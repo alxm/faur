@@ -1,0 +1,31 @@
+#!/bin/sh
+
+if [ $# -ne 2 ]
+then
+    echo "Usage: `basename $0` SourceDir HeaderFile"
+    exit 1
+fi
+
+SRC=$1
+FILE=$2
+
+function putline
+{
+    echo -e $1 >> $FILE
+}
+
+touch $FILE
+
+putline "#ifndef A2X_H"
+putline "#define A2X_H"
+putline ""
+
+for f in $SRC/a2x_*.h
+do
+	putline "#include \"../src/`basename $f`\""
+done
+
+putline ""
+putline "#endif // A2X_H"
+
+exit 0

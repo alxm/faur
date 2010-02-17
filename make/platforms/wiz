@@ -1,0 +1,21 @@
+PLATFORM	=	wiz
+
+OPEN2X		=	/opt/open2x/gcc-4.1.1-glibc-2.3.6
+
+LIBS 		=	-L$(OPEN2X)/lib -L$(OPEN2X)/arm-open2x-linux/lib -lSDL_image -ljpeg -lpng12 -lz -lSDL_mixer -lsmpeg -lSDL -lpthread -lm -ldl
+
+CFLAGS		=	-DA_PLATFORM_WIZ=1 \
+				-O3 -s \
+ 				-msoft-float \
+ 				`$(OPEN2X)/bin/sdl-config --cflags` \
+ 				-I$(OPEN2X)/include -I$(OPEN2X)/arm-open2x-linux/include
+
+PREFIX			:=	arm-open2x-linux-
+export PATH		:=	$(OPEN2X)/bin:$(PATH)
+export CC		:=	$(PREFIX)gcc
+export CXX		:=	$(PREFIX)g++
+export AS		:=	$(PREFIX)as
+export AR		:=	$(PREFIX)ar
+export OBJCOPY	:=	$(PREFIX)objcopy
+export READELF	:=	$(PREFIX)readelf
+export STRIP	:=	$(PREFIX)strip

@@ -1,0 +1,70 @@
+#!/bin/sh
+
+if [ $# -ne 1 ]
+then
+    echo "Usage: `basename $0` ProjectName"
+    exit 1
+fi
+
+A2X_LOCATION="`dirname $0`/.."
+PROJECT_NAME=$1
+PROJECT_PATH=./$PROJECT_NAME
+CURRENT_FILE=./
+
+if [ -e $PROJECT_PATH ]
+then
+    echo "Error: $PROJECT_NAME already exists"
+    exit 1
+fi
+
+function newdir
+{
+    echo "Making dir $1"
+    mkdir $1
+}
+
+function newfile
+{
+    echo "Writing file $1"
+    CURRENT_FILE=$1
+    touch $CURRENT_FILE
+}
+
+function putline
+{
+    echo -e $1 >> $CURRENT_FILE
+}
+
+newdir $PROJECT_PATH
+newdir $PROJECT_PATH/make
+newdir $PROJECT_PATH/src
+
+newfile $PROJECT_PATH/make/Makefile
+putline "APP = $1"
+putline "TARGET_DIR = .."
+putline "SRC_DIR = ../src"
+putline "GFX_DIR ="
+putline "SFX_DIR ="
+putline "A2X_PATH = $A2X_LOCATION"
+putline "include \$(A2X_PATH)/make/project/Makefile.linux"
+
+newfile $PROJECT_PATH/src/main.c
+putline "#include <a2x.h>"
+putline ""
+putline "void a2x(void)"
+putline "{"
+putline "\ta2x_set(\"title\", \"New App\");"
+putline "\ta2x_set(\"version\", \"0.1\");"
+putline "\ta2x_set(\"author\", \"You\");"
+putline "\ta2x_set(\"window\", \"no\");"
+putline "\ta2x_set(\"quiet\", \"yes\");"
+putline "}"
+putline ""
+putline "void Main(void)"
+putline "{"
+putline "\tprintf(\"Code me!\\\n\");"
+putline "}"
+
+echo "$1 is ready!"
+
+exit 0

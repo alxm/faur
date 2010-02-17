@@ -1,0 +1,62 @@
+#
+# this is what gets built
+#
+
+NAME	=	$(TARGET_DIR)/$(APP)
+
+#
+# PNG and WAV files
+#
+
+GFX_FILES	= $(notdir $(wildcard $(GFX_DIR)/*.png))
+SFX_FILES	= $(notdir $(wildcard $(SFX_DIR)/*.wav))
+
+#
+# .c gfx & sfx files
+#
+
+C_GFX_DIR	= $(SRC_DIR)/gfx
+C_SFX_DIR	= $(SRC_DIR)/sfx
+
+#
+# PNG and WAV files in .c form
+#
+
+C_GFX_FILES	= $(addprefix $(C_GFX_DIR)/, $(GFX_FILES:.png=.c))
+C_SFX_FILES	= $(addprefix $(C_SFX_DIR)/, $(SFX_FILES:.wav=.c))
+
+#
+# .c source files
+#
+
+CFILES	= 	$(notdir $(wildcard $(SRC_DIR)/*.c))
+
+#
+# object file dirs
+#
+
+O_DIR		= obj_$(PLATFORM)
+O_GFX_DIR	= $(O_DIR)/gfx
+O_SFX_DIR	= $(O_DIR)/sfx
+
+#
+# all the dirs
+#
+
+DIRS		=	$(O_DIR)
+
+ifdef GFX_DIR
+	DIRS	+=	$(C_GFX_DIR) $(O_GFX_DIR)
+endif
+
+ifdef SFX_DIR
+	DIRS	+=	$(C_SFX_DIR) $(O_SFX_DIR)
+endif
+
+#
+# all object files
+#
+
+OFILES	=	$(addprefix $(O_DIR)/, $(CFILES:.c=.o)) \
+			$(addprefix $(O_GFX_DIR)/, $(notdir $(C_GFX_FILES:.c=.o))) \
+			$(addprefix $(O_SFX_DIR)/, $(notdir $(C_SFX_FILES:.c=.o)))

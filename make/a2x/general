@@ -1,0 +1,31 @@
+NAME	=	../../lib/a2x_$(PLATFORM).a
+HEADER	=	../../lib/a2x.h
+
+O_DIR	=	obj_$(PLATFORM)
+C_DIR	=	../../src
+
+TIME	:=	$(shell date "+%F %R")
+
+CFLAGS	+=	-std=gnu99 -Wall -Werror \
+			-DA_COMPILE_TIME=\"'$(TIME)'\"
+
+PREFIX	=	a2x_
+CFILES	= 	$(notdir $(wildcard $(C_DIR)/$(PREFIX)*.c))
+OFILES	= 	$(addprefix $(O_DIR)/, $(CFILES:.c=.o))
+
+all : $(HEADER) $(NAME)
+
+$(HEADER) :
+	./a2x_header $(C_DIR) $(HEADER)
+
+$(NAME) : $(O_DIR) $(OFILES)
+	$(AR) rvs $(NAME) $(OFILES)
+
+$(O_DIR) :
+	mkdir $@
+
+$(O_DIR)/$(PREFIX)%.o : $(C_DIR)/$(PREFIX)%.c
+	$(CC) -c -o $@ $< $(CFLAGS)
+
+clean :
+	rm -rf $(HEADER) $(NAME) $(O_DIR)
