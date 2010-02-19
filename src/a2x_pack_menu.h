@@ -32,7 +32,7 @@
 #define A_MENU_PAUSE (a2xSet.fps / 6)
 
 typedef enum MenuState {
-    A_MENU_NOT_DONE, A_MENU_ACCEPT, A_MENU_CANCEL
+    A_MENU_RUNNING, A_MENU_ACCEPT, A_MENU_CANCEL, A_MENU_SPENT
 } MenuState;
 
 typedef struct Menu {
@@ -76,11 +76,12 @@ extern void a_menu_input(Menu* const m);
 #define a_menu_currentItem(m)  (a_list_current(m->items))
 #define a_menu_isSelected(m)   (a_list_currentNode(m->items) == m->selectedNode)
 
-#define a_menu_reset(m)   (m->state = MENU_NOT_DONE)
-#define a_menu_notDone(m) (m->state == MENU_NOT_DONE)
-#define a_menu_accept(m)  (m->state == MENU_ACCEPT)
-#define a_menu_cancel(m)  (m->state == MENU_CANCEL)
+#define a_menu_keepRunning(m) (m->state = A_MENU_RUNNING)
+#define a_menu_running(m)     (m->state == A_MENU_RUNNING)
+#define a_menu_finished(m)    (m->state == A_MENU_ACCEPT || m->state == A_MENU_CANCEL)
+#define a_menu_accept(m)      (m->state == A_MENU_ACCEPT)
+#define a_menu_cancel(m)      (m->state == A_MENU_CANCEL)
 
-#define a_menu_choiceNumber(m)  (m->currentIndex)
+#define a_menu_choice(m) (m->selectedIndex)
 
 #endif // A2X_PACK_MENU_H

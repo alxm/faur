@@ -28,8 +28,8 @@ Menu* a_menu_set(Input* const next, Input* const back, Input* const select, Inpu
 
     m->selectedNode = NULL;
     m->selectedIndex = 0;
-    
-    m->state = A_MENU_NOT_DONE;
+
+    m->state = A_MENU_RUNNING;
     m->pause = A_MENU_PAUSE;
     m->used = 0;
 
@@ -102,6 +102,11 @@ void a_menu_addItem(Menu* const m, void* const v)
 
 void a_menu_input(Menu* const m)
 {
+    if(!a_menu_running(m)) {
+        m->state = A_MENU_SPENT;
+        return;
+    }
+
     m->used = 0;
 
     if(!m->pause) {
@@ -115,7 +120,7 @@ void a_menu_input(Menu* const m)
             m->used = 1;
         }
     } else {
-        if(!a_input_get(m->back) && !a_input_get(m->next) && !a_input_get(m->select) && !a_input_get(m->cancel)) {
+        if(!a_input_get(m->back) && !a_input_get(m->next) && !a_input_get(m->select) && !(m->cancel && a_input_get(m->cancel))) {
             m->pause = 0;
         } else {
             m->pause--;
@@ -143,7 +148,7 @@ void a_menu_input(Menu* const m)
             if(m->soundAccept) {
                 a_sfx_play(m->soundAccept);
             }
-        } else if(a_input_get(m->cancel)) {
+        } else if(m->cancel && a_input_get(m->cancel)) {
             m->state = A_MENU_CANCEL;
 
             if(m->soundCancel) {
@@ -156,10 +161,13 @@ void a_menu_input(Menu* const m)
         m->input(m, m->v);
     }
 
-    if(m->state != A_MENU_NOT_DONE) {
+    if(m->state != A_MENU_RUNNING) {
         a_input_unpress(m->next);
         a_input_unpress(m->back);
         a_input_unpress(m->select);
-        a_input_unpress(m->cancel);
+
+        if(m->cancel) {
+            a_input_unpress(m->cancel);
+        }
     }
 }
