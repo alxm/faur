@@ -19,13 +19,14 @@
 
 #include "a2x_pack_menu.h"
 
-Menu* a_menu_set(const char* const next, const char* const back, const char* const select, const char* const cancel)
+Menu* a_menu_set(Input* const next, Input* const back, Input* const select, Input* const cancel, void (*freeItem)(void* v))
 {
     Menu* const m = malloc(sizeof(Menu));
 
     m->items = a_list_set();
+    m->freeItem = freeItem;
+
     m->currentIndex = 0;
-    m->current = NULL;
     m->state = A_MENU_NOT_DONE;
     m->pause = A_MENU_PAUSE;
     m->used = 0;
@@ -40,32 +41,24 @@ Menu* a_menu_set(const char* const next, const char* const back, const char* con
     m->soundCancel = NULL;
     m->soundBrowse = NULL;
 
-    m->next = a_input_set(next);
-    m->back = a_input_set(back);
-    m->select = a_input_set(select);
-    m->cancel = a_input_set(cancel);
+    m->next = next;
+    m->back = back;
+    m->select = select;
+    m->cancel = cancel;
 
     return m;
 }
 
 void a_menu_free(Menu* const m)
 {
-    while(a_list_iterate(m->items)) {
-        MenuItem* const i = a_list_current(m->items);
-
-        free(i->title);
-        free(i);
+    if(m->freeItem) {
+        while(a_list_iterate(m->items)) {
+            m->freeItem(a_list_current(m->items));
+        }
     }
 
     a_list_free(m->items);
-
     free(m->title);
-
-    a_input_free(m->next);
-    a_input_free(m->back);
-    a_input_free(m->select);
-    a_input_free(m->cancel);
-
     free(m);
 }
 
@@ -96,20 +89,9 @@ void a_menu_addSounds(Menu* const m, Sound* const accept, Sound* const cancel, S
     m->soundBrowse = browse;
 }
 
-MenuItem* a_menu_addItemV(Menu* const m, const char* const title, void* const v)
+void a_menu_addItem(Menu* const m, void* const v)
 {
-    MenuItem* const item = malloc(sizeof(MenuItem));
-
-    item->title = a_str_dup(title);
-    item->v = v;
-
-    a_list_addLast(m->items, item);
-
-    if(m->current == NULL) {
-        m->current = item;
-    }
-
-    return item;
+    a_list_addLast(m->items, v);
 }
 
 void a_menu_input(Menu* const m)

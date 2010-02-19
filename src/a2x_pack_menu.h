@@ -35,15 +35,10 @@ typedef enum MenuState {
     A_MENU_NOT_DONE, A_MENU_ACCEPT, A_MENU_CANCEL
 } MenuState;
 
-typedef struct MenuItem {
-    char* title;
-    void* v;
-} MenuItem;
-
 typedef struct Menu {
     List* items;
+    void (*freeItem)(void* v);
     int currentIndex;
-    MenuItem* current;
     MenuState state;
     int pause;
     int used;
@@ -60,7 +55,7 @@ typedef struct Menu {
     Input* cancel;
 } Menu;
 
-extern Menu* a_menu_set(const char* const next, const char* const back, const char* const select, const char* const cancel);
+extern Menu* a_menu_set(Input* const next, Input* const back, Input* const select, Input* const cancel, void (*freeItem)(void* v));
 extern void a_menu_free(Menu* const m);
 
 extern void a_menu_addInput(Menu* const m, void (*input)(struct Menu* const m, void* const v));
@@ -69,8 +64,7 @@ extern void a_menu_addTitle(Menu* const m, const char* const t);
 extern void a_menu_addSprite(Menu* const m, Sprite* const s);
 extern void a_menu_addSounds(Menu* const m, Sound* const accept, Sound* const cancel, Sound* const browse);
 
-#define a_menu_addItem(m, t) a_menu_addItemV(m, t, NULL)
-extern MenuItem* a_menu_addItemV(Menu* const m, const char* const title, void* const v);
+extern void a_menu_addItem(Menu* const m, void* const v);
 
 extern void a_menu_input(Menu* const m);
 
@@ -78,10 +72,7 @@ extern void a_menu_input(Menu* const m);
 
 #define a_menu_iterate(m)      (a_list_iterate(m->items))
 #define a_menu_iterateReset(m) (a_list_reset(m->items))
-
-#define a_menu_item(m)      (a_list_current(m->items))
-#define a_menu_itemTitle(m) (((MenuItem*)a_menu_item(m))->title)
-#define a_menu_itemV(m)     (((MenuItem*)a_menu_item(m))->v)
+#define a_menu_currentItem(m)  (a_list_current(m->items))
 
 #define a_menu_reset(m)   (m->state = MENU_NOT_DONE)
 #define a_menu_notDone(m) (m->state == MENU_NOT_DONE)
@@ -89,9 +80,5 @@ extern void a_menu_input(Menu* const m);
 #define a_menu_cancel(m)  (m->state == MENU_CANCEL)
 
 #define a_menu_choiceNumber(m)  (m->currentIndex)
-
-#define a_menu_choice(m)      (m->current)
-#define a_menu_choiceTitle(m) (((MenuItem*)a_menu_choice(m))->title)
-#define a_menu_choiceV(m)     (((MenuItem*)a_menu_choice(m))->v)
 
 #endif // A2X_PACK_MENU_H
