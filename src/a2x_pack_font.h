@@ -39,14 +39,7 @@ typedef enum FontAlign {
 } FontAlign;
 
 extern int a_font_load(Sheet* const sheet, const int sx, const int sy, const int sw, const int sh, const int zoom, const FontLoad loader);
-extern void a_font_colour(const int index, const Pixel colour, const FontLoad loader);
-
-#define a_font_loadRGB(sheet, sx, sy, sw, sh, zoom, loader, r, g, b)   \
-({                                                                     \
-    const int a__f = a_font_load(sheet, sx, sy, sw, sh, zoom, loader); \
-    a_font_colour(a__f, a_screen_makePixel(r, g, b), loader);          \
-    a__f;                                                              \
-})
+extern int a_font_loadRGB(Sheet* const sheet, const int sx, const int sy, const int sw, const int sh, const int zoom, const FontLoad loader, const uint8_t r, const uint8_t g, const uint8_t b);
 
 extern int a_font_text(const FontAlign align, int x, const int y, const int index, const Blit_t draw, const char* const text);
 extern int a_font_safe(const FontAlign align, int x, const int y, const int index, const Blit_t draw, const char* const text);

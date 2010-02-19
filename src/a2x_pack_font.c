@@ -139,42 +139,27 @@ int a_font_load(Sheet* const sheet, const int sx, const int sy, const int sw, co
     return numFonts - 1;
 }
 
-void a_font_colour(const int index, const Pixel colour, const FontLoad loader)
+int a_font_loadRGB(Sheet* const sheet, const int sx, const int sy, const int sw, const int sh, const int zoom, const FontLoad loader, const uint8_t r, const uint8_t g, const uint8_t b)
 {
+    const int index = a_font_load(sheet, sx, sy, sw, sh, zoom, loader);
     Font* const f = fonts[index];
 
-    int start = 0;
-    int end = CHARS_NUM - 1;
+    const Pixel colour = a_screen_makePixel(r, g, b);
 
-    switch(loader) {
-		case A_LOAD_AN: {
-            end = a_font_charIndex('9');
-		} break;
-
-		case A_LOAD_A: {
-            end = a_font_charIndex('z');
-		} break;
-
-		case A_LOAD_N: {
-			start = a_font_charIndex('0');
-            end = a_font_charIndex('9');
-		} break;
-
-        default:break;
-	}
-
-    for(int i = start; i <= end; i++) {
+    for(int i = NUM_ASCII; i--; ) {
         Sprite* const s = f->sprites[i];
 
-        if(s == NULL) continue;
+        if(s) {
+            const Pixel t = s->t;
+            Pixel* d = s->data;
 
-        const Pixel t = s->t;
-        Pixel* d = s->data;
-
-        for(int j = s->w * s->h; j--; d++) {
-            if(*d != t) *d = colour;
+            for(int j = s->w * s->h; j--; d++) {
+                if(*d != t) *d = colour;
+            }
         }
     }
+
+    return index;
 }
 
 int a_font_text(const FontAlign align, int x, const int y, const int index, const Blit_t draw, const char* const text)
