@@ -46,6 +46,9 @@ typedef struct ListIterator {
 #define a_list_current(l)     ((l)->current->content)
 #define a_list_currentNode(l) ((l)->current)
 
+#define a_list_next(n)          ((n)->next)
+#define a_list_prev(n)          ((n)->prev)
+#define a_list_getContent(n)    ((n)->content)
 #define a_list_setContent(n, c) ((n)->content = (c))
 
 #define a_list_items(l)   ((l)->items)

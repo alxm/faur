@@ -38,7 +38,8 @@ typedef enum MenuState {
 typedef struct Menu {
     List* items;
     void (*freeItem)(void* v);
-    int currentIndex;
+    Node* selectedNode;
+    int selectedIndex;
     MenuState state;
     int pause;
     int used;
@@ -73,6 +74,7 @@ extern void a_menu_input(Menu* const m);
 #define a_menu_iterate(m)      (a_list_iterate(m->items))
 #define a_menu_iterateReset(m) (a_list_reset(m->items))
 #define a_menu_currentItem(m)  (a_list_current(m->items))
+#define a_menu_isSelected(m)   (a_list_currentNode(m->items) == m->selectedNode)
 
 #define a_menu_reset(m)   (m->state = MENU_NOT_DONE)
 #define a_menu_notDone(m) (m->state == MENU_NOT_DONE)

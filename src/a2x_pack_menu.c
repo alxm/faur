@@ -26,7 +26,9 @@ Menu* a_menu_set(Input* const next, Input* const back, Input* const select, Inpu
     m->items = a_list_set();
     m->freeItem = freeItem;
 
-    m->currentIndex = 0;
+    m->selectedNode = NULL;
+    m->selectedIndex = 0;
+    
     m->state = A_MENU_NOT_DONE;
     m->pause = A_MENU_PAUSE;
     m->used = 0;
@@ -91,7 +93,11 @@ void a_menu_addSounds(Menu* const m, Sound* const accept, Sound* const cancel, S
 
 void a_menu_addItem(Menu* const m, void* const v)
 {
-    a_list_addLast(m->items, v);
+    Node* const n = a_list_addLast(m->items, v);
+
+    if(m->selectedNode == NULL) {
+        m->selectedNode = n;
+    }
 }
 
 void a_menu_input(Menu* const m)
@@ -100,10 +106,12 @@ void a_menu_input(Menu* const m)
 
     if(!m->pause) {
         if(a_input_get(m->back)) {
-            m->currentIndex--;
+            m->selectedIndex--;
+            m->selectedNode = a_list_prev(m->selectedNode);
             m->used = 1;
         } else if(a_input_get(m->next)) {
-            m->currentIndex++;
+            m->selectedIndex++;
+            m->selectedNode = a_list_next(m->selectedNode);
             m->used = 1;
         }
     } else {
@@ -121,10 +129,12 @@ void a_menu_input(Menu* const m)
             a_sfx_play(m->soundBrowse);
         }
 
-        if(m->currentIndex < 0) {
-            m->currentIndex = a_menu_items(m) - 1;
-        } else if(m->currentIndex == a_menu_items(m)) {
-            m->currentIndex = 0;
+        if(m->selectedIndex < 0) {
+            m->selectedNode = m->items->last->prev;
+            m->selectedIndex = a_menu_items(m) - 1;
+        } else if(m->selectedIndex == a_menu_items(m)) {
+            m->selectedNode = m->items->first->next;
+            m->selectedIndex = 0;
         }
     } else {
         if(a_input_get(m->select)) {
