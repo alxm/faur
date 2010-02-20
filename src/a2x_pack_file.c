@@ -70,86 +70,56 @@ int a_file_isDir(const char* const f)
     return S_ISDIR(info.st_mode);
 }
 
-int _a_file_selector(const struct dirent* f)
-{
-    return a_file_validName(f->d_name);
-}
-
-List* a_file_listFilenames(const char* const path, int (*selector)(const struct dirent* f))
-{
-    List* list = a_list_set();
-
-    if(!a_file_dirExists(path)) return list;
-    if(!selector) selector = &_a_file_selector;
-
-    struct dirent** dlist;
-    const int numFiles = scandir(path, &dlist, selector, alphasort);
-
-    for(int i = numFiles; i--; ) {
-        a_list_addFirst(list, a_str_dup(dlist[i]->d_name));
-
-        free(dlist[i]);
-    }
-
-    free(dlist);
-
-    return list;
-}
-
-List* a_file_listFullpath(const char* const path, int (*selector)(const struct dirent* f))
-{
-    List* list = a_list_set();
-
-    if(!a_file_dirExists(path)) return list;
-    if(!selector) selector = &_a_file_selector;
-
-    struct dirent** dlist;
-    const int numFiles = scandir(path, &dlist, selector, alphasort);
-
-    for(int i = numFiles; i--; ) {
-        char* const name = a_str_malloc2(3, path, "/", dlist[i]->d_name);
-        sprintf(name, "%s/%s", path, dlist[i]->d_name);
-
-        a_list_addFirst(list, name);
-
-        free(dlist[i]);
-    }
-
-    free(dlist);
-
-    return list;
-}
-
-List* a_file_listFullpath2(const char* const path, List* const files)
-{
-    List* const list = a_list_set();
-
-    while(a_list_iterate(files)) {
-        char* const file = a_list_current(files);
-        char* const full = a_str_malloc2(3, path, "/", file);
-
-        sprintf(full, "%s/%s", path, file);
-
-        a_list_addLast(list, full);
-    }
-
-    return list;
-}
-
-char* a_file_pathFileString(const char* const path, const char* const file)
-{
-    char* const full = a_str_malloc2(3, path, "/", file);
-    sprintf(full, "%s/%s", path, file);
-
-    return full;
-}
-
 int a_file_size(const char* const f)
 {
     struct stat info;
     stat(f, &info);
 
     return info.st_size;
+}
+
+int a__file_selector(const struct dirent* f)
+{
+    return a_file_validName(f->d_name);
+}
+
+List* a_file_list(const char* const path, int (*selector)(const struct dirent* f))
+{
+    List* const list = a_list_set();
+
+    if(!a_file_dirExists(path)) {
+        return list;
+    }
+
+    if(!selector) {
+        selector = &a__file_selector;
+    }
+
+    struct dirent** dlist;
+    const int numFiles = scandir(path, &dlist, selector, alphasort);
+
+    for(int i = numFiles; i--; ) {
+        FilePath* const f = malloc(sizeof(FilePath));
+
+        f->name = a_str_dup(dlist[i]->d_name);
+        f->full = a_str_merge(3, path, "/", f->name);
+
+        a_list_addFirst(list, f);
+
+        free(dlist[i]);
+    }
+
+    free(dlist);
+
+    return list;
+}
+
+void a_file_freeFilePath(FilePath* const f)
+{
+    free(f->name);
+    free(f->full);
+
+    free(f);
 }
 
 char* a_file_readLine(File* const f)
@@ -171,7 +141,7 @@ char* a_file_readLine(File* const f)
     if(offset > 1) {
         a_file_jump(f, -offset);
 
-        char* str = malloc(offset * sizeof(char));
+        char* const str = malloc(offset * sizeof(char));
 
         for(int i = 0; i < offset - 1; i++) {
             str[i] = fgetc(f);

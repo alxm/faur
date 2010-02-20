@@ -24,11 +24,14 @@
 
 typedef List Stack;
 
-#define a_stack_set()          a_qlist_set()
-#define a_stack_free(s)        a_qlist_free((s))
-#define a_stack_freeContent(s) a_qlist_freeContent((s))
-#define a_stack_push(s, v)     a_qlist_addFirst((s), (v))
-#define a_stack_pop(s)         a_qlist_pop((s))
-#define a_stack_peek(s)        a_qlist_peek((s))
+#define a_stack_set()           a_list_set()
+#define a_stack_free(s)         a_list_free(s)
+#define a_stack_freeContent(s)  a_list_freeContent(s)
+#define a_stack_empty(s)        a_list_empty(s)
+#define a_stack_emptyContent(s) a_list_emptyContent(s)
+#define a_stack_push(s, v)      a_list_addFirst(s, v)
+#define a_stack_pop(s)          a_list_pop(s)
+#define a_stack_peek(s)         a_list_peek(s)
+#define a_stack_isEmpty(s)      a_list_isEmpty(s)
 
 #endif // A2X_PACK_STACK_H

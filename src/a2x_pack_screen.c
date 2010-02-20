@@ -50,8 +50,32 @@ void a__screen_set(void)
         return;
     }
 
+    a__videoFlags = SDL_SWSURFACE;
+    a_screen = SDL_SetVideoMode(a2xSet.width, a2xSet.height, A_BPP, a__videoFlags);
+
+    SDL_SetClipRect(a_screen, NULL);
+
+    #if A_PLATFORM_LINUXPC
+        String64 caption;
+        sprintf(caption, "%s %s", a2xSet.title, a2xSet.version);
+        SDL_WM_SetCaption(caption, NULL);
+    #else
+        SDL_ShowCursor(SDL_DISABLE);
+    #endif
+
     if(a2xSet.fixWizTear) {
         #if A_PLATFORM_WIZ
+            #define FBIO_MAGIC 'D'
+            #define FBIO_LCD_CHANGE_CONTROL _IOW(FBIO_MAGIC, 90, unsigned int[2])
+            #define LCD_DIRECTION_ON_CMD 5 // 320x240
+            #define LCD_DIRECTION_OFF_CMD 6 // 240x320
+
+            unsigned int send[2];
+            int fb_fd = open("/dev/fb0", O_RDWR);
+            send[0] = LCD_DIRECTION_OFF_CMD;
+            ioctl(fb_fd, FBIO_LCD_CHANGE_CONTROL, &send);
+            close(fb_fd);
+
             a2xSet.fakeScreen = 1;
         #else
             a2xSet.fixWizTear = 0;
@@ -61,24 +85,11 @@ void a__screen_set(void)
     if(a2xSet.fakeScreen) {
         a_pixels = malloc(A_SCREEN_SIZE);
         memset(a_pixels, 0, A_SCREEN_SIZE);
-    }
+    } else {
+        if(SDL_MUSTLOCK(a_screen)) {
+            SDL_LockSurface(a_screen);
+        }
 
-    a__videoFlags = SDL_SWSURFACE;
-    a_screen = SDL_SetVideoMode(a2xSet.width, a2xSet.height, A_BPP, a__videoFlags);
-
-    #if A_PLATFORM_LINUXPC
-        String64 caption;
-        sprintf(caption, "%s %s", a2xSet.title, a2xSet.version);
-        SDL_WM_SetCaption(caption, NULL);
-    #endif
-
-    SDL_SetClipRect(a_screen, NULL);
-
-    #if !A_PLATFORM_LINUXPC
-        SDL_ShowCursor(SDL_DISABLE);
-    #endif
-
-    if(!a2xSet.fakeScreen) {
         a_pixels = a_screen->pixels;
     }
 
@@ -91,19 +102,6 @@ void a__screen_set(void)
 
     a_screen_customDraw = NULL;
     a_screen_customItem = NULL;
-
-    if(a2xSet.fixWizTear) {
-        #define FBIO_MAGIC 'D'
-        #define FBIO_LCD_CHANGE_CONTROL _IOW(FBIO_MAGIC, 90, unsigned int[2])
-        #define LCD_DIRECTION_ON_CMD 5 // 320x240
-        #define LCD_DIRECTION_OFF_CMD 6 // 240x320
-
-        unsigned int send[2];
-        int fb_fd = open("/dev/fb0", O_RDWR);
-        send[0] = LCD_DIRECTION_OFF_CMD;
-        ioctl(fb_fd, FBIO_LCD_CHANGE_CONTROL, &send);
-        close(fb_fd);
-    }
 }
 
 void a__screen_free(void)
@@ -114,6 +112,10 @@ void a__screen_free(void)
 
     if(a2xSet.fakeScreen) {
         free(a_pixels);
+    } else {
+        if(SDL_MUSTLOCK(a_screen)) {
+            SDL_UnlockSurface(a_screen);
+        }
     }
 }
 
@@ -178,34 +180,36 @@ void a_screen_show(void)
         }
 
         SDL_Flip(a_screen);
-    } else {
-        if(a2xSet.fakeScreen) {
-            if(SDL_MUSTLOCK(a_screen)) {
-                SDL_LockSurface(a_screen);
-            }
-
-            const Pixel* const src = a_pixels;
-            Pixel* const dst = a_screen->pixels;
-
-            memcpy(dst, src, A_SCREEN_SIZE);
-
-            if(SDL_MUSTLOCK(a_screen)) {
-                SDL_UnlockSurface(a_screen);
-            }
+    } else if(a2xSet.fakeScreen) {
+        if(SDL_MUSTLOCK(a_screen)) {
+            SDL_LockSurface(a_screen);
         }
 
-        #if A_PLATFORM_GP2X
-            //flush_uppermem_cache(a_screen->pixels, a_screen->pixels + WIDTH * HEIGHT, 0);
-        #endif
+        const Pixel* const src = a_pixels;
+        Pixel* const dst = a_screen->pixels;
 
-        if(!a2xSet.fakeScreen) {
-            if(SDL_MUSTLOCK(a_screen)) {
-                SDL_UnlockSurface(a_screen);
-            }
+        memcpy(dst, src, A_SCREEN_SIZE);
+
+        if(SDL_MUSTLOCK(a_screen)) {
+            SDL_UnlockSurface(a_screen);
         }
 
         SDL_Flip(a_screen);
+    } else {
+        if(SDL_MUSTLOCK(a_screen)) {
+            SDL_UnlockSurface(a_screen);
+        }
+
+        SDL_Flip(a_screen);
+
+        if(SDL_MUSTLOCK(a_screen)) {
+            SDL_LockSurface(a_screen);
+        }
     }
+
+    #if A_PLATFORM_GP2X
+        //flush_uppermem_cache(a_screen->pixels, a_screen->pixels + WIDTH * HEIGHT, 0);
+    #endif
 }
 
 void a_screen_custom(void (*f)(void* const v), void* const v)
@@ -220,7 +224,7 @@ static void displayVolume(void)
         if(a2xSet.sound) {
             if(a_time_getMilis() - a__volumeAdjust > A_MILIS_VOLUME) {
                 return;
-            }    
+            }
 
             a_draw_rectangle(0, 181, A_MAX_VOLUME / A_VOLUME_STEP + 5, 197, 0);
 

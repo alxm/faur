@@ -63,14 +63,7 @@ void a__fps_set(void)
 void a_fps_start(void)
 {
     a__input_get();
-
     a_sound_adjustVolume();
-
-    #if !A_FAKE_SCREEN
-        if(SDL_MUSTLOCK(a_screen)) {
-            SDL_LockSurface(a_screen);
-        }
-    #endif
 }
 
 void a_fps_end(void)
