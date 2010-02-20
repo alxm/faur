@@ -27,8 +27,10 @@ void a__conf_set(void)
 
     char* line;
 
-    while((line = a_file_readLine(f))) {
+    while(a_file_readLine(f, &line)) {
         char* const s = a_str_trim(line);
+
+        free(line);
 
         if(strlen(s) >= 2 && s[0] == '/' && s[1] == '/') {
             free(s);

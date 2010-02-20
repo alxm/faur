@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <dirent.h>
+#include <limits.h>
 
 #include "a2x_pack_list.h"
 #include "a2x_pack_str.h"
@@ -94,6 +95,6 @@ extern int a_file_size(const char* const f);
 extern List* a_file_list(const char* const path, int (*selector)(const struct dirent* f));
 extern void a_file_freeFilePath(FilePath* const f);
 
-extern char* a_file_readLine(File* const f);
+extern int a_file_readLine(File* const f, char** const line);
 
 #endif // A2X_PACK_FILE

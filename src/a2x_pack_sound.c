@@ -82,12 +82,12 @@ void a__sound_free(void)
         a_list_free(a__musicList);
 
         Mix_CloseAudio();
-    }
 
-    #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
-        a_input_free(a__volUp);
-        a_input_free(a__volDown);
-    #endif
+        #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
+            a_input_free(a__volUp);
+            a_input_free(a__volDown);
+        #endif
+    }
 }
 
 Music* a_music_load(const char* const path)

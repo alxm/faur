@@ -33,32 +33,51 @@
     static void a__hw_ramTimings(int tRC, int tRAS, int tWR, int tMRD, int tRFC, int tRP, int tRCD);
 #endif
 
+#if A_PLATFORM_GP2X || A_PLATFORM_WIZ
+    static int mmuHackOn = 0;
+#endif
+
 void a__hw_set(void)
 {
-    #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
-        system("/sbin/rmmod mmuhack");
-        system("/sbin/insmod mmuhack.o");
-
-        int mmufd = open("/dev/mmuhack", O_RDWR);
-
-        if(mmufd >= 0) {
-            close(mmufd);
-        }
-    #endif
-
     #if A_PLATFORM_GP2X
+        if(a_file_exists("./mmuhack.o")) {
+            system("/sbin/rmmod mmuhack");
+            system("/sbin/insmod mmuhack.o");
+
+            int mmufd = open("/dev/mmuhack", O_RDWR);
+
+            if(mmufd >= 0) {
+                close(mmufd);
+                mmuHackOn = 1;
+            }
+        }
+
         if(a2xSet.mhz > 0) {
             a__hw_cpu(a2xSet.mhz);
         }
-        
+
         a__hw_ramTimings(6, 4, 1, 1, 1, 2, 2);
+    #elif A_PLATFORM_WIZ
+        if(a_file_exists("./mmuhack.ko")) {
+            system("/sbin/rmmod mmuhack");
+            system("/sbin/insmod mmuhack.ko");
+
+            int mmufd = open("/dev/mmuhack", O_RDWR);
+
+            if(mmufd >= 0) {
+                close(mmufd);
+                mmuHackOn = 1;
+            }
+        }
     #endif
 }
 
 void a__hw_free(void)
 {
     #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
-        system("/sbin/rmmod mmuhack");
+        if(mmuHackOn) {
+            system("/sbin/rmmod mmuhack");
+        }
     #endif
 
     #if A_PLATFORM_GP2X

@@ -27,6 +27,7 @@
 #include <sys/mman.h>
 
 #include "a2x_app_settings.h"
+#include "a2x_pack_file.h"
 
 extern void a__hw_set(void);
 extern void a__hw_free(void);

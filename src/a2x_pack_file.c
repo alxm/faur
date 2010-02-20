@@ -122,7 +122,7 @@ void a_file_freeFilePath(FilePath* const f)
     free(f);
 }
 
-char* a_file_readLine(File* const f)
+int a_file_readLine(File* const f, char** const line)
 {
     int offset = 1;
 
@@ -149,8 +149,10 @@ char* a_file_readLine(File* const f)
 
         str[offset - 1] = '\0';
 
-        return str;
+        *line = str;
+        return 1;
     }
 
-    return NULL;
+    *line = NULL;
+    return 0;
 }
