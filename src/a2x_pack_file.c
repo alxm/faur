@@ -155,8 +155,8 @@ int a_file_readLine(FileReader* const fr)
     while(offset == 1) {
         int c;
 
-        for(c = fgetc(f); !iscntrl(c) && c != EOF; c = fgetc(f), offset++) {
-            continue;
+        for(c = fgetc(f); !iscntrl(c) && c != EOF; c = fgetc(f)) {
+            offset++;
         }
 
         if(c == EOF) {
@@ -166,7 +166,12 @@ int a_file_readLine(FileReader* const fr)
     }
 
     if(offset > 1) {
-        a_file_jump(f, -offset);
+        if(fr->eof) {
+            a_file_rewind(f);
+            a_file_jumpEnd(f, -(offset - 1));
+        } else {
+            a_file_jump(f, -offset);
+        }
 
         char* const str = malloc(offset * sizeof(char));
 
@@ -175,6 +180,8 @@ int a_file_readLine(FileReader* const fr)
         }
 
         str[offset - 1] = '\0';
+
+        a_file_jump(f, 1);
 
         free(fr->line);
         fr->line = str;
