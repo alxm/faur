@@ -57,6 +57,17 @@
 
 #include "a2x_app_settings.h"
 
+/*
+#define a_out(...)                    \
+({                                    \
+    if(!a2xSet.quiet) {               \
+        fprintf(stderr, "a2x: ");     \
+        fprintf(stderr, __VA_ARGS__); \
+        fprintf(stderr, "\n");        \
+    }                                 \
+})
+//*/
+//*
 #define a_out(...)           \
 ({                           \
     if(!a2xSet.quiet) {      \
@@ -65,6 +76,7 @@
         printf("\n");        \
     }                        \
 })
+//*/
 
 #define a_error(...)        \
 ({                          \

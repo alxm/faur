@@ -122,9 +122,35 @@ void a_file_freeFilePath(FilePath* const f)
     free(f);
 }
 
-int a_file_readLine(File* const f, char** const line)
+FileReader* a_file_makeReader(const char* const file)
 {
+    FileReader* const f = malloc(sizeof(FileReader));
+
+    f->file = a_file_openReadText(file);
+    f->line = NULL;
+    f->eof = f->file == NULL;
+
+    return f;
+}
+
+void a_file_freeReader(FileReader* const f)
+{
+    if(f->file) {
+        a_file_close(f->file);
+    }
+
+    free(f->line);
+    free(f);
+}
+
+int a_file_readLine(FileReader* const fr)
+{
+    if(fr->eof) {
+        return 0;
+    }
+
     int offset = 1;
+    File* const f = fr->file;
 
     while(offset == 1) {
         int c;
@@ -134,6 +160,7 @@ int a_file_readLine(File* const f, char** const line)
         }
 
         if(c == EOF) {
+            fr->eof = 1;
             break;
         }
     }
@@ -149,10 +176,11 @@ int a_file_readLine(File* const f, char** const line)
 
         str[offset - 1] = '\0';
 
-        *line = str;
+        free(fr->line);
+        fr->line = str;
+
         return 1;
     }
 
-    *line = NULL;
     return 0;
 }

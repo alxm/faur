@@ -71,6 +71,13 @@ realclean :
 	rm -rf $(NAME) $(DIRS)
 
 #
+# clean-up rule that deletes the built binary
+#
+
+cleanbin :
+	rm -f $(NAME)
+
+#
 # run the program
 #
 

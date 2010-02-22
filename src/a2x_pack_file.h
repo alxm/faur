@@ -37,6 +37,12 @@ typedef struct FilePath {
     char* full;
 } FilePath;
 
+typedef struct FileReader {
+    File* file;
+    char* line;
+    int eof;
+} FileReader;
+
 /*#if A_PLATFORM_GP2X || A_PLATFORM_WIZ || A_PLATFORM_PANDORA
     #define a_sync() sync()
 #else*/
@@ -95,6 +101,9 @@ extern int a_file_size(const char* const f);
 extern List* a_file_list(const char* const path, int (*selector)(const struct dirent* f));
 extern void a_file_freeFilePath(FilePath* const f);
 
-extern int a_file_readLine(File* const f, char** const line);
+extern FileReader* a_file_makeReader(const char* const file);
+extern void a_file_freeReader(FileReader* const f);
+extern int a_file_readLine(FileReader* const fr);
+#define a_file_getLine(fr) ((fr)->line)
 
 #endif // A2X_PACK_FILE

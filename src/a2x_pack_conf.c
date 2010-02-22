@@ -21,16 +21,10 @@
 
 void a__conf_set(void)
 {
-    File* const f = a_file_openReadText(a2xSet.conf);
+    FileReader* const f = a_file_makeReader(a2xSet.conf);
 
-    if(!f) return;
-
-    char* line;
-
-    while(a_file_readLine(f, &line)) {
-        char* const s = a_str_trim(line);
-
-        free(line);
+    while(a_file_readLine(f)) {
+        char* const s = a_str_trim(a_file_getLine(f));
 
         if(strlen(s) >= 2 && s[0] == '/' && s[1] == '/') {
             free(s);
@@ -78,5 +72,5 @@ void a__conf_set(void)
         free(b);
     }
 
-    a_file_close(f);
+    a_file_freeReader(f);
 }
