@@ -16,16 +16,20 @@ OFILES	= 	$(addprefix $(O_DIR)/, $(CFILES:.c=.o))
 all : $(HEADER) $(NAME)
 
 $(HEADER) :
-	./a2x_header $(C_DIR) $(HEADER)
+	@ echo "Writing header $(notdir $(HEADER))"
+	@ ./a2x_header $(C_DIR) $(HEADER)
 
 $(NAME) : $(O_DIR) $(OFILES)
-	$(AR) rvs $(NAME) $(OFILES)
+	@ echo "Building $(notdir $(NAME))"
+	@ $(AR) rs $(NAME) $(OFILES)
 
 $(O_DIR) :
-	mkdir $@
+	@ mkdir $@
 
 $(O_DIR)/$(PREFIX)%.o : $(C_DIR)/$(PREFIX)%.c
-	$(CC) -c -o $@ $< $(CFLAGS)
+	@ echo "Compiling $(notdir $<)"
+	@ $(CC) -c -o $@ $< $(CFLAGS)
 
 clean :
-	rm -rf $(HEADER) $(NAME) $(O_DIR)
+	@ echo "Cleaning a2x $(PLATFORM)"
+	@ rm -rf $(HEADER) $(NAME) $(O_DIR)

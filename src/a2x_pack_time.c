@@ -25,7 +25,7 @@
 
 #include "a2x_pack_time.h"
 
-int a__time_getMilisOverflow = 0;
+static int overflow = 0;
 
 #if A_PLATFORM_WIZ
     #define TIMER_BASE3  0x1980
@@ -72,10 +72,25 @@ uint32_t a_time_getMilis(void)
     #endif
 
     if(t < old) {
-        a__time_getMilisOverflow = 1;
+        overflow = 1;
     }
 
     old = t;
 
     return t;
+}
+
+void a_time_waitMilis(const uint32_t milis)
+{
+    SDL_Delay(milis);
+}
+
+int a_time_overflowed(void)
+{
+    return overflow;
+}
+
+void a_time_handledOverflow(void)
+{
+    overflow = 0;
 }

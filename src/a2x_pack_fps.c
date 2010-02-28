@@ -19,45 +19,52 @@
 
 #include "a2x_pack_fps.h"
 
-#define MILIS (1000 / a2xSet.fps)
-#define FPS_SIZE (60)
+#define BUFFER_SIZE 60
 
-static struct {
-    uint32_t f[FPS_SIZE];
-    uint32_t f2[FPS_SIZE];
-    uint32_t m[FPS_SIZE];
-    uint32_t m2[FPS_SIZE];
+static uint32_t fpsBuffer[BUFFER_SIZE];
+static uint32_t maxBuffer[BUFFER_SIZE];
 
-    uint32_t fps;
-    uint32_t max;
-    uint32_t num;
-    uint32_t last;
-    uint32_t counter;
-} a__fps;
+static uint32_t milisPerFrame;
+static uint32_t fps;
+static uint32_t max;
+static uint32_t numFrames;
+static uint32_t lastMilis;
+static uint32_t counter;
 
-#define overflow()                   \
-{                                    \
-    a__time_getMilisOverflow = 0;    \
-    a__fps.num = 0;                  \
-    a__fps.last = a_time_getMilis(); \
-    return;                          \
-}
+#define getMilis()                        \
+({                                        \
+    const uint32_t m = a_time_getMilis(); \
+    if(a_time_overflowed()) {             \
+        overflow();                       \
+    }                                     \
+    m;                                    \
+})
+
+#define overflow()                 \
+({                                 \
+    numFrames = 0;                 \
+    lastMilis = a_time_getMilis(); \
+    a_time_handledOverflow();      \
+    return;                        \
+})
 
 void a__fps_set(void)
 {
-    if(a2xSet.trackFps) {
-        a__fps.fps = 0;
-        a__fps.max = 0;
+    milisPerFrame = 1000 / a2xSet.fps;
 
-        for(int i = 0; i < FPS_SIZE; i++) {
-            a__fps.f[i] = a__fps.m[i] = MILIS;
+    fps = 0;
+    max = 0;
+
+    if(a2xSet.trackFps) {
+        for(int i = BUFFER_SIZE; i--; ) {
+            fpsBuffer[i] = milisPerFrame;
+            maxBuffer[i] = milisPerFrame;
         }
     }
 
-    a__fps.num = 0;
-    a__fps.last = a_time_getMilis();
-
-    a__fps.counter = 0;
+    numFrames = 0;
+    lastMilis = a_time_getMilis();
+    counter = 0;
 }
 
 void a_fps_start(void)
@@ -70,79 +77,78 @@ void a_fps_end(void)
 {
     a_screen_show();
 
-    a__fps.counter++;
+    counter++;
+    numFrames++;
 
-    if(a2xSet.trackFps) {
-        a__fps.fps = a__fps.max = 0;
+    const uint32_t wantedMilis = lastMilis + numFrames * milisPerFrame;
 
-        for(int i = 0; i < FPS_SIZE; i++) {
-            a__fps.fps += a__fps.f[i];
-            a__fps.max += a__fps.m[i];
-        }
-
-        a__fps.fps = 1000 / ((float)a__fps.fps / FPS_SIZE);
-        a__fps.max = 1000 / ((float)a__fps.max / FPS_SIZE);
-
-        memcpy(&a__fps.f2[0], &a__fps.f[0], FPS_SIZE * sizeof(uint32_t));
-        memcpy(&a__fps.f[0], &a__fps.f2[1], (FPS_SIZE - 1) * sizeof(uint32_t));
-
-        memcpy(&a__fps.m2[0], &a__fps.m[0], FPS_SIZE * sizeof(uint32_t));
-        memcpy(&a__fps.m[0], &a__fps.m2[1], (FPS_SIZE - 1) * sizeof(uint32_t));
+    if(wantedMilis < lastMilis) {
+        overflow();
     }
 
-    a__fps.num++;
-
-    const uint32_t wantedTicks = a__fps.last + (uint32_t)(MILIS * a__fps.num);
-    if(wantedTicks < a__fps.last) overflow();
-
-    uint32_t currentTicks = a_time_getMilis();
-    if(a__time_getMilisOverflow) overflow();
+    uint32_t currentMilis = getMilis();
 
     if(a2xSet.trackFps) {
-        const uint32_t diff = wantedTicks - currentTicks;
+        const uint32_t diff = wantedMilis - currentMilis;
 
-        if(diff < MILIS) {
-            a__fps.m[FPS_SIZE - 1] = MILIS - diff;
+        if(diff < milisPerFrame) {
+            maxBuffer[BUFFER_SIZE - 1] = milisPerFrame - diff;
         } else {
-            a__fps.m[FPS_SIZE - 1] = 1;
+            maxBuffer[BUFFER_SIZE - 1] = 1;
         }
     } else {
-        a__fps.max = 1000 / a_math_max(1, wantedTicks - currentTicks);
+        max = 1000 / a_math_max(1, wantedMilis - currentMilis);
     }
 
-    if(currentTicks < wantedTicks) {
+    if(currentMilis < wantedMilis) {
         do {
             #if !A_PLATFORM_WIZ
-                if(wantedTicks - currentTicks >= 10) a_time_waitMilis(10);
+                if(wantedMilis - currentMilis >= 10) {
+                    a_time_waitMilis(10);
+                }
             #endif
 
-            currentTicks = a_time_getMilis();
-            if(a__time_getMilisOverflow) overflow();
-        } while(currentTicks < wantedTicks);
-    } else if(currentTicks > wantedTicks) {
-        a__fps.num = 0;
-        a__fps.last = a_time_getMilis();
-        if(a__time_getMilisOverflow) a__time_getMilisOverflow = 0;
+            currentMilis = getMilis();
+        } while(currentMilis < wantedMilis);
+    } else if(currentMilis > wantedMilis) {
+        numFrames = 0;
+        lastMilis = getMilis();
     }
 
     if(a2xSet.trackFps) {
-        a__fps.f[FPS_SIZE - 1] = MILIS - (wantedTicks - currentTicks);
+        int f = 0;
+        int m = 0;
+
+        for(int i = BUFFER_SIZE; i--; ) {
+            f += fpsBuffer[i];
+            m += maxBuffer[i];
+        }
+
+        fps = 1000 / ((float)f / BUFFER_SIZE);
+        max = 1000 / ((float)m / BUFFER_SIZE);
+
+        memmove(&fpsBuffer[0], &fpsBuffer[1], (BUFFER_SIZE - 1) * sizeof(uint32_t));
+        memmove(&maxBuffer[0], &maxBuffer[1], (BUFFER_SIZE - 1) * sizeof(uint32_t));
+    }
+
+    if(a2xSet.trackFps) {
+        fpsBuffer[BUFFER_SIZE - 1] = milisPerFrame - (wantedMilis - currentMilis);
     } else {
-        a__fps.fps = 1000 / (MILIS - (wantedTicks - currentTicks));
+        fps = 1000 / (milisPerFrame - (wantedMilis - currentMilis));
     }
 }
 
-uint32_t a_fps_fps(void)
+uint32_t a_fps_getFps(void)
 {
-    return a__fps.fps;
+    return fps;
 }
 
-uint32_t a_fps_max(void)
+uint32_t a_fps_getMaxFps(void)
 {
-    return a__fps.max;
+    return max;
 }
 
-uint32_t a_fps_counter(void)
+uint32_t a_fps_getCounter(void)
 {
-    return a__fps.counter;
+    return counter;
 }

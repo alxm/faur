@@ -33,8 +33,8 @@ extern void a__fps_set(void);
 extern void a_fps_start(void);
 extern void a_fps_end(void);
 
-extern uint32_t a_fps_fps(void);
-extern uint32_t a_fps_max(void);
-extern uint32_t a_fps_counter(void);
+extern uint32_t a_fps_getFps(void);
+extern uint32_t a_fps_getMaxFps(void);
+extern uint32_t a_fps_getCounter(void);
 
 #endif // A2X_PACK_FPS_H

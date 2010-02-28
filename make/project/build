@@ -16,70 +16,80 @@ CFLAGS	+=	-std=gnu99 -Werror \
 all : $(NAME)
 
 $(NAME) : $(DIRS) $(C_GFX_FILES) $(C_SFX_FILES) $(OFILES)
-	$(CC) -o $(NAME) $(OFILES) $(A2X_PATH)/lib/a2x_$(PLATFORM).a $(LIBS)
+	@ echo "Building $(APP)"
+	@ $(CC) -o $(NAME) $(OFILES) $(A2X_PATH)/lib/a2x_$(PLATFORM).a $(LIBS)
 
 #
 # make all the needed dirs
 #
 
 $(O_DIR) :
-	mkdir $@
+	@ mkdir $@
 
 $(O_GFX_DIR) :
-	mkdir $@
+	@ mkdir $@
 
 $(O_SFX_DIR) :
-	mkdir $@
+	@ mkdir $@
 
 $(C_GFX_DIR) :
-	mkdir $@
+	@ mkdir $@
 
 $(C_SFX_DIR) :
-	mkdir $@
+	@ mkdir $@
 
 #
 # pattern rules for building the universe
 #
 
 $(C_GFX_DIR)/%.c : $(GFX_DIR)/%.png
-	$(A2X_PATH)/tools/a2x_gfx $< $@ $(@:.c=.h)
+	@ echo "Making graphic $(notdir $<)"
+	@ $(A2X_PATH)/tools/a2x_gfx $< $@ $(@:.c=.h)
 
 $(C_SFX_DIR)/%.c : $(SFX_DIR)/%.wav
-	$(A2X_PATH)/tools/a2x_sfx $< $@ $(@:.c=.h)
+	@ echo "Making sound $(notdir $<)"
+	@ $(A2X_PATH)/tools/a2x_sfx $< $@ $(@:.c=.h)
 
 $(O_DIR)/%.o : $(SRC_DIR)/%.c
-	$(CC) -c -o $@ $< $(CFLAGS)
+	@ echo "Compiling $(notdir $<)"
+	@ $(CC) -c -o $@ $< $(CFLAGS)
 
 $(O_GFX_DIR)/%.o : $(C_GFX_DIR)/%.c
-	$(CC) -c -o $@ $< $(CFLAGS)
+	@ echo "Compiling $(notdir $<)"
+	@ $(CC) -c -o $@ $< $(CFLAGS)
 
 $(O_SFX_DIR)/%.o : $(C_SFX_DIR)/%.c
-	$(CC) -c -o $@ $< $(CFLAGS)
+	@ echo "Compiling $(notdir $<)"
+	@ $(CC) -c -o $@ $< $(CFLAGS)
 
 #
 # clean-up rule that deletes all .o files
 #
 
 clean :
-	rm -rf $(NAME) $(O_DIR)
+	@ echo "Cleaning $(APP)"
+	@ rm -rf $(NAME) $(O_DIR)
 
 #
 # clean-up rule that deletes all .o files and all generated .c files
 #
 
 realclean :
-	rm -rf $(NAME) $(DIRS)
+	@ echo "Cleaning $(APP) and generated files"
+	@ rm -rf $(NAME) $(DIRS)
 
 #
 # clean-up rule that deletes the built binary
 #
 
 cleanbin :
-	rm -f $(NAME)
+	@ echo "Removing $(APP) binary"
+	@ rm -f $(NAME)
 
 #
 # run the program
 #
 
 run : all
-	cd $(TARGET_DIR) ; ./$(APP)
+	@ echo "Running $(notdir $(APP))"
+	@ cd $(TARGET_DIR) ; ./$(APP)
