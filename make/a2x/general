@@ -33,3 +33,7 @@ $(O_DIR)/$(PREFIX)%.o : $(C_DIR)/$(PREFIX)%.c
 clean :
 	@ echo "Cleaning a2x $(PLATFORM)"
 	@ rm -rf $(HEADER) $(NAME) $(O_DIR)
+
+cleanheader :
+	@ echo "Cleaning header $(notdir $(HEADER))"
+	@ rm -rf $(HEADER)
