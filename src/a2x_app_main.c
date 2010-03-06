@@ -20,7 +20,6 @@
 #include "a2x_app_main.h"
 #include "a2x_app_settings.h"
 
-#include "a2x_pack_blit.h"
 #include "a2x_pack_conf.h"
 #include "a2x_pack_fix.h"
 #include "a2x_pack_font.h"
@@ -32,6 +31,7 @@
 #include "a2x_pack_screen.h"
 #include "a2x_pack_sdl.h"
 #include "a2x_pack_sound.h"
+#include "a2x_pack_sprite.h"
 #include "a2x_pack_time.h"
 
 #define A_PACK_SET(p)     \
@@ -66,7 +66,7 @@ int main(int argc, char** argv)
     A_PACK_SET(hw);
     A_PACK_SET(time);
     A_PACK_SET(screen);
-    A_PACK_SET(blit);
+    A_PACK_SET(sprite);
     A_PACK_SET(fps);
     A_PACK_SET(input);
     A_PACK_SET(sound);
@@ -85,7 +85,7 @@ int main(int argc, char** argv)
     A_PACK_FREE(input);
     A_PACK_FREE(font);
     A_PACK_FREE(screen);
-    A_PACK_FREE(blit);
+    A_PACK_FREE(sprite);
     A_PACK_FREE(time);
     A_PACK_FREE(hw);
     A_PACK_FREE(sdl);

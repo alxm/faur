@@ -87,11 +87,11 @@ int a_font_load(Sheet* const sheet, const int sx, const int sy, const int sw, co
 
     const Pixel limit = sheet->limit;
 
-    Sheet* const sheet2 = a_blit_makeSheet2(sheet, sx, sy, sw, sh);
+    Sheet* const sheet2 = a_sprite_sheetFromSheet(sheet, sx, sy, sw, sh);
 
     do {
         y2++;
-    } while(a_blit_getPixel(sheet2, x, y2) != limit);
+    } while(a_sprite_getPixel(sheet2, x, y2) != limit);
 
     int start = 0;
     int end = CHARS_NUM - 1;
@@ -117,12 +117,12 @@ int a_font_load(Sheet* const sheet, const int sx, const int sy, const int sw, co
 
         do {
             x++;
-        } while(a_blit_getPixel(sheet2, x, y) != limit);
+        } while(a_sprite_getPixel(sheet2, x, y) != limit);
 
         int areaw = x - areax;
         int areah = y2 - y;
 
-        f->sprites[(int)chars[i]] = a_blit_makeSpriteZoom(sheet2, areax, areay, areaw, areah, zoom);
+        f->sprites[(int)chars[i]] = a_sprite_makeZoomed(sheet2, areax, areay, areaw, areah, zoom);
 
         if(((loader & A_LOAD_N) && chars[i] == '0') || chars[i] == 'A') {
             f->maxWidth = areaw;
@@ -134,7 +134,7 @@ int a_font_load(Sheet* const sheet, const int sx, const int sy, const int sw, co
         }
     }
 
-    a_blit_freeSheet(sheet2);
+    a_sprite_freeSheet(sheet2);
 
     return numFonts - 1;
 }
