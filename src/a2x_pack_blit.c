@@ -18,7 +18,8 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a2x_pack_blit.h"
+#include "a2x_pack_blit.p.h"
+#include "a2x_pack_blit.v.h"
 
 void (*a_blit_blitters[])(const Sprite* const s, const int x, const int y) = {
     &a_blit_NCNT, &a_blit_NCT, &a_blit_CNT, &a_blit_CT
@@ -295,18 +296,18 @@ void (*a_blit_blitters[])(const Sprite* const s, const int x, const int y) = {
     Blitters
 */
 
-#define a__blit_make(type, params)    \
-    a__blit_make2(NCNT, type, params) \
-    a__blit_make2(NCT,  type, params) \
-    a__blit_make2(CNT,  type, params) \
-    a__blit_make2(CT,   type, params)
-
 #define a__blit_make2(area, type, params) \
     void a_blit_##area##_##type params    \
     {                                     \
         BLIT_##type##_setup               \
         area(BLIT_##type##_do)            \
     }
+
+#define a__blit_make(type, params)    \
+    a__blit_make2(NCNT, type, params) \
+    a__blit_make2(NCT,  type, params) \
+    a__blit_make2(CNT,  type, params) \
+    a__blit_make2(CT,   type, params)
 
 a__blit_make(plain, (const Sprite* const s, const int x, const int y))
 a__blit_make(rgb, (const Sprite* const s, const int x, const int y, const int r, const int g, const int b))

@@ -17,7 +17,8 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a2x_pack_menu.h"
+#include "a2x_pack_menu.p.h"
+#include "a2x_pack_menu.v.h"
 
 Menu* a_menu_set(Input* const next, Input* const back, Input* const select, Input* const cancel, void (*freeItem)(void* v))
 {

@@ -17,7 +17,8 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a2x_pack_fps.h"
+#include "a2x_pack_fps.p.h"
+#include "a2x_pack_fps.v.h"
 
 #define BUFFER_SIZE 60
 

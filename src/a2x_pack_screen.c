@@ -23,7 +23,8 @@
     - to Orkie for the Wiz framebuffer direction code
 */
 
-#include "a2x_pack_screen.h"
+#include "a2x_pack_screen.p.h"
+#include "a2x_pack_screen.v.h"
 
 #if A_PLATFORM_GP2X
     //#include "../gp2x/flush_uppermem_cache.h"

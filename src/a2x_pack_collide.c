@@ -17,7 +17,8 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a2x_pack_collide.h"
+#include "a2x_pack_collide.p.h"
+#include "a2x_pack_collide.v.h"
 
 int a_collide_circles(const int x1, const int y1, const int r1, const int x2, const int y2, const int r2)
 {

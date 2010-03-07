@@ -17,7 +17,8 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a2x_pack_math.h"
+#include "a2x_pack_math.p.h"
+#include "a2x_pack_math.v.h"
 
 double a_math_Sin[A_ANGLES_NUM];
 double a_math_Cos[A_ANGLES_NUM];

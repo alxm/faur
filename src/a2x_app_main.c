@@ -17,22 +17,22 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a2x_app_main.h"
-#include "a2x_app_settings.h"
+#include "a2x_app_main.p.h"
+#include "a2x_app_settings.p.h"
 
-#include "a2x_pack_conf.h"
-#include "a2x_pack_fix.h"
-#include "a2x_pack_font.h"
-#include "a2x_pack_fps.h"
-#include "a2x_pack_hw.h"
-#include "a2x_pack_input.h"
-#include "a2x_pack_math.h"
-#include "a2x_pack_mem.h"
-#include "a2x_pack_screen.h"
-#include "a2x_pack_sdl.h"
-#include "a2x_pack_sound.h"
-#include "a2x_pack_sprite.h"
-#include "a2x_pack_time.h"
+#include "a2x_pack_conf.p.h"
+#include "a2x_pack_fix.p.h"
+#include "a2x_pack_font.p.h"
+#include "a2x_pack_fps.p.h"
+#include "a2x_pack_hw.p.h"
+#include "a2x_pack_input.p.h"
+#include "a2x_pack_math.p.h"
+#include "a2x_pack_mem.p.h"
+#include "a2x_pack_screen.p.h"
+#include "a2x_pack_sdl.p.h"
+#include "a2x_pack_sound.p.h"
+#include "a2x_pack_sprite.p.h"
+#include "a2x_pack_time.p.h"
 
 #define A_PACK_SET(p)     \
 ({                        \

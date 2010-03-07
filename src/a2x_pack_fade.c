@@ -17,7 +17,8 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a2x_pack_fade.h"
+#include "a2x_pack_fade.p.h"
+#include "a2x_pack_fade.v.h"
 
 #define a_screen_pixelRed1(p)   ((((p) >> (11 + 16)) & a_mask(5)) << 3)
 #define a_screen_pixelGreen1(p) ((((p) >> (5  + 16)) & a_mask(6)) << 2)

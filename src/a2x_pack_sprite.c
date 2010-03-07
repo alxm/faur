@@ -17,9 +17,25 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a2x_pack_sprite.h"
+#include "a2x_pack_sprite.p.h"
+#include "a2x_pack_sprite.v.h"
+
+struct SpriteAnimation {
+    Sprite** sprites;
+    fix8 num;
+    fix8 current;
+    fix8 speed;
+    int dir;
+};
+
+struct SpriteFrames {
+    int num;
+    Sprite** frames;
+};
 
 static List* sprites;
+
+static void setSheetValues(Sheet* const s);
 
 void a__sprite_set(void)
 {
@@ -35,70 +51,61 @@ void a__sprite_free(void)
     a_list_free(sprites);
 }
 
-static Uint32 a__blit_getPixel(const SDL_Surface* const s, const int x, const int y)
-{
-    const Uint8* const p = (Uint8*)s->pixels + y * s->pitch + x * s->format->BytesPerPixel;
-
-    switch(s->format->BytesPerPixel) {
-        case 1: {
-            return *p;
-        } break;
-
-        case 2: {
-            return *(Uint16*)p;
-        } break;
-
-        case 3: {
-            if(SDL_BYTEORDER == SDL_BIG_ENDIAN) {
-                return (p[0] << 16) | (p[1] << 8) | (p[2]);
-            } else {
-                return (p[0]) | (p[1] << 8) | (p[2] << 16);
-            }
-        } break;
-
-        case 4: {
-            return *(Uint32*)p;
-        } break;
-
-        default: {
-            return 0;
-        } break;
-    }
-}
-
-static void a__blit_sheetValues(Sheet* const s)
-{
-    s->transparent = a_sprite_getPixel(s, s->w - 1, s->h - 1);
-    s->limit = a_sprite_getPixel(s, s->w - 2, s->h - 1);
-}
-
 Sheet* a_sprite_sheetFromFile(const char* const path)
 {
-    SDL_Surface* const surf = IMG_Load(path);
-
+    SDL_Surface* const sf = IMG_Load(path);
     Sheet* const s = malloc(sizeof(Sheet));
 
-    s->w = surf->w;
-    s->h = surf->h;
+    s->w = sf->w;
+    s->h = sf->h;
     s->data = malloc(s->w * s->h * sizeof(Pixel));
 
     for(int i = 0; i < s->h; i++) {
         for(int j = 0; j < s->w; j++) {
+            const Uint8* const p = (Uint8*)sf->pixels + i * sf->pitch + j * sf->format->BytesPerPixel;
+            Uint32 pixel;
+
+            switch(sf->format->BytesPerPixel) {
+                case 1: {
+                    pixel = *p;
+                } break;
+
+                case 2: {
+                    pixel = *(Uint16*)p;
+                } break;
+
+                case 3: {
+                    if(SDL_BYTEORDER == SDL_BIG_ENDIAN) {
+                        pixel = (p[0] << 16) | (p[1] << 8) | (p[2]);
+                    } else {
+                        pixel = (p[0]) | (p[1] << 8) | (p[2] << 16);
+                    }
+                } break;
+
+                case 4: {
+                    pixel = *(Uint32*)p;
+                } break;
+
+                default: {
+                    pixel = 0;
+                } break;
+            }
+
             Uint8 r, g, b;
-            SDL_GetRGB(a__blit_getPixel(surf, j, i), surf->format, &r, &g, &b);
+            SDL_GetRGB(pixel, sf->format, &r, &g, &b);
 
             s->data[i * s->w + j] = a_screen_makePixel(r, g, b);
         }
     }
 
-    SDL_FreeSurface(surf);
+    SDL_FreeSurface(sf);
 
-    a__blit_sheetValues(s);
+    setSheetValues(s);
 
     return s;
 }
 
-Sheet* a_sprite_sheet(Pixel* data, const int w, const int h)
+Sheet* a_sprite_sheetFromData(Pixel* data, const int w, const int h)
 {
     Sheet* const s = malloc(sizeof(Sheet));
 
@@ -106,7 +113,7 @@ Sheet* a_sprite_sheet(Pixel* data, const int w, const int h)
     s->h = h;
     s->data = a_mem_decodeRLE(data, w * h, sizeof(Pixel), NULL);
 
-    a__blit_sheetValues(s);
+    setSheetValues(s);
 
     return s;
 }
@@ -302,54 +309,89 @@ void a_sprite_free(Sprite* const s)
     free(s);
 }
 
-SpriteList* a_sprite_makeList(const int num, const int cycleLength)
+int a_sprite_w(const Sprite* const s)
 {
-    SpriteList* const s = malloc(sizeof(SpriteList));
+    return s->w;
+}
+
+int a_sprite_h(const Sprite* const s)
+{
+    return s->h;
+}
+
+Pixel* a_sprite_data(const Sprite* const s)
+{
+    return s->data;
+}
+
+SpriteAnimation* a_sprite_makeAnimation(const int num, const int framesPerCycle)
+{
+    SpriteAnimation* const s = malloc(sizeof(SpriteAnimation));
 
     s->sprites = malloc(num * sizeof(Sprite*));
     s->num = a_fix8_itofix(num);
     s->current = 0;
-    s->speed = a_fix8_itofix(num) / cycleLength;
+    s->speed = s->num / framesPerCycle;
     s->dir = 1;
 
     return s;
 }
 
-void a_sprite_freeList(SpriteList* const s)
+void a_sprite_freeAnimation(SpriteAnimation* const s)
 {
     free(s->sprites);
     free(s);
 }
 
-void a_sprite_addSprite(SpriteList* const s, Sprite* const sp)
+void a_sprite_addAnimation(SpriteAnimation* const s, Sprite* const sp)
 {
     s->sprites[a_fix8_fixtoi(s->current)] = sp;
 
     s->current += FONE8;
-    if(s->current == s->num) s->current = 0;
+
+    if(s->current == s->num) {
+        s->current = 0;
+    }
 }
 
-Sprite* a_sprite_nextSprite(SpriteList* const s)
+Sprite* a_sprite_nextAnimation(SpriteAnimation* const s)
 {
     Sprite* const sp = s->sprites[a_fix8_fixtoi(s->current)];
 
     s->current += s->speed * s->dir;
-    if(s->current >= s->num) s->current = 0;
-    else if(s->current < 0) s->current = s->num - FONE8;
+
+    if(s->current >= s->num) {
+        s->current = s->current - s->num;
+
+        if(s->current >= s->num) {
+            s->current = 0;
+        }
+    } else if(s->current < 0) {
+        s->current = s->num - FONE8 + s->current;
+
+        if(s->current < 0) {
+            s->current = s->num - FONE8;
+        }
+    }
 
     return sp;
 }
 
-void a_sprite_changeDir(SpriteList* const s, const int dir)
+void a_sprite_changeAnimationDir(SpriteAnimation* const s, const int dir)
 {
     s->dir = dir;
+}
+
+void a_sprite_flipAnimationDir(SpriteAnimation* const s)
+{
+    s->dir *= -1;
 }
 
 SpriteFrames* a_sprite_makeFrames(void)
 {
     SpriteFrames* const s = malloc(sizeof(SpriteFrames));
 
-    s->numFrames = 0;
+    s->num = 0;
     s->frames = NULL;
 
     return s;
@@ -364,12 +406,18 @@ void a_sprite_freeFrames(SpriteFrames* const s)
 void a_sprite_addFrame(SpriteFrames* const s, Sprite* const f)
 {
     Sprite** const tempFrames = s->frames;
-    s->frames = malloc(++(s->numFrames) * sizeof(Sprite*));
+    s->frames = malloc(++(s->num) * sizeof(Sprite*));
 
-    for(int i = s->numFrames - 1; i--; ) {
+    for(int i = s->num - 1; i--; ) {
         s->frames[i] = tempFrames[i];
     }
 
-    s->frames[s->numFrames - 1] = f;
+    s->frames[s->num - 1] = f;
     free(tempFrames);
+}
+
+static void setSheetValues(Sheet* const s)
+{
+    s->transparent = a_sprite_getPixel(s, s->w - 1, s->h - 1);
+    s->limit = a_sprite_getPixel(s, s->w - 2, s->h - 1);
 }

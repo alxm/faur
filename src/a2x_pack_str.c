@@ -17,7 +17,8 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a2x_pack_str.h"
+#include "a2x_pack_str.p.h"
+#include "a2x_pack_str.v.h"
 
 StringTok* a_str_makeTok(const char* const s, const char* const d)
 {

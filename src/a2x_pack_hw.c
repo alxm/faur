@@ -26,7 +26,8 @@
     - to JyCet for the GP2X ram timings code
 */
 
-#include "a2x_pack_hw.h"
+#include "a2x_pack_hw.p.h"
+#include "a2x_pack_hw.v.h"
 
 #if A_PLATFORM_GP2X
     static void a__hw_cpu(const int Mhz);

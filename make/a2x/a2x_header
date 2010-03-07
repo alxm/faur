@@ -20,7 +20,7 @@ putline "#ifndef A2X_H"
 putline "#define A2X_H"
 putline ""
 
-for f in $SRC/a2x_*.h
+for f in $SRC/a2x_*.p.h
 do
 	putline "#include \"../src/`basename $f`\""
 done

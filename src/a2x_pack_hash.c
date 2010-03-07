@@ -17,7 +17,8 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a2x_pack_hash.h"
+#include "a2x_pack_hash.p.h"
+#include "a2x_pack_hash.v.h"
 
 typedef struct HashEntry {
     char* key;

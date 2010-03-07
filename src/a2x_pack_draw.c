@@ -17,7 +17,8 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a2x_pack_draw.h"
+#include "a2x_pack_draw.p.h"
+#include "a2x_pack_draw.v.h"
 
 int _a_draw_lineClipper(int* error, int* x1, int* y1, int* x2, int* y2)
 {
