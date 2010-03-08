@@ -20,6 +20,8 @@
 #ifndef A2X_PACK_SPRITE_VH
 #define A2X_PACK_SPRITE_VH
 
+#include "a2x_pack_screen.p.h"
+
 struct Sheet {
     int w;
     int h;
@@ -37,5 +39,8 @@ struct Sprite {
     fix8 alpha;
     Pixel t;
 };
+
+extern void a_sprite__set(void);
+extern void a_sprite__free(void);
 
 #endif // A2X_PACK_SPRITE_VH

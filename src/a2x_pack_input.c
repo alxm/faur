@@ -20,6 +20,33 @@
 #include "a2x_pack_input.p.h"
 #include "a2x_pack_input.v.h"
 
+struct Button {
+    char* name;
+    int code;
+    int pressed;
+};
+
+struct Touch {
+    List* motion;
+    int x;
+    int y;
+    int tap;
+};
+
+struct Input {
+    List* buttons;
+    char* name;
+    int working;
+};
+
+struct Inputs {
+    List* buttons;
+    Touch mouse;
+    #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
+        SDL_Joystick* joystick;
+    #endif
+};
+
 static Inputs a__input;
 
 #if A_PLATFORM_LINUXPC
@@ -28,7 +55,7 @@ static Inputs a__input;
 
 static void a__input_button(const char* const name, const int code);
 
-void a__input_set(void)
+void a_input__set(void)
 {
     a__input.buttons = a_list_set();
 
@@ -92,7 +119,7 @@ void a__input_set(void)
         a__input_button("pc.0", SDLK_0);
     #endif
 
-    if(a2xSet.trackMouse) {
+    if(a2x_bool("trackMouse")) {
         a__input.mouse.motion = a_list_set();
     }
 
@@ -112,7 +139,7 @@ static void a__input_button(const char* const name, const int code)
     a_list_addLast(a__input.buttons, b);
 }
 
-void a__input_free(void)
+void a_input__free(void)
 {
     while(a_list_iterate(a__input.buttons)) {
         Button* const b = a_list_current(a__input.buttons);
@@ -122,7 +149,7 @@ void a__input_free(void)
 
     a_list_free(a__input.buttons);
 
-    if(a2xSet.trackMouse) {
+    if(a2x_bool("trackMouse")) {
         a_list_freeContent(a__input.mouse.motion);
     }
 
@@ -137,7 +164,7 @@ void a__input_free(void)
 
 void a__input_get(void)
 {
-    if(a2xSet.trackMouse) {
+    if(a2x_bool("trackMouse")) {
         a_list_freeContent(a__input.mouse.motion);
     }
 
@@ -174,7 +201,7 @@ void a__input_get(void)
                 a__input.mouse.x = event.button.x;
                 a__input.mouse.y = event.button.y;
 
-                if(a2xSet.trackMouse) {
+                if(a2x_bool("trackMouse")) {
                     Point* const p = malloc(sizeof(Point));
 
                     p->x = a__input.mouse.x;
@@ -304,6 +331,16 @@ int a_input_getUnpress(Input* const i)
     }
 
     return 0;
+}
+
+char* a_input_name(const Input* const i)
+{
+    return i->name;
+}
+
+int a_input_working(const Input* const i)
+{
+    return i->working;
 }
 
 void a_input_waitFor(Input* const i)

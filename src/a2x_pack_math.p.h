@@ -24,8 +24,6 @@
 #include <math.h>
 #include <time.h>
 
-extern void a__math_set(void);
-
 #define a_math_srand()     srand(time(NULL))
 #define a_math_rand(range) (rand() % (range))
 

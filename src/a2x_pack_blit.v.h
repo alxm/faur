@@ -20,6 +20,9 @@
 #ifndef A2X_PACK_BLIT_VP
 #define A2X_PACK_BLIT_VP
 
+#include "a2x_pack_sprite.p.h"
 #include "a2x_pack_sprite.v.h"
+
+extern void (*a_blit_blitters[])(const Sprite* const s, const int x, const int y);
 
 #endif // A2X_PACK_BLIT_VP

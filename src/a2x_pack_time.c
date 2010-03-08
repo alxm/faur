@@ -36,7 +36,7 @@ static int overflow = 0;
     static volatile uint32_t* memregs;
 #endif
 
-void a__time_set(void)
+void a_time__set(void)
 {
     #if A_PLATFORM_WIZ
         memfd = open("/dev/mem", O_RDWR);
@@ -48,7 +48,7 @@ void a__time_set(void)
     #endif
 }
 
-void a__time_free(void)
+void a_time__free(void)
 {
     #if A_PLATFORM_WIZ
         TIMER_REG(0x40) = 0x0c;

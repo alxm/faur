@@ -23,7 +23,7 @@
 double a_math_Sin[A_ANGLES_NUM];
 double a_math_Cos[A_ANGLES_NUM];
 
-void a__math_set(void)
+void a_math__set(void)
 {
     a_math_srand();
 

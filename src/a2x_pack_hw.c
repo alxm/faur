@@ -38,7 +38,7 @@
     static int mmuHackOn = 0;
 #endif
 
-void a__hw_set(void)
+void a_hw__set(void)
 {
     #if A_PLATFORM_GP2X
         if(a_file_exists("./mmuhack.o")) {
@@ -53,8 +53,8 @@ void a__hw_set(void)
             }
         }
 
-        if(a2xSet.mhz > 0) {
-            a__hw_cpu(a2xSet.mhz);
+        if(a2x_int("mhz") > 0) {
+            a__hw_cpu(a2x_int("mhz"));
         }
 
         a__hw_ramTimings(6, 4, 1, 1, 1, 2, 2);
@@ -73,7 +73,7 @@ void a__hw_set(void)
     #endif
 }
 
-void a__hw_free(void)
+void a_hw__free(void)
 {
     #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
         if(mmuHackOn) {

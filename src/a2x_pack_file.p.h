@@ -32,16 +32,8 @@
 typedef FILE File;
 typedef DIR Dir;
 
-typedef struct FilePath {
-    char* name;
-    char* full;
-} FilePath;
-
-typedef struct FileReader {
-    File* file;
-    char* line;
-    int eof;
-} FileReader;
+typedef struct FilePath FilePath;
+typedef struct FileReader FileReader;
 
 /*#if A_PLATFORM_GP2X || A_PLATFORM_WIZ || A_PLATFORM_PANDORA
     #define a_sync() sync()
@@ -90,7 +82,6 @@ typedef struct FileReader {
 #define a_file_makeDir(path) mkdir((path), S_IRWXU); a_sync()
 
 #define a_file_validName(s) (strlen(s) > 0 && (s)[0] != '.')
-extern int alphasort();
 
 extern int a_file_exists(const char* const path);
 extern int a_file_dirExists(const char* const path);
@@ -100,10 +91,12 @@ extern int a_file_size(const char* const f);
 
 extern List* a_file_list(const char* const path, int (*selector)(const struct dirent* f));
 extern void a_file_freeFilePath(FilePath* const f);
+extern char* a_file_pathName(const FilePath* const f);
+extern char* a_file_pathFull(const FilePath* const f);
 
 extern FileReader* a_file_makeReader(const char* const file);
 extern void a_file_freeReader(FileReader* const f);
 extern int a_file_readLine(FileReader* const fr);
-#define a_file_getLine(fr) ((fr)->line)
+extern char* a_file_getLine(const FileReader* const fr);
 
 #endif // A2X_PACK_FILE_PH

@@ -45,26 +45,26 @@ static void displayVolume(void);
 static void (*a_screen_customDraw)(void* const v);
 static void* a_screen_customItem;
 
-void a__screen_set(void)
+void a_screen__set(void)
 {
-    if(!a2xSet.window) {
+    if(!a2x_bool("window")) {
         return;
     }
 
     a__videoFlags = SDL_SWSURFACE;
-    a_screen = SDL_SetVideoMode(a2xSet.width, a2xSet.height, A_BPP, a__videoFlags);
+    a_screen = SDL_SetVideoMode(a2x_int("width"), a2x_int("height"), A_BPP, a__videoFlags);
 
     SDL_SetClipRect(a_screen, NULL);
 
     #if A_PLATFORM_LINUXPC
         String64 caption;
-        sprintf(caption, "%s %s", a2xSet.title, a2xSet.version);
+        sprintf(caption, "%s %s", a2x_str("title"), a2x_str("version"));
         SDL_WM_SetCaption(caption, NULL);
     #else
         SDL_ShowCursor(SDL_DISABLE);
     #endif
 
-    if(a2xSet.fixWizTear) {
+    if(a2x_bool("fixWizTear")) {
         #if A_PLATFORM_WIZ
             #define FBIO_MAGIC 'D'
             #define FBIO_LCD_CHANGE_CONTROL _IOW(FBIO_MAGIC, 90, unsigned int[2])
@@ -77,13 +77,13 @@ void a__screen_set(void)
             ioctl(fb_fd, FBIO_LCD_CHANGE_CONTROL, &send);
             close(fb_fd);
 
-            a2xSet.fakeScreen = 1;
+            a2x_set("fakeScreen", "1");
         #else
-            a2xSet.fixWizTear = 0;
+            a2x_set("fixWizTear", "0");
         #endif
     }
 
-    if(a2xSet.fakeScreen) {
+    if(a2x_bool("fakeScreen")) {
         a_pixels = malloc(A_SCREEN_SIZE);
         memset(a_pixels, 0, A_SCREEN_SIZE);
     } else {
@@ -94,8 +94,8 @@ void a__screen_set(void)
         a_pixels = a_screen->pixels;
     }
 
-    a_width = a2xSet.width;
-    a_height = a2xSet.height;
+    a_width = a2x_int("width");
+    a_height = a2x_int("height");
 
     a__pixels2 = a_pixels;
     a__width2 = a_width;
@@ -105,13 +105,13 @@ void a__screen_set(void)
     a_screen_customItem = NULL;
 }
 
-void a__screen_free(void)
+void a_screen__free(void)
 {
-    if(!a2xSet.window) {
+    if(!a2x_bool("window")) {
         return;
     }
 
-    if(a2xSet.fakeScreen) {
+    if(a2x_bool("fakeScreen")) {
         free(a_pixels);
     } else {
         if(SDL_MUSTLOCK(a_screen)) {
@@ -138,11 +138,11 @@ void a__screen_switchFull(void)
 {
     #if A_PLATFORM_LINUXPC || A_PLATFORM_WINDOWS
         a__videoFlags ^= SDL_FULLSCREEN;
-        a_screen = SDL_SetVideoMode(a2xSet.width, a2xSet.height, A_BPP, a__videoFlags);
+        a_screen = SDL_SetVideoMode(a2x_int("width"), a2x_int("height"), A_BPP, a__videoFlags);
 
         SDL_SetClipRect(a_screen, NULL);
 
-        if(!a2xSet.fakeScreen) {
+        if(!a2x_bool("fakeScreen")) {
             a_pixels = a_screen->pixels;
         }
     #endif
@@ -158,7 +158,7 @@ void a_screen_show(void)
 
     displayVolume();
 
-    if(a2xSet.fixWizTear) {
+    if(a2x_bool("fixWizTear")) {
         if(SDL_MUSTLOCK(a_screen)) {
             SDL_LockSurface(a_screen);
         }
@@ -181,7 +181,7 @@ void a_screen_show(void)
         }
 
         SDL_Flip(a_screen);
-    } else if(a2xSet.fakeScreen) {
+    } else if(a2x_bool("fakeScreen")) {
         if(SDL_MUSTLOCK(a_screen)) {
             SDL_LockSurface(a_screen);
         }
@@ -222,7 +222,7 @@ void a_screen_custom(void (*f)(void* const v), void* const v)
 static void displayVolume(void)
 {
     #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
-        if(a2xSet.sound) {
+        if(a2x_set.sound) {
             if(a_time_getMilis() - a__volumeAdjust > A_MILIS_VOLUME) {
                 return;
             }

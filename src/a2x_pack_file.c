@@ -20,6 +20,19 @@
 #include "a2x_pack_file.p.h"
 #include "a2x_pack_file.v.h"
 
+struct FilePath {
+    char* name;
+    char* full;
+};
+
+struct FileReader {
+    File* file;
+    char* line;
+    int eof;
+};
+
+static int defaultSelector(const struct dirent* f);
+
 int a_file_exists(const char* const path)
 {
     File* const f = a_file_openRead(path);
@@ -79,11 +92,6 @@ int a_file_size(const char* const f)
     return info.st_size;
 }
 
-int a__file_selector(const struct dirent* f)
-{
-    return a_file_validName(f->d_name);
-}
-
 List* a_file_list(const char* const path, int (*selector)(const struct dirent* f))
 {
     List* const list = a_list_set();
@@ -93,7 +101,7 @@ List* a_file_list(const char* const path, int (*selector)(const struct dirent* f
     }
 
     if(!selector) {
-        selector = &a__file_selector;
+        selector = &defaultSelector;
     }
 
     struct dirent** dlist;
@@ -121,6 +129,16 @@ void a_file_freeFilePath(FilePath* const f)
     free(f->full);
 
     free(f);
+}
+
+char* a_file_pathName(const FilePath* const f)
+{
+    return f->name;
+}
+
+char* a_file_pathFull(const FilePath* const f)
+{
+    return f->full;
 }
 
 FileReader* a_file_makeReader(const char* const file)
@@ -191,4 +209,14 @@ int a_file_readLine(FileReader* const fr)
     }
 
     return 0;
+}
+
+char* a_file_getLine(const FileReader* const fr)
+{
+    return fr->line;
+}
+
+static int defaultSelector(const struct dirent* f)
+{
+    return a_file_validName(f->d_name);
 }

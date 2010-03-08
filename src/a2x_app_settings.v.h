@@ -20,6 +20,8 @@
 #ifndef A2X_APP_SETTINGS_VH
 #define A2X_APP_SETTINGS_VH
 
-//
+#include "a2x_app_main.v.h"
+
+extern void a2x_defaults(void);
 
 #endif // A2X_APP_SETTINGS_VH

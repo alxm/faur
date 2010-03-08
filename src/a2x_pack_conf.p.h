@@ -28,6 +28,4 @@
 #include "a2x_pack_sound.p.h"
 #include "a2x_pack_str.p.h"
 
-extern void a__conf_set(void);
-
 #endif // A2X_PACK_CONF_PH

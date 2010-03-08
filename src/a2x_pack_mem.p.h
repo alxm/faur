@@ -26,9 +26,6 @@
 
 #include "a2x_pack_list.p.h"
 
-extern void a__mem_set(void);
-extern void a__mem_free(void);
-
 extern void* a_mem_track(void* const v);
 
 #define a_mem_mallocz(size)            \

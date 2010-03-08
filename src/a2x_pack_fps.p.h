@@ -28,8 +28,6 @@
 #include "a2x_pack_sound.p.h"
 #include "a2x_pack_time.p.h"
 
-extern void a__fps_set(void);
-
 extern void a_fps_start(void);
 extern void a_fps_end(void);
 

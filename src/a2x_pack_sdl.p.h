@@ -24,7 +24,4 @@
 
 #include "a2x_app_main.p.h"
 
-extern void a__sdl_set(void);
-extern void a__sdl_free(void);
-
 #endif // A2X_PACK_SDL_PH

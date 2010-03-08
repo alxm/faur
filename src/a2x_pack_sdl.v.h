@@ -20,6 +20,7 @@
 #ifndef A2X_PACK_SDL_VH
 #define A2X_PACK_SDL_VH
 
-//
+extern void a_sdl__set(void);
+extern void a_sdl__free(void);
 
 #endif // A2X_PACK_SDL_VH

@@ -29,7 +29,4 @@
 #include "a2x_app_settings.p.h"
 #include "a2x_pack_file.p.h"
 
-extern void a__hw_set(void);
-extern void a__hw_free(void);
-
 #endif // A2X_PACK_HW_PH

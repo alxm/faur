@@ -20,35 +20,16 @@
 #ifndef A2X_APP_SETTINGS_PH
 #define A2X_APP_SETTINGS_PH
 
+#include "a2x_app_main.p.h"
+
+#include "a2x_pack_hash.p.h"
 #include "a2x_pack_str.p.h"
 
-typedef struct A2xSettings {
-    String64 title;
-    String64 version;
-    String64 author;
-    String64 compiled;
-    String64 conf;
-    int quiet;
-    int window;
-    int tool;
-    int gp2xMenu;
-    int mhz;
-    int width;
-    int height;
-    int fps;
-    int trackFps;
-    int sound;
-    int musicScale;
-    int sfxScale;
-    int trackMouse;
-    int fakeScreen;
-    int fixWizTear;
-} A2xSettings;
-
-extern A2xSettings a2xSet;
-
 extern void a2x(void);
-extern void a2x_defaults(void);
-extern void a2x_set(const char* const var, const char* const val);
+extern void a2x_set(const char* const key, const char* const val);
+
+extern char* a2x_str(const char* const key);
+extern int a2x_bool(const char* const key);
+extern int a2x_int(const char* const key);
 
 #endif // A2X_APP_SETTINGS_PH

@@ -83,7 +83,7 @@ void a_collide_freeColBox(ColBox* const c)
     List* const nodes = c->nodes;
 
     while(a_list_iterate(nodes)) {
-        Node* const n = a_list_current(nodes);
+        ListNode* const n = a_list__current(nodes);
         a_list_removeNode(n);
     }
 
@@ -103,7 +103,7 @@ void a_collide_assignColMaps(ColMap* const cm, ColBox* const o)
     List* const maps = o->maps;
 
     while(a_list_iterate(nodes)) {
-        Node* const n = a_list_current(nodes);
+        ListNode* const n = a_list__current(nodes);
         a_list_removeNode(n);
     }
 

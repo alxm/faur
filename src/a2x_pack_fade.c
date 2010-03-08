@@ -28,9 +28,8 @@
 #define a_screen_pixelGreen2(p) ((((p) >> (5  + 0 )) & a_mask(6)) << 2)
 #define a_screen_pixelBlue2(p)  ((((p) >> (0  + 0 )) & a_mask(5)) << 3)
 
-#define setSpeed() (speed = FONE8 >> (speed + 1 + a2xSet.fps / 60))
-
-#define SCREEN_DIM (a2xSet.height * a2xSet.width)
+#define setSpeed() (speed = FONE8 >> (speed + 1 + a2x_int("fps") / 60))
+#define SCREEN_DIM (a_width * a_height)
 
 void a_fade_toBlack(FadeSpeed speed)
 {
@@ -315,8 +314,8 @@ void a_fade_squaresOn(const Pixel c)
 {
     int step = 0;
 
-    const int height = a2xSet.height;
-    const int width = a2xSet.width;
+    const int height = a_height;
+    const int width = a_width;
 
     while((++step) >> SQUARE_DELAY <= SQUARE_DIM / 2) {
         a_fps_start();
@@ -336,7 +335,7 @@ void a_fade_squaresOn(const Pixel c)
         a_fps_end();
     }
 
-    for(int i = 0; i < a2xSet.fps / 10; i++) {
+    for(int i = a2x_int("fps") / 10; i--; ) {
         a_fps_start();
         a_fps_end();
     }
@@ -344,8 +343,8 @@ void a_fade_squaresOn(const Pixel c)
 
 void a_fade_squaresOff(const Pixel c)
 {
-    const int height = a2xSet.height;
-    const int width = a2xSet.width;
+    const int height = a_height;
+    const int width = a_width;
     
     Pixel* copy = malloc(A_SCREEN_SIZE);
     memcpy(copy, a_pixels, A_SCREEN_SIZE);

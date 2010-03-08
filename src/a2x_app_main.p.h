@@ -56,22 +56,7 @@
 #include <stdio.h>
 
 #include "a2x_app_settings.p.h"
-
-#define a_out(...)           \
-({                           \
-    if(!a2xSet.quiet) {      \
-        printf("a2x: ");     \
-        printf(__VA_ARGS__); \
-        printf("\n");        \
-    }                        \
-})
-
-#define a_error(...)        \
-({                          \
-    printf("a2x Error: ");  \
-    printf(__VA_ARGS__);    \
-    printf("\n");           \
-})
+#include "a2x_pack_state.p.h"
 
 extern int a_argsNum;
 extern char** a_args;

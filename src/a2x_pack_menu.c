@@ -20,6 +20,33 @@
 #include "a2x_pack_menu.p.h"
 #include "a2x_pack_menu.v.h"
 
+typedef enum MenuState {
+    A_MENU_RUNNING, A_MENU_ACCEPT, A_MENU_CANCEL, A_MENU_SPENT
+} MenuState;
+
+struct Menu {
+    List* items;
+    void (*freeItem)(void* v);
+    ListNode* selectedNode;
+    int selectedIndex;
+    MenuState state;
+    int pause;
+    int used;
+    void (*input)(struct Menu* const m, void* const v);
+    void* v;
+    char* title;
+    Sprite* sprite;
+    Sound* soundAccept;
+    Sound* soundCancel;
+    Sound* soundBrowse;
+    Input* next;
+    Input* back;
+    Input* select;
+    Input* cancel;
+};
+
+#define A_MENU_PAUSE (a2x_int("fps") / 6)
+
 Menu* a_menu_set(Input* const next, Input* const back, Input* const select, Input* const cancel, void (*freeItem)(void* v))
 {
     Menu* const m = malloc(sizeof(Menu));
@@ -94,7 +121,7 @@ void a_menu_addSounds(Menu* const m, Sound* const accept, Sound* const cancel, S
 
 void a_menu_addItem(Menu* const m, void* const v)
 {
-    Node* const n = a_list_addLast(m->items, v);
+    ListNode* const n = a_list_addLast(m->items, v);
 
     if(m->selectedNode == NULL) {
         m->selectedNode = n;
@@ -113,11 +140,11 @@ void a_menu_input(Menu* const m)
     if(!m->pause) {
         if(a_input_get(m->back)) {
             m->selectedIndex--;
-            m->selectedNode = a_list_prev(m->selectedNode);
+            m->selectedNode = a_list__prev(m->selectedNode);
             m->used = 1;
         } else if(a_input_get(m->next)) {
             m->selectedIndex++;
-            m->selectedNode = a_list_next(m->selectedNode);
+            m->selectedNode = a_list__next(m->selectedNode);
             m->used = 1;
         }
     } else {
@@ -171,4 +198,60 @@ void a_menu_input(Menu* const m)
             a_input_unpress(m->cancel);
         }
     }
+}
+
+int a_menu_items(const Menu* const m)
+{
+    return a_list__size(m->items);
+}
+
+
+int a_menu_iterate(const Menu* const m)
+{
+    return a_list_iterate(m->items);
+}
+
+void a_menu_iterateReset(const Menu* const m)
+{
+    a_list_reset(m->items);
+}
+
+void* a_menu_currentItem(const Menu* const m)
+{
+    return a_list_current(m->items);
+}
+
+int a_menu_isSelected(const Menu* const m)
+{
+    return a_list_currentNode(m->items) == m->selectedNode;
+}
+
+void a_menu_keepRunning(Menu* const m)
+{
+    m->state = A_MENU_RUNNING;
+}
+
+int a_menu_running(const Menu* const m)
+{
+    return m->state == A_MENU_RUNNING;
+}
+ 
+int a_menu_finished(const Menu* const m)
+{
+    return m->state == A_MENU_ACCEPT || m->state == A_MENU_CANCEL;
+}
+
+int a_menu_accept(const Menu* const m)
+{
+    return m->state == A_MENU_ACCEPT;
+}
+
+int a_menu_cancel(const Menu* const m)
+{
+    return m->state == A_MENU_CANCEL;
+}
+
+int a_menu_choice(const Menu* const m)
+{
+    return m->selectedIndex;
 }

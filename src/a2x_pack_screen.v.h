@@ -20,6 +20,7 @@
 #ifndef A2X_PACK_SCREEN_VH
 #define A2X_PACK_SCREEN_VH
 
-//
+extern void a_screen__set(void);
+extern void a_screen__free(void);
 
 #endif // A2X_PACK_SCREEN_VH

@@ -47,13 +47,13 @@ static int numFonts;
 
 static int a_font_charIndex(const char c);
 
-void a__font_set(void)
+void a_font__set(void)
 {
     fonts = NULL;
     numFonts = 0;
 }
 
-void a__font_free(void)
+void a_font__free(void)
 {
     for(int i = 0; i < numFonts; i++) {
         free(fonts[i]);

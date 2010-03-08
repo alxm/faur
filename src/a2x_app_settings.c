@@ -20,84 +20,165 @@
 #include "a2x_app_settings.p.h"
 #include "a2x_app_settings.v.h"
 
-A2xSettings a2xSet;
+typedef enum Setting_t {
+    A_STR, A_BOOL, A_INT
+} Setting_t;
+
+typedef enum Update_t {
+    A_CONSTANT, A_UPDATE, A_BLOCKED
+} Update_t;
+
+typedef struct Setting {
+    Setting_t type;
+    Update_t update;
+
+    union {
+        int aInt;
+        int aBool;
+        String64 aStr;
+    } value;
+} Setting;
+
+static HashTable* settings;
+
+static void add(Setting_t const type, const Update_t update, const char* const key, const char* const val);
+static int parseBool(const char* const val);
 
 void a2x_defaults(void)
 {
-    #define copy(s1, s2) ({ strncpy(s1, s2, 63); s1[63] = '\0'; })
+    settings = a_hash_set(32);
 
-    copy(a2xSet.title, "Untitled");
-    copy(a2xSet.version, "0");
-    copy(a2xSet.author, "Unknown");
-    copy(a2xSet.compiled, "?");
-    copy(a2xSet.conf, "a2x.cfg");
-    a2xSet.quiet = 0;
-    a2xSet.window = 0;
-    a2xSet.gp2xMenu = 1;
-    a2xSet.mhz = 0;
-    a2xSet.width = 0;
-    a2xSet.height = 0;
-    a2xSet.fps = 60;
-    a2xSet.trackFps = 0;
-    a2xSet.sound = 0;
-    a2xSet.musicScale = 100;
-    a2xSet.sfxScale = 100;
-    a2xSet.trackMouse = 0;
-    a2xSet.fakeScreen = 0;
-    a2xSet.fixWizTear = 0;
+    add(A_STR, A_CONSTANT, "title", "Untitled");
+    add(A_STR, A_CONSTANT, "version", "0");
+    add(A_STR, A_CONSTANT, "author", "Unknown");
+    add(A_STR, A_CONSTANT, "compiled", "?");
+    add(A_STR, A_CONSTANT, "conf", "a2x.cfg");
+
+    add(A_BOOL, A_UPDATE, "quiet", "0");
+    add(A_BOOL, A_CONSTANT, "window", "0");
+    add(A_BOOL, A_CONSTANT, "tool", "0");
+    add(A_BOOL, A_CONSTANT, "gp2xMenu", "0");
+    add(A_BOOL, A_UPDATE, "trackFps", "0");
+    add(A_BOOL, A_UPDATE, "sound", "0");
+    add(A_BOOL, A_UPDATE, "trackMouse", "0");
+    add(A_BOOL, A_CONSTANT, "fakeScreen", "0");
+    add(A_BOOL, A_CONSTANT, "fixWizTear", "0");
+
+    add(A_INT, A_UPDATE, "mhz", "0");
+    add(A_INT, A_CONSTANT, "width", "0");
+    add(A_INT, A_CONSTANT, "height", "0");
+    add(A_INT, A_CONSTANT, "fps", "60");
+    add(A_INT, A_UPDATE, "musicScale", "100");
+    add(A_INT, A_UPDATE, "sfxScale", "100");
 }
 
-void a2x_set(const char* const var, const char* const val)
+void a2x_set(const char* const key, const char* const val)
 {
-    #define str(variable)                      \
-    ({                                         \
-        if(a_str_same(var, #variable)) {       \
-            strncpy(a2xSet.variable, val, 63); \
-            a2xSet.variable[63] = '\0';        \
-            return;                            \
-        }                                      \
-    })
+    Setting* const s = a_hash_get(settings, key);
 
-    #define num(variable)                \
-    ({                                   \
-        if(a_str_same(var, #variable)) { \
-            a2xSet.variable = atoi(val); \
-            return;                      \
-        }                                \
-    })
+    if(s == NULL) {
+        a_error("Setting '%s' does not exist", key);
+        return;
+    } else if(s->update == A_BLOCKED) {
+        a_error("Setting '%s' is constant", key);
+        return;
+    }
 
-    #define boo(variable)                  \
-    ({                                     \
-        if(a_str_same(var, #variable)) {   \
-            a2xSet.variable =              \
-                   a_str_same(val, "yes")  \
-                || a_str_same(val, "y")    \
-                || a_str_same(val, "true") \
-                || a_str_same(val, "t")    \
-                || a_str_same(val, "on")   \
-                || a_str_same(val, "1")    \
-                ;                          \
-            return;                        \
-        }                                  \
-    })
+    switch(s->type) {
+        case A_INT: {
+            s->value.aInt = atoi(val);
+        } break;
 
-    str(title);
-    str(version);
-    str(author);
-    str(compiled);
-    str(conf);
-    boo(quiet);
-    boo(window);
-    boo(gp2xMenu);
-    num(mhz);
-    num(width);
-    num(height);
-    num(fps);
-    boo(trackFps);
-    boo(sound);
-    num(musicScale);
-    num(sfxScale);
-    boo(trackMouse);
-    boo(fakeScreen);
-    boo(fixWizTear);
+        case A_BOOL: {
+            s->value.aBool = parseBool(val);
+        } break;
+
+        case A_STR: {
+            strncpy(s->value.aStr, val, 63);
+        } break;
+    }
+
+    if(s->update == A_CONSTANT) {
+        s->update = A_BLOCKED;
+    }
+}
+
+char* a2x_str(const char* const key)
+{
+    Setting* const s = a_hash_get(settings, key);
+
+    if(s == NULL) {
+        a_error("Setting '%s' does not exist", key);
+        return NULL;
+    } else if(s->type != A_STR) {
+        a_error("Setting '%s' is not a string", key);
+        return NULL;
+    } else {
+        return s->value.aStr;
+    }
+}
+
+int a2x_bool(const char* const key)
+{
+    Setting* const s = a_hash_get(settings, key);
+
+    if(s == NULL) {
+        a_error("Setting '%s' does not exist", key);
+        return 0;
+    } else if(s->type != A_BOOL) {
+        a_error("Setting '%s' is not a boolean", key);
+        return 0;
+    } else {
+        return s->value.aBool;
+    }
+}
+
+int a2x_int(const char* const key)
+{
+    Setting* const s = a_hash_get(settings, key);
+
+    if(s == NULL) {
+        a_error("Setting '%s' does not exist", key);
+        return 0;
+    } else if(s->type != A_INT) {
+        a_error("Setting '%s' is not an integer", key);
+        return 0;
+    } else {
+        return s->value.aInt;
+    }
+}
+
+static void add(Setting_t const type, const Update_t update, const char* const key, const char* const val)
+{
+    Setting* const s = malloc(sizeof(Setting));
+
+    s->type = type;
+    s->update = update;
+
+    switch(type) {
+        case A_INT: {
+            s->value.aInt = atoi(val);
+        } break;
+
+        case A_BOOL: {
+            s->value.aBool = parseBool(val);
+        } break;
+
+        case A_STR: {
+            strncpy(s->value.aStr, val, 63);
+        } break;
+    }
+
+    a_hash_add(settings, key, s);
+}
+
+static int parseBool(const char* const val)
+{
+    return a_str_same(val, "yes")
+        || a_str_same(val, "y")
+        || a_str_same(val, "true")
+        || a_str_same(val, "t")
+        || a_str_same(val, "da")
+        || a_str_same(val, "on")
+        || a_str_same(val, "1");
 }

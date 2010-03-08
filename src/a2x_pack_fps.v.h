@@ -20,6 +20,8 @@
 #ifndef A2X_PACK_FPS_VH
 #define A2X_PACK_FPS_VH
 
-//
+#include "a2x_pack_time.v.h"
+
+extern void a_fps__set(void);
 
 #endif // A2X_PACK_FPS_VH

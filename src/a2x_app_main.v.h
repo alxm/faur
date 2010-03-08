@@ -20,6 +20,36 @@
 #ifndef A2X_APP_MAIN_VH
 #define A2X_APP_MAIN_VH
 
-//
+#include "a2x_app_settings.v.h"
+
+#include "a2x_pack_conf.v.h"
+#include "a2x_pack_fix.v.h"
+#include "a2x_pack_font.v.h"
+#include "a2x_pack_fps.v.h"
+#include "a2x_pack_hw.v.h"
+#include "a2x_pack_input.v.h"
+#include "a2x_pack_math.v.h"
+#include "a2x_pack_mem.v.h"
+#include "a2x_pack_screen.v.h"
+#include "a2x_pack_sdl.v.h"
+#include "a2x_pack_sound.v.h"
+#include "a2x_pack_sprite.v.h"
+#include "a2x_pack_time.v.h"
+
+#define a_out(...)           \
+({                           \
+    if(!a2x_bool("quiet")) { \
+        printf("a2x: ");     \
+        printf(__VA_ARGS__); \
+        printf("\n");        \
+    }                        \
+})
+
+#define a_error(...)        \
+({                          \
+    printf("a2x Error: ");  \
+    printf(__VA_ARGS__);    \
+    printf("\n");           \
+})
 
 #endif // A2X_APP_MAIN_VH

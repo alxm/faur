@@ -20,11 +20,11 @@
 #include "a2x_pack_sdl.p.h"
 #include "a2x_pack_sdl.v.h"
 
-void a__sdl_set(void)
+void a_sdl__set(void)
 {
     Uint32 sdlFlags = 0;
 
-    if(a2xSet.window) {
+    if(a2x_bool("window")) {
         sdlFlags |= SDL_INIT_VIDEO;
     }
 
@@ -36,14 +36,14 @@ void a__sdl_set(void)
         sdlFlags |= SDL_INIT_JOYSTICK;
     #endif
 
-    if(a2xSet.sound) {
+    if(a2x_bool("sound")) {
         sdlFlags |= SDL_INIT_AUDIO;
     }
 
     SDL_Init(sdlFlags);
 }
 
-void a__sdl_free(void)
+void a_sdl__free(void)
 {
     SDL_Quit();
 }

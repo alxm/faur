@@ -37,12 +37,12 @@ static List* sprites;
 
 static void setSheetValues(Sheet* const s);
 
-void a__sprite_set(void)
+void a_sprite__set(void)
 {
     sprites = a_list_set();
 }
 
-void a__sprite_free(void)
+void a_sprite__free(void)
 {
     while(a_list_iterate(sprites)) {
         a_sprite_free(a_list_current(sprites));
@@ -271,8 +271,8 @@ void a_sprite_makeTransparent(Sprite* const s, const Sheet* const graphic)
             }
         }
 
-        s->spansNum[i] = spans->items;
-        s->spans[i] = malloc(spans->items * sizeof(int*));
+        s->spansNum[i] = a_list_size(spans);
+        s->spans[i] = malloc(s->spansNum[i] * sizeof(int*));
 
         int counter = 0;
 

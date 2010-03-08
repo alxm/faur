@@ -33,9 +33,6 @@ typedef struct Sprite Sprite;
 typedef struct SpriteAnimation SpriteAnimation;
 typedef struct SpriteFrames SpriteFrames;
 
-extern void a__sprite_set(void);
-extern void a__sprite_free(void);
-
 extern Sheet* a_sprite_sheetFromFile(const char* const path);
 extern Sheet* a_sprite_sheetFromData(Pixel* data, const int w, const int h);
 extern Sheet* a_sprite_sheetFromSheet(const Sheet* const sheet, const int x, const int y, const int w, const int h);

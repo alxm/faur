@@ -29,35 +29,11 @@
 #include "a2x_pack_str.p.h"
 #include "a2x_pack_types.p.h"
 
-typedef struct Button {
-    char* name;
-    int code;
-    int pressed;
-} Button;
+typedef struct Button Button;
+typedef struct Touch Touch;
+typedef struct Input Input;
+typedef struct Inputs Inputs;
 
-typedef struct Touch {
-    List* motion;
-    int x;
-    int y;
-    int tap;
-} Touch;
-
-typedef struct Input {
-    List* buttons;
-    char* name;
-    int working;
-} Input;
-
-typedef struct Inputs {
-    List* buttons;
-    Touch mouse;
-    #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
-        SDL_Joystick* joystick;
-    #endif
-} Inputs;
-
-extern void a__input_set(void);
-extern void a__input_free(void);
 extern void a__input_get(void);
 
 extern Input* a_input_set(const char* const names);
@@ -66,8 +42,8 @@ extern int a_input_get(Input* const i);
 extern void a_input_unpress(Input* const i);
 extern int a_input_getUnpress(Input* const i);
 
-#define a_input_name(i)    (i->name)
-#define a_input_working(i) (i->working)
+extern char* a_input_name(const Input* const i);
+extern int a_input_working(const Input* const i);
 
 extern void a_input_waitFor(Input* const i);
 extern int a_input_touchedPoint(const int x, const int y);

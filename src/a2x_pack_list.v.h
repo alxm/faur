@@ -20,6 +20,28 @@
 #ifndef A2X_PACK_LIST_VH
 #define A2X_PACK_LIST_VH
 
-//
+struct ListNode {
+    void* content;
+    struct ListNode* next;
+    struct ListNode* prev;
+};
+
+struct List {
+    ListNode* first;
+    ListNode* last;
+    ListNode* current;
+    int items;
+};
+
+#define a_list__first(l)         ((l)->first->content)
+#define a_list__last(l)          ((l)->last->content)
+#define a_list__current(l)       ((l)->current->content)
+#define a_list__currentNode(l)   ((l)->current)
+#define a_list__size(l)          ((l)->items)
+#define a_list__isEmpty(l)       ((l)->first->next == (l)->last)
+#define a_list__next(n)          ((n)->next)
+#define a_list__prev(n)          ((n)->prev)
+#define a_list__getContent(n)    ((n)->content)
+#define a_list__setContent(n, c) ((n)->content = (c))
 
 #endif // A2X_PACK_LIST_VH

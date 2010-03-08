@@ -20,6 +20,7 @@
 #ifndef A2X_PACK_INPUT_VH
 #define A2X_PACK_INPUT_VH
 
-//
+extern void a_input__set(void);
+extern void a_input__free(void);
 
 #endif // A2X_PACK_INPUT_VH

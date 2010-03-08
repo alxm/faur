@@ -22,8 +22,6 @@
 
 #include "a2x_pack_math.p.h"
 
-extern void a__fix_set(void);
-
 typedef int fix12;
 #define FONE12            (1 << 12)
 #define a_fix12_to8(x)    ((x) >> 4)

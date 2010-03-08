@@ -42,9 +42,6 @@ typedef Mix_Chunk Sound;
 extern int a__volume;
 extern int a__volumeAdjust;
 
-extern void a__sound_set(void);
-extern void a__sound_free(void);
-
 extern Music* a_music_load(const char* const path);
 extern void a_music_free(Music* const m);
 extern void a_music_play(Music* const m);

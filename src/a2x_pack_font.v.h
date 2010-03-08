@@ -20,6 +20,10 @@
 #ifndef A2X_PACK_FONT_VH
 #define A2X_PACK_FONT_VH
 
+#include "a2x_pack_blit.v.h"
 #include "a2x_pack_sprite.v.h"
+
+extern void a_font__set(void);
+extern void a_font__free(void);
 
 #endif // A2X_PACK_FONT_VH

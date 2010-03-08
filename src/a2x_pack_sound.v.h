@@ -20,6 +20,9 @@
 #ifndef A2X_PACK_SOUND_VH
 #define A2X_PACK_SOUND_VH
 
-//
+#include "a2x_app_main.v.h"
+
+extern void a_sound__set(void);
+extern void a_sound__free(void);
 
 #endif // A2X_PACK_SOUND_VH

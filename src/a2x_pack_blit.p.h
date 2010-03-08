@@ -25,7 +25,6 @@
 #include "a2x_pack_sprite.p.h"
 
 typedef enum Blit_t {NCNT, NCT, CNT, CT} Blit_t;
-extern void (*a_blit_blitters[])(const Sprite* const s, const int x, const int y);
 
 /*
     Blitters

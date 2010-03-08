@@ -20,6 +20,6 @@
 #ifndef A2X_PACK_FIX_VH
 #define A2X_PACK_FIX_VH
 
-//
+extern void a_fix__set(void);
 
 #endif // A2X_PACK_FIX_VH

@@ -30,13 +30,7 @@
 
 #include <SDL/SDL.h>
 
-extern void a__time_set(void);
-extern void a__time_free(void);
-
 extern uint32_t a_time_getMilis(void);
 extern void a_time_waitMilis(const uint32_t milis);
-
-extern int a_time_overflowed(void);
-extern void a_time_handledOverflow(void);
 
 #endif // A2X_PACK_TIME_PH

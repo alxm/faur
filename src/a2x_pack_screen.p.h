@@ -36,9 +36,6 @@ typedef uint16_t Pixel;
 #include "a2x_pack_str.p.h"
 #include "a2x_pack_time.p.h"
 
-extern void a__screen_set(void);
-extern void a__screen_free(void);
-
 #define A_BPP 16
 
 #define a_mask(x) ((1 << (x)) - 1)
@@ -65,14 +62,12 @@ extern void a__screen_free(void);
 #define a_screen_getPixel(x, y) (*(a_pixels + (y) * a_width + (x)))
 #define a_screen_getPixel2(p, x, y) (*((p) + (y) * a_width + (x)))
 
-
-
 extern SDL_Surface* a_screen;
 extern Pixel* a_pixels;
 extern int a_width;
 extern int a_height;
 
-#define A_SCREEN_SIZE (a2xSet.width * a2xSet.height * sizeof(Pixel))
+#define A_SCREEN_SIZE (a_width * a_height * sizeof(Pixel))
 
 #define a_screen_new()          malloc(A_SCREEN_SIZE)
 #define a_screen_copy(dst, src) memcpy((dst), (src), A_SCREEN_SIZE)

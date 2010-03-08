@@ -49,14 +49,14 @@ static uint32_t counter;
     return;                        \
 })
 
-void a__fps_set(void)
+void a_fps__set(void)
 {
-    milisPerFrame = 1000 / a2xSet.fps;
+    milisPerFrame = 1000 / a2x_int("fps");
 
     fps = 0;
     max = 0;
 
-    if(a2xSet.trackFps) {
+    if(a2x_bool("trackFps")) {
         for(int i = BUFFER_SIZE; i--; ) {
             fpsBuffer[i] = milisPerFrame;
             maxBuffer[i] = milisPerFrame;
@@ -89,7 +89,7 @@ void a_fps_end(void)
 
     uint32_t currentMilis = getMilis();
 
-    if(a2xSet.trackFps) {
+    if(a2x_bool("trackFps")) {
         const uint32_t diff = wantedMilis - currentMilis;
 
         if(diff < milisPerFrame) {
@@ -116,7 +116,7 @@ void a_fps_end(void)
         lastMilis = getMilis();
     }
 
-    if(a2xSet.trackFps) {
+    if(a2x_bool("trackFps")) {
         int f = 0;
         int m = 0;
 
@@ -132,7 +132,7 @@ void a_fps_end(void)
         memmove(&maxBuffer[0], &maxBuffer[1], (BUFFER_SIZE - 1) * sizeof(uint32_t));
     }
 
-    if(a2xSet.trackFps) {
+    if(a2x_bool("trackFps")) {
         fpsBuffer[BUFFER_SIZE - 1] = milisPerFrame - (wantedMilis - currentMilis);
     } else {
         fps = 1000 / (milisPerFrame - (wantedMilis - currentMilis));

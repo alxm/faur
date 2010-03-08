@@ -22,12 +22,12 @@
 
 static List* a__memTracker;
 
-void a__mem_set(void)
+void a_mem__set(void)
 {
     a__memTracker = a_list_set();
 }
 
-void a__mem_free(void)
+void a_mem__free(void)
 {
     a_list_freeContent(a__memTracker);
 }

@@ -29,32 +29,7 @@
 #include "a2x_pack_input.p.h"
 #include "a2x_pack_sound.p.h"
 
-#define A_MENU_PAUSE (a2xSet.fps / 6)
-
-typedef enum MenuState {
-    A_MENU_RUNNING, A_MENU_ACCEPT, A_MENU_CANCEL, A_MENU_SPENT
-} MenuState;
-
-typedef struct Menu {
-    List* items;
-    void (*freeItem)(void* v);
-    Node* selectedNode;
-    int selectedIndex;
-    MenuState state;
-    int pause;
-    int used;
-    void (*input)(struct Menu* const m, void* const v);
-    void* v;
-    char* title;
-    Sprite* sprite;
-    Sound* soundAccept;
-    Sound* soundCancel;
-    Sound* soundBrowse;
-    Input* next;
-    Input* back;
-    Input* select;
-    Input* cancel;
-} Menu;
+typedef struct Menu Menu;
 
 extern Menu* a_menu_set(Input* const next, Input* const back, Input* const select, Input* const cancel, void (*freeItem)(void* v));
 extern void a_menu_free(Menu* const m);
@@ -64,24 +39,20 @@ extern void a_menu_addV(Menu* const m, void* const v);
 extern void a_menu_addTitle(Menu* const m, const char* const t);
 extern void a_menu_addSprite(Menu* const m, Sprite* const s);
 extern void a_menu_addSounds(Menu* const m, Sound* const accept, Sound* const cancel, Sound* const browse);
-
 extern void a_menu_addItem(Menu* const m, void* const v);
 
 extern void a_menu_input(Menu* const m);
 
-#define a_menu_items(m) (a_list_items(m->items))
-
-#define a_menu_iterate(m)      (a_list_iterate(m->items))
-#define a_menu_iterateReset(m) (a_list_reset(m->items))
-#define a_menu_currentItem(m)  (a_list_current(m->items))
-#define a_menu_isSelected(m)   (a_list_currentNode(m->items) == m->selectedNode)
-
-#define a_menu_keepRunning(m) (m->state = A_MENU_RUNNING)
-#define a_menu_running(m)     (m->state == A_MENU_RUNNING)
-#define a_menu_finished(m)    (m->state == A_MENU_ACCEPT || m->state == A_MENU_CANCEL)
-#define a_menu_accept(m)      (m->state == A_MENU_ACCEPT)
-#define a_menu_cancel(m)      (m->state == A_MENU_CANCEL)
-
-#define a_menu_choice(m) (m->selectedIndex)
+extern int a_menu_items(const Menu* const m);
+extern int a_menu_iterate(const Menu* const m);
+extern void a_menu_iterateReset(const Menu* const m);
+extern void* a_menu_currentItem(const Menu* const m);
+extern int a_menu_isSelected(const Menu* const m);
+extern void a_menu_keepRunning(Menu* const m);
+extern int a_menu_running(const Menu* const m);
+extern int a_menu_finished(const Menu* const m);
+extern int a_menu_accept(const Menu* const m);
+extern int a_menu_cancel(const Menu* const m);
+extern int a_menu_choice(const Menu* const m);
 
 #endif // A2X_PACK_MENU_PH

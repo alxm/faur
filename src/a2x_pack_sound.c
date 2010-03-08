@@ -31,9 +31,9 @@ int a__volumeAdjust = -2 * A_MILIS_VOLUME;
     static Input* a__volDown;
 #endif
 
-void a__sound_set(void)
+void a_sound__set(void)
 {
-    if(a2xSet.sound) {
+    if(a2x_bool("sound")) {
         a__musicList = a_list_set();
         a__sfxList = a_list_set();
 
@@ -47,15 +47,15 @@ void a__sound_set(void)
 
         #if A_PLATFORM_LINUXPC || A_PLATFORM_WINDOWS
             if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096) != 0) {
-                a2xSet.sound = 0;
+                a2x_set("sound", "0");
             }
         #elif A_PLATFORM_GP2X
             if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 256) != 0) {
-                a2xSet.sound = 0;
+                a2x_set("sound", "0");
             }
         #else
             if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 512) != 0) {
-                a2xSet.sound = 0;
+                a2x_set("sound", "0");
             }
         #endif
 
@@ -66,9 +66,9 @@ void a__sound_set(void)
     }
 }
 
-void a__sound_free(void)
+void a_sound__free(void)
 {
-    if(a2xSet.sound) {
+    if(a2x_bool("sound")) {
         a_music_stop();
 
         while(a_list_iterate(a__sfxList)) {
@@ -93,14 +93,14 @@ void a__sound_free(void)
 
 Music* a_music_load(const char* const path)
 {
-    if(a2xSet.sound) {
+    if(a2x_bool("sound")) {
         Music* const m = Mix_LoadMUS(path);
 
         if(!m) {
             a_error(Mix_GetError());
         }
 
-        Mix_VolumeMusic(((float)a2xSet.musicScale / 100) * a__volume);
+        Mix_VolumeMusic((float)a2x_int("musicScale") / 100 * a__volume);
 
         a_list_addLast(a__musicList, m);
 
@@ -117,28 +117,28 @@ void a_music_free(Music* const m)
 
 void a_music_play(Music* const m)
 {
-    if(a2xSet.sound) {
+    if(a2x_bool("sound")) {
         Mix_PlayMusic(m, -1);
     }
 }
 
 void a_music_stop(void)
 {
-    if(a2xSet.sound) {
+    if(a2x_bool("sound")) {
         Mix_HaltMusic();
     }
 }
 
 Sound* a__sfx_load(uint16_t* const data, const int size)
 {
-    if(a2xSet.sound) {
+    if(a2x_bool("sound")) {
         int decLength;
         uint8_t* const dataDec = a_mem_decodeRLE(data, size / sizeof(uint16_t), sizeof(uint16_t), &decLength);
 
         SDL_RWops* const rw = SDL_RWFromMem(dataDec, decLength * sizeof(uint16_t));
         Sound* const s = Mix_LoadWAV_RW(rw, 0);
 
-        s->volume = ((float)a2xSet.sfxScale / 100) * a__volume;
+        s->volume = (float)a2x_int("sfxScale") / 100 * a__volume;
         a_list_addLast(a__sfxList, s);
 
         SDL_FreeRW(rw);
@@ -152,21 +152,21 @@ Sound* a__sfx_load(uint16_t* const data, const int size)
 
 void a_sfx_free(Sound* const s)
 {
-    if(a2xSet.sound) {
+    if(a2x_bool("sound")) {
         Mix_FreeChunk(s);
     }
 }
 
 void a_sfx_play(Sound* const s)
 {
-    if(a2xSet.sound) {
+    if(a2x_bool("sound")) {
         Mix_PlayChannel(-1, s, 0);
     }
 }
 
 void a_sfx_volume(const int v)
 {
-    if(a2xSet.sound) {
+    if(a2x_bool("sound")) {
         while(a_list_iterate(a__sfxList)) {
             ((Sound*)a_list_current(a__sfxList))->volume = v;
         }
@@ -176,7 +176,7 @@ void a_sfx_volume(const int v)
 void a_sound_adjustVolume(void)
 {
     #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
-        if(a2xSet.sound) {
+        if(a2x_bool("sound")) {
             int adjust = 0;
 
             if(a_input_get(a__volUp)) adjust = 1;

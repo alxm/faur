@@ -20,9 +20,9 @@
 #include "a2x_pack_conf.p.h"
 #include "a2x_pack_conf.v.h"
 
-void a__conf_set(void)
+void a_conf__set(void)
 {
-    FileReader* const f = a_file_makeReader(a2xSet.conf);
+    FileReader* const f = a_file_makeReader(a2x_str("conf"));
 
     while(a_file_readLine(f)) {
         char* const s = a_str_trim(a_file_getLine(f));
@@ -53,18 +53,14 @@ void a__conf_set(void)
         #define arg(s) a_str_same(b, (s))
 
         if(var("sound")) {
-            if(arg("on")) {
-                a2xSet.sound = 1;
-            } else if(arg("off")) {
-                a2xSet.sound = 0;
-            }
+            a2x_set("sound", b);
         } else if(var("musicScale")) {
             if(val >= 0 && val <= 100) {
-                a2xSet.musicScale = val;
+                a2x_set("musicScale", b);
             }
         } else if(var("sfxScale")) {
             if(val >= 0 && val <= 100) {
-                a2xSet.sfxScale = val;
+                a2x_set("sfxScale", b);
             }
         }
 

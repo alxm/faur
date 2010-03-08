@@ -20,119 +20,12 @@
 #include "a2x_pack_draw.p.h"
 #include "a2x_pack_draw.v.h"
 
-int _a_draw_lineClipper(int* error, int* x1, int* y1, int* x2, int* y2)
-{
-    const int xx1 = *x1;
-    const int yy1 = *y1;
-    const int xx2 = *x2;
-    const int yy2 = *y2;
-
-    if(    xx1 >= 0 && xx1 < a_width
-        && xx2 >= 0 && xx2 < a_width
-        && yy1 >= 0 && yy1 < a_height
-        && yy2 >= 0 && yy2 < a_height) return 0;
-
-    int xmin, xmax, ymin, ymax;
-
-    if(xx1 < xx2) {
-        xmin = xx1;
-        xmax = xx2;
-    } else {
-        xmin = xx2;
-        xmax = xx1;
-    }
-    if(yy1 < yy2) {
-        ymin = yy1;
-        ymax = yy2;
-    } else {
-        ymin = yy2;
-        ymax = yy1;
-    }
-
-    if(xmin >= a_width || xmax < 0 || ymin >= a_height || ymax < 0) {
-        *error = 1;
-        return 0;
-    }
-
-    if(xx1 == xx2) {
-        if(ymin < 0) {
-            if(ymin == yy1) *y1 = 0;
-            if(ymin == yy2) *y2 = 0;
-        }
-
-        if(ymax >= a_height) {
-            if(ymax == yy1) *y1 = a_height - 1;
-            if(ymax == yy2) *y2 = a_height - 1;
-        }
-
-        return 0;
-    }
-
-    if(yy1 == yy2) {
-        if(xmin < 0) {
-            if(xmin == xx1) *x1 = 0;
-            if(xmin == xx2) *x2 = 0;
-        }
-
-        if(xmax >= a_width) {
-            if(xmax == xx1) *x1 = a_width - 1;
-            if(xmax == xx2) *x2 = a_width - 1;
-        }
-
-        return 0;
-    }
-
-    const fix8 m = a_fix8_div(a_fix8_itofix(yy1 - yy2), a_fix8_itofix(xx1 - xx2));
-
-    if(xmin < 0) {
-        if(xmin == xx1) {
-            *y1 = a_fix8_fixtoi(m * (0 - xx1)) + yy1;
-            *x1 = 0;
-        } else {
-            *y2 = a_fix8_fixtoi(m * (0 - xx2)) + yy2;
-            *x2 = 0;
-        }
-
-        return 1;
-    } else if(xmax >= a_width) {
-        if(xmax == xx1) {
-            *y1 = a_fix8_fixtoi(m * (a_width - 1 - xx1)) + yy1;
-            *x1 = a_width - 1;
-        } else {
-            *y2 = a_fix8_fixtoi(m * (a_width - 1 - xx2)) + yy2;
-            *x2 = a_width - 1;
-        }
-
-        return 1;
-    } else if(ymin < 0) {
-        if(ymin == yy1) {
-            *x1 = a_fix8_fixtoi(a_fix8_div(a_fix8_itofix(0 - yy1), m)) + xx1;
-            *y1 = 0;
-        } else {
-            *x2 = a_fix8_fixtoi(a_fix8_div(a_fix8_itofix(0 - yy2), m)) + xx2;
-            *y2 = 0;
-        }
-
-        return 1;
-    } else if(ymax >= a_height) {
-        if(ymax == yy1) {
-            *x1 = a_fix8_fixtoi(a_fix8_div(a_fix8_itofix(a_height - 1 - yy1), m)) + xx1;
-            *y1 = a_height - 1;
-        } else {
-            *x2 = a_fix8_fixtoi(a_fix8_div(a_fix8_itofix(a_height - 1 - yy2), m)) + xx2;
-            *y2 = a_height - 1;
-        }
-
-        return 1;
-    }
-
-    return 0;
-}
+static int lineClipper(int* error, int* x1, int* y1, int* x2, int* y2);
 
 void a_draw_line(int x1, int y1, int x2, int y2, const Pixel p)
 {
     int error = 0;
-    while(_a_draw_lineClipper(&error, &x1, &y1, &x2, &y2)) continue;
+    while(lineClipper(&error, &x1, &y1, &x2, &y2)) continue;
     if(error) return;
 
     int xmin, xmax, ymin, ymax;
@@ -329,4 +222,113 @@ void a_draw_borderRectangleSafe(const int x1, const int y1, const int x2, const 
     a_draw_rectangleSafe(x1, y2 - t, x2, y2, c);         // bottom
     a_draw_rectangleSafe(x1, y1 + t, x1 + t, y2 - t, c); // left
     a_draw_rectangleSafe(x2 - t, y1 + t, x2, y2 - t, c); // right
+}
+
+static int lineClipper(int* error, int* x1, int* y1, int* x2, int* y2)
+{
+    const int xx1 = *x1;
+    const int yy1 = *y1;
+    const int xx2 = *x2;
+    const int yy2 = *y2;
+
+    if(    xx1 >= 0 && xx1 < a_width
+        && xx2 >= 0 && xx2 < a_width
+        && yy1 >= 0 && yy1 < a_height
+        && yy2 >= 0 && yy2 < a_height) return 0;
+
+    int xmin, xmax, ymin, ymax;
+
+    if(xx1 < xx2) {
+        xmin = xx1;
+        xmax = xx2;
+    } else {
+        xmin = xx2;
+        xmax = xx1;
+    }
+    if(yy1 < yy2) {
+        ymin = yy1;
+        ymax = yy2;
+    } else {
+        ymin = yy2;
+        ymax = yy1;
+    }
+
+    if(xmin >= a_width || xmax < 0 || ymin >= a_height || ymax < 0) {
+        *error = 1;
+        return 0;
+    }
+
+    if(xx1 == xx2) {
+        if(ymin < 0) {
+            if(ymin == yy1) *y1 = 0;
+            if(ymin == yy2) *y2 = 0;
+        }
+
+        if(ymax >= a_height) {
+            if(ymax == yy1) *y1 = a_height - 1;
+            if(ymax == yy2) *y2 = a_height - 1;
+        }
+
+        return 0;
+    }
+
+    if(yy1 == yy2) {
+        if(xmin < 0) {
+            if(xmin == xx1) *x1 = 0;
+            if(xmin == xx2) *x2 = 0;
+        }
+
+        if(xmax >= a_width) {
+            if(xmax == xx1) *x1 = a_width - 1;
+            if(xmax == xx2) *x2 = a_width - 1;
+        }
+
+        return 0;
+    }
+
+    const fix8 m = a_fix8_div(a_fix8_itofix(yy1 - yy2), a_fix8_itofix(xx1 - xx2));
+
+    if(xmin < 0) {
+        if(xmin == xx1) {
+            *y1 = a_fix8_fixtoi(m * (0 - xx1)) + yy1;
+            *x1 = 0;
+        } else {
+            *y2 = a_fix8_fixtoi(m * (0 - xx2)) + yy2;
+            *x2 = 0;
+        }
+
+        return 1;
+    } else if(xmax >= a_width) {
+        if(xmax == xx1) {
+            *y1 = a_fix8_fixtoi(m * (a_width - 1 - xx1)) + yy1;
+            *x1 = a_width - 1;
+        } else {
+            *y2 = a_fix8_fixtoi(m * (a_width - 1 - xx2)) + yy2;
+            *x2 = a_width - 1;
+        }
+
+        return 1;
+    } else if(ymin < 0) {
+        if(ymin == yy1) {
+            *x1 = a_fix8_fixtoi(a_fix8_div(a_fix8_itofix(0 - yy1), m)) + xx1;
+            *y1 = 0;
+        } else {
+            *x2 = a_fix8_fixtoi(a_fix8_div(a_fix8_itofix(0 - yy2), m)) + xx2;
+            *y2 = 0;
+        }
+
+        return 1;
+    } else if(ymax >= a_height) {
+        if(ymax == yy1) {
+            *x1 = a_fix8_fixtoi(a_fix8_div(a_fix8_itofix(a_height - 1 - yy1), m)) + xx1;
+            *y1 = a_height - 1;
+        } else {
+            *x2 = a_fix8_fixtoi(a_fix8_div(a_fix8_itofix(a_height - 1 - yy2), m)) + xx2;
+            *y2 = a_height - 1;
+        }
+
+        return 1;
+    }
+
+    return 0;
 }

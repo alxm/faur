@@ -20,6 +20,6 @@
 #ifndef A2X_PACK_CONF_VH
 #define A2X_PACK_CONF_VH
 
-//
+extern void a_conf__set(void);
 
 #endif // A2X_PACK_CONF_VH

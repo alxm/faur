@@ -20,6 +20,7 @@
 #ifndef A2X_PACK_MEM_VH
 #define A2X_PACK_MEM_VH
 
-//
+extern void a_mem__set(void);
+extern void a_mem__free(void);
 
 #endif // A2X_PACK_MEM_VH

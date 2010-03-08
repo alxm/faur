@@ -20,6 +20,6 @@
 #ifndef A2X_PACK_COLLIDE_VH
 #define A2X_PACK_COLLIDE_VH
 
-//
+#include "a2x_pack_list.v.h"
 
 #endif // A2X_PACK_COLLIDE_VH

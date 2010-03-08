@@ -18,34 +18,20 @@
 */
 
 #include "a2x_app_main.p.h"
-#include "a2x_app_settings.p.h"
+#include "a2x_app_main.v.h"
 
-#include "a2x_pack_conf.p.h"
-#include "a2x_pack_fix.p.h"
-#include "a2x_pack_font.p.h"
-#include "a2x_pack_fps.p.h"
-#include "a2x_pack_hw.p.h"
-#include "a2x_pack_input.p.h"
-#include "a2x_pack_math.p.h"
-#include "a2x_pack_mem.p.h"
-#include "a2x_pack_screen.p.h"
-#include "a2x_pack_sdl.p.h"
-#include "a2x_pack_sound.p.h"
-#include "a2x_pack_sprite.p.h"
-#include "a2x_pack_time.p.h"
-
-#define A_PACK_SET(p)     \
-({                        \
-    a_out("Setting " #p); \
-    a__##p##_set();       \
-    a_out(#p " set");     \
+#define A_PACK_SET(p)          \
+({                             \
+    a_out("Setting pack " #p); \
+    a_##p##__set();            \
+    a_out(#p " set");          \
 })
 
-#define A_PACK_FREE(p)    \
-({                        \
-    a_out("Freeing " #p); \
-    a__##p##_free();      \
-    a_out(#p " freed");   \
+#define A_PACK_FREE(p)         \
+({                             \
+    a_out("Freeing pack " #p); \
+    a_##p##__free();           \
+    a_out(#p " freed");        \
 })
 
 int a_argsNum;
@@ -59,7 +45,8 @@ int main(int argc, char** argv)
     a2x_defaults();
     a2x();
 
-    a_out("Opening %s %s by %s, compiled %s", a2xSet.title, a2xSet.version, a2xSet.author, a2xSet.compiled);
+    a_out("Opening %s %s by %s, compiled %s",
+        a2x_str("title"), a2x_str("version"), a2x_str("author"), a2x_str("compiled"));
 
     A_PACK_SET(conf);
     A_PACK_SET(sdl);
@@ -90,7 +77,7 @@ int main(int argc, char** argv)
     A_PACK_FREE(hw);
     A_PACK_FREE(sdl);
 
-    a_out("Closing %s - see you next time.", a2xSet.title);
+    a_out("Closing %s - see you next time.", a2x_str("title"));
 
     #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
         if(a2xSet.gp2xMenu) {

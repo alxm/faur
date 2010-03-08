@@ -20,6 +20,10 @@
 #ifndef A2X_PACK_TIME_VH
 #define A2X_PACK_TIME_VH
 
-//
+extern void a_time__set(void);
+extern void a_time__free(void);
+
+extern int a_time_overflowed(void);
+extern void a_time_handledOverflow(void);
 
 #endif // A2X_PACK_TIME_VH
