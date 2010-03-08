@@ -51,8 +51,11 @@ void a_screen__set(void)
         return;
     }
 
+    a_width = a2x_int("width");
+    a_height = a2x_int("height");
+
     a__videoFlags = SDL_SWSURFACE;
-    a_screen = SDL_SetVideoMode(a2x_int("width"), a2x_int("height"), A_BPP, a__videoFlags);
+    a_screen = SDL_SetVideoMode(a_width, a_height, A_BPP, a__videoFlags);
 
     SDL_SetClipRect(a_screen, NULL);
 
@@ -77,9 +80,9 @@ void a_screen__set(void)
             ioctl(fb_fd, FBIO_LCD_CHANGE_CONTROL, &send);
             close(fb_fd);
 
-            a2x_set("fakeScreen", "1");
+            a2x__set("fakeScreen", "1");
         #else
-            a2x_set("fixWizTear", "0");
+            a2x__set("fixWizTear", "0");
         #endif
     }
 
@@ -93,9 +96,6 @@ void a_screen__set(void)
 
         a_pixels = a_screen->pixels;
     }
-
-    a_width = a2x_int("width");
-    a_height = a2x_int("height");
 
     a__pixels2 = a_pixels;
     a__width2 = a_width;
@@ -222,7 +222,7 @@ void a_screen_custom(void (*f)(void* const v), void* const v)
 static void displayVolume(void)
 {
     #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
-        if(a2x_set.sound) {
+        if(a2x_bool("sound")) {
             if(a_time_getMilis() - a__volumeAdjust > A_MILIS_VOLUME) {
                 return;
             }

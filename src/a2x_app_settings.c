@@ -43,6 +43,7 @@ static HashTable* settings;
 
 static void add(Setting_t const type, const Update_t update, const char* const key, const char* const val);
 static int parseBool(const char* const val);
+static void set(const char* const key, const char* const val, int respect);
 
 void a2x_defaults(void)
 {
@@ -74,33 +75,12 @@ void a2x_defaults(void)
 
 void a2x_set(const char* const key, const char* const val)
 {
-    Setting* const s = a_hash_get(settings, key);
+    set(key, val, 1);
+}
 
-    if(s == NULL) {
-        a_error("Setting '%s' does not exist", key);
-        return;
-    } else if(s->update == A_BLOCKED) {
-        a_error("Setting '%s' is constant", key);
-        return;
-    }
-
-    switch(s->type) {
-        case A_INT: {
-            s->value.aInt = atoi(val);
-        } break;
-
-        case A_BOOL: {
-            s->value.aBool = parseBool(val);
-        } break;
-
-        case A_STR: {
-            strncpy(s->value.aStr, val, 63);
-        } break;
-    }
-
-    if(s->update == A_CONSTANT) {
-        s->update = A_BLOCKED;
-    }
+void a2x__set(const char* const key, const char* const val)
+{
+    set(key, val, 0);
 }
 
 char* a2x_str(const char* const key)
@@ -181,4 +161,35 @@ static int parseBool(const char* const val)
         || a_str_same(val, "da")
         || a_str_same(val, "on")
         || a_str_same(val, "1");
+}
+
+static void set(const char* const key, const char* const val, int respect)
+{
+    Setting* const s = a_hash_get(settings, key);
+
+    if(s == NULL) {
+        a_error("Setting '%s' does not exist", key);
+        return;
+    } else if(s->update == A_BLOCKED && respect) {
+        a_error("Setting '%s' is constant", key);
+        return;
+    }
+
+    switch(s->type) {
+        case A_INT: {
+            s->value.aInt = atoi(val);
+        } break;
+
+        case A_BOOL: {
+            s->value.aBool = parseBool(val);
+        } break;
+
+        case A_STR: {
+            strncpy(s->value.aStr, val, 63);
+        } break;
+    }
+
+    if(s->update == A_CONSTANT) {
+        s->update = A_BLOCKED;
+    }
 }

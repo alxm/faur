@@ -189,10 +189,10 @@ void a_sound_adjustVolume(void)
                 else if(a__volume < 0) a__volume = 0;
 
                 if(a_list_size(a__musicList) > 0) {
-                    Mix_VolumeMusic((float)a2xSet.musicScale / 100 * a__volume);
+                    Mix_VolumeMusic((float)a2x_int("musicScale") / 100 * a__volume);
                 }
 
-                a_sfx_volume((float)a2xSet.sfxScale / 100 * a__volume);
+                a_sfx_volume((float)a2x_int("sfxScale") / 100 * a__volume);
                 a__volumeAdjust = a_time_getMilis();
             }
         }
