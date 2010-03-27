@@ -39,7 +39,7 @@ typedef struct Setting {
     } value;
 } Setting;
 
-static HashTable* settings;
+static Hash* settings;
 
 static void add(Setting_t const type, const Update_t update, const char* const key, const char* const val);
 static int parseBool(const char* const val);

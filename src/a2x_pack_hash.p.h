@@ -26,12 +26,12 @@
 
 #include "a2x_pack_str.p.h"
 
-typedef struct HashTable HashTable;
+typedef struct Hash Hash;
 
-extern HashTable* a_hash_set(const int size);
-extern void a_hash_free(HashTable* const h);
-extern void a_hash_freeContent(HashTable* const h);
-extern void a_hash_add(HashTable* const h, const char* const key, void* const content);
-extern void* a_hash_get(HashTable* const h, const char* const key);
+extern Hash* a_hash_set(const int size);
+extern void a_hash_free(Hash* const h);
+extern void a_hash_freeContent(Hash* const h);
+extern void a_hash_add(Hash* const h, const char* const key, void* const content);
+extern void* a_hash_get(Hash* const h, const char* const key);
 
 #endif // A2X_PACK_HASH_PH

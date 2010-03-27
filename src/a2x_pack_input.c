@@ -175,6 +175,10 @@ void a__input_get(void)
         int action = -1;
 
         switch(event.type) {
+            case SDL_QUIT: {
+                a_state_exit();
+            } break;
+
             #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
                 case SDL_JOYBUTTONDOWN: {
                     button = event.jbutton.button;
@@ -189,6 +193,10 @@ void a__input_get(void)
                 case SDL_KEYDOWN: {
                     button = event.key.keysym.sym;
                     action = 1;
+
+                    if(button == SDLK_ESCAPE) {
+                        a_state_exit();
+                    }
                 } break;
 
                 case SDL_KEYUP: {
@@ -228,10 +236,6 @@ void a__input_get(void)
                         a__input.mouse.y = event.button.y;
                     break;
                 }
-            } break;
-
-            case SDL_QUIT: {
-                a_state_exit();
             } break;
 
             default:break;

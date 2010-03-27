@@ -20,15 +20,15 @@
 #include "a2x_pack_hash.p.h"
 #include "a2x_pack_hash.v.h"
 
-typedef struct HashEntry {
+typedef struct Entry {
     char* key;
     void* content;
-    struct HashEntry* next;
-} HashEntry;
+    struct Entry* next;
+} Entry;
 
-struct HashTable {
+struct Hash {
     int size;
-    HashEntry** entries;
+    Entry** entries;
 };
 
 #define getSlot(h, k)               \
@@ -40,12 +40,12 @@ struct HashTable {
     a__s %= h->size;                \
 })
 
-HashTable* a_hash_set(const int size)
+Hash* a_hash_set(const int size)
 {
-    HashTable* const h = malloc(sizeof(HashTable));
+    Hash* const h = malloc(sizeof(Hash));
 
     h->size = size;
-    h->entries = malloc(size * sizeof(HashEntry*));
+    h->entries = malloc(size * sizeof(Entry*));
 
     for(int i = size; i--; ) {
         h->entries[i] = NULL;
@@ -54,13 +54,13 @@ HashTable* a_hash_set(const int size)
     return h;
 }
 
-void a_hash_free(HashTable* const h)
+void a_hash_free(Hash* const h)
 {
     for(int i = h->size; i--; ) {
-        HashEntry* e = h->entries[i];
+        Entry* e = h->entries[i];
 
         while(e) {
-            HashEntry* const save = e->next;
+            Entry* const save = e->next;
 
             free(e->key);
             free(e);
@@ -73,13 +73,13 @@ void a_hash_free(HashTable* const h)
     free(h);
 }
 
-void a_hash_freeContent(HashTable* const h)
+void a_hash_freeContent(Hash* const h)
 {
     for(int i = h->size; i--; ) {
-        HashEntry* e = h->entries[i];
+        Entry* e = h->entries[i];
 
         while(e) {
-            HashEntry* const save = e->next;
+            Entry* const save = e->next;
 
             free(e->key);
             free(e->content);
@@ -93,16 +93,16 @@ void a_hash_freeContent(HashTable* const h)
     free(h);
 }
 
-void a_hash_add(HashTable* const h, const char* const key, void* const content)
+void a_hash_add(Hash* const h, const char* const key, void* const content)
 {
-    HashEntry* const e = malloc(sizeof(HashEntry));
+    Entry* const e = malloc(sizeof(Entry));
 
     e->key = a_str_dup(key);
     e->content = content;
     e->next = NULL;
 
     const int slot = getSlot(h, key);
-    HashEntry* entry = h->entries[slot];
+    Entry* entry = h->entries[slot];
 
     if(entry == NULL) {
         h->entries[slot] = e;
@@ -115,9 +115,9 @@ void a_hash_add(HashTable* const h, const char* const key, void* const content)
     }
 }
 
-void* a_hash_get(HashTable* const h, const char* const key)
+void* a_hash_get(Hash* const h, const char* const key)
 {
-    HashEntry* e = h->entries[getSlot(h, key)];
+    Entry* e = h->entries[getSlot(h, key)];
 
     while(e && !a_str_same(key, e->key)) {
         e = e->next;
