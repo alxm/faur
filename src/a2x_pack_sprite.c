@@ -20,11 +20,12 @@
 #include "a2x_pack_sprite.p.h"
 #include "a2x_pack_sprite.v.h"
 
-struct SpriteAnimation {
+struct AnimatedSprite {
+    int num;
     Sprite** sprites;
-    fix8 num;
-    fix8 current;
-    fix8 speed;
+    int frame;
+    int framesPerCycle;
+    int current;
     int dir;
 };
 
@@ -324,65 +325,61 @@ Pixel* a_sprite_data(const Sprite* const s)
     return s->data;
 }
 
-SpriteAnimation* a_sprite_makeAnimation(const int num, const int framesPerCycle)
+AnimatedSprite* a_sprite_makeAnimation(const int num, const int framesPerCycle)
 {
-    SpriteAnimation* const s = malloc(sizeof(SpriteAnimation));
+    AnimatedSprite* const s = malloc(sizeof(AnimatedSprite));
 
+    s->num = num;
     s->sprites = malloc(num * sizeof(Sprite*));
-    s->num = a_fix8_itofix(num);
+    s->frame = 0;
+    s->framesPerCycle = framesPerCycle;
     s->current = 0;
-    s->speed = s->num / framesPerCycle;
     s->dir = 1;
 
     return s;
 }
 
-void a_sprite_freeAnimation(SpriteAnimation* const s)
+void a_sprite_freeAnimation(AnimatedSprite* const s)
 {
     free(s->sprites);
     free(s);
 }
 
-void a_sprite_addAnimation(SpriteAnimation* const s, Sprite* const sp)
+void a_sprite_addAnimation(AnimatedSprite* const s, Sprite* const sp)
 {
-    s->sprites[a_fix8_fixtoi(s->current)] = sp;
+    s->sprites[s->current] = sp;
 
-    s->current += FONE8;
-
-    if(s->current == s->num) {
+    if(++(s->current) == s->num) {
         s->current = 0;
     }
 }
 
-Sprite* a_sprite_nextAnimation(SpriteAnimation* const s)
+Sprite* a_sprite_nextAnimation(AnimatedSprite* const s)
 {
-    Sprite* const sp = s->sprites[a_fix8_fixtoi(s->current)];
+    Sprite* const sp = s->sprites[s->current];
 
-    s->current += s->speed * s->dir;
+    s->frame += s->num;
 
-    if(s->current >= s->num) {
-        s->current = s->current - s->num;
-
-        if(s->current >= s->num) {
-            s->current = 0;
-        }
-    } else if(s->current < 0) {
-        s->current = s->num - FONE8 + s->current;
+    if(s->frame >= s->framesPerCycle) {
+        s->frame -= s->framesPerCycle;
+        s->current += s->dir;
 
         if(s->current < 0) {
-            s->current = s->num - FONE8;
+            s->current = s->num - 1;
+        } else if(s->current >= s->num) {
+            s->current = 0;
         }
     }
 
     return sp;
 }
 
-void a_sprite_changeAnimationDir(SpriteAnimation* const s, const int dir)
+void a_sprite_setAnimationDir(AnimatedSprite* const s, const int dir)
 {
     s->dir = dir;
 }
 
-void a_sprite_flipAnimationDir(SpriteAnimation* const s)
+void a_sprite_flipAnimationDir(AnimatedSprite* const s)
 {
     s->dir *= -1;
 }
@@ -418,6 +415,6 @@ void a_sprite_addFrame(SpriteFrames* const s, Sprite* const f)
 
 static void setSheetValues(Sheet* const s)
 {
-    s->transparent = a_sprite_getPixel(s, s->w - 1, s->h - 1);
-    s->limit = a_sprite_getPixel(s, s->w - 2, s->h - 1);
+    s->transparent = a_sprite__getPixel(s, s->w - 1, s->h - 1);
+    s->limit = a_sprite__getPixel(s, s->w - 2, s->h - 1);
 }

@@ -30,15 +30,13 @@
 
 typedef struct Sheet Sheet;
 typedef struct Sprite Sprite;
-typedef struct SpriteAnimation SpriteAnimation;
+typedef struct AnimatedSprite AnimatedSprite;
 typedef struct SpriteFrames SpriteFrames;
 
 extern Sheet* a_sprite_sheetFromFile(const char* const path);
 extern Sheet* a_sprite_sheetFromData(Pixel* data, const int w, const int h);
 extern Sheet* a_sprite_sheetFromSheet(const Sheet* const sheet, const int x, const int y, const int w, const int h);
 extern void a_sprite_freeSheet(Sheet* const s);
-
-#define a_sprite_getPixel(s, x, y) (*((s)->data + (y) * (s)->w + (x)))
 
 #define a_sprite_make(g, x, y, w, h) a_sprite_makeZoomed((g), (x), (y), (w), (h), 1)
 extern Sprite* a_sprite_makeZoomed(const Sheet* const graphic, const int x, const int y, const int w, const int h, const int zoom);
@@ -49,12 +47,12 @@ extern int a_sprite_w(const Sprite* const s);
 extern int a_sprite_h(const Sprite* const s);
 extern Pixel* a_sprite_data(const Sprite* const s);
 
-extern SpriteAnimation* a_sprite_makeAnimation(const int num, const int framesPerCycle);
-extern void a_sprite_freeAnimation(SpriteAnimation* const s);
-extern void a_sprite_addAnimation(SpriteAnimation* const s, Sprite* const sp);
-extern Sprite* a_sprite_nextAnimation(SpriteAnimation* const s);
-extern void a_sprite_changeAnimationDir(SpriteAnimation* const s, const int dir);
-extern void a_sprite_flipAnimationDir(SpriteAnimation* const s);
+extern AnimatedSprite* a_sprite_makeAnimation(const int num, const int framesPerCycle);
+extern void a_sprite_freeAnimation(AnimatedSprite* const s);
+extern void a_sprite_addAnimation(AnimatedSprite* const s, Sprite* const sp);
+extern Sprite* a_sprite_nextAnimation(AnimatedSprite* const s);
+extern void a_sprite_setAnimationDir(AnimatedSprite* const s, const int dir);
+extern void a_sprite_flipAnimationDir(AnimatedSprite* const s);
 
 extern SpriteFrames* a_sprite_makeFrames(void);
 extern void a_sprite_freeFrames(SpriteFrames* const s);

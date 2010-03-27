@@ -92,7 +92,7 @@ int a_font_load(Sheet* const sheet, const int sx, const int sy, const int sw, co
 
     do {
         y2++;
-    } while(a_sprite_getPixel(sheet2, x, y2) != limit);
+    } while(a_sprite__getPixel(sheet2, x, y2) != limit);
 
     int start = 0;
     int end = CHARS_NUM - 1;
@@ -118,7 +118,7 @@ int a_font_load(Sheet* const sheet, const int sx, const int sy, const int sw, co
 
         do {
             x++;
-        } while(a_sprite_getPixel(sheet2, x, y) != limit);
+        } while(a_sprite__getPixel(sheet2, x, y) != limit);
 
         int areaw = x - areax;
         int areah = y2 - y;
