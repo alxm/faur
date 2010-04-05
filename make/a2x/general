@@ -12,10 +12,11 @@ CFLAGS	+=	-std=gnu99 -Wall -Werror \
 PREFIX	=	a2x_
 CFILES	= 	$(notdir $(wildcard $(C_DIR)/$(PREFIX)*.c))
 OFILES	= 	$(addprefix $(O_DIR)/, $(CFILES:.c=.o))
+HFILES	=	$(wildcard $(C_DIR)/$(PREFIX)*.p.h)
 
 all : $(HEADER) $(NAME)
 
-$(HEADER) :
+$(HEADER) : $(HFILES)
 	@ echo "Writing header $(notdir $(HEADER))"
 	@ ./a2x_header $(C_DIR) $(HEADER)
 

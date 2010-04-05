@@ -35,7 +35,7 @@ extern fix12 a_fix12_Sin[A_ANGLES_NUM];
 extern fix12 a_fix12_Cos[A_ANGLES_NUM];
 #define a_fix12_sin(a)       (a_fix12_Sin[(a)])
 #define a_fix12_cos(a)       (a_fix12_Cos[(a)])
-#define a_fix12_wrapAngle(a) ((a) & ((ANGLES_NUM << 12) - 1))
+#define a_fix12_wrapAngle(a) ((a) & ((A_ANGLES_NUM << 12) - 1))
 
 typedef int fix8;
 #define FONE8            (1 << 8)
@@ -50,6 +50,6 @@ extern fix8 a_fix8_Sin[A_ANGLES_NUM];
 extern fix8 a_fix8_Cos[A_ANGLES_NUM];
 #define a_fix8_sin(a)       (a_fix8_Sin[(a)])
 #define a_fix8_cos(a)       (a_fix8_Cos[(a)])
-#define a_fix8_wrapAngle(a) ((a) & ((ANGLES_NUM << 8) - 1))
+#define a_fix8_wrapAngle(a) ((a) & ((A_ANGLES_NUM << 8) - 1))
 
 #endif // A2X_PACK_FIX_PH

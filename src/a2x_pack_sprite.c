@@ -29,11 +29,6 @@ struct AnimatedSprite {
     int dir;
 };
 
-struct SpriteFrames {
-    int num;
-    Sprite** frames;
-};
-
 static List* sprites;
 
 static void setSheetValues(Sheet* const s);
@@ -146,6 +141,21 @@ void a_sprite_freeSheet(Sheet* const s)
 {
     free(s->data);
     free(s);
+}
+
+int a_sprite_sheetW(const Sheet* const s)
+{
+    return s->w;
+}
+
+int a_sprite_sheetH(const Sheet* const s)
+{
+    return s->h;
+}
+
+Pixel* a_sprite_sheetData(const Sheet* const s)
+{
+    return s->data;
 }
 
 Sprite* a_sprite_makeZoomed(const Sheet* const graphic, const int x, const int y, const int w, const int h, const int zoom)
@@ -325,6 +335,26 @@ Pixel* a_sprite_data(const Sprite* const s)
     return s->data;
 }
 
+fix8 a_sprite_getAlpha(const Sprite* const s)
+{
+    return s->alpha;
+}
+
+void a_sprite_setAlpha(Sprite* const s, const fix8 a)
+{
+    s->alpha = a;
+}
+
+Pixel a_sprite_t(const Sprite* const s)
+{
+    return s->t;
+}
+
+Pixel a_sprite_getPixel(const Sprite* const s, const int x, const int y)
+{
+    return *(s->data + y * s->w + x);
+}
+
 AnimatedSprite* a_sprite_makeAnimation(const int num, const int framesPerCycle)
 {
     AnimatedSprite* const s = malloc(sizeof(AnimatedSprite));
@@ -382,35 +412,6 @@ void a_sprite_setAnimationDir(AnimatedSprite* const s, const int dir)
 void a_sprite_flipAnimationDir(AnimatedSprite* const s)
 {
     s->dir *= -1;
-}
-
-SpriteFrames* a_sprite_makeFrames(void)
-{
-    SpriteFrames* const s = malloc(sizeof(SpriteFrames));
-
-    s->num = 0;
-    s->frames = NULL;
-
-    return s;
-}
-
-void a_sprite_freeFrames(SpriteFrames* const s)
-{
-    free(s->frames);
-    free(s);
-}
-
-void a_sprite_addFrame(SpriteFrames* const s, Sprite* const f)
-{
-    Sprite** const tempFrames = s->frames;
-    s->frames = malloc(++(s->num) * sizeof(Sprite*));
-
-    for(int i = s->num - 1; i--; ) {
-        s->frames[i] = tempFrames[i];
-    }
-
-    s->frames[s->num - 1] = f;
-    free(tempFrames);
 }
 
 static void setSheetValues(Sheet* const s)

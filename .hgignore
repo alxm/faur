@@ -1,0 +1,5 @@
+.*\.a
+.*\.o
+lib/a2x.h
+tools/a2x_gfx
+tools/a2x_sfx

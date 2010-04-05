@@ -56,6 +56,17 @@
 #define a_math_wrap(x, w)   ((x) & ((w) - 1))
 #define a_math_wrapAngle(a) (a_math_wrap((a), A_ANGLES_NUM))
 
+#define a_math_constrain(x, min, max) \
+({                                    \
+    int a__new = (x);                 \
+    if(a__new < (min)) {              \
+        a__new = (min);               \
+    } else if(a__new > (max)) {       \
+        a__new = (max);               \
+    }                                 \
+    a__new;                           \
+})
+
 extern double a_math_Sin[A_ANGLES_NUM];
 extern double a_math_Cos[A_ANGLES_NUM];
 
