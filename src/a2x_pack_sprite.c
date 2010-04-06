@@ -27,6 +27,7 @@ struct AnimatedSprite {
     int framesPerCycle;
     int current;
     int dir;
+    int paused;
 };
 
 static List* sprites;
@@ -365,6 +366,7 @@ AnimatedSprite* a_sprite_makeAnimation(const int num, const int framesPerCycle)
     s->framesPerCycle = framesPerCycle;
     s->current = 0;
     s->dir = 1;
+    s->paused = 0;
 
     return s;
 }
@@ -388,20 +390,27 @@ Sprite* a_sprite_nextAnimation(AnimatedSprite* const s)
 {
     Sprite* const sp = s->sprites[s->current];
 
-    s->frame += s->num;
+    if(!s->paused) {
+        s->frame += s->num;
 
-    if(s->frame >= s->framesPerCycle) {
-        s->frame -= s->framesPerCycle;
-        s->current += s->dir;
+        if(s->frame >= s->framesPerCycle) {
+            s->frame -= s->framesPerCycle;
+            s->current += s->dir;
 
-        if(s->current < 0) {
-            s->current = s->num - 1;
-        } else if(s->current >= s->num) {
-            s->current = 0;
+            if(s->current < 0) {
+                s->current = s->num - 1;
+            } else if(s->current >= s->num) {
+                s->current = 0;
+            }
         }
     }
 
     return sp;
+}
+
+Sprite* a_sprite_getAnimation(AnimatedSprite* const s)
+{
+    return s->sprites[s->current];
 }
 
 void a_sprite_setAnimationDir(AnimatedSprite* const s, const int dir)
@@ -412,6 +421,22 @@ void a_sprite_setAnimationDir(AnimatedSprite* const s, const int dir)
 void a_sprite_flipAnimationDir(AnimatedSprite* const s)
 {
     s->dir *= -1;
+}
+
+void a_sprite_pauseAnimation(AnimatedSprite* const s)
+{
+    s->paused = 1;
+}
+
+void a_sprite_resumeAnimation(AnimatedSprite* const s)
+{
+    s->paused = 0;
+}
+
+void a_sprite_resetAnimation(AnimatedSprite* const s)
+{
+    s->frame = 0;
+    s->current = 0;
 }
 
 static void setSheetValues(Sheet* const s)

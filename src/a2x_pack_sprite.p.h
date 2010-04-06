@@ -57,7 +57,11 @@ extern AnimatedSprite* a_sprite_makeAnimation(const int num, const int framesPer
 extern void a_sprite_freeAnimation(AnimatedSprite* const s);
 extern void a_sprite_addAnimation(AnimatedSprite* const s, Sprite* const sp);
 extern Sprite* a_sprite_nextAnimation(AnimatedSprite* const s);
+extern Sprite* a_sprite_getAnimation(AnimatedSprite* const s);
 extern void a_sprite_setAnimationDir(AnimatedSprite* const s, const int dir);
 extern void a_sprite_flipAnimationDir(AnimatedSprite* const s);
+extern void a_sprite_pauseAnimation(AnimatedSprite* const s);
+extern void a_sprite_resumeAnimation(AnimatedSprite* const s);
+extern void a_sprite_resetAnimation(AnimatedSprite* const s);
 
 #endif // A2X_PACK_SPRITE_PH
