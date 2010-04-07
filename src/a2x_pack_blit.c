@@ -232,6 +232,23 @@ void (*a_blit_blitters[])(const Sprite* const s, const int x, const int y) = {
         B + a_fix8_fixtoi((a_screen_pixelBlue(cs) - B) * a)   \
     );
 
+#define BLIT_alpha_setup     \
+    const fix8 a = s->alpha;
+
+#define BLIT_alpha_do                                         \
+    const Pixel cd = *dst;                                    \
+    const Pixel cs = *src;                                    \
+                                                              \
+    const int R = a_screen_pixelRed(cd);                      \
+    const int G = a_screen_pixelGreen(cd);                    \
+    const int B = a_screen_pixelBlue(cd);                     \
+                                                              \
+    *dst = a_screen_makePixel(                                \
+        R + a_fix8_fixtoi((a_screen_pixelRed(cs) - R) * a),   \
+        G + a_fix8_fixtoi((a_screen_pixelGreen(cs) - G) * a), \
+        B + a_fix8_fixtoi((a_screen_pixelBlue(cs) - B) * a)   \
+    );
+
 #define BLIT_argb_setup
 
 #define BLIT_argb_do                       \
@@ -313,6 +330,7 @@ a__blit_make(plain, (const Sprite* const s, const int x, const int y))
 a__blit_make(rgb, (const Sprite* const s, const int x, const int y, const int r, const int g, const int b))
 a__blit_make(inverse, (const Sprite* const s, const int x, const int y))
 a__blit_make(a, (const Sprite* const s, const int x, const int y, const fix8 a))
+a__blit_make(alpha, (const Sprite* const s, const int x, const int y))
 a__blit_make(argb, (const Sprite* const s, const int x, const int y, const fix8 a, const int r, const int g, const int b))
 a__blit_make(a25rgb, (const Sprite* const s, const int x, const int y, const int r, const int g, const int b))
 a__blit_make(a50rgb, (const Sprite* const s, const int x, const int y, const int r, const int g, const int b))
