@@ -59,6 +59,8 @@ void a_input__set(void)
 {
     a__input.buttons = a_list_set();
 
+    a__input_button("all.any", -1);
+
     #if A_PLATFORM_GP2X
         a__input_button("gp2x.Up", 0);
         a__input_button("gp2x.Down", 4);
@@ -128,17 +130,6 @@ void a_input__set(void)
     #endif
 }
 
-static void a__input_button(const char* const name, const int code)
-{
-    Button* const b = malloc(sizeof(Button));
-
-    b->name = a_str_dup(name);
-    b->code = code;
-    b->pressed = 0;
-
-    a_list_addLast(a__input.buttons, b);
-}
-
 void a_input__free(void)
 {
     while(a_list_iterate(a__input.buttons)) {
@@ -169,6 +160,9 @@ void a__input_get(void)
     }
 
     a__input.mouse.tap = 0;
+
+    Button* const any = a_list__first(a__input.buttons);
+    any->pressed = 0;
 
     for(SDL_Event event; SDL_PollEvent(&event); ) {
         int button;
@@ -242,6 +236,10 @@ void a__input_get(void)
         }
 
         if(action != -1) {
+            if(action == 1) {
+                any->pressed = 1;
+            }
+
             List* const l = a__input.buttons;
 
             while(a_list_iterate(l)) {
@@ -373,4 +371,15 @@ int a_input_touchedRect(const int x, const int y, const int w, const int h)
             ((Rect){x, y, w, h}),
             ((Rect){a__input.mouse.x, a__input.mouse.y, 1, 1})
         );
+}
+
+static void a__input_button(const char* const name, const int code)
+{
+    Button* const b = malloc(sizeof(Button));
+
+    b->name = a_str_dup(name);
+    b->code = code;
+    b->pressed = 0;
+
+    a_list_addLast(a__input.buttons, b);
 }

@@ -36,20 +36,20 @@
 #include "a2x_pack_sprite.v.h"
 #include "a2x_pack_time.v.h"
 
-#define a_out(...)           \
-({                           \
+#define a_out(...) \
+({ \
     if(!a2x_bool("quiet")) { \
-        printf("a2x: ");     \
+        printf("[ a2x Msg ] "); \
         printf(__VA_ARGS__); \
-        printf("\n");        \
-    }                        \
+        printf("\n"); \
+    } \
 })
 
-#define a_error(...)        \
-({                          \
-    printf("a2x Error: ");  \
-    printf(__VA_ARGS__);    \
-    printf("\n");           \
+#define a_error(...) \
+({ \
+    fprintf(stderr, "[ a2x Err ] "); \
+    fprintf(stderr, __VA_ARGS__); \
+    fprintf(stderr, "\n"); \
 })
 
 #endif // A2X_APP_MAIN_VH

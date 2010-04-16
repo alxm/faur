@@ -33,8 +33,8 @@ struct List {
     int items;
 };
 
-#define a_list__first(l)         ((l)->first->content)
-#define a_list__last(l)          ((l)->last->content)
+#define a_list__first(l)         ((l)->first->next->content)
+#define a_list__last(l)          ((l)->last->prev->content)
 #define a_list__current(l)       ((l)->current->content)
 #define a_list__currentNode(l)   ((l)->current)
 #define a_list__size(l)          ((l)->items)

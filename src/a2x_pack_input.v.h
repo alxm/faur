@@ -20,6 +20,8 @@
 #ifndef A2X_PACK_INPUT_VH
 #define A2X_PACK_INPUT_VH
 
+#include "a2x_pack_list.v.h"
+
 extern void a_input__set(void);
 extern void a_input__free(void);
 
