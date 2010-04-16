@@ -20,6 +20,16 @@
 #include "a2x_pack_str.p.h"
 #include "a2x_pack_str.v.h"
 
+struct StringTok {
+    char* string;
+    char* delims;
+    int numDelims;
+    int index;
+    char* tok;
+};
+
+static int a_string__isDelim(const char c, const char* const d, const int n);
+
 StringTok* a_str_makeTok(const char* const s, const char* const d)
 {
     StringTok* const t = malloc(sizeof(StringTok));
@@ -41,18 +51,7 @@ void a_str_freeTok(StringTok* const t)
     free(t);
 }
 
-static int a__string_isDelim(const char c, const char* const d, const int n)
-{
-    for(int i = n; i--; ) {
-        if(c == d[i]) {
-            return 1;
-        }
-    }
-
-    return 0;
-}
-
-int a_str_nextTok(StringTok* const t)
+int a_str_hasTok(StringTok* const t)
 {
     char* const string = t->string;
     const char* const delims = t->delims;
@@ -64,14 +63,14 @@ int a_str_nextTok(StringTok* const t)
     while(1) {
         if(string[start] == '\0') {
             return 0;
-        } else if(a__string_isDelim(string[start], delims, numDelims)) {
+        } else if(a_string__isDelim(string[start], delims, numDelims)) {
             start++;
         } else {
             break;
         }
     }
 
-    for(end = start; string[end] != '\0' && !a__string_isDelim(string[end], delims, numDelims); end++) {
+    for(end = start; string[end] != '\0' && !a_string__isDelim(string[end], delims, numDelims); end++) {
         continue;
     }
 
@@ -275,4 +274,15 @@ char* a_str_trim(const char* const s)
     }
 
     return a_str_sub(s, start, end + 1);
+}
+
+static int a_string__isDelim(const char c, const char* const d, const int n)
+{
+    for(int i = n; i--; ) {
+        if(c == d[i]) {
+            return 1;
+        }
+    }
+
+    return 0;
 }

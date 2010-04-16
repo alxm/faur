@@ -267,7 +267,7 @@ Input* a_input_set(const char* const names)
     i->buttons = a_list_set();
     i->name = NULL;
 
-    while(a_str_nextTok(t)) {
+    while(a_str_hasTok(t)) {
         List* const l = a__input.buttons;
         const char* const name = a_str_getTok(t);
 
