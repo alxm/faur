@@ -47,13 +47,17 @@ List* a_list_set(void)
     return list;
 }
 
-void a_list_free(List* const list)
+void a_list__free(List* const list, const int freeContent)
 {
     ListNode* n = list->first->next;
 
     while(n != list->last) {
         ListNode* const t = n;
         n = n->next;
+
+        if(freeContent) {
+            free(t->content);
+        }
 
         free(t);
     }
@@ -63,7 +67,7 @@ void a_list_free(List* const list)
     free(list);
 }
 
-void a_list_freeContent(List* const list)
+void a_list__empty(List* const list, const int freeContent)
 {
     ListNode* n = list->first->next;
 
@@ -71,41 +75,10 @@ void a_list_freeContent(List* const list)
         ListNode* const t = n;
         n = n->next;
 
-        free(t->content);
-        free(t);
-    }
+        if(freeContent) {
+            free(t->content);
+        }
 
-    free(list->first);
-    free(list->last);
-    free(list);
-}
-
-void a_list_empty(List* const list)
-{
-    ListNode* n = list->first->next;
-
-    while(n != list->last) {
-        ListNode* const t = n;
-        n = n->next;
-
-        free(t);
-    }
-
-    list->first->next = list->last;
-    list->last->prev = list->first;
-
-    list->items = 0;
-}
-
-void a_list_emptyContent(List* const list)
-{
-    ListNode* n = list->first->next;
-
-    while(n != list->last) {
-        ListNode* const t = n;
-        n = n->next;
-
-        free(t->content);
         free(t);
     }
 
@@ -173,13 +146,30 @@ void* a_list_peek(List* const list)
     else return n->content;
 }
 
-void* a_list_removeFirst(List* const list)
+void a_list_remove(List* const list, const void* const v)
+{
+    ListIterator* const it = a_list_setIterator(list);
+
+    while(a_list_iteratorNext(it)) {
+        void* const c = a_list_iteratorGet(it);
+
+        if(c == v) {
+            a_list_iteratorRemove(it);
+        }
+    }
+
+    a_list_freeIterator(it);
+}
+
+void* a_list__removeFirst(List* const list, const int freeContent)
 {
     ListNode* const n = list->first->next;
 
-    if(n == list->last) return NULL;
+    if(n == list->last) {
+        return NULL;
+    }
 
-    void* const v = n->content;
+    void* v = n->content;
 
     n->prev->next = n->next;
     n->next->prev = n->prev;
@@ -188,58 +178,42 @@ void* a_list_removeFirst(List* const list)
 
     list->items--;
 
+    if(freeContent) {
+        free(v);
+        v = NULL;
+    }
+
     free(n);
+
     return v;
 }
 
-void a_list_removeFirstContent(List* const list)
-{
-    ListNode* const n = list->first->next;
-
-    if(n == list->last) return;
-
-    n->prev->next = n->next;
-    n->next->prev = n->prev;
-
-    list->items--;
-
-    free(n->content);
-    free(n);
-}
-
-void* a_list_removeLast(List* const list)
+void* a_list__removeLast(List* const list, const int freeContent)
 {
     ListNode* const n = list->last->prev;
 
-    if(n == list->first) return NULL;
+    if(n == list->first) {
+        return NULL;
+    }
 
-    void* const v = n->content;
+    void* v = n->content;
 
     n->prev->next = n->next;
     n->next->prev = n->prev;
 
     list->items--;
 
+    if(freeContent) {
+        free(v);
+        v = NULL;
+    }
+
     free(n);
+
     return v;
 }
 
-void a_list_removeLastContent(List* const list)
-{
-    ListNode* const n = list->last->prev;
-
-    if(n == list->first) return;
-
-    n->prev->next = n->next;
-    n->next->prev = n->prev;
-
-    list->items--;
-
-    free(n->content);
-    free(n);
-}
-
-void a_list_removeCurrent(List* const list)
+void a_list__removeCurrent(List* const list, const int freeContent)
 {
     ListNode* const n = list->current;
 
@@ -250,38 +224,22 @@ void a_list_removeCurrent(List* const list)
 
     list->items--;
 
+    if(freeContent) {
+        free(n->content);
+    }
+
     free(n);
 }
 
-void a_list_removeCurrentContent(List* const list)
-{
-    ListNode* const n = list->current;
-
-    n->prev->next = n->next;
-    n->next->prev = n->prev;
-
-    list->current = n->prev;
-
-    list->items--;
-
-    free(n->content);
-    free(n);
-}
-
-void a_list_removeNode(ListNode* const node)
+void a_list__removeNode(ListNode* const node, const int freeContent)
 {
     node->prev->next = node->next;
     node->next->prev = node->prev;
 
-    free(node);
-}
+    if(freeContent) {
+        free(node->content);
+    }
 
-void a_list_removeNodeContent(ListNode* const node)
-{
-    node->prev->next = node->next;
-    node->next->prev = node->prev;
-
-    free(node->content);
     free(node);
 }
 
@@ -331,7 +289,7 @@ ListIterator* a_list_setIterator(List* const list)
     ListIterator* const it = malloc(sizeof(ListIterator));
 
     it->list = list;
-    it->current = list->current;
+    it->current = list->first;
 
     return it;
 }
@@ -351,4 +309,26 @@ int a_list_iteratorNext(ListIterator* const it)
 void* a_list_iteratorGet(const ListIterator* const it)
 {
     return it->current->content;
+}
+
+void a_list__iteratorRemove(ListIterator* const it, const int freeContent)
+{
+    List* const list = it->list;
+    ListNode* const n = it->current;
+
+    // prevents errors when calling from inside an a_list_iterate() loop
+    if(n == list->current) {
+        list->current = n->prev;
+    }
+
+    n->prev->next = n->next;
+    n->next->prev = n->prev;
+
+    list->items--;
+
+    if(freeContent) {
+        free(n->content);
+    }
+
+    free(n);
 }

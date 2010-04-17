@@ -20,18 +20,26 @@
 #include "a2x_pack_input.p.h"
 #include "a2x_pack_input.v.h"
 
-struct Button {
+typedef struct Button {
     char* name;
     int code;
     int pressed;
-};
+} Button;
 
-struct Touch {
+typedef struct Touch {
     List* motion;
     int x;
     int y;
     int tap;
-};
+} Touch;
+
+typedef struct Inputs {
+    List* buttons;
+    Touch mouse;
+    #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
+        SDL_Joystick* joystick;
+    #endif
+} Inputs;
 
 struct Input {
     List* buttons;
@@ -39,24 +47,18 @@ struct Input {
     int working;
 };
 
-struct Inputs {
-    List* buttons;
-    Touch mouse;
-    #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
-        SDL_Joystick* joystick;
-    #endif
-};
-
+static List* inputs;
 static Inputs a__input;
 
 #if A_PLATFORM_LINUXPC
-    static Input* a__fullScreen;
+    static Input* fullScreen;
 #endif
 
 static void a__input_button(const char* const name, const int code);
 
 void a_input__set(void)
 {
+    inputs = a_list_set();
     a__input.buttons = a_list_set();
 
     a__input_button("all.any", -1);
@@ -126,12 +128,18 @@ void a_input__set(void)
     }
 
     #if A_PLATFORM_LINUXPC
-        a__fullScreen = a_input_set("pc.F1");
+        fullScreen = a_input_set("pc.F1");
     #endif
 }
 
 void a_input__free(void)
 {
+    while(a_list_iterate(inputs)) {
+        a_input_free(a_list_current(inputs));
+    }
+
+    a_list_free(inputs);
+
     while(a_list_iterate(a__input.buttons)) {
         Button* const b = a_list_current(a__input.buttons);
         free(b->name);
@@ -146,10 +154,6 @@ void a_input__free(void)
 
     #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
         SDL_JoystickClose(a__input.joystick);
-    #endif
-
-    #if A_PLATFORM_LINUXPC
-        a_input_free(a__fullScreen);
     #endif
 }
 
@@ -253,7 +257,7 @@ void a__input_get(void)
     }
 
     #if A_PLATFORM_LINUXPC
-        if(a_input_getUnpress(a__fullScreen)){
+        if(a_input_getUnpress(fullScreen)){
             a__screen_switchFull();
         }
     #endif
@@ -284,9 +288,11 @@ Input* a_input_set(const char* const names)
         }
     }
 
+    a_str_freeTok(t);
+
     i->working = a_list_size(i->buttons) > 0;
 
-    a_str_freeTok(t);
+    a_list_addLast(inputs, i);
 
     return i;
 }
@@ -297,6 +303,8 @@ void a_input_free(Input* const i)
     free(i->name);
 
     free(i);
+
+    a_list_remove(inputs, i);
 }
 
 int a_input_get(Input* const i)

@@ -29,10 +29,7 @@
 #include "a2x_pack_str.p.h"
 #include "a2x_pack_types.p.h"
 
-typedef struct Button Button;
-typedef struct Touch Touch;
 typedef struct Input Input;
-typedef struct Inputs Inputs;
 
 extern void a__input_get(void);
 
