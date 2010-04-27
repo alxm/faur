@@ -223,17 +223,15 @@ void a_screen_show(void)
 
         if(a2x_bool("doubleRes")) {
             const Pixel* src = a_pixels;
-            Pixel* dst = a_screen->pixels;
+            uint32_t* dst = (uint32_t*)a_screen->pixels;
 
-            const int len = a_width * 2;
-            const int size = len * sizeof(Pixel);
-
-            const int w = a_width;
+            const int len = a_width;
+            const int size = len * sizeof(uint32_t);
 
             for(int i = a_height; i--; ) {
-                for(int j = w; j--; ) {
-                    *dst++ = *src;
-                    *dst++ = *src++;
+                for(int j = len; j--; ) {
+                    const Pixel p = *src++;
+                    *dst++ = (p << 16) | p;
                 }
 
                 memcpy(dst, dst - len, size);
