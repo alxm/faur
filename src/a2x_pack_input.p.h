@@ -24,6 +24,7 @@
 
 #include "a2x_pack_collide.p.h"
 #include "a2x_pack_fps.p.h"
+#include "a2x_pack_hash.p.h"
 #include "a2x_pack_list.p.h"
 #include "a2x_pack_state.p.h"
 #include "a2x_pack_str.p.h"

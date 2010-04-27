@@ -20,9 +20,12 @@
 #include "a2x_pack_input.p.h"
 #include "a2x_pack_input.v.h"
 
+#define MAX_CODES 4
+
 typedef struct Button {
     char* name;
-    int code;
+    int numCodes;
+    int codes[MAX_CODES];
     int pressed;
 } Button;
 
@@ -33,22 +36,22 @@ typedef struct Touch {
     int tap;
 } Touch;
 
-typedef struct Inputs {
-    List* buttons;
-    Touch mouse;
-    #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
-        SDL_Joystick* joystick;
-    #endif
-} Inputs;
-
 struct Input {
     List* buttons;
     char* name;
     int working;
 };
 
+static Hash* buttonNames;
+static List* buttonList;
+
+static Touch mouse;
+
+#if A_PLATFORM_GP2X || A_PLATFORM_WIZ
+    static SDL_Joystick* joystick;
+#endif
+
 static List* inputs;
-static Inputs a__input;
 
 #if A_PLATFORM_LINUXPC
     static Input* fullScreen;
@@ -59,8 +62,10 @@ static void registerButton(const char* const name, const int code);
 
 void a_input__set(void)
 {
+    buttonNames = a_hash_set(32);
+    buttonList = a_list_set();
+
     inputs = a_list_set();
-    a__input.buttons = a_list_set();
 
     registerButton("all.any", -1);
 
@@ -106,13 +111,17 @@ void a_input__set(void)
         registerButton("wiz.VolUp", 16);
         registerButton("wiz.VolDown", 17);
 
-        a__input.joystick = SDL_JoystickOpen(0);
+        joystick = SDL_JoystickOpen(0);
     #elif A_PLATFORM_LINUXPC
         // my laptop's arrow keys drowned in vodka, so I use IJKL instead
-        registerButton("pc.Up", SDLK_i); // SDLK_UP
-        registerButton("pc.Down", SDLK_k); // SDLK_DOWN
-        registerButton("pc.Left", SDLK_j); // SDLK_LEFT
-        registerButton("pc.Right", SDLK_l); // SDLK_RIGHT
+        registerButton("pc.Up", SDLK_i);
+        registerButton("pc.Up", SDLK_UP);
+        registerButton("pc.Down", SDLK_k);
+        registerButton("pc.Down", SDLK_DOWN);
+        registerButton("pc.Left", SDLK_j);
+        registerButton("pc.Left", SDLK_LEFT);
+        registerButton("pc.Right", SDLK_l);
+        registerButton("pc.Right", SDLK_RIGHT);
         registerButton("pc.z", SDLK_z);
         registerButton("pc.x", SDLK_x);
         registerButton("pc.c", SDLK_c);
@@ -126,7 +135,7 @@ void a_input__set(void)
     #endif
 
     if(a2x_bool("trackMouse")) {
-        a__input.mouse.motion = a_list_set();
+        mouse.motion = a_list_set();
     }
 
     #if A_PLATFORM_LINUXPC
@@ -143,32 +152,33 @@ void a_input__free(void)
 
     a_list_free(inputs);
 
-    while(a_list_iterate(a__input.buttons)) {
-        Button* const b = a_list_current(a__input.buttons);
+    while(a_list_iterate(buttonList)) {
+        Button* const b = a_list_current(buttonList);
         free(b->name);
         free(b);
     }
 
-    a_list_free(a__input.buttons);
+    a_list_free(buttonList);
+    a_hash_free(buttonNames);
 
     if(a2x_bool("trackMouse")) {
-        a_list_freeContent(a__input.mouse.motion);
+        a_list_freeContent(mouse.motion);
     }
 
     #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
-        SDL_JoystickClose(a__input.joystick);
+        SDL_JoystickClose(joystick);
     #endif
 }
 
 void a_input__get(void)
 {
     if(a2x_bool("trackMouse")) {
-        a_list_freeContent(a__input.mouse.motion);
+        a_list_freeContent(mouse.motion);
     }
 
-    a__input.mouse.tap = 0;
+    mouse.tap = 0;
 
-    Button* const any = a_list__first(a__input.buttons);
+    Button* const any = a_list__first(buttonList);
     any->pressed = 0;
 
     for(SDL_Event event; SDL_PollEvent(&event); ) {
@@ -207,25 +217,25 @@ void a_input__get(void)
             #endif
 
             case SDL_MOUSEMOTION: {
-                a__input.mouse.x = event.button.x;
-                a__input.mouse.y = event.button.y;
+                mouse.x = event.button.x;
+                mouse.y = event.button.y;
 
                 if(a2x_bool("trackMouse")) {
                     Point* const p = malloc(sizeof(Point));
 
-                    p->x = a__input.mouse.x;
-                    p->y = a__input.mouse.y;
+                    p->x = mouse.x;
+                    p->y = mouse.y;
 
-                    a_list_addLast(a__input.mouse.motion, p);
+                    a_list_addLast(mouse.motion, p);
                 }
             } break;
 
             case SDL_MOUSEBUTTONDOWN: {
                 switch(event.button.button) {
                     case SDL_BUTTON_LEFT:
-                        a__input.mouse.tap = 1;
-                        a__input.mouse.x = event.button.x;
-                        a__input.mouse.y = event.button.y;
+                        mouse.tap = 1;
+                        mouse.x = event.button.x;
+                        mouse.y = event.button.y;
                     break;
                 }
             } break;
@@ -233,8 +243,8 @@ void a_input__get(void)
             case SDL_MOUSEBUTTONUP: {
                 switch(event.button.button) {
                     case SDL_BUTTON_LEFT:
-                        a__input.mouse.x = event.button.x;
-                        a__input.mouse.y = event.button.y;
+                        mouse.x = event.button.x;
+                        mouse.y = event.button.y;
                     break;
                 }
             } break;
@@ -247,13 +257,16 @@ void a_input__get(void)
                 any->pressed = 1;
             }
 
-            List* const l = a__input.buttons;
+            List* const l = buttonList;
 
             while(a_list_iterate(l)) {
                 Button* const b = a_list_current(l);
 
-                if(b->code == button) {
-                    b->pressed = action;
+                for(int i = b->numCodes; i--; ) {
+                    if(b->codes[i] == button) {
+                        b->pressed = action;
+                        break;
+                    }
                 }
             }
         }
@@ -279,7 +292,7 @@ Input* a_input_set(const char* const names)
     i->name = NULL;
 
     while(a_str_hasTok(t)) {
-        List* const l = a__input.buttons;
+        List* const l = buttonList;
         const char* const name = a_str_getTok(t);
 
         while(a_list_iterate(l)) {
@@ -372,29 +385,37 @@ void a_input_waitFor(Input* const i)
 
 int a_input_touchedPoint(const int x, const int y)
 {
-    return a__input.mouse.tap
+    return mouse.tap
         && a_collide_rects(
             ((Rect){x - 1, y - 1, 3, 3}),
-            ((Rect){a__input.mouse.x, a__input.mouse.y, 1, 1})
+            ((Rect){mouse.x, mouse.y, 1, 1})
         );
 }
 
 int a_input_touchedRect(const int x, const int y, const int w, const int h)
 {
-    return a__input.mouse.tap
+    return mouse.tap
         && a_collide_rects(
             ((Rect){x, y, w, h}),
-            ((Rect){a__input.mouse.x, a__input.mouse.y, 1, 1})
+            ((Rect){mouse.x, mouse.y, 1, 1})
         );
 }
 
 static void registerButton(const char* const name, const int code)
 {
-    Button* const b = malloc(sizeof(Button));
+    Button* const bt = a_hash_get(buttonNames, name);
 
-    b->name = a_str_dup(name);
-    b->code = code;
-    b->pressed = 0;
+    if(bt == NULL) {
+        Button* const b = malloc(sizeof(Button));
 
-    a_list_addLast(a__input.buttons, b);
+        b->name = a_str_dup(name);
+        b->numCodes = 1;
+        b->codes[0] = code;
+        b->pressed = 0;
+
+        a_list_addLast(buttonList, b);
+        a_hash_add(buttonNames, name, b);
+    } else if(bt->numCodes < MAX_CODES) {
+        bt->codes[bt->numCodes++] = code;
+    }
 }
