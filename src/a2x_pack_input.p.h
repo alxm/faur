@@ -31,8 +31,6 @@
 
 typedef struct Input Input;
 
-extern void a__input_get(void);
-
 extern Input* a_input_set(const char* const names);
 extern void a_input_free(Input* const i);
 extern int a_input_get(Input* const i);

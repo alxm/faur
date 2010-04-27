@@ -45,7 +45,7 @@ static void add(Setting_t const type, const Update_t update, const char* const k
 static int parseBool(const char* const val);
 static void set(const char* const key, const char* const val, int respect);
 
-void a2x_defaults(void)
+void a2x__defaults(void)
 {
     settings = a_hash_set(32);
 
@@ -63,6 +63,7 @@ void a2x_defaults(void)
     add(A_BOOL, A_UPDATE, "sound", "0");
     add(A_BOOL, A_UPDATE, "trackMouse", "0");
     add(A_BOOL, A_CONSTANT, "fakeScreen", "0");
+    add(A_BOOL, A_CONSTANT, "doubleRes", "0");
     add(A_BOOL, A_CONSTANT, "fixWizTear", "0");
 
     add(A_INT, A_UPDATE, "mhz", "0");

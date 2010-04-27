@@ -134,21 +134,56 @@ void a_screen_resetTarget(void)
     a_height = a__height2;
 }
 
-void a__screen_switchFull(void)
-{
-    #if A_PLATFORM_LINUXPC || A_PLATFORM_WINDOWS
+#if A_PLATFORM_LINUXPC || A_PLATFORM_WINDOWS
+    void a_screen__switchFull(void)
+    {
         a__videoFlags ^= SDL_FULLSCREEN;
-        a_screen = SDL_SetVideoMode(a2x_int("width"), a2x_int("height"), A_BPP, a__videoFlags);
+
+        if(a2x_bool("doubleRes")) {
+            a_screen = SDL_SetVideoMode(a2x_int("width") * 2, a2x_int("height") * 2, A_BPP, a__videoFlags);
+        } else {
+            a_screen = SDL_SetVideoMode(a2x_int("width"), a2x_int("height"), A_BPP, a__videoFlags);
+        }
 
         SDL_SetClipRect(a_screen, NULL);
 
         if(!a2x_bool("fakeScreen")) {
             a_pixels = a_screen->pixels;
         }
-    #endif
 
-    a__pixels2 = a_pixels;
-}
+        a__pixels2 = a_pixels;
+    }
+
+    void a_screen__doubleRes(void)
+    {
+        static int doubled = 0;
+        doubled ^= 1;
+
+        // once this function is called, we switch to fake screen permanently
+        if(!a2x_bool("fakeScreen")) {
+            a_pixels = malloc(A_SCREEN_SIZE);
+            memset(a_pixels, 0, A_SCREEN_SIZE);
+
+            if(SDL_MUSTLOCK(a_screen)) {
+                SDL_UnlockSurface(a_screen);
+            }
+
+            a2x__set("fakeScreen", "1");
+        }
+
+        if(doubled) {
+            a_screen = SDL_SetVideoMode(a2x_int("width") * 2, a2x_int("height") * 2, A_BPP, a__videoFlags);
+
+            a2x__set("doubleRes", "1");
+        } else {
+            a_screen = SDL_SetVideoMode(a2x_int("width"), a2x_int("height"), A_BPP, a__videoFlags);
+
+            a2x__set("doubleRes", "0");
+        }
+
+        SDL_SetClipRect(a_screen, NULL);
+    }
+#endif
 
 void a_screen_show(void)
 {
@@ -186,10 +221,30 @@ void a_screen_show(void)
             SDL_LockSurface(a_screen);
         }
 
-        const Pixel* const src = a_pixels;
-        Pixel* const dst = a_screen->pixels;
+        if(a2x_bool("doubleRes")) {
+            const Pixel* src = a_pixels;
+            Pixel* dst = a_screen->pixels;
 
-        memcpy(dst, src, A_SCREEN_SIZE);
+            const int len = a_width * 2;
+            const int size = len * sizeof(Pixel);
+
+            const int w = a_width;
+
+            for(int i = a_height; i--; ) {
+                for(int j = w; j--; ) {
+                    *dst++ = *src;
+                    *dst++ = *src++;
+                }
+
+                memcpy(dst, dst - len, size);
+                dst += len;
+            }
+        } else {
+            const Pixel* const src = a_pixels;
+            Pixel* const dst = a_screen->pixels;
+
+            memcpy(dst, src, A_SCREEN_SIZE);
+        }
 
         if(SDL_MUSTLOCK(a_screen)) {
             SDL_UnlockSurface(a_screen);

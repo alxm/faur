@@ -22,7 +22,7 @@
 
 #include "a2x_app_main.v.h"
 
-extern void a2x_defaults(void);
+extern void a2x__defaults(void);
 extern void a2x__set(const char* const key, const char* const val);
 
 #endif // A2X_APP_SETTINGS_VH

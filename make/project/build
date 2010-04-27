@@ -82,6 +82,8 @@ realclean :
 # clean-up rule that deletes the built binary
 #
 
+cb : cleanbin
+
 cleanbin :
 	@ echo "Removing $(APP) binary"
 	@ rm -f $(NAME)

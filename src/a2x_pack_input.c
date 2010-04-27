@@ -52,75 +52,77 @@ static Inputs a__input;
 
 #if A_PLATFORM_LINUXPC
     static Input* fullScreen;
+    static Input* doubleRes;
 #endif
 
-static void a__input_button(const char* const name, const int code);
+static void registerButton(const char* const name, const int code);
 
 void a_input__set(void)
 {
     inputs = a_list_set();
     a__input.buttons = a_list_set();
 
-    a__input_button("all.any", -1);
+    registerButton("all.any", -1);
 
     #if A_PLATFORM_GP2X
-        a__input_button("gp2x.Up", 0);
-        a__input_button("gp2x.Down", 4);
-        a__input_button("gp2x.Left", 2);
-        a__input_button("gp2x.Right", 6);
-        a__input_button("gp2x.UpLeft", 1);
-        a__input_button("gp2x.UpRight", 7);
-        a__input_button("gp2x.DownLeft", 3);
-        a__input_button("gp2x.DownRight", 5);
-        a__input_button("gp2x.L", 10);
-        a__input_button("gp2x.R", 11);
-        a__input_button("gp2x.A", 12);
-        a__input_button("gp2x.B", 13);
-        a__input_button("gp2x.X", 14);
-        a__input_button("gp2x.Y", 15);
-        a__input_button("gp2x.Start", 8);
-        a__input_button("gp2x.Select", 9);
-        a__input_button("gp2x.VolUp", 16);
-        a__input_button("gp2x.VolDown", 17);
-        a__input_button("gp2x.StickClick", 18);
+        registerButton("gp2x.Up", 0);
+        registerButton("gp2x.Down", 4);
+        registerButton("gp2x.Left", 2);
+        registerButton("gp2x.Right", 6);
+        registerButton("gp2x.UpLeft", 1);
+        registerButton("gp2x.UpRight", 7);
+        registerButton("gp2x.DownLeft", 3);
+        registerButton("gp2x.DownRight", 5);
+        registerButton("gp2x.L", 10);
+        registerButton("gp2x.R", 11);
+        registerButton("gp2x.A", 12);
+        registerButton("gp2x.B", 13);
+        registerButton("gp2x.X", 14);
+        registerButton("gp2x.Y", 15);
+        registerButton("gp2x.Start", 8);
+        registerButton("gp2x.Select", 9);
+        registerButton("gp2x.VolUp", 16);
+        registerButton("gp2x.VolDown", 17);
+        registerButton("gp2x.StickClick", 18);
 
         a__input.joystick = SDL_JoystickOpen(0);
     #elif A_PLATFORM_WIZ
-        a__input_button("wiz.Up", 0);
-        a__input_button("wiz.Down", 4);
-        a__input_button("wiz.Left", 2);
-        a__input_button("wiz.Right", 6);
-        a__input_button("wiz.UpLeft", 1);
-        a__input_button("wiz.UpRight", 7);
-        a__input_button("wiz.DownLeft", 3);
-        a__input_button("wiz.DownRight", 5);
-        a__input_button("wiz.L", 10);
-        a__input_button("wiz.R", 11);
-        a__input_button("wiz.A", 12);
-        a__input_button("wiz.B", 13);
-        a__input_button("wiz.X", 14);
-        a__input_button("wiz.Y", 15);
-        a__input_button("wiz.Menu", 8);
-        a__input_button("wiz.Select", 9);
-        a__input_button("wiz.VolUp", 16);
-        a__input_button("wiz.VolDown", 17);
+        registerButton("wiz.Up", 0);
+        registerButton("wiz.Down", 4);
+        registerButton("wiz.Left", 2);
+        registerButton("wiz.Right", 6);
+        registerButton("wiz.UpLeft", 1);
+        registerButton("wiz.UpRight", 7);
+        registerButton("wiz.DownLeft", 3);
+        registerButton("wiz.DownRight", 5);
+        registerButton("wiz.L", 10);
+        registerButton("wiz.R", 11);
+        registerButton("wiz.A", 12);
+        registerButton("wiz.B", 13);
+        registerButton("wiz.X", 14);
+        registerButton("wiz.Y", 15);
+        registerButton("wiz.Menu", 8);
+        registerButton("wiz.Select", 9);
+        registerButton("wiz.VolUp", 16);
+        registerButton("wiz.VolDown", 17);
 
         a__input.joystick = SDL_JoystickOpen(0);
     #elif A_PLATFORM_LINUXPC
         // my laptop's arrow keys drowned in vodka, so I use IJKL instead
-        a__input_button("pc.Up", SDLK_i); // SDLK_UP
-        a__input_button("pc.Down", SDLK_k); // SDLK_DOWN
-        a__input_button("pc.Left", SDLK_j); // SDLK_LEFT
-        a__input_button("pc.Right", SDLK_l); // SDLK_RIGHT
-        a__input_button("pc.z", SDLK_z);
-        a__input_button("pc.x", SDLK_x);
-        a__input_button("pc.c", SDLK_c);
-        a__input_button("pc.v", SDLK_v);
-        a__input_button("pc.Enter", SDLK_RETURN);
-        a__input_button("pc.Space", SDLK_SPACE);
-        a__input_button("pc.F1", SDLK_F1);
-        a__input_button("pc.1", SDLK_1);
-        a__input_button("pc.0", SDLK_0);
+        registerButton("pc.Up", SDLK_i); // SDLK_UP
+        registerButton("pc.Down", SDLK_k); // SDLK_DOWN
+        registerButton("pc.Left", SDLK_j); // SDLK_LEFT
+        registerButton("pc.Right", SDLK_l); // SDLK_RIGHT
+        registerButton("pc.z", SDLK_z);
+        registerButton("pc.x", SDLK_x);
+        registerButton("pc.c", SDLK_c);
+        registerButton("pc.v", SDLK_v);
+        registerButton("pc.Enter", SDLK_RETURN);
+        registerButton("pc.Space", SDLK_SPACE);
+        registerButton("pc.F1", SDLK_F1);
+        registerButton("pc.F2", SDLK_F2);
+        registerButton("pc.1", SDLK_1);
+        registerButton("pc.0", SDLK_0);
     #endif
 
     if(a2x_bool("trackMouse")) {
@@ -129,6 +131,7 @@ void a_input__set(void)
 
     #if A_PLATFORM_LINUXPC
         fullScreen = a_input_set("pc.F1");
+        doubleRes = a_input_set("pc.F2");
     #endif
 }
 
@@ -157,7 +160,7 @@ void a_input__free(void)
     #endif
 }
 
-void a__input_get(void)
+void a_input__get(void)
 {
     if(a2x_bool("trackMouse")) {
         a_list_freeContent(a__input.mouse.motion);
@@ -257,8 +260,12 @@ void a__input_get(void)
     }
 
     #if A_PLATFORM_LINUXPC
-        if(a_input_getUnpress(fullScreen)){
-            a__screen_switchFull();
+        if(a_input_getUnpress(fullScreen)) {
+            a_screen__switchFull();
+        }
+
+        if(a_input_getUnpress(doubleRes)) {
+            a_screen__doubleRes();
         }
     #endif
 }
@@ -381,7 +388,7 @@ int a_input_touchedRect(const int x, const int y, const int w, const int h)
         );
 }
 
-static void a__input_button(const char* const name, const int code)
+static void registerButton(const char* const name, const int code)
 {
     Button* const b = malloc(sizeof(Button));
 

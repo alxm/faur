@@ -82,8 +82,6 @@ extern int a_height;
 extern void a_screen_setTarget(Pixel* const p, const int w, const int h);
 extern void a_screen_resetTarget(void);
 
-extern void a__screen_switchFull(void);
-
 extern void a_screen_show(void);
 extern void a_screen_custom(void (*f)(void* const v), void* const v);
 

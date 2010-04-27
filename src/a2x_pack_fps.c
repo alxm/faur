@@ -70,7 +70,7 @@ void a_fps__set(void)
 
 void a_fps_start(void)
 {
-    a__input_get();
+    a_input__get();
     a_sound_adjustVolume();
 }
 

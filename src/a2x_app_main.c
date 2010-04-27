@@ -42,7 +42,7 @@ int main(int argc, char** argv)
     a_argsNum = argc;
     a_args = argv;
 
-    a2x_defaults();
+    a2x__defaults();
     a2x();
 
     a_out("Opening %s %s by %s, compiled %s",
