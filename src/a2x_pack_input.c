@@ -90,7 +90,7 @@ void a_input__set(void)
         registerButton("gp2x.VolDown", 17);
         registerButton("gp2x.StickClick", 18);
 
-        a__input.joystick = SDL_JoystickOpen(0);
+        joystick = SDL_JoystickOpen(0);
     #elif A_PLATFORM_WIZ
         registerButton("wiz.Up", 0);
         registerButton("wiz.Down", 4);
