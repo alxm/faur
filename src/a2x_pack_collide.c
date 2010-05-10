@@ -114,21 +114,6 @@ void a_colbox_setCoords(ColBox* const b, const fix8 x, const fix8 y)
     b->x = x;
     b->y = y;
 
-    a_colmap_update(b->colmap, b);
-}
-
-void a_colbox_setParent(ColBox* const b, void* parent)
-{
-    b->parent = parent;
-}
-
-void* a_colbox_getParent(ColBox* const b)
-{
-    return b->parent;
-}
-
-void a_colmap_update(ColMap* const m, ColBox* const b)
-{
     List* const submaps = b->submaps;
     List* const nodes = b->nodes;
 
@@ -137,6 +122,7 @@ void a_colmap_update(ColMap* const m, ColBox* const b)
         a_list_removeNode(a_list__current(nodes));
     }
 
+    // purge old information
     a_list_empty(nodes);
     a_list_empty(submaps);
 
@@ -150,16 +136,18 @@ void a_colmap_update(ColMap* const m, ColBox* const b)
     const fix8 bh_div2 = (bh >> 1) + FONE8;
     const fix8 bh_add2 = bh + 2 * FONE8;
 
-    const int cx = a_fix8_fixtoi(bx) / m->dim;
-    const int cy = a_fix8_fixtoi(by) / m->dim;
+    // center submap coords
+    const int cx = a_fix8_fixtoi(bx) / b->colmap->dim;
+    const int cy = a_fix8_fixtoi(by) / b->colmap->dim;
 
+    // submap perimeter to look in
     const int starty = a_math_max(0, cy - 1);
     const int endy = a_math_min(bh - 1, cy + 1);
     const int startx = a_math_max(0, cx - 1);
     const int endx = a_math_min(bw - 1, cx + 1);
 
-    List*** const msubmaps = m->submaps;
-    const fix8 mdim = a_fix8_itofix(m->dim);
+    List*** const msubmaps = b->colmap->submaps;
+    const fix8 mdim = a_fix8_itofix(b->colmap->dim);
 
     int counter = 0;
 
@@ -186,6 +174,16 @@ void a_colmap_update(ColMap* const m, ColBox* const b)
     }
 }
 
+void a_colbox_setParent(ColBox* const b, void* parent)
+{
+    b->parent = parent;
+}
+
+void* a_colbox_getParent(ColBox* const b)
+{
+    return b->parent;
+}
+
 ColIterator* a_colbox_setIterator(ColBox* const b)
 {
     ColIterator* const it = malloc(sizeof(ColIterator));
@@ -209,7 +207,13 @@ void a_colbox_freeIterator(ColIterator* const it)
 int a_colbox_iteratorNext(ColIterator* const it)
 {
     if(a_list_iteratorNext(it->boxes)) {
-        return 1;
+        // don't return the box we iterate on
+        if(a_list_iteratorGet(it->boxes) == it->box) {
+            return a_colbox_iteratorNext(it);
+        } else {
+            a_list__iteratorRewind(it->boxes);
+            return 1;
+        }
     } else {
         if(a_list_iteratorNext(it->submaps)) {
             it->boxes = a_list_setIterator(a_list_iteratorGet(it->submaps));

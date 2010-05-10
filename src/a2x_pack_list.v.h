@@ -44,4 +44,6 @@ struct List {
 #define a_list__getContent(n)    ((n)->content)
 #define a_list__setContent(n, c) ((n)->content = (c))
 
+extern void a_list__iteratorRewind(ListIterator* const it);
+
 #endif // A2X_PACK_LIST_VH

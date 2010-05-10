@@ -39,7 +39,6 @@ extern void a_colbox_free(ColBox* const c);
 extern void a_colbox_setCoords(ColBox* const b, const fix8 x, const fix8 y);
 extern void a_colbox_setParent(ColBox* const b, void* parent);
 extern void* a_colbox_getParent(ColBox* const b);
-extern void a_colmap_update(ColMap* const m, ColBox* const b);
 
 extern ColIterator* a_colbox_setIterator(ColBox* const b);
 extern void a_colbox_freeIterator(ColIterator* const it);

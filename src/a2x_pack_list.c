@@ -332,3 +332,8 @@ void a_list__iteratorRemove(ListIterator* const it, const int freeContent)
 
     free(n);
 }
+
+void a_list__iteratorRewind(ListIterator* const it)
+{
+    it->current = it->current->prev;
+}
