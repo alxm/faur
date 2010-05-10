@@ -26,22 +26,25 @@
 #include "a2x_pack_list.p.h"
 #include "a2x_pack_math.p.h"
 
-typedef struct ColMap {
-    int w;
-    int h;
-    int dim;
-    List*** maps;
-} ColMap;
+typedef struct ColMap ColMap;
+typedef struct ColBox ColBox;
+typedef struct ColIterator ColIterator;
 
-typedef struct ColBox {
-    fix8 x;
-    fix8 y;
-    fix8 w;
-    fix8 h;
-    List* nodes;
-    List* maps;
-    void* parent;
-} ColBox;
+extern ColMap* a_colmap_set(const int dim, const int w, const int h);
+extern void a_colmap_free(ColMap* const c);
+
+extern ColBox* a_colbox_set(ColMap* const colmap, const int w, const int h);
+extern void a_colbox_free(ColBox* const c);
+
+extern void a_colbox_setCoords(ColBox* const b, const fix8 x, const fix8 y);
+extern void a_colbox_setParent(ColBox* const b, void* parent);
+extern void* a_colbox_getParent(ColBox* const b);
+extern void a_colmap_update(ColMap* const m, ColBox* const b);
+
+extern ColIterator* a_colbox_setIterator(ColBox* const b);
+extern void a_colbox_freeIterator(ColIterator* const it);
+extern int a_colbox_iteratorNext(ColIterator* const it);
+extern ColBox* a_colbox_iteratorGet(const ColIterator* const it);
 
 #define a_collide_rects(r1, r2)    \
 (                                  \
@@ -59,16 +62,10 @@ typedef struct ColBox {
 	|| (x2) >= (x1) + (w1) )                            \
 )
 
-#define a_collide_screen(r1) (                         \
-	a_collide_rects((r1), (Rect){0, 0, WIDTH, HEIGHT}) \
+#define a_collide_screen(r1) (                             \
+	a_collide_rects((r1), (Rect){0, 0, a_width, a_height}) \
 )
 
 extern int a_collide_circles(const int x1, const int y1, const int r1, const int x2, const int y2, const int r2);
-
-extern ColMap* a_collide_makeColMap(const int dim, const int w, const int h);
-extern void a_collide_freeColMap(ColMap* const c);
-extern ColBox* a_collide_makeColBox(const fix8 x, const fix8 y, const int w, const int h, void* const parent);
-extern void a_collide_freeColBox(ColBox* const c);
-extern void a_collide_assignColMaps(ColMap* const cm, ColBox* const o);
 
 #endif // A2X_PACK_COLLIDE_PH

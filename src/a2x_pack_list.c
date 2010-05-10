@@ -299,15 +299,15 @@ void a_list_freeIterator(ListIterator* const it)
     free(it);
 }
 
-int a_list_iteratorNext(ListIterator* const it)
+int a_list_iteratorNext(const ListIterator* const it)
+{
+    return it->current->next != it->list->last;
+}
+
+void* a_list_iteratorGet(ListIterator* const it)
 {
     it->current = it->current->next;
 
-    return it->current != it->list->last;
-}
-
-void* a_list_iteratorGet(const ListIterator* const it)
-{
     return it->current->content;
 }
 

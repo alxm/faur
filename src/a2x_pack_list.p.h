@@ -74,8 +74,8 @@ extern int a_list_isEmpty(const List* const list);
 
 extern ListIterator* a_list_setIterator(List* const list);
 extern void a_list_freeIterator(ListIterator* const it);
-extern int a_list_iteratorNext(ListIterator* const it);
-extern void* a_list_iteratorGet(const ListIterator* const it);
+extern int a_list_iteratorNext(const ListIterator* const it);
+extern void* a_list_iteratorGet(ListIterator* const it);
 
 #define a_list_iteratorRemove(it) a_list__iteratorRemove(it, 0)
 #define a_list_iteratorRemoveContent(it) a_list__iteratorRemove(it, 1)
