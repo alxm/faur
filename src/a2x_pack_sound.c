@@ -20,8 +20,8 @@
 #include "a2x_pack_sound.p.h"
 #include "a2x_pack_sound.v.h"
 
-static List* a__musicList;
-static List* a__sfxList;
+static List* musicList;
+static List* sfxList;
 
 int a__volume;
 int a__volumeAdjust = -2 * A_MILIS_VOLUME;
@@ -34,8 +34,8 @@ int a__volumeAdjust = -2 * A_MILIS_VOLUME;
 void a_sound__set(void)
 {
     if(a2x_bool("sound")) {
-        a__musicList = a_list_set();
-        a__sfxList = a_list_set();
+        musicList = a_list_set();
+        sfxList = a_list_set();
 
         #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
             a__volume = A_MAX_VOLUME / 16;
@@ -71,16 +71,16 @@ void a_sound__free(void)
     if(a2x_bool("sound")) {
         a_music_stop();
 
-        while(a_list_iterate(a__sfxList)) {
-            a_sfx_free(a_list_current(a__sfxList));
+        while(a_list_iterate(sfxList)) {
+            a_sfx_free(a_list_current(sfxList));
         }
 
-        while(a_list_iterate(a__musicList)) {
-            a_music_free(a_list_current(a__musicList));
+        while(a_list_iterate(musicList)) {
+            a_music_free(a_list_current(musicList));
         }
 
-        a_list_free(a__sfxList);
-        a_list_free(a__musicList);
+        a_list_free(sfxList);
+        a_list_free(musicList);
 
         Mix_CloseAudio();
 
@@ -102,7 +102,7 @@ Music* a_music_load(const char* const path)
 
         Mix_VolumeMusic((float)a2x_int("musicScale") / 100 * a__volume);
 
-        a_list_addLast(a__musicList, m);
+        a_list_addLast(musicList, m);
 
         return m;
     } else {
@@ -112,7 +112,10 @@ Music* a_music_load(const char* const path)
 
 void a_music_free(Music* const m)
 {
-    Mix_FreeMusic(m);
+    if(a2x_bool("sound")) {
+        Mix_FreeMusic(m);
+        a_list_remove(musicList, m);
+    }
 }
 
 void a_music_play(Music* const m)
@@ -139,7 +142,7 @@ Sound* a__sfx_load(uint16_t* const data, const int size)
         Sound* const s = Mix_LoadWAV_RW(rw, 0);
 
         s->volume = (float)a2x_int("sfxScale") / 100 * a__volume;
-        a_list_addLast(a__sfxList, s);
+        a_list_addLast(sfxList, s);
 
         SDL_FreeRW(rw);
         free(dataDec);
@@ -154,6 +157,7 @@ void a_sfx_free(Sound* const s)
 {
     if(a2x_bool("sound")) {
         Mix_FreeChunk(s);
+        a_list_remove(sfxList, s);
     }
 }
 
@@ -167,8 +171,8 @@ void a_sfx_play(Sound* const s)
 void a_sfx_volume(const int v)
 {
     if(a2x_bool("sound")) {
-        while(a_list_iterate(a__sfxList)) {
-            ((Sound*)a_list_current(a__sfxList))->volume = v;
+        while(a_list_iterate(sfxList)) {
+            ((Sound*)a_list_current(sfxList))->volume = v;
         }
     }
 }
@@ -188,7 +192,7 @@ void a_sound_adjustVolume(void)
                 if(a__volume > A_MAX_VOLUME) a__volume = A_MAX_VOLUME;
                 else if(a__volume < 0) a__volume = 0;
 
-                if(a_list_size(a__musicList) > 0) {
+                if(a_list_size(musicList) > 0) {
                     Mix_VolumeMusic((float)a2x_int("musicScale") / 100 * a__volume);
                 }
 

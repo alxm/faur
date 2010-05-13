@@ -313,12 +313,16 @@ void a_sprite_free(Sprite* const s)
         for(int j = 0; j < s->spansNum[i]; j++) {
             free(s->spans[i][j]);
         }
+
         free(s->spans[i]);
     }
+
     free(s->spans);
     free(s->spansNum);
 
     free(s);
+
+    a_list_remove(sprites, s);
 }
 
 int a_sprite_w(const Sprite* const s)
