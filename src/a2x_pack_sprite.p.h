@@ -63,5 +63,6 @@ extern void a_sprite_flipAnimationDir(AnimatedSprite* const s);
 extern void a_sprite_pauseAnimation(AnimatedSprite* const s);
 extern void a_sprite_resumeAnimation(AnimatedSprite* const s);
 extern void a_sprite_resetAnimation(AnimatedSprite* const s);
+extern int a_sprite_frameIndex(const AnimatedSprite* const s);
 
 #endif // A2X_PACK_SPRITE_PH

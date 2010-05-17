@@ -443,6 +443,11 @@ void a_sprite_resetAnimation(AnimatedSprite* const s)
     s->current = 0;
 }
 
+int a_sprite_frameIndex(const AnimatedSprite* const s)
+{
+    return s->current;
+}
+
 static void setSheetValues(Sheet* const s)
 {
     s->transparent = a_sprite__getPixel(s, s->w - 1, s->h - 1);
