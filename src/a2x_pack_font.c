@@ -88,7 +88,7 @@ int a_font_load(Sheet* const sheet, const int sx, const int sy, const int sw, co
 
     const Pixel limit = sheet->limit;
 
-    Sheet* const sheet2 = a_sprite_sheetFromSheet(sheet, sx, sy, sw, sh);
+    Sheet* const sheet2 = a_sheet_fromSheet(sheet, sx, sy, sw, sh);
 
     do {
         y2++;
@@ -135,7 +135,7 @@ int a_font_load(Sheet* const sheet, const int sx, const int sy, const int sw, co
         }
     }
 
-    a_sprite_freeSheet(sheet2);
+    a_sheet_free(sheet2);
 
     return numFonts - 1;
 }

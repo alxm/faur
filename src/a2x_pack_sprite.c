@@ -48,7 +48,7 @@ void a_sprite__free(void)
     a_list_free(sprites);
 }
 
-Sheet* a_sprite_sheetFromFile(const char* const path)
+Sheet* a_sheet_fromFile(const char* const path)
 {
     SDL_Surface* const sf = IMG_Load(path);
     Sheet* const s = malloc(sizeof(Sheet));
@@ -102,7 +102,7 @@ Sheet* a_sprite_sheetFromFile(const char* const path)
     return s;
 }
 
-Sheet* a_sprite_sheetFromData(Pixel* data, const int w, const int h)
+Sheet* a_sheet_fromData(Pixel* data, const int w, const int h)
 {
     Sheet* const s = malloc(sizeof(Sheet));
 
@@ -115,7 +115,7 @@ Sheet* a_sprite_sheetFromData(Pixel* data, const int w, const int h)
     return s;
 }
 
-Sheet* a_sprite_sheetFromSheet(const Sheet* const sheet, const int x, const int y, const int w, const int h)
+Sheet* a_sheet_fromSheet(const Sheet* const sheet, const int x, const int y, const int w, const int h)
 {
     Sheet* const s = malloc(sizeof(Sheet));
 
@@ -138,25 +138,30 @@ Sheet* a_sprite_sheetFromSheet(const Sheet* const sheet, const int x, const int 
     return s;
 }
 
-void a_sprite_freeSheet(Sheet* const s)
+void a_sheet_free(Sheet* const s)
 {
     free(s->data);
     free(s);
 }
 
-int a_sprite_sheetW(const Sheet* const s)
+int a_sheet_w(const Sheet* const s)
 {
     return s->w;
 }
 
-int a_sprite_sheetH(const Sheet* const s)
+int a_sheet_h(const Sheet* const s)
 {
     return s->h;
 }
 
-Pixel* a_sprite_sheetData(const Sheet* const s)
+Pixel* a_sheet_data(const Sheet* const s)
 {
     return s->data;
+}
+
+Pixel a_sheet_getPixel(const Sheet* const s, const int x, const int y)
+{
+    return *(s->data + y * s->w + x);
 }
 
 Sprite* a_sprite_makeZoomed(const Sheet* const graphic, const int x, const int y, const int w, const int h, const int zoom)

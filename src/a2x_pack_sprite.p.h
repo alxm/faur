@@ -32,13 +32,14 @@ typedef struct Sheet Sheet;
 typedef struct Sprite Sprite;
 typedef struct AnimatedSprite AnimatedSprite;
 
-extern Sheet* a_sprite_sheetFromFile(const char* const path);
-extern Sheet* a_sprite_sheetFromData(Pixel* data, const int w, const int h);
-extern Sheet* a_sprite_sheetFromSheet(const Sheet* const sheet, const int x, const int y, const int w, const int h);
-extern void a_sprite_freeSheet(Sheet* const s);
-extern int a_sprite_sheetW(const Sheet* const s);
-extern int a_sprite_sheetH(const Sheet* const s);
-extern Pixel* a_sprite_sheetData(const Sheet* const s);
+extern Sheet* a_sheet_fromFile(const char* const path);
+extern Sheet* a_sheet_fromData(Pixel* data, const int w, const int h);
+extern Sheet* a_sheet_fromSheet(const Sheet* const sheet, const int x, const int y, const int w, const int h);
+extern void a_sheet_free(Sheet* const s);
+extern int a_sheet_w(const Sheet* const s);
+extern int a_sheet_h(const Sheet* const s);
+extern Pixel* a_sheet_data(const Sheet* const s);
+extern Pixel a_sheet_getPixel(const Sheet* const s, const int x, const int y);
 
 #define a_sprite_make(g, x, y, w, h) a_sprite_makeZoomed((g), (x), (y), (w), (h), 1)
 extern Sprite* a_sprite_makeZoomed(const Sheet* const graphic, const int x, const int y, const int w, const int h, const int zoom);
