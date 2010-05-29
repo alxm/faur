@@ -56,7 +56,6 @@
 #include <stdio.h>
 
 #include "a2x_app_settings.p.h"
-#include "a2x_pack_state.p.h"
 
 extern int a_argsNum;
 extern char** a_args;

@@ -20,20 +20,38 @@
 #include "a2x_pack_state.p.h"
 #include "a2x_pack_state.v.h"
 
-int a_state_unchanged;
-
-static StateRunner a__state = NULL;
+static int changed;
+static StateRunner current = NULL;
 
 void a_state_go(StateRunner s)
 {
-    a__state = s;
-    a_state_unchanged = 0;
+    current = s;
+    changed = 1;
 }
 
-void a__state_run(void)
+void a_state__run(void)
 {
-    while(a__state) {
-        a_state_unchanged = 1;
-        a__state();
+    while(current) {
+        changed = 0;
+        current();
     }
+}
+
+int a_state_running(void)
+{
+    static int first = 1;
+
+    if(first) {
+        first = 0;
+    } else {
+        a_fps_end();
+    }
+
+    a_fps_start();
+
+    if(changed) {
+        first = 1;
+    }
+
+    return !changed;
 }

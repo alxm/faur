@@ -64,7 +64,7 @@ int main(int argc, char** argv)
 
     a_out("Opening Main()");
     Main();
-    a__state_run();
+    a_state__run();
     a_out("Main() closed");
 
     A_PACK_FREE(mem);

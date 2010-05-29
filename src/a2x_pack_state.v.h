@@ -20,6 +20,6 @@
 #ifndef A2X_PACK_STATE_VH
 #define A2X_PACK_STATE_VH
 
-//
+extern void a_state__run(void);
 
 #endif // A2X_PACK_STATE_VH

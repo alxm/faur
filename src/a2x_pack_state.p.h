@@ -22,23 +22,16 @@
 
 #include <stdlib.h>
 
-#define State(s) void (s)(void)
-
-#define StateStart             \
-    while(a_state_unchanged) { \
-        a_fps_start();
-
-#define StateEnd     \
-        a_fps_end(); \
-    }
+#include "a2x_pack_fps.p.h"
 
 typedef void (*StateRunner)(void);
 
-extern void a_state_go(StateRunner s);
-extern void a__state_run(void);
+#define State(s) void (s)(void)
+#define StateLoop while(a_state_running())
 
+extern void a_state_go(StateRunner s);
 #define a_state_exit() a_state_go(NULL)
 
-extern int a_state_unchanged;
+extern int a_state_running(void);
 
 #endif // A2X_PACK_STATE_PH

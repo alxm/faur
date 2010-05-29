@@ -34,6 +34,7 @@
 #include "a2x_pack_sdl.v.h"
 #include "a2x_pack_sound.v.h"
 #include "a2x_pack_sprite.v.h"
+#include "a2x_pack_state.v.h"
 #include "a2x_pack_time.v.h"
 
 #define a_out(...) \
