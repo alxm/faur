@@ -284,6 +284,19 @@ int a_list_isEmpty(const List* const list)
     return list->first->next == list->last;
 }
 
+void* a_list_get(const List* const list, const int index)
+{
+    int counter = -1;
+
+    for(ListNode* n = list->first; n->next != NULL; n = n->next, counter++) {
+        if(counter == index) {
+            return n->content;
+        }
+    }
+
+    return NULL;
+}
+
 ListIterator* a_list_setIterator(List* const list)
 {
     ListIterator* const it = malloc(sizeof(ListIterator));

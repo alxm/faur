@@ -69,6 +69,8 @@ extern ListNode* a_list_currentNode(const List* const list);
 extern int a_list_size(const List* const list);
 extern int a_list_isEmpty(const List* const list);
 
+extern void* a_list_get(const List* const list, const int index);
+
 #define a_list_push(l, c) a_list_addFirst(l, c)
 #define a_list_pop(l) a_list_removeFirst(l)
 
