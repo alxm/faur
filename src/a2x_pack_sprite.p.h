@@ -23,23 +23,12 @@
 #include <SDL/SDL.h>
 #include <SDL/SDL_image.h>
 
-#include "a2x_pack_fix.p.h"
 #include "a2x_pack_list.p.h"
 #include "a2x_pack_screen.p.h"
+#include "a2x_pack_sheet.p.h"
 #include "a2x_pack_types.p.h"
 
-typedef struct Sheet Sheet;
 typedef struct Sprite Sprite;
-typedef struct AnimatedSprite AnimatedSprite;
-
-extern Sheet* a_sheet_fromFile(const char* const path);
-extern Sheet* a_sheet_fromData(Pixel* data, const int w, const int h);
-extern Sheet* a_sheet_fromSheet(const Sheet* const sheet, const int x, const int y, const int w, const int h);
-extern void a_sheet_free(Sheet* const s);
-extern int a_sheet_w(const Sheet* const s);
-extern int a_sheet_h(const Sheet* const s);
-extern Pixel* a_sheet_data(const Sheet* const s);
-extern Pixel a_sheet_getPixel(const Sheet* const s, const int x, const int y);
 
 #define a_sprite_make(g, x, y, w, h) a_sprite_makeZoomed((g), (x), (y), (w), (h), 1)
 extern Sprite* a_sprite_makeZoomed(const Sheet* const graphic, const int x, const int y, const int w, const int h, const int zoom);
@@ -53,17 +42,5 @@ extern fix8 a_sprite_getAlpha(const Sprite* const s);
 extern void a_sprite_setAlpha(Sprite* const s, const fix8 a);
 extern Pixel a_sprite_t(const Sprite* const s);
 extern Pixel a_sprite_getPixel(const Sprite* const s, const int x, const int y);
-
-extern AnimatedSprite* a_sprite_makeAnimation(const int num, const int framesPerCycle);
-extern void a_sprite_freeAnimation(AnimatedSprite* const s);
-extern void a_sprite_addAnimation(AnimatedSprite* const s, Sprite* const sp);
-extern Sprite* a_sprite_nextAnimation(AnimatedSprite* const s);
-extern Sprite* a_sprite_getAnimation(AnimatedSprite* const s);
-extern void a_sprite_setAnimationDir(AnimatedSprite* const s, const int dir);
-extern void a_sprite_flipAnimationDir(AnimatedSprite* const s);
-extern void a_sprite_pauseAnimation(AnimatedSprite* const s);
-extern void a_sprite_resumeAnimation(AnimatedSprite* const s);
-extern void a_sprite_resetAnimation(AnimatedSprite* const s);
-extern int a_sprite_frameIndex(const AnimatedSprite* const s);
 
 #endif // A2X_PACK_SPRITE_PH

@@ -17,14 +17,20 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_PACK_FONT_VH
-#define A2X_PACK_FONT_VH
+#ifndef A2X_PACK_SHEET_VH
+#define A2X_PACK_SHEET_VH
 
-#include "a2x_pack_blit.v.h"
-#include "a2x_pack_sheet.v.h"
-#include "a2x_pack_sprite.v.h"
+#include "a2x_pack_screen.p.h"
 
-extern void a_font__set(void);
-extern void a_font__free(void);
+struct Sheet {
+    int w;
+    int h;
+    Pixel* data;
+    Pixel transparent;
+    Pixel limit;
+    Pixel end;
+};
 
-#endif // A2X_PACK_FONT_VH
+#define a_sheet__getPixel(s, x, y) (*((s)->data + (y) * (s)->w + (x)))
+
+#endif // A2X_PACK_SHEET_VH

@@ -21,14 +21,7 @@
 #define A2X_PACK_SPRITE_VH
 
 #include "a2x_pack_screen.p.h"
-
-struct Sheet {
-    int w;
-    int h;
-    Pixel* data;
-    Pixel transparent;
-    Pixel limit;
-};
+#include "a2x_pack_sheet.v.h"
 
 struct Sprite {
 	int w;
