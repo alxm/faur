@@ -243,15 +243,19 @@ void a_list__removeNode(ListNode* const node, const int freeContent)
     free(node);
 }
 
-void* a_list_getArray(List* const list, const int size)
+void** a_list_getArray(List* const list)
 {
-    void* data = malloc(list->items * size);
+    void** const array = malloc(list->items * sizeof(void*));
 
-    for(int i = 0; a_list_iterate(list); i++) {
-        memcpy(data + i * size, list->current->content, size);
+    ListIterator* const it = a_list_setIterator(list);
+
+    for(int i = 0; a_list_iteratorNext(it); i++) {
+        array[i] = a_list_iteratorGet(it);
     }
 
-    return data;
+    a_list_freeIterator(it);
+
+    return array;
 }
 
 void* a_list_first(const List* const list)

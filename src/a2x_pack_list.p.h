@@ -61,7 +61,8 @@ extern void a_list__removeCurrent(List* const list, const int freeContent);
 #define a_list_removeNodeContent(node) a_list__removeNode(node, 1)
 extern void a_list__removeNode(ListNode* const node, const int freeContent);
 
-extern void* a_list_getArray(List* const list, const int size);
+extern void** a_list_getArray(List* const list);
+
 extern void* a_list_first(const List* const list);
 extern void* a_list_last(const List* const list);
 extern void* a_list_current(const List* const list);
