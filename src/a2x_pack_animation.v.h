@@ -20,6 +20,7 @@
 #ifndef A2X_PACK_ANIMATION_VH
 #define A2X_PACK_ANIMATION_VH
 
+#include "a2x_pack_sheet.v.h"
 #include "a2x_pack_sprite.v.h"
 
 #endif // A2X_PACK_ANIMATION_VH

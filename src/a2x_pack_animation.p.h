@@ -26,15 +26,19 @@
 #include "a2x_pack_fix.p.h"
 #include "a2x_pack_list.p.h"
 #include "a2x_pack_screen.p.h"
+#include "a2x_pack_sheet.p.h"
 #include "a2x_pack_sprite.p.h"
 #include "a2x_pack_types.p.h"
 
 typedef struct Animation Animation;
 
 extern Animation* a_animation_make(const int framesPerCycle);
+extern Animation* a_animation_fromSheet(const Sheet* const sh, const int x, const int y, const int framesPerCycle);
 extern void a_animation_free(Animation* const a);
 
 extern void a_animation_add(Animation* const a, Sprite* const s);
+extern Sprite* a_animation_remove(Animation* const a, const int index);
+
 extern Sprite* a_animation_next(Animation* const a);
 extern Sprite* a_animation_get(Animation* const a);
 
@@ -48,5 +52,6 @@ extern void a_animation_reset(Animation* const a);
 extern int a_animation_frameIndex(const Animation* const a);
 
 extern Animation* a_animation_clone(const Animation* const src);
+extern List* a_animation_sprites(const Animation* const a);
 
 #endif // A2X_PACK_ANIMATION_PH

@@ -50,9 +50,56 @@ Animation* a_animation_make(const int framesPerCycle)
     return a;
 }
 
+Animation* a_animation_fromSheet(const Sheet* const sh, const int x, const int y, const int framesPerCycle)
+{
+    Animation* const a = a_animation_make(framesPerCycle);
+
+    const int width = sh->w;
+    const int height = sh->h;
+
+    const Pixel limit = sh->limit;
+    const Pixel end = sh->end;
+
+    int last_sheetx = x;
+
+    for(int sheetx = x; sheetx < width; sheetx++) {
+        const Pixel horizPixel = a_sheet__getPixel(sh, sheetx, y);
+
+        // reached right edge
+        if(horizPixel == limit || horizPixel == end) {
+            for(int sheety = y; sheety < height; sheety++) {
+                const Pixel vertPixel = a_sheet__getPixel(sh, last_sheetx, sheety);
+
+                // reached bottom edge
+                if(vertPixel == limit || vertPixel == end) {
+                    const int w = sheetx - last_sheetx;
+                    const int h = sheety - y;
+
+                    Sprite* const sprite = a_sprite_make(sh, last_sheetx, y, w, h);
+                    a_list_addLast(a->sprites, sprite);
+
+                    break;
+                }
+            }
+
+            last_sheetx = sheetx + 1;
+
+            if(horizPixel == end) {
+                break;
+            }
+        }
+    }
+
+    a->spriteArray = (Sprite**)a_list_getArray(a->sprites);
+    a->num = a_list_size(a->sprites);
+
+    return a;
+}
+
 void a_animation_free(Animation* const a)
 {
     a_list_free(a->sprites);
+    free(a->spriteArray);
 
     free(a);
 }
@@ -65,6 +112,24 @@ void a_animation_add(Animation* const a, Sprite* const s)
     a->spriteArray = (Sprite**)a_list_getArray(a->sprites);
 
     a->num++;
+
+    a_animation_reset(a);
+}
+
+Sprite* a_animation_remove(Animation* const a, const int index)
+{
+    Sprite* const s = a->spriteArray[index];
+
+    a_list_remove(a->sprites, s);
+
+    free(a->spriteArray);
+    a->spriteArray = (Sprite**)a_list_getArray(a->sprites);
+
+    a->num--;
+
+    a_animation_reset(a);
+
+    return s;
 }
 
 Sprite* a_animation_next(Animation* const a)
@@ -132,4 +197,9 @@ Animation* a_animation_clone(const Animation* const src)
     }
 
     return a;
+}
+
+List* a_animation_sprites(const Animation* const a)
+{
+    return a->sprites;
 }
