@@ -38,15 +38,17 @@ void (*a_blit_blitters[])(const Sprite* const s, const int x, const int y) = {
     } NCNT_END;  \
 }
 
-#define NCNT_START                           \
-    const int w = s->w;                      \
-    const int h = s->h;                      \
-    const int diff = a_width - w;            \
-                                             \
-    const Pixel* src = s->data;              \
-    Pixel* dst = a_pixels + y * a_width + x; \
-                                             \
-    for(int i = h; i--; dst += diff) {       \
+#define NCNT_START                               \
+    const int screenWidth = a_width;             \
+                                                 \
+    const int w = s->w;                          \
+    const int h = s->h;                          \
+    const int diff = screenWidth - w;            \
+                                                 \
+    const Pixel* src = s->data;                  \
+    Pixel* dst = a_pixels + y * screenWidth + x; \
+                                                 \
+    for(int i = h; i--; dst += diff) {           \
         for(int j = w; j--; dst++, src++) {
 
 #define NCNT_END \
@@ -62,21 +64,23 @@ void (*a_blit_blitters[])(const Sprite* const s, const int x, const int y) = {
     } NCT_END;  \
 }
 
-#define NCT_START                                               \
-    const int w = s->w;                                         \
-    const int h = s->h;                                         \
-                                                                \
-    const Pixel* src2 = s->data;                                \
-    Pixel* dst2 = a_pixels + y * a_width + x;                   \
-                                                                \
-    for(int i = 0; i < h; i++, dst2 += a_width, src2 += w) {    \
-        const int spansNum = s->spansNum[i];                    \
-                                                                \
-        for(int j = 0; j < spansNum; j++) {                     \
-            const Pixel* src = src2 + s->spans[i][j][0];        \
-            Pixel* dst = dst2 + s->spans[i][j][0];              \
-                                                                \
-            for(int k = s->spans[i][j][2]; k--; dst++, src++) { \
+#define NCT_START                                                \
+    const int screenWidth = a_width;                             \
+                                                                 \
+    const int w = s->w;                                          \
+    const int h = s->h;                                          \
+                                                                 \
+    const Pixel* src2 = s->data;                                 \
+    Pixel* dst2 = a_pixels + y * screenWidth + x;                \
+                                                                 \
+    for(int i = 0; i < h; i++, dst2 += screenWidth, src2 += w) { \
+        const int spansNum = s->spansNum[i];                     \
+                                                                 \
+        for(int j = 0; j < spansNum; j++) {                      \
+            const Pixel* src = src2 + s->spans[i][j][0];         \
+            Pixel* dst = dst2 + s->spans[i][j][0];               \
+                                                                 \
+            for(int k = s->spans[i][j][2]; k--; dst++, src++) {
 
 #define NCT_END \
             }   \
@@ -92,28 +96,33 @@ void (*a_blit_blitters[])(const Sprite* const s, const int x, const int y) = {
     } CNT_END;  \
 }
 
-#define CNT_START                                                         \
-    const int w = s->w;                                                   \
-    const int h = s->h;                                                   \
-                                                                          \
-    if(y + h <= 0 || y >= a_height || x + w <= 0 || x >= a_width) return; \
-                                                                          \
-    const int yTclip = (y < 0) ? (-y) : 0;                                \
-    const int yBclip = (y + h > a_height) ? (y + h - a_height) : 0;       \
-    const int xLclip = (x < 0) ? (-x) : 0;                                \
-    const int xRclip = (x + w > a_width) ? (x + w - a_width) : 0;         \
-                                                                          \
-    const int W = (w - xLclip - xRclip) << 1;                             \
-    const int H = h - yTclip - yBclip;                                    \
-                                                                          \
-    const Pixel* src2 = s->data + yTclip * w + xLclip;                    \
-    Pixel* dst2 = a_pixels + (y + yTclip) * a_width + x + xLclip;         \
-                                                                          \
-    for(int i = 0; i < H; i++, dst2 += a_width, src2 += w) {              \
-        const Pixel* src = src2;                                          \
-        Pixel* dst = dst2;                                                \
-                                                                          \
-        for(int j = W; j--; dst++, src++) {                               \
+#define CNT_START                                                           \
+    const int screenWidth = a_width;                                        \
+    const int screenHeight = a_height;                                      \
+                                                                            \
+    const int w = s->w;                                                     \
+    const int h = s->h;                                                     \
+                                                                            \
+    if(y + h <= 0 || y >= screenHeight || x + w <= 0 || x >= screenWidth) { \
+        return;                                                             \
+    }                                                                       \
+                                                                            \
+    const int yTclip = (y < 0) ? (-y) : 0;                                  \
+    const int yBclip = a_math_max(0, y + h - screenHeight);                 \
+    const int xLclip = (x < 0) ? (-x) : 0;                                  \
+    const int xRclip = a_math_max(0, x + w - screenWidth);                  \
+                                                                            \
+    const int W = (w - xLclip - xRclip);                                    \
+    const int H = h - yTclip - yBclip;                                      \
+                                                                            \
+    const Pixel* src2 = s->data + yTclip * w + xLclip;                      \
+    Pixel* dst2 = a_pixels + (y + yTclip) * screenWidth + x + xLclip;       \
+                                                                            \
+    for(int i = 0; i < H; i++, dst2 += screenWidth, src2 += w) {            \
+        const Pixel* src = src2;                                            \
+        Pixel* dst = dst2;                                                  \
+                                                                            \
+        for(int j = W; j--; dst++, src++) {
 
 #define CNT_END \
         }       \
@@ -138,32 +147,39 @@ void (*a_blit_blitters[])(const Sprite* const s, const int x, const int y) = {
     } CT_END;             \
 }
 
-#define CT_START                                                               \
-    const int w = s->w;                                                        \
-    const int h = s->h;                                                        \
-                                                                               \
-    if(y + h <= 0 || y >= a_height || x + w <= 0 || x >= a_width) return;      \
-                                                                               \
-    const int yTclip = (y < 0) ? (-y) : 0;                                     \
-    const int xLclip = (x < 0) ? (-x) : 0;                                     \
-                                                                               \
-    const int H = h - ((y + h > a_height) ? (y + h - a_height) : 0);           \
-                                                                               \
-    const Pixel* src2 = s->data + yTclip * w;                                  \
-    Pixel* dst2 = a_pixels + (y + yTclip) * a_width + x;                       \
-                                                                               \
-    for(int i = yTclip; i < H; i++, dst2 += a_width, src2 += w) {              \
-        int j;                                                                 \
-        const int spansNum = s->spansNum[i];                                   \
-                                                                               \
-        for(j = 0; j < spansNum && s->spans[i][j][1] <= xLclip; j++) continue; \
+#define CT_START                                                            \
+    const int screenWidth = a_width;                                        \
+    const int screenHeight = a_height;                                      \
+                                                                            \
+    const int w = s->w;                                                     \
+    const int h = s->h;                                                     \
+                                                                            \
+    if(y + h <= 0 || y >= screenHeight || x + w <= 0 || x >= screenWidth) { \
+        return;                                                             \
+    }                                                                       \
+                                                                            \
+    const int yTclip = (y < 0) ? (-y) : 0;                                  \
+    const int xLclip = (x < 0) ? (-x) : 0;                                  \
+                                                                            \
+    const int H = h - a_math_max(0, y + h - screenHeight);                  \
+                                                                            \
+    const Pixel* src2 = s->data + yTclip * w;                               \
+    Pixel* dst2 = a_pixels + (y + yTclip) * screenWidth + x;                \
+                                                                            \
+    for(int i = yTclip; i < H; i++, dst2 += screenWidth, src2 += w) {       \
+        int j;                                                              \
+        const int spansNum = s->spansNum[i];                                \
+                                                                            \
+        for(j = 0; j < spansNum && s->spans[i][j][1] <= xLclip; j++) {      \
+            continue;                                                       \
+        }
 
 #define CT_LEFT_START                                                    \
         if(j < spansNum && s->spans[i][j][0] < xLclip) {                 \
             const Pixel* src = src2 + xLclip;                            \
             Pixel* dst = dst2 + xLclip;                                  \
                                                                          \
-            for(int k = s->spans[i][j][1] - xLclip; k--; dst++, src++) { \
+            for(int k = s->spans[i][j][1] - xLclip; k--; dst++, src++) {
 
 #define CT_LEFT_END \
             }       \
@@ -171,23 +187,23 @@ void (*a_blit_blitters[])(const Sprite* const s, const int x, const int y) = {
             j++;    \
         }
 
-#define CT_MIDDLE_START                                                 \
-        for( ; j < spansNum && x + s->spans[i][j][1] <= a_width; j++) { \
-            const Pixel* src = src2 + s->spans[i][j][0];                \
-            Pixel* dst = dst2 + s->spans[i][j][0];                      \
-                                                                        \
+#define CT_MIDDLE_START                                                     \
+        for( ; j < spansNum && x + s->spans[i][j][1] <= screenWidth; j++) { \
+            const Pixel* src = src2 + s->spans[i][j][0];                    \
+            Pixel* dst = dst2 + s->spans[i][j][0];                          \
+                                                                            \
             for(int k = s->spans[i][j][2]; k--; dst++, src++) {
 
 #define CT_MIDDLE_END \
             }         \
         }
 
-#define CT_RIGHT_START                                                          \
-        if(j < spansNum && x + s->spans[i][j][0] < a_width) {                   \
-            const Pixel* src = src2 + s->spans[i][j][0];                        \
-            Pixel* dst = dst2 + s->spans[i][j][0];                              \
-                                                                                \
-            for(int k = a_width - (x + s->spans[i][j][0]); k--; dst++, src++) {
+#define CT_RIGHT_START                                                              \
+        if(j < spansNum && x + s->spans[i][j][0] < screenWidth) {                   \
+            const Pixel* src = src2 + s->spans[i][j][0];                            \
+            Pixel* dst = dst2 + s->spans[i][j][0];                                  \
+                                                                                    \
+            for(int k = screenWidth - (x + s->spans[i][j][0]); k--; dst++, src++) {
 
 #define CT_RIGHT_END \
             }        \
@@ -313,11 +329,11 @@ void (*a_blit_blitters[])(const Sprite* const s, const int x, const int y) = {
     Blitters
 */
 
-#define a__blit_make2(area, type, params) \
-    void a_blit_##area##_##type params    \
-    {                                     \
-        BLIT_##type##_setup               \
-        area(BLIT_##type##_do)            \
+#define a__blit_make2(area, type, params)  \
+    void a_blit_##area##_##type params     \
+    {                                      \
+        BLIT_##type##_setup                \
+        area(BLIT_##type##_do)             \
     }
 
 #define a__blit_make(type, params)    \
