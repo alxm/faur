@@ -35,6 +35,7 @@ extern Sprite* a_sprite_makeZoomed(const Sheet* const graphic, const int x, cons
 extern Sprite* a_sprite_makeBlank(const int w, const int h);
 extern void a_sprite_makeTransparent(Sprite* const s, const Sheet* const graphic);
 extern void a_sprite_free(Sprite* const s);
+extern Sprite* a_sprite_clone(const Sprite* const src);
 extern int a_sprite_w(const Sprite* const s);
 extern int a_sprite_h(const Sprite* const s);
 extern Pixel* a_sprite_data(const Sprite* const s);

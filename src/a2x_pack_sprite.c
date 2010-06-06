@@ -202,6 +202,40 @@ void a_sprite_free(Sprite* const s)
     a_list_remove(sprites, s);
 }
 
+Sprite* a_sprite_clone(const Sprite* const src)
+{
+    Sprite* const s = malloc(sizeof(Sprite));
+
+    s->w = src->w;
+    s->h = src->h;
+
+    s->data = malloc(s->w * s->h * sizeof(Pixel));
+    memcpy(s->data, src->data, s->w * s->h * sizeof(Pixel));
+
+    s->spans = malloc(s->h * sizeof(int**));
+    s->spansNum = malloc(s->h * sizeof(int));
+
+    for(int i = s->h; i--; ) {
+        s->spansNum[i] = src->spansNum[i];
+        s->spans[i] = malloc(s->spansNum[i] * sizeof(int*));
+
+        for(int j = s->spansNum[i]; j--; ) {
+            s->spans[i][j] = malloc(3 * sizeof(int));
+
+            for(int k = 3; k--; ) {
+                s->spans[i][j][k] = src->spans[i][j][k];
+            }
+        }
+    }
+
+    s->alpha = src->alpha;
+    s->t = src->t;
+
+    a_list_addLast(sprites, s);
+
+    return s;
+}
+
 int a_sprite_w(const Sprite* const s)
 {
     return s->w;

@@ -25,13 +25,12 @@
 #define FONT_SPACE       1
 #define FONT_BLANK_SPACE 3
 
-#define CHARS_NUM 93
-
 typedef struct Font {
     Sprite* sprites[NUM_ASCII];
     int maxWidth;
 } Font;
 
+#define CHARS_NUM 93
 static const char const chars[CHARS_NUM] = {
     'A', 'a', 'B', 'b', 'C', 'c', 'D', 'd', 'E', 'e', 'F', 'f', 'G', 'g',
     'H', 'h', 'I', 'i', 'J', 'j', 'K', 'k', 'L', 'l', 'M', 'm', 'N', 'n',
@@ -42,23 +41,20 @@ static const char const chars[CHARS_NUM] = {
     '(', ')', '[', ']', '{', '}', '.', ',', '~', ':', ';', '%', '^', '#', '<', '>', '|'
 };
 
+static List* fontsList;
 static Font** fonts;
-static int numFonts;
 
 static int a_font_charIndex(const char c);
 
 void a_font__set(void)
 {
+    fontsList = a_list_set();
     fonts = NULL;
-    numFonts = 0;
 }
 
 void a_font__free(void)
 {
-    for(int i = 0; i < numFonts; i++) {
-        free(fonts[i]);
-    }
-
+    a_list_freeContent(fontsList);
     free(fonts);
 }
 
@@ -72,22 +68,15 @@ int a_font_load(Sheet* const sheet, const int sx, const int sy, const int sw, co
 
     f->maxWidth = 0;
 
-    Font** const tempFonts = fonts;
-    fonts = malloc(++(numFonts) * sizeof(Font*));
-
-    for(int i = numFonts - 1; i--; ) {
-        fonts[i] = tempFonts[i];
-    }
-
-    fonts[numFonts - 1] = f;
-    free(tempFonts);
+    a_list_addLast(fontsList, f);
+    free(fonts);
+    fonts = (Font**)a_list_getArray(fontsList);
 
     int x = 0;
     int y = 0;
     int y2 = 0;
 
     const Pixel limit = sheet->limit;
-
     Sheet* const sheet2 = a_sheet_fromSheet(sheet, sx, sy, sw, sh);
 
     do {
@@ -137,7 +126,7 @@ int a_font_load(Sheet* const sheet, const int sx, const int sy, const int sw, co
 
     a_sheet_free(sheet2);
 
-    return numFonts - 1;
+    return a_list_size(fontsList) - 1;
 }
 
 int a_font_loadRGB(Sheet* const sheet, const int sx, const int sy, const int sw, const int sh, const int zoom, const FontLoad loader, const uint8_t r, const uint8_t g, const uint8_t b)
@@ -155,12 +144,47 @@ int a_font_loadRGB(Sheet* const sheet, const int sx, const int sy, const int sw,
             Pixel* d = s->data;
 
             for(int j = s->w * s->h; j--; d++) {
-                if(*d != t) *d = colour;
+                if(*d != t) {
+                    *d = colour;
+                }
             }
         }
     }
 
     return index;
+}
+
+int a_font_copyRGB(const int font, const uint8_t r, const uint8_t g, const uint8_t b)
+{
+    const Font* const src = fonts[font];
+    Font* const f = malloc(sizeof(Font));
+    const Pixel colour = a_screen_makePixel(r, g, b);
+
+    for(int i = NUM_ASCII; i--; ) {
+        if(src->sprites[i]) {
+            f->sprites[i] = a_sprite_clone(src->sprites[i]);
+
+            Sprite* const s = f->sprites[i];
+            const Pixel t = s->t;
+            Pixel* d = s->data;
+
+            for(int j = s->w * s->h; j--; d++) {
+                if(*d != t) {
+                    *d = colour;
+                }
+            }
+        } else {
+            f->sprites[i] = NULL;
+        }
+    }
+
+    f->maxWidth = src->maxWidth;
+
+    a_list_addLast(fontsList, f);
+    free(fonts);
+    fonts = (Font**)a_list_getArray(fontsList);
+
+    return a_list_size(fontsList) - 1;
 }
 
 int a_font_text(const FontAlign align, int x, const int y, const int index, const Blit_t draw, const char* const text)
