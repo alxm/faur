@@ -24,7 +24,7 @@
 #include "a2x_pack_screen.p.h"
 #include "a2x_pack_sprite.p.h"
 
-typedef enum Blit_t {NCNT, NCT, CNT, CT} Blit_t;
+typedef enum Blit_t {A_NCNT, A_NCT, A_CNT, A_CT} Blit_t;
 
 /*
     Blitters
@@ -57,13 +57,5 @@ a__blit_makeH(a75rgb,  (const Sprite* const s, const int x, const int y, const i
 #define a_blit_c (f, s)    (f)((s), (a_width - (s)->w) / 2, (a_height - (s)->h) / 2)
 #define a_blit_ch(f, s, y) (f)((s), (a_width - (s)->w) / 2, (y))
 #define a_blit_cv(f, s, x) (f)((s), (x),                    (a_height - (s)->h) / 2)
-
-/*
-    Other stuff
-*/
-
-#define a_blit_putBackground(s) memcpy(a_pixels, (s)->data, A_SCREEN_SIZE)
-#define a_blit_getBackground(s) memcpy((s)->data, a_pixels, A_SCREEN_SIZE)
-extern void a_blit_getScreen(Pixel* dst, const Rect area);
 
 #endif // A2X_PACK_BLIT_PH

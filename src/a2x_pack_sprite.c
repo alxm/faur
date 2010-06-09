@@ -93,7 +93,7 @@ Sprite* a_sprite_makeBlank(const int w, const int h)
 
         s->spans[i][0][0] = 0;
         s->spans[i][0][1] = w;
-        s->spans[i][0][2] = (s->spans[i][0][1] - s->spans[i][0][0]) << 1;
+        s->spans[i][0][2] = s->spans[i][0][1] - s->spans[i][0][0];
     }
 
     a_list_addLast(sprites, s);

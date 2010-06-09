@@ -254,6 +254,17 @@ void a_screen_custom(void (*f)(void* const v), void* const v)
     a_screen_customItem = v;
 }
 
+void a_screen_copyPart(Pixel* dst, const int x, const int y, const int w, const int h)
+{
+    const Pixel* screen = a_pixels + y * a_width + x;
+
+    for(int i = h; i--; ) {
+        memcpy(dst, screen, w * sizeof(Pixel));
+        dst += w;
+        screen += a_width;
+    }
+}
+
 static void setSDLScreen(void)
 {
     if(doubled) {

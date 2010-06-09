@@ -351,19 +351,3 @@ a__blit_make(argb, (const Sprite* const s, const int x, const int y, const fix8 
 a__blit_make(a25rgb, (const Sprite* const s, const int x, const int y, const int r, const int g, const int b))
 a__blit_make(a50rgb, (const Sprite* const s, const int x, const int y, const int r, const int g, const int b))
 a__blit_make(a75rgb, (const Sprite* const s, const int x, const int y, const int r, const int g, const int b))
-
-/*
-    Other stuff
-*/
-
-void a_blit_getScreen(Pixel* dst, const Rect area)
-{
-    const Pixel* screen = a_pixels + area.y * a_width + area.x;
-    const int w = area.w;
-
-    for(int i = area.h; i--; ) {
-        memcpy(dst, screen, w * sizeof(Pixel));
-        dst += w;
-        screen += a_width;
-    }
-}

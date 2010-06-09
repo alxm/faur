@@ -71,6 +71,7 @@ extern int a_height;
 
 #define a_screen_new()          malloc(A_SCREEN_SIZE)
 #define a_screen_copy(dst, src) memcpy((dst), (src), A_SCREEN_SIZE)
+extern void a_screen_copyPart(Pixel* dst, const int x, const int y, const int w, const int h);
 
 #define a_screen_dup(src)                 \
 ({                                        \
