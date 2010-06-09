@@ -383,6 +383,11 @@ void a_input_waitFor(Input* const i)
     } while(!a_input_getUnpress(i));
 }
 
+int a_input_tappedScreen(void)
+{
+    return mouse.tap;
+}
+
 int a_input_touchedPoint(const int x, const int y)
 {
     return mouse.tap

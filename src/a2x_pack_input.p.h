@@ -42,6 +42,8 @@ extern char* a_input_name(const Input* const i);
 extern int a_input_working(const Input* const i);
 
 extern void a_input_waitFor(Input* const i);
+
+extern int a_input_tappedScreen(void);
 extern int a_input_touchedPoint(const int x, const int y);
 extern int a_input_touchedRect(const int x, const int y, const int w, const int h);
 
