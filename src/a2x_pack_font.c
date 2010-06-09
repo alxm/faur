@@ -44,7 +44,7 @@ static const char const chars[CHARS_NUM] = {
 static List* fontsList;
 static Font** fonts;
 
-static int a_font_charIndex(const char c);
+static int charIndex(const char c);
 
 void a_font__set(void)
 {
@@ -58,7 +58,7 @@ void a_font__free(void)
     free(fonts);
 }
 
-int a_font_load(Sheet* const sheet, const int sx, const int sy, const int sw, const int sh, const int zoom, const FontLoad loader)
+int a_font_load(Sheet* const sheet, const int sx, const int sy, const int zoom, const FontLoad loader)
 {
     Font* const f = malloc(sizeof(Font));
 
@@ -69,35 +69,35 @@ int a_font_load(Sheet* const sheet, const int sx, const int sy, const int sw, co
     f->maxWidth = 0;
 
     a_list_addLast(fontsList, f);
+
     free(fonts);
     fonts = (Font**)a_list_getArray(fontsList);
 
-    int x = 0;
-    int y = 0;
-    int y2 = 0;
+    int x = sx;
+    int y = sy;
+    int y2 = sy;
 
     const Pixel limit = sheet->limit;
-    Sheet* const sheet2 = a_sheet_fromSheet(sheet, sx, sy, sw, sh);
 
     do {
         y2++;
-    } while(a_sprite__getPixel(sheet2, x, y2) != limit);
+    } while(a_sprite__getPixel(sheet, x, y2) != limit);
 
     int start = 0;
     int end = CHARS_NUM - 1;
 
 	switch(loader & (~A_LOAD_CAPS)) {
 		case A_LOAD_AN: {
-            end = a_font_charIndex('9');
+            end = charIndex('9');
 		} break;
 
 		case A_LOAD_A: {
-            end = a_font_charIndex('z');
+            end = charIndex('z');
 		} break;
 
 		case A_LOAD_N: {
-			start = a_font_charIndex('0');
-            end = a_font_charIndex('9');
+			start = charIndex('0');
+            end = charIndex('9');
 		} break;
 	}
 
@@ -107,12 +107,12 @@ int a_font_load(Sheet* const sheet, const int sx, const int sy, const int sw, co
 
         do {
             x++;
-        } while(a_sprite__getPixel(sheet2, x, y) != limit);
+        } while(a_sprite__getPixel(sheet, x, y) != limit);
 
         int areaw = x - areax;
         int areah = y2 - y;
 
-        f->sprites[(int)chars[i]] = a_sprite_makeZoomed(sheet2, areax, areay, areaw, areah, zoom);
+        f->sprites[(int)chars[i]] = a_sprite_makeZoomed(sheet, areax, areay, areaw, areah, zoom);
 
         if(((loader & A_LOAD_N) && chars[i] == '0') || chars[i] == 'A') {
             f->maxWidth = areaw;
@@ -124,40 +124,14 @@ int a_font_load(Sheet* const sheet, const int sx, const int sy, const int sw, co
         }
     }
 
-    a_sheet_free(sheet2);
-
     return a_list_size(fontsList) - 1;
 }
 
-int a_font_loadRGB(Sheet* const sheet, const int sx, const int sy, const int sw, const int sh, const int zoom, const FontLoad loader, const uint8_t r, const uint8_t g, const uint8_t b)
-{
-    const int index = a_font_load(sheet, sx, sy, sw, sh, zoom, loader);
-    Font* const f = fonts[index];
-
-    const Pixel colour = a_screen_makePixel(r, g, b);
-
-    for(int i = NUM_ASCII; i--; ) {
-        Sprite* const s = f->sprites[i];
-
-        if(s) {
-            const Pixel t = s->t;
-            Pixel* d = s->data;
-
-            for(int j = s->w * s->h; j--; d++) {
-                if(*d != t) {
-                    *d = colour;
-                }
-            }
-        }
-    }
-
-    return index;
-}
-
-int a_font_copyRGB(const int font, const uint8_t r, const uint8_t g, const uint8_t b)
+int a_font_copy(const int font, const uint8_t r, const uint8_t g, const uint8_t b)
 {
     const Font* const src = fonts[font];
     Font* const f = malloc(sizeof(Font));
+
     const Pixel colour = a_screen_makePixel(r, g, b);
 
     for(int i = NUM_ASCII; i--; ) {
@@ -181,6 +155,7 @@ int a_font_copyRGB(const int font, const uint8_t r, const uint8_t g, const uint8
     f->maxWidth = src->maxWidth;
 
     a_list_addLast(fontsList, f);
+
     free(fonts);
     fonts = (Font**)a_list_getArray(fontsList);
 
@@ -345,7 +320,7 @@ int a_font_width(const int index, const char* const text)
     return x - FONT_SPACE;
 }
 
-static int a_font_charIndex(const char c)
+static int charIndex(const char c)
 {
     for(int i = 0; i < CHARS_NUM; i++) {
         if(chars[i] == c) return i;

@@ -36,9 +36,8 @@ typedef enum FontAlign {
     A_LEFT = 1, A_MIDDLE = 2, A_RIGHT = 4, A_SPACED = 8, A_SAFE = 16
 } FontAlign;
 
-extern int a_font_load(Sheet* const sheet, const int sx, const int sy, const int sw, const int sh, const int zoom, const FontLoad loader);
-extern int a_font_loadRGB(Sheet* const sheet, const int sx, const int sy, const int sw, const int sh, const int zoom, const FontLoad loader, const uint8_t r, const uint8_t g, const uint8_t b);
-extern int a_font_copyRGB(const int font, const uint8_t r, const uint8_t g, const uint8_t b);
+extern int a_font_load(Sheet* const sheet, const int sx, const int sy, const int zoom, const FontLoad loader);
+extern int a_font_copy(const int font, const uint8_t r, const uint8_t g, const uint8_t b);
 
 extern int a_font_text(const FontAlign align, int x, const int y, const int index, const Blit_t draw, const char* const text);
 extern int a_font_safe(const FontAlign align, int x, const int y, const int index, const Blit_t draw, const char* const text);
