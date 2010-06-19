@@ -174,12 +174,12 @@ void (*a_blit_blitters[])(const Sprite* const s, const int x, const int y) = {
             continue;                                                       \
         }
 
-#define CT_LEFT_START                                                    \
-        if(j < spansNum && s->spans[i][j][0] < xLclip) {                 \
-            const Pixel* src = src2 + xLclip;                            \
-            Pixel* dst = dst2 + xLclip;                                  \
-                                                                         \
-            for(int k = s->spans[i][j][1] - xLclip; k--; dst++, src++) {
+#define CT_LEFT_START                                                                             \
+        if(j < spansNum && s->spans[i][j][0] < xLclip) {                                          \
+            const Pixel* src = src2 + xLclip;                                                     \
+            Pixel* dst = dst2 + xLclip;                                                           \
+                                                                                                  \
+            for(int k = a_math_min(s->spans[i][j][1] - xLclip, screenWidth); k--; dst++, src++) {
 
 #define CT_LEFT_END \
             }       \
