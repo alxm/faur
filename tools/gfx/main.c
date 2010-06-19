@@ -11,35 +11,29 @@ void a2x(void)
 
 #define TYPE uint16_t
 
-#define A_GC
-#define a_mem_gcOn()
-#define a_mem_gcOff()
-
 void Main(void)
 {
     if(a_argsNum != 4) {
-        a_error("%s inputFile file.c file.h", a_args[0]);
+        printf("Error: %s inputFile file.c file.h", a_args[0]);
         return;
     }
-
-    a_mem_gcOn();
 
     char* const inputFile = a_args[1];
     char* const cFile = a_args[2];
     char* const hFile = a_args[3];
 
-    char* const graphicName = A_GC a_str_extractName(inputFile);
-    Sheet* const sheet = a_blit_makeSheetFromFile(inputFile);
+    char* const graphicName = a_str_extractName(inputFile);
+    Sheet* const sheet = a_sheet_fromFile(inputFile);
 
-    const int width = sheet->w;
-    const int height = sheet->h;
+    const int width = a_sheet_w(sheet);
+    const int height = a_sheet_h(sheet);
 
     int eLength;
     const int oLength = width * height;
 
-    TYPE* const dst = a_mem_encodeRLE(sheet->data, oLength, sizeof(TYPE), &eLength);
+    TYPE* const dst = a_mem_encodeRLE(a_sheet_data(sheet), oLength, sizeof(TYPE), &eLength);
 
-    a_blit_freeSheet(sheet);
+    a_sheet_free(sheet);
 
     File* const h = a_file_openWriteText(hFile);
     File* const c = a_file_openWriteText(cFile);
@@ -74,6 +68,4 @@ void Main(void)
     a_file_close(c);
 
     printf("Wrote '%s' and '%s', saved %d%%\n", cFile, hFile, 100 - 100 * eLength / oLength);
-
-    a_mem_gcOff();
 }

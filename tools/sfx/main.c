@@ -14,7 +14,7 @@ void a2x(void)
 void Main(void)
 {
     if(a_argsNum != 4) {
-        a_error("%s inputFile file.c file.h", a_args[0]);
+        printf("Error: %s inputFile file.c file.h", a_args[0]);
         return;
     }
 
