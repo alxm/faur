@@ -51,6 +51,8 @@ extern void a_animation_resume(Animation* const a);
 extern void a_animation_reset(Animation* const a);
 extern int a_animation_frameIndex(const Animation* const a);
 
+extern int a_animation_onLastFrame(Animation* const a);
+
 extern Animation* a_animation_clone(const Animation* const src);
 extern List* a_animation_sprites(const Animation* const a);
 

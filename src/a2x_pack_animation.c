@@ -180,12 +180,28 @@ void a_animation_resume(Animation* const a)
 void a_animation_reset(Animation* const a)
 {
     a->frame = 0;
-    a->current = 0;
+
+    if(a->dir == 1) {
+        a->current = 0;
+    } else {
+        a->current = a->num - 1;
+    }
 }
 
 int a_animation_frameIndex(const Animation* const a)
 {
     return a->current;
+}
+
+int a_animation_onLastFrame(Animation* const a)
+{
+    if(a->frame + a->num >= a->framesPerCycle) {
+        const int n = a->current + a->dir;
+
+        return n < 0 || n >= a->num;
+    }
+
+    return 0;
 }
 
 Animation* a_animation_clone(const Animation* const src)
