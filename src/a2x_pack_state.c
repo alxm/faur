@@ -51,6 +51,7 @@ int a_state_running(void)
 
     if(changed) {
         first = 1;
+        a_fps_end();
     }
 
     return !changed;
