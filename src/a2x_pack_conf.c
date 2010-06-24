@@ -22,6 +22,8 @@
 
 void a_conf__set(void)
 {
+    a_out("You can edit %s", a2x_str("conf"));
+
     FileReader* const f = a_file_makeReader(a2x_str("conf"));
 
     while(a_file_readLine(f)) {
@@ -33,38 +35,18 @@ void a_conf__set(void)
         }
 
         char* const a = a_str_getPrefixFirstFind(s, '=');
-
-        if(!a) {
-            free(s);
-            continue;
-        }
-
         char* const b = a_str_getSuffixFirstFind(s, '=');
 
-        if(!b) {
-            free(s);
-            free(a);
-            continue;
+        if(a && b) {
+            char* const key = a_str_trim(a);
+            char* const value = a_str_trim(b);
+
+            a2x_set(key, value);
+
+            free(key);
+            free(value);
         }
 
-        const int val = atoi(b);
-
-        #define var(s) a_str_same(a, (s))
-        #define arg(s) a_str_same(b, (s))
-
-        if(var("sound")) {
-            a2x_set("sound", b);
-        } else if(var("musicScale")) {
-            if(val >= 0 && val <= 100) {
-                a2x_set("musicScale", b);
-            }
-        } else if(var("sfxScale")) {
-            if(val >= 0 && val <= 100) {
-                a2x_set("sfxScale", b);
-            }
-        }
-
-        free(s);
         free(a);
         free(b);
     }

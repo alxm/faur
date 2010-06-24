@@ -20,6 +20,8 @@
 #ifndef A2X_PACK_CONF_VH
 #define A2X_PACK_CONF_VH
 
+#include "a2x_app_main.v.h"
+
 extern void a_conf__set(void);
 
 #endif // A2X_PACK_CONF_VH

@@ -25,7 +25,6 @@
 #include "a2x_app_settings.p.h"
 
 #include "a2x_pack_file.p.h"
-#include "a2x_pack_sound.p.h"
 #include "a2x_pack_str.p.h"
 
 #endif // A2X_PACK_CONF_PH

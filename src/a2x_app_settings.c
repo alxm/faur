@@ -25,7 +25,7 @@ typedef enum Setting_t {
 } Setting_t;
 
 typedef enum Update_t {
-    A_CONSTANT, A_UPDATE, A_BLOCKED
+    A_SET_ONCE, A_SET_ANY, A_SET_FROZEN
 } Update_t;
 
 typedef struct Setting {
@@ -49,29 +49,29 @@ void a2x__defaults(void)
 {
     settings = a_hash_set(32);
 
-    add(A_STR, A_CONSTANT, "title", "Untitled");
-    add(A_STR, A_CONSTANT, "version", "0");
-    add(A_STR, A_CONSTANT, "author", "Unknown");
-    add(A_STR, A_CONSTANT, "compiled", "?");
-    add(A_STR, A_CONSTANT, "conf", "a2x.cfg");
+    add(A_STR, A_SET_ONCE, "title", "Untitled");
+    add(A_STR, A_SET_ONCE, "version", "0");
+    add(A_STR, A_SET_ONCE, "author", "Unknown");
+    add(A_STR, A_SET_ONCE, "compiled", "?");
+    add(A_STR, A_SET_ONCE, "conf", "a2x.cfg");
 
-    add(A_BOOL, A_UPDATE, "quiet", "0");
-    add(A_BOOL, A_CONSTANT, "window", "0");
-    add(A_BOOL, A_CONSTANT, "tool", "0");
-    add(A_BOOL, A_CONSTANT, "gp2xMenu", "0");
-    add(A_BOOL, A_UPDATE, "trackFps", "0");
-    add(A_BOOL, A_UPDATE, "sound", "0");
-    add(A_BOOL, A_UPDATE, "trackMouse", "0");
-    add(A_BOOL, A_CONSTANT, "fakeScreen", "0");
-    add(A_BOOL, A_CONSTANT, "doubleRes", "0");
-    add(A_BOOL, A_CONSTANT, "fixWizTear", "0");
+    add(A_BOOL, A_SET_ANY, "quiet", "0");
+    add(A_BOOL, A_SET_ONCE, "window", "0");
+    add(A_BOOL, A_SET_ONCE, "tool", "0");
+    add(A_BOOL, A_SET_ONCE, "gp2xMenu", "0");
+    add(A_BOOL, A_SET_ANY, "trackFps", "0");
+    add(A_BOOL, A_SET_ANY, "sound", "0");
+    add(A_BOOL, A_SET_ANY, "trackMouse", "0");
+    add(A_BOOL, A_SET_ONCE, "fakeScreen", "0");
+    add(A_BOOL, A_SET_ONCE, "doubleRes", "0");
+    add(A_BOOL, A_SET_ONCE, "fixWizTear", "0");
 
-    add(A_INT, A_UPDATE, "mhz", "0");
-    add(A_INT, A_CONSTANT, "width", "0");
-    add(A_INT, A_CONSTANT, "height", "0");
-    add(A_INT, A_CONSTANT, "fps", "60");
-    add(A_INT, A_UPDATE, "musicScale", "100");
-    add(A_INT, A_UPDATE, "sfxScale", "100");
+    add(A_INT, A_SET_ANY, "mhz", "0");
+    add(A_INT, A_SET_ONCE, "width", "0");
+    add(A_INT, A_SET_ONCE, "height", "0");
+    add(A_INT, A_SET_ONCE, "fps", "60");
+    add(A_INT, A_SET_ANY, "musicScale", "100");
+    add(A_INT, A_SET_ANY, "sfxScale", "100");
 }
 
 void a2x_set(const char* const key, const char* const val)
@@ -171,8 +171,8 @@ static void set(const char* const key, const char* const val, int respect)
     if(s == NULL) {
         a_error("Setting '%s' does not exist", key);
         return;
-    } else if(s->update == A_BLOCKED && respect) {
-        a_error("Setting '%s' is constant", key);
+    } else if(s->update == A_SET_FROZEN && respect) {
+        a_error("Setting '%s' is frozen", key);
         return;
     }
 
@@ -190,7 +190,7 @@ static void set(const char* const key, const char* const val, int respect)
         } break;
     }
 
-    if(s->update == A_CONSTANT) {
-        s->update = A_BLOCKED;
+    if(s->update == A_SET_ONCE) {
+        s->update = A_SET_FROZEN;
     }
 }
