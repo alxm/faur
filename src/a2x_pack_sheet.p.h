@@ -29,7 +29,8 @@
 typedef struct Sheet Sheet;
 
 extern Sheet* a_sheet_fromFile(const char* const path);
-extern Sheet* a_sheet_fromData(Pixel* data, const int w, const int h);
+#define a_sheet_fromData(g) a_sheet__fromData(gfx_##g##_data, gfx_##g##_w, gfx_##g##_h, sizeof(gfx_##g##_data))
+extern Sheet* a_sheet__fromData(Pixel* data, const int w, const int h, const int size);
 extern Sheet* a_sheet_fromSheet(const Sheet* const sheet, const int x, const int y, const int w, const int h);
 extern void a_sheet_free(Sheet* const s);
 
