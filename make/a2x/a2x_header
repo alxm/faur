@@ -28,4 +28,14 @@ done
 putline ""
 putline "#endif // A2X_H"
 
+GEANY_TAGS_DIR=~/.geany/tags
+
+if [ -d $GEANY_TAGS_DIR ]
+then
+    sync
+    INC_FILE="`readlink -f $FILE`"
+    echo "Writing Geany tags file"
+    geany -g $GEANY_TAGS_DIR/a2x.c.tags $INC_FILE
+fi
+
 exit 0
