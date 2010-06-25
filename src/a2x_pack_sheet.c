@@ -80,7 +80,7 @@ Sheet* a_sheet_fromFile(const char* const path)
     return s;
 }
 
-Sheet* a_sheet__fromData(Pixel* data, const int w, const int h, const int size)
+Sheet* a_sheet__fromData(const Pixel* const data, const int w, const int h, const int size)
 {
     Sheet* const s = malloc(sizeof(Sheet));
 

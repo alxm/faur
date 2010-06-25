@@ -132,7 +132,21 @@ void a_music_stop(void)
     }
 }
 
-Sound* a__sfx_load(uint16_t* const data, const int size)
+Sound* a_sfx_fromFile(const char* const path)
+{
+    if(a2x_bool("sound")) {
+        Sound* const s = Mix_LoadWAV(path);
+
+        s->volume = (float)a2x_int("sfxScale") / 100 * a__volume;
+        a_list_addLast(sfxList, s);
+
+        return s;
+    } else {
+        return NULL;
+    }
+}
+
+Sound* a_sfx__fromData(const uint16_t* const data, const int size)
 {
     if(a2x_bool("sound")) {
         int decLength;
