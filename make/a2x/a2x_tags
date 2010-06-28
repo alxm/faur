@@ -1,0 +1,17 @@
+#!/bin/sh
+
+if [ $# -ne 1 ]
+then
+    echo "Usage: `basename $0` HeaderFile"
+    exit 1
+fi
+
+FILE="`readlink -f $1`"
+GEANY_TAGS_DIR=~/.geany/tags
+
+if [ -d $GEANY_TAGS_DIR ]
+then
+    geany -g $GEANY_TAGS_DIR/a2x.c.tags $FILE
+fi
+
+exit 0
