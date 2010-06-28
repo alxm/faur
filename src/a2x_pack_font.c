@@ -132,7 +132,7 @@ int a_font_copy(const int font, const uint8_t r, const uint8_t g, const uint8_t 
     const Font* const src = fonts[font];
     Font* const f = malloc(sizeof(Font));
 
-    const Pixel colour = a_screen_makePixel(r, g, b);
+    const Pixel colour = a_pixel_make(r, g, b);
 
     for(int i = NUM_ASCII; i--; ) {
         if(src->sprites[i]) {

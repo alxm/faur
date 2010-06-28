@@ -221,8 +221,8 @@ void (*a_blit_blitters[])(const Sprite* const s, const int x, const int y) = {
 #define BLIT_plain_do \
     *dst = *src;
 
-#define BLIT_rgb_setup                               \
-    const Pixel color = a_screen_makePixel(r, g, b);
+#define BLIT_rgb_setup                         \
+    const Pixel color = a_pixel_make(r, g, b);
 
 #define BLIT_rgb_do \
     *dst = color;
@@ -234,106 +234,106 @@ void (*a_blit_blitters[])(const Sprite* const s, const int x, const int y) = {
 
 #define BLIT_a_setup
 
-#define BLIT_a_do                                             \
-    const Pixel cd = *dst;                                    \
-    const Pixel cs = *src;                                    \
-                                                              \
-    const int R = a_screen_pixelRed(cd);                      \
-    const int G = a_screen_pixelGreen(cd);                    \
-    const int B = a_screen_pixelBlue(cd);                     \
-                                                              \
-    *dst = a_screen_makePixel(                                \
-        R + a_fix8_fixtoi((a_screen_pixelRed(cs) - R) * a),   \
-        G + a_fix8_fixtoi((a_screen_pixelGreen(cs) - G) * a), \
-        B + a_fix8_fixtoi((a_screen_pixelBlue(cs) - B) * a)   \
+#define BLIT_a_do                                       \
+    const Pixel cd = *dst;                              \
+    const Pixel cs = *src;                              \
+                                                        \
+    const int R = a_pixel_red(cd);                      \
+    const int G = a_pixel_green(cd);                    \
+    const int B = a_pixel_blue(cd);                     \
+                                                        \
+    *dst = a_pixel_make(                                \
+        R + a_fix8_fixtoi((a_pixel_red(cs) - R) * a),   \
+        G + a_fix8_fixtoi((a_pixel_green(cs) - G) * a), \
+        B + a_fix8_fixtoi((a_pixel_blue(cs) - B) * a)   \
     );
 
 #define BLIT_alpha_setup     \
     const fix8 a = s->alpha;
 
-#define BLIT_alpha_do                                         \
-    const Pixel cd = *dst;                                    \
-    const Pixel cs = *src;                                    \
-                                                              \
-    const int R = a_screen_pixelRed(cd);                      \
-    const int G = a_screen_pixelGreen(cd);                    \
-    const int B = a_screen_pixelBlue(cd);                     \
-                                                              \
-    *dst = a_screen_makePixel(                                \
-        R + a_fix8_fixtoi((a_screen_pixelRed(cs) - R) * a),   \
-        G + a_fix8_fixtoi((a_screen_pixelGreen(cs) - G) * a), \
-        B + a_fix8_fixtoi((a_screen_pixelBlue(cs) - B) * a)   \
+#define BLIT_alpha_do                                   \
+    const Pixel cd = *dst;                              \
+    const Pixel cs = *src;                              \
+                                                        \
+    const int R = a_pixel_red(cd);                      \
+    const int G = a_pixel_green(cd);                    \
+    const int B = a_pixel_blue(cd);                     \
+                                                        \
+    *dst = a_pixel_make(                                \
+        R + a_fix8_fixtoi((a_pixel_red(cs) - R) * a),   \
+        G + a_fix8_fixtoi((a_pixel_green(cs) - G) * a), \
+        B + a_fix8_fixtoi((a_pixel_blue(cs) - B) * a)   \
     );
 
 #define BLIT_argb_setup
 
-#define BLIT_argb_do                       \
-    const Pixel cd = *dst;                 \
-                                           \
-    const int R = a_screen_pixelRed(cd);   \
-    const int G = a_screen_pixelGreen(cd); \
-    const int B = a_screen_pixelBlue(cd);  \
-                                           \
-    *dst = a_screen_makePixel(             \
-        R + a_fix8_fixtoi((r - R) * a),    \
-        G + a_fix8_fixtoi((g - G) * a),    \
-        B + a_fix8_fixtoi((b - B) * a)     \
+#define BLIT_argb_do                    \
+    const Pixel cd = *dst;              \
+                                        \
+    const int R = a_pixel_red(cd);      \
+    const int G = a_pixel_green(cd);    \
+    const int B = a_pixel_blue(cd);     \
+                                        \
+    *dst = a_pixel_make(                \
+        R + a_fix8_fixtoi((r - R) * a), \
+        G + a_fix8_fixtoi((g - G) * a), \
+        B + a_fix8_fixtoi((b - B) * a)  \
     );
 
 #define BLIT_a25rgb_setup
 
-#define BLIT_a25rgb_do                     \
-    const Pixel cd = *dst;                 \
-                                           \
-    const int R = a_screen_pixelRed(cd);   \
-    const int G = a_screen_pixelGreen(cd); \
-    const int B = a_screen_pixelBlue(cd);  \
-                                           \
-    *dst = a_screen_makePixel(             \
-        (R >> 1) + ((R + r) >> 2),         \
-        (G >> 1) + ((G + g) >> 2),         \
-        (B >> 1) + ((B + b) >> 2)          \
+#define BLIT_a25rgb_do               \
+    const Pixel cd = *dst;           \
+                                     \
+    const int R = a_pixel_red(cd);   \
+    const int G = a_pixel_green(cd); \
+    const int B = a_pixel_blue(cd);  \
+                                     \
+    *dst = a_pixel_make(             \
+        (R >> 1) + ((R + r) >> 2),   \
+        (G >> 1) + ((G + g) >> 2),   \
+        (B >> 1) + ((B + b) >> 2)    \
     );
 
 #define BLIT_a50rgb_setup
 
-#define BLIT_a50rgb_do                     \
-    const Pixel cd = *dst;                 \
-                                           \
-    const int R = a_screen_pixelRed(cd);   \
-    const int G = a_screen_pixelGreen(cd); \
-    const int B = a_screen_pixelBlue(cd);  \
-                                           \
-    *dst = a_screen_makePixel(             \
-        (R + r) >> 1,                      \
-        (G + g) >> 1,                      \
-        (B + b) >> 1                       \
+#define BLIT_a50rgb_do               \
+    const Pixel cd = *dst;           \
+                                     \
+    const int R = a_pixel_red(cd);   \
+    const int G = a_pixel_green(cd); \
+    const int B = a_pixel_blue(cd);  \
+                                     \
+    *dst = a_pixel_make(             \
+        (R + r) >> 1,                \
+        (G + g) >> 1,                \
+        (B + b) >> 1                 \
     );
 
 #define BLIT_a75rgb_setup
 
-#define BLIT_a75rgb_do                     \
-    const Pixel cd = *dst;                 \
-                                           \
-    const int R = a_screen_pixelRed(cd);   \
-    const int G = a_screen_pixelGreen(cd); \
-    const int B = a_screen_pixelBlue(cd);  \
-                                           \
-    *dst = a_screen_makePixel(             \
-        (R >> 2) + (r >> 2) + (r >> 1),    \
-        (G >> 2) + (g >> 2) + (g >> 1),    \
-        (B >> 2) + (b >> 2) + (b >> 1)     \
+#define BLIT_a75rgb_do                  \
+    const Pixel cd = *dst;              \
+                                        \
+    const int R = a_pixel_red(cd);      \
+    const int G = a_pixel_green(cd);    \
+    const int B = a_pixel_blue(cd);     \
+                                        \
+    *dst = a_pixel_make(                \
+        (R >> 2) + (r >> 2) + (r >> 1), \
+        (G >> 2) + (g >> 2) + (g >> 1), \
+        (B >> 2) + (b >> 2) + (b >> 1)  \
     );
 
 /*
     Blitters
 */
 
-#define a__blit_make2(area, type, params)  \
-    void a_blit_##area##_##type params     \
-    {                                      \
-        BLIT_##type##_setup                \
-        area(BLIT_##type##_do)             \
+#define a__blit_make2(area, type, params) \
+    void a_blit_##area##_##type params    \
+    {                                     \
+        BLIT_##type##_setup               \
+        area(BLIT_##type##_do)            \
     }
 
 #define a__blit_make(type, params)    \

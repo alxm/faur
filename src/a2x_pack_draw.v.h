@@ -20,6 +20,6 @@
 #ifndef A2X_PACK_DRAW_VH
 #define A2X_PACK_DRAW_VH
 
-//
+#include "a2x_pack_pixel.v.h"
 
 #endif // A2X_PACK_DRAW_VH

@@ -66,7 +66,7 @@ void a_draw_line(int x1, int y1, int x2, int y2, const Pixel p)
         const int yinc2 = (denominator == deltax) ? yinct : 0;
 
         for(int i = denominator + 1; i--; x1 += xinc1, y1 += yinc1) {
-            a_draw_putPixel(x1, y1, p);
+            a_pixel_put(x1, y1, p);
             numerator += numeratorinc;
             if(numerator >= denominator) {
                 numerator -= denominator;
@@ -136,60 +136,63 @@ void a_draw_rectangle(const int x1, const int y1, const int x2, const int y2, co
     }
 }
 
-void a_draw_rectangleAlpha(const int x1, const int y1, const int x2, const int y2, const int r, const int g, const int b, const fix8 a)
+void a_draw_rectangleAlpha(const int x1, const int y1, const int x2, const int y2, const uint8_t r, const uint8_t g, const uint8_t b, const uint8_t a)
 {
-    Pixel* a_pixels2 = a_pixels + y1 * a_width + x1;
-    const int a_offset = a_width - (x2 - x1 + 1);
+    Pixel* dst = a_pixels + y1 * a_width + x1;
+    const int offset = a_width - (x2 - x1 + 1);
 
     for(int i = y2 - y1 + 1; i--; ) {
         for(int j = x2 - x1 + 1; j--; ) {
-            const Pixel a_colour = *a_pixels2;
-            _a_draw_pixelAlpha(r, g, b, a);
+            a_pixel__putAlpha(dst, r, g, b, a);
+            dst++;
         }
 
-        a_pixels2 += a_offset;
+        dst += offset;
     }
 }
 
-void a_draw_rectangle25(const int x1, const int y1, const int x2, const int y2, const int r, const int g, const int b)
+void a_draw_rectangle25(const int x1, const int y1, const int x2, const int y2, const uint8_t r, const uint8_t g, const uint8_t b)
 {
-    Pixel* a_pixels2 = a_pixels + y1 * a_width + x1;
-    const int a_offset = a_width - (x2 - x1 + 1);
+    Pixel* dst = a_pixels + y1 * a_width + x1;
+    const int offset = a_width - (x2 - x1 + 1);
 
     for(int i = y2 - y1 + 1; i--; ) {
         for(int j = x2 - x1 + 1; j--; ) {
-            const Pixel a_colour = *a_pixels2;
-            _a_draw_pixel25(r, g, b);
+            a_pixel__put25(dst, r, g, b);
+            dst++;
         }
-        a_pixels2 += a_offset;
+
+        dst += offset;
     }
 }
 
-void a_draw_rectangle50(const int x1, const int y1, const int x2, const int y2, const int r, const int g, const int b)
+void a_draw_rectangle50(const int x1, const int y1, const int x2, const int y2, const uint8_t r, const uint8_t g, const uint8_t b)
 {
-    Pixel* a_pixels2 = a_pixels + y1 * a_width + x1;
-    const int a_offset = a_width - (x2 - x1 + 1);
+    Pixel* dst = a_pixels + y1 * a_width + x1;
+    const int offset = a_width - (x2 - x1 + 1);
 
     for(int i = y2 - y1 + 1; i--; ) {
         for(int j = x2 - x1 + 1; j--; ) {
-            const Pixel a_colour = *a_pixels2;
-            _a_draw_pixel50(r, g, b);
+            a_pixel__put50(dst, r, g, b);
+            dst++;
         }
-        a_pixels2 += a_offset;
+
+        dst += offset;
     }
 }
 
-void a_draw_rectangle75(const int x1, const int y1, const int x2, const int y2, const int r, const int g, const int b)
+void a_draw_rectangle75(const int x1, const int y1, const int x2, const int y2, const uint8_t r, const uint8_t g, const uint8_t b)
 {
-    Pixel* a_pixels2 = a_pixels + y1 * a_width + x1;
-    const int a_offset = a_width - (x2 - x1 + 1);
+    Pixel* dst = a_pixels + y1 * a_width + x1;
+    const int offset = a_width - (x2 - x1 + 1);
 
     for(int i = y2 - y1 + 1; i--; ) {
         for(int j = x2 - x1 + 1; j--; ) {
-            const Pixel a_colour = *a_pixels2;
-            _a_draw_pixel75(r, g, b);
+            a_pixel__put75(dst, r, g, b);
+            dst++;
         }
-        a_pixels2 += a_offset;
+
+        dst += offset;
     }
 }
 
@@ -331,4 +334,108 @@ static int lineClipper(int* error, int* x1, int* y1, int* x2, int* y2)
     }
 
     return 0;
+}
+
+void a_draw_hline(const int x1, const int x2, const int y, const Pixel c)
+{
+    Pixel* p = a_pixels + y * a_width + x1;
+
+    for(int i = x2 - x1 + 1; i--; ) {
+        *p++ = c;
+    }
+}
+
+void a_draw_hlineAlpha(const int x1, const int x2, const int y, const uint8_t r, const uint8_t g, const uint8_t b, const uint8_t a)
+{
+    Pixel* dst = a_pixels + y * a_width + x1;
+
+    for(int i = x2 - x1 + 1; i--; ) {
+        a_pixel__putAlpha(dst, r, g, b, a);
+        dst++;
+    }
+}
+
+void a_draw_hline25(const int x1, const int x2, const int y, const uint8_t r, const uint8_t g, const uint8_t b)
+{
+    Pixel* dst = a_pixels + y * a_width + x1;
+
+    for(int i = x2 - x1 + 1; i--; ) {
+        a_pixel__put25(dst, r, g, b);
+        dst++;
+    }
+}
+
+void a_draw_hline50(const int x1, const int x2, const int y, const uint8_t r, const uint8_t g, const uint8_t b)
+{
+    Pixel* dst = a_pixels + y * a_width + x1;
+
+    for(int i = x2 - x1 + 1; i--; ) {
+        a_pixel__put50(dst, r, g, b);
+        dst++;
+    }
+}
+
+void a_draw_hline75(const int x1, const int x2, const int y, const uint8_t r, const uint8_t g, const uint8_t b)
+{
+    Pixel* dst = a_pixels + y * a_width + x1;
+
+    for(int i = x2 - x1 + 1; i--; ) {
+        a_pixel__put75(dst, r, g, b);
+        dst++;
+    }
+}
+
+void a_draw_vline(const int x, const int y1, const int y2, const Pixel c)
+{
+    const int width = a_width;
+    Pixel* p = a_pixels + y1 * width + x;
+
+    for(int i = y2 - y1 + 1; i--; ) {
+        *p = c;
+        p += width;
+    }
+}
+
+void a_draw_vlineAlpha(const int x, const int y1, const int y2, const uint8_t r, const uint8_t g, const uint8_t b, const uint8_t a)
+{
+    const int width = a_width;
+    Pixel* dst = a_pixels + y1 * width + x;
+
+    for(int i = y2 - y1 + 1; i--; ) {
+        a_pixel__putAlpha(dst, r, g, b, a);
+        dst += width;
+    }
+}
+
+void a_draw_vline25(const int x, const int y1, const int y2, const uint8_t r, const uint8_t g, const uint8_t b)
+{
+    const int width = a_width;
+    Pixel* dst = a_pixels + y1 * width + x;
+
+    for(int i = y2 - y1 + 1; i--; ) {
+        a_pixel__put25(dst, r, g, b);
+        dst += width;
+    }
+}
+
+void a_draw_vline50(const int x, const int y1, const int y2, const uint8_t r, const uint8_t g, const uint8_t b)
+{
+    const int width = a_width;
+    Pixel* dst = a_pixels + y1 * width + x;
+
+    for(int i = y2 - y1 + 1; i--; ) {
+        a_pixel__put50(dst, r, g, b);
+        dst += width;
+    }
+}
+
+void a_draw_vline75(const int x, const int y1, const int y2, const uint8_t r, const uint8_t g, const uint8_t b)
+{
+    const int width = a_width;
+    Pixel* dst = a_pixels + y1 * width + x;
+
+    for(int i = y2 - y1 + 1; i--; ) {
+        a_pixel__put75(dst, r, g, b);
+        dst += width;
+    }
 }

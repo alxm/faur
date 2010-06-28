@@ -20,47 +20,19 @@
 #ifndef A2X_PACK_SCREEN_PH
 #define A2X_PACK_SCREEN_PH
 
-#include <stdint.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/ioctl.h>
 
 #include <SDL/SDL.h>
 
-typedef uint16_t Pixel;
-
 #include "a2x_app_settings.p.h"
 
 #include "a2x_pack_draw.p.h"
+#include "a2x_pack_pixel.p.h"
 #include "a2x_pack_sound.p.h"
 #include "a2x_pack_str.p.h"
 #include "a2x_pack_time.p.h"
-
-#define A_BPP 16
-
-#define a_mask(x) ((1 << (x)) - 1)
-
-// RGB565
-#define a_screen_makePixel(r, g, b) \
-(                                   \
-    (                               \
-        (((r) >> 3) << 11)          \
-      | (((g) >> 2) << 5 )          \
-      | (((b) >> 3) << 0 )          \
-    ) & a_mask(16)                  \
-)
-
-#define a_screen_pixelRed(p)   ((((p) >> 11) & a_mask(5)) << 3)
-#define a_screen_pixelGreen(p) ((((p) >> 5 ) & a_mask(6)) << 2)
-#define a_screen_pixelBlue(p)  ((((p) >> 0 ) & a_mask(5)) << 3)
-
-#define a_screen_rgbToRaw(r, g, b) (((r) << 24) | ((g) << 16) | ((b) << 8))
-#define a_screen_rawRed(r)         (((r) >> 24) & 0xff)
-#define a_screen_rawGreen(r)       (((r) >> 16) & 0xff)
-#define a_screen_rawBlue(r)        (((r) >> 8 ) & 0xff)
-
-#define a_screen_getPixel(x, y) (*(a_pixels + (y) * a_width + (x)))
-#define a_screen_getPixel2(p, x, y) (*((p) + (y) * a_width + (x)))
 
 extern SDL_Surface* a_screen;
 extern Pixel* a_pixels;

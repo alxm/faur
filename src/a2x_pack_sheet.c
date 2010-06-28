@@ -20,9 +20,9 @@
 #include "a2x_pack_sheet.p.h"
 #include "a2x_pack_sheet.v.h"
 
-#define DEFAULT_TRANSPARENT a_screen_makePixel(255, 0, 255)
-#define DEFAULT_LIMIT       a_screen_makePixel(0, 255, 0)
-#define DEFAULT_END         a_screen_makePixel(0, 255, 255)
+#define DEFAULT_TRANSPARENT a_pixel_make(255, 0, 255)
+#define DEFAULT_LIMIT       a_pixel_make(0, 255, 0)
+#define DEFAULT_END         a_pixel_make(0, 255, 255)
 
 Sheet* a_sheet_fromFile(const char* const path)
 {
@@ -67,7 +67,7 @@ Sheet* a_sheet_fromFile(const char* const path)
             Uint8 r, g, b;
             SDL_GetRGB(pixel, sf->format, &r, &g, &b);
 
-            s->data[i * s->w + j] = a_screen_makePixel(r, g, b);
+            s->data[i * s->w + j] = a_pixel_make(r, g, b);
         }
     }
 
@@ -127,17 +127,17 @@ void a_sheet_free(Sheet* const s)
 
 void a_sheet_setTransparent(Sheet* const s, const uint8_t r, const uint8_t g, const uint8_t b)
 {
-    s->transparent = a_screen_makePixel(r, g, b);
+    s->transparent = a_pixel_make(r, g, b);
 }
 
 void a_sheet_setLimit(Sheet* const s, const uint8_t r, const uint8_t g, const uint8_t b)
 {
-    s->limit = a_screen_makePixel(r, g, b);
+    s->limit = a_pixel_make(r, g, b);
 }
 
 void a_sheet_setEnd(Sheet* const s, const uint8_t r, const uint8_t g, const uint8_t b)
 {
-    s->end = a_screen_makePixel(r, g, b);
+    s->end = a_pixel_make(r, g, b);
 }
 
 int a_sheet_w(const Sheet* const s)
