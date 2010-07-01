@@ -23,12 +23,12 @@
 #include <SDL/SDL.h>
 #include <SDL/SDL_image.h>
 
+typedef struct Sprite Sprite;
+
 #include "a2x_pack_list.p.h"
 #include "a2x_pack_screen.p.h"
 #include "a2x_pack_sheet.p.h"
 #include "a2x_pack_types.p.h"
-
-typedef struct Sprite Sprite;
 
 #define a_sprite_make(g, x, y, w, h) a_sprite_makeZoomed((g), (x), (y), (w), (h), 1)
 extern Sprite* a_sprite_makeZoomed(const Sheet* const graphic, const int x, const int y, const int w, const int h, const int zoom);

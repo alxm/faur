@@ -31,6 +31,7 @@
 #include "a2x_pack_draw.p.h"
 #include "a2x_pack_pixel.p.h"
 #include "a2x_pack_sound.p.h"
+#include "a2x_pack_sprite.p.h"
 #include "a2x_pack_str.p.h"
 #include "a2x_pack_time.p.h"
 
@@ -53,6 +54,7 @@ extern void a_screen_copyPart(Pixel* dst, const int x, const int y, const int w,
 })
 
 extern void a_screen_setTarget(Pixel* const p, const int w, const int h);
+extern void a_screen_setTargetSprite(const Sprite* const s);
 extern void a_screen_resetTarget(void);
 
 extern void a_screen_show(void);

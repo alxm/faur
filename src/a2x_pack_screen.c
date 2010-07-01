@@ -139,6 +139,13 @@ void a_screen_setTarget(Pixel* const p, const int w, const int h)
     a_height = h;
 }
 
+void a_screen_setTargetSprite(const Sprite* const s)
+{
+    a_pixels = s->data;
+    a_width = s->w;
+    a_height = s->h;
+}
+
 void a_screen_resetTarget(void)
 {
     a_pixels = a__pixels2;

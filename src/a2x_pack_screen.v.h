@@ -22,6 +22,8 @@
 
 #include "a2x_app_settings.v.h"
 
+#include "a2x_pack_sprite.v.h"
+
 extern void a_screen__set(void);
 extern void a_screen__free(void);
 

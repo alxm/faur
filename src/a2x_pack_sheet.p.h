@@ -23,10 +23,10 @@
 #include <SDL/SDL.h>
 #include <SDL/SDL_image.h>
 
+typedef struct Sheet Sheet;
+
 #include "a2x_pack_screen.p.h"
 #include "a2x_pack_types.p.h"
-
-typedef struct Sheet Sheet;
 
 extern Sheet* a_sheet_fromFile(const char* const path);
 #define a_sheet_fromData(g) a_sheet__fromData(gfx_##g##_data, gfx_##g##_w, gfx_##g##_h, sizeof(gfx_##g##_data))
