@@ -46,6 +46,7 @@ StringTok* a_str_makeTok(const char* const s, const char* const d)
 void a_str_freeTok(StringTok* const t)
 {
     free(t->string);
+    free(t->delims);
     free(t->tok);
 
     free(t);

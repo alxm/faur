@@ -155,6 +155,7 @@ void a_list_remove(List* const list, const void* const v)
 
         if(c == v) {
             a_list_iteratorRemove(it);
+            break;
         }
     }
 

@@ -3,4 +3,4 @@ PLATFORM	=	linux
 LIBS 		=	-lSDL_image -lSDL_mixer -lSDL -lm
 
 CFLAGS		=	-DA_PLATFORM_LINUXPC=1 \
-				-O0
+				-O0 -g
