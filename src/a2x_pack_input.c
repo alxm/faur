@@ -391,18 +391,18 @@ int a_input_tappedScreen(void)
 int a_input_touchedPoint(const int x, const int y)
 {
     return mouse.tap
-        && a_collide_rects(
-            ((Rect){x - 1, y - 1, 3, 3}),
-            ((Rect){mouse.x, mouse.y, 1, 1})
+        && a_collide_boxes(
+            x - 1, y - 1, 3, 3,
+            mouse.x, mouse.y, 1, 1
         );
 }
 
 int a_input_touchedRect(const int x, const int y, const int w, const int h)
 {
     return mouse.tap
-        && a_collide_rects(
-            ((Rect){x, y, w, h}),
-            ((Rect){mouse.x, mouse.y, 1, 1})
+        && a_collide_boxes(
+            x, y, w, h,
+            mouse.x, mouse.y, 1, 1
         );
 }
 

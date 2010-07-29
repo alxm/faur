@@ -45,14 +45,6 @@ extern void a_colbox_freeIterator(ColIterator* const it);
 extern int a_colbox_iteratorNext(ColIterator* const it);
 extern ColBox* a_colbox_iteratorGet(const ColIterator* const it);
 
-#define a_collide_rects(r1, r2)    \
-(                                  \
-	!( (r1).y >= (r2).y + (r2).h   \
-	|| (r2).y >= (r1).y + (r1).h   \
-	|| (r1).x >= (r2).x + (r2).w   \
-	|| (r2).x >= (r1).x + (r1).w ) \
-)
-
 #define a_collide_boxes(x1, y1, w1, h1, x2, y2, w2, h2) \
 (                                                       \
 	!( (y1) >= (y2) + (h2)                              \
@@ -61,8 +53,8 @@ extern ColBox* a_colbox_iteratorGet(const ColIterator* const it);
 	|| (x2) >= (x1) + (w1) )                            \
 )
 
-#define a_collide_screen(r1) (                             \
-	a_collide_rects((r1), (Rect){0, 0, a_width, a_height}) \
+#define a_collide_screen(x, y, w, h) (                           \
+	a_collide_boxes((x), (y), (w), (h), 0, 0, a_width, a_height) \
 )
 
 extern int a_collide_circles(const int x1, const int y1, const int r1, const int x2, const int y2, const int r2);
