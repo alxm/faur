@@ -21,36 +21,46 @@
 #include "a2x_pack_collide.v.h"
 
 struct ColMap {
-    int dim; // dimension of a submap, in pixels
     int w; // width of map, in submaps
     int h; // height of map, in submaps
-    List*** submaps; // each is a list of colboxes that are in a submap
+    int submapShift; // right-shift coords by this to get submap
+    List*** submaps; // matrix of lists of colpoints
 };
 
-struct ColBox {
+struct ColPoint {
     fix8 x;
     fix8 y;
-    fix8 w;
-    fix8 h;
-    ColMap* colmap; // the colmap this box moves in
-    List* submaps; // list of submaps this box is in
-    List* nodes;
-    void* parent;
+    ColMap* colmap; // the colmap this point belongs to
+    List* submaps; // submaps this point is in
+    List* nodes; // ListNodes from submaps this point is in
+    void* parent; // the object that uses this ColPoint
 };
 
 struct ColIterator {
-    ColBox* box;
-    ListIterator* submaps; // list of submaps this box is in
-    ListIterator* boxes; // list of boxes in the current submap
+    ColPoint* callerPoint;
+    ListIterator* submaps; // list of submaps this point is in
+    ListIterator* points; // list of points in the current submap
 };
 
-ColMap* a_colmap_set(const int dim, const int w, const int h)
+ColMap* a_colmap_set(const int totalWidth, const int totalHeight, const int gridDim)
 {
     ColMap* const c = malloc(sizeof(ColMap));
 
-    c->dim = dim;
-    c->w = w / dim;
-    c->h = h / dim;
+    #define nextpow(x) \
+    ({ \
+        int p = 1; \
+        while(p < x) { \
+            p <<= 1; \
+        } \
+        p; \
+    })
+
+    const int submapDim = nextpow(gridDim);
+
+    c->submapShift = a_math_log2(submapDim);
+
+    c->w = nextpow(totalWidth) / submapDim;
+    c->h = nextpow(totalHeight) / submapDim;
 
     c->submaps = malloc(c->h * sizeof(List**));
 
@@ -79,154 +89,131 @@ void a_colmap_free(ColMap* const c)
     free(c);
 }
 
-ColBox* a_colbox_set(ColMap* const colmap, const int w, const int h)
+ColPoint* a_colpoint_set(ColMap* const colmap)
 {
-    ColBox* const c = malloc(sizeof(ColBox));
+    ColPoint* const p = malloc(sizeof(ColPoint));
 
-    c->w = a_fix8_itofix(w);
-    c->h = a_fix8_itofix(h);
+    p->colmap = colmap;
 
-    c->colmap = colmap;
+    p->submaps = a_list_set();
+    p->nodes = a_list_set();
 
-    c->submaps = a_list_set();
-    c->nodes = a_list_set();
-
-    return c;
+    return p;
 }
 
-void a_colbox_free(ColBox* const c)
+void a_colpoint_free(ColPoint* const p)
 {
-    List* const nodes = c->nodes;
+    List* const nodes = p->nodes;
 
     while(a_list_iterate(nodes)) {
         ListNode* const n = a_list__current(nodes);
         a_list_removeNode(n);
     }
 
-    a_list_free(c->nodes);
-    a_list_free(c->submaps);
+    a_list_free(p->nodes);
+    a_list_free(p->submaps);
 
-    free(c);
+    free(p);
 }
 
-void a_colbox_setCoords(ColBox* const b, const fix8 x, const fix8 y)
+void a_colpoint_setCoords(ColPoint* const p, const fix8 x, const fix8 y)
 {
-    b->x = x;
-    b->y = y;
+    p->x = x;
+    p->y = y;
 
-    List* const submaps = b->submaps;
-    List* const nodes = b->nodes;
+    ColMap* const colmap = p->colmap;
 
-    // remove box from all the submaps it was in
-    while(a_list_iterate(nodes)) {
-        a_list_removeNode(a_list__current(nodes));
+    List* const pt_submaps = p->submaps;
+    List* const pt_nodes = p->nodes;
+
+    // remove point from all the submaps it was in
+    while(a_list_iterate(pt_nodes)) {
+        a_list_removeNode(a_list__current(pt_nodes));
     }
 
     // purge old information
-    a_list_empty(nodes);
-    a_list_empty(submaps);
-
-    const fix8 bx = b->x;
-    const fix8 by = b->y;
-    const fix8 bw = b->w;
-    const fix8 bh = b->h;
-
-    const fix8 bw_div2 = (bw >> 1) + FONE8;
-    const fix8 bw_add2 = bw + 2 * FONE8;
-    const fix8 bh_div2 = (bh >> 1) + FONE8;
-    const fix8 bh_add2 = bh + 2 * FONE8;
+    a_list_empty(pt_nodes);
+    a_list_empty(pt_submaps);
 
     // center submap coords
-    const int cx = a_fix8_fixtoi(bx) / b->colmap->dim;
-    const int cy = a_fix8_fixtoi(by) / b->colmap->dim;
+    const int submap_x = a_fix8_fixtoi(p->x) >> colmap->submapShift;
+    const int submap_y = a_fix8_fixtoi(p->y) >> colmap->submapShift;
 
-    // submap perimeter to look in
-    const int starty = a_math_max(0, cy - 1);
-    const int endy = a_math_min(bh - 1, cy + 1);
-    const int startx = a_math_max(0, cx - 1);
-    const int endx = a_math_min(bw - 1, cx + 1);
+    // submap perimeter
+    const int startx = a_math_max(0, submap_x - 1);
+    const int endx = a_math_min(colmap->w - 1, submap_x + 1);
+    const int starty = a_math_max(0, submap_y - 1);
+    const int endy = a_math_min(colmap->h - 1, submap_y + 1);
 
-    List*** const msubmaps = b->colmap->submaps;
-    const fix8 mdim = a_fix8_itofix(b->colmap->dim);
-
-    int counter = 0;
+    // submap matrix
+    List*** const submaps = colmap->submaps;
 
     for(int i = starty; i <= endy; i++) {
         for(int j = startx; j <= endx; j++) {
-            if(a_collide_boxes(
-                bx - bw_div2, by - bh_div2, bw_add2, bh_add2,
-                j * mdim, i * mdim, mdim, mdim
-            )) {
-                List* const submap = msubmaps[i][j];
+            List* const submap = submaps[i][j];
 
-                // add box to the submap, save node to box's nodes list
-                a_list_addFirst(nodes, a_list_addFirst(submap, b));
+            // add point to the submap, save node to point's nodes list
+            a_list_addFirst(pt_nodes, a_list_addFirst(submap, p));
 
-                // add submap to box's list of submaps
-                a_list_addFirst(submaps, submap);
-
-                // 4 submaps are enough
-                if(++counter == 4) {
-                    return;
-                }
-            }
+            // add submap to point's list of submaps
+            a_list_addFirst(pt_submaps, submap);
         }
     }
 }
 
-void a_colbox_setParent(ColBox* const b, void* parent)
+void a_colpoint_setParent(ColPoint* const p, void* parent)
 {
-    b->parent = parent;
+    p->parent = parent;
 }
 
-void* a_colbox_getParent(ColBox* const b)
+void* a_colpoint_getParent(ColPoint* const p)
 {
-    return b->parent;
+    return p->parent;
 }
 
-ColIterator* a_colbox_setIterator(ColBox* const b)
+ColIterator* a_colpoint_setIterator(ColPoint* const p)
 {
     ColIterator* const it = malloc(sizeof(ColIterator));
 
-    it->box = b;
-
-    it->submaps = a_list_setIterator(b->submaps);
-    it->boxes = a_list_setIterator(a_list_iteratorGet(it->submaps));
+    it->callerPoint = p;
+    it->submaps = a_list_setIterator(p->submaps);
+    it->points = a_list_setIterator(a_list_iteratorGet(it->submaps));
 
     return it;
 }
 
-void a_colbox_freeIterator(ColIterator* const it)
+void a_colpoint_freeIterator(ColIterator* const it)
 {
     a_list_freeIterator(it->submaps);
-    a_list_freeIterator(it->boxes);
+    a_list_freeIterator(it->points);
 
     free(it);
 }
 
-int a_colbox_iteratorNext(ColIterator* const it)
+int a_colpoint_iteratorNext(ColIterator* const it)
 {
-    if(a_list_iteratorNext(it->boxes)) {
-        // don't return the box we iterate on
-        if(a_list_iteratorGet(it->boxes) == it->box) {
-            return a_colbox_iteratorNext(it);
+    if(a_list_iteratorNext(it->points)) {
+        // don't return the point we iterate on
+        if(a_list_iteratorGet(it->points) == it->callerPoint) {
+            return a_colpoint_iteratorNext(it);
         } else {
-            a_list__iteratorRewind(it->boxes);
+            a_list__iteratorRewind(it->points);
             return 1;
         }
     } else {
         if(a_list_iteratorNext(it->submaps)) {
-            it->boxes = a_list_setIterator(a_list_iteratorGet(it->submaps));
-            return a_colbox_iteratorNext(it);
+            a_list_freeIterator(it->points);
+            it->points = a_list_setIterator(a_list_iteratorGet(it->submaps));
+            return a_colpoint_iteratorNext(it);
         } else {
             return 0;
         }
     }
 }
 
-ColBox* a_colbox_iteratorGet(const ColIterator* const it)
+ColPoint* a_colpoint_iteratorGet(const ColIterator* const it)
 {
-    return a_list_iteratorGet(it->boxes);
+    return a_list_iteratorGet(it->points);
 }
 
 int a_collide_circles(const int x1, const int y1, const int r1, const int x2, const int y2, const int r2)

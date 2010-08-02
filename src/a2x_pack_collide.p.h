@@ -27,23 +27,23 @@
 #include "a2x_pack_math.p.h"
 
 typedef struct ColMap ColMap;
-typedef struct ColBox ColBox;
+typedef struct ColPoint ColPoint;
 typedef struct ColIterator ColIterator;
 
-extern ColMap* a_colmap_set(const int dim, const int w, const int h);
+extern ColMap* a_colmap_set(const int totalWidth, const int totalHeight, const int gridDim);
 extern void a_colmap_free(ColMap* const c);
 
-extern ColBox* a_colbox_set(ColMap* const colmap, const int w, const int h);
-extern void a_colbox_free(ColBox* const c);
+extern ColPoint* a_colpoint_set(ColMap* const colmap);
+extern void a_colpoint_free(ColPoint* const c);
 
-extern void a_colbox_setCoords(ColBox* const b, const fix8 x, const fix8 y);
-extern void a_colbox_setParent(ColBox* const b, void* parent);
-extern void* a_colbox_getParent(ColBox* const b);
+extern void a_colpoint_setCoords(ColPoint* const b, const fix8 x, const fix8 y);
+extern void a_colpoint_setParent(ColPoint* const b, void* parent);
+extern void* a_colpoint_getParent(ColPoint* const b);
 
-extern ColIterator* a_colbox_setIterator(ColBox* const b);
-extern void a_colbox_freeIterator(ColIterator* const it);
-extern int a_colbox_iteratorNext(ColIterator* const it);
-extern ColBox* a_colbox_iteratorGet(const ColIterator* const it);
+extern ColIterator* a_colpoint_setIterator(ColPoint* const b);
+extern void a_colpoint_freeIterator(ColIterator* const it);
+extern int a_colpoint_iteratorNext(ColIterator* const it);
+extern ColPoint* a_colpoint_iteratorGet(const ColIterator* const it);
 
 #define a_collide_boxes(x1, y1, w1, h1, x2, y2, w2, h2) \
 (                                                       \
@@ -53,7 +53,7 @@ extern ColBox* a_colbox_iteratorGet(const ColIterator* const it);
 	|| (x2) >= (x1) + (w1) )                            \
 )
 
-#define a_collide_screen(x, y, w, h) (                           \
+#define a_collide_boxOnScreen(x, y, w, h) (                      \
 	a_collide_boxes((x), (y), (w), (h), 0, 0, a_width, a_height) \
 )
 

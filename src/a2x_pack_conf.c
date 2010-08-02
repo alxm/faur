@@ -49,6 +49,7 @@ void a_conf__set(void)
 
         free(a);
         free(b);
+        free(s);
     }
 
     a_file_freeReader(f);
