@@ -120,32 +120,6 @@ ListNode* a_list_addLast(List* const list, void* const content)
     return n;
 }
 
-void a_list_reset(List* const list)
-{
-    list->current = list->first;
-}
-
-int a_list_iterate(List* const list)
-{
-    ListNode* const n = list->current->next;
-
-    if(n == list->last) {
-        list->current = list->first;
-        return 0;
-    }
-
-    list->current = n;
-    return 1;
-}
-
-void* a_list_peek(List* const list)
-{
-    ListNode* const n = list->first->next;
-
-    if(n == list->last) return NULL;
-    else return n->content;
-}
-
 void a_list_remove(List* const list, const void* const v)
 {
     ListIterator* const it = a_list_setIterator(list);
@@ -244,6 +218,24 @@ void a_list__removeNode(ListNode* const node, const int freeContent)
     free(node);
 }
 
+int a_list_iterate(List* const list)
+{
+    ListNode* const n = list->current->next;
+
+    if(n == list->last) {
+        list->current = list->first;
+        return 0;
+    }
+
+    list->current = n;
+    return 1;
+}
+
+void a_list_reset(List* const list)
+{
+    list->current = list->first;
+}
+
 void** a_list_getArray(List* const list)
 {
     void** const array = malloc(list->items * sizeof(void*));
@@ -279,16 +271,6 @@ ListNode* a_list_currentNode(const List* const list)
     return a_list__currentNode(list);
 }
 
-int a_list_size(const List* const list)
-{
-    return a_list__size(list);
-}
-
-int a_list_isEmpty(const List* const list)
-{
-    return list->first->next == list->last;
-}
-
 void* a_list_get(const List* const list, const int index)
 {
     int counter = -1;
@@ -300,6 +282,16 @@ void* a_list_get(const List* const list, const int index)
     }
 
     return NULL;
+}
+
+int a_list_size(const List* const list)
+{
+    return a_list__size(list);
+}
+
+int a_list_isEmpty(const List* const list)
+{
+    return list->first->next == list->last;
 }
 
 ListIterator* a_list_setIterator(List* const list)

@@ -39,9 +39,6 @@ extern void a_list__empty(List* const list, const int freeContent);
 
 extern ListNode* a_list_addFirst(List* const list, void* const content);
 extern ListNode* a_list_addLast(List* const list, void* const content);
-extern void a_list_reset(List* const list);
-extern int a_list_iterate(List* const list);
-extern void* a_list_peek(List* const list);
 
 extern void a_list_remove(List* const list, const void* const v);
 
@@ -61,19 +58,30 @@ extern void a_list__removeCurrent(List* const list, const int freeContent);
 #define a_list_removeNodeContent(node) a_list__removeNode(node, 1)
 extern void a_list__removeNode(ListNode* const node, const int freeContent);
 
+#define a_list_push(l, c) a_list_addFirst(l, c)
+#define a_list_pop(l)     a_list_removeFirst(l)
+#define a_list_peek(l)    a_list_first(l)
+
+extern int a_list_iterate(List* const list);
+extern void a_list_reset(List* const list);
+
+#define a_list_iterateDone(list) \
+({                               \
+    a_list_reset(list);          \
+    break;                       \
+})
+
 extern void** a_list_getArray(List* const list);
 
 extern void* a_list_first(const List* const list);
 extern void* a_list_last(const List* const list);
 extern void* a_list_current(const List* const list);
 extern ListNode* a_list_currentNode(const List* const list);
-extern int a_list_size(const List* const list);
-extern int a_list_isEmpty(const List* const list);
 
 extern void* a_list_get(const List* const list, const int index);
 
-#define a_list_push(l, c) a_list_addFirst(l, c)
-#define a_list_pop(l) a_list_removeFirst(l)
+extern int a_list_size(const List* const list);
+extern int a_list_isEmpty(const List* const list);
 
 extern ListIterator* a_list_setIterator(List* const list);
 extern void a_list_freeIterator(ListIterator* const it);
