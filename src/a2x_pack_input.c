@@ -30,10 +30,11 @@ typedef struct Button {
 } Button;
 
 typedef struct Touch {
-    List* motion;
+    int tap;
     int x;
     int y;
-    int tap;
+    int shift;
+    List* motion;
 } Touch;
 
 struct Input {
@@ -133,6 +134,8 @@ void a_input__set(void)
         registerButton("pc.1", SDLK_1);
         registerButton("pc.0", SDLK_0);
     #endif
+
+    mouse.shift = a2x_bool("doubleRes");
 
     if(a2x_bool("trackMouse")) {
         mouse.motion = a_list_set();
@@ -278,7 +281,9 @@ void a_input__get(void)
         }
 
         if(a_input_getUnpress(doubleRes)) {
+            a2x__flip("doubleRes");
             a_screen__doubleRes();
+            mouse.shift = a2x_bool("doubleRes");
         }
     #endif
 }
@@ -390,18 +395,22 @@ int a_input_tappedScreen(void)
 
 int a_input_touchedPoint(const int x, const int y)
 {
+    const int shift = mouse.shift;
+
     return mouse.tap
         && a_collide_boxes(
-            x - 1, y - 1, 3, 3,
+            (x - 1) << shift, (y - 1) << shift, 3 << shift, 3 << shift,
             mouse.x, mouse.y, 1, 1
         );
 }
 
 int a_input_touchedRect(const int x, const int y, const int w, const int h)
 {
+    const int shift = mouse.shift;
+
     return mouse.tap
         && a_collide_boxes(
-            x, y, w, h,
+            x << shift, y << shift, w << shift, h << shift,
             mouse.x, mouse.y, 1, 1
         );
 }

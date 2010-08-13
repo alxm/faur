@@ -162,7 +162,7 @@ void a_screen_resetTarget(void)
 
     void a_screen__doubleRes(void)
     {
-        doubled ^= 1;
+        doubled = a2x_bool("doubleRes");
 
         // once this function is called, we switch to fake screen permanently
         if(!a2x_bool("fakeScreen")) {
