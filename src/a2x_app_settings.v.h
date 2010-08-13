@@ -23,6 +23,8 @@
 #include "a2x_app_main.v.h"
 
 extern void a2x__defaults(void);
+
 extern void a2x__set(const char* const key, const char* const val);
+extern void a2x__flip(const char* const key);
 
 #endif // A2X_APP_SETTINGS_VH

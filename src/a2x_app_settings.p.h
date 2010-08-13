@@ -26,7 +26,9 @@
 #include "a2x_pack_str.p.h"
 
 extern void a2x(void);
+
 extern void a2x_set(const char* const key, const char* const val);
+extern void a2x_flip(const char* const key);
 
 extern char* a2x_str(const char* const key);
 extern int a2x_bool(const char* const key);

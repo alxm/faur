@@ -21,11 +21,11 @@
 #include "a2x_app_settings.v.h"
 
 typedef enum Setting_t {
-    A_STR, A_BOOL, A_INT
+    STR, BOOL, INT
 } Setting_t;
 
 typedef enum Update_t {
-    A_SET_ONCE, A_SET_ANY, A_SET_FROZEN
+    SET_ONCE, SET_ANY, SET_FROZEN
 } Update_t;
 
 typedef struct Setting {
@@ -33,9 +33,9 @@ typedef struct Setting {
     Update_t update;
 
     union {
-        int aInt;
-        int aBool;
-        String64 aStr;
+        int integer;
+        int boolean;
+        char string[64];
     } value;
 } Setting;
 
@@ -43,35 +43,36 @@ static Hash* settings;
 
 static void add(Setting_t const type, const Update_t update, const char* const key, const char* const val);
 static int parseBool(const char* const val);
-static void set(const char* const key, const char* const val, int respect);
+static void set(const char* const key, const char* const val, const int respect);
+static void flip(const char* const key, const int respect);
 
 void a2x__defaults(void)
 {
     settings = a_hash_set(32);
 
-    add(A_STR, A_SET_ONCE, "title", "Untitled");
-    add(A_STR, A_SET_ONCE, "version", "0");
-    add(A_STR, A_SET_ONCE, "author", "Unknown");
-    add(A_STR, A_SET_ONCE, "compiled", "?");
-    add(A_STR, A_SET_ONCE, "conf", "a2x.cfg");
+    add(STR, SET_ONCE, "title", "Untitled");
+    add(STR, SET_ONCE, "version", "0");
+    add(STR, SET_ONCE, "author", "Unknown");
+    add(STR, SET_ONCE, "compiled", "?");
+    add(STR, SET_ONCE, "conf", "a2x.cfg");
 
-    add(A_BOOL, A_SET_ANY, "quiet", "0");
-    add(A_BOOL, A_SET_ONCE, "window", "0");
-    add(A_BOOL, A_SET_ONCE, "tool", "0");
-    add(A_BOOL, A_SET_ONCE, "gp2xMenu", "0");
-    add(A_BOOL, A_SET_ANY, "trackFps", "0");
-    add(A_BOOL, A_SET_ANY, "sound", "0");
-    add(A_BOOL, A_SET_ANY, "trackMouse", "0");
-    add(A_BOOL, A_SET_ONCE, "fakeScreen", "0");
-    add(A_BOOL, A_SET_ONCE, "doubleRes", "0");
-    add(A_BOOL, A_SET_ONCE, "fixWizTear", "0");
+    add(BOOL, SET_ANY, "quiet", "0");
+    add(BOOL, SET_ONCE, "window", "0");
+    add(BOOL, SET_ONCE, "tool", "0");
+    add(BOOL, SET_ONCE, "gp2xMenu", "0");
+    add(BOOL, SET_ANY, "trackFps", "0");
+    add(BOOL, SET_ANY, "sound", "0");
+    add(BOOL, SET_ANY, "trackMouse", "0");
+    add(BOOL, SET_ONCE, "fakeScreen", "0");
+    add(BOOL, SET_ONCE, "doubleRes", "0");
+    add(BOOL, SET_ONCE, "fixWizTear", "0");
 
-    add(A_INT, A_SET_ANY, "mhz", "0");
-    add(A_INT, A_SET_ONCE, "width", "0");
-    add(A_INT, A_SET_ONCE, "height", "0");
-    add(A_INT, A_SET_ONCE, "fps", "60");
-    add(A_INT, A_SET_ANY, "musicScale", "100");
-    add(A_INT, A_SET_ANY, "sfxScale", "100");
+    add(INT, SET_ANY, "mhz", "0");
+    add(INT, SET_ONCE, "width", "0");
+    add(INT, SET_ONCE, "height", "0");
+    add(INT, SET_ONCE, "fps", "60");
+    add(INT, SET_ANY, "musicScale", "100");
+    add(INT, SET_ANY, "sfxScale", "100");
 }
 
 void a2x_set(const char* const key, const char* const val)
@@ -84,6 +85,16 @@ void a2x__set(const char* const key, const char* const val)
     set(key, val, 0);
 }
 
+void a2x_flip(const char* const key)
+{
+    flip(key, 1);
+}
+
+void a2x__flip(const char* const key)
+{
+    flip(key, 0);
+}
+
 char* a2x_str(const char* const key)
 {
     Setting* const s = a_hash_get(settings, key);
@@ -91,11 +102,11 @@ char* a2x_str(const char* const key)
     if(s == NULL) {
         a_error("Setting '%s' does not exist", key);
         return NULL;
-    } else if(s->type != A_STR) {
+    } else if(s->type != STR) {
         a_error("Setting '%s' is not a string", key);
         return NULL;
     } else {
-        return s->value.aStr;
+        return s->value.string;
     }
 }
 
@@ -106,11 +117,11 @@ int a2x_bool(const char* const key)
     if(s == NULL) {
         a_error("Setting '%s' does not exist", key);
         return 0;
-    } else if(s->type != A_BOOL) {
+    } else if(s->type != BOOL) {
         a_error("Setting '%s' is not a boolean", key);
         return 0;
     } else {
-        return s->value.aBool;
+        return s->value.boolean;
     }
 }
 
@@ -121,11 +132,11 @@ int a2x_int(const char* const key)
     if(s == NULL) {
         a_error("Setting '%s' does not exist", key);
         return 0;
-    } else if(s->type != A_INT) {
+    } else if(s->type != INT) {
         a_error("Setting '%s' is not an integer", key);
         return 0;
     } else {
-        return s->value.aInt;
+        return s->value.integer;
     }
 }
 
@@ -137,16 +148,16 @@ static void add(Setting_t const type, const Update_t update, const char* const k
     s->update = update;
 
     switch(type) {
-        case A_INT: {
-            s->value.aInt = atoi(val);
+        case INT: {
+            s->value.integer = atoi(val);
         } break;
 
-        case A_BOOL: {
-            s->value.aBool = parseBool(val);
+        case BOOL: {
+            s->value.boolean = parseBool(val);
         } break;
 
-        case A_STR: {
-            strncpy(s->value.aStr, val, 63);
+        case STR: {
+            strncpy(s->value.string, val, 63);
         } break;
     }
 
@@ -164,33 +175,49 @@ static int parseBool(const char* const val)
         || a_str_same(val, "1");
 }
 
-static void set(const char* const key, const char* const val, int respect)
+static void set(const char* const key, const char* const val, const int respect)
 {
     Setting* const s = a_hash_get(settings, key);
 
     if(s == NULL) {
         a_error("Setting '%s' does not exist", key);
         return;
-    } else if(s->update == A_SET_FROZEN && respect) {
+    } else if(s->update == SET_FROZEN && respect) {
         a_error("Setting '%s' is frozen", key);
         return;
     }
 
     switch(s->type) {
-        case A_INT: {
-            s->value.aInt = atoi(val);
+        case INT: {
+            s->value.integer = atoi(val);
         } break;
 
-        case A_BOOL: {
-            s->value.aBool = parseBool(val);
+        case BOOL: {
+            s->value.boolean = parseBool(val);
         } break;
 
-        case A_STR: {
-            strncpy(s->value.aStr, val, 63);
+        case STR: {
+            strncpy(s->value.string, val, sizeof(s->value.string) - 1);
         } break;
     }
 
-    if(s->update == A_SET_ONCE) {
-        s->update = A_SET_FROZEN;
+    if(s->update == SET_ONCE) {
+        s->update = SET_FROZEN;
+    }
+}
+
+static void flip(const char* const key, const int respect)
+{
+    Setting* const s = a_hash_get(settings, key);
+
+    if(s == NULL) {
+        a_error("Setting '%s' does not exist", key);
+    } else if(s->type != BOOL) {
+        a_error("Setting '%s' is not a boolean - can't flip it", key);
+    } else if(s->update == SET_FROZEN && respect) {
+        a_error("Setting '%s' is frozen", key);
+        return;
+    } else {
+        s->value.boolean ^= 1;
     }
 }
