@@ -27,6 +27,8 @@ typedef struct Button {
     int numCodes;
     int codes[MAX_CODES];
     int pressed;
+    int oldEvent;
+    int freshEvent;
 } Button;
 
 typedef struct Touch {
@@ -36,6 +38,12 @@ typedef struct Touch {
     int shift;
     List* motion;
 } Touch;
+
+typedef struct Analog {
+    int id;
+    int xaxis;
+    int yaxis;
+} Analog;
 
 struct Input {
     List* buttons;
@@ -48,7 +56,7 @@ static List* buttonList;
 
 static Touch mouse;
 
-#if A_PLATFORM_GP2X || A_PLATFORM_WIZ
+#if A_PLATFORM_GP2X || A_PLATFORM_WIZ || A_PLATFORM_CAANOO
     static SDL_Joystick* joystick;
 #endif
 
@@ -59,7 +67,12 @@ static List* inputs;
     static Input* doubleRes;
 #endif
 
+#if A_PLATFORM_CAANOO
+    static Analog caanooAnalog;
+#endif
+
 static void registerButton(const char* const name, const int code);
+static void registerButtonFake(const char* const name);
 
 void a_input__set(void)
 {
@@ -68,7 +81,7 @@ void a_input__set(void)
 
     inputs = a_list_set();
 
-    registerButton("all.any", -1);
+    registerButtonFake("all.any");
 
     #if A_PLATFORM_GP2X
         registerButton("gp2x.Up", 0);
@@ -113,8 +126,28 @@ void a_input__set(void)
         registerButton("wiz.VolDown", 17);
 
         joystick = SDL_JoystickOpen(0);
+    #elif A_PLATFORM_CAANOO
+        registerButtonFake("caanoo.Up");
+        registerButtonFake("caanoo.Down");
+        registerButtonFake("caanoo.Left");
+        registerButtonFake("caanoo.Right");
+        registerButton("caanoo.A", 0);
+        registerButton("caanoo.X", 1);
+        registerButton("caanoo.B", 2);
+        registerButton("caanoo.Y", 3);
+        registerButton("caanoo.L", 4);
+        registerButton("caanoo.R", 5);
+        registerButton("caanoo.Home", 6);
+        registerButton("caanoo.Hold", 7);
+        registerButton("caanoo.Help1", 8);
+        registerButton("caanoo.Help2", 9);
+
+        caanooAnalog.id = 0;
+        caanooAnalog.xaxis = 0;
+        caanooAnalog.yaxis = 0;
+
+        joystick = SDL_JoystickOpen(0);
     #elif A_PLATFORM_LINUXPC
-        // my laptop's arrow keys drowned in vodka, so I use IJKL instead
         registerButton("pc.Up", SDLK_i);
         registerButton("pc.Up", SDLK_UP);
         registerButton("pc.Down", SDLK_k);
@@ -184,6 +217,11 @@ void a_input__get(void)
     Button* const any = a_list__first(buttonList);
     any->pressed = 0;
 
+    while(a_list_iterate(buttonList)) {
+        Button* const b = a_list_current(buttonList);
+        b->freshEvent = 0;
+    }
+
     for(SDL_Event event; SDL_PollEvent(&event); ) {
         int button;
         int action = -1;
@@ -193,17 +231,7 @@ void a_input__get(void)
                 a_state_exit();
             } break;
 
-            #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
-                case SDL_JOYBUTTONDOWN: {
-                    button = event.jbutton.button;
-                    action = 1;
-                } break;
-
-                case SDL_JOYBUTTONUP: {
-                    button = event.jbutton.button;
-                    action = 0;
-                } break;
-            #else
+            #if A_PLATFORM_LINUXPC
                 case SDL_KEYDOWN: {
                     button = event.key.keysym.sym;
                     action = 1;
@@ -216,6 +244,30 @@ void a_input__get(void)
                 case SDL_KEYUP: {
                     button = event.key.keysym.sym;
                     action = 0;
+                } break;
+            #endif
+
+            #if A_PLATFORM_GP2X || A_PLATFORM_WIZ || A_PLATFORM_CAANOO
+                case SDL_JOYBUTTONDOWN: {
+                    button = event.jbutton.button;
+                    action = 1;
+                } break;
+
+                case SDL_JOYBUTTONUP: {
+                    button = event.jbutton.button;
+                    action = 0;
+                } break;
+            #endif
+
+            #if A_PLATFORM_CAANOO
+                case SDL_JOYAXISMOTION: {
+                    if(event.jaxis.which == caanooAnalog.id) {
+                        if(event.jaxis.axis == 0) {
+                            caanooAnalog.xaxis = event.jaxis.value;
+                        } else {
+                            caanooAnalog.yaxis = event.jaxis.value;
+                        }
+                    }
                 } break;
             #endif
 
@@ -268,6 +320,7 @@ void a_input__get(void)
                 for(int i = b->numCodes; i--; ) {
                     if(b->codes[i] == button) {
                         b->pressed = action;
+                        b->freshEvent = 1;
                         break;
                     }
                 }
@@ -275,6 +328,7 @@ void a_input__get(void)
         }
     }
 
+    // PC-only options
     #if A_PLATFORM_LINUXPC
         if(a_input_getUnpress(fullScreen)) {
             a_screen__switchFull();
@@ -284,6 +338,129 @@ void a_input__get(void)
             a2x__flip("doubleRes");
             a_screen__doubleRes();
             mouse.shift = a2x_bool("doubleRes");
+        }
+    #endif
+
+    // simulate seperate direction events
+    #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
+        #if A_PLATFORM_GP2X
+            Button* const upLeft = a_hash_get(buttonNames, "gp2x.UpLeft");
+            Button* const upRight = a_hash_get(buttonNames, "gp2x.UpRight");
+            Button* const downLeft = a_hash_get(buttonNames, "gp2x.DownLeft");
+            Button* const downRight = a_hash_get(buttonNames, "gp2x.DownRight");
+
+            Button* const up = a_hash_get(buttonNames, "gp2x.Up");
+            Button* const down = a_hash_get(buttonNames, "gp2x.Down");
+            Button* const left = a_hash_get(buttonNames, "gp2x.Left");
+            Button* const right = a_hash_get(buttonNames, "gp2x.Right");
+        #elif A_PLATFORM_WIZ
+            Button* const upLeft = a_hash_get(buttonNames, "wiz.UpLeft");
+            Button* const upRight = a_hash_get(buttonNames, "wiz.UpRight");
+            Button* const downLeft = a_hash_get(buttonNames, "wiz.DownLeft");
+            Button* const downRight = a_hash_get(buttonNames, "wiz.DownRight");
+
+            Button* const up = a_hash_get(buttonNames, "wiz.Up");
+            Button* const down = a_hash_get(buttonNames, "wiz.Down");
+            Button* const left = a_hash_get(buttonNames, "wiz.Left");
+            Button* const right = a_hash_get(buttonNames, "wiz.Right");
+        #endif
+
+        if(upLeft->freshEvent) {
+            if(!up->freshEvent) {
+                up->pressed = upLeft->pressed;
+            }
+
+            if(!left->freshEvent) {
+                left->pressed = upLeft->pressed;
+            }
+        }
+
+        if(upRight->freshEvent) {
+            if(!up->freshEvent) {
+                up->pressed = upRight->pressed;
+            }
+
+            if(!right->freshEvent) {
+                right->pressed = upRight->pressed;
+            }
+        }
+
+        if(downLeft->freshEvent) {
+            if(!down->freshEvent) {
+                down->pressed = downLeft->pressed;
+            }
+
+            if(!left->freshEvent) {
+                left->pressed = downLeft->pressed;
+            }
+        }
+
+        if(downRight->freshEvent) {
+            if(!down->freshEvent) {
+                down->pressed = downRight->pressed;
+            }
+
+            if(!right->freshEvent) {
+                right->pressed = downRight->pressed;
+            }
+        }
+    #endif
+
+    // simulate a DPAD with Caanoo's analog stick
+    #if A_PLATFORM_CAANOO
+        #define ANALOG_TRESH (1 << 14)
+
+        Button* const up = a_hash_get(buttonNames, "caanoo.Up");
+        Button* const down = a_hash_get(buttonNames, "caanoo.Down");
+        Button* const left = a_hash_get(buttonNames, "caanoo.Left");
+        Button* const right = a_hash_get(buttonNames, "caanoo.Right");
+
+        if(caanooAnalog.xaxis < -ANALOG_TRESH) {
+            if(left->oldEvent == 0) {
+                left->oldEvent = 1;
+                left->pressed = 1;
+            }
+        } else {
+            if(left->oldEvent == 1) {
+                left->oldEvent = 0;
+                left->pressed = 0;
+            }
+        }
+
+        if(caanooAnalog.xaxis > ANALOG_TRESH) {
+            if(right->oldEvent == 0) {
+                right->oldEvent = 1;
+                right->pressed = 1;
+            }
+        } else {
+            if(right->oldEvent == 1) {
+                right->oldEvent = 0;
+                right->pressed = 0;
+            }
+        }
+
+        if(caanooAnalog.yaxis < -ANALOG_TRESH) {
+            if(up->oldEvent == 0) {
+                up->oldEvent = 1;
+                up->pressed = 1;
+            }
+        } else {
+            if(up->oldEvent == 1) {
+                up->oldEvent = 0;
+                up->pressed = 0;
+            }
+        }
+
+        if(caanooAnalog.yaxis > ANALOG_TRESH) {
+            if(down->oldEvent == 0) {
+                down->oldEvent = 1;
+                down->pressed = 1;
+            }
+        } else {
+            if(down->oldEvent == 1) {
+                down->oldEvent = 0;
+                down->pressed = 0;
+            }
         }
     #endif
 }
@@ -426,10 +603,17 @@ static void registerButton(const char* const name, const int code)
         b->numCodes = 1;
         b->codes[0] = code;
         b->pressed = 0;
+        b->oldEvent = 0;
+        b->freshEvent = 0;
 
         a_list_addLast(buttonList, b);
         a_hash_add(buttonNames, name, b);
     } else if(bt->numCodes < MAX_CODES) {
         bt->codes[bt->numCodes++] = code;
     }
+}
+
+static void registerButtonFake(const char* const name)
+{
+    registerButton(name, -1);
 }
