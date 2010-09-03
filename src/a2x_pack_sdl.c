@@ -32,7 +32,7 @@ void a_sdl__set(void)
         sdlFlags |= SDL_INIT_TIMER;
     #endif
 
-    #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
+    #if A_PLATFORM_GP2X || A_PLATFORM_WIZ || A_PLATFORM_CAANOO
         sdlFlags |= SDL_INIT_JOYSTICK;
     #endif
 

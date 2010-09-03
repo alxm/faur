@@ -79,7 +79,7 @@ int main(int argc, char** argv)
 
     a_out("Closing %s - see you next time.", a2x_str("title"));
 
-    #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
+    #if A_PLATFORM_GP2X || A_PLATFORM_WIZ || A_PLATFORM_CAANOO
         if(a2x_bool("gp2xMenu")) {
             a_out("Calling gp2xmenu");
 

@@ -28,6 +28,10 @@
     #define A_PLATFORM_WINDOWS 0
 #endif
 
+#ifndef A_PLATFORM_CAANOO
+    #define A_PLATFORM_CAANOO 0
+#endif
+
 #ifndef A_PLATFORM_WIZ
     #define A_PLATFORM_WIZ 0
 #endif
@@ -45,7 +49,7 @@
 #endif
 
 #ifndef A_PLATFORM_LINUX
-    #if A_PLATFORM_LINUXPC || A_PLATFORM_GP2X || A_PLATFORM_WIZ || A_PLATFORM_PANDORA
+    #if A_PLATFORM_LINUXPC || A_PLATFORM_GP2X || A_PLATFORM_WIZ || A_PLATFORM_CAANOO || A_PLATFORM_PANDORA
         #define A_PLATFORM_LINUX 1
     #else
         #define A_PLATFORM_LINUX 0
