@@ -2,7 +2,10 @@ PLATFORM	=	gp2x
 
 OPEN2X		=	/opt/open2x/gcc-4.1.1-glibc-2.3.6
 
-LIBS 		=	-static -L$(OPEN2X)/lib -L$(OPEN2X)/arm-open2x-linux/lib -lSDL_image -ljpeg -lpng12 -lz -lSDL_mixer -lsmpeg -lmikmod -logg -lvorbisidec -lSDL -lpthread -lm -lstdc++ -ldl
+LIBS 		=	-static \
+				-L$(OPEN2X)/lib \
+				-L$(OPEN2X)/arm-open2x-linux/lib \
+				-lSDL_image -ljpeg -lpng12 -lz -lSDL_mixer -lsmpeg -lmikmod -logg -lvorbisidec -lSDL -lpthread -lm -lstdc++ -ldl
 
 CFLAGS		=	-DA_PLATFORM_GP2X=1 \
 				-O3 -s \
