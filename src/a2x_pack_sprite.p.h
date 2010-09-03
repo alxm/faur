@@ -33,15 +33,16 @@ typedef struct Sprite Sprite;
 #define a_sprite_make(g, x, y, w, h) a_sprite_makeZoomed((g), (x), (y), (w), (h), 1)
 extern Sprite* a_sprite_makeZoomed(const Sheet* const graphic, const int x, const int y, const int w, const int h, const int zoom);
 extern Sprite* a_sprite_makeBlank(const int w, const int h);
-extern void a_sprite_makeTransparent(Sprite* const s, const Sheet* const graphic);
+extern void a_sprite_makeTransparent(Sprite* const s);
 extern void a_sprite_free(Sprite* const s);
 extern Sprite* a_sprite_clone(const Sprite* const src);
 extern int a_sprite_w(const Sprite* const s);
 extern int a_sprite_h(const Sprite* const s);
 extern Pixel* a_sprite_data(const Sprite* const s);
-extern fix8 a_sprite_getAlpha(const Sprite* const s);
-extern void a_sprite_setAlpha(Sprite* const s, const fix8 a);
-extern Pixel a_sprite_t(const Sprite* const s);
+extern uint8_t a_sprite_getAlpha(const Sprite* const s);
+extern void a_sprite_setAlpha(Sprite* const s, const uint8_t a);
+extern Pixel a_sprite_getTransparent(const Sprite* const s);
+extern void a_sprite_setTransparent(Sprite* const s, const Pixel c);
 extern Pixel a_sprite_getPixel(const Sprite* const s, const int x, const int y);
 
 #endif // A2X_PACK_SPRITE_PH

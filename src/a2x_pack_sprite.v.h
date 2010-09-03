@@ -29,7 +29,7 @@ struct Sprite {
 	Pixel* data;
 	int*** spans;
     int* spansNum;
-    fix8 alpha;
+    uint8_t alpha;
     Pixel t;
 };
 

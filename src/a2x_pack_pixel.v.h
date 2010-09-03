@@ -29,9 +29,9 @@
     const uint8_t B = a_pixel_blue(p);      \
                                             \
     *(dst) = a_pixel_make(                  \
-        R + a_fix8_fixtoi(((r) - R) * (a)), \
-        G + a_fix8_fixtoi(((g) - G) * (a)), \
-        B + a_fix8_fixtoi(((b) - B) * (a))  \
+        R + ((((r) - R) * (a)) >> 8),       \
+        G + ((((g) - G) * (a)) >> 8),       \
+        B + ((((b) - B) * (a)) >> 8)        \
     );                                      \
 })
 

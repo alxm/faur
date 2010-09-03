@@ -20,7 +20,6 @@
 #ifndef A2X_PACK_BLIT_PH
 #define A2X_PACK_BLIT_PH
 
-#include "a2x_pack_fix.p.h"
 #include "a2x_pack_screen.p.h"
 #include "a2x_pack_sprite.p.h"
 

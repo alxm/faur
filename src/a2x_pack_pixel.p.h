@@ -25,7 +25,6 @@
 #define A_BPP 16
 typedef uint16_t Pixel;
 
-#include "a2x_pack_fix.p.h"
 #include "a2x_pack_screen.p.h"
 
 #define a_mask(x) ((1 << (x)) - 1)

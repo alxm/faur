@@ -121,7 +121,9 @@ void a_music_free(Music* const m)
 void a_music_play(Music* const m)
 {
     if(a2x_bool("sound")) {
-        Mix_PlayMusic(m, -1);
+        if(m) {
+            Mix_PlayMusic(m, -1);
+        }
     }
 }
 

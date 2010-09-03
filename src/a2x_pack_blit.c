@@ -243,9 +243,9 @@ void (*a_blit_blitters[])(const Sprite* const s, const int x, const int y) = {
     const int B = a_pixel_blue(cd);                     \
                                                         \
     *dst = a_pixel_make(                                \
-        R + a_fix8_fixtoi((a_pixel_red(cs) - R) * a),   \
-        G + a_fix8_fixtoi((a_pixel_green(cs) - G) * a), \
-        B + a_fix8_fixtoi((a_pixel_blue(cs) - B) * a)   \
+        R + (((a_pixel_red(cs) - R) * a) >> 8),         \
+        G + (((a_pixel_green(cs) - G) * a) >> 8),       \
+        B + (((a_pixel_blue(cs) - B) * a) >> 8)         \
     );
 
 #define BLIT_alpha_setup     \
@@ -260,9 +260,9 @@ void (*a_blit_blitters[])(const Sprite* const s, const int x, const int y) = {
     const int B = a_pixel_blue(cd);                     \
                                                         \
     *dst = a_pixel_make(                                \
-        R + a_fix8_fixtoi((a_pixel_red(cs) - R) * a),   \
-        G + a_fix8_fixtoi((a_pixel_green(cs) - G) * a), \
-        B + a_fix8_fixtoi((a_pixel_blue(cs) - B) * a)   \
+        R + (((a_pixel_red(cs) - R) * a) >> 8),         \
+        G + (((a_pixel_green(cs) - G) * a) >> 8),       \
+        B + (((a_pixel_blue(cs) - B) * a) >> 8)         \
     );
 
 #define BLIT_argb_setup
@@ -275,9 +275,9 @@ void (*a_blit_blitters[])(const Sprite* const s, const int x, const int y) = {
     const int B = a_pixel_blue(cd);     \
                                         \
     *dst = a_pixel_make(                \
-        R + a_fix8_fixtoi((r - R) * a), \
-        G + a_fix8_fixtoi((g - G) * a), \
-        B + a_fix8_fixtoi((b - B) * a)  \
+        R + (((r - R) * a) >> 8),       \
+        G + (((g - G) * a) >> 8),       \
+        B + (((b - B) * a) >> 8)        \
     );
 
 #define BLIT_a25rgb_setup

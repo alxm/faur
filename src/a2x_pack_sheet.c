@@ -20,10 +20,6 @@
 #include "a2x_pack_sheet.p.h"
 #include "a2x_pack_sheet.v.h"
 
-#define DEFAULT_TRANSPARENT a_pixel_make(255, 0, 255)
-#define DEFAULT_LIMIT       a_pixel_make(0, 255, 0)
-#define DEFAULT_END         a_pixel_make(0, 255, 255)
-
 Sheet* a_sheet_fromFile(const char* const path)
 {
     SDL_Surface* const sf = IMG_Load(path);
