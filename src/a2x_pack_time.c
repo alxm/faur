@@ -28,7 +28,7 @@
 
 static int overflow = 0;
 
-#if A_PLATFORM_WIZ
+#if A_PLATFORM_WIZ || A_PLATFORM_CAANOO
     #define TIMER_BASE3  0x1980
     #define TIMER_REG(x) memregs[(TIMER_BASE3 + x) >> 2]
 
@@ -38,7 +38,7 @@ static int overflow = 0;
 
 void a_time__set(void)
 {
-    #if A_PLATFORM_WIZ
+    #if A_PLATFORM_WIZ || A_PLATFORM_CAANOO
         memfd = open("/dev/mem", O_RDWR);
         memregs = mmap(0, 0x20000, PROT_READ|PROT_WRITE, MAP_SHARED, memfd, 0xc0000000);
 
@@ -50,7 +50,7 @@ void a_time__set(void)
 
 void a_time__free(void)
 {
-    #if A_PLATFORM_WIZ
+    #if A_PLATFORM_WIZ || A_PLATFORM_CAANOO
         TIMER_REG(0x40) = 0x0c;
         TIMER_REG(0x08) = 0x23;
         TIMER_REG(0x00) = 0;
@@ -65,7 +65,7 @@ uint32_t a_time_getMilis(void)
 {
     static uint32_t old = 0;
 
-    #if A_PLATFORM_WIZ
+    #if A_PLATFORM_WIZ || A_PLATFORM_CAANOO
         TIMER_REG(0x08) = 0x4b; // run timer, latch value
         const uint32_t t = TIMER_REG(0) / 1000;
     #else

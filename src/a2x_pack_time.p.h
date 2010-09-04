@@ -22,7 +22,7 @@
 
 #include <stdint.h>
 
-#if A_PLATFORM_WIZ
+#if A_PLATFORM_WIZ || A_PLATFORM_CAANOO
     #include <unistd.h>
     #include <fcntl.h>
     #include <sys/mman.h>

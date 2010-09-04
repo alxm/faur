@@ -28,7 +28,7 @@ void a_sdl__set(void)
         sdlFlags |= SDL_INIT_VIDEO;
     }
 
-    #if !A_PLATFORM_WIZ
+    #if !(A_PLATFORM_WIZ || A_PLATFORM_CAANOO)
         sdlFlags |= SDL_INIT_TIMER;
     #endif
 
