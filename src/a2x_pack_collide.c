@@ -31,14 +31,12 @@ struct ColPoint {
     fix8 x;
     fix8 y;
     ColMap* colmap; // the colmap this point belongs to
-    List* submaps; // submaps this point is in
     List* nodes; // ListNodes from submaps this point is in
     void* parent; // the object that uses this ColPoint
 };
 
 struct ColIterator {
     ColPoint* callerPoint;
-    ListIterator* submaps; // list of submaps this point is in
     ListIterator* points; // list of points in the current submap
 };
 
@@ -94,8 +92,6 @@ ColPoint* a_colpoint_set(ColMap* const colmap)
     ColPoint* const p = malloc(sizeof(ColPoint));
 
     p->colmap = colmap;
-
-    p->submaps = a_list_set();
     p->nodes = a_list_set();
 
     return p;
@@ -111,7 +107,6 @@ void a_colpoint_free(ColPoint* const p)
     }
 
     a_list_free(p->nodes);
-    a_list_free(p->submaps);
 
     free(p);
 }
@@ -122,8 +117,6 @@ void a_colpoint_setCoords(ColPoint* const p, const fix8 x, const fix8 y)
     p->y = y;
 
     ColMap* const colmap = p->colmap;
-
-    List* const pt_submaps = p->submaps;
     List* const pt_nodes = p->nodes;
 
     // remove point from all the submaps it was in
@@ -133,7 +126,6 @@ void a_colpoint_setCoords(ColPoint* const p, const fix8 x, const fix8 y)
 
     // purge old information
     a_list_empty(pt_nodes);
-    a_list_empty(pt_submaps);
 
     // center submap coords
     const int submap_x = a_fix8_fixtoi(p->x) >> colmap->submapShift;
@@ -150,13 +142,8 @@ void a_colpoint_setCoords(ColPoint* const p, const fix8 x, const fix8 y)
 
     for(int i = starty; i <= endy; i++) {
         for(int j = startx; j <= endx; j++) {
-            List* const submap = submaps[i][j];
-
             // add point to the submap, save node to point's nodes list
-            a_list_addFirst(pt_nodes, a_list_addFirst(submap, p));
-
-            // add submap to point's list of submaps
-            a_list_addFirst(pt_submaps, submap);
+            a_list_addFirst(pt_nodes, a_list_addFirst(submaps[i][j], p));
         }
     }
 }
@@ -174,17 +161,19 @@ void* a_colpoint_getParent(ColPoint* const p)
 ColIterator* a_colpoint_setIterator(ColPoint* const p)
 {
     ColIterator* const it = malloc(sizeof(ColIterator));
+    ColMap* const colmap = p->colmap;
+
+    const int submap_x = a_fix8_fixtoi(p->x) >> colmap->submapShift;
+    const int submap_y = a_fix8_fixtoi(p->y) >> colmap->submapShift;
 
     it->callerPoint = p;
-    it->submaps = a_list_setIterator(p->submaps);
-    it->points = a_list_setIterator(a_list_iteratorGet(it->submaps));
+    it->points = a_list_setIterator(colmap->submaps[submap_y][submap_x]);
 
     return it;
 }
 
 void a_colpoint_freeIterator(ColIterator* const it)
 {
-    a_list_freeIterator(it->submaps);
     a_list_freeIterator(it->points);
 
     free(it);
@@ -200,15 +189,9 @@ int a_colpoint_iteratorNext(ColIterator* const it)
             a_list__iteratorRewind(it->points);
             return 1;
         }
-    } else {
-        if(a_list_iteratorNext(it->submaps)) {
-            a_list_freeIterator(it->points);
-            it->points = a_list_setIterator(a_list_iteratorGet(it->submaps));
-            return a_colpoint_iteratorNext(it);
-        } else {
-            return 0;
-        }
     }
+
+    return 0;
 }
 
 ColPoint* a_colpoint_iteratorGet(const ColIterator* const it)
