@@ -366,42 +366,58 @@ void a_input__get(void)
         #endif
 
         if(upLeft->freshEvent) {
-            if(!up->freshEvent) {
-                up->pressed = upLeft->pressed;
-            }
+            if(upLeft->pressed) {
+                up->pressed = left->pressed = 1;
+            } else {
+                if(!up->freshEvent) {
+                    up->pressed = 0;
+                }
 
-            if(!left->freshEvent) {
-                left->pressed = upLeft->pressed;
+                if(!left->freshEvent) {
+                    left->pressed = 0;
+                }
             }
         }
 
         if(upRight->freshEvent) {
-            if(!up->freshEvent) {
-                up->pressed = upRight->pressed;
-            }
+            if(upRight->pressed) {
+                up->pressed = right->pressed = 1;
+            } else {
+                if(!up->freshEvent) {
+                    up->pressed = 0;
+                }
 
-            if(!right->freshEvent) {
-                right->pressed = upRight->pressed;
+                if(!right->freshEvent) {
+                    right->pressed = 0;
+                }
             }
         }
 
         if(downLeft->freshEvent) {
-            if(!down->freshEvent) {
-                down->pressed = downLeft->pressed;
-            }
+            if(downLeft->pressed) {
+                down->pressed = left->pressed = 1;
+            } else {
+                if(!down->freshEvent) {
+                    down->pressed = 0;
+                }
 
-            if(!left->freshEvent) {
-                left->pressed = downLeft->pressed;
+                if(!left->freshEvent) {
+                    left->pressed = 0;
+                }
             }
         }
 
         if(downRight->freshEvent) {
-            if(!down->freshEvent) {
-                down->pressed = downRight->pressed;
-            }
+            if(downRight->pressed) {
+                down->pressed = right->pressed = 1;
+            } else {
+                if(!down->freshEvent) {
+                    down->pressed = 0;
+                }
 
-            if(!right->freshEvent) {
-                right->pressed = downRight->pressed;
+                if(!right->freshEvent) {
+                    right->pressed = 0;
+                }
             }
         }
     #endif
