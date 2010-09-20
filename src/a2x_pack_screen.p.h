@@ -46,10 +46,10 @@ extern int a_height;
 #define a_screen_copy(dst, src) memcpy((dst), (src), A_SCREEN_SIZE)
 extern void a_screen_copyPart(Pixel* dst, const int x, const int y, const int w, const int h);
 
-#define a_screen_dup(src)                 \
+#define a_screen_dup()                    \
 ({                                        \
     Pixel* const a__dst = a_screen_new(); \
-    a_screen_copy(a__dst, (src));         \
+    a_screen_copy(a__dst, a_pixels);      \
     a__dst;                               \
 })
 

@@ -162,10 +162,10 @@ int a_font_copy(const int font, const uint8_t r, const uint8_t g, const uint8_t 
     return a_list_size(fontsList) - 1;
 }
 
-int a_font_text(const FontAlign align, int x, const int y, const int index, const Blit_t draw, const char* const text)
+int a_font_text(const FontAlign align, int x, const int y, const int index, const char* const text)
 {
     if(align & A_SAFE) {
-        return a_font_safe(align, x, y, index, draw, text);
+        return a_font_safe(align, x, y, index, text);
     }
 
     Font* const f = fonts[index];
@@ -179,8 +179,6 @@ int a_font_text(const FontAlign align, int x, const int y, const int index, cons
     const int length = strlen(text);
     const int maxWidth = f->maxWidth;
     int drx = x;
-
-    void (* const blitter)(const Sprite* const s, const int x, const int y) = a_blit_blitters[draw];
 
     for(int l = 0; l < length; l++) {
         int drx2 = drx;
@@ -199,7 +197,7 @@ int a_font_text(const FontAlign align, int x, const int y, const int index, cons
                 drx2 += (f->maxWidth - spr->w) / 2;
             }
 
-            blitter(spr, drx2, y);
+            a_blit(spr, drx2, y);
             drx += FONT_SPACE + (spaced ? maxWidth : spr->w);
         }
     }
@@ -207,7 +205,7 @@ int a_font_text(const FontAlign align, int x, const int y, const int index, cons
     return drx;
 }
 
-int a_font_safe(const FontAlign align, int x, const int y, const int index, const Blit_t draw, const char* const text)
+int a_font_safe(const FontAlign align, int x, const int y, const int index, const char* const text)
 {
     Font* const f = fonts[index];
 
@@ -220,8 +218,6 @@ int a_font_safe(const FontAlign align, int x, const int y, const int index, cons
     const int length = strlen(text);
     const int maxWidth = f->maxWidth;
     int drx = x;
-
-    void (* const blitter)(const Sprite* const s, const int x, const int y) = a_blit_blitters[draw];
 
     for(int l = 0; l < length; l++) {
         int drx2 = drx;
@@ -245,7 +241,7 @@ int a_font_safe(const FontAlign align, int x, const int y, const int index, cons
                 drx2 += (f->maxWidth - spr->w) / 2;
             }
 
-            blitter(spr, drx2, y);
+            a_blit(spr, drx2, y);
             drx += FONT_SPACE + (spaced ? maxWidth : spr->w);
         }
     }
@@ -253,34 +249,34 @@ int a_font_safe(const FontAlign align, int x, const int y, const int index, cons
     return drx;
 }
 
-int a_font_int(const FontAlign align, const int x, const int y, const int f, const Blit_t draw, const int number)
+int a_font_int(const FontAlign align, const int x, const int y, const int f, const int number)
 {
     String16 s;
     sprintf(s, "%d", number);
 
-    return a_font_text(align, x, y, f, draw, s);
+    return a_font_text(align, x, y, f, s);
 }
 
-int a_font_float(const FontAlign align, const int x, const int y, const int f, const Blit_t draw, const float number)
+int a_font_float(const FontAlign align, const int x, const int y, const int f, const float number)
 {
     String64 s;
     sprintf(s, "%f", number);
 
-    return a_font_text(align, x, y, f, draw, s);
+    return a_font_text(align, x, y, f, s);
 }
 
-int a_font_char(const FontAlign align, const int x, const int y, const int f, const Blit_t draw, const char ch)
+int a_font_char(const FontAlign align, const int x, const int y, const int f, const char ch)
 {
     char s[2];
     sprintf(s, "%c", ch);
 
-    return a_font_text(align, x, y, f, draw, s);
+    return a_font_text(align, x, y, f, s);
 }
 
-int a_font_fixed(const FontAlign align, const int x, const int y, const int f, const Blit_t draw, const int width, const char* const text)
+int a_font_fixed(const FontAlign align, const int x, const int y, const int f, const int width, const char* const text)
 {
     if(a_font_width(f, text) <= width) {
-        return a_font_text(align, x, y, f, draw, text);
+        return a_font_text(align, x, y, f, text);
     }
 
     const int w = a_font_width(f, "...");
@@ -290,7 +286,7 @@ int a_font_fixed(const FontAlign align, const int x, const int y, const int f, c
         temp[strlen(temp) - 1] = '\0';
     } while(a_font_width(f, temp) + w > width);
 
-    int rx = a_font_textf(align, x, y, f, draw, "%s...", temp);
+    int rx = a_font_textf(align, x, y, f, "%s...", temp);
 
     free(temp);
 

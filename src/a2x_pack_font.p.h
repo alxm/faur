@@ -39,21 +39,21 @@ typedef enum FontAlign {
 extern int a_font_load(Sheet* const sheet, const int sx, const int sy, const int zoom, const FontLoad loader);
 extern int a_font_copy(const int font, const uint8_t r, const uint8_t g, const uint8_t b);
 
-extern int a_font_text(const FontAlign align, int x, const int y, const int index, const Blit_t draw, const char* const text);
-extern int a_font_safe(const FontAlign align, int x, const int y, const int index, const Blit_t draw, const char* const text);
-extern int a_font_int(const FontAlign align, const int x, const int y, const int f, const Blit_t draw, const int number);
-extern int a_font_float(const FontAlign align, const int x, const int y, const int f, const Blit_t draw, const float number);
-extern int a_font_char(const FontAlign align, const int x, const int y, const int f, const Blit_t draw, const char ch);
+extern int a_font_text(const FontAlign align, int x, const int y, const int index, const char* const text);
+extern int a_font_safe(const FontAlign align, int x, const int y, const int index, const char* const text);
+extern int a_font_int(const FontAlign align, const int x, const int y, const int f, const int number);
+extern int a_font_float(const FontAlign align, const int x, const int y, const int f, const float number);
+extern int a_font_char(const FontAlign align, const int x, const int y, const int f, const char ch);
 
-extern int a_font_fixed(const FontAlign align, const int x, const int y, const int f, const Blit_t draw, const int width, const char* const text);
+extern int a_font_fixed(const FontAlign align, const int x, const int y, const int f, const int width, const char* const text);
 
 extern int a_font_width(const int index, const char* const text);
 
-#define a_font_textf(align, x, y, f, b, ...) \
-({                                           \
-    String256 a__s;                          \
-    sprintf(a__s, __VA_ARGS__);              \
-    a_font_text(align, x, y, f, b, a__s);    \
+#define a_font_textf(align, x, y, f, ...) \
+({                                        \
+    String256 a__s;                       \
+    sprintf(a__s, __VA_ARGS__);           \
+    a_font_text(align, x, y, f, a__s);    \
 })
 
 #define a_font_widthf(f, ...)   \

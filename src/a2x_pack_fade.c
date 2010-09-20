@@ -35,7 +35,7 @@ void a_fade_toBlack(FadeSpeed speed)
 {
     setSpeed();
 
-    Pixel* const copy = a_screen_dup(a_pixels);
+    Pixel* const copy = a_screen_dup();
 
     for(fix8 a = FONE8; a >= 0; a -= speed) {
         a_fps_start();
@@ -67,7 +67,7 @@ void a_fade_fromBlack(FadeSpeed speed)
 {
     setSpeed();
 
-    Pixel* const copy = a_screen_dup(a_pixels);
+    Pixel* const copy = a_screen_dup();
 
     for(fix8 a = 0; a <= FONE8; a += speed) {
         a_fps_start();
@@ -99,7 +99,7 @@ void a_fade_toBlackOld(FadeSpeed speed)
 {
     setSpeed();
 
-    Pixel* const copy = a_screen_dup(a_pixels);
+    Pixel* const copy = a_screen_dup();
 
     for(fix8 a = FONE8; a >= 0; a -= speed) {
         a_fps_start();
@@ -127,7 +127,7 @@ void a_fade_fromBlackOld(FadeSpeed speed)
 {
     setSpeed();
 
-    Pixel* const copy = a_screen_dup(a_pixels);
+    Pixel* const copy = a_screen_dup();
 
     for(fix8 a = 0; a <= FONE8; a += speed) {
         a_fps_start();

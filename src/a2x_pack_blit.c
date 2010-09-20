@@ -21,9 +21,15 @@
 #include "a2x_pack_blit.p.h"
 #include "a2x_pack_blit.v.h"
 
-void (*a_blit_blitters[])(const Sprite* const s, const int x, const int y) = {
-    &a_blit_NCNT, &a_blit_NCT, &a_blit_CNT, &a_blit_CT
-};
+Blitter a_blit = NULL;
+
+static Blitter blitters[A_BLIT_TYPE_NUM][A_BLIT_CLIP_NUM];
+
+static BlitType_t type;
+static BlitClip_t clip;
+
+static uint8_t alpha;
+static uint8_t red, green, blue;
 
 /*
     Blit area
@@ -221,66 +227,15 @@ void (*a_blit_blitters[])(const Sprite* const s, const int x, const int y) = {
 #define BLIT_plain_do \
     *dst = *src;
 
-#define BLIT_rgb_setup                         \
-    const Pixel color = a_pixel_make(r, g, b);
-
-#define BLIT_rgb_do \
-    *dst = color;
-
 #define BLIT_inverse_setup
 
 #define BLIT_inverse_do \
     *dst = ~*dst;
 
-#define BLIT_a_setup
-
-#define BLIT_a_do                                       \
-    const Pixel cd = *dst;                              \
-    const Pixel cs = *src;                              \
-                                                        \
-    const int R = a_pixel_red(cd);                      \
-    const int G = a_pixel_green(cd);                    \
-    const int B = a_pixel_blue(cd);                     \
-                                                        \
-    *dst = a_pixel_make(                                \
-        R + (((a_pixel_red(cs) - R) * a) >> 8),         \
-        G + (((a_pixel_green(cs) - G) * a) >> 8),       \
-        B + (((a_pixel_blue(cs) - B) * a) >> 8)         \
-    );
-
-#define BLIT_alpha_setup     \
-    const fix8 a = s->alpha;
-
-#define BLIT_alpha_do                                   \
-    const Pixel cd = *dst;                              \
-    const Pixel cs = *src;                              \
-                                                        \
-    const int R = a_pixel_red(cd);                      \
-    const int G = a_pixel_green(cd);                    \
-    const int B = a_pixel_blue(cd);                     \
-                                                        \
-    *dst = a_pixel_make(                                \
-        R + (((a_pixel_red(cs) - R) * a) >> 8),         \
-        G + (((a_pixel_green(cs) - G) * a) >> 8),       \
-        B + (((a_pixel_blue(cs) - B) * a) >> 8)         \
-    );
-
-#define BLIT_argb_setup
-
-#define BLIT_argb_do                    \
-    const Pixel cd = *dst;              \
-                                        \
-    const int R = a_pixel_red(cd);      \
-    const int G = a_pixel_green(cd);    \
-    const int B = a_pixel_blue(cd);     \
-                                        \
-    *dst = a_pixel_make(                \
-        R + (((r - R) * a) >> 8),       \
-        G + (((g - G) * a) >> 8),       \
-        B + (((b - B) * a) >> 8)        \
-    );
-
-#define BLIT_a25rgb_setup
+#define BLIT_a25rgb_setup    \
+    const uint8_t r = red;   \
+    const uint8_t g = green; \
+    const uint8_t b = blue;
 
 #define BLIT_a25rgb_do               \
     const Pixel cd = *dst;           \
@@ -295,7 +250,10 @@ void (*a_blit_blitters[])(const Sprite* const s, const int x, const int y) = {
         (B >> 1) + ((B + b) >> 2)    \
     );
 
-#define BLIT_a50rgb_setup
+#define BLIT_a50rgb_setup    \
+    const uint8_t r = red;   \
+    const uint8_t g = green; \
+    const uint8_t b = blue;
 
 #define BLIT_a50rgb_do               \
     const Pixel cd = *dst;           \
@@ -310,7 +268,10 @@ void (*a_blit_blitters[])(const Sprite* const s, const int x, const int y) = {
         (B + b) >> 1                 \
     );
 
-#define BLIT_a75rgb_setup
+#define BLIT_a75rgb_setup    \
+    const uint8_t r = red;   \
+    const uint8_t g = green; \
+    const uint8_t b = blue;
 
 #define BLIT_a75rgb_do                  \
     const Pixel cd = *dst;              \
@@ -325,29 +286,143 @@ void (*a_blit_blitters[])(const Sprite* const s, const int x, const int y) = {
         (B >> 2) + (b >> 2) + (b >> 1)  \
     );
 
+#define BLIT_rgb_setup                         \
+    const uint8_t r = red;                     \
+    const uint8_t g = green;                   \
+    const uint8_t b = blue;                    \
+    const Pixel color = a_pixel_make(r, g, b);
+
+#define BLIT_rgb_do \
+    *dst = color;
+
+#define BLIT_alpha_setup     \
+    const uint8_t a = alpha; \
+
+#define BLIT_alpha_do                             \
+    const Pixel cd = *dst;                        \
+    const Pixel cs = *src;                        \
+                                                  \
+    const uint8_t R = a_pixel_red(cd);            \
+    const uint8_t G = a_pixel_green(cd);          \
+    const uint8_t B = a_pixel_blue(cd);           \
+                                                  \
+                                                  \
+    *dst = a_pixel_make(                          \
+        R + (((a_pixel_red(cs) - R) * a) >> 8),   \
+        G + (((a_pixel_green(cs) - G) * a) >> 8), \
+        B + (((a_pixel_blue(cs) - B) * a) >> 8)   \
+    );
+
+#define BLIT_spritealpha_setup \
+    const fix8 a = s->alpha;
+
+#define BLIT_spritealpha_do                       \
+    const Pixel cd = *dst;                        \
+    const Pixel cs = *src;                        \
+                                                  \
+    const uint8_t R = a_pixel_red(cd);            \
+    const uint8_t G = a_pixel_green(cd);          \
+    const uint8_t B = a_pixel_blue(cd);           \
+                                                  \
+    *dst = a_pixel_make(                          \
+        R + (((a_pixel_red(cs) - R) * a) >> 8),   \
+        G + (((a_pixel_green(cs) - G) * a) >> 8), \
+        B + (((a_pixel_blue(cs) - B) * a) >> 8)   \
+    );
+
+#define BLIT_argb_setup      \
+    const uint8_t a = alpha; \
+    const uint8_t r = red;   \
+    const uint8_t g = green; \
+    const uint8_t b = blue;
+
+#define BLIT_argb_do                     \
+    const Pixel cd = *dst;               \
+                                         \
+    const uint8_t R = a_pixel_red(cd);   \
+    const uint8_t G = a_pixel_green(cd); \
+    const uint8_t B = a_pixel_blue(cd);  \
+                                         \
+                                         \
+    *dst = a_pixel_make(                 \
+        R + (((r - R) * a) >> 8),        \
+        G + (((g - G) * a) >> 8),        \
+        B + (((b - B) * a) >> 8)         \
+    );
+
 /*
     Blitters
 */
 
-#define a__blit_make2(area, type, params) \
-    void a_blit_##area##_##type params    \
-    {                                     \
-        BLIT_##type##_setup               \
-        area(BLIT_##type##_do)            \
+#define blitterMake2(area, type)                                                  \
+    void a_blit_##area##_##type (const Sprite* const s, const int x, const int y) \
+    {                                                                             \
+        BLIT_##type##_setup                                                       \
+        area(BLIT_##type##_do)                                                    \
     }
 
-#define a__blit_make(type, params)    \
-    a__blit_make2(NCNT, type, params) \
-    a__blit_make2(NCT,  type, params) \
-    a__blit_make2(CNT,  type, params) \
-    a__blit_make2(CT,   type, params)
+#define blitterMake(type)    \
+    blitterMake2(NCNT, type) \
+    blitterMake2(NCT, type)  \
+    blitterMake2(CNT, type)  \
+    blitterMake2(CT, type)
 
-a__blit_make(plain, (const Sprite* const s, const int x, const int y))
-a__blit_make(rgb, (const Sprite* const s, const int x, const int y, const int r, const int g, const int b))
-a__blit_make(inverse, (const Sprite* const s, const int x, const int y))
-a__blit_make(a, (const Sprite* const s, const int x, const int y, const fix8 a))
-a__blit_make(alpha, (const Sprite* const s, const int x, const int y))
-a__blit_make(argb, (const Sprite* const s, const int x, const int y, const fix8 a, const int r, const int g, const int b))
-a__blit_make(a25rgb, (const Sprite* const s, const int x, const int y, const int r, const int g, const int b))
-a__blit_make(a50rgb, (const Sprite* const s, const int x, const int y, const int r, const int g, const int b))
-a__blit_make(a75rgb, (const Sprite* const s, const int x, const int y, const int r, const int g, const int b))
+blitterMake(plain)
+blitterMake(inverse)
+blitterMake(a25rgb)
+blitterMake(a50rgb)
+blitterMake(a75rgb)
+blitterMake(rgb)
+blitterMake(alpha)
+blitterMake(spritealpha)
+blitterMake(argb)
+
+#define blitter(type, name)                           \
+({                                                    \
+    blitters[type][A_BLIT_NCNT] = a_blit_NCNT_##name; \
+    blitters[type][A_BLIT_NCT] = a_blit_NCT_##name;   \
+    blitters[type][A_BLIT_CNT] = a_blit_CNT_##name;   \
+    blitters[type][A_BLIT_CT] = a_blit_CT_##name;     \
+})
+
+void a_blit__set(void)
+{
+    blitter(A_BLIT_PLAIN, plain);
+    blitter(A_BLIT_INVERSE, inverse);
+    blitter(A_BLIT_RGB25, a25rgb);
+    blitter(A_BLIT_RGB50, a50rgb);
+    blitter(A_BLIT_RGB75, a75rgb);
+    blitter(A_BLIT_RGB, rgb);
+    blitter(A_BLIT_ALPHA, alpha);
+    blitter(A_BLIT_SPRITEALPHA, spritealpha);
+    blitter(A_BLIT_ARGB, argb);
+
+    type = A_BLIT_PLAIN;
+    clip = A_BLIT_CT;
+
+    a_blit = blitters[type][clip];
+}
+
+void a_blit_setType(BlitType_t t)
+{
+    type = t;
+    a_blit = blitters[type][clip];
+}
+
+void a_blit_setClip(BlitClip_t c)
+{
+    clip = c;
+    a_blit = blitters[type][clip];
+}
+
+void a_blit_setAlpha(const uint8_t a)
+{
+    alpha = a;
+}
+
+void a_blit_setRGB(const uint8_t r, const uint8_t g, const uint8_t b)
+{
+    red = r;
+    green = g;
+    blue = b;
+}

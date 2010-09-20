@@ -23,38 +23,24 @@
 #include "a2x_pack_screen.p.h"
 #include "a2x_pack_sprite.p.h"
 
-typedef enum Blit_t {A_NCNT, A_NCT, A_CNT, A_CT} Blit_t;
+typedef enum {
+    A_BLIT_PLAIN, A_BLIT_INVERSE,
+    A_BLIT_RGB25, A_BLIT_RGB50, A_BLIT_RGB75, A_BLIT_RGB,
+    A_BLIT_ALPHA, A_BLIT_SPRITEALPHA, A_BLIT_ARGB,
+    A_BLIT_TYPE_NUM
+} BlitType_t;
 
-/*
-    Blitters
-*/
+typedef enum {
+    A_BLIT_NCNT, A_BLIT_NCT, A_BLIT_CNT, A_BLIT_CT, A_BLIT_CLIP_NUM
+} BlitClip_t;
 
-#define a__blit_makeH2(area, type, params)     \
-    extern void a_blit_##area##_##type params;
+typedef void (*Blitter)(const Sprite* const s, const int x, const int y);
 
-#define a__blit_makeH(type, params)    \
-    a__blit_makeH2(NCNT, type, params) \
-    a__blit_makeH2(NCT,  type, params) \
-    a__blit_makeH2(CNT,  type, params) \
-    a__blit_makeH2(CT,   type, params)
+extern void a_blit_setType(BlitType_t t);
+extern void a_blit_setClip(BlitClip_t c);
+extern void a_blit_setAlpha(const uint8_t a);
+extern void a_blit_setRGB(const uint8_t r, const uint8_t g, const uint8_t b);
 
-a__blit_makeH(plain,   (const Sprite* const s, const int x, const int y))
-a__blit_makeH(rgb,     (const Sprite* const s, const int x, const int y, const int r, const int g, const int b))
-a__blit_makeH(inverse, (const Sprite* const s, const int x, const int y))
-a__blit_makeH(a,       (const Sprite* const s, const int x, const int y, const fix8 a))
-a__blit_makeH(alpha,   (const Sprite* const s, const int x, const int y))
-a__blit_makeH(argb,    (const Sprite* const s, const int x, const int y, const fix8 a, const int r, const int g, const int b))
-a__blit_makeH(a25rgb,  (const Sprite* const s, const int x, const int y, const int r, const int g, const int b))
-a__blit_makeH(a50rgb,  (const Sprite* const s, const int x, const int y, const int r, const int g, const int b))
-a__blit_makeH(a75rgb,  (const Sprite* const s, const int x, const int y, const int r, const int g, const int b))
-
-#define a_blit_NCNT a_blit_NCNT_plain
-#define a_blit_NCT  a_blit_NCT_plain
-#define a_blit_CNT  a_blit_CNT_plain
-#define a_blit_CT   a_blit_CT_plain
-
-#define a_blit_c (f, s)    (f)((s), (a_width - (s)->w) / 2, (a_height - (s)->h) / 2)
-#define a_blit_ch(f, s, y) (f)((s), (a_width - (s)->w) / 2, (y))
-#define a_blit_cv(f, s, x) (f)((s), (x),                    (a_height - (s)->h) / 2)
+extern Blitter a_blit;
 
 #endif // A2X_PACK_BLIT_PH
