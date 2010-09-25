@@ -426,3 +426,18 @@ void a_blit_setRGB(const uint8_t r, const uint8_t g, const uint8_t b)
     green = g;
     blue = b;
 }
+
+void a_blit_c(const Sprite* const s)
+{
+    a_blit(s, (a_width - s->w) / 2, (a_height - s->h) / 2);
+}
+
+void a_blit_ch(const Sprite* const s, const int y)
+{
+    a_blit(s, (a_width - s->w) / 2, y);
+}
+
+void a_blit_cv(const Sprite* const s, const int x)
+{
+    a_blit(s, x, (a_height - s->h) / 2);
+}

@@ -43,4 +43,8 @@ extern void a_blit_setRGB(const uint8_t r, const uint8_t g, const uint8_t b);
 
 extern Blitter a_blit;
 
+extern void a_blit_c(const Sprite* const s);
+extern void a_blit_ch(const Sprite* const s, const int y);
+extern void a_blit_cv(const Sprite* const s, const int x);
+
 #endif // A2X_PACK_BLIT_PH
