@@ -76,7 +76,7 @@ static void registerButtonFake(const char* const name);
 
 void a_input__set(void)
 {
-    buttonNames = a_hash_set(32);
+    buttonNames = a_hash_set();
     buttonList = a_list_set();
 
     inputs = a_list_set();

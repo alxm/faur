@@ -20,6 +20,8 @@
 #include "a2x_pack_hash.p.h"
 #include "a2x_pack_hash.v.h"
 
+#define A_HASH_NUM 256
+
 typedef struct Entry {
     char* key;
     void* content;
@@ -27,27 +29,23 @@ typedef struct Entry {
 } Entry;
 
 struct Hash {
-    int size;
-    Entry** entries;
+    Entry* entries[A_HASH_NUM];
 };
 
-#define getSlot(h, k)               \
+#define getSlot(k)                  \
 ({                                  \
-    int a__s = 0;                   \
+    int s = 0;                      \
     for(int i = strlen(k); i--; ) { \
-        a__s += (int)k[i];          \
+        s ^= k[i];                  \
     }                               \
-    a__s %= h->size;                \
+    s &= A_HASH_NUM - 1;            \
 })
 
-Hash* a_hash_set(const int size)
+Hash* a_hash_set(void)
 {
     Hash* const h = malloc(sizeof(Hash));
 
-    h->size = size;
-    h->entries = malloc(size * sizeof(Entry*));
-
-    for(int i = size; i--; ) {
+    for(int i = A_HASH_NUM; i--; ) {
         h->entries[i] = NULL;
     }
 
@@ -56,7 +54,7 @@ Hash* a_hash_set(const int size)
 
 void a_hash_free(Hash* const h)
 {
-    for(int i = h->size; i--; ) {
+    for(int i = A_HASH_NUM; i--; ) {
         Entry* e = h->entries[i];
 
         while(e) {
@@ -69,13 +67,12 @@ void a_hash_free(Hash* const h)
         }
     }
 
-    free(h->entries);
     free(h);
 }
 
 void a_hash_freeContent(Hash* const h)
 {
-    for(int i = h->size; i--; ) {
+    for(int i = A_HASH_NUM; i--; ) {
         Entry* e = h->entries[i];
 
         while(e) {
@@ -89,7 +86,6 @@ void a_hash_freeContent(Hash* const h)
         }
     }
 
-    free(h->entries);
     free(h);
 }
 
@@ -101,7 +97,7 @@ void a_hash_add(Hash* const h, const char* const key, void* const content)
     e->content = content;
     e->next = NULL;
 
-    const int slot = getSlot(h, key);
+    const int slot = getSlot(key);
     Entry* entry = h->entries[slot];
 
     if(entry == NULL) {
@@ -115,9 +111,9 @@ void a_hash_add(Hash* const h, const char* const key, void* const content)
     }
 }
 
-void* a_hash_get(Hash* const h, const char* const key)
+void* a_hash_get(const Hash* const h, const char* const key)
 {
-    Entry* e = h->entries[getSlot(h, key)];
+    Entry* e = h->entries[getSlot(key)];
 
     while(e && !a_str_same(key, e->key)) {
         e = e->next;

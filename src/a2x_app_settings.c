@@ -48,7 +48,7 @@ static void flip(const char* const key, const int respect);
 
 void a2x__defaults(void)
 {
-    settings = a_hash_set(32);
+    settings = a_hash_set();
 
     add(STR, SET_ONCE, "title", "Untitled");
     add(STR, SET_ONCE, "version", "0");

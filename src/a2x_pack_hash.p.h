@@ -28,10 +28,10 @@
 
 typedef struct Hash Hash;
 
-extern Hash* a_hash_set(const int size);
+extern Hash* a_hash_set(void);
 extern void a_hash_free(Hash* const h);
 extern void a_hash_freeContent(Hash* const h);
 extern void a_hash_add(Hash* const h, const char* const key, void* const content);
-extern void* a_hash_get(Hash* const h, const char* const key);
+extern void* a_hash_get(const Hash* const h, const char* const key);
 
 #endif // A2X_PACK_HASH_PH
