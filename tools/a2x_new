@@ -2,47 +2,45 @@
 
 if [ $# -ne 1 ]
 then
-    echo "Usage: `basename $0` ProjectPath"
+    echo "Usage: $(basename "$0") ProjectPath"
     exit 1
 fi
 
-SCRIPT_PATH="`readlink -f $0`"
-A2X_LOCATION="`dirname $SCRIPT_PATH`/.."
+A2X_LOCATION="$(readlink -f "$(dirname "$0")/..")"
+echo "Found a2x: $A2X_LOCATION"
 
-PROJECT_NAME="`basename $1`"
+PROJECT_NAME="$(basename "$1")"
 PROJECT_PATH=$1
 
-CURRENT_FILE=
-
-if [ -e $PROJECT_PATH ]
+if [ -e "$PROJECT_PATH" ]
 then
-    echo "Error: $PROJECT_NAME already exists"
+    echo "Error: \"$PROJECT_NAME\" already exists"
     exit 1
 fi
 
 function newdir
 {
-    echo "Making dir $1"
-    mkdir $1
+    echo "Making dir: $1"
+    mkdir "$1"
 }
 
 function newfile
 {
-    echo "Writing file $1"
+    echo "Writing file: $1"
     CURRENT_FILE=$1
-    touch $CURRENT_FILE
+    touch "$CURRENT_FILE"
 }
 
 function putline
 {
-    echo -e $1 >> $CURRENT_FILE
+    echo -e $1 >> "$CURRENT_FILE"
 }
 
-newdir $PROJECT_PATH
-newdir $PROJECT_PATH/make
-newdir $PROJECT_PATH/src
+newdir "$PROJECT_PATH"
+newdir "$PROJECT_PATH/make"
+newdir "$PROJECT_PATH/src"
 
-newfile $PROJECT_PATH/make/Makefile
+newfile "$PROJECT_PATH/make/Makefile"
 putline "APP = $PROJECT_NAME"
 putline "TARGET_DIR = .."
 putline "SRC_DIR = ../src"
@@ -51,7 +49,7 @@ putline "SFX_DIR ="
 putline "A2X_PATH = $A2X_LOCATION"
 putline "include \$(A2X_PATH)/make/project/Makefile.linux"
 
-newfile $PROJECT_PATH/src/main.c
+newfile "$PROJECT_PATH/src/main.c"
 putline "#include <a2x.h>"
 putline ""
 putline "void a2x(void)"
