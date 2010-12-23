@@ -40,104 +40,104 @@ void a2x_png_readFile(const char* const path, Pixel** const pixels, int* const w
     }
 
     #define PNG_SIG 8
-	png_byte sig[PNG_SIG];
+    png_byte sig[PNG_SIG];
 
-	a_file_rp(f, sig, PNG_SIG);
+    a_file_rp(f, sig, PNG_SIG);
 
-	if(png_sig_cmp(sig, 0, PNG_SIG) != 0) {
-		a_error("%s is not a PNG", path);
+    if(png_sig_cmp(sig, 0, PNG_SIG) != 0) {
+        a_error("%s is not a PNG", path);
         goto cleanUp;
-	}
-
-	png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
-
-	if(!png) {
-	    goto cleanUp;
-	}
-
-	info = png_create_info_struct(png);
-
-	if(!info) {
-	    goto cleanUp;
-	}
-
-	if(setjmp(png_jmpbuf(png))) {
-	    goto cleanUp;
     }
 
-	png_init_io(png, f);
-	png_set_sig_bytes(png, PNG_SIG);
-	png_read_png(png, info, PNG_TRANSFORM_IDENTITY, NULL);
+    png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 
-	const int type = png_get_color_type(png, info);
+    if(!png) {
+        goto cleanUp;
+    }
 
-	if(type != PNG_COLOR_TYPE_RGB && type != PNG_COLOR_TYPE_RGBA) {
-	    a_error("%s not 8-bit RGBA PNG", path);
-	    goto cleanUp;
+    info = png_create_info_struct(png);
+
+    if(!info) {
+        goto cleanUp;
+    }
+
+    if(setjmp(png_jmpbuf(png))) {
+        goto cleanUp;
+    }
+
+    png_init_io(png, f);
+    png_set_sig_bytes(png, PNG_SIG);
+    png_read_png(png, info, PNG_TRANSFORM_IDENTITY, NULL);
+
+    const int type = png_get_color_type(png, info);
+
+    if(type != PNG_COLOR_TYPE_RGB && type != PNG_COLOR_TYPE_RGBA) {
+        a_error("%s not 8-bit RGBA PNG", path);
+        goto cleanUp;
     }
 
     pngToPixels(png, info, pixels, width, height);
 
-	cleanUp:
+    cleanUp:
 
     if(png) {
         png_destroy_read_struct(&png, info ? &info : NULL, NULL);
     }
 
     if(f) {
-	    a_file_close(f);
+        a_file_close(f);
     }
 }
 
 void a2x_png_readMemory(const uint8_t* const data, Pixel** const pixels, int* const width, int* const height)
 {
-    png_structp png = NULL;
-    png_infop info = NULL;
-
-    #define PNG_SIG 8
-	png_byte sig[PNG_SIG];
-
-	memcpy(sig, data, PNG_SIG);
-
-	if(png_sig_cmp(sig, 0, PNG_SIG) != 0) {
-		a_error("Data not a PNG");
-        goto cleanUp;
-	}
-
-	png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
-
-	if(!png) {
-	    goto cleanUp;
-	}
-
-	info = png_create_info_struct(png);
-
-	if(!info) {
-	    goto cleanUp;
-	}
-
-	if(setjmp(png_jmpbuf(png))) {
-	    goto cleanUp;
-    }
-
     ByteStream* const stream = malloc(sizeof(ByteStream));
 
     stream->data = data;
     stream->offset = 0;
 
-	png_set_read_fn(png, stream, readFunction);
-	png_read_png(png, info, PNG_TRANSFORM_IDENTITY, NULL);
+    png_structp png = NULL;
+    png_infop info = NULL;
 
-	const int type = png_get_color_type(png, info);
+    #define PNG_SIG 8
+    png_byte sig[PNG_SIG];
 
-	if(type != PNG_COLOR_TYPE_RGB && type != PNG_COLOR_TYPE_RGBA) {
-	    a_error("Data not 8-bit RGBA PNG");
-	    goto cleanUp;
+    memcpy(sig, data, PNG_SIG);
+
+    if(png_sig_cmp(sig, 0, PNG_SIG) != 0) {
+        a_error("Data not a PNG");
+        goto cleanUp;
+    }
+
+    png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+
+    if(!png) {
+        goto cleanUp;
+    }
+
+    info = png_create_info_struct(png);
+
+    if(!info) {
+        goto cleanUp;
+    }
+
+    if(setjmp(png_jmpbuf(png))) {
+        goto cleanUp;
+    }
+
+    png_set_read_fn(png, stream, readFunction);
+    png_read_png(png, info, PNG_TRANSFORM_IDENTITY, NULL);
+
+    const int type = png_get_color_type(png, info);
+
+    if(type != PNG_COLOR_TYPE_RGB && type != PNG_COLOR_TYPE_RGBA) {
+        a_error("Data not 8-bit RGBA PNG");
+        goto cleanUp;
     }
 
     pngToPixels(png, info, pixels, width, height);
 
-	cleanUp:
+    cleanUp:
 
     if(png) {
         png_destroy_read_struct(&png, info ? &info : NULL, NULL);
@@ -153,70 +153,70 @@ void a2x_png_write(const char* const path, const Pixel* const data, const int wi
     png_structp png = NULL;
     png_infop info = NULL;
 
-	png = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+    png_bytepp rows = malloc(height * sizeof(png_bytep));
+
+    png = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 
     if(!png) {
-		goto cleanUp;
-	}
+        goto cleanUp;
+    }
 
-	info = png_create_info_struct(png);
+    info = png_create_info_struct(png);
 
-	if(!info) {
-	    goto cleanUp;
-	}
+    if(!info) {
+        goto cleanUp;
+    }
 
-	if(setjmp(png_jmpbuf(png))) {
-		goto cleanUp;
+    if(setjmp(png_jmpbuf(png))) {
+        goto cleanUp;
     }
 
     png_set_compression_level(png, Z_BEST_COMPRESSION);
 
     png_set_IHDR(
-    	png, info,
-    	width, height,
-    	8, PNG_COLOR_TYPE_RGB,
-    	PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT,
-    	PNG_FILTER_TYPE_DEFAULT
+        png, info,
+        width, height,
+        8, PNG_COLOR_TYPE_RGB,
+        PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT,
+        PNG_FILTER_TYPE_DEFAULT
     );
 
-    png_bytepp rows = malloc(height * sizeof(png_bytep));
-
     for(int i = 0; i < height; i++) {
-    	rows[i] = malloc(width * 3 * sizeof(png_byte));
+        rows[i] = malloc(width * 3 * sizeof(png_byte));
 
-		for(int j = 0; j < width; j++) {
-			const Pixel p = *(data + i * width + j);
+        for(int j = 0; j < width; j++) {
+            const Pixel p = *(data + i * width + j);
 
-	    	rows[i][j * 3 + 0] = a_pixel_red(p);
-	    	rows[i][j * 3 + 1] = a_pixel_green(p);
-	    	rows[i][j * 3 + 2] = a_pixel_blue(p);
-		}
-	}
+            rows[i][j * 3 + 0] = a_pixel_red(p);
+            rows[i][j * 3 + 1] = a_pixel_green(p);
+            rows[i][j * 3 + 2] = a_pixel_blue(p);
+        }
+    }
 
     png_init_io(png, f);
-	png_set_rows(png, info, rows);
-	png_write_png(png, info, PNG_TRANSFORM_IDENTITY, NULL);
-	png_write_end(png, NULL);
+    png_set_rows(png, info, rows);
+    png_write_png(png, info, PNG_TRANSFORM_IDENTITY, NULL);
+    png_write_end(png, NULL);
 
-	cleanUp:
+    cleanUp:
 
-	if(png) {
-	    png_destroy_write_struct(&png, info ? &info : NULL);
+    if(png) {
+        png_destroy_write_struct(&png, info ? &info : NULL);
     }
 
     for(int i = 0; i < height; i++) {
-		free(rows[i]);
-	}
+        free(rows[i]);
+    }
 
-	free(rows);
+    free(rows);
 }
 
 static void readFunction(png_structp png, png_bytep data, png_size_t length)
 {
-	ByteStream* const stream = png_get_io_ptr(png);
+    ByteStream* const stream = png_get_io_ptr(png);
 
-	memcpy(data, stream->data + stream->offset, length);
-	stream->offset += length;
+    memcpy(data, stream->data + stream->offset, length);
+    stream->offset += length;
 }
 
 static void pngToPixels(png_structp png, png_infop info, Pixel** const pixels, int* const width, int* const height)
@@ -225,7 +225,7 @@ static void pngToPixels(png_structp png, png_infop info, Pixel** const pixels, i
     const int h = png_get_image_height(png, info);
     const int channels = png_get_channels(png, info);
 
-	Pixel* const px = malloc(w * h * sizeof(Pixel));
+    Pixel* const px = malloc(w * h * sizeof(Pixel));
     png_bytepp rows = png_get_rows(png, info);
 
     for(int i = 0; i < h; i++) {
@@ -239,6 +239,6 @@ static void pngToPixels(png_structp png, png_infop info, Pixel** const pixels, i
     }
 
     *width = w;
-	*height = h;
-	*pixels = px;
+    *height = h;
+    *pixels = px;
 }

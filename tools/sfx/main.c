@@ -3,13 +3,11 @@
 void a2x(void)
 {
 	a2x_set("title", "a2x_sfx");
-	a2x_set("version", "0.1");
+	a2x_set("version", "0.2");
 	a2x_set("author", "Alex");
 	a2x_set("window", "no");
 	a2x_set("quiet", "yes");
 }
-
-#define TYPE uint16_t
 
 void Main(void)
 {
@@ -22,41 +20,33 @@ void Main(void)
     char* const cFile = a_args[2];
     char* const hFile = a_args[3];
 
-    char* const soundName = a_str_extractName(inputFile);
+    File* const sfxFile = a_file_openRead(inputFile);
+    char* const sfxName = a_str_extractName(inputFile);
 
-    int eLength;
-    const int oLength = a_file_size(inputFile);
-
-    File* const soundFile = a_file_openRead(inputFile);
-    TYPE* const soundData = malloc(oLength);
-    a_file_rp(soundFile, soundData, oLength);
-    a_file_close(soundFile);
-
-    TYPE* const dst = a_mem_encodeRLE(soundData, oLength / sizeof(TYPE), sizeof(TYPE), &eLength);
-
-    free(soundData);
+    const int length = a_file_size(inputFile) / sizeof(uint16_t);
+    uint16_t* const sfxData = (uint16_t*)a_file_toBuffer(inputFile);
 
     File* const h = a_file_openWriteText(hFile);
     File* const c = a_file_openWriteText(cFile);
 
     // header
 
-    fprintf(h, "#ifndef H_%s_H\n", soundName);
-    fprintf(h, "#define H_%s_H\n\n", soundName);
+    fprintf(h, "#ifndef H_%s_H\n", sfxName);
+    fprintf(h, "#define H_%s_H\n\n", sfxName);
 
     fprintf(h, "#include <stdint.h>\n\n");
-    fprintf(h, "extern " a_stringify(TYPE) " sfx_%s_data[%d];\n\n", soundName, eLength);
+    fprintf(h, "extern uint16_t sfx_%s[%d];\n\n", sfxName, length);
 
     fprintf(h, "#endif\n");
 
     // body
 
     fprintf(c, "#include \"%s\"\n\n", a_str_extractFile(hFile));
-    fprintf(c, a_stringify(TYPE) " sfx_%s_data[%d] = {", soundName, eLength);
+    fprintf(c, "uint16_t sfx_%s[%d] = {", sfxName, length);
 
-    for(int i = 0; i < eLength; i++) {
+    for(int i = 0; i < length; i++) {
         if(!(i % 8)) fprintf(c, "\n    ");
-        fprintf(c, "0x%04x,", dst[i]);
+        fprintf(c, "0x%04x,", sfxData[i]);
     }
 
     fprintf(c, "\n};\n");
@@ -64,5 +54,6 @@ void Main(void)
     a_file_close(h);
     a_file_close(c);
 
-    printf("Wrote '%s' and '%s', saved %d%%\n", cFile, hFile, 100 - 100 * eLength * sizeof(TYPE) / oLength);
+    free(sfxName);
+    free(sfxData);
 }

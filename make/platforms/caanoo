@@ -7,7 +7,7 @@ LIBS 		=	-L$(SDK_ROOT)/lib/target \
 				-L$(SDK_ROOT)/DGE/lib/target \
 				-L$(SDK_GLIBC)/lib \
 				-L$(SDK_GLIBC)/arm-gph-linux-gnueabi/lib \
-				-lSDL_image -ljpeg -lpng12 -lz -lSDL_mixer -lsmpeg -lSDL -lpthread -lm -ldl
+				-lpng12 -lz -lSDL_mixer -lsmpeg -lSDL -lpthread -lm -ldl
 
 CFLAGS		=	-DA_PLATFORM_CAANOO=1 \
 				-O3 -s \

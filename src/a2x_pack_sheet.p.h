@@ -25,12 +25,12 @@
 
 typedef struct Sheet Sheet;
 
+#include "a2x_pack_png.p.h"
 #include "a2x_pack_screen.p.h"
 #include "a2x_pack_types.p.h"
 
 extern Sheet* a_sheet_fromFile(const char* const path);
-#define a_sheet_fromData(g) a_sheet__fromData(gfx_##g##_data, gfx_##g##_w, gfx_##g##_h, sizeof(gfx_##g##_data))
-extern Sheet* a_sheet__fromData(const Pixel* const data, const int w, const int h, const int size);
+extern Sheet* a_sheet_fromData(const uint8_t* const data);
 extern Sheet* a_sheet_fromSheet(const Sheet* const sheet, const int x, const int y, const int w, const int h);
 extern void a_sheet_free(Sheet* const s);
 

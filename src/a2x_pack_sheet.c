@@ -22,52 +22,9 @@
 
 Sheet* a_sheet_fromFile(const char* const path)
 {
-    SDL_Surface* const sf = IMG_Load(path);
     Sheet* const s = malloc(sizeof(Sheet));
 
-    s->w = sf->w;
-    s->h = sf->h;
-    s->data = malloc(s->w * s->h * sizeof(Pixel));
-
-    for(int i = 0; i < s->h; i++) {
-        for(int j = 0; j < s->w; j++) {
-            const Uint8* const p = (Uint8*)sf->pixels + i * sf->pitch + j * sf->format->BytesPerPixel;
-            Uint32 pixel;
-
-            switch(sf->format->BytesPerPixel) {
-                case 1: {
-                    pixel = *p;
-                } break;
-
-                case 2: {
-                    pixel = *(Uint16*)p;
-                } break;
-
-                case 3: {
-                    if(SDL_BYTEORDER == SDL_BIG_ENDIAN) {
-                        pixel = (p[0] << 16) | (p[1] << 8) | (p[2]);
-                    } else {
-                        pixel = (p[0]) | (p[1] << 8) | (p[2] << 16);
-                    }
-                } break;
-
-                case 4: {
-                    pixel = *(Uint32*)p;
-                } break;
-
-                default: {
-                    pixel = 0;
-                } break;
-            }
-
-            Uint8 r, g, b;
-            SDL_GetRGB(pixel, sf->format, &r, &g, &b);
-
-            s->data[i * s->w + j] = a_pixel_make(r, g, b);
-        }
-    }
-
-    SDL_FreeSurface(sf);
+    a2x_png_readFile(path, &s->data, &s->w, &s->h);
 
     s->transparent = DEFAULT_TRANSPARENT;
     s->limit = DEFAULT_LIMIT;
@@ -76,13 +33,11 @@ Sheet* a_sheet_fromFile(const char* const path)
     return s;
 }
 
-Sheet* a_sheet__fromData(const Pixel* const data, const int w, const int h, const int size)
+Sheet* a_sheet_fromData(const uint8_t* const data)
 {
     Sheet* const s = malloc(sizeof(Sheet));
 
-    s->w = w;
-    s->h = h;
-    s->data = a_mem_decodeRLE(data, size / sizeof(Pixel), sizeof(Pixel), NULL);
+    a2x_png_readMemory(data, &s->data, &s->w, &s->h);
 
     s->transparent = DEFAULT_TRANSPARENT;
     s->limit = DEFAULT_LIMIT;

@@ -4,7 +4,7 @@ OPEN2X		=	/opt/open2x/gcc-4.1.1-glibc-2.3.6
 
 LIBS 		=	-L$(OPEN2X)/lib \
 				-L$(OPEN2X)/arm-open2x-linux/lib \
-				-lSDL_image -ljpeg -lpng12 -lz -lSDL_mixer -lsmpeg -lSDL -lpthread -lm -ldl
+				-lpng12 -lz -lSDL_mixer -lsmpeg -lSDL -lpthread -lm -ldl
 
 CFLAGS		=	-DA_PLATFORM_WIZ=1 \
 				-O3 -s \

@@ -151,17 +151,13 @@ Sound* a_sfx_fromFile(const char* const path)
 Sound* a_sfx__fromData(const uint16_t* const data, const int size)
 {
     if(a2x_bool("sound")) {
-        int decLength;
-        uint8_t* const dataDec = a_mem_decodeRLE(data, size / sizeof(uint16_t), sizeof(uint16_t), &decLength);
-
-        SDL_RWops* const rw = SDL_RWFromMem(dataDec, decLength * sizeof(uint16_t));
+        SDL_RWops* const rw = SDL_RWFromMem((void*)data, size);
         Sound* const s = Mix_LoadWAV_RW(rw, 0);
 
         s->volume = (float)a2x_int("sfxScale") / 100 * a__volume;
         a_list_addLast(sfxList, s);
 
         SDL_FreeRW(rw);
-        free(dataDec);
 
         return s;
     } else {

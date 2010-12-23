@@ -48,7 +48,7 @@ extern void a_music_play(Music* const m);
 extern void a_music_stop(void);
 
 extern Sound* a_sfx_fromFile(const char* const path);
-#define a_sfx_fromData(s) a_sfx__fromData(sfx_##s##_data, sizeof(sfx_##s##_data))
+#define a_sfx_fromData(s) a_sfx__fromData(s, sizeof(s))
 extern Sound* a_sfx__fromData(const uint16_t* const data, const int size);
 extern void a_sfx_free(Sound* const s);
 extern void a_sfx_play(Sound* const s);
