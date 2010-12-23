@@ -22,6 +22,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <sys/stat.h>
 #include <dirent.h>
 #include <limits.h>
@@ -93,6 +94,8 @@ extern List* a_file_list(const char* const path, int (*selector)(const struct di
 extern void a_file_freeFilePath(FilePath* const f);
 extern char* a_file_pathName(const FilePath* const f);
 extern char* a_file_pathFull(const FilePath* const f);
+
+extern uint8_t* a_file_toBuffer(const char* const path);
 
 extern FileReader* a_file_makeReader(const char* const file);
 extern void a_file_freeReader(FileReader* const f);

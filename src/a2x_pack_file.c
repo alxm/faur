@@ -141,6 +141,23 @@ char* a_file_pathFull(const FilePath* const f)
     return f->full;
 }
 
+uint8_t* a_file_toBuffer(const char* const path)
+{
+    File* const f = a_file_openRead(path);
+
+    if(!f) {
+        return NULL;
+    }
+
+    const int len = a_file_size(path);
+    uint8_t* const data = malloc(len);
+
+    a_file_rp(f, data, len);
+    a_file_close(f);
+
+    return data;
+}
+
 FileReader* a_file_makeReader(const char* const file)
 {
     FileReader* const f = malloc(sizeof(FileReader));
