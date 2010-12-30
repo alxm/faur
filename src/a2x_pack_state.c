@@ -21,11 +21,11 @@
 #include "a2x_pack_state.v.h"
 
 static int changed;
-static StateRunner current = NULL;
+static void (*current)(void) = NULL;
 
-void a_state_go(StateRunner s)
+void a_state_go(void (*state)(void))
 {
-    current = s;
+    current = state;
     changed = 1;
 }
 

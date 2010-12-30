@@ -24,12 +24,10 @@
 
 #include "a2x_pack_fps.p.h"
 
-typedef void (*StateRunner)(void);
-
-#define State(s) void (s)(void)
+#define State(state) void state(void)
 #define StateLoop while(a_state_running())
 
-extern void a_state_go(StateRunner s);
+extern void a_state_go(void (*state)(void));
 #define a_state_exit() a_state_go(NULL)
 
 extern int a_state_running(void);
