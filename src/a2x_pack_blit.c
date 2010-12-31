@@ -166,13 +166,13 @@ void a_blit__set(void)
     a_blit = blitters[blend][clip];
 }
 
-void a_blit__setBlend(PixelBlend_t b)
+void a_blit__setBlend(const PixelBlend_t b)
 {
     blend = b;
     a_blit = blitters[blend][clip];
 }
 
-void a_blit__setClip(bool c)
+void a_blit__setClip(const bool c)
 {
     clip = c;
     a_blit = blitters[blend][clip];

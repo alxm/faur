@@ -74,7 +74,7 @@ void a_pixel__set(void)
     a_pixel_put = pixels[blend][clip];
 }
 
-void a_pixel_setBlend(PixelBlend_t b)
+void a_pixel_setBlend(const PixelBlend_t b)
 {
     blend = b;
 
@@ -84,7 +84,7 @@ void a_pixel_setBlend(PixelBlend_t b)
     a_pixel_put = pixels[blend][clip];
 }
 
-void a_pixel_setClip(bool c)
+void a_pixel_setClip(const bool c)
 {
     clip = c;
 

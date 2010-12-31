@@ -42,7 +42,7 @@ static uint8_t alpha;
 static uint8_t red, green, blue;
 static Pixel pixel;
 
-static bool cohen_sutherland_clip(int* lx1, int* ly1, int* lx2, int* ly2);
+static bool cohen_sutherland_clip(int* const lx1, int* const ly1, int* const lx2, int* const ly2);
 
 #define rectangle_noclip(pixeler)                  \
 {                                                  \
@@ -260,13 +260,13 @@ void a_draw__set(void)
     drawSetAll();
 }
 
-void a_draw__setBlend(PixelBlend_t b)
+void a_draw__setBlend(const PixelBlend_t b)
 {
     blend = b;
     drawSetAll();
 }
 
-void a_draw__setClip(bool c)
+void a_draw__setClip(const bool c)
 {
     clip = c;
     drawSetAll();
@@ -341,7 +341,7 @@ void a_draw_rectangle_outline(const int x1, const int y1, const int x2, const in
     a_draw_rectangle(x2 - t, y1 + t, x2, y2 - t); // right
 }
 
-static bool cohen_sutherland_clip(int* lx1, int* ly1, int* lx2, int* ly2)
+static bool cohen_sutherland_clip(int* const lx1, int* const ly1, int* const lx2, int* const ly2)
 {
     int x1 = *lx1;
     int y1 = *ly1;

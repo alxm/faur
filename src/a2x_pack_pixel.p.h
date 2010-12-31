@@ -55,8 +55,8 @@ typedef void (*PixelPut)(const int x, const int y);
 
 #define a_pixel_get(x, y)    (*(a_pixels + (y) * a_width + (x)))
 
-extern void a_pixel_setBlend(PixelBlend_t b);
-extern void a_pixel_setClip(bool clip);
+extern void a_pixel_setBlend(const PixelBlend_t b);
+extern void a_pixel_setClip(const bool clip);
 
 extern void a_pixel_setAlpha(const uint8_t a);
 extern void a_pixel_setRGB(const uint8_t r, const uint8_t g, const uint8_t b);

@@ -25,8 +25,8 @@
 
 extern void a_draw__set(void);
 
-extern void a_draw__setBlend(PixelBlend_t b);
-extern void a_draw__setClip(bool c);
+extern void a_draw__setBlend(const PixelBlend_t b);
+extern void a_draw__setClip(const bool c);
 
 extern void a_draw__setAlpha(const uint8_t a);
 extern void a_draw__setRGB(const uint8_t r, const uint8_t g, const uint8_t b);
