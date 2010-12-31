@@ -20,6 +20,15 @@
 #ifndef A2X_PACK_DRAW_VH
 #define A2X_PACK_DRAW_VH
 
+#include "a2x_pack_pixel.p.h"
 #include "a2x_pack_pixel.v.h"
+
+extern void a_draw__set(void);
+
+extern void a_draw__setBlend(PixelBlend_t b);
+extern void a_draw__setClip(bool c);
+
+extern void a_draw__setAlpha(const uint8_t a);
+extern void a_draw__setRGB(const uint8_t r, const uint8_t g, const uint8_t b);
 
 #endif // A2X_PACK_DRAW_VH

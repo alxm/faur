@@ -21,56 +21,17 @@
 #include "a2x_pack_blit.p.h"
 #include "a2x_pack_blit.v.h"
 
-Blitter a_blit = NULL;
+Blitter a_blit;
+static Blitter blitters[A_PIXEL_TYPE_NUM][2];
 
-static Blitter blitters[A_BLIT_TYPE_NUM][A_BLIT_CLIP_NUM];
-
-static BlitType_t type;
-static BlitClip_t clip;
+static PixelBlend_t blend;
+static bool clip;
 
 static uint8_t alpha;
 static uint8_t red, green, blue;
 
-/*
-    Blit area
-*/
-
-// no clip, no transparent
-
-#define NCNT(e)  \
-{                \
-    NCNT_START { \
-        {e}      \
-    } NCNT_END;  \
-}
-
-#define NCNT_START                               \
-    const int screenWidth = a_width;             \
-                                                 \
-    const int w = s->w;                          \
-    const int h = s->h;                          \
-    const int diff = screenWidth - w;            \
-                                                 \
-    const Pixel* src = s->data;                  \
-    Pixel* dst = a_pixels + y * screenWidth + x; \
-                                                 \
-    for(int i = h; i--; dst += diff) {           \
-        for(int j = w; j--; dst++, src++) {
-
-#define NCNT_END \
-        }        \
-    }
-
-// no clip, transparent
-
-#define NCT(e)  \
-{               \
-    NCT_START { \
-        {e}     \
-    } NCT_END;  \
-}
-
-#define NCT_START                                                \
+#define blitter_noclip(pixeler)                                  \
+{                                                                \
     const int screenWidth = a_width;                             \
                                                                  \
     const int w = s->w;                                          \
@@ -86,341 +47,143 @@ static uint8_t red, green, blue;
             const Pixel* src = src2 + s->spans[i][j][0];         \
             Pixel* dst = dst2 + s->spans[i][j][0];               \
                                                                  \
-            for(int k = s->spans[i][j][2]; k--; dst++, src++) {
-
-#define NCT_END \
-            }   \
-        }       \
-    }
-
-// clip, no transparent
-
-#define CNT(e)  \
-{               \
-    CNT_START { \
-        {e}     \
-    } CNT_END;  \
+            for(int k = s->spans[i][j][2]; k--; dst++, src++) {  \
+                pixeler;                                         \
+            }                                                    \
+        }                                                        \
+    }                                                            \
 }
 
-#define CNT_START                                                           \
-    const int screenWidth = a_width;                                        \
-    const int screenHeight = a_height;                                      \
-                                                                            \
-    const int w = s->w;                                                     \
-    const int h = s->h;                                                     \
-                                                                            \
-    if(y + h <= 0 || y >= screenHeight || x + w <= 0 || x >= screenWidth) { \
-        return;                                                             \
-    }                                                                       \
-                                                                            \
-    const int yTclip = (y < 0) ? (-y) : 0;                                  \
-    const int yBclip = a_math_max(0, y + h - screenHeight);                 \
-    const int xLclip = (x < 0) ? (-x) : 0;                                  \
-    const int xRclip = a_math_max(0, x + w - screenWidth);                  \
-                                                                            \
-    const int W = (w - xLclip - xRclip);                                    \
-    const int H = h - yTclip - yBclip;                                      \
-                                                                            \
-    const Pixel* src2 = s->data + yTclip * w + xLclip;                      \
-    Pixel* dst2 = a_pixels + (y + yTclip) * screenWidth + x + xLclip;       \
-                                                                            \
-    for(int i = 0; i < H; i++, dst2 += screenWidth, src2 += w) {            \
-        const Pixel* src = src2;                                            \
-        Pixel* dst = dst2;                                                  \
-                                                                            \
-        for(int j = W; j--; dst++, src++) {
-
-#define CNT_END \
-        }       \
-    }
-
-// clip, transparent
-
-#define CT(e)             \
-{                         \
-    CT_START {            \
-        CT_LEFT_START {   \
-            {e}           \
-        } CT_LEFT_END;    \
-                          \
-        CT_MIDDLE_START { \
-            {e}           \
-        } CT_MIDDLE_END;  \
-                          \
-        CT_RIGHT_START {  \
-            {e}           \
-        } CT_RIGHT_END;   \
-    } CT_END;             \
-}
-
-#define CT_START                                                            \
-    const int screenWidth = a_width;                                        \
-    const int screenHeight = a_height;                                      \
-                                                                            \
-    const int w = s->w;                                                     \
-    const int h = s->h;                                                     \
-                                                                            \
-    if(y + h <= 0 || y >= screenHeight || x + w <= 0 || x >= screenWidth) { \
-        return;                                                             \
-    }                                                                       \
-                                                                            \
-    const int yTclip = (y < 0) ? (-y) : 0;                                  \
-    const int xLclip = (x < 0) ? (-x) : 0;                                  \
-                                                                            \
-    const int H = h - a_math_max(0, y + h - screenHeight);                  \
-                                                                            \
-    const Pixel* src2 = s->data + yTclip * w;                               \
-    Pixel* dst2 = a_pixels + (y + yTclip) * screenWidth + x;                \
-                                                                            \
-    for(int i = yTclip; i < H; i++, dst2 += screenWidth, src2 += w) {       \
-        int j;                                                              \
-        const int spansNum = s->spansNum[i];                                \
-                                                                            \
-        for(j = 0; j < spansNum && s->spans[i][j][1] <= xLclip; j++) {      \
-            continue;                                                       \
-        }
-
-#define CT_LEFT_START                                                                             \
-        if(j < spansNum && s->spans[i][j][0] < xLclip) {                                          \
-            const Pixel* src = src2 + xLclip;                                                     \
-            Pixel* dst = dst2 + xLclip;                                                           \
-                                                                                                  \
-            for(int k = a_math_min(s->spans[i][j][1] - xLclip, screenWidth); k--; dst++, src++) {
-
-#define CT_LEFT_END \
-            }       \
-                    \
-            j++;    \
-        }
-
-#define CT_MIDDLE_START                                                     \
-        for( ; j < spansNum && x + s->spans[i][j][1] <= screenWidth; j++) { \
-            const Pixel* src = src2 + s->spans[i][j][0];                    \
-            Pixel* dst = dst2 + s->spans[i][j][0];                          \
-                                                                            \
-            for(int k = s->spans[i][j][2]; k--; dst++, src++) {
-
-#define CT_MIDDLE_END \
-            }         \
-        }
-
-#define CT_RIGHT_START                                                              \
+#define blitter_clip(pixeler)                                                       \
+{                                                                                   \
+    const int screenWidth = a_width;                                                \
+    const int screenHeight = a_height;                                              \
+                                                                                    \
+    const int w = s->w;                                                             \
+    const int h = s->h;                                                             \
+                                                                                    \
+    if(y + h <= 0 || y >= screenHeight || x + w <= 0 || x >= screenWidth) {         \
+        return;                                                                     \
+    }                                                                               \
+                                                                                    \
+    const int yTclip = (y < 0) ? (-y) : 0;                                          \
+    const int xLclip = (x < 0) ? (-x) : 0;                                          \
+                                                                                    \
+    const int H = h - a_math_max(0, y + h - screenHeight);                          \
+                                                                                    \
+    const Pixel* src2 = s->data + yTclip * w;                                       \
+    Pixel* dst2 = a_pixels + (y + yTclip) * screenWidth + x;                        \
+                                                                                    \
+    for(int i = yTclip; i < H; i++, dst2 += screenWidth, src2 += w) {               \
+        int j;                                                                      \
+        const int spansNum = s->spansNum[i];                                        \
+                                                                                    \
+        for(j = 0; j < spansNum && s->spans[i][j][1] <= xLclip; j++) {              \
+            continue;                                                               \
+        }                                                                           \
+                                                                                    \
+        if(j < spansNum && s->spans[i][j][0] < xLclip) {                            \
+            const Pixel* src = src2 + xLclip;                                       \
+            Pixel* dst = dst2 + xLclip;                                             \
+                                                                                    \
+            for(int k = a_math_min(s->spans[i][j][1] - xLclip, screenWidth);        \
+                k--; dst++, src++) {                                                \
+                pixeler;                                                            \
+            }                                                                       \
+                                                                                    \
+            j++;                                                                    \
+        }                                                                           \
+                                                                                    \
+        for( ; j < spansNum && x + s->spans[i][j][1] <= screenWidth; j++) {         \
+            const Pixel* src = src2 + s->spans[i][j][0];                            \
+            Pixel* dst = dst2 + s->spans[i][j][0];                                  \
+                                                                                    \
+            for(int k = s->spans[i][j][2]; k--; dst++, src++) {                     \
+                pixeler;                                                            \
+            }                                                                       \
+        }                                                                           \
+                                                                                    \
         if(j < spansNum && x + s->spans[i][j][0] < screenWidth) {                   \
             const Pixel* src = src2 + s->spans[i][j][0];                            \
             Pixel* dst = dst2 + s->spans[i][j][0];                                  \
                                                                                     \
-            for(int k = screenWidth - (x + s->spans[i][j][0]); k--; dst++, src++) {
+            for(int k = screenWidth - (x + s->spans[i][j][0]); k--; dst++, src++) { \
+                pixeler;                                                            \
+            }                                                                       \
+        }                                                                           \
+    }                                                                               \
+}
 
-#define CT_RIGHT_END \
-            }        \
-        }
+#define blitter_plain_setup
 
-#define CT_END \
+#define blitter_rgba_setup   \
+    const uint8_t a = alpha;
+
+#define blitter_rgb25_setup
+#define blitter_rgb50_setup
+#define blitter_rgb75_setup
+#define blitter_inverse_setup
+
+#define blitterMake(blend, args)                                                 \
+                                                                                 \
+    void a_blit__noclip_##blend(const Sprite* const s, const int x, const int y) \
+    {                                                                            \
+        blitter_##blend##_setup                                                  \
+        blitter_noclip(a_pixel__##blend args)                                    \
+    }                                                                            \
+                                                                                 \
+    void a_blit__clip_##blend(const Sprite* const s, const int x, const int y)   \
+    {                                                                            \
+        blitter_##blend##_setup                                                  \
+        blitter_clip(a_pixel__##blend args)                                      \
     }
 
-/*
-    Blit type
-*/
-
-#define BLIT_plain_setup
-
-#define BLIT_plain_do \
-    *dst = *src;
-
-#define BLIT_inverse_setup
-
-#define BLIT_inverse_do \
-    *dst = ~*dst;
-
-#define BLIT_a25rgb_setup    \
-    const uint8_t r = red;   \
-    const uint8_t g = green; \
-    const uint8_t b = blue;
-
-#define BLIT_a25rgb_do               \
-    const Pixel cd = *dst;           \
-                                     \
-    const int R = a_pixel_red(cd);   \
-    const int G = a_pixel_green(cd); \
-    const int B = a_pixel_blue(cd);  \
-                                     \
-    *dst = a_pixel_make(             \
-        (R >> 1) + ((R + r) >> 2),   \
-        (G >> 1) + ((G + g) >> 2),   \
-        (B >> 1) + ((B + b) >> 2)    \
-    );
-
-#define BLIT_a50rgb_setup    \
-    const uint8_t r = red;   \
-    const uint8_t g = green; \
-    const uint8_t b = blue;
-
-#define BLIT_a50rgb_do               \
-    const Pixel cd = *dst;           \
-                                     \
-    const int R = a_pixel_red(cd);   \
-    const int G = a_pixel_green(cd); \
-    const int B = a_pixel_blue(cd);  \
-                                     \
-    *dst = a_pixel_make(             \
-        (R + r) >> 1,                \
-        (G + g) >> 1,                \
-        (B + b) >> 1                 \
-    );
-
-#define BLIT_a75rgb_setup    \
-    const uint8_t r = red;   \
-    const uint8_t g = green; \
-    const uint8_t b = blue;
-
-#define BLIT_a75rgb_do                  \
-    const Pixel cd = *dst;              \
-                                        \
-    const int R = a_pixel_red(cd);      \
-    const int G = a_pixel_green(cd);    \
-    const int B = a_pixel_blue(cd);     \
-                                        \
-    *dst = a_pixel_make(                \
-        (R >> 2) + (r >> 2) + (r >> 1), \
-        (G >> 2) + (g >> 2) + (g >> 1), \
-        (B >> 2) + (b >> 2) + (b >> 1)  \
-    );
-
-#define BLIT_rgb_setup                         \
-    const uint8_t r = red;                     \
-    const uint8_t g = green;                   \
-    const uint8_t b = blue;                    \
-    const Pixel color = a_pixel_make(r, g, b);
-
-#define BLIT_rgb_do \
-    *dst = color;
-
-#define BLIT_alpha_setup     \
-    const uint8_t a = alpha; \
-
-#define BLIT_alpha_do                             \
-    const Pixel cd = *dst;                        \
-    const Pixel cs = *src;                        \
-                                                  \
-    const uint8_t R = a_pixel_red(cd);            \
-    const uint8_t G = a_pixel_green(cd);          \
-    const uint8_t B = a_pixel_blue(cd);           \
-                                                  \
-                                                  \
-    *dst = a_pixel_make(                          \
-        R + (((a_pixel_red(cs) - R) * a) >> 8),   \
-        G + (((a_pixel_green(cs) - G) * a) >> 8), \
-        B + (((a_pixel_blue(cs) - B) * a) >> 8)   \
-    );
-
-#define BLIT_spritealpha_setup \
-    const fix8 a = s->alpha;
-
-#define BLIT_spritealpha_do                       \
-    const Pixel cd = *dst;                        \
-    const Pixel cs = *src;                        \
-                                                  \
-    const uint8_t R = a_pixel_red(cd);            \
-    const uint8_t G = a_pixel_green(cd);          \
-    const uint8_t B = a_pixel_blue(cd);           \
-                                                  \
-    *dst = a_pixel_make(                          \
-        R + (((a_pixel_red(cs) - R) * a) >> 8),   \
-        G + (((a_pixel_green(cs) - G) * a) >> 8), \
-        B + (((a_pixel_blue(cs) - B) * a) >> 8)   \
-    );
-
-#define BLIT_argb_setup      \
-    const uint8_t a = alpha; \
-    const uint8_t r = red;   \
-    const uint8_t g = green; \
-    const uint8_t b = blue;
-
-#define BLIT_argb_do                     \
-    const Pixel cd = *dst;               \
-                                         \
-    const uint8_t R = a_pixel_red(cd);   \
-    const uint8_t G = a_pixel_green(cd); \
-    const uint8_t B = a_pixel_blue(cd);  \
-                                         \
-                                         \
-    *dst = a_pixel_make(                 \
-        R + (((r - R) * a) >> 8),        \
-        G + (((g - G) * a) >> 8),        \
-        B + (((b - B) * a) >> 8)         \
-    );
-
-/*
-    Blitters
-*/
-
-#define blitterMake2(area, type)                                                  \
-    void a_blit_##area##_##type (const Sprite* const s, const int x, const int y) \
-    {                                                                             \
-        BLIT_##type##_setup                                                       \
-        area(BLIT_##type##_do)                                                    \
-    }
-
-#define blitterMake(type)    \
-    blitterMake2(NCNT, type) \
-    blitterMake2(NCT, type)  \
-    blitterMake2(CNT, type)  \
-    blitterMake2(CT, type)
-
-blitterMake(plain)
-blitterMake(inverse)
-blitterMake(a25rgb)
-blitterMake(a50rgb)
-blitterMake(a75rgb)
-blitterMake(rgb)
-blitterMake(alpha)
-blitterMake(spritealpha)
-blitterMake(argb)
-
-#define blitter(type, name)                           \
-({                                                    \
-    blitters[type][A_BLIT_NCNT] = a_blit_NCNT_##name; \
-    blitters[type][A_BLIT_NCT] = a_blit_NCT_##name;   \
-    blitters[type][A_BLIT_CNT] = a_blit_CNT_##name;   \
-    blitters[type][A_BLIT_CT] = a_blit_CT_##name;     \
-})
+blitterMake(plain, (dst, *src))
+blitterMake(rgba, (dst, a_pixel_red(*src), a_pixel_green(*src), a_pixel_blue(*src), a))
+blitterMake(rgb25, (dst, a_pixel_red(*src), a_pixel_green(*src), a_pixel_blue(*src)))
+blitterMake(rgb50, (dst, a_pixel_red(*src), a_pixel_green(*src), a_pixel_blue(*src)))
+blitterMake(rgb75, (dst, a_pixel_red(*src), a_pixel_green(*src), a_pixel_blue(*src)))
+blitterMake(inverse, (dst))
 
 void a_blit__set(void)
 {
-    blitter(A_BLIT_PLAIN, plain);
-    blitter(A_BLIT_INVERSE, inverse);
-    blitter(A_BLIT_RGB25, a25rgb);
-    blitter(A_BLIT_RGB50, a50rgb);
-    blitter(A_BLIT_RGB75, a75rgb);
-    blitter(A_BLIT_RGB, rgb);
-    blitter(A_BLIT_ALPHA, alpha);
-    blitter(A_BLIT_SPRITEALPHA, spritealpha);
-    blitter(A_BLIT_ARGB, argb);
+    #define blitterInit(index, blend)                \
+    ({                                               \
+        blitters[index][0] = a_blit__noclip_##blend; \
+        blitters[index][1] = a_blit__clip_##blend;   \
+    })
 
-    type = A_BLIT_PLAIN;
-    clip = A_BLIT_CT;
+    blitterInit(A_PIXEL_PLAIN, plain);
+    blitterInit(A_PIXEL_RGBA, rgba);
+    blitterInit(A_PIXEL_RGB25, rgb25);
+    blitterInit(A_PIXEL_RGB50, rgb50);
+    blitterInit(A_PIXEL_RGB75, rgb75);
+    blitterInit(A_PIXEL_INVERSE, inverse);
 
-    a_blit = blitters[type][clip];
+    blend = A_PIXEL_PLAIN;
+    clip = true;
+
+    a_blit = blitters[blend][clip];
 }
 
-void a_blit_setType(BlitType_t t)
+void a_blit__setBlend(PixelBlend_t b)
 {
-    type = t;
-    a_blit = blitters[type][clip];
+    blend = b;
+    a_blit = blitters[blend][clip];
 }
 
-void a_blit_setClip(BlitClip_t c)
+void a_blit__setClip(bool c)
 {
     clip = c;
-    a_blit = blitters[type][clip];
+    a_blit = blitters[blend][clip];
 }
 
-void a_blit_setAlpha(const uint8_t a)
+void a_blit__setAlpha(const uint8_t a)
 {
     alpha = a;
 }
 
-void a_blit_setRGB(const uint8_t r, const uint8_t g, const uint8_t b)
+void a_blit__setRGB(const uint8_t r, const uint8_t g, const uint8_t b)
 {
     red = r;
     green = g;

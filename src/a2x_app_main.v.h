@@ -22,7 +22,9 @@
 
 #include "a2x_app_settings.v.h"
 
+#include "a2x_pack_blit.v.h"
 #include "a2x_pack_conf.v.h"
+#include "a2x_pack_draw.v.h"
 #include "a2x_pack_fix.v.h"
 #include "a2x_pack_font.v.h"
 #include "a2x_pack_fps.v.h"
@@ -30,6 +32,7 @@
 #include "a2x_pack_input.v.h"
 #include "a2x_pack_math.v.h"
 #include "a2x_pack_mem.v.h"
+#include "a2x_pack_pixel.v.h"
 #include "a2x_pack_screen.v.h"
 #include "a2x_pack_sdl.v.h"
 #include "a2x_pack_sound.v.h"

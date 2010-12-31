@@ -29,7 +29,7 @@ typedef struct LayerSprite LayerSprite;
 extern LayerSprite* a_layersprite_make(void);
 extern void a_layersprite_free(LayerSprite* const ls);
 
-extern void a_layersprite_add(LayerSprite* const ls, Sprite* const sprite, const BlitType_t blit, const uint8_t r, const uint8_t g, const uint8_t b, const uint8_t a);
+extern void a_layersprite_add(LayerSprite* const ls, Sprite* const sprite, const PixelBlend_t blend, const uint8_t r, const uint8_t g, const uint8_t b, const uint8_t a);
 extern void a_layersprite_blit(LayerSprite* const ls, const int x, const int y);
 
 #endif // A2X_PACK_LAYERSPRITE_PH

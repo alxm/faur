@@ -317,6 +317,8 @@ void a_fade_squaresOn(const Pixel c)
     const int height = a_height;
     const int width = a_width;
 
+    a_pixel_setPixel(c);
+
     while((++step) >> SQUARE_DELAY <= SQUARE_DIM / 2) {
         a_fps_start();
 
@@ -326,8 +328,7 @@ void a_fade_squaresOn(const Pixel c)
                     j + SQUARE_DIM / 2 - (step >> SQUARE_DELAY),
                     i + SQUARE_DIM / 2 - (step >> SQUARE_DELAY),
                     j + SQUARE_DIM / 2 + (step >> SQUARE_DELAY) - 1,
-                    i + SQUARE_DIM / 2 + (step >> SQUARE_DELAY) - 1,
-                    c
+                    i + SQUARE_DIM / 2 + (step >> SQUARE_DELAY) - 1
                 );
             }
         }
@@ -351,6 +352,8 @@ void a_fade_squaresOff(const Pixel c)
 
     int step = ((SQUARE_DIM / 2) << SQUARE_DELAY) + 1;
 
+    a_pixel_setPixel(c);
+
     while((--step) >> SQUARE_DELAY > 0) {
         a_fps_start();
 
@@ -360,8 +363,7 @@ void a_fade_squaresOff(const Pixel c)
                     j + SQUARE_DIM / 2 - (step >> SQUARE_DELAY),
                     i + SQUARE_DIM / 2 - (step >> SQUARE_DELAY),
                     j + SQUARE_DIM / 2 + (step >> SQUARE_DELAY) - 1,
-                    i + SQUARE_DIM / 2 + (step >> SQUARE_DELAY) - 1,
-                    c
+                    i + SQUARE_DIM / 2 + (step >> SQUARE_DELAY) - 1
                 );
             }
         }

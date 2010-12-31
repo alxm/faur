@@ -28,7 +28,7 @@ struct LayerSprite {
 
 struct Layer {
     Sprite* sprite;
-    BlitType_t blit;
+    PixelBlend_t blend;
     uint8_t r, g, b, a;
 };
 
@@ -48,12 +48,12 @@ void a_layersprite_free(LayerSprite* const ls)
     free(ls);
 }
 
-void a_layersprite_add(LayerSprite* const ls, Sprite* const sprite, const BlitType_t blit, const uint8_t r, const uint8_t g, const uint8_t b, const uint8_t a)
+void a_layersprite_add(LayerSprite* const ls, Sprite* const sprite, const PixelBlend_t blend, const uint8_t r, const uint8_t g, const uint8_t b, const uint8_t a)
 {
     Layer* const l = malloc(sizeof(Layer));
 
     l->sprite = sprite;
-    l->blit = blit;
+    l->blend = blend;
     l->r = r;
     l->g = g;
     l->b = b;
@@ -69,9 +69,9 @@ void a_layersprite_blit(LayerSprite* const ls, const int x, const int y)
     while(a_list_iterate(layers)) {
         Layer* const l = a_list_current(layers);
 
-        a_blit_setType(l->blit);
-        a_blit_setRGB(l->r, l->g, l->b);
-        a_blit_setAlpha(l->a);
+        a_pixel_setBlend(l->blend);
+        a_pixel_setRGB(l->r, l->g, l->b);
+        a_pixel_setAlpha(l->a);
 
         a_blit(l->sprite, x, y);
     }

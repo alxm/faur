@@ -21,11 +21,21 @@
 #define A2X_PACK_PIXEL_PH
 
 #include <stdint.h>
+#include <stdbool.h>
 
 #define A_BPP 16
 typedef uint16_t Pixel;
 
+typedef enum {
+    A_PIXEL_PLAIN,
+    A_PIXEL_RGBA, A_PIXEL_RGB25, A_PIXEL_RGB50, A_PIXEL_RGB75,
+    A_PIXEL_INVERSE,
+    A_PIXEL_TYPE_NUM
+} PixelBlend_t;
+
 #include "a2x_pack_screen.p.h"
+
+typedef void (*PixelPut)(const int x, const int y);
 
 #define a_mask(x) ((1 << (x)) - 1)
 
@@ -44,13 +54,14 @@ typedef uint16_t Pixel;
 #define a_pixel_blue(p)  ((((p) >> 0 ) & a_mask(5)) << 3)
 
 #define a_pixel_get(x, y)    (*(a_pixels + (y) * a_width + (x)))
-#define a_pixel_put(x, y, p) (*(a_pixels + (y) * a_width + (x)) = (p))
 
-#define a_pixel_putRGB(x, y, r, g, b) a_pixel_put(x, y, a_pixel_make((r), (g), (b)))
+extern void a_pixel_setBlend(PixelBlend_t b);
+extern void a_pixel_setClip(bool clip);
 
-extern void a_pixel_putAlpha(const int x, const int y, const uint8_t r, const uint8_t g, const uint8_t b, const uint8_t a);
-extern void a_pixel_put25(const int x, const int y, const uint8_t r, const uint8_t g, const uint8_t b);
-extern void a_pixel_put50(const int x, const int y, const uint8_t r, const uint8_t g, const uint8_t b);
-extern void a_pixel_put75(const int x, const int y, const uint8_t r, const uint8_t g, const uint8_t b);
+extern void a_pixel_setAlpha(const uint8_t a);
+extern void a_pixel_setRGB(const uint8_t r, const uint8_t g, const uint8_t b);
+extern void a_pixel_setPixel(const Pixel p);
+
+extern PixelPut a_pixel_put;
 
 #endif // A2X_PACK_PIXEL_PH

@@ -308,13 +308,18 @@ static void displayVolume(void)
                 return;
             }
 
-            a_draw_rectangle(0, 181, A_MAX_VOLUME / A_VOLUME_STEP + 5, 197, 0);
+            a_pixel_setBlend(A_PIXEL_PLAIN);
 
-            a_draw_hlineRGB(0, A_MAX_VOLUME / A_VOLUME_STEP + 4 + 1, 180, 255, 156, 107);
-            a_draw_hlineRGB(0, A_MAX_VOLUME / A_VOLUME_STEP + 4 + 1, 183 + 14, 255, 156, 107);
-            a_draw_vlineRGB(A_MAX_VOLUME / A_VOLUME_STEP + 4 + 1, 181, 183 + 14, 255, 156, 107);
+            a_pixel_setPixel(0);
+            a_draw_rectangle(0, 181, A_MAX_VOLUME / A_VOLUME_STEP + 5, 197);
 
-            a_draw_rectangleRGB(0, 186, a__volume / A_VOLUME_STEP, 192, 255, 84, 0);
+            a_pixel_setRGB(255, 156, 107);
+            a_draw_hline(0, A_MAX_VOLUME / A_VOLUME_STEP + 4 + 1, 180);
+            a_draw_hline(0, A_MAX_VOLUME / A_VOLUME_STEP + 4 + 1, 183 + 14);
+            a_draw_vline(A_MAX_VOLUME / A_VOLUME_STEP + 4 + 1, 181, 183 + 14);
+
+            a_pixel_setRGB(255, 84, 0);
+            a_draw_rectangle(0, 186, a__volume / A_VOLUME_STEP, 192);
         }
     #endif
 }

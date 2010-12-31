@@ -20,26 +20,11 @@
 #ifndef A2X_PACK_BLIT_PH
 #define A2X_PACK_BLIT_PH
 
+#include "a2x_pack_pixel.p.h"
 #include "a2x_pack_screen.p.h"
 #include "a2x_pack_sprite.p.h"
 
-typedef enum {
-    A_BLIT_PLAIN, A_BLIT_INVERSE,
-    A_BLIT_RGB25, A_BLIT_RGB50, A_BLIT_RGB75, A_BLIT_RGB,
-    A_BLIT_ALPHA, A_BLIT_SPRITEALPHA, A_BLIT_ARGB,
-    A_BLIT_TYPE_NUM
-} BlitType_t;
-
-typedef enum {
-    A_BLIT_NCNT, A_BLIT_NCT, A_BLIT_CNT, A_BLIT_CT, A_BLIT_CLIP_NUM
-} BlitClip_t;
-
 typedef void (*Blitter)(const Sprite* const s, const int x, const int y);
-
-extern void a_blit_setType(BlitType_t t);
-extern void a_blit_setClip(BlitClip_t c);
-extern void a_blit_setAlpha(const uint8_t a);
-extern void a_blit_setRGB(const uint8_t r, const uint8_t g, const uint8_t b);
 
 extern Blitter a_blit;
 

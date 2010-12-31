@@ -20,9 +20,16 @@
 #ifndef A2X_PACK_BLIT_VP
 #define A2X_PACK_BLIT_VP
 
+#include "a2x_pack_pixel.v.h"
 #include "a2x_pack_sprite.p.h"
 #include "a2x_pack_sprite.v.h"
 
 extern void a_blit__set(void);
+
+extern void a_blit__setBlend(PixelBlend_t b);
+extern void a_blit__setClip(bool c);
+
+extern void a_blit__setAlpha(const uint8_t a);
+extern void a_blit__setRGB(const uint8_t r, const uint8_t g, const uint8_t b);
 
 #endif // A2X_PACK_BLIT_VP

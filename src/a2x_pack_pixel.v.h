@@ -20,64 +20,79 @@
 #ifndef A2X_PACK_PIXEL_VH
 #define A2X_PACK_PIXEL_VH
 
-#define a_pixel__putAlpha(dst, r, g, b, a)  \
-({                                          \
-    const Pixel p = *(dst);                 \
-                                            \
-    const uint8_t R = a_pixel_red(p);       \
-    const uint8_t G = a_pixel_green(p);     \
-    const uint8_t B = a_pixel_blue(p);      \
-                                            \
-    *(dst) = a_pixel_make(                  \
-        R + ((((r) - R) * (a)) >> 8),       \
-        G + ((((g) - G) * (a)) >> 8),       \
-        B + ((((b) - B) * (a)) >> 8)        \
-    );                                      \
+#include "a2x_pack_blit.v.h"
+#include "a2x_pack_draw.v.h"
+
+#define a_pixel__plain(dst, p) \
+({                             \
+    *dst = p;                  \
 })
 
-#define a_pixel__put25(dst, r, g, b)    \
+#define a_pixel__rgba(dst, r, g, b, a)  \
 ({                                      \
-    const Pixel p = *(dst);             \
+    const Pixel p = *dst;               \
                                         \
     const uint8_t R = a_pixel_red(p);   \
     const uint8_t G = a_pixel_green(p); \
     const uint8_t B = a_pixel_blue(p);  \
                                         \
-    *(dst) = a_pixel_make(              \
+    *dst = a_pixel_make(                \
+        R + ((((r) - R) * (a)) >> 8),   \
+        G + ((((g) - G) * (a)) >> 8),   \
+        B + ((((b) - B) * (a)) >> 8)    \
+    );                                  \
+})
+
+#define a_pixel__rgb25(dst, r, g, b)    \
+({                                      \
+    const Pixel p = *dst;               \
+                                        \
+    const uint8_t R = a_pixel_red(p);   \
+    const uint8_t G = a_pixel_green(p); \
+    const uint8_t B = a_pixel_blue(p);  \
+                                        \
+    *dst = a_pixel_make(                \
         (R >> 1) + ((R + (r)) >> 2),    \
         (G >> 1) + ((G + (g)) >> 2),    \
         (B >> 1) + ((B + (b)) >> 2)     \
     );                                  \
 })
 
-#define a_pixel__put50(dst, r, g, b)    \
+#define a_pixel__rgb50(dst, r, g, b)    \
 ({                                      \
-    const Pixel p = *(dst);             \
+    const Pixel p = *dst;               \
                                         \
     const uint8_t R = a_pixel_red(p);   \
     const uint8_t G = a_pixel_green(p); \
     const uint8_t B = a_pixel_blue(p);  \
                                         \
-    *(dst) = a_pixel_make(              \
+    *dst = a_pixel_make(                \
         (R + (r)) >> 1,                 \
         (G + (g)) >> 1,                 \
         (B + (b)) >> 1                  \
     );                                  \
 })
 
-#define a_pixel__put75(dst, r, g, b)        \
+#define a_pixel__rgb75(dst, r, g, b)        \
 ({                                          \
-    const Pixel p = *(dst);                 \
+    const Pixel p = *dst;                   \
                                             \
     const uint8_t R = a_pixel_red(p);       \
     const uint8_t G = a_pixel_green(p);     \
     const uint8_t B = a_pixel_blue(p);      \
                                             \
-    *(dst) = a_pixel_make(                  \
+    *dst = a_pixel_make(                    \
         (R >> 2) + ((r) >> 2) + ((r) >> 1), \
         (G >> 2) + ((g) >> 2) + ((g) >> 1), \
         (B >> 2) + ((b) >> 2) + ((b) >> 1)  \
     );                                      \
 })
+
+#define a_pixel__inverse(dst) \
+({                            \
+    *dst = ~*dst;             \
+})
+
+extern void a_pixel__set(void);
 
 #endif // A2X_PACK_PIXEL_VH
