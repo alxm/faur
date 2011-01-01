@@ -20,6 +20,11 @@
 #include "a2x_pack_sprite.p.h"
 #include "a2x_pack_sprite.v.h"
 
+typedef struct Span {
+    int x1;
+    int x2;
+} Span;
+
 static List* sprites;
 
 void a_sprite__set(void)

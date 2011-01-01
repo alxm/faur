@@ -27,7 +27,6 @@ typedef struct Sheet Sheet;
 
 #include "a2x_pack_png.p.h"
 #include "a2x_pack_screen.p.h"
-#include "a2x_pack_types.p.h"
 
 extern Sheet* a_sheet_fromFile(const char* const path);
 extern Sheet* a_sheet_fromData(const uint8_t* const data);

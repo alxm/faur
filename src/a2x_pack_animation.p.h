@@ -28,7 +28,6 @@
 #include "a2x_pack_screen.p.h"
 #include "a2x_pack_sheet.p.h"
 #include "a2x_pack_sprite.p.h"
-#include "a2x_pack_types.p.h"
 
 typedef struct Animation Animation;
 

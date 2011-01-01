@@ -28,7 +28,6 @@
 #include "a2x_pack_list.p.h"
 #include "a2x_pack_state.p.h"
 #include "a2x_pack_str.p.h"
-#include "a2x_pack_types.p.h"
 
 typedef struct Input Input;
 

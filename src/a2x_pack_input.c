@@ -22,6 +22,11 @@
 
 #define MAX_CODES 4
 
+typedef struct Point {
+    int x;
+    int y;
+} Point;
+
 typedef struct Button {
     char* name;
     int numCodes;
