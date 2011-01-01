@@ -1,5 +1,6 @@
-NAME	=	../../lib/a2x_$(PLATFORM).a
-HEADER	=	../../lib/a2x.h
+LIBDIR	=	../../lib
+HEADER	=	$(LIBDIR)/a2x.h
+NAME	=	$(LIBDIR)/a2x_$(PLATFORM).a
 
 O_DIR	=	obj_$(PLATFORM)
 C_DIR	=	../../src
@@ -14,7 +15,10 @@ CFILES	= 	$(notdir $(wildcard $(C_DIR)/$(PREFIX)*.c))
 OFILES	= 	$(addprefix $(O_DIR)/, $(CFILES:.c=.o))
 HFILES	=	$(wildcard $(C_DIR)/$(PREFIX)*.p.h)
 
-all : $(HEADER) $(NAME)
+all : $(LIBDIR) $(HEADER) $(NAME)
+
+$(LIBDIR) :
+	@ mkdir $@
 
 $(HEADER) : $(HFILES)
 	@ echo "Writing header $(notdir $(HEADER))"
