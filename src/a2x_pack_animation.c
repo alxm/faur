@@ -17,7 +17,6 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a2x_pack_animation.p.h"
 #include "a2x_pack_animation.v.h"
 
 struct Animation {

@@ -20,7 +20,10 @@
 #ifndef A2X_PACK_SHEET_VH
 #define A2X_PACK_SHEET_VH
 
-#include "a2x_pack_screen.p.h"
+#include "a2x_pack_sheet.p.h"
+
+#include "a2x_pack_png.v.h"
+#include "a2x_pack_screen.v.h"
 
 struct Sheet {
     int w;

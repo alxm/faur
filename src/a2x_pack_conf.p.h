@@ -20,11 +20,6 @@
 #ifndef A2X_PACK_CONF_PH
 #define A2X_PACK_CONF_PH
 
-#include <stdlib.h>
-
-#include "a2x_app_settings.p.h"
-
-#include "a2x_pack_file.p.h"
-#include "a2x_pack_str.p.h"
+#include "a2x_app_includes.h"
 
 #endif // A2X_PACK_CONF_PH

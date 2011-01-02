@@ -20,6 +20,9 @@
 #ifndef A2X_PACK_FILE_VH
 #define A2X_PACK_FILE_VH
 
-//
+#include "a2x_pack_file.p.h"
+
+#include "a2x_pack_list.v.h"
+#include "a2x_pack_str.v.h"
 
 #endif // A2X_PACK_FILE_VH

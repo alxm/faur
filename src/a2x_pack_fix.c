@@ -17,7 +17,6 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a2x_pack_fix.p.h"
 #include "a2x_pack_fix.v.h"
 
 fix12 a_fix12_Sin[A_ANGLES_NUM];

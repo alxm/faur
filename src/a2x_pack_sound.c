@@ -17,7 +17,6 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a2x_pack_sound.p.h"
 #include "a2x_pack_sound.v.h"
 
 static List* musicList;

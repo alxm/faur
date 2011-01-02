@@ -20,10 +20,7 @@
 #ifndef A2X_PACK_STR_PH
 #define A2X_PACK_STR_PH
 
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <stdarg.h>
+#include "a2x_app_includes.h"
 
 typedef char String8  [8];
 typedef char String16 [16];

@@ -20,6 +20,10 @@
 #ifndef A2X_PACK_STATE_VH
 #define A2X_PACK_STATE_VH
 
+#include "a2x_pack_state.p.h"
+
+#include "a2x_pack_fps.v.h"
+
 extern void a_state__run(void);
 
 #endif // A2X_PACK_STATE_VH

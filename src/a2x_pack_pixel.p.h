@@ -20,8 +20,7 @@
 #ifndef A2X_PACK_PIXEL_PH
 #define A2X_PACK_PIXEL_PH
 
-#include <stdint.h>
-#include <stdbool.h>
+#include "a2x_app_includes.h"
 
 #define A_BPP 16
 typedef uint16_t Pixel;
@@ -32,8 +31,6 @@ typedef enum {
     A_PIXEL_INVERSE,
     A_PIXEL_TYPE_NUM
 } PixelBlend_t;
-
-#include "a2x_pack_screen.p.h"
 
 typedef void (*PixelPut)(const int x, const int y);
 

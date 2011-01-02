@@ -17,7 +17,6 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a2x_pack_pixel.p.h"
 #include "a2x_pack_pixel.v.h"
 
 PixelPut a_pixel_put;

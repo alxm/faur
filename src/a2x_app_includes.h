@@ -17,26 +17,28 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a2x_pack_math.v.h"
+#ifndef A2X_APP_INCLUDES_H
+#define A2X_APP_INCLUDES_H
 
-double a_math_Sin[A_ANGLES_NUM];
-double a_math_Cos[A_ANGLES_NUM];
+#include <ctype.h>
+#include <dirent.h>
+#include <fcntl.h>
+#include <limits.h>
+#include <math.h>
+#include <stdarg.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/ioctl.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <time.h>
+#include <unistd.h>
 
-void a_math__set(void)
-{
-    a_math_srand();
+#include <png.h>
+#include <SDL/SDL.h>
+#include <SDL/SDL_mixer.h>
 
-    for(int a = 0; a < A_ANGLES_NUM; a++) {
-		a_math_Sin[a] = sin(a_math_degToRad(a));
-		a_math_Cos[a] = cos(a_math_degToRad(a));
-	}
-}
-
-int a_math_log2(int x)
-{
-    int log = 0;
-
-    while(x >>= 1) log++;
-
-    return log;
-}
+#endif // A2X_APP_INCLUDES_H

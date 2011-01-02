@@ -17,7 +17,6 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a2x_pack_png.p.h"
 #include "a2x_pack_png.v.h"
 
 typedef struct ByteStream {

@@ -20,8 +20,11 @@
 #ifndef A2X_PACK_DRAW_VH
 #define A2X_PACK_DRAW_VH
 
-#include "a2x_pack_pixel.p.h"
+#include "a2x_pack_draw.p.h"
+
+#include "a2x_pack_fix.v.h"
 #include "a2x_pack_pixel.v.h"
+#include "a2x_pack_screen.v.h"
 
 extern void a_draw__set(void);
 

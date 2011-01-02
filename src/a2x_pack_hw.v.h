@@ -20,6 +20,12 @@
 #ifndef A2X_PACK_HW_VH
 #define A2X_PACK_HW_VH
 
+#include "a2x_pack_hw.p.h"
+
+#include "a2x_app_settings.v.h"
+
+#include "a2x_pack_file.v.h"
+
 extern void a_hw__set(void);
 extern void a_hw__free(void);
 

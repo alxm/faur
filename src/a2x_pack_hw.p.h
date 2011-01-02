@@ -20,13 +20,6 @@
 #ifndef A2X_PACK_HW_PH
 #define A2X_PACK_HW_PH
 
-#include <stdint.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/mman.h>
-
-#include "a2x_app_settings.p.h"
-#include "a2x_pack_file.p.h"
+#include "a2x_app_includes.h"
 
 #endif // A2X_PACK_HW_PH

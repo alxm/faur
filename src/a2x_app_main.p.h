@@ -20,6 +20,8 @@
 #ifndef A2X_APP_MAIN_PH
 #define A2X_APP_MAIN_PH
 
+#include "a2x_app_includes.h"
+
 #ifndef A_PLATFORM_LINUXPC
     #define A_PLATFORM_LINUXPC 0
 #endif
@@ -55,11 +57,6 @@
         #define A_PLATFORM_LINUX 0
     #endif
 #endif
-
-#include <stdlib.h>
-#include <stdio.h>
-
-#include "a2x_app_settings.p.h"
 
 extern int a_argsNum;
 extern char** a_args;

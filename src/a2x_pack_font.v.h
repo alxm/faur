@@ -20,7 +20,11 @@
 #ifndef A2X_PACK_FONT_VH
 #define A2X_PACK_FONT_VH
 
+#include "a2x_pack_font.p.h"
+
 #include "a2x_pack_blit.v.h"
+#include "a2x_pack_list.v.h"
+#include "a2x_pack_screen.v.h"
 #include "a2x_pack_sheet.v.h"
 #include "a2x_pack_sprite.v.h"
 

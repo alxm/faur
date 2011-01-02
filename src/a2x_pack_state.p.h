@@ -20,9 +20,7 @@
 #ifndef A2X_PACK_STATE_PH
 #define A2X_PACK_STATE_PH
 
-#include <stdlib.h>
-
-#include "a2x_pack_fps.p.h"
+#include "a2x_app_includes.h"
 
 #define State(state) void state(void)
 #define StateLoop while(a_state_running())

@@ -20,6 +20,10 @@
 #ifndef A2X_PACK_LAYERSPRITE_VH
 #define A2X_PACK_LAYERSPRITE_VH
 
-//
+#include "a2x_pack_layersprite.p.h"
+
+#include "a2x_pack_blit.v.h"
+#include "a2x_pack_list.v.h"
+#include "a2x_pack_sprite.v.h"
 
 #endif // A2X_PACK_LAYERSPRITE_VH

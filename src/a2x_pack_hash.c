@@ -17,7 +17,6 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a2x_pack_hash.p.h"
 #include "a2x_pack_hash.v.h"
 
 #define A_HASH_NUM 256

@@ -20,11 +20,7 @@
 #ifndef A2X_PACK_MEM_PH
 #define A2X_PACK_MEM_PH
 
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-
-#include "a2x_pack_list.p.h"
+#include "a2x_app_includes.h"
 
 extern void* a_mem_track(void* const v);
 

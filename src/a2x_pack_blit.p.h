@@ -20,8 +20,8 @@
 #ifndef A2X_PACK_BLIT_PH
 #define A2X_PACK_BLIT_PH
 
-#include "a2x_pack_pixel.p.h"
-#include "a2x_pack_screen.p.h"
+#include "a2x_app_includes.h"
+
 #include "a2x_pack_sprite.p.h"
 
 typedef void (*Blitter)(const Sprite* const s, const int x, const int y);

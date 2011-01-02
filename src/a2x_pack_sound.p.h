@@ -20,16 +20,7 @@
 #ifndef A2X_PACK_SOUND_PH
 #define A2X_PACK_SOUND_PH
 
-#include <stdint.h>
-
-#include <SDL/SDL_mixer.h>
-
-#include "a2x_app_main.p.h"
-#include "a2x_app_settings.p.h"
-
-#include "a2x_pack_input.p.h"
-#include "a2x_pack_list.p.h"
-#include "a2x_pack_mem.p.h"
+#include "a2x_app_includes.h"
 
 #define A_VOLUME_STEP 1
 #define A_MILIS_VOLUME (1000 / 2)

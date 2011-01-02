@@ -20,20 +20,10 @@
 #ifndef A2X_PACK_SCREEN_PH
 #define A2X_PACK_SCREEN_PH
 
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/ioctl.h>
+#include "a2x_app_includes.h"
 
-#include <SDL/SDL.h>
-
-#include "a2x_app_settings.p.h"
-
-#include "a2x_pack_draw.p.h"
 #include "a2x_pack_pixel.p.h"
-#include "a2x_pack_sound.p.h"
 #include "a2x_pack_sprite.p.h"
-#include "a2x_pack_str.p.h"
-#include "a2x_pack_time.p.h"
 
 extern SDL_Surface* a_screen;
 extern Pixel* a_pixels;

@@ -17,7 +17,6 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a2x_pack_fade.p.h"
 #include "a2x_pack_fade.v.h"
 
 #define a_pixel_red1(p)   ((((p) >> (11 + 16)) & a_mask(5)) << 3)

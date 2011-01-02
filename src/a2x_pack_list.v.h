@@ -20,6 +20,8 @@
 #ifndef A2X_PACK_LIST_VH
 #define A2X_PACK_LIST_VH
 
+#include "a2x_pack_list.p.h"
+
 struct ListNode {
     void* content;
     struct ListNode* next;

@@ -20,6 +20,10 @@
 #ifndef A2X_PACK_SDL_VH
 #define A2X_PACK_SDL_VH
 
+#include "a2x_pack_sdl.p.h"
+
+#include "a2x_app_main.v.h"
+
 extern void a_sdl__set(void);
 extern void a_sdl__free(void);
 

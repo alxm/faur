@@ -17,7 +17,6 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a2x_pack_sheet.p.h"
 #include "a2x_pack_sheet.v.h"
 
 Sheet* a_sheet_fromFile(const char* const path)

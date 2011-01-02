@@ -20,6 +20,8 @@
 #ifndef A2X_PACK_MATH_VH
 #define A2X_PACK_MATH_VH
 
+#include "a2x_pack_math.p.h"
+
 extern void a_math__set(void);
 
 #endif // A2X_PACK_MATH_VH

@@ -23,7 +23,6 @@
     - to Orkie for the Wiz framebuffer direction code
 */
 
-#include "a2x_pack_screen.p.h"
 #include "a2x_pack_screen.v.h"
 
 #if A_PLATFORM_GP2X

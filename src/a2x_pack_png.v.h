@@ -20,8 +20,11 @@
 #ifndef A2X_PACK_PNG_VH
 #define A2X_PACK_PNG_VH
 
-#include <png.h>
+#include "a2x_pack_png.p.h"
 
 #include "a2x_app_main.v.h"
+
+#include "a2x_pack_file.v.h"
+#include "a2x_pack_pixel.v.h"
 
 #endif // A2X_PACK_PNG_VH

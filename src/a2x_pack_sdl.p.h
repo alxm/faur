@@ -20,8 +20,6 @@
 #ifndef A2X_PACK_SDL_PH
 #define A2X_PACK_SDL_PH
 
-#include <SDL/SDL.h>
-
-#include "a2x_app_main.p.h"
+#include "a2x_app_includes.h"
 
 #endif // A2X_PACK_SDL_PH

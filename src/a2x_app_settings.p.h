@@ -20,10 +20,7 @@
 #ifndef A2X_APP_SETTINGS_PH
 #define A2X_APP_SETTINGS_PH
 
-#include "a2x_app_main.p.h"
-
-#include "a2x_pack_hash.p.h"
-#include "a2x_pack_str.p.h"
+#include "a2x_app_includes.h"
 
 extern void a2x(void);
 

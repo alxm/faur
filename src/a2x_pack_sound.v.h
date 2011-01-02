@@ -20,7 +20,14 @@
 #ifndef A2X_PACK_SOUND_VH
 #define A2X_PACK_SOUND_VH
 
+#include "a2x_pack_sound.p.h"
+
 #include "a2x_app_main.v.h"
+#include "a2x_app_settings.v.h"
+
+#include "a2x_pack_input.v.h"
+#include "a2x_pack_list.v.h"
+#include "a2x_pack_mem.v.h"
 
 extern void a_sound__set(void);
 extern void a_sound__free(void);

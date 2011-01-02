@@ -20,11 +20,7 @@
 #ifndef A2X_PACK_HASH_PH
 #define A2X_PACK_HASH_PH
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-
-#include "a2x_pack_str.p.h"
+#include "a2x_app_includes.h"
 
 typedef struct Hash Hash;
 

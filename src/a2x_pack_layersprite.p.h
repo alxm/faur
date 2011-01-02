@@ -20,11 +20,12 @@
 #ifndef A2X_PACK_LAYERSPRITE_PH
 #define A2X_PACK_LAYERSPRITE_PH
 
-typedef struct LayerSprite LayerSprite;
+#include "a2x_app_includes.h"
 
-#include "a2x_pack_blit.p.h"
-#include "a2x_pack_list.p.h"
+#include "a2x_pack_pixel.p.h"
 #include "a2x_pack_sprite.p.h"
+
+typedef struct LayerSprite LayerSprite;
 
 extern LayerSprite* a_layersprite_make(void);
 extern void a_layersprite_free(LayerSprite* const ls);

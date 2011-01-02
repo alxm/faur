@@ -20,13 +20,9 @@
 #ifndef A2X_PACK_FONT_PH
 #define A2X_PACK_FONT_PH
 
-#include <stdlib.h>
-#include <stdio.h>
+#include "a2x_app_includes.h"
 
-#include "a2x_pack_blit.p.h"
-#include "a2x_pack_list.p.h"
-#include "a2x_pack_screen.p.h"
-#include "a2x_pack_sprite.p.h"
+#include "a2x_pack_sheet.p.h"
 
 typedef enum FontLoad  {
     A_LOAD_ALL = 1, A_LOAD_AN = 2, A_LOAD_A = 4, A_LOAD_N = 8, A_LOAD_CAPS = 16

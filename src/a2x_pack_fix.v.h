@@ -20,6 +20,10 @@
 #ifndef A2X_PACK_FIX_VH
 #define A2X_PACK_FIX_VH
 
+#include "a2x_pack_fix.p.h"
+
+#include "a2x_pack_math.v.h"
+
 extern void a_fix__set(void);
 
 #endif // A2X_PACK_FIX_VH

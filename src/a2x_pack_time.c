@@ -23,7 +23,6 @@
     - to Notaz for the accurate Wiz timer code
 */
 
-#include "a2x_pack_time.p.h"
 #include "a2x_pack_time.v.h"
 
 static int overflow = 0;

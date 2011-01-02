@@ -20,16 +20,13 @@
 #ifndef A2X_PACK_ANIMATION_PH
 #define A2X_PACK_ANIMATION_PH
 
-#include <SDL/SDL.h>
-#include <SDL/SDL_image.h>
-
-#include "a2x_pack_fix.p.h"
-#include "a2x_pack_list.p.h"
-#include "a2x_pack_screen.p.h"
-#include "a2x_pack_sheet.p.h"
-#include "a2x_pack_sprite.p.h"
+#include "a2x_app_includes.h"
 
 typedef struct Animation Animation;
+
+#include "a2x_pack_list.p.h"
+#include "a2x_pack_sheet.p.h"
+#include "a2x_pack_sprite.p.h"
 
 extern Animation* a_animation_make(const int framesPerCycle);
 extern Animation* a_animation_fromSheet(const Sheet* const sh, const int x, const int y, const int framesPerCycle);

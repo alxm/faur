@@ -20,8 +20,7 @@
 #ifndef A2X_PACK_LIST_PH
 #define A2X_PACK_LIST_PH
 
-#include <stdlib.h>
-#include <string.h>
+#include "a2x_app_includes.h"
 
 typedef struct ListNode ListNode;
 typedef struct List List;

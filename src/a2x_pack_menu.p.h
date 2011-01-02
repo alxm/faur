@@ -20,16 +20,13 @@
 #ifndef A2X_PACK_MENU_PH
 #define A2X_PACK_MENU_PH
 
-#include <stdlib.h>
-
-#include "a2x_app_settings.p.h"
-
-#include "a2x_pack_blit.p.h"
-#include "a2x_pack_fps.p.h"
-#include "a2x_pack_input.p.h"
-#include "a2x_pack_sound.p.h"
+#include "a2x_app_includes.h"
 
 typedef struct Menu Menu;
+
+#include "a2x_pack_input.p.h"
+#include "a2x_pack_sound.p.h"
+#include "a2x_pack_sprite.p.h"
 
 extern Menu* a_menu_set(Input* const next, Input* const back, Input* const select, Input* const cancel, void (*freeItem)(void* v));
 extern void a_menu_free(Menu* const m);

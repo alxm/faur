@@ -20,6 +20,11 @@
 #ifndef A2X_PACK_ANIMATION_VH
 #define A2X_PACK_ANIMATION_VH
 
+#include "a2x_pack_animation.p.h"
+
+#include "a2x_pack_fix.v.h"
+#include "a2x_pack_list.v.h"
+#include "a2x_pack_screen.v.h"
 #include "a2x_pack_sheet.v.h"
 #include "a2x_pack_sprite.v.h"
 

@@ -20,15 +20,13 @@
 #ifndef A2X_PACK_COLLIDE_PH
 #define A2X_PACK_COLLIDE_PH
 
-#include <stdlib.h>
-
-#include "a2x_pack_fix.p.h"
-#include "a2x_pack_list.p.h"
-#include "a2x_pack_math.p.h"
+#include "a2x_app_includes.h"
 
 typedef struct ColMap ColMap;
 typedef struct ColPoint ColPoint;
 typedef struct ColIterator ColIterator;
+
+#include "a2x_pack_fix.p.h"
 
 extern ColMap* a_colmap_set(const int totalWidth, const int totalHeight, const int gridDim);
 extern void a_colmap_free(ColMap* const c);

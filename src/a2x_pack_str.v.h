@@ -20,6 +20,6 @@
 #ifndef A2X_PACK_STR_VH
 #define A2X_PACK_STR_VH
 
-//
+#include "a2x_pack_str.p.h"
 
 #endif // A2X_PACK_STR_VH

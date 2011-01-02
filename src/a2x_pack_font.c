@@ -17,7 +17,6 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a2x_pack_font.p.h"
 #include "a2x_pack_font.v.h"
 
 #define NUM_ASCII 256

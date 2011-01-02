@@ -20,8 +20,11 @@
 #ifndef A2X_PACK_PIXEL_VH
 #define A2X_PACK_PIXEL_VH
 
+#include "a2x_pack_pixel.p.h"
+
 #include "a2x_pack_blit.v.h"
 #include "a2x_pack_draw.v.h"
+#include "a2x_pack_screen.v.h"
 
 #define a_pixel__plain(dst, p) \
 ({                             \

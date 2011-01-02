@@ -20,7 +20,8 @@
 #ifndef A2X_PACK_PNG_PH
 #define A2X_PACK_PNG_PH
 
-#include "a2x_pack_file.p.h"
+#include "a2x_app_includes.h"
+
 #include "a2x_pack_pixel.p.h"
 
 extern void a2x_png_readFile(const char* const path, Pixel** const pixels, int* const width, int* const height);

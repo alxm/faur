@@ -20,13 +20,11 @@
 #ifndef A2X_PACK_SHEET_PH
 #define A2X_PACK_SHEET_PH
 
-#include <SDL/SDL.h>
-#include <SDL/SDL_image.h>
+#include "a2x_app_includes.h"
 
 typedef struct Sheet Sheet;
 
-#include "a2x_pack_png.p.h"
-#include "a2x_pack_screen.p.h"
+#include "a2x_pack_pixel.p.h"
 
 extern Sheet* a_sheet_fromFile(const char* const path);
 extern Sheet* a_sheet_fromData(const uint8_t* const data);

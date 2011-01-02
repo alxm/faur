@@ -20,7 +20,12 @@
 #ifndef A2X_APP_SETTINGS_VH
 #define A2X_APP_SETTINGS_VH
 
+#include "a2x_app_settings.p.h"
+
 #include "a2x_app_main.v.h"
+
+#include "a2x_pack_hash.v.h"
+#include "a2x_pack_str.v.h"
 
 extern void a2x__defaults(void);
 

@@ -20,6 +20,10 @@
 #ifndef A2X_PACK_COLLIDE_VH
 #define A2X_PACK_COLLIDE_VH
 
+#include "a2x_pack_collide.p.h"
+
+#include "a2x_pack_fix.v.h"
 #include "a2x_pack_list.v.h"
+#include "a2x_pack_math.v.h"
 
 #endif // A2X_PACK_COLLIDE_VH

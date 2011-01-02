@@ -20,21 +20,15 @@
 #ifndef A2X_PACK_FILE_PH
 #define A2X_PACK_FILE_PH
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h>
-#include <sys/stat.h>
-#include <dirent.h>
-#include <limits.h>
-
-#include "a2x_pack_list.p.h"
-#include "a2x_pack_str.p.h"
+#include "a2x_app_includes.h"
 
 typedef FILE File;
 typedef DIR Dir;
 
 typedef struct FilePath FilePath;
 typedef struct FileReader FileReader;
+
+#include "a2x_pack_list.p.h"
 
 /*#if A_PLATFORM_GP2X || A_PLATFORM_WIZ || A_PLATFORM_PANDORA
     #define a_sync() sync()

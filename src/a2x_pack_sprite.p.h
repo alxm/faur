@@ -20,13 +20,11 @@
 #ifndef A2X_PACK_SPRITE_PH
 #define A2X_PACK_SPRITE_PH
 
-#include <SDL/SDL.h>
-#include <SDL/SDL_image.h>
+#include "a2x_app_includes.h"
 
 typedef struct Sprite Sprite;
 
-#include "a2x_pack_list.p.h"
-#include "a2x_pack_screen.p.h"
+#include "a2x_pack_pixel.p.h"
 #include "a2x_pack_sheet.p.h"
 
 #define a_sprite_make(g, x, y, w, h) a_sprite_makeZoomed((g), (x), (y), (w), (h), 1)

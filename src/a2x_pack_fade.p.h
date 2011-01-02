@@ -20,13 +20,9 @@
 #ifndef A2X_PACK_FADE_PH
 #define A2X_PACK_FADE_PH
 
-#include <stdlib.h>
+#include "a2x_app_includes.h"
 
-#include "a2x_app_settings.p.h"
-
-#include "a2x_pack_draw.p.h"
-#include "a2x_pack_fps.p.h"
-#include "a2x_pack_screen.p.h"
+#include "a2x_pack_pixel.p.h"
 
 typedef enum FadeSpeed {
     A_FADE_FAST3, A_FADE_FAST2, A_FADE_FAST,

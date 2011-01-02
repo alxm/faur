@@ -17,7 +17,6 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a2x_pack_menu.p.h"
 #include "a2x_pack_menu.v.h"
 
 typedef enum MenuState {
@@ -235,7 +234,7 @@ int a_menu_running(const Menu* const m)
 {
     return m->state == A_MENU_RUNNING;
 }
- 
+
 int a_menu_finished(const Menu* const m)
 {
     return m->state == A_MENU_ACCEPT || m->state == A_MENU_CANCEL;

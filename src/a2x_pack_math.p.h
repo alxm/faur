@@ -20,9 +20,7 @@
 #ifndef A2X_PACK_MATH_PH
 #define A2X_PACK_MATH_PH
 
-#include <stdlib.h>
-#include <math.h>
-#include <time.h>
+#include "a2x_app_includes.h"
 
 #define a_math_srand()     srand(time(NULL))
 #define a_math_rand(range) (rand() % (range))

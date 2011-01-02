@@ -20,6 +20,8 @@
 #ifndef A2X_PACK_HASH_VH
 #define A2X_PACK_HASH_VH
 
-//
+#include "a2x_pack_hash.p.h"
+
+#include "a2x_pack_str.v.h"
 
 #endif // A2X_PACK_HASH_VH

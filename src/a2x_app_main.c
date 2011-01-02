@@ -17,7 +17,6 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a2x_app_main.p.h"
 #include "a2x_app_main.v.h"
 
 #define A_PACK_SET(p)          \

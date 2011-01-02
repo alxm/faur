@@ -20,9 +20,16 @@
 #ifndef A2X_PACK_SCREEN_VH
 #define A2X_PACK_SCREEN_VH
 
+#include "a2x_pack_screen.p.h"
+
 #include "a2x_app_settings.v.h"
 
+#include "a2x_pack_draw.v.h"
+#include "a2x_pack_pixel.v.h"
+#include "a2x_pack_sound.v.h"
 #include "a2x_pack_sprite.v.h"
+#include "a2x_pack_str.v.h"
+#include "a2x_pack_time.v.h"
 
 extern void a_screen__set(void);
 extern void a_screen__free(void);

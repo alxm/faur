@@ -20,6 +20,8 @@
 #ifndef A2X_APP_MAIN_VH
 #define A2X_APP_MAIN_VH
 
+#include "a2x_app_main.p.h"
+
 #include "a2x_app_settings.v.h"
 
 #include "a2x_pack_blit.v.h"

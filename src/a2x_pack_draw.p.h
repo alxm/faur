@@ -20,9 +20,9 @@
 #ifndef A2X_PACK_DRAW_PH
 #define A2X_PACK_DRAW_PH
 
-#include "a2x_pack_fix.p.h"
+#include "a2x_app_includes.h"
+
 #include "a2x_pack_pixel.p.h"
-#include "a2x_pack_screen.p.h"
 
 typedef void (*DrawRectangle)(int x1, int y1, int x2, int y2);
 typedef void (*DrawLine)(int x1, int y1, int x2, int y2);

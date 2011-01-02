@@ -20,15 +20,7 @@
 #ifndef A2X_PACK_TIME_PH
 #define A2X_PACK_TIME_PH
 
-#include <stdint.h>
-
-#if A_PLATFORM_WIZ || A_PLATFORM_CAANOO
-    #include <unistd.h>
-    #include <fcntl.h>
-    #include <sys/mman.h>
-#endif
-
-#include <SDL/SDL.h>
+#include "a2x_app_includes.h"
 
 typedef struct Timer Timer;
 

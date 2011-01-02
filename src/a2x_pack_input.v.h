@@ -20,8 +20,15 @@
 #ifndef A2X_PACK_INPUT_VH
 #define A2X_PACK_INPUT_VH
 
+#include "a2x_pack_input.p.h"
+
+#include "a2x_pack_collide.v.h"
+#include "a2x_pack_fps.v.h"
+#include "a2x_pack_hash.v.h"
 #include "a2x_pack_list.v.h"
 #include "a2x_pack_screen.v.h"
+#include "a2x_pack_state.v.h"
+#include "a2x_pack_str.v.h"
 
 extern void a_input__set(void);
 extern void a_input__free(void);

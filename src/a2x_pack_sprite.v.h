@@ -20,7 +20,10 @@
 #ifndef A2X_PACK_SPRITE_VH
 #define A2X_PACK_SPRITE_VH
 
-#include "a2x_pack_screen.p.h"
+#include "a2x_pack_sprite.p.h"
+
+#include "a2x_pack_list.v.h"
+#include "a2x_pack_screen.v.h"
 #include "a2x_pack_sheet.v.h"
 
 struct Sprite {

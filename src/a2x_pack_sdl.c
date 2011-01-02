@@ -17,7 +17,6 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a2x_pack_sdl.p.h"
 #include "a2x_pack_sdl.v.h"
 
 void a_sdl__set(void)

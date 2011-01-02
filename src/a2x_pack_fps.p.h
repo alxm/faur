@@ -20,13 +20,7 @@
 #ifndef A2X_PACK_FPS_PH
 #define A2X_PACK_FPS_PH
 
-#include "a2x_app_settings.p.h"
-
-#include "a2x_pack_input.p.h"
-#include "a2x_pack_math.p.h"
-#include "a2x_pack_screen.p.h"
-#include "a2x_pack_sound.p.h"
-#include "a2x_pack_time.p.h"
+#include "a2x_app_includes.h"
 
 extern void a_fps_start(void);
 extern void a_fps_end(void);
