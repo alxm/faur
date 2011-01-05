@@ -25,8 +25,6 @@
 
 #include "a2x_pack_time.v.h"
 
-static int overflow = 0;
-
 #if A_PLATFORM_WIZ || A_PLATFORM_CAANOO
     #define TIMER_BASE3  0x1980
     #define TIMER_REG(x) memregs[(TIMER_BASE3 + x) >> 2]
@@ -62,8 +60,6 @@ void a_time__free(void)
 
 uint32_t a_time_getMilis(void)
 {
-    static uint32_t old = 0;
-
     #if A_PLATFORM_WIZ || A_PLATFORM_CAANOO
         TIMER_REG(0x08) = 0x4b; // run timer, latch value
         const uint32_t t = TIMER_REG(0) / 1000;
@@ -71,26 +67,18 @@ uint32_t a_time_getMilis(void)
         const uint32_t t = SDL_GetTicks();
     #endif
 
-    if(t < old) {
-        overflow = 1;
-    }
-
-    old = t;
-
     return t;
 }
 
 void a_time_waitMilis(const uint32_t milis)
 {
-    SDL_Delay(milis);
-}
+    #if A_PLATFORM_WIZ || A_PLATFORM_CAANOO
+        const uint32_t start = a_time_getMilis();
 
-int a_time_overflowed(void)
-{
-    return overflow;
-}
-
-void a_time_handledOverflow(void)
-{
-    overflow = 0;
+        while(a_time_getMilis() - start < milis) {
+            continue;
+        }
+    #else
+        SDL_Delay(milis);
+    #endif
 }

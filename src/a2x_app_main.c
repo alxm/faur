@@ -75,6 +75,7 @@ int main(int argc, char** argv)
     A_PACK_FREE(font);
     A_PACK_FREE(screen);
     A_PACK_FREE(sprite);
+    A_PACK_FREE(fps);
     A_PACK_FREE(time);
     A_PACK_FREE(hw);
     A_PACK_FREE(sdl);

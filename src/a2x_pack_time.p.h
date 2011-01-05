@@ -22,8 +22,6 @@
 
 #include "a2x_app_includes.h"
 
-typedef struct Timer Timer;
-
 extern uint32_t a_time_getMilis(void);
 extern void a_time_waitMilis(const uint32_t milis);
 

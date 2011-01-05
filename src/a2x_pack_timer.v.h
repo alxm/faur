@@ -17,12 +17,11 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_PACK_TIME_VH
-#define A2X_PACK_TIME_VH
+#ifndef A2X_PACK_TIMER_VH
+#define A2X_PACK_TIMER_VH
 
-#include "a2x_pack_time.p.h"
+#include "a2x_pack_timer.p.h"
 
-extern void a_time__set(void);
-extern void a_time__free(void);
+#include "a2x_pack_time.v.h"
 
-#endif // A2X_PACK_TIME_VH
+#endif // A2X_PACK_TIMER_VH

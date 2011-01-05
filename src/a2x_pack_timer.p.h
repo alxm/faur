@@ -17,12 +17,18 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_PACK_TIME_VH
-#define A2X_PACK_TIME_VH
+#ifndef A2X_PACK_TIMER_PH
+#define A2X_PACK_TIMER_PH
 
-#include "a2x_pack_time.p.h"
+#include "a2x_app_includes.h"
 
-extern void a_time__set(void);
-extern void a_time__free(void);
+typedef struct Timer Timer;
 
-#endif // A2X_PACK_TIME_VH
+extern Timer* a_timer_set(const uint32_t milisPeriod);
+extern void a_timer_free(Timer* const t);
+
+extern bool a_timer_check(Timer* const t);
+extern uint32_t a_timer_diff(Timer* const t);
+extern void a_timer_start(Timer* const t);
+
+#endif // A2X_PACK_TIMER_PH
