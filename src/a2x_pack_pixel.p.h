@@ -57,6 +57,7 @@ extern void a_pixel_setClip(const bool clip);
 
 extern void a_pixel_setAlpha(const uint8_t a);
 extern void a_pixel_setRGB(const uint8_t r, const uint8_t g, const uint8_t b);
+extern void a_pixel_setRGBA(const uint8_t r, const uint8_t g, const uint8_t b, const uint8_t a);
 extern void a_pixel_setPixel(const Pixel p);
 
 extern PixelPut a_pixel_put;

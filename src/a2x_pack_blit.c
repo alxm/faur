@@ -21,13 +21,15 @@
 #include "a2x_pack_blit.v.h"
 
 Blitter a_blit;
-static Blitter blitters[A_PIXEL_TYPE_NUM][2];
+static Blitter blitters[A_PIXEL_TYPE_NUM][2][2];
 
 static PixelBlend_t blend;
 static bool clip;
+static bool usePixel;
 
 static uint8_t alpha;
 static uint8_t red, green, blue;
+static Pixel pixel;
 
 #define blitter_noclip(pixeler)                                  \
 {                                                                \
@@ -123,33 +125,76 @@ static uint8_t red, green, blue;
 #define blitter_rgb75_setup
 #define blitter_inverse_setup
 
-#define blitterMake(blend, args)                                                 \
-                                                                                 \
-    void a_blit__noclip_##blend(const Sprite* const s, const int x, const int y) \
-    {                                                                            \
-        blitter_##blend##_setup                                                  \
-        blitter_noclip(a_pixel__##blend args)                                    \
-    }                                                                            \
-                                                                                 \
-    void a_blit__clip_##blend(const Sprite* const s, const int x, const int y)   \
-    {                                                                            \
-        blitter_##blend##_setup                                                  \
-        blitter_clip(a_pixel__##blend args)                                      \
+#define blitterMake(blend, argsBlit, argsPixel)                                      \
+                                                                                     \
+    void a_blit__noclip_##blend(const Sprite* const s, const int x, const int y)     \
+    {                                                                                \
+        blitter_##blend##_setup                                                      \
+        blitter_noclip(a_pixel__##blend argsBlit)                                    \
+    }                                                                                \
+                                                                                     \
+    void a_blit__noclip_##blend##_p(const Sprite* const s, const int x, const int y) \
+    {                                                                                \
+        blitter_##blend##_setup                                                      \
+        blitter_noclip(a_pixel__##blend argsPixel)                                   \
+    }                                                                                \
+                                                                                     \
+    void a_blit__clip_##blend(const Sprite* const s, const int x, const int y)       \
+    {                                                                                \
+        blitter_##blend##_setup                                                      \
+        blitter_clip(a_pixel__##blend argsBlit)                                      \
+    }                                                                                \
+                                                                                     \
+    void a_blit__clip_##blend##_p(const Sprite* const s, const int x, const int y)   \
+    {                                                                                \
+        blitter_##blend##_setup                                                      \
+        blitter_clip(a_pixel__##blend argsPixel)                                     \
     }
 
-blitterMake(plain, (dst, *src))
-blitterMake(rgba, (dst, a_pixel_red(*src), a_pixel_green(*src), a_pixel_blue(*src), a))
-blitterMake(rgb25, (dst, a_pixel_red(*src), a_pixel_green(*src), a_pixel_blue(*src)))
-blitterMake(rgb50, (dst, a_pixel_red(*src), a_pixel_green(*src), a_pixel_blue(*src)))
-blitterMake(rgb75, (dst, a_pixel_red(*src), a_pixel_green(*src), a_pixel_blue(*src)))
-blitterMake(inverse, (dst))
+blitterMake(
+    plain,
+    (dst, *src),
+    (dst, pixel)
+)
+
+blitterMake(
+    rgba,
+    (dst, a_pixel_red(*src), a_pixel_green(*src), a_pixel_blue(*src), a),
+    (dst, red, green, blue, a)
+)
+
+blitterMake(
+    rgb25,
+    (dst, a_pixel_red(*src), a_pixel_green(*src), a_pixel_blue(*src)),
+    (dst, red, green, blue)
+)
+
+blitterMake(
+    rgb50,
+    (dst, a_pixel_red(*src), a_pixel_green(*src), a_pixel_blue(*src)),
+    (dst, red, green, blue)
+)
+
+blitterMake(
+    rgb75,
+    (dst, a_pixel_red(*src), a_pixel_green(*src), a_pixel_blue(*src)),
+    (dst, red, green, blue)
+)
+
+blitterMake(
+    inverse,
+    (dst),
+    (dst)
+)
 
 void a_blit__set(void)
 {
-    #define blitterInit(index, blend)                \
-    ({                                               \
-        blitters[index][0] = a_blit__noclip_##blend; \
-        blitters[index][1] = a_blit__clip_##blend;   \
+    #define blitterInit(index, blend)                       \
+    ({                                                      \
+        blitters[index][0][0] = a_blit__noclip_##blend;     \
+        blitters[index][0][1] = a_blit__noclip_##blend##_p; \
+        blitters[index][1][0] = a_blit__clip_##blend;       \
+        blitters[index][1][1] = a_blit__clip_##blend##_p;   \
     })
 
     blitterInit(A_PIXEL_PLAIN, plain);
@@ -161,20 +206,27 @@ void a_blit__set(void)
 
     blend = A_PIXEL_PLAIN;
     clip = true;
+    usePixel = false;
 
-    a_blit = blitters[blend][clip];
+    a_blit = blitters[blend][clip][usePixel];
 }
 
 void a_blit__setBlend(const PixelBlend_t b)
 {
     blend = b;
-    a_blit = blitters[blend][clip];
+    a_blit = blitters[blend][clip][usePixel];
 }
 
 void a_blit__setClip(const bool c)
 {
     clip = c;
-    a_blit = blitters[blend][clip];
+    a_blit = blitters[blend][clip][usePixel];
+}
+
+void a_blit_pixel(const bool p)
+{
+    usePixel = p;
+    a_blit = blitters[blend][clip][usePixel];
 }
 
 void a_blit__setAlpha(const uint8_t a)
@@ -187,6 +239,8 @@ void a_blit__setRGB(const uint8_t r, const uint8_t g, const uint8_t b)
     red = r;
     green = g;
     blue = b;
+
+    pixel = a_pixel_make(red, green, blue);
 }
 
 void a_blit_c(const Sprite* const s)

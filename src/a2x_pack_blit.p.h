@@ -28,6 +28,8 @@ typedef void (*Blitter)(const Sprite* const s, const int x, const int y);
 
 extern Blitter a_blit;
 
+extern void a_blit_pixel(const bool p);
+
 extern void a_blit_c(const Sprite* const s);
 extern void a_blit_ch(const Sprite* const s, const int y);
 extern void a_blit_cv(const Sprite* const s, const int x);

@@ -113,6 +113,22 @@ void a_pixel_setRGB(const uint8_t r, const uint8_t g, const uint8_t b)
     a_draw__setRGB(red, green, blue);
 }
 
+void a_pixel_setRGBA(const uint8_t r, const uint8_t g, const uint8_t b, const uint8_t a)
+{
+    red = r;
+    green = g;
+    blue = b;
+    alpha = a;
+
+    pixel = a_pixel_make(red, green, blue);
+
+    a_blit__setAlpha(alpha);
+    a_blit__setRGB(red, green, blue);
+
+    a_draw__setAlpha(alpha);
+    a_draw__setRGB(red, green, blue);
+}
+
 void a_pixel_setPixel(const Pixel p)
 {
     pixel = p;
