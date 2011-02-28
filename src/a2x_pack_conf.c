@@ -23,7 +23,11 @@ void a_conf__set(void)
 {
     a_out("You can edit %s", a2x_str("conf"));
 
-    FileReader* const f = a_file_makeReader(a2x_str("conf"));
+    File* const f = a_file_open(a2x_str("conf"), "r");
+
+    if(!f) {
+        return;
+    }
 
     while(a_file_readLine(f)) {
         char* const s = a_str_trim(a_file_getLine(f));
@@ -51,5 +55,5 @@ void a_conf__set(void)
         free(s);
     }
 
-    a_file_freeReader(f);
+    a_file_close(f);
 }

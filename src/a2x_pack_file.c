@@ -19,57 +19,132 @@
 
 #include "a2x_pack_file.v.h"
 
-struct FilePath {
+struct File {
+    FILE* file;
+    char* modes;
+    char* path;
     char* name;
-    char* full;
-};
-
-struct FileReader {
-    File* file;
     char* line;
     int eof;
 };
 
-static int defaultSelector(const struct dirent* f);
+File* a_file_open(const char* const path, const char* const modes)
+{
+    FILE* const file = fopen(path, modes);
+
+    if(!file) {
+        return NULL;
+    }
+
+    File* const f = malloc(sizeof(File));
+
+    f->file = file;
+    f->modes = a_str_dup(modes);
+    f->path = a_str_getPrefixLastFind(path, '/');
+    f->name = a_str_getSuffixLastFind(path, '/');
+    f->line = NULL;
+    f->eof = 0;
+
+    return f;
+}
+
+void a_file_close(File* const f)
+{
+    if(f->file) {
+        fclose(f->file);
+    }
+
+    free(f->modes);
+    free(f->path);
+    free(f->name);
+    free(f->line);
+
+    free(f);
+}
+
+void a_file_read(File* const f, void* const buffer, const size_t size)
+{
+    fread(buffer, size, 1, f->file);
+}
+
+void a_file_write(File* const f, void* const buffer, const size_t size)
+{
+    fwrite(buffer, size, 1, f->file);
+}
+
+int a_file_readLine(File* const f)
+{
+    if(f->eof) {
+        return 0;
+    }
+
+    int offset = 1;
+    FILE* const file = f->file;
+
+    while(offset == 1 && !f->eof) {
+        int c;
+
+        for(c = fgetc(file); !iscntrl(c) && c != EOF; c = fgetc(file)) {
+            offset++;
+        }
+
+        f->eof = c == EOF;
+    }
+
+    if(offset > 1) {
+        if(f->eof) {
+            rewind(file);
+            fseek(file, -(offset - 1), SEEK_END);
+        } else {
+            fseek(file, -offset, SEEK_CUR);
+        }
+
+        char* const str = malloc(offset * sizeof(char));
+
+        for(int i = 0; i < offset - 1; i++) {
+            str[i] = fgetc(file);
+        }
+
+        str[offset - 1] = '\0';
+
+        fseek(file, 1, SEEK_CUR);
+
+        free(f->line);
+        f->line = str;
+
+        return 1;
+    }
+
+    return 0;
+}
+
+char* a_file_getLine(const File* const f)
+{
+    return f->line;
+}
+
+const char* a_file_path(const File* const f)
+{
+    return f->path;
+}
+
+const char* a_file_name(const File* const f)
+{
+    return f->name;
+}
+
+FILE* a_file_file(const File* const f)
+{
+    return f->file;
+}
 
 int a_file_exists(const char* const path)
 {
-    File* const f = a_file_openRead(path);
+    FILE* const f = fopen(path, "r");
 
     if(f) {
-        a_file_close(f);
+        fclose(f);
         return 1;
-    }
-
-    return 0;
-}
-
-int a_file_dirExists(const char* const path)
-{
-    Dir* const d = a_file_openDir(path);
-
-    if(d) {
-        a_file_closeDir(d);
-        return 1;
-    }
-
-    return 0;
-}
-
-int a_file_hasKey(const char* const path, const char* const key)
-{
-    File* const f = a_file_openRead(path);
-
-    if(f) {
-        char* const buffer = a_str_malloc(key);
-        a_file_rp(f, buffer, a_str_size(key));
-
-        int verdict = a_str_same(buffer, key);
-
-        free(buffer);
-        a_file_close(f);
-
-        return verdict;
     }
 
     return 0;
@@ -91,148 +166,19 @@ int a_file_size(const char* const f)
     return info.st_size;
 }
 
-List* a_file_list(const char* const path, int (*selector)(const struct dirent* f))
-{
-    List* const list = a_list_set();
-
-    if(!a_file_dirExists(path)) {
-        return list;
-    }
-
-    if(!selector) {
-        selector = &defaultSelector;
-    }
-
-    struct dirent** dlist;
-    const int numFiles = scandir(path, &dlist, selector, alphasort);
-
-    for(int i = numFiles; i--; ) {
-        FilePath* const f = malloc(sizeof(FilePath));
-
-        f->name = a_str_dup(dlist[i]->d_name);
-        f->full = a_str_merge(3, path, "/", f->name);
-
-        a_list_addFirst(list, f);
-
-        free(dlist[i]);
-    }
-
-    free(dlist);
-
-    return list;
-}
-
-void a_file_freeFilePath(FilePath* const f)
-{
-    free(f->name);
-    free(f->full);
-
-    free(f);
-}
-
-char* a_file_pathName(const FilePath* const f)
-{
-    return f->name;
-}
-
-char* a_file_pathFull(const FilePath* const f)
-{
-    return f->full;
-}
-
 uint8_t* a_file_toBuffer(const char* const path)
 {
-    File* const f = a_file_openRead(path);
+    FILE* const f = fopen(path, "r");
 
     if(!f) {
         return NULL;
     }
 
     const int len = a_file_size(path);
-    uint8_t* const data = malloc(len);
+    uint8_t* const buffer = malloc(len);
 
-    a_file_rp(f, data, len);
-    a_file_close(f);
+    fread(buffer, len, 1, f);
+    fclose(f);
 
-    return data;
-}
-
-FileReader* a_file_makeReader(const char* const file)
-{
-    FileReader* const f = malloc(sizeof(FileReader));
-
-    f->file = a_file_openReadText(file);
-    f->line = NULL;
-    f->eof = f->file == NULL;
-
-    return f;
-}
-
-void a_file_freeReader(FileReader* const f)
-{
-    if(f->file) {
-        a_file_close(f->file);
-    }
-
-    free(f->line);
-    free(f);
-}
-
-int a_file_readLine(FileReader* const fr)
-{
-    if(fr->eof) {
-        return 0;
-    }
-
-    int offset = 1;
-    File* const f = fr->file;
-
-    while(offset == 1) {
-        int c;
-
-        for(c = fgetc(f); !iscntrl(c) && c != EOF; c = fgetc(f)) {
-            offset++;
-        }
-
-        if(c == EOF) {
-            fr->eof = 1;
-            break;
-        }
-    }
-
-    if(offset > 1) {
-        if(fr->eof) {
-            a_file_rewind(f);
-            a_file_jumpEnd(f, -(offset - 1));
-        } else {
-            a_file_jump(f, -offset);
-        }
-
-        char* const str = malloc(offset * sizeof(char));
-
-        for(int i = 0; i < offset - 1; i++) {
-            str[i] = fgetc(f);
-        }
-
-        str[offset - 1] = '\0';
-
-        a_file_jump(f, 1);
-
-        free(fr->line);
-        fr->line = str;
-
-        return 1;
-    }
-
-    return 0;
-}
-
-char* a_file_getLine(const FileReader* const fr)
-{
-    return fr->line;
-}
-
-static int defaultSelector(const struct dirent* f)
-{
-    return a_file_validName(f->d_name);
+    return buffer;
 }

@@ -27,9 +27,9 @@ typedef struct ByteStream {
 static void readFunction(png_structp png, png_bytep data, png_size_t length);
 static void pngToPixels(png_structp png, png_infop info, Pixel** const pixels, int* const width, int* const height);
 
-void a2x_png_readFile(const char* const path, Pixel** const pixels, int* const width, int* const height)
+void a_png_readFile(const char* const path, Pixel** const pixels, int* const width, int* const height)
 {
-    File* const f = a_file_openRead(path);
+    File* const f = a_file_open(path, "r");
 
     png_structp png = NULL;
     png_infop info = NULL;
@@ -41,7 +41,7 @@ void a2x_png_readFile(const char* const path, Pixel** const pixels, int* const w
     #define PNG_SIG 8
     png_byte sig[PNG_SIG];
 
-    a_file_rp(f, sig, PNG_SIG);
+    a_file_read(f, sig, PNG_SIG);
 
     if(png_sig_cmp(sig, 0, PNG_SIG) != 0) {
         a_error("%s is not a PNG", path);
@@ -64,7 +64,7 @@ void a2x_png_readFile(const char* const path, Pixel** const pixels, int* const w
         goto cleanUp;
     }
 
-    png_init_io(png, f);
+    png_init_io(png, a_file_file(f));
     png_set_sig_bytes(png, PNG_SIG);
     png_read_png(png, info, PNG_TRANSFORM_IDENTITY, NULL);
 
@@ -88,7 +88,7 @@ void a2x_png_readFile(const char* const path, Pixel** const pixels, int* const w
     }
 }
 
-void a2x_png_readMemory(const uint8_t* const data, Pixel** const pixels, int* const width, int* const height)
+void a_png_readMemory(const uint8_t* const data, Pixel** const pixels, int* const width, int* const height)
 {
     ByteStream* const stream = malloc(sizeof(ByteStream));
 
@@ -145,9 +145,9 @@ void a2x_png_readMemory(const uint8_t* const data, Pixel** const pixels, int* co
     free(stream);
 }
 
-void a2x_png_write(const char* const path, const Pixel* const data, const int width, const int height)
+void a_png_write(const char* const path, const Pixel* const data, const int width, const int height)
 {
-    File* f = a_file_openWrite(path);
+    File* f = a_file_open(path, "w");
 
     png_structp png = NULL;
     png_infop info = NULL;
@@ -192,7 +192,7 @@ void a2x_png_write(const char* const path, const Pixel* const data, const int wi
         }
     }
 
-    png_init_io(png, f);
+    png_init_io(png, a_file_file(f));
     png_set_rows(png, info, rows);
     png_write_png(png, info, PNG_TRANSFORM_IDENTITY, NULL);
     png_write_end(png, NULL);

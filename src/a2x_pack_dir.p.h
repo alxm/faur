@@ -17,11 +17,25 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_PACK_FILE_VH
-#define A2X_PACK_FILE_VH
+#ifndef A2X_PACK_DIR_PH
+#define A2X_PACK_DIR_PH
 
-#include "a2x_pack_file.p.h"
+#include "a2x_app_includes.h"
 
-#include "a2x_pack_str.v.h"
+typedef struct Dir Dir;
 
-#endif // A2X_PACK_FILE_VH
+extern Dir* a_dir_open(const char* const path);
+extern Dir* a_dir_openFilter(const char* const path, int (*filter)(const struct dirent* f));
+extern void a_dir_close(Dir* const d);
+
+extern bool a_dir_iterate(Dir* const d);
+extern const char* a_dir_current(const Dir* const d);
+
+extern const char* a_dir_path(const Dir* const d);
+extern const char* a_dir_name(const Dir* const d);
+extern int a_dir_num(const Dir* const d);
+
+extern int a_dir_exists(const char* const path);
+extern void a_dir_make(const char* const path);
+
+#endif // A2X_PACK_DIR_PH

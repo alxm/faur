@@ -23,7 +23,7 @@ Sheet* a_sheet_fromFile(const char* const path)
 {
     Sheet* const s = malloc(sizeof(Sheet));
 
-    a2x_png_readFile(path, &s->data, &s->w, &s->h);
+    a_png_readFile(path, &s->data, &s->w, &s->h);
 
     s->transparent = DEFAULT_TRANSPARENT;
     s->limit = DEFAULT_LIMIT;
@@ -36,7 +36,7 @@ Sheet* a_sheet_fromData(const uint8_t* const data)
 {
     Sheet* const s = malloc(sizeof(Sheet));
 
-    a2x_png_readMemory(data, &s->data, &s->w, &s->h);
+    a_png_readMemory(data, &s->data, &s->w, &s->h);
 
     s->transparent = DEFAULT_TRANSPARENT;
     s->limit = DEFAULT_LIMIT;
