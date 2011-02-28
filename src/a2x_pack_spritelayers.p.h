@@ -17,13 +17,20 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_PACK_LAYERSPRITE_VH
-#define A2X_PACK_LAYERSPRITE_VH
+#ifndef A2X_PACK_SPRITELAYERS_PH
+#define A2X_PACK_SPRITELAYERS_PH
 
-#include "a2x_pack_layersprite.p.h"
+#include "a2x_app_includes.h"
 
-#include "a2x_pack_blit.v.h"
-#include "a2x_pack_list.v.h"
-#include "a2x_pack_sprite.v.h"
+#include "a2x_pack_pixel.p.h"
+#include "a2x_pack_sprite.p.h"
 
-#endif // A2X_PACK_LAYERSPRITE_VH
+typedef struct SpriteLayers SpriteLayers;
+
+extern SpriteLayers* a_spritelayers_make(void);
+extern void a_spritelayers_free(SpriteLayers* const s);
+
+extern void a_spritelayers_add(SpriteLayers* const s, Sprite* const sprite, const PixelBlend_t blend, const uint8_t r, const uint8_t g, const uint8_t b, const uint8_t a);
+extern void a_spritelayers_blit(SpriteLayers* const s, const int x, const int y);
+
+#endif // A2X_PACK_SPRITELAYERS_PH

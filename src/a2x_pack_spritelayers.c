@@ -17,11 +17,11 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a2x_pack_layersprite.v.h"
+#include "a2x_pack_spritelayers.v.h"
 
 typedef struct Layer Layer;
 
-struct LayerSprite {
+struct SpriteLayers {
     List* layers;
 };
 
@@ -31,23 +31,23 @@ struct Layer {
     uint8_t r, g, b, a;
 };
 
-LayerSprite* a_layersprite_make(void)
+SpriteLayers* a_spritelayers_make(void)
 {
-    LayerSprite* const ls = malloc(sizeof(LayerSprite));
+    SpriteLayers* const s = malloc(sizeof(SpriteLayers));
 
-    ls->layers = a_list_set();
+    s->layers = a_list_set();
 
-    return ls;
+    return s;
 }
 
-void a_layersprite_free(LayerSprite* const ls)
+void a_spritelayers_free(SpriteLayers* const s)
 {
-    a_list_freeContent(ls->layers);
+    a_list_freeContent(s->layers);
 
-    free(ls);
+    free(s);
 }
 
-void a_layersprite_add(LayerSprite* const ls, Sprite* const sprite, const PixelBlend_t blend, const uint8_t r, const uint8_t g, const uint8_t b, const uint8_t a)
+void a_spritelayers_add(SpriteLayers* const s, Sprite* const sprite, const PixelBlend_t blend, const uint8_t r, const uint8_t g, const uint8_t b, const uint8_t a)
 {
     Layer* const l = malloc(sizeof(Layer));
 
@@ -58,12 +58,12 @@ void a_layersprite_add(LayerSprite* const ls, Sprite* const sprite, const PixelB
     l->b = b;
     l->a = a;
 
-    a_list_addLast(ls->layers, l);
+    a_list_addLast(s->layers, l);
 }
 
-void a_layersprite_blit(LayerSprite* const ls, const int x, const int y)
+void a_spritelayers_blit(SpriteLayers* const s, const int x, const int y)
 {
-    List* const layers = ls->layers;
+    List* const layers = s->layers;
 
     while(a_list_iterate(layers)) {
         Layer* const l = a_list_current(layers);

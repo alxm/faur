@@ -17,10 +17,10 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_PACK_ANIMATION_VH
-#define A2X_PACK_ANIMATION_VH
+#ifndef A2X_PACK_SPRITEFRAMES_VH
+#define A2X_PACK_SPRITEFRAMES_VH
 
-#include "a2x_pack_animation.p.h"
+#include "a2x_pack_spriteframes.p.h"
 
 #include "a2x_pack_fix.v.h"
 #include "a2x_pack_list.v.h"
@@ -28,4 +28,4 @@
 #include "a2x_pack_sheet.v.h"
 #include "a2x_pack_sprite.v.h"
 
-#endif // A2X_PACK_ANIMATION_VH
+#endif // A2X_PACK_SPRITEFRAMES_VH
