@@ -9,9 +9,9 @@ fi
 SRC=$1
 FILE=$2
 
-function putline
+putline()
 {
-    echo -e $1 >> $FILE
+    echo $1 >> $FILE
 }
 
 touch $FILE
@@ -22,7 +22,7 @@ putline ""
 
 for f in $SRC/a2x_*.p.h
 do
-	putline "#include \"../src/`basename $f`\""
+    putline "#include \"../src/`basename $f`\""
 done
 
 putline ""

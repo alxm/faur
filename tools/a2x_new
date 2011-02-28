@@ -18,22 +18,22 @@ then
     exit 1
 fi
 
-function newdir
+newdir()
 {
     echo "Making dir: $1"
     mkdir "$1"
 }
 
-function newfile
+newfile()
 {
     echo "Writing file: $1"
     CURRENT_FILE=$1
     touch "$CURRENT_FILE"
 }
 
-function putline
+putline()
 {
-    echo -e $1 >> "$CURRENT_FILE"
+    echo $1 >> "$CURRENT_FILE"
 }
 
 newdir "$PROJECT_PATH"

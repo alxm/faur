@@ -7,11 +7,16 @@ then
 fi
 
 FILE="`readlink -f $1`"
-GEANY_TAGS_DIR=~/.geany/tags
 
-if [ -d $GEANY_TAGS_DIR ]
-then
-    geany -g $GEANY_TAGS_DIR/a2x.c.tags $FILE
-fi
+geanytags()
+{
+    if [ -d $1 ]
+    then
+        geany -g $1/a2x.c.tags $FILE
+    fi
+}
+
+geanytags "~/.geany/tags"
+geanytags "~/.config/geany/tags"
 
 exit 0
