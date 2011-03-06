@@ -1,12 +1,12 @@
-#!/bin/sh
+#!/bin/bash
 
 if [ $# -ne 1 ]
 then
-    echo "Usage: `basename $0` HeaderFile"
+    echo "Usage: $(basename $0) HeaderFile"
     exit 1
 fi
 
-FILE="`readlink -f $1`"
+FILE=$(readlink -f $1)
 
 geanytags()
 {

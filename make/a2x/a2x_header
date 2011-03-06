@@ -1,8 +1,8 @@
-#!/bin/sh
+#!/bin/bash
 
 if [ $# -ne 2 ]
 then
-    echo "Usage: `basename $0` SourceDir HeaderFile"
+    echo "Usage: $(basename $0) SourceDir HeaderFile"
     exit 1
 fi
 
@@ -22,7 +22,7 @@ putline ""
 
 for f in $SRC/a2x_*.p.h
 do
-    putline "#include \"../src/`basename $f`\""
+    putline "#include \"../src/$(basename $f)\""
 done
 
 putline ""

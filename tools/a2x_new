@@ -1,18 +1,20 @@
-#!/bin/sh
+#!/bin/bash
 
 if [ $# -ne 1 ]
 then
-    echo "Usage: $(basename "$0") ProjectPath"
+    echo "Usage: $(basename $0) ProjectPath"
     exit 1
 fi
 
-A2X_LOCATION="$(readlink -f "$(dirname "$0")/..")"
+A2X_LOCATION=$(readlink -f $(dirname $0)/..)
 echo "Found a2x: $A2X_LOCATION"
 
-PROJECT_NAME="$(basename "$1")"
+PROJECT_NAME=$(basename $1)
 PROJECT_PATH=$1
 
-if [ -e "$PROJECT_PATH" ]
+FILE=
+
+if [ -e $PROJECT_PATH ]
 then
     echo "Error: \"$PROJECT_NAME\" already exists"
     exit 1
@@ -21,19 +23,26 @@ fi
 newdir()
 {
     echo "Making dir: $1"
-    mkdir "$1"
+    mkdir $1
 }
 
 newfile()
 {
     echo "Writing file: $1"
-    CURRENT_FILE=$1
-    touch "$CURRENT_FILE"
+    FILE=$1
+    touch $FILE
 }
 
 putline()
 {
-    echo $1 >> "$CURRENT_FILE"
+    TABS=
+
+    for i in $(seq 1 $1)
+    do
+        TABS=$TABS"\040\040\040\040"
+    done
+
+    echo -e $TABS$2 >> $FILE
 }
 
 newdir "$PROJECT_PATH"
@@ -41,30 +50,30 @@ newdir "$PROJECT_PATH/make"
 newdir "$PROJECT_PATH/src"
 
 newfile "$PROJECT_PATH/make/Makefile"
-putline "APP = $PROJECT_NAME"
-putline "TARGET_DIR = .."
-putline "SRC_DIR = ../src"
-putline "GFX_DIR ="
-putline "SFX_DIR ="
-putline "A2X_PATH = $A2X_LOCATION"
-putline "include \$(A2X_PATH)/make/project/Makefile.linux"
+putline 0 "APP = $PROJECT_NAME"
+putline 0 "TARGET_DIR = .."
+putline 0 "SRC_DIR = ../src"
+putline 0 "GFX_DIR ="
+putline 0 "SFX_DIR ="
+putline 0 "A2X_PATH = $A2X_LOCATION"
+putline 0 "include \$(A2X_PATH)/make/project/Makefile.linux"
 
 newfile "$PROJECT_PATH/src/main.c"
-putline "#include <a2x.h>"
-putline ""
-putline "void a2x(void)"
-putline "{"
-putline "\ta2x_set(\"title\", \"New App\");"
-putline "\ta2x_set(\"version\", \"0.1\");"
-putline "\ta2x_set(\"author\", \"You\");"
-putline "\ta2x_set(\"window\", \"no\");"
-putline "\ta2x_set(\"quiet\", \"yes\");"
-putline "}"
-putline ""
-putline "void Main(void)"
-putline "{"
-putline "\tprintf(\"Code me!\\\n\");"
-putline "}"
+putline 0 "#include <a2x.h>"
+putline 0 ""
+putline 0 "void a2x(void)"
+putline 0 "{"
+putline 1 "    a2x_set(\"title\", \"New App\");"
+putline 1 "    a2x_set(\"version\", \"0.1\");"
+putline 1 "    a2x_set(\"author\", \"You\");"
+putline 1 "    a2x_set(\"window\", \"no\");"
+putline 1 "    a2x_set(\"quiet\", \"yes\");"
+putline 0 "}"
+putline 0 ""
+putline 0 "void Main(void)"
+putline 0 "{"
+putline 1 "    printf(\"Code me!\\\n\");"
+putline 0 "}"
 
 echo "$PROJECT_NAME is ready!"
 
