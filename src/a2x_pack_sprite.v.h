@@ -27,10 +27,10 @@
 #include "a2x_pack_sheet.v.h"
 
 struct Sprite {
-	int w;
-	int h;
-	Pixel* data;
-	int*** spans;
+    int w;
+    int h;
+    Pixel* data;
+    int*** spans;
     int* spansNum;
     uint8_t alpha;
     Pixel t;

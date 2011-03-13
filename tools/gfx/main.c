@@ -20,14 +20,15 @@ void Main(void)
     char* const cFile = a_args[2];
     char* const hFile = a_args[3];
 
-    File* const gfxFile = a_file_openRead(inputFile);
-    char* const gfxName = a_str_extractName(inputFile);
-
     const int length = a_file_size(inputFile);
+    char* const gfxName = a_str_extractName(inputFile);
     uint8_t* const gfxData = a_file_toBuffer(inputFile);
 
-    File* const h = a_file_openWriteText(hFile);
-    File* const c = a_file_openWriteText(cFile);
+    File* const hf = a_file_open(hFile, "w");
+    File* const cf = a_file_open(cFile, "w");
+
+    FILE* const h = a_file_file(hf);
+    FILE* const c = a_file_file(cf);
 
     // header
 
@@ -51,8 +52,8 @@ void Main(void)
 
     fprintf(c, "\n};\n");
 
-    a_file_close(h);
-    a_file_close(c);
+    a_file_close(hf);
+    a_file_close(cf);
 
     free(gfxName);
     free(gfxData);
