@@ -67,8 +67,8 @@ void a2x__defaults(void)
     add(BOOL, SET_ONCE, "fixWizTear", "0");
 
     add(INT, SET_ANY, "mhz", "0");
-    add(INT, SET_ONCE, "width", "0");
-    add(INT, SET_ONCE, "height", "0");
+    add(INT, SET_ONCE, "width", "320");
+    add(INT, SET_ONCE, "height", "240");
     add(INT, SET_ONCE, "fps", "60");
     add(INT, SET_ANY, "musicScale", "100");
     add(INT, SET_ANY, "sfxScale", "100");
