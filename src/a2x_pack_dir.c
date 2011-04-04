@@ -48,7 +48,7 @@ Dir* a_dir_openFilter(const char* const path, int (*filter)(const struct dirent*
     d->current = NULL;
 
     for(int i = d->num; i--; ) {
-        char* const file = a_str_merge(3, path, "/", dlist[i]->d_name);
+        char* const file = a_str_merge(path, "/", dlist[i]->d_name);
         a_list_addFirst(d->files, file);
 
         free(dlist[i]);

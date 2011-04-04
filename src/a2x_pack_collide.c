@@ -43,21 +43,23 @@ ColMap* a_colmap_set(const int totalWidth, const int totalHeight, const int grid
 {
     ColMap* const c = malloc(sizeof(ColMap));
 
-    #define nextpow(x) \
-    ({ \
-        int p = 1; \
-        while(p < x) { \
-            p <<= 1; \
-        } \
-        p; \
+    #define a__nextpow(x) \
+    ({                    \
+        int p = 1;        \
+        while(p < x) {    \
+            p <<= 1;      \
+        }                 \
+        p;                \
     })
 
-    const int submapDim = nextpow(gridDim);
+    const int submapDim = a__nextpow(gridDim);
 
     c->submapShift = a_math_log2(submapDim);
 
-    c->w = nextpow(totalWidth) / submapDim;
-    c->h = nextpow(totalHeight) / submapDim;
+    c->w = a__nextpow(totalWidth) / submapDim;
+    c->h = a__nextpow(totalHeight) / submapDim;
+
+    #undef a__nextpow
 
     c->submaps = malloc(c->h * sizeof(List**));
 

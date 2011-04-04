@@ -42,12 +42,21 @@ extern char* a_str_getTok(StringTok* const t);
 #define a_str_equal(s1, s2) (strcmp((s1), (s2)) == 0)
 #define a_str_size(s)       ((strlen(s) + 1) * sizeof(char))
 
-#define a_str_malloc(s) malloc(a_str_size((s)))
-extern void* a_str_malloc2(int count, ...);
+#define a_str_malloc(...)                                               \
+({                                                                      \
+    const char* const a__strs[] = {__VA_ARGS__};                        \
+    a_str__malloc((sizeof(a__strs) / sizeof(a__strs[0])), __VA_ARGS__); \
+})
+extern void* a_str__malloc(int count, ...);
+
+#define a_str_merge(...)                                               \
+({                                                                     \
+    const char* const a__strs[] = {__VA_ARGS__};                       \
+    a_str__merge((sizeof(a__strs) / sizeof(a__strs[0])), __VA_ARGS__); \
+})
+char* a_str__merge(int count, ...);
 
 extern char* a_str_dup(const char* const s);
-
-char* a_str_merge(int count, ...);
 
 extern char* a_str_sub(const char* const s, const int start, const int end);
 

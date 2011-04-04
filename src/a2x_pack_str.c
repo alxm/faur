@@ -93,7 +93,7 @@ char* a_str_getTok(StringTok* const t)
     return t->tok;
 }
 
-void* a_str_malloc2(int count, ...)
+void* a_str__malloc(int count, ...)
 {
     va_list ap;
     int size = 0;
@@ -109,15 +109,7 @@ void* a_str_malloc2(int count, ...)
     return malloc((size + 1) * sizeof(char));
 }
 
-char* a_str_dup(const char* const s)
-{
-    char* const d = a_str_malloc(s);
-    strcpy(d, s);
-
-    return d;
-}
-
-char* a_str_merge(int count, ...)
+char* a_str__merge(int count, ...)
 {
     va_list ap;
     int size = 0;
@@ -142,6 +134,14 @@ char* a_str_merge(int count, ...)
     va_end(ap);
 
     return s;
+}
+
+char* a_str_dup(const char* const s)
+{
+    char* const d = a_str_malloc(s);
+    strcpy(d, s);
+
+    return d;
 }
 
 char* a_str_sub(const char* const s, const int start, const int end)

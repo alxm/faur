@@ -45,14 +45,15 @@ extern ColPoint* a_colpoint_iteratorGet(const ColIterator* const it);
 
 #define a_collide_boxes(x1, y1, w1, h1, x2, y2, w2, h2) \
 (                                                       \
-	!( (y1) >= (y2) + (h2)                              \
-	|| (y2) >= (y1) + (h1)                              \
-	|| (x1) >= (x2) + (w2)                              \
-	|| (x2) >= (x1) + (w1) )                            \
+    !( (y1) >= (y2) + (h2)                              \
+    || (y2) >= (y1) + (h1)                              \
+    || (x1) >= (x2) + (w2)                              \
+    || (x2) >= (x1) + (w1) )                            \
 )
 
-#define a_collide_boxOnScreen(x, y, w, h) (                      \
-	a_collide_boxes((x), (y), (w), (h), 0, 0, a_width, a_height) \
+#define a_collide_boxOnScreen(x, y, w, h)			 \
+(                      						 \
+    a_collide_boxes((x), (y), (w), (h), 0, 0, a_width, a_height) \
 )
 
 extern int a_collide_circles(const int x1, const int y1, const int r1, const int x2, const int y2, const int r2);
