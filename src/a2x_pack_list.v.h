@@ -22,17 +22,19 @@
 
 #include "a2x_pack_list.p.h"
 
-struct ListNode {
-    void* content;
-    struct ListNode* next;
-    struct ListNode* prev;
-};
+#include "a2x_pack_listit.v.h"
 
 struct List {
     ListNode* first;
     ListNode* last;
     ListNode* current;
     int items;
+};
+
+struct ListNode {
+    void* content;
+    struct ListNode* next;
+    struct ListNode* prev;
 };
 
 #define a_list__first(l)         ((l)->first->next->content)
@@ -45,7 +47,5 @@ struct List {
 #define a_list__prev(n)          ((n)->prev)
 #define a_list__getContent(n)    ((n)->content)
 #define a_list__setContent(n, c) ((n)->content = (c))
-
-extern void a_list__iteratorRewind(ListIterator* const it);
 
 #endif // A2X_PACK_LIST_VH

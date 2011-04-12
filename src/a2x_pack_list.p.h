@@ -22,9 +22,8 @@
 
 #include "a2x_app_includes.h"
 
-typedef struct ListNode ListNode;
 typedef struct List List;
-typedef struct ListIterator ListIterator;
+typedef struct ListNode ListNode;
 
 extern List* a_list_set(void);
 
@@ -81,14 +80,5 @@ extern void* a_list_get(const List* const list, const int index);
 
 extern int a_list_size(const List* const list);
 extern int a_list_isEmpty(const List* const list);
-
-extern ListIterator* a_list_setIterator(List* const list);
-extern void a_list_freeIterator(ListIterator* const it);
-extern int a_list_iteratorNext(const ListIterator* const it);
-extern void* a_list_iteratorGet(ListIterator* const it);
-
-#define a_list_iteratorRemove(it) a_list__iteratorRemove(it, 0)
-#define a_list_iteratorRemoveContent(it) a_list__iteratorRemove(it, 1)
-extern void a_list__iteratorRemove(ListIterator* const it, const int freeContent);
 
 #endif // A2X_PACK_LIST_PH

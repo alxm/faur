@@ -19,11 +19,6 @@
 
 #include "a2x_pack_list.v.h"
 
-struct ListIterator {
-    List* list;
-    ListNode* current;
-};
-
 List* a_list_set(void)
 {
     List* const list = malloc(sizeof(List));
@@ -121,18 +116,18 @@ ListNode* a_list_addLast(List* const list, void* const content)
 
 void a_list_remove(List* const list, const void* const v)
 {
-    ListIterator* const it = a_list_setIterator(list);
+    ListIt* const it = a_listit_set(list);
 
-    while(a_list_iteratorNext(it)) {
-        void* const c = a_list_iteratorGet(it);
+    while(a_listit_next(it)) {
+        void* const c = a_listit_get(it);
 
         if(c == v) {
-            a_list_iteratorRemove(it);
+            a_listit_remove(it);
             break;
         }
     }
 
-    a_list_freeIterator(it);
+    a_listit_free(it);
 }
 
 void* a_list__removeFirst(List* const list, const int freeContent)
@@ -239,13 +234,13 @@ void** a_list_getArray(List* const list)
 {
     void** const array = malloc(list->items * sizeof(void*));
 
-    ListIterator* const it = a_list_setIterator(list);
+    ListIt* const it = a_listit_set(list);
 
-    for(int i = 0; a_list_iteratorNext(it); i++) {
-        array[i] = a_list_iteratorGet(it);
+    for(int i = 0; a_listit_next(it); i++) {
+        array[i] = a_listit_get(it);
     }
 
-    a_list_freeIterator(it);
+    a_listit_free(it);
 
     return array;
 }
@@ -291,58 +286,4 @@ int a_list_size(const List* const list)
 int a_list_isEmpty(const List* const list)
 {
     return list->first->next == list->last;
-}
-
-ListIterator* a_list_setIterator(List* const list)
-{
-    ListIterator* const it = malloc(sizeof(ListIterator));
-
-    it->list = list;
-    it->current = list->first;
-
-    return it;
-}
-
-void a_list_freeIterator(ListIterator* const it)
-{
-    free(it);
-}
-
-int a_list_iteratorNext(const ListIterator* const it)
-{
-    return it->current->next != it->list->last;
-}
-
-void* a_list_iteratorGet(ListIterator* const it)
-{
-    it->current = it->current->next;
-
-    return it->current->content;
-}
-
-void a_list__iteratorRemove(ListIterator* const it, const int freeContent)
-{
-    List* const list = it->list;
-    ListNode* const n = it->current;
-
-    // prevents errors when calling from inside an a_list_iterate() loop
-    if(n == list->current) {
-        list->current = n->prev;
-    }
-
-    n->prev->next = n->next;
-    n->next->prev = n->prev;
-
-    list->items--;
-
-    if(freeContent) {
-        free(n->content);
-    }
-
-    free(n);
-}
-
-void a_list__iteratorRewind(ListIterator* const it)
-{
-    it->current = it->current->prev;
 }

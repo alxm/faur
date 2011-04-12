@@ -17,14 +17,13 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_PACK_COLLIDE_VH
-#define A2X_PACK_COLLIDE_VH
+#ifndef A2X_PACK_LISTIT_VH
+#define A2X_PACK_LISTIT_VH
 
-#include "a2x_pack_collide.p.h"
+#include "a2x_pack_listit.p.h"
 
-#include "a2x_pack_fix.v.h"
 #include "a2x_pack_list.v.h"
-#include "a2x_pack_listit.v.h"
-#include "a2x_pack_math.v.h"
 
-#endif // A2X_PACK_COLLIDE_VH
+extern void a_listit__rewind(ListIt* const it);
+
+#endif // A2X_PACK_LISTIT_VH

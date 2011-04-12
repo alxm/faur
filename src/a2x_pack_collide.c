@@ -36,7 +36,7 @@ struct ColPoint {
 
 struct ColIterator {
     ColPoint* callerPoint;
-    ListIterator* points; // list of points in the current submap
+    ListIt* points; // list of points in the current submap
 };
 
 ColMap* a_colmap_set(const int totalWidth, const int totalHeight, const int gridDim)
@@ -168,26 +168,26 @@ ColIterator* a_colpoint_setIterator(ColPoint* const p)
     const int submap_y = a_fix8_fixtoi(p->y) >> colmap->submapShift;
 
     it->callerPoint = p;
-    it->points = a_list_setIterator(colmap->submaps[submap_y][submap_x]);
+    it->points = a_listit_set(colmap->submaps[submap_y][submap_x]);
 
     return it;
 }
 
 void a_colpoint_freeIterator(ColIterator* const it)
 {
-    a_list_freeIterator(it->points);
+    a_listit_free(it->points);
 
     free(it);
 }
 
 int a_colpoint_iteratorNext(ColIterator* const it)
 {
-    if(a_list_iteratorNext(it->points)) {
+    if(a_listit_next(it->points)) {
         // don't return the point we iterate on
-        if(a_list_iteratorGet(it->points) == it->callerPoint) {
+        if(a_listit_get(it->points) == it->callerPoint) {
             return a_colpoint_iteratorNext(it);
         } else {
-            a_list__iteratorRewind(it->points);
+            a_listit__rewind(it->points);
             return 1;
         }
     }
@@ -197,7 +197,7 @@ int a_colpoint_iteratorNext(ColIterator* const it)
 
 ColPoint* a_colpoint_iteratorGet(const ColIterator* const it)
 {
-    return a_list_iteratorGet(it->points);
+    return a_listit_get(it->points);
 }
 
 int a_collide_circles(const int x1, const int y1, const int r1, const int x2, const int y2, const int r2)

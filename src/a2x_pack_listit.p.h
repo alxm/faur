@@ -17,14 +17,22 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_PACK_COLLIDE_VH
-#define A2X_PACK_COLLIDE_VH
+#ifndef A2X_PACK_LISTIT_PH
+#define A2X_PACK_LISTIT_PH
 
-#include "a2x_pack_collide.p.h"
+#include "a2x_app_includes.h"
 
-#include "a2x_pack_fix.v.h"
-#include "a2x_pack_list.v.h"
-#include "a2x_pack_listit.v.h"
-#include "a2x_pack_math.v.h"
+typedef struct ListIt ListIt;
 
-#endif // A2X_PACK_COLLIDE_VH
+#include "a2x_pack_list.p.h"
+
+extern ListIt* a_listit_set(List* const list);
+extern void a_listit_free(ListIt* const it);
+extern int a_listit_next(const ListIt* const it);
+extern void* a_listit_get(ListIt* const it);
+
+#define a_listit_remove(it) a_listit__remove(it, 0)
+#define a_listit_removeContent(it) a_listit__remove(it, 1)
+extern void a_listit__remove(ListIt* const it, const int freeContent);
+
+#endif // A2X_PACK_LISTIT_PH
