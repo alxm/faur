@@ -19,6 +19,8 @@
 
 #include "a2x_pack_str.v.h"
 
+#define A__NULL_STRING "(null)"
+
 struct StringTok {
     char* string;
     char* delims;
@@ -95,45 +97,63 @@ char* a_str_getTok(StringTok* const t)
 
 void* a_str__malloc(int count, ...)
 {
-    va_list ap;
+    va_list args;
     int size = 0;
 
-    va_start(ap, count);
+    va_start(args, count);
 
     for(int i = count; i--; ) {
-        size += strlen(va_arg(ap, char*));
+        char* const s = va_arg(args, char*);
+
+        if(s) {
+            size += strlen(s);
+        } else {
+            size += strlen(A__NULL_STRING);
+        }
     }
 
-    va_end(ap);
+    va_end(args);
 
     return malloc((size + 1) * sizeof(char));
 }
 
 char* a_str__merge(int count, ...)
 {
-    va_list ap;
+    va_list args;
     int size = 0;
 
-    va_start(ap, count);
+    va_start(args, count);
 
     for(int i = count; i--; ) {
-        size += strlen(va_arg(ap, char*));
+        char* const s = va_arg(args, char*);
+
+        if(s) {
+            size += strlen(s);
+        } else {
+            size += strlen(A__NULL_STRING);
+        }
     }
 
-    va_end(ap);
+    va_end(args);
 
-    char* const s = malloc((size + 1) * sizeof(char));
-    s[0] = '\0';
+    char* const str = malloc((size + 1) * sizeof(char));
+    str[0] = '\0';
 
-    va_start(ap, count);
+    va_start(args, count);
 
     for(int i = count; i--; ) {
-        strcat(s, va_arg(ap, char*));
+        char* const s = va_arg(args, char*);
+
+        if(s) {
+            strcat(str, s);
+        } else {
+            strcat(str, A__NULL_STRING);
+        }
     }
 
-    va_end(ap);
+    va_end(args);
 
-    return s;
+    return str;
 }
 
 char* a_str_dup(const char* const s)
