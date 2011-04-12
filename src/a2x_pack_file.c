@@ -62,6 +62,19 @@ void a_file_close(File* const f)
     free(f);
 }
 
+bool a_file_checkPrefix(File* const f, const char* const prefix)
+{
+    const int len = strlen(prefix);
+
+    char buffer[len + 1];
+    buffer[len] = '\0';
+
+    fseek(f->file, 0, SEEK_SET);
+    fread(buffer, len, 1, f->file);
+
+    return a_str_equal(buffer, prefix);
+}
+
 void a_file_read(File* const f, void* const buffer, const size_t size)
 {
     fread(buffer, size, 1, f->file);

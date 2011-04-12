@@ -27,6 +27,8 @@ typedef struct File File;
 extern File* a_file_open(const char* const path, const char* const modes);
 extern void a_file_close(File* const f);
 
+extern bool a_file_checkPrefix(File* const f, const char* const prefix);
+
 extern void a_file_read(File* const f, void* const buffer, const size_t size);
 extern void a_file_write(File* const f, void* const buffer, const size_t size);
 
