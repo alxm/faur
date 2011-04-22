@@ -1,3 +1,0 @@
-include $(A2X_PATH)/make/platforms/linux
-include $(A2X_PATH)/make/project/files
-include $(A2X_PATH)/make/project/build

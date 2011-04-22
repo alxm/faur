@@ -1,0 +1,3 @@
+include $(A2X_PATH)/bin/make/platforms/wiz
+include $(A2X_PATH)/bin/make/project/files
+include $(A2X_PATH)/bin/make/project/build

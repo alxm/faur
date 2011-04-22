@@ -1,0 +1,3 @@
+include $(A2X_PATH)/bin/make/platforms/caanoo
+include $(A2X_PATH)/bin/make/project/files
+include $(A2X_PATH)/bin/make/project/build

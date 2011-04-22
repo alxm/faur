@@ -1,0 +1,23 @@
+#!/bin/bash
+
+A2X_BIN_DIR=$(readlink -f $(dirname $0)/bin)
+
+if [ $# = "1" -a $1 = "clean" ]
+then
+    COMMAND="clean"
+else
+    COMMAND=
+    echo "Dependencies: SDL, SDL_mixer, libpng"
+    echo "Add $A2X_BIN_DIR to \$PATH"
+fi
+
+cd $A2X_BIN_DIR/make/a2x
+make $COMMAND
+
+cd $A2X_BIN_DIR/tools/gfx
+make $COMMAND
+
+cd $A2X_BIN_DIR/tools/sfx
+make $COMMAND
+
+exit 0

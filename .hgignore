@@ -1,5 +1,7 @@
-.*\.a
-.*\.o
-lib/a2x.h
-tools/a2x_gfx
-tools/a2x_sfx
+syntax: regexp
+
+\.a$
+\.o$
+^bin/lib/a2x.h
+^bin/a2x_gfx
+^bin/a2x_sfx
