@@ -6,7 +6,7 @@ then
     exit 1
 fi
 
-A2X_LOCATION=$(readlink -f $(dirname $0)/..)
+A2X_LOCATION=$(readlink -f $(dirname $0))
 echo "Found a2x: $A2X_LOCATION"
 
 PROJECT_NAME=$(basename $1)
@@ -56,15 +56,15 @@ putline 0 "SRC_DIR = ../src"
 putline 0 "GFX_DIR ="
 putline 0 "SFX_DIR ="
 putline 0 "A2X_PATH = $A2X_LOCATION"
-putline 0 "include \$(A2X_PATH)/bin/make/project/Makefile.linux"
+putline 0 "include \$(A2X_PATH)/make/project/Makefile.linux"
 
 newfile "$PROJECT_PATH/src/main.c"
 putline 0 "#include <a2x.h>"
 putline 0 ""
 putline 0 "void a2x(void)"
 putline 0 "{"
-putline 1 "    a2x_set(\"title\", \"New App\");"
-putline 1 "    a2x_set(\"version\", \"0.1\");"
+putline 1 "    a2x_set(\"title\", \"Sample a2x App\");"
+putline 1 "    a2x_set(\"version\", \"1.0\");"
 putline 1 "    a2x_set(\"author\", \"You\");"
 putline 1 "    a2x_set(\"window\", \"no\");"
 putline 1 "    a2x_set(\"quiet\", \"yes\");"
