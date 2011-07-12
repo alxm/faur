@@ -1,24 +1,24 @@
-#!/bin/bash
+#!/usr/bin/env python
 
-A2X_BIN_DIR=$(readlink -f $(dirname $0))
+import subprocess, sys
 
-if [ "$#" = "1" -a "$1" = "clean" ]
-then
-    COMMAND="clean"
-else
-    COMMAND=
-    echo "Add $A2X_BIN_DIR to \$PATH"
-    echo "Dependencies: SDL, SDL_mixer, libpng"
-    echo "------------------------------------"
-fi
+def main():
+    def call(cmd):
+        subprocess.call(cmd, shell = True)
 
-cd $A2X_BIN_DIR/make/a2x
-make $COMMAND
+    a2x_dir = sys.path[0]
 
-cd $A2X_BIN_DIR/tools/gfx
-make $COMMAND
+    if len(sys.argv) == 2 and sys.argv[1] == "clean":
+        command = "clean"
+    else:
+        command = ""
+        print("Add " + a2x_dir + " to $PATH")
+        print("Dependencies: SDL, SDL_mixer, libpng")
+        print("------------------------------------")
 
-cd $A2X_BIN_DIR/tools/sfx
-make $COMMAND
+    call("cd " + a2x_dir + "/make/a2x; make " + command)
+    call("cd " + a2x_dir + "/tools/gfx; make " + command)
+    call("cd " + a2x_dir + "/tools/sfx; make " + command)
 
-exit 0
+if __name__ == "__main__":
+    main()

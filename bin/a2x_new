@@ -1,80 +1,66 @@
-#!/bin/bash
+#!/usr/bin/env python
 
-if [ $# -ne 1 ]
-then
-    echo "Usage: $(basename $0) ProjectPath"
-    exit 1
-fi
+import os, subprocess, sys
 
-A2X_LOCATION=$(readlink -f $(dirname $0))
-echo "Found a2x: $A2X_LOCATION"
+def main():
+    if len(sys.argv) != 2:
+        print("Usage: " + os.path.basename(sys.argv[0]) + " ProjectPath")
+        return
 
-PROJECT_NAME=$(basename $1)
-PROJECT_PATH=$1
+    a2x_dir = sys.path[0]
 
-FILE=
+    print("Found a2x: " + a2x_dir)
 
-if [ -e $PROJECT_PATH ]
-then
-    echo "Error: \"$PROJECT_NAME\" already exists"
-    exit 1
-fi
+    project_path = sys.argv[1]
+    project_name = os.path.basename(project_path)
 
-newdir()
+    if os.path.exists(project_path):
+        print("Error: " + project_name + " already exists")
+        return
+
+    def newdir(name):
+        print("Making dir: " + name)
+        os.mkdir(name)
+
+    def newfile(name, contents):
+        print("Writing file: " + name)
+
+        with open(name, "w") as f:
+            f.write(contents)
+
+    newdir(project_path)
+    newdir(project_path + "/make")
+    newdir(project_path + "/src")
+
+    newfile(project_path + "/make/Makefile",
+"""APP = {0}
+TARGET_DIR = ..
+SRC_DIR = ../src
+GFX_DIR =
+SFX_DIR =
+A2X_PATH = {1}
+include $(A2X_PATH)/make/project/Makefile.linux
+""".format(project_name, a2x_dir))
+
+    newfile(project_path + "/src/main.c",
+"""#include <a2x.h>
+
+void a2x(void)
 {
-    echo "Making dir: $1"
-    mkdir $1
+    a2x_set("title", "Sample a2x App");
+    a2x_set("version", "1.0");
+    a2x_set("author", "You");
+    a2x_set("window", "no");
+    a2x_set("quiet", "yes");
 }
 
-newfile()
+void Main(void)
 {
-    echo "Writing file: $1"
-    FILE=$1
-    touch $FILE
+    printf("Code me!\\n");
 }
+""")
 
-putline()
-{
-    TABS=
+    print(project_name + " is ready!")
 
-    for i in $(seq 1 $1)
-    do
-        TABS=$TABS"\040\040\040\040"
-    done
-
-    echo -e $TABS$2 >> $FILE
-}
-
-newdir "$PROJECT_PATH"
-newdir "$PROJECT_PATH/make"
-newdir "$PROJECT_PATH/src"
-
-newfile "$PROJECT_PATH/make/Makefile"
-putline 0 "APP = $PROJECT_NAME"
-putline 0 "TARGET_DIR = .."
-putline 0 "SRC_DIR = ../src"
-putline 0 "GFX_DIR ="
-putline 0 "SFX_DIR ="
-putline 0 "A2X_PATH = $A2X_LOCATION"
-putline 0 "include \$(A2X_PATH)/make/project/Makefile.linux"
-
-newfile "$PROJECT_PATH/src/main.c"
-putline 0 "#include <a2x.h>"
-putline 0 ""
-putline 0 "void a2x(void)"
-putline 0 "{"
-putline 1 "    a2x_set(\"title\", \"Sample a2x App\");"
-putline 1 "    a2x_set(\"version\", \"1.0\");"
-putline 1 "    a2x_set(\"author\", \"You\");"
-putline 1 "    a2x_set(\"window\", \"no\");"
-putline 1 "    a2x_set(\"quiet\", \"yes\");"
-putline 0 "}"
-putline 0 ""
-putline 0 "void Main(void)"
-putline 0 "{"
-putline 1 "    printf(\"Code me!\\\n\");"
-putline 0 "}"
-
-echo "$PROJECT_NAME is ready!"
-
-exit 0
+if __name__ == "__main__":
+    main()
