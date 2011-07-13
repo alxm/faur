@@ -1,19 +1,17 @@
 PLATFORM	=	gp2x_open2x
 
-OPEN2X		=	/opt/open2x/gcc-4.1.1-glibc-2.3.6
-
-LIBS 		=	-L$(OPEN2X)/lib \
-				-L$(OPEN2X)/arm-open2x-linux/lib \
+LIBS 		=	-L$(OPEN2X_ROOT)/lib \
+				-L$(OPEN2X_ROOT)/arm-open2x-linux/lib \
 				-lpng12 -lz -lSDL_mixer -lsmpeg -lmikmod -logg -lvorbisidec -lSDL -lpthread -lm -lstdc++ -ldl
 
 CFLAGS		=	-DA_PLATFORM_GP2X=1 \
 				-O3 -s \
  				-msoft-float \
- 				`$(OPEN2X)/bin/sdl-config --cflags` \
- 				-I$(OPEN2X)/include -I$(OPEN2X)/arm-open2x-linux/include
+ 				`$(OPEN2X_ROOT)/bin/sdl-config --cflags` \
+ 				-I$(OPEN2X_ROOT)/include -I$(OPEN2X_ROOT)/arm-open2x-linux/include
 
 PREFIX			:=	arm-open2x-linux-
-export PATH		:=	$(OPEN2X)/bin:$(PATH)
+export PATH		:=	$(OPEN2X_ROOT)/bin:$(PATH)
 export CC		:=	$(PREFIX)gcc
 export CXX		:=	$(PREFIX)g++
 export AS		:=	$(PREFIX)as

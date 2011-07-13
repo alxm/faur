@@ -1,3 +1,4 @@
+include $(A2X_PATH)/make/a2x.config
 include $(A2X_PATH)/make/platforms/caanoo
 include $(A2X_PATH)/make/project/files
 include $(A2X_PATH)/make/project/build

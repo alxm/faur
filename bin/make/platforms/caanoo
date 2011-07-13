@@ -1,24 +1,21 @@
 PLATFORM	=	caanoo
 
-SDK_ROOT	=	/alex/sdk/GPH_SDK
-SDK_GLIBC	=	$(SDK_ROOT)/tools/gcc-4.2.4-glibc-2.7-eabi
-
-LIBS 		=	-L$(SDK_ROOT)/lib/target \
-				-L$(SDK_ROOT)/DGE/lib/target \
-				-L$(SDK_GLIBC)/lib \
-				-L$(SDK_GLIBC)/arm-gph-linux-gnueabi/lib \
+LIBS 		=	-L$(CAANOO_ROOT)/lib/target \
+				-L$(CAANOO_ROOT)/DGE/lib/target \
+				-L$(CAANOO_GLIBC)/lib \
+				-L$(CAANOO_GLIBC)/arm-gph-linux-gnueabi/lib \
 				-lpng12 -lz -lSDL_mixer -lsmpeg -lSDL -lpthread -lm -ldl
 
 CFLAGS		=	-DA_PLATFORM_CAANOO=1 \
 				-O3 -s \
  				-msoft-float \
- 				-I$(SDK_ROOT)/include \
- 				-I$(SDK_ROOT)/DGE/include \
- 				-I$(SDK_GLIBC)/include \
- 				-I$(SDK_GLIBC)/arm-gph-linux-gnueabi/include
+ 				-I$(CAANOO_ROOT)/include \
+ 				-I$(CAANOO_ROOT)/DGE/include \
+ 				-I$(CAANOO_GLIBC)/include \
+ 				-I$(CAANOO_GLIBC)/arm-gph-linux-gnueabi/include
 
 PREFIX			:=	arm-gph-linux-gnueabi-
-export PATH		:=	$(SDK_GLIBC)/bin:$(PATH)
+export PATH		:=	$(CAANOO_GLIBC)/bin:$(PATH)
 export CC		:=	$(PREFIX)gcc
 export CXX		:=	$(PREFIX)g++
 export AS		:=	$(PREFIX)as

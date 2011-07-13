@@ -1,2 +1,3 @@
+include ../a2x.config
 include ../platforms/gp2x
 include general
