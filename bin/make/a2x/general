@@ -21,8 +21,7 @@ $(LIBDIR) :
 	@ mkdir $@
 
 $(HEADER) : $(HFILES)
-	@ echo "Writing header $(notdir $(HEADER))"
-	@ sh ./a2x_header $(C_DIR) $(HEADER)
+	@ ./a2x_header $(C_DIR) $(HEADER)
 
 $(NAME) : $(O_DIR) $(OFILES)
 	@ echo "Building $(notdir $(NAME))"
@@ -44,5 +43,4 @@ cleanheader :
 	@ rm -rf $(HEADER)
 
 tags :
-	@ echo "Writing Geany tags file"
-	@ sh ./a2x_tags $(HEADER)
+	@ ./a2x_tags $(HEADER)

@@ -1,22 +1,27 @@
-#!/bin/bash
+#!/usr/bin/env python
 
-if [ $# -ne 1 ]
-then
-    echo "Usage: $(basename $0) HeaderFile"
-    exit 1
-fi
+import os, subprocess, sys
 
-FILE=$(readlink -f $1)
+def main():
+    if len(sys.argv) != 2:
+        print("Usage: " + os.path.basename(sys.argv[0]) + "HeaderFile")
+        return
 
-geanytags()
-{
-    if [ -d $1 ]
-    then
-        geany -g $1/a2x.c.tags $FILE
-    fi
-}
+    header_file = os.path.abspath(sys.argv[1])
 
-geanytags "~/.geany/tags"
-geanytags "~/.config/geany/tags"
+    def geany_tags(path):
+        path = os.path.expanduser(path)
 
-exit 0
+        print "Looking for " + path
+
+        if os.path.exists(path):
+            print("Writing Geany tags file: " + path)
+
+            subprocess.call("geany -g " + path + "/a2x.c.tags " + header_file,
+                shell = True)
+
+    geany_tags("~/.geany/tags")
+    geany_tags("~/.config/geany/tags")
+
+if __name__ == "__main__":
+    main()

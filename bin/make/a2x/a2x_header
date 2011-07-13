@@ -1,31 +1,28 @@
-#!/bin/bash
+#!/usr/bin/env python
 
-if [ $# -ne 2 ]
-then
-    echo "Usage: $(basename $0) SourceDir HeaderFile"
-    exit 1
-fi
+import os, sys
 
-SRC=$1
-FILE=$2
+def main():
+    if len(sys.argv) != 3:
+        print("Usage: " + os.path.basename(sys.argv[0]) + "SourceDir HeaderFile")
+        return
 
-putline()
-{
-    echo $1 >> $FILE
-}
+    source_dir = os.path.abspath(sys.argv[1])
+    header_file = os.path.abspath(sys.argv[2])
 
-touch $FILE
+    print("Writing header " + os.path.basename(header_file))
 
-putline "#ifndef A2X_H"
-putline "#define A2X_H"
-putline ""
+    with open(header_file, "w") as f:
+        f.write("#ifndef A2X_H\n")
+        f.write("#define A2X_H\n\n")
 
-for f in $SRC/a2x_*.p.h
-do
-    putline "#include \"../../src/$(basename $f)\""
-done
+        headers = [h for h in os.listdir(source_dir) if h[-4 :] == ".p.h"]
+        headers.sort(key = lambda h: h)
 
-putline ""
-putline "#endif // A2X_H"
+        for h in headers:
+            f.write('#include "../../src/' + h + '"\n')
 
-exit 0
+        f.write("\n#endif // A2X_H\n")
+
+if __name__ == "__main__":
+    main()
