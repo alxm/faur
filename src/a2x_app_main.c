@@ -23,14 +23,12 @@
 ({                             \
     a_out("Setting pack " #p); \
     a_##p##__set();            \
-    a_out(#p " set");          \
 })
 
 #define A_PACK_FREE(p)         \
 ({                             \
     a_out("Freeing pack " #p); \
     a_##p##__free();           \
-    a_out(#p " freed");        \
 })
 
 int a_argsNum;

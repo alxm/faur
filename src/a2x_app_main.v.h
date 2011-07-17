@@ -42,21 +42,39 @@
 #include "a2x_pack_state.v.h"
 #include "a2x_pack_time.v.h"
 
-#define a_out(...) \
-({ \
-    if(!a2x_bool("quiet")) { \
-        printf("[ a2x Msg ] "); \
-        printf(__VA_ARGS__); \
-        printf("\n"); \
-    } \
-})
+#if A_PLATFORM_LINUXPC
+    #define a_out(...) \
+    ({ \
+        if(!a2x_bool("quiet")) { \
+            printf("%c[%d;%dm[ a2x Msg ]%c[%dm ", 0x1b, 0, 32, 0x1b, 0); \
+            printf(__VA_ARGS__); \
+            printf("\n"); \
+        } \
+    })
 
-#define a_error(...) \
-({ \
-    fprintf(stderr, "[ a2x Err ] "); \
-    fprintf(stderr, __VA_ARGS__); \
-    fprintf(stderr, "\n"); \
-})
+    #define a_error(...) \
+    ({ \
+        fprintf(stderr, "%c[%d;%dm[ a2x Err ]%c[%dm ", 0x1b, 0, 31, 0x1b, 0); \
+        fprintf(stderr, __VA_ARGS__); \
+        fprintf(stderr, "\n"); \
+    })
+#else
+    #define a_out(...) \
+    ({ \
+        if(!a2x_bool("quiet")) { \
+            printf("[ a2x Msg ] "); \
+            printf(__VA_ARGS__); \
+            printf("\n"); \
+        } \
+    })
+
+    #define a_error(...) \
+    ({ \
+        fprintf(stderr, "[ a2x Err ] "); \
+        fprintf(stderr, __VA_ARGS__); \
+        fprintf(stderr, "\n"); \
+    })
+#endif
 
 #define a_stringify(s)  a__stringify(s)
 #define a__stringify(s) #s
