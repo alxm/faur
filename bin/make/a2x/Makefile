@@ -1,3 +1,3 @@
-include ../a2x.config
+include ../sdk.config
 include ../platforms/linux
 include general

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import subprocess, sys
+import os, re, subprocess, sys
 
 def main():
     def call(cmd):
@@ -8,17 +8,61 @@ def main():
 
     a2x_dir = sys.path[0]
 
+    config_read = a2x_dir + "/../a2x.config"
+    config_write = a2x_dir + "/make/sdk.config"
+
     if len(sys.argv) == 2 and sys.argv[1] == "clean":
         command = "clean"
+        print("Cleaning a2x (removing all compiled and generated files)")
+        print("--------------------------------------------------------")
+
+        if not os.path.exists(config_write):
+            print(os.path.basename(config_write) + " does not exist")
+            print("Run " + sys.argv[0])
+            return
     else:
         command = ""
-        print("Add " + a2x_dir + " to $PATH")
+        print("Installing a2x (compiling and generating files)")
         print("Dependencies: SDL, SDL_mixer, libpng")
-        print("------------------------------------")
+        print("Add " + a2x_dir + " to $PATH")
+        print("-----------------------------------------------")
+
+    if command == "":
+        print("Generating " + os.path.basename(config_write))
+
+        db = {
+            "sdk.open2x.root": ["OPEN2X_ROOT", None],
+            "sdk.open2x.toolchain": ["OPEN2X_GLIBC", None],
+            "sdk.caanoo.root": ["CAANOO_ROOT", None],
+            "sdk.caanoo.toolchain": ["CAANOO_GLIBC", None],
+        }
+
+        with open(config_read, "rU") as f:
+            re_assg = re.compile("(.*?)\s*=\s*(.*)$")
+
+            for line in f:
+                line = line.strip()
+                assg = re_assg.match(line)
+
+                if not assg or line[0] == "#":
+                    continue
+
+                key = assg.group(1)
+
+                if key in db.keys():
+                    db[key][1] = assg.group(2)
+
+        with open(config_write, "w") as f:
+            for key in db:
+                if db[key][1]:
+                    f.write(db[key][0] + " = " + db[key][1] + "\n")
 
     call("cd " + a2x_dir + "/make/a2x; make " + command)
     call("cd " + a2x_dir + "/tools/gfx; make " + command)
     call("cd " + a2x_dir + "/tools/sfx; make " + command)
+
+    if command == "clean":
+        call("rm -f " + config_write)
 
 if __name__ == "__main__":
     main()
