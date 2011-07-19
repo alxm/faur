@@ -3,30 +3,41 @@ a2x
 
 a2x is a light C framework I made to help me write my software faster and easier. It supports desktop Linux, GP2X F-100/200, GP2X Wiz, and Caanoo.
 
+Requirements: GCC, make, Python, SDL, SDL_mixer, libpng. The Open2x toolchain is used for GP2X/Wiz apps, while GPH's SDK is used for Caanoo.
+
 Installation and Use
 --------------------
 
+### Download
+
     $ cd ~
     $ git clone git://github.com/alxm/a2x.git a2x
-    $ bash a2x/bin/a2x_install
+
+### Configure and Build
+
+1. Add `~/a2x/bin` to your `$PATH` variable.
+2. Edit `a2x/a2x.config` with the correct paths of GP2X SDKs.
+3. Call `$ a2x_install` to build a2x. `$ a2x_install clean` deletes all compiled and generated files.
+
+### Test with a Simple Program
 
     $ cd ~
-    $ bash a2x/bin/a2x_new Sample
+    $ a2x_new Simple
     Found a2x: ~/a2x/bin
-    Making dir: Sample
-    Making dir: Sample/make
-    Making dir: Sample/src
-    Writing file: Sample/make/Makefile
-    Writing file: Sample/src/main.c
-    Sample is ready!
-    $ cd Sample/make
+    Making dir: Simple
+    Making dir: Simple/make
+    Making dir: Simple/src
+    Writing file: Simple/make/Makefile
+    Writing file: Simple/src/main.c
+    Simple is ready!
+    $ cd Simple/make
     $ make run
     Compiling main.c
-    Building Sample
-    Running Sample
+    Building Simple
+    Running Simple
     Code me!
 
-**Sample Program**
+### Simple Program
 
     #include <a2x.h>
 
