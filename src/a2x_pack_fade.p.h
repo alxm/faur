@@ -35,7 +35,4 @@ extern void a_fade_fromBlack(const FadeSpeed speed);
 
 extern void a_fade_screens(const Pixel* const old, const FadeSpeed speed);
 
-extern void a_fade_squaresOn(const Pixel c);
-extern void a_fade_squaresOff(const Pixel c);
-
 #endif // A2X_PACK_FADE_PH

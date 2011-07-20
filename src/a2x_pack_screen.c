@@ -38,7 +38,7 @@ static Pixel* a__pixels2;
 static int a__width2;
 static int a__height2;
 
-static Uint32 videoFlags;
+static uint32_t videoFlags;
 static int doubled;
 
 static void setSDLScreen(void);

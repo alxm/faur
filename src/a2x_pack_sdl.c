@@ -21,7 +21,7 @@
 
 void a_sdl__set(void)
 {
-    Uint32 sdlFlags = 0;
+    uint32_t sdlFlags = 0;
 
     if(a2x_bool("window")) {
         sdlFlags |= SDL_INIT_VIDEO;
