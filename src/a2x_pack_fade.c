@@ -21,8 +21,6 @@
 
 #define SCREEN_DIM (a_width * a_height)
 
-#define setSpeed() (speed = FONE8 >> (speed + 1 + a2x_int("fps") / 60))
-
 #define pixel_red1(p)   ((((p) >> (11 + 16)) & a_mask(5)) << 3)
 #define pixel_green1(p) ((((p) >> (5  + 16)) & a_mask(6)) << 2)
 #define pixel_blue1(p)  ((((p) >> (0  + 16)) & a_mask(5)) << 3)
@@ -31,13 +29,13 @@
 #define pixel_green2(p) ((((p) >> (5  + 0 )) & a_mask(6)) << 2)
 #define pixel_blue2(p)  ((((p) >> (0  + 0 )) & a_mask(5)) << 3)
 
-void a_fade_toBlack(FadeSpeed speed)
+void a_fade_toBlack(const int framesDuration)
 {
-    setSpeed();
-
+    int accum = 0;
+    fix8 alpha = FONE8;
     Pixel* const copy = a_screen_dup();
 
-    for(fix8 a = FONE8; a >= 0; a -= speed) {
+    while(alpha >= 0) {
         a_fps_start();
 
         a_screen_copy(a_pixels, copy);
@@ -47,14 +45,30 @@ void a_fade_toBlack(FadeSpeed speed)
             const uint32_t c = *a_pixels2;
 
             *a_pixels2++ = (a_pixel_make(
-                a_fix8_fixtoi(pixel_red1(c)   * a),
-                a_fix8_fixtoi(pixel_green1(c) * a),
-                a_fix8_fixtoi(pixel_blue1(c)  * a)
+                a_fix8_fixtoi(pixel_red1(c)   * alpha),
+                a_fix8_fixtoi(pixel_green1(c) * alpha),
+                a_fix8_fixtoi(pixel_blue1(c)  * alpha)
             ) << 16) | a_pixel_make(
-                a_fix8_fixtoi(pixel_red2(c)   * a),
-                a_fix8_fixtoi(pixel_green2(c) * a),
-                a_fix8_fixtoi(pixel_blue2(c)  * a)
+                a_fix8_fixtoi(pixel_red2(c)   * alpha),
+                a_fix8_fixtoi(pixel_green2(c) * alpha),
+                a_fix8_fixtoi(pixel_blue2(c)  * alpha)
             );
+        }
+
+        if(framesDuration < FONE8) {
+            while(accum < FONE8) {
+                accum += framesDuration;
+                alpha--;
+            }
+
+            accum -= FONE8;
+        } else if(FONE8 <= framesDuration) {
+            accum += FONE8;
+
+            if(accum >= framesDuration) {
+                accum -= framesDuration;
+                alpha--;
+            }
         }
 
         a_fps_end();
@@ -63,13 +77,13 @@ void a_fade_toBlack(FadeSpeed speed)
     free(copy);
 }
 
-void a_fade_fromBlack(FadeSpeed speed)
+void a_fade_fromBlack(const int framesDuration)
 {
-    setSpeed();
-
+    int accum = 0;
+    fix8 alpha = 0;
     Pixel* const copy = a_screen_dup();
 
-    for(fix8 a = 0; a <= FONE8; a += speed) {
+    while(alpha <= FONE8) {
         a_fps_start();
 
         a_screen_copy(a_pixels, copy);
@@ -79,14 +93,30 @@ void a_fade_fromBlack(FadeSpeed speed)
             const uint32_t c = *a_pixels2;
 
             *a_pixels2++ = (a_pixel_make(
-                a_fix8_fixtoi(pixel_red1(c)   * a),
-                a_fix8_fixtoi(pixel_green1(c) * a),
-                a_fix8_fixtoi(pixel_blue1(c)  * a)
+                a_fix8_fixtoi(pixel_red1(c)   * alpha),
+                a_fix8_fixtoi(pixel_green1(c) * alpha),
+                a_fix8_fixtoi(pixel_blue1(c)  * alpha)
             ) << 16) | a_pixel_make(
-                a_fix8_fixtoi(pixel_red2(c)   * a),
-                a_fix8_fixtoi(pixel_green2(c) * a),
-                a_fix8_fixtoi(pixel_blue2(c)  * a)
+                a_fix8_fixtoi(pixel_red2(c)   * alpha),
+                a_fix8_fixtoi(pixel_green2(c) * alpha),
+                a_fix8_fixtoi(pixel_blue2(c)  * alpha)
             );
+        }
+
+        if(framesDuration < FONE8) {
+            while(accum < FONE8) {
+                accum += framesDuration;
+                alpha++;
+            }
+
+            accum -= FONE8;
+        } else if(FONE8 <= framesDuration) {
+            accum += FONE8;
+
+            if(accum >= framesDuration) {
+                accum -= framesDuration;
+                alpha++;
+            }
         }
 
         a_fps_end();
@@ -95,10 +125,8 @@ void a_fade_fromBlack(FadeSpeed speed)
     free(copy);
 }
 
-void a_fade_screens(const Pixel* const old, FadeSpeed speed)
+void a_fade_screens(const Pixel* const old, int framesDuration)
 {
-    setSpeed();
-
     int* rNew = malloc(SCREEN_DIM * sizeof(int));
     int* gNew = malloc(SCREEN_DIM * sizeof(int));
     int* bNew = malloc(SCREEN_DIM * sizeof(int));
@@ -132,7 +160,10 @@ void a_fade_screens(const Pixel* const old, FadeSpeed speed)
         *bOldp++ = a_pixel_blue(oc) - *bNewp++;
     }
 
-    for(fix8 a = FONE8; a >= 0; a -= speed) {
+    int accum = 0;
+    fix8 alpha = FONE8;
+
+    while(alpha >= 0) {
         a_fps_start();
 
         Pixel* dst = a_pixels;
@@ -147,9 +178,9 @@ void a_fade_screens(const Pixel* const old, FadeSpeed speed)
 
         for(int i = SCREEN_DIM; i--; ) {
             *dst++ = a_pixel_make(
-                *rNewp + a_fix8_fixtoi(*rOldp * a),
-                *gNewp + a_fix8_fixtoi(*gOldp * a),
-                *bNewp + a_fix8_fixtoi(*bOldp * a)
+                *rNewp + a_fix8_fixtoi(*rOldp * alpha),
+                *gNewp + a_fix8_fixtoi(*gOldp * alpha),
+                *bNewp + a_fix8_fixtoi(*bOldp * alpha)
             );
 
             rNewp++;
@@ -159,6 +190,22 @@ void a_fade_screens(const Pixel* const old, FadeSpeed speed)
             rOldp++;
             gOldp++;
             bOldp++;
+        }
+
+        if(framesDuration < FONE8) {
+            while(accum < FONE8) {
+                accum += framesDuration;
+                alpha--;
+            }
+
+            accum -= FONE8;
+        } else if(FONE8 <= framesDuration) {
+            accum += FONE8;
+
+            if(accum >= framesDuration) {
+                accum -= framesDuration;
+                alpha--;
+            }
         }
 
         a_fps_end();

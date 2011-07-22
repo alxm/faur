@@ -24,15 +24,9 @@
 
 #include "a2x_pack_pixel.p.h"
 
-typedef enum FadeSpeed {
-    A_FADE_FAST3, A_FADE_FAST2, A_FADE_FAST,
-    A_FADE_NORMAL,
-    A_FADE_SLOW, A_FADE_SLOW2, A_FADE_SLOW3
-} FadeSpeed;
+extern void a_fade_toBlack(const int framesDuration);
+extern void a_fade_fromBlack(const int framesDuration);
 
-extern void a_fade_toBlack(const FadeSpeed speed);
-extern void a_fade_fromBlack(const FadeSpeed speed);
-
-extern void a_fade_screens(const Pixel* const old, const FadeSpeed speed);
+extern void a_fade_screens(const Pixel* const old, const int framesDuration);
 
 #endif // A2X_PACK_FADE_PH
