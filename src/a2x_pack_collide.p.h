@@ -40,7 +40,7 @@ extern void* a_colpoint_getParent(ColPoint* const b);
 
 extern ColIterator* a_colpoint_setIterator(ColPoint* const b);
 extern void a_colpoint_freeIterator(ColIterator* const it);
-extern int a_colpoint_iteratorNext(ColIterator* const it);
+extern bool a_colpoint_iteratorNext(ColIterator* const it);
 extern ColPoint* a_colpoint_iteratorGet(const ColIterator* const it);
 
 #define a_collide_boxes(x1, y1, w1, h1, x2, y2, w2, h2) \
@@ -56,6 +56,6 @@ extern ColPoint* a_colpoint_iteratorGet(const ColIterator* const it);
     a_collide_boxes((x), (y), (w), (h), 0, 0, a_width, a_height) \
 )
 
-extern int a_collide_circles(const int x1, const int y1, const int r1, const int x2, const int y2, const int r2);
+extern bool a_collide_circles(const int x1, const int y1, const int r1, const int x2, const int y2, const int r2);
 
 #endif // A2X_PACK_COLLIDE_PH

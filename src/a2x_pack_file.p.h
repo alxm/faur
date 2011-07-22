@@ -32,15 +32,15 @@ extern bool a_file_checkPrefix(File* const f, const char* const prefix);
 extern void a_file_read(File* const f, void* const buffer, const size_t size);
 extern void a_file_write(File* const f, void* const buffer, const size_t size);
 
-extern int a_file_readLine(File* const f);
+extern bool a_file_readLine(File* const f);
 extern char* a_file_getLine(const File* const f);
 
 extern const char* a_file_path(const File* const f);
 extern const char* a_file_name(const File* const f);
 extern FILE* a_file_file(const File* const f);
 
-extern int a_file_exists(const char* const path);
-extern int a_file_isDir(const char* const f);
+extern bool a_file_exists(const char* const path);
+extern bool a_file_isDir(const char* const f);
 extern int a_file_size(const char* const f);
 
 extern uint8_t* a_file_toBuffer(const char* const path);

@@ -212,17 +212,17 @@ void a_list__removeNode(ListNode* const node, const int freeContent)
     free(node);
 }
 
-int a_list_iterate(List* const list)
+bool a_list_iterate(List* const list)
 {
     ListNode* const n = list->current->next;
 
     if(n == list->last) {
         list->current = list->first;
-        return 0;
+        return false;
     }
 
     list->current = n;
-    return 1;
+    return true;
 }
 
 void a_list_reset(List* const list)
@@ -283,7 +283,7 @@ int a_list_size(const List* const list)
     return a_list__size(list);
 }
 
-int a_list_isEmpty(const List* const list)
+bool a_list_isEmpty(const List* const list)
 {
     return list->first->next == list->last;
 }

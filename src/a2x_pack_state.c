@@ -19,29 +19,29 @@
 
 #include "a2x_pack_state.v.h"
 
-static int changed;
+static bool changed;
 static void (*current)(void) = NULL;
 
 void a_state_go(void (*state)(void))
 {
     current = state;
-    changed = 1;
+    changed = true;
 }
 
 void a_state__run(void)
 {
     while(current) {
-        changed = 0;
+        changed = false;
         current();
     }
 }
 
-int a_state_running(void)
+bool a_state_running(void)
 {
-    static int first = 1;
+    static bool first = true;
 
     if(first) {
-        first = 0;
+        first = false;
     } else {
         a_fps_end();
     }
@@ -49,7 +49,7 @@ int a_state_running(void)
     a_fps_start();
 
     if(changed) {
-        first = 1;
+        first = true;
         a_fps_end();
     }
 

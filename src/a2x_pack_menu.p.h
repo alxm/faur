@@ -41,15 +41,15 @@ extern void a_menu_addItem(Menu* const m, void* const v);
 extern void a_menu_input(Menu* const m);
 
 extern int a_menu_items(const Menu* const m);
-extern int a_menu_iterate(const Menu* const m);
+extern bool a_menu_iterate(const Menu* const m);
 extern void a_menu_iterateReset(const Menu* const m);
 extern void* a_menu_currentItem(const Menu* const m);
-extern int a_menu_isSelected(const Menu* const m);
+extern bool a_menu_isSelected(const Menu* const m);
 extern void a_menu_keepRunning(Menu* const m);
-extern int a_menu_running(const Menu* const m);
-extern int a_menu_finished(const Menu* const m);
-extern int a_menu_accept(const Menu* const m);
-extern int a_menu_cancel(const Menu* const m);
+extern bool a_menu_running(const Menu* const m);
+extern bool a_menu_finished(const Menu* const m);
+extern bool a_menu_accept(const Menu* const m);
+extern bool a_menu_cancel(const Menu* const m);
 extern int a_menu_choice(const Menu* const m);
 
 #endif // A2X_PACK_MENU_PH

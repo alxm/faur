@@ -36,7 +36,7 @@ typedef struct Button {
 } Button;
 
 typedef struct Touch {
-    int tap;
+    bool tap;
     int x;
     int y;
     int shift;
@@ -52,7 +52,7 @@ typedef struct Analog {
 struct Input {
     List* buttons;
     char* name;
-    int working;
+    bool working;
 };
 
 static Hash* buttonNames;
@@ -216,7 +216,7 @@ void a_input__get(void)
         a_list_freeContent(mouse.motion);
     }
 
-    mouse.tap = 0;
+    mouse.tap = false;
 
     Button* const any = a_list__first(buttonList);
     any->pressed = 0;
@@ -292,7 +292,7 @@ void a_input__get(void)
             case SDL_MOUSEBUTTONDOWN: {
                 switch(event.button.button) {
                     case SDL_BUTTON_LEFT:
-                        mouse.tap = 1;
+                        mouse.tap = true;
                         mouse.x = event.button.x;
                         mouse.y = event.button.y;
                     break;
@@ -529,7 +529,7 @@ void a_input_free(Input* const i)
     a_list_remove(inputs, i);
 }
 
-int a_input_get(Input* const i)
+bool a_input_get(Input* const i)
 {
     List* const l = i->buttons;
 
@@ -538,11 +538,11 @@ int a_input_get(Input* const i)
 
         if(b->pressed) {
             a_list_reset(l);
-            return 1;
+            return true;
         }
     }
 
-    return 0;
+    return false;
 }
 
 void a_input_unpress(Input* const i)
@@ -555,14 +555,14 @@ void a_input_unpress(Input* const i)
     }
 }
 
-int a_input_getUnpress(Input* const i)
+bool a_input_getUnpress(Input* const i)
 {
     if(a_input_get(i)) {
         a_input_unpress(i);
-        return 1;
+        return true;
     }
 
-    return 0;
+    return false;
 }
 
 char* a_input_name(const Input* const i)
@@ -570,7 +570,7 @@ char* a_input_name(const Input* const i)
     return i->name;
 }
 
-int a_input_working(const Input* const i)
+bool a_input_working(const Input* const i)
 {
     return i->working;
 }
@@ -585,12 +585,12 @@ void a_input_waitFor(Input* const i)
     } while(!a_input_getUnpress(i));
 }
 
-int a_input_tappedScreen(void)
+bool a_input_tappedScreen(void)
 {
     return mouse.tap;
 }
 
-int a_input_touchedPoint(const int x, const int y)
+bool a_input_touchedPoint(const int x, const int y)
 {
     const int shift = mouse.shift;
 
@@ -601,7 +601,7 @@ int a_input_touchedPoint(const int x, const int y)
         );
 }
 
-int a_input_touchedRect(const int x, const int y, const int w, const int h)
+bool a_input_touchedRect(const int x, const int y, const int w, const int h)
 {
     const int shift = mouse.shift;
 

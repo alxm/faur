@@ -109,7 +109,7 @@ char* a2x_str(const char* const key)
     }
 }
 
-int a2x_bool(const char* const key)
+bool a2x_bool(const char* const key)
 {
     Setting* const s = a_hash_get(settings, key);
 

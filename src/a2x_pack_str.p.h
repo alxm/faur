@@ -35,7 +35,7 @@ typedef struct StringTok StringTok;
 
 extern StringTok* a_str_makeTok(const char* const s, const char* const d);
 extern void a_str_freeTok(StringTok* const t);
-extern int a_str_hasTok(StringTok* const t);
+extern bool a_str_hasTok(StringTok* const t);
 extern char* a_str_getTok(StringTok* const t);
 
 #define a_str_same(s1, s2)  (strcmp((s1), (s2)) == 0)

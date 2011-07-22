@@ -53,7 +53,7 @@ void a_str_freeTok(StringTok* const t)
     free(t);
 }
 
-int a_str_hasTok(StringTok* const t)
+bool a_str_hasTok(StringTok* const t)
 {
     char* const string = t->string;
     const char* const delims = t->delims;
@@ -64,7 +64,7 @@ int a_str_hasTok(StringTok* const t)
 
     while(1) {
         if(string[start] == '\0') {
-            return 0;
+            return false;
         } else if(a_string__isDelim(string[start], delims, numDelims)) {
             start++;
         } else {
@@ -87,7 +87,7 @@ int a_str_hasTok(StringTok* const t)
     free(t->tok);
     t->tok = str;
 
-    return 1;
+    return true;
 }
 
 char* a_str_getTok(StringTok* const t)

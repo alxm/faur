@@ -192,15 +192,14 @@ int a_spriteframes_frameIndex(const SpriteFrames* const sf)
     return sf->current;
 }
 
-int a_spriteframes_onLastFrame(SpriteFrames* const sf)
+bool a_spriteframes_onLastFrame(SpriteFrames* const sf)
 {
     if(sf->frame + sf->num >= sf->framesPerCycle) {
         const int n = sf->current + sf->dir;
-
         return n < 0 || n >= sf->num;
     }
 
-    return 0;
+    return false;
 }
 
 SpriteFrames* a_spriteframes_clone(const SpriteFrames* const src)

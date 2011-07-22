@@ -39,7 +39,7 @@ void a_listit_free(ListIt* const it)
     free(it);
 }
 
-int a_listit_next(const ListIt* const it)
+bool a_listit_next(const ListIt* const it)
 {
     return it->current->next != it->list->last;
 }

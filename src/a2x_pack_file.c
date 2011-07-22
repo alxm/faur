@@ -85,10 +85,10 @@ void a_file_write(File* const f, void* const buffer, const size_t size)
     fwrite(buffer, size, 1, f->file);
 }
 
-int a_file_readLine(File* const f)
+bool a_file_readLine(File* const f)
 {
     if(f->eof) {
-        return 0;
+        return false;
     }
 
     int offset = 1;
@@ -125,10 +125,10 @@ int a_file_readLine(File* const f)
         free(f->line);
         f->line = str;
 
-        return 1;
+        return true;
     }
 
-    return 0;
+    return false;
 }
 
 char* a_file_getLine(const File* const f)
@@ -151,19 +151,19 @@ FILE* a_file_file(const File* const f)
     return f->file;
 }
 
-int a_file_exists(const char* const path)
+bool a_file_exists(const char* const path)
 {
     FILE* const f = fopen(path, "r");
 
     if(f) {
         fclose(f);
-        return 1;
+        return true;
     }
 
-    return 0;
+    return false;
 }
 
-int a_file_isDir(const char* const f)
+bool a_file_isDir(const char* const f)
 {
     struct stat info;
     stat(f, &info);

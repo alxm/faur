@@ -35,7 +35,7 @@ extern const char* a_dir_path(const Dir* const d);
 extern const char* a_dir_name(const Dir* const d);
 extern int a_dir_num(const Dir* const d);
 
-extern int a_dir_exists(const char* const path);
+extern bool a_dir_exists(const char* const path);
 extern void a_dir_make(const char* const path);
 
 #endif // A2X_PACK_DIR_PH

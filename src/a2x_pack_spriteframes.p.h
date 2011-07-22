@@ -47,7 +47,7 @@ extern void a_spriteframes_resume(SpriteFrames* const sf);
 extern void a_spriteframes_reset(SpriteFrames* const sf);
 extern int a_spriteframes_frameIndex(const SpriteFrames* const sf);
 
-extern int a_spriteframes_onLastFrame(SpriteFrames* const sf);
+extern bool a_spriteframes_onLastFrame(SpriteFrames* const sf);
 
 extern SpriteFrames* a_spriteframes_clone(const SpriteFrames* const src);
 extern List* a_spriteframes_sprites(const SpriteFrames* const sf);

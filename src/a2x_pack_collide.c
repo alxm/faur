@@ -180,7 +180,7 @@ void a_colpoint_freeIterator(ColIterator* const it)
     free(it);
 }
 
-int a_colpoint_iteratorNext(ColIterator* const it)
+bool a_colpoint_iteratorNext(ColIterator* const it)
 {
     if(a_listit_next(it->points)) {
         // don't return the point we iterate on
@@ -188,11 +188,11 @@ int a_colpoint_iteratorNext(ColIterator* const it)
             return a_colpoint_iteratorNext(it);
         } else {
             a_listit__rewind(it->points);
-            return 1;
+            return true;
         }
     }
 
-    return 0;
+    return false;
 }
 
 ColPoint* a_colpoint_iteratorGet(const ColIterator* const it)
@@ -200,7 +200,7 @@ ColPoint* a_colpoint_iteratorGet(const ColIterator* const it)
     return a_listit_get(it->points);
 }
 
-int a_collide_circles(const int x1, const int y1, const int r1, const int x2, const int y2, const int r2)
+bool a_collide_circles(const int x1, const int y1, const int r1, const int x2, const int y2, const int r2)
 {
     const int x = x1 - x2;
     const int y = y1 - y2;

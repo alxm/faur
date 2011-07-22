@@ -28,6 +28,6 @@
 extern void a_state_go(void (*state)(void));
 #define a_state_exit() a_state_go(NULL)
 
-extern int a_state_running(void);
+extern bool a_state_running(void);
 
 #endif // A2X_PACK_STATE_PH

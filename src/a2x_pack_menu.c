@@ -205,7 +205,7 @@ int a_menu_items(const Menu* const m)
 }
 
 
-int a_menu_iterate(const Menu* const m)
+bool a_menu_iterate(const Menu* const m)
 {
     return a_list_iterate(m->items);
 }
@@ -220,7 +220,7 @@ void* a_menu_currentItem(const Menu* const m)
     return a_list_current(m->items);
 }
 
-int a_menu_isSelected(const Menu* const m)
+bool a_menu_isSelected(const Menu* const m)
 {
     return a_list_currentNode(m->items) == m->selectedNode;
 }
@@ -230,22 +230,22 @@ void a_menu_keepRunning(Menu* const m)
     m->state = A_MENU_RUNNING;
 }
 
-int a_menu_running(const Menu* const m)
+bool a_menu_running(const Menu* const m)
 {
     return m->state == A_MENU_RUNNING;
 }
 
-int a_menu_finished(const Menu* const m)
+bool a_menu_finished(const Menu* const m)
 {
     return m->state == A_MENU_ACCEPT || m->state == A_MENU_CANCEL;
 }
 
-int a_menu_accept(const Menu* const m)
+bool a_menu_accept(const Menu* const m)
 {
     return m->state == A_MENU_ACCEPT;
 }
 
-int a_menu_cancel(const Menu* const m)
+bool a_menu_cancel(const Menu* const m)
 {
     return m->state == A_MENU_CANCEL;
 }

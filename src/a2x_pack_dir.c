@@ -98,16 +98,16 @@ int a_dir_num(const Dir* const d)
     return d->num;
 }
 
-int a_dir_exists(const char* const path)
+bool a_dir_exists(const char* const path)
 {
     DIR* const d = opendir(path);
 
     if(d) {
         closedir(d);
-        return 1;
+        return true;
     }
 
-    return 0;
+    return false;
 }
 
 void a_dir_make(const char* const path)
