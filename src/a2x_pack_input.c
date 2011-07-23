@@ -172,9 +172,9 @@ void a_input__set(void)
         registerButton("pc.0", SDLK_0);
     #endif
 
-    mouse.shift = a2x_bool("doubleRes");
+    mouse.shift = a2x_bool("video.double");
 
-    if(a2x_bool("trackMouse")) {
+    if(a2x_bool("input.trackMouse")) {
         mouse.motion = a_list_set();
     }
 
@@ -201,7 +201,7 @@ void a_input__free(void)
     a_list_free(buttonList);
     a_hash_free(buttonNames);
 
-    if(a2x_bool("trackMouse")) {
+    if(a2x_bool("input.trackMouse")) {
         a_list_freeContent(mouse.motion);
     }
 
@@ -212,7 +212,7 @@ void a_input__free(void)
 
 void a_input__get(void)
 {
-    if(a2x_bool("trackMouse")) {
+    if(a2x_bool("input.trackMouse")) {
         a_list_freeContent(mouse.motion);
     }
 
@@ -279,7 +279,7 @@ void a_input__get(void)
                 mouse.x = event.button.x;
                 mouse.y = event.button.y;
 
-                if(a2x_bool("trackMouse")) {
+                if(a2x_bool("input.trackMouse")) {
                     Point* const p = malloc(sizeof(Point));
 
                     p->x = mouse.x;
@@ -339,9 +339,9 @@ void a_input__get(void)
         }
 
         if(a_input_getUnpress(doubleRes)) {
-            a2x__flip("doubleRes");
+            a2x__flip("video.double");
             a_screen__doubleRes();
-            mouse.shift = a2x_bool("doubleRes");
+            mouse.shift = a2x_bool("video.double");
         }
     #endif
 

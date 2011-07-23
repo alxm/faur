@@ -45,7 +45,7 @@
 #if A_PLATFORM_LINUXPC
     #define a_out(...) \
     ({ \
-        if(!a2x_bool("quiet")) { \
+        if(!a2x_bool("app.quiet")) { \
             printf("%c[%d;%dm[ a2x Msg ]%c[%dm ", 0x1b, 0, 32, 0x1b, 0); \
             printf(__VA_ARGS__); \
             printf("\n"); \
@@ -61,7 +61,7 @@
 #else
     #define a_out(...) \
     ({ \
-        if(!a2x_bool("quiet")) { \
+        if(!a2x_bool("app.quiet")) { \
             printf("[ a2x Msg ] "); \
             printf(__VA_ARGS__); \
             printf("\n"); \

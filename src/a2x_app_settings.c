@@ -49,29 +49,31 @@ void a2x__defaults(void)
 {
     settings = a_hash_set();
 
-    add(STR, SET_ONCE, "title", "Untitled");
-    add(STR, SET_ONCE, "version", "0");
-    add(STR, SET_ONCE, "author", "Unknown");
-    add(STR, SET_ONCE, "compiled", "?");
-    add(STR, SET_ONCE, "conf", "a2x.cfg");
+    add(STR, SET_ONCE, "app.title", "Untitled");
+    add(STR, SET_ONCE, "app.version", "0");
+    add(STR, SET_ONCE, "app.author", "Unknown");
+    add(STR, SET_ONCE, "app.compiled", "?");
+    add(STR, SET_ONCE, "app.conf", "a2x.cfg");
+    add(BOOL, SET_ANY, "app.quiet", "0");
+    add(BOOL, SET_ONCE, "app.tool", "0");
+    add(BOOL, SET_ONCE, "app.gp2xMenu", "0");
+    add(INT, SET_ANY, "app.mhz", "0");
 
-    add(BOOL, SET_ANY, "quiet", "0");
-    add(BOOL, SET_ONCE, "window", "0");
-    add(BOOL, SET_ONCE, "tool", "0");
-    add(BOOL, SET_ONCE, "gp2xMenu", "0");
-    add(BOOL, SET_ANY, "trackFps", "0");
-    add(BOOL, SET_ANY, "sound", "0");
-    add(BOOL, SET_ANY, "trackMouse", "0");
-    add(BOOL, SET_ONCE, "fakeScreen", "0");
-    add(BOOL, SET_ONCE, "doubleRes", "0");
-    add(BOOL, SET_ONCE, "fixWizTear", "0");
+    add(BOOL, SET_ONCE, "video.window", "0");
+    add(INT, SET_ONCE, "video.width", "320");
+    add(INT, SET_ONCE, "video.height", "240");
+    add(BOOL, SET_ONCE, "video.fake", "0");
+    add(BOOL, SET_ONCE, "video.double", "0");
+    add(BOOL, SET_ONCE, "video.wizTear", "0");
 
-    add(INT, SET_ANY, "mhz", "0");
-    add(INT, SET_ONCE, "width", "320");
-    add(INT, SET_ONCE, "height", "240");
-    add(INT, SET_ONCE, "fps", "60");
-    add(INT, SET_ANY, "musicScale", "100");
-    add(INT, SET_ANY, "sfxScale", "100");
+    add(BOOL, SET_ANY, "sound.on", "0");
+    add(INT, SET_ANY, "sound.musicScale", "100");
+    add(INT, SET_ANY, "sound.sfxScale", "100");
+
+    add(BOOL, SET_ANY, "input.trackMouse", "0");
+
+    add(INT, SET_ONCE, "fps.rate", "60");
+    add(BOOL, SET_ANY, "fps.track", "0");
 }
 
 void a2x_set(const char* const key, const char* const val)

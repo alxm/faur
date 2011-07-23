@@ -47,11 +47,11 @@ include $(A2X_PATH)/make/project/Makefile.linux
 
 void a2x(void)
 {
-    a2x_set("title", "Sample a2x App");
-    a2x_set("version", "1.0");
-    a2x_set("author", "You");
-    a2x_set("window", "no");
-    a2x_set("quiet", "yes");
+    a2x_set("app.title", "a2x Application");
+    a2x_set("app.version", "1.0");
+    a2x_set("app.author", "You");
+    a2x_set("app.quiet", "yes");
+    a2x_set("video.window", "no");
 }
 
 void Main(void)

@@ -33,7 +33,7 @@ static uint32_t counter;
 
 void a_fps__set(void)
 {
-    milisPerFrame = 1000 / a2x_int("fps");
+    milisPerFrame = 1000 / a2x_int("fps.rate");
 
     timer = a_timer_set(milisPerFrame);
     a_timer_start(timer);
@@ -41,11 +41,9 @@ void a_fps__set(void)
     fps = 0;
     max = 0;
 
-    if(a2x_bool("trackFps")) {
-        for(int i = BUFFER_SIZE; i--; ) {
-            fpsBuffer[i] = milisPerFrame;
-            maxBuffer[i] = milisPerFrame;
-        }
+    for(int i = BUFFER_SIZE; i--; ) {
+        fpsBuffer[i] = milisPerFrame;
+        maxBuffer[i] = milisPerFrame;
     }
 
     counter = 0;
@@ -68,7 +66,7 @@ void a_fps_end(void)
 
     a_screen_show();
 
-    const bool track = a2x_bool("trackFps");
+    const bool track = a2x_bool("fps.track");
     const bool done = a_timer_check(timer);
 
     if(track) {

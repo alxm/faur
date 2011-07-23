@@ -43,7 +43,8 @@ int main(int argc, char** argv)
     a2x();
 
     a_out("Opening %s %s by %s, compiled %s",
-        a2x_str("title"), a2x_str("version"), a2x_str("author"), a2x_str("compiled"));
+        a2x_str("app.title"), a2x_str("app.version"),
+        a2x_str("app.author"),a2x_str("app.compiled"));
 
     A_PACK_SET(conf);
     A_PACK_SET(sdl);
@@ -78,10 +79,10 @@ int main(int argc, char** argv)
     A_PACK_FREE(hw);
     A_PACK_FREE(sdl);
 
-    a_out("Closing %s - see you next time.", a2x_str("title"));
+    a_out("Closing %s - see you next time.", a2x_str("app.title"));
 
     #if A_PLATFORM_GP2X || A_PLATFORM_WIZ || A_PLATFORM_CAANOO
-        if(a2x_bool("gp2xMenu")) {
+        if(a2x_bool("app.gp2xMenu")) {
             a_out("Calling gp2xmenu");
 
             chdir("/usr/gp2x");

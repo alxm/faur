@@ -32,7 +32,7 @@ int a__volumeAdjust = -2 * A_MILIS_VOLUME;
 
 void a_sound__set(void)
 {
-    if(a2x_bool("sound")) {
+    if(a2x_bool("sound.on")) {
         musicList = a_list_set();
         sfxList = a_list_set();
 
@@ -46,15 +46,15 @@ void a_sound__set(void)
 
         #if A_PLATFORM_LINUXPC || A_PLATFORM_WINDOWS
             if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096) != 0) {
-                a2x_set("sound", "0");
+                a2x_set("sound.on", "0");
             }
         #elif A_PLATFORM_GP2X
             if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 256) != 0) {
-                a2x_set("sound", "0");
+                a2x_set("sound.on", "0");
             }
         #else
             if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 512) != 0) {
-                a2x_set("sound", "0");
+                a2x_set("sound.on", "0");
             }
         #endif
 
@@ -67,7 +67,7 @@ void a_sound__set(void)
 
 void a_sound__free(void)
 {
-    if(a2x_bool("sound")) {
+    if(a2x_bool("sound.on")) {
         a_music_stop();
 
         while(a_list_iterate(sfxList)) {
@@ -92,14 +92,14 @@ void a_sound__free(void)
 
 Music* a_music_load(const char* const path)
 {
-    if(a2x_bool("sound")) {
+    if(a2x_bool("sound.on")) {
         Music* const m = Mix_LoadMUS(path);
 
         if(!m) {
             a_error(Mix_GetError());
         }
 
-        Mix_VolumeMusic((float)a2x_int("musicScale") / 100 * a__volume);
+        Mix_VolumeMusic((float)a2x_int("sound.musicScale") / 100 * a__volume);
 
         a_list_addLast(musicList, m);
 
@@ -111,7 +111,7 @@ Music* a_music_load(const char* const path)
 
 void a_music_free(Music* const m)
 {
-    if(a2x_bool("sound")) {
+    if(a2x_bool("sound.on")) {
         Mix_FreeMusic(m);
         a_list_remove(musicList, m);
     }
@@ -119,7 +119,7 @@ void a_music_free(Music* const m)
 
 void a_music_play(Music* const m)
 {
-    if(a2x_bool("sound")) {
+    if(a2x_bool("sound.on")) {
         if(m) {
             Mix_PlayMusic(m, -1);
         }
@@ -128,17 +128,17 @@ void a_music_play(Music* const m)
 
 void a_music_stop(void)
 {
-    if(a2x_bool("sound")) {
+    if(a2x_bool("sound.on")) {
         Mix_HaltMusic();
     }
 }
 
 Sound* a_sfx_fromFile(const char* const path)
 {
-    if(a2x_bool("sound")) {
+    if(a2x_bool("sound.on")) {
         Sound* const s = Mix_LoadWAV(path);
 
-        s->volume = (float)a2x_int("sfxScale") / 100 * a__volume;
+        s->volume = (float)a2x_int("sound.sfxScale") / 100 * a__volume;
         a_list_addLast(sfxList, s);
 
         return s;
@@ -149,11 +149,11 @@ Sound* a_sfx_fromFile(const char* const path)
 
 Sound* a_sfx__fromData(const uint16_t* const data, const int size)
 {
-    if(a2x_bool("sound")) {
+    if(a2x_bool("sound.on")) {
         SDL_RWops* const rw = SDL_RWFromMem((void*)data, size);
         Sound* const s = Mix_LoadWAV_RW(rw, 0);
 
-        s->volume = (float)a2x_int("sfxScale") / 100 * a__volume;
+        s->volume = (float)a2x_int("sound.sfxScale") / 100 * a__volume;
         a_list_addLast(sfxList, s);
 
         SDL_FreeRW(rw);
@@ -166,7 +166,7 @@ Sound* a_sfx__fromData(const uint16_t* const data, const int size)
 
 void a_sfx_free(Sound* const s)
 {
-    if(a2x_bool("sound")) {
+    if(a2x_bool("sound.on")) {
         Mix_FreeChunk(s);
         a_list_remove(sfxList, s);
     }
@@ -174,14 +174,14 @@ void a_sfx_free(Sound* const s)
 
 void a_sfx_play(Sound* const s)
 {
-    if(a2x_bool("sound")) {
+    if(a2x_bool("sound.on")) {
         Mix_PlayChannel(-1, s, 0);
     }
 }
 
 void a_sfx_volume(const int v)
 {
-    if(a2x_bool("sound")) {
+    if(a2x_bool("sound.on")) {
         while(a_list_iterate(sfxList)) {
             ((Sound*)a_list_current(sfxList))->volume = v;
         }
@@ -191,7 +191,7 @@ void a_sfx_volume(const int v)
 void a_sound_adjustVolume(void)
 {
     #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
-        if(a2x_bool("sound")) {
+        if(a2x_bool("sound.on")) {
             int adjust = 0;
 
             if(a_input_get(a__volUp)) adjust = 1;
@@ -204,10 +204,10 @@ void a_sound_adjustVolume(void)
                 else if(a__volume < 0) a__volume = 0;
 
                 if(a_list_size(musicList) > 0) {
-                    Mix_VolumeMusic((float)a2x_int("musicScale") / 100 * a__volume);
+                    Mix_VolumeMusic((float)a2x_int("sound.musicScale") / 100 * a__volume);
                 }
 
-                a_sfx_volume((float)a2x_int("sfxScale") / 100 * a__volume);
+                a_sfx_volume((float)a2x_int("sound.sfxScale") / 100 * a__volume);
                 a__volumeAdjust = a_time_getMilis();
             }
         }

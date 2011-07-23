@@ -23,7 +23,7 @@ void a_sdl__set(void)
 {
     uint32_t sdlFlags = 0;
 
-    if(a2x_bool("window")) {
+    if(a2x_bool("video.window")) {
         sdlFlags |= SDL_INIT_VIDEO;
     }
 
@@ -35,7 +35,7 @@ void a_sdl__set(void)
         sdlFlags |= SDL_INIT_JOYSTICK;
     #endif
 
-    if(a2x_bool("sound")) {
+    if(a2x_bool("sound.on")) {
         sdlFlags |= SDL_INIT_AUDIO;
     }
 
