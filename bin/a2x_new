@@ -7,7 +7,7 @@ def main():
         print("Usage: " + os.path.basename(sys.argv[0]) + " ProjectPath")
         return
 
-    a2x_dir = sys.path[0]
+    a2x_dir = os.path.abspath(sys.path[0])
 
     print("Found a2x: " + a2x_dir)
 
