@@ -3,7 +3,7 @@ a2x
 
 a2x is a light C framework I made to help me write my software faster and easier. It supports desktop Linux, GP2X F-100/200, GP2X Wiz, and Caanoo.
 
-**Requirements:** GCC, make, Python, SDL, SDL_mixer, libpng; Open2x toolchain for GP2X/Wiz builds, GPH's SDK for Caanoo builds.
+**Requirements:** GCC, make, Python, SDL 1.2, SDL_mixer 1.2, libpng; Open2x toolchain for GP2X/Wiz builds, GPH's SDK for Caanoo builds.
 
 Installation and Use
 --------------------
@@ -38,17 +38,16 @@ Installation and Use
     Running Simple
     Code me!
 
-### Simple Program
+### A Simple Program
 
     #include <a2x.h>
 
     void a2x(void)
     {
-        a2x_set("app.title", "a2x Application");
+        a2x_set("app.title", "A Simple Program");
         a2x_set("app.version", "1.0");
         a2x_set("app.author", "You");
         a2x_set("app.quiet", "yes");
-        a2x_set("video.window", "no");
     }
 
     void Main(void)

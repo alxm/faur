@@ -46,19 +46,18 @@ include $(A2X_PATH)/make/project/Makefile.linux
 """#include <a2x.h>
 
 void a2x(void)
-{
-    a2x_set("app.title", "a2x Application");
+{{
+    a2x_set("app.title", "{0}");
     a2x_set("app.version", "1.0");
     a2x_set("app.author", "You");
     a2x_set("app.quiet", "yes");
-    a2x_set("video.window", "no");
-}
+}}
 
 void Main(void)
-{
+{{
     printf("Code me!\\n");
-}
-""")
+}}
+""".format(project_name))
 
     print(project_name + " is ready!")
 
