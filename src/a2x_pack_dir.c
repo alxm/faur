@@ -68,6 +68,11 @@ void a_dir_close(Dir* const d)
     free(d);
 }
 
+void a_dir_reverse(Dir* const d)
+{
+    a_list_reverse(d->files);
+}
+
 bool a_dir_iterate(Dir* const d)
 {
     if(a_list_iterate(d->files)) {

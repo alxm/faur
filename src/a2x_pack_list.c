@@ -212,6 +212,22 @@ void a_list__removeNode(ListNode* const node, const int freeContent)
     free(node);
 }
 
+void a_list_reverse(List* const list)
+{
+    ListNode* save;
+
+    for(ListNode* n = list->last; n; n = n->next) {
+        save = n->next;
+        n->next = n->prev;
+        n->prev = save;
+    }
+
+    save = list->first;
+    list->first = list->last;
+    list->last = save;
+    list->current = list->first;
+}
+
 bool a_list_iterate(List* const list)
 {
     ListNode* const n = list->current->next;

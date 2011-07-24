@@ -28,6 +28,8 @@ extern Dir* a_dir_open(const char* const path);
 extern Dir* a_dir_openFilter(const char* const path, int (*filter)(const struct dirent* f));
 extern void a_dir_close(Dir* const d);
 
+extern void a_dir_reverse(Dir* const d);
+
 extern bool a_dir_iterate(Dir* const d);
 extern const char* a_dir_current(const Dir* const d);
 

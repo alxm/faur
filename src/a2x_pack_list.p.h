@@ -60,6 +60,8 @@ extern void a_list__removeNode(ListNode* const node, const int freeContent);
 #define a_list_pop(l)     a_list_removeFirst(l)
 #define a_list_peek(l)    a_list_first(l)
 
+extern void a_list_reverse(List* const list);
+
 extern bool a_list_iterate(List* const list);
 extern void a_list_reset(List* const list);
 
