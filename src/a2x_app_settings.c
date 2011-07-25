@@ -74,6 +74,9 @@ void a2x__defaults(void)
 
     add(INT, SET_ONCE, "fps.rate", "60");
     add(BOOL, SET_ANY, "fps.track", "0");
+
+    add(STR, SET_ONCE, "screenshot.dir", "./screenshots");
+    add(STR, SET_ONCE, "screenshot.button", "pc.F3");
 }
 
 void a2x_set(const char* const key, const char* const val)

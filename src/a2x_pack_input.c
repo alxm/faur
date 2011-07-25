@@ -75,6 +75,8 @@ static List* inputs;
     static Analog caanooAnalog;
 #endif
 
+static Input* screenshot;
+
 static void registerButton(const char* const name, const int code);
 static void registerButtonFake(const char* const name);
 
@@ -168,6 +170,7 @@ void a_input__set(void)
         registerButton("pc.Space", SDLK_SPACE);
         registerButton("pc.F1", SDLK_F1);
         registerButton("pc.F2", SDLK_F2);
+        registerButton("pc.F3", SDLK_F3);
         registerButton("pc.1", SDLK_1);
         registerButton("pc.0", SDLK_0);
     #endif
@@ -182,6 +185,8 @@ void a_input__set(void)
         fullScreen = a_input_set("pc.F1");
         doubleRes = a_input_set("pc.F2");
     #endif
+
+    screenshot = a_input_set(a2x_str("screenshot.button"));
 }
 
 void a_input__free(void)
@@ -330,6 +335,10 @@ void a_input__get(void)
                 }
             }
         }
+    }
+
+    if(a_input_getUnpress(screenshot)) {
+        a_screenshot_save();
     }
 
     // PC-only options

@@ -17,23 +17,11 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_PACK_INPUT_VH
-#define A2X_PACK_INPUT_VH
+#ifndef A2X_PACK_SCREENSHOT_PH
+#define A2X_PACK_SCREENSHOT_PH
 
-#include "a2x_pack_input.p.h"
+#include "a2x_app_includes.h"
 
-#include "a2x_pack_collide.v.h"
-#include "a2x_pack_fps.v.h"
-#include "a2x_pack_hash.v.h"
-#include "a2x_pack_list.v.h"
-#include "a2x_pack_screen.v.h"
-#include "a2x_pack_screenshot.v.h"
-#include "a2x_pack_state.v.h"
-#include "a2x_pack_str.v.h"
+extern void a_screenshot_save(void);
 
-extern void a_input__set(void);
-extern void a_input__free(void);
-
-extern void a_input__get(void);
-
-#endif // A2X_PACK_INPUT_VH
+#endif // A2X_PACK_SCREENSHOT_PH

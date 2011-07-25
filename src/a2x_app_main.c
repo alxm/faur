@@ -51,6 +51,7 @@ int main(int argc, char** argv)
     A_PACK_SET(hw);
     A_PACK_SET(time);
     A_PACK_SET(screen);
+    A_PACK_SET(screenshot);
     A_PACK_SET(pixel);
     A_PACK_SET(draw);
     A_PACK_SET(blit);
