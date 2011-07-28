@@ -20,6 +20,7 @@
 #include "a2x_pack_frametimer.v.h"
 
 struct FrameTimer {
+    bool running;
     uint32_t period;
     uint32_t start;
     uint32_t diff;
@@ -29,6 +30,7 @@ FrameTimer* a_frametimer_set(const uint32_t framesPeriod)
 {
     FrameTimer* const t = malloc(sizeof(FrameTimer));
 
+    t->running = false;
     t->period = framesPeriod;
     t->start = 0;
     t->diff = 0;
@@ -43,11 +45,13 @@ void a_frametimer_free(FrameTimer* const t)
 
 bool a_frametimer_check(FrameTimer* const t)
 {
-    t->diff = a_fps_getCounter() - t->start;
+    if(t->running) {
+        t->diff = a_fps_getCounter() - t->start;
 
-    if(t->diff >= t->period) {
-        t->start += (t->diff / t->period) * t->period;
-        return true;
+        if(t->diff >= t->period) {
+            t->start += (t->diff / t->period) * t->period;
+            return true;
+        }
     }
 
     return false;
@@ -60,5 +64,6 @@ uint32_t a_frametimer_diff(FrameTimer* const t)
 
 void a_frametimer_start(FrameTimer* const t)
 {
+    t->running = true;
     t->start = a_fps_getCounter();
 }

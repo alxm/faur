@@ -20,6 +20,7 @@
 #include "a2x_pack_timer.v.h"
 
 struct Timer {
+    bool running;
     uint32_t period;
     uint32_t start;
     uint32_t diff;
@@ -29,6 +30,7 @@ Timer* a_timer_set(const uint32_t milisPeriod)
 {
     Timer* const t = malloc(sizeof(Timer));
 
+    t->running = false;
     t->period = milisPeriod;
     t->start = 0;
     t->diff = 0;
@@ -43,11 +45,13 @@ void a_timer_free(Timer* const t)
 
 bool a_timer_check(Timer* const t)
 {
-    t->diff = a_time_getMilis() - t->start;
+    if(t->running) {
+        t->diff = a_time_getMilis() - t->start;
 
-    if(t->diff >= t->period) {
-        t->start += (t->diff / t->period) * t->period;
-        return true;
+        if(t->diff >= t->period) {
+            t->start += (t->diff / t->period) * t->period;
+            return true;
+        }
     }
 
     return false;
@@ -60,5 +64,6 @@ uint32_t a_timer_diff(Timer* const t)
 
 void a_timer_start(Timer* const t)
 {
+    t->running = true;
     t->start = a_time_getMilis();
 }
