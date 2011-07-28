@@ -1,5 +1,5 @@
-a2x
-===
+![a2x](https://github.com/alxm/a2x/raw/master/doc/a2x-logo.png "a2x")
+=====================================================================
 
 a2x is a light C framework I made to help me write my software faster and easier. It supports desktop Linux, GP2X F-100/200, GP2X Wiz, and Caanoo.
 
