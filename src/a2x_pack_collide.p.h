@@ -24,7 +24,7 @@
 
 typedef struct ColMap ColMap;
 typedef struct ColPoint ColPoint;
-typedef struct ColIterator ColIterator;
+typedef struct ColIt ColIt;
 
 #include "a2x_pack_fix.p.h"
 
@@ -38,10 +38,10 @@ extern void a_colpoint_setCoords(ColPoint* const b, const fix8 x, const fix8 y);
 extern void a_colpoint_setParent(ColPoint* const b, void* parent);
 extern void* a_colpoint_getParent(ColPoint* const b);
 
-extern ColIterator* a_colpoint_setIterator(ColPoint* const b);
-extern void a_colpoint_freeIterator(ColIterator* const it);
-extern bool a_colpoint_iteratorNext(ColIterator* const it);
-extern ColPoint* a_colpoint_iteratorGet(const ColIterator* const it);
+extern ColIt* a_colit_set(ColPoint* const b);
+extern void a_colit_free(ColIt* const it);
+extern bool a_colit_next(ColIt* const it);
+extern ColPoint* a_colit_get(const ColIt* const it);
 
 #define a_collide_boxes(x1, y1, w1, h1, x2, y2, w2, h2) \
 (                                                       \
@@ -51,8 +51,8 @@ extern ColPoint* a_colpoint_iteratorGet(const ColIterator* const it);
     || (x2) >= (x1) + (w1) )                            \
 )
 
-#define a_collide_boxOnScreen(x, y, w, h)			 \
-(                      						 \
+#define a_collide_boxOnScreen(x, y, w, h)		            	 \
+(                      						                     \
     a_collide_boxes((x), (y), (w), (h), 0, 0, a_width, a_height) \
 )
 

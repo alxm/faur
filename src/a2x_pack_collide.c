@@ -34,7 +34,7 @@ struct ColPoint {
     void* parent; // the object that uses this ColPoint
 };
 
-struct ColIterator {
+struct ColIt {
     ColPoint* callerPoint;
     ListIt* points; // list of points in the current submap
 };
@@ -159,9 +159,9 @@ void* a_colpoint_getParent(ColPoint* const p)
     return p->parent;
 }
 
-ColIterator* a_colpoint_setIterator(ColPoint* const p)
+ColIt* a_colit_set(ColPoint* const p)
 {
-    ColIterator* const it = malloc(sizeof(ColIterator));
+    ColIt* const it = malloc(sizeof(ColIt));
     ColMap* const colmap = p->colmap;
 
     const int submap_x = a_fix8_fixtoi(p->x) >> colmap->submapShift;
@@ -173,19 +173,19 @@ ColIterator* a_colpoint_setIterator(ColPoint* const p)
     return it;
 }
 
-void a_colpoint_freeIterator(ColIterator* const it)
+void a_colit_free(ColIt* const it)
 {
     a_listit_free(it->points);
 
     free(it);
 }
 
-bool a_colpoint_iteratorNext(ColIterator* const it)
+bool a_colit_next(ColIt* const it)
 {
     if(a_listit_next(it->points)) {
         // don't return the point we iterate on
         if(a_listit_get(it->points) == it->callerPoint) {
-            return a_colpoint_iteratorNext(it);
+            return a_colit_next(it);
         } else {
             a_listit__rewind(it->points);
             return true;
@@ -195,7 +195,7 @@ bool a_colpoint_iteratorNext(ColIterator* const it)
     return false;
 }
 
-ColPoint* a_colpoint_iteratorGet(const ColIterator* const it)
+ColPoint* a_colit_get(const ColIt* const it)
 {
     return a_listit_get(it->points);
 }
