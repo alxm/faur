@@ -35,4 +35,8 @@ extern void* a_listit_get(ListIt* const it);
 #define a_listit_removeContent(it) a_listit__remove(it, 1)
 extern void a_listit__remove(ListIt* const it, const int freeContent);
 
+#define ListIterate(list, type, var)                                                   \
+    for(ListIt* a__it = a_listit_set(list); a__it; a_listit_free(a__it), a__it = NULL) \
+        for(type* var; a_listit_next(a__it) && (var = a_listit_get(a__it), true); )
+
 #endif // A2X_PACK_LISTIT_PH
