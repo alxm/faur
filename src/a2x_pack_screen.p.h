@@ -25,29 +25,18 @@
 #include "a2x_pack_pixel.p.h"
 #include "a2x_pack_sprite.p.h"
 
-extern SDL_Surface* a_screen;
 extern Pixel* a_pixels;
 extern int a_width;
 extern int a_height;
 
-#define A_SCREEN_SIZE (a_width * a_height * sizeof(Pixel))
+extern void a_screen_show(void);
 
-#define a_screen_new()          malloc(A_SCREEN_SIZE)
-#define a_screen_copy(dst, src) memcpy((dst), (src), A_SCREEN_SIZE)
+extern Pixel* a_screen_dup(void);
+extern void a_screen_copy(Pixel* const dst, const Pixel* const src);
 extern void a_screen_copyPart(Pixel* dst, const int x, const int y, const int w, const int h);
-
-#define a_screen_dup()                    \
-({                                        \
-    Pixel* const a__dst = a_screen_new(); \
-    a_screen_copy(a__dst, a_pixels);      \
-    a__dst;                               \
-})
 
 extern void a_screen_setTarget(Pixel* const p, const int w, const int h);
 extern void a_screen_setTargetSprite(const Sprite* const s);
 extern void a_screen_resetTarget(void);
-
-extern void a_screen_show(void);
-extern void a_screen_custom(void (*f)(void* const v), void* const v);
 
 #endif // A2X_PACK_SCREEN_PH

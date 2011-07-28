@@ -344,12 +344,12 @@ void a_input__get(void)
     // PC-only options
     #if A_PLATFORM_LINUXPC
         if(a_input_getUnpress(fullScreen)) {
-            a_screen__switchFull();
+            a_screen__full();
         }
 
         if(a_input_getUnpress(doubleRes)) {
             a2x__flip("video.double");
-            a_screen__doubleRes();
+            a_screen__double();
             mouse.shift = a2x_bool("video.double");
         }
     #endif

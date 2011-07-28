@@ -35,8 +35,8 @@ extern void a_screen__set(void);
 extern void a_screen__free(void);
 
 #if A_PLATFORM_LINUXPC || A_PLATFORM_WINDOWS
-    extern void a_screen__switchFull(void);
-    extern void a_screen__doubleRes(void);
+    extern void a_screen__full(void);
+    extern void a_screen__double(void);
 #endif
 
 #endif // A2X_PACK_SCREEN_VH

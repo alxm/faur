@@ -29,24 +29,23 @@
     //#include "../gp2x/flush_uppermem_cache.h"
 #endif
 
-SDL_Surface* a_screen;
+#define A_SCREEN_SIZE (a_width * a_height * sizeof(Pixel))
+
 Pixel* a_pixels;
 int a_width;
 int a_height;
+
+static SDL_Surface* a_screen;
 
 static Pixel* a__pixels2;
 static int a__width2;
 static int a__height2;
 
 static uint32_t videoFlags;
-static int doubled;
 
 static void setSDLScreen(void);
 static void setFakeScreen(void);
 static void displayVolume(void);
-
-static void (*a_screen_customDraw)(void* const v);
-static void* a_screen_customItem;
 
 void a_screen__set(void)
 {
@@ -63,9 +62,7 @@ void a_screen__set(void)
         a2x__set("video.double", "0");
     #endif
 
-    doubled = a2x_bool("video.double");
-
-    if(doubled) {
+    if(a2x_bool("video.double")) {
         a2x__set("video.fake", "1");
     }
 
@@ -111,9 +108,6 @@ void a_screen__set(void)
     a__pixels2 = a_pixels;
     a__width2 = a_width;
     a__height2 = a_height;
-
-    a_screen_customDraw = NULL;
-    a_screen_customItem = NULL;
 }
 
 void a_screen__free(void)
@@ -131,54 +125,8 @@ void a_screen__free(void)
     }
 }
 
-void a_screen_setTarget(Pixel* const p, const int w, const int h)
-{
-    a_pixels = p;
-    a_width = w;
-    a_height = h;
-}
-
-void a_screen_setTargetSprite(const Sprite* const s)
-{
-    a_pixels = s->data;
-    a_width = s->w;
-    a_height = s->h;
-}
-
-void a_screen_resetTarget(void)
-{
-    a_pixels = a__pixels2;
-    a_width = a__width2;
-    a_height = a__height2;
-}
-
-#if A_PLATFORM_LINUXPC || A_PLATFORM_WINDOWS
-    void a_screen__switchFull(void)
-    {
-        videoFlags ^= SDL_FULLSCREEN;
-        setSDLScreen();
-    }
-
-    void a_screen__doubleRes(void)
-    {
-        doubled = a2x_bool("video.double");
-
-        // once this function is called, we switch to fake screen permanently
-        if(!a2x_bool("video.fake")) {
-            setFakeScreen();
-            a2x__set("video.fake", "1");
-        }
-
-        setSDLScreen();
-    }
-#endif
-
 void a_screen_show(void)
 {
-    if(a_screen_customDraw) {
-        a_screen_customDraw(a_screen_customItem);
-    }
-
     displayVolume();
 
     if(a2x_bool("video.wizTear")) {
@@ -209,7 +157,7 @@ void a_screen_show(void)
             SDL_LockSurface(a_screen);
         }
 
-        if(doubled) {
+        if(a2x_bool("video.double")) {
             const Pixel* src = a_pixels;
             uint32_t* dst = (uint32_t*)a_screen->pixels;
 
@@ -254,10 +202,17 @@ void a_screen_show(void)
     #endif
 }
 
-void a_screen_custom(void (*f)(void* const v), void* const v)
+Pixel* a_screen_dup(void)
 {
-    a_screen_customDraw = f;
-    a_screen_customItem = v;
+    Pixel* const dst = malloc(A_SCREEN_SIZE);
+    a_screen_copy(dst, a_pixels);
+
+    return dst;
+}
+
+void a_screen_copy(Pixel* const dst, const Pixel* const src)
+{
+    memcpy(dst, src, A_SCREEN_SIZE);
 }
 
 void a_screen_copyPart(Pixel* dst, const int x, const int y, const int w, const int h)
@@ -271,9 +226,49 @@ void a_screen_copyPart(Pixel* dst, const int x, const int y, const int w, const 
     }
 }
 
+void a_screen_setTarget(Pixel* const p, const int w, const int h)
+{
+    a_pixels = p;
+    a_width = w;
+    a_height = h;
+}
+
+void a_screen_setTargetSprite(const Sprite* const s)
+{
+    a_pixels = s->data;
+    a_width = s->w;
+    a_height = s->h;
+}
+
+void a_screen_resetTarget(void)
+{
+    a_pixels = a__pixels2;
+    a_width = a__width2;
+    a_height = a__height2;
+}
+
+#if A_PLATFORM_LINUXPC || A_PLATFORM_WINDOWS
+    void a_screen__full(void)
+    {
+        videoFlags ^= SDL_FULLSCREEN;
+        setSDLScreen();
+    }
+
+    void a_screen__double(void)
+    {
+        // once this function is called, we switch to fake screen permanently
+        if(!a2x_bool("video.fake")) {
+            setFakeScreen();
+            a2x__set("video.fake", "1");
+        }
+
+        setSDLScreen();
+    }
+#endif
+
 static void setSDLScreen(void)
 {
-    if(doubled) {
+    if(a2x_bool("video.double")) {
         a_screen = SDL_SetVideoMode(a_width * 2, a_height * 2, A_BPP, videoFlags);
     } else {
         a_screen = SDL_SetVideoMode(a_width, a_height, A_BPP, videoFlags);
