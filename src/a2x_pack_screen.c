@@ -204,10 +204,15 @@ void a_screen_show(void)
 
 Pixel* a_screen_dup(void)
 {
-    Pixel* const dst = malloc(A_SCREEN_SIZE);
+    Pixel* const dst = a_screen_new();
     a_screen_copy(dst, a_pixels);
 
     return dst;
+}
+
+Pixel* a_screen_new(void)
+{
+    return malloc(A_SCREEN_SIZE);
 }
 
 void a_screen_copy(Pixel* const dst, const Pixel* const src)

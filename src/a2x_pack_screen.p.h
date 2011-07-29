@@ -32,6 +32,7 @@ extern int a_height;
 extern void a_screen_show(void);
 
 extern Pixel* a_screen_dup(void);
+extern Pixel* a_screen_new(void);
 extern void a_screen_copy(Pixel* const dst, const Pixel* const src);
 extern void a_screen_copyPart(Pixel* dst, const int x, const int y, const int w, const int h);
 
