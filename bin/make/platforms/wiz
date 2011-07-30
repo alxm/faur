@@ -1,17 +1,19 @@
 PLATFORM	=	wiz
 
-LIBS 		=	-L$(OPEN2X_ROOT)/lib \
-				-L$(OPEN2X_ROOT)/arm-open2x-linux/lib \
+OPEN2X		=	$(OPEN2X_ROOT)/$(OPEN2X_GLIBC)
+
+LIBS 		=	-L$(OPEN2X)/lib \
+				-L$(OPEN2X)/arm-open2x-linux/lib \
 				-lpng12 -lz -lSDL_mixer -lsmpeg -lSDL -lpthread -lm -ldl
 
 CFLAGS		=	-DA_PLATFORM_WIZ=1 \
 				-O3 -s \
  				-msoft-float \
- 				`$(OPEN2X_ROOT)/bin/sdl-config --cflags` \
- 				-I$(OPEN2X_ROOT)/include -I$(OPEN2X_ROOT)/arm-open2x-linux/include
+ 				`$(OPEN2X)/bin/sdl-config --cflags` \
+ 				-I$(OPEN2X)/include -I$(OPEN2X)/arm-open2x-linux/include
 
 PREFIX			:=	arm-open2x-linux-
-export PATH		:=	$(OPEN2X_ROOT)/bin:$(PATH)
+export PATH		:=	$(OPEN2X)/bin:$(PATH)
 export CC		:=	$(PREFIX)gcc
 export CXX		:=	$(PREFIX)g++
 export AS		:=	$(PREFIX)as

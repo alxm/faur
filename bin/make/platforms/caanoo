@@ -1,9 +1,11 @@
 PLATFORM	=	caanoo
 
+CAANOO_SDK	=	$(CAANOO_ROOT)/$(CAANOO_GLIBC)
+
 LIBS 		=	-L$(CAANOO_ROOT)/lib/target \
 				-L$(CAANOO_ROOT)/DGE/lib/target \
-				-L$(CAANOO_GLIBC)/lib \
-				-L$(CAANOO_GLIBC)/arm-gph-linux-gnueabi/lib \
+				-L$(CAANOO_SDK)/lib \
+				-L$(CAANOO_SDK)/arm-gph-linux-gnueabi/lib \
 				-lpng12 -lz -lSDL_mixer -lsmpeg -lSDL -lpthread -lm -ldl
 
 CFLAGS		=	-DA_PLATFORM_CAANOO=1 \
@@ -11,11 +13,11 @@ CFLAGS		=	-DA_PLATFORM_CAANOO=1 \
  				-msoft-float \
  				-I$(CAANOO_ROOT)/include \
  				-I$(CAANOO_ROOT)/DGE/include \
- 				-I$(CAANOO_GLIBC)/include \
- 				-I$(CAANOO_GLIBC)/arm-gph-linux-gnueabi/include
+ 				-I$(CAANOO_SDK)/include \
+ 				-I$(CAANOO_SDK)/arm-gph-linux-gnueabi/include
 
 PREFIX			:=	arm-gph-linux-gnueabi-
-export PATH		:=	$(CAANOO_GLIBC)/bin:$(PATH)
+export PATH		:=	$(CAANOO_SDK)/bin:$(PATH)
 export CC		:=	$(PREFIX)gcc
 export CXX		:=	$(PREFIX)g++
 export AS		:=	$(PREFIX)as
