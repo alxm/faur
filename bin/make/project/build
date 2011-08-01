@@ -15,7 +15,7 @@ CFLAGS	+=	-std=gnu99 -Werror \
 
 all : $(NAME)
 
-$(NAME) : $(DIRS) $(C_GFX_FILES) $(C_SFX_FILES) $(OFILES)
+$(NAME) : $(DIRS) $(C_GFX_FILES) $(C_SFX_FILES) $(C_ALL_HEADERS) $(OFILES)
 	@ echo "Building $(APP)"
 	@ $(CC) -o $(NAME) $(OFILES) $(A2X_PATH)/lib/a2x_$(PLATFORM).a $(LIBS)
 
@@ -42,11 +42,11 @@ $(C_SFX_DIR) :
 # pattern rules for building the universe
 #
 
-$(C_GFX_DIR)/%.c : $(GFX_DIR)/%.png
+$(C_GFX_DIR)/gfx_%.c : $(GFX_DIR)/%.png
 	@ echo "Making graphic $(notdir $<)"
 	@ $(A2X_PATH)/a2x_gfx $< $@ $(@:.c=.h)
 
-$(C_SFX_DIR)/%.c : $(SFX_DIR)/%.wav
+$(C_SFX_DIR)/sfx_%.c : $(SFX_DIR)/%.wav
 	@ echo "Making sound $(notdir $<)"
 	@ $(A2X_PATH)/a2x_sfx $< $@ $(@:.c=.h)
 
@@ -61,6 +61,14 @@ $(O_GFX_DIR)/%.o : $(C_GFX_DIR)/%.c
 $(O_SFX_DIR)/%.o : $(C_SFX_DIR)/%.c
 	@ echo "Compiling $(notdir $<)"
 	@ $(CC) -c -o $@ $< $(CFLAGS)
+
+$(C_GFX_HEADER) : $(C_GFX_FILES)
+	@ echo "Making gfx header $(notdir $@)"
+	@ $(A2X_PATH)/a2x_headers $(C_GFX_DIR)
+
+$(C_SFX_HEADER) : $(C_SFX_FILES)
+	@ echo "Making sfx header $(notdir $@)"
+	@ $(A2X_PATH)/a2x_headers $(C_SFX_DIR)
 
 #
 # clean-up rule that deletes all .o files

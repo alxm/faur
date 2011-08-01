@@ -18,12 +18,25 @@ SFX_FILES	= $(notdir $(wildcard $(SFX_DIR)/*.wav))
 C_GFX_DIR	= $(SRC_DIR)/gfx
 C_SFX_DIR	= $(SRC_DIR)/sfx
 
+C_GFX_HEADER	=	$(C_GFX_DIR)/all.h
+C_SFX_HEADER	=	$(C_SFX_DIR)/all.h
+
+C_ALL_HEADERS	=
+
+ifdef GFX_DIR
+	C_ALL_HEADERS	+=	$(C_GFX_HEADER)
+endif
+
+ifdef SFX_DIR
+	C_ALL_HEADERS	+=	$(C_SFX_HEADER)
+endif
+
 #
 # PNG and WAV files in .c form
 #
 
-C_GFX_FILES	= $(addprefix $(C_GFX_DIR)/, $(GFX_FILES:.png=.c))
-C_SFX_FILES	= $(addprefix $(C_SFX_DIR)/, $(SFX_FILES:.wav=.c))
+C_GFX_FILES	= $(addprefix $(C_GFX_DIR)/gfx_, $(GFX_FILES:.png=.c))
+C_SFX_FILES	= $(addprefix $(C_SFX_DIR)/sfx_, $(SFX_FILES:.wav=.c))
 
 #
 # .c source files

@@ -1,0 +1,32 @@
+#!/usr/bin/env python
+
+import os, subprocess, sys
+
+def main():
+    if len(sys.argv) != 2:
+        print("Usage: " + os.path.basename(sys.argv[0]) + " dir")
+        return
+
+    dir = sys.argv[1]
+    dir_name = os.path.basename(dir)
+
+    if not os.path.isdir(dir):
+        print(dir + " is not a dir")
+        return
+
+    contents = "#ifndef H_A2X__" + dir_name + "_ALL_H\n"
+    contents += "#define H_A2X__" + dir_name + "_ALL_H\n\n"
+
+    headers = [h for h in os.listdir(dir) if h[-2 :] == ".h"]
+    headers.sort(key = lambda h: h)
+
+    for h in headers:
+        contents += '#include "' + h + '"\n'
+
+    contents += "\n#endif // H_A2X__" + dir_name + "_ALL_H\n"
+
+    with open(dir + "/all.h", "w") as f:
+        f.write(contents)
+
+if __name__ == "__main__":
+    main()
