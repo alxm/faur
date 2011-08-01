@@ -2,17 +2,17 @@
 
 void a2x(void)
 {
-	a2x_set("title", "a2x_gfx");
-	a2x_set("version", "0.2");
-	a2x_set("author", "Alex");
-	a2x_set("window", "no");
-	a2x_set("quiet", "yes");
+	a2x_set("app.title", "a2x_gfx");
+	a2x_set("app.version", "0.2");
+	a2x_set("app.author", "Alex");
+	a2x_set("app.quiet", "yes");
+	a2x_set("video.window", "no");
 }
 
 void Main(void)
 {
     if(a_argsNum != 4) {
-        printf("Error: %s inputFile file.c file.h", a_args[0]);
+        printf("Error: %s inputFile file.c file.h\n", a_args[0]);
         return;
     }
 
@@ -32,13 +32,13 @@ void Main(void)
 
     // header
 
-    fprintf(h, "#ifndef H_%s_H\n", gfxName);
-    fprintf(h, "#define H_%s_H\n\n", gfxName);
+    fprintf(h, "#ifndef H_A2X_GFX_%s_H\n", gfxName);
+    fprintf(h, "#define H_A2X_GFX_%s_H\n\n", gfxName);
 
     fprintf(h, "#include <stdint.h>\n\n");
     fprintf(h, "extern uint8_t gfx_%s[];\n\n", gfxName);
 
-    fprintf(h, "#endif\n");
+    fprintf(h, "#endif // H_A2X_GFX_%s_H\n", gfxName);
 
     // body
 
