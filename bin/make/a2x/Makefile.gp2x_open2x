@@ -1,3 +1,0 @@
-include ../sdk.config
-include ../platforms/gp2x_open2x
-include general
