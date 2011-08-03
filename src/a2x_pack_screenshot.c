@@ -38,7 +38,7 @@ void a_screenshot_save(void)
     int number = 1;
 
     if(a_dir_iterate(dir)) {
-        const char* const file = a_dir_current(dir);
+        const char* const file = a_dir_current(dir)[0];
 
         int start = a_str_lastIndex(file, '-');
         int end = a_str_lastIndex(file, '.');

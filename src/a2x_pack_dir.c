@@ -24,8 +24,13 @@ struct Dir {
     char* name;
     List* files;
     int num;
-    char* current;
+    const char** current;
 };
+
+typedef struct DirEntry {
+    char* name;
+    char* full;
+} DirEntry;
 
 static int defaultFilter(const struct dirent* f);
 
@@ -45,12 +50,15 @@ Dir* a_dir_openFilter(const char* const path, int (*filter)(const struct dirent*
     d->name = a_str_getSuffixLastFind(path, '/');
     d->files = a_list_set();
     d->num = a_math_max(0, numFiles);
-    d->current = NULL;
+    d->current = malloc(2 * sizeof(char*));
 
     for(int i = d->num; i--; ) {
-        char* const file = a_str_merge(path, "/", dlist[i]->d_name);
-        a_list_addFirst(d->files, file);
+        DirEntry* const e = malloc(sizeof(DirEntry));
 
+        e->name = a_str_dup(dlist[i]->d_name);
+        e->full = a_str_merge(path, "/", e->name);
+
+        a_list_addFirst(d->files, e);
         free(dlist[i]);
     }
 
@@ -63,7 +71,15 @@ void a_dir_close(Dir* const d)
 {
     free(d->path);
     free(d->name);
-    a_list_freeContent(d->files);
+
+    ListIterate(d->files, DirEntry, e) {
+        free(e->name);
+        free(e->full);
+        free(e);
+    }
+
+    a_list_free(d->files);
+    free(d->current);
 
     free(d);
 }
@@ -76,14 +92,18 @@ void a_dir_reverse(Dir* const d)
 bool a_dir_iterate(Dir* const d)
 {
     if(a_list_iterate(d->files)) {
-        d->current = a_list_current(d->files);
+        DirEntry* const e = a_list_current(d->files);
+
+        d->current[0] = e->name;
+        d->current[1] = e->full;
+
         return true;
     }
 
     return false;
 }
 
-const char* a_dir_current(const Dir* const d)
+const char** a_dir_current(const Dir* const d)
 {
     return d->current;
 }

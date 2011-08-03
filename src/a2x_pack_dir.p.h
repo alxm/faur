@@ -31,7 +31,11 @@ extern void a_dir_close(Dir* const d);
 extern void a_dir_reverse(Dir* const d);
 
 extern bool a_dir_iterate(Dir* const d);
-extern const char* a_dir_current(const Dir* const d);
+extern const char** a_dir_current(const Dir* const d);
+
+#define DirIterate(dir, name, path)                                                     \
+    for(const char** a__pair; a_dir_iterate(dir) && (a__pair = a_dir_current(dir)); )   \
+        for(const char const *name = a__pair[0], *path = a__pair[1]; name; name = NULL)
 
 extern const char* a_dir_path(const Dir* const d);
 extern const char* a_dir_name(const Dir* const d);
