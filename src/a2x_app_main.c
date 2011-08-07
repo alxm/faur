@@ -39,8 +39,9 @@ int main(int argc, char** argv)
     a_argsNum = argc;
     a_args = argv;
 
-    a2x__defaults();
+    a_settings__defaults();
     a2x();
+    a_settings__freeze();
 
     a_out("Opening %s %s by %s, compiled %s",
         a2x_str("app.title"), a2x_str("app.version"),

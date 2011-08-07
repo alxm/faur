@@ -33,19 +33,20 @@ typedef struct Setting {
 
     union {
         int integer;
-        int boolean;
+        bool boolean;
         char string[64];
     } value;
 } Setting;
 
 static Hash* settings;
+static bool frozen = false;
 
 static void add(Setting_t const type, const Update_t update, const char* const key, const char* const val);
 static int parseBool(const char* const val);
 static void set(const char* const key, const char* const val, const int respect);
 static void flip(const char* const key, const int respect);
 
-void a2x__defaults(void)
+void a_settings__defaults(void)
 {
     settings = a_hash_set();
 
@@ -77,6 +78,11 @@ void a2x__defaults(void)
 
     add(STR, SET_ONCE, "screenshot.dir", "./screenshots");
     add(STR, SET_ONCE, "screenshot.button", "pc.F3");
+}
+
+void a_settings__freeze(void)
+{
+    frozen = true;
 }
 
 void a2x_set(const char* const key, const char* const val)
@@ -186,7 +192,8 @@ static void set(const char* const key, const char* const val, const int respect)
     if(s == NULL) {
         a_error("Setting '%s' does not exist", key);
         return;
-    } else if(s->update == SET_FROZEN && respect) {
+    } else if(respect
+        && (s->update == SET_FROZEN || (s->update == SET_ONCE && frozen))) {
         a_error("Setting '%s' is frozen", key);
         return;
     }
@@ -216,12 +223,19 @@ static void flip(const char* const key, const int respect)
 
     if(s == NULL) {
         a_error("Setting '%s' does not exist", key);
+        return;
     } else if(s->type != BOOL) {
         a_error("Setting '%s' is not a boolean - can't flip it", key);
-    } else if(s->update == SET_FROZEN && respect) {
+        return;
+    } else if(respect
+        && (s->update == SET_FROZEN || (s->update == SET_ONCE && frozen))) {
         a_error("Setting '%s' is frozen", key);
         return;
-    } else {
-        s->value.boolean ^= 1;
+    }
+
+    s->value.boolean ^= 1;
+
+    if(s->update == SET_ONCE) {
+        s->update = SET_FROZEN;
     }
 }

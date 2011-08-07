@@ -27,7 +27,8 @@
 #include "a2x_pack_hash.v.h"
 #include "a2x_pack_str.v.h"
 
-extern void a2x__defaults(void);
+extern void a_settings__defaults(void);
+extern void a_settings__freeze(void);
 
 extern void a2x__set(const char* const key, const char* const val);
 extern void a2x__flip(const char* const key);
