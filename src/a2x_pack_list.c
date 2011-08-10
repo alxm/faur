@@ -41,7 +41,7 @@ List* a_list_set(void)
     return list;
 }
 
-void a_list__free(List* const list, const int freeContent)
+void a_list__free(List* const list, const bool freeContent)
 {
     ListNode* n = list->first->next;
 
@@ -61,7 +61,7 @@ void a_list__free(List* const list, const int freeContent)
     free(list);
 }
 
-void a_list__empty(List* const list, const int freeContent)
+void a_list__empty(List* const list, const bool freeContent)
 {
     ListNode* n = list->first->next;
 
@@ -130,7 +130,7 @@ void a_list_remove(List* const list, const void* const v)
     a_listit_free(it);
 }
 
-void* a_list__removeFirst(List* const list, const int freeContent)
+void* a_list__removeFirst(List* const list, const bool freeContent)
 {
     ListNode* const n = list->first->next;
 
@@ -157,7 +157,7 @@ void* a_list__removeFirst(List* const list, const int freeContent)
     return v;
 }
 
-void* a_list__removeLast(List* const list, const int freeContent)
+void* a_list__removeLast(List* const list, const bool freeContent)
 {
     ListNode* const n = list->last->prev;
 
@@ -182,7 +182,7 @@ void* a_list__removeLast(List* const list, const int freeContent)
     return v;
 }
 
-void a_list__removeCurrent(List* const list, const int freeContent)
+void a_list__removeCurrent(List* const list, const bool freeContent)
 {
     ListNode* const n = list->current;
 
@@ -200,7 +200,7 @@ void a_list__removeCurrent(List* const list, const int freeContent)
     free(n);
 }
 
-void a_list__removeNode(ListNode* const node, const int freeContent)
+void a_list__removeNode(ListNode* const node, const bool freeContent)
 {
     node->prev->next = node->next;
     node->next->prev = node->prev;
