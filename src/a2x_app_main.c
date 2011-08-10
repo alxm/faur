@@ -64,12 +64,14 @@ int main(int argc, char** argv)
     A_PACK_SET(fix);
     A_PACK_SET(font);
     A_PACK_SET(mem);
+    A_PACK_SET(state);
 
     a_out("Opening Main()");
     Main();
     a_state__run();
     a_out("Main() closed");
 
+    A_PACK_FREE(state);
     A_PACK_FREE(mem);
     A_PACK_FREE(sound);
     A_PACK_FREE(input);

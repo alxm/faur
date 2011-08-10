@@ -19,24 +19,89 @@
 
 #include "a2x_pack_state.v.h"
 
-static bool changed;
-static void (*current)(void) = NULL;
+typedef void (*StateFunction)(void);
 
-void a_state_go(void (*state)(void))
+typedef struct StateInstance {
+    StateFunction function;
+} StateInstance;
+
+static Hash* functions;
+static List* stack;
+
+static bool changed;
+
+void a_state__set(void)
 {
-    current = state;
-    changed = true;
+    functions = a_hash_set();
+    stack = a_list_set();
+
+    changed = false;
+}
+
+void a_state__free(void)
+{
+    a_hash_free(functions);
+    a_list_free(stack);
 }
 
 void a_state__run(void)
 {
-    while(current) {
+    while(!a_list_isEmpty(stack)) {
         changed = false;
-        current();
+        ((StateInstance*)a_list_peek(stack))->function();
     }
 }
 
-bool a_state_running(void)
+void a_state_add(const char* const name, void (*function)(void))
+{
+    a_hash_add(functions, name, function);
+}
+
+void a_state_push(const char* const name)
+{
+    StateFunction function = a_hash_get(functions, name);
+
+    if(function == NULL) {
+        a_error("No state '%s'", name);
+        return;
+    }
+
+    changed = true;
+
+    StateInstance* const s = malloc(sizeof(StateInstance));
+
+    s->function = function;
+
+    a_list_push(stack, s);
+}
+
+void a_state_pop(void)
+{
+    changed = true;
+
+    StateInstance* const s = a_list_pop(stack);
+
+    free(s);
+}
+
+void a_state_replace(const char* const name)
+{
+    if(a_hash_get(functions, name) == NULL) {
+        a_error("No state '%s'", name);
+        return;
+    }
+
+    a_state_pop();
+    a_state_push(name);
+}
+
+void a_state_exit(void)
+{
+    changed = true;
+    a_list_empty(stack);
+}
+
+bool a_state_unchanged(void)
 {
     static bool first = true;
 

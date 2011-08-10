@@ -22,12 +22,17 @@
 
 #include "a2x_app_includes.h"
 
-#define State(state) void state(void)
-#define StateLoop while(a_state_running())
+extern void a_state_add(const char* const name, void (*function)(void));
 
-extern void a_state_go(void (*state)(void));
-#define a_state_exit() a_state_go(NULL)
+extern void a_state_push(const char* const name);
+extern void a_state_pop(void);
 
-extern bool a_state_running(void);
+extern void a_state_replace(const char* const name);
+extern void a_state_exit(void);
+
+extern bool a_state_unchanged(void);
+
+#define State(state_name) void state_name(void)
+#define StateLoop while(a_state_unchanged())
 
 #endif // A2X_PACK_STATE_PH
