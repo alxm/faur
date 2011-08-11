@@ -47,7 +47,7 @@ extern int a_font_width(const int index, const char* const text);
 
 #define a_font_textf(align, x, y, f, ...) \
 ({                                        \
-    String256 a__s;                       \
+    char a__s[256];                       \
     sprintf(a__s, __VA_ARGS__);           \
     a_font_text(align, x, y, f, a__s);    \
 })

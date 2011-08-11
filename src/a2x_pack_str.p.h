@@ -22,21 +22,12 @@
 
 #include "a2x_app_includes.h"
 
-typedef char String8  [8];
-typedef char String16 [16];
-typedef char String32 [32];
-typedef char String64 [64];
-typedef char String100[100];
-typedef char String128[128];
-typedef char String256[256];
-typedef char String512[512];
-
 typedef struct StringTok StringTok;
 
-extern StringTok* a_str_makeTok(const char* const s, const char* const d);
-extern void a_str_freeTok(StringTok* const t);
-extern bool a_str_hasTok(StringTok* const t);
-extern char* a_str_getTok(StringTok* const t);
+extern StringTok* a_strtok_set(const char* const s, const char* const d);
+extern void a_strtok_free(StringTok* const t);
+extern bool a_strtok_next(StringTok* const t);
+extern char* a_strtok_get(StringTok* const t);
 
 #define a_str_same(s1, s2)  (strcmp((s1), (s2)) == 0)
 #define a_str_equal(s1, s2) (strcmp((s1), (s2)) == 0)

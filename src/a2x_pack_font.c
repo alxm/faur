@@ -250,7 +250,7 @@ int a_font_safe(const FontAlign align, int x, const int y, const int index, cons
 
 int a_font_int(const FontAlign align, const int x, const int y, const int f, const int number)
 {
-    String16 s;
+    char s[16];
     sprintf(s, "%d", number);
 
     return a_font_text(align, x, y, f, s);
@@ -258,7 +258,7 @@ int a_font_int(const FontAlign align, const int x, const int y, const int f, con
 
 int a_font_float(const FontAlign align, const int x, const int y, const int f, const float number)
 {
-    String64 s;
+    char s[64];
     sprintf(s, "%f", number);
 
     return a_font_text(align, x, y, f, s);

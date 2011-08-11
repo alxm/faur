@@ -31,7 +31,7 @@ struct StringTok {
 
 static int a_string__isDelim(const char c, const char* const d, const int n);
 
-StringTok* a_str_makeTok(const char* const s, const char* const d)
+StringTok* a_strtok_set(const char* const s, const char* const d)
 {
     StringTok* const t = malloc(sizeof(StringTok));
 
@@ -44,7 +44,7 @@ StringTok* a_str_makeTok(const char* const s, const char* const d)
     return t;
 }
 
-void a_str_freeTok(StringTok* const t)
+void a_strtok_free(StringTok* const t)
 {
     free(t->string);
     free(t->delims);
@@ -53,7 +53,7 @@ void a_str_freeTok(StringTok* const t)
     free(t);
 }
 
-bool a_str_hasTok(StringTok* const t)
+bool a_strtok_next(StringTok* const t)
 {
     char* const string = t->string;
     const char* const delims = t->delims;
@@ -90,7 +90,7 @@ bool a_str_hasTok(StringTok* const t)
     return true;
 }
 
-char* a_str_getTok(StringTok* const t)
+char* a_strtok_get(StringTok* const t)
 {
     return t->tok;
 }

@@ -69,7 +69,7 @@ void a_screen__set(void)
     setSDLScreen();
 
     #if A_PLATFORM_LINUXPC
-        String64 caption;
+        char caption[64];
         sprintf(caption, "%s %s", a2x_str("app.title"), a2x_str("app.version"));
         SDL_WM_SetCaption(caption, NULL);
     #else

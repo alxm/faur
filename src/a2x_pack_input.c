@@ -497,14 +497,14 @@ void a_input__get(void)
 Input* a_input_set(const char* const names)
 {
     Input* const i = malloc(sizeof(Input));
-    StringTok* const t = a_str_makeTok(names, ", ");
+    StringTok* const t = a_strtok_set(names, ", ");
 
     i->buttons = a_list_set();
     i->name = NULL;
 
-    while(a_str_hasTok(t)) {
+    while(a_strtok_next(t)) {
         List* const l = buttonList;
-        const char* const name = a_str_getTok(t);
+        const char* const name = a_strtok_get(t);
 
         while(a_list_iterate(l)) {
             Button* const b = a_list_current(l);
@@ -519,7 +519,7 @@ Input* a_input_set(const char* const names)
         }
     }
 
-    a_str_freeTok(t);
+    a_strtok_free(t);
 
     i->working = a_list_size(i->buttons) > 0;
 
