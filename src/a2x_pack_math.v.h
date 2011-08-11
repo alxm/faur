@@ -22,6 +22,6 @@
 
 #include "a2x_pack_math.p.h"
 
-extern void a_math__set(void);
+extern void a_math__init(void);
 
 #endif // A2X_PACK_MATH_VH

@@ -30,7 +30,7 @@ struct StringTok {
 
 static bool is_delim(const char c, const char* const d, const int n);
 
-StringTok* a_strtok_set(const char* const s, const char* const d)
+StringTok* a_strtok_new(const char* const s, const char* const d)
 {
     StringTok* const t = malloc(sizeof(StringTok));
 

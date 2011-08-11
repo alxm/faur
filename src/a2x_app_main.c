@@ -19,10 +19,10 @@
 
 #include "a2x_app_main.v.h"
 
-#define A_PACK_SET(p)          \
+#define A_PACK_INIT(p)         \
 ({                             \
-    a_out("Setting pack " #p); \
-    a_##p##__set();            \
+    a_out("Initing pack " #p); \
+    a_##p##__init();           \
 })
 
 #define A_PACK_FREE(p)         \
@@ -47,24 +47,24 @@ int main(int argc, char** argv)
         a2x_str("app.title"), a2x_str("app.version"),
         a2x_str("app.author"),a2x_str("app.compiled"));
 
-    A_PACK_SET(conf);
-    A_PACK_SET(sdl);
-    A_PACK_SET(hw);
-    A_PACK_SET(time);
-    A_PACK_SET(screen);
-    A_PACK_SET(screenshot);
-    A_PACK_SET(pixel);
-    A_PACK_SET(draw);
-    A_PACK_SET(blit);
-    A_PACK_SET(sprite);
-    A_PACK_SET(fps);
-    A_PACK_SET(input);
-    A_PACK_SET(sound);
-    A_PACK_SET(math);
-    A_PACK_SET(fix);
-    A_PACK_SET(font);
-    A_PACK_SET(mem);
-    A_PACK_SET(state);
+    A_PACK_INIT(conf);
+    A_PACK_INIT(sdl);
+    A_PACK_INIT(hw);
+    A_PACK_INIT(time);
+    A_PACK_INIT(screen);
+    A_PACK_INIT(screenshot);
+    A_PACK_INIT(pixel);
+    A_PACK_INIT(draw);
+    A_PACK_INIT(blit);
+    A_PACK_INIT(sprite);
+    A_PACK_INIT(fps);
+    A_PACK_INIT(input);
+    A_PACK_INIT(sound);
+    A_PACK_INIT(math);
+    A_PACK_INIT(fix);
+    A_PACK_INIT(font);
+    A_PACK_INIT(mem);
+    A_PACK_INIT(state);
 
     a_out("Opening Main()");
     Main();
@@ -88,7 +88,6 @@ int main(int argc, char** argv)
     #if A_PLATFORM_GP2X || A_PLATFORM_WIZ || A_PLATFORM_CAANOO
         if(a2x_bool("app.gp2xMenu")) {
             a_out("Calling gp2xmenu");
-
             chdir("/usr/gp2x");
             execl("gp2xmenu", "gp2xmenu", NULL);
         }

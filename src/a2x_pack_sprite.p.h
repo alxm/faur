@@ -27,10 +27,10 @@ typedef struct Sprite Sprite;
 #include "a2x_pack_pixel.p.h"
 #include "a2x_pack_sheet.p.h"
 
-#define a_sprite_make(g, x, y, w, h) a_sprite_makeZoomed((g), (x), (y), (w), (h), 1)
-extern Sprite* a_sprite_makeZoomed(const Sheet* const graphic, const int x, const int y, const int w, const int h, const int zoom);
-extern Sprite* a_sprite_makeBlank(const int w, const int h);
-extern void a_sprite_makeTransparent(Sprite* const s);
+#define a_sprite_new(g, x, y, w, h) a_sprite_newZoomed((g), (x), (y), (w), (h), 1)
+extern Sprite* a_sprite_newZoomed(const Sheet* const graphic, const int x, const int y, const int w, const int h, const int zoom);
+extern Sprite* a_sprite_newBlank(const int w, const int h);
+extern void a_sprite_newTransparent(Sprite* const s);
 extern void a_sprite_free(Sprite* const s);
 extern Sprite* a_sprite_clone(const Sprite* const src);
 extern int a_sprite_w(const Sprite* const s);

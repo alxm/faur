@@ -36,7 +36,7 @@ struct Sprite {
     Pixel t;
 };
 
-extern void a_sprite__set(void);
+extern void a_sprite__init(void);
 extern void a_sprite__free(void);
 
 #define a_sprite__getPixel(s, x, y) (*((s)->data + (y) * (s)->w + (x)))

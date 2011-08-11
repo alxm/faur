@@ -26,7 +26,7 @@
 #include "a2x_pack_screen.v.h"
 #include "a2x_pack_sprite.v.h"
 
-extern void a_blit__set(void);
+extern void a_blit__init(void);
 
 extern void a_blit__setBlend(const PixelBlend_t b);
 extern void a_blit__setClip(const bool c);

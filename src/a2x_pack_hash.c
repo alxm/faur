@@ -40,7 +40,7 @@ struct Hash {
     s &= A_HASH_NUM - 1;            \
 })
 
-Hash* a_hash_set(void)
+Hash* a_hash_new(void)
 {
     Hash* const h = malloc(sizeof(Hash));
 

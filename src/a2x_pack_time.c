@@ -33,7 +33,7 @@
     static volatile uint32_t* memregs;
 #endif
 
-void a_time__set(void)
+void a_time__init(void)
 {
     #if A_PLATFORM_WIZ || A_PLATFORM_CAANOO
         memfd = open("/dev/mem", O_RDWR);

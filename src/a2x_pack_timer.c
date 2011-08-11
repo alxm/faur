@@ -26,7 +26,7 @@ struct Timer {
     uint32_t diff;
 };
 
-Timer* a_timer_set(const uint32_t milisPeriod)
+Timer* a_timer_new(const uint32_t milisPeriod)
 {
     Timer* const t = malloc(sizeof(Timer));
 

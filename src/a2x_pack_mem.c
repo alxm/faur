@@ -21,9 +21,9 @@
 
 static List* a__memTracker;
 
-void a_mem__set(void)
+void a_mem__init(void)
 {
-    a__memTracker = a_list_set();
+    a__memTracker = a_list_new();
 }
 
 void a_mem__free(void)

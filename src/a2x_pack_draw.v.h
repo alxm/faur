@@ -26,7 +26,7 @@
 #include "a2x_pack_pixel.v.h"
 #include "a2x_pack_screen.v.h"
 
-extern void a_draw__set(void);
+extern void a_draw__init(void);
 
 extern void a_draw__setBlend(const PixelBlend_t b);
 extern void a_draw__setClip(const bool c);

@@ -28,23 +28,23 @@ typedef struct ColIt ColIt;
 
 #include "a2x_pack_fix.p.h"
 
-extern ColMap* a_colmap_set(const int totalWidth, const int totalHeight, const int gridDim);
+extern ColMap* a_colmap_new(const int totalWidth, const int totalHeight, const int gridDim);
 extern void a_colmap_free(ColMap* const c);
 
-extern ColPoint* a_colpoint_set(ColMap* const colmap);
+extern ColPoint* a_colpoint_new(ColMap* const colmap);
 extern void a_colpoint_free(ColPoint* const c);
 
 extern void a_colpoint_setCoords(ColPoint* const b, const fix8 x, const fix8 y);
 extern void a_colpoint_setParent(ColPoint* const b, void* parent);
 extern void* a_colpoint_getParent(ColPoint* const b);
 
-extern ColIt* a_colit_set(ColPoint* const b);
+extern ColIt* a_colit_new(ColPoint* const b);
 extern void a_colit_free(ColIt* const it);
 extern bool a_colit_next(ColIt* const it);
 extern ColPoint* a_colit_get(const ColIt* const it);
 
 #define ColIterate(colpoint, var)                                                       \
-    for(ColIt* a__ci = a_colit_set(colpoint); a__ci; a_colit_free(a__ci), a__ci = NULL) \
+    for(ColIt* a__ci = a_colit_new(colpoint); a__ci; a_colit_free(a__ci), a__ci = NULL) \
         for(ColPoint* var; a_colit_next(a__ci) && (var = a_colit_get(a__ci)); )
 
 #define a_collide_boxes(x1, y1, w1, h1, x2, y2, w2, h2) \

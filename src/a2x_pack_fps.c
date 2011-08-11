@@ -31,11 +31,11 @@ static uint32_t maxBuffer[BUFFER_SIZE];
 
 static uint32_t counter;
 
-void a_fps__set(void)
+void a_fps__init(void)
 {
     milisPerFrame = 1000 / a2x_int("fps.rate");
 
-    timer = a_timer_set(milisPerFrame);
+    timer = a_timer_new(milisPerFrame);
     a_timer_start(timer);
 
     fps = 0;

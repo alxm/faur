@@ -19,7 +19,7 @@
 
 #include "a2x_pack_conf.v.h"
 
-void a_conf__set(void)
+void a_conf__init(void)
 {
     a_out("You can edit %s", a2x_str("app.conf"));
 

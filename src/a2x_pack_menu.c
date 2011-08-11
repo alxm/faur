@@ -46,11 +46,11 @@ struct Menu {
 
 #define A_MENU_PAUSE (a2x_int("fps.rate") / 6)
 
-Menu* a_menu_set(Input* const next, Input* const back, Input* const select, Input* const cancel, void (*freeItem)(void* v))
+Menu* a_menu_new(Input* const next, Input* const back, Input* const select, Input* const cancel, void (*freeItem)(void* v))
 {
     Menu* const m = malloc(sizeof(Menu));
 
-    m->items = a_list_set();
+    m->items = a_list_new();
     m->freeItem = freeItem;
 
     m->selectedNode = NULL;

@@ -27,7 +27,7 @@
 
 typedef struct SpriteLayers SpriteLayers;
 
-extern SpriteLayers* a_spritelayers_make(void);
+extern SpriteLayers* a_spritelayers_new(void);
 extern void a_spritelayers_free(SpriteLayers* const s);
 
 extern void a_spritelayers_add(SpriteLayers* const s, Sprite* const sprite, const PixelBlend_t blend, const uint8_t r, const uint8_t g, const uint8_t b, const uint8_t a);

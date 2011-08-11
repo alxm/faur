@@ -24,7 +24,7 @@ struct ListIt {
     ListNode* current;
 };
 
-ListIt* a_listit_set(List* const list)
+ListIt* a_listit_new(List* const list)
 {
     ListIt* const it = malloc(sizeof(ListIt));
 

@@ -31,7 +31,7 @@
 #include "a2x_pack_state.v.h"
 #include "a2x_pack_strtok.v.h"
 
-extern void a_input__set(void);
+extern void a_input__init(void);
 extern void a_input__free(void);
 
 extern void a_input__get(void);

@@ -37,7 +37,7 @@
     static int mmuHackOn = 0;
 #endif
 
-void a_hw__set(void)
+void a_hw__init(void)
 {
     #if A_PLATFORM_GP2X
         if(a_file_exists("./mmuhack.o")) {

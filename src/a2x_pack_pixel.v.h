@@ -96,6 +96,6 @@
     *dst = ~*dst;             \
 })
 
-extern void a_pixel__set(void);
+extern void a_pixel__init(void);
 
 #endif // A2X_PACK_PIXEL_VH

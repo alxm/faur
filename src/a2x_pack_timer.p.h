@@ -24,7 +24,7 @@
 
 typedef struct Timer Timer;
 
-extern Timer* a_timer_set(const uint32_t milisPeriod);
+extern Timer* a_timer_new(const uint32_t milisPeriod);
 extern void a_timer_free(Timer* const t);
 
 extern bool a_timer_check(Timer* const t);

@@ -19,7 +19,7 @@
 
 #include "a2x_pack_sdl.v.h"
 
-void a_sdl__set(void)
+void a_sdl__init(void)
 {
     uint32_t sdlFlags = 0;
 

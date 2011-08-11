@@ -30,10 +30,10 @@ static List* stack;
 
 static bool changed;
 
-void a_state__set(void)
+void a_state__init(void)
 {
-    functions = a_hash_set();
-    stack = a_list_set();
+    functions = a_hash_new();
+    stack = a_list_new();
 
     changed = false;
 }

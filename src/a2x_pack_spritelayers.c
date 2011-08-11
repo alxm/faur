@@ -31,11 +31,11 @@ struct Layer {
     uint8_t r, g, b, a;
 };
 
-SpriteLayers* a_spritelayers_make(void)
+SpriteLayers* a_spritelayers_new(void)
 {
     SpriteLayers* const s = malloc(sizeof(SpriteLayers));
 
-    s->layers = a_list_set();
+    s->layers = a_list_new();
 
     return s;
 }

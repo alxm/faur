@@ -48,7 +48,7 @@ static void flip(const char* const key, const int respect);
 
 void a_settings__defaults(void)
 {
-    settings = a_hash_set();
+    settings = a_hash_new();
 
     add(STR, SET_ONCE, "app.title", "Untitled");
     add(STR, SET_ONCE, "app.version", "0");

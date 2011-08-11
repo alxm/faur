@@ -30,11 +30,11 @@ struct SpriteFrames {
     int paused;
 };
 
-SpriteFrames* a_spriteframes_make(const int framesPerCycle)
+SpriteFrames* a_spriteframes_new(const int framesPerCycle)
 {
     SpriteFrames* const a = malloc(sizeof(SpriteFrames));
 
-    a->sprites = a_list_set();
+    a->sprites = a_list_new();
     a->spriteArray = NULL;
 
     a->num = 0;
@@ -51,7 +51,7 @@ SpriteFrames* a_spriteframes_make(const int framesPerCycle)
 
 SpriteFrames* a_spriteframes_fromSheet(const Sheet* const sh, const int x, const int y, const int framesPerCycle)
 {
-    SpriteFrames* const sf = a_spriteframes_make(framesPerCycle);
+    SpriteFrames* const sf = a_spriteframes_new(framesPerCycle);
 
     const int width = sh->w;
     const int height = sh->h;
@@ -74,7 +74,7 @@ SpriteFrames* a_spriteframes_fromSheet(const Sheet* const sh, const int x, const
                     const int w = sheetx - last_sheetx;
                     const int h = sheety - y;
 
-                    Sprite* const sprite = a_sprite_make(sh, last_sheetx, y, w, h);
+                    Sprite* const sprite = a_sprite_new(sh, last_sheetx, y, w, h);
                     a_list_addLast(sf->sprites, sprite);
 
                     break;
@@ -204,7 +204,7 @@ bool a_spriteframes_onLastFrame(SpriteFrames* const sf)
 
 SpriteFrames* a_spriteframes_clone(const SpriteFrames* const src)
 {
-    SpriteFrames* const sf = a_spriteframes_make(src->framesPerCycle);
+    SpriteFrames* const sf = a_spriteframes_new(src->framesPerCycle);
 
     while(a_list_iterate(src->sprites)) {
         a_spriteframes_add(sf, a_list_current(src->sprites));

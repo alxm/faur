@@ -24,7 +24,7 @@
 
 typedef struct Hash Hash;
 
-extern Hash* a_hash_set(void);
+extern Hash* a_hash_new(void);
 extern void a_hash_free(Hash* const h);
 extern void a_hash_freeContent(Hash* const h);
 extern void a_hash_add(Hash* const h, const char* const key, void* const content);

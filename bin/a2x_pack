@@ -57,7 +57,7 @@ def main():
 """
 #include "a2x_pack_{0}.v.h"
 
-void a_{0}__set(void)
+void a_{0}__init(void)
 {{
     //
 }}
@@ -87,7 +87,7 @@ void a_{0}__free(void)
 
 #include "a2x_pack_{1}.p.h"
 
-extern void a_{1}__set(void);
+extern void a_{1}__init(void);
 extern void a_{1}__free(void);
 
 //

@@ -25,6 +25,6 @@
 #include "a2x_pack_dir.v.h"
 #include "a2x_pack_png.v.h"
 
-extern void a_screenshot__set(void);
+extern void a_screenshot__init(void);
 
 #endif // A2X_PACK_SCREENSHOT_VH

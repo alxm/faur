@@ -24,7 +24,7 @@
 
 typedef struct FrameTimer FrameTimer;
 
-extern FrameTimer* a_frametimer_set(const uint32_t framesPeriod);
+extern FrameTimer* a_frametimer_new(const uint32_t framesPeriod);
 extern void a_frametimer_free(FrameTimer* const t);
 
 extern bool a_frametimer_check(FrameTimer* const t);

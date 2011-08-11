@@ -28,7 +28,7 @@ typedef struct Menu Menu;
 #include "a2x_pack_sound.p.h"
 #include "a2x_pack_sprite.p.h"
 
-extern Menu* a_menu_set(Input* const next, Input* const back, Input* const select, Input* const cancel, void (*freeItem)(void* v));
+extern Menu* a_menu_new(Input* const next, Input* const back, Input* const select, Input* const cancel, void (*freeItem)(void* v));
 extern void a_menu_free(Menu* const m);
 
 extern void a_menu_addInput(Menu* const m, void (*input)(struct Menu* const m, void* const v));

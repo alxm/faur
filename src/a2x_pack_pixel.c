@@ -52,7 +52,7 @@ pixelMake(rgb50, (PIXEL_DST, red, green, blue))
 pixelMake(rgb75, (PIXEL_DST, red, green, blue))
 pixelMake(inverse, (PIXEL_DST))
 
-void a_pixel__set(void)
+void a_pixel__init(void)
 {
     #define pixelInit(index, blend)                 \
     ({                                              \

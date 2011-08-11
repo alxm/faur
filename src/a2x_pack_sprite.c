@@ -26,9 +26,9 @@ typedef struct Span {
 
 static List* sprites;
 
-void a_sprite__set(void)
+void a_sprite__init(void)
 {
-    sprites = a_list_set();
+    sprites = a_list_new();
 }
 
 void a_sprite__free(void)
@@ -40,12 +40,12 @@ void a_sprite__free(void)
     a_list_free(sprites);
 }
 
-Sprite* a_sprite_makeZoomed(const Sheet* const graphic, const int x, const int y, const int w, const int h, const int zoom)
+Sprite* a_sprite_newZoomed(const Sheet* const graphic, const int x, const int y, const int w, const int h, const int zoom)
 {
     const int spritew = w * zoom;
     const int spriteh = h * zoom;
 
-    Sprite* const s = a_sprite_makeBlank(spritew, spriteh);
+    Sprite* const s = a_sprite_newBlank(spritew, spriteh);
 
     const int wp = graphic->w;
     const Pixel* const data = graphic->data;
@@ -70,12 +70,12 @@ Sprite* a_sprite_makeZoomed(const Sheet* const graphic, const int x, const int y
 
     s->t = graphic->transparent;
 
-    a_sprite_makeTransparent(s);
+    a_sprite_newTransparent(s);
 
     return s;
 }
 
-Sprite* a_sprite_makeBlank(const int w, const int h)
+Sprite* a_sprite_newBlank(const int w, const int h)
 {
     Sprite* const s = malloc(sizeof(Sprite));
 
@@ -104,7 +104,7 @@ Sprite* a_sprite_makeBlank(const int w, const int h)
     return s;
 }
 
-void a_sprite_makeTransparent(Sprite* const s)
+void a_sprite_newTransparent(Sprite* const s)
 {
     const Pixel tpixel = s->t;
 
@@ -122,7 +122,7 @@ void a_sprite_makeTransparent(Sprite* const s)
     }
 
     for(int i = 0; i < spriteh; i++) {
-        List* const spans = a_list_set();
+        List* const spans = a_list_new();
 
         int start = 0;
         int transparent = 1;

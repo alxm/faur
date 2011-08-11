@@ -47,7 +47,7 @@ static void setSDLScreen(void);
 static void setFakeScreen(void);
 static void displayVolume(void);
 
-void a_screen__set(void)
+void a_screen__init(void)
 {
     if(!a2x_bool("video.window")) {
         return;

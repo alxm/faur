@@ -77,7 +77,4 @@
     })
 #endif
 
-#define a_stringify(s)  a__stringify(s)
-#define a__stringify(s) #s
-
 #endif // A2X_APP_MAIN_VH

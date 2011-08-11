@@ -230,7 +230,7 @@ shapeMakeAll(inverse, (dst))
     drawSet(vline);     \
 })
 
-void a_draw__set(void)
+void a_draw__init(void)
 {
     #define shapeInit(shape, index, blend)                     \
     ({                                                         \

@@ -187,7 +187,7 @@ blitterMake(
     (dst)
 )
 
-void a_blit__set(void)
+void a_blit__init(void)
 {
     #define blitterInit(index, blend)                       \
     ({                                                      \

@@ -24,7 +24,7 @@
 
 #include "a2x_pack_list.v.h"
 
-extern void a_mem__set(void);
+extern void a_mem__init(void);
 extern void a_mem__free(void);
 
 #endif // A2X_PACK_MEM_VH

@@ -26,7 +26,7 @@
 #include "a2x_pack_hash.v.h"
 #include "a2x_pack_list.v.h"
 
-extern void a_state__set(void);
+extern void a_state__init(void);
 extern void a_state__free(void);
 
 extern void a_state__run(void);

@@ -28,6 +28,6 @@
 #include "a2x_pack_file.v.h"
 #include "a2x_pack_str.v.h"
 
-extern void a_conf__set(void);
+extern void a_conf__init(void);
 
 #endif // A2X_PACK_CONF_VH

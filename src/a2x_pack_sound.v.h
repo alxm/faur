@@ -29,7 +29,7 @@
 #include "a2x_pack_list.v.h"
 #include "a2x_pack_mem.v.h"
 
-extern void a_sound__set(void);
+extern void a_sound__init(void);
 extern void a_sound__free(void);
 
 #endif // A2X_PACK_SOUND_VH

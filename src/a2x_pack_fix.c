@@ -25,7 +25,7 @@ fix12 a_fix12_Cos[A_ANGLES_NUM];
 fix8 a_fix8_Sin[A_ANGLES_NUM];
 fix8 a_fix8_Cos[A_ANGLES_NUM];
 
-void a_fix__set(void)
+void a_fix__init(void)
 {
     for(int a = 0; a < A_ANGLES_NUM; a++) {
 		a_fix12_Sin[a] = a_fix12_ftofix(a_math_sin(a));

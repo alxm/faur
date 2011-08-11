@@ -24,7 +24,7 @@
 
 #include "a2x_app_main.v.h"
 
-extern void a_sdl__set(void);
+extern void a_sdl__init(void);
 extern void a_sdl__free(void);
 
 #endif // A2X_PACK_SDL_VH

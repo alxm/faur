@@ -25,7 +25,7 @@
 typedef struct List List;
 typedef struct ListNode ListNode;
 
-extern List* a_list_set(void);
+extern List* a_list_new(void);
 
 #define a_list_free(list) a_list__free(list, 0)
 #define a_list_freeContent(list) a_list__free(list, 1)

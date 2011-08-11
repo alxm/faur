@@ -19,7 +19,7 @@
 
 #include "a2x_pack_list.v.h"
 
-List* a_list_set(void)
+List* a_list_new(void)
 {
     List* const list = malloc(sizeof(List));
     ListNode* const first = malloc(sizeof(ListNode));
@@ -116,7 +116,7 @@ ListNode* a_list_addLast(List* const list, void* const content)
 
 void a_list_remove(List* const list, const void* const v)
 {
-    ListIt* const it = a_listit_set(list);
+    ListIt* const it = a_listit_new(list);
 
     while(a_listit_next(it)) {
         void* const c = a_listit_get(it);
@@ -250,7 +250,7 @@ void** a_list_getArray(List* const list)
 {
     void** const array = malloc(list->items * sizeof(void*));
 
-    ListIt* const it = a_listit_set(list);
+    ListIt* const it = a_listit_new(list);
 
     for(int i = 0; a_listit_next(it); i++) {
         array[i] = a_listit_get(it);

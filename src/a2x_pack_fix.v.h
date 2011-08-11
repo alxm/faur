@@ -24,6 +24,6 @@
 
 #include "a2x_pack_math.v.h"
 
-extern void a_fix__set(void);
+extern void a_fix__init(void);
 
 #endif // A2X_PACK_FIX_VH

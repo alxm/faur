@@ -39,7 +39,7 @@ struct ColIt {
     ListIt* points; // list of points in the current submap
 };
 
-ColMap* a_colmap_set(const int totalWidth, const int totalHeight, const int gridDim)
+ColMap* a_colmap_new(const int totalWidth, const int totalHeight, const int gridDim)
 {
     ColMap* const c = malloc(sizeof(ColMap));
 
@@ -67,7 +67,7 @@ ColMap* a_colmap_set(const int totalWidth, const int totalHeight, const int grid
         c->submaps[i] = malloc(c->w * sizeof(List*));
 
         for(int j = c->w; j--; ) {
-            c->submaps[i][j] = a_list_set();
+            c->submaps[i][j] = a_list_new();
         }
     }
 
@@ -88,12 +88,12 @@ void a_colmap_free(ColMap* const c)
     free(c);
 }
 
-ColPoint* a_colpoint_set(ColMap* const colmap)
+ColPoint* a_colpoint_new(ColMap* const colmap)
 {
     ColPoint* const p = malloc(sizeof(ColPoint));
 
     p->colmap = colmap;
-    p->nodes = a_list_set();
+    p->nodes = a_list_new();
 
     return p;
 }
@@ -159,7 +159,7 @@ void* a_colpoint_getParent(ColPoint* const p)
     return p->parent;
 }
 
-ColIt* a_colit_set(ColPoint* const p)
+ColIt* a_colit_new(ColPoint* const p)
 {
     ColIt* const it = malloc(sizeof(ColIt));
     ColMap* const colmap = p->colmap;
@@ -168,7 +168,7 @@ ColIt* a_colit_set(ColPoint* const p)
     const int submap_y = a_fix8_fixtoi(p->y) >> colmap->submapShift;
 
     it->callerPoint = p;
-    it->points = a_listit_set(colmap->submaps[submap_y][submap_x]);
+    it->points = a_listit_new(colmap->submaps[submap_y][submap_x]);
 
     return it;
 }

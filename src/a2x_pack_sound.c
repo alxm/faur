@@ -30,11 +30,11 @@ int a__volumeAdjust = -2 * A_MILIS_VOLUME;
     static Input* a__volDown;
 #endif
 
-void a_sound__set(void)
+void a_sound__init(void)
 {
     if(a2x_bool("sound.on")) {
-        musicList = a_list_set();
-        sfxList = a_list_set();
+        musicList = a_list_new();
+        sfxList = a_list_new();
 
         #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
             a__volume = A_MAX_VOLUME / 16;
@@ -59,8 +59,8 @@ void a_sound__set(void)
         #endif
 
         #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
-            a__volUp = a_input_set("gp2x.VolUp, wiz.VolUp");
-            a__volDown = a_input_set("gp2x.VolDown, wiz.VolDown");
+            a__volUp = a_input_new("gp2x.VolUp, wiz.VolUp");
+            a__volDown = a_input_new("gp2x.VolDown, wiz.VolDown");
         #endif
     }
 }

@@ -26,7 +26,7 @@ typedef struct ListIt ListIt;
 
 #include "a2x_pack_list.p.h"
 
-extern ListIt* a_listit_set(List* const list);
+extern ListIt* a_listit_new(List* const list);
 extern void a_listit_free(ListIt* const it);
 extern bool a_listit_next(const ListIt* const it);
 extern void* a_listit_get(ListIt* const it);
@@ -36,7 +36,7 @@ extern void* a_listit_get(ListIt* const it);
 extern void a_listit__remove(ListIt* const it, const int freeContent);
 
 #define ListIterate(list, type, var)                                                   \
-    for(ListIt* a__it = a_listit_set(list); a__it; a_listit_free(a__it), a__it = NULL) \
+    for(ListIt* a__it = a_listit_new(list); a__it; a_listit_free(a__it), a__it = NULL) \
         for(type* var; a_listit_next(a__it) && (var = a_listit_get(a__it), true); )
 
 #endif // A2X_PACK_LISTIT_PH

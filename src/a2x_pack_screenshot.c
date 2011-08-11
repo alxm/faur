@@ -21,7 +21,7 @@
 
 static char* screens_dir;
 
-void a_screenshot__set(void)
+void a_screenshot__init(void)
 {
     screens_dir = a2x_str("screenshot.dir");
 
@@ -44,19 +44,33 @@ void a_screenshot_save(void)
         int end = a_str_lastIndex(file, '.');
 
         if(start == -1 || end == -1 || end - start != 6) {
-            a_error("Invalid screenshot file: %s", file);
+            a_error("Found invalid screenshot file: %s", file);
         } else {
             char* const num = a_str_sub(file, start + 1, end);
+            int num_i = atoi(num);
 
-            number = atoi(num) + 1;
-            a_out("Saving screenshot %d", number);
+            if(num_i > 0) {
+                number = num_i + 1;
+                a_out("Saving screenshot %d", number);
+            } else {
+                a_error("Found invalid screenshot file: %s", file);
+            }
 
             free(num);
         }
+    }
+
+    if(number == -1) {
+        a_error("Could not take screenshot");
+        return;
     }
 
     char name[256];
     sprintf(name, "%s/%s-%05d.png", screens_dir, a2x_str("app.title"), number);
 
     a_png_write(name, a_pixels, a_width, a_height);
+
+    //cleanup:
+
+    a_dir_close(dir);
 }

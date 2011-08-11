@@ -45,9 +45,9 @@ static Font** fonts;
 
 static int charIndex(const char c);
 
-void a_font__set(void)
+void a_font__init(void)
 {
-    fontsList = a_list_set();
+    fontsList = a_list_new();
     fonts = NULL;
 }
 
@@ -111,7 +111,7 @@ int a_font_load(Sheet* const sheet, const int sx, const int sy, const int zoom, 
         int areaw = x - areax;
         int areah = y2 - y;
 
-        f->sprites[(int)chars[i]] = a_sprite_makeZoomed(sheet, areax, areay, areaw, areah, zoom);
+        f->sprites[(int)chars[i]] = a_sprite_newZoomed(sheet, areax, areay, areaw, areah, zoom);
 
         if(((loader & A_LOAD_N) && chars[i] == '0') || chars[i] == 'A') {
             f->maxWidth = areaw;

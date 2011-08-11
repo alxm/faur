@@ -80,12 +80,12 @@ static Input* screenshot;
 static void registerButton(const char* const name, const int code);
 static void registerButtonFake(const char* const name);
 
-void a_input__set(void)
+void a_input__init(void)
 {
-    buttonNames = a_hash_set();
-    buttonList = a_list_set();
+    buttonNames = a_hash_new();
+    buttonList = a_list_new();
 
-    inputs = a_list_set();
+    inputs = a_list_new();
 
     registerButtonFake("all.any");
 
@@ -178,15 +178,15 @@ void a_input__set(void)
     mouse.shift = a2x_bool("video.double");
 
     if(a2x_bool("input.trackMouse")) {
-        mouse.motion = a_list_set();
+        mouse.motion = a_list_new();
     }
 
     #if A_PLATFORM_LINUXPC
-        fullScreen = a_input_set("pc.F1");
-        doubleRes = a_input_set("pc.F2");
+        fullScreen = a_input_new("pc.F1");
+        doubleRes = a_input_new("pc.F2");
     #endif
 
-    screenshot = a_input_set(a2x_str("screenshot.button"));
+    screenshot = a_input_new(a2x_str("screenshot.button"));
 }
 
 void a_input__free(void)
@@ -494,12 +494,12 @@ void a_input__get(void)
     #endif
 }
 
-Input* a_input_set(const char* const names)
+Input* a_input_new(const char* const names)
 {
     Input* const i = malloc(sizeof(Input));
-    StringTok* const t = a_strtok_set(names, ", ");
+    StringTok* const t = a_strtok_new(names, ", ");
 
-    i->buttons = a_list_set();
+    i->buttons = a_list_new();
     i->name = NULL;
 
     while(a_strtok_next(t)) {

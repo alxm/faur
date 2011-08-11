@@ -48,7 +48,7 @@ Dir* a_dir_openFilter(const char* const path, int (*filter)(const struct dirent*
 
     d->path = a_str_dup(path);
     d->name = a_str_getSuffixLastFind(path, '/');
-    d->files = a_list_set();
+    d->files = a_list_new();
     d->num = a_math_max(0, numFiles);
     d->current = malloc(2 * sizeof(char*));
 
