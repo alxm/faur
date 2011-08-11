@@ -9,6 +9,7 @@
     (at your option) any later version.
 
     a2x-framework is distributed in the hope that it will be useful,
+    a2x-framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU Lesser General Public License for more details.
@@ -17,23 +18,11 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_PACK_INPUT_VH
-#define A2X_PACK_INPUT_VH
+#ifndef A2X_PACK_STRTOK_VH
+#define A2X_PACK_STRTOK_VH
 
-#include "a2x_pack_input.p.h"
+#include "a2x_pack_strtok.p.h"
 
-#include "a2x_pack_collide.v.h"
-#include "a2x_pack_fps.v.h"
-#include "a2x_pack_hash.v.h"
-#include "a2x_pack_list.v.h"
-#include "a2x_pack_screen.v.h"
-#include "a2x_pack_screenshot.v.h"
-#include "a2x_pack_state.v.h"
-#include "a2x_pack_strtok.v.h"
+#include "a2x_pack_str.v.h"
 
-extern void a_input__set(void);
-extern void a_input__free(void);
-
-extern void a_input__get(void);
-
-#endif // A2X_PACK_INPUT_VH
+#endif // A2X_PACK_STRTOK_VH

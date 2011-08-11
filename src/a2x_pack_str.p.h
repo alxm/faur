@@ -22,13 +22,6 @@
 
 #include "a2x_app_includes.h"
 
-typedef struct StringTok StringTok;
-
-extern StringTok* a_strtok_set(const char* const s, const char* const d);
-extern void a_strtok_free(StringTok* const t);
-extern bool a_strtok_next(StringTok* const t);
-extern char* a_strtok_get(StringTok* const t);
-
 #define a_str_same(s1, s2)  (strcmp((s1), (s2)) == 0)
 #define a_str_equal(s1, s2) (strcmp((s1), (s2)) == 0)
 #define a_str_size(s)       ((strlen(s) + 1) * sizeof(char))
@@ -38,14 +31,15 @@ extern char* a_strtok_get(StringTok* const t);
     const char* const a__strs[] = {__VA_ARGS__};                        \
     a_str__malloc((sizeof(a__strs) / sizeof(a__strs[0])), __VA_ARGS__); \
 })
-extern void* a_str__malloc(int count, ...);
 
 #define a_str_merge(...)                                               \
 ({                                                                     \
     const char* const a__strs[] = {__VA_ARGS__};                       \
     a_str__merge((sizeof(a__strs) / sizeof(a__strs[0])), __VA_ARGS__); \
 })
-char* a_str__merge(int count, ...);
+
+extern void* a_str__malloc(int count, ...);
+extern char* a_str__merge(int count, ...);
 
 extern char* a_str_dup(const char* const s);
 

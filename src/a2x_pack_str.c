@@ -21,80 +21,6 @@
 
 #define A__NULL_STRING "(null)"
 
-struct StringTok {
-    char* string;
-    char* delims;
-    int numDelims;
-    int index;
-    char* tok;
-};
-
-static int a_string__isDelim(const char c, const char* const d, const int n);
-
-StringTok* a_strtok_set(const char* const s, const char* const d)
-{
-    StringTok* const t = malloc(sizeof(StringTok));
-
-    t->string = a_str_dup(s);
-    t->delims = a_str_dup(d);
-    t->numDelims = strlen(d);
-    t->index = 0;
-    t->tok = NULL;
-
-    return t;
-}
-
-void a_strtok_free(StringTok* const t)
-{
-    free(t->string);
-    free(t->delims);
-    free(t->tok);
-
-    free(t);
-}
-
-bool a_strtok_next(StringTok* const t)
-{
-    char* const string = t->string;
-    const char* const delims = t->delims;
-    const int numDelims = t->numDelims;
-
-    int start = t->index;
-    int end;
-
-    while(1) {
-        if(string[start] == '\0') {
-            return false;
-        } else if(a_string__isDelim(string[start], delims, numDelims)) {
-            start++;
-        } else {
-            break;
-        }
-    }
-
-    for(end = start; string[end] != '\0' && !a_string__isDelim(string[end], delims, numDelims); end++) {
-        continue;
-    }
-
-    const int len = end - start;
-    char* const str = malloc((len + 1) * sizeof(char));
-
-    memcpy(str, &string[start], len);
-    str[len] = '\0';
-
-    t->index = end;
-
-    free(t->tok);
-    t->tok = str;
-
-    return true;
-}
-
-char* a_strtok_get(StringTok* const t)
-{
-    return t->tok;
-}
-
 void* a_str__malloc(int count, ...)
 {
     va_list args;
@@ -294,15 +220,4 @@ char* a_str_trim(const char* const s)
     }
 
     return a_str_sub(s, start, end + 1);
-}
-
-static int a_string__isDelim(const char c, const char* const d, const int n)
-{
-    for(int i = n; i--; ) {
-        if(c == d[i]) {
-            return 1;
-        }
-    }
-
-    return 0;
 }
