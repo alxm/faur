@@ -58,6 +58,7 @@ def main():
                     f.write(db[key][0] + " = " + db[key][1] + "\n")
 
     call("cd " + a2x_dir + "/make/a2x; make " + command)
+    call("cd " + a2x_dir + "/make/a2x; make tags" + command)
     call("cd " + a2x_dir + "/tools/gfx; make " + command)
     call("cd " + a2x_dir + "/tools/sfx; make " + command)
 
