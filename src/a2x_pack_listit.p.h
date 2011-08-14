@@ -30,6 +30,7 @@ extern ListIt* a_listit_new(List* const list);
 extern void a_listit_free(ListIt* const it);
 extern bool a_listit_next(const ListIt* const it);
 extern void* a_listit_get(ListIt* const it);
+extern void* a_listit_peek(const ListIt* const it);
 
 #define a_listit_remove(it) a_listit__remove(it, 0)
 #define a_listit_removeContent(it) a_listit__remove(it, 1)

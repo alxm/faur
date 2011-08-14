@@ -26,38 +26,20 @@ typedef struct List List;
 typedef struct ListNode ListNode;
 
 extern List* a_list_new(void);
-
-#define a_list_free(list) a_list__free(list, 0)
-#define a_list_freeContent(list) a_list__free(list, 1)
-extern void a_list__free(List* const list, const bool freeContent);
-
-#define a_list_empty(list) a_list__empty(list, 0)
-#define a_list_emptyContent(list) a_list__empty(list, 1)
-extern void a_list__empty(List* const list, const bool freeContent);
+extern void a_list_free(List* const list, const bool freeContent);
+extern void a_list_empty(List* const list, const bool freeContent);
 
 extern ListNode* a_list_addFirst(List* const list, void* const content);
 extern ListNode* a_list_addLast(List* const list, void* const content);
 
 extern void a_list_remove(List* const list, const void* const v);
-
-#define a_list_removeFirst(list) a_list__removeFirst(list, 0)
-#define a_list_removeFirstContent(list) a_list__removeFirst(list, 1)
-extern void* a_list__removeFirst(List* const list, const bool freeContent);
-
-#define a_list_removeLast(list) a_list__removeLast(list, 0)
-#define a_list_removeLastContent(list) a_list__removeLast(list, 1)
-extern void* a_list__removeLast(List* const list, const bool freeContent);
-
-#define a_list_removeCurrent(list) a_list__removeCurrent(list, 0)
-#define a_list_removeCurrentContent(list) a_list__removeCurrent(list, 1)
-extern void a_list__removeCurrent(List* const list, const bool freeContent);
-
-#define a_list_removeNode(node) a_list__removeNode(node, 0)
-#define a_list_removeNodeContent(node) a_list__removeNode(node, 1)
-extern void a_list__removeNode(ListNode* const node, const bool freeContent);
+extern void* a_list_removeFirst(List* const list, const bool freeContent);
+extern void* a_list_removeLast(List* const list, const bool freeContent);
+extern void a_list_removeCurrent(List* const list, const bool freeContent);
+extern void a_list_removeNode(ListNode* const node, const bool freeContent);
 
 #define a_list_push(l, c) a_list_addFirst(l, c)
-#define a_list_pop(l)     a_list_removeFirst(l)
+#define a_list_pop(l)     a_list_removeFirst(l, false)
 #define a_list_peek(l)    a_list_first(l)
 
 extern void a_list_reverse(List* const list);

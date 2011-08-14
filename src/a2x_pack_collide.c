@@ -43,23 +43,23 @@ ColMap* a_colmap_new(const int totalWidth, const int totalHeight, const int grid
 {
     ColMap* const c = malloc(sizeof(ColMap));
 
-    #define a__nextpow(x) \
-    ({                    \
-        int p = 1;        \
-        while(p < x) {    \
-            p <<= 1;      \
-        }                 \
-        p;                \
+    #define nextpow(x) \
+    ({                 \
+        int p = 1;     \
+        while(p < x) { \
+            p <<= 1;   \
+        }              \
+        p;             \
     })
 
-    const int submapDim = a__nextpow(gridDim);
+    const int submapDim = nextpow(gridDim);
 
     c->submapShift = a_math_log2(submapDim);
 
-    c->w = a__nextpow(totalWidth) / submapDim;
-    c->h = a__nextpow(totalHeight) / submapDim;
+    c->w = nextpow(totalWidth) / submapDim;
+    c->h = nextpow(totalHeight) / submapDim;
 
-    #undef a__nextpow
+    #undef nextpow
 
     c->submaps = malloc(c->h * sizeof(List**));
 
@@ -78,7 +78,7 @@ void a_colmap_free(ColMap* const c)
 {
     for(int i = c->h; i--; ) {
         for(int j = c->w; j--; ) {
-            a_list_free(c->submaps[i][j]);
+            a_list_free(c->submaps[i][j], false);
         }
 
         free(c->submaps[i]);
@@ -104,10 +104,10 @@ void a_colpoint_free(ColPoint* const p)
 
     while(a_list_iterate(nodes)) {
         ListNode* const n = a_list__current(nodes);
-        a_list_removeNode(n);
+        a_list_removeNode(n, false);
     }
 
-    a_list_free(p->nodes);
+    a_list_free(p->nodes, false);
 
     free(p);
 }
@@ -122,11 +122,11 @@ void a_colpoint_setCoords(ColPoint* const p, const fix8 x, const fix8 y)
 
     // remove point from all the submaps it was in
     while(a_list_iterate(pt_nodes)) {
-        a_list_removeNode(a_list__current(pt_nodes));
+        a_list_removeNode(a_list__current(pt_nodes), false);
     }
 
     // purge old information
-    a_list_empty(pt_nodes);
+    a_list_empty(pt_nodes, false);
 
     // center submap coords
     const int submap_x = a_fix8_fixtoi(p->x) >> colmap->submapShift;
@@ -176,7 +176,6 @@ ColIt* a_colit_new(ColPoint* const p)
 void a_colit_free(ColIt* const it)
 {
     a_listit_free(it->points);
-
     free(it);
 }
 
@@ -184,12 +183,12 @@ bool a_colit_next(ColIt* const it)
 {
     if(a_listit_next(it->points)) {
         // don't return the point we iterate on
-        if(a_listit_get(it->points) == it->callerPoint) {
+        if(a_listit_peek(it->points) == it->callerPoint) {
+            a_listit_get(it->points);
             return a_colit_next(it);
-        } else {
-            a_listit__rewind(it->points);
-            return true;
         }
+
+        return true;
     }
 
     return false;

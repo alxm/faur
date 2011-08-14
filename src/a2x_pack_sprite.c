@@ -37,7 +37,7 @@ void a_sprite__free(void)
         a_sprite_free(a_list_current(sprites));
     }
 
-    a_list_free(sprites);
+    a_list_free(sprites, false);
 }
 
 Sprite* a_sprite_newZoomed(const Sheet* const graphic, const int x, const int y, const int w, const int h, const int zoom)
@@ -181,7 +181,7 @@ void a_sprite_newTransparent(Sprite* const s)
             counter++;
         }
 
-        a_list_freeContent(spans);
+        a_list_free(spans, true);
     }
 }
 

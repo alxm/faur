@@ -42,7 +42,7 @@ SpriteLayers* a_spritelayers_new(void)
 
 void a_spritelayers_free(SpriteLayers* const s)
 {
-    a_list_freeContent(s->layers);
+    a_list_free(s->layers, true);
 
     free(s);
 }

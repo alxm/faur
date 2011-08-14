@@ -63,7 +63,6 @@ int main(int argc, char** argv)
     A_PACK_INIT(math);
     A_PACK_INIT(fix);
     A_PACK_INIT(font);
-    A_PACK_INIT(mem);
     A_PACK_INIT(state);
 
     a_out("Opening Main()");
@@ -72,7 +71,6 @@ int main(int argc, char** argv)
     a_out("Main() closed");
 
     A_PACK_FREE(state);
-    A_PACK_FREE(mem);
     A_PACK_FREE(sound);
     A_PACK_FREE(input);
     A_PACK_FREE(font);

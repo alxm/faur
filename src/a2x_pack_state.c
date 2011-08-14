@@ -42,14 +42,14 @@ void a_state__init(void)
 
 void a_state__free(void)
 {
-    a_hash_free(functions);
+    a_hash_free(functions, false);
 
     ListIterate(stack, StateInstance, s) {
-        a_hash_free(s->objects);
+        a_hash_free(s->objects, false);
         free(s);
     }
 
-    a_list_free(stack);
+    a_list_free(stack, false);
 }
 
 void a_state_new(const char* const name, void (*function)(void))
@@ -133,7 +133,7 @@ void a_state__run(void)
         const StateInstance* const s = a_list_peek(stack);
 
         if(s->stage == A_STATE_FREE) {
-            a_hash_free(s->objects);
+            a_hash_free(s->objects, false);
             free(a_list_pop(stack));
         } else {
             changed = false;

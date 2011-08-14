@@ -47,8 +47,12 @@ bool a_listit_next(const ListIt* const it)
 void* a_listit_get(ListIt* const it)
 {
     it->current = it->current->next;
-
     return it->current->content;
+}
+
+void* a_listit_peek(const ListIt* const it)
+{
+    return it->current->next->content;
 }
 
 void a_listit__remove(ListIt* const it, const int freeContent)
@@ -71,9 +75,4 @@ void a_listit__remove(ListIt* const it, const int freeContent)
     }
 
     free(n);
-}
-
-void a_listit__rewind(ListIt* const it)
-{
-    it->current = it->current->prev;
 }

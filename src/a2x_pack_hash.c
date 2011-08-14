@@ -51,7 +51,7 @@ Hash* a_hash_new(void)
     return h;
 }
 
-void a_hash_free(Hash* const h)
+void a_hash_free(Hash* const h, const bool freeContent)
 {
     for(int i = A_HASH_NUM; i--; ) {
         Entry* e = h->entries[i];
@@ -59,26 +59,11 @@ void a_hash_free(Hash* const h)
         while(e) {
             Entry* const save = e->next;
 
-            free(e->key);
-            free(e);
-
-            e = save;
-        }
-    }
-
-    free(h);
-}
-
-void a_hash_freeContent(Hash* const h)
-{
-    for(int i = A_HASH_NUM; i--; ) {
-        Entry* e = h->entries[i];
-
-        while(e) {
-            Entry* const save = e->next;
+            if(freeContent) {
+                free(e->content);
+            }
 
             free(e->key);
-            free(e->content);
             free(e);
 
             e = save;

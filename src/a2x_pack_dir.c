@@ -78,7 +78,7 @@ void a_dir_close(Dir* const d)
         free(e);
     }
 
-    a_list_free(d->files);
+    a_list_free(d->files, false);
     free(d->current);
 
     free(d);

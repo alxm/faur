@@ -195,7 +195,7 @@ void a_input__free(void)
         a_input_free(a_list_current(inputs));
     }
 
-    a_list_free(inputs);
+    a_list_free(inputs, false);
 
     while(a_list_iterate(buttonList)) {
         Button* const b = a_list_current(buttonList);
@@ -203,11 +203,11 @@ void a_input__free(void)
         free(b);
     }
 
-    a_list_free(buttonList);
-    a_hash_free(buttonNames);
+    a_list_free(buttonList, false);
+    a_hash_free(buttonNames, false);
 
     if(a2x_bool("input.trackMouse")) {
-        a_list_freeContent(mouse.motion);
+        a_list_free(mouse.motion, true);
     }
 
     #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
@@ -218,7 +218,7 @@ void a_input__free(void)
 void a_input__get(void)
 {
     if(a2x_bool("input.trackMouse")) {
-        a_list_freeContent(mouse.motion);
+        a_list_free(mouse.motion, true);
     }
 
     mouse.tap = false;
@@ -530,7 +530,7 @@ Input* a_input_new(const char* const names)
 
 void a_input_free(Input* const i)
 {
-    a_list_free(i->buttons);
+    a_list_free(i->buttons, false);
     free(i->name);
 
     free(i);

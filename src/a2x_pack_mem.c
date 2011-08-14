@@ -19,25 +19,6 @@
 
 #include "a2x_pack_mem.v.h"
 
-static List* a__memTracker;
-
-void a_mem__init(void)
-{
-    a__memTracker = a_list_new();
-}
-
-void a_mem__free(void)
-{
-    a_list_freeContent(a__memTracker);
-}
-
-void* a_mem_track(void* const v)
-{
-    a_list_addLast(a__memTracker, v);
-
-    return v;
-}
-
 void* a_mem_encodeRLE(const void* const data, const int length, const int size, int* const encLength)
 {
     int space = 0;

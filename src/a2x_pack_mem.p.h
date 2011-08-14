@@ -22,8 +22,6 @@
 
 #include "a2x_app_includes.h"
 
-extern void* a_mem_track(void* const v);
-
 #define a_mem_mallocz(size)            \
 ({                                     \
     void* const a__m = malloc((size)); \

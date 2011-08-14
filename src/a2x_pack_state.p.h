@@ -33,8 +33,8 @@ extern void a_state_exit(void);
 typedef enum {A_STATE_INVALID, A_STATE_INIT, A_STATE_BODY, A_STATE_FREE} StateStage;
 
 #define State(state_name) void state_name(void)
-#define StateInit if(a_state__stage() == A_STATE_INIT && a_state__setStage(A_STATE_BODY))
-#define StateBody if(a_state__stage() == A_STATE_BODY)
+#define StateInit if(a_state__stage() == A_STATE_INIT)
+#define StateBody if(a_state__stage() == A_STATE_BODY || (a_state__stage() == A_STATE_INIT && a_state__setStage(A_STATE_BODY)))
 #define StateFree if(a_state__stage() == A_STATE_FREE)
 #define StateLoop while(a_state__stage() == A_STATE_BODY && a_state__unchanged())
 

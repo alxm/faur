@@ -53,7 +53,7 @@ void a_font__init(void)
 
 void a_font__free(void)
 {
-    a_list_freeContent(fontsList);
+    a_list_free(fontsList, true);
     free(fonts);
 }
 
