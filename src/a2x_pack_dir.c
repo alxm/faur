@@ -72,7 +72,7 @@ void a_dir_close(Dir* const d)
     free(d->path);
     free(d->name);
 
-    ListIterate(d->files, DirEntry, e) {
+    A_LIST_ITERATE(d->files, DirEntry, e) {
         free(e->name);
         free(e->full);
         free(e);

@@ -43,7 +43,7 @@ extern void a_colit_free(ColIt* const it);
 extern bool a_colit_next(ColIt* const it);
 extern ColPoint* a_colit_get(const ColIt* const it);
 
-#define ColIterate(colpoint, var)                                                       \
+#define A_COL_ITERATE(colpoint, var)                                                    \
     for(ColIt* a__ci = a_colit_new(colpoint); a__ci; a_colit_free(a__ci), a__ci = NULL) \
         for(ColPoint* var; a_colit_next(a__ci) && (var = a_colit_get(a__ci)); )
 

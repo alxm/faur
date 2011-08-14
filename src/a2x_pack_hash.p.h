@@ -26,6 +26,7 @@ typedef struct Hash Hash;
 
 extern Hash* a_hash_new(void);
 extern void a_hash_free(Hash* const h, const bool freeContent);
+
 extern void a_hash_add(Hash* const h, const char* const key, void* const content);
 extern void* a_hash_get(const Hash* const h, const char* const key);
 

@@ -32,14 +32,19 @@ extern Sprite* a_sprite_newZoomed(const Sheet* const graphic, const int x, const
 extern Sprite* a_sprite_newBlank(const int w, const int h);
 extern void a_sprite_newTransparent(Sprite* const s);
 extern void a_sprite_free(Sprite* const s);
+
 extern Sprite* a_sprite_clone(const Sprite* const src);
+
 extern int a_sprite_w(const Sprite* const s);
 extern int a_sprite_h(const Sprite* const s);
 extern Pixel* a_sprite_data(const Sprite* const s);
+
 extern uint8_t a_sprite_getAlpha(const Sprite* const s);
 extern void a_sprite_setAlpha(Sprite* const s, const uint8_t a);
+
 extern Pixel a_sprite_getTransparent(const Sprite* const s);
 extern void a_sprite_setTransparent(Sprite* const s, const Pixel c);
+
 extern Pixel a_sprite_getPixel(const Sprite* const s, const int x, const int y);
 
 #endif // A2X_PACK_SPRITE_PH

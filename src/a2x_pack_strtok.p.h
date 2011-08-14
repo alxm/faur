@@ -27,6 +27,7 @@ typedef struct StringTok StringTok;
 
 extern StringTok* a_strtok_new(const char* const s, const char* const d);
 extern void a_strtok_free(StringTok* const t);
+
 extern bool a_strtok_next(StringTok* const t);
 extern char* a_strtok_get(StringTok* const t);
 

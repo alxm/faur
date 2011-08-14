@@ -27,7 +27,7 @@ typedef int fix8;
 
 #include "a2x_pack_math.p.h"
 
-#define FONE12            (1 << 12)
+#define A_FONE12          (1 << 12)
 #define a_fix12_to8(x)    ((x) >> 4)
 #define a_fix12_itofix(x) ((x) << 12)
 #define a_fix12_ftofix(x) ((x) * (1 << 12))
@@ -41,7 +41,7 @@ extern fix12 a_fix12_Cos[A_ANGLES_NUM];
 #define a_fix12_cos(a)       (a_fix12_Cos[(a)])
 #define a_fix12_wrapAngle(a) ((a) & ((A_ANGLES_NUM << 12) - 1))
 
-#define FONE8            (1 << 8)
+#define A_FONE8          (1 << 8)
 #define a_fix8_to12(x)   ((x) << 4)
 #define a_fix8_itofix(x) ((x) << 8)
 #define a_fix8_ftofix(x) ((x) * (1 << 8))

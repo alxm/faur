@@ -32,7 +32,7 @@
 void a_fade_toBlack(const int framesDuration)
 {
     int accum = 0;
-    fix8 alpha = FONE8;
+    fix8 alpha = A_FONE8;
     Pixel* const copy = a_screen_dup();
 
     while(alpha >= 0) {
@@ -55,15 +55,15 @@ void a_fade_toBlack(const int framesDuration)
             );
         }
 
-        if(framesDuration < FONE8) {
-            while(accum < FONE8) {
+        if(framesDuration < A_FONE8) {
+            while(accum < A_FONE8) {
                 accum += framesDuration;
                 alpha--;
             }
 
-            accum -= FONE8;
-        } else if(FONE8 <= framesDuration) {
-            accum += FONE8;
+            accum -= A_FONE8;
+        } else if(A_FONE8 <= framesDuration) {
+            accum += A_FONE8;
 
             if(accum >= framesDuration) {
                 accum -= framesDuration;
@@ -83,7 +83,7 @@ void a_fade_fromBlack(const int framesDuration)
     fix8 alpha = 0;
     Pixel* const copy = a_screen_dup();
 
-    while(alpha <= FONE8) {
+    while(alpha <= A_FONE8) {
         a_fps_start();
 
         a_screen_copy(a_pixels, copy);
@@ -103,15 +103,15 @@ void a_fade_fromBlack(const int framesDuration)
             );
         }
 
-        if(framesDuration < FONE8) {
-            while(accum < FONE8) {
+        if(framesDuration < A_FONE8) {
+            while(accum < A_FONE8) {
                 accum += framesDuration;
                 alpha++;
             }
 
-            accum -= FONE8;
-        } else if(FONE8 <= framesDuration) {
-            accum += FONE8;
+            accum -= A_FONE8;
+        } else if(A_FONE8 <= framesDuration) {
+            accum += A_FONE8;
 
             if(accum >= framesDuration) {
                 accum -= framesDuration;
@@ -161,7 +161,7 @@ void a_fade_screens(const Pixel* const old, int framesDuration)
     }
 
     int accum = 0;
-    fix8 alpha = FONE8;
+    fix8 alpha = A_FONE8;
 
     while(alpha >= 0) {
         a_fps_start();
@@ -192,15 +192,15 @@ void a_fade_screens(const Pixel* const old, int framesDuration)
             bOldp++;
         }
 
-        if(framesDuration < FONE8) {
-            while(accum < FONE8) {
+        if(framesDuration < A_FONE8) {
+            while(accum < A_FONE8) {
                 accum += framesDuration;
                 alpha--;
             }
 
-            accum -= FONE8;
-        } else if(FONE8 <= framesDuration) {
-            accum += FONE8;
+            accum -= A_FONE8;
+        } else if(A_FONE8 <= framesDuration) {
+            accum += A_FONE8;
 
             if(accum >= framesDuration) {
                 accum -= framesDuration;

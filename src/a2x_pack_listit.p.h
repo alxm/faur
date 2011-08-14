@@ -36,7 +36,7 @@ extern void* a_listit_peek(const ListIt* const it);
 #define a_listit_removeContent(it) a_listit__remove(it, 1)
 extern void a_listit__remove(ListIt* const it, const int freeContent);
 
-#define ListIterate(list, type, var)                                                   \
+#define A_LIST_ITERATE(list, type, var)                                                \
     for(ListIt* a__it = a_listit_new(list); a__it; a_listit_free(a__it), a__it = NULL) \
         for(type* var; a_listit_next(a__it) && (var = a_listit_get(a__it), true); )
 

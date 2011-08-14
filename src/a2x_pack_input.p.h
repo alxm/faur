@@ -26,6 +26,7 @@ typedef struct Input Input;
 
 extern Input* a_input_new(const char* const names);
 extern void a_input_free(Input* const i);
+
 extern bool a_input_get(Input* const i);
 extern void a_input_unpress(Input* const i);
 extern bool a_input_getUnpress(Input* const i);

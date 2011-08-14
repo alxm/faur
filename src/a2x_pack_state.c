@@ -44,7 +44,7 @@ void a_state__free(void)
 {
     a_hash_free(functions, false);
 
-    ListIterate(stack, StateInstance, s) {
+    A_LIST_ITERATE(stack, StateInstance, s) {
         a_hash_free(s->objects, false);
         free(s);
     }
@@ -70,7 +70,7 @@ void a_state_push(const char* const name)
 
     StateInstance* const s = malloc(sizeof(StateInstance));
 
-    s->stage = A_STATE_INIT;
+    s->stage = A_STATE_STAGE_INIT;
     s->function = function;
     s->objects = a_hash_new();
 
@@ -83,7 +83,7 @@ void a_state_pop(void)
 
     if(s) {
         changed = true;
-        s->stage = A_STATE_FREE;
+        s->stage = A_STATE_STAGE_FREE;
     }
 }
 
@@ -102,12 +102,12 @@ void a_state_exit(void)
 {
     changed = true;
 
-    ListIterate(stack, StateInstance, s) {
-        s->stage = A_STATE_FREE;
+    A_LIST_ITERATE(stack, StateInstance, s) {
+        s->stage = A_STATE_STAGE_FREE;
     }
 }
 
-void StateAdd(const char* const name, void* const object)
+void a_state_add(const char* const name, void* const object)
 {
     const StateInstance* const s = a_list_peek(stack);
 
@@ -116,7 +116,7 @@ void StateAdd(const char* const name, void* const object)
     }
 }
 
-void* StateGet(const char* const name)
+void* a_state_get(const char* const name)
 {
     const StateInstance* const s = a_list_peek(stack);
 
@@ -132,7 +132,7 @@ void a_state__run(void)
     while(!a_list_isEmpty(stack)) {
         const StateInstance* const s = a_list_peek(stack);
 
-        if(s->stage == A_STATE_FREE) {
+        if(s->stage == A_STATE_STAGE_FREE) {
             a_hash_free(s->objects, false);
             free(a_list_pop(stack));
         } else {
@@ -150,7 +150,7 @@ StateStage a_state__stage(void)
         return s->stage;
     }
 
-    return A_STATE_INVALID;
+    return A_STATE_STAGE_INVALID;
 }
 
 bool a_state__setStage(const StateStage stage)

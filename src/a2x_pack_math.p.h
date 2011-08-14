@@ -47,6 +47,7 @@
 
 #define A_PI                3.14159265f
 #define A_ANGLES_NUM        256
+
 #define a_math_degToRad(a)  ((a) * A_PI / (A_ANGLES_NUM / 2))
 #define a_math_radToDeg(a)  ((int)((a) * (A_ANGLES_NUM / 2) / A_PI))
 #define a_math_sin(a)       (a_math_Sin[(a)])
