@@ -198,9 +198,7 @@ void a_input__free(void)
     a_list_free(inputs, false);
 
     while(a_list_iterate(buttonList)) {
-        Button* const b = a_list_current(buttonList);
-        free(b->name);
-        free(b);
+        free(a_list_current(buttonList));
     }
 
     a_list_free(buttonList, false);
@@ -531,8 +529,6 @@ Input* a_input_new(const char* const names)
 void a_input_free(Input* const i)
 {
     a_list_free(i->buttons, false);
-    free(i->name);
-
     free(i);
 
     a_list_remove(inputs, i);

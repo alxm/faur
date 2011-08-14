@@ -55,8 +55,6 @@ void a_screenshot_save(void)
             } else {
                 a_error("Found invalid screenshot file: %s", file);
             }
-
-            free(num);
         }
     }
 

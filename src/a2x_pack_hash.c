@@ -21,14 +21,16 @@
 
 #define A_HASH_NUM 256
 
-typedef struct Entry {
-    char* key;
-    void* content;
-    struct Entry* next;
-} Entry;
+typedef struct Entry Entry;
 
 struct Hash {
     Entry* entries[A_HASH_NUM];
+};
+
+struct Entry {
+    char* key;
+    void* content;
+    Entry* next;
 };
 
 #define getSlot(k)                  \
@@ -63,9 +65,7 @@ void a_hash_free(Hash* const h, const bool freeContent)
                 free(e->content);
             }
 
-            free(e->key);
             free(e);
-
             e = save;
         }
     }

@@ -19,12 +19,46 @@
 
 #include "a2x_pack_str.v.h"
 
-#define A__NULL_STRING "(null)"
+#define NULL_STRING "(null)"
+#define STRING_POOL_SIZE 1024
+
+static List* pools;
+static StringPool* pool;
+
+void a_str__init(void)
+{
+    pools = a_list_new();
+    pool = a_strpool_new(STRING_POOL_SIZE);
+    a_list_addLast(pools, pool);
+}
+
+void a_str__free(void)
+{
+    A_LIST_ITERATE(pools, StringPool, s) {
+        a_strpool_free(s);
+    }
+
+    a_list_free(pools, false);
+}
+
+char* a_str__alloc(const uint size)
+{
+    char* const str = a_strpool_alloc(pool, size);
+
+    if(str) {
+        return str;
+    }
+
+    pool = a_strpool_new(a_math_max(STRING_POOL_SIZE, size));
+    a_list_addLast(pools, pool);
+
+    return a_strpool_alloc(pool, size);
+}
 
 void* a_str__malloc(int count, ...)
 {
     va_list args;
-    int size = 0;
+    uint size = 0;
 
     va_start(args, count);
 
@@ -34,13 +68,13 @@ void* a_str__malloc(int count, ...)
         if(s) {
             size += strlen(s);
         } else {
-            size += strlen(A__NULL_STRING);
+            size += strlen(NULL_STRING);
         }
     }
 
     va_end(args);
 
-    return malloc((size + 1) * sizeof(char));
+    return a_str__alloc((size + 1) * sizeof(char));
 }
 
 char* a_str__merge(int count, ...)
@@ -56,13 +90,13 @@ char* a_str__merge(int count, ...)
         if(s) {
             size += strlen(s);
         } else {
-            size += strlen(A__NULL_STRING);
+            size += strlen(NULL_STRING);
         }
     }
 
     va_end(args);
 
-    char* const str = malloc((size + 1) * sizeof(char));
+    char* const str = a_str__alloc((size + 1) * sizeof(char));
     str[0] = '\0';
 
     va_start(args, count);
@@ -73,7 +107,7 @@ char* a_str__merge(int count, ...)
         if(s) {
             strcat(str, s);
         } else {
-            strcat(str, A__NULL_STRING);
+            strcat(str, NULL_STRING);
         }
     }
 
@@ -84,7 +118,7 @@ char* a_str__merge(int count, ...)
 
 char* a_str_dup(const char* const s)
 {
-    char* const d = a_str_malloc(s);
+    char* const d = a_str__alloc(a_str_size(s));
     strcpy(d, s);
 
     return d;
@@ -93,7 +127,7 @@ char* a_str_dup(const char* const s)
 char* a_str_sub(const char* const s, const int start, const int end)
 {
     const int len = end - start;
-    char* const str = malloc((len + 1) * sizeof(char));
+    char* const str = a_str__alloc((len + 1) * sizeof(char));
 
     memcpy(str, s + start, len);
     str[len] = '\0';
@@ -197,7 +231,6 @@ char* a_str_extractName(const char* const s)
     char* const name = a_str_getPrefixLastFind(file, '.');
 
     if(name) {
-        free(file);
         return name;
     } else {
         return file;

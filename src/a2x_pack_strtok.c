@@ -45,10 +45,6 @@ StringTok* a_strtok_new(const char* const s, const char* const d)
 
 void a_strtok_free(StringTok* const t)
 {
-    free(t->string);
-    free(t->delims);
-    free(t->tok);
-
     free(t);
 }
 
@@ -76,14 +72,12 @@ bool a_strtok_next(StringTok* const t)
     }
 
     const int len = end - start;
-    char* const str = malloc((len + 1) * sizeof(char));
+    char* const str = a_str__alloc((len + 1) * sizeof(char));
 
     memcpy(str, &string[start], len);
     str[len] = '\0';
 
     t->index = end;
-
-    free(t->tok);
     t->tok = str;
 
     return true;

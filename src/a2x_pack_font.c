@@ -287,8 +287,6 @@ int a_font_fixed(const FontAlign align, const int x, const int y, const int f, c
 
     int rx = a_font_textf(align, x, y, f, "%s...", temp);
 
-    free(temp);
-
     return rx;
 }
 

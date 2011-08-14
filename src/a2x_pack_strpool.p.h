@@ -9,6 +9,7 @@
     (at your option) any later version.
 
     a2x-framework is distributed in the hope that it will be useful,
+    a2x-framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU Lesser General Public License for more details.
@@ -17,32 +18,16 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a2x_pack_conf.v.h"
+#ifndef A2X_PACK_STRPOOL_PH
+#define A2X_PACK_STRPOOL_PH
 
-void a_conf__init(void)
-{
-    a_out("You can edit %s", a2x_str("app.conf"));
+#include "a2x_app_includes.h"
 
-    File* const f = a_file_open(a2x_str("app.conf"), "r");
+typedef struct StringPool StringPool;
 
-    if(!f) {
-        return;
-    }
+extern StringPool* a_strpool_new(const uint bytes);
+extern void a_strpool_free(StringPool* const sp);
 
-    while(a_file_readLine(f)) {
-        char* const s = a_str_trim(a_file_getLine(f));
+extern char* a_strpool_alloc(StringPool* const sp, uint size);
 
-        if(strlen(s) >= 2 && s[0] == '/' && s[1] == '/') {
-            continue;
-        }
-
-        char* const key = a_str_getPrefixFirstFind(s, '=');
-        char* const value = a_str_getSuffixFirstFind(s, '=');
-
-        if(key && value) {
-            a2x_set(a_str_trim(key), a_str_trim(value));
-        }
-    }
-
-    a_file_close(f);
-}
+#endif // A2X_PACK_STRPOOL_PH

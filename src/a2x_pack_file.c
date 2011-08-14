@@ -54,11 +54,6 @@ void a_file_close(File* const f)
         fclose(f->file);
     }
 
-    free(f->modes);
-    free(f->path);
-    free(f->name);
-    free(f->line);
-
     free(f);
 }
 
@@ -119,11 +114,9 @@ bool a_file_readLine(File* const f)
         }
 
         str[offset - 1] = '\0';
+        f->line = str;
 
         fseek(file, 1, SEEK_CUR);
-
-        free(f->line);
-        f->line = str;
 
         return true;
     }

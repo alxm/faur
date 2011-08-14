@@ -9,6 +9,7 @@
     (at your option) any later version.
 
     a2x-framework is distributed in the hope that it will be useful,
+    a2x-framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU Lesser General Public License for more details.
@@ -17,32 +18,41 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a2x_pack_conf.v.h"
+#include "a2x_pack_strpool.v.h"
 
-void a_conf__init(void)
+struct StringPool {
+    char* data;
+    uint size;
+    uint offset;
+};
+
+StringPool* a_strpool_new(const uint bytes)
 {
-    a_out("You can edit %s", a2x_str("app.conf"));
+    StringPool* const sp = malloc(sizeof(StringPool));
 
-    File* const f = a_file_open(a2x_str("app.conf"), "r");
+    sp->data = malloc(bytes);
+    sp->size = bytes;
+    sp->offset = 0;
 
-    if(!f) {
-        return;
+    return sp;
+}
+
+void a_strpool_free(StringPool* const sp)
+{
+    free(sp->data);
+    free(sp);
+}
+
+char* a_strpool_alloc(StringPool* const sp, uint size)
+{
+    const uint old_offset = sp->offset;
+    const uint new_offset = old_offset + size;
+
+    if(new_offset > sp->size) {
+        return NULL;
     }
 
-    while(a_file_readLine(f)) {
-        char* const s = a_str_trim(a_file_getLine(f));
+    sp->offset = new_offset;
 
-        if(strlen(s) >= 2 && s[0] == '/' && s[1] == '/') {
-            continue;
-        }
-
-        char* const key = a_str_getPrefixFirstFind(s, '=');
-        char* const value = a_str_getSuffixFirstFind(s, '=');
-
-        if(key && value) {
-            a2x_set(a_str_trim(key), a_str_trim(value));
-        }
-    }
-
-    a_file_close(f);
+    return sp->data + old_offset;
 }

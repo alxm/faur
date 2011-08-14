@@ -69,18 +69,8 @@ Dir* a_dir_openFilter(const char* const path, int (*filter)(const struct dirent*
 
 void a_dir_close(Dir* const d)
 {
-    free(d->path);
-    free(d->name);
-
-    A_LIST_ITERATE(d->files, DirEntry, e) {
-        free(e->name);
-        free(e->full);
-        free(e);
-    }
-
-    a_list_free(d->files, false);
+    a_list_free(d->files, true);
     free(d->current);
-
     free(d);
 }
 

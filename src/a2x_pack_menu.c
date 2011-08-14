@@ -87,7 +87,6 @@ void a_menu_free(Menu* const m)
     }
 
     a_list_free(m->items, false);
-    free(m->title);
     free(m);
 }
 
