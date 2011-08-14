@@ -22,7 +22,9 @@
 typedef void (*StateFunction)(void);
 
 typedef struct StateInstance {
+    StateStage stage;
     StateFunction function;
+    Hash* objects;
 } StateInstance;
 
 static Hash* functions;
@@ -41,25 +43,23 @@ void a_state__init(void)
 void a_state__free(void)
 {
     a_hash_free(functions);
+
+    ListIterate(stack, StateInstance, s) {
+        a_hash_free(s->objects);
+        free(s);
+    }
+
     a_list_free(stack);
 }
 
-void a_state__run(void)
-{
-    while(!a_list_isEmpty(stack)) {
-        changed = false;
-        ((StateInstance*)a_list_peek(stack))->function();
-    }
-}
-
-void a_state_add(const char* const name, void (*function)(void))
+void a_state_new(const char* const name, void (*function)(void))
 {
     a_hash_add(functions, name, function);
 }
 
 void a_state_push(const char* const name)
 {
-    StateFunction function = a_hash_get(functions, name);
+    const StateFunction function = a_hash_get(functions, name);
 
     if(function == NULL) {
         a_error("No state '%s'", name);
@@ -70,18 +70,21 @@ void a_state_push(const char* const name)
 
     StateInstance* const s = malloc(sizeof(StateInstance));
 
+    s->stage = A_STATE_INIT;
     s->function = function;
+    s->objects = a_hash_new();
 
     a_list_push(stack, s);
 }
 
 void a_state_pop(void)
 {
-    changed = true;
+    StateInstance* const s = a_list_peek(stack);
 
-    StateInstance* const s = a_list_pop(stack);
-
-    free(s);
+    if(s) {
+        changed = true;
+        s->stage = A_STATE_FREE;
+    }
 }
 
 void a_state_replace(const char* const name)
@@ -98,10 +101,71 @@ void a_state_replace(const char* const name)
 void a_state_exit(void)
 {
     changed = true;
-    a_list_empty(stack);
+
+    ListIterate(stack, StateInstance, s) {
+        s->stage = A_STATE_FREE;
+    }
 }
 
-bool a_state_unchanged(void)
+void StateAdd(const char* const name, void* const object)
+{
+    const StateInstance* const s = a_list_peek(stack);
+
+    if(s) {
+        a_hash_add(s->objects, name, object);
+    }
+}
+
+void* StateGet(const char* const name)
+{
+    const StateInstance* const s = a_list_peek(stack);
+
+    if(s) {
+        return a_hash_get(s->objects, name);
+    }
+
+    return NULL;
+}
+
+void a_state__run(void)
+{
+    while(!a_list_isEmpty(stack)) {
+        const StateInstance* const s = a_list_peek(stack);
+
+        if(s->stage == A_STATE_FREE) {
+            a_hash_free(s->objects);
+            free(a_list_pop(stack));
+        } else {
+            changed = false;
+            s->function();
+        }
+    }
+}
+
+StateStage a_state__stage(void)
+{
+    const StateInstance* const s = a_list_peek(stack);
+
+    if(s) {
+        return s->stage;
+    }
+
+    return A_STATE_INVALID;
+}
+
+bool a_state__setStage(const StateStage stage)
+{
+    StateInstance* const s = a_list_peek(stack);
+
+    if(s) {
+        s->stage = stage;
+        return true;
+    }
+
+    return false;
+}
+
+bool a_state__unchanged(void)
 {
     static bool first = true;
 
