@@ -19,23 +19,26 @@
 
 #include "a2x_pack_screenshot.v.h"
 
-static char* screens_dir;
+#define SCREENSHOTS_LIMIT 99999
+
+static bool can_save;
+static char* prefix;
+static uint number;
 
 void a_screenshot__init(void)
 {
-    screens_dir = a2x_str("screenshot.dir");
+    const char* const screens_dir = a2x_str("screenshot.dir");
 
     if(!a_dir_exists(screens_dir)) {
         a_dir_make(screens_dir);
     }
-}
 
-void a_screenshot_save(void)
-{
+    can_save = true;
+    prefix = a_str_merge(screens_dir, "/", a2x_str("app.title"), "-");
+    number = 0;
+
     Dir* const dir = a_dir_open(screens_dir);
     a_dir_reverse(dir);
-
-    int number = 1;
 
     if(a_dir_iterate(dir)) {
         const char* const file = a_dir_current(dir)[0];
@@ -43,32 +46,41 @@ void a_screenshot_save(void)
         int start = a_str_lastIndex(file, '-');
         int end = a_str_lastIndex(file, '.');
 
-        if(start == -1 || end == -1 || end - start != 6) {
-            a_error("Found invalid screenshot file: %s", file);
-        } else {
-            char* const num = a_str_sub(file, start + 1, end);
-            int num_i = atoi(num);
+        if(start != -1 && end != -1 && end - start == 6) {
+            number = atoi(a_str_sub(file, start + 1, end));
 
-            if(num_i > 0) {
-                number = num_i + 1;
-                a_out("Saving screenshot %d", number);
-            } else {
-                a_error("Found invalid screenshot file: %s", file);
+            if(number <= 0) {
+                can_save = false;
             }
+        } else {
+            can_save = false;
+        }
+
+        if(!can_save) {
+            a_error("Can't save screenshots: invalid file '%s'", file);
         }
     }
 
-    if(number == -1) {
-        a_error("Could not take screenshot");
+    a_dir_close(dir);
+}
+
+void a_screenshot_save(void)
+{
+    if(!can_save) {
+        a_error("Can't save screenshots");
         return;
     }
 
-    char name[256];
-    sprintf(name, "%s/%s-%05d.png", screens_dir, a2x_str("app.title"), number);
+    if(++number > SCREENSHOTS_LIMIT) {
+        a_error("%d screenshots limit exceeded", SCREENSHOTS_LIMIT);
+        return;
+    }
 
+    char num[6];
+    sprintf(num, "%05d", number);
+
+    char* const name = a_str_merge(prefix, num, ".png");
+
+    a_out("Saving screenshot '%s'", name);
     a_png_write(name, a_pixels, a_width, a_height);
-
-    //cleanup:
-
-    a_dir_close(dir);
 }
