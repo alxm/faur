@@ -50,7 +50,7 @@ void a2x(void)
     a2x_set("app.title", "{0}");
     a2x_set("app.version", "1.0");
     a2x_set("app.author", "You");
-    a2x_set("app.quiet", "yes");
+    a2x_set("app.quiet", "no");
 }}
 
 void Main(void)

@@ -36,7 +36,12 @@ Installation and Use
     Compiling main.c
     Building Simple
     Running Simple
+    [ a2x Msg ] Opening Simple 1.0 by You, compiled ?
+    [ a2x Msg ] You can edit a2x.cfg
+    [ a2x Msg ] Opening Main()
     Code me!
+    [ a2x Msg ] Main() closed
+    [ a2x Msg ] Closing Simple - see you next time.
 
 ### A Simple Program
 
@@ -47,7 +52,7 @@ Installation and Use
         a2x_set("app.title", "A Simple Program");
         a2x_set("app.version", "1.0");
         a2x_set("app.author", "You");
-        a2x_set("app.quiet", "yes");
+        a2x_set("app.quiet", "no");
     }
 
     void Main(void)
