@@ -45,7 +45,7 @@ include $(A2X_PATH)/make/project/Makefile.linux
     newfile(project_path + "/src/main.c",
 """#include <a2x.h>
 
-void a2x(void)
+A_SETUP
 {{
     a2x_set("app.title", "{0}");
     a2x_set("app.version", "1.0");
@@ -53,7 +53,7 @@ void a2x(void)
     a2x_set("app.quiet", "no");
 }}
 
-void Main(void)
+A_MAIN
 {{
     printf("Code me!\\n");
 }}

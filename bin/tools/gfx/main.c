@@ -1,6 +1,6 @@
 #include <a2x.h>
 
-void a2x(void)
+A_SETUP
 {
 	a2x_set("app.title", "a2x_gfx");
 	a2x_set("app.version", "0.2");
@@ -9,7 +9,7 @@ void a2x(void)
 	a2x_set("video.window", "no");
 }
 
-void Main(void)
+A_MAIN
 {
     if(a_argsNum != 4) {
         printf("Error: %s inputFile file.c file.h\n", a_args[0]);

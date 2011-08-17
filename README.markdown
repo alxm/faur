@@ -47,7 +47,7 @@ Installation and Use
 
     #include <a2x.h>
 
-    void a2x(void)
+    A_SETUP
     {
         a2x_set("app.title", "A Simple Program");
         a2x_set("app.version", "1.0");
@@ -55,7 +55,7 @@ Installation and Use
         a2x_set("app.quiet", "no");
     }
 
-    void Main(void)
+    A_MAIN
     {
         printf("Code me!\n");
     }

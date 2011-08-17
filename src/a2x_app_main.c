@@ -55,10 +55,10 @@ int main(int argc, char** argv)
     a_font__init();
     a_state__init();
 
-    a_out("Opening Main()");
+    a_out("Opening A_MAIN");
     a_main();
     a_state__run();
-    a_out("Main() closed");
+    a_out("A_MAIN closed");
 
     a_state__free();
     a_sound__free();
