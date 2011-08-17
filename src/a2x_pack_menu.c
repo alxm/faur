@@ -81,8 +81,8 @@ Menu* a_menu_new(Input* const next, Input* const back, Input* const select, Inpu
 void a_menu_free(Menu* const m)
 {
     if(m->freeItem) {
-        while(a_list_iterate(m->items)) {
-            m->freeItem(a_list_current(m->items));
+        A_LIST_ITERATE(m->items, void, v) {
+            m->freeItem(v);
         }
     }
 

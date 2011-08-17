@@ -206,8 +206,8 @@ SpriteFrames* a_spriteframes_clone(const SpriteFrames* const src)
 {
     SpriteFrames* const sf = a_spriteframes_new(src->framesPerCycle);
 
-    while(a_list_iterate(src->sprites)) {
-        a_spriteframes_add(sf, a_list_current(src->sprites));
+    A_LIST_ITERATE(src->sprites, Sprite, s) {
+        a_spriteframes_add(sf, s);
     }
 
     return sf;

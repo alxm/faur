@@ -33,8 +33,8 @@ void a_sprite__init(void)
 
 void a_sprite__free(void)
 {
-    while(a_list_iterate(sprites)) {
-        a_sprite_free(a_list_current(sprites));
+    A_LIST_ITERATE(sprites, Sprite, s) {
+        a_sprite_free(s);
     }
 
     a_list_free(sprites, false);
@@ -168,9 +168,9 @@ void a_sprite_newTransparent(Sprite* const s)
 
         int counter = 0;
 
-        while(a_list_iterate(spans)) {
-            const int x1 = ((Span*)a_list_current(spans))->x1;
-            const int x2 = ((Span*)a_list_current(spans))->x2;
+        A_LIST_ITERATE(spans, Span, span) {
+            const int x1 = span->x1;
+            const int x2 = span->x2;
 
             s->spans[i][counter] = malloc(3 * sizeof(int));
 

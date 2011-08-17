@@ -102,8 +102,7 @@ void a_colpoint_free(ColPoint* const p)
 {
     List* const nodes = p->nodes;
 
-    while(a_list_iterate(nodes)) {
-        ListNode* const n = a_list__current(nodes);
+    A_LIST_ITERATE(nodes, ListNode, n) {
         a_list_removeNode(n, false);
     }
 
@@ -121,8 +120,8 @@ void a_colpoint_setCoords(ColPoint* const p, const fix8 x, const fix8 y)
     List* const pt_nodes = p->nodes;
 
     // remove point from all the submaps it was in
-    while(a_list_iterate(pt_nodes)) {
-        a_list_removeNode(a_list__current(pt_nodes), false);
+    A_LIST_ITERATE(pt_nodes, ListNode, n) {
+        a_list_removeNode(n, false);
     }
 
     // purge old information

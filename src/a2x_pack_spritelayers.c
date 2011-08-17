@@ -63,11 +63,7 @@ void a_spritelayers_add(SpriteLayers* const s, Sprite* const sprite, const Pixel
 
 void a_spritelayers_blit(SpriteLayers* const s, const int x, const int y)
 {
-    List* const layers = s->layers;
-
-    while(a_list_iterate(layers)) {
-        Layer* const l = a_list_current(layers);
-
+    A_LIST_ITERATE(s->layers, Layer, l) {
         a_pixel_setBlend(l->blend);
         a_pixel_setRGB(l->r, l->g, l->b);
         a_pixel_setAlpha(l->a);

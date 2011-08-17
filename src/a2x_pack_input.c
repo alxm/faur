@@ -191,17 +191,12 @@ void a_input__init(void)
 
 void a_input__free(void)
 {
-    while(a_list_iterate(inputs)) {
-        a_input_free(a_list_current(inputs));
+    A_LIST_ITERATE(inputs, Input, i) {
+        a_input_free(i);
     }
 
     a_list_free(inputs, false);
-
-    while(a_list_iterate(buttonList)) {
-        free(a_list_current(buttonList));
-    }
-
-    a_list_free(buttonList, false);
+    a_list_free(buttonList, true);
     a_hash_free(buttonNames, false);
 
     if(a2x_bool("input.trackMouse")) {
@@ -224,8 +219,7 @@ void a_input__get(void)
     Button* const any = a_list__first(buttonList);
     any->pressed = 0;
 
-    while(a_list_iterate(buttonList)) {
-        Button* const b = a_list_current(buttonList);
+    A_LIST_ITERATE(buttonList, Button, b) {
         b->freshEvent = 0;
     }
 
@@ -319,11 +313,7 @@ void a_input__get(void)
                 any->pressed = 1;
             }
 
-            List* const l = buttonList;
-
-            while(a_list_iterate(l)) {
-                Button* const b = a_list_current(l);
-
+            A_LIST_ITERATE(buttonList, Button, b) {
                 for(int i = b->numCodes; i--; ) {
                     if(b->codes[i] == button) {
                         b->pressed = action;
@@ -501,12 +491,9 @@ Input* a_input_new(const char* const names)
     i->name = NULL;
 
     while(a_strtok_next(t)) {
-        List* const l = buttonList;
         const char* const name = a_strtok_get(t);
 
-        while(a_list_iterate(l)) {
-            Button* const b = a_list_current(l);
-
+        A_LIST_ITERATE(buttonList, Button, b) {
             if(a_str_equal(name, b->name)) {
                 a_list_addLast(i->buttons, b);
 
@@ -536,13 +523,8 @@ void a_input_free(Input* const i)
 
 bool a_input_get(Input* const i)
 {
-    List* const l = i->buttons;
-
-    while(a_list_iterate(l)) {
-        Button* const b = a_list_current(l);
-
+    A_LIST_ITERATE(i->buttons, Button, b) {
         if(b->pressed) {
-            a_list_reset(l);
             return true;
         }
     }
@@ -552,10 +534,7 @@ bool a_input_get(Input* const i)
 
 void a_input_unpress(Input* const i)
 {
-    List* const l = i->buttons;
-
-    while(a_list_iterate(l)) {
-        Button* const b = a_list_current(l);
+    A_LIST_ITERATE(i->buttons, Button, b) {
         b->pressed = 0;
     }
 }

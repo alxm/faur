@@ -70,12 +70,12 @@ void a_sound__free(void)
     if(a2x_bool("sound.on")) {
         a_music_stop();
 
-        while(a_list_iterate(sfxList)) {
-            a_sfx_free(a_list_current(sfxList));
+        A_LIST_ITERATE(sfxList, Sound, s) {
+            a_sfx_free(s);
         }
 
-        while(a_list_iterate(musicList)) {
-            a_music_free(a_list_current(musicList));
+        A_LIST_ITERATE(musicList, Music, m) {
+            a_music_free(m);
         }
 
         a_list_free(sfxList, false);
@@ -182,8 +182,8 @@ void a_sfx_play(Sound* const s)
 void a_sfx_volume(const int v)
 {
     if(a2x_bool("sound.on")) {
-        while(a_list_iterate(sfxList)) {
-            ((Sound*)a_list_current(sfxList))->volume = v;
+        A_LIST_ITERATE(sfxList, Sound, s) {
+            s->volume = v;
         }
     }
 }
