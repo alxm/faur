@@ -22,15 +22,17 @@
 typedef void (*StateFunction)(void);
 
 typedef struct StateInstance {
-    StateStage stage;
+    const char* name;
     StateFunction function;
     Hash* objects;
+    StateStage stage;
 } StateInstance;
 
 static Hash* functions;
 static List* stack;
 static StateInstance* new_state;
 static bool changed;
+static bool replacing;
 
 void a_state__init(void)
 {
@@ -38,6 +40,7 @@ void a_state__init(void)
     stack = a_list_new();
     new_state = NULL;
     changed = false;
+    replacing = false;
 }
 
 void a_state__free(void)
@@ -59,57 +62,82 @@ void a_state_new(const char* const name, void (*function)(void))
 
 void a_state_push(const char* const name)
 {
-    const StateFunction function = a_hash_get(functions, name);
+    const StateInstance* const active = a_list_peek(stack);
+
+    if(!replacing && active && active->stage != A_STATE_STAGE_BODY) {
+        a_error("Push state '%s': only call from A_STATE_BODY", name);
+        exit(1);
+    }
+
+    StateFunction function = a_hash_get(functions, name);
 
     if(function == NULL) {
-        a_error("No state '%s'", name);
-        return;
+        a_error("Push state '%s': does not exist", name);
+        exit(1);
     }
 
     changed = true;
 
     StateInstance* const s = malloc(sizeof(StateInstance));
 
-    s->stage = A_STATE_STAGE_INIT;
+    s->name = a_str_dup(name);
     s->function = function;
     s->objects = a_hash_new();
+    s->stage = A_STATE_STAGE_INIT;
 
     if(a_list_isEmpty(stack)) {
         a_list_push(stack, s);
     } else if(new_state == NULL) {
         new_state = s;
     } else {
-        a_error("Can't push '%s'", name);
+        a_error("Push state '%s': already pushed state '%s'",
+            name, new_state->name);
+        exit(1);
     }
 }
 
 void a_state_pop(void)
 {
-    StateInstance* const s = a_list_peek(stack);
+    StateInstance* const active = a_list_peek(stack);
 
-    if(s == NULL) {
-        a_error("No active state to pop");
-        return;
+    if(active == NULL) {
+        a_error("Pop state: no active state");
+        exit(1);
+    } else if(active->stage != A_STATE_STAGE_BODY) {
+        a_error("Pop state '%s': only call from A_STATE_BODY",
+            active->name);
+        exit(1);
     }
 
     changed = true;
-    s->stage = A_STATE_STAGE_FREE;
+    active->stage = A_STATE_STAGE_FREE;
 }
 
 void a_state_replace(const char* const name)
 {
     if(a_hash_get(functions, name) == NULL) {
-        a_error("No state '%s'", name);
-        return;
+        a_error("Replace state '%s': does not exist", name);
+        exit(1);
     }
 
-    if(a_list_isEmpty(stack)) {
-        a_error("No active state, use a_state_push");
-        return;
+    const StateInstance* const active = a_list_peek(stack);
+
+    if(active == NULL) {
+        a_error("Replace state '%s': no active state, use a_state_push", name);
+        exit(1);
+    } else if(active->stage != A_STATE_STAGE_BODY) {
+        a_error(
+            "Replace state '%s' with '%s': only call from A_STATE_BODY",
+            active->name, name);
+        exit(1);
     }
+
+    replacing = true;
 
     a_state_pop();
     a_state_push(name);
+
+    replacing = false;
 }
 
 void a_state_exit(void)
