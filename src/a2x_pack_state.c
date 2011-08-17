@@ -29,14 +29,14 @@ typedef struct StateInstance {
 
 static Hash* functions;
 static List* stack;
-
+static StateInstance* new_state;
 static bool changed;
 
 void a_state__init(void)
 {
     functions = a_hash_new();
     stack = a_list_new();
-
+    new_state = NULL;
     changed = false;
 }
 
@@ -74,23 +74,37 @@ void a_state_push(const char* const name)
     s->function = function;
     s->objects = a_hash_new();
 
-    a_list_push(stack, s);
+    if(a_list_isEmpty(stack)) {
+        a_list_push(stack, s);
+    } else if(new_state == NULL) {
+        new_state = s;
+    } else {
+        a_error("Can't push '%s'", name);
+    }
 }
 
 void a_state_pop(void)
 {
     StateInstance* const s = a_list_peek(stack);
 
-    if(s) {
-        changed = true;
-        s->stage = A_STATE_STAGE_FREE;
+    if(s == NULL) {
+        a_error("No active state to pop");
+        return;
     }
+
+    changed = true;
+    s->stage = A_STATE_STAGE_FREE;
 }
 
 void a_state_replace(const char* const name)
 {
     if(a_hash_get(functions, name) == NULL) {
         a_error("No state '%s'", name);
+        return;
+    }
+
+    if(a_list_isEmpty(stack)) {
+        a_error("No active state, use a_state_push");
         return;
     }
 
@@ -132,12 +146,17 @@ void a_state__run(void)
     while(!a_list_isEmpty(stack)) {
         const StateInstance* const s = a_list_peek(stack);
 
+        changed = false;
+        s->function();
+
         if(s->stage == A_STATE_STAGE_FREE) {
             a_hash_free(s->objects, false);
             free(a_list_pop(stack));
-        } else {
-            changed = false;
-            s->function();
+        }
+
+        if(new_state) {
+            a_list_push(stack, new_state);
+            new_state = NULL;
         }
     }
 }

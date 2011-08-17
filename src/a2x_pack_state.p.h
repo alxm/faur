@@ -36,7 +36,7 @@ typedef enum {A_STATE_STAGE_INVALID, A_STATE_STAGE_INIT, A_STATE_STAGE_BODY, A_S
 #define A_STATE_INIT if(a_state__stage() == A_STATE_STAGE_INIT)
 #define A_STATE_BODY if(a_state__stage() == A_STATE_STAGE_BODY || (a_state__stage() == A_STATE_STAGE_INIT && a_state__setStage(A_STATE_STAGE_BODY)))
 #define A_STATE_FREE if(a_state__stage() == A_STATE_STAGE_FREE)
-#define A_STATE_LOOP while(a_state__stage() == A_STATE_STAGE_BODY && a_state__unchanged())
+#define A_STATE_LOOP while(a_state__unchanged())
 
 extern void a_state_add(const char* const name, void* const object);
 extern void* a_state_get(const char* const name);
