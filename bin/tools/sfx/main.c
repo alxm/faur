@@ -54,7 +54,4 @@ A_MAIN
 
     a_file_close(hf);
     a_file_close(cf);
-
-    free(sfxName);
-    free(sfxData);
 }
