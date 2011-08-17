@@ -25,7 +25,6 @@ struct StringTok {
     char* delims;
     int numDelims;
     int index;
-    char* tok;
 };
 
 static bool is_delim(const char c, const char* const d, const int n);
@@ -38,7 +37,6 @@ StringTok* a_strtok_new(const char* const s, const char* const d)
     t->delims = a_str_dup(d);
     t->numDelims = strlen(d);
     t->index = 0;
-    t->tok = NULL;
 
     return t;
 }
@@ -50,42 +48,44 @@ void a_strtok_free(StringTok* const t)
 
 bool a_strtok_next(StringTok* const t)
 {
-    char* const string = t->string;
+    const char* const string = t->string;
     const char* const delims = t->delims;
     const int numDelims = t->numDelims;
 
-    int start = t->index;
-    int end;
-
-    while(1) {
-        if(string[start] == '\0') {
+    while(true) {
+        if(string[t->index] == '\0') {
             return false;
-        } else if(is_delim(string[start], delims, numDelims)) {
-            start++;
+        } else if(is_delim(string[t->index], delims, numDelims)) {
+            t->index++;
         } else {
-            break;
+            return true;
         }
     }
-
-    for(end = start; string[end] != '\0' && !is_delim(string[end], delims, numDelims); end++) {
-        continue;
-    }
-
-    const int len = end - start;
-    char* const str = a_str__alloc((len + 1) * sizeof(char));
-
-    memcpy(str, &string[start], len);
-    str[len] = '\0';
-
-    t->index = end;
-    t->tok = str;
-
-    return true;
 }
 
 char* a_strtok_get(StringTok* const t)
 {
-    return t->tok;
+    const char* const string = t->string;
+    const char* const delims = t->delims;
+    const int numDelims = t->numDelims;
+
+    while(is_delim(string[t->index], delims, numDelims)) {
+        t->index++;
+    }
+
+    const int start = t->index;
+
+    while(string[t->index] != '\0' && !is_delim(string[t->index], delims, numDelims)) {
+        t->index++;
+    }
+
+    const int len = t->index - start;
+    char* const token = a_str__alloc((len + 1) * sizeof(char));
+
+    memcpy(token, &string[start], len);
+    token[len] = '\0';
+
+    return token;
 }
 
 static bool is_delim(const char c, const char* const d, const int n)
