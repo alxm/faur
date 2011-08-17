@@ -30,7 +30,7 @@ int main(int argc, char** argv)
     a_str__init();
 
     a_settings__defaults();
-    a2x();
+    a_setup();
     a_settings__freeze();
 
     a_out("Opening %s %s by %s, compiled %s",
@@ -56,7 +56,7 @@ int main(int argc, char** argv)
     a_state__init();
 
     a_out("Opening Main()");
-    Main();
+    a_main();
     a_state__run();
     a_out("Main() closed");
 

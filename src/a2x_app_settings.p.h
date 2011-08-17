@@ -22,7 +22,8 @@
 
 #include "a2x_app_includes.h"
 
-extern void a2x(void);
+#define A_SETUP void a_setup(void)
+extern A_SETUP;
 
 extern void a2x_set(const char* const key, const char* const val);
 extern void a2x_flip(const char* const key);

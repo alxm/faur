@@ -61,6 +61,7 @@
 extern int a_argsNum;
 extern char** a_args;
 
-extern void Main(void);
+#define A_MAIN void a_main(void)
+extern A_MAIN;
 
 #endif // A2X_APP_MAIN_PH
