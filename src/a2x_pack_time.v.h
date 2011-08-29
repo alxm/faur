@@ -23,6 +23,6 @@
 #include "a2x_pack_time.p.h"
 
 extern void a_time__init(void);
-extern void a_time__free(void);
+extern void a_time__uninit(void);
 
 #endif // A2X_PACK_TIME_VH

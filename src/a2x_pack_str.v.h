@@ -27,7 +27,7 @@
 #include "a2x_pack_strpool.v.h"
 
 extern void a_str__init(void);
-extern void a_str__free(void);
+extern void a_str__uninit(void);
 
 extern char* a_str__alloc(const uint size);
 

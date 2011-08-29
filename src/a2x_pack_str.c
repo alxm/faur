@@ -32,7 +32,7 @@ void a_str__init(void)
     a_list_addLast(pools, pool);
 }
 
-void a_str__free(void)
+void a_str__uninit(void)
 {
     A_LIST_ITERATE(pools, StringPool, s) {
         a_strpool_free(s);

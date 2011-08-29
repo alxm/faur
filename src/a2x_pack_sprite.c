@@ -31,10 +31,10 @@ void a_sprite__init(void)
     sprites = a_list_new();
 }
 
-void a_sprite__free(void)
+void a_sprite__uninit(void)
 {
     A_LIST_ITERATE(sprites, Sprite, s) {
-        a_sprite_free(s);
+        a_sprite__free(s);
     }
 
     a_list_free(sprites, false);
@@ -185,7 +185,7 @@ void a_sprite_newTransparent(Sprite* const s)
     }
 }
 
-void a_sprite_free(Sprite* const s)
+void a_sprite__free(Sprite* const s)
 {
     free(s->data);
 
@@ -201,8 +201,6 @@ void a_sprite_free(Sprite* const s)
     free(s->spansNum);
 
     free(s);
-
-    a_list_remove(sprites, s);
 }
 
 Sprite* a_sprite_clone(const Sprite* const src)

@@ -60,29 +60,29 @@ int main(int argc, char** argv)
     a_state__run();
     a_out("A_MAIN closed");
 
-    a_state__free();
-    a_sound__free();
-    a_input__free();
-    a_font__free();
-    a_screen__free();
-    a_sprite__free();
-    a_fps__free();
-    a_time__free();
-    a_hw__free();
-    a_sdl__free();
+    a_state__uninit();
+    a_sound__uninit();
+    a_input__uninit();
+    a_font__uninit();
+    a_screen__uninit();
+    a_sprite__uninit();
+    a_fps__uninit();
+    a_time__uninit();
+    a_hw__uninit();
+    a_sdl__uninit();
 
     a_out("Closing %s - see you next time.", a2x_str("app.title"));
 
     #if A_PLATFORM_GP2X || A_PLATFORM_WIZ || A_PLATFORM_CAANOO
         if(a2x_bool("app.gp2xMenu")) {
             a_out("Calling gp2xmenu");
-            a_str__free();
+            a_str__uninit();
 
             chdir("/usr/gp2x");
             execl("gp2xmenu", "gp2xmenu", NULL);
         }
     #else
-        a_str__free();
+        a_str__uninit();
     #endif
 
     return 0;

@@ -43,7 +43,7 @@ void a_state__init(void)
     replacing = false;
 }
 
-void a_state__free(void)
+void a_state__uninit(void)
 {
     a_hash_free(functions, false);
 

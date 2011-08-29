@@ -110,7 +110,7 @@ void a_screen__init(void)
     a__height2 = a_height;
 }
 
-void a_screen__free(void)
+void a_screen__uninit(void)
 {
     if(!a2x_bool("video.window")) {
         return;

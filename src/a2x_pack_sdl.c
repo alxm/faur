@@ -42,7 +42,7 @@ void a_sdl__init(void)
     SDL_Init(sdlFlags);
 }
 
-void a_sdl__free(void)
+void a_sdl__uninit(void)
 {
     SDL_Quit();
 }

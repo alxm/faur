@@ -72,7 +72,7 @@ void a_hw__init(void)
     #endif
 }
 
-void a_hw__free(void)
+void a_hw__uninit(void)
 {
     #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
         if(mmuHackOn) {

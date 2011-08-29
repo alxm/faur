@@ -31,6 +31,6 @@
 #include "a2x_pack_timer.v.h"
 
 extern void a_fps__init(void);
-extern void a_fps__free(void);
+extern void a_fps__uninit(void);
 
 #endif // A2X_PACK_FPS_VH

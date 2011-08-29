@@ -29,6 +29,6 @@
 #include "a2x_pack_sprite.v.h"
 
 extern void a_font__init(void);
-extern void a_font__free(void);
+extern void a_font__uninit(void);
 
 #endif // A2X_PACK_FONT_VH

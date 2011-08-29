@@ -189,10 +189,10 @@ void a_input__init(void)
     screenshot = a_input_new(a2x_str("screenshot.button"));
 }
 
-void a_input__free(void)
+void a_input__uninit(void)
 {
     A_LIST_ITERATE(inputs, Input, i) {
-        a_input_free(i);
+        a_input__free(i);
     }
 
     a_list_free(inputs, false);
@@ -513,12 +513,10 @@ Input* a_input_new(const char* const names)
     return i;
 }
 
-void a_input_free(Input* const i)
+void a_input__free(Input* const i)
 {
     a_list_free(i->buttons, false);
     free(i);
-
-    a_list_remove(inputs, i);
 }
 
 bool a_input_get(Input* const i)

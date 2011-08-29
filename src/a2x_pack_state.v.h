@@ -27,7 +27,7 @@
 #include "a2x_pack_list.v.h"
 
 extern void a_state__init(void);
-extern void a_state__free(void);
+extern void a_state__uninit(void);
 
 extern void a_state__run(void);
 

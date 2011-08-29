@@ -65,28 +65,23 @@ void a_sound__init(void)
     }
 }
 
-void a_sound__free(void)
+void a_sound__uninit(void)
 {
     if(a2x_bool("sound.on")) {
         a_music_stop();
 
         A_LIST_ITERATE(sfxList, Sound, s) {
-            a_sfx_free(s);
+            a_sfx__free(s);
         }
 
         A_LIST_ITERATE(musicList, Music, m) {
-            a_music_free(m);
+            a_music__free(m);
         }
 
         a_list_free(sfxList, false);
         a_list_free(musicList, false);
 
         Mix_CloseAudio();
-
-        #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
-            a_input_free(a__volUp);
-            a_input_free(a__volDown);
-        #endif
     }
 }
 
@@ -109,11 +104,10 @@ Music* a_music_load(const char* const path)
     }
 }
 
-void a_music_free(Music* const m)
+void a_music__free(Music* const m)
 {
     if(a2x_bool("sound.on")) {
         Mix_FreeMusic(m);
-        a_list_remove(musicList, m);
     }
 }
 
@@ -164,11 +158,10 @@ Sound* a_sfx__fromData(const uint16_t* const data, const int size)
     }
 }
 
-void a_sfx_free(Sound* const s)
+void a_sfx__free(Sound* const s)
 {
     if(a2x_bool("sound.on")) {
         Mix_FreeChunk(s);
-        a_list_remove(sfxList, s);
     }
 }
 

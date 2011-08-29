@@ -51,7 +51,7 @@ void a_font__init(void)
     fonts = NULL;
 }
 
-void a_font__free(void)
+void a_font__uninit(void)
 {
     a_list_free(fontsList, true);
     free(fonts);

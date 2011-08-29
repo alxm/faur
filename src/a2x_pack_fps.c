@@ -49,7 +49,7 @@ void a_fps__init(void)
     counter = 0;
 }
 
-void a_fps__free(void)
+void a_fps__uninit(void)
 {
     a_timer_free(timer);
 }

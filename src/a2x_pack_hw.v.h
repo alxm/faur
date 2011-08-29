@@ -27,6 +27,6 @@
 #include "a2x_pack_file.v.h"
 
 extern void a_hw__init(void);
-extern void a_hw__free(void);
+extern void a_hw__uninit(void);
 
 #endif // A2X_PACK_HW_VH

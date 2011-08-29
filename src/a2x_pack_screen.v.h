@@ -32,7 +32,7 @@
 #include "a2x_pack_time.v.h"
 
 extern void a_screen__init(void);
-extern void a_screen__free(void);
+extern void a_screen__uninit(void);
 
 #if A_PLATFORM_LINUXPC || A_PLATFORM_WINDOWS
     extern void a_screen__full(void);

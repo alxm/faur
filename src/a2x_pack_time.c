@@ -45,7 +45,7 @@ void a_time__init(void)
     #endif
 }
 
-void a_time__free(void)
+void a_time__uninit(void)
 {
     #if A_PLATFORM_WIZ || A_PLATFORM_CAANOO
         TIMER_REG(0x40) = 0x0c;

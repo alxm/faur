@@ -30,6 +30,9 @@
 #include "a2x_pack_mem.v.h"
 
 extern void a_sound__init(void);
-extern void a_sound__free(void);
+extern void a_sound__uninit(void);
+
+extern void a_sfx__free(Sound* const s);
+extern void a_music__free(Music* const m);
 
 #endif // A2X_PACK_SOUND_VH

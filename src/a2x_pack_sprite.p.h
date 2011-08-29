@@ -31,7 +31,6 @@ typedef struct Sprite Sprite;
 extern Sprite* a_sprite_newZoomed(const Sheet* const graphic, const int x, const int y, const int w, const int h, const int zoom);
 extern Sprite* a_sprite_newBlank(const int w, const int h);
 extern void a_sprite_newTransparent(Sprite* const s);
-extern void a_sprite_free(Sprite* const s);
 
 extern Sprite* a_sprite_clone(const Sprite* const src);
 
