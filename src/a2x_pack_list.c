@@ -35,7 +35,6 @@ List* a_list_new(void)
 
     list->first = first;
     list->last = last;
-    list->current = first;
     list->items = 0;
 
     return list;
@@ -143,8 +142,6 @@ void* a_list_removeFirst(List* const list, const bool freeContent)
     n->prev->next = n->next;
     n->next->prev = n->prev;
 
-    list->current = n->prev;
-
     list->items--;
 
     if(freeContent) {
@@ -182,24 +179,6 @@ void* a_list_removeLast(List* const list, const bool freeContent)
     return v;
 }
 
-void a_list_removeCurrent(List* const list, const bool freeContent)
-{
-    ListNode* const n = list->current;
-
-    n->prev->next = n->next;
-    n->next->prev = n->prev;
-
-    list->current = n->prev;
-
-    list->items--;
-
-    if(freeContent) {
-        free(n->content);
-    }
-
-    free(n);
-}
-
 void a_list_removeNode(ListNode* const node, const bool freeContent)
 {
     node->prev->next = node->next;
@@ -225,25 +204,6 @@ void a_list_reverse(List* const list)
     save = list->first;
     list->first = list->last;
     list->last = save;
-    list->current = list->first;
-}
-
-bool a_list_iterate(List* const list)
-{
-    ListNode* const n = list->current->next;
-
-    if(n == list->last) {
-        list->current = list->first;
-        return false;
-    }
-
-    list->current = n;
-    return true;
-}
-
-void a_list_reset(List* const list)
-{
-    list->current = list->first;
 }
 
 void** a_list_getArray(List* const list)
@@ -269,16 +229,6 @@ void* a_list_first(const List* const list)
 void* a_list_last(const List* const list)
 {
     return a_list__last(list);
-}
-
-void* a_list_current(const List* const list)
-{
-    return a_list__current(list);
-}
-
-ListNode* a_list_currentNode(const List* const list)
-{
-    return a_list__currentNode(list);
 }
 
 void* a_list_get(const List* const list, const int index)

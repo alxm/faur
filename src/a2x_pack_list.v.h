@@ -27,7 +27,6 @@
 struct List {
     ListNode* first;
     ListNode* last;
-    ListNode* current;
     int items;
 };
 
@@ -39,8 +38,6 @@ struct ListNode {
 
 #define a_list__first(l)         ((l)->first->next->content)
 #define a_list__last(l)          ((l)->last->prev->content)
-#define a_list__current(l)       ((l)->current->content)
-#define a_list__currentNode(l)   ((l)->current)
 #define a_list__size(l)          ((l)->items)
 #define a_list__isEmpty(l)       ((l)->first->next == (l)->last)
 #define a_list__next(n)          ((n)->next)

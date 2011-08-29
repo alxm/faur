@@ -35,7 +35,6 @@ extern ListNode* a_list_addLast(List* const list, void* const content);
 extern void a_list_remove(List* const list, const void* const v);
 extern void* a_list_removeFirst(List* const list, const bool freeContent);
 extern void* a_list_removeLast(List* const list, const bool freeContent);
-extern void a_list_removeCurrent(List* const list, const bool freeContent);
 extern void a_list_removeNode(ListNode* const node, const bool freeContent);
 
 #define a_list_push(l, c) a_list_addFirst(l, c)
@@ -44,21 +43,10 @@ extern void a_list_removeNode(ListNode* const node, const bool freeContent);
 
 extern void a_list_reverse(List* const list);
 
-extern bool a_list_iterate(List* const list);
-extern void a_list_reset(List* const list);
-
-#define a_list_iterateDone(list) \
-({                               \
-    a_list_reset(list);          \
-    break;                       \
-})
-
 extern void** a_list_getArray(List* const list);
 
 extern void* a_list_first(const List* const list);
 extern void* a_list_last(const List* const list);
-extern void* a_list_current(const List* const list);
-extern ListNode* a_list_currentNode(const List* const list);
 
 extern void* a_list_get(const List* const list, const int index);
 

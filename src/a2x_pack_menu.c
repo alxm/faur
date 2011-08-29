@@ -26,11 +26,11 @@ typedef enum MenuState {
 struct Menu {
     List* items;
     void (*freeItem)(void* v);
-    ListNode* selectedNode;
     int selectedIndex;
+    void* selectedItem;
     MenuState state;
     int pause;
-    int used;
+    bool used;
     void (*input)(struct Menu* const m, void* const v);
     void* v;
     char* title;
@@ -53,12 +53,12 @@ Menu* a_menu_new(Input* const next, Input* const back, Input* const select, Inpu
     m->items = a_list_new();
     m->freeItem = freeItem;
 
-    m->selectedNode = NULL;
     m->selectedIndex = 0;
+    m->selectedItem = NULL;
 
     m->state = A_MENU_RUNNING;
     m->pause = A_MENU_PAUSE;
-    m->used = 0;
+    m->used = false;
 
     m->input = NULL;
     m->v = NULL;
@@ -119,10 +119,10 @@ void a_menu_addSounds(Menu* const m, Sound* const accept, Sound* const cancel, S
 
 void a_menu_addItem(Menu* const m, void* const v)
 {
-    ListNode* const n = a_list_addLast(m->items, v);
+    a_list_addLast(m->items, v);
 
-    if(m->selectedNode == NULL) {
-        m->selectedNode = n;
+    if(m->selectedItem == NULL) {
+        m->selectedItem = v;
     }
 }
 
@@ -133,17 +133,17 @@ void a_menu_input(Menu* const m)
         return;
     }
 
-    m->used = 0;
+    m->used = false;
 
     if(!m->pause) {
         if(a_input_get(m->back)) {
             m->selectedIndex--;
-            m->selectedNode = a_list__prev(m->selectedNode);
-            m->used = 1;
+            m->selectedItem = a_list_get(m->items, m->selectedIndex);
+            m->used = true;
         } else if(a_input_get(m->next)) {
             m->selectedIndex++;
-            m->selectedNode = a_list__next(m->selectedNode);
-            m->used = 1;
+            m->selectedItem = a_list_get(m->items, m->selectedIndex);
+            m->used = true;
         }
     } else {
         if(!a_input_get(m->back) && !a_input_get(m->next) && !a_input_get(m->select) && !(m->cancel && a_input_get(m->cancel))) {
@@ -161,11 +161,11 @@ void a_menu_input(Menu* const m)
         }
 
         if(m->selectedIndex < 0) {
-            m->selectedNode = m->items->last->prev;
-            m->selectedIndex = a_menu_items(m) - 1;
-        } else if(m->selectedIndex == a_menu_items(m)) {
-            m->selectedNode = m->items->first->next;
+            m->selectedIndex = a_list__size(m->items) - 1;
+            m->selectedItem = a_list_last(m->items);
+        } else if(m->selectedIndex == a_list__size(m->items)) {
             m->selectedIndex = 0;
+            m->selectedItem = a_list_first(m->items);
         }
     } else {
         if(a_input_get(m->select)) {
@@ -198,30 +198,14 @@ void a_menu_input(Menu* const m)
     }
 }
 
-int a_menu_items(const Menu* const m)
+List* a_menu__items(const Menu* const m)
 {
-    return a_list__size(m->items);
+    return m->items;
 }
 
-
-bool a_menu_iterate(const Menu* const m)
+bool a_menu_isSelected(const Menu* const m, const void* const item)
 {
-    return a_list_iterate(m->items);
-}
-
-void a_menu_iterateReset(const Menu* const m)
-{
-    a_list_reset(m->items);
-}
-
-void* a_menu_currentItem(const Menu* const m)
-{
-    return a_list_current(m->items);
-}
-
-bool a_menu_isSelected(const Menu* const m)
-{
-    return a_list_currentNode(m->items) == m->selectedNode;
+    return item == m->selectedItem;
 }
 
 void a_menu_keepRunning(Menu* const m)

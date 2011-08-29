@@ -25,6 +25,7 @@
 typedef struct Menu Menu;
 
 #include "a2x_pack_input.p.h"
+#include "a2x_pack_list.p.h"
 #include "a2x_pack_sound.p.h"
 #include "a2x_pack_sprite.p.h"
 
@@ -39,12 +40,12 @@ extern void a_menu_addSounds(Menu* const m, Sound* const accept, Sound* const ca
 extern void a_menu_addItem(Menu* const m, void* const v);
 
 extern void a_menu_input(Menu* const m);
+extern List* a_menu__items(const Menu* const m);
 
-extern int a_menu_items(const Menu* const m);
-extern bool a_menu_iterate(const Menu* const m);
-extern void a_menu_iterateReset(const Menu* const m);
-extern void* a_menu_currentItem(const Menu* const m);
-extern bool a_menu_isSelected(const Menu* const m);
+#define A_MENU_ITERATE(menu, type, var) \
+    A_LIST_ITERATE(a_menu__items(menu), type, var)
+
+extern bool a_menu_isSelected(const Menu* const m, const void* const item);
 extern void a_menu_keepRunning(Menu* const m);
 extern bool a_menu_running(const Menu* const m);
 extern bool a_menu_finished(const Menu* const m);

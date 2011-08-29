@@ -60,11 +60,6 @@ void a_listit_remove(ListIt* const it, const bool freeContent)
     List* const list = it->list;
     ListNode* const n = it->current;
 
-    // prevents errors when calling from inside an a_list_iterate() loop
-    if(n == list->current) {
-        list->current = n->prev;
-    }
-
     n->prev->next = n->next;
     n->next->prev = n->prev;
 
