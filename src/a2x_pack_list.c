@@ -122,7 +122,7 @@ void a_list_remove(List* const list, const void* const v)
         void* const c = a_listit_get(it);
 
         if(c == v) {
-            a_listit_remove(it);
+            a_listit_remove(it, false);
             break;
         }
     }

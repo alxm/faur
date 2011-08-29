@@ -28,13 +28,12 @@ typedef struct ListIt ListIt;
 
 extern ListIt* a_listit_new(List* const list);
 extern void a_listit_free(ListIt* const it);
+
 extern bool a_listit_next(const ListIt* const it);
 extern void* a_listit_get(ListIt* const it);
 extern void* a_listit_peek(const ListIt* const it);
 
-#define a_listit_remove(it) a_listit__remove(it, 0)
-#define a_listit_removeContent(it) a_listit__remove(it, 1)
-extern void a_listit__remove(ListIt* const it, const int freeContent);
+extern void a_listit_remove(ListIt* const it, const bool freeContent);
 
 #define A_LIST_ITERATE(list, type, var)                                                \
     for(ListIt* a__it = a_listit_new(list); a__it; a_listit_free(a__it), a__it = NULL) \
