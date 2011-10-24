@@ -104,8 +104,7 @@ void a_state_pop(void)
         a_error("Pop state: no active state");
         exit(1);
     } else if(active->stage != A_STATE_STAGE_BODY) {
-        a_error("Pop state '%s': only call from A_STATE_BODY",
-            active->name);
+        a_error("Pop state '%s': only call from A_STATE_BODY", active->name);
         exit(1);
     }
 

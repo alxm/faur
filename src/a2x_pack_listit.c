@@ -19,46 +19,38 @@
 
 #include "a2x_pack_listit.v.h"
 
-struct ListIt {
-    List* list;
-    ListNode* current;
-};
-
-ListIt* a_listit_new(List* const list)
+ListIt a_listit__new(List* list)
 {
-    ListIt* const it = malloc(sizeof(ListIt));
+    ListIt it;
 
-    it->list = list;
-    it->current = list->first;
+    it.list = list;
+    it.current = list->first;
 
     return it;
 }
 
-void a_listit_free(ListIt* const it)
-{
-    free(it);
-}
-
-bool a_listit_next(const ListIt* const it)
+bool a_listit__next(const ListIt* it)
 {
     return it->current->next != it->list->last;
 }
 
-void* a_listit_get(ListIt* const it)
+void* a_listit__get(ListIt* it)
 {
     it->current = it->current->next;
     return it->current->content;
 }
 
-void* a_listit_peek(const ListIt* const it)
+void* a_listit__peek(const ListIt* it)
 {
     return it->current->next->content;
 }
 
-void a_listit_remove(ListIt* const it, const bool freeContent)
+void a_listit__remove(ListIt* it, const bool freeContent)
 {
     List* const list = it->list;
     ListNode* const n = it->current;
+
+    it->current = n->prev;
 
     n->prev->next = n->next;
     n->next->prev = n->prev;

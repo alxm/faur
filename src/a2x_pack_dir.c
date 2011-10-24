@@ -23,7 +23,7 @@ struct Dir {
     char* path;
     char* name;
     List* files;
-    ListIt* iterator;
+    ListIt iterator;
     int num;
     const char** current;
 };
@@ -63,7 +63,7 @@ Dir* a_dir_openFilter(const char* const path, int (*filter)(const struct dirent*
         free(dlist[i]);
     }
 
-    d->iterator = a_listit_new(d->files);
+    d->iterator = a_listit__new(d->files);
 
     free(dlist);
 
@@ -73,7 +73,6 @@ Dir* a_dir_openFilter(const char* const path, int (*filter)(const struct dirent*
 void a_dir_close(Dir* const d)
 {
     a_list_free(d->files, true);
-    a_listit_free(d->iterator);
     free(d->current);
     free(d);
 }
@@ -81,14 +80,13 @@ void a_dir_close(Dir* const d)
 void a_dir_reverse(Dir* const d)
 {
     a_list_reverse(d->files);
-    a_listit_free(d->iterator);
-    d->iterator = a_listit_new(d->files);
+    d->iterator = a_listit__new(d->files);
 }
 
 bool a_dir_iterate(Dir* const d)
 {
-    if(a_listit_next(d->iterator)) {
-        DirEntry* const e = a_listit_get(d->iterator);
+    if(a_listit__next(&d->iterator)) {
+        DirEntry* const e = a_listit__get(&d->iterator);
 
         d->current[0] = e->name;
         d->current[1] = e->full;

@@ -26,17 +26,21 @@ typedef struct ListIt ListIt;
 
 #include "a2x_pack_list.p.h"
 
-extern ListIt* a_listit_new(List* const list);
-extern void a_listit_free(ListIt* const it);
+struct ListIt {
+    List* list;
+    ListNode* current;
+};
 
-extern bool a_listit_next(const ListIt* const it);
-extern void* a_listit_get(ListIt* const it);
-extern void* a_listit_peek(const ListIt* const it);
+extern ListIt a_listit__new(List* list);
 
-extern void a_listit_remove(ListIt* const it, const bool freeContent);
+extern bool a_listit__next(const ListIt* it);
+extern void* a_listit__get(ListIt* it);
+extern void a_listit__remove(ListIt* it, const bool freeContent);
 
-#define A_LIST_ITERATE(list, type, var)                                                \
-    for(ListIt* a__it = a_listit_new(list); a__it; a_listit_free(a__it), a__it = NULL) \
-        for(type* var; a_listit_next(a__it) && (var = a_listit_get(a__it), true); )
+#define A_LIST_ITERATE(list, type, var)                                                 \
+    for(ListIt a__it = a_listit__new(list); a__it.current; a__it.current = NULL)        \
+        for(type* var; a_listit__next(&a__it) && (var = a_listit__get(&a__it), true); )
+
+#define A_LIST_REMOVE(freeContent) a_listit__remove(&a__it, freeContent)
 
 #endif // A2X_PACK_LISTIT_PH

@@ -115,18 +115,12 @@ ListNode* a_list_addLast(List* const list, void* const content)
 
 void a_list_remove(List* const list, const void* const v)
 {
-    ListIt* const it = a_listit_new(list);
-
-    while(a_listit_next(it)) {
-        void* const c = a_listit_get(it);
-
-        if(c == v) {
-            a_listit_remove(it, false);
+    A_LIST_ITERATE(list, void, var) {
+        if(var == v) {
+            A_LIST_REMOVE(false);
             break;
         }
     }
-
-    a_listit_free(it);
 }
 
 void* a_list_removeFirst(List* const list, const bool freeContent)
@@ -208,15 +202,12 @@ void a_list_reverse(List* const list)
 
 void** a_list_getArray(List* const list)
 {
+    int i = 0;
     void** const array = malloc(list->items * sizeof(void*));
 
-    ListIt* const it = a_listit_new(list);
-
-    for(int i = 0; a_listit_next(it); i++) {
-        array[i] = a_listit_get(it);
+    A_LIST_ITERATE(list, void, v) {
+        array[i++] = v;
     }
-
-    a_listit_free(it);
 
     return array;
 }

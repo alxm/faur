@@ -27,6 +27,12 @@ typedef struct ColPoint ColPoint;
 typedef struct ColIt ColIt;
 
 #include "a2x_pack_fix.p.h"
+#include "a2x_pack_listit.p.h"
+
+struct ColIt {
+    ColPoint* callerPoint;
+    ListIt points; // list of points in the current submap
+};
 
 extern ColMap* a_colmap_new(const int totalWidth, const int totalHeight, const int gridDim);
 extern void a_colmap_free(ColMap* const c);
@@ -38,14 +44,13 @@ extern void a_colpoint_setCoords(ColPoint* const b, const fix8 x, const fix8 y);
 extern void a_colpoint_setParent(ColPoint* const b, void* parent);
 extern void* a_colpoint_getParent(ColPoint* const b);
 
-extern ColIt* a_colit_new(ColPoint* const b);
-extern void a_colit_free(ColIt* const it);
-extern bool a_colit_next(ColIt* const it);
-extern ColPoint* a_colit_get(const ColIt* const it);
+extern ColIt a_colit__new(ColPoint* const b);
+extern bool a_colit__next(ColIt* const it);
+extern ColPoint* a_colit__get(ColIt* const it);
 
-#define A_COL_ITERATE(colpoint, var)                                                    \
-    for(ColIt* a__ci = a_colit_new(colpoint); a__ci; a_colit_free(a__ci), a__ci = NULL) \
-        for(ColPoint* var; a_colit_next(a__ci) && (var = a_colit_get(a__ci)); )
+#define A_COL_ITERATE(colpoint, var) \
+    for(ColIt a__ci = a_colit__new(colpoint); a__ci.callerPoint; a__ci.callerPoint = NULL) \
+        for(ColPoint* var; a_colit__next(&a__ci) && (var = a_colit__get(&a__ci)); )
 
 #define a_collide_boxes(x1, y1, w1, h1, x2, y2, w2, h2) \
 (                                                       \

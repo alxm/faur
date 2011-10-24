@@ -34,11 +34,6 @@ struct ColPoint {
     void* parent; // the object that uses this ColPoint
 };
 
-struct ColIt {
-    ColPoint* callerPoint;
-    ListIt* points; // list of points in the current submap
-};
-
 ColMap* a_colmap_new(const int totalWidth, const int totalHeight, const int gridDim)
 {
     ColMap* const c = malloc(sizeof(ColMap));
@@ -158,33 +153,27 @@ void* a_colpoint_getParent(ColPoint* const p)
     return p->parent;
 }
 
-ColIt* a_colit_new(ColPoint* const p)
+ColIt a_colit__new(ColPoint* const p)
 {
-    ColIt* const it = malloc(sizeof(ColIt));
+    ColIt it;
     ColMap* const colmap = p->colmap;
 
     const int submap_x = a_fix8_fixtoi(p->x) >> colmap->submapShift;
     const int submap_y = a_fix8_fixtoi(p->y) >> colmap->submapShift;
 
-    it->callerPoint = p;
-    it->points = a_listit_new(colmap->submaps[submap_y][submap_x]);
+    it.callerPoint = p;
+    it.points = a_listit__new(colmap->submaps[submap_y][submap_x]);
 
     return it;
 }
 
-void a_colit_free(ColIt* const it)
+bool a_colit__next(ColIt* const it)
 {
-    a_listit_free(it->points);
-    free(it);
-}
-
-bool a_colit_next(ColIt* const it)
-{
-    if(a_listit_next(it->points)) {
+    if(a_listit__next(&it->points)) {
         // don't return the point we iterate on
-        if(a_listit_peek(it->points) == it->callerPoint) {
-            a_listit_get(it->points);
-            return a_colit_next(it);
+        if(a_listit__peek(&it->points) == it->callerPoint) {
+            a_listit__get(&it->points);
+            return a_colit__next(it);
         }
 
         return true;
@@ -193,9 +182,9 @@ bool a_colit_next(ColIt* const it)
     return false;
 }
 
-ColPoint* a_colit_get(const ColIt* const it)
+ColPoint* a_colit__get(ColIt* const it)
 {
-    return a_listit_get(it->points);
+    return a_listit__get(&it->points);
 }
 
 bool a_collide_circles(const int x1, const int y1, const int r1, const int x2, const int y2, const int r2)
