@@ -32,7 +32,7 @@
 extern void a_sound__init(void);
 extern void a_sound__uninit(void);
 
-extern void a_sfx__free(Sound* const s);
-extern void a_music__free(Music* const m);
+extern void a_sfx__free(Sound* s);
+extern void a_music__free(Music* m);
 
 #endif // A2X_PACK_SOUND_VH

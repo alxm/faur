@@ -32,18 +32,18 @@ typedef enum FontAlign {
     A_LEFT = 1, A_MIDDLE = 2, A_RIGHT = 4, A_SPACED = 8, A_SAFE = 16
 } FontAlign;
 
-extern int a_font_load(Sheet* const sheet, const int sx, const int sy, const int zoom, const FontLoad loader);
-extern int a_font_copy(const int font, const uint8_t r, const uint8_t g, const uint8_t b);
+extern int a_font_load(Sheet* sheet, int sx, int sy, int zoom, FontLoad loader);
+extern int a_font_copy(int font, uint8_t r, uint8_t g, uint8_t b);
 
-extern int a_font_text(const FontAlign align, int x, const int y, const int index, const char* const text);
-extern int a_font_safe(const FontAlign align, int x, const int y, const int index, const char* const text);
-extern int a_font_int(const FontAlign align, const int x, const int y, const int f, const int number);
-extern int a_font_float(const FontAlign align, const int x, const int y, const int f, const float number);
-extern int a_font_char(const FontAlign align, const int x, const int y, const int f, const char ch);
+extern int a_font_text(FontAlign align, int x, int y, int index, const char* text);
+extern int a_font_safe(FontAlign align, int x, int y, int index, const char* text);
+extern int a_font_int(FontAlign align, int x, int y, int f, int number);
+extern int a_font_float(FontAlign align, int x, int y, int f, float number);
+extern int a_font_char(FontAlign align, int x, int y, int f, char ch);
 
-extern int a_font_fixed(const FontAlign align, const int x, const int y, const int f, const int width, const char* const text);
+extern int a_font_fixed(FontAlign align, int x, int y, int f, int width, const char* text);
 
-extern int a_font_width(const int index, const char* const text);
+extern int a_font_width(int index, const char* text);
 
 #define a_font_textf(align, x, y, f, ...) \
 ({                                        \

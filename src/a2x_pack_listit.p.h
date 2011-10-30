@@ -35,7 +35,7 @@ extern ListIt a_listit__new(List* list);
 
 extern bool a_listit__next(const ListIt* it);
 extern void* a_listit__get(ListIt* it);
-extern void a_listit__remove(ListIt* it, const bool freeContent);
+extern void a_listit__remove(ListIt* it, bool freeContent);
 
 #define A_LIST_ITERATE(list, type, var)                                                 \
     for(ListIt a__it = a_listit__new(list); a__it.current; a__it.current = NULL)        \

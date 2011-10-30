@@ -25,9 +25,9 @@
 
 typedef struct StringPool StringPool;
 
-extern StringPool* a_strpool_new(const uint bytes);
-extern void a_strpool_free(StringPool* const sp);
+extern StringPool* a_strpool_new(uint bytes);
+extern void a_strpool_free(StringPool* sp);
 
-extern char* a_strpool_alloc(StringPool* const sp, uint size);
+extern char* a_strpool_alloc(StringPool* sp, uint size);
 
 #endif // A2X_PACK_STRPOOL_PH

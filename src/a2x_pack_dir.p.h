@@ -24,14 +24,14 @@
 
 typedef struct Dir Dir;
 
-extern Dir* a_dir_open(const char* const path);
-extern Dir* a_dir_openFilter(const char* const path, int (*filter)(const struct dirent* f));
-extern void a_dir_close(Dir* const d);
+extern Dir* a_dir_open(const char* path);
+extern Dir* a_dir_openFilter(const char* path, int (*filter)(const struct dirent* f));
+extern void a_dir_close(Dir* d);
 
-extern void a_dir_reverse(Dir* const d);
+extern void a_dir_reverse(Dir* d);
 
-extern bool a_dir_iterate(Dir* const d);
-extern const char** a_dir_current(const Dir* const d);
+extern bool a_dir_iterate(Dir* d);
+extern const char** a_dir_current(const Dir* d);
 
 enum {A_DIR_NAME, A_DIR_PATH};
 
@@ -39,11 +39,11 @@ enum {A_DIR_NAME, A_DIR_PATH};
     for(const char** a__pair; a_dir_iterate(dir) && (a__pair = a_dir_current(dir)); )                     \
         for(const char const *name = a__pair[A_DIR_NAME], *path = a__pair[A_DIR_PATH]; name; name = NULL)
 
-extern const char* a_dir_path(const Dir* const d);
-extern const char* a_dir_name(const Dir* const d);
-extern int a_dir_num(const Dir* const d);
+extern const char* a_dir_path(const Dir* d);
+extern const char* a_dir_name(const Dir* d);
+extern int a_dir_num(const Dir* d);
 
-extern bool a_dir_exists(const char* const path);
-extern void a_dir_make(const char* const path);
+extern bool a_dir_exists(const char* path);
+extern void a_dir_make(const char* path);
 
 #endif // A2X_PACK_DIR_PH

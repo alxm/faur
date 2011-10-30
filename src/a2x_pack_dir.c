@@ -35,12 +35,12 @@ typedef struct DirEntry {
 
 static int defaultFilter(const struct dirent* f);
 
-Dir* a_dir_open(const char* const path)
+Dir* a_dir_open(const char* path)
 {
     return a_dir_openFilter(path, defaultFilter);
 }
 
-Dir* a_dir_openFilter(const char* const path, int (*filter)(const struct dirent* f))
+Dir* a_dir_openFilter(const char* path, int (*filter)(const struct dirent* f))
 {
     struct dirent** dlist = NULL;
     const int numFiles = scandir(path, &dlist, filter, alphasort);
@@ -70,20 +70,20 @@ Dir* a_dir_openFilter(const char* const path, int (*filter)(const struct dirent*
     return d;
 }
 
-void a_dir_close(Dir* const d)
+void a_dir_close(Dir* d)
 {
     a_list_free(d->files, true);
     free(d->current);
     free(d);
 }
 
-void a_dir_reverse(Dir* const d)
+void a_dir_reverse(Dir* d)
 {
     a_list_reverse(d->files);
     d->iterator = a_listit__new(d->files);
 }
 
-bool a_dir_iterate(Dir* const d)
+bool a_dir_iterate(Dir* d)
 {
     if(a_listit__next(&d->iterator)) {
         DirEntry* const e = a_listit__get(&d->iterator);
@@ -97,27 +97,27 @@ bool a_dir_iterate(Dir* const d)
     return false;
 }
 
-const char** a_dir_current(const Dir* const d)
+const char** a_dir_current(const Dir* d)
 {
     return d->current;
 }
 
-const char* a_dir_path(const Dir* const d)
+const char* a_dir_path(const Dir* d)
 {
     return d->path;
 }
 
-const char* a_dir_name(const Dir* const d)
+const char* a_dir_name(const Dir* d)
 {
     return d->name;
 }
 
-int a_dir_num(const Dir* const d)
+int a_dir_num(const Dir* d)
 {
     return d->num;
 }
 
-bool a_dir_exists(const char* const path)
+bool a_dir_exists(const char* path)
 {
     DIR* const d = opendir(path);
 
@@ -129,7 +129,7 @@ bool a_dir_exists(const char* const path)
     return false;
 }
 
-void a_dir_make(const char* const path)
+void a_dir_make(const char* path)
 {
     mkdir(path, S_IRWXU);
 }

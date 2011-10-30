@@ -77,8 +77,8 @@ static List* inputs;
 
 static Input* screenshot;
 
-static void registerButton(const char* const name, const int code);
-static void registerButtonFake(const char* const name);
+static void registerButton(const char* name, int code);
+static void registerButtonFake(const char* name);
 
 void a_input__init(void)
 {
@@ -482,7 +482,7 @@ void a_input__get(void)
     #endif
 }
 
-Input* a_input_new(const char* const names)
+Input* a_input_new(const char* names)
 {
     Input* const i = malloc(sizeof(Input));
     StringTok* const t = a_strtok_new(names, ", ");
@@ -513,13 +513,13 @@ Input* a_input_new(const char* const names)
     return i;
 }
 
-void a_input__free(Input* const i)
+void a_input__free(Input* i)
 {
     a_list_free(i->buttons, false);
     free(i);
 }
 
-bool a_input_get(Input* const i)
+bool a_input_get(Input* i)
 {
     A_LIST_ITERATE(i->buttons, Button, b) {
         if(b->pressed) {
@@ -530,14 +530,14 @@ bool a_input_get(Input* const i)
     return false;
 }
 
-void a_input_unpress(Input* const i)
+void a_input_unpress(Input* i)
 {
     A_LIST_ITERATE(i->buttons, Button, b) {
         b->pressed = 0;
     }
 }
 
-bool a_input_getUnpress(Input* const i)
+bool a_input_getUnpress(Input* i)
 {
     if(a_input_get(i)) {
         a_input_unpress(i);
@@ -547,17 +547,17 @@ bool a_input_getUnpress(Input* const i)
     return false;
 }
 
-char* a_input_name(const Input* const i)
+char* a_input_name(const Input* i)
 {
     return i->name;
 }
 
-bool a_input_working(const Input* const i)
+bool a_input_working(const Input* i)
 {
     return i->working;
 }
 
-void a_input_waitFor(Input* const i)
+void a_input_waitFor(Input* i)
 {
     a_input_unpress(i);
 
@@ -572,7 +572,7 @@ bool a_input_tappedScreen(void)
     return mouse.tap;
 }
 
-bool a_input_touchedPoint(const int x, const int y)
+bool a_input_touchedPoint(int x, int y)
 {
     const int shift = mouse.shift;
 
@@ -583,7 +583,7 @@ bool a_input_touchedPoint(const int x, const int y)
         );
 }
 
-bool a_input_touchedRect(const int x, const int y, const int w, const int h)
+bool a_input_touchedRect(int x, int y, int w, int h)
 {
     const int shift = mouse.shift;
 
@@ -594,7 +594,7 @@ bool a_input_touchedRect(const int x, const int y, const int w, const int h)
         );
 }
 
-static void registerButton(const char* const name, const int code)
+static void registerButton(const char* name, int code)
 {
     Button* const bt = a_hash_get(buttonNames, name);
 
@@ -615,7 +615,7 @@ static void registerButton(const char* const name, const int code)
     }
 }
 
-static void registerButtonFake(const char* const name)
+static void registerButtonFake(const char* name)
 {
     registerButton(name, -1);
 }

@@ -53,7 +53,7 @@ Hash* a_hash_new(void)
     return h;
 }
 
-void a_hash_free(Hash* const h, const bool freeContent)
+void a_hash_free(Hash* h, bool freeContent)
 {
     for(int i = A_HASH_NUM; i--; ) {
         Entry* e = h->entries[i];
@@ -73,7 +73,7 @@ void a_hash_free(Hash* const h, const bool freeContent)
     free(h);
 }
 
-void a_hash_add(Hash* const h, const char* const key, void* const content)
+void a_hash_add(Hash* h, const char* key, void* content)
 {
     Entry* const e = malloc(sizeof(Entry));
 
@@ -95,7 +95,7 @@ void a_hash_add(Hash* const h, const char* const key, void* const content)
     }
 }
 
-void* a_hash_get(const Hash* const h, const char* const key)
+void* a_hash_get(const Hash* h, const char* key)
 {
     Entry* e = h->entries[getSlot(key)];
 

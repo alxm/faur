@@ -24,9 +24,9 @@
 
 #include "a2x_pack_pixel.p.h"
 
-extern void a_fade_toBlack(const int framesDuration);
-extern void a_fade_fromBlack(const int framesDuration);
+extern void a_fade_toBlack(int framesDuration);
+extern void a_fade_fromBlack(int framesDuration);
 
-extern void a_fade_screens(const Pixel* const old, const int framesDuration);
+extern void a_fade_screens(const Pixel* old, int framesDuration);
 
 #endif // A2X_PACK_FADE_PH

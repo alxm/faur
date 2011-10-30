@@ -40,14 +40,14 @@ SpriteLayers* a_spritelayers_new(void)
     return s;
 }
 
-void a_spritelayers_free(SpriteLayers* const s)
+void a_spritelayers_free(SpriteLayers* s)
 {
     a_list_free(s->layers, true);
 
     free(s);
 }
 
-void a_spritelayers_add(SpriteLayers* const s, Sprite* const sprite, const PixelBlend_t blend, const uint8_t r, const uint8_t g, const uint8_t b, const uint8_t a)
+void a_spritelayers_add(SpriteLayers* s, Sprite* sprite, PixelBlend_t blend, uint8_t r, uint8_t g, uint8_t b, uint8_t a)
 {
     Layer* const l = malloc(sizeof(Layer));
 
@@ -61,7 +61,7 @@ void a_spritelayers_add(SpriteLayers* const s, Sprite* const sprite, const Pixel
     a_list_addLast(s->layers, l);
 }
 
-void a_spritelayers_blit(SpriteLayers* const s, const int x, const int y)
+void a_spritelayers_blit(SpriteLayers* s, int x, int y)
 {
     A_LIST_ITERATE(s->layers, Layer, l) {
         a_pixel_setBlend(l->blend);

@@ -30,7 +30,7 @@ struct SpriteFrames {
     int paused;
 };
 
-SpriteFrames* a_spriteframes_new(const int framesPerCycle)
+SpriteFrames* a_spriteframes_new(int framesPerCycle)
 {
     SpriteFrames* const a = malloc(sizeof(SpriteFrames));
 
@@ -49,7 +49,7 @@ SpriteFrames* a_spriteframes_new(const int framesPerCycle)
     return a;
 }
 
-SpriteFrames* a_spriteframes_fromSheet(const Sheet* const sh, const int x, const int y, const int framesPerCycle)
+SpriteFrames* a_spriteframes_fromSheet(const Sheet* sh, int x, int y, int framesPerCycle)
 {
     SpriteFrames* const sf = a_spriteframes_new(framesPerCycle);
 
@@ -95,7 +95,7 @@ SpriteFrames* a_spriteframes_fromSheet(const Sheet* const sh, const int x, const
     return sf;
 }
 
-void a_spriteframes_free(SpriteFrames* const sf)
+void a_spriteframes_free(SpriteFrames* sf)
 {
     a_list_free(sf->sprites, false);
     free(sf->spriteArray);
@@ -103,7 +103,7 @@ void a_spriteframes_free(SpriteFrames* const sf)
     free(sf);
 }
 
-void a_spriteframes_add(SpriteFrames* const sf, Sprite* const s)
+void a_spriteframes_add(SpriteFrames* sf, Sprite* s)
 {
     a_list_addLast(sf->sprites, s);
 
@@ -115,7 +115,7 @@ void a_spriteframes_add(SpriteFrames* const sf, Sprite* const s)
     a_spriteframes_reset(sf);
 }
 
-Sprite* a_spriteframes_remove(SpriteFrames* const sf, const int index)
+Sprite* a_spriteframes_remove(SpriteFrames* sf, int index)
 {
     Sprite* const s = sf->spriteArray[index];
 
@@ -131,7 +131,7 @@ Sprite* a_spriteframes_remove(SpriteFrames* const sf, const int index)
     return s;
 }
 
-Sprite* a_spriteframes_next(SpriteFrames* const sf)
+Sprite* a_spriteframes_next(SpriteFrames* sf)
 {
     if(!sf->paused) {
         sf->frame += sf->num;
@@ -151,32 +151,32 @@ Sprite* a_spriteframes_next(SpriteFrames* const sf)
     return sf->spriteArray[sf->current];
 }
 
-Sprite* a_spriteframes_get(SpriteFrames* const sf)
+Sprite* a_spriteframes_get(SpriteFrames* sf)
 {
     return sf->spriteArray[sf->current];
 }
 
-void a_spriteframes_setDir(SpriteFrames* const sf, const int dir)
+void a_spriteframes_setDir(SpriteFrames* sf, int dir)
 {
     sf->dir = dir;
 }
 
-void a_spriteframes_flipDir(SpriteFrames* const sf)
+void a_spriteframes_flipDir(SpriteFrames* sf)
 {
     sf->dir *= -1;
 }
 
-void a_spriteframes_pause(SpriteFrames* const sf)
+void a_spriteframes_pause(SpriteFrames* sf)
 {
     sf->paused = 1;
 }
 
-void a_spriteframes_resume(SpriteFrames* const sf)
+void a_spriteframes_resume(SpriteFrames* sf)
 {
     sf->paused = 0;
 }
 
-void a_spriteframes_reset(SpriteFrames* const sf)
+void a_spriteframes_reset(SpriteFrames* sf)
 {
     sf->frame = 0;
 
@@ -187,12 +187,12 @@ void a_spriteframes_reset(SpriteFrames* const sf)
     }
 }
 
-int a_spriteframes_frameIndex(const SpriteFrames* const sf)
+int a_spriteframes_frameIndex(const SpriteFrames* sf)
 {
     return sf->current;
 }
 
-bool a_spriteframes_onLastFrame(SpriteFrames* const sf)
+bool a_spriteframes_onLastFrame(SpriteFrames* sf)
 {
     if(sf->frame + sf->num >= sf->framesPerCycle) {
         const int n = sf->current + sf->dir;
@@ -202,7 +202,7 @@ bool a_spriteframes_onLastFrame(SpriteFrames* const sf)
     return false;
 }
 
-SpriteFrames* a_spriteframes_clone(const SpriteFrames* const src)
+SpriteFrames* a_spriteframes_clone(const SpriteFrames* src)
 {
     SpriteFrames* const sf = a_spriteframes_new(src->framesPerCycle);
 
@@ -213,7 +213,7 @@ SpriteFrames* a_spriteframes_clone(const SpriteFrames* const src)
     return sf;
 }
 
-List* a_spriteframes_sprites(const SpriteFrames* const sf)
+List* a_spriteframes_sprites(const SpriteFrames* sf)
 {
     return sf->sprites;
 }

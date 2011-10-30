@@ -30,7 +30,7 @@ typedef struct Font {
 } Font;
 
 #define CHARS_NUM 93
-static const char const chars[CHARS_NUM] = {
+static const char chars[CHARS_NUM] = {
     'A', 'a', 'B', 'b', 'C', 'c', 'D', 'd', 'E', 'e', 'F', 'f', 'G', 'g',
     'H', 'h', 'I', 'i', 'J', 'j', 'K', 'k', 'L', 'l', 'M', 'm', 'N', 'n',
     'O', 'o', 'P', 'p', 'Q', 'q', 'R', 'r', 'S', 's', 'T', 't', 'U', 'u',
@@ -43,7 +43,7 @@ static const char const chars[CHARS_NUM] = {
 static List* fontsList;
 static Font** fonts;
 
-static int charIndex(const char c);
+static int charIndex(char c);
 
 void a_font__init(void)
 {
@@ -57,7 +57,7 @@ void a_font__uninit(void)
     free(fonts);
 }
 
-int a_font_load(Sheet* const sheet, const int sx, const int sy, const int zoom, const FontLoad loader)
+int a_font_load(Sheet* sheet, int sx, int sy, int zoom, FontLoad loader)
 {
     Font* const f = malloc(sizeof(Font));
 
@@ -126,7 +126,7 @@ int a_font_load(Sheet* const sheet, const int sx, const int sy, const int zoom, 
     return a_list_size(fontsList) - 1;
 }
 
-int a_font_copy(const int font, const uint8_t r, const uint8_t g, const uint8_t b)
+int a_font_copy(int font, uint8_t r, uint8_t g, uint8_t b)
 {
     const Font* const src = fonts[font];
     Font* const f = malloc(sizeof(Font));
@@ -161,7 +161,7 @@ int a_font_copy(const int font, const uint8_t r, const uint8_t g, const uint8_t 
     return a_list_size(fontsList) - 1;
 }
 
-int a_font_text(const FontAlign align, int x, const int y, const int index, const char* const text)
+int a_font_text(FontAlign align, int x, int y, int index, const char* text)
 {
     if(align & A_SAFE) {
         return a_font_safe(align, x, y, index, text);
@@ -204,7 +204,7 @@ int a_font_text(const FontAlign align, int x, const int y, const int index, cons
     return drx;
 }
 
-int a_font_safe(const FontAlign align, int x, const int y, const int index, const char* const text)
+int a_font_safe(FontAlign align, int x, int y, int index, const char* text)
 {
     Font* const f = fonts[index];
 
@@ -248,7 +248,7 @@ int a_font_safe(const FontAlign align, int x, const int y, const int index, cons
     return drx;
 }
 
-int a_font_int(const FontAlign align, const int x, const int y, const int f, const int number)
+int a_font_int(FontAlign align, int x, int y, int f, int number)
 {
     char s[16];
     sprintf(s, "%d", number);
@@ -256,7 +256,7 @@ int a_font_int(const FontAlign align, const int x, const int y, const int f, con
     return a_font_text(align, x, y, f, s);
 }
 
-int a_font_float(const FontAlign align, const int x, const int y, const int f, const float number)
+int a_font_float(FontAlign align, int x, int y, int f, float number)
 {
     char s[64];
     sprintf(s, "%f", number);
@@ -264,7 +264,7 @@ int a_font_float(const FontAlign align, const int x, const int y, const int f, c
     return a_font_text(align, x, y, f, s);
 }
 
-int a_font_char(const FontAlign align, const int x, const int y, const int f, const char ch)
+int a_font_char(FontAlign align, int x, int y, int f, char ch)
 {
     char s[2];
     sprintf(s, "%c", ch);
@@ -272,7 +272,7 @@ int a_font_char(const FontAlign align, const int x, const int y, const int f, co
     return a_font_text(align, x, y, f, s);
 }
 
-int a_font_fixed(const FontAlign align, const int x, const int y, const int f, const int width, const char* const text)
+int a_font_fixed(FontAlign align, int x, int y, int f, int width, const char* text)
 {
     if(a_font_width(f, text) <= width) {
         return a_font_text(align, x, y, f, text);
@@ -290,7 +290,7 @@ int a_font_fixed(const FontAlign align, const int x, const int y, const int f, c
     return rx;
 }
 
-int a_font_width(const int index, const char* const text)
+int a_font_width(int index, const char* text)
 {
     Font* const f = fonts[index];
 
@@ -313,7 +313,7 @@ int a_font_width(const int index, const char* const text)
     return x - FONT_SPACE;
 }
 
-static int charIndex(const char c)
+static int charIndex(char c)
 {
     for(int i = 0; i < CHARS_NUM; i++) {
         if(chars[i] == c) return i;

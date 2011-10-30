@@ -24,11 +24,11 @@
 
 typedef struct FrameTimer FrameTimer;
 
-extern FrameTimer* a_frametimer_new(const uint32_t framesPeriod);
-extern void a_frametimer_free(FrameTimer* const t);
+extern FrameTimer* a_frametimer_new(uint32_t framesPeriod);
+extern void a_frametimer_free(FrameTimer* t);
 
-extern bool a_frametimer_check(FrameTimer* const t);
-extern uint32_t a_frametimer_diff(FrameTimer* const t);
-extern void a_frametimer_start(FrameTimer* const t);
+extern bool a_frametimer_check(FrameTimer* t);
+extern uint32_t a_frametimer_diff(FrameTimer* t);
+extern void a_frametimer_start(FrameTimer* t);
 
 #endif // A2X_PACK_FRAMETIMER_PH

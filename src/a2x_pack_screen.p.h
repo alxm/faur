@@ -33,11 +33,11 @@ extern void a_screen_show(void);
 
 extern Pixel* a_screen_dup(void);
 extern Pixel* a_screen_new(void);
-extern void a_screen_copy(Pixel* const dst, const Pixel* const src);
-extern void a_screen_copyPart(Pixel* dst, const int x, const int y, const int w, const int h);
+extern void a_screen_copy(Pixel* dst, const Pixel* src);
+extern void a_screen_copyPart(Pixel* dst, int x, int y, int w, int h);
 
-extern void a_screen_setTarget(Pixel* const p, const int w, const int h);
-extern void a_screen_setTargetSprite(const Sprite* const s);
+extern void a_screen_setTarget(Pixel* p, int w, int h);
+extern void a_screen_setTargetSprite(const Sprite* s);
 extern void a_screen_resetTarget(void);
 
 #endif // A2X_PACK_SCREEN_PH

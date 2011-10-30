@@ -23,6 +23,6 @@
 #include "a2x_app_includes.h"
 
 extern uint32_t a_time_getMilis(void);
-extern void a_time_waitMilis(const uint32_t milis);
+extern void a_time_waitMilis(uint32_t milis);
 
 #endif // A2X_PACK_TIME_PH

@@ -29,7 +29,7 @@
 #define pixel_green2(p) ((((p) >> (5  + 0 )) & a_mask(6)) << 2)
 #define pixel_blue2(p)  ((((p) >> (0  + 0 )) & a_mask(5)) << 3)
 
-void a_fade_toBlack(const int framesDuration)
+void a_fade_toBlack(int framesDuration)
 {
     int accum = 0;
     fix8 alpha = A_FONE8;
@@ -77,7 +77,7 @@ void a_fade_toBlack(const int framesDuration)
     free(copy);
 }
 
-void a_fade_fromBlack(const int framesDuration)
+void a_fade_fromBlack(int framesDuration)
 {
     int accum = 0;
     fix8 alpha = 0;

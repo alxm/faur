@@ -22,12 +22,12 @@
 
 #include "a2x_app_includes.h"
 
-extern void a_state_new(const char* const name, void (*function)(void));
+extern void a_state_new(const char* name, void (*function)(void));
 
-extern void a_state_push(const char* const name);
+extern void a_state_push(const char* name);
 extern void a_state_pop(void);
 
-extern void a_state_replace(const char* const name);
+extern void a_state_replace(const char* name);
 extern void a_state_exit(void);
 
 typedef enum {A_STATE_STAGE_INVALID, A_STATE_STAGE_INIT, A_STATE_STAGE_BODY, A_STATE_STAGE_FREE} StateStage;
@@ -38,11 +38,11 @@ typedef enum {A_STATE_STAGE_INVALID, A_STATE_STAGE_INIT, A_STATE_STAGE_BODY, A_S
 #define A_STATE_FREE if(a_state__stage() == A_STATE_STAGE_FREE)
 #define A_STATE_LOOP while(a_state__unchanged())
 
-extern void a_state_add(const char* const name, void* const object);
-extern void* a_state_get(const char* const name);
+extern void a_state_add(const char* name, void* object);
+extern void* a_state_get(const char* name);
 
 extern StateStage a_state__stage(void);
-extern bool a_state__setStage(const StateStage stage);
+extern bool a_state__setStage(StateStage stage);
 extern bool a_state__unchanged(void);
 
 #endif // A2X_PACK_STATE_PH

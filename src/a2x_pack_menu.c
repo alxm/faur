@@ -46,7 +46,7 @@ struct Menu {
 
 #define A_MENU_PAUSE (a2x_int("fps.rate") / 6)
 
-Menu* a_menu_new(Input* const next, Input* const back, Input* const select, Input* const cancel, void (*freeItem)(void* v))
+Menu* a_menu_new(Input* next, Input* back, Input* select, Input* cancel, void (*freeItem)(void* v))
 {
     Menu* const m = malloc(sizeof(Menu));
 
@@ -78,7 +78,7 @@ Menu* a_menu_new(Input* const next, Input* const back, Input* const select, Inpu
     return m;
 }
 
-void a_menu_free(Menu* const m)
+void a_menu_free(Menu* m)
 {
     if(m->freeItem) {
         A_LIST_ITERATE(m->items, void, v) {
@@ -90,34 +90,34 @@ void a_menu_free(Menu* const m)
     free(m);
 }
 
-void a_menu_addInput(Menu* const m, void (*input)(struct Menu* const m, void* const v))
+void a_menu_addInput(Menu* m, void (*input)(Menu* m, void* v))
 {
     m->input = input;
 }
 
-void a_menu_addV(Menu* const m, void* const v)
+void a_menu_addV(Menu* m, void* v)
 {
     m->v = v;
 }
 
-void a_menu_addTitle(Menu* const m, const char* const t)
+void a_menu_addTitle(Menu* m, const char* t)
 {
     m->title = a_str_dup(t);
 }
 
-void a_menu_addSprite(Menu* const m, Sprite* const s)
+void a_menu_addSprite(Menu* m, Sprite* s)
 {
     m->sprite = s;
 }
 
-void a_menu_addSounds(Menu* const m, Sound* const accept, Sound* const cancel, Sound* const browse)
+void a_menu_addSounds(Menu* m, Sound* accept, Sound* cancel, Sound* browse)
 {
     m->soundAccept = accept;
     m->soundCancel = cancel;
     m->soundBrowse = browse;
 }
 
-void a_menu_addItem(Menu* const m, void* const v)
+void a_menu_addItem(Menu* m, void* v)
 {
     a_list_addLast(m->items, v);
 
@@ -126,7 +126,7 @@ void a_menu_addItem(Menu* const m, void* const v)
     }
 }
 
-void a_menu_input(Menu* const m)
+void a_menu_input(Menu* m)
 {
     if(!a_menu_running(m)) {
         m->state = A_MENU_SPENT;
@@ -198,42 +198,42 @@ void a_menu_input(Menu* const m)
     }
 }
 
-List* a_menu__items(const Menu* const m)
+List* a_menu__items(const Menu* m)
 {
     return m->items;
 }
 
-bool a_menu_isSelected(const Menu* const m, const void* const item)
+bool a_menu_isSelected(const Menu* m, const void* item)
 {
     return item == m->selectedItem;
 }
 
-void a_menu_keepRunning(Menu* const m)
+void a_menu_keepRunning(Menu* m)
 {
     m->state = A_MENU_RUNNING;
 }
 
-bool a_menu_running(const Menu* const m)
+bool a_menu_running(const Menu* m)
 {
     return m->state == A_MENU_RUNNING;
 }
 
-bool a_menu_finished(const Menu* const m)
+bool a_menu_finished(const Menu* m)
 {
     return m->state == A_MENU_ACCEPT || m->state == A_MENU_CANCEL;
 }
 
-bool a_menu_accept(const Menu* const m)
+bool a_menu_accept(const Menu* m)
 {
     return m->state == A_MENU_ACCEPT;
 }
 
-bool a_menu_cancel(const Menu* const m)
+bool a_menu_cancel(const Menu* m)
 {
     return m->state == A_MENU_CANCEL;
 }
 
-int a_menu_choice(const Menu* const m)
+int a_menu_choice(const Menu* m)
 {
     return m->selectedIndex;
 }

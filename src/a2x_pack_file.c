@@ -28,7 +28,7 @@ struct File {
     int eof;
 };
 
-File* a_file_open(const char* const path, const char* const modes)
+File* a_file_open(const char* path, const char* modes)
 {
     FILE* const file = fopen(path, modes);
 
@@ -48,7 +48,7 @@ File* a_file_open(const char* const path, const char* const modes)
     return f;
 }
 
-void a_file_close(File* const f)
+void a_file_close(File* f)
 {
     if(f->file) {
         fclose(f->file);
@@ -57,7 +57,7 @@ void a_file_close(File* const f)
     free(f);
 }
 
-bool a_file_checkPrefix(File* const f, const char* const prefix)
+bool a_file_checkPrefix(File* f, const char* prefix)
 {
     const int len = strlen(prefix);
 
@@ -70,17 +70,17 @@ bool a_file_checkPrefix(File* const f, const char* const prefix)
     return a_str_equal(buffer, prefix);
 }
 
-void a_file_read(File* const f, void* const buffer, const size_t size)
+void a_file_read(File* f, void* buffer, size_t size)
 {
     fread(buffer, size, 1, f->file);
 }
 
-void a_file_write(File* const f, void* const buffer, const size_t size)
+void a_file_write(File* f, void* buffer, size_t size)
 {
     fwrite(buffer, size, 1, f->file);
 }
 
-bool a_file_readLine(File* const f)
+bool a_file_readLine(File* f)
 {
     if(f->eof) {
         return false;
@@ -124,27 +124,27 @@ bool a_file_readLine(File* const f)
     return false;
 }
 
-char* a_file_getLine(const File* const f)
+char* a_file_getLine(const File* f)
 {
     return f->line;
 }
 
-const char* a_file_path(const File* const f)
+const char* a_file_path(const File* f)
 {
     return f->path;
 }
 
-const char* a_file_name(const File* const f)
+const char* a_file_name(const File* f)
 {
     return f->name;
 }
 
-FILE* a_file_file(const File* const f)
+FILE* a_file_file(const File* f)
 {
     return f->file;
 }
 
-bool a_file_exists(const char* const path)
+bool a_file_exists(const char* path)
 {
     FILE* const f = fopen(path, "r");
 
@@ -156,7 +156,7 @@ bool a_file_exists(const char* const path)
     return false;
 }
 
-bool a_file_isDir(const char* const f)
+bool a_file_isDir(const char* f)
 {
     struct stat info;
     stat(f, &info);
@@ -164,7 +164,7 @@ bool a_file_isDir(const char* const f)
     return S_ISDIR(info.st_mode);
 }
 
-int a_file_size(const char* const f)
+int a_file_size(const char* f)
 {
     struct stat info;
     stat(f, &info);
@@ -172,7 +172,7 @@ int a_file_size(const char* const f)
     return info.st_size;
 }
 
-uint8_t* a_file_toBuffer(const char* const path)
+uint8_t* a_file_toBuffer(const char* path)
 {
     FILE* const f = fopen(path, "r");
 

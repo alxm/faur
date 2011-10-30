@@ -19,7 +19,7 @@
 
 #include "a2x_pack_sheet.v.h"
 
-Sheet* a_sheet_fromFile(const char* const path)
+Sheet* a_sheet_fromFile(const char* path)
 {
     Sheet* const s = malloc(sizeof(Sheet));
 
@@ -32,7 +32,7 @@ Sheet* a_sheet_fromFile(const char* const path)
     return s;
 }
 
-Sheet* a_sheet_fromData(const uint8_t* const data)
+Sheet* a_sheet_fromData(const uint8_t* data)
 {
     Sheet* const s = malloc(sizeof(Sheet));
 
@@ -45,7 +45,7 @@ Sheet* a_sheet_fromData(const uint8_t* const data)
     return s;
 }
 
-Sheet* a_sheet_fromSheet(const Sheet* const sheet, const int x, const int y, const int w, const int h)
+Sheet* a_sheet_fromSheet(const Sheet* sheet, int x, int y, int w, int h)
 {
     Sheet* const s = malloc(sizeof(Sheet));
 
@@ -69,43 +69,43 @@ Sheet* a_sheet_fromSheet(const Sheet* const sheet, const int x, const int y, con
     return s;
 }
 
-void a_sheet_free(Sheet* const s)
+void a_sheet_free(Sheet* s)
 {
     free(s->data);
     free(s);
 }
 
-void a_sheet_setTransparent(Sheet* const s, const uint8_t r, const uint8_t g, const uint8_t b)
+void a_sheet_setTransparent(Sheet* s, uint8_t r, uint8_t g, uint8_t b)
 {
     s->transparent = a_pixel_make(r, g, b);
 }
 
-void a_sheet_setLimit(Sheet* const s, const uint8_t r, const uint8_t g, const uint8_t b)
+void a_sheet_setLimit(Sheet* s, uint8_t r, uint8_t g, uint8_t b)
 {
     s->limit = a_pixel_make(r, g, b);
 }
 
-void a_sheet_setEnd(Sheet* const s, const uint8_t r, const uint8_t g, const uint8_t b)
+void a_sheet_setEnd(Sheet* s, uint8_t r, uint8_t g, uint8_t b)
 {
     s->end = a_pixel_make(r, g, b);
 }
 
-int a_sheet_w(const Sheet* const s)
+int a_sheet_w(const Sheet* s)
 {
     return s->w;
 }
 
-int a_sheet_h(const Sheet* const s)
+int a_sheet_h(const Sheet* s)
 {
     return s->h;
 }
 
-Pixel* a_sheet_data(const Sheet* const s)
+Pixel* a_sheet_data(const Sheet* s)
 {
     return s->data;
 }
 
-Pixel a_sheet_getPixel(const Sheet* const s, const int x, const int y)
+Pixel a_sheet_getPixel(const Sheet* s, int x, int y)
 {
     return *(s->data + y * s->w + x);
 }

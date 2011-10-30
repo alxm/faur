@@ -26,7 +26,7 @@ struct FrameTimer {
     uint32_t diff;
 };
 
-FrameTimer* a_frametimer_new(const uint32_t framesPeriod)
+FrameTimer* a_frametimer_new(uint32_t framesPeriod)
 {
     FrameTimer* const t = malloc(sizeof(FrameTimer));
 
@@ -38,12 +38,12 @@ FrameTimer* a_frametimer_new(const uint32_t framesPeriod)
     return t;
 }
 
-void a_frametimer_free(FrameTimer* const t)
+void a_frametimer_free(FrameTimer* t)
 {
     free(t);
 }
 
-bool a_frametimer_check(FrameTimer* const t)
+bool a_frametimer_check(FrameTimer* t)
 {
     if(t->running) {
         t->diff = a_fps_getCounter() - t->start;
@@ -57,12 +57,12 @@ bool a_frametimer_check(FrameTimer* const t)
     return false;
 }
 
-uint32_t a_frametimer_diff(FrameTimer* const t)
+uint32_t a_frametimer_diff(FrameTimer* t)
 {
     return t->diff;
 }
 
-void a_frametimer_start(FrameTimer* const t)
+void a_frametimer_start(FrameTimer* t)
 {
     t->running = true;
     t->start = a_fps_getCounter();

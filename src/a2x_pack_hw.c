@@ -29,7 +29,7 @@
 #include "a2x_pack_hw.v.h"
 
 #if A_PLATFORM_GP2X
-    static void a__hw_cpu(const int Mhz);
+    static void a__hw_cpu(int Mhz);
     static void a__hw_ramTimings(int tRC, int tRAS, int tWR, int tMRD, int tRFC, int tRP, int tRCD);
 #endif
 
@@ -86,7 +86,7 @@ void a_hw__uninit(void)
 }
 
 #if A_PLATFORM_GP2X
-    static void a__hw_cpu(const int Mhz)
+    static void a__hw_cpu(int Mhz)
     {
         int mhz = Mhz * 1000000;
         int freq = 7372800;

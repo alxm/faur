@@ -34,7 +34,7 @@ struct ColPoint {
     void* parent; // the object that uses this ColPoint
 };
 
-ColMap* a_colmap_new(const int totalWidth, const int totalHeight, const int gridDim)
+ColMap* a_colmap_new(int totalWidth, int totalHeight, int gridDim)
 {
     ColMap* const c = malloc(sizeof(ColMap));
 
@@ -69,7 +69,7 @@ ColMap* a_colmap_new(const int totalWidth, const int totalHeight, const int grid
     return c;
 }
 
-void a_colmap_free(ColMap* const c)
+void a_colmap_free(ColMap* c)
 {
     for(int i = c->h; i--; ) {
         for(int j = c->w; j--; ) {
@@ -83,7 +83,7 @@ void a_colmap_free(ColMap* const c)
     free(c);
 }
 
-ColPoint* a_colpoint_new(ColMap* const colmap)
+ColPoint* a_colpoint_new(ColMap* colmap)
 {
     ColPoint* const p = malloc(sizeof(ColPoint));
 
@@ -167,7 +167,7 @@ ColIt a_colit__new(ColPoint* const p)
     return it;
 }
 
-bool a_colit__next(ColIt* const it)
+bool a_colit__next(ColIt* it)
 {
     if(a_listit__next(&it->points)) {
         // don't return the point we iterate on
@@ -182,12 +182,12 @@ bool a_colit__next(ColIt* const it)
     return false;
 }
 
-ColPoint* a_colit__get(ColIt* const it)
+ColPoint* a_colit__get(ColIt* it)
 {
     return a_listit__get(&it->points);
 }
 
-bool a_collide_circles(const int x1, const int y1, const int r1, const int x2, const int y2, const int r2)
+bool a_collide_circles(int x1, int y1, int r1, int x2, int y2, int r2)
 {
     const int x = x1 - x2;
     const int y = y1 - y2;

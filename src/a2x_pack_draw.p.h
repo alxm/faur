@@ -38,12 +38,12 @@ extern DrawCircle a_draw_circle;
 
 #define a_draw_fill() a_draw_rectangle(0, 0, a_width, a_height)
 
-extern void a_draw_fill_fast(const Pixel c);
+extern void a_draw_fill_fast(Pixel c);
 #define a_draw_fill_fastRGB(r, g, b) a_draw_fill_fast(a_pixel_make(r, g, b))
 
-extern void a_draw_rectangle_fast(int x1, int y1, int x2, int y2, const Pixel c);
+extern void a_draw_rectangle_fast(int x1, int y1, int x2, int y2, Pixel c);
 #define a_draw_rectangle_fastRGB(x1, y1, x2, y2, r, g, b) a_draw_rectangle_fast(x1, y1, x2, y2, a_pixel_make(r, g, b))
 
-extern void a_draw_rectangle_outline(const int x1, const int y1, const int x2, const int y2, const int t);
+extern void a_draw_rectangle_outline(int x1, int y1, int x2, int y2, int t);
 
 #endif // A2X_PACK_DRAW_PH

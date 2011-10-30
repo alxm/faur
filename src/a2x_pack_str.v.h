@@ -29,6 +29,6 @@
 extern void a_str__init(void);
 extern void a_str__uninit(void);
 
-extern char* a_str__alloc(const uint size);
+extern char* a_str__alloc(uint size);
 
 #endif // A2X_PACK_STR_VH

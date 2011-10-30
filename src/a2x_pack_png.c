@@ -25,9 +25,9 @@ typedef struct ByteStream {
 } ByteStream;
 
 static void readFunction(png_structp png, png_bytep data, png_size_t length);
-static void pngToPixels(png_structp png, png_infop info, Pixel** const pixels, int* const width, int* const height);
+static void pngToPixels(png_structp png, png_infop info, Pixel** pixels, int* width, int* height);
 
-void a_png_readFile(const char* const path, Pixel** const pixels, int* const width, int* const height)
+void a_png_readFile(const char* path, Pixel** pixels, int* width, int* height)
 {
     File* const f = a_file_open(path, "r");
 
@@ -88,7 +88,7 @@ void a_png_readFile(const char* const path, Pixel** const pixels, int* const wid
     }
 }
 
-void a_png_readMemory(const uint8_t* const data, Pixel** const pixels, int* const width, int* const height)
+void a_png_readMemory(const uint8_t* data, Pixel** pixels, int* width, int* height)
 {
     ByteStream* const stream = malloc(sizeof(ByteStream));
 
@@ -145,7 +145,7 @@ void a_png_readMemory(const uint8_t* const data, Pixel** const pixels, int* cons
     free(stream);
 }
 
-void a_png_write(const char* const path, const Pixel* const data, const int width, const int height)
+void a_png_write(const char* path, const Pixel* data, int width, int height)
 {
     File* f = a_file_open(path, "w");
 
@@ -218,7 +218,7 @@ static void readFunction(png_structp png, png_bytep data, png_size_t length)
     stream->offset += length;
 }
 
-static void pngToPixels(png_structp png, png_infop info, Pixel** const pixels, int* const width, int* const height)
+static void pngToPixels(png_structp png, png_infop info, Pixel** pixels, int* width, int* height)
 {
     const int w = png_get_image_width(png, info);
     const int h = png_get_image_height(png, info);

@@ -24,25 +24,25 @@
 
 typedef struct File File;
 
-extern File* a_file_open(const char* const path, const char* const modes);
-extern void a_file_close(File* const f);
+extern File* a_file_open(const char* path, const char* modes);
+extern void a_file_close(File* f);
 
-extern bool a_file_checkPrefix(File* const f, const char* const prefix);
+extern bool a_file_checkPrefix(File* f, const char* prefix);
 
-extern void a_file_read(File* const f, void* const buffer, const size_t size);
-extern void a_file_write(File* const f, void* const buffer, const size_t size);
+extern void a_file_read(File* f, void* buffer, size_t size);
+extern void a_file_write(File* f, void* buffer, size_t size);
 
-extern bool a_file_readLine(File* const f);
-extern char* a_file_getLine(const File* const f);
+extern bool a_file_readLine(File* f);
+extern char* a_file_getLine(const File* f);
 
-extern const char* a_file_path(const File* const f);
-extern const char* a_file_name(const File* const f);
-extern FILE* a_file_file(const File* const f);
+extern const char* a_file_path(const File* f);
+extern const char* a_file_name(const File* f);
+extern FILE* a_file_file(const File* f);
 
-extern bool a_file_exists(const char* const path);
-extern bool a_file_isDir(const char* const f);
-extern int a_file_size(const char* const f);
+extern bool a_file_exists(const char* path);
+extern bool a_file_isDir(const char* f);
+extern int a_file_size(const char* f);
 
-extern uint8_t* a_file_toBuffer(const char* const path);
+extern uint8_t* a_file_toBuffer(const char* path);
 
 #endif // A2X_PACK_FILE_PH

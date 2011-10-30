@@ -26,7 +26,7 @@ struct Timer {
     uint32_t diff;
 };
 
-Timer* a_timer_new(const uint32_t milisPeriod)
+Timer* a_timer_new(uint32_t milisPeriod)
 {
     Timer* const t = malloc(sizeof(Timer));
 
@@ -38,12 +38,12 @@ Timer* a_timer_new(const uint32_t milisPeriod)
     return t;
 }
 
-void a_timer_free(Timer* const t)
+void a_timer_free(Timer* t)
 {
     free(t);
 }
 
-bool a_timer_check(Timer* const t)
+bool a_timer_check(Timer* t)
 {
     if(t->running) {
         t->diff = a_time_getMilis() - t->start;
@@ -57,12 +57,12 @@ bool a_timer_check(Timer* const t)
     return false;
 }
 
-uint32_t a_timer_diff(Timer* const t)
+uint32_t a_timer_diff(Timer* t)
 {
     return t->diff;
 }
 
-void a_timer_start(Timer* const t)
+void a_timer_start(Timer* t)
 {
     t->running = true;
     t->start = a_time_getMilis();

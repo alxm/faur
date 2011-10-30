@@ -41,10 +41,10 @@ typedef struct Setting {
 static Hash* settings;
 static bool frozen = false;
 
-static void add(Setting_t const type, const Update_t update, const char* const key, const char* const val);
-static int parseBool(const char* const val);
-static void set(const char* const key, const char* const val, const int respect);
-static void flip(const char* const key, const int respect);
+static void add(Setting_t type, Update_t update, const char* key, const char* val);
+static int parseBool(const char* val);
+static void set(const char* key, const char* val, bool respect);
+static void flip(const char* key, bool respect);
 
 void a_settings__defaults(void)
 {
@@ -85,27 +85,27 @@ void a_settings__freeze(void)
     frozen = true;
 }
 
-void a2x_set(const char* const key, const char* const val)
+void a2x_set(const char* key, const char* val)
 {
-    set(key, val, 1);
+    set(key, val, true);
 }
 
-void a2x__set(const char* const key, const char* const val)
+void a2x__set(const char* key, const char* val)
 {
-    set(key, val, 0);
+    set(key, val, false);
 }
 
-void a2x_flip(const char* const key)
+void a2x_flip(const char* key)
 {
-    flip(key, 1);
+    flip(key, true);
 }
 
-void a2x__flip(const char* const key)
+void a2x__flip(const char* key)
 {
-    flip(key, 0);
+    flip(key, false);
 }
 
-char* a2x_str(const char* const key)
+char* a2x_str(const char* key)
 {
     Setting* const s = a_hash_get(settings, key);
 
@@ -120,7 +120,7 @@ char* a2x_str(const char* const key)
     }
 }
 
-bool a2x_bool(const char* const key)
+bool a2x_bool(const char* key)
 {
     Setting* const s = a_hash_get(settings, key);
 
@@ -135,7 +135,7 @@ bool a2x_bool(const char* const key)
     }
 }
 
-int a2x_int(const char* const key)
+int a2x_int(const char* key)
 {
     Setting* const s = a_hash_get(settings, key);
 
@@ -150,7 +150,7 @@ int a2x_int(const char* const key)
     }
 }
 
-static void add(Setting_t const type, const Update_t update, const char* const key, const char* const val)
+static void add(Setting_t type, Update_t update, const char* key, const char* val)
 {
     Setting* const s = malloc(sizeof(Setting));
 
@@ -174,7 +174,7 @@ static void add(Setting_t const type, const Update_t update, const char* const k
     a_hash_add(settings, key, s);
 }
 
-static int parseBool(const char* const val)
+static int parseBool(const char* val)
 {
     return a_str_same(val, "yes")
         || a_str_same(val, "y")
@@ -185,7 +185,7 @@ static int parseBool(const char* const val)
         || a_str_same(val, "1");
 }
 
-static void set(const char* const key, const char* const val, const int respect)
+static void set(const char* key, const char* val, bool respect)
 {
     Setting* const s = a_hash_get(settings, key);
 
@@ -217,7 +217,7 @@ static void set(const char* const key, const char* const val, const int respect)
     }
 }
 
-static void flip(const char* const key, const int respect)
+static void flip(const char* key, bool respect)
 {
     Setting* const s = a_hash_get(settings, key);
 

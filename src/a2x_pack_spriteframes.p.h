@@ -28,28 +28,28 @@ typedef struct SpriteFrames SpriteFrames;
 #include "a2x_pack_sheet.p.h"
 #include "a2x_pack_sprite.p.h"
 
-extern SpriteFrames* a_spriteframes_new(const int framesPerCycle);
-extern SpriteFrames* a_spriteframes_fromSheet(const Sheet* const sh, const int x, const int y, const int framesPerCycle);
-extern void a_spriteframes_free(SpriteFrames* const sf);
+extern SpriteFrames* a_spriteframes_new(int framesPerCycle);
+extern SpriteFrames* a_spriteframes_fromSheet(const Sheet* sh, int x, int y, int framesPerCycle);
+extern void a_spriteframes_free(SpriteFrames* sf);
 
-extern void a_spriteframes_add(SpriteFrames* const sf, Sprite* const s);
-extern Sprite* a_spriteframes_remove(SpriteFrames* const sf, const int index);
+extern void a_spriteframes_add(SpriteFrames* sf, Sprite* s);
+extern Sprite* a_spriteframes_remove(SpriteFrames* sf, int index);
 
-extern Sprite* a_spriteframes_next(SpriteFrames* const sf);
-extern Sprite* a_spriteframes_get(SpriteFrames* const sf);
+extern Sprite* a_spriteframes_next(SpriteFrames* sf);
+extern Sprite* a_spriteframes_get(SpriteFrames* sf);
 
-extern void a_spriteframes_setDir(SpriteFrames* const sf, const int dir);
-extern void a_spriteframes_flipDir(SpriteFrames* const sf);
+extern void a_spriteframes_setDir(SpriteFrames* sf, int dir);
+extern void a_spriteframes_flipDir(SpriteFrames* sf);
 
-extern void a_spriteframes_pause(SpriteFrames* const sf);
-extern void a_spriteframes_resume(SpriteFrames* const sf);
+extern void a_spriteframes_pause(SpriteFrames* sf);
+extern void a_spriteframes_resume(SpriteFrames* sf);
 
-extern void a_spriteframes_reset(SpriteFrames* const sf);
-extern int a_spriteframes_frameIndex(const SpriteFrames* const sf);
+extern void a_spriteframes_reset(SpriteFrames* sf);
+extern int a_spriteframes_frameIndex(const SpriteFrames* sf);
 
-extern bool a_spriteframes_onLastFrame(SpriteFrames* const sf);
+extern bool a_spriteframes_onLastFrame(SpriteFrames* sf);
 
-extern SpriteFrames* a_spriteframes_clone(const SpriteFrames* const src);
-extern List* a_spriteframes_sprites(const SpriteFrames* const sf);
+extern SpriteFrames* a_spriteframes_clone(const SpriteFrames* src);
+extern List* a_spriteframes_sprites(const SpriteFrames* sf);
 
 #endif // A2X_PACK_SPRITEFRAMES_PH

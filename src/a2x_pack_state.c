@@ -55,12 +55,12 @@ void a_state__uninit(void)
     a_list_free(stack, false);
 }
 
-void a_state_new(const char* const name, void (*function)(void))
+void a_state_new(const char* name, void (*function)(void))
 {
     a_hash_add(functions, name, function);
 }
 
-void a_state_push(const char* const name)
+void a_state_push(const char* name)
 {
     const StateInstance* const active = a_list_peek(stack);
 
@@ -112,7 +112,7 @@ void a_state_pop(void)
     active->stage = A_STATE_STAGE_FREE;
 }
 
-void a_state_replace(const char* const name)
+void a_state_replace(const char* name)
 {
     if(a_hash_get(functions, name) == NULL) {
         a_error("Replace state '%s': does not exist", name);
@@ -148,7 +148,7 @@ void a_state_exit(void)
     }
 }
 
-void a_state_add(const char* const name, void* const object)
+void a_state_add(const char* name, void* object)
 {
     const StateInstance* const s = a_list_peek(stack);
 
@@ -157,7 +157,7 @@ void a_state_add(const char* const name, void* const object)
     }
 }
 
-void* a_state_get(const char* const name)
+void* a_state_get(const char* name)
 {
     const StateInstance* const s = a_list_peek(stack);
 
@@ -199,7 +199,7 @@ StateStage a_state__stage(void)
     return A_STATE_STAGE_INVALID;
 }
 
-bool a_state__setStage(const StateStage stage)
+bool a_state__setStage(StateStage stage)
 {
     StateInstance* const s = a_list_peek(stack);
 

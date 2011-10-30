@@ -19,7 +19,7 @@
 
 #include "a2x_pack_mem.v.h"
 
-void* a_mem_encodeRLE(const void* const data, const int length, const int size, int* const encLength)
+void* a_mem_encodeRLE(const void* data, int length, int size, int* encLength)
 {
     int space = 0;
 
@@ -139,7 +139,7 @@ void* a_mem_encodeRLE(const void* const data, const int length, const int size, 
     return dst;
 }
 
-void* a_mem_decodeRLE(const void* const data, const int length, const int size, int* const decLength)
+void* a_mem_decodeRLE(const void* data, int length, int size, int* decLength)
 {
     int space = 0;
 

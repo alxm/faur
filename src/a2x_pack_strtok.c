@@ -27,9 +27,9 @@ struct StringTok {
     int index;
 };
 
-static bool is_delim(const char c, const char* const d, const int n);
+static bool is_delim(char c, const char* d, int n);
 
-StringTok* a_strtok_new(const char* const s, const char* const d)
+StringTok* a_strtok_new(const char* s, const char* d)
 {
     StringTok* const t = malloc(sizeof(StringTok));
 
@@ -41,12 +41,12 @@ StringTok* a_strtok_new(const char* const s, const char* const d)
     return t;
 }
 
-void a_strtok_free(StringTok* const t)
+void a_strtok_free(StringTok* t)
 {
     free(t);
 }
 
-bool a_strtok_next(StringTok* const t)
+bool a_strtok_next(StringTok* t)
 {
     const char* const string = t->string;
     const char* const delims = t->delims;
@@ -63,7 +63,7 @@ bool a_strtok_next(StringTok* const t)
     }
 }
 
-char* a_strtok_get(StringTok* const t)
+char* a_strtok_get(StringTok* t)
 {
     const char* const string = t->string;
     const char* const delims = t->delims;
@@ -88,7 +88,7 @@ char* a_strtok_get(StringTok* const t)
     return token;
 }
 
-static bool is_delim(const char c, const char* const d, const int n)
+static bool is_delim(char c, const char* d, int n)
 {
     for(int i = n; i--; ) {
         if(c == d[i]) {

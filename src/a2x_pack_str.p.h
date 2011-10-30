@@ -41,22 +41,22 @@
 extern void* a_str__malloc(int count, ...);
 extern char* a_str__merge(int count, ...);
 
-extern char* a_str_dup(const char* const s);
+extern char* a_str_dup(const char* s);
 
-extern char* a_str_sub(const char* const s, const int start, const int end);
+extern char* a_str_sub(const char* s, int start, int end);
 
-extern int a_str_firstIndex(const char* const s, const char c);
-extern int a_str_lastIndex(const char* const s, const char c);
+extern int a_str_firstIndex(const char* s, char c);
+extern int a_str_lastIndex(const char* s, char c);
 
-extern char* a_str_getPrefixFirstFind(const char* const s, const char limit);
-extern char* a_str_getPrefixLastFind(const char* const s, const char limit);
-extern char* a_str_getSuffixFirstFind(const char* const s, const char limit);
-extern char* a_str_getSuffixLastFind(const char* const s, const char limit);
+extern char* a_str_getPrefixFirstFind(const char* s, char limit);
+extern char* a_str_getPrefixLastFind(const char* s, char limit);
+extern char* a_str_getSuffixFirstFind(const char* s, char limit);
+extern char* a_str_getSuffixLastFind(const char* s, char limit);
 
-extern char* a_str_extractPath(const char* const s);
-extern char* a_str_extractFile(const char* const s);
-extern char* a_str_extractName(const char* const s);
+extern char* a_str_extractPath(const char* s);
+extern char* a_str_extractFile(const char* s);
+extern char* a_str_extractName(const char* s);
 
-extern char* a_str_trim(const char* const s);
+extern char* a_str_trim(const char* s);
 
 #endif // A2X_PACK_STR_PH

@@ -25,11 +25,11 @@
 #define A_SETUP void a_setup(void)
 extern A_SETUP;
 
-extern void a2x_set(const char* const key, const char* const val);
-extern void a2x_flip(const char* const key);
+extern void a2x_set(const char* key, const char* val);
+extern void a2x_flip(const char* key);
 
-extern char* a2x_str(const char* const key);
-extern bool a2x_bool(const char* const key);
-extern int a2x_int(const char* const key);
+extern char* a2x_str(const char* key);
+extern bool a2x_bool(const char* key);
+extern int a2x_int(const char* key);
 
 #endif // A2X_APP_SETTINGS_PH

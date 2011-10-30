@@ -32,7 +32,7 @@ typedef enum {
     A_PIXEL_TYPE_NUM
 } PixelBlend_t;
 
-typedef void (*PixelPut)(const int x, const int y);
+typedef void (*PixelPut)(int x, int y);
 
 #define a_mask(x) ((1 << (x)) - 1)
 
@@ -52,13 +52,13 @@ typedef void (*PixelPut)(const int x, const int y);
 
 #define a_pixel_get(x, y)    (*(a_pixels + (y) * a_width + (x)))
 
-extern void a_pixel_setBlend(const PixelBlend_t b);
-extern void a_pixel_setClip(const bool clip);
+extern void a_pixel_setBlend(PixelBlend_t b);
+extern void a_pixel_setClip(bool clip);
 
-extern void a_pixel_setAlpha(const uint8_t a);
-extern void a_pixel_setRGB(const uint8_t r, const uint8_t g, const uint8_t b);
-extern void a_pixel_setRGBA(const uint8_t r, const uint8_t g, const uint8_t b, const uint8_t a);
-extern void a_pixel_setPixel(const Pixel p);
+extern void a_pixel_setAlpha(uint8_t a);
+extern void a_pixel_setRGB(uint8_t r, uint8_t g, uint8_t b);
+extern void a_pixel_setRGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a);
+extern void a_pixel_setPixel(Pixel p);
 
 extern PixelPut a_pixel_put;
 

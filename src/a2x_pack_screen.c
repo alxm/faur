@@ -215,12 +215,12 @@ Pixel* a_screen_new(void)
     return malloc(A_SCREEN_SIZE);
 }
 
-void a_screen_copy(Pixel* const dst, const Pixel* const src)
+void a_screen_copy(Pixel* dst, const Pixel* src)
 {
     memcpy(dst, src, A_SCREEN_SIZE);
 }
 
-void a_screen_copyPart(Pixel* dst, const int x, const int y, const int w, const int h)
+void a_screen_copyPart(Pixel* dst, int x, int y, int w, int h)
 {
     const Pixel* screen = a_pixels + y * a_width + x;
 
@@ -231,14 +231,14 @@ void a_screen_copyPart(Pixel* dst, const int x, const int y, const int w, const 
     }
 }
 
-void a_screen_setTarget(Pixel* const p, const int w, const int h)
+void a_screen_setTarget(Pixel* p, int w, int h)
 {
     a_pixels = p;
     a_width = w;
     a_height = h;
 }
 
-void a_screen_setTargetSprite(const Sprite* const s)
+void a_screen_setTargetSprite(const Sprite* s)
 {
     a_pixels = s->data;
     a_width = s->w;

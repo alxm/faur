@@ -24,9 +24,9 @@
 
 #include "a2x_pack_pixel.p.h"
 
-extern void a_png_readFile(const char* const path, Pixel** const pixels, int* const width, int* const height);
-extern void a_png_readMemory(const uint8_t* const data, Pixel** const pixels, int* const width, int* const height);
+extern void a_png_readFile(const char* path, Pixel** pixels, int* width, int* height);
+extern void a_png_readMemory(const uint8_t* data, Pixel** pixels, int* width, int* height);
 
-extern void a_png_write(const char* const path, const Pixel* const data, const int width, const int height);
+extern void a_png_write(const char* path, const Pixel* data, int width, int height);
 
 #endif // A2X_PACK_PNG_PH

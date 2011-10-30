@@ -33,18 +33,18 @@ typedef Mix_Chunk Sound;
 extern int a__volume;
 extern int a__volumeAdjust;
 
-extern Music* a_music_load(const char* const path);
+extern Music* a_music_load(const char* path);
 
-extern void a_music_play(Music* const m);
+extern void a_music_play(Music* m);
 extern void a_music_stop(void);
 
-extern Sound* a_sfx_fromFile(const char* const path);
+extern Sound* a_sfx_fromFile(const char* path);
 #define a_sfx_fromData(s) a_sfx__fromData(s, sizeof(s))
-extern Sound* a_sfx__fromData(const uint16_t* const data, const int size);
+extern Sound* a_sfx__fromData(const uint16_t* data, int size);
 
-extern void a_sfx_play(Sound* const s);
+extern void a_sfx_play(Sound* s);
 
-extern void a_sfx_volume(const int v);
+extern void a_sfx_volume(int v);
 extern void a_sound_adjustVolume(void);
 
 #endif // A2X_PACK_SOUND_PH

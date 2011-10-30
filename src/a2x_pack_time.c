@@ -70,7 +70,7 @@ uint32_t a_time_getMilis(void)
     return t;
 }
 
-void a_time_waitMilis(const uint32_t milis)
+void a_time_waitMilis(uint32_t milis)
 {
     #if A_PLATFORM_WIZ || A_PLATFORM_CAANOO
         const uint32_t start = a_time_getMilis();

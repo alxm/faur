@@ -29,28 +29,28 @@ typedef struct Menu Menu;
 #include "a2x_pack_sound.p.h"
 #include "a2x_pack_sprite.p.h"
 
-extern Menu* a_menu_new(Input* const next, Input* const back, Input* const select, Input* const cancel, void (*freeItem)(void* v));
-extern void a_menu_free(Menu* const m);
+extern Menu* a_menu_new(Input* next, Input* back, Input* select, Input* cancel, void (*freeItem)(void* v));
+extern void a_menu_free(Menu* m);
 
-extern void a_menu_addInput(Menu* const m, void (*input)(struct Menu* const m, void* const v));
-extern void a_menu_addV(Menu* const m, void* const v);
-extern void a_menu_addTitle(Menu* const m, const char* const t);
-extern void a_menu_addSprite(Menu* const m, Sprite* const s);
-extern void a_menu_addSounds(Menu* const m, Sound* const accept, Sound* const cancel, Sound* const browse);
-extern void a_menu_addItem(Menu* const m, void* const v);
+extern void a_menu_addInput(Menu* m, void (*input)(Menu* m, void* v));
+extern void a_menu_addV(Menu* m, void* v);
+extern void a_menu_addTitle(Menu* m, const char* t);
+extern void a_menu_addSprite(Menu* m, Sprite* s);
+extern void a_menu_addSounds(Menu* m, Sound* accept, Sound* cancel, Sound* browse);
+extern void a_menu_addItem(Menu* m, void* v);
 
-extern void a_menu_input(Menu* const m);
-extern List* a_menu__items(const Menu* const m);
+extern void a_menu_input(Menu* m);
+extern List* a_menu__items(const Menu* m);
 
 #define A_MENU_ITERATE(menu, type, var) \
     A_LIST_ITERATE(a_menu__items(menu), type, var)
 
-extern bool a_menu_isSelected(const Menu* const m, const void* const item);
-extern void a_menu_keepRunning(Menu* const m);
-extern bool a_menu_running(const Menu* const m);
-extern bool a_menu_finished(const Menu* const m);
-extern bool a_menu_accept(const Menu* const m);
-extern bool a_menu_cancel(const Menu* const m);
-extern int a_menu_choice(const Menu* const m);
+extern bool a_menu_isSelected(const Menu* m, const void* item);
+extern void a_menu_keepRunning(Menu* m);
+extern bool a_menu_running(const Menu* m);
+extern bool a_menu_finished(const Menu* m);
+extern bool a_menu_accept(const Menu* m);
+extern bool a_menu_cancel(const Menu* m);
+extern int a_menu_choice(const Menu* m);
 
 #endif // A2X_PACK_MENU_PH

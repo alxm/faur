@@ -24,11 +24,11 @@
 
 typedef struct Timer Timer;
 
-extern Timer* a_timer_new(const uint32_t milisPeriod);
-extern void a_timer_free(Timer* const t);
+extern Timer* a_timer_new(uint32_t milisPeriod);
+extern void a_timer_free(Timer* t);
 
-extern bool a_timer_check(Timer* const t);
-extern uint32_t a_timer_diff(Timer* const t);
-extern void a_timer_start(Timer* const t);
+extern bool a_timer_check(Timer* t);
+extern uint32_t a_timer_diff(Timer* t);
+extern void a_timer_start(Timer* t);
 
 #endif // A2X_PACK_TIMER_PH

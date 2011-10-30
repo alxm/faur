@@ -34,7 +34,7 @@
 extern void a_input__init(void);
 extern void a_input__uninit(void);
 
-extern void a_input__free(Input* const i);
+extern void a_input__free(Input* i);
 
 extern void a_input__get(void);
 

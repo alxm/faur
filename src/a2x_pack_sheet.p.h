@@ -26,18 +26,18 @@ typedef struct Sheet Sheet;
 
 #include "a2x_pack_pixel.p.h"
 
-extern Sheet* a_sheet_fromFile(const char* const path);
-extern Sheet* a_sheet_fromData(const uint8_t* const data);
-extern Sheet* a_sheet_fromSheet(const Sheet* const sheet, const int x, const int y, const int w, const int h);
-extern void a_sheet_free(Sheet* const s);
+extern Sheet* a_sheet_fromFile(const char* path);
+extern Sheet* a_sheet_fromData(const uint8_t* data);
+extern Sheet* a_sheet_fromSheet(const Sheet* sheet, int x, int y, int w, int h);
+extern void a_sheet_free(Sheet* s);
 
-extern void a_sheet_setTransparent(Sheet* const s, const uint8_t r, const uint8_t g, const uint8_t b);
-extern void a_sheet_setLimit(Sheet* const s, const uint8_t r, const uint8_t g, const uint8_t b);
-extern void a_sheet_setEnd(Sheet* const s, const uint8_t r, const uint8_t g, const uint8_t b);
+extern void a_sheet_setTransparent(Sheet* s, uint8_t r, uint8_t g, uint8_t b);
+extern void a_sheet_setLimit(Sheet* s, uint8_t r, uint8_t g, uint8_t b);
+extern void a_sheet_setEnd(Sheet* s, uint8_t r, uint8_t g, uint8_t b);
 
-extern int a_sheet_w(const Sheet* const s);
-extern int a_sheet_h(const Sheet* const s);
-extern Pixel* a_sheet_data(const Sheet* const s);
-extern Pixel a_sheet_getPixel(const Sheet* const s, const int x, const int y);
+extern int a_sheet_w(const Sheet* s);
+extern int a_sheet_h(const Sheet* s);
+extern Pixel* a_sheet_data(const Sheet* s);
+extern Pixel a_sheet_getPixel(const Sheet* s, int x, int y);
 
 #endif // A2X_PACK_SHEET_PH

@@ -40,7 +40,7 @@ void a_sprite__uninit(void)
     a_list_free(sprites, false);
 }
 
-Sprite* a_sprite_newZoomed(const Sheet* const graphic, const int x, const int y, const int w, const int h, const int zoom)
+Sprite* a_sprite_newZoomed(const Sheet* graphic, int x, int y, int w, int h, int zoom)
 {
     const int spritew = w * zoom;
     const int spriteh = h * zoom;
@@ -75,7 +75,7 @@ Sprite* a_sprite_newZoomed(const Sheet* const graphic, const int x, const int y,
     return s;
 }
 
-Sprite* a_sprite_newBlank(const int w, const int h)
+Sprite* a_sprite_newBlank(int w, int h)
 {
     Sprite* const s = malloc(sizeof(Sprite));
 
@@ -104,7 +104,7 @@ Sprite* a_sprite_newBlank(const int w, const int h)
     return s;
 }
 
-void a_sprite_newTransparent(Sprite* const s)
+void a_sprite_newTransparent(Sprite* s)
 {
     const Pixel tpixel = s->t;
 
@@ -185,7 +185,7 @@ void a_sprite_newTransparent(Sprite* const s)
     }
 }
 
-void a_sprite__free(Sprite* const s)
+void a_sprite__free(Sprite* s)
 {
     free(s->data);
 
@@ -203,7 +203,7 @@ void a_sprite__free(Sprite* const s)
     free(s);
 }
 
-Sprite* a_sprite_clone(const Sprite* const src)
+Sprite* a_sprite_clone(const Sprite* src)
 {
     Sprite* const s = malloc(sizeof(Sprite));
 
@@ -237,42 +237,42 @@ Sprite* a_sprite_clone(const Sprite* const src)
     return s;
 }
 
-int a_sprite_w(const Sprite* const s)
+int a_sprite_w(const Sprite* s)
 {
     return s->w;
 }
 
-int a_sprite_h(const Sprite* const s)
+int a_sprite_h(const Sprite* s)
 {
     return s->h;
 }
 
-Pixel* a_sprite_data(const Sprite* const s)
+Pixel* a_sprite_data(const Sprite* s)
 {
     return s->data;
 }
 
-uint8_t a_sprite_getAlpha(const Sprite* const s)
+uint8_t a_sprite_getAlpha(const Sprite* s)
 {
     return s->alpha;
 }
 
-void a_sprite_setAlpha(Sprite* const s, const uint8_t a)
+void a_sprite_setAlpha(Sprite* s, uint8_t a)
 {
     s->alpha = a;
 }
 
-Pixel a_sprite_getTransparent(const Sprite* const s)
+Pixel a_sprite_getTransparent(const Sprite* s)
 {
     return s->t;
 }
 
-void a_sprite_setTransparent(Sprite* const s, const Pixel c)
+void a_sprite_setTransparent(Sprite* s, Pixel c)
 {
     s->t = c;
 }
 
-Pixel a_sprite_getPixel(const Sprite* const s, const int x, const int y)
+Pixel a_sprite_getPixel(const Sprite* s, int x, int y)
 {
     return *(s->data + y * s->w + x);
 }

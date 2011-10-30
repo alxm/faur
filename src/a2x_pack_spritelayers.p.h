@@ -28,9 +28,9 @@
 typedef struct SpriteLayers SpriteLayers;
 
 extern SpriteLayers* a_spritelayers_new(void);
-extern void a_spritelayers_free(SpriteLayers* const s);
+extern void a_spritelayers_free(SpriteLayers* s);
 
-extern void a_spritelayers_add(SpriteLayers* const s, Sprite* const sprite, const PixelBlend_t blend, const uint8_t r, const uint8_t g, const uint8_t b, const uint8_t a);
-extern void a_spritelayers_blit(SpriteLayers* const s, const int x, const int y);
+extern void a_spritelayers_add(SpriteLayers* s, Sprite* sprite, PixelBlend_t blend, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
+extern void a_spritelayers_blit(SpriteLayers* s, int x, int y);
 
 #endif // A2X_PACK_SPRITELAYERS_PH

@@ -85,7 +85,7 @@ void a_sound__uninit(void)
     }
 }
 
-Music* a_music_load(const char* const path)
+Music* a_music_load(const char* path)
 {
     if(a2x_bool("sound.on")) {
         Music* const m = Mix_LoadMUS(path);
@@ -104,14 +104,14 @@ Music* a_music_load(const char* const path)
     }
 }
 
-void a_music__free(Music* const m)
+void a_music__free(Music* m)
 {
     if(a2x_bool("sound.on")) {
         Mix_FreeMusic(m);
     }
 }
 
-void a_music_play(Music* const m)
+void a_music_play(Music* m)
 {
     if(a2x_bool("sound.on")) {
         if(m) {
@@ -127,7 +127,7 @@ void a_music_stop(void)
     }
 }
 
-Sound* a_sfx_fromFile(const char* const path)
+Sound* a_sfx_fromFile(const char* path)
 {
     if(a2x_bool("sound.on")) {
         Sound* const s = Mix_LoadWAV(path);
@@ -141,7 +141,7 @@ Sound* a_sfx_fromFile(const char* const path)
     }
 }
 
-Sound* a_sfx__fromData(const uint16_t* const data, const int size)
+Sound* a_sfx__fromData(const uint16_t* data, int size)
 {
     if(a2x_bool("sound.on")) {
         SDL_RWops* const rw = SDL_RWFromMem((void*)data, size);
@@ -158,21 +158,21 @@ Sound* a_sfx__fromData(const uint16_t* const data, const int size)
     }
 }
 
-void a_sfx__free(Sound* const s)
+void a_sfx__free(Sound* s)
 {
     if(a2x_bool("sound.on")) {
         Mix_FreeChunk(s);
     }
 }
 
-void a_sfx_play(Sound* const s)
+void a_sfx_play(Sound* s)
 {
     if(a2x_bool("sound.on")) {
         Mix_PlayChannel(-1, s, 0);
     }
 }
 
-void a_sfx_volume(const int v)
+void a_sfx_volume(int v)
 {
     if(a2x_bool("sound.on")) {
         A_LIST_ITERATE(sfxList, Sound, s) {

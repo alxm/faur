@@ -40,7 +40,7 @@ List* a_list_new(void)
     return list;
 }
 
-void a_list_free(List* const list, const bool freeContent)
+void a_list_free(List* list, bool freeContent)
 {
     ListNode* n = list->first->next;
 
@@ -60,7 +60,7 @@ void a_list_free(List* const list, const bool freeContent)
     free(list);
 }
 
-void a_list_empty(List* const list, const bool freeContent)
+void a_list_empty(List* list, bool freeContent)
 {
     ListNode* n = list->first->next;
 
@@ -81,7 +81,7 @@ void a_list_empty(List* const list, const bool freeContent)
     list->items = 0;
 }
 
-ListNode* a_list_addFirst(List* const list, void* const content)
+ListNode* a_list_addFirst(List* list, void* content)
 {
     ListNode* const n = malloc(sizeof(ListNode));
 
@@ -97,7 +97,7 @@ ListNode* a_list_addFirst(List* const list, void* const content)
     return n;
 }
 
-ListNode* a_list_addLast(List* const list, void* const content)
+ListNode* a_list_addLast(List* list, void* content)
 {
     ListNode* const n = malloc(sizeof(ListNode));
 
@@ -113,7 +113,7 @@ ListNode* a_list_addLast(List* const list, void* const content)
     return n;
 }
 
-void a_list_remove(List* const list, const void* const v)
+void a_list_remove(List* list, const void* v)
 {
     A_LIST_ITERATE(list, void, var) {
         if(var == v) {
@@ -123,7 +123,7 @@ void a_list_remove(List* const list, const void* const v)
     }
 }
 
-void* a_list_removeFirst(List* const list, const bool freeContent)
+void* a_list_removeFirst(List* list, bool freeContent)
 {
     ListNode* const n = list->first->next;
 
@@ -148,7 +148,7 @@ void* a_list_removeFirst(List* const list, const bool freeContent)
     return v;
 }
 
-void* a_list_removeLast(List* const list, const bool freeContent)
+void* a_list_removeLast(List* list, bool freeContent)
 {
     ListNode* const n = list->last->prev;
 
@@ -173,7 +173,7 @@ void* a_list_removeLast(List* const list, const bool freeContent)
     return v;
 }
 
-void a_list_removeNode(ListNode* const node, const bool freeContent)
+void a_list_removeNode(ListNode* node, bool freeContent)
 {
     node->prev->next = node->next;
     node->next->prev = node->prev;
@@ -185,7 +185,7 @@ void a_list_removeNode(ListNode* const node, const bool freeContent)
     free(node);
 }
 
-void a_list_reverse(List* const list)
+void a_list_reverse(List* list)
 {
     ListNode* save;
 
@@ -200,7 +200,7 @@ void a_list_reverse(List* const list)
     list->last = save;
 }
 
-void** a_list_getArray(List* const list)
+void** a_list_getArray(List* list)
 {
     int i = 0;
     void** const array = malloc(list->items * sizeof(void*));
@@ -212,17 +212,17 @@ void** a_list_getArray(List* const list)
     return array;
 }
 
-void* a_list_first(const List* const list)
+void* a_list_first(const List* list)
 {
     return a_list__first(list);
 }
 
-void* a_list_last(const List* const list)
+void* a_list_last(const List* list)
 {
     return a_list__last(list);
 }
 
-void* a_list_get(const List* const list, const int index)
+void* a_list_get(const List* list, int index)
 {
     int counter = -1;
 
@@ -235,12 +235,12 @@ void* a_list_get(const List* const list, const int index)
     return NULL;
 }
 
-int a_list_size(const List* const list)
+int a_list_size(const List* list)
 {
     return a_list__size(list);
 }
 
-bool a_list_isEmpty(const List* const list)
+bool a_list_isEmpty(const List* list)
 {
     return list->first->next == list->last;
 }

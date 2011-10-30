@@ -33,12 +33,12 @@ static Pixel pixel;
 
 #define pixelMake(blend, args)                                \
                                                               \
-    void a_pixel__noclip_##blend(const int x, const int y)    \
+    void a_pixel__noclip_##blend(int x, int y)                \
     {                                                         \
         a_pixel__##blend args;                                \
     }                                                         \
                                                               \
-    void a_pixel__clip_##blend(const int x, const int y)      \
+    void a_pixel__clip_##blend(int x, int y)                  \
     {                                                         \
         if(x >= 0 && x < a_width && y >= 0 && y < a_height) { \
             a_pixel__##blend args;                            \
@@ -73,7 +73,7 @@ void a_pixel__init(void)
     a_pixel_put = pixels[blend][clip];
 }
 
-void a_pixel_setBlend(const PixelBlend_t b)
+void a_pixel_setBlend(PixelBlend_t b)
 {
     blend = b;
 
@@ -83,7 +83,7 @@ void a_pixel_setBlend(const PixelBlend_t b)
     a_pixel_put = pixels[blend][clip];
 }
 
-void a_pixel_setClip(const bool c)
+void a_pixel_setClip(bool c)
 {
     clip = c;
 
@@ -93,7 +93,7 @@ void a_pixel_setClip(const bool c)
     a_pixel_put = pixels[blend][clip];
 }
 
-void a_pixel_setAlpha(const uint8_t a)
+void a_pixel_setAlpha(uint8_t a)
 {
     alpha = a;
 
@@ -101,7 +101,7 @@ void a_pixel_setAlpha(const uint8_t a)
     a_draw__setAlpha(alpha);
 }
 
-void a_pixel_setRGB(const uint8_t r, const uint8_t g, const uint8_t b)
+void a_pixel_setRGB(uint8_t r, uint8_t g, uint8_t b)
 {
     red = r;
     green = g;
@@ -113,7 +113,7 @@ void a_pixel_setRGB(const uint8_t r, const uint8_t g, const uint8_t b)
     a_draw__setRGB(red, green, blue);
 }
 
-void a_pixel_setRGBA(const uint8_t r, const uint8_t g, const uint8_t b, const uint8_t a)
+void a_pixel_setRGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
 {
     red = r;
     green = g;
@@ -129,7 +129,7 @@ void a_pixel_setRGBA(const uint8_t r, const uint8_t g, const uint8_t b, const ui
     a_draw__setRGB(red, green, blue);
 }
 
-void a_pixel_setPixel(const Pixel p)
+void a_pixel_setPixel(Pixel p)
 {
     pixel = p;
 

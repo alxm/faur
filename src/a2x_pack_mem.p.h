@@ -36,7 +36,7 @@
     a__m;                                          \
 })
 
-extern void* a_mem_encodeRLE(const void* const data, const int length, const int size, int* const encLength);
-extern void* a_mem_decodeRLE(const void* const data, const int length, const int size, int* const decLength);
+extern void* a_mem_encodeRLE(const void* data, int length, int size, int* encLength);
+extern void* a_mem_decodeRLE(const void* data, int length, int size, int* decLength);
 
 #endif // A2X_PACK_MEM_PH

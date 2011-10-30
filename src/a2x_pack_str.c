@@ -41,7 +41,7 @@ void a_str__uninit(void)
     a_list_free(pools, false);
 }
 
-char* a_str__alloc(const uint size)
+char* a_str__alloc(uint size)
 {
     char* const str = a_strpool_alloc(pool, size);
 
@@ -116,7 +116,7 @@ char* a_str__merge(int count, ...)
     return str;
 }
 
-char* a_str_dup(const char* const s)
+char* a_str_dup(const char* s)
 {
     char* const d = a_str__alloc(a_str_size(s));
     strcpy(d, s);
@@ -124,7 +124,7 @@ char* a_str_dup(const char* const s)
     return d;
 }
 
-char* a_str_sub(const char* const s, const int start, const int end)
+char* a_str_sub(const char* s, int start, int end)
 {
     const int len = end - start;
     char* const str = a_str__alloc((len + 1) * sizeof(char));
@@ -135,7 +135,7 @@ char* a_str_sub(const char* const s, const int start, const int end)
     return str;
 }
 
-int a_str_firstIndex(const char* const s, const char c)
+int a_str_firstIndex(const char* s, char c)
 {
     const int len = strlen(s);
 
@@ -148,7 +148,7 @@ int a_str_firstIndex(const char* const s, const char c)
     return -1;
 }
 
-int a_str_lastIndex(const char* const s, const char c)
+int a_str_lastIndex(const char* s, char c)
 {
     for(int i = strlen(s); i--; ) {
         if(s[i] == c) {
@@ -159,7 +159,7 @@ int a_str_lastIndex(const char* const s, const char c)
     return -1;
 }
 
-char* a_str_getPrefixFirstFind(const char* const s, const char limit)
+char* a_str_getPrefixFirstFind(const char* s, char limit)
 {
     const int index = a_str_firstIndex(s, limit);
 
@@ -170,7 +170,7 @@ char* a_str_getPrefixFirstFind(const char* const s, const char limit)
     return a_str_sub(s, 0, index);
 }
 
-char* a_str_getPrefixLastFind(const char* const s, const char limit)
+char* a_str_getPrefixLastFind(const char* s, char limit)
 {
     const int index = a_str_lastIndex(s, limit);
 
@@ -181,7 +181,7 @@ char* a_str_getPrefixLastFind(const char* const s, const char limit)
     return a_str_sub(s, 0, index);
 }
 
-char* a_str_getSuffixFirstFind(const char* const s, const char limit)
+char* a_str_getSuffixFirstFind(const char* s, char limit)
 {
     const int index = a_str_firstIndex(s, limit);
 
@@ -192,7 +192,7 @@ char* a_str_getSuffixFirstFind(const char* const s, const char limit)
     return a_str_sub(s, index + 1, strlen(s));
 }
 
-char* a_str_getSuffixLastFind(const char* const s, const char limit)
+char* a_str_getSuffixLastFind(const char* s, char limit)
 {
     const int index = a_str_lastIndex(s, limit);
 
@@ -203,7 +203,7 @@ char* a_str_getSuffixLastFind(const char* const s, const char limit)
     return a_str_sub(s, index + 1, strlen(s));
 }
 
-char* a_str_extractPath(const char* const s)
+char* a_str_extractPath(const char* s)
 {
     char* const c = a_str_getPrefixLastFind(s, '/');
 
@@ -214,7 +214,7 @@ char* a_str_extractPath(const char* const s)
     }
 }
 
-char* a_str_extractFile(const char* const s)
+char* a_str_extractFile(const char* s)
 {
     char* const c = a_str_getSuffixLastFind(s, '/');
 
@@ -225,7 +225,7 @@ char* a_str_extractFile(const char* const s)
     }
 }
 
-char* a_str_extractName(const char* const s)
+char* a_str_extractName(const char* s)
 {
     char* const file = a_str_extractFile(s);
     char* const name = a_str_getPrefixLastFind(file, '.');
@@ -237,7 +237,7 @@ char* a_str_extractName(const char* const s)
     }
 }
 
-char* a_str_trim(const char* const s)
+char* a_str_trim(const char* s)
 {
     const int len = strlen(s);
 

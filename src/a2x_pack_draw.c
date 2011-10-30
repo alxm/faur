@@ -41,7 +41,7 @@ static uint8_t alpha;
 static uint8_t red, green, blue;
 static Pixel pixel;
 
-static bool cohen_sutherland_clip(int* const lx1, int* const ly1, int* const lx2, int* const ly2);
+static bool cohen_sutherland_clip(int* lx1, int* ly1, int* lx2, int* ly2);
 
 #define rectangle_noclip(pixeler)                  \
 {                                                  \
@@ -259,24 +259,24 @@ void a_draw__init(void)
     drawSetAll();
 }
 
-void a_draw__setBlend(const PixelBlend_t b)
+void a_draw__setBlend(PixelBlend_t b)
 {
     blend = b;
     drawSetAll();
 }
 
-void a_draw__setClip(const bool c)
+void a_draw__setClip(bool c)
 {
     clip = c;
     drawSetAll();
 }
 
-void a_draw__setAlpha(const uint8_t a)
+void a_draw__setAlpha(uint8_t a)
 {
     alpha = a;
 }
 
-void a_draw__setRGB(const uint8_t r, const uint8_t g, const uint8_t b)
+void a_draw__setRGB(uint8_t r, uint8_t g, uint8_t b)
 {
     red = r;
     green = g;
@@ -285,7 +285,7 @@ void a_draw__setRGB(const uint8_t r, const uint8_t g, const uint8_t b)
     pixel = a_pixel_make(red, green, blue);
 }
 
-void a_draw_fill_fast(const Pixel c)
+void a_draw_fill_fast(Pixel c)
 {
     uint32_t* pixels = (uint32_t*)a_pixels;
     const uint32_t col = (c << 16) | c;
@@ -295,7 +295,7 @@ void a_draw_fill_fast(const Pixel c)
     }
 }
 
-void a_draw_rectangle_fast(int x1, int y1, int x2, int y2, const Pixel c)
+void a_draw_rectangle_fast(int x1, int y1, int x2, int y2, Pixel c)
 {
     x1 = a_math_max(x1, 0);
     y1 = a_math_max(y1, 0);
@@ -332,7 +332,7 @@ void a_draw_rectangle_fast(int x1, int y1, int x2, int y2, const Pixel c)
     }
 }
 
-void a_draw_rectangle_outline(const int x1, const int y1, const int x2, const int y2, const int t)
+void a_draw_rectangle_outline(int x1, int y1, int x2, int y2, int t)
 {
     a_draw_rectangle(x1, y1, x2, y1 + t);         // top
     a_draw_rectangle(x1, y2 - t, x2, y2);         // bottom
@@ -340,7 +340,7 @@ void a_draw_rectangle_outline(const int x1, const int y1, const int x2, const in
     a_draw_rectangle(x2 - t, y1 + t, x2, y2 - t); // right
 }
 
-static bool cohen_sutherland_clip(int* const lx1, int* const ly1, int* const lx2, int* const ly2)
+static bool cohen_sutherland_clip(int* lx1, int* ly1, int* lx2, int* ly2)
 {
     int x1 = *lx1;
     int y1 = *ly1;
@@ -378,7 +378,7 @@ static bool cohen_sutherland_clip(int* const lx1, int* const ly1, int* const lx2
         (float)(x1 - x2) / (y1 - y2) * (y - y1) + x1; \
     })
 
-    while(1) {
+    while(true) {
         const int outcode1 = outcode(x1, y1);
         const int outcode2 = outcode(x2, y2);
 
