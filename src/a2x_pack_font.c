@@ -42,6 +42,10 @@ static const char chars[CHARS_NUM] = {
 
 static List* fontsList;
 static Font** fonts;
+static int font;
+static FontAlign align;
+static int x;
+static int y;
 
 static int charIndex(char c);
 
@@ -49,6 +53,10 @@ void a_font__init(void)
 {
     fontsList = a_list_new();
     fonts = NULL;
+    font = 0;
+    align = A_LEFT;
+    x = 0;
+    y = 0;
 }
 
 void a_font__uninit(void)
@@ -161,29 +169,47 @@ int a_font_copy(int font, uint8_t r, uint8_t g, uint8_t b)
     return a_list_size(fontsList) - 1;
 }
 
-int a_font_text(FontAlign align, int x, int y, int index, const char* text)
+void a_font_setFace(int f)
+{
+    font = f;
+}
+
+void a_font_setAlign(FontAlign a)
+{
+    align = a;
+}
+
+void a_font_setCoords(int X, int Y)
+{
+    x = X;
+    y = Y;
+}
+
+void a_font_text(const char* text)
 {
     if(align & A_SAFE) {
-        return a_font_safe(align, x, y, index, text);
+        a_font__safe(text);
+        return;
     }
 
-    Font* const f = fonts[index];
+    Font* const f = fonts[font];
 
-    int spaced = 0;
+    bool spaced = align & A_SPACED;
 
-    if(align & A_SPACED) spaced = 1;
-    if(align & A_MIDDLE) x -= a_font_width(index, text) / 2;
-    if(align & A_RIGHT) x -= a_font_width(index, text);
+    if(align & A_MIDDLE) {
+        x -= a_font_width(text) / 2;
+    }
+
+    if(align & A_RIGHT) {
+        x -= a_font_width(text);
+    }
 
     const int length = strlen(text);
     const int maxWidth = f->maxWidth;
-    int drx = x;
 
     for(int l = 0; l < length; l++) {
-        int drx2 = drx;
-
         if(text[l] == ' ') {
-            drx += FONT_SPACE + FONT_BLANK_SPACE;
+            x += FONT_SPACE + FONT_BLANK_SPACE;
         } else {
             const int index = (int)text[l];
             Sprite* const spr = f->sprites[index];
@@ -193,36 +219,36 @@ int a_font_text(FontAlign align, int x, int y, int index, const char* text)
             }
 
             if(spaced) {
-                drx2 += (f->maxWidth - spr->w) / 2;
+                a_blit(spr, x + (f->maxWidth - spr->w) / 2, y);
+            } else {
+                a_blit(spr, x, y);
             }
 
-            a_blit(spr, drx2, y);
-            drx += FONT_SPACE + (spaced ? maxWidth : spr->w);
+            x += FONT_SPACE + (spaced ? maxWidth : spr->w);
         }
     }
-
-    return drx;
 }
 
-int a_font_safe(FontAlign align, int x, int y, int index, const char* text)
+void a_font__safe(const char* text)
 {
-    Font* const f = fonts[index];
+    Font* const f = fonts[font];
 
-    int spaced = 0;
+    bool spaced = align & A_SPACED;
 
-    if(align & A_SPACED) spaced = 1;
-    if(align & A_MIDDLE) x -= a_font_width(index, text) / 2;
-    if(align & A_RIGHT) x -= a_font_width(index, text);
+    if(align & A_MIDDLE) {
+        x -= a_font_width(text) / 2;
+    }
+
+    if(align & A_RIGHT) {
+        x -= a_font_width(text);
+    }
 
     const int length = strlen(text);
     const int maxWidth = f->maxWidth;
-    int drx = x;
 
     for(int l = 0; l < length; l++) {
-        int drx2 = drx;
-
         if(text[l] == ' ') {
-            drx += FONT_SPACE + FONT_BLANK_SPACE;
+            x += FONT_SPACE + FONT_BLANK_SPACE;
         } else {
             const int index = (int)text[l];
 
@@ -237,62 +263,60 @@ int a_font_safe(FontAlign align, int x, int y, int index, const char* text)
             }
 
             if(spaced) {
-                drx2 += (f->maxWidth - spr->w) / 2;
+                a_blit(spr, x + (f->maxWidth - spr->w) / 2, y);
+            } else {
+                a_blit(spr, x, y);
             }
 
-            a_blit(spr, drx2, y);
-            drx += FONT_SPACE + (spaced ? maxWidth : spr->w);
+            x += FONT_SPACE + (spaced ? maxWidth : spr->w);
         }
     }
-
-    return drx;
 }
 
-int a_font_int(FontAlign align, int x, int y, int f, int number)
+void a_font_int(int number)
 {
-    char s[16];
+    char s[21];
     sprintf(s, "%d", number);
 
-    return a_font_text(align, x, y, f, s);
+    a_font_text(s);
 }
 
-int a_font_float(FontAlign align, int x, int y, int f, float number)
+void a_font_float(float number)
 {
     char s[64];
     sprintf(s, "%f", number);
 
-    return a_font_text(align, x, y, f, s);
+    a_font_text(s);
 }
 
-int a_font_char(FontAlign align, int x, int y, int f, char ch)
+void a_font_char(char ch)
 {
     char s[2];
     sprintf(s, "%c", ch);
 
-    return a_font_text(align, x, y, f, s);
+    a_font_text(s);
 }
 
-int a_font_fixed(FontAlign align, int x, int y, int f, int width, const char* text)
+void a_font_fixed(int width, const char* text)
 {
-    if(a_font_width(f, text) <= width) {
-        return a_font_text(align, x, y, f, text);
+    if(a_font_width(text) <= width) {
+        a_font_text(text);
+        return;
     }
 
-    const int w = a_font_width(f, "...");
+    const int w = a_font_width("...");
     char* const temp = a_str_dup(text);
 
     do {
         temp[strlen(temp) - 1] = '\0';
-    } while(a_font_width(f, temp) + w > width);
+    } while(a_font_width(temp) + w > width);
 
-    int rx = a_font_textf(align, x, y, f, "%s...", temp);
-
-    return rx;
+    a_font_textf("%s...", temp);
 }
 
-int a_font_width(int index, const char* text)
+int a_font_width(const char* text)
 {
-    Font* const f = fonts[index];
+    Font* const f = fonts[font];
 
     const int length = strlen(text);
 

@@ -35,28 +35,31 @@ typedef enum FontAlign {
 extern int a_font_load(Sheet* sheet, int sx, int sy, int zoom, FontLoad loader);
 extern int a_font_copy(int font, uint8_t r, uint8_t g, uint8_t b);
 
-extern int a_font_text(FontAlign align, int x, int y, int index, const char* text);
-extern int a_font_safe(FontAlign align, int x, int y, int index, const char* text);
-extern int a_font_int(FontAlign align, int x, int y, int f, int number);
-extern int a_font_float(FontAlign align, int x, int y, int f, float number);
-extern int a_font_char(FontAlign align, int x, int y, int f, char ch);
+extern void a_font_setFace(int f);
+extern void a_font_setAlign(FontAlign a);
+extern void a_font_setCoords(int x, int y);
 
-extern int a_font_fixed(FontAlign align, int x, int y, int f, int width, const char* text);
+extern void a_font_text(const char* text);
+extern void a_font_int(int number);
+extern void a_font_float(float number);
+extern void a_font_char(char ch);
 
-extern int a_font_width(int index, const char* text);
+extern void a_font_fixed(int width, const char* text);
 
-#define a_font_textf(align, x, y, f, ...) \
-({                                        \
-    char a__s[256];                       \
-    sprintf(a__s, __VA_ARGS__);           \
-    a_font_text(align, x, y, f, a__s);    \
+extern int a_font_width(const char* text);
+
+#define a_font_textf(...)       \
+({                              \
+    char a__s[256];             \
+    sprintf(a__s, __VA_ARGS__); \
+    a_font_text(a__s);          \
 })
 
 #define a_font_widthf(f, ...)   \
 ({                              \
     char a__s[256];             \
     sprintf(a__s, __VA_ARGS__); \
-    a_font_width(f, a__s);      \
+    a_font_width(a__s);         \
 })
 
 #endif // A2X_PACK_FONT_PH
