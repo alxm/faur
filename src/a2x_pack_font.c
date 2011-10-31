@@ -185,6 +185,11 @@ void a_font_setCoords(int X, int Y)
     y = Y;
 }
 
+int a_font_getX(void)
+{
+    return x;
+}
+
 void a_font_text(const char* text)
 {
     if(align & A_SAFE) {

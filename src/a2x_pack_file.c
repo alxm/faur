@@ -50,6 +50,8 @@ File* a_file_open(const char* path, const char* modes)
 
 void a_file_close(File* f)
 {
+    free(f->line);
+
     if(f->file) {
         fclose(f->file);
     }
@@ -82,6 +84,9 @@ void a_file_write(File* f, void* buffer, size_t size)
 
 bool a_file_readLine(File* f)
 {
+    free(f->line);
+    f->line = NULL;
+
     if(f->eof) {
         return false;
     }

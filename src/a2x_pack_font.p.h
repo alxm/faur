@@ -38,6 +38,7 @@ extern int a_font_copy(int font, uint8_t r, uint8_t g, uint8_t b);
 extern void a_font_setFace(int f);
 extern void a_font_setAlign(FontAlign a);
 extern void a_font_setCoords(int x, int y);
+extern int a_font_getX(void);
 
 extern void a_font_text(const char* text);
 extern void a_font_int(int number);
