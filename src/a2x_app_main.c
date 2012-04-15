@@ -35,7 +35,7 @@ int main(int argc, char** argv)
 
     a_out("Opening %s %s by %s, compiled %s",
         a2x_str("app.title"), a2x_str("app.version"),
-        a2x_str("app.author"),a2x_str("app.compiled"));
+        a2x_str("app.author"), a2x_str("app.compiled"));
 
     a_conf__init();
     a_sdl__init();

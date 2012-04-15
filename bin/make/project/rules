@@ -15,8 +15,8 @@ SFX_FILES	= $(notdir $(wildcard $(SFX_DIR)/*.wav))
 # .c gfx & sfx files
 #
 
-C_GFX_DIR	= $(SRC_DIR)/gfx
-C_SFX_DIR	= $(SRC_DIR)/sfx
+C_GFX_DIR	= $(SRC_DIR)/a2x_gfx
+C_SFX_DIR	= $(SRC_DIR)/a2x_sfx
 
 C_GFX_HEADER	=	$(C_GFX_DIR)/all.h
 C_SFX_HEADER	=	$(C_SFX_DIR)/all.h
@@ -49,8 +49,8 @@ CFILES	= 	$(notdir $(wildcard $(SRC_DIR)/*.c))
 #
 
 O_DIR		= obj_$(PLATFORM)
-O_GFX_DIR	= $(O_DIR)/gfx
-O_SFX_DIR	= $(O_DIR)/sfx
+O_GFX_DIR	= $(O_DIR)/a2x_gfx
+O_SFX_DIR	= $(O_DIR)/a2x_sfx
 
 #
 # all the dirs
