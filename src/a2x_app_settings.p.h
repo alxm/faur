@@ -26,7 +26,7 @@
 extern A_SETUP;
 
 extern void a2x_set(const char* key, const char* val);
-extern void a2x_flip(const char* key);
+extern bool a2x_flip(const char* key);
 
 extern char* a2x_str(const char* key);
 extern bool a2x_bool(const char* key);

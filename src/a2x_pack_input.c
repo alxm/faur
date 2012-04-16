@@ -336,9 +336,8 @@ void a_input__get(void)
         }
 
         if(a_input_getUnpress(doubleRes)) {
-            a2x__flip("video.double");
+            mouse.shift = a2x__flip("video.double");
             a_screen__double();
-            mouse.shift = a2x_bool("video.double");
         }
     #endif
 

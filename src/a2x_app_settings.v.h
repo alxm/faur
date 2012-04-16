@@ -31,6 +31,6 @@ extern void a_settings__defaults(void);
 extern void a_settings__freeze(void);
 
 extern void a2x__set(const char* key, const char* val);
-extern void a2x__flip(const char* key);
+extern bool a2x__flip(const char* key);
 
 #endif // A2X_APP_SETTINGS_VH

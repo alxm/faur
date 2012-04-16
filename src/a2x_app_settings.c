@@ -44,7 +44,7 @@ static bool frozen = false;
 static void add(Setting_t type, Update_t update, const char* key, const char* val);
 static int parseBool(const char* val);
 static void set(const char* key, const char* val, bool respect);
-static void flip(const char* key, bool respect);
+static bool flip(const char* key, bool respect);
 
 void a_settings__defaults(void)
 {
@@ -95,14 +95,14 @@ void a2x__set(const char* key, const char* val)
     set(key, val, false);
 }
 
-void a2x_flip(const char* key)
+bool a2x_flip(const char* key)
 {
-    flip(key, true);
+    return flip(key, true);
 }
 
-void a2x__flip(const char* key)
+bool a2x__flip(const char* key)
 {
-    flip(key, false);
+    return flip(key, false);
 }
 
 char* a2x_str(const char* key)
@@ -126,10 +126,10 @@ bool a2x_bool(const char* key)
 
     if(s == NULL) {
         a_error("Setting '%s' does not exist", key);
-        return 0;
+        return false;
     } else if(s->type != BOOL) {
         a_error("Setting '%s' is not a boolean", key);
-        return 0;
+        return false;
     } else {
         return s->value.boolean;
     }
@@ -217,20 +217,20 @@ static void set(const char* key, const char* val, bool respect)
     }
 }
 
-static void flip(const char* key, bool respect)
+static bool flip(const char* key, bool respect)
 {
     Setting* const s = a_hash_get(settings, key);
 
     if(s == NULL) {
         a_error("Setting '%s' does not exist", key);
-        return;
+        return false;
     } else if(s->type != BOOL) {
         a_error("Setting '%s' is not a boolean - can't flip it", key);
-        return;
+        return false;
     } else if(respect
         && (s->update == SET_FROZEN || (s->update == SET_ONCE && frozen))) {
         a_error("Setting '%s' is frozen", key);
-        return;
+        return false;
     }
 
     s->value.boolean ^= 1;
@@ -238,4 +238,6 @@ static void flip(const char* key, bool respect)
     if(s->update == SET_ONCE) {
         s->update = SET_FROZEN;
     }
+
+    return s->value.boolean;
 }
