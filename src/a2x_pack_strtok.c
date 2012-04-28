@@ -20,50 +20,21 @@
 
 #include "a2x_pack_strtok.v.h"
 
-struct StringTok {
-    char* string;
-    char* delims;
-    int numDelims;
-    int index;
-};
-
 static bool is_delim(char c, const char* d, int n);
 
-StringTok* a_strtok_new(const char* s, const char* d)
+StringTok a_strtok__new(const char* s, const char* d)
 {
-    StringTok* const t = malloc(sizeof(StringTok));
+    StringTok t;
 
-    t->string = a_str_dup(s);
-    t->delims = a_str_dup(d);
-    t->numDelims = strlen(d);
-    t->index = 0;
+    t.string = s;
+    t.index = 0;
+    t.delims = d;
+    t.numDelims = strlen(d);
 
     return t;
 }
 
-void a_strtok_free(StringTok* t)
-{
-    free(t);
-}
-
-bool a_strtok_next(StringTok* t)
-{
-    const char* const string = t->string;
-    const char* const delims = t->delims;
-    const int numDelims = t->numDelims;
-
-    while(true) {
-        if(string[t->index] == '\0') {
-            return false;
-        } else if(is_delim(string[t->index], delims, numDelims)) {
-            t->index++;
-        } else {
-            return true;
-        }
-    }
-}
-
-char* a_strtok_get(StringTok* t)
+char* a_strtok__next(StringTok* t)
 {
     const char* const string = t->string;
     const char* const delims = t->delims;
@@ -73,11 +44,15 @@ char* a_strtok_get(StringTok* t)
         t->index++;
     }
 
+    if(string[t->index] == '\0') {
+        return NULL;
+    }
+
     const int start = t->index;
 
-    while(string[t->index] != '\0' && !is_delim(string[t->index], delims, numDelims)) {
+    do {
         t->index++;
-    }
+    } while(string[t->index] != '\0' && !is_delim(string[t->index], delims, numDelims));
 
     const int len = t->index - start;
     char* const token = a_str__alloc((len + 1) * sizeof(char));

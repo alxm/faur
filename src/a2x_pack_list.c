@@ -40,17 +40,13 @@ List* a_list_new(void)
     return list;
 }
 
-void a_list_free(List* list, bool freeContent)
+void a_list_free(List* list)
 {
     ListNode* n = list->first->next;
 
     while(n != list->last) {
         ListNode* const t = n;
         n = n->next;
-
-        if(freeContent) {
-            free(t->content);
-        }
 
         free(t);
     }
@@ -60,17 +56,13 @@ void a_list_free(List* list, bool freeContent)
     free(list);
 }
 
-void a_list_empty(List* list, bool freeContent)
+void a_list_empty(List* list)
 {
     ListNode* n = list->first->next;
 
     while(n != list->last) {
         ListNode* const t = n;
         n = n->next;
-
-        if(freeContent) {
-            free(t->content);
-        }
 
         free(t);
     }
@@ -117,13 +109,13 @@ void a_list_remove(List* list, const void* v)
 {
     A_LIST_ITERATE(list, void, var) {
         if(var == v) {
-            A_LIST_REMOVE(false);
+            A_LIST_REMOVE();
             break;
         }
     }
 }
 
-void* a_list_removeFirst(List* list, bool freeContent)
+void* a_list_removeFirst(List* list)
 {
     ListNode* const n = list->first->next;
 
@@ -136,19 +128,14 @@ void* a_list_removeFirst(List* list, bool freeContent)
     n->prev->next = n->next;
     n->next->prev = n->prev;
 
-    list->items--;
-
-    if(freeContent) {
-        free(v);
-        v = NULL;
-    }
-
     free(n);
+
+    list->items--;
 
     return v;
 }
 
-void* a_list_removeLast(List* list, bool freeContent)
+void* a_list_removeLast(List* list)
 {
     ListNode* const n = list->last->prev;
 
@@ -161,26 +148,17 @@ void* a_list_removeLast(List* list, bool freeContent)
     n->prev->next = n->next;
     n->next->prev = n->prev;
 
-    list->items--;
-
-    if(freeContent) {
-        free(v);
-        v = NULL;
-    }
-
     free(n);
+
+    list->items--;
 
     return v;
 }
 
-void a_list_removeNode(ListNode* node, bool freeContent)
+void a_list_removeNode(ListNode* node)
 {
     node->prev->next = node->next;
     node->next->prev = node->prev;
-
-    if(freeContent) {
-        free(node->content);
-    }
 
     free(node);
 }

@@ -45,14 +45,13 @@ void a_state__init(void)
 
 void a_state__uninit(void)
 {
-    a_hash_free(functions, false);
+    a_hash_free(functions);
 
     A_LIST_ITERATE(stack, StateInstance, s) {
-        a_hash_free(s->objects, false);
+        a_hash_free(s->objects);
         free(s);
     }
-
-    a_list_free(stack, false);
+    a_list_free(stack);
 }
 
 void a_state_new(const char* name, void (*function)(void))
@@ -177,7 +176,7 @@ void a_state__run(void)
         s->function();
 
         if(s->stage == A_STATE_STAGE_FREE) {
-            a_hash_free(s->objects, false);
+            a_hash_free(s->objects);
             free(a_list_pop(stack));
         }
 

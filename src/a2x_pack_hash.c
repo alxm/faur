@@ -53,18 +53,13 @@ Hash* a_hash_new(void)
     return h;
 }
 
-void a_hash_free(Hash* h, bool freeContent)
+void a_hash_free(Hash* h)
 {
     for(int i = A_HASH_NUM; i--; ) {
         Entry* e = h->entries[i];
 
         while(e) {
             Entry* const save = e->next;
-
-            if(freeContent) {
-                free(e->content);
-            }
-
             free(e);
             e = save;
         }

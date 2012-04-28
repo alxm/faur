@@ -26,19 +26,19 @@ typedef struct List List;
 typedef struct ListNode ListNode;
 
 extern List* a_list_new(void);
-extern void a_list_free(List* list, bool freeContent);
-extern void a_list_empty(List* list, bool freeContent);
+extern void a_list_free(List* list);
+extern void a_list_empty(List* list);
 
 extern ListNode* a_list_addFirst(List* list, void* content);
 extern ListNode* a_list_addLast(List* list, void* content);
 
 extern void a_list_remove(List* list, const void* v);
-extern void* a_list_removeFirst(List* list, bool freeContent);
-extern void* a_list_removeLast(List* list, bool freeContent);
-extern void a_list_removeNode(ListNode* node, bool freeContent);
+extern void* a_list_removeFirst(List* list);
+extern void* a_list_removeLast(List* list);
+extern void a_list_removeNode(ListNode* node);
 
 #define a_list_push(l, c) a_list_addFirst(l, c)
-#define a_list_pop(l)     a_list_removeFirst(l, false)
+#define a_list_pop(l)     a_list_removeFirst(l)
 #define a_list_peek(l)    a_list_first(l)
 
 extern void a_list_reverse(List* list);

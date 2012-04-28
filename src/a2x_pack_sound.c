@@ -78,8 +78,8 @@ void a_sound__uninit(void)
             a_music__free(m);
         }
 
-        a_list_free(sfxList, false);
-        a_list_free(musicList, false);
+        a_list_free(sfxList);
+        a_list_free(musicList);
 
         Mix_CloseAudio();
     }

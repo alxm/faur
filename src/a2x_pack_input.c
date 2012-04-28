@@ -69,10 +69,13 @@ typedef enum InputAction {
 
 #define a_inputs_new() ((Inputs){a_list_new(), a_hash_new()})
 
-#define a_inputs_free(i)         \
-({                               \
-    a_list_free(i.list, true);   \
-    a_hash_free(i.names, false); \
+#define a_inputs_free(i)              \
+({                                    \
+    A_LIST_ITERATE(i.list, void, v) { \
+        free(v);                      \
+    }                                 \
+    a_list_free(i.list);              \
+    a_hash_free(i.names);             \
 })
 
 #define a_inputs_add(i, ptr, name)  \
@@ -212,13 +215,16 @@ void a_input__init(void)
 void a_input__uninit(void)
 {
     A_LIST_ITERATE(touches.list, Touch, t) {
-        a_list_free(t->motion, true);
+        A_LIST_ITERATE(t->motion, Point, p) {
+            free(p);
+        }
+        a_list_free(t->motion);
     }
 
     A_LIST_ITERATE(userInputs, Input, i) {
         a_input__free(i);
     }
-    a_list_free(userInputs, false);
+    a_list_free(userInputs);
 
     a_inputs_free(buttons);
     a_inputs_free(analogs);
@@ -233,7 +239,11 @@ void a_input__get(void)
 {
     A_LIST_ITERATE(touches.list, Touch, t) {
         t->tap = false;
-        a_list_empty(t->motion, true);
+
+        A_LIST_ITERATE(t->motion, Point, p) {
+            free(p);
+        }
+        a_list_empty(t->motion);
     }
 
     A_LIST_ITERATE(buttons.list, Button, b) {
@@ -515,16 +525,13 @@ void a_input__get(void)
 Input* a_input_new(const char* names)
 {
     Input* const i = malloc(sizeof(Input));
-    StringTok* const t = a_strtok_new(names, ", ");
 
     i->name = NULL;
     i->buttons = a_list_new();
     i->analogs = a_list_new();
     i->touches = a_list_new();
 
-    while(a_strtok_next(t)) {
-        const char* const name = a_strtok_get(t);
-
+    A_STRTOK_ITERATE(names, ", ", name) {
         #define addInput(type, collection)                        \
         ({                                                        \
             type* const var = a_hash_get(collection.names, name); \
@@ -541,8 +548,6 @@ Input* a_input_new(const char* names)
         addInput(Touch, touches);
     }
 
-    a_strtok_free(t);
-
     if(a_list_isEmpty(i->buttons)
         && a_list_isEmpty(i->analogs)
         && a_list_isEmpty(i->touches)) {
@@ -556,9 +561,9 @@ Input* a_input_new(const char* names)
 
 void a_input__free(Input* i)
 {
-    a_list_free(i->buttons, false);
-    a_list_free(i->analogs, false);
-    a_list_free(i->touches, false);
+    a_list_free(i->buttons);
+    a_list_free(i->analogs);
+    a_list_free(i->touches);
 
     free(i);
 }

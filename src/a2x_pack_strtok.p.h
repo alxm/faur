@@ -25,10 +25,19 @@
 
 typedef struct StringTok StringTok;
 
-extern StringTok* a_strtok_new(const char* s, const char* d);
-extern void a_strtok_free(StringTok* t);
+struct StringTok {
+    const char* string;
+    int index;
+    const char* delims;
+    int numDelims;
+};
 
-extern bool a_strtok_next(StringTok* t);
-extern char* a_strtok_get(StringTok* t);
+extern StringTok a_strtok__new(const char* s, const char* d);
+
+extern char* a_strtok__next(StringTok* t);
+
+#define A_STRTOK_ITERATE(str, delims, var)                                               \
+    for(StringTok a__st = a_strtok__new(str, delims); a__st.string; a__st.string = NULL) \
+        for(char* var; (var = a_strtok__next(&a__st)); )
 
 #endif // A2X_PACK_STRTOK_PH

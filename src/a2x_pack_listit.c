@@ -45,7 +45,7 @@ void* a_listit__peek(const ListIt* it)
     return it->current->next->content;
 }
 
-void a_listit__remove(ListIt* it, bool freeContent)
+void a_listit__remove(ListIt* it)
 {
     List* const list = it->list;
     ListNode* const n = it->current;
@@ -55,11 +55,7 @@ void a_listit__remove(ListIt* it, bool freeContent)
     n->prev->next = n->next;
     n->next->prev = n->prev;
 
-    list->items--;
-
-    if(freeContent) {
-        free(n->content);
-    }
-
     free(n);
+
+    list->items--;
 }

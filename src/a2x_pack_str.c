@@ -37,8 +37,7 @@ void a_str__uninit(void)
     A_LIST_ITERATE(pools, StringPool, s) {
         a_strpool_free(s);
     }
-
-    a_list_free(pools, false);
+    a_list_free(pools);
 }
 
 char* a_str__alloc(uint size)

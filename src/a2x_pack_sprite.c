@@ -37,7 +37,7 @@ void a_sprite__uninit(void)
         a_sprite__free(s);
     }
 
-    a_list_free(sprites, false);
+    a_list_free(sprites);
 }
 
 Sprite* a_sprite_newZoomed(const Sheet* graphic, int x, int y, int w, int h, int zoom)
@@ -179,9 +179,11 @@ void a_sprite_newTransparent(Sprite* s)
             s->spans[i][counter][2] = x2 - x1;
 
             counter++;
+
+            free(span);
         }
 
-        a_list_free(spans, true);
+        a_list_free(spans);
     }
 }
 

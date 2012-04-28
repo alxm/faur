@@ -35,12 +35,12 @@ extern ListIt a_listit__new(List* list);
 
 extern bool a_listit__next(const ListIt* it);
 extern void* a_listit__get(ListIt* it);
-extern void a_listit__remove(ListIt* it, bool freeContent);
+extern void a_listit__remove(ListIt* it);
 
 #define A_LIST_ITERATE(list, type, var)                                                 \
     for(ListIt a__it = a_listit__new(list); a__it.current; a__it.current = NULL)        \
         for(type* var; a_listit__next(&a__it) && (var = a_listit__get(&a__it), true); )
 
-#define A_LIST_REMOVE(freeContent) a_listit__remove(&a__it, freeContent)
+#define A_LIST_REMOVE() a_listit__remove(&a__it)
 
 #endif // A2X_PACK_LISTIT_PH

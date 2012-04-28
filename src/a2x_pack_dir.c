@@ -72,7 +72,10 @@ Dir* a_dir_openFilter(const char* path, int (*filter)(const struct dirent* f))
 
 void a_dir_close(Dir* d)
 {
-    a_list_free(d->files, true);
+    A_LIST_ITERATE(d->files, DirEntry, e) {
+        free(e);
+    }
+    a_list_free(d->files);
     free(d->current);
     free(d);
 }

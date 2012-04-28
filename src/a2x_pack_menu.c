@@ -86,7 +86,7 @@ void a_menu_free(Menu* m)
         }
     }
 
-    a_list_free(m->items, false);
+    a_list_free(m->items);
     free(m);
 }
 

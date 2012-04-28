@@ -42,7 +42,10 @@ SpriteLayers* a_spritelayers_new(void)
 
 void a_spritelayers_free(SpriteLayers* s)
 {
-    a_list_free(s->layers, true);
+    A_LIST_ITERATE(s->layers, Layer, l) {
+        free(l);
+    }
+    a_list_free(s->layers);
 
     free(s);
 }

@@ -97,7 +97,7 @@ SpriteFrames* a_spriteframes_fromSheet(const Sheet* sh, int x, int y, int frames
 
 void a_spriteframes_free(SpriteFrames* sf)
 {
-    a_list_free(sf->sprites, false);
+    a_list_free(sf->sprites);
     free(sf->spriteArray);
 
     free(sf);

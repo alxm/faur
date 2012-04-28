@@ -61,7 +61,10 @@ void a_font__init(void)
 
 void a_font__uninit(void)
 {
-    a_list_free(fontsList, true);
+    A_LIST_ITERATE(fontsList, Font, f) {
+        free(f);
+    }
+    a_list_free(fontsList);
     free(fonts);
 }
 

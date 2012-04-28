@@ -73,7 +73,7 @@ void a_colmap_free(ColMap* c)
 {
     for(int i = c->h; i--; ) {
         for(int j = c->w; j--; ) {
-            a_list_free(c->submaps[i][j], false);
+            a_list_free(c->submaps[i][j]);
         }
 
         free(c->submaps[i]);
@@ -98,10 +98,10 @@ void a_colpoint_free(ColPoint* const p)
     List* const nodes = p->nodes;
 
     A_LIST_ITERATE(nodes, ListNode, n) {
-        a_list_removeNode(n, false);
+        a_list_removeNode(n);
     }
 
-    a_list_free(p->nodes, false);
+    a_list_free(p->nodes);
 
     free(p);
 }
@@ -116,11 +116,11 @@ void a_colpoint_setCoords(ColPoint* const p, const fix8 x, const fix8 y)
 
     // remove point from all the submaps it was in
     A_LIST_ITERATE(pt_nodes, ListNode, n) {
-        a_list_removeNode(n, false);
+        a_list_removeNode(n);
     }
 
     // purge old information
-    a_list_empty(pt_nodes, false);
+    a_list_empty(pt_nodes);
 
     // center submap coords
     const int submap_x = a_fix8_fixtoi(p->x) >> colmap->submapShift;
