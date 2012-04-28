@@ -26,17 +26,16 @@ typedef struct Input Input;
 
 extern Input* a_input_new(const char* names);
 
-extern bool a_input_get(Input* i);
-extern void a_input_unpress(Input* i);
-extern bool a_input_getUnpress(Input* i);
-
 extern char* a_input_name(const Input* i);
 extern bool a_input_working(const Input* i);
 
-extern void a_input_waitFor(Input* i);
+extern bool a_button_get(const Input* i);
+extern void a_button_unpress(const Input* i);
+extern bool a_button_getUnpress(const Input* i);
+extern void a_button_waitFor(const Input* i);
 
-extern bool a_input_tappedScreen(void);
-extern bool a_input_touchedPoint(int x, int y);
-extern bool a_input_touchedRect(int x, int y, int w, int h);
+extern bool a_touch_tapped(const Input* i);
+extern bool a_touch_point(const Input* i, int x, int y);
+extern bool a_touch_rect(const Input* i, int x, int y, int w, int h);
 
 #endif // A2X_PACK_INPUT_PH

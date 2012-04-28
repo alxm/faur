@@ -136,17 +136,20 @@ void a_menu_input(Menu* m)
     m->used = false;
 
     if(!m->pause) {
-        if(a_input_get(m->back)) {
+        if(a_button_get(m->back)) {
             m->selectedIndex--;
             m->selectedItem = a_list_get(m->items, m->selectedIndex);
             m->used = true;
-        } else if(a_input_get(m->next)) {
+        } else if(a_button_get(m->next)) {
             m->selectedIndex++;
             m->selectedItem = a_list_get(m->items, m->selectedIndex);
             m->used = true;
         }
     } else {
-        if(!a_input_get(m->back) && !a_input_get(m->next) && !a_input_get(m->select) && !(m->cancel && a_input_get(m->cancel))) {
+        if(!a_button_get(m->back)
+            && !a_button_get(m->next)
+            && !a_button_get(m->select)
+            && !(m->cancel && a_button_get(m->cancel))) {
             m->pause = 0;
         } else {
             m->pause--;
@@ -168,13 +171,13 @@ void a_menu_input(Menu* m)
             m->selectedItem = a_list_first(m->items);
         }
     } else {
-        if(a_input_get(m->select)) {
+        if(a_button_get(m->select)) {
             m->state = A_MENU_ACCEPT;
 
             if(m->soundAccept) {
                 a_sfx_play(m->soundAccept);
             }
-        } else if(m->cancel && a_input_get(m->cancel)) {
+        } else if(m->cancel && a_button_get(m->cancel)) {
             m->state = A_MENU_CANCEL;
 
             if(m->soundCancel) {
@@ -188,12 +191,12 @@ void a_menu_input(Menu* m)
     }
 
     if(m->state != A_MENU_RUNNING) {
-        a_input_unpress(m->next);
-        a_input_unpress(m->back);
-        a_input_unpress(m->select);
+        a_button_unpress(m->next);
+        a_button_unpress(m->back);
+        a_button_unpress(m->select);
 
         if(m->cancel) {
-            a_input_unpress(m->cancel);
+            a_button_unpress(m->cancel);
         }
     }
 }

@@ -187,8 +187,8 @@ void a_sound_adjustVolume(void)
         if(a2x_bool("sound.on")) {
             int adjust = 0;
 
-            if(a_input_get(a__volUp)) adjust = 1;
-            if(a_input_get(a__volDown)) adjust = -1;
+            if(a_button_get(a__volUp)) adjust = 1;
+            if(a_button_get(a__volDown)) adjust = -1;
 
             if(adjust) {
                 a__volume += adjust * A_VOLUME_STEP;
