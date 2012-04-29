@@ -48,7 +48,7 @@ extern ColIt a_colit__new(ColPoint* b);
 extern bool a_colit__next(ColIt* it);
 extern ColPoint* a_colit__get(ColIt* it);
 
-#define A_COL_ITERATE(colpoint, var) \
+#define A_COL_ITERATE(colpoint, var)                                                       \
     for(ColIt a__ci = a_colit__new(colpoint); a__ci.callerPoint; a__ci.callerPoint = NULL) \
         for(ColPoint* var; a_colit__next(&a__ci) && (var = a_colit__get(&a__ci)); )
 

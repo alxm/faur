@@ -40,8 +40,10 @@ void a_screenshot__init(void)
     Dir* const dir = a_dir_open(screens_dir);
     a_dir_reverse(dir);
 
-    if(a_dir_iterate(dir)) {
-        const char* const file = a_dir_current(dir)[0];
+    const char** const pair = a_dir__next(dir);
+
+    if(pair) {
+        const char* const file = pair[A_DIR_NAME];
 
         int start = a_str_lastIndex(file, '-');
         int end = a_str_lastIndex(file, '.');

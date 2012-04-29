@@ -30,14 +30,15 @@ extern void a_dir_close(Dir* d);
 
 extern void a_dir_reverse(Dir* d);
 
-extern bool a_dir_iterate(Dir* d);
-extern const char** a_dir_current(const Dir* d);
+extern const char** a_dir__next(Dir* d);
 
 enum {A_DIR_NAME, A_DIR_PATH};
 
-#define A_DIR_ITERATE(dir, name, path)                                                                    \
-    for(const char** a__pair; a_dir_iterate(dir) && (a__pair = a_dir_current(dir)); )                     \
-        for(const char const *name = a__pair[A_DIR_NAME], *path = a__pair[A_DIR_PATH]; name; name = NULL)
+#define A_DIR_ITERATE(dir, name, path)                                                              \
+    for(const char** a__pair; (a__pair = a_dir__next(dir)); )                                       \
+        for(const char *name = a__pair[A_DIR_NAME], *path = a__pair[A_DIR_PATH]; name; name = NULL)
+
+extern void a_dir_reset(Dir* d);
 
 extern const char* a_dir_path(const Dir* d);
 extern const char* a_dir_name(const Dir* d);
