@@ -60,7 +60,7 @@ void a_settings__defaults(void)
     add(BOOL, SET_ONCE, "app.gp2xMenu", "0");
     add(INT, SET_ANY, "app.mhz", "0");
 
-    add(BOOL, SET_ONCE, "video.window", "0");
+    add(BOOL, SET_ONCE, "video.window", "1");
     add(INT, SET_ONCE, "video.width", "320");
     add(INT, SET_ONCE, "video.height", "240");
     add(BOOL, SET_ONCE, "video.fake", "0");
