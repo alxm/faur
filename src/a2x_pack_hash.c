@@ -70,37 +70,25 @@ void a_hash_free(Hash* h)
 
 void a_hash_add(Hash* h, const char* key, void* content)
 {
+    const int slot = getSlot(key);
+    Entry* const entry = h->entries[slot];
+
     Entry* const e = malloc(sizeof(Entry));
 
     e->key = a_str_dup(key);
     e->content = content;
-    e->next = NULL;
+    e->next = entry;
 
-    const int slot = getSlot(key);
-    Entry* entry = h->entries[slot];
-
-    if(entry == NULL) {
-        h->entries[slot] = e;
-    } else {
-        while(entry->next) {
-            entry = entry->next;
-        }
-
-        entry->next = e;
-    }
+    h->entries[slot] = e;
 }
 
 void* a_hash_get(const Hash* h, const char* key)
 {
-    Entry* e = h->entries[getSlot(key)];
-
-    while(e && !a_str_same(key, e->key)) {
-        e = e->next;
+    for(Entry* e = h->entries[getSlot(key)]; e; e = e->next) {
+        if(a_str_same(key, e->key)) {
+            return e->content;
+        }
     }
 
-    if(e) {
-        return e->content;
-    } else {
-        return NULL;
-    }
+    return NULL;
 }
