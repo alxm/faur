@@ -41,6 +41,11 @@ extern void a_listit__remove(ListIt* it);
     for(ListIt a__it = a_listit__new(list); a__it.current; a__it.current = NULL)        \
         for(type* var; a_listit__next(&a__it) && (var = a_listit__get(&a__it), true); )
 
+#define A_LIST_FILTER(list, type, var, filter) \
+    A_LIST_ITERATE(list, type, var)            \
+        if(!(filter)) continue;                \
+        else
+
 #define A_LIST_REMOVE() a_listit__remove(&a__it)
 
 #endif // A2X_PACK_LISTIT_PH
