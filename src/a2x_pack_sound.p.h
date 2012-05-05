@@ -22,11 +22,6 @@
 
 #include "a2x_app_includes.h"
 
-#define A_VOLUME_STEP 1
-#define A_MILIS_VOLUME (1000 / 2)
-
-#define A_MAX_VOLUME MIX_MAX_VOLUME
-
 typedef Mix_Music Music;
 typedef Mix_Chunk Sound;
 

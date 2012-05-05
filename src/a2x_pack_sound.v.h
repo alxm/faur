@@ -29,6 +29,10 @@
 #include "a2x_pack_list.v.h"
 #include "a2x_pack_mem.v.h"
 
+#define A_VOLUME_STEP 1
+#define A_MILIS_VOLUME (1000 / 2)
+#define A_MAX_VOLUME MIX_MAX_VOLUME
+
 extern void a_sound__init(void);
 extern void a_sound__uninit(void);
 
