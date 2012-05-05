@@ -25,9 +25,9 @@ Sheet* a_sheet_fromFile(const char* path)
 
     a_png_readFile(path, &s->data, &s->w, &s->h);
 
-    s->transparent = DEFAULT_TRANSPARENT;
-    s->limit = DEFAULT_LIMIT;
-    s->end = DEFAULT_END;
+    s->transparent = A_DEFAULT_TRANSPARENT;
+    s->limit = A_DEFAULT_LIMIT;
+    s->end = A_DEFAULT_END;
 
     return s;
 }
@@ -38,9 +38,9 @@ Sheet* a_sheet_fromData(const uint8_t* data)
 
     a_png_readMemory(data, &s->data, &s->w, &s->h);
 
-    s->transparent = DEFAULT_TRANSPARENT;
-    s->limit = DEFAULT_LIMIT;
-    s->end = DEFAULT_END;
+    s->transparent = A_DEFAULT_TRANSPARENT;
+    s->limit = A_DEFAULT_LIMIT;
+    s->end = A_DEFAULT_END;
 
     return s;
 }

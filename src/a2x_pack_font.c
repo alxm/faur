@@ -122,7 +122,7 @@ int a_font_load(Sheet* sheet, int sx, int sy, int zoom, FontLoad loader)
         int areaw = x - areax;
         int areah = y2 - y;
 
-        f->sprites[(int)chars[i]] = a_sprite_newZoomed(sheet, areax, areay, areaw, areah, zoom);
+        f->sprites[(int)chars[i]] = a_sprite_zoomed(sheet, areax, areay, areaw, areah, zoom);
 
         if(((loader & A_LOAD_N) && chars[i] == '0') || chars[i] == 'A') {
             f->maxWidth = areaw;

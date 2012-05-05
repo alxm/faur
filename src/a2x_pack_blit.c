@@ -31,88 +31,103 @@ static uint8_t alpha;
 static uint8_t red, green, blue;
 static Pixel pixel;
 
-#define blitter_noclip(pixeler)                                  \
-{                                                                \
-    const int screenWidth = a_width;                             \
-                                                                 \
-    const int w = s->w;                                          \
-    const int h = s->h;                                          \
-                                                                 \
-    const Pixel* src2 = s->data;                                 \
-    Pixel* dst2 = a_pixels + y * screenWidth + x;                \
-                                                                 \
-    for(int i = 0; i < h; i++, dst2 += screenWidth, src2 += w) { \
-        const int spansNum = s->spansNum[i];                     \
-                                                                 \
-        for(int j = 0; j < spansNum; j++) {                      \
-            const Pixel* src = src2 + s->spans[i][j][0];         \
-            Pixel* dst = dst2 + s->spans[i][j][0];               \
-                                                                 \
-            for(int k = s->spans[i][j][2]; k--; dst++, src++) {  \
-                pixeler;                                         \
-            }                                                    \
-        }                                                        \
-    }                                                            \
+// Spans format:
+// [1 (draw) / 0 (transp)][[len]...][0 (end line)]
+
+#define blitter_noclip(pixeler)                          \
+{                                                        \
+    const int scrw = a_width;                            \
+                                                         \
+    Pixel* dst2 = a_pixels + y * scrw + x;               \
+    const Pixel* src = s->data;                          \
+                                                         \
+    const uint16_t* sp = s->spans;                       \
+                                                         \
+    for(int i = s->h; i--; dst2 += scrw) {               \
+        bool draw = *sp++ == 1;                          \
+        Pixel* dst = dst2;                               \
+                                                         \
+        for(uint16_t len = *sp; *sp++ != 0; len = *sp) { \
+            if(draw) {                                   \
+                for(int j = len; j--; dst++, src++) {    \
+                    pixeler;                             \
+                }                                        \
+            } else {                                     \
+                dst += len;                              \
+                src += len;                              \
+            }                                            \
+                                                         \
+            draw ^= 1;                                   \
+        }                                                \
+    }                                                    \
 }
 
-#define blitter_clip(pixeler)                                                       \
-{                                                                                   \
-    const int screenWidth = a_width;                                                \
-    const int screenHeight = a_height;                                              \
-                                                                                    \
-    const int w = s->w;                                                             \
-    const int h = s->h;                                                             \
-                                                                                    \
-    if(y + h <= 0 || y >= screenHeight || x + w <= 0 || x >= screenWidth) {         \
-        return;                                                                     \
-    }                                                                               \
-                                                                                    \
-    const int yTclip = (y < 0) ? (-y) : 0;                                          \
-    const int xLclip = (x < 0) ? (-x) : 0;                                          \
-                                                                                    \
-    const int H = h - a_math_max(0, y + h - screenHeight);                          \
-                                                                                    \
-    const Pixel* src2 = s->data + yTclip * w;                                       \
-    Pixel* dst2 = a_pixels + (y + yTclip) * screenWidth + x;                        \
-                                                                                    \
-    for(int i = yTclip; i < H; i++, dst2 += screenWidth, src2 += w) {               \
-        int j;                                                                      \
-        const int spansNum = s->spansNum[i];                                        \
-                                                                                    \
-        for(j = 0; j < spansNum && s->spans[i][j][1] <= xLclip; j++) {              \
-            continue;                                                               \
-        }                                                                           \
-                                                                                    \
-        if(j < spansNum && s->spans[i][j][0] < xLclip) {                            \
-            const Pixel* src = src2 + xLclip;                                       \
-            Pixel* dst = dst2 + xLclip;                                             \
-                                                                                    \
-            for(int k = a_math_min(s->spans[i][j][1] - xLclip, screenWidth);        \
-                k--; dst++, src++) {                                                \
-                pixeler;                                                            \
-            }                                                                       \
-                                                                                    \
-            j++;                                                                    \
-        }                                                                           \
-                                                                                    \
-        for( ; j < spansNum && x + s->spans[i][j][1] <= screenWidth; j++) {         \
-            const Pixel* src = src2 + s->spans[i][j][0];                            \
-            Pixel* dst = dst2 + s->spans[i][j][0];                                  \
-                                                                                    \
-            for(int k = s->spans[i][j][2]; k--; dst++, src++) {                     \
-                pixeler;                                                            \
-            }                                                                       \
-        }                                                                           \
-                                                                                    \
-        if(j < spansNum && x + s->spans[i][j][0] < screenWidth) {                   \
-            const Pixel* src = src2 + s->spans[i][j][0];                            \
-            Pixel* dst = dst2 + s->spans[i][j][0];                                  \
-                                                                                    \
-            for(int k = screenWidth - (x + s->spans[i][j][0]); k--; dst++, src++) { \
-                pixeler;                                                            \
-            }                                                                       \
-        }                                                                           \
-    }                                                                               \
+#define blitter_clip(pixeler)                                            \
+{                                                                        \
+    const int scrw = a_width;                                            \
+    const int scrh = a_height;                                           \
+                                                                         \
+    const int w = s->w;                                                  \
+    const int h = s->h;                                                  \
+                                                                         \
+    if(y + h <= 0 || y >= scrh || x + w <= 0 || x >= scrw) {             \
+        return;                                                          \
+    }                                                                    \
+                                                                         \
+    const int yClipUp = a_math_max(0, -y);                               \
+    const int yClipDown = a_math_max(0, y + h - scrh);                   \
+    const int xClipLeft = a_math_max(0, -x);                             \
+    const int xClipRight = a_math_max(0, x + w - scrw);                  \
+                                                                         \
+    const int rows = h - yClipUp - yClipDown;                            \
+    const int columns = w - xClipLeft - xClipRight;                      \
+                                                                         \
+    Pixel* startDst = a_pixels + (y + yClipUp) * scrw + (x + xClipLeft); \
+    const Pixel* startSrc = s->data + yClipUp * w + xClipLeft;           \
+                                                                         \
+    const uint16_t* sp = s->spans;                                       \
+                                                                         \
+    /* skip clipped top rows */                                          \
+    for(int i = yClipUp; i--; ) {                                        \
+        sp++;                                                            \
+        while(*sp++ != 0) {                                              \
+            continue;                                                    \
+        }                                                                \
+    }                                                                    \
+                                                                         \
+    /* draw visible rows */                                              \
+    for(int i = rows; i--; startDst += scrw, startSrc += w) {            \
+        bool draw = *sp++ == 1;                                          \
+        uint16_t len = *sp;                                              \
+                                                                         \
+        /* skip clipped left columns */                                  \
+        while(len <= xClipLeft) {                                        \
+            len += *++sp;                                                \
+            draw ^= 1;                                                   \
+        }                                                                \
+        len -= xClipLeft;                                                \
+                                                                         \
+        Pixel* dst = startDst;                                           \
+        const Pixel* src = startSrc;                                     \
+                                                                         \
+        /* draw visible columns */                                       \
+        for(int c = columns; c > 0; len = *++sp, draw ^= 1) {            \
+            if(draw) {                                                   \
+                for(int d = len; d-- && c > 0; dst++, src++, c--) {      \
+                    pixeler;                                             \
+                }                                                        \
+            } else {                                                     \
+                dst += len;                                              \
+                src += len;                                              \
+                c -= len;                                                \
+            }                                                            \
+        }                                                                \
+                                                                         \
+        /* skip clipped right columns */                                 \
+        while(*sp++ != 0) {                                              \
+            continue;                                                    \
+        }                                                                \
+    }                                                                    \
 }
 
 #define blitter_plain_setup

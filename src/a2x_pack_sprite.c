@@ -19,11 +19,6 @@
 
 #include "a2x_pack_sprite.v.h"
 
-typedef struct Span {
-    int x1;
-    int x2;
-} Span;
-
 static List* sprites;
 
 void a_sprite__init(void)
@@ -40,12 +35,17 @@ void a_sprite__uninit(void)
     a_list_free(sprites);
 }
 
-Sprite* a_sprite_newZoomed(const Sheet* graphic, int x, int y, int w, int h, int zoom)
+Sprite* a_sprite_new(const Sheet* graphic, int x, int y, int w, int h)
+{
+    return a_sprite_zoomed(graphic, x, y, w, h, 1);
+}
+
+Sprite* a_sprite_zoomed(const Sheet* graphic, int x, int y, int w, int h, int zoom)
 {
     const int spritew = w * zoom;
     const int spriteh = h * zoom;
 
-    Sprite* const s = a_sprite_newBlank(spritew, spriteh);
+    Sprite* const s = a_sprite_blank(spritew, spriteh);
 
     const int wp = graphic->w;
     const Pixel* const data = graphic->data;
@@ -69,174 +69,34 @@ Sprite* a_sprite_newZoomed(const Sheet* graphic, int x, int y, int w, int h, int
     }
 
     s->t = graphic->transparent;
-
-    a_sprite_newTransparent(s);
+    a_sprite_refresh(s);
 
     return s;
 }
 
-Sprite* a_sprite_newBlank(int w, int h)
+Sprite* a_sprite_blank(int w, int h)
 {
-    Sprite* const s = malloc(sizeof(Sprite));
+    Sprite* const s = malloc(sizeof(Sprite) + w * h * sizeof(Pixel));
 
     s->w = w;
     s->h = h;
-    s->data = malloc(w * h * sizeof(Pixel));
-    s->spansNum = malloc(h * sizeof(int));
-    s->spans = malloc(h * sizeof(int**));
-
-    for(int i = 0; i < h; i++) {
-        s->spansNum[i] = 1;
-        s->spans[i] = malloc(1 * sizeof(int*));
-
-        s->spans[i][0] = malloc(3 * sizeof(int));
-
-        s->spans[i][0][0] = 0;
-        s->spans[i][0][1] = w;
-        s->spans[i][0][2] = s->spans[i][0][1] - s->spans[i][0][0];
-    }
-
+    s->t = A_DEFAULT_TRANSPARENT;
     s->alpha = 255;
-    s->t = DEFAULT_TRANSPARENT;
+    s->spans = NULL;
+
+    for(int i = w * h; i--; ) {
+        s->data[i] = A_DEFAULT_TRANSPARENT;
+    }
 
     a_list_addLast(sprites, s);
 
     return s;
-}
-
-void a_sprite_newTransparent(Sprite* s)
-{
-    const Pixel tpixel = s->t;
-
-    const int spritew = s->w;
-    const int spriteh = s->h;
-
-    const Pixel* const dst = s->data;
-
-    for(int i = spriteh; i--; ) {
-        for(int j = s->spansNum[i]; j--; ) {
-            free(s->spans[i][j]);
-        }
-
-        free(s->spans[i]);
-    }
-
-    for(int i = 0; i < spriteh; i++) {
-        List* const spans = a_list_new();
-
-        int start = 0;
-        int transparent = 1;
-
-        for(int j = 0; j < spritew; j++) {
-            const Pixel pixel = dst[i * spritew + j];
-
-            int oldTra = transparent;
-            transparent = pixel == tpixel;
-
-            if(oldTra && !transparent) {
-                if(j == spritew - 1) {
-                    Span* const span = malloc(sizeof(Span));
-
-                    span->x1 = j;
-                    span->x2 = spritew;
-
-                    a_list_addLast(spans, span);
-                } else {
-                    start = j;
-                }
-            } else if(!oldTra) {
-                if(j == spritew - 1) {
-                    Span* const span = malloc(sizeof(Span));
-
-                    span->x1 = start;
-                    span->x2 = spritew - transparent;
-
-                    a_list_addLast(spans, span);
-                } else if(transparent) {
-                    Span* const span = malloc(sizeof(Span));
-
-                    span->x1 = start;
-                    span->x2 = j;
-
-                    a_list_addLast(spans, span);
-                }
-            }
-        }
-
-        s->spansNum[i] = a_list_size(spans);
-        s->spans[i] = malloc(s->spansNum[i] * sizeof(int*));
-
-        int counter = 0;
-
-        A_LIST_ITERATE(spans, Span, span) {
-            const int x1 = span->x1;
-            const int x2 = span->x2;
-
-            s->spans[i][counter] = malloc(3 * sizeof(int));
-
-            s->spans[i][counter][0] = x1;
-            s->spans[i][counter][1] = x2;
-            s->spans[i][counter][2] = x2 - x1;
-
-            counter++;
-
-            free(span);
-        }
-
-        a_list_free(spans);
-    }
 }
 
 void a_sprite__free(Sprite* s)
 {
-    free(s->data);
-
-    for(int i = 0; i < s->h; i++) {
-        for(int j = 0; j < s->spansNum[i]; j++) {
-            free(s->spans[i][j]);
-        }
-
-        free(s->spans[i]);
-    }
-
     free(s->spans);
-    free(s->spansNum);
-
     free(s);
-}
-
-Sprite* a_sprite_clone(const Sprite* src)
-{
-    Sprite* const s = malloc(sizeof(Sprite));
-
-    s->w = src->w;
-    s->h = src->h;
-
-    s->data = malloc(s->w * s->h * sizeof(Pixel));
-    memcpy(s->data, src->data, s->w * s->h * sizeof(Pixel));
-
-    s->spans = malloc(s->h * sizeof(int**));
-    s->spansNum = malloc(s->h * sizeof(int));
-
-    for(int i = s->h; i--; ) {
-        s->spansNum[i] = src->spansNum[i];
-        s->spans[i] = malloc(s->spansNum[i] * sizeof(int*));
-
-        for(int j = s->spansNum[i]; j--; ) {
-            s->spans[i][j] = malloc(3 * sizeof(int));
-
-            for(int k = 3; k--; ) {
-                s->spans[i][j][k] = src->spans[i][j][k];
-            }
-        }
-    }
-
-    s->alpha = src->alpha;
-    s->t = src->t;
-
-    a_list_addLast(sprites, s);
-
-    return s;
 }
 
 int a_sprite_w(const Sprite* s)
@@ -249,7 +109,7 @@ int a_sprite_h(const Sprite* s)
     return s->h;
 }
 
-Pixel* a_sprite_data(const Sprite* s)
+Pixel* a_sprite_data(Sprite* s)
 {
     return s->data;
 }
@@ -277,4 +137,65 @@ void a_sprite_setTransparent(Sprite* s, Pixel c)
 Pixel a_sprite_getPixel(const Sprite* s, int x, int y)
 {
     return *(s->data + y * s->w + x);
+}
+
+void a_sprite_refresh(Sprite* s)
+{
+    const int w = s->w;
+    const int h = s->h;
+    const Pixel tpixel = s->t;
+    const Pixel* const dst = s->data;
+
+    // Spans format:
+    // [1 (draw) / 0 (transp)][[len]...][0 (end line)]
+
+    uint num = 0;
+    const Pixel* dest = dst;
+
+    for(int y = h; y--; ) {
+        num += 3; // transparency start + first len + end line
+        dest++; // start from the second pixel in the line
+        for(int x = w - 1; x--; dest++) {
+            if((*dest == tpixel && *(dest - 1) != tpixel)
+                || (*dest != tpixel && *(dest - 1) == tpixel)) {
+                num++; // transparency change, add a len
+            }
+        }
+    }
+
+    free(s->spans);
+    s->spans = malloc(num * sizeof(uint16_t));
+
+    uint16_t* spans = s->spans;
+
+    dest = dst;
+
+    for(int y = h; y--; ) {
+        *spans++ = *dest != tpixel; // transparency start
+        dest++; // start from the second pixel in the line
+        uint16_t len = 1;
+        for(int x = 1; x < w; x++, dest++) {
+            if((*dest == tpixel && *(dest - 1) != tpixel)
+                || (*dest != tpixel && *(dest - 1) == tpixel)) {
+                *spans++ = len; // record len
+                len = 1;
+            } else {
+                len++;
+            }
+        }
+        *spans++ = len; // record last len of line
+        *spans++ = 0; // mark end of line
+    }
+}
+
+Sprite* a_sprite_clone(const Sprite* src)
+{
+    Sprite* const s = a_sprite_blank(src->w, src->h);
+
+    s->t = src->t;
+    s->alpha = src->alpha;
+    memcpy(s->data, src->data, src->w * src->h * sizeof(Pixel));
+    a_sprite_refresh(s);
+
+    return s;
 }

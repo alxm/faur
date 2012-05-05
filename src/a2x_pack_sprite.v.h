@@ -29,11 +29,10 @@
 struct Sprite {
     int w;
     int h;
-    Pixel* data;
-    int*** spans;
-    int* spansNum;
-    uint8_t alpha;
     Pixel t;
+    uint8_t alpha;
+    uint16_t* spans;
+    Pixel data[];
 };
 
 extern void a_sprite__init(void);

@@ -27,16 +27,13 @@ typedef struct Sprite Sprite;
 #include "a2x_pack_pixel.p.h"
 #include "a2x_pack_sheet.p.h"
 
-#define a_sprite_new(g, x, y, w, h) a_sprite_newZoomed((g), (x), (y), (w), (h), 1)
-extern Sprite* a_sprite_newZoomed(const Sheet* graphic, int x, int y, int w, int h, int zoom);
-extern Sprite* a_sprite_newBlank(int w, int h);
-extern void a_sprite_newTransparent(Sprite* s);
-
-extern Sprite* a_sprite_clone(const Sprite* src);
+extern Sprite* a_sprite_new(const Sheet* graphic, int x, int y, int w, int h);
+extern Sprite* a_sprite_zoomed(const Sheet* graphic, int x, int y, int w, int h, int zoom);
+extern Sprite* a_sprite_blank(int w, int h);
 
 extern int a_sprite_w(const Sprite* s);
 extern int a_sprite_h(const Sprite* s);
-extern Pixel* a_sprite_data(const Sprite* s);
+extern Pixel* a_sprite_data(Sprite* s);
 
 extern uint8_t a_sprite_getAlpha(const Sprite* s);
 extern void a_sprite_setAlpha(Sprite* s, uint8_t a);
@@ -45,5 +42,8 @@ extern Pixel a_sprite_getTransparent(const Sprite* s);
 extern void a_sprite_setTransparent(Sprite* s, Pixel c);
 
 extern Pixel a_sprite_getPixel(const Sprite* s, int x, int y);
+
+extern void a_sprite_refresh(Sprite* s);
+extern Sprite* a_sprite_clone(const Sprite* src);
 
 #endif // A2X_PACK_SPRITE_PH

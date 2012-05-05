@@ -34,9 +34,9 @@ struct Sheet {
     Pixel end;
 };
 
-#define DEFAULT_TRANSPARENT a_pixel_make(255, 0, 255)
-#define DEFAULT_LIMIT       a_pixel_make(0, 255, 0)
-#define DEFAULT_END         a_pixel_make(0, 255, 255)
+#define A_DEFAULT_TRANSPARENT a_pixel_make(255, 0, 255)
+#define A_DEFAULT_LIMIT       a_pixel_make(0, 255, 0)
+#define A_DEFAULT_END         a_pixel_make(0, 255, 255)
 
 #define a_sheet__getPixel(s, x, y) (*((s)->data + (y) * (s)->w + (x)))
 
