@@ -42,6 +42,7 @@ static int a__width2;
 static int a__height2;
 
 static uint32_t videoFlags;
+static Sprite* spriteTarget = NULL;
 
 static void setSDLScreen(void);
 static void setFakeScreen(void);
@@ -243,6 +244,8 @@ void a_screen_setTargetSprite(Sprite* s)
     a_pixels = s->data;
     a_width = s->w;
     a_height = s->h;
+
+    spriteTarget = s;
 }
 
 void a_screen_resetTarget(void)
@@ -250,6 +253,11 @@ void a_screen_resetTarget(void)
     a_pixels = a__pixels2;
     a_width = a__width2;
     a_height = a__height2;
+
+    if(spriteTarget) {
+        a_sprite_refresh(spriteTarget);
+        spriteTarget = NULL;
+    }
 }
 
 #if A_PLATFORM_LINUXPC || A_PLATFORM_WINDOWS
