@@ -25,7 +25,6 @@
 #include "a2x_pack_blit.v.h"
 #include "a2x_pack_list.v.h"
 #include "a2x_pack_screen.v.h"
-#include "a2x_pack_sheet.v.h"
 #include "a2x_pack_sprite.v.h"
 
 extern void a_font__init(void);

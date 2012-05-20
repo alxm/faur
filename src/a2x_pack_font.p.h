@@ -22,7 +22,7 @@
 
 #include "a2x_app_includes.h"
 
-#include "a2x_pack_sheet.p.h"
+#include "a2x_pack_sprite.p.h"
 
 typedef enum FontLoad  {
     A_LOAD_ALL = 1, A_LOAD_AN = 2, A_LOAD_A = 4, A_LOAD_N = 8, A_LOAD_CAPS = 16
@@ -32,7 +32,7 @@ typedef enum FontAlign {
     A_LEFT = 1, A_MIDDLE = 2, A_RIGHT = 4, A_SPACED = 8, A_SAFE = 16
 } FontAlign;
 
-extern int a_font_load(Sheet* sheet, int sx, int sy, int zoom, FontLoad loader);
+extern int a_font_load(Sprite* sheet, int sx, int sy, int zoom, FontLoad loader);
 extern int a_font_copy(int font, uint8_t r, uint8_t g, uint8_t b);
 
 extern void a_font_setFace(int f);

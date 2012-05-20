@@ -25,10 +25,12 @@
 typedef struct Sprite Sprite;
 
 #include "a2x_pack_pixel.p.h"
-#include "a2x_pack_sheet.p.h"
 
-extern Sprite* a_sprite_new(const Sheet* graphic, int x, int y, int w, int h);
-extern Sprite* a_sprite_zoomed(const Sheet* graphic, int x, int y, int w, int h, int zoom);
+extern Sprite* a_sprite_fromFile(const char* path);
+extern Sprite* a_sprite_fromData(const uint8_t* data);
+
+extern Sprite* a_sprite_new(const Sprite* graphic, int x, int y, int w, int h);
+extern Sprite* a_sprite_zoomed(const Sprite* graphic, int x, int y, int w, int h, int zoom);
 extern Sprite* a_sprite_blank(int w, int h);
 
 extern int a_sprite_w(const Sprite* s);

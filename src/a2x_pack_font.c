@@ -68,7 +68,7 @@ void a_font__uninit(void)
     free(fonts);
 }
 
-int a_font_load(Sheet* sheet, int sx, int sy, int zoom, FontLoad loader)
+int a_font_load(Sprite* sheet, int sx, int sy, int zoom, FontLoad loader)
 {
     Font* const f = malloc(sizeof(Font));
 

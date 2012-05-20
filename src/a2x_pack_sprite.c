@@ -35,12 +35,56 @@ void a_sprite__uninit(void)
     a_list_free(sprites);
 }
 
-Sprite* a_sprite_new(const Sheet* graphic, int x, int y, int w, int h)
+Sprite* a_sprite_fromFile(const char* path)
+{
+    int w;
+    int h;
+    Pixel* pixels;
+
+    a_png_readFile(path, &pixels, &w, &h);
+
+    Sprite* const s = a_sprite_blank(w, h);
+
+    s->t = A_DEFAULT_TRANSPARENT;
+    s->limit = A_DEFAULT_LIMIT;
+    s->end = A_DEFAULT_END;
+
+    memcpy(s->data, pixels, w * h * sizeof(Pixel));
+    free(pixels);
+
+    a_sprite_refresh(s);
+
+    return s;
+}
+
+Sprite* a_sprite_fromData(const uint8_t* data)
+{
+    int w;
+    int h;
+    Pixel* pixels;
+
+    a_png_readMemory(data, &pixels, &w, &h);
+
+    Sprite* const s = a_sprite_blank(w, h);
+
+    s->t = A_DEFAULT_TRANSPARENT;
+    s->limit = A_DEFAULT_LIMIT;
+    s->end = A_DEFAULT_END;
+
+    memcpy(s->data, pixels, w * h * sizeof(Pixel));
+    free(pixels);
+
+    a_sprite_refresh(s);
+
+    return s;
+}
+
+Sprite* a_sprite_new(const Sprite* graphic, int x, int y, int w, int h)
 {
     return a_sprite_zoomed(graphic, x, y, w, h, 1);
 }
 
-Sprite* a_sprite_zoomed(const Sheet* graphic, int x, int y, int w, int h, int zoom)
+Sprite* a_sprite_zoomed(const Sprite* graphic, int x, int y, int w, int h, int zoom)
 {
     const int spritew = w * zoom;
     const int spriteh = h * zoom;
@@ -68,7 +112,7 @@ Sprite* a_sprite_zoomed(const Sheet* graphic, int x, int y, int w, int h, int zo
         }
     }
 
-    s->t = graphic->transparent;
+    s->t = graphic->t;
     a_sprite_refresh(s);
 
     return s;

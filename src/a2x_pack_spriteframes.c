@@ -49,7 +49,7 @@ SpriteFrames* a_spriteframes_new(int framesPerCycle)
     return a;
 }
 
-SpriteFrames* a_spriteframes_fromSheet(const Sheet* sh, int x, int y, int framesPerCycle)
+SpriteFrames* a_spriteframes_fromSheet(const Sprite* sh, int x, int y, int framesPerCycle)
 {
     SpriteFrames* const sf = a_spriteframes_new(framesPerCycle);
 
@@ -62,12 +62,12 @@ SpriteFrames* a_spriteframes_fromSheet(const Sheet* sh, int x, int y, int frames
     int last_sheetx = x;
 
     for(int sheetx = x; sheetx < width; sheetx++) {
-        const Pixel horizPixel = a_sheet__getPixel(sh, sheetx, y);
+        const Pixel horizPixel = a_sprite__getPixel(sh, sheetx, y);
 
         // reached right edge
         if(horizPixel == limit || horizPixel == end) {
             for(int sheety = y; sheety < height; sheety++) {
-                const Pixel vertPixel = a_sheet__getPixel(sh, last_sheetx, sheety);
+                const Pixel vertPixel = a_sprite__getPixel(sh, last_sheetx, sheety);
 
                 // reached bottom edge
                 if(vertPixel == limit || vertPixel == end) {
