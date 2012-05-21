@@ -30,28 +30,18 @@ struct SpriteFrames {
     int paused;
 };
 
-SpriteFrames* a_spriteframes_new(int framesPerCycle)
+SpriteFrames* a_spriteframes_new(const Sprite* sh, int x, int y, int framesPerCycle)
 {
-    SpriteFrames* const a = malloc(sizeof(SpriteFrames));
+    SpriteFrames* const sf = malloc(sizeof(SpriteFrames));
 
-    a->sprites = a_list_new();
-    a->spriteArray = NULL;
-
-    a->num = 0;
-    a->frame = 0;
-    a->framesPerCycle = framesPerCycle;
-
-    a->current = 0;
-    a->dir = 1;
-
-    a->paused = 0;
-
-    return a;
-}
-
-SpriteFrames* a_spriteframes_fromSheet(const Sprite* sh, int x, int y, int framesPerCycle)
-{
-    SpriteFrames* const sf = a_spriteframes_new(framesPerCycle);
+    sf->sprites = a_list_new();
+    sf->spriteArray = NULL;
+    sf->num = 0;
+    sf->frame = 0;
+    sf->framesPerCycle = framesPerCycle;
+    sf->current = 0;
+    sf->dir = 1;
+    sf->paused = 0;
 
     const int width = sh->w;
     const int height = sh->h;
@@ -101,34 +91,6 @@ void a_spriteframes_free(SpriteFrames* sf)
     free(sf->spriteArray);
 
     free(sf);
-}
-
-void a_spriteframes_add(SpriteFrames* sf, Sprite* s)
-{
-    a_list_addLast(sf->sprites, s);
-
-    free(sf->spriteArray);
-    sf->spriteArray = (Sprite**)a_list_getArray(sf->sprites);
-
-    sf->num++;
-
-    a_spriteframes_reset(sf);
-}
-
-Sprite* a_spriteframes_remove(SpriteFrames* sf, int index)
-{
-    Sprite* const s = sf->spriteArray[index];
-
-    a_list_remove(sf->sprites, s);
-
-    free(sf->spriteArray);
-    sf->spriteArray = (Sprite**)a_list_getArray(sf->sprites);
-
-    sf->num--;
-
-    a_spriteframes_reset(sf);
-
-    return s;
 }
 
 Sprite* a_spriteframes_next(SpriteFrames* sf)
@@ -204,11 +166,19 @@ bool a_spriteframes_onLastFrame(SpriteFrames* sf)
 
 SpriteFrames* a_spriteframes_clone(const SpriteFrames* src)
 {
-    SpriteFrames* const sf = a_spriteframes_new(src->framesPerCycle);
+    SpriteFrames* const sf = malloc(sizeof(SpriteFrames));
 
+    sf->sprites = a_list_new();
     A_LIST_ITERATE(src->sprites, Sprite, s) {
-        a_spriteframes_add(sf, s);
+        a_list_addLast(sf->sprites, s);
     }
+    sf->spriteArray = (Sprite**)a_list_getArray(sf->sprites);
+    sf->num = src->num;
+    sf->frame = 0;
+    sf->framesPerCycle = src->framesPerCycle;
+    sf->current = 0;
+    sf->dir = 1;
+    sf->paused = 0;
 
     return sf;
 }

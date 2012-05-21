@@ -27,12 +27,8 @@ typedef struct SpriteFrames SpriteFrames;
 #include "a2x_pack_list.p.h"
 #include "a2x_pack_sprite.p.h"
 
-extern SpriteFrames* a_spriteframes_new(int framesPerCycle);
-extern SpriteFrames* a_spriteframes_fromSheet(const Sprite* sh, int x, int y, int framesPerCycle);
+extern SpriteFrames* a_spriteframes_new(const Sprite* sh, int x, int y, int framesPerCycle);
 extern void a_spriteframes_free(SpriteFrames* sf);
-
-extern void a_spriteframes_add(SpriteFrames* sf, Sprite* s);
-extern Sprite* a_spriteframes_remove(SpriteFrames* sf, int index);
 
 extern Sprite* a_spriteframes_next(SpriteFrames* sf);
 extern Sprite* a_spriteframes_get(SpriteFrames* sf);
