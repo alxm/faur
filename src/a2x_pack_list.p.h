@@ -41,9 +41,9 @@ extern void a_list_removeNode(ListNode* node);
 #define a_list_pop(l)     a_list_removeFirst(l)
 #define a_list_peek(l)    a_list_first(l)
 
+extern List* a_list_clone(const List* list);
 extern void a_list_reverse(List* list);
-
-extern void** a_list_getArray(List* list);
+extern void** a_list_array(List* list);
 
 extern void* a_list_first(const List* list);
 extern void* a_list_last(const List* list);

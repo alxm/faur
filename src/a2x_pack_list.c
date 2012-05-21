@@ -163,6 +163,17 @@ void a_list_removeNode(ListNode* node)
     free(node);
 }
 
+List* a_list_clone(const List* list)
+{
+    List* l = a_list_new();
+
+    for(ListNode* n = list->first->next; n != list->last; n = n->next) {
+        a_list_addLast(l, n->content);
+    }
+
+    return l;
+}
+
 void a_list_reverse(List* list)
 {
     ListNode* save;
@@ -178,7 +189,7 @@ void a_list_reverse(List* list)
     list->last = save;
 }
 
-void** a_list_getArray(List* list)
+void** a_list_array(List* list)
 {
     int i = 0;
     void** const array = malloc(list->items * sizeof(void*));

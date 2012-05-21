@@ -81,7 +81,7 @@ int a_font_load(Sprite* sheet, int sx, int sy, int zoom, FontLoad loader)
     a_list_addLast(fontsList, f);
 
     free(fonts);
-    fonts = (Font**)a_list_getArray(fontsList);
+    fonts = (Font**)a_list_array(fontsList);
 
     int x = sx;
     int y = sy;
@@ -167,7 +167,7 @@ int a_font_copy(int font, uint8_t r, uint8_t g, uint8_t b)
     a_list_addLast(fontsList, f);
 
     free(fonts);
-    fonts = (Font**)a_list_getArray(fontsList);
+    fonts = (Font**)a_list_array(fontsList);
 
     return a_list_size(fontsList) - 1;
 }

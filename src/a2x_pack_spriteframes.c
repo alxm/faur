@@ -27,7 +27,7 @@ struct SpriteFrames {
     int framesPerCycle;
     int current;
     int dir;
-    int paused;
+    bool paused;
 };
 
 SpriteFrames* a_spriteframes_new(const Sprite* sh, int x, int y, int framesPerCycle)
@@ -41,7 +41,7 @@ SpriteFrames* a_spriteframes_new(const Sprite* sh, int x, int y, int framesPerCy
     sf->framesPerCycle = framesPerCycle;
     sf->current = 0;
     sf->dir = 1;
-    sf->paused = 0;
+    sf->paused = false;
 
     const int width = sh->w;
     const int height = sh->h;
@@ -79,7 +79,7 @@ SpriteFrames* a_spriteframes_new(const Sprite* sh, int x, int y, int framesPerCy
         }
     }
 
-    sf->spriteArray = (Sprite**)a_list_getArray(sf->sprites);
+    sf->spriteArray = (Sprite**)a_list_array(sf->sprites);
     sf->num = a_list_size(sf->sprites);
 
     return sf;
@@ -130,12 +130,12 @@ void a_spriteframes_flipDir(SpriteFrames* sf)
 
 void a_spriteframes_pause(SpriteFrames* sf)
 {
-    sf->paused = 1;
+    sf->paused = true;
 }
 
 void a_spriteframes_resume(SpriteFrames* sf)
 {
-    sf->paused = 0;
+    sf->paused = false;
 }
 
 void a_spriteframes_reset(SpriteFrames* sf)
@@ -168,17 +168,14 @@ SpriteFrames* a_spriteframes_clone(const SpriteFrames* src)
 {
     SpriteFrames* const sf = malloc(sizeof(SpriteFrames));
 
-    sf->sprites = a_list_new();
-    A_LIST_ITERATE(src->sprites, Sprite, s) {
-        a_list_addLast(sf->sprites, s);
-    }
-    sf->spriteArray = (Sprite**)a_list_getArray(sf->sprites);
+    sf->sprites = a_list_clone(src->sprites);
+    sf->spriteArray = (Sprite**)a_list_array(sf->sprites);
     sf->num = src->num;
     sf->frame = 0;
     sf->framesPerCycle = src->framesPerCycle;
     sf->current = 0;
     sf->dir = 1;
-    sf->paused = 0;
+    sf->paused = false;
 
     return sf;
 }
