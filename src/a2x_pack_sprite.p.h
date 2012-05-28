@@ -45,4 +45,8 @@ extern Pixel a_sprite_getPixel(const Sprite* s, int x, int y);
 extern void a_sprite_refresh(Sprite* s);
 extern Sprite* a_sprite_clone(const Sprite* src);
 
+#define A_SPRITE_TRANSPARENT a_pixel_make(255, 0, 255)
+#define A_SPRITE_LIMIT       a_pixel_make(0, 255, 0)
+#define A_SPRITE_END         a_pixel_make(0, 255, 255)
+
 #endif // A2X_PACK_SPRITE_PH

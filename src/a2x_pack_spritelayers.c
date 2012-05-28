@@ -19,38 +19,27 @@
 
 #include "a2x_pack_spritelayers.v.h"
 
-typedef struct Layer Layer;
-
-struct SpriteLayers {
-    List* layers;
-};
-
-struct Layer {
-    Sprite* sprite;
+typedef struct Layer {
+    const Sprite* sprite;
     PixelBlend_t blend;
     uint8_t r, g, b, a;
-};
+} Layer;
 
 SpriteLayers* a_spritelayers_new(void)
 {
-    SpriteLayers* const s = malloc(sizeof(SpriteLayers));
-
-    s->layers = a_list_new();
-
+    SpriteLayers* const s = a_list_new();
     return s;
 }
 
 void a_spritelayers_free(SpriteLayers* s)
 {
-    A_LIST_ITERATE(s->layers, Layer, l) {
+    A_LIST_ITERATE(s, Layer, l) {
         free(l);
     }
-    a_list_free(s->layers);
-
-    free(s);
+    a_list_free(s);
 }
 
-void a_spritelayers_add(SpriteLayers* s, Sprite* sprite, PixelBlend_t blend, uint8_t r, uint8_t g, uint8_t b, uint8_t a)
+void a_spritelayers_add(SpriteLayers* s, const Sprite* sprite, PixelBlend_t blend, uint8_t r, uint8_t g, uint8_t b, uint8_t a)
 {
     Layer* const l = malloc(sizeof(Layer));
 
@@ -61,12 +50,12 @@ void a_spritelayers_add(SpriteLayers* s, Sprite* sprite, PixelBlend_t blend, uin
     l->b = b;
     l->a = a;
 
-    a_list_addLast(s->layers, l);
+    a_list_addLast(s, l);
 }
 
 void a_spritelayers_blit(SpriteLayers* s, int x, int y)
 {
-    A_LIST_ITERATE(s->layers, Layer, l) {
+    A_LIST_ITERATE(s, Layer, l) {
         a_pixel_setBlend(l->blend);
         a_pixel_setRGB(l->r, l->g, l->b);
         a_pixel_setAlpha(l->a);

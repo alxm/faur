@@ -22,15 +22,16 @@
 
 #include "a2x_app_includes.h"
 
+#include "a2x_pack_list.p.h"
 #include "a2x_pack_pixel.p.h"
 #include "a2x_pack_sprite.p.h"
 
-typedef struct SpriteLayers SpriteLayers;
+typedef List SpriteLayers;
 
 extern SpriteLayers* a_spritelayers_new(void);
 extern void a_spritelayers_free(SpriteLayers* s);
 
-extern void a_spritelayers_add(SpriteLayers* s, Sprite* sprite, PixelBlend_t blend, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
+extern void a_spritelayers_add(SpriteLayers* s, const Sprite* sprite, PixelBlend_t blend, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 extern void a_spritelayers_blit(SpriteLayers* s, int x, int y);
 
 #endif // A2X_PACK_SPRITELAYERS_PH

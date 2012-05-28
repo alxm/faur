@@ -32,6 +32,7 @@ extern void a_spriteframes_free(SpriteFrames* sf);
 
 extern Sprite* a_spriteframes_next(SpriteFrames* sf);
 extern Sprite* a_spriteframes_get(SpriteFrames* sf);
+extern bool a_spriteframes_last(const SpriteFrames* sf);
 
 extern void a_spriteframes_setDir(SpriteFrames* sf, int dir);
 extern void a_spriteframes_flipDir(SpriteFrames* sf);
@@ -40,11 +41,10 @@ extern void a_spriteframes_pause(SpriteFrames* sf);
 extern void a_spriteframes_resume(SpriteFrames* sf);
 
 extern void a_spriteframes_reset(SpriteFrames* sf);
-extern int a_spriteframes_frameIndex(const SpriteFrames* sf);
-
-extern bool a_spriteframes_onLastFrame(const SpriteFrames* sf);
 
 extern SpriteFrames* a_spriteframes_clone(const SpriteFrames* src);
 extern List* a_spriteframes_sprites(const SpriteFrames* sf);
+
+extern Sprite* a_spriteframes_pop(SpriteFrames* sf);
 
 #endif // A2X_PACK_SPRITEFRAMES_PH

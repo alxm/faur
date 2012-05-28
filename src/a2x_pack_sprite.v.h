@@ -33,10 +33,6 @@ struct Sprite {
     Pixel data[];
 };
 
-#define A_SPRITE_TRANSPARENT a_pixel_make(255, 0, 255)
-#define A_SPRITE_LIMIT       a_pixel_make(0, 255, 0)
-#define A_SPRITE_END         a_pixel_make(0, 255, 255)
-
 extern void a_sprite__init(void);
 extern void a_sprite__uninit(void);
 

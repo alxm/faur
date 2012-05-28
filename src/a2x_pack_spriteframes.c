@@ -25,7 +25,7 @@ struct SpriteFrames {
     int num;
     int frame;
     int framesPerCycle;
-    int current;
+    int index;
     int dir;
     bool paused;
 };
@@ -39,7 +39,7 @@ SpriteFrames* a_spriteframes_new(const Sprite* sheet, int x, int y, int framesPe
     sf->num = 0;
     sf->frame = 0;
     sf->framesPerCycle = framesPerCycle;
-    sf->current = 0;
+    sf->index = 0;
     sf->dir = 1;
     sf->paused = false;
 
@@ -97,22 +97,32 @@ Sprite* a_spriteframes_next(SpriteFrames* sf)
 
         if(sf->frame >= sf->framesPerCycle) {
             sf->frame -= sf->framesPerCycle;
-            sf->current += sf->dir;
+            sf->index += sf->dir;
 
-            if(sf->current < 0) {
-                sf->current = sf->num - 1;
-            } else if(sf->current >= sf->num) {
-                sf->current = 0;
+            if(sf->index < 0) {
+                sf->index = sf->num - 1;
+            } else if(sf->index >= sf->num) {
+                sf->index = 0;
             }
         }
     }
 
-    return sf->spriteArray[sf->current];
+    return sf->spriteArray[sf->index];
 }
 
 Sprite* a_spriteframes_get(SpriteFrames* sf)
 {
-    return sf->spriteArray[sf->current];
+    return sf->spriteArray[sf->index];
+}
+
+bool a_spriteframes_last(const SpriteFrames* sf)
+{
+    if(sf->frame + sf->num >= sf->framesPerCycle) {
+        const int n = sf->index + sf->dir;
+        return n < 0 || n >= sf->num;
+    }
+
+    return false;
 }
 
 void a_spriteframes_setDir(SpriteFrames* sf, int dir)
@@ -140,25 +150,10 @@ void a_spriteframes_reset(SpriteFrames* sf)
     sf->frame = 0;
 
     if(sf->dir == 1) {
-        sf->current = 0;
+        sf->index = 0;
     } else {
-        sf->current = sf->num - 1;
+        sf->index = sf->num - 1;
     }
-}
-
-int a_spriteframes_frameIndex(const SpriteFrames* sf)
-{
-    return sf->current;
-}
-
-bool a_spriteframes_onLastFrame(const SpriteFrames* sf)
-{
-    if(sf->frame + sf->num >= sf->framesPerCycle) {
-        const int n = sf->current + sf->dir;
-        return n < 0 || n >= sf->num;
-    }
-
-    return false;
 }
 
 SpriteFrames* a_spriteframes_clone(const SpriteFrames* src)
@@ -170,7 +165,7 @@ SpriteFrames* a_spriteframes_clone(const SpriteFrames* src)
     sf->num = src->num;
     sf->frame = 0;
     sf->framesPerCycle = src->framesPerCycle;
-    sf->current = 0;
+    sf->index = 0;
     sf->dir = 1;
     sf->paused = false;
 
@@ -180,4 +175,15 @@ SpriteFrames* a_spriteframes_clone(const SpriteFrames* src)
 List* a_spriteframes_sprites(const SpriteFrames* sf)
 {
     return sf->sprites;
+}
+
+Sprite* a_spriteframes_pop(SpriteFrames* sf)
+{
+    Sprite* s = a_list_pop(sf->sprites);
+
+    sf->spriteArray = (Sprite**)a_list_array(sf->sprites);
+    sf->num = a_list_size(sf->sprites);
+    a_spriteframes_reset(sf);
+
+    return s;
 }
