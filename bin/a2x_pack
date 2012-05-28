@@ -62,7 +62,7 @@ void a_{0}__init(void)
     //
 }}
 
-void a_{0}__free(void)
+void a_{0}__uninit(void)
 {{
     //
 }}
@@ -88,7 +88,7 @@ void a_{0}__free(void)
 #include "a2x_pack_{1}.p.h"
 
 extern void a_{1}__init(void);
-extern void a_{1}__free(void);
+extern void a_{1}__uninit(void);
 
 //
 
