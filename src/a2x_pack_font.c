@@ -68,7 +68,7 @@ void a_font__uninit(void)
     free(fonts);
 }
 
-int a_font_load(Sprite* sheet, int sx, int sy, int zoom, FontLoad loader)
+int a_font_load(const Sprite* sheet, int sx, int sy, int zoom, FontLoad loader)
 {
     Font* const f = malloc(sizeof(Font));
 
@@ -87,11 +87,9 @@ int a_font_load(Sprite* sheet, int sx, int sy, int zoom, FontLoad loader)
     int y = sy;
     int y2 = sy;
 
-    const Pixel limit = sheet->limit;
-
     do {
         y2++;
-    } while(a_sprite__getPixel(sheet, x, y2) != limit);
+    } while(a_sprite__getPixel(sheet, x, y2) != A_SPRITE_LIMIT);
 
     int start = 0;
     int end = CHARS_NUM - 1;
@@ -117,7 +115,7 @@ int a_font_load(Sprite* sheet, int sx, int sy, int zoom, FontLoad loader)
 
         do {
             x++;
-        } while(a_sprite__getPixel(sheet, x, y) != limit);
+        } while(a_sprite__getPixel(sheet, x, y) != A_SPRITE_LIMIT);
 
         int areaw = x - areax;
         int areah = y2 - y;
@@ -149,11 +147,10 @@ int a_font_copy(int font, uint8_t r, uint8_t g, uint8_t b)
             f->sprites[i] = a_sprite_clone(src->sprites[i]);
 
             Sprite* const s = f->sprites[i];
-            const Pixel t = s->t;
             Pixel* d = s->data;
 
             for(int j = s->w * s->h; j--; d++) {
-                if(*d != t) {
+                if(*d != A_SPRITE_TRANSPARENT) {
                     *d = colour;
                 }
             }

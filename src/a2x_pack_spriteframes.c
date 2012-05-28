@@ -30,7 +30,7 @@ struct SpriteFrames {
     bool paused;
 };
 
-SpriteFrames* a_spriteframes_new(const Sprite* sh, int x, int y, int framesPerCycle)
+SpriteFrames* a_spriteframes_new(const Sprite* sheet, int x, int y, int framesPerCycle)
 {
     SpriteFrames* const sf = malloc(sizeof(SpriteFrames));
 
@@ -43,28 +43,25 @@ SpriteFrames* a_spriteframes_new(const Sprite* sh, int x, int y, int framesPerCy
     sf->dir = 1;
     sf->paused = false;
 
-    const int width = sh->w;
-    const int height = sh->h;
-
-    const Pixel limit = sh->limit;
-    const Pixel end = sh->end;
+    const int width = sheet->w;
+    const int height = sheet->h;
 
     int last_sheetx = x;
 
     for(int sheetx = x; sheetx < width; sheetx++) {
-        const Pixel horizPixel = a_sprite__getPixel(sh, sheetx, y);
+        const Pixel horizPixel = a_sprite__getPixel(sheet, sheetx, y);
 
         // reached right edge
-        if(horizPixel == limit || horizPixel == end) {
+        if(horizPixel == A_SPRITE_LIMIT || horizPixel == A_SPRITE_END) {
             for(int sheety = y; sheety < height; sheety++) {
-                const Pixel vertPixel = a_sprite__getPixel(sh, last_sheetx, sheety);
+                const Pixel vertPixel = a_sprite__getPixel(sheet, last_sheetx, sheety);
 
                 // reached bottom edge
-                if(vertPixel == limit || vertPixel == end) {
+                if(vertPixel == A_SPRITE_LIMIT || vertPixel == A_SPRITE_END) {
                     const int w = sheetx - last_sheetx;
                     const int h = sheety - y;
 
-                    Sprite* const sprite = a_sprite_new(sh, last_sheetx, y, w, h);
+                    Sprite* const sprite = a_sprite_new(sheet, last_sheetx, y, w, h);
                     a_list_addLast(sf->sprites, sprite);
 
                     break;
@@ -73,7 +70,7 @@ SpriteFrames* a_spriteframes_new(const Sprite* sh, int x, int y, int framesPerCy
 
             last_sheetx = sheetx + 1;
 
-            if(horizPixel == end) {
+            if(horizPixel == A_SPRITE_END) {
                 break;
             }
         }
@@ -154,7 +151,7 @@ int a_spriteframes_frameIndex(const SpriteFrames* sf)
     return sf->current;
 }
 
-bool a_spriteframes_onLastFrame(SpriteFrames* sf)
+bool a_spriteframes_onLastFrame(const SpriteFrames* sf)
 {
     if(sf->frame + sf->num >= sf->framesPerCycle) {
         const int n = sf->current + sf->dir;

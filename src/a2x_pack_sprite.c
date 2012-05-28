@@ -45,10 +45,6 @@ Sprite* a_sprite_fromFile(const char* path)
 
     Sprite* const s = a_sprite_blank(w, h);
 
-    s->t = A_DEFAULT_TRANSPARENT;
-    s->limit = A_DEFAULT_LIMIT;
-    s->end = A_DEFAULT_END;
-
     memcpy(s->data, pixels, w * h * sizeof(Pixel));
     free(pixels);
 
@@ -67,10 +63,6 @@ Sprite* a_sprite_fromData(const uint8_t* data)
 
     Sprite* const s = a_sprite_blank(w, h);
 
-    s->t = A_DEFAULT_TRANSPARENT;
-    s->limit = A_DEFAULT_LIMIT;
-    s->end = A_DEFAULT_END;
-
     memcpy(s->data, pixels, w * h * sizeof(Pixel));
     free(pixels);
 
@@ -79,27 +71,27 @@ Sprite* a_sprite_fromData(const uint8_t* data)
     return s;
 }
 
-Sprite* a_sprite_new(const Sprite* graphic, int x, int y, int w, int h)
+Sprite* a_sprite_new(const Sprite* sheet, int x, int y, int w, int h)
 {
-    return a_sprite_zoomed(graphic, x, y, w, h, 1);
+    return a_sprite_zoomed(sheet, x, y, w, h, 1);
 }
 
-Sprite* a_sprite_zoomed(const Sprite* graphic, int x, int y, int w, int h, int zoom)
+Sprite* a_sprite_zoomed(const Sprite* sheet, int x, int y, int w, int h, int zoom)
 {
     const int spritew = w * zoom;
     const int spriteh = h * zoom;
 
     Sprite* const s = a_sprite_blank(spritew, spriteh);
 
-    const int wp = graphic->w;
-    const Pixel* const data = graphic->data;
+    const int wp = sheet->w;
+    const Pixel* const src = sheet->data;
     Pixel* const dst = s->data;
 
     // put the pixels on
 
     for(int i = y; i < y + h; i++) {
         for(int j = x; j < x + w; j++) {
-            const Pixel pixel = *(data + i * wp + j);
+            const Pixel pixel = *(src + i * wp + j);
 
             const int dy = (i - y) * zoom;
             const int dx = (j - x) * zoom;
@@ -112,7 +104,6 @@ Sprite* a_sprite_zoomed(const Sprite* graphic, int x, int y, int w, int h, int z
         }
     }
 
-    s->t = graphic->t;
     a_sprite_refresh(s);
 
     return s;
@@ -124,12 +115,11 @@ Sprite* a_sprite_blank(int w, int h)
 
     s->w = w;
     s->h = h;
-    s->t = A_DEFAULT_TRANSPARENT;
     s->alpha = 255;
     s->spans = NULL;
 
     for(int i = w * h; i--; ) {
-        s->data[i] = A_DEFAULT_TRANSPARENT;
+        s->data[i] = A_SPRITE_TRANSPARENT;
     }
 
     a_list_addLast(sprites, s);
@@ -168,16 +158,6 @@ void a_sprite_setAlpha(Sprite* s, uint8_t a)
     s->alpha = a;
 }
 
-Pixel a_sprite_getTransparent(const Sprite* s)
-{
-    return s->t;
-}
-
-void a_sprite_setTransparent(Sprite* s, Pixel c)
-{
-    s->t = c;
-}
-
 Pixel a_sprite_getPixel(const Sprite* s, int x, int y)
 {
     return *(s->data + y * s->w + x);
@@ -187,7 +167,6 @@ void a_sprite_refresh(Sprite* s)
 {
     const int w = s->w;
     const int h = s->h;
-    const Pixel tpixel = s->t;
     const Pixel* const dst = s->data;
 
     // Spans format:
@@ -200,8 +179,8 @@ void a_sprite_refresh(Sprite* s)
         num += 3; // transparency start + first len + end line
         dest++; // start from the second pixel in the line
         for(int x = w - 1; x--; dest++) {
-            if((*dest == tpixel && *(dest - 1) != tpixel)
-                || (*dest != tpixel && *(dest - 1) == tpixel)) {
+            if((*dest == A_SPRITE_TRANSPARENT && *(dest - 1) != A_SPRITE_TRANSPARENT)
+                || (*dest != A_SPRITE_TRANSPARENT && *(dest - 1) == A_SPRITE_TRANSPARENT)) {
                 num++; // transparency change, add a len
             }
         }
@@ -215,12 +194,12 @@ void a_sprite_refresh(Sprite* s)
     dest = dst;
 
     for(int y = h; y--; ) {
-        *spans++ = *dest != tpixel; // transparency start
+        *spans++ = *dest != A_SPRITE_TRANSPARENT; // transparency start
         dest++; // start from the second pixel in the line
         uint16_t len = 1;
         for(int x = 1; x < w; x++, dest++) {
-            if((*dest == tpixel && *(dest - 1) != tpixel)
-                || (*dest != tpixel && *(dest - 1) == tpixel)) {
+            if((*dest == A_SPRITE_TRANSPARENT && *(dest - 1) != A_SPRITE_TRANSPARENT)
+                || (*dest != A_SPRITE_TRANSPARENT && *(dest - 1) == A_SPRITE_TRANSPARENT)) {
                 *spans++ = len; // record len
                 len = 1;
             } else {
@@ -236,7 +215,6 @@ Sprite* a_sprite_clone(const Sprite* src)
 {
     Sprite* const s = a_sprite_blank(src->w, src->h);
 
-    s->t = src->t;
     s->alpha = src->alpha;
     memcpy(s->data, src->data, src->w * src->h * sizeof(Pixel));
     a_sprite_refresh(s);

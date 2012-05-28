@@ -32,7 +32,7 @@ typedef enum FontAlign {
     A_LEFT = 1, A_MIDDLE = 2, A_RIGHT = 4, A_SPACED = 8, A_SAFE = 16
 } FontAlign;
 
-extern int a_font_load(Sprite* sheet, int sx, int sy, int zoom, FontLoad loader);
+extern int a_font_load(const Sprite* sheet, int sx, int sy, int zoom, FontLoad loader);
 extern int a_font_copy(int font, uint8_t r, uint8_t g, uint8_t b);
 
 extern void a_font_setFace(int f);
