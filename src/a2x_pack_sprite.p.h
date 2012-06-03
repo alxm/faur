@@ -29,8 +29,8 @@ typedef struct Sprite Sprite;
 extern Sprite* a_sprite_fromFile(const char* path);
 extern Sprite* a_sprite_fromData(const uint8_t* data);
 
-extern Sprite* a_sprite_new(const Sprite* sheet, int x, int y, int w, int h);
-extern Sprite* a_sprite_zoomed(const Sprite* sheet, int x, int y, int w, int h, int zoom);
+extern Sprite* a_sprite_new(const Sprite* sheet, int x, int y);
+extern Sprite* a_sprite_zoomed(const Sprite* sheet, int x, int y, int zoom);
 extern Sprite* a_sprite_blank(int w, int h);
 
 extern int a_sprite_w(const Sprite* s);

@@ -23,58 +23,41 @@ struct SpriteFrames {
     List* sprites;
     Sprite** spriteArray;
     int num;
-    int frame;
-    int framesPerCycle;
+    uint countdown;
+    uint callsToNextFrame;
     int index;
     int dir;
     bool paused;
 };
 
-SpriteFrames* a_spriteframes_new(const Sprite* sheet, int x, int y, int framesPerCycle)
+SpriteFrames* a_spriteframes_new(const Sprite* sheet, int x, int y, uint callsToNextFrame)
 {
     SpriteFrames* const sf = malloc(sizeof(SpriteFrames));
 
     sf->sprites = a_list_new();
     sf->spriteArray = NULL;
     sf->num = 0;
-    sf->frame = 0;
-    sf->framesPerCycle = framesPerCycle;
+    sf->countdown = callsToNextFrame;
+    sf->callsToNextFrame = callsToNextFrame;
     sf->index = 0;
     sf->dir = 1;
     sf->paused = false;
 
-    const int width = sheet->w;
-    const int height = sheet->h;
+    Sprite* s;
 
-    int last_sheetx = x;
+    do {
+        s = a_sprite_new(sheet, x, y);
 
-    for(int sheetx = x; sheetx < width; sheetx++) {
-        const Pixel horizPixel = a_sprite__getPixel(sheet, sheetx, y);
+        if(s) {
+            a_list_addLast(sf->sprites, s);
 
-        // reached right edge
-        if(horizPixel == A_SPRITE_LIMIT || horizPixel == A_SPRITE_END) {
-            for(int sheety = y; sheety < height; sheety++) {
-                const Pixel vertPixel = a_sprite__getPixel(sheet, last_sheetx, sheety);
-
-                // reached bottom edge
-                if(vertPixel == A_SPRITE_LIMIT || vertPixel == A_SPRITE_END) {
-                    const int w = sheetx - last_sheetx;
-                    const int h = sheety - y;
-
-                    Sprite* const sprite = a_sprite_new(sheet, last_sheetx, y, w, h);
-                    a_list_addLast(sf->sprites, sprite);
-
-                    break;
-                }
-            }
-
-            last_sheetx = sheetx + 1;
-
-            if(horizPixel == A_SPRITE_END) {
-                break;
+            if(a_sprite__getPixel(sheet, x + s->w, y) == A_SPRITE_END) {
+                s = NULL;
+            } else {
+                x += s->w + 1;
             }
         }
-    }
+    } while(s != NULL);
 
     sf->spriteArray = (Sprite**)a_list_array(sf->sprites);
     sf->num = a_list_size(sf->sprites);
@@ -92,11 +75,11 @@ void a_spriteframes_free(SpriteFrames* sf)
 
 Sprite* a_spriteframes_next(SpriteFrames* sf)
 {
-    if(!sf->paused) {
-        sf->frame += sf->num;
+    const int oldindex = sf->index;
 
-        if(sf->frame >= sf->framesPerCycle) {
-            sf->frame -= sf->framesPerCycle;
+    if(!sf->paused) {
+        if(sf->countdown-- == 0) {
+            sf->countdown = sf->callsToNextFrame;
             sf->index += sf->dir;
 
             if(sf->index < 0) {
@@ -107,7 +90,7 @@ Sprite* a_spriteframes_next(SpriteFrames* sf)
         }
     }
 
-    return sf->spriteArray[sf->index];
+    return sf->spriteArray[oldindex];
 }
 
 Sprite* a_spriteframes_get(SpriteFrames* sf)
@@ -117,7 +100,7 @@ Sprite* a_spriteframes_get(SpriteFrames* sf)
 
 bool a_spriteframes_last(const SpriteFrames* sf)
 {
-    if(sf->frame + sf->num >= sf->framesPerCycle) {
+    if(sf->countdown == 1) {
         const int n = sf->index + sf->dir;
         return n < 0 || n >= sf->num;
     }
@@ -147,7 +130,7 @@ void a_spriteframes_resume(SpriteFrames* sf)
 
 void a_spriteframes_reset(SpriteFrames* sf)
 {
-    sf->frame = 0;
+    sf->countdown = sf->callsToNextFrame;
 
     if(sf->dir == 1) {
         sf->index = 0;
@@ -163,8 +146,8 @@ SpriteFrames* a_spriteframes_clone(const SpriteFrames* src)
     sf->sprites = a_list_clone(src->sprites);
     sf->spriteArray = (Sprite**)a_list_array(sf->sprites);
     sf->num = src->num;
-    sf->frame = 0;
-    sf->framesPerCycle = src->framesPerCycle;
+    sf->countdown = src->callsToNextFrame;
+    sf->callsToNextFrame = src->callsToNextFrame;
     sf->index = 0;
     sf->dir = 1;
     sf->paused = false;
@@ -183,6 +166,7 @@ Sprite* a_spriteframes_pop(SpriteFrames* sf)
 
     sf->spriteArray = (Sprite**)a_list_array(sf->sprites);
     sf->num = a_list_size(sf->sprites);
+
     a_spriteframes_reset(sf);
 
     return s;

@@ -71,13 +71,43 @@ Sprite* a_sprite_fromData(const uint8_t* data)
     return s;
 }
 
-Sprite* a_sprite_new(const Sprite* sheet, int x, int y, int w, int h)
+Sprite* a_sprite_new(const Sprite* sheet, int x, int y)
 {
-    return a_sprite_zoomed(sheet, x, y, w, h, 1);
+    return a_sprite_zoomed(sheet, x, y, 1);
 }
 
-Sprite* a_sprite_zoomed(const Sprite* sheet, int x, int y, int w, int h, int zoom)
+Sprite* a_sprite_zoomed(const Sprite* sheet, int x, int y, int zoom)
 {
+    int w = 0;
+    int h = 0;
+
+    const int width = sheet->w;
+    const int height = sheet->h;
+
+    for(int sheetx = x; sheetx < width; sheetx++) {
+        const Pixel hPixel = a_sprite__getPixel(sheet, sheetx, y);
+
+        // reached right edge
+        if(hPixel == A_SPRITE_LIMIT || hPixel == A_SPRITE_END) {
+            for(int sheety = y; sheety < height; sheety++) {
+                const Pixel vPixel = a_sprite__getPixel(sheet, x, sheety);
+
+                // reached bottom edge
+                if(vPixel == A_SPRITE_LIMIT) {
+                    w = sheetx - x;
+                    h = sheety - y;
+                    goto Done;
+                }
+            }
+        }
+    }
+
+    Done:
+
+    if(w == 0 || h == 0) {
+        return NULL;
+    }
+
     const int spritew = w * zoom;
     const int spriteh = h * zoom;
 
