@@ -31,7 +31,7 @@ extern bool a_input_working(const Input* i);
 
 extern bool a_button_get(const Input* i);
 extern void a_button_unpress(const Input* i);
-extern bool a_button_getUnpress(const Input* i);
+extern bool a_button_getAndUnpress(const Input* i);
 extern void a_button_waitFor(const Input* i);
 
 extern bool a_touch_tapped(const Input* i);

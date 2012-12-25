@@ -361,17 +361,17 @@ void a_input__get(void)
         }
     }
 
-    if(a_button_getUnpress(screenshot)) {
+    if(a_button_getAndUnpress(screenshot)) {
         a_screenshot_save();
     }
 
     // PC-only options
     #if A_PLATFORM_LINUXPC
-        if(a_button_getUnpress(fullScreen)) {
+        if(a_button_getAndUnpress(fullScreen)) {
             a_screen__full();
         }
 
-        if(a_button_getUnpress(doubleRes)) {
+        if(a_button_getAndUnpress(doubleRes)) {
             A_LIST_ITERATE(touches.list, Touch, t) {
                 t->shiftScale = a2x__flip("video.double");
             }
@@ -598,7 +598,7 @@ void a_button_unpress(const Input* i)
     }
 }
 
-bool a_button_getUnpress(const Input* i)
+bool a_button_getAndUnpress(const Input* i)
 {
     bool foundPressed = false;
 
@@ -623,7 +623,7 @@ void a_button_waitFor(const Input* i)
     do {
         a_fps_start();
         a_fps_end();
-    } while(!a_button_getUnpress(i));
+    } while(!a_button_getAndUnpress(i));
 }
 
 bool a_touch_tapped(const Input* i)
