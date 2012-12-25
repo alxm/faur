@@ -34,6 +34,26 @@ static StateInstance* new_state;
 static bool changed;
 static bool replacing;
 
+#if A_PLATFORM_LINUXPC
+    #define a_state__out(...)                                            \
+    ({                                                                   \
+        if(!a2x_bool("app.quiet")) {                                     \
+            printf("%c[%d;%dm[ a2x Stt ]%c[%dm ", 0x1b, 0, 34, 0x1b, 0); \
+            printf(__VA_ARGS__);                                         \
+            printf("\n");                                                \
+        }                                                                \
+    })
+#else
+    #define a_state__out(...)        \
+    ({                               \
+        if(!a2x_bool("app.quiet")) { \
+            printf("[ a2x Stt ] ");  \
+            printf(__VA_ARGS__);     \
+            printf("\n");            \
+        }                            \
+    })
+#endif
+
 void a_state__init(void)
 {
     functions = a_hash_new();
@@ -56,6 +76,7 @@ void a_state__uninit(void)
 
 void a_state_new(const char* name, void (*function)(void))
 {
+    a_state__out("New state '%s'", name);
     a_hash_add(functions, name, function);
 }
 
@@ -85,8 +106,10 @@ void a_state_push(const char* name)
     s->stage = A_STATE_STAGE_INIT;
 
     if(a_list_isEmpty(stack)) {
+        a_state__out("Push first state '%s'", name);
         a_list_push(stack, s);
     } else if(new_state == NULL) {
+        a_state__out("Push state '%s'", name);
         new_state = s;
     } else {
         a_error("Push state '%s': already pushed state '%s'",
@@ -106,6 +129,8 @@ void a_state_pop(void)
         a_error("Pop state '%s': only call from A_STATE_BODY", active->name);
         exit(1);
     }
+
+    a_state__out("Pop state '%s'", active->name);
 
     changed = true;
     active->stage = A_STATE_STAGE_FREE;
@@ -130,6 +155,8 @@ void a_state_replace(const char* name)
         exit(1);
     }
 
+    a_state__out("Replace state '%s' with '%s'", active->name, name);
+
     replacing = true;
 
     a_state_pop();
@@ -143,6 +170,7 @@ void a_state_exit(void)
     changed = true;
 
     A_LIST_ITERATE(stack, StateInstance, s) {
+        a_state__out("State '%s' exiting", s->name);
         s->stage = A_STATE_STAGE_FREE;
     }
 }
