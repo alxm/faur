@@ -49,7 +49,7 @@ typedef struct Touch {
     bool tap;
     int x;
     int y;
-    int shiftScale; // for zoomed screens
+    int scale; // for zoomed screens
     List* motion; // Points captured by motion event
 } Touch;
 
@@ -368,12 +368,20 @@ void a_input__get(void)
     // PC-only options
     #if A_PLATFORM_LINUXPC
         if(a_button_getAndUnpress(fullScreen)) {
-            a_screen__full();
+            //a_screen__full();
         }
 
         if(a_button_getAndUnpress(doubleRes)) {
+            if(a2x_int("video.scale") == 2) {
+                a2x__set("video.scale", "1");
+            } else {
+                a2x__set("video.scale", "2");
+            }
+
+            int scale = a2x_int("video.scale");
+
             A_LIST_ITERATE(touches.list, Touch, t) {
-                t->shiftScale = a2x__flip("video.double");
+                t->scale = scale;
             }
 
             a_screen__double();
@@ -645,11 +653,11 @@ bool a_touch_point(const Input* i, int x, int y)
 bool a_touch_rect(const Input* i, int x, int y, int w, int h)
 {
     A_LIST_ITERATE(i->touches, Touch, t) {
-        const int shift = t->shiftScale;
+        const int scale = t->scale;
 
         if(t->tap
             && a_collide_boxes(
-                x << shift, y << shift, w << shift, h << shift,
+                x * scale, y * scale, w * scale, h * scale,
                 t->x, t->y, 1, 1)) {
             return true;
         }
@@ -713,7 +721,7 @@ static void addTouch(const char* name)
         t->tap = false;
         t->x = 0;
         t->y = 0;
-        t->shiftScale = a2x_bool("video.double");
+        t->scale = a2x_int("video.scale");
         t->motion = a_list_new();
 
         a_inputs_add(touches, t, name);

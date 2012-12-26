@@ -60,10 +60,10 @@ void a_screen__init(void)
     videoFlags = SDL_SWSURFACE;
 
     #if !A_PLATFORM_LINUXPC
-        a2x__set("video.double", "0");
+        a2x__set("video.scale", "1");
     #endif
 
-    if(a2x_bool("video.double")) {
+    if(a2x_int("video.scale") > 1) {
         a2x__set("video.fake", "1");
     }
 
@@ -158,27 +158,31 @@ void a_screen_show(void)
             SDL_LockSurface(a_screen);
         }
 
-        if(a2x_bool("video.double")) {
-            const Pixel* src = a_pixels;
-            uint32_t* dst = (uint32_t*)a_screen->pixels;
+        switch(a2x_int("video.scale")) {
+            case 1: {
+                const Pixel* const src = a_pixels;
+                Pixel* const dst = a_screen->pixels;
 
-            const int len = a_width;
-            const int size = len * sizeof(uint32_t);
+                memcpy(dst, src, A_SCREEN_SIZE);
+            } break;
 
-            for(int i = a_height; i--; ) {
-                for(int j = len; j--; ) {
-                    const Pixel p = *src++;
-                    *dst++ = (p << 16) | p;
+            case 2: {
+                const Pixel* src = a_pixels;
+                uint32_t* dst = (uint32_t*)a_screen->pixels;
+
+                const int len = a_width;
+                const int size = len * sizeof(uint32_t);
+
+                for(int i = a_height; i--; ) {
+                    for(int j = len; j--; ) {
+                        const Pixel p = *src++;
+                        *dst++ = (p << 16) | p;
+                    }
+
+                    memcpy(dst, dst - len, size);
+                    dst += len;
                 }
-
-                memcpy(dst, dst - len, size);
-                dst += len;
-            }
-        } else {
-            const Pixel* const src = a_pixels;
-            Pixel* const dst = a_screen->pixels;
-
-            memcpy(dst, src, A_SCREEN_SIZE);
+            } break;
         }
 
         if(SDL_MUSTLOCK(a_screen)) {
@@ -281,11 +285,8 @@ void a_screen_resetTarget(void)
 
 static void setSDLScreen(void)
 {
-    if(a2x_bool("video.double")) {
-        a_screen = SDL_SetVideoMode(a_width * 2, a_height * 2, A_BPP, videoFlags);
-    } else {
-        a_screen = SDL_SetVideoMode(a_width, a_height, A_BPP, videoFlags);
-    }
+    int scale = a2x_int("video.scale");
+    a_screen = SDL_SetVideoMode(a_width * scale, a_height * scale, A_BPP, videoFlags);
 
     SDL_SetClipRect(a_screen, NULL);
 
