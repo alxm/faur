@@ -183,6 +183,29 @@ void a_screen_show(void)
                     dst += len;
                 }
             } break;
+
+            case 3: {
+                const Pixel* src = a_pixels;
+                Pixel* dst = (Pixel*)a_screen->pixels;
+
+                const int width = a_width;
+                const int scaledWidth = width * 3;
+                const int scaledSize = scaledWidth * sizeof(Pixel);
+
+                for(int i = a_height; i--; ) {
+                    for(int j = width; j--; ) {
+                        const Pixel p = *src++;
+                        *dst++ = p;
+                        *dst++ = p;
+                        *dst++ = p;
+                    }
+
+                    for(int j = 2; j--; ) {
+                        memcpy(dst, dst - scaledWidth, scaledSize);
+                        dst += scaledWidth;
+                    }
+                }
+            } break;
         }
 
         if(SDL_MUSTLOCK(a_screen)) {
@@ -271,7 +294,7 @@ void a_screen_resetTarget(void)
         setSDLScreen();
     }
 
-    void a_screen__double(void)
+    void a_screen__applyScale(void)
     {
         // once this function is called, we switch to fake screen permanently
         if(!a2x_bool("video.fake")) {

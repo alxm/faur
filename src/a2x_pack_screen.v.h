@@ -36,7 +36,7 @@ extern void a_screen__uninit(void);
 
 #if A_PLATFORM_LINUXPC || A_PLATFORM_WINDOWS
     extern void a_screen__full(void);
-    extern void a_screen__double(void);
+    extern void a_screen__applyScale(void);
 #endif
 
 #endif // A2X_PACK_SCREEN_VH

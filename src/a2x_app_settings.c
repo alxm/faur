@@ -77,7 +77,7 @@ void a_settings__defaults(void)
     add(BOOL, SET_ANY, "fps.track", "0");
 
     add(STR, SET_ONCE, "screenshot.dir", "./screenshots");
-    add(STR, SET_ONCE, "screenshot.button", "pc.F3");
+    add(STR, SET_ONCE, "screenshot.button", "pc.F12");
 }
 
 void a_settings__freeze(void)
