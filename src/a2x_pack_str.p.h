@@ -44,6 +44,8 @@ extern char* a_str__merge(int count, ...);
 extern char* a_str_dup(const char* s);
 
 extern char* a_str_sub(const char* s, int start, int end);
+extern char* a_str_prefix(const char* s, int len);
+extern char* a_str_suffix(const char* s, int len);
 
 extern int a_str_firstIndex(const char* s, char c);
 extern int a_str_lastIndex(const char* s, char c);

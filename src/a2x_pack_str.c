@@ -134,6 +134,17 @@ char* a_str_sub(const char* s, int start, int end)
     return str;
 }
 
+char* a_str_prefix(const char* s, int len)
+{
+    return a_str_sub(s, 0, len);
+}
+
+char* a_str_suffix(const char* s, int len)
+{
+    const int sLen = strlen(s);
+    return a_str_sub(s, sLen - len, sLen);
+}
+
 int a_str_firstIndex(const char* s, char c)
 {
     const int len = strlen(s);
