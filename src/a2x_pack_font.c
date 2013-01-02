@@ -174,52 +174,7 @@ int a_font_getX(void)
 
 void a_font_text(const char* text)
 {
-    if(align & A_SAFE) {
-        a_font__safe(text);
-        return;
-    }
-
     Font* const f = fonts[font];
-
-    bool spaced = align & A_SPACED;
-
-    if(align & A_MIDDLE) {
-        x -= a_font_width(text) / 2;
-    }
-
-    if(align & A_RIGHT) {
-        x -= a_font_width(text);
-    }
-
-    const int length = strlen(text);
-    const int maxWidth = f->maxWidth;
-
-    for(int l = 0; l < length; l++) {
-        if(text[l] == ' ') {
-            x += FONT_SPACE + FONT_BLANK_SPACE;
-        } else {
-            const int index = (int)text[l];
-            Sprite* const spr = f->sprites[index];
-
-            if(index < 0 || index >= NUM_ASCII) {
-                continue;
-            }
-
-            if(spaced) {
-                a_blit(spr, x + (f->maxWidth - spr->w) / 2, y);
-            } else {
-                a_blit(spr, x, y);
-            }
-
-            x += FONT_SPACE + (spaced ? maxWidth : spr->w);
-        }
-    }
-}
-
-void a_font__safe(const char* text)
-{
-    Font* const f = fonts[font];
-
     bool spaced = align & A_SPACED;
 
     if(align & A_MIDDLE) {

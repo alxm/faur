@@ -29,7 +29,7 @@ typedef enum FontLoad  {
 } FontLoad;
 
 typedef enum FontAlign {
-    A_LEFT = 1, A_MIDDLE = 2, A_RIGHT = 4, A_SPACED = 8, A_SAFE = 16
+    A_LEFT = 1, A_MIDDLE = 2, A_RIGHT = 4, A_SPACED = 8
 } FontAlign;
 
 extern int a_font_load(const Sprite* sheet, int x, int y, int zoom, FontLoad loader);
