@@ -65,6 +65,11 @@ extern ColPoint* a_colit__get(ColIt* it);
     a_collide_boxes((x), (y), (w), (h), 0, 0, a_width, a_height) \
 )
 
+#define a_collide_boxInsideScreen(x, y, w, h)                 \
+(                                                             \
+    x >= 0 && y >= 0 && x + w <= a_width && y + h <= a_height \
+)
+
 extern bool a_collide_circles(int x1, int y1, int r1, int x2, int y2, int r2);
 
 #endif // A2X_PACK_COLLIDE_PH
