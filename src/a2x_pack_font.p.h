@@ -43,6 +43,7 @@ extern int a_font_getX(void);
 extern void a_font_text(const char* text);
 extern void a_font_int(int number);
 extern void a_font_float(float number);
+extern void a_font_double(double number);
 extern void a_font_char(char ch);
 
 extern void a_font_fixed(int width, const char* text);

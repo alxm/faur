@@ -231,6 +231,14 @@ void a_font_float(float number)
     a_font_text(s);
 }
 
+void a_font_double(double number)
+{
+    char s[64];
+    sprintf(s, "%lf", number);
+
+    a_font_text(s);
+}
+
 void a_font_char(char ch)
 {
     char s[2];
