@@ -17,14 +17,14 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a2x_pack_hash.v.h"
+#include "a2x_pack_strhash.v.h"
 
-#define A_HASH_NUM 256
+#define A_STRHASH_NUM 256
 
 typedef struct Entry Entry;
 
-struct Hash {
-    Entry* entries[A_HASH_NUM];
+struct StrHash {
+    Entry* entries[A_STRHASH_NUM];
 };
 
 struct Entry {
@@ -35,27 +35,28 @@ struct Entry {
 
 #define getSlot(k)                  \
 ({                                  \
-    int s = 0;                      \
+    uint8_t s = 0;                  \
     for(int i = strlen(k); i--; ) { \
+        s <<= 1;                    \
         s ^= k[i];                  \
     }                               \
-    s &= A_HASH_NUM - 1;            \
+    s;                              \
 })
 
-Hash* a_hash_new(void)
+StrHash* a_strhash_new(void)
 {
-    Hash* const h = malloc(sizeof(Hash));
+    StrHash* const h = malloc(sizeof(StrHash));
 
-    for(int i = A_HASH_NUM; i--; ) {
+    for(int i = A_STRHASH_NUM; i--; ) {
         h->entries[i] = NULL;
     }
 
     return h;
 }
 
-void a_hash_free(Hash* h)
+void a_strhash_free(StrHash* h)
 {
-    for(int i = A_HASH_NUM; i--; ) {
+    for(int i = A_STRHASH_NUM; i--; ) {
         Entry* e = h->entries[i];
 
         while(e) {
@@ -68,9 +69,9 @@ void a_hash_free(Hash* h)
     free(h);
 }
 
-void a_hash_add(Hash* h, const char* key, void* content)
+void a_strhash_add(StrHash* h, const char* key, void* content)
 {
-    const int slot = getSlot(key);
+    const uint8_t slot = getSlot(key);
     Entry* const entry = h->entries[slot];
 
     Entry* const e = malloc(sizeof(Entry));
@@ -82,7 +83,7 @@ void a_hash_add(Hash* h, const char* key, void* content)
     h->entries[slot] = e;
 }
 
-void* a_hash_get(const Hash* h, const char* key)
+void* a_strhash_get(const StrHash* h, const char* key)
 {
     for(Entry* e = h->entries[getSlot(key)]; e; e = e->next) {
         if(a_str_same(key, e->key)) {

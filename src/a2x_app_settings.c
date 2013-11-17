@@ -38,7 +38,7 @@ typedef struct Setting {
     } value;
 } Setting;
 
-static Hash* settings;
+static StrHash* settings;
 static bool frozen = false;
 
 static void add(Setting_t type, Update_t update, const char* key, const char* val);
@@ -48,7 +48,7 @@ static bool flip(const char* key, bool respect);
 
 void a_settings__defaults(void)
 {
-    settings = a_hash_new();
+    settings = a_strhash_new();
 
     add(STR, SET_ONCE, "app.title", "Untitled");
     add(STR, SET_ONCE, "app.version", "0");
@@ -107,7 +107,7 @@ bool a2x__flip(const char* key)
 
 char* a2x_str(const char* key)
 {
-    Setting* const s = a_hash_get(settings, key);
+    Setting* const s = a_strhash_get(settings, key);
 
     if(s == NULL) {
         a_error("Setting '%s' does not exist", key);
@@ -122,7 +122,7 @@ char* a2x_str(const char* key)
 
 bool a2x_bool(const char* key)
 {
-    Setting* const s = a_hash_get(settings, key);
+    Setting* const s = a_strhash_get(settings, key);
 
     if(s == NULL) {
         a_error("Setting '%s' does not exist", key);
@@ -137,7 +137,7 @@ bool a2x_bool(const char* key)
 
 int a2x_int(const char* key)
 {
-    Setting* const s = a_hash_get(settings, key);
+    Setting* const s = a_strhash_get(settings, key);
 
     if(s == NULL) {
         a_error("Setting '%s' does not exist", key);
@@ -171,7 +171,7 @@ static void add(Setting_t type, Update_t update, const char* key, const char* va
         } break;
     }
 
-    a_hash_add(settings, key, s);
+    a_strhash_add(settings, key, s);
 }
 
 static int parseBool(const char* val)
@@ -187,7 +187,7 @@ static int parseBool(const char* val)
 
 static void set(const char* key, const char* val, bool respect)
 {
-    Setting* const s = a_hash_get(settings, key);
+    Setting* const s = a_strhash_get(settings, key);
 
     if(s == NULL) {
         a_error("Setting '%s' does not exist", key);
@@ -219,7 +219,7 @@ static void set(const char* key, const char* val, bool respect)
 
 static bool flip(const char* key, bool respect)
 {
-    Setting* const s = a_hash_get(settings, key);
+    Setting* const s = a_strhash_get(settings, key);
 
     if(s == NULL) {
         a_error("Setting '%s' does not exist", key);

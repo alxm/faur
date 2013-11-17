@@ -17,11 +17,11 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_PACK_HASH_VH
-#define A2X_PACK_HASH_VH
+#ifndef A2X_PACK_STRHASH_VH
+#define A2X_PACK_STRHASH_VH
 
-#include "a2x_pack_hash.p.h"
+#include "a2x_pack_strhash.p.h"
 
 #include "a2x_pack_str.v.h"
 
-#endif // A2X_PACK_HASH_VH
+#endif // A2X_PACK_STRHASH_VH

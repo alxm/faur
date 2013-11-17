@@ -24,7 +24,7 @@
 
 #include "a2x_pack_collide.v.h"
 #include "a2x_pack_fps.v.h"
-#include "a2x_pack_hash.v.h"
+#include "a2x_pack_strhash.v.h"
 #include "a2x_pack_list.v.h"
 #include "a2x_pack_screen.v.h"
 #include "a2x_pack_screenshot.v.h"

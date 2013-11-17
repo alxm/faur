@@ -24,8 +24,8 @@
 
 #include "a2x_app_main.v.h"
 
-#include "a2x_pack_hash.v.h"
 #include "a2x_pack_str.v.h"
+#include "a2x_pack_strhash.v.h"
 
 extern void a_settings__defaults(void);
 extern void a_settings__freeze(void);

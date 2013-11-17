@@ -17,17 +17,17 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_PACK_HASH_PH
-#define A2X_PACK_HASH_PH
+#ifndef A2X_PACK_STRHASH_PH
+#define A2X_PACK_STRHASH_PH
 
 #include "a2x_app_includes.h"
 
-typedef struct Hash Hash;
+typedef struct StrHash StrHash;
 
-extern Hash* a_hash_new(void);
-extern void a_hash_free(Hash* h);
+extern StrHash* a_strhash_new(void);
+extern void a_strhash_free(StrHash* h);
 
-extern void a_hash_add(Hash* h, const char* key, void* content);
-extern void* a_hash_get(const Hash* h, const char* key);
+extern void a_strhash_add(StrHash* h, const char* key, void* content);
+extern void* a_strhash_get(const StrHash* h, const char* key);
 
-#endif // A2X_PACK_HASH_PH
+#endif // A2X_PACK_STRHASH_PH

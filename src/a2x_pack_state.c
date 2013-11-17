@@ -24,11 +24,11 @@ typedef void (*StateFunction)(void);
 typedef struct StateInstance {
     const char* name;
     StateFunction function;
-    Hash* objects;
+    StrHash* objects;
     StateStage stage;
 } StateInstance;
 
-static Hash* functions;
+static StrHash* functions;
 static List* stack;
 static StateInstance* new_state;
 static bool changed;
@@ -56,7 +56,7 @@ static bool replacing;
 
 void a_state__init(void)
 {
-    functions = a_hash_new();
+    functions = a_strhash_new();
     stack = a_list_new();
     new_state = NULL;
     changed = false;
@@ -65,10 +65,10 @@ void a_state__init(void)
 
 void a_state__uninit(void)
 {
-    a_hash_free(functions);
+    a_strhash_free(functions);
 
     A_LIST_ITERATE(stack, StateInstance, s) {
-        a_hash_free(s->objects);
+        a_strhash_free(s->objects);
         free(s);
     }
     a_list_free(stack);
@@ -77,7 +77,7 @@ void a_state__uninit(void)
 void a_state_new(const char* name, void (*function)(void))
 {
     a_state__out("New state '%s'", name);
-    a_hash_add(functions, name, function);
+    a_strhash_add(functions, name, function);
 }
 
 void a_state_push(const char* name)
@@ -89,7 +89,7 @@ void a_state_push(const char* name)
         exit(1);
     }
 
-    StateFunction function = a_hash_get(functions, name);
+    StateFunction function = a_strhash_get(functions, name);
 
     if(function == NULL) {
         a_error("Push state '%s': does not exist", name);
@@ -102,7 +102,7 @@ void a_state_push(const char* name)
 
     s->name = a_str_dup(name);
     s->function = function;
-    s->objects = a_hash_new();
+    s->objects = a_strhash_new();
     s->stage = A_STATE_STAGE_INIT;
 
     if(a_list_isEmpty(stack)) {
@@ -138,7 +138,7 @@ void a_state_pop(void)
 
 void a_state_replace(const char* name)
 {
-    if(a_hash_get(functions, name) == NULL) {
+    if(a_strhash_get(functions, name) == NULL) {
         a_error("Replace state '%s': does not exist", name);
         exit(1);
     }
@@ -180,7 +180,7 @@ void a_state_add(const char* name, void* object)
     const StateInstance* const s = a_list_peek(stack);
 
     if(s) {
-        a_hash_add(s->objects, name, object);
+        a_strhash_add(s->objects, name, object);
     }
 }
 
@@ -189,7 +189,7 @@ void* a_state_get(const char* name)
     const StateInstance* const s = a_list_peek(stack);
 
     if(s) {
-        return a_hash_get(s->objects, name);
+        return a_strhash_get(s->objects, name);
     }
 
     return NULL;
@@ -204,7 +204,7 @@ void a_state__run(void)
         s->function();
 
         if(s->stage == A_STATE_STAGE_FREE) {
-            a_hash_free(s->objects);
+            a_strhash_free(s->objects);
             free(a_list_pop(stack));
         }
 
