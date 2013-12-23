@@ -97,10 +97,10 @@ static List* userInputs; // all inputs returned by a_input_new()
 static Input* screenshot;
 
 #if A_PLATFORM_LINUXPC
-    //static Input* fullScreen;
     static Input* normalRes;
     static Input* doubleRes;
     static Input* tripleRes;
+    static Input* fullScreen;
 #endif
 
 static void addButton(const char* name, int code);
@@ -199,6 +199,14 @@ void a_input__init(void)
         addButton("pc.F1", SDLK_F1);
         addButton("pc.F2", SDLK_F2);
         addButton("pc.F3", SDLK_F3);
+        addButton("pc.F4", SDLK_F4);
+        addButton("pc.F5", SDLK_F5);
+        addButton("pc.F6", SDLK_F6);
+        addButton("pc.F7", SDLK_F7);
+        addButton("pc.F8", SDLK_F8);
+        addButton("pc.F9", SDLK_F9);
+        addButton("pc.F10", SDLK_F10);
+        addButton("pc.F11", SDLK_F11);
         addButton("pc.F12", SDLK_F12);
         addButton("pc.1", SDLK_1);
         addButton("pc.0", SDLK_0);
@@ -208,10 +216,10 @@ void a_input__init(void)
     userInputs = a_list_new();
 
     #if A_PLATFORM_LINUXPC
-        //fullScreen = a_input_new("pc.");
         normalRes = a_input_new("pc.F1");
         doubleRes = a_input_new("pc.F2");
         tripleRes = a_input_new("pc.F3");
+        fullScreen = a_input_new("pc.F4");
     #endif
 
     screenshot = a_input_new(a2x_str("screenshot.button"));
@@ -372,20 +380,26 @@ void a_input__get(void)
 
     // PC-only options
     #if A_PLATFORM_LINUXPC
-        /*if(a_button_getAndUnpress(fullScreen)) {
-            a_screen__full();
-        }*/
-
         bool changed = false;
 
-        if(a_button_getAndUnpress(normalRes) && a2x_int("video.scale") > 1) {
+        if(a_button_getAndUnpress(normalRes)) {
+            if(a2x_int("video.scale") != 1) {
+                a2x__set("video.scale", "1");
+                changed = true;
+            }
+        } else if(a_button_getAndUnpress(doubleRes)) {
+            if(a2x_int("video.scale") != 2) {
+                a2x__set("video.scale", "2");
+                changed = true;
+            }
+        } else if(a_button_getAndUnpress(tripleRes)) {
+            if(a2x_int("video.scale") != 3) {
+                a2x__set("video.scale", "3");
+                changed = true;
+            }
+        } else if(a_button_getAndUnpress(fullScreen)) {
+            a2x__flip("video.fullscreen");
             a2x__set("video.scale", "1");
-            changed = true;
-        } else if(a_button_getAndUnpress(doubleRes) && a2x_int("video.scale") != 2) {
-            a2x__set("video.scale", "2");
-            changed = true;
-        } else if(a_button_getAndUnpress(tripleRes) && a2x_int("video.scale") != 3) {
-            a2x__set("video.scale", "3");
             changed = true;
         }
 
@@ -396,7 +410,7 @@ void a_input__get(void)
                 t->scale = scale;
             }
 
-            a_screen__applyScale();
+            a_screen__change();
         }
     #endif
 

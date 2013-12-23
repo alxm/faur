@@ -288,16 +288,16 @@ void a_screen_resetTarget(void)
 }
 
 #if A_PLATFORM_LINUXPC || A_PLATFORM_WINDOWS
-    void a_screen__full(void)
+    void a_screen__change(void)
     {
-        videoFlags ^= SDL_FULLSCREEN;
-        setSDLScreen();
-    }
+        if(a2x_bool("video.fullscreen")) {
+            videoFlags |= SDL_FULLSCREEN;
+        } else {
+            videoFlags &= ~SDL_FULLSCREEN;
+        }
 
-    void a_screen__applyScale(void)
-    {
-        // once this function is called, we switch to fake screen permanently
-        if(!a2x_bool("video.fake")) {
+        if(a2x_int("video.scale") > 1 && !a2x_bool("video.fake")) {
+            // once we scale up, we switch to fake screen
             setFakeScreen();
             a2x__set("video.fake", "1");
         }
