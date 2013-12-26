@@ -19,7 +19,18 @@
 
 #include "a2x_pack_input.v.h"
 
-#define MAX_CODES 4
+#if A_PLATFORM_LINUXPC || A_PLATFORM_CAANOO || A_PLATFORM_PANDORA
+    #define A_INPUT_SUPPORTS_ANALOG 1
+#else
+    #define A_INPUT_SUPPORTS_ANALOG 0
+#endif
+
+#define A_ANALOG_MAX_DISTANCE (1 << 15)
+#define A_ANALOG_ERROR_MARGIN (A_ANALOG_MAX_DISTANCE / 20)
+
+#define A_MAX_BUTTON_CODES 4
+
+#define A_MAX_JOYSTICKS 8
 
 struct Input {
     char* name;
@@ -28,46 +39,49 @@ struct Input {
     List* touches;
 };
 
-typedef struct Button {
+typedef struct InputInstance {
     char* name;
-    int numCodes;
-    int codes[MAX_CODES]; // SDL button/key code
-    bool pressed;
-    bool previouslyPressed; // used to simulate key events for analog
-    bool freshEvent; // used to simulate separate directions from diagonals
-} Button;
-
-typedef struct Analog {
-    char* name;
-    int id;
-    int xaxis;
-    int yaxis;
-} Analog;
-
-typedef struct Touch {
-    char* name;
-    bool tap;
-    int x;
-    int y;
-    int scale; // for zoomed screens
-    List* motion; // Points captured by motion event
-} Touch;
+    int device_index;
+    char* device_name;
+    union {
+        struct {
+            int numCodes;
+            int codes[A_MAX_BUTTON_CODES]; // SDL button/key code
+            bool pressed;
+            bool previouslyPressed; // used to simulate key events for analog
+            bool freshEvent; // used to simulate separate directions from diagonals
+        } button;
+        struct {
+            int xaxis_index;
+            int yaxis_index;
+            int xaxis;
+            int yaxis;
+        } analog;
+        struct {
+            bool tap;
+            int x;
+            int y;
+            int scale; // for zoomed screens
+            List* motion; // Points captured by motion event
+        } touch;
+    };
+} InputInstance;
 
 typedef struct Point {
     int x;
     int y;
 } Point;
 
-typedef struct Inputs {
+typedef struct InputCollection {
     List* list; // inputs registered during init
     StrHash* names; // hash table of above inputs' names
-} Inputs;
+} InputCollection;
 
 typedef enum InputAction {
     A_ACTION_NONE, A_ACTION_PRESSED, A_ACTION_UNPRESSED
 } InputAction;
 
-#define a_inputs_new() ((Inputs){a_list_new(), a_strhash_new()})
+#define a_inputs_new() ((InputCollection){a_list_new(), a_strhash_new()})
 
 #define a_inputs_free(i)              \
 ({                                    \
@@ -84,13 +98,12 @@ typedef enum InputAction {
     a_strhash_add(i.names, name, ptr); \
 })
 
-#if A_PLATFORM_GP2X || A_PLATFORM_WIZ || A_PLATFORM_CAANOO
-    static SDL_Joystick* joystick;
-#endif
+static int joysticks_num;
+static SDL_Joystick* joysticks[A_MAX_JOYSTICKS];
 
-static Inputs buttons;
-static Inputs analogs;
-static Inputs touches;
+static InputCollection buttons;
+static InputCollection analogs;
+static InputCollection touches;
 
 static List* userInputs; // all inputs returned by a_input_new()
 
@@ -104,13 +117,22 @@ static Input* screenshot;
 #endif
 
 static void addButton(const char* name, int code);
-#if A_PLATFORM_CAANOO
-    static void addAnalog(const char* name, int id);
+#if A_INPUT_SUPPORTS_ANALOG
+    static void addAnalog(const char* name, int device_index, char* device_name, int xaxis_index, int yaxis_index);
 #endif
 static void addTouch(const char* name);
 
 void a_input__init(void)
 {
+    joysticks_num = a_math_min(A_MAX_JOYSTICKS, SDL_NumJoysticks());
+
+    if(joysticks_num > 0) {
+        a_out("Found %d joysticks", joysticks_num);
+        for(int j = joysticks_num; j--; ) {
+            joysticks[j] = SDL_JoystickOpen(j);
+        }
+    }
+
     buttons = a_inputs_new();
     analogs = a_inputs_new();
     touches = a_inputs_new();
@@ -138,8 +160,6 @@ void a_input__init(void)
         addButton("gp2x.VolDown", 17);
         addButton("gp2x.StickClick", 18);
         addTouch("gp2x.Touch");
-
-        joystick = SDL_JoystickOpen(0);
     #elif A_PLATFORM_WIZ
         addButton("wiz.Up", 0);
         addButton("wiz.Down", 4);
@@ -160,8 +180,6 @@ void a_input__init(void)
         addButton("wiz.VolUp", 16);
         addButton("wiz.VolDown", 17);
         addTouch("wiz.Touch");
-
-        joystick = SDL_JoystickOpen(0);
     #elif A_PLATFORM_CAANOO
         addButton("caanoo.Up", -1);
         addButton("caanoo.Down", -1);
@@ -177,10 +195,24 @@ void a_input__init(void)
         addButton("caanoo.Hold", 7);
         addButton("caanoo.Help1", 8);
         addButton("caanoo.Help2", 9);
-        addAnalog("caanoo.Stick", 0);
+        addAnalog("caanoo.Stick", 0, NULL, 0, 1);
         addTouch("caanoo.Touch");
-
-        joystick = SDL_JoystickOpen(0);
+    #elif A_PLATFORM_PANDORA
+        addButton("pandora.Up", SDLK_UP);
+        addButton("pandora.Down", SDLK_DOWN);
+        addButton("pandora.Left", SDLK_LEFT);
+        addButton("pandora.Right", SDLK_RIGHT);
+        addButton("pandora.L", SDLK_RSHIFT);
+        addButton("pandora.R", SDLK_RCTRL);
+        addButton("pandora.A", SDLK_HOME);
+        addButton("pandora.B", SDLK_END);
+        addButton("pandora.X", SDLK_PAGEDOWN);
+        addButton("pandora.Y", SDLK_PAGEUP);
+        addButton("pandora.Start", SDLK_LALT);
+        addButton("pandora.Select", SDLK_LCTRL);
+        addTouch("pandora.Touch");
+        addAnalog("pandora.Nub1", -1, "nub0", 0, 1);
+        addAnalog("pandora.Nub2", -1, "nub1", 0, 1);
     #elif A_PLATFORM_LINUXPC
         addButton("pc.Up", SDLK_i);
         addButton("pc.Up", SDLK_UP);
@@ -211,6 +243,8 @@ void a_input__init(void)
         addButton("pc.1", SDLK_1);
         addButton("pc.0", SDLK_0);
         addTouch("pc.Mouse");
+        addAnalog("joypad.Analog1", 0, NULL, 0, 1);
+        addAnalog("joypad.Analog2", 0, NULL, 3, 4);
     #endif
 
     userInputs = a_list_new();
@@ -227,11 +261,11 @@ void a_input__init(void)
 
 void a_input__uninit(void)
 {
-    A_LIST_ITERATE(touches.list, Touch, t) {
-        A_LIST_ITERATE(t->motion, Point, p) {
+    A_LIST_ITERATE(touches.list, InputInstance, t) {
+        A_LIST_ITERATE(t->touch.motion, Point, p) {
             free(p);
         }
-        a_list_free(t->motion);
+        a_list_free(t->touch.motion);
     }
 
     A_LIST_ITERATE(userInputs, Input, i) {
@@ -243,32 +277,32 @@ void a_input__uninit(void)
     a_inputs_free(analogs);
     a_inputs_free(touches);
 
-    #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
-        SDL_JoystickClose(joystick);
-    #endif
+    for(int j = joysticks_num; j--; ) {
+        SDL_JoystickClose(joysticks[j]);
+    }
 }
 
 void a_input__get(void)
 {
-    A_LIST_ITERATE(touches.list, Touch, t) {
-        t->tap = false;
+    A_LIST_ITERATE(touches.list, InputInstance, t) {
+        t->touch.tap = false;
 
-        A_LIST_ITERATE(t->motion, Point, p) {
+        A_LIST_ITERATE(t->touch.motion, Point, p) {
             free(p);
         }
-        a_list_empty(t->motion);
+        a_list_empty(t->touch.motion);
     }
 
-    A_LIST_ITERATE(buttons.list, Button, b) {
-        b->freshEvent = false;
+    A_LIST_ITERATE(buttons.list, InputInstance, b) {
+        b->button.freshEvent = false;
     }
 
-    Button* const any = a_list__first(buttons.list);
-    any->pressed = false;
+    InputInstance* const any = a_list__first(buttons.list);
+    any->button.pressed = false;
 
     for(SDL_Event event; SDL_PollEvent(&event); ) {
         InputAction action = A_ACTION_NONE;
-        int buttonCode = -1;
+        int code = -1;
 
         switch(event.type) {
             case SDL_QUIT: {
@@ -277,54 +311,52 @@ void a_input__get(void)
 
             case SDL_KEYDOWN: {
                 action = A_ACTION_PRESSED;
-                buttonCode = event.key.keysym.sym;
+                code = event.key.keysym.sym;
 
-                if(buttonCode == SDLK_ESCAPE) {
+                if(code == SDLK_ESCAPE) {
                     a_state_exit();
                 }
             } break;
 
             case SDL_KEYUP: {
                 action = A_ACTION_UNPRESSED;
-                buttonCode = event.key.keysym.sym;
+                code = event.key.keysym.sym;
             } break;
 
             case SDL_JOYBUTTONDOWN: {
                 action = A_ACTION_PRESSED;
-                buttonCode = event.jbutton.button;
+                code = event.jbutton.button;
             } break;
 
             case SDL_JOYBUTTONUP: {
                 action = A_ACTION_UNPRESSED;
-                buttonCode = event.jbutton.button;
+                code = event.jbutton.button;
             } break;
 
             case SDL_JOYAXISMOTION: {
-                A_LIST_ITERATE(analogs.list, Analog, a) {
-                    if(a->id == event.jaxis.which) {
-                        if(event.jaxis.axis == 0) {
-                            a->xaxis = event.jaxis.value;
-                        } else {
-                            a->yaxis = event.jaxis.value;
+                A_LIST_ITERATE(analogs.list, InputInstance, a) {
+                    if(a->device_index == event.jaxis.which) {
+                        if(event.jaxis.axis == a->analog.xaxis_index) {
+                            a->analog.xaxis = event.jaxis.value;
+                        } else if(event.jaxis.axis == a->analog.yaxis_index) {
+                            a->analog.yaxis = event.jaxis.value;
                         }
-
-                        break;
                     }
                 }
             } break;
 
             case SDL_MOUSEMOTION: {
-                A_LIST_ITERATE(touches.list, Touch, t) {
-                    t->x = event.button.x;
-                    t->y = event.button.y;
+                A_LIST_ITERATE(touches.list, InputInstance, t) {
+                    t->touch.x = event.button.x;
+                    t->touch.y = event.button.y;
 
                     if(a2x_bool("input.trackMouse")) {
                         Point* const p = malloc(sizeof(Point));
 
-                        p->x = t->x;
-                        p->y = t->y;
+                        p->x = t->touch.x;
+                        p->y = t->touch.y;
 
-                        a_list_addLast(t->motion, p);
+                        a_list_addLast(t->touch.motion, p);
                     }
                 }
             } break;
@@ -334,10 +366,10 @@ void a_input__get(void)
                     case SDL_BUTTON_LEFT:
                         action = A_ACTION_PRESSED;
 
-                        A_LIST_ITERATE(touches.list, Touch, t) {
-                            t->tap = true;
-                            t->x = event.button.x;
-                            t->y = event.button.y;
+                        A_LIST_ITERATE(touches.list, InputInstance, t) {
+                            t->touch.tap = true;
+                            t->touch.x = event.button.x;
+                            t->touch.y = event.button.y;
                         }
                     break;
                 }
@@ -346,9 +378,9 @@ void a_input__get(void)
             case SDL_MOUSEBUTTONUP: {
                 switch(event.button.button) {
                     case SDL_BUTTON_LEFT:
-                        A_LIST_ITERATE(touches.list, Touch, t) {
-                            t->x = event.button.x;
-                            t->y = event.button.y;
+                        A_LIST_ITERATE(touches.list, InputInstance, t) {
+                            t->touch.x = event.button.x;
+                            t->touch.y = event.button.y;
                         }
                     break;
                 }
@@ -359,14 +391,14 @@ void a_input__get(void)
 
         if(action != A_ACTION_NONE) {
             if(action == A_ACTION_PRESSED) {
-                any->pressed = true;
+                any->button.pressed = true;
             }
 
-            A_LIST_ITERATE(buttons.list, Button, b) {
-                for(int c = b->numCodes; c--; ) {
-                    if(b->codes[c] == buttonCode) {
-                        b->pressed = action == A_ACTION_PRESSED;
-                        b->freshEvent = true;
+            A_LIST_ITERATE(buttons.list, InputInstance, b) {
+                for(int c = b->button.numCodes; c--; ) {
+                    if(b->button.codes[c] == code) {
+                        b->button.pressed = action == A_ACTION_PRESSED;
+                        b->button.freshEvent = true;
                         break;
                     }
                 }
@@ -406,8 +438,8 @@ void a_input__get(void)
         if(changed) {
             int scale = a2x_int("video.scale");
 
-            A_LIST_ITERATE(touches.list, Touch, t) {
-                t->scale = scale;
+            A_LIST_ITERATE(touches.list, InputInstance, t) {
+                t->touch.scale = scale;
             }
 
             a_screen__change();
@@ -417,79 +449,80 @@ void a_input__get(void)
     // simulate seperate direction events from diagonals
     #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
         #if A_PLATFORM_GP2X
-            Button* const upLeft = a_strhash_get(buttons.names, "gp2x.UpLeft");
-            Button* const upRight = a_strhash_get(buttons.names, "gp2x.UpRight");
-            Button* const downLeft = a_strhash_get(buttons.names, "gp2x.DownLeft");
-            Button* const downRight = a_strhash_get(buttons.names, "gp2x.DownRight");
+            InputInstance* const upLeft = a_strhash_get(buttons.names, "gp2x.UpLeft");
+            InputInstance* const upRight = a_strhash_get(buttons.names, "gp2x.UpRight");
+            InputInstance* const downLeft = a_strhash_get(buttons.names, "gp2x.DownLeft");
+            InputInstance* const downRight = a_strhash_get(buttons.names, "gp2x.DownRight");
 
-            Button* const up = a_strhash_get(buttons.names, "gp2x.Up");
-            Button* const down = a_strhash_get(buttons.names, "gp2x.Down");
-            Button* const left = a_strhash_get(buttons.names, "gp2x.Left");
-            Button* const right = a_strhash_get(buttons.names, "gp2x.Right");
+            InputInstance* const up = a_strhash_get(buttons.names, "gp2x.Up");
+            InputInstance* const down = a_strhash_get(buttons.names, "gp2x.Down");
+            InputInstance* const left = a_strhash_get(buttons.names, "gp2x.Left");
+            InputInstance* const right = a_strhash_get(buttons.names, "gp2x.Right");
         #elif A_PLATFORM_WIZ
-            Button* const upLeft = a_strhash_get(buttons.names, "wiz.UpLeft");
-            Button* const upRight = a_strhash_get(buttons.names, "wiz.UpRight");
-            Button* const downLeft = a_strhash_get(buttons.names, "wiz.DownLeft");
-            Button* const downRight = a_strhash_get(buttons.names, "wiz.DownRight");
+            InputInstance* const upLeft = a_strhash_get(buttons.names, "wiz.UpLeft");
+            InputInstance* const upRight = a_strhash_get(buttons.names, "wiz.UpRight");
+            InputInstance* const downLeft = a_strhash_get(buttons.names, "wiz.DownLeft");
+            InputInstance* const downRight = a_strhash_get(buttons.names, "wiz.DownRight");
 
-            Button* const up = a_strhash_get(buttons.names, "wiz.Up");
-            Button* const down = a_strhash_get(buttons.names, "wiz.Down");
-            Button* const left = a_strhash_get(buttons.names, "wiz.Left");
-            Button* const right = a_strhash_get(buttons.names, "wiz.Right");
+            InputInstance* const up = a_strhash_get(buttons.names, "wiz.Up");
+            InputInstance* const down = a_strhash_get(buttons.names, "wiz.Down");
+            InputInstance* const left = a_strhash_get(buttons.names, "wiz.Left");
+            InputInstance* const right = a_strhash_get(buttons.names, "wiz.Right");
         #endif
 
-        if(upLeft->freshEvent) {
-            if(upLeft->pressed) {
-                up->pressed = left->pressed = true;
+        if(upLeft->button.freshEvent) {
+            if(upLeft->button.pressed) {
+                up->button.pressed = left->button.pressed = true;
             } else {
-                if(!up->freshEvent) {
-                    up->pressed = false;
+                // if the up button itself was not pressed, unpress it
+                if(!up->button.freshEvent) {
+                    up->button.pressed = false;
                 }
 
-                if(!left->freshEvent) {
-                    left->pressed = false;
+                if(!left->button.freshEvent) {
+                    left->button.pressed = false;
                 }
             }
         }
 
-        if(upRight->freshEvent) {
-            if(upRight->pressed) {
-                up->pressed = right->pressed = true;
+        if(upRight->button.freshEvent) {
+            if(upRight->button.pressed) {
+                up->button.pressed = right->button.pressed = true;
             } else {
-                if(!up->freshEvent) {
-                    up->pressed = false;
+                if(!up->button.freshEvent) {
+                    up->button.pressed = false;
                 }
 
-                if(!right->freshEvent) {
-                    right->pressed = false;
+                if(!right->button.freshEvent) {
+                    right->button.pressed = false;
                 }
             }
         }
 
-        if(downLeft->freshEvent) {
-            if(downLeft->pressed) {
-                down->pressed = left->pressed = true;
+        if(downLeft->button.freshEvent) {
+            if(downLeft->button.pressed) {
+                down->button.pressed = left->pressed = true;
             } else {
-                if(!down->freshEvent) {
-                    down->pressed = false;
+                if(!down->button.freshEvent) {
+                    down->button.pressed = false;
                 }
 
-                if(!left->freshEvent) {
-                    left->pressed = false;
+                if(!left->button.freshEvent) {
+                    left->button.pressed = false;
                 }
             }
         }
 
-        if(downRight->freshEvent) {
-            if(downRight->pressed) {
-                down->pressed = right->pressed = true;
+        if(downRight->button.freshEvent) {
+            if(downRight->button.pressed) {
+                down->button.pressed = right->button.pressed = true;
             } else {
-                if(!down->freshEvent) {
-                    down->pressed = false;
+                if(!down->button.freshEvent) {
+                    down->button.pressed = false;
                 }
 
-                if(!right->freshEvent) {
-                    right->pressed = false;
+                if(!right->button.freshEvent) {
+                    right->button.pressed = false;
                 }
             }
         }
@@ -500,57 +533,59 @@ void a_input__get(void)
         // pressed at least half-way
         #define ANALOG_TRESH (1 << 14)
 
-        Analog* const stick = a_strhash_get(analogs.names, "caanoo.Stick");
-        Button* const up = a_strhash_get(buttons.names, "caanoo.Up");
-        Button* const down = a_strhash_get(buttons.names, "caanoo.Down");
-        Button* const left = a_strhash_get(buttons.names, "caanoo.Left");
-        Button* const right = a_strhash_get(buttons.names, "caanoo.Right");
+        InputInstance* const stick = a_strhash_get(analogs.names, "caanoo.Stick");
+        InputInstance* const up = a_strhash_get(buttons.names, "caanoo.Up");
+        InputInstance* const down = a_strhash_get(buttons.names, "caanoo.Down");
+        InputInstance* const left = a_strhash_get(buttons.names, "caanoo.Left");
+        InputInstance* const right = a_strhash_get(buttons.names, "caanoo.Right");
 
-        if(stick->xaxis < -ANALOG_TRESH) {
-            if(!left->previouslyPressed) {
-                left->previouslyPressed = true;
-                left->pressed = true;
+        if(stick->analog.xaxis < -ANALOG_TRESH) {
+            // saving previouslyPressed allows us to call a_button_getAndUnpress
+            // or a_button_unpress without losing actual button state
+            if(!left->button.previouslyPressed) {
+                left->button.previouslyPressed = true;
+                left->button.pressed = true;
             }
         } else {
-            if(left->previouslyPressed) {
-                left->previouslyPressed = false;
-                left->pressed = false;
+            if(left->button.previouslyPressed) {
+                left->button.previouslyPressed = false;
+                left->button.pressed = false;
             }
         }
 
-        if(stick->xaxis > ANALOG_TRESH) {
-            if(!right->previouslyPressed) {
-                right->previouslyPressed = true;
-                right->pressed = true;
+        if(stick->analog.xaxis > ANALOG_TRESH) {
+            if(!right->button.previouslyPressed) {
+                right->button.previouslyPressed = true;
+                right->button.pressed = true;
             }
         } else {
             if(right->previouslyPressed) {
-                right->previouslyPressed = false;
-                right->pressed = false;
+                right->button.previouslyPressed = false;
+                right->button.pressed = false;
             }
         }
 
-        if(stick->yaxis < -ANALOG_TRESH) {
-            if(!up->previouslyPressed) {
-                up->previouslyPressed = true;
-                up->pressed = true;
+        if(stick->analog.yaxis < -ANALOG_TRESH) {
+            if(!up->button.previouslyPressed) {
+                up->button.previouslyPressed = true;
+                up->button.pressed = true;
             }
         } else {
-            if(up->previouslyPressed) {
-                up->previouslyPressed = false;
-                up->pressed = false;
+            if(up->button.previouslyPressed) {
+                up->button.previouslyPressed = false;
+                up->button.pressed = false;
             }
         }
 
-        if(stick->yaxis > ANALOG_TRESH) {
-            if(!down->previouslyPressed) {
-                down->previouslyPressed = true;
-                down->pressed = true;
+        if(stick->analog.yaxis > ANALOG_TRESH) {
+            if(!down->button.previouslyPressed) {
+                down->button.previouslyPressed = true;
+                down->button.pressed = true;
             }
         } else {
-            if(down->previouslyPressed) {
-                down->previouslyPressed = false;
-                down->pressed = false;
+            if(down->button.previouslyPressed) {
+                down->button.previouslyPressed = false;
+                down->button.pressed = false;
             }
         }
     #endif
@@ -566,20 +601,20 @@ Input* a_input_new(const char* names)
     i->touches = a_list_new();
 
     A_STRTOK_ITERATE(names, ", ", name) {
-        #define addInput(type, collection)                           \
-        ({                                                           \
-            type* const var = a_strhash_get(collection.names, name); \
-            if(var) {                                                \
-                a_list_addLast(i->collection, var);                  \
-                if(i->name == NULL) {                                \
-                    i->name = a_str_getSuffixLastFind(name, '.');    \
-                }                                                    \
-            }                                                        \
+        #define registerInput(instances)                      \
+        ({                                                          \
+            InputInstance* const var = a_strhash_get(instances.names, name); \
+            if(var) {                                               \
+                a_list_addLast(i->instances, var);                  \
+                if(i->name == NULL) {                               \
+                    i->name = a_str_getSuffixLastFind(name, '.');   \
+                }                                                   \
+            }                                                       \
         })
 
-        addInput(Button, buttons);
-        addInput(Analog, analogs);
-        addInput(Touch, touches);
+        registerInput(buttons);
+        registerInput(analogs);
+        registerInput(touches);
     }
 
     if(a_list_isEmpty(i->buttons)
@@ -616,8 +651,8 @@ bool a_input_working(const Input* i)
 
 bool a_button_get(const Input* i)
 {
-    A_LIST_ITERATE(i->buttons, Button, b) {
-        if(b->pressed) {
+    A_LIST_ITERATE(i->buttons, InputInstance, b) {
+        if(b->button.pressed) {
             return true;
         }
     }
@@ -627,8 +662,8 @@ bool a_button_get(const Input* i)
 
 void a_button_unpress(const Input* i)
 {
-    A_LIST_ITERATE(i->buttons, Button, b) {
-        b->pressed = false;
+    A_LIST_ITERATE(i->buttons, InputInstance, b) {
+        b->button.pressed = false;
     }
 }
 
@@ -636,9 +671,9 @@ bool a_button_getAndUnpress(const Input* i)
 {
     bool foundPressed = false;
 
-    A_LIST_ITERATE(i->buttons, Button, b) {
-        if(b->pressed) {
-            b->pressed = false;
+    A_LIST_ITERATE(i->buttons, InputInstance, b) {
+        if(b->button.pressed) {
+            b->button.pressed = false;
             foundPressed = true;
         }
     }
@@ -660,10 +695,42 @@ void a_button_waitFor(const Input* i)
     } while(!a_button_getAndUnpress(i));
 }
 
+int a_analog_xaxis(const Input* i)
+{
+    A_LIST_ITERATE(i->analogs, InputInstance, a) {
+        if(a_math_abs(a->analog.xaxis) > A_ANALOG_ERROR_MARGIN) {
+            return a->analog.xaxis;
+        }
+    }
+
+    return 0;
+}
+
+int a_analog_yaxis(const Input* i)
+{
+    A_LIST_ITERATE(i->analogs, InputInstance, a) {
+        if(a_math_abs(a->analog.yaxis) > A_ANALOG_ERROR_MARGIN) {
+            return a->analog.yaxis;
+        }
+    }
+
+    return 0;
+}
+
+fix8 a_analog_xaxis_fix(const Input* i)
+{
+    return a_analog_xaxis(i) >> 7;
+}
+
+fix8 a_analog_yaxis_fix(const Input* i)
+{
+    return a_analog_yaxis(i) >> 7;
+}
+
 bool a_touch_tapped(const Input* i)
 {
-    A_LIST_ITERATE(i->touches, Touch, t) {
-        if(t->tap) {
+    A_LIST_ITERATE(i->touches, InputInstance, t) {
+        if(t->touch.tap) {
             return true;
         }
     }
@@ -678,13 +745,13 @@ bool a_touch_point(const Input* i, int x, int y)
 
 bool a_touch_rect(const Input* i, int x, int y, int w, int h)
 {
-    A_LIST_ITERATE(i->touches, Touch, t) {
-        const int scale = t->scale;
+    A_LIST_ITERATE(i->touches, InputInstance, t) {
+        const int scale = t->touch.scale;
 
-        if(t->tap
+        if(t->touch.tap
             && a_collide_boxes(
                 x * scale, y * scale, w * scale, h * scale,
-                t->x, t->y, 1, 1)) {
+                t->touch.x, t->touch.y, 1, 1)) {
             return true;
         }
     }
@@ -694,40 +761,58 @@ bool a_touch_rect(const Input* i, int x, int y, int w, int h)
 
 static void addButton(const char* name, int code)
 {
-    Button* b = a_strhash_get(buttons.names, name);
+    InputInstance* b = a_strhash_get(buttons.names, name);
 
     if(!b) {
-        b = malloc(sizeof(Button));
+        b = malloc(sizeof(InputInstance));
 
         b->name = a_str_dup(name);
-        b->numCodes = 1;
-        b->codes[0] = code;
-        b->pressed = false;
-        b->previouslyPressed = false;
-        b->freshEvent = false;
+        b->button.numCodes = 1;
+        b->button.codes[0] = code;
+        b->button.pressed = false;
+        b->button.previouslyPressed = false;
+        b->button.freshEvent = false;
 
         a_inputs_add(buttons, b, name);
     } else {
-        if(b->numCodes < MAX_CODES) {
-            b->codes[b->numCodes++] = code;
+        if(b->button.numCodes < A_MAX_BUTTON_CODES) {
+            b->button.codes[b->button.numCodes++] = code;
         } else {
             a_error("Button '%s' has too many codes", name);
         }
     }
 }
 
-#if A_PLATFORM_CAANOO
-    static void addAnalog(const char* name, int id)
+#if A_INPUT_SUPPORTS_ANALOG
+    static void addAnalog(const char* name, int device_index, char* device_name, int xaxis_index, int yaxis_index)
     {
-        Analog* a = a_strhash_get(analogs.names, name);
+        if(device_index == -1 && device_name == NULL) {
+            a_error("Inputs must specify device index or name");
+            return;
+        }
+
+        InputInstance* a = a_strhash_get(analogs.names, name);
 
         if(!a) {
-            a = malloc(sizeof(Analog));
+            a = malloc(sizeof(InputInstance));
 
             a->name = a_str_dup(name);
-            a->id = id;
-            a->xaxis = 0;
-            a->yaxis = 0;
+            a->device_index = device_index;
+            a->device_name = device_name;
+            a->analog.xaxis_index = xaxis_index;
+            a->analog.yaxis_index = yaxis_index;
+            a->analog.xaxis = 0;
+            a->analog.yaxis = 0;
+
+            // check if we requested a specific device by name
+            if(device_name) {
+                for(int j = joysticks_num; j--; ) {
+                    if(a_str_same(device_name, SDL_JoystickName(j))) {
+                        a->device_index = j;
+                        break;
+                    }
+                }
+            }
 
             a_inputs_add(analogs, a, name);
         } else {
@@ -738,17 +823,17 @@ static void addButton(const char* name, int code)
 
 static void addTouch(const char* name)
 {
-    Touch* t = a_strhash_get(touches.names, name);
+    InputInstance* t = a_strhash_get(touches.names, name);
 
     if(!t) {
-        t = malloc(sizeof(Touch));
+        t = malloc(sizeof(InputInstance));
 
         t->name = a_str_dup(name);
-        t->tap = false;
-        t->x = 0;
-        t->y = 0;
-        t->scale = a2x_int("video.scale");
-        t->motion = a_list_new();
+        t->touch.tap = false;
+        t->touch.x = 0;
+        t->touch.y = 0;
+        t->touch.scale = a2x_int("video.scale");
+        t->touch.motion = a_list_new();
 
         a_inputs_add(touches, t, name);
     } else {

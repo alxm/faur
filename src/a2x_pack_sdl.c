@@ -27,17 +27,15 @@ void a_sdl__init(void)
         sdlFlags |= SDL_INIT_VIDEO;
     }
 
-    #if !(A_PLATFORM_WIZ || A_PLATFORM_CAANOO)
-        sdlFlags |= SDL_INIT_TIMER;
-    #endif
-
-    #if A_PLATFORM_GP2X || A_PLATFORM_WIZ || A_PLATFORM_CAANOO
-        sdlFlags |= SDL_INIT_JOYSTICK;
-    #endif
-
     if(a2x_bool("sound.on")) {
         sdlFlags |= SDL_INIT_AUDIO;
     }
+
+    sdlFlags |= SDL_INIT_JOYSTICK;
+
+    #if !(A_PLATFORM_WIZ || A_PLATFORM_CAANOO)
+        sdlFlags |= SDL_INIT_TIMER;
+    #endif
 
     SDL_Init(sdlFlags);
 }
