@@ -118,3 +118,8 @@ uint32_t a_fps_getCounter(void)
 {
     return counter;
 }
+
+bool a_fps_nthFrame(uint32_t n)
+{
+    return (counter % n) == 0;
+}
