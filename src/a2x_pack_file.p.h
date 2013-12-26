@@ -28,6 +28,7 @@ extern File* a_file_open(const char* path, const char* modes);
 extern void a_file_close(File* f);
 
 extern bool a_file_checkPrefix(File* f, const char* prefix);
+extern void a_file_writePrefix(File* f, const char* prefix);
 
 extern void a_file_read(File* f, void* buffer, size_t size);
 extern void a_file_write(File* f, void* buffer, size_t size);

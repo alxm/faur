@@ -61,15 +61,18 @@ void a_file_close(File* f)
 
 bool a_file_checkPrefix(File* f, const char* prefix)
 {
-    const int len = strlen(prefix);
-
-    char buffer[len + 1];
-    buffer[len] = '\0';
+    const int len = strlen(prefix) + 1;
+    char buffer[len];
 
     fseek(f->file, 0, SEEK_SET);
     fread(buffer, len, 1, f->file);
 
     return a_str_equal(buffer, prefix);
+}
+
+void a_file_writePrefix(File* f, const char* prefix)
+{
+    fwrite(prefix, strlen(prefix) + 1, 1, f->file);
 }
 
 void a_file_read(File* f, void* buffer, size_t size)
