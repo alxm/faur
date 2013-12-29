@@ -20,8 +20,6 @@
 #ifndef A2X_PACK_INPUT_VH
 #define A2X_PACK_INPUT_VH
 
-#include "a2x_pack_fix.v.h"
-
 #include "a2x_pack_input.p.h"
 
 #include "a2x_pack_collide.v.h"

@@ -22,6 +22,8 @@
 
 #include "a2x_app_includes.h"
 
+#include "a2x_pack_fix.p.h"
+
 typedef struct Input Input;
 
 extern Input* a_input_new(const char* names);
