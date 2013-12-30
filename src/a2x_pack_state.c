@@ -84,9 +84,14 @@ void a_state_push(const char* name)
 {
     const StateInstance* const active = a_list_peek(stack);
 
-    if(!replacing && active && active->stage != A_STATE_STAGE_BODY) {
-        a_error("Push state '%s': only call from A_STATE_BODY", name);
-        exit(1);
+    if(active && !replacing) {
+        if(active->stage == A_STATE_STAGE_FREE) {
+            a_state__out("Push state '%s': already exiting", name);
+            return;
+        } else if(active->stage != A_STATE_STAGE_BODY) {
+            a_error("Push state '%s': only call from A_STATE_BODY", name);
+            exit(1);
+        }
     }
 
     StateFunction function = a_strhash_get(functions, name);
@@ -112,8 +117,7 @@ void a_state_push(const char* name)
         a_state__out("Push state '%s'", name);
         new_state = s;
     } else {
-        a_error("Push state '%s': already pushed state '%s'",
-            name, new_state->name);
+        a_error("Push state '%s': already pushed state '%s'", name, new_state->name);
         exit(1);
     }
 }
@@ -125,6 +129,9 @@ void a_state_pop(void)
     if(active == NULL) {
         a_error("Pop state: no active state");
         exit(1);
+    } else if(active->stage == A_STATE_STAGE_FREE) {
+        a_state__out("Pop state '%s': already exiting", active->name);
+        return;
     } else if(active->stage != A_STATE_STAGE_BODY) {
         a_error("Pop state '%s': only call from A_STATE_BODY", active->name);
         exit(1);
@@ -146,12 +153,13 @@ void a_state_replace(const char* name)
     const StateInstance* const active = a_list_peek(stack);
 
     if(active == NULL) {
-        a_error("Replace state '%s': no active state, use a_state_push", name);
+        a_error("Replace state with '%s': no active state, use a_state_push", name);
         exit(1);
+    } else if(active->stage == A_STATE_STAGE_FREE) {
+        a_state__out("Replace state '%s' with '%s': already exiting", active->name, name);
+        return;
     } else if(active->stage != A_STATE_STAGE_BODY) {
-        a_error(
-            "Replace state '%s' with '%s': only call from A_STATE_BODY",
-            active->name, name);
+        a_error("Replace state '%s' with '%s': only call from A_STATE_BODY", active->name, name);
         exit(1);
     }
 
