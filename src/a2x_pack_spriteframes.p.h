@@ -32,6 +32,7 @@ extern void a_spriteframes_free(SpriteFrames* sf);
 
 extern Sprite* a_spriteframes_next(SpriteFrames* sf);
 extern Sprite* a_spriteframes_get(SpriteFrames* sf);
+extern Sprite* a_spriteframes_geti(SpriteFrames* sf, int index);
 extern bool a_spriteframes_last(const SpriteFrames* sf);
 
 extern void a_spriteframes_setDir(SpriteFrames* sf, int dir);

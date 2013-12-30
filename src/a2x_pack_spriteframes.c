@@ -98,6 +98,11 @@ Sprite* a_spriteframes_get(SpriteFrames* sf)
     return sf->spriteArray[sf->index];
 }
 
+Sprite* a_spriteframes_geti(SpriteFrames* sf, int index)
+{
+    return sf->spriteArray[index];
+}
+
 bool a_spriteframes_last(const SpriteFrames* sf)
 {
     if(sf->countdown == 1) {
