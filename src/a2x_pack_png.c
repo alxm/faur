@@ -151,8 +151,14 @@ void a_png_write(const char* path, const Pixel* data, int width, int height)
 
     png_structp png = NULL;
     png_infop info = NULL;
+    png_bytepp rows = NULL;
 
-    png_bytepp rows = malloc(height * sizeof(png_bytep));
+    if(!f) {
+        goto cleanUp;
+    }
+
+    rows = malloc(height * sizeof(png_bytep));
+    memset(rows, 0, height * sizeof(png_bytep));
 
     png = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 
@@ -203,11 +209,17 @@ void a_png_write(const char* path, const Pixel* data, int width, int height)
         png_destroy_write_struct(&png, info ? &info : NULL);
     }
 
-    for(int i = 0; i < height; i++) {
-        free(rows[i]);
+    if(rows) {
+        for(int i = 0; i < height; i++) {
+            free(rows[i]);
+        }
+
+        free(rows);
     }
 
-    free(rows);
+    if(f) {
+        a_file_close(f);
+    }
 }
 
 static void readFunction(png_structp png, png_bytep data, png_size_t length)
