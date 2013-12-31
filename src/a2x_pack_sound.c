@@ -28,6 +28,8 @@ int a__volumeAdjust = -2 * A_MILIS_VOLUME;
 #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
     static Input* a__volUp;
     static Input* a__volDown;
+#elif A_PLATFORM_LINUXPC || A_PLATFORM_PANDORA
+    static Input* a__musicOnOff;
 #endif
 
 void a_sound__init(void)
@@ -61,6 +63,8 @@ void a_sound__init(void)
         #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
             a__volUp = a_input_new("gp2x.VolUp, wiz.VolUp");
             a__volDown = a_input_new("gp2x.VolDown, wiz.VolDown");
+        #elif A_PLATFORM_LINUXPC || A_PLATFORM_PANDORA
+            a__musicOnOff = a_input_new("pc.m, pandora.m");
         #endif
     }
 }
@@ -94,7 +98,7 @@ Music* a_music_load(const char* path)
             a_error("%s", Mix_GetError());
         }
 
-        Mix_VolumeMusic((float)a2x_int("sound.musicScale") / 100 * a__volume);
+        Mix_VolumeMusic((float)a2x_int("sound.music.scale") / 100 * a__volume);
 
         a_list_addLast(musicList, m);
 
@@ -132,7 +136,7 @@ Sound* a_sfx_fromFile(const char* path)
     if(a2x_bool("sound.on")) {
         Sound* const s = Mix_LoadWAV(path);
 
-        s->volume = (float)a2x_int("sound.sfxScale") / 100 * a__volume;
+        s->volume = (float)a2x_int("sound.sfx.scale") / 100 * a__volume;
         a_list_addLast(sfxList, s);
 
         return s;
@@ -147,7 +151,7 @@ Sound* a_sfx__fromData(const uint16_t* data, int size)
         SDL_RWops* const rw = SDL_RWFromMem((void*)data, size);
         Sound* const s = Mix_LoadWAV_RW(rw, 0);
 
-        s->volume = (float)a2x_int("sound.sfxScale") / 100 * a__volume;
+        s->volume = (float)a2x_int("sound.sfx.scale") / 100 * a__volume;
         a_list_addLast(sfxList, s);
 
         SDL_FreeRW(rw);
@@ -197,11 +201,21 @@ void a_sound_adjustVolume(void)
                 else if(a__volume < 0) a__volume = 0;
 
                 if(a_list_size(musicList) > 0) {
-                    Mix_VolumeMusic((float)a2x_int("sound.musicScale") / 100 * a__volume);
+                    Mix_VolumeMusic((float)a2x_int("sound.music.scale") / 100 * a__volume);
                 }
 
-                a_sfx_volume((float)a2x_int("sound.sfxScale") / 100 * a__volume);
+                a_sfx_volume((float)a2x_int("sound.sfx.scale") / 100 * a__volume);
                 a__volumeAdjust = a_time_getMilis();
+            }
+        }
+    #elif A_PLATFORM_LINUXPC || A_PLATFORM_PANDORA
+        if(a2x_bool("sound.on")) {
+            if(a_button_getAndUnpress(a__musicOnOff)) {
+                if(Mix_PausedMusic()) {
+                    Mix_ResumeMusic();
+                } else {
+                    Mix_PauseMusic();
+                }
             }
         }
     #endif

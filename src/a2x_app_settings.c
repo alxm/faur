@@ -69,8 +69,8 @@ void a_settings__defaults(void)
     add(BOOL, SET_ONCE, "video.wizTear", "0");
 
     add(BOOL, SET_ANY, "sound.on", "0");
-    add(INT, SET_ANY, "sound.musicScale", "100");
-    add(INT, SET_ANY, "sound.sfxScale", "100");
+    add(INT, SET_ANY, "sound.music.scale", "100");
+    add(INT, SET_ANY, "sound.sfx.scale", "100");
 
     add(BOOL, SET_ANY, "input.trackMouse", "0");
 
@@ -78,7 +78,7 @@ void a_settings__defaults(void)
     add(BOOL, SET_ANY, "fps.track", "0");
 
     add(STR, SET_ONCE, "screenshot.dir", "./screenshots");
-    add(STR, SET_ONCE, "screenshot.button", "pc.F12");
+    add(STR, SET_ONCE, "screenshot.button", "pc.F12, pandora.s");
 }
 
 void a_settings__freeze(void)

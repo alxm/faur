@@ -213,6 +213,8 @@ void a_input__init(void)
         addTouch("pandora.Touch");
         addAnalog("pandora.Nub1", -1, "nub0", 0, 1);
         addAnalog("pandora.Nub2", -1, "nub1", 0, 1);
+        addButton("pandora.m", SDLK_m);
+        addButton("pandora.s", SDLK_s);
     #elif A_PLATFORM_LINUXPC
         addButton("pc.Up", SDLK_i);
         addButton("pc.Up", SDLK_UP);
@@ -226,6 +228,7 @@ void a_input__init(void)
         addButton("pc.x", SDLK_x);
         addButton("pc.c", SDLK_c);
         addButton("pc.v", SDLK_v);
+        addButton("pc.m", SDLK_m);
         addButton("pc.Enter", SDLK_RETURN);
         addButton("pc.Space", SDLK_SPACE);
         addButton("pc.F1", SDLK_F1);
