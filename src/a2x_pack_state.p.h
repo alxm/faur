@@ -28,20 +28,29 @@ extern void a_state_push(const char* name);
 extern void a_state_pop(void);
 
 extern void a_state_replace(const char* name);
+
+extern void a_state_pause(void);
+extern void a_state_resume(void);
+
 extern void a_state_exit(void);
 
 typedef enum {A_STATE_STAGE_INVALID, A_STATE_STAGE_INIT, A_STATE_STAGE_BODY, A_STATE_STAGE_FREE} StateStage;
+typedef enum {A_STATE_BODYSTAGE_INVALID, A_STATE_BODYSTAGE_RUN, A_STATE_BODYSTAGE_PAUSE} StateBodyStage;
 
 #define A_STATE(state_name) void state_name(void)
 #define A_STATE_INIT if(a_state__stage() == A_STATE_STAGE_INIT)
 #define A_STATE_BODY if(a_state__stage() == A_STATE_STAGE_BODY || (a_state__stage() == A_STATE_STAGE_INIT && a_state__setStage(A_STATE_STAGE_BODY)))
 #define A_STATE_FREE if(a_state__stage() == A_STATE_STAGE_FREE)
+#define A_STATE_RUN if(a_state__stage() == A_STATE_STAGE_BODY && a_state__bodystage() == A_STATE_BODYSTAGE_RUN)
+#define A_STATE_PAUSE if(a_state__stage() == A_STATE_STAGE_BODY && a_state__bodystage() == A_STATE_BODYSTAGE_PAUSE)
 #define A_STATE_LOOP while(a_state__unchanged())
 
 extern void a_state_add(const char* name, void* object);
 extern void* a_state_get(const char* name);
 
 extern StateStage a_state__stage(void);
+extern StateBodyStage a_state__bodystage(void);
+
 extern bool a_state__setStage(StateStage stage);
 extern bool a_state__unchanged(void);
 

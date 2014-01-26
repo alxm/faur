@@ -26,6 +26,7 @@ typedef struct StateInstance {
     StateFunction function;
     StrHash* objects;
     StateStage stage;
+    StateBodyStage bodystage;
 } StateInstance;
 
 static StrHash* functions;
@@ -109,6 +110,7 @@ void a_state_push(const char* name)
     s->function = function;
     s->objects = a_strhash_new();
     s->stage = A_STATE_STAGE_INIT;
+    s->bodystage = A_STATE_BODYSTAGE_RUN;
 
     if(a_list_isEmpty(stack)) {
         a_state__out("Push first state '%s'", name);
@@ -173,6 +175,38 @@ void a_state_replace(const char* name)
     replacing = false;
 }
 
+void a_state_pause(void)
+{
+    StateInstance* const active = a_list_peek(stack);
+
+    if(active == NULL) {
+        a_error("No active state to pause");
+        exit(1);
+    } else if(active->bodystage == A_STATE_BODYSTAGE_PAUSE) {
+        a_error("State '%s' is already paused", active->name);
+        exit(1);
+    }
+
+    active->bodystage = A_STATE_BODYSTAGE_PAUSE;
+    changed = true;
+}
+
+void a_state_resume(void)
+{
+    StateInstance* const active = a_list_peek(stack);
+
+    if(active == NULL) {
+        a_error("No active state to resume");
+        exit(1);
+    } else if(active->bodystage == A_STATE_BODYSTAGE_RUN) {
+        a_error("State '%s' is already running", active->name);
+        exit(1);
+    }
+
+    active->bodystage = A_STATE_BODYSTAGE_RUN;
+    changed = true;
+}
+
 void a_state_exit(void)
 {
     changed = true;
@@ -232,6 +266,17 @@ StateStage a_state__stage(void)
     }
 
     return A_STATE_STAGE_INVALID;
+}
+
+StateBodyStage a_state__bodystage(void)
+{
+    const StateInstance* const s = a_list_peek(stack);
+
+    if(s) {
+        return s->bodystage;
+    }
+
+    return A_STATE_BODYSTAGE_INVALID;
 }
 
 bool a_state__setStage(StateStage stage)
