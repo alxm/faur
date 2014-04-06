@@ -5,7 +5,13 @@
 NAME	=	$(TARGET_DIR)/$(APP)
 
 #
-# PNG and WAV files
+# Subdir for generated code and object files
+#
+
+A2X_GEN = a2x_gen
+
+#
+# PNG and WAV files we can convert to C code
 #
 
 GFX_FILES	= $(notdir $(wildcard $(GFX_DIR)/*.png))
@@ -15,8 +21,10 @@ SFX_FILES	= $(notdir $(wildcard $(SFX_DIR)/*.wav))
 # .c gfx & sfx files
 #
 
-C_GFX_DIR	= $(SRC_DIR)/a2x_gfx
-C_SFX_DIR	= $(SRC_DIR)/a2x_sfx
+C_GEN_DIR = $(SRC_DIR)/$(A2X_GEN)
+
+C_GFX_DIR	= $(C_GEN_DIR)/gfx
+C_SFX_DIR	= $(C_GEN_DIR)/sfx
 
 C_GFX_HEADER	=	$(C_GFX_DIR)/all.h
 C_SFX_HEADER	=	$(C_SFX_DIR)/all.h
@@ -48,15 +56,16 @@ CFILES	= 	$(notdir $(wildcard $(SRC_DIR)/*.c))
 # object file dirs
 #
 
-O_DIR		= obj_$(PLATFORM)
-O_GFX_DIR	= $(O_DIR)/a2x_gfx
-O_SFX_DIR	= $(O_DIR)/a2x_sfx
+O_DIR		= $(OBJ_DIR)/obj_$(PLATFORM)
+
+O_GFX_DIR	= $(O_DIR)/$(A2X_GEN)/gfx
+O_SFX_DIR	= $(O_DIR)/$(A2X_GEN)/sfx
 
 #
 # all the dirs
 #
 
-DIRS		=	$(O_DIR)
+DIRS		=	$(OBJ_DIR) $(O_DIR) $(C_GEN_DIR)
 
 ifdef GFX_DIR
 	DIRS	+=	$(C_GFX_DIR) $(O_GFX_DIR)
@@ -99,20 +108,8 @@ $(NAME) : $(DIRS) $(C_GFX_FILES) $(C_SFX_FILES) $(C_ALL_HEADERS) $(OFILES)
 # make all the needed dirs
 #
 
-$(O_DIR) :
-	@ mkdir $@
-
-$(O_GFX_DIR) :
-	@ mkdir $@
-
-$(O_SFX_DIR) :
-	@ mkdir $@
-
-$(C_GFX_DIR) :
-	@ mkdir $@
-
-$(C_SFX_DIR) :
-	@ mkdir $@
+$(DIRS) :
+	@ mkdir --parents $@
 
 #
 # pattern rules for building the universe
