@@ -27,8 +27,8 @@ struct ColMap {
 };
 
 struct ColPoint {
-    fix8 x;
-    fix8 y;
+    fix x;
+    fix y;
     ColMap* colmap; // the colmap this point belongs to
     List* nodes; // ListNodes from submaps this point is in
     void* parent; // the object that uses this ColPoint
@@ -106,7 +106,7 @@ void a_colpoint_free(ColPoint* const p)
     free(p);
 }
 
-void a_colpoint_setCoords(ColPoint* const p, const fix8 x, const fix8 y)
+void a_colpoint_setCoords(ColPoint* const p, const fix x, const fix y)
 {
     p->x = x;
     p->y = y;
@@ -123,8 +123,8 @@ void a_colpoint_setCoords(ColPoint* const p, const fix8 x, const fix8 y)
     a_list_empty(pt_nodes);
 
     // center submap coords
-    const int submap_x = a_fix8_fixtoi(p->x) >> colmap->submapShift;
-    const int submap_y = a_fix8_fixtoi(p->y) >> colmap->submapShift;
+    const int submap_x = a_fix_fixtoi(p->x) >> colmap->submapShift;
+    const int submap_y = a_fix_fixtoi(p->y) >> colmap->submapShift;
 
     // submap perimeter
     const int startx = a_math_max(0, submap_x - 1);
@@ -158,8 +158,8 @@ ColIt a_colit__new(ColPoint* const p)
     ColIt it;
     ColMap* const colmap = p->colmap;
 
-    const int submap_x = a_fix8_fixtoi(p->x) >> colmap->submapShift;
-    const int submap_y = a_fix8_fixtoi(p->y) >> colmap->submapShift;
+    const int submap_x = a_fix_fixtoi(p->x) >> colmap->submapShift;
+    const int submap_y = a_fix_fixtoi(p->y) >> colmap->submapShift;
 
     it.callerPoint = p;
     it.points = a_listit__new(colmap->submaps[submap_y][submap_x]);

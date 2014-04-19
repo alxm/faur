@@ -720,14 +720,14 @@ int a_analog_yaxis(const Input* i)
     return 0;
 }
 
-fix8 a_analog_xaxis_fix(const Input* i)
+fix a_analog_xaxis_fix(const Input* i)
 {
-    return a_analog_xaxis(i) >> 7;
+    return a_analog_xaxis(i) >> (15 - A_FIX_BIT_PRECISION);
 }
 
-fix8 a_analog_yaxis_fix(const Input* i)
+fix a_analog_yaxis_fix(const Input* i)
 {
-    return a_analog_yaxis(i) >> 7;
+    return a_analog_yaxis(i) >> (15 - A_FIX_BIT_PRECISION);
 }
 
 bool a_touch_tapped(const Input* i)

@@ -19,16 +19,16 @@
 
 #include "a2x_pack_math.v.h"
 
-double a_math_Sin[A_ANGLES_NUM];
-double a_math_Cos[A_ANGLES_NUM];
+double a_math_sin_val[A_MATH_ANGLES_NUM];
+double a_math_cos_val[A_MATH_ANGLES_NUM];
 
 void a_math__init(void)
 {
     a_math_srand();
 
-    for(int a = 0; a < A_ANGLES_NUM; a++) {
-		a_math_Sin[a] = sin(a_math_degToRad(a));
-		a_math_Cos[a] = cos(a_math_degToRad(a));
+    for(int a = 0; a < A_MATH_ANGLES_NUM; a++) {
+		a_math_sin_val[a] = sin(a_math_degToRad(a));
+		a_math_cos_val[a] = cos(a_math_degToRad(a));
 	}
 }
 

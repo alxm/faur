@@ -38,8 +38,8 @@ extern void a_button_waitFor(const Input* i);
 
 extern int a_analog_xaxis(const Input* i);
 extern int a_analog_yaxis(const Input* i);
-extern fix8 a_analog_xaxis_fix(const Input* i);
-extern fix8 a_analog_yaxis_fix(const Input* i);
+extern fix a_analog_xaxis_fix(const Input* i);
+extern fix a_analog_yaxis_fix(const Input* i);
 
 extern bool a_touch_tapped(const Input* i);
 extern bool a_touch_point(const Input* i, int x, int y);

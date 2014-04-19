@@ -45,15 +45,15 @@
     (a__x >= 0) ? a__x : -a__x; \
 })
 
-#define A_PI                3.14159265f
-#define A_ANGLES_NUM        256
+#define A_MATH_PI                3.14159265f
+#define A_MATH_ANGLES_NUM        256
 
-#define a_math_degToRad(a)  ((a) * A_PI / (A_ANGLES_NUM / 2))
-#define a_math_radToDeg(a)  ((int)((a) * (A_ANGLES_NUM / 2) / A_PI))
-#define a_math_sin(a)       (a_math_Sin[(a)])
-#define a_math_cos(a)       (a_math_Cos[(a)])
+#define a_math_degToRad(a)  ((a) * A_MATH_PI / (A_MATH_ANGLES_NUM / 2))
+#define a_math_radToDeg(a)  ((int)((a) * (A_MATH_ANGLES_NUM / 2) / A_MATH_PI))
+#define a_math_sin(a)       (a_math_sin_val[(a)])
+#define a_math_cos(a)       (a_math_cos_val[(a)])
 #define a_math_wrap(x, w)   ((x) & ((w) - 1))
-#define a_math_wrapAngle(a) (a_math_wrap((a), A_ANGLES_NUM))
+#define a_math_wrapAngle(a) (a_math_wrap((a), A_MATH_ANGLES_NUM))
 
 #define a_math_constrain(x, min, max) \
 ({                                    \
@@ -66,8 +66,8 @@
     a__new;                           \
 })
 
-extern double a_math_Sin[A_ANGLES_NUM];
-extern double a_math_Cos[A_ANGLES_NUM];
+extern double a_math_sin_val[A_MATH_ANGLES_NUM];
+extern double a_math_cos_val[A_MATH_ANGLES_NUM];
 
 extern int a_math_log2(int x);
 

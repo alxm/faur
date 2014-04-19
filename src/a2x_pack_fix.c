@@ -19,19 +19,13 @@
 
 #include "a2x_pack_fix.v.h"
 
-fix12 a_fix12_Sin[A_ANGLES_NUM];
-fix12 a_fix12_Cos[A_ANGLES_NUM];
-
-fix8 a_fix8_Sin[A_ANGLES_NUM];
-fix8 a_fix8_Cos[A_ANGLES_NUM];
+fix a_fix_sin_val[A_MATH_ANGLES_NUM];
+fix a_fix_cos_val[A_MATH_ANGLES_NUM];
 
 void a_fix__init(void)
 {
-    for(int a = 0; a < A_ANGLES_NUM; a++) {
-		a_fix12_Sin[a] = a_fix12_ftofix(a_math_sin(a));
-		a_fix12_Cos[a] = a_fix12_ftofix(a_math_cos(a));
-
-        a_fix8_Sin[a] = a_fix12_to8(a_fix12_Sin[a]);
-        a_fix8_Cos[a] = a_fix12_to8(a_fix12_Cos[a]);
+    for(int a = 0; a < A_MATH_ANGLES_NUM; a++) {
+        a_fix_sin_val[a] = a_fix_ftofix(a_math_sin(a));
+		a_fix_cos_val[a] = a_fix_ftofix(a_math_cos(a));
 	}
 }

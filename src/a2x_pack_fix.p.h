@@ -22,37 +22,26 @@
 
 #include "a2x_app_includes.h"
 
-typedef int fix12;
-typedef int fix8;
+typedef int fix;
+typedef uint ufix;
 
 #include "a2x_pack_math.p.h"
 
-#define A_FONE12          (1 << 12)
-#define a_fix12_to8(x)    ((x) >> 4)
-#define a_fix12_itofix(x) ((x) << 12)
-#define a_fix12_ftofix(x) ((x) * (1 << 12))
-#define a_fix12_fixtoi(x) ((x) >> 12)
-#define a_fix12_fixtof(x) ((float)(x) / (1 << 12))
-#define a_fix12_mul(x, y) (((x) * (y)) >> 12)
-#define a_fix12_div(x, y) (((x) << 12) / (y))
-extern fix12 a_fix12_Sin[A_ANGLES_NUM];
-extern fix12 a_fix12_Cos[A_ANGLES_NUM];
-#define a_fix12_sin(a)       (a_fix12_Sin[(a)])
-#define a_fix12_cos(a)       (a_fix12_Cos[(a)])
-#define a_fix12_wrapAngle(a) ((a) & ((A_ANGLES_NUM << 12) - 1))
+#define A_FIX_BIT_PRECISION (8)
+#define A_FIX_ONE           (1 << A_FIX_BIT_PRECISION)
 
-#define A_FONE8          (1 << 8)
-#define a_fix8_to12(x)   ((x) << 4)
-#define a_fix8_itofix(x) ((x) << 8)
-#define a_fix8_ftofix(x) ((x) * (1 << 8))
-#define a_fix8_fixtoi(x) ((x) >> 8)
-#define a_fix8_fixtof(x) ((float)(x) / (1 << 8))
-#define a_fix8_mul(x, y) (((x) * (y)) >> 8)
-#define a_fix8_div(x, y) (((x) << 8) / (y))
-extern fix8 a_fix8_Sin[A_ANGLES_NUM];
-extern fix8 a_fix8_Cos[A_ANGLES_NUM];
-#define a_fix8_sin(a)       (a_fix8_Sin[(a)])
-#define a_fix8_cos(a)       (a_fix8_Cos[(a)])
-#define a_fix8_wrapAngle(a) ((a) & ((A_ANGLES_NUM << 8) - 1))
+#define a_fix_itofix(x) ((x) << A_FIX_BIT_PRECISION)
+#define a_fix_ftofix(x) ((x) * (1 << A_FIX_BIT_PRECISION))
+#define a_fix_fixtoi(x) ((x) >> A_FIX_BIT_PRECISION)
+#define a_fix_fixtof(x) ((float)(x) / (1 << A_FIX_BIT_PRECISION))
+#define a_fix_mul(x, y) (((x) * (y)) >> A_FIX_BIT_PRECISION)
+#define a_fix_div(x, y) (((x) << A_FIX_BIT_PRECISION) / (y))
+
+extern fix a_fix_sin_val[A_MATH_ANGLES_NUM];
+extern fix a_fix_cos_val[A_MATH_ANGLES_NUM];
+
+#define a_fix_sin(a)       (a_fix_sin_val[(a)])
+#define a_fix_cos(a)       (a_fix_cos_val[(a)])
+#define a_fix_wrapAngle(a) ((a) & ((A_MATH_ANGLES_NUM << A_FIX_BIT_PRECISION) - 1))
 
 #endif // A2X_PACK_FIX_PH
