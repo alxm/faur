@@ -38,7 +38,7 @@ extern char* a_file_getLine(const File* f);
 
 extern const char* a_file_path(const File* f);
 extern const char* a_file_name(const File* f);
-extern FILE* a_file_file(const File* f);
+extern FILE* a_file_handle(const File* f);
 
 extern bool a_file_exists(const char* path);
 extern bool a_file_isDir(const char* f);

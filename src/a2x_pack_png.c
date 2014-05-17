@@ -64,7 +64,7 @@ void a_png_readFile(const char* path, Pixel** pixels, int* width, int* height)
         goto cleanUp;
     }
 
-    png_init_io(png, a_file_file(f));
+    png_init_io(png, a_file_handle(f));
     png_set_sig_bytes(png, PNG_SIG);
     png_read_png(png, info, PNG_TRANSFORM_IDENTITY, NULL);
 
@@ -198,7 +198,7 @@ void a_png_write(const char* path, const Pixel* data, int width, int height)
         }
     }
 
-    png_init_io(png, a_file_file(f));
+    png_init_io(png, a_file_handle(f));
     png_set_rows(png, info, rows);
     png_write_png(png, info, PNG_TRANSFORM_IDENTITY, NULL);
     png_write_end(png, NULL);

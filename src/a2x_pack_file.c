@@ -20,7 +20,7 @@
 #include "a2x_pack_file.v.h"
 
 struct File {
-    FILE* file;
+    FILE* handle;
     char* modes;
     char* path;
     char* name;
@@ -30,15 +30,15 @@ struct File {
 
 File* a_file_open(const char* path, const char* modes)
 {
-    FILE* const file = fopen(path, modes);
+    FILE* const handle = fopen(path, modes);
 
-    if(!file) {
+    if(!handle) {
         return NULL;
     }
 
     File* const f = malloc(sizeof(File));
 
-    f->file = file;
+    f->handle = handle;
     f->modes = a_str_dup(modes);
     f->path = a_str_getPrefixLastFind(path, '/');
     f->name = a_str_getSuffixLastFind(path, '/');
@@ -52,8 +52,8 @@ void a_file_close(File* f)
 {
     free(f->line);
 
-    if(f->file) {
-        fclose(f->file);
+    if(f->handle) {
+        fclose(f->handle);
     }
 
     free(f);
@@ -64,25 +64,25 @@ bool a_file_checkPrefix(File* f, const char* prefix)
     const int len = strlen(prefix) + 1;
     char buffer[len];
 
-    fseek(f->file, 0, SEEK_SET);
-    fread(buffer, len, 1, f->file);
+    fseek(f->handle, 0, SEEK_SET);
+    fread(buffer, len, 1, f->handle);
 
     return a_str_equal(buffer, prefix);
 }
 
 void a_file_writePrefix(File* f, const char* prefix)
 {
-    fwrite(prefix, strlen(prefix) + 1, 1, f->file);
+    fwrite(prefix, strlen(prefix) + 1, 1, f->handle);
 }
 
 void a_file_read(File* f, void* buffer, size_t size)
 {
-    fread(buffer, size, 1, f->file);
+    fread(buffer, size, 1, f->handle);
 }
 
 void a_file_write(File* f, void* buffer, size_t size)
 {
-    fwrite(buffer, size, 1, f->file);
+    fwrite(buffer, size, 1, f->handle);
 }
 
 bool a_file_readLine(File* f)
@@ -95,12 +95,12 @@ bool a_file_readLine(File* f)
     }
 
     int offset = 1;
-    FILE* const file = f->file;
+    FILE* const handle = f->handle;
 
     while(offset == 1 && !f->eof) {
         int c;
 
-        for(c = fgetc(file); !iscntrl(c) && c != EOF; c = fgetc(file)) {
+        for(c = fgetc(handle); !iscntrl(c) && c != EOF; c = fgetc(handle)) {
             offset++;
         }
 
@@ -109,22 +109,22 @@ bool a_file_readLine(File* f)
 
     if(offset > 1) {
         if(f->eof) {
-            rewind(file);
-            fseek(file, -(offset - 1), SEEK_END);
+            rewind(handle);
+            fseek(handle, -(offset - 1), SEEK_END);
         } else {
-            fseek(file, -offset, SEEK_CUR);
+            fseek(handle, -offset, SEEK_CUR);
         }
 
         char* const str = malloc(offset * sizeof(char));
 
         for(int i = 0; i < offset - 1; i++) {
-            str[i] = fgetc(file);
+            str[i] = fgetc(handle);
         }
 
         str[offset - 1] = '\0';
         f->line = str;
 
-        fseek(file, 1, SEEK_CUR);
+        fseek(handle, 1, SEEK_CUR);
 
         return true;
     }
@@ -147,9 +147,9 @@ const char* a_file_name(const File* f)
     return f->name;
 }
 
-FILE* a_file_file(const File* f)
+FILE* a_file_handle(const File* f)
 {
-    return f->file;
+    return f->handle;
 }
 
 bool a_file_exists(const char* path)
