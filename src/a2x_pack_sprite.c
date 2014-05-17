@@ -105,7 +105,14 @@ Sprite* a_sprite_zoomed(const Sprite* sheet, int x, int y, int zoom)
     Done:
 
     if(w == 0 || h == 0) {
-        return NULL;
+        if(x == 0 && y == 0) {
+            // no boundary borders for full-image sprites
+            w = width;
+            h = height;
+        } else {
+            a_error("Sprite coords %d, %d are invalid", x, y);
+            return NULL;
+        }
     }
 
     const int spritew = w * zoom;
