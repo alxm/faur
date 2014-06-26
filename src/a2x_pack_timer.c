@@ -43,6 +43,12 @@ void a_timer_free(Timer* t)
     free(t);
 }
 
+void a_timer_start(Timer* t)
+{
+    t->running = true;
+    t->start = a_time_getMilis();
+}
+
 bool a_timer_check(Timer* t)
 {
     if(t->running) {
@@ -60,10 +66,4 @@ bool a_timer_check(Timer* t)
 uint32_t a_timer_diff(Timer* t)
 {
     return t->diff;
-}
-
-void a_timer_start(Timer* t)
-{
-    t->running = true;
-    t->start = a_time_getMilis();
 }
