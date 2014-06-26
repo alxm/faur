@@ -31,12 +31,3 @@ void a_math__init(void)
 		a_math_cos_val[a] = cos(a_math_degToRad(a));
 	}
 }
-
-int a_math_log2(int x)
-{
-    int log = 0;
-
-    while(x >>= 1) log++;
-
-    return log;
-}

@@ -69,6 +69,4 @@
 extern double a_math_sin_val[A_MATH_ANGLES_NUM];
 extern double a_math_cos_val[A_MATH_ANGLES_NUM];
 
-extern int a_math_log2(int x);
-
 #endif // A2X_PACK_MATH_PH

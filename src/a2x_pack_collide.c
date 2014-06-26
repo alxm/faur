@@ -49,7 +49,7 @@ ColMap* a_colmap_new(int totalWidth, int totalHeight, int gridDim)
 
     const int submapDim = nextpow(gridDim);
 
-    c->submapShift = a_math_log2(submapDim);
+    c->submapShift = log2(submapDim);
 
     c->w = nextpow(totalWidth) / submapDim;
     c->h = nextpow(totalHeight) / submapDim;
