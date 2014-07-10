@@ -2,7 +2,7 @@
 # this is what gets built
 #
 
-NAME	=	$(TARGET_DIR)/$(APP)
+TARGET_BINARY	=	$(TARGET_DIR)/$(APP)
 
 #
 # Subdir for generated code and object files
@@ -98,11 +98,11 @@ CFLAGS	+=	-std=gnu99 -Werror \
 # the main target
 #
 
-all : $(NAME)
+all : $(TARGET_BINARY)
 
-$(NAME) : $(DIRS) $(C_GFX_FILES) $(C_SFX_FILES) $(C_ALL_HEADERS) $(OFILES)
+$(TARGET_BINARY) : $(DIRS) $(C_GFX_FILES) $(C_SFX_FILES) $(C_ALL_HEADERS) $(OFILES)
 	@ echo "Building $(APP)"
-	@ $(CC) -o $(NAME) $(OFILES) $(A2X_PATH)/lib/a2x_$(PLATFORM).a $(LIBS)
+	@ $(CC) -o $(TARGET_BINARY) $(OFILES) $(A2X_PATH)/lib/a2x_$(PLATFORM).a $(LIBS)
 
 #
 # make all the needed dirs
@@ -149,7 +149,7 @@ $(C_SFX_HEADER) : $(C_SFX_FILES)
 
 clean :
 	@ echo "Cleaning $(APP)"
-	@ rm -rf $(NAME) $(O_DIR)
+	@ rm -rf $(TARGET_BINARY) $(O_DIR)
 
 #
 # clean-up rule that deletes all .o files and all generated .c files
@@ -157,7 +157,7 @@ clean :
 
 realclean :
 	@ echo "Cleaning $(APP) and generated files"
-	@ rm -rf $(NAME) $(DIRS)
+	@ rm -rf $(TARGET_BINARY) $(DIRS)
 
 #
 # clean-up rule that deletes the built binary
@@ -167,7 +167,7 @@ cb : cleanbin
 
 cleanbin :
 	@ echo "Removing $(APP) binary"
-	@ rm -f $(NAME)
+	@ rm -f $(TARGET_BINARY)
 
 #
 # run the program

@@ -38,6 +38,7 @@ TARGET_DIR = ..
 SRC_DIR = ../src
 GFX_DIR =
 SFX_DIR =
+OBJ_DIR = ../obj
 A2X_PATH = {1}
 include $(A2X_PATH)/make/project/Makefile.linux
 """.format(project_name, a2x_dir))
