@@ -44,20 +44,27 @@
 #include "a2x_pack_time.v.h"
 
 #if A_PLATFORM_LINUXPC
-    #define a_out(...)                                                   \
-    ({                                                                   \
-        if(!a2x_bool("app.quiet")) {                                     \
-            printf("%c[%d;%dm[ a2x Msg ]%c[%dm ", 0x1b, 0, 32, 0x1b, 0); \
-            printf(__VA_ARGS__);                                         \
-            printf("\n");                                                \
-        }                                                                \
+    #define a_out(...)                               \
+    ({                                               \
+        if(!a2x_bool("app.quiet")) {                 \
+            printf("\033[32;1m[ a2x Msg ]\033[0m "); \
+            printf(__VA_ARGS__);                     \
+            printf("\n");                            \
+        }                                            \
     })
 
-    #define a_error(...)                                                      \
-    ({                                                                        \
-        fprintf(stderr, "%c[%d;%dm[ a2x Err ]%c[%dm ", 0x1b, 0, 31, 0x1b, 0); \
-        fprintf(stderr, __VA_ARGS__);                                         \
-        fprintf(stderr, "\n");                                                \
+    #define a_warning(...)                                \
+    ({                                                    \
+        fprintf(stderr, "\033[33;1m[ a2x Wrn ]\033[0m "); \
+        fprintf(stderr, __VA_ARGS__);                     \
+        fprintf(stderr, "\n");                            \
+    })
+
+    #define a_error(...)                                  \
+    ({                                                    \
+        fprintf(stderr, "\033[31;1m[ a2x Err ]\033[0m "); \
+        fprintf(stderr, __VA_ARGS__);                     \
+        fprintf(stderr, "\n");                            \
     })
 #else
     #define a_out(...)               \
@@ -67,6 +74,13 @@
             printf(__VA_ARGS__);     \
             printf("\n");            \
         }                            \
+    })
+
+    #define a_warning(...)               \
+    ({                                   \
+        fprintf(stderr, "[ a2x Wrn ] "); \
+        fprintf(stderr, __VA_ARGS__);    \
+        fprintf(stderr, "\n");           \
     })
 
     #define a_error(...)                 \

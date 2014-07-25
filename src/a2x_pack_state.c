@@ -36,13 +36,13 @@ static bool changed;
 static bool replacing;
 
 #if A_PLATFORM_LINUXPC
-    #define a_state__out(...)                                            \
-    ({                                                                   \
-        if(!a2x_bool("app.quiet")) {                                     \
-            printf("%c[%d;%dm[ a2x Stt ]%c[%dm ", 0x1b, 0, 34, 0x1b, 0); \
-            printf(__VA_ARGS__);                                         \
-            printf("\n");                                                \
-        }                                                                \
+    #define a_state__out(...)                        \
+    ({                                               \
+        if(!a2x_bool("app.quiet")) {                 \
+            printf("\033[34;1m[ a2x Stt ]\033[0m "); \
+            printf(__VA_ARGS__);                     \
+            printf("\n");                            \
+        }                                            \
     })
 #else
     #define a_state__out(...)        \
