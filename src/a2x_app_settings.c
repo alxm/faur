@@ -35,7 +35,7 @@ typedef struct Setting {
         int integer;
         bool boolean;
         char string[64];
-    } value;
+    } value[2];
 } Setting;
 
 static StrHash* settings;
@@ -96,6 +96,30 @@ void a2x__set(const char* key, const char* val)
     set(key, val, false);
 }
 
+void a2x__undo(const char* key)
+{
+    Setting* const s = a_strhash_get(settings, key);
+
+    if(s == NULL) {
+        a_error("Setting '%s' does not exist", key);
+        return;
+    }
+
+    switch(s->type) {
+        case INT: {
+            s->value[0].integer = s->value[1].integer;
+        } break;
+
+        case BOOL: {
+            s->value[0].boolean = s->value[1].boolean;
+        } break;
+
+        case STR: {
+            strcpy(s->value[0].string, s->value[1].string);
+        } break;
+    }
+}
+
 bool a2x_flip(const char* key)
 {
     return flip(key, true);
@@ -117,7 +141,7 @@ char* a2x_str(const char* key)
         a_error("Setting '%s' is not a string", key);
         return NULL;
     } else {
-        return s->value.string;
+        return s->value[0].string;
     }
 }
 
@@ -132,7 +156,7 @@ bool a2x_bool(const char* key)
         a_error("Setting '%s' is not a boolean", key);
         return false;
     } else {
-        return s->value.boolean;
+        return s->value[0].boolean;
     }
 }
 
@@ -147,7 +171,7 @@ int a2x_int(const char* key)
         a_error("Setting '%s' is not an integer", key);
         return 0;
     } else {
-        return s->value.integer;
+        return s->value[0].integer;
     }
 }
 
@@ -160,15 +184,19 @@ static void add(Setting_t type, Update_t update, const char* key, const char* va
 
     switch(type) {
         case INT: {
-            s->value.integer = atoi(val);
+            s->value[0].integer = atoi(val);
+            s->value[1].integer = s->value[0].integer;
         } break;
 
         case BOOL: {
-            s->value.boolean = parseBool(val);
+            s->value[0].boolean = parseBool(val);
+            s->value[1].boolean = s->value[0].boolean;
         } break;
 
         case STR: {
-            strncpy(s->value.string, val, 63);
+            strncpy(s->value[0].string, val, sizeof(s->value[0].string) - 1);
+            s->value[0].string[sizeof(s->value[0].string) - 1] = '\0';
+            strcpy(s->value[1].string, s->value[0].string);
         } break;
     }
 
@@ -201,15 +229,18 @@ static void set(const char* key, const char* val, bool respect)
 
     switch(s->type) {
         case INT: {
-            s->value.integer = atoi(val);
+            s->value[1].integer = s->value[0].integer;
+            s->value[0].integer = atoi(val);
         } break;
 
         case BOOL: {
-            s->value.boolean = parseBool(val);
+            s->value[1].boolean = s->value[0].boolean;
+            s->value[0].boolean = parseBool(val);
         } break;
 
         case STR: {
-            strncpy(s->value.string, val, sizeof(s->value.string) - 1);
+            strcpy(s->value[1].string, s->value[0].string);
+            strncpy(s->value[0].string, val, sizeof(s->value[0].string) - 1);
         } break;
     }
 
@@ -234,11 +265,12 @@ static bool flip(const char* key, bool respect)
         return false;
     }
 
-    s->value.boolean ^= 1;
+    s->value[1].boolean = s->value[0].boolean;
+    s->value[0].boolean ^= 1;
 
     if(s->update == SET_ONCE) {
         s->update = SET_FROZEN;
     }
 
-    return s->value.boolean;
+    return s->value[0].boolean;
 }
