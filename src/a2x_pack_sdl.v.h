@@ -24,7 +24,15 @@
 
 #include "a2x_app_main.v.h"
 
+#include "a2x_pack_pixel.v.h"
+
 extern void a_sdl__init(void);
 extern void a_sdl__uninit(void);
+
+extern bool a_sdl__screen_set(void);
+extern Pixel* a_sdl__screen_pixels(void);
+extern void a_sdl__screen_lock(void);
+extern void a_sdl__screen_unlock(void);
+extern void a_sdl__screen_flip(void);
 
 #endif // A2X_PACK_SDL_VH

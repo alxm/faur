@@ -25,26 +25,18 @@
 
 #include "a2x_pack_screen.v.h"
 
-#if A_PLATFORM_GP2X
-    //#include "../gp2x/flush_uppermem_cache.h"
-#endif
-
 #define A_SCREEN_SIZE (a_width * a_height * sizeof(Pixel))
 
-Pixel* a_pixels;
-int a_width;
-int a_height;
+Pixel* a_pixels = NULL;
+int a_width = 0;
+int a_height = 0;
 
-static SDL_Surface* a_screen;
+static Pixel* a__pixels2 = NULL;
+static int a__width2 = 0;
+static int a__height2 = 0;
 
-static Pixel* a__pixels2;
-static int a__width2;
-static int a__height2;
-
-static uint32_t videoFlags;
 static Sprite* spriteTarget = NULL;
 
-static void setSDLScreen(void);
 static void setFakeScreen(void);
 static void displayVolume(void);
 
@@ -57,8 +49,6 @@ void a_screen__init(void)
     a_width = a2x_int("video.width");
     a_height = a2x_int("video.height");
 
-    videoFlags = SDL_SWSURFACE;
-
     #if !A_PLATFORM_LINUXPC
         a2x__set("video.scale", "1");
     #endif
@@ -67,15 +57,7 @@ void a_screen__init(void)
         a2x__set("video.fake", "1");
     }
 
-    setSDLScreen();
-
-    #if A_PLATFORM_LINUXPC
-        char caption[64];
-        sprintf(caption, "%s %s", a2x_str("app.title"), a2x_str("app.version"));
-        SDL_WM_SetCaption(caption, NULL);
-    #else
-        SDL_ShowCursor(SDL_DISABLE);
-    #endif
+    a_sdl__screen_set();
 
     if(a2x_bool("video.wizTear")) {
         #if A_PLATFORM_WIZ
@@ -99,14 +81,12 @@ void a_screen__init(void)
     if(a2x_bool("video.fake")) {
         setFakeScreen();
     } else {
-        if(SDL_MUSTLOCK(a_screen)) {
-            SDL_LockSurface(a_screen);
-        }
+        a_sdl__screen_lock();
 
-        a_pixels = a_screen->pixels;
+        a_pixels = a_sdl__screen_pixels();
+        a__pixels2 = a_pixels;
     }
 
-    a__pixels2 = a_pixels;
     a__width2 = a_width;
     a__height2 = a_height;
 }
@@ -120,9 +100,7 @@ void a_screen__uninit(void)
     if(a2x_bool("video.fake")) {
         free(a_pixels);
     } else {
-        if(SDL_MUSTLOCK(a_screen)) {
-            SDL_UnlockSurface(a_screen);
-        }
+        a_sdl__screen_unlock();
     }
 }
 
@@ -131,14 +109,14 @@ void a_screen_show(void)
     displayVolume();
 
     if(a2x_bool("video.wizTear")) {
-        if(SDL_MUSTLOCK(a_screen)) {
-            SDL_LockSurface(a_screen);
-        }
+        // video.fake is also set when video.wizTear is set
+
+        a_sdl__screen_lock();
 
         #define A_WIDTH 320
         #define A_HEIGHT 240
 
-        Pixel* dst = (Pixel*)a_screen->pixels + A_WIDTH * A_HEIGHT;
+        Pixel* dst = a_sdl__screen_pixels() + A_WIDTH * A_HEIGHT;
         const Pixel* src = a_pixels;
 
         for(int i = A_HEIGHT; i--; dst += A_WIDTH * A_HEIGHT + 1) {
@@ -148,27 +126,22 @@ void a_screen_show(void)
             }
         }
 
-        if(SDL_MUSTLOCK(a_screen)) {
-            SDL_UnlockSurface(a_screen);
-        }
-
-        SDL_Flip(a_screen);
+        a_sdl__screen_unlock();
+        a_sdl__screen_flip();
     } else if(a2x_bool("video.fake")) {
-        if(SDL_MUSTLOCK(a_screen)) {
-            SDL_LockSurface(a_screen);
-        }
+        a_sdl__screen_lock();
 
         switch(a2x_int("video.scale")) {
             case 1: {
                 const Pixel* const src = a_pixels;
-                Pixel* const dst = a_screen->pixels;
+                Pixel* const dst = a_sdl__screen_pixels();
 
                 memcpy(dst, src, A_SCREEN_SIZE);
             } break;
 
             case 2: {
                 const Pixel* src = a_pixels;
-                uint32_t* dst = (uint32_t*)a_screen->pixels;
+                uint32_t* dst = (uint32_t*)a_sdl__screen_pixels();
 
                 const int len = a_width;
                 const int size = len * sizeof(uint32_t);
@@ -186,7 +159,7 @@ void a_screen_show(void)
 
             case 3: {
                 const Pixel* src = a_pixels;
-                Pixel* dst = (Pixel*)a_screen->pixels;
+                Pixel* dst = a_sdl__screen_pixels();
 
                 const int width = a_width;
                 const int scaledWidth = width * 3;
@@ -208,26 +181,16 @@ void a_screen_show(void)
             } break;
         }
 
-        if(SDL_MUSTLOCK(a_screen)) {
-            SDL_UnlockSurface(a_screen);
-        }
-
-        SDL_Flip(a_screen);
+        a_sdl__screen_unlock();
+        a_sdl__screen_flip();
     } else {
-        if(SDL_MUSTLOCK(a_screen)) {
-            SDL_UnlockSurface(a_screen);
-        }
+        a_sdl__screen_unlock();
+        a_sdl__screen_flip();
+        a_sdl__screen_lock();
 
-        SDL_Flip(a_screen);
-
-        if(SDL_MUSTLOCK(a_screen)) {
-            SDL_LockSurface(a_screen);
-        }
+        a_pixels = a_sdl__screen_pixels();
+        a__pixels2 = a_pixels;
     }
-
-    #if A_PLATFORM_GP2X
-        //flush_uppermem_cache(a_screen->pixels, a_screen->pixels + WIDTH * HEIGHT, 0);
-    #endif
 }
 
 Pixel* a_screen_dup(void)
@@ -288,47 +251,50 @@ void a_screen_resetTarget(void)
 }
 
 #if A_PLATFORM_LINUXPC || A_PLATFORM_WINDOWS
-    void a_screen__change(void)
+    bool a_screen__change(void)
     {
-        if(a2x_bool("video.fullscreen")) {
-            videoFlags |= SDL_FULLSCREEN;
+        if(!a2x_bool("video.fake")) {
+            a_sdl__screen_unlock();
+        }
+
+        bool changed = a_sdl__screen_set();
+
+        if(!a2x_bool("video.fake")) {
+            a_sdl__screen_lock();
+        }
+
+        if(changed) {
+            if(a2x_int("video.scale") > 1) {
+                // once we scale up, we switch to fake screen
+                a2x__set("video.fake", "1");
+            }
+
+            if(a2x_bool("video.fake")) {
+                setFakeScreen();
+            } else {
+                a_pixels = a_sdl__screen_pixels();
+                a__pixels2 = a_pixels;
+            }
+
+            a_out("Changed resolution to %dx%d %dx (%s)",
+                  a_width, a_height, a2x_int("video.scale"),
+                  a2x_bool("video.fullscreen") ? "fullscreen" : "windowed");
         } else {
-            videoFlags &= ~SDL_FULLSCREEN;
+            a_warning("Could not change resolution to %dx%d %dx (%s)",
+                      a_width, a_height, a2x_int("video.scale"),
+                      a2x_bool("video.fullscreen") ? "fullscreen" : "windowed");
         }
 
-        if(a2x_int("video.scale") > 1 && !a2x_bool("video.fake")) {
-            // once we scale up, we switch to fake screen
-            setFakeScreen();
-            a2x__set("video.fake", "1");
-        }
-
-        setSDLScreen();
+        return changed;
     }
 #endif
-
-static void setSDLScreen(void)
-{
-    int scale = a2x_int("video.scale");
-    a_screen = SDL_SetVideoMode(a_width * scale, a_height * scale, A_BPP, videoFlags);
-
-    SDL_SetClipRect(a_screen, NULL);
-
-    if(!a2x_bool("video.fake")) {
-        if(SDL_MUSTLOCK(a_screen)) {
-            SDL_LockSurface(a_screen);
-        }
-
-        a_pixels = a_screen->pixels;
-        a__pixels2 = a_pixels;
-    }
-}
 
 static void setFakeScreen(void)
 {
     a_pixels = malloc(A_SCREEN_SIZE);
-    memset(a_pixels, 0, A_SCREEN_SIZE);
-
     a__pixels2 = a_pixels;
+
+    memset(a_pixels, 0, A_SCREEN_SIZE);
 }
 
 static void displayVolume(void)

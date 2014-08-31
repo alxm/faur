@@ -26,16 +26,15 @@
 
 #include "a2x_pack_draw.v.h"
 #include "a2x_pack_pixel.v.h"
+#include "a2x_pack_sdl.v.h"
 #include "a2x_pack_sound.v.h"
 #include "a2x_pack_sprite.v.h"
-#include "a2x_pack_str.v.h"
-#include "a2x_pack_time.v.h"
 
 extern void a_screen__init(void);
 extern void a_screen__uninit(void);
 
 #if A_PLATFORM_LINUXPC || A_PLATFORM_WINDOWS
-    extern void a_screen__change(void);
+    extern bool a_screen__change(void);
 #endif
 
 #endif // A2X_PACK_SCREEN_VH

@@ -19,8 +19,12 @@
 
 #include "a2x_pack_sdl.v.h"
 
+static SDL_Surface* screen = NULL;
+static bool screen_locked = false;
+
 void a_sdl__init(void)
 {
+    int ret = 0;
     uint32_t sdlFlags = 0;
 
     if(a2x_bool("video.window")) {
@@ -37,10 +41,86 @@ void a_sdl__init(void)
         sdlFlags |= SDL_INIT_TIMER;
     #endif
 
-    SDL_Init(sdlFlags);
+    ret = SDL_Init(sdlFlags);
+
+    if(ret != 0) {
+        a_error("SDL: %s", SDL_GetError());
+        exit(1);
+    }
 }
 
 void a_sdl__uninit(void)
 {
     SDL_Quit();
+}
+
+bool a_sdl__screen_set(void)
+{
+    static bool first_time = true;
+
+    int bpp = 0;
+    int scale = a2x_int("video.scale");
+    uint32_t videoFlags = SDL_SWSURFACE;
+
+    if(a2x_bool("video.fullscreen")) {
+        videoFlags |= SDL_FULLSCREEN;
+    }
+
+    bpp = SDL_VideoModeOK(a_width * scale, a_height * scale, A_BPP, videoFlags);
+
+    if(bpp == 0) {
+        if(first_time) {
+            a_error("SDL: %dx%d video not available", a_width * scale, a_height * scale);
+            exit(1);
+        } else {
+            a_warning("SDL: %dx%d video not available", a_width * scale, a_height * scale);
+            return false;
+        }
+    }
+
+    first_time = false;
+    screen = SDL_SetVideoMode(a_width * scale, a_height * scale, A_BPP, videoFlags);
+
+    if(screen == NULL) {
+        a_error("SDL: %s", SDL_GetError());
+        exit(1);
+    }
+
+    SDL_SetClipRect(screen, NULL);
+
+    #if A_PLATFORM_LINUXPC
+        char caption[64];
+        sprintf(caption, "%s %s", a2x_str("app.title"), a2x_str("app.version"));
+        SDL_WM_SetCaption(caption, NULL);
+    #else
+        SDL_ShowCursor(SDL_DISABLE);
+    #endif
+
+    return true;
+}
+
+Pixel* a_sdl__screen_pixels(void)
+{
+    return screen->pixels;
+}
+
+void a_sdl__screen_lock(void)
+{
+    if(SDL_MUSTLOCK(screen) && !screen_locked) {
+        SDL_LockSurface(screen);
+        screen_locked = true;
+    }
+}
+
+void a_sdl__screen_unlock(void)
+{
+    if(SDL_MUSTLOCK(screen) && screen_locked) {
+        SDL_UnlockSurface(screen);
+        screen_locked = false;
+    }
+}
+
+void a_sdl__screen_flip(void)
+{
+    SDL_Flip(screen);
 }

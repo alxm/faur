@@ -439,13 +439,15 @@ void a_input__get(void)
         }
 
         if(changed) {
-            int scale = a2x_int("video.scale");
+            if(a_screen__change()) {
+                int scale = a2x_int("video.scale");
 
-            A_LIST_ITERATE(touches.list, InputInstance, t) {
-                t->touch.scale = scale;
+                A_LIST_ITERATE(touches.list, InputInstance, t) {
+                    t->touch.scale = scale;
+                }
+            } else {
+                a2x__undo("video.scale");
             }
-
-            a_screen__change();
         }
     #endif
 
