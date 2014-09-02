@@ -55,15 +55,12 @@
 #define a_math_wrap(x, w)   ((x) & ((w) - 1))
 #define a_math_wrapAngle(a) (a_math_wrap((a), A_MATH_ANGLES_NUM))
 
-#define a_math_constrain(x, min, max) \
-({                                    \
-    int a__new = (x);                 \
-    if(a__new < (min)) {              \
-        a__new = (min);               \
-    } else if(a__new > (max)) {       \
-        a__new = (max);               \
-    }                                 \
-    a__new;                           \
+#define a_math_constrain(x, min, max)                             \
+({                                                                \
+    const typeof(x) a__x = (x);                                   \
+    const typeof(x) a__min = (min);                               \
+    const typeof(x) a__max = (max);                               \
+    (a__x < a__min) ? a__min : ((a__x > a__max) ? a__max : a__x); \
 })
 
 extern double a_math_sin_val[A_MATH_ANGLES_NUM];
