@@ -15,6 +15,11 @@ LDLIBS		=	-lpng12 -lz -lSDL_mixer -lsmpeg -lSDL -lpthread -lm -ldl
 
 CFLAGS		=	-DA_PLATFORM_PANDORA=1 \
 			-O3 -s \
+                        -mcpu=cortex-a8 \
+                        -mfpu=neon \
+                        -mfloat-abi=softfp \
+                        -fsingle-precision-constant \
+                        -ffast-math \
 			-I$(PANDORA_SDK)/include \
 			-I$(PANDORA_SDK)/usr/include \
 			-I$(PANDORA_SDK)/arm-none-linux-gnueabi/include
