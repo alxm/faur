@@ -1,36 +1,44 @@
-PLATFORM	=	pandora
+PLATFORM = pandora
 
-PANDORA_SDK	=	$(PANDORA_ROOT)
+PANDORA_SDK = $(PANDORA_ROOT)
 
-LIBS 		=	-L$(PANDORA_SDK)/lib \
-			-L$(PANDORA_SDK)/usr/lib \
-			-L$(PANDORA_SDK)/arm-none-linux-gnueabi/lib \
-			-lpng12 -lz -lSDL_mixer -lmad -lSDL -lts -lpthread -lm -ldl
+LIBS = -L$(PANDORA_SDK)/lib \
+       -L$(PANDORA_SDK)/usr/lib \
+       -L$(PANDORA_SDK)/arm-none-linux-gnueabi/lib \
+       -lpng12 \
+       -lz \
+       -lSDL_mixer \
+       -lmad \
+       -lSDL \
+       -lts \
+       -lpthread \
+       -lm \
+       -ldl
 
-LDFLAGS		=	-L$(PANDORA_SDK)/lib \
-			-L$(PANDORA_SDK)/usr/lib \
-			-L$(PANDORA_SDK)/arm-none-linux-gnueabi/lib
+CFLAGS = -DA_PLATFORM_PANDORA=1 \
+         -O3 \
+         -s \
+         -march=armv7-a \
+         -mcpu=cortex-a8 \
+         -mtune=cortex-a8 \
+         -mfpu=neon \
+         -mfloat-abi=softfp \
+         -ffast-math \
+         -fsingle-precision-constant \
+         -ftree-vectorize \
+         -fomit-frame-pointer \
+         -I$(PANDORA_SDK)/include \
+         -I$(PANDORA_SDK)/usr/include \
+         -I$(PANDORA_SDK)/arm-none-linux-gnueabi/include
 
-LDLIBS		=	-lpng12 -lz -lSDL_mixer -lsmpeg -lSDL -lpthread -lm -ldl
+PREFIX := arm-none-linux-gnueabi-
 
-CFLAGS		=	-DA_PLATFORM_PANDORA=1 \
-			-O3 -s \
-                        -mcpu=cortex-a8 \
-                        -mfpu=neon \
-                        -mfloat-abi=softfp \
-                        -fsingle-precision-constant \
-                        -ffast-math \
-			-I$(PANDORA_SDK)/include \
-			-I$(PANDORA_SDK)/usr/include \
-			-I$(PANDORA_SDK)/arm-none-linux-gnueabi/include
-
-PREFIX		:=	arm-none-linux-gnueabi-
-export PATH	:=	$(PANDORA_SDK)/bin:$(PATH)
-export CC	:=	$(PREFIX)gcc
-export CXX	:=	$(PREFIX)g++
-export AS	:=	$(PREFIX)as
-export AR	:=	$(PREFIX)ar
-export OBJCOPY	:=	$(PREFIX)objcopy
-export READELF	:=	$(PREFIX)readelf
-export STRIP	:=	$(PREFIX)strip
-export LD	:=	$(PREFIX)ld
+export PATH    := $(PANDORA_SDK)/bin:$(PATH)
+export CC      := $(PREFIX)gcc
+export CXX     := $(PREFIX)g++
+export AS      := $(PREFIX)as
+export AR      := $(PREFIX)ar
+export OBJCOPY := $(PREFIX)objcopy
+export READELF := $(PREFIX)readelf
+export STRIP   := $(PREFIX)strip
+export LD      := $(PREFIX)ld

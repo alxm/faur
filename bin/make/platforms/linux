@@ -1,6 +1,10 @@
-PLATFORM	=	linux
+PLATFORM = linux
 
-LIBS 		=	-lSDL_mixer -lSDL -lpng -lm
+LIBS = -lSDL_mixer \
+       -lSDL \
+       -lpng \
+       -lm
 
-CFLAGS		=	-DA_PLATFORM_LINUXPC=1 \
-				-O0 -g
+CFLAGS = -DA_PLATFORM_LINUXPC=1 \
+         -O0 \
+         -g

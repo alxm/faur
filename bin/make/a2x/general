@@ -1,19 +1,22 @@
-LIBDIR	=	../../lib
-HEADER	=	$(LIBDIR)/a2x.h
-NAME	=	$(LIBDIR)/a2x_$(PLATFORM).a
+LIBDIR = ../../lib
+HEADER = $(LIBDIR)/a2x.h
+NAME   = $(LIBDIR)/a2x_$(PLATFORM).a
 
-O_DIR	=	obj_$(PLATFORM)
-C_DIR	=	../../../src
+O_DIR = obj_$(PLATFORM)
+C_DIR = ../../../src
 
-TIME	:=	$(shell date "+%F %R")
+TIME := $(shell date "+%F %R")
 
-CFLAGS	+=	-std=gnu99 -Wall -Werror \
-			-DA_COMPILE_TIME=\"'$(TIME)'\"
+CFLAGS += -std=gnu99 \
+          -Wall \
+          -Werror \
+          -DA_COMPILE_TIME=\"'$(TIME)'\"
 
-PREFIX	=	a2x_
-CFILES	= 	$(notdir $(wildcard $(C_DIR)/$(PREFIX)*.c))
-OFILES	= 	$(addprefix $(O_DIR)/, $(CFILES:.c=.o))
-HFILES	=	$(wildcard $(C_DIR)/$(PREFIX)*.p.h)
+PREFIX = a2x_
+
+CFILES = $(notdir $(wildcard $(C_DIR)/$(PREFIX)*.c))
+OFILES = $(addprefix $(O_DIR)/, $(CFILES:.c=.o))
+HFILES = $(wildcard $(C_DIR)/$(PREFIX)*.p.h)
 
 all : $(LIBDIR) $(HEADER) $(NAME)
 

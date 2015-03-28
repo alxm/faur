@@ -2,7 +2,7 @@
 # this is what gets built
 #
 
-TARGET_BINARY	=	$(TARGET_DIR)/$(APP)
+TARGET_BINARY = $(TARGET_DIR)/$(APP)
 
 #
 # Subdir for generated code and object files
@@ -14,8 +14,8 @@ A2X_GEN = a2x_gen
 # PNG and WAV files we can convert to C code
 #
 
-GFX_FILES	= $(notdir $(wildcard $(GFX_DIR)/*.png))
-SFX_FILES	= $(notdir $(wildcard $(SFX_DIR)/*.wav))
+GFX_FILES = $(notdir $(wildcard $(GFX_DIR)/*.png))
+SFX_FILES = $(notdir $(wildcard $(SFX_DIR)/*.wav))
 
 #
 # .c gfx & sfx files
@@ -23,76 +23,76 @@ SFX_FILES	= $(notdir $(wildcard $(SFX_DIR)/*.wav))
 
 C_GEN_DIR = $(SRC_DIR)/$(A2X_GEN)
 
-C_GFX_DIR	= $(C_GEN_DIR)/gfx
-C_SFX_DIR	= $(C_GEN_DIR)/sfx
+C_GFX_DIR = $(C_GEN_DIR)/gfx
+C_SFX_DIR = $(C_GEN_DIR)/sfx
 
-C_GFX_HEADER	=	$(C_GFX_DIR)/all.h
-C_SFX_HEADER	=	$(C_SFX_DIR)/all.h
+C_GFX_HEADER = $(C_GFX_DIR)/all.h
+C_SFX_HEADER = $(C_SFX_DIR)/all.h
 
-C_ALL_HEADERS	=
+C_ALL_HEADERS =
 
 ifdef GFX_DIR
-	C_ALL_HEADERS	+=	$(C_GFX_HEADER)
+	C_ALL_HEADERS += $(C_GFX_HEADER)
 endif
 
 ifdef SFX_DIR
-	C_ALL_HEADERS	+=	$(C_SFX_HEADER)
+	C_ALL_HEADERS += $(C_SFX_HEADER)
 endif
 
 #
 # PNG and WAV files in .c form
 #
 
-C_GFX_FILES	= $(addprefix $(C_GFX_DIR)/gfx_, $(GFX_FILES:.png=.c))
-C_SFX_FILES	= $(addprefix $(C_SFX_DIR)/sfx_, $(SFX_FILES:.wav=.c))
+C_GFX_FILES = $(addprefix $(C_GFX_DIR)/gfx_, $(GFX_FILES:.png=.c))
+C_SFX_FILES = $(addprefix $(C_SFX_DIR)/sfx_, $(SFX_FILES:.wav=.c))
 
 #
 # .c source files
 #
 
-CFILES	= 	$(notdir $(wildcard $(SRC_DIR)/*.c))
+CFILES =  $(notdir $(wildcard $(SRC_DIR)/*.c))
 
 #
 # object file dirs
 #
 
-O_DIR		= $(OBJ_DIR)/obj_$(PLATFORM)
+O_DIR = $(OBJ_DIR)/obj_$(PLATFORM)
 
-O_GFX_DIR	= $(O_DIR)/$(A2X_GEN)/gfx
-O_SFX_DIR	= $(O_DIR)/$(A2X_GEN)/sfx
+O_GFX_DIR = $(O_DIR)/$(A2X_GEN)/gfx
+O_SFX_DIR = $(O_DIR)/$(A2X_GEN)/sfx
 
 #
 # all the dirs
 #
 
-DIRS		=	$(OBJ_DIR) $(O_DIR) $(C_GEN_DIR)
+DIRS = $(OBJ_DIR) $(O_DIR) $(C_GEN_DIR)
 
 ifdef GFX_DIR
-	DIRS	+=	$(C_GFX_DIR) $(O_GFX_DIR)
+	DIRS +=	$(C_GFX_DIR) $(O_GFX_DIR)
 endif
 
 ifdef SFX_DIR
-	DIRS	+=	$(C_SFX_DIR) $(O_SFX_DIR)
+	DIRS +=	$(C_SFX_DIR) $(O_SFX_DIR)
 endif
 
 #
 # all object files
 #
 
-OFILES	=	$(addprefix $(O_DIR)/, $(CFILES:.c=.o)) \
-			$(addprefix $(O_GFX_DIR)/, $(notdir $(C_GFX_FILES:.c=.o))) \
-			$(addprefix $(O_SFX_DIR)/, $(notdir $(C_SFX_FILES:.c=.o)))
+OFILES = $(addprefix $(O_DIR)/, $(CFILES:.c=.o)) \
+         $(addprefix $(O_GFX_DIR)/, $(notdir $(C_GFX_FILES:.c=.o))) \
+         $(addprefix $(O_SFX_DIR)/, $(notdir $(C_SFX_FILES:.c=.o)))
 
 #
 # compile flags
 #
 
-TIME	:=	$(shell date "+%F %R")
+TIME := $(shell date "+%F %R")
 
-CFLAGS	+=	-std=gnu99 -Werror \
-			-fomit-frame-pointer -ffast-math \
-			-I$(A2X_PATH)/lib \
-			-DA_COMPILE_TIME=\"'$(TIME)'\"
+CFLAGS += -std=gnu99 \
+          -Werror \
+          -I$(A2X_PATH)/lib \
+          -DA_COMPILE_TIME=\"'$(TIME)'\"
 
 #
 # the main target
