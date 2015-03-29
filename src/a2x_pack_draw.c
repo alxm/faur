@@ -285,53 +285,6 @@ void a_draw__setRGB(uint8_t r, uint8_t g, uint8_t b)
     pixel = a_pixel_make(red, green, blue);
 }
 
-void a_draw_fill_fast(Pixel c)
-{
-    uint32_t* pixels = (uint32_t*)a_pixels;
-    const uint32_t col = (c << 16) | c;
-
-    for(int i = a_width * a_height / 2; i--; ) {
-        *pixels++ = col;
-    }
-}
-
-void a_draw_rectangle_fast(int x1, int y1, int x2, int y2, Pixel c)
-{
-    x1 = a_math_max(x1, 0);
-    y1 = a_math_max(y1, 0);
-    x2 = a_math_min(x2, a_width);
-    y2 = a_math_min(y2, a_height);
-
-    if(x1 >= x2 || y1 >= y2) {
-        return;
-    }
-
-    Pixel* pixels = a_pixels + y1 * a_width + x1;
-
-    const int w = x2 - x1;
-    const int o1 = x1 & 1;
-    const int o2 = x2 & 1;
-    const int W = (w - o1 - o2) / 2;
-
-    const uint32_t col = (c << 16) | c;
-
-    for(int i = y2 - y1; i--; pixels += a_width) {
-        if(o1) {
-            *pixels = c;
-        }
-
-        if(o2) {
-            *(pixels + w - 1) = c;
-        }
-
-        uint32_t* pixels32 = (uint32_t*)(pixels + o1);
-
-        for(int j = W; j--; ) {
-            *pixels32++ = col;
-        }
-    }
-}
-
 void a_draw_rectangle_outline(int x1, int y1, int x2, int y2, int t)
 {
     a_draw_rectangle(x1, y1, x2, y1 + t);         // top
