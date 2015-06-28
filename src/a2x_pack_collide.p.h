@@ -40,15 +40,11 @@ extern ColObject* a_colobject_new(ColMap* colmap, void* parent);
 extern void a_colobject_free(ColObject* o);
 
 extern void a_colobject_setCoords(ColObject* o, int x, int y);
+extern List* a_colobject__getColList(ColObject* o);
 extern void* a_colobject_getParent(ColObject* o);
 
-extern ColIt a_colit__new(ColObject* p);
-extern bool a_colit__next(ColIt* it);
-extern ColObject* a_colit__get(ColIt* it);
-
-#define A_COL_ITERATE(o, var) \
-    for(ColIt a__ci = a_colit__new(o); a__ci.callerPoint; a__ci.callerPoint = NULL) \
-        for(ColObject* var; a_colit__next(&a__ci) && (var = a_colit__get(&a__ci)); )
+#define A_COL_ITERATE(o, var)                                           \
+    A_LIST_FILTER(a_colobject__getColList(o), ColObject, var, o != var)
 
 #define a_collide_boxes(x1, y1, w1, h1, x2, y2, w2, h2) \
 (                                                       \

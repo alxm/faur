@@ -140,38 +140,14 @@ void* a_colobject_getParent(ColObject* const o)
     return o->parent;
 }
 
-ColIt a_colit__new(ColObject* const p)
+List* a_colobject__getColList(ColObject* o)
 {
-    ColIt it;
-    ColMap* const colmap = p->colmap;
+    ColMap* const m = o->colmap;
 
-    const int submap_x = p->x >> colmap->bitShift;
-    const int submap_y = p->y >> colmap->bitShift;
+    const int submap_x = a_math_constrain(o->x >> m->bitShift, 0, m->w - 1);
+    const int submap_y = a_math_constrain(o->y >> m->bitShift, 0, m->h - 1);
 
-    it.callerPoint = p;
-    it.points = a_listit__new(colmap->submaps[submap_y][submap_x]);
-
-    return it;
-}
-
-bool a_colit__next(ColIt* it)
-{
-    if(a_listit__next(&it->points)) {
-        // don't return the point we iterate on
-        if(a_listit__peek(&it->points) == it->callerPoint) {
-            a_listit__get(&it->points);
-            return a_colit__next(it);
-        }
-
-        return true;
-    }
-
-    return false;
-}
-
-ColObject* a_colit__get(ColIt* it)
-{
-    return a_listit__get(&it->points);
+    return m->submaps[submap_y][submap_x];
 }
 
 bool a_collide_circles(int x1, int y1, int r1, int x2, int y2, int r2)
