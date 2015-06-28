@@ -36,12 +36,12 @@ struct ColIt {
 extern ColMap* a_colmap_new(int width, int height, int maxObjectDim);
 extern void a_colmap_free(ColMap* m);
 
-extern ColObject* a_colobject_new(ColMap* m, void* parent);
+extern ColObject* a_colobject_new(const ColMap* m, void* parent);
 extern void a_colobject_free(ColObject* o);
 
 extern void a_colobject_setCoords(ColObject* o, int x, int y);
-extern List* a_colobject__getColList(ColObject* o);
-extern void* a_colobject_getParent(ColObject* o);
+extern List* a_colobject__getColList(const ColObject* o);
+extern void* a_colobject_getParent(const ColObject* o);
 
 #define A_COL_ITERATE(o, var)                                           \
     A_LIST_FILTER(a_colobject__getColList(o), ColObject, var, o != var)

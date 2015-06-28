@@ -26,7 +26,7 @@ struct ColMap {
 };
 
 struct ColObject {
-    ColMap* colmap;
+    const ColMap* colmap;
     int x, y; // coords on the Colmap
     List* nodes; // ListNodes from submaps this object is in
     void* parent; // the game object that owns this ColObject
@@ -74,7 +74,7 @@ void a_colmap_free(ColMap* m)
     free(m);
 }
 
-ColObject* a_colobject_new(ColMap* m, void* parent)
+ColObject* a_colobject_new(const ColMap* m, void* parent)
 {
     ColObject* const o = malloc(sizeof(ColObject));
 
@@ -98,7 +98,7 @@ void a_colobject_free(ColObject* o)
 
 void a_colobject_setCoords(ColObject* o, int x, int y)
 {
-    ColMap* const m = o->colmap;
+    const ColMap* const m = o->colmap;
     List* const pt_nodes = o->nodes;
 
     // remove point from all the submaps it was in
@@ -135,14 +135,14 @@ void a_colobject_setCoords(ColObject* o, int x, int y)
     }
 }
 
-void* a_colobject_getParent(ColObject* o)
+void* a_colobject_getParent(const ColObject* o)
 {
     return o->parent;
 }
 
-List* a_colobject__getColList(ColObject* o)
+List* a_colobject__getColList(const ColObject* o)
 {
-    ColMap* const m = o->colmap;
+    const ColMap* const m = o->colmap;
 
     const int submap_x = a_math_constrain(o->x >> m->bitShift, 0, m->w - 1);
     const int submap_y = a_math_constrain(o->y >> m->bitShift, 0, m->h - 1);
