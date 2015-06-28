@@ -75,7 +75,7 @@ void a_state__uninit(void)
     a_list_free(stack);
 }
 
-void a_state_new(const char* name, void (*function)(void))
+void a_state__new(const char* name, void (*function)(void))
 {
     a_state__out("New state '%s'", name);
     a_strhash_add(functions, name, function);
