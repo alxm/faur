@@ -20,10 +20,9 @@
 #include "a2x_pack_collide.v.h"
 
 struct ColMap {
-    int w; // width of map, in submaps
-    int h; // height of map, in submaps
-    int submapShift; // right-shift coords by this to get submap
-    List*** submaps; // matrix of lists of colpoints
+    int w, h; // width and height of map, in submaps
+    int bitShift; // right-shift object coords by this to get submap index
+    List*** submaps; // List*[h][w] of ColObjects
 };
 
 struct ColObject {
@@ -34,53 +33,46 @@ struct ColObject {
     void* parent; // the object that uses this ColObject
 };
 
-ColMap* a_colmap_new(int totalWidth, int totalHeight, int gridDim)
+ColMap* a_colmap_new(int width, int height, int maxObjectDim)
 {
-    ColMap* const c = malloc(sizeof(ColMap));
+    ColMap* const m = malloc(sizeof(ColMap));
 
-    #define nextpow(x) \
-    ({                 \
-        int p = 1;     \
-        while(p < x) { \
-            p <<= 1;   \
-        }              \
-        p;             \
+    #define nextpow(value)           \
+    ({                               \
+        int p = 0;                   \
+        while((1 << p) < value) p++; \
+        p;                           \
     })
 
-    const int submapDim = nextpow(gridDim);
+    m->bitShift = nextpow(maxObjectDim);
+    m->w = 1 << a_math_max(0, nextpow(width) - m->bitShift);
+    m->h = 1 << a_math_max(0, nextpow(height) - m->bitShift);
 
-    c->submapShift = log2(submapDim);
+    m->submaps = malloc(m->h * sizeof(List**));
 
-    c->w = nextpow(totalWidth) / submapDim;
-    c->h = nextpow(totalHeight) / submapDim;
+    for(int i = m->h; i--; ) {
+        m->submaps[i] = malloc(m->w * sizeof(List*));
 
-    #undef nextpow
-
-    c->submaps = malloc(c->h * sizeof(List**));
-
-    for(int i = c->h; i--; ) {
-        c->submaps[i] = malloc(c->w * sizeof(List*));
-
-        for(int j = c->w; j--; ) {
-            c->submaps[i][j] = a_list_new();
+        for(int j = m->w; j--; ) {
+            m->submaps[i][j] = a_list_new();
         }
     }
 
-    return c;
+    return m;
 }
 
-void a_colmap_free(ColMap* c)
+void a_colmap_free(ColMap* m)
 {
-    for(int i = c->h; i--; ) {
-        for(int j = c->w; j--; ) {
-            a_list_free(c->submaps[i][j]);
+    for(int i = m->h; i--; ) {
+        for(int j = m->w; j--; ) {
+            a_list_free(m->submaps[i][j]);
         }
 
-        free(c->submaps[i]);
+        free(m->submaps[i]);
     }
 
-    free(c->submaps);
-    free(c);
+    free(m->submaps);
+    free(m);
 }
 
 ColObject* a_colobject_new(ColMap* colmap, void* parent)
@@ -104,12 +96,9 @@ void a_colobject_free(ColObject* const o)
     free(o);
 }
 
-void a_colobject_setCoords(ColObject* const o, const int x, const int y)
+void a_colobject_setCoords(ColObject* o, int x, int y)
 {
-    o->x = x;
-    o->y = y;
-
-    ColMap* const colmap = o->colmap;
+    ColMap* const m = o->colmap;
     List* const pt_nodes = o->nodes;
 
     // remove point from all the submaps it was in
@@ -120,19 +109,24 @@ void a_colobject_setCoords(ColObject* const o, const int x, const int y)
     // purge old information
     a_list_empty(pt_nodes);
 
+    // set new coords
+    o->x = x;
+    o->y = y;
+
     // center submap coords
-    const int submap_x = o->x >> colmap->submapShift;
-    const int submap_y = o->y >> colmap->submapShift;
+    const int submap_x = o->x >> m->bitShift;
+    const int submap_y = o->y >> m->bitShift;
 
     // submap perimeter
-    const int startx = a_math_max(0, submap_x - 1);
-    const int endx = a_math_min(colmap->w - 1, submap_x + 1);
-    const int starty = a_math_max(0, submap_y - 1);
-    const int endy = a_math_min(colmap->h - 1, submap_y + 1);
+    const int startx = a_math_constrain(submap_x - 1, 0, m->w - 1);
+    const int endx = a_math_constrain(submap_x + 1, 0, m->w - 1);
+    const int starty = a_math_constrain(submap_y - 1, 0, m->h - 1);
+    const int endy = a_math_constrain(submap_y + 1, 0, m->h - 1);
 
     // submap matrix
-    List*** const submaps = colmap->submaps;
+    List*** const submaps = m->submaps;
 
+    // add object to every submap in its surrounding perimeter
     for(int i = starty; i <= endy; i++) {
         for(int j = startx; j <= endx; j++) {
             // add point to the submap, save node to point's nodes list
@@ -151,8 +145,8 @@ ColIt a_colit__new(ColObject* const p)
     ColIt it;
     ColMap* const colmap = p->colmap;
 
-    const int submap_x = p->x >> colmap->submapShift;
-    const int submap_y = p->y >> colmap->submapShift;
+    const int submap_x = p->x >> colmap->bitShift;
+    const int submap_y = p->y >> colmap->bitShift;
 
     it.callerPoint = p;
     it.points = a_listit__new(colmap->submaps[submap_y][submap_x]);

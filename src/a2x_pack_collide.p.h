@@ -33,8 +33,8 @@ struct ColIt {
     ListIt points; // list of points in the current submap
 };
 
-extern ColMap* a_colmap_new(int totalWidth, int totalHeight, int gridDim);
-extern void a_colmap_free(ColMap* c);
+extern ColMap* a_colmap_new(int width, int height, int maxObjectDim);
+extern void a_colmap_free(ColMap* m);
 
 extern ColObject* a_colobject_new(ColMap* colmap, void* parent);
 extern void a_colobject_free(ColObject* o);
