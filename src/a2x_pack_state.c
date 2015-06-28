@@ -34,24 +34,31 @@ static List* stack;
 static StateInstance* new_state;
 static bool changed;
 static bool replacing;
+static uint indent;
 
 #if A_PLATFORM_LINUXPC
     #define a_state__out(...)                        \
     ({                                               \
         if(!a2x_bool("app.quiet")) {                 \
             printf("\033[34;1m[ a2x Stt ]\033[0m "); \
+            for(uint i = indent; i--; ) {            \
+                printf("  ");                        \
+            }                                        \
             printf(__VA_ARGS__);                     \
             printf("\n");                            \
         }                                            \
     })
 #else
-    #define a_state__out(...)        \
-    ({                               \
-        if(!a2x_bool("app.quiet")) { \
-            printf("[ a2x Stt ] ");  \
-            printf(__VA_ARGS__);     \
-            printf("\n");            \
-        }                            \
+    #define a_state__out(...)             \
+    ({                                    \
+        if(!a2x_bool("app.quiet")) {      \
+            printf("[ a2x Stt ] ");       \
+            for(uint i = indent; i--; ) { \
+                printf("  ");             \
+            }                             \
+            printf(__VA_ARGS__);          \
+            printf("\n");                 \
+        }                                 \
     })
 #endif
 
@@ -62,6 +69,7 @@ void a_state__init(void)
     new_state = NULL;
     changed = false;
     replacing = false;
+    indent = 0;
 }
 
 void a_state__uninit(void)
@@ -168,11 +176,13 @@ void a_state_replace(const char* name)
     a_state__out("Replace state '%s' with '%s'", active->name, name);
 
     replacing = true;
+    indent++;
 
     a_state_pop();
     a_state_push(name);
 
     replacing = false;
+    indent--;
 }
 
 void a_state_pause(void)
