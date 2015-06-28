@@ -26,7 +26,6 @@ typedef struct ColMap ColMap;
 typedef struct ColObject ColObject;
 typedef struct ColIt ColIt;
 
-#include "a2x_pack_fix.p.h"
 #include "a2x_pack_listit.p.h"
 
 struct ColIt {
@@ -40,7 +39,7 @@ extern void a_colmap_free(ColMap* c);
 extern ColObject* a_colobject_new(ColMap* colmap, void* parent);
 extern void a_colobject_free(ColObject* o);
 
-extern void a_colobject_setCoords(ColObject* o, fix x, fix y);
+extern void a_colobject_setCoords(ColObject* o, int x, int y);
 extern void* a_colobject_getParent(ColObject* o);
 
 extern ColIt a_colit__new(ColObject* p);
