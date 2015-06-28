@@ -26,12 +26,12 @@ struct ColMap {
     List*** submaps; // matrix of lists of colpoints
 };
 
-struct ColPoint {
+struct ColObject {
     fix x;
     fix y;
     ColMap* colmap; // the colmap this point belongs to
     List* nodes; // ListNodes from submaps this point is in
-    void* parent; // the object that uses this ColPoint
+    void* parent; // the object that uses this ColObject
 };
 
 ColMap* a_colmap_new(int totalWidth, int totalHeight, int gridDim)
@@ -83,37 +83,34 @@ void a_colmap_free(ColMap* c)
     free(c);
 }
 
-ColPoint* a_colpoint_new(ColMap* colmap, void* parent)
+ColObject* a_colobject_new(ColMap* colmap, void* parent)
 {
-    ColPoint* const p = malloc(sizeof(ColPoint));
+    ColObject* const o = malloc(sizeof(ColObject));
 
-    p->colmap = colmap;
-    p->nodes = a_list_new();
-    p->parent = parent;
+    o->colmap = colmap;
+    o->nodes = a_list_new();
+    o->parent = parent;
 
-    return p;
+    return o;
 }
 
-void a_colpoint_free(ColPoint* const p)
+void a_colobject_free(ColObject* const o)
 {
-    List* const nodes = p->nodes;
-
-    A_LIST_ITERATE(nodes, ListNode, n) {
+    A_LIST_ITERATE(o->nodes, ListNode, n) {
         a_list_removeNode(n);
     }
 
-    a_list_free(p->nodes);
-
-    free(p);
+    a_list_free(o->nodes);
+    free(o);
 }
 
-void a_colpoint_setCoords(ColPoint* const p, const fix x, const fix y)
+void a_colobject_setCoords(ColObject* const o, const fix x, const fix y)
 {
-    p->x = x;
-    p->y = y;
+    o->x = x;
+    o->y = y;
 
-    ColMap* const colmap = p->colmap;
-    List* const pt_nodes = p->nodes;
+    ColMap* const colmap = o->colmap;
+    List* const pt_nodes = o->nodes;
 
     // remove point from all the submaps it was in
     A_LIST_ITERATE(pt_nodes, ListNode, n) {
@@ -124,8 +121,8 @@ void a_colpoint_setCoords(ColPoint* const p, const fix x, const fix y)
     a_list_empty(pt_nodes);
 
     // center submap coords
-    const int submap_x = a_fix_fixtoi(p->x) >> colmap->submapShift;
-    const int submap_y = a_fix_fixtoi(p->y) >> colmap->submapShift;
+    const int submap_x = a_fix_fixtoi(o->x) >> colmap->submapShift;
+    const int submap_y = a_fix_fixtoi(o->y) >> colmap->submapShift;
 
     // submap perimeter
     const int startx = a_math_max(0, submap_x - 1);
@@ -139,17 +136,17 @@ void a_colpoint_setCoords(ColPoint* const p, const fix x, const fix y)
     for(int i = starty; i <= endy; i++) {
         for(int j = startx; j <= endx; j++) {
             // add point to the submap, save node to point's nodes list
-            a_list_addFirst(pt_nodes, a_list_addFirst(submaps[i][j], p));
+            a_list_addFirst(pt_nodes, a_list_addFirst(submaps[i][j], o));
         }
     }
 }
 
-void* a_colpoint_getParent(ColPoint* const p)
+void* a_colobject_getParent(ColObject* const o)
 {
-    return p->parent;
+    return o->parent;
 }
 
-ColIt a_colit__new(ColPoint* const p)
+ColIt a_colit__new(ColObject* const p)
 {
     ColIt it;
     ColMap* const colmap = p->colmap;
@@ -178,7 +175,7 @@ bool a_colit__next(ColIt* it)
     return false;
 }
 
-ColPoint* a_colit__get(ColIt* it)
+ColObject* a_colit__get(ColIt* it)
 {
     return a_listit__get(&it->points);
 }

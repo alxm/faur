@@ -23,33 +23,33 @@
 #include "a2x_app_includes.h"
 
 typedef struct ColMap ColMap;
-typedef struct ColPoint ColPoint;
+typedef struct ColObject ColObject;
 typedef struct ColIt ColIt;
 
 #include "a2x_pack_fix.p.h"
 #include "a2x_pack_listit.p.h"
 
 struct ColIt {
-    ColPoint* callerPoint;
+    ColObject* callerPoint;
     ListIt points; // list of points in the current submap
 };
 
 extern ColMap* a_colmap_new(int totalWidth, int totalHeight, int gridDim);
 extern void a_colmap_free(ColMap* c);
 
-extern ColPoint* a_colpoint_new(ColMap* colmap, void* parent);
-extern void a_colpoint_free(ColPoint* c);
+extern ColObject* a_colobject_new(ColMap* colmap, void* parent);
+extern void a_colobject_free(ColObject* o);
 
-extern void a_colpoint_setCoords(ColPoint* b, fix x, fix y);
-extern void* a_colpoint_getParent(ColPoint* b);
+extern void a_colobject_setCoords(ColObject* o, fix x, fix y);
+extern void* a_colobject_getParent(ColObject* o);
 
-extern ColIt a_colit__new(ColPoint* b);
+extern ColIt a_colit__new(ColObject* p);
 extern bool a_colit__next(ColIt* it);
-extern ColPoint* a_colit__get(ColIt* it);
+extern ColObject* a_colit__get(ColIt* it);
 
-#define A_COL_ITERATE(colpoint, var)                                                       \
-    for(ColIt a__ci = a_colit__new(colpoint); a__ci.callerPoint; a__ci.callerPoint = NULL) \
-        for(ColPoint* var; a_colit__next(&a__ci) && (var = a_colit__get(&a__ci)); )
+#define A_COL_ITERATE(o, var) \
+    for(ColIt a__ci = a_colit__new(o); a__ci.callerPoint; a__ci.callerPoint = NULL) \
+        for(ColObject* var; a_colit__next(&a__ci) && (var = a_colit__get(&a__ci)); )
 
 #define a_collide_boxes(x1, y1, w1, h1, x2, y2, w2, h2) \
 (                                                       \
