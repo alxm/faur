@@ -36,7 +36,7 @@ struct ColIt {
 extern ColMap* a_colmap_new(int width, int height, int maxObjectDim);
 extern void a_colmap_free(ColMap* m);
 
-extern ColObject* a_colobject_new(ColMap* colmap, void* parent);
+extern ColObject* a_colobject_new(ColMap* m, void* parent);
 extern void a_colobject_free(ColObject* o);
 
 extern void a_colobject_setCoords(ColObject* o, int x, int y);

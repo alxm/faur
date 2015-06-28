@@ -26,11 +26,10 @@ struct ColMap {
 };
 
 struct ColObject {
-    int x;
-    int y;
-    ColMap* colmap; // the colmap this point belongs to
-    List* nodes; // ListNodes from submaps this point is in
-    void* parent; // the object that uses this ColObject
+    ColMap* colmap;
+    int x, y; // coords on the Colmap
+    List* nodes; // ListNodes from submaps this object is in
+    void* parent; // the game object that owns this ColObject
 };
 
 ColMap* a_colmap_new(int width, int height, int maxObjectDim)
@@ -75,19 +74,20 @@ void a_colmap_free(ColMap* m)
     free(m);
 }
 
-ColObject* a_colobject_new(ColMap* colmap, void* parent)
+ColObject* a_colobject_new(ColMap* m, void* parent)
 {
     ColObject* const o = malloc(sizeof(ColObject));
 
-    o->colmap = colmap;
+    o->colmap = m;
     o->nodes = a_list_new();
     o->parent = parent;
 
     return o;
 }
 
-void a_colobject_free(ColObject* const o)
+void a_colobject_free(ColObject* o)
 {
+    // Remove object from any lists it is in
     A_LIST_ITERATE(o->nodes, ListNode, n) {
         a_list_removeNode(n);
     }
@@ -135,7 +135,7 @@ void a_colobject_setCoords(ColObject* o, int x, int y)
     }
 }
 
-void* a_colobject_getParent(ColObject* const o)
+void* a_colobject_getParent(ColObject* o)
 {
     return o->parent;
 }
