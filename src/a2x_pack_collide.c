@@ -83,12 +83,13 @@ void a_colmap_free(ColMap* c)
     free(c);
 }
 
-ColPoint* a_colpoint_new(ColMap* colmap)
+ColPoint* a_colpoint_new(ColMap* colmap, void* parent)
 {
     ColPoint* const p = malloc(sizeof(ColPoint));
 
     p->colmap = colmap;
     p->nodes = a_list_new();
+    p->parent = parent;
 
     return p;
 }
@@ -141,11 +142,6 @@ void a_colpoint_setCoords(ColPoint* const p, const fix x, const fix y)
             a_list_addFirst(pt_nodes, a_list_addFirst(submaps[i][j], p));
         }
     }
-}
-
-void a_colpoint_setParent(ColPoint* const p, void* parent)
-{
-    p->parent = parent;
 }
 
 void* a_colpoint_getParent(ColPoint* const p)

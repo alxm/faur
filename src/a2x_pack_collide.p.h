@@ -37,11 +37,10 @@ struct ColIt {
 extern ColMap* a_colmap_new(int totalWidth, int totalHeight, int gridDim);
 extern void a_colmap_free(ColMap* c);
 
-extern ColPoint* a_colpoint_new(ColMap* colmap);
+extern ColPoint* a_colpoint_new(ColMap* colmap, void* parent);
 extern void a_colpoint_free(ColPoint* c);
 
 extern void a_colpoint_setCoords(ColPoint* b, fix x, fix y);
-extern void a_colpoint_setParent(ColPoint* b, void* parent);
 extern void* a_colpoint_getParent(ColPoint* b);
 
 extern ColIt a_colit__new(ColPoint* b);
