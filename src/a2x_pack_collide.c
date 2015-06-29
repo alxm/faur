@@ -100,6 +100,7 @@ void a_colobject_setCoords(ColObject* o, int x, int y)
 {
     const ColMap* const m = o->colmap;
     List* const pt_nodes = o->nodes;
+    List*** const submaps = m->submaps;
 
     // remove point from all the submaps it was in
     A_LIST_ITERATE(pt_nodes, ListNode, n) {
@@ -117,18 +118,34 @@ void a_colobject_setCoords(ColObject* o, int x, int y)
     const int submap_x = o->x >> m->bitShift;
     const int submap_y = o->y >> m->bitShift;
 
-    // submap perimeter
-    const int startx = a_math_constrain(submap_x - 1, 0, m->w - 1);
-    const int endx = a_math_constrain(submap_x + 1, 0, m->w - 1);
-    const int starty = a_math_constrain(submap_y - 1, 0, m->h - 1);
-    const int endy = a_math_constrain(submap_y + 1, 0, m->h - 1);
+    // offset inside submap
+    const int submapDim = 1 << m->bitShift;
+    int offset_x = o->x & (submapDim - 1);
+    int offset_y = o->y & (submapDim - 1);
 
-    // submap matrix
-    List*** const submaps = m->submaps;
+    // submaps perimeter
+    int start_x, end_x;
+    int start_y, end_y;
+
+    if(offset_x < submapDim / 2) {
+        start_x = a_math_constrain(submap_x - 1, 0, m->w - 1);
+        end_x = a_math_constrain(submap_x, 0, m->w - 1);
+    } else {
+        start_x = a_math_constrain(submap_x, 0, m->w - 1);
+        end_x = a_math_constrain(submap_x + 1, 0, m->w - 1);
+    }
+
+    if(offset_y < submapDim / 2) {
+        start_y = a_math_constrain(submap_y - 1, 0, m->h - 1);
+        end_y = a_math_constrain(submap_y, 0, m->h - 1);
+    } else {
+        start_y = a_math_constrain(submap_y, 0, m->h - 1);
+        end_y = a_math_constrain(submap_y + 1, 0, m->h - 1);
+    }
 
     // add object to every submap in its surrounding perimeter
-    for(int i = starty; i <= endy; i++) {
-        for(int j = startx; j <= endx; j++) {
+    for(int i = start_y; i <= end_y; i++) {
+        for(int j = start_x; j <= end_x; j++) {
             // add point to the submap, save node to point's nodes list
             a_list_addFirst(pt_nodes, a_list_addFirst(submaps[i][j], o));
         }
