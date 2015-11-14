@@ -23,14 +23,14 @@ struct SpriteFrames {
     List* sprites;
     Sprite** spriteArray;
     int num;
-    uint countdown;
-    uint callsToNextFrame;
+    unsigned int countdown;
+    unsigned int callsToNextFrame;
     int index;
     int dir;
     bool paused;
 };
 
-SpriteFrames* a_spriteframes_new(const Sprite* sheet, int x, int y, uint callsToNextFrame)
+SpriteFrames* a_spriteframes_new(const Sprite* sheet, int x, int y, unsigned int callsToNextFrame)
 {
     SpriteFrames* const sf = malloc(sizeof(SpriteFrames));
 

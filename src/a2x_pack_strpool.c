@@ -22,11 +22,11 @@
 
 struct StringPool {
     char* data;
-    uint size;
-    uint offset;
+    unsigned int size;
+    unsigned int offset;
 };
 
-StringPool* a_strpool_new(uint bytes)
+StringPool* a_strpool_new(unsigned int bytes)
 {
     StringPool* const sp = malloc(sizeof(StringPool));
 
@@ -43,10 +43,10 @@ void a_strpool_free(StringPool* sp)
     free(sp);
 }
 
-char* a_strpool_alloc(StringPool* sp, uint size)
+char* a_strpool_alloc(StringPool* sp, unsigned int size)
 {
-    const uint old_offset = sp->offset;
-    const uint new_offset = old_offset + size;
+    const unsigned int old_offset = sp->offset;
+    const unsigned int new_offset = old_offset + size;
 
     if(new_offset > sp->size) {
         return NULL;

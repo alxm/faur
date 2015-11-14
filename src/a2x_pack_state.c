@@ -34,14 +34,14 @@ static List* stack;
 static StateInstance* new_state;
 static bool changed;
 static bool replacing;
-static uint indent;
+static int indent;
 
 #if A_PLATFORM_LINUXPC
     #define a_state__out(...)                        \
     ({                                               \
         if(!a2x_bool("app.quiet")) {                 \
             printf("\033[34;1m[ a2x Stt ]\033[0m "); \
-            for(uint i = indent; i--; ) {            \
+            for(int i = indent; i--; ) {             \
                 printf("  ");                        \
             }                                        \
             printf(__VA_ARGS__);                     \
@@ -53,7 +53,7 @@ static uint indent;
     ({                                    \
         if(!a2x_bool("app.quiet")) {      \
             printf("[ a2x Stt ] ");       \
-            for(uint i = indent; i--; ) { \
+            for(int i = indent; i--; ) {  \
                 printf("  ");             \
             }                             \
             printf(__VA_ARGS__);          \

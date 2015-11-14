@@ -40,7 +40,7 @@ void a_str__uninit(void)
     a_list_free(pools);
 }
 
-char* a_str__alloc(uint size)
+char* a_str__alloc(unsigned int size)
 {
     char* const str = a_strpool_alloc(pool, size);
 
@@ -57,7 +57,7 @@ char* a_str__alloc(uint size)
 void* a_str__malloc(int count, ...)
 {
     va_list args;
-    uint size = 0;
+    unsigned int size = 0;
 
     va_start(args, count);
 

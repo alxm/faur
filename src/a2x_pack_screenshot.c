@@ -23,7 +23,7 @@
 
 static bool can_save;
 static char* prefix;
-static uint number;
+static unsigned int number;
 
 void a_screenshot__init(void)
 {

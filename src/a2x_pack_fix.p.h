@@ -23,7 +23,7 @@
 #include "a2x_app_includes.h"
 
 typedef int fix;
-typedef uint ufix;
+typedef unsigned int ufix;
 
 #include "a2x_pack_math.p.h"
 

@@ -209,7 +209,7 @@ void a_sprite_refresh(Sprite* s)
     // Spans format:
     // [1 (draw) / 0 (transp)][[len]...][0 (end line)]
 
-    uint num = 0;
+    unsigned int num = 0;
     const Pixel* dest = dst;
 
     for(int y = h; y--; ) {
