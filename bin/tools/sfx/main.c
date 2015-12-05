@@ -27,8 +27,8 @@ A_MAIN
     File* const hf = a_file_open(hFile, "w");
     File* const cf = a_file_open(cFile, "w");
 
-    FILE* const h = a_file_file(hf);
-    FILE* const c = a_file_file(cf);
+    FILE* const h = a_file_handle(hf);
+    FILE* const c = a_file_handle(cf);
 
     // header
 
