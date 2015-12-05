@@ -43,8 +43,9 @@ extern void a_colobject_setCoords(ColObject* o, int x, int y);
 extern List* a_colobject__getColList(const ColObject* o);
 extern void* a_colobject_getParent(const ColObject* o);
 
-#define A_COL_ITERATE(o, var)                                           \
-    A_LIST_FILTER(a_colobject__getColList(o), ColObject, var, o != var)
+#define A_COL_ITERATE(o, type, var)                                 \
+    A_LIST_FILTER(a_colobject__getColList(o), ColObject, c, o != c) \
+        for(type* var = a_colobject_getParent(c); var; var = NULL)
 
 #define a_collide_boxes(x1, y1, w1, h1, x2, y2, w2, h2) \
 (                                                       \
