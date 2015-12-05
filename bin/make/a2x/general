@@ -7,7 +7,7 @@ C_DIR = ../../../src
 
 TIME := $(shell date "+%F %R")
 
-CFLAGS += -std=gnu99 \
+CFLAGS += -std=c99 \
           -Wall \
           -Werror \
           -DA_COMPILE_TIME=\"'$(TIME)'\"
