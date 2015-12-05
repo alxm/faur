@@ -152,7 +152,7 @@ void a_colobject_setCoords(ColObject* o, int x, int y)
     }
 }
 
-void* a_colobject_getParent(const ColObject* o)
+void* a_colobject__getParent(const ColObject* o)
 {
     return o->parent;
 }
