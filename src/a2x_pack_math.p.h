@@ -25,24 +25,24 @@
 #define a_math_srand()     srand(time(NULL))
 #define a_math_rand(range) (rand() % (range))
 
-#define a_math_min(x, y)         \
-({                               \
-    const typeof(x) a__x = (x);  \
-    const typeof(y) a__y = (y);  \
-    (a__x < a__y) ? a__x : a__y; \
+#define a_math_min(x, y)          \
+({                                \
+    const __typeof(x) a__x = (x); \
+    const __typeof(y) a__y = (y); \
+    (a__x < a__y) ? a__x : a__y;  \
 })
 
-#define a_math_max(x, y)         \
-({                               \
-    const typeof(x) a__x = (x);  \
-    const typeof(y) a__y = (y);  \
-    (a__x > a__y) ? a__x : a__y; \
+#define a_math_max(x, y)          \
+({                                \
+    const __typeof(x) a__x = (x); \
+    const __typeof(y) a__y = (y); \
+    (a__x > a__y) ? a__x : a__y;  \
 })
 
-#define a_math_abs(x)           \
-({                              \
-    const typeof(x) a__x = (x); \
-    (a__x >= 0) ? a__x : -a__x; \
+#define a_math_abs(x)             \
+({                                \
+    const __typeof(x) a__x = (x); \
+    (a__x >= 0) ? a__x : -a__x;   \
 })
 
 #define A_MATH_PI                3.14159265f
@@ -57,9 +57,9 @@
 
 #define a_math_constrain(x, min, max)                             \
 ({                                                                \
-    const typeof(x) a__x = (x);                                   \
-    const typeof(x) a__min = (min);                               \
-    const typeof(x) a__max = (max);                               \
+    const __typeof(x) a__x = (x);                                 \
+    const __typeof(x) a__min = (min);                             \
+    const __typeof(x) a__max = (max);                             \
     (a__x < a__min) ? a__min : ((a__x > a__max) ? a__max : a__x); \
 })
 

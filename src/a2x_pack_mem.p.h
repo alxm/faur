@@ -29,11 +29,11 @@
     a__m;                              \
 })
 
-#define a_mem_make(c)                              \
-({                                                 \
-    typeof(c)* const a__m = malloc(sizeof(*a__m)); \
-    *a__m = c;                                     \
-    a__m;                                          \
+#define a_mem_make(c)                                \
+({                                                   \
+    __typeof(c)* const a__m = malloc(sizeof(*a__m)); \
+    *a__m = c;                                       \
+    a__m;                                            \
 })
 
 extern void* a_mem_encodeRLE(const void* data, int length, int size, int* encLength);
