@@ -37,8 +37,18 @@ extern void a_state_resume(void);
 
 extern void a_state_exit(void);
 
-typedef enum {A_STATE_STAGE_INVALID, A_STATE_STAGE_INIT, A_STATE_STAGE_BODY, A_STATE_STAGE_FREE} StateStage;
-typedef enum {A_STATE_BODYSTAGE_INVALID, A_STATE_BODYSTAGE_RUN, A_STATE_BODYSTAGE_PAUSE} StateBodyStage;
+typedef enum {
+    A_STATE_STAGE_INVALID,
+    A_STATE_STAGE_INIT,
+    A_STATE_STAGE_BODY,
+    A_STATE_STAGE_FREE
+} StateStage;
+
+typedef enum {
+    A_STATE_BODYSTAGE_INVALID,
+    A_STATE_BODYSTAGE_RUN,
+    A_STATE_BODYSTAGE_PAUSE
+} StateBodyStage;
 
 #define A_STATE(name) void A_STATE__FORM_NAME(name)(void)
 #define A_STATE_INIT if(a_state__stage() == A_STATE_STAGE_INIT)
