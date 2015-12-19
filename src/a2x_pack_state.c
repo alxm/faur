@@ -21,13 +21,13 @@
 
 typedef void (*StateFunction)(void);
 
-typedef struct StateInstance {
+struct StateInstance {
     const char* name;
     StateFunction function;
     StrHash* objects;
     StateStage stage;
     StateBodyStage bodystage;
-} StateInstance;
+};
 
 static StrHash* functions;
 static List* stack;
@@ -150,7 +150,7 @@ void a_state_pop(void)
     a_state__out("Pop state '%s'", active->name);
 
     changed = true;
-    active->stage = A_STATE_STAGE_FREE;
+    a_state__setStage(active, A_STATE_STAGE_FREE);
 }
 
 void a_state_replace(const char* name)
@@ -197,7 +197,7 @@ void a_state_pause(void)
         exit(1);
     }
 
-    active->bodystage = A_STATE_BODYSTAGE_PAUSE;
+    a_state__setBodyStage(active, A_STATE_BODYSTAGE_PAUSE);
     changed = true;
 }
 
@@ -213,7 +213,7 @@ void a_state_resume(void)
         exit(1);
     }
 
-    active->bodystage = A_STATE_BODYSTAGE_RUN;
+    a_state__setBodyStage(active, A_STATE_BODYSTAGE_RUN);
     changed = true;
 }
 
@@ -223,7 +223,7 @@ void a_state_exit(void)
 
     A_LIST_ITERATE(stack, StateInstance, s) {
         a_state__out("State '%s' exiting", s->name);
-        s->stage = A_STATE_STAGE_FREE;
+        a_state__setStage(s, A_STATE_STAGE_FREE);
     }
 }
 
@@ -289,16 +289,26 @@ StateBodyStage a_state__bodystage(void)
     return A_STATE_BODYSTAGE_INVALID;
 }
 
-bool a_state__setStage(StateStage stage)
+bool a_state__setStage(StateInstance* state, StateStage stage)
 {
-    StateInstance* const s = a_list_peek(stack);
+    StateInstance* const s = state ? state : a_list_peek(stack);
 
     if(s) {
+        a_state__out("State '%s' transitioning from %d to %d",
+            s->name, s->stage, stage);
         s->stage = stage;
+
         return true;
     }
 
     return false;
+}
+
+void a_state__setBodyStage(StateInstance* state, StateBodyStage bodystage)
+{
+    a_state__out("State '%s' transitioning from %d to %d",
+        state->name, state->bodystage, bodystage);
+    state->bodystage = bodystage;
 }
 
 bool a_state__unchanged(void)
