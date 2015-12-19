@@ -163,7 +163,10 @@ void a_state_pop(void)
     a_state__out("Pop state '%s'", active->name);
 
     changed = true;
+
+    indent++;
     a_state__setStage(active, A_STATE_STAGE_FREE);
+    indent--;
 }
 
 void a_state_replace(const char* name)
@@ -237,7 +240,10 @@ void a_state_exit(void)
 
     A_LIST_ITERATE(stack, StateInstance, s) {
         a_state__out("State '%s' exiting", s->name);
+
+        indent++;
         a_state__setStage(s, A_STATE_STAGE_FREE);
+        indent--;
     }
 }
 
