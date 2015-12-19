@@ -36,6 +36,19 @@ static bool changed;
 static bool replacing;
 static int indent;
 
+static char* stage_names[A_STATE_STAGE_NUM] = {
+    "Invalid",
+    "Init",
+    "Body",
+    "Free",
+};
+
+static char* bodystage_names[A_STATE_BODYSTAGE_NUM] = {
+    "Invalid",
+    "Running",
+    "Paused",
+};
+
 #if A_PLATFORM_LINUXPC
     #define a_state__out(...)                        \
     ({                                               \
@@ -220,6 +233,7 @@ void a_state_resume(void)
 void a_state_exit(void)
 {
     changed = true;
+    a_state__out("Telling all states to exit");
 
     A_LIST_ITERATE(stack, StateInstance, s) {
         a_state__out("State '%s' exiting", s->name);
@@ -294,8 +308,8 @@ bool a_state__setStage(StateInstance* state, StateStage stage)
     StateInstance* const s = state ? state : a_list_peek(stack);
 
     if(s) {
-        a_state__out("State '%s' transitioning from %d to %d",
-            s->name, s->stage, stage);
+        a_state__out("State '%s' transitioning from %s to %s",
+            s->name, stage_names[s->stage], stage_names[stage]);
         s->stage = stage;
 
         return true;
@@ -306,8 +320,8 @@ bool a_state__setStage(StateInstance* state, StateStage stage)
 
 void a_state__setBodyStage(StateInstance* state, StateBodyStage bodystage)
 {
-    a_state__out("State '%s' transitioning from %d to %d",
-        state->name, state->bodystage, bodystage);
+    a_state__out("State '%s' transitioning from %s to %s",
+        state->name, bodystage_names[state->bodystage], bodystage_names[bodystage]);
     state->bodystage = bodystage;
 }
 
