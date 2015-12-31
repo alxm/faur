@@ -22,6 +22,8 @@
 
 #include "a2x_app_includes.h"
 
+typedef struct StateInstance StateInstance;
+
 #define A_STATE__FORM_NAME(name) a_state__name_##name
 
 #define a_state_new(name) a_state__new(#name, A_STATE__FORM_NAME(name))
@@ -41,18 +43,20 @@ typedef enum {
     A_STATE_STAGE_INVALID,
     A_STATE_STAGE_INIT,
     A_STATE_STAGE_BODY,
-    A_STATE_STAGE_FREE
+    A_STATE_STAGE_FREE,
+    A_STATE_STAGE_NUM
 } StateStage;
 
 typedef enum {
     A_STATE_BODYSTAGE_INVALID,
     A_STATE_BODYSTAGE_RUN,
-    A_STATE_BODYSTAGE_PAUSE
+    A_STATE_BODYSTAGE_PAUSE,
+    A_STATE_BODYSTAGE_NUM
 } StateBodyStage;
 
 #define A_STATE(name) void A_STATE__FORM_NAME(name)(void)
 #define A_STATE_INIT if(a_state__stage() == A_STATE_STAGE_INIT)
-#define A_STATE_BODY if(a_state__stage() == A_STATE_STAGE_BODY || (a_state__stage() == A_STATE_STAGE_INIT && a_state__setStage(A_STATE_STAGE_BODY)))
+#define A_STATE_BODY if(a_state__stage() == A_STATE_STAGE_BODY || (a_state__stage() == A_STATE_STAGE_INIT && a_state__setStage(NULL, A_STATE_STAGE_BODY)))
 #define A_STATE_FREE if(a_state__stage() == A_STATE_STAGE_FREE)
 #define A_STATE_RUN if(a_state__stage() == A_STATE_STAGE_BODY && a_state__bodystage() == A_STATE_BODYSTAGE_RUN)
 #define A_STATE_PAUSE if(a_state__stage() == A_STATE_STAGE_BODY && a_state__bodystage() == A_STATE_BODYSTAGE_PAUSE)
@@ -64,7 +68,8 @@ extern void* a_state_get(const char* name);
 extern StateStage a_state__stage(void);
 extern StateBodyStage a_state__bodystage(void);
 
-extern bool a_state__setStage(StateStage stage);
+extern bool a_state__setStage(StateInstance* state, StateStage stage);
+extern void a_state__setBodyStage(StateInstance* state, StateBodyStage bodystage);
 extern bool a_state__unchanged(void);
 
 #endif // A2X_PACK_STATE_PH

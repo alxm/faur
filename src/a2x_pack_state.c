@@ -21,13 +21,13 @@
 
 typedef void (*StateFunction)(void);
 
-typedef struct StateInstance {
+struct StateInstance {
     const char* name;
     StateFunction function;
     StrHash* objects;
     StateStage stage;
     StateBodyStage bodystage;
-} StateInstance;
+};
 
 static StrHash* functions;
 static List* stack;
@@ -35,6 +35,19 @@ static StateInstance* new_state;
 static bool changed;
 static bool replacing;
 static int indent;
+
+static char* stage_names[A_STATE_STAGE_NUM] = {
+    "Invalid",
+    "Init",
+    "Body",
+    "Free",
+};
+
+static char* bodystage_names[A_STATE_BODYSTAGE_NUM] = {
+    "Invalid",
+    "Running",
+    "Paused",
+};
 
 #if A_PLATFORM_LINUXPC
     #define a_state__out(...)                        \
@@ -150,7 +163,10 @@ void a_state_pop(void)
     a_state__out("Pop state '%s'", active->name);
 
     changed = true;
-    active->stage = A_STATE_STAGE_FREE;
+
+    indent++;
+    a_state__setStage(active, A_STATE_STAGE_FREE);
+    indent--;
 }
 
 void a_state_replace(const char* name)
@@ -197,7 +213,7 @@ void a_state_pause(void)
         exit(1);
     }
 
-    active->bodystage = A_STATE_BODYSTAGE_PAUSE;
+    a_state__setBodyStage(active, A_STATE_BODYSTAGE_PAUSE);
     changed = true;
 }
 
@@ -213,17 +229,21 @@ void a_state_resume(void)
         exit(1);
     }
 
-    active->bodystage = A_STATE_BODYSTAGE_RUN;
+    a_state__setBodyStage(active, A_STATE_BODYSTAGE_RUN);
     changed = true;
 }
 
 void a_state_exit(void)
 {
     changed = true;
+    a_state__out("Telling all states to exit");
 
     A_LIST_ITERATE(stack, StateInstance, s) {
         a_state__out("State '%s' exiting", s->name);
-        s->stage = A_STATE_STAGE_FREE;
+
+        indent++;
+        a_state__setStage(s, A_STATE_STAGE_FREE);
+        indent--;
     }
 }
 
@@ -289,16 +309,26 @@ StateBodyStage a_state__bodystage(void)
     return A_STATE_BODYSTAGE_INVALID;
 }
 
-bool a_state__setStage(StateStage stage)
+bool a_state__setStage(StateInstance* state, StateStage stage)
 {
-    StateInstance* const s = a_list_peek(stack);
+    StateInstance* const s = state ? state : a_list_peek(stack);
 
     if(s) {
+        a_state__out("State '%s' transitioning from %s to %s",
+            s->name, stage_names[s->stage], stage_names[stage]);
         s->stage = stage;
+
         return true;
     }
 
     return false;
+}
+
+void a_state__setBodyStage(StateInstance* state, StateBodyStage bodystage)
+{
+    a_state__out("State '%s' transitioning from %s to %s",
+        state->name, bodystage_names[state->bodystage], bodystage_names[bodystage]);
+    state->bodystage = bodystage;
 }
 
 bool a_state__unchanged(void)
