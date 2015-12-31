@@ -44,8 +44,7 @@ void a_sdl__init(void)
     ret = SDL_Init(sdlFlags);
 
     if(ret != 0) {
-        a_error("SDL: %s", SDL_GetError());
-        exit(1);
+        a_fatal("SDL: %s", SDL_GetError());
     }
 }
 
@@ -70,8 +69,7 @@ bool a_sdl__screen_set(void)
 
     if(bpp == 0) {
         if(first_time) {
-            a_error("SDL: %dx%d video not available", a_width * scale, a_height * scale);
-            exit(1);
+            a_fatal("SDL: %dx%d video not available", a_width * scale, a_height * scale);
         } else {
             a_warning("SDL: %dx%d video not available", a_width * scale, a_height * scale);
             return false;
@@ -82,8 +80,7 @@ bool a_sdl__screen_set(void)
     screen = SDL_SetVideoMode(a_width * scale, a_height * scale, A_BPP, videoFlags);
 
     if(screen == NULL) {
-        a_error("SDL: %s", SDL_GetError());
-        exit(1);
+        a_fatal("SDL: %s", SDL_GetError());
     }
 
     SDL_SetClipRect(screen, NULL);

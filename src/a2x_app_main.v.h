@@ -66,6 +66,14 @@
         fprintf(stderr, __VA_ARGS__);                     \
         fprintf(stderr, "\n");                            \
     })
+
+    #define a_fatal(...)                                  \
+    ({                                                    \
+        fprintf(stderr, "\033[35;1m[ a2x Ftl ]\033[0m "); \
+        fprintf(stderr, __VA_ARGS__);                     \
+        fprintf(stderr, "\n");                            \
+        exit(1);                                          \
+    })
 #else
     #define a_out(...)               \
     ({                               \
@@ -88,6 +96,14 @@
         fprintf(stderr, "[ a2x Err ] "); \
         fprintf(stderr, __VA_ARGS__);    \
         fprintf(stderr, "\n");           \
+    })
+
+    #define a_fatal(...)                 \
+    ({                                   \
+        fprintf(stderr, "[ a2x Ftl ] "); \
+        fprintf(stderr, __VA_ARGS__);    \
+        fprintf(stderr, "\n");           \
+        exit(1);                         \
     })
 #endif
 

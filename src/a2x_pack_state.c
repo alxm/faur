@@ -111,16 +111,14 @@ void a_state_push(const char* name)
             a_state__out("Push state '%s': already exiting", name);
             return;
         } else if(active->stage != A_STATE_STAGE_BODY) {
-            a_error("Push state '%s': only call from A_STATE_BODY", name);
-            exit(1);
+            a_fatal("Push state '%s': only call from A_STATE_BODY", name);
         }
     }
 
     StateFunction function = a_strhash_get(functions, name);
 
     if(function == NULL) {
-        a_error("Push state '%s': does not exist", name);
-        exit(1);
+        a_fatal("Push state '%s': does not exist", name);
     }
 
     changed = true;
@@ -140,8 +138,7 @@ void a_state_push(const char* name)
         a_state__out("Push state '%s'", name);
         new_state = s;
     } else {
-        a_error("Push state '%s': already pushed state '%s'", name, new_state->name);
-        exit(1);
+        a_fatal("Push state '%s': already pushed state '%s'", name, new_state->name);
     }
 }
 
@@ -150,14 +147,12 @@ void a_state_pop(void)
     StateInstance* const active = a_list_peek(stack);
 
     if(active == NULL) {
-        a_error("Pop state: no active state");
-        exit(1);
+        a_fatal("Pop state: no active state");
     } else if(active->stage == A_STATE_STAGE_FREE) {
         a_state__out("Pop state '%s': already exiting", active->name);
         return;
     } else if(active->stage != A_STATE_STAGE_BODY) {
-        a_error("Pop state '%s': only call from A_STATE_BODY", active->name);
-        exit(1);
+        a_fatal("Pop state '%s': only call from A_STATE_BODY", active->name);
     }
 
     a_state__out("Pop state '%s'", active->name);
@@ -172,21 +167,18 @@ void a_state_pop(void)
 void a_state_replace(const char* name)
 {
     if(a_strhash_get(functions, name) == NULL) {
-        a_error("Replace state '%s': does not exist", name);
-        exit(1);
+        a_fatal("Replace state '%s': does not exist", name);
     }
 
     const StateInstance* const active = a_list_peek(stack);
 
     if(active == NULL) {
-        a_error("Replace state with '%s': no active state, use a_state_push", name);
-        exit(1);
+        a_fatal("Replace state with '%s': no active state, use a_state_push", name);
     } else if(active->stage == A_STATE_STAGE_FREE) {
         a_state__out("Replace state '%s' with '%s': already exiting", active->name, name);
         return;
     } else if(active->stage != A_STATE_STAGE_BODY) {
-        a_error("Replace state '%s' with '%s': only call from A_STATE_BODY", active->name, name);
-        exit(1);
+        a_fatal("Replace state '%s' with '%s': only call from A_STATE_BODY", active->name, name);
     }
 
     a_state__out("Replace state '%s' with '%s'", active->name, name);
@@ -206,11 +198,9 @@ void a_state_pause(void)
     StateInstance* const active = a_list_peek(stack);
 
     if(active == NULL) {
-        a_error("No active state to pause");
-        exit(1);
+        a_fatal("No active state to pause");
     } else if(active->bodystage == A_STATE_BODYSTAGE_PAUSE) {
-        a_error("State '%s' is already paused", active->name);
-        exit(1);
+        a_fatal("State '%s' is already paused", active->name);
     }
 
     a_state__setBodyStage(active, A_STATE_BODYSTAGE_PAUSE);
@@ -222,11 +212,9 @@ void a_state_resume(void)
     StateInstance* const active = a_list_peek(stack);
 
     if(active == NULL) {
-        a_error("No active state to resume");
-        exit(1);
+        a_fatal("No active state to resume");
     } else if(active->bodystage == A_STATE_BODYSTAGE_RUN) {
-        a_error("State '%s' is already running", active->name);
-        exit(1);
+        a_fatal("State '%s' is already running", active->name);
     }
 
     a_state__setBodyStage(active, A_STATE_BODYSTAGE_RUN);
