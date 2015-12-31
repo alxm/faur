@@ -31,16 +31,16 @@ Installation and Use
     Writing file: Simple/src/main.c
     Simple is ready!
 
-    $ cd Simple/make
+    $ cd Simple/make/
     $ make run
     Compiling main.c
     Building Simple
     Running Simple
-    [ a2x Msg ] Opening Simple 1.0 by You, compiled ?
+    [ a2x Msg ] Opening Simple 1.0 by You, compiled 2015-12-30
     [ a2x Msg ] You can edit a2x.cfg
-    [ a2x Msg ] Opening Main()
+    [ a2x Msg ] Opening A_MAIN
     Code me!
-    [ a2x Msg ] Main() closed
+    [ a2x Msg ] A_MAIN closed
     [ a2x Msg ] Closing Simple - see you next time.
 
 ### A Simple Program
@@ -63,6 +63,6 @@ Installation and Use
 License
 -------
 
-Copyright 2010 Alex Margarit (artraid@gmail.com)
+Copyright 2010 Alex Margarit (alex@alxm.org)
 
 Licensed under GNU LGPL3.
