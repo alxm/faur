@@ -44,67 +44,40 @@
 #include "a2x_pack_time.v.h"
 
 #if A_PLATFORM_LINUXPC
-    #define a_out(...)                               \
-    ({                                               \
-        if(!a2x_bool("app.quiet")) {                 \
-            printf("\033[32;1m[ a2x Msg ]\033[0m "); \
-            printf(__VA_ARGS__);                     \
-            printf("\n");                            \
-        }                                            \
-    })
-
-    #define a_warning(...)                                \
-    ({                                                    \
-        fprintf(stderr, "\033[33;1m[ a2x Wrn ]\033[0m "); \
-        fprintf(stderr, __VA_ARGS__);                     \
-        fprintf(stderr, "\n");                            \
-    })
-
-    #define a_error(...)                                  \
-    ({                                                    \
-        fprintf(stderr, "\033[31;1m[ a2x Err ]\033[0m "); \
-        fprintf(stderr, __VA_ARGS__);                     \
-        fprintf(stderr, "\n");                            \
-    })
-
-    #define a_fatal(...)                                  \
-    ({                                                    \
-        fprintf(stderr, "\033[35;1m[ a2x Ftl ]\033[0m "); \
-        fprintf(stderr, __VA_ARGS__);                     \
-        fprintf(stderr, "\n");                            \
-        exit(1);                                          \
-    })
+    #define A_OUT__HEADER(title, color) "\033[" #color ";1m[ a2x " title " ]\033[0m "
 #else
-    #define a_out(...)               \
-    ({                               \
-        if(!a2x_bool("app.quiet")) { \
-            printf("[ a2x Msg ] ");  \
-            printf(__VA_ARGS__);     \
-            printf("\n");            \
-        }                            \
-    })
-
-    #define a_warning(...)               \
-    ({                                   \
-        fprintf(stderr, "[ a2x Wrn ] "); \
-        fprintf(stderr, __VA_ARGS__);    \
-        fprintf(stderr, "\n");           \
-    })
-
-    #define a_error(...)                 \
-    ({                                   \
-        fprintf(stderr, "[ a2x Err ] "); \
-        fprintf(stderr, __VA_ARGS__);    \
-        fprintf(stderr, "\n");           \
-    })
-
-    #define a_fatal(...)                 \
-    ({                                   \
-        fprintf(stderr, "[ a2x Ftl ] "); \
-        fprintf(stderr, __VA_ARGS__);    \
-        fprintf(stderr, "\n");           \
-        exit(1);                         \
-    })
+    #define A_OUT__HEADER(title, color) "[ a2x " title " ] "
 #endif
+
+#define a_out(...)                        \
+({                                        \
+    if(!a2x_bool("app.quiet")) {          \
+        printf(A_OUT__HEADER("Msg", 32)); \
+        printf(__VA_ARGS__);              \
+        printf("\n");                     \
+    }                                     \
+})
+
+#define a_warning(...)                         \
+({                                             \
+    fprintf(stderr, A_OUT__HEADER("Wrn", 33)); \
+    fprintf(stderr, __VA_ARGS__);              \
+    fprintf(stderr, "\n");                     \
+})
+
+#define a_error(...)                           \
+({                                             \
+    fprintf(stderr, A_OUT__HEADER("Err", 31)); \
+    fprintf(stderr, __VA_ARGS__);              \
+    fprintf(stderr, "\n");                     \
+})
+
+#define a_fatal(...)                           \
+({                                             \
+    fprintf(stderr, A_OUT__HEADER("Ftl", 35)); \
+    fprintf(stderr, __VA_ARGS__);              \
+    fprintf(stderr, "\n");                     \
+    exit(1);                                   \
+})
 
 #endif // A2X_APP_MAIN_VH
