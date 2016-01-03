@@ -5,12 +5,12 @@ NAME   = $(LIBDIR)/a2x_$(PLATFORM).a
 O_DIR = obj_$(PLATFORM)
 C_DIR = ../../../src
 
-TIME := $(shell date "+%F %R")
+COMPILE_TIME := $(shell date "+%F")
 
 CFLAGS += -std=c99 \
           -Wall \
           -Werror \
-          -DA_COMPILE_TIME=\"'$(TIME)'\"
+          -DA_COMPILE_TIME=\"'$(COMPILE_TIME)'\"
 
 PREFIX = a2x_
 
