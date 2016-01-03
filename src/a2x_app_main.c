@@ -33,6 +33,8 @@ int main(int argc, char** argv)
     a_setup();
     a_settings__freeze();
 
+    a_out("a2x %s, compiled on %s", A__VERSION, A_COMPILE_TIME);
+
     a_out("Opening %s %s by %s, compiled %s",
         a2x_str("app.title"), a2x_str("app.version"),
         a2x_str("app.author"), a2x_str("app.compiled"));
