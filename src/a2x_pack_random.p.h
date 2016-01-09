@@ -23,6 +23,7 @@
 
 #include "a2x_app_includes.h"
 
-int a_random_rand(int max);
+extern int a_random_rand(int max);
+extern int a_random_range(int min, int max);
 
 #endif // A2X_PACK_RANDOM_PH
