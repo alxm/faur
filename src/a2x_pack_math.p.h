@@ -22,8 +22,6 @@
 
 #include "a2x_app_includes.h"
 
-#define a_math_rand(range) (rand() % (range))
-
 #define a_math_min(x, y)          \
 ({                                \
     const __typeof(x) a__x = (x); \

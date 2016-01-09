@@ -29,3 +29,8 @@ void a_random__uninit(void)
 {
     //
 }
+
+int a_random_rand(int max)
+{
+    return rand() % max;
+}
