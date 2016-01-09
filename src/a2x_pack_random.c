@@ -32,5 +32,9 @@ void a_random__uninit(void)
 
 int a_random_rand(int max)
 {
+    if(max == 0) {
+        a_fatal("a_random_rand invalid arg: 0");
+    }
+
     return rand() % max;
 }
