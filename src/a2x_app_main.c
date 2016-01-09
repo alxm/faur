@@ -53,6 +53,7 @@ int main(int argc, char** argv)
     a_input__init();
     a_sound__init();
     a_math__init();
+    a_random__init();
     a_fix__init();
     a_font__init();
     a_state__init();

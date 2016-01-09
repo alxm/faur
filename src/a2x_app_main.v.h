@@ -37,6 +37,7 @@
 #include "a2x_pack_math.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_pixel.v.h"
+#include "a2x_pack_random.v.h"
 #include "a2x_pack_screen.v.h"
 #include "a2x_pack_screenshot.v.h"
 #include "a2x_pack_sdl.v.h"
