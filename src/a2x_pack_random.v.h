@@ -26,8 +26,5 @@
 #include "a2x_app_main.v.h"
 
 extern void a_random__init(void);
-extern void a_random__uninit(void);
-
-//
 
 #endif // A2X_PACK_RANDOM_VH

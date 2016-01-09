@@ -25,11 +25,6 @@ void a_random__init(void)
     srand(time(NULL));
 }
 
-void a_random__uninit(void)
-{
-    //
-}
-
 int a_random_int(int max)
 {
     if(max == 0) {
