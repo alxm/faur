@@ -24,8 +24,6 @@ double a_math_cos_val[A_MATH_ANGLES_NUM];
 
 void a_math__init(void)
 {
-    a_math_srand();
-
     for(int a = 0; a < A_MATH_ANGLES_NUM; a++) {
 		a_math_sin_val[a] = sin(a_math_degToRad(a));
 		a_math_cos_val[a] = cos(a_math_degToRad(a));

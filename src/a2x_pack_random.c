@@ -22,7 +22,7 @@
 
 void a_random__init(void)
 {
-    //
+    srand(time(NULL));
 }
 
 void a_random__uninit(void)
