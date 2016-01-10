@@ -17,8 +17,7 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_PACK_BLIT_VP
-#define A2X_PACK_BLIT_VP
+#pragma once
 
 #include "a2x_pack_blit.p.h"
 
@@ -33,5 +32,3 @@ extern void a_blit__setClip(bool c);
 
 extern void a_blit__setAlpha(uint8_t a);
 extern void a_blit__setRGB(uint8_t r, uint8_t g, uint8_t b);
-
-#endif // A2X_PACK_BLIT_VP

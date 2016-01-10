@@ -17,8 +17,7 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_PACK_SPRITE_VH
-#define A2X_PACK_SPRITE_VH
+#pragma once
 
 #include "a2x_pack_sprite.p.h"
 
@@ -39,5 +38,3 @@ extern void a_sprite__uninit(void);
 extern void a_sprite__free(Sprite* s);
 
 #define a_sprite__getPixel(s, x, y) (*((s)->data + (y) * (s)->w + (x)))
-
-#endif // A2X_PACK_SPRITE_VH

@@ -17,12 +17,9 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_PACK_TIME_PH
-#define A2X_PACK_TIME_PH
+#pragma once
 
 #include "a2x_app_includes.h"
 
 extern uint32_t a_time_getMilis(void);
 extern void a_time_waitMilis(uint32_t milis);
-
-#endif // A2X_PACK_TIME_PH

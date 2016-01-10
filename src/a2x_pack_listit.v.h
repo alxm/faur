@@ -17,13 +17,10 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_PACK_LISTIT_VH
-#define A2X_PACK_LISTIT_VH
+#pragma once
 
 #include "a2x_pack_listit.p.h"
 
 #include "a2x_pack_list.v.h"
 
 extern void* a_listit__peek(const ListIt* it);
-
-#endif // A2X_PACK_LISTIT_VH

@@ -17,8 +17,7 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_PACK_FADE_VH
-#define A2X_PACK_FADE_VH
+#pragma once
 
 #include "a2x_pack_fade.p.h"
 
@@ -27,5 +26,3 @@
 #include "a2x_pack_draw.v.h"
 #include "a2x_pack_fps.v.h"
 #include "a2x_pack_screen.v.h"
-
-#endif // A2X_PACK_FADE_VH

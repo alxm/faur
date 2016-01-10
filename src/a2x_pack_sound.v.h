@@ -17,8 +17,7 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_PACK_SOUND_VH
-#define A2X_PACK_SOUND_VH
+#pragma once
 
 #include "a2x_pack_sound.p.h"
 
@@ -38,5 +37,3 @@ extern void a_sound__uninit(void);
 
 extern void a_sfx__free(Sound* s);
 extern void a_music__free(Music* m);
-
-#endif // A2X_PACK_SOUND_VH

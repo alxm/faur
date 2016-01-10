@@ -17,13 +17,10 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_PACK_DIR_VH
-#define A2X_PACK_DIR_VH
+#pragma once
 
 #include "a2x_pack_dir.p.h"
 
 #include "a2x_pack_list.v.h"
 #include "a2x_pack_math.v.h"
 #include "a2x_pack_str.v.h"
-
-#endif // A2X_PACK_DIR_VH

@@ -17,8 +17,7 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_PACK_FPS_PH
-#define A2X_PACK_FPS_PH
+#pragma once
 
 #include "a2x_app_includes.h"
 
@@ -29,5 +28,3 @@ extern uint32_t a_fps_getFps(void);
 extern uint32_t a_fps_getMaxFps(void);
 extern uint32_t a_fps_getCounter(void);
 extern bool a_fps_nthFrame(uint32_t n);
-
-#endif // A2X_PACK_FPS_PH

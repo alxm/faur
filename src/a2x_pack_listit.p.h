@@ -17,8 +17,7 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_PACK_LISTIT_PH
-#define A2X_PACK_LISTIT_PH
+#pragma once
 
 #include "a2x_app_includes.h"
 
@@ -47,5 +46,3 @@ extern void a_listit__remove(ListIt* it);
         else
 
 #define A_LIST_REMOVE() a_listit__remove(&a__it)
-
-#endif // A2X_PACK_LISTIT_PH

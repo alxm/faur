@@ -17,8 +17,7 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_PACK_DRAW_PH
-#define A2X_PACK_DRAW_PH
+#pragma once
 
 #include "a2x_app_includes.h"
 
@@ -39,5 +38,3 @@ extern DrawCircle a_draw_circle;
 #define a_draw_fill() a_draw_rectangle(0, 0, a_width, a_height)
 
 extern void a_draw_rectangle_outline(int x1, int y1, int x2, int y2, int t);
-
-#endif // A2X_PACK_DRAW_PH

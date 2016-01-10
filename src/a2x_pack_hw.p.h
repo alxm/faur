@@ -17,9 +17,6 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_PACK_HW_PH
-#define A2X_PACK_HW_PH
+#pragma once
 
 #include "a2x_app_includes.h"
-
-#endif // A2X_PACK_HW_PH

@@ -17,8 +17,7 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_PACK_CONF_VH
-#define A2X_PACK_CONF_VH
+#pragma once
 
 #include "a2x_pack_conf.p.h"
 
@@ -29,5 +28,3 @@
 #include "a2x_pack_str.v.h"
 
 extern void a_conf__init(void);
-
-#endif // A2X_PACK_CONF_VH

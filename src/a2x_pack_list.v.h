@@ -17,8 +17,7 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_PACK_LIST_VH
-#define A2X_PACK_LIST_VH
+#pragma once
 
 #include "a2x_pack_list.p.h"
 
@@ -44,5 +43,3 @@ struct ListNode {
 #define a_list__prev(n)          ((n)->prev)
 #define a_list__getContent(n)    ((n)->content)
 #define a_list__setContent(n, c) ((n)->content = (c))
-
-#endif // A2X_PACK_LIST_VH

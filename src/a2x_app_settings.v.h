@@ -17,8 +17,7 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_APP_SETTINGS_VH
-#define A2X_APP_SETTINGS_VH
+#pragma once
 
 #include "a2x_app_settings.p.h"
 
@@ -33,5 +32,3 @@ extern void a_settings__freeze(void);
 extern void a2x__set(const char* key, const char* val);
 extern void a2x__undo(const char* key);
 extern bool a2x__flip(const char* key);
-
-#endif // A2X_APP_SETTINGS_VH

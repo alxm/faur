@@ -18,8 +18,7 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_PACK_STRTOK_PH
-#define A2X_PACK_STRTOK_PH
+#pragma once
 
 #include "a2x_app_includes.h"
 
@@ -39,5 +38,3 @@ extern char* a_strtok__next(StringTok* t);
 #define A_STRTOK_ITERATE(str, delims, var)                                               \
     for(StringTok a__st = a_strtok__new(str, delims); a__st.string; a__st.string = NULL) \
         for(char* var; (var = a_strtok__next(&a__st)); )
-
-#endif // A2X_PACK_STRTOK_PH

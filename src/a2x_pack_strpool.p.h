@@ -18,8 +18,7 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_PACK_STRPOOL_PH
-#define A2X_PACK_STRPOOL_PH
+#pragma once
 
 #include "a2x_app_includes.h"
 
@@ -29,5 +28,3 @@ extern StringPool* a_strpool_new(unsigned int bytes);
 extern void a_strpool_free(StringPool* sp);
 
 extern char* a_strpool_alloc(StringPool* sp, unsigned int size);
-
-#endif // A2X_PACK_STRPOOL_PH

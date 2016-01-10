@@ -17,8 +17,7 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_PACK_SPRITE_PH
-#define A2X_PACK_SPRITE_PH
+#pragma once
 
 #include "a2x_app_includes.h"
 
@@ -48,5 +47,3 @@ extern Sprite* a_sprite_clone(const Sprite* src);
 #define A_SPRITE_TRANSPARENT a_pixel_make(255, 0, 255)
 #define A_SPRITE_LIMIT       a_pixel_make(0, 255, 0)
 #define A_SPRITE_END         a_pixel_make(0, 255, 255)
-
-#endif // A2X_PACK_SPRITE_PH

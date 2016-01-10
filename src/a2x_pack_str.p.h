@@ -17,8 +17,7 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_PACK_STR_PH
-#define A2X_PACK_STR_PH
+#pragma once
 
 #include "a2x_app_includes.h"
 
@@ -60,5 +59,3 @@ extern char* a_str_extractFile(const char* s);
 extern char* a_str_extractName(const char* s);
 
 extern char* a_str_trim(const char* s);
-
-#endif // A2X_PACK_STR_PH

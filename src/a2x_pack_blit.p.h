@@ -17,8 +17,7 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_PACK_BLIT_PH
-#define A2X_PACK_BLIT_PH
+#pragma once
 
 #include "a2x_app_includes.h"
 
@@ -33,5 +32,3 @@ extern void a_blit_pixel(bool p);
 extern void a_blit_c(const Sprite* s);
 extern void a_blit_ch(const Sprite* s, int y);
 extern void a_blit_cv(const Sprite* s, int x);
-
-#endif // A2X_PACK_BLIT_PH

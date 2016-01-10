@@ -17,8 +17,7 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_PACK_STR_VH
-#define A2X_PACK_STR_VH
+#pragma once
 
 #include "a2x_pack_str.p.h"
 
@@ -30,5 +29,3 @@ extern void a_str__init(void);
 extern void a_str__uninit(void);
 
 extern char* a_str__alloc(unsigned int size);
-
-#endif // A2X_PACK_STR_VH

@@ -17,8 +17,7 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_PACK_HW_VH
-#define A2X_PACK_HW_VH
+#pragma once
 
 #include "a2x_pack_hw.p.h"
 
@@ -28,5 +27,3 @@
 
 extern void a_hw__init(void);
 extern void a_hw__uninit(void);
-
-#endif // A2X_PACK_HW_VH

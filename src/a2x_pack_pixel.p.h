@@ -17,8 +17,7 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_PACK_PIXEL_PH
-#define A2X_PACK_PIXEL_PH
+#pragma once
 
 #include "a2x_app_includes.h"
 
@@ -61,5 +60,3 @@ extern void a_pixel_setRGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 extern void a_pixel_setPixel(Pixel p);
 
 extern PixelPut a_pixel_put;
-
-#endif // A2X_PACK_PIXEL_PH

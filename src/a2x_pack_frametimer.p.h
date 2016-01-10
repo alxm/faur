@@ -17,8 +17,7 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_PACK_FRAMETIMER_PH
-#define A2X_PACK_FRAMETIMER_PH
+#pragma once
 
 #include "a2x_app_includes.h"
 
@@ -30,5 +29,3 @@ extern void a_frametimer_free(FrameTimer* t);
 extern bool a_frametimer_check(FrameTimer* t);
 extern uint32_t a_frametimer_diff(FrameTimer* t);
 extern void a_frametimer_start(FrameTimer* t);
-
-#endif // A2X_PACK_FRAMETIMER_PH

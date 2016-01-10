@@ -17,8 +17,7 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_PACK_SDL_VH
-#define A2X_PACK_SDL_VH
+#pragma once
 
 #include "a2x_pack_sdl.p.h"
 
@@ -34,5 +33,3 @@ extern Pixel* a_sdl__screen_pixels(void);
 extern void a_sdl__screen_lock(void);
 extern void a_sdl__screen_unlock(void);
 extern void a_sdl__screen_flip(void);
-
-#endif // A2X_PACK_SDL_VH

@@ -17,8 +17,7 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_PACK_COLLIDE_PH
-#define A2X_PACK_COLLIDE_PH
+#pragma once
 
 #include "a2x_app_includes.h"
 
@@ -66,5 +65,3 @@ extern void* a_colobject__getParent(const ColObject* o);
 )
 
 extern bool a_collide_circles(int x1, int y1, int r1, int x2, int y2, int r2);
-
-#endif // A2X_PACK_COLLIDE_PH

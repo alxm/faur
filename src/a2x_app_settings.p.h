@@ -17,8 +17,7 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_APP_SETTINGS_PH
-#define A2X_APP_SETTINGS_PH
+#pragma once
 
 #include "a2x_app_includes.h"
 
@@ -31,5 +30,3 @@ extern bool a2x_flip(const char* key);
 extern char* a2x_str(const char* key);
 extern bool a2x_bool(const char* key);
 extern int a2x_int(const char* key);
-
-#endif // A2X_APP_SETTINGS_PH

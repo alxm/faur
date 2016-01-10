@@ -17,8 +17,7 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_PACK_SPRITELAYERS_PH
-#define A2X_PACK_SPRITELAYERS_PH
+#pragma once
 
 #include "a2x_app_includes.h"
 
@@ -33,5 +32,3 @@ extern void a_spritelayers_free(SpriteLayers* s);
 
 extern void a_spritelayers_add(SpriteLayers* s, const Sprite* sprite, PixelBlend_t blend, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 extern void a_spritelayers_blit(SpriteLayers* s, int x, int y);
-
-#endif // A2X_PACK_SPRITELAYERS_PH

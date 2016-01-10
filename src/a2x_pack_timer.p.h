@@ -17,8 +17,7 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_PACK_TIMER_PH
-#define A2X_PACK_TIMER_PH
+#pragma once
 
 #include "a2x_app_includes.h"
 
@@ -30,5 +29,3 @@ extern void a_timer_free(Timer* t);
 extern void a_timer_start(Timer* t);
 extern bool a_timer_check(Timer* t);
 extern uint32_t a_timer_diff(Timer* t);
-
-#endif // A2X_PACK_TIMER_PH

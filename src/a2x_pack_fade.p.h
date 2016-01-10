@@ -17,8 +17,7 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_PACK_FADE_PH
-#define A2X_PACK_FADE_PH
+#pragma once
 
 #include "a2x_app_includes.h"
 
@@ -28,5 +27,3 @@ extern void a_fade_toBlack(int framesDuration);
 extern void a_fade_fromBlack(int framesDuration);
 
 extern void a_fade_screens(const Pixel* old, int framesDuration);
-
-#endif // A2X_PACK_FADE_PH

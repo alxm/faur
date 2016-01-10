@@ -17,8 +17,7 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_PACK_SCREEN_VH
-#define A2X_PACK_SCREEN_VH
+#pragma once
 
 #include "a2x_pack_screen.p.h"
 
@@ -36,5 +35,3 @@ extern void a_screen__uninit(void);
 #if A_PLATFORM_LINUXPC || A_PLATFORM_WINDOWS
     extern bool a_screen__change(void);
 #endif
-
-#endif // A2X_PACK_SCREEN_VH

@@ -17,8 +17,7 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_PACK_DRAW_VH
-#define A2X_PACK_DRAW_VH
+#pragma once
 
 #include "a2x_pack_draw.p.h"
 
@@ -33,5 +32,3 @@ extern void a_draw__setClip(bool c);
 
 extern void a_draw__setAlpha(uint8_t a);
 extern void a_draw__setRGB(uint8_t r, uint8_t g, uint8_t b);
-
-#endif // A2X_PACK_DRAW_VH

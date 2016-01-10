@@ -17,8 +17,7 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_PACK_MEM_VH
-#define A2X_PACK_MEM_VH
+#pragma once
 
 #include "a2x_pack_mem.p.h"
 
@@ -26,5 +25,3 @@
 
 extern void a_mem__init(void);
 extern void a_mem__free(void);
-
-#endif // A2X_PACK_MEM_VH

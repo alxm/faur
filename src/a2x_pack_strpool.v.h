@@ -18,9 +18,6 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_PACK_STRPOOL_VH
-#define A2X_PACK_STRPOOL_VH
+#pragma once
 
 #include "a2x_pack_strpool.p.h"
-
-#endif // A2X_PACK_STRPOOL_VH

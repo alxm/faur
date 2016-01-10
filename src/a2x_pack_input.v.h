@@ -17,8 +17,7 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_PACK_INPUT_VH
-#define A2X_PACK_INPUT_VH
+#pragma once
 
 #include "a2x_pack_input.p.h"
 
@@ -37,5 +36,3 @@ extern void a_input__uninit(void);
 extern void a_input__free(Input* i);
 
 extern void a_input__get(void);
-
-#endif // A2X_PACK_INPUT_VH

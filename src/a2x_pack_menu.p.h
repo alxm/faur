@@ -17,10 +17,9 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_PACK_MENU_PH
 #define A2X_PACK_MENU_PH
 
-#include "a2x_app_includes.h"
+#pragma once
 
 typedef struct Menu Menu;
 
@@ -52,5 +51,3 @@ extern bool a_menu_finished(const Menu* m);
 extern bool a_menu_accept(const Menu* m);
 extern bool a_menu_cancel(const Menu* m);
 extern int a_menu_choice(const Menu* m);
-
-#endif // A2X_PACK_MENU_PH

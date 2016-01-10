@@ -17,13 +17,10 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_PACK_FIX_VH
-#define A2X_PACK_FIX_VH
+#pragma once
 
 #include "a2x_pack_fix.p.h"
 
 #include "a2x_pack_math.v.h"
 
 extern void a_fix__init(void);
-
-#endif // A2X_PACK_FIX_VH

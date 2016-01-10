@@ -17,8 +17,7 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_PACK_PNG_PH
-#define A2X_PACK_PNG_PH
+#pragma once
 
 #include "a2x_app_includes.h"
 
@@ -28,5 +27,3 @@ extern void a_png_readFile(const char* path, Pixel** pixels, int* width, int* he
 extern void a_png_readMemory(const uint8_t* data, Pixel** pixels, int* width, int* height);
 
 extern void a_png_write(const char* path, const Pixel* data, int width, int height);
-
-#endif // A2X_PACK_PNG_PH

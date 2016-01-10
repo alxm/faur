@@ -17,8 +17,7 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_PACK_FIX_PH
-#define A2X_PACK_FIX_PH
+#pragma once
 
 #include "a2x_app_includes.h"
 
@@ -43,5 +42,3 @@ extern fix a_fix_cos_val[A_MATH_ANGLES_NUM];
 #define a_fix_sin(a)       (a_fix_sin_val[(a)])
 #define a_fix_cos(a)       (a_fix_cos_val[(a)])
 #define a_fix_wrapAngle(a) ((a) & ((A_MATH_ANGLES_NUM << A_FIX_BIT_PRECISION) - 1))
-
-#endif // A2X_PACK_FIX_PH

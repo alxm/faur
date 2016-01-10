@@ -17,8 +17,7 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_PACK_FONT_PH
-#define A2X_PACK_FONT_PH
+#pragma once
 
 #include "a2x_app_includes.h"
 
@@ -63,5 +62,3 @@ extern int a_font_width(const char* text);
     sprintf(a__s, __VA_ARGS__); \
     a_font_width(a__s);         \
 })
-
-#endif // A2X_PACK_FONT_PH

@@ -70,30 +70,24 @@ void a_{0}__uninit(void)
 
     newfile(pack_ph,
 """
-#ifndef A2X_PACK_{0}_PH
-#define A2X_PACK_{0}_PH
+#pragma once
 
 #include "a2x_app_includes.h"
 
 //
-
-#endif // A2X_PACK_{0}_PH
-""".format(pack_name.upper()))
+""")
 
     newfile(pack_vh,
 """
-#ifndef A2X_PACK_{0}_VH
-#define A2X_PACK_{0}_VH
+#pragma once
 
-#include "a2x_pack_{1}.p.h"
+#include "a2x_pack_{0}.p.h"
 
-extern void a_{1}__init(void);
-extern void a_{1}__uninit(void);
+extern void a_{0}__init(void);
+extern void a_{0}__uninit(void);
 
 //
-
-#endif // A2X_PACK_{0}_VH
-""".format(pack_name.upper(), pack_name))
+""".format(pack_name))
 
     print(pack_name + " is ready!")
 

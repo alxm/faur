@@ -17,8 +17,7 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_PACK_DIR_PH
-#define A2X_PACK_DIR_PH
+#pragma once
 
 #include "a2x_app_includes.h"
 
@@ -46,5 +45,3 @@ extern int a_dir_num(const Dir* d);
 
 extern bool a_dir_exists(const char* path);
 extern void a_dir_make(const char* path);
-
-#endif // A2X_PACK_DIR_PH

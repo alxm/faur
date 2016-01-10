@@ -17,8 +17,7 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_PACK_INPUT_PH
-#define A2X_PACK_INPUT_PH
+#pragma once
 
 #include "a2x_app_includes.h"
 
@@ -44,5 +43,3 @@ extern fix a_analog_yaxis_fix(const Input* i);
 extern bool a_touch_tapped(const Input* i);
 extern bool a_touch_point(const Input* i, int x, int y);
 extern bool a_touch_rect(const Input* i, int x, int y, int w, int h);
-
-#endif // A2X_PACK_INPUT_PH

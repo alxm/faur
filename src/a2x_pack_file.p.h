@@ -17,8 +17,7 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_PACK_FILE_PH
-#define A2X_PACK_FILE_PH
+#pragma once
 
 #include "a2x_app_includes.h"
 
@@ -45,5 +44,3 @@ extern bool a_file_isDir(const char* f);
 extern int a_file_size(const char* f);
 
 extern uint8_t* a_file_toBuffer(const char* path);
-
-#endif // A2X_PACK_FILE_PH

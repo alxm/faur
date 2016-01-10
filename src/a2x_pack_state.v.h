@@ -17,8 +17,7 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_PACK_STATE_VH
-#define A2X_PACK_STATE_VH
+#pragma once
 
 #include "a2x_pack_state.p.h"
 
@@ -30,5 +29,3 @@ extern void a_state__init(void);
 extern void a_state__uninit(void);
 
 extern void a_state__run(void);
-
-#endif // A2X_PACK_STATE_VH

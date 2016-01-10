@@ -17,8 +17,7 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_PACK_SPRITEFRAMES_PH
-#define A2X_PACK_SPRITEFRAMES_PH
+#pragma once
 
 #include "a2x_app_includes.h"
 
@@ -47,5 +46,3 @@ extern SpriteFrames* a_spriteframes_clone(const SpriteFrames* src);
 extern List* a_spriteframes_sprites(const SpriteFrames* sf);
 
 extern Sprite* a_spriteframes_pop(SpriteFrames* sf);
-
-#endif // A2X_PACK_SPRITEFRAMES_PH

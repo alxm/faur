@@ -17,8 +17,7 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_PACK_SCREEN_PH
-#define A2X_PACK_SCREEN_PH
+#pragma once
 
 #include "a2x_app_includes.h"
 
@@ -39,5 +38,3 @@ extern void a_screen_copyPart(Pixel* dst, int x, int y, int w, int h);
 extern void a_screen_setTarget(Pixel* p, int w, int h);
 extern void a_screen_setTargetSprite(Sprite* s);
 extern void a_screen_resetTarget(void);
-
-#endif // A2X_PACK_SCREEN_PH

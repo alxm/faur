@@ -17,8 +17,7 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_APP_INCLUDES_H
-#define A2X_APP_INCLUDES_H
+#pragma once
 
 #include <ctype.h>
 #include <dirent.h>
@@ -40,5 +39,3 @@
 #include <png.h>
 #include <SDL/SDL.h>
 #include <SDL/SDL_mixer.h>
-
-#endif // A2X_APP_INCLUDES_H

@@ -17,8 +17,7 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_APP_MAIN_VH
-#define A2X_APP_MAIN_VH
+#pragma once
 
 #define A__VERSION "rolling"
 
@@ -82,5 +81,3 @@
     fprintf(stderr, "\n");                     \
     exit(1);                                   \
 })
-
-#endif // A2X_APP_MAIN_VH

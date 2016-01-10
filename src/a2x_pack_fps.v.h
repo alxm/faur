@@ -17,8 +17,7 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_PACK_FPS_VH
-#define A2X_PACK_FPS_VH
+#pragma once
 
 #include "a2x_pack_fps.p.h"
 
@@ -32,5 +31,3 @@
 
 extern void a_fps__init(void);
 extern void a_fps__uninit(void);
-
-#endif // A2X_PACK_FPS_VH

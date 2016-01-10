@@ -17,8 +17,7 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_PACK_FONT_VH
-#define A2X_PACK_FONT_VH
+#pragma once
 
 #include "a2x_pack_font.p.h"
 
@@ -32,5 +31,3 @@ extern void a_font__init(void);
 extern void a_font__uninit(void);
 
 extern void a_font__safe(const char* text);
-
-#endif // A2X_PACK_FONT_VH

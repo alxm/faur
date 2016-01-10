@@ -17,8 +17,7 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A2X_PACK_MENU_VH
-#define A2X_PACK_MENU_VH
+#pragma once
 
 #include "a2x_pack_menu.p.h"
 
@@ -29,5 +28,3 @@
 #include "a2x_pack_input.v.h"
 #include "a2x_pack_list.v.h"
 #include "a2x_pack_sound.v.h"
-
-#endif // A2X_PACK_MENU_VH
