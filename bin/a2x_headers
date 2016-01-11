@@ -14,16 +14,13 @@ def main():
         print(dir + " is not a dir")
         return
 
-    contents = "#ifndef H_A2X__" + dir_name + "_ALL_H\n"
-    contents += "#define H_A2X__" + dir_name + "_ALL_H\n\n"
+    contents = "#pragma once\n\n"
 
     headers = [h for h in os.listdir(dir) if h[-2 :] == ".h"]
     headers.sort(key = lambda h: h)
 
     for h in headers:
         contents += '#include "' + h + '"\n'
-
-    contents += "\n#endif // H_A2X__" + dir_name + "_ALL_H\n"
 
     with open(dir + "/all.h", "w") as f:
         f.write(contents)

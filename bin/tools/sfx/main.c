@@ -32,13 +32,9 @@ A_MAIN
 
     // header
 
-    fprintf(h, "#ifndef H_A2X_SFX_%s_H\n", sfxName);
-    fprintf(h, "#define H_A2X_SFX_%s_H\n\n", sfxName);
-
+    fprintf(h, "#pragma once\n\n");
     fprintf(h, "#include <stdint.h>\n\n");
-    fprintf(h, "extern uint16_t sfx_%s[%d];\n\n", sfxName, length);
-
-    fprintf(h, "#endif // H_A2X_SFX_%s_H\n", sfxName);
+    fprintf(h, "extern uint16_t sfx_%s[%d];\n", sfxName, length);
 
     // body
 

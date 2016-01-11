@@ -32,13 +32,9 @@ A_MAIN
 
     // header
 
-    fprintf(h, "#ifndef H_A2X_GFX_%s_H\n", gfxName);
-    fprintf(h, "#define H_A2X_GFX_%s_H\n\n", gfxName);
-
+    fprintf(h, "#pragma once\n\n");
     fprintf(h, "#include <stdint.h>\n\n");
-    fprintf(h, "extern uint8_t gfx_%s[];\n\n", gfxName);
-
-    fprintf(h, "#endif // H_A2X_GFX_%s_H\n", gfxName);
+    fprintf(h, "extern uint8_t gfx_%s[];\n", gfxName);
 
     // body
 
