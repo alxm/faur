@@ -21,6 +21,6 @@
 
 #include "a2x_pack_random.p.h"
 
-#include "a2x_app_main.v.h"
+#include "a2x_pack_out.v.h"
 
 extern void a_random__init(void);

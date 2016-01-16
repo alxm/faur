@@ -35,6 +35,7 @@
 #include "a2x_pack_input.v.h"
 #include "a2x_pack_math.v.h"
 #include "a2x_pack_mem.v.h"
+#include "a2x_pack_out.v.h"
 #include "a2x_pack_pixel.v.h"
 #include "a2x_pack_random.v.h"
 #include "a2x_pack_screen.v.h"
@@ -44,40 +45,3 @@
 #include "a2x_pack_sprite.v.h"
 #include "a2x_pack_state.v.h"
 #include "a2x_pack_time.v.h"
-
-#if A_PLATFORM_LINUXPC
-    #define A_OUT__HEADER(title, color) "\033[" #color ";1m[ a2x " title " ]\033[0m "
-#else
-    #define A_OUT__HEADER(title, color) "[ a2x " title " ] "
-#endif
-
-#define a_out(...)                        \
-({                                        \
-    if(!a2x_bool("app.quiet")) {          \
-        printf(A_OUT__HEADER("Msg", 32)); \
-        printf(__VA_ARGS__);              \
-        printf("\n");                     \
-    }                                     \
-})
-
-#define a_warning(...)                         \
-({                                             \
-    fprintf(stderr, A_OUT__HEADER("Wrn", 33)); \
-    fprintf(stderr, __VA_ARGS__);              \
-    fprintf(stderr, "\n");                     \
-})
-
-#define a_error(...)                           \
-({                                             \
-    fprintf(stderr, A_OUT__HEADER("Err", 31)); \
-    fprintf(stderr, __VA_ARGS__);              \
-    fprintf(stderr, "\n");                     \
-})
-
-#define a_fatal(...)                           \
-({                                             \
-    fprintf(stderr, A_OUT__HEADER("Ftl", 35)); \
-    fprintf(stderr, __VA_ARGS__);              \
-    fprintf(stderr, "\n");                     \
-    exit(1);                                   \
-})
