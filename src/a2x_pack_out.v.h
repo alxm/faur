@@ -21,42 +21,12 @@
 
 #include "a2x_pack_out.p.h"
 
+#include "a2x_app_settings.v.h"
+
 extern void a_out__init(void);
 extern void a_out__uninit(void);
 
-#if A_PLATFORM_LINUXPC
-    #define A_OUT__HEADER(title, color) "\033[" #color ";1m[ a2x " title " ]\033[0m "
-#else
-    #define A_OUT__HEADER(title, color) "[ a2x " title " ] "
-#endif
-
-#define a_out(...)                        \
-({                                        \
-    if(!a2x_bool("app.quiet")) {          \
-        printf(A_OUT__HEADER("Msg", 32)); \
-        printf(__VA_ARGS__);              \
-        printf("\n");                     \
-    }                                     \
-})
-
-#define a_warning(...)                         \
-({                                             \
-    fprintf(stderr, A_OUT__HEADER("Wrn", 33)); \
-    fprintf(stderr, __VA_ARGS__);              \
-    fprintf(stderr, "\n");                     \
-})
-
-#define a_error(...)                           \
-({                                             \
-    fprintf(stderr, A_OUT__HEADER("Err", 31)); \
-    fprintf(stderr, __VA_ARGS__);              \
-    fprintf(stderr, "\n");                     \
-})
-
-#define a_fatal(...)                           \
-({                                             \
-    fprintf(stderr, A_OUT__HEADER("Ftl", 35)); \
-    fprintf(stderr, __VA_ARGS__);              \
-    fprintf(stderr, "\n");                     \
-    exit(1);                                   \
-})
+extern void a_out(char* fmt, ...);
+extern void a_warning(char* fmt, ...);
+extern void a_error(char* fmt, ...);
+extern void a_fatal(char* fmt, ...);
