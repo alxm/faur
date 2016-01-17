@@ -68,4 +68,5 @@ void a_out__error(char* fmt, ...)
 void a_out__fatal(char* fmt, ...)
 {
     A_OUT__WORKER("Ftl", 35, stderr);
+    exit(1);
 }
