@@ -23,6 +23,7 @@
 #include "a2x_pack_console.p.h"
 
 #include "a2x_pack_list.v.h"
+#include "a2x_pack_pixel.v.h"
 #include "a2x_pack_str.v.h"
 
 extern void a_console__init(void);
@@ -35,3 +36,5 @@ typedef enum {
 } ConsoleOutType;
 
 extern void a_console__write(ConsoleOutType type, char* str);
+extern void a_console__draw(void);
+extern void a_console__show(void);

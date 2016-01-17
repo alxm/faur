@@ -107,6 +107,7 @@ static InputCollection touches;
 
 static List* userInputs; // all inputs returned by a_input_new()
 
+static Input* console;
 static Input* screenshot;
 
 #if A_PLATFORM_LINUXPC
@@ -259,6 +260,7 @@ void a_input__init(void)
         fullScreen = a_input_new("pc.F4");
     #endif
 
+    console = a_input_new(a2x_str("console.button"));
     screenshot = a_input_new(a2x_str("screenshot.button"));
 }
 
@@ -407,6 +409,10 @@ void a_input__get(void)
                 }
             }
         }
+    }
+
+    if(a_button_getAndUnpress(console)) {
+        a_console__show();
     }
 
     if(a_button_getAndUnpress(screenshot)) {

@@ -26,14 +26,19 @@ typedef struct Line {
 } Line;
 
 static List* lines;
+bool enabled;
+bool show;
 
 void a_console__init(void)
 {
+    enabled = true;
     lines = a_list_new();
 }
 
 void a_console__uninit(void)
 {
+    enabled = false;
+
     A_LIST_ITERATE(lines, Line, line) {
         free(line);
     }
@@ -43,10 +48,30 @@ void a_console__uninit(void)
 
 void a_console__write(ConsoleOutType type, char* str)
 {
+    if(!enabled) {
+        return;
+    }
+
     Line* line = malloc(sizeof(Line));
 
     line->type = type;
     line->text = a_str_dup(str);
 
     a_list_addLast(lines, line);
+}
+
+void a_console__draw(void)
+{
+    if(!enabled || !show) {
+        return;
+    }
+
+    a_pixel_setBlend(A_PIXEL_RGBA);
+    a_pixel_setRGBA(0, 0, 0, A_FIX_ONE / 2);
+    a_draw_fill();
+}
+
+void a_console__show(void)
+{
+    show = !show;
 }

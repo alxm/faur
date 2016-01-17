@@ -107,6 +107,7 @@ void a_screen__uninit(void)
 void a_screen_show(void)
 {
     displayVolume();
+    a_console__draw();
 
     if(a2x_bool("video.wizTear")) {
         // video.fake is also set when video.wizTear is set
