@@ -23,6 +23,8 @@
 
 #include "a2x_app_settings.v.h"
 
+#include "a2x_pack_console.v.h"
+
 extern void a_out__init(void);
 extern void a_out__uninit(void);
 

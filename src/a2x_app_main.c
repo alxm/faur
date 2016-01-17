@@ -32,6 +32,7 @@ int main(int argc, char** argv)
     a_settings__defaults();
     a_setup();
     a_settings__freeze();
+    a_console__init();
 
     a_out__message("a2x %s, compiled on %s", A__VERSION, A_COMPILE_TIME);
 
@@ -66,6 +67,7 @@ int main(int argc, char** argv)
     a_state__uninit();
     a_sound__uninit();
     a_input__uninit();
+    a_console__uninit();
     a_font__uninit();
     a_screen__uninit();
     a_sprite__uninit();
@@ -73,19 +75,13 @@ int main(int argc, char** argv)
     a_time__uninit();
     a_hw__uninit();
     a_sdl__uninit();
-
-    a_out__message("Closing %s - see you next time.", a2x_str("app.title"));
+    a_str__uninit();
 
     #if A_PLATFORM_GP2X || A_PLATFORM_WIZ || A_PLATFORM_CAANOO
         if(a2x_bool("app.gp2xMenu")) {
-            a_out__message("Calling gp2xmenu");
-            a_str__uninit();
-
             chdir("/usr/gp2x");
             execl("gp2xmenu", "gp2xmenu", NULL);
         }
-    #else
-        a_str__uninit();
     #endif
 
     return 0;

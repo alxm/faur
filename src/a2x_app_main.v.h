@@ -27,6 +27,7 @@
 
 #include "a2x_pack_blit.v.h"
 #include "a2x_pack_conf.v.h"
+#include "a2x_pack_console.v.h"
 #include "a2x_pack_draw.v.h"
 #include "a2x_pack_fix.v.h"
 #include "a2x_pack_font.v.h"

@@ -38,6 +38,18 @@
     va_end(args);                                 \
 })
 
+#define A_OUT__CONSOLE(type)           \
+({                                     \
+    char buffer[256];                  \
+    va_list args;                      \
+    va_start(args, fmt);               \
+                                       \
+    vsnprintf(buffer, 256, fmt, args); \
+    a_console__write(type, buffer);    \
+                                       \
+    va_end(args);                      \
+})
+
 void a_out__init(void)
 {
     //
@@ -52,17 +64,20 @@ void a_out__message(char* fmt, ...)
 {
     if(!a2x_bool("app.quiet")) {
         A_OUT__WORKER("Msg", 32, stdout);
+        A_OUT__CONSOLE(ConsoleMessage);
     }
 }
 
 void a_out__warning(char* fmt, ...)
 {
     A_OUT__WORKER("Wrn", 33, stderr);
+    A_OUT__CONSOLE(ConsoleWarning);
 }
 
 void a_out__error(char* fmt, ...)
 {
     A_OUT__WORKER("Err", 31, stderr);
+    A_OUT__CONSOLE(ConsoleError);
 }
 
 void a_out__fatal(char* fmt, ...)

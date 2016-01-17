@@ -20,12 +20,33 @@
 
 #include "a2x_pack_console.v.h"
 
+typedef struct Line {
+    ConsoleOutType type;
+    char* text;
+} Line;
+
+static List* lines;
+
 void a_console__init(void)
 {
-    //
+    lines = a_list_new();
 }
 
 void a_console__uninit(void)
 {
-    //
+    A_LIST_ITERATE(lines, Line, line) {
+        free(line);
+    }
+
+    a_list_free(lines);
+}
+
+void a_console__write(ConsoleOutType type, char* str)
+{
+    Line* line = malloc(sizeof(Line));
+
+    line->type = type;
+    line->text = a_str_dup(str);
+
+    a_list_addLast(lines, line);
 }

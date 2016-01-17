@@ -22,7 +22,16 @@
 
 #include "a2x_pack_console.p.h"
 
+#include "a2x_pack_list.v.h"
+#include "a2x_pack_str.v.h"
+
 extern void a_console__init(void);
 extern void a_console__uninit(void);
 
-//
+typedef enum {
+    ConsoleMessage,
+    ConsoleWarning,
+    ConsoleError,
+} ConsoleOutType;
+
+extern void a_console__write(ConsoleOutType type, char* str);
