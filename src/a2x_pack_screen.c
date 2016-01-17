@@ -276,11 +276,11 @@ void a_screen_resetTarget(void)
                 a__pixels2 = a_pixels;
             }
 
-            a_out("Changed resolution to %dx%d %dx (%s)",
+            a_out__message("Changed resolution to %dx%d %dx (%s)",
                   a_width, a_height, a2x_int("video.scale"),
                   a2x_bool("video.fullscreen") ? "fullscreen" : "windowed");
         } else {
-            a_warning("Could not change resolution to %dx%d %dx (%s)",
+            a_out__warning("Could not change resolution to %dx%d %dx (%s)",
                       a_width, a_height, a2x_int("video.scale"),
                       a2x_bool("video.fullscreen") ? "fullscreen" : "windowed");
         }

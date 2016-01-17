@@ -101,7 +101,7 @@ void a2x__undo(const char* key)
     Setting* const s = a_strhash_get(settings, key);
 
     if(s == NULL) {
-        a_error("Setting '%s' does not exist", key);
+        a_out__error("Setting '%s' does not exist", key);
         return;
     }
 
@@ -135,10 +135,10 @@ char* a2x_str(const char* key)
     Setting* const s = a_strhash_get(settings, key);
 
     if(s == NULL) {
-        a_error("Setting '%s' does not exist", key);
+        a_out__error("Setting '%s' does not exist", key);
         return NULL;
     } else if(s->type != STR) {
-        a_error("Setting '%s' is not a string", key);
+        a_out__error("Setting '%s' is not a string", key);
         return NULL;
     } else {
         return s->value[0].string;
@@ -150,10 +150,10 @@ bool a2x_bool(const char* key)
     Setting* const s = a_strhash_get(settings, key);
 
     if(s == NULL) {
-        a_error("Setting '%s' does not exist", key);
+        a_out__error("Setting '%s' does not exist", key);
         return false;
     } else if(s->type != BOOL) {
-        a_error("Setting '%s' is not a boolean", key);
+        a_out__error("Setting '%s' is not a boolean", key);
         return false;
     } else {
         return s->value[0].boolean;
@@ -165,10 +165,10 @@ int a2x_int(const char* key)
     Setting* const s = a_strhash_get(settings, key);
 
     if(s == NULL) {
-        a_error("Setting '%s' does not exist", key);
+        a_out__error("Setting '%s' does not exist", key);
         return 0;
     } else if(s->type != INT) {
-        a_error("Setting '%s' is not an integer", key);
+        a_out__error("Setting '%s' is not an integer", key);
         return 0;
     } else {
         return s->value[0].integer;
@@ -219,11 +219,11 @@ static void set(const char* key, const char* val, bool respect)
     Setting* const s = a_strhash_get(settings, key);
 
     if(s == NULL) {
-        a_error("Setting '%s' does not exist", key);
+        a_out__error("Setting '%s' does not exist", key);
         return;
     } else if(respect
         && (s->update == SET_FROZEN || (s->update == SET_ONCE && frozen))) {
-        a_error("Setting '%s' is frozen", key);
+        a_out__error("Setting '%s' is frozen", key);
         return;
     }
 
@@ -254,14 +254,14 @@ static bool flip(const char* key, bool respect)
     Setting* const s = a_strhash_get(settings, key);
 
     if(s == NULL) {
-        a_error("Setting '%s' does not exist", key);
+        a_out__error("Setting '%s' does not exist", key);
         return false;
     } else if(s->type != BOOL) {
-        a_error("Setting '%s' is not a boolean - can't flip it", key);
+        a_out__error("Setting '%s' is not a boolean - can't flip it", key);
         return false;
     } else if(respect
         && (s->update == SET_FROZEN || (s->update == SET_ONCE && frozen))) {
-        a_error("Setting '%s' is frozen", key);
+        a_out__error("Setting '%s' is frozen", key);
         return false;
     }
 

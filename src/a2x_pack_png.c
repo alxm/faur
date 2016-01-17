@@ -44,7 +44,7 @@ void a_png_readFile(const char* path, Pixel** pixels, int* width, int* height)
     a_file_read(f, sig, PNG_SIG);
 
     if(png_sig_cmp(sig, 0, PNG_SIG) != 0) {
-        a_error("%s is not a PNG", path);
+        a_out__error("%s is not a PNG", path);
         goto cleanUp;
     }
 
@@ -71,7 +71,7 @@ void a_png_readFile(const char* path, Pixel** pixels, int* width, int* height)
     const int type = png_get_color_type(png, info);
 
     if(type != PNG_COLOR_TYPE_RGB && type != PNG_COLOR_TYPE_RGBA) {
-        a_error("%s not 8-bit RGBA PNG", path);
+        a_out__error("%s not 8-bit RGBA PNG", path);
         goto cleanUp;
     }
 
@@ -104,7 +104,7 @@ void a_png_readMemory(const uint8_t* data, Pixel** pixels, int* width, int* heig
     memcpy(sig, data, PNG_SIG);
 
     if(png_sig_cmp(sig, 0, PNG_SIG) != 0) {
-        a_error("Data not a PNG");
+        a_out__error("Data not a PNG");
         goto cleanUp;
     }
 
@@ -130,7 +130,7 @@ void a_png_readMemory(const uint8_t* data, Pixel** pixels, int* width, int* heig
     const int type = png_get_color_type(png, info);
 
     if(type != PNG_COLOR_TYPE_RGB && type != PNG_COLOR_TYPE_RGBA) {
-        a_error("Data not 8-bit RGBA PNG");
+        a_out__error("Data not 8-bit RGBA PNG");
         goto cleanUp;
     }
 

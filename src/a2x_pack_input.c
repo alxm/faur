@@ -127,7 +127,7 @@ void a_input__init(void)
     joysticks_num = a_math_min(A_MAX_JOYSTICKS, SDL_NumJoysticks());
 
     if(joysticks_num > 0) {
-        a_out("Found %d joysticks", joysticks_num);
+        a_out__message("Found %d joysticks", joysticks_num);
         for(int j = joysticks_num; j--; ) {
             joysticks[j] = SDL_JoystickOpen(j);
         }
@@ -625,7 +625,7 @@ Input* a_input_new(const char* names)
     if(a_list_isEmpty(i->buttons)
         && a_list_isEmpty(i->analogs)
         && a_list_isEmpty(i->touches)) {
-        a_error("No inputs found for '%s'", names);
+        a_out__error("No inputs found for '%s'", names);
     }
 
     a_list_addLast(userInputs, i);
@@ -783,7 +783,7 @@ static void addButton(const char* name, int code)
         if(b->button.numCodes < A_MAX_BUTTON_CODES) {
             b->button.codes[b->button.numCodes++] = code;
         } else {
-            a_error("Button '%s' has too many codes", name);
+            a_out__error("Button '%s' has too many codes", name);
         }
     }
 }
@@ -792,7 +792,7 @@ static void addButton(const char* name, int code)
     static void addAnalog(const char* name, int device_index, char* device_name, int xaxis_index, int yaxis_index)
     {
         if(device_index == -1 && device_name == NULL) {
-            a_error("Inputs must specify device index or name");
+            a_out__error("Inputs must specify device index or name");
             return;
         }
 
@@ -821,7 +821,7 @@ static void addButton(const char* name, int code)
 
             a_inputs_add(analogs, a, name);
         } else {
-            a_error("Analog '%s' is already defined", name);
+            a_out__error("Analog '%s' is already defined", name);
         }
     }
 #endif
@@ -842,6 +842,6 @@ static void addTouch(const char* name)
 
         a_inputs_add(touches, t, name);
     } else {
-        a_error("Touch '%s' is already defined", name);
+        a_out__error("Touch '%s' is already defined", name);
     }
 }

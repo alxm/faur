@@ -21,7 +21,7 @@
 
 void a_conf__init(void)
 {
-    a_out("You can edit %s", a2x_str("app.conf"));
+    a_out__message("You can edit %s", a2x_str("app.conf"));
 
     File* const f = a_file_open(a2x_str("app.conf"), "r");
 

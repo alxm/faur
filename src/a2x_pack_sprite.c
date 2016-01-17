@@ -110,7 +110,7 @@ Sprite* a_sprite_zoomed(const Sprite* sheet, int x, int y, int zoom)
             w = width;
             h = height;
         } else {
-            a_error("Sprite coords %d, %d are invalid", x, y);
+            a_out__error("Sprite coords %d, %d are invalid", x, y);
             return NULL;
         }
     }

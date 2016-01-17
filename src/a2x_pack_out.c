@@ -48,24 +48,24 @@ void a_out__uninit(void)
     //
 }
 
-void a_out(char* fmt, ...)
+void a_out__message(char* fmt, ...)
 {
     if(!a2x_bool("app.quiet")) {
         A_OUT__WORKER("Msg", 32, stdout);
     }
 }
 
-void a_warning(char* fmt, ...)
+void a_out__warning(char* fmt, ...)
 {
     A_OUT__WORKER("Wrn", 33, stderr);
 }
 
-void a_error(char* fmt, ...)
+void a_out__error(char* fmt, ...)
 {
     A_OUT__WORKER("Err", 31, stderr);
 }
 
-void a_fatal(char* fmt, ...)
+void a_out__fatal(char* fmt, ...)
 {
     A_OUT__WORKER("Ftl", 35, stderr);
 }

@@ -26,7 +26,7 @@
 extern void a_out__init(void);
 extern void a_out__uninit(void);
 
-extern void a_out(char* fmt, ...);
-extern void a_warning(char* fmt, ...);
-extern void a_error(char* fmt, ...);
-extern void a_fatal(char* fmt, ...);
+extern void a_out__message(char* fmt, ...);
+extern void a_out__warning(char* fmt, ...);
+extern void a_out__error(char* fmt, ...);
+extern void a_out__fatal(char* fmt, ...);
