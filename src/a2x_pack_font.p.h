@@ -35,6 +35,7 @@ extern int a_font_load(const Sprite* sheet, int x, int y, int zoom, FontLoad loa
 extern int a_font_copy(int font, uint8_t r, uint8_t g, uint8_t b);
 
 extern void a_font_setFace(int f);
+extern void a_font_setFaceDefault(void);
 extern void a_font_setAlign(FontAlign a);
 extern void a_font_setCoords(int x, int y);
 extern int a_font_getX(void);
