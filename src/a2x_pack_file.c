@@ -85,6 +85,16 @@ void a_file_write(File* f, void* buffer, size_t size)
     fwrite(buffer, size, 1, f->handle);
 }
 
+void a_file_writef(File* f, char* fmt, ...)
+{
+    va_list args;
+    va_start(args, fmt);
+
+    vfprintf(f->handle, fmt, args);
+
+    va_end(args);
+}
+
 bool a_file_readLine(File* f)
 {
     free(f->line);
