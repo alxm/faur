@@ -19,13 +19,13 @@
 
 #include "a2x_app_main.v.h"
 
-int a_argsNum;
-char** a_args;
+static int numArgs;
+static char** args;
 
 int main(int argc, char** argv)
 {
-    a_argsNum = argc;
-    a_args = argv;
+    numArgs = argc;
+    args = argv;
 
     a_str__init();
 
@@ -89,4 +89,19 @@ int main(int argc, char** argv)
     #endif
 
     return 0;
+}
+
+int a_main_numArgs(void)
+{
+    return numArgs;
+}
+
+char* a_main_getArg(unsigned int n)
+{
+    if(n >= numArgs) {
+        a_out__error("a_main_getArg invalid arg: %u", n);
+        return NULL;
+    }
+
+    return args[n];
 }
