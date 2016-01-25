@@ -93,3 +93,14 @@ void* a_strhash_get(const StrHash* h, const char* key)
 
     return NULL;
 }
+
+bool a_strhash_contains(const StrHash* h, const char* key)
+{
+    for(Entry* e = h->entries[getSlot(key)]; e; e = e->next) {
+        if(a_str_same(key, e->key)) {
+            return true;
+        }
+    }
+
+    return false;
+}
