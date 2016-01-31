@@ -52,8 +52,8 @@ void a_settings__defaults(void)
 
     add(STR, SET_ONCE, "app.title", "Untitled");
     add(STR, SET_ONCE, "app.version", "0");
-    add(STR, SET_ONCE, "app.author", "Unknown");
-    add(STR, SET_ONCE, "app.compiled", "?");
+    add(STR, SET_ONCE, "app.author", "(unknown)");
+    add(STR, SET_ONCE, "app.compiled", "(unknown)");
     add(STR, SET_ONCE, "app.conf", "a2x.cfg");
     add(BOOL, SET_ANY, "app.quiet", "0");
     add(BOOL, SET_ONCE, "app.tool", "0");

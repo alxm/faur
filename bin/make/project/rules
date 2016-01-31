@@ -87,12 +87,12 @@ OFILES = $(addprefix $(O_DIR)/, $(CFILES:.c=.o)) \
 # compile flags
 #
 
-TIME := $(shell date "+%F %R")
+COMPILE_TIME := $(shell date "+%F")
 
 CFLAGS += -std=gnu99 \
           -Werror \
           -I$(A2X_PATH)/lib \
-          -DA_COMPILE_TIME=\"'$(TIME)'\"
+          -DA_COMPILE_TIME=\"'$(COMPILE_TIME)'\"
 
 #
 # the main target
