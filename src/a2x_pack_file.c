@@ -33,6 +33,7 @@ File* a_file_open(const char* path, const char* modes)
     FILE* const handle = fopen(path, modes);
 
     if(!handle) {
+        a_out__error("a_file_open: Can't open %s for '%s'", path, modes);
         return NULL;
     }
 

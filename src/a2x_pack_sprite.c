@@ -37,11 +37,15 @@ void a_sprite__uninit(void)
 
 Sprite* a_sprite_fromFile(const char* path)
 {
-    int w;
-    int h;
-    Pixel* pixels;
+    int w = 0;
+    int h = 0;
+    Pixel* pixels = NULL;
 
     a_png_readFile(path, &pixels, &w, &h);
+
+    if(pixels == NULL) {
+        return NULL;
+    }
 
     Sprite* const s = a_sprite_blank(w, h);
 
