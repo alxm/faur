@@ -29,10 +29,19 @@ static List* lines;
 bool enabled;
 bool show;
 
+#define LINE_HEIGHT 10
+static int linesPerScreen;
+static char* titles[ConsoleMax] = {
+    "[ a2x Msg ]",
+    "[ a2x Wrn ]",
+    "[ a2x Err ]",
+};
+
 void a_console__init(void)
 {
     enabled = true;
     lines = a_list_new();
+    linesPerScreen = a2x_int("video.height") / LINE_HEIGHT;
 }
 
 void a_console__uninit(void)
@@ -67,8 +76,17 @@ void a_console__draw(void)
     }
 
     a_pixel_setBlend(A_PIXEL_RGBA);
-    a_pixel_setRGBA(0, 0, 0, A_FIX_ONE / 2);
+    a_pixel_setRGBA(0, 0, 0, 0.8 * A_FIX_ONE);
     a_draw_fill();
+
+    int y = 0;
+    a_font_setFaceDefault();
+
+    A_LIST_ITERATE(lines, Line, line) {
+        a_font_setCoords(0, y);
+        a_font_textf("%s %s", titles[line->type], line->text);
+        y += LINE_HEIGHT;
+    }
 }
 
 void a_console__show(void)

@@ -22,6 +22,7 @@
 
 #include "a2x_pack_console.p.h"
 
+#include "a2x_pack_font.v.h"
 #include "a2x_pack_list.v.h"
 #include "a2x_pack_pixel.v.h"
 #include "a2x_pack_str.v.h"
@@ -33,6 +34,7 @@ typedef enum {
     ConsoleMessage,
     ConsoleWarning,
     ConsoleError,
+    ConsoleMax
 } ConsoleOutType;
 
 extern void a_console__write(ConsoleOutType type, char* str);
