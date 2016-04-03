@@ -33,6 +33,7 @@ File* a_file_open(const char* path, const char* modes)
     FILE* const handle = fopen(path, modes);
 
     if(!handle) {
+        a_out__error("a_file_open: Can't open %s for '%s'", path, modes);
         return NULL;
     }
 
@@ -83,6 +84,16 @@ void a_file_read(File* f, void* buffer, size_t size)
 void a_file_write(File* f, void* buffer, size_t size)
 {
     fwrite(buffer, size, 1, f->handle);
+}
+
+void a_file_writef(File* f, char* fmt, ...)
+{
+    va_list args;
+    va_start(args, fmt);
+
+    vfprintf(f->handle, fmt, args);
+
+    va_end(args);
 }
 
 bool a_file_readLine(File* f)

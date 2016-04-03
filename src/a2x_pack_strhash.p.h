@@ -28,3 +28,4 @@ extern void a_strhash_free(StrHash* h);
 
 extern void a_strhash_add(StrHash* h, const char* key, void* content);
 extern void* a_strhash_get(const StrHash* h, const char* key);
+extern bool a_strhash_contains(const StrHash* h, const char* key);

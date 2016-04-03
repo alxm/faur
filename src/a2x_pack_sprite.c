@@ -37,18 +37,19 @@ void a_sprite__uninit(void)
 
 Sprite* a_sprite_fromFile(const char* path)
 {
-    int w;
-    int h;
-    Pixel* pixels;
+    int w = 0;
+    int h = 0;
+    Sprite* s;
+    Pixel* pixels = NULL;
 
     a_png_readFile(path, &pixels, &w, &h);
 
-    Sprite* const s = a_sprite_blank(w, h);
+    if(pixels == NULL) {
+        return NULL;
+    }
 
-    memcpy(s->data, pixels, w * h * sizeof(Pixel));
+    s = a_sprite_fromPixels(pixels, w, h);
     free(pixels);
-
-    a_sprite_refresh(s);
 
     return s;
 }
@@ -57,15 +58,26 @@ Sprite* a_sprite_fromData(const uint8_t* data)
 {
     int w;
     int h;
-    Pixel* pixels;
+    Sprite* s;
+    Pixel* pixels = NULL;
 
     a_png_readMemory(data, &pixels, &w, &h);
 
-    Sprite* const s = a_sprite_blank(w, h);
+    if(pixels == NULL) {
+        return NULL;
+    }
 
-    memcpy(s->data, pixels, w * h * sizeof(Pixel));
+    s = a_sprite_fromPixels(pixels, w, h);
     free(pixels);
 
+    return s;
+}
+
+Sprite* a_sprite_fromPixels(Pixel* pixels, int w, int h)
+{
+    Sprite* s = a_sprite_blank(w, h);
+
+    memcpy(s->data, pixels, w * h * sizeof(Pixel));
     a_sprite_refresh(s);
 
     return s;

@@ -21,13 +21,19 @@
 
 void a_conf__init(void)
 {
-    a_out__message("You can edit %s", a2x_str("app.conf"));
+    char* conf_name = a2x_str("app.conf");
 
-    File* const f = a_file_open(a2x_str("app.conf"), "r");
+    if(!a_file_exists(conf_name)) {
+        return;
+    }
+
+    File* const f = a_file_open(conf_name, "r");
 
     if(!f) {
         return;
     }
+
+    a_out__message("You can edit config in %s", conf_name);
 
     while(a_file_readLine(f)) {
         char* const s = a_str_trim(a_file_getLine(f));
