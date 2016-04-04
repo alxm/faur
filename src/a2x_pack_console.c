@@ -67,6 +67,10 @@ void a_console__write(ConsoleOutType type, char* str)
     line->text = a_str_dup(str);
 
     a_list_addLast(lines, line);
+
+    if(a_list_size(lines) > linesPerScreen) {
+        free(a_list_pop(lines));
+    }
 }
 
 void a_console__draw(void)
@@ -79,12 +83,15 @@ void a_console__draw(void)
     a_pixel_setRGBA(0, 0, 0, 0.8 * A_FIX_ONE);
     a_draw_fill();
 
-    int y = 0;
+    int y = 1;
+
+    a_pixel_setClip(true);
     a_font_setFaceDefault();
 
     A_LIST_ITERATE(lines, Line, line) {
-        a_font_setCoords(0, y);
+        a_font_setCoords(1, y);
         a_font_textf("%s %s", titles[line->type], line->text);
+
         y += LINE_HEIGHT;
     }
 }
