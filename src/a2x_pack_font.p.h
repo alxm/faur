@@ -31,11 +31,19 @@ typedef enum FontAlign {
     A_LEFT = 1, A_MIDDLE = 2, A_RIGHT = 4, A_SPACED = 8
 } FontAlign;
 
+typedef enum FontDefaults {
+    A_FONT_WHITE,
+    A_FONT_GREEN,
+    A_FONT_YELLOW,
+    A_FONT_RED,
+    A_FONT_BLUE,
+    A_FONT_MAX
+} FontDefaults;
+
 extern int a_font_load(const Sprite* sheet, int x, int y, int zoom, FontLoad loader);
-extern int a_font_copy(int font, uint8_t r, uint8_t g, uint8_t b);
+extern int a_font_copy(int font, Pixel color);
 
 extern void a_font_setFace(int f);
-extern void a_font_setFaceDefault(void);
 extern void a_font_setAlign(FontAlign a);
 extern void a_font_setCoords(int x, int y);
 extern int a_font_getX(void);

@@ -37,7 +37,6 @@ static const char chars[] =
 #define CHARS_NUM (sizeof(chars) / sizeof(char) - 1)
 
 static uint8_t gfx_default_font[];
-static int defaultFont;
 
 static List* fontsList;
 static Font** fonts;
@@ -58,7 +57,19 @@ void a_font__init(void)
     y = 0;
 
     Sprite* const fontSprite = a_sprite_fromData(gfx_default_font);
-    defaultFont = a_font_load(fontSprite, 0, 0, 1, A_LOAD_ALL);
+
+    Pixel colors[A_FONT_MAX];
+    colors[A_FONT_WHITE] = a_pixel_make(255, 255, 255);
+    colors[A_FONT_GREEN] = a_pixel_make(0, 255, 0);
+    colors[A_FONT_YELLOW] = a_pixel_make(255, 255, 0);
+    colors[A_FONT_RED] = a_pixel_make(255, 0, 0);
+    colors[A_FONT_BLUE] = a_pixel_make(0, 0, 255);
+
+    a_font_load(fontSprite, 0, 0, 1, A_LOAD_ALL);
+
+    for(int f = 1; f < A_FONT_MAX; f++) {
+        a_font_copy(A_FONT_WHITE, colors[f]);
+    }
 }
 
 void a_font__uninit(void)
@@ -119,12 +130,10 @@ int a_font_load(const Sprite* sheet, int x, int y, int zoom, FontLoad loader)
     return a_list_size(fontsList) - 1;
 }
 
-int a_font_copy(int font, uint8_t r, uint8_t g, uint8_t b)
+int a_font_copy(int font, Pixel color)
 {
     const Font* const src = fonts[font];
     Font* const f = malloc(sizeof(Font));
-
-    const Pixel colour = a_pixel_make(r, g, b);
 
     for(int i = NUM_ASCII; i--; ) {
         if(src->sprites[i]) {
@@ -135,7 +144,7 @@ int a_font_copy(int font, uint8_t r, uint8_t g, uint8_t b)
 
             for(int j = s->w * s->h; j--; d++) {
                 if(*d != A_SPRITE_TRANSPARENT) {
-                    *d = colour;
+                    *d = color;
                 }
             }
         } else {
@@ -156,11 +165,6 @@ int a_font_copy(int font, uint8_t r, uint8_t g, uint8_t b)
 void a_font_setFace(int f)
 {
     font = f;
-}
-
-void a_font_setFaceDefault(void)
-{
-    font = defaultFont;
 }
 
 void a_font_setAlign(FontAlign a)

@@ -86,7 +86,7 @@ void a_console__draw(void)
     int y = 1;
 
     a_pixel_setClip(true);
-    a_font_setFaceDefault();
+    a_font_setFace(A_FONT_WHITE);
 
     A_LIST_ITERATE(lines, Line, line) {
         a_font_setCoords(1, y);
