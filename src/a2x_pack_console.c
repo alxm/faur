@@ -31,10 +31,14 @@ bool show;
 
 #define LINE_HEIGHT 10
 static int linesPerScreen;
-static char* titles[ConsoleMax] = {
-    "[ a2x Msg ]",
-    "[ a2x Wrn ]",
-    "[ a2x Err ]",
+
+static struct {
+    char* text;
+    int font;
+} titles[ConsoleMax] = {
+    {"[ a2x Msg ] ", A_FONT_GREEN},
+    {"[ a2x Wrn ] ", A_FONT_YELLOW},
+    {"[ a2x Err ] ", A_FONT_RED},
 };
 
 void a_console__init(void)
@@ -90,7 +94,12 @@ void a_console__draw(void)
 
     A_LIST_ITERATE(lines, Line, line) {
         a_font_setCoords(1, y);
-        a_font_textf("%s %s", titles[line->type], line->text);
+        a_font_setFace(titles[line->type].font);
+        a_font_text(titles[line->type].text);
+
+        a_font_setCoords(a_font_getX(), y);
+        a_font_setFace(A_FONT_WHITE);
+        a_font_text(line->text);
 
         y += LINE_HEIGHT;
     }
