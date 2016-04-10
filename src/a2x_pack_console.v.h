@@ -34,6 +34,7 @@ typedef enum {
     ConsoleMessage,
     ConsoleWarning,
     ConsoleError,
+    ConsoleState,
     ConsoleMax
 } ConsoleOutType;
 

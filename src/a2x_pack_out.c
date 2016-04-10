@@ -85,3 +85,11 @@ void a_out__fatal(char* fmt, ...)
     A_OUT__WORKER("Ftl", 35, stderr);
     exit(1);
 }
+
+void a_out__state(char* fmt, ...)
+{
+    if(!a2x_bool("app.quiet")) {
+        A_OUT__WORKER("Stt", 34, stdout);
+        A_OUT__CONSOLE(ConsoleState);
+    }
+}

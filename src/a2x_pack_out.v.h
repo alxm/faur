@@ -32,3 +32,4 @@ extern void a_out__message(char* fmt, ...);
 extern void a_out__warning(char* fmt, ...);
 extern void a_out__error(char* fmt, ...);
 extern void a_out__fatal(char* fmt, ...);
+extern void a_out__state(char* fmt, ...);
