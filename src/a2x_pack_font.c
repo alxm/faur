@@ -113,6 +113,10 @@ int a_font_load(const Sprite* sheet, int x, int y, int zoom, FontLoad loader)
     for(int i = start; i <= end; i++) {
         f->sprites[(int)chars[i]] = a_spriteframes_next(sf);
 
+        if(f->sprites[(int)chars[i]]->w > f->maxWidth) {
+            f->maxWidth = f->sprites[(int)chars[i]]->w;
+        }
+
         if((loader & A_FONT_LOAD_CAPS) && isalpha(chars[i])) {
             f->sprites[(int)chars[i + 1]] = f->sprites[(int)chars[i]];
             i++;
