@@ -277,16 +277,27 @@ int a_font_width(const char* text)
 {
     int width = 0;
     Font* const f = fonts[font];
+    bool monospaced = align & A_FONT_MONOSPACED;
 
     if(text[0] == '\0') {
         return 0;
     }
 
-    for(char c = *text; c != '\0'; c = *(++text)) {
-        if(f->sprites[(int)c]) {
-            width += f->sprites[(int)c]->w + FONT_SPACE;
-        } else if(c == ' ') {
-            width += FONT_BLANK_SPACE + FONT_SPACE;
+    if(monospaced) {
+        for(char c = *text; c != '\0'; c = *(++text)) {
+            if(f->sprites[(int)c]) {
+                width += f->maxWidth + FONT_SPACE;
+            } else if(c == ' ') {
+                width += FONT_BLANK_SPACE + FONT_SPACE;
+            }
+        }
+    } else {
+        for(char c = *text; c != '\0'; c = *(++text)) {
+            if(f->sprites[(int)c]) {
+                width += f->sprites[(int)c]->w + FONT_SPACE;
+            } else if(c == ' ') {
+                width += FONT_BLANK_SPACE + FONT_SPACE;
+            }
         }
     }
 
