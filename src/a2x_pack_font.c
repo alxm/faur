@@ -271,25 +271,22 @@ void a_font_fixed(int width, const char* text)
 
 int a_font_width(const char* text)
 {
+    int width = 0;
     Font* const f = fonts[font];
 
-    const int length = strlen(text);
+    if(text[0] == '\0') {
+        return 0;
+    }
 
-    int x = 0;
-
-    for(int l = 0; l < length; l++) {
-        if(text[l] == ' ') {
-            x += FONT_SPACE + FONT_BLANK_SPACE;
-        } else {
-            const int i = (int)text[l];
-
-            if(i >= 0 && i < NUM_ASCII) {
-                x += FONT_SPACE + f->sprites[i]->w;
-            }
+    for(char c = *text; c != '\0'; c = *(++text)) {
+        if(f->sprites[(int)c]) {
+            width += f->sprites[(int)c]->w + FONT_SPACE;
+        } else if(c == ' ') {
+            width += FONT_BLANK_SPACE + FONT_SPACE;
         }
     }
 
-    return x - FONT_SPACE;
+    return width - FONT_SPACE;
 }
 
 static int charIndex(char c)
