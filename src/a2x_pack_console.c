@@ -89,17 +89,15 @@ void a_console__draw(void)
     a_draw_fill();
 
     int y = 1;
+    a_font_setAlign(A_LEFT);
 
     A_LIST_ITERATE(lines, Line, line) {
         a_font_setCoords(1, y);
         a_font_setFace(titles[line->type].font);
         a_font_text(titles[line->type].text);
 
-        int x = a_font_getX();
-
-        a_font_setCoords(x, y);
         a_font_setFace(A_FONT_WHITE);
-        a_font_fixed(a_width - x, line->text);
+        a_font_fixed(a_width - a_font_getX(), line->text);
 
         y += LINE_HEIGHT;
     }
