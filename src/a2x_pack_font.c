@@ -99,20 +99,14 @@ int a_font_load(const Sprite* sheet, int x, int y, int zoom, FontLoad loader)
     int start = 0;
     int end = CHARS_NUM - 1;
 
-	switch(loader & ~A_LOAD_CAPS) {
-		case A_LOAD_AN: {
-            end = charIndex('9');
-		} break;
-
-		case A_LOAD_A: {
-            end = charIndex('z');
-		} break;
-
-		case A_LOAD_N: {
-			start = charIndex('0');
-            end = charIndex('9');
-		} break;
-	}
+    if(loader & A_LOAD_ALPHANUMERIC) {
+        end = charIndex('9');
+    } else if(loader & A_LOAD_ALPHA) {
+        end = charIndex('z');
+    } else if(loader & A_LOAD_NUMERIC) {
+        start = charIndex('0');
+        end = charIndex('9');
+    }
 
     SpriteFrames* const sf = a_spriteframes_new(sheet, x, y, 0);
 
