@@ -52,7 +52,7 @@ void a_font__init(void)
     fontsList = a_list_new();
     fonts = NULL;
     font = 0;
-    align = A_LEFT;
+    align = A_FONT_ALIGN_LEFT;
     x = 0;
     y = 0;
 
@@ -65,7 +65,7 @@ void a_font__init(void)
     colors[A_FONT_RED] = a_pixel_make(255, 0, 0);
     colors[A_FONT_BLUE] = a_pixel_make(0, 0, 255);
 
-    a_font_load(fontSprite, 0, 0, 1, A_LOAD_ALL);
+    a_font_load(fontSprite, 0, 0, 1, A_FONT_LOAD_ALL);
 
     for(int f = 1; f < A_FONT_MAX; f++) {
         a_font_copy(A_FONT_WHITE, colors[f]);
@@ -99,11 +99,11 @@ int a_font_load(const Sprite* sheet, int x, int y, int zoom, FontLoad loader)
     int start = 0;
     int end = CHARS_NUM - 1;
 
-    if(loader & A_LOAD_ALPHANUMERIC) {
+    if(loader & A_FONT_LOAD_ALPHANUMERIC) {
         end = charIndex('9');
-    } else if(loader & A_LOAD_ALPHA) {
+    } else if(loader & A_FONT_LOAD_ALPHA) {
         end = charIndex('z');
-    } else if(loader & A_LOAD_NUMERIC) {
+    } else if(loader & A_FONT_LOAD_NUMERIC) {
         start = charIndex('0');
         end = charIndex('9');
     }
@@ -113,7 +113,7 @@ int a_font_load(const Sprite* sheet, int x, int y, int zoom, FontLoad loader)
     for(int i = start; i <= end; i++) {
         f->sprites[(int)chars[i]] = a_spriteframes_next(sf);
 
-        if((loader & A_LOAD_CAPS) && isalpha(chars[i])) {
+        if((loader & A_FONT_LOAD_CAPS) && isalpha(chars[i])) {
             f->sprites[(int)chars[i + 1]] = f->sprites[(int)chars[i]];
             i++;
         }
@@ -180,13 +180,13 @@ int a_font_getX(void)
 void a_font_text(const char* text)
 {
     Font* const f = fonts[font];
-    bool spaced = align & A_SPACED;
+    bool monospaced = align & A_FONT_MONOSPACED;
 
-    if(align & A_MIDDLE) {
+    if(align & A_FONT_ALIGN_MIDDLE) {
         x -= a_font_width(text) / 2;
     }
 
-    if(align & A_RIGHT) {
+    if(align & A_FONT_ALIGN_RIGHT) {
         x -= a_font_width(text);
     }
 
@@ -209,13 +209,13 @@ void a_font_text(const char* text)
                 continue;
             }
 
-            if(spaced) {
+            if(monospaced) {
                 a_blit(spr, x + (f->maxWidth - spr->w) / 2, y);
             } else {
                 a_blit(spr, x, y);
             }
 
-            x += FONT_SPACE + (spaced ? maxWidth : spr->w);
+            x += FONT_SPACE + (monospaced ? maxWidth : spr->w);
         }
     }
 }

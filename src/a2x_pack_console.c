@@ -89,7 +89,7 @@ void a_console__draw(void)
     a_draw_fill();
 
     int y = 1;
-    a_font_setAlign(A_LEFT);
+    a_font_setAlign(A_FONT_ALIGN_LEFT);
 
     A_LIST_ITERATE(lines, Line, line) {
         a_font_setCoords(1, y);

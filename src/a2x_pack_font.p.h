@@ -24,15 +24,18 @@
 #include "a2x_pack_sprite.p.h"
 
 typedef enum FontLoad  {
-    A_LOAD_ALL = 1,
-    A_LOAD_ALPHANUMERIC = 2,
-    A_LOAD_ALPHA = 4,
-    A_LOAD_NUMERIC = 8,
-    A_LOAD_CAPS = 16,
+    A_FONT_LOAD_ALL = 1,
+    A_FONT_LOAD_ALPHANUMERIC = 2,
+    A_FONT_LOAD_ALPHA = 4,
+    A_FONT_LOAD_NUMERIC = 8,
+    A_FONT_LOAD_CAPS = 16,
 } FontLoad;
 
 typedef enum FontAlign {
-    A_LEFT = 1, A_MIDDLE = 2, A_RIGHT = 4, A_SPACED = 8
+    A_FONT_ALIGN_LEFT = 1,
+    A_FONT_ALIGN_MIDDLE = 2,
+    A_FONT_ALIGN_RIGHT = 4,
+    A_FONT_MONOSPACED = 8
 } FontAlign;
 
 typedef enum FontDefaults {
