@@ -255,19 +255,106 @@ void a_font_char(char ch)
 
 void a_font_fixed(int width, const char* text)
 {
+    char* buffer;
+    int tally = 0;
+    int numChars = 0;
+    const int dotsWidth = a_font_width("...");
+    bool monospaced = align & A_FONT_MONOSPACED;
+    Font* const f = fonts[font];
+
+    if(*text == '\0' || width == 0) {
+        return;
+    }
+
     if(a_font_width(text) <= width) {
         a_font_text(text);
         return;
     }
 
-    const int w = a_font_width("...");
-    char* const temp = a_str_dup(text);
+    if(dotsWidth > width) {
+        return;
+    }
 
-    do {
-        temp[strlen(temp) - 1] = '\0';
-    } while(a_font_width(temp) + w > width);
+    if(monospaced) {
+        const int maxWidth = f->maxWidth;
 
-    a_font_textf("%s...", temp);
+        for(int i = 0; text[i] != '\0'; i++) {
+            numChars++;
+
+            if(f->sprites[(int)text[i]] || text[i] == ' ') {
+                tally += maxWidth;
+
+                if(tally > width) {
+                    if(numChars < 3) {
+                        return;
+                    }
+
+                    tally += FONT_SPACE + dotsWidth;
+
+                    for(int j = i; j >= 0; j--) {
+                        numChars--;
+                        tally -= FONT_SPACE + maxWidth;
+
+                        if(tally <= width) {
+                            goto fits;
+                        }
+                    }
+
+                    return;
+                }
+
+                tally += FONT_SPACE;
+            }
+        }
+    } else {
+        for(int i = 0; text[i] != '\0'; i++) {
+            Sprite* spr = f->sprites[(int)text[i]];
+
+            numChars++;
+
+            if(spr || text[i] == ' ') {
+                tally += spr ? spr->w : FONT_BLANK_SPACE;
+
+                if(tally > width) {
+                    if(numChars < 3) {
+                        return;
+                    }
+
+                    tally += FONT_SPACE + dotsWidth;
+
+                    for(int j = i; j >= 0; j--) {
+                        spr = f->sprites[(int)text[j]];
+
+                        numChars--;
+
+                        if(spr) {
+                            tally -= FONT_SPACE + spr->w;
+                        } else if(text[j] == ' ') {
+                            tally -= FONT_SPACE + FONT_BLANK_SPACE;
+                        }
+
+                        if(tally <= width) {
+                            goto fits;
+                        }
+                    }
+
+                    return;
+                }
+
+                tally += FONT_SPACE;
+            }
+        }
+    }
+
+fits:
+    buffer = a_str_dup(text);
+
+    buffer[numChars] = '.';
+    buffer[numChars + 1] = '.';
+    buffer[numChars + 2] = '.';
+    buffer[numChars + 3] = '\0';
+
+    a_font_text(buffer);
 }
 
 int a_font_width(const char* text)
