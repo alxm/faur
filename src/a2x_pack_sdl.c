@@ -87,7 +87,7 @@ bool a_sdl__screen_set(void)
 
     #if A_PLATFORM_LINUXPC
         char caption[64];
-        sprintf(caption, "%s %s", a2x_str("app.title"), a2x_str("app.version"));
+        snprintf(caption, 64, "%s %s", a2x_str("app.title"), a2x_str("app.version"));
         SDL_WM_SetCaption(caption, NULL);
     #else
         SDL_ShowCursor(SDL_DISABLE);

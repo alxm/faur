@@ -65,16 +65,16 @@ extern void a_font_fixed(int width, const char* text);
 
 extern int a_font_width(const char* text);
 
-#define a_font_textf(...)       \
-({                              \
-    char a__s[256];             \
-    sprintf(a__s, __VA_ARGS__); \
-    a_font_text(a__s);          \
+#define a_font_textf(...)             \
+({                                    \
+    char a__s[256];                   \
+    snprintf(a__s, 256, __VA_ARGS__); \
+    a_font_text(a__s);                \
 })
 
-#define a_font_widthf(f, ...)   \
-({                              \
-    char a__s[256];             \
-    sprintf(a__s, __VA_ARGS__); \
-    a_font_width(a__s);         \
+#define a_font_widthf(f, ...)         \
+({                                    \
+    char a__s[256];                   \
+    snprintf(a__s, 256, __VA_ARGS__); \
+    a_font_width(a__s);               \
 })

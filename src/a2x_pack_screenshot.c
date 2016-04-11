@@ -79,7 +79,7 @@ void a_screenshot_save(void)
     }
 
     char num[6];
-    sprintf(num, "%05d", number);
+    snprintf(num, 6, "%05d", number);
 
     char* const name = a_str_merge(prefix, num, ".png");
 

@@ -223,7 +223,7 @@ void a_font_text(const char* text)
 void a_font_int(int number)
 {
     char s[21];
-    sprintf(s, "%d", number);
+    snprintf(s, 21, "%d", number);
 
     a_font_text(s);
 }
@@ -231,7 +231,7 @@ void a_font_int(int number)
 void a_font_float(float number)
 {
     char s[64];
-    sprintf(s, "%f", number);
+    snprintf(s, 64, "%f", number);
 
     a_font_text(s);
 }
@@ -239,7 +239,7 @@ void a_font_float(float number)
 void a_font_double(double number)
 {
     char s[64];
-    sprintf(s, "%lf", number);
+    snprintf(s, 64, "%lf", number);
 
     a_font_text(s);
 }
@@ -247,7 +247,7 @@ void a_font_double(double number)
 void a_font_char(char ch)
 {
     char s[2];
-    sprintf(s, "%c", ch);
+    snprintf(s, 2, "%c", ch);
 
     a_font_text(s);
 }
