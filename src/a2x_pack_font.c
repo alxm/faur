@@ -194,32 +194,29 @@ void a_font_text(const char* text)
         x -= a_font_width(text);
     }
 
-    const int length = strlen(text);
-    const int maxWidth = f->maxWidth;
+    if(monospaced) {
+        const int maxWidth = f->maxWidth;
 
-    for(int l = 0; l < length; l++) {
-        if(text[l] == ' ') {
-            x += FONT_SPACE + FONT_BLANK_SPACE;
-        } else {
-            const int index = (int)text[l];
+        for( ; *text != '\0'; text++) {
+            Sprite* spr = f->sprites[(int)*text];
 
-            if(index < 0 || index >= NUM_ASCII) {
-                continue;
+            if(spr) {
+                a_blit(spr, x + (maxWidth - spr->w) / 2, y);
+                x += maxWidth + FONT_SPACE;
+            } else if(*text == ' ') {
+                x += maxWidth + FONT_SPACE;
             }
+        }
+    } else {
+        for( ; *text != '\0'; text++) {
+            Sprite* spr = f->sprites[(int)*text];
 
-            Sprite* const spr = f->sprites[index];
-
-            if(!spr) {
-                continue;
-            }
-
-            if(monospaced) {
-                a_blit(spr, x + (f->maxWidth - spr->w) / 2, y);
-            } else {
+            if(spr) {
                 a_blit(spr, x, y);
+                x += spr->w + FONT_SPACE;
+            } else if(*text == ' ') {
+                x += FONT_BLANK_SPACE + FONT_SPACE;
             }
-
-            x += FONT_SPACE + (monospaced ? maxWidth : spr->w);
         }
     }
 }
@@ -279,23 +276,25 @@ int a_font_width(const char* text)
     Font* const f = fonts[font];
     bool monospaced = align & A_FONT_MONOSPACED;
 
-    if(text[0] == '\0') {
+    if(*text == '\0') {
         return 0;
     }
 
     if(monospaced) {
-        for(char c = *text; c != '\0'; c = *(++text)) {
-            if(f->sprites[(int)c]) {
-                width += f->maxWidth + FONT_SPACE;
-            } else if(c == ' ') {
-                width += FONT_BLANK_SPACE + FONT_SPACE;
+        const int maxWidth = f->maxWidth;
+
+        for( ; *text != '\0'; text++) {
+            if(f->sprites[(int)*text] || *text == ' ') {
+                width += maxWidth + FONT_SPACE;
             }
         }
     } else {
-        for(char c = *text; c != '\0'; c = *(++text)) {
-            if(f->sprites[(int)c]) {
-                width += f->sprites[(int)c]->w + FONT_SPACE;
-            } else if(c == ' ') {
+        for( ; *text != '\0'; text++) {
+            Sprite* spr = f->sprites[(int)*text];
+
+            if(spr) {
+                width += spr->w + FONT_SPACE;
+            } else if(*text == ' ') {
                 width += FONT_BLANK_SPACE + FONT_SPACE;
             }
         }
