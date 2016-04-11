@@ -184,7 +184,6 @@ int a_font_getX(void)
 void a_font_text(const char* text)
 {
     Font* const f = fonts[font];
-    bool monospaced = align & A_FONT_MONOSPACED;
 
     if(align & A_FONT_ALIGN_MIDDLE) {
         x -= a_font_width(text) / 2;
@@ -194,7 +193,7 @@ void a_font_text(const char* text)
         x -= a_font_width(text);
     }
 
-    if(monospaced) {
+    if(align & A_FONT_MONOSPACED) {
         const int maxWidth = f->maxWidth;
 
         for( ; *text != '\0'; text++) {
@@ -259,7 +258,6 @@ void a_font_fixed(int width, const char* text)
     int tally = 0;
     int numChars = 0;
     const int dotsWidth = a_font_width("...");
-    bool monospaced = align & A_FONT_MONOSPACED;
     Font* const f = fonts[font];
 
     if(*text == '\0' || width == 0) {
@@ -275,7 +273,7 @@ void a_font_fixed(int width, const char* text)
         return;
     }
 
-    if(monospaced) {
+    if(align & A_FONT_MONOSPACED) {
         const int maxWidth = f->maxWidth;
 
         for(int i = 0; text[i] != '\0'; i++) {
@@ -361,13 +359,12 @@ int a_font_width(const char* text)
 {
     int width = 0;
     Font* const f = fonts[font];
-    bool monospaced = align & A_FONT_MONOSPACED;
 
     if(*text == '\0') {
         return 0;
     }
 
-    if(monospaced) {
+    if(align & A_FONT_MONOSPACED) {
         const int maxWidth = f->maxWidth;
 
         for( ; *text != '\0'; text++) {
