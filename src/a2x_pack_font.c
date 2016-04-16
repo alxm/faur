@@ -220,6 +220,21 @@ void a_font_text(const char* text)
     }
 }
 
+void a_font_textf(const char* fmt, ...)
+{
+    int ret;
+    va_list args;
+    char buffer[256];
+
+    va_start(args, fmt);
+    ret = vsnprintf(buffer, sizeof(buffer), fmt, args);
+    va_end(args);
+
+    if(ret > 0) {
+        a_font_text(buffer);
+    }
+}
+
 void a_font_int(int number)
 {
     char s[21];
@@ -385,6 +400,23 @@ int a_font_width(const char* text)
     }
 
     return width - FONT_SPACE;
+}
+
+int a_font_widthf(const char* fmt, ...)
+{
+    int ret;
+    va_list args;
+    char buffer[256];
+
+    va_start(args, fmt);
+    ret = vsnprintf(buffer, sizeof(buffer), fmt, args);
+    va_end(args);
+
+    if(ret < 0) {
+        return 0;
+    }
+
+    return a_font_width(buffer);
 }
 
 static int charIndex(char c)

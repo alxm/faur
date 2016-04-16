@@ -53,28 +53,18 @@ extern int a_font_copy(int font, Pixel color);
 extern void a_font_setFace(int f);
 extern void a_font_setAlign(FontAlign a);
 extern void a_font_setCoords(int x, int y);
+
 extern int a_font_getX(void);
 
+extern int a_font_width(const char* text);
+extern int a_font_widthf(const char* fmt, ...);
+
 extern void a_font_text(const char* text);
+extern void a_font_textf(const char* fmt, ...);
+
+extern void a_font_fixed(int width, const char* text);
+
 extern void a_font_int(int number);
 extern void a_font_float(float number);
 extern void a_font_double(double number);
 extern void a_font_char(char ch);
-
-extern void a_font_fixed(int width, const char* text);
-
-extern int a_font_width(const char* text);
-
-#define a_font_textf(...)             \
-({                                    \
-    char a__s[256];                   \
-    snprintf(a__s, 256, __VA_ARGS__); \
-    a_font_text(a__s);                \
-})
-
-#define a_font_widthf(f, ...)         \
-({                                    \
-    char a__s[256];                   \
-    snprintf(a__s, 256, __VA_ARGS__); \
-    a_font_width(a__s);               \
-})
