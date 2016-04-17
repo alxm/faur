@@ -36,18 +36,21 @@ void a_conf__init(void)
     a_out__message("You can edit config in %s", conf_name);
 
     while(a_file_readLine(f)) {
-        char* const s = a_str_trim(a_file_getLine(f));
+        char* const line = a_str_trim(a_file_getLine(f));
 
-        if(strlen(s) >= 2 && s[0] == '/' && s[1] == '/') {
+        if(strlen(line) >= 2 && line[0] == '/' && line[1] == '/') {
             continue;
         }
 
-        char* const key = a_str_getPrefixFirstFind(s, '=');
-        char* const value = a_str_getSuffixFirstFind(s, '=');
+        char* const key = a_str_getPrefixFirstFind(line, '=');
+        char* const value = a_str_getSuffixFirstFind(line, '=');
 
         if(key && value) {
             a2x_set(a_str_trim(key), a_str_trim(value));
         }
+
+        free(key);
+        free(value);
     }
 
     a_file_close(f);
