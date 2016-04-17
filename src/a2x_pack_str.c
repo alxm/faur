@@ -215,12 +215,12 @@ char* a_str_getSuffixLastFind(const char* s, char limit)
 
 char* a_str_extractPath(const char* s)
 {
-    char* const c = a_str_getPrefixLastFind(s, '/');
+    char* const path = a_str_getPrefixLastFind(s, '/');
 
-    if(c) {
-        return c;
+    if(path) {
+        return path;
     } else {
-        return a_str_dup("./");
+        return a_str_dup(".");
     }
 }
 
