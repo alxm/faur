@@ -95,7 +95,7 @@ char* a_str__merge(int count, ...)
 
     va_end(args);
 
-    char* const str = a_str__alloc((size + 1) * sizeof(char));
+    char* const str = malloc((size + 1) * sizeof(char));
     str[0] = '\0';
 
     va_start(args, count);
@@ -117,7 +117,7 @@ char* a_str__merge(int count, ...)
 
 char* a_str_dup(const char* s)
 {
-    char* const d = a_str__alloc(a_str_size(s));
+    char* const d = malloc((strlen(s) + 1) * sizeof(char));
     strcpy(d, s);
 
     return d;

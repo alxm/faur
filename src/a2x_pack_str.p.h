@@ -23,7 +23,6 @@
 
 #define a_str_same(s1, s2)  (strcmp((s1), (s2)) == 0)
 #define a_str_equal(s1, s2) (strcmp((s1), (s2)) == 0)
-#define a_str_size(s)       ((strlen(s) + 1) * sizeof(char))
 
 #define a_str_malloc(...)                                               \
 ({                                                                      \
