@@ -73,7 +73,7 @@ void* a_str__malloc(int count, ...)
 
     va_end(args);
 
-    return a_str__alloc((size + 1) * sizeof(char));
+    return malloc((size + 1) * sizeof(char));
 }
 
 char* a_str__merge(int count, ...)
