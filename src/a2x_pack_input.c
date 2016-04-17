@@ -605,28 +605,31 @@ void a_input__get(void)
 Input* a_input_new(const char* names)
 {
     Input* const i = malloc(sizeof(Input));
+    StringTok* tok = a_strtok_new(names, ", ");
 
     i->name = NULL;
     i->buttons = a_list_new();
     i->analogs = a_list_new();
     i->touches = a_list_new();
 
-    A_STRTOK_ITERATE(names, ", ", name) {
-        #define registerInput(instances)                      \
-        ({                                                          \
+    A_STRTOK_ITERATE(tok, name) {
+        #define registerInput(instances)                                     \
+        ({                                                                   \
             InputInstance* const var = a_strhash_get(instances.names, name); \
-            if(var) {                                               \
-                a_list_addLast(i->instances, var);                  \
-                if(i->name == NULL) {                               \
-                    i->name = a_str_getSuffixLastFind(name, '.');   \
-                }                                                   \
-            }                                                       \
+            if(var) {                                                        \
+                a_list_addLast(i->instances, var);                           \
+                if(i->name == NULL) {                                        \
+                    i->name = a_str_getSuffixLastFind(name, '.');            \
+                }                                                            \
+            }                                                                \
         })
 
         registerInput(buttons);
         registerInput(analogs);
         registerInput(touches);
     }
+
+    a_strtok_free(tok);
 
     if(a_list_isEmpty(i->buttons)
         && a_list_isEmpty(i->analogs)

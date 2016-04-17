@@ -20,21 +20,39 @@
 
 #include "a2x_pack_strtok.v.h"
 
+struct StringTok {
+    const char* string;
+    const char* delims;
+    int numDelims;
+    int index;
+    char* currentToken;
+};
+
 static bool is_delim(char c, const char* d, int n);
 
-StringTok a_strtok__new(const char* s, const char* d)
+StringTok* a_strtok_new(const char* string, const char* delims)
 {
-    StringTok t;
+    StringTok* t = malloc(sizeof(StringTok));
 
-    t.string = s;
-    t.index = 0;
-    t.delims = d;
-    t.numDelims = strlen(d);
+    t->string = string;
+    t->delims = delims;
+    t->numDelims = strlen(delims);
+    t->index = 0;
+    t->currentToken = NULL;
 
     return t;
 }
 
-char* a_strtok__next(StringTok* t)
+void a_strtok_free(StringTok* t)
+{
+    if(t->currentToken) {
+        free(t->currentToken);
+    }
+
+    free(t);
+}
+
+char* a_strtok__get(StringTok* t)
 {
     const char* const string = t->string;
     const char* const delims = t->delims;
@@ -54,13 +72,17 @@ char* a_strtok__next(StringTok* t)
         t->index++;
     } while(string[t->index] != '\0' && !is_delim(string[t->index], delims, numDelims));
 
+    if(t->currentToken) {
+        free(t->currentToken);
+    }
+
     const int len = t->index - start;
-    char* const token = a_str__alloc((len + 1) * sizeof(char));
+    t->currentToken = malloc((len + 1) * sizeof(char));
 
-    memcpy(token, &string[start], len);
-    token[len] = '\0';
+    memcpy(t->currentToken, &string[start], len);
+    t->currentToken[len] = '\0';
 
-    return token;
+    return t->currentToken;
 }
 
 static bool is_delim(char c, const char* d, int n)
