@@ -241,6 +241,7 @@ char* a_str_extractName(const char* s)
     char* const name = a_str_getPrefixLastFind(file, '.');
 
     if(name) {
+        free(file);
         return name;
     } else {
         return file;
