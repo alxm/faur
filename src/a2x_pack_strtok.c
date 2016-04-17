@@ -26,6 +26,7 @@ struct StringTok {
     int numDelims;
     int index;
     char* currentToken;
+    int currentBufferLen;
 };
 
 static bool is_delim(char c, const char* d, int n);
@@ -39,6 +40,7 @@ StringTok* a_strtok_new(const char* string, const char* delims)
     t->numDelims = strlen(delims);
     t->index = 0;
     t->currentToken = NULL;
+    t->currentBufferLen = 0;
 
     return t;
 }
@@ -72,12 +74,16 @@ char* a_strtok__get(StringTok* t)
         t->index++;
     } while(string[t->index] != '\0' && !is_delim(string[t->index], delims, numDelims));
 
-    if(t->currentToken) {
-        free(t->currentToken);
-    }
-
     const int len = t->index - start;
-    t->currentToken = malloc((len + 1) * sizeof(char));
+
+    if(len > t->currentBufferLen) {
+        if(t->currentToken) {
+            free(t->currentToken);
+        }
+
+        t->currentToken = malloc((len + 1) * sizeof(char));
+        t->currentBufferLen = len;
+    }
 
     memcpy(t->currentToken, &string[start], len);
     t->currentToken[len] = '\0';
