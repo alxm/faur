@@ -48,7 +48,13 @@ void a_conf__init(void)
         value = a_str_getSuffixFirstFind(line, '=');
 
         if(key && value) {
-            a2x_set(a_str_trim(key), a_str_trim(value));
+            char* key_trim = a_str_trim(key);
+            char* val_trim = a_str_trim(value);
+
+            a2x_set(key_trim, val_trim);
+
+            free(key_trim);
+            free(val_trim);
         }
 
 next:
