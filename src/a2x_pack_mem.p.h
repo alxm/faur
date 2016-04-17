@@ -21,19 +21,5 @@
 
 #include "a2x_app_includes.h"
 
-#define a_mem_mallocz(size)            \
-({                                     \
-    void* const a__m = malloc((size)); \
-    memset(a__m, 0, (size));           \
-    a__m;                              \
-})
-
-#define a_mem_make(c)                                \
-({                                                   \
-    __typeof(c)* const a__m = malloc(sizeof(*a__m)); \
-    *a__m = c;                                       \
-    a__m;                                            \
-})
-
 extern void* a_mem_encodeRLE(const void* data, int length, int size, int* encLength);
 extern void* a_mem_decodeRLE(const void* data, int length, int size, int* decLength);
