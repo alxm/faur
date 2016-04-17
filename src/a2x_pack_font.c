@@ -360,14 +360,17 @@ void a_font_fixed(int width, const char* text)
     }
 
 fits:
-    buffer = a_str_dup(text);
+    buffer = malloc((numChars + 4) * sizeof(char));
+    memcpy(buffer, text, numChars * sizeof(char));
 
-    buffer[numChars] = '.';
+    buffer[numChars + 0] = '.';
     buffer[numChars + 1] = '.';
     buffer[numChars + 2] = '.';
     buffer[numChars + 3] = '\0';
 
     a_font_text(buffer);
+
+    free(buffer);
 }
 
 int a_font_width(const char* text)
