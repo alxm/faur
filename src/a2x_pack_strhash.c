@@ -61,7 +61,10 @@ void a_strhash_free(StrHash* h)
 
         while(e) {
             Entry* const save = e->next;
+
+            free(e->key);
             free(e);
+
             e = save;
         }
     }
