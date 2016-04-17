@@ -51,6 +51,9 @@ File* a_file_open(const char* path, const char* modes)
 
 void a_file_close(File* f)
 {
+    free(f->modes);
+    free(f->path);
+    free(f->name);
     free(f->line);
 
     if(f->handle) {
