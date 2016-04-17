@@ -20,39 +20,6 @@
 #include "a2x_pack_str.v.h"
 
 #define NULL_STRING "(null)"
-#define STRING_POOL_SIZE 1024
-
-static List* pools;
-static StringPool* pool;
-
-void a_str__init(void)
-{
-    pools = a_list_new();
-    pool = a_strpool_new(STRING_POOL_SIZE);
-    a_list_addLast(pools, pool);
-}
-
-void a_str__uninit(void)
-{
-    A_LIST_ITERATE(pools, StringPool, s) {
-        a_strpool_free(s);
-    }
-    a_list_free(pools);
-}
-
-char* a_str__alloc(unsigned int size)
-{
-    char* const str = a_strpool_alloc(pool, size);
-
-    if(str) {
-        return str;
-    }
-
-    pool = a_strpool_new(a_math_max(STRING_POOL_SIZE, size));
-    a_list_addLast(pools, pool);
-
-    return a_strpool_alloc(pool, size);
-}
 
 void* a_str__malloc(int count, ...)
 {
