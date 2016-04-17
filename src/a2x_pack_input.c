@@ -644,6 +644,8 @@ Input* a_input_new(const char* names)
 
 void a_input__free(Input* i)
 {
+    free(i->name);
+
     a_list_free(i->buttons);
     a_list_free(i->analogs);
     a_list_free(i->touches);
