@@ -266,11 +266,21 @@ void a_input__init(void)
 
 void a_input__uninit(void)
 {
-    A_LIST_ITERATE(touches.list, InputInstance, t) {
-        A_LIST_ITERATE(t->u.touch.motion, Point, p) {
+    A_LIST_ITERATE(buttons.list, InputInstance, i) {
+        free(i->name);
+    }
+
+    A_LIST_ITERATE(analogs.list, InputInstance, i) {
+        free(i->name);
+    }
+
+    A_LIST_ITERATE(touches.list, InputInstance, i) {
+        free(i->name);
+
+        A_LIST_ITERATE(i->u.touch.motion, Point, p) {
             free(p);
         }
-        a_list_free(t->u.touch.motion);
+        a_list_free(i->u.touch.motion);
     }
 
     A_LIST_ITERATE(userInputs, Input, i) {
@@ -605,28 +615,31 @@ void a_input__get(void)
 Input* a_input_new(const char* names)
 {
     Input* const i = malloc(sizeof(Input));
+    StringTok* tok = a_strtok_new(names, ", ");
 
     i->name = NULL;
     i->buttons = a_list_new();
     i->analogs = a_list_new();
     i->touches = a_list_new();
 
-    A_STRTOK_ITERATE(names, ", ", name) {
-        #define registerInput(instances)                      \
-        ({                                                          \
+    A_STRTOK_ITERATE(tok, name) {
+        #define registerInput(instances)                                     \
+        ({                                                                   \
             InputInstance* const var = a_strhash_get(instances.names, name); \
-            if(var) {                                               \
-                a_list_addLast(i->instances, var);                  \
-                if(i->name == NULL) {                               \
-                    i->name = a_str_getSuffixLastFind(name, '.');   \
-                }                                                   \
-            }                                                       \
+            if(var) {                                                        \
+                a_list_addLast(i->instances, var);                           \
+                if(i->name == NULL) {                                        \
+                    i->name = a_str_getSuffixLastFind(name, '.');            \
+                }                                                            \
+            }                                                                \
         })
 
         registerInput(buttons);
         registerInput(analogs);
         registerInput(touches);
     }
+
+    a_strtok_free(tok);
 
     if(a_list_isEmpty(i->buttons)
         && a_list_isEmpty(i->analogs)
@@ -641,6 +654,8 @@ Input* a_input_new(const char* names)
 
 void a_input__free(Input* i)
 {
+    free(i->name);
+
     a_list_free(i->buttons);
     a_list_free(i->analogs);
     a_list_free(i->touches);

@@ -23,9 +23,3 @@
 
 #include "a2x_pack_list.v.h"
 #include "a2x_pack_math.v.h"
-#include "a2x_pack_strpool.v.h"
-
-extern void a_str__init(void);
-extern void a_str__uninit(void);
-
-extern char* a_str__alloc(unsigned int size);

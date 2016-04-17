@@ -27,8 +27,6 @@ int main(int argc, char** argv)
     numArgs = argc;
     args = argv;
 
-    a_str__init();
-
     a_settings__defaults();
     a_setup();
     a_settings__freeze();
@@ -69,13 +67,13 @@ int main(int argc, char** argv)
     a_input__uninit();
     a_console__uninit();
     a_font__uninit();
+    a_screenshot__uninit();
     a_screen__uninit();
     a_sprite__uninit();
     a_fps__uninit();
     a_time__uninit();
     a_hw__uninit();
     a_sdl__uninit();
-    a_str__uninit();
 
     #if A_PLATFORM_GP2X || A_PLATFORM_WIZ || A_PLATFORM_CAANOO
         if(a2x_bool("app.gp2xMenu")) {

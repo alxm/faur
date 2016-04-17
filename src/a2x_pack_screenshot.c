@@ -49,7 +49,9 @@ void a_screenshot__init(void)
         int end = a_str_lastIndex(file, '.');
 
         if(start != -1 && end != -1 && end - start == 6) {
-            number = atoi(a_str_sub(file, start + 1, end));
+            char* numberStr = a_str_sub(file, start + 1, end);
+            number = atoi(numberStr);
+            free(numberStr);
 
             if(number <= 0) {
                 can_save = false;
@@ -64,6 +66,11 @@ void a_screenshot__init(void)
     }
 
     a_dir_close(dir);
+}
+
+void a_screenshot__uninit(void)
+{
+    free(prefix);
 }
 
 void a_screenshot_save(void)
@@ -85,4 +92,6 @@ void a_screenshot_save(void)
 
     a_out__message("Saving screenshot '%s'", name);
     a_png_write(name, a_pixels, a_width, a_height);
+
+    free(name);
 }

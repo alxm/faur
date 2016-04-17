@@ -22,7 +22,7 @@
 typedef void (*StateFunction)(void);
 
 struct StateInstance {
-    const char* name;
+    char* name;
     StateFunction function;
     StrHash* objects;
     StateStage stage;
@@ -49,6 +49,9 @@ static char* bodystage_names[A_STATE_BODYSTAGE_NUM] = {
     "Paused",
 };
 
+static StateInstance* a_stateinstance__new(const char* name);
+static void a_stateinstance__free(StateInstance* s);
+
 void a_state__init(void)
 {
     functions = a_strhash_new();
@@ -64,8 +67,7 @@ void a_state__uninit(void)
     a_strhash_free(functions);
 
     A_LIST_ITERATE(stack, StateInstance, s) {
-        a_strhash_free(s->objects);
-        free(s);
+        a_stateinstance__free(s);
     }
     a_list_free(stack);
 }
@@ -89,21 +91,9 @@ void a_state_push(const char* name)
         }
     }
 
-    StateFunction function = a_strhash_get(functions, name);
-
-    if(function == NULL) {
-        a_out__fatal("Push state '%s': does not exist", name);
-    }
-
     changed = true;
 
-    StateInstance* const s = malloc(sizeof(StateInstance));
-
-    s->name = a_str_dup(name);
-    s->function = function;
-    s->objects = a_strhash_new();
-    s->stage = A_STATE_STAGE_INIT;
-    s->bodystage = A_STATE_BODYSTAGE_RUN;
+    StateInstance* const s = a_stateinstance__new(name);
 
     if(a_list_isEmpty(stack)) {
         a_out__state("Push first state '%s'", name);
@@ -238,8 +228,7 @@ void a_state__run(void)
         s->function();
 
         if(s->stage == A_STATE_STAGE_FREE) {
-            a_strhash_free(s->objects);
-            free(a_list_pop(stack));
+            a_stateinstance__free(a_list_pop(stack));
         }
 
         if(new_state) {
@@ -311,4 +300,31 @@ bool a_state__unchanged(void)
     }
 
     return !changed;
+}
+
+static StateInstance* a_stateinstance__new(const char* name)
+{
+    StateFunction function = a_strhash_get(functions, name);
+
+    if(function == NULL) {
+        a_out__fatal("State '%s' does not exist", name);
+    }
+
+    StateInstance* const s = malloc(sizeof(StateInstance));
+
+    s->name = a_str_dup(name);
+    s->function = function;
+    s->objects = a_strhash_new();
+    s->stage = A_STATE_STAGE_INIT;
+    s->bodystage = A_STATE_BODYSTAGE_RUN;
+
+    return s;
+}
+
+static void a_stateinstance__free(StateInstance* s)
+{
+    free(s->name);
+    a_strhash_free(s->objects);
+
+    free(s);
 }
