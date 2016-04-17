@@ -126,7 +126,7 @@ char* a_str_dup(const char* s)
 char* a_str_sub(const char* s, int start, int end)
 {
     const int len = end - start;
-    char* const str = a_str__alloc((len + 1) * sizeof(char));
+    char* const str = malloc((len + 1) * sizeof(char));
 
     memcpy(str, s + start, len);
     str[len] = '\0';
