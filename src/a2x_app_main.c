@@ -69,6 +69,7 @@ int main(int argc, char** argv)
     a_input__uninit();
     a_console__uninit();
     a_font__uninit();
+    a_screenshot__uninit();
     a_screen__uninit();
     a_sprite__uninit();
     a_fps__uninit();

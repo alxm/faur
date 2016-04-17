@@ -25,3 +25,4 @@
 #include "a2x_pack_png.v.h"
 
 extern void a_screenshot__init(void);
+extern void a_screenshot__uninit(void);
