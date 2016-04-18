@@ -44,7 +44,7 @@ void a_png_readFile(const char* path, Pixel** pixels, int* width, int* height)
     a_file_read(f, sig, PNG_SIG);
 
     if(png_sig_cmp(sig, 0, PNG_SIG) != 0) {
-        a_error("%s is not a PNG", path);
+        a_out__error("%s is not a PNG", path);
         goto cleanUp;
     }
 
@@ -71,7 +71,7 @@ void a_png_readFile(const char* path, Pixel** pixels, int* width, int* height)
     const int type = png_get_color_type(png, info);
 
     if(type != PNG_COLOR_TYPE_RGB && type != PNG_COLOR_TYPE_RGBA) {
-        a_error("%s not 8-bit RGBA PNG", path);
+        a_out__error("%s not 8-bit RGBA PNG", path);
         goto cleanUp;
     }
 
@@ -90,7 +90,7 @@ void a_png_readFile(const char* path, Pixel** pixels, int* width, int* height)
 
 void a_png_readMemory(const uint8_t* data, Pixel** pixels, int* width, int* height)
 {
-    ByteStream* const stream = malloc(sizeof(ByteStream));
+    ByteStream* const stream = a_mem_malloc(sizeof(ByteStream));
 
     stream->data = data;
     stream->offset = 0;
@@ -104,7 +104,7 @@ void a_png_readMemory(const uint8_t* data, Pixel** pixels, int* width, int* heig
     memcpy(sig, data, PNG_SIG);
 
     if(png_sig_cmp(sig, 0, PNG_SIG) != 0) {
-        a_error("Data not a PNG");
+        a_out__error("Data not a PNG");
         goto cleanUp;
     }
 
@@ -130,7 +130,7 @@ void a_png_readMemory(const uint8_t* data, Pixel** pixels, int* width, int* heig
     const int type = png_get_color_type(png, info);
 
     if(type != PNG_COLOR_TYPE_RGB && type != PNG_COLOR_TYPE_RGBA) {
-        a_error("Data not 8-bit RGBA PNG");
+        a_out__error("Data not 8-bit RGBA PNG");
         goto cleanUp;
     }
 
@@ -157,7 +157,7 @@ void a_png_write(const char* path, const Pixel* data, int width, int height)
         goto cleanUp;
     }
 
-    rows = malloc(height * sizeof(png_bytep));
+    rows = a_mem_malloc(height * sizeof(png_bytep));
     memset(rows, 0, height * sizeof(png_bytep));
 
     png = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
@@ -187,7 +187,7 @@ void a_png_write(const char* path, const Pixel* data, int width, int height)
     );
 
     for(int i = 0; i < height; i++) {
-        rows[i] = malloc(width * 3 * sizeof(png_byte));
+        rows[i] = a_mem_malloc(width * 3 * sizeof(png_byte));
 
         for(int j = 0; j < width; j++) {
             const Pixel p = *(data + i * width + j);
@@ -236,7 +236,7 @@ static void pngToPixels(png_structp png, png_infop info, Pixel** pixels, int* wi
     const int h = png_get_image_height(png, info);
     const int channels = png_get_channels(png, info);
 
-    Pixel* const px = malloc(w * h * sizeof(Pixel));
+    Pixel* const px = a_mem_malloc(w * h * sizeof(Pixel));
     png_bytepp rows = png_get_rows(png, info);
 
     for(int i = 0; i < h; i++) {

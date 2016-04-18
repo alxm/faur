@@ -21,7 +21,5 @@
 
 #include "a2x_pack_png.p.h"
 
-#include "a2x_app_main.v.h"
-
 #include "a2x_pack_file.v.h"
 #include "a2x_pack_pixel.v.h"

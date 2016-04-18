@@ -37,18 +37,19 @@ void a_sprite__uninit(void)
 
 Sprite* a_sprite_fromFile(const char* path)
 {
-    int w;
-    int h;
-    Pixel* pixels;
+    int w = 0;
+    int h = 0;
+    Sprite* s;
+    Pixel* pixels = NULL;
 
     a_png_readFile(path, &pixels, &w, &h);
 
-    Sprite* const s = a_sprite_blank(w, h);
+    if(pixels == NULL) {
+        return NULL;
+    }
 
-    memcpy(s->data, pixels, w * h * sizeof(Pixel));
+    s = a_sprite_fromPixels(pixels, w, h);
     free(pixels);
-
-    a_sprite_refresh(s);
 
     return s;
 }
@@ -57,15 +58,26 @@ Sprite* a_sprite_fromData(const uint8_t* data)
 {
     int w;
     int h;
-    Pixel* pixels;
+    Sprite* s;
+    Pixel* pixels = NULL;
 
     a_png_readMemory(data, &pixels, &w, &h);
 
-    Sprite* const s = a_sprite_blank(w, h);
+    if(pixels == NULL) {
+        return NULL;
+    }
 
-    memcpy(s->data, pixels, w * h * sizeof(Pixel));
+    s = a_sprite_fromPixels(pixels, w, h);
     free(pixels);
 
+    return s;
+}
+
+Sprite* a_sprite_fromPixels(Pixel* pixels, int w, int h)
+{
+    Sprite* s = a_sprite_blank(w, h);
+
+    memcpy(s->data, pixels, w * h * sizeof(Pixel));
     a_sprite_refresh(s);
 
     return s;
@@ -110,7 +122,7 @@ Sprite* a_sprite_zoomed(const Sprite* sheet, int x, int y, int zoom)
             w = width;
             h = height;
         } else {
-            a_error("Sprite coords %d, %d are invalid", x, y);
+            a_out__error("Sprite coords %d, %d are invalid", x, y);
             return NULL;
         }
     }
@@ -148,7 +160,7 @@ Sprite* a_sprite_zoomed(const Sprite* sheet, int x, int y, int zoom)
 
 Sprite* a_sprite_blank(int w, int h)
 {
-    Sprite* const s = malloc(sizeof(Sprite) + w * h * sizeof(Pixel));
+    Sprite* const s = a_mem_malloc(sizeof(Sprite) + w * h * sizeof(Pixel));
 
     s->w = w;
     s->h = h;
@@ -224,7 +236,7 @@ void a_sprite_refresh(Sprite* s)
     }
 
     free(s->spans);
-    s->spans = malloc(num * sizeof(uint16_t));
+    s->spans = a_mem_malloc(num * sizeof(uint16_t));
 
     uint16_t* spans = s->spans;
 

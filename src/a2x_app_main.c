@@ -19,23 +19,22 @@
 
 #include "a2x_app_main.v.h"
 
-int a_argsNum;
-char** a_args;
+static int numArgs;
+static char** args;
 
 int main(int argc, char** argv)
 {
-    a_argsNum = argc;
-    a_args = argv;
-
-    a_str__init();
+    numArgs = argc;
+    args = argv;
 
     a_settings__defaults();
     a_setup();
     a_settings__freeze();
+    a_console__init();
 
-    a_out("a2x %s, compiled on %s", A__VERSION, A_COMPILE_TIME);
+    a_out__message("a2x %s, compiled on %s", A__VERSION, A_COMPILE_TIME);
 
-    a_out("Opening %s %s by %s, compiled %s",
+    a_out__message("Opening %s %s by %s, compiled %s",
         a2x_str("app.title"), a2x_str("app.version"),
         a2x_str("app.author"), a2x_str("app.compiled"));
 
@@ -58,15 +57,17 @@ int main(int argc, char** argv)
     a_font__init();
     a_state__init();
 
-    a_out("Opening A_MAIN");
+    a_out__message("Opening A_MAIN");
     a_main();
     a_state__run();
-    a_out("A_MAIN closed");
+    a_out__message("A_MAIN closed");
 
     a_state__uninit();
     a_sound__uninit();
     a_input__uninit();
+    a_console__uninit();
     a_font__uninit();
+    a_screenshot__uninit();
     a_screen__uninit();
     a_sprite__uninit();
     a_fps__uninit();
@@ -74,19 +75,27 @@ int main(int argc, char** argv)
     a_hw__uninit();
     a_sdl__uninit();
 
-    a_out("Closing %s - see you next time.", a2x_str("app.title"));
-
     #if A_PLATFORM_GP2X || A_PLATFORM_WIZ || A_PLATFORM_CAANOO
         if(a2x_bool("app.gp2xMenu")) {
-            a_out("Calling gp2xmenu");
-            a_str__uninit();
-
             chdir("/usr/gp2x");
             execl("gp2xmenu", "gp2xmenu", NULL);
         }
-    #else
-        a_str__uninit();
     #endif
 
     return 0;
+}
+
+int a_main_numArgs(void)
+{
+    return numArgs;
+}
+
+char* a_main_getArg(unsigned int n)
+{
+    if(n >= numArgs) {
+        a_out__error("a_main_getArg invalid arg: %u", n);
+        return NULL;
+    }
+
+    return args[n];
 }

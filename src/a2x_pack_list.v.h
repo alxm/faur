@@ -22,6 +22,7 @@
 #include "a2x_pack_list.p.h"
 
 #include "a2x_pack_listit.v.h"
+#include "a2x_pack_mem.v.h"
 
 struct List {
     ListNode* first;

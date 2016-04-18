@@ -95,7 +95,7 @@ Music* a_music_load(const char* path)
         Music* const m = Mix_LoadMUS(path);
 
         if(!m) {
-            a_error("%s", Mix_GetError());
+            a_out__error("%s", Mix_GetError());
         }
 
         Mix_VolumeMusic((float)a2x_int("sound.music.scale") / 100 * a__volume);

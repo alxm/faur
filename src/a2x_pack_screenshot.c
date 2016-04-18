@@ -49,7 +49,9 @@ void a_screenshot__init(void)
         int end = a_str_lastIndex(file, '.');
 
         if(start != -1 && end != -1 && end - start == 6) {
-            number = atoi(a_str_sub(file, start + 1, end));
+            char* numberStr = a_str_sub(file, start + 1, end);
+            number = atoi(numberStr);
+            free(numberStr);
 
             if(number <= 0) {
                 can_save = false;
@@ -59,30 +61,37 @@ void a_screenshot__init(void)
         }
 
         if(!can_save) {
-            a_error("Can't save screenshots: invalid file '%s'", file);
+            a_out__error("Can't save screenshots: invalid file '%s'", file);
         }
     }
 
     a_dir_close(dir);
 }
 
+void a_screenshot__uninit(void)
+{
+    free(prefix);
+}
+
 void a_screenshot_save(void)
 {
     if(!can_save) {
-        a_error("Can't save screenshots");
+        a_out__error("Can't save screenshots");
         return;
     }
 
     if(++number > SCREENSHOTS_LIMIT) {
-        a_error("%d screenshots limit exceeded", SCREENSHOTS_LIMIT);
+        a_out__error("%d screenshots limit exceeded", SCREENSHOTS_LIMIT);
         return;
     }
 
     char num[6];
-    sprintf(num, "%05d", number);
+    snprintf(num, 6, "%05d", number);
 
     char* const name = a_str_merge(prefix, num, ".png");
 
-    a_out("Saving screenshot '%s'", name);
+    a_out__message("Saving screenshot '%s'", name);
     a_png_write(name, a_pixels, a_width, a_height);
+
+    free(name);
 }

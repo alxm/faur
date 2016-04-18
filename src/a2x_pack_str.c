@@ -20,39 +20,6 @@
 #include "a2x_pack_str.v.h"
 
 #define NULL_STRING "(null)"
-#define STRING_POOL_SIZE 1024
-
-static List* pools;
-static StringPool* pool;
-
-void a_str__init(void)
-{
-    pools = a_list_new();
-    pool = a_strpool_new(STRING_POOL_SIZE);
-    a_list_addLast(pools, pool);
-}
-
-void a_str__uninit(void)
-{
-    A_LIST_ITERATE(pools, StringPool, s) {
-        a_strpool_free(s);
-    }
-    a_list_free(pools);
-}
-
-char* a_str__alloc(unsigned int size)
-{
-    char* const str = a_strpool_alloc(pool, size);
-
-    if(str) {
-        return str;
-    }
-
-    pool = a_strpool_new(a_math_max(STRING_POOL_SIZE, size));
-    a_list_addLast(pools, pool);
-
-    return a_strpool_alloc(pool, size);
-}
 
 void* a_str__malloc(int count, ...)
 {
@@ -73,7 +40,7 @@ void* a_str__malloc(int count, ...)
 
     va_end(args);
 
-    return a_str__alloc((size + 1) * sizeof(char));
+    return a_mem_malloc((size + 1) * sizeof(char));
 }
 
 char* a_str__merge(int count, ...)
@@ -95,7 +62,7 @@ char* a_str__merge(int count, ...)
 
     va_end(args);
 
-    char* const str = a_str__alloc((size + 1) * sizeof(char));
+    char* const str = a_mem_malloc((size + 1) * sizeof(char));
     str[0] = '\0';
 
     va_start(args, count);
@@ -117,7 +84,7 @@ char* a_str__merge(int count, ...)
 
 char* a_str_dup(const char* s)
 {
-    char* const d = a_str__alloc(a_str_size(s));
+    char* const d = a_mem_malloc((strlen(s) + 1) * sizeof(char));
     strcpy(d, s);
 
     return d;
@@ -126,7 +93,7 @@ char* a_str_dup(const char* s)
 char* a_str_sub(const char* s, int start, int end)
 {
     const int len = end - start;
-    char* const str = a_str__alloc((len + 1) * sizeof(char));
+    char* const str = a_mem_malloc((len + 1) * sizeof(char));
 
     memcpy(str, s + start, len);
     str[len] = '\0';
@@ -215,12 +182,12 @@ char* a_str_getSuffixLastFind(const char* s, char limit)
 
 char* a_str_extractPath(const char* s)
 {
-    char* const c = a_str_getPrefixLastFind(s, '/');
+    char* const path = a_str_getPrefixLastFind(s, '/');
 
-    if(c) {
-        return c;
+    if(path) {
+        return path;
     } else {
-        return a_str_dup("./");
+        return a_str_dup(".");
     }
 }
 
@@ -241,6 +208,7 @@ char* a_str_extractName(const char* s)
     char* const name = a_str_getPrefixLastFind(file, '.');
 
     if(name) {
+        free(file);
         return name;
     } else {
         return file;

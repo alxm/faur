@@ -21,8 +21,6 @@
 
 #include "a2x_pack_sdl.p.h"
 
-#include "a2x_app_main.v.h"
-
 #include "a2x_pack_pixel.v.h"
 
 extern void a_sdl__init(void);

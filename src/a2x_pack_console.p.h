@@ -1,5 +1,5 @@
 /*
-    Copyright 2010 Alex Margarit
+    Copyright 2016 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -22,9 +22,4 @@
 
 #include "a2x_app_includes.h"
 
-typedef struct StringPool StringPool;
-
-extern StringPool* a_strpool_new(unsigned int bytes);
-extern void a_strpool_free(StringPool* sp);
-
-extern char* a_strpool_alloc(StringPool* sp, unsigned int size);
+//

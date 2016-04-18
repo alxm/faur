@@ -57,8 +57,8 @@
     #endif
 #endif
 
-extern int a_argsNum;
-extern char** a_args;
-
 #define A_MAIN void a_main(void)
 extern A_MAIN;
+
+extern int a_main_numArgs(void);
+extern char* a_main_getArg(unsigned int n);

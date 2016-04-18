@@ -22,7 +22,7 @@
 typedef void (*StateFunction)(void);
 
 struct StateInstance {
-    const char* name;
+    char* name;
     StateFunction function;
     StrHash* objects;
     StateStage stage;
@@ -49,31 +49,8 @@ static char* bodystage_names[A_STATE_BODYSTAGE_NUM] = {
     "Paused",
 };
 
-#if A_PLATFORM_LINUXPC
-    #define a_state__out(...)                        \
-    ({                                               \
-        if(!a2x_bool("app.quiet")) {                 \
-            printf("\033[34;1m[ a2x Stt ]\033[0m "); \
-            for(int i = indent; i--; ) {             \
-                printf("  ");                        \
-            }                                        \
-            printf(__VA_ARGS__);                     \
-            printf("\n");                            \
-        }                                            \
-    })
-#else
-    #define a_state__out(...)             \
-    ({                                    \
-        if(!a2x_bool("app.quiet")) {      \
-            printf("[ a2x Stt ] ");       \
-            for(int i = indent; i--; ) {  \
-                printf("  ");             \
-            }                             \
-            printf(__VA_ARGS__);          \
-            printf("\n");                 \
-        }                                 \
-    })
-#endif
+static StateInstance* a_stateinstance__new(const char* name);
+static void a_stateinstance__free(StateInstance* s);
 
 void a_state__init(void)
 {
@@ -90,15 +67,14 @@ void a_state__uninit(void)
     a_strhash_free(functions);
 
     A_LIST_ITERATE(stack, StateInstance, s) {
-        a_strhash_free(s->objects);
-        free(s);
+        a_stateinstance__free(s);
     }
     a_list_free(stack);
 }
 
 void a_state__new(const char* name, void (*function)(void))
 {
-    a_state__out("New state '%s'", name);
+    a_out__state("New state '%s'", name);
     a_strhash_add(functions, name, function);
 }
 
@@ -108,37 +84,25 @@ void a_state_push(const char* name)
 
     if(active && !replacing) {
         if(active->stage == A_STATE_STAGE_FREE) {
-            a_state__out("Push state '%s': already exiting", name);
+            a_out__state("Push state '%s': already exiting", name);
             return;
         } else if(active->stage != A_STATE_STAGE_BODY) {
-            a_fatal("Push state '%s': only call from A_STATE_BODY", name);
+            a_out__fatal("Push state '%s': only call from A_STATE_BODY", name);
         }
-    }
-
-    StateFunction function = a_strhash_get(functions, name);
-
-    if(function == NULL) {
-        a_fatal("Push state '%s': does not exist", name);
     }
 
     changed = true;
 
-    StateInstance* const s = malloc(sizeof(StateInstance));
-
-    s->name = a_str_dup(name);
-    s->function = function;
-    s->objects = a_strhash_new();
-    s->stage = A_STATE_STAGE_INIT;
-    s->bodystage = A_STATE_BODYSTAGE_RUN;
+    StateInstance* const s = a_stateinstance__new(name);
 
     if(a_list_isEmpty(stack)) {
-        a_state__out("Push first state '%s'", name);
+        a_out__state("Push first state '%s'", name);
         a_list_push(stack, s);
     } else if(new_state == NULL) {
-        a_state__out("Push state '%s'", name);
+        a_out__state("Push state '%s'", name);
         new_state = s;
     } else {
-        a_fatal("Push state '%s': already pushed state '%s'", name, new_state->name);
+        a_out__fatal("Push state '%s': already pushed state '%s'", name, new_state->name);
     }
 }
 
@@ -147,15 +111,15 @@ void a_state_pop(void)
     StateInstance* const active = a_list_peek(stack);
 
     if(active == NULL) {
-        a_fatal("Pop state: no active state");
+        a_out__fatal("Pop state: no active state");
     } else if(active->stage == A_STATE_STAGE_FREE) {
-        a_state__out("Pop state '%s': already exiting", active->name);
+        a_out__state("Pop state '%s': already exiting", active->name);
         return;
     } else if(active->stage != A_STATE_STAGE_BODY) {
-        a_fatal("Pop state '%s': only call from A_STATE_BODY", active->name);
+        a_out__fatal("Pop state '%s': only call from A_STATE_BODY", active->name);
     }
 
-    a_state__out("Pop state '%s'", active->name);
+    a_out__state("Pop state '%s'", active->name);
 
     changed = true;
 
@@ -167,21 +131,21 @@ void a_state_pop(void)
 void a_state_replace(const char* name)
 {
     if(a_strhash_get(functions, name) == NULL) {
-        a_fatal("Replace state '%s': does not exist", name);
+        a_out__fatal("Replace state '%s': does not exist", name);
     }
 
     const StateInstance* const active = a_list_peek(stack);
 
     if(active == NULL) {
-        a_fatal("Replace state with '%s': no active state, use a_state_push", name);
+        a_out__fatal("Replace state with '%s': no active state, use a_state_push", name);
     } else if(active->stage == A_STATE_STAGE_FREE) {
-        a_state__out("Replace state '%s' with '%s': already exiting", active->name, name);
+        a_out__state("Replace state '%s' with '%s': already exiting", active->name, name);
         return;
     } else if(active->stage != A_STATE_STAGE_BODY) {
-        a_fatal("Replace state '%s' with '%s': only call from A_STATE_BODY", active->name, name);
+        a_out__fatal("Replace state '%s' with '%s': only call from A_STATE_BODY", active->name, name);
     }
 
-    a_state__out("Replace state '%s' with '%s'", active->name, name);
+    a_out__state("Replace state '%s' with '%s'", active->name, name);
 
     replacing = true;
     indent++;
@@ -198,9 +162,9 @@ void a_state_pause(void)
     StateInstance* const active = a_list_peek(stack);
 
     if(active == NULL) {
-        a_fatal("No active state to pause");
+        a_out__fatal("No active state to pause");
     } else if(active->bodystage == A_STATE_BODYSTAGE_PAUSE) {
-        a_fatal("State '%s' is already paused", active->name);
+        a_out__fatal("State '%s' is already paused", active->name);
     }
 
     a_state__setBodyStage(active, A_STATE_BODYSTAGE_PAUSE);
@@ -212,9 +176,9 @@ void a_state_resume(void)
     StateInstance* const active = a_list_peek(stack);
 
     if(active == NULL) {
-        a_fatal("No active state to resume");
+        a_out__fatal("No active state to resume");
     } else if(active->bodystage == A_STATE_BODYSTAGE_RUN) {
-        a_fatal("State '%s' is already running", active->name);
+        a_out__fatal("State '%s' is already running", active->name);
     }
 
     a_state__setBodyStage(active, A_STATE_BODYSTAGE_RUN);
@@ -224,10 +188,10 @@ void a_state_resume(void)
 void a_state_exit(void)
 {
     changed = true;
-    a_state__out("Telling all states to exit");
+    a_out__state("Telling all states to exit");
 
     A_LIST_ITERATE(stack, StateInstance, s) {
-        a_state__out("State '%s' exiting", s->name);
+        a_out__state("State '%s' exiting", s->name);
 
         indent++;
         a_state__setStage(s, A_STATE_STAGE_FREE);
@@ -264,8 +228,7 @@ void a_state__run(void)
         s->function();
 
         if(s->stage == A_STATE_STAGE_FREE) {
-            a_strhash_free(s->objects);
-            free(a_list_pop(stack));
+            a_stateinstance__free(a_list_pop(stack));
         }
 
         if(new_state) {
@@ -302,7 +265,7 @@ bool a_state__setStage(StateInstance* state, StateStage stage)
     StateInstance* const s = state ? state : a_list_peek(stack);
 
     if(s) {
-        a_state__out("State '%s' transitioning from %s to %s",
+        a_out__state("State '%s' transitioning from %s to %s",
             s->name, stage_names[s->stage], stage_names[stage]);
         s->stage = stage;
 
@@ -314,7 +277,7 @@ bool a_state__setStage(StateInstance* state, StateStage stage)
 
 void a_state__setBodyStage(StateInstance* state, StateBodyStage bodystage)
 {
-    a_state__out("State '%s' transitioning from %s to %s",
+    a_out__state("State '%s' transitioning from %s to %s",
         state->name, bodystage_names[state->bodystage], bodystage_names[bodystage]);
     state->bodystage = bodystage;
 }
@@ -337,4 +300,31 @@ bool a_state__unchanged(void)
     }
 
     return !changed;
+}
+
+static StateInstance* a_stateinstance__new(const char* name)
+{
+    StateFunction function = a_strhash_get(functions, name);
+
+    if(function == NULL) {
+        a_out__fatal("State '%s' does not exist", name);
+    }
+
+    StateInstance* const s = a_mem_malloc(sizeof(StateInstance));
+
+    s->name = a_str_dup(name);
+    s->function = function;
+    s->objects = a_strhash_new();
+    s->stage = A_STATE_STAGE_INIT;
+    s->bodystage = A_STATE_BODYSTAGE_RUN;
+
+    return s;
+}
+
+static void a_stateinstance__free(StateInstance* s)
+{
+    free(s->name);
+    a_strhash_free(s->objects);
+
+    free(s);
 }

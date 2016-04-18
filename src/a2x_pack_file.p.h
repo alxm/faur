@@ -31,6 +31,7 @@ extern void a_file_writePrefix(File* f, const char* prefix);
 
 extern void a_file_read(File* f, void* buffer, size_t size);
 extern void a_file_write(File* f, void* buffer, size_t size);
+extern void a_file_writef(File* f, char* fmt, ...);
 
 extern bool a_file_readLine(File* f);
 extern char* a_file_getLine(const File* f);

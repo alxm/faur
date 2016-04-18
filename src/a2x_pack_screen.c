@@ -107,6 +107,7 @@ void a_screen__uninit(void)
 void a_screen_show(void)
 {
     displayVolume();
+    a_console__draw();
 
     if(a2x_bool("video.wizTear")) {
         // video.fake is also set when video.wizTear is set
@@ -203,7 +204,7 @@ Pixel* a_screen_dup(void)
 
 Pixel* a_screen_new(void)
 {
-    return malloc(A_SCREEN_SIZE);
+    return a_mem_malloc(A_SCREEN_SIZE);
 }
 
 void a_screen_copy(Pixel* dst, const Pixel* src)
@@ -276,11 +277,11 @@ void a_screen_resetTarget(void)
                 a__pixels2 = a_pixels;
             }
 
-            a_out("Changed resolution to %dx%d %dx (%s)",
+            a_out__message("Changed resolution to %dx%d %dx (%s)",
                   a_width, a_height, a2x_int("video.scale"),
                   a2x_bool("video.fullscreen") ? "fullscreen" : "windowed");
         } else {
-            a_warning("Could not change resolution to %dx%d %dx (%s)",
+            a_out__warning("Could not change resolution to %dx%d %dx (%s)",
                       a_width, a_height, a2x_int("video.scale"),
                       a2x_bool("video.fullscreen") ? "fullscreen" : "windowed");
         }
@@ -291,7 +292,7 @@ void a_screen_resetTarget(void)
 
 static void setFakeScreen(void)
 {
-    a_pixels = malloc(A_SCREEN_SIZE);
+    a_pixels = a_mem_malloc(A_SCREEN_SIZE);
     a__pixels2 = a_pixels;
 
     memset(a_pixels, 0, A_SCREEN_SIZE);

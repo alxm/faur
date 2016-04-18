@@ -45,7 +45,7 @@ struct Entry {
 
 StrHash* a_strhash_new(void)
 {
-    StrHash* const h = malloc(sizeof(StrHash));
+    StrHash* const h = a_mem_malloc(sizeof(StrHash));
 
     for(int i = A_STRHASH_NUM; i--; ) {
         h->entries[i] = NULL;
@@ -61,7 +61,10 @@ void a_strhash_free(StrHash* h)
 
         while(e) {
             Entry* const save = e->next;
+
+            free(e->key);
             free(e);
+
             e = save;
         }
     }
@@ -74,7 +77,7 @@ void a_strhash_add(StrHash* h, const char* key, void* content)
     const uint8_t slot = getSlot(key);
     Entry* const entry = h->entries[slot];
 
-    Entry* const e = malloc(sizeof(Entry));
+    Entry* const e = a_mem_malloc(sizeof(Entry));
 
     e->key = a_str_dup(key);
     e->content = content;
@@ -92,4 +95,15 @@ void* a_strhash_get(const StrHash* h, const char* key)
     }
 
     return NULL;
+}
+
+bool a_strhash_contains(const StrHash* h, const char* key)
+{
+    for(Entry* e = h->entries[getSlot(key)]; e; e = e->next) {
+        if(a_str_same(key, e->key)) {
+            return true;
+        }
+    }
+
+    return false;
 }

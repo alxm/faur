@@ -127,13 +127,13 @@ void a_fade_fromBlack(int framesDuration)
 
 void a_fade_screens(const Pixel* const old, int framesDuration)
 {
-    int* rNew = malloc(SCREEN_DIM * sizeof(int));
-    int* gNew = malloc(SCREEN_DIM * sizeof(int));
-    int* bNew = malloc(SCREEN_DIM * sizeof(int));
+    int* rNew = a_mem_malloc(SCREEN_DIM * sizeof(int));
+    int* gNew = a_mem_malloc(SCREEN_DIM * sizeof(int));
+    int* bNew = a_mem_malloc(SCREEN_DIM * sizeof(int));
 
-    int* rOld = malloc(SCREEN_DIM * sizeof(int));
-    int* gOld = malloc(SCREEN_DIM * sizeof(int));
-    int* bOld = malloc(SCREEN_DIM * sizeof(int));
+    int* rOld = a_mem_malloc(SCREEN_DIM * sizeof(int));
+    int* gOld = a_mem_malloc(SCREEN_DIM * sizeof(int));
+    int* bOld = a_mem_malloc(SCREEN_DIM * sizeof(int));
 
     int* rNewp = rNew;
     int* gNewp = gNew;

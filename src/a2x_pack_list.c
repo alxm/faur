@@ -21,9 +21,9 @@
 
 List* a_list_new(void)
 {
-    List* const list = malloc(sizeof(List));
-    ListNode* const first = malloc(sizeof(ListNode));
-    ListNode* const last = malloc(sizeof(ListNode));
+    List* const list = a_mem_malloc(sizeof(List));
+    ListNode* const first = a_mem_malloc(sizeof(ListNode));
+    ListNode* const last = a_mem_malloc(sizeof(ListNode));
 
     first->content = NULL;
     first->next = last;
@@ -75,7 +75,7 @@ void a_list_empty(List* list)
 
 ListNode* a_list_addFirst(List* list, void* content)
 {
-    ListNode* const n = malloc(sizeof(ListNode));
+    ListNode* const n = a_mem_malloc(sizeof(ListNode));
 
     n->content = content;
     n->next = list->first->next;
@@ -91,7 +91,7 @@ ListNode* a_list_addFirst(List* list, void* content)
 
 ListNode* a_list_addLast(List* list, void* content)
 {
-    ListNode* const n = malloc(sizeof(ListNode));
+    ListNode* const n = a_mem_malloc(sizeof(ListNode));
 
     n->content = content;
     n->next = list->last;
@@ -192,7 +192,7 @@ void a_list_reverse(List* list)
 void** a_list_array(List* list)
 {
     int i = 0;
-    void** const array = malloc(list->items * sizeof(void*));
+    void** const array = a_mem_malloc(list->items * sizeof(void*));
 
     A_LIST_ITERATE(list, void, v) {
         array[i++] = v;

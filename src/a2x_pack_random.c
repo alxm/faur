@@ -9,7 +9,6 @@
     (at your option) any later version.
 
     a2x-framework is distributed in the hope that it will be useful,
-    a2x-framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU Lesser General Public License for more details.
@@ -28,7 +27,7 @@ void a_random__init(void)
 int a_random_int(int max)
 {
     if(max == 0) {
-        a_fatal("a_random_int invalid arg: 0");
+        a_out__fatal("a_random_int invalid arg: 0");
     }
 
     return rand() % max;
@@ -37,7 +36,7 @@ int a_random_int(int max)
 int a_random_range(int min, int max)
 {
     if(min >= max) {
-        a_fatal("a_random_range invalid args: %d, %d", min, max);
+        a_out__fatal("a_random_range invalid args: %d, %d", min, max);
     }
 
     return min + (rand() % (max - min));

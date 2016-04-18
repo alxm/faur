@@ -1,5 +1,5 @@
 /*
-    Copyright 2010 Alex Margarit
+    Copyright 2016 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -19,13 +19,17 @@
 
 #pragma once
 
-#include "a2x_app_includes.h"
+#include "a2x_pack_out.p.h"
 
-typedef struct StrHash StrHash;
+#include "a2x_app_settings.v.h"
 
-extern StrHash* a_strhash_new(void);
-extern void a_strhash_free(StrHash* h);
+#include "a2x_pack_console.v.h"
 
-extern void a_strhash_add(StrHash* h, const char* key, void* content);
-extern void* a_strhash_get(const StrHash* h, const char* key);
-extern bool a_strhash_contains(const StrHash* h, const char* key);
+extern void a_out__init(void);
+extern void a_out__uninit(void);
+
+extern void a_out__message(char* fmt, ...);
+extern void a_out__warning(char* fmt, ...);
+extern void a_out__error(char* fmt, ...);
+extern void a_out__fatal(char* fmt, ...);
+extern void a_out__state(char* fmt, ...);

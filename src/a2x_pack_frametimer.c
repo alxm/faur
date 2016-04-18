@@ -28,7 +28,7 @@ struct FrameTimer {
 
 FrameTimer* a_frametimer_new(uint32_t framesPeriod)
 {
-    FrameTimer* const t = malloc(sizeof(FrameTimer));
+    FrameTimer* const t = a_mem_malloc(sizeof(FrameTimer));
 
     t->running = false;
     t->period = framesPeriod;

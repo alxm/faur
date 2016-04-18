@@ -1,5 +1,5 @@
 /*
-    Copyright 2010 Alex Margarit
+    Copyright 2016 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -18,41 +18,26 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a2x_pack_strpool.v.h"
+#pragma once
 
-struct StringPool {
-    char* data;
-    unsigned int size;
-    unsigned int offset;
-};
+#include "a2x_pack_console.p.h"
 
-StringPool* a_strpool_new(unsigned int bytes)
-{
-    StringPool* const sp = malloc(sizeof(StringPool));
+#include "a2x_pack_font.v.h"
+#include "a2x_pack_list.v.h"
+#include "a2x_pack_pixel.v.h"
+#include "a2x_pack_str.v.h"
 
-    sp->data = malloc(bytes);
-    sp->size = bytes;
-    sp->offset = 0;
+extern void a_console__init(void);
+extern void a_console__uninit(void);
 
-    return sp;
-}
+typedef enum {
+    ConsoleMessage,
+    ConsoleWarning,
+    ConsoleError,
+    ConsoleState,
+    ConsoleMax
+} ConsoleOutType;
 
-void a_strpool_free(StringPool* sp)
-{
-    free(sp->data);
-    free(sp);
-}
-
-char* a_strpool_alloc(StringPool* sp, unsigned int size)
-{
-    const unsigned int old_offset = sp->offset;
-    const unsigned int new_offset = old_offset + size;
-
-    if(new_offset > sp->size) {
-        return NULL;
-    }
-
-    sp->offset = new_offset;
-
-    return sp->data + old_offset;
-}
+extern void a_console__write(ConsoleOutType type, const char* text);
+extern void a_console__draw(void);
+extern void a_console__show(void);

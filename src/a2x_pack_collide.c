@@ -34,7 +34,7 @@ struct ColObject {
 
 ColMap* a_colmap_new(int width, int height, int maxObjectDim)
 {
-    ColMap* const m = malloc(sizeof(ColMap));
+    ColMap* const m = a_mem_malloc(sizeof(ColMap));
 
     #define nextpow(value)           \
     ({                               \
@@ -47,10 +47,10 @@ ColMap* a_colmap_new(int width, int height, int maxObjectDim)
     m->w = 1 << a_math_max(0, nextpow(width) - m->bitShift);
     m->h = 1 << a_math_max(0, nextpow(height) - m->bitShift);
 
-    m->submaps = malloc(m->h * sizeof(List**));
+    m->submaps = a_mem_malloc(m->h * sizeof(List**));
 
     for(int i = m->h; i--; ) {
-        m->submaps[i] = malloc(m->w * sizeof(List*));
+        m->submaps[i] = a_mem_malloc(m->w * sizeof(List*));
 
         for(int j = m->w; j--; ) {
             m->submaps[i][j] = a_list_new();
@@ -76,7 +76,7 @@ void a_colmap_free(ColMap* m)
 
 ColObject* a_colobject_new(const ColMap* m, void* parent)
 {
-    ColObject* const o = malloc(sizeof(ColObject));
+    ColObject* const o = a_mem_malloc(sizeof(ColObject));
 
     o->colmap = m;
     o->nodes = a_list_new();

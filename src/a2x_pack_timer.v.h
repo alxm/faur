@@ -21,4 +21,5 @@
 
 #include "a2x_pack_timer.p.h"
 
+#include "a2x_pack_mem.v.h"
 #include "a2x_pack_time.v.h"

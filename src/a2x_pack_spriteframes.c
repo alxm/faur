@@ -32,7 +32,7 @@ struct SpriteFrames {
 
 SpriteFrames* a_spriteframes_new(const Sprite* sheet, int x, int y, unsigned int callsToNextFrame)
 {
-    SpriteFrames* const sf = malloc(sizeof(SpriteFrames));
+    SpriteFrames* const sf = a_mem_malloc(sizeof(SpriteFrames));
 
     sf->sprites = a_list_new();
     sf->spriteArray = NULL;
@@ -146,7 +146,7 @@ void a_spriteframes_reset(SpriteFrames* sf)
 
 SpriteFrames* a_spriteframes_clone(const SpriteFrames* src)
 {
-    SpriteFrames* const sf = malloc(sizeof(SpriteFrames));
+    SpriteFrames* const sf = a_mem_malloc(sizeof(SpriteFrames));
 
     sf->sprites = a_list_clone(src->sprites);
     sf->spriteArray = (Sprite**)a_list_array(sf->sprites);

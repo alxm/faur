@@ -33,10 +33,11 @@ File* a_file_open(const char* path, const char* modes)
     FILE* const handle = fopen(path, modes);
 
     if(!handle) {
+        a_out__error("a_file_open: Can't open %s for '%s'", path, modes);
         return NULL;
     }
 
-    File* const f = malloc(sizeof(File));
+    File* const f = a_mem_malloc(sizeof(File));
 
     f->handle = handle;
     f->modes = a_str_dup(modes);
@@ -50,6 +51,9 @@ File* a_file_open(const char* path, const char* modes)
 
 void a_file_close(File* f)
 {
+    free(f->modes);
+    free(f->path);
+    free(f->name);
     free(f->line);
 
     if(f->handle) {
@@ -85,6 +89,16 @@ void a_file_write(File* f, void* buffer, size_t size)
     fwrite(buffer, size, 1, f->handle);
 }
 
+void a_file_writef(File* f, char* fmt, ...)
+{
+    va_list args;
+    va_start(args, fmt);
+
+    vfprintf(f->handle, fmt, args);
+
+    va_end(args);
+}
+
 bool a_file_readLine(File* f)
 {
     free(f->line);
@@ -115,7 +129,7 @@ bool a_file_readLine(File* f)
             fseek(handle, -offset, SEEK_CUR);
         }
 
-        char* const str = malloc(offset * sizeof(char));
+        char* const str = a_mem_malloc(offset * sizeof(char));
 
         for(int i = 0; i < offset - 1; i++) {
             str[i] = fgetc(handle);
@@ -189,7 +203,7 @@ uint8_t* a_file_toBuffer(const char* path)
     }
 
     const int len = a_file_size(path);
-    uint8_t* const buffer = malloc(len);
+    uint8_t* const buffer = a_mem_malloc(len);
 
     fread(buffer, len, 1, f);
     fclose(f);

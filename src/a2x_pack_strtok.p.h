@@ -24,17 +24,10 @@
 
 typedef struct StringTok StringTok;
 
-struct StringTok {
-    const char* string;
-    int index;
-    const char* delims;
-    int numDelims;
-};
+extern StringTok* a_strtok_new(const char* string, const char* delims);
+extern void a_strtok_free(StringTok* t);
 
-extern StringTok a_strtok__new(const char* s, const char* d);
+extern char* a_strtok__get(StringTok* t);
 
-extern char* a_strtok__next(StringTok* t);
-
-#define A_STRTOK_ITERATE(str, delims, var)                                               \
-    for(StringTok a__st = a_strtok__new(str, delims); a__st.string; a__st.string = NULL) \
-        for(char* var; (var = a_strtok__next(&a__st)); )
+#define A_STRTOK_ITERATE(tok, var)                                     \
+    for(char* var = a_strtok__get(tok); var; var = a_strtok__get(tok))

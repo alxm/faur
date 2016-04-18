@@ -9,7 +9,6 @@
     (at your option) any later version.
 
     a2x-framework is distributed in the hope that it will be useful,
-    a2x-framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU Lesser General Public License for more details.
@@ -22,6 +21,6 @@
 
 #include "a2x_pack_random.p.h"
 
-#include "a2x_app_main.v.h"
+#include "a2x_pack_out.v.h"
 
 extern void a_random__init(void);

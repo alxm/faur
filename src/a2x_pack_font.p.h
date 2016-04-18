@@ -24,41 +24,47 @@
 #include "a2x_pack_sprite.p.h"
 
 typedef enum FontLoad  {
-    A_LOAD_ALL = 1, A_LOAD_AN = 2, A_LOAD_A = 4, A_LOAD_N = 8, A_LOAD_CAPS = 16
+    A_FONT_LOAD_ALL = 1,
+    A_FONT_LOAD_ALPHANUMERIC = 2,
+    A_FONT_LOAD_ALPHA = 4,
+    A_FONT_LOAD_NUMERIC = 8,
+    A_FONT_LOAD_CAPS = 16,
 } FontLoad;
 
 typedef enum FontAlign {
-    A_LEFT = 1, A_MIDDLE = 2, A_RIGHT = 4, A_SPACED = 8
+    A_FONT_ALIGN_LEFT = 1,
+    A_FONT_ALIGN_MIDDLE = 2,
+    A_FONT_ALIGN_RIGHT = 4,
+    A_FONT_MONOSPACED = 8
 } FontAlign;
 
+typedef enum FontDefaults {
+    A_FONT_WHITE,
+    A_FONT_GREEN,
+    A_FONT_YELLOW,
+    A_FONT_RED,
+    A_FONT_BLUE,
+    A_FONT_MAX
+} FontDefaults;
+
 extern int a_font_load(const Sprite* sheet, int x, int y, int zoom, FontLoad loader);
-extern int a_font_copy(int font, uint8_t r, uint8_t g, uint8_t b);
+extern int a_font_copy(int font, Pixel color);
 
 extern void a_font_setFace(int f);
 extern void a_font_setAlign(FontAlign a);
 extern void a_font_setCoords(int x, int y);
+
 extern int a_font_getX(void);
 
+extern int a_font_width(const char* text);
+extern int a_font_widthf(const char* fmt, ...);
+
 extern void a_font_text(const char* text);
+extern void a_font_textf(const char* fmt, ...);
+
+extern void a_font_fixed(int width, const char* text);
+
 extern void a_font_int(int number);
 extern void a_font_float(float number);
 extern void a_font_double(double number);
 extern void a_font_char(char ch);
-
-extern void a_font_fixed(int width, const char* text);
-
-extern int a_font_width(const char* text);
-
-#define a_font_textf(...)       \
-({                              \
-    char a__s[256];             \
-    sprintf(a__s, __VA_ARGS__); \
-    a_font_text(a__s);          \
-})
-
-#define a_font_widthf(f, ...)   \
-({                              \
-    char a__s[256];             \
-    sprintf(a__s, __VA_ARGS__); \
-    a_font_width(a__s);         \
-})

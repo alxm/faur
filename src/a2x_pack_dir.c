@@ -52,7 +52,7 @@ Dir* a_dir_openFilter(const char* path, int (*filter)(const struct dirent* f))
     struct dirent** dlist = NULL;
     const int numFiles = scandir(path, &dlist, filter, alphasort);
 
-    Dir* const d = malloc(sizeof(Dir));
+    Dir* const d = a_mem_malloc(sizeof(Dir));
 
     d->path = a_str_dup(path);
     d->name = a_str_getSuffixLastFind(path, '/');
@@ -60,7 +60,7 @@ Dir* a_dir_openFilter(const char* path, int (*filter)(const struct dirent* f))
     d->num = a_math_max(0, numFiles);
 
     for(int i = d->num; i--; ) {
-        DirEntry* const e = malloc(sizeof(DirEntry));
+        DirEntry* const e = a_mem_malloc(sizeof(DirEntry));
 
         e->name = a_str_dup(dlist[i]->d_name);
         e->full = a_str_merge(path, "/", e->name);
@@ -78,10 +78,16 @@ Dir* a_dir_openFilter(const char* path, int (*filter)(const struct dirent* f))
 
 void a_dir_close(Dir* d)
 {
+    free(d->path);
+    free(d->name);
+
     A_LIST_ITERATE(d->files, DirEntry, e) {
+        free(e->name);
+        free(e->full);
         free(e);
     }
     a_list_free(d->files);
+
     free(d);
 }
 

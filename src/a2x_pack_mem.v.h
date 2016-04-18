@@ -22,6 +22,4 @@
 #include "a2x_pack_mem.p.h"
 
 #include "a2x_pack_list.v.h"
-
-extern void a_mem__init(void);
-extern void a_mem__free(void);
+#include "a2x_pack_out.v.h"

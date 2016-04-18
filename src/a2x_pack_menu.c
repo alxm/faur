@@ -48,7 +48,7 @@ struct Menu {
 
 Menu* a_menu_new(Input* next, Input* back, Input* select, Input* cancel, void (*freeItem)(void* v))
 {
-    Menu* const m = malloc(sizeof(Menu));
+    Menu* const m = a_mem_malloc(sizeof(Menu));
 
     m->items = a_list_new();
     m->freeItem = freeItem;
@@ -87,6 +87,8 @@ void a_menu_free(Menu* m)
     }
 
     a_list_free(m->items);
+    free(m->title);
+
     free(m);
 }
 

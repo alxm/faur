@@ -1,5 +1,5 @@
 /*
-    Copyright 2010 Alex Margarit
+    Copyright 2016 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -8,7 +8,6 @@
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    a2x-framework is distributed in the hope that it will be useful,
     a2x-framework is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -20,4 +19,6 @@
 
 #pragma once
 
-#include "a2x_pack_strpool.p.h"
+#include "a2x_app_includes.h"
+
+//
