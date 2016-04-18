@@ -40,7 +40,7 @@ void* a_str__malloc(int count, ...)
 
     va_end(args);
 
-    return malloc((size + 1) * sizeof(char));
+    return a_mem_malloc((size + 1) * sizeof(char));
 }
 
 char* a_str__merge(int count, ...)
@@ -62,7 +62,7 @@ char* a_str__merge(int count, ...)
 
     va_end(args);
 
-    char* const str = malloc((size + 1) * sizeof(char));
+    char* const str = a_mem_malloc((size + 1) * sizeof(char));
     str[0] = '\0';
 
     va_start(args, count);
@@ -84,7 +84,7 @@ char* a_str__merge(int count, ...)
 
 char* a_str_dup(const char* s)
 {
-    char* const d = malloc((strlen(s) + 1) * sizeof(char));
+    char* const d = a_mem_malloc((strlen(s) + 1) * sizeof(char));
     strcpy(d, s);
 
     return d;
@@ -93,7 +93,7 @@ char* a_str_dup(const char* s)
 char* a_str_sub(const char* s, int start, int end)
 {
     const int len = end - start;
-    char* const str = malloc((len + 1) * sizeof(char));
+    char* const str = a_mem_malloc((len + 1) * sizeof(char));
 
     memcpy(str, s + start, len);
     str[len] = '\0';

@@ -310,7 +310,7 @@ static StateInstance* a_stateinstance__new(const char* name)
         a_out__fatal("State '%s' does not exist", name);
     }
 
-    StateInstance* const s = malloc(sizeof(StateInstance));
+    StateInstance* const s = a_mem_malloc(sizeof(StateInstance));
 
     s->name = a_str_dup(name);
     s->function = function;

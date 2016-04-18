@@ -33,7 +33,7 @@ static bool is_delim(char c, const char* d, int n);
 
 StringTok* a_strtok_new(const char* string, const char* delims)
 {
-    StringTok* t = malloc(sizeof(StringTok));
+    StringTok* t = a_mem_malloc(sizeof(StringTok));
 
     t->string = string;
     t->delims = delims;
@@ -81,7 +81,7 @@ char* a_strtok__get(StringTok* t)
             free(t->currentToken);
         }
 
-        t->currentToken = malloc((len + 1) * sizeof(char));
+        t->currentToken = a_mem_malloc((len + 1) * sizeof(char));
         t->currentBufferLen = len;
     }
 

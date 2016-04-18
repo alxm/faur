@@ -366,7 +366,7 @@ void a_input__get(void)
                     t->u.touch.y = event.button.y;
 
                     if(a2x_bool("input.trackMouse")) {
-                        Point* const p = malloc(sizeof(Point));
+                        Point* const p = a_mem_malloc(sizeof(Point));
 
                         p->x = t->u.touch.x;
                         p->y = t->u.touch.y;
@@ -614,7 +614,7 @@ void a_input__get(void)
 
 Input* a_input_new(const char* names)
 {
-    Input* const i = malloc(sizeof(Input));
+    Input* const i = a_mem_malloc(sizeof(Input));
     StringTok* tok = a_strtok_new(names, ", ");
 
     i->name = NULL;
@@ -790,7 +790,7 @@ static void addButton(const char* name, int code)
     InputInstance* b = a_strhash_get(buttons.names, name);
 
     if(!b) {
-        b = malloc(sizeof(InputInstance));
+        b = a_mem_malloc(sizeof(InputInstance));
 
         b->name = a_str_dup(name);
         b->u.button.numCodes = 1;
@@ -820,7 +820,7 @@ static void addButton(const char* name, int code)
         InputInstance* a = a_strhash_get(analogs.names, name);
 
         if(!a) {
-            a = malloc(sizeof(InputInstance));
+            a = a_mem_malloc(sizeof(InputInstance));
 
             a->name = a_str_dup(name);
             a->device_index = device_index;
@@ -852,7 +852,7 @@ static void addTouch(const char* name)
     InputInstance* t = a_strhash_get(touches.names, name);
 
     if(!t) {
-        t = malloc(sizeof(InputInstance));
+        t = a_mem_malloc(sizeof(InputInstance));
 
         t->name = a_str_dup(name);
         t->u.touch.tap = false;

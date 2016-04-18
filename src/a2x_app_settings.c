@@ -179,7 +179,7 @@ int a2x_int(const char* key)
 
 static void add(Setting_t type, Update_t update, const char* key, const char* val)
 {
-    Setting* const s = malloc(sizeof(Setting));
+    Setting* const s = a_mem_malloc(sizeof(Setting));
 
     s->type = type;
     s->update = update;

@@ -204,7 +204,7 @@ Pixel* a_screen_dup(void)
 
 Pixel* a_screen_new(void)
 {
-    return malloc(A_SCREEN_SIZE);
+    return a_mem_malloc(A_SCREEN_SIZE);
 }
 
 void a_screen_copy(Pixel* dst, const Pixel* src)
@@ -292,7 +292,7 @@ void a_screen_resetTarget(void)
 
 static void setFakeScreen(void)
 {
-    a_pixels = malloc(A_SCREEN_SIZE);
+    a_pixels = a_mem_malloc(A_SCREEN_SIZE);
     a__pixels2 = a_pixels;
 
     memset(a_pixels, 0, A_SCREEN_SIZE);

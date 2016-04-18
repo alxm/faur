@@ -37,7 +37,7 @@ File* a_file_open(const char* path, const char* modes)
         return NULL;
     }
 
-    File* const f = malloc(sizeof(File));
+    File* const f = a_mem_malloc(sizeof(File));
 
     f->handle = handle;
     f->modes = a_str_dup(modes);
@@ -129,7 +129,7 @@ bool a_file_readLine(File* f)
             fseek(handle, -offset, SEEK_CUR);
         }
 
-        char* const str = malloc(offset * sizeof(char));
+        char* const str = a_mem_malloc(offset * sizeof(char));
 
         for(int i = 0; i < offset - 1; i++) {
             str[i] = fgetc(handle);
@@ -203,7 +203,7 @@ uint8_t* a_file_toBuffer(const char* path)
     }
 
     const int len = a_file_size(path);
-    uint8_t* const buffer = malloc(len);
+    uint8_t* const buffer = a_mem_malloc(len);
 
     fread(buffer, len, 1, f);
     fclose(f);

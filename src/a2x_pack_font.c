@@ -83,7 +83,7 @@ void a_font__uninit(void)
 
 int a_font_load(const Sprite* sheet, int x, int y, int zoom, FontLoad loader)
 {
-    Font* const f = malloc(sizeof(Font));
+    Font* const f = a_mem_malloc(sizeof(Font));
 
     for(int i = NUM_ASCII; i--; ) {
         f->sprites[i] = NULL;
@@ -131,7 +131,7 @@ int a_font_load(const Sprite* sheet, int x, int y, int zoom, FontLoad loader)
 int a_font_copy(int font, Pixel color)
 {
     const Font* const src = fonts[font];
-    Font* const f = malloc(sizeof(Font));
+    Font* const f = a_mem_malloc(sizeof(Font));
 
     for(int i = NUM_ASCII; i--; ) {
         if(src->sprites[i]) {
@@ -360,7 +360,7 @@ void a_font_fixed(int width, const char* text)
     }
 
 fits:
-    buffer = malloc((numChars + 4) * sizeof(char));
+    buffer = a_mem_malloc((numChars + 4) * sizeof(char));
     memcpy(buffer, text, numChars * sizeof(char));
 
     buffer[numChars + 0] = '.';

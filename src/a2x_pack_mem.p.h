@@ -21,5 +21,7 @@
 
 #include "a2x_app_includes.h"
 
+extern void* a_mem_malloc(size_t size);
+
 extern void* a_mem_encodeRLE(const void* data, int length, int size, int* encLength);
 extern void* a_mem_decodeRLE(const void* data, int length, int size, int* decLength);

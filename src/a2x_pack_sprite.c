@@ -160,7 +160,7 @@ Sprite* a_sprite_zoomed(const Sprite* sheet, int x, int y, int zoom)
 
 Sprite* a_sprite_blank(int w, int h)
 {
-    Sprite* const s = malloc(sizeof(Sprite) + w * h * sizeof(Pixel));
+    Sprite* const s = a_mem_malloc(sizeof(Sprite) + w * h * sizeof(Pixel));
 
     s->w = w;
     s->h = h;
@@ -236,7 +236,7 @@ void a_sprite_refresh(Sprite* s)
     }
 
     free(s->spans);
-    s->spans = malloc(num * sizeof(uint16_t));
+    s->spans = a_mem_malloc(num * sizeof(uint16_t));
 
     uint16_t* spans = s->spans;
 

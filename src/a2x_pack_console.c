@@ -108,7 +108,7 @@ void a_console__show(void)
 
 static Line* line_new(ConsoleOutType type, const char* text)
 {
-    Line* line = malloc(sizeof(Line));
+    Line* line = a_mem_malloc(sizeof(Line));
 
     line->type = type;
     line->text = a_str_dup(text);

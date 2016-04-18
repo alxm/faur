@@ -19,6 +19,17 @@
 
 #include "a2x_pack_mem.v.h"
 
+void* a_mem_malloc(size_t size)
+{
+    void* const ptr = malloc(size);
+
+    if(ptr == NULL) {
+        a_out__fatal("a_mem_malloc(%u) failed", size);
+    }
+
+    return ptr;
+}
+
 void* a_mem_encodeRLE(const void* data, int length, int size, int* encLength)
 {
     int space = 0;
@@ -34,7 +45,7 @@ void* a_mem_encodeRLE(const void* data, int length, int size, int* encLength)
 
     for(int a = 0; a < 2; a++) {
         if(a == 1) {
-            dst = malloc(space * size);
+            dst = a_mem_malloc(space * size);
 
             dst8 = dst;
             dst16 = dst;
@@ -154,7 +165,7 @@ void* a_mem_decodeRLE(const void* data, int length, int size, int* decLength)
 
     for(int a = 0; a < 2; a++) {
         if(a == 1) {
-            dst = malloc(space * size);
+            dst = a_mem_malloc(space * size);
 
             dst8 = dst;
             dst16 = dst;
