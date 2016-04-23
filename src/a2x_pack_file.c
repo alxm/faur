@@ -65,38 +65,71 @@ void a_file_close(File* f)
 
 bool a_file_checkPrefix(File* f, const char* prefix)
 {
-    const int len = strlen(prefix) + 1;
-    char buffer[len];
+    const size_t size = strlen(prefix) + 1;
+    char buffer[size];
 
     fseek(f->handle, 0, SEEK_SET);
-    fread(buffer, len, 1, f->handle);
+
+    if(!a_file_read(f, buffer, size)) {
+        return false;
+    }
+
+    buffer[size - 1] = '\0';
 
     return a_str_equal(buffer, prefix);
 }
 
 void a_file_writePrefix(File* f, const char* prefix)
 {
-    fwrite(prefix, strlen(prefix) + 1, 1, f->handle);
+    a_file_write(f, prefix, strlen(prefix) + 1);
 }
 
-void a_file_read(File* f, void* buffer, size_t size)
+bool a_file_read(File* f, void* buffer, size_t size)
 {
-    fread(buffer, size, 1, f->handle);
+    size_t readCount;
+
+    readCount = fread(buffer, size, 1, f->handle);
+
+    if(readCount != 1) {
+        a_out__warning("a_file_read: could not read %u bytes from %s",
+                       size, f->name);
+        return false;
+    }
+
+    return true;
 }
 
-void a_file_write(File* f, void* buffer, size_t size)
+bool a_file_write(File* f, const void* buffer, size_t size)
 {
-    fwrite(buffer, size, 1, f->handle);
+    size_t writeCount;
+
+    writeCount = fwrite(buffer, size, 1, f->handle);
+
+    if(writeCount != 1) {
+        a_out__error("a_file_write: could not write %u bytes to %s",
+                     size, f->name);
+        return false;
+    }
+
+    return true;
 }
 
-void a_file_writef(File* f, char* fmt, ...)
+bool a_file_writef(File* f, char* fmt, ...)
 {
+    int ret;
     va_list args;
     va_start(args, fmt);
 
-    vfprintf(f->handle, fmt, args);
+    ret = vfprintf(f->handle, fmt, args);
 
     va_end(args);
+
+    if(ret < 0) {
+        a_out__error("a_file_writef: could not write to %s", f->name);
+        return false;
+    }
+
+    return true;
 }
 
 bool a_file_readLine(File* f)
@@ -186,7 +219,7 @@ bool a_file_isDir(const char* f)
     return S_ISDIR(info.st_mode);
 }
 
-int a_file_size(const char* f)
+size_t a_file_size(const char* f)
 {
     struct stat info;
     stat(f, &info);
@@ -196,17 +229,21 @@ int a_file_size(const char* f)
 
 uint8_t* a_file_toBuffer(const char* path)
 {
-    FILE* const f = fopen(path, "r");
+    File* f = a_file_open(path, "r");
 
     if(!f) {
         return NULL;
     }
 
-    const int len = a_file_size(path);
-    uint8_t* const buffer = a_mem_malloc(len);
+    const size_t size = a_file_size(path);
+    uint8_t* buffer = a_mem_malloc(size);
 
-    fread(buffer, len, 1, f);
-    fclose(f);
+    if(!a_file_read(f, buffer, size)) {
+        free(buffer);
+        buffer = NULL;
+    }
+
+    a_file_close(f);
 
     return buffer;
 }

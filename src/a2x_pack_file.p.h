@@ -29,9 +29,9 @@ extern void a_file_close(File* f);
 extern bool a_file_checkPrefix(File* f, const char* prefix);
 extern void a_file_writePrefix(File* f, const char* prefix);
 
-extern void a_file_read(File* f, void* buffer, size_t size);
-extern void a_file_write(File* f, void* buffer, size_t size);
-extern void a_file_writef(File* f, char* fmt, ...);
+extern bool a_file_read(File* f, void* buffer, size_t size);
+extern bool a_file_write(File* f, const void* buffer, size_t size);
+extern bool a_file_writef(File* f, char* fmt, ...);
 
 extern bool a_file_readLine(File* f);
 extern char* a_file_getLine(const File* f);
@@ -42,6 +42,6 @@ extern FILE* a_file_handle(const File* f);
 
 extern bool a_file_exists(const char* path);
 extern bool a_file_isDir(const char* f);
-extern int a_file_size(const char* f);
+extern size_t a_file_size(const char* f);
 
 extern uint8_t* a_file_toBuffer(const char* path);
