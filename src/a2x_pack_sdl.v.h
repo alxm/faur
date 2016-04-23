@@ -31,3 +31,7 @@ extern Pixel* a_sdl__screen_pixels(void);
 extern void a_sdl__screen_lock(void);
 extern void a_sdl__screen_unlock(void);
 extern void a_sdl__screen_flip(void);
+
+extern void* a_sdl__sfx_loadFromFile(const char* path);
+extern void* a_sdl__sfx_loadFromData(const uint16_t* data, int size);
+extern void a_sdl__sfx_setVolume(void* s, uint8_t volume);

@@ -121,3 +121,24 @@ void a_sdl__screen_flip(void)
 {
     SDL_Flip(screen);
 }
+
+void* a_sdl__sfx_loadFromFile(const char* path)
+{
+    return Mix_LoadWAV(path);
+}
+
+void* a_sdl__sfx_loadFromData(const uint16_t* data, int size)
+{
+    SDL_RWops* rw = SDL_RWFromMem((void*)data, size);
+    Mix_Chunk* sfx = Mix_LoadWAV_RW(rw, 0);
+
+    SDL_FreeRW(rw);
+
+    return sfx;
+}
+
+void a_sdl__sfx_setVolume(void* s, uint8_t volume)
+{
+    Mix_Chunk* sfx = s;
+    sfx->volume = volume;
+}

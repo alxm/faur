@@ -134,11 +134,10 @@ void a_music_stop(void)
 Sound* a_sfx_fromFile(const char* path)
 {
     if(a2x_bool("sound.on")) {
-        Sound* const s = Mix_LoadWAV(path);
+        Sound* s = a_sdl__sfx_loadFromFile(path);
+        a_sdl__sfx_setVolume(s, (float)a2x_int("sound.sfx.scale") / 100 * a__volume);
 
-        s->volume = (float)a2x_int("sound.sfx.scale") / 100 * a__volume;
         a_list_addLast(sfxList, s);
-
         return s;
     } else {
         return NULL;
@@ -148,14 +147,10 @@ Sound* a_sfx_fromFile(const char* path)
 Sound* a_sfx__fromData(const uint16_t* data, int size)
 {
     if(a2x_bool("sound.on")) {
-        SDL_RWops* const rw = SDL_RWFromMem((void*)data, size);
-        Sound* const s = Mix_LoadWAV_RW(rw, 0);
+        Sound* s = a_sdl__sfx_loadFromData(data, size);
+        a_sdl__sfx_setVolume(s, (float)a2x_int("sound.sfx.scale") / 100 * a__volume);
 
-        s->volume = (float)a2x_int("sound.sfx.scale") / 100 * a__volume;
         a_list_addLast(sfxList, s);
-
-        SDL_FreeRW(rw);
-
         return s;
     } else {
         return NULL;
@@ -180,7 +175,7 @@ void a_sfx_volume(int v)
 {
     if(a2x_bool("sound.on")) {
         A_LIST_ITERATE(sfxList, Sound, s) {
-            s->volume = v;
+            a_sdl__sfx_setVolume(s, v);
         }
     }
 }
