@@ -118,8 +118,6 @@ void a_screen__uninit(void)
 
     if(a2x_bool("video.fake")) {
         free(a_pixels);
-    } else {
-        a_sdl__screen_unlock();
     }
 }
 

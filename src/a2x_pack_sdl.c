@@ -346,6 +346,13 @@ void a_sdl__uninit(void)
         Mix_CloseAudio();
     }
 
+    #if A_USE_LIB_SDL
+        if(SDL_MUSTLOCK(screen) && screen_locked) {
+            SDL_UnlockSurface(screen);
+            screen_locked = false;
+        }
+    #endif
+
     SDL_Quit();
 }
 
@@ -424,30 +431,14 @@ bool a_sdl__screen_set(void)
 Pixel* a_sdl__screen_pixels(void)
 {
     #if A_USE_LIB_SDL
-        a_sdl__screen_lock();
-        return screen->pixels;
-    #elif A_USE_LIB_SDL2
-        return a_pixels;
-    #endif
-}
-
-void a_sdl__screen_lock(void)
-{
-    #if A_USE_LIB_SDL
         if(SDL_MUSTLOCK(screen) && !screen_locked) {
             SDL_LockSurface(screen);
             screen_locked = true;
         }
-    #endif
-}
 
-void a_sdl__screen_unlock(void)
-{
-    #if A_USE_LIB_SDL
-        if(SDL_MUSTLOCK(screen) && screen_locked) {
-            SDL_UnlockSurface(screen);
-            screen_locked = false;
-        }
+        return screen->pixels;
+    #elif A_USE_LIB_SDL2
+        return a_pixels;
     #endif
 }
 
@@ -459,7 +450,10 @@ void a_sdl__pixelsToScreen(void)
 
         memcpy(dst, src, A_SCREEN_SIZE);
 
-        a_sdl__screen_unlock();
+        if(SDL_MUSTLOCK(screen) && screen_locked) {
+            SDL_UnlockSurface(screen);
+            screen_locked = false;
+        }
     #endif
 }
 
@@ -493,13 +487,21 @@ void a_sdl__screen_show(void)
                 }
             }
 
-            a_sdl__screen_unlock();
+            if(SDL_MUSTLOCK(screen) && screen_locked) {
+                SDL_UnlockSurface(screen);
+                screen_locked = false;
+            }
+
             a_sdl__screen_flip();
         } else if(a2x_bool("video.fake")) {
             a_sdl__pixelsToScreen();
             a_sdl__screen_flip();
         } else {
-            a_sdl__screen_unlock();
+            if(SDL_MUSTLOCK(screen) && screen_locked) {
+                SDL_UnlockSurface(screen);
+                screen_locked = false;
+            }
+
             a_sdl__screen_flip();
 
             a_pixels = a_sdl__screen_pixels();
