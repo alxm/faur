@@ -182,6 +182,73 @@ void a_sdl__screen_flip(void)
     SDL_Flip(screen);
 }
 
+void a_sdl__sound_init(void)
+{
+    #if A_PLATFORM_LINUXPC || A_PLATFORM_WINDOWS
+        if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096) != 0) {
+            a2x_set("sound.on", "0");
+        }
+    #elif A_PLATFORM_GP2X
+        if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 256) != 0) {
+            a2x_set("sound.on", "0");
+        }
+    #else
+        if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 512) != 0) {
+            a2x_set("sound.on", "0");
+        }
+    #endif
+}
+
+void a_sdl__sound_free(void)
+{
+    Mix_CloseAudio();
+}
+
+int a_sdl__sound_volumeMax(void)
+{
+    return MIX_MAX_VOLUME;
+}
+
+void* a_sdl__music_load(const char* path)
+{
+    Mix_Music* m = Mix_LoadMUS(path);
+
+    if(!m) {
+        a_out__error("%s", Mix_GetError());
+    }
+
+    return m;
+}
+
+void a_sdl__music_free(void* m)
+{
+    Mix_FreeMusic(m);
+}
+
+void a_sdl__music_setVolume(void)
+{
+    Mix_VolumeMusic((float)a2x_int("sound.music.scale") / 100 * a__volume);
+}
+
+void a_sdl__music_play(void* m)
+{
+    Mix_PlayMusic(m, -1);
+}
+
+void a_sdl__music_stop(void)
+{
+    Mix_HaltMusic();
+}
+
+void a_sdl__music_toggle(void)
+{
+    if(Mix_PausedMusic()) {
+        Mix_ResumeMusic();
+    } else {
+        Mix_PauseMusic();
+    }
+}
+
 void* a_sdl__sfx_loadFromFile(const char* path)
 {
     return Mix_LoadWAV(path);
@@ -197,10 +264,19 @@ void* a_sdl__sfx_loadFromData(const uint16_t* data, int size)
     return sfx;
 }
 
+void a_sdl__sfx_free(void* s)
+{
+    Mix_FreeChunk(s);
+}
+
 void a_sdl__sfx_setVolume(void* s, uint8_t volume)
 {
-    Mix_Chunk* sfx = s;
-    sfx->volume = volume;
+    ((Mix_Chunk*)s)->volume = volume;
+}
+
+void a_sdl__sfx_play(void* s)
+{
+    Mix_PlayChannel(-1, s, 0);
 }
 
 uint32_t a_sdl__getTicks(void)

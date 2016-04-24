@@ -24,9 +24,6 @@
 typedef void Music;
 typedef void Sound;
 
-extern int a__volume;
-extern int a__volumeAdjust;
-
 extern Music* a_music_load(const char* path);
 
 extern void a_music_play(Music* m);

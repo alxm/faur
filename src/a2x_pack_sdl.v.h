@@ -33,9 +33,22 @@ extern void a_sdl__screen_lock(void);
 extern void a_sdl__screen_unlock(void);
 extern void a_sdl__screen_flip(void);
 
+extern void a_sdl__sound_init(void);
+extern void a_sdl__sound_free(void);
+extern int a_sdl__sound_volumeMax(void);
+
+extern void* a_sdl__music_load(const char* path);
+extern void a_sdl__music_free(void* m);
+extern void a_sdl__music_setVolume(void);
+extern void a_sdl__music_play(void* m);
+extern void a_sdl__music_stop(void);
+extern void a_sdl__music_toggle(void);
+
 extern void* a_sdl__sfx_loadFromFile(const char* path);
 extern void* a_sdl__sfx_loadFromData(const uint16_t* data, int size);
+extern void a_sdl__sfx_free(void* s);
 extern void a_sdl__sfx_setVolume(void* s, uint8_t volume);
+extern void a_sdl__sfx_play(void* s);
 
 extern uint32_t a_sdl__getTicks(void);
 extern void a_sdl__delay(uint32_t ms);
