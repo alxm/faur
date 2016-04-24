@@ -35,7 +35,3 @@
 #include <sys/stat.h>
 #include <time.h>
 #include <unistd.h>
-
-#include <png.h>
-#include <SDL/SDL.h>
-#include <SDL/SDL_mixer.h>

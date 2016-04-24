@@ -19,6 +19,9 @@
 
 #include "a2x_pack_sdl.v.h"
 
+#include <SDL/SDL.h>
+#include <SDL/SDL_mixer.h>
+
 #define A_MAX_BUTTON_CODES 4
 
 typedef struct SdlInputInstance {

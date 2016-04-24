@@ -19,6 +19,8 @@
 
 #include "a2x_pack_png.v.h"
 
+#include <png.h>
+
 typedef struct ByteStream {
     const uint8_t* data;
     int offset;
