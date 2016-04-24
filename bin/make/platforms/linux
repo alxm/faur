@@ -1,11 +1,12 @@
 PLATFORM = linux
 
-LIBS = -lSDL_mixer \
-       -lSDL \
+LIBS = -lSDL2_mixer \
+       -lSDL2 \
        -lpng \
        -lm
 
 CFLAGS = -DA_PLATFORM_LINUXPC=1 \
-         -DA_USE_LIB_SDL=1 \
+         -DA_USE_LIB_SDL2=1 \
+         `sdl2-config --cflags` \
          -O0 \
          -g

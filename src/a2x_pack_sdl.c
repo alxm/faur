@@ -19,8 +19,8 @@
 
 #include "a2x_pack_sdl.v.h"
 
-#include <SDL/SDL.h>
-#include <SDL/SDL_mixer.h>
+#include <SDL.h>
+#include <SDL_mixer.h>
 
 #define A_MAX_BUTTON_CODES 4
 
@@ -70,8 +70,14 @@ typedef enum InputAction {
     A_ACTION_NONE, A_ACTION_PRESSED, A_ACTION_UNPRESSED
 } InputAction;
 
-static SDL_Surface* screen = NULL;
-static bool screen_locked = false;
+#if A_USE_LIB_SDL
+    static SDL_Surface* screen = NULL;
+    static bool screen_locked = false;
+#elif A_USE_LIB_SDL2
+    static SDL_Window* window = NULL;
+    static SDL_Renderer* renderer = NULL;
+    static SDL_Texture* texture = NULL;
+#endif
 
 #define A_MAX_JOYSTICKS 8
 static int joysticks_num;
@@ -127,10 +133,17 @@ static void addAnalog(const char* name, int device_index, char* device_name, int
     // check if we requested a specific device by name
     if(device_name) {
         for(int j = joysticks_num; j--; ) {
-            if(a_str_same(device_name, SDL_JoystickName(j))) {
-                a->device_index = j;
-                break;
-            }
+            #if A_USE_LIB_SDL
+                if(a_str_same(device_name, SDL_JoystickName(j))) {
+                    a->device_index = j;
+                    break;
+                }
+            #elif A_USE_LIB_SDL2
+                if(a_str_same(device_name, SDL_JoystickName(joysticks[j]))) {
+                    a->device_index = j;
+                    break;
+                }
+            #endif
         }
     }
 
@@ -338,40 +351,70 @@ void a_sdl__uninit(void)
 
 bool a_sdl__screen_set(void)
 {
-    static bool first_time = true;
+    #if A_USE_LIB_SDL
+        static bool first_time = true;
 
-    int bpp = 0;
-    int scale = a2x_int("video.scale");
-    uint32_t videoFlags = SDL_SWSURFACE;
+        int bpp = 0;
+        int scale = a2x_int("video.scale");
+        uint32_t videoFlags = SDL_SWSURFACE;
 
-    if(a2x_bool("video.fullscreen")) {
-        videoFlags |= SDL_FULLSCREEN;
-    }
-
-    bpp = SDL_VideoModeOK(a_width * scale, a_height * scale, A_BPP, videoFlags);
-
-    if(bpp == 0) {
-        if(first_time) {
-            a_out__fatal("SDL: %dx%d video not available", a_width * scale, a_height * scale);
-        } else {
-            a_out__warning("SDL: %dx%d video not available", a_width * scale, a_height * scale);
-            return false;
+        if(a2x_bool("video.fullscreen")) {
+            videoFlags |= SDL_FULLSCREEN;
         }
-    }
 
-    first_time = false;
-    screen = SDL_SetVideoMode(a_width * scale, a_height * scale, A_BPP, videoFlags);
+        bpp = SDL_VideoModeOK(a_width * scale, a_height * scale, A_BPP, videoFlags);
 
-    if(screen == NULL) {
-        a_out__fatal("SDL: %s", SDL_GetError());
-    }
+        if(bpp == 0) {
+            if(first_time) {
+                a_out__fatal("SDL: %dx%d video not available", a_width * scale, a_height * scale);
+            } else {
+                a_out__warning("SDL: %dx%d video not available", a_width * scale, a_height * scale);
+                return false;
+            }
+        }
 
-    SDL_SetClipRect(screen, NULL);
+        first_time = false;
+
+        screen = SDL_SetVideoMode(a_width * scale,
+                                  a_height * scale,
+                                  A_BPP,
+                                  videoFlags);
+
+        if(screen == NULL) {
+            a_out__fatal("SDL: %s", SDL_GetError());
+        }
+
+        SDL_SetClipRect(screen, NULL);
+    #elif A_USE_LIB_SDL2
+        a2x__set("video.fake", "1");
+
+        window = SDL_CreateWindow("",
+                                  SDL_WINDOWPOS_UNDEFINED,
+                                  SDL_WINDOWPOS_UNDEFINED,
+                                  a_width,
+                                  a_height,
+                                  0);
+
+        renderer = SDL_CreateRenderer(window,
+                                      -1,
+                                      0);
+
+        texture = SDL_CreateTexture(renderer,
+                                    SDL_PIXELFORMAT_RGB565,
+                                    SDL_TEXTUREACCESS_STREAMING,
+                                    a_width,
+                                    a_height);
+    #endif
 
     #if A_PLATFORM_LINUXPC
         char caption[64];
         snprintf(caption, 64, "%s %s", a2x_str("app.title"), a2x_str("app.version"));
-        SDL_WM_SetCaption(caption, NULL);
+
+        #if A_USE_LIB_SDL
+            SDL_WM_SetCaption(caption, NULL);
+        #elif A_USE_LIB_SDL2
+            SDL_SetWindowTitle(window, caption);
+        #endif
     #else
         SDL_ShowCursor(SDL_DISABLE);
     #endif
@@ -381,28 +424,43 @@ bool a_sdl__screen_set(void)
 
 Pixel* a_sdl__screen_pixels(void)
 {
-    return screen->pixels;
+    #if A_USE_LIB_SDL
+        return screen->pixels;
+    #elif A_USE_LIB_SDL2
+        return a_pixels;
+    #endif
 }
 
 void a_sdl__screen_lock(void)
 {
-    if(SDL_MUSTLOCK(screen) && !screen_locked) {
-        SDL_LockSurface(screen);
-        screen_locked = true;
-    }
+    #if A_USE_LIB_SDL
+        if(SDL_MUSTLOCK(screen) && !screen_locked) {
+            SDL_LockSurface(screen);
+            screen_locked = true;
+        }
+    #endif
 }
 
 void a_sdl__screen_unlock(void)
 {
-    if(SDL_MUSTLOCK(screen) && screen_locked) {
-        SDL_UnlockSurface(screen);
-        screen_locked = false;
-    }
+    #if A_USE_LIB_SDL
+        if(SDL_MUSTLOCK(screen) && screen_locked) {
+            SDL_UnlockSurface(screen);
+            screen_locked = false;
+        }
+    #endif
 }
 
 void a_sdl__screen_flip(void)
 {
-    SDL_Flip(screen);
+    #if A_USE_LIB_SDL
+        SDL_Flip(screen);
+    #elif A_USE_LIB_SDL2
+        SDL_UpdateTexture(texture, NULL, a_pixels, a_width * sizeof(Pixel));
+        SDL_RenderClear(renderer);
+        SDL_RenderCopy(renderer, texture, NULL, NULL);
+        SDL_RenderPresent(renderer);
+    #endif
 }
 
 int a_sdl__sound_volumeMax(void)
