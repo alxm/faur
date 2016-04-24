@@ -33,8 +33,6 @@ extern void a_sdl__screen_lock(void);
 extern void a_sdl__screen_unlock(void);
 extern void a_sdl__screen_flip(void);
 
-extern void a_sdl__sound_init(void);
-extern void a_sdl__sound_free(void);
 extern int a_sdl__sound_volumeMax(void);
 
 extern void* a_sdl__music_load(const char* path);
@@ -53,8 +51,6 @@ extern void a_sdl__sfx_play(void* s);
 extern uint32_t a_sdl__getTicks(void);
 extern void a_sdl__delay(uint32_t ms);
 
-extern void a_sdl__input_init(void);
-extern void a_sdl__input_free(void);
 extern void a_sdl__input_matchButton(const char* name, InputInstance* button);
 extern void a_sdl__input_matchAnalog(const char* name, InputInstance* analog);
 extern void a_sdl__input_matchTouch(const char* name, InputInstance* touch);

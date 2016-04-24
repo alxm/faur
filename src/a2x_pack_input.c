@@ -100,8 +100,6 @@ static void addTouch(const char* name);
 
 void a_input__init(void)
 {
-    a_sdl__input_init();
-
     buttons = a_inputs_new();
     analogs = a_inputs_new();
     touches = a_inputs_new();
@@ -253,8 +251,6 @@ void a_input__uninit(void)
     a_inputs_free(buttons);
     a_inputs_free(analogs);
     a_inputs_free(touches);
-
-    a_sdl__input_free();
 }
 
 void a_input__get(void)

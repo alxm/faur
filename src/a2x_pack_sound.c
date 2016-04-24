@@ -39,7 +39,6 @@ void a_sound__init(void)
         musicList = a_list_new();
         sfxList = a_list_new();
 
-        a_sdl__sound_init();
         a__volumeMax = a_sdl__sound_volumeMax();
 
         #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
@@ -74,8 +73,6 @@ void a_sound__uninit(void)
 
         a_list_free(sfxList);
         a_list_free(musicList);
-
-        a_sdl__sound_free();
     }
 }
 

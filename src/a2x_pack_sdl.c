@@ -109,191 +109,23 @@ void a_sdl__init(void)
     if(ret != 0) {
         a_out__fatal("SDL: %s", SDL_GetError());
     }
-}
 
-void a_sdl__uninit(void)
-{
-    SDL_Quit();
-}
-
-bool a_sdl__screen_set(void)
-{
-    static bool first_time = true;
-
-    int bpp = 0;
-    int scale = a2x_int("video.scale");
-    uint32_t videoFlags = SDL_SWSURFACE;
-
-    if(a2x_bool("video.fullscreen")) {
-        videoFlags |= SDL_FULLSCREEN;
+    if(a2x_bool("sound.on")) {
+        #if A_PLATFORM_LINUXPC || A_PLATFORM_WINDOWS
+            if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096) != 0) {
+                a2x_set("sound.on", "0");
+            }
+        #elif A_PLATFORM_GP2X
+            if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 256) != 0) {
+                a2x_set("sound.on", "0");
+            }
+        #else
+            if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 512) != 0) {
+                a2x_set("sound.on", "0");
+            }
+        #endif
     }
 
-    bpp = SDL_VideoModeOK(a_width * scale, a_height * scale, A_BPP, videoFlags);
-
-    if(bpp == 0) {
-        if(first_time) {
-            a_out__fatal("SDL: %dx%d video not available", a_width * scale, a_height * scale);
-        } else {
-            a_out__warning("SDL: %dx%d video not available", a_width * scale, a_height * scale);
-            return false;
-        }
-    }
-
-    first_time = false;
-    screen = SDL_SetVideoMode(a_width * scale, a_height * scale, A_BPP, videoFlags);
-
-    if(screen == NULL) {
-        a_out__fatal("SDL: %s", SDL_GetError());
-    }
-
-    SDL_SetClipRect(screen, NULL);
-
-    #if A_PLATFORM_LINUXPC
-        char caption[64];
-        snprintf(caption, 64, "%s %s", a2x_str("app.title"), a2x_str("app.version"));
-        SDL_WM_SetCaption(caption, NULL);
-    #else
-        SDL_ShowCursor(SDL_DISABLE);
-    #endif
-
-    return true;
-}
-
-Pixel* a_sdl__screen_pixels(void)
-{
-    return screen->pixels;
-}
-
-void a_sdl__screen_lock(void)
-{
-    if(SDL_MUSTLOCK(screen) && !screen_locked) {
-        SDL_LockSurface(screen);
-        screen_locked = true;
-    }
-}
-
-void a_sdl__screen_unlock(void)
-{
-    if(SDL_MUSTLOCK(screen) && screen_locked) {
-        SDL_UnlockSurface(screen);
-        screen_locked = false;
-    }
-}
-
-void a_sdl__screen_flip(void)
-{
-    SDL_Flip(screen);
-}
-
-void a_sdl__sound_init(void)
-{
-    #if A_PLATFORM_LINUXPC || A_PLATFORM_WINDOWS
-        if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096) != 0) {
-            a2x_set("sound.on", "0");
-        }
-    #elif A_PLATFORM_GP2X
-        if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 256) != 0) {
-            a2x_set("sound.on", "0");
-        }
-    #else
-        if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 512) != 0) {
-            a2x_set("sound.on", "0");
-        }
-    #endif
-}
-
-void a_sdl__sound_free(void)
-{
-    Mix_CloseAudio();
-}
-
-int a_sdl__sound_volumeMax(void)
-{
-    return MIX_MAX_VOLUME;
-}
-
-void* a_sdl__music_load(const char* path)
-{
-    Mix_Music* m = Mix_LoadMUS(path);
-
-    if(!m) {
-        a_out__error("%s", Mix_GetError());
-    }
-
-    return m;
-}
-
-void a_sdl__music_free(void* m)
-{
-    Mix_FreeMusic(m);
-}
-
-void a_sdl__music_setVolume(void)
-{
-    Mix_VolumeMusic((float)a2x_int("sound.music.scale") / 100 * a__volume);
-}
-
-void a_sdl__music_play(void* m)
-{
-    Mix_PlayMusic(m, -1);
-}
-
-void a_sdl__music_stop(void)
-{
-    Mix_HaltMusic();
-}
-
-void a_sdl__music_toggle(void)
-{
-    if(Mix_PausedMusic()) {
-        Mix_ResumeMusic();
-    } else {
-        Mix_PauseMusic();
-    }
-}
-
-void* a_sdl__sfx_loadFromFile(const char* path)
-{
-    return Mix_LoadWAV(path);
-}
-
-void* a_sdl__sfx_loadFromData(const uint16_t* data, int size)
-{
-    SDL_RWops* rw = SDL_RWFromMem((void*)data, size);
-    Mix_Chunk* sfx = Mix_LoadWAV_RW(rw, 0);
-
-    SDL_FreeRW(rw);
-
-    return sfx;
-}
-
-void a_sdl__sfx_free(void* s)
-{
-    Mix_FreeChunk(s);
-}
-
-void a_sdl__sfx_setVolume(void* s, uint8_t volume)
-{
-    ((Mix_Chunk*)s)->volume = volume;
-}
-
-void a_sdl__sfx_play(void* s)
-{
-    Mix_PlayChannel(-1, s, 0);
-}
-
-uint32_t a_sdl__getTicks(void)
-{
-    return SDL_GetTicks();
-}
-
-void a_sdl__delay(uint32_t ms)
-{
-    SDL_Delay(ms);
-}
-
-void a_sdl__input_init(void)
-{
     joysticks_num = a_math_min(A_MAX_JOYSTICKS, SDL_NumJoysticks());
 
     if(joysticks_num > 0) {
@@ -419,7 +251,7 @@ void a_sdl__input_init(void)
     #endif
 }
 
-void a_sdl__input_free(void)
+void a_sdl__uninit(void)
 {
     a_inputs_free(buttons);
     a_inputs_free(analogs);
@@ -428,6 +260,166 @@ void a_sdl__input_free(void)
     for(int j = joysticks_num; j--; ) {
         SDL_JoystickClose(joysticks[j]);
     }
+
+    if(a2x_bool("sound.on")) {
+        Mix_CloseAudio();
+    }
+
+    SDL_Quit();
+}
+
+bool a_sdl__screen_set(void)
+{
+    static bool first_time = true;
+
+    int bpp = 0;
+    int scale = a2x_int("video.scale");
+    uint32_t videoFlags = SDL_SWSURFACE;
+
+    if(a2x_bool("video.fullscreen")) {
+        videoFlags |= SDL_FULLSCREEN;
+    }
+
+    bpp = SDL_VideoModeOK(a_width * scale, a_height * scale, A_BPP, videoFlags);
+
+    if(bpp == 0) {
+        if(first_time) {
+            a_out__fatal("SDL: %dx%d video not available", a_width * scale, a_height * scale);
+        } else {
+            a_out__warning("SDL: %dx%d video not available", a_width * scale, a_height * scale);
+            return false;
+        }
+    }
+
+    first_time = false;
+    screen = SDL_SetVideoMode(a_width * scale, a_height * scale, A_BPP, videoFlags);
+
+    if(screen == NULL) {
+        a_out__fatal("SDL: %s", SDL_GetError());
+    }
+
+    SDL_SetClipRect(screen, NULL);
+
+    #if A_PLATFORM_LINUXPC
+        char caption[64];
+        snprintf(caption, 64, "%s %s", a2x_str("app.title"), a2x_str("app.version"));
+        SDL_WM_SetCaption(caption, NULL);
+    #else
+        SDL_ShowCursor(SDL_DISABLE);
+    #endif
+
+    return true;
+}
+
+Pixel* a_sdl__screen_pixels(void)
+{
+    return screen->pixels;
+}
+
+void a_sdl__screen_lock(void)
+{
+    if(SDL_MUSTLOCK(screen) && !screen_locked) {
+        SDL_LockSurface(screen);
+        screen_locked = true;
+    }
+}
+
+void a_sdl__screen_unlock(void)
+{
+    if(SDL_MUSTLOCK(screen) && screen_locked) {
+        SDL_UnlockSurface(screen);
+        screen_locked = false;
+    }
+}
+
+void a_sdl__screen_flip(void)
+{
+    SDL_Flip(screen);
+}
+
+int a_sdl__sound_volumeMax(void)
+{
+    return MIX_MAX_VOLUME;
+}
+
+void* a_sdl__music_load(const char* path)
+{
+    Mix_Music* m = Mix_LoadMUS(path);
+
+    if(!m) {
+        a_out__error("%s", Mix_GetError());
+    }
+
+    return m;
+}
+
+void a_sdl__music_free(void* m)
+{
+    Mix_FreeMusic(m);
+}
+
+void a_sdl__music_setVolume(void)
+{
+    Mix_VolumeMusic((float)a2x_int("sound.music.scale") / 100 * a__volume);
+}
+
+void a_sdl__music_play(void* m)
+{
+    Mix_PlayMusic(m, -1);
+}
+
+void a_sdl__music_stop(void)
+{
+    Mix_HaltMusic();
+}
+
+void a_sdl__music_toggle(void)
+{
+    if(Mix_PausedMusic()) {
+        Mix_ResumeMusic();
+    } else {
+        Mix_PauseMusic();
+    }
+}
+
+void* a_sdl__sfx_loadFromFile(const char* path)
+{
+    return Mix_LoadWAV(path);
+}
+
+void* a_sdl__sfx_loadFromData(const uint16_t* data, int size)
+{
+    SDL_RWops* rw = SDL_RWFromMem((void*)data, size);
+    Mix_Chunk* sfx = Mix_LoadWAV_RW(rw, 0);
+
+    SDL_FreeRW(rw);
+
+    return sfx;
+}
+
+void a_sdl__sfx_free(void* s)
+{
+    Mix_FreeChunk(s);
+}
+
+void a_sdl__sfx_setVolume(void* s, uint8_t volume)
+{
+    ((Mix_Chunk*)s)->volume = volume;
+}
+
+void a_sdl__sfx_play(void* s)
+{
+    Mix_PlayChannel(-1, s, 0);
+}
+
+uint32_t a_sdl__getTicks(void)
+{
+    return SDL_GetTicks();
+}
+
+void a_sdl__delay(uint32_t ms)
+{
+    SDL_Delay(ms);
 }
 
 void a_sdl__input_matchButton(const char* name, InputInstance* button)
