@@ -142,3 +142,13 @@ void a_sdl__sfx_setVolume(void* s, uint8_t volume)
     Mix_Chunk* sfx = s;
     sfx->volume = volume;
 }
+
+uint32_t a_sdl__getTicks(void)
+{
+    return SDL_GetTicks();
+}
+
+void a_sdl__delay(uint32_t ms)
+{
+    SDL_Delay(ms);
+}

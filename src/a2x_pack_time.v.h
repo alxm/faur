@@ -21,5 +21,7 @@
 
 #include "a2x_pack_time.p.h"
 
+#include "a2x_pack_sdl.v.h"
+
 extern void a_time__init(void);
 extern void a_time__uninit(void);
