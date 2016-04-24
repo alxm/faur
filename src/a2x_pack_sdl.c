@@ -424,6 +424,7 @@ bool a_sdl__screen_set(void)
 Pixel* a_sdl__screen_pixels(void)
 {
     #if A_USE_LIB_SDL
+        a_sdl__screen_lock();
         return screen->pixels;
     #elif A_USE_LIB_SDL2
         return a_pixels;
@@ -453,8 +454,6 @@ void a_sdl__screen_unlock(void)
 void a_sdl__pixelsToScreen(void)
 {
     #if A_USE_LIB_SDL
-        a_sdl__screen_lock();
-
         const Pixel* src = a_pixels;
         Pixel* dst = a_sdl__screen_pixels();
 
@@ -473,6 +472,42 @@ void a_sdl__screen_flip(void)
         SDL_RenderClear(renderer);
         SDL_RenderCopy(renderer, texture, NULL, NULL);
         SDL_RenderPresent(renderer);
+    #endif
+}
+
+void a_sdl__screen_show(void)
+{
+    #if A_USE_LIB_SDL
+        if(a2x_bool("video.wizTear")) {
+            // video.fake is also set when video.wizTear is set
+            #define A_WIDTH 320
+            #define A_HEIGHT 240
+
+            Pixel* dst = a_sdl__screen_pixels() + A_WIDTH * A_HEIGHT;
+            const Pixel* src = a_pixels;
+
+            for(int i = A_HEIGHT; i--; dst += A_WIDTH * A_HEIGHT + 1) {
+                for(int j = A_WIDTH; j--; ) {
+                    dst -= A_HEIGHT;
+                    *dst = *src++;
+                }
+            }
+
+            a_sdl__screen_unlock();
+            a_sdl__screen_flip();
+        } else if(a2x_bool("video.fake")) {
+            a_sdl__pixelsToScreen();
+            a_sdl__screen_flip();
+        } else {
+            a_sdl__screen_unlock();
+            a_sdl__screen_flip();
+
+            a_pixels = a_sdl__screen_pixels();
+            a__pixels2 = a_pixels;
+        }
+    #elif A_USE_LIB_SDL2
+        a_sdl__pixelsToScreen();
+        a_sdl__screen_flip();
     #endif
 }
 

@@ -33,6 +33,7 @@ extern void a_sdl__screen_lock(void);
 extern void a_sdl__screen_unlock(void);
 extern void a_sdl__pixelsToScreen(void);
 extern void a_sdl__screen_flip(void);
+extern void a_sdl__screen_show(void);
 
 extern int a_sdl__sound_volumeMax(void);
 

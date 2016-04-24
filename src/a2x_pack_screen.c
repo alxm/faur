@@ -102,8 +102,6 @@ void a_screen__init(void)
     if(a2x_bool("video.fake")) {
         setFakeScreen();
     } else {
-        a_sdl__screen_lock();
-
         a_pixels = a_sdl__screen_pixels();
         a__pixels2 = a_pixels;
     }
@@ -130,37 +128,7 @@ void a_screen_show(void)
     displayVolume();
     a_console__draw();
 
-    if(a2x_bool("video.wizTear")) {
-        // video.fake is also set when video.wizTear is set
-
-        a_sdl__screen_lock();
-
-        #define A_WIDTH 320
-        #define A_HEIGHT 240
-
-        Pixel* dst = a_sdl__screen_pixels() + A_WIDTH * A_HEIGHT;
-        const Pixel* src = a_pixels;
-
-        for(int i = A_HEIGHT; i--; dst += A_WIDTH * A_HEIGHT + 1) {
-            for(int j = A_WIDTH; j--; ) {
-                dst -= A_HEIGHT;
-                *dst = *src++;
-            }
-        }
-
-        a_sdl__screen_unlock();
-        a_sdl__screen_flip();
-    } else if(a2x_bool("video.fake")) {
-        a_sdl__pixelsToScreen();
-        a_sdl__screen_flip();
-    } else {
-        a_sdl__screen_unlock();
-        a_sdl__screen_flip();
-        a_sdl__screen_lock();
-
-        a_pixels = a_sdl__screen_pixels();
-        a__pixels2 = a_pixels;
-    }
+    a_sdl__screen_show();
 }
 
 Pixel* a_screen_dup(void)
