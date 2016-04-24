@@ -19,12 +19,6 @@
 
 #include "a2x_pack_input.v.h"
 
-#if A_PLATFORM_LINUXPC || A_PLATFORM_CAANOO || A_PLATFORM_PANDORA
-    #define A_INPUT_SUPPORTS_ANALOG 1
-#else
-    #define A_INPUT_SUPPORTS_ANALOG 0
-#endif
-
 #define A_ANALOG_MAX_DISTANCE (1 << 15)
 #define A_ANALOG_ERROR_MARGIN (A_ANALOG_MAX_DISTANCE / 20)
 
@@ -118,9 +112,7 @@ static Input* screenshot;
 #endif
 
 static void addButton(const char* name, int code);
-#if A_INPUT_SUPPORTS_ANALOG
-    static void addAnalog(const char* name, int device_index, char* device_name, int xaxis_index, int yaxis_index);
-#endif
+static void addAnalog(const char* name, int device_index, char* device_name, int xaxis_index, int yaxis_index);
 static void addTouch(const char* name);
 
 void a_input__init(void)
@@ -809,43 +801,41 @@ static void addButton(const char* name, int code)
     }
 }
 
-#if A_INPUT_SUPPORTS_ANALOG
-    static void addAnalog(const char* name, int device_index, char* device_name, int xaxis_index, int yaxis_index)
-    {
-        if(device_index == -1 && device_name == NULL) {
-            a_out__error("Inputs must specify device index or name");
-            return;
-        }
+static void addAnalog(const char* name, int device_index, char* device_name, int xaxis_index, int yaxis_index)
+{
+    if(device_index == -1 && device_name == NULL) {
+        a_out__error("Inputs must specify device index or name");
+        return;
+    }
 
-        InputInstance* a = a_strhash_get(analogs.names, name);
+    InputInstance* a = a_strhash_get(analogs.names, name);
 
-        if(!a) {
-            a = a_mem_malloc(sizeof(InputInstance));
+    if(!a) {
+        a = a_mem_malloc(sizeof(InputInstance));
 
-            a->name = a_str_dup(name);
-            a->device_index = device_index;
-            a->device_name = device_name;
-            a->u.analog.xaxis_index = xaxis_index;
-            a->u.analog.yaxis_index = yaxis_index;
-            a->u.analog.xaxis = 0;
-            a->u.analog.yaxis = 0;
+        a->name = a_str_dup(name);
+        a->device_index = device_index;
+        a->device_name = device_name;
+        a->u.analog.xaxis_index = xaxis_index;
+        a->u.analog.yaxis_index = yaxis_index;
+        a->u.analog.xaxis = 0;
+        a->u.analog.yaxis = 0;
 
-            // check if we requested a specific device by name
-            if(device_name) {
-                for(int j = joysticks_num; j--; ) {
-                    if(a_str_same(device_name, SDL_JoystickName(j))) {
-                        a->device_index = j;
-                        break;
-                    }
+        // check if we requested a specific device by name
+        if(device_name) {
+            for(int j = joysticks_num; j--; ) {
+                if(a_str_same(device_name, SDL_JoystickName(j))) {
+                    a->device_index = j;
+                    break;
                 }
             }
-
-            a_inputs_add(analogs, a, name);
-        } else {
-            a_out__error("Analog '%s' is already defined", name);
         }
+
+        a_inputs_add(analogs, a, name);
+    } else {
+        a_out__error("Analog '%s' is already defined", name);
     }
-#endif
+}
 
 static void addTouch(const char* name)
 {
