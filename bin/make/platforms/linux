@@ -6,5 +6,6 @@ LIBS = -lSDL_mixer \
        -lm
 
 CFLAGS = -DA_PLATFORM_LINUXPC=1 \
+         -DA_USE_LIB_SDL=1 \
          -O0 \
          -g

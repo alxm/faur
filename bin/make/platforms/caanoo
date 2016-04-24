@@ -16,6 +16,7 @@ LIBS = -L$(CAANOO_ROOT)/lib/target \
        -ldl
 
 CFLAGS = -DA_PLATFORM_CAANOO=1 \
+         -DA_USE_LIB_SDL=1 \
          -O3 \
          -s \
          -msoft-float \

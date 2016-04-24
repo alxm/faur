@@ -14,6 +14,7 @@ LIBS = -L$(OPEN2X)/lib \
        -ldl
 
 CFLAGS = -DA_PLATFORM_WIZ=1 \
+         -DA_USE_LIB_SDL=1 \
          -O3 \
          -s \
          -msoft-float \
