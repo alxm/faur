@@ -21,6 +21,7 @@
 
 #include "a2x_pack_sdl.p.h"
 
+#include "a2x_pack_input.v.h"
 #include "a2x_pack_pixel.v.h"
 
 extern void a_sdl__init(void);
@@ -38,3 +39,10 @@ extern void a_sdl__sfx_setVolume(void* s, uint8_t volume);
 
 extern uint32_t a_sdl__getTicks(void);
 extern void a_sdl__delay(uint32_t ms);
+
+extern void a_sdl__input_init(void);
+extern void a_sdl__input_free(void);
+extern void a_sdl__input_matchButton(const char* name, InputInstance* button);
+extern void a_sdl__input_matchAnalog(const char* name, InputInstance* analog);
+extern void a_sdl__input_matchTouch(const char* name, InputInstance* touch);
+extern void a_sdl__input_get(void);

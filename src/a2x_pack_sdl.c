@@ -19,8 +19,68 @@
 
 #include "a2x_pack_sdl.v.h"
 
+#define A_MAX_BUTTON_CODES 4
+
+typedef struct SdlInputInstance {
+    char* name;
+    InputInstance* input;
+    int device_index;
+    char* device_name;
+    union {
+        struct {
+            int numCodes;
+            int codes[A_MAX_BUTTON_CODES]; // SDL button/key code
+        } button;
+        struct {
+            int xaxis_index;
+            int yaxis_index;
+        } analog;
+        struct {
+            //
+        } touch;
+    } u;
+} SdlInputInstance;
+
+typedef struct InputCollection {
+    List* list; // inputs registered during init
+    StrHash* names; // hash table of above inputs' names
+} InputCollection;
+
+#define a_inputs_new() ((InputCollection){a_list_new(), a_strhash_new()})
+
+#define a_inputs_free(i)              \
+({                                    \
+    A_LIST_ITERATE(i.list, void, v) { \
+        free(v);                      \
+    }                                 \
+    a_list_free(i.list);              \
+    a_strhash_free(i.names);          \
+})
+
+#define a_inputs_add(i, ptr, name)     \
+({                                     \
+    a_list_addLast(i.list, ptr);       \
+    a_strhash_add(i.names, name, ptr); \
+})
+
+typedef enum InputAction {
+    A_ACTION_NONE, A_ACTION_PRESSED, A_ACTION_UNPRESSED
+} InputAction;
+
 static SDL_Surface* screen = NULL;
 static bool screen_locked = false;
+
+#define A_MAX_JOYSTICKS 8
+static int joysticks_num;
+static SDL_Joystick* joysticks[A_MAX_JOYSTICKS];
+
+static InputCollection buttons;
+static InputCollection analogs;
+static InputCollection touches;
+
+static void addButton(const char* name, int code);
+static void addAnalog(const char* name, int device_index, char* device_name, int xaxis_index, int yaxis_index);
+static void addTouch(const char* name);
 
 void a_sdl__init(void)
 {
@@ -151,4 +211,338 @@ uint32_t a_sdl__getTicks(void)
 void a_sdl__delay(uint32_t ms)
 {
     SDL_Delay(ms);
+}
+
+void a_sdl__input_init(void)
+{
+    joysticks_num = a_math_min(A_MAX_JOYSTICKS, SDL_NumJoysticks());
+
+    if(joysticks_num > 0) {
+        a_out__message("Found %d joysticks", joysticks_num);
+        for(int j = joysticks_num; j--; ) {
+            joysticks[j] = SDL_JoystickOpen(j);
+        }
+    }
+
+    buttons = a_inputs_new();
+    analogs = a_inputs_new();
+    touches = a_inputs_new();
+
+    #if A_PLATFORM_GP2X
+        addButton("gp2x.Up", 0);
+        addButton("gp2x.Down", 4);
+        addButton("gp2x.Left", 2);
+        addButton("gp2x.Right", 6);
+        addButton("gp2x.UpLeft", 1);
+        addButton("gp2x.UpRight", 7);
+        addButton("gp2x.DownLeft", 3);
+        addButton("gp2x.DownRight", 5);
+        addButton("gp2x.L", 10);
+        addButton("gp2x.R", 11);
+        addButton("gp2x.A", 12);
+        addButton("gp2x.B", 13);
+        addButton("gp2x.X", 14);
+        addButton("gp2x.Y", 15);
+        addButton("gp2x.Start", 8);
+        addButton("gp2x.Select", 9);
+        addButton("gp2x.VolUp", 16);
+        addButton("gp2x.VolDown", 17);
+        addButton("gp2x.StickClick", 18);
+        addTouch("gp2x.Touch");
+    #elif A_PLATFORM_WIZ
+        addButton("wiz.Up", 0);
+        addButton("wiz.Down", 4);
+        addButton("wiz.Left", 2);
+        addButton("wiz.Right", 6);
+        addButton("wiz.UpLeft", 1);
+        addButton("wiz.UpRight", 7);
+        addButton("wiz.DownLeft", 3);
+        addButton("wiz.DownRight", 5);
+        addButton("wiz.L", 10);
+        addButton("wiz.R", 11);
+        addButton("wiz.A", 12);
+        addButton("wiz.B", 13);
+        addButton("wiz.X", 14);
+        addButton("wiz.Y", 15);
+        addButton("wiz.Menu", 8);
+        addButton("wiz.Select", 9);
+        addButton("wiz.VolUp", 16);
+        addButton("wiz.VolDown", 17);
+        addTouch("wiz.Touch");
+    #elif A_PLATFORM_CAANOO
+        addButton("caanoo.Up", -1);
+        addButton("caanoo.Down", -1);
+        addButton("caanoo.Left", -1);
+        addButton("caanoo.Right", -1);
+        addButton("caanoo.A", 0);
+        addButton("caanoo.X", 1);
+        addButton("caanoo.B", 2);
+        addButton("caanoo.Y", 3);
+        addButton("caanoo.L", 4);
+        addButton("caanoo.R", 5);
+        addButton("caanoo.Home", 6);
+        addButton("caanoo.Hold", 7);
+        addButton("caanoo.Help1", 8);
+        addButton("caanoo.Help2", 9);
+        addAnalog("caanoo.Stick", 0, NULL, 0, 1);
+        addTouch("caanoo.Touch");
+    #elif A_PLATFORM_PANDORA
+        addButton("pandora.Up", SDLK_UP);
+        addButton("pandora.Down", SDLK_DOWN);
+        addButton("pandora.Left", SDLK_LEFT);
+        addButton("pandora.Right", SDLK_RIGHT);
+        addButton("pandora.L", SDLK_RSHIFT);
+        addButton("pandora.R", SDLK_RCTRL);
+        addButton("pandora.A", SDLK_HOME);
+        addButton("pandora.B", SDLK_END);
+        addButton("pandora.X", SDLK_PAGEDOWN);
+        addButton("pandora.Y", SDLK_PAGEUP);
+        addButton("pandora.Start", SDLK_LALT);
+        addButton("pandora.Select", SDLK_LCTRL);
+        addTouch("pandora.Touch");
+        addAnalog("pandora.Nub1", -1, "nub0", 0, 1);
+        addAnalog("pandora.Nub2", -1, "nub1", 0, 1);
+        addButton("pandora.m", SDLK_m);
+        addButton("pandora.s", SDLK_s);
+    #elif A_PLATFORM_LINUXPC
+        addButton("pc.Up", SDLK_i);
+        addButton("pc.Up", SDLK_UP);
+        addButton("pc.Down", SDLK_k);
+        addButton("pc.Down", SDLK_DOWN);
+        addButton("pc.Left", SDLK_j);
+        addButton("pc.Left", SDLK_LEFT);
+        addButton("pc.Right", SDLK_l);
+        addButton("pc.Right", SDLK_RIGHT);
+        addButton("pc.z", SDLK_z);
+        addButton("pc.x", SDLK_x);
+        addButton("pc.c", SDLK_c);
+        addButton("pc.v", SDLK_v);
+        addButton("pc.m", SDLK_m);
+        addButton("pc.Enter", SDLK_RETURN);
+        addButton("pc.Space", SDLK_SPACE);
+        addButton("pc.F1", SDLK_F1);
+        addButton("pc.F2", SDLK_F2);
+        addButton("pc.F3", SDLK_F3);
+        addButton("pc.F4", SDLK_F4);
+        addButton("pc.F5", SDLK_F5);
+        addButton("pc.F6", SDLK_F6);
+        addButton("pc.F7", SDLK_F7);
+        addButton("pc.F8", SDLK_F8);
+        addButton("pc.F9", SDLK_F9);
+        addButton("pc.F10", SDLK_F10);
+        addButton("pc.F11", SDLK_F11);
+        addButton("pc.F12", SDLK_F12);
+        addButton("pc.1", SDLK_1);
+        addButton("pc.0", SDLK_0);
+        addTouch("pc.Mouse");
+        addAnalog("joypad.Analog1", 0, NULL, 0, 1);
+        addAnalog("joypad.Analog2", 0, NULL, 3, 4);
+    #endif
+}
+
+void a_sdl__input_free(void)
+{
+    a_inputs_free(buttons);
+    a_inputs_free(analogs);
+    a_inputs_free(touches);
+
+    for(int j = joysticks_num; j--; ) {
+        SDL_JoystickClose(joysticks[j]);
+    }
+}
+
+void a_sdl__input_matchButton(const char* name, InputInstance* button)
+{
+    SdlInputInstance* i = a_strhash_get(buttons.names, name);
+
+    if(!i) {
+        a_out__error("No SDL binding for button %s", name);
+    }
+
+    i->input = button;
+}
+
+void a_sdl__input_matchAnalog(const char* name, InputInstance* analog)
+{
+    SdlInputInstance* i = a_strhash_get(analogs.names, name);
+
+    if(!i) {
+        a_out__error("No SDL binding for analog %s", name);
+    }
+
+    i->input = analog;
+}
+
+void a_sdl__input_matchTouch(const char* name, InputInstance* touch)
+{
+    SdlInputInstance* i = a_strhash_get(touches.names, name);
+
+    if(!i) {
+        a_out__error("No SDL binding for touchscreen %s", name);
+    }
+
+    i->input = touch;
+}
+
+void a_sdl__input_get(void)
+{
+    for(SDL_Event event; SDL_PollEvent(&event); ) {
+        InputAction action = A_ACTION_NONE;
+        int code = -1;
+
+        switch(event.type) {
+            case SDL_QUIT: {
+                a_state_exit();
+            } break;
+
+            case SDL_KEYDOWN: {
+                action = A_ACTION_PRESSED;
+                code = event.key.keysym.sym;
+
+                if(code == SDLK_ESCAPE) {
+                    a_state_exit();
+                }
+            } break;
+
+            case SDL_KEYUP: {
+                action = A_ACTION_UNPRESSED;
+                code = event.key.keysym.sym;
+            } break;
+
+            case SDL_JOYBUTTONDOWN: {
+                action = A_ACTION_PRESSED;
+                code = event.jbutton.button;
+            } break;
+
+            case SDL_JOYBUTTONUP: {
+                action = A_ACTION_UNPRESSED;
+                code = event.jbutton.button;
+            } break;
+
+            case SDL_JOYAXISMOTION: {
+                A_LIST_ITERATE(analogs.list, SdlInputInstance, a) {
+                    if(a->device_index == event.jaxis.which) {
+                        if(event.jaxis.axis == a->u.analog.xaxis_index) {
+                            a_input__analog_setXAxis(a->input, event.jaxis.value);
+                        } else if(event.jaxis.axis == a->u.analog.yaxis_index) {
+                            a_input__analog_setYAxis(a->input, event.jaxis.value);
+                        }
+                    }
+                }
+            } break;
+
+            case SDL_MOUSEMOTION: {
+                A_LIST_ITERATE(touches.list, SdlInputInstance, t) {
+                    a_input__touch_addMotion(t->input, event.button.x, event.button.y);
+                }
+            } break;
+
+            case SDL_MOUSEBUTTONDOWN: {
+                switch(event.button.button) {
+                    case SDL_BUTTON_LEFT:
+                        action = A_ACTION_PRESSED;
+
+                        A_LIST_ITERATE(touches.list, SdlInputInstance, t) {
+                            a_input__touch_setCoords(t->input, event.button.x, event.button.y);
+                        }
+                    break;
+                }
+            } break;
+
+            case SDL_MOUSEBUTTONUP: {
+                switch(event.button.button) {
+                    case SDL_BUTTON_LEFT:
+                        A_LIST_ITERATE(touches.list, SdlInputInstance, t) {
+                            a_input__touch_setCoords(t->input, event.button.x, event.button.y);
+                        }
+                    break;
+                }
+            } break;
+
+            default:break;
+        }
+
+        if(action != A_ACTION_NONE) {
+            A_LIST_ITERATE(buttons.list, SdlInputInstance, b) {
+                for(int c = b->u.button.numCodes; c--; ) {
+                    if(b->u.button.codes[c] == code) {
+                        a_input__button_setState(b->input, action == A_ACTION_PRESSED);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+}
+
+static void addButton(const char* name, int code)
+{
+    SdlInputInstance* b = a_strhash_get(buttons.names, name);
+
+    if(!b) {
+        b = a_mem_malloc(sizeof(SdlInputInstance));
+
+        b->name = a_str_dup(name);
+        b->u.button.numCodes = 1;
+        b->u.button.codes[0] = code;
+
+        a_inputs_add(buttons, b, name);
+    } else {
+        if(b->u.button.numCodes < A_MAX_BUTTON_CODES) {
+            b->u.button.codes[b->u.button.numCodes++] = code;
+        } else {
+            a_out__error("Button '%s' has too many codes", name);
+        }
+    }
+}
+
+static void addAnalog(const char* name, int device_index, char* device_name, int xaxis_index, int yaxis_index)
+{
+    if(device_index == -1 && device_name == NULL) {
+        a_out__error("Inputs must specify device index or name");
+        return;
+    }
+
+    SdlInputInstance* a = a_strhash_get(analogs.names, name);
+
+    if(a) {
+        a_out__error("Analog '%s' is already defined", name);
+        return;
+    }
+
+    a = a_mem_malloc(sizeof(SdlInputInstance));
+
+    a->name = a_str_dup(name);
+    a->device_index = device_index;
+    a->device_name = device_name;
+    a->u.analog.xaxis_index = xaxis_index;
+    a->u.analog.yaxis_index = yaxis_index;
+
+    // check if we requested a specific device by name
+    if(device_name) {
+        for(int j = joysticks_num; j--; ) {
+            if(a_str_same(device_name, SDL_JoystickName(j))) {
+                a->device_index = j;
+                break;
+            }
+        }
+    }
+
+    a_inputs_add(analogs, a, name);
+}
+
+static void addTouch(const char* name)
+{
+    SdlInputInstance* t = a_strhash_get(touches.names, name);
+
+    if(t) {
+        a_out__error("Touch '%s' is already defined", name);
+        return;
+    }
+
+    t = a_mem_malloc(sizeof(SdlInputInstance));
+
+    t->name = a_str_dup(name);
+
+    a_inputs_add(touches, t, name);
 }
