@@ -151,14 +151,7 @@ void a_screen_show(void)
         a_sdl__screen_unlock();
         a_sdl__screen_flip();
     } else if(a2x_bool("video.fake")) {
-        a_sdl__screen_lock();
-
-        const Pixel* const src = a_pixels;
-        Pixel* const dst = a_sdl__screen_pixels();
-
-        memcpy(dst, src, A_SCREEN_SIZE);
-
-        a_sdl__screen_unlock();
+        a_sdl__pixelsToScreen();
         a_sdl__screen_flip();
     } else {
         a_sdl__screen_unlock();

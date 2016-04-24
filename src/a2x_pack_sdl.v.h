@@ -31,6 +31,7 @@ extern bool a_sdl__screen_set(void);
 extern Pixel* a_sdl__screen_pixels(void);
 extern void a_sdl__screen_lock(void);
 extern void a_sdl__screen_unlock(void);
+extern void a_sdl__pixelsToScreen(void);
 extern void a_sdl__screen_flip(void);
 
 extern int a_sdl__sound_volumeMax(void);

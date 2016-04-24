@@ -450,6 +450,20 @@ void a_sdl__screen_unlock(void)
     #endif
 }
 
+void a_sdl__pixelsToScreen(void)
+{
+    #if A_USE_LIB_SDL
+        a_sdl__screen_lock();
+
+        const Pixel* src = a_pixels;
+        Pixel* dst = a_sdl__screen_pixels();
+
+        memcpy(dst, src, A_SCREEN_SIZE);
+
+        a_sdl__screen_unlock();
+    #endif
+}
+
 void a_sdl__screen_flip(void)
 {
     #if A_USE_LIB_SDL
