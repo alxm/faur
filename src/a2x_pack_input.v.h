@@ -45,4 +45,4 @@ extern void a_input__analog_setXAxis(InputInstance* a, int value);
 extern void a_input__analog_setYAxis(InputInstance* a, int value);
 
 extern void a_input__touch_addMotion(InputInstance* t, int x, int y);
-extern void a_input__touch_setCoords(InputInstance* t, int x, int y);
+extern void a_input__touch_setCoords(InputInstance* t, int x, int y, bool tapped);

@@ -24,7 +24,7 @@
 
 struct Input {
     char* name;
-    List* buttons;
+    List* buttons; // Lists of InputInstance
     List* analogs;
     List* touches;
 };
@@ -669,9 +669,9 @@ void a_input__touch_addMotion(InputInstance* t, int x, int y)
     }
 }
 
-void a_input__touch_setCoords(InputInstance* t, int x, int y)
+void a_input__touch_setCoords(InputInstance* t, int x, int y, bool tapped)
 {
-    t->u.touch.tap = true;
+    t->u.touch.tap = tapped;
 
     t->u.touch.x = x;
     t->u.touch.y = y;

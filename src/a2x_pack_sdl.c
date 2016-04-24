@@ -519,10 +519,8 @@ void a_sdl__input_get(void)
             case SDL_MOUSEBUTTONDOWN: {
                 switch(event.button.button) {
                     case SDL_BUTTON_LEFT:
-                        action = A_ACTION_PRESSED;
-
                         A_LIST_ITERATE(touches.list, SdlInputInstance, t) {
-                            a_input__touch_setCoords(t->input, event.button.x, event.button.y);
+                            a_input__touch_setCoords(t->input, event.button.x, event.button.y, true);
                         }
                     break;
                 }
@@ -532,7 +530,7 @@ void a_sdl__input_get(void)
                 switch(event.button.button) {
                     case SDL_BUTTON_LEFT:
                         A_LIST_ITERATE(touches.list, SdlInputInstance, t) {
-                            a_input__touch_setCoords(t->input, event.button.x, event.button.y);
+                            a_input__touch_setCoords(t->input, event.button.x, event.button.y, false);
                         }
                     break;
                 }
