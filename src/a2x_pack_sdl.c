@@ -442,33 +442,6 @@ Pixel* a_sdl__screen_pixels(void)
     #endif
 }
 
-void a_sdl__pixelsToScreen(void)
-{
-    #if A_USE_LIB_SDL
-        const Pixel* src = a_pixels;
-        Pixel* dst = a_sdl__screen_pixels();
-
-        memcpy(dst, src, A_SCREEN_SIZE);
-
-        if(SDL_MUSTLOCK(screen) && screen_locked) {
-            SDL_UnlockSurface(screen);
-            screen_locked = false;
-        }
-    #endif
-}
-
-void a_sdl__screen_flip(void)
-{
-    #if A_USE_LIB_SDL
-        SDL_Flip(screen);
-    #elif A_USE_LIB_SDL2
-        SDL_UpdateTexture(texture, NULL, a_pixels, a_width * sizeof(Pixel));
-        SDL_RenderClear(renderer);
-        SDL_RenderCopy(renderer, texture, NULL, NULL);
-        SDL_RenderPresent(renderer);
-    #endif
-}
-
 void a_sdl__screen_show(void)
 {
     #if A_USE_LIB_SDL
@@ -492,24 +465,35 @@ void a_sdl__screen_show(void)
                 screen_locked = false;
             }
 
-            a_sdl__screen_flip();
+            SDL_Flip(screen);
         } else if(a2x_bool("video.doubleBuffer")) {
-            a_sdl__pixelsToScreen();
-            a_sdl__screen_flip();
+            const Pixel* src = a_pixels;
+            Pixel* dst = a_sdl__screen_pixels();
+
+            memcpy(dst, src, A_SCREEN_SIZE);
+
+            if(SDL_MUSTLOCK(screen) && screen_locked) {
+                SDL_UnlockSurface(screen);
+                screen_locked = false;
+            }
+
+            SDL_Flip(screen);
         } else {
             if(SDL_MUSTLOCK(screen) && screen_locked) {
                 SDL_UnlockSurface(screen);
                 screen_locked = false;
             }
 
-            a_sdl__screen_flip();
+            SDL_Flip(screen);
 
             a_pixels = a_sdl__screen_pixels();
             a__pixels2 = a_pixels;
         }
     #elif A_USE_LIB_SDL2
-        a_sdl__pixelsToScreen();
-        a_sdl__screen_flip();
+        SDL_UpdateTexture(texture, NULL, a_pixels, a_width * sizeof(Pixel));
+        SDL_RenderClear(renderer);
+        SDL_RenderCopy(renderer, texture, NULL, NULL);
+        SDL_RenderPresent(renderer);
     #endif
 }
 
