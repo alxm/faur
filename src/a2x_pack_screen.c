@@ -37,14 +37,6 @@ static int a__height2 = 0;
 
 static Sprite* spriteTarget = NULL;
 
-static void setFakeScreen(void)
-{
-    a_pixels = a_mem_malloc(A_SCREEN_SIZE);
-    a__pixels2 = a_pixels;
-
-    memset(a_pixels, 0, A_SCREEN_SIZE);
-}
-
 static void displayVolume(void)
 {
     #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
@@ -93,14 +85,17 @@ void a_screen__init(void)
             ioctl(fb_fd, FBIO_LCD_CHANGE_CONTROL, &send);
             close(fb_fd);
 
-            a2x__set("video.fake", "1");
+            a2x__set("video.doubleBuffer", "1");
         #else
             a2x__set("video.wizTear", "0");
         #endif
     }
 
-    if(a2x_bool("video.fake")) {
-        setFakeScreen();
+    if(a2x_bool("video.doubleBuffer")) {
+        a_pixels = a_mem_malloc(A_SCREEN_SIZE);
+        a__pixels2 = a_pixels;
+
+        memset(a_pixels, 0, A_SCREEN_SIZE);
     } else {
         a_pixels = a_sdl__screen_pixels();
         a__pixels2 = a_pixels;
@@ -116,7 +111,7 @@ void a_screen__uninit(void)
         return;
     }
 
-    if(a2x_bool("video.fake")) {
+    if(a2x_bool("video.doubleBuffer")) {
         free(a_pixels);
     }
 }

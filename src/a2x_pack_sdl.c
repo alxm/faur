@@ -392,7 +392,7 @@ bool a_sdl__screen_set(void)
 
         SDL_SetClipRect(screen, NULL);
     #elif A_USE_LIB_SDL2
-        a2x__set("video.fake", "1");
+        a2x__set("video.doubleBuffer", "1");
 
         window = SDL_CreateWindow("",
                                   SDL_WINDOWPOS_UNDEFINED,
@@ -473,7 +473,7 @@ void a_sdl__screen_show(void)
 {
     #if A_USE_LIB_SDL
         if(a2x_bool("video.wizTear")) {
-            // video.fake is also set when video.wizTear is set
+            // video.doubleBuffer is also set when video.wizTear is set
             #define A_WIDTH 320
             #define A_HEIGHT 240
 
@@ -493,7 +493,7 @@ void a_sdl__screen_show(void)
             }
 
             a_sdl__screen_flip();
-        } else if(a2x_bool("video.fake")) {
+        } else if(a2x_bool("video.doubleBuffer")) {
             a_sdl__pixelsToScreen();
             a_sdl__screen_flip();
         } else {

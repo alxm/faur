@@ -158,7 +158,7 @@ void a_settings__defaults(void)
     add(BOOL, SET_ONCE, "video.window", "1");
     add(INT, SET_ONCE, "video.width", "320");
     add(INT, SET_ONCE, "video.height", "240");
-    add(BOOL, SET_ONCE, "video.fake", "0");
+    add(BOOL, SET_ONCE, "video.doubleBuffer", "0");
     add(BOOL, SET_ANY, "video.fullscreen", "0");
     add(BOOL, SET_ONCE, "video.wizTear", "0");
 
