@@ -24,3 +24,7 @@
 #ifndef A_USE_LIB_SDL
     #define A_USE_LIB_SDL 0
 #endif
+
+#ifndef A_USE_LIB_SDL2
+    #define A_USE_LIB_SDL2 0
+#endif
