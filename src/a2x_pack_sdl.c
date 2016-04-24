@@ -355,28 +355,27 @@ bool a_sdl__screen_set(void)
         static bool first_time = true;
 
         int bpp = 0;
-        int scale = a2x_int("video.scale");
         uint32_t videoFlags = SDL_SWSURFACE;
 
         if(a2x_bool("video.fullscreen")) {
             videoFlags |= SDL_FULLSCREEN;
         }
 
-        bpp = SDL_VideoModeOK(a_width * scale, a_height * scale, A_BPP, videoFlags);
+        bpp = SDL_VideoModeOK(a_width, a_height, A_BPP, videoFlags);
 
         if(bpp == 0) {
             if(first_time) {
-                a_out__fatal("SDL: %dx%d video not available", a_width * scale, a_height * scale);
+                a_out__fatal("SDL: %dx%d video not available", a_width, a_height);
             } else {
-                a_out__warning("SDL: %dx%d video not available", a_width * scale, a_height * scale);
+                a_out__warning("SDL: %dx%d video not available", a_width, a_height);
                 return false;
             }
         }
 
         first_time = false;
 
-        screen = SDL_SetVideoMode(a_width * scale,
-                                  a_height * scale,
+        screen = SDL_SetVideoMode(a_width,
+                                  a_height,
                                   A_BPP,
                                   videoFlags);
 

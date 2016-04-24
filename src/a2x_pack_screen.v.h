@@ -31,7 +31,3 @@
 
 extern void a_screen__init(void);
 extern void a_screen__uninit(void);
-
-#if A_PLATFORM_LINUXPC || A_PLATFORM_WINDOWS
-    extern bool a_screen__change(void);
-#endif

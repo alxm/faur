@@ -78,14 +78,6 @@ void a_screen__init(void)
     a_width = a2x_int("video.width");
     a_height = a2x_int("video.height");
 
-    #if !A_PLATFORM_LINUXPC
-        a2x__set("video.scale", "1");
-    #endif
-
-    if(a2x_int("video.scale") > 1) {
-        a2x__set("video.fake", "1");
-    }
-
     a_sdl__screen_set();
 
     if(a2x_bool("video.wizTear")) {
@@ -161,55 +153,10 @@ void a_screen_show(void)
     } else if(a2x_bool("video.fake")) {
         a_sdl__screen_lock();
 
-        switch(a2x_int("video.scale")) {
-            case 1: {
-                const Pixel* const src = a_pixels;
-                Pixel* const dst = a_sdl__screen_pixels();
+        const Pixel* const src = a_pixels;
+        Pixel* const dst = a_sdl__screen_pixels();
 
-                memcpy(dst, src, A_SCREEN_SIZE);
-            } break;
-
-            case 2: {
-                const Pixel* src = a_pixels;
-                uint32_t* dst = (uint32_t*)a_sdl__screen_pixels();
-
-                const int len = a_width;
-                const int size = len * sizeof(uint32_t);
-
-                for(int i = a_height; i--; ) {
-                    for(int j = len; j--; ) {
-                        const Pixel p = *src++;
-                        *dst++ = (p << 16) | p;
-                    }
-
-                    memcpy(dst, dst - len, size);
-                    dst += len;
-                }
-            } break;
-
-            case 3: {
-                const Pixel* src = a_pixels;
-                Pixel* dst = a_sdl__screen_pixels();
-
-                const int width = a_width;
-                const int scaledWidth = width * 3;
-                const int scaledSize = scaledWidth * sizeof(Pixel);
-
-                for(int i = a_height; i--; ) {
-                    for(int j = width; j--; ) {
-                        const Pixel p = *src++;
-                        *dst++ = p;
-                        *dst++ = p;
-                        *dst++ = p;
-                    }
-
-                    for(int j = 2; j--; ) {
-                        memcpy(dst, dst - scaledWidth, scaledSize);
-                        dst += scaledWidth;
-                    }
-                }
-            } break;
-        }
+        memcpy(dst, src, A_SCREEN_SIZE);
 
         a_sdl__screen_unlock();
         a_sdl__screen_flip();
@@ -279,42 +226,3 @@ void a_screen_resetTarget(void)
         spriteTarget = NULL;
     }
 }
-
-#if A_PLATFORM_LINUXPC || A_PLATFORM_WINDOWS
-    bool a_screen__change(void)
-    {
-        if(!a2x_bool("video.fake")) {
-            a_sdl__screen_unlock();
-        }
-
-        bool changed = a_sdl__screen_set();
-
-        if(!a2x_bool("video.fake")) {
-            a_sdl__screen_lock();
-        }
-
-        if(changed) {
-            if(a2x_int("video.scale") > 1) {
-                // once we scale up, we switch to fake screen
-                a2x__set("video.fake", "1");
-            }
-
-            if(a2x_bool("video.fake")) {
-                setFakeScreen();
-            } else {
-                a_pixels = a_sdl__screen_pixels();
-                a__pixels2 = a_pixels;
-            }
-
-            a_out__message("Changed resolution to %dx%d %dx (%s)",
-                  a_width, a_height, a2x_int("video.scale"),
-                  a2x_bool("video.fullscreen") ? "fullscreen" : "windowed");
-        } else {
-            a_out__warning("Could not change resolution to %dx%d %dx (%s)",
-                      a_width, a_height, a2x_int("video.scale"),
-                      a2x_bool("video.fullscreen") ? "fullscreen" : "windowed");
-        }
-
-        return changed;
-    }
-#endif

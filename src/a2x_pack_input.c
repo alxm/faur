@@ -45,7 +45,6 @@ struct InputInstance {
             bool tap;
             int x;
             int y;
-            int scale; // for zoomed screens
             List* motion; // Points captured by motion event
         } touch;
     } u;
@@ -86,13 +85,6 @@ static List* userInputs; // all inputs returned by a_input_new()
 
 static Input* console;
 static Input* screenshot;
-
-#if A_PLATFORM_LINUXPC
-    static Input* normalRes;
-    static Input* doubleRes;
-    static Input* tripleRes;
-    static Input* fullScreen;
-#endif
 
 static void addButton(const char* name)
 {
@@ -148,7 +140,6 @@ static void addTouch(const char* name)
     t->u.touch.tap = false;
     t->u.touch.x = 0;
     t->u.touch.y = 0;
-    t->u.touch.scale = a2x_int("video.scale");
     t->u.touch.motion = a_list_new();
 
     a_inputs_add(touches, t, name);
@@ -270,13 +261,6 @@ void a_input__init(void)
 
     userInputs = a_list_new();
 
-    #if A_PLATFORM_LINUXPC
-        normalRes = a_input_new("pc.F1");
-        doubleRes = a_input_new("pc.F2");
-        tripleRes = a_input_new("pc.F3");
-        fullScreen = a_input_new("pc.F4");
-    #endif
-
     console = a_input_new(a2x_str("console.button"));
     screenshot = a_input_new(a2x_str("screenshot.button"));
 }
@@ -334,44 +318,6 @@ void a_input__get(void)
     if(a_button_getAndUnpress(screenshot)) {
         a_screenshot_save();
     }
-
-    // PC-only options
-    #if A_PLATFORM_LINUXPC
-        bool changed = false;
-
-        if(a_button_getAndUnpress(normalRes)) {
-            if(a2x_int("video.scale") != 1) {
-                a2x__set("video.scale", "1");
-                changed = true;
-            }
-        } else if(a_button_getAndUnpress(doubleRes)) {
-            if(a2x_int("video.scale") != 2) {
-                a2x__set("video.scale", "2");
-                changed = true;
-            }
-        } else if(a_button_getAndUnpress(tripleRes)) {
-            if(a2x_int("video.scale") != 3) {
-                a2x__set("video.scale", "3");
-                changed = true;
-            }
-        } else if(a_button_getAndUnpress(fullScreen)) {
-            a2x__flip("video.fullscreen");
-            a2x__set("video.scale", "1");
-            changed = true;
-        }
-
-        if(changed) {
-            if(a_screen__change()) {
-                int scale = a2x_int("video.scale");
-
-                A_LIST_ITERATE(touches.list, InputInstance, t) {
-                    t->u.touch.scale = scale;
-                }
-            } else {
-                a2x__undo("video.scale");
-            }
-        }
-    #endif
 
     // simulate seperate direction events from diagonals
     #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
@@ -678,12 +624,9 @@ bool a_touch_point(const Input* i, int x, int y)
 bool a_touch_rect(const Input* i, int x, int y, int w, int h)
 {
     A_LIST_ITERATE(i->touches, InputInstance, t) {
-        const int scale = t->u.touch.scale;
-
         if(t->u.touch.tap
-            && a_collide_boxes(
-                x * scale, y * scale, w * scale, h * scale,
-                t->u.touch.x, t->u.touch.y, 1, 1)) {
+            && a_collide_boxes(x, y, w, h,
+                               t->u.touch.x, t->u.touch.y, 1, 1)) {
             return true;
         }
     }
