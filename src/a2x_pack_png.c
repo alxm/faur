@@ -26,8 +26,37 @@ typedef struct ByteStream {
     int offset;
 } ByteStream;
 
-static void readFunction(png_structp png, png_bytep data, png_size_t length);
-static void pngToPixels(png_structp png, png_infop info, Pixel** pixels, int* width, int* height);
+static void readFunction(png_structp png, png_bytep data, png_size_t length)
+{
+    ByteStream* const stream = png_get_io_ptr(png);
+
+    memcpy(data, stream->data + stream->offset, length);
+    stream->offset += length;
+}
+
+static void pngToPixels(png_structp png, png_infop info, Pixel** pixels, int* width, int* height)
+{
+    const int w = png_get_image_width(png, info);
+    const int h = png_get_image_height(png, info);
+    const int channels = png_get_channels(png, info);
+
+    Pixel* const px = a_mem_malloc(w * h * sizeof(Pixel));
+    png_bytepp rows = png_get_rows(png, info);
+
+    for(int i = 0; i < h; i++) {
+        for(int j = 0; j < w; j++) {
+            *(px + i * w + j) = a_pixel_make(
+                rows[i][j * channels + 0],
+                rows[i][j * channels + 1],
+                rows[i][j * channels + 2]
+            );
+        }
+    }
+
+    *width = w;
+    *height = h;
+    *pixels = px;
+}
 
 void a_png_readFile(const char* path, Pixel** pixels, int* width, int* height)
 {
@@ -222,36 +251,4 @@ void a_png_write(const char* path, const Pixel* data, int width, int height)
     if(f) {
         a_file_close(f);
     }
-}
-
-static void readFunction(png_structp png, png_bytep data, png_size_t length)
-{
-    ByteStream* const stream = png_get_io_ptr(png);
-
-    memcpy(data, stream->data + stream->offset, length);
-    stream->offset += length;
-}
-
-static void pngToPixels(png_structp png, png_infop info, Pixel** pixels, int* width, int* height)
-{
-    const int w = png_get_image_width(png, info);
-    const int h = png_get_image_height(png, info);
-    const int channels = png_get_channels(png, info);
-
-    Pixel* const px = a_mem_malloc(w * h * sizeof(Pixel));
-    png_bytepp rows = png_get_rows(png, info);
-
-    for(int i = 0; i < h; i++) {
-        for(int j = 0; j < w; j++) {
-            *(px + i * w + j) = a_pixel_make(
-                rows[i][j * channels + 0],
-                rows[i][j * channels + 1],
-                rows[i][j * channels + 2]
-            );
-        }
-    }
-
-    *width = w;
-    *height = h;
-    *pixels = px;
 }

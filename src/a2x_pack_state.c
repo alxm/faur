@@ -49,8 +49,32 @@ static char* bodystage_names[A_STATE_BODYSTAGE_NUM] = {
     "Paused",
 };
 
-static StateInstance* a_stateinstance__new(const char* name);
-static void a_stateinstance__free(StateInstance* s);
+static StateInstance* a_stateinstance__new(const char* name)
+{
+    StateFunction function = a_strhash_get(functions, name);
+
+    if(function == NULL) {
+        a_out__fatal("State '%s' does not exist", name);
+    }
+
+    StateInstance* const s = a_mem_malloc(sizeof(StateInstance));
+
+    s->name = a_str_dup(name);
+    s->function = function;
+    s->objects = a_strhash_new();
+    s->stage = A_STATE_STAGE_INIT;
+    s->bodystage = A_STATE_BODYSTAGE_RUN;
+
+    return s;
+}
+
+static void a_stateinstance__free(StateInstance* s)
+{
+    free(s->name);
+    a_strhash_free(s->objects);
+
+    free(s);
+}
 
 void a_state__init(void)
 {
@@ -300,31 +324,4 @@ bool a_state__unchanged(void)
     }
 
     return !changed;
-}
-
-static StateInstance* a_stateinstance__new(const char* name)
-{
-    StateFunction function = a_strhash_get(functions, name);
-
-    if(function == NULL) {
-        a_out__fatal("State '%s' does not exist", name);
-    }
-
-    StateInstance* const s = a_mem_malloc(sizeof(StateInstance));
-
-    s->name = a_str_dup(name);
-    s->function = function;
-    s->objects = a_strhash_new();
-    s->stage = A_STATE_STAGE_INIT;
-    s->bodystage = A_STATE_BODYSTAGE_RUN;
-
-    return s;
-}
-
-static void a_stateinstance__free(StateInstance* s)
-{
-    free(s->name);
-    a_strhash_free(s->objects);
-
-    free(s);
 }

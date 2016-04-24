@@ -29,7 +29,16 @@ struct StringTok {
     int currentBufferLen;
 };
 
-static bool is_delim(char c, const char* d, int n);
+static bool is_delim(char c, const char* d, int n)
+{
+    for(int i = n; i--; ) {
+        if(c == d[i]) {
+            return true;
+        }
+    }
+
+    return false;
+}
 
 StringTok* a_strtok_new(const char* string, const char* delims)
 {
@@ -89,15 +98,4 @@ char* a_strtok__get(StringTok* t)
     t->currentToken[len] = '\0';
 
     return t->currentToken;
-}
-
-static bool is_delim(char c, const char* d, int n)
-{
-    for(int i = n; i--; ) {
-        if(c == d[i]) {
-            return true;
-        }
-    }
-
-    return false;
 }

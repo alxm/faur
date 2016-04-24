@@ -41,7 +41,85 @@ static uint8_t alpha;
 static uint8_t red, green, blue;
 static Pixel pixel;
 
-static bool cohen_sutherland_clip(int* lx1, int* ly1, int* lx2, int* ly2);
+static bool cohen_sutherland_clip(int* lx1, int* ly1, int* lx2, int* ly2)
+{
+    int x1 = *lx1;
+    int y1 = *ly1;
+    int x2 = *lx2;
+    int y2 = *ly2;
+
+    const int screenw = a_width;
+    const int screenh = a_height;
+
+    #define OUT_LEFT  1
+    #define OUT_RIGHT 2
+    #define OUT_TOP   4
+    #define OUT_DOWN  8
+
+    #define outcode(x, y)                     \
+    ({                                        \
+        int o = 0;                            \
+                                              \
+        if(x < 0) o |= OUT_LEFT;              \
+        else if(x >= screenw) o |= OUT_RIGHT; \
+                                              \
+        if(y < 0) o |= OUT_TOP;               \
+        else if(y >= screenh) o |= OUT_DOWN;  \
+                                              \
+        o;                                    \
+    })
+
+    #define solvey(x, x1, y1, x2, y2)                 \
+    ({                                                \
+        (float)(y1 - y2) / (x1 - x2) * (x - x1) + y1; \
+    })
+
+    #define solvex(y, x1, y1, x2, y2)                 \
+    ({                                                \
+        (float)(x1 - x2) / (y1 - y2) * (y - y1) + x1; \
+    })
+
+    while(true) {
+        const int outcode1 = outcode(x1, y1);
+        const int outcode2 = outcode(x2, y2);
+
+        if((outcode1 | outcode2) == 0) {
+            *lx1 = x1;
+            *ly1 = y1;
+            *lx2 = x2;
+            *ly2 = y2;
+
+            return true;
+        } else if(outcode1 & outcode2) {
+            return false;
+        } else {
+            int x, y;
+            const int outcode = outcode1 ? outcode1 : outcode2;
+
+            if(outcode & OUT_LEFT) {
+                x = 0;
+                y = solvey(x, x1, y1, x2, y2);
+            } else if(outcode & OUT_RIGHT) {
+                x = screenw - 1;
+                y = solvey(x, x1, y1, x2, y2);
+            } else if(outcode & OUT_TOP) {
+                y = 0;
+                x = solvex(y, x1, y1, x2, y2);
+            } else { // outcode & OUT_DOWN
+                y = screenh - 1;
+                x = solvex(y, x1, y1, x2, y2);
+            }
+
+            if(outcode == outcode1) {
+                x1 = x;
+                y1 = y;
+            } else {
+                x2 = x;
+                y2 = y;
+            }
+        }
+    }
+}
 
 #define rectangle_noclip(pixeler)                  \
 {                                                  \
@@ -291,84 +369,4 @@ void a_draw_rectangle_outline(int x1, int y1, int x2, int y2, int t)
     a_draw_rectangle(x1, y2 - t, x2, y2);         // bottom
     a_draw_rectangle(x1, y1 + t, x1 + t, y2 - t); // left
     a_draw_rectangle(x2 - t, y1 + t, x2, y2 - t); // right
-}
-
-static bool cohen_sutherland_clip(int* lx1, int* ly1, int* lx2, int* ly2)
-{
-    int x1 = *lx1;
-    int y1 = *ly1;
-    int x2 = *lx2;
-    int y2 = *ly2;
-
-    const int screenw = a_width;
-    const int screenh = a_height;
-
-    #define OUT_LEFT  1
-    #define OUT_RIGHT 2
-    #define OUT_TOP   4
-    #define OUT_DOWN  8
-
-    #define outcode(x, y)                     \
-    ({                                        \
-        int o = 0;                            \
-                                              \
-        if(x < 0) o |= OUT_LEFT;              \
-        else if(x >= screenw) o |= OUT_RIGHT; \
-                                              \
-        if(y < 0) o |= OUT_TOP;               \
-        else if(y >= screenh) o |= OUT_DOWN;  \
-                                              \
-        o;                                    \
-    })
-
-    #define solvey(x, x1, y1, x2, y2)                 \
-    ({                                                \
-        (float)(y1 - y2) / (x1 - x2) * (x - x1) + y1; \
-    })
-
-    #define solvex(y, x1, y1, x2, y2)                 \
-    ({                                                \
-        (float)(x1 - x2) / (y1 - y2) * (y - y1) + x1; \
-    })
-
-    while(true) {
-        const int outcode1 = outcode(x1, y1);
-        const int outcode2 = outcode(x2, y2);
-
-        if((outcode1 | outcode2) == 0) {
-            *lx1 = x1;
-            *ly1 = y1;
-            *lx2 = x2;
-            *ly2 = y2;
-
-            return true;
-        } else if(outcode1 & outcode2) {
-            return false;
-        } else {
-            int x, y;
-            const int outcode = outcode1 ? outcode1 : outcode2;
-
-            if(outcode & OUT_LEFT) {
-                x = 0;
-                y = solvey(x, x1, y1, x2, y2);
-            } else if(outcode & OUT_RIGHT) {
-                x = screenw - 1;
-                y = solvey(x, x1, y1, x2, y2);
-            } else if(outcode & OUT_TOP) {
-                y = 0;
-                x = solvex(y, x1, y1, x2, y2);
-            } else { // outcode & OUT_DOWN
-                y = screenh - 1;
-                x = solvex(y, x1, y1, x2, y2);
-            }
-
-            if(outcode == outcode1) {
-                x1 = x;
-                y1 = y;
-            } else {
-                x2 = x;
-                y2 = y;
-            }
-        }
-    }
 }

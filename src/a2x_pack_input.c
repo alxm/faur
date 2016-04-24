@@ -94,9 +94,66 @@ static Input* screenshot;
     static Input* fullScreen;
 #endif
 
-static void addButton(const char* name);
-static void addAnalog(const char* name);
-static void addTouch(const char* name);
+static void addButton(const char* name)
+{
+    InputInstance* b = a_strhash_get(buttons.names, name);
+
+    if(b) {
+        a_out__error("Button '%s' is already defined", name);
+        return;
+    }
+
+    b = a_mem_malloc(sizeof(InputInstance));
+
+    b->name = a_str_dup(name);
+    b->u.button.pressed = false;
+    b->u.button.previouslyPressed = false;
+    b->u.button.freshEvent = false;
+
+    a_inputs_add(buttons, b, name);
+    a_sdl__input_matchButton(name, b);
+}
+
+static void addAnalog(const char* name)
+{
+    InputInstance* a = a_strhash_get(analogs.names, name);
+
+    if(a) {
+        a_out__error("Analog '%s' is already defined", name);
+        return;
+    }
+
+    a = a_mem_malloc(sizeof(InputInstance));
+
+    a->name = a_str_dup(name);
+    a->u.analog.xaxis = 0;
+    a->u.analog.yaxis = 0;
+
+    a_inputs_add(analogs, a, name);
+    a_sdl__input_matchAnalog(name, a);
+}
+
+static void addTouch(const char* name)
+{
+    InputInstance* t = a_strhash_get(touches.names, name);
+
+    if(t) {
+        a_out__error("Touch '%s' is already defined", name);
+        return;
+    }
+
+    t = a_mem_malloc(sizeof(InputInstance));
+
+    t->name = a_str_dup(name);
+    t->u.touch.tap = false;
+    t->u.touch.x = 0;
+    t->u.touch.y = 0;
+    t->u.touch.scale = a2x_int("video.scale");
+    t->u.touch.motion = a_list_new();
+
+    a_inputs_add(touches, t, name);
+    a_sdl__input_matchTouch(name, t);
+}
 
 void a_input__init(void)
 {
@@ -671,65 +728,4 @@ void a_input__touch_setCoords(InputInstance* t, int x, int y, bool tapped)
 
     t->u.touch.x = x;
     t->u.touch.y = y;
-}
-
-static void addButton(const char* name)
-{
-    InputInstance* b = a_strhash_get(buttons.names, name);
-
-    if(b) {
-        a_out__error("Button '%s' is already defined", name);
-        return;
-    }
-
-    b = a_mem_malloc(sizeof(InputInstance));
-
-    b->name = a_str_dup(name);
-    b->u.button.pressed = false;
-    b->u.button.previouslyPressed = false;
-    b->u.button.freshEvent = false;
-
-    a_inputs_add(buttons, b, name);
-    a_sdl__input_matchButton(name, b);
-}
-
-static void addAnalog(const char* name)
-{
-    InputInstance* a = a_strhash_get(analogs.names, name);
-
-    if(a) {
-        a_out__error("Analog '%s' is already defined", name);
-        return;
-    }
-
-    a = a_mem_malloc(sizeof(InputInstance));
-
-    a->name = a_str_dup(name);
-    a->u.analog.xaxis = 0;
-    a->u.analog.yaxis = 0;
-
-    a_inputs_add(analogs, a, name);
-    a_sdl__input_matchAnalog(name, a);
-}
-
-static void addTouch(const char* name)
-{
-    InputInstance* t = a_strhash_get(touches.names, name);
-
-    if(t) {
-        a_out__error("Touch '%s' is already defined", name);
-        return;
-    }
-
-    t = a_mem_malloc(sizeof(InputInstance));
-
-    t->name = a_str_dup(name);
-    t->u.touch.tap = false;
-    t->u.touch.x = 0;
-    t->u.touch.y = 0;
-    t->u.touch.scale = a2x_int("video.scale");
-    t->u.touch.motion = a_list_new();
-
-    a_inputs_add(touches, t, name);
-    a_sdl__input_matchTouch(name, t);
 }

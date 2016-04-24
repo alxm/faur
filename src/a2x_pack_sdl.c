@@ -81,9 +81,77 @@ static InputCollection buttons;
 static InputCollection analogs;
 static InputCollection touches;
 
-static void addButton(const char* name, int code);
-static void addAnalog(const char* name, int device_index, char* device_name, int xaxis_index, int yaxis_index);
-static void addTouch(const char* name);
+static void addButton(const char* name, int code)
+{
+    SdlInputInstance* b = a_strhash_get(buttons.names, name);
+
+    if(!b) {
+        b = a_mem_malloc(sizeof(SdlInputInstance));
+
+        b->name = a_str_dup(name);
+        b->u.button.numCodes = 1;
+        b->u.button.codes[0] = code;
+
+        a_inputs_add(buttons, b, name);
+    } else {
+        if(b->u.button.numCodes < A_MAX_BUTTON_CODES) {
+            b->u.button.codes[b->u.button.numCodes++] = code;
+        } else {
+            a_out__error("Button '%s' has too many codes", name);
+        }
+    }
+}
+
+static void addAnalog(const char* name, int device_index, char* device_name, int xaxis_index, int yaxis_index)
+{
+    if(device_index == -1 && device_name == NULL) {
+        a_out__error("Inputs must specify device index or name");
+        return;
+    }
+
+    SdlInputInstance* a = a_strhash_get(analogs.names, name);
+
+    if(a) {
+        a_out__error("Analog '%s' is already defined", name);
+        return;
+    }
+
+    a = a_mem_malloc(sizeof(SdlInputInstance));
+
+    a->name = a_str_dup(name);
+    a->device_index = device_index;
+    a->device_name = device_name;
+    a->u.analog.xaxis_index = xaxis_index;
+    a->u.analog.yaxis_index = yaxis_index;
+
+    // check if we requested a specific device by name
+    if(device_name) {
+        for(int j = joysticks_num; j--; ) {
+            if(a_str_same(device_name, SDL_JoystickName(j))) {
+                a->device_index = j;
+                break;
+            }
+        }
+    }
+
+    a_inputs_add(analogs, a, name);
+}
+
+static void addTouch(const char* name)
+{
+    SdlInputInstance* t = a_strhash_get(touches.names, name);
+
+    if(t) {
+        a_out__error("Touch '%s' is already defined", name);
+        return;
+    }
+
+    t = a_mem_malloc(sizeof(SdlInputInstance));
+
+    t->name = a_str_dup(name);
+
+    a_inputs_add(touches, t, name);
+}
 
 void a_sdl__init(void)
 {
@@ -542,76 +610,4 @@ void a_sdl__input_get(void)
             }
         }
     }
-}
-
-static void addButton(const char* name, int code)
-{
-    SdlInputInstance* b = a_strhash_get(buttons.names, name);
-
-    if(!b) {
-        b = a_mem_malloc(sizeof(SdlInputInstance));
-
-        b->name = a_str_dup(name);
-        b->u.button.numCodes = 1;
-        b->u.button.codes[0] = code;
-
-        a_inputs_add(buttons, b, name);
-    } else {
-        if(b->u.button.numCodes < A_MAX_BUTTON_CODES) {
-            b->u.button.codes[b->u.button.numCodes++] = code;
-        } else {
-            a_out__error("Button '%s' has too many codes", name);
-        }
-    }
-}
-
-static void addAnalog(const char* name, int device_index, char* device_name, int xaxis_index, int yaxis_index)
-{
-    if(device_index == -1 && device_name == NULL) {
-        a_out__error("Inputs must specify device index or name");
-        return;
-    }
-
-    SdlInputInstance* a = a_strhash_get(analogs.names, name);
-
-    if(a) {
-        a_out__error("Analog '%s' is already defined", name);
-        return;
-    }
-
-    a = a_mem_malloc(sizeof(SdlInputInstance));
-
-    a->name = a_str_dup(name);
-    a->device_index = device_index;
-    a->device_name = device_name;
-    a->u.analog.xaxis_index = xaxis_index;
-    a->u.analog.yaxis_index = yaxis_index;
-
-    // check if we requested a specific device by name
-    if(device_name) {
-        for(int j = joysticks_num; j--; ) {
-            if(a_str_same(device_name, SDL_JoystickName(j))) {
-                a->device_index = j;
-                break;
-            }
-        }
-    }
-
-    a_inputs_add(analogs, a, name);
-}
-
-static void addTouch(const char* name)
-{
-    SdlInputInstance* t = a_strhash_get(touches.names, name);
-
-    if(t) {
-        a_out__error("Touch '%s' is already defined", name);
-        return;
-    }
-
-    t = a_mem_malloc(sizeof(SdlInputInstance));
-
-    t->name = a_str_dup(name);
-
-    a_inputs_add(touches, t, name);
 }

@@ -29,8 +29,44 @@
 #include "a2x_pack_hw.v.h"
 
 #if A_PLATFORM_GP2X
-    static void a_hw__cpu(int Mhz);
-    static void a_hw__ramTimings(int tRC, int tRAS, int tWR, int tMRD, int tRFC, int tRP, int tRCD);
+    static void a_hw__cpu(int Mhz)
+    {
+        int mhz = Mhz * 1000000;
+        int freq = 7372800;
+
+        int memfd = open("/dev/mem", O_RDWR);
+        volatile uint32_t* memregs32 = mmap(0, 0x10000, PROT_READ | PROT_WRITE, MAP_SHARED, memfd, 0xc0000000);
+        volatile uint16_t* memregs16 = (uint16_t*)memregs32;
+
+        unsigned int pdiv = 3;
+        unsigned int mdiv = (mhz * pdiv) / freq;
+
+        pdiv = ((pdiv - 2) << 2) & 0xfc;
+        mdiv = ((mdiv - 8) << 8) & 0xff00;
+
+        unsigned int v = pdiv | mdiv;
+
+        unsigned int l = memregs32[0x808 >> 2]; // Get interupt flags
+        memregs32[0x808 >> 2] = 0xFF8FFFE7; // Turn off interrupts
+        memregs16[0x910 >> 1] = v; // Set frequentie
+        while(memregs16[0x0902 >> 1] & 1) continue; // Wait for the frequentie to be ajused
+        memregs32[0x808 >> 2] = l; // Turn on interrupts
+
+        close(memfd);
+    }
+
+    static void a_hw__ramTimings(int tRC, int tRAS, int tWR, int tMRD, int tRFC, int tRP, int tRCD)
+    {
+        int memfd = open("/dev/mem", O_RDWR);
+        volatile uint32_t* memregs32 = mmap(0, 0x10000, PROT_READ | PROT_WRITE, MAP_SHARED, memfd, 0xc0000000);
+        volatile uint16_t* memregs16 = (uint16_t*)memregs32;
+
+        tRC -= 1; tRAS -= 1; tWR -= 1; tMRD -= 1; tRFC -= 1; tRP -= 1; tRCD -= 1;
+        memregs16[0x3802>>1] = ((tMRD & 0xF) << 12) | ((tRFC & 0xF) << 8) | ((tRP & 0xF) << 4) | (tRCD & 0xF);
+        memregs16[0x3804>>1] = ((tRC & 0xF) << 8) | ((tRAS & 0xF) << 4) | (tWR & 0xF);
+
+        close(memfd);
+    }
 #endif
 
 #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
@@ -84,44 +120,3 @@ void a_hw__uninit(void)
         a_hw__ramTimings(8, 16, 3, 8, 8, 8, 8);
     #endif
 }
-
-#if A_PLATFORM_GP2X
-    static void a_hw__cpu(int Mhz)
-    {
-        int mhz = Mhz * 1000000;
-        int freq = 7372800;
-
-        int memfd = open("/dev/mem", O_RDWR);
-        volatile uint32_t* memregs32 = mmap(0, 0x10000, PROT_READ | PROT_WRITE, MAP_SHARED, memfd, 0xc0000000);
-        volatile uint16_t* memregs16 = (uint16_t*)memregs32;
-
-        unsigned int pdiv = 3;
-        unsigned int mdiv = (mhz * pdiv) / freq;
-
-        pdiv = ((pdiv - 2) << 2) & 0xfc;
-        mdiv = ((mdiv - 8) << 8) & 0xff00;
-
-        unsigned int v = pdiv | mdiv;
-
-        unsigned int l = memregs32[0x808 >> 2]; // Get interupt flags
-        memregs32[0x808 >> 2] = 0xFF8FFFE7; // Turn off interrupts
-        memregs16[0x910 >> 1] = v; // Set frequentie
-        while(memregs16[0x0902 >> 1] & 1) continue; // Wait for the frequentie to be ajused
-        memregs32[0x808 >> 2] = l; // Turn on interrupts
-
-        close(memfd);
-    }
-
-    static void a_hw__ramTimings(int tRC, int tRAS, int tWR, int tMRD, int tRFC, int tRP, int tRCD)
-    {
-        int memfd = open("/dev/mem", O_RDWR);
-        volatile uint32_t* memregs32 = mmap(0, 0x10000, PROT_READ | PROT_WRITE, MAP_SHARED, memfd, 0xc0000000);
-        volatile uint16_t* memregs16 = (uint16_t*)memregs32;
-
-        tRC -= 1; tRAS -= 1; tWR -= 1; tMRD -= 1; tRFC -= 1; tRP -= 1; tRCD -= 1;
-        memregs16[0x3802>>1] = ((tMRD & 0xF) << 12) | ((tRFC & 0xF) << 8) | ((tRP & 0xF) << 4) | (tRCD & 0xF);
-        memregs16[0x3804>>1] = ((tRC & 0xF) << 8) | ((tRAS & 0xF) << 4) | (tWR & 0xF);
-
-        close(memfd);
-    }
-#endif

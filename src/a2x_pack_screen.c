@@ -37,8 +37,37 @@ static int a__height2 = 0;
 
 static Sprite* spriteTarget = NULL;
 
-static void setFakeScreen(void);
-static void displayVolume(void);
+static void setFakeScreen(void)
+{
+    a_pixels = a_mem_malloc(A_SCREEN_SIZE);
+    a__pixels2 = a_pixels;
+
+    memset(a_pixels, 0, A_SCREEN_SIZE);
+}
+
+static void displayVolume(void)
+{
+    #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
+        if(a2x_bool("sound.on")) {
+            if(a_time_getMilis() - a__volumeAdjust > A_MILIS_VOLUME) {
+                return;
+            }
+
+            a_pixel_setBlend(A_PIXEL_PLAIN);
+
+            a_pixel_setPixel(0);
+            a_draw_rectangle(0, 181, a__volumeMax / A_VOLUME_STEP + 5, 197);
+
+            a_pixel_setRGB(255, 156, 107);
+            a_draw_hline(0, a__volumeMax / A_VOLUME_STEP + 4 + 1, 180);
+            a_draw_hline(0, a__volumeMax / A_VOLUME_STEP + 4 + 1, 183 + 14);
+            a_draw_vline(a__volumeMax / A_VOLUME_STEP + 4 + 1, 181, 183 + 14);
+
+            a_pixel_setRGB(255, 84, 0);
+            a_draw_rectangle(0, 186, a__volume / A_VOLUME_STEP, 192);
+        }
+    #endif
+}
 
 void a_screen__init(void)
 {
@@ -289,35 +318,3 @@ void a_screen_resetTarget(void)
         return changed;
     }
 #endif
-
-static void setFakeScreen(void)
-{
-    a_pixels = a_mem_malloc(A_SCREEN_SIZE);
-    a__pixels2 = a_pixels;
-
-    memset(a_pixels, 0, A_SCREEN_SIZE);
-}
-
-static void displayVolume(void)
-{
-    #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
-        if(a2x_bool("sound.on")) {
-            if(a_time_getMilis() - a__volumeAdjust > A_MILIS_VOLUME) {
-                return;
-            }
-
-            a_pixel_setBlend(A_PIXEL_PLAIN);
-
-            a_pixel_setPixel(0);
-            a_draw_rectangle(0, 181, a__volumeMax / A_VOLUME_STEP + 5, 197);
-
-            a_pixel_setRGB(255, 156, 107);
-            a_draw_hline(0, a__volumeMax / A_VOLUME_STEP + 4 + 1, 180);
-            a_draw_hline(0, a__volumeMax / A_VOLUME_STEP + 4 + 1, 183 + 14);
-            a_draw_vline(a__volumeMax / A_VOLUME_STEP + 4 + 1, 181, 183 + 14);
-
-            a_pixel_setRGB(255, 84, 0);
-            a_draw_rectangle(0, 186, a__volume / A_VOLUME_STEP, 192);
-        }
-    #endif
-}

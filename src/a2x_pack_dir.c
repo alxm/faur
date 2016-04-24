@@ -33,7 +33,10 @@ typedef struct DirEntry {
     char* full;
 } DirEntry;
 
-static int defaultFilter(const struct dirent* f);
+static int defaultFilter(const struct dirent* f)
+{
+    return strlen(f->d_name) > 0 && f->d_name[0] != '.';
+}
 
 Dir* a_dir_open(const char* path)
 {
@@ -147,9 +150,4 @@ bool a_dir_exists(const char* path)
 void a_dir_make(const char* path)
 {
     mkdir(path, S_IRWXU);
-}
-
-static int defaultFilter(const struct dirent* f)
-{
-    return strlen(f->d_name) > 0 && f->d_name[0] != '.';
 }
