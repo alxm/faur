@@ -392,7 +392,12 @@ bool a_sdl__screen_set(void)
 
         SDL_SetClipRect(screen, NULL);
 
-        a_pixels = a_sdl__screen_pixels();
+        if(SDL_MUSTLOCK(screen) && !screen_locked) {
+            SDL_LockSurface(screen);
+            screen_locked = true;
+        }
+
+        a_pixels = screen->pixels;
     #elif A_USE_LIB_SDL2
         a2x__set("video.doubleBuffer", "1");
 
@@ -430,20 +435,6 @@ bool a_sdl__screen_set(void)
     return true;
 }
 
-Pixel* a_sdl__screen_pixels(void)
-{
-    #if A_USE_LIB_SDL
-        if(SDL_MUSTLOCK(screen) && !screen_locked) {
-            SDL_LockSurface(screen);
-            screen_locked = true;
-        }
-
-        return screen->pixels;
-    #elif A_USE_LIB_SDL2
-        return a_pixels;
-    #endif
-}
-
 void a_sdl__screen_show(void)
 {
     #if A_USE_LIB_SDL
@@ -452,7 +443,12 @@ void a_sdl__screen_show(void)
             #define A_WIDTH 320
             #define A_HEIGHT 240
 
-            Pixel* dst = a_sdl__screen_pixels() + A_WIDTH * A_HEIGHT;
+            if(SDL_MUSTLOCK(screen) && !screen_locked) {
+                SDL_LockSurface(screen);
+                screen_locked = true;
+            }
+
+            Pixel* dst = screen->pixels + A_WIDTH * A_HEIGHT;
             const Pixel* src = a_pixels;
 
             for(int i = A_HEIGHT; i--; dst += A_WIDTH * A_HEIGHT + 1) {
@@ -469,8 +465,13 @@ void a_sdl__screen_show(void)
 
             SDL_Flip(screen);
         } else if(a2x_bool("video.doubleBuffer")) {
+            if(SDL_MUSTLOCK(screen) && !screen_locked) {
+                SDL_LockSurface(screen);
+                screen_locked = true;
+            }
+
             const Pixel* src = a_pixels;
-            Pixel* dst = a_sdl__screen_pixels();
+            Pixel* dst = screen->pixels;
 
             memcpy(dst, src, A_SCREEN_SIZE);
 
@@ -488,7 +489,12 @@ void a_sdl__screen_show(void)
 
             SDL_Flip(screen);
 
-            a_pixels = a_sdl__screen_pixels();
+            if(SDL_MUSTLOCK(screen) && !screen_locked) {
+                SDL_LockSurface(screen);
+                screen_locked = true;
+            }
+
+            a_pixels = screen->pixels;
             a__pixels2 = a_pixels;
         }
     #elif A_USE_LIB_SDL2

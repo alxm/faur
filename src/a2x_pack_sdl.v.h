@@ -28,7 +28,6 @@ extern void a_sdl__init(void);
 extern void a_sdl__uninit(void);
 
 extern bool a_sdl__screen_set(void);
-extern Pixel* a_sdl__screen_pixels(void);
 extern void a_sdl__screen_show(void);
 
 extern int a_sdl__sound_volumeMax(void);
