@@ -108,6 +108,7 @@ static void addButton(const char* name, int code)
     }
 }
 
+#if !A_PLATFORM_GP2X && !A_PLATFORM_WIZ
 static void addAnalog(const char* name, int device_index, char* device_name, int xaxis_index, int yaxis_index)
 {
     if(device_index == -1 && device_name == NULL) {
@@ -149,6 +150,7 @@ static void addAnalog(const char* name, int device_index, char* device_name, int
 
     a_inputs_add(analogs, a, name);
 }
+#endif // !A_PLATFORM_GP2X && !A_PLATFORM_WIZ
 
 static void addTouch(const char* name)
 {

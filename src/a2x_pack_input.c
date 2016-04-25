@@ -106,6 +106,7 @@ static void addButton(const char* name)
     a_sdl__input_matchButton(name, b);
 }
 
+#if !A_PLATFORM_GP2X && !A_PLATFORM_WIZ
 static void addAnalog(const char* name)
 {
     InputInstance* a = a_strhash_get(analogs.names, name);
@@ -124,6 +125,7 @@ static void addAnalog(const char* name)
     a_inputs_add(analogs, a, name);
     a_sdl__input_matchAnalog(name, a);
 }
+#endif // !A_PLATFORM_GP2X && !A_PLATFORM_WIZ
 
 static void addTouch(const char* name)
 {

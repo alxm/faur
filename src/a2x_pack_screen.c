@@ -25,13 +25,11 @@
 
 #include "a2x_pack_screen.v.h"
 
-#define A_SCREEN_SIZE (a_width * a_height * sizeof(Pixel))
-
 Pixel* a_pixels = NULL;
 int a_width = 0;
 int a_height = 0;
 
-static Pixel* a__pixels2 = NULL;
+Pixel* a__pixels2 = NULL;
 static int a__width2 = 0;
 static int a__height2 = 0;
 

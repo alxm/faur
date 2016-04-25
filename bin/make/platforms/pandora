@@ -30,6 +30,7 @@ CFLAGS = -DA_PLATFORM_PANDORA=1 \
          -fomit-frame-pointer \
          -I$(PANDORA_SDK)/include \
          -I$(PANDORA_SDK)/usr/include \
+         -I$(PANDORA_SDK)/usr/include/SDL \
          -I$(PANDORA_SDK)/arm-none-linux-gnueabi/include
 
 PREFIX := arm-none-linux-gnueabi-

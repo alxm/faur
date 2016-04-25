@@ -24,6 +24,7 @@ CFLAGS = -DA_PLATFORM_CAANOO=1 \
          -fomit-frame-pointer \
          -I$(CAANOO_ROOT)/include \
          -I$(CAANOO_ROOT)/DGE/include \
+         -I$(CAANOO_ROOT)/DGE/include/SDL \
          -I$(CAANOO_SDK)/include \
          -I$(CAANOO_SDK)/arm-gph-linux-gnueabi/include
 
