@@ -391,6 +391,8 @@ bool a_sdl__screen_set(void)
         }
 
         SDL_SetClipRect(screen, NULL);
+
+        a_pixels = a_sdl__screen_pixels();
     #elif A_USE_LIB_SDL2
         a2x__set("video.doubleBuffer", "1");
 

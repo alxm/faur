@@ -93,16 +93,12 @@ void a_screen__init(void)
 
     if(a2x_bool("video.doubleBuffer")) {
         a_pixels = a_mem_malloc(A_SCREEN_SIZE);
-        a__pixels2 = a_pixels;
-
         memset(a_pixels, 0, A_SCREEN_SIZE);
-    } else {
-        a_pixels = a_sdl__screen_pixels();
-        a__pixels2 = a_pixels;
     }
 
     a__width2 = a_width;
     a__height2 = a_height;
+    a__pixels2 = a_pixels;
 }
 
 void a_screen__uninit(void)
