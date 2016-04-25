@@ -66,10 +66,6 @@ typedef struct InputCollection {
     a_strhash_add(i.names, name, ptr); \
 })
 
-typedef enum InputAction {
-    A_ACTION_NONE, A_ACTION_PRESSED, A_ACTION_UNPRESSED
-} InputAction;
-
 #if A_USE_LIB_SDL
     static SDL_Surface* screen = NULL;
     static bool screen_locked = false;
@@ -628,7 +624,12 @@ void a_sdl__input_matchTouch(const char* name, InputInstance* touch)
 void a_sdl__input_get(void)
 {
     for(SDL_Event event; SDL_PollEvent(&event); ) {
-        InputAction action = A_ACTION_NONE;
+        enum {
+            A_ACTION_NONE,
+            A_ACTION_PRESSED,
+            A_ACTION_UNPRESSED,
+        } action = A_ACTION_NONE;
+
         int code = -1;
 
         switch(event.type) {
