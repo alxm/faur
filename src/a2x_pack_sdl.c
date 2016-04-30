@@ -404,11 +404,19 @@ bool a_sdl__screen_set(void)
                                   SDL_WINDOWPOS_UNDEFINED,
                                   a_width,
                                   a_height,
-                                  0);
+                                  SDL_WINDOW_RESIZABLE);
 
         renderer = SDL_CreateRenderer(window,
                                       -1,
                                       0);
+
+        SDL_RenderSetLogicalSize(renderer,
+                                 a_width,
+                                 a_height);
+
+        SDL_SetHintWithPriority(SDL_HINT_RENDER_SCALE_QUALITY,
+                                "nearest",
+                                SDL_HINT_OVERRIDE);
 
         texture = SDL_CreateTexture(renderer,
                                     SDL_PIXELFORMAT_RGB565,
