@@ -563,15 +563,36 @@ void a_sdl__music_toggle(void)
 
 void* a_sdl__sfx_loadFromFile(const char* path)
 {
-    return Mix_LoadWAV(path);
+    Mix_Chunk* sfx = Mix_LoadWAV(path);
+
+    if(sfx == NULL) {
+        a_out__error("Mix_LoadWAV(%s) failed: %s", path, SDL_GetError());
+    }
+
+    return sfx;
 }
 
 void* a_sdl__sfx_loadFromData(const uint16_t* data, int size)
 {
-    SDL_RWops* rw = SDL_RWFromMem((void*)data, size);
-    Mix_Chunk* sfx = Mix_LoadWAV_RW(rw, 0);
+    SDL_RWops* rw;
+    Mix_Chunk* sfx = NULL;
 
-    SDL_FreeRW(rw);
+    rw = SDL_RWFromMem((void*)data, size);
+    if(rw == NULL) {
+        a_out__error("SDL_RWFromMem failed: %s", SDL_GetError());
+        goto Done;
+    }
+
+    sfx = Mix_LoadWAV_RW(rw, 0);
+    if(sfx == NULL) {
+        a_out__error("Mix_LoadWAV_RW failed: %s", SDL_GetError());
+        goto Done;
+    }
+
+Done:
+    if(rw) {
+        SDL_FreeRW(rw);
+    }
 
     return sfx;
 }
