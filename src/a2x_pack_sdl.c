@@ -44,28 +44,6 @@ typedef struct SdlInputInstance {
     } u;
 } SdlInputInstance;
 
-typedef struct InputCollection {
-    List* list; // inputs registered during init
-    StrHash* names; // hash table of above inputs' names
-} InputCollection;
-
-#define a_inputs_new() ((InputCollection){a_list_new(), a_strhash_new()})
-
-#define a_inputs_free(i)              \
-({                                    \
-    A_LIST_ITERATE(i.list, void, v) { \
-        free(v);                      \
-    }                                 \
-    a_list_free(i.list);              \
-    a_strhash_free(i.names);          \
-})
-
-#define a_inputs_add(i, ptr, name)     \
-({                                     \
-    a_list_addLast(i.list, ptr);       \
-    a_strhash_add(i.names, name, ptr); \
-})
-
 #if A_USE_LIB_SDL
     static SDL_Surface* screen = NULL;
     static bool screen_locked = false;
@@ -79,13 +57,13 @@ typedef struct InputCollection {
 static int joysticks_num;
 static SDL_Joystick* joysticks[A_MAX_JOYSTICKS];
 
-static InputCollection buttons;
-static InputCollection analogs;
-static InputCollection touches;
+static InputCollection* buttons;
+static InputCollection* analogs;
+static InputCollection* touches;
 
 static void addButton(const char* name, int code)
 {
-    SdlInputInstance* b = a_strhash_get(buttons.names, name);
+    SdlInputInstance* b = a_strhash_get(buttons->names, name);
 
     if(!b) {
         b = a_mem_malloc(sizeof(SdlInputInstance));
@@ -94,7 +72,7 @@ static void addButton(const char* name, int code)
         b->u.button.numCodes = 1;
         b->u.button.codes[0] = code;
 
-        a_inputs_add(buttons, b, name);
+        a_input__collection_add(buttons, b, name);
     } else {
         if(b->u.button.numCodes < A_MAX_BUTTON_CODES) {
             b->u.button.codes[b->u.button.numCodes++] = code;
@@ -112,7 +90,7 @@ static void addAnalog(const char* name, int device_index, char* device_name, int
         return;
     }
 
-    SdlInputInstance* a = a_strhash_get(analogs.names, name);
+    SdlInputInstance* a = a_strhash_get(analogs->names, name);
 
     if(a) {
         a_out__error("Analog '%s' is already defined", name);
@@ -144,13 +122,13 @@ static void addAnalog(const char* name, int device_index, char* device_name, int
         }
     }
 
-    a_inputs_add(analogs, a, name);
+    a_input__collection_add(analogs, a, name);
 }
 #endif // !A_PLATFORM_GP2X && !A_PLATFORM_WIZ
 
 static void addTouch(const char* name)
 {
-    SdlInputInstance* t = a_strhash_get(touches.names, name);
+    SdlInputInstance* t = a_strhash_get(touches->names, name);
 
     if(t) {
         a_out__error("Touch '%s' is already defined", name);
@@ -161,7 +139,7 @@ static void addTouch(const char* name)
 
     t->name = a_str_dup(name);
 
-    a_inputs_add(touches, t, name);
+    a_input__collection_add(touches, t, name);
 }
 
 void a_sdl__init(void)
@@ -214,9 +192,9 @@ void a_sdl__init(void)
         }
     }
 
-    buttons = a_inputs_new();
-    analogs = a_inputs_new();
-    touches = a_inputs_new();
+    buttons = a_input__collection_new();
+    analogs = a_input__collection_new();
+    touches = a_input__collection_new();
 
     #if A_PLATFORM_GP2X
         addButton("gp2x.Up", 0);
@@ -332,9 +310,9 @@ void a_sdl__init(void)
 
 void a_sdl__uninit(void)
 {
-    a_inputs_free(buttons);
-    a_inputs_free(analogs);
-    a_inputs_free(touches);
+    a_input__collection_free(buttons);
+    a_input__collection_free(analogs);
+    a_input__collection_free(touches);
 
     for(int j = joysticks_num; j--; ) {
         SDL_JoystickClose(joysticks[j]);
@@ -598,7 +576,7 @@ void a_sdl__delay(uint32_t ms)
 
 void a_sdl__input_matchButton(const char* name, InputInstance* button)
 {
-    SdlInputInstance* i = a_strhash_get(buttons.names, name);
+    SdlInputInstance* i = a_strhash_get(buttons->names, name);
 
     if(!i) {
         a_out__error("No SDL binding for button %s", name);
@@ -609,7 +587,7 @@ void a_sdl__input_matchButton(const char* name, InputInstance* button)
 
 void a_sdl__input_matchAnalog(const char* name, InputInstance* analog)
 {
-    SdlInputInstance* i = a_strhash_get(analogs.names, name);
+    SdlInputInstance* i = a_strhash_get(analogs->names, name);
 
     if(!i) {
         a_out__error("No SDL binding for analog %s", name);
@@ -620,7 +598,7 @@ void a_sdl__input_matchAnalog(const char* name, InputInstance* analog)
 
 void a_sdl__input_matchTouch(const char* name, InputInstance* touch)
 {
-    SdlInputInstance* i = a_strhash_get(touches.names, name);
+    SdlInputInstance* i = a_strhash_get(touches->names, name);
 
     if(!i) {
         a_out__error("No SDL binding for touchscreen %s", name);
@@ -670,7 +648,7 @@ void a_sdl__input_get(void)
             } break;
 
             case SDL_JOYAXISMOTION: {
-                A_LIST_ITERATE(analogs.list, SdlInputInstance, a) {
+                A_LIST_ITERATE(analogs->list, SdlInputInstance, a) {
                     if(a->device_index == event.jaxis.which) {
                         if(event.jaxis.axis == a->u.analog.xaxis_index) {
                             a_input__analog_setXAxis(a->input, event.jaxis.value);
@@ -682,7 +660,7 @@ void a_sdl__input_get(void)
             } break;
 
             case SDL_MOUSEMOTION: {
-                A_LIST_ITERATE(touches.list, SdlInputInstance, t) {
+                A_LIST_ITERATE(touches->list, SdlInputInstance, t) {
                     a_input__touch_addMotion(t->input, event.button.x, event.button.y);
                 }
             } break;
@@ -690,7 +668,7 @@ void a_sdl__input_get(void)
             case SDL_MOUSEBUTTONDOWN: {
                 switch(event.button.button) {
                     case SDL_BUTTON_LEFT:
-                        A_LIST_ITERATE(touches.list, SdlInputInstance, t) {
+                        A_LIST_ITERATE(touches->list, SdlInputInstance, t) {
                             a_input__touch_setCoords(t->input, event.button.x, event.button.y, true);
                         }
                     break;
@@ -700,7 +678,7 @@ void a_sdl__input_get(void)
             case SDL_MOUSEBUTTONUP: {
                 switch(event.button.button) {
                     case SDL_BUTTON_LEFT:
-                        A_LIST_ITERATE(touches.list, SdlInputInstance, t) {
+                        A_LIST_ITERATE(touches->list, SdlInputInstance, t) {
                             a_input__touch_setCoords(t->input, event.button.x, event.button.y, false);
                         }
                     break;
@@ -711,7 +689,7 @@ void a_sdl__input_get(void)
         }
 
         if(action != A_ACTION_NONE) {
-            A_LIST_ITERATE(buttons.list, SdlInputInstance, b) {
+            A_LIST_ITERATE(buttons->list, SdlInputInstance, b) {
                 for(int c = b->u.button.numCodes; c--; ) {
                     if(b->u.button.codes[c] == code) {
                         a_input__button_setState(b->input, action == A_ACTION_PRESSED);
