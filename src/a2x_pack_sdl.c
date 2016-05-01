@@ -375,6 +375,7 @@ bool a_sdl__screen_set(void)
 
         a_pixels = screen->pixels;
     #elif A_USE_LIB_SDL2
+        int ret;
         a2x__set("video.doubleBuffer", "1");
 
         window = SDL_CreateWindow("",
@@ -383,24 +384,36 @@ bool a_sdl__screen_set(void)
                                   a_width,
                                   a_height,
                                   SDL_WINDOW_RESIZABLE);
+        if(window == NULL) {
+            a_out__fatal("SDL_CreateWindow failed: %s", SDL_GetError());
+        }
 
         renderer = SDL_CreateRenderer(window,
                                       -1,
                                       0);
+        if(renderer == NULL) {
+            a_out__fatal("SDL_CreateRenderer failed: %s", SDL_GetError());
+        }
 
-        SDL_RenderSetLogicalSize(renderer,
-                                 a_width,
-                                 a_height);
-
-        SDL_SetHintWithPriority(SDL_HINT_RENDER_SCALE_QUALITY,
-                                "nearest",
-                                SDL_HINT_OVERRIDE);
+        ret = SDL_RenderSetLogicalSize(renderer,
+                                       a_width,
+                                       a_height);
+        if(ret < 0) {
+            a_out__fatal("SDL_RenderSetLogicalSize failed: %s", SDL_GetError());
+        }
 
         texture = SDL_CreateTexture(renderer,
                                     SDL_PIXELFORMAT_RGB565,
                                     SDL_TEXTUREACCESS_STREAMING,
                                     a_width,
                                     a_height);
+        if(texture == NULL) {
+            a_out__fatal("SDL_CreateTexture failed: %s", SDL_GetError());
+        }
+
+        SDL_SetHintWithPriority(SDL_HINT_RENDER_SCALE_QUALITY,
+                                "nearest",
+                                SDL_HINT_OVERRIDE);
     #endif
 
     #if A_PLATFORM_LINUXPC
@@ -482,9 +495,23 @@ void a_sdl__screen_show(void)
             a__pixels2 = a_pixels;
         }
     #elif A_USE_LIB_SDL2
-        SDL_UpdateTexture(texture, NULL, a_pixels, a_width * sizeof(Pixel));
-        SDL_RenderClear(renderer);
-        SDL_RenderCopy(renderer, texture, NULL, NULL);
+        int ret;
+
+        ret = SDL_UpdateTexture(texture, NULL, a_pixels, a_width * sizeof(Pixel));
+        if(ret < 0) {
+            a_out__fatal("SDL_UpdateTexture failed: %s", SDL_GetError());
+        }
+
+        ret = SDL_RenderClear(renderer);
+        if(ret < 0) {
+            a_out__fatal("SDL_RenderClear failed: %s", SDL_GetError());
+        }
+
+        ret = SDL_RenderCopy(renderer, texture, NULL, NULL);
+        if(ret < 0) {
+            a_out__fatal("SDL_RenderCopy failed: %s", SDL_GetError());
+        }
+
         SDL_RenderPresent(renderer);
     #endif
 }
