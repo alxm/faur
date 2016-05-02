@@ -521,11 +521,6 @@ void a_sdl__screen_show(void)
             a_out__fatal("SDL_UpdateTexture failed: %s", SDL_GetError());
         }
 
-        ret = SDL_RenderClear(renderer);
-        if(ret < 0) {
-            a_out__fatal("SDL_RenderClear failed: %s", SDL_GetError());
-        }
-
         ret = SDL_RenderCopy(renderer, texture, NULL, NULL);
         if(ret < 0) {
             a_out__fatal("SDL_RenderCopy failed: %s", SDL_GetError());
