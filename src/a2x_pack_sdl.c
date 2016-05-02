@@ -44,6 +44,8 @@ typedef struct SdlInputInstance {
     } u;
 } SdlInputInstance;
 
+static uint32_t sdl_flags;
+
 #if A_USE_LIB_SDL
     static SDL_Surface* screen = NULL;
     static bool screen_locked = false;
@@ -145,23 +147,23 @@ static void addTouch(const char* name)
 void a_sdl__init(void)
 {
     int ret = 0;
-    uint32_t sdlFlags = 0;
+    sdl_flags = 0;
 
     if(a2x_bool("video.window")) {
-        sdlFlags |= SDL_INIT_VIDEO;
+        sdl_flags |= SDL_INIT_VIDEO;
     }
 
     if(a2x_bool("sound.on")) {
-        sdlFlags |= SDL_INIT_AUDIO;
+        sdl_flags |= SDL_INIT_AUDIO;
     }
 
-    sdlFlags |= SDL_INIT_JOYSTICK;
+    sdl_flags |= SDL_INIT_JOYSTICK;
 
     #if !(A_PLATFORM_WIZ || A_PLATFORM_CAANOO)
-        sdlFlags |= SDL_INIT_TIMER;
+        sdl_flags |= SDL_INIT_TIMER;
     #endif
 
-    ret = SDL_Init(sdlFlags);
+    ret = SDL_Init(sdl_flags);
 
     if(ret != 0) {
         a_out__fatal("SDL: %s", SDL_GetError());
@@ -345,6 +347,7 @@ void a_sdl__uninit(void)
         SDL_DestroyWindow(window);
     #endif
 
+    SDL_QuitSubSystem(sdl_flags);
     SDL_Quit();
 }
 
