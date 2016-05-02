@@ -247,6 +247,12 @@ void a_input__init(void)
 
 void a_input__uninit(void)
 {
+    A_LIST_ITERATE(userInputs, Input, i) {
+        a_input__free(i);
+    }
+
+    a_list_free(userInputs);
+
     A_LIST_ITERATE(buttons->list, InputInstance, i) {
         free(i->name);
     }
@@ -263,11 +269,6 @@ void a_input__uninit(void)
         }
         a_list_free(i->u.touch.motion);
     }
-
-    A_LIST_ITERATE(userInputs, Input, i) {
-        a_input__free(i);
-    }
-    a_list_free(userInputs);
 
     a_input__collection_free(buttons);
     a_input__collection_free(analogs);

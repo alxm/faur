@@ -310,6 +310,18 @@ void a_sdl__init(void)
 
 void a_sdl__uninit(void)
 {
+    A_LIST_ITERATE(buttons->list, SdlInputInstance, i) {
+        free(i->name);
+    }
+
+    A_LIST_ITERATE(analogs->list, SdlInputInstance, i) {
+        free(i->name);
+    }
+
+    A_LIST_ITERATE(touches->list, SdlInputInstance, i) {
+        free(i->name);
+    }
+
     a_input__collection_free(buttons);
     a_input__collection_free(analogs);
     a_input__collection_free(touches);
@@ -327,6 +339,10 @@ void a_sdl__uninit(void)
             SDL_UnlockSurface(screen);
             screen_locked = false;
         }
+    #elif A_USE_LIB_SDL2
+        SDL_DestroyTexture(texture);
+        SDL_DestroyRenderer(renderer);
+        SDL_DestroyWindow(window);
     #endif
 
     SDL_Quit();
