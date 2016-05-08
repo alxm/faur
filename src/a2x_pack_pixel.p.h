@@ -77,8 +77,6 @@ typedef enum {
     A_PIXEL_TYPE_NUM
 } PixelBlend_t;
 
-#define a_mask(x) ((1 << (x)) - 1)
-
 extern void a_pixel_setBlend(PixelBlend_t b);
 extern void a_pixel_setClip(bool clip);
 

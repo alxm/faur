@@ -21,13 +21,15 @@
 
 #define SCREEN_DIM (a_width * a_height)
 
-#define pixel_red1(p)   ((((p) >> (11 + 16)) & a_mask(5)) << 3)
-#define pixel_green1(p) ((((p) >> (5  + 16)) & a_mask(6)) << 2)
-#define pixel_blue1(p)  ((((p) >> (0  + 16)) & a_mask(5)) << 3)
+#define pixel_mask(x) ((1 << (x)) - 1)
 
-#define pixel_red2(p)   ((((p) >> (11 + 0 )) & a_mask(5)) << 3)
-#define pixel_green2(p) ((((p) >> (5  + 0 )) & a_mask(6)) << 2)
-#define pixel_blue2(p)  ((((p) >> (0  + 0 )) & a_mask(5)) << 3)
+#define pixel_red1(p)   ((((p) >> (11 + 16)) & pixel_mask(5)) << 3)
+#define pixel_green1(p) ((((p) >> (5  + 16)) & pixel_mask(6)) << 2)
+#define pixel_blue1(p)  ((((p) >> (0  + 16)) & pixel_mask(5)) << 3)
+
+#define pixel_red2(p)   ((((p) >> (11 + 0 )) & pixel_mask(5)) << 3)
+#define pixel_green2(p) ((((p) >> (5  + 0 )) & pixel_mask(6)) << 2)
+#define pixel_blue2(p)  ((((p) >> (0  + 0 )) & pixel_mask(5)) << 3)
 
 void a_fade_toBlack(int framesDuration)
 {
