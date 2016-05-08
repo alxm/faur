@@ -72,7 +72,7 @@ void a_font__init(void)
     colors[A_FONT_RED] = a_pixel_make(255, 0, 0);
     colors[A_FONT_BLUE] = a_pixel_make(0, 0, 255);
 
-    a_font_load(fontSprite, 0, 0, 1, A_FONT_LOAD_ALL);
+    a_font_load(fontSprite, 0, 0, A_FONT_LOAD_ALL);
 
     for(int f = 1; f < A_FONT_MAX; f++) {
         a_font_copy(A_FONT_WHITE, colors[f]);
@@ -88,7 +88,7 @@ void a_font__uninit(void)
     free(fonts);
 }
 
-int a_font_load(const Sprite* sheet, int x, int y, int zoom, FontLoad loader)
+int a_font_load(const Sprite* sheet, int x, int y, FontLoad loader)
 {
     Font* const f = a_mem_malloc(sizeof(Font));
 

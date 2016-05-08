@@ -47,7 +47,7 @@ typedef enum FontDefaults {
     A_FONT_MAX
 } FontDefaults;
 
-extern int a_font_load(const Sprite* sheet, int x, int y, int zoom, FontLoad loader);
+extern int a_font_load(const Sprite* sheet, int x, int y, FontLoad loader);
 extern int a_font_copy(int font, Pixel color);
 
 extern void a_font_setFace(int f);
