@@ -19,6 +19,8 @@
 
 #pragma once
 
+typedef struct InputInstance InputInstance;
+
 #include "a2x_pack_input.p.h"
 
 #include "a2x_pack_collide.v.h"
@@ -30,9 +32,26 @@
 #include "a2x_pack_state.v.h"
 #include "a2x_pack_strtok.v.h"
 
+typedef struct InputCollection {
+    List* list; // inputs registered during init
+    StrHash* names; // hash table of above inputs' names
+} InputCollection;
+
 extern void a_input__init(void);
 extern void a_input__uninit(void);
 
 extern void a_input__free(Input* i);
 
 extern void a_input__get(void);
+
+extern void a_input__button_setState(InputInstance* b, bool pressed);
+
+extern void a_input__analog_setXAxis(InputInstance* a, int value);
+extern void a_input__analog_setYAxis(InputInstance* a, int value);
+
+extern void a_input__touch_addMotion(InputInstance* t, int x, int y);
+extern void a_input__touch_setCoords(InputInstance* t, int x, int y, bool tapped);
+
+extern InputCollection* a_input__collection_new(void);
+extern void a_input__collection_free(InputCollection* c);
+extern void a_input__collection_add(InputCollection* c, void* instance, const char* name);

@@ -77,9 +77,7 @@ void a_fps_end(void)
 
     if(!done) {
         while(!a_timer_check(timer)) {
-            if(milisPerFrame - a_timer_diff(timer) >= 10) {
-                a_time_waitMilis(10);
-            }
+            a_time_waitMilis(milisPerFrame - a_timer_diff(timer));
         }
     }
 

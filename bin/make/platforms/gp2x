@@ -19,6 +19,7 @@ LIBS = -static \
        -ldl
 
 CFLAGS = -DA_PLATFORM_GP2X=1 \
+         -DA_USE_LIB_SDL=1 \
          -O3 \
          -s \
          -msoft-float \

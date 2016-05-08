@@ -21,11 +21,8 @@
 
 #include "a2x_app_includes.h"
 
-typedef Mix_Music Music;
-typedef Mix_Chunk Sound;
-
-extern int a__volume;
-extern int a__volumeAdjust;
+typedef void Music;
+typedef void Sound;
 
 extern Music* a_music_load(const char* path);
 

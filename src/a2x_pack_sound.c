@@ -23,6 +23,7 @@ static List* musicList;
 static List* sfxList;
 
 int a__volume;
+int a__volumeMax;
 int a__volumeAdjust = -2 * A_MILIS_VOLUME;
 
 #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
@@ -38,27 +39,15 @@ void a_sound__init(void)
         musicList = a_list_new();
         sfxList = a_list_new();
 
+        a__volumeMax = a_sdl__sound_volumeMax();
+
         #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
-            a__volume = A_MAX_VOLUME / 16;
+            a__volume = a__volumeMax / 16;
         #else
-            a__volume = A_MAX_VOLUME;
+            a__volume = a__volumeMax;
         #endif
 
         a__volumeAdjust = -2 * A_MILIS_VOLUME;
-
-        #if A_PLATFORM_LINUXPC || A_PLATFORM_WINDOWS
-            if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096) != 0) {
-                a2x_set("sound.on", "0");
-            }
-        #elif A_PLATFORM_GP2X
-            if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 256) != 0) {
-                a2x_set("sound.on", "0");
-            }
-        #else
-            if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 512) != 0) {
-                a2x_set("sound.on", "0");
-            }
-        #endif
 
         #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
             a__volUp = a_input_new("gp2x.VolUp, wiz.VolUp");
@@ -84,24 +73,15 @@ void a_sound__uninit(void)
 
         a_list_free(sfxList);
         a_list_free(musicList);
-
-        Mix_CloseAudio();
     }
 }
 
 Music* a_music_load(const char* path)
 {
     if(a2x_bool("sound.on")) {
-        Music* const m = Mix_LoadMUS(path);
-
-        if(!m) {
-            a_out__error("%s", Mix_GetError());
-        }
-
-        Mix_VolumeMusic((float)a2x_int("sound.music.scale") / 100 * a__volume);
-
+        Music* m = a_sdl__music_load(path);
         a_list_addLast(musicList, m);
-
+        a_sdl__music_setVolume();
         return m;
     } else {
         return NULL;
@@ -111,34 +91,31 @@ Music* a_music_load(const char* path)
 void a_music__free(Music* m)
 {
     if(a2x_bool("sound.on")) {
-        Mix_FreeMusic(m);
+        a_sdl__music_free(m);
     }
 }
 
 void a_music_play(Music* m)
 {
-    if(a2x_bool("sound.on")) {
-        if(m) {
-            Mix_PlayMusic(m, -1);
-        }
+    if(a2x_bool("sound.on") && m) {
+        a_sdl__music_play(m);
     }
 }
 
 void a_music_stop(void)
 {
     if(a2x_bool("sound.on")) {
-        Mix_HaltMusic();
+        a_sdl__music_stop();
     }
 }
 
 Sound* a_sfx_fromFile(const char* path)
 {
     if(a2x_bool("sound.on")) {
-        Sound* const s = Mix_LoadWAV(path);
+        Sound* s = a_sdl__sfx_loadFromFile(path);
+        a_sdl__sfx_setVolume(s, (float)a2x_int("sound.sfx.scale") / 100 * a__volume);
 
-        s->volume = (float)a2x_int("sound.sfx.scale") / 100 * a__volume;
         a_list_addLast(sfxList, s);
-
         return s;
     } else {
         return NULL;
@@ -148,14 +125,10 @@ Sound* a_sfx_fromFile(const char* path)
 Sound* a_sfx__fromData(const uint16_t* data, int size)
 {
     if(a2x_bool("sound.on")) {
-        SDL_RWops* const rw = SDL_RWFromMem((void*)data, size);
-        Sound* const s = Mix_LoadWAV_RW(rw, 0);
+        Sound* s = a_sdl__sfx_loadFromData(data, size);
+        a_sdl__sfx_setVolume(s, (float)a2x_int("sound.sfx.scale") / 100 * a__volume);
 
-        s->volume = (float)a2x_int("sound.sfx.scale") / 100 * a__volume;
         a_list_addLast(sfxList, s);
-
-        SDL_FreeRW(rw);
-
         return s;
     } else {
         return NULL;
@@ -165,14 +138,14 @@ Sound* a_sfx__fromData(const uint16_t* data, int size)
 void a_sfx__free(Sound* s)
 {
     if(a2x_bool("sound.on")) {
-        Mix_FreeChunk(s);
+        a_sdl__sfx_free(s);
     }
 }
 
 void a_sfx_play(Sound* s)
 {
     if(a2x_bool("sound.on")) {
-        Mix_PlayChannel(-1, s, 0);
+        a_sdl__sfx_play(s);
     }
 }
 
@@ -180,7 +153,7 @@ void a_sfx_volume(int v)
 {
     if(a2x_bool("sound.on")) {
         A_LIST_ITERATE(sfxList, Sound, s) {
-            s->volume = v;
+            a_sdl__sfx_setVolume(s, v);
         }
     }
 }
@@ -197,11 +170,11 @@ void a_sound_adjustVolume(void)
             if(adjust) {
                 a__volume += adjust * A_VOLUME_STEP;
 
-                if(a__volume > A_MAX_VOLUME) a__volume = A_MAX_VOLUME;
+                if(a__volume > a__volumeMax) a__volume = a__volumeMax;
                 else if(a__volume < 0) a__volume = 0;
 
                 if(a_list_size(musicList) > 0) {
-                    Mix_VolumeMusic((float)a2x_int("sound.music.scale") / 100 * a__volume);
+                    a_sdl__music_setVolume();
                 }
 
                 a_sfx_volume((float)a2x_int("sound.sfx.scale") / 100 * a__volume);
@@ -211,11 +184,7 @@ void a_sound_adjustVolume(void)
     #elif A_PLATFORM_LINUXPC || A_PLATFORM_PANDORA
         if(a2x_bool("sound.on")) {
             if(a_button_getAndUnpress(a__musicOnOff)) {
-                if(Mix_PausedMusic()) {
-                    Mix_ResumeMusic();
-                } else {
-                    Mix_PauseMusic();
-                }
+                a_sdl__music_toggle();
             }
         }
     #endif

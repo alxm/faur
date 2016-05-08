@@ -20,3 +20,11 @@
 #pragma once
 
 #include "a2x_app_includes.h"
+
+#ifndef A_USE_LIB_SDL
+    #define A_USE_LIB_SDL 0
+#endif
+
+#ifndef A_USE_LIB_SDL2
+    #define A_USE_LIB_SDL2 0
+#endif

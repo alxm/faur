@@ -1,10 +1,16 @@
 PLATFORM = linux
 
-LIBS = -lSDL_mixer \
-       -lSDL \
-       -lpng \
+LIBS = -lpng \
        -lm
 
 CFLAGS = -DA_PLATFORM_LINUXPC=1 \
          -O0 \
          -g
+
+ifdef USE_LIB_SDL
+    LIBS := -lSDL_mixer -lSDL $(LIBS)
+    CFLAGS += $(shell sdl-config --cflags) -DA_USE_LIB_SDL=1
+else
+    LIBS := -lSDL2_mixer -lSDL2 $(LIBS)
+    CFLAGS += $(shell sdl2-config --cflags) -DA_USE_LIB_SDL2=1
+endif

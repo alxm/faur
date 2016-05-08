@@ -45,7 +45,14 @@ static FontAlign align;
 static int x;
 static int y;
 
-static int charIndex(char c);
+static int charIndex(char c)
+{
+    for(int i = 0; i < CHARS_NUM; i++) {
+        if(chars[i] == c) return i;
+    }
+
+    return -1;
+}
 
 void a_font__init(void)
 {
@@ -420,15 +427,6 @@ int a_font_widthf(const char* fmt, ...)
     }
 
     return a_font_width(buffer);
-}
-
-static int charIndex(char c)
-{
-    for(int i = 0; i < CHARS_NUM; i++) {
-        if(chars[i] == c) return i;
-    }
-
-    return -1;
 }
 
 static uint8_t gfx_default_font[] = {

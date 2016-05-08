@@ -41,10 +41,105 @@ typedef struct Setting {
 static StrHash* settings;
 static bool frozen = false;
 
-static void add(Setting_t type, Update_t update, const char* key, const char* val);
-static int parseBool(const char* val);
-static void set(const char* key, const char* val, bool respect);
-static bool flip(const char* key, bool respect);
+static int parseBool(const char* val)
+{
+    return a_str_same(val, "yes")
+        || a_str_same(val, "y")
+        || a_str_same(val, "true")
+        || a_str_same(val, "t")
+        || a_str_same(val, "da")
+        || a_str_same(val, "on")
+        || a_str_same(val, "1");
+}
+
+static void add(Setting_t type, Update_t update, const char* key, const char* val)
+{
+    Setting* const s = a_mem_malloc(sizeof(Setting));
+
+    s->type = type;
+    s->update = update;
+
+    switch(type) {
+        case INT: {
+            s->value[0].integer = atoi(val);
+            s->value[1].integer = s->value[0].integer;
+        } break;
+
+        case BOOL: {
+            s->value[0].boolean = parseBool(val);
+            s->value[1].boolean = s->value[0].boolean;
+        } break;
+
+        case STR: {
+            strncpy(s->value[0].string, val, sizeof(s->value[0].string) - 1);
+            s->value[0].string[sizeof(s->value[0].string) - 1] = '\0';
+            strcpy(s->value[1].string, s->value[0].string);
+        } break;
+    }
+
+    a_strhash_add(settings, key, s);
+}
+
+static void set(const char* key, const char* val, bool respect)
+{
+    Setting* const s = a_strhash_get(settings, key);
+
+    if(s == NULL) {
+        a_out__error("Setting '%s' does not exist", key);
+        return;
+    } else if(respect
+        && (s->update == SET_FROZEN || (s->update == SET_ONCE && frozen))) {
+        a_out__error("Setting '%s' is frozen", key);
+        return;
+    }
+
+    switch(s->type) {
+        case INT: {
+            s->value[1].integer = s->value[0].integer;
+            s->value[0].integer = atoi(val);
+        } break;
+
+        case BOOL: {
+            s->value[1].boolean = s->value[0].boolean;
+            s->value[0].boolean = parseBool(val);
+        } break;
+
+        case STR: {
+            strcpy(s->value[1].string, s->value[0].string);
+            strncpy(s->value[0].string, val, sizeof(s->value[0].string) - 1);
+        } break;
+    }
+
+    if(s->update == SET_ONCE) {
+        s->update = SET_FROZEN;
+    }
+}
+
+static bool flip(const char* key, bool respect)
+{
+    Setting* const s = a_strhash_get(settings, key);
+
+    if(s == NULL) {
+        a_out__error("Setting '%s' does not exist", key);
+        return false;
+    } else if(s->type != BOOL) {
+        a_out__error("Setting '%s' is not a boolean - can't flip it", key);
+        return false;
+    } else if(respect
+        && (s->update == SET_FROZEN || (s->update == SET_ONCE && frozen))) {
+        a_out__error("Setting '%s' is frozen", key);
+        return false;
+    }
+
+    s->value[1].boolean = s->value[0].boolean;
+    s->value[0].boolean ^= 1;
+
+    if(s->update == SET_ONCE) {
+        s->update = SET_FROZEN;
+    }
+
+    return s->value[0].boolean;
+}
 
 void a_settings__defaults(void)
 {
@@ -63,8 +158,7 @@ void a_settings__defaults(void)
     add(BOOL, SET_ONCE, "video.window", "1");
     add(INT, SET_ONCE, "video.width", "320");
     add(INT, SET_ONCE, "video.height", "240");
-    add(BOOL, SET_ONCE, "video.fake", "0");
-    add(INT, SET_ONCE, "video.scale", "1");
+    add(BOOL, SET_ONCE, "video.doubleBuffer", "0");
     add(BOOL, SET_ANY, "video.fullscreen", "0");
     add(BOOL, SET_ONCE, "video.wizTear", "0");
 
@@ -175,104 +269,4 @@ int a2x_int(const char* key)
     } else {
         return s->value[0].integer;
     }
-}
-
-static void add(Setting_t type, Update_t update, const char* key, const char* val)
-{
-    Setting* const s = a_mem_malloc(sizeof(Setting));
-
-    s->type = type;
-    s->update = update;
-
-    switch(type) {
-        case INT: {
-            s->value[0].integer = atoi(val);
-            s->value[1].integer = s->value[0].integer;
-        } break;
-
-        case BOOL: {
-            s->value[0].boolean = parseBool(val);
-            s->value[1].boolean = s->value[0].boolean;
-        } break;
-
-        case STR: {
-            strncpy(s->value[0].string, val, sizeof(s->value[0].string) - 1);
-            s->value[0].string[sizeof(s->value[0].string) - 1] = '\0';
-            strcpy(s->value[1].string, s->value[0].string);
-        } break;
-    }
-
-    a_strhash_add(settings, key, s);
-}
-
-static int parseBool(const char* val)
-{
-    return a_str_same(val, "yes")
-        || a_str_same(val, "y")
-        || a_str_same(val, "true")
-        || a_str_same(val, "t")
-        || a_str_same(val, "da")
-        || a_str_same(val, "on")
-        || a_str_same(val, "1");
-}
-
-static void set(const char* key, const char* val, bool respect)
-{
-    Setting* const s = a_strhash_get(settings, key);
-
-    if(s == NULL) {
-        a_out__error("Setting '%s' does not exist", key);
-        return;
-    } else if(respect
-        && (s->update == SET_FROZEN || (s->update == SET_ONCE && frozen))) {
-        a_out__error("Setting '%s' is frozen", key);
-        return;
-    }
-
-    switch(s->type) {
-        case INT: {
-            s->value[1].integer = s->value[0].integer;
-            s->value[0].integer = atoi(val);
-        } break;
-
-        case BOOL: {
-            s->value[1].boolean = s->value[0].boolean;
-            s->value[0].boolean = parseBool(val);
-        } break;
-
-        case STR: {
-            strcpy(s->value[1].string, s->value[0].string);
-            strncpy(s->value[0].string, val, sizeof(s->value[0].string) - 1);
-        } break;
-    }
-
-    if(s->update == SET_ONCE) {
-        s->update = SET_FROZEN;
-    }
-}
-
-static bool flip(const char* key, bool respect)
-{
-    Setting* const s = a_strhash_get(settings, key);
-
-    if(s == NULL) {
-        a_out__error("Setting '%s' does not exist", key);
-        return false;
-    } else if(s->type != BOOL) {
-        a_out__error("Setting '%s' is not a boolean - can't flip it", key);
-        return false;
-    } else if(respect
-        && (s->update == SET_FROZEN || (s->update == SET_ONCE && frozen))) {
-        a_out__error("Setting '%s' is frozen", key);
-        return false;
-    }
-
-    s->value[1].boolean = s->value[0].boolean;
-    s->value[0].boolean ^= 1;
-
-    if(s->update == SET_ONCE) {
-        s->update = SET_FROZEN;
-    }
-
-    return s->value[0].boolean;
 }

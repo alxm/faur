@@ -64,7 +64,7 @@ uint32_t a_time_getMilis(void)
         TIMER_REG(0x08) = 0x4b; // run timer, latch value
         const uint32_t t = TIMER_REG(0) / 1000;
     #else
-        const uint32_t t = SDL_GetTicks();
+        const uint32_t t = a_sdl__getTicks();
     #endif
 
     return t;
@@ -79,6 +79,6 @@ void a_time_waitMilis(uint32_t milis)
             continue;
         }
     #else
-        SDL_Delay(milis);
+        a_sdl__delay(milis);
     #endif
 }

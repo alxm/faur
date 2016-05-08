@@ -29,9 +29,9 @@
 #include "a2x_pack_sound.v.h"
 #include "a2x_pack_sprite.v.h"
 
+#define A_SCREEN_SIZE (a_width * a_height * sizeof(Pixel))
+
+extern Pixel* a__pixels2;
+
 extern void a_screen__init(void);
 extern void a_screen__uninit(void);
-
-#if A_PLATFORM_LINUXPC || A_PLATFORM_WINDOWS
-    extern bool a_screen__change(void);
-#endif

@@ -42,8 +42,21 @@ static struct {
     {"[ a2x Stt ] ", A_FONT_BLUE},
 };
 
-static Line* line_new(ConsoleOutType type, const char* text);
-static void line_free(Line* line);
+static Line* line_new(ConsoleOutType type, const char* text)
+{
+    Line* line = a_mem_malloc(sizeof(Line));
+
+    line->type = type;
+    line->text = a_str_dup(text);
+
+    return line;
+}
+
+static void line_free(Line* line)
+{
+    free(line->text);
+    free(line);
+}
 
 void a_console__init(void)
 {
@@ -104,20 +117,4 @@ void a_console__draw(void)
 void a_console__show(void)
 {
     show = !show;
-}
-
-static Line* line_new(ConsoleOutType type, const char* text)
-{
-    Line* line = a_mem_malloc(sizeof(Line));
-
-    line->type = type;
-    line->text = a_str_dup(text);
-
-    return line;
-}
-
-static void line_free(Line* line)
-{
-    free(line->text);
-    free(line);
 }

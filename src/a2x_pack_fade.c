@@ -21,13 +21,15 @@
 
 #define SCREEN_DIM (a_width * a_height)
 
-#define pixel_red1(p)   ((((p) >> (11 + 16)) & a_mask(5)) << 3)
-#define pixel_green1(p) ((((p) >> (5  + 16)) & a_mask(6)) << 2)
-#define pixel_blue1(p)  ((((p) >> (0  + 16)) & a_mask(5)) << 3)
+#define pixel_mask(x) ((1 << (x)) - 1)
 
-#define pixel_red2(p)   ((((p) >> (11 + 0 )) & a_mask(5)) << 3)
-#define pixel_green2(p) ((((p) >> (5  + 0 )) & a_mask(6)) << 2)
-#define pixel_blue2(p)  ((((p) >> (0  + 0 )) & a_mask(5)) << 3)
+#define pixel_red1(p)   ((((p) >> (11 + 16)) & pixel_mask(5)) << 3)
+#define pixel_green1(p) ((((p) >> (5  + 16)) & pixel_mask(6)) << 2)
+#define pixel_blue1(p)  ((((p) >> (0  + 16)) & pixel_mask(5)) << 3)
+
+#define pixel_red2(p)   ((((p) >> (11 + 0 )) & pixel_mask(5)) << 3)
+#define pixel_green2(p) ((((p) >> (5  + 0 )) & pixel_mask(6)) << 2)
+#define pixel_blue2(p)  ((((p) >> (0  + 0 )) & pixel_mask(5)) << 3)
 
 void a_fade_toBlack(int framesDuration)
 {
@@ -37,23 +39,38 @@ void a_fade_toBlack(int framesDuration)
 
     while(alpha >= 0) {
         a_fps_start();
-
         a_screen_copy(a_pixels, copy);
-        uint32_t* a_pixels2 = (uint32_t*)a_pixels;
 
-        for(int i = SCREEN_DIM / 2; i--; ) {
-            const uint32_t c = *a_pixels2;
+        #if A_PIXEL_BPP == 16
+            uint32_t* a_pixels2 = (uint32_t*)a_pixels;
 
-            *a_pixels2++ = (a_pixel_make(
-                a_fix_fixtoi(pixel_red1(c)   * alpha),
-                a_fix_fixtoi(pixel_green1(c) * alpha),
-                a_fix_fixtoi(pixel_blue1(c)  * alpha)
-            ) << 16) | a_pixel_make(
-                a_fix_fixtoi(pixel_red2(c)   * alpha),
-                a_fix_fixtoi(pixel_green2(c) * alpha),
-                a_fix_fixtoi(pixel_blue2(c)  * alpha)
-            );
-        }
+            for(int i = SCREEN_DIM / 2; i--; ) {
+                const uint32_t c = *a_pixels2;
+
+                *a_pixels2++ = (a_pixel_make(
+                    a_fix_fixtoi(pixel_red1(c)   * alpha),
+                    a_fix_fixtoi(pixel_green1(c) * alpha),
+                    a_fix_fixtoi(pixel_blue1(c)  * alpha)
+                ) << 16) | a_pixel_make(
+                    a_fix_fixtoi(pixel_red2(c)   * alpha),
+                    a_fix_fixtoi(pixel_green2(c) * alpha),
+                    a_fix_fixtoi(pixel_blue2(c)  * alpha)
+                );
+            }
+        #elif A_PIXEL_BPP == 32
+            Pixel* pixels = a_pixels;
+
+            for(int i = SCREEN_DIM; i--; ) {
+                const Pixel p = *pixels;
+
+                *pixels++ = a_pixel_make(
+                    a_fix_fixtoi(a_pixel_red(p) * alpha),
+                    a_fix_fixtoi(a_pixel_green(p) * alpha),
+                    a_fix_fixtoi(a_pixel_blue(p) * alpha));
+            }
+        #else
+            #error Invalid A_PIXEL_BPP value
+        #endif
 
         if(framesDuration < A_FIX_ONE) {
             while(accum < A_FIX_ONE) {
@@ -85,23 +102,38 @@ void a_fade_fromBlack(int framesDuration)
 
     while(alpha <= A_FIX_ONE) {
         a_fps_start();
-
         a_screen_copy(a_pixels, copy);
-        uint32_t* a_pixels2 = (uint32_t*)a_pixels;
 
-        for(int i = SCREEN_DIM / 2; i--; ) {
-            const uint32_t c = *a_pixels2;
+        #if A_PIXEL_BPP == 16
+            uint32_t* a_pixels2 = (uint32_t*)a_pixels;
 
-            *a_pixels2++ = (a_pixel_make(
-                a_fix_fixtoi(pixel_red1(c)   * alpha),
-                a_fix_fixtoi(pixel_green1(c) * alpha),
-                a_fix_fixtoi(pixel_blue1(c)  * alpha)
-            ) << 16) | a_pixel_make(
-                a_fix_fixtoi(pixel_red2(c)   * alpha),
-                a_fix_fixtoi(pixel_green2(c) * alpha),
-                a_fix_fixtoi(pixel_blue2(c)  * alpha)
-            );
-        }
+            for(int i = SCREEN_DIM / 2; i--; ) {
+                const uint32_t c = *a_pixels2;
+
+                *a_pixels2++ = (a_pixel_make(
+                    a_fix_fixtoi(pixel_red1(c)   * alpha),
+                    a_fix_fixtoi(pixel_green1(c) * alpha),
+                    a_fix_fixtoi(pixel_blue1(c)  * alpha)
+                ) << 16) | a_pixel_make(
+                    a_fix_fixtoi(pixel_red2(c)   * alpha),
+                    a_fix_fixtoi(pixel_green2(c) * alpha),
+                    a_fix_fixtoi(pixel_blue2(c)  * alpha)
+                );
+            }
+        #elif A_PIXEL_BPP == 32
+            Pixel* pixels = a_pixels;
+
+            for(int i = SCREEN_DIM; i--; ) {
+                const Pixel p = *pixels;
+
+                *pixels++ = a_pixel_make(
+                    a_fix_fixtoi(a_pixel_red(p) * alpha),
+                    a_fix_fixtoi(a_pixel_green(p) * alpha),
+                    a_fix_fixtoi(a_pixel_blue(p) * alpha));
+            }
+        #else
+            #error Invalid A_PIXEL_BPP value
+        #endif
 
         if(framesDuration < A_FIX_ONE) {
             while(accum < A_FIX_ONE) {
