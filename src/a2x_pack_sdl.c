@@ -363,7 +363,7 @@ bool a_sdl__screen_set(void)
             videoFlags |= SDL_FULLSCREEN;
         }
 
-        bpp = SDL_VideoModeOK(a_width, a_height, A_BPP, videoFlags);
+        bpp = SDL_VideoModeOK(a_width, a_height, A_PIXEL_BPP, videoFlags);
 
         if(bpp == 0) {
             if(first_time) {
@@ -378,7 +378,7 @@ bool a_sdl__screen_set(void)
 
         screen = SDL_SetVideoMode(a_width,
                                   a_height,
-                                  A_BPP,
+                                  A_PIXEL_BPP,
                                   videoFlags);
 
         if(screen == NULL) {
@@ -422,12 +422,12 @@ bool a_sdl__screen_set(void)
         }
 
         texture = SDL_CreateTexture(renderer,
-                                    #if A_BPP == 16
+                                    #if A_PIXEL_BPP == 16
                                         SDL_PIXELFORMAT_RGB565,
-                                    #elif A_BPP == 32
+                                    #elif A_PIXEL_BPP == 32
                                         SDL_PIXELFORMAT_RGBX8888,
                                     #else
-                                        #error Invalid A_BPP value
+                                        #error Invalid A_PIXEL_BPP value
                                     #endif
                                     SDL_TEXTUREACCESS_STREAMING,
                                     a_width,

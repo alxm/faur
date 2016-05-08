@@ -22,14 +22,14 @@
 #include "a2x_app_includes.h"
 
 #if A_PLATFORM_LINUXPC
-    #define A_BPP 32
+    #define A_PIXEL_BPP 32
     typedef uint32_t Pixel;
 #else
-    #define A_BPP 16
+    #define A_PIXEL_BPP 16
     typedef uint16_t Pixel;
 #endif
 
-#if A_BPP == 16
+#if A_PIXEL_BPP == 16
     // RGB565
     #define A_PIXEL_RED_BITS   5
     #define A_PIXEL_GREEN_BITS 6
@@ -38,7 +38,7 @@
     #define A_PIXEL_RED_SHIFT   (A_PIXEL_GREEN_BITS + A_PIXEL_BLUE_BITS)
     #define A_PIXEL_GREEN_SHIFT (A_PIXEL_BLUE_BITS)
     #define A_PIXEL_BLUE_SHIFT  (0)
-#elif A_BPP == 32
+#elif A_PIXEL_BPP == 32
     // RGBX8888
     #define A_PIXEL_RED_BITS   8
     #define A_PIXEL_GREEN_BITS 8
@@ -49,7 +49,7 @@
     #define A_PIXEL_GREEN_SHIFT (A_PIXEL_BLUE_BITS + A_PIXEL_PAD_BITS)
     #define A_PIXEL_BLUE_SHIFT  (A_PIXEL_PAD_BITS)
 #else
-    #error Invalid A_BPP value
+    #error Invalid A_PIXEL_BPP value
 #endif
 
 #define A_PIXEL_RED_MASK   ((1 << A_PIXEL_RED_BITS) - 1)
