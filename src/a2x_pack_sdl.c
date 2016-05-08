@@ -422,7 +422,13 @@ bool a_sdl__screen_set(void)
         }
 
         texture = SDL_CreateTexture(renderer,
-                                    SDL_PIXELFORMAT_RGB565,
+                                    #if A_BPP == 16
+                                        SDL_PIXELFORMAT_RGB565,
+                                    #elif A_BPP == 32
+                                        SDL_PIXELFORMAT_RGBX8888,
+                                    #else
+                                        #error Invalid A_BPP value
+                                    #endif
                                     SDL_TEXTUREACCESS_STREAMING,
                                     a_width,
                                     a_height);
