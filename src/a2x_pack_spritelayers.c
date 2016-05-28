@@ -27,8 +27,7 @@ typedef struct Layer {
 
 SpriteLayers* a_spritelayers_new(void)
 {
-    SpriteLayers* const s = a_list_new();
-    return s;
+    return a_list_new();
 }
 
 void a_spritelayers_free(SpriteLayers* s)
@@ -36,6 +35,7 @@ void a_spritelayers_free(SpriteLayers* s)
     A_LIST_ITERATE(s, Layer, l) {
         free(l);
     }
+
     a_list_free(s);
 }
 
@@ -57,8 +57,7 @@ void a_spritelayers_blit(SpriteLayers* s, int x, int y)
 {
     A_LIST_ITERATE(s, Layer, l) {
         a_pixel_setBlend(l->blend);
-        a_pixel_setRGB(l->r, l->g, l->b);
-        a_pixel_setAlpha(l->a);
+        a_pixel_setRGBA(l->r, l->g, l->b, l->a);
 
         a_blit(l->sprite, x, y);
     }
