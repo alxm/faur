@@ -169,6 +169,7 @@ Sprite* a_spriteframes_pop(SpriteFrames* sf)
 {
     Sprite* s = a_list_pop(sf->sprites);
 
+    free(sf->spriteArray);
     sf->spriteArray = (Sprite**)a_list_array(sf->sprites);
     sf->num = a_list_size(sf->sprites);
 
