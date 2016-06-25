@@ -170,7 +170,6 @@ void a_screen_resetTarget(void)
     a_height = a__height2;
 
     if(spriteTarget) {
-        a_sprite_refresh(spriteTarget);
         spriteTarget = NULL;
     }
 }
