@@ -23,9 +23,9 @@
 
 typedef struct StateInstance StateInstance;
 
-#define A_STATE__FORM_NAME(name) a_state__name_##name
+#define A_STATE__MAKE_NAME(name) a_state__function_##name
 
-#define a_state_new(name) a_state__new(#name, A_STATE__FORM_NAME(name))
+#define a_state_new(name, function) a_state__new(name, A_STATE__MAKE_NAME(function))
 extern void a_state__new(const char* name, void (*function)(void));
 
 extern void a_state_push(const char* name);
@@ -53,7 +53,7 @@ typedef enum {
     A_STATE_BODYSTAGE_NUM
 } StateBodyStage;
 
-#define A_STATE(name) void A_STATE__FORM_NAME(name)(void)
+#define A_STATE(name) void A_STATE__MAKE_NAME(name)(void)
 #define A_STATE_INIT if(a_state__stage() == A_STATE_STAGE_INIT)
 #define A_STATE_BODY if(a_state__stage() == A_STATE_STAGE_BODY || (a_state__stage() == A_STATE_STAGE_INIT && a_state__setStage(NULL, A_STATE_STAGE_BODY)))
 #define A_STATE_FREE if(a_state__stage() == A_STATE_STAGE_FREE)
