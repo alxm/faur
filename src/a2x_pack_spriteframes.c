@@ -65,8 +65,14 @@ SpriteFrames* a_spriteframes_new(const Sprite* sheet, int x, int y, unsigned int
     return sf;
 }
 
-void a_spriteframes_free(SpriteFrames* sf)
+void a_spriteframes_free(SpriteFrames* sf, bool freeSprites)
 {
+    if(freeSprites) {
+        A_LIST_ITERATE(sf->sprites, Sprite, sprite) {
+            a_sprite_free(sprite);
+        }
+    }
+
     a_list_free(sf->sprites);
     free(sf->spriteArray);
 

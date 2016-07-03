@@ -130,7 +130,7 @@ int a_font_load(const Sprite* sheet, int x, int y, FontLoad loader)
         }
     }
 
-    a_spriteframes_free(sf);
+    a_spriteframes_free(sf, false);
 
     return a_list_size(fontsList) - 1;
 }

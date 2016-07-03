@@ -25,6 +25,7 @@
 #include "a2x_pack_screen.v.h"
 
 struct Sprite {
+    ListNode* node;
     int w;
     int h;
     uint8_t alpha;

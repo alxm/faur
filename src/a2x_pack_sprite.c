@@ -171,9 +171,15 @@ Sprite* a_sprite_blank(int w, int h)
         s->data[i] = A_SPRITE_TRANSPARENT;
     }
 
-    a_list_addLast(sprites, s);
+    s->node = a_list_addLast(sprites, s);
 
     return s;
+}
+
+void a_sprite_free(Sprite* s)
+{
+    a_list_removeNode(s->node);
+    a_sprite__free(s);
 }
 
 void a_sprite__free(Sprite* s)
