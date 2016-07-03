@@ -34,23 +34,26 @@
     #define A_PIXEL_RED_BITS   5
     #define A_PIXEL_GREEN_BITS 6
     #define A_PIXEL_BLUE_BITS  5
-
-    #define A_PIXEL_RED_SHIFT   (A_PIXEL_GREEN_BITS + A_PIXEL_BLUE_BITS)
-    #define A_PIXEL_GREEN_SHIFT (A_PIXEL_BLUE_BITS)
-    #define A_PIXEL_BLUE_SHIFT  (0)
+    #define A_PIXEL_PAD_BITS   0
 #elif A_PIXEL_BPP == 32
-    // RGBX8888
     #define A_PIXEL_RED_BITS   8
     #define A_PIXEL_GREEN_BITS 8
     #define A_PIXEL_BLUE_BITS  8
-    #define A_PIXEL_PAD_BITS   8
 
-    #define A_PIXEL_RED_SHIFT   (A_PIXEL_GREEN_BITS + A_PIXEL_BLUE_BITS + A_PIXEL_PAD_BITS)
-    #define A_PIXEL_GREEN_SHIFT (A_PIXEL_BLUE_BITS + A_PIXEL_PAD_BITS)
-    #define A_PIXEL_BLUE_SHIFT  (A_PIXEL_PAD_BITS)
+    #if A_USE_LIB_SDL
+        // XRGB8888
+        #define A_PIXEL_PAD_BITS 0
+    #elif A_USE_LIB_SDL2
+        // RGBX8888
+        #define A_PIXEL_PAD_BITS 8
+    #endif
 #else
     #error Invalid A_PIXEL_BPP value
 #endif
+
+#define A_PIXEL_RED_SHIFT   (A_PIXEL_GREEN_BITS + A_PIXEL_BLUE_BITS + A_PIXEL_PAD_BITS)
+#define A_PIXEL_GREEN_SHIFT (A_PIXEL_BLUE_BITS + A_PIXEL_PAD_BITS)
+#define A_PIXEL_BLUE_SHIFT  (A_PIXEL_PAD_BITS)
 
 #define A_PIXEL_RED_MASK   ((1 << A_PIXEL_RED_BITS) - 1)
 #define A_PIXEL_GREEN_MASK ((1 << A_PIXEL_GREEN_BITS) - 1)
