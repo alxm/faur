@@ -129,6 +129,12 @@ void a_spriteframes_flipDir(SpriteFrames* sf)
     sf->dir *= -1;
 }
 
+void a_spriteframes_setSpeed(SpriteFrames* sf, unsigned int callsToNextFrame)
+{
+    sf->callsToNextFrame = callsToNextFrame;
+    a_spriteframes_reset(sf);
+}
+
 void a_spriteframes_pause(SpriteFrames* sf)
 {
     sf->paused = true;

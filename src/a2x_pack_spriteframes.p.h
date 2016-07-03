@@ -37,6 +37,8 @@ extern bool a_spriteframes_last(const SpriteFrames* sf);
 extern void a_spriteframes_setDir(SpriteFrames* sf, int dir);
 extern void a_spriteframes_flipDir(SpriteFrames* sf);
 
+extern void a_spriteframes_setSpeed(SpriteFrames* sf, unsigned int callsToNextFrame);
+
 extern void a_spriteframes_pause(SpriteFrames* sf);
 extern void a_spriteframes_resume(SpriteFrames* sf);
 
