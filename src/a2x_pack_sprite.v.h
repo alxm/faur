@@ -27,6 +27,7 @@
 struct Sprite {
     ListNode* node;
     int w;
+    int wLog2;
     int h;
     uint8_t alpha;
     uint16_t* spans;

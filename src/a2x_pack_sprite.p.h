@@ -36,6 +36,7 @@ extern Sprite* a_sprite_blank(int w, int h);
 extern void a_sprite_free(Sprite* s);
 
 extern int a_sprite_w(const Sprite* s);
+extern int a_sprite_wLog2(const Sprite* s);
 extern int a_sprite_h(const Sprite* s);
 extern Pixel* a_sprite_data(Sprite* s);
 

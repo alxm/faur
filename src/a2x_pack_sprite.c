@@ -163,6 +163,7 @@ Sprite* a_sprite_blank(int w, int h)
     Sprite* const s = a_mem_malloc(sizeof(Sprite) + w * h * sizeof(Pixel));
 
     s->w = w;
+    s->wLog2 = (int)log2f(w);
     s->h = h;
     s->alpha = 255;
     s->spans = NULL;
@@ -191,6 +192,11 @@ void a_sprite__free(Sprite* s)
 int a_sprite_w(const Sprite* s)
 {
     return s->w;
+}
+
+int a_sprite_wLog2(const Sprite* s)
+{
+    return s->wLog2;
 }
 
 int a_sprite_h(const Sprite* s)
