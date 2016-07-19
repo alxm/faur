@@ -11,14 +11,14 @@ A_SETUP
 
 A_MAIN
 {
-    if(a_argsNum != 4) {
-        printf("Error: %s inputFile file.c file.h\n", a_args[0]);
+    if(a_main_numArgs() != 4) {
+        printf("Error: %s inputFile file.c file.h\n", a_main_getArg(0));
         return;
     }
 
-    char* const inputFile = a_args[1];
-    char* const cFile = a_args[2];
-    char* const hFile = a_args[3];
+    char* const inputFile = a_main_getArg(1);
+    char* const cFile = a_main_getArg(2);
+    char* const hFile = a_main_getArg(3);
 
     const int length = a_file_size(inputFile);
     char* const gfxName = a_str_extractName(inputFile);
