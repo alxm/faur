@@ -31,6 +31,7 @@ struct Sprite {
     int h;
     uint8_t alpha;
     uint16_t* spans;
+    size_t spansSize;
     Pixel data[];
 };
 

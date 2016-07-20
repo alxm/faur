@@ -167,6 +167,7 @@ Sprite* a_sprite_blank(int w, int h)
     s->h = h;
     s->alpha = 255;
     s->spans = NULL;
+    s->spansSize = 0;
 
     for(int i = w * h; i--; ) {
         s->data[i] = A_SPRITE_TRANSPARENT;
@@ -247,8 +248,13 @@ void a_sprite_refresh(Sprite* s)
         }
     }
 
-    free(s->spans);
-    s->spans = a_mem_malloc(num * sizeof(uint16_t));
+    const size_t newSpansSize = num * sizeof(uint16_t);
+
+    if(s->spansSize < newSpansSize) {
+        free(s->spans);
+        s->spans = a_mem_malloc(newSpansSize);
+        s->spansSize = newSpansSize;
+    }
 
     uint16_t* spans = s->spans;
 
