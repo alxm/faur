@@ -44,7 +44,7 @@ struct Menu {
     Input* cancel;
 };
 
-#define A_MENU_PAUSE (a2x_int("fps.rate") / 6)
+#define A_MENU_PAUSE (a_settings_getInt("fps.rate") / 6)
 
 Menu* a_menu_new(Input* next, Input* back, Input* select, Input* cancel, void (*freeItem)(void* v))
 {

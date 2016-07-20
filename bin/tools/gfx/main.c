@@ -2,11 +2,11 @@
 
 A_SETUP
 {
-	a2x_set("app.title", "a2x_gfx");
-	a2x_set("app.version", "0.2");
-	a2x_set("app.author", "Alex");
-	a2x_set("app.quiet", "yes");
-	a2x_set("video.window", "no");
+	a_settings_set("app.title", "a2x_gfx");
+	a_settings_set("app.version", "0.2");
+	a_settings_set("app.author", "Alex");
+	a_settings_set("app.quiet", "yes");
+	a_settings_set("video.window", "no");
 }
 
 A_MAIN

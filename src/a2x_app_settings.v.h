@@ -28,6 +28,6 @@
 extern void a_settings__defaults(void);
 extern void a_settings__freeze(void);
 
-extern void a2x__set(const char* key, const char* val);
-extern void a2x__undo(const char* key);
-extern bool a2x__flip(const char* key);
+extern void a_settings__set(const char* key, const char* val);
+extern void a_settings__undo(const char* key);
+extern bool a_settings__flip(const char* key);

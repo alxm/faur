@@ -88,8 +88,8 @@ void a_hw__init(void)
             }
         }
 
-        if(a2x_int("app.mhz") > 0) {
-            a_hw__cpu(a2x_int("app.mhz"));
+        if(a_settings_getInt("app.mhz") > 0) {
+            a_hw__cpu(a_settings_getInt("app.mhz"));
         }
 
         a_hw__ramTimings(6, 4, 1, 1, 1, 2, 2);

@@ -27,14 +27,14 @@ static unsigned int number;
 
 void a_screenshot__init(void)
 {
-    const char* const screens_dir = a2x_str("screenshot.dir");
+    const char* const screens_dir = a_settings_getString("screenshot.dir");
 
     if(!a_dir_exists(screens_dir)) {
         a_dir_make(screens_dir);
     }
 
     can_save = true;
-    prefix = a_str_merge(screens_dir, "/", a2x_str("app.title"), "-");
+    prefix = a_str_merge(screens_dir, "/", a_settings_getString("app.title"), "-");
     number = 0;
 
     Dir* const dir = a_dir_open(screens_dir);

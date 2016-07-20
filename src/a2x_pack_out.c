@@ -62,7 +62,7 @@ void a_out__uninit(void)
 
 void a_out__message(char* fmt, ...)
 {
-    if(!a2x_bool("app.quiet")) {
+    if(!a_settings_getBool("app.quiet")) {
         A_OUT__WORKER("Msg", 32, stdout);
         A_OUT__CONSOLE(ConsoleMessage);
     }
@@ -88,7 +88,7 @@ void a_out__fatal(char* fmt, ...)
 
 void a_out__state(char* fmt, ...)
 {
-    if(!a2x_bool("app.quiet")) {
+    if(!a_settings_getBool("app.quiet")) {
         A_OUT__WORKER("Stt", 34, stdout);
         A_OUT__CONSOLE(ConsoleState);
     }

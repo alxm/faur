@@ -38,7 +38,7 @@ static Sprite* spriteTarget = NULL;
 static void displayVolume(void)
 {
     #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
-        if(a2x_bool("sound.on")) {
+        if(a_settings_getBool("sound.on")) {
             if(a_time_getMilis() - a__volumeAdjust > A_MILIS_VOLUME) {
                 return;
             }
@@ -61,16 +61,16 @@ static void displayVolume(void)
 
 void a_screen__init(void)
 {
-    if(!a2x_bool("video.window")) {
+    if(!a_settings_getBool("video.window")) {
         return;
     }
 
-    a_width = a2x_int("video.width");
-    a_height = a2x_int("video.height");
+    a_width = a_settings_getInt("video.width");
+    a_height = a_settings_getInt("video.height");
 
     a_sdl__screen_set();
 
-    if(a2x_bool("video.wizTear")) {
+    if(a_settings_getBool("video.wizTear")) {
         #if A_PLATFORM_WIZ
             #define FBIO_MAGIC 'D'
             #define FBIO_LCD_CHANGE_CONTROL _IOW(FBIO_MAGIC, 90, unsigned int[2])
@@ -83,13 +83,13 @@ void a_screen__init(void)
             ioctl(fb_fd, FBIO_LCD_CHANGE_CONTROL, &send);
             close(fb_fd);
 
-            a2x__set("video.doubleBuffer", "1");
+            a_settings__set("video.doubleBuffer", "1");
         #else
-            a2x__set("video.wizTear", "0");
+            a_settings__set("video.wizTear", "0");
         #endif
     }
 
-    if(a2x_bool("video.doubleBuffer")) {
+    if(a_settings_getBool("video.doubleBuffer")) {
         a_pixels = a_mem_malloc(A_SCREEN_SIZE);
         memset(a_pixels, 0, A_SCREEN_SIZE);
     }
@@ -101,11 +101,11 @@ void a_screen__init(void)
 
 void a_screen__uninit(void)
 {
-    if(!a2x_bool("video.window")) {
+    if(!a_settings_getBool("video.window")) {
         return;
     }
 
-    if(a2x_bool("video.doubleBuffer")) {
+    if(a_settings_getBool("video.doubleBuffer")) {
         free(a_pixels);
     }
 }

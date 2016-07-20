@@ -21,7 +21,7 @@
 
 void a_conf__init(void)
 {
-    char* conf_name = a2x_str("app.conf");
+    char* conf_name = a_settings_getString("app.conf");
 
     if(!a_file_exists(conf_name)) {
         return;
@@ -51,7 +51,7 @@ void a_conf__init(void)
             char* key_trim = a_str_trim(key);
             char* val_trim = a_str_trim(value);
 
-            a2x_set(key_trim, val_trim);
+            a_settings_set(key_trim, val_trim);
 
             free(key_trim);
             free(val_trim);

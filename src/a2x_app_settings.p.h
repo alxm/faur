@@ -21,12 +21,12 @@
 
 #include "a2x_app_includes.h"
 
-#define A_SETUP void a_setup(void)
+#define A_SETUP void a_settings__setup(void)
 extern A_SETUP;
 
-extern void a2x_set(const char* key, const char* val);
-extern bool a2x_flip(const char* key);
+extern void a_settings_set(const char* key, const char* val);
+extern bool a_settings_flip(const char* key);
 
-extern char* a2x_str(const char* key);
-extern bool a2x_bool(const char* key);
-extern int a2x_int(const char* key);
+extern char* a_settings_getString(const char* key);
+extern bool a_settings_getBool(const char* key);
+extern int a_settings_getInt(const char* key);

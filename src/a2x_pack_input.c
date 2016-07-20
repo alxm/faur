@@ -241,8 +241,8 @@ void a_input__init(void)
 
     userInputs = a_list_new();
 
-    console = a_input_new(a2x_str("console.button"));
-    screenshot = a_input_new(a2x_str("screenshot.button"));
+    console = a_input_new(a_settings_getString("console.button"));
+    screenshot = a_input_new(a_settings_getString("screenshot.button"));
 }
 
 void a_input__uninit(void)
@@ -664,7 +664,7 @@ void a_input__touch_addMotion(InputInstance* t, int x, int y)
     t->u.touch.x = x;
     t->u.touch.y = y;
 
-    if(a2x_bool("input.trackMouse")) {
+    if(a_settings_getBool("input.trackMouse")) {
         Point* const p = a_mem_malloc(sizeof(Point));
 
         p->x = t->u.touch.x;

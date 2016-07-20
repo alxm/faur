@@ -149,11 +149,11 @@ void a_sdl__init(void)
     int ret = 0;
     sdl_flags = 0;
 
-    if(a2x_bool("video.window")) {
+    if(a_settings_getBool("video.window")) {
         sdl_flags |= SDL_INIT_VIDEO;
     }
 
-    if(a2x_bool("sound.on")) {
+    if(a_settings_getBool("sound.on")) {
         sdl_flags |= SDL_INIT_AUDIO;
     }
 
@@ -169,18 +169,18 @@ void a_sdl__init(void)
         a_out__fatal("SDL: %s", SDL_GetError());
     }
 
-    if(a2x_bool("sound.on")) {
+    if(a_settings_getBool("sound.on")) {
         #if A_PLATFORM_LINUXPC || A_PLATFORM_WINDOWS
             if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096) != 0) {
-                a2x_set("sound.on", "0");
+                a_settings_set("sound.on", "0");
             }
         #elif A_PLATFORM_GP2X
             if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 256) != 0) {
-                a2x_set("sound.on", "0");
+                a_settings_set("sound.on", "0");
             }
         #else
             if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 512) != 0) {
-                a2x_set("sound.on", "0");
+                a_settings_set("sound.on", "0");
             }
         #endif
     }
@@ -332,7 +332,7 @@ void a_sdl__uninit(void)
         SDL_JoystickClose(joysticks[j]);
     }
 
-    if(a2x_bool("sound.on")) {
+    if(a_settings_getBool("sound.on")) {
         Mix_CloseAudio();
     }
 
@@ -359,7 +359,7 @@ bool a_sdl__screen_set(void)
         int bpp = 0;
         uint32_t videoFlags = SDL_SWSURFACE;
 
-        if(a2x_bool("video.fullscreen")) {
+        if(a_settings_getBool("video.fullscreen")) {
             videoFlags |= SDL_FULLSCREEN;
         }
 
@@ -395,7 +395,7 @@ bool a_sdl__screen_set(void)
         a_pixels = screen->pixels;
     #elif A_USE_LIB_SDL2
         int ret;
-        a2x__set("video.doubleBuffer", "1");
+        a_settings__set("video.doubleBuffer", "1");
 
         window = SDL_CreateWindow("",
                                   SDL_WINDOWPOS_UNDEFINED,
@@ -443,7 +443,7 @@ bool a_sdl__screen_set(void)
 
     #if A_PLATFORM_LINUXPC
         char caption[64];
-        snprintf(caption, 64, "%s %s", a2x_str("app.title"), a2x_str("app.version"));
+        snprintf(caption, 64, "%s %s", a_settings_getString("app.title"), a_settings_getString("app.version"));
 
         #if A_USE_LIB_SDL
             SDL_WM_SetCaption(caption, NULL);
@@ -460,7 +460,7 @@ bool a_sdl__screen_set(void)
 void a_sdl__screen_show(void)
 {
     #if A_USE_LIB_SDL
-        if(a2x_bool("video.wizTear")) {
+        if(a_settings_getBool("video.wizTear")) {
             // video.doubleBuffer is also set when video.wizTear is set
             #define A_WIDTH 320
             #define A_HEIGHT 240
@@ -486,7 +486,7 @@ void a_sdl__screen_show(void)
             }
 
             SDL_Flip(screen);
-        } else if(a2x_bool("video.doubleBuffer")) {
+        } else if(a_settings_getBool("video.doubleBuffer")) {
             if(SDL_MUSTLOCK(screen) && !screen_locked) {
                 SDL_LockSurface(screen);
                 screen_locked = true;
@@ -559,7 +559,7 @@ void a_sdl__music_free(void* m)
 
 void a_sdl__music_setVolume(void)
 {
-    Mix_VolumeMusic((float)a2x_int("sound.music.scale") / 100 * a__volume);
+    Mix_VolumeMusic((float)a_settings_getInt("sound.music.scale") / 100 * a__volume);
 }
 
 void a_sdl__music_play(void* m)

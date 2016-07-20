@@ -28,15 +28,15 @@ int main(int argc, char** argv)
     args = argv;
 
     a_settings__defaults();
-    a_setup();
+    a_settings__setup();
     a_settings__freeze();
     a_console__init();
 
     a_out__message("a2x %s, compiled on %s", A__VERSION, A_COMPILE_TIME);
 
     a_out__message("Opening %s %s by %s, compiled %s",
-        a2x_str("app.title"), a2x_str("app.version"),
-        a2x_str("app.author"), a2x_str("app.compiled"));
+        a_settings_getString("app.title"), a_settings_getString("app.version"),
+        a_settings_getString("app.author"), a_settings_getString("app.compiled"));
 
     a_conf__init();
     a_sdl__init();
@@ -76,7 +76,7 @@ int main(int argc, char** argv)
     a_sdl__uninit();
 
     #if A_PLATFORM_GP2X || A_PLATFORM_WIZ || A_PLATFORM_CAANOO
-        if(a2x_bool("app.gp2xMenu")) {
+        if(a_settings_getBool("app.gp2xMenu")) {
             chdir("/usr/gp2x");
             execl("gp2xmenu", "gp2xmenu", NULL);
         }

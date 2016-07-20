@@ -33,7 +33,7 @@ static uint32_t counter;
 
 void a_fps__init(void)
 {
-    milisPerFrame = 1000 / a2x_int("fps.rate");
+    milisPerFrame = 1000 / a_settings_getInt("fps.rate");
 
     timer = a_timer_new(milisPerFrame);
     a_timer_start(timer);
@@ -66,7 +66,7 @@ void a_fps_end(void)
 
     a_screen_show();
 
-    const bool track = a2x_bool("fps.track");
+    const bool track = a_settings_getBool("fps.track");
     const bool done = a_timer_check(timer);
 
     if(track) {

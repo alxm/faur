@@ -182,17 +182,17 @@ void a_settings__freeze(void)
     frozen = true;
 }
 
-void a2x_set(const char* key, const char* val)
+void a_settings_set(const char* key, const char* val)
 {
     set(key, val, true);
 }
 
-void a2x__set(const char* key, const char* val)
+void a_settings__set(const char* key, const char* val)
 {
     set(key, val, false);
 }
 
-void a2x__undo(const char* key)
+void a_settings__undo(const char* key)
 {
     Setting* const s = a_strhash_get(settings, key);
 
@@ -216,17 +216,17 @@ void a2x__undo(const char* key)
     }
 }
 
-bool a2x_flip(const char* key)
+bool a_settings_flip(const char* key)
 {
     return flip(key, true);
 }
 
-bool a2x__flip(const char* key)
+bool a_settings__flip(const char* key)
 {
     return flip(key, false);
 }
 
-char* a2x_str(const char* key)
+char* a_settings_getString(const char* key)
 {
     Setting* const s = a_strhash_get(settings, key);
 
@@ -241,7 +241,7 @@ char* a2x_str(const char* key)
     }
 }
 
-bool a2x_bool(const char* key)
+bool a_settings_getBool(const char* key)
 {
     Setting* const s = a_strhash_get(settings, key);
 
@@ -256,7 +256,7 @@ bool a2x_bool(const char* key)
     }
 }
 
-int a2x_int(const char* key)
+int a_settings_getInt(const char* key)
 {
     Setting* const s = a_strhash_get(settings, key);
 

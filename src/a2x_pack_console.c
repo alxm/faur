@@ -62,7 +62,7 @@ void a_console__init(void)
 {
     enabled = true;
     lines = a_list_new();
-    linesPerScreen = a2x_int("video.height") / LINE_HEIGHT;
+    linesPerScreen = a_settings_getInt("video.height") / LINE_HEIGHT;
 }
 
 void a_console__uninit(void)
