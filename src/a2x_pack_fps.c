@@ -77,7 +77,16 @@ void a_fps_end(void)
 
     if(!done) {
         while(!a_timer_check(timer)) {
-            a_time_waitMilis(milisPerFrame - a_timer_diff(timer));
+            const uint32_t waitMilis = milisPerFrame - a_timer_diff(timer);
+
+            #if A_PLATFORM_GP2X
+                // GP2X timer granularity is too coarse
+                if(waitMilis >= 10) {
+                    a_time_waitMilis(10);
+                }
+            #else
+                a_time_waitMilis(waitMilis);
+            #endif
         }
     }
 
