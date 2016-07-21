@@ -35,7 +35,7 @@ static int linesPerScreen;
 static struct {
     char* text;
     int font;
-} titles[ConsoleMax] = {
+} titles[A_CONSOLE_MAX] = {
     {"[ a2x Msg ] ", A_FONT_GREEN},
     {"[ a2x Wrn ] ", A_FONT_YELLOW},
     {"[ a2x Err ] ", A_FONT_RED},

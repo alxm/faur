@@ -30,11 +30,11 @@ extern void a_console__init(void);
 extern void a_console__uninit(void);
 
 typedef enum {
-    ConsoleMessage,
-    ConsoleWarning,
-    ConsoleError,
-    ConsoleState,
-    ConsoleMax
+    A_CONSOLE_MESSAGE,
+    A_CONSOLE_WARNING,
+    A_CONSOLE_ERROR,
+    A_CONSOLE_STATE,
+    A_CONSOLE_MAX
 } AConsoleOutType;
 
 extern void a_console__write(AConsoleOutType type, const char* text);

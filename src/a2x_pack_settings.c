@@ -19,17 +19,17 @@
 
 #include "a2x_pack_settings.v.h"
 
-typedef enum ASetting_t {
-    STR, BOOL, INT
-} ASetting_t;
+typedef enum ASettingType {
+    A_SETTING_STR, A_SETTING_BOOL, A_SETTING_INT
+} ASettingType;
 
-typedef enum AUpdate_t {
-    SET_ONCE, SET_ANY, SET_FROZEN
-} AUpdate_t;
+typedef enum ASettingUpdate {
+    A_SETTING_SET_ONCE, A_SETTING_SET_ANY, A_SETTING_SET_FROZEN
+} ASettingUpdate;
 
 typedef struct ASetting {
-    ASetting_t type;
-    AUpdate_t update;
+    ASettingType type;
+    ASettingUpdate update;
 
     union {
         int integer;
@@ -52,7 +52,7 @@ static int parseBool(const char* val)
         || a_str_same(val, "1");
 }
 
-static void add(ASetting_t type, AUpdate_t update, const char* key, const char* val)
+static void add(ASettingType type, ASettingUpdate update, const char* key, const char* val)
 {
     ASetting* const s = a_mem_malloc(sizeof(ASetting));
 
@@ -60,17 +60,17 @@ static void add(ASetting_t type, AUpdate_t update, const char* key, const char* 
     s->update = update;
 
     switch(type) {
-        case INT: {
+        case A_SETTING_INT: {
             s->value[0].integer = atoi(val);
             s->value[1].integer = s->value[0].integer;
         } break;
 
-        case BOOL: {
+        case A_SETTING_BOOL: {
             s->value[0].boolean = parseBool(val);
             s->value[1].boolean = s->value[0].boolean;
         } break;
 
-        case STR: {
+        case A_SETTING_STR: {
             strncpy(s->value[0].string, val, sizeof(s->value[0].string) - 1);
             s->value[0].string[sizeof(s->value[0].string) - 1] = '\0';
             strcpy(s->value[1].string, s->value[0].string);
@@ -88,30 +88,30 @@ static void set(const char* key, const char* val, bool respect)
         a_out__error("ASetting '%s' does not exist", key);
         return;
     } else if(respect
-        && (s->update == SET_FROZEN || (s->update == SET_ONCE && frozen))) {
+        && (s->update == A_SETTING_SET_FROZEN || (s->update == A_SETTING_SET_ONCE && frozen))) {
         a_out__error("ASetting '%s' is frozen", key);
         return;
     }
 
     switch(s->type) {
-        case INT: {
+        case A_SETTING_INT: {
             s->value[1].integer = s->value[0].integer;
             s->value[0].integer = atoi(val);
         } break;
 
-        case BOOL: {
+        case A_SETTING_BOOL: {
             s->value[1].boolean = s->value[0].boolean;
             s->value[0].boolean = parseBool(val);
         } break;
 
-        case STR: {
+        case A_SETTING_STR: {
             strcpy(s->value[1].string, s->value[0].string);
             strncpy(s->value[0].string, val, sizeof(s->value[0].string) - 1);
         } break;
     }
 
-    if(s->update == SET_ONCE) {
-        s->update = SET_FROZEN;
+    if(s->update == A_SETTING_SET_ONCE) {
+        s->update = A_SETTING_SET_FROZEN;
     }
 }
 
@@ -122,11 +122,11 @@ static bool flip(const char* key, bool respect)
     if(s == NULL) {
         a_out__error("ASetting '%s' does not exist", key);
         return false;
-    } else if(s->type != BOOL) {
+    } else if(s->type != A_SETTING_BOOL) {
         a_out__error("ASetting '%s' is not a boolean - can't flip it", key);
         return false;
     } else if(respect
-        && (s->update == SET_FROZEN || (s->update == SET_ONCE && frozen))) {
+        && (s->update == A_SETTING_SET_FROZEN || (s->update == A_SETTING_SET_ONCE && frozen))) {
         a_out__error("ASetting '%s' is frozen", key);
         return false;
     }
@@ -134,8 +134,8 @@ static bool flip(const char* key, bool respect)
     s->value[1].boolean = s->value[0].boolean;
     s->value[0].boolean ^= 1;
 
-    if(s->update == SET_ONCE) {
-        s->update = SET_FROZEN;
+    if(s->update == A_SETTING_SET_ONCE) {
+        s->update = A_SETTING_SET_FROZEN;
     }
 
     return s->value[0].boolean;
@@ -145,36 +145,36 @@ void a_settings__defaults(void)
 {
     settings = a_strhash_new();
 
-    add(STR, SET_ONCE, "app.title", "Untitled");
-    add(STR, SET_ONCE, "app.version", "0");
-    add(STR, SET_ONCE, "app.author", "(unknown)");
-    add(STR, SET_ONCE, "app.compiled", "(unknown)");
-    add(STR, SET_ONCE, "app.conf", "a2x.cfg");
-    add(BOOL, SET_ANY, "app.quiet", "0");
-    add(BOOL, SET_ONCE, "app.tool", "0");
-    add(BOOL, SET_ONCE, "app.gp2xMenu", "0");
-    add(INT, SET_ANY, "app.mhz", "0");
+    add(A_SETTING_STR, A_SETTING_SET_ONCE, "app.title", "Untitled");
+    add(A_SETTING_STR, A_SETTING_SET_ONCE, "app.version", "0");
+    add(A_SETTING_STR, A_SETTING_SET_ONCE, "app.author", "(unknown)");
+    add(A_SETTING_STR, A_SETTING_SET_ONCE, "app.compiled", "(unknown)");
+    add(A_SETTING_STR, A_SETTING_SET_ONCE, "app.conf", "a2x.cfg");
+    add(A_SETTING_BOOL, A_SETTING_SET_ANY, "app.quiet", "0");
+    add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "app.tool", "0");
+    add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "app.gp2xMenu", "0");
+    add(A_SETTING_INT, A_SETTING_SET_ANY, "app.mhz", "0");
 
-    add(BOOL, SET_ONCE, "video.window", "1");
-    add(INT, SET_ONCE, "video.width", "320");
-    add(INT, SET_ONCE, "video.height", "240");
-    add(BOOL, SET_ONCE, "video.doubleBuffer", "0");
-    add(BOOL, SET_ANY, "video.fullscreen", "0");
-    add(BOOL, SET_ONCE, "video.wizTear", "0");
+    add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.window", "1");
+    add(A_SETTING_INT, A_SETTING_SET_ONCE, "video.width", "320");
+    add(A_SETTING_INT, A_SETTING_SET_ONCE, "video.height", "240");
+    add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.doubleBuffer", "0");
+    add(A_SETTING_BOOL, A_SETTING_SET_ANY, "video.fullscreen", "0");
+    add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.wizTear", "0");
 
-    add(BOOL, SET_ANY, "sound.on", "0");
-    add(INT, SET_ANY, "sound.music.scale", "100");
-    add(INT, SET_ANY, "sound.sfx.scale", "100");
+    add(A_SETTING_BOOL, A_SETTING_SET_ANY, "sound.on", "0");
+    add(A_SETTING_INT, A_SETTING_SET_ANY, "sound.music.scale", "100");
+    add(A_SETTING_INT, A_SETTING_SET_ANY, "sound.sfx.scale", "100");
 
-    add(BOOL, SET_ANY, "input.trackMouse", "0");
+    add(A_SETTING_BOOL, A_SETTING_SET_ANY, "input.trackMouse", "0");
 
-    add(INT, SET_ONCE, "fps.rate", "60");
-    add(BOOL, SET_ANY, "fps.track", "0");
+    add(A_SETTING_INT, A_SETTING_SET_ONCE, "fps.rate", "60");
+    add(A_SETTING_BOOL, A_SETTING_SET_ANY, "fps.track", "0");
 
-    add(STR, SET_ONCE, "screenshot.dir", "./screenshots");
-    add(STR, SET_ONCE, "screenshot.button", "pc.F12, pandora.s");
+    add(A_SETTING_STR, A_SETTING_SET_ONCE, "screenshot.dir", "./screenshots");
+    add(A_SETTING_STR, A_SETTING_SET_ONCE, "screenshot.button", "pc.F12, pandora.s");
 
-    add(STR, SET_ONCE, "console.button", "pc.F11");
+    add(A_SETTING_STR, A_SETTING_SET_ONCE, "console.button", "pc.F11");
 }
 
 void a_settings__freeze(void)
@@ -202,15 +202,15 @@ void a_settings__undo(const char* key)
     }
 
     switch(s->type) {
-        case INT: {
+        case A_SETTING_INT: {
             s->value[0].integer = s->value[1].integer;
         } break;
 
-        case BOOL: {
+        case A_SETTING_BOOL: {
             s->value[0].boolean = s->value[1].boolean;
         } break;
 
-        case STR: {
+        case A_SETTING_STR: {
             strcpy(s->value[0].string, s->value[1].string);
         } break;
     }
@@ -233,7 +233,7 @@ char* a_settings_getString(const char* key)
     if(s == NULL) {
         a_out__error("ASetting '%s' does not exist", key);
         return NULL;
-    } else if(s->type != STR) {
+    } else if(s->type != A_SETTING_STR) {
         a_out__error("ASetting '%s' is not a string", key);
         return NULL;
     } else {
@@ -248,7 +248,7 @@ bool a_settings_getBool(const char* key)
     if(s == NULL) {
         a_out__error("ASetting '%s' does not exist", key);
         return false;
-    } else if(s->type != BOOL) {
+    } else if(s->type != A_SETTING_BOOL) {
         a_out__error("ASetting '%s' is not a boolean", key);
         return false;
     } else {
@@ -263,7 +263,7 @@ int a_settings_getInt(const char* key)
     if(s == NULL) {
         a_out__error("ASetting '%s' does not exist", key);
         return 0;
-    } else if(s->type != INT) {
+    } else if(s->type != A_SETTING_INT) {
         a_out__error("ASetting '%s' is not an integer", key);
         return 0;
     } else {

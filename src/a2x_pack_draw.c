@@ -34,7 +34,7 @@ static ADrawHLine vlines[A_PIXEL_TYPE_NUM][2];
 ADrawCircle a_draw_circle;
 //static ADrawCircle circles[A_PIXEL_TYPE_NUM][2];
 
-static APixelBlend_t blend;
+static APixelBlend blend;
 static bool clip;
 
 static uint8_t alpha;
@@ -337,7 +337,7 @@ void a_draw__init(void)
     drawSetAll();
 }
 
-void a_draw__setBlend(APixelBlend_t b)
+void a_draw__setBlend(APixelBlend b)
 {
     blend = b;
     drawSetAll();

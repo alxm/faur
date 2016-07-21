@@ -64,20 +64,20 @@ void a_out__message(char* fmt, ...)
 {
     if(!a_settings_getBool("app.quiet")) {
         A_OUT__WORKER("Msg", 32, stdout);
-        A_OUT__CONSOLE(ConsoleMessage);
+        A_OUT__CONSOLE(A_CONSOLE_MESSAGE);
     }
 }
 
 void a_out__warning(char* fmt, ...)
 {
     A_OUT__WORKER("Wrn", 33, stderr);
-    A_OUT__CONSOLE(ConsoleWarning);
+    A_OUT__CONSOLE(A_CONSOLE_WARNING);
 }
 
 void a_out__error(char* fmt, ...)
 {
     A_OUT__WORKER("Err", 31, stderr);
-    A_OUT__CONSOLE(ConsoleError);
+    A_OUT__CONSOLE(A_CONSOLE_ERROR);
 }
 
 void a_out__fatal(char* fmt, ...)
@@ -90,6 +90,6 @@ void a_out__state(char* fmt, ...)
 {
     if(!a_settings_getBool("app.quiet")) {
         A_OUT__WORKER("Stt", 34, stdout);
-        A_OUT__CONSOLE(ConsoleState);
+        A_OUT__CONSOLE(A_CONSOLE_STATE);
     }
 }

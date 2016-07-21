@@ -22,7 +22,7 @@
 ABlitter a_blit;
 static ABlitter blitters[A_PIXEL_TYPE_NUM][2][2];
 
-static APixelBlend_t blend;
+static APixelBlend blend;
 static bool clip;
 static bool usePixel;
 
@@ -225,7 +225,7 @@ void a_blit__init(void)
     a_blit = blitters[blend][clip][usePixel];
 }
 
-void a_blit__setBlend(APixelBlend_t b)
+void a_blit__setBlend(APixelBlend b)
 {
     blend = b;
     a_blit = blitters[blend][clip][usePixel];

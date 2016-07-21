@@ -22,7 +22,7 @@
 APixelPut a_pixel_put;
 static APixelPut pixels[A_PIXEL_TYPE_NUM][2];
 
-static APixelBlend_t blend;
+static APixelBlend blend;
 static bool clip;
 
 static uint8_t alpha;
@@ -73,7 +73,7 @@ void a_pixel__init(void)
     a_pixel_put = pixels[blend][clip];
 }
 
-void a_pixel_setBlend(APixelBlend_t b)
+void a_pixel_setBlend(APixelBlend b)
 {
     blend = b;
 

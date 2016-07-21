@@ -78,9 +78,9 @@ typedef enum {
     A_PIXEL_RGBA, A_PIXEL_RGB25, A_PIXEL_RGB50, A_PIXEL_RGB75,
     A_PIXEL_INVERSE,
     A_PIXEL_TYPE_NUM
-} APixelBlend_t;
+} APixelBlend;
 
-extern void a_pixel_setBlend(APixelBlend_t b);
+extern void a_pixel_setBlend(APixelBlend b);
 extern void a_pixel_setClip(bool clip);
 
 extern void a_pixel_setAlpha(uint8_t a);

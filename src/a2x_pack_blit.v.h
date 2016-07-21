@@ -27,7 +27,7 @@
 
 extern void a_blit__init(void);
 
-extern void a_blit__setBlend(APixelBlend_t b);
+extern void a_blit__setBlend(APixelBlend b);
 extern void a_blit__setClip(bool c);
 
 extern void a_blit__setAlpha(uint8_t a);
