@@ -26,30 +26,30 @@ struct AFrameTimer {
     uint32_t diff;
 };
 
-AFrameTimer* a_frametimer_new(uint32_t framesPeriod)
+AFrameTimer* a_frametimer_new(uint32_t FramesPeriod)
 {
     AFrameTimer* const t = a_mem_malloc(sizeof(AFrameTimer));
 
     t->running = false;
-    t->period = framesPeriod;
+    t->period = FramesPeriod;
     t->start = 0;
     t->diff = 0;
 
     return t;
 }
 
-void a_frametimer_free(AFrameTimer* t)
+void a_frametimer_free(AFrameTimer* Timer)
 {
-    free(t);
+    free(Timer);
 }
 
-bool a_frametimer_check(AFrameTimer* t)
+bool a_frametimer_check(AFrameTimer* Timer)
 {
-    if(t->running) {
-        t->diff = a_fps_getCounter() - t->start;
+    if(Timer->running) {
+        Timer->diff = a_fps_getCounter() - Timer->start;
 
-        if(t->diff >= t->period) {
-            t->start += (t->diff / t->period) * t->period;
+        if(Timer->diff >= Timer->period) {
+            Timer->start += (Timer->diff / Timer->period) * Timer->period;
             return true;
         }
     }
@@ -57,13 +57,13 @@ bool a_frametimer_check(AFrameTimer* t)
     return false;
 }
 
-uint32_t a_frametimer_diff(AFrameTimer* t)
+uint32_t a_frametimer_diff(AFrameTimer* Timer)
 {
-    return t->diff;
+    return Timer->diff;
 }
 
-void a_frametimer_start(AFrameTimer* t)
+void a_frametimer_start(AFrameTimer* Timer)
 {
-    t->running = true;
-    t->start = a_fps_getCounter();
+    Timer->running = true;
+    Timer->start = a_fps_getCounter();
 }

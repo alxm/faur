@@ -32,9 +32,9 @@ extern void a_screen_show(void);
 
 extern APixel* a_screen_dup(void);
 extern APixel* a_screen_new(void);
-extern void a_screen_copy(APixel* dst, const APixel* src);
-extern void a_screen_copyPart(APixel* dst, int x, int y, int w, int h);
+extern void a_screen_copy(APixel* Dst, const APixel* Src);
+extern void a_screen_copyPart(APixel* Dst, int X, int Y, int Width, int Height);
 
-extern void a_screen_setTarget(APixel* p, int w, int h);
-extern void a_screen_setTargetSprite(ASprite* s);
+extern void a_screen_setTarget(APixel* Pixels, int Width, int Height);
+extern void a_screen_setTargetSprite(ASprite* Sprite);
 extern void a_screen_resetTarget(void);

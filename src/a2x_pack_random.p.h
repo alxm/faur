@@ -21,5 +21,5 @@
 
 #include "a2x_system_includes.h"
 
-extern int a_random_int(int max);
-extern int a_random_range(int min, int max);
+extern int a_random_int(int Max);
+extern int a_random_range(int Min, int Max);

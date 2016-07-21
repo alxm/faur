@@ -25,21 +25,21 @@
 
 typedef struct AInput AInput;
 
-extern AInput* a_input_new(const char* names);
+extern AInput* a_input_new(const char* Names);
 
-extern char* a_input_name(const AInput* i);
-extern bool a_input_working(const AInput* i);
+extern char* a_input_name(const AInput* Input);
+extern bool a_input_working(const AInput* Input);
 
-extern bool a_button_get(const AInput* i);
-extern void a_button_unpress(const AInput* i);
-extern bool a_button_getAndUnpress(const AInput* i);
-extern void a_button_waitFor(const AInput* i);
+extern bool a_button_get(const AInput* Button);
+extern void a_button_unpress(const AInput* Button);
+extern bool a_button_getAndUnpress(const AInput* Button);
+extern void a_button_waitFor(const AInput* Button);
 
-extern int a_analog_xaxis(const AInput* i);
-extern int a_analog_yaxis(const AInput* i);
-extern AFix a_analog_xaxis_fix(const AInput* i);
-extern AFix a_analog_yaxis_fix(const AInput* i);
+extern int a_analog_xaxis(const AInput* Analog);
+extern int a_analog_yaxis(const AInput* Analog);
+extern AFix a_analog_xaxis_fix(const AInput* Analog);
+extern AFix a_analog_yaxis_fix(const AInput* Analog);
 
-extern bool a_touch_tapped(const AInput* i);
-extern bool a_touch_point(const AInput* i, int x, int y);
-extern bool a_touch_rect(const AInput* i, int x, int y, int w, int h);
+extern bool a_touch_tapped(const AInput* Touch);
+extern bool a_touch_point(const AInput* Touch, int X, int Y);
+extern bool a_touch_rect(const AInput* Touch, int X, int Y, int W, int H);

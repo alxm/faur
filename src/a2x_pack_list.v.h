@@ -36,11 +36,11 @@ struct AListNode {
     struct AListNode* prev;
 };
 
-#define a_list__first(l)         ((l)->first->next->content)
-#define a_list__last(l)          ((l)->last->prev->content)
-#define a_list__size(l)          ((l)->items)
-#define a_list__isEmpty(l)       ((l)->first->next == (l)->last)
-#define a_list__next(n)          ((n)->next)
-#define a_list__prev(n)          ((n)->prev)
-#define a_list__getContent(n)    ((n)->content)
-#define a_list__setContent(n, c) ((n)->content = (c))
+#define a_list__first(List) ((List)->first->next->content)
+#define a_list__last(List) ((List)->last->prev->content)
+#define a_list__size(List) ((List)->items)
+#define a_list__isEmpty(List) ((List)->first->next == (List)->last)
+#define a_list__next(Node) ((Node)->next)
+#define a_list__prev(Node) ((Node)->prev)
+#define a_list__getContent(Node) ((Node)->content)
+#define a_list__setContent(Node, Content) ((Node)->content = (Content))

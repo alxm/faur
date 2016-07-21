@@ -40,18 +40,18 @@ typedef struct AInputCollection {
 extern void a_input__init(void);
 extern void a_input__uninit(void);
 
-extern void a_input__free(AInput* i);
+extern void a_input__free(AInput* Input);
 
 extern void a_input__get(void);
 
-extern void a_input__button_setState(AInputInstance* b, bool pressed);
+extern void a_input__button_setState(AInputInstance* Button, bool Pressed);
 
-extern void a_input__analog_setXAxis(AInputInstance* a, int value);
-extern void a_input__analog_setYAxis(AInputInstance* a, int value);
+extern void a_input__analog_setXAxis(AInputInstance* Analog, int Value);
+extern void a_input__analog_setYAxis(AInputInstance* Analog, int Value);
 
-extern void a_input__touch_addMotion(AInputInstance* t, int x, int y);
-extern void a_input__touch_setCoords(AInputInstance* t, int x, int y, bool tapped);
+extern void a_input__touch_addMotion(AInputInstance* Touch, int X, int Y);
+extern void a_input__touch_setCoords(AInputInstance* Touch, int X, int Y, bool Tapped);
 
 extern AInputCollection* a_input__collection_new(void);
-extern void a_input__collection_free(AInputCollection* c);
-extern void a_input__collection_add(AInputCollection* c, void* instance, const char* name);
+extern void a_input__collection_free(AInputCollection* Collection);
+extern void a_input__collection_add(AInputCollection* Collection, void* Instance, const char* Name);

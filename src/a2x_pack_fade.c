@@ -31,7 +31,7 @@
 #define pixel_green2(p) ((((p) >> (5  + 0 )) & pixel_mask(6)) << 2)
 #define pixel_blue2(p)  ((((p) >> (0  + 0 )) & pixel_mask(5)) << 3)
 
-void a_fade_toBlack(int framesDuration)
+void a_fade_toBlack(int FramesDuration)
 {
     int accum = 0;
     AFix alpha = A_FIX_ONE;
@@ -72,18 +72,18 @@ void a_fade_toBlack(int framesDuration)
             #error Invalid A_PIXEL_BPP value
         #endif
 
-        if(framesDuration < A_FIX_ONE) {
+        if(FramesDuration < A_FIX_ONE) {
             while(accum < A_FIX_ONE) {
-                accum += framesDuration;
+                accum += FramesDuration;
                 alpha--;
             }
 
             accum -= A_FIX_ONE;
-        } else if(A_FIX_ONE <= framesDuration) {
+        } else if(A_FIX_ONE <= FramesDuration) {
             accum += A_FIX_ONE;
 
-            if(accum >= framesDuration) {
-                accum -= framesDuration;
+            if(accum >= FramesDuration) {
+                accum -= FramesDuration;
                 alpha--;
             }
         }
@@ -94,7 +94,7 @@ void a_fade_toBlack(int framesDuration)
     free(copy);
 }
 
-void a_fade_fromBlack(int framesDuration)
+void a_fade_fromBlack(int FramesDuration)
 {
     int accum = 0;
     AFix alpha = 0;
@@ -135,18 +135,18 @@ void a_fade_fromBlack(int framesDuration)
             #error Invalid A_PIXEL_BPP value
         #endif
 
-        if(framesDuration < A_FIX_ONE) {
+        if(FramesDuration < A_FIX_ONE) {
             while(accum < A_FIX_ONE) {
-                accum += framesDuration;
+                accum += FramesDuration;
                 alpha++;
             }
 
             accum -= A_FIX_ONE;
-        } else if(A_FIX_ONE <= framesDuration) {
+        } else if(A_FIX_ONE <= FramesDuration) {
             accum += A_FIX_ONE;
 
-            if(accum >= framesDuration) {
-                accum -= framesDuration;
+            if(accum >= FramesDuration) {
+                accum -= FramesDuration;
                 alpha++;
             }
         }
@@ -157,7 +157,7 @@ void a_fade_fromBlack(int framesDuration)
     free(copy);
 }
 
-void a_fade_screens(const APixel* const old, int framesDuration)
+void a_fade_screens(const APixel* const OldScreen, int FramesDuration)
 {
     int* rNew = a_mem_malloc(SCREEN_DIM * sizeof(int));
     int* gNew = a_mem_malloc(SCREEN_DIM * sizeof(int));
@@ -176,7 +176,7 @@ void a_fade_screens(const APixel* const old, int framesDuration)
     int* bOldp = bOld;
 
     APixel* newp = a_pixels;
-    APixel* oldp = (APixel*)old;
+    APixel* oldp = (APixel*)OldScreen;
 
     for(int i = SCREEN_DIM; i--; ) {
         const APixel nc = *newp++;
@@ -224,18 +224,18 @@ void a_fade_screens(const APixel* const old, int framesDuration)
             bOldp++;
         }
 
-        if(framesDuration < A_FIX_ONE) {
+        if(FramesDuration < A_FIX_ONE) {
             while(accum < A_FIX_ONE) {
-                accum += framesDuration;
+                accum += FramesDuration;
                 alpha--;
             }
 
             accum -= A_FIX_ONE;
-        } else if(A_FIX_ONE <= framesDuration) {
+        } else if(A_FIX_ONE <= FramesDuration) {
             accum += A_FIX_ONE;
 
-            if(accum >= framesDuration) {
-                accum -= framesDuration;
+            if(accum >= FramesDuration) {
+                accum -= FramesDuration;
                 alpha--;
             }
         }

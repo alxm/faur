@@ -29,9 +29,9 @@
 #include "a2x_pack_hw.v.h"
 
 #if A_PLATFORM_GP2X
-    static void a_hw__cpu(int Mhz)
+    static void a_hw__cpu(int MHz)
     {
-        int mhz = Mhz * 1000000;
+        int mhz = MHz * 1000000;
         int freq = 7372800;
 
         int memfd = open("/dev/mem", O_RDWR);

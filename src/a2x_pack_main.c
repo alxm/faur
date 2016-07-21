@@ -22,10 +22,10 @@
 static int numArgs;
 static char** args;
 
-int main(int argc, char** argv)
+int main(int Argc, char** Argv)
 {
-    numArgs = argc;
-    args = argv;
+    numArgs = Argc;
+    args = Argv;
 
     a_settings__defaults();
     a_settings__setup();
@@ -90,12 +90,12 @@ int a_main_numArgs(void)
     return numArgs;
 }
 
-char* a_main_getArg(unsigned int n)
+char* a_main_getArg(unsigned int ArgNum)
 {
-    if(n >= numArgs) {
-        a_out__error("a_main_getArg invalid arg: %u", n);
+    if(ArgNum >= numArgs) {
+        a_out__error("a_main_getArg invalid arg: %u", ArgNum);
         return NULL;
     }
 
-    return args[n];
+    return args[ArgNum];
 }

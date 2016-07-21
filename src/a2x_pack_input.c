@@ -64,66 +64,66 @@ static AList* userInputs; // all inputs returned by a_input_new()
 static AInput* console;
 static AInput* screenshot;
 
-static void addButton(const char* name)
+static void addButton(const char* Name)
 {
-    AInputInstance* b = a_strhash_get(buttons->names, name);
+    AInputInstance* b = a_strhash_get(buttons->names, Name);
 
     if(b) {
-        a_out__error("Button '%s' is already defined", name);
+        a_out__error("Button '%s' is already defined", Name);
         return;
     }
 
     b = a_mem_malloc(sizeof(AInputInstance));
 
-    b->name = a_str_dup(name);
+    b->name = a_str_dup(Name);
     b->u.button.pressed = false;
     b->u.button.previouslyPressed = false;
     b->u.button.freshEvent = false;
 
-    a_input__collection_add(buttons, b, name);
-    a_sdl__input_matchButton(name, b);
+    a_input__collection_add(buttons, b, Name);
+    a_sdl__input_matchButton(Name, b);
 }
 
 #if !A_PLATFORM_GP2X && !A_PLATFORM_WIZ
-static void addAnalog(const char* name)
+static void addAnalog(const char* Name)
 {
-    AInputInstance* a = a_strhash_get(analogs->names, name);
+    AInputInstance* a = a_strhash_get(analogs->names, Name);
 
     if(a) {
-        a_out__error("Analog '%s' is already defined", name);
+        a_out__error("Analog '%s' is already defined", Name);
         return;
     }
 
     a = a_mem_malloc(sizeof(AInputInstance));
 
-    a->name = a_str_dup(name);
+    a->name = a_str_dup(Name);
     a->u.analog.xaxis = 0;
     a->u.analog.yaxis = 0;
 
-    a_input__collection_add(analogs, a, name);
-    a_sdl__input_matchAnalog(name, a);
+    a_input__collection_add(analogs, a, Name);
+    a_sdl__input_matchAnalog(Name, a);
 }
 #endif // !A_PLATFORM_GP2X && !A_PLATFORM_WIZ
 
-static void addTouch(const char* name)
+static void addTouch(const char* Name)
 {
-    AInputInstance* t = a_strhash_get(touches->names, name);
+    AInputInstance* t = a_strhash_get(touches->names, Name);
 
     if(t) {
-        a_out__error("Touch '%s' is already defined", name);
+        a_out__error("Touch '%s' is already defined", Name);
         return;
     }
 
     t = a_mem_malloc(sizeof(AInputInstance));
 
-    t->name = a_str_dup(name);
+    t->name = a_str_dup(Name);
     t->u.touch.tap = false;
     t->u.touch.x = 0;
     t->u.touch.y = 0;
     t->u.touch.motion = a_list_new();
 
-    a_input__collection_add(touches, t, name);
-    a_sdl__input_matchTouch(name, t);
+    a_input__collection_add(touches, t, Name);
+    a_sdl__input_matchTouch(Name, t);
 }
 
 void a_input__init(void)
@@ -285,22 +285,22 @@ AInputCollection* a_input__collection_new(void)
     return c;
 }
 
-void a_input__collection_free(AInputCollection* c)
+void a_input__collection_free(AInputCollection* Collection)
 {
-    A_LIST_ITERATE(c->list, void, v) {
+    A_LIST_ITERATE(Collection->list, void, v) {
         free(v);
     }
 
-    a_list_free(c->list);
-    a_strhash_free(c->names);
+    a_list_free(Collection->list);
+    a_strhash_free(Collection->names);
 
-    free(c);
+    free(Collection);
 }
 
-void a_input__collection_add(AInputCollection* c, void* instance, const char* name)
+void a_input__collection_add(AInputCollection* Collection, void* Instance, const char* Name)
 {
-    a_list_addLast(c->list, instance);
-    a_strhash_add(c->names, name, instance);
+    a_list_addLast(Collection->list, Instance);
+    a_strhash_add(Collection->names, Name, Instance);
 }
 
 void a_input__get(void)
@@ -473,10 +473,10 @@ void a_input__get(void)
     #endif
 }
 
-AInput* a_input_new(const char* names)
+AInput* a_input_new(const char* Names)
 {
     AInput* const i = a_mem_malloc(sizeof(AInput));
-    AStringTok* tok = a_strtok_new(names, ", ");
+    AStrTok* tok = a_strtok_new(Names, ", ");
 
     i->name = NULL;
     i->buttons = a_list_new();
@@ -505,7 +505,7 @@ AInput* a_input_new(const char* names)
     if(a_list_isEmpty(i->buttons)
         && a_list_isEmpty(i->analogs)
         && a_list_isEmpty(i->touches)) {
-        a_out__error("No inputs found for '%s'", names);
+        a_out__error("No inputs found for '%s'", Names);
     }
 
     a_list_addLast(userInputs, i);
@@ -513,32 +513,32 @@ AInput* a_input_new(const char* names)
     return i;
 }
 
-void a_input__free(AInput* i)
+void a_input__free(AInput* Input)
 {
-    free(i->name);
+    free(Input->name);
 
-    a_list_free(i->buttons);
-    a_list_free(i->analogs);
-    a_list_free(i->touches);
+    a_list_free(Input->buttons);
+    a_list_free(Input->analogs);
+    a_list_free(Input->touches);
 
-    free(i);
+    free(Input);
 }
 
-char* a_input_name(const AInput* i)
+char* a_input_name(const AInput* Input)
 {
-    return i->name;
+    return Input->name;
 }
 
-bool a_input_working(const AInput* i)
+bool a_input_working(const AInput* Input)
 {
-    return !a_list_isEmpty(i->buttons)
-        || !a_list_isEmpty(i->analogs)
-        || !a_list_isEmpty(i->touches);
+    return !a_list_isEmpty(Input->buttons)
+        || !a_list_isEmpty(Input->analogs)
+        || !a_list_isEmpty(Input->touches);
 }
 
-bool a_button_get(const AInput* i)
+bool a_button_get(const AInput* Button)
 {
-    A_LIST_ITERATE(i->buttons, AInputInstance, b) {
+    A_LIST_ITERATE(Button->buttons, AInputInstance, b) {
         if(b->u.button.pressed) {
             return true;
         }
@@ -547,18 +547,18 @@ bool a_button_get(const AInput* i)
     return false;
 }
 
-void a_button_unpress(const AInput* i)
+void a_button_unpress(const AInput* Input)
 {
-    A_LIST_ITERATE(i->buttons, AInputInstance, b) {
+    A_LIST_ITERATE(Input->buttons, AInputInstance, b) {
         b->u.button.pressed = false;
     }
 }
 
-bool a_button_getAndUnpress(const AInput* i)
+bool a_button_getAndUnpress(const AInput* Button)
 {
     bool foundPressed = false;
 
-    A_LIST_ITERATE(i->buttons, AInputInstance, b) {
+    A_LIST_ITERATE(Button->buttons, AInputInstance, b) {
         if(b->u.button.pressed) {
             b->u.button.pressed = false;
             foundPressed = true;
@@ -568,23 +568,23 @@ bool a_button_getAndUnpress(const AInput* i)
     return foundPressed;
 }
 
-void a_button_waitFor(const AInput* i)
+void a_button_waitFor(const AInput* Button)
 {
-    if(a_list_isEmpty(i->buttons)) {
+    if(a_list_isEmpty(Button->buttons)) {
         return;
     }
 
-    a_button_unpress(i);
+    a_button_unpress(Button);
 
     do {
         a_fps_start();
         a_fps_end();
-    } while(!a_button_getAndUnpress(i));
+    } while(!a_button_getAndUnpress(Button));
 }
 
-int a_analog_xaxis(const AInput* i)
+int a_analog_xaxis(const AInput* Analog)
 {
-    A_LIST_ITERATE(i->analogs, AInputInstance, a) {
+    A_LIST_ITERATE(Analog->analogs, AInputInstance, a) {
         if(a_math_abs(a->u.analog.xaxis) > A_ANALOG_ERROR_MARGIN) {
             return a->u.analog.xaxis;
         }
@@ -593,9 +593,9 @@ int a_analog_xaxis(const AInput* i)
     return 0;
 }
 
-int a_analog_yaxis(const AInput* i)
+int a_analog_yaxis(const AInput* Analog)
 {
-    A_LIST_ITERATE(i->analogs, AInputInstance, a) {
+    A_LIST_ITERATE(Analog->analogs, AInputInstance, a) {
         if(a_math_abs(a->u.analog.yaxis) > A_ANALOG_ERROR_MARGIN) {
             return a->u.analog.yaxis;
         }
@@ -604,19 +604,19 @@ int a_analog_yaxis(const AInput* i)
     return 0;
 }
 
-AFix a_analog_xaxis_fix(const AInput* i)
+AFix a_analog_xaxis_fix(const AInput* Analog)
 {
-    return a_analog_xaxis(i) >> (15 - A_FIX_BIT_PRECISION);
+    return a_analog_xaxis(Analog) >> (15 - A_FIX_BIT_PRECISION);
 }
 
-AFix a_analog_yaxis_fix(const AInput* i)
+AFix a_analog_yaxis_fix(const AInput* Analog)
 {
-    return a_analog_yaxis(i) >> (15 - A_FIX_BIT_PRECISION);
+    return a_analog_yaxis(Analog) >> (15 - A_FIX_BIT_PRECISION);
 }
 
-bool a_touch_tapped(const AInput* i)
+bool a_touch_tapped(const AInput* Touch)
 {
-    A_LIST_ITERATE(i->touches, AInputInstance, t) {
+    A_LIST_ITERATE(Touch->touches, AInputInstance, t) {
         if(t->u.touch.tap) {
             return true;
         }
@@ -625,16 +625,16 @@ bool a_touch_tapped(const AInput* i)
     return false;
 }
 
-bool a_touch_point(const AInput* i, int x, int y)
+bool a_touch_point(const AInput* Touch, int X, int Y)
 {
-    return a_touch_rect(i, x - 1, y - 1, 3, 3);
+    return a_touch_rect(Touch, X - 1, Y - 1, 3, 3);
 }
 
-bool a_touch_rect(const AInput* i, int x, int y, int w, int h)
+bool a_touch_rect(const AInput* Touch, int X, int Y, int W, int H)
 {
-    A_LIST_ITERATE(i->touches, AInputInstance, t) {
+    A_LIST_ITERATE(Touch->touches, AInputInstance, t) {
         if(t->u.touch.tap
-            && a_collide_boxes(x, y, w, h,
+            && a_collide_boxes(X, Y, W, H,
                                t->u.touch.x, t->u.touch.y, 1, 1)) {
             return true;
         }
@@ -643,41 +643,41 @@ bool a_touch_rect(const AInput* i, int x, int y, int w, int h)
     return false;
 }
 
-void a_input__button_setState(AInputInstance* b, bool pressed)
+void a_input__button_setState(AInputInstance* Button, bool Pressed)
 {
-    b->u.button.pressed = pressed;
-    b->u.button.freshEvent = true;
+    Button->u.button.pressed = Pressed;
+    Button->u.button.freshEvent = true;
 }
 
-void a_input__analog_setXAxis(AInputInstance* a, int value)
+void a_input__analog_setXAxis(AInputInstance* Analog, int Value)
 {
-    a->u.analog.xaxis = value;
+    Analog->u.analog.xaxis = Value;
 }
 
-void a_input__analog_setYAxis(AInputInstance* a, int value)
+void a_input__analog_setYAxis(AInputInstance* Analog, int Value)
 {
-    a->u.analog.yaxis = value;
+    Analog->u.analog.yaxis = Value;
 }
 
-void a_input__touch_addMotion(AInputInstance* t, int x, int y)
+void a_input__touch_addMotion(AInputInstance* Touch, int X, int Y)
 {
-    t->u.touch.x = x;
-    t->u.touch.y = y;
+    Touch->u.touch.x = X;
+    Touch->u.touch.y = Y;
 
     if(a_settings_getBool("input.trackMouse")) {
         APoint* const p = a_mem_malloc(sizeof(APoint));
 
-        p->x = t->u.touch.x;
-        p->y = t->u.touch.y;
+        p->x = Touch->u.touch.x;
+        p->y = Touch->u.touch.y;
 
-        a_list_addLast(t->u.touch.motion, p);
+        a_list_addLast(Touch->u.touch.motion, p);
     }
 }
 
-void a_input__touch_setCoords(AInputInstance* t, int x, int y, bool tapped)
+void a_input__touch_setCoords(AInputInstance* Touch, int X, int Y, bool Tapped)
 {
-    t->u.touch.tap = tapped;
+    Touch->u.touch.tap = Tapped;
 
-    t->u.touch.x = x;
-    t->u.touch.y = y;
+    Touch->u.touch.x = X;
+    Touch->u.touch.y = Y;
 }

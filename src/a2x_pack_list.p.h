@@ -25,29 +25,29 @@ typedef struct AList AList;
 typedef struct AListNode AListNode;
 
 extern AList* a_list_new(void);
-extern void a_list_free(AList* list);
-extern void a_list_empty(AList* list);
+extern void a_list_free(AList* List);
+extern void a_list_empty(AList* List);
 
-extern AListNode* a_list_addFirst(AList* list, void* content);
-extern AListNode* a_list_addLast(AList* list, void* content);
+extern AListNode* a_list_addFirst(AList* List, void* Content);
+extern AListNode* a_list_addLast(AList* List, void* Content);
 
-extern void a_list_remove(AList* list, const void* v);
-extern void* a_list_removeFirst(AList* list);
-extern void* a_list_removeLast(AList* list);
-extern void a_list_removeNode(AListNode* node);
+extern void a_list_remove(AList* List, const void* Item);
+extern void* a_list_removeFirst(AList* List);
+extern void* a_list_removeLast(AList* List);
+extern void a_list_removeNode(AListNode* Node);
 
-#define a_list_push(l, c) a_list_addFirst(l, c)
-#define a_list_pop(l)     a_list_removeFirst(l)
-#define a_list_peek(l)    a_list_first(l)
+#define a_list_push(List, Item) a_list_addFirst(List, Item)
+#define a_list_pop(List) a_list_removeFirst(List)
+#define a_list_peek(List) a_list_first(List)
 
-extern AList* a_list_clone(const AList* list);
-extern void a_list_reverse(AList* list);
-extern void** a_list_array(AList* list);
+extern AList* a_list_clone(const AList* List);
+extern void a_list_reverse(AList* List);
+extern void** a_list_array(AList* List);
 
-extern void* a_list_first(const AList* list);
-extern void* a_list_last(const AList* list);
+extern void* a_list_first(const AList* List);
+extern void* a_list_last(const AList* List);
 
-extern void* a_list_get(const AList* list, int index);
+extern void* a_list_get(const AList* List, int Index);
 
-extern int a_list_size(const AList* list);
-extern bool a_list_isEmpty(const AList* list);
+extern int a_list_size(const AList* List);
+extern bool a_list_isEmpty(const AList* List);

@@ -23,9 +23,9 @@
 
 typedef struct AFrameTimer AFrameTimer;
 
-extern AFrameTimer* a_frametimer_new(uint32_t framesPeriod);
-extern void a_frametimer_free(AFrameTimer* t);
+extern AFrameTimer* a_frametimer_new(uint32_t FramesPeriod);
+extern void a_frametimer_free(AFrameTimer* Timer);
 
-extern bool a_frametimer_check(AFrameTimer* t);
-extern uint32_t a_frametimer_diff(AFrameTimer* t);
-extern void a_frametimer_start(AFrameTimer* t);
+extern bool a_frametimer_check(AFrameTimer* Timer);
+extern uint32_t a_frametimer_diff(AFrameTimer* Timer);
+extern void a_frametimer_start(AFrameTimer* Timer);

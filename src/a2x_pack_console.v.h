@@ -37,6 +37,6 @@ typedef enum {
     A_CONSOLE_MAX
 } AConsoleOutType;
 
-extern void a_console__write(AConsoleOutType type, const char* text);
+extern void a_console__write(AConsoleOutType Type, const char* Text);
 extern void a_console__draw(void);
 extern void a_console__show(void);

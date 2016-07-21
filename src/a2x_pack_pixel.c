@@ -29,19 +29,19 @@ static uint8_t alpha;
 static uint8_t red, green, blue;
 static APixel pixel;
 
-#define PIXEL_DST (a_pixels + y * a_width + x)
+#define PIXEL_DST (a_pixels + Y * a_width + X)
 
-#define pixelMake(blend, args)                                \
+#define pixelMake(Blend, Args)                                \
                                                               \
-    void a_pixel__noclip_##blend(int x, int y)                \
+    void a_pixel__noclip_##Blend(int X, int Y)                \
     {                                                         \
-        a_pixel__##blend args;                                \
+        a_pixel__##Blend Args;                                \
     }                                                         \
                                                               \
-    void a_pixel__clip_##blend(int x, int y)                  \
+    void a_pixel__clip_##Blend(int X, int Y)                  \
     {                                                         \
-        if(x >= 0 && x < a_width && y >= 0 && y < a_height) { \
-            a_pixel__##blend args;                            \
+        if(X >= 0 && X < a_width && Y >= 0 && Y < a_height) { \
+            a_pixel__##Blend Args;                            \
         }                                                     \
     }
 
@@ -54,10 +54,10 @@ pixelMake(inverse, (PIXEL_DST))
 
 void a_pixel__init(void)
 {
-    #define pixelInit(index, blend)                 \
+    #define pixelInit(Index, Blend)                 \
     ({                                              \
-        pixels[index][0] = a_pixel__noclip_##blend; \
-        pixels[index][1] = a_pixel__clip_##blend;   \
+        pixels[Index][0] = a_pixel__noclip_##Blend; \
+        pixels[Index][1] = a_pixel__clip_##Blend;   \
     })
 
     pixelInit(A_PIXEL_PLAIN, plain);
@@ -73,19 +73,19 @@ void a_pixel__init(void)
     a_pixel_put = pixels[blend][clip];
 }
 
-void a_pixel_setBlend(APixelBlend b)
+void a_pixel_setBlend(APixelBlend Blend)
 {
-    blend = b;
+    blend = Blend;
 
-    a_blit__setBlend(blend);
-    a_draw__setBlend(blend);
+    a_blit__setBlend(Blend);
+    a_draw__setBlend(Blend);
 
-    a_pixel_put = pixels[blend][clip];
+    a_pixel_put = pixels[Blend][clip];
 }
 
-void a_pixel_setClip(bool c)
+void a_pixel_setClip(bool DoClip)
 {
-    clip = c;
+    clip = DoClip;
 
     a_blit__setClip(clip);
     a_draw__setClip(clip);
@@ -93,19 +93,19 @@ void a_pixel_setClip(bool c)
     a_pixel_put = pixels[blend][clip];
 }
 
-void a_pixel_setAlpha(uint8_t a)
+void a_pixel_setAlpha(uint8_t Alpha)
 {
-    alpha = a;
+    alpha = Alpha;
 
     a_blit__setAlpha(alpha);
     a_draw__setAlpha(alpha);
 }
 
-void a_pixel_setRGB(uint8_t r, uint8_t g, uint8_t b)
+void a_pixel_setRGB(uint8_t Red, uint8_t Green, uint8_t Blue)
 {
-    red = r;
-    green = g;
-    blue = b;
+    red = Red;
+    green = Green;
+    blue = Blue;
 
     pixel = a_pixel_make(red, green, blue);
 
@@ -113,12 +113,12 @@ void a_pixel_setRGB(uint8_t r, uint8_t g, uint8_t b)
     a_draw__setRGB(red, green, blue);
 }
 
-void a_pixel_setRGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
+void a_pixel_setRGBA(uint8_t Red, uint8_t Green, uint8_t Blue, uint8_t Alpha)
 {
-    red = r;
-    green = g;
-    blue = b;
-    alpha = a;
+    red = Red;
+    green = Green;
+    blue = Blue;
+    alpha = Alpha;
 
     pixel = a_pixel_make(red, green, blue);
 
@@ -129,9 +129,9 @@ void a_pixel_setRGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
     a_draw__setRGB(red, green, blue);
 }
 
-void a_pixel_setPixel(APixel p)
+void a_pixel_setPixel(APixel Pixel)
 {
-    pixel = p;
+    pixel = Pixel;
 
     red = a_pixel_red(pixel);
     green = a_pixel_green(pixel);

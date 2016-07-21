@@ -13,7 +13,7 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU Lesser General Public License for more details.
 
-    You should have received a copy of the GNU Lesser General Public License
+    You should have received Alpha copy of the GNU Lesser General Public License
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
@@ -25,28 +25,28 @@ typedef struct ASprite ASprite;
 
 #include "a2x_pack_pixel.p.h"
 
-extern ASprite* a_sprite_fromFile(const char* path);
-extern ASprite* a_sprite_fromData(const uint8_t* data);
-extern ASprite* a_sprite_fromPixels(APixel* pixels, int w, int h);
+extern ASprite* a_sprite_fromFile(const char* Path);
+extern ASprite* a_sprite_fromData(const uint8_t* Data);
+extern ASprite* a_sprite_fromPixels(APixel* Pixels, int Width, int Height);
 
-extern ASprite* a_sprite_new(const ASprite* sheet, int x, int y);
-extern ASprite* a_sprite_zoomed(const ASprite* sheet, int x, int y, int zoom);
-extern ASprite* a_sprite_blank(int w, int h);
+extern ASprite* a_sprite_new(const ASprite* sheet, int X, int Y);
+extern ASprite* a_sprite_zoomed(const ASprite* sheet, int X, int Y, int Zoom);
+extern ASprite* a_sprite_blank(int Width, int Height);
 
-extern void a_sprite_free(ASprite* s);
+extern void a_sprite_free(ASprite* Sprite);
 
-extern int a_sprite_w(const ASprite* s);
-extern int a_sprite_wLog2(const ASprite* s);
-extern int a_sprite_h(const ASprite* s);
-extern APixel* a_sprite_data(ASprite* s);
+extern int a_sprite_w(const ASprite* Sprite);
+extern int a_sprite_wLog2(const ASprite* Sprite);
+extern int a_sprite_h(const ASprite* Sprite);
+extern APixel* a_sprite_data(ASprite* Sprite);
 
-extern uint8_t a_sprite_getAlpha(const ASprite* s);
-extern void a_sprite_setAlpha(ASprite* s, uint8_t a);
+extern uint8_t a_sprite_getAlpha(const ASprite* Sprite);
+extern void a_sprite_setAlpha(ASprite* Sprite, uint8_t Alpha);
 
-extern APixel a_sprite_getPixel(const ASprite* s, int x, int y);
+extern APixel a_sprite_getPixel(const ASprite* Sprite, int X, int Y);
 
-extern void a_sprite_refresh(ASprite* s);
-extern ASprite* a_sprite_clone(const ASprite* src);
+extern void a_sprite_refresh(ASprite* Sprite);
+extern ASprite* a_sprite_clone(const ASprite* Sprite);
 
 #define A_SPRITE_TRANSPARENT a_pixel_make(255, 0, 255)
 #define A_SPRITE_LIMIT       a_pixel_make(0, 255, 0)

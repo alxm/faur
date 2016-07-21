@@ -35,14 +35,14 @@ void a_sprite__uninit(void)
     a_list_free(sprites);
 }
 
-ASprite* a_sprite_fromFile(const char* path)
+ASprite* a_sprite_fromFile(const char* Path)
 {
     int w = 0;
     int h = 0;
     ASprite* s;
     APixel* pixels = NULL;
 
-    a_png_readFile(path, &pixels, &w, &h);
+    a_png_readFile(Path, &pixels, &w, &h);
 
     if(pixels == NULL) {
         return NULL;
@@ -54,14 +54,14 @@ ASprite* a_sprite_fromFile(const char* path)
     return s;
 }
 
-ASprite* a_sprite_fromData(const uint8_t* data)
+ASprite* a_sprite_fromData(const uint8_t* Data)
 {
     int w;
     int h;
     ASprite* s;
     APixel* pixels = NULL;
 
-    a_png_readMemory(data, &pixels, &w, &h);
+    a_png_readMemory(Data, &pixels, &w, &h);
 
     if(pixels == NULL) {
         return NULL;
@@ -73,41 +73,41 @@ ASprite* a_sprite_fromData(const uint8_t* data)
     return s;
 }
 
-ASprite* a_sprite_fromPixels(APixel* pixels, int w, int h)
+ASprite* a_sprite_fromPixels(APixel* Pixels, int Width, int Height)
 {
-    ASprite* s = a_sprite_blank(w, h);
+    ASprite* s = a_sprite_blank(Width, Height);
 
-    memcpy(s->data, pixels, w * h * sizeof(APixel));
+    memcpy(s->data, Pixels, Width * Height * sizeof(APixel));
     a_sprite_refresh(s);
 
     return s;
 }
 
-ASprite* a_sprite_new(const ASprite* sheet, int x, int y)
+ASprite* a_sprite_new(const ASprite* Sheet, int X, int Y)
 {
-    return a_sprite_zoomed(sheet, x, y, 1);
+    return a_sprite_zoomed(Sheet, X, Y, 1);
 }
 
-ASprite* a_sprite_zoomed(const ASprite* sheet, int x, int y, int zoom)
+ASprite* a_sprite_zoomed(const ASprite* Sheet, int X, int Y, int Zoom)
 {
     int w = 0;
     int h = 0;
 
-    const int width = sheet->w;
-    const int height = sheet->h;
+    const int width = Sheet->w;
+    const int height = Sheet->h;
 
-    for(int sheetx = x; sheetx < width; sheetx++) {
-        const APixel hPixel = a_sprite__getPixel(sheet, sheetx, y);
+    for(int sheetx = X; sheetx < width; sheetx++) {
+        const APixel hPixel = a_sprite__getPixel(Sheet, sheetx, Y);
 
         // reached right edge
         if(hPixel == A_SPRITE_LIMIT || hPixel == A_SPRITE_END) {
-            for(int sheety = y; sheety < height; sheety++) {
-                const APixel vPixel = a_sprite__getPixel(sheet, x, sheety);
+            for(int sheety = Y; sheety < height; sheety++) {
+                const APixel vPixel = a_sprite__getPixel(Sheet, X, sheety);
 
                 // reached bottom edge
                 if(vPixel == A_SPRITE_LIMIT) {
-                    w = sheetx - x;
-                    h = sheety - y;
+                    w = sheetx - X;
+                    h = sheety - Y;
                     goto Done;
                 }
             }
@@ -117,36 +117,36 @@ ASprite* a_sprite_zoomed(const ASprite* sheet, int x, int y, int zoom)
     Done:
 
     if(w == 0 || h == 0) {
-        if(x == 0 && y == 0) {
+        if(X == 0 && Y == 0) {
             // no boundary borders for full-image sprites
             w = width;
             h = height;
         } else {
-            a_out__error("ASprite coords %d, %d are invalid", x, y);
+            a_out__error("ASprite coords %d, %d are invalid", X, Y);
             return NULL;
         }
     }
 
-    const int spritew = w * zoom;
-    const int spriteh = h * zoom;
+    const int spritew = w * Zoom;
+    const int spriteh = h * Zoom;
 
     ASprite* const s = a_sprite_blank(spritew, spriteh);
 
-    const int wp = sheet->w;
-    const APixel* const src = sheet->data;
+    const int wp = Sheet->w;
+    const APixel* const src = Sheet->data;
     APixel* const dst = s->data;
 
     // put the pixels on
 
-    for(int i = y; i < y + h; i++) {
-        for(int j = x; j < x + w; j++) {
+    for(int i = Y; i < Y + h; i++) {
+        for(int j = X; j < X + w; j++) {
             const APixel pixel = *(src + i * wp + j);
 
-            const int dy = (i - y) * zoom;
-            const int dx = (j - x) * zoom;
+            const int dy = (i - Y) * Zoom;
+            const int dx = (j - X) * Zoom;
 
-            for(int zy = zoom; zy--; ) {
-                for(int zx = zoom; zx--; ) {
+            for(int zy = Zoom; zy--; ) {
+                for(int zx = Zoom; zx--; ) {
                     dst[(dy + zy) * spritew + dx + zx] = pixel;
                 }
             }
@@ -158,18 +158,18 @@ ASprite* a_sprite_zoomed(const ASprite* sheet, int x, int y, int zoom)
     return s;
 }
 
-ASprite* a_sprite_blank(int w, int h)
+ASprite* a_sprite_blank(int Width, int Height)
 {
-    ASprite* const s = a_mem_malloc(sizeof(ASprite) + w * h * sizeof(APixel));
+    ASprite* const s = a_mem_malloc(sizeof(ASprite) + Width * Height * sizeof(APixel));
 
-    s->w = w;
-    s->wLog2 = (int)log2f(w);
-    s->h = h;
+    s->w = Width;
+    s->wLog2 = (int)log2f(Width);
+    s->h = Height;
     s->alpha = 255;
     s->spans = NULL;
     s->spansSize = 0;
 
-    for(int i = w * h; i--; ) {
+    for(int i = Width * Height; i--; ) {
         s->data[i] = A_SPRITE_TRANSPARENT;
     }
 
@@ -178,58 +178,58 @@ ASprite* a_sprite_blank(int w, int h)
     return s;
 }
 
-void a_sprite_free(ASprite* s)
+void a_sprite_free(ASprite* Sprite)
 {
-    a_list_removeNode(s->node);
-    a_sprite__free(s);
+    a_list_removeNode(Sprite->node);
+    a_sprite__free(Sprite);
 }
 
-void a_sprite__free(ASprite* s)
+void a_sprite__free(ASprite* Sprite)
 {
-    free(s->spans);
-    free(s);
+    free(Sprite->spans);
+    free(Sprite);
 }
 
-int a_sprite_w(const ASprite* s)
+int a_sprite_w(const ASprite* Sprite)
 {
-    return s->w;
+    return Sprite->w;
 }
 
-int a_sprite_wLog2(const ASprite* s)
+int a_sprite_wLog2(const ASprite* Sprite)
 {
-    return s->wLog2;
+    return Sprite->wLog2;
 }
 
-int a_sprite_h(const ASprite* s)
+int a_sprite_h(const ASprite* Sprite)
 {
-    return s->h;
+    return Sprite->h;
 }
 
-APixel* a_sprite_data(ASprite* s)
+APixel* a_sprite_data(ASprite* Sprite)
 {
-    return s->data;
+    return Sprite->data;
 }
 
-uint8_t a_sprite_getAlpha(const ASprite* s)
+uint8_t a_sprite_getAlpha(const ASprite* Sprite)
 {
-    return s->alpha;
+    return Sprite->alpha;
 }
 
-void a_sprite_setAlpha(ASprite* s, uint8_t a)
+void a_sprite_setAlpha(ASprite* Sprite, uint8_t Alpha)
 {
-    s->alpha = a;
+    Sprite->alpha = Alpha;
 }
 
-APixel a_sprite_getPixel(const ASprite* s, int x, int y)
+APixel a_sprite_getPixel(const ASprite* Sprite, int X, int Y)
 {
-    return *(s->data + y * s->w + x);
+    return *(Sprite->data + Y * Sprite->w + X);
 }
 
-void a_sprite_refresh(ASprite* s)
+void a_sprite_refresh(ASprite* Sprite)
 {
-    const int w = s->w;
-    const int h = s->h;
-    const APixel* const dst = s->data;
+    const int w = Sprite->w;
+    const int h = Sprite->h;
+    const APixel* const dst = Sprite->data;
 
     // Spans format:
     // [1 (draw) / 0 (transp)][[len]...][0 (end line)]
@@ -250,13 +250,13 @@ void a_sprite_refresh(ASprite* s)
 
     const size_t newSpansSize = num * sizeof(uint16_t);
 
-    if(s->spansSize < newSpansSize) {
-        free(s->spans);
-        s->spans = a_mem_malloc(newSpansSize);
-        s->spansSize = newSpansSize;
+    if(Sprite->spansSize < newSpansSize) {
+        free(Sprite->spans);
+        Sprite->spans = a_mem_malloc(newSpansSize);
+        Sprite->spansSize = newSpansSize;
     }
 
-    uint16_t* spans = s->spans;
+    uint16_t* spans = Sprite->spans;
 
     dest = dst;
 
@@ -278,12 +278,12 @@ void a_sprite_refresh(ASprite* s)
     }
 }
 
-ASprite* a_sprite_clone(const ASprite* src)
+ASprite* a_sprite_clone(const ASprite* Sprite)
 {
-    ASprite* const s = a_sprite_blank(src->w, src->h);
+    ASprite* const s = a_sprite_blank(Sprite->w, Sprite->h);
 
-    s->alpha = src->alpha;
-    memcpy(s->data, src->data, src->w * src->h * sizeof(APixel));
+    s->alpha = Sprite->alpha;
+    memcpy(s->data, Sprite->data, Sprite->w * Sprite->h * sizeof(APixel));
     a_sprite_refresh(s);
 
     return s;

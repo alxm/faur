@@ -34,19 +34,19 @@ static ADrawHLine vlines[A_PIXEL_TYPE_NUM][2];
 ADrawCircle a_draw_circle;
 //static ADrawCircle circles[A_PIXEL_TYPE_NUM][2];
 
-static APixelBlend blend;
-static bool clip;
+static APixelBlend g_blend;
+static bool g_clip;
 
-static uint8_t alpha;
-static uint8_t red, green, blue;
-static APixel pixel;
+static uint8_t g_alpha;
+static uint8_t g_red, g_green, g_blue;
+static APixel g_pixel;
 
-static bool cohen_sutherland_clip(int* lx1, int* ly1, int* lx2, int* ly2)
+static bool cohen_sutherland_clip(int* X1, int* Y1, int* X2, int* Y2)
 {
-    int x1 = *lx1;
-    int y1 = *ly1;
-    int x2 = *lx2;
-    int y2 = *ly2;
+    int x1 = *X1;
+    int y1 = *Y1;
+    int x2 = *X2;
+    int y2 = *Y2;
 
     const int screenw = a_width;
     const int screenh = a_height;
@@ -69,25 +69,18 @@ static bool cohen_sutherland_clip(int* lx1, int* ly1, int* lx2, int* ly2)
         o;                                    \
     })
 
-    #define solvey(x, x1, y1, x2, y2)                 \
-    ({                                                \
-        (float)(y1 - y2) / (x1 - x2) * (x - x1) + y1; \
-    })
-
-    #define solvex(y, x1, y1, x2, y2)                 \
-    ({                                                \
-        (float)(x1 - x2) / (y1 - y2) * (y - y1) + x1; \
-    })
+    #define solvey() (float)(y1 - y2) / (x1 - x2) * (x - x1) + y1;
+    #define solvex() (float)(x1 - x2) / (y1 - y2) * (y - y1) + x1;
 
     while(true) {
         const int outcode1 = outcode(x1, y1);
         const int outcode2 = outcode(x2, y2);
 
         if((outcode1 | outcode2) == 0) {
-            *lx1 = x1;
-            *ly1 = y1;
-            *lx2 = x2;
-            *ly2 = y2;
+            *X1 = x1;
+            *Y1 = y1;
+            *X2 = x2;
+            *Y2 = y2;
 
             return true;
         } else if(outcode1 & outcode2) {
@@ -98,16 +91,16 @@ static bool cohen_sutherland_clip(int* lx1, int* ly1, int* lx2, int* ly2)
 
             if(outcode & OUT_LEFT) {
                 x = 0;
-                y = solvey(x, x1, y1, x2, y2);
+                y = solvey();
             } else if(outcode & OUT_RIGHT) {
                 x = screenw - 1;
-                y = solvey(x, x1, y1, x2, y2);
+                y = solvey();
             } else if(outcode & OUT_TOP) {
                 y = 0;
-                x = solvex(y, x1, y1, x2, y2);
+                x = solvex();
             } else { // outcode & OUT_DOWN
                 y = screenh - 1;
-                x = solvex(y, x1, y1, x2, y2);
+                x = solvex();
             }
 
             if(outcode == outcode1) {
@@ -121,47 +114,47 @@ static bool cohen_sutherland_clip(int* lx1, int* ly1, int* lx2, int* ly2)
     }
 }
 
-#define rectangle_noclip(pixeler)                  \
+#define rectangle_noclip(Pixeler)                  \
 {                                                  \
-    APixel* pixels = a_pixels + y1 * a_width + x1;  \
+    APixel* pixels = a_pixels + Y1 * a_width + X1; \
                                                    \
     const int screenw = a_width;                   \
-    const int w = x2 - x1;                         \
+    const int w = X2 - X1;                         \
                                                    \
-    for(int i = y2 - y1; i--; pixels += screenw) { \
-        APixel* dst = pixels;                       \
+    for(int i = Y2 - Y1; i--; pixels += screenw) { \
+        APixel* a__pass_dst = pixels;              \
                                                    \
-        for(int j = w; j--; dst++) {               \
-            pixeler;                               \
+        for(int j = w; j--; a__pass_dst++) {       \
+            Pixeler;                               \
         }                                          \
     }                                              \
 }
 
-#define rectangle_clip(pixeler)    \
+#define rectangle_clip(Pixeler)    \
 {                                  \
-    x1 = a_math_max(x1, 0);        \
-    y1 = a_math_max(y1, 0);        \
-    x2 = a_math_min(x2, a_width);  \
-    y2 = a_math_min(y2, a_height); \
+    X1 = a_math_max(X1, 0);        \
+    Y1 = a_math_max(Y1, 0);        \
+    X2 = a_math_min(X2, a_width);  \
+    Y2 = a_math_min(Y2, a_height); \
                                    \
-    if(x1 >= x2 || y1 >= y2) {     \
+    if(X1 >= X2 || Y1 >= Y2) {     \
         return;                    \
     }                              \
                                    \
-    rectangle_noclip(pixeler);     \
+    rectangle_noclip(Pixeler);     \
 }
 
-#define line_noclip(pixeler)                                   \
+#define line_noclip(Pixeler)                                   \
 {                                                              \
-    const int xmin = a_math_min(x1, x2);                       \
-    const int xmax = a_math_max(x1, x2);                       \
-    const int ymin = a_math_min(y1, y2);                       \
-    const int ymax = a_math_max(y1, y2);                       \
+    const int xmin = a_math_min(X1, X2);                       \
+    const int xmax = a_math_max(X1, X2);                       \
+    const int ymin = a_math_min(Y1, Y2);                       \
+    const int ymax = a_math_max(Y1, Y2);                       \
                                                                \
-    if(x1 == x2) {                                             \
-        a_draw_vline(x1, ymin, ymax);                          \
-    } else if(y1 == y2) {                                      \
-        a_draw_hline(xmin, xmax, y1);                          \
+    if(X1 == X2) {                                             \
+        a_draw_vline(X1, ymin, ymax);                          \
+    } else if(Y1 == Y2) {                                      \
+        a_draw_hline(xmin, xmax, Y1);                          \
     } else {                                                   \
         const int deltax = xmax - xmin;                        \
         const int deltay = ymax - ymin;                        \
@@ -170,8 +163,8 @@ static bool cohen_sutherland_clip(int* lx1, int* ly1, int* lx2, int* ly2)
         const int numeratorinc = a_math_min(deltax, deltay);   \
         int numerator = denominator / 2;                       \
                                                                \
-        const int xinct = (x1 <= x2) ? 1 : -1;                 \
-        const int yinct = (y1 <= y2) ? 1 : -1;                 \
+        const int xinct = (X1 <= X2) ? 1 : -1;                 \
+        const int yinct = (Y1 <= Y2) ? 1 : -1;                 \
                                                                \
         const int xinc1 = (denominator == deltax) ? xinct : 0; \
         const int yinc1 = (denominator == deltax) ? 0 : yinct; \
@@ -180,124 +173,124 @@ static bool cohen_sutherland_clip(int* lx1, int* ly1, int* lx2, int* ly2)
         const int yinc2 = (denominator == deltax) ? yinct : 0; \
                                                                \
         const int screenw = a_width;                           \
-        APixel* dst = a_pixels + y1 * screenw + x1;             \
+        APixel* a__pass_dst = a_pixels + Y1 * screenw + X1;    \
                                                                \
         for(int i = denominator + 1; i--; ) {                  \
-            pixeler;                                           \
+            Pixeler;                                           \
                                                                \
             numerator += numeratorinc;                         \
                                                                \
             if(numerator >= denominator) {                     \
                 numerator -= denominator;                      \
-                dst += xinc2;                                  \
-                dst += yinc2 * screenw;                        \
+                a__pass_dst += xinc2;                          \
+                a__pass_dst += yinc2 * screenw;                \
             }                                                  \
                                                                \
-            dst += xinc1;                                      \
-            dst += yinc1 * screenw;                            \
+            a__pass_dst += xinc1;                              \
+            a__pass_dst += yinc1 * screenw;                    \
         }                                                      \
     }                                                          \
 }
 
-#define line_clip(pixeler)                           \
+#define line_clip(Pixeler)                           \
 {                                                    \
-    if(!cohen_sutherland_clip(&x1, &y1, &x2, &y2)) { \
+    if(!cohen_sutherland_clip(&X1, &Y1, &X2, &Y2)) { \
         return;                                      \
     }                                                \
                                                      \
-    line_noclip(pixeler);                            \
+    line_noclip(Pixeler);                            \
 }
 
-#define hline_noclip(pixeler)                 \
-{                                             \
-    APixel* dst = a_pixels + y * a_width + x1; \
-                                              \
-    for(int i = x2 - x1; i--; dst++) {        \
-        pixeler;                              \
-    }                                         \
+#define hline_noclip(Pixeler)                          \
+{                                                      \
+    APixel* a__pass_dst = a_pixels + Y * a_width + X1; \
+                                                       \
+    for(int i = X2 - X1; i--; a__pass_dst++) {         \
+        Pixeler;                                       \
+    }                                                  \
 }
 
-#define hline_clip(pixeler)                  \
+#define hline_clip(Pixeler)                  \
 {                                            \
-    x1 = a_math_max(x1, 0);                  \
-    x2 = a_math_min(x2, a_width);            \
+    X1 = a_math_max(X1, 0);                  \
+    X2 = a_math_min(X2, a_width);            \
                                              \
-    if(x1 >= x2 || y < 0 || y >= a_height) { \
+    if(X1 >= X2 || Y < 0 || Y >= a_height) { \
         return;                              \
     }                                        \
                                              \
-    hline_noclip(pixeler);                   \
+    hline_noclip(Pixeler);                   \
 }
 
-#define vline_noclip(pixeler)                   \
-{                                               \
-    APixel* dst = a_pixels + y1 * a_width + x;   \
-    const int screenw = a_width;                \
-                                                \
-    for(int i = y2 - y1; i--; dst += screenw) { \
-        pixeler;                                \
-    }                                           \
+#define vline_noclip(Pixeler)                           \
+{                                                       \
+    APixel* a__pass_dst = a_pixels + Y1 * a_width + X;  \
+    const int screenw = a_width;                        \
+                                                        \
+    for(int i = Y2 - Y1; i--; a__pass_dst += screenw) { \
+        Pixeler;                                        \
+    }                                                   \
 }
 
-#define vline_clip(pixeler)                 \
+#define vline_clip(Pixeler)                 \
 {                                           \
-    y1 = a_math_max(y1, 0);                 \
-    y2 = a_math_min(y2, a_height);          \
+    Y1 = a_math_max(Y1, 0);                 \
+    Y2 = a_math_min(Y2, a_height);          \
                                             \
-    if(y1 >= y2 || x < 0 || x >= a_width) { \
+    if(Y1 >= Y2 || X < 0 || X >= a_width) { \
         return;                             \
     }                                       \
                                             \
-    vline_noclip(pixeler);                  \
+    vline_noclip(Pixeler);                  \
 }
 
-#define shape_setup_plain  \
-    const APixel c = pixel;
+#define shape_setup_plain                 \
+    const APixel a__pass_color = g_pixel;
 
-#define shape_setup_rgb25    \
-    const uint8_t r = red;   \
-    const uint8_t g = green; \
-    const uint8_t b = blue;  \
+#define shape_setup_rgb25                  \
+    const uint8_t a__pass_red = g_red;     \
+    const uint8_t a__pass_green = g_green; \
+    const uint8_t a__pass_blue = g_blue;
 
 #define shape_setup_rgb50 shape_setup_rgb25
 #define shape_setup_rgb75 shape_setup_rgb25
 
-#define shape_setup_rgba     \
-    shape_setup_rgb25        \
-    const uint8_t a = alpha;
+#define shape_setup_rgba                   \
+    shape_setup_rgb25                      \
+    const uint8_t a__pass_alpha = g_alpha;
 
 #define shape_setup_inverse
 
-#define shapeMake(shape, func_args, blend, args)    \
-                                                    \
-    void a_draw__##shape##_noclip_##blend func_args \
-    {                                               \
-        shape_setup_##blend                         \
-        shape##_noclip(a_pixel__##blend args)       \
-    }                                               \
-                                                    \
-    void a_draw__##shape##_clip_##blend func_args   \
-    {                                               \
-        shape_setup_##blend                         \
-        shape##_clip(a_pixel__##blend args)         \
+#define shapeMake(Shape, FuncArgs, Blend, BlendArgs) \
+                                                     \
+    void a_draw__##Shape##_noclip_##Blend FuncArgs   \
+    {                                                \
+        shape_setup_##Blend                          \
+        Shape##_noclip(a_pixel__##Blend BlendArgs)   \
+    }                                                \
+                                                     \
+    void a_draw__##Shape##_clip_##Blend FuncArgs     \
+    {                                                \
+        shape_setup_##Blend                          \
+        Shape##_clip(a_pixel__##Blend BlendArgs)     \
     }
 
-#define shapeMakeAll(blend, args)                                       \
-    shapeMake(rectangle, (int x1, int y1, int x2, int y2), blend, args) \
-    shapeMake(line, (int x1, int y1, int x2, int y2), blend, args)      \
-    shapeMake(hline, (int x1, int x2, int y), blend, args)              \
-    shapeMake(vline, (int x, int y1, int y2), blend, args)
+#define shapeMakeAll(Blend, BlendArgs)                                       \
+    shapeMake(rectangle, (int X1, int Y1, int X2, int Y2), Blend, BlendArgs) \
+    shapeMake(line,      (int X1, int Y1, int X2, int Y2), Blend, BlendArgs) \
+    shapeMake(hline,     (int X1, int X2, int Y),          Blend, BlendArgs) \
+    shapeMake(vline,     (int X,  int Y1, int Y2),         Blend, BlendArgs)
 
-shapeMakeAll(plain, (dst, c))
-shapeMakeAll(rgba, (dst, r, g, b, a))
-shapeMakeAll(rgb25, (dst, r, g, b))
-shapeMakeAll(rgb50, (dst, r, g, b))
-shapeMakeAll(rgb75, (dst, r, g, b))
-shapeMakeAll(inverse, (dst))
+shapeMakeAll(plain,   (a__pass_dst, a__pass_color))
+shapeMakeAll(rgba,    (a__pass_dst, a__pass_red, a__pass_green, a__pass_blue, a__pass_alpha))
+shapeMakeAll(rgb25,   (a__pass_dst, a__pass_red, a__pass_green, a__pass_blue))
+shapeMakeAll(rgb50,   (a__pass_dst, a__pass_red, a__pass_green, a__pass_blue))
+shapeMakeAll(rgb75,   (a__pass_dst, a__pass_red, a__pass_green, a__pass_blue))
+shapeMakeAll(inverse, (a__pass_dst))
 
-#define drawSet(shape)                      \
-({                                          \
-    a_draw_##shape = shape##s[blend][clip]; \
+#define drawSet(Shape)                          \
+({                                              \
+    a_draw_##Shape = Shape##s[g_blend][g_clip]; \
 })
 
 #define drawSetAll()    \
@@ -310,18 +303,18 @@ shapeMakeAll(inverse, (dst))
 
 void a_draw__init(void)
 {
-    #define shapeInit(shape, index, blend)                     \
+    #define shapeInit(Shape, Index, Blend)                     \
     ({                                                         \
-        shape##s[index][0] = a_draw__##shape##_noclip_##blend; \
-        shape##s[index][1] = a_draw__##shape##_clip_##blend;   \
+        Shape##s[Index][0] = a_draw__##Shape##_noclip_##Blend; \
+        Shape##s[Index][1] = a_draw__##Shape##_clip_##Blend;   \
     })
 
-    #define shapeInitAll(index, blend)      \
+    #define shapeInitAll(Index, Blend)      \
     ({                                      \
-        shapeInit(rectangle, index, blend); \
-        shapeInit(line, index, blend);      \
-        shapeInit(hline, index, blend);     \
-        shapeInit(vline, index, blend);     \
+        shapeInit(rectangle, Index, Blend); \
+        shapeInit(line, Index, Blend);      \
+        shapeInit(hline, Index, Blend);     \
+        shapeInit(vline, Index, Blend);     \
     })
 
     shapeInitAll(A_PIXEL_PLAIN, plain);
@@ -331,42 +324,42 @@ void a_draw__init(void)
     shapeInitAll(A_PIXEL_RGB75, rgb75);
     shapeInitAll(A_PIXEL_INVERSE, inverse);
 
-    blend = A_PIXEL_PLAIN;
-    clip = true;
+    g_blend = A_PIXEL_PLAIN;
+    g_clip = true;
 
     drawSetAll();
 }
 
-void a_draw__setBlend(APixelBlend b)
+void a_draw__setBlend(APixelBlend Blend)
 {
-    blend = b;
+    g_blend = Blend;
     drawSetAll();
 }
 
-void a_draw__setClip(bool c)
+void a_draw__setClip(bool DoClip)
 {
-    clip = c;
+    g_clip = DoClip;
     drawSetAll();
 }
 
-void a_draw__setAlpha(uint8_t a)
+void a_draw__setAlpha(uint8_t Alpha)
 {
-    alpha = a;
+    g_alpha = Alpha;
 }
 
-void a_draw__setRGB(uint8_t r, uint8_t g, uint8_t b)
+void a_draw__setRGB(uint8_t Red, uint8_t Green, uint8_t Blue)
 {
-    red = r;
-    green = g;
-    blue = b;
+    g_red = Red;
+    g_green = Green;
+    g_blue = Blue;
 
-    pixel = a_pixel_make(red, green, blue);
+    g_pixel = a_pixel_make(g_red, g_green, g_blue);
 }
 
-void a_draw_rectangle_outline(int x1, int y1, int x2, int y2, int t)
+void a_draw_rectangleBorder(int X1, int Y1, int X2, int Y2, int Border)
 {
-    a_draw_rectangle(x1, y1, x2, y1 + t);         // top
-    a_draw_rectangle(x1, y2 - t, x2, y2);         // bottom
-    a_draw_rectangle(x1, y1 + t, x1 + t, y2 - t); // left
-    a_draw_rectangle(x2 - t, y1 + t, x2, y2 - t); // right
+    a_draw_rectangle(X1,          Y1,          X2,          Y1 + Border); // top
+    a_draw_rectangle(X1,          Y2 - Border, X2,          Y2);          // bottom
+    a_draw_rectangle(X1,          Y1 + Border, X1 + Border, Y2 - Border); // left
+    a_draw_rectangle(X2 - Border, Y1 + Border, X2,          Y2 - Border); // right
 }

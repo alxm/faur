@@ -32,36 +32,36 @@ struct AColIt {
     AListIt points; // list of points in the current submap
 };
 
-extern AColMap* a_colmap_new(int width, int height, int maxObjectDim);
-extern void a_colmap_free(AColMap* m);
+extern AColMap* a_colmap_new(int Width, int Height, int MaxObjectDim);
+extern void a_colmap_free(AColMap* Map);
 
-extern AColObject* a_colobject_new(const AColMap* m, void* parent);
-extern void a_colobject_free(AColObject* o);
+extern AColObject* a_colobject_new(const AColMap* Map, void* Parent);
+extern void a_colobject_free(AColObject* Object);
 
-extern void a_colobject_setCoords(AColObject* o, int x, int y);
-extern AList* a_colobject__getColList(const AColObject* o);
-extern void* a_colobject__getParent(const AColObject* o);
+extern void a_colobject_setCoords(AColObject* Object, int X, int Y);
+extern AList* a_colobject__getColList(const AColObject* Object);
+extern void* a_colobject__getParent(const AColObject* Object);
 
-#define A_COL_ITERATE(o, type, var)                                 \
-    A_LIST_FILTER(a_colobject__getColList(o), AColObject, c, o != c) \
-        for(type* var = a_colobject__getParent(c); var; var = NULL)
+#define A_COL_ITERATE(Object, VarType, VarName)                                          \
+    A_LIST_FILTER(a_colobject__getColList(Object), AColObject, a__obj, Object != a__obj) \
+        for(VarType* VarName = a_colobject__getParent(a__obj); VarName; VarName = NULL)
 
-#define a_collide_boxes(x1, y1, w1, h1, x2, y2, w2, h2) \
+#define a_collide_boxes(X1, Y1, W1, H1, X2, Y2, W2, H2) \
 (                                                       \
-    !( (y1) >= (y2) + (h2)                              \
-    || (y2) >= (y1) + (h1)                              \
-    || (x1) >= (x2) + (w2)                              \
-    || (x2) >= (x1) + (w1) )                            \
+    !( (Y1) >= (Y2) + (H2)                              \
+    || (Y2) >= (Y1) + (H1)                              \
+    || (X1) >= (X2) + (W2)                              \
+    || (X2) >= (X1) + (W1) )                            \
 )
 
-#define a_collide_boxOnScreen(x, y, w, h)		            	 \
+#define a_collide_boxOnScreen(X, Y, W, H)		            	 \
 (                      						                     \
-    a_collide_boxes((x), (y), (w), (h), 0, 0, a_width, a_height) \
+    a_collide_boxes((X), (Y), (W), (H), 0, 0, a_width, a_height) \
 )
 
-#define a_collide_boxInsideScreen(x, y, w, h)                 \
+#define a_collide_boxInsideScreen(X, Y, W, H)                 \
 (                                                             \
-    x >= 0 && y >= 0 && x + w <= a_width && y + h <= a_height \
+    X >= 0 && Y >= 0 && X + W <= a_width && Y + H <= a_height \
 )
 
-extern bool a_collide_circles(int x1, int y1, int r1, int x2, int y2, int r2);
+extern bool a_collide_circles(int X1, int Y1, int R1, int X2, int Y2, int R2);

@@ -54,10 +54,10 @@ AStrHash* a_strhash_new(void)
     return h;
 }
 
-void a_strhash_free(AStrHash* h)
+void a_strhash_free(AStrHash* Hash)
 {
     for(int i = A_STRHASH_NUM; i--; ) {
-        AEntry* e = h->entries[i];
+        AEntry* e = Hash->entries[i];
 
         while(e) {
             AEntry* const save = e->next;
@@ -69,27 +69,27 @@ void a_strhash_free(AStrHash* h)
         }
     }
 
-    free(h);
+    free(Hash);
 }
 
-void a_strhash_add(AStrHash* h, const char* key, void* content)
+void a_strhash_add(AStrHash* Hash, const char* Key, void* Content)
 {
-    const uint8_t slot = getSlot(key);
-    AEntry* const entry = h->entries[slot];
+    const uint8_t slot = getSlot(Key);
+    AEntry* const entry = Hash->entries[slot];
 
     AEntry* const e = a_mem_malloc(sizeof(AEntry));
 
-    e->key = a_str_dup(key);
-    e->content = content;
+    e->key = a_str_dup(Key);
+    e->content = Content;
     e->next = entry;
 
-    h->entries[slot] = e;
+    Hash->entries[slot] = e;
 }
 
-void* a_strhash_get(const AStrHash* h, const char* key)
+void* a_strhash_get(const AStrHash* Hash, const char* Key)
 {
-    for(AEntry* e = h->entries[getSlot(key)]; e; e = e->next) {
-        if(a_str_same(key, e->key)) {
+    for(AEntry* e = Hash->entries[getSlot(Key)]; e; e = e->next) {
+        if(a_str_same(Key, e->key)) {
             return e->content;
         }
     }
@@ -97,10 +97,10 @@ void* a_strhash_get(const AStrHash* h, const char* key)
     return NULL;
 }
 
-bool a_strhash_contains(const AStrHash* h, const char* key)
+bool a_strhash_contains(const AStrHash* Hash, const char* Key)
 {
-    for(AEntry* e = h->entries[getSlot(key)]; e; e = e->next) {
-        if(a_str_same(key, e->key)) {
+    for(AEntry* e = Hash->entries[getSlot(Key)]; e; e = e->next) {
+        if(a_str_same(Key, e->key)) {
             return true;
         }
     }

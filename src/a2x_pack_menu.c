@@ -31,8 +31,8 @@ struct AMenu {
     AMenuState state;
     int pause;
     bool used;
-    void (*input)(struct AMenu* const m, void* const v);
-    void* v;
+    void (*inputHandler)(struct AMenu* Menu, void* Context);
+    void* context;
     char* title;
     ASprite* sprite;
     ASound* soundAccept;
@@ -46,12 +46,12 @@ struct AMenu {
 
 #define A_MENU_PAUSE (a_settings_getInt("fps.rate") / 6)
 
-AMenu* a_menu_new(AInput* next, AInput* back, AInput* select, AInput* cancel, void (*freeItem)(void* v))
+AMenu* a_menu_new(AInput* Next, AInput* Back, AInput* Select, AInput* Cancel, void (*FreeItem)(void* Item))
 {
     AMenu* const m = a_mem_malloc(sizeof(AMenu));
 
     m->items = a_list_new();
-    m->freeItem = freeItem;
+    m->freeItem = FreeItem;
 
     m->selectedIndex = 0;
     m->selectedItem = NULL;
@@ -60,8 +60,8 @@ AMenu* a_menu_new(AInput* next, AInput* back, AInput* select, AInput* cancel, vo
     m->pause = A_MENU_PAUSE;
     m->used = false;
 
-    m->input = NULL;
-    m->v = NULL;
+    m->inputHandler = NULL;
+    m->context = NULL;
     m->title = NULL;
 
     m->sprite = NULL;
@@ -70,175 +70,175 @@ AMenu* a_menu_new(AInput* next, AInput* back, AInput* select, AInput* cancel, vo
     m->soundCancel = NULL;
     m->soundBrowse = NULL;
 
-    m->next = next;
-    m->back = back;
-    m->select = select;
-    m->cancel = cancel;
+    m->next = Next;
+    m->back = Back;
+    m->select = Select;
+    m->cancel = Cancel;
 
     return m;
 }
 
-void a_menu_free(AMenu* m)
+void a_menu_free(AMenu* Menu)
 {
-    if(m->freeItem) {
-        A_LIST_ITERATE(m->items, void, v) {
-            m->freeItem(v);
+    if(Menu->freeItem) {
+        A_LIST_ITERATE(Menu->items, void, v) {
+            Menu->freeItem(v);
         }
     }
 
-    a_list_free(m->items);
-    free(m->title);
+    a_list_free(Menu->items);
+    free(Menu->title);
 
-    free(m);
+    free(Menu);
 }
 
-void a_menu_addInput(AMenu* m, void (*input)(AMenu* m, void* v))
+void a_menu_addInput(AMenu* Menu, void (*InputHandler)(AMenu* Menu, void* Context))
 {
-    m->input = input;
+    Menu->inputHandler = InputHandler;
 }
 
-void a_menu_addV(AMenu* m, void* v)
+void a_menu_addContext(AMenu* Menu, void* Context)
 {
-    m->v = v;
+    Menu->context = Context;
 }
 
-void a_menu_addTitle(AMenu* m, const char* t)
+void a_menu_addTitle(AMenu* Menu, const char* Title)
 {
-    m->title = a_str_dup(t);
+    Menu->title = a_str_dup(Title);
 }
 
-void a_menu_addSprite(AMenu* m, ASprite* s)
+void a_menu_addSprite(AMenu* Menu, ASprite* Sprite)
 {
-    m->sprite = s;
+    Menu->sprite = Sprite;
 }
 
-void a_menu_addSounds(AMenu* m, ASound* accept, ASound* cancel, ASound* browse)
+void a_menu_addSounds(AMenu* Menu, ASound* Accept, ASound* Cancel, ASound* Browse)
 {
-    m->soundAccept = accept;
-    m->soundCancel = cancel;
-    m->soundBrowse = browse;
+    Menu->soundAccept = Accept;
+    Menu->soundCancel = Cancel;
+    Menu->soundBrowse = Browse;
 }
 
-void a_menu_addItem(AMenu* m, void* v)
+void a_menu_addItem(AMenu* Menu, void* Item)
 {
-    a_list_addLast(m->items, v);
+    a_list_addLast(Menu->items, Item);
 
-    if(m->selectedItem == NULL) {
-        m->selectedItem = v;
+    if(Menu->selectedItem == NULL) {
+        Menu->selectedItem = Item;
     }
 }
 
-void a_menu_input(AMenu* m)
+void a_menu_input(AMenu* Menu)
 {
-    if(!a_menu_running(m)) {
-        m->state = A_MENU_SPENT;
+    if(!a_menu_running(Menu)) {
+        Menu->state = A_MENU_SPENT;
         return;
     }
 
-    m->used = false;
+    Menu->used = false;
 
-    if(!m->pause) {
-        if(a_button_get(m->back)) {
-            m->selectedIndex--;
-            m->selectedItem = a_list_get(m->items, m->selectedIndex);
-            m->used = true;
-        } else if(a_button_get(m->next)) {
-            m->selectedIndex++;
-            m->selectedItem = a_list_get(m->items, m->selectedIndex);
-            m->used = true;
+    if(!Menu->pause) {
+        if(a_button_get(Menu->back)) {
+            Menu->selectedIndex--;
+            Menu->selectedItem = a_list_get(Menu->items, Menu->selectedIndex);
+            Menu->used = true;
+        } else if(a_button_get(Menu->next)) {
+            Menu->selectedIndex++;
+            Menu->selectedItem = a_list_get(Menu->items, Menu->selectedIndex);
+            Menu->used = true;
         }
     } else {
-        if(!a_button_get(m->back)
-            && !a_button_get(m->next)
-            && !a_button_get(m->select)
-            && !(m->cancel && a_button_get(m->cancel))) {
-            m->pause = 0;
+        if(!a_button_get(Menu->back)
+            && !a_button_get(Menu->next)
+            && !a_button_get(Menu->select)
+            && !(Menu->cancel && a_button_get(Menu->cancel))) {
+            Menu->pause = 0;
         } else {
-            m->pause--;
+            Menu->pause--;
         }
     }
 
-    if(m->used) {
-        m->pause = A_MENU_PAUSE;
+    if(Menu->used) {
+        Menu->pause = A_MENU_PAUSE;
 
-        if(m->soundBrowse) {
-            a_sfx_play(m->soundBrowse);
+        if(Menu->soundBrowse) {
+            a_sfx_play(Menu->soundBrowse);
         }
 
-        if(m->selectedIndex < 0) {
-            m->selectedIndex = a_list__size(m->items) - 1;
-            m->selectedItem = a_list_last(m->items);
-        } else if(m->selectedIndex == a_list__size(m->items)) {
-            m->selectedIndex = 0;
-            m->selectedItem = a_list_first(m->items);
+        if(Menu->selectedIndex < 0) {
+            Menu->selectedIndex = a_list__size(Menu->items) - 1;
+            Menu->selectedItem = a_list_last(Menu->items);
+        } else if(Menu->selectedIndex == a_list__size(Menu->items)) {
+            Menu->selectedIndex = 0;
+            Menu->selectedItem = a_list_first(Menu->items);
         }
     } else {
-        if(a_button_get(m->select)) {
-            m->state = A_MENU_ACCEPT;
+        if(a_button_get(Menu->select)) {
+            Menu->state = A_MENU_ACCEPT;
 
-            if(m->soundAccept) {
-                a_sfx_play(m->soundAccept);
+            if(Menu->soundAccept) {
+                a_sfx_play(Menu->soundAccept);
             }
-        } else if(m->cancel && a_button_get(m->cancel)) {
-            m->state = A_MENU_CANCEL;
+        } else if(Menu->cancel && a_button_get(Menu->cancel)) {
+            Menu->state = A_MENU_CANCEL;
 
-            if(m->soundCancel) {
-                a_sfx_play(m->soundCancel);
+            if(Menu->soundCancel) {
+                a_sfx_play(Menu->soundCancel);
             }
         }
     }
 
-    if(m->input) {
-        m->input(m, m->v);
+    if(Menu->inputHandler) {
+        Menu->inputHandler(Menu, Menu->context);
     }
 
-    if(m->state != A_MENU_RUNNING) {
-        a_button_unpress(m->next);
-        a_button_unpress(m->back);
-        a_button_unpress(m->select);
+    if(Menu->state != A_MENU_RUNNING) {
+        a_button_unpress(Menu->next);
+        a_button_unpress(Menu->back);
+        a_button_unpress(Menu->select);
 
-        if(m->cancel) {
-            a_button_unpress(m->cancel);
+        if(Menu->cancel) {
+            a_button_unpress(Menu->cancel);
         }
     }
 }
 
-AList* a_menu__items(const AMenu* m)
+AList* a_menu__items(const AMenu* Menu)
 {
-    return m->items;
+    return Menu->items;
 }
 
-bool a_menu_isSelected(const AMenu* m, const void* item)
+bool a_menu_isSelected(const AMenu* Menu, const void* Item)
 {
-    return item == m->selectedItem;
+    return Item == Menu->selectedItem;
 }
 
-void a_menu_keepRunning(AMenu* m)
+void a_menu_keepRunning(AMenu* Menu)
 {
-    m->state = A_MENU_RUNNING;
+    Menu->state = A_MENU_RUNNING;
 }
 
-bool a_menu_running(const AMenu* m)
+bool a_menu_running(const AMenu* Menu)
 {
-    return m->state == A_MENU_RUNNING;
+    return Menu->state == A_MENU_RUNNING;
 }
 
-bool a_menu_finished(const AMenu* m)
+bool a_menu_finished(const AMenu* Menu)
 {
-    return m->state == A_MENU_ACCEPT || m->state == A_MENU_CANCEL;
+    return Menu->state == A_MENU_ACCEPT || Menu->state == A_MENU_CANCEL;
 }
 
-bool a_menu_accept(const AMenu* m)
+bool a_menu_accept(const AMenu* Menu)
 {
-    return m->state == A_MENU_ACCEPT;
+    return Menu->state == A_MENU_ACCEPT;
 }
 
-bool a_menu_cancel(const AMenu* m)
+bool a_menu_cancel(const AMenu* Menu)
 {
-    return m->state == A_MENU_CANCEL;
+    return Menu->state == A_MENU_CANCEL;
 }
 
-int a_menu_choice(const AMenu* m)
+int a_menu_choice(const AMenu* Menu)
 {
-    return m->selectedIndex;
+    return Menu->selectedIndex;
 }

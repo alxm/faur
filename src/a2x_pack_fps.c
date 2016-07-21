@@ -126,7 +126,7 @@ uint32_t a_fps_getCounter(void)
     return counter;
 }
 
-bool a_fps_nthFrame(uint32_t n)
+bool a_fps_nthFrame(uint32_t N)
 {
-    return (counter % n) == 0;
+    return (counter % N) == 0;
 }

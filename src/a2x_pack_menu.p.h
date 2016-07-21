@@ -28,26 +28,26 @@ typedef struct AMenu AMenu;
 #include "a2x_pack_sound.p.h"
 #include "a2x_pack_sprite.p.h"
 
-extern AMenu* a_menu_new(AInput* next, AInput* back, AInput* select, AInput* cancel, void (*freeItem)(void* v));
-extern void a_menu_free(AMenu* m);
+extern AMenu* a_menu_new(AInput* Next, AInput* Back, AInput* Select, AInput* Cancel, void (*FreeItemFreeItem)(void* Item));
+extern void a_menu_free(AMenu* Menu);
 
-extern void a_menu_addInput(AMenu* m, void (*input)(AMenu* m, void* v));
-extern void a_menu_addV(AMenu* m, void* v);
-extern void a_menu_addTitle(AMenu* m, const char* t);
-extern void a_menu_addSprite(AMenu* m, ASprite* s);
-extern void a_menu_addSounds(AMenu* m, ASound* accept, ASound* cancel, ASound* browse);
-extern void a_menu_addItem(AMenu* m, void* v);
+extern void a_menu_addInput(AMenu* Menu, void (*InputHandler)(AMenu* Menu, void* Context));
+extern void a_menu_addContext(AMenu* Menu, void* Context);
+extern void a_menu_addTitle(AMenu* Menu, const char* Title);
+extern void a_menu_addSprite(AMenu* Menu, ASprite* Sprite);
+extern void a_menu_addSounds(AMenu* Menu, ASound* Accept, ASound* Cancel, ASound* Browse);
+extern void a_menu_addItem(AMenu* Menu, void* Item);
 
-extern void a_menu_input(AMenu* m);
-extern AList* a_menu__items(const AMenu* m);
+extern void a_menu_input(AMenu* Menu);
+extern AList* a_menu__items(const AMenu* Menu);
 
-#define A_MENU_ITERATE(menu, type, var) \
-    A_LIST_ITERATE(a_menu__items(menu), type, var)
+#define A_MENU_ITERATE(Menu, VarType, VarName) \
+    A_LIST_ITERATE(a_menu__items(Menu), VarType, VarName)
 
-extern bool a_menu_isSelected(const AMenu* m, const void* item);
-extern void a_menu_keepRunning(AMenu* m);
-extern bool a_menu_running(const AMenu* m);
-extern bool a_menu_finished(const AMenu* m);
-extern bool a_menu_accept(const AMenu* m);
-extern bool a_menu_cancel(const AMenu* m);
-extern int a_menu_choice(const AMenu* m);
+extern bool a_menu_isSelected(const AMenu* Menu, const void* Item);
+extern void a_menu_keepRunning(AMenu* Menu);
+extern bool a_menu_running(const AMenu* Menu);
+extern bool a_menu_finished(const AMenu* Menu);
+extern bool a_menu_accept(const AMenu* Menu);
+extern bool a_menu_cancel(const AMenu* Menu);
+extern int a_menu_choice(const AMenu* Menu);

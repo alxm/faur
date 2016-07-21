@@ -23,25 +23,25 @@
 
 typedef struct AFile AFile;
 
-extern AFile* a_file_open(const char* path, const char* modes);
-extern void a_file_close(AFile* f);
+extern AFile* a_file_open(const char* Path, const char* Modes);
+extern void a_file_close(AFile* File);
 
-extern bool a_file_checkPrefix(AFile* f, const char* prefix);
-extern void a_file_writePrefix(AFile* f, const char* prefix);
+extern bool a_file_checkPrefix(AFile* File, const char* Prefix);
+extern void a_file_writePrefix(AFile* File, const char* Prefix);
 
-extern bool a_file_read(AFile* f, void* buffer, size_t size);
-extern bool a_file_write(AFile* f, const void* buffer, size_t size);
-extern bool a_file_writef(AFile* f, char* fmt, ...);
+extern bool a_file_read(AFile* File, void* Buffer, size_t Size);
+extern bool a_file_write(AFile* File, const void* Buffer, size_t Size);
+extern bool a_file_writef(AFile* File, char* Format, ...);
 
-extern bool a_file_readLine(AFile* f);
-extern char* a_file_getLine(const AFile* f);
+extern bool a_file_readLine(AFile* File);
+extern char* a_file_getLine(const AFile* File);
 
-extern const char* a_file_path(const AFile* f);
-extern const char* a_file_name(const AFile* f);
-extern FILE* a_file_handle(const AFile* f);
+extern const char* a_file_path(const AFile* File);
+extern const char* a_file_name(const AFile* File);
+extern FILE* a_file_handle(const AFile* File);
 
-extern bool a_file_exists(const char* path);
-extern bool a_file_isDir(const char* f);
-extern size_t a_file_size(const char* f);
+extern bool a_file_exists(const char* Path);
+extern bool a_file_isDir(const char* Path);
+extern size_t a_file_size(const char* Path);
 
-extern uint8_t* a_file_toBuffer(const char* path);
+extern uint8_t* a_file_toBuffer(const char* Path);

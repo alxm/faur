@@ -23,25 +23,25 @@
 
 typedef struct ADir ADir;
 
-extern ADir* a_dir_open(const char* path);
-extern ADir* a_dir_openFilter(const char* path, int (*filter)(const struct dirent* f));
-extern void a_dir_close(ADir* d);
+extern ADir* a_dir_open(const char* Path);
+extern ADir* a_dir_openFilter(const char* Path, int (*filter)(const struct dirent* Entry));
+extern void a_dir_close(ADir* Dir);
 
-extern void a_dir_reverse(ADir* d);
+extern void a_dir_reverse(ADir* Dir);
 
-extern const char** a_dir__next(ADir* d);
+extern const char** a_dir__next(ADir* Dir);
 
 enum {A_DIR_NAME, A_DIR_PATH};
 
-#define A_DIR_ITERATE(dir, name, path)                                                              \
-    for(const char** a__pair; (a__pair = a_dir__next(dir)); )                                       \
-        for(const char *name = a__pair[A_DIR_NAME], *path = a__pair[A_DIR_PATH]; name; name = NULL)
+#define A_DIR_ITERATE(Dir, NameVar, PathVar)                                                              \
+    for(const char** a__pair; (a__pair = a_dir__next(Dir)); )                                       \
+        for(const char *NameVar = a__pair[A_DIR_NAME], *PathVar = a__pair[A_DIR_PATH]; NameVar; NameVar = NULL)
 
-extern void a_dir_reset(ADir* d);
+extern void a_dir_reset(ADir* Dir);
 
-extern const char* a_dir_path(const ADir* d);
-extern const char* a_dir_name(const ADir* d);
-extern int a_dir_num(const ADir* d);
+extern const char* a_dir_path(const ADir* Dir);
+extern const char* a_dir_name(const ADir* Dir);
+extern int a_dir_num(const ADir* Dir);
 
-extern bool a_dir_exists(const char* path);
-extern void a_dir_make(const char* path);
+extern bool a_dir_exists(const char* Path);
+extern void a_dir_make(const char* Path);

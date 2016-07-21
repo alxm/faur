@@ -26,25 +26,25 @@ typedef struct ASpriteFrames ASpriteFrames;
 #include "a2x_pack_list.p.h"
 #include "a2x_pack_sprite.p.h"
 
-extern ASpriteFrames* a_spriteframes_new(const ASprite* sheet, int x, int y, unsigned int callsToNextFrame);
-extern void a_spriteframes_free(ASpriteFrames* sf, bool freeSprites);
+extern ASpriteFrames* a_spriteframes_new(const ASprite* Sheet, int X, int Y, unsigned int CallsToNextFrame);
+extern void a_spriteframes_free(ASpriteFrames* Frames, bool DoFreeSprites);
 
-extern ASprite* a_spriteframes_next(ASpriteFrames* sf);
-extern ASprite* a_spriteframes_get(ASpriteFrames* sf);
-extern ASprite* a_spriteframes_geti(ASpriteFrames* sf, int index);
-extern bool a_spriteframes_last(const ASpriteFrames* sf);
+extern ASprite* a_spriteframes_next(ASpriteFrames* Frames);
+extern ASprite* a_spriteframes_get(ASpriteFrames* Frames);
+extern ASprite* a_spriteframes_geti(ASpriteFrames* Frames, int Index);
+extern bool a_spriteframes_last(const ASpriteFrames* Frames);
 
-extern void a_spriteframes_setDir(ASpriteFrames* sf, int dir);
-extern void a_spriteframes_flipDir(ASpriteFrames* sf);
+extern void a_spriteframes_setDirection(ASpriteFrames* Frames, int Direction);
+extern void a_spriteframes_flipDirection(ASpriteFrames* Frames);
 
-extern void a_spriteframes_setSpeed(ASpriteFrames* sf, unsigned int callsToNextFrame);
+extern void a_spriteframes_setSpeed(ASpriteFrames* Frames, unsigned int CallsToNextFrame);
 
-extern void a_spriteframes_pause(ASpriteFrames* sf);
-extern void a_spriteframes_resume(ASpriteFrames* sf);
+extern void a_spriteframes_pause(ASpriteFrames* Frames);
+extern void a_spriteframes_resume(ASpriteFrames* Frames);
 
-extern void a_spriteframes_reset(ASpriteFrames* sf);
+extern void a_spriteframes_reset(ASpriteFrames* Frames);
 
-extern ASpriteFrames* a_spriteframes_clone(const ASpriteFrames* src);
-extern AList* a_spriteframes_sprites(const ASpriteFrames* sf);
+extern ASpriteFrames* a_spriteframes_clone(const ASpriteFrames* Frames);
+extern AList* a_spriteframes_sprites(const ASpriteFrames* Frames);
 
-extern ASprite* a_spriteframes_pop(ASpriteFrames* sf);
+extern ASprite* a_spriteframes_pop(ASpriteFrames* Frames);

@@ -30,4 +30,4 @@
 extern void a_font__init(void);
 extern void a_font__uninit(void);
 
-extern void a_font__safe(const char* text);
+extern void a_font__safe(const char* Text);

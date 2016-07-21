@@ -24,8 +24,8 @@
 typedef struct AStrHash AStrHash;
 
 extern AStrHash* a_strhash_new(void);
-extern void a_strhash_free(AStrHash* h);
+extern void a_strhash_free(AStrHash* Hash);
 
-extern void a_strhash_add(AStrHash* h, const char* key, void* content);
-extern void* a_strhash_get(const AStrHash* h, const char* key);
-extern bool a_strhash_contains(const AStrHash* h, const char* key);
+extern void a_strhash_add(AStrHash* Hash, const char* Key, void* Content);
+extern void* a_strhash_get(const AStrHash* Hash, const char* Key);
+extern bool a_strhash_contains(const AStrHash* Hash, const char* Key);

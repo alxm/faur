@@ -41,72 +41,72 @@ typedef struct ASetting {
 static AStrHash* settings;
 static bool frozen = false;
 
-static int parseBool(const char* val)
+static int parseBool(const char* Value)
 {
-    return a_str_same(val, "yes")
-        || a_str_same(val, "y")
-        || a_str_same(val, "true")
-        || a_str_same(val, "t")
-        || a_str_same(val, "da")
-        || a_str_same(val, "on")
-        || a_str_same(val, "1");
+    return a_str_same(Value, "yes")
+        || a_str_same(Value, "y")
+        || a_str_same(Value, "true")
+        || a_str_same(Value, "t")
+        || a_str_same(Value, "da")
+        || a_str_same(Value, "on")
+        || a_str_same(Value, "1");
 }
 
-static void add(ASettingType type, ASettingUpdate update, const char* key, const char* val)
+static void add(ASettingType Type, ASettingUpdate Update, const char* Key, const char* Value)
 {
     ASetting* const s = a_mem_malloc(sizeof(ASetting));
 
-    s->type = type;
-    s->update = update;
+    s->type = Type;
+    s->update = Update;
 
-    switch(type) {
+    switch(Type) {
         case A_SETTING_INT: {
-            s->value[0].integer = atoi(val);
+            s->value[0].integer = atoi(Value);
             s->value[1].integer = s->value[0].integer;
         } break;
 
         case A_SETTING_BOOL: {
-            s->value[0].boolean = parseBool(val);
+            s->value[0].boolean = parseBool(Value);
             s->value[1].boolean = s->value[0].boolean;
         } break;
 
         case A_SETTING_STR: {
-            strncpy(s->value[0].string, val, sizeof(s->value[0].string) - 1);
+            strncpy(s->value[0].string, Value, sizeof(s->value[0].string) - 1);
             s->value[0].string[sizeof(s->value[0].string) - 1] = '\0';
             strcpy(s->value[1].string, s->value[0].string);
         } break;
     }
 
-    a_strhash_add(settings, key, s);
+    a_strhash_add(settings, Key, s);
 }
 
-static void set(const char* key, const char* val, bool respect)
+static void set(const char* Key, const char* Value, bool HonorFrozen)
 {
-    ASetting* const s = a_strhash_get(settings, key);
+    ASetting* const s = a_strhash_get(settings, Key);
 
     if(s == NULL) {
-        a_out__error("ASetting '%s' does not exist", key);
+        a_out__error("ASetting '%s' does not exist", Key);
         return;
-    } else if(respect
+    } else if(HonorFrozen
         && (s->update == A_SETTING_SET_FROZEN || (s->update == A_SETTING_SET_ONCE && frozen))) {
-        a_out__error("ASetting '%s' is frozen", key);
+        a_out__error("ASetting '%s' is frozen", Key);
         return;
     }
 
     switch(s->type) {
         case A_SETTING_INT: {
             s->value[1].integer = s->value[0].integer;
-            s->value[0].integer = atoi(val);
+            s->value[0].integer = atoi(Value);
         } break;
 
         case A_SETTING_BOOL: {
             s->value[1].boolean = s->value[0].boolean;
-            s->value[0].boolean = parseBool(val);
+            s->value[0].boolean = parseBool(Value);
         } break;
 
         case A_SETTING_STR: {
             strcpy(s->value[1].string, s->value[0].string);
-            strncpy(s->value[0].string, val, sizeof(s->value[0].string) - 1);
+            strncpy(s->value[0].string, Value, sizeof(s->value[0].string) - 1);
         } break;
     }
 
@@ -115,19 +115,19 @@ static void set(const char* key, const char* val, bool respect)
     }
 }
 
-static bool flip(const char* key, bool respect)
+static bool flip(const char* Key, bool HonorFrozen)
 {
-    ASetting* const s = a_strhash_get(settings, key);
+    ASetting* const s = a_strhash_get(settings, Key);
 
     if(s == NULL) {
-        a_out__error("ASetting '%s' does not exist", key);
+        a_out__error("ASetting '%s' does not exist", Key);
         return false;
     } else if(s->type != A_SETTING_BOOL) {
-        a_out__error("ASetting '%s' is not a boolean - can't flip it", key);
+        a_out__error("ASetting '%s' is not a boolean - can't flip it", Key);
         return false;
-    } else if(respect
+    } else if(HonorFrozen
         && (s->update == A_SETTING_SET_FROZEN || (s->update == A_SETTING_SET_ONCE && frozen))) {
-        a_out__error("ASetting '%s' is frozen", key);
+        a_out__error("ASetting '%s' is frozen", Key);
         return false;
     }
 
@@ -182,22 +182,22 @@ void a_settings__freeze(void)
     frozen = true;
 }
 
-void a_settings_set(const char* key, const char* val)
+void a_settings_set(const char* Key, const char* Value)
 {
-    set(key, val, true);
+    set(Key, Value, true);
 }
 
-void a_settings__set(const char* key, const char* val)
+void a_settings__set(const char* Key, const char* Value)
 {
-    set(key, val, false);
+    set(Key, Value, false);
 }
 
-void a_settings__undo(const char* key)
+void a_settings__undo(const char* Key)
 {
-    ASetting* const s = a_strhash_get(settings, key);
+    ASetting* const s = a_strhash_get(settings, Key);
 
     if(s == NULL) {
-        a_out__error("ASetting '%s' does not exist", key);
+        a_out__error("ASetting '%s' does not exist", Key);
         return;
     }
 
@@ -216,55 +216,55 @@ void a_settings__undo(const char* key)
     }
 }
 
-bool a_settings_flip(const char* key)
+bool a_settings_flip(const char* Key)
 {
-    return flip(key, true);
+    return flip(Key, true);
 }
 
-bool a_settings__flip(const char* key)
+bool a_settings__flip(const char* Key)
 {
-    return flip(key, false);
+    return flip(Key, false);
 }
 
-char* a_settings_getString(const char* key)
+char* a_settings_getString(const char* Key)
 {
-    ASetting* const s = a_strhash_get(settings, key);
+    ASetting* const s = a_strhash_get(settings, Key);
 
     if(s == NULL) {
-        a_out__error("ASetting '%s' does not exist", key);
+        a_out__error("ASetting '%s' does not exist", Key);
         return NULL;
     } else if(s->type != A_SETTING_STR) {
-        a_out__error("ASetting '%s' is not a string", key);
+        a_out__error("ASetting '%s' is not a string", Key);
         return NULL;
     } else {
         return s->value[0].string;
     }
 }
 
-bool a_settings_getBool(const char* key)
+bool a_settings_getBool(const char* Key)
 {
-    ASetting* const s = a_strhash_get(settings, key);
+    ASetting* const s = a_strhash_get(settings, Key);
 
     if(s == NULL) {
-        a_out__error("ASetting '%s' does not exist", key);
+        a_out__error("ASetting '%s' does not exist", Key);
         return false;
     } else if(s->type != A_SETTING_BOOL) {
-        a_out__error("ASetting '%s' is not a boolean", key);
+        a_out__error("ASetting '%s' is not a boolean", Key);
         return false;
     } else {
         return s->value[0].boolean;
     }
 }
 
-int a_settings_getInt(const char* key)
+int a_settings_getInt(const char* Key)
 {
-    ASetting* const s = a_strhash_get(settings, key);
+    ASetting* const s = a_strhash_get(settings, Key);
 
     if(s == NULL) {
-        a_out__error("ASetting '%s' does not exist", key);
+        a_out__error("ASetting '%s' does not exist", Key);
         return 0;
     } else if(s->type != A_SETTING_INT) {
-        a_out__error("ASetting '%s' is not an integer", key);
+        a_out__error("ASetting '%s' is not an integer", Key);
         return 0;
     } else {
         return s->value[0].integer;

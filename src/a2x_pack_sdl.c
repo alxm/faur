@@ -63,60 +63,60 @@ static AInputCollection* buttons;
 static AInputCollection* analogs;
 static AInputCollection* touches;
 
-static void addButton(const char* name, int code)
+static void addButton(const char* Name, int Code)
 {
-    ASdlInputInstance* b = a_strhash_get(buttons->names, name);
+    ASdlInputInstance* b = a_strhash_get(buttons->names, Name);
 
     if(!b) {
         b = a_mem_malloc(sizeof(ASdlInputInstance));
 
-        b->name = a_str_dup(name);
+        b->name = a_str_dup(Name);
         b->u.button.numCodes = 1;
-        b->u.button.codes[0] = code;
+        b->u.button.codes[0] = Code;
 
-        a_input__collection_add(buttons, b, name);
+        a_input__collection_add(buttons, b, Name);
     } else {
         if(b->u.button.numCodes < A_MAX_BUTTON_CODES) {
-            b->u.button.codes[b->u.button.numCodes++] = code;
+            b->u.button.codes[b->u.button.numCodes++] = Code;
         } else {
-            a_out__error("Button '%s' has too many codes", name);
+            a_out__error("Button '%s' has too many codes", Name);
         }
     }
 }
 
 #if !A_PLATFORM_GP2X && !A_PLATFORM_WIZ
-static void addAnalog(const char* name, int device_index, char* device_name, int xaxis_index, int yaxis_index)
+static void addAnalog(const char* Name, int DeviceIndex, char* DeviceName, int XAxisIndex, int YAxisIndex)
 {
-    if(device_index == -1 && device_name == NULL) {
-        a_out__error("AInputs must specify device index or name");
+    if(DeviceIndex == -1 && DeviceName == NULL) {
+        a_out__error("AInputs must specify device index or Name");
         return;
     }
 
-    ASdlInputInstance* a = a_strhash_get(analogs->names, name);
+    ASdlInputInstance* a = a_strhash_get(analogs->names, Name);
 
     if(a) {
-        a_out__error("Analog '%s' is already defined", name);
+        a_out__error("Analog '%s' is already defined", Name);
         return;
     }
 
     a = a_mem_malloc(sizeof(ASdlInputInstance));
 
-    a->name = a_str_dup(name);
-    a->device_index = device_index;
-    a->device_name = device_name;
-    a->u.analog.xaxis_index = xaxis_index;
-    a->u.analog.yaxis_index = yaxis_index;
+    a->name = a_str_dup(Name);
+    a->device_index = DeviceIndex;
+    a->device_name = DeviceName;
+    a->u.analog.xaxis_index = XAxisIndex;
+    a->u.analog.yaxis_index = YAxisIndex;
 
-    // check if we requested a specific device by name
-    if(device_name) {
+    // check if we requested a specific device by Name
+    if(DeviceName) {
         for(int j = joysticks_num; j--; ) {
             #if A_USE_LIB_SDL
-                if(a_str_same(device_name, SDL_JoystickName(j))) {
+                if(a_str_same(DeviceName, SDL_JoystickName(j))) {
                     a->device_index = j;
                     break;
                 }
             #elif A_USE_LIB_SDL2
-                if(a_str_same(device_name, SDL_JoystickName(joysticks[j]))) {
+                if(a_str_same(DeviceName, SDL_JoystickName(joysticks[j]))) {
                     a->device_index = j;
                     break;
                 }
@@ -124,24 +124,24 @@ static void addAnalog(const char* name, int device_index, char* device_name, int
         }
     }
 
-    a_input__collection_add(analogs, a, name);
+    a_input__collection_add(analogs, a, Name);
 }
 #endif // !A_PLATFORM_GP2X && !A_PLATFORM_WIZ
 
-static void addTouch(const char* name)
+static void addTouch(const char* Name)
 {
-    ASdlInputInstance* t = a_strhash_get(touches->names, name);
+    ASdlInputInstance* t = a_strhash_get(touches->names, Name);
 
     if(t) {
-        a_out__error("Touch '%s' is already defined", name);
+        a_out__error("Touch '%s' is already defined", Name);
         return;
     }
 
     t = a_mem_malloc(sizeof(ASdlInputInstance));
 
-    t->name = a_str_dup(name);
+    t->name = a_str_dup(Name);
 
-    a_input__collection_add(touches, t, name);
+    a_input__collection_add(touches, t, Name);
 }
 
 void a_sdl__init(void)
@@ -541,9 +541,9 @@ int a_sdl__sound_volumeMax(void)
     return MIX_MAX_VOLUME;
 }
 
-void* a_sdl__music_load(const char* path)
+void* a_sdl__music_load(const char* Path)
 {
-    Mix_Music* m = Mix_LoadMUS(path);
+    Mix_Music* m = Mix_LoadMUS(Path);
 
     if(!m) {
         a_out__error("%s", Mix_GetError());
@@ -552,9 +552,9 @@ void* a_sdl__music_load(const char* path)
     return m;
 }
 
-void a_sdl__music_free(void* m)
+void a_sdl__music_free(void* Music)
 {
-    Mix_FreeMusic(m);
+    Mix_FreeMusic(Music);
 }
 
 void a_sdl__music_setVolume(void)
@@ -562,9 +562,9 @@ void a_sdl__music_setVolume(void)
     Mix_VolumeMusic((float)a_settings_getInt("sound.music.scale") / 100 * a__volume);
 }
 
-void a_sdl__music_play(void* m)
+void a_sdl__music_play(void* Music)
 {
-    Mix_PlayMusic(m, -1);
+    Mix_PlayMusic(Music, -1);
 }
 
 void a_sdl__music_stop(void)
@@ -581,23 +581,23 @@ void a_sdl__music_toggle(void)
     }
 }
 
-void* a_sdl__sfx_loadFromFile(const char* path)
+void* a_sdl__sfx_loadFromFile(const char* Path)
 {
-    Mix_Chunk* sfx = Mix_LoadWAV(path);
+    Mix_Chunk* sfx = Mix_LoadWAV(Path);
 
     if(sfx == NULL) {
-        a_out__error("Mix_LoadWAV(%s) failed: %s", path, SDL_GetError());
+        a_out__error("Mix_LoadWAV(%s) failed: %s", Path, SDL_GetError());
     }
 
     return sfx;
 }
 
-void* a_sdl__sfx_loadFromData(const uint16_t* data, int size)
+void* a_sdl__sfx_loadFromData(const uint16_t* Data, int Size)
 {
     SDL_RWops* rw;
     Mix_Chunk* sfx = NULL;
 
-    rw = SDL_RWFromMem((void*)data, size);
+    rw = SDL_RWFromMem((void*)Data, Size);
     if(rw == NULL) {
         a_out__error("SDL_RWFromMem failed: %s", SDL_GetError());
         goto Done;
@@ -617,19 +617,19 @@ Done:
     return sfx;
 }
 
-void a_sdl__sfx_free(void* s)
+void a_sdl__sfx_free(void* Sfx)
 {
-    Mix_FreeChunk(s);
+    Mix_FreeChunk(Sfx);
 }
 
-void a_sdl__sfx_setVolume(void* s, uint8_t volume)
+void a_sdl__sfx_setVolume(void* Sfx, uint8_t Volume)
 {
-    ((Mix_Chunk*)s)->volume = volume;
+    ((Mix_Chunk*)Sfx)->volume = Volume;
 }
 
-void a_sdl__sfx_play(void* s)
+void a_sdl__sfx_play(void* Sfx)
 {
-    Mix_PlayChannel(-1, s, 0);
+    Mix_PlayChannel(-1, Sfx, 0);
 }
 
 uint32_t a_sdl__getTicks(void)
@@ -637,42 +637,42 @@ uint32_t a_sdl__getTicks(void)
     return SDL_GetTicks();
 }
 
-void a_sdl__delay(uint32_t ms)
+void a_sdl__delay(uint32_t Milis)
 {
-    SDL_Delay(ms);
+    SDL_Delay(Milis);
 }
 
-void a_sdl__input_matchButton(const char* name, AInputInstance* button)
+void a_sdl__input_matchButton(const char* Name, AInputInstance* Button)
 {
-    ASdlInputInstance* i = a_strhash_get(buttons->names, name);
+    ASdlInputInstance* i = a_strhash_get(buttons->names, Name);
 
     if(!i) {
-        a_out__error("No SDL binding for button %s", name);
+        a_out__error("No SDL binding for button %s", Name);
     }
 
-    i->input = button;
+    i->input = Button;
 }
 
-void a_sdl__input_matchAnalog(const char* name, AInputInstance* analog)
+void a_sdl__input_matchAnalog(const char* Name, AInputInstance* Analog)
 {
-    ASdlInputInstance* i = a_strhash_get(analogs->names, name);
+    ASdlInputInstance* i = a_strhash_get(analogs->names, Name);
 
     if(!i) {
-        a_out__error("No SDL binding for analog %s", name);
+        a_out__error("No SDL binding for analog %s", Name);
     }
 
-    i->input = analog;
+    i->input = Analog;
 }
 
-void a_sdl__input_matchTouch(const char* name, AInputInstance* touch)
+void a_sdl__input_matchTouch(const char* Name, AInputInstance* Touch)
 {
-    ASdlInputInstance* i = a_strhash_get(touches->names, name);
+    ASdlInputInstance* i = a_strhash_get(touches->names, Name);
 
     if(!i) {
-        a_out__error("No SDL binding for touchscreen %s", name);
+        a_out__error("No SDL binding for touchscreen %s", Name);
     }
 
-    i->input = touch;
+    i->input = Touch;
 }
 
 void a_sdl__input_get(void)

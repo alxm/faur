@@ -49,17 +49,17 @@ static char* bodystage_names[A_STATE_BODYSTAGE_NUM] = {
     "Paused",
 };
 
-static AStateInstance* a_stateinstance__new(const char* name)
+static AStateInstance* a_stateinstance__new(const char* Name)
 {
-    AStateFunction function = a_strhash_get(functions, name);
+    AStateFunction function = a_strhash_get(functions, Name);
 
     if(function == NULL) {
-        a_out__fatal("State '%s' does not exist", name);
+        a_out__fatal("State '%s' does not exist", Name);
     }
 
     AStateInstance* const s = a_mem_malloc(sizeof(AStateInstance));
 
-    s->name = a_str_dup(name);
+    s->name = a_str_dup(Name);
     s->function = function;
     s->objects = a_strhash_new();
     s->stage = A_STATE_STAGE_INIT;
@@ -68,12 +68,12 @@ static AStateInstance* a_stateinstance__new(const char* name)
     return s;
 }
 
-static void a_stateinstance__free(AStateInstance* s)
+static void a_stateinstance__free(AStateInstance* State)
 {
-    free(s->name);
-    a_strhash_free(s->objects);
+    free(State->name);
+    a_strhash_free(State->objects);
 
-    free(s);
+    free(State);
 }
 
 void a_state__init(void)
@@ -96,37 +96,37 @@ void a_state__uninit(void)
     a_list_free(stack);
 }
 
-void a_state__new(const char* name, void (*function)(void))
+void a_state__new(const char* Name, void (*Function)(void))
 {
-    a_out__state("New state '%s'", name);
-    a_strhash_add(functions, name, function);
+    a_out__state("New state '%s'", Name);
+    a_strhash_add(functions, Name, Function);
 }
 
-void a_state_push(const char* name)
+void a_state_push(const char* Name)
 {
     const AStateInstance* const active = a_list_peek(stack);
 
     if(active && !replacing) {
         if(active->stage == A_STATE_STAGE_FREE) {
-            a_out__state("Push state '%s': already exiting", name);
+            a_out__state("Push state '%s': already exiting", Name);
             return;
         } else if(active->stage != A_STATE_STAGE_BODY) {
-            a_out__fatal("Push state '%s': only call from A_STATE_BODY", name);
+            a_out__fatal("Push state '%s': only call from A_STATE_BODY", Name);
         }
     }
 
     changed = true;
 
-    AStateInstance* const s = a_stateinstance__new(name);
+    AStateInstance* const s = a_stateinstance__new(Name);
 
     if(a_list_isEmpty(stack)) {
-        a_out__state("Push first state '%s'", name);
+        a_out__state("Push first state '%s'", Name);
         a_list_push(stack, s);
     } else if(new_state == NULL) {
-        a_out__state("Push state '%s'", name);
+        a_out__state("Push state '%s'", Name);
         new_state = s;
     } else {
-        a_out__fatal("Push state '%s': already pushed state '%s'", name, new_state->name);
+        a_out__fatal("Push state '%s': already pushed state '%s'", Name, new_state->name);
     }
 }
 
@@ -152,30 +152,30 @@ void a_state_pop(void)
     indent--;
 }
 
-void a_state_replace(const char* name)
+void a_state_replace(const char* Name)
 {
-    if(a_strhash_get(functions, name) == NULL) {
-        a_out__fatal("Replace state '%s': does not exist", name);
+    if(a_strhash_get(functions, Name) == NULL) {
+        a_out__fatal("Replace state '%s': does not exist", Name);
     }
 
     const AStateInstance* const active = a_list_peek(stack);
 
     if(active == NULL) {
-        a_out__fatal("Replace state with '%s': no active state, use a_state_push", name);
+        a_out__fatal("Replace state with '%s': no active state, use a_state_push", Name);
     } else if(active->stage == A_STATE_STAGE_FREE) {
-        a_out__state("Replace state '%s' with '%s': already exiting", active->name, name);
+        a_out__state("Replace state '%s' with '%s': already exiting", active->name, Name);
         return;
     } else if(active->stage != A_STATE_STAGE_BODY) {
-        a_out__fatal("Replace state '%s' with '%s': only call from A_STATE_BODY", active->name, name);
+        a_out__fatal("Replace state '%s' with '%s': only call from A_STATE_BODY", active->name, Name);
     }
 
-    a_out__state("Replace state '%s' with '%s'", active->name, name);
+    a_out__state("Replace state '%s' with '%s'", active->name, Name);
 
     replacing = true;
     indent++;
 
     a_state_pop();
-    a_state_push(name);
+    a_state_push(Name);
 
     replacing = false;
     indent--;
@@ -223,21 +223,21 @@ void a_state_exit(void)
     }
 }
 
-void a_state_add(const char* name, void* object)
+void a_state_add(const char* Name, void* Object)
 {
     const AStateInstance* const s = a_list_peek(stack);
 
     if(s) {
-        a_strhash_add(s->objects, name, object);
+        a_strhash_add(s->objects, Name, Object);
     }
 }
 
-void* a_state_get(const char* name)
+void* a_state_get(const char* Name)
 {
     const AStateInstance* const s = a_list_peek(stack);
 
     if(s) {
-        return a_strhash_get(s->objects, name);
+        return a_strhash_get(s->objects, Name);
     }
 
     return NULL;
@@ -284,14 +284,16 @@ AStateBodyStage a_state__bodystage(void)
     return A_STATE_BODYSTAGE_INVALID;
 }
 
-bool a_state__setStage(AStateInstance* state, AStateStage stage)
+bool a_state__setStage(AStateInstance* State, AStateStage Stage)
 {
-    AStateInstance* const s = state ? state : a_list_peek(stack);
+    if(State == NULL) {
+        State = a_list_peek(stack);
+    }
 
-    if(s) {
+    if(State) {
         a_out__state("State '%s' transitioning from %s to %s",
-            s->name, stage_names[s->stage], stage_names[stage]);
-        s->stage = stage;
+            State->name, stage_names[State->stage], stage_names[Stage]);
+        State->stage = Stage;
 
         return true;
     }
@@ -299,11 +301,11 @@ bool a_state__setStage(AStateInstance* state, AStateStage stage)
     return false;
 }
 
-void a_state__setBodyStage(AStateInstance* state, AStateBodyStage bodystage)
+void a_state__setBodyStage(AStateInstance* State, AStateBodyStage Bodystage)
 {
     a_out__state("State '%s' transitioning from %s to %s",
-        state->name, bodystage_names[state->bodystage], bodystage_names[bodystage]);
-    state->bodystage = bodystage;
+        State->name, bodystage_names[State->bodystage], bodystage_names[Bodystage]);
+    State->bodystage = Bodystage;
 }
 
 bool a_state__unchanged(void)

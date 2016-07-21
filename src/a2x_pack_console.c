@@ -42,20 +42,20 @@ static struct {
     {"[ a2x Stt ] ", A_FONT_BLUE},
 };
 
-static ALine* line_new(AConsoleOutType type, const char* text)
+static ALine* line_new(AConsoleOutType Type, const char* Text)
 {
     ALine* line = a_mem_malloc(sizeof(ALine));
 
-    line->type = type;
-    line->text = a_str_dup(text);
+    line->type = Type;
+    line->text = a_str_dup(Text);
 
     return line;
 }
 
-static void line_free(ALine* line)
+static void line_free(ALine* Line)
 {
-    free(line->text);
-    free(line);
+    free(Line->text);
+    free(Line);
 }
 
 void a_console__init(void)
@@ -76,13 +76,13 @@ void a_console__uninit(void)
     a_list_free(lines);
 }
 
-void a_console__write(AConsoleOutType type, const char* text)
+void a_console__write(AConsoleOutType Type, const char* Text)
 {
     if(!enabled) {
         return;
     }
 
-    a_list_addLast(lines, line_new(type, text));
+    a_list_addLast(lines, line_new(Type, Text));
 
     if(a_list_size(lines) > linesPerScreen) {
         line_free(a_list_pop(lines));

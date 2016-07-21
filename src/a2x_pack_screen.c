@@ -131,36 +131,36 @@ APixel* a_screen_new(void)
     return a_mem_malloc(A_SCREEN_SIZE);
 }
 
-void a_screen_copy(APixel* dst, const APixel* src)
+void a_screen_copy(APixel* Dst, const APixel* Src)
 {
-    memcpy(dst, src, A_SCREEN_SIZE);
+    memcpy(Dst, Src, A_SCREEN_SIZE);
 }
 
-void a_screen_copyPart(APixel* dst, int x, int y, int w, int h)
+void a_screen_copyPart(APixel* Dst, int X, int Y, int Width, int Height)
 {
-    const APixel* screen = a_pixels + y * a_width + x;
+    const APixel* screen = a_pixels + Y * a_width + X;
 
-    for(int i = h; i--; ) {
-        memcpy(dst, screen, w * sizeof(APixel));
-        dst += w;
+    for(int i = Height; i--; ) {
+        memcpy(Dst, screen, Width * sizeof(APixel));
+        Dst += Width;
         screen += a_width;
     }
 }
 
-void a_screen_setTarget(APixel* p, int w, int h)
+void a_screen_setTarget(APixel* Pixels, int Width, int Height)
 {
-    a_pixels = p;
-    a_width = w;
-    a_height = h;
+    a_pixels = Pixels;
+    a_width = Width;
+    a_height = Height;
 }
 
-void a_screen_setTargetSprite(ASprite* s)
+void a_screen_setTargetSprite(ASprite* Sprite)
 {
-    a_pixels = s->data;
-    a_width = s->w;
-    a_height = s->h;
+    a_pixels = Sprite->data;
+    a_width = Sprite->w;
+    a_height = Sprite->h;
 
-    spriteTarget = s;
+    spriteTarget = Sprite;
 }
 
 void a_screen_resetTarget(void)

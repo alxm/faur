@@ -47,24 +47,24 @@ typedef enum AFontDefaults {
     A_FONT_MAX
 } AFontDefaults;
 
-extern int a_font_load(const ASprite* sheet, int x, int y, AFontLoad loader);
-extern int a_font_copy(int font, APixel color);
+extern int a_font_load(const ASprite* Sheet, int X, int Y, AFontLoad Loader);
+extern int a_font_copy(int Font, APixel Color);
 
-extern void a_font_setFace(int f);
-extern void a_font_setAlign(AFontAlign a);
-extern void a_font_setCoords(int x, int y);
+extern void a_font_setFace(int Font);
+extern void a_font_setAlign(AFontAlign Align);
+extern void a_font_setCoords(int X, int Y);
 
 extern int a_font_getX(void);
 
-extern int a_font_width(const char* text);
-extern int a_font_widthf(const char* fmt, ...);
+extern int a_font_width(const char* Text);
+extern int a_font_widthf(const char* Format, ...);
 
-extern void a_font_text(const char* text);
-extern void a_font_textf(const char* fmt, ...);
+extern void a_font_text(const char* Text);
+extern void a_font_textf(const char* Format, ...);
 
-extern void a_font_fixed(int width, const char* text);
+extern void a_font_fixed(int Width, const char* Text);
 
-extern void a_font_int(int number);
-extern void a_font_float(float number);
-extern void a_font_double(double number);
-extern void a_font_char(char ch);
+extern void a_font_int(int Number);
+extern void a_font_float(float Number);
+extern void a_font_double(double Number);
+extern void a_font_char(char Character);
