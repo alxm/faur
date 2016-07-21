@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include "a2x_app_includes.h"
+#include "a2x_system_includes.h"
 
 #if A_PLATFORM_LINUXPC
     #define A_PIXEL_BPP 32
