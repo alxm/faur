@@ -19,19 +19,19 @@
 
 #include "a2x_pack_state.v.h"
 
-typedef void (*StateFunction)(void);
+typedef void (*AStateFunction)(void);
 
-struct StateInstance {
+struct AStateInstance {
     char* name;
-    StateFunction function;
-    StrHash* objects;
-    StateStage stage;
-    StateBodyStage bodystage;
+    AStateFunction function;
+    AStrHash* objects;
+    AStateStage stage;
+    AStateBodyStage bodystage;
 };
 
-static StrHash* functions;
-static List* stack;
-static StateInstance* new_state;
+static AStrHash* functions;
+static AList* stack;
+static AStateInstance* new_state;
 static bool changed;
 static bool replacing;
 static int indent;
@@ -49,15 +49,15 @@ static char* bodystage_names[A_STATE_BODYSTAGE_NUM] = {
     "Paused",
 };
 
-static StateInstance* a_stateinstance__new(const char* name)
+static AStateInstance* a_stateinstance__new(const char* name)
 {
-    StateFunction function = a_strhash_get(functions, name);
+    AStateFunction function = a_strhash_get(functions, name);
 
     if(function == NULL) {
         a_out__fatal("State '%s' does not exist", name);
     }
 
-    StateInstance* const s = a_mem_malloc(sizeof(StateInstance));
+    AStateInstance* const s = a_mem_malloc(sizeof(AStateInstance));
 
     s->name = a_str_dup(name);
     s->function = function;
@@ -68,7 +68,7 @@ static StateInstance* a_stateinstance__new(const char* name)
     return s;
 }
 
-static void a_stateinstance__free(StateInstance* s)
+static void a_stateinstance__free(AStateInstance* s)
 {
     free(s->name);
     a_strhash_free(s->objects);
@@ -90,7 +90,7 @@ void a_state__uninit(void)
 {
     a_strhash_free(functions);
 
-    A_LIST_ITERATE(stack, StateInstance, s) {
+    A_LIST_ITERATE(stack, AStateInstance, s) {
         a_stateinstance__free(s);
     }
     a_list_free(stack);
@@ -104,7 +104,7 @@ void a_state__new(const char* name, void (*function)(void))
 
 void a_state_push(const char* name)
 {
-    const StateInstance* const active = a_list_peek(stack);
+    const AStateInstance* const active = a_list_peek(stack);
 
     if(active && !replacing) {
         if(active->stage == A_STATE_STAGE_FREE) {
@@ -117,7 +117,7 @@ void a_state_push(const char* name)
 
     changed = true;
 
-    StateInstance* const s = a_stateinstance__new(name);
+    AStateInstance* const s = a_stateinstance__new(name);
 
     if(a_list_isEmpty(stack)) {
         a_out__state("Push first state '%s'", name);
@@ -132,7 +132,7 @@ void a_state_push(const char* name)
 
 void a_state_pop(void)
 {
-    StateInstance* const active = a_list_peek(stack);
+    AStateInstance* const active = a_list_peek(stack);
 
     if(active == NULL) {
         a_out__fatal("Pop state: no active state");
@@ -158,7 +158,7 @@ void a_state_replace(const char* name)
         a_out__fatal("Replace state '%s': does not exist", name);
     }
 
-    const StateInstance* const active = a_list_peek(stack);
+    const AStateInstance* const active = a_list_peek(stack);
 
     if(active == NULL) {
         a_out__fatal("Replace state with '%s': no active state, use a_state_push", name);
@@ -183,7 +183,7 @@ void a_state_replace(const char* name)
 
 void a_state_pause(void)
 {
-    StateInstance* const active = a_list_peek(stack);
+    AStateInstance* const active = a_list_peek(stack);
 
     if(active == NULL) {
         a_out__fatal("No active state to pause");
@@ -197,7 +197,7 @@ void a_state_pause(void)
 
 void a_state_resume(void)
 {
-    StateInstance* const active = a_list_peek(stack);
+    AStateInstance* const active = a_list_peek(stack);
 
     if(active == NULL) {
         a_out__fatal("No active state to resume");
@@ -214,7 +214,7 @@ void a_state_exit(void)
     changed = true;
     a_out__state("Telling all states to exit");
 
-    A_LIST_ITERATE(stack, StateInstance, s) {
+    A_LIST_ITERATE(stack, AStateInstance, s) {
         a_out__state("State '%s' exiting", s->name);
 
         indent++;
@@ -225,7 +225,7 @@ void a_state_exit(void)
 
 void a_state_add(const char* name, void* object)
 {
-    const StateInstance* const s = a_list_peek(stack);
+    const AStateInstance* const s = a_list_peek(stack);
 
     if(s) {
         a_strhash_add(s->objects, name, object);
@@ -234,7 +234,7 @@ void a_state_add(const char* name, void* object)
 
 void* a_state_get(const char* name)
 {
-    const StateInstance* const s = a_list_peek(stack);
+    const AStateInstance* const s = a_list_peek(stack);
 
     if(s) {
         return a_strhash_get(s->objects, name);
@@ -246,7 +246,7 @@ void* a_state_get(const char* name)
 void a_state__run(void)
 {
     while(!a_list_isEmpty(stack)) {
-        const StateInstance* const s = a_list_peek(stack);
+        const AStateInstance* const s = a_list_peek(stack);
 
         changed = false;
         s->function();
@@ -262,9 +262,9 @@ void a_state__run(void)
     }
 }
 
-StateStage a_state__stage(void)
+AStateStage a_state__stage(void)
 {
-    const StateInstance* const s = a_list_peek(stack);
+    const AStateInstance* const s = a_list_peek(stack);
 
     if(s) {
         return s->stage;
@@ -273,9 +273,9 @@ StateStage a_state__stage(void)
     return A_STATE_STAGE_INVALID;
 }
 
-StateBodyStage a_state__bodystage(void)
+AStateBodyStage a_state__bodystage(void)
 {
-    const StateInstance* const s = a_list_peek(stack);
+    const AStateInstance* const s = a_list_peek(stack);
 
     if(s) {
         return s->bodystage;
@@ -284,9 +284,9 @@ StateBodyStage a_state__bodystage(void)
     return A_STATE_BODYSTAGE_INVALID;
 }
 
-bool a_state__setStage(StateInstance* state, StateStage stage)
+bool a_state__setStage(AStateInstance* state, AStateStage stage)
 {
-    StateInstance* const s = state ? state : a_list_peek(stack);
+    AStateInstance* const s = state ? state : a_list_peek(stack);
 
     if(s) {
         a_out__state("State '%s' transitioning from %s to %s",
@@ -299,7 +299,7 @@ bool a_state__setStage(StateInstance* state, StateStage stage)
     return false;
 }
 
-void a_state__setBodyStage(StateInstance* state, StateBodyStage bodystage)
+void a_state__setBodyStage(AStateInstance* state, AStateBodyStage bodystage)
 {
     a_out__state("State '%s' transitioning from %s to %s",
         state->name, bodystage_names[state->bodystage], bodystage_names[bodystage]);

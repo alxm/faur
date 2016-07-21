@@ -21,12 +21,12 @@
 
 #include "a2x_app_includes.h"
 
-typedef struct StringTok StringTok;
+typedef struct AStringTok AStringTok;
 
-extern StringTok* a_strtok_new(const char* string, const char* delims);
-extern void a_strtok_free(StringTok* t);
+extern AStringTok* a_strtok_new(const char* string, const char* delims);
+extern void a_strtok_free(AStringTok* t);
 
-extern char* a_strtok__get(StringTok* t);
+extern char* a_strtok__get(AStringTok* t);
 
 #define A_STRTOK_ITERATE(tok, var)                                     \
     for(char* var = a_strtok__get(tok); var; var = a_strtok__get(tok))

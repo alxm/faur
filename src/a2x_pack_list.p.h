@@ -21,33 +21,33 @@
 
 #include "a2x_app_includes.h"
 
-typedef struct List List;
-typedef struct ListNode ListNode;
+typedef struct AList AList;
+typedef struct AListNode AListNode;
 
-extern List* a_list_new(void);
-extern void a_list_free(List* list);
-extern void a_list_empty(List* list);
+extern AList* a_list_new(void);
+extern void a_list_free(AList* list);
+extern void a_list_empty(AList* list);
 
-extern ListNode* a_list_addFirst(List* list, void* content);
-extern ListNode* a_list_addLast(List* list, void* content);
+extern AListNode* a_list_addFirst(AList* list, void* content);
+extern AListNode* a_list_addLast(AList* list, void* content);
 
-extern void a_list_remove(List* list, const void* v);
-extern void* a_list_removeFirst(List* list);
-extern void* a_list_removeLast(List* list);
-extern void a_list_removeNode(ListNode* node);
+extern void a_list_remove(AList* list, const void* v);
+extern void* a_list_removeFirst(AList* list);
+extern void* a_list_removeLast(AList* list);
+extern void a_list_removeNode(AListNode* node);
 
 #define a_list_push(l, c) a_list_addFirst(l, c)
 #define a_list_pop(l)     a_list_removeFirst(l)
 #define a_list_peek(l)    a_list_first(l)
 
-extern List* a_list_clone(const List* list);
-extern void a_list_reverse(List* list);
-extern void** a_list_array(List* list);
+extern AList* a_list_clone(const AList* list);
+extern void a_list_reverse(AList* list);
+extern void** a_list_array(AList* list);
 
-extern void* a_list_first(const List* list);
-extern void* a_list_last(const List* list);
+extern void* a_list_first(const AList* list);
+extern void* a_list_last(const AList* list);
 
-extern void* a_list_get(const List* list, int index);
+extern void* a_list_get(const AList* list, int index);
 
-extern int a_list_size(const List* list);
-extern bool a_list_isEmpty(const List* list);
+extern int a_list_size(const AList* list);
+extern bool a_list_isEmpty(const AList* list);

@@ -21,11 +21,11 @@
 
 #include "a2x_app_includes.h"
 
-typedef struct Timer Timer;
+typedef struct ATimer ATimer;
 
-extern Timer* a_timer_new(uint32_t milisPeriod);
-extern void a_timer_free(Timer* t);
+extern ATimer* a_timer_new(uint32_t milisPeriod);
+extern void a_timer_free(ATimer* t);
 
-extern void a_timer_start(Timer* t);
-extern bool a_timer_check(Timer* t);
-extern uint32_t a_timer_diff(Timer* t);
+extern void a_timer_start(ATimer* t);
+extern bool a_timer_check(ATimer* t);
+extern uint32_t a_timer_diff(ATimer* t);

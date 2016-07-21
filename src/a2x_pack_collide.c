@@ -19,22 +19,22 @@
 
 #include "a2x_pack_collide.v.h"
 
-struct ColMap {
+struct AColMap {
     int w, h; // width and height of map, in submaps
     int bitShift; // right-shift object coords by this to get submap index
-    List*** submaps; // List*[h][w] of ColObjects
+    AList*** submaps; // AList*[h][w] of AColObjects
 };
 
-struct ColObject {
-    const ColMap* colmap;
+struct AColObject {
+    const AColMap* colmap;
     int x, y; // coords on the Colmap
-    List* nodes; // ListNodes from submaps this object is in
-    void* parent; // the game object that owns this ColObject
+    AList* nodes; // AListNodes from submaps this object is in
+    void* parent; // the game object that owns this AColObject
 };
 
-ColMap* a_colmap_new(int width, int height, int maxObjectDim)
+AColMap* a_colmap_new(int width, int height, int maxObjectDim)
 {
-    ColMap* const m = a_mem_malloc(sizeof(ColMap));
+    AColMap* const m = a_mem_malloc(sizeof(AColMap));
 
     #define nextpow(value)           \
     ({                               \
@@ -47,10 +47,10 @@ ColMap* a_colmap_new(int width, int height, int maxObjectDim)
     m->w = 1 << a_math_max(0, nextpow(width) - m->bitShift);
     m->h = 1 << a_math_max(0, nextpow(height) - m->bitShift);
 
-    m->submaps = a_mem_malloc(m->h * sizeof(List**));
+    m->submaps = a_mem_malloc(m->h * sizeof(AList**));
 
     for(int i = m->h; i--; ) {
-        m->submaps[i] = a_mem_malloc(m->w * sizeof(List*));
+        m->submaps[i] = a_mem_malloc(m->w * sizeof(AList*));
 
         for(int j = m->w; j--; ) {
             m->submaps[i][j] = a_list_new();
@@ -60,7 +60,7 @@ ColMap* a_colmap_new(int width, int height, int maxObjectDim)
     return m;
 }
 
-void a_colmap_free(ColMap* m)
+void a_colmap_free(AColMap* m)
 {
     for(int i = m->h; i--; ) {
         for(int j = m->w; j--; ) {
@@ -74,9 +74,9 @@ void a_colmap_free(ColMap* m)
     free(m);
 }
 
-ColObject* a_colobject_new(const ColMap* m, void* parent)
+AColObject* a_colobject_new(const AColMap* m, void* parent)
 {
-    ColObject* const o = a_mem_malloc(sizeof(ColObject));
+    AColObject* const o = a_mem_malloc(sizeof(AColObject));
 
     o->colmap = m;
     o->nodes = a_list_new();
@@ -85,10 +85,10 @@ ColObject* a_colobject_new(const ColMap* m, void* parent)
     return o;
 }
 
-void a_colobject_free(ColObject* o)
+void a_colobject_free(AColObject* o)
 {
     // Remove object from any lists it is in
-    A_LIST_ITERATE(o->nodes, ListNode, n) {
+    A_LIST_ITERATE(o->nodes, AListNode, n) {
         a_list_removeNode(n);
     }
 
@@ -96,14 +96,14 @@ void a_colobject_free(ColObject* o)
     free(o);
 }
 
-void a_colobject_setCoords(ColObject* o, int x, int y)
+void a_colobject_setCoords(AColObject* o, int x, int y)
 {
-    const ColMap* const m = o->colmap;
-    List* const pt_nodes = o->nodes;
-    List*** const submaps = m->submaps;
+    const AColMap* const m = o->colmap;
+    AList* const pt_nodes = o->nodes;
+    AList*** const submaps = m->submaps;
 
     // remove point from all the submaps it was in
-    A_LIST_ITERATE(pt_nodes, ListNode, n) {
+    A_LIST_ITERATE(pt_nodes, AListNode, n) {
         a_list_removeNode(n);
     }
 
@@ -152,14 +152,14 @@ void a_colobject_setCoords(ColObject* o, int x, int y)
     }
 }
 
-void* a_colobject__getParent(const ColObject* o)
+void* a_colobject__getParent(const AColObject* o)
 {
     return o->parent;
 }
 
-List* a_colobject__getColList(const ColObject* o)
+AList* a_colobject__getColList(const AColObject* o)
 {
-    const ColMap* const m = o->colmap;
+    const AColMap* const m = o->colmap;
 
     const int submap_x = a_math_constrain(o->x >> m->bitShift, 0, m->w - 1);
     const int submap_y = a_math_constrain(o->y >> m->bitShift, 0, m->h - 1);

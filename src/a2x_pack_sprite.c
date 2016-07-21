@@ -19,7 +19,7 @@
 
 #include "a2x_pack_sprite.v.h"
 
-static List* sprites;
+static AList* sprites;
 
 void a_sprite__init(void)
 {
@@ -28,19 +28,19 @@ void a_sprite__init(void)
 
 void a_sprite__uninit(void)
 {
-    A_LIST_ITERATE(sprites, Sprite, s) {
+    A_LIST_ITERATE(sprites, ASprite, s) {
         a_sprite__free(s);
     }
 
     a_list_free(sprites);
 }
 
-Sprite* a_sprite_fromFile(const char* path)
+ASprite* a_sprite_fromFile(const char* path)
 {
     int w = 0;
     int h = 0;
-    Sprite* s;
-    Pixel* pixels = NULL;
+    ASprite* s;
+    APixel* pixels = NULL;
 
     a_png_readFile(path, &pixels, &w, &h);
 
@@ -54,12 +54,12 @@ Sprite* a_sprite_fromFile(const char* path)
     return s;
 }
 
-Sprite* a_sprite_fromData(const uint8_t* data)
+ASprite* a_sprite_fromData(const uint8_t* data)
 {
     int w;
     int h;
-    Sprite* s;
-    Pixel* pixels = NULL;
+    ASprite* s;
+    APixel* pixels = NULL;
 
     a_png_readMemory(data, &pixels, &w, &h);
 
@@ -73,22 +73,22 @@ Sprite* a_sprite_fromData(const uint8_t* data)
     return s;
 }
 
-Sprite* a_sprite_fromPixels(Pixel* pixels, int w, int h)
+ASprite* a_sprite_fromPixels(APixel* pixels, int w, int h)
 {
-    Sprite* s = a_sprite_blank(w, h);
+    ASprite* s = a_sprite_blank(w, h);
 
-    memcpy(s->data, pixels, w * h * sizeof(Pixel));
+    memcpy(s->data, pixels, w * h * sizeof(APixel));
     a_sprite_refresh(s);
 
     return s;
 }
 
-Sprite* a_sprite_new(const Sprite* sheet, int x, int y)
+ASprite* a_sprite_new(const ASprite* sheet, int x, int y)
 {
     return a_sprite_zoomed(sheet, x, y, 1);
 }
 
-Sprite* a_sprite_zoomed(const Sprite* sheet, int x, int y, int zoom)
+ASprite* a_sprite_zoomed(const ASprite* sheet, int x, int y, int zoom)
 {
     int w = 0;
     int h = 0;
@@ -97,12 +97,12 @@ Sprite* a_sprite_zoomed(const Sprite* sheet, int x, int y, int zoom)
     const int height = sheet->h;
 
     for(int sheetx = x; sheetx < width; sheetx++) {
-        const Pixel hPixel = a_sprite__getPixel(sheet, sheetx, y);
+        const APixel hPixel = a_sprite__getPixel(sheet, sheetx, y);
 
         // reached right edge
         if(hPixel == A_SPRITE_LIMIT || hPixel == A_SPRITE_END) {
             for(int sheety = y; sheety < height; sheety++) {
-                const Pixel vPixel = a_sprite__getPixel(sheet, x, sheety);
+                const APixel vPixel = a_sprite__getPixel(sheet, x, sheety);
 
                 // reached bottom edge
                 if(vPixel == A_SPRITE_LIMIT) {
@@ -122,7 +122,7 @@ Sprite* a_sprite_zoomed(const Sprite* sheet, int x, int y, int zoom)
             w = width;
             h = height;
         } else {
-            a_out__error("Sprite coords %d, %d are invalid", x, y);
+            a_out__error("ASprite coords %d, %d are invalid", x, y);
             return NULL;
         }
     }
@@ -130,17 +130,17 @@ Sprite* a_sprite_zoomed(const Sprite* sheet, int x, int y, int zoom)
     const int spritew = w * zoom;
     const int spriteh = h * zoom;
 
-    Sprite* const s = a_sprite_blank(spritew, spriteh);
+    ASprite* const s = a_sprite_blank(spritew, spriteh);
 
     const int wp = sheet->w;
-    const Pixel* const src = sheet->data;
-    Pixel* const dst = s->data;
+    const APixel* const src = sheet->data;
+    APixel* const dst = s->data;
 
     // put the pixels on
 
     for(int i = y; i < y + h; i++) {
         for(int j = x; j < x + w; j++) {
-            const Pixel pixel = *(src + i * wp + j);
+            const APixel pixel = *(src + i * wp + j);
 
             const int dy = (i - y) * zoom;
             const int dx = (j - x) * zoom;
@@ -158,9 +158,9 @@ Sprite* a_sprite_zoomed(const Sprite* sheet, int x, int y, int zoom)
     return s;
 }
 
-Sprite* a_sprite_blank(int w, int h)
+ASprite* a_sprite_blank(int w, int h)
 {
-    Sprite* const s = a_mem_malloc(sizeof(Sprite) + w * h * sizeof(Pixel));
+    ASprite* const s = a_mem_malloc(sizeof(ASprite) + w * h * sizeof(APixel));
 
     s->w = w;
     s->wLog2 = (int)log2f(w);
@@ -178,64 +178,64 @@ Sprite* a_sprite_blank(int w, int h)
     return s;
 }
 
-void a_sprite_free(Sprite* s)
+void a_sprite_free(ASprite* s)
 {
     a_list_removeNode(s->node);
     a_sprite__free(s);
 }
 
-void a_sprite__free(Sprite* s)
+void a_sprite__free(ASprite* s)
 {
     free(s->spans);
     free(s);
 }
 
-int a_sprite_w(const Sprite* s)
+int a_sprite_w(const ASprite* s)
 {
     return s->w;
 }
 
-int a_sprite_wLog2(const Sprite* s)
+int a_sprite_wLog2(const ASprite* s)
 {
     return s->wLog2;
 }
 
-int a_sprite_h(const Sprite* s)
+int a_sprite_h(const ASprite* s)
 {
     return s->h;
 }
 
-Pixel* a_sprite_data(Sprite* s)
+APixel* a_sprite_data(ASprite* s)
 {
     return s->data;
 }
 
-uint8_t a_sprite_getAlpha(const Sprite* s)
+uint8_t a_sprite_getAlpha(const ASprite* s)
 {
     return s->alpha;
 }
 
-void a_sprite_setAlpha(Sprite* s, uint8_t a)
+void a_sprite_setAlpha(ASprite* s, uint8_t a)
 {
     s->alpha = a;
 }
 
-Pixel a_sprite_getPixel(const Sprite* s, int x, int y)
+APixel a_sprite_getPixel(const ASprite* s, int x, int y)
 {
     return *(s->data + y * s->w + x);
 }
 
-void a_sprite_refresh(Sprite* s)
+void a_sprite_refresh(ASprite* s)
 {
     const int w = s->w;
     const int h = s->h;
-    const Pixel* const dst = s->data;
+    const APixel* const dst = s->data;
 
     // Spans format:
     // [1 (draw) / 0 (transp)][[len]...][0 (end line)]
 
     unsigned int num = 0;
-    const Pixel* dest = dst;
+    const APixel* dest = dst;
 
     for(int y = h; y--; ) {
         num += 3; // transparency start + first len + end line
@@ -278,12 +278,12 @@ void a_sprite_refresh(Sprite* s)
     }
 }
 
-Sprite* a_sprite_clone(const Sprite* src)
+ASprite* a_sprite_clone(const ASprite* src)
 {
-    Sprite* const s = a_sprite_blank(src->w, src->h);
+    ASprite* const s = a_sprite_blank(src->w, src->h);
 
     s->alpha = src->alpha;
-    memcpy(s->data, src->data, src->w * src->h * sizeof(Pixel));
+    memcpy(s->data, src->data, src->w * src->h * sizeof(APixel));
     a_sprite_refresh(s);
 
     return s;

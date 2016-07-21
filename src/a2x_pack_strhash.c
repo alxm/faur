@@ -21,16 +21,16 @@
 
 #define A_STRHASH_NUM 256
 
-typedef struct Entry Entry;
+typedef struct AEntry AEntry;
 
-struct StrHash {
-    Entry* entries[A_STRHASH_NUM];
+struct AStrHash {
+    AEntry* entries[A_STRHASH_NUM];
 };
 
-struct Entry {
+struct AEntry {
     char* key;
     void* content;
-    Entry* next;
+    AEntry* next;
 };
 
 #define getSlot(k)                  \
@@ -43,9 +43,9 @@ struct Entry {
     s;                              \
 })
 
-StrHash* a_strhash_new(void)
+AStrHash* a_strhash_new(void)
 {
-    StrHash* const h = a_mem_malloc(sizeof(StrHash));
+    AStrHash* const h = a_mem_malloc(sizeof(AStrHash));
 
     for(int i = A_STRHASH_NUM; i--; ) {
         h->entries[i] = NULL;
@@ -54,13 +54,13 @@ StrHash* a_strhash_new(void)
     return h;
 }
 
-void a_strhash_free(StrHash* h)
+void a_strhash_free(AStrHash* h)
 {
     for(int i = A_STRHASH_NUM; i--; ) {
-        Entry* e = h->entries[i];
+        AEntry* e = h->entries[i];
 
         while(e) {
-            Entry* const save = e->next;
+            AEntry* const save = e->next;
 
             free(e->key);
             free(e);
@@ -72,12 +72,12 @@ void a_strhash_free(StrHash* h)
     free(h);
 }
 
-void a_strhash_add(StrHash* h, const char* key, void* content)
+void a_strhash_add(AStrHash* h, const char* key, void* content)
 {
     const uint8_t slot = getSlot(key);
-    Entry* const entry = h->entries[slot];
+    AEntry* const entry = h->entries[slot];
 
-    Entry* const e = a_mem_malloc(sizeof(Entry));
+    AEntry* const e = a_mem_malloc(sizeof(AEntry));
 
     e->key = a_str_dup(key);
     e->content = content;
@@ -86,9 +86,9 @@ void a_strhash_add(StrHash* h, const char* key, void* content)
     h->entries[slot] = e;
 }
 
-void* a_strhash_get(const StrHash* h, const char* key)
+void* a_strhash_get(const AStrHash* h, const char* key)
 {
-    for(Entry* e = h->entries[getSlot(key)]; e; e = e->next) {
+    for(AEntry* e = h->entries[getSlot(key)]; e; e = e->next) {
         if(a_str_same(key, e->key)) {
             return e->content;
         }
@@ -97,9 +97,9 @@ void* a_strhash_get(const StrHash* h, const char* key)
     return NULL;
 }
 
-bool a_strhash_contains(const StrHash* h, const char* key)
+bool a_strhash_contains(const AStrHash* h, const char* key)
 {
-    for(Entry* e = h->entries[getSlot(key)]; e; e = e->next) {
+    for(AEntry* e = h->entries[getSlot(key)]; e; e = e->next) {
         if(a_str_same(key, e->key)) {
             return true;
         }

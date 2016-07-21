@@ -23,12 +23,12 @@
 
 #include "a2x_pack_sprite.p.h"
 
-typedef void (*Blitter)(const Sprite* s, int x, int y);
+typedef void (*ABlitter)(const ASprite* s, int x, int y);
 
-extern Blitter a_blit;
+extern ABlitter a_blit;
 
 extern void a_blit_pixel(bool p);
 
-extern void a_blit_c(const Sprite* s);
-extern void a_blit_ch(const Sprite* s, int y);
-extern void a_blit_cv(const Sprite* s, int x);
+extern void a_blit_c(const ASprite* s);
+extern void a_blit_ch(const ASprite* s, int y);
+extern void a_blit_cv(const ASprite* s, int x);

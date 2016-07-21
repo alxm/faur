@@ -21,26 +21,26 @@
 
 #include <png.h>
 
-typedef struct ByteStream {
+typedef struct AByteStream {
     const uint8_t* data;
     int offset;
-} ByteStream;
+} AByteStream;
 
 static void readFunction(png_structp png, png_bytep data, png_size_t length)
 {
-    ByteStream* const stream = png_get_io_ptr(png);
+    AByteStream* const stream = png_get_io_ptr(png);
 
     memcpy(data, stream->data + stream->offset, length);
     stream->offset += length;
 }
 
-static void pngToPixels(png_structp png, png_infop info, Pixel** pixels, int* width, int* height)
+static void pngToPixels(png_structp png, png_infop info, APixel** pixels, int* width, int* height)
 {
     const int w = png_get_image_width(png, info);
     const int h = png_get_image_height(png, info);
     const int channels = png_get_channels(png, info);
 
-    Pixel* const px = a_mem_malloc(w * h * sizeof(Pixel));
+    APixel* const px = a_mem_malloc(w * h * sizeof(APixel));
     png_bytepp rows = png_get_rows(png, info);
 
     for(int i = 0; i < h; i++) {
@@ -58,9 +58,9 @@ static void pngToPixels(png_structp png, png_infop info, Pixel** pixels, int* wi
     *pixels = px;
 }
 
-void a_png_readFile(const char* path, Pixel** pixels, int* width, int* height)
+void a_png_readFile(const char* path, APixel** pixels, int* width, int* height)
 {
-    File* const f = a_file_open(path, "r");
+    AFile* const f = a_file_open(path, "r");
 
     png_structp png = NULL;
     png_infop info = NULL;
@@ -119,9 +119,9 @@ void a_png_readFile(const char* path, Pixel** pixels, int* width, int* height)
     }
 }
 
-void a_png_readMemory(const uint8_t* data, Pixel** pixels, int* width, int* height)
+void a_png_readMemory(const uint8_t* data, APixel** pixels, int* width, int* height)
 {
-    ByteStream* const stream = a_mem_malloc(sizeof(ByteStream));
+    AByteStream* const stream = a_mem_malloc(sizeof(AByteStream));
 
     stream->data = data;
     stream->offset = 0;
@@ -176,9 +176,9 @@ void a_png_readMemory(const uint8_t* data, Pixel** pixels, int* width, int* heig
     free(stream);
 }
 
-void a_png_write(const char* path, const Pixel* data, int width, int height)
+void a_png_write(const char* path, const APixel* data, int width, int height)
 {
-    File* f = a_file_open(path, "w");
+    AFile* f = a_file_open(path, "w");
 
     png_structp png = NULL;
     png_infop info = NULL;
@@ -221,7 +221,7 @@ void a_png_write(const char* path, const Pixel* data, int width, int height)
         rows[i] = a_mem_malloc(width * 3 * sizeof(png_byte));
 
         for(int j = 0; j < width; j++) {
-            const Pixel p = *(data + i * width + j);
+            const APixel p = *(data + i * width + j);
 
             rows[i][j * 3 + 0] = a_pixel_red(p);
             rows[i][j * 3 + 1] = a_pixel_green(p);

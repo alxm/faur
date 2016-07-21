@@ -19,31 +19,31 @@
 
 #include "a2x_pack_dir.v.h"
 
-struct Dir {
+struct ADir {
     char* path;
     char* name;
-    List* files;
-    ListIt iterator;
+    AList* files;
+    AListIt iterator;
     int num;
     const char* current[2];
 };
 
-typedef struct DirEntry {
+typedef struct ADirEntry {
     char* name;
     char* full;
-} DirEntry;
+} ADirEntry;
 
 static int defaultFilter(const struct dirent* f)
 {
     return strlen(f->d_name) > 0 && f->d_name[0] != '.';
 }
 
-Dir* a_dir_open(const char* path)
+ADir* a_dir_open(const char* path)
 {
     return a_dir_openFilter(path, defaultFilter);
 }
 
-Dir* a_dir_openFilter(const char* path, int (*filter)(const struct dirent* f))
+ADir* a_dir_openFilter(const char* path, int (*filter)(const struct dirent* f))
 {
     extern int scandir(
         const char *dirp, struct dirent ***namelist,
@@ -55,7 +55,7 @@ Dir* a_dir_openFilter(const char* path, int (*filter)(const struct dirent* f))
     struct dirent** dlist = NULL;
     const int numFiles = scandir(path, &dlist, filter, alphasort);
 
-    Dir* const d = a_mem_malloc(sizeof(Dir));
+    ADir* const d = a_mem_malloc(sizeof(ADir));
 
     d->path = a_str_dup(path);
     d->name = a_str_getSuffixLastFind(path, '/');
@@ -63,7 +63,7 @@ Dir* a_dir_openFilter(const char* path, int (*filter)(const struct dirent* f))
     d->num = a_math_max(0, numFiles);
 
     for(int i = d->num; i--; ) {
-        DirEntry* const e = a_mem_malloc(sizeof(DirEntry));
+        ADirEntry* const e = a_mem_malloc(sizeof(ADirEntry));
 
         e->name = a_str_dup(dlist[i]->d_name);
         e->full = a_str_merge(path, "/", e->name);
@@ -79,12 +79,12 @@ Dir* a_dir_openFilter(const char* path, int (*filter)(const struct dirent* f))
     return d;
 }
 
-void a_dir_close(Dir* d)
+void a_dir_close(ADir* d)
 {
     free(d->path);
     free(d->name);
 
-    A_LIST_ITERATE(d->files, DirEntry, e) {
+    A_LIST_ITERATE(d->files, ADirEntry, e) {
         free(e->name);
         free(e->full);
         free(e);
@@ -94,16 +94,16 @@ void a_dir_close(Dir* d)
     free(d);
 }
 
-void a_dir_reverse(Dir* d)
+void a_dir_reverse(ADir* d)
 {
     a_list_reverse(d->files);
     d->iterator = a_listit__new(d->files);
 }
 
-const char** a_dir__next(Dir* d)
+const char** a_dir__next(ADir* d)
 {
     if(a_listit__next(&d->iterator)) {
-        DirEntry* const e = a_listit__get(&d->iterator);
+        ADirEntry* const e = a_listit__get(&d->iterator);
 
         d->current[A_DIR_NAME] = e->name;
         d->current[A_DIR_PATH] = e->full;
@@ -115,22 +115,22 @@ const char** a_dir__next(Dir* d)
     return NULL;
 }
 
-void a_dir_reset(Dir* d)
+void a_dir_reset(ADir* d)
 {
     d->iterator = a_listit__new(d->files);
 }
 
-const char* a_dir_path(const Dir* d)
+const char* a_dir_path(const ADir* d)
 {
     return d->path;
 }
 
-const char* a_dir_name(const Dir* d)
+const char* a_dir_name(const ADir* d)
 {
     return d->name;
 }
 
-int a_dir_num(const Dir* d)
+int a_dir_num(const ADir* d)
 {
     return d->num;
 }

@@ -23,7 +23,7 @@
 
 #include "a2x_pack_pixel.p.h"
 
-extern void a_png_readFile(const char* path, Pixel** pixels, int* width, int* height);
-extern void a_png_readMemory(const uint8_t* data, Pixel** pixels, int* width, int* height);
+extern void a_png_readFile(const char* path, APixel** pixels, int* width, int* height);
+extern void a_png_readMemory(const uint8_t* data, APixel** pixels, int* width, int* height);
 
-extern void a_png_write(const char* path, const Pixel* data, int width, int height);
+extern void a_png_write(const char* path, const APixel* data, int width, int height);

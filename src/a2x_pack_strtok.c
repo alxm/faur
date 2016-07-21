@@ -19,7 +19,7 @@
 
 #include "a2x_pack_strtok.v.h"
 
-struct StringTok {
+struct AStringTok {
     const char* string;
     const char* delims;
     int numDelims;
@@ -39,9 +39,9 @@ static bool is_delim(char c, const char* d, int n)
     return false;
 }
 
-StringTok* a_strtok_new(const char* string, const char* delims)
+AStringTok* a_strtok_new(const char* string, const char* delims)
 {
-    StringTok* t = a_mem_malloc(sizeof(StringTok));
+    AStringTok* t = a_mem_malloc(sizeof(AStringTok));
 
     t->string = string;
     t->delims = delims;
@@ -53,7 +53,7 @@ StringTok* a_strtok_new(const char* string, const char* delims)
     return t;
 }
 
-void a_strtok_free(StringTok* t)
+void a_strtok_free(AStringTok* t)
 {
     if(t->currentToken) {
         free(t->currentToken);
@@ -62,7 +62,7 @@ void a_strtok_free(StringTok* t)
     free(t);
 }
 
-char* a_strtok__get(StringTok* t)
+char* a_strtok__get(AStringTok* t)
 {
     const char* const string = t->string;
     const char* const delims = t->delims;

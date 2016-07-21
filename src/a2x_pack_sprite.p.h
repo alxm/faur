@@ -21,32 +21,32 @@
 
 #include "a2x_app_includes.h"
 
-typedef struct Sprite Sprite;
+typedef struct ASprite ASprite;
 
 #include "a2x_pack_pixel.p.h"
 
-extern Sprite* a_sprite_fromFile(const char* path);
-extern Sprite* a_sprite_fromData(const uint8_t* data);
-extern Sprite* a_sprite_fromPixels(Pixel* pixels, int w, int h);
+extern ASprite* a_sprite_fromFile(const char* path);
+extern ASprite* a_sprite_fromData(const uint8_t* data);
+extern ASprite* a_sprite_fromPixels(APixel* pixels, int w, int h);
 
-extern Sprite* a_sprite_new(const Sprite* sheet, int x, int y);
-extern Sprite* a_sprite_zoomed(const Sprite* sheet, int x, int y, int zoom);
-extern Sprite* a_sprite_blank(int w, int h);
+extern ASprite* a_sprite_new(const ASprite* sheet, int x, int y);
+extern ASprite* a_sprite_zoomed(const ASprite* sheet, int x, int y, int zoom);
+extern ASprite* a_sprite_blank(int w, int h);
 
-extern void a_sprite_free(Sprite* s);
+extern void a_sprite_free(ASprite* s);
 
-extern int a_sprite_w(const Sprite* s);
-extern int a_sprite_wLog2(const Sprite* s);
-extern int a_sprite_h(const Sprite* s);
-extern Pixel* a_sprite_data(Sprite* s);
+extern int a_sprite_w(const ASprite* s);
+extern int a_sprite_wLog2(const ASprite* s);
+extern int a_sprite_h(const ASprite* s);
+extern APixel* a_sprite_data(ASprite* s);
 
-extern uint8_t a_sprite_getAlpha(const Sprite* s);
-extern void a_sprite_setAlpha(Sprite* s, uint8_t a);
+extern uint8_t a_sprite_getAlpha(const ASprite* s);
+extern void a_sprite_setAlpha(ASprite* s, uint8_t a);
 
-extern Pixel a_sprite_getPixel(const Sprite* s, int x, int y);
+extern APixel a_sprite_getPixel(const ASprite* s, int x, int y);
 
-extern void a_sprite_refresh(Sprite* s);
-extern Sprite* a_sprite_clone(const Sprite* src);
+extern void a_sprite_refresh(ASprite* s);
+extern ASprite* a_sprite_clone(const ASprite* src);
 
 #define A_SPRITE_TRANSPARENT a_pixel_make(255, 0, 255)
 #define A_SPRITE_LIMIT       a_pixel_make(0, 255, 0)

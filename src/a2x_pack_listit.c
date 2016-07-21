@@ -19,9 +19,9 @@
 
 #include "a2x_pack_listit.v.h"
 
-ListIt a_listit__new(List* list)
+AListIt a_listit__new(AList* list)
 {
-    ListIt it;
+    AListIt it;
 
     it.list = list;
     it.current = list->first;
@@ -29,26 +29,26 @@ ListIt a_listit__new(List* list)
     return it;
 }
 
-bool a_listit__next(const ListIt* it)
+bool a_listit__next(const AListIt* it)
 {
     return it->current->next != it->list->last;
 }
 
-void* a_listit__get(ListIt* it)
+void* a_listit__get(AListIt* it)
 {
     it->current = it->current->next;
     return it->current->content;
 }
 
-void* a_listit__peek(const ListIt* it)
+void* a_listit__peek(const AListIt* it)
 {
     return it->current->next->content;
 }
 
-void a_listit__remove(ListIt* it)
+void a_listit__remove(AListIt* it)
 {
-    List* const list = it->list;
-    ListNode* const n = it->current;
+    AList* const list = it->list;
+    AListNode* const n = it->current;
 
     it->current = n->prev;
 

@@ -19,15 +19,15 @@
 
 #include "a2x_pack_pixel.v.h"
 
-PixelPut a_pixel_put;
-static PixelPut pixels[A_PIXEL_TYPE_NUM][2];
+APixelPut a_pixel_put;
+static APixelPut pixels[A_PIXEL_TYPE_NUM][2];
 
-static PixelBlend_t blend;
+static APixelBlend_t blend;
 static bool clip;
 
 static uint8_t alpha;
 static uint8_t red, green, blue;
-static Pixel pixel;
+static APixel pixel;
 
 #define PIXEL_DST (a_pixels + y * a_width + x)
 
@@ -73,7 +73,7 @@ void a_pixel__init(void)
     a_pixel_put = pixels[blend][clip];
 }
 
-void a_pixel_setBlend(PixelBlend_t b)
+void a_pixel_setBlend(APixelBlend_t b)
 {
     blend = b;
 
@@ -129,7 +129,7 @@ void a_pixel_setRGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
     a_draw__setRGB(red, green, blue);
 }
 
-void a_pixel_setPixel(Pixel p)
+void a_pixel_setPixel(APixel p)
 {
     pixel = p;
 

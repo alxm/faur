@@ -23,4 +23,4 @@
 
 #include "a2x_pack_list.v.h"
 
-extern void* a_listit__peek(const ListIt* it);
+extern void* a_listit__peek(const AListIt* it);

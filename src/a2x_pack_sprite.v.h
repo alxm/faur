@@ -24,20 +24,20 @@
 #include "a2x_pack_list.v.h"
 #include "a2x_pack_screen.v.h"
 
-struct Sprite {
-    ListNode* node;
+struct ASprite {
+    AListNode* node;
     int w;
     int wLog2;
     int h;
     uint8_t alpha;
     uint16_t* spans;
     size_t spansSize;
-    Pixel data[];
+    APixel data[];
 };
 
 extern void a_sprite__init(void);
 extern void a_sprite__uninit(void);
 
-extern void a_sprite__free(Sprite* s);
+extern void a_sprite__free(ASprite* s);
 
 #define a_sprite__getPixel(s, x, y) (*((s)->data + (y) * (s)->w + (x)))

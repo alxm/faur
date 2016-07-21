@@ -21,7 +21,7 @@
 
 #include "a2x_app_includes.h"
 
-typedef int32_t fix;
+typedef int32_t AFix;
 
 #include "a2x_pack_math.p.h"
 
@@ -35,8 +35,8 @@ typedef int32_t fix;
 #define a_fix_mul(x, y) (int32_t)(((int64_t)(x) * (y)) >> A_FIX_BIT_PRECISION)
 #define a_fix_div(x, y) (int32_t)(((int64_t)(x) << A_FIX_BIT_PRECISION) / (y))
 
-extern fix a_fix_sin_val[A_MATH_ANGLES_NUM];
-extern fix a_fix_cos_val[A_MATH_ANGLES_NUM];
+extern AFix a_fix_sin_val[A_MATH_ANGLES_NUM];
+extern AFix a_fix_cos_val[A_MATH_ANGLES_NUM];
 
 #define a_fix_sin(a)       (a_fix_sin_val[(a)])
 #define a_fix_cos(a)       (a_fix_cos_val[(a)])

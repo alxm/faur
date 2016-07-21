@@ -20,12 +20,12 @@
 
 #include "a2x_pack_console.v.h"
 
-typedef struct Line {
-    ConsoleOutType type;
+typedef struct ALine {
+    AConsoleOutType type;
     char* text;
-} Line;
+} ALine;
 
-static List* lines;
+static AList* lines;
 bool enabled;
 bool show;
 
@@ -42,9 +42,9 @@ static struct {
     {"[ a2x Stt ] ", A_FONT_BLUE},
 };
 
-static Line* line_new(ConsoleOutType type, const char* text)
+static ALine* line_new(AConsoleOutType type, const char* text)
 {
-    Line* line = a_mem_malloc(sizeof(Line));
+    ALine* line = a_mem_malloc(sizeof(ALine));
 
     line->type = type;
     line->text = a_str_dup(text);
@@ -52,7 +52,7 @@ static Line* line_new(ConsoleOutType type, const char* text)
     return line;
 }
 
-static void line_free(Line* line)
+static void line_free(ALine* line)
 {
     free(line->text);
     free(line);
@@ -69,14 +69,14 @@ void a_console__uninit(void)
 {
     enabled = false;
 
-    A_LIST_ITERATE(lines, Line, line) {
+    A_LIST_ITERATE(lines, ALine, line) {
         line_free(line);
     }
 
     a_list_free(lines);
 }
 
-void a_console__write(ConsoleOutType type, const char* text)
+void a_console__write(AConsoleOutType type, const char* text)
 {
     if(!enabled) {
         return;
@@ -102,7 +102,7 @@ void a_console__draw(void)
     int y = 1;
     a_font_setAlign(A_FONT_ALIGN_LEFT);
 
-    A_LIST_ITERATE(lines, Line, line) {
+    A_LIST_ITERATE(lines, ALine, line) {
         a_font_setCoords(1, y);
         a_font_setFace(titles[line->type].font);
         a_font_text(titles[line->type].text);

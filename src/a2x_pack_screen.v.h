@@ -28,9 +28,9 @@
 #include "a2x_pack_sound.v.h"
 #include "a2x_pack_sprite.v.h"
 
-#define A_SCREEN_SIZE (a_width * a_height * sizeof(Pixel))
+#define A_SCREEN_SIZE (a_width * a_height * sizeof(APixel))
 
-extern Pixel* a__pixels2;
+extern APixel* a__pixels2;
 
 extern void a_screen__init(void);
 extern void a_screen__uninit(void);

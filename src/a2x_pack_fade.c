@@ -34,8 +34,8 @@
 void a_fade_toBlack(int framesDuration)
 {
     int accum = 0;
-    fix alpha = A_FIX_ONE;
-    Pixel* const copy = a_screen_dup();
+    AFix alpha = A_FIX_ONE;
+    APixel* const copy = a_screen_dup();
 
     while(alpha >= 0) {
         a_fps_start();
@@ -58,10 +58,10 @@ void a_fade_toBlack(int framesDuration)
                 );
             }
         #elif A_PIXEL_BPP == 32
-            Pixel* pixels = a_pixels;
+            APixel* pixels = a_pixels;
 
             for(int i = SCREEN_DIM; i--; ) {
-                const Pixel p = *pixels;
+                const APixel p = *pixels;
 
                 *pixels++ = a_pixel_make(
                     a_fix_fixtoi(a_pixel_red(p) * alpha),
@@ -97,8 +97,8 @@ void a_fade_toBlack(int framesDuration)
 void a_fade_fromBlack(int framesDuration)
 {
     int accum = 0;
-    fix alpha = 0;
-    Pixel* const copy = a_screen_dup();
+    AFix alpha = 0;
+    APixel* const copy = a_screen_dup();
 
     while(alpha <= A_FIX_ONE) {
         a_fps_start();
@@ -121,10 +121,10 @@ void a_fade_fromBlack(int framesDuration)
                 );
             }
         #elif A_PIXEL_BPP == 32
-            Pixel* pixels = a_pixels;
+            APixel* pixels = a_pixels;
 
             for(int i = SCREEN_DIM; i--; ) {
-                const Pixel p = *pixels;
+                const APixel p = *pixels;
 
                 *pixels++ = a_pixel_make(
                     a_fix_fixtoi(a_pixel_red(p) * alpha),
@@ -157,7 +157,7 @@ void a_fade_fromBlack(int framesDuration)
     free(copy);
 }
 
-void a_fade_screens(const Pixel* const old, int framesDuration)
+void a_fade_screens(const APixel* const old, int framesDuration)
 {
     int* rNew = a_mem_malloc(SCREEN_DIM * sizeof(int));
     int* gNew = a_mem_malloc(SCREEN_DIM * sizeof(int));
@@ -175,12 +175,12 @@ void a_fade_screens(const Pixel* const old, int framesDuration)
     int* gOldp = gOld;
     int* bOldp = bOld;
 
-    Pixel* newp = a_pixels;
-    Pixel* oldp = (Pixel*)old;
+    APixel* newp = a_pixels;
+    APixel* oldp = (APixel*)old;
 
     for(int i = SCREEN_DIM; i--; ) {
-        const Pixel nc = *newp++;
-        const Pixel oc = *oldp++;
+        const APixel nc = *newp++;
+        const APixel oc = *oldp++;
 
         *rNewp = a_pixel_red(nc);
         *rOldp++ = a_pixel_red(oc) - *rNewp++;
@@ -193,12 +193,12 @@ void a_fade_screens(const Pixel* const old, int framesDuration)
     }
 
     int accum = 0;
-    fix alpha = A_FIX_ONE;
+    AFix alpha = A_FIX_ONE;
 
     while(alpha >= 0) {
         a_fps_start();
 
-        Pixel* dst = a_pixels;
+        APixel* dst = a_pixels;
 
         rNewp = rNew;
         gNewp = gNew;

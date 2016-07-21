@@ -32,7 +32,7 @@
 
 #define a_pixel__rgba(dst, r, g, b, a)  \
 ({                                      \
-    const Pixel p = *dst;               \
+    const APixel p = *dst;               \
                                         \
     const uint8_t R = a_pixel_red(p);   \
     const uint8_t G = a_pixel_green(p); \
@@ -47,7 +47,7 @@
 
 #define a_pixel__rgb25(dst, r, g, b)    \
 ({                                      \
-    const Pixel p = *dst;               \
+    const APixel p = *dst;               \
                                         \
     const uint8_t R = a_pixel_red(p);   \
     const uint8_t G = a_pixel_green(p); \
@@ -62,7 +62,7 @@
 
 #define a_pixel__rgb50(dst, r, g, b)    \
 ({                                      \
-    const Pixel p = *dst;               \
+    const APixel p = *dst;               \
                                         \
     const uint8_t R = a_pixel_red(p);   \
     const uint8_t G = a_pixel_green(p); \
@@ -77,7 +77,7 @@
 
 #define a_pixel__rgb75(dst, r, g, b)        \
 ({                                          \
-    const Pixel p = *dst;                   \
+    const APixel p = *dst;                   \
                                             \
     const uint8_t R = a_pixel_red(p);       \
     const uint8_t G = a_pixel_green(p);     \

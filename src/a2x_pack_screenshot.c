@@ -37,7 +37,7 @@ void a_screenshot__init(void)
     prefix = a_str_merge(screens_dir, "/", a_settings_getString("app.title"), "-");
     number = 0;
 
-    Dir* const dir = a_dir_open(screens_dir);
+    ADir* const dir = a_dir_open(screens_dir);
     a_dir_reverse(dir);
 
     const char** const pair = a_dir__next(dir);

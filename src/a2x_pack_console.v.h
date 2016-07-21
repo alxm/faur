@@ -35,8 +35,8 @@ typedef enum {
     ConsoleError,
     ConsoleState,
     ConsoleMax
-} ConsoleOutType;
+} AConsoleOutType;
 
-extern void a_console__write(ConsoleOutType type, const char* text);
+extern void a_console__write(AConsoleOutType type, const char* text);
 extern void a_console__draw(void);
 extern void a_console__show(void);

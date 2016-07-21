@@ -19,7 +19,7 @@
 
 #include "a2x_pack_file.v.h"
 
-struct File {
+struct AFile {
     FILE* handle;
     char* modes;
     char* path;
@@ -28,7 +28,7 @@ struct File {
     int eof;
 };
 
-File* a_file_open(const char* path, const char* modes)
+AFile* a_file_open(const char* path, const char* modes)
 {
     FILE* const handle = fopen(path, modes);
 
@@ -37,7 +37,7 @@ File* a_file_open(const char* path, const char* modes)
         return NULL;
     }
 
-    File* const f = a_mem_malloc(sizeof(File));
+    AFile* const f = a_mem_malloc(sizeof(AFile));
 
     f->handle = handle;
     f->modes = a_str_dup(modes);
@@ -49,7 +49,7 @@ File* a_file_open(const char* path, const char* modes)
     return f;
 }
 
-void a_file_close(File* f)
+void a_file_close(AFile* f)
 {
     free(f->modes);
     free(f->path);
@@ -63,7 +63,7 @@ void a_file_close(File* f)
     free(f);
 }
 
-bool a_file_checkPrefix(File* f, const char* prefix)
+bool a_file_checkPrefix(AFile* f, const char* prefix)
 {
     const size_t size = strlen(prefix) + 1;
     char buffer[size];
@@ -79,12 +79,12 @@ bool a_file_checkPrefix(File* f, const char* prefix)
     return a_str_equal(buffer, prefix);
 }
 
-void a_file_writePrefix(File* f, const char* prefix)
+void a_file_writePrefix(AFile* f, const char* prefix)
 {
     a_file_write(f, prefix, strlen(prefix) + 1);
 }
 
-bool a_file_read(File* f, void* buffer, size_t size)
+bool a_file_read(AFile* f, void* buffer, size_t size)
 {
     size_t readCount;
 
@@ -99,7 +99,7 @@ bool a_file_read(File* f, void* buffer, size_t size)
     return true;
 }
 
-bool a_file_write(File* f, const void* buffer, size_t size)
+bool a_file_write(AFile* f, const void* buffer, size_t size)
 {
     size_t writeCount;
 
@@ -114,7 +114,7 @@ bool a_file_write(File* f, const void* buffer, size_t size)
     return true;
 }
 
-bool a_file_writef(File* f, char* fmt, ...)
+bool a_file_writef(AFile* f, char* fmt, ...)
 {
     int ret;
     va_list args;
@@ -132,7 +132,7 @@ bool a_file_writef(File* f, char* fmt, ...)
     return true;
 }
 
-bool a_file_readLine(File* f)
+bool a_file_readLine(AFile* f)
 {
     free(f->line);
     f->line = NULL;
@@ -179,22 +179,22 @@ bool a_file_readLine(File* f)
     return false;
 }
 
-char* a_file_getLine(const File* f)
+char* a_file_getLine(const AFile* f)
 {
     return f->line;
 }
 
-const char* a_file_path(const File* f)
+const char* a_file_path(const AFile* f)
 {
     return f->path;
 }
 
-const char* a_file_name(const File* f)
+const char* a_file_name(const AFile* f)
 {
     return f->name;
 }
 
-FILE* a_file_handle(const File* f)
+FILE* a_file_handle(const AFile* f)
 {
     return f->handle;
 }
@@ -229,7 +229,7 @@ size_t a_file_size(const char* f)
 
 uint8_t* a_file_toBuffer(const char* path)
 {
-    File* f = a_file_open(path, "r");
+    AFile* f = a_file_open(path, "r");
 
     if(!f) {
         return NULL;

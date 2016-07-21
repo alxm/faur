@@ -21,29 +21,29 @@
 
 #include "a2x_app_includes.h"
 
-typedef struct ColMap ColMap;
-typedef struct ColObject ColObject;
-typedef struct ColIt ColIt;
+typedef struct AColMap AColMap;
+typedef struct AColObject AColObject;
+typedef struct AColIt AColIt;
 
 #include "a2x_pack_listit.p.h"
 
-struct ColIt {
-    ColObject* callerPoint;
-    ListIt points; // list of points in the current submap
+struct AColIt {
+    AColObject* callerPoint;
+    AListIt points; // list of points in the current submap
 };
 
-extern ColMap* a_colmap_new(int width, int height, int maxObjectDim);
-extern void a_colmap_free(ColMap* m);
+extern AColMap* a_colmap_new(int width, int height, int maxObjectDim);
+extern void a_colmap_free(AColMap* m);
 
-extern ColObject* a_colobject_new(const ColMap* m, void* parent);
-extern void a_colobject_free(ColObject* o);
+extern AColObject* a_colobject_new(const AColMap* m, void* parent);
+extern void a_colobject_free(AColObject* o);
 
-extern void a_colobject_setCoords(ColObject* o, int x, int y);
-extern List* a_colobject__getColList(const ColObject* o);
-extern void* a_colobject__getParent(const ColObject* o);
+extern void a_colobject_setCoords(AColObject* o, int x, int y);
+extern AList* a_colobject__getColList(const AColObject* o);
+extern void* a_colobject__getParent(const AColObject* o);
 
 #define A_COL_ITERATE(o, type, var)                                 \
-    A_LIST_FILTER(a_colobject__getColList(o), ColObject, c, o != c) \
+    A_LIST_FILTER(a_colobject__getColList(o), AColObject, c, o != c) \
         for(type* var = a_colobject__getParent(c); var; var = NULL)
 
 #define a_collide_boxes(x1, y1, w1, h1, x2, y2, w2, h2) \

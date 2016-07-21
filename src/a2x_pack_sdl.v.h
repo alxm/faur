@@ -48,7 +48,7 @@ extern void a_sdl__sfx_play(void* s);
 extern uint32_t a_sdl__getTicks(void);
 extern void a_sdl__delay(uint32_t ms);
 
-extern void a_sdl__input_matchButton(const char* name, InputInstance* button);
-extern void a_sdl__input_matchAnalog(const char* name, InputInstance* analog);
-extern void a_sdl__input_matchTouch(const char* name, InputInstance* touch);
+extern void a_sdl__input_matchButton(const char* name, AInputInstance* button);
+extern void a_sdl__input_matchAnalog(const char* name, AInputInstance* analog);
+extern void a_sdl__input_matchTouch(const char* name, AInputInstance* touch);
 extern void a_sdl__input_get(void);

@@ -19,27 +19,27 @@
 
 #include "a2x_pack_draw.v.h"
 
-DrawRectangle a_draw_rectangle;
-static DrawRectangle rectangles[A_PIXEL_TYPE_NUM][2];
+ADrawRectangle a_draw_rectangle;
+static ADrawRectangle rectangles[A_PIXEL_TYPE_NUM][2];
 
-DrawLine a_draw_line;
-static DrawLine lines[A_PIXEL_TYPE_NUM][2];
+ADrawLine a_draw_line;
+static ADrawLine lines[A_PIXEL_TYPE_NUM][2];
 
-DrawHLine a_draw_hline;
-static DrawHLine hlines[A_PIXEL_TYPE_NUM][2];
+ADrawHLine a_draw_hline;
+static ADrawHLine hlines[A_PIXEL_TYPE_NUM][2];
 
-DrawVLine a_draw_vline;
-static DrawHLine vlines[A_PIXEL_TYPE_NUM][2];
+ADrawVLine a_draw_vline;
+static ADrawHLine vlines[A_PIXEL_TYPE_NUM][2];
 
-DrawCircle a_draw_circle;
-//static DrawCircle circles[A_PIXEL_TYPE_NUM][2];
+ADrawCircle a_draw_circle;
+//static ADrawCircle circles[A_PIXEL_TYPE_NUM][2];
 
-static PixelBlend_t blend;
+static APixelBlend_t blend;
 static bool clip;
 
 static uint8_t alpha;
 static uint8_t red, green, blue;
-static Pixel pixel;
+static APixel pixel;
 
 static bool cohen_sutherland_clip(int* lx1, int* ly1, int* lx2, int* ly2)
 {
@@ -123,13 +123,13 @@ static bool cohen_sutherland_clip(int* lx1, int* ly1, int* lx2, int* ly2)
 
 #define rectangle_noclip(pixeler)                  \
 {                                                  \
-    Pixel* pixels = a_pixels + y1 * a_width + x1;  \
+    APixel* pixels = a_pixels + y1 * a_width + x1;  \
                                                    \
     const int screenw = a_width;                   \
     const int w = x2 - x1;                         \
                                                    \
     for(int i = y2 - y1; i--; pixels += screenw) { \
-        Pixel* dst = pixels;                       \
+        APixel* dst = pixels;                       \
                                                    \
         for(int j = w; j--; dst++) {               \
             pixeler;                               \
@@ -180,7 +180,7 @@ static bool cohen_sutherland_clip(int* lx1, int* ly1, int* lx2, int* ly2)
         const int yinc2 = (denominator == deltax) ? yinct : 0; \
                                                                \
         const int screenw = a_width;                           \
-        Pixel* dst = a_pixels + y1 * screenw + x1;             \
+        APixel* dst = a_pixels + y1 * screenw + x1;             \
                                                                \
         for(int i = denominator + 1; i--; ) {                  \
             pixeler;                                           \
@@ -210,7 +210,7 @@ static bool cohen_sutherland_clip(int* lx1, int* ly1, int* lx2, int* ly2)
 
 #define hline_noclip(pixeler)                 \
 {                                             \
-    Pixel* dst = a_pixels + y * a_width + x1; \
+    APixel* dst = a_pixels + y * a_width + x1; \
                                               \
     for(int i = x2 - x1; i--; dst++) {        \
         pixeler;                              \
@@ -231,7 +231,7 @@ static bool cohen_sutherland_clip(int* lx1, int* ly1, int* lx2, int* ly2)
 
 #define vline_noclip(pixeler)                   \
 {                                               \
-    Pixel* dst = a_pixels + y1 * a_width + x;   \
+    APixel* dst = a_pixels + y1 * a_width + x;   \
     const int screenw = a_width;                \
                                                 \
     for(int i = y2 - y1; i--; dst += screenw) { \
@@ -252,7 +252,7 @@ static bool cohen_sutherland_clip(int* lx1, int* ly1, int* lx2, int* ly2)
 }
 
 #define shape_setup_plain  \
-    const Pixel c = pixel;
+    const APixel c = pixel;
 
 #define shape_setup_rgb25    \
     const uint8_t r = red;   \
@@ -337,7 +337,7 @@ void a_draw__init(void)
     drawSetAll();
 }
 
-void a_draw__setBlend(PixelBlend_t b)
+void a_draw__setBlend(APixelBlend_t b)
 {
     blend = b;
     drawSetAll();

@@ -27,7 +27,7 @@ void a_conf__init(void)
         return;
     }
 
-    File* const f = a_file_open(conf_name, "r");
+    AFile* const f = a_file_open(conf_name, "r");
 
     if(!f) {
         return;

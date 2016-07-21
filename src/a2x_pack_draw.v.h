@@ -27,7 +27,7 @@
 
 extern void a_draw__init(void);
 
-extern void a_draw__setBlend(PixelBlend_t b);
+extern void a_draw__setBlend(APixelBlend_t b);
 extern void a_draw__setClip(bool c);
 
 extern void a_draw__setAlpha(uint8_t a);

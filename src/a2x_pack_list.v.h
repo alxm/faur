@@ -24,16 +24,16 @@
 #include "a2x_pack_listit.v.h"
 #include "a2x_pack_mem.v.h"
 
-struct List {
-    ListNode* first;
-    ListNode* last;
+struct AList {
+    AListNode* first;
+    AListNode* last;
     int items;
 };
 
-struct ListNode {
+struct AListNode {
     void* content;
-    struct ListNode* next;
-    struct ListNode* prev;
+    struct AListNode* next;
+    struct AListNode* prev;
 };
 
 #define a_list__first(l)         ((l)->first->next->content)

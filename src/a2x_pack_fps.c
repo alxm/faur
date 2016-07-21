@@ -20,7 +20,7 @@
 #include "a2x_pack_fps.v.h"
 
 static uint32_t milisPerFrame;
-static Timer* timer;
+static ATimer* timer;
 
 static uint32_t fps;
 static uint32_t max;

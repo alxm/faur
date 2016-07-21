@@ -21,11 +21,11 @@
 
 #include "a2x_app_includes.h"
 
-typedef struct StrHash StrHash;
+typedef struct AStrHash AStrHash;
 
-extern StrHash* a_strhash_new(void);
-extern void a_strhash_free(StrHash* h);
+extern AStrHash* a_strhash_new(void);
+extern void a_strhash_free(AStrHash* h);
 
-extern void a_strhash_add(StrHash* h, const char* key, void* content);
-extern void* a_strhash_get(const StrHash* h, const char* key);
-extern bool a_strhash_contains(const StrHash* h, const char* key);
+extern void a_strhash_add(AStrHash* h, const char* key, void* content);
+extern void* a_strhash_get(const AStrHash* h, const char* key);
+extern bool a_strhash_contains(const AStrHash* h, const char* key);

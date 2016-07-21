@@ -19,18 +19,18 @@
 
 #include "a2x_pack_sound.v.h"
 
-static List* musicList;
-static List* sfxList;
+static AList* musicList;
+static AList* sfxList;
 
 int a__volume;
 int a__volumeMax;
 int a__volumeAdjust = -2 * A_MILIS_VOLUME;
 
 #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
-    static Input* a__volUp;
-    static Input* a__volDown;
+    static AInput* a__volUp;
+    static AInput* a__volDown;
 #elif A_PLATFORM_LINUXPC || A_PLATFORM_PANDORA
-    static Input* a__musicOnOff;
+    static AInput* a__musicOnOff;
 #endif
 
 void a_sound__init(void)
@@ -63,11 +63,11 @@ void a_sound__uninit(void)
     if(a_settings_getBool("sound.on")) {
         a_music_stop();
 
-        A_LIST_ITERATE(sfxList, Sound, s) {
+        A_LIST_ITERATE(sfxList, ASound, s) {
             a_sfx__free(s);
         }
 
-        A_LIST_ITERATE(musicList, Music, m) {
+        A_LIST_ITERATE(musicList, AMusic, m) {
             a_music__free(m);
         }
 
@@ -76,10 +76,10 @@ void a_sound__uninit(void)
     }
 }
 
-Music* a_music_load(const char* path)
+AMusic* a_music_load(const char* path)
 {
     if(a_settings_getBool("sound.on")) {
-        Music* m = a_sdl__music_load(path);
+        AMusic* m = a_sdl__music_load(path);
         a_list_addLast(musicList, m);
         a_sdl__music_setVolume();
         return m;
@@ -88,14 +88,14 @@ Music* a_music_load(const char* path)
     }
 }
 
-void a_music__free(Music* m)
+void a_music__free(AMusic* m)
 {
     if(a_settings_getBool("sound.on")) {
         a_sdl__music_free(m);
     }
 }
 
-void a_music_play(Music* m)
+void a_music_play(AMusic* m)
 {
     if(a_settings_getBool("sound.on") && m) {
         a_sdl__music_play(m);
@@ -109,10 +109,10 @@ void a_music_stop(void)
     }
 }
 
-Sound* a_sfx_fromFile(const char* path)
+ASound* a_sfx_fromFile(const char* path)
 {
     if(a_settings_getBool("sound.on")) {
-        Sound* s = a_sdl__sfx_loadFromFile(path);
+        ASound* s = a_sdl__sfx_loadFromFile(path);
         a_sdl__sfx_setVolume(s, (float)a_settings_getInt("sound.sfx.scale") / 100 * a__volume);
 
         a_list_addLast(sfxList, s);
@@ -122,10 +122,10 @@ Sound* a_sfx_fromFile(const char* path)
     }
 }
 
-Sound* a_sfx__fromData(const uint16_t* data, int size)
+ASound* a_sfx__fromData(const uint16_t* data, int size)
 {
     if(a_settings_getBool("sound.on")) {
-        Sound* s = a_sdl__sfx_loadFromData(data, size);
+        ASound* s = a_sdl__sfx_loadFromData(data, size);
         a_sdl__sfx_setVolume(s, (float)a_settings_getInt("sound.sfx.scale") / 100 * a__volume);
 
         a_list_addLast(sfxList, s);
@@ -135,14 +135,14 @@ Sound* a_sfx__fromData(const uint16_t* data, int size)
     }
 }
 
-void a_sfx__free(Sound* s)
+void a_sfx__free(ASound* s)
 {
     if(a_settings_getBool("sound.on")) {
         a_sdl__sfx_free(s);
     }
 }
 
-void a_sfx_play(Sound* s)
+void a_sfx_play(ASound* s)
 {
     if(a_settings_getBool("sound.on")) {
         a_sdl__sfx_play(s);
@@ -152,7 +152,7 @@ void a_sfx_play(Sound* s)
 void a_sfx_volume(int v)
 {
     if(a_settings_getBool("sound.on")) {
-        A_LIST_ITERATE(sfxList, Sound, s) {
+        A_LIST_ITERATE(sfxList, ASound, s) {
             a_sdl__sfx_setVolume(s, v);
         }
     }

@@ -19,8 +19,8 @@
 
 #include "a2x_pack_fix.v.h"
 
-fix a_fix_sin_val[A_MATH_ANGLES_NUM];
-fix a_fix_cos_val[A_MATH_ANGLES_NUM];
+AFix a_fix_sin_val[A_MATH_ANGLES_NUM];
+AFix a_fix_cos_val[A_MATH_ANGLES_NUM];
 
 void a_fix__init(void)
 {

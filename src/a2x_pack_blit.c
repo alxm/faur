@@ -19,16 +19,16 @@
 
 #include "a2x_pack_blit.v.h"
 
-Blitter a_blit;
-static Blitter blitters[A_PIXEL_TYPE_NUM][2][2];
+ABlitter a_blit;
+static ABlitter blitters[A_PIXEL_TYPE_NUM][2][2];
 
-static PixelBlend_t blend;
+static APixelBlend_t blend;
 static bool clip;
 static bool usePixel;
 
 static uint8_t alpha;
 static uint8_t red, green, blue;
-static Pixel pixel;
+static APixel pixel;
 
 // Spans format:
 // [1 (draw) / 0 (transp)][[len]...][0 (end line)]
@@ -37,14 +37,14 @@ static Pixel pixel;
 {                                                        \
     const int scrw = a_width;                            \
                                                          \
-    Pixel* dst2 = a_pixels + y * scrw + x;               \
-    const Pixel* src = s->data;                          \
+    APixel* dst2 = a_pixels + y * scrw + x;               \
+    const APixel* src = s->data;                          \
                                                          \
     const uint16_t* sp = s->spans;                       \
                                                          \
     for(int i = s->h; i--; dst2 += scrw) {               \
         bool draw = *sp++ == 1;                          \
-        Pixel* dst = dst2;                               \
+        APixel* dst = dst2;                               \
                                                          \
         for(uint16_t len = *sp; *sp++ != 0; len = *sp) { \
             if(draw) {                                   \
@@ -81,8 +81,8 @@ static Pixel pixel;
     const int rows = h - yClipUp - yClipDown;                            \
     const int columns = w - xClipLeft - xClipRight;                      \
                                                                          \
-    Pixel* startDst = a_pixels + (y + yClipUp) * scrw + (x + xClipLeft); \
-    const Pixel* startSrc = s->data + yClipUp * w + xClipLeft;           \
+    APixel* startDst = a_pixels + (y + yClipUp) * scrw + (x + xClipLeft); \
+    const APixel* startSrc = s->data + yClipUp * w + xClipLeft;           \
                                                                          \
     const uint16_t* sp = s->spans;                                       \
                                                                          \
@@ -106,8 +106,8 @@ static Pixel pixel;
         }                                                                \
         len -= xClipLeft;                                                \
                                                                          \
-        Pixel* dst = startDst;                                           \
-        const Pixel* src = startSrc;                                     \
+        APixel* dst = startDst;                                           \
+        const APixel* src = startSrc;                                     \
                                                                          \
         /* draw visible columns */                                       \
         for(int c = columns; c > 0; len = *++sp, draw ^= 1) {            \
@@ -141,25 +141,25 @@ static Pixel pixel;
 
 #define blitterMake(blend, argsBlit, argsPixel)                    \
                                                                    \
-    void a_blit__noclip_##blend(const Sprite* s, int x, int y)     \
+    void a_blit__noclip_##blend(const ASprite* s, int x, int y)     \
     {                                                              \
         blitter_##blend##_setup                                    \
         blitter_noclip(a_pixel__##blend argsBlit)                  \
     }                                                              \
                                                                    \
-    void a_blit__noclip_##blend##_p(const Sprite* s, int x, int y) \
+    void a_blit__noclip_##blend##_p(const ASprite* s, int x, int y) \
     {                                                              \
         blitter_##blend##_setup                                    \
         blitter_noclip(a_pixel__##blend argsPixel)                 \
     }                                                              \
                                                                    \
-    void a_blit__clip_##blend(const Sprite* s, int x, int y)       \
+    void a_blit__clip_##blend(const ASprite* s, int x, int y)       \
     {                                                              \
         blitter_##blend##_setup                                    \
         blitter_clip(a_pixel__##blend argsBlit)                    \
     }                                                              \
                                                                    \
-    void a_blit__clip_##blend##_p(const Sprite* s, int x, int y)   \
+    void a_blit__clip_##blend##_p(const ASprite* s, int x, int y)   \
     {                                                              \
         blitter_##blend##_setup                                    \
         blitter_clip(a_pixel__##blend argsPixel)                   \
@@ -225,7 +225,7 @@ void a_blit__init(void)
     a_blit = blitters[blend][clip][usePixel];
 }
 
-void a_blit__setBlend(PixelBlend_t b)
+void a_blit__setBlend(APixelBlend_t b)
 {
     blend = b;
     a_blit = blitters[blend][clip][usePixel];
@@ -257,17 +257,17 @@ void a_blit__setRGB(uint8_t r, uint8_t g, uint8_t b)
     pixel = a_pixel_make(red, green, blue);
 }
 
-void a_blit_c(const Sprite* s)
+void a_blit_c(const ASprite* s)
 {
     a_blit(s, (a_width - s->w) / 2, (a_height - s->h) / 2);
 }
 
-void a_blit_ch(const Sprite* s, int y)
+void a_blit_ch(const ASprite* s, int y)
 {
     a_blit(s, (a_width - s->w) / 2, y);
 }
 
-void a_blit_cv(const Sprite* s, int x)
+void a_blit_cv(const ASprite* s, int x)
 {
     a_blit(s, x, (a_height - s->h) / 2);
 }

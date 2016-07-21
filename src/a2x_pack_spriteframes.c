@@ -19,9 +19,9 @@
 
 #include "a2x_pack_spriteframes.v.h"
 
-struct SpriteFrames {
-    List* sprites;
-    Sprite** spriteArray;
+struct ASpriteFrames {
+    AList* sprites;
+    ASprite** spriteArray;
     int num;
     unsigned int countdown;
     unsigned int callsToNextFrame;
@@ -30,9 +30,9 @@ struct SpriteFrames {
     bool paused;
 };
 
-SpriteFrames* a_spriteframes_new(const Sprite* sheet, int x, int y, unsigned int callsToNextFrame)
+ASpriteFrames* a_spriteframes_new(const ASprite* sheet, int x, int y, unsigned int callsToNextFrame)
 {
-    SpriteFrames* const sf = a_mem_malloc(sizeof(SpriteFrames));
+    ASpriteFrames* const sf = a_mem_malloc(sizeof(ASpriteFrames));
 
     sf->sprites = a_list_new();
     sf->spriteArray = NULL;
@@ -43,7 +43,7 @@ SpriteFrames* a_spriteframes_new(const Sprite* sheet, int x, int y, unsigned int
     sf->dir = 1;
     sf->paused = false;
 
-    Sprite* s;
+    ASprite* s;
 
     do {
         s = a_sprite_new(sheet, x, y);
@@ -59,16 +59,16 @@ SpriteFrames* a_spriteframes_new(const Sprite* sheet, int x, int y, unsigned int
         }
     } while(s != NULL);
 
-    sf->spriteArray = (Sprite**)a_list_array(sf->sprites);
+    sf->spriteArray = (ASprite**)a_list_array(sf->sprites);
     sf->num = a_list_size(sf->sprites);
 
     return sf;
 }
 
-void a_spriteframes_free(SpriteFrames* sf, bool freeSprites)
+void a_spriteframes_free(ASpriteFrames* sf, bool freeSprites)
 {
     if(freeSprites) {
-        A_LIST_ITERATE(sf->sprites, Sprite, sprite) {
+        A_LIST_ITERATE(sf->sprites, ASprite, sprite) {
             a_sprite_free(sprite);
         }
     }
@@ -79,7 +79,7 @@ void a_spriteframes_free(SpriteFrames* sf, bool freeSprites)
     free(sf);
 }
 
-Sprite* a_spriteframes_next(SpriteFrames* sf)
+ASprite* a_spriteframes_next(ASpriteFrames* sf)
 {
     const int oldindex = sf->index;
 
@@ -99,17 +99,17 @@ Sprite* a_spriteframes_next(SpriteFrames* sf)
     return sf->spriteArray[oldindex];
 }
 
-Sprite* a_spriteframes_get(SpriteFrames* sf)
+ASprite* a_spriteframes_get(ASpriteFrames* sf)
 {
     return sf->spriteArray[sf->index];
 }
 
-Sprite* a_spriteframes_geti(SpriteFrames* sf, int index)
+ASprite* a_spriteframes_geti(ASpriteFrames* sf, int index)
 {
     return sf->spriteArray[index];
 }
 
-bool a_spriteframes_last(const SpriteFrames* sf)
+bool a_spriteframes_last(const ASpriteFrames* sf)
 {
     if(sf->countdown == 1) {
         const int n = sf->index + sf->dir;
@@ -119,33 +119,33 @@ bool a_spriteframes_last(const SpriteFrames* sf)
     return false;
 }
 
-void a_spriteframes_setDir(SpriteFrames* sf, int dir)
+void a_spriteframes_setDir(ASpriteFrames* sf, int dir)
 {
     sf->dir = dir;
 }
 
-void a_spriteframes_flipDir(SpriteFrames* sf)
+void a_spriteframes_flipDir(ASpriteFrames* sf)
 {
     sf->dir *= -1;
 }
 
-void a_spriteframes_setSpeed(SpriteFrames* sf, unsigned int callsToNextFrame)
+void a_spriteframes_setSpeed(ASpriteFrames* sf, unsigned int callsToNextFrame)
 {
     sf->callsToNextFrame = callsToNextFrame;
     a_spriteframes_reset(sf);
 }
 
-void a_spriteframes_pause(SpriteFrames* sf)
+void a_spriteframes_pause(ASpriteFrames* sf)
 {
     sf->paused = true;
 }
 
-void a_spriteframes_resume(SpriteFrames* sf)
+void a_spriteframes_resume(ASpriteFrames* sf)
 {
     sf->paused = false;
 }
 
-void a_spriteframes_reset(SpriteFrames* sf)
+void a_spriteframes_reset(ASpriteFrames* sf)
 {
     sf->countdown = sf->callsToNextFrame;
 
@@ -156,12 +156,12 @@ void a_spriteframes_reset(SpriteFrames* sf)
     }
 }
 
-SpriteFrames* a_spriteframes_clone(const SpriteFrames* src)
+ASpriteFrames* a_spriteframes_clone(const ASpriteFrames* src)
 {
-    SpriteFrames* const sf = a_mem_malloc(sizeof(SpriteFrames));
+    ASpriteFrames* const sf = a_mem_malloc(sizeof(ASpriteFrames));
 
     sf->sprites = a_list_clone(src->sprites);
-    sf->spriteArray = (Sprite**)a_list_array(sf->sprites);
+    sf->spriteArray = (ASprite**)a_list_array(sf->sprites);
     sf->num = src->num;
     sf->countdown = src->callsToNextFrame;
     sf->callsToNextFrame = src->callsToNextFrame;
@@ -172,17 +172,17 @@ SpriteFrames* a_spriteframes_clone(const SpriteFrames* src)
     return sf;
 }
 
-List* a_spriteframes_sprites(const SpriteFrames* sf)
+AList* a_spriteframes_sprites(const ASpriteFrames* sf)
 {
     return sf->sprites;
 }
 
-Sprite* a_spriteframes_pop(SpriteFrames* sf)
+ASprite* a_spriteframes_pop(ASpriteFrames* sf)
 {
-    Sprite* s = a_list_pop(sf->sprites);
+    ASprite* s = a_list_pop(sf->sprites);
 
     free(sf->spriteArray);
-    sf->spriteArray = (Sprite**)a_list_array(sf->sprites);
+    sf->spriteArray = (ASprite**)a_list_array(sf->sprites);
     sf->num = a_list_size(sf->sprites);
 
     a_spriteframes_reset(sf);

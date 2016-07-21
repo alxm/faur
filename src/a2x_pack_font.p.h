@@ -23,35 +23,35 @@
 
 #include "a2x_pack_sprite.p.h"
 
-typedef enum FontLoad  {
+typedef enum AFontLoad  {
     A_FONT_LOAD_ALL = 1,
     A_FONT_LOAD_ALPHANUMERIC = 2,
     A_FONT_LOAD_ALPHA = 4,
     A_FONT_LOAD_NUMERIC = 8,
     A_FONT_LOAD_CAPS = 16,
-} FontLoad;
+} AFontLoad;
 
-typedef enum FontAlign {
+typedef enum AFontAlign {
     A_FONT_ALIGN_LEFT = 1,
     A_FONT_ALIGN_MIDDLE = 2,
     A_FONT_ALIGN_RIGHT = 4,
     A_FONT_MONOSPACED = 8
-} FontAlign;
+} AFontAlign;
 
-typedef enum FontDefaults {
+typedef enum AFontDefaults {
     A_FONT_WHITE,
     A_FONT_GREEN,
     A_FONT_YELLOW,
     A_FONT_RED,
     A_FONT_BLUE,
     A_FONT_MAX
-} FontDefaults;
+} AFontDefaults;
 
-extern int a_font_load(const Sprite* sheet, int x, int y, FontLoad loader);
-extern int a_font_copy(int font, Pixel color);
+extern int a_font_load(const ASprite* sheet, int x, int y, AFontLoad loader);
+extern int a_font_copy(int font, APixel color);
 
 extern void a_font_setFace(int f);
-extern void a_font_setAlign(FontAlign a);
+extern void a_font_setAlign(AFontAlign a);
 extern void a_font_setCoords(int x, int y);
 
 extern int a_font_getX(void);
