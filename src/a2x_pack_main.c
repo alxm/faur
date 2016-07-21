@@ -17,7 +17,7 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a2x_app_main.v.h"
+#include "a2x_pack_main.v.h"
 
 static int numArgs;
 static char** args;

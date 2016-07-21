@@ -19,15 +19,29 @@
 
 #pragma once
 
-#include "a2x_app_settings.p.h"
+#include "a2x_pack_main.p.h"
 
+#define A__VERSION "rolling"
+
+#include "a2x_pack_blit.v.h"
+#include "a2x_pack_conf.v.h"
+#include "a2x_pack_console.v.h"
+#include "a2x_pack_draw.v.h"
+#include "a2x_pack_fix.v.h"
+#include "a2x_pack_font.v.h"
+#include "a2x_pack_fps.v.h"
+#include "a2x_pack_hw.v.h"
+#include "a2x_pack_input.v.h"
+#include "a2x_pack_math.v.h"
+#include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
-#include "a2x_pack_str.v.h"
-#include "a2x_pack_strhash.v.h"
-
-extern void a_settings__defaults(void);
-extern void a_settings__freeze(void);
-
-extern void a_settings__set(const char* key, const char* val);
-extern void a_settings__undo(const char* key);
-extern bool a_settings__flip(const char* key);
+#include "a2x_pack_pixel.v.h"
+#include "a2x_pack_random.v.h"
+#include "a2x_pack_screen.v.h"
+#include "a2x_pack_screenshot.v.h"
+#include "a2x_pack_sdl.v.h"
+#include "a2x_pack_settings.v.h"
+#include "a2x_pack_sound.v.h"
+#include "a2x_pack_sprite.v.h"
+#include "a2x_pack_state.v.h"
+#include "a2x_pack_time.v.h"

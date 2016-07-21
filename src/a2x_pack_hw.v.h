@@ -21,9 +21,8 @@
 
 #include "a2x_pack_hw.p.h"
 
-#include "a2x_app_settings.v.h"
-
 #include "a2x_pack_file.v.h"
+#include "a2x_pack_settings.v.h"
 
 extern void a_hw__init(void);
 extern void a_hw__uninit(void);

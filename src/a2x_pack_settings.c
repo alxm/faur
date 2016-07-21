@@ -17,7 +17,7 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a2x_app_settings.v.h"
+#include "a2x_pack_settings.v.h"
 
 typedef enum Setting_t {
     STR, BOOL, INT

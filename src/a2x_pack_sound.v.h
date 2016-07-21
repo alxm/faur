@@ -21,11 +21,10 @@
 
 #include "a2x_pack_sound.p.h"
 
-#include "a2x_app_settings.v.h"
-
 #include "a2x_pack_input.v.h"
 #include "a2x_pack_list.v.h"
 #include "a2x_pack_mem.v.h"
+#include "a2x_pack_settings.v.h"
 
 #define A_VOLUME_STEP 1
 #define A_MILIS_VOLUME (1000 / 2)
