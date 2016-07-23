@@ -28,8 +28,20 @@
 
 #include "a2x_pack_hw.v.h"
 
+#if A_PLATFORM_GP2X || A_PLATFORM_WIZ
+    static int g_mmuHackOn = 0;
+#endif
+
+#if A_PLATFORM_WIZ || A_PLATFORM_CAANOO
+    #define TIMER_BASE3  0x1980
+    #define TIMER_REG(x) g_memregs[(TIMER_BASE3 + x) >> 2]
+
+    static int g_memfd;
+    static volatile uint32_t* g_memregs;
+#endif
+
 #if A_PLATFORM_GP2X
-    static void a_hw__cpu(int MHz)
+    static void setCpuSpeed(int MHz)
     {
         int mhz = MHz * 1000000;
         int freq = 7372800;
@@ -55,7 +67,7 @@
         close(memfd);
     }
 
-    static void a_hw__ramTimings(int tRC, int tRAS, int tWR, int tMRD, int tRFC, int tRP, int tRCD)
+    static void setRamTimings(int tRC, int tRAS, int tWR, int tMRD, int tRFC, int tRP, int tRCD)
     {
         int memfd = open("/dev/mem", O_RDWR);
         volatile uint32_t* memregs32 = mmap(0, 0x10000, PROT_READ | PROT_WRITE, MAP_SHARED, memfd, 0xc0000000);
@@ -67,10 +79,6 @@
 
         close(memfd);
     }
-#endif
-
-#if A_PLATFORM_GP2X || A_PLATFORM_WIZ
-    static int g_mmuHackOn = 0;
 #endif
 
 void a_hw__init(void)
@@ -89,10 +97,10 @@ void a_hw__init(void)
         }
 
         if(a_settings_getInt("app.mhz") > 0) {
-            a_hw__cpu(a_settings_getInt("app.mhz"));
+            setCpuSpeed(a_settings_getInt("app.mhz"));
         }
 
-        a_hw__ramTimings(6, 4, 1, 1, 1, 2, 2);
+        setRamTimings(6, 4, 1, 1, 1, 2, 2);
     #elif A_PLATFORM_WIZ
         if(a_file_exists("./mmuhack.ko")) {
             system("/sbin/rmmod mmuhack");
@@ -106,10 +114,29 @@ void a_hw__init(void)
             }
         }
     #endif
+
+    #if A_PLATFORM_WIZ || A_PLATFORM_CAANOO
+        g_memfd = open("/dev/mem", O_RDWR);
+        g_memregs = mmap(0, 0x20000, PROT_READ | PROT_WRITE, MAP_SHARED, g_memfd, 0xc0000000);
+
+        TIMER_REG(0x44) = 0x922;
+        TIMER_REG(0x40) = 0x0c;
+        TIMER_REG(0x08) = 0x6b;
+    #endif
 }
 
 void a_hw__uninit(void)
 {
+    #if A_PLATFORM_WIZ || A_PLATFORM_CAANOO
+        TIMER_REG(0x40) = 0x0c;
+        TIMER_REG(0x08) = 0x23;
+        TIMER_REG(0x00) = 0;
+        TIMER_REG(0x40) = 0;
+        TIMER_REG(0x44) = 0;
+
+        close(g_memfd);
+    #endif
+
     #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
         if(g_mmuHackOn) {
             system("/sbin/rmmod mmuhack");
@@ -117,6 +144,14 @@ void a_hw__uninit(void)
     #endif
 
     #if A_PLATFORM_GP2X
-        a_hw__ramTimings(8, 16, 3, 8, 8, 8, 8);
+        setRamTimings(8, 16, 3, 8, 8, 8, 8);
     #endif
 }
+
+#if A_PLATFORM_WIZ || A_PLATFORM_CAANOO
+    uint32_t a_hw__getMilis(void)
+    {
+        TIMER_REG(0x08) = 0x4b; // run timer, latch value
+        const uint32_t t = TIMER_REG(0) / 1000;
+    }
+#endif

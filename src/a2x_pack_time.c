@@ -25,57 +25,21 @@
 
 #include "a2x_pack_time.v.h"
 
-#if A_PLATFORM_WIZ || A_PLATFORM_CAANOO
-    #define TIMER_BASE3  0x1980
-    #define TIMER_REG(x) g_memregs[(TIMER_BASE3 + x) >> 2]
-
-    static int g_memfd;
-    static volatile uint32_t* g_memregs;
-#endif
-
-void a_time__init(void)
-{
-    #if A_PLATFORM_WIZ || A_PLATFORM_CAANOO
-        g_memfd = open("/dev/mem", O_RDWR);
-        g_memregs = mmap(0, 0x20000, PROT_READ|PROT_WRITE, MAP_SHARED, g_memfd, 0xc0000000);
-
-        TIMER_REG(0x44) = 0x922;
-        TIMER_REG(0x40) = 0x0c;
-        TIMER_REG(0x08) = 0x6b;
-    #endif
-}
-
-void a_time__uninit(void)
-{
-    #if A_PLATFORM_WIZ || A_PLATFORM_CAANOO
-        TIMER_REG(0x40) = 0x0c;
-        TIMER_REG(0x08) = 0x23;
-        TIMER_REG(0x00) = 0;
-        TIMER_REG(0x40) = 0;
-        TIMER_REG(0x44) = 0;
-
-        close(g_memfd);
-    #endif
-}
-
 uint32_t a_time_getMilis(void)
 {
     #if A_PLATFORM_WIZ || A_PLATFORM_CAANOO
-        TIMER_REG(0x08) = 0x4b; // run timer, latch value
-        const uint32_t t = TIMER_REG(0) / 1000;
+        return a_hw__getMilis();
     #else
-        const uint32_t t = a_sdl__getTicks();
+        return a_sdl__getTicks();
     #endif
-
-    return t;
 }
 
 void a_time_waitMilis(uint32_t Milis)
 {
     #if A_PLATFORM_WIZ || A_PLATFORM_CAANOO
-        const uint32_t start = a_time_getMilis();
+        const uint32_t start = a_hw__getMilis();
 
-        while(a_time_getMilis() - start < Milis) {
+        while(a_hw__getMilis() - start < Milis) {
             continue;
         }
     #else

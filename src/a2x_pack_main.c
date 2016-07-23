@@ -43,7 +43,6 @@ int main(int Argc, char** Argv)
     a_conf__init();
     a_sdl__init();
     a_hw__init();
-    a_time__init();
     a_screen__init();
     a_screenshot__init();
     a_pixel__init();
@@ -73,7 +72,6 @@ int main(int Argc, char** Argv)
     a_screen__uninit();
     a_sprite__uninit();
     a_fps__uninit();
-    a_time__uninit();
     a_hw__uninit();
     a_sdl__uninit();
 
