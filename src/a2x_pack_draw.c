@@ -20,19 +20,19 @@
 #include "a2x_pack_draw.v.h"
 
 ADrawRectangle a_draw_rectangle;
-static ADrawRectangle rectangles[A_PIXEL_TYPE_NUM][2];
+static ADrawRectangle g_rectangleDraw[A_PIXEL_TYPE_NUM][2];
 
 ADrawLine a_draw_line;
-static ADrawLine lines[A_PIXEL_TYPE_NUM][2];
+static ADrawLine g_lineDraw[A_PIXEL_TYPE_NUM][2];
 
 ADrawHLine a_draw_hline;
-static ADrawHLine hlines[A_PIXEL_TYPE_NUM][2];
+static ADrawHLine g_hlineDraw[A_PIXEL_TYPE_NUM][2];
 
 ADrawVLine a_draw_vline;
-static ADrawHLine vlines[A_PIXEL_TYPE_NUM][2];
+static ADrawHLine g_vlineDraw[A_PIXEL_TYPE_NUM][2];
 
 ADrawCircle a_draw_circle;
-//static ADrawCircle circles[A_PIXEL_TYPE_NUM][2];
+//static ADrawCircle g_circleDraw[A_PIXEL_TYPE_NUM][2];
 
 static APixelBlend g_blend;
 static bool g_clip;
@@ -288,9 +288,9 @@ shapeMakeAll(rgb50,   (a__pass_dst, a__pass_red, a__pass_green, a__pass_blue))
 shapeMakeAll(rgb75,   (a__pass_dst, a__pass_red, a__pass_green, a__pass_blue))
 shapeMakeAll(inverse, (a__pass_dst))
 
-#define drawSet(Shape)                          \
-({                                              \
-    a_draw_##Shape = Shape##s[g_blend][g_clip]; \
+#define drawSet(Shape)                                 \
+({                                                     \
+    a_draw_##Shape = g_##Shape##Draw[g_blend][g_clip]; \
 })
 
 #define drawSetAll()    \
@@ -303,10 +303,10 @@ shapeMakeAll(inverse, (a__pass_dst))
 
 void a_draw__init(void)
 {
-    #define shapeInit(Shape, Index, Blend)                     \
-    ({                                                         \
-        Shape##s[Index][0] = a_draw__##Shape##_noclip_##Blend; \
-        Shape##s[Index][1] = a_draw__##Shape##_clip_##Blend;   \
+    #define shapeInit(Shape, Index, Blend)                            \
+    ({                                                                \
+        g_##Shape##Draw[Index][0] = a_draw__##Shape##_noclip_##Blend; \
+        g_##Shape##Draw[Index][1] = a_draw__##Shape##_clip_##Blend;   \
     })
 
     #define shapeInitAll(Index, Blend)      \

@@ -44,28 +44,28 @@ typedef struct ASdlInputInstance {
     } u;
 } ASdlInputInstance;
 
-static uint32_t sdl_flags;
+static uint32_t g_sdlFlags;
 
 #if A_USE_LIB_SDL
-    static SDL_Surface* screen = NULL;
-    static bool screen_locked = false;
+    static SDL_Surface* g_sdlScreen = NULL;
+    static bool g_sdlScreenLocked = false;
 #elif A_USE_LIB_SDL2
-    static SDL_Window* window = NULL;
-    static SDL_Renderer* renderer = NULL;
-    static SDL_Texture* texture = NULL;
+    static SDL_Window* g_sdlWindow = NULL;
+    static SDL_Renderer* g_sdlRenderer = NULL;
+    static SDL_Texture* g_sdlTexture = NULL;
 #endif
 
 #define A_MAX_JOYSTICKS 8
-static int joysticks_num;
-static SDL_Joystick* joysticks[A_MAX_JOYSTICKS];
+static int g_joysticksNum;
+static SDL_Joystick* g_joysticks[A_MAX_JOYSTICKS];
 
-static AInputCollection* buttons;
-static AInputCollection* analogs;
-static AInputCollection* touches;
+static AInputCollection* g_buttons;
+static AInputCollection* g_analogs;
+static AInputCollection* g_touchScreens;
 
 static void addButton(const char* Name, int Code)
 {
-    ASdlInputInstance* b = a_strhash_get(buttons->names, Name);
+    ASdlInputInstance* b = a_strhash_get(g_buttons->names, Name);
 
     if(!b) {
         b = a_mem_malloc(sizeof(ASdlInputInstance));
@@ -74,7 +74,7 @@ static void addButton(const char* Name, int Code)
         b->u.button.numCodes = 1;
         b->u.button.codes[0] = Code;
 
-        a_input__collection_add(buttons, b, Name);
+        a_input__collection_add(g_buttons, b, Name);
     } else {
         if(b->u.button.numCodes < A_MAX_BUTTON_CODES) {
             b->u.button.codes[b->u.button.numCodes++] = Code;
@@ -92,7 +92,7 @@ static void addAnalog(const char* Name, int DeviceIndex, char* DeviceName, int X
         return;
     }
 
-    ASdlInputInstance* a = a_strhash_get(analogs->names, Name);
+    ASdlInputInstance* a = a_strhash_get(g_analogs->names, Name);
 
     if(a) {
         a_out__error("Analog '%s' is already defined", Name);
@@ -109,14 +109,14 @@ static void addAnalog(const char* Name, int DeviceIndex, char* DeviceName, int X
 
     // check if we requested a specific device by Name
     if(DeviceName) {
-        for(int j = joysticks_num; j--; ) {
+        for(int j = g_joysticksNum; j--; ) {
             #if A_USE_LIB_SDL
                 if(a_str_same(DeviceName, SDL_JoystickName(j))) {
                     a->device_index = j;
                     break;
                 }
             #elif A_USE_LIB_SDL2
-                if(a_str_same(DeviceName, SDL_JoystickName(joysticks[j]))) {
+                if(a_str_same(DeviceName, SDL_JoystickName(g_joysticks[j]))) {
                     a->device_index = j;
                     break;
                 }
@@ -124,13 +124,13 @@ static void addAnalog(const char* Name, int DeviceIndex, char* DeviceName, int X
         }
     }
 
-    a_input__collection_add(analogs, a, Name);
+    a_input__collection_add(g_analogs, a, Name);
 }
 #endif // !A_PLATFORM_GP2X && !A_PLATFORM_WIZ
 
 static void addTouch(const char* Name)
 {
-    ASdlInputInstance* t = a_strhash_get(touches->names, Name);
+    ASdlInputInstance* t = a_strhash_get(g_touchScreens->names, Name);
 
     if(t) {
         a_out__error("Touch '%s' is already defined", Name);
@@ -141,29 +141,29 @@ static void addTouch(const char* Name)
 
     t->name = a_str_dup(Name);
 
-    a_input__collection_add(touches, t, Name);
+    a_input__collection_add(g_touchScreens, t, Name);
 }
 
 void a_sdl__init(void)
 {
     int ret = 0;
-    sdl_flags = 0;
+    g_sdlFlags = 0;
 
     if(a_settings_getBool("video.window")) {
-        sdl_flags |= SDL_INIT_VIDEO;
+        g_sdlFlags |= SDL_INIT_VIDEO;
     }
 
     if(a_settings_getBool("sound.on")) {
-        sdl_flags |= SDL_INIT_AUDIO;
+        g_sdlFlags |= SDL_INIT_AUDIO;
     }
 
-    sdl_flags |= SDL_INIT_JOYSTICK;
+    g_sdlFlags |= SDL_INIT_JOYSTICK;
 
     #if !(A_PLATFORM_WIZ || A_PLATFORM_CAANOO)
-        sdl_flags |= SDL_INIT_TIMER;
+        g_sdlFlags |= SDL_INIT_TIMER;
     #endif
 
-    ret = SDL_Init(sdl_flags);
+    ret = SDL_Init(g_sdlFlags);
 
     if(ret != 0) {
         a_out__fatal("SDL: %s", SDL_GetError());
@@ -185,18 +185,18 @@ void a_sdl__init(void)
         #endif
     }
 
-    joysticks_num = a_math_min(A_MAX_JOYSTICKS, SDL_NumJoysticks());
+    g_joysticksNum = a_math_min(A_MAX_JOYSTICKS, SDL_NumJoysticks());
 
-    if(joysticks_num > 0) {
-        a_out__message("Found %d joysticks", joysticks_num);
-        for(int j = joysticks_num; j--; ) {
-            joysticks[j] = SDL_JoystickOpen(j);
+    if(g_joysticksNum > 0) {
+        a_out__message("Found %d g_joysticks", g_joysticksNum);
+        for(int j = g_joysticksNum; j--; ) {
+            g_joysticks[j] = SDL_JoystickOpen(j);
         }
     }
 
-    buttons = a_input__collection_new();
-    analogs = a_input__collection_new();
-    touches = a_input__collection_new();
+    g_buttons = a_input__collection_new();
+    g_analogs = a_input__collection_new();
+    g_touchScreens = a_input__collection_new();
 
     #if A_PLATFORM_GP2X
         addButton("gp2x.Up", 0);
@@ -312,24 +312,24 @@ void a_sdl__init(void)
 
 void a_sdl__uninit(void)
 {
-    A_LIST_ITERATE(buttons->list, ASdlInputInstance, i) {
+    A_LIST_ITERATE(g_buttons->list, ASdlInputInstance, i) {
         free(i->name);
     }
 
-    A_LIST_ITERATE(analogs->list, ASdlInputInstance, i) {
+    A_LIST_ITERATE(g_analogs->list, ASdlInputInstance, i) {
         free(i->name);
     }
 
-    A_LIST_ITERATE(touches->list, ASdlInputInstance, i) {
+    A_LIST_ITERATE(g_touchScreens->list, ASdlInputInstance, i) {
         free(i->name);
     }
 
-    a_input__collection_free(buttons);
-    a_input__collection_free(analogs);
-    a_input__collection_free(touches);
+    a_input__collection_free(g_buttons);
+    a_input__collection_free(g_analogs);
+    a_input__collection_free(g_touchScreens);
 
-    for(int j = joysticks_num; j--; ) {
-        SDL_JoystickClose(joysticks[j]);
+    for(int j = g_joysticksNum; j--; ) {
+        SDL_JoystickClose(g_joysticks[j]);
     }
 
     if(a_settings_getBool("sound.on")) {
@@ -337,17 +337,17 @@ void a_sdl__uninit(void)
     }
 
     #if A_USE_LIB_SDL
-        if(SDL_MUSTLOCK(screen) && screen_locked) {
-            SDL_UnlockSurface(screen);
-            screen_locked = false;
+        if(SDL_MUSTLOCK(g_sdlScreen) && g_sdlScreenLocked) {
+            SDL_UnlockSurface(g_sdlScreen);
+            g_sdlScreenLocked = false;
         }
     #elif A_USE_LIB_SDL2
-        SDL_DestroyTexture(texture);
-        SDL_DestroyRenderer(renderer);
-        SDL_DestroyWindow(window);
+        SDL_DestroyTexture(g_sdlTexture);
+        SDL_DestroyRenderer(g_sdlRenderer);
+        SDL_DestroyWindow(g_sdlWindow);
     #endif
 
-    SDL_QuitSubSystem(sdl_flags);
+    SDL_QuitSubSystem(g_sdlFlags);
     SDL_Quit();
 }
 
@@ -364,7 +364,6 @@ bool a_sdl__screen_set(void)
         }
 
         bpp = SDL_VideoModeOK(a_width, a_height, A_PIXEL_BPP, videoFlags);
-
         if(bpp == 0) {
             if(first_time) {
                 a_out__fatal("SDL: %dx%d video not available", a_width, a_height);
@@ -376,63 +375,62 @@ bool a_sdl__screen_set(void)
 
         first_time = false;
 
-        screen = SDL_SetVideoMode(a_width,
-                                  a_height,
-                                  A_PIXEL_BPP,
-                                  videoFlags);
-
-        if(screen == NULL) {
+        g_sdlScreen = SDL_SetVideoMode(a_width,
+                                       a_height,
+                                       A_PIXEL_BPP,
+                                       videoFlags);
+        if(g_sdlScreen == NULL) {
             a_out__fatal("SDL: %s", SDL_GetError());
         }
 
-        SDL_SetClipRect(screen, NULL);
+        SDL_SetClipRect(g_sdlScreen, NULL);
 
-        if(SDL_MUSTLOCK(screen) && !screen_locked) {
-            SDL_LockSurface(screen);
-            screen_locked = true;
+        if(SDL_MUSTLOCK(g_sdlScreen) && !g_sdlScreenLocked) {
+            SDL_LockSurface(g_sdlScreen);
+            g_sdlScreenLocked = true;
         }
 
-        a_pixels = screen->pixels;
+        a_pixels = g_sdlScreen->pixels;
     #elif A_USE_LIB_SDL2
         int ret;
         a_settings__set("video.doubleBuffer", "1");
 
-        window = SDL_CreateWindow("",
-                                  SDL_WINDOWPOS_UNDEFINED,
-                                  SDL_WINDOWPOS_UNDEFINED,
-                                  a_width,
-                                  a_height,
-                                  SDL_WINDOW_RESIZABLE);
-        if(window == NULL) {
+        g_sdlWindow = SDL_CreateWindow("",
+                                       SDL_WINDOWPOS_UNDEFINED,
+                                       SDL_WINDOWPOS_UNDEFINED,
+                                       a_width,
+                                       a_height,
+                                       SDL_WINDOW_RESIZABLE);
+        if(g_sdlWindow == NULL) {
             a_out__fatal("SDL_CreateWindow failed: %s", SDL_GetError());
         }
 
-        renderer = SDL_CreateRenderer(window,
-                                      -1,
-                                      0);
-        if(renderer == NULL) {
+        g_sdlRenderer = SDL_CreateRenderer(g_sdlWindow,
+                                           -1,
+                                           0);
+        if(g_sdlRenderer == NULL) {
             a_out__fatal("SDL_CreateRenderer failed: %s", SDL_GetError());
         }
 
-        ret = SDL_RenderSetLogicalSize(renderer,
+        ret = SDL_RenderSetLogicalSize(g_sdlRenderer,
                                        a_width,
                                        a_height);
         if(ret < 0) {
             a_out__fatal("SDL_RenderSetLogicalSize failed: %s", SDL_GetError());
         }
 
-        texture = SDL_CreateTexture(renderer,
-                                    #if A_PIXEL_BPP == 16
-                                        SDL_PIXELFORMAT_RGB565,
-                                    #elif A_PIXEL_BPP == 32
-                                        SDL_PIXELFORMAT_RGBX8888,
-                                    #else
-                                        #error Invalid A_PIXEL_BPP value
-                                    #endif
-                                    SDL_TEXTUREACCESS_STREAMING,
-                                    a_width,
-                                    a_height);
-        if(texture == NULL) {
+        g_sdlTexture = SDL_CreateTexture(g_sdlRenderer,
+                                         #if A_PIXEL_BPP == 16
+                                             SDL_PIXELFORMAT_RGB565,
+                                         #elif A_PIXEL_BPP == 32
+                                             SDL_PIXELFORMAT_RGBX8888,
+                                         #else
+                                             #error Invalid A_PIXEL_BPP value
+                                         #endif
+                                         SDL_TEXTUREACCESS_STREAMING,
+                                         a_width,
+                                         a_height);
+        if(g_sdlTexture == NULL) {
             a_out__fatal("SDL_CreateTexture failed: %s", SDL_GetError());
         }
 
@@ -443,12 +441,14 @@ bool a_sdl__screen_set(void)
 
     #if A_PLATFORM_LINUXPC
         char caption[64];
-        snprintf(caption, 64, "%s %s", a_settings_getString("app.title"), a_settings_getString("app.version"));
+        snprintf(caption, 64, "%s %s",
+            a_settings_getString("app.title"),
+            a_settings_getString("app.version"));
 
         #if A_USE_LIB_SDL
             SDL_WM_SetCaption(caption, NULL);
         #elif A_USE_LIB_SDL2
-            SDL_SetWindowTitle(window, caption);
+            SDL_SetWindowTitle(g_sdlWindow, caption);
         #endif
     #else
         SDL_ShowCursor(SDL_DISABLE);
@@ -465,12 +465,12 @@ void a_sdl__screen_show(void)
             #define A_WIDTH 320
             #define A_HEIGHT 240
 
-            if(SDL_MUSTLOCK(screen) && !screen_locked) {
-                SDL_LockSurface(screen);
-                screen_locked = true;
+            if(SDL_MUSTLOCK(g_sdlScreen) && !g_sdlScreenLocked) {
+                SDL_LockSurface(g_sdlScreen);
+                g_sdlScreenLocked = true;
             }
 
-            APixel* dst = screen->pixels + A_WIDTH * A_HEIGHT;
+            APixel* dst = g_sdlScreen->pixels + A_WIDTH * A_HEIGHT;
             const APixel* src = a_pixels;
 
             for(int i = A_HEIGHT; i--; dst += A_WIDTH * A_HEIGHT + 1) {
@@ -480,59 +480,59 @@ void a_sdl__screen_show(void)
                 }
             }
 
-            if(SDL_MUSTLOCK(screen) && screen_locked) {
-                SDL_UnlockSurface(screen);
-                screen_locked = false;
+            if(SDL_MUSTLOCK(g_sdlScreen) && g_sdlScreenLocked) {
+                SDL_UnlockSurface(g_sdlScreen);
+                g_sdlScreenLocked = false;
             }
 
-            SDL_Flip(screen);
+            SDL_Flip(g_sdlScreen);
         } else if(a_settings_getBool("video.doubleBuffer")) {
-            if(SDL_MUSTLOCK(screen) && !screen_locked) {
-                SDL_LockSurface(screen);
-                screen_locked = true;
+            if(SDL_MUSTLOCK(g_sdlScreen) && !g_sdlScreenLocked) {
+                SDL_LockSurface(g_sdlScreen);
+                g_sdlScreenLocked = true;
             }
 
             const APixel* src = a_pixels;
-            APixel* dst = screen->pixels;
+            APixel* dst = g_sdlScreen->pixels;
 
             memcpy(dst, src, A_SCREEN_SIZE);
 
-            if(SDL_MUSTLOCK(screen) && screen_locked) {
-                SDL_UnlockSurface(screen);
-                screen_locked = false;
+            if(SDL_MUSTLOCK(g_sdlScreen) && g_sdlScreenLocked) {
+                SDL_UnlockSurface(g_sdlScreen);
+                g_sdlScreenLocked = false;
             }
 
-            SDL_Flip(screen);
+            SDL_Flip(g_sdlScreen);
         } else {
-            if(SDL_MUSTLOCK(screen) && screen_locked) {
-                SDL_UnlockSurface(screen);
-                screen_locked = false;
+            if(SDL_MUSTLOCK(g_sdlScreen) && g_sdlScreenLocked) {
+                SDL_UnlockSurface(g_sdlScreen);
+                g_sdlScreenLocked = false;
             }
 
-            SDL_Flip(screen);
+            SDL_Flip(g_sdlScreen);
 
-            if(SDL_MUSTLOCK(screen) && !screen_locked) {
-                SDL_LockSurface(screen);
-                screen_locked = true;
+            if(SDL_MUSTLOCK(g_sdlScreen) && !g_sdlScreenLocked) {
+                SDL_LockSurface(g_sdlScreen);
+                g_sdlScreenLocked = true;
             }
 
-            a_pixels = screen->pixels;
+            a_pixels = g_sdlScreen->pixels;
             a__pixels2 = a_pixels;
         }
     #elif A_USE_LIB_SDL2
         int ret;
 
-        ret = SDL_UpdateTexture(texture, NULL, a_pixels, a_width * sizeof(APixel));
+        ret = SDL_UpdateTexture(g_sdlTexture, NULL, a_pixels, a_width * sizeof(APixel));
         if(ret < 0) {
             a_out__fatal("SDL_UpdateTexture failed: %s", SDL_GetError());
         }
 
-        ret = SDL_RenderCopy(renderer, texture, NULL, NULL);
+        ret = SDL_RenderCopy(g_sdlRenderer, g_sdlTexture, NULL, NULL);
         if(ret < 0) {
             a_out__fatal("SDL_RenderCopy failed: %s", SDL_GetError());
         }
 
-        SDL_RenderPresent(renderer);
+        SDL_RenderPresent(g_sdlRenderer);
     #endif
 }
 
@@ -644,7 +644,7 @@ void a_sdl__delay(uint32_t Milis)
 
 void a_sdl__input_matchButton(const char* Name, AInputInstance* Button)
 {
-    ASdlInputInstance* i = a_strhash_get(buttons->names, Name);
+    ASdlInputInstance* i = a_strhash_get(g_buttons->names, Name);
 
     if(!i) {
         a_out__error("No SDL binding for button %s", Name);
@@ -655,7 +655,7 @@ void a_sdl__input_matchButton(const char* Name, AInputInstance* Button)
 
 void a_sdl__input_matchAnalog(const char* Name, AInputInstance* Analog)
 {
-    ASdlInputInstance* i = a_strhash_get(analogs->names, Name);
+    ASdlInputInstance* i = a_strhash_get(g_analogs->names, Name);
 
     if(!i) {
         a_out__error("No SDL binding for analog %s", Name);
@@ -666,7 +666,7 @@ void a_sdl__input_matchAnalog(const char* Name, AInputInstance* Analog)
 
 void a_sdl__input_matchTouch(const char* Name, AInputInstance* Touch)
 {
-    ASdlInputInstance* i = a_strhash_get(touches->names, Name);
+    ASdlInputInstance* i = a_strhash_get(g_touchScreens->names, Name);
 
     if(!i) {
         a_out__error("No SDL binding for touchscreen %s", Name);
@@ -716,7 +716,7 @@ void a_sdl__input_get(void)
             } break;
 
             case SDL_JOYAXISMOTION: {
-                A_LIST_ITERATE(analogs->list, ASdlInputInstance, a) {
+                A_LIST_ITERATE(g_analogs->list, ASdlInputInstance, a) {
                     if(a->device_index == event.jaxis.which) {
                         if(event.jaxis.axis == a->u.analog.xaxis_index) {
                             a_input__analog_setXAxis(a->input, event.jaxis.value);
@@ -728,7 +728,7 @@ void a_sdl__input_get(void)
             } break;
 
             case SDL_MOUSEMOTION: {
-                A_LIST_ITERATE(touches->list, ASdlInputInstance, t) {
+                A_LIST_ITERATE(g_touchScreens->list, ASdlInputInstance, t) {
                     a_input__touch_addMotion(t->input, event.button.x, event.button.y);
                 }
             } break;
@@ -736,7 +736,7 @@ void a_sdl__input_get(void)
             case SDL_MOUSEBUTTONDOWN: {
                 switch(event.button.button) {
                     case SDL_BUTTON_LEFT:
-                        A_LIST_ITERATE(touches->list, ASdlInputInstance, t) {
+                        A_LIST_ITERATE(g_touchScreens->list, ASdlInputInstance, t) {
                             a_input__touch_setCoords(t->input, event.button.x, event.button.y, true);
                         }
                     break;
@@ -746,7 +746,7 @@ void a_sdl__input_get(void)
             case SDL_MOUSEBUTTONUP: {
                 switch(event.button.button) {
                     case SDL_BUTTON_LEFT:
-                        A_LIST_ITERATE(touches->list, ASdlInputInstance, t) {
+                        A_LIST_ITERATE(g_touchScreens->list, ASdlInputInstance, t) {
                             a_input__touch_setCoords(t->input, event.button.x, event.button.y, false);
                         }
                     break;
@@ -757,7 +757,7 @@ void a_sdl__input_get(void)
         }
 
         if(action != A_ACTION_NONE) {
-            A_LIST_ITERATE(buttons->list, ASdlInputInstance, b) {
+            A_LIST_ITERATE(g_buttons->list, ASdlInputInstance, b) {
                 for(int c = b->u.button.numCodes; c--; ) {
                     if(b->u.button.codes[c] == code) {
                         a_input__button_setState(b->input, action == A_ACTION_PRESSED);

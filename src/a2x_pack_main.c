@@ -19,13 +19,13 @@
 
 #include "a2x_pack_main.v.h"
 
-static int numArgs;
-static char** args;
+static int g_argsNum;
+static char** g_args;
 
 int main(int Argc, char** Argv)
 {
-    numArgs = Argc;
-    args = Argv;
+    g_argsNum = Argc;
+    g_args = Argv;
 
     a_settings__defaults();
     a_settings__setup();
@@ -35,8 +35,10 @@ int main(int Argc, char** Argv)
     a_out__message("a2x %s, compiled on %s", A__VERSION, A_COMPILE_TIME);
 
     a_out__message("Opening %s %s by %s, compiled %s",
-        a_settings_getString("app.title"), a_settings_getString("app.version"),
-        a_settings_getString("app.author"), a_settings_getString("app.compiled"));
+        a_settings_getString("app.title"),
+        a_settings_getString("app.version"),
+        a_settings_getString("app.author"),
+        a_settings_getString("app.compiled"));
 
     a_conf__init();
     a_sdl__init();
@@ -87,15 +89,15 @@ int main(int Argc, char** Argv)
 
 int a_main_numArgs(void)
 {
-    return numArgs;
+    return g_argsNum;
 }
 
 char* a_main_getArg(unsigned int ArgNum)
 {
-    if(ArgNum >= numArgs) {
+    if(ArgNum >= g_argsNum) {
         a_out__error("a_main_getArg invalid arg: %u", ArgNum);
         return NULL;
     }
 
-    return args[ArgNum];
+    return g_args[ArgNum];
 }

@@ -19,25 +19,25 @@
 
 #include "a2x_pack_sound.v.h"
 
-static AList* musicList;
-static AList* sfxList;
+static AList* g_musicList;
+static AList* g_sfxList;
 
 int a__volume;
 int a__volumeMax;
 int a__volumeAdjust = -2 * A_MILIS_VOLUME;
 
 #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
-    static AInput* a__volUp;
-    static AInput* a__volDown;
+    static AInput* g_volumeUpButton;
+    static AInput* g_volumeDownButton;
 #elif A_PLATFORM_LINUXPC || A_PLATFORM_PANDORA
-    static AInput* a__musicOnOff;
+    static AInput* g_musicOnOffButton;
 #endif
 
 void a_sound__init(void)
 {
     if(a_settings_getBool("sound.on")) {
-        musicList = a_list_new();
-        sfxList = a_list_new();
+        g_musicList = a_list_new();
+        g_sfxList = a_list_new();
 
         a__volumeMax = a_sdl__sound_volumeMax();
 
@@ -50,10 +50,10 @@ void a_sound__init(void)
         a__volumeAdjust = -2 * A_MILIS_VOLUME;
 
         #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
-            a__volUp = a_input_new("gp2x.VolUp, wiz.VolUp");
-            a__volDown = a_input_new("gp2x.VolDown, wiz.VolDown");
+            g_volumeUpButton = a_input_new("gp2x.VolUp, wiz.VolUp");
+            g_volumeDownButton = a_input_new("gp2x.VolDown, wiz.VolDown");
         #elif A_PLATFORM_LINUXPC || A_PLATFORM_PANDORA
-            a__musicOnOff = a_input_new("pc.Music, pandora.Music");
+            g_musicOnOffButton = a_input_new("pc.Music, pandora.Music");
         #endif
     }
 }
@@ -63,16 +63,16 @@ void a_sound__uninit(void)
     if(a_settings_getBool("sound.on")) {
         a_music_stop();
 
-        A_LIST_ITERATE(sfxList, ASound, s) {
+        A_LIST_ITERATE(g_sfxList, ASound, s) {
             a_sfx__free(s);
         }
 
-        A_LIST_ITERATE(musicList, AMusic, Music) {
+        A_LIST_ITERATE(g_musicList, AMusic, Music) {
             a_music__free(Music);
         }
 
-        a_list_free(sfxList);
-        a_list_free(musicList);
+        a_list_free(g_sfxList);
+        a_list_free(g_musicList);
     }
 }
 
@@ -80,7 +80,7 @@ AMusic* a_music_load(const char* Path)
 {
     if(a_settings_getBool("sound.on")) {
         AMusic* Music = a_sdl__music_load(Path);
-        a_list_addLast(musicList, Music);
+        a_list_addLast(g_musicList, Music);
         a_sdl__music_setVolume();
         return Music;
     } else {
@@ -115,7 +115,7 @@ ASound* a_sfx_fromFile(const char* Path)
         ASound* s = a_sdl__sfx_loadFromFile(Path);
         a_sdl__sfx_setVolume(s, (float)a_settings_getInt("sound.sfx.scale") / 100 * a__volume);
 
-        a_list_addLast(sfxList, s);
+        a_list_addLast(g_sfxList, s);
         return s;
     } else {
         return NULL;
@@ -128,7 +128,7 @@ ASound* a_sfx__fromData(const uint16_t* Data, int Size)
         ASound* s = a_sdl__sfx_loadFromData(Data, Size);
         a_sdl__sfx_setVolume(s, (float)a_settings_getInt("sound.sfx.scale") / 100 * a__volume);
 
-        a_list_addLast(sfxList, s);
+        a_list_addLast(g_sfxList, s);
         return s;
     } else {
         return NULL;
@@ -152,7 +152,7 @@ void a_sfx_play(ASound* Sfx)
 void a_sfx_volume(int Volume)
 {
     if(a_settings_getBool("sound.on")) {
-        A_LIST_ITERATE(sfxList, ASound, s) {
+        A_LIST_ITERATE(g_sfxList, ASound, s) {
             a_sdl__sfx_setVolume(s, Volume);
         }
     }
@@ -164,8 +164,8 @@ void a_sound_adjustVolume(void)
         if(a_settings_getBool("sound.on")) {
             int adjust = 0;
 
-            if(a_button_get(a__volUp)) adjust = 1;
-            if(a_button_get(a__volDown)) adjust = -1;
+            if(a_button_get(g_volumeUpButton)) adjust = 1;
+            if(a_button_get(g_volumeDownButton)) adjust = -1;
 
             if(adjust) {
                 a__volume += adjust * A_VOLUME_STEP;
@@ -173,7 +173,7 @@ void a_sound_adjustVolume(void)
                 if(a__volume > a__volumeMax) a__volume = a__volumeMax;
                 else if(a__volume < 0) a__volume = 0;
 
-                if(a_list_size(musicList) > 0) {
+                if(a_list_size(g_musicList) > 0) {
                     a_sdl__music_setVolume();
                 }
 
@@ -183,7 +183,7 @@ void a_sound_adjustVolume(void)
         }
     #elif A_PLATFORM_LINUXPC || A_PLATFORM_PANDORA
         if(a_settings_getBool("sound.on")) {
-            if(a_button_getAndUnpress(a__musicOnOff)) {
+            if(a_button_getAndUnpress(g_musicOnOffButton)) {
                 a_sdl__music_toggle();
             }
         }

@@ -25,17 +25,17 @@ typedef struct ALine {
     char* text;
 } ALine;
 
-static AList* lines;
+static AList* g_lines;
 bool enabled;
 bool show;
 
 #define LINE_HEIGHT 10
-static int linesPerScreen;
+static int g_linesPerScreen;
 
 static struct {
     char* text;
     int font;
-} titles[A_CONSOLE_MAX] = {
+} g_titles[A_CONSOLE_MAX] = {
     {"[ a2x Msg ] ", A_FONT_GREEN},
     {"[ a2x Wrn ] ", A_FONT_YELLOW},
     {"[ a2x Err ] ", A_FONT_RED},
@@ -61,19 +61,19 @@ static void line_free(ALine* Line)
 void a_console__init(void)
 {
     enabled = true;
-    lines = a_list_new();
-    linesPerScreen = a_settings_getInt("video.height") / LINE_HEIGHT;
+    g_lines = a_list_new();
+    g_linesPerScreen = a_settings_getInt("video.height") / LINE_HEIGHT;
 }
 
 void a_console__uninit(void)
 {
     enabled = false;
 
-    A_LIST_ITERATE(lines, ALine, line) {
+    A_LIST_ITERATE(g_lines, ALine, line) {
         line_free(line);
     }
 
-    a_list_free(lines);
+    a_list_free(g_lines);
 }
 
 void a_console__write(AConsoleOutType Type, const char* Text)
@@ -82,10 +82,10 @@ void a_console__write(AConsoleOutType Type, const char* Text)
         return;
     }
 
-    a_list_addLast(lines, line_new(Type, Text));
+    a_list_addLast(g_lines, line_new(Type, Text));
 
-    if(a_list_size(lines) > linesPerScreen) {
-        line_free(a_list_pop(lines));
+    if(a_list_size(g_lines) > g_linesPerScreen) {
+        line_free(a_list_pop(g_lines));
     }
 }
 
@@ -102,10 +102,10 @@ void a_console__draw(void)
     int y = 1;
     a_font_setAlign(A_FONT_ALIGN_LEFT);
 
-    A_LIST_ITERATE(lines, ALine, line) {
+    A_LIST_ITERATE(g_lines, ALine, line) {
         a_font_setCoords(1, y);
-        a_font_setFace(titles[line->type].font);
-        a_font_text(titles[line->type].text);
+        a_font_setFace(g_titles[line->type].font);
+        a_font_text(g_titles[line->type].text);
 
         a_font_setFace(A_FONT_WHITE);
         a_font_fixed(a_width - a_font_getX(), line->text);

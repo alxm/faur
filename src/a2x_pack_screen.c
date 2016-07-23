@@ -30,10 +30,10 @@ int a_width = 0;
 int a_height = 0;
 
 APixel* a__pixels2 = NULL;
-static int a__width2 = 0;
-static int a__height2 = 0;
+static int g_savedWidth = 0;
+static int g_savedHeight = 0;
 
-static ASprite* spriteTarget = NULL;
+static ASprite* g_spriteTarget = NULL;
 
 static void displayVolume(void)
 {
@@ -94,8 +94,8 @@ void a_screen__init(void)
         memset(a_pixels, 0, A_SCREEN_SIZE);
     }
 
-    a__width2 = a_width;
-    a__height2 = a_height;
+    g_savedWidth = a_width;
+    g_savedHeight = a_height;
     a__pixels2 = a_pixels;
 }
 
@@ -160,16 +160,16 @@ void a_screen_setTargetSprite(ASprite* Sprite)
     a_width = Sprite->w;
     a_height = Sprite->h;
 
-    spriteTarget = Sprite;
+    g_spriteTarget = Sprite;
 }
 
 void a_screen_resetTarget(void)
 {
     a_pixels = a__pixels2;
-    a_width = a__width2;
-    a_height = a__height2;
+    a_width = g_savedWidth;
+    a_height = g_savedHeight;
 
-    if(spriteTarget) {
-        spriteTarget = NULL;
+    if(g_spriteTarget) {
+        g_spriteTarget = NULL;
     }
 }

@@ -19,20 +19,20 @@
 
 #include "a2x_pack_sprite.v.h"
 
-static AList* sprites;
+static AList* g_spritesList;
 
 void a_sprite__init(void)
 {
-    sprites = a_list_new();
+    g_spritesList = a_list_new();
 }
 
 void a_sprite__uninit(void)
 {
-    A_LIST_ITERATE(sprites, ASprite, s) {
+    A_LIST_ITERATE(g_spritesList, ASprite, s) {
         a_sprite__free(s);
     }
 
-    a_list_free(sprites);
+    a_list_free(g_spritesList);
 }
 
 ASprite* a_sprite_fromFile(const char* Path)
@@ -173,7 +173,7 @@ ASprite* a_sprite_blank(int Width, int Height)
         s->data[i] = A_SPRITE_TRANSPARENT;
     }
 
-    s->node = a_list_addLast(sprites, s);
+    s->node = a_list_addLast(g_spritesList, s);
 
     return s;
 }

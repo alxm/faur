@@ -70,7 +70,7 @@
 #endif
 
 #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
-    static int mmuHackOn = 0;
+    static int g_mmuHackOn = 0;
 #endif
 
 void a_hw__init(void)
@@ -84,7 +84,7 @@ void a_hw__init(void)
 
             if(mmufd >= 0) {
                 close(mmufd);
-                mmuHackOn = 1;
+                g_mmuHackOn = 1;
             }
         }
 
@@ -102,7 +102,7 @@ void a_hw__init(void)
 
             if(mmufd >= 0) {
                 close(mmufd);
-                mmuHackOn = 1;
+                g_mmuHackOn = 1;
             }
         }
     #endif
@@ -111,7 +111,7 @@ void a_hw__init(void)
 void a_hw__uninit(void)
 {
     #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
-        if(mmuHackOn) {
+        if(g_mmuHackOn) {
             system("/sbin/rmmod mmuhack");
         }
     #endif

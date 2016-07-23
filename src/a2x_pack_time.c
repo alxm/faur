@@ -27,17 +27,17 @@
 
 #if A_PLATFORM_WIZ || A_PLATFORM_CAANOO
     #define TIMER_BASE3  0x1980
-    #define TIMER_REG(x) memregs[(TIMER_BASE3 + x) >> 2]
+    #define TIMER_REG(x) g_memregs[(TIMER_BASE3 + x) >> 2]
 
-    static int memfd;
-    static volatile uint32_t* memregs;
+    static int g_memfd;
+    static volatile uint32_t* g_memregs;
 #endif
 
 void a_time__init(void)
 {
     #if A_PLATFORM_WIZ || A_PLATFORM_CAANOO
-        memfd = open("/dev/mem", O_RDWR);
-        memregs = mmap(0, 0x20000, PROT_READ|PROT_WRITE, MAP_SHARED, memfd, 0xc0000000);
+        g_memfd = open("/dev/mem", O_RDWR);
+        g_memregs = mmap(0, 0x20000, PROT_READ|PROT_WRITE, MAP_SHARED, g_memfd, 0xc0000000);
 
         TIMER_REG(0x44) = 0x922;
         TIMER_REG(0x40) = 0x0c;
@@ -54,7 +54,7 @@ void a_time__uninit(void)
         TIMER_REG(0x40) = 0;
         TIMER_REG(0x44) = 0;
 
-        close(memfd);
+        close(g_memfd);
     #endif
 }
 

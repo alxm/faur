@@ -21,9 +21,9 @@
 
 #define SCREENSHOTS_LIMIT 99999
 
-static bool can_save;
-static char* prefix;
-static unsigned int number;
+static bool g_canSave;
+static char* g_filePrefix;
+static unsigned int g_screenshotNumber;
 
 void a_screenshot__init(void)
 {
@@ -33,9 +33,9 @@ void a_screenshot__init(void)
         a_dir_make(screens_dir);
     }
 
-    can_save = true;
-    prefix = a_str_merge(screens_dir, "/", a_settings_getString("app.title"), "-");
-    number = 0;
+    g_canSave = true;
+    g_filePrefix = a_str_merge(screens_dir, "/", a_settings_getString("app.title"), "-");
+    g_screenshotNumber = 0;
 
     ADir* const dir = a_dir_open(screens_dir);
     a_dir_reverse(dir);
@@ -50,17 +50,17 @@ void a_screenshot__init(void)
 
         if(start != -1 && end != -1 && end - start == 6) {
             char* numberStr = a_str_sub(file, start + 1, end);
-            number = atoi(numberStr);
+            g_screenshotNumber = atoi(numberStr);
             free(numberStr);
 
-            if(number <= 0) {
-                can_save = false;
+            if(g_screenshotNumber <= 0) {
+                g_canSave = false;
             }
         } else {
-            can_save = false;
+            g_canSave = false;
         }
 
-        if(!can_save) {
+        if(!g_canSave) {
             a_out__error("Can't save screenshots: invalid file '%s'", file);
         }
     }
@@ -70,25 +70,25 @@ void a_screenshot__init(void)
 
 void a_screenshot__uninit(void)
 {
-    free(prefix);
+    free(g_filePrefix);
 }
 
 void a_screenshot_save(void)
 {
-    if(!can_save) {
+    if(!g_canSave) {
         a_out__error("Can't save screenshots");
         return;
     }
 
-    if(++number > SCREENSHOTS_LIMIT) {
+    if(++g_screenshotNumber > SCREENSHOTS_LIMIT) {
         a_out__error("%d screenshots limit exceeded", SCREENSHOTS_LIMIT);
         return;
     }
 
     char num[6];
-    snprintf(num, 6, "%05d", number);
+    snprintf(num, 6, "%05d", g_screenshotNumber);
 
-    char* const name = a_str_merge(prefix, num, ".png");
+    char* const name = a_str_merge(g_filePrefix, num, ".png");
 
     a_out__message("Saving screenshot '%s'", name);
     a_png_write(name, a_pixels, a_width, a_height);

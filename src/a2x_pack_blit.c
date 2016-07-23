@@ -20,7 +20,7 @@
 #include "a2x_pack_blit.v.h"
 
 ABlitter a_blit;
-static ABlitter blitters[A_PIXEL_TYPE_NUM][2][2];
+static ABlitter g_blitters[A_PIXEL_TYPE_NUM][2][2];
 
 static APixelBlend g_blend;
 static bool g_clip;
@@ -224,10 +224,10 @@ void a_blit__init(void)
 {
     #define blitterInit(Index, Blend)                       \
     ({                                                      \
-        blitters[Index][0][0] = a_blit__noclip_##Blend;     \
-        blitters[Index][0][1] = a_blit__noclip_##Blend##_p; \
-        blitters[Index][1][0] = a_blit__clip_##Blend;       \
-        blitters[Index][1][1] = a_blit__clip_##Blend##_p;   \
+        g_blitters[Index][0][0] = a_blit__noclip_##Blend;     \
+        g_blitters[Index][0][1] = a_blit__noclip_##Blend##_p; \
+        g_blitters[Index][1][0] = a_blit__clip_##Blend;       \
+        g_blitters[Index][1][1] = a_blit__clip_##Blend##_p;   \
     })
 
     blitterInit(A_PIXEL_PLAIN, plain);
@@ -241,25 +241,25 @@ void a_blit__init(void)
     g_clip = true;
     g_usePixel = false;
 
-    a_blit = blitters[g_blend][g_clip][g_usePixel];
+    a_blit = g_blitters[g_blend][g_clip][g_usePixel];
 }
 
 void a_blit__setBlend(APixelBlend Blend)
 {
     g_blend = Blend;
-    a_blit = blitters[g_blend][g_clip][g_usePixel];
+    a_blit = g_blitters[g_blend][g_clip][g_usePixel];
 }
 
 void a_blit__setClip(bool DoClip)
 {
     g_clip = DoClip;
-    a_blit = blitters[g_blend][g_clip][g_usePixel];
+    a_blit = g_blitters[g_blend][g_clip][g_usePixel];
 }
 
 void a_blit_pixel(bool UsePixelColor)
 {
     g_usePixel = UsePixelColor;
-    a_blit = blitters[g_blend][g_clip][g_usePixel];
+    a_blit = g_blitters[g_blend][g_clip][g_usePixel];
 }
 
 void a_blit__setAlpha(uint8_t Alpha)
