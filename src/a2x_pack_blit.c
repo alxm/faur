@@ -22,122 +22,141 @@
 ABlitter a_blit;
 static ABlitter blitters[A_PIXEL_TYPE_NUM][2][2];
 
-static APixelBlend blend;
-static bool clip;
-static bool usePixel;
+static APixelBlend g_blend;
+static bool g_clip;
+static bool g_usePixel;
 
-static uint8_t alpha;
-static uint8_t red, green, blue;
-static APixel pixel;
+static uint8_t g_red, g_green, g_blue, g_alpha;
+static APixel g_pixel;
 
 // Spans format:
 // [1 (draw) / 0 (transp)][[len]...][0 (end line)]
 
-#define blitter_noclip(Pixeler)                          \
-{                                                        \
-    const int scrw = a_width;                            \
-                                                         \
-    APixel* dst2 = a_pixels + Y * scrw + X;               \
-    const APixel* src = Sprite->data;                          \
-                                                         \
-    const uint16_t* sp = Sprite->spans;                       \
-                                                         \
-    for(int i = Sprite->h; i--; dst2 += scrw) {               \
-        bool draw = *sp++ == 1;                          \
-        APixel* dst = dst2;                               \
-                                                         \
-        for(uint16_t len = *sp; *sp++ != 0; len = *sp) { \
-            if(draw) {                                   \
-                for(int j = len; j--; dst++, src++) {    \
-                    Pixeler;                             \
-                }                                        \
-            } else {                                     \
-                dst += len;                              \
-                src += len;                              \
-            }                                            \
-                                                         \
-            draw ^= 1;                                   \
-        }                                                \
-    }                                                    \
+#define blitter_noclip(Pixeler)                                       \
+{                                                                     \
+    const int screenW = a_width;                                      \
+    APixel* dst = a_pixels + Y * screenW + X;                         \
+    const APixel* a__pass_src = Sprite->data;                         \
+    const uint16_t* spans = Sprite->spans;                            \
+                                                                      \
+    for(int i = Sprite->h; i--; dst += screenW) {                     \
+        bool draw = *spans++ == 1;                                    \
+        APixel* a__pass_dst = dst;                                    \
+                                                                      \
+        for(uint16_t len = *spans; *spans++ != 0; len = *spans) {     \
+            if(draw) {                                                \
+                for(int j = len; j--; a__pass_dst++, a__pass_src++) { \
+                    Pixeler;                                          \
+                }                                                     \
+            } else {                                                  \
+                a__pass_dst += len;                                   \
+                a__pass_src += len;                                   \
+            }                                                         \
+                                                                      \
+            draw ^= 1;                                                \
+        }                                                             \
+    }                                                                 \
 }
 
-#define blitter_clip(Pixeler)                                            \
-{                                                                        \
-    const int scrw = a_width;                                            \
-    const int scrh = a_height;                                           \
-                                                                         \
-    const int w = Sprite->w;                                                  \
-    const int h = Sprite->h;                                                  \
-                                                                         \
-    if(Y + h <= 0 || Y >= scrh || X + w <= 0 || X >= scrw) {             \
-        return;                                                          \
-    }                                                                    \
-                                                                         \
-    const int yClipUp = a_math_max(0, -Y);                               \
-    const int yClipDown = a_math_max(0, Y + h - scrh);                   \
-    const int xClipLeft = a_math_max(0, -X);                             \
-    const int xClipRight = a_math_max(0, X + w - scrw);                  \
-                                                                         \
-    const int rows = h - yClipUp - yClipDown;                            \
-    const int columns = w - xClipLeft - xClipRight;                      \
-                                                                         \
-    APixel* startDst = a_pixels + (Y + yClipUp) * scrw + (X + xClipLeft); \
-    const APixel* startSrc = Sprite->data + yClipUp * w + xClipLeft;           \
-                                                                         \
-    const uint16_t* sp = Sprite->spans;                                       \
-                                                                         \
-    /* skip clipped top rows */                                          \
-    for(int i = yClipUp; i--; ) {                                        \
-        sp++;                                                            \
-        while(*sp++ != 0) {                                              \
-            continue;                                                    \
-        }                                                                \
-    }                                                                    \
-                                                                         \
-    /* draw visible rows */                                              \
-    for(int i = rows; i--; startDst += scrw, startSrc += w) {            \
-        bool draw = *sp++ == 1;                                          \
-        uint16_t len = *sp;                                              \
-                                                                         \
-        /* skip clipped left columns */                                  \
-        while(len <= xClipLeft) {                                        \
-            len += *++sp;                                                \
-            draw ^= 1;                                                   \
-        }                                                                \
-        len -= xClipLeft;                                                \
-                                                                         \
-        APixel* dst = startDst;                                           \
-        const APixel* src = startSrc;                                     \
-                                                                         \
-        /* draw visible columns */                                       \
-        for(int c = columns; c > 0; len = *++sp, draw ^= 1) {            \
-            if(draw) {                                                   \
-                for(int d = len; d-- && c > 0; dst++, src++, c--) {      \
-                    Pixeler;                                             \
-                }                                                        \
-            } else {                                                     \
-                dst += len;                                              \
-                src += len;                                              \
-                c -= len;                                                \
-            }                                                            \
-        }                                                                \
-                                                                         \
-        /* skip clipped right columns */                                 \
-        while(*sp++ != 0) {                                              \
-            continue;                                                    \
-        }                                                                \
-    }                                                                    \
+#define blitter_clip(Pixeler)                                                \
+{                                                                            \
+    const int screenW = a_width;                                             \
+    const int screenH = a_height;                                            \
+    const int spriteW = Sprite->w;                                           \
+    const int spriteH = Sprite->h;                                           \
+                                                                             \
+    if(Y + spriteH <= 0 || Y >= screenH                                      \
+        || X + spriteW <= 0 || X >= screenW) {                               \
+        return;                                                              \
+    }                                                                        \
+                                                                             \
+    const int yClipUp = a_math_max(0, -Y);                                   \
+    const int yClipDown = a_math_max(0, Y + spriteH - screenH);              \
+    const int xClipLeft = a_math_max(0, -X);                                 \
+    const int xClipRight = a_math_max(0, X + spriteW - screenW);             \
+                                                                             \
+    const int rows = spriteH - yClipUp - yClipDown;                          \
+    const int columns = spriteW - xClipLeft - xClipRight;                    \
+                                                                             \
+    APixel* startDst = a_pixels + (Y + yClipUp) * screenW + (X + xClipLeft); \
+    const APixel* startSrc = Sprite->data + yClipUp * spriteW + xClipLeft;   \
+    const uint16_t* spans = Sprite->spans;                                   \
+                                                                             \
+    /* skip clipped top rows */                                              \
+    for(int i = yClipUp; i--; ) {                                            \
+        spans++;                                                             \
+        while (*spans++ != 0) {                                              \
+            continue;                                                        \
+        }                                                                    \
+    }                                                                        \
+                                                                             \
+    /* draw visible rows */                                                  \
+    for(int i = rows; i--; startDst += screenW, startSrc += spriteW) {       \
+        bool draw = *spans++ == 1;                                           \
+        uint16_t len = *spans;                                               \
+                                                                             \
+        /* skip clipped left columns */                                      \
+        while(len <= xClipLeft) {                                            \
+            len += *++spans;                                                 \
+            draw ^= 1;                                                       \
+        }                                                                    \
+                                                                             \
+        /* account for overclipping */                                       \
+        len -= xClipLeft;                                                    \
+                                                                             \
+        APixel* a__pass_dst = startDst;                                      \
+        const APixel* a__pass_src = startSrc;                                \
+                                                                             \
+        /* draw visible columns */                                           \
+        for(int c = columns; c > 0; ) {                                      \
+            if(draw) {                                                       \
+                for(int d = len; d-- && c--; ) {                             \
+                    Pixeler;                                                 \
+                    a__pass_dst++;                                           \
+                    a__pass_src++;                                           \
+                }                                                            \
+            } else {                                                         \
+                a__pass_dst += len;                                          \
+                a__pass_src += len;                                          \
+                c -= len;                                                    \
+            }                                                                \
+                                                                             \
+            len = *++spans;                                                  \
+            draw ^= 1;                                                       \
+        }                                                                    \
+                                                                             \
+        /* skip clipped right columns */                                     \
+        while(*spans++ != 0) {                                               \
+            continue;                                                        \
+        }                                                                    \
+    }                                                                        \
 }
 
 #define blitter_plain_setup
-
-#define blitter_rgba_setup   \
-    const uint8_t a = alpha;
+#define blitter_plain_setup_p             \
+    const APixel a__pass_pixel = g_pixel;
 
 #define blitter_rgb25_setup
+#define blitter_rgb25_setup_p              \
+    const uint8_t a__pass_red = g_red;     \
+    const uint8_t a__pass_green = g_green; \
+    const uint8_t a__pass_blue = g_blue;
+
 #define blitter_rgb50_setup
+#define blitter_rgb50_setup_p blitter_rgb25_setup_p
+
 #define blitter_rgb75_setup
+#define blitter_rgb75_setup_p blitter_rgb25_setup_p
+
+#define blitter_rgba_setup                 \
+    blitter_rgb25_setup                    \
+    const uint8_t a__pass_alpha = g_alpha;
+#define blitter_rgba_setup_p               \
+    blitter_rgb25_setup_p                  \
+    const uint8_t a__pass_alpha = g_alpha;
+
 #define blitter_inverse_setup
+#define blitter_inverse_setup_p
 
 #define blitterMake(Blend, ArgsBlit, ArgsPixel)                          \
                                                                          \
@@ -149,7 +168,7 @@ static APixel pixel;
                                                                          \
     void a_blit__noclip_##Blend##_p(const ASprite* Sprite, int X, int Y) \
     {                                                                    \
-        blitter_##Blend##_setup                                          \
+        blitter_##Blend##_setup_p                                        \
         blitter_noclip(a_pixel__##Blend ArgsPixel)                       \
     }                                                                    \
                                                                          \
@@ -161,44 +180,44 @@ static APixel pixel;
                                                                          \
     void a_blit__clip_##Blend##_p(const ASprite* Sprite, int X, int Y)   \
     {                                                                    \
-        blitter_##Blend##_setup                                          \
+        blitter_##Blend##_setup_p                                        \
         blitter_clip(a_pixel__##Blend ArgsPixel)                         \
     }
 
 blitterMake(
     plain,
-    (dst, *src),
-    (dst, pixel)
+    (a__pass_dst, *a__pass_src),
+    (a__pass_dst, a__pass_pixel)
 )
 
 blitterMake(
     rgba,
-    (dst, a_pixel_red(*src), a_pixel_green(*src), a_pixel_blue(*src), a),
-    (dst, red, green, blue, a)
+    (a__pass_dst, a_pixel_red(*a__pass_src), a_pixel_green(*a__pass_src), a_pixel_blue(*a__pass_src), a__pass_alpha),
+    (a__pass_dst, a__pass_red, a__pass_green, a__pass_blue, a__pass_alpha)
 )
 
 blitterMake(
     rgb25,
-    (dst, a_pixel_red(*src), a_pixel_green(*src), a_pixel_blue(*src)),
-    (dst, red, green, blue)
+    (a__pass_dst, a_pixel_red(*a__pass_src), a_pixel_green(*a__pass_src), a_pixel_blue(*a__pass_src)),
+    (a__pass_dst, a__pass_red, a__pass_green, a__pass_blue)
 )
 
 blitterMake(
     rgb50,
-    (dst, a_pixel_red(*src), a_pixel_green(*src), a_pixel_blue(*src)),
-    (dst, red, green, blue)
+    (a__pass_dst, a_pixel_red(*a__pass_src), a_pixel_green(*a__pass_src), a_pixel_blue(*a__pass_src)),
+    (a__pass_dst, a__pass_red, a__pass_green, a__pass_blue)
 )
 
 blitterMake(
     rgb75,
-    (dst, a_pixel_red(*src), a_pixel_green(*src), a_pixel_blue(*src)),
-    (dst, red, green, blue)
+    (a__pass_dst, a_pixel_red(*a__pass_src), a_pixel_green(*a__pass_src), a_pixel_blue(*a__pass_src)),
+    (a__pass_dst, a__pass_red, a__pass_green, a__pass_blue)
 )
 
 blitterMake(
     inverse,
-    (dst),
-    (dst)
+    (a__pass_dst),
+    (a__pass_dst)
 )
 
 void a_blit__init(void)
@@ -218,43 +237,43 @@ void a_blit__init(void)
     blitterInit(A_PIXEL_RGB75, rgb75);
     blitterInit(A_PIXEL_INVERSE, inverse);
 
-    blend = A_PIXEL_PLAIN;
-    clip = true;
-    usePixel = false;
+    g_blend = A_PIXEL_PLAIN;
+    g_clip = true;
+    g_usePixel = false;
 
-    a_blit = blitters[blend][clip][usePixel];
+    a_blit = blitters[g_blend][g_clip][g_usePixel];
 }
 
 void a_blit__setBlend(APixelBlend Blend)
 {
-    blend = Blend;
-    a_blit = blitters[blend][clip][usePixel];
+    g_blend = Blend;
+    a_blit = blitters[g_blend][g_clip][g_usePixel];
 }
 
 void a_blit__setClip(bool DoClip)
 {
-    clip = DoClip;
-    a_blit = blitters[blend][clip][usePixel];
+    g_clip = DoClip;
+    a_blit = blitters[g_blend][g_clip][g_usePixel];
 }
 
 void a_blit_pixel(bool UsePixelColor)
 {
-    usePixel = UsePixelColor;
-    a_blit = blitters[blend][clip][usePixel];
+    g_usePixel = UsePixelColor;
+    a_blit = blitters[g_blend][g_clip][g_usePixel];
 }
 
 void a_blit__setAlpha(uint8_t Alpha)
 {
-    alpha = Alpha;
+    g_alpha = Alpha;
 }
 
 void a_blit__setRGB(uint8_t Red, uint8_t Green, uint8_t Blue)
 {
-    red = Red;
-    green = Green;
-    blue = Blue;
+    g_red = Red;
+    g_green = Green;
+    g_blue = Blue;
 
-    pixel = a_pixel_make(red, green, blue);
+    g_pixel = a_pixel_make(g_red, g_green, g_blue);
 }
 
 void a_blit_c(const ASprite* Sprite)
