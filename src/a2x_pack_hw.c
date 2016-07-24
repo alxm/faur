@@ -152,6 +152,6 @@ void a_hw__uninit(void)
     uint32_t a_hw__getMilis(void)
     {
         TIMER_REG(0x08) = 0x4b; // run timer, latch value
-        const uint32_t t = TIMER_REG(0) / 1000;
+        return TIMER_REG(0) / 1000;
     }
 #endif
