@@ -214,7 +214,11 @@ bool a_file_exists(const char* Path)
 bool a_file_isDir(const char* Path)
 {
     struct stat info;
-    stat(Path, &info);
+
+    if(stat(Path, &info) != 0) {
+        a_out__error("a_file_isDir: stat(%s) failed", Path);
+        return false;
+    }
 
     return S_ISDIR(info.st_mode);
 }
@@ -222,7 +226,11 @@ bool a_file_isDir(const char* Path)
 size_t a_file_size(const char* Path)
 {
     struct stat info;
-    stat(Path, &info);
+
+    if(stat(Path, &info) != 0) {
+        a_out__error("a_file_size: stat(%s) failed", Path);
+        return 0;
+    }
 
     return info.st_size;
 }
