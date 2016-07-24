@@ -28,7 +28,7 @@ static bool g_clip;
 static uint8_t g_red, g_green, g_blue, alpha;
 static APixel g_pixel;
 
-#define PIXEL_DST (a_pixels + Y * a_width + X)
+#define PIXEL_DST (a_screen__pixels + Y * a_screen__width + X)
 
 #define pixelMake(Blend, Args)                                \
                                                               \
@@ -39,7 +39,8 @@ static APixel g_pixel;
                                                               \
     void a_pixel__clip_##Blend(int X, int Y)                  \
     {                                                         \
-        if(X >= 0 && X < a_width && Y >= 0 && Y < a_height) { \
+        if(X >= 0 && X < a_screen__width                      \
+           && Y >= 0 && Y < a_screen__height) {               \
             a_pixel__##Blend Args;                            \
         }                                                     \
     }

@@ -94,4 +94,4 @@ extern void a_pixel_setPixel(APixel Pixel);
 typedef void (*APixelPut)(int X, int Y);
 extern APixelPut a_pixel_put;
 
-#define a_pixel_get(X, Y) (*(a_pixels + (Y) * a_width + (X)))
+#define a_pixel_get(X, Y) (*(a_screen__pixels + (Y) * a_screen__width + (X)))

@@ -24,9 +24,9 @@
 #include "a2x_pack_pixel.p.h"
 #include "a2x_pack_sprite.p.h"
 
-extern APixel* a_pixels;
-extern int a_width;
-extern int a_height;
+extern APixel* a_screen_pixels(void);
+extern int a_screen_width(void);
+extern int a_screen_height(void);
 
 extern void a_screen_show(void);
 

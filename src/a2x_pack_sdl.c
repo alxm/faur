@@ -363,20 +363,20 @@ bool a_sdl__screen_set(void)
             videoFlags |= SDL_FULLSCREEN;
         }
 
-        bpp = SDL_VideoModeOK(a_width, a_height, A_PIXEL_BPP, videoFlags);
+        bpp = SDL_VideoModeOK(a_screen__width, a_screen__height, A_PIXEL_BPP, videoFlags);
         if(bpp == 0) {
             if(first_time) {
-                a_out__fatal("SDL: %dx%d video not available", a_width, a_height);
+                a_out__fatal("SDL: %dx%d video not available", a_screen__width, a_screen__height);
             } else {
-                a_out__warning("SDL: %dx%d video not available", a_width, a_height);
+                a_out__warning("SDL: %dx%d video not available", a_screen__width, a_screen__height);
                 return false;
             }
         }
 
         first_time = false;
 
-        g_sdlScreen = SDL_SetVideoMode(a_width,
-                                       a_height,
+        g_sdlScreen = SDL_SetVideoMode(a_screen__width,
+                                       a_screen__height,
                                        A_PIXEL_BPP,
                                        videoFlags);
         if(g_sdlScreen == NULL) {
@@ -390,7 +390,7 @@ bool a_sdl__screen_set(void)
             g_sdlScreenLocked = true;
         }
 
-        a_pixels = g_sdlScreen->pixels;
+        a_screen__pixels = g_sdlScreen->pixels;
     #elif A_USE_LIB_SDL2
         int ret;
         a_settings__set("video.doubleBuffer", "1");
@@ -398,8 +398,8 @@ bool a_sdl__screen_set(void)
         g_sdlWindow = SDL_CreateWindow("",
                                        SDL_WINDOWPOS_UNDEFINED,
                                        SDL_WINDOWPOS_UNDEFINED,
-                                       a_width,
-                                       a_height,
+                                       a_screen__width,
+                                       a_screen__height,
                                        SDL_WINDOW_RESIZABLE);
         if(g_sdlWindow == NULL) {
             a_out__fatal("SDL_CreateWindow failed: %s", SDL_GetError());
@@ -413,8 +413,8 @@ bool a_sdl__screen_set(void)
         }
 
         ret = SDL_RenderSetLogicalSize(g_sdlRenderer,
-                                       a_width,
-                                       a_height);
+                                       a_screen__width,
+                                       a_screen__height);
         if(ret < 0) {
             a_out__fatal("SDL_RenderSetLogicalSize failed: %s", SDL_GetError());
         }
@@ -428,8 +428,8 @@ bool a_sdl__screen_set(void)
                                              #error Invalid A_PIXEL_BPP value
                                          #endif
                                          SDL_TEXTUREACCESS_STREAMING,
-                                         a_width,
-                                         a_height);
+                                         a_screen__width,
+                                         a_screen__height);
         if(g_sdlTexture == NULL) {
             a_out__fatal("SDL_CreateTexture failed: %s", SDL_GetError());
         }
@@ -471,7 +471,7 @@ void a_sdl__screen_show(void)
             }
 
             APixel* dst = g_sdlScreen->pixels + A_WIDTH * A_HEIGHT;
-            const APixel* src = a_pixels;
+            const APixel* src = a_screen__pixels;
 
             for(int i = A_HEIGHT; i--; dst += A_WIDTH * A_HEIGHT + 1) {
                 for(int j = A_WIDTH; j--; ) {
@@ -492,7 +492,7 @@ void a_sdl__screen_show(void)
                 g_sdlScreenLocked = true;
             }
 
-            const APixel* src = a_pixels;
+            const APixel* src = a_screen__pixels;
             APixel* dst = g_sdlScreen->pixels;
 
             memcpy(dst, src, A_SCREEN_SIZE);
@@ -516,13 +516,13 @@ void a_sdl__screen_show(void)
                 g_sdlScreenLocked = true;
             }
 
-            a_pixels = g_sdlScreen->pixels;
-            a__pixels2 = a_pixels;
+            a_screen__pixels = g_sdlScreen->pixels;
+            a_screen__savedPixels = a_screen__pixels;
         }
     #elif A_USE_LIB_SDL2
         int ret;
 
-        ret = SDL_UpdateTexture(g_sdlTexture, NULL, a_pixels, a_width * sizeof(APixel));
+        ret = SDL_UpdateTexture(g_sdlTexture, NULL, a_screen__pixels, a_screen__width * sizeof(APixel));
         if(ret < 0) {
             a_out__fatal("SDL_UpdateTexture failed: %s", SDL_GetError());
         }

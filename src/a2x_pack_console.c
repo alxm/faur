@@ -108,7 +108,7 @@ void a_console__draw(void)
         a_font_text(g_titles[line->type].text);
 
         a_font_setFace(A_FONT_WHITE);
-        a_font_fixed(a_width - a_font_getX(), line->text);
+        a_font_fixed(a_screen__width - a_font_getX(), line->text);
 
         y += LINE_HEIGHT;
     }

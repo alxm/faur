@@ -91,7 +91,7 @@ void a_screenshot_save(void)
     char* const name = a_str_merge(g_filePrefix, num, ".png");
 
     a_out__message("Saving screenshot '%s'", name);
-    a_png_write(name, a_pixels, a_width, a_height);
+    a_png_write(name, a_screen__pixels, a_screen__width, a_screen__height);
 
     free(name);
 }

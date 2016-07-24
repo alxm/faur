@@ -48,8 +48,8 @@ static bool cohen_sutherland_clip(int* X1, int* Y1, int* X2, int* Y2)
     int x2 = *X2;
     int y2 = *Y2;
 
-    const int screenw = a_width;
-    const int screenh = a_height;
+    const int screenw = a_screen__width;
+    const int screenh = a_screen__height;
 
     #define OUT_LEFT  1
     #define OUT_RIGHT 2
@@ -116,9 +116,10 @@ static bool cohen_sutherland_clip(int* X1, int* Y1, int* X2, int* Y2)
 
 #define rectangle_noclip(Pixeler)                  \
 {                                                  \
-    APixel* pixels = a_pixels + Y1 * a_width + X1; \
+    APixel* pixels = a_screen__pixels              \
+                     + Y1 * a_screen__width + X1;  \
                                                    \
-    const int screenw = a_width;                   \
+    const int screenw = a_screen__width;           \
     const int w = X2 - X1;                         \
                                                    \
     for(int i = Y2 - Y1; i--; pixels += screenw) { \
@@ -130,18 +131,18 @@ static bool cohen_sutherland_clip(int* X1, int* Y1, int* X2, int* Y2)
     }                                              \
 }
 
-#define rectangle_clip(Pixeler)    \
-{                                  \
-    X1 = a_math_max(X1, 0);        \
-    Y1 = a_math_max(Y1, 0);        \
-    X2 = a_math_min(X2, a_width);  \
-    Y2 = a_math_min(Y2, a_height); \
-                                   \
-    if(X1 >= X2 || Y1 >= Y2) {     \
-        return;                    \
-    }                              \
-                                   \
-    rectangle_noclip(Pixeler);     \
+#define rectangle_clip(Pixeler)            \
+{                                          \
+    X1 = a_math_max(X1, 0);                \
+    Y1 = a_math_max(Y1, 0);                \
+    X2 = a_math_min(X2, a_screen__width);  \
+    Y2 = a_math_min(Y2, a_screen__height); \
+                                           \
+    if(X1 >= X2 || Y1 >= Y2) {             \
+        return;                            \
+    }                                      \
+                                           \
+    rectangle_noclip(Pixeler);             \
 }
 
 #define line_noclip(Pixeler)                                   \
@@ -172,8 +173,9 @@ static bool cohen_sutherland_clip(int* X1, int* Y1, int* X2, int* Y2)
         const int xinc2 = (denominator == deltax) ? 0 : xinct; \
         const int yinc2 = (denominator == deltax) ? yinct : 0; \
                                                                \
-        const int screenw = a_width;                           \
-        APixel* a__pass_dst = a_pixels + Y1 * screenw + X1;    \
+        const int screenw = a_screen__width;                   \
+        APixel* a__pass_dst = a_screen__pixels                 \
+                              + Y1 * screenw + X1;             \
                                                                \
         for(int i = denominator + 1; i--; ) {                  \
             Pixeler;                                           \
@@ -203,45 +205,47 @@ static bool cohen_sutherland_clip(int* X1, int* Y1, int* X2, int* Y2)
 
 #define hline_noclip(Pixeler)                          \
 {                                                      \
-    APixel* a__pass_dst = a_pixels + Y * a_width + X1; \
+    APixel* a__pass_dst = a_screen__pixels             \
+                          + Y * a_screen__width + X1;  \
                                                        \
     for(int i = X2 - X1; i--; a__pass_dst++) {         \
         Pixeler;                                       \
     }                                                  \
 }
 
-#define hline_clip(Pixeler)                  \
-{                                            \
-    X1 = a_math_max(X1, 0);                  \
-    X2 = a_math_min(X2, a_width);            \
-                                             \
-    if(X1 >= X2 || Y < 0 || Y >= a_height) { \
-        return;                              \
-    }                                        \
-                                             \
-    hline_noclip(Pixeler);                   \
+#define hline_clip(Pixeler)                          \
+{                                                    \
+    X1 = a_math_max(X1, 0);                          \
+    X2 = a_math_min(X2, a_screen__width);            \
+                                                     \
+    if(X1 >= X2 || Y < 0 || Y >= a_screen__height) { \
+        return;                                      \
+    }                                                \
+                                                     \
+    hline_noclip(Pixeler);                           \
 }
 
 #define vline_noclip(Pixeler)                           \
 {                                                       \
-    APixel* a__pass_dst = a_pixels + Y1 * a_width + X;  \
-    const int screenw = a_width;                        \
+    APixel* a__pass_dst = a_screen__pixels              \
+                          + Y1 * a_screen__width + X;   \
+    const int screenw = a_screen__width;                \
                                                         \
     for(int i = Y2 - Y1; i--; a__pass_dst += screenw) { \
         Pixeler;                                        \
     }                                                   \
 }
 
-#define vline_clip(Pixeler)                 \
-{                                           \
-    Y1 = a_math_max(Y1, 0);                 \
-    Y2 = a_math_min(Y2, a_height);          \
-                                            \
-    if(Y1 >= Y2 || X < 0 || X >= a_width) { \
-        return;                             \
-    }                                       \
-                                            \
-    vline_noclip(Pixeler);                  \
+#define vline_clip(Pixeler)                         \
+{                                                   \
+    Y1 = a_math_max(Y1, 0);                         \
+    Y2 = a_math_min(Y2, a_screen__height);          \
+                                                    \
+    if(Y1 >= Y2 || X < 0 || X >= a_screen__width) { \
+        return;                                     \
+    }                                               \
+                                                    \
+    vline_noclip(Pixeler);                          \
 }
 
 #define shape_setup_plain                 \

@@ -34,8 +34,8 @@ static APixel g_pixel;
 
 #define blitter_noclip(Pixeler)                                       \
 {                                                                     \
-    const int screenW = a_width;                                      \
-    APixel* dst = a_pixels + Y * screenW + X;                         \
+    const int screenW = a_screen__width;                              \
+    APixel* dst = a_screen__pixels + Y * screenW + X;                 \
     const APixel* a__pass_src = Sprite->data;                         \
     const uint16_t* spans = Sprite->spans;                            \
                                                                       \
@@ -60,8 +60,8 @@ static APixel g_pixel;
 
 #define blitter_clip(Pixeler)                                                \
 {                                                                            \
-    const int screenW = a_width;                                             \
-    const int screenH = a_height;                                            \
+    const int screenW = a_screen__width;                                     \
+    const int screenH = a_screen__height;                                    \
     const int spriteW = Sprite->w;                                           \
     const int spriteH = Sprite->h;                                           \
                                                                              \
@@ -78,8 +78,10 @@ static APixel g_pixel;
     const int rows = spriteH - yClipUp - yClipDown;                          \
     const int columns = spriteW - xClipLeft - xClipRight;                    \
                                                                              \
-    APixel* startDst = a_pixels + (Y + yClipUp) * screenW + (X + xClipLeft); \
-    const APixel* startSrc = Sprite->data + yClipUp * spriteW + xClipLeft;   \
+    APixel* startDst = a_screen__pixels                                      \
+                       + (Y + yClipUp) * screenW + (X + xClipLeft);          \
+    const APixel* startSrc = Sprite->data                                    \
+                             + yClipUp * spriteW + xClipLeft;                \
     const uint16_t* spans = Sprite->spans;                                   \
                                                                              \
     /* skip clipped top rows */                                              \
@@ -278,15 +280,15 @@ void a_blit__setRGB(uint8_t Red, uint8_t Green, uint8_t Blue)
 
 void a_blit_c(const ASprite* Sprite)
 {
-    a_blit(Sprite, (a_width - Sprite->w) / 2, (a_height - Sprite->h) / 2);
+    a_blit(Sprite, (a_screen__width - Sprite->w) / 2, (a_screen__height - Sprite->h) / 2);
 }
 
 void a_blit_ch(const ASprite* Sprite, int Y)
 {
-    a_blit(Sprite, (a_width - Sprite->w) / 2, Y);
+    a_blit(Sprite, (a_screen__width - Sprite->w) / 2, Y);
 }
 
 void a_blit_cv(const ASprite* Sprite, int X)
 {
-    a_blit(Sprite, X, (a_height - Sprite->h) / 2);
+    a_blit(Sprite, X, (a_screen__height - Sprite->h) / 2);
 }

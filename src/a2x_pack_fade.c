@@ -19,7 +19,7 @@
 
 #include "a2x_pack_fade.v.h"
 
-#define SCREEN_DIM (a_width * a_height)
+#define SCREEN_DIM (a_screen__width * a_screen__height)
 
 #define pixel_mask(x) ((1 << (x)) - 1)
 
@@ -39,10 +39,10 @@ void a_fade_toBlack(int FramesDuration)
 
     while(alpha >= 0) {
         a_fps_start();
-        a_screen_copy(a_pixels, copy);
+        a_screen_copy(a_screen__pixels, copy);
 
         #if A_PIXEL_BPP == 16
-            uint32_t* a_pixels2 = (uint32_t*)a_pixels;
+            uint32_t* a_pixels2 = (uint32_t*)a_screen__pixels;
 
             for(int i = SCREEN_DIM / 2; i--; ) {
                 const uint32_t c = *a_pixels2;
@@ -58,7 +58,7 @@ void a_fade_toBlack(int FramesDuration)
                 );
             }
         #elif A_PIXEL_BPP == 32
-            APixel* pixels = a_pixels;
+            APixel* pixels = a_screen__pixels;
 
             for(int i = SCREEN_DIM; i--; ) {
                 const APixel p = *pixels;
@@ -102,10 +102,10 @@ void a_fade_fromBlack(int FramesDuration)
 
     while(alpha <= A_FIX_ONE) {
         a_fps_start();
-        a_screen_copy(a_pixels, copy);
+        a_screen_copy(a_screen__pixels, copy);
 
         #if A_PIXEL_BPP == 16
-            uint32_t* a_pixels2 = (uint32_t*)a_pixels;
+            uint32_t* a_pixels2 = (uint32_t*)a_screen__pixels;
 
             for(int i = SCREEN_DIM / 2; i--; ) {
                 const uint32_t c = *a_pixels2;
@@ -121,7 +121,7 @@ void a_fade_fromBlack(int FramesDuration)
                 );
             }
         #elif A_PIXEL_BPP == 32
-            APixel* pixels = a_pixels;
+            APixel* pixels = a_screen__pixels;
 
             for(int i = SCREEN_DIM; i--; ) {
                 const APixel p = *pixels;
@@ -175,7 +175,7 @@ void a_fade_screens(const APixel* const OldScreen, int FramesDuration)
     int* gOldp = gOld;
     int* bOldp = bOld;
 
-    APixel* newp = a_pixels;
+    APixel* newp = a_screen__pixels;
     APixel* oldp = (APixel*)OldScreen;
 
     for(int i = SCREEN_DIM; i--; ) {
@@ -198,7 +198,7 @@ void a_fade_screens(const APixel* const OldScreen, int FramesDuration)
     while(alpha >= 0) {
         a_fps_start();
 
-        APixel* dst = a_pixels;
+        APixel* dst = a_screen__pixels;
 
         rNewp = rNew;
         gNewp = gNew;

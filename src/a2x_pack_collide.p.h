@@ -54,14 +54,15 @@ extern void* a_colobject__getParent(const AColObject* Object);
     || (X2) >= (X1) + (W1) )                            \
 )
 
-#define a_collide_boxOnScreen(X, Y, W, H)		            	 \
-(                      						                     \
-    a_collide_boxes((X), (Y), (W), (H), 0, 0, a_width, a_height) \
+#define a_collide_boxOnScreen(X, Y, W, H)                    \
+(                                                            \
+    a_collide_boxes((X), (Y), (W), (H),                      \
+                    0, 0, a_screen__width, a_screen__height) \
 )
 
-#define a_collide_boxInsideScreen(X, Y, W, H)                 \
-(                                                             \
-    X >= 0 && Y >= 0 && X + W <= a_width && Y + H <= a_height \
+#define a_collide_boxInsideScreen(X, Y, W, H)                                 \
+(                                                                             \
+    X >= 0 && Y >= 0 && X + W <= a_screen__width && Y + H <= a_screen__height \
 )
 
 extern bool a_collide_circles(int X1, int Y1, int R1, int X2, int Y2, int R2);
