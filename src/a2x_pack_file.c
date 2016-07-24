@@ -21,7 +21,6 @@
 
 struct AFile {
     FILE* handle;
-    char* modes;
     char* path;
     char* name;
     char* line;
@@ -40,7 +39,6 @@ AFile* a_file_open(const char* Path, const char* Modes)
     AFile* const f = a_mem_malloc(sizeof(AFile));
 
     f->handle = handle;
-    f->modes = a_str_dup(Modes);
     f->path = a_str_getPrefixLastFind(Path, '/');
     f->name = a_str_getSuffixLastFind(Path, '/');
     f->line = NULL;
@@ -51,7 +49,6 @@ AFile* a_file_open(const char* Path, const char* Modes)
 
 void a_file_close(AFile* File)
 {
-    free(File->modes);
     free(File->path);
     free(File->name);
     free(File->line);
