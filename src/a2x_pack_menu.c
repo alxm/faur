@@ -20,18 +20,21 @@
 #include "a2x_pack_menu.v.h"
 
 typedef enum AMenuState {
-    A_MENU_RUNNING, A_MENU_ACCEPT, A_MENU_CANCEL, A_MENU_SPENT
+    A_MENU_RUNNING,
+    A_MENU_ACCEPT,
+    A_MENU_CANCEL,
+    A_MENU_SPENT
 } AMenuState;
 
 struct AMenu {
     AList* items;
-    void (*freeItem)(void* v);
+    AMenuFreeItemHandler freeItem;
     int selectedIndex;
     void* selectedItem;
     AMenuState state;
     int pause;
     bool used;
-    void (*inputHandler)(struct AMenu* Menu, void* Context);
+    AMenuInputHandler inputHandler;
     void* context;
     char* title;
     ASprite* sprite;
@@ -46,12 +49,12 @@ struct AMenu {
 
 #define A_MENU_PAUSE (a_settings_getInt("fps.rate") / 6)
 
-AMenu* a_menu_new(AInput* Next, AInput* Back, AInput* Select, AInput* Cancel, void (*FreeItem)(void* Item))
+AMenu* a_menu_new(AInput* Next, AInput* Back, AInput* Select, AInput* Cancel, AMenuFreeItemHandler FreeItemHandler)
 {
     AMenu* const m = a_mem_malloc(sizeof(AMenu));
 
     m->items = a_list_new();
-    m->freeItem = FreeItem;
+    m->freeItem = FreeItemHandler;
 
     m->selectedIndex = 0;
     m->selectedItem = NULL;
@@ -92,7 +95,7 @@ void a_menu_free(AMenu* Menu)
     free(Menu);
 }
 
-void a_menu_addInput(AMenu* Menu, void (*InputHandler)(AMenu* Menu, void* Context))
+void a_menu_addInput(AMenu* Menu, AMenuInputHandler InputHandler)
 {
     Menu->inputHandler = InputHandler;
 }

@@ -22,6 +22,7 @@
 #include "a2x_system_includes.h"
 
 typedef struct AStateInstance AStateInstance;
+typedef void (*AStateFunction)(void);
 
 #define A_STATE__MAKE_NAME(Name) a_state__function_##Name
 

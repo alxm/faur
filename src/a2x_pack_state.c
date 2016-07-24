@@ -19,8 +19,6 @@
 
 #include "a2x_pack_state.v.h"
 
-typedef void (*AStateFunction)(void);
-
 struct AStateInstance {
     char* name;
     AStateFunction function;
@@ -96,7 +94,7 @@ void a_state__uninit(void)
     a_list_free(g_statesStack);
 }
 
-void a_state__new(const char* Name, void (*Function)(void))
+void a_state__new(const char* Name, AStateFunction Function)
 {
     a_out__state("New state '%s'", Name);
     a_strhash_add(g_states, Name, Function);
