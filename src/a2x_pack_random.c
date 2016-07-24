@@ -27,7 +27,7 @@ void a_random__init(void)
 int a_random_int(int Max)
 {
     if(Max == 0) {
-        a_out__fatal("a_random_int invalid arg: 0");
+        a_out__fatal("a_random_int: invalid arg 0");
     }
 
     return rand() % Max;
@@ -36,7 +36,7 @@ int a_random_int(int Max)
 int a_random_range(int Min, int Max)
 {
     if(Min >= Max) {
-        a_out__fatal("a_random_range invalid args: %d, %d", Min, Max);
+        a_out__fatal("a_random_range: invalid args %d, %d", Min, Max);
     }
 
     return Min + (rand() % (Max - Min));

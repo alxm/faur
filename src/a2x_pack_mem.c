@@ -24,7 +24,7 @@ void* a_mem_malloc(size_t Size)
     void* const ptr = malloc(Size);
 
     if(ptr == NULL) {
-        a_out__fatal("a_mem_malloc(%u) failed", Size);
+        a_out__fatal("malloc(%u) failed", Size);
     }
 
     return ptr;

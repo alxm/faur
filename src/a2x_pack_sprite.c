@@ -122,7 +122,7 @@ ASprite* a_sprite_zoomed(const ASprite* Sheet, int X, int Y, int Zoom)
             w = width;
             h = height;
         } else {
-            a_out__error("ASprite coords %d, %d are invalid", X, Y);
+            a_out__error("Sprite coords %d, %d are invalid", X, Y);
             return NULL;
         }
     }

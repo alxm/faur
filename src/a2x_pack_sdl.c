@@ -88,7 +88,7 @@ static void addButton(const char* Name, int Code)
 static void addAnalog(const char* Name, int DeviceIndex, char* DeviceName, int XAxisIndex, int YAxisIndex)
 {
     if(DeviceIndex == -1 && DeviceName == NULL) {
-        a_out__error("AInputs must specify device index or Name");
+        a_out__error("Inputs must specify device index or name");
         return;
     }
 
@@ -133,7 +133,7 @@ static void addTouch(const char* Name)
     ASdlInputInstance* t = a_strhash_get(g_touchScreens->names, Name);
 
     if(t) {
-        a_out__error("Touch '%s' is already defined", Name);
+        a_out__error("Touchscreen '%s' is already defined", Name);
         return;
     }
 
@@ -188,7 +188,7 @@ void a_sdl__init(void)
     g_joysticksNum = a_math_min(A_MAX_JOYSTICKS, SDL_NumJoysticks());
 
     if(g_joysticksNum > 0) {
-        a_out__message("Found %d g_joysticks", g_joysticksNum);
+        a_out__message("Found %d joysticks", g_joysticksNum);
         for(int j = g_joysticksNum; j--; ) {
             g_joysticks[j] = SDL_JoystickOpen(j);
         }
@@ -546,7 +546,7 @@ void* a_sdl__music_load(const char* Path)
     Mix_Music* m = Mix_LoadMUS(Path);
 
     if(!m) {
-        a_out__error("%s", Mix_GetError());
+        a_out__error("Mix_LoadMUS failed: %s", Mix_GetError());
     }
 
     return m;

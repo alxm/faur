@@ -111,7 +111,7 @@ static void addTouch(const char* Name)
     AInputInstance* t = a_strhash_get(g_touchScreens->names, Name);
 
     if(t) {
-        a_out__error("Touch '%s' is already defined", Name);
+        a_out__error("Touchscreen '%s' is already defined", Name);
         return;
     }
 
