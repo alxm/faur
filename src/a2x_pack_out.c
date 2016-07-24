@@ -51,16 +51,6 @@
     va_end(args);                         \
 })
 
-void a_out__init(void)
-{
-    //
-}
-
-void a_out__uninit(void)
-{
-    //
-}
-
 void a_out__message(char* Format, ...)
 {
     if(!a_settings_getBool("app.quiet")) {

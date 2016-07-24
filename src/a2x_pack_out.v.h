@@ -24,9 +24,6 @@
 #include "a2x_pack_console.v.h"
 #include "a2x_pack_settings.v.h"
 
-extern void a_out__init(void);
-extern void a_out__uninit(void);
-
 extern void a_out__message(char* Format, ...);
 extern void a_out__warning(char* Format, ...);
 extern void a_out__error(char* Format, ...);
