@@ -85,29 +85,23 @@ ASprite* a_sprite_fromPixels(APixel* Pixels, int Width, int Height)
 
 ASprite* a_sprite_new(const ASprite* Sheet, int X, int Y)
 {
-    return a_sprite_zoomed(Sheet, X, Y, 1);
-}
+    int spriteWidth = 0;
+    int spriteHeight = 0;
+    const int sheetWidth = Sheet->w;
+    const int sheetHeight = Sheet->h;
 
-ASprite* a_sprite_zoomed(const ASprite* Sheet, int X, int Y, int Zoom)
-{
-    int w = 0;
-    int h = 0;
-
-    const int width = Sheet->w;
-    const int height = Sheet->h;
-
-    for(int sheetx = X; sheetx < width; sheetx++) {
+    for(int sheetx = X; sheetx < sheetWidth; sheetx++) {
         const APixel hPixel = a_sprite__getPixel(Sheet, sheetx, Y);
 
         // reached right edge
         if(hPixel == A_SPRITE_LIMIT || hPixel == A_SPRITE_END) {
-            for(int sheety = Y; sheety < height; sheety++) {
+            for(int sheety = Y; sheety < sheetHeight; sheety++) {
                 const APixel vPixel = a_sprite__getPixel(Sheet, X, sheety);
 
                 // reached bottom edge
                 if(vPixel == A_SPRITE_LIMIT) {
-                    w = sheetx - X;
-                    h = sheety - Y;
+                    spriteWidth = sheetx - X;
+                    spriteHeight = sheety - Y;
                     goto Done;
                 }
             }
@@ -116,46 +110,30 @@ ASprite* a_sprite_zoomed(const ASprite* Sheet, int X, int Y, int Zoom)
 
     Done:
 
-    if(w == 0 || h == 0) {
+    if(spriteWidth == 0 || spriteHeight == 0) {
         if(X == 0 && Y == 0) {
             // no boundary borders for full-image sprites
-            w = width;
-            h = height;
+            spriteWidth = sheetWidth;
+            spriteHeight = sheetHeight;
         } else {
             a_out__error("Sprite coords %d, %d are invalid", X, Y);
             return NULL;
         }
     }
 
-    const int spritew = w * Zoom;
-    const int spriteh = h * Zoom;
+    ASprite* const sprite = a_sprite_blank(spriteWidth, spriteHeight);
+    const APixel* src = Sheet->data + Y * sheetWidth + X;
+    APixel* dst = sprite->data;
 
-    ASprite* const s = a_sprite_blank(spritew, spriteh);
-
-    const int wp = Sheet->w;
-    const APixel* const src = Sheet->data;
-    APixel* const dst = s->data;
-
-    // put the pixels on
-
-    for(int i = Y; i < Y + h; i++) {
-        for(int j = X; j < X + w; j++) {
-            const APixel pixel = *(src + i * wp + j);
-
-            const int dy = (i - Y) * Zoom;
-            const int dx = (j - X) * Zoom;
-
-            for(int zy = Zoom; zy--; ) {
-                for(int zx = Zoom; zx--; ) {
-                    dst[(dy + zy) * spritew + dx + zx] = pixel;
-                }
-            }
-        }
+    for(int i = spriteHeight; i--; ) {
+        memcpy(dst, src, spriteWidth * sizeof(APixel));
+        src += sheetWidth;
+        dst += spriteWidth;
     }
 
-    a_sprite_refresh(s);
+    a_sprite_refresh(sprite);
 
-    return s;
+    return sprite;
 }
 
 ASprite* a_sprite_blank(int Width, int Height)
@@ -169,8 +147,10 @@ ASprite* a_sprite_blank(int Width, int Height)
     s->spans = NULL;
     s->spansSize = 0;
 
+    APixel* data = s->data;
+
     for(int i = Width * Height; i--; ) {
-        s->data[i] = A_SPRITE_TRANSPARENT;
+        *data++ = A_SPRITE_TRANSPARENT;
     }
 
     s->node = a_list_addLast(g_spritesList, s);

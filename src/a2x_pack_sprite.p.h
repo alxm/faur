@@ -30,7 +30,6 @@ extern ASprite* a_sprite_fromData(const uint8_t* Data);
 extern ASprite* a_sprite_fromPixels(APixel* Pixels, int Width, int Height);
 
 extern ASprite* a_sprite_new(const ASprite* sheet, int X, int Y);
-extern ASprite* a_sprite_zoomed(const ASprite* sheet, int X, int Y, int Zoom);
 extern ASprite* a_sprite_blank(int Width, int Height);
 
 extern void a_sprite_free(ASprite* Sprite);
