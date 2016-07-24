@@ -22,5 +22,3 @@
 #include "a2x_pack_listit.p.h"
 
 #include "a2x_pack_list.v.h"
-
-extern void* a_listit__peek(const AListIt* Iterator);

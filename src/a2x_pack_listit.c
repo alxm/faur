@@ -40,11 +40,6 @@ void* a_listit__get(AListIt* Iterator)
     return Iterator->current->content;
 }
 
-void* a_listit__peek(const AListIt* Iterator)
-{
-    return Iterator->current->next->content;
-}
-
 void a_listit__remove(AListIt* Iterator)
 {
     AList* const list = Iterator->list;
