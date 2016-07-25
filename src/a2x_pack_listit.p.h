@@ -45,4 +45,4 @@ extern void a_listit__remove(AListIt* Iterator);
         if(!(Filter)) continue;                \
         else
 
-#define A_LIST_REMOVE() a_listit__remove(&a__it)
+#define A_LIST_REMOVE_CURRENT() a_listit__remove(&a__it)

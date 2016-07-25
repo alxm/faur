@@ -167,6 +167,26 @@ AList* a_colobject__getColList(const AColObject* Object)
     return m->submaps[submap_y][submap_x];
 }
 
+bool a_collide_boxes(int X1, int Y1, int W1, int H1, int X2, int Y2, int W2, int H2)
+{
+    return !(Y1 >= Y2 + H2
+          || Y2 >= Y1 + H1
+          || X1 >= X2 + W2
+          || X2 >= X1 + W1);
+}
+
+bool a_collide_boxOnScreen(int X, int Y, int W, int H)
+{
+    return a_collide_boxes(X, Y, W, H,
+                           0, 0, a_screen__width, a_screen__height);
+}
+
+bool a_collide_boxInsideScreen(int X, int Y, int W, int H)
+{
+    return X >= 0 && Y >= 0
+        && X + W <= a_screen__width && Y + H <= a_screen__height;
+}
+
 bool a_collide_circles(int X1, int Y1, int R1, int X2, int Y2, int R2)
 {
     const int x = X1 - X2;

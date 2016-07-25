@@ -46,23 +46,7 @@ extern void* a_colobject__getParent(const AColObject* Object);
     A_LIST_FILTER(a_colobject__getColList(Object), AColObject, a__obj, Object != a__obj) \
         for(VarType* VarName = a_colobject__getParent(a__obj); VarName; VarName = NULL)
 
-#define a_collide_boxes(X1, Y1, W1, H1, X2, Y2, W2, H2) \
-(                                                       \
-    !( (Y1) >= (Y2) + (H2)                              \
-    || (Y2) >= (Y1) + (H1)                              \
-    || (X1) >= (X2) + (W2)                              \
-    || (X2) >= (X1) + (W1) )                            \
-)
-
-#define a_collide_boxOnScreen(X, Y, W, H)                    \
-(                                                            \
-    a_collide_boxes((X), (Y), (W), (H),                      \
-                    0, 0, a_screen__width, a_screen__height) \
-)
-
-#define a_collide_boxInsideScreen(X, Y, W, H)                                 \
-(                                                                             \
-    X >= 0 && Y >= 0 && X + W <= a_screen__width && Y + H <= a_screen__height \
-)
-
+extern bool a_collide_boxes(int X1, int Y1, int W1, int H1, int X2, int Y2, int W2, int H2);
+extern bool a_collide_boxOnScreen(int X, int Y, int W, int H);
+extern bool a_collide_boxInsideScreen(int X, int Y, int W, int H);
 extern bool a_collide_circles(int X1, int Y1, int R1, int X2, int Y2, int R2);

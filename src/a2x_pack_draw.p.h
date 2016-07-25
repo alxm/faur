@@ -35,6 +35,5 @@ extern ADrawHLine a_draw_hline;
 extern ADrawVLine a_draw_vline;
 extern ADrawCircle a_draw_circle;
 
-#define a_draw_fill() a_draw_rectangle(0, 0, a_screen_width(), a_screen_height())
-
+extern void a_draw_fill(void);
 extern void a_draw_rectangleBorder(int X1, int Y1, int X2, int Y2, int Border);

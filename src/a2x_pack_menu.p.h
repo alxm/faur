@@ -17,8 +17,6 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#define A2X_PACK_MENU_PH
-
 #pragma once
 
 typedef struct AMenu AMenu;

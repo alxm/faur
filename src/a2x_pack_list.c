@@ -105,11 +105,21 @@ AListNode* a_list_addLast(AList* List, void* Content)
     return n;
 }
 
+void* a_list_getFirst(const AList* List)
+{
+    return a_list__first(List);
+}
+
+void* a_list_getLast(const AList* List)
+{
+    return a_list__last(List);
+}
+
 void a_list_remove(AList* List, const void* Item)
 {
     A_LIST_ITERATE(List, void, var) {
         if(var == Item) {
-            A_LIST_REMOVE();
+            A_LIST_REMOVE_CURRENT();
             break;
         }
     }
@@ -163,6 +173,21 @@ void a_list_removeNode(AListNode* Node)
     free(Node);
 }
 
+AListNode* a_list_push(AList* List, void* Content)
+{
+    return a_list_addFirst(List, Content);
+}
+
+void* a_list_pop(AList* List)
+{
+    return a_list_removeFirst(List);
+}
+
+void* a_list_peek(AList* List)
+{
+    return a_list_getFirst(List);
+}
+
 AList* a_list_clone(const AList* List)
 {
     AList* l = a_list_new();
@@ -199,16 +224,6 @@ void** a_list_array(AList* List)
     }
 
     return array;
-}
-
-void* a_list_first(const AList* List)
-{
-    return a_list__first(List);
-}
-
-void* a_list_last(const AList* List)
-{
-    return a_list__last(List);
 }
 
 void* a_list_get(const AList* List, int Index)

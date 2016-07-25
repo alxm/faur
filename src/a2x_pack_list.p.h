@@ -31,21 +31,21 @@ extern void a_list_empty(AList* List);
 extern AListNode* a_list_addFirst(AList* List, void* Content);
 extern AListNode* a_list_addLast(AList* List, void* Content);
 
+extern void* a_list_getFirst(const AList* List);
+extern void* a_list_getLast(const AList* List);
+
 extern void a_list_remove(AList* List, const void* Item);
 extern void* a_list_removeFirst(AList* List);
 extern void* a_list_removeLast(AList* List);
 extern void a_list_removeNode(AListNode* Node);
 
-#define a_list_push(List, Item) a_list_addFirst(List, Item)
-#define a_list_pop(List) a_list_removeFirst(List)
-#define a_list_peek(List) a_list_first(List)
+extern AListNode* a_list_push(AList* List, void* Content);
+extern void* a_list_pop(AList* List);
+extern void* a_list_peek(AList* List);
 
 extern AList* a_list_clone(const AList* List);
 extern void a_list_reverse(AList* List);
 extern void** a_list_array(AList* List);
-
-extern void* a_list_first(const AList* List);
-extern void* a_list_last(const AList* List);
 
 extern void* a_list_get(const AList* List, int Index);
 

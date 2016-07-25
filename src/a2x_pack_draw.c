@@ -360,6 +360,11 @@ void a_draw__setRGB(uint8_t Red, uint8_t Green, uint8_t Blue)
     g_pixel = a_pixel_make(g_red, g_green, g_blue);
 }
 
+void a_draw_fill(void)
+{
+    a_draw_rectangle(0, 0, a_screen__width, a_screen__height);
+}
+
 void a_draw_rectangleBorder(int X1, int Y1, int X2, int Y2, int Border)
 {
     a_draw_rectangle(X1,          Y1,          X2,          Y1 + Border); // top
