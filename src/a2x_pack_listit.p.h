@@ -19,30 +19,30 @@
 
 #pragma once
 
-#include "a2x_app_includes.h"
+#include "a2x_system_includes.h"
 
-typedef struct ListIt ListIt;
+typedef struct AListIt AListIt;
 
 #include "a2x_pack_list.p.h"
 
-struct ListIt {
-    List* list;
-    ListNode* current;
+struct AListIt {
+    AList* list;
+    AListNode* current;
 };
 
-extern ListIt a_listit__new(List* list);
+extern AListIt a_listit__new(AList* List);
 
-extern bool a_listit__next(const ListIt* it);
-extern void* a_listit__get(ListIt* it);
-extern void a_listit__remove(ListIt* it);
+extern bool a_listit__next(const AListIt* Iterator);
+extern void* a_listit__get(AListIt* Iterator);
+extern void a_listit__remove(AListIt* Iterator);
 
-#define A_LIST_ITERATE(list, type, var)                                                 \
-    for(ListIt a__it = a_listit__new(list); a__it.current; a__it.current = NULL)        \
-        for(type* var; a_listit__next(&a__it) && (var = a_listit__get(&a__it), true); )
+#define A_LIST_ITERATE(List, VarType, VarName)                                                 \
+    for(AListIt a__it = a_listit__new(List); a__it.current; a__it.current = NULL)        \
+        for(VarType* VarName; a_listit__next(&a__it) && (VarName = a_listit__get(&a__it), true); )
 
-#define A_LIST_FILTER(list, type, var, filter) \
-    A_LIST_ITERATE(list, type, var)            \
-        if(!(filter)) continue;                \
+#define A_LIST_FILTER(List, VarType, VarName, Filter) \
+    A_LIST_ITERATE(List, VarType, VarName)            \
+        if(!(Filter)) continue;                \
         else
 
-#define A_LIST_REMOVE() a_listit__remove(&a__it)
+#define A_LIST_REMOVE_CURRENT() a_listit__remove(&a__it)

@@ -19,21 +19,21 @@
 
 #pragma once
 
-#include "a2x_app_includes.h"
+#include "a2x_system_includes.h"
 
-typedef void Music;
-typedef void Sound;
+typedef void AMusic;
+typedef void ASound;
 
-extern Music* a_music_load(const char* path);
+extern AMusic* a_music_load(const char* Path);
 
-extern void a_music_play(Music* m);
+extern void a_music_play(AMusic* Music);
 extern void a_music_stop(void);
 
-extern Sound* a_sfx_fromFile(const char* path);
-#define a_sfx_fromData(s) a_sfx__fromData(s, sizeof(s))
-extern Sound* a_sfx__fromData(const uint16_t* data, int size);
+extern ASound* a_sfx_fromFile(const char* Path);
+#define a_sfx_fromData(Data) a_sfx__fromData(Data, sizeof(Data))
+extern ASound* a_sfx__fromData(const uint16_t* Data, int Size);
 
-extern void a_sfx_play(Sound* s);
+extern void a_sfx_play(ASound* Sfx);
 
-extern void a_sfx_volume(int v);
+extern void a_sfx_volume(int Volume);
 extern void a_sound_adjustVolume(void);

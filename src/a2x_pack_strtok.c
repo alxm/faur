@@ -19,7 +19,7 @@
 
 #include "a2x_pack_strtok.v.h"
 
-struct StringTok {
+struct AStrTok {
     const char* string;
     const char* delims;
     int numDelims;
@@ -28,10 +28,10 @@ struct StringTok {
     int currentBufferLen;
 };
 
-static bool is_delim(char c, const char* d, int n)
+static bool is_delim(char Character, const char* Delimiters, int NumDelimiters)
 {
-    for(int i = n; i--; ) {
-        if(c == d[i]) {
+    for(int i = NumDelimiters; i--; ) {
+        if(Character == Delimiters[i]) {
             return true;
         }
     }
@@ -39,13 +39,13 @@ static bool is_delim(char c, const char* d, int n)
     return false;
 }
 
-StringTok* a_strtok_new(const char* string, const char* delims)
+AStrTok* a_strtok_new(const char* String, const char* Delimiters)
 {
-    StringTok* t = a_mem_malloc(sizeof(StringTok));
+    AStrTok* t = a_mem_malloc(sizeof(AStrTok));
 
-    t->string = string;
-    t->delims = delims;
-    t->numDelims = strlen(delims);
+    t->string = String;
+    t->delims = Delimiters;
+    t->numDelims = strlen(Delimiters);
     t->index = 0;
     t->currentToken = NULL;
     t->currentBufferLen = 0;
@@ -53,48 +53,48 @@ StringTok* a_strtok_new(const char* string, const char* delims)
     return t;
 }
 
-void a_strtok_free(StringTok* t)
+void a_strtok_free(AStrTok* Tokenizer)
 {
-    if(t->currentToken) {
-        free(t->currentToken);
+    if(Tokenizer->currentToken) {
+        free(Tokenizer->currentToken);
     }
 
-    free(t);
+    free(Tokenizer);
 }
 
-char* a_strtok__get(StringTok* t)
+char* a_strtok__get(AStrTok* Tokenizer)
 {
-    const char* const string = t->string;
-    const char* const delims = t->delims;
-    const int numDelims = t->numDelims;
+    const char* const string = Tokenizer->string;
+    const char* const delims = Tokenizer->delims;
+    const int numDelims = Tokenizer->numDelims;
 
-    while(is_delim(string[t->index], delims, numDelims)) {
-        t->index++;
+    while(is_delim(string[Tokenizer->index], delims, numDelims)) {
+        Tokenizer->index++;
     }
 
-    if(string[t->index] == '\0') {
+    if(string[Tokenizer->index] == '\0') {
         return NULL;
     }
 
-    const int start = t->index;
+    const int start = Tokenizer->index;
 
     do {
-        t->index++;
-    } while(string[t->index] != '\0' && !is_delim(string[t->index], delims, numDelims));
+        Tokenizer->index++;
+    } while(string[Tokenizer->index] != '\0' && !is_delim(string[Tokenizer->index], delims, numDelims));
 
-    const int len = t->index - start;
+    const int len = Tokenizer->index - start;
 
-    if(len > t->currentBufferLen) {
-        if(t->currentToken) {
-            free(t->currentToken);
+    if(len > Tokenizer->currentBufferLen) {
+        if(Tokenizer->currentToken) {
+            free(Tokenizer->currentToken);
         }
 
-        t->currentToken = a_mem_malloc((len + 1) * sizeof(char));
-        t->currentBufferLen = len;
+        Tokenizer->currentToken = a_mem_malloc((len + 1) * sizeof(char));
+        Tokenizer->currentBufferLen = len;
     }
 
-    memcpy(t->currentToken, &string[start], len);
-    t->currentToken[len] = '\0';
+    memcpy(Tokenizer->currentToken, &string[start], len);
+    Tokenizer->currentToken[len] = '\0';
 
-    return t->currentToken;
+    return Tokenizer->currentToken;
 }

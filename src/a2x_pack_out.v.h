@@ -21,15 +21,11 @@
 
 #include "a2x_pack_out.p.h"
 
-#include "a2x_app_settings.v.h"
-
 #include "a2x_pack_console.v.h"
+#include "a2x_pack_settings.v.h"
 
-extern void a_out__init(void);
-extern void a_out__uninit(void);
-
-extern void a_out__message(char* fmt, ...);
-extern void a_out__warning(char* fmt, ...);
-extern void a_out__error(char* fmt, ...);
-extern void a_out__fatal(char* fmt, ...);
-extern void a_out__state(char* fmt, ...);
+extern void a_out__message(char* Format, ...);
+extern void a_out__warning(char* Format, ...);
+extern void a_out__error(char* Format, ...);
+extern void a_out__fatal(char* Format, ...);
+extern void a_out__state(char* Format, ...);

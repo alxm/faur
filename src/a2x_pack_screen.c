@@ -25,15 +25,15 @@
 
 #include "a2x_pack_screen.v.h"
 
-Pixel* a_pixels = NULL;
-int a_width = 0;
-int a_height = 0;
+APixel* a_screen__pixels = NULL;
+int a_screen__width = 0;
+int a_screen__height = 0;
 
-Pixel* a__pixels2 = NULL;
-static int a__width2 = 0;
-static int a__height2 = 0;
+APixel* a_screen__savedPixels = NULL;
+static int g_savedWidth = 0;
+static int g_savedHeight = 0;
 
-static Sprite* spriteTarget = NULL;
+static ASprite* g_spriteTarget = NULL;
 
 static void displayVolume(void)
 {
@@ -65,8 +65,8 @@ void a_screen__init(void)
         return;
     }
 
-    a_width = a_settings_getInt("video.width");
-    a_height = a_settings_getInt("video.height");
+    a_screen__width = a_settings_getInt("video.width");
+    a_screen__height = a_settings_getInt("video.height");
 
     a_sdl__screen_set();
 
@@ -90,13 +90,13 @@ void a_screen__init(void)
     }
 
     if(a_settings_getBool("video.doubleBuffer")) {
-        a_pixels = a_mem_malloc(A_SCREEN_SIZE);
-        memset(a_pixels, 0, A_SCREEN_SIZE);
+        a_screen__pixels = a_mem_malloc(A_SCREEN_SIZE);
+        memset(a_screen__pixels, 0, A_SCREEN_SIZE);
     }
 
-    a__width2 = a_width;
-    a__height2 = a_height;
-    a__pixels2 = a_pixels;
+    g_savedWidth = a_screen__width;
+    g_savedHeight = a_screen__height;
+    a_screen__savedPixels = a_screen__pixels;
 }
 
 void a_screen__uninit(void)
@@ -106,8 +106,23 @@ void a_screen__uninit(void)
     }
 
     if(a_settings_getBool("video.doubleBuffer")) {
-        free(a_pixels);
+        free(a_screen__pixels);
     }
+}
+
+APixel* a_screen_pixels(void)
+{
+    return a_screen__pixels;
+}
+
+int a_screen_width(void)
+{
+    return a_screen__width;
+}
+
+int a_screen_height(void)
+{
+    return a_screen__height;
 }
 
 void a_screen_show(void)
@@ -118,58 +133,58 @@ void a_screen_show(void)
     a_sdl__screen_show();
 }
 
-Pixel* a_screen_dup(void)
+APixel* a_screen_dup(void)
 {
-    Pixel* const dst = a_screen_new();
-    a_screen_copy(dst, a_pixels);
+    APixel* const dst = a_screen_new();
+    a_screen_copy(dst, a_screen__pixels);
 
     return dst;
 }
 
-Pixel* a_screen_new(void)
+APixel* a_screen_new(void)
 {
     return a_mem_malloc(A_SCREEN_SIZE);
 }
 
-void a_screen_copy(Pixel* dst, const Pixel* src)
+void a_screen_copy(APixel* Dst, const APixel* Src)
 {
-    memcpy(dst, src, A_SCREEN_SIZE);
+    memcpy(Dst, Src, A_SCREEN_SIZE);
 }
 
-void a_screen_copyPart(Pixel* dst, int x, int y, int w, int h)
+void a_screen_copyPart(APixel* Dst, int X, int Y, int Width, int Height)
 {
-    const Pixel* screen = a_pixels + y * a_width + x;
+    const APixel* screen = a_screen__pixels + Y * a_screen__width + X;
 
-    for(int i = h; i--; ) {
-        memcpy(dst, screen, w * sizeof(Pixel));
-        dst += w;
-        screen += a_width;
+    for(int i = Height; i--; ) {
+        memcpy(Dst, screen, Width * sizeof(APixel));
+        Dst += Width;
+        screen += a_screen__width;
     }
 }
 
-void a_screen_setTarget(Pixel* p, int w, int h)
+void a_screen_setTarget(APixel* Pixels, int Width, int Height)
 {
-    a_pixels = p;
-    a_width = w;
-    a_height = h;
+    a_screen__pixels = Pixels;
+    a_screen__width = Width;
+    a_screen__height = Height;
 }
 
-void a_screen_setTargetSprite(Sprite* s)
+void a_screen_setTargetSprite(ASprite* Sprite)
 {
-    a_pixels = s->data;
-    a_width = s->w;
-    a_height = s->h;
+    a_screen__pixels = Sprite->data;
+    a_screen__width = Sprite->w;
+    a_screen__height = Sprite->h;
 
-    spriteTarget = s;
+    g_spriteTarget = Sprite;
 }
 
 void a_screen_resetTarget(void)
 {
-    a_pixels = a__pixels2;
-    a_width = a__width2;
-    a_height = a__height2;
+    a_screen__pixels = a_screen__savedPixels;
+    a_screen__width = g_savedWidth;
+    a_screen__height = g_savedHeight;
 
-    if(spriteTarget) {
-        spriteTarget = NULL;
+    if(g_spriteTarget) {
+        g_spriteTarget = NULL;
     }
 }

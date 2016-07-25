@@ -19,25 +19,25 @@
 
 #pragma once
 
-#include "a2x_app_includes.h"
+#include "a2x_system_includes.h"
 
-typedef int32_t fix;
+typedef int32_t AFix;
 
 #include "a2x_pack_math.p.h"
 
 #define A_FIX_BIT_PRECISION (8)
 #define A_FIX_ONE           (1 << A_FIX_BIT_PRECISION)
 
-#define a_fix_itofix(x) ((x) << A_FIX_BIT_PRECISION)
-#define a_fix_ftofix(x) ((x) * (1 << A_FIX_BIT_PRECISION))
-#define a_fix_fixtoi(x) ((x) >> A_FIX_BIT_PRECISION)
-#define a_fix_fixtof(x) ((float)(x) / (1 << A_FIX_BIT_PRECISION))
-#define a_fix_mul(x, y) (int32_t)(((int64_t)(x) * (y)) >> A_FIX_BIT_PRECISION)
-#define a_fix_div(x, y) (int32_t)(((int64_t)(x) << A_FIX_BIT_PRECISION) / (y))
+#define a_fix_itofix(X) ((X) << A_FIX_BIT_PRECISION)
+#define a_fix_ftofix(X) ((X) * (1 << A_FIX_BIT_PRECISION))
+#define a_fix_fixtoi(X) ((X) >> A_FIX_BIT_PRECISION)
+#define a_fix_fixtof(X) ((float)(X) / (1 << A_FIX_BIT_PRECISION))
+#define a_fix_mul(X, Y) (int32_t)(((int64_t)(X) * (Y)) >> A_FIX_BIT_PRECISION)
+#define a_fix_div(X, Y) (int32_t)(((int64_t)(X) << A_FIX_BIT_PRECISION) / (Y))
 
-extern fix a_fix_sin_val[A_MATH_ANGLES_NUM];
-extern fix a_fix_cos_val[A_MATH_ANGLES_NUM];
+extern AFix a_fix_sin_val[A_MATH_ANGLES_NUM];
+extern AFix a_fix_cos_val[A_MATH_ANGLES_NUM];
 
-#define a_fix_sin(a)       (a_fix_sin_val[(a)])
-#define a_fix_cos(a)       (a_fix_cos_val[(a)])
-#define a_fix_wrapAngle(a) ((a) & ((A_MATH_ANGLES_NUM << A_FIX_BIT_PRECISION) - 1))
+#define a_fix_sin(Angle)       (a_fix_sin_val[(Angle)])
+#define a_fix_cos(Angle)       (a_fix_cos_val[(Angle)])
+#define a_fix_wrapAngle(Angle) ((Angle) & ((A_MATH_ANGLES_NUM << A_FIX_BIT_PRECISION) - 1))

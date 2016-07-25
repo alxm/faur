@@ -19,29 +19,29 @@
 
 #pragma once
 
-#include "a2x_app_includes.h"
+#include "a2x_system_includes.h"
 
-typedef struct File File;
+typedef struct AFile AFile;
 
-extern File* a_file_open(const char* path, const char* modes);
-extern void a_file_close(File* f);
+extern AFile* a_file_open(const char* Path, const char* Modes);
+extern void a_file_close(AFile* File);
 
-extern bool a_file_checkPrefix(File* f, const char* prefix);
-extern void a_file_writePrefix(File* f, const char* prefix);
+extern bool a_file_checkPrefix(AFile* File, const char* Prefix);
+extern void a_file_writePrefix(AFile* File, const char* Prefix);
 
-extern bool a_file_read(File* f, void* buffer, size_t size);
-extern bool a_file_write(File* f, const void* buffer, size_t size);
-extern bool a_file_writef(File* f, char* fmt, ...);
+extern bool a_file_read(AFile* File, void* Buffer, size_t Size);
+extern bool a_file_write(AFile* File, const void* Buffer, size_t Size);
+extern bool a_file_writef(AFile* File, char* Format, ...);
 
-extern bool a_file_readLine(File* f);
-extern char* a_file_getLine(const File* f);
+extern bool a_file_readLine(AFile* File);
+extern char* a_file_getLine(const AFile* File);
 
-extern const char* a_file_path(const File* f);
-extern const char* a_file_name(const File* f);
-extern FILE* a_file_handle(const File* f);
+extern const char* a_file_path(const AFile* File);
+extern const char* a_file_name(const AFile* File);
+extern FILE* a_file_handle(const AFile* File);
 
-extern bool a_file_exists(const char* path);
-extern bool a_file_isDir(const char* f);
-extern size_t a_file_size(const char* f);
+extern bool a_file_exists(const char* Path);
+extern bool a_file_isDir(const char* Path);
+extern size_t a_file_size(const char* Path);
 
-extern uint8_t* a_file_toBuffer(const char* path);
+extern uint8_t* a_file_toBuffer(const char* Path);

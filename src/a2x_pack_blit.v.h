@@ -27,8 +27,8 @@
 
 extern void a_blit__init(void);
 
-extern void a_blit__setBlend(PixelBlend_t b);
-extern void a_blit__setClip(bool c);
+extern void a_blit__setBlend(APixelBlend Blend);
+extern void a_blit__setClip(bool DoClip);
 
-extern void a_blit__setAlpha(uint8_t a);
-extern void a_blit__setRGB(uint8_t r, uint8_t g, uint8_t b);
+extern void a_blit__setAlpha(uint8_t Alpha);
+extern void a_blit__setRGB(uint8_t Red, uint8_t Green, uint8_t Blue);

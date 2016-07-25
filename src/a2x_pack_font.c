@@ -24,31 +24,31 @@
 #define FONT_SPACE       1
 #define FONT_BLANK_SPACE 3
 
-typedef struct Font {
-    Sprite* sprites[NUM_ASCII];
+typedef struct AFont {
+    ASprite* sprites[NUM_ASCII];
     int maxWidth;
-} Font;
+} AFont;
 
-static const char chars[] =
+static const char g_chars[] =
     "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz"
     "0123456789"
     "_-+=*/\\&$@!?'\"()[]{}.,~:;%^#<>|`";
 
-#define CHARS_NUM (sizeof(chars) / sizeof(char) - 1)
+#define CHARS_NUM (sizeof(g_chars) / sizeof(char) - 1)
 
-static uint8_t gfx_default_font[];
+static uint8_t g_gfx_default_font[];
 
-static List* fontsList;
-static Font** fonts;
-static int font;
-static FontAlign align;
-static int x;
-static int y;
+static AList* g_fontsList;
+static AFont** g_fonts;
+static int g_currentFont;
+static AFontAlign g_align;
+static int g_x;
+static int g_y;
 
-static int charIndex(char c)
+static int charIndex(char Character)
 {
     for(int i = 0; i < CHARS_NUM; i++) {
-        if(chars[i] == c) return i;
+        if(g_chars[i] == Character) return i;
     }
 
     return -1;
@@ -56,16 +56,16 @@ static int charIndex(char c)
 
 void a_font__init(void)
 {
-    fontsList = a_list_new();
-    fonts = NULL;
-    font = 0;
-    align = A_FONT_ALIGN_LEFT;
-    x = 0;
-    y = 0;
+    g_fontsList = a_list_new();
+    g_fonts = NULL;
+    g_currentFont = 0;
+    g_align = A_FONT_ALIGN_LEFT;
+    g_x = 0;
+    g_y = 0;
 
-    Sprite* const fontSprite = a_sprite_fromData(gfx_default_font);
+    ASprite* const fontSprite = a_sprite_fromData(g_gfx_default_font);
 
-    Pixel colors[A_FONT_MAX];
+    APixel colors[A_FONT_MAX];
     colors[A_FONT_WHITE] = a_pixel_make(255, 255, 255);
     colors[A_FONT_GREEN] = a_pixel_make(0, 255, 0);
     colors[A_FONT_YELLOW] = a_pixel_make(255, 255, 0);
@@ -81,16 +81,16 @@ void a_font__init(void)
 
 void a_font__uninit(void)
 {
-    A_LIST_ITERATE(fontsList, Font, f) {
+    A_LIST_ITERATE(g_fontsList, AFont, f) {
         free(f);
     }
-    a_list_free(fontsList);
-    free(fonts);
+    a_list_free(g_fontsList);
+    free(g_fonts);
 }
 
-int a_font_load(const Sprite* sheet, int x, int y, FontLoad loader)
+int a_font_load(const ASprite* Sheet, int X, int Y, AFontLoad Loader)
 {
-    Font* const f = a_mem_malloc(sizeof(Font));
+    AFont* const f = a_mem_malloc(sizeof(AFont));
 
     for(int i = NUM_ASCII; i--; ) {
         f->sprites[i] = NULL;
@@ -98,58 +98,58 @@ int a_font_load(const Sprite* sheet, int x, int y, FontLoad loader)
 
     f->maxWidth = 0;
 
-    a_list_addLast(fontsList, f);
+    a_list_addLast(g_fontsList, f);
 
-    free(fonts);
-    fonts = (Font**)a_list_array(fontsList);
+    free(g_fonts);
+    g_fonts = (AFont**)a_list_array(g_fontsList);
 
     int start = 0;
     int end = CHARS_NUM - 1;
 
-    if(loader & A_FONT_LOAD_ALPHANUMERIC) {
+    if(Loader & A_FONT_LOAD_ALPHANUMERIC) {
         end = charIndex('9');
-    } else if(loader & A_FONT_LOAD_ALPHA) {
+    } else if(Loader & A_FONT_LOAD_ALPHA) {
         end = charIndex('z');
-    } else if(loader & A_FONT_LOAD_NUMERIC) {
+    } else if(Loader & A_FONT_LOAD_NUMERIC) {
         start = charIndex('0');
         end = charIndex('9');
     }
 
-    SpriteFrames* const sf = a_spriteframes_new(sheet, x, y, 0);
+    ASpriteFrames* const sf = a_spriteframes_new(Sheet, X, Y, 0);
 
     for(int i = start; i <= end; i++) {
-        f->sprites[(int)chars[i]] = a_spriteframes_next(sf);
+        f->sprites[(int)g_chars[i]] = a_spriteframes_next(sf);
 
-        if(f->sprites[(int)chars[i]]->w > f->maxWidth) {
-            f->maxWidth = f->sprites[(int)chars[i]]->w;
+        if(f->sprites[(int)g_chars[i]]->w > f->maxWidth) {
+            f->maxWidth = f->sprites[(int)g_chars[i]]->w;
         }
 
-        if((loader & A_FONT_LOAD_CAPS) && isalpha(chars[i])) {
-            f->sprites[(int)chars[i + 1]] = f->sprites[(int)chars[i]];
+        if((Loader & A_FONT_LOAD_CAPS) && isalpha(g_chars[i])) {
+            f->sprites[(int)g_chars[i + 1]] = f->sprites[(int)g_chars[i]];
             i++;
         }
     }
 
     a_spriteframes_free(sf, false);
 
-    return a_list_size(fontsList) - 1;
+    return a_list_size(g_fontsList) - 1;
 }
 
-int a_font_copy(int font, Pixel color)
+int a_font_copy(int Font, APixel Color)
 {
-    const Font* const src = fonts[font];
-    Font* const f = a_mem_malloc(sizeof(Font));
+    const AFont* const src = g_fonts[Font];
+    AFont* const f = a_mem_malloc(sizeof(AFont));
 
     for(int i = NUM_ASCII; i--; ) {
         if(src->sprites[i]) {
             f->sprites[i] = a_sprite_clone(src->sprites[i]);
 
-            Sprite* const s = f->sprites[i];
-            Pixel* d = s->data;
+            ASprite* const s = f->sprites[i];
+            APixel* d = s->data;
 
             for(int j = s->w * s->h; j--; d++) {
                 if(*d != A_SPRITE_TRANSPARENT) {
-                    *d = color;
+                    *d = Color;
                 }
             }
         } else {
@@ -159,82 +159,82 @@ int a_font_copy(int font, Pixel color)
 
     f->maxWidth = src->maxWidth;
 
-    a_list_addLast(fontsList, f);
+    a_list_addLast(g_fontsList, f);
 
-    free(fonts);
-    fonts = (Font**)a_list_array(fontsList);
+    free(g_fonts);
+    g_fonts = (AFont**)a_list_array(g_fontsList);
 
-    return a_list_size(fontsList) - 1;
+    return a_list_size(g_fontsList) - 1;
 }
 
-void a_font_setFace(int f)
+void a_font_setFace(int Font)
 {
-    font = f;
+    g_currentFont = Font;
 }
 
-void a_font_setAlign(FontAlign a)
+void a_font_setAlign(AFontAlign Align)
 {
-    align = a;
+    g_align = Align;
 }
 
 void a_font_setCoords(int X, int Y)
 {
-    x = X;
-    y = Y;
+    g_x = X;
+    g_y = Y;
 }
 
 int a_font_getX(void)
 {
-    return x;
+    return g_x;
 }
 
-void a_font_text(const char* text)
+void a_font_text(const char* Text)
 {
-    Font* const f = fonts[font];
+    AFont* const f = g_fonts[g_currentFont];
 
-    if(align & A_FONT_ALIGN_MIDDLE) {
-        x -= a_font_width(text) / 2;
+    if(g_align & A_FONT_ALIGN_MIDDLE) {
+        g_x -= a_font_width(Text) / 2;
     }
 
-    if(align & A_FONT_ALIGN_RIGHT) {
-        x -= a_font_width(text);
+    if(g_align & A_FONT_ALIGN_RIGHT) {
+        g_x -= a_font_width(Text);
     }
 
-    if(align & A_FONT_MONOSPACED) {
+    if(g_align & A_FONT_MONOSPACED) {
         const int maxWidth = f->maxWidth;
 
-        for( ; *text != '\0'; text++) {
-            Sprite* spr = f->sprites[(int)*text];
+        for( ; *Text != '\0'; Text++) {
+            ASprite* spr = f->sprites[(int)*Text];
 
             if(spr) {
-                a_blit(spr, x + (maxWidth - spr->w) / 2, y);
-                x += maxWidth + FONT_SPACE;
-            } else if(*text == ' ') {
-                x += maxWidth + FONT_SPACE;
+                a_blit(spr, g_x + (maxWidth - spr->w) / 2, g_y);
+                g_x += maxWidth + FONT_SPACE;
+            } else if(*Text == ' ') {
+                g_x += maxWidth + FONT_SPACE;
             }
         }
     } else {
-        for( ; *text != '\0'; text++) {
-            Sprite* spr = f->sprites[(int)*text];
+        for( ; *Text != '\0'; Text++) {
+            ASprite* spr = f->sprites[(int)*Text];
 
             if(spr) {
-                a_blit(spr, x, y);
-                x += spr->w + FONT_SPACE;
-            } else if(*text == ' ') {
-                x += FONT_BLANK_SPACE + FONT_SPACE;
+                a_blit(spr, g_x, g_y);
+                g_x += spr->w + FONT_SPACE;
+            } else if(*Text == ' ') {
+                g_x += FONT_BLANK_SPACE + FONT_SPACE;
             }
         }
     }
 }
 
-void a_font_textf(const char* fmt, ...)
+void a_font_textf(const char* Format, ...)
 {
     int ret;
     va_list args;
     char buffer[256];
 
-    va_start(args, fmt);
-    ret = vsnprintf(buffer, sizeof(buffer), fmt, args);
+    va_start(args, Format);
+    ret = vsnprintf(buffer, sizeof(buffer), Format, args);
     va_end(args);
 
     if(ret > 0) {
@@ -242,69 +242,69 @@ void a_font_textf(const char* fmt, ...)
     }
 }
 
-void a_font_int(int number)
+void a_font_int(int Number)
 {
     char s[21];
-    snprintf(s, 21, "%d", number);
+    snprintf(s, 21, "%d", Number);
 
     a_font_text(s);
 }
 
-void a_font_float(float number)
+void a_font_float(float Number)
 {
     char s[64];
-    snprintf(s, 64, "%f", number);
+    snprintf(s, 64, "%f", Number);
 
     a_font_text(s);
 }
 
-void a_font_double(double number)
+void a_font_double(double Number)
 {
     char s[64];
-    snprintf(s, 64, "%lf", number);
+    snprintf(s, 64, "%lf", Number);
 
     a_font_text(s);
 }
 
-void a_font_char(char ch)
+void a_font_char(char Character)
 {
     char s[2];
-    snprintf(s, 2, "%c", ch);
+    snprintf(s, 2, "%c", Character);
 
     a_font_text(s);
 }
 
-void a_font_fixed(int width, const char* text)
+void a_font_fixed(int Width, const char* Text)
 {
     char* buffer;
     int tally = 0;
     int numChars = 0;
     const int dotsWidth = a_font_width("...");
-    Font* const f = fonts[font];
+    AFont* const f = g_fonts[g_currentFont];
 
-    if(*text == '\0' || width == 0) {
+    if(*Text == '\0' || Width == 0) {
         return;
     }
 
-    if(a_font_width(text) <= width) {
-        a_font_text(text);
+    if(a_font_width(Text) <= Width) {
+        a_font_text(Text);
         return;
     }
 
-    if(dotsWidth > width) {
+    if(dotsWidth > Width) {
         return;
     }
 
-    if(align & A_FONT_MONOSPACED) {
+    if(g_align & A_FONT_MONOSPACED) {
         const int maxWidth = f->maxWidth;
 
-        for(int i = 0; text[i] != '\0'; i++) {
+        for(int i = 0; Text[i] != '\0'; i++) {
             numChars++;
 
-            if(f->sprites[(int)text[i]] || text[i] == ' ') {
+            if(f->sprites[(int)Text[i]] || Text[i] == ' ') {
                 tally += maxWidth;
 
-                if(tally > width) {
+                if(tally > Width) {
                     if(numChars < 3) {
                         return;
                     }
@@ -315,7 +315,7 @@ void a_font_fixed(int width, const char* text)
                         numChars--;
                         tally -= FONT_SPACE + maxWidth;
 
-                        if(tally <= width) {
+                        if(tally <= Width) {
                             goto fits;
                         }
                     }
@@ -327,15 +327,15 @@ void a_font_fixed(int width, const char* text)
             }
         }
     } else {
-        for(int i = 0; text[i] != '\0'; i++) {
-            Sprite* spr = f->sprites[(int)text[i]];
+        for(int i = 0; Text[i] != '\0'; i++) {
+            ASprite* spr = f->sprites[(int)Text[i]];
 
             numChars++;
 
-            if(spr || text[i] == ' ') {
+            if(spr || Text[i] == ' ') {
                 tally += spr ? spr->w : FONT_BLANK_SPACE;
 
-                if(tally > width) {
+                if(tally > Width) {
                     if(numChars < 3) {
                         return;
                     }
@@ -343,17 +343,17 @@ void a_font_fixed(int width, const char* text)
                     tally += FONT_SPACE + dotsWidth;
 
                     for(int j = i; j >= 0; j--) {
-                        spr = f->sprites[(int)text[j]];
+                        spr = f->sprites[(int)Text[j]];
 
                         numChars--;
 
                         if(spr) {
                             tally -= FONT_SPACE + spr->w;
-                        } else if(text[j] == ' ') {
+                        } else if(Text[j] == ' ') {
                             tally -= FONT_SPACE + FONT_BLANK_SPACE;
                         }
 
-                        if(tally <= width) {
+                        if(tally <= Width) {
                             goto fits;
                         }
                     }
@@ -368,7 +368,7 @@ void a_font_fixed(int width, const char* text)
 
 fits:
     buffer = a_mem_malloc((numChars + 4) * sizeof(char));
-    memcpy(buffer, text, numChars * sizeof(char));
+    memcpy(buffer, Text, numChars * sizeof(char));
 
     buffer[numChars + 0] = '.';
     buffer[numChars + 1] = '.';
@@ -380,30 +380,30 @@ fits:
     free(buffer);
 }
 
-int a_font_width(const char* text)
+int a_font_width(const char* Text)
 {
     int width = 0;
-    Font* const f = fonts[font];
+    AFont* const f = g_fonts[g_currentFont];
 
-    if(*text == '\0') {
+    if(*Text == '\0') {
         return 0;
     }
 
-    if(align & A_FONT_MONOSPACED) {
+    if(g_align & A_FONT_MONOSPACED) {
         const int maxWidth = f->maxWidth;
 
-        for( ; *text != '\0'; text++) {
-            if(f->sprites[(int)*text] || *text == ' ') {
+        for( ; *Text != '\0'; Text++) {
+            if(f->sprites[(int)*Text] || *Text == ' ') {
                 width += maxWidth + FONT_SPACE;
             }
         }
     } else {
-        for( ; *text != '\0'; text++) {
-            Sprite* spr = f->sprites[(int)*text];
+        for( ; *Text != '\0'; Text++) {
+            ASprite* spr = f->sprites[(int)*Text];
 
             if(spr) {
                 width += spr->w + FONT_SPACE;
-            } else if(*text == ' ') {
+            } else if(*Text == ' ') {
                 width += FONT_BLANK_SPACE + FONT_SPACE;
             }
         }
@@ -412,14 +412,14 @@ int a_font_width(const char* text)
     return width - FONT_SPACE;
 }
 
-int a_font_widthf(const char* fmt, ...)
+int a_font_widthf(const char* Format, ...)
 {
     int ret;
     va_list args;
     char buffer[256];
 
-    va_start(args, fmt);
-    ret = vsnprintf(buffer, sizeof(buffer), fmt, args);
+    va_start(args, Format);
+    ret = vsnprintf(buffer, sizeof(buffer), Format, args);
     va_end(args);
 
     if(ret < 0) {
@@ -429,7 +429,7 @@ int a_font_widthf(const char* fmt, ...)
     return a_font_width(buffer);
 }
 
-static uint8_t gfx_default_font[] = {
+static uint8_t g_gfx_default_font[] = {
     0x89,0x50,0x4e,0x47,0x0d,0x0a,0x1a,0x0a,
     0x00,0x00,0x00,0x0d,0x49,0x48,0x44,0x52,
     0x00,0x00,0x01,0xfc,0x00,0x00,0x00,0x09,

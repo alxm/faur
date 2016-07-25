@@ -19,38 +19,33 @@
 
 #include "a2x_pack_listit.v.h"
 
-ListIt a_listit__new(List* list)
+AListIt a_listit__new(AList* List)
 {
-    ListIt it;
+    AListIt it;
 
-    it.list = list;
-    it.current = list->first;
+    it.list = List;
+    it.current = List->first;
 
     return it;
 }
 
-bool a_listit__next(const ListIt* it)
+bool a_listit__next(const AListIt* Iterator)
 {
-    return it->current->next != it->list->last;
+    return Iterator->current->next != Iterator->list->last;
 }
 
-void* a_listit__get(ListIt* it)
+void* a_listit__get(AListIt* Iterator)
 {
-    it->current = it->current->next;
-    return it->current->content;
+    Iterator->current = Iterator->current->next;
+    return Iterator->current->content;
 }
 
-void* a_listit__peek(const ListIt* it)
+void a_listit__remove(AListIt* Iterator)
 {
-    return it->current->next->content;
-}
+    AList* const list = Iterator->list;
+    AListNode* const n = Iterator->current;
 
-void a_listit__remove(ListIt* it)
-{
-    List* const list = it->list;
-    ListNode* const n = it->current;
-
-    it->current = n->prev;
+    Iterator->current = n->prev;
 
     n->prev->next = n->next;
     n->next->prev = n->prev;

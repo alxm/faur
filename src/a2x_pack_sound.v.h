@@ -21,11 +21,10 @@
 
 #include "a2x_pack_sound.p.h"
 
-#include "a2x_app_settings.v.h"
-
 #include "a2x_pack_input.v.h"
 #include "a2x_pack_list.v.h"
 #include "a2x_pack_mem.v.h"
+#include "a2x_pack_settings.v.h"
 
 #define A_VOLUME_STEP 1
 #define A_MILIS_VOLUME (1000 / 2)
@@ -37,5 +36,5 @@ extern int a__volumeAdjust;
 extern void a_sound__init(void);
 extern void a_sound__uninit(void);
 
-extern void a_sfx__free(Sound* s);
-extern void a_music__free(Music* m);
+extern void a_sfx__free(ASound* Sfx);
+extern void a_music__free(AMusic* Music);

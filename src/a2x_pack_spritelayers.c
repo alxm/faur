@@ -19,46 +19,46 @@
 
 #include "a2x_pack_spritelayers.v.h"
 
-typedef struct Layer {
-    const Sprite* sprite;
-    PixelBlend_t blend;
+typedef struct ALayer {
+    const ASprite* sprite;
+    APixelBlend blend;
     uint8_t r, g, b, a;
-} Layer;
+} ALayer;
 
-SpriteLayers* a_spritelayers_new(void)
+ASpriteLayers* a_spritelayers_new(void)
 {
     return a_list_new();
 }
 
-void a_spritelayers_free(SpriteLayers* s)
+void a_spritelayers_free(ASpriteLayers* Layers)
 {
-    A_LIST_ITERATE(s, Layer, l) {
+    A_LIST_ITERATE(Layers, ALayer, l) {
         free(l);
     }
 
-    a_list_free(s);
+    a_list_free(Layers);
 }
 
-void a_spritelayers_add(SpriteLayers* s, const Sprite* sprite, PixelBlend_t blend, uint8_t r, uint8_t g, uint8_t b, uint8_t a)
+void a_spritelayers_add(ASpriteLayers* Layers, const ASprite* Sprite, APixelBlend Blend, uint8_t Red, uint8_t Green, uint8_t Blue, uint8_t Alpha)
 {
-    Layer* const l = a_mem_malloc(sizeof(Layer));
+    ALayer* const l = a_mem_malloc(sizeof(ALayer));
 
-    l->sprite = sprite;
-    l->blend = blend;
-    l->r = r;
-    l->g = g;
-    l->b = b;
-    l->a = a;
+    l->sprite = Sprite;
+    l->blend = Blend;
+    l->r = Red;
+    l->g = Green;
+    l->b = Blue;
+    l->a = Alpha;
 
-    a_list_addLast(s, l);
+    a_list_addLast(Layers, l);
 }
 
-void a_spritelayers_blit(SpriteLayers* s, int x, int y)
+void a_spritelayers_blit(ASpriteLayers* Layers, int X, int Y)
 {
-    A_LIST_ITERATE(s, Layer, l) {
+    A_LIST_ITERATE(Layers, ALayer, l) {
         a_pixel_setBlend(l->blend);
         a_pixel_setRGBA(l->r, l->g, l->b, l->a);
 
-        a_blit(l->sprite, x, y);
+        a_blit(l->sprite, X, Y);
     }
 }

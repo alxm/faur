@@ -19,18 +19,18 @@
 
 #include "a2x_pack_mem.v.h"
 
-void* a_mem_malloc(size_t size)
+void* a_mem_malloc(size_t Size)
 {
-    void* const ptr = malloc(size);
+    void* const ptr = malloc(Size);
 
     if(ptr == NULL) {
-        a_out__fatal("a_mem_malloc(%u) failed", size);
+        a_out__fatal("malloc(%u) failed", Size);
     }
 
     return ptr;
 }
 
-void* a_mem_encodeRLE(const void* data, int length, int size, int* encLength)
+void* a_mem_encodeRLE(const void* Data, int Length, int Size, int* EncodedLength)
 {
     int space = 0;
 
@@ -39,31 +39,31 @@ void* a_mem_encodeRLE(const void* data, int length, int size, int* encLength)
     uint16_t* dst16 = NULL;
     uint32_t* dst32 = NULL;
 
-    const uint8_t* const data8 = data;
-    const uint16_t* const data16 = data;
-    const uint32_t* const data32 = data;
+    const uint8_t* const data8 = Data;
+    const uint16_t* const data16 = Data;
+    const uint32_t* const data32 = Data;
 
     for(int a = 0; a < 2; a++) {
         if(a == 1) {
-            dst = a_mem_malloc(space * size);
+            dst = a_mem_malloc(space * Size);
 
             dst8 = dst;
             dst16 = dst;
             dst32 = dst;
 
-            if(encLength) {
-                *encLength = space;
+            if(EncodedLength) {
+                *EncodedLength = space;
             }
         }
 
-        for(int i = 0; i < length; ) {
+        for(int i = 0; i < Length; ) {
             unsigned int span = 1;
 
-            for(int j = i; j < length - 1; j++) {
-                if((size == 1 && data8[j] == data8[j + 1]) || (size == 2 && data16[j] == data16[j + 1]) || (size == 4 && data32[j] == data32[j + 1])) {
+            for(int j = i; j < Length - 1; j++) {
+                if((Size == 1 && data8[j] == data8[j + 1]) || (Size == 2 && data16[j] == data16[j + 1]) || (Size == 4 && data32[j] == data32[j + 1])) {
                     span++;
 
-                    if((size == 1 && span == 0xff) || (size == 2 && span == 0xffff) || (size == 4 && span == 0xffffffff)) {
+                    if((Size == 1 && span == 0xff) || (Size == 2 && span == 0xffff) || (Size == 4 && span == 0xffffffff)) {
                         break;
                     }
                 } else {
@@ -71,12 +71,12 @@ void* a_mem_encodeRLE(const void* data, int length, int size, int* encLength)
                 }
             }
 
-            if(span > 2 || (span == 2 && ((size == 1 && data8[i] == 0) || (size == 2 && data16[i] == 0) || (size == 4 && data32[i] == 0)))) {
+            if(span > 2 || (span == 2 && ((Size == 1 && data8[i] == 0) || (Size == 2 && data16[i] == 0) || (Size == 4 && data32[i] == 0)))) {
                 if(a == 0) {
                     // TRIGGER LENGTH VALUE
                     space += 1 + 1 + 1;
                 } else {
-                    switch(size) {
+                    switch(Size) {
                         case 1: {
                             *dst8++ = 0;
                             *dst8++ = span;
@@ -98,12 +98,12 @@ void* a_mem_encodeRLE(const void* data, int length, int size, int* encLength)
                 }
 
                 i += span;
-            } else if((size == 1 && data8[i] == 0) || (size == 2 && data16[i] == 0) || (size == 4 && data32[i] == 0)) {
+            } else if((Size == 1 && data8[i] == 0) || (Size == 2 && data16[i] == 0) || (Size == 4 && data32[i] == 0)) {
                 if(a == 0) {
                     // TRIGGER TRIGGER
                     space += 1 + 1;
                 } else {
-                    switch(size) {
+                    switch(Size) {
                         case 1: {
                             *dst8++ = 0;
                             *dst8++ = 0;
@@ -127,7 +127,7 @@ void* a_mem_encodeRLE(const void* data, int length, int size, int* encLength)
                     // VALUE
                     space += 1;
                 } else {
-                    switch(size) {
+                    switch(Size) {
                         case 1: {
                             *dst8++ = data8[i];
                         } break;
@@ -150,7 +150,7 @@ void* a_mem_encodeRLE(const void* data, int length, int size, int* encLength)
     return dst;
 }
 
-void* a_mem_decodeRLE(const void* data, int length, int size, int* decLength)
+void* a_mem_decodeRLE(const void* Data, int Length, int Size, int* DecodedLength)
 {
     int space = 0;
 
@@ -159,30 +159,30 @@ void* a_mem_decodeRLE(const void* data, int length, int size, int* decLength)
     uint16_t* dst16 = NULL;
     uint32_t* dst32 = NULL;
 
-    const uint8_t* const data8 = data;
-    const uint16_t* const data16 = data;
-    const uint32_t* const data32 = data;
+    const uint8_t* const data8 = Data;
+    const uint16_t* const data16 = Data;
+    const uint32_t* const data32 = Data;
 
     for(int a = 0; a < 2; a++) {
         if(a == 1) {
-            dst = a_mem_malloc(space * size);
+            dst = a_mem_malloc(space * Size);
 
             dst8 = dst;
             dst16 = dst;
             dst32 = dst;
 
-            if(decLength) {
-                *decLength = space;
+            if(DecodedLength) {
+                *DecodedLength = space;
             }
         }
 
-        for(int i = 0; i < length; ) {
-            if(i + 1 < length && ((size == 1 && data8[i] == 0) || (size == 2 && data16[i] == 0) || (size == 4 && data32[i] == 0))) {
-                if((size == 1 && data8[i + 1] == 0) || (size == 2 && data16[i + 1] == 0) || (size == 4 && data32[i + 1] == 0)) {
+        for(int i = 0; i < Length; ) {
+            if(i + 1 < Length && ((Size == 1 && data8[i] == 0) || (Size == 2 && data16[i] == 0) || (Size == 4 && data32[i] == 0))) {
+                if((Size == 1 && data8[i + 1] == 0) || (Size == 2 && data16[i + 1] == 0) || (Size == 4 && data32[i + 1] == 0)) {
                     if(a == 0) {
                         space += 1;
                     } else {
-                        switch(size) {
+                        switch(Size) {
                             case 1: {
                                 *dst8++ = 0;
                             } break;
@@ -201,7 +201,7 @@ void* a_mem_decodeRLE(const void* data, int length, int size, int* decLength)
                     i += 1 + 1;
                 } else {
                     if(a == 0) {
-                        switch(size) {
+                        switch(Size) {
                             case 1: {
                                 space += data8[i + 1];
                             } break;
@@ -215,7 +215,7 @@ void* a_mem_decodeRLE(const void* data, int length, int size, int* decLength)
                             } break;
                         }
                     } else {
-                        switch(size) {
+                        switch(Size) {
                             case 1: {
                                 for(int j = data8[i + 1]; j--; ) {
                                     *dst8++ = data8[i + 2];
@@ -243,7 +243,7 @@ void* a_mem_decodeRLE(const void* data, int length, int size, int* decLength)
                 if(a == 0) {
                     space += 1;
                 } else {
-                    switch(size) {
+                    switch(Size) {
                         case 1: {
                             *dst8++ = data8[i];
                         } break;

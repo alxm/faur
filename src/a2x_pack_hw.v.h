@@ -21,9 +21,12 @@
 
 #include "a2x_pack_hw.p.h"
 
-#include "a2x_app_settings.v.h"
-
 #include "a2x_pack_file.v.h"
+#include "a2x_pack_settings.v.h"
 
 extern void a_hw__init(void);
 extern void a_hw__uninit(void);
+
+#if A_PLATFORM_WIZ || A_PLATFORM_CAANOO
+    extern uint32_t a_hw__getMilis(void);
+#endif

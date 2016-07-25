@@ -19,11 +19,11 @@
 
 #pragma once
 
-#include "a2x_app_includes.h"
+#include "a2x_system_includes.h"
 
 #include "a2x_pack_pixel.p.h"
 
-extern void a_fade_toBlack(int framesDuration);
-extern void a_fade_fromBlack(int framesDuration);
+extern void a_fade_toBlack(int FramesDuration);
+extern void a_fade_fromBlack(int FramesDuration);
 
-extern void a_fade_screens(const Pixel* old, int framesDuration);
+extern void a_fade_screens(const APixel* OldScreen, int FramesDuration);

@@ -20,76 +20,67 @@
 #include "a2x_pack_out.v.h"
 
 #if A_PLATFORM_LINUXPC
-    #define A_OUT__HEADER(title, color) \
-        "\033[" #color ";1m[ a2x " title " ]\033[0m "
+    #define A_OUT__HEADER(Title, Color) \
+        "\033[" #Color ";1m[ a2x " Title " ]\033[0m "
 #else
-    #define A_OUT__HEADER(title, color) "[ a2x " title " ] "
+    #define A_OUT__HEADER(Title, Color) \
+        "[ a2x " Title " ] "
 #endif
 
-#define A_OUT__WORKER(title, color, stream)       \
+#define A_OUT__WORKER(Title, Color, Stream)       \
 ({                                                \
     va_list args;                                 \
-    va_start(args, fmt);                          \
+    va_start(args, Format);                       \
                                                   \
-    fprintf(stream, A_OUT__HEADER(title, color)); \
-    vfprintf(stream, fmt, args);                  \
-    fprintf(stream, "\n");                        \
+    fprintf(Stream, A_OUT__HEADER(Title, Color)); \
+    vfprintf(Stream, Format, args);               \
+    fprintf(Stream, "\n");                        \
                                                   \
     va_end(args);                                 \
 })
 
-#define A_OUT__CONSOLE(type)           \
-({                                     \
-    char buffer[256];                  \
-    va_list args;                      \
-    va_start(args, fmt);               \
-                                       \
-    vsnprintf(buffer, 256, fmt, args); \
-    a_console__write(type, buffer);    \
-                                       \
-    va_end(args);                      \
+#define A_OUT__CONSOLE(Type)              \
+({                                        \
+    char buffer[256];                     \
+    va_list args;                         \
+    va_start(args, Format);               \
+                                          \
+    vsnprintf(buffer, 256, Format, args); \
+    a_console__write(Type, buffer);       \
+                                          \
+    va_end(args);                         \
 })
 
-void a_out__init(void)
-{
-    //
-}
-
-void a_out__uninit(void)
-{
-    //
-}
-
-void a_out__message(char* fmt, ...)
+void a_out__message(char* Format, ...)
 {
     if(!a_settings_getBool("app.quiet")) {
         A_OUT__WORKER("Msg", 32, stdout);
-        A_OUT__CONSOLE(ConsoleMessage);
+        A_OUT__CONSOLE(A_CONSOLE_MESSAGE);
     }
 }
 
-void a_out__warning(char* fmt, ...)
+void a_out__warning(char* Format, ...)
 {
     A_OUT__WORKER("Wrn", 33, stderr);
-    A_OUT__CONSOLE(ConsoleWarning);
+    A_OUT__CONSOLE(A_CONSOLE_WARNING);
 }
 
-void a_out__error(char* fmt, ...)
+void a_out__error(char* Format, ...)
 {
     A_OUT__WORKER("Err", 31, stderr);
-    A_OUT__CONSOLE(ConsoleError);
+    A_OUT__CONSOLE(A_CONSOLE_ERROR);
 }
 
-void a_out__fatal(char* fmt, ...)
+void a_out__fatal(char* Format, ...)
 {
     A_OUT__WORKER("Ftl", 35, stderr);
     exit(1);
 }
 
-void a_out__state(char* fmt, ...)
+void a_out__state(char* Format, ...)
 {
     if(!a_settings_getBool("app.quiet")) {
         A_OUT__WORKER("Stt", 34, stdout);
-        A_OUT__CONSOLE(ConsoleState);
+        A_OUT__CONSOLE(A_CONSOLE_STATE);
     }
 }

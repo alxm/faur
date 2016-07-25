@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include "a2x_app_includes.h"
+#include "a2x_system_includes.h"
 
 #ifndef A_PLATFORM_LINUXPC
     #define A_PLATFORM_LINUXPC 0
@@ -61,4 +61,4 @@
 extern A_MAIN;
 
 extern int a_main_numArgs(void);
-extern char* a_main_getArg(unsigned int n);
+extern char* a_main_getArg(unsigned int ArgNum);

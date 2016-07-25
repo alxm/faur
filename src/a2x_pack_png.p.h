@@ -19,11 +19,11 @@
 
 #pragma once
 
-#include "a2x_app_includes.h"
+#include "a2x_system_includes.h"
 
 #include "a2x_pack_pixel.p.h"
 
-extern void a_png_readFile(const char* path, Pixel** pixels, int* width, int* height);
-extern void a_png_readMemory(const uint8_t* data, Pixel** pixels, int* width, int* height);
+extern void a_png_readFile(const char* Path, APixel** Pixels, int* Width, int* Height);
+extern void a_png_readMemory(const uint8_t* Data, APixel** Pixels, int* Width, int* Height);
 
-extern void a_png_write(const char* path, const Pixel* data, int width, int height);
+extern void a_png_write(const char* Path, const APixel* Data, int Width, int Height);

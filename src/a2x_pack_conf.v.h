@@ -21,9 +21,8 @@
 
 #include "a2x_pack_conf.p.h"
 
-#include "a2x_app_settings.v.h"
-
 #include "a2x_pack_file.v.h"
+#include "a2x_pack_settings.v.h"
 #include "a2x_pack_str.v.h"
 
 extern void a_conf__init(void);

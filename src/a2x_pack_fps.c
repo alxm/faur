@@ -19,39 +19,39 @@
 
 #include "a2x_pack_fps.v.h"
 
-static uint32_t milisPerFrame;
-static Timer* timer;
+static uint32_t g_milisPerFrame;
+static ATimer* g_timer;
 
-static uint32_t fps;
-static uint32_t max;
+static uint32_t g_fps;
+static uint32_t g_maxFps;
 
 #define BUFFER_SIZE 60
-static uint32_t fpsBuffer[BUFFER_SIZE];
-static uint32_t maxBuffer[BUFFER_SIZE];
+static uint32_t g_fpsBuffer[BUFFER_SIZE];
+static uint32_t g_maxFpsBuffer[BUFFER_SIZE];
 
-static uint32_t counter;
+static uint32_t g_frameCounter;
 
 void a_fps__init(void)
 {
-    milisPerFrame = 1000 / a_settings_getInt("fps.rate");
+    g_milisPerFrame = 1000 / a_settings_getInt("fps.rate");
 
-    timer = a_timer_new(milisPerFrame);
-    a_timer_start(timer);
+    g_timer = a_timer_new(g_milisPerFrame);
+    a_timer_start(g_timer);
 
-    fps = 0;
-    max = 0;
+    g_fps = 0;
+    g_maxFps = 0;
 
     for(int i = BUFFER_SIZE; i--; ) {
-        fpsBuffer[i] = milisPerFrame;
-        maxBuffer[i] = milisPerFrame;
+        g_fpsBuffer[i] = g_milisPerFrame;
+        g_maxFpsBuffer[i] = g_milisPerFrame;
     }
 
-    counter = 0;
+    g_frameCounter = 0;
 }
 
 void a_fps__uninit(void)
 {
-    a_timer_free(timer);
+    a_timer_free(g_timer);
 }
 
 void a_fps_start(void)
@@ -62,22 +62,22 @@ void a_fps_start(void)
 
 void a_fps_end(void)
 {
-    counter++;
+    g_frameCounter++;
 
     a_screen_show();
 
     const bool track = a_settings_getBool("fps.track");
-    const bool done = a_timer_check(timer);
+    const bool done = a_timer_check(g_timer);
 
     if(track) {
-        maxBuffer[BUFFER_SIZE - 1] = a_timer_diff(timer);
+        g_maxFpsBuffer[BUFFER_SIZE - 1] = a_timer_diff(g_timer);
     } else {
-        max = 1000 / a_math_max(1, a_timer_diff(timer));
+        g_maxFps = 1000 / a_math_max(1, a_timer_diff(g_timer));
     }
 
     if(!done) {
-        while(!a_timer_check(timer)) {
-            const uint32_t waitMilis = milisPerFrame - a_timer_diff(timer);
+        while(!a_timer_check(g_timer)) {
+            const uint32_t waitMilis = g_milisPerFrame - a_timer_diff(g_timer);
 
             #if A_PLATFORM_GP2X
                 // GP2X timer granularity is too coarse
@@ -95,38 +95,38 @@ void a_fps_end(void)
         uint32_t m = 0;
 
         for(int i = BUFFER_SIZE; i--; ) {
-            f += fpsBuffer[i];
-            m += maxBuffer[i];
+            f += g_fpsBuffer[i];
+            m += g_maxFpsBuffer[i];
         }
 
-        fps = 1000 / ((float)f / BUFFER_SIZE);
-        max = 1000 / ((float)m / BUFFER_SIZE);
+        g_fps = 1000 / ((float)f / BUFFER_SIZE);
+        g_maxFps = 1000 / ((float)m / BUFFER_SIZE);
 
-        memmove(fpsBuffer, &fpsBuffer[1], (BUFFER_SIZE - 1) * sizeof(uint32_t));
-        memmove(maxBuffer, &maxBuffer[1], (BUFFER_SIZE - 1) * sizeof(uint32_t));
+        memmove(g_fpsBuffer, &g_fpsBuffer[1], (BUFFER_SIZE - 1) * sizeof(uint32_t));
+        memmove(g_maxFpsBuffer, &g_maxFpsBuffer[1], (BUFFER_SIZE - 1) * sizeof(uint32_t));
 
-        fpsBuffer[BUFFER_SIZE - 1] = a_timer_diff(timer);
+        g_fpsBuffer[BUFFER_SIZE - 1] = a_timer_diff(g_timer);
     } else {
-        fps = 1000 / a_math_max(1, a_timer_diff(timer));
+        g_fps = 1000 / a_math_max(1, a_timer_diff(g_timer));
     }
 }
 
 uint32_t a_fps_getFps(void)
 {
-    return fps;
+    return g_fps;
 }
 
 uint32_t a_fps_getMaxFps(void)
 {
-    return max;
+    return g_maxFps;
 }
 
 uint32_t a_fps_getCounter(void)
 {
-    return counter;
+    return g_frameCounter;
 }
 
-bool a_fps_nthFrame(uint32_t n)
+bool a_fps_nthFrame(uint32_t N)
 {
-    return (counter % n) == 0;
+    return (g_frameCounter % N) == 0;
 }

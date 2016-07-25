@@ -21,14 +21,14 @@
 
 #define NULL_STRING "(null)"
 
-void* a_str__malloc(int count, ...)
+void* a_str__malloc(int Count, ...)
 {
     va_list args;
     unsigned int size = 0;
 
-    va_start(args, count);
+    va_start(args, Count);
 
-    for(int i = count; i--; ) {
+    for(int i = Count; i--; ) {
         char* const s = va_arg(args, char*);
 
         if(s) {
@@ -43,14 +43,14 @@ void* a_str__malloc(int count, ...)
     return a_mem_malloc((size + 1) * sizeof(char));
 }
 
-char* a_str__merge(int count, ...)
+char* a_str__merge(int Count, ...)
 {
     va_list args;
     int size = 0;
 
-    va_start(args, count);
+    va_start(args, Count);
 
-    for(int i = count; i--; ) {
+    for(int i = Count; i--; ) {
         char* const s = va_arg(args, char*);
 
         if(s) {
@@ -65,9 +65,9 @@ char* a_str__merge(int count, ...)
     char* const str = a_mem_malloc((size + 1) * sizeof(char));
     str[0] = '\0';
 
-    va_start(args, count);
+    va_start(args, Count);
 
-    for(int i = count; i--; ) {
+    for(int i = Count; i--; ) {
         char* const s = va_arg(args, char*);
 
         if(s) {
@@ -82,42 +82,42 @@ char* a_str__merge(int count, ...)
     return str;
 }
 
-char* a_str_dup(const char* s)
+char* a_str_dup(const char* String)
 {
-    char* const d = a_mem_malloc((strlen(s) + 1) * sizeof(char));
-    strcpy(d, s);
+    char* const copy = a_mem_malloc((strlen(String) + 1) * sizeof(char));
+    strcpy(copy, String);
 
-    return d;
+    return copy;
 }
 
-char* a_str_sub(const char* s, int start, int end)
+char* a_str_sub(const char* String, int Start, int End)
 {
-    const int len = end - start;
+    const int len = End - Start;
     char* const str = a_mem_malloc((len + 1) * sizeof(char));
 
-    memcpy(str, s + start, len);
+    memcpy(str, String + Start, len);
     str[len] = '\0';
 
     return str;
 }
 
-char* a_str_prefix(const char* s, int len)
+char* a_str_prefix(const char* String, int Length)
 {
-    return a_str_sub(s, 0, len);
+    return a_str_sub(String, 0, Length);
 }
 
-char* a_str_suffix(const char* s, int len)
+char* a_str_suffix(const char* String, int Length)
 {
-    const int sLen = strlen(s);
-    return a_str_sub(s, sLen - len, sLen);
+    const int sLen = strlen(String);
+    return a_str_sub(String, sLen - Length, sLen);
 }
 
-int a_str_firstIndex(const char* s, char c)
+int a_str_firstIndex(const char* String, char Character)
 {
-    const int len = strlen(s);
+    const int len = strlen(String);
 
     for(int i = 0; i < len; i++) {
-        if(s[i] == c) {
+        if(String[i] == Character) {
             return i;
         }
     }
@@ -125,10 +125,10 @@ int a_str_firstIndex(const char* s, char c)
     return -1;
 }
 
-int a_str_lastIndex(const char* s, char c)
+int a_str_lastIndex(const char* String, char Character)
 {
-    for(int i = strlen(s); i--; ) {
-        if(s[i] == c) {
+    for(int i = strlen(String); i--; ) {
+        if(String[i] == Character) {
             return i;
         }
     }
@@ -136,53 +136,53 @@ int a_str_lastIndex(const char* s, char c)
     return -1;
 }
 
-char* a_str_getPrefixFirstFind(const char* s, char limit)
+char* a_str_getPrefixFirstFind(const char* String, char Marker)
 {
-    const int index = a_str_firstIndex(s, limit);
+    const int index = a_str_firstIndex(String, Marker);
 
     if(index == -1) {
         return NULL;
     }
 
-    return a_str_sub(s, 0, index);
+    return a_str_sub(String, 0, index);
 }
 
-char* a_str_getPrefixLastFind(const char* s, char limit)
+char* a_str_getPrefixLastFind(const char* String, char Marker)
 {
-    const int index = a_str_lastIndex(s, limit);
+    const int index = a_str_lastIndex(String, Marker);
 
     if(index == -1) {
         return NULL;
     }
 
-    return a_str_sub(s, 0, index);
+    return a_str_sub(String, 0, index);
 }
 
-char* a_str_getSuffixFirstFind(const char* s, char limit)
+char* a_str_getSuffixFirstFind(const char* String, char Marker)
 {
-    const int index = a_str_firstIndex(s, limit);
+    const int index = a_str_firstIndex(String, Marker);
 
     if(index == -1) {
         return NULL;
     }
 
-    return a_str_sub(s, index + 1, strlen(s));
+    return a_str_sub(String, index + 1, strlen(String));
 }
 
-char* a_str_getSuffixLastFind(const char* s, char limit)
+char* a_str_getSuffixLastFind(const char* String, char Marker)
 {
-    const int index = a_str_lastIndex(s, limit);
+    const int index = a_str_lastIndex(String, Marker);
 
     if(index == -1) {
         return NULL;
     }
 
-    return a_str_sub(s, index + 1, strlen(s));
+    return a_str_sub(String, index + 1, strlen(String));
 }
 
-char* a_str_extractPath(const char* s)
+char* a_str_extractPath(const char* String)
 {
-    char* const path = a_str_getPrefixLastFind(s, '/');
+    char* const path = a_str_getPrefixLastFind(String, '/');
 
     if(path) {
         return path;
@@ -191,20 +191,20 @@ char* a_str_extractPath(const char* s)
     }
 }
 
-char* a_str_extractFile(const char* s)
+char* a_str_extractFile(const char* String)
 {
-    char* const c = a_str_getSuffixLastFind(s, '/');
+    char* const c = a_str_getSuffixLastFind(String, '/');
 
     if(c) {
         return c;
     } else {
-        return a_str_dup(s);
+        return a_str_dup(String);
     }
 }
 
-char* a_str_extractName(const char* s)
+char* a_str_extractName(const char* String)
 {
-    char* const file = a_str_extractFile(s);
+    char* const file = a_str_extractFile(String);
     char* const name = a_str_getPrefixLastFind(file, '.');
 
     if(name) {
@@ -215,20 +215,20 @@ char* a_str_extractName(const char* s)
     }
 }
 
-char* a_str_trim(const char* s)
+char* a_str_trim(const char* String)
 {
-    const int len = strlen(s);
+    const int len = strlen(String);
 
     int start;
     int end;
 
-    for(start = 0; start < len && isspace(s[start]); start++) {
+    for(start = 0; start < len && isspace(String[start]); start++) {
         continue;
     }
 
-    for(end = len - 1; end >= start && isspace(s[end]); end--) {
+    for(end = len - 1; end >= start && isspace(String[end]); end--) {
         continue;
     }
 
-    return a_str_sub(s, start, end + 1);
+    return a_str_sub(String, start, end + 1);
 }

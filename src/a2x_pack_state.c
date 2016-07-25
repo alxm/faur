@@ -19,47 +19,45 @@
 
 #include "a2x_pack_state.v.h"
 
-typedef void (*StateFunction)(void);
-
-struct StateInstance {
+struct AStateInstance {
     char* name;
-    StateFunction function;
-    StrHash* objects;
-    StateStage stage;
-    StateBodyStage bodystage;
+    AStateFunction function;
+    AStrHash* objects;
+    AStateStage stage;
+    AStateBodyStage bodystage;
 };
 
-static StrHash* functions;
-static List* stack;
-static StateInstance* new_state;
-static bool changed;
-static bool replacing;
-static int indent;
+static AStrHash* g_states;
+static AList* g_statesStack;
+static AStateInstance* g_nextNewState;
+static bool g_somethingChanged;
+static bool g_replacingState;
+static int g_outputIndent;
 
-static char* stage_names[A_STATE_STAGE_NUM] = {
+static char* g_stageNames[A_STATE_STAGE_NUM] = {
     "Invalid",
     "Init",
     "Body",
     "Free",
 };
 
-static char* bodystage_names[A_STATE_BODYSTAGE_NUM] = {
+static char* g_bodyStageNames[A_STATE_BODYSTAGE_NUM] = {
     "Invalid",
     "Running",
     "Paused",
 };
 
-static StateInstance* a_stateinstance__new(const char* name)
+static AStateInstance* a_stateinstance__new(const char* Name)
 {
-    StateFunction function = a_strhash_get(functions, name);
+    AStateFunction function = a_strhash_get(g_states, Name);
 
     if(function == NULL) {
-        a_out__fatal("State '%s' does not exist", name);
+        a_out__fatal("State '%s' does not exist", Name);
     }
 
-    StateInstance* const s = a_mem_malloc(sizeof(StateInstance));
+    AStateInstance* const s = a_mem_malloc(sizeof(AStateInstance));
 
-    s->name = a_str_dup(name);
+    s->name = a_str_dup(Name);
     s->function = function;
     s->objects = a_strhash_new();
     s->stage = A_STATE_STAGE_INIT;
@@ -68,71 +66,71 @@ static StateInstance* a_stateinstance__new(const char* name)
     return s;
 }
 
-static void a_stateinstance__free(StateInstance* s)
+static void a_stateinstance__free(AStateInstance* State)
 {
-    free(s->name);
-    a_strhash_free(s->objects);
+    free(State->name);
+    a_strhash_free(State->objects);
 
-    free(s);
+    free(State);
 }
 
 void a_state__init(void)
 {
-    functions = a_strhash_new();
-    stack = a_list_new();
-    new_state = NULL;
-    changed = false;
-    replacing = false;
-    indent = 0;
+    g_states = a_strhash_new();
+    g_statesStack = a_list_new();
+    g_nextNewState = NULL;
+    g_somethingChanged = false;
+    g_replacingState = false;
+    g_outputIndent = 0;
 }
 
 void a_state__uninit(void)
 {
-    a_strhash_free(functions);
+    a_strhash_free(g_states);
 
-    A_LIST_ITERATE(stack, StateInstance, s) {
+    A_LIST_ITERATE(g_statesStack, AStateInstance, s) {
         a_stateinstance__free(s);
     }
-    a_list_free(stack);
+    a_list_free(g_statesStack);
 }
 
-void a_state__new(const char* name, void (*function)(void))
+void a_state__new(const char* Name, AStateFunction Function)
 {
-    a_out__state("New state '%s'", name);
-    a_strhash_add(functions, name, function);
+    a_out__state("New state '%s'", Name);
+    a_strhash_add(g_states, Name, Function);
 }
 
-void a_state_push(const char* name)
+void a_state_push(const char* Name)
 {
-    const StateInstance* const active = a_list_peek(stack);
+    const AStateInstance* const active = a_list_peek(g_statesStack);
 
-    if(active && !replacing) {
+    if(active && !g_replacingState) {
         if(active->stage == A_STATE_STAGE_FREE) {
-            a_out__state("Push state '%s': already exiting", name);
+            a_out__state("Push state '%s': already exiting", Name);
             return;
         } else if(active->stage != A_STATE_STAGE_BODY) {
-            a_out__fatal("Push state '%s': only call from A_STATE_BODY", name);
+            a_out__fatal("Push state '%s': only call from A_STATE_BODY", Name);
         }
     }
 
-    changed = true;
+    g_somethingChanged = true;
 
-    StateInstance* const s = a_stateinstance__new(name);
+    AStateInstance* const s = a_stateinstance__new(Name);
 
-    if(a_list_isEmpty(stack)) {
-        a_out__state("Push first state '%s'", name);
-        a_list_push(stack, s);
-    } else if(new_state == NULL) {
-        a_out__state("Push state '%s'", name);
-        new_state = s;
+    if(a_list_isEmpty(g_statesStack)) {
+        a_out__state("Push first state '%s'", Name);
+        a_list_push(g_statesStack, s);
+    } else if(g_nextNewState == NULL) {
+        a_out__state("Push state '%s'", Name);
+        g_nextNewState = s;
     } else {
-        a_out__fatal("Push state '%s': already pushed state '%s'", name, new_state->name);
+        a_out__fatal("Push state '%s': already pushed state '%s'", Name, g_nextNewState->name);
     }
 }
 
 void a_state_pop(void)
 {
-    StateInstance* const active = a_list_peek(stack);
+    AStateInstance* const active = a_list_peek(g_statesStack);
 
     if(active == NULL) {
         a_out__fatal("Pop state: no active state");
@@ -145,45 +143,45 @@ void a_state_pop(void)
 
     a_out__state("Pop state '%s'", active->name);
 
-    changed = true;
+    g_somethingChanged = true;
 
-    indent++;
+    g_outputIndent++;
     a_state__setStage(active, A_STATE_STAGE_FREE);
-    indent--;
+    g_outputIndent--;
 }
 
-void a_state_replace(const char* name)
+void a_state_replace(const char* Name)
 {
-    if(a_strhash_get(functions, name) == NULL) {
-        a_out__fatal("Replace state '%s': does not exist", name);
+    if(a_strhash_get(g_states, Name) == NULL) {
+        a_out__fatal("Replace state '%s': does not exist", Name);
     }
 
-    const StateInstance* const active = a_list_peek(stack);
+    const AStateInstance* const active = a_list_peek(g_statesStack);
 
     if(active == NULL) {
-        a_out__fatal("Replace state with '%s': no active state, use a_state_push", name);
+        a_out__fatal("Replace state with '%s': no active state, use a_state_push", Name);
     } else if(active->stage == A_STATE_STAGE_FREE) {
-        a_out__state("Replace state '%s' with '%s': already exiting", active->name, name);
+        a_out__state("Replace state '%s' with '%s': already exiting", active->name, Name);
         return;
     } else if(active->stage != A_STATE_STAGE_BODY) {
-        a_out__fatal("Replace state '%s' with '%s': only call from A_STATE_BODY", active->name, name);
+        a_out__fatal("Replace state '%s' with '%s': only call from A_STATE_BODY", active->name, Name);
     }
 
-    a_out__state("Replace state '%s' with '%s'", active->name, name);
+    a_out__state("Replace state '%s' with '%s'", active->name, Name);
 
-    replacing = true;
-    indent++;
+    g_replacingState = true;
+    g_outputIndent++;
 
     a_state_pop();
-    a_state_push(name);
+    a_state_push(Name);
 
-    replacing = false;
-    indent--;
+    g_replacingState = false;
+    g_outputIndent--;
 }
 
 void a_state_pause(void)
 {
-    StateInstance* const active = a_list_peek(stack);
+    AStateInstance* const active = a_list_peek(g_statesStack);
 
     if(active == NULL) {
         a_out__fatal("No active state to pause");
@@ -192,12 +190,12 @@ void a_state_pause(void)
     }
 
     a_state__setBodyStage(active, A_STATE_BODYSTAGE_PAUSE);
-    changed = true;
+    g_somethingChanged = true;
 }
 
 void a_state_resume(void)
 {
-    StateInstance* const active = a_list_peek(stack);
+    AStateInstance* const active = a_list_peek(g_statesStack);
 
     if(active == NULL) {
         a_out__fatal("No active state to resume");
@@ -206,38 +204,38 @@ void a_state_resume(void)
     }
 
     a_state__setBodyStage(active, A_STATE_BODYSTAGE_RUN);
-    changed = true;
+    g_somethingChanged = true;
 }
 
 void a_state_exit(void)
 {
-    changed = true;
+    g_somethingChanged = true;
     a_out__state("Telling all states to exit");
 
-    A_LIST_ITERATE(stack, StateInstance, s) {
+    A_LIST_ITERATE(g_statesStack, AStateInstance, s) {
         a_out__state("State '%s' exiting", s->name);
 
-        indent++;
+        g_outputIndent++;
         a_state__setStage(s, A_STATE_STAGE_FREE);
-        indent--;
+        g_outputIndent--;
     }
 }
 
-void a_state_add(const char* name, void* object)
+void a_state_add(const char* Name, void* Object)
 {
-    const StateInstance* const s = a_list_peek(stack);
+    const AStateInstance* const s = a_list_peek(g_statesStack);
 
     if(s) {
-        a_strhash_add(s->objects, name, object);
+        a_strhash_add(s->objects, Name, Object);
     }
 }
 
-void* a_state_get(const char* name)
+void* a_state_get(const char* Name)
 {
-    const StateInstance* const s = a_list_peek(stack);
+    const AStateInstance* const s = a_list_peek(g_statesStack);
 
     if(s) {
-        return a_strhash_get(s->objects, name);
+        return a_strhash_get(s->objects, Name);
     }
 
     return NULL;
@@ -245,26 +243,26 @@ void* a_state_get(const char* name)
 
 void a_state__run(void)
 {
-    while(!a_list_isEmpty(stack)) {
-        const StateInstance* const s = a_list_peek(stack);
+    while(!a_list_isEmpty(g_statesStack)) {
+        const AStateInstance* const s = a_list_peek(g_statesStack);
 
-        changed = false;
+        g_somethingChanged = false;
         s->function();
 
         if(s->stage == A_STATE_STAGE_FREE) {
-            a_stateinstance__free(a_list_pop(stack));
+            a_stateinstance__free(a_list_pop(g_statesStack));
         }
 
-        if(new_state) {
-            a_list_push(stack, new_state);
-            new_state = NULL;
+        if(g_nextNewState) {
+            a_list_push(g_statesStack, g_nextNewState);
+            g_nextNewState = NULL;
         }
     }
 }
 
-StateStage a_state__stage(void)
+AStateStage a_state__stage(void)
 {
-    const StateInstance* const s = a_list_peek(stack);
+    const AStateInstance* const s = a_list_peek(g_statesStack);
 
     if(s) {
         return s->stage;
@@ -273,9 +271,9 @@ StateStage a_state__stage(void)
     return A_STATE_STAGE_INVALID;
 }
 
-StateBodyStage a_state__bodystage(void)
+AStateBodyStage a_state__bodystage(void)
 {
-    const StateInstance* const s = a_list_peek(stack);
+    const AStateInstance* const s = a_list_peek(g_statesStack);
 
     if(s) {
         return s->bodystage;
@@ -284,14 +282,16 @@ StateBodyStage a_state__bodystage(void)
     return A_STATE_BODYSTAGE_INVALID;
 }
 
-bool a_state__setStage(StateInstance* state, StateStage stage)
+bool a_state__setStage(AStateInstance* State, AStateStage Stage)
 {
-    StateInstance* const s = state ? state : a_list_peek(stack);
+    if(State == NULL) {
+        State = a_list_peek(g_statesStack);
+    }
 
-    if(s) {
+    if(State) {
         a_out__state("State '%s' transitioning from %s to %s",
-            s->name, stage_names[s->stage], stage_names[stage]);
-        s->stage = stage;
+            State->name, g_stageNames[State->stage], g_stageNames[Stage]);
+        State->stage = Stage;
 
         return true;
     }
@@ -299,11 +299,11 @@ bool a_state__setStage(StateInstance* state, StateStage stage)
     return false;
 }
 
-void a_state__setBodyStage(StateInstance* state, StateBodyStage bodystage)
+void a_state__setBodyStage(AStateInstance* State, AStateBodyStage Bodystage)
 {
     a_out__state("State '%s' transitioning from %s to %s",
-        state->name, bodystage_names[state->bodystage], bodystage_names[bodystage]);
-    state->bodystage = bodystage;
+        State->name, g_bodyStageNames[State->bodystage], g_bodyStageNames[Bodystage]);
+    State->bodystage = Bodystage;
 }
 
 bool a_state__unchanged(void)
@@ -318,10 +318,10 @@ bool a_state__unchanged(void)
 
     a_fps_start();
 
-    if(changed) {
+    if(g_somethingChanged) {
         first = true;
         a_fps_end();
     }
 
-    return !changed;
+    return !g_somethingChanged;
 }

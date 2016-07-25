@@ -24,20 +24,20 @@ void a_random__init(void)
     srand(time(NULL));
 }
 
-int a_random_int(int max)
+int a_random_int(int Max)
 {
-    if(max == 0) {
-        a_out__fatal("a_random_int invalid arg: 0");
+    if(Max == 0) {
+        a_out__fatal("a_random_int: invalid arg 0");
     }
 
-    return rand() % max;
+    return rand() % Max;
 }
 
-int a_random_range(int min, int max)
+int a_random_range(int Min, int Max)
 {
-    if(min >= max) {
-        a_out__fatal("a_random_range invalid args: %d, %d", min, max);
+    if(Min >= Max) {
+        a_out__fatal("a_random_range: invalid args %d, %d", Min, Max);
     }
 
-    return min + (rand() % (max - min));
+    return Min + (rand() % (Max - Min));
 }

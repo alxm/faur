@@ -19,14 +19,14 @@
 
 #pragma once
 
-#include "a2x_app_includes.h"
+#include "a2x_system_includes.h"
 
 #if A_PLATFORM_LINUXPC
     #define A_PIXEL_BPP 32
-    typedef uint32_t Pixel;
+    typedef uint32_t APixel;
 #else
     #define A_PIXEL_BPP 16
-    typedef uint16_t Pixel;
+    typedef uint16_t APixel;
 #endif
 
 #if A_PIXEL_BPP == 16
@@ -63,32 +63,35 @@
 #define A_PIXEL_GREEN_PACK (8 - A_PIXEL_GREEN_BITS)
 #define A_PIXEL_BLUE_PACK  (8 - A_PIXEL_BLUE_BITS)
 
-#define a_pixel_make(r, g, b)                                    \
-    (Pixel)(                                                     \
-        ((((r) >> A_PIXEL_RED_PACK))   << A_PIXEL_RED_SHIFT)   | \
-        ((((g) >> A_PIXEL_GREEN_PACK)) << A_PIXEL_GREEN_SHIFT) | \
-        ((((b) >> A_PIXEL_BLUE_PACK))  << A_PIXEL_BLUE_SHIFT))
+#define a_pixel_make(Red, Green, Blue)                               \
+    (APixel)(                                                        \
+        ((((Red)   >> A_PIXEL_RED_PACK))   << A_PIXEL_RED_SHIFT)   | \
+        ((((Green) >> A_PIXEL_GREEN_PACK)) << A_PIXEL_GREEN_SHIFT) | \
+        ((((Blue)  >> A_PIXEL_BLUE_PACK))  << A_PIXEL_BLUE_SHIFT))
 
-#define a_pixel_red(p)   ((((p) >> A_PIXEL_RED_SHIFT)   & A_PIXEL_RED_MASK)   << A_PIXEL_RED_PACK)
-#define a_pixel_green(p) ((((p) >> A_PIXEL_GREEN_SHIFT) & A_PIXEL_GREEN_MASK) << A_PIXEL_GREEN_PACK)
-#define a_pixel_blue(p)  ((((p) >> A_PIXEL_BLUE_SHIFT)  & A_PIXEL_BLUE_MASK)  << A_PIXEL_BLUE_PACK)
+#define a_pixel_red(Pixel)   ((((Pixel) >> A_PIXEL_RED_SHIFT)   & A_PIXEL_RED_MASK)   << A_PIXEL_RED_PACK)
+#define a_pixel_green(Pixel) ((((Pixel) >> A_PIXEL_GREEN_SHIFT) & A_PIXEL_GREEN_MASK) << A_PIXEL_GREEN_PACK)
+#define a_pixel_blue(Pixel)  ((((Pixel) >> A_PIXEL_BLUE_SHIFT)  & A_PIXEL_BLUE_MASK)  << A_PIXEL_BLUE_PACK)
 
 typedef enum {
     A_PIXEL_PLAIN,
-    A_PIXEL_RGBA, A_PIXEL_RGB25, A_PIXEL_RGB50, A_PIXEL_RGB75,
+    A_PIXEL_RGBA,
+    A_PIXEL_RGB25,
+    A_PIXEL_RGB50,
+    A_PIXEL_RGB75,
     A_PIXEL_INVERSE,
     A_PIXEL_TYPE_NUM
-} PixelBlend_t;
+} APixelBlend;
 
-extern void a_pixel_setBlend(PixelBlend_t b);
-extern void a_pixel_setClip(bool clip);
+extern void a_pixel_setBlend(APixelBlend Blend);
+extern void a_pixel_setClip(bool DoClip);
 
-extern void a_pixel_setAlpha(uint8_t a);
-extern void a_pixel_setRGB(uint8_t r, uint8_t g, uint8_t b);
-extern void a_pixel_setRGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a);
-extern void a_pixel_setPixel(Pixel p);
+extern void a_pixel_setAlpha(uint8_t Alpha);
+extern void a_pixel_setRGB(uint8_t Red, uint8_t Green, uint8_t Blue);
+extern void a_pixel_setRGBA(uint8_t Red, uint8_t Green, uint8_t Blue, uint8_t Alpha);
+extern void a_pixel_setPixel(APixel Pixel);
 
-typedef void (*PixelPut)(int x, int y);
-extern PixelPut a_pixel_put;
+typedef void (*APixelPut)(int X, int Y);
+extern APixelPut a_pixel_put;
 
-#define a_pixel_get(x, y) (*(a_pixels + (y) * a_width + (x)))
+#define a_pixel_get(X, Y) (*(a_screen__pixels + (Y) * a_screen__width + (X)))

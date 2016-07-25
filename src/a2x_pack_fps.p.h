@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include "a2x_app_includes.h"
+#include "a2x_system_includes.h"
 
 extern void a_fps_start(void);
 extern void a_fps_end(void);
@@ -27,4 +27,4 @@ extern void a_fps_end(void);
 extern uint32_t a_fps_getFps(void);
 extern uint32_t a_fps_getMaxFps(void);
 extern uint32_t a_fps_getCounter(void);
-extern bool a_fps_nthFrame(uint32_t n);
+extern bool a_fps_nthFrame(uint32_t N);

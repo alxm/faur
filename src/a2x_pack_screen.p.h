@@ -19,22 +19,22 @@
 
 #pragma once
 
-#include "a2x_app_includes.h"
+#include "a2x_system_includes.h"
 
 #include "a2x_pack_pixel.p.h"
 #include "a2x_pack_sprite.p.h"
 
-extern Pixel* a_pixels;
-extern int a_width;
-extern int a_height;
+extern APixel* a_screen_pixels(void);
+extern int a_screen_width(void);
+extern int a_screen_height(void);
 
 extern void a_screen_show(void);
 
-extern Pixel* a_screen_dup(void);
-extern Pixel* a_screen_new(void);
-extern void a_screen_copy(Pixel* dst, const Pixel* src);
-extern void a_screen_copyPart(Pixel* dst, int x, int y, int w, int h);
+extern APixel* a_screen_dup(void);
+extern APixel* a_screen_new(void);
+extern void a_screen_copy(APixel* Dst, const APixel* Src);
+extern void a_screen_copyPart(APixel* Dst, int X, int Y, int Width, int Height);
 
-extern void a_screen_setTarget(Pixel* p, int w, int h);
-extern void a_screen_setTargetSprite(Sprite* s);
+extern void a_screen_setTarget(APixel* Pixels, int Width, int Height);
+extern void a_screen_setTargetSprite(ASprite* Sprite);
 extern void a_screen_resetTarget(void);

@@ -21,8 +21,7 @@
 
 #include "a2x_pack_fade.p.h"
 
-#include "a2x_app_settings.v.h"
-
 #include "a2x_pack_draw.v.h"
 #include "a2x_pack_fps.v.h"
 #include "a2x_pack_screen.v.h"
+#include "a2x_pack_settings.v.h"

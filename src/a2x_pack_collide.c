@@ -19,22 +19,22 @@
 
 #include "a2x_pack_collide.v.h"
 
-struct ColMap {
+struct AColMap {
     int w, h; // width and height of map, in submaps
     int bitShift; // right-shift object coords by this to get submap index
-    List*** submaps; // List*[h][w] of ColObjects
+    AList*** submaps; // AList*[h][w] of AColObjects
 };
 
-struct ColObject {
-    const ColMap* colmap;
+struct AColObject {
+    const AColMap* colmap;
     int x, y; // coords on the Colmap
-    List* nodes; // ListNodes from submaps this object is in
-    void* parent; // the game object that owns this ColObject
+    AList* nodes; // AListNodes from submaps this object is in
+    void* parent; // the game object that owns this AColObject
 };
 
-ColMap* a_colmap_new(int width, int height, int maxObjectDim)
+AColMap* a_colmap_new(int Width, int Height, int MaxObjectDim)
 {
-    ColMap* const m = a_mem_malloc(sizeof(ColMap));
+    AColMap* const m = a_mem_malloc(sizeof(AColMap));
 
     #define nextpow(value)           \
     ({                               \
@@ -43,14 +43,14 @@ ColMap* a_colmap_new(int width, int height, int maxObjectDim)
         p;                           \
     })
 
-    m->bitShift = nextpow(maxObjectDim);
-    m->w = 1 << a_math_max(0, nextpow(width) - m->bitShift);
-    m->h = 1 << a_math_max(0, nextpow(height) - m->bitShift);
+    m->bitShift = nextpow(MaxObjectDim);
+    m->w = 1 << a_math_max(0, nextpow(Width) - m->bitShift);
+    m->h = 1 << a_math_max(0, nextpow(Height) - m->bitShift);
 
-    m->submaps = a_mem_malloc(m->h * sizeof(List**));
+    m->submaps = a_mem_malloc(m->h * sizeof(AList**));
 
     for(int i = m->h; i--; ) {
-        m->submaps[i] = a_mem_malloc(m->w * sizeof(List*));
+        m->submaps[i] = a_mem_malloc(m->w * sizeof(AList*));
 
         for(int j = m->w; j--; ) {
             m->submaps[i][j] = a_list_new();
@@ -60,50 +60,50 @@ ColMap* a_colmap_new(int width, int height, int maxObjectDim)
     return m;
 }
 
-void a_colmap_free(ColMap* m)
+void a_colmap_free(AColMap* Map)
 {
-    for(int i = m->h; i--; ) {
-        for(int j = m->w; j--; ) {
-            a_list_free(m->submaps[i][j]);
+    for(int i = Map->h; i--; ) {
+        for(int j = Map->w; j--; ) {
+            a_list_free(Map->submaps[i][j]);
         }
 
-        free(m->submaps[i]);
+        free(Map->submaps[i]);
     }
 
-    free(m->submaps);
-    free(m);
+    free(Map->submaps);
+    free(Map);
 }
 
-ColObject* a_colobject_new(const ColMap* m, void* parent)
+AColObject* a_colobject_new(const AColMap* Map, void* Parent)
 {
-    ColObject* const o = a_mem_malloc(sizeof(ColObject));
+    AColObject* const o = a_mem_malloc(sizeof(AColObject));
 
-    o->colmap = m;
+    o->colmap = Map;
     o->nodes = a_list_new();
-    o->parent = parent;
+    o->parent = Parent;
 
     return o;
 }
 
-void a_colobject_free(ColObject* o)
+void a_colobject_free(AColObject* Object)
 {
     // Remove object from any lists it is in
-    A_LIST_ITERATE(o->nodes, ListNode, n) {
+    A_LIST_ITERATE(Object->nodes, AListNode, n) {
         a_list_removeNode(n);
     }
 
-    a_list_free(o->nodes);
-    free(o);
+    a_list_free(Object->nodes);
+    free(Object);
 }
 
-void a_colobject_setCoords(ColObject* o, int x, int y)
+void a_colobject_setCoords(AColObject* Object, int X, int Y)
 {
-    const ColMap* const m = o->colmap;
-    List* const pt_nodes = o->nodes;
-    List*** const submaps = m->submaps;
+    const AColMap* const m = Object->colmap;
+    AList* const pt_nodes = Object->nodes;
+    AList*** const submaps = m->submaps;
 
     // remove point from all the submaps it was in
-    A_LIST_ITERATE(pt_nodes, ListNode, n) {
+    A_LIST_ITERATE(pt_nodes, AListNode, n) {
         a_list_removeNode(n);
     }
 
@@ -111,17 +111,17 @@ void a_colobject_setCoords(ColObject* o, int x, int y)
     a_list_empty(pt_nodes);
 
     // set new coords
-    o->x = x;
-    o->y = y;
+    Object->x = X;
+    Object->y = Y;
 
     // center submap coords
-    const int submap_x = o->x >> m->bitShift;
-    const int submap_y = o->y >> m->bitShift;
+    const int submap_x = Object->x >> m->bitShift;
+    const int submap_y = Object->y >> m->bitShift;
 
     // offset inside submap
     const int submapDim = 1 << m->bitShift;
-    int offset_x = o->x & (submapDim - 1);
-    int offset_y = o->y & (submapDim - 1);
+    int offset_x = Object->x & (submapDim - 1);
+    int offset_y = Object->y & (submapDim - 1);
 
     // submaps perimeter
     int start_x, end_x;
@@ -147,31 +147,51 @@ void a_colobject_setCoords(ColObject* o, int x, int y)
     for(int i = start_y; i <= end_y; i++) {
         for(int j = start_x; j <= end_x; j++) {
             // add point to the submap, save node to point's nodes list
-            a_list_addFirst(pt_nodes, a_list_addFirst(submaps[i][j], o));
+            a_list_addFirst(pt_nodes, a_list_addFirst(submaps[i][j], Object));
         }
     }
 }
 
-void* a_colobject__getParent(const ColObject* o)
+void* a_colobject__getParent(const AColObject* Object)
 {
-    return o->parent;
+    return Object->parent;
 }
 
-List* a_colobject__getColList(const ColObject* o)
+AList* a_colobject__getColList(const AColObject* Object)
 {
-    const ColMap* const m = o->colmap;
+    const AColMap* const m = Object->colmap;
 
-    const int submap_x = a_math_constrain(o->x >> m->bitShift, 0, m->w - 1);
-    const int submap_y = a_math_constrain(o->y >> m->bitShift, 0, m->h - 1);
+    const int submap_x = a_math_constrain(Object->x >> m->bitShift, 0, m->w - 1);
+    const int submap_y = a_math_constrain(Object->y >> m->bitShift, 0, m->h - 1);
 
     return m->submaps[submap_y][submap_x];
 }
 
-bool a_collide_circles(int x1, int y1, int r1, int x2, int y2, int r2)
+bool a_collide_boxes(int X1, int Y1, int W1, int H1, int X2, int Y2, int W2, int H2)
 {
-    const int x = x1 - x2;
-    const int y = y1 - y2;
-    const int r = r1 + r2;
+    return !(Y1 >= Y2 + H2
+          || Y2 >= Y1 + H1
+          || X1 >= X2 + W2
+          || X2 >= X1 + W1);
+}
+
+bool a_collide_boxOnScreen(int X, int Y, int W, int H)
+{
+    return a_collide_boxes(X, Y, W, H,
+                           0, 0, a_screen__width, a_screen__height);
+}
+
+bool a_collide_boxInsideScreen(int X, int Y, int W, int H)
+{
+    return X >= 0 && Y >= 0
+        && X + W <= a_screen__width && Y + H <= a_screen__height;
+}
+
+bool a_collide_circles(int X1, int Y1, int R1, int X2, int Y2, int R2)
+{
+    const int x = X1 - X2;
+    const int y = Y1 - Y2;
+    const int r = R1 + R2;
 
     return x * x + y * y < r * r;
 }

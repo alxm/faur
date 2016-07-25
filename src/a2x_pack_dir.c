@@ -19,31 +19,31 @@
 
 #include "a2x_pack_dir.v.h"
 
-struct Dir {
+struct ADir {
     char* path;
     char* name;
-    List* files;
-    ListIt iterator;
+    AList* files;
+    AListIt iterator;
     int num;
     const char* current[2];
 };
 
-typedef struct DirEntry {
+typedef struct ADirEntry {
     char* name;
     char* full;
-} DirEntry;
+} ADirEntry;
 
-static int defaultFilter(const struct dirent* f)
+static int defaultFilter(const struct dirent* Entry)
 {
-    return strlen(f->d_name) > 0 && f->d_name[0] != '.';
+    return strlen(Entry->d_name) > 0 && Entry->d_name[0] != '.';
 }
 
-Dir* a_dir_open(const char* path)
+ADir* a_dir_open(const char* Path)
 {
-    return a_dir_openFilter(path, defaultFilter);
+    return a_dir_openFilter(Path, defaultFilter);
 }
 
-Dir* a_dir_openFilter(const char* path, int (*filter)(const struct dirent* f))
+ADir* a_dir_openFilter(const char* Path, int (*filter)(const struct dirent* Entry))
 {
     extern int scandir(
         const char *dirp, struct dirent ***namelist,
@@ -53,20 +53,20 @@ Dir* a_dir_openFilter(const char* path, int (*filter)(const struct dirent* f))
     extern int alphasort(const struct dirent **, const struct dirent **);
 
     struct dirent** dlist = NULL;
-    const int numFiles = scandir(path, &dlist, filter, alphasort);
+    const int numFiles = scandir(Path, &dlist, filter, alphasort);
 
-    Dir* const d = a_mem_malloc(sizeof(Dir));
+    ADir* const d = a_mem_malloc(sizeof(ADir));
 
-    d->path = a_str_dup(path);
-    d->name = a_str_getSuffixLastFind(path, '/');
+    d->path = a_str_dup(Path);
+    d->name = a_str_getSuffixLastFind(Path, '/');
     d->files = a_list_new();
     d->num = a_math_max(0, numFiles);
 
     for(int i = d->num; i--; ) {
-        DirEntry* const e = a_mem_malloc(sizeof(DirEntry));
+        ADirEntry* const e = a_mem_malloc(sizeof(ADirEntry));
 
         e->name = a_str_dup(dlist[i]->d_name);
-        e->full = a_str_merge(path, "/", e->name);
+        e->full = a_str_merge(Path, "/", e->name);
 
         a_list_addFirst(d->files, e);
         free(dlist[i]);
@@ -79,65 +79,65 @@ Dir* a_dir_openFilter(const char* path, int (*filter)(const struct dirent* f))
     return d;
 }
 
-void a_dir_close(Dir* d)
+void a_dir_close(ADir* Dir)
 {
-    free(d->path);
-    free(d->name);
+    free(Dir->path);
+    free(Dir->name);
 
-    A_LIST_ITERATE(d->files, DirEntry, e) {
+    A_LIST_ITERATE(Dir->files, ADirEntry, e) {
         free(e->name);
         free(e->full);
         free(e);
     }
-    a_list_free(d->files);
 
-    free(d);
+    a_list_free(Dir->files);
+    free(Dir);
 }
 
-void a_dir_reverse(Dir* d)
+void a_dir_reverse(ADir* Dir)
 {
-    a_list_reverse(d->files);
-    d->iterator = a_listit__new(d->files);
+    a_list_reverse(Dir->files);
+    Dir->iterator = a_listit__new(Dir->files);
 }
 
-const char** a_dir__next(Dir* d)
+const char** a_dir__next(ADir* Dir)
 {
-    if(a_listit__next(&d->iterator)) {
-        DirEntry* const e = a_listit__get(&d->iterator);
+    if(a_listit__next(&Dir->iterator)) {
+        ADirEntry* const e = a_listit__get(&Dir->iterator);
 
-        d->current[A_DIR_NAME] = e->name;
-        d->current[A_DIR_PATH] = e->full;
+        Dir->current[A_DIR_NAME] = e->name;
+        Dir->current[A_DIR_PATH] = e->full;
 
-        return (const char**)d->current;
+        return (const char**)Dir->current;
     }
 
-    d->iterator = a_listit__new(d->files);
+    Dir->iterator = a_listit__new(Dir->files);
     return NULL;
 }
 
-void a_dir_reset(Dir* d)
+void a_dir_reset(ADir* Dir)
 {
-    d->iterator = a_listit__new(d->files);
+    Dir->iterator = a_listit__new(Dir->files);
 }
 
-const char* a_dir_path(const Dir* d)
+const char* a_dir_path(const ADir* Dir)
 {
-    return d->path;
+    return Dir->path;
 }
 
-const char* a_dir_name(const Dir* d)
+const char* a_dir_name(const ADir* Dir)
 {
-    return d->name;
+    return Dir->name;
 }
 
-int a_dir_num(const Dir* d)
+int a_dir_num(const ADir* Dir)
 {
-    return d->num;
+    return Dir->num;
 }
 
-bool a_dir_exists(const char* path)
+bool a_dir_exists(const char* Path)
 {
-    DIR* const d = opendir(path);
+    DIR* const d = opendir(Path);
 
     if(d) {
         closedir(d);
@@ -147,7 +147,7 @@ bool a_dir_exists(const char* path)
     return false;
 }
 
-void a_dir_make(const char* path)
+void a_dir_make(const char* Path)
 {
-    mkdir(path, S_IRWXU);
+    mkdir(Path, S_IRWXU);
 }

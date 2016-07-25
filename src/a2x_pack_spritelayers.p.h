@@ -19,16 +19,16 @@
 
 #pragma once
 
-#include "a2x_app_includes.h"
+#include "a2x_system_includes.h"
 
 #include "a2x_pack_list.p.h"
 #include "a2x_pack_pixel.p.h"
 #include "a2x_pack_sprite.p.h"
 
-typedef List SpriteLayers;
+typedef AList ASpriteLayers;
 
-extern SpriteLayers* a_spritelayers_new(void);
-extern void a_spritelayers_free(SpriteLayers* s);
+extern ASpriteLayers* a_spritelayers_new(void);
+extern void a_spritelayers_free(ASpriteLayers* Layers);
 
-extern void a_spritelayers_add(SpriteLayers* s, const Sprite* sprite, PixelBlend_t blend, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
-extern void a_spritelayers_blit(SpriteLayers* s, int x, int y);
+extern void a_spritelayers_add(ASpriteLayers* Layers, const ASprite* Sprite, APixelBlend Blend, uint8_t Red, uint8_t Green, uint8_t Blue, uint8_t Alpha);
+extern void a_spritelayers_blit(ASpriteLayers* Layers, int X, int Y);

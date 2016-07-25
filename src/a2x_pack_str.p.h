@@ -19,10 +19,9 @@
 
 #pragma once
 
-#include "a2x_app_includes.h"
+#include "a2x_system_includes.h"
 
-#define a_str_same(s1, s2)  (strcmp((s1), (s2)) == 0)
-#define a_str_equal(s1, s2) (strcmp((s1), (s2)) == 0)
+#define a_str_same(String1, String2) (strcmp(String1, String2) == 0)
 
 #define a_str_malloc(...)                                               \
 ({                                                                      \
@@ -36,25 +35,25 @@
     a_str__merge((sizeof(a__strs) / sizeof(a__strs[0])), __VA_ARGS__); \
 })
 
-extern void* a_str__malloc(int count, ...);
-extern char* a_str__merge(int count, ...);
+extern void* a_str__malloc(int Count, ...);
+extern char* a_str__merge(int Count, ...);
 
-extern char* a_str_dup(const char* s);
+extern char* a_str_dup(const char* String);
 
-extern char* a_str_sub(const char* s, int start, int end);
-extern char* a_str_prefix(const char* s, int len);
-extern char* a_str_suffix(const char* s, int len);
+extern char* a_str_sub(const char* String, int Start, int End);
+extern char* a_str_prefix(const char* String, int Length);
+extern char* a_str_suffix(const char* String, int Length);
 
-extern int a_str_firstIndex(const char* s, char c);
-extern int a_str_lastIndex(const char* s, char c);
+extern int a_str_firstIndex(const char* String, char Character);
+extern int a_str_lastIndex(const char* String, char Character);
 
-extern char* a_str_getPrefixFirstFind(const char* s, char limit);
-extern char* a_str_getPrefixLastFind(const char* s, char limit);
-extern char* a_str_getSuffixFirstFind(const char* s, char limit);
-extern char* a_str_getSuffixLastFind(const char* s, char limit);
+extern char* a_str_getPrefixFirstFind(const char* String, char Marker);
+extern char* a_str_getPrefixLastFind(const char* String, char Marker);
+extern char* a_str_getSuffixFirstFind(const char* String, char Marker);
+extern char* a_str_getSuffixLastFind(const char* String, char Marker);
 
-extern char* a_str_extractPath(const char* s);
-extern char* a_str_extractFile(const char* s);
-extern char* a_str_extractName(const char* s);
+extern char* a_str_extractPath(const char* String);
+extern char* a_str_extractFile(const char* String);
+extern char* a_str_extractName(const char* String);
 
-extern char* a_str_trim(const char* s);
+extern char* a_str_trim(const char* String);

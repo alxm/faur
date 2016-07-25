@@ -19,19 +19,20 @@
 
 #pragma once
 
-#include "a2x_app_includes.h"
+#include "a2x_system_includes.h"
 
-typedef struct StateInstance StateInstance;
+typedef struct AStateInstance AStateInstance;
+typedef void (*AStateFunction)(void);
 
-#define A_STATE__MAKE_NAME(name) a_state__function_##name
+#define A_STATE__MAKE_NAME(Name) a_state__function_##Name
 
-#define a_state_new(name, function) a_state__new(name, A_STATE__MAKE_NAME(function))
-extern void a_state__new(const char* name, void (*function)(void));
+#define a_state_new(Name, Function) a_state__new(Name, A_STATE__MAKE_NAME(Function))
+extern void a_state__new(const char* Name, void (*Function)(void));
 
-extern void a_state_push(const char* name);
+extern void a_state_push(const char* Name);
 extern void a_state_pop(void);
 
-extern void a_state_replace(const char* name);
+extern void a_state_replace(const char* Name);
 
 extern void a_state_pause(void);
 extern void a_state_resume(void);
@@ -44,16 +45,16 @@ typedef enum {
     A_STATE_STAGE_BODY,
     A_STATE_STAGE_FREE,
     A_STATE_STAGE_NUM
-} StateStage;
+} AStateStage;
 
 typedef enum {
     A_STATE_BODYSTAGE_INVALID,
     A_STATE_BODYSTAGE_RUN,
     A_STATE_BODYSTAGE_PAUSE,
     A_STATE_BODYSTAGE_NUM
-} StateBodyStage;
+} AStateBodyStage;
 
-#define A_STATE(name) void A_STATE__MAKE_NAME(name)(void)
+#define A_STATE(Name) void A_STATE__MAKE_NAME(Name)(void)
 #define A_STATE_INIT if(a_state__stage() == A_STATE_STAGE_INIT)
 #define A_STATE_BODY if(a_state__stage() == A_STATE_STAGE_BODY || (a_state__stage() == A_STATE_STAGE_INIT && a_state__setStage(NULL, A_STATE_STAGE_BODY)))
 #define A_STATE_FREE if(a_state__stage() == A_STATE_STAGE_FREE)
@@ -61,12 +62,12 @@ typedef enum {
 #define A_STATE_PAUSE if(a_state__stage() == A_STATE_STAGE_BODY && a_state__bodystage() == A_STATE_BODYSTAGE_PAUSE)
 #define A_STATE_LOOP while(a_state__unchanged())
 
-extern void a_state_add(const char* name, void* object);
-extern void* a_state_get(const char* name);
+extern void a_state_add(const char* Name, void* Object);
+extern void* a_state_get(const char* Name);
 
-extern StateStage a_state__stage(void);
-extern StateBodyStage a_state__bodystage(void);
+extern AStateStage a_state__stage(void);
+extern AStateBodyStage a_state__bodystage(void);
 
-extern bool a_state__setStage(StateInstance* state, StateStage stage);
-extern void a_state__setBodyStage(StateInstance* state, StateBodyStage bodystage);
+extern bool a_state__setStage(AStateInstance* State, AStateStage Stage);
+extern void a_state__setBodyStage(AStateInstance* State, AStateBodyStage Bodystage);
 extern bool a_state__unchanged(void);

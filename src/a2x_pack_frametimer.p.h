@@ -19,13 +19,13 @@
 
 #pragma once
 
-#include "a2x_app_includes.h"
+#include "a2x_system_includes.h"
 
-typedef struct FrameTimer FrameTimer;
+typedef struct AFrameTimer AFrameTimer;
 
-extern FrameTimer* a_frametimer_new(uint32_t framesPeriod);
-extern void a_frametimer_free(FrameTimer* t);
+extern AFrameTimer* a_frametimer_new(uint32_t FramesPeriod);
+extern void a_frametimer_free(AFrameTimer* Timer);
 
-extern bool a_frametimer_check(FrameTimer* t);
-extern uint32_t a_frametimer_diff(FrameTimer* t);
-extern void a_frametimer_start(FrameTimer* t);
+extern bool a_frametimer_check(AFrameTimer* Timer);
+extern uint32_t a_frametimer_diff(AFrameTimer* Timer);
+extern void a_frametimer_start(AFrameTimer* Timer);

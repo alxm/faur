@@ -17,15 +17,15 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a2x_app_main.v.h"
+#include "a2x_pack_main.v.h"
 
-static int numArgs;
-static char** args;
+static int g_argsNum;
+static char** g_args;
 
-int main(int argc, char** argv)
+int main(int Argc, char** Argv)
 {
-    numArgs = argc;
-    args = argv;
+    g_argsNum = Argc;
+    g_args = Argv;
 
     a_settings__defaults();
     a_settings__setup();
@@ -35,13 +35,14 @@ int main(int argc, char** argv)
     a_out__message("a2x %s, compiled on %s", A__VERSION, A_COMPILE_TIME);
 
     a_out__message("Opening %s %s by %s, compiled %s",
-        a_settings_getString("app.title"), a_settings_getString("app.version"),
-        a_settings_getString("app.author"), a_settings_getString("app.compiled"));
+        a_settings_getString("app.title"),
+        a_settings_getString("app.version"),
+        a_settings_getString("app.author"),
+        a_settings_getString("app.compiled"));
 
     a_conf__init();
     a_sdl__init();
     a_hw__init();
-    a_time__init();
     a_screen__init();
     a_screenshot__init();
     a_pixel__init();
@@ -71,7 +72,6 @@ int main(int argc, char** argv)
     a_screen__uninit();
     a_sprite__uninit();
     a_fps__uninit();
-    a_time__uninit();
     a_hw__uninit();
     a_sdl__uninit();
 
@@ -87,15 +87,15 @@ int main(int argc, char** argv)
 
 int a_main_numArgs(void)
 {
-    return numArgs;
+    return g_argsNum;
 }
 
-char* a_main_getArg(unsigned int n)
+char* a_main_getArg(unsigned int ArgNum)
 {
-    if(n >= numArgs) {
-        a_out__error("a_main_getArg invalid arg: %u", n);
+    if(ArgNum >= g_argsNum) {
+        a_out__error("a_main_getArg invalid arg: %u", ArgNum);
         return NULL;
     }
 
-    return args[n];
+    return g_args[ArgNum];
 }

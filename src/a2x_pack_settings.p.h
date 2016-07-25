@@ -19,30 +19,14 @@
 
 #pragma once
 
-#define A__VERSION "rolling"
+#include "a2x_system_includes.h"
 
-#include "a2x_app_main.p.h"
+#define A_SETUP void a_settings__setup(void)
+extern A_SETUP;
 
-#include "a2x_app_settings.v.h"
+extern void a_settings_set(const char* Key, const char* Value);
+extern bool a_settings_flip(const char* Key);
 
-#include "a2x_pack_blit.v.h"
-#include "a2x_pack_conf.v.h"
-#include "a2x_pack_console.v.h"
-#include "a2x_pack_draw.v.h"
-#include "a2x_pack_fix.v.h"
-#include "a2x_pack_font.v.h"
-#include "a2x_pack_fps.v.h"
-#include "a2x_pack_hw.v.h"
-#include "a2x_pack_input.v.h"
-#include "a2x_pack_math.v.h"
-#include "a2x_pack_mem.v.h"
-#include "a2x_pack_out.v.h"
-#include "a2x_pack_pixel.v.h"
-#include "a2x_pack_random.v.h"
-#include "a2x_pack_screen.v.h"
-#include "a2x_pack_screenshot.v.h"
-#include "a2x_pack_sdl.v.h"
-#include "a2x_pack_sound.v.h"
-#include "a2x_pack_sprite.v.h"
-#include "a2x_pack_state.v.h"
-#include "a2x_pack_time.v.h"
+extern char* a_settings_getString(const char* Key);
+extern bool a_settings_getBool(const char* Key);
+extern int a_settings_getInt(const char* Key);

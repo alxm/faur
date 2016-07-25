@@ -19,35 +19,35 @@
 
 #pragma once
 
-#include "a2x_app_includes.h"
+#include "a2x_system_includes.h"
 
-typedef struct List List;
-typedef struct ListNode ListNode;
+typedef struct AList AList;
+typedef struct AListNode AListNode;
 
-extern List* a_list_new(void);
-extern void a_list_free(List* list);
-extern void a_list_empty(List* list);
+extern AList* a_list_new(void);
+extern void a_list_free(AList* List);
+extern void a_list_empty(AList* List);
 
-extern ListNode* a_list_addFirst(List* list, void* content);
-extern ListNode* a_list_addLast(List* list, void* content);
+extern AListNode* a_list_addFirst(AList* List, void* Content);
+extern AListNode* a_list_addLast(AList* List, void* Content);
 
-extern void a_list_remove(List* list, const void* v);
-extern void* a_list_removeFirst(List* list);
-extern void* a_list_removeLast(List* list);
-extern void a_list_removeNode(ListNode* node);
+extern void* a_list_getFirst(const AList* List);
+extern void* a_list_getLast(const AList* List);
 
-#define a_list_push(l, c) a_list_addFirst(l, c)
-#define a_list_pop(l)     a_list_removeFirst(l)
-#define a_list_peek(l)    a_list_first(l)
+extern void a_list_remove(AList* List, const void* Item);
+extern void* a_list_removeFirst(AList* List);
+extern void* a_list_removeLast(AList* List);
+extern void a_list_removeNode(AListNode* Node);
 
-extern List* a_list_clone(const List* list);
-extern void a_list_reverse(List* list);
-extern void** a_list_array(List* list);
+extern AListNode* a_list_push(AList* List, void* Content);
+extern void* a_list_pop(AList* List);
+extern void* a_list_peek(AList* List);
 
-extern void* a_list_first(const List* list);
-extern void* a_list_last(const List* list);
+extern AList* a_list_clone(const AList* List);
+extern void a_list_reverse(AList* List);
+extern void** a_list_array(AList* List);
 
-extern void* a_list_get(const List* list, int index);
+extern void* a_list_get(const AList* List, int Index);
 
-extern int a_list_size(const List* list);
-extern bool a_list_isEmpty(const List* list);
+extern int a_list_size(const AList* List);
+extern bool a_list_isEmpty(const AList* List);

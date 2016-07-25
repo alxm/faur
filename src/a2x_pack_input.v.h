@@ -19,7 +19,7 @@
 
 #pragma once
 
-typedef struct InputInstance InputInstance;
+typedef struct AInputInstance AInputInstance;
 
 #include "a2x_pack_input.p.h"
 
@@ -32,26 +32,26 @@ typedef struct InputInstance InputInstance;
 #include "a2x_pack_state.v.h"
 #include "a2x_pack_strtok.v.h"
 
-typedef struct InputCollection {
-    List* list; // inputs registered during init
-    StrHash* names; // hash table of above inputs' names
-} InputCollection;
+typedef struct AInputCollection {
+    AList* list; // inputs registered during init
+    AStrHash* names; // hash table of above inputs' names
+} AInputCollection;
 
 extern void a_input__init(void);
 extern void a_input__uninit(void);
 
-extern void a_input__free(Input* i);
+extern void a_input__free(AInput* Input);
 
 extern void a_input__get(void);
 
-extern void a_input__button_setState(InputInstance* b, bool pressed);
+extern void a_input__button_setState(AInputInstance* Button, bool Pressed);
 
-extern void a_input__analog_setXAxis(InputInstance* a, int value);
-extern void a_input__analog_setYAxis(InputInstance* a, int value);
+extern void a_input__analog_setXAxis(AInputInstance* Analog, int Value);
+extern void a_input__analog_setYAxis(AInputInstance* Analog, int Value);
 
-extern void a_input__touch_addMotion(InputInstance* t, int x, int y);
-extern void a_input__touch_setCoords(InputInstance* t, int x, int y, bool tapped);
+extern void a_input__touch_addMotion(AInputInstance* Touch, int X, int Y);
+extern void a_input__touch_setCoords(AInputInstance* Touch, int X, int Y, bool Tapped);
 
-extern InputCollection* a_input__collection_new(void);
-extern void a_input__collection_free(InputCollection* c);
-extern void a_input__collection_add(InputCollection* c, void* instance, const char* name);
+extern AInputCollection* a_input__collection_new(void);
+extern void a_input__collection_free(AInputCollection* Collection);
+extern void a_input__collection_add(AInputCollection* Collection, void* Instance, const char* Name);
