@@ -72,7 +72,7 @@ typedef enum {
         && a_state__substage(A_STATE_SUBSTAGE_PAUSE))
 
 #define A_STATE_LOOP            \
-    while(a_state__unchanged())
+    while(a_state__nothingPending())
 
 #define A_STATE_FREE                       \
     if(a_state__stage(A_STATE_STAGE_FREE))
@@ -80,4 +80,4 @@ typedef enum {
 extern bool a_state__stage(AStateStage Stage);
 extern bool a_state__substage(AStateSubStage BodyStage);
 
-extern bool a_state__unchanged(void);
+extern bool a_state__nothingPending(void);

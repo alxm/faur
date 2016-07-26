@@ -326,7 +326,7 @@ bool a_state__substage(AStateSubStage Substage)
     return false;
 }
 
-bool a_state__unchanged(void)
+bool a_state__nothingPending(void)
 {
     static bool first = true;
 
@@ -338,12 +338,14 @@ bool a_state__unchanged(void)
 
     a_fps_start();
 
-    if(!a_list_isEmpty(g_pending)) {
+    if(a_list_isEmpty(g_pending)) {
+        return true;
+    } else {
         first = true;
         a_fps_end();
-    }
 
-    return a_list_isEmpty(g_pending);
+        return false;
+    }
 }
 
 void a_state__run(void)
