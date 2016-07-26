@@ -31,13 +31,13 @@ extern void a_state__new(const char* Name, void (*Function)(void));
 
 extern void a_state_push(const char* Name);
 extern void a_state_pop(void);
-
 extern void a_state_replace(const char* Name);
-
 extern void a_state_pause(void);
 extern void a_state_resume(void);
-
 extern void a_state_exit(void);
+
+extern void a_state_add(const char* Name, void* Object);
+extern void* a_state_get(const char* Name);
 
 typedef enum {
     A_STATE_STAGE_INVALID,
@@ -48,26 +48,36 @@ typedef enum {
 } AStateStage;
 
 typedef enum {
-    A_STATE_BODYSTAGE_INVALID,
-    A_STATE_BODYSTAGE_RUN,
-    A_STATE_BODYSTAGE_PAUSE,
-    A_STATE_BODYSTAGE_NUM
-} AStateBodyStage;
+    A_STATE_SUBSTAGE_INVALID,
+    A_STATE_SUBSTAGE_RUN,
+    A_STATE_SUBSTAGE_PAUSE,
+    A_STATE_SUBSTAGE_NUM
+} AStateSubStage;
 
-#define A_STATE(Name) void A_STATE__MAKE_NAME(Name)(void)
-#define A_STATE_INIT if(a_state__stage() == A_STATE_STAGE_INIT)
-#define A_STATE_BODY if(a_state__stage() == A_STATE_STAGE_BODY || (a_state__stage() == A_STATE_STAGE_INIT && a_state__setStage(NULL, A_STATE_STAGE_BODY)))
-#define A_STATE_FREE if(a_state__stage() == A_STATE_STAGE_FREE)
-#define A_STATE_RUN if(a_state__stage() == A_STATE_STAGE_BODY && a_state__bodystage() == A_STATE_BODYSTAGE_RUN)
-#define A_STATE_PAUSE if(a_state__stage() == A_STATE_STAGE_BODY && a_state__bodystage() == A_STATE_BODYSTAGE_PAUSE)
-#define A_STATE_LOOP while(a_state__unchanged())
+#define A_STATE(Name)                   \
+    void A_STATE__MAKE_NAME(Name)(void)
 
-extern void a_state_add(const char* Name, void* Object);
-extern void* a_state_get(const char* Name);
+#define A_STATE_INIT                       \
+    if(a_state__stage(A_STATE_STAGE_INIT))
 
-extern AStateStage a_state__stage(void);
-extern AStateBodyStage a_state__bodystage(void);
+#define A_STATE_BODY                       \
+    if(a_state__stage(A_STATE_STAGE_BODY))
 
-extern bool a_state__setStage(AStateInstance* State, AStateStage Stage);
-extern void a_state__setBodyStage(AStateInstance* State, AStateBodyStage Bodystage);
+#define A_STATE_RUN                                 \
+    if(a_state__stage(A_STATE_STAGE_BODY)           \
+        && a_state__substage(A_STATE_SUBSTAGE_RUN))
+
+#define A_STATE_PAUSE                                 \
+    if(a_state__stage(A_STATE_STAGE_BODY)             \
+        && a_state__substage(A_STATE_SUBSTAGE_PAUSE))
+
+#define A_STATE_LOOP            \
+    while(a_state__unchanged())
+
+#define A_STATE_FREE                       \
+    if(a_state__stage(A_STATE_STAGE_FREE))
+
+extern bool a_state__stage(AStateStage Stage);
+extern bool a_state__substage(AStateSubStage BodyStage);
+
 extern bool a_state__unchanged(void);
