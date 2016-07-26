@@ -46,7 +46,6 @@ static AStrHash* g_states;
 static AList* g_stack;
 static AList* g_pending;
 
-/*
 static char* g_stageNames[A_STATE_STAGE_NUM] = {
     "Invalid",
     "Init",
@@ -59,7 +58,6 @@ static char* g_subStageNames[A_STATE_SUBSTAGE_NUM] = {
     "Running",
     "Paused",
 };
-*/
 
 static void pending_new(AStateAction Action, const char* Name)
 {
@@ -96,11 +94,15 @@ static AStateInstance* state_new(const char* Name)
     s->stage = A_STATE_STAGE_INIT;
     s->substage = A_STATE_SUBSTAGE_INVALID;
 
+    a_out__state("New '%s' instance", Name);
+
     return s;
 }
 
 static void state_free(AStateInstance* State)
 {
+    a_out__state("Destroying '%s' instance", State->name);
+
     free(State->name);
     a_strhash_free(State->objects);
 
@@ -116,6 +118,12 @@ static void state_handle(void)
         if(current && current->stage == A_STATE_STAGE_INIT) {
             current->stage = A_STATE_STAGE_BODY;
             current->substage = A_STATE_SUBSTAGE_RUN;
+
+            a_out__state("'%s' going from %s to %s/%s",
+                current->name,
+                g_stageNames[A_STATE_STAGE_INIT],
+                g_stageNames[A_STATE_STAGE_BODY],
+                g_subStageNames[A_STATE_SUBSTAGE_RUN]);
         }
 
         return;
@@ -131,22 +139,87 @@ static void state_handle(void)
 
         case A_STATE_ACTION_POP: {
             AStateInstance* s = a_list_peek(g_stack);
+
+            if(s == NULL) {
+                a_out__fatal("Pop state: stack is empty");
+            } else if(s->stage != A_STATE_STAGE_BODY) {
+                a_out__fatal("Pop state '%s': only call from A_STATE_BODY",
+                    s->name);
+            }
+
+            a_out__state("'%s' going from %s/%s to %s",
+                s->name,
+                g_stageNames[A_STATE_STAGE_BODY],
+                g_subStageNames[s->substage],
+                g_stageNames[A_STATE_STAGE_FREE]);
+
             s->stage = A_STATE_STAGE_FREE;
             s->substage = A_STATE_SUBSTAGE_INVALID;
         } break;
 
         case A_STATE_ACTION_PAUSE: {
             AStateInstance* s = a_list_peek(g_stack);
+
+            if(s == NULL) {
+                a_out__fatal("Pause state: stack is empty");
+            } else if(s->stage != A_STATE_STAGE_BODY) {
+                a_out__fatal("Pause state '%s': only call from A_STATE_BODY",
+                    s->name);
+            } else if(s->substage != A_STATE_SUBSTAGE_RUN) {
+                a_out__fatal("Pause state '%s': only call from A_STATE_RUN",
+                    s->name);
+            }
+
             s->substage = A_STATE_SUBSTAGE_PAUSE;
+
+            a_out__state("'%s' going from %s/%s to %s/%s",
+                s->name,
+                g_stageNames[A_STATE_STAGE_BODY],
+                g_subStageNames[A_STATE_SUBSTAGE_RUN],
+                g_stageNames[A_STATE_STAGE_BODY],
+                g_subStageNames[A_STATE_SUBSTAGE_PAUSE]);
         } break;
 
         case A_STATE_ACTION_RESUME: {
             AStateInstance* s = a_list_peek(g_stack);
+
+            if(s == NULL) {
+                a_out__fatal("Resume state: stack is empty");
+            } else if(s->stage != A_STATE_STAGE_BODY) {
+                a_out__fatal("Resume state '%s': only call from A_STATE_BODY",
+                    s->name);
+            } else if(s->substage != A_STATE_SUBSTAGE_PAUSE) {
+                a_out__fatal("Resume state '%s': only call from A_STATE_PAUSE",
+                    s->name);
+            }
+
             s->substage = A_STATE_SUBSTAGE_RUN;
+
+            a_out__state("'%s' going from %s/%s to %s/%s",
+                s->name,
+                g_stageNames[A_STATE_STAGE_BODY],
+                g_subStageNames[A_STATE_SUBSTAGE_PAUSE],
+                g_stageNames[A_STATE_STAGE_BODY],
+                g_subStageNames[A_STATE_SUBSTAGE_RUN]);
         } break;
 
         case A_STATE_ACTION_EXIT: {
+            a_out__state("Telling all states to exit");
+
             A_LIST_ITERATE(g_stack, AStateInstance, s) {
+                if(s->stage == A_STATE_STAGE_BODY) {
+                    a_out__state("'%s' going from %s/%s to %s",
+                        s->name,
+                        g_stageNames[s->stage],
+                        g_subStageNames[s->substage],
+                        g_stageNames[A_STATE_STAGE_FREE]);
+                } else {
+                    a_out__state("'%s' going from %s to %s",
+                        s->name,
+                        g_stageNames[s->stage],
+                        g_stageNames[A_STATE_STAGE_FREE]);
+                }
+
                 s->stage = A_STATE_STAGE_FREE;
                 s->substage = A_STATE_SUBSTAGE_INVALID;
             }
@@ -176,8 +249,8 @@ void a_state__uninit(void)
 
 void a_state__new(const char* Name, AStateFunction Function)
 {
-    a_out__state("New state '%s'", Name);
     a_strhash_add(g_states, Name, Function);
+    a_out__state("Declared '%s'", Name);
 }
 
 void a_state_push(const char* Name)
