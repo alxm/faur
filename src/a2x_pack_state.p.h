@@ -71,7 +71,7 @@ typedef enum {
     if(a_state__stage(A_STATE_STAGE_BODY)             \
         && a_state__substage(A_STATE_SUBSTAGE_PAUSE))
 
-#define A_STATE_LOOP            \
+#define A_STATE_LOOP                 \
     while(a_state__nothingPending())
 
 #define A_STATE_FREE                       \

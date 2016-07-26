@@ -27,6 +27,7 @@
 #include "a2x_pack_conf.v.h"
 #include "a2x_pack_console.v.h"
 #include "a2x_pack_draw.v.h"
+#include "a2x_pack_fade.v.h"
 #include "a2x_pack_fix.v.h"
 #include "a2x_pack_font.v.h"
 #include "a2x_pack_fps.v.h"
