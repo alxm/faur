@@ -351,13 +351,24 @@ void a_state__run(void)
     state_handle();
 
     while(!a_list_isEmpty(g_stack)) {
-        AStateInstance* current = a_list_peek(g_stack);
+        AStateInstance* s = a_list_peek(g_stack);
 
-        current->function();
+        if(s->stage == A_STATE_STAGE_BODY) {
+            a_out__state("'%s' running %s/%s",
+                s->name,
+                g_stageNames[A_STATE_STAGE_BODY],
+                g_subStageNames[s->substage]);
+        } else {
+            a_out__state("'%s' running %s",
+                s->name,
+                g_stageNames[s->stage]);
+        }
+
+        s->function();
 
         // Check if the state just ran its Free stage
-        if(current->stage == A_STATE_STAGE_FREE) {
-            state_free(current);
+        if(s->stage == A_STATE_STAGE_FREE) {
+            state_free(s);
             a_list_pop(g_stack);
         }
 
