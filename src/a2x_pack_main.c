@@ -57,6 +57,7 @@ int main(int Argc, char** Argv)
     a_fix__init();
     a_font__init();
     a_state__init();
+    a_fade__init();
 
     a_out__message("Opening A_MAIN");
     a_main();
