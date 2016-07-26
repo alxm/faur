@@ -25,7 +25,7 @@ static APixelPut g_pixelDraw[A_PIXEL_TYPE_NUM][2];
 static APixelBlend g_blend;
 static bool g_clip;
 
-static uint8_t g_red, g_green, g_blue, alpha;
+static uint8_t g_red, g_green, g_blue, g_alpha;
 static APixel g_pixel;
 
 #define PIXEL_DST (a_screen__pixels + Y * a_screen__width + X)
@@ -46,7 +46,7 @@ static APixel g_pixel;
     }
 
 pixelMake(plain,   (PIXEL_DST, g_pixel))
-pixelMake(rgba,    (PIXEL_DST, g_red, g_green, g_blue, alpha))
+pixelMake(rgba,    (PIXEL_DST, g_red, g_green, g_blue, g_alpha))
 pixelMake(rgb25,   (PIXEL_DST, g_red, g_green, g_blue))
 pixelMake(rgb50,   (PIXEL_DST, g_red, g_green, g_blue))
 pixelMake(rgb75,   (PIXEL_DST, g_red, g_green, g_blue))
@@ -95,10 +95,10 @@ void a_pixel_setClip(bool DoClip)
 
 void a_pixel_setAlpha(uint8_t Alpha)
 {
-    alpha = Alpha;
+    g_alpha = Alpha;
 
-    a_blit__setAlpha(alpha);
-    a_draw__setAlpha(alpha);
+    a_blit__setAlpha(g_alpha);
+    a_draw__setAlpha(g_alpha);
 }
 
 void a_pixel_setRGB(uint8_t Red, uint8_t Green, uint8_t Blue)
@@ -118,14 +118,14 @@ void a_pixel_setRGBA(uint8_t Red, uint8_t Green, uint8_t Blue, uint8_t Alpha)
     g_red = Red;
     g_green = Green;
     g_blue = Blue;
-    alpha = Alpha;
+    g_alpha = Alpha;
 
     g_pixel = a_pixel_make(g_red, g_green, g_blue);
 
-    a_blit__setAlpha(alpha);
+    a_blit__setAlpha(g_alpha);
     a_blit__setRGB(g_red, g_green, g_blue);
 
-    a_draw__setAlpha(alpha);
+    a_draw__setAlpha(g_alpha);
     a_draw__setRGB(g_red, g_green, g_blue);
 }
 
