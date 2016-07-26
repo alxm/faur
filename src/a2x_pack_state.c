@@ -265,8 +265,8 @@ void a_state_pop(void)
 
 void a_state_replace(const char* Name)
 {
-    a_state_pop();
-    a_state_push(Name);
+    pending_new(A_STATE_ACTION_POP, NULL);
+    pending_new(A_STATE_ACTION_PUSH, Name);
 }
 
 void a_state_pause(void)
