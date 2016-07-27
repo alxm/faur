@@ -27,3 +27,4 @@
 #include "a2x_pack_settings.v.h"
 
 extern void a_fade__init(void);
+extern void a_fade__uninit(void);

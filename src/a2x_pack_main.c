@@ -64,6 +64,7 @@ int main(int Argc, char** Argv)
     a_state__run();
     a_out__message("A_MAIN closed");
 
+    a_fade__uninit();
     a_state__uninit();
     a_sound__uninit();
     a_input__uninit();

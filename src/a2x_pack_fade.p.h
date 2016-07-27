@@ -25,5 +25,4 @@
 
 extern void a_fade_toBlack(int FramesDuration);
 extern void a_fade_fromBlack(int FramesDuration);
-
-extern void a_fade_screens(const APixel* OldScreen, int FramesDuration);
+extern void a_fade_screens(int FramesDuration);

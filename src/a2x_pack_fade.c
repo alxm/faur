@@ -20,7 +20,8 @@
 #include "a2x_pack_fade.v.h"
 
 static int g_framesDuration;
-static const APixel* g_oldScreen;
+static APixel* g_savedScreen;
+static int g_savedWidth, g_savedHeight;
 
 static A_STATE(a_fade__toBlack);
 static A_STATE(a_fade__fromBlack);
@@ -28,9 +29,22 @@ static A_STATE(a_fade__screens);
 
 void a_fade__init(void)
 {
+    g_framesDuration = 0;
+
+    g_savedScreen = NULL;
+    g_savedWidth = 0;
+    g_savedHeight = 0;
+
     a_state_new("a__fadeToBlack", a_fade__toBlack);
     a_state_new("a__fadeFromBlack", a_fade__fromBlack);
     a_state_new("a__fadeScreens", a_fade__screens);
+}
+
+void a_fade__uninit(void)
+{
+    if(g_savedScreen != NULL) {
+        free(g_savedScreen);
+    }
 }
 
 void a_fade_toBlack(int FramesDuration)
@@ -45,14 +59,26 @@ void a_fade_fromBlack(int FramesDuration)
     a_state_push("a__fadeFromBlack");
 }
 
-void a_fade_screens(const APixel* OldScreen, int FramesDuration)
+void a_fade_screens(int FramesDuration)
 {
-    g_oldScreen = OldScreen;
     g_framesDuration = FramesDuration;
+
+    if(A_SCREEN_SIZE > g_savedWidth * g_savedHeight * sizeof(APixel)) {
+        if(g_savedScreen != NULL) {
+            free(g_savedScreen);
+        }
+
+        g_savedScreen = a_mem_malloc(A_SCREEN_SIZE);
+    }
+
+    g_savedWidth = a_screen__width;
+    g_savedHeight = a_screen__height;
+
+    // capture current screen
+    a_screen_copy(g_savedScreen, a_screen__pixels);
+
     a_state_push("a__fadeScreens");
 }
-
-#define SCREEN_DIM (a_screen__width * a_screen__height)
 
 static A_STATE(a_fade__toBlack)
 {
@@ -60,7 +86,7 @@ static A_STATE(a_fade__toBlack)
     {
         AFix alpha = 0;
         AFix alpha_inc = a_fix_itofix(255) / g_framesDuration;
-        APixel* const copy = a_screen_dup();
+        APixel* copy = a_screen_dup();
 
         a_pixel_setBlend(A_PIXEL_RGBA);
         a_pixel_setRGB(0, 0, 0);
@@ -89,7 +115,7 @@ static A_STATE(a_fade__fromBlack)
     {
         AFix alpha = a_fix_itofix(255);
         AFix alpha_inc = a_fix_itofix(255) / g_framesDuration;
-        APixel* const copy = a_screen_dup();
+        APixel* copy = a_screen_dup();
 
         a_pixel_setBlend(A_PIXEL_RGBA);
         a_pixel_setRGB(0, 0, 0);
@@ -116,97 +142,36 @@ static A_STATE(a_fade__screens)
 {
     A_STATE_BODY
     {
-        int* rNew = a_mem_malloc(SCREEN_DIM * sizeof(int));
-        int* gNew = a_mem_malloc(SCREEN_DIM * sizeof(int));
-        int* bNew = a_mem_malloc(SCREEN_DIM * sizeof(int));
+        if(a_screen__width != g_savedWidth
+            || a_screen__height != g_savedHeight) {
 
-        int* rOld = a_mem_malloc(SCREEN_DIM * sizeof(int));
-        int* gOld = a_mem_malloc(SCREEN_DIM * sizeof(int));
-        int* bOld = a_mem_malloc(SCREEN_DIM * sizeof(int));
-
-        int* rNewp = rNew;
-        int* gNewp = gNew;
-        int* bNewp = bNew;
-
-        int* rOldp = rOld;
-        int* gOldp = gOld;
-        int* bOldp = bOld;
-
-        APixel* newp = a_screen__pixels;
-        APixel* oldp = (APixel*)g_oldScreen;
-
-        for(int i = SCREEN_DIM; i--; ) {
-            const APixel nc = *newp++;
-            const APixel oc = *oldp++;
-
-            *rNewp = a_pixel_red(nc);
-            *rOldp++ = a_pixel_red(oc) - *rNewp++;
-
-            *gNewp = a_pixel_green(nc);
-            *gOldp++ = a_pixel_green(oc) - *gNewp++;
-
-            *bNewp = a_pixel_blue(nc);
-            *bOldp++ = a_pixel_blue(oc) - *bNewp++;
+            a_out__fatal("a_fade_screens: screen size changed");
         }
 
-        int accum = 0;
-        AFix alpha = A_FIX_ONE;
+        AFix alpha = a_fix_itofix(255);
+        AFix alpha_inc = a_fix_itofix(255) / g_framesDuration;
+        APixel* currentScreenBuffer = a_screen_dup();
+        ASprite* oldScreen = a_sprite_fromPixels(g_savedScreen,
+                                                 a_screen__width,
+                                                 a_screen__height);
+
+        a_pixel_setBlend(A_PIXEL_RGBA);
 
         A_STATE_LOOP
         {
-            APixel* dst = a_screen__pixels;
+            a_screen_copy(a_screen__pixels, currentScreenBuffer);
 
-            rNewp = rNew;
-            gNewp = gNew;
-            bNewp = bNew;
+            a_blit__setAlpha(a_fix_fixtoi(alpha));
+            a_blit(oldScreen, 0, 0);
 
-            rOldp = rOld;
-            gOldp = gOld;
-            bOldp = bOld;
-
-            for(int i = SCREEN_DIM; i--; ) {
-                *dst++ = a_pixel_make(
-                    *rNewp + a_fix_fixtoi(*rOldp * alpha),
-                    *gNewp + a_fix_fixtoi(*gOldp * alpha),
-                    *bNewp + a_fix_fixtoi(*bOldp * alpha)
-                );
-
-                rNewp++;
-                gNewp++;
-                bNewp++;
-
-                rOldp++;
-                gOldp++;
-                bOldp++;
-            }
-
-            if(g_framesDuration < A_FIX_ONE) {
-                while(accum < A_FIX_ONE) {
-                    accum += g_framesDuration;
-                    alpha--;
-                }
-
-                accum -= A_FIX_ONE;
-            } else if(A_FIX_ONE <= g_framesDuration) {
-                accum += A_FIX_ONE;
-
-                if(accum >= g_framesDuration) {
-                    accum -= g_framesDuration;
-                    alpha--;
-                }
-            }
+            alpha -= alpha_inc;
 
             if(alpha < 0) {
                 a_state_pop();
             }
         }
 
-        free(rNew);
-        free(gNew);
-        free(bNew);
-
-        free(rOld);
-        free(gOld);
-        free(bOld);
+        a_sprite_free(oldScreen);
+        free(currentScreenBuffer);
     }
 }
