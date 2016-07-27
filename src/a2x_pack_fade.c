@@ -54,76 +54,27 @@ void a_fade_screens(const APixel* OldScreen, int FramesDuration)
 
 #define SCREEN_DIM (a_screen__width * a_screen__height)
 
-#define pixel_mask(x) ((1 << (x)) - 1)
-
-#define pixel_red1(p)   ((((p) >> (11 + 16)) & pixel_mask(5)) << 3)
-#define pixel_green1(p) ((((p) >> (5  + 16)) & pixel_mask(6)) << 2)
-#define pixel_blue1(p)  ((((p) >> (0  + 16)) & pixel_mask(5)) << 3)
-
-#define pixel_red2(p)   ((((p) >> (11 + 0 )) & pixel_mask(5)) << 3)
-#define pixel_green2(p) ((((p) >> (5  + 0 )) & pixel_mask(6)) << 2)
-#define pixel_blue2(p)  ((((p) >> (0  + 0 )) & pixel_mask(5)) << 3)
-
 static A_STATE(a_fade__toBlack)
 {
     A_STATE_BODY
     {
-        int accum = 0;
-        AFix alpha = A_FIX_ONE;
+        AFix alpha = 0;
+        AFix alpha_inc = a_fix_itofix(255) / g_framesDuration;
         APixel* const copy = a_screen_dup();
+
+        a_pixel_setBlend(A_PIXEL_RGBA);
+        a_pixel_setRGB(0, 0, 0);
 
         A_STATE_LOOP
         {
             a_screen_copy(a_screen__pixels, copy);
 
-            #if A_PIXEL_BPP == 16
-                uint32_t* a_pixels2 = (uint32_t*)a_screen__pixels;
+            a_pixel_setAlpha(a_fix_fixtoi(alpha));
+            a_draw_fill();
 
-                for(int i = SCREEN_DIM / 2; i--; ) {
-                    const uint32_t c = *a_pixels2;
+            alpha += alpha_inc;
 
-                    *a_pixels2++ = (a_pixel_make(
-                        a_fix_fixtoi(pixel_red1(c)   * alpha),
-                        a_fix_fixtoi(pixel_green1(c) * alpha),
-                        a_fix_fixtoi(pixel_blue1(c)  * alpha)
-                    ) << 16) | a_pixel_make(
-                        a_fix_fixtoi(pixel_red2(c)   * alpha),
-                        a_fix_fixtoi(pixel_green2(c) * alpha),
-                        a_fix_fixtoi(pixel_blue2(c)  * alpha)
-                    );
-                }
-            #elif A_PIXEL_BPP == 32
-                APixel* pixels = a_screen__pixels;
-
-                for(int i = SCREEN_DIM; i--; ) {
-                    const APixel p = *pixels;
-
-                    *pixels++ = a_pixel_make(
-                        a_fix_fixtoi(a_pixel_red(p) * alpha),
-                        a_fix_fixtoi(a_pixel_green(p) * alpha),
-                        a_fix_fixtoi(a_pixel_blue(p) * alpha));
-                }
-            #else
-                #error Invalid A_PIXEL_BPP value
-            #endif
-
-            if(g_framesDuration < A_FIX_ONE) {
-                while(accum < A_FIX_ONE) {
-                    accum += g_framesDuration;
-                    alpha--;
-                }
-
-                accum -= A_FIX_ONE;
-            } else if(A_FIX_ONE <= g_framesDuration) {
-                accum += A_FIX_ONE;
-
-                if(accum >= g_framesDuration) {
-                    accum -= g_framesDuration;
-                    alpha--;
-                }
-            }
-
-            if(alpha < 0) {
+            if(alpha > a_fix_itofix(255)) {
                 a_state_pop();
             }
         }
@@ -136,62 +87,23 @@ static A_STATE(a_fade__fromBlack)
 {
     A_STATE_BODY
     {
-        int accum = 0;
-        AFix alpha = 0;
+        AFix alpha = a_fix_itofix(255);
+        AFix alpha_inc = a_fix_itofix(255) / g_framesDuration;
         APixel* const copy = a_screen_dup();
+
+        a_pixel_setBlend(A_PIXEL_RGBA);
+        a_pixel_setRGB(0, 0, 0);
 
         A_STATE_LOOP
         {
             a_screen_copy(a_screen__pixels, copy);
 
-            #if A_PIXEL_BPP == 16
-                uint32_t* a_pixels2 = (uint32_t*)a_screen__pixels;
+            a_pixel_setAlpha(a_fix_fixtoi(alpha));
+            a_draw_fill();
 
-                for(int i = SCREEN_DIM / 2; i--; ) {
-                    const uint32_t c = *a_pixels2;
+            alpha -= alpha_inc;
 
-                    *a_pixels2++ = (a_pixel_make(
-                        a_fix_fixtoi(pixel_red1(c)   * alpha),
-                        a_fix_fixtoi(pixel_green1(c) * alpha),
-                        a_fix_fixtoi(pixel_blue1(c)  * alpha)
-                    ) << 16) | a_pixel_make(
-                        a_fix_fixtoi(pixel_red2(c)   * alpha),
-                        a_fix_fixtoi(pixel_green2(c) * alpha),
-                        a_fix_fixtoi(pixel_blue2(c)  * alpha)
-                    );
-                }
-            #elif A_PIXEL_BPP == 32
-                APixel* pixels = a_screen__pixels;
-
-                for(int i = SCREEN_DIM; i--; ) {
-                    const APixel p = *pixels;
-
-                    *pixels++ = a_pixel_make(
-                        a_fix_fixtoi(a_pixel_red(p) * alpha),
-                        a_fix_fixtoi(a_pixel_green(p) * alpha),
-                        a_fix_fixtoi(a_pixel_blue(p) * alpha));
-                }
-            #else
-                #error Invalid A_PIXEL_BPP value
-            #endif
-
-            if(g_framesDuration < A_FIX_ONE) {
-                while(accum < A_FIX_ONE) {
-                    accum += g_framesDuration;
-                    alpha++;
-                }
-
-                accum -= A_FIX_ONE;
-            } else if(A_FIX_ONE <= g_framesDuration) {
-                accum += A_FIX_ONE;
-
-                if(accum >= g_framesDuration) {
-                    accum -= g_framesDuration;
-                    alpha++;
-                }
-            }
-
-            if(alpha > A_FIX_ONE) {
+            if(alpha < 0) {
                 a_state_pop();
             }
         }
