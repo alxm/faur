@@ -20,23 +20,25 @@
 #include "a2x_pack_fade.v.h"
 
 static int g_framesDuration;
+static APixel g_savedColor;
 static APixel* g_savedScreen;
 static int g_savedWidth, g_savedHeight;
 
-static A_STATE(a_fade__toBlack);
-static A_STATE(a_fade__fromBlack);
+static A_STATE(a_fade__toColor);
+static A_STATE(a_fade__fromColor);
 static A_STATE(a_fade__screens);
 
 void a_fade__init(void)
 {
     g_framesDuration = 0;
 
+    g_savedColor = 0;
     g_savedScreen = NULL;
     g_savedWidth = 0;
     g_savedHeight = 0;
 
-    a_state_new("a__fadeToBlack", a_fade__toBlack);
-    a_state_new("a__fadeFromBlack", a_fade__fromBlack);
+    a_state_new("a__fadeToColor", a_fade__toColor);
+    a_state_new("a__fadeFromColor", a_fade__fromColor);
     a_state_new("a__fadeScreens", a_fade__screens);
 }
 
@@ -47,16 +49,18 @@ void a_fade__uninit(void)
     }
 }
 
-void a_fade_toBlack(int FramesDuration)
+void a_fade_toColor(int FramesDuration)
 {
     g_framesDuration = FramesDuration;
-    a_state_push("a__fadeToBlack");
+    g_savedColor = a_pixel__getPixel();
+    a_state_push("a__fadeToColor");
 }
 
-void a_fade_fromBlack(int FramesDuration)
+void a_fade_fromColor(int FramesDuration)
 {
     g_framesDuration = FramesDuration;
-    a_state_push("a__fadeFromBlack");
+    g_savedColor = a_pixel__getPixel();
+    a_state_push("a__fadeFromColor");
 }
 
 void a_fade_screens(int FramesDuration)
@@ -80,7 +84,7 @@ void a_fade_screens(int FramesDuration)
     a_state_push("a__fadeScreens");
 }
 
-static A_STATE(a_fade__toBlack)
+static A_STATE(a_fade__toColor)
 {
     A_STATE_BODY
     {
@@ -89,7 +93,7 @@ static A_STATE(a_fade__toBlack)
         APixel* copy = a_screen_dup();
 
         a_pixel_setBlend(A_PIXEL_RGBA);
-        a_pixel_setRGB(0, 0, 0);
+        a_pixel_setPixel(g_savedColor);
 
         A_STATE_LOOP
         {
@@ -109,7 +113,7 @@ static A_STATE(a_fade__toBlack)
     }
 }
 
-static A_STATE(a_fade__fromBlack)
+static A_STATE(a_fade__fromColor)
 {
     A_STATE_BODY
     {
@@ -118,7 +122,7 @@ static A_STATE(a_fade__fromBlack)
         APixel* copy = a_screen_dup();
 
         a_pixel_setBlend(A_PIXEL_RGBA);
-        a_pixel_setRGB(0, 0, 0);
+        a_pixel_setPixel(g_savedColor);
 
         A_STATE_LOOP
         {
