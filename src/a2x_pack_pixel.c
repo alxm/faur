@@ -140,3 +140,8 @@ void a_pixel_setPixel(APixel Pixel)
     a_blit__setRGB(g_red, g_green, g_blue);
     a_draw__setRGB(g_red, g_green, g_blue);
 }
+
+APixel a_pixel__getPixel(void)
+{
+    return g_pixel;
+}
