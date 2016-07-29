@@ -19,6 +19,7 @@
 
 #include "a2x_pack_fade.v.h"
 
+static bool g_fadePending;
 static int g_framesDuration;
 static APixel g_savedColor;
 static APixel* g_savedScreen;
@@ -30,6 +31,7 @@ static A_STATE(a_fade__screens);
 
 void a_fade__init(void)
 {
+    g_fadePending = false;
     g_framesDuration = 0;
 
     g_savedColor = 0;
@@ -51,20 +53,39 @@ void a_fade__uninit(void)
 
 void a_fade_toColor(int FramesDuration)
 {
+    if(g_fadePending) {
+        a_out__warning("a_fade_toColor: fade pending, ignoring");
+        return;
+    }
+
     g_framesDuration = FramesDuration;
     g_savedColor = a_pixel__getPixel();
+
     a_state_push("a__fadeToColor");
+    g_fadePending = true;
 }
 
 void a_fade_fromColor(int FramesDuration)
 {
+    if(g_fadePending) {
+        a_out__warning("a_fade_fromColor: fade pending, ignoring");
+        return;
+    }
+
     g_framesDuration = FramesDuration;
     g_savedColor = a_pixel__getPixel();
+
     a_state_push("a__fadeFromColor");
+    g_fadePending = true;
 }
 
 void a_fade_screens(int FramesDuration)
 {
+    if(g_fadePending) {
+        a_out__warning("a_fade_screens: fade pending, ignoring");
+        return;
+    }
+
     g_framesDuration = FramesDuration;
 
     if(A_SCREEN_SIZE > g_savedWidth * g_savedHeight * sizeof(APixel)) {
@@ -82,6 +103,7 @@ void a_fade_screens(int FramesDuration)
     a_screen_copy(g_savedScreen, a_screen__pixels);
 
     a_state_push("a__fadeScreens");
+    g_fadePending = true;
 }
 
 static A_STATE(a_fade__toColor)
@@ -110,6 +132,7 @@ static A_STATE(a_fade__toColor)
         }
 
         free(copy);
+        g_fadePending = false;
     }
 }
 
@@ -139,6 +162,7 @@ static A_STATE(a_fade__fromColor)
         }
 
         free(copy);
+        g_fadePending = false;
     }
 }
 
@@ -177,5 +201,6 @@ static A_STATE(a_fade__screens)
 
         a_sprite_free(oldScreen);
         free(currentScreenBuffer);
+        g_fadePending = false;
     }
 }
