@@ -90,8 +90,7 @@ void a_screen__init(void)
     }
 
     if(a_settings_getBool("video.doubleBuffer")) {
-        a_screen__pixels = a_mem_malloc(A_SCREEN_SIZE);
-        memset(a_screen__pixels, 0, A_SCREEN_SIZE);
+        a_screen__pixels = a_screen_new();
     }
 
     g_savedWidth = a_screen__width;
@@ -137,13 +136,14 @@ APixel* a_screen_dup(void)
 {
     APixel* const dst = a_screen_new();
     a_screen_copy(dst, a_screen__pixels);
-
     return dst;
 }
 
 APixel* a_screen_new(void)
 {
-    return a_mem_malloc(A_SCREEN_SIZE);
+    APixel* buffer = a_mem_malloc(A_SCREEN_SIZE);
+    memset(buffer, 0, A_SCREEN_SIZE);
+    return buffer;
 }
 
 void a_screen_copy(APixel* Dst, const APixel* Src)

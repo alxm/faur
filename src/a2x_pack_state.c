@@ -336,14 +336,11 @@ bool a_state__nothingPending(void)
         a_fps_end();
     }
 
-    a_fps_start();
-
     if(a_list_isEmpty(g_pending)) {
+        a_fps_start();
         return true;
     } else {
         first = true;
-        a_fps_end();
-
         return false;
     }
 }

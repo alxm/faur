@@ -96,3 +96,5 @@
 })
 
 extern void a_pixel__init(void);
+
+extern APixel a_pixel__getPixel(void);

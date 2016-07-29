@@ -73,7 +73,7 @@ ASprite* a_sprite_fromData(const uint8_t* Data)
     return s;
 }
 
-ASprite* a_sprite_fromPixels(APixel* Pixels, int Width, int Height)
+ASprite* a_sprite_fromPixels(const APixel* Pixels, int Width, int Height)
 {
     ASprite* s = a_sprite_blank(Width, Height);
 

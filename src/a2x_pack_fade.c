@@ -19,184 +19,190 @@
 
 #include "a2x_pack_fade.v.h"
 
+static bool g_fadePending;
 static int g_framesDuration;
-static const APixel* g_oldScreen;
+static APixel g_savedColor;
+static APixel* g_screenBuffer;
+static APixel* g_savedScreen;
+static int g_savedWidth, g_savedHeight;
 
-static A_STATE(a_fade__toBlack);
-static A_STATE(a_fade__fromBlack);
+static A_STATE(a_fade__toColor);
+static A_STATE(a_fade__fromColor);
 static A_STATE(a_fade__screens);
+
+static void updateCachedBuffer(bool UpdateSavedScreen)
+{
+    if(A_SCREEN_SIZE > g_savedWidth * g_savedHeight * sizeof(APixel)) {
+        if(g_screenBuffer != NULL) {
+            free(g_screenBuffer);
+        }
+
+        g_screenBuffer = a_mem_malloc(A_SCREEN_SIZE);
+
+        if(UpdateSavedScreen) {
+            if(g_savedScreen != NULL) {
+                free(g_savedScreen);
+            }
+
+            g_savedScreen = a_mem_malloc(A_SCREEN_SIZE);
+        }
+    }
+
+    if(UpdateSavedScreen) {
+        if(g_savedScreen == NULL) {
+            g_savedScreen = a_mem_malloc(A_SCREEN_SIZE);
+        }
+
+        // capture current screen
+        a_screen_copy(g_savedScreen, a_screen__pixels);
+    }
+
+    g_savedWidth = a_screen__width;
+    g_savedHeight = a_screen__height;
+}
+
+static void validateCachedBuffer(void)
+{
+    if(a_screen__width != g_savedWidth || a_screen__height != g_savedHeight) {
+        a_out__fatal("Screen size changed before fading");
+    }
+}
 
 void a_fade__init(void)
 {
-    a_state_new("a__fadeToBlack", a_fade__toBlack);
-    a_state_new("a__fadeFromBlack", a_fade__fromBlack);
+    g_fadePending = false;
+    g_framesDuration = 0;
+
+    g_savedColor = 0;
+    g_screenBuffer = NULL;
+    g_savedScreen = NULL;
+    g_savedWidth = 0;
+    g_savedHeight = 0;
+
+    a_state_new("a__fadeToColor", a_fade__toColor);
+    a_state_new("a__fadeFromColor", a_fade__fromColor);
     a_state_new("a__fadeScreens", a_fade__screens);
 }
 
-void a_fade_toBlack(int FramesDuration)
+void a_fade__uninit(void)
 {
-    g_framesDuration = FramesDuration;
-    a_state_push("a__fadeToBlack");
+    if(g_screenBuffer != NULL) {
+        free(g_screenBuffer);
+    }
+
+    if(g_savedScreen != NULL) {
+        free(g_savedScreen);
+    }
 }
 
-void a_fade_fromBlack(int FramesDuration)
+void a_fade_toColor(int FramesDuration)
 {
+    if(g_fadePending) {
+        a_out__warning("a_fade_toColor: fade pending, ignoring");
+        return;
+    }
+
     g_framesDuration = FramesDuration;
-    a_state_push("a__fadeFromBlack");
+    g_savedColor = a_pixel__getPixel();
+
+    updateCachedBuffer(false);
+
+    a_state_push("a__fadeToColor");
+    g_fadePending = true;
 }
 
-void a_fade_screens(const APixel* OldScreen, int FramesDuration)
+void a_fade_fromColor(int FramesDuration)
 {
-    g_oldScreen = OldScreen;
+    if(g_fadePending) {
+        a_out__warning("a_fade_fromColor: fade pending, ignoring");
+        return;
+    }
+
     g_framesDuration = FramesDuration;
+    g_savedColor = a_pixel__getPixel();
+
+    updateCachedBuffer(false);
+
+    a_state_push("a__fadeFromColor");
+    g_fadePending = true;
+}
+
+void a_fade_screens(int FramesDuration)
+{
+    if(g_fadePending) {
+        a_out__warning("a_fade_screens: fade pending, ignoring");
+        return;
+    }
+
+    g_framesDuration = FramesDuration;
+
+    updateCachedBuffer(true);
+
     a_state_push("a__fadeScreens");
+    g_fadePending = true;
 }
 
-#define SCREEN_DIM (a_screen__width * a_screen__height)
-
-#define pixel_mask(x) ((1 << (x)) - 1)
-
-#define pixel_red1(p)   ((((p) >> (11 + 16)) & pixel_mask(5)) << 3)
-#define pixel_green1(p) ((((p) >> (5  + 16)) & pixel_mask(6)) << 2)
-#define pixel_blue1(p)  ((((p) >> (0  + 16)) & pixel_mask(5)) << 3)
-
-#define pixel_red2(p)   ((((p) >> (11 + 0 )) & pixel_mask(5)) << 3)
-#define pixel_green2(p) ((((p) >> (5  + 0 )) & pixel_mask(6)) << 2)
-#define pixel_blue2(p)  ((((p) >> (0  + 0 )) & pixel_mask(5)) << 3)
-
-static A_STATE(a_fade__toBlack)
+static A_STATE(a_fade__toColor)
 {
     A_STATE_BODY
     {
-        int accum = 0;
-        AFix alpha = A_FIX_ONE;
-        APixel* const copy = a_screen_dup();
+        validateCachedBuffer();
+
+        AFix alpha = 0;
+        AFix alpha_inc = a_fix_itofix(255) / g_framesDuration;
+
+        a_pixel_setBlend(A_PIXEL_RGBA);
+        a_pixel_setPixel(g_savedColor);
+
+        a_screen_copy(g_screenBuffer, a_screen__pixels);
 
         A_STATE_LOOP
         {
-            a_screen_copy(a_screen__pixels, copy);
+            a_screen_copy(a_screen__pixels, g_screenBuffer);
 
-            #if A_PIXEL_BPP == 16
-                uint32_t* a_pixels2 = (uint32_t*)a_screen__pixels;
+            a_pixel_setAlpha(a_fix_fixtoi(alpha));
+            a_draw_fill();
 
-                for(int i = SCREEN_DIM / 2; i--; ) {
-                    const uint32_t c = *a_pixels2;
+            alpha += alpha_inc;
 
-                    *a_pixels2++ = (a_pixel_make(
-                        a_fix_fixtoi(pixel_red1(c)   * alpha),
-                        a_fix_fixtoi(pixel_green1(c) * alpha),
-                        a_fix_fixtoi(pixel_blue1(c)  * alpha)
-                    ) << 16) | a_pixel_make(
-                        a_fix_fixtoi(pixel_red2(c)   * alpha),
-                        a_fix_fixtoi(pixel_green2(c) * alpha),
-                        a_fix_fixtoi(pixel_blue2(c)  * alpha)
-                    );
-                }
-            #elif A_PIXEL_BPP == 32
-                APixel* pixels = a_screen__pixels;
-
-                for(int i = SCREEN_DIM; i--; ) {
-                    const APixel p = *pixels;
-
-                    *pixels++ = a_pixel_make(
-                        a_fix_fixtoi(a_pixel_red(p) * alpha),
-                        a_fix_fixtoi(a_pixel_green(p) * alpha),
-                        a_fix_fixtoi(a_pixel_blue(p) * alpha));
-                }
-            #else
-                #error Invalid A_PIXEL_BPP value
-            #endif
-
-            if(g_framesDuration < A_FIX_ONE) {
-                while(accum < A_FIX_ONE) {
-                    accum += g_framesDuration;
-                    alpha--;
-                }
-
-                accum -= A_FIX_ONE;
-            } else if(A_FIX_ONE <= g_framesDuration) {
-                accum += A_FIX_ONE;
-
-                if(accum >= g_framesDuration) {
-                    accum -= g_framesDuration;
-                    alpha--;
-                }
+            if(alpha > a_fix_itofix(255)) {
+                a_state_pop();
             }
+        }
+
+        g_fadePending = false;
+    }
+}
+
+static A_STATE(a_fade__fromColor)
+{
+    A_STATE_BODY
+    {
+        validateCachedBuffer();
+
+        AFix alpha = a_fix_itofix(255);
+        AFix alpha_inc = a_fix_itofix(255) / g_framesDuration;
+
+        a_pixel_setBlend(A_PIXEL_RGBA);
+        a_pixel_setPixel(g_savedColor);
+
+        a_screen_copy(g_screenBuffer, a_screen__pixels);
+
+        A_STATE_LOOP
+        {
+            a_screen_copy(a_screen__pixels, g_screenBuffer);
+
+            a_pixel_setAlpha(a_fix_fixtoi(alpha));
+            a_draw_fill();
+
+            alpha -= alpha_inc;
 
             if(alpha < 0) {
                 a_state_pop();
             }
         }
 
-        free(copy);
-    }
-}
-
-static A_STATE(a_fade__fromBlack)
-{
-    A_STATE_BODY
-    {
-        int accum = 0;
-        AFix alpha = 0;
-        APixel* const copy = a_screen_dup();
-
-        A_STATE_LOOP
-        {
-            a_screen_copy(a_screen__pixels, copy);
-
-            #if A_PIXEL_BPP == 16
-                uint32_t* a_pixels2 = (uint32_t*)a_screen__pixels;
-
-                for(int i = SCREEN_DIM / 2; i--; ) {
-                    const uint32_t c = *a_pixels2;
-
-                    *a_pixels2++ = (a_pixel_make(
-                        a_fix_fixtoi(pixel_red1(c)   * alpha),
-                        a_fix_fixtoi(pixel_green1(c) * alpha),
-                        a_fix_fixtoi(pixel_blue1(c)  * alpha)
-                    ) << 16) | a_pixel_make(
-                        a_fix_fixtoi(pixel_red2(c)   * alpha),
-                        a_fix_fixtoi(pixel_green2(c) * alpha),
-                        a_fix_fixtoi(pixel_blue2(c)  * alpha)
-                    );
-                }
-            #elif A_PIXEL_BPP == 32
-                APixel* pixels = a_screen__pixels;
-
-                for(int i = SCREEN_DIM; i--; ) {
-                    const APixel p = *pixels;
-
-                    *pixels++ = a_pixel_make(
-                        a_fix_fixtoi(a_pixel_red(p) * alpha),
-                        a_fix_fixtoi(a_pixel_green(p) * alpha),
-                        a_fix_fixtoi(a_pixel_blue(p) * alpha));
-                }
-            #else
-                #error Invalid A_PIXEL_BPP value
-            #endif
-
-            if(g_framesDuration < A_FIX_ONE) {
-                while(accum < A_FIX_ONE) {
-                    accum += g_framesDuration;
-                    alpha++;
-                }
-
-                accum -= A_FIX_ONE;
-            } else if(A_FIX_ONE <= g_framesDuration) {
-                accum += A_FIX_ONE;
-
-                if(accum >= g_framesDuration) {
-                    accum -= g_framesDuration;
-                    alpha++;
-                }
-            }
-
-            if(alpha > A_FIX_ONE) {
-                a_state_pop();
-            }
-        }
-
-        free(copy);
+        g_fadePending = false;
     }
 }
 
@@ -204,97 +210,33 @@ static A_STATE(a_fade__screens)
 {
     A_STATE_BODY
     {
-        int* rNew = a_mem_malloc(SCREEN_DIM * sizeof(int));
-        int* gNew = a_mem_malloc(SCREEN_DIM * sizeof(int));
-        int* bNew = a_mem_malloc(SCREEN_DIM * sizeof(int));
+        validateCachedBuffer();
 
-        int* rOld = a_mem_malloc(SCREEN_DIM * sizeof(int));
-        int* gOld = a_mem_malloc(SCREEN_DIM * sizeof(int));
-        int* bOld = a_mem_malloc(SCREEN_DIM * sizeof(int));
+        AFix alpha = a_fix_itofix(255);
+        AFix alpha_inc = a_fix_itofix(255) / g_framesDuration;
+        ASprite* oldScreen = a_sprite_fromPixels(g_savedScreen,
+                                                 a_screen__width,
+                                                 a_screen__height);
 
-        int* rNewp = rNew;
-        int* gNewp = gNew;
-        int* bNewp = bNew;
+        a_pixel_setBlend(A_PIXEL_RGBA);
 
-        int* rOldp = rOld;
-        int* gOldp = gOld;
-        int* bOldp = bOld;
-
-        APixel* newp = a_screen__pixels;
-        APixel* oldp = (APixel*)g_oldScreen;
-
-        for(int i = SCREEN_DIM; i--; ) {
-            const APixel nc = *newp++;
-            const APixel oc = *oldp++;
-
-            *rNewp = a_pixel_red(nc);
-            *rOldp++ = a_pixel_red(oc) - *rNewp++;
-
-            *gNewp = a_pixel_green(nc);
-            *gOldp++ = a_pixel_green(oc) - *gNewp++;
-
-            *bNewp = a_pixel_blue(nc);
-            *bOldp++ = a_pixel_blue(oc) - *bNewp++;
-        }
-
-        int accum = 0;
-        AFix alpha = A_FIX_ONE;
+        a_screen_copy(g_screenBuffer, a_screen__pixels);
 
         A_STATE_LOOP
         {
-            APixel* dst = a_screen__pixels;
+            a_screen_copy(a_screen__pixels, g_screenBuffer);
 
-            rNewp = rNew;
-            gNewp = gNew;
-            bNewp = bNew;
+            a_blit__setAlpha(a_fix_fixtoi(alpha));
+            a_blit(oldScreen, 0, 0);
 
-            rOldp = rOld;
-            gOldp = gOld;
-            bOldp = bOld;
-
-            for(int i = SCREEN_DIM; i--; ) {
-                *dst++ = a_pixel_make(
-                    *rNewp + a_fix_fixtoi(*rOldp * alpha),
-                    *gNewp + a_fix_fixtoi(*gOldp * alpha),
-                    *bNewp + a_fix_fixtoi(*bOldp * alpha)
-                );
-
-                rNewp++;
-                gNewp++;
-                bNewp++;
-
-                rOldp++;
-                gOldp++;
-                bOldp++;
-            }
-
-            if(g_framesDuration < A_FIX_ONE) {
-                while(accum < A_FIX_ONE) {
-                    accum += g_framesDuration;
-                    alpha--;
-                }
-
-                accum -= A_FIX_ONE;
-            } else if(A_FIX_ONE <= g_framesDuration) {
-                accum += A_FIX_ONE;
-
-                if(accum >= g_framesDuration) {
-                    accum -= g_framesDuration;
-                    alpha--;
-                }
-            }
+            alpha -= alpha_inc;
 
             if(alpha < 0) {
                 a_state_pop();
             }
         }
 
-        free(rNew);
-        free(gNew);
-        free(bNew);
-
-        free(rOld);
-        free(gOld);
-        free(bOld);
+        a_sprite_free(oldScreen);
+        g_fadePending = false;
     }
 }
