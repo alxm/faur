@@ -22,6 +22,7 @@
 static bool g_fadePending;
 static int g_framesDuration;
 static APixel g_savedColor;
+static APixel* g_screenBuffer;
 static APixel* g_savedScreen;
 static int g_savedWidth, g_savedHeight;
 
@@ -29,12 +30,51 @@ static A_STATE(a_fade__toColor);
 static A_STATE(a_fade__fromColor);
 static A_STATE(a_fade__screens);
 
+static void updateCachedBuffer(bool UpdateSavedScreen)
+{
+    if(A_SCREEN_SIZE > g_savedWidth * g_savedHeight * sizeof(APixel)) {
+        if(g_screenBuffer != NULL) {
+            free(g_screenBuffer);
+        }
+
+        g_screenBuffer = a_mem_malloc(A_SCREEN_SIZE);
+
+        if(UpdateSavedScreen) {
+            if(g_savedScreen != NULL) {
+                free(g_savedScreen);
+            }
+
+            g_savedScreen = a_mem_malloc(A_SCREEN_SIZE);
+        }
+    }
+
+    if(UpdateSavedScreen) {
+        if(g_savedScreen == NULL) {
+            g_savedScreen = a_mem_malloc(A_SCREEN_SIZE);
+        }
+
+        // capture current screen
+        a_screen_copy(g_savedScreen, a_screen__pixels);
+    }
+
+    g_savedWidth = a_screen__width;
+    g_savedHeight = a_screen__height;
+}
+
+static void validateCachedBuffer(void)
+{
+    if(a_screen__width != g_savedWidth || a_screen__height != g_savedHeight) {
+        a_out__fatal("Screen size changed before fading");
+    }
+}
+
 void a_fade__init(void)
 {
     g_fadePending = false;
     g_framesDuration = 0;
 
     g_savedColor = 0;
+    g_screenBuffer = NULL;
     g_savedScreen = NULL;
     g_savedWidth = 0;
     g_savedHeight = 0;
@@ -46,6 +86,10 @@ void a_fade__init(void)
 
 void a_fade__uninit(void)
 {
+    if(g_screenBuffer != NULL) {
+        free(g_screenBuffer);
+    }
+
     if(g_savedScreen != NULL) {
         free(g_savedScreen);
     }
@@ -61,6 +105,8 @@ void a_fade_toColor(int FramesDuration)
     g_framesDuration = FramesDuration;
     g_savedColor = a_pixel__getPixel();
 
+    updateCachedBuffer(false);
+
     a_state_push("a__fadeToColor");
     g_fadePending = true;
 }
@@ -75,6 +121,8 @@ void a_fade_fromColor(int FramesDuration)
     g_framesDuration = FramesDuration;
     g_savedColor = a_pixel__getPixel();
 
+    updateCachedBuffer(false);
+
     a_state_push("a__fadeFromColor");
     g_fadePending = true;
 }
@@ -88,19 +136,7 @@ void a_fade_screens(int FramesDuration)
 
     g_framesDuration = FramesDuration;
 
-    if(A_SCREEN_SIZE > g_savedWidth * g_savedHeight * sizeof(APixel)) {
-        if(g_savedScreen != NULL) {
-            free(g_savedScreen);
-        }
-
-        g_savedScreen = a_mem_malloc(A_SCREEN_SIZE);
-    }
-
-    g_savedWidth = a_screen__width;
-    g_savedHeight = a_screen__height;
-
-    // capture current screen
-    a_screen_copy(g_savedScreen, a_screen__pixels);
+    updateCachedBuffer(true);
 
     a_state_push("a__fadeScreens");
     g_fadePending = true;
@@ -110,16 +146,19 @@ static A_STATE(a_fade__toColor)
 {
     A_STATE_BODY
     {
+        validateCachedBuffer();
+
         AFix alpha = 0;
         AFix alpha_inc = a_fix_itofix(255) / g_framesDuration;
-        APixel* copy = a_screen_dup();
 
         a_pixel_setBlend(A_PIXEL_RGBA);
         a_pixel_setPixel(g_savedColor);
 
+        a_screen_copy(g_screenBuffer, a_screen__pixels);
+
         A_STATE_LOOP
         {
-            a_screen_copy(a_screen__pixels, copy);
+            a_screen_copy(a_screen__pixels, g_screenBuffer);
 
             a_pixel_setAlpha(a_fix_fixtoi(alpha));
             a_draw_fill();
@@ -131,7 +170,6 @@ static A_STATE(a_fade__toColor)
             }
         }
 
-        free(copy);
         g_fadePending = false;
     }
 }
@@ -140,16 +178,19 @@ static A_STATE(a_fade__fromColor)
 {
     A_STATE_BODY
     {
+        validateCachedBuffer();
+
         AFix alpha = a_fix_itofix(255);
         AFix alpha_inc = a_fix_itofix(255) / g_framesDuration;
-        APixel* copy = a_screen_dup();
 
         a_pixel_setBlend(A_PIXEL_RGBA);
         a_pixel_setPixel(g_savedColor);
 
+        a_screen_copy(g_screenBuffer, a_screen__pixels);
+
         A_STATE_LOOP
         {
-            a_screen_copy(a_screen__pixels, copy);
+            a_screen_copy(a_screen__pixels, g_screenBuffer);
 
             a_pixel_setAlpha(a_fix_fixtoi(alpha));
             a_draw_fill();
@@ -161,7 +202,6 @@ static A_STATE(a_fade__fromColor)
             }
         }
 
-        free(copy);
         g_fadePending = false;
     }
 }
@@ -170,24 +210,21 @@ static A_STATE(a_fade__screens)
 {
     A_STATE_BODY
     {
-        if(a_screen__width != g_savedWidth
-            || a_screen__height != g_savedHeight) {
-
-            a_out__fatal("a_fade_screens: screen size changed");
-        }
+        validateCachedBuffer();
 
         AFix alpha = a_fix_itofix(255);
         AFix alpha_inc = a_fix_itofix(255) / g_framesDuration;
-        APixel* currentScreenBuffer = a_screen_dup();
         ASprite* oldScreen = a_sprite_fromPixels(g_savedScreen,
                                                  a_screen__width,
                                                  a_screen__height);
 
         a_pixel_setBlend(A_PIXEL_RGBA);
 
+        a_screen_copy(g_screenBuffer, a_screen__pixels);
+
         A_STATE_LOOP
         {
-            a_screen_copy(a_screen__pixels, currentScreenBuffer);
+            a_screen_copy(a_screen__pixels, g_screenBuffer);
 
             a_blit__setAlpha(a_fix_fixtoi(alpha));
             a_blit(oldScreen, 0, 0);
@@ -200,7 +237,6 @@ static A_STATE(a_fade__screens)
         }
 
         a_sprite_free(oldScreen);
-        free(currentScreenBuffer);
         g_fadePending = false;
     }
 }
