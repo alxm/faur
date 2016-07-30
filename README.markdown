@@ -16,7 +16,7 @@ Installation and Use
 ### Configure and Build
 
 1. Add `~/a2x/bin` to your `$PATH` variable.
-2. Edit `a2x/a2x.config` with the correct paths of GP2X SDKs.
+2. Edit `a2x/cfg/a2x.config` with the correct paths of GP2X SDKs.
 3. Call `$ a2x_install` to build a2x. `$ a2x_install clean` deletes all compiled and generated files.
 
 ### Test with a Simple Program
