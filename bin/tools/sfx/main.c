@@ -24,8 +24,8 @@ A_MAIN
     uint16_t* const sfxData = (uint16_t*)a_file_toBuffer(inputFile);
     const int length = a_file_size(inputFile) / sizeof(uint16_t);
 
-    File* const hf = a_file_open(hFile, "w");
-    File* const cf = a_file_open(cFile, "w");
+    AFile* const hf = a_file_open(hFile, "w");
+    AFile* const cf = a_file_open(cFile, "w");
 
     FILE* const h = a_file_handle(hf);
     FILE* const c = a_file_handle(cf);

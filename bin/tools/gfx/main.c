@@ -24,8 +24,8 @@ A_MAIN
     char* const gfxName = a_str_extractName(inputFile);
     uint8_t* const gfxData = a_file_toBuffer(inputFile);
 
-    File* const hf = a_file_open(hFile, "w");
-    File* const cf = a_file_open(cFile, "w");
+    AFile* const hf = a_file_open(hFile, "w");
+    AFile* const cf = a_file_open(cFile, "w");
 
     FILE* const h = a_file_handle(hf);
     FILE* const c = a_file_handle(cf);
