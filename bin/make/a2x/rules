@@ -1,5 +1,6 @@
-LIBDIR = ../../lib
-HEADER = $(LIBDIR)/a2x.h
+INCDIR = ../../../inc
+LIBDIR = ../../../lib
+HEADER = $(INCDIR)/a2x.h
 NAME   = $(LIBDIR)/a2x_$(PLATFORM).a
 
 O_DIR = obj_$(PLATFORM)
@@ -18,7 +19,10 @@ CFILES = $(notdir $(wildcard $(C_DIR)/$(PREFIX)*.c))
 OFILES = $(addprefix $(O_DIR)/, $(CFILES:.c=.o))
 HFILES = $(wildcard $(C_DIR)/$(PREFIX)*.p.h)
 
-all : $(LIBDIR) $(HEADER) $(NAME)
+all : $(INCDIR) $(LIBDIR) $(HEADER) $(NAME)
+
+$(INCDIR) :
+	@ mkdir $@
 
 $(LIBDIR) :
 	@ mkdir $@

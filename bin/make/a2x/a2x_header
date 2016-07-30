@@ -20,7 +20,7 @@ def main():
         headers.sort(key = lambda h: h)
 
         for h in headers:
-            f.write('#include "../../src/' + h + '"\n')
+            f.write('#include "../src/' + h + '"\n')
 
         f.write("\n#endif // A2X_H\n")
 

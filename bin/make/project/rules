@@ -92,7 +92,7 @@ COMPILE_TIME := $(shell date "+%F")
 CFLAGS += -std=c99 \
           -Wall \
           -Werror \
-          -I$(A2X_PATH)/lib \
+          -I$(A2X_PATH)/../inc \
           -DA_COMPILE_TIME=\"'$(COMPILE_TIME)'\"
 
 #
@@ -103,7 +103,7 @@ all : $(TARGET_BINARY)
 
 $(TARGET_BINARY) : $(DIRS) $(C_GFX_FILES) $(C_SFX_FILES) $(C_ALL_HEADERS) $(OFILES)
 	@ echo "Building $(APP)"
-	@ $(CC) -o $(TARGET_BINARY) $(OFILES) $(A2X_PATH)/lib/a2x_$(PLATFORM).a $(LIBS)
+	@ $(CC) -o $(TARGET_BINARY) $(OFILES) $(A2X_PATH)/../lib/a2x_$(PLATFORM).a $(LIBS)
 
 #
 # make all the needed dirs
