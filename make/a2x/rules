@@ -1,10 +1,10 @@
-INCDIR = ../../../inc
-LIBDIR = ../../../lib
+INCDIR = ../../inc
+LIBDIR = ../../lib
 HEADER = $(INCDIR)/a2x.h
 NAME   = $(LIBDIR)/a2x_$(PLATFORM).a
 
 O_DIR = obj_$(PLATFORM)
-C_DIR = ../../../src
+C_DIR = ../../src
 
 COMPILE_TIME := $(shell date "+%F")
 

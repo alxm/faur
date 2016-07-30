@@ -6,9 +6,9 @@ def main():
     def call(cmd):
         subprocess.call(cmd, shell = True)
 
-    a2x_dir = sys.path[0]
+    a2x_dir = sys.path[0] + "/.."
 
-    config_read = a2x_dir + "/../cfg/a2x.config"
+    config_read = a2x_dir + "/cfg/a2x.config"
     config_write = a2x_dir + "/make/sdk.config"
 
     if len(sys.argv) == 2 and sys.argv[1] == "clean":
@@ -61,8 +61,8 @@ def main():
 
     call("cd " + a2x_dir + "/make/a2x; make " + command)
     call("cd " + a2x_dir + "/make/a2x; make tags" + command)
-    call("cd " + a2x_dir + "/tools/gfx; make " + command)
-    call("cd " + a2x_dir + "/tools/sfx; make " + command)
+    call("cd " + a2x_dir + "/bin/tools/gfx; make " + command)
+    call("cd " + a2x_dir + "/bin/tools/sfx; make " + command)
 
     if command == "clean":
         call("rm -f " + config_write)

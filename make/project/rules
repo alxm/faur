@@ -92,7 +92,7 @@ COMPILE_TIME := $(shell date "+%F")
 CFLAGS += -std=c99 \
           -Wall \
           -Werror \
-          -I$(A2X_PATH)/../inc \
+          -I$(A2X_PATH)/inc \
           -DA_COMPILE_TIME=\"'$(COMPILE_TIME)'\"
 
 #
@@ -103,7 +103,7 @@ all : $(TARGET_BINARY)
 
 $(TARGET_BINARY) : $(DIRS) $(C_GFX_FILES) $(C_SFX_FILES) $(C_ALL_HEADERS) $(OFILES)
 	@ echo "Building $(APP)"
-	@ $(CC) -o $(TARGET_BINARY) $(OFILES) $(A2X_PATH)/../lib/a2x_$(PLATFORM).a $(LIBS)
+	@ $(CC) -o $(TARGET_BINARY) $(OFILES) $(A2X_PATH)/lib/a2x_$(PLATFORM).a $(LIBS)
 
 #
 # make all the needed dirs
@@ -118,11 +118,11 @@ $(DIRS) :
 
 $(C_GFX_DIR)/gfx_%.c : $(GFX_DIR)/%.png
 	@ echo "Making graphic $(notdir $<)"
-	@ $(A2X_PATH)/a2x_gfx $< $@ $(@:.c=.h)
+	@ $(A2X_PATH)/bin/a2x_gfx $< $@ $(@:.c=.h)
 
 $(C_SFX_DIR)/sfx_%.c : $(SFX_DIR)/%.wav
 	@ echo "Making sound $(notdir $<)"
-	@ $(A2X_PATH)/a2x_sfx $< $@ $(@:.c=.h)
+	@ $(A2X_PATH)/bin/a2x_sfx $< $@ $(@:.c=.h)
 
 $(O_DIR)/%.o : $(SRC_DIR)/%.c
 	@ echo "Compiling $(notdir $<)"
@@ -138,11 +138,11 @@ $(O_SFX_DIR)/%.o : $(C_SFX_DIR)/%.c
 
 $(C_GFX_HEADER) : $(C_GFX_FILES)
 	@ echo "Making gfx header $(notdir $@)"
-	@ $(A2X_PATH)/a2x_headers $(C_GFX_DIR)
+	@ $(A2X_PATH)/bin/a2x_headers $(C_GFX_DIR)
 
 $(C_SFX_HEADER) : $(C_SFX_FILES)
 	@ echo "Making sfx header $(notdir $@)"
-	@ $(A2X_PATH)/a2x_headers $(C_SFX_DIR)
+	@ $(A2X_PATH)/bin/a2x_headers $(C_SFX_DIR)
 
 #
 # clean-up rule that deletes all .o files
