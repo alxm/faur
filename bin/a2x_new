@@ -39,7 +39,7 @@ SRC_DIR = ../src
 GFX_DIR =
 SFX_DIR =
 OBJ_DIR = ../obj
-A2X_PATH = {1}
+A2X_PATH = {1}/..
 include $(A2X_PATH)/make/project/Makefile.linux
 """.format(project_name, a2x_dir))
 
@@ -48,10 +48,10 @@ include $(A2X_PATH)/make/project/Makefile.linux
 
 A_SETUP
 {{
-    a2x_set("app.title", "{0}");
-    a2x_set("app.version", "1.0");
-    a2x_set("app.author", "You");
-    a2x_set("app.quiet", "no");
+    a_settings_set("app.title", "{0}");
+    a_settings_set("app.version", "1.0");
+    a_settings_set("app.author", "You");
+    a_settings_set("app.quiet", "no");
 }}
 
 A_MAIN
