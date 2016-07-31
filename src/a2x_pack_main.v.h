@@ -21,8 +21,6 @@
 
 #include "a2x_pack_main.p.h"
 
-#define A__VERSION "rolling"
-
 #include "a2x_pack_blit.v.h"
 #include "a2x_pack_conf.v.h"
 #include "a2x_pack_console.v.h"

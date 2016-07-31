@@ -32,7 +32,9 @@ int main(int Argc, char** Argv)
     a_settings__freeze();
     a_console__init();
 
-    a_out__message("a2x %s, compiled on %s", A__VERSION, A_COMPILE_TIME);
+    a_out__message("a2x %s, compiled %s",
+        A__MAKE_CURRENT_GIT_BRANCH,
+        A__MAKE_COMPILE_TIME);
 
     a_out__message("Opening %s %s by %s, compiled %s",
         a_settings_getString("app.title"),
