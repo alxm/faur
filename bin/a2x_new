@@ -50,7 +50,7 @@ A_SETUP
 {{
     a_settings_set("app.title", "{0}");
     a_settings_set("app.version", "1.0");
-    a_settings_set("app.author", "You");
+    a_settings_set("app.author", "{1}");
     a_settings_set("app.quiet", "no");
 }}
 
@@ -58,7 +58,7 @@ A_MAIN
 {{
     printf("Code me!\\n");
 }}
-""".format(project_name))
+""".format(project_name, os.getlogin()))
 
     print(project_name + " is ready!")
 
