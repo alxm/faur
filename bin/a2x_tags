@@ -21,8 +21,7 @@ def main():
                 .format(os.path.join(path, "a2x.c.tags"), header_file),
                 shell = True)
 
-    geany_tags("~/.geany/tags")
-    geany_tags("~/.config/geany/tags")
+    geany_tags(os.path.join("~", ".config", "geany", "tags"))
 
 if __name__ == "__main__":
     main()
