@@ -4,7 +4,7 @@ import os, subprocess, sys
 
 def main():
     if len(sys.argv) != 2:
-        print("Usage: " + os.path.basename(sys.argv[0]) + "HeaderFile")
+        print("Usage: {} HeaderFile".format(os.path.basename(sys.argv[0])))
         return
 
     header_file = os.path.abspath(sys.argv[1])
@@ -12,12 +12,13 @@ def main():
     def geany_tags(path):
         path = os.path.expanduser(path)
 
-        print("Looking for " + path)
+        print("Looking for {}".format(path))
 
         if os.path.exists(path):
-            print("Writing Geany tags file: " + path)
+            print("Writing Geany tags file: {}".format(path))
 
-            subprocess.call("geany -g " + path + "/a2x.c.tags " + header_file,
+            subprocess.call("geany -g {} {}" \
+                .format(os.path.join(path, "a2x.c.tags"), header_file),
                 shell = True)
 
     geany_tags("~/.geany/tags")

@@ -4,22 +4,23 @@ import os, subprocess, sys, time
 
 def main():
     if len(sys.argv) != 2:
-        print("Usage: " + os.path.basename(sys.argv[0]) + " pack_name")
+        print("Usage: {} pack_name".format(os.path.basename(sys.argv[0])))
         return
 
-    a2x_dir = os.path.abspath(sys.path[0] + "/../src") + "/"
+    bin_dir = os.path.dirname(__file__)
+    src_dir = os.path.abspath(os.path.join(bin_dir, "..", "src"))
 
-    if not os.path.exists(a2x_dir):
-        print("Error: " + a2x_dir + " does not exist")
+    if not os.path.exists(src_dir):
+        print("Error: {} does not exist".format(src_dir))
         return
 
-    print("Found a2x src: " + a2x_dir)
+    print("Found a2x src: {}".format(src_dir))
 
     pack_name = sys.argv[1].strip().lower()
 
-    pack_c = a2x_dir + "a2x_pack_" + pack_name + ".c"
-    pack_ph = a2x_dir + "a2x_pack_" + pack_name + ".p.h"
-    pack_vh = a2x_dir + "a2x_pack_" + pack_name + ".v.h"
+    pack_c = os.path.join(src_dir, "a2x_pack_{}.c".format(pack_name))
+    pack_c = os.path.join(src_dir, "a2x_pack_{}.p.h".format(pack_name))
+    pack_c = os.path.join(src_dir, "a2x_pack_{}.v.h".format(pack_name))
 
     for f in [pack_c, pack_ph, pack_vh]:
         if os.path.exists(f):
@@ -47,10 +48,10 @@ def main():
 """.format(time.strftime('%Y'))
 
     def newfile(name, contents):
-        print("Writing file: " + name)
+        print("Writing file: {}".format(name))
 
         with open(name, "w") as f:
-            f.write(license_header + contents)
+            f.write("{}{}".format(license_header, contents))
 
     newfile(pack_c,
 """
@@ -88,7 +89,7 @@ extern void a_{0}__uninit(void);
 //
 """.format(pack_name))
 
-    print(pack_name + " is ready!")
+    print("{} is ready!".format(pack_name))
 
 if __name__ == "__main__":
     main()
