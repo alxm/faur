@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import os, subprocess, sys
 
@@ -12,7 +12,7 @@ def main():
     def geany_tags(path):
         path = os.path.expanduser(path)
 
-        print "Looking for " + path
+        print("Looking for " + path)
 
         if os.path.exists(path):
             print("Writing Geany tags file: " + path)
