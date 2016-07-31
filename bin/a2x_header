@@ -14,16 +14,13 @@ def main():
     print("Writing header {}".format(os.path.basename(header_file)))
 
     with open(header_file, "w") as f:
-        f.write("#ifndef A2X_H\n")
-        f.write("#define A2X_H\n\n")
+        f.write("#pragma once\n\n")
 
         headers = [h for h in os.listdir(source_dir) if h[-4 :] == ".p.h"]
         headers.sort(key = lambda h: h)
 
         for h in headers:
             f.write('#include "{}"\n'.format(os.path.join("..", "src", h)))
-
-        f.write("\n#endif // A2X_H\n")
 
 if __name__ == "__main__":
     main()
