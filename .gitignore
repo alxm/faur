@@ -5,4 +5,5 @@
 /make/sdk.config
 /bin/a2x_gfx
 /bin/a2x_sfx
+bin/utils/__pycache__
 /todo
