@@ -21,8 +21,8 @@ def main():
         if not os.path.exists(config_write):
             Output.error("{} does not exist"
                 .format(os.path.basename(config_write)))
-            Output.note("Run " + sys.argv[0])
-            return
+            Output.note("Run {}".format(sys.argv[0]))
+            sys.exit(1)
     else:
         make_command = ""
         Output.info("Generating {}".format(os.path.basename(config_write)))
@@ -66,9 +66,6 @@ def main():
         .format(os.path.join(a2x_dir, "make", "a2x"),
                 make_command))
 
-    Shell.run("cd {} && make tags"
-        .format(os.path.join(a2x_dir, "make", "a2x")))
-
     Shell.run("cd {} && make {}"
         .format(os.path.join(a2x_dir, "bin", "tools", "gfx"),
                 make_command))
@@ -79,6 +76,9 @@ def main():
 
     if make_command == "clean":
         Shell.run("rm -f {}".format(config_write))
+    else:
+        Shell.run("cd {} && make tags"
+            .format(os.path.join(a2x_dir, "make", "a2x")))
 
 if __name__ == "__main__":
     main()
