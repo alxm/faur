@@ -1,4 +1,5 @@
 import subprocess
+import sys
 
 from utils.output import Output
 
@@ -8,6 +9,8 @@ class Shell:
         Output.shell(cmd)
         status, output = subprocess.getstatusoutput(cmd)
 
+        for line in output.splitlines():
+            print('    {}'.format(line))
+
         if status != 0:
-            for line in output.splitlines():
-                print('    {}'.format(line))
+            sys.exit(status)
