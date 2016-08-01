@@ -1,4 +1,5 @@
 import subprocess
+
 from utils.output import Output
 
 class Shell:
