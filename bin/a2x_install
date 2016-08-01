@@ -1,35 +1,28 @@
 #!/usr/bin/env python3
 
 import os, re, subprocess, sys
+from utils.output import Output
+from utils.shell import Shell
 
 def main():
-    def call(cmd):
-        subprocess.call(cmd, shell = True)
-
     bin_dir = os.path.dirname(__file__)
     a2x_dir = os.path.abspath(os.path.join(bin_dir, ".."))
 
     config_read = os.path.join(a2x_dir, "cfg", "a2x.config")
     config_write = os.path.join(a2x_dir, "make", "sdk.config")
 
-    make_command = ""
+    make_command = sys.argv[1] if len(sys.argv) == 2 else ""
+    Output.title("install", make_command)
 
-    if len(sys.argv) == 2 and sys.argv[1] == "clean":
-        make_command = "clean"
-
-        print("Cleaning a2x (removing all compiled and generated files)")
-        print("--------------------------------------------------------")
-
+    if make_command == "clean":
         if not os.path.exists(config_write):
-            print(os.path.basename(config_write) + " does not exist")
-            print("Run " + sys.argv[0])
+            Output.error("{} does not exist"
+                .format(os.path.basename(config_write)))
+            Output.note("Run " + sys.argv[0])
             return
     else:
-        print("Installing a2x (compiling and generating files)")
-        print("Dependencies: SDL, SDL_mixer, libpng")
-        print("Add {} to $PATH".format(a2x_dir))
-        print("-----------------------------------------------")
-        print("Generating {}".format(os.path.basename(config_write)))
+        make_command = ""
+        Output.info("Generating {}".format(os.path.basename(config_write)))
 
         db = {
             "sdk.open2x.root": ["OPEN2X_ROOT", None],
@@ -60,23 +53,29 @@ def main():
                 if db[key][1]:
                     f.write("{} = {}\n".format(db[key][0], db[key][1]))
 
-    call("cd {}; make {}" \
+    if make_command == "clean":
+        Output.info("Removing all compiled and generated a2x files")
+    else:
+        Output.note("Add {} to $PATH".format(a2x_dir))
+        Output.info("Compiling a2x and tools")
+
+    Shell.run("cd {} && make {}"
         .format(os.path.join(a2x_dir, "make", "a2x"),
                 make_command))
 
-    call("cd {}; make tags" \
+    Shell.run("cd {} && make tags"
         .format(os.path.join(a2x_dir, "make", "a2x")))
 
-    call("cd {}; make {}" \
+    Shell.run("cd {} && make {}"
         .format(os.path.join(a2x_dir, "bin", "tools", "gfx"),
                 make_command))
 
-    call("cd {}; make {}" \
+    Shell.run("cd {} && make {}"
         .format(os.path.join(a2x_dir, "bin", "tools", "sfx"),
                 make_command))
 
     if make_command == "clean":
-        call("rm -f {}".format(config_write))
+        Shell.run("rm -f {}".format(config_write))
 
 if __name__ == "__main__":
     main()

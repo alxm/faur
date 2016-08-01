@@ -22,15 +22,20 @@ class Output:
         print('\033[{}m{}\033[0m'.format(color, text), end = '')
 
     @staticmethod
-    def title(text):
+    def title(text, arguments):
         whole_text = ' a2x_{} '.format(text)
+
+        if len(arguments) > 0:
+            whole_text += '{} '.format(arguments)
+
         border = '-' * len(whole_text)
 
         print(border)
         Output.colored(' a', Color.LightBlue)
         Output.colored('2', Color.LightGreen)
         Output.colored('x', Color.Yellow)
-        Output.colored('_{}\n'.format(text), Color.White)
+        Output.colored('_{} '.format(text), Color.White)
+        print(arguments)
         print(border)
 
     @staticmethod
