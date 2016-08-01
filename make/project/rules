@@ -1,28 +1,23 @@
 #
 # this is what gets built
 #
-
 TARGET_BINARY = $(TARGET_DIR)/$(APP)
 
 #
 # Subdir for generated code and object files
 #
-
 A2X_GEN = a2x_gen
 
 #
 # PNG and WAV files we can convert to C code
 #
-
 GFX_FILES = $(notdir $(wildcard $(GFX_DIR)/*.png))
 SFX_FILES = $(notdir $(wildcard $(SFX_DIR)/*.wav))
 
 #
 # .c gfx & sfx files
 #
-
 C_GEN_DIR = $(SRC_DIR)/$(A2X_GEN)
-
 C_GFX_DIR = $(C_GEN_DIR)/gfx
 C_SFX_DIR = $(C_GEN_DIR)/sfx
 
@@ -42,20 +37,17 @@ endif
 #
 # PNG and WAV files in .c form
 #
-
 C_GFX_FILES = $(addprefix $(C_GFX_DIR)/gfx_, $(GFX_FILES:.png=.c))
 C_SFX_FILES = $(addprefix $(C_SFX_DIR)/sfx_, $(SFX_FILES:.wav=.c))
 
 #
 # .c source files
 #
-
-CFILES =  $(notdir $(wildcard $(SRC_DIR)/*.c))
+C_FILES = $(notdir $(wildcard $(SRC_DIR)/*.c))
 
 #
 # object file dirs
 #
-
 O_DIR = $(OBJ_DIR)/obj_$(PLATFORM)
 
 O_GFX_DIR = $(O_DIR)/$(A2X_GEN)/gfx
@@ -64,29 +56,26 @@ O_SFX_DIR = $(O_DIR)/$(A2X_GEN)/sfx
 #
 # all the dirs
 #
-
-DIRS = $(OBJ_DIR) $(O_DIR) $(C_GEN_DIR)
+ALL_DIRS = $(O_DIR) $(C_GEN_DIR)
 
 ifdef GFX_DIR
-	DIRS +=	$(C_GFX_DIR) $(O_GFX_DIR)
+	ALL_DIRS += $(C_GFX_DIR) $(O_GFX_DIR)
 endif
 
 ifdef SFX_DIR
-	DIRS +=	$(C_SFX_DIR) $(O_SFX_DIR)
+	ALL_DIRS += $(C_SFX_DIR) $(O_SFX_DIR)
 endif
 
 #
 # all object files
 #
-
-OFILES = $(addprefix $(O_DIR)/, $(CFILES:.c=.o)) \
-         $(addprefix $(O_GFX_DIR)/, $(notdir $(C_GFX_FILES:.c=.o))) \
-         $(addprefix $(O_SFX_DIR)/, $(notdir $(C_SFX_FILES:.c=.o)))
+O_FILES = $(addprefix $(O_DIR)/, $(C_FILES:.c=.o)) \
+          $(addprefix $(O_GFX_DIR)/, $(notdir $(C_GFX_FILES:.c=.o))) \
+          $(addprefix $(O_SFX_DIR)/, $(notdir $(C_SFX_FILES:.c=.o)))
 
 #
 # compile flags
 #
-
 COMPILE_TIME := $(shell date "+%F")
 
 CFLAGS += -std=c99 \
@@ -98,24 +87,21 @@ CFLAGS += -std=c99 \
 #
 # the main target
 #
-
 all : $(TARGET_BINARY)
 
-$(TARGET_BINARY) : $(DIRS) $(C_GFX_FILES) $(C_SFX_FILES) $(C_ALL_HEADERS) $(OFILES)
+$(TARGET_BINARY) : $(ALL_DIRS) $(C_GFX_FILES) $(C_SFX_FILES) $(C_ALL_HEADERS) $(O_FILES)
 	@ echo "Building $(APP)"
-	@ $(CC) -o $(TARGET_BINARY) $(OFILES) $(A2X_PATH)/lib/a2x_$(PLATFORM).a $(LIBS)
+	@ $(CC) -o $(TARGET_BINARY) $(O_FILES) $(A2X_PATH)/lib/a2x_$(PLATFORM).a $(LIBS)
 
 #
 # make all the needed dirs
 #
-
-$(DIRS) :
+$(ALL_DIRS) :
 	@ mkdir --parents $@
 
 #
 # pattern rules for building the universe
 #
-
 $(C_GFX_DIR)/gfx_%.c : $(GFX_DIR)/%.png
 	@ echo "Making graphic $(notdir $<)"
 	@ $(A2X_PATH)/bin/a2x_gfx $< $@ $(@:.c=.h)
@@ -145,25 +131,15 @@ $(C_SFX_HEADER) : $(C_SFX_FILES)
 	@ $(A2X_PATH)/bin/a2x_headers $(C_SFX_DIR)
 
 #
-# clean-up rule that deletes all .o files
+# delete all .o files and all generated .c files
 #
-
 clean :
-	@ echo "Cleaning $(APP)"
-	@ rm -rf $(TARGET_BINARY) $(O_DIR)
-
-#
-# clean-up rule that deletes all .o files and all generated .c files
-#
-
-realclean :
-	@ echo "Cleaning $(APP) and generated files"
-	@ rm -rf $(TARGET_BINARY) $(DIRS)
+	@ echo "Cleaning $(APP) and all generated files $(ALL_DIRS)"
+	@ rm -rf $(TARGET_BINARY) $(ALL_DIRS)
 
 #
 # clean-up rule that deletes the built binary
 #
-
 cb : cleanbin
 
 cleanbin :
@@ -173,7 +149,6 @@ cleanbin :
 #
 # run the program
 #
-
 run : all
 	@ echo "Running $(notdir $(APP))"
 	@ cd $(TARGET_DIR) ; ./$(APP)
