@@ -19,10 +19,9 @@ def main():
 
     if make_command == 'clean':
         if not os.path.exists(config_write):
+            Output.note('Run {} first'.format(sys.argv[0]))
             Output.error('{} does not exist'
                 .format(os.path.basename(config_write)))
-            Output.note('Run {}'.format(sys.argv[0]))
-            sys.exit(1)
 
         Output.info('Removing all compiled and generated a2x files')
     else:

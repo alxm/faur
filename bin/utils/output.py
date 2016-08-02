@@ -1,3 +1,5 @@
+import sys
+
 class Color:
     Black = '0;30'
     DarkGray = '1;30'
@@ -52,6 +54,7 @@ class Output:
     def error(text):
         Output.colored('[ Error ] ', Color.Red)
         print(text)
+        sys.exit(1)
 
     @staticmethod
     def shell(text):

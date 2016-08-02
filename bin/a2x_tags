@@ -9,7 +9,6 @@ from utils.shell import Shell
 def main():
     if len(sys.argv) != 2:
         Output.error('Usage: {} HeaderFile'.format(os.path.basename(sys.argv[0])))
-        sys.exit(1)
 
     header_file = os.path.abspath(sys.argv[1])
 
