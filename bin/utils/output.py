@@ -22,7 +22,7 @@ class Output:
         print('\033[{}m{}\033[0m'.format(color, text), end = '')
 
     @staticmethod
-    def title(text, arguments):
+    def title(text, arguments = ''):
         whole_text = ' a2x_{} '.format(text)
 
         if len(arguments) > 0:

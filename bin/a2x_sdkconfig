@@ -1,0 +1,51 @@
+#!/usr/bin/env python3
+
+import os
+import re
+import sys
+
+from utils.output import Output
+
+def main():
+    bin_dir = os.path.dirname(__file__)
+    a2x_dir = os.path.abspath(os.path.join(bin_dir, '..'))
+
+    config_read = os.path.join(a2x_dir, 'cfg', 'a2x.config')
+    config_write = os.path.join(a2x_dir, 'make', 'sdk.config')
+
+    Output.title('sdkconfig')
+    Output.info('Generating {}'.format(os.path.basename(config_write)))
+
+    db = {
+        'sdk.open2x.root': ['OPEN2X_ROOT', None],
+        'sdk.open2x.toolchain': ['OPEN2X_GLIBC', None],
+        'sdk.caanoo.root': ['CAANOO_ROOT', None],
+        'sdk.caanoo.toolchain': ['CAANOO_GLIBC', None],
+        'sdk.pandora.root': ['PANDORA_ROOT', None],
+        'sdk.pandora.toolchain': ['PANDORA_TOOLCHAIN', None],
+    }
+
+    with open(config_read, 'rU') as f:
+        re_assg = re.compile('(.*?)\s*=\s*(.*)$')
+
+        for line in f:
+            line = line.strip()
+            assg = re_assg.match(line)
+
+            if not assg or line[0] == '#':
+                continue
+
+            key = assg.group(1)
+
+            if key in db.keys():
+                db[key][1] = assg.group(2)
+
+    with open(config_write, 'w') as f:
+        for key in db:
+            if db[key][1]:
+                f.write('{} = {}\n'.format(db[key][0], db[key][1]))
+
+    Output.info('Done')
+
+if __name__ == '__main__':
+    main()
