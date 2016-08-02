@@ -5,34 +5,34 @@ import sys
 
 def main():
     if len(sys.argv) != 2:
-        print("Usage: {} ProjectPath".format(os.path.basename(sys.argv[0])))
+        print('Usage: {} ProjectPath'.format(os.path.basename(sys.argv[0])))
         return
 
     a2x_dir = os.path.abspath(sys.path[0])
 
-    print("Found a2x: {}".format(a2x_dir))
+    print('Found a2x: {}'.format(a2x_dir))
 
     project_path = sys.argv[1]
     project_name = os.path.basename(project_path)
 
     if os.path.exists(project_path):
-        print("Error: {} already exists".format(project_name))
+        print('Error: {} already exists'.format(project_name))
         return
 
     def newdir(name):
-        print("Making dir: {}".format(name))
+        print('Making dir: {}'.format(name))
         os.mkdir(name)
 
     def newfile(name, contents):
-        print("Writing file: {}".format(name))
+        print('Writing file: {}'.format(name))
 
-        with open(name, "w") as f:
+        with open(name, 'w') as f:
             f.write(contents)
 
     newdir(project_path)
-    newdir(os.path.join(project_path, "make"))
-    newdir(os.path.join(project_path, "src"))
-    newfile(os.path.join(project_path, "make", "Makefile"),
+    newdir(os.path.join(project_path, 'make'))
+    newdir(os.path.join(project_path, 'src'))
+    newfile(os.path.join(project_path, 'make', 'Makefile'),
 """APP = {0}
 TARGET_DIR = ..
 SRC_DIR = ../src
@@ -43,7 +43,7 @@ A2X_PATH = {1}/..
 include $(A2X_PATH)/make/project/Makefile.linux
 """.format(project_name, a2x_dir))
 
-    newfile(project_path + "/src/main.c",
+    newfile(os.path.join(project_path, 'src', 'main.c'),
 """#include <a2x.h>
 
 A_SETUP
@@ -60,7 +60,7 @@ A_MAIN
 }}
 """.format(project_name, os.getlogin()))
 
-    print("{} is ready!".format(project_name))
+    print('{} is ready!'.format(project_name))
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

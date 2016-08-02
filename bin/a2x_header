@@ -5,23 +5,23 @@ import sys
 
 def main():
     if len(sys.argv) != 3:
-        print("Usage: {} SourceDir HeaderFile"
+        print('Usage: {} SourceDir HeaderFile'
             .format(os.path.basename(sys.argv[0])))
         return
 
     source_dir = os.path.abspath(sys.argv[1])
     header_file = os.path.abspath(sys.argv[2])
 
-    print("Writing header {}".format(os.path.basename(header_file)))
+    print('Writing header {}'.format(os.path.basename(header_file)))
 
-    with open(header_file, "w") as f:
-        f.write("#pragma once\n\n")
+    with open(header_file, 'w') as f:
+        f.write('#pragma once\n\n')
 
-        headers = [h for h in os.listdir(source_dir) if h[-4 :] == ".p.h"]
+        headers = [h for h in os.listdir(source_dir) if h[-4 :] == '.p.h']
         headers.sort(key = lambda h: h)
 
         for h in headers:
-            f.write('#include "{}"\n'.format(os.path.join("..", "src", h)))
+            f.write('#include "{}"\n'.format(os.path.join('..', 'src', h)))
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

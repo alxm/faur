@@ -8,7 +8,7 @@ from utils.shell import Shell
 
 def main():
     if len(sys.argv) != 2:
-        Output.error("Usage: {} HeaderFile".format(os.path.basename(sys.argv[0])))
+        Output.error('Usage: {} HeaderFile'.format(os.path.basename(sys.argv[0])))
         sys.exit(1)
 
     header_file = os.path.abspath(sys.argv[1])
@@ -16,15 +16,15 @@ def main():
     def geany_tags(path):
         path = os.path.expanduser(path)
 
-        Output.info("Looking for {}".format(path))
+        Output.info('Looking for {}'.format(path))
 
         if os.path.exists(path):
-            Output.info("Writing Geany tags file: {}".format(path))
+            Output.info('Writing Geany tags file: {}'.format(path))
 
-            Shell.run("geany -g {} {}"
-                .format(os.path.join(path, "a2x.c.tags"), header_file))
+            Shell.run('geany -g {} {}'
+                .format(os.path.join(path, 'a2x.c.tags'), header_file))
 
-    geany_tags(os.path.join("~", ".config", "geany", "tags"))
+    geany_tags(os.path.join('~', '.config', 'geany', 'tags'))
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

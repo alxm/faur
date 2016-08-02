@@ -6,27 +6,27 @@ import time
 
 def main():
     if len(sys.argv) != 2:
-        print("Usage: {} pack_name".format(os.path.basename(sys.argv[0])))
+        print('Usage: {} pack_name'.format(os.path.basename(sys.argv[0])))
         return
 
     bin_dir = os.path.dirname(__file__)
-    src_dir = os.path.abspath(os.path.join(bin_dir, "..", "src"))
+    src_dir = os.path.abspath(os.path.join(bin_dir, '..', 'src'))
 
     if not os.path.exists(src_dir):
-        print("Error: {} does not exist".format(src_dir))
+        print('Error: {} does not exist'.format(src_dir))
         return
 
-    print("Found a2x src: {}".format(src_dir))
+    print('Found a2x src: {}'.format(src_dir))
 
     pack_name = sys.argv[1].strip().lower()
 
-    pack_c = os.path.join(src_dir, "a2x_pack_{}.c".format(pack_name))
-    pack_c = os.path.join(src_dir, "a2x_pack_{}.p.h".format(pack_name))
-    pack_c = os.path.join(src_dir, "a2x_pack_{}.v.h".format(pack_name))
+    pack_c = os.path.join(src_dir, 'a2x_pack_{}.c'.format(pack_name))
+    pack_c = os.path.join(src_dir, 'a2x_pack_{}.p.h'.format(pack_name))
+    pack_c = os.path.join(src_dir, 'a2x_pack_{}.v.h'.format(pack_name))
 
     for f in [pack_c, pack_ph, pack_vh]:
         if os.path.exists(f):
-            print("Error: " + f + " already exists")
+            print('Error: {} already exists'.format(f))
             return
 
     license_header = """/*
@@ -50,10 +50,10 @@ def main():
 """.format(time.strftime('%Y'))
 
     def newfile(name, contents):
-        print("Writing file: {}".format(name))
+        print('Writing file: {}'.format(name))
 
-        with open(name, "w") as f:
-            f.write("{}{}".format(license_header, contents))
+        with open(name, 'w') as f:
+            f.write('{}{}'.format(license_header, contents))
 
     newfile(pack_c,
 """
@@ -91,7 +91,7 @@ extern void a_{0}__uninit(void);
 //
 """.format(pack_name))
 
-    print("{} is ready!".format(pack_name))
+    print('{} is ready!'.format(pack_name))
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

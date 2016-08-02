@@ -5,26 +5,26 @@ import sys
 
 def main():
     if len(sys.argv) != 2:
-        print("Usage: {} dir".format(os.path.basename(sys.argv[0])))
+        print('Usage: {} dir'.format(os.path.basename(sys.argv[0])))
         return
 
     dir = sys.argv[1]
     dir_name = os.path.basename(dir)
 
     if not os.path.isdir(dir):
-        print("{} is not a dir".format(dir))
+        print('{} is not a dir'.format(dir))
         return
 
-    contents = "#pragma once\n\n"
+    contents = '#pragma once\n\n'
 
-    headers = [h for h in os.listdir(dir) if h[-2 :] == ".h"]
+    headers = [h for h in os.listdir(dir) if h[-2 :] == '.h']
     headers.sort(key = lambda h: h)
 
     for h in headers:
         contents += '#include "{}"\n'.format(h)
 
-    with open(os.path.join(dir, "all.h"), "w") as f:
+    with open(os.path.join(dir, 'all.h'), 'w') as f:
         f.write(contents)
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
