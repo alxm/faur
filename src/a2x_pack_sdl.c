@@ -592,7 +592,7 @@ void* a_sdl__sfx_loadFromFile(const char* Path)
     return sfx;
 }
 
-void* a_sdl__sfx_loadFromData(const uint16_t* Data, int Size)
+void* a_sdl__sfx_loadFromData(const uint8_t* Data, int Size)
 {
     SDL_RWops* rw;
     Mix_Chunk* sfx = NULL;

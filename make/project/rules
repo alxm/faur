@@ -103,12 +103,10 @@ $(ALL_DIRS) :
 # pattern rules for building the universe
 #
 $(C_GFX_DIR)/gfx_%.c : $(GFX_DIR)/%.png
-	@ echo "Making graphic $(notdir $<)"
-	@ $(A2X_PATH)/bin/a2x_gfx $< $@ $(@:.c=.h)
+	@ $(A2X_PATH)/bin/a2x_bin $< $@ $(@:.c=.h) gfx
 
 $(C_SFX_DIR)/sfx_%.c : $(SFX_DIR)/%.wav
-	@ echo "Making sound $(notdir $<)"
-	@ $(A2X_PATH)/bin/a2x_sfx $< $@ $(@:.c=.h)
+	@ $(A2X_PATH)/bin/a2x_bin $< $@ $(@:.c=.h) sfx
 
 $(O_DIR)/%.o : $(SRC_DIR)/%.c
 	@ echo "Compiling $(notdir $<)"
@@ -123,11 +121,9 @@ $(O_SFX_DIR)/%.o : $(C_SFX_DIR)/%.c
 	@ $(CC) -c -o $@ $< $(CFLAGS)
 
 $(C_GFX_HEADER) : $(C_GFX_FILES)
-	@ echo "Making gfx header $(notdir $@)"
 	@ $(A2X_PATH)/bin/a2x_headers $(C_GFX_DIR)
 
 $(C_SFX_HEADER) : $(C_SFX_FILES)
-	@ echo "Making sfx header $(notdir $@)"
 	@ $(A2X_PATH)/bin/a2x_headers $(C_SFX_DIR)
 
 #
