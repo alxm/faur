@@ -3,16 +3,19 @@
 import os
 import sys
 
+from utils.output import Output
+
 def main():
+    Output.title('header', sys.argv)
+
     if len(sys.argv) != 3:
-        print('Usage: {} SourceDir HeaderFile'
+        Output.error('Usage: {} SourceDir HeaderFile'
             .format(os.path.basename(sys.argv[0])))
-        return
 
     source_dir = os.path.abspath(sys.argv[1])
     header_file = os.path.abspath(sys.argv[2])
 
-    print('Writing header {}'.format(os.path.basename(header_file)))
+    Output.info('Writing header {}'.format(os.path.basename(header_file)))
 
     with open(header_file, 'w') as f:
         f.write('#pragma once\n\n')
@@ -22,6 +25,8 @@ def main():
 
         for h in headers:
             f.write('#include "{}"\n'.format(os.path.join('..', 'src', h)))
+
+    Output.info('Done')
 
 if __name__ == '__main__':
     main()

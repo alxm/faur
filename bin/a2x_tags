@@ -6,24 +6,24 @@ import sys
 from utils.output import Output
 from utils.shell import Shell
 
+def geany_tags(header_file, path):
+    path = os.path.expanduser(path)
+    Output.info('Looking for Geany tags: {}'.format(path))
+
+    if os.path.exists(path):
+        Shell.run('geany -g {} {}'
+            .format(os.path.join(path, 'a2x.c.tags'), header_file))
+
 def main():
+    Output.title('tags', sys.argv)
+
     if len(sys.argv) != 2:
         Output.error('Usage: {} HeaderFile'.format(os.path.basename(sys.argv[0])))
 
     header_file = os.path.abspath(sys.argv[1])
+    geany_tags(header_file, os.path.join('~', '.config', 'geany', 'tags'))
 
-    def geany_tags(path):
-        path = os.path.expanduser(path)
-
-        Output.info('Looking for {}'.format(path))
-
-        if os.path.exists(path):
-            Output.info('Writing Geany tags file: {}'.format(path))
-
-            Shell.run('geany -g {} {}'
-                .format(os.path.join(path, 'a2x.c.tags'), header_file))
-
-    geany_tags(os.path.join('~', '.config', 'geany', 'tags'))
+    Output.info('Done')
 
 if __name__ == '__main__':
     main()

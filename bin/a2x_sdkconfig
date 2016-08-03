@@ -7,14 +7,17 @@ import sys
 from utils.output import Output
 
 def main():
+    Output.title('sdkconfig', sys.argv)
+
     bin_dir = os.path.dirname(__file__)
     a2x_dir = os.path.abspath(os.path.join(bin_dir, '..'))
 
     config_read = os.path.join(a2x_dir, 'cfg', 'a2x.config')
     config_write = os.path.join(a2x_dir, 'make', 'sdk.config')
 
-    Output.title('sdkconfig')
-    Output.info('Generating {}'.format(os.path.basename(config_write)))
+    Output.info('Generating {} with data from {}'
+        .format(os.path.basename(config_write),
+                os.path.basename(config_read)))
 
     db = {
         'sdk.open2x.root': ['OPEN2X_ROOT', None],
@@ -37,7 +40,8 @@ def main():
 
             key = assg.group(1)
 
-            if key in db.keys():
+            if key in db:
+                Output.info('{} = {}'.format(db[key][0], assg.group(2)))
                 db[key][1] = assg.group(2)
 
     with open(config_write, 'w') as f:

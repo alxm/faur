@@ -3,28 +3,35 @@
 import os
 import sys
 
+from utils.output import Output
+
 def main():
+    Output.title('headers', sys.argv)
+
     if len(sys.argv) != 2:
-        print('Usage: {} dir'.format(os.path.basename(sys.argv[0])))
-        return
+        Output.error('Usage: {} dir'.format(os.path.basename(sys.argv[0])))
 
-    dir = sys.argv[1]
-    dir_name = os.path.basename(dir)
+    gen_dir = sys.argv[1]
+    header_path = os.path.join(gen_dir, 'all.h')
 
-    if not os.path.isdir(dir):
-        print('{} is not a dir'.format(dir))
-        return
+    if not os.path.isdir(gen_dir):
+        Output.error('{} is not a dir'.format(gen_dir))
 
     contents = '#pragma once\n\n'
 
-    headers = [h for h in os.listdir(dir) if h[-2 :] == '.h']
+    headers = [h for h in os.listdir(gen_dir) if h[-2 :] == '.h']
     headers.sort(key = lambda h: h)
 
     for h in headers:
+        Output.info('Including {}'.format(h))
         contents += '#include "{}"\n'.format(h)
 
-    with open(os.path.join(dir, 'all.h'), 'w') as f:
+    Output.info('Writing header {}'.format(os.path.basename(header_path)))
+
+    with open(header_path, 'w') as f:
         f.write(contents)
+
+    Output.info('Done')
 
 if __name__ == '__main__':
     main()

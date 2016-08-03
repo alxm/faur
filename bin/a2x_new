@@ -3,35 +3,39 @@
 import os
 import sys
 
+from utils.output import Output
+
+def newdir(name):
+    Output.info('Making dir: {}'.format(name))
+    os.mkdir(name)
+
+def newfile(name, contents):
+    Output.info('Writing file: {}'.format(name))
+
+    with open(name, 'w') as f:
+        f.write(contents)
+
 def main():
+    Output.title('new', sys.argv)
+
     if len(sys.argv) != 2:
-        print('Usage: {} ProjectPath'.format(os.path.basename(sys.argv[0])))
-        return
+        Output.error('Usage: {} ProjectPath'
+            .format(os.path.basename(sys.argv[0])))
 
     a2x_dir = os.path.abspath(sys.path[0])
 
-    print('Found a2x: {}'.format(a2x_dir))
+    Output.info('Found a2x: {}'.format(a2x_dir))
 
     project_path = sys.argv[1]
     project_name = os.path.basename(project_path)
 
     if os.path.exists(project_path):
-        print('Error: {} already exists'.format(project_name))
-        return
-
-    def newdir(name):
-        print('Making dir: {}'.format(name))
-        os.mkdir(name)
-
-    def newfile(name, contents):
-        print('Writing file: {}'.format(name))
-
-        with open(name, 'w') as f:
-            f.write(contents)
+        Output.error('Error: {} already exists'.format(project_name))
 
     newdir(project_path)
     newdir(os.path.join(project_path, 'make'))
     newdir(os.path.join(project_path, 'src'))
+
     newfile(os.path.join(project_path, 'make', 'Makefile'),
 """APP = {0}
 TARGET_DIR = ..
@@ -60,7 +64,8 @@ A_MAIN
 }}
 """.format(project_name, os.getlogin()))
 
-    print('{} is ready!'.format(project_name))
+    Output.note('{} is ready!'.format(project_name))
+    Output.info('Done')
 
 if __name__ == '__main__':
     main()

@@ -24,21 +24,18 @@ class Output:
         print('\033[{}m{}\033[0m'.format(color, text), end = '')
 
     @staticmethod
-    def title(text, arguments = ''):
-        whole_text = ' a2x_{} '.format(text)
+    def title(text, args):
+        arguments = ' '.join(args[1 : ]) + ' ' if len(args) > 1 else ''
+        whole_text = ' a2x_{} {}'.format(text, arguments)
+        border = '-' * len(whole_text) + '\n'
 
-        if len(arguments) > 0:
-            whole_text += '{} '.format(arguments)
-
-        border = '-' * len(whole_text)
-
-        print(border)
+        Output.colored(border, Color.DarkGray)
         Output.colored(' a', Color.LightBlue)
         Output.colored('2', Color.LightGreen)
         Output.colored('x', Color.Yellow)
         Output.colored('_{} '.format(text), Color.White)
         print(arguments)
-        print(border)
+        Output.colored(border, Color.DarkGray)
 
     @staticmethod
     def note(text):
@@ -47,16 +44,16 @@ class Output:
 
     @staticmethod
     def info(text):
-        Output.colored('[ Info ] ', Color.Green)
+        Output.colored('[ Info ] ', Color.LightBlue)
         print(text)
 
     @staticmethod
     def error(text):
-        Output.colored('[ Error ] ', Color.Red)
+        Output.colored('[ Error ] ', Color.LightRed)
         print(text)
         sys.exit(1)
 
     @staticmethod
     def shell(text):
-        Output.colored('[ Shell ] ', Color.Purple)
+        Output.colored('[ Shell ] ', Color.LightPurple)
         print(text)

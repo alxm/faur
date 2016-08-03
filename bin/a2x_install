@@ -8,6 +8,8 @@ from utils.output import Output
 from utils.shell import Shell
 
 def main():
+    Output.title('install', sys.argv)
+
     bin_dir = os.path.dirname(__file__)
     a2x_dir = os.path.abspath(os.path.join(bin_dir, '..'))
 
@@ -15,7 +17,6 @@ def main():
     config_write = os.path.join(a2x_dir, 'make', 'sdk.config')
 
     make_command = sys.argv[1] if len(sys.argv) == 2 else ''
-    Output.title('install', make_command)
 
     if make_command == 'clean':
         if not os.path.exists(config_write):

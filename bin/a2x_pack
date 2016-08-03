@@ -4,33 +4,41 @@ import os
 import sys
 import time
 
+from utils.output import Output
+
+def newfile(name, header, contents):
+    Output.info('Writing file: {}'.format(name))
+
+    with open(name, 'w') as f:
+        f.write('{}{}'.format(header, contents))
+
 def main():
+    Output.title('pack', sys.argv)
+
     if len(sys.argv) != 2:
-        print('Usage: {} pack_name'.format(os.path.basename(sys.argv[0])))
-        return
+        Output.error('Usage: {} pack_name'
+            .format(os.path.basename(sys.argv[0])))
 
     bin_dir = os.path.dirname(__file__)
     src_dir = os.path.abspath(os.path.join(bin_dir, '..', 'src'))
 
     if not os.path.exists(src_dir):
-        print('Error: {} does not exist'.format(src_dir))
-        return
+        Output.error('Error: {} does not exist'.format(src_dir))
 
-    print('Found a2x src: {}'.format(src_dir))
+    Output.info('Found a2x src: {}'.format(src_dir))
 
     pack_name = sys.argv[1].strip().lower()
 
     pack_c = os.path.join(src_dir, 'a2x_pack_{}.c'.format(pack_name))
-    pack_c = os.path.join(src_dir, 'a2x_pack_{}.p.h'.format(pack_name))
-    pack_c = os.path.join(src_dir, 'a2x_pack_{}.v.h'.format(pack_name))
+    pack_ph = os.path.join(src_dir, 'a2x_pack_{}.p.h'.format(pack_name))
+    pack_vh = os.path.join(src_dir, 'a2x_pack_{}.v.h'.format(pack_name))
 
     for f in [pack_c, pack_ph, pack_vh]:
         if os.path.exists(f):
-            print('Error: {} already exists'.format(f))
-            return
+            Output.error('Error: {} already exists'.format(f))
 
     license_header = """/*
-    Copyright {0} Alex Margarit
+    Copyright {0} {1}
 
     This file is part of a2x-framework.
 
@@ -47,15 +55,9 @@ def main():
     You should have received a copy of the GNU Lesser General Public License
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
-""".format(time.strftime('%Y'))
+""".format(time.strftime('%Y'), os.getlogin())
 
-    def newfile(name, contents):
-        print('Writing file: {}'.format(name))
-
-        with open(name, 'w') as f:
-            f.write('{}{}'.format(license_header, contents))
-
-    newfile(pack_c,
+    newfile(pack_c, license_header,
 """
 #include "a2x_pack_{0}.v.h"
 
@@ -70,16 +72,16 @@ void a_{0}__uninit(void)
 }}
 """.format(pack_name))
 
-    newfile(pack_ph,
+    newfile(pack_ph, license_header,
 """
 #pragma once
 
-#include "a2x_app_includes.h"
+#include "a2x_system_includes.h"
 
 //
 """)
 
-    newfile(pack_vh,
+    newfile(pack_vh, license_header,
 """
 #pragma once
 
@@ -91,7 +93,8 @@ extern void a_{0}__uninit(void);
 //
 """.format(pack_name))
 
-    print('{} is ready!'.format(pack_name))
+    Output.note('{} is ready!'.format(pack_name))
+    Output.info('Done')
 
 if __name__ == '__main__':
     main()
