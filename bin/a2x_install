@@ -1,52 +1,65 @@
 #!/usr/bin/env python3
 
+"""
+    Copyright 2016 Alex Margarit
+
+    This file is part of a2x-framework.
+
+    a2x-framework is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    a2x-framework is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
 import os
-import re
-import sys
 
 from utils.output import Output
 from utils.shell import Shell
+from utils.tool import Tool
 
-def main():
-    Output.title('install', sys.argv)
+class InstallTool(Tool):
+    def main(self):
+        config_read = os.path.join(self.a2x_dir, 'cfg', 'a2x.config')
+        config_write = os.path.join(self.a2x_dir, 'make', 'sdk.config')
 
-    bin_dir = os.path.dirname(__file__)
-    a2x_dir = os.path.abspath(os.path.join(bin_dir, '..'))
+        make_command = self.get_arg('[clean]')
 
-    config_read = os.path.join(a2x_dir, 'cfg', 'a2x.config')
-    config_write = os.path.join(a2x_dir, 'make', 'sdk.config')
+        if make_command == 'clean':
+            if not os.path.exists(config_write):
+                Output.note('Run {} first'.format(self.name))
+                Output.error('{} does not exist'
+                    .format(os.path.basename(config_write)))
 
-    make_command = sys.argv[1] if len(sys.argv) == 2 else ''
+            Output.info('Removing all compiled and generated a2x files')
+        else:
+            make_command = ''
+            Shell.run(os.path.join(self.a2x_dir, 'bin', 'a2x_sdkconfig'))
+            Output.note('Add {} to $PATH'.format(self.a2x_dir))
+            Output.info('Compiling a2x and tools')
 
-    if make_command == 'clean':
-        if not os.path.exists(config_write):
-            Output.note('Run {} first'.format(sys.argv[0]))
-            Output.error('{} does not exist'
-                .format(os.path.basename(config_write)))
+        Shell.run('cd {} && make {}'
+            .format(os.path.join(self.a2x_dir, 'make', 'a2x'),
+                    make_command))
 
-        Output.info('Removing all compiled and generated a2x files')
-    else:
-        make_command = ''
-        Shell.run(os.path.join(a2x_dir, 'bin', 'a2x_sdkconfig'))
-        Output.note('Add {} to $PATH'.format(a2x_dir))
-        Output.info('Compiling a2x and tools')
+        Shell.run('cd {} && make {}'
+            .format(os.path.join(self.a2x_dir, 'bin', 'tools', 'gfx'),
+                    make_command))
 
-    Shell.run('cd {} && make {}'
-        .format(os.path.join(a2x_dir, 'make', 'a2x'),
-                make_command))
+        Shell.run('cd {} && make {}'
+            .format(os.path.join(self.a2x_dir, 'bin', 'tools', 'sfx'),
+                    make_command))
 
-    Shell.run('cd {} && make {}'
-        .format(os.path.join(a2x_dir, 'bin', 'tools', 'gfx'),
-                make_command))
-
-    Shell.run('cd {} && make {}'
-        .format(os.path.join(a2x_dir, 'bin', 'tools', 'sfx'),
-                make_command))
-
-    if make_command == 'clean':
-        Shell.run('rm -f {}'.format(config_write))
-
-    Output.info('Done')
+        if make_command == 'clean':
+            Shell.run('rm -f {}'.format(config_write))
 
 if __name__ == '__main__':
-    main()
+    tool = InstallTool('[clean]')
+    tool.run()

@@ -1,3 +1,22 @@
+"""
+    Copyright 2016 Alex Margarit
+
+    This file is part of a2x-framework.
+
+    a2x-framework is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    a2x-framework is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
 import sys
 
 class Color:
@@ -24,18 +43,8 @@ class Output:
         print('\033[{}m{}\033[0m'.format(color, text), end = '')
 
     @staticmethod
-    def title(text, args):
-        arguments = ' '.join(args[1 : ]) + ' ' if len(args) > 1 else ''
-        whole_text = ' a2x_{} {}'.format(text, arguments)
-        border = '-' * len(whole_text) + '\n'
-
-        Output.colored(border, Color.DarkGray)
-        Output.colored(' a', Color.LightBlue)
-        Output.colored('2', Color.LightGreen)
-        Output.colored('x', Color.Yellow)
-        Output.colored('_{} '.format(text), Color.White)
-        print(arguments)
-        Output.colored(border, Color.DarkGray)
+    def coloredln(text, color):
+        print('\033[{}m{}\033[0m'.format(color, text))
 
     @staticmethod
     def note(text):
