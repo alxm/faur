@@ -45,9 +45,6 @@ def main():
 
     if make_command == 'clean':
         Shell.run('rm -f {}'.format(config_write))
-    else:
-        Shell.run('cd {} && make tags'
-            .format(os.path.join(a2x_dir, 'make', 'a2x')))
 
     Output.info('Done')
 

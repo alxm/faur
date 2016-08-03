@@ -31,6 +31,7 @@ $(ALL_DIRS) :
 
 $(HEADER) : $(H_FILES)
 	@ $(BIN_DIR)/a2x_header $(C_DIR) $(HEADER)
+	@ $(BIN_DIR)/a2x_tags $(HEADER)
 
 $(LIBRARY) : $(O_FILES)
 	@ echo "Building $(notdir $(LIBRARY))"
@@ -43,6 +44,3 @@ $(O_DIR)/$(A2X_PREFIX)%.o : $(C_DIR)/$(A2X_PREFIX)%.c
 clean :
 	@ echo "Cleaning a2x $(ALL_DIRS)"
 	@ rm -rf $(ALL_DIRS)
-
-tags :
-	@ $(BIN_DIR)/a2x_tags $(HEADER)
