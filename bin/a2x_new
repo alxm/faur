@@ -69,7 +69,7 @@ A_MAIN
 {{
     printf("Code me!\\n");
 }}
-""".format(project_name, os.getlogin()))
+""".format(project_name, os.environ['USERNAME']))
 
 if __name__ == '__main__':
     tool = NewTool('ProjectPath')
