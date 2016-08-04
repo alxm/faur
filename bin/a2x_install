@@ -43,7 +43,6 @@ class InstallTool(Tool):
                         userconfig,
                         sdkconfig))
 
-            Output.note('Add {} to $PATH'.format(self.a2x_dir))
             Output.info('Compiling a2x')
 
         Shell.run('cd {} && make {}'
@@ -51,6 +50,8 @@ class InstallTool(Tool):
 
         if make_command == 'clean':
             Shell.run('rm {}'.format(sdkconfig))
+        else:
+            Output.note('Add {} to your $PATH'.format(self.bin_dir))
 
 if __name__ == '__main__':
     tool = InstallTool('[clean]')
