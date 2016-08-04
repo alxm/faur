@@ -44,9 +44,14 @@ SRC_DIR = ../src
 GFX_DIR =
 SFX_DIR =
 OBJ_DIR = ../obj
-A2X_PATH = {1}
+
+#
+# You can set A2X_PATH to a hard-coded value
+# if you do not have a2x/bin in your $PATH
+#
+A2X_PATH := $(shell a2x_path)
 include $(A2X_PATH)/make/project/Makefile.linux
-""".format(project_name, self.a2x_dir))
+""".format(project_name))
 
         self.writefile(os.path.join(project_path, 'src', 'main.c'),
 """\
