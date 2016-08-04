@@ -33,7 +33,7 @@ $(ALL_DIRS) :
 	@ mkdir $@
 
 $(HEADER) : $(H_FILES)
-	@ $(BIN_DIR)/a2x_header $(C_DIR) $(HEADER)
+	@ $(BIN_DIR)/a2x_header $(C_DIR) .p.h $(HEADER)
 	@ $(BIN_DIR)/a2x_tags $(HEADER)
 
 $(LIBRARY) : $(O_FILES)

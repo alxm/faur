@@ -121,10 +121,10 @@ $(O_SFX_DIR)/%.o : $(C_SFX_DIR)/%.c
 	@ $(CC) -c -o $@ $< $(CFLAGS)
 
 $(C_GFX_HEADER) : $(C_GFX_FILES)
-	@ $(A2X_PATH)/bin/a2x_headers $(C_GFX_DIR)
+	@ $(A2X_PATH)/bin/a2x_header $(C_GFX_DIR) .h $(C_GFX_DIR)/all.h
 
 $(C_SFX_HEADER) : $(C_SFX_FILES)
-	@ $(A2X_PATH)/bin/a2x_headers $(C_SFX_DIR)
+	@ $(A2X_PATH)/bin/a2x_header $(C_SFX_DIR) .h $(C_SFX_DIR)/all.h
 
 #
 # delete all .o files and all generated .c files
