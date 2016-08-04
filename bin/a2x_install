@@ -27,30 +27,30 @@ from utils.tool import Tool
 
 class InstallTool(Tool):
     def main(self):
-        config_read = os.path.join(self.a2x_dir, 'cfg', 'a2x.config')
-        config_write = os.path.join(self.a2x_dir, 'make', 'sdk.config')
-
         make_command = self.get_arg('[clean]')
+        userconfig = os.path.join(self.cfg_dir, 'a2x.config')
+        sdkconfig = os.path.join(self.make_dir, 'sdk.config')
 
         if make_command == 'clean':
-            if not os.path.exists(config_write):
+            if not os.path.exists(sdkconfig):
                 Output.note('Run {} first'.format(self.name))
-                Output.error('{} does not exist'
-                    .format(os.path.basename(config_write)))
+                Output.error('{} does not exist'.format(sdkconfig))
 
             Output.info('Removing compiled and generated a2x files')
         else:
-            make_command = ''
-            Shell.run(os.path.join(self.a2x_dir, 'bin', 'a2x_sdkconfig'))
+            Shell.run('{} {} {}'
+                .format(os.path.join(self.bin_dir, 'a2x_sdkconfig'),
+                        userconfig,
+                        sdkconfig))
+
             Output.note('Add {} to $PATH'.format(self.a2x_dir))
             Output.info('Compiling a2x')
 
         Shell.run('cd {} && make {}'
-            .format(os.path.join(self.a2x_dir, 'make', 'a2x'),
-                    make_command))
+            .format(os.path.join(self.make_dir, 'a2x'), make_command))
 
         if make_command == 'clean':
-            Shell.run('rm -f {}'.format(config_write))
+            Shell.run('rm {}'.format(sdkconfig))
 
 if __name__ == '__main__':
     tool = InstallTool('[clean]')

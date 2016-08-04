@@ -27,12 +27,11 @@ from utils.tool import Tool
 
 class SdkConfigTool(Tool):
     def main(self):
-        config_read = os.path.join(self.a2x_dir, 'cfg', 'a2x.config')
-        config_write = os.path.join(self.a2x_dir, 'make', 'sdk.config')
+        config_read = self.get_arg('UserConfig')
+        config_write = self.get_arg('GeneratedConfig')
 
-        Output.info('Generating {} with data from {}'
-            .format(os.path.basename(config_write),
-                    os.path.basename(config_read)))
+        if not os.path.exists(config_read):
+            Output.error('{} does not exist'.format(config_read))
 
         db = {
             'sdk.open2x.root': ['OPEN2X_ROOT', None],
@@ -67,5 +66,5 @@ class SdkConfigTool(Tool):
         self.writefile(config_write, out)
 
 if __name__ == '__main__':
-    tool = SdkConfigTool('')
+    tool = SdkConfigTool('UserConfig GeneratedConfig')
     tool.run()

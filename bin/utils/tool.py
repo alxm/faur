@@ -30,8 +30,10 @@ class Tool:
         self.name = os.path.basename(sys.argv[0])
 
         current_dir = os.path.dirname(__file__)
-        self.bin_dir = os.path.abspath(os.path.join(current_dir, '..'))
-        self.a2x_dir = os.path.abspath(os.path.join(self.bin_dir, '..'))
+        self.a2x_dir = os.path.abspath(os.path.join(current_dir, '..', '..'))
+        self.bin_dir = os.path.join(self.a2x_dir, 'bin')
+        self.cfg_dir = os.path.join(self.a2x_dir, 'cfg')
+        self.make_dir = os.path.join(self.a2x_dir, 'make')
         self.src_dir = os.path.join(self.a2x_dir, 'src')
 
     def title(self):
@@ -79,7 +81,7 @@ class Tool:
         if name in self.args_db:
             return self.args_db[name]
         else:
-            return None
+            return ''
 
     def main(self):
         Output.error('{} does not implement main'.format(self.name))
