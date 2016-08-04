@@ -55,7 +55,7 @@ O_SFX_DIR = $(O_DIR)/$(A2X_GEN)/sfx
 #
 # all the dirs
 #
-ALL_DIRS = $(O_DIR) $(C_GEN_DIR)
+ALL_DIRS = $(C_GEN_DIR) $(OBJ_DIR) $(O_DIR)
 
 ifdef GFX_DIR
 	ALL_DIRS += $(C_GFX_DIR) $(O_GFX_DIR)

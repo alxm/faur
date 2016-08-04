@@ -5,7 +5,8 @@ INC_DIR  = $(A2X_ROOT)/inc
 LIB_DIR  = $(A2X_ROOT)/lib
 MAKE_DIR = $(A2X_ROOT)/make
 C_DIR    = $(A2X_ROOT)/src
-O_DIR    = obj_$(PLATFORM)
+OBJ_DIR  = obj
+O_DIR    = $(OBJ_DIR)/obj_$(PLATFORM)
 
 HEADER = $(INC_DIR)/a2x.h
 LIBRARY = $(LIB_DIR)/a2x_$(PLATFORM).a
@@ -25,12 +26,12 @@ C_FILES = $(notdir $(wildcard $(C_DIR)/$(A2X_PREFIX)*.c))
 O_FILES = $(addprefix $(O_DIR)/, $(C_FILES:.c=.o))
 H_FILES = $(wildcard $(C_DIR)/$(A2X_PREFIX)*.p.h)
 
-ALL_DIRS = $(INC_DIR) $(LIB_DIR) $(O_DIR)
+ALL_DIRS = $(INC_DIR) $(LIB_DIR) $(OBJ_DIR) $(O_DIR)
 
 all : $(ALL_DIRS) $(HEADER) $(LIBRARY)
 
 $(ALL_DIRS) :
-	@ mkdir $@
+	@ mkdir --parents $@
 
 $(HEADER) : $(H_FILES)
 	@ $(BIN_DIR)/a2x_header $(C_DIR) .p.h $(HEADER)
