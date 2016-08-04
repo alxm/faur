@@ -26,17 +26,23 @@ from utils.tool import Tool
 
 class NewTool(Tool):
     def main(self):
-        project_path = self.get_arg('ProjectPath')
-        project_name = os.path.basename(project_path)
+        project_name = self.get_arg('ProjectName')
+        project_dir = os.path.abspath(project_name)
 
-        if os.path.exists(project_path):
-            Output.error('Error: {} already exists'.format(project_name))
+        if project_name != os.path.basename(project_name):
+            Output.error('Project name cannot be a path'.format(project_name))
 
-        self.makedir(project_path)
-        self.makedir(os.path.join(project_path, 'make'))
-        self.makedir(os.path.join(project_path, 'src'))
+        if os.path.exists(project_dir):
+            Output.error('{} already exists'.format(project_dir))
 
-        self.writefile(os.path.join(project_path, 'make', 'Makefile'),
+        make_dir = os.path.join(project_dir, 'make')
+        src_dir = os.path.join(project_dir, 'src')
+
+        self.makedir(project_dir)
+        self.makedir(make_dir)
+        self.makedir(src_dir)
+
+        self.writefile(os.path.join(make_dir, 'Makefile'),
 """\
 APP = {0}
 TARGET_DIR = ..
@@ -53,7 +59,7 @@ A2X_PATH := $(shell a2x_path)
 include $(A2X_PATH)/make/project/Makefile.linux
 """.format(project_name))
 
-        self.writefile(os.path.join(project_path, 'src', 'main.c'),
+        self.writefile(os.path.join(src_dir, 'main.c'),
 """\
 #include <a2x.h>
 
@@ -72,5 +78,5 @@ A_MAIN
 """.format(project_name, os.environ['USERNAME']))
 
 if __name__ == '__main__':
-    tool = NewTool('ProjectPath')
+    tool = NewTool('ProjectName')
     tool.run()
