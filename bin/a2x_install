@@ -28,7 +28,7 @@ from utils.tool import Tool
 class InstallTool(Tool):
     def main(self):
         make_command = self.get_arg('[clean]')
-        userconfig = os.path.join(self.cfg_dir, 'a2x.config')
+        userconfig = os.path.join(self.cfg_dir, 'sdk.config')
         sdkconfig = os.path.join(self.make_dir, 'sdk.config')
 
         if make_command == 'clean':
