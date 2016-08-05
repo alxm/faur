@@ -25,6 +25,32 @@ import re
 from utils.output import Output
 from utils.tool import Tool
 
+class Sdk:
+    def __init__(self, title):
+        self.title = title
+        self.variables = {}
+
+    def add_var(self, config_name, makefile_name):
+        self.variables[config_name] = [makefile_name, None]
+
+    def set_var(self, name, value):
+        self.variables[name][1] = value
+
+    def has_var(self, name):
+        return name in self.variables
+
+    def is_complete(self):
+        for name in self.variables:
+            if self.variables[name][1] is None:
+                return False
+
+        return True
+
+    def __str__(self):
+        return '\n'.join([
+            '{} = {}'.format(self.variables[name][0], self.variables[name][1])
+            for name in self.variables])
+
 class SdkConfigTool(Tool):
     def main(self):
         config_read = self.get_arg('UserConfig')
@@ -33,36 +59,51 @@ class SdkConfigTool(Tool):
         if not os.path.exists(config_read):
             Output.error('{} does not exist'.format(config_read))
 
-        db = {
-            'sdk.caanoo.root': ['CAANOO_ROOT', None],
-            'sdk.caanoo.toolchain': ['CAANOO_GLIBC', None],
-            'sdk.open2x.root': ['OPEN2X_ROOT', None],
-            'sdk.open2x.toolchain': ['OPEN2X_GLIBC', None],
-            'sdk.pandora.root': ['PANDORA_ROOT', None],
-            'sdk.pandora.toolchain': ['PANDORA_TOOLCHAIN', None],
-        }
+        sdks = {}
 
-        re_assignment = re.compile('^(.*?)\s*=\s*(.*)$')
+        sdks['caanoo'] = Sdk('GPH SDK (Caanoo)')
+        sdks['caanoo'].add_var('root', 'CAANOO_ROOT')
+        sdks['caanoo'].add_var('toolchain', 'CAANOO_GLIBC')
+
+        sdks['open2x'] = Sdk('Open2x SDK (GP2X, Wiz)')
+        sdks['open2x'].add_var('root', 'OPEN2X_ROOT')
+        sdks['open2x'].add_var('toolchain', 'OPEN2X_GLIBC')
+
+        sdks['pandora'] = Sdk('Pandora SDK (Open Pandora)')
+        sdks['pandora'].add_var('root', 'PANDORA_ROOT')
+        sdks['pandora'].add_var('toolchain', 'PANDORA_TOOLCHAIN')
+
+        re_assignment = re.compile('^\s*sdk\.(.*?)\.(.*?)\s*=\s*(.*?)\s*$')
 
         for line in self.readtext(config_read).splitlines():
-            line = line.strip()
-            assg = re_assignment.match(line)
+            assignment = re_assignment.match(line)
 
-            if not assg or line[0] == '#':
+            if not assignment:
                 continue
 
-            key = assg.group(1)
+            sdk_name = assignment.group(1)
+            variable = assignment.group(2)
+            value = assignment.group(3)
 
-            if key in db:
-                Output.info('{} = {}'.format(db[key][0], assg.group(2)))
-                db[key][1] = assg.group(2)
+            if sdk_name not in sdks:
+                Output.note('You can comment out config lines with #')
+                Output.error('Unknown SDK {} - only aware of {}'
+                    .format(sdk_name, ', '.join(sorted([s for s in sdks]))))
 
-        out = ''
+            sdk = sdks[sdk_name]
 
-        for key in db:
-            if db[key][1]:
-                out += '{} = {}\n'.format(db[key][0], db[key][1])
+            if not sdk.has_var(variable):
+                Output.note('You can comment out config lines with #')
+                Output.error('Unknown variable {}.{} - only aware of {}'
+                    .format(sdk_name, variable,
+                    ', '.join(sorted([v for v in sdk.variables]))))
 
+            sdk.set_var(variable, value)
+
+            if sdk.is_complete():
+                Output.note('Processed config for {}'.format(sdk.title))
+
+        out = '\n'.join([str(sdks[sdk]) for sdk in sdks])
         self.writefile(config_write, out)
 
 if __name__ == '__main__':
