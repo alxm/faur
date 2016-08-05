@@ -4,4 +4,6 @@
 /lib
 /make/sdk.config
 /bin/utils/__pycache__
+/src/media/*.c
+/src/media/*.h
 /todo
