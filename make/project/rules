@@ -62,7 +62,11 @@ ifdef GFX_DIR
 endif
 
 ifdef SFX_DIR
-	ALL_DIRS += $(C_GEN_DIR) $(C_SFX_DIR) $(O_SFX_DIR)
+	ifndef GFX_DIR
+		ALL_DIRS += $(C_GEN_DIR)
+	endif
+
+	ALL_DIRS += $(C_SFX_DIR) $(O_SFX_DIR)
 endif
 
 #
