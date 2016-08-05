@@ -1,7 +1,7 @@
 #
 # this is what gets built
 #
-TARGET_BINARY = $(TARGET_DIR)/$(APP)
+TARGET_BINARY = $(BIN_DIR)/$(APP)
 
 #
 # Subdir for generated code and object files
@@ -146,4 +146,4 @@ cleanbin :
 #
 run : all
 	@ echo "Running $(notdir $(APP))"
-	@ cd $(TARGET_DIR) ; ./$(APP)
+	@ cd $(BIN_DIR) ; ./$(APP)
