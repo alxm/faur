@@ -1,3 +1,11 @@
 include $(A2X_PATH)/make/sdk.config
 include $(A2X_PATH)/make/platforms/pandora
 include $(A2X_PATH)/make/project/rules
+
+pnd:
+	cp $(TARGET_DIR)/$(APP) $(PND_DIR)/$(APP)
+	$(PANDORA_UTILS)/pnd_make.sh -c \
+		-d $(PWD)/$(PND_DIR) \
+		-p $(PWD)/$(TARGET_DIR)/$(PND_FILE) \
+		-x $(PWD)/$(PND_DIR)/doc/PXML.xml \
+		-i $(PWD)/$(PND_DIR)/img/icon.png

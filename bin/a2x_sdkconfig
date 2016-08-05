@@ -72,6 +72,7 @@ class SdkConfigTool(Tool):
         sdks['pandora'] = Sdk('Pandora SDK (Open Pandora)')
         sdks['pandora'].add_var('root', 'PANDORA_ROOT')
         sdks['pandora'].add_var('toolchain', 'PANDORA_TOOLCHAIN')
+        sdks['pandora'].add_var('utils', 'PANDORA_SDKUTILS')
 
         re_assignment = re.compile('^\s*sdk\.(.*?)\.(.*?)\s*=\s*(.*?)\s*$')
 
