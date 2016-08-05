@@ -34,17 +34,17 @@ class SdkConfigTool(Tool):
             Output.error('{} does not exist'.format(config_read))
 
         db = {
-            'sdk.open2x.root': ['OPEN2X_ROOT', None],
-            'sdk.open2x.toolchain': ['OPEN2X_GLIBC', None],
             'sdk.caanoo.root': ['CAANOO_ROOT', None],
             'sdk.caanoo.toolchain': ['CAANOO_GLIBC', None],
+            'sdk.open2x.root': ['OPEN2X_ROOT', None],
+            'sdk.open2x.toolchain': ['OPEN2X_GLIBC', None],
             'sdk.pandora.root': ['PANDORA_ROOT', None],
             'sdk.pandora.toolchain': ['PANDORA_TOOLCHAIN', None],
         }
 
         re_assignment = re.compile('^(.*?)\s*=\s*(.*)$')
 
-        for line in self.readtext(config_read):
+        for line in self.readtext(config_read).splitlines():
             line = line.strip()
             assg = re_assignment.match(line)
 
