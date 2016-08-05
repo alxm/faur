@@ -144,11 +144,12 @@ static bool flip(const char* Key, bool HonorFrozen)
 void a_settings__defaults(void)
 {
     g_settings = a_strhash_new();
+    extern const char* a_app__buildtime;
 
     add(A_SETTING_STR, A_SETTING_SET_ONCE, "app.title", "Untitled");
     add(A_SETTING_STR, A_SETTING_SET_ONCE, "app.version", "0");
     add(A_SETTING_STR, A_SETTING_SET_ONCE, "app.author", "(unknown)");
-    add(A_SETTING_STR, A_SETTING_SET_ONCE, "app.compiled", "(unknown)");
+    add(A_SETTING_STR, A_SETTING_SET_ONCE, "app.buildtime", a_app__buildtime);
     add(A_SETTING_STR, A_SETTING_SET_ONCE, "app.conf", "a2x.cfg");
     add(A_SETTING_BOOL, A_SETTING_SET_ANY, "app.quiet", "0");
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "app.tool", "0");
