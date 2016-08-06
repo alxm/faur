@@ -181,6 +181,11 @@ char* a_file_getLine(const AFile* File)
     return File->line;
 }
 
+void a_file_rewind(const AFile* File)
+{
+    rewind(File->handle);
+}
+
 const char* a_file_path(const AFile* File)
 {
     return File->path;
