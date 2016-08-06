@@ -122,7 +122,7 @@ ASound* a_sfx_fromFile(const char* Path)
     }
 }
 
-ASound* a_sfx__fromData(const uint16_t* Data, int Size)
+ASound* a_sfx__fromData(const uint8_t* Data, int Size)
 {
     if(a_settings_getBool("sound.on")) {
         ASound* s = a_sdl__sfx_loadFromData(Data, Size);

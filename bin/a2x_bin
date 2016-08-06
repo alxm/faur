@@ -1,0 +1,69 @@
+#!/usr/bin/env python3
+
+"""
+    Copyright 2016 Alex Margarit
+
+    This file is part of a2x-framework.
+
+    a2x-framework is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    a2x-framework is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
+import os
+
+from utils.output import Output
+from utils.tool import Tool
+
+class BinTool(Tool):
+    def main(self):
+        bin_file = self.get_arg('File.bin')
+        c_file = self.get_arg('File.c')
+        h_file = self.get_arg('File.h')
+        header_file = os.path.basename(h_file)
+        prefix = self.get_arg('VariablePrefix')
+
+        bin_name = os.path.basename(bin_file)
+        extension_index = bin_name.rfind('.')
+        bin_name = bin_name.replace('.', '_')
+
+        if extension_index > 0:
+            bin_name = bin_name[ : extension_index]
+
+        bin_data = ''
+        bin_bytes = self.readbytes(bin_file)
+        bin_size = len(bin_bytes)
+
+        for index, byte in enumerate(bin_bytes):
+            if index % 8 == 0:
+                bin_data += '\n    '
+
+            bin_data += '0x{:0>2x},'.format(byte)
+
+        self.writefile(h_file, """\
+#pragma once
+
+#include <stdint.h>
+
+extern uint8_t {}_{}[{}];
+""".format(prefix, bin_name, bin_size))
+
+        self.writefile(c_file, """\
+#include "{}"
+
+uint8_t {}_{}[{}] = {{{}
+}};
+""".format(header_file, prefix, bin_name, bin_size, bin_data))
+
+if __name__ == '__main__':
+    tool = BinTool('File.bin File.c File.h VariablePrefix')
+    tool.run()

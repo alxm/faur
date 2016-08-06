@@ -1,33 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
-import os, subprocess, sys, time
-
-def main():
-    if len(sys.argv) != 2:
-        print("Usage: " + os.path.basename(sys.argv[0]) + " pack_name")
-        return
-
-    a2x_dir = os.path.abspath(sys.path[0] + "/../src") + "/"
-
-    if not os.path.exists(a2x_dir):
-        print("Error: " + a2x_dir + " does not exist")
-        return
-
-    print("Found a2x src: " + a2x_dir)
-
-    pack_name = sys.argv[1].strip().lower()
-
-    pack_c = a2x_dir + "a2x_pack_" + pack_name + ".c"
-    pack_ph = a2x_dir + "a2x_pack_" + pack_name + ".p.h"
-    pack_vh = a2x_dir + "a2x_pack_" + pack_name + ".v.h"
-
-    for f in [pack_c, pack_ph, pack_vh]:
-        if os.path.exists(f):
-            print("Error: " + f + " already exists")
-            return
-
-    license_header = """/*
-    Copyright {0} Alex Margarit
+"""
+    Copyright 2016 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -43,52 +17,83 @@ def main():
 
     You should have received a copy of the GNU Lesser General Public License
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
-*/
-""".format(time.strftime('%Y'))
-
-    def newfile(name, contents):
-        print("Writing file: " + name)
-
-        with open(name, "w") as f:
-            f.write(license_header + contents)
-
-    newfile(pack_c,
 """
-#include "a2x_pack_{0}.v.h"
 
-void a_{0}__init(void)
+import os
+import time
+
+from utils.output import Output
+from utils.tool import Tool
+
+class PackTool(Tool):
+    def main(self):
+        pack_name = self.get_arg('PackName').strip().lower()
+        pack_c = os.path.join(self.src_dir, 'a2x_pack_{}.c'.format(pack_name))
+        pack_ph = os.path.join(self.src_dir, 'a2x_pack_{}.p.h'.format(pack_name))
+        pack_vh = os.path.join(self.src_dir, 'a2x_pack_{}.v.h'.format(pack_name))
+
+        for f in [pack_c, pack_ph, pack_vh]:
+            if os.path.exists(f):
+                Output.error('Error: {} already exists'.format(f))
+
+        license_header = """\
+/*
+    Copyright {0} {1}
+
+    This file is part of a2x-framework.
+
+    a2x-framework is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    a2x-framework is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
+*/""".format(time.strftime('%Y'), os.getlogin())
+
+        self.writefile(pack_c,
+"""\
+{0}
+
+#include "a2x_pack_{1}.v.h"
+
+void a_{1}__init(void)
 {{
     //
 }}
 
-void a_{0}__uninit(void)
+void a_{1}__uninit(void)
 {{
     //
 }}
-""".format(pack_name))
+""".format(license_header, pack_name))
 
-    newfile(pack_ph,
-"""
+        self.writefile(pack_ph,
+"""\
+{0}
+
 #pragma once
 
-#include "a2x_app_includes.h"
+#include "a2x_system_includes.h"
+""".format(license_header))
 
-//
-""")
+        self.writefile(pack_vh,
+"""\
+{0}
 
-    newfile(pack_vh,
-"""
 #pragma once
 
-#include "a2x_pack_{0}.p.h"
+#include "a2x_pack_{1}.p.h"
 
-extern void a_{0}__init(void);
-extern void a_{0}__uninit(void);
+extern void a_{1}__init(void);
+extern void a_{1}__uninit(void);
+""".format(license_header, pack_name))
 
-//
-""".format(pack_name))
-
-    print(pack_name + " is ready!")
-
-if __name__ == "__main__":
-    main()
+if __name__ == '__main__':
+    tool = PackTool('PackName')
+    tool.run()

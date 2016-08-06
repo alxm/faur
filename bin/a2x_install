@@ -1,71 +1,58 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
-import os, re, subprocess, sys
+"""
+    Copyright 2016 Alex Margarit
 
-def main():
-    def call(cmd):
-        subprocess.call(cmd, shell = True)
+    This file is part of a2x-framework.
 
-    a2x_dir = sys.path[0]
+    a2x-framework is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
-    config_read = a2x_dir + "/../a2x.config"
-    config_write = a2x_dir + "/make/sdk.config"
+    a2x-framework is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
 
-    if len(sys.argv) == 2 and sys.argv[1] == "clean":
-        command = "clean"
-        print("Cleaning a2x (removing all compiled and generated files)")
-        print("--------------------------------------------------------")
+    You should have received a copy of the GNU Lesser General Public License
+    along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
+"""
 
-        if not os.path.exists(config_write):
-            print(os.path.basename(config_write) + " does not exist")
-            print("Run " + sys.argv[0])
-            return
-    else:
-        command = ""
-        print("Installing a2x (compiling and generating files)")
-        print("Dependencies: SDL, SDL_mixer, libpng")
-        print("Add " + a2x_dir + " to $PATH")
-        print("-----------------------------------------------")
+import os
 
-    if command == "":
-        print("Generating " + os.path.basename(config_write))
+from utils.output import Output
+from utils.shell import Shell
+from utils.tool import Tool
 
-        db = {
-            "sdk.open2x.root": ["OPEN2X_ROOT", None],
-            "sdk.open2x.toolchain": ["OPEN2X_GLIBC", None],
-            "sdk.caanoo.root": ["CAANOO_ROOT", None],
-            "sdk.caanoo.toolchain": ["CAANOO_GLIBC", None],
-            "sdk.pandora.root": ["PANDORA_ROOT", None],
-            "sdk.pandora.toolchain": ["PANDORA_TOOLCHAIN", None],
-        }
+class InstallTool(Tool):
+    def main(self):
+        make_command = self.get_arg('[clean]')
+        userconfig = os.path.join(self.cfg_dir, 'sdk.config')
+        sdkconfig = os.path.join(self.make_dir, 'sdk.config')
 
-        with open(config_read, "rU") as f:
-            re_assg = re.compile("(.*?)\s*=\s*(.*)$")
+        if make_command == 'clean':
+            if not os.path.exists(sdkconfig):
+                Output.note('Run {} first'.format(self.name))
+                Output.error('{} does not exist'.format(sdkconfig))
 
-            for line in f:
-                line = line.strip()
-                assg = re_assg.match(line)
+            Output.info('Removing compiled and generated a2x files')
+        else:
+            Shell.run('{} {} {}'
+                .format(os.path.join(self.bin_dir, 'a2x_sdkconfig'),
+                        userconfig,
+                        sdkconfig))
 
-                if not assg or line[0] == "#":
-                    continue
+            Output.info('Compiling a2x')
 
-                key = assg.group(1)
+        Shell.run('cd {} && make {}'
+            .format(os.path.join(self.make_dir, 'a2x'), make_command))
 
-                if key in db.keys():
-                    db[key][1] = assg.group(2)
+        if make_command == 'clean':
+            Shell.run('rm {}'.format(sdkconfig))
+        else:
+            Output.note('Add {} to your $PATH'.format(self.bin_dir))
 
-        with open(config_write, "w") as f:
-            for key in db:
-                if db[key][1]:
-                    f.write(db[key][0] + " = " + db[key][1] + "\n")
-
-    call("cd " + a2x_dir + "/make/a2x; make " + command)
-    call("cd " + a2x_dir + "/make/a2x; make tags" + command)
-    call("cd " + a2x_dir + "/tools/gfx; make " + command)
-    call("cd " + a2x_dir + "/tools/sfx; make " + command)
-
-    if command == "clean":
-        call("rm -f " + config_write)
-
-if __name__ == "__main__":
-    main()
+if __name__ == '__main__':
+    tool = InstallTool('[clean]')
+    tool.run()

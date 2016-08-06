@@ -1,0 +1,43 @@
+#!/usr/bin/env python3
+
+"""
+    Copyright 2016 Alex Margarit
+
+    This file is part of a2x-framework.
+
+    a2x-framework is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    a2x-framework is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
+import os
+
+from utils.output import Output
+from utils.shell import Shell
+from utils.tool import Tool
+
+class TagsTool(Tool):
+    def geany_tags(self, header_file, path):
+        path = os.path.expanduser(path)
+        Output.info('Looking for Geany tags in: {}'.format(path))
+
+        if os.path.exists(path):
+            Shell.run('geany -g {} {}'
+                .format(os.path.join(path, 'a2x.c.tags'), header_file))
+
+    def main(self):
+        header_file = os.path.abspath(self.get_arg('HeaderFile'))
+        self.geany_tags(header_file, os.path.join('~', '.config', 'geany', 'tags'))
+
+if __name__ == '__main__':
+    tool = TagsTool('HeaderFile')
+    tool.run()

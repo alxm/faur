@@ -1,66 +1,82 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
-import os, subprocess, sys
+"""
+    Copyright 2016 Alex Margarit
 
-def main():
-    if len(sys.argv) != 2:
-        print("Usage: " + os.path.basename(sys.argv[0]) + " ProjectPath")
-        return
+    This file is part of a2x-framework.
 
-    a2x_dir = os.path.abspath(sys.path[0])
+    a2x-framework is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
-    print("Found a2x: " + a2x_dir)
+    a2x-framework is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
 
-    project_path = sys.argv[1]
-    project_name = os.path.basename(project_path)
+    You should have received a copy of the GNU Lesser General Public License
+    along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
+"""
 
-    if os.path.exists(project_path):
-        print("Error: " + project_name + " already exists")
-        return
+import os
 
-    def newdir(name):
-        print("Making dir: " + name)
-        os.mkdir(name)
+from utils.output import Output
+from utils.tool import Tool
 
-    def newfile(name, contents):
-        print("Writing file: " + name)
+class NewTool(Tool):
+    def main(self):
+        project_name = self.get_arg('ProjectName')
+        project_dir = os.path.abspath(project_name)
 
-        with open(name, "w") as f:
-            f.write(contents)
+        if project_name != os.path.basename(project_name):
+            Output.error('Project name cannot be a path'.format(project_name))
 
-    newdir(project_path)
-    newdir(project_path + "/make")
-    newdir(project_path + "/src")
+        if os.path.exists(project_dir):
+            Output.error('{} already exists'.format(project_dir))
 
-    newfile(project_path + "/make/Makefile",
-"""APP = {0}
-TARGET_DIR = ..
+        make_dir = os.path.join(project_dir, 'make')
+        src_dir = os.path.join(project_dir, 'src')
+
+        self.makedir(project_dir)
+        self.makedir(make_dir)
+        self.makedir(src_dir)
+
+        self.writefile(os.path.join(make_dir, 'Makefile'),
+"""\
+APP = {0}
+BIN_DIR = ..
 SRC_DIR = ../src
 GFX_DIR =
 SFX_DIR =
 OBJ_DIR = ../obj
-A2X_PATH = {1}
-include $(A2X_PATH)/make/project/Makefile.linux
-""".format(project_name, a2x_dir))
 
-    newfile(project_path + "/src/main.c",
-"""#include <a2x.h>
+#
+# You can set A2X_PATH to a hard-coded value
+# if you do not have a2x/bin in your $PATH
+#
+A2X_PATH := $(shell a2x_path)
+include $(A2X_PATH)/make/project/Makefile.linux
+""".format(project_name))
+
+        self.writefile(os.path.join(src_dir, 'main.c'),
+"""\
+#include <a2x.h>
 
 A_SETUP
 {{
-    a2x_set("app.title", "{0}");
-    a2x_set("app.version", "1.0");
-    a2x_set("app.author", "You");
-    a2x_set("app.quiet", "no");
+    a_settings_set("app.title", "{0}");
+    a_settings_set("app.version", "1.0");
+    a_settings_set("app.author", "{1}");
+    a_settings_set("app.quiet", "no");
 }}
 
 A_MAIN
 {{
     printf("Code me!\\n");
 }}
-""".format(project_name))
+""".format(project_name, os.environ['USERNAME']))
 
-    print(project_name + " is ready!")
-
-if __name__ == "__main__":
-    main()
+if __name__ == '__main__':
+    tool = NewTool('ProjectName')
+    tool.run()

@@ -1,5 +1,5 @@
-/*
-    Copyright 2010 Alex Margarit
+"""
+    Copyright 2016 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -15,25 +15,21 @@
 
     You should have received a copy of the GNU Lesser General Public License
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
-*/
+"""
 
-#pragma once
+import subprocess
+import sys
 
-#include "a2x_system_includes.h"
+from utils.output import Output
 
-typedef void AMusic;
-typedef void ASound;
+class Shell:
+    @staticmethod
+    def run(cmd):
+        Output.shell(cmd)
+        status, output = subprocess.getstatusoutput(cmd)
 
-extern AMusic* a_music_load(const char* Path);
+        for line in output.splitlines():
+            print('    {}'.format(line))
 
-extern void a_music_play(AMusic* Music);
-extern void a_music_stop(void);
-
-extern ASound* a_sfx_fromFile(const char* Path);
-#define a_sfx_fromData(Data) a_sfx__fromData(Data, sizeof(Data))
-extern ASound* a_sfx__fromData(const uint8_t* Data, int Size);
-
-extern void a_sfx_play(ASound* Sfx);
-
-extern void a_sfx_volume(int Volume);
-extern void a_sound_adjustVolume(void);
+        if status != 0:
+            sys.exit(status)
