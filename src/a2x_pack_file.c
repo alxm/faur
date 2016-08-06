@@ -64,6 +64,14 @@ AFile* a_file_open(const char* Path, const char* Modes)
     f->eof = 0;
     f->node = a_list_addLast(g_openedFiles, f);
 
+    if(f->name == NULL) {
+        f->name = a_str_dup(Path);
+    }
+
+    if(f->path == NULL) {
+        f->path = a_str_dup(".");
+    }
+
     return f;
 }
 
