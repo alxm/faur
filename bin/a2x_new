@@ -45,7 +45,7 @@ class NewTool(Tool):
         self.writefile(os.path.join(make_dir, 'Makefile'),
 """\
 APP = {0}
-TARGET_DIR = ..
+BIN_DIR = ..
 SRC_DIR = ../src
 GFX_DIR =
 SFX_DIR =
