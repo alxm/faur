@@ -186,6 +186,30 @@ void a_file_rewind(const AFile* File)
     rewind(File->handle);
 }
 
+void a_file_seekStart(const AFile* File, long int Offset)
+{
+    if(fseek(File->handle, Offset, SEEK_SET) != 0) {
+        a_out__error("%s: could not seek %ld bytes from start",
+                     File->name, Offset);
+    }
+}
+
+void a_file_seekEnd(const AFile* File, long int Offset)
+{
+    if(fseek(File->handle, Offset, SEEK_END) != 0) {
+        a_out__error("%s: could not seek %ld bytes from end",
+                     File->name, Offset);
+    }
+}
+
+void a_file_seekCurrent(const AFile* File, long int Offset)
+{
+    if(fseek(File->handle, Offset, SEEK_CUR) != 0) {
+        a_out__error("%s: could not seek %ld bytes from current",
+                     File->name, Offset);
+    }
+}
+
 const char* a_file_path(const AFile* File)
 {
     return File->path;
