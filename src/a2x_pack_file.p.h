@@ -36,6 +36,11 @@ extern bool a_file_writef(AFile* File, char* Format, ...);
 extern bool a_file_readLine(AFile* File);
 extern char* a_file_getLine(const AFile* File);
 
+extern void a_file_rewind(const AFile* File);
+extern void a_file_seekStart(const AFile* File, long int Offset);
+extern void a_file_seekEnd(const AFile* File, long int Offset);
+extern void a_file_seekCurrent(const AFile* File, long int Offset);
+
 extern const char* a_file_path(const AFile* File);
 extern const char* a_file_name(const AFile* File);
 extern FILE* a_file_handle(const AFile* File);

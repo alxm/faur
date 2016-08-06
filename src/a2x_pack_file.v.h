@@ -23,3 +23,6 @@
 
 #include "a2x_pack_out.v.h"
 #include "a2x_pack_str.v.h"
+
+extern void a_file__init(void);
+extern void a_file__uninit(void);

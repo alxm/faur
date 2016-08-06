@@ -62,6 +62,10 @@ ADir* a_dir_openFilter(const char* Path, int (*filter)(const struct dirent* Entr
     d->files = a_list_new();
     d->num = a_math_max(0, numFiles);
 
+    if(d->name == NULL) {
+        d->name = a_str_dup(Path);
+    }
+
     for(int i = d->num; i--; ) {
         ADirEntry* const e = a_mem_malloc(sizeof(ADirEntry));
 

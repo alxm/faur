@@ -25,7 +25,26 @@ struct AFile {
     char* name;
     char* line;
     int eof;
+    AListNode* node;
 };
+
+static AList* g_openedFiles;
+
+void a_file__init(void)
+{
+    g_openedFiles = a_list_new();
+}
+
+void a_file__uninit(void)
+{
+    A_LIST_ITERATE(g_openedFiles, AFile, f) {
+        a_out__warning("You should close %s/%s with a_file_close",
+                       f->path, f->name);
+        a_file_close(f);
+    }
+
+    a_list_free(g_openedFiles);
+}
 
 AFile* a_file_open(const char* Path, const char* Modes)
 {
@@ -43,6 +62,15 @@ AFile* a_file_open(const char* Path, const char* Modes)
     f->name = a_str_getSuffixLastFind(Path, '/');
     f->line = NULL;
     f->eof = 0;
+    f->node = a_list_addLast(g_openedFiles, f);
+
+    if(f->name == NULL) {
+        f->name = a_str_dup(Path);
+    }
+
+    if(f->path == NULL) {
+        f->path = a_str_dup(".");
+    }
 
     return f;
 }
@@ -57,6 +85,7 @@ void a_file_close(AFile* File)
         fclose(File->handle);
     }
 
+    a_list_removeNode(File->node);
     free(File);
 }
 
@@ -179,6 +208,35 @@ bool a_file_readLine(AFile* File)
 char* a_file_getLine(const AFile* File)
 {
     return File->line;
+}
+
+void a_file_rewind(const AFile* File)
+{
+    rewind(File->handle);
+}
+
+void a_file_seekStart(const AFile* File, long int Offset)
+{
+    if(fseek(File->handle, Offset, SEEK_SET) != 0) {
+        a_out__error("%s: could not seek %ld bytes from start",
+                     File->name, Offset);
+    }
+}
+
+void a_file_seekEnd(const AFile* File, long int Offset)
+{
+    if(fseek(File->handle, Offset, SEEK_END) != 0) {
+        a_out__error("%s: could not seek %ld bytes from end",
+                     File->name, Offset);
+    }
+}
+
+void a_file_seekCurrent(const AFile* File, long int Offset)
+{
+    if(fseek(File->handle, Offset, SEEK_CUR) != 0) {
+        a_out__error("%s: could not seek %ld bytes from current",
+                     File->name, Offset);
+    }
 }
 
 const char* a_file_path(const AFile* File)
