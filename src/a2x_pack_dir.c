@@ -25,7 +25,6 @@ struct ADir {
     AList* files;
     AListIt iterator;
     int num;
-    const char* current[2];
 };
 
 typedef struct ADirEntry {
@@ -104,19 +103,19 @@ void a_dir_reverse(ADir* Dir)
     Dir->iterator = a_listit__new(Dir->files);
 }
 
-const char** a_dir__next(ADir* Dir)
+bool a_dir__getNext(ADir* Dir, const char** Name, const char** FullPath)
 {
     if(a_listit__next(&Dir->iterator)) {
         ADirEntry* const e = a_listit__get(&Dir->iterator);
 
-        Dir->current[A_DIR_NAME] = e->name;
-        Dir->current[A_DIR_PATH] = e->full;
+        *Name = e->name;
+        *FullPath = e->full;
 
-        return (const char**)Dir->current;
+        return true;
     }
 
     Dir->iterator = a_listit__new(Dir->files);
-    return NULL;
+    return false;
 }
 
 void a_dir_reset(ADir* Dir)
