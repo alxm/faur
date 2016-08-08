@@ -107,12 +107,11 @@ void a_dir_reverse(ADir* Dir)
 
 bool a_dir__getNext(ADir* Dir, const char** Name, const char** FullPath)
 {
-    if(a_listit__next(&Dir->iterator)) {
-        ADirEntry* const e = a_listit__get(&Dir->iterator);
+    ADirEntry* entry;
 
-        *Name = e->name;
-        *FullPath = e->full;
-
+    if(a_listit__getNext(&Dir->iterator, (void**)&entry)) {
+        *Name = entry->name;
+        *FullPath = entry->full;
         return true;
     }
 

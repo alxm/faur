@@ -41,17 +41,6 @@ bool a_listit__getNext(AListIt* Iterator, void** Item)
     return true;
 }
 
-bool a_listit__next(const AListIt* Iterator)
-{
-    return Iterator->current->next != Iterator->list->last;
-}
-
-void* a_listit__get(AListIt* Iterator)
-{
-    Iterator->current = Iterator->current->next;
-    return Iterator->current->content;
-}
-
 void a_listit__remove(AListIt* Iterator)
 {
     AList* const list = Iterator->list;

@@ -33,8 +33,6 @@ struct AListIt {
 extern AListIt a_listit__new(AList* List);
 
 extern bool a_listit__getNext(AListIt* Iterator, void** Item);
-extern bool a_listit__next(const AListIt* Iterator);
-extern void* a_listit__get(AListIt* Iterator);
 extern void a_listit__remove(AListIt* Iterator);
 
 #define A_LIST_ITERATE(List, Item)                  \
