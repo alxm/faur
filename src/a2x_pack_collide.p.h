@@ -23,14 +23,8 @@
 
 typedef struct AColMap AColMap;
 typedef struct AColObject AColObject;
-typedef struct AColIt AColIt;
 
 #include "a2x_pack_listit.p.h"
-
-struct AColIt {
-    AColObject* callerPoint;
-    AListIt points; // list of points in the current submap
-};
 
 extern AColMap* a_colmap_new(int Width, int Height, int MaxObjectDim);
 extern void a_colmap_free(AColMap* Map);
