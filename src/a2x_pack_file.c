@@ -37,7 +37,9 @@ void a_file__init(void)
 
 void a_file__uninit(void)
 {
-    A_LIST_ITERATE(g_openedFiles, AFile, f) {
+    AFile* f;
+
+    A_LIST_ITERATE(g_openedFiles, f) {
         a_out__warning("You should close %s/%s with a_file_close",
                        f->path, f->name);
         a_file_close(f);

@@ -87,8 +87,10 @@ AColObject* a_colobject_new(const AColMap* Map, void* Parent)
 
 void a_colobject_free(AColObject* Object)
 {
+    AListNode* n;
+
     // Remove object from any lists it is in
-    A_LIST_ITERATE(Object->nodes, AListNode, n) {
+    A_LIST_ITERATE(Object->nodes, n) {
         a_list_removeNode(n);
     }
 
@@ -101,9 +103,10 @@ void a_colobject_setCoords(AColObject* Object, int X, int Y)
     const AColMap* const m = Object->colmap;
     AList* const pt_nodes = Object->nodes;
     AList*** const submaps = m->submaps;
+    AListNode* n;
 
     // remove point from all the submaps it was in
-    A_LIST_ITERATE(pt_nodes, AListNode, n) {
+    A_LIST_ITERATE(pt_nodes, n) {
         a_list_removeNode(n);
     }
 

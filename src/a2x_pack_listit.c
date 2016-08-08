@@ -29,6 +29,18 @@ AListIt a_listit__new(AList* List)
     return it;
 }
 
+bool a_listit__getNext(AListIt* Iterator, void** Item)
+{
+    if(Iterator->current->next == Iterator->list->last) {
+        return false;
+    }
+
+    Iterator->current = Iterator->current->next;
+    *Item = Iterator->current->content;
+
+    return true;
+}
+
 bool a_listit__next(const AListIt* Iterator)
 {
     return Iterator->current->next != Iterator->list->last;

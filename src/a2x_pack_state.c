@@ -204,9 +204,10 @@ static void state_handle(void)
         } break;
 
         case A_STATE_ACTION_EXIT: {
+            AStateInstance* s;
             a_out__state("Telling all states to exit");
 
-            A_LIST_ITERATE(g_stack, AStateInstance, s) {
+            A_LIST_ITERATE(g_stack, s) {
                 if(s->stage == A_STATE_STAGE_BODY) {
                     a_out__state("  '%s' going from %s/%s to %s",
                         s->name,

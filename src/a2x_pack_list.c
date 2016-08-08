@@ -117,8 +117,10 @@ void* a_list_getLast(const AList* List)
 
 void a_list_remove(AList* List, const void* Item)
 {
-    A_LIST_ITERATE(List, void, var) {
-        if(var == Item) {
+    void* item;
+
+    A_LIST_ITERATE(List, item) {
+        if(item == Item) {
             A_LIST_REMOVE_CURRENT();
             break;
         }
@@ -217,10 +219,11 @@ void a_list_reverse(AList* List)
 void** a_list_array(AList* List)
 {
     int i = 0;
+    void* item;
     void** const array = a_mem_malloc(List->items * sizeof(void*));
 
-    A_LIST_ITERATE(List, void, v) {
-        array[i++] = v;
+    A_LIST_ITERATE(List, item) {
+        array[i++] = item;
     }
 
     return array;

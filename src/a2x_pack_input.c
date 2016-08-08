@@ -248,27 +248,31 @@ void a_input__init(void)
 
 void a_input__uninit(void)
 {
-    A_LIST_ITERATE(g_userInputs, AInput, i) {
-        a_input__free(i);
+    AInput* input;
+    AInputInstance* inputInstance;
+
+    A_LIST_ITERATE(g_userInputs, input) {
+        a_input__free(input);
     }
 
     a_list_free(g_userInputs);
 
-    A_LIST_ITERATE(g_buttons->list, AInputInstance, i) {
-        free(i->name);
+    A_LIST_ITERATE(g_buttons->list, inputInstance) {
+        free(inputInstance->name);
     }
 
-    A_LIST_ITERATE(g_analogs->list, AInputInstance, i) {
-        free(i->name);
+    A_LIST_ITERATE(g_analogs->list, inputInstance) {
+        free(inputInstance->name);
     }
 
-    A_LIST_ITERATE(g_touchScreens->list, AInputInstance, i) {
-        free(i->name);
+    A_LIST_ITERATE(g_touchScreens->list, inputInstance) {
+        free(inputInstance->name);
 
-        A_LIST_ITERATE(i->u.touch.motion, APoint, p) {
+        APoint* p;
+        A_LIST_ITERATE(inputInstance->u.touch.motion, p) {
             free(p);
         }
-        a_list_free(i->u.touch.motion);
+        a_list_free(inputInstance->u.touch.motion);
     }
 
     a_input__collection_free(g_buttons);
@@ -288,7 +292,9 @@ AInputCollection* a_input__collection_new(void)
 
 void a_input__collection_free(AInputCollection* Collection)
 {
-    A_LIST_ITERATE(Collection->list, void, v) {
+    void* v;
+
+    A_LIST_ITERATE(Collection->list, v) {
         free(v);
     }
 
@@ -306,17 +312,21 @@ void a_input__collection_add(AInputCollection* Collection, void* Instance, const
 
 void a_input__get(void)
 {
-    A_LIST_ITERATE(g_touchScreens->list, AInputInstance, t) {
-        t->u.touch.tap = false;
+    APoint* p;
+    AInputInstance* inputInstance;
 
-        A_LIST_ITERATE(t->u.touch.motion, APoint, p) {
+    A_LIST_ITERATE(g_touchScreens->list, inputInstance) {
+        inputInstance->u.touch.tap = false;
+
+        A_LIST_ITERATE(inputInstance->u.touch.motion, p) {
             free(p);
         }
-        a_list_empty(t->u.touch.motion);
+
+        a_list_empty(inputInstance->u.touch.motion);
     }
 
-    A_LIST_ITERATE(g_buttons->list, AInputInstance, b) {
-        b->u.button.freshEvent = false;
+    A_LIST_ITERATE(g_buttons->list, inputInstance) {
+        inputInstance->u.button.freshEvent = false;
     }
 
     a_sdl__input_get();
@@ -539,7 +549,9 @@ bool a_input_working(const AInput* Input)
 
 bool a_button_get(const AInput* Button)
 {
-    A_LIST_ITERATE(Button->g_buttons, AInputInstance, b) {
+    AInputInstance* b;
+
+    A_LIST_ITERATE(Button->g_buttons, b) {
         if(b->u.button.pressed) {
             return true;
         }
@@ -550,16 +562,19 @@ bool a_button_get(const AInput* Button)
 
 void a_button_unpress(const AInput* Input)
 {
-    A_LIST_ITERATE(Input->g_buttons, AInputInstance, b) {
+    AInputInstance* b;
+
+    A_LIST_ITERATE(Input->g_buttons, b) {
         b->u.button.pressed = false;
     }
 }
 
 bool a_button_getAndUnpress(const AInput* Button)
 {
+    AInputInstance* b;
     bool foundPressed = false;
 
-    A_LIST_ITERATE(Button->g_buttons, AInputInstance, b) {
+    A_LIST_ITERATE(Button->g_buttons, b) {
         if(b->u.button.pressed) {
             b->u.button.pressed = false;
             foundPressed = true;
@@ -585,7 +600,9 @@ void a_button_waitFor(const AInput* Button)
 
 int a_analog_xaxis(const AInput* Analog)
 {
-    A_LIST_ITERATE(Analog->g_analogs, AInputInstance, a) {
+    AInputInstance* a;
+
+    A_LIST_ITERATE(Analog->g_analogs, a) {
         if(a_math_abs(a->u.analog.xaxis) > A_ANALOG_ERROR_MARGIN) {
             return a->u.analog.xaxis;
         }
@@ -596,7 +613,9 @@ int a_analog_xaxis(const AInput* Analog)
 
 int a_analog_yaxis(const AInput* Analog)
 {
-    A_LIST_ITERATE(Analog->g_analogs, AInputInstance, a) {
+    AInputInstance* a;
+
+    A_LIST_ITERATE(Analog->g_analogs, a) {
         if(a_math_abs(a->u.analog.yaxis) > A_ANALOG_ERROR_MARGIN) {
             return a->u.analog.yaxis;
         }
@@ -617,7 +636,9 @@ AFix a_analog_yaxis_fix(const AInput* Analog)
 
 bool a_touch_tapped(const AInput* Touch)
 {
-    A_LIST_ITERATE(Touch->g_touchScreens, AInputInstance, t) {
+    AInputInstance* t;
+
+    A_LIST_ITERATE(Touch->g_touchScreens, t) {
         if(t->u.touch.tap) {
             return true;
         }
@@ -633,7 +654,9 @@ bool a_touch_point(const AInput* Touch, int X, int Y)
 
 bool a_touch_rect(const AInput* Touch, int X, int Y, int W, int H)
 {
-    A_LIST_ITERATE(Touch->g_touchScreens, AInputInstance, t) {
+    AInputInstance* t;
+
+    A_LIST_ITERATE(Touch->g_touchScreens, t) {
         if(t->u.touch.tap
             && a_collide_boxes(X, Y, W, H,
                                t->u.touch.x, t->u.touch.y, 1, 1)) {
