@@ -21,62 +21,81 @@
 
 #define SCREENSHOTS_LIMIT 99999
 
-static bool g_canSave;
+static bool g_isInit;
 static char* g_filePrefix;
 static unsigned int g_screenshotNumber;
 
+static bool lazy_init(void)
+{
+    const char* screensDir = a_settings_getString("screenshot.dir");
+
+    if(a_dir_exists(screensDir)) {
+        ADir* dir = a_dir_open(screensDir);
+
+        if(a_dir_num(dir) == 0) {
+            g_isInit = true;
+        } else {
+            const char* file;
+            const char* fullPath;
+
+            // Only interested in the last file, to get the number from its name
+            a_dir_reverse(dir);
+
+            A_DIR_ITERATE(dir, file, fullPath) {
+                int start = a_str_lastIndex(file, '-');
+                int end = a_str_lastIndex(file, '.');
+
+                if(start != -1 && end != -1 && end - start == 6) {
+                    char* numberStr = a_str_sub(file, start + 1, end);
+                    int number = atoi(numberStr);
+                    free(numberStr);
+
+                    if(number > 0) {
+                        g_screenshotNumber = number;
+                        g_isInit = true;
+                        break;
+                    }
+                }
+
+                a_out__error("Invalid file name %s", fullPath);
+                break;
+            }
+        }
+
+        a_dir_close(dir);
+    } else {
+        a_out__message("Making screenshots dir: %s", screensDir);
+        a_dir_make(screensDir);
+        g_isInit = true;
+    }
+
+    if(g_isInit) {
+        g_filePrefix = a_str_merge(screensDir,
+                                   "/",
+                                   a_settings_getString("app.title"),
+                                   "-");
+    }
+
+    return g_isInit;
+}
+
 void a_screenshot__init(void)
 {
-    const char* const screens_dir = a_settings_getString("screenshot.dir");
-
-    if(!a_dir_exists(screens_dir)) {
-        a_dir_make(screens_dir);
-    }
-
-    g_canSave = true;
-    g_filePrefix = a_str_merge(screens_dir, "/", a_settings_getString("app.title"), "-");
+    g_isInit = false;
+    g_filePrefix = NULL;
     g_screenshotNumber = 0;
-
-    ADir* const dir = a_dir_open(screens_dir);
-    a_dir_reverse(dir);
-
-    const char** const pair = a_dir__next(dir);
-
-    if(pair) {
-        const char* const file = pair[A_DIR_NAME];
-
-        int start = a_str_lastIndex(file, '-');
-        int end = a_str_lastIndex(file, '.');
-
-        if(start != -1 && end != -1 && end - start == 6) {
-            char* numberStr = a_str_sub(file, start + 1, end);
-            g_screenshotNumber = atoi(numberStr);
-            free(numberStr);
-
-            if(g_screenshotNumber <= 0) {
-                g_canSave = false;
-            }
-        } else {
-            g_canSave = false;
-        }
-
-        if(!g_canSave) {
-            a_out__error("Can't save screenshots: invalid file '%s'", file);
-        }
-    }
-
-    a_dir_close(dir);
 }
 
 void a_screenshot__uninit(void)
 {
-    free(g_filePrefix);
+    if(g_filePrefix != NULL) {
+        free(g_filePrefix);
+    }
 }
 
 void a_screenshot_save(void)
 {
-    if(!g_canSave) {
-        a_out__error("Can't save screenshots");
+    if(!g_isInit && !lazy_init()) {
         return;
     }
 
@@ -87,8 +106,7 @@ void a_screenshot_save(void)
 
     char num[6];
     snprintf(num, 6, "%05d", g_screenshotNumber);
-
-    char* const name = a_str_merge(g_filePrefix, num, ".png");
+    char* name = a_str_merge(g_filePrefix, num, ".png");
 
     a_out__message("Saving screenshot '%s'", name);
     a_png_write(name, a_screen__pixels, a_screen__width, a_screen__height);
