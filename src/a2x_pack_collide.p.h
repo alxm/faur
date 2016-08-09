@@ -36,9 +36,12 @@ extern void a_colobject_setCoords(AColObject* Object, int X, int Y);
 extern AList* a_colobject__getColList(const AColObject* Object);
 extern void* a_colobject__getParent(const AColObject* Object);
 
-#define A_COL_ITERATE(Object, VarType, VarName)                                          \
-    A_LIST_FILTER(a_colobject__getColList(Object), AColObject, a__obj, Object != a__obj) \
-        for(VarType* VarName = a_colobject__getParent(a__obj); VarName; VarName = NULL)
+extern void a_colobject__reset(AColObject* Object);
+extern bool a_colobject__getNext(AColObject* Object, void** UserObject);
+
+#define A_COL_ITERATE(ColObject, UserObject)                    \
+    for(a_colobject__reset(ColObject);                          \
+        a_colobject__getNext(ColObject, (void**)&UserObject); )
 
 extern bool a_collide_boxes(int X1, int Y1, int W1, int H1, int X2, int Y2, int W2, int H2);
 extern bool a_collide_boxOnScreen(int X, int Y, int W, int H);

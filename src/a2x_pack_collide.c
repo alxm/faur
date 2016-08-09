@@ -30,6 +30,7 @@ struct AColObject {
     int x, y; // coords on the Colmap
     AList* nodes; // AListNodes from submaps this object is in
     void* parent; // the game object that owns this AColObject
+    AListIt iterator;
 };
 
 AColMap* a_colmap_new(int Width, int Height, int MaxObjectDim)
@@ -158,6 +159,29 @@ void a_colobject_setCoords(AColObject* Object, int X, int Y)
 void* a_colobject__getParent(const AColObject* Object)
 {
     return Object->parent;
+}
+
+void a_colobject__reset(AColObject* Object)
+{
+    Object->iterator = a_listit__new(a_colobject__getColList(Object));
+}
+
+bool a_colobject__getNext(AColObject* Object, void** UserObject)
+{
+    while(true) {
+        AColObject* colObject;
+
+        if(a_listit__getNext(&Object->iterator, (void**)&colObject)) {
+            if(colObject == Object) {
+                continue;
+            }
+
+            *UserObject = a_colobject__getParent(colObject);
+            return true;
+        }
+
+        return false;
+    }
 }
 
 AList* a_colobject__getColList(const AColObject* Object)
