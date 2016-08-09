@@ -34,7 +34,7 @@ struct AInputInstance {
     union {
         struct {
             bool pressed;
-            bool previouslyPressed; // used to simulate key events for analog
+            bool analogPushedPast; // used to simulate key events for analog
             bool freshEvent; // used to simulate separate directions from diagonals
         } button;
         struct {
@@ -78,7 +78,7 @@ static void addButton(const char* Name)
 
     b->name = a_str_dup(Name);
     b->u.button.pressed = false;
-    b->u.button.previouslyPressed = false;
+    b->u.button.analogPushedPast = false;
     b->u.button.freshEvent = false;
 
     a_input__collection_add(g_buttons, b, Name);
@@ -339,28 +339,28 @@ void a_input__get(void)
         a_screenshot_save();
     }
 
-    // simulate seperate direction events from diagonals
+    // GP2X and Wiz dpad diagonals show up as dedicated buttons instead of a
+    // combination of two separate buttons. This code checks diagonal events
+    // and sets the state of each actual button accordingly.
     #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
         #if A_PLATFORM_GP2X
-            AInputInstance* const upLeft = a_strhash_get(g_buttons->names, "gp2x.UpLeft");
-            AInputInstance* const upRight = a_strhash_get(g_buttons->names, "gp2x.UpRight");
-            AInputInstance* const downLeft = a_strhash_get(g_buttons->names, "gp2x.DownLeft");
-            AInputInstance* const downRight = a_strhash_get(g_buttons->names, "gp2x.DownRight");
-
-            AInputInstance* const up = a_strhash_get(g_buttons->names, "gp2x.Up");
-            AInputInstance* const down = a_strhash_get(g_buttons->names, "gp2x.Down");
-            AInputInstance* const left = a_strhash_get(g_buttons->names, "gp2x.Left");
-            AInputInstance* const right = a_strhash_get(g_buttons->names, "gp2x.Right");
+            AInputInstance* upLeft = a_strhash_get(g_buttons->names, "gp2x.UpLeft");
+            AInputInstance* upRight = a_strhash_get(g_buttons->names, "gp2x.UpRight");
+            AInputInstance* downLeft = a_strhash_get(g_buttons->names, "gp2x.DownLeft");
+            AInputInstance* downRight = a_strhash_get(g_buttons->names, "gp2x.DownRight");
+            AInputInstance* up = a_strhash_get(g_buttons->names, "gp2x.Up");
+            AInputInstance* down = a_strhash_get(g_buttons->names, "gp2x.Down");
+            AInputInstance* left = a_strhash_get(g_buttons->names, "gp2x.Left");
+            AInputInstance* right = a_strhash_get(g_buttons->names, "gp2x.Right");
         #elif A_PLATFORM_WIZ
-            AInputInstance* const upLeft = a_strhash_get(g_buttons->names, "wiz.UpLeft");
-            AInputInstance* const upRight = a_strhash_get(g_buttons->names, "wiz.UpRight");
-            AInputInstance* const downLeft = a_strhash_get(g_buttons->names, "wiz.DownLeft");
-            AInputInstance* const downRight = a_strhash_get(g_buttons->names, "wiz.DownRight");
-
-            AInputInstance* const up = a_strhash_get(g_buttons->names, "wiz.Up");
-            AInputInstance* const down = a_strhash_get(g_buttons->names, "wiz.Down");
-            AInputInstance* const left = a_strhash_get(g_buttons->names, "wiz.Left");
-            AInputInstance* const right = a_strhash_get(g_buttons->names, "wiz.Right");
+            AInputInstance* upLeft = a_strhash_get(g_buttons->names, "wiz.UpLeft");
+            AInputInstance* upRight = a_strhash_get(g_buttons->names, "wiz.UpRight");
+            AInputInstance* downLeft = a_strhash_get(g_buttons->names, "wiz.DownLeft");
+            AInputInstance* downRight = a_strhash_get(g_buttons->names, "wiz.DownRight");
+            AInputInstance* up = a_strhash_get(g_buttons->names, "wiz.Up");
+            AInputInstance* down = a_strhash_get(g_buttons->names, "wiz.Down");
+            AInputInstance* left = a_strhash_get(g_buttons->names, "wiz.Left");
+            AInputInstance* right = a_strhash_get(g_buttons->names, "wiz.Right");
         #endif
 
         if(upLeft->u.button.freshEvent) {
@@ -421,63 +421,65 @@ void a_input__get(void)
         }
     #endif
 
-    // simulate a DPAD with Caanoo's analog stick
+    // Caanoo has an analog stick instead of a dpad, but in most cases it's
+    // useful to be able to use it as a dpad like on the other platforms.
     #if A_PLATFORM_CAANOO
         // pressed at least half-way
-        #define ANALOG_TRESH (1 << 14)
+        #define ANALOG_TRESH ((1 << 15) / 2)
 
-        AInputInstance* const stick = a_strhash_get(g_analogs->names, "caanoo.Stick");
-        AInputInstance* const up = a_strhash_get(g_buttons->names, "caanoo.Up");
-        AInputInstance* const down = a_strhash_get(g_buttons->names, "caanoo.Down");
-        AInputInstance* const left = a_strhash_get(g_buttons->names, "caanoo.Left");
-        AInputInstance* const right = a_strhash_get(g_buttons->names, "caanoo.Right");
+        AInputInstance* stick = a_strhash_get(g_analogs->names, "caanoo.Stick");
+        AInputInstance* up = a_strhash_get(g_buttons->names, "caanoo.Up");
+        AInputInstance* down = a_strhash_get(g_buttons->names, "caanoo.Down");
+        AInputInstance* left = a_strhash_get(g_buttons->names, "caanoo.Left");
+        AInputInstance* right = a_strhash_get(g_buttons->names, "caanoo.Right");
 
         if(stick->u.analog.xaxis < -ANALOG_TRESH) {
-            // saving previouslyPressed allows us to call a_button_getAndUnpress
-            // or a_button_unpress without losing actual button state
-            if(!left->u.button.previouslyPressed) {
-                left->u.button.previouslyPressed = true;
+            // Tracking analog direction pushes with analogPushedPast lets us
+            // call a_button_getAndUnpress and a_button_unpress on the simulated
+            // dpad buttons while maintaining correct press/unpress states here.
+            if(!left->u.button.analogPushedPast) {
+                left->u.button.analogPushedPast = true;
                 left->u.button.pressed = true;
             }
         } else {
-            if(left->u.button.previouslyPressed) {
-                left->u.button.previouslyPressed = false;
+            if(left->u.button.analogPushedPast) {
+                left->u.button.analogPushedPast = false;
                 left->u.button.pressed = false;
             }
         }
 
         if(stick->u.analog.xaxis > ANALOG_TRESH) {
-            if(!right->u.button.previouslyPressed) {
-                right->u.button.previouslyPressed = true;
+            if(!right->u.button.analogPushedPast) {
+                right->u.button.analogPushedPast = true;
                 right->u.button.pressed = true;
             }
         } else {
-            if(right->u.button.previouslyPressed) {
-                right->u.button.previouslyPressed = false;
+            if(right->u.button.analogPushedPast) {
+                right->u.button.analogPushedPast = false;
                 right->u.button.pressed = false;
             }
         }
 
         if(stick->u.analog.yaxis < -ANALOG_TRESH) {
-            if(!up->u.button.previouslyPressed) {
-                up->u.button.previouslyPressed = true;
+            if(!up->u.button.analogPushedPast) {
+                up->u.button.analogPushedPast = true;
                 up->u.button.pressed = true;
             }
         } else {
-            if(up->u.button.previouslyPressed) {
-                up->u.button.previouslyPressed = false;
+            if(up->u.button.analogPushedPast) {
+                up->u.button.analogPushedPast = false;
                 up->u.button.pressed = false;
             }
         }
 
         if(stick->u.analog.yaxis > ANALOG_TRESH) {
-            if(!down->u.button.previouslyPressed) {
-                down->u.button.previouslyPressed = true;
+            if(!down->u.button.analogPushedPast) {
+                down->u.button.analogPushedPast = true;
                 down->u.button.pressed = true;
             }
         } else {
-            if(down->u.button.previouslyPressed) {
-                down->u.button.previouslyPressed = false;
+            if(down->u.button.analogPushedPast) {
+                down->u.button.analogPushedPast = false;
                 down->u.button.pressed = false;
             }
         }
