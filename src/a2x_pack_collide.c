@@ -29,7 +29,7 @@ struct AColObject {
     const AColMap* colmap;
     int x, y; // coords on the Colmap
     AList* nodes; // AListNodes from submaps this object is in
-    void* parent; // the game object that owns this AColObject
+    void* userObject; // the game object that owns this AColObject
     AListIt iterator;
 };
 
@@ -75,13 +75,13 @@ void a_colmap_free(AColMap* Map)
     free(Map);
 }
 
-AColObject* a_colobject_new(const AColMap* Map, void* Parent)
+AColObject* a_colobject_new(const AColMap* Map, void* UserObject)
 {
     AColObject* const o = a_mem_malloc(sizeof(AColObject));
 
     o->colmap = Map;
     o->nodes = a_list_new();
-    o->parent = Parent;
+    o->userObject = UserObject;
 
     return o;
 }
@@ -156,11 +156,6 @@ void a_colobject_setCoords(AColObject* Object, int X, int Y)
     }
 }
 
-void* a_colobject__getParent(const AColObject* Object)
-{
-    return Object->parent;
-}
-
 void a_colobject__reset(AColObject* Object)
 {
     AList* possibleCollisions;
@@ -183,12 +178,17 @@ bool a_colobject__getNext(AColObject* Object, void** UserObject)
                 continue;
             }
 
-            *UserObject = a_colobject__getParent(colObject);
+            *UserObject = a_colobject__getUserObject(colObject);
             return true;
         }
 
         return false;
     }
+}
+
+void* a_colobject__getUserObject(const AColObject* Object)
+{
+    return Object->userObject;
 }
 
 bool a_collide_boxes(int X1, int Y1, int W1, int H1, int X2, int Y2, int W2, int H2)

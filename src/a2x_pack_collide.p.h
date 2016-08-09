@@ -29,14 +29,14 @@ typedef struct AColObject AColObject;
 extern AColMap* a_colmap_new(int Width, int Height, int MaxObjectDim);
 extern void a_colmap_free(AColMap* Map);
 
-extern AColObject* a_colobject_new(const AColMap* Map, void* Parent);
+extern AColObject* a_colobject_new(const AColMap* Map, void* UserObject);
 extern void a_colobject_free(AColObject* Object);
 
 extern void a_colobject_setCoords(AColObject* Object, int X, int Y);
-extern void* a_colobject__getParent(const AColObject* Object);
 
 extern void a_colobject__reset(AColObject* Object);
 extern bool a_colobject__getNext(AColObject* Object, void** UserObject);
+extern void* a_colobject__getUserObject(const AColObject* Object);
 
 #define A_COL_ITERATE(ColObject, UserObject)                    \
     for(a_colobject__reset(ColObject);                          \
