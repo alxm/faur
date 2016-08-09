@@ -33,7 +33,6 @@ extern AColObject* a_colobject_new(const AColMap* Map, void* Parent);
 extern void a_colobject_free(AColObject* Object);
 
 extern void a_colobject_setCoords(AColObject* Object, int X, int Y);
-extern AList* a_colobject__getColList(const AColObject* Object);
 extern void* a_colobject__getParent(const AColObject* Object);
 
 extern void a_colobject__reset(AColObject* Object);

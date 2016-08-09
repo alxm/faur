@@ -163,7 +163,14 @@ void* a_colobject__getParent(const AColObject* Object)
 
 void a_colobject__reset(AColObject* Object)
 {
-    Object->iterator = a_listit__new(a_colobject__getColList(Object));
+    AList* possibleCollisions;
+    const AColMap* map = Object->colmap;
+
+    int submap_x = a_math_constrain(Object->x >> map->bitShift, 0, map->w - 1);
+    int submap_y = a_math_constrain(Object->y >> map->bitShift, 0, map->h - 1);
+
+    possibleCollisions = map->submaps[submap_y][submap_x];
+    Object->iterator = a_listit__new(possibleCollisions);
 }
 
 bool a_colobject__getNext(AColObject* Object, void** UserObject)
@@ -182,16 +189,6 @@ bool a_colobject__getNext(AColObject* Object, void** UserObject)
 
         return false;
     }
-}
-
-AList* a_colobject__getColList(const AColObject* Object)
-{
-    const AColMap* const m = Object->colmap;
-
-    const int submap_x = a_math_constrain(Object->x >> m->bitShift, 0, m->w - 1);
-    const int submap_y = a_math_constrain(Object->y >> m->bitShift, 0, m->h - 1);
-
-    return m->submaps[submap_y][submap_x];
 }
 
 bool a_collide_boxes(int X1, int Y1, int W1, int H1, int X2, int Y2, int W2, int H2)
