@@ -171,9 +171,9 @@ void a_colobject__reset(AColObject* Object)
 bool a_colobject__getNext(AColObject* Object, void** UserObject)
 {
     while(true) {
-        AColObject* colObject;
+        if(a_listit__getNext(&Object->iterator)) {
+            AColObject* colObject = Object->iterator.currentItem;
 
-        if(a_listit__getNext(&Object->iterator, (void**)&colObject)) {
             if(colObject == Object) {
                 continue;
             }

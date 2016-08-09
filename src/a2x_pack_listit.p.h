@@ -27,17 +27,18 @@ typedef struct AListIt AListIt;
 
 struct AListIt {
     AList* list;
-    AListNode* current;
+    AListNode* currentNode;
+    void* currentItem;
 };
 
 extern AListIt a_listit__new(AList* List);
 
-extern bool a_listit__getNext(AListIt* Iterator, void** Item);
+extern bool a_listit__getNext(AListIt* Iterator);
 extern void a_listit__remove(AListIt* Iterator);
 
-#define A_LIST_ITERATE(List, Item)                  \
-    for(AListIt a__it = a_listit__new(List);        \
-        a_listit__getNext(&a__it, (void**)&Item); )
+#define A_LIST_ITERATE(List, Item)                                       \
+    for(AListIt a__it = a_listit__new(List);                             \
+        a_listit__getNext(&a__it) && (Item = a__it.currentItem, true); )
 
 #define A_LIST_FILTER(List, Item, Filter) \
     A_LIST_ITERATE(List, Item)            \

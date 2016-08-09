@@ -24,29 +24,30 @@ AListIt a_listit__new(AList* List)
     AListIt it;
 
     it.list = List;
-    it.current = List->first;
+    it.currentNode = List->first;
+    it.currentItem = NULL;
 
     return it;
 }
 
-bool a_listit__getNext(AListIt* Iterator, void** Item)
+bool a_listit__getNext(AListIt* Iterator)
 {
-    if(Iterator->current->next == Iterator->list->last) {
+    if(Iterator->currentNode->next == Iterator->list->last) {
         return false;
     }
 
-    Iterator->current = Iterator->current->next;
-    *Item = Iterator->current->content;
+    Iterator->currentNode = Iterator->currentNode->next;
+    Iterator->currentItem = Iterator->currentNode->content;
 
     return true;
 }
 
 void a_listit__remove(AListIt* Iterator)
 {
-    AList* const list = Iterator->list;
-    AListNode* const n = Iterator->current;
+    AList* list = Iterator->list;
+    AListNode* n = Iterator->currentNode;
 
-    Iterator->current = n->prev;
+    Iterator->currentNode = n->prev;
 
     n->prev->next = n->next;
     n->next->prev = n->prev;
