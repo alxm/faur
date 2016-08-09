@@ -34,13 +34,16 @@ extern void a_colobject_free(AColObject* Object);
 
 extern void a_colobject_setCoords(AColObject* Object, int X, int Y);
 
-extern void a_colobject__reset(AColObject* Object);
-extern bool a_colobject__getNext(AColObject* Object, void** UserObject);
 extern void* a_colobject__getUserObject(const AColObject* Object);
+extern AList* a_colobject__getPossibleCollisions(const AColObject* Object);
 
-#define A_COL_ITERATE(ColObject, UserObject)                    \
-    for(a_colobject__reset(ColObject);                          \
-        a_colobject__getNext(ColObject, (void**)&UserObject); )
+#define A_COL_ITERATE(ColObject, UserObject)                        \
+    for(AColObject* a__o = ColObject; a__o; a__o = NULL)            \
+        A_LIST_FILTER(                                              \
+            a_colobject__getPossibleCollisions(ColObject),          \
+            a__o,                                                   \
+            a__o != ColObject                                       \
+                && (UserObject = a_colobject__getUserObject(a__o)))
 
 extern bool a_collide_boxes(int X1, int Y1, int W1, int H1, int X2, int Y2, int W2, int H2);
 extern bool a_collide_boxOnScreen(int X, int Y, int W, int H);

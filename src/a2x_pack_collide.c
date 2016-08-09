@@ -30,7 +30,6 @@ struct AColObject {
     int x, y; // coords on the Colmap
     AList* nodes; // AListNodes from submaps this object is in
     void* userObject; // the game object that owns this AColObject
-    AListIt iterator;
 };
 
 AColMap* a_colmap_new(int Width, int Height, int MaxObjectDim)
@@ -156,39 +155,19 @@ void a_colobject_setCoords(AColObject* Object, int X, int Y)
     }
 }
 
-void a_colobject__reset(AColObject* Object)
+void* a_colobject__getUserObject(const AColObject* Object)
 {
-    AList* possibleCollisions;
+    return Object->userObject;
+}
+
+AList* a_colobject__getPossibleCollisions(const AColObject* Object)
+{
     const AColMap* map = Object->colmap;
 
     int submap_x = a_math_constrain(Object->x >> map->bitShift, 0, map->w - 1);
     int submap_y = a_math_constrain(Object->y >> map->bitShift, 0, map->h - 1);
 
-    possibleCollisions = map->submaps[submap_y][submap_x];
-    Object->iterator = a_listit__new(possibleCollisions);
-}
-
-bool a_colobject__getNext(AColObject* Object, void** UserObject)
-{
-    while(true) {
-        if(a_listit__getNext(&Object->iterator)) {
-            AColObject* colObject = Object->iterator.currentItem;
-
-            if(colObject == Object) {
-                continue;
-            }
-
-            *UserObject = a_colobject__getUserObject(colObject);
-            return true;
-        }
-
-        return false;
-    }
-}
-
-void* a_colobject__getUserObject(const AColObject* Object)
-{
-    return Object->userObject;
+    return map->submaps[submap_y][submap_x];
 }
 
 bool a_collide_boxes(int X1, int Y1, int W1, int H1, int X2, int Y2, int W2, int H2)
