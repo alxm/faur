@@ -39,9 +39,9 @@ extern void a_listit__remove(AListIt* Iterator);
     for(AListIt a__it = a_listit__new(List);        \
         a_listit__getNext(&a__it, (void**)&Item); )
 
-#define A_LIST_FILTER(List, VarType, VarName, Filter) \
-    A_LIST_ITERATE(List, VarType, VarName)            \
-        if(!(Filter)) continue;                       \
+#define A_LIST_FILTER(List, Item, Filter) \
+    A_LIST_ITERATE(List, Item)            \
+        if(!(Filter)) continue;           \
         else
 
 #define A_LIST_REMOVE_CURRENT() a_listit__remove(&a__it)
