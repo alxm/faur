@@ -84,8 +84,10 @@ AMenu* a_menu_new(AInput* Next, AInput* Back, AInput* Select, AInput* Cancel, AM
 void a_menu_free(AMenu* Menu)
 {
     if(Menu->freeItem) {
-        A_LIST_ITERATE(Menu->items, void, v) {
-            Menu->freeItem(v);
+        void* item;
+
+        A_LIST_ITERATE(Menu->items, item) {
+            Menu->freeItem(item);
         }
     }
 

@@ -29,7 +29,8 @@ struct AColObject {
     const AColMap* colmap;
     int x, y; // coords on the Colmap
     AList* nodes; // AListNodes from submaps this object is in
-    void* parent; // the game object that owns this AColObject
+    void* userObject; // the game object that owns this AColObject
+    AListIt iterator;
 };
 
 AColMap* a_colmap_new(int Width, int Height, int MaxObjectDim)
@@ -74,21 +75,23 @@ void a_colmap_free(AColMap* Map)
     free(Map);
 }
 
-AColObject* a_colobject_new(const AColMap* Map, void* Parent)
+AColObject* a_colobject_new(const AColMap* Map, void* UserObject)
 {
     AColObject* const o = a_mem_malloc(sizeof(AColObject));
 
     o->colmap = Map;
     o->nodes = a_list_new();
-    o->parent = Parent;
+    o->userObject = UserObject;
 
     return o;
 }
 
 void a_colobject_free(AColObject* Object)
 {
+    AListNode* n;
+
     // Remove object from any lists it is in
-    A_LIST_ITERATE(Object->nodes, AListNode, n) {
+    A_LIST_ITERATE(Object->nodes, n) {
         a_list_removeNode(n);
     }
 
@@ -101,9 +104,10 @@ void a_colobject_setCoords(AColObject* Object, int X, int Y)
     const AColMap* const m = Object->colmap;
     AList* const pt_nodes = Object->nodes;
     AList*** const submaps = m->submaps;
+    AListNode* n;
 
     // remove point from all the submaps it was in
-    A_LIST_ITERATE(pt_nodes, AListNode, n) {
+    A_LIST_ITERATE(pt_nodes, n) {
         a_list_removeNode(n);
     }
 
@@ -152,19 +156,39 @@ void a_colobject_setCoords(AColObject* Object, int X, int Y)
     }
 }
 
-void* a_colobject__getParent(const AColObject* Object)
+void a_colobject__reset(AColObject* Object)
 {
-    return Object->parent;
+    AList* possibleCollisions;
+    const AColMap* map = Object->colmap;
+
+    int submap_x = a_math_constrain(Object->x >> map->bitShift, 0, map->w - 1);
+    int submap_y = a_math_constrain(Object->y >> map->bitShift, 0, map->h - 1);
+
+    possibleCollisions = map->submaps[submap_y][submap_x];
+    Object->iterator = a_listit__new(possibleCollisions);
 }
 
-AList* a_colobject__getColList(const AColObject* Object)
+bool a_colobject__getNext(AColObject* Object, void** UserObject)
 {
-    const AColMap* const m = Object->colmap;
+    while(true) {
+        AColObject* colObject;
 
-    const int submap_x = a_math_constrain(Object->x >> m->bitShift, 0, m->w - 1);
-    const int submap_y = a_math_constrain(Object->y >> m->bitShift, 0, m->h - 1);
+        if(a_listit__getNext(&Object->iterator, (void**)&colObject)) {
+            if(colObject == Object) {
+                continue;
+            }
 
-    return m->submaps[submap_y][submap_x];
+            *UserObject = a_colobject__getUserObject(colObject);
+            return true;
+        }
+
+        return false;
+    }
+}
+
+void* a_colobject__getUserObject(const AColObject* Object)
+{
+    return Object->userObject;
 }
 
 bool a_collide_boxes(int X1, int Y1, int W1, int H1, int X2, int Y2, int W2, int H2)

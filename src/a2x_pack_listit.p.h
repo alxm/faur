@@ -32,17 +32,16 @@ struct AListIt {
 
 extern AListIt a_listit__new(AList* List);
 
-extern bool a_listit__next(const AListIt* Iterator);
-extern void* a_listit__get(AListIt* Iterator);
+extern bool a_listit__getNext(AListIt* Iterator, void** Item);
 extern void a_listit__remove(AListIt* Iterator);
 
-#define A_LIST_ITERATE(List, VarType, VarName)                                                 \
-    for(AListIt a__it = a_listit__new(List); a__it.current; a__it.current = NULL)        \
-        for(VarType* VarName; a_listit__next(&a__it) && (VarName = a_listit__get(&a__it), true); )
+#define A_LIST_ITERATE(List, Item)                  \
+    for(AListIt a__it = a_listit__new(List);        \
+        a_listit__getNext(&a__it, (void**)&Item); )
 
-#define A_LIST_FILTER(List, VarType, VarName, Filter) \
-    A_LIST_ITERATE(List, VarType, VarName)            \
-        if(!(Filter)) continue;                \
+#define A_LIST_FILTER(List, Item, Filter) \
+    A_LIST_ITERATE(List, Item)            \
+        if(!(Filter)) continue;           \
         else
 
 #define A_LIST_REMOVE_CURRENT() a_listit__remove(&a__it)

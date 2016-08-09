@@ -68,7 +68,9 @@ ASpriteFrames* a_spriteframes_new(const ASprite* Sheet, int X, int Y, unsigned i
 void a_spriteframes_free(ASpriteFrames* Frames, bool DoFreeSprites)
 {
     if(DoFreeSprites) {
-        A_LIST_ITERATE(Frames->sprites, ASprite, sprite) {
+        ASprite* sprite;
+
+        A_LIST_ITERATE(Frames->sprites, sprite) {
             a_sprite_free(sprite);
         }
     }

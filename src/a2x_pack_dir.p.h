@@ -29,14 +29,10 @@ extern void a_dir_close(ADir* Dir);
 
 extern void a_dir_reverse(ADir* Dir);
 
-extern const char** a_dir__next(ADir* Dir);
+#define A_DIR_ITERATE(Dir, Name, FullPath)       \
+    while(a_dir__getNext(Dir, &Name, &FullPath))
 
-enum {A_DIR_NAME, A_DIR_PATH};
-
-#define A_DIR_ITERATE(Dir, NameVar, PathVar)                                                              \
-    for(const char** a__pair; (a__pair = a_dir__next(Dir)); )                                       \
-        for(const char *NameVar = a__pair[A_DIR_NAME], *PathVar = a__pair[A_DIR_PATH]; NameVar; NameVar = NULL)
-
+extern bool a_dir__getNext(ADir* Dir, const char** Name, const char** FullPath);
 extern void a_dir_reset(ADir* Dir);
 
 extern const char* a_dir_path(const ADir* Dir);
