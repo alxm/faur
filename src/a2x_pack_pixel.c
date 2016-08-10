@@ -31,6 +31,7 @@ APixelPut a_pixel_put;
 static APixelPut g_pixelDraw[A_PIXEL_TYPE_NUM][2];
 
 static APixelMode g_mode;
+static AList* g_modeStack;
 
 #define PIXEL_DST (a_screen__pixels + Y * a_screen__width + X)
 
@@ -73,6 +74,52 @@ void a_pixel__init(void)
 
     g_mode.blend = A_PIXEL_PLAIN;
     g_mode.clip = true;
+    g_modeStack = a_list_new();
+
+    a_pixel_put = g_pixelDraw[g_mode.blend][g_mode.clip];
+}
+
+void a_pixel__uninit(void)
+{
+    APixelMode* mode;
+
+    A_LIST_ITERATE(g_modeStack, mode) {
+        free(mode);
+    }
+
+    a_list_free(g_modeStack);
+}
+
+void a_pixel_push(void)
+{
+    APixelMode* mode = a_mem_malloc(sizeof(APixelMode));
+
+    *mode = g_mode;
+    a_list_push(g_modeStack, mode);
+}
+
+void a_pixel_pop(void)
+{
+    APixelMode* mode = a_list_pop(g_modeStack);
+
+    if(mode == NULL) {
+        a_out__fatal("Cannot pop APixelMode: stack is empty");
+    }
+
+    g_mode = *mode;
+    free(mode);
+
+    a_pixel_setClip(g_mode.clip);
+    a_pixel_setBlend(g_mode.blend);
+    a_pixel_setRGBA(g_mode.red, g_mode.green, g_mode.blue, g_mode.alpha);
+}
+
+void a_pixel_setClip(bool DoClip)
+{
+    g_mode.clip = DoClip;
+
+    a_blit__setClip(g_mode.clip);
+    a_draw__setClip(g_mode.clip);
 
     a_pixel_put = g_pixelDraw[g_mode.blend][g_mode.clip];
 }
@@ -85,16 +132,6 @@ void a_pixel_setBlend(APixelBlend Blend)
     a_draw__setBlend(Blend);
 
     a_pixel_put = g_pixelDraw[Blend][g_mode.clip];
-}
-
-void a_pixel_setClip(bool DoClip)
-{
-    g_mode.clip = DoClip;
-
-    a_blit__setClip(g_mode.clip);
-    a_draw__setClip(g_mode.clip);
-
-    a_pixel_put = g_pixelDraw[g_mode.blend][g_mode.clip];
 }
 
 void a_pixel_setAlpha(uint8_t Alpha)
