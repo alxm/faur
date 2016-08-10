@@ -151,6 +151,7 @@ static A_STATE(a_fade__toColor)
         AFix alpha = 0;
         AFix alpha_inc = a_fix_itofix(255) / g_framesDuration;
 
+        a_pixel_push();
         a_pixel_setBlend(A_PIXEL_RGBA);
         a_pixel_setPixel(g_savedColor);
 
@@ -170,6 +171,7 @@ static A_STATE(a_fade__toColor)
             }
         }
 
+        a_pixel_pop();
         g_fadePending = false;
     }
 }
@@ -183,6 +185,7 @@ static A_STATE(a_fade__fromColor)
         AFix alpha = a_fix_itofix(255);
         AFix alpha_inc = a_fix_itofix(255) / g_framesDuration;
 
+        a_pixel_push();
         a_pixel_setBlend(A_PIXEL_RGBA);
         a_pixel_setPixel(g_savedColor);
 
@@ -202,6 +205,7 @@ static A_STATE(a_fade__fromColor)
             }
         }
 
+        a_pixel_pop();
         g_fadePending = false;
     }
 }
@@ -218,6 +222,7 @@ static A_STATE(a_fade__screens)
                                                  a_screen__width,
                                                  a_screen__height);
 
+        a_pixel_push();
         a_pixel_setBlend(A_PIXEL_RGBA);
 
         a_screen_copy(g_screenBuffer, a_screen__pixels);
@@ -236,6 +241,7 @@ static A_STATE(a_fade__screens)
             }
         }
 
+        a_pixel_pop();
         a_sprite_free(oldScreen);
         g_fadePending = false;
     }
