@@ -1,5 +1,5 @@
-![a2x](https://github.com/alxm/a2x/raw/master/doc/a2x-logo.png "a2x")
-=====================================================================
+![a2x](https://github.com/alxm/a2x/raw/master/doc/a2x-logo.png "a2x") [![Build Status](https://travis-ci.org/alxm/a2x.svg?branch=master)](https://travis-ci.org/alxm/a2x)
+=========================================================================================================================================================================
 
 a2x is a C framework I wrote for my video games. It supports desktop Linux, GP2X F-100 and F-200, GP2X Wiz, Caanoo, and Open Pandora.
 
