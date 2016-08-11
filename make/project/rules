@@ -102,7 +102,7 @@ $(TARGET_BINARY) : $(ALL_DIRS) $(C_GFX_FILES) $(C_SFX_FILES) $(C_GEN_HEADERS) $(
 # make all the needed dirs
 #
 $(ALL_DIRS) :
-	@ mkdir --parents $@
+	@ mkdir -p $@
 
 #
 # pattern rules for building the universe
