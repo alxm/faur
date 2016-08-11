@@ -38,7 +38,7 @@ ALL_DIRS = $(INC_DIR) $(LIB_DIR) $(OBJ_DIR) $(O_DIR) $(MEDIA_O_DIR)
 all : $(ALL_DIRS) $(HEADER) $(LIBRARY)
 
 $(ALL_DIRS) :
-	@ mkdir --parents $@
+	@ mkdir -p $@
 
 $(HEADER) : $(H_FILES)
 	@ $(BIN_DIR)/a2x_header $(C_DIR) .p.h $(HEADER)

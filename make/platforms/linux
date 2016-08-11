@@ -8,9 +8,9 @@ CFLAGS = -DA_PLATFORM_LINUXPC=1 \
          -g
 
 ifdef USE_LIB_SDL
-    LIBS := -lSDL_mixer -lSDL $(LIBS)
+    LIBS := $(shell sdl-config --libs) -lSDL_mixer $(LIBS)
     CFLAGS += $(shell sdl-config --cflags) -DA_USE_LIB_SDL=1
 else
-    LIBS := -lSDL2_mixer -lSDL2 $(LIBS)
+    LIBS := $(shell sdl2-config --libs) -lSDL2_mixer $(LIBS)
     CFLAGS += $(shell sdl2-config --cflags) -DA_USE_LIB_SDL2=1
 endif
