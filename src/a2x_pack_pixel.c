@@ -23,7 +23,7 @@ typedef struct APixelMode {
     bool clip;
     APixelBlend blend;
     uint8_t red, green, blue;
-    uint8_t alpha;
+    unsigned int alpha;
     APixel pixel;
 } APixelMode;
 
@@ -134,9 +134,9 @@ void a_pixel_setBlend(APixelBlend Blend)
     a_pixel_put = g_pixelDraw[Blend][g_mode.clip];
 }
 
-void a_pixel_setAlpha(uint8_t Alpha)
+void a_pixel_setAlpha(unsigned int Alpha)
 {
-    g_mode.alpha = Alpha;
+    g_mode.alpha = a_math_min(Alpha, A_PIXEL_ALPHA_MAX);
 
     a_blit__setAlpha(g_mode.alpha);
     a_draw__setAlpha(g_mode.alpha);
@@ -154,12 +154,12 @@ void a_pixel_setRGB(uint8_t Red, uint8_t Green, uint8_t Blue)
     a_draw__setRGB(g_mode.red, g_mode.green, g_mode.blue);
 }
 
-void a_pixel_setRGBA(uint8_t Red, uint8_t Green, uint8_t Blue, uint8_t Alpha)
+void a_pixel_setRGBA(uint8_t Red, uint8_t Green, uint8_t Blue, unsigned int Alpha)
 {
     g_mode.red = Red;
     g_mode.green = Green;
     g_mode.blue = Blue;
-    g_mode.alpha = Alpha;
+    g_mode.alpha = a_math_min(Alpha, A_PIXEL_ALPHA_MAX);
 
     g_mode.pixel = a_pixel_make(g_mode.red, g_mode.green, g_mode.blue);
 

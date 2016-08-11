@@ -149,7 +149,7 @@ static A_STATE(a_fade__toColor)
         validateCachedBuffer();
 
         AFix alpha = 0;
-        AFix alpha_inc = a_fix_itofix(255) / g_framesDuration;
+        AFix alpha_inc = a_fix_itofix(A_PIXEL_ALPHA_MAX) / g_framesDuration;
 
         a_pixel_push();
         a_pixel_setBlend(A_PIXEL_RGBA);
@@ -166,7 +166,7 @@ static A_STATE(a_fade__toColor)
 
             alpha += alpha_inc;
 
-            if(alpha > a_fix_itofix(255)) {
+            if(alpha > a_fix_itofix(A_PIXEL_ALPHA_MAX)) {
                 a_state_pop();
             }
         }
@@ -182,8 +182,8 @@ static A_STATE(a_fade__fromColor)
     {
         validateCachedBuffer();
 
-        AFix alpha = a_fix_itofix(255);
-        AFix alpha_inc = a_fix_itofix(255) / g_framesDuration;
+        AFix alpha = a_fix_itofix(A_PIXEL_ALPHA_MAX);
+        AFix alpha_inc = a_fix_itofix(A_PIXEL_ALPHA_MAX) / g_framesDuration;
 
         a_pixel_push();
         a_pixel_setBlend(A_PIXEL_RGBA);
@@ -216,8 +216,8 @@ static A_STATE(a_fade__screens)
     {
         validateCachedBuffer();
 
-        AFix alpha = a_fix_itofix(255);
-        AFix alpha_inc = a_fix_itofix(255) / g_framesDuration;
+        AFix alpha = a_fix_itofix(A_PIXEL_ALPHA_MAX);
+        AFix alpha_inc = a_fix_itofix(A_PIXEL_ALPHA_MAX) / g_framesDuration;
         ASprite* oldScreen = a_sprite_fromPixels(g_savedScreen,
                                                  a_screen__width,
                                                  a_screen__height);

@@ -73,6 +73,8 @@
 #define a_pixel_green(Pixel) ((((Pixel) >> A_PIXEL_GREEN_SHIFT) & A_PIXEL_GREEN_MASK) << A_PIXEL_GREEN_PACK)
 #define a_pixel_blue(Pixel)  ((((Pixel) >> A_PIXEL_BLUE_SHIFT)  & A_PIXEL_BLUE_MASK)  << A_PIXEL_BLUE_PACK)
 
+#define A_PIXEL_ALPHA_MAX 256
+
 typedef enum {
     A_PIXEL_PLAIN,
     A_PIXEL_RGBA,
@@ -88,9 +90,9 @@ extern void a_pixel_pop(void);
 
 extern void a_pixel_setClip(bool DoClip);
 extern void a_pixel_setBlend(APixelBlend Blend);
-extern void a_pixel_setAlpha(uint8_t Alpha);
+extern void a_pixel_setAlpha(unsigned int Alpha);
 extern void a_pixel_setRGB(uint8_t Red, uint8_t Green, uint8_t Blue);
-extern void a_pixel_setRGBA(uint8_t Red, uint8_t Green, uint8_t Blue, uint8_t Alpha);
+extern void a_pixel_setRGBA(uint8_t Red, uint8_t Green, uint8_t Blue, unsigned int Alpha);
 extern void a_pixel_setPixel(APixel Pixel);
 
 typedef void (*APixelPut)(int X, int Y);

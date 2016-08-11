@@ -34,11 +34,10 @@ static ADrawHLine g_vlineDraw[A_PIXEL_TYPE_NUM][2];
 ADrawCircle a_draw_circle;
 //static ADrawCircle g_circleDraw[A_PIXEL_TYPE_NUM][2];
 
-static APixelBlend g_blend;
 static bool g_clip;
-
-static uint8_t g_alpha;
+static APixelBlend g_blend;
 static uint8_t g_red, g_green, g_blue;
+static unsigned int g_alpha;
 static APixel g_pixel;
 
 static bool cohen_sutherland_clip(int* X1, int* Y1, int* X2, int* Y2)
@@ -259,9 +258,9 @@ static bool cohen_sutherland_clip(int* X1, int* Y1, int* X2, int* Y2)
 #define shape_setup_rgb50 shape_setup_rgb25
 #define shape_setup_rgb75 shape_setup_rgb25
 
-#define shape_setup_rgba                   \
-    shape_setup_rgb25                      \
-    const uint8_t a__pass_alpha = g_alpha;
+#define shape_setup_rgba                        \
+    shape_setup_rgb25                           \
+    const unsigned int a__pass_alpha = g_alpha;
 
 #define shape_setup_inverse
 
@@ -346,7 +345,7 @@ void a_draw__setClip(bool DoClip)
     drawSetAll();
 }
 
-void a_draw__setAlpha(uint8_t Alpha)
+void a_draw__setAlpha(unsigned int Alpha)
 {
     g_alpha = Alpha;
 }

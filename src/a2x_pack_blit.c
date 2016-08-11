@@ -22,11 +22,11 @@
 ABlitter a_blit;
 static ABlitter g_blitters[A_PIXEL_TYPE_NUM][2][2];
 
-static APixelBlend g_blend;
 static bool g_clip;
 static bool g_usePixel;
-
-static uint8_t g_red, g_green, g_blue, g_alpha;
+static APixelBlend g_blend;
+static uint8_t g_red, g_green, g_blue;
+static unsigned int g_alpha;
 static APixel g_pixel;
 
 // Spans format:
@@ -150,12 +150,13 @@ static APixel g_pixel;
 #define blitter_rgb75_setup
 #define blitter_rgb75_setup_p blitter_rgb25_setup_p
 
-#define blitter_rgba_setup                 \
-    blitter_rgb25_setup                    \
-    const uint8_t a__pass_alpha = g_alpha;
-#define blitter_rgba_setup_p               \
-    blitter_rgb25_setup_p                  \
-    const uint8_t a__pass_alpha = g_alpha;
+#define blitter_rgba_setup                      \
+    blitter_rgb25_setup                         \
+    const unsigned int a__pass_alpha = g_alpha;
+
+#define blitter_rgba_setup_p                    \
+    blitter_rgb25_setup_p                       \
+    const unsigned int a__pass_alpha = g_alpha;
 
 #define blitter_inverse_setup
 #define blitter_inverse_setup_p
@@ -264,7 +265,7 @@ void a_blit_pixel(bool UsePixelColor)
     a_blit = g_blitters[g_blend][g_clip][g_usePixel];
 }
 
-void a_blit__setAlpha(uint8_t Alpha)
+void a_blit__setAlpha(unsigned int Alpha)
 {
     g_alpha = Alpha;
 }
