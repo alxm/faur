@@ -19,6 +19,7 @@
 
 #include "a2x_pack_png.v.h"
 
+#include <zlib.h>
 #include <png.h>
 
 typedef struct AByteStream {
