@@ -20,6 +20,7 @@
 """
 
 import os
+import sys
 
 from utils.output import Output
 from utils.shell import Shell
@@ -27,11 +28,18 @@ from utils.tool import Tool
 
 class InstallTool(Tool):
     def main(self):
-        make_command = self.get_arg('[clean]')
+        if sys.platform.startswith('linux'):
+            make = 'make'
+        elif sys.platform.startswith('freebsd'):
+            make = 'gmake'
+        else:
+            Output.error('Unknown platform {}'.format(sys.platform))
+
+        command = self.get_arg('[clean]')
         userconfig = os.path.join(self.cfg_dir, 'sdk.config')
         sdkconfig = os.path.join(self.make_dir, 'sdk.config')
 
-        if make_command == 'clean':
+        if command == 'clean':
             if not os.path.exists(sdkconfig):
                 Output.note('Run {} first'.format(self.name))
                 Output.error('{} does not exist'.format(sdkconfig))
@@ -45,10 +53,10 @@ class InstallTool(Tool):
 
             Output.info('Compiling a2x')
 
-        Shell.run('cd {} && make {}'
-            .format(os.path.join(self.make_dir, 'a2x'), make_command))
+        Shell.run('cd {} && {} {}'
+            .format(os.path.join(self.make_dir, 'a2x'), make, command))
 
-        if make_command == 'clean':
+        if command == 'clean':
             Shell.run('rm {}'.format(sdkconfig))
         else:
             Output.note('Add {} to your $PATH'.format(self.bin_dir))
