@@ -34,12 +34,6 @@ static ADrawHLine g_vlineDraw[A_PIXEL_TYPE_NUM][2];
 ADrawCircle a_draw_circle;
 //static ADrawCircle g_circleDraw[A_PIXEL_TYPE_NUM][2];
 
-static bool g_clip;
-static APixelBlend g_blend;
-static uint8_t g_red, g_green, g_blue;
-static unsigned int g_alpha;
-static APixel g_pixel;
-
 static bool cohen_sutherland_clip(int* X1, int* Y1, int* X2, int* Y2)
 {
     int x1 = *X1;
@@ -247,20 +241,20 @@ static bool cohen_sutherland_clip(int* X1, int* Y1, int* X2, int* Y2)
     vline_noclip(Pixeler);                          \
 }
 
-#define shape_setup_plain                 \
-    const APixel a__pass_color = g_pixel;
+#define shape_setup_plain                             \
+    const APixel a__pass_color = a_pixel__mode.pixel;
 
-#define shape_setup_rgb25                  \
-    const uint8_t a__pass_red = g_red;     \
-    const uint8_t a__pass_green = g_green; \
-    const uint8_t a__pass_blue = g_blue;
+#define shape_setup_rgb25                              \
+    const uint8_t a__pass_red = a_pixel__mode.red;     \
+    const uint8_t a__pass_green = a_pixel__mode.green; \
+    const uint8_t a__pass_blue = a_pixel__mode.blue;
 
 #define shape_setup_rgb50 shape_setup_rgb25
 #define shape_setup_rgb75 shape_setup_rgb25
 
-#define shape_setup_rgba                        \
-    shape_setup_rgb25                           \
-    const unsigned int a__pass_alpha = g_alpha;
+#define shape_setup_rgba                                    \
+    shape_setup_rgb25                                       \
+    const unsigned int a__pass_alpha = a_pixel__mode.alpha;
 
 #define shape_setup_inverse
 
@@ -291,19 +285,6 @@ shapeMakeAll(rgb50,   (a__pass_dst, a__pass_red, a__pass_green, a__pass_blue))
 shapeMakeAll(rgb75,   (a__pass_dst, a__pass_red, a__pass_green, a__pass_blue))
 shapeMakeAll(inverse, (a__pass_dst))
 
-#define drawSet(Shape)                                 \
-({                                                     \
-    a_draw_##Shape = g_##Shape##Draw[g_blend][g_clip]; \
-})
-
-#define drawSetAll()    \
-({                      \
-    drawSet(rectangle); \
-    drawSet(line);      \
-    drawSet(hline);     \
-    drawSet(vline);     \
-})
-
 void a_draw__init(void)
 {
     #define shapeInit(Shape, Index, Blend)                            \
@@ -327,36 +308,15 @@ void a_draw__init(void)
     shapeInitAll(A_PIXEL_RGB75, rgb75);
     shapeInitAll(A_PIXEL_INVERSE, inverse);
 
-    g_blend = A_PIXEL_PLAIN;
-    g_clip = true;
-
-    drawSetAll();
+    a_draw__updateRoutines();
 }
 
-void a_draw__setBlend(APixelBlend Blend)
+void a_draw__updateRoutines(void)
 {
-    g_blend = Blend;
-    drawSetAll();
-}
-
-void a_draw__setClip(bool DoClip)
-{
-    g_clip = DoClip;
-    drawSetAll();
-}
-
-void a_draw__setAlpha(unsigned int Alpha)
-{
-    g_alpha = Alpha;
-}
-
-void a_draw__setRGB(uint8_t Red, uint8_t Green, uint8_t Blue)
-{
-    g_red = Red;
-    g_green = Green;
-    g_blue = Blue;
-
-    g_pixel = a_pixel_make(g_red, g_green, g_blue);
+    a_draw_rectangle = g_rectangleDraw[a_pixel__mode.blend][a_pixel__mode.clip];
+    a_draw_line = g_lineDraw[a_pixel__mode.blend][a_pixel__mode.clip];
+    a_draw_hline = g_hlineDraw[a_pixel__mode.blend][a_pixel__mode.clip];
+    a_draw_vline = g_vlineDraw[a_pixel__mode.blend][a_pixel__mode.clip];
 }
 
 void a_draw_fill(void)

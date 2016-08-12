@@ -25,6 +25,16 @@
 #include "a2x_pack_draw.v.h"
 #include "a2x_pack_screen.v.h"
 
+typedef struct APixelMode {
+    bool clip;
+    APixelBlend blend;
+    uint8_t red, green, blue;
+    unsigned int alpha;
+    APixel pixel;
+} APixelMode;
+
+extern APixelMode a_pixel__mode;
+
 #define a_pixel__plain(Dst, Pixel) \
 ({                                 \
     *Dst = Pixel;                  \

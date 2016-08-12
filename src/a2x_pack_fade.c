@@ -231,7 +231,7 @@ static A_STATE(a_fade__screens)
         {
             a_screen_copy(a_screen__pixels, g_screenBuffer);
 
-            a_blit__setAlpha(a_fix_fixtoi(alpha));
+            a_pixel_setAlpha(a_fix_fixtoi(alpha));
             a_blit(oldScreen, 0, 0);
 
             alpha -= alpha_inc;
