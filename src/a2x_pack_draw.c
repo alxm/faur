@@ -19,20 +19,22 @@
 
 #include "a2x_pack_draw.v.h"
 
-ADrawRectangle a_draw_rectangle;
+typedef void (*ADrawRectangle)(int X1, int Y1, int X2, int Y2);
+typedef void (*ADrawLine)(int X1, int Y1, int X2, int Y2);
+typedef void (*ADrawHLine)(int X1, int X2, int Y);
+typedef void (*ADrawVLine)(int X, int Y1, int Y2);
+
+ADrawRectangle g_draw_rectangle;
 static ADrawRectangle g_rectangle[A_PIXEL_TYPE_NUM][2];
 
-ADrawLine a_draw_line;
+ADrawLine g_draw_line;
 static ADrawLine g_line[A_PIXEL_TYPE_NUM][2];
 
-ADrawHLine a_draw_hline;
+ADrawHLine g_draw_hline;
 static ADrawHLine g_hline[A_PIXEL_TYPE_NUM][2];
 
-ADrawVLine a_draw_vline;
+ADrawVLine g_draw_vline;
 static ADrawHLine g_vline[A_PIXEL_TYPE_NUM][2];
-
-ADrawCircle a_draw_circle;
-//static ADrawCircle g_circleDraw[A_PIXEL_TYPE_NUM][2];
 
 static bool cohen_sutherland_clip(int* X1, int* Y1, int* X2, int* Y2)
 {
@@ -146,9 +148,9 @@ static bool cohen_sutherland_clip(int* X1, int* Y1, int* X2, int* Y2)
     const int ymax = a_math_max(Y1, Y2);                       \
                                                                \
     if(X1 == X2) {                                             \
-        a_draw_vline(X1, ymin, ymax);                          \
+        g_draw_vline(X1, ymin, ymax);                          \
     } else if(Y1 == Y2) {                                      \
-        a_draw_hline(xmin, xmax, Y1);                          \
+        g_draw_hline(xmin, xmax, Y1);                          \
     } else {                                                   \
         const int deltax = xmax - xmin;                        \
         const int deltay = ymax - ymin;                        \
@@ -313,21 +315,41 @@ void a_draw__init(void)
 
 void a_draw__updateRoutines(void)
 {
-    a_draw_rectangle = g_rectangle[a_pixel__mode.blend][a_pixel__mode.clip];
-    a_draw_line = g_line[a_pixel__mode.blend][a_pixel__mode.clip];
-    a_draw_hline = g_hline[a_pixel__mode.blend][a_pixel__mode.clip];
-    a_draw_vline = g_vline[a_pixel__mode.blend][a_pixel__mode.clip];
+    g_draw_rectangle = g_rectangle[a_pixel__mode.blend][a_pixel__mode.clip];
+    g_draw_line = g_line[a_pixel__mode.blend][a_pixel__mode.clip];
+    g_draw_hline = g_hline[a_pixel__mode.blend][a_pixel__mode.clip];
+    g_draw_vline = g_vline[a_pixel__mode.blend][a_pixel__mode.clip];
 }
 
 void a_draw_fill(void)
 {
-    a_draw_rectangle(0, 0, a_screen__width, a_screen__height);
+    g_draw_rectangle(0, 0, a_screen__width, a_screen__height);
 }
 
 void a_draw_rectangleBorder(int X1, int Y1, int X2, int Y2, int Border)
 {
-    a_draw_rectangle(X1,          Y1,          X2,          Y1 + Border); // top
-    a_draw_rectangle(X1,          Y2 - Border, X2,          Y2);          // bottom
-    a_draw_rectangle(X1,          Y1 + Border, X1 + Border, Y2 - Border); // left
-    a_draw_rectangle(X2 - Border, Y1 + Border, X2,          Y2 - Border); // right
+    g_draw_rectangle(X1,          Y1,          X2,          Y1 + Border); // top
+    g_draw_rectangle(X1,          Y2 - Border, X2,          Y2);          // bottom
+    g_draw_rectangle(X1,          Y1 + Border, X1 + Border, Y2 - Border); // left
+    g_draw_rectangle(X2 - Border, Y1 + Border, X2,          Y2 - Border); // right
+}
+
+void a_draw_rectangle(int X1, int Y1, int X2, int Y2)
+{
+    g_draw_rectangle(X1, Y1, X2, Y2);
+}
+
+void a_draw_line(int X1, int Y1, int X2, int Y2)
+{
+    g_draw_line(X1, Y1, X2, Y2);
+}
+
+void a_draw_hline(int X1, int X2, int Y)
+{
+    g_draw_hline(X1, X2, Y);
+}
+
+void a_draw_vline(int X, int Y1, int Y2)
+{
+    g_draw_vline(X, Y1, Y2);
 }
