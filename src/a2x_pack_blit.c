@@ -19,7 +19,9 @@
 
 #include "a2x_pack_blit.v.h"
 
-ABlitter a_blit;
+typedef void (*ABlitter)(const ASprite* Sprite, int X, int Y);
+
+ABlitter g_blitter;
 static ABlitter g_blitters[A_PIXEL_TYPE_NUM][2][2];
 
 static bool g_fillFlat;
@@ -242,7 +244,7 @@ void a_blit__init(void)
 
 void a_blit__updateRoutines(void)
 {
-    a_blit = g_blitters[a_pixel__mode.blend][a_pixel__mode.clip][g_fillFlat];
+    g_blitter = g_blitters[a_pixel__mode.blend][a_pixel__mode.clip][g_fillFlat];
 }
 
 void a_blit_fillFlat(bool FillFlatColor)
@@ -251,17 +253,22 @@ void a_blit_fillFlat(bool FillFlatColor)
     a_blit__updateRoutines();
 }
 
-void a_blit_c(const ASprite* Sprite)
+void a_blit(const ASprite* Sprite, int X, int Y)
 {
-    a_blit(Sprite, (a_screen__width - Sprite->w) / 2, (a_screen__height - Sprite->h) / 2);
+    g_blitter(Sprite, X, Y);
 }
 
-void a_blit_ch(const ASprite* Sprite, int Y)
+void a_blit_center(const ASprite* Sprite)
 {
-    a_blit(Sprite, (a_screen__width - Sprite->w) / 2, Y);
+    g_blitter(Sprite, (a_screen__width - Sprite->w) / 2, (a_screen__height - Sprite->h) / 2);
 }
 
-void a_blit_cv(const ASprite* Sprite, int X)
+void a_blit_centerX(const ASprite* Sprite, int Y)
 {
-    a_blit(Sprite, X, (a_screen__height - Sprite->h) / 2);
+    g_blitter(Sprite, (a_screen__width - Sprite->w) / 2, Y);
+}
+
+void a_blit_centerY(const ASprite* Sprite, int X)
+{
+    g_blitter(Sprite, X, (a_screen__height - Sprite->h) / 2);
 }
