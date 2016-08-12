@@ -20,16 +20,16 @@
 #include "a2x_pack_draw.v.h"
 
 ADrawRectangle a_draw_rectangle;
-static ADrawRectangle g_rectangleDraw[A_PIXEL_TYPE_NUM][2];
+static ADrawRectangle g_rectangle[A_PIXEL_TYPE_NUM][2];
 
 ADrawLine a_draw_line;
-static ADrawLine g_lineDraw[A_PIXEL_TYPE_NUM][2];
+static ADrawLine g_line[A_PIXEL_TYPE_NUM][2];
 
 ADrawHLine a_draw_hline;
-static ADrawHLine g_hlineDraw[A_PIXEL_TYPE_NUM][2];
+static ADrawHLine g_hline[A_PIXEL_TYPE_NUM][2];
 
 ADrawVLine a_draw_vline;
-static ADrawHLine g_vlineDraw[A_PIXEL_TYPE_NUM][2];
+static ADrawHLine g_vline[A_PIXEL_TYPE_NUM][2];
 
 ADrawCircle a_draw_circle;
 //static ADrawCircle g_circleDraw[A_PIXEL_TYPE_NUM][2];
@@ -289,8 +289,8 @@ void a_draw__init(void)
 {
     #define shapeInit(Shape, Index, Blend)                            \
     ({                                                                \
-        g_##Shape##Draw[Index][0] = a_draw__##Shape##_noclip_##Blend; \
-        g_##Shape##Draw[Index][1] = a_draw__##Shape##_clip_##Blend;   \
+        g_##Shape[Index][0] = a_draw__##Shape##_noclip_##Blend;       \
+        g_##Shape[Index][1] = a_draw__##Shape##_clip_##Blend;         \
     })
 
     #define shapeInitAll(Index, Blend)      \
@@ -313,10 +313,10 @@ void a_draw__init(void)
 
 void a_draw__updateRoutines(void)
 {
-    a_draw_rectangle = g_rectangleDraw[a_pixel__mode.blend][a_pixel__mode.clip];
-    a_draw_line = g_lineDraw[a_pixel__mode.blend][a_pixel__mode.clip];
-    a_draw_hline = g_hlineDraw[a_pixel__mode.blend][a_pixel__mode.clip];
-    a_draw_vline = g_vlineDraw[a_pixel__mode.blend][a_pixel__mode.clip];
+    a_draw_rectangle = g_rectangle[a_pixel__mode.blend][a_pixel__mode.clip];
+    a_draw_line = g_line[a_pixel__mode.blend][a_pixel__mode.clip];
+    a_draw_hline = g_hline[a_pixel__mode.blend][a_pixel__mode.clip];
+    a_draw_vline = g_vline[a_pixel__mode.blend][a_pixel__mode.clip];
 }
 
 void a_draw_fill(void)
