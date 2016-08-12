@@ -22,7 +22,7 @@
 ABlitter a_blit;
 static ABlitter g_blitters[A_PIXEL_TYPE_NUM][2][2];
 
-static bool g_usePixel;
+static bool g_fillFlat;
 
 // Spans format:
 // [1 (draw) / 0 (transp)][[len]...][0 (end line)]
@@ -235,20 +235,20 @@ void a_blit__init(void)
     blitterInit(A_PIXEL_RGB75, rgb75);
     blitterInit(A_PIXEL_INVERSE, inverse);
 
-    g_usePixel = false;
+    g_fillFlat = false;
 
     a_blit__updateRoutines();
 }
 
 void a_blit__updateRoutines(void)
 {
-    a_blit = g_blitters[a_pixel__mode.blend][a_pixel__mode.clip][g_usePixel];
+    a_blit = g_blitters[a_pixel__mode.blend][a_pixel__mode.clip][g_fillFlat];
 }
 
-void a_blit_pixel(bool UsePixelColor)
+void a_blit_fillFlat(bool FillFlatColor)
 {
-    g_usePixel = UsePixelColor;
-    a_blit = g_blitters[a_pixel__mode.blend][a_pixel__mode.clip][g_usePixel];
+    g_fillFlat = FillFlatColor;
+    a_blit__updateRoutines();
 }
 
 void a_blit_c(const ASprite* Sprite)

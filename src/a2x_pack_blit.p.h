@@ -27,7 +27,7 @@ typedef void (*ABlitter)(const ASprite* Sprite, int X, int Y);
 
 extern ABlitter a_blit;
 
-extern void a_blit_pixel(bool UsePixelColor);
+extern void a_blit_fillFlat(bool FillFlatColor);
 
 extern void a_blit_c(const ASprite* Sprite);
 extern void a_blit_ch(const ASprite* Sprite, int Y);
