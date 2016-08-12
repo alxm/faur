@@ -19,27 +19,22 @@
 
 #include "a2x_pack_draw.v.h"
 
-ADrawRectangle a_draw_rectangle;
-static ADrawRectangle g_rectangleDraw[A_PIXEL_TYPE_NUM][2];
+typedef void (*ADrawRectangle)(int X1, int Y1, int X2, int Y2);
+typedef void (*ADrawLine)(int X1, int Y1, int X2, int Y2);
+typedef void (*ADrawHLine)(int X1, int X2, int Y);
+typedef void (*ADrawVLine)(int X, int Y1, int Y2);
 
-ADrawLine a_draw_line;
-static ADrawLine g_lineDraw[A_PIXEL_TYPE_NUM][2];
+static ADrawRectangle g_draw_rectangle;
+static ADrawRectangle g_rectangle[A_PIXEL_TYPE_NUM][2];
 
-ADrawHLine a_draw_hline;
-static ADrawHLine g_hlineDraw[A_PIXEL_TYPE_NUM][2];
+static ADrawLine g_draw_line;
+static ADrawLine g_line[A_PIXEL_TYPE_NUM][2];
 
-ADrawVLine a_draw_vline;
-static ADrawHLine g_vlineDraw[A_PIXEL_TYPE_NUM][2];
+static ADrawHLine g_draw_hline;
+static ADrawHLine g_hline[A_PIXEL_TYPE_NUM][2];
 
-ADrawCircle a_draw_circle;
-//static ADrawCircle g_circleDraw[A_PIXEL_TYPE_NUM][2];
-
-static APixelBlend g_blend;
-static bool g_clip;
-
-static uint8_t g_alpha;
-static uint8_t g_red, g_green, g_blue;
-static APixel g_pixel;
+static ADrawVLine g_draw_vline;
+static ADrawHLine g_vline[A_PIXEL_TYPE_NUM][2];
 
 static bool cohen_sutherland_clip(int* X1, int* Y1, int* X2, int* Y2)
 {
@@ -153,9 +148,9 @@ static bool cohen_sutherland_clip(int* X1, int* Y1, int* X2, int* Y2)
     const int ymax = a_math_max(Y1, Y2);                       \
                                                                \
     if(X1 == X2) {                                             \
-        a_draw_vline(X1, ymin, ymax);                          \
+        g_draw_vline(X1, ymin, ymax);                          \
     } else if(Y1 == Y2) {                                      \
-        a_draw_hline(xmin, xmax, Y1);                          \
+        g_draw_hline(xmin, xmax, Y1);                          \
     } else {                                                   \
         const int deltax = xmax - xmin;                        \
         const int deltay = ymax - ymin;                        \
@@ -248,20 +243,20 @@ static bool cohen_sutherland_clip(int* X1, int* Y1, int* X2, int* Y2)
     vline_noclip(Pixeler);                          \
 }
 
-#define shape_setup_plain                 \
-    const APixel a__pass_color = g_pixel;
+#define shape_setup_plain                             \
+    const APixel a__pass_color = a_pixel__mode.pixel;
 
-#define shape_setup_rgb25                  \
-    const uint8_t a__pass_red = g_red;     \
-    const uint8_t a__pass_green = g_green; \
-    const uint8_t a__pass_blue = g_blue;
+#define shape_setup_rgb25                              \
+    const uint8_t a__pass_red = a_pixel__mode.red;     \
+    const uint8_t a__pass_green = a_pixel__mode.green; \
+    const uint8_t a__pass_blue = a_pixel__mode.blue;
 
 #define shape_setup_rgb50 shape_setup_rgb25
 #define shape_setup_rgb75 shape_setup_rgb25
 
-#define shape_setup_rgba                   \
-    shape_setup_rgb25                      \
-    const uint8_t a__pass_alpha = g_alpha;
+#define shape_setup_rgba                                    \
+    shape_setup_rgb25                                       \
+    const unsigned int a__pass_alpha = a_pixel__mode.alpha;
 
 #define shape_setup_inverse
 
@@ -292,25 +287,12 @@ shapeMakeAll(rgb50,   (a__pass_dst, a__pass_red, a__pass_green, a__pass_blue))
 shapeMakeAll(rgb75,   (a__pass_dst, a__pass_red, a__pass_green, a__pass_blue))
 shapeMakeAll(inverse, (a__pass_dst))
 
-#define drawSet(Shape)                                 \
-({                                                     \
-    a_draw_##Shape = g_##Shape##Draw[g_blend][g_clip]; \
-})
-
-#define drawSetAll()    \
-({                      \
-    drawSet(rectangle); \
-    drawSet(line);      \
-    drawSet(hline);     \
-    drawSet(vline);     \
-})
-
 void a_draw__init(void)
 {
     #define shapeInit(Shape, Index, Blend)                            \
     ({                                                                \
-        g_##Shape##Draw[Index][0] = a_draw__##Shape##_noclip_##Blend; \
-        g_##Shape##Draw[Index][1] = a_draw__##Shape##_clip_##Blend;   \
+        g_##Shape[Index][0] = a_draw__##Shape##_noclip_##Blend;       \
+        g_##Shape[Index][1] = a_draw__##Shape##_clip_##Blend;         \
     })
 
     #define shapeInitAll(Index, Blend)      \
@@ -328,47 +310,46 @@ void a_draw__init(void)
     shapeInitAll(A_PIXEL_RGB75, rgb75);
     shapeInitAll(A_PIXEL_INVERSE, inverse);
 
-    g_blend = A_PIXEL_PLAIN;
-    g_clip = true;
-
-    drawSetAll();
+    a_draw__updateRoutines();
 }
 
-void a_draw__setBlend(APixelBlend Blend)
+void a_draw__updateRoutines(void)
 {
-    g_blend = Blend;
-    drawSetAll();
-}
-
-void a_draw__setClip(bool DoClip)
-{
-    g_clip = DoClip;
-    drawSetAll();
-}
-
-void a_draw__setAlpha(uint8_t Alpha)
-{
-    g_alpha = Alpha;
-}
-
-void a_draw__setRGB(uint8_t Red, uint8_t Green, uint8_t Blue)
-{
-    g_red = Red;
-    g_green = Green;
-    g_blue = Blue;
-
-    g_pixel = a_pixel_make(g_red, g_green, g_blue);
+    g_draw_rectangle = g_rectangle[a_pixel__mode.blend][a_pixel__mode.clip];
+    g_draw_line = g_line[a_pixel__mode.blend][a_pixel__mode.clip];
+    g_draw_hline = g_hline[a_pixel__mode.blend][a_pixel__mode.clip];
+    g_draw_vline = g_vline[a_pixel__mode.blend][a_pixel__mode.clip];
 }
 
 void a_draw_fill(void)
 {
-    a_draw_rectangle(0, 0, a_screen__width, a_screen__height);
+    g_draw_rectangle(0, 0, a_screen__width, a_screen__height);
 }
 
 void a_draw_rectangleBorder(int X1, int Y1, int X2, int Y2, int Border)
 {
-    a_draw_rectangle(X1,          Y1,          X2,          Y1 + Border); // top
-    a_draw_rectangle(X1,          Y2 - Border, X2,          Y2);          // bottom
-    a_draw_rectangle(X1,          Y1 + Border, X1 + Border, Y2 - Border); // left
-    a_draw_rectangle(X2 - Border, Y1 + Border, X2,          Y2 - Border); // right
+    g_draw_rectangle(X1,          Y1,          X2,          Y1 + Border); // top
+    g_draw_rectangle(X1,          Y2 - Border, X2,          Y2);          // bottom
+    g_draw_rectangle(X1,          Y1 + Border, X1 + Border, Y2 - Border); // left
+    g_draw_rectangle(X2 - Border, Y1 + Border, X2,          Y2 - Border); // right
+}
+
+void a_draw_rectangle(int X1, int Y1, int X2, int Y2)
+{
+    g_draw_rectangle(X1, Y1, X2, Y2);
+}
+
+void a_draw_line(int X1, int Y1, int X2, int Y2)
+{
+    g_draw_line(X1, Y1, X2, Y2);
+}
+
+void a_draw_hline(int X1, int X2, int Y)
+{
+    g_draw_hline(X1, X2, Y);
+}
+
+void a_draw_vline(int X, int Y1, int Y2)
+{
+    g_draw_vline(X, Y1, Y2);
 }

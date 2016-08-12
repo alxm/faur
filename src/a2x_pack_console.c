@@ -97,7 +97,7 @@ void a_console__draw(void)
     }
 
     a_pixel_setBlend(A_PIXEL_RGBA);
-    a_pixel_setRGBA(0, 0, 0, 0.8 * A_FIX_ONE);
+    a_pixel_setRGBA(0, 0, 0, 0.8 * A_PIXEL_ALPHA_MAX);
     a_draw_fill();
 
     int y = 1;

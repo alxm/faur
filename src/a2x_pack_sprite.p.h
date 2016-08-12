@@ -39,8 +39,8 @@ extern int a_sprite_wLog2(const ASprite* Sprite);
 extern int a_sprite_h(const ASprite* Sprite);
 extern APixel* a_sprite_data(ASprite* Sprite);
 
-extern uint8_t a_sprite_getAlpha(const ASprite* Sprite);
-extern void a_sprite_setAlpha(ASprite* Sprite, uint8_t Alpha);
+extern void a_sprite_setAlpha(ASprite* Sprite, unsigned int Alpha);
+extern unsigned int a_sprite_getAlpha(const ASprite* Sprite);
 
 extern APixel a_sprite_getPixel(const ASprite* Sprite, int X, int Y);
 

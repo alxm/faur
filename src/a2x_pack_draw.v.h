@@ -27,8 +27,4 @@
 
 extern void a_draw__init(void);
 
-extern void a_draw__setBlend(APixelBlend Blend);
-extern void a_draw__setClip(bool DoClip);
-
-extern void a_draw__setAlpha(uint8_t Alpha);
-extern void a_draw__setRGB(uint8_t Red, uint8_t Green, uint8_t Blue);
+extern void a_draw__updateRoutines(void);

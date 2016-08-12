@@ -19,14 +19,13 @@
 
 #include "a2x_pack_pixel.v.h"
 
-APixelPut a_pixel_put;
+typedef void (*APixelPut)(int X, int Y);
+
+static APixelPut g_pixel_put;
 static APixelPut g_pixelDraw[A_PIXEL_TYPE_NUM][2];
 
-static APixelBlend g_blend;
-static bool g_clip;
-
-static uint8_t g_red, g_green, g_blue, g_alpha;
-static APixel g_pixel;
+APixelMode a_pixel__mode;
+static AList* g_modeStack;
 
 #define PIXEL_DST (a_screen__pixels + Y * a_screen__width + X)
 
@@ -45,17 +44,17 @@ static APixel g_pixel;
         }                                                     \
     }
 
-pixelMake(plain,   (PIXEL_DST, g_pixel))
-pixelMake(rgba,    (PIXEL_DST, g_red, g_green, g_blue, g_alpha))
-pixelMake(rgb25,   (PIXEL_DST, g_red, g_green, g_blue))
-pixelMake(rgb50,   (PIXEL_DST, g_red, g_green, g_blue))
-pixelMake(rgb75,   (PIXEL_DST, g_red, g_green, g_blue))
+pixelMake(plain,   (PIXEL_DST, a_pixel__mode.pixel))
+pixelMake(rgba,    (PIXEL_DST, a_pixel__mode.red, a_pixel__mode.green, a_pixel__mode.blue, a_pixel__mode.alpha))
+pixelMake(rgb25,   (PIXEL_DST, a_pixel__mode.red, a_pixel__mode.green, a_pixel__mode.blue))
+pixelMake(rgb50,   (PIXEL_DST, a_pixel__mode.red, a_pixel__mode.green, a_pixel__mode.blue))
+pixelMake(rgb75,   (PIXEL_DST, a_pixel__mode.red, a_pixel__mode.green, a_pixel__mode.blue))
 pixelMake(inverse, (PIXEL_DST))
 
 void a_pixel__init(void)
 {
-    #define pixelInit(Index, Blend)                 \
-    ({                                              \
+    #define pixelInit(Index, Blend)                      \
+    ({                                                   \
         g_pixelDraw[Index][0] = a_pixel__noclip_##Blend; \
         g_pixelDraw[Index][1] = a_pixel__clip_##Blend;   \
     })
@@ -67,81 +66,107 @@ void a_pixel__init(void)
     pixelInit(A_PIXEL_RGB75, rgb75);
     pixelInit(A_PIXEL_INVERSE, inverse);
 
-    g_blend = A_PIXEL_PLAIN;
-    g_clip = true;
+    a_pixel__mode.blend = A_PIXEL_PLAIN;
+    a_pixel__mode.clip = true;
+    g_modeStack = a_list_new();
 
-    a_pixel_put = g_pixelDraw[g_blend][g_clip];
+    g_pixel_put = g_pixelDraw[a_pixel__mode.blend][a_pixel__mode.clip];
 }
 
-void a_pixel_setBlend(APixelBlend Blend)
+void a_pixel__uninit(void)
 {
-    g_blend = Blend;
+    APixelMode* mode;
 
-    a_blit__setBlend(Blend);
-    a_draw__setBlend(Blend);
+    A_LIST_ITERATE(g_modeStack, mode) {
+        free(mode);
+    }
 
-    a_pixel_put = g_pixelDraw[Blend][g_clip];
+    a_list_free(g_modeStack);
+}
+
+void a_pixel_push(void)
+{
+    APixelMode* mode = a_mem_malloc(sizeof(APixelMode));
+
+    *mode = a_pixel__mode;
+    a_list_push(g_modeStack, mode);
+}
+
+void a_pixel_pop(void)
+{
+    APixelMode* mode = a_list_pop(g_modeStack);
+
+    if(mode == NULL) {
+        a_out__fatal("Cannot pop APixelMode: stack is empty");
+    }
+
+    a_pixel__mode = *mode;
+    free(mode);
+
+    a_pixel_setClip(a_pixel__mode.clip);
+    a_pixel_setBlend(a_pixel__mode.blend);
+    a_pixel_setRGBA(a_pixel__mode.red, a_pixel__mode.green, a_pixel__mode.blue, a_pixel__mode.alpha);
 }
 
 void a_pixel_setClip(bool DoClip)
 {
-    g_clip = DoClip;
+    a_pixel__mode.clip = DoClip;
 
-    a_blit__setClip(g_clip);
-    a_draw__setClip(g_clip);
+    a_blit__updateRoutines();
+    a_draw__updateRoutines();
 
-    a_pixel_put = g_pixelDraw[g_blend][g_clip];
+    g_pixel_put = g_pixelDraw[a_pixel__mode.blend][a_pixel__mode.clip];
 }
 
-void a_pixel_setAlpha(uint8_t Alpha)
+void a_pixel_setBlend(APixelBlend Blend)
 {
-    g_alpha = Alpha;
+    a_pixel__mode.blend = Blend;
 
-    a_blit__setAlpha(g_alpha);
-    a_draw__setAlpha(g_alpha);
+    a_blit__updateRoutines();
+    a_draw__updateRoutines();
+
+    g_pixel_put = g_pixelDraw[Blend][a_pixel__mode.clip];
+}
+
+void a_pixel_setAlpha(unsigned int Alpha)
+{
+    a_pixel__mode.alpha = a_math_min(Alpha, A_PIXEL_ALPHA_MAX);
 }
 
 void a_pixel_setRGB(uint8_t Red, uint8_t Green, uint8_t Blue)
 {
-    g_red = Red;
-    g_green = Green;
-    g_blue = Blue;
+    a_pixel__mode.red = Red;
+    a_pixel__mode.green = Green;
+    a_pixel__mode.blue = Blue;
 
-    g_pixel = a_pixel_make(g_red, g_green, g_blue);
-
-    a_blit__setRGB(g_red, g_green, g_blue);
-    a_draw__setRGB(g_red, g_green, g_blue);
+    a_pixel__mode.pixel = a_pixel_make(a_pixel__mode.red, a_pixel__mode.green, a_pixel__mode.blue);
 }
 
-void a_pixel_setRGBA(uint8_t Red, uint8_t Green, uint8_t Blue, uint8_t Alpha)
+void a_pixel_setRGBA(uint8_t Red, uint8_t Green, uint8_t Blue, unsigned int Alpha)
 {
-    g_red = Red;
-    g_green = Green;
-    g_blue = Blue;
-    g_alpha = Alpha;
+    a_pixel__mode.red = Red;
+    a_pixel__mode.green = Green;
+    a_pixel__mode.blue = Blue;
+    a_pixel__mode.alpha = a_math_min(Alpha, A_PIXEL_ALPHA_MAX);
 
-    g_pixel = a_pixel_make(g_red, g_green, g_blue);
-
-    a_blit__setAlpha(g_alpha);
-    a_blit__setRGB(g_red, g_green, g_blue);
-
-    a_draw__setAlpha(g_alpha);
-    a_draw__setRGB(g_red, g_green, g_blue);
+    a_pixel__mode.pixel = a_pixel_make(a_pixel__mode.red, a_pixel__mode.green, a_pixel__mode.blue);
 }
 
 void a_pixel_setPixel(APixel Pixel)
 {
-    g_pixel = Pixel;
+    a_pixel__mode.pixel = Pixel;
 
-    g_red = a_pixel_red(g_pixel);
-    g_green = a_pixel_green(g_pixel);
-    g_blue = a_pixel_blue(g_pixel);
-
-    a_blit__setRGB(g_red, g_green, g_blue);
-    a_draw__setRGB(g_red, g_green, g_blue);
+    a_pixel__mode.red = a_pixel_red(a_pixel__mode.pixel);
+    a_pixel__mode.green = a_pixel_green(a_pixel__mode.pixel);
+    a_pixel__mode.blue = a_pixel_blue(a_pixel__mode.pixel);
 }
 
-APixel a_pixel__getPixel(void)
+void a_pixel_put(int X, int Y)
 {
-    return g_pixel;
+    g_pixel_put(X, Y);
+}
+
+APixel a_pixel_get(int X, int Y)
+{
+    return *(a_screen__pixels + Y * a_screen__width + X);
 }

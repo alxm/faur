@@ -145,7 +145,7 @@ ASprite* a_sprite_blank(int Width, int Height)
     s->w = Width;
     s->wLog2 = (int)log2f(Width);
     s->h = Height;
-    s->alpha = 255;
+    s->alpha = A_PIXEL_ALPHA_MAX;
     s->spans = NULL;
     s->spansSize = 0;
 
@@ -192,14 +192,14 @@ APixel* a_sprite_data(ASprite* Sprite)
     return Sprite->data;
 }
 
-uint8_t a_sprite_getAlpha(const ASprite* Sprite)
-{
-    return Sprite->alpha;
-}
-
-void a_sprite_setAlpha(ASprite* Sprite, uint8_t Alpha)
+void a_sprite_setAlpha(ASprite* Sprite, unsigned int Alpha)
 {
     Sprite->alpha = Alpha;
+}
+
+unsigned int a_sprite_getAlpha(const ASprite* Sprite)
+{
+    return Sprite->alpha;
 }
 
 APixel a_sprite_getPixel(const ASprite* Sprite, int X, int Y)

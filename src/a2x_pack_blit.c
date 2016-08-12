@@ -19,15 +19,12 @@
 
 #include "a2x_pack_blit.v.h"
 
-ABlitter a_blit;
+typedef void (*ABlitter)(const ASprite* Sprite, int X, int Y);
+
+static ABlitter g_blitter;
 static ABlitter g_blitters[A_PIXEL_TYPE_NUM][2][2];
 
-static APixelBlend g_blend;
-static bool g_clip;
-static bool g_usePixel;
-
-static uint8_t g_red, g_green, g_blue, g_alpha;
-static APixel g_pixel;
+static bool g_fillFlat;
 
 // Spans format:
 // [1 (draw) / 0 (transp)][[len]...][0 (end line)]
@@ -135,14 +132,14 @@ static APixel g_pixel;
 }
 
 #define blitter_plain_setup
-#define blitter_plain_setup_p             \
-    const APixel a__pass_pixel = g_pixel;
+#define blitter_plain_setup_p                         \
+    const APixel a__pass_pixel = a_pixel__mode.pixel;
 
 #define blitter_rgb25_setup
-#define blitter_rgb25_setup_p              \
-    const uint8_t a__pass_red = g_red;     \
-    const uint8_t a__pass_green = g_green; \
-    const uint8_t a__pass_blue = g_blue;
+#define blitter_rgb25_setup_p                          \
+    const uint8_t a__pass_red = a_pixel__mode.red;     \
+    const uint8_t a__pass_green = a_pixel__mode.green; \
+    const uint8_t a__pass_blue = a_pixel__mode.blue;
 
 #define blitter_rgb50_setup
 #define blitter_rgb50_setup_p blitter_rgb25_setup_p
@@ -150,12 +147,13 @@ static APixel g_pixel;
 #define blitter_rgb75_setup
 #define blitter_rgb75_setup_p blitter_rgb25_setup_p
 
-#define blitter_rgba_setup                 \
-    blitter_rgb25_setup                    \
-    const uint8_t a__pass_alpha = g_alpha;
-#define blitter_rgba_setup_p               \
-    blitter_rgb25_setup_p                  \
-    const uint8_t a__pass_alpha = g_alpha;
+#define blitter_rgba_setup                                  \
+    blitter_rgb25_setup                                     \
+    const unsigned int a__pass_alpha = a_pixel__mode.alpha;
+
+#define blitter_rgba_setup_p                                \
+    blitter_rgb25_setup_p                                   \
+    const unsigned int a__pass_alpha = a_pixel__mode.alpha;
 
 #define blitter_inverse_setup
 #define blitter_inverse_setup_p
@@ -239,56 +237,38 @@ void a_blit__init(void)
     blitterInit(A_PIXEL_RGB75, rgb75);
     blitterInit(A_PIXEL_INVERSE, inverse);
 
-    g_blend = A_PIXEL_PLAIN;
-    g_clip = true;
-    g_usePixel = false;
+    g_fillFlat = false;
 
-    a_blit = g_blitters[g_blend][g_clip][g_usePixel];
+    a_blit__updateRoutines();
 }
 
-void a_blit__setBlend(APixelBlend Blend)
+void a_blit__updateRoutines(void)
 {
-    g_blend = Blend;
-    a_blit = g_blitters[g_blend][g_clip][g_usePixel];
+    g_blitter = g_blitters[a_pixel__mode.blend][a_pixel__mode.clip][g_fillFlat];
 }
 
-void a_blit__setClip(bool DoClip)
+void a_blit_fillFlat(bool FillFlatColor)
 {
-    g_clip = DoClip;
-    a_blit = g_blitters[g_blend][g_clip][g_usePixel];
+    g_fillFlat = FillFlatColor;
+    a_blit__updateRoutines();
 }
 
-void a_blit_pixel(bool UsePixelColor)
+void a_blit(const ASprite* Sprite, int X, int Y)
 {
-    g_usePixel = UsePixelColor;
-    a_blit = g_blitters[g_blend][g_clip][g_usePixel];
+    g_blitter(Sprite, X, Y);
 }
 
-void a_blit__setAlpha(uint8_t Alpha)
+void a_blit_center(const ASprite* Sprite)
 {
-    g_alpha = Alpha;
+    g_blitter(Sprite, (a_screen__width - Sprite->w) / 2, (a_screen__height - Sprite->h) / 2);
 }
 
-void a_blit__setRGB(uint8_t Red, uint8_t Green, uint8_t Blue)
+void a_blit_centerX(const ASprite* Sprite, int Y)
 {
-    g_red = Red;
-    g_green = Green;
-    g_blue = Blue;
-
-    g_pixel = a_pixel_make(g_red, g_green, g_blue);
+    g_blitter(Sprite, (a_screen__width - Sprite->w) / 2, Y);
 }
 
-void a_blit_c(const ASprite* Sprite)
+void a_blit_centerY(const ASprite* Sprite, int X)
 {
-    a_blit(Sprite, (a_screen__width - Sprite->w) / 2, (a_screen__height - Sprite->h) / 2);
-}
-
-void a_blit_ch(const ASprite* Sprite, int Y)
-{
-    a_blit(Sprite, (a_screen__width - Sprite->w) / 2, Y);
-}
-
-void a_blit_cv(const ASprite* Sprite, int X)
-{
-    a_blit(Sprite, X, (a_screen__height - Sprite->h) / 2);
+    g_blitter(Sprite, X, (a_screen__height - Sprite->h) / 2);
 }

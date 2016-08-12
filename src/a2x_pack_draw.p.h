@@ -23,17 +23,9 @@
 
 #include "a2x_pack_pixel.p.h"
 
-typedef void (*ADrawRectangle)(int X1, int Y1, int X2, int Y2);
-typedef void (*ADrawLine)(int X1, int Y1, int X2, int Y2);
-typedef void (*ADrawHLine)(int X1, int X2, int Y);
-typedef void (*ADrawVLine)(int X, int Y1, int Y2);
-typedef void (*ADrawCircle)(int X, int Y, int Radius);
-
-extern ADrawRectangle a_draw_rectangle;
-extern ADrawLine a_draw_line;
-extern ADrawHLine a_draw_hline;
-extern ADrawVLine a_draw_vline;
-extern ADrawCircle a_draw_circle;
-
 extern void a_draw_fill(void);
 extern void a_draw_rectangleBorder(int X1, int Y1, int X2, int Y2, int Border);
+extern void a_draw_rectangle(int X1, int Y1, int X2, int Y2);
+extern void a_draw_line(int X1, int Y1, int X2, int Y2);
+extern void a_draw_hline(int X1, int X2, int Y);
+extern void a_draw_vline(int X, int Y1, int Y2);

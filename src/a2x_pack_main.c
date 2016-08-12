@@ -76,6 +76,7 @@ int main(int Argc, char** Argv)
     a_screenshot__uninit();
     a_screen__uninit();
     a_sprite__uninit();
+    a_pixel__uninit();
     a_fps__uninit();
     a_hw__uninit();
     a_sdl__uninit();

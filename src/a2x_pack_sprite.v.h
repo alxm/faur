@@ -29,7 +29,7 @@ struct ASprite {
     int w;
     int wLog2;
     int h;
-    uint8_t alpha;
+    unsigned int alpha;
     uint16_t* spans;
     size_t spansSize;
     APixel data[];
