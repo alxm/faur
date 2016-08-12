@@ -158,8 +158,3 @@ void a_pixel_setPixel(APixel Pixel)
     a_pixel__mode.green = a_pixel_green(a_pixel__mode.pixel);
     a_pixel__mode.blue = a_pixel_blue(a_pixel__mode.pixel);
 }
-
-APixel a_pixel__getPixel(void)
-{
-    return a_pixel__mode.pixel;
-}

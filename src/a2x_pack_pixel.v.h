@@ -107,5 +107,3 @@ extern APixelMode a_pixel__mode;
 
 extern void a_pixel__init(void);
 extern void a_pixel__uninit(void);
-
-extern APixel a_pixel__getPixel(void);
