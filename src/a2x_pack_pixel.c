@@ -19,7 +19,9 @@
 
 #include "a2x_pack_pixel.v.h"
 
-APixelPut a_pixel_put;
+typedef void (*APixelPut)(int X, int Y);
+
+static APixelPut g_pixel_put;
 static APixelPut g_pixelDraw[A_PIXEL_TYPE_NUM][2];
 
 APixelMode a_pixel__mode;
@@ -68,7 +70,7 @@ void a_pixel__init(void)
     a_pixel__mode.clip = true;
     g_modeStack = a_list_new();
 
-    a_pixel_put = g_pixelDraw[a_pixel__mode.blend][a_pixel__mode.clip];
+    g_pixel_put = g_pixelDraw[a_pixel__mode.blend][a_pixel__mode.clip];
 }
 
 void a_pixel__uninit(void)
@@ -113,7 +115,7 @@ void a_pixel_setClip(bool DoClip)
     a_blit__updateRoutines();
     a_draw__updateRoutines();
 
-    a_pixel_put = g_pixelDraw[a_pixel__mode.blend][a_pixel__mode.clip];
+    g_pixel_put = g_pixelDraw[a_pixel__mode.blend][a_pixel__mode.clip];
 }
 
 void a_pixel_setBlend(APixelBlend Blend)
@@ -123,7 +125,7 @@ void a_pixel_setBlend(APixelBlend Blend)
     a_blit__updateRoutines();
     a_draw__updateRoutines();
 
-    a_pixel_put = g_pixelDraw[Blend][a_pixel__mode.clip];
+    g_pixel_put = g_pixelDraw[Blend][a_pixel__mode.clip];
 }
 
 void a_pixel_setAlpha(unsigned int Alpha)
@@ -157,4 +159,14 @@ void a_pixel_setPixel(APixel Pixel)
     a_pixel__mode.red = a_pixel_red(a_pixel__mode.pixel);
     a_pixel__mode.green = a_pixel_green(a_pixel__mode.pixel);
     a_pixel__mode.blue = a_pixel_blue(a_pixel__mode.pixel);
+}
+
+void a_pixel_put(int X, int Y)
+{
+    g_pixel_put(X, Y);
+}
+
+APixel a_pixel_get(int X, int Y)
+{
+    return *(a_screen__pixels + Y * a_screen__width + X);
 }

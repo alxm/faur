@@ -95,7 +95,5 @@ extern void a_pixel_setRGB(uint8_t Red, uint8_t Green, uint8_t Blue);
 extern void a_pixel_setRGBA(uint8_t Red, uint8_t Green, uint8_t Blue, unsigned int Alpha);
 extern void a_pixel_setPixel(APixel Pixel);
 
-typedef void (*APixelPut)(int X, int Y);
-extern APixelPut a_pixel_put;
-
-#define a_pixel_get(X, Y) (*(a_screen__pixels + (Y) * a_screen__width + (X)))
+extern void a_pixel_put(int X, int Y);
+extern APixel a_pixel_get(int X, int Y);

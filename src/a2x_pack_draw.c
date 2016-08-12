@@ -24,16 +24,16 @@ typedef void (*ADrawLine)(int X1, int Y1, int X2, int Y2);
 typedef void (*ADrawHLine)(int X1, int X2, int Y);
 typedef void (*ADrawVLine)(int X, int Y1, int Y2);
 
-ADrawRectangle g_draw_rectangle;
+static ADrawRectangle g_draw_rectangle;
 static ADrawRectangle g_rectangle[A_PIXEL_TYPE_NUM][2];
 
-ADrawLine g_draw_line;
+static ADrawLine g_draw_line;
 static ADrawLine g_line[A_PIXEL_TYPE_NUM][2];
 
-ADrawHLine g_draw_hline;
+static ADrawHLine g_draw_hline;
 static ADrawHLine g_hline[A_PIXEL_TYPE_NUM][2];
 
-ADrawVLine g_draw_vline;
+static ADrawVLine g_draw_vline;
 static ADrawHLine g_vline[A_PIXEL_TYPE_NUM][2];
 
 static bool cohen_sutherland_clip(int* X1, int* Y1, int* X2, int* Y2)

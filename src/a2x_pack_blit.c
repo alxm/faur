@@ -21,7 +21,7 @@
 
 typedef void (*ABlitter)(const ASprite* Sprite, int X, int Y);
 
-ABlitter g_blitter;
+static ABlitter g_blitter;
 static ABlitter g_blitters[A_PIXEL_TYPE_NUM][2][2];
 
 static bool g_fillFlat;
