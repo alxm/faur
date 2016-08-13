@@ -37,6 +37,10 @@ ADir* a_dir_open(const char* Path)
     struct dirent** dlist = NULL;
     const int numFiles = scandir(Path, &dlist, NULL, alphasort);
 
+    if(numFiles == -1) {
+        a_out__fatal("a_dir_open(%s): scandir failed", Path);
+    }
+
     ADir* d = a_mem_malloc(sizeof(ADir));
 
     d->path = a_str_dup(Path);
@@ -111,5 +115,7 @@ bool a_dir_exists(const char* Path)
 
 void a_dir_make(const char* Path)
 {
-    mkdir(Path, S_IRWXU);
+    if(mkdir(Path, S_IRWXU) == -1) {
+        a_out__error("mkdir(%s) failed", Path);
+    }
 }
