@@ -29,20 +29,32 @@ struct AListIt {
     AList* list;
     AListNode* currentNode;
     void* currentItem;
+    bool reversed;
 };
 
-extern AListIt a_listit__new(AList* List);
+extern AListIt a_listit__new(AList* List, bool Reversed);
 
 extern bool a_listit__getNext(AListIt* Iterator);
 extern void a_listit__remove(AListIt* Iterator);
 
-#define A_LIST_ITERATE(List, Item)                                       \
-    for(AListIt a__it = a_listit__new(List);                             \
-        a_listit__getNext(&a__it) && (Item = a__it.currentItem, true); )
+#define A_LIST_ITERATE(List, PtrType, Name)                                  \
+    for(PtrType Name = NULL + 1; Name; Name = NULL)                          \
+        for(AListIt a__it = a_listit__new(List, false);                      \
+            a_listit__getNext(&a__it) && (Name = a__it.currentItem, true); )
 
-#define A_LIST_FILTER(List, Item, Filter) \
-    A_LIST_ITERATE(List, Item)            \
-        if(!(Filter)) continue;           \
+#define A_LIST_ITERATE_BACKWARDS(List, PtrType, Name)                        \
+    for(PtrType Name = NULL + 1; Name; Name = NULL)                          \
+        for(AListIt a__it = a_listit__new(List, true);                       \
+            a_listit__getNext(&a__it) && (Name = a__it.currentItem, true); )
+
+#define A_LIST_FILTER(List, PtrType, Name, Filter) \
+    A_LIST_ITERATE(List, PtrType, Name)            \
+        if(!(Filter)) continue;                    \
+        else
+
+#define A_LIST_FILTER_BACKWARDS(List, PtrType, Name, Filter) \
+    A_LIST_ITERATE_BACKWARDS(List, PtrType, Name)            \
+        if(!(Filter)) continue;                              \
         else
 
 #define A_LIST_REMOVE_CURRENT() a_listit__remove(&a__it)

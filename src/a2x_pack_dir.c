@@ -23,38 +23,21 @@ struct ADir {
     char* path;
     char* name;
     AList* files;
-    AListIt iterator;
     int num;
 };
 
-typedef struct ADirEntry {
-    char* name;
-    char* full;
-} ADirEntry;
-
-static int defaultFilter(const struct dirent* Entry)
-{
-    return strlen(Entry->d_name) > 0 && Entry->d_name[0] != '.';
-}
-
 ADir* a_dir_open(const char* Path)
-{
-    return a_dir_openFilter(Path, defaultFilter);
-}
-
-ADir* a_dir_openFilter(const char* Path, int (*filter)(const struct dirent* Entry))
 {
     extern int scandir(
         const char *dirp, struct dirent ***namelist,
         int (*filter)(const struct dirent *),
         int (*compar)(const struct dirent **, const struct dirent **));
-
     extern int alphasort(const struct dirent **, const struct dirent **);
 
     struct dirent** dlist = NULL;
-    const int numFiles = scandir(Path, &dlist, filter, alphasort);
+    const int numFiles = scandir(Path, &dlist, NULL, alphasort);
 
-    ADir* const d = a_mem_malloc(sizeof(ADir));
+    ADir* d = a_mem_malloc(sizeof(ADir));
 
     d->path = a_str_dup(Path);
     d->name = a_str_getSuffixLastFind(Path, '/');
@@ -66,7 +49,7 @@ ADir* a_dir_openFilter(const char* Path, int (*filter)(const struct dirent* Entr
     }
 
     for(int i = d->num; i--; ) {
-        ADirEntry* const e = a_mem_malloc(sizeof(ADirEntry));
+        ADirEntry* e = a_mem_malloc(sizeof(ADirEntry));
 
         e->name = a_str_dup(dlist[i]->d_name);
         e->full = a_str_merge(Path, "/", e->name);
@@ -75,21 +58,16 @@ ADir* a_dir_openFilter(const char* Path, int (*filter)(const struct dirent* Entr
         free(dlist[i]);
     }
 
-    d->iterator = a_listit__new(d->files);
-
     free(dlist);
-
     return d;
 }
 
 void a_dir_close(ADir* Dir)
 {
-    ADirEntry* e;
-
     free(Dir->path);
     free(Dir->name);
 
-    A_LIST_ITERATE(Dir->files, e) {
+    A_LIST_ITERATE(Dir->files, ADirEntry*, e) {
         free(e->name);
         free(e->full);
         free(e);
@@ -99,30 +77,9 @@ void a_dir_close(ADir* Dir)
     free(Dir);
 }
 
-void a_dir_reverse(ADir* Dir)
+AList* a_dir__files(const ADir* Dir)
 {
-    a_list_reverse(Dir->files);
-    Dir->iterator = a_listit__new(Dir->files);
-}
-
-bool a_dir__getNext(ADir* Dir, const char** Name, const char** FullPath)
-{
-    if(a_listit__getNext(&Dir->iterator)) {
-        ADirEntry* entry = Dir->iterator.currentItem;
-
-        *Name = entry->name;
-        *FullPath = entry->full;
-
-        return true;
-    }
-
-    Dir->iterator = a_listit__new(Dir->files);
-    return false;
-}
-
-void a_dir_reset(ADir* Dir)
-{
-    Dir->iterator = a_listit__new(Dir->files);
+    return Dir->files;
 }
 
 const char* a_dir_path(const ADir* Dir)

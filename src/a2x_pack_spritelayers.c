@@ -33,9 +33,7 @@ ASpriteLayers* a_spritelayers_new(void)
 
 void a_spritelayers_free(ASpriteLayers* Layers)
 {
-    ALayer* l;
-
-    A_LIST_ITERATE(Layers, l) {
+    A_LIST_ITERATE(Layers, ALayer*, l) {
         free(l);
     }
 
@@ -58,9 +56,7 @@ void a_spritelayers_add(ASpriteLayers* Layers, const ASprite* Sprite, APixelBlen
 
 void a_spritelayers_blit(ASpriteLayers* Layers, int X, int Y)
 {
-    ALayer* l;
-
-    A_LIST_ITERATE(Layers, l) {
+    A_LIST_ITERATE(Layers, ALayer*, l) {
         a_pixel_setBlend(l->blend);
         a_pixel_setRGBA(l->r, l->g, l->b, l->a);
 

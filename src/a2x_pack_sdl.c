@@ -312,17 +312,15 @@ void a_sdl__init(void)
 
 void a_sdl__uninit(void)
 {
-    ASdlInputInstance* i;
-
-    A_LIST_ITERATE(g_buttons->list, i) {
+    A_LIST_ITERATE(g_buttons->list, ASdlInputInstance*, i) {
         free(i->name);
     }
 
-    A_LIST_ITERATE(g_analogs->list, i) {
+    A_LIST_ITERATE(g_analogs->list, ASdlInputInstance*, i) {
         free(i->name);
     }
 
-    A_LIST_ITERATE(g_touchScreens->list, i) {
+    A_LIST_ITERATE(g_touchScreens->list, ASdlInputInstance*, i) {
         free(i->name);
     }
 
@@ -718,9 +716,7 @@ void a_sdl__input_get(void)
             } break;
 
             case SDL_JOYAXISMOTION: {
-                ASdlInputInstance* a;
-
-                A_LIST_ITERATE(g_analogs->list, a) {
+                A_LIST_ITERATE(g_analogs->list, ASdlInputInstance*, a) {
                     if(a->device_index == event.jaxis.which) {
                         if(event.jaxis.axis == a->u.analog.xaxis_index) {
                             a_input__analog_setXAxis(a->input, event.jaxis.value);
@@ -732,9 +728,7 @@ void a_sdl__input_get(void)
             } break;
 
             case SDL_MOUSEMOTION: {
-                ASdlInputInstance* t;
-
-                A_LIST_ITERATE(g_touchScreens->list, t) {
+                A_LIST_ITERATE(g_touchScreens->list, ASdlInputInstance*, t) {
                     a_input__touch_addMotion(t->input, event.button.x, event.button.y);
                 }
             } break;
@@ -742,9 +736,7 @@ void a_sdl__input_get(void)
             case SDL_MOUSEBUTTONDOWN: {
                 switch(event.button.button) {
                     case SDL_BUTTON_LEFT: {
-                        ASdlInputInstance* t;
-
-                        A_LIST_ITERATE(g_touchScreens->list, t) {
+                        A_LIST_ITERATE(g_touchScreens->list, ASdlInputInstance*, t) {
                             a_input__touch_setCoords(t->input, event.button.x, event.button.y, true);
                         }
                     } break;
@@ -754,9 +746,7 @@ void a_sdl__input_get(void)
             case SDL_MOUSEBUTTONUP: {
                 switch(event.button.button) {
                     case SDL_BUTTON_LEFT: {
-                        ASdlInputInstance* t;
-
-                        A_LIST_ITERATE(g_touchScreens->list, t) {
+                        A_LIST_ITERATE(g_touchScreens->list, ASdlInputInstance*, t) {
                             a_input__touch_setCoords(t->input, event.button.x, event.button.y, false);
                         }
                     } break;
@@ -767,9 +757,7 @@ void a_sdl__input_get(void)
         }
 
         if(action != A_ACTION_NONE) {
-            ASdlInputInstance* b;
-
-            A_LIST_ITERATE(g_buttons->list, b) {
+            A_LIST_ITERATE(g_buttons->list, ASdlInputInstance*, b) {
                 for(int c = b->u.button.numCodes; c--; ) {
                     if(b->u.button.codes[c] == code) {
                         a_input__button_setState(b->input, action == A_ACTION_PRESSED);

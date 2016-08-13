@@ -28,9 +28,7 @@ void a_sprite__init(void)
 
 void a_sprite__uninit(void)
 {
-    ASprite* s;
-
-    A_LIST_ITERATE(g_spritesList, s) {
+    A_LIST_ITERATE(g_spritesList, ASprite*, s) {
         a_sprite__free(s);
     }
 

@@ -28,5 +28,7 @@ extern void a_strtok_free(AStrTok* Tokenizer);
 
 extern char* a_strtok__get(AStrTok* Tokenizer);
 
-#define A_STRTOK_ITERATE(Tokenizer, VarName)                                                   \
-    for(char* VarName = a_strtok__get(Tokenizer); VarName; VarName = a_strtok__get(Tokenizer))
+#define A_STRTOK_ITERATE(Tokenizer, NameVar)            \
+    for(const char* NameVar = a_strtok__get(Tokenizer); \
+        NameVar;                                        \
+        NameVar = a_strtok__get(Tokenizer))
