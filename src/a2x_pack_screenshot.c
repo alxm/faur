@@ -36,9 +36,7 @@ static bool lazy_init(void)
             g_isInit = true;
         } else {
             // Only interested in the last file, to get the number from its name
-            a_dir_reverse(dir);
-
-            A_DIR_ITERATE(dir, file, fullPath) {
+            A_DIR_ITERATE_BACKWARDS(dir, file, fullPath) {
                 int start = a_str_lastIndex(file, '-');
                 int end = a_str_lastIndex(file, '.');
 

@@ -93,11 +93,6 @@ AList* a_dir__files(const ADir* Dir)
     return Dir->files;
 }
 
-void a_dir_reverse(ADir* Dir)
-{
-    a_list_reverse(Dir->files);
-}
-
 const char* a_dir_path(const ADir* Dir)
 {
     return Dir->path;

@@ -37,12 +37,17 @@ extern void a_dir_close(ADir* Dir);
 
 extern AList* a_dir__files(const ADir* Dir);
 
-extern void a_dir_reverse(ADir* Dir);
-
 #define A_DIR_ITERATE(Dir, NameVar, FullPathVar)                               \
     for(const char *NameVar = NULL + 1, *FullPathVar; NameVar; NameVar = NULL) \
-        A_LIST_FILTER(a_dir__files(Dir), ADirEntry*, entry,                    \
-                      (NameVar = entry->name, FullPathVar = entry->full))
+        A_LIST_FILTER(                                                         \
+            a_dir__files(Dir), ADirEntry*, entry,                              \
+            (NameVar = entry->name, FullPathVar = entry->full))
+
+#define A_DIR_ITERATE_BACKWARDS(Dir, NameVar, FullPathVar)                     \
+    for(const char *NameVar = NULL + 1, *FullPathVar; NameVar; NameVar = NULL) \
+        A_LIST_FILTER_BACKWARDS(                                               \
+            a_dir__files(Dir), ADirEntry*, entry,                              \
+            (NameVar = entry->name, FullPathVar = entry->full))
 
 extern const char* a_dir_path(const ADir* Dir);
 extern const char* a_dir_name(const ADir* Dir);
