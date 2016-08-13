@@ -84,12 +84,10 @@ ADir* a_dir_openFilter(const char* Path, int (*filter)(const struct dirent* Entr
 
 void a_dir_close(ADir* Dir)
 {
-    ADirEntry* e;
-
     free(Dir->path);
     free(Dir->name);
 
-    A_LIST_ITERATE(Dir->files, e) {
+    A_LIST_ITERATE(Dir->files, ADirEntry*, e) {
         free(e->name);
         free(e->full);
         free(e);

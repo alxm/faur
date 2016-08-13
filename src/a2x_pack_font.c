@@ -80,9 +80,7 @@ void a_font__init(void)
 
 void a_font__uninit(void)
 {
-    AFont* f;
-
-    A_LIST_ITERATE(g_fontsList, f) {
+    A_LIST_ITERATE(g_fontsList, AFont*, f) {
         free(f);
     }
 

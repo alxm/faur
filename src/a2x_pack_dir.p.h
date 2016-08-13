@@ -29,8 +29,9 @@ extern void a_dir_close(ADir* Dir);
 
 extern void a_dir_reverse(ADir* Dir);
 
-#define A_DIR_ITERATE(Dir, Name, FullPath)       \
-    while(a_dir__getNext(Dir, &Name, &FullPath))
+#define A_DIR_ITERATE(Dir, NameVar, FullPathVar)                               \
+    for(const char *NameVar = NULL + 1, *FullPathVar; NameVar; NameVar = NULL) \
+        while(a_dir__getNext(Dir, &NameVar, &FullPathVar))
 
 extern bool a_dir__getNext(ADir* Dir, const char** Name, const char** FullPath);
 extern void a_dir_reset(ADir* Dir);

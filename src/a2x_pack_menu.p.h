@@ -41,8 +41,8 @@ extern void a_menu_addItem(AMenu* Menu, void* Item);
 extern void a_menu_input(AMenu* Menu);
 extern AList* a_menu__items(const AMenu* Menu);
 
-#define A_MENU_ITERATE(Menu, Item)            \
-    A_LIST_ITERATE(a_menu__items(Menu), Item)
+#define A_MENU_ITERATE(Menu, PtrType, Name)            \
+    A_LIST_ITERATE(a_menu__items(Menu), PtrType, Name)
 
 extern bool a_menu_isSelected(const AMenu* Menu, const void* Item);
 extern void a_menu_keepRunning(AMenu* Menu);

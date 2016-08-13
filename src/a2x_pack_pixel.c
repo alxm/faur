@@ -75,9 +75,7 @@ void a_pixel__init(void)
 
 void a_pixel__uninit(void)
 {
-    APixelMode* mode;
-
-    A_LIST_ITERATE(g_modeStack, mode) {
+    A_LIST_ITERATE(g_modeStack, APixelMode*, mode) {
         free(mode);
     }
 

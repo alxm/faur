@@ -87,10 +87,8 @@ AColObject* a_colobject_new(const AColMap* Map, void* UserObject)
 
 void a_colobject_free(AColObject* Object)
 {
-    AListNode* n;
-
     // Remove object from any lists it is in
-    A_LIST_ITERATE(Object->nodes, n) {
+    A_LIST_ITERATE(Object->nodes, AListNode*, n) {
         a_list_removeNode(n);
     }
 
@@ -100,13 +98,12 @@ void a_colobject_free(AColObject* Object)
 
 void a_colobject_setCoords(AColObject* Object, int X, int Y)
 {
-    const AColMap* const m = Object->colmap;
-    AList* const pt_nodes = Object->nodes;
-    AList*** const submaps = m->submaps;
-    AListNode* n;
+    const AColMap* m = Object->colmap;
+    AList* pt_nodes = Object->nodes;
+    AList*** submaps = m->submaps;
 
     // remove point from all the submaps it was in
-    A_LIST_ITERATE(pt_nodes, n) {
+    A_LIST_ITERATE(pt_nodes, AListNode*, n) {
         a_list_removeNode(n);
     }
 

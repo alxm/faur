@@ -35,9 +35,6 @@ static bool lazy_init(void)
         if(a_dir_num(dir) == 0) {
             g_isInit = true;
         } else {
-            const char* file;
-            const char* fullPath;
-
             // Only interested in the last file, to get the number from its name
             a_dir_reverse(dir);
 

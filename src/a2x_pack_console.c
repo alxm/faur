@@ -67,10 +67,9 @@ void a_console__init(void)
 
 void a_console__uninit(void)
 {
-    ALine* line;
     enabled = false;
 
-    A_LIST_ITERATE(g_lines, line) {
+    A_LIST_ITERATE(g_lines, ALine*, line) {
         line_free(line);
     }
 
@@ -101,10 +100,9 @@ void a_console__draw(void)
     a_draw_fill();
 
     int y = 1;
-    ALine* line;
     a_font_setAlign(A_FONT_ALIGN_LEFT);
 
-    A_LIST_ITERATE(g_lines, line) {
+    A_LIST_ITERATE(g_lines, ALine*, line) {
         a_font_setCoords(1, y);
         a_font_setFace(g_titles[line->type].font);
         a_font_text(g_titles[line->type].text);

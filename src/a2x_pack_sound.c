@@ -61,16 +61,13 @@ void a_sound__init(void)
 void a_sound__uninit(void)
 {
     if(a_settings_getBool("sound.on")) {
-        ASound* s;
-        AMusic* m;
-
         a_music_stop();
 
-        A_LIST_ITERATE(g_sfxList, s) {
+        A_LIST_ITERATE(g_sfxList, ASound*, s) {
             a_sfx__free(s);
         }
 
-        A_LIST_ITERATE(g_musicList, m) {
+        A_LIST_ITERATE(g_musicList, AMusic*, m) {
             a_music__free(m);
         }
 
@@ -155,9 +152,7 @@ void a_sfx_play(ASound* Sfx)
 void a_sfx_volume(int Volume)
 {
     if(a_settings_getBool("sound.on")) {
-        ASound* s;
-
-        A_LIST_ITERATE(g_sfxList, s) {
+        A_LIST_ITERATE(g_sfxList, ASound*, s) {
             a_sdl__sfx_setVolume(s, Volume);
         }
     }
