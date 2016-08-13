@@ -19,26 +19,35 @@
 
 #include "a2x_pack_listit.v.h"
 
-AListIt a_listit__new(AList* List)
+AListIt a_listit__new(AList* List, bool Reversed)
 {
     AListIt it;
 
     it.list = List;
-    it.currentNode = List->first;
+    it.currentNode = Reversed ? List->last : List->first;
     it.currentItem = NULL;
+    it.reversed = Reversed;
 
     return it;
 }
 
 bool a_listit__getNext(AListIt* Iterator)
 {
-    if(Iterator->currentNode->next == Iterator->list->last) {
-        return false;
+    if(Iterator->reversed) {
+        if(Iterator->currentNode->prev == Iterator->list->first) {
+            return false;
+        }
+
+        Iterator->currentNode = Iterator->currentNode->prev;
+    } else {
+        if(Iterator->currentNode->next == Iterator->list->last) {
+            return false;
+        }
+
+        Iterator->currentNode = Iterator->currentNode->next;
     }
 
-    Iterator->currentNode = Iterator->currentNode->next;
     Iterator->currentItem = Iterator->currentNode->content;
-
     return true;
 }
 
@@ -47,12 +56,15 @@ void a_listit__remove(AListIt* Iterator)
     AList* list = Iterator->list;
     AListNode* n = Iterator->currentNode;
 
-    Iterator->currentNode = n->prev;
+    if(Iterator->reversed) {
+        Iterator->currentNode = n->next;
+    } else {
+        Iterator->currentNode = n->prev;
+    }
 
     n->prev->next = n->next;
     n->next->prev = n->prev;
 
     free(n);
-
     list->items--;
 }

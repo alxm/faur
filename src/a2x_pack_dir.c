@@ -75,7 +75,7 @@ ADir* a_dir_openFilter(const char* Path, int (*filter)(const struct dirent* Entr
         free(dlist[i]);
     }
 
-    d->iterator = a_listit__new(d->files);
+    d->iterator = a_listit__new(d->files, false);
 
     free(dlist);
 
@@ -100,7 +100,7 @@ void a_dir_close(ADir* Dir)
 void a_dir_reverse(ADir* Dir)
 {
     a_list_reverse(Dir->files);
-    Dir->iterator = a_listit__new(Dir->files);
+    Dir->iterator = a_listit__new(Dir->files, false);
 }
 
 bool a_dir__getNext(ADir* Dir, const char** Name, const char** FullPath)
@@ -114,13 +114,13 @@ bool a_dir__getNext(ADir* Dir, const char** Name, const char** FullPath)
         return true;
     }
 
-    Dir->iterator = a_listit__new(Dir->files);
+    Dir->iterator = a_listit__new(Dir->files, false);
     return false;
 }
 
 void a_dir_reset(ADir* Dir)
 {
-    Dir->iterator = a_listit__new(Dir->files);
+    Dir->iterator = a_listit__new(Dir->files, false);
 }
 
 const char* a_dir_path(const ADir* Dir)
