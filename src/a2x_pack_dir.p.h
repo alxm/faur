@@ -32,7 +32,6 @@ struct ADirEntry {
 };
 
 extern ADir* a_dir_open(const char* Path);
-extern ADir* a_dir_openFilter(const char* Path, int (*filter)(const struct dirent* Entry));
 extern void a_dir_close(ADir* Dir);
 
 extern AList* a_dir__files(const ADir* Dir);
@@ -48,6 +47,18 @@ extern AList* a_dir__files(const ADir* Dir);
         A_LIST_FILTER_BACKWARDS(                                               \
             a_dir__files(Dir), ADirEntry*, entry,                              \
             (NameVar = entry->name, FullPathVar = entry->full))
+
+#define A_DIR_FILTER(Dir, NameVar, FullPathVar, Filter)                        \
+    for(const char *NameVar = NULL + 1, *FullPathVar; NameVar; NameVar = NULL) \
+        A_LIST_FILTER(                                                         \
+            a_dir__files(Dir), ADirEntry*, entry,                              \
+            ((NameVar = entry->name, FullPathVar = entry->full) && (Filter)))
+
+#define A_DIR_FILTER_BACKWARDS(Dir, NameVar, FullPathVar, Filter)              \
+    for(const char *NameVar = NULL + 1, *FullPathVar; NameVar; NameVar = NULL) \
+        A_LIST_FILTER_BACKWARDS(                                               \
+            a_dir__files(Dir), ADirEntry*, entry,                              \
+            ((NameVar = entry->name, FullPathVar = entry->full) && (Filter)))
 
 extern const char* a_dir_path(const ADir* Dir);
 extern const char* a_dir_name(const ADir* Dir);

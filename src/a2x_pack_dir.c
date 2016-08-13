@@ -26,27 +26,16 @@ struct ADir {
     int num;
 };
 
-static int defaultFilter(const struct dirent* Entry)
-{
-    return strlen(Entry->d_name) > 0 && Entry->d_name[0] != '.';
-}
-
 ADir* a_dir_open(const char* Path)
-{
-    return a_dir_openFilter(Path, defaultFilter);
-}
-
-ADir* a_dir_openFilter(const char* Path, int (*filter)(const struct dirent* Entry))
 {
     extern int scandir(
         const char *dirp, struct dirent ***namelist,
         int (*filter)(const struct dirent *),
         int (*compar)(const struct dirent **, const struct dirent **));
-
     extern int alphasort(const struct dirent **, const struct dirent **);
 
     struct dirent** dlist = NULL;
-    const int numFiles = scandir(Path, &dlist, filter, alphasort);
+    const int numFiles = scandir(Path, &dlist, NULL, alphasort);
 
     ADir* d = a_mem_malloc(sizeof(ADir));
 
