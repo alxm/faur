@@ -40,6 +40,7 @@ typedef enum AFontAlign {
 
 typedef enum AFontDefaults {
     A_FONT_WHITE,
+    A_FONT_LIGHT_GRAY,
     A_FONT_GREEN,
     A_FONT_YELLOW,
     A_FONT_RED,

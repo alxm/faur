@@ -140,7 +140,7 @@ void a_console__draw(void)
         ASprite* graphic = g_titles[line->type];
         a_blit(graphic, 1, y);
 
-        a_font_setFace(A_FONT_WHITE);
+        a_font_setFace(A_FONT_LIGHT_GRAY);
         a_font_setCoords(1 + a_sprite_w(graphic) + 2, y);
         a_font_fixed(a_screen__width - a_font_getX(), line->text);
 
