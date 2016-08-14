@@ -26,8 +26,8 @@ typedef struct ALine {
 } ALine;
 
 static AList* g_lines;
-bool enabled;
-bool show;
+bool g_enabled;
+bool g_show;
 
 #define LINE_HEIGHT 10
 static int g_linesPerScreen;
@@ -60,14 +60,14 @@ static void line_free(ALine* Line)
 
 void a_console__init(void)
 {
-    enabled = true;
+    g_enabled = true;
     g_lines = a_list_new();
     g_linesPerScreen = a_settings_getInt("video.height") / LINE_HEIGHT;
 }
 
 void a_console__uninit(void)
 {
-    enabled = false;
+    g_enabled = false;
 
     A_LIST_ITERATE(g_lines, ALine*, line) {
         line_free(line);
@@ -78,7 +78,7 @@ void a_console__uninit(void)
 
 void a_console__write(AConsoleOutType Type, const char* Text)
 {
-    if(!enabled) {
+    if(!g_enabled) {
         return;
     }
 
@@ -91,7 +91,7 @@ void a_console__write(AConsoleOutType Type, const char* Text)
 
 void a_console__draw(void)
 {
-    if(!enabled || !show) {
+    if(!g_enabled || !g_show) {
         return;
     }
 
@@ -116,5 +116,5 @@ void a_console__draw(void)
 
 void a_console__show(void)
 {
-    show = !show;
+    g_show = !g_show;
 }
