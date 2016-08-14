@@ -24,6 +24,7 @@
 static bool g_isInit;
 static char* g_filePrefix;
 static unsigned int g_screenshotNumber;
+static AInput* g_button;
 
 static bool lazy_init(void)
 {
@@ -74,11 +75,36 @@ static bool lazy_init(void)
     return g_isInit;
 }
 
+static void inputCallback(void)
+{
+    if(a_button_getAndUnpress(g_button)) {
+        if(!g_isInit && !lazy_init()) {
+            return;
+        }
+
+        if(++g_screenshotNumber > SCREENSHOTS_LIMIT) {
+            a_out__error("%d screenshots limit exceeded", SCREENSHOTS_LIMIT);
+            return;
+        }
+
+        char num[6];
+        snprintf(num, 6, "%05d", g_screenshotNumber);
+        char* name = a_str_merge(g_filePrefix, num, ".png");
+
+        a_out__message("Saving screenshot '%s'", name);
+        a_png_write(name, a_screen__pixels, a_screen__width, a_screen__height);
+
+        free(name);
+    }
+}
+
 void a_screenshot__init(void)
 {
     g_isInit = false;
     g_filePrefix = NULL;
     g_screenshotNumber = 0;
+    g_button = a_input_new(a_settings_getString("screenshot.button"));
+    a_input__addCallback(inputCallback);
 }
 
 void a_screenshot__uninit(void)
@@ -86,25 +112,4 @@ void a_screenshot__uninit(void)
     if(g_filePrefix != NULL) {
         free(g_filePrefix);
     }
-}
-
-void a_screenshot_save(void)
-{
-    if(!g_isInit && !lazy_init()) {
-        return;
-    }
-
-    if(++g_screenshotNumber > SCREENSHOTS_LIMIT) {
-        a_out__error("%d screenshots limit exceeded", SCREENSHOTS_LIMIT);
-        return;
-    }
-
-    char num[6];
-    snprintf(num, 6, "%05d", g_screenshotNumber);
-    char* name = a_str_merge(g_filePrefix, num, ".png");
-
-    a_out__message("Saving screenshot '%s'", name);
-    a_png_write(name, a_screen__pixels, a_screen__width, a_screen__height);
-
-    free(name);
 }

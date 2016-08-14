@@ -64,8 +64,6 @@ static AInputCollection* g_touchScreens;
 static AList* g_userInputs;
 static AList* g_callbacks;
 
-static AInput* g_screenshotButton;
-
 static void addButton(const char* Name)
 {
     AInputInstance* b = a_strhash_get(g_buttons->names, Name);
@@ -244,8 +242,6 @@ void a_input__init(void)
 
     g_userInputs = a_list_new();
     g_callbacks = a_list_new();
-
-    g_screenshotButton = a_input_new(a_settings_getString("screenshot.button"));
 }
 
 void a_input__uninit(void)
@@ -332,10 +328,6 @@ void a_input__get(void)
 
     A_LIST_ITERATE(g_callbacks, AInputCallback, callback) {
         callback();
-    }
-
-    if(a_button_getAndUnpress(g_screenshotButton)) {
-        a_screenshot_save();
     }
 
     // GP2X and Wiz dpad diagonals show up as dedicated buttons instead of a
