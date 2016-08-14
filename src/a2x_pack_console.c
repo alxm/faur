@@ -55,7 +55,7 @@ void a_console__init(void)
 {
     g_enabled = true;
     g_lines = a_list_new();
-    g_linesPerScreen = a_settings_getInt("video.height") / LINE_HEIGHT - 2;
+    g_linesPerScreen = INT_MAX;
 }
 
 void a_console__init2(void)
@@ -70,6 +70,13 @@ void a_console__init2(void)
 
     a_spriteframes_free(frames, false);
     a_sprite_free(graphics);
+
+    g_linesPerScreen = a_settings_getInt("video.height") / LINE_HEIGHT - 2;
+
+    // In case messages were logged between init and init2
+    while(a_list_size(g_lines) > g_linesPerScreen) {
+        line_free(a_list_pop(g_lines));
+    }
 }
 
 void a_console__uninit(void)

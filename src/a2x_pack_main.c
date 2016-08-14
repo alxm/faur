@@ -27,10 +27,10 @@ int main(int Argc, char** Argv)
     g_argsNum = Argc;
     g_args = Argv;
 
+    a_console__init();
     a_settings__defaults();
     a_settings__setup();
     a_settings__freeze();
-    a_console__init();
 
     a_out__message("a2x %s, built %s",
         A__MAKE_CURRENT_GIT_BRANCH,
