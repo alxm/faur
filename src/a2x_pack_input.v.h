@@ -20,6 +20,7 @@
 #pragma once
 
 typedef struct AInputInstance AInputInstance;
+typedef void (*AInputCallback)(void);
 
 #include "a2x_pack_input.p.h"
 
@@ -42,6 +43,7 @@ extern void a_input__uninit(void);
 
 extern void a_input__free(AInput* Input);
 
+extern void a_input__addCallback(AInputCallback Callback);
 extern void a_input__get(void);
 
 extern void a_input__button_setState(AInputInstance* Button, bool Pressed);

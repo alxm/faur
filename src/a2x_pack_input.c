@@ -62,6 +62,7 @@ static AInputCollection* g_touchScreens;
 
 // all inputs returned by a_input_new()
 static AList* g_userInputs;
+static AList* g_callbacks;
 
 static AInput* g_consoleToggleButton;
 static AInput* g_screenshotButton;
@@ -243,6 +244,7 @@ void a_input__init(void)
     #endif
 
     g_userInputs = a_list_new();
+    g_callbacks = a_list_new();
 
     g_consoleToggleButton = a_input_new(a_settings_getString("console.button"));
     g_screenshotButton = a_input_new(a_settings_getString("screenshot.button"));
@@ -255,6 +257,7 @@ void a_input__uninit(void)
     }
 
     a_list_free(g_userInputs);
+    a_list_free(g_callbacks);
 
     A_LIST_ITERATE(g_buttons->list, AInputInstance*, inputInstance) {
         free(inputInstance->name);
@@ -306,6 +309,11 @@ void a_input__collection_add(AInputCollection* Collection, void* Instance, const
     a_strhash_add(Collection->names, Name, Instance);
 }
 
+void a_input__addCallback(AInputCallback Callback)
+{
+    a_list_addLast(g_callbacks, Callback);
+}
+
 void a_input__get(void)
 {
     A_LIST_ITERATE(g_touchScreens->list, AInputInstance*, inputInstance) {
@@ -323,6 +331,10 @@ void a_input__get(void)
     }
 
     a_sdl__input_get();
+
+    A_LIST_ITERATE(g_callbacks, AInputCallback, callback) {
+        callback();
+    }
 
     if(a_button_getAndUnpress(g_consoleToggleButton)) {
         a_console__show();
