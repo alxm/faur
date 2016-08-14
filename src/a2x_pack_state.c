@@ -101,7 +101,7 @@ static AStateInstance* state_new(const char* Name)
 
 static void state_free(AStateInstance* State)
 {
-    a_out__state("Destroying '%s' instance", State->name);
+    a_out__stateVerbose("Destroying '%s' instance", State->name);
 
     free(State->name);
     a_strhash_free(State->objects);
@@ -119,7 +119,7 @@ static void state_handle(void)
             current->stage = A_STATE_STAGE_BODY;
             current->substage = A_STATE_SUBSTAGE_RUN;
 
-            a_out__state("  '%s' going from %s to %s/%s",
+            a_out__stateVerbose("  '%s' going from %s to %s/%s",
                 current->name,
                 g_stageNames[A_STATE_STAGE_INIT],
                 g_stageNames[A_STATE_STAGE_BODY],
@@ -147,7 +147,7 @@ static void state_handle(void)
                     s->name);
             }
 
-            a_out__state("  '%s' going from %s/%s to %s",
+            a_out__stateVerbose("  '%s' going from %s/%s to %s",
                 s->name,
                 g_stageNames[A_STATE_STAGE_BODY],
                 g_subStageNames[s->substage],
@@ -172,7 +172,7 @@ static void state_handle(void)
 
             s->substage = A_STATE_SUBSTAGE_PAUSE;
 
-            a_out__state("  '%s' going from %s/%s to %s/%s",
+            a_out__stateVerbose("  '%s' going from %s/%s to %s/%s",
                 s->name,
                 g_stageNames[A_STATE_STAGE_BODY],
                 g_subStageNames[A_STATE_SUBSTAGE_RUN],
@@ -195,7 +195,7 @@ static void state_handle(void)
 
             s->substage = A_STATE_SUBSTAGE_RUN;
 
-            a_out__state("  '%s' going from %s/%s to %s/%s",
+            a_out__stateVerbose("  '%s' going from %s/%s to %s/%s",
                 s->name,
                 g_stageNames[A_STATE_STAGE_BODY],
                 g_subStageNames[A_STATE_SUBSTAGE_PAUSE],
@@ -208,13 +208,13 @@ static void state_handle(void)
 
             A_LIST_ITERATE(g_stack, AStateInstance*, s) {
                 if(s->stage == A_STATE_STAGE_BODY) {
-                    a_out__state("  '%s' going from %s/%s to %s",
+                    a_out__stateVerbose("  '%s' going from %s/%s to %s",
                         s->name,
                         g_stageNames[s->stage],
                         g_subStageNames[s->substage],
                         g_stageNames[A_STATE_STAGE_FREE]);
                 } else {
-                    a_out__state("  '%s' going from %s to %s",
+                    a_out__stateVerbose("  '%s' going from %s to %s",
                         s->name,
                         g_stageNames[s->stage],
                         g_stageNames[A_STATE_STAGE_FREE]);
@@ -250,7 +250,7 @@ void a_state__uninit(void)
 void a_state__new(const char* Name, AStateFunction Function)
 {
     a_strhash_add(g_states, Name, Function);
-    a_out__state("Declared '%s'", Name);
+    a_out__stateVerbose("Declared '%s'", Name);
 }
 
 void a_state_push(const char* Name)
@@ -353,12 +353,12 @@ void a_state__run(void)
         AStateInstance* s = a_list_peek(g_stack);
 
         if(s->stage == A_STATE_STAGE_BODY) {
-            a_out__state("  '%s' running %s/%s",
+            a_out__stateVerbose("  '%s' running %s/%s",
                 s->name,
                 g_stageNames[A_STATE_STAGE_BODY],
                 g_subStageNames[s->substage]);
         } else {
-            a_out__state("  '%s' running %s",
+            a_out__stateVerbose("  '%s' running %s",
                 s->name,
                 g_stageNames[s->stage]);
         }

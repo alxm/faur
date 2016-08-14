@@ -84,3 +84,13 @@ void a_out__state(char* Format, ...)
         A_OUT__CONSOLE(A_CONSOLE_STATE);
     }
 }
+
+void a_out__stateVerbose(char* Format, ...)
+{
+    if(a_settings_getBool("app.output.on")
+        && a_settings_getBool("app.output.verbose")) {
+
+        A_OUT__WORKER("Stt", 34, stdout);
+        A_OUT__CONSOLE(A_CONSOLE_STATE);
+    }
+}
