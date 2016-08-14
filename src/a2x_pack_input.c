@@ -64,7 +64,6 @@ static AInputCollection* g_touchScreens;
 static AList* g_userInputs;
 static AList* g_callbacks;
 
-static AInput* g_consoleToggleButton;
 static AInput* g_screenshotButton;
 
 static void addButton(const char* Name)
@@ -246,7 +245,6 @@ void a_input__init(void)
     g_userInputs = a_list_new();
     g_callbacks = a_list_new();
 
-    g_consoleToggleButton = a_input_new(a_settings_getString("console.button"));
     g_screenshotButton = a_input_new(a_settings_getString("screenshot.button"));
 }
 
@@ -334,10 +332,6 @@ void a_input__get(void)
 
     A_LIST_ITERATE(g_callbacks, AInputCallback, callback) {
         callback();
-    }
-
-    if(a_button_getAndUnpress(g_consoleToggleButton)) {
-        a_console__show();
     }
 
     if(a_button_getAndUnpress(g_screenshotButton)) {

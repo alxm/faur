@@ -29,11 +29,10 @@ typedef struct ALine {
 static AList* g_lines;
 bool g_enabled;
 bool g_show;
-
 #define LINE_HEIGHT 10
 static int g_linesPerScreen;
-
 static ASprite* g_titles[A_CONSOLE_MAX];
+static AInput* g_toggle;
 
 static ALine* line_new(AConsoleOutType Type, const char* Text)
 {
@@ -49,6 +48,13 @@ static void line_free(ALine* Line)
 {
     free(Line->text);
     free(Line);
+}
+
+static void inputCallback(void)
+{
+    if(a_button_getAndUnpress(g_toggle)) {
+        g_show = !g_show;
+    }
 }
 
 void a_console__init(void)
@@ -77,6 +83,9 @@ void a_console__init2(void)
     while(a_list_size(g_lines) > g_linesPerScreen) {
         line_free(a_list_pop(g_lines));
     }
+
+    g_toggle = a_input_new(a_settings_getString("console.button"));
+    a_input__addCallback(inputCallback);
 }
 
 void a_console__uninit(void)
@@ -153,9 +162,4 @@ void a_console__draw(void)
 
         y += LINE_HEIGHT;
     }
-}
-
-void a_console__show(void)
-{
-    g_show = !g_show;
 }
