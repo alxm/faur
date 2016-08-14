@@ -34,6 +34,7 @@ struct AInputInstance {
     union {
         struct {
             bool pressed;
+            bool waitingForUnpress;
             bool analogPushedPast; // used to simulate key events for analog
             bool freshEvent; // used to simulate separate directions from diagonals
         } button;
@@ -78,6 +79,7 @@ static void addButton(const char* Name)
 
     b->name = a_str_dup(Name);
     b->u.button.pressed = false;
+    b->u.button.waitingForUnpress = false;
     b->u.button.analogPushedPast = false;
     b->u.button.freshEvent = false;
 
@@ -565,6 +567,7 @@ bool a_button_getAndUnpress(const AInput* Button)
     A_LIST_ITERATE(Button->g_buttons, AInputInstance*, b) {
         if(b->u.button.pressed) {
             b->u.button.pressed = false;
+            b->u.button.waitingForUnpress = true;
             foundPressed = true;
         }
     }
@@ -649,7 +652,13 @@ bool a_touch_rect(const AInput* Touch, int X, int Y, int W, int H)
 
 void a_input__button_setState(AInputInstance* Button, bool Pressed)
 {
+    if(Button->u.button.waitingForUnpress && Pressed) {
+        // Ignore press until getting an unpress
+        return;
+    }
+
     Button->u.button.pressed = Pressed;
+    Button->u.button.waitingForUnpress = false;
     Button->u.button.freshEvent = true;
 }
 
