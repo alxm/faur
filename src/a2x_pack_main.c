@@ -63,6 +63,8 @@ int main(int Argc, char** Argv)
     a_state__init();
     a_fade__init();
 
+    a_console__init2();
+
     a_out__message("Opening A_MAIN");
     a_main();
     a_state__run();

@@ -19,6 +19,7 @@
 */
 
 #include "a2x_pack_console.v.h"
+#include "media/console.h"
 
 typedef struct ALine {
     AConsoleOutType type;
@@ -32,15 +33,7 @@ bool g_show;
 #define LINE_HEIGHT 10
 static int g_linesPerScreen;
 
-static struct {
-    char* text;
-    int font;
-} g_titles[A_CONSOLE_MAX] = {
-    {"[ a2x Msg ] ", A_FONT_GREEN},
-    {"[ a2x Wrn ] ", A_FONT_YELLOW},
-    {"[ a2x Err ] ", A_FONT_RED},
-    {"[ a2x Stt ] ", A_FONT_BLUE},
-};
+static ASprite* g_titles[A_CONSOLE_MAX];
 
 static ALine* line_new(AConsoleOutType Type, const char* Text)
 {
@@ -63,6 +56,20 @@ void a_console__init(void)
     g_enabled = true;
     g_lines = a_list_new();
     g_linesPerScreen = a_settings_getInt("video.height") / LINE_HEIGHT;
+}
+
+void a_console__init2(void)
+{
+    ASprite* graphics = a_sprite_fromData(g_media_console);
+    ASpriteFrames* frames = a_spriteframes_new(graphics, 0, 0, 0);
+
+    g_titles[A_CONSOLE_MESSAGE] = a_spriteframes_geti(frames, 0);
+    g_titles[A_CONSOLE_WARNING] = a_spriteframes_geti(frames, 1);
+    g_titles[A_CONSOLE_ERROR] = a_spriteframes_geti(frames, 2);
+    g_titles[A_CONSOLE_STATE] = a_spriteframes_geti(frames, 4);
+
+    a_spriteframes_free(frames, false);
+    a_sprite_free(graphics);
 }
 
 void a_console__uninit(void)
@@ -95,19 +102,23 @@ void a_console__draw(void)
         return;
     }
 
+    a_pixel_push();
+
     a_pixel_setBlend(A_PIXEL_RGBA);
-    a_pixel_setRGBA(0, 0, 0, 0.8 * A_PIXEL_ALPHA_MAX);
+    a_pixel_setRGBA(0x28, 0x18, 0x18, 0.95 * A_PIXEL_ALPHA_MAX);
     a_draw_fill();
 
-    int y = 1;
+    a_pixel_pop();
+
+    int y = 2;
     a_font_setAlign(A_FONT_ALIGN_LEFT);
 
     A_LIST_ITERATE(g_lines, ALine*, line) {
-        a_font_setCoords(1, y);
-        a_font_setFace(g_titles[line->type].font);
-        a_font_text(g_titles[line->type].text);
+        ASprite* graphic = g_titles[line->type];
+        a_blit(graphic, 1, y);
 
         a_font_setFace(A_FONT_WHITE);
+        a_font_setCoords(1 + a_sprite_w(graphic) + 2, y);
         a_font_fixed(a_screen__width - a_font_getX(), line->text);
 
         y += LINE_HEIGHT;

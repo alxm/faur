@@ -27,6 +27,7 @@
 #include "a2x_pack_str.v.h"
 
 extern void a_console__init(void);
+extern void a_console__init2(void);
 extern void a_console__uninit(void);
 
 typedef enum {
