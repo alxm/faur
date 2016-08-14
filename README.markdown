@@ -34,7 +34,7 @@ A_SETUP
     a_settings_set("app.title", "simple");
     a_settings_set("app.version", "1.0");
     a_settings_set("app.author", "alex");
-    a_settings_set("app.quiet", "no");
+    a_settings_set("app.output.on", "yes");
 }
 
 A_MAIN

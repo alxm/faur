@@ -151,7 +151,7 @@ void a_settings__defaults(void)
     add(A_SETTING_STR, A_SETTING_SET_ONCE, "app.author", "(unknown)");
     add(A_SETTING_STR, A_SETTING_SET_ONCE, "app.buildtime", a_app__buildtime);
     add(A_SETTING_STR, A_SETTING_SET_ONCE, "app.conf", "a2x.cfg");
-    add(A_SETTING_BOOL, A_SETTING_SET_ANY, "app.quiet", "0");
+    add(A_SETTING_BOOL, A_SETTING_SET_ANY, "app.output.on", "1");
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "app.tool", "0");
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "app.gp2xMenu", "0");
     add(A_SETTING_INT, A_SETTING_SET_ANY, "app.mhz", "0");
