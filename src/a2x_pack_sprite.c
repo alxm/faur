@@ -20,6 +20,7 @@
 #include "a2x_pack_sprite.v.h"
 
 static AList* g_spritesList;
+static void a_sprite__free(ASprite* Sprite);
 
 void a_sprite__init(void)
 {

@@ -29,6 +29,7 @@ struct AFile {
 };
 
 static AList* g_openedFiles;
+static void a_file__close(AFile* File);
 
 void a_file__init(void)
 {
@@ -40,7 +41,7 @@ void a_file__uninit(void)
     A_LIST_ITERATE(g_openedFiles, AFile*, f) {
         a_out__warning("You should close %s/%s with a_file_close",
                        f->path, f->name);
-        a_file_close(f);
+        a_file__close(f);
     }
 
     a_list_free(g_openedFiles);
@@ -77,6 +78,12 @@ AFile* a_file_open(const char* Path, const char* Modes)
 
 void a_file_close(AFile* File)
 {
+    a_list_removeNode(File->node);
+    a_file__close(File);
+}
+
+void a_file__close(AFile* File)
+{
     free(File->path);
     free(File->name);
     free(File->line);
@@ -85,7 +92,6 @@ void a_file_close(AFile* File)
         fclose(File->handle);
     }
 
-    a_list_removeNode(File->node);
     free(File);
 }
 
