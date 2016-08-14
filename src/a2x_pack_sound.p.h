@@ -34,6 +34,4 @@ extern ASound* a_sfx_fromFile(const char* Path);
 extern ASound* a_sfx__fromData(const uint8_t* Data, int Size);
 
 extern void a_sfx_play(ASound* Sfx);
-
 extern void a_sfx_volume(int Volume);
-extern void a_sound_adjustVolume(void);
