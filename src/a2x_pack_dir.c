@@ -24,7 +24,26 @@ struct ADir {
     char* name;
     AList* files;
     unsigned int num;
+    AListNode* node;
 };
+
+static AList* g_openedDirs;
+static void a_dir__close(ADir* Dir);
+
+void a_dir__init(void)
+{
+    g_openedDirs = a_list_new();
+}
+
+void a_dir__uninit(void)
+{
+    A_LIST_ITERATE(g_openedDirs, ADir*, d) {
+        a_out__warning("You should close %s with a_dir_close", d->path);
+        a_dir__close(d);
+    }
+
+    a_list_free(g_openedDirs);
+}
 
 ADir* a_dir_open(const char* Path)
 {
@@ -63,10 +82,18 @@ ADir* a_dir_open(const char* Path)
     }
 
     free(dlist);
+
+    d->node = a_list_addLast(g_openedDirs, d);
     return d;
 }
 
 void a_dir_close(ADir* Dir)
+{
+    a_list_removeNode(Dir->node);
+    a_dir__close(Dir);
+}
+
+void a_dir__close(ADir* Dir)
 {
     free(Dir->path);
     free(Dir->name);
