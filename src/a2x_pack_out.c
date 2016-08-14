@@ -53,7 +53,7 @@
 
 void a_out__message(char* Format, ...)
 {
-    if(!a_settings_getBool("app.quiet")) {
+    if(a_settings_getBool("app.output.on")) {
         A_OUT__WORKER("Msg", 32, stdout);
         A_OUT__CONSOLE(A_CONSOLE_MESSAGE);
     }
@@ -79,7 +79,17 @@ void a_out__fatal(char* Format, ...)
 
 void a_out__state(char* Format, ...)
 {
-    if(!a_settings_getBool("app.quiet")) {
+    if(a_settings_getBool("app.output.on")) {
+        A_OUT__WORKER("Stt", 34, stdout);
+        A_OUT__CONSOLE(A_CONSOLE_STATE);
+    }
+}
+
+void a_out__stateVerbose(char* Format, ...)
+{
+    if(a_settings_getBool("app.output.on")
+        && a_settings_getBool("app.output.verbose")) {
+
         A_OUT__WORKER("Stt", 34, stdout);
         A_OUT__CONSOLE(A_CONSOLE_STATE);
     }
