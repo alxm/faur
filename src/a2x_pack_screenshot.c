@@ -32,7 +32,7 @@ static bool lazy_init(void)
     if(a_dir_exists(screensDir)) {
         ADir* dir = a_dir_open(screensDir);
 
-        if(a_dir_num(dir) == 0) {
+        if(a_dir_numEntries(dir) == 0) {
             g_isInit = true;
         } else {
             // Only interested in the last file, to get the number from its name

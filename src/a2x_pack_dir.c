@@ -23,7 +23,7 @@ struct ADir {
     char* path;
     char* name;
     AList* files;
-    int num;
+    unsigned int num;
 };
 
 ADir* a_dir_open(const char* Path)
@@ -52,7 +52,7 @@ ADir* a_dir_open(const char* Path)
         d->name = a_str_dup(Path);
     }
 
-    for(int i = d->num; i--; ) {
+    for(unsigned int i = d->num; i--; ) {
         ADirEntry* e = a_mem_malloc(sizeof(ADirEntry));
 
         e->name = a_str_dup(dlist[i]->d_name);
@@ -96,7 +96,7 @@ const char* a_dir_name(const ADir* Dir)
     return Dir->name;
 }
 
-int a_dir_num(const ADir* Dir)
+unsigned int a_dir_numEntries(const ADir* Dir)
 {
     return Dir->num;
 }
