@@ -55,7 +55,7 @@ void a_console__init(void)
 {
     g_enabled = true;
     g_lines = a_list_new();
-    g_linesPerScreen = a_settings_getInt("video.height") / LINE_HEIGHT;
+    g_linesPerScreen = a_settings_getInt("video.height") / LINE_HEIGHT - 2;
 }
 
 void a_console__init2(void)
@@ -103,14 +103,37 @@ void a_console__draw(void)
     }
 
     a_pixel_push();
-
-    a_pixel_setBlend(A_PIXEL_RGBA);
-    a_pixel_setRGBA(0x28, 0x18, 0x18, 0.95 * A_PIXEL_ALPHA_MAX);
+    a_pixel_setBlend(A_PIXEL_RGB75);
+    a_pixel_setRGB(0x28, 0x18, 0x18);
     a_draw_fill();
-
     a_pixel_pop();
 
     int y = 2;
+
+    a_font_setCoords(2, y);
+    a_font_setFace(A_FONT_BLUE); a_font_text("a");
+    a_font_setFace(A_FONT_GREEN); a_font_text("2");
+    a_font_setFace(A_FONT_YELLOW); a_font_text("x");
+    a_font_setFace(A_FONT_WHITE);
+    a_font_textf(" %s, built %s",
+        A__MAKE_CURRENT_GIT_BRANCH,
+        A__MAKE_COMPILE_TIME);
+
+    a_font_setCoords(2, y + LINE_HEIGHT);
+    a_font_textf("Running %s %s by %s, built %s",
+        a_settings_getString("app.title"),
+        a_settings_getString("app.version"),
+        a_settings_getString("app.author"),
+        a_settings_getString("app.buildtime"));
+
+    a_font_setAlign(A_FONT_ALIGN_RIGHT);
+    a_font_setCoords(a_screen__width - 2, y);
+    a_font_textf("%u fps", a_fps_getFps());
+    a_font_setCoords(a_screen__width - 2, y + LINE_HEIGHT);
+    a_font_textf("%u max", a_fps_getMaxFps());
+
+    y += 2 * LINE_HEIGHT;
+
     a_font_setAlign(A_FONT_ALIGN_LEFT);
 
     A_LIST_ITERATE(g_lines, ALine*, line) {
