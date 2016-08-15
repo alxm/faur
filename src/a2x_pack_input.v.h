@@ -19,7 +19,7 @@
 
 #pragma once
 
-typedef struct AInputInstance AInputInstance;
+typedef struct APhysicalInput APhysicalInput;
 typedef void (*AInputCallback)(void);
 
 #include "a2x_pack_input.p.h"
@@ -46,14 +46,14 @@ extern void a_input__free(AInput* Input);
 extern void a_input__addCallback(AInputCallback Callback);
 extern void a_input__get(void);
 
-extern void a_input__button_setState(AInputInstance* Button, bool Pressed);
+extern void a_input__button_setState(APhysicalInput* Button, bool Pressed);
 
-extern void a_input__analog_setXAxis(AInputInstance* Analog, int Value);
-extern void a_input__analog_setYAxis(AInputInstance* Analog, int Value);
+extern void a_input__analog_setXAxis(APhysicalInput* Analog, int Value);
+extern void a_input__analog_setYAxis(APhysicalInput* Analog, int Value);
 
-extern void a_input__touch_addMotion(AInputInstance* Touch, int X, int Y);
-extern void a_input__touch_setCoords(AInputInstance* Touch, int X, int Y, bool Tapped);
+extern void a_input__touch_addMotion(APhysicalInput* Touch, int X, int Y);
+extern void a_input__touch_setCoords(APhysicalInput* Touch, int X, int Y, bool Tapped);
 
 extern AInputCollection* a_input__collection_new(void);
 extern void a_input__collection_free(AInputCollection* Collection);
-extern void a_input__collection_add(AInputCollection* Collection, void* Instance, const char* Name);
+extern void a_input__collection_add(AInputCollection* Collection, void* PhysicalInput, const char* Name);
