@@ -31,6 +31,7 @@ typedef void (*AInputCallback)(void);
 #include "a2x_pack_screen.v.h"
 #include "a2x_pack_screenshot.v.h"
 #include "a2x_pack_state.v.h"
+#include "a2x_pack_strbuilder.v.h"
 #include "a2x_pack_strtok.v.h"
 
 typedef struct AInputCollection {

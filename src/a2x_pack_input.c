@@ -24,13 +24,20 @@
 
 struct AInput {
     char* name;
-    AList* buttons; // Lists of APhysicalInput
-    AList* analogs;
-    AList* touchScreens;
+    AList* buttons; // List of APhysicalInput
+    AList* analogs; // List of APhysicalInput
+    AList* touchScreens; // List of APhysicalInput
+    AList* combos; // List of AComboInput
 };
+
+typedef struct AComboInput {
+    char* name;
+    AList* buttons; // List of APhysicalInput
+} AComboInput;
 
 struct APhysicalInput {
     char* name;
+    char* shortName;
     union {
         struct {
             bool pressed;
@@ -76,6 +83,7 @@ static void addButton(const char* Name)
     b = a_mem_malloc(sizeof(APhysicalInput));
 
     b->name = a_str_dup(Name);
+    b->shortName = a_str_getSuffixLastFind(Name, '.');
     b->u.button.pressed = false;
     b->u.button.waitingForUnpress = false;
     b->u.button.analogPushedPast = false;
@@ -98,6 +106,7 @@ static void addAnalog(const char* Name)
     a = a_mem_malloc(sizeof(APhysicalInput));
 
     a->name = a_str_dup(Name);
+    a->shortName = a_str_getSuffixLastFind(Name, '.');
     a->u.analog.xaxis = 0;
     a->u.analog.yaxis = 0;
 
@@ -118,6 +127,7 @@ static void addTouch(const char* Name)
     t = a_mem_malloc(sizeof(APhysicalInput));
 
     t->name = a_str_dup(Name);
+    t->shortName = a_str_getSuffixLastFind(Name, '.');
     t->u.touch.tap = false;
     t->u.touch.x = 0;
     t->u.touch.y = 0;
@@ -255,14 +265,17 @@ void a_input__uninit(void)
 
     A_LIST_ITERATE(g_buttons->list, APhysicalInput*, b) {
         free(b->name);
+        free(b->shortName);
     }
 
     A_LIST_ITERATE(g_analogs->list, APhysicalInput*, a) {
         free(a->name);
+        free(a->shortName);
     }
 
     A_LIST_ITERATE(g_touchScreens->list, APhysicalInput*, t) {
         free(t->name);
+        free(t->shortName);
 
         A_LIST_ITERATE(t->u.touch.motion, APoint*, p) {
             free(p);
@@ -487,29 +500,75 @@ AInput* a_input_new(const char* Names)
     i->buttons = a_list_new();
     i->analogs = a_list_new();
     i->touchScreens = a_list_new();
+    i->combos = a_list_new();
 
     A_STRTOK_ITERATE(tok, name) {
-        #define findNameInCollection(collection)                             \
-        ({                                                                   \
-            APhysicalInput* pi = a_strhash_get(g_##collection->names, name); \
-            if(pi) {                                                         \
-                a_list_addLast(i->collection, pi);                           \
-                if(i->name == NULL) {                                        \
-                    i->name = a_str_getSuffixLastFind(name, '.');            \
-                }                                                            \
-            }                                                                \
-        })
+        if(a_str_firstIndex(name, '+') > 0) {
+            AList* buttons = a_list_new();
+            AStrTok* tok = a_strtok_new(name, "+");
+            bool missing = false;
 
-        findNameInCollection(buttons);
-        findNameInCollection(analogs);
-        findNameInCollection(touchScreens);
+            A_STRTOK_ITERATE(tok, part) {
+                APhysicalInput* button = a_strhash_get(g_buttons->names, part);
+
+                if(button == NULL) {
+                    missing = true;
+                    a_list_free(buttons);
+                    break;
+                }
+
+                a_list_addLast(buttons, button);
+            }
+
+            if(!missing) {
+                AComboInput* combo = a_mem_malloc(sizeof(AComboInput));
+                AStrBuilder* sb = a_strbuilder_new(128);
+
+                A_LIST_ITERATE(buttons, APhysicalInput*, button) {
+                    a_strbuilder_addString(sb, button->shortName);
+
+                    if(!A_LIST_IS_LAST()) {
+                        a_strbuilder_addString(sb, "+");
+                    }
+                }
+
+                combo->name = a_str_dup(a_strbuilder_string(sb));
+                combo->buttons = buttons;
+
+                a_list_addLast(i->combos, combo);
+
+                if(i->name == NULL) {
+                    i->name = combo->name;
+                }
+
+                a_strbuilder_free(sb);
+            }
+
+            a_strtok_free(tok);
+        } else {
+            #define findNameInCollection(collection)                             \
+            ({                                                                   \
+                APhysicalInput* pi = a_strhash_get(g_##collection->names, name); \
+                if(pi) {                                                         \
+                    a_list_addLast(i->collection, pi);                           \
+                    if(i->name == NULL) {                                        \
+                        i->name = pi->shortName;                                 \
+                    }                                                            \
+                }                                                                \
+            })
+
+            findNameInCollection(buttons);
+            findNameInCollection(analogs);
+            findNameInCollection(touchScreens);
+        }
     }
 
     a_strtok_free(tok);
 
     if(a_list_isEmpty(i->buttons)
         && a_list_isEmpty(i->analogs)
-        && a_list_isEmpty(i->touchScreens)) {
+        && a_list_isEmpty(i->touchScreens)
+        && a_list_isEmpty(i->combos)) {
 
         a_out__error("No inputs found for '%s'", Names);
     }
@@ -521,11 +580,16 @@ AInput* a_input_new(const char* Names)
 
 void a_input__free(AInput* Input)
 {
-    free(Input->name);
-
     a_list_free(Input->buttons);
     a_list_free(Input->analogs);
     a_list_free(Input->touchScreens);
+
+    A_LIST_ITERATE(Input->combos, AComboInput*, c) {
+        free(c->name);
+        a_list_free(c->buttons);
+    }
+
+    a_list_free(Input->combos);
 
     free(Input);
 }
@@ -539,7 +603,8 @@ bool a_input_working(const AInput* Input)
 {
     return !a_list_isEmpty(Input->buttons)
         || !a_list_isEmpty(Input->analogs)
-        || !a_list_isEmpty(Input->touchScreens);
+        || !a_list_isEmpty(Input->touchScreens)
+        || !a_list_isEmpty(Input->combos);
 }
 
 bool a_button_get(const AInput* Button)
@@ -550,13 +615,31 @@ bool a_button_get(const AInput* Button)
         }
     }
 
+    if(!a_list_isEmpty(Button->combos)) {
+        A_LIST_ITERATE(Button->combos, AComboInput*, c) {
+            A_LIST_ITERATE(c->buttons, APhysicalInput*, b) {
+                if(!b->u.button.pressed) {
+                    break;
+                } else if(A_LIST_IS_LAST()) {
+                    return true;
+                }
+            }
+        }
+    }
+
     return false;
 }
 
-void a_button_unpress(const AInput* Input)
+void a_button_unpress(const AInput* Button)
 {
-    A_LIST_ITERATE(Input->buttons, APhysicalInput*, b) {
+    A_LIST_ITERATE(Button->buttons, APhysicalInput*, b) {
         b->u.button.pressed = false;
+    }
+
+    A_LIST_ITERATE(Button->combos, AComboInput*, c) {
+        A_LIST_ITERATE(c->buttons, APhysicalInput*, b) {
+            b->u.button.pressed = false;
+        }
     }
 }
 
@@ -572,7 +655,24 @@ bool a_button_getAndUnpress(const AInput* Button)
         }
     }
 
-    return foundPressed;
+    bool anyComboAllPressed = false;
+
+    A_LIST_ITERATE(Button->combos, AComboInput*, c) {
+        A_LIST_ITERATE(c->buttons, APhysicalInput*, b) {
+            if(!b->u.button.pressed) {
+                break;
+            } else if(A_LIST_IS_LAST()) {
+                anyComboAllPressed = true;
+
+                A_LIST_ITERATE(c->buttons, APhysicalInput*, b) {
+                    b->u.button.pressed = false;
+                    b->u.button.waitingForUnpress = true;
+                }
+            }
+        }
+    }
+
+    return foundPressed || anyComboAllPressed;
 }
 
 void a_button_waitFor(const AInput* Button)
