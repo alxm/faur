@@ -57,7 +57,6 @@ void a_fps__uninit(void)
 void a_fps_start(void)
 {
     a_input__get();
-    a_sound_adjustVolume();
 }
 
 void a_fps_end(void)

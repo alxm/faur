@@ -1,5 +1,5 @@
 /*
-    Copyright 2010 Alex Margarit
+    Copyright 2016 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -21,17 +21,10 @@
 
 #include "a2x_system_includes.h"
 
-typedef void AMusic;
-typedef void ASound;
+typedef struct AStrBuilder AStrBuilder;
 
-extern AMusic* a_music_load(const char* Path);
+extern AStrBuilder* a_strbuilder_new(size_t Bytes);
+extern void a_strbuilder_free(AStrBuilder* Builder);
 
-extern void a_music_play(AMusic* Music);
-extern void a_music_stop(void);
-
-extern ASound* a_sfx_fromFile(const char* Path);
-#define a_sfx_fromData(Data) a_sfx__fromData(Data, sizeof(Data))
-extern ASound* a_sfx__fromData(const uint8_t* Data, int Size);
-
-extern void a_sfx_play(ASound* Sfx);
-extern void a_sfx_volume(int Volume);
+extern const char* a_strbuilder_string(AStrBuilder* Builder);
+extern bool a_strbuilder_addString(AStrBuilder* Builder, const char* String);

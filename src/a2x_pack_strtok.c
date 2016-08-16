@@ -73,6 +73,8 @@ char* a_strtok__get(AStrTok* Tokenizer)
     }
 
     if(string[Tokenizer->index] == '\0') {
+        // Reset index, in case A_STRTOK_ITERATE is called again
+        Tokenizer->index = 0;
         return NULL;
     }
 

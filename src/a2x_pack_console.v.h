@@ -40,4 +40,3 @@ typedef enum {
 
 extern void a_console__write(AConsoleOutType Type, const char* Text);
 extern void a_console__draw(void);
-extern void a_console__show(void);

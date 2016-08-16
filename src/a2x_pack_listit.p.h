@@ -36,6 +36,8 @@ extern AListIt a_listit__new(AList* List, bool Reversed);
 
 extern bool a_listit__getNext(AListIt* Iterator);
 extern void a_listit__remove(AListIt* Iterator);
+extern bool a_listit__isFirst(AListIt* Iterator);
+extern bool a_listit__isLast(AListIt* Iterator);
 
 #define A_LIST_ITERATE(List, PtrType, Name)                                  \
     for(PtrType Name = NULL + 1; Name; Name = NULL)                          \
@@ -58,3 +60,5 @@ extern void a_listit__remove(AListIt* Iterator);
         else
 
 #define A_LIST_REMOVE_CURRENT() a_listit__remove(&a__it)
+#define A_LIST_IS_FIRST() a_listit__isFirst(&a__it)
+#define A_LIST_IS_LAST() a_listit__isLast(&a__it)

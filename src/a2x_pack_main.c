@@ -48,13 +48,13 @@ int main(int Argc, char** Argv)
     a_sdl__init();
     a_hw__init();
     a_screen__init();
-    a_screenshot__init();
     a_pixel__init();
     a_draw__init();
     a_blit__init();
     a_sprite__init();
     a_fps__init();
     a_input__init();
+    a_screenshot__init();
     a_sound__init();
     a_math__init();
     a_random__init();

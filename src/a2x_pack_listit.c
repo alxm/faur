@@ -68,3 +68,21 @@ void a_listit__remove(AListIt* Iterator)
     free(n);
     list->items--;
 }
+
+bool a_listit__isFirst(AListIt* Iterator)
+{
+    if(Iterator->reversed) {
+        return Iterator->currentNode->next == Iterator->list->last;
+    } else {
+        return Iterator->currentNode->prev == Iterator->list->first;
+    }
+}
+
+bool a_listit__isLast(AListIt* Iterator)
+{
+    if(Iterator->reversed) {
+        return Iterator->currentNode->prev == Iterator->list->first;
+    } else {
+        return Iterator->currentNode->next == Iterator->list->last;
+    }
+}

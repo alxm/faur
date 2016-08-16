@@ -33,6 +33,38 @@ int a__volumeAdjust = -2 * A_MILIS_VOLUME;
     static AInput* g_musicOnOffButton;
 #endif
 
+static void inputCallback(void)
+{
+    #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
+        if(a_settings_getBool("sound.on")) {
+            int adjust = 0;
+
+            if(a_button_get(g_volumeUpButton)) adjust = 1;
+            if(a_button_get(g_volumeDownButton)) adjust = -1;
+
+            if(adjust) {
+                a__volume += adjust * A_VOLUME_STEP;
+
+                if(a__volume > a__volumeMax) a__volume = a__volumeMax;
+                else if(a__volume < 0) a__volume = 0;
+
+                if(a_list_size(g_musicList) > 0) {
+                    a_sdl__music_setVolume();
+                }
+
+                a_sfx_volume((float)a_settings_getInt("sound.sfx.scale") / 100 * a__volume);
+                a__volumeAdjust = a_time_getMilis();
+            }
+        }
+    #elif A_PLATFORM_LINUXPC || A_PLATFORM_PANDORA
+        if(a_settings_getBool("sound.on")) {
+            if(a_button_getAndUnpress(g_musicOnOffButton)) {
+                a_sdl__music_toggle();
+            }
+        }
+    #endif
+}
+
 void a_sound__init(void)
 {
     if(a_settings_getBool("sound.on")) {
@@ -53,8 +85,10 @@ void a_sound__init(void)
             g_volumeUpButton = a_input_new("gp2x.VolUp, wiz.VolUp");
             g_volumeDownButton = a_input_new("gp2x.VolDown, wiz.VolDown");
         #elif A_PLATFORM_LINUXPC || A_PLATFORM_PANDORA
-            g_musicOnOffButton = a_input_new("pc.Music, pandora.Music");
+            g_musicOnOffButton = a_input_new("pc.m, pandora.m");
         #endif
+
+        a_input__addCallback(inputCallback);
     }
 }
 
@@ -156,36 +190,4 @@ void a_sfx_volume(int Volume)
             a_sdl__sfx_setVolume(s, Volume);
         }
     }
-}
-
-void a_sound_adjustVolume(void)
-{
-    #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
-        if(a_settings_getBool("sound.on")) {
-            int adjust = 0;
-
-            if(a_button_get(g_volumeUpButton)) adjust = 1;
-            if(a_button_get(g_volumeDownButton)) adjust = -1;
-
-            if(adjust) {
-                a__volume += adjust * A_VOLUME_STEP;
-
-                if(a__volume > a__volumeMax) a__volume = a__volumeMax;
-                else if(a__volume < 0) a__volume = 0;
-
-                if(a_list_size(g_musicList) > 0) {
-                    a_sdl__music_setVolume();
-                }
-
-                a_sfx_volume((float)a_settings_getInt("sound.sfx.scale") / 100 * a__volume);
-                a__volumeAdjust = a_time_getMilis();
-            }
-        }
-    #elif A_PLATFORM_LINUXPC || A_PLATFORM_PANDORA
-        if(a_settings_getBool("sound.on")) {
-            if(a_button_getAndUnpress(g_musicOnOffButton)) {
-                a_sdl__music_toggle();
-            }
-        }
-    #endif
 }
