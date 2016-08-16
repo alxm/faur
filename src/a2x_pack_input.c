@@ -675,20 +675,6 @@ bool a_button_getAndUnpress(const AInput* Button)
     return foundPressed || anyComboAllPressed;
 }
 
-void a_button_waitFor(const AInput* Button)
-{
-    if(a_list_isEmpty(Button->buttons)) {
-        return;
-    }
-
-    a_button_unpress(Button);
-
-    do {
-        a_fps_start();
-        a_fps_end();
-    } while(!a_button_getAndUnpress(Button));
-}
-
 int a_analog_xaxis(const AInput* Analog)
 {
     A_LIST_ITERATE(Analog->analogs, APhysicalInput*, a) {

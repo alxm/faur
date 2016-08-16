@@ -33,7 +33,6 @@ extern bool a_input_working(const AInput* Input);
 extern bool a_button_get(const AInput* Button);
 extern void a_button_unpress(const AInput* Button);
 extern bool a_button_getAndUnpress(const AInput* Button);
-extern void a_button_waitFor(const AInput* Button);
 
 extern int a_analog_xaxis(const AInput* Analog);
 extern int a_analog_yaxis(const AInput* Analog);
