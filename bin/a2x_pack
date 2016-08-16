@@ -54,7 +54,7 @@ class PackTool(Tool):
 
     You should have received a copy of the GNU Lesser General Public License
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
-*/""".format(time.strftime('%Y'), os.getlogin())
+*/""".format(time.strftime('%Y'), os.environ['USERNAME'])
 
         self.writefile(pack_c,
 """\
