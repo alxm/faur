@@ -27,7 +27,7 @@ typedef struct AInput AInput;
 
 extern AInput* a_input_new(const char* Names);
 
-extern char* a_input_name(const AInput* Input);
+extern const char* a_input_name(const AInput* Input);
 extern bool a_input_working(const AInput* Input);
 
 extern bool a_button_get(const AInput* Button);

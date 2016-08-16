@@ -23,7 +23,7 @@
 #define A_ANALOG_ERROR_MARGIN (A_ANALOG_MAX_DISTANCE / 20)
 
 struct AInput {
-    char* name;
+    const char* name;
     AList* buttons; // List of APhysicalInput
     AList* analogs; // List of APhysicalInput
     AList* touchScreens; // List of APhysicalInput
@@ -594,7 +594,7 @@ void a_input__free(AInput* Input)
     free(Input);
 }
 
-char* a_input_name(const AInput* Input)
+const char* a_input_name(const AInput* Input)
 {
     return Input->name;
 }
