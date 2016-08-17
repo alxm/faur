@@ -21,7 +21,7 @@
 
 #include "a2x_system_includes.h"
 
-#define A_SETUP void a_settings__setup(void)
+#define A_SETUP void a_settings__application(void)
 extern A_SETUP;
 
 extern void a_settings_set(const char* Key, const char* Value);

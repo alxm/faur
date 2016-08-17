@@ -29,7 +29,7 @@ int main(int Argc, char** Argv)
 
     a_console__init();
     a_settings__defaults();
-    a_settings__setup();
+    a_settings__application();
     a_settings__freeze();
 
     a_out__message("a2x %s, built %s",
