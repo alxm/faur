@@ -22,6 +22,9 @@
 #include "a2x_system_includes.h"
 
 typedef struct AStrHash AStrHash;
+typedef struct AStrHashEntry AStrHashEntry;
+
+#include "a2x_pack_list.p.h"
 
 extern AStrHash* a_strhash_new(void);
 extern void a_strhash_free(AStrHash* Hash);
@@ -29,3 +32,7 @@ extern void a_strhash_free(AStrHash* Hash);
 extern void a_strhash_add(AStrHash* Hash, const char* Key, void* Content);
 extern void* a_strhash_get(const AStrHash* Hash, const char* Key);
 extern bool a_strhash_contains(const AStrHash* Hash, const char* Key);
+
+extern AList* a_strhash_entries(const AStrHash* Hash);
+extern const char* a_strhash_entryKey(const AStrHashEntry* Entry);
+extern void* a_strhash_entryValue(const AStrHashEntry* Entry);
