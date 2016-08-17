@@ -28,7 +28,7 @@ int main(int Argc, char** Argv)
     g_args = Argv;
 
     a_console__init();
-    a_settings__defaults();
+    a_settings__init();
     a_settings__application();
     a_settings__freeze();
 
@@ -88,10 +88,13 @@ int main(int Argc, char** Argv)
 
     #if A_PLATFORM_GP2X || A_PLATFORM_WIZ || A_PLATFORM_CAANOO
         if(a_settings_getBool("app.gp2xMenu")) {
+            a_settings__uninit();
             chdir("/usr/gp2x");
             execl("gp2xmenu", "gp2xmenu", NULL);
         }
     #endif
+
+    a_settings__uninit();
 
     return 0;
 }

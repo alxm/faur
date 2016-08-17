@@ -34,7 +34,7 @@ typedef struct ASetting {
     union {
         int integer;
         bool boolean;
-        char string[64];
+        char* string;
     } value;
 } ASetting;
 
@@ -69,8 +69,7 @@ static void add(ASettingType Type, ASettingUpdate Update, const char* Key, const
         } break;
 
         case A_SETTING_STR: {
-            strncpy(s->value.string, Value, sizeof(s->value.string) - 1);
-            s->value.string[sizeof(s->value.string) - 1] = '\0';
+            s->value.string = a_str_dup(Value);
         } break;
     }
 
@@ -100,7 +99,8 @@ static void set(const char* Key, const char* Value, bool HonorFrozen)
         } break;
 
         case A_SETTING_STR: {
-            strncpy(s->value.string, Value, sizeof(s->value.string) - 1);
+            free(s->value.string);
+            s->value.string = a_str_dup(Value);
         } break;
     }
 
@@ -134,7 +134,7 @@ static bool flip(const char* Key, bool HonorFrozen)
     return s->value.boolean;
 }
 
-void a_settings__defaults(void)
+void a_settings__init(void)
 {
     g_settings = a_strhash_new();
     extern const char* a_app__buildtime;
@@ -170,6 +170,21 @@ void a_settings__defaults(void)
     add(A_SETTING_STR, A_SETTING_SET_ONCE, "screenshot.button", "pc.F12, pandora.s");
 
     add(A_SETTING_STR, A_SETTING_SET_ONCE, "console.button", "pc.F11");
+}
+
+void a_settings__uninit(void)
+{
+    A_LIST_ITERATE(a_strhash_entries(g_settings), AStrHashEntry*, e) {
+        ASetting* s = a_strhash_entryValue(e);
+
+        if(s->type == A_SETTING_STR) {
+            free(s->value.string);
+        }
+
+        free(s);
+    }
+
+    a_strhash_free(g_settings);
 }
 
 void a_settings__freeze(void)
