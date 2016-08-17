@@ -252,8 +252,8 @@ void a_sdl__init(void)
         addButton("caanoo.R", 5);
         addButton("caanoo.Home", 6);
         addButton("caanoo.Hold", 7);
-        addButton("caanoo.Help1", 8);
-        addButton("caanoo.Help2", 9);
+        addButton("caanoo.I", 8);
+        addButton("caanoo.II", 9);
         addAnalog("caanoo.Stick", 0, NULL, 0, 1);
         addTouch("caanoo.Touch");
     #elif A_PLATFORM_PANDORA
