@@ -35,7 +35,7 @@ typedef struct ASetting {
         int integer;
         bool boolean;
         char string[64];
-    } value[2];
+    } value;
 } ASetting;
 
 static AStrHash* g_settings;
@@ -61,19 +61,16 @@ static void add(ASettingType Type, ASettingUpdate Update, const char* Key, const
 
     switch(Type) {
         case A_SETTING_INT: {
-            s->value[0].integer = atoi(Value);
-            s->value[1].integer = s->value[0].integer;
+            s->value.integer = atoi(Value);
         } break;
 
         case A_SETTING_BOOL: {
-            s->value[0].boolean = parseBool(Value);
-            s->value[1].boolean = s->value[0].boolean;
+            s->value.boolean = parseBool(Value);
         } break;
 
         case A_SETTING_STR: {
-            strncpy(s->value[0].string, Value, sizeof(s->value[0].string) - 1);
-            s->value[0].string[sizeof(s->value[0].string) - 1] = '\0';
-            strcpy(s->value[1].string, s->value[0].string);
+            strncpy(s->value.string, Value, sizeof(s->value.string) - 1);
+            s->value.string[sizeof(s->value.string) - 1] = '\0';
         } break;
     }
 
@@ -95,18 +92,15 @@ static void set(const char* Key, const char* Value, bool HonorFrozen)
 
     switch(s->type) {
         case A_SETTING_INT: {
-            s->value[1].integer = s->value[0].integer;
-            s->value[0].integer = atoi(Value);
+            s->value.integer = atoi(Value);
         } break;
 
         case A_SETTING_BOOL: {
-            s->value[1].boolean = s->value[0].boolean;
-            s->value[0].boolean = parseBool(Value);
+            s->value.boolean = parseBool(Value);
         } break;
 
         case A_SETTING_STR: {
-            strcpy(s->value[1].string, s->value[0].string);
-            strncpy(s->value[0].string, Value, sizeof(s->value[0].string) - 1);
+            strncpy(s->value.string, Value, sizeof(s->value.string) - 1);
         } break;
     }
 
@@ -131,14 +125,13 @@ static bool flip(const char* Key, bool HonorFrozen)
         return false;
     }
 
-    s->value[1].boolean = s->value[0].boolean;
-    s->value[0].boolean ^= 1;
+    s->value.boolean = !s->value.boolean;
 
     if(s->update == A_SETTING_SET_ONCE) {
         s->update = A_SETTING_SET_FROZEN;
     }
 
-    return s->value[0].boolean;
+    return s->value.boolean;
 }
 
 void a_settings__defaults(void)
@@ -215,7 +208,7 @@ char* a_settings_getString(const char* Key)
         a_out__error("Setting '%s' is not a string", Key);
         return NULL;
     } else {
-        return s->value[0].string;
+        return s->value.string;
     }
 }
 
@@ -230,7 +223,7 @@ bool a_settings_getBool(const char* Key)
         a_out__error("Setting '%s' is not a boolean", Key);
         return false;
     } else {
-        return s->value[0].boolean;
+        return s->value.boolean;
     }
 }
 
@@ -245,6 +238,6 @@ int a_settings_getInt(const char* Key)
         a_out__error("Setting '%s' is not an integer", Key);
         return 0;
     } else {
-        return s->value[0].integer;
+        return s->value.integer;
     }
 }
