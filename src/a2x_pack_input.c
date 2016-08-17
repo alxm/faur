@@ -179,7 +179,7 @@ void a_input__init(void)
         addButton("wiz.B");
         addButton("wiz.X");
         addButton("wiz.Y");
-        addButton("wiz.AMenu");
+        addButton("wiz.Menu");
         addButton("wiz.Select");
         addButton("wiz.VolUp");
         addButton("wiz.VolDown");
@@ -197,8 +197,8 @@ void a_input__init(void)
         addButton("caanoo.R");
         addButton("caanoo.Home");
         addButton("caanoo.Hold");
-        addButton("caanoo.Help1");
-        addButton("caanoo.Help2");
+        addButton("caanoo.I");
+        addButton("caanoo.II");
         addAnalog("caanoo.Stick");
         addTouch("caanoo.Touch");
     #elif A_PLATFORM_PANDORA
