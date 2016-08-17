@@ -169,6 +169,7 @@ void a_settings__init(void)
     add(A_SETTING_STR, A_SETTING_SET_ONCE, "screenshot.dir", "./screenshots");
     add(A_SETTING_STR, A_SETTING_SET_ONCE, "screenshot.button", "pc.F12, pandora.s");
 
+    add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "console.on", "0");
     add(A_SETTING_STR, A_SETTING_SET_ONCE, "console.button", "pc.F11");
 }
 
