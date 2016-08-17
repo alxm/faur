@@ -21,14 +21,12 @@
 
 void a_conf__init(void)
 {
-    char* conf_name = a_settings_getString("app.conf");
-
+    const char* conf_name = a_settings_getString("app.conf");
     if(!a_file_exists(conf_name)) {
         return;
     }
 
-    AFile* const f = a_file_open(conf_name, "r");
-
+    AFile* f = a_file_open(conf_name, "r");
     if(!f) {
         return;
     }

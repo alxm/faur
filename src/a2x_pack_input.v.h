@@ -34,11 +34,6 @@ typedef void (*AInputCallback)(void);
 #include "a2x_pack_strbuilder.v.h"
 #include "a2x_pack_strtok.v.h"
 
-typedef struct AInputCollection {
-    AList* list; // inputs registered during init
-    AStrHash* names; // hash table of above inputs' names
-} AInputCollection;
-
 extern void a_input__init(void);
 extern void a_input__uninit(void);
 
@@ -54,7 +49,3 @@ extern void a_input__analog_setYAxis(APhysicalInput* Analog, int Value);
 
 extern void a_input__touch_addMotion(APhysicalInput* Touch, int X, int Y);
 extern void a_input__touch_setCoords(APhysicalInput* Touch, int X, int Y, bool Tapped);
-
-extern AInputCollection* a_input__collection_new(void);
-extern void a_input__collection_free(AInputCollection* Collection);
-extern void a_input__collection_add(AInputCollection* Collection, void* PhysicalInput, const char* Name);

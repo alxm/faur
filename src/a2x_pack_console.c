@@ -26,10 +26,11 @@ typedef struct ALine {
     char* text;
 } ALine;
 
-static AList* g_lines;
+#define LINE_HEIGHT 10
+
 bool g_enabled;
 bool g_show;
-#define LINE_HEIGHT 10
+static AList* g_lines;
 static int g_linesPerScreen;
 static ASprite* g_titles[A_CONSOLE_MAX];
 static AInput* g_toggle;
@@ -60,6 +61,7 @@ static void inputCallback(void)
 void a_console__init(void)
 {
     g_enabled = true;
+    g_show = false;
     g_lines = a_list_new();
     g_linesPerScreen = INT_MAX;
 }
@@ -84,7 +86,9 @@ void a_console__init2(void)
         line_free(a_list_pop(g_lines));
     }
 
+    g_show = a_settings_getBool("console.on");
     g_toggle = a_input_new(a_settings_getString("console.button"));
+
     a_input__addCallback(inputCallback);
 }
 

@@ -34,8 +34,8 @@ typedef struct ASetting {
     union {
         int integer;
         bool boolean;
-        char string[64];
-    } value[2];
+        char* string;
+    } value;
 } ASetting;
 
 static AStrHash* g_settings;
@@ -52,7 +52,7 @@ static int parseBool(const char* Value)
         || a_str_same(Value, "1");
 }
 
-static void add(ASettingType Type, ASettingUpdate Update, const char* Key, const char* Value)
+static void add(ASettingType Type, ASettingUpdate Update, const char* Key, const char* DefaultValue)
 {
     ASetting* const s = a_mem_malloc(sizeof(ASetting));
 
@@ -61,19 +61,15 @@ static void add(ASettingType Type, ASettingUpdate Update, const char* Key, const
 
     switch(Type) {
         case A_SETTING_INT: {
-            s->value[0].integer = atoi(Value);
-            s->value[1].integer = s->value[0].integer;
+            s->value.integer = atoi(DefaultValue);
         } break;
 
         case A_SETTING_BOOL: {
-            s->value[0].boolean = parseBool(Value);
-            s->value[1].boolean = s->value[0].boolean;
+            s->value.boolean = parseBool(DefaultValue);
         } break;
 
         case A_SETTING_STR: {
-            strncpy(s->value[0].string, Value, sizeof(s->value[0].string) - 1);
-            s->value[0].string[sizeof(s->value[0].string) - 1] = '\0';
-            strcpy(s->value[1].string, s->value[0].string);
+            s->value.string = a_str_dup(DefaultValue);
         } break;
     }
 
@@ -95,18 +91,16 @@ static void set(const char* Key, const char* Value, bool HonorFrozen)
 
     switch(s->type) {
         case A_SETTING_INT: {
-            s->value[1].integer = s->value[0].integer;
-            s->value[0].integer = atoi(Value);
+            s->value.integer = atoi(Value);
         } break;
 
         case A_SETTING_BOOL: {
-            s->value[1].boolean = s->value[0].boolean;
-            s->value[0].boolean = parseBool(Value);
+            s->value.boolean = parseBool(Value);
         } break;
 
         case A_SETTING_STR: {
-            strcpy(s->value[1].string, s->value[0].string);
-            strncpy(s->value[0].string, Value, sizeof(s->value[0].string) - 1);
+            free(s->value.string);
+            s->value.string = a_str_dup(Value);
         } break;
     }
 
@@ -131,17 +125,16 @@ static bool flip(const char* Key, bool HonorFrozen)
         return false;
     }
 
-    s->value[1].boolean = s->value[0].boolean;
-    s->value[0].boolean ^= 1;
+    s->value.boolean = !s->value.boolean;
 
     if(s->update == A_SETTING_SET_ONCE) {
         s->update = A_SETTING_SET_FROZEN;
     }
 
-    return s->value[0].boolean;
+    return s->value.boolean;
 }
 
-void a_settings__defaults(void)
+void a_settings__init(void)
 {
     g_settings = a_strhash_new();
     extern const char* a_app__buildtime;
@@ -149,22 +142,22 @@ void a_settings__defaults(void)
     add(A_SETTING_STR, A_SETTING_SET_ONCE, "app.title", "Untitled");
     add(A_SETTING_STR, A_SETTING_SET_ONCE, "app.version", "0");
     add(A_SETTING_STR, A_SETTING_SET_ONCE, "app.author", "(unknown)");
-    add(A_SETTING_STR, A_SETTING_SET_ONCE, "app.buildtime", a_app__buildtime);
+    add(A_SETTING_STR, A_SETTING_SET_FROZEN, "app.buildtime", a_app__buildtime);
     add(A_SETTING_STR, A_SETTING_SET_ONCE, "app.conf", "a2x.cfg");
     add(A_SETTING_BOOL, A_SETTING_SET_ANY, "app.output.on", "1");
     add(A_SETTING_BOOL, A_SETTING_SET_ANY, "app.output.verbose", "0");
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "app.tool", "0");
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "app.gp2xMenu", "0");
-    add(A_SETTING_INT, A_SETTING_SET_ANY, "app.mhz", "0");
+    add(A_SETTING_INT, A_SETTING_SET_ONCE, "app.mhz", "0");
 
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.window", "1");
     add(A_SETTING_INT, A_SETTING_SET_ONCE, "video.width", "320");
     add(A_SETTING_INT, A_SETTING_SET_ONCE, "video.height", "240");
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.doubleBuffer", "0");
-    add(A_SETTING_BOOL, A_SETTING_SET_ANY, "video.fullscreen", "0");
+    add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.fullscreen", "0");
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.wizTear", "0");
 
-    add(A_SETTING_BOOL, A_SETTING_SET_ANY, "sound.on", "0");
+    add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "sound.on", "0");
     add(A_SETTING_INT, A_SETTING_SET_ANY, "sound.music.scale", "100");
     add(A_SETTING_INT, A_SETTING_SET_ANY, "sound.sfx.scale", "100");
 
@@ -176,7 +169,21 @@ void a_settings__defaults(void)
     add(A_SETTING_STR, A_SETTING_SET_ONCE, "screenshot.dir", "./screenshots");
     add(A_SETTING_STR, A_SETTING_SET_ONCE, "screenshot.button", "pc.F12, pandora.s");
 
+    add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "console.on", "0");
     add(A_SETTING_STR, A_SETTING_SET_ONCE, "console.button", "pc.F11");
+}
+
+void a_settings__uninit(void)
+{
+    A_STRHASH_ITERATE(g_settings, ASetting*, s) {
+        if(s->type == A_SETTING_STR) {
+            free(s->value.string);
+        }
+
+        free(s);
+    }
+
+    a_strhash_free(g_settings);
 }
 
 void a_settings__freeze(void)
@@ -194,30 +201,6 @@ void a_settings__set(const char* Key, const char* Value)
     set(Key, Value, false);
 }
 
-void a_settings__undo(const char* Key)
-{
-    ASetting* const s = a_strhash_get(g_settings, Key);
-
-    if(s == NULL) {
-        a_out__error("Setting '%s' does not exist", Key);
-        return;
-    }
-
-    switch(s->type) {
-        case A_SETTING_INT: {
-            s->value[0].integer = s->value[1].integer;
-        } break;
-
-        case A_SETTING_BOOL: {
-            s->value[0].boolean = s->value[1].boolean;
-        } break;
-
-        case A_SETTING_STR: {
-            strcpy(s->value[0].string, s->value[1].string);
-        } break;
-    }
-}
-
 bool a_settings_flip(const char* Key)
 {
     return flip(Key, true);
@@ -228,7 +211,7 @@ bool a_settings__flip(const char* Key)
     return flip(Key, false);
 }
 
-char* a_settings_getString(const char* Key)
+const char* a_settings_getString(const char* Key)
 {
     ASetting* const s = a_strhash_get(g_settings, Key);
 
@@ -239,7 +222,7 @@ char* a_settings_getString(const char* Key)
         a_out__error("Setting '%s' is not a string", Key);
         return NULL;
     } else {
-        return s->value[0].string;
+        return s->value.string;
     }
 }
 
@@ -254,7 +237,7 @@ bool a_settings_getBool(const char* Key)
         a_out__error("Setting '%s' is not a boolean", Key);
         return false;
     } else {
-        return s->value[0].boolean;
+        return s->value.boolean;
     }
 }
 
@@ -269,6 +252,6 @@ int a_settings_getInt(const char* Key)
         a_out__error("Setting '%s' is not an integer", Key);
         return 0;
     } else {
-        return s->value[0].integer;
+        return s->value.integer;
     }
 }
