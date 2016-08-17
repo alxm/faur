@@ -52,7 +52,7 @@ static int parseBool(const char* Value)
         || a_str_same(Value, "1");
 }
 
-static void add(ASettingType Type, ASettingUpdate Update, const char* Key, const char* Value)
+static void add(ASettingType Type, ASettingUpdate Update, const char* Key, const char* DefaultValue)
 {
     ASetting* const s = a_mem_malloc(sizeof(ASetting));
 
@@ -61,15 +61,15 @@ static void add(ASettingType Type, ASettingUpdate Update, const char* Key, const
 
     switch(Type) {
         case A_SETTING_INT: {
-            s->value.integer = atoi(Value);
+            s->value.integer = atoi(DefaultValue);
         } break;
 
         case A_SETTING_BOOL: {
-            s->value.boolean = parseBool(Value);
+            s->value.boolean = parseBool(DefaultValue);
         } break;
 
         case A_SETTING_STR: {
-            s->value.string = a_str_dup(Value);
+            s->value.string = a_str_dup(DefaultValue);
         } break;
     }
 
@@ -142,22 +142,22 @@ void a_settings__init(void)
     add(A_SETTING_STR, A_SETTING_SET_ONCE, "app.title", "Untitled");
     add(A_SETTING_STR, A_SETTING_SET_ONCE, "app.version", "0");
     add(A_SETTING_STR, A_SETTING_SET_ONCE, "app.author", "(unknown)");
-    add(A_SETTING_STR, A_SETTING_SET_ONCE, "app.buildtime", a_app__buildtime);
+    add(A_SETTING_STR, A_SETTING_SET_FROZEN, "app.buildtime", a_app__buildtime);
     add(A_SETTING_STR, A_SETTING_SET_ONCE, "app.conf", "a2x.cfg");
     add(A_SETTING_BOOL, A_SETTING_SET_ANY, "app.output.on", "1");
     add(A_SETTING_BOOL, A_SETTING_SET_ANY, "app.output.verbose", "0");
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "app.tool", "0");
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "app.gp2xMenu", "0");
-    add(A_SETTING_INT, A_SETTING_SET_ANY, "app.mhz", "0");
+    add(A_SETTING_INT, A_SETTING_SET_ONCE, "app.mhz", "0");
 
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.window", "1");
     add(A_SETTING_INT, A_SETTING_SET_ONCE, "video.width", "320");
     add(A_SETTING_INT, A_SETTING_SET_ONCE, "video.height", "240");
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.doubleBuffer", "0");
-    add(A_SETTING_BOOL, A_SETTING_SET_ANY, "video.fullscreen", "0");
+    add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.fullscreen", "0");
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.wizTear", "0");
 
-    add(A_SETTING_BOOL, A_SETTING_SET_ANY, "sound.on", "0");
+    add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "sound.on", "0");
     add(A_SETTING_INT, A_SETTING_SET_ANY, "sound.music.scale", "100");
     add(A_SETTING_INT, A_SETTING_SET_ANY, "sound.sfx.scale", "100");
 

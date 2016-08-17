@@ -172,15 +172,15 @@ void a_sdl__init(void)
     if(a_settings_getBool("sound.on")) {
         #if A_PLATFORM_LINUXPC || A_PLATFORM_WINDOWS
             if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096) != 0) {
-                a_settings_set("sound.on", "0");
+                a_settings__set("sound.on", "0");
             }
         #elif A_PLATFORM_GP2X
             if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 256) != 0) {
-                a_settings_set("sound.on", "0");
+                a_settings__set("sound.on", "0");
             }
         #else
             if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 512) != 0) {
-                a_settings_set("sound.on", "0");
+                a_settings__set("sound.on", "0");
             }
         #endif
     }
