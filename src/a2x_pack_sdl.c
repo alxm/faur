@@ -646,33 +646,33 @@ void a_sdl__input_matchButton(const char* Name, APhysicalInput* Button)
 {
     ASdlPhysicalInput* b = a_strhash_get(g_buttons->names, Name);
 
-    if(!b) {
+    if(b) {
+        b->input = Button;
+    } else {
         a_out__error("No SDL binding for button %s", Name);
     }
-
-    b->input = Button;
 }
 
 void a_sdl__input_matchAnalog(const char* Name, APhysicalInput* Analog)
 {
     ASdlPhysicalInput* a = a_strhash_get(g_analogs->names, Name);
 
-    if(!a) {
+    if(a) {
+        a->input = Analog;
+    } else {
         a_out__error("No SDL binding for analog %s", Name);
     }
-
-    a->input = Analog;
 }
 
 void a_sdl__input_matchTouch(const char* Name, APhysicalInput* Touch)
 {
     ASdlPhysicalInput* t = a_strhash_get(g_touchScreens->names, Name);
 
-    if(!t) {
+    if(t) {
+        t->input = Touch;
+    } else {
         a_out__error("No SDL binding for touchscreen %s", Name);
     }
-
-    t->input = Touch;
 }
 
 void a_sdl__input_get(void)
