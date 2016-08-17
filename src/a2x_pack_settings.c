@@ -194,30 +194,6 @@ void a_settings__set(const char* Key, const char* Value)
     set(Key, Value, false);
 }
 
-void a_settings__undo(const char* Key)
-{
-    ASetting* const s = a_strhash_get(g_settings, Key);
-
-    if(s == NULL) {
-        a_out__error("Setting '%s' does not exist", Key);
-        return;
-    }
-
-    switch(s->type) {
-        case A_SETTING_INT: {
-            s->value[0].integer = s->value[1].integer;
-        } break;
-
-        case A_SETTING_BOOL: {
-            s->value[0].boolean = s->value[1].boolean;
-        } break;
-
-        case A_SETTING_STR: {
-            strcpy(s->value[0].string, s->value[1].string);
-        } break;
-    }
-}
-
 bool a_settings_flip(const char* Key)
 {
     return flip(Key, true);
