@@ -27,6 +27,6 @@ extern A_SETUP;
 extern void a_settings_set(const char* Key, const char* Value);
 extern bool a_settings_flip(const char* Key);
 
-extern char* a_settings_getString(const char* Key);
+extern const char* a_settings_getString(const char* Key);
 extern bool a_settings_getBool(const char* Key);
 extern int a_settings_getInt(const char* Key);

@@ -197,7 +197,7 @@ bool a_settings__flip(const char* Key)
     return flip(Key, false);
 }
 
-char* a_settings_getString(const char* Key)
+const char* a_settings_getString(const char* Key)
 {
     ASetting* const s = a_strhash_get(g_settings, Key);
 
