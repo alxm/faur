@@ -174,9 +174,7 @@ void a_settings__init(void)
 
 void a_settings__uninit(void)
 {
-    A_LIST_ITERATE(a_strhash_entries(g_settings), AStrHashEntry*, e) {
-        ASetting* s = a_strhash_entryValue(e);
-
+    A_STRHASH_ITERATE(g_settings, ASetting*, s) {
         if(s->type == A_SETTING_STR) {
             free(s->value.string);
         }

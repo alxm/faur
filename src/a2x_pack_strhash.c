@@ -102,17 +102,12 @@ bool a_strhash_contains(const AStrHash* Hash, const char* Key)
     return false;
 }
 
-AList* a_strhash_entries(const AStrHash* Hash)
+AList* a_strhash__entries(const AStrHash* Hash)
 {
     return Hash->entriesList;
 }
 
-const char* a_strhash_entryKey(const AStrHashEntry* Entry)
-{
-    return Entry->key;
-}
-
-void* a_strhash_entryValue(const AStrHashEntry* Entry)
+void* a_strhash__entryValue(const AStrHashEntry* Entry)
 {
     return Entry->content;
 }
