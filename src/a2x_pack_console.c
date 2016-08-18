@@ -82,27 +82,29 @@ static void screenCallback(void)
         A__MAKE_COMPILE_TIME);
 
     a_font_setCoords(2, y + LINE_HEIGHT);
-    a_font_textf("Running %s %s by %s, built %s",
+    a_font_textf("%s %s by %s, built %s",
         a_settings_getString("app.title"),
         a_settings_getString("app.version"),
         a_settings_getString("app.author"),
         a_settings_getString("app.buildtime"));
 
+    a_font_setFace(A_FONT_GREEN);
     a_font_setAlign(A_FONT_ALIGN_RIGHT);
     a_font_setCoords(a_screen__width - 2, y);
     a_font_textf("%u fps", a_fps_getFps());
+    a_font_setFace(A_FONT_BLUE);
     a_font_setCoords(a_screen__width - 2, y + LINE_HEIGHT);
     a_font_textf("%u max", a_fps_getMaxFps());
 
     y += 2 * LINE_HEIGHT;
 
+    a_font_setFace(A_FONT_LIGHT_GRAY);
     a_font_setAlign(A_FONT_ALIGN_LEFT);
 
     A_LIST_ITERATE(g_lines, ALine*, line) {
         ASprite* graphic = g_titles[line->type];
         a_blit(graphic, 1, y);
 
-        a_font_setFace(A_FONT_LIGHT_GRAY);
         a_font_setCoords(1 + a_sprite_w(graphic) + 2, y);
         a_font_fixed(a_screen__width - a_font_getX(), line->text);
 
