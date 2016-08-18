@@ -126,6 +126,10 @@ int a_screen_height(void)
 
 void a_screen_show(void)
 {
+    if(a_screen__pixels != a_screen__savedPixels) {
+        a_out__fatal("Must call a_screen_resetTarget before drawing frame");
+    }
+
     displayVolume();
     a_console__draw();
 
