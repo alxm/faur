@@ -266,11 +266,13 @@ void a_input__uninit(void)
     A_STRHASH_ITERATE(g_buttons, APhysicalInput*, b) {
         free(b->name);
         free(b->shortName);
+        free(b);
     }
 
     A_STRHASH_ITERATE(g_analogs, APhysicalInput*, a) {
         free(a->name);
         free(a->shortName);
+        free(a);
     }
 
     A_STRHASH_ITERATE(g_touchScreens, APhysicalInput*, t) {
@@ -282,6 +284,7 @@ void a_input__uninit(void)
         }
 
         a_list_free(t->u.touch.motion);
+        free(t);
     }
 
     a_strhash_free(g_buttons);

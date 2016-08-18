@@ -314,14 +314,17 @@ void a_sdl__uninit(void)
 {
     A_STRHASH_ITERATE(g_buttons, ASdlPhysicalInput*, b) {
         free(b->name);
+        free(b);
     }
 
     A_STRHASH_ITERATE(g_analogs, ASdlPhysicalInput*, a) {
         free(a->name);
+        free(a);
     }
 
     A_STRHASH_ITERATE(g_touchScreens, ASdlPhysicalInput*, t) {
         free(t->name);
+        free(t);
     }
 
     a_strhash_free(g_buttons);
