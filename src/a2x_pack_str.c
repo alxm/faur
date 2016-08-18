@@ -84,10 +84,8 @@ char* a_str__merge(int Count, ...)
 
 char* a_str_dup(const char* String)
 {
-    char* const copy = a_mem_malloc((strlen(String) + 1) * sizeof(char));
-    strcpy(copy, String);
-
-    return copy;
+    char* buffer = a_mem_malloc((strlen(String) + 1) * sizeof(char));
+    return strcpy(buffer, String);
 }
 
 char* a_str_sub(const char* String, int Start, int End)
@@ -114,9 +112,7 @@ char* a_str_suffix(const char* String, int Length)
 
 int a_str_firstIndex(const char* String, char Character)
 {
-    const int len = strlen(String);
-
-    for(int i = 0; i < len; i++) {
+    for(int i = 0; String[i] != '\0'; i++) {
         if(String[i] == Character) {
             return i;
         }
@@ -160,13 +156,18 @@ char* a_str_getPrefixLastFind(const char* String, char Marker)
 
 char* a_str_getSuffixFirstFind(const char* String, char Marker)
 {
-    const int index = a_str_firstIndex(String, Marker);
+    const int start = a_str_firstIndex(String, Marker) + 1;
+    int end = start;
 
-    if(index == -1) {
+    if(start == 0) {
         return NULL;
     }
 
-    return a_str_sub(String, index + 1, strlen(String));
+    while(String[end] != '\0') {
+        end++;
+    }
+
+    return a_str_sub(String, start, end);
 }
 
 char* a_str_getSuffixLastFind(const char* String, char Marker)
@@ -217,16 +218,13 @@ char* a_str_extractName(const char* String)
 
 char* a_str_trim(const char* String)
 {
-    const int len = strlen(String);
+    int start, end;
 
-    int start;
-    int end;
-
-    for(start = 0; start < len && isspace(String[start]); start++) {
+    for(start = 0; isspace(String[start]); start++) {
         continue;
     }
 
-    for(end = len - 1; end >= start && isspace(String[end]); end--) {
+    for(end = strlen(String) - 1; end >= start && isspace(String[end]); end--) {
         continue;
     }
 

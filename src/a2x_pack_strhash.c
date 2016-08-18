@@ -32,14 +32,14 @@ struct AStrHashEntry {
     AStrHashEntry* next;
 };
 
-#define getSlot(k)                  \
-({                                  \
-    uint8_t s = 0;                  \
-    for(int i = strlen(k); i--; ) { \
-        s <<= 1;                    \
-        s ^= k[i];                  \
-    }                               \
-    s;                              \
+#define getSlot(key)                            \
+({                                              \
+    uint8_t s = 0;                              \
+    for(const char* k = key; *k != '\0'; k++) { \
+        s <<= 1;                                \
+        s ^= *k;                                \
+    }                                           \
+    s;                                          \
 })
 
 AStrHash* a_strhash_new(void)
