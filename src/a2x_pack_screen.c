@@ -35,6 +35,8 @@ static int g_savedHeight = 0;
 
 static ASprite* g_spriteTarget = NULL;
 
+static AList* g_overlays;
+
 static void displayVolume(void)
 {
     #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
@@ -96,6 +98,8 @@ void a_screen__init(void)
     g_savedWidth = a_screen__width;
     g_savedHeight = a_screen__height;
     a_screen__savedPixels = a_screen__pixels;
+
+    g_overlays = a_list_new();
 }
 
 void a_screen__uninit(void)
@@ -107,6 +111,8 @@ void a_screen__uninit(void)
     if(a_settings_getBool("video.doubleBuffer")) {
         free(a_screen__pixels);
     }
+
+    a_list_free(g_overlays);
 }
 
 APixel* a_screen_pixels(void)
@@ -128,6 +134,10 @@ void a_screen_show(void)
 {
     if(a_screen__pixels != a_screen__savedPixels) {
         a_out__fatal("Must call a_screen_resetTarget before drawing frame");
+    }
+
+    A_LIST_ITERATE(g_overlays, AScreenOverlay, callback) {
+        callback();
     }
 
     displayVolume();
@@ -191,4 +201,9 @@ void a_screen_resetTarget(void)
     if(g_spriteTarget) {
         g_spriteTarget = NULL;
     }
+}
+
+void a_screen__addOverlay(AScreenOverlay Callback)
+{
+    a_list_addLast(g_overlays, Callback);
 }
