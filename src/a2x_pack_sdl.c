@@ -361,7 +361,10 @@ void a_sdl__screen_set(void)
             videoFlags |= SDL_FULLSCREEN;
         }
 
-        bpp = SDL_VideoModeOK(a_screen__width, a_screen__height, A_PIXEL_BPP, videoFlags);
+        bpp = SDL_VideoModeOK(a_screen__width,
+                              a_screen__height,
+                              A_PIXEL_BPP,
+                              videoFlags);
         if(bpp == 0) {
             a_out__fatal("SDL: %dx%d:%d video not available",
                          a_screen__width,
@@ -514,7 +517,10 @@ void a_sdl__screen_show(void)
     #elif A_USE_LIB_SDL2
         int ret;
 
-        ret = SDL_UpdateTexture(g_sdlTexture, NULL, a_screen__pixels, a_screen__width * sizeof(APixel));
+        ret = SDL_UpdateTexture(g_sdlTexture,
+                                NULL,
+                                a_screen__pixels,
+                                a_screen__width * sizeof(APixel));
         if(ret < 0) {
             a_out__fatal("SDL_UpdateTexture failed: %s", SDL_GetError());
         }
@@ -551,7 +557,8 @@ void a_sdl__music_free(void* Music)
 
 void a_sdl__music_setVolume(void)
 {
-    Mix_VolumeMusic((float)a_settings_getInt("sound.music.scale") / 100 * a__volume);
+    Mix_VolumeMusic(
+        (float)a_settings_getInt("sound.music.scale") / 100 * a__volume);
 }
 
 void a_sdl__music_play(void* Music)
@@ -711,9 +718,11 @@ void a_sdl__input_get(void)
                 A_STRHASH_ITERATE(g_analogs, ASdlPhysicalInput*, a) {
                     if(a->device_index == event.jaxis.which) {
                         if(event.jaxis.axis == a->u.analog.xaxis_index) {
-                            a_input__analog_setXAxis(a->input, event.jaxis.value);
+                            a_input__analog_setXAxis(a->input,
+                                                     event.jaxis.value);
                         } else if(event.jaxis.axis == a->u.analog.yaxis_index) {
-                            a_input__analog_setYAxis(a->input, event.jaxis.value);
+                            a_input__analog_setYAxis(a->input,
+                                                     event.jaxis.value);
                         }
                     }
                 }
@@ -721,7 +730,9 @@ void a_sdl__input_get(void)
 
             case SDL_MOUSEMOTION: {
                 A_STRHASH_ITERATE(g_touchScreens, ASdlPhysicalInput*, t) {
-                    a_input__touch_addMotion(t->input, event.button.x, event.button.y);
+                    a_input__touch_addMotion(t->input,
+                                             event.button.x,
+                                             event.button.y);
                 }
             } break;
 
@@ -729,7 +740,10 @@ void a_sdl__input_get(void)
                 switch(event.button.button) {
                     case SDL_BUTTON_LEFT: {
                         A_STRHASH_ITERATE(g_touchScreens, ASdlPhysicalInput*, t) {
-                            a_input__touch_setCoords(t->input, event.button.x, event.button.y, true);
+                            a_input__touch_setCoords(t->input,
+                                                     event.button.x,
+                                                     event.button.y,
+                                                     true);
                         }
                     } break;
                 }
@@ -739,7 +753,10 @@ void a_sdl__input_get(void)
                 switch(event.button.button) {
                     case SDL_BUTTON_LEFT: {
                         A_STRHASH_ITERATE(g_touchScreens, ASdlPhysicalInput*, t) {
-                            a_input__touch_setCoords(t->input, event.button.x, event.button.y, false);
+                            a_input__touch_setCoords(t->input,
+                                                     event.button.x,
+                                                     event.button.y,
+                                                     false);
                         }
                     } break;
                 }
@@ -752,7 +769,8 @@ void a_sdl__input_get(void)
             A_STRHASH_ITERATE(g_buttons, ASdlPhysicalInput*, b) {
                 for(int c = b->u.button.numCodes; c--; ) {
                     if(b->u.button.codes[c] == code) {
-                        a_input__button_setState(b->input, action == A_ACTION_PRESSED);
+                        a_input__button_setState(b->input,
+                                                 action == A_ACTION_PRESSED);
                         break;
                     }
                 }
