@@ -65,6 +65,30 @@ static void inputCallback(void)
     #endif
 }
 
+#if A_PLATFORM_GP2X || A_PLATFORM_WIZ
+    static void screenCallback(void)
+    {
+        if(a_settings_getBool("sound.on")) {
+            if(a_time_getMilis() - a__volumeAdjust > A_MILIS_VOLUME) {
+                return;
+            }
+
+            a_pixel_setBlend(A_PIXEL_PLAIN);
+
+            a_pixel_setPixel(0);
+            a_draw_rectangle(0, 181, a__volumeMax / A_VOLUME_STEP + 5, 197);
+
+            a_pixel_setRGB(255, 156, 107);
+            a_draw_hline(0, a__volumeMax / A_VOLUME_STEP + 4 + 1, 180);
+            a_draw_hline(0, a__volumeMax / A_VOLUME_STEP + 4 + 1, 183 + 14);
+            a_draw_vline(a__volumeMax / A_VOLUME_STEP + 4 + 1, 181, 183 + 14);
+
+            a_pixel_setRGB(255, 84, 0);
+            a_draw_rectangle(0, 186, a__volume / A_VOLUME_STEP, 192);
+        }
+    }
+#endif
+
 void a_sound__init(void)
 {
     if(a_settings_getBool("sound.on")) {
@@ -89,6 +113,10 @@ void a_sound__init(void)
         #endif
 
         a_input__addCallback(inputCallback);
+
+        #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
+            a_screen__addOverlay(screenCallback);
+        #endif
     }
 }
 
