@@ -351,11 +351,9 @@ void a_sdl__uninit(void)
     SDL_Quit();
 }
 
-bool a_sdl__screen_set(void)
+void a_sdl__screen_set(void)
 {
     #if A_USE_LIB_SDL
-        static bool first_time = true;
-
         int bpp = 0;
         uint32_t videoFlags = SDL_SWSURFACE;
 
@@ -365,15 +363,11 @@ bool a_sdl__screen_set(void)
 
         bpp = SDL_VideoModeOK(a_screen__width, a_screen__height, A_PIXEL_BPP, videoFlags);
         if(bpp == 0) {
-            if(first_time) {
-                a_out__fatal("SDL: %dx%d video not available", a_screen__width, a_screen__height);
-            } else {
-                a_out__warning("SDL: %dx%d video not available", a_screen__width, a_screen__height);
-                return false;
-            }
+            a_out__fatal("SDL: %dx%d:%d video not available",
+                         a_screen__width,
+                         a_screen__height,
+                         A_PIXEL_BPP);
         }
-
-        first_time = false;
 
         g_sdlScreen = SDL_SetVideoMode(a_screen__width,
                                        a_screen__height,
@@ -453,8 +447,6 @@ bool a_sdl__screen_set(void)
     #else
         SDL_ShowCursor(SDL_DISABLE);
     #endif
-
-    return true;
 }
 
 void a_sdl__screen_show(void)
