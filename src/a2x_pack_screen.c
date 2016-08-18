@@ -116,8 +116,6 @@ void a_screen_show(void)
         callback();
     }
 
-    a_console__draw();
-
     a_sdl__screen_show();
 }
 

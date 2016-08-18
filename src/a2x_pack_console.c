@@ -58,65 +58,7 @@ static void inputCallback(void)
     }
 }
 
-void a_console__init(void)
-{
-    g_enabled = true;
-    g_show = false;
-    g_lines = a_list_new();
-    g_linesPerScreen = INT_MAX;
-}
-
-void a_console__init2(void)
-{
-    ASprite* graphics = a_sprite_fromData(g_media_console);
-    ASpriteFrames* frames = a_spriteframes_new(graphics, 0, 0, 0);
-
-    g_titles[A_CONSOLE_MESSAGE] = a_spriteframes_geti(frames, 0);
-    g_titles[A_CONSOLE_WARNING] = a_spriteframes_geti(frames, 1);
-    g_titles[A_CONSOLE_ERROR] = a_spriteframes_geti(frames, 2);
-    g_titles[A_CONSOLE_STATE] = a_spriteframes_geti(frames, 4);
-
-    a_spriteframes_free(frames, false);
-    a_sprite_free(graphics);
-
-    g_linesPerScreen = a_settings_getInt("video.height") / LINE_HEIGHT - 2;
-
-    // In case messages were logged between init and init2
-    while(a_list_size(g_lines) > g_linesPerScreen) {
-        line_free(a_list_pop(g_lines));
-    }
-
-    g_show = a_settings_getBool("console.on");
-    g_toggle = a_input_new(a_settings_getString("console.button"));
-
-    a_input__addCallback(inputCallback);
-}
-
-void a_console__uninit(void)
-{
-    g_enabled = false;
-
-    A_LIST_ITERATE(g_lines, ALine*, line) {
-        line_free(line);
-    }
-
-    a_list_free(g_lines);
-}
-
-void a_console__write(AConsoleOutType Type, const char* Text)
-{
-    if(!g_enabled) {
-        return;
-    }
-
-    a_list_addLast(g_lines, line_new(Type, Text));
-
-    if(a_list_size(g_lines) > g_linesPerScreen) {
-        line_free(a_list_pop(g_lines));
-    }
-}
-
-void a_console__draw(void)
+static void screenCallback(void)
 {
     if(!g_enabled || !g_show) {
         return;
@@ -165,5 +107,64 @@ void a_console__draw(void)
         a_font_fixed(a_screen__width - a_font_getX(), line->text);
 
         y += LINE_HEIGHT;
+    }
+}
+
+void a_console__init(void)
+{
+    g_enabled = true;
+    g_show = false;
+    g_lines = a_list_new();
+    g_linesPerScreen = INT_MAX;
+}
+
+void a_console__init2(void)
+{
+    ASprite* graphics = a_sprite_fromData(g_media_console);
+    ASpriteFrames* frames = a_spriteframes_new(graphics, 0, 0, 0);
+
+    g_titles[A_CONSOLE_MESSAGE] = a_spriteframes_geti(frames, 0);
+    g_titles[A_CONSOLE_WARNING] = a_spriteframes_geti(frames, 1);
+    g_titles[A_CONSOLE_ERROR] = a_spriteframes_geti(frames, 2);
+    g_titles[A_CONSOLE_STATE] = a_spriteframes_geti(frames, 4);
+
+    a_spriteframes_free(frames, false);
+    a_sprite_free(graphics);
+
+    g_linesPerScreen = a_settings_getInt("video.height") / LINE_HEIGHT - 2;
+
+    // In case messages were logged between init and init2
+    while(a_list_size(g_lines) > g_linesPerScreen) {
+        line_free(a_list_pop(g_lines));
+    }
+
+    g_show = a_settings_getBool("console.on");
+    g_toggle = a_input_new(a_settings_getString("console.button"));
+
+    a_input__addCallback(inputCallback);
+    a_screen__addOverlay(screenCallback);
+}
+
+void a_console__uninit(void)
+{
+    g_enabled = false;
+
+    A_LIST_ITERATE(g_lines, ALine*, line) {
+        line_free(line);
+    }
+
+    a_list_free(g_lines);
+}
+
+void a_console__write(AConsoleOutType Type, const char* Text)
+{
+    if(!g_enabled) {
+        return;
+    }
+
+    a_list_addLast(g_lines, line_new(Type, Text));
+
+    if(a_list_size(g_lines) > g_linesPerScreen) {
+        line_free(a_list_pop(g_lines));
     }
 }
