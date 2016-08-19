@@ -389,7 +389,10 @@ void a_sdl__screen_set(void)
 
         if(!a_settings_getBool("video.doubleBuffer")) {
             if(SDL_MUSTLOCK(g_sdlScreen)) {
-                SDL_LockSurface(g_sdlScreen);
+                if(SDL_LockSurface(g_sdlScreen) < 0) {
+                    a_out__fatal("SDL_LockSurface failed: %s",
+                                 SDL_GetError());
+                }
             }
         }
 
@@ -466,7 +469,10 @@ void a_sdl__screen_show(void)
                 #define A_HEIGHT 240
 
                 if(SDL_MUSTLOCK(g_sdlScreen)) {
-                    SDL_LockSurface(g_sdlScreen);
+                    if(SDL_LockSurface(g_sdlScreen) < 0) {
+                        a_out__fatal("SDL_LockSurface failed: %s",
+                                     SDL_GetError());
+                    }
                 }
 
                 APixel* dst = g_sdlScreen->pixels + A_WIDTH * A_HEIGHT;
@@ -490,7 +496,10 @@ void a_sdl__screen_show(void)
 
         if(a_settings_getBool("video.doubleBuffer")) {
             if(SDL_MUSTLOCK(g_sdlScreen)) {
-                SDL_LockSurface(g_sdlScreen);
+                if(SDL_LockSurface(g_sdlScreen) < 0) {
+                    a_out__fatal("SDL_LockSurface failed: %s",
+                                 SDL_GetError());
+                }
             }
 
             const APixel* src = a_screen__pixels;
@@ -511,7 +520,10 @@ void a_sdl__screen_show(void)
             SDL_Flip(g_sdlScreen);
 
             if(SDL_MUSTLOCK(g_sdlScreen)) {
-                SDL_LockSurface(g_sdlScreen);
+                if(SDL_LockSurface(g_sdlScreen) < 0) {
+                    a_out__fatal("SDL_LockSurface failed: %s",
+                                 SDL_GetError());
+                }
             }
 
             a_screen__pixels = g_sdlScreen->pixels;
