@@ -461,7 +461,7 @@ void a_sdl__screen_show(void)
 {
     #if A_USE_LIB_SDL
         #if A_PLATFORM_WIZ
-            if(a_settings_getBool("video.wizTear")) { // also video.doubleBuffer
+            if(a_settings_getBool("video.fixWizTearing")) { // also video.doubleBuffer
                 #define A_WIDTH 320
                 #define A_HEIGHT 240
 

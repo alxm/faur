@@ -50,7 +50,7 @@ void a_screen__init(void)
         a_sdl__screen_set();
 
         #if A_PLATFORM_WIZ
-            if(a_settings_getBool("video.wizTear")) {
+            if(a_settings_getBool("video.fixWizTearing")) {
                 #define FBIO_MAGIC 'D'
                 #define FBIO_LCD_CHANGE_CONTROL \
                     _IOW(FBIO_MAGIC, 90, unsigned int[2])

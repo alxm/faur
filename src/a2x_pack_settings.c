@@ -156,7 +156,7 @@ void a_settings__init(void)
     add(A_SETTING_INT, A_SETTING_SET_ONCE, "video.height", "240");
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.doubleBuffer", "0");
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.fullscreen", "0");
-    add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.wizTear", "0");
+    add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.fixWizTearing", "0");
 
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "sound.on", "0");
     add(A_SETTING_INT, A_SETTING_SET_ANY, "sound.music.scale", "100");
@@ -204,7 +204,7 @@ void a_settings__freeze(void)
     }
 
     #if A_PLATFORM_WIZ
-        if(a_settings_getBool("video.wizTear")) {
+        if(a_settings_getBool("video.fixWizTearing")) {
             a_settings__set("video.doubleBuffer", "1");
         }
     #endif
