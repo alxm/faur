@@ -49,8 +49,8 @@ void a_screen__init(void)
     if(a_settings_getBool("video.window")) {
         a_sdl__screen_set();
 
-        if(a_settings_getBool("video.wizTear")) {
-            #if A_PLATFORM_WIZ
+        #if A_PLATFORM_WIZ
+            if(a_settings_getBool("video.wizTear")) {
                 #define FBIO_MAGIC 'D'
                 #define FBIO_LCD_CHANGE_CONTROL \
                     _IOW(FBIO_MAGIC, 90, unsigned int[2])
@@ -62,12 +62,8 @@ void a_screen__init(void)
                 send[0] = LCD_DIRECTION_OFF_CMD;
                 ioctl(fb_fd, FBIO_LCD_CHANGE_CONTROL, &send);
                 close(fb_fd);
-
-                a_settings__set("video.doubleBuffer", "1");
-            #else
-                a_settings__set("video.wizTear", "0");
-            #endif
-        }
+            }
+        #endif
     }
 
     if(a_settings_getBool("video.doubleBuffer")) {

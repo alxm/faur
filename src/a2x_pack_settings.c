@@ -194,6 +194,22 @@ void a_settings__freeze(void)
     #if A_USE_LIB_SDL2
         a_settings__set("video.doubleBuffer", "1");
     #endif
+
+    if(a_settings_getBool("video.window")) {
+        a_settings__set("video.on", "1");
+    }
+
+    if(a_settings_getBool("video.on") && !a_settings_getBool("video.window")) {
+        a_settings__set("video.doubleBuffer", "1");
+    }
+
+    if(a_settings_getBool("video.wizTear")) {
+        #if A_PLATFORM_WIZ
+            a_settings__set("video.doubleBuffer", "1");
+        #else
+            a_settings__set("video.wizTear", "0");
+        #endif
+    }
 }
 
 void a_settings_set(const char* Key, const char* Value)
