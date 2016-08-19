@@ -442,6 +442,17 @@ void a_sdl__screen_set(void)
         SDL_SetHintWithPriority(SDL_HINT_RENDER_SCALE_QUALITY,
                                 "nearest",
                                 SDL_HINT_OVERRIDE);
+
+        char* end;
+        const char* color = a_settings_getString("video.borderColor");
+        uint8_t r = strtol(color, &end, 0);
+        uint8_t g = strtol(end, &end, 0);
+        uint8_t b = strtol(end, NULL, 0);
+
+        ret = SDL_SetRenderDrawColor(g_sdlRenderer, r, g, b, 255);
+        if(ret < 0) {
+            a_out__fatal("SDL_SetRenderDrawColor failed: %s", SDL_GetError());
+        }
     #endif
 
     #if A_PLATFORM_LINUXPC
@@ -531,6 +542,11 @@ void a_sdl__screen_show(void)
         }
     #elif A_USE_LIB_SDL2
         int ret;
+
+        ret = SDL_RenderClear(g_sdlRenderer);
+        if(ret < 0) {
+            a_out__fatal("SDL_RenderClear failed: %s", SDL_GetError());
+        }
 
         ret = SDL_UpdateTexture(g_sdlTexture,
                                 NULL,
