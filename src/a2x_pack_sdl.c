@@ -460,30 +460,35 @@ void a_sdl__screen_set(void)
 void a_sdl__screen_show(void)
 {
     #if A_USE_LIB_SDL
-        if(a_settings_getBool("video.wizTear")) { // also video.doubleBuffer
-            #define A_WIDTH 320
-            #define A_HEIGHT 240
+        #if A_PLATFORM_WIZ
+            if(a_settings_getBool("video.wizTear")) { // also video.doubleBuffer
+                #define A_WIDTH 320
+                #define A_HEIGHT 240
 
-            if(SDL_MUSTLOCK(g_sdlScreen)) {
-                SDL_LockSurface(g_sdlScreen);
-            }
-
-            APixel* dst = g_sdlScreen->pixels + A_WIDTH * A_HEIGHT;
-            const APixel* src = a_screen__pixels;
-
-            for(int i = A_HEIGHT; i--; dst += A_WIDTH * A_HEIGHT + 1) {
-                for(int j = A_WIDTH; j--; ) {
-                    dst -= A_HEIGHT;
-                    *dst = *src++;
+                if(SDL_MUSTLOCK(g_sdlScreen)) {
+                    SDL_LockSurface(g_sdlScreen);
                 }
-            }
 
-            if(SDL_MUSTLOCK(g_sdlScreen)) {
-                SDL_UnlockSurface(g_sdlScreen);
-            }
+                APixel* dst = g_sdlScreen->pixels + A_WIDTH * A_HEIGHT;
+                const APixel* src = a_screen__pixels;
 
-            SDL_Flip(g_sdlScreen);
-        } else if(a_settings_getBool("video.doubleBuffer")) {
+                for(int i = A_HEIGHT; i--; dst += A_WIDTH * A_HEIGHT + 1) {
+                    for(int j = A_WIDTH; j--; ) {
+                        dst -= A_HEIGHT;
+                        *dst = *src++;
+                    }
+                }
+
+                if(SDL_MUSTLOCK(g_sdlScreen)) {
+                    SDL_UnlockSurface(g_sdlScreen);
+                }
+
+                SDL_Flip(g_sdlScreen);
+                return;
+            }
+        #endif
+
+        if(a_settings_getBool("video.doubleBuffer")) {
             if(SDL_MUSTLOCK(g_sdlScreen)) {
                 SDL_LockSurface(g_sdlScreen);
             }

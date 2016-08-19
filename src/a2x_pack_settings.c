@@ -203,13 +203,11 @@ void a_settings__freeze(void)
         a_settings__set("video.doubleBuffer", "1");
     }
 
-    if(a_settings_getBool("video.wizTear")) {
-        #if A_PLATFORM_WIZ
+    #if A_PLATFORM_WIZ
+        if(a_settings_getBool("video.wizTear")) {
             a_settings__set("video.doubleBuffer", "1");
-        #else
-            a_settings__set("video.wizTear", "0");
-        #endif
-    }
+        }
+    #endif
 }
 
 void a_settings_set(const char* Key, const char* Value)
