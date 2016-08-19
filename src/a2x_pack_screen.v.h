@@ -21,6 +21,8 @@
 
 #include "a2x_pack_screen.p.h"
 
+typedef void (*AScreenOverlay)(void);
+
 #include "a2x_pack_draw.v.h"
 #include "a2x_pack_pixel.v.h"
 #include "a2x_pack_sdl.v.h"
@@ -37,3 +39,5 @@ extern int a_screen__height;
 
 extern void a_screen__init(void);
 extern void a_screen__uninit(void);
+
+extern void a_screen__addOverlay(AScreenOverlay Callback);

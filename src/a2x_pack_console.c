@@ -58,6 +58,60 @@ static void inputCallback(void)
     }
 }
 
+static void screenCallback(void)
+{
+    if(!g_enabled || !g_show) {
+        return;
+    }
+
+    a_pixel_push();
+    a_pixel_setBlend(A_PIXEL_RGB75);
+    a_pixel_setRGB(0x28, 0x18, 0x18);
+    a_draw_fill();
+    a_pixel_pop();
+
+    int y = 2;
+
+    a_font_setCoords(2, y);
+    a_font_setFace(A_FONT_BLUE); a_font_text("a");
+    a_font_setFace(A_FONT_GREEN); a_font_text("2");
+    a_font_setFace(A_FONT_YELLOW); a_font_text("x");
+    a_font_setFace(A_FONT_WHITE);
+    a_font_textf(" %s, built %s",
+        A__MAKE_CURRENT_GIT_BRANCH,
+        A__MAKE_COMPILE_TIME);
+
+    a_font_setCoords(2, y + LINE_HEIGHT);
+    a_font_textf("%s %s by %s, built %s",
+        a_settings_getString("app.title"),
+        a_settings_getString("app.version"),
+        a_settings_getString("app.author"),
+        a_settings_getString("app.buildtime"));
+
+    a_font_setFace(A_FONT_GREEN);
+    a_font_setAlign(A_FONT_ALIGN_RIGHT);
+    a_font_setCoords(a_screen__width - 2, y);
+    a_font_textf("%u fps", a_fps_getFps());
+    a_font_setFace(A_FONT_BLUE);
+    a_font_setCoords(a_screen__width - 2, y + LINE_HEIGHT);
+    a_font_textf("%u max", a_fps_getMaxFps());
+
+    y += 2 * LINE_HEIGHT;
+
+    a_font_setFace(A_FONT_LIGHT_GRAY);
+    a_font_setAlign(A_FONT_ALIGN_LEFT);
+
+    A_LIST_ITERATE(g_lines, ALine*, line) {
+        ASprite* graphic = g_titles[line->type];
+        a_blit(graphic, 1, y);
+
+        a_font_setCoords(1 + a_sprite_w(graphic) + 2, y);
+        a_font_fixed(a_screen__width - a_font_getX(), line->text);
+
+        y += LINE_HEIGHT;
+    }
+}
+
 void a_console__init(void)
 {
     g_enabled = true;
@@ -90,6 +144,7 @@ void a_console__init2(void)
     g_toggle = a_input_new(a_settings_getString("console.button"));
 
     a_input__addCallback(inputCallback);
+    a_screen__addOverlay(screenCallback);
 }
 
 void a_console__uninit(void)
@@ -113,57 +168,5 @@ void a_console__write(AConsoleOutType Type, const char* Text)
 
     if(a_list_size(g_lines) > g_linesPerScreen) {
         line_free(a_list_pop(g_lines));
-    }
-}
-
-void a_console__draw(void)
-{
-    if(!g_enabled || !g_show) {
-        return;
-    }
-
-    a_pixel_push();
-    a_pixel_setBlend(A_PIXEL_RGB75);
-    a_pixel_setRGB(0x28, 0x18, 0x18);
-    a_draw_fill();
-    a_pixel_pop();
-
-    int y = 2;
-
-    a_font_setCoords(2, y);
-    a_font_setFace(A_FONT_BLUE); a_font_text("a");
-    a_font_setFace(A_FONT_GREEN); a_font_text("2");
-    a_font_setFace(A_FONT_YELLOW); a_font_text("x");
-    a_font_setFace(A_FONT_WHITE);
-    a_font_textf(" %s, built %s",
-        A__MAKE_CURRENT_GIT_BRANCH,
-        A__MAKE_COMPILE_TIME);
-
-    a_font_setCoords(2, y + LINE_HEIGHT);
-    a_font_textf("Running %s %s by %s, built %s",
-        a_settings_getString("app.title"),
-        a_settings_getString("app.version"),
-        a_settings_getString("app.author"),
-        a_settings_getString("app.buildtime"));
-
-    a_font_setAlign(A_FONT_ALIGN_RIGHT);
-    a_font_setCoords(a_screen__width - 2, y);
-    a_font_textf("%u fps", a_fps_getFps());
-    a_font_setCoords(a_screen__width - 2, y + LINE_HEIGHT);
-    a_font_textf("%u max", a_fps_getMaxFps());
-
-    y += 2 * LINE_HEIGHT;
-
-    a_font_setAlign(A_FONT_ALIGN_LEFT);
-
-    A_LIST_ITERATE(g_lines, ALine*, line) {
-        ASprite* graphic = g_titles[line->type];
-        a_blit(graphic, 1, y);
-
-        a_font_setFace(A_FONT_LIGHT_GRAY);
-        a_font_setCoords(1 + a_sprite_w(graphic) + 2, y);
-        a_font_fixed(a_screen__width - a_font_getX(), line->text);
-
-        y += LINE_HEIGHT;
     }
 }

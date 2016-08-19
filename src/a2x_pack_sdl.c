@@ -48,7 +48,6 @@ static uint32_t g_sdlFlags;
 
 #if A_USE_LIB_SDL
     static SDL_Surface* g_sdlScreen = NULL;
-    static bool g_sdlScreenLocked = false;
 #elif A_USE_LIB_SDL2
     static SDL_Window* g_sdlWindow = NULL;
     static SDL_Renderer* g_sdlRenderer = NULL;
@@ -314,14 +313,17 @@ void a_sdl__uninit(void)
 {
     A_STRHASH_ITERATE(g_buttons, ASdlPhysicalInput*, b) {
         free(b->name);
+        free(b);
     }
 
     A_STRHASH_ITERATE(g_analogs, ASdlPhysicalInput*, a) {
         free(a->name);
+        free(a);
     }
 
     A_STRHASH_ITERATE(g_touchScreens, ASdlPhysicalInput*, t) {
         free(t->name);
+        free(t);
     }
 
     a_strhash_free(g_buttons);
@@ -336,26 +338,27 @@ void a_sdl__uninit(void)
         Mix_CloseAudio();
     }
 
-    #if A_USE_LIB_SDL
-        if(SDL_MUSTLOCK(g_sdlScreen) && g_sdlScreenLocked) {
-            SDL_UnlockSurface(g_sdlScreen);
-            g_sdlScreenLocked = false;
-        }
-    #elif A_USE_LIB_SDL2
-        SDL_DestroyTexture(g_sdlTexture);
-        SDL_DestroyRenderer(g_sdlRenderer);
-        SDL_DestroyWindow(g_sdlWindow);
-    #endif
+    if(a_settings_getBool("video.window")) {
+        #if A_USE_LIB_SDL
+            if(!a_settings_getBool("video.doubleBuffer")) {
+                if(SDL_MUSTLOCK(g_sdlScreen)) {
+                    SDL_UnlockSurface(g_sdlScreen);
+                }
+            }
+        #elif A_USE_LIB_SDL2
+            SDL_DestroyTexture(g_sdlTexture);
+            SDL_DestroyRenderer(g_sdlRenderer);
+            SDL_DestroyWindow(g_sdlWindow);
+        #endif
+    }
 
     SDL_QuitSubSystem(g_sdlFlags);
     SDL_Quit();
 }
 
-bool a_sdl__screen_set(void)
+void a_sdl__screen_set(void)
 {
     #if A_USE_LIB_SDL
-        static bool first_time = true;
-
         int bpp = 0;
         uint32_t videoFlags = SDL_SWSURFACE;
 
@@ -363,17 +366,16 @@ bool a_sdl__screen_set(void)
             videoFlags |= SDL_FULLSCREEN;
         }
 
-        bpp = SDL_VideoModeOK(a_screen__width, a_screen__height, A_PIXEL_BPP, videoFlags);
+        bpp = SDL_VideoModeOK(a_screen__width,
+                              a_screen__height,
+                              A_PIXEL_BPP,
+                              videoFlags);
         if(bpp == 0) {
-            if(first_time) {
-                a_out__fatal("SDL: %dx%d video not available", a_screen__width, a_screen__height);
-            } else {
-                a_out__warning("SDL: %dx%d video not available", a_screen__width, a_screen__height);
-                return false;
-            }
+            a_out__fatal("SDL: %dx%d:%d video not available",
+                         a_screen__width,
+                         a_screen__height,
+                         A_PIXEL_BPP);
         }
-
-        first_time = false;
 
         g_sdlScreen = SDL_SetVideoMode(a_screen__width,
                                        a_screen__height,
@@ -385,15 +387,18 @@ bool a_sdl__screen_set(void)
 
         SDL_SetClipRect(g_sdlScreen, NULL);
 
-        if(SDL_MUSTLOCK(g_sdlScreen) && !g_sdlScreenLocked) {
-            SDL_LockSurface(g_sdlScreen);
-            g_sdlScreenLocked = true;
+        if(!a_settings_getBool("video.doubleBuffer")) {
+            if(SDL_MUSTLOCK(g_sdlScreen)) {
+                if(SDL_LockSurface(g_sdlScreen) < 0) {
+                    a_out__fatal("SDL_LockSurface failed: %s",
+                                 SDL_GetError());
+                }
+            }
         }
 
         a_screen__pixels = g_sdlScreen->pixels;
     #elif A_USE_LIB_SDL2
         int ret;
-        a_settings__set("video.doubleBuffer", "1");
 
         g_sdlWindow = SDL_CreateWindow("",
                                        SDL_WINDOWPOS_UNDEFINED,
@@ -437,6 +442,17 @@ bool a_sdl__screen_set(void)
         SDL_SetHintWithPriority(SDL_HINT_RENDER_SCALE_QUALITY,
                                 "nearest",
                                 SDL_HINT_OVERRIDE);
+
+        char* end;
+        const char* color = a_settings_getString("video.borderColor");
+        uint8_t r = strtol(color, &end, 0);
+        uint8_t g = strtol(end, &end, 0);
+        uint8_t b = strtol(end, NULL, 0);
+
+        ret = SDL_SetRenderDrawColor(g_sdlRenderer, r, g, b, 255);
+        if(ret < 0) {
+            a_out__fatal("SDL_SetRenderDrawColor failed: %s", SDL_GetError());
+        }
     #endif
 
     #if A_PLATFORM_LINUXPC
@@ -453,43 +469,48 @@ bool a_sdl__screen_set(void)
     #else
         SDL_ShowCursor(SDL_DISABLE);
     #endif
-
-    return true;
 }
 
 void a_sdl__screen_show(void)
 {
     #if A_USE_LIB_SDL
-        if(a_settings_getBool("video.wizTear")) {
-            // video.doubleBuffer is also set when video.wizTear is set
-            #define A_WIDTH 320
-            #define A_HEIGHT 240
+        #if A_PLATFORM_WIZ
+            if(a_settings_getBool("video.fixWizTearing")) { // also video.doubleBuffer
+                #define A_WIDTH 320
+                #define A_HEIGHT 240
 
-            if(SDL_MUSTLOCK(g_sdlScreen) && !g_sdlScreenLocked) {
-                SDL_LockSurface(g_sdlScreen);
-                g_sdlScreenLocked = true;
-            }
-
-            APixel* dst = g_sdlScreen->pixels + A_WIDTH * A_HEIGHT;
-            const APixel* src = a_screen__pixels;
-
-            for(int i = A_HEIGHT; i--; dst += A_WIDTH * A_HEIGHT + 1) {
-                for(int j = A_WIDTH; j--; ) {
-                    dst -= A_HEIGHT;
-                    *dst = *src++;
+                if(SDL_MUSTLOCK(g_sdlScreen)) {
+                    if(SDL_LockSurface(g_sdlScreen) < 0) {
+                        a_out__fatal("SDL_LockSurface failed: %s",
+                                     SDL_GetError());
+                    }
                 }
-            }
 
-            if(SDL_MUSTLOCK(g_sdlScreen) && g_sdlScreenLocked) {
-                SDL_UnlockSurface(g_sdlScreen);
-                g_sdlScreenLocked = false;
-            }
+                APixel* dst = g_sdlScreen->pixels + A_WIDTH * A_HEIGHT;
+                const APixel* src = a_screen__pixels;
 
-            SDL_Flip(g_sdlScreen);
-        } else if(a_settings_getBool("video.doubleBuffer")) {
-            if(SDL_MUSTLOCK(g_sdlScreen) && !g_sdlScreenLocked) {
-                SDL_LockSurface(g_sdlScreen);
-                g_sdlScreenLocked = true;
+                for(int i = A_HEIGHT; i--; dst += A_WIDTH * A_HEIGHT + 1) {
+                    for(int j = A_WIDTH; j--; ) {
+                        dst -= A_HEIGHT;
+                        *dst = *src++;
+                    }
+                }
+
+                if(SDL_MUSTLOCK(g_sdlScreen)) {
+                    SDL_UnlockSurface(g_sdlScreen);
+                }
+
+                SDL_Flip(g_sdlScreen);
+                return;
+            }
+        #endif
+
+        if(a_settings_getBool("video.doubleBuffer")) {
+            if(SDL_MUSTLOCK(g_sdlScreen)) {
+                if(SDL_LockSurface(g_sdlScreen) < 0) {
+                    a_out__fatal("SDL_LockSurface failed: %s",
+                                 SDL_GetError());
+                }
             }
 
             const APixel* src = a_screen__pixels;
@@ -497,23 +518,23 @@ void a_sdl__screen_show(void)
 
             memcpy(dst, src, A_SCREEN_SIZE);
 
-            if(SDL_MUSTLOCK(g_sdlScreen) && g_sdlScreenLocked) {
+            if(SDL_MUSTLOCK(g_sdlScreen)) {
                 SDL_UnlockSurface(g_sdlScreen);
-                g_sdlScreenLocked = false;
             }
 
             SDL_Flip(g_sdlScreen);
         } else {
-            if(SDL_MUSTLOCK(g_sdlScreen) && g_sdlScreenLocked) {
+            if(SDL_MUSTLOCK(g_sdlScreen)) {
                 SDL_UnlockSurface(g_sdlScreen);
-                g_sdlScreenLocked = false;
             }
 
             SDL_Flip(g_sdlScreen);
 
-            if(SDL_MUSTLOCK(g_sdlScreen) && !g_sdlScreenLocked) {
-                SDL_LockSurface(g_sdlScreen);
-                g_sdlScreenLocked = true;
+            if(SDL_MUSTLOCK(g_sdlScreen)) {
+                if(SDL_LockSurface(g_sdlScreen) < 0) {
+                    a_out__fatal("SDL_LockSurface failed: %s",
+                                 SDL_GetError());
+                }
             }
 
             a_screen__pixels = g_sdlScreen->pixels;
@@ -522,7 +543,15 @@ void a_sdl__screen_show(void)
     #elif A_USE_LIB_SDL2
         int ret;
 
-        ret = SDL_UpdateTexture(g_sdlTexture, NULL, a_screen__pixels, a_screen__width * sizeof(APixel));
+        ret = SDL_RenderClear(g_sdlRenderer);
+        if(ret < 0) {
+            a_out__fatal("SDL_RenderClear failed: %s", SDL_GetError());
+        }
+
+        ret = SDL_UpdateTexture(g_sdlTexture,
+                                NULL,
+                                a_screen__pixels,
+                                a_screen__width * sizeof(APixel));
         if(ret < 0) {
             a_out__fatal("SDL_UpdateTexture failed: %s", SDL_GetError());
         }
@@ -559,7 +588,8 @@ void a_sdl__music_free(void* Music)
 
 void a_sdl__music_setVolume(void)
 {
-    Mix_VolumeMusic((float)a_settings_getInt("sound.music.scale") / 100 * a__volume);
+    Mix_VolumeMusic(
+        (float)a_settings_getInt("sound.music.scale") / 100 * a_sound__volume);
 }
 
 void a_sdl__music_play(void* Music)
@@ -719,9 +749,11 @@ void a_sdl__input_get(void)
                 A_STRHASH_ITERATE(g_analogs, ASdlPhysicalInput*, a) {
                     if(a->device_index == event.jaxis.which) {
                         if(event.jaxis.axis == a->u.analog.xaxis_index) {
-                            a_input__analog_setXAxis(a->input, event.jaxis.value);
+                            a_input__analog_setXAxis(a->input,
+                                                     event.jaxis.value);
                         } else if(event.jaxis.axis == a->u.analog.yaxis_index) {
-                            a_input__analog_setYAxis(a->input, event.jaxis.value);
+                            a_input__analog_setYAxis(a->input,
+                                                     event.jaxis.value);
                         }
                     }
                 }
@@ -729,7 +761,9 @@ void a_sdl__input_get(void)
 
             case SDL_MOUSEMOTION: {
                 A_STRHASH_ITERATE(g_touchScreens, ASdlPhysicalInput*, t) {
-                    a_input__touch_addMotion(t->input, event.button.x, event.button.y);
+                    a_input__touch_addMotion(t->input,
+                                             event.button.x,
+                                             event.button.y);
                 }
             } break;
 
@@ -737,7 +771,10 @@ void a_sdl__input_get(void)
                 switch(event.button.button) {
                     case SDL_BUTTON_LEFT: {
                         A_STRHASH_ITERATE(g_touchScreens, ASdlPhysicalInput*, t) {
-                            a_input__touch_setCoords(t->input, event.button.x, event.button.y, true);
+                            a_input__touch_setCoords(t->input,
+                                                     event.button.x,
+                                                     event.button.y,
+                                                     true);
                         }
                     } break;
                 }
@@ -747,7 +784,10 @@ void a_sdl__input_get(void)
                 switch(event.button.button) {
                     case SDL_BUTTON_LEFT: {
                         A_STRHASH_ITERATE(g_touchScreens, ASdlPhysicalInput*, t) {
-                            a_input__touch_setCoords(t->input, event.button.x, event.button.y, false);
+                            a_input__touch_setCoords(t->input,
+                                                     event.button.x,
+                                                     event.button.y,
+                                                     false);
                         }
                     } break;
                 }
@@ -760,7 +800,8 @@ void a_sdl__input_get(void)
             A_STRHASH_ITERATE(g_buttons, ASdlPhysicalInput*, b) {
                 for(int c = b->u.button.numCodes; c--; ) {
                     if(b->u.button.codes[c] == code) {
-                        a_input__button_setState(b->input, action == A_ACTION_PRESSED);
+                        a_input__button_setState(b->input,
+                                                 action == A_ACTION_PRESSED);
                         break;
                     }
                 }

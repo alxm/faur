@@ -35,57 +35,34 @@ static int g_savedHeight = 0;
 
 static ASprite* g_spriteTarget = NULL;
 
-static void displayVolume(void)
-{
-    #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
-        if(a_settings_getBool("sound.on")) {
-            if(a_time_getMilis() - a__volumeAdjust > A_MILIS_VOLUME) {
-                return;
-            }
-
-            a_pixel_setBlend(A_PIXEL_PLAIN);
-
-            a_pixel_setPixel(0);
-            a_draw_rectangle(0, 181, a__volumeMax / A_VOLUME_STEP + 5, 197);
-
-            a_pixel_setRGB(255, 156, 107);
-            a_draw_hline(0, a__volumeMax / A_VOLUME_STEP + 4 + 1, 180);
-            a_draw_hline(0, a__volumeMax / A_VOLUME_STEP + 4 + 1, 183 + 14);
-            a_draw_vline(a__volumeMax / A_VOLUME_STEP + 4 + 1, 181, 183 + 14);
-
-            a_pixel_setRGB(255, 84, 0);
-            a_draw_rectangle(0, 186, a__volume / A_VOLUME_STEP, 192);
-        }
-    #endif
-}
+static AList* g_overlays;
 
 void a_screen__init(void)
 {
-    if(!a_settings_getBool("video.window")) {
+    if(!a_settings_getBool("video.on")) {
         return;
     }
 
     a_screen__width = a_settings_getInt("video.width");
     a_screen__height = a_settings_getInt("video.height");
 
-    a_sdl__screen_set();
+    if(a_settings_getBool("video.window")) {
+        a_sdl__screen_set();
 
-    if(a_settings_getBool("video.wizTear")) {
         #if A_PLATFORM_WIZ
-            #define FBIO_MAGIC 'D'
-            #define FBIO_LCD_CHANGE_CONTROL _IOW(FBIO_MAGIC, 90, unsigned int[2])
-            #define LCD_DIRECTION_ON_CMD 5 // 320x240
-            #define LCD_DIRECTION_OFF_CMD 6 // 240x320
+            if(a_settings_getBool("video.fixWizTearing")) {
+                #define FBIO_MAGIC 'D'
+                #define FBIO_LCD_CHANGE_CONTROL \
+                    _IOW(FBIO_MAGIC, 90, unsigned int[2])
+                #define LCD_DIRECTION_ON_CMD 5 // 320x240
+                #define LCD_DIRECTION_OFF_CMD 6 // 240x320
 
-            unsigned int send[2];
-            int fb_fd = open("/dev/fb0", O_RDWR);
-            send[0] = LCD_DIRECTION_OFF_CMD;
-            ioctl(fb_fd, FBIO_LCD_CHANGE_CONTROL, &send);
-            close(fb_fd);
-
-            a_settings__set("video.doubleBuffer", "1");
-        #else
-            a_settings__set("video.wizTear", "0");
+                unsigned int send[2];
+                int fb_fd = open("/dev/fb0", O_RDWR);
+                send[0] = LCD_DIRECTION_OFF_CMD;
+                ioctl(fb_fd, FBIO_LCD_CHANGE_CONTROL, &send);
+                close(fb_fd);
+            }
         #endif
     }
 
@@ -96,17 +73,21 @@ void a_screen__init(void)
     g_savedWidth = a_screen__width;
     g_savedHeight = a_screen__height;
     a_screen__savedPixels = a_screen__pixels;
+
+    g_overlays = a_list_new();
 }
 
 void a_screen__uninit(void)
 {
-    if(!a_settings_getBool("video.window")) {
+    if(!a_settings_getBool("video.on")) {
         return;
     }
 
     if(a_settings_getBool("video.doubleBuffer")) {
         free(a_screen__pixels);
     }
+
+    a_list_free(g_overlays);
 }
 
 APixel* a_screen_pixels(void)
@@ -126,8 +107,13 @@ int a_screen_height(void)
 
 void a_screen_show(void)
 {
-    displayVolume();
-    a_console__draw();
+    if(a_screen__pixels != a_screen__savedPixels) {
+        a_out__fatal("Must call a_screen_resetTarget before drawing frame");
+    }
+
+    A_LIST_ITERATE(g_overlays, AScreenOverlay, callback) {
+        callback();
+    }
 
     a_sdl__screen_show();
 }
@@ -187,4 +173,9 @@ void a_screen_resetTarget(void)
     if(g_spriteTarget) {
         g_spriteTarget = NULL;
     }
+}
+
+void a_screen__addOverlay(AScreenOverlay Callback)
+{
+    a_list_addLast(g_overlays, Callback);
 }

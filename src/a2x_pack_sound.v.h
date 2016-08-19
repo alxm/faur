@@ -29,9 +29,7 @@
 #define A_VOLUME_STEP 1
 #define A_MILIS_VOLUME (1000 / 2)
 
-extern int a__volume;
-extern int a__volumeMax;
-extern int a__volumeAdjust;
+extern int a_sound__volume;
 
 extern void a_sound__init(void);
 extern void a_sound__uninit(void);

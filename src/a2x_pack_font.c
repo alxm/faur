@@ -66,7 +66,7 @@ void a_font__init(void)
 
     APixel colors[A_FONT_MAX];
     colors[A_FONT_WHITE] = a_pixel_make(255, 255, 255);
-    colors[A_FONT_LIGHT_GRAY] = a_pixel_make(0xe8, 0xe8, 0xe8);
+    colors[A_FONT_LIGHT_GRAY] = a_pixel_make(0xcc, 0xcc, 0xcc);
     colors[A_FONT_GREEN] = a_pixel_make(0x2c, 0xde, 0x99);
     colors[A_FONT_YELLOW] = a_pixel_make(0xe6, 0xff, 0x3e);
     colors[A_FONT_RED] = a_pixel_make(0xff, 0x75, 0x75);
