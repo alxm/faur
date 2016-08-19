@@ -48,7 +48,6 @@ static uint32_t g_sdlFlags;
 
 #if A_USE_LIB_SDL
     static SDL_Surface* g_sdlScreen = NULL;
-    static bool g_sdlScreenLocked = false;
 #elif A_USE_LIB_SDL2
     static SDL_Window* g_sdlWindow = NULL;
     static SDL_Renderer* g_sdlRenderer = NULL;
@@ -341,9 +340,10 @@ void a_sdl__uninit(void)
 
     if(a_settings_getBool("video.window")) {
         #if A_USE_LIB_SDL
-            if(SDL_MUSTLOCK(g_sdlScreen) && g_sdlScreenLocked) {
-                SDL_UnlockSurface(g_sdlScreen);
-                g_sdlScreenLocked = false;
+            if(!a_settings_getBool("video.doubleBuffer")) {
+                if(SDL_MUSTLOCK(g_sdlScreen)) {
+                    SDL_UnlockSurface(g_sdlScreen);
+                }
             }
         #elif A_USE_LIB_SDL2
             SDL_DestroyTexture(g_sdlTexture);
@@ -387,9 +387,10 @@ void a_sdl__screen_set(void)
 
         SDL_SetClipRect(g_sdlScreen, NULL);
 
-        if(SDL_MUSTLOCK(g_sdlScreen) && !g_sdlScreenLocked) {
-            SDL_LockSurface(g_sdlScreen);
-            g_sdlScreenLocked = true;
+        if(!a_settings_getBool("video.doubleBuffer")) {
+            if(SDL_MUSTLOCK(g_sdlScreen)) {
+                SDL_LockSurface(g_sdlScreen);
+            }
         }
 
         a_screen__pixels = g_sdlScreen->pixels;
@@ -459,14 +460,12 @@ void a_sdl__screen_set(void)
 void a_sdl__screen_show(void)
 {
     #if A_USE_LIB_SDL
-        if(a_settings_getBool("video.wizTear")) {
-            // video.doubleBuffer is also set when video.wizTear is set
+        if(a_settings_getBool("video.wizTear")) { // also video.doubleBuffer
             #define A_WIDTH 320
             #define A_HEIGHT 240
 
-            if(SDL_MUSTLOCK(g_sdlScreen) && !g_sdlScreenLocked) {
+            if(SDL_MUSTLOCK(g_sdlScreen)) {
                 SDL_LockSurface(g_sdlScreen);
-                g_sdlScreenLocked = true;
             }
 
             APixel* dst = g_sdlScreen->pixels + A_WIDTH * A_HEIGHT;
@@ -479,16 +478,14 @@ void a_sdl__screen_show(void)
                 }
             }
 
-            if(SDL_MUSTLOCK(g_sdlScreen) && g_sdlScreenLocked) {
+            if(SDL_MUSTLOCK(g_sdlScreen)) {
                 SDL_UnlockSurface(g_sdlScreen);
-                g_sdlScreenLocked = false;
             }
 
             SDL_Flip(g_sdlScreen);
         } else if(a_settings_getBool("video.doubleBuffer")) {
-            if(SDL_MUSTLOCK(g_sdlScreen) && !g_sdlScreenLocked) {
+            if(SDL_MUSTLOCK(g_sdlScreen)) {
                 SDL_LockSurface(g_sdlScreen);
-                g_sdlScreenLocked = true;
             }
 
             const APixel* src = a_screen__pixels;
@@ -496,23 +493,20 @@ void a_sdl__screen_show(void)
 
             memcpy(dst, src, A_SCREEN_SIZE);
 
-            if(SDL_MUSTLOCK(g_sdlScreen) && g_sdlScreenLocked) {
+            if(SDL_MUSTLOCK(g_sdlScreen)) {
                 SDL_UnlockSurface(g_sdlScreen);
-                g_sdlScreenLocked = false;
             }
 
             SDL_Flip(g_sdlScreen);
         } else {
-            if(SDL_MUSTLOCK(g_sdlScreen) && g_sdlScreenLocked) {
+            if(SDL_MUSTLOCK(g_sdlScreen)) {
                 SDL_UnlockSurface(g_sdlScreen);
-                g_sdlScreenLocked = false;
             }
 
             SDL_Flip(g_sdlScreen);
 
-            if(SDL_MUSTLOCK(g_sdlScreen) && !g_sdlScreenLocked) {
+            if(SDL_MUSTLOCK(g_sdlScreen)) {
                 SDL_LockSurface(g_sdlScreen);
-                g_sdlScreenLocked = true;
             }
 
             a_screen__pixels = g_sdlScreen->pixels;
