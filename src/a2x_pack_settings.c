@@ -150,6 +150,7 @@ void a_settings__init(void)
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "app.gp2xMenu", "0");
     add(A_SETTING_INT, A_SETTING_SET_ONCE, "app.mhz", "0");
 
+    add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.on", "1");
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.window", "1");
     add(A_SETTING_INT, A_SETTING_SET_ONCE, "video.width", "320");
     add(A_SETTING_INT, A_SETTING_SET_ONCE, "video.height", "240");
@@ -189,6 +190,10 @@ void a_settings__uninit(void)
 void a_settings__freeze(void)
 {
     g_settingsAreFrozen = true;
+
+    #if A_USE_LIB_SDL2
+        a_settings__set("video.doubleBuffer", "1");
+    #endif
 }
 
 void a_settings_set(const char* Key, const char* Value)

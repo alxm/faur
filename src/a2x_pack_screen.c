@@ -39,32 +39,35 @@ static AList* g_overlays;
 
 void a_screen__init(void)
 {
-    if(!a_settings_getBool("video.window")) {
+    if(!a_settings_getBool("video.on")) {
         return;
     }
 
     a_screen__width = a_settings_getInt("video.width");
     a_screen__height = a_settings_getInt("video.height");
 
-    a_sdl__screen_set();
+    if(a_settings_getBool("video.window")) {
+        a_sdl__screen_set();
 
-    if(a_settings_getBool("video.wizTear")) {
-        #if A_PLATFORM_WIZ
-            #define FBIO_MAGIC 'D'
-            #define FBIO_LCD_CHANGE_CONTROL _IOW(FBIO_MAGIC, 90, unsigned int[2])
-            #define LCD_DIRECTION_ON_CMD 5 // 320x240
-            #define LCD_DIRECTION_OFF_CMD 6 // 240x320
+        if(a_settings_getBool("video.wizTear")) {
+            #if A_PLATFORM_WIZ
+                #define FBIO_MAGIC 'D'
+                #define FBIO_LCD_CHANGE_CONTROL \
+                    _IOW(FBIO_MAGIC, 90, unsigned int[2])
+                #define LCD_DIRECTION_ON_CMD 5 // 320x240
+                #define LCD_DIRECTION_OFF_CMD 6 // 240x320
 
-            unsigned int send[2];
-            int fb_fd = open("/dev/fb0", O_RDWR);
-            send[0] = LCD_DIRECTION_OFF_CMD;
-            ioctl(fb_fd, FBIO_LCD_CHANGE_CONTROL, &send);
-            close(fb_fd);
+                unsigned int send[2];
+                int fb_fd = open("/dev/fb0", O_RDWR);
+                send[0] = LCD_DIRECTION_OFF_CMD;
+                ioctl(fb_fd, FBIO_LCD_CHANGE_CONTROL, &send);
+                close(fb_fd);
 
-            a_settings__set("video.doubleBuffer", "1");
-        #else
-            a_settings__set("video.wizTear", "0");
-        #endif
+                a_settings__set("video.doubleBuffer", "1");
+            #else
+                a_settings__set("video.wizTear", "0");
+            #endif
+        }
     }
 
     if(a_settings_getBool("video.doubleBuffer")) {
@@ -80,7 +83,7 @@ void a_screen__init(void)
 
 void a_screen__uninit(void)
 {
-    if(!a_settings_getBool("video.window")) {
+    if(!a_settings_getBool("video.on")) {
         return;
     }
 

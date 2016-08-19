@@ -339,16 +339,18 @@ void a_sdl__uninit(void)
         Mix_CloseAudio();
     }
 
-    #if A_USE_LIB_SDL
-        if(SDL_MUSTLOCK(g_sdlScreen) && g_sdlScreenLocked) {
-            SDL_UnlockSurface(g_sdlScreen);
-            g_sdlScreenLocked = false;
-        }
-    #elif A_USE_LIB_SDL2
-        SDL_DestroyTexture(g_sdlTexture);
-        SDL_DestroyRenderer(g_sdlRenderer);
-        SDL_DestroyWindow(g_sdlWindow);
-    #endif
+    if(a_settings_getBool("video.window")) {
+        #if A_USE_LIB_SDL
+            if(SDL_MUSTLOCK(g_sdlScreen) && g_sdlScreenLocked) {
+                SDL_UnlockSurface(g_sdlScreen);
+                g_sdlScreenLocked = false;
+            }
+        #elif A_USE_LIB_SDL2
+            SDL_DestroyTexture(g_sdlTexture);
+            SDL_DestroyRenderer(g_sdlRenderer);
+            SDL_DestroyWindow(g_sdlWindow);
+        #endif
+    }
 
     SDL_QuitSubSystem(g_sdlFlags);
     SDL_Quit();
@@ -393,7 +395,6 @@ void a_sdl__screen_set(void)
         a_screen__pixels = g_sdlScreen->pixels;
     #elif A_USE_LIB_SDL2
         int ret;
-        a_settings__set("video.doubleBuffer", "1");
 
         g_sdlWindow = SDL_CreateWindow("",
                                        SDL_WINDOWPOS_UNDEFINED,
