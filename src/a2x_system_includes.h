@@ -19,6 +19,9 @@
 
 #pragma once
 
+// Feature macro for scandir, alphasort, realpath, etc.
+#define _GNU_SOURCE 1
+
 #include <ctype.h>
 #include <dirent.h>
 #include <fcntl.h>

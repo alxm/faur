@@ -47,12 +47,6 @@ void a_dir__uninit(void)
 
 ADir* a_dir_open(const char* Path)
 {
-    extern int scandir(
-        const char *dirp, struct dirent ***namelist,
-        int (*filter)(const struct dirent *),
-        int (*compar)(const struct dirent **, const struct dirent **));
-    extern int alphasort(const struct dirent **, const struct dirent **);
-
     struct dirent** dlist = NULL;
     const int numFiles = scandir(Path, &dlist, NULL, alphasort);
 
