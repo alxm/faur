@@ -26,7 +26,7 @@ typedef struct AListNode AListNode;
 
 extern AList* a_list_new(void);
 extern void a_list_free(AList* List);
-extern void a_list_empty(AList* List);
+extern void a_list_clear(AList* List);
 
 extern AListNode* a_list_addFirst(AList* List, void* Content);
 extern AListNode* a_list_addLast(AList* List, void* Content);
@@ -50,4 +50,4 @@ extern void** a_list_array(AList* List);
 extern void* a_list_get(const AList* List, int Index);
 
 extern int a_list_size(const AList* List);
-extern bool a_list_isEmpty(const AList* List);
+extern bool a_list_empty(const AList* List);

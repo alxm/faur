@@ -112,7 +112,7 @@ static void state_free(AStateInstance* State)
 static void state_handle(void)
 {
     // If there are no pending state changes, do any automatic transitions
-    if(a_list_isEmpty(g_pending)) {
+    if(a_list_empty(g_pending)) {
         AStateInstance* current = a_list_peek(g_stack);
 
         if(current && current->stage == A_STATE_STAGE_INIT) {
@@ -336,7 +336,7 @@ bool a_state__nothingPending(void)
         a_fps_end();
     }
 
-    if(a_list_isEmpty(g_pending)) {
+    if(a_list_empty(g_pending)) {
         a_fps_start();
         return true;
     } else {
@@ -349,7 +349,7 @@ void a_state__run(void)
 {
     state_handle();
 
-    while(!a_list_isEmpty(g_stack)) {
+    while(!a_list_empty(g_stack)) {
         AStateInstance* s = a_list_peek(g_stack);
 
         if(s->stage == A_STATE_STAGE_BODY) {

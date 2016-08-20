@@ -56,15 +56,14 @@ void a_list_free(AList* List)
     free(List);
 }
 
-void a_list_empty(AList* List)
+void a_list_clear(AList* List)
 {
     AListNode* n = List->first->next;
 
     while(n != List->last) {
-        AListNode* const t = n;
+        AListNode* saved = n;
         n = n->next;
-
-        free(t);
+        free(saved);
     }
 
     List->first->next = List->last;
@@ -244,7 +243,7 @@ int a_list_size(const AList* List)
     return a_list__size(List);
 }
 
-bool a_list_isEmpty(const AList* List)
+bool a_list_empty(const AList* List)
 {
     return List->first->next == List->last;
 }

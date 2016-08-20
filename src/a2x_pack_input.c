@@ -306,7 +306,7 @@ void a_input__get(void)
             free(p);
         }
 
-        a_list_empty(touchScreen->u.touch.motion);
+        a_list_clear(touchScreen->u.touch.motion);
     }
 
     A_STRHASH_ITERATE(g_buttons, APhysicalInput*, button) {
@@ -540,10 +540,10 @@ AInput* a_input_new(const char* Names)
 
     a_strtok_free(tok);
 
-    if(a_list_isEmpty(i->buttons)
-        && a_list_isEmpty(i->analogs)
-        && a_list_isEmpty(i->touchScreens)
-        && a_list_isEmpty(i->combos)) {
+    if(a_list_empty(i->buttons)
+        && a_list_empty(i->analogs)
+        && a_list_empty(i->touchScreens)
+        && a_list_empty(i->combos)) {
 
         a_out__error("No inputs found for '%s'", Names);
     }
@@ -576,10 +576,10 @@ const char* a_input_name(const AInput* Input)
 
 bool a_input_working(const AInput* Input)
 {
-    return !a_list_isEmpty(Input->buttons)
-        || !a_list_isEmpty(Input->analogs)
-        || !a_list_isEmpty(Input->touchScreens)
-        || !a_list_isEmpty(Input->combos);
+    return !a_list_empty(Input->buttons)
+        || !a_list_empty(Input->analogs)
+        || !a_list_empty(Input->touchScreens)
+        || !a_list_empty(Input->combos);
 }
 
 bool a_button_get(const AInput* Button)
@@ -590,7 +590,7 @@ bool a_button_get(const AInput* Button)
         }
     }
 
-    if(!a_list_isEmpty(Button->combos)) {
+    if(!a_list_empty(Button->combos)) {
         A_LIST_ITERATE(Button->combos, AComboInput*, c) {
             A_LIST_ITERATE(c->buttons, APhysicalInput*, b) {
                 if(!b->u.button.pressed) {

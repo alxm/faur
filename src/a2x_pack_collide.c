@@ -108,7 +108,7 @@ void a_colobject_setCoords(AColObject* Object, int X, int Y)
     }
 
     // purge old information
-    a_list_empty(pt_nodes);
+    a_list_clear(pt_nodes);
 
     // set new coords
     Object->x = X;
