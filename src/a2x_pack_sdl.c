@@ -110,12 +110,12 @@ static void addAnalog(const char* Name, int DeviceIndex, char* DeviceName, int X
     if(DeviceName) {
         for(int j = g_joysticksNum; j--; ) {
             #if A_USE_LIB_SDL
-                if(a_str_same(DeviceName, SDL_JoystickName(j))) {
+                if(a_str_equal(DeviceName, SDL_JoystickName(j))) {
                     a->device_index = j;
                     break;
                 }
             #elif A_USE_LIB_SDL2
-                if(a_str_same(DeviceName, SDL_JoystickName(g_joysticks[j]))) {
+                if(a_str_equal(DeviceName, SDL_JoystickName(g_joysticks[j]))) {
                     a->device_index = j;
                     break;
                 }

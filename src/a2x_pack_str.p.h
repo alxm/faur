@@ -21,7 +21,7 @@
 
 #include "a2x_system_includes.h"
 
-#define a_str_same(String1, String2) (strcmp(String1, String2) == 0)
+#define a_str_equal(String1, String2) (strcmp(String1, String2) == 0)
 
 #define a_str_malloc(...)                                               \
 ({                                                                      \

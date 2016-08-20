@@ -43,13 +43,13 @@ static bool g_settingsAreFrozen = false;
 
 static int parseBool(const char* Value)
 {
-    return a_str_same(Value, "yes")
-        || a_str_same(Value, "y")
-        || a_str_same(Value, "true")
-        || a_str_same(Value, "t")
-        || a_str_same(Value, "da")
-        || a_str_same(Value, "on")
-        || a_str_same(Value, "1");
+    return a_str_equal(Value, "yes")
+        || a_str_equal(Value, "y")
+        || a_str_equal(Value, "true")
+        || a_str_equal(Value, "t")
+        || a_str_equal(Value, "da")
+        || a_str_equal(Value, "on")
+        || a_str_equal(Value, "1");
 }
 
 static void add(ASettingType Type, ASettingUpdate Update, const char* Key, const char* DefaultValue)

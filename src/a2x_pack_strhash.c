@@ -83,7 +83,7 @@ void a_strhash_add(AStrHash* Hash, const char* Key, void* Content)
 void* a_strhash_get(const AStrHash* Hash, const char* Key)
 {
     for(AStrHashEntry* e = Hash->entriesTable[getSlot(Key)]; e; e = e->next) {
-        if(a_str_same(Key, e->key)) {
+        if(a_str_equal(Key, e->key)) {
             return e->content;
         }
     }
@@ -94,7 +94,7 @@ void* a_strhash_get(const AStrHash* Hash, const char* Key)
 bool a_strhash_contains(const AStrHash* Hash, const char* Key)
 {
     for(AStrHashEntry* e = Hash->entriesTable[getSlot(Key)]; e; e = e->next) {
-        if(a_str_same(Key, e->key)) {
+        if(a_str_equal(Key, e->key)) {
             return true;
         }
     }

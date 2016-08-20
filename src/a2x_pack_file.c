@@ -108,7 +108,7 @@ bool a_file_checkPrefix(AFile* File, const char* Prefix)
 
     buffer[size - 1] = '\0';
 
-    return a_str_same(buffer, Prefix);
+    return a_str_equal(buffer, Prefix);
 }
 
 void a_file_writePrefix(AFile* File, const char* Prefix)
