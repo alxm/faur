@@ -61,7 +61,7 @@ static void pngToPixels(png_structp Png, png_infop Info, APixel** Pixels, int* W
 
 void a_png_readFile(const char* Path, APixel** Pixels, int* Width, int* Height)
 {
-    AFile* const f = a_file_open(Path, "r");
+    AFile* const f = a_file_open(Path, "rb");
 
     png_structp png = NULL;
     png_infop info = NULL;
@@ -179,7 +179,7 @@ void a_png_readMemory(const uint8_t* Data, APixel** Pixels, int* Width, int* Hei
 
 void a_png_write(const char* Path, const APixel* Data, int Width, int Height)
 {
-    AFile* f = a_file_open(Path, "w");
+    AFile* f = a_file_open(Path, "wb");
 
     png_structp png = NULL;
     png_infop info = NULL;

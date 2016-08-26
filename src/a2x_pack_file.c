@@ -298,7 +298,7 @@ size_t a_file_size(const char* Path)
 
 uint8_t* a_file_toBuffer(const char* Path)
 {
-    AFile* f = a_file_open(Path, "r");
+    AFile* f = a_file_open(Path, "rb");
 
     if(!f) {
         return NULL;
