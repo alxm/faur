@@ -169,7 +169,7 @@ void a_sdl__init(void)
     }
 
     if(a_settings_getBool("sound.on")) {
-        #if A_PLATFORM_LINUXPC || A_PLATFORM_WINDOWS
+        #if A_PLATFORM_LINUXPC || A_PLATFORM_MINGW
             if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096) != 0) {
                 a_settings__set("sound.on", "0");
             }
@@ -273,7 +273,7 @@ void a_sdl__init(void)
         addAnalog("pandora.Nub2", -1, "nub1", 0, 1);
         addButton("pandora.m", SDLK_m);
         addButton("pandora.s", SDLK_s);
-    #elif A_PLATFORM_LINUXPC
+    #elif A_PLATFORM_LINUXPC || A_PLATFORM_MINGW
         addButton("pc.Up", SDLK_i);
         addButton("pc.Up", SDLK_UP);
         addButton("pc.Down", SDLK_k);
