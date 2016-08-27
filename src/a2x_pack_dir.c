@@ -23,7 +23,7 @@ struct ADir {
     char* path;
     char* name;
     AList* files;
-    unsigned int num;
+    int num;
     AListNode* node;
 };
 
@@ -137,14 +137,14 @@ const char* a_dir_name(const ADir* Dir)
     return Dir->name;
 }
 
-unsigned int a_dir_numEntries(const ADir* Dir)
+int a_dir_numEntries(const ADir* Dir)
 {
     return Dir->num;
 }
 
 bool a_dir_exists(const char* Path)
 {
-    DIR* const d = opendir(Path);
+    DIR* d = opendir(Path);
 
     if(d) {
         closedir(d);
