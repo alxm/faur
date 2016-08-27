@@ -19,6 +19,42 @@
 
 #pragma once
 
+#ifndef A_PLATFORM_LINUXPC
+    #define A_PLATFORM_LINUXPC 0
+#endif
+
+#ifndef A_PLATFORM_MINGW
+    #define A_PLATFORM_MINGW 0
+#endif
+
+#ifndef A_PLATFORM_CAANOO
+    #define A_PLATFORM_CAANOO 0
+#endif
+
+#ifndef A_PLATFORM_WIZ
+    #define A_PLATFORM_WIZ 0
+#endif
+
+#ifndef A_PLATFORM_GP2X
+    #define A_PLATFORM_GP2X 0
+#endif
+
+#ifndef A_PLATFORM_PANDORA
+    #define A_PLATFORM_PANDORA 0
+#endif
+
+#ifndef A_PLATFORM_GP32
+    #define A_PLATFORM_GP32 0
+#endif
+
+#ifndef A_PLATFORM_LINUX
+    #if A_PLATFORM_LINUXPC || A_PLATFORM_GP2X || A_PLATFORM_WIZ || A_PLATFORM_CAANOO || A_PLATFORM_PANDORA
+        #define A_PLATFORM_LINUX 1
+    #else
+        #define A_PLATFORM_LINUX 0
+    #endif
+#endif
+
 // Feature macro for scandir, alphasort, realpath, etc.
 #define _GNU_SOURCE 1
 
@@ -33,8 +69,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/ioctl.h>
-#include <sys/mman.h>
 #include <sys/stat.h>
 #include <time.h>
 #include <unistd.h>
+
+#if A_PLATFORM_GP2X || A_PLATFORM_WIZ || A_PLATFORM_CAANOO
+    #include <sys/ioctl.h>
+    #include <sys/mman.h>
+#endif

@@ -61,6 +61,10 @@ class SdkConfigTool(Tool):
 
         sdks = {}
 
+        sdks['mingw'] = Sdk('MinGW (Windows)')
+        sdks['mingw'].add_var('root', 'MINGW_ROOT')
+        sdks['mingw'].add_var('arch', 'MINGW_ARCH')
+
         sdks['caanoo'] = Sdk('GPH SDK (Caanoo)')
         sdks['caanoo'].add_var('root', 'CAANOO_ROOT')
         sdks['caanoo'].add_var('toolchain', 'CAANOO_GLIBC')

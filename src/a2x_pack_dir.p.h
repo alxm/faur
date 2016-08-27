@@ -62,7 +62,7 @@ extern AList* a_dir__files(const ADir* Dir);
 
 extern const char* a_dir_path(const ADir* Dir);
 extern const char* a_dir_name(const ADir* Dir);
-extern unsigned int a_dir_numEntries(const ADir* Dir);
+extern int a_dir_numEntries(const ADir* Dir);
 
 extern bool a_dir_exists(const char* Path);
-extern void a_dir_make(const char* Path);
+extern bool a_dir_make(const char* Path);

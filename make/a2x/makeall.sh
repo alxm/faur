@@ -21,6 +21,7 @@ do_make ()
 }
 
 do_make "Desktop Linux" Makefile
+do_make "MinGW" Makefile.mingw
 do_make "Caanoo" Makefile.caanoo
 do_make "GP2X" Makefile.gp2x
 do_make "Pandora" Makefile.pandora

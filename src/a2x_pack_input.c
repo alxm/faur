@@ -219,7 +219,7 @@ void a_input__init(void)
         addAnalog("pandora.Nub2");
         addButton("pandora.m");
         addButton("pandora.s");
-    #elif A_PLATFORM_LINUXPC
+    #elif A_PLATFORM_LINUXPC || A_PLATFORM_MINGW
         addButton("pc.Up");
         addButton("pc.Down");
         addButton("pc.Left");

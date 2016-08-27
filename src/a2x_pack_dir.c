@@ -23,7 +23,7 @@ struct ADir {
     char* path;
     char* name;
     AList* files;
-    unsigned int num;
+    int num;
     AListNode* node;
 };
 
@@ -45,37 +45,57 @@ void a_dir__uninit(void)
     a_list_free(g_openedDirs);
 }
 
+static int a_dir__sort(const void* A, const void* B)
+{
+    const ADirEntry* a = *(ADirEntry**)A;
+    const ADirEntry* b = *(ADirEntry**)B;
+
+    return strcmp(a->name, b->name);
+}
+
 ADir* a_dir_open(const char* Path)
 {
-    struct dirent** dlist = NULL;
-    const int numFiles = scandir(Path, &dlist, NULL, alphasort);
+    DIR* dir = opendir(Path);
 
-    if(numFiles == -1) {
-        a_out__fatal("a_dir_open(%s): scandir failed", Path);
+    if(dir == NULL) {
+        a_out__error("a_dir_open(%s): opendir failed", Path);
+        return NULL;
     }
+
+    struct dirent* ent;
+    AList* files = a_list_new();
+
+    while((ent = readdir(dir)) != NULL) {
+        ADirEntry* e = a_mem_malloc(sizeof(ADirEntry));
+
+        e->name = a_str_dup(ent->d_name);
+        e->full = a_str_merge(Path, "/", e->name);
+
+        a_list_addLast(files, e);
+    }
+
+    closedir(dir);
+
+    void** array = a_list_array(files);
+    qsort(array, a_list_size(files), sizeof(void*), a_dir__sort);
 
     ADir* d = a_mem_malloc(sizeof(ADir));
 
     d->path = a_str_dup(Path);
     d->name = a_str_getSuffixLastFind(Path, '/');
-    d->files = a_list_new();
-    d->num = a_math_max(0, numFiles);
-
     if(d->name == NULL) {
         d->name = a_str_dup(Path);
     }
 
-    for(unsigned int i = d->num; i--; ) {
-        ADirEntry* e = a_mem_malloc(sizeof(ADirEntry));
+    d->num = a_list_size(files);
+    a_list_clear(files);
+    d->files = files;
 
-        e->name = a_str_dup(dlist[i]->d_name);
-        e->full = a_str_merge(Path, "/", e->name);
-
-        a_list_addFirst(d->files, e);
-        free(dlist[i]);
+    for(int i = d->num; i--; ) {
+        a_list_addFirst(d->files, array[i]);
     }
 
-    free(dlist);
+    free(array);
 
     d->node = a_list_addLast(g_openedDirs, d);
     return d;
@@ -117,14 +137,14 @@ const char* a_dir_name(const ADir* Dir)
     return Dir->name;
 }
 
-unsigned int a_dir_numEntries(const ADir* Dir)
+int a_dir_numEntries(const ADir* Dir)
 {
     return Dir->num;
 }
 
 bool a_dir_exists(const char* Path)
 {
-    DIR* const d = opendir(Path);
+    DIR* d = opendir(Path);
 
     if(d) {
         closedir(d);
@@ -134,9 +154,20 @@ bool a_dir_exists(const char* Path)
     return false;
 }
 
-void a_dir_make(const char* Path)
+bool a_dir_make(const char* Path)
 {
-    if(mkdir(Path, S_IRWXU) == -1) {
+    int result;
+
+    #if A_PLATFORM_LINUX
+        result = mkdir(Path, S_IRWXU);
+    #else
+        result = mkdir(Path);
+    #endif
+
+    if(result == -1) {
         a_out__error("mkdir(%s) failed", Path);
+        return false;
     }
+
+    return true;
 }
