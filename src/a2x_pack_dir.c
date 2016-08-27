@@ -136,7 +136,15 @@ bool a_dir_exists(const char* Path)
 
 void a_dir_make(const char* Path)
 {
-    if(mkdir(Path, S_IRWXU) == -1) {
+    int result;
+
+    #if A_PLATFORM_LINUX
+        result = mkdir(Path, S_IRWXU);
+    #else
+        result = mkdir(Path);
+    #endif
+
+    if(result == -1) {
         a_out__error("mkdir(%s) failed", Path);
     }
 }
