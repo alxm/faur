@@ -134,7 +134,7 @@ bool a_dir_exists(const char* Path)
     return false;
 }
 
-void a_dir_make(const char* Path)
+bool a_dir_make(const char* Path)
 {
     int result;
 
@@ -146,5 +146,8 @@ void a_dir_make(const char* Path)
 
     if(result == -1) {
         a_out__error("mkdir(%s) failed", Path);
+        return false;
     }
+
+    return true;
 }

@@ -61,8 +61,9 @@ static bool lazy_init(void)
         a_dir_close(dir);
     } else {
         a_out__message("Making screenshots dir: %s", screensDir);
-        a_dir_make(screensDir);
-        g_isInit = true;
+        if(a_dir_make(screensDir)) {
+            g_isInit = true;
+        }
     }
 
     if(g_isInit) {
