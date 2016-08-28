@@ -142,7 +142,6 @@ void a_spriteframes_flipDirection(ASpriteFrames* Frames)
 void a_spriteframes_setSpeed(ASpriteFrames* Frames, unsigned int CallsToNextFrame)
 {
     Frames->callsToNextFrame = CallsToNextFrame;
-    a_spriteframes_reset(Frames);
 }
 
 void a_spriteframes_pause(ASpriteFrames* Frames)
