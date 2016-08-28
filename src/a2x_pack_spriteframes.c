@@ -119,6 +119,11 @@ bool a_spriteframes_last(const ASpriteFrames* Frames)
     return false;
 }
 
+int a_spriteframes_num(const ASpriteFrames* Frames)
+{
+    return Frames->num;
+}
+
 void a_spriteframes_setDirection(ASpriteFrames* Frames, int Direction)
 {
     Frames->dir = Direction;
