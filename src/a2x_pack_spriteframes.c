@@ -109,6 +109,11 @@ ASprite* a_spriteframes_geti(ASpriteFrames* Frames, int Index)
     return Frames->spriteArray[Index];
 }
 
+ASprite* a_spriteframes_getRandom(const ASpriteFrames* Frames)
+{
+    return Frames->spriteArray[a_random_int(Frames->num)];
+}
+
 bool a_spriteframes_last(const ASpriteFrames* Frames)
 {
     if(Frames->countdown == 1) {

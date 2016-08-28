@@ -32,6 +32,7 @@ extern void a_spriteframes_free(ASpriteFrames* Frames, bool DoFreeSprites);
 extern ASprite* a_spriteframes_next(ASpriteFrames* Frames);
 extern ASprite* a_spriteframes_get(ASpriteFrames* Frames);
 extern ASprite* a_spriteframes_geti(ASpriteFrames* Frames, int Index);
+extern ASprite* a_spriteframes_getRandom(const ASpriteFrames* Frames);
 extern bool a_spriteframes_last(const ASpriteFrames* Frames);
 extern int a_spriteframes_num(const ASpriteFrames* Frames);
 

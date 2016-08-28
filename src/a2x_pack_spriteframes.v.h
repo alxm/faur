@@ -23,5 +23,6 @@
 
 #include "a2x_pack_fix.v.h"
 #include "a2x_pack_list.v.h"
+#include "a2x_pack_random.v.h"
 #include "a2x_pack_screen.v.h"
 #include "a2x_pack_sprite.v.h"
