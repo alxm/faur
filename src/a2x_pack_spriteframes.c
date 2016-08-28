@@ -23,14 +23,14 @@ struct ASpriteFrames {
     AList* sprites;
     ASprite** spriteArray;
     int num;
-    unsigned int countdown;
-    unsigned int callsToNextFrame;
+    int countdown;
+    int callsToNextFrame;
     int index;
     int dir;
     bool paused;
 };
 
-ASpriteFrames* a_spriteframes_new(const ASprite* Sheet, int X, int Y, unsigned int CallsToNextFrame)
+ASpriteFrames* a_spriteframes_new(const ASprite* Sheet, int X, int Y, int CallsToNextFrame)
 {
     ASpriteFrames* const Frames = a_mem_malloc(sizeof(ASpriteFrames));
 
@@ -139,12 +139,12 @@ void a_spriteframes_flipDirection(ASpriteFrames* Frames)
     Frames->dir *= -1;
 }
 
-unsigned int a_spriteframes_getSpeed(const ASpriteFrames* Frames)
+int a_spriteframes_getSpeed(const ASpriteFrames* Frames)
 {
     return Frames->callsToNextFrame;
 }
 
-void a_spriteframes_setSpeed(ASpriteFrames* Frames, unsigned int CallsToNextFrame)
+void a_spriteframes_setSpeed(ASpriteFrames* Frames, int CallsToNextFrame)
 {
     Frames->callsToNextFrame = CallsToNextFrame;
 }
