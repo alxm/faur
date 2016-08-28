@@ -139,6 +139,11 @@ void a_spriteframes_flipDirection(ASpriteFrames* Frames)
     Frames->dir *= -1;
 }
 
+unsigned int a_spriteframes_getSpeed(const ASpriteFrames* Frames)
+{
+    return Frames->callsToNextFrame;
+}
+
 void a_spriteframes_setSpeed(ASpriteFrames* Frames, unsigned int CallsToNextFrame)
 {
     Frames->callsToNextFrame = CallsToNextFrame;

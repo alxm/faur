@@ -39,6 +39,7 @@ extern int a_spriteframes_num(const ASpriteFrames* Frames);
 extern void a_spriteframes_setDirection(ASpriteFrames* Frames, int Direction);
 extern void a_spriteframes_flipDirection(ASpriteFrames* Frames);
 
+extern unsigned int a_spriteframes_getSpeed(const ASpriteFrames* Frames);
 extern void a_spriteframes_setSpeed(ASpriteFrames* Frames, unsigned int CallsToNextFrame);
 
 extern void a_spriteframes_pause(ASpriteFrames* Frames);
