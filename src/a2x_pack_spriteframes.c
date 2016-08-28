@@ -99,12 +99,12 @@ ASprite* a_spriteframes_next(ASpriteFrames* Frames)
     return Frames->spriteArray[oldindex];
 }
 
-ASprite* a_spriteframes_get(ASpriteFrames* Frames)
+ASprite* a_spriteframes_get(const ASpriteFrames* Frames)
 {
     return Frames->spriteArray[Frames->index];
 }
 
-ASprite* a_spriteframes_geti(ASpriteFrames* Frames, int Index)
+ASprite* a_spriteframes_geti(const ASpriteFrames* Frames, int Index)
 {
     return Frames->spriteArray[Index];
 }
