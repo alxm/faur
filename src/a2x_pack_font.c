@@ -64,18 +64,18 @@ void a_font__init(void)
 
     ASprite* const fontSprite = a_sprite_fromData(g_media_font);
 
-    APixel colors[A_FONT_MAX];
-    colors[A_FONT_WHITE] = a_pixel_make(255, 255, 255);
-    colors[A_FONT_LIGHT_GRAY] = a_pixel_make(0xcc, 0xcc, 0xcc);
-    colors[A_FONT_GREEN] = a_pixel_make(0x2c, 0xde, 0x99);
-    colors[A_FONT_YELLOW] = a_pixel_make(0xe6, 0xff, 0x3e);
-    colors[A_FONT_RED] = a_pixel_make(0xff, 0x75, 0x75);
-    colors[A_FONT_BLUE] = a_pixel_make(0x4c, 0xab, 0xe1);
+    APixel colors[A_FONT_FACE_DEFAULT_NUM];
+    colors[A_FONT_FACE_WHITE] = a_pixel_make(255, 255, 255);
+    colors[A_FONT_FACE_LIGHT_GRAY] = a_pixel_make(0xcc, 0xcc, 0xcc);
+    colors[A_FONT_FACE_GREEN] = a_pixel_make(0x2c, 0xde, 0x99);
+    colors[A_FONT_FACE_YELLOW] = a_pixel_make(0xe6, 0xff, 0x3e);
+    colors[A_FONT_FACE_RED] = a_pixel_make(0xff, 0x75, 0x75);
+    colors[A_FONT_FACE_BLUE] = a_pixel_make(0x4c, 0xab, 0xe1);
 
     a_font_load(fontSprite, 0, 0, A_FONT_LOAD_ALL);
 
-    for(int f = 1; f < A_FONT_MAX; f++) {
-        a_font_copy(A_FONT_WHITE, colors[f]);
+    for(int f = 1; f < A_FONT_FACE_DEFAULT_NUM; f++) {
+        a_font_copy(A_FONT_FACE_WHITE, colors[f]);
     }
 }
 

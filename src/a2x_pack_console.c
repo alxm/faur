@@ -73,10 +73,10 @@ static void screenCallback(void)
     int y = 2;
 
     a_font_setCoords(2, y);
-    a_font_setFace(A_FONT_BLUE); a_font_text("a");
-    a_font_setFace(A_FONT_GREEN); a_font_text("2");
-    a_font_setFace(A_FONT_YELLOW); a_font_text("x");
-    a_font_setFace(A_FONT_WHITE);
+    a_font_setFace(A_FONT_FACE_BLUE); a_font_text("a");
+    a_font_setFace(A_FONT_FACE_GREEN); a_font_text("2");
+    a_font_setFace(A_FONT_FACE_YELLOW); a_font_text("x");
+    a_font_setFace(A_FONT_FACE_WHITE);
     a_font_textf(" %s, built %s",
         A__MAKE_CURRENT_GIT_BRANCH,
         A__MAKE_COMPILE_TIME);
@@ -88,17 +88,17 @@ static void screenCallback(void)
         a_settings_getString("app.author"),
         a_settings_getString("app.buildtime"));
 
-    a_font_setFace(A_FONT_GREEN);
+    a_font_setFace(A_FONT_FACE_GREEN);
     a_font_setAlign(A_FONT_ALIGN_RIGHT);
     a_font_setCoords(a_screen__width - 2, y);
     a_font_textf("%u fps", a_fps_getFps());
-    a_font_setFace(A_FONT_BLUE);
+    a_font_setFace(A_FONT_FACE_BLUE);
     a_font_setCoords(a_screen__width - 2, y + LINE_HEIGHT);
     a_font_textf("%u max", a_fps_getMaxFps());
 
     y += 2 * LINE_HEIGHT;
 
-    a_font_setFace(A_FONT_LIGHT_GRAY);
+    a_font_setFace(A_FONT_FACE_LIGHT_GRAY);
     a_font_setAlign(A_FONT_ALIGN_LEFT);
 
     A_LIST_ITERATE(g_lines, ALine*, line) {
