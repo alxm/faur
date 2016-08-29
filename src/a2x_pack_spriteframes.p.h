@@ -26,18 +26,21 @@ typedef struct ASpriteFrames ASpriteFrames;
 #include "a2x_pack_list.p.h"
 #include "a2x_pack_sprite.p.h"
 
-extern ASpriteFrames* a_spriteframes_new(const ASprite* Sheet, int X, int Y, unsigned int CallsToNextFrame);
+extern ASpriteFrames* a_spriteframes_new(const ASprite* Sheet, int X, int Y, int CallsToNextFrame);
 extern void a_spriteframes_free(ASpriteFrames* Frames, bool DoFreeSprites);
 
 extern ASprite* a_spriteframes_next(ASpriteFrames* Frames);
-extern ASprite* a_spriteframes_get(ASpriteFrames* Frames);
-extern ASprite* a_spriteframes_geti(ASpriteFrames* Frames, int Index);
+extern ASprite* a_spriteframes_get(const ASpriteFrames* Frames);
+extern ASprite* a_spriteframes_geti(const ASpriteFrames* Frames, int Index);
+extern ASprite* a_spriteframes_getRandom(const ASpriteFrames* Frames);
 extern bool a_spriteframes_last(const ASpriteFrames* Frames);
+extern int a_spriteframes_num(const ASpriteFrames* Frames);
 
 extern void a_spriteframes_setDirection(ASpriteFrames* Frames, int Direction);
 extern void a_spriteframes_flipDirection(ASpriteFrames* Frames);
 
-extern void a_spriteframes_setSpeed(ASpriteFrames* Frames, unsigned int CallsToNextFrame);
+extern int a_spriteframes_getSpeed(const ASpriteFrames* Frames);
+extern void a_spriteframes_setSpeed(ASpriteFrames* Frames, int CallsToNextFrame);
 
 extern void a_spriteframes_pause(ASpriteFrames* Frames);
 extern void a_spriteframes_resume(ASpriteFrames* Frames);

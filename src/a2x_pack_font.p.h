@@ -39,13 +39,13 @@ typedef enum AFontAlign {
 } AFontAlign;
 
 typedef enum AFontDefaults {
-    A_FONT_WHITE,
-    A_FONT_LIGHT_GRAY,
-    A_FONT_GREEN,
-    A_FONT_YELLOW,
-    A_FONT_RED,
-    A_FONT_BLUE,
-    A_FONT_MAX
+    A_FONT_FACE_WHITE,
+    A_FONT_FACE_LIGHT_GRAY,
+    A_FONT_FACE_GREEN,
+    A_FONT_FACE_YELLOW,
+    A_FONT_FACE_RED,
+    A_FONT_FACE_BLUE,
+    A_FONT_FACE_DEFAULT_NUM
 } AFontDefaults;
 
 extern int a_font_load(const ASprite* Sheet, int X, int Y, AFontLoad Loader);

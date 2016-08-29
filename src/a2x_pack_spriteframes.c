@@ -23,14 +23,14 @@ struct ASpriteFrames {
     AList* sprites;
     ASprite** spriteArray;
     int num;
-    unsigned int countdown;
-    unsigned int callsToNextFrame;
+    int countdown;
+    int callsToNextFrame;
     int index;
     int dir;
     bool paused;
 };
 
-ASpriteFrames* a_spriteframes_new(const ASprite* Sheet, int X, int Y, unsigned int CallsToNextFrame)
+ASpriteFrames* a_spriteframes_new(const ASprite* Sheet, int X, int Y, int CallsToNextFrame)
 {
     ASpriteFrames* const Frames = a_mem_malloc(sizeof(ASpriteFrames));
 
@@ -99,14 +99,19 @@ ASprite* a_spriteframes_next(ASpriteFrames* Frames)
     return Frames->spriteArray[oldindex];
 }
 
-ASprite* a_spriteframes_get(ASpriteFrames* Frames)
+ASprite* a_spriteframes_get(const ASpriteFrames* Frames)
 {
     return Frames->spriteArray[Frames->index];
 }
 
-ASprite* a_spriteframes_geti(ASpriteFrames* Frames, int Index)
+ASprite* a_spriteframes_geti(const ASpriteFrames* Frames, int Index)
 {
     return Frames->spriteArray[Index];
+}
+
+ASprite* a_spriteframes_getRandom(const ASpriteFrames* Frames)
+{
+    return Frames->spriteArray[a_random_int(Frames->num)];
 }
 
 bool a_spriteframes_last(const ASpriteFrames* Frames)
@@ -119,6 +124,11 @@ bool a_spriteframes_last(const ASpriteFrames* Frames)
     return false;
 }
 
+int a_spriteframes_num(const ASpriteFrames* Frames)
+{
+    return Frames->num;
+}
+
 void a_spriteframes_setDirection(ASpriteFrames* Frames, int Direction)
 {
     Frames->dir = Direction;
@@ -129,10 +139,14 @@ void a_spriteframes_flipDirection(ASpriteFrames* Frames)
     Frames->dir *= -1;
 }
 
-void a_spriteframes_setSpeed(ASpriteFrames* Frames, unsigned int CallsToNextFrame)
+int a_spriteframes_getSpeed(const ASpriteFrames* Frames)
+{
+    return Frames->callsToNextFrame;
+}
+
+void a_spriteframes_setSpeed(ASpriteFrames* Frames, int CallsToNextFrame)
 {
     Frames->callsToNextFrame = CallsToNextFrame;
-    a_spriteframes_reset(Frames);
 }
 
 void a_spriteframes_pause(ASpriteFrames* Frames)
