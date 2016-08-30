@@ -84,7 +84,8 @@ void a_screen__uninit(void)
     }
 
     if(a_settings_getBool("video.doubleBuffer")) {
-        free(a_screen__pixels);
+        // Use savedPixels in case app forgot to call a_screen_resetTarget
+        free(a_screen__savedPixels);
     }
 
     a_list_free(g_overlays);
