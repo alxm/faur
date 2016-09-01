@@ -52,11 +52,14 @@ static void inputCallback(void)
                                                    0,
                                                    g_volumeMax);
 
-                if(a_list_size(g_musicList) > 0) {
+                if(!a_list_empty(g_musicList)) {
                     a_sdl__music_setVolume();
                 }
 
-                a_sfx_volume((float)a_settings_getInt("sound.sfx.scale") / 100 * a_sound__volume);
+                A_LIST_ITERATE(g_sfxList, ASound*, s) {
+                    a_sdl__sfx_setVolume(s, (float)a_settings_getInt("sound.sfx.scale") / 100 * a_sound__volume);
+                }
+
                 g_lastVolAdjustment = a_time_getMilis();
             }
         }
@@ -211,14 +214,5 @@ void a_sfx_play(ASound* Sfx)
 {
     if(a_settings_getBool("sound.on")) {
         a_sdl__sfx_play(Sfx);
-    }
-}
-
-void a_sfx_volume(int Volume)
-{
-    if(a_settings_getBool("sound.on")) {
-        A_LIST_ITERATE(g_sfxList, ASound*, s) {
-            a_sdl__sfx_setVolume(s, Volume);
-        }
     }
 }
