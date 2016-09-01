@@ -27,8 +27,8 @@ static int g_volumeMax;
 
 #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
     #define A_VOLUME_STEP 1
-    #define A_MILIS_VOLUME (1000 / 2)
-    static int g_volumeAdjust = -2 * A_MILIS_VOLUME;
+    #define A_VOLBAR_SHOW_MS 500
+    static uint32_t g_lastVolAdjustment;
     static AInput* g_volumeUpButton;
     static AInput* g_volumeDownButton;
 #elif A_PLATFORM_LINUXPC || A_PLATFORM_PANDORA
@@ -55,7 +55,7 @@ static void inputCallback(void)
                 }
 
                 a_sfx_volume((float)a_settings_getInt("sound.sfx.scale") / 100 * a_sound__volume);
-                g_volumeAdjust = a_time_getMilis();
+                g_lastVolAdjustment = a_time_getMilis();
             }
         }
     #elif A_PLATFORM_LINUXPC || A_PLATFORM_PANDORA
@@ -71,7 +71,7 @@ static void inputCallback(void)
     static void screenCallback(void)
     {
         if(a_settings_getBool("sound.on")) {
-            if(a_time_getMilis() - g_volumeAdjust > A_MILIS_VOLUME) {
+            if(a_time_getMilis() - g_lastVolAdjustment >= A_VOLBAR_SHOW_MS) {
                 return;
             }
 
@@ -101,7 +101,7 @@ void a_sound__init(void)
 
         #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
             a_sound__volume = g_volumeMax / 16;
-            g_volumeAdjust = -2 * A_MILIS_VOLUME;
+            g_lastVolAdjustment = -A_VOLBAR_SHOW_MS;
         #else
             a_sound__volume = g_volumeMax;
         #endif
