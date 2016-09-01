@@ -41,14 +41,16 @@ static void inputCallback(void)
         if(a_settings_getBool("sound.on")) {
             int adjust = 0;
 
-            if(a_button_get(g_volumeUpButton)) adjust = 1;
-            if(a_button_get(g_volumeDownButton)) adjust = -1;
+            if(a_button_get(g_volumeUpButton)) {
+                adjust = A_VOLUME_STEP;
+            } else if(a_button_get(g_volumeDownButton)) {
+                adjust = -A_VOLUME_STEP;
+            }
 
             if(adjust) {
-                a_sound__volume += adjust * A_VOLUME_STEP;
-
-                if(a_sound__volume > g_volumeMax) a_sound__volume = g_volumeMax;
-                else if(a_sound__volume < 0) a_sound__volume = 0;
+                a_sound__volume = a_math_constrain(a_sound__volume + adjust,
+                                                   0,
+                                                   g_volumeMax);
 
                 if(a_list_size(g_musicList) > 0) {
                     a_sdl__music_setVolume();
