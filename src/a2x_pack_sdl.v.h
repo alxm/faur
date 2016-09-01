@@ -42,7 +42,7 @@ extern void a_sdl__music_toggle(void);
 extern void* a_sdl__sfx_loadFromFile(const char* Path);
 extern void* a_sdl__sfx_loadFromData(const uint8_t* Data, int Size);
 extern void a_sdl__sfx_free(void* Sfx);
-extern void a_sdl__sfx_setVolume(void* Sfx, uint8_t Volume);
+extern void a_sdl__sfx_setVolume(void* Sfx, int Volume);
 extern void a_sdl__sfx_play(void* Sfx);
 
 extern uint32_t a_sdl__getTicks(void);
