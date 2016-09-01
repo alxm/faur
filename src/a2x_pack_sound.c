@@ -24,9 +24,11 @@ static AList* g_sfxList;
 
 int a_sound__volume;
 static int g_volumeMax;
-static int g_volumeAdjust = -2 * A_MILIS_VOLUME;
 
 #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
+    #define A_VOLUME_STEP 1
+    #define A_MILIS_VOLUME (1000 / 2)
+    static int g_volumeAdjust = -2 * A_MILIS_VOLUME;
     static AInput* g_volumeUpButton;
     static AInput* g_volumeDownButton;
 #elif A_PLATFORM_LINUXPC || A_PLATFORM_PANDORA
@@ -99,11 +101,10 @@ void a_sound__init(void)
 
         #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
             a_sound__volume = g_volumeMax / 16;
+            g_volumeAdjust = -2 * A_MILIS_VOLUME;
         #else
             a_sound__volume = g_volumeMax;
         #endif
-
-        g_volumeAdjust = -2 * A_MILIS_VOLUME;
 
         #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
             g_volumeUpButton = a_input_new("gp2x.VolUp, wiz.VolUp");
