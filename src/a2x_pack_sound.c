@@ -33,6 +33,9 @@ static int g_volumeMax;
     static uint32_t g_lastVolAdjustment;
     static AInput* g_volumeUpButton;
     static AInput* g_volumeDownButton;
+    static APixel g_volbarBackground;
+    static APixel g_volbarBorder;
+    static APixel g_volbarFill;
 #elif A_PLATFORM_LINUXPC || A_PLATFORM_PANDORA
     static AInput* g_musicOnOffButton;
 #endif
@@ -93,15 +96,15 @@ static void inputCallback(void)
 
             a_pixel_setBlend(A_PIXEL_PLAIN);
 
-            a_pixel_setPixel(0);
+            a_pixel_setPixel(g_volbarBackground);
             a_draw_rectangle(0, 181, g_volumeMax / A_VOLUME_STEP + 5, 197);
 
-            a_pixel_setRGB(255, 156, 107);
+            a_pixel_setPixel(g_volbarBorder);
             a_draw_hline(0, g_volumeMax / A_VOLUME_STEP + 4 + 1, 180);
             a_draw_hline(0, g_volumeMax / A_VOLUME_STEP + 4 + 1, 183 + 14);
             a_draw_vline(g_volumeMax / A_VOLUME_STEP + 4 + 1, 181, 183 + 14);
 
-            a_pixel_setRGB(255, 84, 0);
+            a_pixel_setPixel(g_volbarFill);
             a_draw_rectangle(0, 186, g_volume / A_VOLUME_STEP, 192);
         }
     }
@@ -132,6 +135,28 @@ void a_sound__init(void)
         a_input__addCallback(inputCallback);
 
         #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
+            char* end;
+            const char* color;
+            uint8_t r, g, b;
+
+            color = a_settings_getString("sound.volbar.background");
+            r = strtol(color, &end, 0);
+            g = strtol(end, &end, 0);
+            b = strtol(end, NULL, 0);
+            g_volbarBackground = a_pixel_make(r, g, b);
+
+            color = a_settings_getString("sound.volbar.border");
+            r = strtol(color, &end, 0);
+            g = strtol(end, &end, 0);
+            b = strtol(end, NULL, 0);
+            g_volbarBorder = a_pixel_make(r, g, b);
+
+            color = a_settings_getString("sound.volbar.fill");
+            r = strtol(color, &end, 0);
+            g = strtol(end, &end, 0);
+            b = strtol(end, NULL, 0);
+            g_volbarFill = a_pixel_make(r, g, b);
+
             a_screen__addOverlay(screenCallback);
         #endif
     }
