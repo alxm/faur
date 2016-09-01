@@ -77,12 +77,12 @@ static void screenCallback(void)
     a_font_setFace(A_FONT_FACE_GREEN); a_font_text("2");
     a_font_setFace(A_FONT_FACE_YELLOW); a_font_text("x");
     a_font_setFace(A_FONT_FACE_WHITE);
-    a_font_textf(" %s, built %s",
+    a_font_textf(" %s, %s",
         A__MAKE_CURRENT_GIT_BRANCH,
         A__MAKE_COMPILE_TIME);
 
     a_font_setCoords(2, y + LINE_HEIGHT);
-    a_font_textf("%s %s by %s, built %s",
+    a_font_textf("%s %s by %s, %s",
         a_settings_getString("app.title"),
         a_settings_getString("app.version"),
         a_settings_getString("app.author"),
