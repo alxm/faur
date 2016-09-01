@@ -653,7 +653,7 @@ void a_sdl__sfx_free(void* Sfx)
 
 void a_sdl__sfx_setVolume(void* Sfx, int Volume)
 {
-    ((Mix_Chunk*)Sfx)->volume = Volume;
+    Mix_VolumeChunk(Sfx, Volume);
 }
 
 void a_sdl__sfx_play(void* Sfx)
