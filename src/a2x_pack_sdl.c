@@ -586,10 +586,9 @@ void a_sdl__music_free(void* Music)
     Mix_FreeMusic(Music);
 }
 
-void a_sdl__music_setVolume(void)
+void a_sdl__music_setVolume(int Volume)
 {
-    Mix_VolumeMusic(
-        (float)a_settings_getInt("sound.music.scale") / 100 * a_sound__volume);
+    Mix_VolumeMusic(Volume);
 }
 
 void a_sdl__music_play(void* Music)

@@ -34,7 +34,7 @@ extern int a_sdl__sound_volumeMax(void);
 
 extern void* a_sdl__music_load(const char* Path);
 extern void a_sdl__music_free(void* Music);
-extern void a_sdl__music_setVolume(void);
+extern void a_sdl__music_setVolume(int Volume);
 extern void a_sdl__music_play(void* Music);
 extern void a_sdl__music_stop(void);
 extern void a_sdl__music_toggle(void);

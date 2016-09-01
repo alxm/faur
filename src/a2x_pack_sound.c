@@ -23,6 +23,8 @@ static AList* g_musicList;
 static AList* g_sfxList;
 
 int a_sound__volume;
+static int g_musicVolume;
+static int g_sfxVolume;
 static int g_volumeMax;
 
 #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
@@ -34,6 +36,17 @@ static int g_volumeMax;
 #elif A_PLATFORM_LINUXPC || A_PLATFORM_PANDORA
     static AInput* g_musicOnOffButton;
 #endif
+
+static void adjustSoundVolume(int Volume)
+{
+    a_sound__volume = a_math_constrain(Volume, 0, g_volumeMax);
+
+    g_musicVolume = (float)a_settings_getInt("sound.music.scale")
+                        / 100 * a_sound__volume;
+
+    g_sfxVolume = (float)a_settings_getInt("sound.sfx.scale")
+                        / 100 * a_sound__volume;
+}
 
 static void inputCallback(void)
 {
@@ -48,16 +61,14 @@ static void inputCallback(void)
             }
 
             if(adjust) {
-                a_sound__volume = a_math_constrain(a_sound__volume + adjust,
-                                                   0,
-                                                   g_volumeMax);
+                adjustSoundVolume(a_sound__volume + adjust);
 
                 if(!a_list_empty(g_musicList)) {
-                    a_sdl__music_setVolume();
+                    a_sdl__music_setVolume(g_musicVolume);
                 }
 
                 A_LIST_ITERATE(g_sfxList, ASound*, s) {
-                    a_sdl__sfx_setVolume(s, (float)a_settings_getInt("sound.sfx.scale") / 100 * a_sound__volume);
+                    a_sdl__sfx_setVolume(s, g_sfxVolume);
                 }
 
                 g_lastVolAdjustment = a_time_getMilis();
@@ -105,10 +116,10 @@ void a_sound__init(void)
         g_volumeMax = a_sdl__sound_volumeMax();
 
         #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
-            a_sound__volume = g_volumeMax / 16;
+            adjustSoundVolume(g_volumeMax / 16);
             g_lastVolAdjustment = -A_VOLBAR_SHOW_MS;
         #else
-            a_sound__volume = g_volumeMax;
+            adjustSoundVolume(g_volumeMax);
         #endif
 
         #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
@@ -148,8 +159,9 @@ AMusic* a_music_load(const char* Path)
 {
     if(a_settings_getBool("sound.on")) {
         AMusic* Music = a_sdl__music_load(Path);
+        a_sdl__music_setVolume(g_musicVolume);
+
         a_list_addLast(g_musicList, Music);
-        a_sdl__music_setVolume();
         return Music;
     } else {
         return NULL;
@@ -181,7 +193,7 @@ ASound* a_sfx_fromFile(const char* Path)
 {
     if(a_settings_getBool("sound.on")) {
         ASound* s = a_sdl__sfx_loadFromFile(Path);
-        a_sdl__sfx_setVolume(s, (float)a_settings_getInt("sound.sfx.scale") / 100 * a_sound__volume);
+        a_sdl__sfx_setVolume(s, g_sfxVolume);
 
         a_list_addLast(g_sfxList, s);
         return s;
@@ -194,7 +206,7 @@ ASound* a_sfx__fromData(const uint8_t* Data, int Size)
 {
     if(a_settings_getBool("sound.on")) {
         ASound* s = a_sdl__sfx_loadFromData(Data, Size);
-        a_sdl__sfx_setVolume(s, (float)a_settings_getInt("sound.sfx.scale") / 100 * a_sound__volume);
+        a_sdl__sfx_setVolume(s, g_sfxVolume);
 
         a_list_addLast(g_sfxList, s);
         return s;
