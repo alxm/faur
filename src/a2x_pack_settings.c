@@ -159,9 +159,12 @@ void a_settings__init(void)
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.fixWizTearing", "0");
     add(A_SETTING_STR, A_SETTING_SET_ONCE, "video.borderColor", "20 12 12");
 
-    add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "sound.on", "0");
+    add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "sound.on", "1");
     add(A_SETTING_INT, A_SETTING_SET_ANY, "sound.music.scale", "100");
     add(A_SETTING_INT, A_SETTING_SET_ANY, "sound.sfx.scale", "100");
+    add(A_SETTING_STR, A_SETTING_SET_ONCE, "sound.volbar.background", "0x28 0x18 0x18");
+    add(A_SETTING_STR, A_SETTING_SET_ONCE, "sound.volbar.border", "0x5f 0xaf 0xdf");
+    add(A_SETTING_STR, A_SETTING_SET_ONCE, "sound.volbar.fill", "0xcf 0xff 0x3f");
 
     add(A_SETTING_BOOL, A_SETTING_SET_ANY, "input.trackMouse", "0");
 

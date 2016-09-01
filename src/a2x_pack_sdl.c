@@ -586,10 +586,9 @@ void a_sdl__music_free(void* Music)
     Mix_FreeMusic(Music);
 }
 
-void a_sdl__music_setVolume(void)
+void a_sdl__music_setVolume(int Volume)
 {
-    Mix_VolumeMusic(
-        (float)a_settings_getInt("sound.music.scale") / 100 * a_sound__volume);
+    Mix_VolumeMusic(Volume);
 }
 
 void a_sdl__music_play(void* Music)
@@ -652,9 +651,9 @@ void a_sdl__sfx_free(void* Sfx)
     Mix_FreeChunk(Sfx);
 }
 
-void a_sdl__sfx_setVolume(void* Sfx, uint8_t Volume)
+void a_sdl__sfx_setVolume(void* Sfx, int Volume)
 {
-    ((Mix_Chunk*)Sfx)->volume = Volume;
+    Mix_VolumeChunk(Sfx, Volume);
 }
 
 void a_sdl__sfx_play(void* Sfx)

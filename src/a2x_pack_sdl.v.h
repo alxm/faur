@@ -34,7 +34,7 @@ extern int a_sdl__sound_volumeMax(void);
 
 extern void* a_sdl__music_load(const char* Path);
 extern void a_sdl__music_free(void* Music);
-extern void a_sdl__music_setVolume(void);
+extern void a_sdl__music_setVolume(int Volume);
 extern void a_sdl__music_play(void* Music);
 extern void a_sdl__music_stop(void);
 extern void a_sdl__music_toggle(void);
@@ -42,7 +42,7 @@ extern void a_sdl__music_toggle(void);
 extern void* a_sdl__sfx_loadFromFile(const char* Path);
 extern void* a_sdl__sfx_loadFromData(const uint8_t* Data, int Size);
 extern void a_sdl__sfx_free(void* Sfx);
-extern void a_sdl__sfx_setVolume(void* Sfx, uint8_t Volume);
+extern void a_sdl__sfx_setVolume(void* Sfx, int Volume);
 extern void a_sdl__sfx_play(void* Sfx);
 
 extern uint32_t a_sdl__getTicks(void);

@@ -22,16 +22,34 @@
 static AList* g_musicList;
 static AList* g_sfxList;
 
-int a_sound__volume;
+static int g_volume;
+static int g_musicVolume;
+static int g_sfxVolume;
 static int g_volumeMax;
-static int g_volumeAdjust = -2 * A_MILIS_VOLUME;
 
 #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
+    #define A_VOLUME_STEP 1
+    #define A_VOLBAR_SHOW_MS 500
+    static uint32_t g_lastVolAdjustment;
     static AInput* g_volumeUpButton;
     static AInput* g_volumeDownButton;
+    static APixel g_volbarBackground;
+    static APixel g_volbarBorder;
+    static APixel g_volbarFill;
 #elif A_PLATFORM_LINUXPC || A_PLATFORM_PANDORA
     static AInput* g_musicOnOffButton;
 #endif
+
+static void adjustSoundVolume(int Volume)
+{
+    g_volume = a_math_constrain(Volume, 0, g_volumeMax);
+
+    g_musicVolume = (float)a_settings_getInt("sound.music.scale")
+                        / 100 * g_volume;
+
+    g_sfxVolume = (float)a_settings_getInt("sound.sfx.scale")
+                        / 100 * g_volume;
+}
 
 static void inputCallback(void)
 {
@@ -39,21 +57,24 @@ static void inputCallback(void)
         if(a_settings_getBool("sound.on")) {
             int adjust = 0;
 
-            if(a_button_get(g_volumeUpButton)) adjust = 1;
-            if(a_button_get(g_volumeDownButton)) adjust = -1;
+            if(a_button_get(g_volumeUpButton)) {
+                adjust = A_VOLUME_STEP;
+            } else if(a_button_get(g_volumeDownButton)) {
+                adjust = -A_VOLUME_STEP;
+            }
 
             if(adjust) {
-                a_sound__volume += adjust * A_VOLUME_STEP;
+                adjustSoundVolume(g_volume + adjust);
 
-                if(a_sound__volume > g_volumeMax) a_sound__volume = g_volumeMax;
-                else if(a_sound__volume < 0) a_sound__volume = 0;
-
-                if(a_list_size(g_musicList) > 0) {
-                    a_sdl__music_setVolume();
+                if(!a_list_empty(g_musicList)) {
+                    a_sdl__music_setVolume(g_musicVolume);
                 }
 
-                a_sfx_volume((float)a_settings_getInt("sound.sfx.scale") / 100 * a_sound__volume);
-                g_volumeAdjust = a_time_getMilis();
+                A_LIST_ITERATE(g_sfxList, ASound*, s) {
+                    a_sdl__sfx_setVolume(s, g_sfxVolume);
+                }
+
+                g_lastVolAdjustment = a_time_getMilis();
             }
         }
     #elif A_PLATFORM_LINUXPC || A_PLATFORM_PANDORA
@@ -69,22 +90,22 @@ static void inputCallback(void)
     static void screenCallback(void)
     {
         if(a_settings_getBool("sound.on")) {
-            if(a_time_getMilis() - g_volumeAdjust > A_MILIS_VOLUME) {
+            if(a_time_getMilis() - g_lastVolAdjustment >= A_VOLBAR_SHOW_MS) {
                 return;
             }
 
             a_pixel_setBlend(A_PIXEL_PLAIN);
 
-            a_pixel_setPixel(0);
+            a_pixel_setPixel(g_volbarBackground);
             a_draw_rectangle(0, 181, g_volumeMax / A_VOLUME_STEP + 5, 197);
 
-            a_pixel_setRGB(255, 156, 107);
+            a_pixel_setPixel(g_volbarBorder);
             a_draw_hline(0, g_volumeMax / A_VOLUME_STEP + 4 + 1, 180);
             a_draw_hline(0, g_volumeMax / A_VOLUME_STEP + 4 + 1, 183 + 14);
             a_draw_vline(g_volumeMax / A_VOLUME_STEP + 4 + 1, 181, 183 + 14);
 
-            a_pixel_setRGB(255, 84, 0);
-            a_draw_rectangle(0, 186, a_sound__volume / A_VOLUME_STEP, 192);
+            a_pixel_setPixel(g_volbarFill);
+            a_draw_rectangle(0, 186, g_volume / A_VOLUME_STEP, 192);
         }
     }
 #endif
@@ -98,12 +119,11 @@ void a_sound__init(void)
         g_volumeMax = a_sdl__sound_volumeMax();
 
         #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
-            a_sound__volume = g_volumeMax / 16;
+            adjustSoundVolume(g_volumeMax / 16);
+            g_lastVolAdjustment = -A_VOLBAR_SHOW_MS;
         #else
-            a_sound__volume = g_volumeMax;
+            adjustSoundVolume(g_volumeMax);
         #endif
-
-        g_volumeAdjust = -2 * A_MILIS_VOLUME;
 
         #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
             g_volumeUpButton = a_input_new("gp2x.VolUp, wiz.VolUp");
@@ -115,6 +135,28 @@ void a_sound__init(void)
         a_input__addCallback(inputCallback);
 
         #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
+            char* end;
+            const char* color;
+            uint8_t r, g, b;
+
+            color = a_settings_getString("sound.volbar.background");
+            r = strtol(color, &end, 0);
+            g = strtol(end, &end, 0);
+            b = strtol(end, NULL, 0);
+            g_volbarBackground = a_pixel_make(r, g, b);
+
+            color = a_settings_getString("sound.volbar.border");
+            r = strtol(color, &end, 0);
+            g = strtol(end, &end, 0);
+            b = strtol(end, NULL, 0);
+            g_volbarBorder = a_pixel_make(r, g, b);
+
+            color = a_settings_getString("sound.volbar.fill");
+            r = strtol(color, &end, 0);
+            g = strtol(end, &end, 0);
+            b = strtol(end, NULL, 0);
+            g_volbarFill = a_pixel_make(r, g, b);
+
             a_screen__addOverlay(screenCallback);
         #endif
     }
@@ -142,8 +184,9 @@ AMusic* a_music_load(const char* Path)
 {
     if(a_settings_getBool("sound.on")) {
         AMusic* Music = a_sdl__music_load(Path);
+        a_sdl__music_setVolume(g_musicVolume);
+
         a_list_addLast(g_musicList, Music);
-        a_sdl__music_setVolume();
         return Music;
     } else {
         return NULL;
@@ -175,7 +218,7 @@ ASound* a_sfx_fromFile(const char* Path)
 {
     if(a_settings_getBool("sound.on")) {
         ASound* s = a_sdl__sfx_loadFromFile(Path);
-        a_sdl__sfx_setVolume(s, (float)a_settings_getInt("sound.sfx.scale") / 100 * a_sound__volume);
+        a_sdl__sfx_setVolume(s, g_sfxVolume);
 
         a_list_addLast(g_sfxList, s);
         return s;
@@ -188,7 +231,7 @@ ASound* a_sfx__fromData(const uint8_t* Data, int Size)
 {
     if(a_settings_getBool("sound.on")) {
         ASound* s = a_sdl__sfx_loadFromData(Data, Size);
-        a_sdl__sfx_setVolume(s, (float)a_settings_getInt("sound.sfx.scale") / 100 * a_sound__volume);
+        a_sdl__sfx_setVolume(s, g_sfxVolume);
 
         a_list_addLast(g_sfxList, s);
         return s;
@@ -208,14 +251,5 @@ void a_sfx_play(ASound* Sfx)
 {
     if(a_settings_getBool("sound.on")) {
         a_sdl__sfx_play(Sfx);
-    }
-}
-
-void a_sfx_volume(int Volume)
-{
-    if(a_settings_getBool("sound.on")) {
-        A_LIST_ITERATE(g_sfxList, ASound*, s) {
-            a_sdl__sfx_setVolume(s, Volume);
-        }
     }
 }

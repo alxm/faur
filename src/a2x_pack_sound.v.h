@@ -26,11 +26,6 @@
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_settings.v.h"
 
-#define A_VOLUME_STEP 1
-#define A_MILIS_VOLUME (1000 / 2)
-
-extern int a_sound__volume;
-
 extern void a_sound__init(void);
 extern void a_sound__uninit(void);
 
