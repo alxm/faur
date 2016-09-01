@@ -26,8 +26,6 @@
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_settings.v.h"
 
-extern int a_sound__volume;
-
 extern void a_sound__init(void);
 extern void a_sound__uninit(void);
 

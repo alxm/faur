@@ -22,7 +22,7 @@
 static AList* g_musicList;
 static AList* g_sfxList;
 
-int a_sound__volume;
+static int g_volume;
 static int g_musicVolume;
 static int g_sfxVolume;
 static int g_volumeMax;
@@ -39,13 +39,13 @@ static int g_volumeMax;
 
 static void adjustSoundVolume(int Volume)
 {
-    a_sound__volume = a_math_constrain(Volume, 0, g_volumeMax);
+    g_volume = a_math_constrain(Volume, 0, g_volumeMax);
 
     g_musicVolume = (float)a_settings_getInt("sound.music.scale")
-                        / 100 * a_sound__volume;
+                        / 100 * g_volume;
 
     g_sfxVolume = (float)a_settings_getInt("sound.sfx.scale")
-                        / 100 * a_sound__volume;
+                        / 100 * g_volume;
 }
 
 static void inputCallback(void)
@@ -61,7 +61,7 @@ static void inputCallback(void)
             }
 
             if(adjust) {
-                adjustSoundVolume(a_sound__volume + adjust);
+                adjustSoundVolume(g_volume + adjust);
 
                 if(!a_list_empty(g_musicList)) {
                     a_sdl__music_setVolume(g_musicVolume);
@@ -102,7 +102,7 @@ static void inputCallback(void)
             a_draw_vline(g_volumeMax / A_VOLUME_STEP + 4 + 1, 181, 183 + 14);
 
             a_pixel_setRGB(255, 84, 0);
-            a_draw_rectangle(0, 186, a_sound__volume / A_VOLUME_STEP, 192);
+            a_draw_rectangle(0, 186, g_volume / A_VOLUME_STEP, 192);
         }
     }
 #endif
