@@ -21,7 +21,6 @@
 
 #include "a2x_pack_main.p.h"
 
-#include "a2x_pack_blit.v.h"
 #include "a2x_pack_conf.v.h"
 #include "a2x_pack_console.v.h"
 #include "a2x_pack_draw.v.h"

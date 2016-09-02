@@ -21,7 +21,6 @@
 
 #include "a2x_pack_pixel.p.h"
 
-#include "a2x_pack_blit.v.h"
 #include "a2x_pack_draw.v.h"
 #include "a2x_pack_screen.v.h"
 

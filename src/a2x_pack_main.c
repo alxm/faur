@@ -50,7 +50,6 @@ int main(int Argc, char** Argv)
     a_screen__init();
     a_pixel__init();
     a_draw__init();
-    a_blit__init();
     a_sprite__init();
     a_fps__init();
     a_input__init();
