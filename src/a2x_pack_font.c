@@ -208,7 +208,7 @@ void a_font_text(const char* Text)
             ASprite* spr = f->sprites[(int)*Text];
 
             if(spr) {
-                a_blit(spr, g_x + (maxWidth - spr->w) / 2, g_y);
+                a_sprite_blit(spr, g_x + (maxWidth - spr->w) / 2, g_y);
                 g_x += maxWidth + FONT_SPACE;
             } else if(*Text == ' ') {
                 g_x += maxWidth + FONT_SPACE;
@@ -219,7 +219,7 @@ void a_font_text(const char* Text)
             ASprite* spr = f->sprites[(int)*Text];
 
             if(spr) {
-                a_blit(spr, g_x, g_y);
+                a_sprite_blit(spr, g_x, g_y);
                 g_x += spr->w + FONT_SPACE;
             } else if(*Text == ' ') {
                 g_x += FONT_BLANK_SPACE + FONT_SPACE;

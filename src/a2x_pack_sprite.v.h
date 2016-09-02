@@ -38,6 +38,6 @@ struct ASprite {
 extern void a_sprite__init(void);
 extern void a_sprite__uninit(void);
 
-extern void a_blit__updateRoutines(void);
+extern void a_sprite__updateRoutines(void);
 
 #define a_sprite__getPixel(s, x, y) (*((s)->data + (y) * (s)->w + (x)))

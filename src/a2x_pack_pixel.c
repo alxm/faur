@@ -110,7 +110,7 @@ void a_pixel_setClip(bool DoClip)
 {
     a_pixel__mode.clip = DoClip;
 
-    a_blit__updateRoutines();
+    a_sprite__updateRoutines();
     a_draw__updateRoutines();
 
     g_pixel_put = g_pixelDraw[a_pixel__mode.blend][a_pixel__mode.clip];
@@ -120,7 +120,7 @@ void a_pixel_setBlend(APixelBlend Blend)
 {
     a_pixel__mode.blend = Blend;
 
-    a_blit__updateRoutines();
+    a_sprite__updateRoutines();
     a_draw__updateRoutines();
 
     g_pixel_put = g_pixelDraw[Blend][a_pixel__mode.clip];

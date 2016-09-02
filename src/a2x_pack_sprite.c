@@ -241,7 +241,7 @@ void a_sprite__init(void)
 
     g_fillFlat = false;
 
-    a_blit__updateRoutines();
+    a_sprite__updateRoutines();
 
     g_spritesList = a_list_new();
 }
@@ -255,7 +255,7 @@ void a_sprite__uninit(void)
     a_list_free(g_spritesList);
 }
 
-void a_blit__updateRoutines(void)
+void a_sprite__updateRoutines(void)
 {
     g_blitter = g_blitters[a_pixel__mode.blend][a_pixel__mode.clip][g_fillFlat];
 }
@@ -395,30 +395,30 @@ void a_sprite__free(ASprite* Sprite)
     free(Sprite);
 }
 
-void a_blit(const ASprite* Sprite, int X, int Y)
+void a_sprite_blit(const ASprite* Sprite, int X, int Y)
 {
     g_blitter(Sprite, X, Y);
 }
 
-void a_blit_center(const ASprite* Sprite)
+void a_sprite_blitCenter(const ASprite* Sprite)
 {
     g_blitter(Sprite, (a_screen__width - Sprite->w) / 2, (a_screen__height - Sprite->h) / 2);
 }
 
-void a_blit_centerX(const ASprite* Sprite, int Y)
+void a_sprite_blitCenterX(const ASprite* Sprite, int Y)
 {
     g_blitter(Sprite, (a_screen__width - Sprite->w) / 2, Y);
 }
 
-void a_blit_centerY(const ASprite* Sprite, int X)
+void a_sprite_blitCenterY(const ASprite* Sprite, int X)
 {
     g_blitter(Sprite, X, (a_screen__height - Sprite->h) / 2);
 }
 
-void a_blit_fillFlat(bool FillFlatColor)
+void a_sprite_fillFlat(bool FillFlatColor)
 {
     g_fillFlat = FillFlatColor;
-    a_blit__updateRoutines();
+    a_sprite__updateRoutines();
 }
 
 int a_sprite_w(const ASprite* Sprite)

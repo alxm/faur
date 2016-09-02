@@ -60,6 +60,6 @@ void a_spritelayers_blit(ASpriteLayers* Layers, int X, int Y)
         a_pixel_setBlend(l->blend);
         a_pixel_setRGBA(l->r, l->g, l->b, l->a);
 
-        a_blit(l->sprite, X, Y);
+        a_sprite_blit(l->sprite, X, Y);
     }
 }

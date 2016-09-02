@@ -34,11 +34,11 @@ extern ASprite* a_sprite_blank(int Width, int Height);
 
 extern void a_sprite_free(ASprite* Sprite);
 
-extern void a_blit(const ASprite* Sprite, int X, int Y);
-extern void a_blit_center(const ASprite* Sprite);
-extern void a_blit_centerX(const ASprite* Sprite, int Y);
-extern void a_blit_centerY(const ASprite* Sprite, int X);
-extern void a_blit_fillFlat(bool FillFlatColor);
+extern void a_sprite_blit(const ASprite* Sprite, int X, int Y);
+extern void a_sprite_blitCenter(const ASprite* Sprite);
+extern void a_sprite_blitCenterX(const ASprite* Sprite, int Y);
+extern void a_sprite_blitCenterY(const ASprite* Sprite, int X);
+extern void a_sprite_fillFlat(bool FillFlatColor);
 
 extern int a_sprite_w(const ASprite* Sprite);
 extern int a_sprite_wLog2(const ASprite* Sprite);
