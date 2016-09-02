@@ -158,7 +158,7 @@ void a_screen_setTarget(APixel* Pixels, int Width, int Height)
 
 void a_screen_setTargetSprite(ASprite* Sprite)
 {
-    a_screen__pixels = Sprite->data;
+    a_screen__pixels = Sprite->pixels;
     a_screen__width = Sprite->w;
     a_screen__height = Sprite->h;
 

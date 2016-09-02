@@ -145,8 +145,8 @@ int a_font_copy(int Font, APixel Color)
         if(src->sprites[i]) {
             f->sprites[i] = a_sprite_clone(src->sprites[i]);
 
-            ASprite* const s = f->sprites[i];
-            APixel* d = s->data;
+            ASprite* s = f->sprites[i];
+            APixel* d = s->pixels;
 
             for(int j = s->w * s->h; j--; d++) {
                 if(*d != A_SPRITE_TRANSPARENT) {

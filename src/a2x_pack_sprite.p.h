@@ -43,7 +43,7 @@ extern void a_sprite_fillFlat(bool FillFlatColor);
 extern int a_sprite_w(const ASprite* Sprite);
 extern int a_sprite_wLog2(const ASprite* Sprite);
 extern int a_sprite_h(const ASprite* Sprite);
-extern APixel* a_sprite_data(ASprite* Sprite);
+extern APixel* a_sprite_pixels(ASprite* Sprite);
 
 extern void a_sprite_setAlpha(ASprite* Sprite, unsigned int Alpha);
 extern unsigned int a_sprite_getAlpha(const ASprite* Sprite);

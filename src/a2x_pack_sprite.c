@@ -35,7 +35,7 @@ static void a_sprite__free(ASprite* Sprite);
 {                                                                     \
     const int screenW = a_screen__width;                              \
     APixel* dst = a_screen__pixels + Y * screenW + X;                 \
-    const APixel* a__pass_src = Sprite->data;                         \
+    const APixel* a__pass_src = Sprite->pixels;                       \
     const uint16_t* spans = Sprite->spans;                            \
                                                                       \
     for(int i = Sprite->h; i--; dst += screenW) {                     \
@@ -79,7 +79,7 @@ static void a_sprite__free(ASprite* Sprite);
                                                                              \
     APixel* startDst = a_screen__pixels                                      \
                        + (Y + yClipUp) * screenW + (X + xClipLeft);          \
-    const APixel* startSrc = Sprite->data                                    \
+    const APixel* startSrc = Sprite->pixels                                  \
                              + yClipUp * spriteW + xClipLeft;                \
     const uint16_t* spans = Sprite->spans;                                   \
                                                                              \
@@ -302,7 +302,7 @@ ASprite* a_sprite_fromPixels(const APixel* Pixels, int Width, int Height)
 {
     ASprite* s = a_sprite_blank(Width, Height);
 
-    memcpy(s->data, Pixels, Width * Height * sizeof(APixel));
+    memcpy(s->pixels, Pixels, Width * Height * sizeof(APixel));
     a_sprite_refresh(s);
 
     return s;
@@ -347,8 +347,8 @@ ASprite* a_sprite_new(const ASprite* Sheet, int X, int Y)
     }
 
     ASprite* const sprite = a_sprite_blank(spriteWidth, spriteHeight);
-    const APixel* src = Sheet->data + Y * sheetWidth + X;
-    APixel* dst = sprite->data;
+    const APixel* src = Sheet->pixels + Y * sheetWidth + X;
+    APixel* dst = sprite->pixels;
 
     for(int i = spriteHeight; i--; ) {
         memcpy(dst, src, spriteWidth * sizeof(APixel));
@@ -372,10 +372,10 @@ ASprite* a_sprite_blank(int Width, int Height)
     s->spans = NULL;
     s->spansSize = 0;
 
-    APixel* data = s->data;
+    APixel* pixels = s->pixels;
 
     for(int i = Width * Height; i--; ) {
-        *data++ = A_SPRITE_TRANSPARENT;
+        *pixels++ = A_SPRITE_TRANSPARENT;
     }
 
     s->node = a_list_addLast(g_spritesList, s);
@@ -436,9 +436,9 @@ int a_sprite_h(const ASprite* Sprite)
     return Sprite->h;
 }
 
-APixel* a_sprite_data(ASprite* Sprite)
+APixel* a_sprite_pixels(ASprite* Sprite)
 {
-    return Sprite->data;
+    return Sprite->pixels;
 }
 
 void a_sprite_setAlpha(ASprite* Sprite, unsigned int Alpha)
@@ -453,14 +453,14 @@ unsigned int a_sprite_getAlpha(const ASprite* Sprite)
 
 APixel a_sprite_getPixel(const ASprite* Sprite, int X, int Y)
 {
-    return *(Sprite->data + Y * Sprite->w + X);
+    return *(Sprite->pixels + Y * Sprite->w + X);
 }
 
 void a_sprite_refresh(ASprite* Sprite)
 {
     const int w = Sprite->w;
     const int h = Sprite->h;
-    const APixel* const dst = Sprite->data;
+    const APixel* const dst = Sprite->pixels;
 
     // Spans format:
     // [1 (draw) / 0 (transp)][[len]...][0 (end line)]
@@ -514,7 +514,7 @@ ASprite* a_sprite_clone(const ASprite* Sprite)
     ASprite* const s = a_sprite_blank(Sprite->w, Sprite->h);
 
     s->alpha = Sprite->alpha;
-    memcpy(s->data, Sprite->data, Sprite->w * Sprite->h * sizeof(APixel));
+    memcpy(s->pixels, Sprite->pixels, Sprite->w * Sprite->h * sizeof(APixel));
     a_sprite_refresh(s);
 
     return s;

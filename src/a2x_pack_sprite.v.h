@@ -32,7 +32,7 @@ struct ASprite {
     unsigned int alpha;
     uint16_t* spans;
     size_t spansSize;
-    APixel data[];
+    APixel pixels[];
 };
 
 extern void a_sprite__init(void);
@@ -40,4 +40,4 @@ extern void a_sprite__uninit(void);
 
 extern void a_sprite__updateRoutines(void);
 
-#define a_sprite__getPixel(s, x, y) (*((s)->data + (y) * (s)->w + (x)))
+#define a_sprite__getPixel(s, x, y) (*((s)->pixels + (y) * (s)->w + (x)))
