@@ -29,7 +29,6 @@ struct ASprite {
     int w;
     int wLog2;
     int h;
-    unsigned int alpha;
     uint16_t* spans;
     size_t spansSize;
     APixel pixels[];
