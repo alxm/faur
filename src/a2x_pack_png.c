@@ -103,7 +103,7 @@ void a_png_readFile(const char* Path, APixel** Pixels, int* Width, int* Height)
     const int type = png_get_color_type(png, info);
 
     if(type != PNG_COLOR_TYPE_RGB && type != PNG_COLOR_TYPE_RGBA) {
-        a_out__error("%s not 8-bit RGBA PNG", Path);
+        a_out__error("%s is not an RGBA8888 PNG", Path);
         goto cleanUp;
     }
 
