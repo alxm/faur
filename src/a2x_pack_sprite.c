@@ -28,8 +28,8 @@ static bool g_fillFlat;
 static AList* g_spritesList;
 static void a_sprite__free(ASprite* Sprite);
 
-// Spans format:
-// [1 (draw) / 0 (transp)][[len]...][0 (end line)]
+// Spans format for each graphic line:
+// [NumSpans << 1 | 1 (draw) / 0 (transparent)][[len]...]
 
 #define blitter_noclip(Pixeler)                                       \
 {                                                                     \
@@ -39,24 +39,28 @@ static void a_sprite__free(ASprite* Sprite);
     const uint16_t* spans = Sprite->spans;                            \
                                                                       \
     for(int i = Sprite->h; i--; dst += screenW) {                     \
-        bool draw = *spans++ == 1;                                    \
+        bool draw = *spans & 1;                                       \
+        int numSpans = *spans++ >> 1;                                 \
         APixel* a__pass_dst = dst;                                    \
                                                                       \
-        for(uint16_t len = *spans; *spans++ != 0; len = *spans) {     \
+        while(numSpans--) {                                           \
+            int len = *spans++;                                       \
+                                                                      \
             if(draw) {                                                \
-                for(int j = len; j--; a__pass_dst++, a__pass_src++) { \
+                while(len--) {                                        \
                     Pixeler;                                          \
+                    a__pass_dst++;                                    \
+                    a__pass_src++;                                    \
                 }                                                     \
             } else {                                                  \
                 a__pass_dst += len;                                   \
                 a__pass_src += len;                                   \
             }                                                         \
                                                                       \
-            draw ^= 1;                                                \
+            draw = !draw;                                             \
         }                                                             \
     }                                                                 \
 }
-
 #define blitter_clip(Pixeler)                                                \
 {                                                                            \
     const int screenW = a_screen__width;                                     \
@@ -85,33 +89,48 @@ static void a_sprite__free(ASprite* Sprite);
                                                                              \
     /* skip clipped top rows */                                              \
     for(int i = yClipUp; i--; ) {                                            \
-        spans++;                                                             \
-        while (*spans++ != 0) {                                              \
-            continue;                                                        \
-        }                                                                    \
+        spans += 1 + (*spans >> 1);                                          \
     }                                                                        \
                                                                              \
     /* draw visible rows */                                                  \
     for(int i = rows; i--; startDst += screenW, startSrc += spriteW) {       \
-        bool draw = *spans++ == 1;                                           \
-        uint16_t len = *spans;                                               \
+        bool draw = *spans & 1;                                              \
+        const uint16_t* nextLine = spans + 1 + (*spans >> 1);                \
+        APixel* a__pass_dst = startDst;                                      \
+        const APixel* a__pass_src = startSrc;                                \
+        int clippedLen = 0;                                                  \
+        int drawColumns = columns;                                           \
                                                                              \
         /* skip clipped left columns */                                      \
-        while(len <= xClipLeft) {                                            \
-            len += *++spans;                                                 \
-            draw ^= 1;                                                       \
+        while(clippedLen < xClipLeft) {                                      \
+            clippedLen += *++spans;                                          \
+            draw = !draw;                                                    \
         }                                                                    \
                                                                              \
         /* account for overclipping */                                       \
-        len -= xClipLeft;                                                    \
+        if(clippedLen > xClipLeft) {                                         \
+            int len = clippedLen - xClipLeft;                                \
                                                                              \
-        APixel* a__pass_dst = startDst;                                      \
-        const APixel* a__pass_src = startSrc;                                \
+            /* Inverse logic because we're drawing from the previous span */ \
+            if(draw) {                                                       \
+                a__pass_dst += len;                                          \
+                a__pass_src += len;                                          \
+                drawColumns -= len;                                          \
+            } else {                                                         \
+                while(len-- && drawColumns--) {                              \
+                    Pixeler;                                                 \
+                    a__pass_dst++;                                           \
+                    a__pass_src++;                                           \
+                }                                                            \
+            }                                                                \
+        }                                                                    \
                                                                              \
         /* draw visible columns */                                           \
-        for(int c = columns; c > 0; ) {                                      \
+        while(drawColumns > 0) {                                             \
+            int len = *++spans;                                              \
+                                                                             \
             if(draw) {                                                       \
-                for(int d = len; d-- && c--; ) {                             \
+                while(len-- && drawColumns--) {                              \
                     Pixeler;                                                 \
                     a__pass_dst++;                                           \
                     a__pass_src++;                                           \
@@ -119,17 +138,14 @@ static void a_sprite__free(ASprite* Sprite);
             } else {                                                         \
                 a__pass_dst += len;                                          \
                 a__pass_src += len;                                          \
-                c -= len;                                                    \
+                drawColumns -= len;                                          \
             }                                                                \
                                                                              \
-            len = *++spans;                                                  \
-            draw ^= 1;                                                       \
+            draw = !draw;                                                    \
         }                                                                    \
                                                                              \
         /* skip clipped right columns */                                     \
-        while(*spans++ != 0) {                                               \
-            continue;                                                        \
-        }                                                                    \
+        spans = nextLine;                                                    \
     }                                                                        \
 }
 
@@ -447,54 +463,64 @@ APixel a_sprite_getPixel(const ASprite* Sprite, int X, int Y)
 
 void a_sprite_refresh(ASprite* Sprite)
 {
-    const int w = Sprite->w;
-    const int h = Sprite->h;
+    const int spriteWidth = Sprite->w;
+    const int spriteHeight = Sprite->h;
     const APixel* const dst = Sprite->pixels;
 
-    // Spans format:
-    // [1 (draw) / 0 (transp)][[len]...][0 (end line)]
+    // Spans format for each graphic line:
+    // [NumSpans << 1 | 1 (draw) / 0 (transparent)][[len]...]
 
-    unsigned int num = 0;
+    size_t bytesNeeded = 0;
     const APixel* dest = dst;
 
-    for(int y = h; y--; ) {
-        num += 3; // transparency start + first len + end line
-        dest++; // start from the second pixel in the line
-        for(int x = w - 1; x--; dest++) {
-            if((*dest == A_SPRITE_TRANSPARENT && *(dest - 1) != A_SPRITE_TRANSPARENT)
-                || (*dest != A_SPRITE_TRANSPARENT && *(dest - 1) == A_SPRITE_TRANSPARENT)) {
-                num++; // transparency change, add a len
+    for(int y = spriteHeight; y--; ) {
+        bytesNeeded += sizeof(uint16_t); // total spans size and initial state
+        bool lastState = *dest != A_SPRITE_TRANSPARENT; // initial state
+
+        for(int x = spriteWidth; x--; ) {
+            bool newState = *dest++ != A_SPRITE_TRANSPARENT;
+
+            if(newState != lastState) {
+                bytesNeeded += sizeof(uint16_t); // length of new span
+                lastState = newState;
             }
         }
+
+        bytesNeeded += sizeof(uint16_t); // line's last span length
     }
 
-    const size_t newSpansSize = num * sizeof(uint16_t);
-
-    if(Sprite->spansSize < newSpansSize) {
+    if(Sprite->spansSize < bytesNeeded) {
         free(Sprite->spans);
-        Sprite->spans = a_mem_malloc(newSpansSize);
-        Sprite->spansSize = newSpansSize;
+        Sprite->spans = a_mem_malloc(bytesNeeded);
+        Sprite->spansSize = bytesNeeded;
     }
-
-    uint16_t* spans = Sprite->spans;
 
     dest = dst;
+    uint16_t* spans = Sprite->spans;
 
-    for(int y = h; y--; ) {
-        *spans++ = *dest != A_SPRITE_TRANSPARENT; // transparency start
-        dest++; // start from the second pixel in the line
-        uint16_t len = 1;
-        for(int x = 1; x < w; x++, dest++) {
-            if((*dest == A_SPRITE_TRANSPARENT && *(dest - 1) != A_SPRITE_TRANSPARENT)
-                || (*dest != A_SPRITE_TRANSPARENT && *(dest - 1) == A_SPRITE_TRANSPARENT)) {
-                *spans++ = len; // record len
-                len = 1;
+    for(int y = spriteHeight; y--; ) {
+        uint16_t* lineStart = spans;
+        uint16_t numSpans = 1; // line has at least 1 span
+        uint16_t spanLength = 0;
+
+        bool lastState = *dest != A_SPRITE_TRANSPARENT; // initial draw state
+        *spans++ = lastState;
+
+        for(int x = spriteWidth; x--; ) {
+            bool newState = *dest++ != A_SPRITE_TRANSPARENT;
+
+            if(newState == lastState) {
+                spanLength++; // keep growing current span
             } else {
-                len++;
+                *spans++ = spanLength; // record the just-ended span's length
+                numSpans++;
+                spanLength = 1; // start a new span from this pixel
+                lastState = newState;
             }
         }
-        *spans++ = len; // record last len of line
-        *spans++ = 0; // mark end of line
+
+        *spans++ = spanLength; // record the last span's length
+        *lineStart |= numSpans << 1; // record line's number of spans
     }
 }
 
