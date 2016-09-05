@@ -94,7 +94,7 @@ static void inputCallback(void)
                 return;
             }
 
-            a_pixel_setBlend(A_PIXEL_PLAIN);
+            a_pixel_setBlend(A_PIXEL_BLEND_PLAIN);
 
             a_pixel_setPixel(g_volbarBackground);
             a_draw_rectangle(0, 181, g_volumeMax / A_VOLUME_STEP + 5, 197);

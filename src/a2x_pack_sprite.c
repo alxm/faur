@@ -22,7 +22,7 @@
 typedef void (*ABlitter)(const ASprite* Sprite, int X, int Y);
 
 static ABlitter g_blitter;
-static ABlitter g_blitters[A_PIXEL_TYPE_NUM][2][2];
+static ABlitter g_blitters[A_PIXEL_BLEND_NUM][2][2];
 static bool g_fillFlat;
 
 static AList* g_spritesList;
@@ -248,12 +248,12 @@ void a_sprite__init(void)
         g_blitters[Index][1][1] = a_blit__clip_##Blend##_p;   \
     })
 
-    blitterInit(A_PIXEL_PLAIN, plain);
-    blitterInit(A_PIXEL_RGBA, rgba);
-    blitterInit(A_PIXEL_RGB25, rgb25);
-    blitterInit(A_PIXEL_RGB50, rgb50);
-    blitterInit(A_PIXEL_RGB75, rgb75);
-    blitterInit(A_PIXEL_INVERSE, inverse);
+    blitterInit(A_PIXEL_BLEND_PLAIN, plain);
+    blitterInit(A_PIXEL_BLEND_RGBA, rgba);
+    blitterInit(A_PIXEL_BLEND_RGB25, rgb25);
+    blitterInit(A_PIXEL_BLEND_RGB50, rgb50);
+    blitterInit(A_PIXEL_BLEND_RGB75, rgb75);
+    blitterInit(A_PIXEL_BLEND_INVERSE, inverse);
 
     g_fillFlat = false;
 

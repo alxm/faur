@@ -152,7 +152,7 @@ static A_STATE(a_fade__toColor)
         AFix alpha_inc = a_fix_itofix(A_PIXEL_ALPHA_MAX) / g_framesDuration;
 
         a_pixel_push();
-        a_pixel_setBlend(A_PIXEL_RGBA);
+        a_pixel_setBlend(A_PIXEL_BLEND_RGBA);
         a_pixel_setPixel(g_savedColor);
 
         a_screen_copy(g_screenBuffer, a_screen__pixels);
@@ -186,7 +186,7 @@ static A_STATE(a_fade__fromColor)
         AFix alpha_inc = a_fix_itofix(A_PIXEL_ALPHA_MAX) / g_framesDuration;
 
         a_pixel_push();
-        a_pixel_setBlend(A_PIXEL_RGBA);
+        a_pixel_setBlend(A_PIXEL_BLEND_RGBA);
         a_pixel_setPixel(g_savedColor);
 
         a_screen_copy(g_screenBuffer, a_screen__pixels);
@@ -223,7 +223,7 @@ static A_STATE(a_fade__screens)
                                                  a_screen__height);
 
         a_pixel_push();
-        a_pixel_setBlend(A_PIXEL_RGBA);
+        a_pixel_setBlend(A_PIXEL_BLEND_RGBA);
 
         a_screen_copy(g_screenBuffer, a_screen__pixels);
 

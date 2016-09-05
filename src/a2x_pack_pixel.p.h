@@ -76,13 +76,13 @@
 #define A_PIXEL_ALPHA_MAX 256
 
 typedef enum {
-    A_PIXEL_PLAIN,
-    A_PIXEL_RGBA,
-    A_PIXEL_RGB25,
-    A_PIXEL_RGB50,
-    A_PIXEL_RGB75,
-    A_PIXEL_INVERSE,
-    A_PIXEL_TYPE_NUM
+    A_PIXEL_BLEND_PLAIN,
+    A_PIXEL_BLEND_RGBA,
+    A_PIXEL_BLEND_RGB25,
+    A_PIXEL_BLEND_RGB50,
+    A_PIXEL_BLEND_RGB75,
+    A_PIXEL_BLEND_INVERSE,
+    A_PIXEL_BLEND_NUM
 } APixelBlend;
 
 extern void a_pixel_push(void);

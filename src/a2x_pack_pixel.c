@@ -22,7 +22,7 @@
 typedef void (*APixelPut)(int X, int Y);
 
 static APixelPut g_pixel_put;
-static APixelPut g_pixelDraw[A_PIXEL_TYPE_NUM][2];
+static APixelPut g_pixelDraw[A_PIXEL_BLEND_NUM][2];
 
 APixelMode a_pixel__mode;
 static AList* g_modeStack;
@@ -59,14 +59,14 @@ void a_pixel__init(void)
         g_pixelDraw[Index][1] = a_pixel__clip_##Blend;   \
     })
 
-    pixelInit(A_PIXEL_PLAIN, plain);
-    pixelInit(A_PIXEL_RGBA, rgba);
-    pixelInit(A_PIXEL_RGB25, rgb25);
-    pixelInit(A_PIXEL_RGB50, rgb50);
-    pixelInit(A_PIXEL_RGB75, rgb75);
-    pixelInit(A_PIXEL_INVERSE, inverse);
+    pixelInit(A_PIXEL_BLEND_PLAIN, plain);
+    pixelInit(A_PIXEL_BLEND_RGBA, rgba);
+    pixelInit(A_PIXEL_BLEND_RGB25, rgb25);
+    pixelInit(A_PIXEL_BLEND_RGB50, rgb50);
+    pixelInit(A_PIXEL_BLEND_RGB75, rgb75);
+    pixelInit(A_PIXEL_BLEND_INVERSE, inverse);
 
-    a_pixel__mode.blend = A_PIXEL_PLAIN;
+    a_pixel__mode.blend = A_PIXEL_BLEND_PLAIN;
     a_pixel__mode.clip = true;
     g_modeStack = a_list_new();
 

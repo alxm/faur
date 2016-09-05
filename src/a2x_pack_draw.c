@@ -25,16 +25,16 @@ typedef void (*ADrawHLine)(int X1, int X2, int Y);
 typedef void (*ADrawVLine)(int X, int Y1, int Y2);
 
 static ADrawRectangle g_draw_rectangle;
-static ADrawRectangle g_rectangle[A_PIXEL_TYPE_NUM][2];
+static ADrawRectangle g_rectangle[A_PIXEL_BLEND_NUM][2];
 
 static ADrawLine g_draw_line;
-static ADrawLine g_line[A_PIXEL_TYPE_NUM][2];
+static ADrawLine g_line[A_PIXEL_BLEND_NUM][2];
 
 static ADrawHLine g_draw_hline;
-static ADrawHLine g_hline[A_PIXEL_TYPE_NUM][2];
+static ADrawHLine g_hline[A_PIXEL_BLEND_NUM][2];
 
 static ADrawVLine g_draw_vline;
-static ADrawHLine g_vline[A_PIXEL_TYPE_NUM][2];
+static ADrawHLine g_vline[A_PIXEL_BLEND_NUM][2];
 
 static bool cohen_sutherland_clip(int* X1, int* Y1, int* X2, int* Y2)
 {
@@ -303,12 +303,12 @@ void a_draw__init(void)
         shapeInit(vline, Index, Blend);     \
     })
 
-    shapeInitAll(A_PIXEL_PLAIN, plain);
-    shapeInitAll(A_PIXEL_RGBA, rgba);
-    shapeInitAll(A_PIXEL_RGB25, rgb25);
-    shapeInitAll(A_PIXEL_RGB50, rgb50);
-    shapeInitAll(A_PIXEL_RGB75, rgb75);
-    shapeInitAll(A_PIXEL_INVERSE, inverse);
+    shapeInitAll(A_PIXEL_BLEND_PLAIN, plain);
+    shapeInitAll(A_PIXEL_BLEND_RGBA, rgba);
+    shapeInitAll(A_PIXEL_BLEND_RGB25, rgb25);
+    shapeInitAll(A_PIXEL_BLEND_RGB50, rgb50);
+    shapeInitAll(A_PIXEL_BLEND_RGB75, rgb75);
+    shapeInitAll(A_PIXEL_BLEND_INVERSE, inverse);
 
     a_draw__updateRoutines();
 }
