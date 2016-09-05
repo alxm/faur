@@ -324,7 +324,7 @@ ASprite* a_sprite_fromPixels(const APixel* Pixels, int Width, int Height)
     return s;
 }
 
-ASprite* a_sprite_new(const ASprite* Sheet, int X, int Y)
+ASprite* a_sprite_fromSprite(const ASprite* Sheet, int X, int Y)
 {
     int spriteWidth = 0;
     int spriteHeight = 0;
