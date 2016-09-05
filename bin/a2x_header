@@ -40,7 +40,6 @@ class HeaderTool(Tool):
         out = '#pragma once\n\n'
 
         for h in headers:
-            Output.info(h)
             out += '#include "{}"\n'.format(os.path.join(path_prefix, h))
 
         self.writefile(umbrella_header, out)
