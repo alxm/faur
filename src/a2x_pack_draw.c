@@ -207,16 +207,16 @@ static bool cohen_sutherland_clip(int* X1, int* Y1, int* X2, int* Y2)
     }                                                  \
 }
 
-#define hline_clip(Pixeler)                          \
-{                                                    \
-    X1 = a_math_max(X1, 0);                          \
-    X2 = a_math_min(X2, a_screen__width);            \
-                                                     \
-    if(X1 >= X2 || Y < 0 || Y >= a_screen__height) { \
-        return;                                      \
-    }                                                \
-                                                     \
-    hline_noclip(Pixeler);                           \
+#define hline_clip(Pixeler)                                     \
+{                                                               \
+    if(X1 >= X2 || !a_collide_boxOnScreen(X1, Y, X2 - X1, 1)) { \
+        return;                                                 \
+    }                                                           \
+                                                                \
+    X1 = a_math_max(X1, 0);                                     \
+    X2 = a_math_min(X2, a_screen__width);                       \
+                                                                \
+    hline_noclip(Pixeler);                                      \
 }
 
 #define vline_noclip(Pixeler)                           \
@@ -230,16 +230,16 @@ static bool cohen_sutherland_clip(int* X1, int* Y1, int* X2, int* Y2)
     }                                                   \
 }
 
-#define vline_clip(Pixeler)                         \
-{                                                   \
-    Y1 = a_math_max(Y1, 0);                         \
-    Y2 = a_math_min(Y2, a_screen__height);          \
-                                                    \
-    if(Y1 >= Y2 || X < 0 || X >= a_screen__width) { \
-        return;                                     \
-    }                                               \
-                                                    \
-    vline_noclip(Pixeler);                          \
+#define vline_clip(Pixeler)                                     \
+{                                                               \
+    if(Y1 >= Y2 || !a_collide_boxOnScreen(X, Y1, 1, Y2 - Y1)) { \
+        return;                                                 \
+    }                                                           \
+                                                                \
+    Y1 = a_math_max(Y1, 0);                                     \
+    Y2 = a_math_min(Y2, a_screen__height);                      \
+                                                                \
+    vline_noclip(Pixeler);                                      \
 }
 
 #define shape_setup_plain                             \
