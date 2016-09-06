@@ -97,7 +97,7 @@ static void inputCallback(void)
             a_pixel_setBlend(A_PIXEL_BLEND_PLAIN);
 
             a_pixel_setPixel(g_volbarBackground);
-            a_draw_rectangle(0, 181, g_volumeMax / A_VOLUME_STEP + 5, 197);
+            a_draw_rectangle(0, 181, g_volumeMax / A_VOLUME_STEP + 5, 16);
 
             a_pixel_setPixel(g_volbarBorder);
             a_draw_hline(0, g_volumeMax / A_VOLUME_STEP + 4 + 1, 180);
@@ -105,7 +105,7 @@ static void inputCallback(void)
             a_draw_vline(g_volumeMax / A_VOLUME_STEP + 4 + 1, 181, 183 + 14);
 
             a_pixel_setPixel(g_volbarFill);
-            a_draw_rectangle(0, 186, g_volume / A_VOLUME_STEP, 192);
+            a_draw_rectangle(0, 186, g_volume / A_VOLUME_STEP, 6);
         }
     }
 #endif

@@ -19,7 +19,7 @@
 
 #include "a2x_pack_draw.v.h"
 
-typedef void (*ADrawRectangle)(int X1, int Y1, int X2, int Y2);
+typedef void (*ADrawRectangle)(int X, int Y, int Width, int Height);
 typedef void (*ADrawLine)(int X1, int Y1, int X2, int Y2);
 typedef void (*ADrawHLine)(int X1, int X2, int Y);
 typedef void (*ADrawVLine)(int X, int Y1, int Y2);
@@ -112,32 +112,31 @@ static bool cohen_sutherland_clip(int* X1, int* Y1, int* X2, int* Y2)
 #define rectangle_noclip(Pixeler)                  \
 {                                                  \
     APixel* pixels = a_screen__pixels              \
-                     + Y1 * a_screen__width + X1;  \
-                                                   \
+                     + Y * a_screen__width + X;    \
     const int screenw = a_screen__width;           \
-    const int w = X2 - X1;                         \
                                                    \
-    for(int i = Y2 - Y1; i--; pixels += screenw) { \
+    for(int i = Height; i--; pixels += screenw) {  \
         APixel* a__pass_dst = pixels;              \
                                                    \
-        for(int j = w; j--; a__pass_dst++) {       \
+        for(int j = Width; j--; a__pass_dst++) {   \
             Pixeler;                               \
         }                                          \
     }                                              \
 }
-
-#define rectangle_clip(Pixeler)            \
-{                                          \
-    X1 = a_math_max(X1, 0);                \
-    Y1 = a_math_max(Y1, 0);                \
-    X2 = a_math_min(X2, a_screen__width);  \
-    Y2 = a_math_min(Y2, a_screen__height); \
-                                           \
-    if(X1 >= X2 || Y1 >= Y2) {             \
-        return;                            \
-    }                                      \
-                                           \
-    rectangle_noclip(Pixeler);             \
+#define rectangle_clip(Pixeler)                              \
+{                                                            \
+    if(!a_collide_boxOnScreen(X, Y, Width, Height)) {        \
+        return;                                              \
+    }                                                        \
+                                                             \
+    const int x2 = a_math_min(X + Width, a_screen__width);   \
+    const int y2 = a_math_min(Y + Height, a_screen__height); \
+    X = a_math_max(X, 0);                                    \
+    Y = a_math_max(Y, 0);                                    \
+    Width = a_math_min(Width, x2 - X);                       \
+    Height = a_math_min(Height, y2 - Y);                     \
+                                                             \
+    rectangle_noclip(Pixeler);                               \
 }
 
 #define line_noclip(Pixeler)                                   \
@@ -274,11 +273,11 @@ static bool cohen_sutherland_clip(int* X1, int* Y1, int* X2, int* Y2)
         Shape##_clip(a_pixel__##Blend BlendArgs)     \
     }
 
-#define shapeMakeAll(Blend, BlendArgs)                                       \
-    shapeMake(rectangle, (int X1, int Y1, int X2, int Y2), Blend, BlendArgs) \
-    shapeMake(line,      (int X1, int Y1, int X2, int Y2), Blend, BlendArgs) \
-    shapeMake(hline,     (int X1, int X2, int Y),          Blend, BlendArgs) \
-    shapeMake(vline,     (int X,  int Y1, int Y2),         Blend, BlendArgs)
+#define shapeMakeAll(Blend, BlendArgs)                                            \
+    shapeMake(rectangle, (int X, int Y, int Width, int Height), Blend, BlendArgs) \
+    shapeMake(line,      (int X1, int Y1, int X2, int Y2),      Blend, BlendArgs) \
+    shapeMake(hline,     (int X1, int X2, int Y),               Blend, BlendArgs) \
+    shapeMake(vline,     (int X,  int Y1, int Y2),              Blend, BlendArgs)
 
 shapeMakeAll(plain,   (a__pass_dst, a__pass_color))
 shapeMakeAll(rgba,    (a__pass_dst, a__pass_red, a__pass_green, a__pass_blue, a__pass_alpha))
@@ -326,17 +325,17 @@ void a_draw_fill(void)
     g_draw_rectangle(0, 0, a_screen__width, a_screen__height);
 }
 
-void a_draw_rectangleBorder(int X1, int Y1, int X2, int Y2, int Border)
+void a_draw_rectangleThick(int X, int Y, int Width, int Height, int Thickness)
 {
-    g_draw_rectangle(X1,          Y1,          X2,          Y1 + Border); // top
-    g_draw_rectangle(X1,          Y2 - Border, X2,          Y2);          // bottom
-    g_draw_rectangle(X1,          Y1 + Border, X1 + Border, Y2 - Border); // left
-    g_draw_rectangle(X2 - Border, Y1 + Border, X2,          Y2 - Border); // right
+    g_draw_rectangle(X, Y, Width, Thickness); // top
+    g_draw_rectangle(X, Y + Height - Thickness, Width, Thickness); // bottom
+    g_draw_rectangle(X, Y + Thickness, Thickness, Height - 2 * Thickness); // left
+    g_draw_rectangle(X + Width - Thickness, Y + Thickness, Thickness, Height - 2 * Thickness); // right
 }
 
-void a_draw_rectangle(int X1, int Y1, int X2, int Y2)
+void a_draw_rectangle(int X, int Y, int Width, int Height)
 {
-    g_draw_rectangle(X1, Y1, X2, Y2);
+    g_draw_rectangle(X, Y, Width, Height);
 }
 
 void a_draw_line(int X1, int Y1, int X2, int Y2)
