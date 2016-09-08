@@ -1,5 +1,5 @@
 /*
-    Copyright 2010 Alex Margarit
+    Copyright 2010, 2016 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -109,182 +109,67 @@ static bool cohen_sutherland_clip(int* X1, int* Y1, int* X2, int* Y2)
     }
 }
 
-#define rectangle_noclip(Pixeler)                  \
-{                                                  \
-    APixel* pixels = a_screen__pixels              \
-                     + Y * a_screen__width + X;    \
-    const int screenw = a_screen__width;           \
-                                                   \
-    for(int i = Height; i--; pixels += screenw) {  \
-        APixel* a__pass_dst = pixels;              \
-                                                   \
-        for(int j = Width; j--; a__pass_dst++) {   \
-            Pixeler;                               \
-        }                                          \
-    }                                              \
-}
-#define rectangle_clip(Pixeler)                              \
-{                                                            \
-    if(!a_collide_boxOnScreen(X, Y, Width, Height)) {        \
-        return;                                              \
-    }                                                        \
-                                                             \
-    const int x2 = a_math_min(X + Width, a_screen__width);   \
-    const int y2 = a_math_min(Y + Height, a_screen__height); \
-    X = a_math_max(X, 0);                                    \
-    Y = a_math_max(Y, 0);                                    \
-    Width = a_math_min(Width, x2 - X);                       \
-    Height = a_math_min(Height, y2 - Y);                     \
-                                                             \
-    rectangle_noclip(Pixeler);                               \
-}
-
-#define line_noclip(Pixeler)                                   \
-{                                                              \
-    const int xmin = a_math_min(X1, X2);                       \
-    const int xmax = a_math_max(X1, X2);                       \
-    const int ymin = a_math_min(Y1, Y2);                       \
-    const int ymax = a_math_max(Y1, Y2);                       \
-                                                               \
-    if(X1 == X2) {                                             \
-        g_draw_vline(X1, ymin, ymax);                          \
-    } else if(Y1 == Y2) {                                      \
-        g_draw_hline(xmin, xmax, Y1);                          \
-    } else {                                                   \
-        const int deltax = xmax - xmin;                        \
-        const int deltay = ymax - ymin;                        \
-                                                               \
-        const int denominator = a_math_max(deltax, deltay);    \
-        const int numeratorinc = a_math_min(deltax, deltay);   \
-        int numerator = denominator / 2;                       \
-                                                               \
-        const int xinct = (X1 <= X2) ? 1 : -1;                 \
-        const int yinct = (Y1 <= Y2) ? 1 : -1;                 \
-                                                               \
-        const int xinc1 = (denominator == deltax) ? xinct : 0; \
-        const int yinc1 = (denominator == deltax) ? 0 : yinct; \
-                                                               \
-        const int xinc2 = (denominator == deltax) ? 0 : xinct; \
-        const int yinc2 = (denominator == deltax) ? yinct : 0; \
-                                                               \
-        const int screenw = a_screen__width;                   \
-        APixel* a__pass_dst = a_screen__pixels                 \
-                              + Y1 * screenw + X1;             \
-                                                               \
-        for(int i = denominator + 1; i--; ) {                  \
-            Pixeler;                                           \
-                                                               \
-            numerator += numeratorinc;                         \
-                                                               \
-            if(numerator >= denominator) {                     \
-                numerator -= denominator;                      \
-                a__pass_dst += xinc2;                          \
-                a__pass_dst += yinc2 * screenw;                \
-            }                                                  \
-                                                               \
-            a__pass_dst += xinc1;                              \
-            a__pass_dst += yinc1 * screenw;                    \
-        }                                                      \
-    }                                                          \
-}
-
-#define line_clip(Pixeler)                           \
-{                                                    \
-    if(!cohen_sutherland_clip(&X1, &Y1, &X2, &Y2)) { \
-        return;                                      \
-    }                                                \
-                                                     \
-    line_noclip(Pixeler);                            \
-}
-
-#define hline_noclip(Pixeler)                          \
-{                                                      \
-    APixel* a__pass_dst = a_screen__pixels             \
-                          + Y * a_screen__width + X1;  \
-                                                       \
-    for(int i = X2 - X1; i--; a__pass_dst++) {         \
-        Pixeler;                                       \
-    }                                                  \
-}
-
-#define hline_clip(Pixeler)                                     \
-{                                                               \
-    if(X1 >= X2 || !a_collide_boxOnScreen(X1, Y, X2 - X1, 1)) { \
-        return;                                                 \
-    }                                                           \
-                                                                \
-    X1 = a_math_max(X1, 0);                                     \
-    X2 = a_math_min(X2, a_screen__width);                       \
-                                                                \
-    hline_noclip(Pixeler);                                      \
-}
-
-#define vline_noclip(Pixeler)                           \
-{                                                       \
-    APixel* a__pass_dst = a_screen__pixels              \
-                          + Y1 * a_screen__width + X;   \
-    const int screenw = a_screen__width;                \
-                                                        \
-    for(int i = Y2 - Y1; i--; a__pass_dst += screenw) { \
-        Pixeler;                                        \
-    }                                                   \
-}
-
-#define vline_clip(Pixeler)                                     \
-{                                                               \
-    if(Y1 >= Y2 || !a_collide_boxOnScreen(X, Y1, 1, Y2 - Y1)) { \
-        return;                                                 \
-    }                                                           \
-                                                                \
-    Y1 = a_math_max(Y1, 0);                                     \
-    Y2 = a_math_min(Y2, a_screen__height);                      \
-                                                                \
-    vline_noclip(Pixeler);                                      \
-}
-
-#define shape_setup_plain                             \
+#define A__BLEND plain
+#define A__BLEND_SETUP \
     const APixel a__pass_color = a_pixel__mode.pixel;
+#define A__PIXEL_PARAMS (a__pass_dst, a__pass_color)
+#include "a2x_pack_draw.inc.c"
+#undef A__BLEND
+#undef A__BLEND_SETUP
+#undef A__PIXEL_PARAMS
 
-#define shape_setup_rgb25                              \
+#define A__BLEND rgba
+#define A__BLEND_SETUP                                      \
+    const uint8_t a__pass_red = a_pixel__mode.red;          \
+    const uint8_t a__pass_green = a_pixel__mode.green;      \
+    const uint8_t a__pass_blue = a_pixel__mode.blue;        \
+    const unsigned int a__pass_alpha = a_pixel__mode.alpha;
+#define A__PIXEL_PARAMS (a__pass_dst, a__pass_red, a__pass_green, a__pass_blue, a__pass_alpha)
+#include "a2x_pack_draw.inc.c"
+#undef A__BLEND
+#undef A__BLEND_SETUP
+#undef A__PIXEL_PARAMS
+
+#define A__BLEND rgb25
+#define A__BLEND_SETUP                                 \
     const uint8_t a__pass_red = a_pixel__mode.red;     \
     const uint8_t a__pass_green = a_pixel__mode.green; \
     const uint8_t a__pass_blue = a_pixel__mode.blue;
+#define A__PIXEL_PARAMS (a__pass_dst, a__pass_red, a__pass_green, a__pass_blue)
+#include "a2x_pack_draw.inc.c"
+#undef A__BLEND
+#undef A__BLEND_SETUP
+#undef A__PIXEL_PARAMS
 
-#define shape_setup_rgb50 shape_setup_rgb25
-#define shape_setup_rgb75 shape_setup_rgb25
+#define A__BLEND rgb50
+#define A__BLEND_SETUP                                 \
+    const uint8_t a__pass_red = a_pixel__mode.red;     \
+    const uint8_t a__pass_green = a_pixel__mode.green; \
+    const uint8_t a__pass_blue = a_pixel__mode.blue;
+#define A__PIXEL_PARAMS (a__pass_dst, a__pass_red, a__pass_green, a__pass_blue)
+#include "a2x_pack_draw.inc.c"
+#undef A__BLEND
+#undef A__BLEND_SETUP
+#undef A__PIXEL_PARAMS
 
-#define shape_setup_rgba                                    \
-    shape_setup_rgb25                                       \
-    const unsigned int a__pass_alpha = a_pixel__mode.alpha;
+#define A__BLEND rgb75
+#define A__BLEND_SETUP                                 \
+    const uint8_t a__pass_red = a_pixel__mode.red;     \
+    const uint8_t a__pass_green = a_pixel__mode.green; \
+    const uint8_t a__pass_blue = a_pixel__mode.blue;
+#define A__PIXEL_PARAMS (a__pass_dst, a__pass_red, a__pass_green, a__pass_blue)
+#include "a2x_pack_draw.inc.c"
+#undef A__BLEND
+#undef A__BLEND_SETUP
+#undef A__PIXEL_PARAMS
 
-#define shape_setup_inverse
-
-#define shapeMake(Shape, FuncArgs, Blend, BlendArgs) \
-                                                     \
-    void a_draw__##Shape##_noclip_##Blend FuncArgs   \
-    {                                                \
-        shape_setup_##Blend                          \
-        Shape##_noclip(a_pixel__##Blend BlendArgs)   \
-    }                                                \
-                                                     \
-    void a_draw__##Shape##_clip_##Blend FuncArgs     \
-    {                                                \
-        shape_setup_##Blend                          \
-        Shape##_clip(a_pixel__##Blend BlendArgs)     \
-    }
-
-#define shapeMakeAll(Blend, BlendArgs)                                            \
-    shapeMake(rectangle, (int X, int Y, int Width, int Height), Blend, BlendArgs) \
-    shapeMake(line,      (int X1, int Y1, int X2, int Y2),      Blend, BlendArgs) \
-    shapeMake(hline,     (int X1, int X2, int Y),               Blend, BlendArgs) \
-    shapeMake(vline,     (int X,  int Y1, int Y2),              Blend, BlendArgs)
-
-shapeMakeAll(plain,   (a__pass_dst, a__pass_color))
-shapeMakeAll(rgba,    (a__pass_dst, a__pass_red, a__pass_green, a__pass_blue, a__pass_alpha))
-shapeMakeAll(rgb25,   (a__pass_dst, a__pass_red, a__pass_green, a__pass_blue))
-shapeMakeAll(rgb50,   (a__pass_dst, a__pass_red, a__pass_green, a__pass_blue))
-shapeMakeAll(rgb75,   (a__pass_dst, a__pass_red, a__pass_green, a__pass_blue))
-shapeMakeAll(inverse, (a__pass_dst))
+#define A__BLEND inverse
+#define A__BLEND_SETUP
+#define A__PIXEL_PARAMS (a__pass_dst)
+#include "a2x_pack_draw.inc.c"
+#undef A__BLEND
+#undef A__BLEND_SETUP
+#undef A__PIXEL_PARAMS
 
 void a_draw__init(void)
 {
