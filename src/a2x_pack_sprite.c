@@ -1,5 +1,5 @@
 /*
-    Copyright 2010 Alex Margarit
+    Copyright 2010-2012, 2014, 2016 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -28,224 +28,149 @@ static bool g_fillFlat;
 static AList* g_spritesList;
 static void a_sprite__free(ASprite* Sprite);
 
-// Spans format for each graphic line:
-// [NumSpans << 1 | 1 (draw) / 0 (transparent)][[len]...]
+#define A__BLEND plain
+#define A__SUFFIX normal
+#define A__BLEND_SETUP
+#define A__PIXEL_PARAMS (a__pass_dst, *a__pass_src)
+#include "a2x_pack_sprite.inc.c"
+#undef A__BLEND
+#undef A__SUFFIX
+#undef A__BLEND_SETUP
+#undef A__PIXEL_PARAMS
 
-#define blitter_noclip(Pixeler)                                       \
-{                                                                     \
-    const int screenW = a_screen__width;                              \
-    APixel* dst = a_screen__pixels + Y * screenW + X;                 \
-    const APixel* a__pass_src = Sprite->pixels;                       \
-    const uint16_t* spans = Sprite->spans;                            \
-                                                                      \
-    for(int i = Sprite->h; i--; dst += screenW) {                     \
-        bool draw = *spans & 1;                                       \
-        int numSpans = *spans++ >> 1;                                 \
-        APixel* a__pass_dst = dst;                                    \
-                                                                      \
-        while(numSpans--) {                                           \
-            int len = *spans++;                                       \
-                                                                      \
-            if(draw) {                                                \
-                while(len--) {                                        \
-                    Pixeler;                                          \
-                    a__pass_dst++;                                    \
-                    a__pass_src++;                                    \
-                }                                                     \
-            } else {                                                  \
-                a__pass_dst += len;                                   \
-                a__pass_src += len;                                   \
-            }                                                         \
-                                                                      \
-            draw = !draw;                                             \
-        }                                                             \
-    }                                                                 \
-}
-#define blitter_clip(Pixeler)                                                \
-{                                                                            \
-    const int screenW = a_screen__width;                                     \
-    const int screenH = a_screen__height;                                    \
-    const int spriteW = Sprite->w;                                           \
-    const int spriteH = Sprite->h;                                           \
-                                                                             \
-    if(Y + spriteH <= 0 || Y >= screenH                                      \
-        || X + spriteW <= 0 || X >= screenW) {                               \
-        return;                                                              \
-    }                                                                        \
-                                                                             \
-    const int yClipUp = a_math_max(0, -Y);                                   \
-    const int yClipDown = a_math_max(0, Y + spriteH - screenH);              \
-    const int xClipLeft = a_math_max(0, -X);                                 \
-    const int xClipRight = a_math_max(0, X + spriteW - screenW);             \
-                                                                             \
-    const int rows = spriteH - yClipUp - yClipDown;                          \
-    const int columns = spriteW - xClipLeft - xClipRight;                    \
-                                                                             \
-    APixel* startDst = a_screen__pixels                                      \
-                       + (Y + yClipUp) * screenW + (X + xClipLeft);          \
-    const APixel* startSrc = Sprite->pixels                                  \
-                             + yClipUp * spriteW + xClipLeft;                \
-    const uint16_t* spans = Sprite->spans;                                   \
-                                                                             \
-    /* skip clipped top rows */                                              \
-    for(int i = yClipUp; i--; ) {                                            \
-        spans += 1 + (*spans >> 1);                                          \
-    }                                                                        \
-                                                                             \
-    /* draw visible rows */                                                  \
-    for(int i = rows; i--; startDst += screenW, startSrc += spriteW) {       \
-        bool draw = *spans & 1;                                              \
-        const uint16_t* nextLine = spans + 1 + (*spans >> 1);                \
-        APixel* a__pass_dst = startDst;                                      \
-        const APixel* a__pass_src = startSrc;                                \
-        int clippedLen = 0;                                                  \
-        int drawColumns = columns;                                           \
-                                                                             \
-        /* skip clipped left columns */                                      \
-        while(clippedLen < xClipLeft) {                                      \
-            clippedLen += *++spans;                                          \
-            draw = !draw;                                                    \
-        }                                                                    \
-                                                                             \
-        /* account for overclipping */                                       \
-        if(clippedLen > xClipLeft) {                                         \
-            int len = clippedLen - xClipLeft;                                \
-                                                                             \
-            /* Inverse logic because we're drawing from the previous span */ \
-            if(draw) {                                                       \
-                a__pass_dst += len;                                          \
-                a__pass_src += len;                                          \
-                drawColumns -= len;                                          \
-            } else {                                                         \
-                while(len-- && drawColumns--) {                              \
-                    Pixeler;                                                 \
-                    a__pass_dst++;                                           \
-                    a__pass_src++;                                           \
-                }                                                            \
-            }                                                                \
-        }                                                                    \
-                                                                             \
-        /* draw visible columns */                                           \
-        while(drawColumns > 0) {                                             \
-            int len = *++spans;                                              \
-                                                                             \
-            if(draw) {                                                       \
-                while(len-- && drawColumns--) {                              \
-                    Pixeler;                                                 \
-                    a__pass_dst++;                                           \
-                    a__pass_src++;                                           \
-                }                                                            \
-            } else {                                                         \
-                a__pass_dst += len;                                          \
-                a__pass_src += len;                                          \
-                drawColumns -= len;                                          \
-            }                                                                \
-                                                                             \
-            draw = !draw;                                                    \
-        }                                                                    \
-                                                                             \
-        /* skip clipped right columns */                                     \
-        spans = nextLine;                                                    \
-    }                                                                        \
-}
+#define A__BLEND plain
+#define A__SUFFIX flat
+#define A__BLEND_SETUP                                \
+    const APixel a__pass_color = a_pixel__mode.pixel;
+#define A__PIXEL_PARAMS (a__pass_dst, a__pass_color)
+#include "a2x_pack_sprite.inc.c"
+#undef A__BLEND
+#undef A__SUFFIX
+#undef A__BLEND_SETUP
+#undef A__PIXEL_PARAMS
 
-#define blitter_plain_setup
-#define blitter_plain_setup_p                         \
-    const APixel a__pass_pixel = a_pixel__mode.pixel;
+#define A__BLEND rgba
+#define A__SUFFIX normal
+#define A__BLEND_SETUP \
+    const unsigned int a__pass_alpha = a_pixel__mode.alpha;
+#define A__PIXEL_PARAMS (a__pass_dst, a_pixel_red(*a__pass_src), a_pixel_green(*a__pass_src), a_pixel_blue(*a__pass_src), a__pass_alpha)
+#include "a2x_pack_sprite.inc.c"
+#undef A__BLEND
+#undef A__SUFFIX
+#undef A__BLEND_SETUP
+#undef A__PIXEL_PARAMS
 
-#define blitter_rgb25_setup
-#define blitter_rgb25_setup_p                          \
+#define A__BLEND rgba
+#define A__SUFFIX flat
+#define A__BLEND_SETUP                                      \
+    const uint8_t a__pass_red = a_pixel__mode.red;          \
+    const uint8_t a__pass_green = a_pixel__mode.green;      \
+    const uint8_t a__pass_blue = a_pixel__mode.blue;        \
+    const unsigned int a__pass_alpha = a_pixel__mode.alpha;
+#define A__PIXEL_PARAMS (a__pass_dst, a__pass_red, a__pass_green, a__pass_blue, a__pass_alpha)
+#include "a2x_pack_sprite.inc.c"
+#undef A__BLEND
+#undef A__SUFFIX
+#undef A__BLEND_SETUP
+#undef A__PIXEL_PARAMS
+
+#define A__BLEND rgb25
+#define A__SUFFIX normal
+#define A__BLEND_SETUP
+#define A__PIXEL_PARAMS (a__pass_dst, a_pixel_red(*a__pass_src), a_pixel_green(*a__pass_src), a_pixel_blue(*a__pass_src))
+#include "a2x_pack_sprite.inc.c"
+#undef A__BLEND
+#undef A__SUFFIX
+#undef A__BLEND_SETUP
+#undef A__PIXEL_PARAMS
+
+#define A__BLEND rgb25
+#define A__SUFFIX flat
+#define A__BLEND_SETUP                                 \
     const uint8_t a__pass_red = a_pixel__mode.red;     \
     const uint8_t a__pass_green = a_pixel__mode.green; \
     const uint8_t a__pass_blue = a_pixel__mode.blue;
+#define A__PIXEL_PARAMS (a__pass_dst, a__pass_red, a__pass_green, a__pass_blue)
+#include "a2x_pack_sprite.inc.c"
+#undef A__BLEND
+#undef A__SUFFIX
+#undef A__BLEND_SETUP
+#undef A__PIXEL_PARAMS
 
-#define blitter_rgb50_setup
-#define blitter_rgb50_setup_p blitter_rgb25_setup_p
+#define A__BLEND rgb50
+#define A__SUFFIX normal
+#define A__BLEND_SETUP
+#define A__PIXEL_PARAMS (a__pass_dst, a_pixel_red(*a__pass_src), a_pixel_green(*a__pass_src), a_pixel_blue(*a__pass_src))
+#include "a2x_pack_sprite.inc.c"
+#undef A__BLEND
+#undef A__SUFFIX
+#undef A__BLEND_SETUP
+#undef A__PIXEL_PARAMS
 
-#define blitter_rgb75_setup
-#define blitter_rgb75_setup_p blitter_rgb25_setup_p
+#define A__BLEND rgb50
+#define A__SUFFIX flat
+#define A__BLEND_SETUP                                 \
+    const uint8_t a__pass_red = a_pixel__mode.red;     \
+    const uint8_t a__pass_green = a_pixel__mode.green; \
+    const uint8_t a__pass_blue = a_pixel__mode.blue;
+#define A__PIXEL_PARAMS (a__pass_dst, a__pass_red, a__pass_green, a__pass_blue)
+#include "a2x_pack_sprite.inc.c"
+#undef A__BLEND
+#undef A__SUFFIX
+#undef A__BLEND_SETUP
+#undef A__PIXEL_PARAMS
 
-#define blitter_rgba_setup                                  \
-    blitter_rgb25_setup                                     \
-    const unsigned int a__pass_alpha = a_pixel__mode.alpha;
+#define A__BLEND rgb75
+#define A__SUFFIX normal
+#define A__BLEND_SETUP
+#define A__PIXEL_PARAMS (a__pass_dst, a_pixel_red(*a__pass_src), a_pixel_green(*a__pass_src), a_pixel_blue(*a__pass_src))
+#include "a2x_pack_sprite.inc.c"
+#undef A__BLEND
+#undef A__SUFFIX
+#undef A__BLEND_SETUP
+#undef A__PIXEL_PARAMS
 
-#define blitter_rgba_setup_p                                \
-    blitter_rgb25_setup_p                                   \
-    const unsigned int a__pass_alpha = a_pixel__mode.alpha;
+#define A__BLEND rgb75
+#define A__SUFFIX flat
+#define A__BLEND_SETUP                                 \
+    const uint8_t a__pass_red = a_pixel__mode.red;     \
+    const uint8_t a__pass_green = a_pixel__mode.green; \
+    const uint8_t a__pass_blue = a_pixel__mode.blue;
+#define A__PIXEL_PARAMS (a__pass_dst, a__pass_red, a__pass_green, a__pass_blue)
+#include "a2x_pack_sprite.inc.c"
+#undef A__BLEND
+#undef A__SUFFIX
+#undef A__BLEND_SETUP
+#undef A__PIXEL_PARAMS
 
-#define blitter_inverse_setup
-#define blitter_inverse_setup_p
+#define A__BLEND inverse
+#define A__SUFFIX normal
+#define A__BLEND_SETUP
+#define A__PIXEL_PARAMS (a__pass_dst)
+#include "a2x_pack_sprite.inc.c"
+#undef A__BLEND
+#undef A__SUFFIX
+#undef A__BLEND_SETUP
+#undef A__PIXEL_PARAMS
 
-#define blitterMake(Blend, ArgsBlit, ArgsPixel)                          \
-                                                                         \
-    void a_blit__noclip_##Blend(const ASprite* Sprite, int X, int Y)     \
-    {                                                                    \
-        blitter_##Blend##_setup                                          \
-        blitter_noclip(a_pixel__##Blend ArgsBlit)                        \
-    }                                                                    \
-                                                                         \
-    void a_blit__noclip_##Blend##_p(const ASprite* Sprite, int X, int Y) \
-    {                                                                    \
-        blitter_##Blend##_setup_p                                        \
-        blitter_noclip(a_pixel__##Blend ArgsPixel)                       \
-    }                                                                    \
-                                                                         \
-    void a_blit__clip_##Blend(const ASprite* Sprite, int X, int Y)       \
-    {                                                                    \
-        blitter_##Blend##_setup                                          \
-        blitter_clip(a_pixel__##Blend ArgsBlit)                          \
-    }                                                                    \
-                                                                         \
-    void a_blit__clip_##Blend##_p(const ASprite* Sprite, int X, int Y)   \
-    {                                                                    \
-        blitter_##Blend##_setup_p                                        \
-        blitter_clip(a_pixel__##Blend ArgsPixel)                         \
-    }
-
-blitterMake(
-    plain,
-    (a__pass_dst, *a__pass_src),
-    (a__pass_dst, a__pass_pixel)
-)
-
-blitterMake(
-    rgba,
-    (a__pass_dst, a_pixel_red(*a__pass_src), a_pixel_green(*a__pass_src), a_pixel_blue(*a__pass_src), a__pass_alpha),
-    (a__pass_dst, a__pass_red, a__pass_green, a__pass_blue, a__pass_alpha)
-)
-
-blitterMake(
-    rgb25,
-    (a__pass_dst, a_pixel_red(*a__pass_src), a_pixel_green(*a__pass_src), a_pixel_blue(*a__pass_src)),
-    (a__pass_dst, a__pass_red, a__pass_green, a__pass_blue)
-)
-
-blitterMake(
-    rgb50,
-    (a__pass_dst, a_pixel_red(*a__pass_src), a_pixel_green(*a__pass_src), a_pixel_blue(*a__pass_src)),
-    (a__pass_dst, a__pass_red, a__pass_green, a__pass_blue)
-)
-
-blitterMake(
-    rgb75,
-    (a__pass_dst, a_pixel_red(*a__pass_src), a_pixel_green(*a__pass_src), a_pixel_blue(*a__pass_src)),
-    (a__pass_dst, a__pass_red, a__pass_green, a__pass_blue)
-)
-
-blitterMake(
-    inverse,
-    (a__pass_dst),
-    (a__pass_dst)
-)
+#define A__BLEND inverse
+#define A__SUFFIX flat
+#define A__BLEND_SETUP
+#define A__PIXEL_PARAMS (a__pass_dst)
+#include "a2x_pack_sprite.inc.c"
+#undef A__BLEND
+#undef A__SUFFIX
+#undef A__BLEND_SETUP
+#undef A__PIXEL_PARAMS
 
 void a_sprite__init(void)
 {
-    #define blitterInit(Index, Blend)                         \
-    ({                                                        \
-        g_blitters[Index][0][0] = a_blit__noclip_##Blend;     \
-        g_blitters[Index][0][1] = a_blit__noclip_##Blend##_p; \
-        g_blitters[Index][1][0] = a_blit__clip_##Blend;       \
-        g_blitters[Index][1][1] = a_blit__clip_##Blend##_p;   \
+    #define blitterInit(Index, Blend)                              \
+    ({                                                             \
+        g_blitters[Index][0][0] = a_blit__noclip_##Blend##_normal; \
+        g_blitters[Index][0][1] = a_blit__noclip_##Blend##_flat;   \
+        g_blitters[Index][1][0] = a_blit__clip_##Blend##_normal;   \
+        g_blitters[Index][1][1] = a_blit__clip_##Blend##_flat;     \
     })
 
     blitterInit(A_PIXEL_BLEND_PLAIN, plain);
@@ -256,9 +181,7 @@ void a_sprite__init(void)
     blitterInit(A_PIXEL_BLEND_INVERSE, inverse);
 
     g_fillFlat = false;
-
     a_sprite__updateRoutines();
-
     g_spritesList = a_list_new();
 }
 
