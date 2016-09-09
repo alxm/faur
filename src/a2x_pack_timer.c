@@ -1,5 +1,5 @@
 /*
-    Copyright 2010 Alex Margarit
+    Copyright 2011 Alex Margarit
 
     This file is part of a2x-framework.
 
