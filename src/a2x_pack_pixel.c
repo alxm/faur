@@ -134,8 +134,3 @@ void a_pixel_setPixel(APixel Pixel)
     a_pixel__mode.green = a_pixel_green(a_pixel__mode.pixel);
     a_pixel__mode.blue = a_pixel_blue(a_pixel__mode.pixel);
 }
-
-APixel a_pixel_get(int X, int Y)
-{
-    return *(a_screen__pixels + Y * a_screen__width + X);
-}

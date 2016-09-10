@@ -94,5 +94,3 @@ extern void a_pixel_setAlpha(unsigned int Alpha);
 extern void a_pixel_setRGB(uint8_t Red, uint8_t Green, uint8_t Blue);
 extern void a_pixel_setRGBA(uint8_t Red, uint8_t Green, uint8_t Blue, unsigned int Alpha);
 extern void a_pixel_setPixel(APixel Pixel);
-
-extern APixel a_pixel_get(int X, int Y);

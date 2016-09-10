@@ -149,6 +149,11 @@ void a_screen_copyPart(APixel* Dst, int X, int Y, int Width, int Height)
     }
 }
 
+APixel a_screen_getPixel(int X, int Y)
+{
+    return *(a_screen__pixels + Y * a_screen__width + X);
+}
+
 void a_screen_setTarget(APixel* Pixels, int Width, int Height)
 {
     a_screen__pixels = Pixels;
