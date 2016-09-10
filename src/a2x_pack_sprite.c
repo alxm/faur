@@ -28,10 +28,18 @@ static bool g_fillFlat;
 static AList* g_spritesList;
 static void a_sprite__free(ASprite* Sprite);
 
+#define A__CONCAT_WORKER(A, B) A##B
+#define A__CONCAT(A, B) A__CONCAT_WORKER(A, B)
+#define A__CONCAT3_WORKER(A, B, C) A##_##B##_##C
+#define A__CONCAT3(A, B, C) A__CONCAT3_WORKER(A, B, C)
+#define A__FUNC_NAME(Prefix) A__CONCAT3(Prefix, A__BLEND, A__SUFFIX)
+#define A__PIXEL_DRAW_WORKER(Params) A__CONCAT(a_pixel__, A__BLEND)(Params)
+#define A__PIXEL_DRAW(Dst) A__PIXEL_DRAW_WORKER(Dst A__PIXEL_PARAMS)
+
 #define A__BLEND plain
 #define A__SUFFIX normal
 #define A__BLEND_SETUP
-#define A__PIXEL_PARAMS (a__pass_dst, *a__pass_src)
+#define A__PIXEL_PARAMS , *a__pass_src
 #include "a2x_pack_sprite.inc.c"
 #undef A__BLEND
 #undef A__SUFFIX
@@ -42,7 +50,7 @@ static void a_sprite__free(ASprite* Sprite);
 #define A__SUFFIX flat
 #define A__BLEND_SETUP                                \
     const APixel a__pass_color = a_pixel__mode.pixel;
-#define A__PIXEL_PARAMS (a__pass_dst, a__pass_color)
+#define A__PIXEL_PARAMS , a__pass_color
 #include "a2x_pack_sprite.inc.c"
 #undef A__BLEND
 #undef A__SUFFIX
@@ -53,7 +61,7 @@ static void a_sprite__free(ASprite* Sprite);
 #define A__SUFFIX normal
 #define A__BLEND_SETUP \
     const unsigned int a__pass_alpha = a_pixel__mode.alpha;
-#define A__PIXEL_PARAMS (a__pass_dst, a_pixel_red(*a__pass_src), a_pixel_green(*a__pass_src), a_pixel_blue(*a__pass_src), a__pass_alpha)
+#define A__PIXEL_PARAMS , a_pixel_red(*a__pass_src), a_pixel_green(*a__pass_src), a_pixel_blue(*a__pass_src), a__pass_alpha
 #include "a2x_pack_sprite.inc.c"
 #undef A__BLEND
 #undef A__SUFFIX
@@ -67,7 +75,7 @@ static void a_sprite__free(ASprite* Sprite);
     const uint8_t a__pass_green = a_pixel__mode.green;      \
     const uint8_t a__pass_blue = a_pixel__mode.blue;        \
     const unsigned int a__pass_alpha = a_pixel__mode.alpha;
-#define A__PIXEL_PARAMS (a__pass_dst, a__pass_red, a__pass_green, a__pass_blue, a__pass_alpha)
+#define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue, a__pass_alpha
 #include "a2x_pack_sprite.inc.c"
 #undef A__BLEND
 #undef A__SUFFIX
@@ -77,7 +85,7 @@ static void a_sprite__free(ASprite* Sprite);
 #define A__BLEND rgb25
 #define A__SUFFIX normal
 #define A__BLEND_SETUP
-#define A__PIXEL_PARAMS (a__pass_dst, a_pixel_red(*a__pass_src), a_pixel_green(*a__pass_src), a_pixel_blue(*a__pass_src))
+#define A__PIXEL_PARAMS , a_pixel_red(*a__pass_src), a_pixel_green(*a__pass_src), a_pixel_blue(*a__pass_src)
 #include "a2x_pack_sprite.inc.c"
 #undef A__BLEND
 #undef A__SUFFIX
@@ -90,7 +98,7 @@ static void a_sprite__free(ASprite* Sprite);
     const uint8_t a__pass_red = a_pixel__mode.red;     \
     const uint8_t a__pass_green = a_pixel__mode.green; \
     const uint8_t a__pass_blue = a_pixel__mode.blue;
-#define A__PIXEL_PARAMS (a__pass_dst, a__pass_red, a__pass_green, a__pass_blue)
+#define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue
 #include "a2x_pack_sprite.inc.c"
 #undef A__BLEND
 #undef A__SUFFIX
@@ -100,7 +108,7 @@ static void a_sprite__free(ASprite* Sprite);
 #define A__BLEND rgb50
 #define A__SUFFIX normal
 #define A__BLEND_SETUP
-#define A__PIXEL_PARAMS (a__pass_dst, a_pixel_red(*a__pass_src), a_pixel_green(*a__pass_src), a_pixel_blue(*a__pass_src))
+#define A__PIXEL_PARAMS , a_pixel_red(*a__pass_src), a_pixel_green(*a__pass_src), a_pixel_blue(*a__pass_src)
 #include "a2x_pack_sprite.inc.c"
 #undef A__BLEND
 #undef A__SUFFIX
@@ -113,7 +121,7 @@ static void a_sprite__free(ASprite* Sprite);
     const uint8_t a__pass_red = a_pixel__mode.red;     \
     const uint8_t a__pass_green = a_pixel__mode.green; \
     const uint8_t a__pass_blue = a_pixel__mode.blue;
-#define A__PIXEL_PARAMS (a__pass_dst, a__pass_red, a__pass_green, a__pass_blue)
+#define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue
 #include "a2x_pack_sprite.inc.c"
 #undef A__BLEND
 #undef A__SUFFIX
@@ -123,7 +131,7 @@ static void a_sprite__free(ASprite* Sprite);
 #define A__BLEND rgb75
 #define A__SUFFIX normal
 #define A__BLEND_SETUP
-#define A__PIXEL_PARAMS (a__pass_dst, a_pixel_red(*a__pass_src), a_pixel_green(*a__pass_src), a_pixel_blue(*a__pass_src))
+#define A__PIXEL_PARAMS , a_pixel_red(*a__pass_src), a_pixel_green(*a__pass_src), a_pixel_blue(*a__pass_src)
 #include "a2x_pack_sprite.inc.c"
 #undef A__BLEND
 #undef A__SUFFIX
@@ -136,7 +144,7 @@ static void a_sprite__free(ASprite* Sprite);
     const uint8_t a__pass_red = a_pixel__mode.red;     \
     const uint8_t a__pass_green = a_pixel__mode.green; \
     const uint8_t a__pass_blue = a_pixel__mode.blue;
-#define A__PIXEL_PARAMS (a__pass_dst, a__pass_red, a__pass_green, a__pass_blue)
+#define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue
 #include "a2x_pack_sprite.inc.c"
 #undef A__BLEND
 #undef A__SUFFIX
@@ -146,7 +154,7 @@ static void a_sprite__free(ASprite* Sprite);
 #define A__BLEND inverse
 #define A__SUFFIX normal
 #define A__BLEND_SETUP
-#define A__PIXEL_PARAMS (a__pass_dst)
+#define A__PIXEL_PARAMS
 #include "a2x_pack_sprite.inc.c"
 #undef A__BLEND
 #undef A__SUFFIX
@@ -156,7 +164,7 @@ static void a_sprite__free(ASprite* Sprite);
 #define A__BLEND inverse
 #define A__SUFFIX flat
 #define A__BLEND_SETUP
-#define A__PIXEL_PARAMS (a__pass_dst)
+#define A__PIXEL_PARAMS
 #include "a2x_pack_sprite.inc.c"
 #undef A__BLEND
 #undef A__SUFFIX

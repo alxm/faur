@@ -17,11 +17,7 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#define A__CONCAT(A, B) A##B
-#define A__FUNC_NAME(Prefix, Blend) A__CONCAT(Prefix, Blend)
-#define A__PIXEL_DRAW(Blend, Params) A__CONCAT(a_pixel__, Blend) Params
-
-void A__FUNC_NAME(a_draw__rectangle_noclip_, A__BLEND)(int X, int Y, int Width, int Height)
+void A__FUNC_NAME(a_draw__rectangle_noclip_)(int X, int Y, int Width, int Height)
 {
     A__BLEND_SETUP;
 
@@ -32,12 +28,12 @@ void A__FUNC_NAME(a_draw__rectangle_noclip_, A__BLEND)(int X, int Y, int Width, 
         APixel* a__pass_dst = pixels;
 
         for(int j = Width; j--; a__pass_dst++) {
-            A__PIXEL_DRAW(A__BLEND, A__PIXEL_PARAMS);
+            A__PIXEL_DRAW(a__pass_dst);
         }
     }
 }
 
-void A__FUNC_NAME(a_draw__rectangle_clip_, A__BLEND)(int X, int Y, int Width, int Height)
+void A__FUNC_NAME(a_draw__rectangle_clip_)(int X, int Y, int Width, int Height)
 {
     if(!a_collide_boxOnScreen(X, Y, Width, Height)) {
         return;
@@ -50,10 +46,10 @@ void A__FUNC_NAME(a_draw__rectangle_clip_, A__BLEND)(int X, int Y, int Width, in
     Width = a_math_min(Width, x2 - X);
     Height = a_math_min(Height, y2 - Y);
 
-    A__FUNC_NAME(a_draw__rectangle_noclip_, A__BLEND)(X, Y, Width, Height);
+    A__FUNC_NAME(a_draw__rectangle_noclip_)(X, Y, Width, Height);
 }
 
-void A__FUNC_NAME(a_draw__line_noclip_, A__BLEND)(int X1, int Y1, int X2, int Y2)
+void A__FUNC_NAME(a_draw__line_noclip_)(int X1, int Y1, int X2, int Y2)
 {
     A__BLEND_SETUP;
 
@@ -84,11 +80,10 @@ void A__FUNC_NAME(a_draw__line_noclip_, A__BLEND)(int X1, int Y1, int X2, int Y2
         const int yinc2 = (denominator == deltax) ? yinct : 0;
 
         const int screenw = a_screen__width;
-        APixel* a__pass_dst = a_screen__pixels
-                              + Y1 * screenw + X1;
+        APixel* a__pass_dst = a_screen__pixels + Y1 * screenw + X1;
 
         for(int i = denominator + 1; i--; ) {
-            A__PIXEL_DRAW(A__BLEND, A__PIXEL_PARAMS);
+            A__PIXEL_DRAW(a__pass_dst);
 
             numerator += numeratorinc;
 
@@ -104,27 +99,27 @@ void A__FUNC_NAME(a_draw__line_noclip_, A__BLEND)(int X1, int Y1, int X2, int Y2
     }
 }
 
-void A__FUNC_NAME(a_draw__line_clip_, A__BLEND)(int X1, int Y1, int X2, int Y2)
+void A__FUNC_NAME(a_draw__line_clip_)(int X1, int Y1, int X2, int Y2)
 {
     if(!cohen_sutherland_clip(&X1, &Y1, &X2, &Y2)) {
         return;
     }
 
-    A__FUNC_NAME(a_draw__line_noclip_, A__BLEND)(X1, Y1, X2, Y2);
+    A__FUNC_NAME(a_draw__line_noclip_)(X1, Y1, X2, Y2);
 }
 
-void A__FUNC_NAME(a_draw__hline_noclip_, A__BLEND)(int X1, int X2, int Y)
+void A__FUNC_NAME(a_draw__hline_noclip_)(int X1, int X2, int Y)
 {
     A__BLEND_SETUP;
 
     APixel* a__pass_dst = a_screen__pixels + Y * a_screen__width + X1;
 
     for(int i = X2 - X1; i--; a__pass_dst++) {
-        A__PIXEL_DRAW(A__BLEND, A__PIXEL_PARAMS);
+        A__PIXEL_DRAW(a__pass_dst);
     }
 }
 
-void A__FUNC_NAME(a_draw__hline_clip_, A__BLEND)(int X1, int X2, int Y)
+void A__FUNC_NAME(a_draw__hline_clip_)(int X1, int X2, int Y)
 {
     if(X1 >= X2 || !a_collide_boxOnScreen(X1, Y, X2 - X1, 1)) {
         return;
@@ -133,10 +128,10 @@ void A__FUNC_NAME(a_draw__hline_clip_, A__BLEND)(int X1, int X2, int Y)
     X1 = a_math_max(X1, 0);
     X2 = a_math_min(X2, a_screen__width);
 
-    A__FUNC_NAME(a_draw__hline_noclip_, A__BLEND)(X1, X2, Y);
+    A__FUNC_NAME(a_draw__hline_noclip_)(X1, X2, Y);
 }
 
-void A__FUNC_NAME(a_draw__vline_noclip_, A__BLEND)(int X,  int Y1, int Y2)
+void A__FUNC_NAME(a_draw__vline_noclip_)(int X, int Y1, int Y2)
 {
     A__BLEND_SETUP;
 
@@ -144,11 +139,11 @@ void A__FUNC_NAME(a_draw__vline_noclip_, A__BLEND)(int X,  int Y1, int Y2)
     APixel* a__pass_dst = a_screen__pixels + Y1 * screenw + X;
 
     for(int i = Y2 - Y1; i--; a__pass_dst += screenw) {
-        A__PIXEL_DRAW(A__BLEND, A__PIXEL_PARAMS);
+        A__PIXEL_DRAW(a__pass_dst);
     }
 }
 
-void A__FUNC_NAME(a_draw__vline_clip_, A__BLEND)(int X,  int Y1, int Y2)
+void A__FUNC_NAME(a_draw__vline_clip_)(int X, int Y1, int Y2)
 {
     if(Y1 >= Y2 || !a_collide_boxOnScreen(X, Y1, 1, Y2 - Y1)) {
         return;
@@ -157,9 +152,5 @@ void A__FUNC_NAME(a_draw__vline_clip_, A__BLEND)(int X,  int Y1, int Y2)
     Y1 = a_math_max(Y1, 0);
     Y2 = a_math_min(Y2, a_screen__height);
 
-    A__FUNC_NAME(a_draw__vline_noclip_, A__BLEND)(X, Y1, Y2);
+    A__FUNC_NAME(a_draw__vline_noclip_)(X, Y1, Y2);
 }
-
-#undef A__CONCAT
-#undef A__FUNC_NAME
-#undef A__PIXEL_DRAW

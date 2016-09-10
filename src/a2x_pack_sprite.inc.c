@@ -17,15 +17,10 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#define A__CONCAT2(A, B) A##B
-#define A__CONCAT3(A, B, C) A##_##B##_##C
-#define A__FUNC_NAME(Prefix, Blend, Suffix) A__CONCAT3(Prefix, Blend, Suffix)
-#define A__PIXEL_DRAW(Blend, Params) A__CONCAT2(a_pixel__, Blend) Params
-
 // Spans format for each graphic line:
 // [NumSpans << 1 | 1 (draw) / 0 (transparent)][[len]...]
 
-void A__FUNC_NAME(a_blit__noclip, A__BLEND, A__SUFFIX)(const ASprite* Sprite, int X, int Y)
+void A__FUNC_NAME(a_blit__noclip)(const ASprite* Sprite, int X, int Y)
 {
     A__BLEND_SETUP;
 
@@ -44,7 +39,7 @@ void A__FUNC_NAME(a_blit__noclip, A__BLEND, A__SUFFIX)(const ASprite* Sprite, in
 
             if(draw) {
                 while(len--) {
-                    A__PIXEL_DRAW(A__BLEND, A__PIXEL_PARAMS);
+                    A__PIXEL_DRAW(a__pass_dst);
                     a__pass_dst++;
                     a__pass_src++;
                 }
@@ -58,7 +53,7 @@ void A__FUNC_NAME(a_blit__noclip, A__BLEND, A__SUFFIX)(const ASprite* Sprite, in
     }
 }
 
-void A__FUNC_NAME(a_blit__clip, A__BLEND, A__SUFFIX)(const ASprite* Sprite, int X, int Y)
+void A__FUNC_NAME(a_blit__clip)(const ASprite* Sprite, int X, int Y)
 {
     A__BLEND_SETUP;
 
@@ -114,7 +109,7 @@ void A__FUNC_NAME(a_blit__clip, A__BLEND, A__SUFFIX)(const ASprite* Sprite, int 
                 drawColumns -= len;
             } else {
                 while(len-- && drawColumns--) {
-                    A__PIXEL_DRAW(A__BLEND, A__PIXEL_PARAMS);
+                    A__PIXEL_DRAW(a__pass_dst);
                     a__pass_dst++;
                     a__pass_src++;
                 }
@@ -127,7 +122,7 @@ void A__FUNC_NAME(a_blit__clip, A__BLEND, A__SUFFIX)(const ASprite* Sprite, int 
 
             if(draw) {
                 while(len-- && drawColumns--) {
-                    A__PIXEL_DRAW(A__BLEND, A__PIXEL_PARAMS);
+                    A__PIXEL_DRAW(a__pass_dst);
                     a__pass_dst++;
                     a__pass_src++;
                 }
@@ -144,8 +139,3 @@ void A__FUNC_NAME(a_blit__clip, A__BLEND, A__SUFFIX)(const ASprite* Sprite, int 
         spans = nextLine;
     }
 }
-
-#undef A__CONCAT2
-#undef A__CONCAT3
-#undef A__FUNC_NAME
-#undef A__PIXEL_DRAW
