@@ -23,6 +23,7 @@ typedef void (*ADrawRectangle)(int X, int Y, int Width, int Height);
 typedef void (*ADrawLine)(int X1, int Y1, int X2, int Y2);
 typedef void (*ADrawHLine)(int X1, int X2, int Y);
 typedef void (*ADrawVLine)(int X, int Y1, int Y2);
+typedef void (*ADrawCircle)(int X, int Y, int Radius);
 
 static ADrawRectangle g_draw_rectangle;
 static ADrawRectangle g_rectangle[A_PIXEL_BLEND_NUM][2];
@@ -35,6 +36,9 @@ static ADrawHLine g_hline[A_PIXEL_BLEND_NUM][2];
 
 static ADrawVLine g_draw_vline;
 static ADrawHLine g_vline[A_PIXEL_BLEND_NUM][2];
+
+static ADrawCircle g_draw_circle;
+static ADrawCircle g_circle[A_PIXEL_BLEND_NUM][2];
 
 static bool cohen_sutherland_clip(int* X1, int* Y1, int* X2, int* Y2)
 {
@@ -108,6 +112,94 @@ static bool cohen_sutherland_clip(int* X1, int* Y1, int* X2, int* Y2)
         }
     }
 }
+
+static void findMidpoint(int X, int Y, int Radius, int* MidX, int* MidY)
+{
+    int x = Radius;
+    int y = 0;
+    int error = -Radius / 2;
+    int lastx = x, lasty = y;
+
+    while(x > y) {
+        lastx = x;
+        lasty = y;
+
+        error += 2 * y + 1; // (y+1)^2 = y^2 + 2y + 1;
+        y++;
+
+        if(error > 0) { // check if x^2 + y^2 > r^2
+            error += -2 * x + 1; // (x-1)^2 = x^2 - 2x + 1;
+            x--;
+        }
+    }
+
+    *MidX = lastx;
+    *MidY = lasty;
+}
+
+#define drawClippedOctant(BoundX, BoundY, BoundW, BoundH,                   \
+                          PrimaryCoord, SecondaryCoord,                     \
+                          Buffer, PrimaryBufferInc, SecondaryBufferInc,     \
+                          YOffScreen, XOffScreen,                           \
+                          PrimaryOnScreen, SecondaryOnScreen)               \
+do {                                                                        \
+    if(!a_collide_boxOnScreen(BoundX, BoundY, BoundW, BoundH)) {            \
+        break;                                                              \
+    }                                                                       \
+                                                                            \
+    int PrimaryCoord = 0;                                                   \
+    int SecondaryCoord = Radius;                                            \
+    int error = -Radius / 2;                                                \
+                                                                            \
+    while(YOffScreen) {                                                     \
+        error += 2 * PrimaryCoord + 1;                                      \
+        PrimaryCoord++;                                                     \
+                                                                            \
+        Buffer += PrimaryBufferInc;                                         \
+                                                                            \
+        if(error > 0) {                                                     \
+            error += -2 * SecondaryCoord + 1;                               \
+            SecondaryCoord--;                                               \
+                                                                            \
+            Buffer += SecondaryBufferInc;                                   \
+        }                                                                   \
+    }                                                                       \
+                                                                            \
+    while(XOffScreen) {                                                     \
+        error += 2 * PrimaryCoord + 1;                                      \
+        PrimaryCoord++;                                                     \
+                                                                            \
+        Buffer += PrimaryBufferInc;                                         \
+                                                                            \
+        if(error > 0) {                                                     \
+            error += -2 * SecondaryCoord + 1;                               \
+            SecondaryCoord--;                                               \
+                                                                            \
+            Buffer += SecondaryBufferInc;                                   \
+        }                                                                   \
+    }                                                                       \
+                                                                            \
+    if((PrimaryOnScreen) && (SecondaryOnScreen)) {                          \
+        while(PrimaryCoord < SecondaryCoord && (PrimaryOnScreen)) {         \
+            error += 2 * PrimaryCoord + 1;                                  \
+            PrimaryCoord++;                                                 \
+                                                                            \
+            A__PIXEL_DRAW(Buffer);                                          \
+            Buffer += PrimaryBufferInc;                                     \
+                                                                            \
+            if(error > 0) {                                                 \
+                error += -2 * SecondaryCoord + 1;                           \
+                SecondaryCoord--;                                           \
+                                                                            \
+                if(!(SecondaryOnScreen)) {                                  \
+                    break;                                                  \
+                }                                                           \
+                                                                            \
+                Buffer += SecondaryBufferInc;                               \
+            }                                                               \
+        }                                                                   \
+    }                                                                       \
+} while(0)
 
 #define A__CONCAT_WORKER(A, B) A##B
 #define A__CONCAT(A, B) A__CONCAT_WORKER(A, B)
@@ -191,6 +283,7 @@ void a_draw__init(void)
         shapeInit(line, Index, Blend);      \
         shapeInit(hline, Index, Blend);     \
         shapeInit(vline, Index, Blend);     \
+        shapeInit(circle, Index, Blend);    \
     })
 
     shapeInitAll(A_PIXEL_BLEND_PLAIN, plain);
@@ -209,6 +302,7 @@ void a_draw__updateRoutines(void)
     g_draw_line = g_line[a_pixel__mode.blend][a_pixel__mode.clip];
     g_draw_hline = g_hline[a_pixel__mode.blend][a_pixel__mode.clip];
     g_draw_vline = g_vline[a_pixel__mode.blend][a_pixel__mode.clip];
+    g_draw_circle = g_circle[a_pixel__mode.blend][a_pixel__mode.clip];
 }
 
 void a_draw_fill(void)
@@ -242,4 +336,9 @@ void a_draw_hline(int X1, int X2, int Y)
 void a_draw_vline(int X, int Y1, int Y2)
 {
     g_draw_vline(X, Y1, Y2);
+}
+
+void a_draw_circle(int X, int Y, int Radius)
+{
+    g_draw_circle(X, Y, Radius);
 }
