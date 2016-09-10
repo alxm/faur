@@ -1,5 +1,5 @@
 /*
-    Copyright 2010 Alex Margarit
+    Copyright 2010, 2016 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -21,7 +21,6 @@
 
 #include "a2x_pack_main.p.h"
 
-#include "a2x_pack_blit.v.h"
 #include "a2x_pack_conf.v.h"
 #include "a2x_pack_console.v.h"
 #include "a2x_pack_draw.v.h"

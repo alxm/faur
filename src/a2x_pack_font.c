@@ -1,5 +1,5 @@
 /*
-    Copyright 2010 Alex Margarit
+    Copyright 2010, 2016 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -145,8 +145,8 @@ int a_font_copy(int Font, APixel Color)
         if(src->sprites[i]) {
             f->sprites[i] = a_sprite_clone(src->sprites[i]);
 
-            ASprite* const s = f->sprites[i];
-            APixel* d = s->data;
+            ASprite* s = f->sprites[i];
+            APixel* d = s->pixels;
 
             for(int j = s->w * s->h; j--; d++) {
                 if(*d != A_SPRITE_TRANSPARENT) {
@@ -208,7 +208,7 @@ void a_font_text(const char* Text)
             ASprite* spr = f->sprites[(int)*Text];
 
             if(spr) {
-                a_blit(spr, g_x + (maxWidth - spr->w) / 2, g_y);
+                a_sprite_blit(spr, g_x + (maxWidth - spr->w) / 2, g_y);
                 g_x += maxWidth + FONT_SPACE;
             } else if(*Text == ' ') {
                 g_x += maxWidth + FONT_SPACE;
@@ -219,7 +219,7 @@ void a_font_text(const char* Text)
             ASprite* spr = f->sprites[(int)*Text];
 
             if(spr) {
-                a_blit(spr, g_x, g_y);
+                a_sprite_blit(spr, g_x, g_y);
                 g_x += spr->w + FONT_SPACE;
             } else if(*Text == ' ') {
                 g_x += FONT_BLANK_SPACE + FONT_SPACE;

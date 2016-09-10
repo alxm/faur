@@ -21,6 +21,5 @@
 
 #include "a2x_pack_spritelayers.p.h"
 
-#include "a2x_pack_blit.v.h"
 #include "a2x_pack_list.v.h"
 #include "a2x_pack_sprite.v.h"

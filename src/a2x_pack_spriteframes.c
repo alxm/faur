@@ -1,5 +1,5 @@
 /*
-    Copyright 2010 Alex Margarit
+    Copyright 2010, 2016 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -46,7 +46,7 @@ ASpriteFrames* a_spriteframes_new(const ASprite* Sheet, int X, int Y, int CallsT
     ASprite* s;
 
     do {
-        s = a_sprite_new(Sheet, X, Y);
+        s = a_sprite_fromSprite(Sheet, X, Y);
 
         if(s) {
             a_list_addLast(Frames->sprites, s);

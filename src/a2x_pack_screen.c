@@ -1,5 +1,5 @@
 /*
-    Copyright 2010 Alex Margarit
+    Copyright 2010, 2016 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -149,6 +149,11 @@ void a_screen_copyPart(APixel* Dst, int X, int Y, int Width, int Height)
     }
 }
 
+APixel a_screen_getPixel(int X, int Y)
+{
+    return *(a_screen__pixels + Y * a_screen__width + X);
+}
+
 void a_screen_setTarget(APixel* Pixels, int Width, int Height)
 {
     a_screen__pixels = Pixels;
@@ -158,7 +163,7 @@ void a_screen_setTarget(APixel* Pixels, int Width, int Height)
 
 void a_screen_setTargetSprite(ASprite* Sprite)
 {
-    a_screen__pixels = Sprite->data;
+    a_screen__pixels = Sprite->pixels;
     a_screen__width = Sprite->w;
     a_screen__height = Sprite->h;
 

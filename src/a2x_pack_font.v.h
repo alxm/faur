@@ -21,7 +21,6 @@
 
 #include "a2x_pack_font.p.h"
 
-#include "a2x_pack_blit.v.h"
 #include "a2x_pack_list.v.h"
 #include "a2x_pack_screen.v.h"
 #include "a2x_pack_sprite.v.h"

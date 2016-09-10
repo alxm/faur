@@ -28,9 +28,13 @@ CFLAGS += -std=c99 \
 
 A2X_PREFIX = a2x_
 
-C_FILES = $(notdir $(wildcard $(C_DIR)/$(A2X_PREFIX)*.c))
+C_INC_FILES = $(notdir $(wildcard $(C_DIR)/$(A2X_PREFIX)*.inc.c))
+C_SRC_FILES = $(notdir $(wildcard $(C_DIR)/$(A2X_PREFIX)*.c))
+C_FILES = $(filter-out $(C_INC_FILES), $(C_SRC_FILES))
+
 O_FILES = $(addprefix $(O_DIR)/, $(C_FILES:.c=.o)) \
           $(addprefix $(MEDIA_O_DIR)/, $(notdir $(MEDIA_C_FILES:.c=.o)))
+
 H_FILES = $(wildcard $(C_DIR)/$(A2X_PREFIX)*.p.h)
 
 ALL_DIRS = $(INC_DIR) $(LIB_DIR) $(OBJ_DIR) $(O_DIR) $(MEDIA_O_DIR)

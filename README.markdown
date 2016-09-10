@@ -62,6 +62,6 @@ I originally wrote a2x for my GP2X games. The following targets are also support
 License
 -------
 
-Copyright 2010 Alex Margarit (alex@alxm.org)
+Copyright 2010-2016 Alex Margarit (alex@alxm.org)
 
-Licensed under GNU LGPL3.
+Licensed under [GNU LGPL3](https://www.gnu.org/licenses/lgpl.html)

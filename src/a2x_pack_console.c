@@ -65,7 +65,7 @@ static void screenCallback(void)
     }
 
     a_pixel_push();
-    a_pixel_setBlend(A_PIXEL_RGB75);
+    a_pixel_setBlend(A_PIXEL_BLEND_RGB75);
     a_pixel_setRGB(0x28, 0x18, 0x18);
     a_draw_fill();
     a_pixel_pop();
@@ -103,7 +103,7 @@ static void screenCallback(void)
 
     A_LIST_ITERATE(g_lines, ALine*, line) {
         ASprite* graphic = g_titles[line->type];
-        a_blit(graphic, 1, y);
+        a_sprite_blit(graphic, 1, y);
 
         a_font_setCoords(1 + a_sprite_w(graphic) + 2, y);
         a_font_fixed(a_screen__width - a_font_getX(), line->text);

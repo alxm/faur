@@ -1,5 +1,5 @@
 /*
-    Copyright 2010 Alex Margarit
+    Copyright 2010, 2016 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -19,11 +19,177 @@
 
 #include "a2x_pack_sprite.v.h"
 
+typedef void (*ABlitter)(const ASprite* Sprite, int X, int Y);
+
+static ABlitter g_blitter;
+static ABlitter g_blitters[A_PIXEL_BLEND_NUM][2][2];
+static bool g_fillFlat;
+
 static AList* g_spritesList;
 static void a_sprite__free(ASprite* Sprite);
 
+#define A__CONCAT_WORKER(A, B) A##B
+#define A__CONCAT(A, B) A__CONCAT_WORKER(A, B)
+#define A__CONCAT3_WORKER(A, B, C) A##_##B##_##C
+#define A__CONCAT3(A, B, C) A__CONCAT3_WORKER(A, B, C)
+#define A__FUNC_NAME(Prefix) A__CONCAT3(Prefix, A__BLEND, A__SUFFIX)
+#define A__PIXEL_DRAW_WORKER(Params) A__CONCAT(a_pixel__, A__BLEND)(Params)
+#define A__PIXEL_DRAW(Dst) A__PIXEL_DRAW_WORKER(Dst A__PIXEL_PARAMS)
+
+#define A__BLEND plain
+#define A__SUFFIX normal
+#define A__BLEND_SETUP
+#define A__PIXEL_PARAMS , *a__pass_src
+#include "a2x_pack_sprite.inc.c"
+#undef A__BLEND
+#undef A__SUFFIX
+#undef A__BLEND_SETUP
+#undef A__PIXEL_PARAMS
+
+#define A__BLEND plain
+#define A__SUFFIX flat
+#define A__BLEND_SETUP                                \
+    const APixel a__pass_color = a_pixel__mode.pixel;
+#define A__PIXEL_PARAMS , a__pass_color
+#include "a2x_pack_sprite.inc.c"
+#undef A__BLEND
+#undef A__SUFFIX
+#undef A__BLEND_SETUP
+#undef A__PIXEL_PARAMS
+
+#define A__BLEND rgba
+#define A__SUFFIX normal
+#define A__BLEND_SETUP \
+    const unsigned int a__pass_alpha = a_pixel__mode.alpha;
+#define A__PIXEL_PARAMS , a_pixel_red(*a__pass_src), a_pixel_green(*a__pass_src), a_pixel_blue(*a__pass_src), a__pass_alpha
+#include "a2x_pack_sprite.inc.c"
+#undef A__BLEND
+#undef A__SUFFIX
+#undef A__BLEND_SETUP
+#undef A__PIXEL_PARAMS
+
+#define A__BLEND rgba
+#define A__SUFFIX flat
+#define A__BLEND_SETUP                                      \
+    const uint8_t a__pass_red = a_pixel__mode.red;          \
+    const uint8_t a__pass_green = a_pixel__mode.green;      \
+    const uint8_t a__pass_blue = a_pixel__mode.blue;        \
+    const unsigned int a__pass_alpha = a_pixel__mode.alpha;
+#define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue, a__pass_alpha
+#include "a2x_pack_sprite.inc.c"
+#undef A__BLEND
+#undef A__SUFFIX
+#undef A__BLEND_SETUP
+#undef A__PIXEL_PARAMS
+
+#define A__BLEND rgb25
+#define A__SUFFIX normal
+#define A__BLEND_SETUP
+#define A__PIXEL_PARAMS , a_pixel_red(*a__pass_src), a_pixel_green(*a__pass_src), a_pixel_blue(*a__pass_src)
+#include "a2x_pack_sprite.inc.c"
+#undef A__BLEND
+#undef A__SUFFIX
+#undef A__BLEND_SETUP
+#undef A__PIXEL_PARAMS
+
+#define A__BLEND rgb25
+#define A__SUFFIX flat
+#define A__BLEND_SETUP                                 \
+    const uint8_t a__pass_red = a_pixel__mode.red;     \
+    const uint8_t a__pass_green = a_pixel__mode.green; \
+    const uint8_t a__pass_blue = a_pixel__mode.blue;
+#define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue
+#include "a2x_pack_sprite.inc.c"
+#undef A__BLEND
+#undef A__SUFFIX
+#undef A__BLEND_SETUP
+#undef A__PIXEL_PARAMS
+
+#define A__BLEND rgb50
+#define A__SUFFIX normal
+#define A__BLEND_SETUP
+#define A__PIXEL_PARAMS , a_pixel_red(*a__pass_src), a_pixel_green(*a__pass_src), a_pixel_blue(*a__pass_src)
+#include "a2x_pack_sprite.inc.c"
+#undef A__BLEND
+#undef A__SUFFIX
+#undef A__BLEND_SETUP
+#undef A__PIXEL_PARAMS
+
+#define A__BLEND rgb50
+#define A__SUFFIX flat
+#define A__BLEND_SETUP                                 \
+    const uint8_t a__pass_red = a_pixel__mode.red;     \
+    const uint8_t a__pass_green = a_pixel__mode.green; \
+    const uint8_t a__pass_blue = a_pixel__mode.blue;
+#define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue
+#include "a2x_pack_sprite.inc.c"
+#undef A__BLEND
+#undef A__SUFFIX
+#undef A__BLEND_SETUP
+#undef A__PIXEL_PARAMS
+
+#define A__BLEND rgb75
+#define A__SUFFIX normal
+#define A__BLEND_SETUP
+#define A__PIXEL_PARAMS , a_pixel_red(*a__pass_src), a_pixel_green(*a__pass_src), a_pixel_blue(*a__pass_src)
+#include "a2x_pack_sprite.inc.c"
+#undef A__BLEND
+#undef A__SUFFIX
+#undef A__BLEND_SETUP
+#undef A__PIXEL_PARAMS
+
+#define A__BLEND rgb75
+#define A__SUFFIX flat
+#define A__BLEND_SETUP                                 \
+    const uint8_t a__pass_red = a_pixel__mode.red;     \
+    const uint8_t a__pass_green = a_pixel__mode.green; \
+    const uint8_t a__pass_blue = a_pixel__mode.blue;
+#define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue
+#include "a2x_pack_sprite.inc.c"
+#undef A__BLEND
+#undef A__SUFFIX
+#undef A__BLEND_SETUP
+#undef A__PIXEL_PARAMS
+
+#define A__BLEND inverse
+#define A__SUFFIX normal
+#define A__BLEND_SETUP
+#define A__PIXEL_PARAMS
+#include "a2x_pack_sprite.inc.c"
+#undef A__BLEND
+#undef A__SUFFIX
+#undef A__BLEND_SETUP
+#undef A__PIXEL_PARAMS
+
+#define A__BLEND inverse
+#define A__SUFFIX flat
+#define A__BLEND_SETUP
+#define A__PIXEL_PARAMS
+#include "a2x_pack_sprite.inc.c"
+#undef A__BLEND
+#undef A__SUFFIX
+#undef A__BLEND_SETUP
+#undef A__PIXEL_PARAMS
+
 void a_sprite__init(void)
 {
+    #define blitterInit(Index, Blend)                              \
+    ({                                                             \
+        g_blitters[Index][0][0] = a_blit__noclip_##Blend##_normal; \
+        g_blitters[Index][0][1] = a_blit__noclip_##Blend##_flat;   \
+        g_blitters[Index][1][0] = a_blit__clip_##Blend##_normal;   \
+        g_blitters[Index][1][1] = a_blit__clip_##Blend##_flat;     \
+    })
+
+    blitterInit(A_PIXEL_BLEND_PLAIN, plain);
+    blitterInit(A_PIXEL_BLEND_RGBA, rgba);
+    blitterInit(A_PIXEL_BLEND_RGB25, rgb25);
+    blitterInit(A_PIXEL_BLEND_RGB50, rgb50);
+    blitterInit(A_PIXEL_BLEND_RGB75, rgb75);
+    blitterInit(A_PIXEL_BLEND_INVERSE, inverse);
+
+    g_fillFlat = false;
+    a_sprite__updateRoutines();
     g_spritesList = a_list_new();
 }
 
@@ -34,6 +200,11 @@ void a_sprite__uninit(void)
     }
 
     a_list_free(g_spritesList);
+}
+
+void a_sprite__updateRoutines(void)
+{
+    g_blitter = g_blitters[a_pixel__mode.blend][a_pixel__mode.clip][g_fillFlat];
 }
 
 ASprite* a_sprite_fromFile(const char* Path)
@@ -78,13 +249,13 @@ ASprite* a_sprite_fromPixels(const APixel* Pixels, int Width, int Height)
 {
     ASprite* s = a_sprite_blank(Width, Height);
 
-    memcpy(s->data, Pixels, Width * Height * sizeof(APixel));
+    memcpy(s->pixels, Pixels, Width * Height * sizeof(APixel));
     a_sprite_refresh(s);
 
     return s;
 }
 
-ASprite* a_sprite_new(const ASprite* Sheet, int X, int Y)
+ASprite* a_sprite_fromSprite(const ASprite* Sheet, int X, int Y)
 {
     int spriteWidth = 0;
     int spriteHeight = 0;
@@ -123,8 +294,8 @@ ASprite* a_sprite_new(const ASprite* Sheet, int X, int Y)
     }
 
     ASprite* const sprite = a_sprite_blank(spriteWidth, spriteHeight);
-    const APixel* src = Sheet->data + Y * sheetWidth + X;
-    APixel* dst = sprite->data;
+    const APixel* src = Sheet->pixels + Y * sheetWidth + X;
+    APixel* dst = sprite->pixels;
 
     for(int i = spriteHeight; i--; ) {
         memcpy(dst, src, spriteWidth * sizeof(APixel));
@@ -144,14 +315,13 @@ ASprite* a_sprite_blank(int Width, int Height)
     s->w = Width;
     s->wLog2 = (int)log2f(Width);
     s->h = Height;
-    s->alpha = A_PIXEL_ALPHA_MAX;
     s->spans = NULL;
     s->spansSize = 0;
 
-    APixel* data = s->data;
+    APixel* pixels = s->pixels;
 
     for(int i = Width * Height; i--; ) {
-        *data++ = A_SPRITE_TRANSPARENT;
+        *pixels++ = A_SPRITE_TRANSPARENT;
     }
 
     s->node = a_list_addLast(g_spritesList, s);
@@ -171,6 +341,32 @@ void a_sprite__free(ASprite* Sprite)
     free(Sprite);
 }
 
+void a_sprite_blit(const ASprite* Sprite, int X, int Y)
+{
+    g_blitter(Sprite, X, Y);
+}
+
+void a_sprite_blitCenter(const ASprite* Sprite)
+{
+    g_blitter(Sprite, (a_screen__width - Sprite->w) / 2, (a_screen__height - Sprite->h) / 2);
+}
+
+void a_sprite_blitCenterX(const ASprite* Sprite, int Y)
+{
+    g_blitter(Sprite, (a_screen__width - Sprite->w) / 2, Y);
+}
+
+void a_sprite_blitCenterY(const ASprite* Sprite, int X)
+{
+    g_blitter(Sprite, X, (a_screen__height - Sprite->h) / 2);
+}
+
+void a_sprite_fillFlat(bool FillFlatColor)
+{
+    g_fillFlat = FillFlatColor;
+    a_sprite__updateRoutines();
+}
+
 int a_sprite_w(const ASprite* Sprite)
 {
     return Sprite->w;
@@ -186,76 +382,76 @@ int a_sprite_h(const ASprite* Sprite)
     return Sprite->h;
 }
 
-APixel* a_sprite_data(ASprite* Sprite)
+APixel* a_sprite_pixels(ASprite* Sprite)
 {
-    return Sprite->data;
-}
-
-void a_sprite_setAlpha(ASprite* Sprite, unsigned int Alpha)
-{
-    Sprite->alpha = Alpha;
-}
-
-unsigned int a_sprite_getAlpha(const ASprite* Sprite)
-{
-    return Sprite->alpha;
+    return Sprite->pixels;
 }
 
 APixel a_sprite_getPixel(const ASprite* Sprite, int X, int Y)
 {
-    return *(Sprite->data + Y * Sprite->w + X);
+    return *(Sprite->pixels + Y * Sprite->w + X);
 }
 
 void a_sprite_refresh(ASprite* Sprite)
 {
-    const int w = Sprite->w;
-    const int h = Sprite->h;
-    const APixel* const dst = Sprite->data;
+    const int spriteWidth = Sprite->w;
+    const int spriteHeight = Sprite->h;
+    const APixel* const dst = Sprite->pixels;
 
-    // Spans format:
-    // [1 (draw) / 0 (transp)][[len]...][0 (end line)]
+    // Spans format for each graphic line:
+    // [NumSpans << 1 | 1 (draw) / 0 (transparent)][[len]...]
 
-    unsigned int num = 0;
+    size_t bytesNeeded = 0;
     const APixel* dest = dst;
 
-    for(int y = h; y--; ) {
-        num += 3; // transparency start + first len + end line
-        dest++; // start from the second pixel in the line
-        for(int x = w - 1; x--; dest++) {
-            if((*dest == A_SPRITE_TRANSPARENT && *(dest - 1) != A_SPRITE_TRANSPARENT)
-                || (*dest != A_SPRITE_TRANSPARENT && *(dest - 1) == A_SPRITE_TRANSPARENT)) {
-                num++; // transparency change, add a len
+    for(int y = spriteHeight; y--; ) {
+        bytesNeeded += sizeof(uint16_t); // total spans size and initial state
+        bool lastState = *dest != A_SPRITE_TRANSPARENT; // initial state
+
+        for(int x = spriteWidth; x--; ) {
+            bool newState = *dest++ != A_SPRITE_TRANSPARENT;
+
+            if(newState != lastState) {
+                bytesNeeded += sizeof(uint16_t); // length of new span
+                lastState = newState;
             }
         }
+
+        bytesNeeded += sizeof(uint16_t); // line's last span length
     }
 
-    const size_t newSpansSize = num * sizeof(uint16_t);
-
-    if(Sprite->spansSize < newSpansSize) {
+    if(Sprite->spansSize < bytesNeeded) {
         free(Sprite->spans);
-        Sprite->spans = a_mem_malloc(newSpansSize);
-        Sprite->spansSize = newSpansSize;
+        Sprite->spans = a_mem_malloc(bytesNeeded);
+        Sprite->spansSize = bytesNeeded;
     }
-
-    uint16_t* spans = Sprite->spans;
 
     dest = dst;
+    uint16_t* spans = Sprite->spans;
 
-    for(int y = h; y--; ) {
-        *spans++ = *dest != A_SPRITE_TRANSPARENT; // transparency start
-        dest++; // start from the second pixel in the line
-        uint16_t len = 1;
-        for(int x = 1; x < w; x++, dest++) {
-            if((*dest == A_SPRITE_TRANSPARENT && *(dest - 1) != A_SPRITE_TRANSPARENT)
-                || (*dest != A_SPRITE_TRANSPARENT && *(dest - 1) == A_SPRITE_TRANSPARENT)) {
-                *spans++ = len; // record len
-                len = 1;
+    for(int y = spriteHeight; y--; ) {
+        uint16_t* lineStart = spans;
+        uint16_t numSpans = 1; // line has at least 1 span
+        uint16_t spanLength = 0;
+
+        bool lastState = *dest != A_SPRITE_TRANSPARENT; // initial draw state
+        *spans++ = lastState;
+
+        for(int x = spriteWidth; x--; ) {
+            bool newState = *dest++ != A_SPRITE_TRANSPARENT;
+
+            if(newState == lastState) {
+                spanLength++; // keep growing current span
             } else {
-                len++;
+                *spans++ = spanLength; // record the just-ended span's length
+                numSpans++;
+                spanLength = 1; // start a new span from this pixel
+                lastState = newState;
             }
         }
-        *spans++ = len; // record last len of line
-        *spans++ = 0; // mark end of line
+
+        *spans++ = spanLength; // record the last span's length
+        *lineStart |= numSpans << 1; // record line's number of spans
     }
 }
 
@@ -263,8 +459,7 @@ ASprite* a_sprite_clone(const ASprite* Sprite)
 {
     ASprite* const s = a_sprite_blank(Sprite->w, Sprite->h);
 
-    s->alpha = Sprite->alpha;
-    memcpy(s->data, Sprite->data, Sprite->w * Sprite->h * sizeof(APixel));
+    memcpy(s->pixels, Sprite->pixels, Sprite->w * Sprite->h * sizeof(APixel));
     a_sprite_refresh(s);
 
     return s;

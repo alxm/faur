@@ -1,5 +1,5 @@
 /*
-    Copyright 2010 Alex Margarit
+    Copyright 2010, 2016 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -29,13 +29,14 @@ struct ASprite {
     int w;
     int wLog2;
     int h;
-    unsigned int alpha;
     uint16_t* spans;
     size_t spansSize;
-    APixel data[];
+    APixel pixels[];
 };
 
 extern void a_sprite__init(void);
 extern void a_sprite__uninit(void);
 
-#define a_sprite__getPixel(s, x, y) (*((s)->data + (y) * (s)->w + (x)))
+extern void a_sprite__updateRoutines(void);
+
+#define a_sprite__getPixel(s, x, y) (*((s)->pixels + (y) * (s)->w + (x)))

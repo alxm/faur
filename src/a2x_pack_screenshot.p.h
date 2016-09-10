@@ -1,5 +1,5 @@
 /*
-    Copyright 2010 Alex Margarit
+    Copyright 2011 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -20,3 +20,5 @@
 #pragma once
 
 #include "a2x_system_includes.h"
+
+extern void a_screenshot_take(void);

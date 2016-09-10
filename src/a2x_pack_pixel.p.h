@@ -1,5 +1,5 @@
 /*
-    Copyright 2010 Alex Margarit
+    Copyright 2010, 2016 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -76,13 +76,13 @@
 #define A_PIXEL_ALPHA_MAX 256
 
 typedef enum {
-    A_PIXEL_PLAIN,
-    A_PIXEL_RGBA,
-    A_PIXEL_RGB25,
-    A_PIXEL_RGB50,
-    A_PIXEL_RGB75,
-    A_PIXEL_INVERSE,
-    A_PIXEL_TYPE_NUM
+    A_PIXEL_BLEND_PLAIN,
+    A_PIXEL_BLEND_RGBA,
+    A_PIXEL_BLEND_RGB25,
+    A_PIXEL_BLEND_RGB50,
+    A_PIXEL_BLEND_RGB75,
+    A_PIXEL_BLEND_INVERSE,
+    A_PIXEL_BLEND_NUM
 } APixelBlend;
 
 extern void a_pixel_push(void);
@@ -94,6 +94,3 @@ extern void a_pixel_setAlpha(unsigned int Alpha);
 extern void a_pixel_setRGB(uint8_t Red, uint8_t Green, uint8_t Blue);
 extern void a_pixel_setRGBA(uint8_t Red, uint8_t Green, uint8_t Blue, unsigned int Alpha);
 extern void a_pixel_setPixel(APixel Pixel);
-
-extern void a_pixel_put(int X, int Y);
-extern APixel a_pixel_get(int X, int Y);

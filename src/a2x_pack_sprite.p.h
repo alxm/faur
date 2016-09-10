@@ -1,5 +1,5 @@
 /*
-    Copyright 2010 Alex Margarit
+    Copyright 2010, 2016 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -28,19 +28,21 @@ typedef struct ASprite ASprite;
 extern ASprite* a_sprite_fromFile(const char* Path);
 extern ASprite* a_sprite_fromData(const uint8_t* Data);
 extern ASprite* a_sprite_fromPixels(const APixel* Pixels, int Width, int Height);
-
-extern ASprite* a_sprite_new(const ASprite* sheet, int X, int Y);
+extern ASprite* a_sprite_fromSprite(const ASprite* Sheet, int X, int Y);
 extern ASprite* a_sprite_blank(int Width, int Height);
 
 extern void a_sprite_free(ASprite* Sprite);
 
+extern void a_sprite_blit(const ASprite* Sprite, int X, int Y);
+extern void a_sprite_blitCenter(const ASprite* Sprite);
+extern void a_sprite_blitCenterX(const ASprite* Sprite, int Y);
+extern void a_sprite_blitCenterY(const ASprite* Sprite, int X);
+extern void a_sprite_fillFlat(bool FillFlatColor);
+
 extern int a_sprite_w(const ASprite* Sprite);
 extern int a_sprite_wLog2(const ASprite* Sprite);
 extern int a_sprite_h(const ASprite* Sprite);
-extern APixel* a_sprite_data(ASprite* Sprite);
-
-extern void a_sprite_setAlpha(ASprite* Sprite, unsigned int Alpha);
-extern unsigned int a_sprite_getAlpha(const ASprite* Sprite);
+extern APixel* a_sprite_pixels(ASprite* Sprite);
 
 extern APixel a_sprite_getPixel(const ASprite* Sprite, int X, int Y);
 
