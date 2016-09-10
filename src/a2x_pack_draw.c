@@ -19,11 +19,15 @@
 
 #include "a2x_pack_draw.v.h"
 
+typedef void (*ADrawPixel)(int X, int Y);
 typedef void (*ADrawRectangle)(int X, int Y, int Width, int Height);
 typedef void (*ADrawLine)(int X1, int Y1, int X2, int Y2);
 typedef void (*ADrawHLine)(int X1, int X2, int Y);
 typedef void (*ADrawVLine)(int X, int Y1, int Y2);
 typedef void (*ADrawCircle)(int X, int Y, int Radius);
+
+static ADrawPixel g_draw_pixel;
+static ADrawPixel g_pixel[A_PIXEL_BLEND_NUM][2];
 
 static ADrawRectangle g_draw_rectangle;
 static ADrawRectangle g_rectangle[A_PIXEL_BLEND_NUM][2];
@@ -279,6 +283,7 @@ void a_draw__init(void)
 
     #define shapeInitAll(Index, Blend)      \
     ({                                      \
+        shapeInit(pixel, Index, Blend);     \
         shapeInit(rectangle, Index, Blend); \
         shapeInit(line, Index, Blend);      \
         shapeInit(hline, Index, Blend);     \
@@ -298,6 +303,7 @@ void a_draw__init(void)
 
 void a_draw__updateRoutines(void)
 {
+    g_draw_pixel = g_pixel[a_pixel__mode.blend][a_pixel__mode.clip];
     g_draw_rectangle = g_rectangle[a_pixel__mode.blend][a_pixel__mode.clip];
     g_draw_line = g_line[a_pixel__mode.blend][a_pixel__mode.clip];
     g_draw_hline = g_hline[a_pixel__mode.blend][a_pixel__mode.clip];
@@ -316,6 +322,11 @@ void a_draw_rectangleThick(int X, int Y, int Width, int Height, int Thickness)
     g_draw_rectangle(X, Y + Height - Thickness, Width, Thickness); // bottom
     g_draw_rectangle(X, Y + Thickness, Thickness, Height - 2 * Thickness); // left
     g_draw_rectangle(X + Width - Thickness, Y + Thickness, Thickness, Height - 2 * Thickness); // right
+}
+
+void a_draw_pixel(int X, int Y)
+{
+    g_draw_pixel(X, Y);
 }
 
 void a_draw_rectangle(int X, int Y, int Width, int Height)

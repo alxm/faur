@@ -25,6 +25,7 @@
 
 extern void a_draw_fill(void);
 extern void a_draw_rectangleThick(int X, int Y, int Width, int Height, int Thickness);
+extern void a_draw_pixel(int X, int Y);
 extern void a_draw_rectangle(int X, int Y, int Width, int Height);
 extern void a_draw_line(int X1, int Y1, int X2, int Y2);
 extern void a_draw_hline(int X1, int X2, int Y);

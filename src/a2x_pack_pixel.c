@@ -19,11 +19,6 @@
 
 #include "a2x_pack_pixel.v.h"
 
-typedef void (*APixelPut)(int X, int Y);
-
-static APixelPut g_pixel_put;
-static APixelPut g_pixelDraw[A_PIXEL_BLEND_NUM][2];
-
 APixelMode a_pixel__mode;
 static AList* g_modeStack;
 
@@ -53,24 +48,9 @@ pixelMake(inverse, (PIXEL_DST))
 
 void a_pixel__init(void)
 {
-    #define pixelInit(Index, Blend)                      \
-    ({                                                   \
-        g_pixelDraw[Index][0] = a_pixel__noclip_##Blend; \
-        g_pixelDraw[Index][1] = a_pixel__clip_##Blend;   \
-    })
-
-    pixelInit(A_PIXEL_BLEND_PLAIN, plain);
-    pixelInit(A_PIXEL_BLEND_RGBA, rgba);
-    pixelInit(A_PIXEL_BLEND_RGB25, rgb25);
-    pixelInit(A_PIXEL_BLEND_RGB50, rgb50);
-    pixelInit(A_PIXEL_BLEND_RGB75, rgb75);
-    pixelInit(A_PIXEL_BLEND_INVERSE, inverse);
-
     a_pixel__mode.blend = A_PIXEL_BLEND_PLAIN;
     a_pixel__mode.clip = true;
     g_modeStack = a_list_new();
-
-    g_pixel_put = g_pixelDraw[a_pixel__mode.blend][a_pixel__mode.clip];
 }
 
 void a_pixel__uninit(void)
@@ -112,8 +92,6 @@ void a_pixel_setClip(bool DoClip)
 
     a_sprite__updateRoutines();
     a_draw__updateRoutines();
-
-    g_pixel_put = g_pixelDraw[a_pixel__mode.blend][a_pixel__mode.clip];
 }
 
 void a_pixel_setBlend(APixelBlend Blend)
@@ -122,8 +100,6 @@ void a_pixel_setBlend(APixelBlend Blend)
 
     a_sprite__updateRoutines();
     a_draw__updateRoutines();
-
-    g_pixel_put = g_pixelDraw[Blend][a_pixel__mode.clip];
 }
 
 void a_pixel_setAlpha(unsigned int Alpha)
@@ -157,11 +133,6 @@ void a_pixel_setPixel(APixel Pixel)
     a_pixel__mode.red = a_pixel_red(a_pixel__mode.pixel);
     a_pixel__mode.green = a_pixel_green(a_pixel__mode.pixel);
     a_pixel__mode.blue = a_pixel_blue(a_pixel__mode.pixel);
-}
-
-void a_pixel_put(int X, int Y)
-{
-    g_pixel_put(X, Y);
 }
 
 APixel a_pixel_get(int X, int Y)
