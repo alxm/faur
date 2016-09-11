@@ -303,12 +303,12 @@ void a_draw__init(void)
 
 void a_draw__updateRoutines(void)
 {
-    g_draw_pixel = g_pixel[a_pixel__mode.blend][a_pixel__mode.clip];
-    g_draw_rectangle = g_rectangle[a_pixel__mode.blend][a_pixel__mode.clip];
-    g_draw_line = g_line[a_pixel__mode.blend][a_pixel__mode.clip];
-    g_draw_hline = g_hline[a_pixel__mode.blend][a_pixel__mode.clip];
-    g_draw_vline = g_vline[a_pixel__mode.blend][a_pixel__mode.clip];
-    g_draw_circle = g_circle[a_pixel__mode.blend][a_pixel__mode.clip];
+    g_draw_pixel = g_pixel[a_pixel__mode.blend][true];
+    g_draw_rectangle = g_rectangle[a_pixel__mode.blend][true];
+    g_draw_line = g_line[a_pixel__mode.blend][true];
+    g_draw_hline = g_hline[a_pixel__mode.blend][true];
+    g_draw_vline = g_vline[a_pixel__mode.blend][true];
+    g_draw_circle = g_circle[a_pixel__mode.blend][true];
 }
 
 void a_draw_fill(void)

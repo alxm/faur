@@ -49,7 +49,6 @@ pixelMake(inverse, (PIXEL_DST))
 void a_pixel__init(void)
 {
     a_pixel__mode.blend = A_PIXEL_BLEND_PLAIN;
-    a_pixel__mode.clip = true;
     g_modeStack = a_list_new();
 }
 
@@ -81,17 +80,8 @@ void a_pixel_pop(void)
     a_pixel__mode = *mode;
     free(mode);
 
-    a_pixel_setClip(a_pixel__mode.clip);
     a_pixel_setBlend(a_pixel__mode.blend);
     a_pixel_setRGBA(a_pixel__mode.red, a_pixel__mode.green, a_pixel__mode.blue, a_pixel__mode.alpha);
-}
-
-void a_pixel_setClip(bool DoClip)
-{
-    a_pixel__mode.clip = DoClip;
-
-    a_sprite__updateRoutines();
-    a_draw__updateRoutines();
 }
 
 void a_pixel_setBlend(APixelBlend Blend)

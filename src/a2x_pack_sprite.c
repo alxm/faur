@@ -204,7 +204,7 @@ void a_sprite__uninit(void)
 
 void a_sprite__updateRoutines(void)
 {
-    g_blitter = g_blitters[a_pixel__mode.blend][a_pixel__mode.clip][g_fillFlat];
+    g_blitter = g_blitters[a_pixel__mode.blend][true][g_fillFlat];
 }
 
 ASprite* a_sprite_fromFile(const char* Path)
