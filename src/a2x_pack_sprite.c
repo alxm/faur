@@ -174,20 +174,18 @@ static void a_sprite__free(ASprite* Sprite);
 
 void a_sprite__init(void)
 {
-    #define blitterInit(Index, Blend)                              \
-    ({                                                             \
+    #define initRoutines(Index, Blend)                             \
         g_blitters[Index][0][0] = a_blit__noclip_##Blend##_normal; \
         g_blitters[Index][0][1] = a_blit__noclip_##Blend##_flat;   \
         g_blitters[Index][1][0] = a_blit__clip_##Blend##_normal;   \
         g_blitters[Index][1][1] = a_blit__clip_##Blend##_flat;     \
-    })
 
-    blitterInit(A_PIXEL_BLEND_PLAIN, plain);
-    blitterInit(A_PIXEL_BLEND_RGBA, rgba);
-    blitterInit(A_PIXEL_BLEND_RGB25, rgb25);
-    blitterInit(A_PIXEL_BLEND_RGB50, rgb50);
-    blitterInit(A_PIXEL_BLEND_RGB75, rgb75);
-    blitterInit(A_PIXEL_BLEND_INVERSE, inverse);
+    initRoutines(A_PIXEL_BLEND_PLAIN, plain);
+    initRoutines(A_PIXEL_BLEND_RGBA, rgba);
+    initRoutines(A_PIXEL_BLEND_RGB25, rgb25);
+    initRoutines(A_PIXEL_BLEND_RGB50, rgb50);
+    initRoutines(A_PIXEL_BLEND_RGB75, rgb75);
+    initRoutines(A_PIXEL_BLEND_INVERSE, inverse);
 
     g_fillFlat = false;
     a_sprite__updateRoutines();

@@ -20,7 +20,7 @@
 // Spans format for each graphic line:
 // [NumSpans << 1 | 1 (draw) / 0 (transparent)][[len]...]
 
-void A__FUNC_NAME(a_blit__noclip)(const ASprite* Sprite, int X, int Y)
+static void A__FUNC_NAME(a_blit__noclip)(const ASprite* Sprite, int X, int Y)
 {
     A__BLEND_SETUP;
 
@@ -53,7 +53,7 @@ void A__FUNC_NAME(a_blit__noclip)(const ASprite* Sprite, int X, int Y)
     }
 }
 
-void A__FUNC_NAME(a_blit__clip)(const ASprite* Sprite, int X, int Y)
+static void A__FUNC_NAME(a_blit__clip)(const ASprite* Sprite, int X, int Y)
 {
     A__BLEND_SETUP;
 

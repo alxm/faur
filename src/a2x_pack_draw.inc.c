@@ -17,7 +17,7 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-void A__FUNC_NAME(a_draw__pixel_)(int X, int Y)
+static void A__FUNC_NAME(a_draw__pixel)(int X, int Y)
 {
     A__BLEND_SETUP;
     APixel* a__pass_dst = a_screen__pixels + Y * a_screen__width + X;
@@ -25,7 +25,7 @@ void A__FUNC_NAME(a_draw__pixel_)(int X, int Y)
     A__PIXEL_DRAW(a__pass_dst);
 }
 
-void A__FUNC_NAME(a_draw__rectangle_)(int X, int Y, int Width, int Height)
+static void A__FUNC_NAME(a_draw__rectangle)(int X, int Y, int Width, int Height)
 {
     A__BLEND_SETUP;
 
@@ -41,7 +41,7 @@ void A__FUNC_NAME(a_draw__rectangle_)(int X, int Y, int Width, int Height)
     }
 }
 
-void A__FUNC_NAME(a_draw__line_)(int X1, int Y1, int X2, int Y2)
+static void A__FUNC_NAME(a_draw__line)(int X1, int Y1, int X2, int Y2)
 {
     A__BLEND_SETUP;
 
@@ -91,7 +91,7 @@ void A__FUNC_NAME(a_draw__line_)(int X1, int Y1, int X2, int Y2)
     }
 }
 
-void A__FUNC_NAME(a_draw__hline_)(int X1, int X2, int Y)
+static void A__FUNC_NAME(a_draw__hline)(int X1, int X2, int Y)
 {
     A__BLEND_SETUP;
 
@@ -102,7 +102,7 @@ void A__FUNC_NAME(a_draw__hline_)(int X1, int X2, int Y)
     }
 }
 
-void A__FUNC_NAME(a_draw__vline_)(int X, int Y1, int Y2)
+static void A__FUNC_NAME(a_draw__vline)(int X, int Y1, int Y2)
 {
     A__BLEND_SETUP;
 
@@ -114,7 +114,7 @@ void A__FUNC_NAME(a_draw__vline_)(int X, int Y1, int Y2)
     }
 }
 
-void A__FUNC_NAME(a_draw__circle_noclip_)(int X, int Y, int Radius)
+static void A__FUNC_NAME(a_draw__circle_noclip)(int X, int Y, int Radius)
 {
     A__BLEND_SETUP;
 
@@ -197,7 +197,7 @@ void A__FUNC_NAME(a_draw__circle_noclip_)(int X, int Y, int Radius)
     }
 }
 
-void A__FUNC_NAME(a_draw__circle_clip_)(int X, int Y, int Radius)
+static void A__FUNC_NAME(a_draw__circle_clip)(int X, int Y, int Radius)
 {
     A__BLEND_SETUP;
 

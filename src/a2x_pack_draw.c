@@ -208,7 +208,7 @@ do {                                                                        \
 
 #define A__CONCAT_WORKER(A, B) A##B
 #define A__CONCAT(A, B) A__CONCAT_WORKER(A, B)
-#define A__FUNC_NAME(Prefix) A__CONCAT(Prefix, A__BLEND)
+#define A__FUNC_NAME(Prefix) A__CONCAT(Prefix##_, A__BLEND)
 #define A__PIXEL_DRAW_WORKER(Params) A__CONCAT(a_pixel__, A__BLEND)(Params)
 #define A__PIXEL_DRAW(Dst) A__PIXEL_DRAW_WORKER(Dst A__PIXEL_PARAMS)
 
@@ -276,23 +276,21 @@ do {                                                                        \
 
 void a_draw__init(void)
 {
-    #define shapeInitAll(Index, Blend)      \
-    ({                                      \
-        g_pixel[Index] = a_draw__pixel_##Blend; \
-        g_rectangle[Index] = a_draw__rectangle_##Blend; \
-        g_line[Index] = a_draw__line_##Blend; \
-        g_hline[Index] = a_draw__hline_##Blend; \
-        g_vline[Index] = a_draw__vline_##Blend; \
-        g_circle[Index][0] = a_draw__circle_noclip_##Blend; \
-        g_circle[Index][1] = a_draw__circle_clip_##Blend; \
-    })
+    #define initRoutines(Index, Blend)                                      \
+        g_pixel[Index] = a_draw__pixel_##Blend;                             \
+        g_rectangle[Index] = a_draw__rectangle_##Blend;                     \
+        g_line[Index] = a_draw__line_##Blend;                               \
+        g_hline[Index] = a_draw__hline_##Blend;                             \
+        g_vline[Index] = a_draw__vline_##Blend;                             \
+        g_circle[Index][0] = a_draw__circle_noclip_##Blend;                 \
+        g_circle[Index][1] = a_draw__circle_clip_##Blend;                   \
 
-    shapeInitAll(A_PIXEL_BLEND_PLAIN, plain);
-    shapeInitAll(A_PIXEL_BLEND_RGBA, rgba);
-    shapeInitAll(A_PIXEL_BLEND_RGB25, rgb25);
-    shapeInitAll(A_PIXEL_BLEND_RGB50, rgb50);
-    shapeInitAll(A_PIXEL_BLEND_RGB75, rgb75);
-    shapeInitAll(A_PIXEL_BLEND_INVERSE, inverse);
+    initRoutines(A_PIXEL_BLEND_PLAIN, plain);
+    initRoutines(A_PIXEL_BLEND_RGBA, rgba);
+    initRoutines(A_PIXEL_BLEND_RGB25, rgb25);
+    initRoutines(A_PIXEL_BLEND_RGB50, rgb50);
+    initRoutines(A_PIXEL_BLEND_RGB75, rgb75);
+    initRoutines(A_PIXEL_BLEND_INVERSE, inverse);
 
     a_draw__updateRoutines();
 }
