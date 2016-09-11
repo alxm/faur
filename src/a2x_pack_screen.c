@@ -23,6 +23,11 @@ APixel* a_screen__pixels = NULL;
 int a_screen__width = 0;
 int a_screen__height = 0;
 
+int a_screen__clipX;
+int a_screen__clipY;
+int a_screen__clipWidth;
+int a_screen__clipHeight;
+
 APixel* a_screen__savedPixels = NULL;
 static int g_savedWidth = 0;
 static int g_savedHeight = 0;
@@ -39,6 +44,8 @@ void a_screen__init(void)
 
     a_screen__width = a_settings_getInt("video.width");
     a_screen__height = a_settings_getInt("video.height");
+
+    a_screen_resetClip();
 
     if(a_settings_getBool("video.window")) {
         a_sdl__screen_set();
@@ -143,13 +150,13 @@ void a_screen_setTarget(APixel* Pixels, int Width, int Height)
     a_screen__pixels = Pixels;
     a_screen__width = Width;
     a_screen__height = Height;
+
+    a_screen_resetClip();
 }
 
 void a_screen_setTargetSprite(ASprite* Sprite)
 {
-    a_screen__pixels = Sprite->pixels;
-    a_screen__width = Sprite->w;
-    a_screen__height = Sprite->h;
+    a_screen_setTarget(Sprite->pixels, Sprite->w, Sprite->h);
 
     g_spriteTarget = Sprite;
 }
@@ -160,9 +167,33 @@ void a_screen_resetTarget(void)
     a_screen__width = g_savedWidth;
     a_screen__height = g_savedHeight;
 
+    a_screen_resetClip();
+
     if(g_spriteTarget) {
         g_spriteTarget = NULL;
     }
+}
+
+void a_screen_setClip(int X, int Y, int Width, int Height)
+{
+    if(!a_collide_boxInsideScreen(X, Y, Width, Height)) {
+        a_out__error("Invalid clipping area: (%d, %d) %d x %d",
+                     X, Y, Width, Height);
+        return;
+    }
+
+    a_screen__clipX = X;
+    a_screen__clipY = Y;
+    a_screen__clipWidth = Width;
+    a_screen__clipHeight = Height;
+}
+
+void a_screen_resetClip(void)
+{
+    a_screen__clipX = 0;
+    a_screen__clipY = 0;
+    a_screen__clipWidth = a_screen__width;
+    a_screen__clipHeight = a_screen__height;
 }
 
 void a_screen__addOverlay(AScreenOverlay Callback)
