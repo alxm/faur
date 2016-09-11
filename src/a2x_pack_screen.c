@@ -176,7 +176,7 @@ void a_screen_resetTarget(void)
 
 void a_screen_setClip(int X, int Y, int Width, int Height)
 {
-    if(!a_collide_boxInsideScreen(X, Y, Width, Height)) {
+    if(!a_screen_boxInsideScreen(X, Y, Width, Height)) {
         a_out__error("Invalid clipping area: (%d, %d) %d x %d",
                      X, Y, Width, Height);
         return;
@@ -194,6 +194,18 @@ void a_screen_resetClip(void)
     a_screen__clipY = 0;
     a_screen__clipWidth = a_screen__width;
     a_screen__clipHeight = a_screen__height;
+}
+
+bool a_screen_boxOnScreen(int X, int Y, int W, int H)
+{
+    return a_collide_boxes(X, Y, W, H,
+                           0, 0, a_screen__width, a_screen__height);
+}
+
+bool a_screen_boxInsideScreen(int X, int Y, int W, int H)
+{
+    return X >= 0 && Y >= 0
+        && X + W <= a_screen__width && Y + H <= a_screen__height;
 }
 
 bool a_screen_boxOnClip(int X, int Y, int W, int H)

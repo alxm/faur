@@ -48,6 +48,4 @@ extern AList* a_colobject__getPossibleCollisions(const AColObject* Object);
                 && (UserObjectName = a_colobject__getUserObject(a__o)))
 
 extern bool a_collide_boxes(int X1, int Y1, int W1, int H1, int X2, int Y2, int W2, int H2);
-extern bool a_collide_boxOnScreen(int X, int Y, int W, int H);
-extern bool a_collide_boxInsideScreen(int X, int Y, int W, int H);
 extern bool a_collide_circles(int X1, int Y1, int R1, int X2, int Y2, int R2);
