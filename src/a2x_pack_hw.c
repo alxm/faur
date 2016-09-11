@@ -18,12 +18,13 @@
 */
 
 /*
-    Many thanks:
+    Many thanks to:
 
-    - to a wiki poster for the GP2X clock speed setter
-    - to Squidge and NK for the GP2X mmuhack
-    - to Notaz for the Wiz mmuhack
-    - to JyCet for the GP2X ram timings code
+    - A wiki poster for the GP2X clock speed setter
+    - Squidge and NK for the GP2X mmuhack
+    - JyCet for the GP2X ram timings code
+    - Notaz for the Wiz mmuhack and accurate timer code
+    - Orkie for the Wiz framebuffer direction code
 */
 
 #include "a2x_pack_hw.v.h"
@@ -153,5 +154,19 @@ void a_hw__uninit(void)
     {
         TIMER_REG(0x08) = 0x4b; // run timer, latch value
         return TIMER_REG(0) / 1000;
+    }
+
+    void a_hw__setWizPortraitMode(void)
+    {
+        #define FBIO_MAGIC 'D'
+        #define FBIO_LCD_CHANGE_CONTROL _IOW(FBIO_MAGIC, 90, unsigned int[2])
+        #define LCD_DIRECTION_ON_CMD 5 // 320x240
+        #define LCD_DIRECTION_OFF_CMD 6 // 240x320
+
+        unsigned int send[2];
+        int fb_fd = open("/dev/fb0", O_RDWR);
+        send[0] = LCD_DIRECTION_OFF_CMD;
+        ioctl(fb_fd, FBIO_LCD_CHANGE_CONTROL, &send);
+        close(fb_fd);
     }
 #endif

@@ -17,12 +17,6 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/*
-    Many thanks:
-
-    - to Orkie for the Wiz framebuffer direction code
-*/
-
 #include "a2x_pack_screen.v.h"
 
 APixel* a_screen__pixels = NULL;
@@ -51,17 +45,7 @@ void a_screen__init(void)
 
         #if A_PLATFORM_WIZ
             if(a_settings_getBool("video.fixWizTearing")) {
-                #define FBIO_MAGIC 'D'
-                #define FBIO_LCD_CHANGE_CONTROL \
-                    _IOW(FBIO_MAGIC, 90, unsigned int[2])
-                #define LCD_DIRECTION_ON_CMD 5 // 320x240
-                #define LCD_DIRECTION_OFF_CMD 6 // 240x320
-
-                unsigned int send[2];
-                int fb_fd = open("/dev/fb0", O_RDWR);
-                send[0] = LCD_DIRECTION_OFF_CMD;
-                ioctl(fb_fd, FBIO_LCD_CHANGE_CONTROL, &send);
-                close(fb_fd);
+                a_hw__setWizPortraitMode();
             }
         #endif
     }

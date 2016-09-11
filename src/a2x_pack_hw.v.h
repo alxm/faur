@@ -29,4 +29,5 @@ extern void a_hw__uninit(void);
 
 #if A_PLATFORM_WIZ || A_PLATFORM_CAANOO
     extern uint32_t a_hw__getMilis(void);
+    extern void a_hw__setWizPortraitMode(void);
 #endif
