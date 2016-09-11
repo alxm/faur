@@ -52,8 +52,10 @@ static bool cohen_sutherland_clip(int* X1, int* Y1, int* X2, int* Y2)
     int x2 = *X2;
     int y2 = *Y2;
 
-    const int screenw = a_screen__width;
-    const int screenh = a_screen__height;
+    const int clipX1 = a_screen__clipX;
+    const int clipX2 = a_screen__clipX + a_screen__clipWidth;
+    const int clipY1 = a_screen__clipY;
+    const int clipY2 = a_screen__clipY + a_screen__clipHeight;
 
     #define OUT_LEFT  1
     #define OUT_RIGHT 2
@@ -64,11 +66,11 @@ static bool cohen_sutherland_clip(int* X1, int* Y1, int* X2, int* Y2)
     ({                                        \
         int o = 0;                            \
                                               \
-        if(x < 0) o |= OUT_LEFT;              \
-        else if(x >= screenw) o |= OUT_RIGHT; \
+        if(x < clipX1) o |= OUT_LEFT;         \
+        else if(x >= clipX2) o |= OUT_RIGHT;  \
                                               \
-        if(y < 0) o |= OUT_TOP;               \
-        else if(y >= screenh) o |= OUT_DOWN;  \
+        if(y < clipY1) o |= OUT_TOP;          \
+        else if(y >= clipY2) o |= OUT_DOWN;   \
                                               \
         o;                                    \
     })
@@ -94,16 +96,16 @@ static bool cohen_sutherland_clip(int* X1, int* Y1, int* X2, int* Y2)
             const int outcode = outcode1 ? outcode1 : outcode2;
 
             if(outcode & OUT_LEFT) {
-                x = 0;
+                x = clipX1;
                 y = solvey();
             } else if(outcode & OUT_RIGHT) {
-                x = screenw - 1;
+                x = clipX2 - 1;
                 y = solvey();
             } else if(outcode & OUT_TOP) {
-                y = 0;
+                y = clipY1;
                 x = solvex();
             } else { // outcode & OUT_DOWN
-                y = screenh - 1;
+                y = clipY2 - 1;
                 x = solvex();
             }
 
@@ -148,7 +150,7 @@ static void findMidpoint(int X, int Y, int Radius, int* MidX, int* MidY)
                           YOffScreen, XOffScreen,                           \
                           PrimaryOnScreen, SecondaryOnScreen)               \
 do {                                                                        \
-    if(!a_collide_boxOnScreen(BoundX, BoundY, BoundW, BoundH)) {            \
+    if(!a_screen_boxOnClip(BoundX, BoundY, BoundW, BoundH)) {               \
         break;                                                              \
     }                                                                       \
                                                                             \
@@ -321,27 +323,27 @@ void a_draw_rectangleThick(int X, int Y, int Width, int Height, int Thickness)
 
 void a_draw_pixel(int X, int Y)
 {
-    if(X >= 0 && X < a_screen__width && Y >= 0 && Y < a_screen__height) {
+    if(a_screen_boxInsideClip(X, Y, 1, 1)) {
         g_draw_pixel(X, Y);
     }
 }
 
 void a_draw_rectangle(int X, int Y, int Width, int Height)
 {
-    if(a_collide_boxInsideScreen(X, Y, Width, Height)) {
+    if(a_screen_boxInsideClip(X, Y, Width, Height)) {
         g_draw_rectangle(X, Y, Width, Height);
         return;
     }
 
-    if(!a_collide_boxOnScreen(X, Y, Width, Height)) {
+    if(!a_screen_boxOnClip(X, Y, Width, Height)) {
         return;
     }
 
-    const int x2 = a_math_min(X + Width, a_screen__width);
-    const int y2 = a_math_min(Y + Height, a_screen__height);
+    const int x2 = a_math_min(X + Width, a_screen__clipX + a_screen__clipWidth);
+    const int y2 = a_math_min(Y + Height, a_screen__clipY + a_screen__clipHeight);
 
-    X = a_math_max(X, 0);
-    Y = a_math_max(Y, 0);
+    X = a_math_max(X, a_screen__clipX);
+    Y = a_math_max(Y, a_screen__clipY);
     Width = a_math_min(Width, x2 - X);
     Height = a_math_min(Height, y2 - Y);
 
@@ -359,38 +361,36 @@ void a_draw_line(int X1, int Y1, int X2, int Y2)
 
 void a_draw_hline(int X1, int X2, int Y)
 {
-    if(X1 >= X2 || !a_collide_boxOnScreen(X1, Y, X2 - X1, 1)) {
+    if(X1 >= X2 || !a_screen_boxOnClip(X1, Y, X2 - X1, 1)) {
         return;
     }
 
-    X1 = a_math_max(X1, 0);
-    X2 = a_math_min(X2, a_screen__width);
+    X1 = a_math_max(X1, a_screen__clipX);
+    X2 = a_math_min(X2, a_screen__clipX + a_screen__clipWidth);
 
     g_draw_hline(X1, X2, Y);
 }
 
 void a_draw_vline(int X, int Y1, int Y2)
 {
-    if(Y1 >= Y2 || !a_collide_boxOnScreen(X, Y1, 1, Y2 - Y1)) {
+    if(Y1 >= Y2 || !a_screen_boxOnClip(X, Y1, 1, Y2 - Y1)) {
         return;
     }
 
-    Y1 = a_math_max(Y1, 0);
-    Y2 = a_math_min(Y2, a_screen__height);
+    Y1 = a_math_max(Y1, a_screen__clipY);
+    Y2 = a_math_min(Y2, a_screen__clipY + a_screen__clipHeight);
 
     g_draw_vline(X, Y1, Y2);
 }
 
 void a_draw_circle(int X, int Y, int Radius)
 {
-    if(a_collide_boxInsideScreen(X - Radius, Y - Radius, 2 * Radius, 2 * Radius)) {
+    if(a_screen_boxInsideClip(X - Radius, Y - Radius, 2 * Radius, 2 * Radius)) {
         g_draw_circle_noclip(X, Y, Radius);
         return;
     }
 
-    if(!a_collide_boxOnScreen(X - Radius, Y - Radius, 2 * Radius, 2 * Radius)) {
-        return;
+    if(a_screen_boxOnClip(X - Radius, Y - Radius, 2 * Radius, 2 * Radius)) {
+        g_draw_circle_clip(X, Y, Radius);
     }
-
-    g_draw_circle_clip(X, Y, Radius);
 }

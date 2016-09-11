@@ -58,14 +58,18 @@ static void A__FUNC_NAME(a_blit__clip)(const ASprite* Sprite, int X, int Y)
     A__BLEND_SETUP;
 
     const int screenW = a_screen__width;
-    const int screenH = a_screen__height;
     const int spriteW = Sprite->w;
     const int spriteH = Sprite->h;
 
-    const int yClipUp = a_math_max(0, -Y);
-    const int yClipDown = a_math_max(0, Y + spriteH - screenH);
-    const int xClipLeft = a_math_max(0, -X);
-    const int xClipRight = a_math_max(0, X + spriteW - screenW);
+    const int clipX1 = a_screen__clipX;
+    const int clipX2 = a_screen__clipX + a_screen__clipWidth;
+    const int clipY1 = a_screen__clipY;
+    const int clipY2 = a_screen__clipY + a_screen__clipHeight;
+
+    const int yClipUp = a_math_max(0, clipY1 - Y);
+    const int yClipDown = a_math_max(0, Y + spriteH - clipY2);
+    const int xClipLeft = a_math_max(0, clipX1 - X);
+    const int xClipRight = a_math_max(0, X + spriteW - clipX2);
 
     const int rows = spriteH - yClipUp - yClipDown;
     const int columns = spriteW - xClipLeft - xClipRight;

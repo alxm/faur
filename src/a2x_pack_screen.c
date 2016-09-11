@@ -196,6 +196,20 @@ void a_screen_resetClip(void)
     a_screen__clipHeight = a_screen__height;
 }
 
+bool a_screen_boxOnClip(int X, int Y, int W, int H)
+{
+    return a_collide_boxes(X, Y, W, H,
+                           a_screen__clipX, a_screen__clipY,
+                           a_screen__clipWidth, a_screen__clipHeight);
+}
+
+bool a_screen_boxInsideClip(int X, int Y, int W, int H)
+{
+    return X >= a_screen__clipX && Y >= a_screen__clipY
+        && X + W <= a_screen__clipX + a_screen__clipWidth
+        && Y + H <= a_screen__clipY + a_screen__clipHeight;
+}
+
 void a_screen__addOverlay(AScreenOverlay Callback)
 {
     a_list_addLast(g_overlays, Callback);

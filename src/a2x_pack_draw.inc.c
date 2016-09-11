@@ -219,9 +219,13 @@ static void A__FUNC_NAME(a_draw__circle_clip)(int X, int Y, int Radius)
     const int q3X = X - 1, q3Y = Y;
     const int q4X = X,     q4Y = Y;
 
-    const int width = a_screen_width();
-    const int height = a_screen_height();
-    APixel* const pixels = a_screen_pixels();
+    const int width = a_screen__width;
+    APixel* const pixels = a_screen__pixels;
+
+    const int clipX1 = a_screen__clipX;
+    const int clipX2 = a_screen__clipX + a_screen__clipWidth;
+    const int clipY1 = a_screen__clipY;
+    const int clipY2 = a_screen__clipY + a_screen__clipHeight;
 
     APixel* oct1 = pixels + q1Y * width + q1X + Radius;
     APixel* oct2 = pixels + (q1Y - Radius) * width + q1X;
@@ -257,10 +261,10 @@ static void A__FUNC_NAME(a_draw__circle_clip)(int X, int Y, int Radius)
         oct1, // Buffer
         -width, // PrimaryBufferInc
         -1, // SecondaryBufferInc
-        q1Y - y >= height, // YOffScreen
-        q1X + x >= width, // XOffScreen
-        q1Y - y >= 0, // PrimaryOnScreen
-        q1X + x >= 0 // SecondaryOnScreen
+        q1Y - y >= clipY2, // YOffScreen
+        q1X + x >= clipX2, // XOffScreen
+        q1Y - y >= clipY1, // PrimaryOnScreen
+        q1X + x >= clipX1 // SecondaryOnScreen
         );
 
     // Octant 2
@@ -274,10 +278,10 @@ static void A__FUNC_NAME(a_draw__circle_clip)(int X, int Y, int Radius)
         oct2, // Buffer
         +1, // PrimaryBufferInc
         +width, // SecondaryBufferInc
-        q1Y - y < 0, // YOffScreen
-        q1X + x < 0, // XOffScreen
-        q1X + x < width, // PrimaryOnScreen
-        q1Y - y < height // SecondaryOnScreen
+        q1Y - y < clipY1, // YOffScreen
+        q1X + x < clipX1, // XOffScreen
+        q1X + x < clipX2, // PrimaryOnScreen
+        q1Y - y < clipY2 // SecondaryOnScreen
         );
 
     // Octant 3
@@ -291,10 +295,10 @@ static void A__FUNC_NAME(a_draw__circle_clip)(int X, int Y, int Radius)
         oct3, // Buffer
         -1, // PrimaryBufferInc
         +width, // SecondaryBufferInc
-        q2Y - y < 0, // YOffScreen
-        q2X - x >= width, // XOffScreen
-        q2X - x >= 0, // PrimaryOnScreen
-        q2Y - y < height // SecondaryOnScreen
+        q2Y - y < clipY1, // YOffScreen
+        q2X - x >= clipX2, // XOffScreen
+        q2X - x >= clipX1, // PrimaryOnScreen
+        q2Y - y < clipY2 // SecondaryOnScreen
         );
 
     // Octant 4
@@ -308,10 +312,10 @@ static void A__FUNC_NAME(a_draw__circle_clip)(int X, int Y, int Radius)
         oct4, // Buffer
         -width, // PrimaryBufferInc
         +1, // SecondaryBufferInc
-        q2Y - y >= height, // YOffScreen
-        q2X - x < 0, // XOffScreen
-        q2Y - y >= 0, // PrimaryOnScreen
-        q2X - x < width // SecondaryOnScreen
+        q2Y - y >= clipY2, // YOffScreen
+        q2X - x < clipX1, // XOffScreen
+        q2Y - y >= clipY1, // PrimaryOnScreen
+        q2X - x < clipX2 // SecondaryOnScreen
         );
 
     // Octant 5
@@ -325,10 +329,10 @@ static void A__FUNC_NAME(a_draw__circle_clip)(int X, int Y, int Radius)
         oct5, // Buffer
         +width, // PrimaryBufferInc
         +1, // SecondaryBufferInc
-        q3Y + y < 0, // YOffScreen
-        q3X - x < 0, // XOffScreen
-        q3Y + y < height, // PrimaryOnScreen
-        q3X - x < width // SecondaryOnScreen
+        q3Y + y < clipY1, // YOffScreen
+        q3X - x < clipX1, // XOffScreen
+        q3Y + y < clipY2, // PrimaryOnScreen
+        q3X - x < clipX2 // SecondaryOnScreen
         );
 
     // Octant 6
@@ -342,10 +346,10 @@ static void A__FUNC_NAME(a_draw__circle_clip)(int X, int Y, int Radius)
         oct6, // Buffer
         -1, // PrimaryBufferInc
         -width, // SecondaryBufferInc
-        q3Y + y >= height, // YOffScreen
-        q3X - x >= width, // XOffScreen
-        q3X - x >= 0, // PrimaryOnScreen
-        q3Y + y >= 0 // SecondaryOnScreen
+        q3Y + y >= clipY2, // YOffScreen
+        q3X - x >= clipX2, // XOffScreen
+        q3X - x >= clipX1, // PrimaryOnScreen
+        q3Y + y >= clipY1 // SecondaryOnScreen
         );
 
     // Octant 7
@@ -359,10 +363,10 @@ static void A__FUNC_NAME(a_draw__circle_clip)(int X, int Y, int Radius)
         oct7, // Buffer
         +1, // PrimaryBufferInc
         -width, // SecondaryBufferInc
-        q4Y + y >= height, // YOffScreen
-        q4X + x < 0, // XOffScreen
-        q4X + x < width, // PrimaryOnScreen
-        q4Y + y >= 0 // SecondaryOnScreen
+        q4Y + y >= clipY2, // YOffScreen
+        q4X + x < clipX1, // XOffScreen
+        q4X + x < clipX2, // PrimaryOnScreen
+        q4Y + y >= clipY1 // SecondaryOnScreen
         );
 
     // Octant 8
@@ -376,9 +380,9 @@ static void A__FUNC_NAME(a_draw__circle_clip)(int X, int Y, int Radius)
         oct8, // Buffer
         +width, // PrimaryBufferInc
         -1, // SecondaryBufferInc
-        q4Y + y < 0, // YOffScreen
-        q4X + x >= width, // XOffScreen
-        q4Y + y < height, // PrimaryOnScreen
-        q4X + x >= 0 // SecondaryOnScreen
+        q4Y + y < clipY1, // YOffScreen
+        q4X + x >= clipX2, // XOffScreen
+        q4Y + y < clipY2, // PrimaryOnScreen
+        q4X + x >= clipX1 // SecondaryOnScreen
         );
 }

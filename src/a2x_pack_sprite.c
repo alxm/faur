@@ -343,9 +343,9 @@ void a_sprite__free(ASprite* Sprite)
 
 void a_sprite_blit(const ASprite* Sprite, int X, int Y)
 {
-    if(a_collide_boxInsideScreen(X, Y, Sprite->w, Sprite->h)) {
+    if(a_screen_boxInsideClip(X, Y, Sprite->w, Sprite->h)) {
         g_blitter_noclip(Sprite, X, Y);
-    } else if(a_collide_boxOnScreen(X, Y, Sprite->w, Sprite->h)) {
+    } else if(a_screen_boxOnClip(X, Y, Sprite->w, Sprite->h)) {
         g_blitter_clip(Sprite, X, Y);
     }
 }
