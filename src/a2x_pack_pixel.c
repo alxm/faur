@@ -22,30 +22,6 @@
 APixelMode a_pixel__mode;
 static AList* g_modeStack;
 
-#define PIXEL_DST (a_screen__pixels + Y * a_screen__width + X)
-
-#define pixelMake(Blend, Args)                                \
-                                                              \
-    void a_pixel__noclip_##Blend(int X, int Y)                \
-    {                                                         \
-        a_pixel__##Blend Args;                                \
-    }                                                         \
-                                                              \
-    void a_pixel__clip_##Blend(int X, int Y)                  \
-    {                                                         \
-        if(X >= 0 && X < a_screen__width                      \
-           && Y >= 0 && Y < a_screen__height) {               \
-            a_pixel__##Blend Args;                            \
-        }                                                     \
-    }
-
-pixelMake(plain,   (PIXEL_DST, a_pixel__mode.pixel))
-pixelMake(rgba,    (PIXEL_DST, a_pixel__mode.red, a_pixel__mode.green, a_pixel__mode.blue, a_pixel__mode.alpha))
-pixelMake(rgb25,   (PIXEL_DST, a_pixel__mode.red, a_pixel__mode.green, a_pixel__mode.blue))
-pixelMake(rgb50,   (PIXEL_DST, a_pixel__mode.red, a_pixel__mode.green, a_pixel__mode.blue))
-pixelMake(rgb75,   (PIXEL_DST, a_pixel__mode.red, a_pixel__mode.green, a_pixel__mode.blue))
-pixelMake(inverse, (PIXEL_DST))
-
 void a_pixel__init(void)
 {
     a_pixel__mode.blend = A_PIXEL_BLEND_PLAIN;
