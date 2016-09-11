@@ -17,22 +17,12 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-void A__FUNC_NAME(a_draw__pixel_noclip_)(int X, int Y)
+void A__FUNC_NAME(a_draw__pixel_)(int X, int Y)
 {
     A__BLEND_SETUP;
     APixel* a__pass_dst = a_screen__pixels + Y * a_screen__width + X;
 
     A__PIXEL_DRAW(a__pass_dst);
-}
-
-void A__FUNC_NAME(a_draw__pixel_clip_)(int X, int Y)
-{
-    if(X >= 0 && X < a_screen__width && Y >= 0 && Y < a_screen__height) {
-        A__BLEND_SETUP;
-        APixel* a__pass_dst = a_screen__pixels + Y * a_screen__width + X;
-
-        A__PIXEL_DRAW(a__pass_dst);
-    }
 }
 
 void A__FUNC_NAME(a_draw__rectangle_noclip_)(int X, int Y, int Width, int Height)
@@ -183,10 +173,10 @@ void A__FUNC_NAME(a_draw__circle_noclip_)(int X, int Y, int Radius)
     }
 
     if(Radius == 0) {
-        g_draw_pixel(X,     Y);
-        g_draw_pixel(X - 1, Y);
-        g_draw_pixel(X,     Y - 1);
-        g_draw_pixel(X - 1, Y - 1);
+        a_draw_pixel(X,     Y);
+        a_draw_pixel(X - 1, Y);
+        a_draw_pixel(X,     Y - 1);
+        a_draw_pixel(X - 1, Y - 1);
         return;
     }
 
@@ -275,10 +265,10 @@ void A__FUNC_NAME(a_draw__circle_clip_)(int X, int Y, int Radius)
     }
 
     if(Radius == 0) {
-        g_draw_pixel(X,     Y);
-        g_draw_pixel(X - 1, Y);
-        g_draw_pixel(X,     Y - 1);
-        g_draw_pixel(X - 1, Y - 1);
+        a_draw_pixel(X,     Y);
+        a_draw_pixel(X - 1, Y);
+        a_draw_pixel(X,     Y - 1);
+        a_draw_pixel(X - 1, Y - 1);
         return;
     }
 
@@ -304,10 +294,10 @@ void A__FUNC_NAME(a_draw__circle_clip_)(int X, int Y, int Radius)
     findMidpoint(X, Y, Radius, &midx, &midy);
 
     if(midx - midy == 2) {
-        g_draw_pixel(q1X + midx - 1, q1Y - midy - 1); // o1-o2
-        g_draw_pixel(q2X - midx + 1, q2Y - midy - 1); // o3-o4
-        g_draw_pixel(q3X - midx + 1, q3Y + midy + 1); // o5-o6
-        g_draw_pixel(q4X + midx - 1, q4Y + midy + 1); // o7-o8
+        a_draw_pixel(q1X + midx - 1, q1Y - midy - 1); // o1-o2
+        a_draw_pixel(q2X - midx + 1, q2Y - midy - 1); // o3-o4
+        a_draw_pixel(q3X - midx + 1, q3Y + midy + 1); // o5-o6
+        a_draw_pixel(q4X + midx - 1, q4Y + midy + 1); // o7-o8
     }
 
     // For octant1, reused for rest

@@ -27,7 +27,7 @@ typedef void (*ADrawVLine)(int X, int Y1, int Y2);
 typedef void (*ADrawCircle)(int X, int Y, int Radius);
 
 static ADrawPixel g_draw_pixel;
-static ADrawPixel g_pixel[A_PIXEL_BLEND_NUM][2];
+static ADrawPixel g_pixel[A_PIXEL_BLEND_NUM];
 
 static ADrawRectangle g_draw_rectangle;
 static ADrawRectangle g_rectangle[A_PIXEL_BLEND_NUM][2];
@@ -283,7 +283,7 @@ void a_draw__init(void)
 
     #define shapeInitAll(Index, Blend)      \
     ({                                      \
-        shapeInit(pixel, Index, Blend);     \
+        g_pixel[Index] = a_draw__pixel_##Blend; \
         shapeInit(rectangle, Index, Blend); \
         shapeInit(line, Index, Blend);      \
         shapeInit(hline, Index, Blend);     \
@@ -303,7 +303,7 @@ void a_draw__init(void)
 
 void a_draw__updateRoutines(void)
 {
-    g_draw_pixel = g_pixel[a_pixel__mode.blend][true];
+    g_draw_pixel = g_pixel[a_pixel__mode.blend];
     g_draw_rectangle = g_rectangle[a_pixel__mode.blend][true];
     g_draw_line = g_line[a_pixel__mode.blend][true];
     g_draw_hline = g_hline[a_pixel__mode.blend][true];
@@ -326,7 +326,9 @@ void a_draw_rectangleThick(int X, int Y, int Width, int Height, int Thickness)
 
 void a_draw_pixel(int X, int Y)
 {
-    g_draw_pixel(X, Y);
+    if(X >= 0 && X < a_screen__width && Y >= 0 && Y < a_screen__height) {
+        g_draw_pixel(X, Y);
+    }
 }
 
 void a_draw_rectangle(int X, int Y, int Width, int Height)
