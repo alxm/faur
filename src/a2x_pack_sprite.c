@@ -21,7 +21,8 @@
 
 typedef void (*ABlitter)(const ASprite* Sprite, int X, int Y);
 
-static ABlitter g_blitter;
+static ABlitter g_blitter_clip;
+static ABlitter g_blitter_noclip;
 static ABlitter g_blitters[A_PIXEL_BLEND_NUM][2][2];
 static bool g_fillFlat;
 
@@ -204,7 +205,8 @@ void a_sprite__uninit(void)
 
 void a_sprite__updateRoutines(void)
 {
-    g_blitter = g_blitters[a_pixel__mode.blend][true][g_fillFlat];
+    g_blitter_clip = g_blitters[a_pixel__mode.blend][true][g_fillFlat];
+    g_blitter_noclip = g_blitters[a_pixel__mode.blend][false][g_fillFlat];
 }
 
 ASprite* a_sprite_fromFile(const char* Path)
@@ -343,22 +345,32 @@ void a_sprite__free(ASprite* Sprite)
 
 void a_sprite_blit(const ASprite* Sprite, int X, int Y)
 {
-    g_blitter(Sprite, X, Y);
+    if(a_collide_boxInsideScreen(X, Y, Sprite->w, Sprite->h)) {
+        g_blitter_noclip(Sprite, X, Y);
+    } else if(a_collide_boxOnScreen(X, Y, Sprite->w, Sprite->h)) {
+        g_blitter_clip(Sprite, X, Y);
+    }
 }
 
 void a_sprite_blitCenter(const ASprite* Sprite)
 {
-    g_blitter(Sprite, (a_screen__width - Sprite->w) / 2, (a_screen__height - Sprite->h) / 2);
+    a_sprite_blit(Sprite,
+                  (a_screen__width - Sprite->w) / 2,
+                  (a_screen__height - Sprite->h) / 2);
 }
 
 void a_sprite_blitCenterX(const ASprite* Sprite, int Y)
 {
-    g_blitter(Sprite, (a_screen__width - Sprite->w) / 2, Y);
+    a_sprite_blit(Sprite,
+                  (a_screen__width - Sprite->w) / 2,
+                  Y);
 }
 
 void a_sprite_blitCenterY(const ASprite* Sprite, int X)
 {
-    g_blitter(Sprite, X, (a_screen__height - Sprite->h) / 2);
+    a_sprite_blit(Sprite,
+                  X,
+                  (a_screen__height - Sprite->h) / 2);
 }
 
 void a_sprite_fillFlat(bool FillFlatColor)

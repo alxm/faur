@@ -62,10 +62,6 @@ void A__FUNC_NAME(a_blit__clip)(const ASprite* Sprite, int X, int Y)
     const int spriteW = Sprite->w;
     const int spriteH = Sprite->h;
 
-    if(Y + spriteH <= 0 || Y >= screenH || X + spriteW <= 0 || X >= screenW) {
-        return;
-    }
-
     const int yClipUp = a_math_max(0, -Y);
     const int yClipDown = a_math_max(0, Y + spriteH - screenH);
     const int xClipLeft = a_math_max(0, -X);
