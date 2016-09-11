@@ -41,7 +41,7 @@ void A__FUNC_NAME(a_draw__rectangle_)(int X, int Y, int Width, int Height)
     }
 }
 
-void A__FUNC_NAME(a_draw__line_noclip_)(int X1, int Y1, int X2, int Y2)
+void A__FUNC_NAME(a_draw__line_)(int X1, int Y1, int X2, int Y2)
 {
     A__BLEND_SETUP;
 
@@ -91,16 +91,7 @@ void A__FUNC_NAME(a_draw__line_noclip_)(int X1, int Y1, int X2, int Y2)
     }
 }
 
-void A__FUNC_NAME(a_draw__line_clip_)(int X1, int Y1, int X2, int Y2)
-{
-    if(!cohen_sutherland_clip(&X1, &Y1, &X2, &Y2)) {
-        return;
-    }
-
-    A__FUNC_NAME(a_draw__line_noclip_)(X1, Y1, X2, Y2);
-}
-
-void A__FUNC_NAME(a_draw__hline_noclip_)(int X1, int X2, int Y)
+void A__FUNC_NAME(a_draw__hline_)(int X1, int X2, int Y)
 {
     A__BLEND_SETUP;
 
@@ -111,19 +102,7 @@ void A__FUNC_NAME(a_draw__hline_noclip_)(int X1, int X2, int Y)
     }
 }
 
-void A__FUNC_NAME(a_draw__hline_clip_)(int X1, int X2, int Y)
-{
-    if(X1 >= X2 || !a_collide_boxOnScreen(X1, Y, X2 - X1, 1)) {
-        return;
-    }
-
-    X1 = a_math_max(X1, 0);
-    X2 = a_math_min(X2, a_screen__width);
-
-    A__FUNC_NAME(a_draw__hline_noclip_)(X1, X2, Y);
-}
-
-void A__FUNC_NAME(a_draw__vline_noclip_)(int X, int Y1, int Y2)
+void A__FUNC_NAME(a_draw__vline_)(int X, int Y1, int Y2)
 {
     A__BLEND_SETUP;
 
@@ -133,18 +112,6 @@ void A__FUNC_NAME(a_draw__vline_noclip_)(int X, int Y1, int Y2)
     for(int i = Y2 - Y1; i--; a__pass_dst += screenw) {
         A__PIXEL_DRAW(a__pass_dst);
     }
-}
-
-void A__FUNC_NAME(a_draw__vline_clip_)(int X, int Y1, int Y2)
-{
-    if(Y1 >= Y2 || !a_collide_boxOnScreen(X, Y1, 1, Y2 - Y1)) {
-        return;
-    }
-
-    Y1 = a_math_max(Y1, 0);
-    Y2 = a_math_min(Y2, a_screen__height);
-
-    A__FUNC_NAME(a_draw__vline_noclip_)(X, Y1, Y2);
 }
 
 void A__FUNC_NAME(a_draw__circle_noclip_)(int X, int Y, int Radius)

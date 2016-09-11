@@ -33,13 +33,13 @@ static ADrawRectangle g_draw_rectangle;
 static ADrawRectangle g_rectangle[A_PIXEL_BLEND_NUM];
 
 static ADrawLine g_draw_line;
-static ADrawLine g_line[A_PIXEL_BLEND_NUM][2];
+static ADrawLine g_line[A_PIXEL_BLEND_NUM];
 
 static ADrawHLine g_draw_hline;
-static ADrawHLine g_hline[A_PIXEL_BLEND_NUM][2];
+static ADrawHLine g_hline[A_PIXEL_BLEND_NUM];
 
 static ADrawVLine g_draw_vline;
-static ADrawHLine g_vline[A_PIXEL_BLEND_NUM][2];
+static ADrawHLine g_vline[A_PIXEL_BLEND_NUM];
 
 static ADrawCircle g_draw_circle;
 static ADrawCircle g_circle[A_PIXEL_BLEND_NUM][2];
@@ -285,9 +285,9 @@ void a_draw__init(void)
     ({                                      \
         g_pixel[Index] = a_draw__pixel_##Blend; \
         g_rectangle[Index] = a_draw__rectangle_##Blend; \
-        shapeInit(line, Index, Blend);      \
-        shapeInit(hline, Index, Blend);     \
-        shapeInit(vline, Index, Blend);     \
+        g_line[Index] = a_draw__line_##Blend; \
+        g_hline[Index] = a_draw__hline_##Blend; \
+        g_vline[Index] = a_draw__vline_##Blend; \
         shapeInit(circle, Index, Blend);    \
     })
 
@@ -305,9 +305,9 @@ void a_draw__updateRoutines(void)
 {
     g_draw_pixel = g_pixel[a_pixel__mode.blend];
     g_draw_rectangle = g_rectangle[a_pixel__mode.blend];
-    g_draw_line = g_line[a_pixel__mode.blend][true];
-    g_draw_hline = g_hline[a_pixel__mode.blend][true];
-    g_draw_vline = g_vline[a_pixel__mode.blend][true];
+    g_draw_line = g_line[a_pixel__mode.blend];
+    g_draw_hline = g_hline[a_pixel__mode.blend];
+    g_draw_vline = g_vline[a_pixel__mode.blend];
     g_draw_circle = g_circle[a_pixel__mode.blend][true];
 }
 
@@ -355,16 +355,34 @@ void a_draw_rectangle(int X, int Y, int Width, int Height)
 
 void a_draw_line(int X1, int Y1, int X2, int Y2)
 {
+    if(!cohen_sutherland_clip(&X1, &Y1, &X2, &Y2)) {
+        return;
+    }
+
     g_draw_line(X1, Y1, X2, Y2);
 }
 
 void a_draw_hline(int X1, int X2, int Y)
 {
+    if(X1 >= X2 || !a_collide_boxOnScreen(X1, Y, X2 - X1, 1)) {
+        return;
+    }
+
+    X1 = a_math_max(X1, 0);
+    X2 = a_math_min(X2, a_screen__width);
+
     g_draw_hline(X1, X2, Y);
 }
 
 void a_draw_vline(int X, int Y1, int Y2)
 {
+    if(Y1 >= Y2 || !a_collide_boxOnScreen(X, Y1, 1, Y2 - Y1)) {
+        return;
+    }
+
+    Y1 = a_math_max(Y1, 0);
+    Y2 = a_math_min(Y2, a_screen__height);
+
     g_draw_vline(X, Y1, Y2);
 }
 
