@@ -30,7 +30,7 @@ static ADrawPixel g_draw_pixel;
 static ADrawPixel g_pixel[A_PIXEL_BLEND_NUM];
 
 static ADrawRectangle g_draw_rectangle;
-static ADrawRectangle g_rectangle[A_PIXEL_BLEND_NUM][2];
+static ADrawRectangle g_rectangle[A_PIXEL_BLEND_NUM];
 
 static ADrawLine g_draw_line;
 static ADrawLine g_line[A_PIXEL_BLEND_NUM][2];
@@ -284,7 +284,7 @@ void a_draw__init(void)
     #define shapeInitAll(Index, Blend)      \
     ({                                      \
         g_pixel[Index] = a_draw__pixel_##Blend; \
-        shapeInit(rectangle, Index, Blend); \
+        g_rectangle[Index] = a_draw__rectangle_##Blend; \
         shapeInit(line, Index, Blend);      \
         shapeInit(hline, Index, Blend);     \
         shapeInit(vline, Index, Blend);     \
@@ -304,7 +304,7 @@ void a_draw__init(void)
 void a_draw__updateRoutines(void)
 {
     g_draw_pixel = g_pixel[a_pixel__mode.blend];
-    g_draw_rectangle = g_rectangle[a_pixel__mode.blend][true];
+    g_draw_rectangle = g_rectangle[a_pixel__mode.blend];
     g_draw_line = g_line[a_pixel__mode.blend][true];
     g_draw_hline = g_hline[a_pixel__mode.blend][true];
     g_draw_vline = g_vline[a_pixel__mode.blend][true];
@@ -333,6 +333,23 @@ void a_draw_pixel(int X, int Y)
 
 void a_draw_rectangle(int X, int Y, int Width, int Height)
 {
+    if(a_collide_boxInsideScreen(X, Y, Width, Height)) {
+        g_draw_rectangle(X, Y, Width, Height);
+        return;
+    }
+
+    if(!a_collide_boxOnScreen(X, Y, Width, Height)) {
+        return;
+    }
+
+    const int x2 = a_math_min(X + Width, a_screen__width);
+    const int y2 = a_math_min(Y + Height, a_screen__height);
+
+    X = a_math_max(X, 0);
+    Y = a_math_max(Y, 0);
+    Width = a_math_min(Width, x2 - X);
+    Height = a_math_min(Height, y2 - Y);
+
     g_draw_rectangle(X, Y, Width, Height);
 }
 

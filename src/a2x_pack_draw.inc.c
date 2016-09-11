@@ -25,7 +25,7 @@ void A__FUNC_NAME(a_draw__pixel_)(int X, int Y)
     A__PIXEL_DRAW(a__pass_dst);
 }
 
-void A__FUNC_NAME(a_draw__rectangle_noclip_)(int X, int Y, int Width, int Height)
+void A__FUNC_NAME(a_draw__rectangle_)(int X, int Y, int Width, int Height)
 {
     A__BLEND_SETUP;
 
@@ -39,22 +39,6 @@ void A__FUNC_NAME(a_draw__rectangle_noclip_)(int X, int Y, int Width, int Height
             A__PIXEL_DRAW(a__pass_dst);
         }
     }
-}
-
-void A__FUNC_NAME(a_draw__rectangle_clip_)(int X, int Y, int Width, int Height)
-{
-    if(!a_collide_boxOnScreen(X, Y, Width, Height)) {
-        return;
-    }
-
-    const int x2 = a_math_min(X + Width, a_screen__width);
-    const int y2 = a_math_min(Y + Height, a_screen__height);
-    X = a_math_max(X, 0);
-    Y = a_math_max(Y, 0);
-    Width = a_math_min(Width, x2 - X);
-    Height = a_math_min(Height, y2 - Y);
-
-    A__FUNC_NAME(a_draw__rectangle_noclip_)(X, Y, Width, Height);
 }
 
 void A__FUNC_NAME(a_draw__line_noclip_)(int X1, int Y1, int X2, int Y2)
