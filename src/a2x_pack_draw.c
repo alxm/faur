@@ -41,7 +41,8 @@ static ADrawHLine g_hline[A_PIXEL_BLEND_NUM];
 static ADrawVLine g_draw_vline;
 static ADrawHLine g_vline[A_PIXEL_BLEND_NUM];
 
-static ADrawCircle g_draw_circle;
+static ADrawCircle g_draw_circle_noclip;
+static ADrawCircle g_draw_circle_clip;
 static ADrawCircle g_circle[A_PIXEL_BLEND_NUM][2];
 
 static bool cohen_sutherland_clip(int* X1, int* Y1, int* X2, int* Y2)
@@ -275,12 +276,6 @@ do {                                                                        \
 
 void a_draw__init(void)
 {
-    #define shapeInit(Shape, Index, Blend)                            \
-    ({                                                                \
-        g_##Shape[Index][0] = a_draw__##Shape##_noclip_##Blend;       \
-        g_##Shape[Index][1] = a_draw__##Shape##_clip_##Blend;         \
-    })
-
     #define shapeInitAll(Index, Blend)      \
     ({                                      \
         g_pixel[Index] = a_draw__pixel_##Blend; \
@@ -288,7 +283,8 @@ void a_draw__init(void)
         g_line[Index] = a_draw__line_##Blend; \
         g_hline[Index] = a_draw__hline_##Blend; \
         g_vline[Index] = a_draw__vline_##Blend; \
-        shapeInit(circle, Index, Blend);    \
+        g_circle[Index][0] = a_draw__circle_noclip_##Blend; \
+        g_circle[Index][1] = a_draw__circle_clip_##Blend; \
     })
 
     shapeInitAll(A_PIXEL_BLEND_PLAIN, plain);
@@ -308,7 +304,8 @@ void a_draw__updateRoutines(void)
     g_draw_line = g_line[a_pixel__mode.blend];
     g_draw_hline = g_hline[a_pixel__mode.blend];
     g_draw_vline = g_vline[a_pixel__mode.blend];
-    g_draw_circle = g_circle[a_pixel__mode.blend][true];
+    g_draw_circle_noclip = g_circle[a_pixel__mode.blend][0];
+    g_draw_circle_clip = g_circle[a_pixel__mode.blend][1];
 }
 
 void a_draw_fill(void)
@@ -388,5 +385,14 @@ void a_draw_vline(int X, int Y1, int Y2)
 
 void a_draw_circle(int X, int Y, int Radius)
 {
-    g_draw_circle(X, Y, Radius);
+    if(a_collide_boxInsideScreen(X - Radius, Y - Radius, 2 * Radius, 2 * Radius)) {
+        g_draw_circle_noclip(X, Y, Radius);
+        return;
+    }
+
+    if(!a_collide_boxOnScreen(X - Radius, Y - Radius, 2 * Radius, 2 * Radius)) {
+        return;
+    }
+
+    g_draw_circle_clip(X, Y, Radius);
 }

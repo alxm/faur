@@ -199,15 +199,6 @@ void A__FUNC_NAME(a_draw__circle_noclip_)(int X, int Y, int Radius)
 
 void A__FUNC_NAME(a_draw__circle_clip_)(int X, int Y, int Radius)
 {
-    if(!a_collide_boxOnScreen(X - Radius, Y - Radius, 2 * Radius, 2 * Radius)) {
-        return;
-    }
-
-    if(a_collide_boxInsideScreen(X - Radius, Y - Radius, 2 * Radius, 2 * Radius)) {
-        A__FUNC_NAME(a_draw__circle_noclip_)(X, Y, Radius);
-        return;
-    }
-
     A__BLEND_SETUP;
 
     // Using inclusive coords
