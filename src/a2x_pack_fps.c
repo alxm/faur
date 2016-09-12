@@ -54,15 +54,8 @@ void a_fps__uninit(void)
     a_timer_free(g_timer);
 }
 
-void a_fps_start(void)
+void a_fps_frame(void)
 {
-    a_input__get();
-}
-
-void a_fps_end(void)
-{
-    g_frameCounter++;
-
     a_screen_show();
 
     const bool track = a_settings_getBool("fps.track");
@@ -108,6 +101,9 @@ void a_fps_end(void)
     } else {
         g_fps = 1000 / a_math_max(1, a_timer_diff(g_timer));
     }
+
+    a_input__get();
+    g_frameCounter++;
 }
 
 uint32_t a_fps_getFps(void)

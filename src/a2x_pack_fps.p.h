@@ -21,8 +21,7 @@
 
 #include "a2x_system_includes.h"
 
-extern void a_fps_start(void);
-extern void a_fps_end(void);
+extern void a_fps_frame(void);
 
 extern uint32_t a_fps_getFps(void);
 extern uint32_t a_fps_getMaxFps(void);
