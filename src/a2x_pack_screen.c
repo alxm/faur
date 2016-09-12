@@ -194,12 +194,7 @@ void a_screen_setClip(int X, int Y, int Width, int Height)
 
 void a_screen_resetClip(void)
 {
-    a_screen__clipX = 0;
-    a_screen__clipY = 0;
-    a_screen__clipX2 = a_screen__width;
-    a_screen__clipY2 = a_screen__height;
-    a_screen__clipWidth = a_screen__width;
-    a_screen__clipHeight = a_screen__height;
+    a_screen_setClip(0, 0, a_screen__width, a_screen__height);
 }
 
 bool a_screen_boxOnScreen(int X, int Y, int W, int H)
