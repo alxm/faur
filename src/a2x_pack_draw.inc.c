@@ -17,7 +17,7 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-void A__FUNC_NAME(a_draw__pixel_noclip_)(int X, int Y)
+static void A__FUNC_NAME(a_draw__pixel)(int X, int Y)
 {
     A__BLEND_SETUP;
     APixel* a__pass_dst = a_screen__pixels + Y * a_screen__width + X;
@@ -25,17 +25,7 @@ void A__FUNC_NAME(a_draw__pixel_noclip_)(int X, int Y)
     A__PIXEL_DRAW(a__pass_dst);
 }
 
-void A__FUNC_NAME(a_draw__pixel_clip_)(int X, int Y)
-{
-    if(X >= 0 && X < a_screen__width && Y >= 0 && Y < a_screen__height) {
-        A__BLEND_SETUP;
-        APixel* a__pass_dst = a_screen__pixels + Y * a_screen__width + X;
-
-        A__PIXEL_DRAW(a__pass_dst);
-    }
-}
-
-void A__FUNC_NAME(a_draw__rectangle_noclip_)(int X, int Y, int Width, int Height)
+static void A__FUNC_NAME(a_draw__rectangle)(int X, int Y, int Width, int Height)
 {
     A__BLEND_SETUP;
 
@@ -51,23 +41,7 @@ void A__FUNC_NAME(a_draw__rectangle_noclip_)(int X, int Y, int Width, int Height
     }
 }
 
-void A__FUNC_NAME(a_draw__rectangle_clip_)(int X, int Y, int Width, int Height)
-{
-    if(!a_collide_boxOnScreen(X, Y, Width, Height)) {
-        return;
-    }
-
-    const int x2 = a_math_min(X + Width, a_screen__width);
-    const int y2 = a_math_min(Y + Height, a_screen__height);
-    X = a_math_max(X, 0);
-    Y = a_math_max(Y, 0);
-    Width = a_math_min(Width, x2 - X);
-    Height = a_math_min(Height, y2 - Y);
-
-    A__FUNC_NAME(a_draw__rectangle_noclip_)(X, Y, Width, Height);
-}
-
-void A__FUNC_NAME(a_draw__line_noclip_)(int X1, int Y1, int X2, int Y2)
+static void A__FUNC_NAME(a_draw__line)(int X1, int Y1, int X2, int Y2)
 {
     A__BLEND_SETUP;
 
@@ -117,16 +91,7 @@ void A__FUNC_NAME(a_draw__line_noclip_)(int X1, int Y1, int X2, int Y2)
     }
 }
 
-void A__FUNC_NAME(a_draw__line_clip_)(int X1, int Y1, int X2, int Y2)
-{
-    if(!cohen_sutherland_clip(&X1, &Y1, &X2, &Y2)) {
-        return;
-    }
-
-    A__FUNC_NAME(a_draw__line_noclip_)(X1, Y1, X2, Y2);
-}
-
-void A__FUNC_NAME(a_draw__hline_noclip_)(int X1, int X2, int Y)
+static void A__FUNC_NAME(a_draw__hline)(int X1, int X2, int Y)
 {
     A__BLEND_SETUP;
 
@@ -137,19 +102,7 @@ void A__FUNC_NAME(a_draw__hline_noclip_)(int X1, int X2, int Y)
     }
 }
 
-void A__FUNC_NAME(a_draw__hline_clip_)(int X1, int X2, int Y)
-{
-    if(X1 >= X2 || !a_collide_boxOnScreen(X1, Y, X2 - X1, 1)) {
-        return;
-    }
-
-    X1 = a_math_max(X1, 0);
-    X2 = a_math_min(X2, a_screen__width);
-
-    A__FUNC_NAME(a_draw__hline_noclip_)(X1, X2, Y);
-}
-
-void A__FUNC_NAME(a_draw__vline_noclip_)(int X, int Y1, int Y2)
+static void A__FUNC_NAME(a_draw__vline)(int X, int Y1, int Y2)
 {
     A__BLEND_SETUP;
 
@@ -161,19 +114,7 @@ void A__FUNC_NAME(a_draw__vline_noclip_)(int X, int Y1, int Y2)
     }
 }
 
-void A__FUNC_NAME(a_draw__vline_clip_)(int X, int Y1, int Y2)
-{
-    if(Y1 >= Y2 || !a_collide_boxOnScreen(X, Y1, 1, Y2 - Y1)) {
-        return;
-    }
-
-    Y1 = a_math_max(Y1, 0);
-    Y2 = a_math_min(Y2, a_screen__height);
-
-    A__FUNC_NAME(a_draw__vline_noclip_)(X, Y1, Y2);
-}
-
-void A__FUNC_NAME(a_draw__circle_noclip_)(int X, int Y, int Radius)
+static void A__FUNC_NAME(a_draw__circle_noclip)(int X, int Y, int Radius)
 {
     A__BLEND_SETUP;
 
@@ -183,10 +124,10 @@ void A__FUNC_NAME(a_draw__circle_noclip_)(int X, int Y, int Radius)
     }
 
     if(Radius == 0) {
-        g_draw_pixel(X,     Y);
-        g_draw_pixel(X - 1, Y);
-        g_draw_pixel(X,     Y - 1);
-        g_draw_pixel(X - 1, Y - 1);
+        a_draw_pixel(X,     Y);
+        a_draw_pixel(X - 1, Y);
+        a_draw_pixel(X,     Y - 1);
+        a_draw_pixel(X - 1, Y - 1);
         return;
     }
 
@@ -256,17 +197,8 @@ void A__FUNC_NAME(a_draw__circle_noclip_)(int X, int Y, int Radius)
     }
 }
 
-void A__FUNC_NAME(a_draw__circle_clip_)(int X, int Y, int Radius)
+static void A__FUNC_NAME(a_draw__circle_clip)(int X, int Y, int Radius)
 {
-    if(!a_collide_boxOnScreen(X - Radius, Y - Radius, 2 * Radius, 2 * Radius)) {
-        return;
-    }
-
-    if(a_collide_boxInsideScreen(X - Radius, Y - Radius, 2 * Radius, 2 * Radius)) {
-        A__FUNC_NAME(a_draw__circle_noclip_)(X, Y, Radius);
-        return;
-    }
-
     A__BLEND_SETUP;
 
     // Using inclusive coords
@@ -275,10 +207,10 @@ void A__FUNC_NAME(a_draw__circle_clip_)(int X, int Y, int Radius)
     }
 
     if(Radius == 0) {
-        g_draw_pixel(X,     Y);
-        g_draw_pixel(X - 1, Y);
-        g_draw_pixel(X,     Y - 1);
-        g_draw_pixel(X - 1, Y - 1);
+        a_draw_pixel(X,     Y);
+        a_draw_pixel(X - 1, Y);
+        a_draw_pixel(X,     Y - 1);
+        a_draw_pixel(X - 1, Y - 1);
         return;
     }
 
@@ -287,9 +219,13 @@ void A__FUNC_NAME(a_draw__circle_clip_)(int X, int Y, int Radius)
     const int q3X = X - 1, q3Y = Y;
     const int q4X = X,     q4Y = Y;
 
-    const int width = a_screen_width();
-    const int height = a_screen_height();
-    APixel* const pixels = a_screen_pixels();
+    const int width = a_screen__width;
+    APixel* const pixels = a_screen__pixels;
+
+    const int clipX1 = a_screen__clipX;
+    const int clipX2 = a_screen__clipX2;
+    const int clipY1 = a_screen__clipY;
+    const int clipY2 = a_screen__clipY2;
 
     APixel* oct1 = pixels + q1Y * width + q1X + Radius;
     APixel* oct2 = pixels + (q1Y - Radius) * width + q1X;
@@ -304,10 +240,10 @@ void A__FUNC_NAME(a_draw__circle_clip_)(int X, int Y, int Radius)
     findMidpoint(X, Y, Radius, &midx, &midy);
 
     if(midx - midy == 2) {
-        g_draw_pixel(q1X + midx - 1, q1Y - midy - 1); // o1-o2
-        g_draw_pixel(q2X - midx + 1, q2Y - midy - 1); // o3-o4
-        g_draw_pixel(q3X - midx + 1, q3Y + midy + 1); // o5-o6
-        g_draw_pixel(q4X + midx - 1, q4Y + midy + 1); // o7-o8
+        a_draw_pixel(q1X + midx - 1, q1Y - midy - 1); // o1-o2
+        a_draw_pixel(q2X - midx + 1, q2Y - midy - 1); // o3-o4
+        a_draw_pixel(q3X - midx + 1, q3Y + midy + 1); // o5-o6
+        a_draw_pixel(q4X + midx - 1, q4Y + midy + 1); // o7-o8
     }
 
     // For octant1, reused for rest
@@ -325,10 +261,10 @@ void A__FUNC_NAME(a_draw__circle_clip_)(int X, int Y, int Radius)
         oct1, // Buffer
         -width, // PrimaryBufferInc
         -1, // SecondaryBufferInc
-        q1Y - y >= height, // YOffScreen
-        q1X + x >= width, // XOffScreen
-        q1Y - y >= 0, // PrimaryOnScreen
-        q1X + x >= 0 // SecondaryOnScreen
+        q1Y - y >= clipY2, // YOffScreen
+        q1X + x >= clipX2, // XOffScreen
+        q1Y - y >= clipY1, // PrimaryOnScreen
+        q1X + x >= clipX1 // SecondaryOnScreen
         );
 
     // Octant 2
@@ -342,10 +278,10 @@ void A__FUNC_NAME(a_draw__circle_clip_)(int X, int Y, int Radius)
         oct2, // Buffer
         +1, // PrimaryBufferInc
         +width, // SecondaryBufferInc
-        q1Y - y < 0, // YOffScreen
-        q1X + x < 0, // XOffScreen
-        q1X + x < width, // PrimaryOnScreen
-        q1Y - y < height // SecondaryOnScreen
+        q1Y - y < clipY1, // YOffScreen
+        q1X + x < clipX1, // XOffScreen
+        q1X + x < clipX2, // PrimaryOnScreen
+        q1Y - y < clipY2 // SecondaryOnScreen
         );
 
     // Octant 3
@@ -359,10 +295,10 @@ void A__FUNC_NAME(a_draw__circle_clip_)(int X, int Y, int Radius)
         oct3, // Buffer
         -1, // PrimaryBufferInc
         +width, // SecondaryBufferInc
-        q2Y - y < 0, // YOffScreen
-        q2X - x >= width, // XOffScreen
-        q2X - x >= 0, // PrimaryOnScreen
-        q2Y - y < height // SecondaryOnScreen
+        q2Y - y < clipY1, // YOffScreen
+        q2X - x >= clipX2, // XOffScreen
+        q2X - x >= clipX1, // PrimaryOnScreen
+        q2Y - y < clipY2 // SecondaryOnScreen
         );
 
     // Octant 4
@@ -376,10 +312,10 @@ void A__FUNC_NAME(a_draw__circle_clip_)(int X, int Y, int Radius)
         oct4, // Buffer
         -width, // PrimaryBufferInc
         +1, // SecondaryBufferInc
-        q2Y - y >= height, // YOffScreen
-        q2X - x < 0, // XOffScreen
-        q2Y - y >= 0, // PrimaryOnScreen
-        q2X - x < width // SecondaryOnScreen
+        q2Y - y >= clipY2, // YOffScreen
+        q2X - x < clipX1, // XOffScreen
+        q2Y - y >= clipY1, // PrimaryOnScreen
+        q2X - x < clipX2 // SecondaryOnScreen
         );
 
     // Octant 5
@@ -393,10 +329,10 @@ void A__FUNC_NAME(a_draw__circle_clip_)(int X, int Y, int Radius)
         oct5, // Buffer
         +width, // PrimaryBufferInc
         +1, // SecondaryBufferInc
-        q3Y + y < 0, // YOffScreen
-        q3X - x < 0, // XOffScreen
-        q3Y + y < height, // PrimaryOnScreen
-        q3X - x < width // SecondaryOnScreen
+        q3Y + y < clipY1, // YOffScreen
+        q3X - x < clipX1, // XOffScreen
+        q3Y + y < clipY2, // PrimaryOnScreen
+        q3X - x < clipX2 // SecondaryOnScreen
         );
 
     // Octant 6
@@ -410,10 +346,10 @@ void A__FUNC_NAME(a_draw__circle_clip_)(int X, int Y, int Radius)
         oct6, // Buffer
         -1, // PrimaryBufferInc
         -width, // SecondaryBufferInc
-        q3Y + y >= height, // YOffScreen
-        q3X - x >= width, // XOffScreen
-        q3X - x >= 0, // PrimaryOnScreen
-        q3Y + y >= 0 // SecondaryOnScreen
+        q3Y + y >= clipY2, // YOffScreen
+        q3X - x >= clipX2, // XOffScreen
+        q3X - x >= clipX1, // PrimaryOnScreen
+        q3Y + y >= clipY1 // SecondaryOnScreen
         );
 
     // Octant 7
@@ -427,10 +363,10 @@ void A__FUNC_NAME(a_draw__circle_clip_)(int X, int Y, int Radius)
         oct7, // Buffer
         +1, // PrimaryBufferInc
         -width, // SecondaryBufferInc
-        q4Y + y >= height, // YOffScreen
-        q4X + x < 0, // XOffScreen
-        q4X + x < width, // PrimaryOnScreen
-        q4Y + y >= 0 // SecondaryOnScreen
+        q4Y + y >= clipY2, // YOffScreen
+        q4X + x < clipX1, // XOffScreen
+        q4X + x < clipX2, // PrimaryOnScreen
+        q4Y + y >= clipY1 // SecondaryOnScreen
         );
 
     // Octant 8
@@ -444,9 +380,9 @@ void A__FUNC_NAME(a_draw__circle_clip_)(int X, int Y, int Radius)
         oct8, // Buffer
         +width, // PrimaryBufferInc
         -1, // SecondaryBufferInc
-        q4Y + y < 0, // YOffScreen
-        q4X + x >= width, // XOffScreen
-        q4Y + y < height, // PrimaryOnScreen
-        q4X + x >= 0 // SecondaryOnScreen
+        q4Y + y < clipY1, // YOffScreen
+        q4X + x >= clipX2, // XOffScreen
+        q4Y + y < clipY2, // PrimaryOnScreen
+        q4X + x >= clipX1 // SecondaryOnScreen
         );
 }

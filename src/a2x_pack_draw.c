@@ -27,21 +27,22 @@ typedef void (*ADrawVLine)(int X, int Y1, int Y2);
 typedef void (*ADrawCircle)(int X, int Y, int Radius);
 
 static ADrawPixel g_draw_pixel;
-static ADrawPixel g_pixel[A_PIXEL_BLEND_NUM][2];
+static ADrawPixel g_pixel[A_PIXEL_BLEND_NUM];
 
 static ADrawRectangle g_draw_rectangle;
-static ADrawRectangle g_rectangle[A_PIXEL_BLEND_NUM][2];
+static ADrawRectangle g_rectangle[A_PIXEL_BLEND_NUM];
 
 static ADrawLine g_draw_line;
-static ADrawLine g_line[A_PIXEL_BLEND_NUM][2];
+static ADrawLine g_line[A_PIXEL_BLEND_NUM];
 
 static ADrawHLine g_draw_hline;
-static ADrawHLine g_hline[A_PIXEL_BLEND_NUM][2];
+static ADrawHLine g_hline[A_PIXEL_BLEND_NUM];
 
 static ADrawVLine g_draw_vline;
-static ADrawHLine g_vline[A_PIXEL_BLEND_NUM][2];
+static ADrawHLine g_vline[A_PIXEL_BLEND_NUM];
 
-static ADrawCircle g_draw_circle;
+static ADrawCircle g_draw_circle_noclip;
+static ADrawCircle g_draw_circle_clip;
 static ADrawCircle g_circle[A_PIXEL_BLEND_NUM][2];
 
 static bool cohen_sutherland_clip(int* X1, int* Y1, int* X2, int* Y2)
@@ -51,8 +52,10 @@ static bool cohen_sutherland_clip(int* X1, int* Y1, int* X2, int* Y2)
     int x2 = *X2;
     int y2 = *Y2;
 
-    const int screenw = a_screen__width;
-    const int screenh = a_screen__height;
+    const int clipX1 = a_screen__clipX;
+    const int clipX2 = a_screen__clipX2;
+    const int clipY1 = a_screen__clipY;
+    const int clipY2 = a_screen__clipY2;
 
     #define OUT_LEFT  1
     #define OUT_RIGHT 2
@@ -63,11 +66,11 @@ static bool cohen_sutherland_clip(int* X1, int* Y1, int* X2, int* Y2)
     ({                                        \
         int o = 0;                            \
                                               \
-        if(x < 0) o |= OUT_LEFT;              \
-        else if(x >= screenw) o |= OUT_RIGHT; \
+        if(x < clipX1) o |= OUT_LEFT;         \
+        else if(x >= clipX2) o |= OUT_RIGHT;  \
                                               \
-        if(y < 0) o |= OUT_TOP;               \
-        else if(y >= screenh) o |= OUT_DOWN;  \
+        if(y < clipY1) o |= OUT_TOP;          \
+        else if(y >= clipY2) o |= OUT_DOWN;   \
                                               \
         o;                                    \
     })
@@ -93,16 +96,16 @@ static bool cohen_sutherland_clip(int* X1, int* Y1, int* X2, int* Y2)
             const int outcode = outcode1 ? outcode1 : outcode2;
 
             if(outcode & OUT_LEFT) {
-                x = 0;
+                x = clipX1;
                 y = solvey();
             } else if(outcode & OUT_RIGHT) {
-                x = screenw - 1;
+                x = clipX2 - 1;
                 y = solvey();
             } else if(outcode & OUT_TOP) {
-                y = 0;
+                y = clipY1;
                 x = solvex();
             } else { // outcode & OUT_DOWN
-                y = screenh - 1;
+                y = clipY2 - 1;
                 x = solvex();
             }
 
@@ -147,7 +150,7 @@ static void findMidpoint(int X, int Y, int Radius, int* MidX, int* MidY)
                           YOffScreen, XOffScreen,                           \
                           PrimaryOnScreen, SecondaryOnScreen)               \
 do {                                                                        \
-    if(!a_collide_boxOnScreen(BoundX, BoundY, BoundW, BoundH)) {            \
+    if(!a_screen_boxOnClip(BoundX, BoundY, BoundW, BoundH)) {               \
         break;                                                              \
     }                                                                       \
                                                                             \
@@ -207,7 +210,7 @@ do {                                                                        \
 
 #define A__CONCAT_WORKER(A, B) A##B
 #define A__CONCAT(A, B) A__CONCAT_WORKER(A, B)
-#define A__FUNC_NAME(Prefix) A__CONCAT(Prefix, A__BLEND)
+#define A__FUNC_NAME(Prefix) A__CONCAT(Prefix##_, A__BLEND)
 #define A__PIXEL_DRAW_WORKER(Params) A__CONCAT(a_pixel__, A__BLEND)(Params)
 #define A__PIXEL_DRAW(Dst) A__PIXEL_DRAW_WORKER(Dst A__PIXEL_PARAMS)
 
@@ -275,40 +278,34 @@ do {                                                                        \
 
 void a_draw__init(void)
 {
-    #define shapeInit(Shape, Index, Blend)                            \
-    ({                                                                \
-        g_##Shape[Index][0] = a_draw__##Shape##_noclip_##Blend;       \
-        g_##Shape[Index][1] = a_draw__##Shape##_clip_##Blend;         \
-    })
+    #define initRoutines(Index, Blend)                                      \
+        g_pixel[Index] = a_draw__pixel_##Blend;                             \
+        g_rectangle[Index] = a_draw__rectangle_##Blend;                     \
+        g_line[Index] = a_draw__line_##Blend;                               \
+        g_hline[Index] = a_draw__hline_##Blend;                             \
+        g_vline[Index] = a_draw__vline_##Blend;                             \
+        g_circle[Index][0] = a_draw__circle_noclip_##Blend;                 \
+        g_circle[Index][1] = a_draw__circle_clip_##Blend;                   \
 
-    #define shapeInitAll(Index, Blend)      \
-    ({                                      \
-        shapeInit(pixel, Index, Blend);     \
-        shapeInit(rectangle, Index, Blend); \
-        shapeInit(line, Index, Blend);      \
-        shapeInit(hline, Index, Blend);     \
-        shapeInit(vline, Index, Blend);     \
-        shapeInit(circle, Index, Blend);    \
-    })
-
-    shapeInitAll(A_PIXEL_BLEND_PLAIN, plain);
-    shapeInitAll(A_PIXEL_BLEND_RGBA, rgba);
-    shapeInitAll(A_PIXEL_BLEND_RGB25, rgb25);
-    shapeInitAll(A_PIXEL_BLEND_RGB50, rgb50);
-    shapeInitAll(A_PIXEL_BLEND_RGB75, rgb75);
-    shapeInitAll(A_PIXEL_BLEND_INVERSE, inverse);
+    initRoutines(A_PIXEL_BLEND_PLAIN, plain);
+    initRoutines(A_PIXEL_BLEND_RGBA, rgba);
+    initRoutines(A_PIXEL_BLEND_RGB25, rgb25);
+    initRoutines(A_PIXEL_BLEND_RGB50, rgb50);
+    initRoutines(A_PIXEL_BLEND_RGB75, rgb75);
+    initRoutines(A_PIXEL_BLEND_INVERSE, inverse);
 
     a_draw__updateRoutines();
 }
 
 void a_draw__updateRoutines(void)
 {
-    g_draw_pixel = g_pixel[a_pixel__mode.blend][a_pixel__mode.clip];
-    g_draw_rectangle = g_rectangle[a_pixel__mode.blend][a_pixel__mode.clip];
-    g_draw_line = g_line[a_pixel__mode.blend][a_pixel__mode.clip];
-    g_draw_hline = g_hline[a_pixel__mode.blend][a_pixel__mode.clip];
-    g_draw_vline = g_vline[a_pixel__mode.blend][a_pixel__mode.clip];
-    g_draw_circle = g_circle[a_pixel__mode.blend][a_pixel__mode.clip];
+    g_draw_pixel = g_pixel[a_pixel__mode.blend];
+    g_draw_rectangle = g_rectangle[a_pixel__mode.blend];
+    g_draw_line = g_line[a_pixel__mode.blend];
+    g_draw_hline = g_hline[a_pixel__mode.blend];
+    g_draw_vline = g_vline[a_pixel__mode.blend];
+    g_draw_circle_noclip = g_circle[a_pixel__mode.blend][0];
+    g_draw_circle_clip = g_circle[a_pixel__mode.blend][1];
 }
 
 void a_draw_fill(void)
@@ -326,30 +323,74 @@ void a_draw_rectangleThick(int X, int Y, int Width, int Height, int Thickness)
 
 void a_draw_pixel(int X, int Y)
 {
-    g_draw_pixel(X, Y);
+    if(a_screen_boxInsideClip(X, Y, 1, 1)) {
+        g_draw_pixel(X, Y);
+    }
 }
 
 void a_draw_rectangle(int X, int Y, int Width, int Height)
 {
+    if(a_screen_boxInsideClip(X, Y, Width, Height)) {
+        g_draw_rectangle(X, Y, Width, Height);
+        return;
+    }
+
+    if(!a_screen_boxOnClip(X, Y, Width, Height)) {
+        return;
+    }
+
+    const int x2 = a_math_min(X + Width, a_screen__clipX2);
+    const int y2 = a_math_min(Y + Height, a_screen__clipY2);
+
+    X = a_math_max(X, a_screen__clipX);
+    Y = a_math_max(Y, a_screen__clipY);
+    Width = a_math_min(Width, x2 - X);
+    Height = a_math_min(Height, y2 - Y);
+
     g_draw_rectangle(X, Y, Width, Height);
 }
 
 void a_draw_line(int X1, int Y1, int X2, int Y2)
 {
+    if(!cohen_sutherland_clip(&X1, &Y1, &X2, &Y2)) {
+        return;
+    }
+
     g_draw_line(X1, Y1, X2, Y2);
 }
 
 void a_draw_hline(int X1, int X2, int Y)
 {
+    if(X1 >= X2 || !a_screen_boxOnClip(X1, Y, X2 - X1, 1)) {
+        return;
+    }
+
+    X1 = a_math_max(X1, a_screen__clipX);
+    X2 = a_math_min(X2, a_screen__clipX2);
+
     g_draw_hline(X1, X2, Y);
 }
 
 void a_draw_vline(int X, int Y1, int Y2)
 {
+    if(Y1 >= Y2 || !a_screen_boxOnClip(X, Y1, 1, Y2 - Y1)) {
+        return;
+    }
+
+    Y1 = a_math_max(Y1, a_screen__clipY);
+    Y2 = a_math_min(Y2, a_screen__clipY2);
+
     g_draw_vline(X, Y1, Y2);
 }
 
 void a_draw_circle(int X, int Y, int Radius)
 {
-    g_draw_circle(X, Y, Radius);
+    if(a_screen_boxInsideClip(X - Radius, Y - Radius, 2 * Radius, 2 * Radius)) {
+        g_draw_circle_noclip(X, Y, Radius);
+        return;
+    }
+
+    if(a_screen_boxOnClip(X - Radius, Y - Radius, 2 * Radius, 2 * Radius)) {
+        g_draw_circle_clip(X, Y, Radius);
+    }
 }

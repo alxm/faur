@@ -25,7 +25,6 @@
 #include "a2x_pack_screen.v.h"
 
 typedef struct APixelMode {
-    bool clip;
     APixelBlend blend;
     uint8_t red, green, blue;
     unsigned int alpha;

@@ -39,3 +39,11 @@ extern APixel a_screen_getPixel(int X, int Y);
 extern void a_screen_setTarget(APixel* Pixels, int Width, int Height);
 extern void a_screen_setTargetSprite(ASprite* Sprite);
 extern void a_screen_resetTarget(void);
+
+extern void a_screen_setClip(int X, int Y, int Width, int Height);
+extern void a_screen_resetClip(void);
+
+extern bool a_screen_boxOnScreen(int X, int Y, int W, int H);
+extern bool a_screen_boxInsideScreen(int X, int Y, int W, int H);
+extern bool a_screen_boxOnClip(int X, int Y, int W, int H);
+extern bool a_screen_boxInsideClip(int X, int Y, int W, int H);

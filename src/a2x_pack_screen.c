@@ -17,17 +17,18 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/*
-    Many thanks:
-
-    - to Orkie for the Wiz framebuffer direction code
-*/
-
 #include "a2x_pack_screen.v.h"
 
 APixel* a_screen__pixels = NULL;
 int a_screen__width = 0;
 int a_screen__height = 0;
+
+int a_screen__clipX;
+int a_screen__clipY;
+int a_screen__clipX2;
+int a_screen__clipY2;
+int a_screen__clipWidth;
+int a_screen__clipHeight;
 
 APixel* a_screen__savedPixels = NULL;
 static int g_savedWidth = 0;
@@ -46,22 +47,14 @@ void a_screen__init(void)
     a_screen__width = a_settings_getInt("video.width");
     a_screen__height = a_settings_getInt("video.height");
 
+    a_screen_resetClip();
+
     if(a_settings_getBool("video.window")) {
         a_sdl__screen_set();
 
         #if A_PLATFORM_WIZ
             if(a_settings_getBool("video.fixWizTearing")) {
-                #define FBIO_MAGIC 'D'
-                #define FBIO_LCD_CHANGE_CONTROL \
-                    _IOW(FBIO_MAGIC, 90, unsigned int[2])
-                #define LCD_DIRECTION_ON_CMD 5 // 320x240
-                #define LCD_DIRECTION_OFF_CMD 6 // 240x320
-
-                unsigned int send[2];
-                int fb_fd = open("/dev/fb0", O_RDWR);
-                send[0] = LCD_DIRECTION_OFF_CMD;
-                ioctl(fb_fd, FBIO_LCD_CHANGE_CONTROL, &send);
-                close(fb_fd);
+                a_hw__setWizPortraitMode();
             }
         #endif
     }
@@ -159,13 +152,13 @@ void a_screen_setTarget(APixel* Pixels, int Width, int Height)
     a_screen__pixels = Pixels;
     a_screen__width = Width;
     a_screen__height = Height;
+
+    a_screen_resetClip();
 }
 
 void a_screen_setTargetSprite(ASprite* Sprite)
 {
-    a_screen__pixels = Sprite->pixels;
-    a_screen__width = Sprite->w;
-    a_screen__height = Sprite->h;
+    a_screen_setTarget(Sprite->pixels, Sprite->w, Sprite->h);
 
     g_spriteTarget = Sprite;
 }
@@ -176,9 +169,57 @@ void a_screen_resetTarget(void)
     a_screen__width = g_savedWidth;
     a_screen__height = g_savedHeight;
 
+    a_screen_resetClip();
+
     if(g_spriteTarget) {
         g_spriteTarget = NULL;
     }
+}
+
+void a_screen_setClip(int X, int Y, int Width, int Height)
+{
+    if(!a_screen_boxInsideScreen(X, Y, Width, Height)) {
+        a_out__error("Invalid clipping area: (%d, %d) %d x %d",
+                     X, Y, Width, Height);
+        return;
+    }
+
+    a_screen__clipX = X;
+    a_screen__clipY = Y;
+    a_screen__clipX2 = X + Width;
+    a_screen__clipY2 = Y + Height;
+    a_screen__clipWidth = Width;
+    a_screen__clipHeight = Height;
+}
+
+void a_screen_resetClip(void)
+{
+    a_screen_setClip(0, 0, a_screen__width, a_screen__height);
+}
+
+bool a_screen_boxOnScreen(int X, int Y, int W, int H)
+{
+    return a_collide_boxes(X, Y, W, H,
+                           0, 0, a_screen__width, a_screen__height);
+}
+
+bool a_screen_boxInsideScreen(int X, int Y, int W, int H)
+{
+    return X >= 0 && Y >= 0
+        && X + W <= a_screen__width && Y + H <= a_screen__height;
+}
+
+bool a_screen_boxOnClip(int X, int Y, int W, int H)
+{
+    return a_collide_boxes(X, Y, W, H,
+                           a_screen__clipX, a_screen__clipY,
+                           a_screen__clipWidth, a_screen__clipHeight);
+}
+
+bool a_screen_boxInsideClip(int X, int Y, int W, int H)
+{
+    return X >= a_screen__clipX && Y >= a_screen__clipY
+        && X + W <= a_screen__clipX2 && Y + H <= a_screen__clipY2;
 }
 
 void a_screen__addOverlay(AScreenOverlay Callback)

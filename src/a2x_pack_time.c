@@ -17,12 +17,6 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/*
-    Many thanks:
-
-    - to Notaz for the accurate Wiz timer code
-*/
-
 #include "a2x_pack_time.v.h"
 
 uint32_t a_time_getMilis(void)

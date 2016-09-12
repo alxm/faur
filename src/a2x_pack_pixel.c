@@ -22,34 +22,9 @@
 APixelMode a_pixel__mode;
 static AList* g_modeStack;
 
-#define PIXEL_DST (a_screen__pixels + Y * a_screen__width + X)
-
-#define pixelMake(Blend, Args)                                \
-                                                              \
-    void a_pixel__noclip_##Blend(int X, int Y)                \
-    {                                                         \
-        a_pixel__##Blend Args;                                \
-    }                                                         \
-                                                              \
-    void a_pixel__clip_##Blend(int X, int Y)                  \
-    {                                                         \
-        if(X >= 0 && X < a_screen__width                      \
-           && Y >= 0 && Y < a_screen__height) {               \
-            a_pixel__##Blend Args;                            \
-        }                                                     \
-    }
-
-pixelMake(plain,   (PIXEL_DST, a_pixel__mode.pixel))
-pixelMake(rgba,    (PIXEL_DST, a_pixel__mode.red, a_pixel__mode.green, a_pixel__mode.blue, a_pixel__mode.alpha))
-pixelMake(rgb25,   (PIXEL_DST, a_pixel__mode.red, a_pixel__mode.green, a_pixel__mode.blue))
-pixelMake(rgb50,   (PIXEL_DST, a_pixel__mode.red, a_pixel__mode.green, a_pixel__mode.blue))
-pixelMake(rgb75,   (PIXEL_DST, a_pixel__mode.red, a_pixel__mode.green, a_pixel__mode.blue))
-pixelMake(inverse, (PIXEL_DST))
-
 void a_pixel__init(void)
 {
     a_pixel__mode.blend = A_PIXEL_BLEND_PLAIN;
-    a_pixel__mode.clip = true;
     g_modeStack = a_list_new();
 }
 
@@ -81,17 +56,8 @@ void a_pixel_pop(void)
     a_pixel__mode = *mode;
     free(mode);
 
-    a_pixel_setClip(a_pixel__mode.clip);
     a_pixel_setBlend(a_pixel__mode.blend);
     a_pixel_setRGBA(a_pixel__mode.red, a_pixel__mode.green, a_pixel__mode.blue, a_pixel__mode.alpha);
-}
-
-void a_pixel_setClip(bool DoClip)
-{
-    a_pixel__mode.clip = DoClip;
-
-    a_sprite__updateRoutines();
-    a_draw__updateRoutines();
 }
 
 void a_pixel_setBlend(APixelBlend Blend)
