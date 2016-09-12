@@ -33,7 +33,7 @@ static uint32_t g_frameCounter;
 
 void a_fps__init(void)
 {
-    const int fps = a_settings_getInt("fps.rate");
+    const int fps = a_settings_getInt("video.fps");
 
     g_milisPerFrame = 1000 / fps;
 
@@ -66,7 +66,7 @@ void a_fps_frame(void)
 {
     a_screen_show();
 
-    const bool track = a_settings_getBool("fps.track");
+    const bool track = a_settings_getBool("video.fps.track");
     const bool done = a_timer_check(g_timer);
 
     if(track) {

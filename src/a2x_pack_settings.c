@@ -158,6 +158,8 @@ void a_settings__init(void)
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.fullscreen", "0");
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.fixWizTearing", "0");
     add(A_SETTING_STR, A_SETTING_SET_ONCE, "video.borderColor", "20 12 12");
+    add(A_SETTING_INT, A_SETTING_SET_ONCE, "video.fps", "60");
+    add(A_SETTING_BOOL, A_SETTING_SET_ANY, "video.fps.track", "0");
 
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "sound.on", "1");
     add(A_SETTING_INT, A_SETTING_SET_ANY, "sound.music.scale", "100");
@@ -167,9 +169,6 @@ void a_settings__init(void)
     add(A_SETTING_STR, A_SETTING_SET_ONCE, "sound.volbar.fill", "0xcf 0xff 0x3f");
 
     add(A_SETTING_BOOL, A_SETTING_SET_ANY, "input.trackMouse", "0");
-
-    add(A_SETTING_INT, A_SETTING_SET_ONCE, "fps.rate", "60");
-    add(A_SETTING_BOOL, A_SETTING_SET_ANY, "fps.track", "0");
 
     add(A_SETTING_STR, A_SETTING_SET_ONCE, "screenshot.dir", "./screenshots");
     add(A_SETTING_STR, A_SETTING_SET_ONCE, "screenshot.button", "pc.F12, pandora.s");

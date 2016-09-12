@@ -47,7 +47,7 @@ struct AMenu {
     AInput* cancel;
 };
 
-#define A_MENU_PAUSE (a_settings_getInt("fps.rate") / 6)
+#define A_MENU_PAUSE (a_settings_getInt("video.fps") / 6)
 
 AMenu* a_menu_new(AInput* Next, AInput* Back, AInput* Select, AInput* Cancel, AMenuFreeItemHandler FreeItemHandler)
 {
