@@ -223,9 +223,9 @@ static void A__FUNC_NAME(a_draw__circle_clip)(int X, int Y, int Radius)
     APixel* const pixels = a_screen__pixels;
 
     const int clipX1 = a_screen__clipX;
-    const int clipX2 = a_screen__clipX + a_screen__clipWidth;
+    const int clipX2 = a_screen__clipX2;
     const int clipY1 = a_screen__clipY;
-    const int clipY2 = a_screen__clipY + a_screen__clipHeight;
+    const int clipY2 = a_screen__clipY2;
 
     APixel* oct1 = pixels + q1Y * width + q1X + Radius;
     APixel* oct2 = pixels + (q1Y - Radius) * width + q1X;

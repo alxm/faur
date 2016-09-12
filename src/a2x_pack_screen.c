@@ -25,6 +25,8 @@ int a_screen__height = 0;
 
 int a_screen__clipX;
 int a_screen__clipY;
+int a_screen__clipX2;
+int a_screen__clipY2;
 int a_screen__clipWidth;
 int a_screen__clipHeight;
 
@@ -184,6 +186,8 @@ void a_screen_setClip(int X, int Y, int Width, int Height)
 
     a_screen__clipX = X;
     a_screen__clipY = Y;
+    a_screen__clipX2 = X + Width;
+    a_screen__clipY2 = Y + Height;
     a_screen__clipWidth = Width;
     a_screen__clipHeight = Height;
 }
@@ -192,6 +196,8 @@ void a_screen_resetClip(void)
 {
     a_screen__clipX = 0;
     a_screen__clipY = 0;
+    a_screen__clipX2 = a_screen__width;
+    a_screen__clipY2 = a_screen__height;
     a_screen__clipWidth = a_screen__width;
     a_screen__clipHeight = a_screen__height;
 }
@@ -218,8 +224,7 @@ bool a_screen_boxOnClip(int X, int Y, int W, int H)
 bool a_screen_boxInsideClip(int X, int Y, int W, int H)
 {
     return X >= a_screen__clipX && Y >= a_screen__clipY
-        && X + W <= a_screen__clipX + a_screen__clipWidth
-        && Y + H <= a_screen__clipY + a_screen__clipHeight;
+        && X + W <= a_screen__clipX2 && Y + H <= a_screen__clipY2;
 }
 
 void a_screen__addOverlay(AScreenOverlay Callback)

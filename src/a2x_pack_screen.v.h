@@ -38,6 +38,8 @@ extern int a_screen__width;
 extern int a_screen__height;
 extern int a_screen__clipX;
 extern int a_screen__clipY;
+extern int a_screen__clipX2;
+extern int a_screen__clipY2;
 extern int a_screen__clipWidth;
 extern int a_screen__clipHeight;
 
