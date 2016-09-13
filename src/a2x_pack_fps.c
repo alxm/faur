@@ -25,9 +25,12 @@ static ATimer* g_timer;
 static uint32_t g_fps;
 static uint32_t g_maxFps;
 
-static size_t g_fpsBufferLen;
+static size_t g_bufferHead;
+static size_t g_bufferLen;
 static uint32_t* g_fpsBuffer;
 static uint32_t* g_maxFpsBuffer;
+static uint32_t g_fpsBufferSum;
+static uint32_t g_maxFpsBufferSum;
 
 static uint32_t g_frameCounter;
 
@@ -43,14 +46,18 @@ void a_fps__init(void)
     g_fps = fps;
     g_maxFps = fps;
 
-    g_fpsBufferLen = 5 * fps;
-    g_fpsBuffer = a_mem_malloc(g_fpsBufferLen * sizeof(uint32_t));
-    g_maxFpsBuffer = a_mem_malloc(g_fpsBufferLen * sizeof(uint32_t));
+    g_bufferHead = 0;
+    g_bufferLen = 5 * fps;
+    g_fpsBuffer = a_mem_malloc(g_bufferLen * sizeof(uint32_t));
+    g_maxFpsBuffer = a_mem_malloc(g_bufferLen * sizeof(uint32_t));
 
-    for(int i = g_fpsBufferLen; i--; ) {
+    for(int i = g_bufferLen; i--; ) {
         g_fpsBuffer[i] = g_milisPerFrame;
         g_maxFpsBuffer[i] = g_milisPerFrame;
     }
+
+    g_fpsBufferSum = g_milisPerFrame * g_bufferLen;
+    g_maxFpsBufferSum = g_milisPerFrame * g_bufferLen;
 
     g_frameCounter = 0;
 }
@@ -70,7 +77,10 @@ void a_fps_frame(void)
     const bool done = a_timer_check(g_timer);
 
     if(track) {
-        g_maxFpsBuffer[g_fpsBufferLen - 1] = a_timer_diff(g_timer);
+        g_maxFpsBufferSum -= g_maxFpsBuffer[g_bufferHead];
+        g_maxFpsBuffer[g_bufferHead] = a_timer_diff(g_timer);
+        g_maxFpsBufferSum += g_maxFpsBuffer[g_bufferHead];
+        g_maxFps = 1000 / ((float)g_maxFpsBufferSum / g_bufferLen);
     } else {
         g_maxFps = 1000 / a_math_max(1, a_timer_diff(g_timer));
     }
@@ -91,21 +101,11 @@ void a_fps_frame(void)
     }
 
     if(track) {
-        uint32_t f = 0;
-        uint32_t m = 0;
-
-        for(int i = g_fpsBufferLen; i--; ) {
-            f += g_fpsBuffer[i];
-            m += g_maxFpsBuffer[i];
-        }
-
-        g_fps = 1000 / ((float)f / g_fpsBufferLen);
-        g_maxFps = 1000 / ((float)m / g_fpsBufferLen);
-
-        memmove(g_fpsBuffer, &g_fpsBuffer[1], (g_fpsBufferLen - 1) * sizeof(uint32_t));
-        memmove(g_maxFpsBuffer, &g_maxFpsBuffer[1], (g_fpsBufferLen - 1) * sizeof(uint32_t));
-
-        g_fpsBuffer[g_fpsBufferLen - 1] = a_timer_diff(g_timer);
+        g_fpsBufferSum -= g_fpsBuffer[g_bufferHead];
+        g_fpsBuffer[g_bufferHead] = a_timer_diff(g_timer);
+        g_fpsBufferSum += g_fpsBuffer[g_bufferHead];
+        g_fps = 1000 / ((float)g_fpsBufferSum / g_bufferLen);
+        g_bufferHead = (g_bufferHead + 1) % g_bufferLen;
     } else {
         g_fps = 1000 / a_math_max(1, a_timer_diff(g_timer));
     }
