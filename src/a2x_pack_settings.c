@@ -159,7 +159,6 @@ void a_settings__init(void)
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.fixWizTearing", "0");
     add(A_SETTING_STR, A_SETTING_SET_ONCE, "video.borderColor", "20 12 12");
     add(A_SETTING_INT, A_SETTING_SET_ONCE, "video.fps", "60");
-    add(A_SETTING_BOOL, A_SETTING_SET_ANY, "video.fps.track", "0");
 
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "sound.on", "1");
     add(A_SETTING_INT, A_SETTING_SET_ANY, "sound.music.scale", "100");

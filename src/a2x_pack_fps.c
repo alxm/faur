@@ -73,17 +73,12 @@ void a_fps_frame(void)
 {
     a_screen_show();
 
-    const bool track = a_settings_getBool("video.fps.track");
     const bool done = a_timer_check(g_timer);
 
-    if(track) {
-        g_maxFpsBufferSum -= g_maxFpsBuffer[g_bufferHead];
-        g_maxFpsBuffer[g_bufferHead] = a_timer_diff(g_timer);
-        g_maxFpsBufferSum += g_maxFpsBuffer[g_bufferHead];
-        g_maxFps = 1000 / ((float)g_maxFpsBufferSum / g_bufferLen);
-    } else {
-        g_maxFps = 1000 / a_math_max(1, a_timer_diff(g_timer));
-    }
+    g_maxFpsBufferSum -= g_maxFpsBuffer[g_bufferHead];
+    g_maxFpsBuffer[g_bufferHead] = a_timer_diff(g_timer);
+    g_maxFpsBufferSum += g_maxFpsBuffer[g_bufferHead];
+    g_maxFps = 1000 / ((float)g_maxFpsBufferSum / g_bufferLen);
 
     if(!done) {
         while(!a_timer_check(g_timer)) {
@@ -100,15 +95,11 @@ void a_fps_frame(void)
         }
     }
 
-    if(track) {
-        g_fpsBufferSum -= g_fpsBuffer[g_bufferHead];
-        g_fpsBuffer[g_bufferHead] = a_timer_diff(g_timer);
-        g_fpsBufferSum += g_fpsBuffer[g_bufferHead];
-        g_fps = 1000 / ((float)g_fpsBufferSum / g_bufferLen);
-        g_bufferHead = (g_bufferHead + 1) % g_bufferLen;
-    } else {
-        g_fps = 1000 / a_math_max(1, a_timer_diff(g_timer));
-    }
+    g_fpsBufferSum -= g_fpsBuffer[g_bufferHead];
+    g_fpsBuffer[g_bufferHead] = a_timer_diff(g_timer);
+    g_fpsBufferSum += g_fpsBuffer[g_bufferHead];
+    g_fps = 1000 / ((float)g_fpsBufferSum / g_bufferLen);
+    g_bufferHead = (g_bufferHead + 1) % g_bufferLen;
 
     a_input__get();
     g_frameCounter++;
