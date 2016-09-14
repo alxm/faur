@@ -22,8 +22,10 @@
 #include "a2x_system_includes.h"
 
 extern void a_fps_frame(void);
+extern bool a_fps_notSkipped(void);
 
 extern uint32_t a_fps_getFps(void);
 extern uint32_t a_fps_getMaxFps(void);
+extern int a_fps_getFrameSkip(void);
 extern uint32_t a_fps_getCounter(void);
 extern bool a_fps_nthFrame(uint32_t N);
