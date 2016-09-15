@@ -40,6 +40,10 @@ static bool g_skipFrames;
 static int g_skipMax;
 static int g_skipNum;
 static int g_skipCounter;
+static uint32_t g_fpsThresholdFast;
+static uint32_t g_fpsThresholdSlow;
+static AFrameTimer* g_fastTimer;
+static AFrameTimer* g_slowTimer;
 
 void a_fps__init(void)
 {
@@ -54,7 +58,7 @@ void a_fps__init(void)
     g_frameCounter = 0;
 
     g_bufferHead = 0;
-    g_bufferLen = AVG_WINDOW_SECONDS * g_fpsRate;
+    g_bufferLen = g_fpsRate * AVG_WINDOW_SECONDS;
     g_fpsBuffer = a_mem_malloc(g_bufferLen * sizeof(uint32_t));
     g_maxFpsBuffer = a_mem_malloc(g_bufferLen * sizeof(uint32_t));
 
@@ -70,11 +74,18 @@ void a_fps__init(void)
     g_skipMax = a_settings_getInt("video.fps.skip.max");
     g_skipNum = 0;
     g_skipCounter = 0;
+    g_fpsThresholdFast = g_fpsRate * 0.95;
+    g_fpsThresholdSlow = g_fpsRate * 0.90;
+    g_fastTimer = a_frametimer_new(g_fpsRate * AVG_WINDOW_SECONDS);
+    g_slowTimer = a_frametimer_new(g_fpsRate * AVG_WINDOW_SECONDS);
 }
 
 void a_fps__uninit(void)
 {
     a_timer_free(g_timer);
+    a_frametimer_free(g_fastTimer);
+    a_frametimer_free(g_slowTimer);
+
     free(g_fpsBuffer);
     free(g_maxFpsBuffer);
 }
@@ -117,13 +128,35 @@ void a_fps_frame(void)
     g_frameCounter++;
 
     if(g_skipFrames) {
-        if(g_fps < g_fpsRate) {
-            if(g_skipCounter++ == g_skipNum) {
-                g_skipNum = a_math_min(g_skipNum + 1, g_skipMax);
+        if(g_fps < g_fpsThresholdSlow && g_skipNum < g_skipMax) {
+            a_frametimer_stop(g_fastTimer);
+
+            if(!a_frametimer_running(g_slowTimer)
+                || a_frametimer_check(g_slowTimer)) {
+
+                g_skipNum++;
                 g_skipCounter = 0;
             }
-        } else {
-            g_skipNum = a_math_max(g_skipNum - 1, 0);
+
+            if(!a_frametimer_running(g_slowTimer)) {
+                a_frametimer_start(g_slowTimer);
+            }
+        } else if(g_fps > g_fpsThresholdFast && g_skipNum > 0) {
+            a_frametimer_stop(g_slowTimer);
+
+            if(!a_frametimer_running(g_fastTimer)
+                || a_frametimer_check(g_fastTimer)) {
+
+                g_skipNum--;
+                g_skipCounter = 0;
+            }
+
+            if(!a_frametimer_running(g_fastTimer)) {
+                a_frametimer_start(g_fastTimer);
+            }
+        }
+
+        if(g_skipCounter++ == g_skipNum) {
             g_skipCounter = 0;
         }
     }
