@@ -21,6 +21,7 @@
 
 #include "a2x_pack_fps.p.h"
 
+#include "a2x_pack_frametimer.v.h"
 #include "a2x_pack_input.v.h"
 #include "a2x_pack_math.v.h"
 #include "a2x_pack_screen.v.h"

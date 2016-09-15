@@ -1,5 +1,5 @@
 /*
-    Copyright 2011 Alex Margarit
+    Copyright 2011, 2016 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -26,6 +26,8 @@ typedef struct AFrameTimer AFrameTimer;
 extern AFrameTimer* a_frametimer_new(uint32_t FramesPeriod);
 extern void a_frametimer_free(AFrameTimer* Timer);
 
+extern void a_frametimer_start(AFrameTimer* Timer);
+extern void a_frametimer_stop(AFrameTimer* Timer);
+extern bool a_frametimer_running(AFrameTimer* Timer);
 extern bool a_frametimer_check(AFrameTimer* Timer);
 extern uint32_t a_frametimer_diff(AFrameTimer* Timer);
-extern void a_frametimer_start(AFrameTimer* Timer);

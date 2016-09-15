@@ -333,11 +333,10 @@ bool a_state__nothingPending(void)
     if(first) {
         first = false;
     } else {
-        a_fps_end();
+        a_fps_frame();
     }
 
     if(a_list_empty(g_pending)) {
-        a_fps_start();
         return true;
     } else {
         first = true;

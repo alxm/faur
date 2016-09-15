@@ -1,5 +1,5 @@
 /*
-    Copyright 2011 Alex Margarit
+    Copyright 2011, 2016 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -47,6 +47,16 @@ void a_timer_start(ATimer* Timer)
 {
     Timer->running = true;
     Timer->start = a_time_getMilis();
+}
+
+void a_timer_stop(ATimer* Timer)
+{
+    Timer->running = false;
+}
+
+bool a_timer_running(ATimer* Timer)
+{
+    return Timer->running;
 }
 
 bool a_timer_check(ATimer* Timer)

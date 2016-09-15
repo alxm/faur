@@ -1,5 +1,5 @@
 /*
-    Copyright 2011 Alex Margarit
+    Copyright 2011, 2016 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -27,5 +27,7 @@ extern ATimer* a_timer_new(uint32_t MilisPeriod);
 extern void a_timer_free(ATimer* Timer);
 
 extern void a_timer_start(ATimer* Timer);
+extern void a_timer_stop(ATimer* Timer);
+extern bool a_timer_running(ATimer* Timer);
 extern bool a_timer_check(ATimer* Timer);
 extern uint32_t a_timer_diff(ATimer* Timer);
