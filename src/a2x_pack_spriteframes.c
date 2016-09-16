@@ -43,21 +43,29 @@ ASpriteFrames* a_spriteframes_new(const ASprite* Sheet, int X, int Y, int CallsT
     Frames->dir = 1;
     Frames->paused = false;
 
-    ASprite* s;
+    while(X < Sheet->w) {
+        ASprite* s = a_sprite_fromSprite(Sheet, X, Y);
 
-    do {
-        s = a_sprite_fromSprite(Sheet, X, Y);
+        a_list_addLast(Frames->sprites, s);
+        X += s->w;
 
-        if(s) {
-            a_list_addLast(Frames->sprites, s);
+        if(X < Sheet->w) {
+            bool end = true;
 
-            if(a_sprite__getPixel(Sheet, X + s->w, Y) == A_SPRITE_END) {
-                s = NULL;
-            } else {
-                X += s->w + 1;
+            for(int y = Y + s->h; y-- > Y; ) {
+                if(a_sprite__getPixel(Sheet, X, y) != A_SPRITE_END) {
+                    end = false;
+                    break;
+                }
+            }
+
+            if(end) {
+                break;
             }
         }
-    } while(s != NULL);
+
+        X += 1;
+    }
 
     Frames->spriteArray = (ASprite**)a_list_array(Frames->sprites);
     Frames->num = a_list_size(Frames->sprites);

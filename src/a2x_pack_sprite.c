@@ -262,26 +262,52 @@ ASprite* a_sprite_fromSprite(const ASprite* Sheet, int X, int Y)
     const int sheetWidth = Sheet->w;
     const int sheetHeight = Sheet->h;
 
-    for(int sheetx = X; sheetx < sheetWidth; sheetx++) {
-        const APixel hPixel = a_sprite__getPixel(Sheet, sheetx, Y);
+    for(int endX = X; endX < sheetWidth; endX++) {
+        APixel p = a_sprite__getPixel(Sheet, endX, Y);
 
-        // reached right edge
-        if(hPixel == A_SPRITE_LIMIT || hPixel == A_SPRITE_END) {
-            for(int sheety = Y; sheety < sheetHeight; sheety++) {
-                const APixel vPixel = a_sprite__getPixel(Sheet, X, sheety);
+        if(p != A_SPRITE_LIMIT && p != A_SPRITE_END) {
+            continue;
+        }
 
-                // reached bottom edge
-                if(vPixel == A_SPRITE_LIMIT) {
-                    spriteWidth = sheetx - X;
-                    spriteHeight = sheety - Y;
-                    goto Done;
+        for(int endY = Y; endY < sheetHeight; endY++) {
+            p = a_sprite__getPixel(Sheet, X, endY);
+
+            if(p != A_SPRITE_LIMIT) {
+                continue;
+            }
+
+            bool foundRightEdge = true;
+            bool foundBottomEdge = true;
+
+            for(int x = X; x < endX; x++) {
+                p = a_sprite__getPixel(Sheet, x, endY);
+
+                if(p != A_SPRITE_LIMIT) {
+                    foundBottomEdge = false;
+                    break;
+                }
+            }
+
+            if(foundBottomEdge) {
+                for(int y = Y; y < endY; y++) {
+                    p = a_sprite__getPixel(Sheet, endX, y);
+
+                    if(p != A_SPRITE_LIMIT && p != A_SPRITE_END) {
+                        foundRightEdge = false;
+                        break;
+                    }
+                }
+
+                if(foundRightEdge) {
+                    spriteWidth = endX - X;
+                    spriteHeight = endY - Y;
+                    goto done;
                 }
             }
         }
     }
 
-    Done:
-
+done:
     if(spriteWidth == 0 || spriteHeight == 0) {
         if(X == 0 && Y == 0) {
             // no boundary borders for full-image sprites
