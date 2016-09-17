@@ -25,4 +25,4 @@
 extern A_MAIN;
 
 extern int a_main_numArgs(void);
-extern char* a_main_getArg(unsigned int ArgNum);
+extern const char* a_main_getArg(int ArgNum);

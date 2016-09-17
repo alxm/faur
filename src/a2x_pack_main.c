@@ -20,9 +20,9 @@
 #include "a2x_pack_main.v.h"
 
 static int g_argsNum;
-static char** g_args;
+static const char** g_args;
 
-int main(int Argc, char** Argv)
+int main(int Argc, const char** Argv)
 {
     g_argsNum = Argc;
     g_args = Argv;
@@ -103,7 +103,7 @@ int a_main_numArgs(void)
     return g_argsNum;
 }
 
-char* a_main_getArg(unsigned int ArgNum)
+const char* a_main_getArg(int ArgNum)
 {
     if(ArgNum >= g_argsNum) {
         a_out__error("a_main_getArg invalid arg: %u", ArgNum);
