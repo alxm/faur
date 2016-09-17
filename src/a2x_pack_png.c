@@ -109,8 +109,7 @@ void a_png_readFile(const char* Path, APixel** Pixels, int* Width, int* Height)
 
     pngToPixels(png, info, Pixels, Width, Height);
 
-    cleanUp:
-
+cleanUp:
     if(png) {
         png_destroy_read_struct(&png, info ? &info : NULL, NULL);
     }
@@ -168,8 +167,7 @@ void a_png_readMemory(const uint8_t* Data, APixel** Pixels, int* Width, int* Hei
 
     pngToPixels(png, info, Pixels, Width, Height);
 
-    cleanUp:
-
+cleanUp:
     if(png) {
         png_destroy_read_struct(&png, info ? &info : NULL, NULL);
     }
@@ -235,8 +233,7 @@ void a_png_write(const char* Path, const APixel* Data, int Width, int Height)
     png_write_png(png, info, PNG_TRANSFORM_IDENTITY, NULL);
     png_write_end(png, NULL);
 
-    cleanUp:
-
+cleanUp:
     if(png) {
         png_destroy_write_struct(&png, info ? &info : NULL);
     }

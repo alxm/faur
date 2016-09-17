@@ -210,7 +210,9 @@ do {                                                                        \
 
 #define A__CONCAT_WORKER(A, B) A##B
 #define A__CONCAT(A, B) A__CONCAT_WORKER(A, B)
+
 #define A__FUNC_NAME(Prefix) A__CONCAT(Prefix##_, A__BLEND)
+
 #define A__PIXEL_DRAW_WORKER(Params) A__CONCAT(a_pixel__, A__BLEND)(Params)
 #define A__PIXEL_DRAW(Dst) A__PIXEL_DRAW_WORKER(Dst A__PIXEL_PARAMS)
 

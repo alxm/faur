@@ -47,7 +47,9 @@ C_SFX_FILES = $(addprefix $(C_SFX_DIR)/sfx_, $(SFX_FILES:.wav=.c))
 #
 # .c source files
 #
-C_FILES = $(notdir $(wildcard $(SRC_DIR)/*.c))
+C_INC_FILES = $(notdir $(wildcard $(SRC_DIR)/*.inc.c))
+C_SRC_FILES = $(notdir $(wildcard $(SRC_DIR)/*.c))
+C_FILES = $(filter-out $(C_INC_FILES), $(C_SRC_FILES))
 
 #
 # object file dirs
