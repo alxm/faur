@@ -172,6 +172,7 @@ void a_screen_resetTarget(void)
     a_screen_resetClip();
 
     if(g_spriteTarget) {
+        a_sprite__refreshSpans(g_spriteTarget);
         g_spriteTarget = NULL;
     }
 }

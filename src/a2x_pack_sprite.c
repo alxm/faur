@@ -270,7 +270,7 @@ ASprite* a_sprite_fromPixels(const APixel* Pixels, int Width, int Height)
     ASprite* s = a_sprite_blank(Width, Height, foundColorKey);
 
     memcpy(s->pixels, Pixels, Width * Height * sizeof(APixel));
-    a_sprite_refresh(s);
+    a_sprite__refreshSpans(s);
 
     return s;
 }
@@ -364,7 +364,7 @@ doneColorKey:
         dst += spriteWidth;
     }
 
-    a_sprite_refresh(sprite);
+    a_sprite__refreshSpans(sprite);
 
     return sprite;
 }
@@ -476,7 +476,7 @@ APixel a_sprite_getPixel(const ASprite* Sprite, int X, int Y)
     return *(Sprite->pixels + Y * Sprite->w + X);
 }
 
-void a_sprite_refresh(ASprite* Sprite)
+void a_sprite__refreshSpans(ASprite* Sprite)
 {
     if(Sprite->spansSize == 0 && Sprite->spans != NULL) {
         return;
@@ -548,7 +548,7 @@ ASprite* a_sprite_clone(const ASprite* Sprite)
     ASprite* s = a_sprite_blank(Sprite->w, Sprite->h, Sprite->spansSize > 0);
 
     memcpy(s->pixels, Sprite->pixels, Sprite->w * Sprite->h * sizeof(APixel));
-    a_sprite_refresh(s);
+    a_sprite__refreshSpans(s);
 
     return s;
 }

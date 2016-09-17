@@ -38,5 +38,6 @@ extern void a_sprite__init(void);
 extern void a_sprite__uninit(void);
 
 extern void a_sprite__updateRoutines(void);
+extern void a_sprite__refreshSpans(ASprite* Sprite);
 
 #define a_sprite__getPixel(s, x, y) (*((s)->pixels + (y) * (s)->w + (x)))

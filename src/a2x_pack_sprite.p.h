@@ -43,10 +43,8 @@ extern int a_sprite_w(const ASprite* Sprite);
 extern int a_sprite_wLog2(const ASprite* Sprite);
 extern int a_sprite_h(const ASprite* Sprite);
 extern APixel* a_sprite_pixels(ASprite* Sprite);
-
 extern APixel a_sprite_getPixel(const ASprite* Sprite, int X, int Y);
 
-extern void a_sprite_refresh(ASprite* Sprite);
 extern ASprite* a_sprite_clone(const ASprite* Sprite);
 
 #define A_SPRITE_COLORKEY a_pixel_make(255, 0,   255)
