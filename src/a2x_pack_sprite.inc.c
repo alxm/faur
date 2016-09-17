@@ -60,15 +60,10 @@ static void A__FUNC_NAME(A__BLEND, A__FILL, keyed, doclip)(const ASprite* Sprite
     const int spriteW = Sprite->w;
     const int spriteH = Sprite->h;
 
-    const int clipX1 = a_screen__clipX;
-    const int clipX2 = a_screen__clipX2;
-    const int clipY1 = a_screen__clipY;
-    const int clipY2 = a_screen__clipY2;
-
-    const int yClipUp = a_math_max(0, clipY1 - Y);
-    const int yClipDown = a_math_max(0, Y + spriteH - clipY2);
-    const int xClipLeft = a_math_max(0, clipX1 - X);
-    const int xClipRight = a_math_max(0, X + spriteW - clipX2);
+    const int yClipUp = a_math_max(0, a_screen__clipY - Y);
+    const int yClipDown = a_math_max(0, Y + spriteH - a_screen__clipY2);
+    const int xClipLeft = a_math_max(0, a_screen__clipX - X);
+    const int xClipRight = a_math_max(0, X + spriteW - a_screen__clipX2);
 
     const int rows = spriteH - yClipUp - yClipDown;
     const int columns = spriteW - xClipLeft - xClipRight;
@@ -166,15 +161,10 @@ static void A__FUNC_NAME(A__BLEND, A__FILL, block, doclip)(const ASprite* Sprite
     const int spriteW = Sprite->w;
     const int spriteH = Sprite->h;
 
-    const int clipX1 = a_screen__clipX;
-    const int clipX2 = a_screen__clipX2;
-    const int clipY1 = a_screen__clipY;
-    const int clipY2 = a_screen__clipY2;
-
-    const int yClipUp = a_math_max(0, clipY1 - Y);
-    const int yClipDown = a_math_max(0, Y + spriteH - clipY2);
-    const int xClipLeft = a_math_max(0, clipX1 - X);
-    const int xClipRight = a_math_max(0, X + spriteW - clipX2);
+    const int yClipUp = a_math_max(0, a_screen__clipY - Y);
+    const int yClipDown = a_math_max(0, Y + spriteH - a_screen__clipY2);
+    const int xClipLeft = a_math_max(0, a_screen__clipX - X);
+    const int xClipRight = a_math_max(0, X + spriteW - a_screen__clipX2);
 
     const int rows = spriteH - yClipUp - yClipDown;
     const int columns = spriteW - xClipLeft - xClipRight;

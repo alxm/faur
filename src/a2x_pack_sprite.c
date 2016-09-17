@@ -261,7 +261,7 @@ ASprite* a_sprite_fromPixels(const APixel* Pixels, int Width, int Height)
     bool foundColorKey = false;
 
     for(int i = Width * Height; i--; ) {
-        if(Pixels[i] == A_SPRITE_TRANSPARENT) {
+        if(Pixels[i] == A_SPRITE_COLORKEY) {
             foundColorKey = true;
             break;
         }
@@ -345,7 +345,7 @@ doneEdges:
 
     for(int i = spriteHeight; i--; pixels += sheetWidth - spriteWidth) {
         for(int j = spriteWidth; j--; ) {
-            if(*pixels++ == A_SPRITE_TRANSPARENT) {
+            if(*pixels++ == A_SPRITE_COLORKEY) {
                 foundColorKey = true;
                 goto doneColorKey;
             }
@@ -383,7 +383,7 @@ ASprite* a_sprite_blank(int Width, int Height, bool ColorKeyed)
         APixel* pixels = s->pixels;
 
         for(int i = Width * Height; i--; ) {
-            *pixels++ = A_SPRITE_TRANSPARENT;
+            *pixels++ = A_SPRITE_COLORKEY;
         }
     }
 
@@ -494,10 +494,10 @@ void a_sprite_refresh(ASprite* Sprite)
 
     for(int y = spriteHeight; y--; ) {
         bytesNeeded += sizeof(uint16_t); // total spans size and initial state
-        bool lastState = *dest != A_SPRITE_TRANSPARENT; // initial state
+        bool lastState = *dest != A_SPRITE_COLORKEY; // initial state
 
         for(int x = spriteWidth; x--; ) {
-            bool newState = *dest++ != A_SPRITE_TRANSPARENT;
+            bool newState = *dest++ != A_SPRITE_COLORKEY;
 
             if(newState != lastState) {
                 bytesNeeded += sizeof(uint16_t); // length of new span
@@ -522,11 +522,11 @@ void a_sprite_refresh(ASprite* Sprite)
         uint16_t numSpans = 1; // line has at least 1 span
         uint16_t spanLength = 0;
 
-        bool lastState = *dest != A_SPRITE_TRANSPARENT; // initial draw state
+        bool lastState = *dest != A_SPRITE_COLORKEY; // initial draw state
         *spans++ = lastState;
 
         for(int x = spriteWidth; x--; ) {
-            bool newState = *dest++ != A_SPRITE_TRANSPARENT;
+            bool newState = *dest++ != A_SPRITE_COLORKEY;
 
             if(newState == lastState) {
                 spanLength++; // keep growing current span

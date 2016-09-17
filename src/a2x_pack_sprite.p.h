@@ -49,6 +49,6 @@ extern APixel a_sprite_getPixel(const ASprite* Sprite, int X, int Y);
 extern void a_sprite_refresh(ASprite* Sprite);
 extern ASprite* a_sprite_clone(const ASprite* Sprite);
 
-#define A_SPRITE_TRANSPARENT a_pixel_make(255, 0, 255)
-#define A_SPRITE_LIMIT       a_pixel_make(0, 255, 0)
-#define A_SPRITE_END         a_pixel_make(0, 255, 255)
+#define A_SPRITE_COLORKEY a_pixel_make(255, 0,   255)
+#define A_SPRITE_LIMIT    a_pixel_make(0,   255, 0)
+#define A_SPRITE_END      a_pixel_make(0,   255, 255)

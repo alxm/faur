@@ -149,7 +149,7 @@ int a_font_copy(int Font, APixel Color)
             APixel* d = s->pixels;
 
             for(int j = s->w * s->h; j--; d++) {
-                if(*d != A_SPRITE_TRANSPARENT) {
+                if(*d != A_SPRITE_COLORKEY) {
                     *d = Color;
                 }
             }
