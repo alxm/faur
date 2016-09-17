@@ -21,56 +21,61 @@
 
 typedef void (*ABlitter)(const ASprite* Sprite, int X, int Y);
 
-static ABlitter g_blitter_clip;
-static ABlitter g_blitter_noclip;
-static ABlitter g_blitters[A_PIXEL_BLEND_NUM][2][2];
-static bool g_fillFlat;
+// [Blend][Fill][ColorKey][Clip]
+static ABlitter g_blitters[A_PIXEL_BLEND_NUM][2][2][2];
 
+static ABlitter g_blitter_block_noclip;
+static ABlitter g_blitter_block_doclip;
+static ABlitter g_blitter_keyed_noclip;
+static ABlitter g_blitter_keyed_doclip;
+
+static bool g_fillFlat;
 static AList* g_spritesList;
 static void a_sprite__free(ASprite* Sprite);
 
-#define A__CONCAT_WORKER(A, B) A##B
-#define A__CONCAT(A, B) A__CONCAT_WORKER(A, B)
-#define A__CONCAT3_WORKER(A, B, C) A##_##B##_##C
-#define A__CONCAT3(A, B, C) A__CONCAT3_WORKER(A, B, C)
-#define A__FUNC_NAME(Prefix) A__CONCAT3(Prefix, A__BLEND, A__SUFFIX)
-#define A__PIXEL_DRAW_WORKER(Params) A__CONCAT(a_pixel__, A__BLEND)(Params)
+#define A__FUNC_NAME_JOIN_WORKER(A, B, C, D) a_blit__##A##_##B##_##C##_##D
+#define A__FUNC_NAME_JOIN(A, B, C, D) A__FUNC_NAME_JOIN_WORKER(A, B, C, D)
+#define A__FUNC_NAME(Blend, Fill, ColorKey, Clip) A__FUNC_NAME_JOIN(Blend, Fill, ColorKey, Clip)
+
+#define A__PIXEL_DRAW_JOIN_WORKER(A) a_pixel__##A
+#define A__PIXEL_DRAW_JOIN(A) A__PIXEL_DRAW_JOIN_WORKER(A)
+#define A__PIXEL_DRAW_WORKER(Params) A__PIXEL_DRAW_JOIN(A__BLEND)(Params)
 #define A__PIXEL_DRAW(Dst) A__PIXEL_DRAW_WORKER(Dst A__PIXEL_PARAMS)
 
 #define A__BLEND plain
-#define A__SUFFIX normal
+#define A__FILL data
 #define A__BLEND_SETUP
 #define A__PIXEL_PARAMS , *a__pass_src
 #include "a2x_pack_sprite.inc.c"
 #undef A__BLEND
-#undef A__SUFFIX
+#undef A__FILL
 #undef A__BLEND_SETUP
 #undef A__PIXEL_PARAMS
 
 #define A__BLEND plain
-#define A__SUFFIX flat
+#define A__FILL flat
 #define A__BLEND_SETUP                                \
     const APixel a__pass_color = a_pixel__mode.pixel;
 #define A__PIXEL_PARAMS , a__pass_color
 #include "a2x_pack_sprite.inc.c"
 #undef A__BLEND
-#undef A__SUFFIX
+#undef A__FILL
 #undef A__BLEND_SETUP
 #undef A__PIXEL_PARAMS
 
 #define A__BLEND rgba
-#define A__SUFFIX normal
+#define A__FILL data
 #define A__BLEND_SETUP \
     const unsigned int a__pass_alpha = a_pixel__mode.alpha;
 #define A__PIXEL_PARAMS , a_pixel_red(*a__pass_src), a_pixel_green(*a__pass_src), a_pixel_blue(*a__pass_src), a__pass_alpha
 #include "a2x_pack_sprite.inc.c"
 #undef A__BLEND
-#undef A__SUFFIX
+#undef A__FILL
 #undef A__BLEND_SETUP
 #undef A__PIXEL_PARAMS
 
 #define A__BLEND rgba
-#define A__SUFFIX flat
+#define A__FILL flat
 #define A__BLEND_SETUP                                      \
     const uint8_t a__pass_red = a_pixel__mode.red;          \
     const uint8_t a__pass_green = a_pixel__mode.green;      \
@@ -79,22 +84,22 @@ static void a_sprite__free(ASprite* Sprite);
 #define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue, a__pass_alpha
 #include "a2x_pack_sprite.inc.c"
 #undef A__BLEND
-#undef A__SUFFIX
+#undef A__FILL
 #undef A__BLEND_SETUP
 #undef A__PIXEL_PARAMS
 
 #define A__BLEND rgb25
-#define A__SUFFIX normal
+#define A__FILL data
 #define A__BLEND_SETUP
 #define A__PIXEL_PARAMS , a_pixel_red(*a__pass_src), a_pixel_green(*a__pass_src), a_pixel_blue(*a__pass_src)
 #include "a2x_pack_sprite.inc.c"
 #undef A__BLEND
-#undef A__SUFFIX
+#undef A__FILL
 #undef A__BLEND_SETUP
 #undef A__PIXEL_PARAMS
 
 #define A__BLEND rgb25
-#define A__SUFFIX flat
+#define A__FILL flat
 #define A__BLEND_SETUP                                 \
     const uint8_t a__pass_red = a_pixel__mode.red;     \
     const uint8_t a__pass_green = a_pixel__mode.green; \
@@ -102,22 +107,22 @@ static void a_sprite__free(ASprite* Sprite);
 #define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue
 #include "a2x_pack_sprite.inc.c"
 #undef A__BLEND
-#undef A__SUFFIX
+#undef A__FILL
 #undef A__BLEND_SETUP
 #undef A__PIXEL_PARAMS
 
 #define A__BLEND rgb50
-#define A__SUFFIX normal
+#define A__FILL data
 #define A__BLEND_SETUP
 #define A__PIXEL_PARAMS , a_pixel_red(*a__pass_src), a_pixel_green(*a__pass_src), a_pixel_blue(*a__pass_src)
 #include "a2x_pack_sprite.inc.c"
 #undef A__BLEND
-#undef A__SUFFIX
+#undef A__FILL
 #undef A__BLEND_SETUP
 #undef A__PIXEL_PARAMS
 
 #define A__BLEND rgb50
-#define A__SUFFIX flat
+#define A__FILL flat
 #define A__BLEND_SETUP                                 \
     const uint8_t a__pass_red = a_pixel__mode.red;     \
     const uint8_t a__pass_green = a_pixel__mode.green; \
@@ -125,22 +130,22 @@ static void a_sprite__free(ASprite* Sprite);
 #define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue
 #include "a2x_pack_sprite.inc.c"
 #undef A__BLEND
-#undef A__SUFFIX
+#undef A__FILL
 #undef A__BLEND_SETUP
 #undef A__PIXEL_PARAMS
 
 #define A__BLEND rgb75
-#define A__SUFFIX normal
+#define A__FILL data
 #define A__BLEND_SETUP
 #define A__PIXEL_PARAMS , a_pixel_red(*a__pass_src), a_pixel_green(*a__pass_src), a_pixel_blue(*a__pass_src)
 #include "a2x_pack_sprite.inc.c"
 #undef A__BLEND
-#undef A__SUFFIX
+#undef A__FILL
 #undef A__BLEND_SETUP
 #undef A__PIXEL_PARAMS
 
 #define A__BLEND rgb75
-#define A__SUFFIX flat
+#define A__FILL flat
 #define A__BLEND_SETUP                                 \
     const uint8_t a__pass_red = a_pixel__mode.red;     \
     const uint8_t a__pass_green = a_pixel__mode.green; \
@@ -148,37 +153,41 @@ static void a_sprite__free(ASprite* Sprite);
 #define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue
 #include "a2x_pack_sprite.inc.c"
 #undef A__BLEND
-#undef A__SUFFIX
+#undef A__FILL
 #undef A__BLEND_SETUP
 #undef A__PIXEL_PARAMS
 
 #define A__BLEND inverse
-#define A__SUFFIX normal
+#define A__FILL data
 #define A__BLEND_SETUP
 #define A__PIXEL_PARAMS
 #include "a2x_pack_sprite.inc.c"
 #undef A__BLEND
-#undef A__SUFFIX
+#undef A__FILL
 #undef A__BLEND_SETUP
 #undef A__PIXEL_PARAMS
 
 #define A__BLEND inverse
-#define A__SUFFIX flat
+#define A__FILL flat
 #define A__BLEND_SETUP
 #define A__PIXEL_PARAMS
 #include "a2x_pack_sprite.inc.c"
 #undef A__BLEND
-#undef A__SUFFIX
+#undef A__FILL
 #undef A__BLEND_SETUP
 #undef A__PIXEL_PARAMS
 
 void a_sprite__init(void)
 {
-    #define initRoutines(Index, Blend)                             \
-        g_blitters[Index][0][0] = a_blit__noclip_##Blend##_normal; \
-        g_blitters[Index][0][1] = a_blit__noclip_##Blend##_flat;   \
-        g_blitters[Index][1][0] = a_blit__clip_##Blend##_normal;   \
-        g_blitters[Index][1][1] = a_blit__clip_##Blend##_flat;     \
+    #define initRoutines(Index, Blend)                                         \
+        g_blitters[Index][0][0][0] = A__FUNC_NAME(Blend, data, block, noclip); \
+        g_blitters[Index][0][0][1] = A__FUNC_NAME(Blend, data, block, doclip); \
+        g_blitters[Index][0][1][0] = A__FUNC_NAME(Blend, data, keyed, noclip); \
+        g_blitters[Index][0][1][1] = A__FUNC_NAME(Blend, data, keyed, doclip); \
+        g_blitters[Index][1][0][0] = A__FUNC_NAME(Blend, flat, block, noclip); \
+        g_blitters[Index][1][0][1] = A__FUNC_NAME(Blend, flat, block, doclip); \
+        g_blitters[Index][1][1][0] = A__FUNC_NAME(Blend, flat, keyed, noclip); \
+        g_blitters[Index][1][1][1] = A__FUNC_NAME(Blend, flat, keyed, doclip); \
 
     initRoutines(A_PIXEL_BLEND_PLAIN, plain);
     initRoutines(A_PIXEL_BLEND_RGBA, rgba);
@@ -203,8 +212,10 @@ void a_sprite__uninit(void)
 
 void a_sprite__updateRoutines(void)
 {
-    g_blitter_clip = g_blitters[a_pixel__mode.blend][true][g_fillFlat];
-    g_blitter_noclip = g_blitters[a_pixel__mode.blend][false][g_fillFlat];
+    g_blitter_block_noclip = g_blitters[a_pixel__mode.blend][g_fillFlat][0][0];
+    g_blitter_block_doclip = g_blitters[a_pixel__mode.blend][g_fillFlat][0][1];
+    g_blitter_keyed_noclip = g_blitters[a_pixel__mode.blend][g_fillFlat][1][0];
+    g_blitter_keyed_doclip = g_blitters[a_pixel__mode.blend][g_fillFlat][1][1];
 }
 
 ASprite* a_sprite_fromFile(const char* Path)
@@ -247,7 +258,16 @@ ASprite* a_sprite_fromData(const uint8_t* Data)
 
 ASprite* a_sprite_fromPixels(const APixel* Pixels, int Width, int Height)
 {
-    ASprite* s = a_sprite_blank(Width, Height);
+    bool foundColorKey = false;
+
+    for(int i = Width * Height; i--; ) {
+        if(Pixels[i] == A_SPRITE_TRANSPARENT) {
+            foundColorKey = true;
+            break;
+        }
+    }
+
+    ASprite* s = a_sprite_blank(Width, Height, foundColorKey);
 
     memcpy(s->pixels, Pixels, Width * Height * sizeof(APixel));
     a_sprite_refresh(s);
@@ -257,6 +277,7 @@ ASprite* a_sprite_fromPixels(const APixel* Pixels, int Width, int Height)
 
 ASprite* a_sprite_fromSprite(const ASprite* Sheet, int X, int Y)
 {
+    ASprite* sprite;
     int spriteWidth = 0;
     int spriteHeight = 0;
     const int sheetWidth = Sheet->w;
@@ -301,13 +322,13 @@ ASprite* a_sprite_fromSprite(const ASprite* Sheet, int X, int Y)
                 if(foundRightEdge) {
                     spriteWidth = endX - X;
                     spriteHeight = endY - Y;
-                    goto done;
+                    goto doneEdges;
                 }
             }
         }
     }
 
-done:
+doneEdges:
     if(spriteWidth == 0 || spriteHeight == 0) {
         if(X == 0 && Y == 0) {
             // no boundary borders for full-image sprites
@@ -319,7 +340,21 @@ done:
         }
     }
 
-    ASprite* const sprite = a_sprite_blank(spriteWidth, spriteHeight);
+    bool foundColorKey = false;
+    const APixel* pixels = Sheet->pixels + Y * sheetWidth + X;
+
+    for(int i = spriteHeight; i--; pixels += sheetWidth - spriteWidth) {
+        for(int j = spriteWidth; j--; ) {
+            if(*pixels++ == A_SPRITE_TRANSPARENT) {
+                foundColorKey = true;
+                goto doneColorKey;
+            }
+        }
+    }
+
+doneColorKey:
+    sprite = a_sprite_blank(spriteWidth, spriteHeight, foundColorKey);
+
     const APixel* src = Sheet->pixels + Y * sheetWidth + X;
     APixel* dst = sprite->pixels;
 
@@ -334,20 +369,22 @@ done:
     return sprite;
 }
 
-ASprite* a_sprite_blank(int Width, int Height)
+ASprite* a_sprite_blank(int Width, int Height, bool ColorKeyed)
 {
-    ASprite* const s = a_mem_malloc(sizeof(ASprite) + Width * Height * sizeof(APixel));
+    ASprite* s = a_mem_malloc(sizeof(ASprite) + Width * Height * sizeof(APixel));
 
     s->w = Width;
     s->wLog2 = (int)log2f(Width);
     s->h = Height;
-    s->spans = NULL;
+    s->spans = ColorKeyed ? NULL : NULL + 1;
     s->spansSize = 0;
 
-    APixel* pixels = s->pixels;
+    if(ColorKeyed) {
+        APixel* pixels = s->pixels;
 
-    for(int i = Width * Height; i--; ) {
-        *pixels++ = A_SPRITE_TRANSPARENT;
+        for(int i = Width * Height; i--; ) {
+            *pixels++ = A_SPRITE_TRANSPARENT;
+        }
     }
 
     s->node = a_list_addLast(g_spritesList, s);
@@ -363,16 +400,27 @@ void a_sprite_free(ASprite* Sprite)
 
 void a_sprite__free(ASprite* Sprite)
 {
-    free(Sprite->spans);
+    if(Sprite->spansSize > 0) {
+        free(Sprite->spans);
+    }
+
     free(Sprite);
 }
 
 void a_sprite_blit(const ASprite* Sprite, int X, int Y)
 {
     if(a_screen_boxInsideClip(X, Y, Sprite->w, Sprite->h)) {
-        g_blitter_noclip(Sprite, X, Y);
+        if(Sprite->spansSize > 0) {
+            g_blitter_keyed_noclip(Sprite, X, Y);
+        } else {
+            g_blitter_block_noclip(Sprite, X, Y);
+        }
     } else if(a_screen_boxOnClip(X, Y, Sprite->w, Sprite->h)) {
-        g_blitter_clip(Sprite, X, Y);
+        if(Sprite->spansSize > 0) {
+            g_blitter_keyed_doclip(Sprite, X, Y);
+        } else {
+            g_blitter_block_doclip(Sprite, X, Y);
+        }
     }
 }
 
@@ -430,6 +478,10 @@ APixel a_sprite_getPixel(const ASprite* Sprite, int X, int Y)
 
 void a_sprite_refresh(ASprite* Sprite)
 {
+    if(Sprite->spansSize == 0 && Sprite->spans != NULL) {
+        return;
+    }
+
     const int spriteWidth = Sprite->w;
     const int spriteHeight = Sprite->h;
     const APixel* const dst = Sprite->pixels;
@@ -493,7 +545,7 @@ void a_sprite_refresh(ASprite* Sprite)
 
 ASprite* a_sprite_clone(const ASprite* Sprite)
 {
-    ASprite* const s = a_sprite_blank(Sprite->w, Sprite->h);
+    ASprite* s = a_sprite_blank(Sprite->w, Sprite->h, Sprite->spansSize > 0);
 
     memcpy(s->pixels, Sprite->pixels, Sprite->w * Sprite->h * sizeof(APixel));
     a_sprite_refresh(s);
