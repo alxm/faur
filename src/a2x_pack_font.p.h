@@ -35,7 +35,7 @@ typedef enum AFontAlign {
     A_FONT_ALIGN_LEFT = 1,
     A_FONT_ALIGN_MIDDLE = 2,
     A_FONT_ALIGN_RIGHT = 4,
-    A_FONT_MONOSPACED = 8
+    A_FONT_ALIGN_MONOSPACED = 8
 } AFontAlign;
 
 typedef enum AFontDefaults {

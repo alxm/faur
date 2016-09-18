@@ -71,7 +71,7 @@ static bool shortenText(const char* Text, char** NewText)
         return false;
     }
 
-    if(g_align & A_FONT_MONOSPACED) {
+    if(g_align & A_FONT_ALIGN_MONOSPACED) {
         const int maxWidth = f->maxWidth;
 
         for(int i = 0; Text[i] != '\0'; i++) {
@@ -333,7 +333,7 @@ void a_font_text(const char* Text)
 
     const AFont* const f = g_fonts[g_currentFont];
 
-    if(g_align & A_FONT_MONOSPACED) {
+    if(g_align & A_FONT_ALIGN_MONOSPACED) {
         const int maxWidth = f->maxWidth;
 
         for( ; *Text != '\0'; Text++) {
@@ -420,7 +420,7 @@ int a_font_width(const char* Text)
         return 0;
     }
 
-    if(g_align & A_FONT_MONOSPACED) {
+    if(g_align & A_FONT_ALIGN_MONOSPACED) {
         const int maxWidth = f->maxWidth;
 
         for( ; *Text != '\0'; Text++) {
