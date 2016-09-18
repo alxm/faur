@@ -43,6 +43,7 @@ static int g_currentFont;
 static AFontAlign g_align;
 static int g_x;
 static int g_y;
+static int g_lineWidth;
 
 static int charIndex(char Character)
 {
@@ -53,6 +54,111 @@ static int charIndex(char Character)
     return -1;
 }
 
+static bool shortenText(const char* Text, char** NewText)
+{
+    char* buffer;
+    int tally = 0;
+    int numChars = 0;
+    const int dotsWidth = a_font_width("...");
+    const AFont* const f = g_fonts[g_currentFont];
+
+    if(a_font_width(Text) <= g_lineWidth) {
+        return false;
+    }
+
+    if(dotsWidth > g_lineWidth) {
+        *NewText = '\0';
+        return false;
+    }
+
+    if(g_align & A_FONT_MONOSPACED) {
+        const int maxWidth = f->maxWidth;
+
+        for(int i = 0; Text[i] != '\0'; i++) {
+            numChars++;
+
+            if(f->sprites[(int)Text[i]] || Text[i] == ' ') {
+                tally += maxWidth;
+
+                if(tally > g_lineWidth) {
+                    if(numChars < 3) {
+                        *NewText = '\0';
+                        return false;
+                    }
+
+                    tally += FONT_SPACE + dotsWidth;
+
+                    for(int j = i; j >= 0; j--) {
+                        numChars--;
+                        tally -= FONT_SPACE + maxWidth;
+
+                        if(tally <= g_lineWidth) {
+                            goto fits;
+                        }
+                    }
+
+                    *NewText = '\0';
+                    return false;
+                }
+
+                tally += FONT_SPACE;
+            }
+        }
+    } else {
+        for(int i = 0; Text[i] != '\0'; i++) {
+            ASprite* spr = f->sprites[(int)Text[i]];
+
+            numChars++;
+
+            if(spr || Text[i] == ' ') {
+                tally += spr ? spr->w : FONT_BLANK_SPACE;
+
+                if(tally > g_lineWidth) {
+                    if(numChars < 3) {
+                        *NewText = '\0';
+                        return false;
+                    }
+
+                    tally += FONT_SPACE + dotsWidth;
+
+                    for(int j = i; j >= 0; j--) {
+                        spr = f->sprites[(int)Text[j]];
+
+                        numChars--;
+
+                        if(spr) {
+                            tally -= FONT_SPACE + spr->w;
+                        } else if(Text[j] == ' ') {
+                            tally -= FONT_SPACE + FONT_BLANK_SPACE;
+                        }
+
+                        if(tally <= g_lineWidth) {
+                            goto fits;
+                        }
+                    }
+
+                    *NewText = '\0';
+                    return false;
+                }
+
+                tally += FONT_SPACE;
+            }
+        }
+    }
+
+fits:
+    buffer = a_mem_malloc((numChars + 4) * sizeof(char));
+    memcpy(buffer, Text, numChars * sizeof(char));
+
+    buffer[numChars + 0] = '.';
+    buffer[numChars + 1] = '.';
+    buffer[numChars + 2] = '.';
+    buffer[numChars + 3] = '\0';
+
+    *NewText = buffer;
+    return true;
+}
+
 void a_font__init(void)
 {
     g_fontsList = a_list_new();
@@ -61,6 +167,7 @@ void a_font__init(void)
     g_align = A_FONT_ALIGN_LEFT;
     g_x = 0;
     g_y = 0;
+    g_lineWidth = 0;
 
     ASprite* const fontSprite = a_sprite_fromData(g_media_font);
 
@@ -189,9 +296,32 @@ int a_font_getX(void)
     return g_x;
 }
 
+void a_font_setLineWidth(int LineWidth)
+{
+    g_lineWidth = LineWidth;
+}
+
+void a_font_resetLineWidth(void)
+{
+    g_lineWidth = 0;
+}
+
 void a_font_text(const char* Text)
 {
-    AFont* const f = g_fonts[g_currentFont];
+    if(*Text == '\0') {
+        return;
+    }
+
+    char* newBuffer = NULL;
+    bool freeNewBuffer = false;
+
+    if(g_lineWidth > 0) {
+        freeNewBuffer = shortenText(Text, &newBuffer);
+
+        if(newBuffer != NULL) {
+            Text = newBuffer;
+        }
+    }
 
     if(g_align & A_FONT_ALIGN_MIDDLE) {
         g_x -= a_font_width(Text) / 2;
@@ -200,6 +330,8 @@ void a_font_text(const char* Text)
     if(g_align & A_FONT_ALIGN_RIGHT) {
         g_x -= a_font_width(Text);
     }
+
+    const AFont* const f = g_fonts[g_currentFont];
 
     if(g_align & A_FONT_MONOSPACED) {
         const int maxWidth = f->maxWidth;
@@ -225,6 +357,10 @@ void a_font_text(const char* Text)
                 g_x += FONT_BLANK_SPACE + FONT_SPACE;
             }
         }
+    }
+
+    if(freeNewBuffer) {
+        free(newBuffer);
     }
 }
 
@@ -273,112 +409,6 @@ void a_font_char(char Character)
     snprintf(s, 2, "%c", Character);
 
     a_font_text(s);
-}
-
-void a_font_fixed(int Width, const char* Text)
-{
-    char* buffer;
-    int tally = 0;
-    int numChars = 0;
-    const int dotsWidth = a_font_width("...");
-    AFont* const f = g_fonts[g_currentFont];
-
-    if(*Text == '\0' || Width == 0) {
-        return;
-    }
-
-    if(a_font_width(Text) <= Width) {
-        a_font_text(Text);
-        return;
-    }
-
-    if(dotsWidth > Width) {
-        return;
-    }
-
-    if(g_align & A_FONT_MONOSPACED) {
-        const int maxWidth = f->maxWidth;
-
-        for(int i = 0; Text[i] != '\0'; i++) {
-            numChars++;
-
-            if(f->sprites[(int)Text[i]] || Text[i] == ' ') {
-                tally += maxWidth;
-
-                if(tally > Width) {
-                    if(numChars < 3) {
-                        return;
-                    }
-
-                    tally += FONT_SPACE + dotsWidth;
-
-                    for(int j = i; j >= 0; j--) {
-                        numChars--;
-                        tally -= FONT_SPACE + maxWidth;
-
-                        if(tally <= Width) {
-                            goto fits;
-                        }
-                    }
-
-                    return;
-                }
-
-                tally += FONT_SPACE;
-            }
-        }
-    } else {
-        for(int i = 0; Text[i] != '\0'; i++) {
-            ASprite* spr = f->sprites[(int)Text[i]];
-
-            numChars++;
-
-            if(spr || Text[i] == ' ') {
-                tally += spr ? spr->w : FONT_BLANK_SPACE;
-
-                if(tally > Width) {
-                    if(numChars < 3) {
-                        return;
-                    }
-
-                    tally += FONT_SPACE + dotsWidth;
-
-                    for(int j = i; j >= 0; j--) {
-                        spr = f->sprites[(int)Text[j]];
-
-                        numChars--;
-
-                        if(spr) {
-                            tally -= FONT_SPACE + spr->w;
-                        } else if(Text[j] == ' ') {
-                            tally -= FONT_SPACE + FONT_BLANK_SPACE;
-                        }
-
-                        if(tally <= Width) {
-                            goto fits;
-                        }
-                    }
-
-                    return;
-                }
-
-                tally += FONT_SPACE;
-            }
-        }
-    }
-
-fits:
-    buffer = a_mem_malloc((numChars + 4) * sizeof(char));
-    memcpy(buffer, Text, numChars * sizeof(char));
-
-    buffer[numChars + 0] = '.';
-    buffer[numChars + 1] = '.';
-    buffer[numChars + 2] = '.';
-    buffer[numChars + 3] = '\0';
-
-    a_font_text(buffer);
-
-    free(buffer);
 }
 
 int a_font_width(const char* Text)

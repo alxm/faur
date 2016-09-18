@@ -54,16 +54,15 @@ extern int a_font_copy(int Font, APixel Color);
 extern void a_font_setFace(int Font);
 extern void a_font_setAlign(AFontAlign Align);
 extern void a_font_setCoords(int X, int Y);
-
 extern int a_font_getX(void);
+extern void a_font_setLineWidth(int LineWidth);
+extern void a_font_resetLineWidth(void);
 
 extern int a_font_width(const char* Text);
 extern int a_font_widthf(const char* Format, ...);
 
 extern void a_font_text(const char* Text);
 extern void a_font_textf(const char* Format, ...);
-
-extern void a_font_fixed(int Width, const char* Text);
 
 extern void a_font_int(int Number);
 extern void a_font_float(float Number);
