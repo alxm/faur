@@ -47,10 +47,42 @@ void a_dir__uninit(void)
 
 static int a_dir__sort(const void* A, const void* B)
 {
-    const ADirEntry* a = *(ADirEntry**)A;
-    const ADirEntry* b = *(ADirEntry**)B;
+    char a, b;
+    const char* nameA = (*(ADirEntry**)A)->name;
+    const char* nameB = (*(ADirEntry**)B)->name;
 
-    return strcmp(a->name, b->name);
+    for(a = *nameA, b = *nameB;
+        a != '\0' && b != '\0';
+        a = *++nameA, b = *++nameB) {
+
+        if(a != b) {
+            break;
+        }
+    }
+
+    if(isalpha(a) && isalpha(b)) {
+        const char a_lower = tolower(a);
+        const char b_lower = tolower(b);
+
+        if(a_lower == b_lower) {
+            if(a == a_lower) {
+                return -1;
+            } else {
+                return 1;
+            }
+        } else {
+            a = a_lower;
+            b = b_lower;
+        }
+    }
+
+    if(a < b) {
+        return -1;
+    } else if(a > b) {
+        return 1;
+    } else {
+        return 0;
+    }
 }
 
 ADir* a_dir_open(const char* Path)
