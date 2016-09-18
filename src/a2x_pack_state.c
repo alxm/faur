@@ -332,6 +332,7 @@ bool a_state__nothingPending(void)
 
     if(first) {
         first = false;
+        a_fps__reset();
     } else {
         a_fps_frame();
     }

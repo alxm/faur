@@ -49,12 +49,7 @@ void a_fps__init(void)
 {
     g_fpsRate = a_settings_getInt("video.fps");
     g_milisPerFrame = 1000 / g_fpsRate;
-
     g_timer = a_timer_new(g_milisPerFrame);
-    a_timer_start(g_timer);
-
-    g_fps = g_fpsRate;
-    g_maxFps = g_fpsRate;
     g_frameCounter = 0;
 
     g_bufferHead = 0;
@@ -62,22 +57,14 @@ void a_fps__init(void)
     g_fpsBuffer = a_mem_malloc(g_bufferLen * sizeof(uint32_t));
     g_maxFpsBuffer = a_mem_malloc(g_bufferLen * sizeof(uint32_t));
 
-    for(int i = g_bufferLen; i--; ) {
-        g_fpsBuffer[i] = g_milisPerFrame;
-        g_maxFpsBuffer[i] = g_milisPerFrame;
-    }
-
-    g_fpsBufferSum = g_milisPerFrame * g_bufferLen;
-    g_maxFpsBufferSum = g_milisPerFrame * g_bufferLen;
-
     g_skipFrames = a_settings_getBool("video.fps.skip");
     g_skipMax = a_settings_getInt("video.fps.skip.max");
-    g_skipNum = 0;
-    g_skipCounter = 0;
     g_fpsThresholdFast = g_fpsRate * 0.95;
     g_fpsThresholdSlow = g_fpsRate * 0.90;
     g_fastTimer = a_frametimer_new(g_fpsRate * AVG_WINDOW_SECONDS);
     g_slowTimer = a_frametimer_new(g_fpsRate * AVG_WINDOW_SECONDS);
+
+    a_fps__reset();
 }
 
 void a_fps__uninit(void)
@@ -88,6 +75,27 @@ void a_fps__uninit(void)
 
     free(g_fpsBuffer);
     free(g_maxFpsBuffer);
+}
+
+void a_fps__reset(void)
+{
+    g_fps = g_fpsRate;
+    g_maxFps = g_fpsRate;
+
+    for(int i = g_bufferLen; i--; ) {
+        g_fpsBuffer[i] = g_milisPerFrame;
+        g_maxFpsBuffer[i] = g_milisPerFrame;
+    }
+
+    g_fpsBufferSum = g_milisPerFrame * g_bufferLen;
+    g_maxFpsBufferSum = g_milisPerFrame * g_bufferLen;
+
+    g_skipNum = 0;
+    g_skipCounter = 0;
+
+    a_frametimer_stop(g_fastTimer);
+    a_frametimer_stop(g_slowTimer);
+    a_timer_start(g_timer);
 }
 
 void a_fps_frame(void)
