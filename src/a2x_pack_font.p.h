@@ -53,8 +53,13 @@ extern int a_font_copy(int Font, APixel Color);
 
 extern void a_font_setFace(int Font);
 extern void a_font_setAlign(AFontAlign Align);
+
 extern void a_font_setCoords(int X, int Y);
 extern int a_font_getX(void);
+extern int a_font_getY(void);
+extern void a_font_newLine(void);
+
+extern int a_font_lineHeight(void);
 extern void a_font_setLineWidth(int LineWidth);
 extern void a_font_resetLineWidth(void);
 
