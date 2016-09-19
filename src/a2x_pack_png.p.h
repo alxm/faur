@@ -25,5 +25,4 @@
 
 extern void a_png_readFile(const char* Path, APixel** Pixels, int* Width, int* Height);
 extern void a_png_readMemory(const uint8_t* Data, APixel** Pixels, int* Width, int* Height);
-
-extern void a_png_write(const char* Path, const APixel* Data, int Width, int Height);
+extern void a_png_write(const char* Path, const APixel* Data, int Width, int Height, char* Title, char* Description);

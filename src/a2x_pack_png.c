@@ -175,13 +175,15 @@ cleanUp:
     free(stream);
 }
 
-void a_png_write(const char* Path, const APixel* Data, int Width, int Height)
+void a_png_write(const char* Path, const APixel* Data, int Width, int Height, char* Title, char* Description)
 {
     AFile* f = a_file_open(Path, "wb");
 
     png_structp png = NULL;
     png_infop info = NULL;
     png_bytepp rows = NULL;
+    png_text text[2];
+    int numText = 0;
 
     if(!f) {
         goto cleanUp;
@@ -228,8 +230,23 @@ void a_png_write(const char* Path, const APixel* Data, int Width, int Height)
         }
     }
 
+    if(Title != NULL) {
+        text[numText].compression = PNG_TEXT_COMPRESSION_NONE;
+        text[numText].key = "Title";
+        text[numText].text = Title;
+        numText++;
+    }
+
+    if(Description != NULL) {
+        text[numText].compression = PNG_TEXT_COMPRESSION_NONE;
+        text[numText].key = "Description";
+        text[numText].text = Description;
+        numText++;
+    }
+
     png_init_io(png, a_file_handle(f));
     png_set_rows(png, info, rows);
+    png_set_text(png, info, text, numText);
     png_write_png(png, info, PNG_TRANSFORM_IDENTITY, NULL);
     png_write_end(png, NULL);
 
