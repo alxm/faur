@@ -175,11 +175,11 @@ void a_font__init(void)
 
     APixel colors[A_FONT_FACE_DEFAULT_NUM];
     colors[A_FONT_FACE_WHITE] = a_pixel_make(0xff, 0xff, 0xff);
-    colors[A_FONT_FACE_LIGHT_GRAY] = a_pixel_make(0xcc, 0xcc, 0xcc);
-    colors[A_FONT_FACE_GREEN] = a_pixel_make(0x3f, 0xdf, 0x9f);
-    colors[A_FONT_FACE_YELLOW] = a_pixel_make(0xcf, 0xff, 0x3f);
-    colors[A_FONT_FACE_RED] = a_pixel_make(0xdf, 0x2f, 0x4f);
-    colors[A_FONT_FACE_BLUE] = a_pixel_make(0x5f, 0xaf, 0xdf);
+    colors[A_FONT_FACE_LIGHT_GRAY] = a_pixel_make(0xaf, 0xaf, 0xaf);
+    colors[A_FONT_FACE_GREEN] = a_pixel_make(0x3f, 0xbf, 0x9f);
+    colors[A_FONT_FACE_YELLOW] = a_pixel_make(0x9f, 0xcf, 0x3f);
+    colors[A_FONT_FACE_RED] = a_pixel_make(0xcf, 0x2f, 0x4f);
+    colors[A_FONT_FACE_BLUE] = a_pixel_make(0x3f, 0x8f, 0xdf);
 
     a_font_load(fontSprite, 0, 0, A_FONT_LOAD_ALL);
 

@@ -64,7 +64,7 @@ static void screenCallback(void)
 
     a_pixel_push();
     a_pixel_setBlend(A_PIXEL_BLEND_RGB75);
-    a_pixel_setRGB(0x28, 0x18, 0x18);
+    a_pixel_setRGB(0x1f, 0x0f, 0x0f);
     a_draw_fill();
     a_pixel_pop();
 

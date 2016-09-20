@@ -64,4 +64,5 @@ License
 
 Copyright 2010-2016 Alex Margarit (alex@alxm.org)
 
-Licensed under [GNU LGPL3](https://www.gnu.org/licenses/lgpl.html)
+* Code licensed under [GNU LGPL3](https://www.gnu.org/licenses/lgpl.html) (see `COPYING` and `COPYING.LESSER`)
+* Logo licensed under [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/) (see `doc/CC-BY-NC-ND`)
