@@ -74,6 +74,13 @@ static bool lazy_init(void)
                                    a_settings_getString("app.title"),
                                    "-");
 
+        // No spaces in file name
+        for(char* s = g_filePrefix; *s != '\0'; s++) {
+            if(*s == ' ') {
+                *s = '-';
+            }
+        }
+
         g_title = a_str_merge(a_settings_getString("app.title"),
                               " ",
                               a_settings_getString("app.version"),
