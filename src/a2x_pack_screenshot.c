@@ -23,6 +23,8 @@
 
 static bool g_isInit;
 static char* g_filePrefix;
+static char* g_title;
+static char* g_description;
 static unsigned int g_screenshotNumber;
 static AInput* g_button;
 
@@ -71,6 +73,32 @@ static bool lazy_init(void)
                                    "/",
                                    a_settings_getString("app.title"),
                                    "-");
+
+        // No spaces in file name
+        for(char* s = g_filePrefix; *s != '\0'; s++) {
+            if(*s == ' ') {
+                *s = '-';
+            }
+        }
+
+        g_title = a_str_merge(a_settings_getString("app.title"),
+                              " ",
+                              a_settings_getString("app.version"),
+                              " by ",
+                              a_settings_getString("app.author"));
+
+        g_description = a_str_merge(a_settings_getString("app.title"),
+                                    " ",
+                                    a_settings_getString("app.version"),
+                                    " by ",
+                                    a_settings_getString("app.author"),
+                                    ", built on ",
+                                    a_settings_getString("app.buildtime"),
+                                    ". Running on a2x ",
+                                    A__MAKE_CURRENT_GIT_BRANCH,
+                                    ", built on ",
+                                    A__MAKE_COMPILE_TIME,
+                                    ".");
     }
 
     return g_isInit;
@@ -92,7 +120,9 @@ static void takeScreenshot(void)
     char* name = a_str_merge(g_filePrefix, num, ".png");
 
     a_out__message("Saving screenshot '%s'", name);
-    a_png_write(name, a_screen__pixels, a_screen__width, a_screen__height);
+    a_png_write(name,
+                a_screen__pixels, a_screen__width, a_screen__height,
+                g_title, g_description);
 
     free(name);
 }
@@ -108,6 +138,8 @@ void a_screenshot__init(void)
 {
     g_isInit = false;
     g_filePrefix = NULL;
+    g_title = NULL;
+    g_description = NULL;
     g_screenshotNumber = 0;
     g_button = a_input_new(a_settings_getString("screenshot.button"));
     a_input__addCallback(inputCallback);
@@ -115,8 +147,10 @@ void a_screenshot__init(void)
 
 void a_screenshot__uninit(void)
 {
-    if(g_filePrefix != NULL) {
+    if(g_isInit) {
         free(g_filePrefix);
+        free(g_title);
+        free(g_description);
     }
 }
 
