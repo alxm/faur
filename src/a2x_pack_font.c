@@ -69,7 +69,7 @@ static bool shortenText(const char* Text, char** NewText)
     }
 
     if(dotsWidth > g_lineWidth) {
-        *NewText = '\0';
+        *NewText = "\0";
         return false;
     }
 
@@ -84,7 +84,7 @@ static bool shortenText(const char* Text, char** NewText)
 
                 if(tally > g_lineWidth) {
                     if(numChars < 3) {
-                        *NewText = '\0';
+                        *NewText = "\0";
                         return false;
                     }
 
@@ -99,7 +99,7 @@ static bool shortenText(const char* Text, char** NewText)
                         }
                     }
 
-                    *NewText = '\0';
+                    *NewText = "\0";
                     return false;
                 }
 
@@ -117,7 +117,7 @@ static bool shortenText(const char* Text, char** NewText)
 
                 if(tally > g_lineWidth) {
                     if(numChars < 3) {
-                        *NewText = '\0';
+                        *NewText = "\0";
                         return false;
                     }
 
@@ -139,7 +139,7 @@ static bool shortenText(const char* Text, char** NewText)
                         }
                     }
 
-                    *NewText = '\0';
+                    *NewText = "\0";
                     return false;
                 }
 
