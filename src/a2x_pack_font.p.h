@@ -35,7 +35,7 @@ typedef enum AFontAlign {
     A_FONT_ALIGN_LEFT = 1,
     A_FONT_ALIGN_MIDDLE = 2,
     A_FONT_ALIGN_RIGHT = 4,
-    A_FONT_MONOSPACED = 8
+    A_FONT_ALIGN_MONOSPACED = 8
 } AFontAlign;
 
 typedef enum AFontDefaults {
@@ -53,17 +53,21 @@ extern int a_font_copy(int Font, APixel Color);
 
 extern void a_font_setFace(int Font);
 extern void a_font_setAlign(AFontAlign Align);
-extern void a_font_setCoords(int X, int Y);
 
+extern void a_font_setCoords(int X, int Y);
 extern int a_font_getX(void);
+extern int a_font_getY(void);
+extern void a_font_newLine(void);
+
+extern int a_font_lineHeight(void);
+extern void a_font_setLineWidth(int LineWidth);
+extern void a_font_resetLineWidth(void);
 
 extern int a_font_width(const char* Text);
 extern int a_font_widthf(const char* Format, ...);
 
 extern void a_font_text(const char* Text);
 extern void a_font_textf(const char* Format, ...);
-
-extern void a_font_fixed(int Width, const char* Text);
 
 extern void a_font_int(int Number);
 extern void a_font_float(float Number);

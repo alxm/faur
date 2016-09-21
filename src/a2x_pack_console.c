@@ -26,8 +26,6 @@ typedef struct ALine {
     char* text;
 } ALine;
 
-#define LINE_HEIGHT 10
-
 bool g_enabled;
 bool g_show;
 static AList* g_lines;
@@ -66,52 +64,62 @@ static void screenCallback(void)
 
     a_pixel_push();
     a_pixel_setBlend(A_PIXEL_BLEND_RGB75);
-    a_pixel_setRGB(0x28, 0x18, 0x18);
+    a_pixel_setRGB(0x1f, 0x0f, 0x0f);
     a_draw_fill();
     a_pixel_pop();
 
-    int y = 2;
+    {
+        a_font_setCoords(2, 2);
+        a_font_setAlign(A_FONT_ALIGN_LEFT);
 
-    a_font_setCoords(2, y);
-    a_font_setFace(A_FONT_FACE_BLUE); a_font_text("a");
-    a_font_setFace(A_FONT_FACE_GREEN); a_font_text("2");
-    a_font_setFace(A_FONT_FACE_YELLOW); a_font_text("x");
-    a_font_setFace(A_FONT_FACE_WHITE);
-    a_font_textf(" %s, %s",
-        A__MAKE_CURRENT_GIT_BRANCH,
-        A__MAKE_COMPILE_TIME);
+        a_font_setFace(A_FONT_FACE_BLUE); a_font_text("a");
+        a_font_setFace(A_FONT_FACE_GREEN); a_font_text("2");
+        a_font_setFace(A_FONT_FACE_YELLOW); a_font_text("x");
 
-    a_font_setCoords(2, y + LINE_HEIGHT);
-    a_font_textf("%s %s by %s, %s",
-        a_settings_getString("app.title"),
-        a_settings_getString("app.version"),
-        a_settings_getString("app.author"),
-        a_settings_getString("app.buildtime"));
+        a_font_setFace(A_FONT_FACE_WHITE);
+        a_font_textf(" %s, %s",
+                     A__MAKE_CURRENT_GIT_BRANCH,
+                     A__MAKE_COMPILE_TIME);
+        a_font_newLine();
 
-    a_font_setAlign(A_FONT_ALIGN_RIGHT);
-    a_font_setFace(A_FONT_FACE_YELLOW);
-    a_font_setCoords(a_screen__width - 2, y);
-    a_font_textf("%u fps", a_fps_getFps());
-    a_font_setFace(A_FONT_FACE_GREEN);
-    a_font_setCoords(a_screen__width - 2, y + LINE_HEIGHT);
-    a_font_textf("%u max", a_fps_getMaxFps());
-    a_font_setFace(A_FONT_FACE_BLUE);
-    a_font_setCoords(a_screen__width - 2, y + 2 * LINE_HEIGHT);
-    a_font_textf("%u skip", a_fps_getFrameSkip());
+        a_font_textf("%s %s by %s, %s",
+                     a_settings_getString("app.title"),
+                     a_settings_getString("app.version"),
+                     a_settings_getString("app.author"),
+                     a_settings_getString("app.buildtime"));
+        a_font_newLine();
+    }
 
-    y += 2 * LINE_HEIGHT;
+    {
+        const int xOffset = 1 + g_titles[A_CONSOLE_MESSAGE]->w + 2;
 
-    a_font_setFace(A_FONT_FACE_LIGHT_GRAY);
-    a_font_setAlign(A_FONT_ALIGN_LEFT);
+        a_font_setCoords(xOffset, a_font_getY());
+        a_font_setLineWidth(a_screen__width - xOffset);
+        a_font_setFace(A_FONT_FACE_LIGHT_GRAY);
 
-    A_LIST_ITERATE(g_lines, ALine*, line) {
-        ASprite* graphic = g_titles[line->type];
-        a_sprite_blit(graphic, 1, y);
+        A_LIST_ITERATE(g_lines, ALine*, line) {
+            a_sprite_blit(g_titles[line->type], 1, a_font_getY());
+            a_font_text(line->text);
+            a_font_newLine();
+        }
 
-        a_font_setCoords(1 + a_sprite_w(graphic) + 2, y);
-        a_font_fixed(a_screen__width - a_font_getX(), line->text);
+        a_font_resetLineWidth();
+    }
 
-        y += LINE_HEIGHT;
+    {
+        a_font_setCoords(a_screen__width - 2, 2);
+        a_font_setAlign(A_FONT_ALIGN_RIGHT);
+
+        a_font_setFace(A_FONT_FACE_YELLOW);
+        a_font_textf("%u fps", a_fps_getFps());
+        a_font_newLine();
+
+        a_font_setFace(A_FONT_FACE_GREEN);
+        a_font_textf("%u max", a_fps_getMaxFps());
+        a_font_newLine();
+
+        a_font_setFace(A_FONT_FACE_BLUE);
+        a_font_textf("%u skip", a_fps_getFrameSkip());
     }
 }
 
@@ -136,7 +144,9 @@ void a_console__init2(void)
     a_spriteframes_free(frames, false);
     a_sprite_free(graphics);
 
-    g_linesPerScreen = a_settings_getInt("video.height") / LINE_HEIGHT - 2;
+    a_font_setFace(A_FONT_FACE_WHITE);
+    g_linesPerScreen = a_settings_getInt("video.height")
+                            / a_font_lineHeight() - 2;
 
     // In case messages were logged between init and init2
     while(a_list_size(g_lines) > g_linesPerScreen) {
