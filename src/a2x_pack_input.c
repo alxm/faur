@@ -70,6 +70,7 @@ typedef struct APoint {
 static AStrHash* g_buttons;
 static AStrHash* g_analogs;
 static AStrHash* g_touchScreens;
+static AStrHash* g_umbrellas;
 
 // all inputs returned by a_input_new()
 static AList* g_userInputs;
@@ -79,6 +80,12 @@ static void freeHeader(AInputHeader* Header)
 {
     free(Header->name);
     free(Header->shortName);
+}
+
+static void addUmbrella(const char* Name, const char* Inputs)
+{
+    AInput* umbrella = a_input_new(Inputs);
+    a_strhash_add(g_umbrellas, Name, umbrella);
 }
 
 static void addButton(const char* Name)
@@ -152,6 +159,7 @@ void a_input__init(void)
     g_buttons = a_strhash_new();
     g_analogs = a_strhash_new();
     g_touchScreens = a_strhash_new();
+    g_umbrellas = a_strhash_new();
 
     #if A_PLATFORM_GP2X
         addButton("gp2x.up");
@@ -262,6 +270,11 @@ void a_input__init(void)
 
     g_userInputs = a_list_new();
     g_callbacks = a_list_new();
+
+    addUmbrella("dpad.up", "pc.up gp2x.up wiz.up caanoo.up pandora.up");
+    addUmbrella("dpad.down", "pc.down gp2x.down wiz.down caanoo.down pandora.down");
+    addUmbrella("dpad.left", "pc.left gp2x.left wiz.left caanoo.left pandora.left");
+    addUmbrella("dpad.right", "pc.right gp2x.right wiz.right caanoo.right pandora.right");
 }
 
 void a_input__uninit(void)
@@ -297,6 +310,7 @@ void a_input__uninit(void)
     a_strhash_free(g_buttons);
     a_strhash_free(g_analogs);
     a_strhash_free(g_touchScreens);
+    a_strhash_free(g_umbrellas);
 }
 
 void a_input__addCallback(AInputCallback Callback)
@@ -527,6 +541,24 @@ AInput* a_input_new(const char* Names)
             }
 
             a_strtok_free(tok);
+        } else if(a_strhash_contains(g_umbrellas, name)) {
+            const AInput* umbrella = a_strhash_get(g_umbrellas, name);
+
+            A_LIST_ITERATE(umbrella->buttons, AInputButton*, b) {
+                a_list_addLast(i->buttons, b);
+            }
+
+            A_LIST_ITERATE(umbrella->analogs, AInputAnalog*, a) {
+                a_list_addLast(i->analogs, a);
+            }
+
+            A_LIST_ITERATE(umbrella->touchScreens, AInputTouch*, t) {
+                a_list_addLast(i->touchScreens, t);
+            }
+
+            A_LIST_ITERATE(umbrella->combos, AInputButtonCombo*, c) {
+                a_list_addLast(i->combos, c);
+            }
         } else {
             #define findNameInCollection(collection)                      \
             ({                                                            \
