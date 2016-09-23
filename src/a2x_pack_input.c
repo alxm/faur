@@ -27,7 +27,7 @@ struct AInput {
     AList* buttons; // List of AInputButton
     AList* analogs; // List of AInputAnalog
     AList* touchScreens; // List of AInputTouch
-    AList* combos; // List of AInputCombo
+    AList* combos; // List of AInputButtonCombo
 };
 
 typedef struct AInputHeader {
@@ -57,10 +57,10 @@ struct AInputTouch {
     AList* motion; // APoints captured by motion event
 };
 
-typedef struct AInputCombo {
+typedef struct AInputButtonCombo {
     AInputHeader header;
     AList* buttons; // List of AInputButton
-} AInputCombo;
+} AInputButtonCombo;
 
 typedef struct APoint {
     int x;
@@ -503,7 +503,7 @@ AInput* a_input_new(const char* Names)
             }
 
             if(!missing) {
-                AInputCombo* combo = a_mem_malloc(sizeof(AInputCombo));
+                AInputButtonCombo* combo = a_mem_malloc(sizeof(AInputButtonCombo));
                 AStrBuilder* sb = a_strbuilder_new(128);
 
                 A_LIST_ITERATE(buttons, AInputButton*, button) {
@@ -566,7 +566,7 @@ void a_input__free(AInput* Input)
     a_list_free(Input->analogs);
     a_list_free(Input->touchScreens);
 
-    A_LIST_ITERATE(Input->combos, AInputCombo*, c) {
+    A_LIST_ITERATE(Input->combos, AInputButtonCombo*, c) {
         free(c->header.name);
         a_list_free(c->buttons);
     }
@@ -598,7 +598,7 @@ bool a_button_get(const AInput* Button)
     }
 
     if(!a_list_empty(Button->combos)) {
-        A_LIST_ITERATE(Button->combos, AInputCombo*, c) {
+        A_LIST_ITERATE(Button->combos, AInputButtonCombo*, c) {
             A_LIST_ITERATE(c->buttons, AInputButton*, b) {
                 if(!b->pressed) {
                     break;
@@ -618,7 +618,7 @@ void a_button_unpress(const AInput* Button)
         b->pressed = false;
     }
 
-    A_LIST_ITERATE(Button->combos, AInputCombo*, c) {
+    A_LIST_ITERATE(Button->combos, AInputButtonCombo*, c) {
         A_LIST_ITERATE(c->buttons, AInputButton*, b) {
             b->pressed = false;
         }
@@ -639,7 +639,7 @@ bool a_button_getAndUnpress(const AInput* Button)
 
     bool anyComboAllPressed = false;
 
-    A_LIST_ITERATE(Button->combos, AInputCombo*, c) {
+    A_LIST_ITERATE(Button->combos, AInputButtonCombo*, c) {
         A_LIST_ITERATE(c->buttons, AInputButton*, b) {
             if(!b->pressed) {
                 break;
