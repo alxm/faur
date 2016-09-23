@@ -529,6 +529,7 @@ AInput* a_input_new(const char* Names)
                 }
 
                 combo->header.name = a_str_dup(a_strbuilder_string(sb));
+                combo->header.shortName = NULL;
                 combo->buttons = buttons;
 
                 a_list_addLast(i->combos, combo);
@@ -599,7 +600,7 @@ void a_input__free(AInput* Input)
     a_list_free(Input->touchScreens);
 
     A_LIST_ITERATE(Input->combos, AInputButtonCombo*, c) {
-        free(c->header.name);
+        freeHeader(&c->header);
         a_list_free(c->buttons);
     }
 
