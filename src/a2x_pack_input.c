@@ -24,39 +24,43 @@
 
 struct AInput {
     const char* name;
-    AList* buttons; // List of APhysicalInput
-    AList* analogs; // List of APhysicalInput
-    AList* touchScreens; // List of APhysicalInput
-    AList* combos; // List of AComboInput
+    AList* buttons; // List of AInputButton
+    AList* analogs; // List of AInputAnalog
+    AList* touchScreens; // List of AInputTouch
+    AList* combos; // List of AInputCombo
 };
 
-typedef struct AComboInput {
-    char* name;
-    AList* buttons; // List of APhysicalInput
-} AComboInput;
-
-struct APhysicalInput {
+typedef struct AInputHeader {
     char* name;
     char* shortName;
-    union {
-        struct {
-            bool pressed;
-            bool waitingForUnpress;
-            bool analogPushedPast; // used to simulate key events for analog
-            bool freshEvent; // used to simulate separate directions from diagonals
-        } button;
-        struct {
-            int xaxis;
-            int yaxis;
-        } analog;
-        struct {
-            int x;
-            int y;
-            bool tap;
-            AList* motion; // APoints captured by motion event
-        } touch;
-    } u;
+} AInputHeader;
+
+struct AInputButton {
+    AInputHeader header;
+    bool pressed;
+    bool waitingForUnpress;
+    bool analogPushedPast; // used to simulate key events for analog
+    bool freshEvent; // used to simulate separate directions from diagonals
 };
+
+struct AInputAnalog {
+    AInputHeader header;
+    int xaxis;
+    int yaxis;
+};
+
+struct AInputTouch {
+    AInputHeader header;
+    int x;
+    int y;
+    bool tap;
+    AList* motion; // APoints captured by motion event
+};
+
+typedef struct AInputCombo {
+    AInputHeader header;
+    AList* buttons; // List of AInputButton
+} AInputCombo;
 
 typedef struct APoint {
     int x;
@@ -71,23 +75,29 @@ static AStrHash* g_touchScreens;
 static AList* g_userInputs;
 static AList* g_callbacks;
 
+static void freeHeader(AInputHeader* Header)
+{
+    free(Header->name);
+    free(Header->shortName);
+}
+
 static void addButton(const char* Name)
 {
-    APhysicalInput* b = a_strhash_get(g_buttons, Name);
+    AInputButton* b = a_strhash_get(g_buttons, Name);
 
     if(b) {
         a_out__error("Button '%s' is already defined", Name);
         return;
     }
 
-    b = a_mem_malloc(sizeof(APhysicalInput));
+    b = a_mem_malloc(sizeof(AInputButton));
 
-    b->name = a_str_dup(Name);
-    b->shortName = a_str_getSuffixLastFind(Name, '.');
-    b->u.button.pressed = false;
-    b->u.button.waitingForUnpress = false;
-    b->u.button.analogPushedPast = false;
-    b->u.button.freshEvent = false;
+    b->header.name = a_str_dup(Name);
+    b->header.shortName = a_str_getSuffixLastFind(Name, '.');
+    b->pressed = false;
+    b->waitingForUnpress = false;
+    b->analogPushedPast = false;
+    b->freshEvent = false;
 
     a_strhash_add(g_buttons, Name, b);
     a_sdl__input_matchButton(Name, b);
@@ -96,19 +106,19 @@ static void addButton(const char* Name)
 #if !A_PLATFORM_GP2X && !A_PLATFORM_WIZ
 static void addAnalog(const char* Name)
 {
-    APhysicalInput* a = a_strhash_get(g_analogs, Name);
+    AInputAnalog* a = a_strhash_get(g_analogs, Name);
 
     if(a) {
         a_out__error("Analog '%s' is already defined", Name);
         return;
     }
 
-    a = a_mem_malloc(sizeof(APhysicalInput));
+    a = a_mem_malloc(sizeof(AInputAnalog));
 
-    a->name = a_str_dup(Name);
-    a->shortName = a_str_getSuffixLastFind(Name, '.');
-    a->u.analog.xaxis = 0;
-    a->u.analog.yaxis = 0;
+    a->header.name = a_str_dup(Name);
+    a->header.shortName = a_str_getSuffixLastFind(Name, '.');
+    a->xaxis = 0;
+    a->yaxis = 0;
 
     a_strhash_add(g_analogs, Name, a);
     a_sdl__input_matchAnalog(Name, a);
@@ -117,21 +127,21 @@ static void addAnalog(const char* Name)
 
 static void addTouch(const char* Name)
 {
-    APhysicalInput* t = a_strhash_get(g_touchScreens, Name);
+    AInputTouch* t = a_strhash_get(g_touchScreens, Name);
 
     if(t) {
         a_out__error("Touchscreen '%s' is already defined", Name);
         return;
     }
 
-    t = a_mem_malloc(sizeof(APhysicalInput));
+    t = a_mem_malloc(sizeof(AInputTouch));
 
-    t->name = a_str_dup(Name);
-    t->shortName = a_str_getSuffixLastFind(Name, '.');
-    t->u.touch.tap = false;
-    t->u.touch.x = 0;
-    t->u.touch.y = 0;
-    t->u.touch.motion = a_list_new();
+    t->header.name = a_str_dup(Name);
+    t->header.shortName = a_str_getSuffixLastFind(Name, '.');
+    t->tap = false;
+    t->x = 0;
+    t->y = 0;
+    t->motion = a_list_new();
 
     a_strhash_add(g_touchScreens, Name, t);
     a_sdl__input_matchTouch(Name, t);
@@ -263,27 +273,24 @@ void a_input__uninit(void)
     a_list_free(g_userInputs);
     a_list_free(g_callbacks);
 
-    A_STRHASH_ITERATE(g_buttons, APhysicalInput*, b) {
-        free(b->name);
-        free(b->shortName);
+    A_STRHASH_ITERATE(g_buttons, AInputButton*, b) {
+        freeHeader(&b->header);
         free(b);
     }
 
-    A_STRHASH_ITERATE(g_analogs, APhysicalInput*, a) {
-        free(a->name);
-        free(a->shortName);
+    A_STRHASH_ITERATE(g_analogs, AInputAnalog*, a) {
+        freeHeader(&a->header);
         free(a);
     }
 
-    A_STRHASH_ITERATE(g_touchScreens, APhysicalInput*, t) {
-        free(t->name);
-        free(t->shortName);
+    A_STRHASH_ITERATE(g_touchScreens, AInputTouch*, t) {
+        freeHeader(&t->header);
 
-        A_LIST_ITERATE(t->u.touch.motion, APoint*, p) {
+        A_LIST_ITERATE(t->motion, APoint*, p) {
             free(p);
         }
 
-        a_list_free(t->u.touch.motion);
+        a_list_free(t->motion);
         free(t);
     }
 
@@ -299,18 +306,18 @@ void a_input__addCallback(AInputCallback Callback)
 
 void a_input__get(void)
 {
-    A_STRHASH_ITERATE(g_touchScreens, APhysicalInput*, touchScreen) {
-        touchScreen->u.touch.tap = false;
+    A_STRHASH_ITERATE(g_touchScreens, AInputTouch*, touchScreen) {
+        touchScreen->tap = false;
 
-        A_LIST_ITERATE(touchScreen->u.touch.motion, APoint*, p) {
+        A_LIST_ITERATE(touchScreen->motion, APoint*, p) {
             free(p);
         }
 
-        a_list_clear(touchScreen->u.touch.motion);
+        a_list_clear(touchScreen->motion);
     }
 
-    A_STRHASH_ITERATE(g_buttons, APhysicalInput*, button) {
-        button->u.button.freshEvent = false;
+    A_STRHASH_ITERATE(g_buttons, AInputButton*, button) {
+        button->freshEvent = false;
     }
 
     a_sdl__input_get();
@@ -324,78 +331,78 @@ void a_input__get(void)
     // and sets the state of each actual button accordingly.
     #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
         #if A_PLATFORM_GP2X
-            APhysicalInput* upLeft = a_strhash_get(g_buttons, "gp2x.upleft");
-            APhysicalInput* upRight = a_strhash_get(g_buttons, "gp2x.upright");
-            APhysicalInput* downLeft = a_strhash_get(g_buttons, "gp2x.downleft");
-            APhysicalInput* downRight = a_strhash_get(g_buttons, "gp2x.downright");
-            APhysicalInput* up = a_strhash_get(g_buttons, "gp2x.up");
-            APhysicalInput* down = a_strhash_get(g_buttons, "gp2x.down");
-            APhysicalInput* left = a_strhash_get(g_buttons, "gp2x.left");
-            APhysicalInput* right = a_strhash_get(g_buttons, "gp2x.right");
+            AInputButton* upLeft = a_strhash_get(g_buttons, "gp2x.upleft");
+            AInputButton* upRight = a_strhash_get(g_buttons, "gp2x.upright");
+            AInputButton* downLeft = a_strhash_get(g_buttons, "gp2x.downleft");
+            AInputButton* downRight = a_strhash_get(g_buttons, "gp2x.downright");
+            AInputButton* up = a_strhash_get(g_buttons, "gp2x.up");
+            AInputButton* down = a_strhash_get(g_buttons, "gp2x.down");
+            AInputButton* left = a_strhash_get(g_buttons, "gp2x.left");
+            AInputButton* right = a_strhash_get(g_buttons, "gp2x.right");
         #elif A_PLATFORM_WIZ
-            APhysicalInput* upLeft = a_strhash_get(g_buttons, "wiz.upleft");
-            APhysicalInput* upRight = a_strhash_get(g_buttons, "wiz.upright");
-            APhysicalInput* downLeft = a_strhash_get(g_buttons, "wiz.downleft");
-            APhysicalInput* downRight = a_strhash_get(g_buttons, "wiz.downright");
-            APhysicalInput* up = a_strhash_get(g_buttons, "wiz.up");
-            APhysicalInput* down = a_strhash_get(g_buttons, "wiz.down");
-            APhysicalInput* left = a_strhash_get(g_buttons, "wiz.left");
-            APhysicalInput* right = a_strhash_get(g_buttons, "wiz.right");
+            AInputButton* upLeft = a_strhash_get(g_buttons, "wiz.upleft");
+            AInputButton* upRight = a_strhash_get(g_buttons, "wiz.upright");
+            AInputButton* downLeft = a_strhash_get(g_buttons, "wiz.downleft");
+            AInputButton* downRight = a_strhash_get(g_buttons, "wiz.downright");
+            AInputButton* up = a_strhash_get(g_buttons, "wiz.up");
+            AInputButton* down = a_strhash_get(g_buttons, "wiz.down");
+            AInputButton* left = a_strhash_get(g_buttons, "wiz.left");
+            AInputButton* right = a_strhash_get(g_buttons, "wiz.right");
         #endif
 
-        if(upLeft->u.button.freshEvent) {
-            if(upLeft->u.button.pressed) {
-                up->u.button.pressed = left->u.button.pressed = true;
+        if(upLeft->freshEvent) {
+            if(upLeft->pressed) {
+                up->pressed = left->pressed = true;
             } else {
                 // if the up button itself was not pressed, unpress it
-                if(!up->u.button.freshEvent) {
-                    up->u.button.pressed = false;
+                if(!up->freshEvent) {
+                    up->pressed = false;
                 }
 
-                if(!left->u.button.freshEvent) {
-                    left->u.button.pressed = false;
-                }
-            }
-        }
-
-        if(upRight->u.button.freshEvent) {
-            if(upRight->u.button.pressed) {
-                up->u.button.pressed = right->u.button.pressed = true;
-            } else {
-                if(!up->u.button.freshEvent) {
-                    up->u.button.pressed = false;
-                }
-
-                if(!right->u.button.freshEvent) {
-                    right->u.button.pressed = false;
+                if(!left->freshEvent) {
+                    left->pressed = false;
                 }
             }
         }
 
-        if(downLeft->u.button.freshEvent) {
-            if(downLeft->u.button.pressed) {
-                down->u.button.pressed = left->u.button.pressed = true;
+        if(upRight->freshEvent) {
+            if(upRight->pressed) {
+                up->pressed = right->pressed = true;
             } else {
-                if(!down->u.button.freshEvent) {
-                    down->u.button.pressed = false;
+                if(!up->freshEvent) {
+                    up->pressed = false;
                 }
 
-                if(!left->u.button.freshEvent) {
-                    left->u.button.pressed = false;
+                if(!right->freshEvent) {
+                    right->pressed = false;
                 }
             }
         }
 
-        if(downRight->u.button.freshEvent) {
-            if(downRight->u.button.pressed) {
-                down->u.button.pressed = right->u.button.pressed = true;
+        if(downLeft->freshEvent) {
+            if(downLeft->pressed) {
+                down->pressed = left->pressed = true;
             } else {
-                if(!down->u.button.freshEvent) {
-                    down->u.button.pressed = false;
+                if(!down->freshEvent) {
+                    down->pressed = false;
                 }
 
-                if(!right->u.button.freshEvent) {
-                    right->u.button.pressed = false;
+                if(!left->freshEvent) {
+                    left->pressed = false;
+                }
+            }
+        }
+
+        if(downRight->freshEvent) {
+            if(downRight->pressed) {
+                down->pressed = right->pressed = true;
+            } else {
+                if(!down->freshEvent) {
+                    down->pressed = false;
+                }
+
+                if(!right->freshEvent) {
+                    right->pressed = false;
                 }
             }
         }
@@ -407,60 +414,60 @@ void a_input__get(void)
         // pressed at least half-way
         #define ANALOG_TRESH ((1 << 15) / 2)
 
-        APhysicalInput* stick = a_strhash_get(g_analogs, "caanoo.stick");
-        APhysicalInput* up = a_strhash_get(g_buttons, "caanoo.up");
-        APhysicalInput* down = a_strhash_get(g_buttons, "caanoo.down");
-        APhysicalInput* left = a_strhash_get(g_buttons, "caanoo.left");
-        APhysicalInput* right = a_strhash_get(g_buttons, "caanoo.right");
+        AInputAnalog* stick = a_strhash_get(g_analogs, "caanoo.stick");
+        AInputButton* up = a_strhash_get(g_buttons, "caanoo.up");
+        AInputButton* down = a_strhash_get(g_buttons, "caanoo.down");
+        AInputButton* left = a_strhash_get(g_buttons, "caanoo.left");
+        AInputButton* right = a_strhash_get(g_buttons, "caanoo.right");
 
-        if(stick->u.analog.xaxis < -ANALOG_TRESH) {
+        if(stick->xaxis < -ANALOG_TRESH) {
             // Tracking analog direction pushes with analogPushedPast lets us
             // call a_button_getAndUnpress and a_button_unpress on the simulated
             // dpad buttons while maintaining correct press/unpress states here.
-            if(!left->u.button.analogPushedPast) {
-                left->u.button.analogPushedPast = true;
-                left->u.button.pressed = true;
+            if(!left->analogPushedPast) {
+                left->analogPushedPast = true;
+                left->pressed = true;
             }
         } else {
-            if(left->u.button.analogPushedPast) {
-                left->u.button.analogPushedPast = false;
-                left->u.button.pressed = false;
+            if(left->analogPushedPast) {
+                left->analogPushedPast = false;
+                left->pressed = false;
             }
         }
 
-        if(stick->u.analog.xaxis > ANALOG_TRESH) {
-            if(!right->u.button.analogPushedPast) {
-                right->u.button.analogPushedPast = true;
-                right->u.button.pressed = true;
+        if(stick->xaxis > ANALOG_TRESH) {
+            if(!right->analogPushedPast) {
+                right->analogPushedPast = true;
+                right->pressed = true;
             }
         } else {
-            if(right->u.button.analogPushedPast) {
-                right->u.button.analogPushedPast = false;
-                right->u.button.pressed = false;
+            if(right->analogPushedPast) {
+                right->analogPushedPast = false;
+                right->pressed = false;
             }
         }
 
-        if(stick->u.analog.yaxis < -ANALOG_TRESH) {
-            if(!up->u.button.analogPushedPast) {
-                up->u.button.analogPushedPast = true;
-                up->u.button.pressed = true;
+        if(stick->yaxis < -ANALOG_TRESH) {
+            if(!up->analogPushedPast) {
+                up->analogPushedPast = true;
+                up->pressed = true;
             }
         } else {
-            if(up->u.button.analogPushedPast) {
-                up->u.button.analogPushedPast = false;
-                up->u.button.pressed = false;
+            if(up->analogPushedPast) {
+                up->analogPushedPast = false;
+                up->pressed = false;
             }
         }
 
-        if(stick->u.analog.yaxis > ANALOG_TRESH) {
-            if(!down->u.button.analogPushedPast) {
-                down->u.button.analogPushedPast = true;
-                down->u.button.pressed = true;
+        if(stick->yaxis > ANALOG_TRESH) {
+            if(!down->analogPushedPast) {
+                down->analogPushedPast = true;
+                down->pressed = true;
             }
         } else {
-            if(down->u.button.analogPushedPast) {
-                down->u.button.analogPushedPast = false;
-                down->u.button.pressed = false;
+            if(down->analogPushedPast) {
+                down->analogPushedPast = false;
+                down->pressed = false;
             }
         }
     #endif
@@ -484,7 +491,7 @@ AInput* a_input_new(const char* Names)
             bool missing = false;
 
             A_STRTOK_ITERATE(tok, part) {
-                APhysicalInput* button = a_strhash_get(g_buttons, part);
+                AInputButton* button = a_strhash_get(g_buttons, part);
 
                 if(button == NULL) {
                     missing = true;
@@ -496,24 +503,24 @@ AInput* a_input_new(const char* Names)
             }
 
             if(!missing) {
-                AComboInput* combo = a_mem_malloc(sizeof(AComboInput));
+                AInputCombo* combo = a_mem_malloc(sizeof(AInputCombo));
                 AStrBuilder* sb = a_strbuilder_new(128);
 
-                A_LIST_ITERATE(buttons, APhysicalInput*, button) {
-                    a_strbuilder_addString(sb, button->shortName);
+                A_LIST_ITERATE(buttons, AInputButton*, button) {
+                    a_strbuilder_addString(sb, button->header.shortName);
 
                     if(!A_LIST_IS_LAST()) {
                         a_strbuilder_addString(sb, "+");
                     }
                 }
 
-                combo->name = a_str_dup(a_strbuilder_string(sb));
+                combo->header.name = a_str_dup(a_strbuilder_string(sb));
                 combo->buttons = buttons;
 
                 a_list_addLast(i->combos, combo);
 
                 if(i->name == NULL) {
-                    i->name = combo->name;
+                    i->name = combo->header.name;
                 }
 
                 a_strbuilder_free(sb);
@@ -523,11 +530,11 @@ AInput* a_input_new(const char* Names)
         } else {
             #define findNameInCollection(collection)                      \
             ({                                                            \
-                APhysicalInput* pi = a_strhash_get(g_##collection, name); \
-                if(pi) {                                                  \
-                    a_list_addLast(i->collection, pi);                    \
+                AInputHeader* h = a_strhash_get(g_##collection, name);    \
+                if(h) {                                                   \
+                    a_list_addLast(i->collection, h);                     \
                     if(i->name == NULL) {                                 \
-                        i->name = pi->shortName;                          \
+                        i->name = h->shortName;                           \
                     }                                                     \
                 }                                                         \
             })
@@ -559,8 +566,8 @@ void a_input__free(AInput* Input)
     a_list_free(Input->analogs);
     a_list_free(Input->touchScreens);
 
-    A_LIST_ITERATE(Input->combos, AComboInput*, c) {
-        free(c->name);
+    A_LIST_ITERATE(Input->combos, AInputCombo*, c) {
+        free(c->header.name);
         a_list_free(c->buttons);
     }
 
@@ -584,16 +591,16 @@ bool a_input_working(const AInput* Input)
 
 bool a_button_get(const AInput* Button)
 {
-    A_LIST_ITERATE(Button->buttons, APhysicalInput*, b) {
-        if(b->u.button.pressed) {
+    A_LIST_ITERATE(Button->buttons, AInputButton*, b) {
+        if(b->pressed) {
             return true;
         }
     }
 
     if(!a_list_empty(Button->combos)) {
-        A_LIST_ITERATE(Button->combos, AComboInput*, c) {
-            A_LIST_ITERATE(c->buttons, APhysicalInput*, b) {
-                if(!b->u.button.pressed) {
+        A_LIST_ITERATE(Button->combos, AInputCombo*, c) {
+            A_LIST_ITERATE(c->buttons, AInputButton*, b) {
+                if(!b->pressed) {
                     break;
                 } else if(A_LIST_IS_LAST()) {
                     return true;
@@ -607,13 +614,13 @@ bool a_button_get(const AInput* Button)
 
 void a_button_unpress(const AInput* Button)
 {
-    A_LIST_ITERATE(Button->buttons, APhysicalInput*, b) {
-        b->u.button.pressed = false;
+    A_LIST_ITERATE(Button->buttons, AInputButton*, b) {
+        b->pressed = false;
     }
 
-    A_LIST_ITERATE(Button->combos, AComboInput*, c) {
-        A_LIST_ITERATE(c->buttons, APhysicalInput*, b) {
-            b->u.button.pressed = false;
+    A_LIST_ITERATE(Button->combos, AInputCombo*, c) {
+        A_LIST_ITERATE(c->buttons, AInputButton*, b) {
+            b->pressed = false;
         }
     }
 }
@@ -622,26 +629,26 @@ bool a_button_getAndUnpress(const AInput* Button)
 {
     bool foundPressed = false;
 
-    A_LIST_ITERATE(Button->buttons, APhysicalInput*, b) {
-        if(b->u.button.pressed) {
-            b->u.button.pressed = false;
-            b->u.button.waitingForUnpress = true;
+    A_LIST_ITERATE(Button->buttons, AInputButton*, b) {
+        if(b->pressed) {
+            b->pressed = false;
+            b->waitingForUnpress = true;
             foundPressed = true;
         }
     }
 
     bool anyComboAllPressed = false;
 
-    A_LIST_ITERATE(Button->combos, AComboInput*, c) {
-        A_LIST_ITERATE(c->buttons, APhysicalInput*, b) {
-            if(!b->u.button.pressed) {
+    A_LIST_ITERATE(Button->combos, AInputCombo*, c) {
+        A_LIST_ITERATE(c->buttons, AInputButton*, b) {
+            if(!b->pressed) {
                 break;
             } else if(A_LIST_IS_LAST()) {
                 anyComboAllPressed = true;
 
-                A_LIST_ITERATE(c->buttons, APhysicalInput*, b) {
-                    b->u.button.pressed = false;
-                    b->u.button.waitingForUnpress = true;
+                A_LIST_ITERATE(c->buttons, AInputButton*, b) {
+                    b->pressed = false;
+                    b->waitingForUnpress = true;
                 }
             }
         }
@@ -652,9 +659,9 @@ bool a_button_getAndUnpress(const AInput* Button)
 
 int a_analog_xaxis(const AInput* Analog)
 {
-    A_LIST_ITERATE(Analog->analogs, APhysicalInput*, a) {
-        if(a_math_abs(a->u.analog.xaxis) > A_ANALOG_ERROR_MARGIN) {
-            return a->u.analog.xaxis;
+    A_LIST_ITERATE(Analog->analogs, AInputAnalog*, a) {
+        if(a_math_abs(a->xaxis) > A_ANALOG_ERROR_MARGIN) {
+            return a->xaxis;
         }
     }
 
@@ -663,9 +670,9 @@ int a_analog_xaxis(const AInput* Analog)
 
 int a_analog_yaxis(const AInput* Analog)
 {
-    A_LIST_ITERATE(Analog->analogs, APhysicalInput*, a) {
-        if(a_math_abs(a->u.analog.yaxis) > A_ANALOG_ERROR_MARGIN) {
-            return a->u.analog.yaxis;
+    A_LIST_ITERATE(Analog->analogs, AInputAnalog*, a) {
+        if(a_math_abs(a->yaxis) > A_ANALOG_ERROR_MARGIN) {
+            return a->yaxis;
         }
     }
 
@@ -684,8 +691,8 @@ AFix a_analog_yaxis_fix(const AInput* Analog)
 
 bool a_touch_tapped(const AInput* Touch)
 {
-    A_LIST_ITERATE(Touch->touchScreens, APhysicalInput*, t) {
-        if(t->u.touch.tap) {
+    A_LIST_ITERATE(Touch->touchScreens, AInputTouch*, t) {
+        if(t->tap) {
             return true;
         }
     }
@@ -700,10 +707,10 @@ bool a_touch_point(const AInput* Touch, int X, int Y)
 
 bool a_touch_rect(const AInput* Touch, int X, int Y, int W, int H)
 {
-    A_LIST_ITERATE(Touch->touchScreens, APhysicalInput*, t) {
-        if(t->u.touch.tap
+    A_LIST_ITERATE(Touch->touchScreens, AInputTouch*, t) {
+        if(t->tap
             && a_collide_boxes(X, Y, W, H,
-                               t->u.touch.x, t->u.touch.y, 1, 1)) {
+                               t->x, t->y, 1, 1)) {
             return true;
         }
     }
@@ -711,46 +718,46 @@ bool a_touch_rect(const AInput* Touch, int X, int Y, int W, int H)
     return false;
 }
 
-void a_input__button_setState(APhysicalInput* Button, bool Pressed)
+void a_input__button_setState(AInputButton* Button, bool Pressed)
 {
-    if(Button->u.button.waitingForUnpress && Pressed) {
+    if(Button->waitingForUnpress && Pressed) {
         // Ignore press until getting an unpress
         return;
     }
 
-    Button->u.button.pressed = Pressed;
-    Button->u.button.waitingForUnpress = false;
-    Button->u.button.freshEvent = true;
+    Button->pressed = Pressed;
+    Button->waitingForUnpress = false;
+    Button->freshEvent = true;
 }
 
-void a_input__analog_setXAxis(APhysicalInput* Analog, int Value)
+void a_input__analog_setXAxis(AInputAnalog* Analog, int Value)
 {
-    Analog->u.analog.xaxis = Value;
+    Analog->xaxis = Value;
 }
 
-void a_input__analog_setYAxis(APhysicalInput* Analog, int Value)
+void a_input__analog_setYAxis(AInputAnalog* Analog, int Value)
 {
-    Analog->u.analog.yaxis = Value;
+    Analog->yaxis = Value;
 }
 
-void a_input__touch_addMotion(APhysicalInput* Touch, int X, int Y)
+void a_input__touch_addMotion(AInputTouch* Touch, int X, int Y)
 {
-    Touch->u.touch.x = X;
-    Touch->u.touch.y = Y;
+    Touch->x = X;
+    Touch->y = Y;
 
     if(a_settings_getBool("input.trackMouse")) {
         APoint* p = a_mem_malloc(sizeof(APoint));
 
-        p->x = Touch->u.touch.x;
-        p->y = Touch->u.touch.y;
+        p->x = Touch->x;
+        p->y = Touch->y;
 
-        a_list_addLast(Touch->u.touch.motion, p);
+        a_list_addLast(Touch->motion, p);
     }
 }
 
-void a_input__touch_setCoords(APhysicalInput* Touch, int X, int Y, bool Tapped)
+void a_input__touch_setCoords(AInputTouch* Touch, int X, int Y, bool Tapped)
 {
-    Touch->u.touch.x = X;
-    Touch->u.touch.y = Y;
-    Touch->u.touch.tap = Tapped;
+    Touch->x = X;
+    Touch->y = Y;
+    Touch->tap = Tapped;
 }

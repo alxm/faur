@@ -19,7 +19,10 @@
 
 #pragma once
 
-typedef struct APhysicalInput APhysicalInput;
+typedef struct AInputButton AInputButton;
+typedef struct AInputAnalog AInputAnalog;
+typedef struct AInputTouch AInputTouch;
+
 typedef void (*AInputCallback)(void);
 
 #include "a2x_pack_input.p.h"
@@ -42,10 +45,10 @@ extern void a_input__free(AInput* Input);
 extern void a_input__addCallback(AInputCallback Callback);
 extern void a_input__get(void);
 
-extern void a_input__button_setState(APhysicalInput* Button, bool Pressed);
+extern void a_input__button_setState(AInputButton* Button, bool Pressed);
 
-extern void a_input__analog_setXAxis(APhysicalInput* Analog, int Value);
-extern void a_input__analog_setYAxis(APhysicalInput* Analog, int Value);
+extern void a_input__analog_setXAxis(AInputAnalog* Analog, int Value);
+extern void a_input__analog_setYAxis(AInputAnalog* Analog, int Value);
 
-extern void a_input__touch_addMotion(APhysicalInput* Touch, int X, int Y);
-extern void a_input__touch_setCoords(APhysicalInput* Touch, int X, int Y, bool Tapped);
+extern void a_input__touch_addMotion(AInputTouch* Touch, int X, int Y);
+extern void a_input__touch_setCoords(AInputTouch* Touch, int X, int Y, bool Tapped);
