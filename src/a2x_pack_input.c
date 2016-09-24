@@ -268,13 +268,18 @@ void a_input__init(void)
         addAnalog("joypad.analog2");
     #endif
 
+    addButton("controller.up");
+    addButton("controller.down");
+    addButton("controller.left");
+    addButton("controller.right");
+
     g_userInputs = a_list_new();
     g_callbacks = a_list_new();
 
-    addUmbrella("dpad.up", "pc.up gp2x.up wiz.up caanoo.up pandora.up");
-    addUmbrella("dpad.down", "pc.down gp2x.down wiz.down caanoo.down pandora.down");
-    addUmbrella("dpad.left", "pc.left gp2x.left wiz.left caanoo.left pandora.left");
-    addUmbrella("dpad.right", "pc.right gp2x.right wiz.right caanoo.right pandora.right");
+    addUmbrella("dpad.up", "pc.up controller.up gp2x.up wiz.up caanoo.up pandora.up");
+    addUmbrella("dpad.down", "pc.down controller.down gp2x.down wiz.down caanoo.down pandora.down");
+    addUmbrella("dpad.left", "pc.left controller.left gp2x.left wiz.left caanoo.left pandora.left");
+    addUmbrella("dpad.right", "pc.right controller.right gp2x.right wiz.right caanoo.right pandora.right");
 }
 
 void a_input__uninit(void)

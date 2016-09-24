@@ -35,6 +35,7 @@ typedef struct ASdlInputButton {
     AInputButton* input;
     int numCodes;
     int codes[A_MAX_BUTTON_CODES]; // SDL button/key code
+    bool lastStatePressed;
 } ASdlInputButton;
 
 typedef struct ASdlInputAnalog {
@@ -82,6 +83,7 @@ static void addButton(const char* Name, int Code)
         b->header.name = a_str_dup(Name);
         b->numCodes = 1;
         b->codes[0] = Code;
+        b->lastStatePressed = false;
 
         a_strhash_add(g_buttons, Name, b);
     } else {
@@ -317,6 +319,11 @@ void a_sdl__init(void)
         addAnalog("joypad.analog1", 0, NULL, 0, 1);
         addAnalog("joypad.analog2", 0, NULL, 3, 4);
     #endif
+
+    addButton("controller.up", -1);
+    addButton("controller.down", -1);
+    addButton("controller.left", -1);
+    addButton("controller.right", -1);
 }
 
 void a_sdl__uninit(void)
@@ -766,6 +773,71 @@ void a_sdl__input_get(void)
                         if(b->codes[c] == event.jbutton.button) {
                             a_input__button_setState(b->input, false);
                             break;
+                        }
+                    }
+                }
+            } break;
+
+            case SDL_JOYHATMOTION: {
+                unsigned int state = 0;
+                #define UP_PRESSED (1 << 0)
+                #define DOWN_PRESSED (1 << 1)
+                #define LEFT_PRESSED (1 << 2)
+                #define RIGHT_PRESSED (1 << 3)
+
+                switch(event.jhat.value) {
+                    case SDL_HAT_UP: {
+                        state = UP_PRESSED;
+                    } break;
+
+                    case SDL_HAT_DOWN: {
+                        state = DOWN_PRESSED;
+                    } break;
+
+                    case SDL_HAT_LEFT: {
+                        state = LEFT_PRESSED;
+                    } break;
+
+                    case SDL_HAT_RIGHT: {
+                        state = RIGHT_PRESSED;
+                    } break;
+
+                    case SDL_HAT_LEFTUP: {
+                        state = LEFT_PRESSED | UP_PRESSED;
+                    } break;
+
+                    case SDL_HAT_RIGHTUP: {
+                        state = RIGHT_PRESSED | UP_PRESSED;
+                    } break;
+
+                    case SDL_HAT_LEFTDOWN: {
+                        state = LEFT_PRESSED | DOWN_PRESSED;
+                    } break;
+
+                    case SDL_HAT_RIGHTDOWN: {
+                        state = RIGHT_PRESSED | DOWN_PRESSED;
+                    } break;
+                }
+
+                ASdlInputButton* buttons[4] = {
+                    a_strhash_get(g_buttons, "controller.up"),
+                    a_strhash_get(g_buttons, "controller.down"),
+                    a_strhash_get(g_buttons, "controller.left"),
+                    a_strhash_get(g_buttons, "controller.right")
+                };
+
+                for(int i = 0; i < 4; i++, state >>= 1) {
+                    ASdlInputButton* b = buttons[i];
+
+                    if(state & 1) {
+                        if(!b->lastStatePressed) {
+                            b->lastStatePressed = true;
+                            a_input__button_setState(b->input, true);
+                        }
+                    } else {
+                        if(b->lastStatePressed) {
+                            b->lastStatePressed = false;
+                            a_input__button_setState(b->input, false);
                         }
                     }
                 }
