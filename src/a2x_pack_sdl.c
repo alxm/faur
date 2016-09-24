@@ -717,41 +717,58 @@ void a_sdl__input_matchTouch(const char* Name, AInputTouch* Touch)
 void a_sdl__input_get(void)
 {
     for(SDL_Event event; SDL_PollEvent(&event); ) {
-        enum {
-            A_ACTION_NONE,
-            A_ACTION_PRESSED,
-            A_ACTION_UNPRESSED,
-        } action = A_ACTION_NONE;
-
-        int code = -1;
-
         switch(event.type) {
             case SDL_QUIT: {
                 a_state_exit();
             } break;
 
             case SDL_KEYDOWN: {
-                action = A_ACTION_PRESSED;
-                code = event.key.keysym.sym;
-
-                if(code == SDLK_ESCAPE) {
+                if(event.key.keysym.sym == SDLK_ESCAPE) {
                     a_state_exit();
+                    break;
+                }
+
+                A_STRHASH_ITERATE(g_buttons, ASdlInputButton*, b) {
+                    for(int c = b->numCodes; c--; ) {
+                        if(b->codes[c] == event.key.keysym.sym) {
+                            a_input__button_setState(b->input, true);
+                            break;
+                        }
+                    }
                 }
             } break;
 
             case SDL_KEYUP: {
-                action = A_ACTION_UNPRESSED;
-                code = event.key.keysym.sym;
+                A_STRHASH_ITERATE(g_buttons, ASdlInputButton*, b) {
+                    for(int c = b->numCodes; c--; ) {
+                        if(b->codes[c] == event.key.keysym.sym) {
+                            a_input__button_setState(b->input, false);
+                            break;
+                        }
+                    }
+                }
             } break;
 
             case SDL_JOYBUTTONDOWN: {
-                action = A_ACTION_PRESSED;
-                code = event.jbutton.button;
+                A_STRHASH_ITERATE(g_buttons, ASdlInputButton*, b) {
+                    for(int c = b->numCodes; c--; ) {
+                        if(b->codes[c] == event.jbutton.button) {
+                            a_input__button_setState(b->input, true);
+                            break;
+                        }
+                    }
+                }
             } break;
 
             case SDL_JOYBUTTONUP: {
-                action = A_ACTION_UNPRESSED;
-                code = event.jbutton.button;
+                A_STRHASH_ITERATE(g_buttons, ASdlInputButton*, b) {
+                    for(int c = b->numCodes; c--; ) {
+                        if(b->codes[c] == event.jbutton.button) {
+                            a_input__button_setState(b->input, false);
+                            break;
+                        }
+                    }
+                }
             } break;
 
             case SDL_JOYAXISMOTION: {
@@ -803,18 +820,6 @@ void a_sdl__input_get(void)
             } break;
 
             default:break;
-        }
-
-        if(action != A_ACTION_NONE) {
-            A_STRHASH_ITERATE(g_buttons, ASdlInputButton*, b) {
-                for(int c = b->numCodes; c--; ) {
-                    if(b->codes[c] == code) {
-                        a_input__button_setState(b->input,
-                                                 action == A_ACTION_PRESSED);
-                        break;
-                    }
-                }
-            }
         }
     }
 }
