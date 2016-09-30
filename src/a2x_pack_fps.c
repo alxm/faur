@@ -83,12 +83,12 @@ void a_fps__reset(void)
     g_maxFps = g_fpsRate;
 
     for(int i = g_bufferLen; i--; ) {
-        g_fpsBuffer[i] = g_milisPerFrame;
-        g_maxFpsBuffer[i] = g_milisPerFrame;
+        g_fpsBuffer[i] = g_fpsRate;
+        g_maxFpsBuffer[i] = g_fpsRate;
     }
 
-    g_fpsBufferSum = g_milisPerFrame * g_bufferLen;
-    g_maxFpsBufferSum = g_milisPerFrame * g_bufferLen;
+    g_fpsBufferSum = g_fpsRate * g_bufferLen;
+    g_maxFpsBufferSum = g_fpsRate * g_bufferLen;
 
     g_skipNum = 0;
     g_skipCounter = 0;
@@ -107,9 +107,9 @@ void a_fps_frame(void)
     const bool done = a_timer_check(g_timer);
 
     g_maxFpsBufferSum -= g_maxFpsBuffer[g_bufferHead];
-    g_maxFpsBuffer[g_bufferHead] = a_timer_diff(g_timer);
+    g_maxFpsBuffer[g_bufferHead] = 1000 / a_timer_diff(g_timer);
     g_maxFpsBufferSum += g_maxFpsBuffer[g_bufferHead];
-    g_maxFps = 1000 / ((float)g_maxFpsBufferSum / g_bufferLen);
+    g_maxFps = g_maxFpsBufferSum / g_bufferLen;
 
     if(!done) {
         while(!a_timer_check(g_timer)) {
@@ -127,9 +127,9 @@ void a_fps_frame(void)
     }
 
     g_fpsBufferSum -= g_fpsBuffer[g_bufferHead];
-    g_fpsBuffer[g_bufferHead] = a_timer_diff(g_timer);
+    g_fpsBuffer[g_bufferHead] = 1000 / a_timer_diff(g_timer);
     g_fpsBufferSum += g_fpsBuffer[g_bufferHead];
-    g_fps = 1000 / ((float)g_fpsBufferSum / g_bufferLen);
+    g_fps = g_fpsBufferSum / g_bufferLen;
     g_bufferHead = (g_bufferHead + 1) % g_bufferLen;
 
     a_input__get();
