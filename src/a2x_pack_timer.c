@@ -77,3 +77,10 @@ uint32_t a_timer_diff(ATimer* Timer)
 {
     return Timer->diff;
 }
+
+void a_timer_setPeriod(ATimer* Timer, uint32_t MilisPeriod)
+{
+    Timer->period = MilisPeriod;
+    Timer->start = a_time_getMilis();
+    Timer->diff = 0;
+}

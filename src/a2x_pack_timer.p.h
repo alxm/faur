@@ -31,3 +31,4 @@ extern void a_timer_stop(ATimer* Timer);
 extern bool a_timer_running(ATimer* Timer);
 extern bool a_timer_check(ATimer* Timer);
 extern uint32_t a_timer_diff(ATimer* Timer);
+extern void a_timer_setPeriod(ATimer* Timer, uint32_t MilisPeriod);
