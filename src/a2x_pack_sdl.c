@@ -688,6 +688,21 @@ void a_sdl__delay(uint32_t Milis)
     SDL_Delay(Milis);
 }
 
+void a_sdl__input_bind(void)
+{
+    A_STRHASH_ITERATE(g_buttons, ASdlInputButton*, b) {
+        a_input__addButton(b->header.name);
+    }
+
+    A_STRHASH_ITERATE(g_analogs, ASdlInputAnalog*, a) {
+        a_input__addAnalog(a->header.name);
+    }
+
+    A_STRHASH_ITERATE(g_touchScreens, ASdlInputTouch*, t) {
+        a_input__addTouch(t->header.name);
+    }
+}
+
 void a_sdl__input_matchButton(const char* Name, AInputButton* Button)
 {
     ASdlInputButton* b = a_strhash_get(g_buttons, Name);

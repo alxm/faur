@@ -88,72 +88,6 @@ static void addUmbrella(const char* Name, const char* Inputs)
     a_strhash_add(g_umbrellas, Name, umbrella);
 }
 
-static void addButton(const char* Name)
-{
-    AInputButton* b = a_strhash_get(g_buttons, Name);
-
-    if(b) {
-        a_out__error("Button '%s' is already defined", Name);
-        return;
-    }
-
-    b = a_mem_malloc(sizeof(AInputButton));
-
-    b->header.name = a_str_dup(Name);
-    b->header.shortName = a_str_getSuffixLastFind(Name, '.');
-    b->pressed = false;
-    b->waitingForUnpress = false;
-    b->analogPushedPast = false;
-    b->freshEvent = false;
-
-    a_strhash_add(g_buttons, Name, b);
-    a_sdl__input_matchButton(Name, b);
-}
-
-#if !A_PLATFORM_GP2X && !A_PLATFORM_WIZ
-static void addAnalog(const char* Name)
-{
-    AInputAnalog* a = a_strhash_get(g_analogs, Name);
-
-    if(a) {
-        a_out__error("Analog '%s' is already defined", Name);
-        return;
-    }
-
-    a = a_mem_malloc(sizeof(AInputAnalog));
-
-    a->header.name = a_str_dup(Name);
-    a->header.shortName = a_str_getSuffixLastFind(Name, '.');
-    a->xaxis = 0;
-    a->yaxis = 0;
-
-    a_strhash_add(g_analogs, Name, a);
-    a_sdl__input_matchAnalog(Name, a);
-}
-#endif // !A_PLATFORM_GP2X && !A_PLATFORM_WIZ
-
-static void addTouch(const char* Name)
-{
-    AInputTouch* t = a_strhash_get(g_touchScreens, Name);
-
-    if(t) {
-        a_out__error("Touchscreen '%s' is already defined", Name);
-        return;
-    }
-
-    t = a_mem_malloc(sizeof(AInputTouch));
-
-    t->header.name = a_str_dup(Name);
-    t->header.shortName = a_str_getSuffixLastFind(Name, '.');
-    t->tap = false;
-    t->x = 0;
-    t->y = 0;
-    t->motion = a_list_new();
-
-    a_strhash_add(g_touchScreens, Name, t);
-    a_sdl__input_matchTouch(Name, t);
-}
-
 void a_input__init(void)
 {
     g_buttons = a_strhash_new();
@@ -161,117 +95,7 @@ void a_input__init(void)
     g_touchScreens = a_strhash_new();
     g_umbrellas = a_strhash_new();
 
-    #if A_PLATFORM_GP2X
-        addButton("gp2x.up");
-        addButton("gp2x.down");
-        addButton("gp2x.left");
-        addButton("gp2x.right");
-        addButton("gp2x.upleft");
-        addButton("gp2x.upright");
-        addButton("gp2x.downleft");
-        addButton("gp2x.downright");
-        addButton("gp2x.l");
-        addButton("gp2x.r");
-        addButton("gp2x.a");
-        addButton("gp2x.b");
-        addButton("gp2x.x");
-        addButton("gp2x.y");
-        addButton("gp2x.start");
-        addButton("gp2x.select");
-        addButton("gp2x.volup");
-        addButton("gp2x.voldown");
-        addButton("gp2x.stickclick");
-        addTouch("gp2x.touch");
-    #elif A_PLATFORM_WIZ
-        addButton("wiz.up");
-        addButton("wiz.down");
-        addButton("wiz.left");
-        addButton("wiz.right");
-        addButton("wiz.upleft");
-        addButton("wiz.upright");
-        addButton("wiz.downleft");
-        addButton("wiz.downright");
-        addButton("wiz.l");
-        addButton("wiz.r");
-        addButton("wiz.a");
-        addButton("wiz.b");
-        addButton("wiz.x");
-        addButton("wiz.y");
-        addButton("wiz.menu");
-        addButton("wiz.select");
-        addButton("wiz.volup");
-        addButton("wiz.voldown");
-        addTouch("wiz.touch");
-    #elif A_PLATFORM_CAANOO
-        addButton("caanoo.up");
-        addButton("caanoo.down");
-        addButton("caanoo.left");
-        addButton("caanoo.right");
-        addButton("caanoo.l");
-        addButton("caanoo.r");
-        addButton("caanoo.a");
-        addButton("caanoo.b");
-        addButton("caanoo.x");
-        addButton("caanoo.y");
-        addButton("caanoo.home");
-        addButton("caanoo.hold");
-        addButton("caanoo.1");
-        addButton("caanoo.2");
-        addAnalog("caanoo.stick");
-        addTouch("caanoo.touch");
-    #elif A_PLATFORM_PANDORA
-        addButton("pandora.up");
-        addButton("pandora.down");
-        addButton("pandora.left");
-        addButton("pandora.right");
-        addButton("pandora.l");
-        addButton("pandora.r");
-        addButton("pandora.a");
-        addButton("pandora.b");
-        addButton("pandora.x");
-        addButton("pandora.y");
-        addButton("pandora.start");
-        addButton("pandora.select");
-        addTouch("pandora.touch");
-        addAnalog("pandora.nub1");
-        addAnalog("pandora.nub2");
-        addButton("pandora.m");
-        addButton("pandora.s");
-    #elif A_PLATFORM_LINUXPC || A_PLATFORM_MINGW
-        addButton("pc.up");
-        addButton("pc.down");
-        addButton("pc.left");
-        addButton("pc.right");
-        addButton("pc.z");
-        addButton("pc.x");
-        addButton("pc.c");
-        addButton("pc.v");
-        addButton("pc.m");
-        addButton("pc.enter");
-        addButton("pc.space");
-        addButton("pc.f1");
-        addButton("pc.f2");
-        addButton("pc.f3");
-        addButton("pc.f4");
-        addButton("pc.f5");
-        addButton("pc.f6");
-        addButton("pc.f7");
-        addButton("pc.f8");
-        addButton("pc.f9");
-        addButton("pc.f10");
-        addButton("pc.f11");
-        addButton("pc.f12");
-        addButton("pc.1");
-        addButton("pc.0");
-        addTouch("pc.mouse");
-        addAnalog("joypad.analog1");
-        addAnalog("joypad.analog2");
-    #endif
-
-    addButton("controller.up");
-    addButton("controller.down");
-    addButton("controller.left");
-    addButton("controller.right");
+    a_sdl__input_bind();
 
     g_userInputs = a_list_new();
     g_callbacks = a_list_new();
@@ -316,6 +140,72 @@ void a_input__uninit(void)
     a_strhash_free(g_analogs);
     a_strhash_free(g_touchScreens);
     a_strhash_free(g_umbrellas);
+}
+
+void a_input__addButton(const char* Name)
+{
+    AInputButton* b = a_strhash_get(g_buttons, Name);
+
+    if(b) {
+        a_out__error("Button '%s' is already defined", Name);
+        return;
+    }
+
+    b = a_mem_malloc(sizeof(AInputButton));
+
+    b->header.name = a_str_dup(Name);
+    b->header.shortName = a_str_getSuffixLastFind(Name, '.');
+    b->pressed = false;
+    b->waitingForUnpress = false;
+    b->analogPushedPast = false;
+    b->freshEvent = false;
+
+    a_strhash_add(g_buttons, Name, b);
+    a_sdl__input_matchButton(Name, b);
+}
+
+#if !A_PLATFORM_GP2X && !A_PLATFORM_WIZ
+void a_input__addAnalog(const char* Name)
+{
+    AInputAnalog* a = a_strhash_get(g_analogs, Name);
+
+    if(a) {
+        a_out__error("Analog '%s' is already defined", Name);
+        return;
+    }
+
+    a = a_mem_malloc(sizeof(AInputAnalog));
+
+    a->header.name = a_str_dup(Name);
+    a->header.shortName = a_str_getSuffixLastFind(Name, '.');
+    a->xaxis = 0;
+    a->yaxis = 0;
+
+    a_strhash_add(g_analogs, Name, a);
+    a_sdl__input_matchAnalog(Name, a);
+}
+#endif // !A_PLATFORM_GP2X && !A_PLATFORM_WIZ
+
+void a_input__addTouch(const char* Name)
+{
+    AInputTouch* t = a_strhash_get(g_touchScreens, Name);
+
+    if(t) {
+        a_out__error("Touchscreen '%s' is already defined", Name);
+        return;
+    }
+
+    t = a_mem_malloc(sizeof(AInputTouch));
+
+    t->header.name = a_str_dup(Name);
+    t->header.shortName = a_str_getSuffixLastFind(Name, '.');
+    t->tap = false;
+    t->x = 0;
+    t->y = 0;
+    t->motion = a_list_new();
+
+    a_strhash_add(g_touchScreens, Name, t);
+    a_sdl__input_matchTouch(Name, t);
 }
 
 void a_input__addCallback(AInputCallback Callback)
