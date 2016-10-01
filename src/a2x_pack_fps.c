@@ -115,11 +115,14 @@ void a_fps_frame(void)
         a_screen_show();
 
         const bool done = a_timer_check(g_timer);
+        const uint32_t elapsedMs = a_timer_diff(g_timer);
 
-        g_maxFpsBufferSum -= g_maxFpsBuffer[g_bufferHead];
-        g_maxFpsBuffer[g_bufferHead] = 1000 / a_timer_diff(g_timer);
-        g_maxFpsBufferSum += g_maxFpsBuffer[g_bufferHead];
-        g_maxFps = g_maxFpsBufferSum / g_bufferLen;
+        if(elapsedMs > 0) {
+            g_maxFpsBufferSum -= g_maxFpsBuffer[g_bufferHead];
+            g_maxFpsBuffer[g_bufferHead] = 1000 / elapsedMs;
+            g_maxFpsBufferSum += g_maxFpsBuffer[g_bufferHead];
+            g_maxFps = g_maxFpsBufferSum / g_bufferLen;
+        }
 
         if(!done) {
             while(!a_timer_check(g_timer)) {
