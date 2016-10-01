@@ -123,6 +123,10 @@ void a_fps_frame(void)
 
         if(!done) {
             while(!a_timer_check(g_timer)) {
+                if(g_skipNum > 0) {
+                    continue;
+                }
+
                 const uint32_t waitMs = g_milisPerFrame - a_timer_diff(g_timer);
 
                 #if A_PLATFORM_GP2X
