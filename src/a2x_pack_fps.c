@@ -21,6 +21,7 @@
 
 #define AVERAGE_WINDOW_SEC 2
 #define FRAMESKIP_ADJUST_DELAY_SEC 2
+#define NO_SLEEP_RESET_SEC 20
 
 static uint32_t g_idealFps;
 static bool g_skipFrames;
@@ -46,6 +47,8 @@ static int g_skipCounter;
 static uint32_t g_fpsThresholdFast;
 static uint32_t g_fpsThresholdSlow;
 static ATimer* g_skipAdjustTimer;
+static ATimer* g_noSleepTimer;
+static bool g_canSleep;
 
 void a_fps__init(void)
 {
@@ -63,6 +66,9 @@ void a_fps__init(void)
     g_skipAdjustTimer = a_timer_new(FRAMESKIP_ADJUST_DELAY_SEC * 1000);
     a_timer_start(g_skipAdjustTimer);
 
+    g_noSleepTimer = a_timer_new(NO_SLEEP_RESET_SEC * 1000);
+    g_canSleep = true;
+
     a_fps__reset(0);
 }
 
@@ -70,6 +76,7 @@ void a_fps__uninit(void)
 {
     a_timer_free(g_timer);
     a_timer_free(g_skipAdjustTimer);
+    a_timer_free(g_noSleepTimer);
 
     free(g_fpsBuffer);
     free(g_maxFpsBuffer);
@@ -126,7 +133,7 @@ void a_fps_frame(void)
 
         if(!done) {
             while(!a_timer_check(g_timer)) {
-                if(g_skipNum > 0) {
+                if(!g_canSleep) {
                     continue;
                 }
 
@@ -156,10 +163,25 @@ void a_fps_frame(void)
 
     if(g_skipFrames) {
         if(a_fps_notSkipped() && a_timer_check(g_skipAdjustTimer)) {
+            int newFrameSkip = -1;
+
             if(g_maxFps <= g_fpsThresholdSlow && g_skipNum < g_skipMax) {
-                a_fps__reset(g_skipNum + 1);
+                newFrameSkip = g_skipNum + 1;
             } else if(g_maxFps >= g_fpsThresholdFast && g_skipNum > 0) {
-                a_fps__reset(g_skipNum - 1);
+                newFrameSkip = g_skipNum - 1;
+            }
+
+            if(newFrameSkip != -1) {
+                if(newFrameSkip == 0) {
+                    a_timer_start(g_noSleepTimer);
+                } else {
+                    a_timer_stop(g_noSleepTimer);
+                }
+
+                g_canSleep = false;
+                a_fps__reset(newFrameSkip);
+            } else if(!g_canSleep && a_timer_check(g_noSleepTimer)) {
+                g_canSleep = true;
             }
         }
 
