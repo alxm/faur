@@ -150,7 +150,7 @@ void a_hw__uninit(void)
 }
 
 #if A_PLATFORM_WIZ || A_PLATFORM_CAANOO
-    uint32_t a_hw__getMilis(void)
+    uint32_t a_hw__getMs(void)
     {
         TIMER_REG(0x08) = 0x4b; // run timer, latch value
         return TIMER_REG(0) / 1000;

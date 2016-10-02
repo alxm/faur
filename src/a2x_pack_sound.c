@@ -74,7 +74,7 @@ static void inputCallback(void)
                     a_sdl__sfx_setVolume(s, g_sfxVolume);
                 }
 
-                g_lastVolAdjustment = a_time_getMilis();
+                g_lastVolAdjustment = a_time_getMs();
             }
         }
     #elif A_PLATFORM_LINUXPC || A_PLATFORM_PANDORA
@@ -90,7 +90,7 @@ static void inputCallback(void)
     static void screenCallback(void)
     {
         if(a_settings_getBool("sound.on")) {
-            if(a_time_getMilis() - g_lastVolAdjustment >= A_VOLBAR_SHOW_MS) {
+            if(a_time_getMs() - g_lastVolAdjustment >= A_VOLBAR_SHOW_MS) {
                 return;
             }
 

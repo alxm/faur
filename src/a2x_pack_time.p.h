@@ -21,5 +21,5 @@
 
 #include "a2x_system_includes.h"
 
-extern uint32_t a_time_getMilis(void);
-extern void a_time_waitMilis(uint32_t Milis);
+extern uint32_t a_time_getMs(void);
+extern void a_time_waitMs(uint32_t Ms);
