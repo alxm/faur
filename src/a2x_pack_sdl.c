@@ -27,7 +27,6 @@
 typedef struct ASdlInputHeader {
     char* name;
     int device_index;
-    char* device_name;
 } ASdlInputHeader;
 
 typedef struct ASdlInputButton {
@@ -123,7 +122,6 @@ static void addButton(const char* Name, int Code)
 
         a->header.name = a_str_dup(Name);
         a->header.device_index = DeviceIndex;
-        a->header.device_name = DeviceName;
         a->xaxis_index = XAxisIndex;
         a->yaxis_index = YAxisIndex;
 
