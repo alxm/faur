@@ -42,9 +42,11 @@ extern void a_input__uninit(void);
 
 extern void a_input__free(AInput* Input);
 
-extern void a_input__addButton(const char* Name);
-extern void a_input__addAnalog(const char* Name);
-extern void a_input__addTouch(const char* Name);
+extern void a_input__newController(void);
+
+extern AInputButton* a_input__newButton(const char* Name);
+extern AInputAnalog* a_input__newAnalog(const char* Name);
+extern AInputTouch* a_input__newTouch(const char* Name);
 
 extern void a_input__addCallback(AInputCallback Callback);
 extern void a_input__get(void);

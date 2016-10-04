@@ -62,6 +62,10 @@ typedef struct AInputButtonCombo {
     AList* buttons; // List of AInputButton
 } AInputButtonCombo;
 
+typedef struct AInputController {
+    AStrHash* buttons;
+} AInputController;
+
 typedef struct APoint {
     int x;
     int y;
@@ -71,6 +75,8 @@ static AStrHash* g_buttons;
 static AStrHash* g_analogs;
 static AStrHash* g_touchScreens;
 static AStrHash* g_umbrellas;
+static AList* g_controllers;
+static AInputController* g_activeController;
 
 // all inputs returned by a_input_new()
 static AList* g_userInputs;
@@ -88,17 +94,36 @@ static void addUmbrella(const char* Name, const char* Inputs)
     a_strhash_add(g_umbrellas, Name, umbrella);
 }
 
+static void findInput(const char* Name, const AStrHash* Collection, AInput* Input, AList* AddTo)
+{
+    AInputHeader* h = a_strhash_get(Collection, Name);
+
+    if(h) {
+        a_list_addLast(AddTo, h);
+
+        if(Input->name == NULL) {
+            Input->name = h->shortName;
+        }
+    }
+}
+
 void a_input__init(void)
 {
     g_buttons = a_strhash_new();
     g_analogs = a_strhash_new();
     g_touchScreens = a_strhash_new();
     g_umbrellas = a_strhash_new();
-
-    a_sdl__input_bind();
+    g_controllers = a_list_new();
+    g_activeController = NULL;
 
     g_userInputs = a_list_new();
     g_callbacks = a_list_new();
+
+    a_sdl__input_bind();
+
+    if(a_input_numControllers() > 0) {
+        a_input_setController(0);
+    }
 
     addUmbrella("dpad.up", "pc.up controller.up gp2x.up wiz.up caanoo.up pandora.up");
     addUmbrella("dpad.down", "pc.down controller.down gp2x.down wiz.down caanoo.down pandora.down");
@@ -136,22 +161,36 @@ void a_input__uninit(void)
         free(t);
     }
 
+    A_LIST_ITERATE(g_controllers, AInputController*, c) {
+        A_STRHASH_ITERATE(c->buttons, AInputButton*, b) {
+            freeHeader(&b->header);
+            free(b);
+        }
+
+        a_strhash_free(c->buttons);
+        free(c);
+    }
+
     a_strhash_free(g_buttons);
     a_strhash_free(g_analogs);
     a_strhash_free(g_touchScreens);
     a_strhash_free(g_umbrellas);
+    a_list_free(g_controllers);
 }
 
-void a_input__addButton(const char* Name)
+void a_input__newController(void)
 {
-    AInputButton* b = a_strhash_get(g_buttons, Name);
+    AInputController* c = a_mem_malloc(sizeof(AInputController));
 
-    if(b) {
-        a_out__error("Button '%s' is already defined", Name);
-        return;
-    }
+    c->buttons = a_strhash_new();
 
-    b = a_mem_malloc(sizeof(AInputButton));
+    a_list_addLast(g_controllers, c);
+    g_activeController = c;
+}
+
+AInputButton* a_input__newButton(const char* Name)
+{
+    AInputButton* b = a_mem_malloc(sizeof(AInputButton));
 
     b->header.name = a_str_dup(Name);
     b->header.shortName = a_str_getSuffixLastFind(Name, '.');
@@ -160,21 +199,18 @@ void a_input__addButton(const char* Name)
     b->analogPushedPast = false;
     b->freshEvent = false;
 
-    a_strhash_add(g_buttons, Name, b);
-    a_sdl__input_matchButton(Name, b);
-}
-
-#if !A_PLATFORM_GP2X && !A_PLATFORM_WIZ
-void a_input__addAnalog(const char* Name)
-{
-    AInputAnalog* a = a_strhash_get(g_analogs, Name);
-
-    if(a) {
-        a_out__error("Analog '%s' is already defined", Name);
-        return;
+    if(g_activeController == NULL) {
+        a_strhash_add(g_buttons, Name, b);
+    } else {
+        a_strhash_add(g_activeController->buttons, Name, b);
     }
 
-    a = a_mem_malloc(sizeof(AInputAnalog));
+    return b;
+}
+
+AInputAnalog* a_input__newAnalog(const char* Name)
+{
+    AInputAnalog* a = a_mem_malloc(sizeof(AInputAnalog));
 
     a->header.name = a_str_dup(Name);
     a->header.shortName = a_str_getSuffixLastFind(Name, '.');
@@ -182,20 +218,13 @@ void a_input__addAnalog(const char* Name)
     a->yaxis = 0;
 
     a_strhash_add(g_analogs, Name, a);
-    a_sdl__input_matchAnalog(Name, a);
+
+    return a;
 }
-#endif // !A_PLATFORM_GP2X && !A_PLATFORM_WIZ
 
-void a_input__addTouch(const char* Name)
+AInputTouch* a_input__newTouch(const char* Name)
 {
-    AInputTouch* t = a_strhash_get(g_touchScreens, Name);
-
-    if(t) {
-        a_out__error("Touchscreen '%s' is already defined", Name);
-        return;
-    }
-
-    t = a_mem_malloc(sizeof(AInputTouch));
+    AInputTouch* t = a_mem_malloc(sizeof(AInputTouch));
 
     t->header.name = a_str_dup(Name);
     t->header.shortName = a_str_getSuffixLastFind(Name, '.');
@@ -205,7 +234,8 @@ void a_input__addTouch(const char* Name)
     t->motion = a_list_new();
 
     a_strhash_add(g_touchScreens, Name, t);
-    a_sdl__input_matchTouch(Name, t);
+
+    return t;
 }
 
 void a_input__addCallback(AInputCallback Callback)
@@ -382,6 +412,21 @@ void a_input__get(void)
     #endif
 }
 
+int a_input_numControllers(void)
+{
+    return a_list_size(g_controllers);
+}
+
+void a_input_setController(int Index)
+{
+    if(Index < 0 || Index >= a_list_size(g_controllers)) {
+        a_out__error("Controller %d not present", Index);
+        return;
+    }
+
+    g_activeController = a_list_get(g_controllers, Index);
+}
+
 AInput* a_input_new(const char* Names)
 {
     AInput* i = a_mem_malloc(sizeof(AInput));
@@ -455,21 +500,12 @@ AInput* a_input_new(const char* Names)
             A_LIST_ITERATE(umbrella->combos, AInputButtonCombo*, c) {
                 a_list_addLast(i->combos, c);
             }
+        } else if(g_activeController != NULL && a_str_startsWith(name, "controller.")) {
+            findInput(name, g_activeController->buttons, i, i->buttons);
         } else {
-            #define findNameInCollection(collection)                      \
-            ({                                                            \
-                AInputHeader* h = a_strhash_get(g_##collection, name);    \
-                if(h) {                                                   \
-                    a_list_addLast(i->collection, h);                     \
-                    if(i->name == NULL) {                                 \
-                        i->name = h->shortName;                           \
-                    }                                                     \
-                }                                                         \
-            })
-
-            findNameInCollection(buttons);
-            findNameInCollection(analogs);
-            findNameInCollection(touchScreens);
+            findInput(name, g_buttons, i, i->buttons);
+            findInput(name, g_analogs, i, i->analogs);
+            findInput(name, g_touchScreens, i, i->touchScreens);
         }
     }
 
