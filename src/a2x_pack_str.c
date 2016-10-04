@@ -132,6 +132,29 @@ int a_str_lastIndex(const char* String, char Character)
     return -1;
 }
 
+bool a_str_startsWith(const char* String, const char* Prefix)
+{
+    while(*String != '\0' && *Prefix != '\0') {
+        if(*String++ != *Prefix++) {
+            return false;
+        }
+    }
+
+    return *Prefix == '\0';
+}
+
+bool a_str_endsWith(const char* String, const char* Suffix)
+{
+    const size_t str_len = strlen(String);
+    const size_t suf_len = strlen(Suffix);
+
+    if(suf_len > str_len) {
+        return false;
+    }
+
+    return strcmp(String + str_len - suf_len, Suffix) == 0;
+}
+
 char* a_str_getPrefixFirstFind(const char* String, char Marker)
 {
     const int index = a_str_firstIndex(String, Marker);
