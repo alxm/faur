@@ -47,6 +47,9 @@ extern char* a_str_suffix(const char* String, int Length);
 extern int a_str_firstIndex(const char* String, char Character);
 extern int a_str_lastIndex(const char* String, char Character);
 
+extern bool a_str_startsWith(const char* String, const char* Prefix);
+extern bool a_str_endsWith(const char* String, const char* Suffix);
+
 extern char* a_str_getPrefixFirstFind(const char* String, char Marker);
 extern char* a_str_getPrefixLastFind(const char* String, char Marker);
 extern char* a_str_getSuffixFirstFind(const char* String, char Marker);

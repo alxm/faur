@@ -22,27 +22,41 @@
 #include <SDL.h>
 #include <SDL_mixer.h>
 
-#define A_MAX_BUTTON_CODES 4
-
-typedef struct ASdlPhysicalInput {
+typedef struct ASdlInputHeader {
     char* name;
-    APhysicalInput* input;
     int device_index;
-    char* device_name;
-    union {
-        struct {
-            int numCodes;
-            int codes[A_MAX_BUTTON_CODES]; // SDL button/key code
-        } button;
-        struct {
-            int xaxis_index;
-            int yaxis_index;
-        } analog;
-        struct {
-            //
-        } touch;
-    } u;
-} ASdlPhysicalInput;
+} ASdlInputHeader;
+
+typedef struct ASdlInputButton {
+    ASdlInputHeader header;
+    AInputButton* input;
+    int code; // SDL button/key code
+    bool lastStatePressed;
+} ASdlInputButton;
+
+typedef struct ASdlInputAnalog {
+    ASdlInputHeader header;
+    AInputAnalog* input;
+    int xaxis_index;
+    int yaxis_index;
+} ASdlInputAnalog;
+
+typedef struct ASdlInputTouch {
+    ASdlInputHeader header;
+    AInputTouch* input;
+} ASdlInputTouch;
+
+typedef struct ASdlInputController {
+    SDL_Joystick* joystick;
+    #if A_USE_LIB_SDL
+        uint8_t id;
+    #elif A_USE_LIB_SDL2
+        SDL_JoystickID id;
+    #endif
+    int numButtons;
+    int numHats;
+    AStrHash* buttons;
+} ASdlInputController;
 
 static uint32_t g_sdlFlags;
 
@@ -54,91 +68,82 @@ static uint32_t g_sdlFlags;
     static SDL_Texture* g_sdlTexture = NULL;
 #endif
 
-#define A_MAX_JOYSTICKS 8
-static int g_joysticksNum;
-static SDL_Joystick* g_joysticks[A_MAX_JOYSTICKS];
-
 static AStrHash* g_buttons;
 static AStrHash* g_analogs;
 static AStrHash* g_touchScreens;
+static AList* g_controllers;
+
+static void freeHeader(ASdlInputHeader* Header)
+{
+    free(Header->name);
+}
 
 static void addButton(const char* Name, int Code)
 {
-    ASdlPhysicalInput* b = a_strhash_get(g_buttons, Name);
+    ASdlInputButton* b = a_strhash_get(g_buttons, Name);
 
-    if(!b) {
-        b = a_mem_malloc(sizeof(ASdlPhysicalInput));
-
-        b->name = a_str_dup(Name);
-        b->u.button.numCodes = 1;
-        b->u.button.codes[0] = Code;
-
-        a_strhash_add(g_buttons, Name, b);
-    } else {
-        if(b->u.button.numCodes < A_MAX_BUTTON_CODES) {
-            b->u.button.codes[b->u.button.numCodes++] = Code;
-        } else {
-            a_out__error("Button '%s' has too many codes", Name);
-        }
-    }
-}
-
-#if !A_PLATFORM_GP2X && !A_PLATFORM_WIZ
-static void addAnalog(const char* Name, int DeviceIndex, char* DeviceName, int XAxisIndex, int YAxisIndex)
-{
-    if(DeviceIndex == -1 && DeviceName == NULL) {
-        a_out__error("Inputs must specify device index or name");
+    if(b) {
+        a_out__error("Button '%s' already defined", Name);
         return;
     }
 
-    ASdlPhysicalInput* a = a_strhash_get(g_analogs, Name);
+    b = a_mem_malloc(sizeof(ASdlInputButton));
 
-    if(a) {
-        a_out__error("Analog '%s' is already defined", Name);
-        return;
-    }
+    b->header.name = a_str_dup(Name);
+    b->code = Code;
+    b->lastStatePressed = false;
 
-    a = a_mem_malloc(sizeof(ASdlPhysicalInput));
-
-    a->name = a_str_dup(Name);
-    a->device_index = DeviceIndex;
-    a->device_name = DeviceName;
-    a->u.analog.xaxis_index = XAxisIndex;
-    a->u.analog.yaxis_index = YAxisIndex;
-
-    // check if we requested a specific device by Name
-    if(DeviceName) {
-        for(int j = g_joysticksNum; j--; ) {
-            #if A_USE_LIB_SDL
-                if(a_str_equal(DeviceName, SDL_JoystickName(j))) {
-                    a->device_index = j;
-                    break;
-                }
-            #elif A_USE_LIB_SDL2
-                if(a_str_equal(DeviceName, SDL_JoystickName(g_joysticks[j]))) {
-                    a->device_index = j;
-                    break;
-                }
-            #endif
-        }
-    }
-
-    a_strhash_add(g_analogs, Name, a);
+    a_strhash_add(g_buttons, Name, b);
 }
-#endif // !A_PLATFORM_GP2X && !A_PLATFORM_WIZ
+
+#if A_PLATFORM_CAANOO || A_PLATFORM_PANDORA
+    static void addAnalog(const char* Name, int DeviceIndex, char* DeviceName, int XAxisIndex, int YAxisIndex)
+    {
+        if(DeviceIndex == -1 && DeviceName == NULL) {
+            a_out__error("Inputs must specify device index or name");
+            return;
+        }
+
+        ASdlInputAnalog* a = a_strhash_get(g_analogs, Name);
+
+        if(a) {
+            a_out__error("Analog '%s' is already defined", Name);
+            return;
+        }
+
+        a = a_mem_malloc(sizeof(ASdlInputAnalog));
+
+        a->header.name = a_str_dup(Name);
+        a->header.device_index = DeviceIndex;
+        a->xaxis_index = XAxisIndex;
+        a->yaxis_index = YAxisIndex;
+
+        // check if we requested a specific device by Name
+        if(DeviceName) {
+            A_LIST_ITERATE(g_controllers, ASdlInputController*, c) {
+                if(a_str_equal(DeviceName, SDL_JoystickName(c->id))) {
+                    a->header.device_index = c->id;
+                    break;
+                }
+            }
+        }
+
+        a_strhash_add(g_analogs, Name, a);
+    }
+#endif
 
 static void addTouch(const char* Name)
 {
-    ASdlPhysicalInput* t = a_strhash_get(g_touchScreens, Name);
+    ASdlInputTouch* t = a_strhash_get(g_touchScreens, Name);
 
     if(t) {
         a_out__error("Touchscreen '%s' is already defined", Name);
         return;
     }
 
-    t = a_mem_malloc(sizeof(ASdlPhysicalInput));
+    t = a_mem_malloc(sizeof(ASdlInputTouch));
 
-    t->name = a_str_dup(Name);
+    t->header.name = a_str_dup(Name);
 
     a_strhash_add(g_touchScreens, Name, t);
 }
@@ -184,155 +189,214 @@ void a_sdl__init(void)
         #endif
     }
 
-    g_joysticksNum = a_math_min(A_MAX_JOYSTICKS, SDL_NumJoysticks());
-
-    if(g_joysticksNum > 0) {
-        a_out__message("Found %d joysticks", g_joysticksNum);
-        for(int j = g_joysticksNum; j--; ) {
-            g_joysticks[j] = SDL_JoystickOpen(j);
-        }
-    }
-
     g_buttons = a_strhash_new();
     g_analogs = a_strhash_new();
     g_touchScreens = a_strhash_new();
+    g_controllers = a_list_new();
+
+    const int joysticksNum = SDL_NumJoysticks();
+    a_out__message("Found %d controllers", joysticksNum);
+
+    for(int i = 0; i < joysticksNum; i++) {
+        SDL_Joystick* joystick = SDL_JoystickOpen(i);
+
+        if(joystick == NULL) {
+            a_out__error("SDL_JoystickOpen(%d) failed: %s",
+                         i,
+                         SDL_GetError());
+            continue;
+        }
+
+        #if A_USE_LIB_SDL2
+            SDL_JoystickID id = SDL_JoystickInstanceID(joystick);
+
+            if(id < 0) {
+                a_out__error("SDL_JoystickInstanceID(%d) failed: %s",
+                             i,
+                             SDL_GetError());
+                SDL_JoystickClose(joystick);
+                continue;
+            }
+        #endif
+
+        ASdlInputController* c = a_mem_malloc(sizeof(ASdlInputController));
+
+        c->joystick = joystick;
+        #if A_USE_LIB_SDL
+            c->id = i;
+        #elif A_USE_LIB_SDL2
+            c->id = id;
+        #endif
+        c->numButtons = SDL_JoystickNumButtons(c->joystick);
+        c->numHats = SDL_JoystickNumHats(c->joystick);
+        c->buttons = a_strhash_new();
+
+        a_list_addLast(g_controllers, c);
+
+        #if A_PLATFORM_GP2X || A_PLATFORM_WIZ || A_PLATFORM_CAANOO
+            if(i == 0) {
+                // Joystick 0 is the built-in controls on these platforms
+                continue;
+            }
+        #endif
+
+        AStrHash* savedButtons = g_buttons;
+        g_buttons = c->buttons;
+
+        for(int j = 0; j < c->numButtons; j++) {
+            char name[32];
+            snprintf(name, sizeof(name), "controller.b%d", j);
+            addButton(name, j);
+        }
+
+        if(c->numHats > 0) {
+            addButton("controller.up", -1);
+            addButton("controller.down", -1);
+            addButton("controller.left", -1);
+            addButton("controller.right", -1);
+        }
+
+        g_buttons = savedButtons;
+    }
 
     #if A_PLATFORM_GP2X
-        addButton("gp2x.Up", 0);
-        addButton("gp2x.Down", 4);
-        addButton("gp2x.Left", 2);
-        addButton("gp2x.Right", 6);
-        addButton("gp2x.UpLeft", 1);
-        addButton("gp2x.UpRight", 7);
-        addButton("gp2x.DownLeft", 3);
-        addButton("gp2x.DownRight", 5);
-        addButton("gp2x.L", 10);
-        addButton("gp2x.R", 11);
-        addButton("gp2x.A", 12);
-        addButton("gp2x.B", 13);
-        addButton("gp2x.X", 14);
-        addButton("gp2x.Y", 15);
-        addButton("gp2x.Start", 8);
-        addButton("gp2x.Select", 9);
-        addButton("gp2x.VolUp", 16);
-        addButton("gp2x.VolDown", 17);
-        addButton("gp2x.StickClick", 18);
-        addTouch("gp2x.Touch");
+        addButton("gp2x.up", 0);
+        addButton("gp2x.down", 4);
+        addButton("gp2x.left", 2);
+        addButton("gp2x.right", 6);
+        addButton("gp2x.upleft", 1);
+        addButton("gp2x.upright", 7);
+        addButton("gp2x.downleft", 3);
+        addButton("gp2x.downright", 5);
+        addButton("gp2x.l", 10);
+        addButton("gp2x.r", 11);
+        addButton("gp2x.a", 12);
+        addButton("gp2x.b", 13);
+        addButton("gp2x.x", 14);
+        addButton("gp2x.y", 15);
+        addButton("gp2x.start", 8);
+        addButton("gp2x.select", 9);
+        addButton("gp2x.volup", 16);
+        addButton("gp2x.voldown", 17);
+        addButton("gp2x.stickclick", 18);
+        addTouch("gp2x.touch");
     #elif A_PLATFORM_WIZ
-        addButton("wiz.Up", 0);
-        addButton("wiz.Down", 4);
-        addButton("wiz.Left", 2);
-        addButton("wiz.Right", 6);
-        addButton("wiz.UpLeft", 1);
-        addButton("wiz.UpRight", 7);
-        addButton("wiz.DownLeft", 3);
-        addButton("wiz.DownRight", 5);
-        addButton("wiz.L", 10);
-        addButton("wiz.R", 11);
-        addButton("wiz.A", 12);
-        addButton("wiz.B", 13);
-        addButton("wiz.X", 14);
-        addButton("wiz.Y", 15);
-        addButton("wiz.AMenu", 8);
-        addButton("wiz.Select", 9);
-        addButton("wiz.VolUp", 16);
-        addButton("wiz.VolDown", 17);
-        addTouch("wiz.Touch");
+        addButton("wiz.up", 0);
+        addButton("wiz.down", 4);
+        addButton("wiz.left", 2);
+        addButton("wiz.right", 6);
+        addButton("wiz.upleft", 1);
+        addButton("wiz.upright", 7);
+        addButton("wiz.downleft", 3);
+        addButton("wiz.downright", 5);
+        addButton("wiz.l", 10);
+        addButton("wiz.r", 11);
+        addButton("wiz.a", 12);
+        addButton("wiz.b", 13);
+        addButton("wiz.x", 14);
+        addButton("wiz.y", 15);
+        addButton("wiz.menu", 8);
+        addButton("wiz.select", 9);
+        addButton("wiz.volup", 16);
+        addButton("wiz.voldown", 17);
+        addTouch("wiz.touch");
     #elif A_PLATFORM_CAANOO
-        addButton("caanoo.Up", -1);
-        addButton("caanoo.Down", -1);
-        addButton("caanoo.Left", -1);
-        addButton("caanoo.Right", -1);
-        addButton("caanoo.A", 0);
-        addButton("caanoo.X", 1);
-        addButton("caanoo.B", 2);
-        addButton("caanoo.Y", 3);
-        addButton("caanoo.L", 4);
-        addButton("caanoo.R", 5);
-        addButton("caanoo.Home", 6);
-        addButton("caanoo.Hold", 7);
-        addButton("caanoo.I", 8);
-        addButton("caanoo.II", 9);
-        addAnalog("caanoo.Stick", 0, NULL, 0, 1);
-        addTouch("caanoo.Touch");
+        addButton("caanoo.up", -1);
+        addButton("caanoo.down", -1);
+        addButton("caanoo.left", -1);
+        addButton("caanoo.right", -1);
+        addButton("caanoo.l", 4);
+        addButton("caanoo.r", 5);
+        addButton("caanoo.a", 0);
+        addButton("caanoo.b", 2);
+        addButton("caanoo.x", 1);
+        addButton("caanoo.y", 3);
+        addButton("caanoo.home", 6);
+        addButton("caanoo.hold", 7);
+        addButton("caanoo.1", 8);
+        addButton("caanoo.2", 9);
+        addAnalog("caanoo.stick", 0, NULL, 0, 1);
+        addTouch("caanoo.touch");
     #elif A_PLATFORM_PANDORA
-        addButton("pandora.Up", SDLK_UP);
-        addButton("pandora.Down", SDLK_DOWN);
-        addButton("pandora.Left", SDLK_LEFT);
-        addButton("pandora.Right", SDLK_RIGHT);
-        addButton("pandora.L", SDLK_RSHIFT);
-        addButton("pandora.R", SDLK_RCTRL);
-        addButton("pandora.A", SDLK_HOME);
-        addButton("pandora.B", SDLK_END);
-        addButton("pandora.X", SDLK_PAGEDOWN);
-        addButton("pandora.Y", SDLK_PAGEUP);
-        addButton("pandora.Start", SDLK_LALT);
-        addButton("pandora.Select", SDLK_LCTRL);
-        addTouch("pandora.Touch");
-        addAnalog("pandora.Nub1", -1, "nub0", 0, 1);
-        addAnalog("pandora.Nub2", -1, "nub1", 0, 1);
+        addButton("pandora.up", SDLK_UP);
+        addButton("pandora.down", SDLK_DOWN);
+        addButton("pandora.left", SDLK_LEFT);
+        addButton("pandora.right", SDLK_RIGHT);
+        addButton("pandora.l", SDLK_RSHIFT);
+        addButton("pandora.r", SDLK_RCTRL);
+        addButton("pandora.a", SDLK_HOME);
+        addButton("pandora.b", SDLK_END);
+        addButton("pandora.x", SDLK_PAGEDOWN);
+        addButton("pandora.y", SDLK_PAGEUP);
+        addButton("pandora.start", SDLK_LALT);
+        addButton("pandora.select", SDLK_LCTRL);
+        addTouch("pandora.touch");
+        addAnalog("pandora.nub1", -1, "nub0", 0, 1);
+        addAnalog("pandora.nub2", -1, "nub1", 0, 1);
         addButton("pandora.m", SDLK_m);
         addButton("pandora.s", SDLK_s);
     #elif A_PLATFORM_LINUXPC || A_PLATFORM_MINGW
-        addButton("pc.Up", SDLK_i);
-        addButton("pc.Up", SDLK_UP);
-        addButton("pc.Down", SDLK_k);
-        addButton("pc.Down", SDLK_DOWN);
-        addButton("pc.Left", SDLK_j);
-        addButton("pc.Left", SDLK_LEFT);
-        addButton("pc.Right", SDLK_l);
-        addButton("pc.Right", SDLK_RIGHT);
+        addButton("pc.up", SDLK_UP);
+        addButton("pc.down", SDLK_DOWN);
+        addButton("pc.left", SDLK_LEFT);
+        addButton("pc.right", SDLK_RIGHT);
         addButton("pc.z", SDLK_z);
         addButton("pc.x", SDLK_x);
         addButton("pc.c", SDLK_c);
         addButton("pc.v", SDLK_v);
         addButton("pc.m", SDLK_m);
-        addButton("pc.Enter", SDLK_RETURN);
-        addButton("pc.Space", SDLK_SPACE);
-        addButton("pc.F1", SDLK_F1);
-        addButton("pc.F2", SDLK_F2);
-        addButton("pc.F3", SDLK_F3);
-        addButton("pc.F4", SDLK_F4);
-        addButton("pc.F5", SDLK_F5);
-        addButton("pc.F6", SDLK_F6);
-        addButton("pc.F7", SDLK_F7);
-        addButton("pc.F8", SDLK_F8);
-        addButton("pc.F9", SDLK_F9);
-        addButton("pc.F10", SDLK_F10);
-        addButton("pc.F11", SDLK_F11);
-        addButton("pc.F12", SDLK_F12);
+        addButton("pc.enter", SDLK_RETURN);
+        addButton("pc.space", SDLK_SPACE);
+        addButton("pc.f1", SDLK_F1);
+        addButton("pc.f2", SDLK_F2);
+        addButton("pc.f3", SDLK_F3);
+        addButton("pc.f4", SDLK_F4);
+        addButton("pc.f5", SDLK_F5);
+        addButton("pc.f6", SDLK_F6);
+        addButton("pc.f7", SDLK_F7);
+        addButton("pc.f8", SDLK_F8);
+        addButton("pc.f9", SDLK_F9);
+        addButton("pc.f10", SDLK_F10);
+        addButton("pc.f11", SDLK_F11);
+        addButton("pc.f12", SDLK_F12);
         addButton("pc.1", SDLK_1);
         addButton("pc.0", SDLK_0);
-        addTouch("pc.Mouse");
-        addAnalog("joypad.Analog1", 0, NULL, 0, 1);
-        addAnalog("joypad.Analog2", 0, NULL, 3, 4);
+        addTouch("pc.mouse");
     #endif
 }
 
 void a_sdl__uninit(void)
 {
-    A_STRHASH_ITERATE(g_buttons, ASdlPhysicalInput*, b) {
-        free(b->name);
+    A_STRHASH_ITERATE(g_buttons, ASdlInputButton*, b) {
+        freeHeader(&b->header);
         free(b);
     }
 
-    A_STRHASH_ITERATE(g_analogs, ASdlPhysicalInput*, a) {
-        free(a->name);
+    A_STRHASH_ITERATE(g_analogs, ASdlInputAnalog*, a) {
+        freeHeader(&a->header);
         free(a);
     }
 
-    A_STRHASH_ITERATE(g_touchScreens, ASdlPhysicalInput*, t) {
-        free(t->name);
+    A_STRHASH_ITERATE(g_touchScreens, ASdlInputTouch*, t) {
+        freeHeader(&t->header);
         free(t);
+    }
+
+    A_LIST_ITERATE(g_controllers, ASdlInputController*, c) {
+        A_STRHASH_ITERATE(c->buttons, ASdlInputButton*, b) {
+            freeHeader(&b->header);
+            free(b);
+        }
+
+        SDL_JoystickClose(c->joystick);
+        a_strhash_free(c->buttons);
+        free(c);
     }
 
     a_strhash_free(g_buttons);
     a_strhash_free(g_analogs);
     a_strhash_free(g_touchScreens);
-
-    for(int j = g_joysticksNum; j--; ) {
-        SDL_JoystickClose(g_joysticks[j]);
-    }
+    a_list_free(g_controllers);
 
     if(a_settings_getBool("sound.on")) {
         Mix_CloseAudio();
@@ -671,86 +735,176 @@ void a_sdl__delay(uint32_t Milis)
     SDL_Delay(Milis);
 }
 
-void a_sdl__input_matchButton(const char* Name, APhysicalInput* Button)
+void a_sdl__input_bind(void)
 {
-    ASdlPhysicalInput* b = a_strhash_get(g_buttons, Name);
-
-    if(b) {
-        b->input = Button;
-    } else {
-        a_out__error("No SDL binding for button %s", Name);
+    A_STRHASH_ITERATE(g_buttons, ASdlInputButton*, b) {
+        b->input = a_input__newButton(b->header.name);
     }
-}
 
-void a_sdl__input_matchAnalog(const char* Name, APhysicalInput* Analog)
-{
-    ASdlPhysicalInput* a = a_strhash_get(g_analogs, Name);
-
-    if(a) {
-        a->input = Analog;
-    } else {
-        a_out__error("No SDL binding for analog %s", Name);
+    A_STRHASH_ITERATE(g_analogs, ASdlInputAnalog*, a) {
+        a->input = a_input__newAnalog(a->header.name);
     }
-}
 
-void a_sdl__input_matchTouch(const char* Name, APhysicalInput* Touch)
-{
-    ASdlPhysicalInput* t = a_strhash_get(g_touchScreens, Name);
+    A_STRHASH_ITERATE(g_touchScreens, ASdlInputTouch*, t) {
+        t->input = a_input__newTouch(t->header.name);
+    }
 
-    if(t) {
-        t->input = Touch;
-    } else {
-        a_out__error("No SDL binding for touchscreen %s", Name);
+    A_LIST_ITERATE(g_controllers, ASdlInputController*, c) {
+        a_input__newController();
+
+        A_STRHASH_ITERATE(c->buttons, ASdlInputButton*, b) {
+            b->input = a_input__newButton(b->header.name);
+        }
     }
 }
 
 void a_sdl__input_get(void)
 {
     for(SDL_Event event; SDL_PollEvent(&event); ) {
-        enum {
-            A_ACTION_NONE,
-            A_ACTION_PRESSED,
-            A_ACTION_UNPRESSED,
-        } action = A_ACTION_NONE;
-
-        int code = -1;
-
         switch(event.type) {
             case SDL_QUIT: {
                 a_state_exit();
             } break;
 
             case SDL_KEYDOWN: {
-                action = A_ACTION_PRESSED;
-                code = event.key.keysym.sym;
-
-                if(code == SDLK_ESCAPE) {
+                if(event.key.keysym.sym == SDLK_ESCAPE) {
                     a_state_exit();
+                    break;
+                }
+
+                A_STRHASH_ITERATE(g_buttons, ASdlInputButton*, b) {
+                    if(b->code == event.key.keysym.sym) {
+                        a_input__button_setState(b->input, true);
+                    }
                 }
             } break;
 
             case SDL_KEYUP: {
-                action = A_ACTION_UNPRESSED;
-                code = event.key.keysym.sym;
+                A_STRHASH_ITERATE(g_buttons, ASdlInputButton*, b) {
+                    if(b->code == event.key.keysym.sym) {
+                        a_input__button_setState(b->input, false);
+                    }
+                }
             } break;
 
             case SDL_JOYBUTTONDOWN: {
-                action = A_ACTION_PRESSED;
-                code = event.jbutton.button;
+                A_STRHASH_ITERATE(g_buttons, ASdlInputButton*, b) {
+                    if(b->code == event.jbutton.button) {
+                        a_input__button_setState(b->input, true);
+                    }
+                }
+
+                A_LIST_ITERATE(g_controllers, ASdlInputController*, c) {
+                    if(c->id == event.jbutton.which) {
+                        A_STRHASH_ITERATE(c->buttons, ASdlInputButton*, b) {
+                            if(b->code == event.jbutton.button) {
+                                a_input__button_setState(b->input, true);
+                            }
+                        }
+
+                        break;
+                    }
+                }
             } break;
 
             case SDL_JOYBUTTONUP: {
-                action = A_ACTION_UNPRESSED;
-                code = event.jbutton.button;
+                A_STRHASH_ITERATE(g_buttons, ASdlInputButton*, b) {
+                    if(b->code == event.jbutton.button) {
+                        a_input__button_setState(b->input, false);
+                    }
+                }
+
+                A_LIST_ITERATE(g_controllers, ASdlInputController*, c) {
+                    if(c->id == event.jbutton.which) {
+                        A_STRHASH_ITERATE(c->buttons, ASdlInputButton*, b) {
+                            if(b->code == event.jbutton.button) {
+                                a_input__button_setState(b->input, false);
+                            }
+                        }
+
+                        break;
+                    }
+                }
+            } break;
+
+            case SDL_JOYHATMOTION: {
+                unsigned int state = 0;
+                #define UP_PRESSED    (1 << 0)
+                #define DOWN_PRESSED  (1 << 1)
+                #define LEFT_PRESSED  (1 << 2)
+                #define RIGHT_PRESSED (1 << 3)
+
+                switch(event.jhat.value) {
+                    case SDL_HAT_UP: {
+                        state = UP_PRESSED;
+                    } break;
+
+                    case SDL_HAT_DOWN: {
+                        state = DOWN_PRESSED;
+                    } break;
+
+                    case SDL_HAT_LEFT: {
+                        state = LEFT_PRESSED;
+                    } break;
+
+                    case SDL_HAT_RIGHT: {
+                        state = RIGHT_PRESSED;
+                    } break;
+
+                    case SDL_HAT_LEFTUP: {
+                        state = LEFT_PRESSED | UP_PRESSED;
+                    } break;
+
+                    case SDL_HAT_RIGHTUP: {
+                        state = RIGHT_PRESSED | UP_PRESSED;
+                    } break;
+
+                    case SDL_HAT_LEFTDOWN: {
+                        state = LEFT_PRESSED | DOWN_PRESSED;
+                    } break;
+
+                    case SDL_HAT_RIGHTDOWN: {
+                        state = RIGHT_PRESSED | DOWN_PRESSED;
+                    } break;
+                }
+
+                A_LIST_ITERATE(g_controllers, ASdlInputController*, c) {
+                    if(c->id == event.jhat.which) {
+                        ASdlInputButton* buttons[4] = {
+                            a_strhash_get(c->buttons, "controller.up"),
+                            a_strhash_get(c->buttons, "controller.down"),
+                            a_strhash_get(c->buttons, "controller.left"),
+                            a_strhash_get(c->buttons, "controller.right")
+                        };
+
+                        for(int i = 0; i < 4; i++, state >>= 1) {
+                            ASdlInputButton* b = buttons[i];
+
+                            if(state & 1) {
+                                if(!b->lastStatePressed) {
+                                    b->lastStatePressed = true;
+                                    a_input__button_setState(b->input, true);
+                                }
+                            } else {
+                                if(b->lastStatePressed) {
+                                    b->lastStatePressed = false;
+                                    a_input__button_setState(b->input, false);
+                                }
+                            }
+                        }
+
+                        break;
+                    }
+                }
             } break;
 
             case SDL_JOYAXISMOTION: {
-                A_STRHASH_ITERATE(g_analogs, ASdlPhysicalInput*, a) {
-                    if(a->device_index == event.jaxis.which) {
-                        if(event.jaxis.axis == a->u.analog.xaxis_index) {
+                A_STRHASH_ITERATE(g_analogs, ASdlInputAnalog*, a) {
+                    if(a->header.device_index == event.jaxis.which) {
+                        if(event.jaxis.axis == a->xaxis_index) {
                             a_input__analog_setXAxis(a->input,
                                                      event.jaxis.value);
-                        } else if(event.jaxis.axis == a->u.analog.yaxis_index) {
+                        } else if(event.jaxis.axis == a->yaxis_index) {
                             a_input__analog_setYAxis(a->input,
                                                      event.jaxis.value);
                         }
@@ -759,7 +913,7 @@ void a_sdl__input_get(void)
             } break;
 
             case SDL_MOUSEMOTION: {
-                A_STRHASH_ITERATE(g_touchScreens, ASdlPhysicalInput*, t) {
+                A_STRHASH_ITERATE(g_touchScreens, ASdlInputTouch*, t) {
                     a_input__touch_addMotion(t->input,
                                              event.button.x,
                                              event.button.y);
@@ -769,7 +923,7 @@ void a_sdl__input_get(void)
             case SDL_MOUSEBUTTONDOWN: {
                 switch(event.button.button) {
                     case SDL_BUTTON_LEFT: {
-                        A_STRHASH_ITERATE(g_touchScreens, ASdlPhysicalInput*, t) {
+                        A_STRHASH_ITERATE(g_touchScreens, ASdlInputTouch*, t) {
                             a_input__touch_setCoords(t->input,
                                                      event.button.x,
                                                      event.button.y,
@@ -782,7 +936,7 @@ void a_sdl__input_get(void)
             case SDL_MOUSEBUTTONUP: {
                 switch(event.button.button) {
                     case SDL_BUTTON_LEFT: {
-                        A_STRHASH_ITERATE(g_touchScreens, ASdlPhysicalInput*, t) {
+                        A_STRHASH_ITERATE(g_touchScreens, ASdlInputTouch*, t) {
                             a_input__touch_setCoords(t->input,
                                                      event.button.x,
                                                      event.button.y,
@@ -793,18 +947,6 @@ void a_sdl__input_get(void)
             } break;
 
             default:break;
-        }
-
-        if(action != A_ACTION_NONE) {
-            A_STRHASH_ITERATE(g_buttons, ASdlPhysicalInput*, b) {
-                for(int c = b->u.button.numCodes; c--; ) {
-                    if(b->u.button.codes[c] == code) {
-                        a_input__button_setState(b->input,
-                                                 action == A_ACTION_PRESSED);
-                        break;
-                    }
-                }
-            }
         }
     }
 }
