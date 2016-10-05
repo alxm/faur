@@ -463,13 +463,18 @@ void a_sdl__screen_set(void)
         a_screen__pixels = g_sdlScreen->pixels;
     #elif A_USE_LIB_SDL == 2
         int ret;
+        uint32_t windowFlags = SDL_WINDOW_RESIZABLE;
+
+        if(a_settings_getBool("video.fullscreen")) {
+            windowFlags |= SDL_WINDOW_FULLSCREEN;
+        }
 
         g_sdlWindow = SDL_CreateWindow("",
                                        SDL_WINDOWPOS_UNDEFINED,
                                        SDL_WINDOWPOS_UNDEFINED,
                                        a_screen__width,
                                        a_screen__height,
-                                       SDL_WINDOW_RESIZABLE);
+                                       windowFlags);
         if(g_sdlWindow == NULL) {
             a_out__fatal("SDL_CreateWindow failed: %s", SDL_GetError());
         }
