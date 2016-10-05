@@ -3,7 +3,7 @@ PLATFORM = mingw
 MINGW_BIN = $(MINGW_ROOT)/$(MINGW_ARCH)/bin
 
 CFLAGS = -DA_PLATFORM_MINGW=1 \
-         -DA_USE_LIB_SDL2=1 \
+         -DA_USE_LIB_SDL=2 \
          -O3 \
          $(shell $(MINGW_BIN)/sdl2-config --cflags)
 
