@@ -7,7 +7,10 @@ CFLAGS = -DA_PLATFORM_LINUXPC=1 \
          -O0 \
          -g
 
-ifdef USE_LIB_SDL
+# Uncomment to compile with SDL 1.2 instead of SDL 2
+#USE_LIB_SDL1=1
+
+ifdef USE_LIB_SDL1
     LIBS := $(shell sdl-config --libs) -lSDL_mixer $(LIBS)
     CFLAGS += $(shell sdl-config --cflags) -DA_USE_LIB_SDL=1
 else
