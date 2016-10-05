@@ -19,10 +19,16 @@
 
 #include "a2x_pack_fps.v.h"
 
-#define AVG_WINDOW_SECONDS 2
+#define AVERAGE_WINDOW_SEC 2
+#define FRAMESKIP_ADJUST_DELAY_SEC 2
+#define NO_SLEEP_RESET_SEC 20
+
+static uint32_t g_idealFps;
+static bool g_skipFrames;
+static int g_skipMax;
 
 static uint32_t g_fpsRate;
-static uint32_t g_milisPerFrame;
+static uint32_t g_msPerFrame;
 static ATimer* g_timer;
 
 static uint32_t g_fps;
@@ -36,131 +42,146 @@ static uint32_t* g_maxFpsBuffer;
 static uint32_t g_fpsBufferSum;
 static uint32_t g_maxFpsBufferSum;
 
-static bool g_skipFrames;
-static int g_skipMax;
 static int g_skipNum;
 static int g_skipCounter;
 static uint32_t g_fpsThresholdFast;
 static uint32_t g_fpsThresholdSlow;
-static AFrameTimer* g_fastTimer;
-static AFrameTimer* g_slowTimer;
+static ATimer* g_skipAdjustTimer;
+static ATimer* g_noSleepTimer;
+static bool g_canSleep;
 
 void a_fps__init(void)
 {
-    g_fpsRate = a_settings_getInt("video.fps");
-    g_milisPerFrame = 1000 / g_fpsRate;
-    g_timer = a_timer_new(g_milisPerFrame);
-    g_frameCounter = 0;
+    g_idealFps = a_settings_getInt("video.fps");
+    g_skipFrames = a_settings_getBool("video.fps.skip");
+    g_skipMax = a_settings_getInt("video.fps.skip.max");
 
+    g_timer = NULL;
+    g_frameCounter = 0;
     g_bufferHead = 0;
-    g_bufferLen = g_fpsRate * AVG_WINDOW_SECONDS;
+    g_bufferLen = g_idealFps * AVERAGE_WINDOW_SEC;
     g_fpsBuffer = a_mem_malloc(g_bufferLen * sizeof(uint32_t));
     g_maxFpsBuffer = a_mem_malloc(g_bufferLen * sizeof(uint32_t));
 
-    g_skipFrames = a_settings_getBool("video.fps.skip");
-    g_skipMax = a_settings_getInt("video.fps.skip.max");
-    g_fpsThresholdFast = g_fpsRate * 0.95;
-    g_fpsThresholdSlow = g_fpsRate * 0.90;
-    g_fastTimer = a_frametimer_new(g_fpsRate * AVG_WINDOW_SECONDS);
-    g_slowTimer = a_frametimer_new(g_fpsRate * AVG_WINDOW_SECONDS);
+    g_skipAdjustTimer = a_timer_new(FRAMESKIP_ADJUST_DELAY_SEC * 1000);
+    a_timer_start(g_skipAdjustTimer);
 
-    a_fps__reset();
+    g_noSleepTimer = a_timer_new(NO_SLEEP_RESET_SEC * 1000);
+    g_canSleep = true;
+
+    a_fps__reset(0);
 }
 
 void a_fps__uninit(void)
 {
     a_timer_free(g_timer);
-    a_frametimer_free(g_fastTimer);
-    a_frametimer_free(g_slowTimer);
+    a_timer_free(g_skipAdjustTimer);
+    a_timer_free(g_noSleepTimer);
 
     free(g_fpsBuffer);
     free(g_maxFpsBuffer);
 }
 
-void a_fps__reset(void)
+void a_fps__reset(int NumFramesToSkip)
 {
+    g_skipNum = NumFramesToSkip;
+    g_skipCounter = 0;
+
+    g_fpsRate = g_idealFps / (1 + g_skipNum);
+    g_msPerFrame = 1000 / g_fpsRate;
+
     g_fps = g_fpsRate;
     g_maxFps = g_fpsRate;
 
     for(int i = g_bufferLen; i--; ) {
-        g_fpsBuffer[i] = g_milisPerFrame;
-        g_maxFpsBuffer[i] = g_milisPerFrame;
+        g_fpsBuffer[i] = g_fpsRate;
+        g_maxFpsBuffer[i] = g_fpsRate;
     }
 
-    g_fpsBufferSum = g_milisPerFrame * g_bufferLen;
-    g_maxFpsBufferSum = g_milisPerFrame * g_bufferLen;
+    g_fpsBufferSum = g_fpsRate * g_bufferLen;
+    g_maxFpsBufferSum = g_fpsRate * g_bufferLen;
 
-    g_skipNum = 0;
-    g_skipCounter = 0;
+    if(g_skipNum > 0) {
+        g_fpsThresholdFast = g_idealFps / g_skipNum;
+    }
 
-    a_frametimer_stop(g_fastTimer);
-    a_frametimer_stop(g_slowTimer);
+    g_fpsThresholdSlow = g_fpsRate - 2;
+
+    if(g_timer == NULL) {
+        g_timer = a_timer_new(g_msPerFrame);
+    } else {
+        a_timer_setPeriod(g_timer, g_msPerFrame);
+    }
+
     a_timer_start(g_timer);
 }
 
 void a_fps_frame(void)
 {
-    if(g_skipCounter == g_skipNum) {
+    if(a_fps_notSkipped()) {
         a_screen_show();
-    }
 
-    const bool done = a_timer_check(g_timer);
+        const bool done = a_timer_expired(g_timer);
+        const uint32_t elapsedMs = a_timer_elapsed(g_timer);
 
-    g_maxFpsBufferSum -= g_maxFpsBuffer[g_bufferHead];
-    g_maxFpsBuffer[g_bufferHead] = a_timer_diff(g_timer);
-    g_maxFpsBufferSum += g_maxFpsBuffer[g_bufferHead];
-    g_maxFps = 1000 / ((float)g_maxFpsBufferSum / g_bufferLen);
-
-    if(!done) {
-        while(!a_timer_check(g_timer)) {
-            const uint32_t waitMilis = g_milisPerFrame - a_timer_diff(g_timer);
-
-            #if A_PLATFORM_GP2X
-                // GP2X timer granularity is too coarse
-                if(waitMilis >= 10) {
-                    a_time_waitMilis(10);
-                }
-            #else
-                a_time_waitMilis(waitMilis);
-            #endif
+        if(elapsedMs > 0) {
+            g_maxFpsBufferSum -= g_maxFpsBuffer[g_bufferHead];
+            g_maxFpsBuffer[g_bufferHead] = 1000 / elapsedMs;
+            g_maxFpsBufferSum += g_maxFpsBuffer[g_bufferHead];
+            g_maxFps = g_maxFpsBufferSum / g_bufferLen;
         }
-    }
 
-    g_fpsBufferSum -= g_fpsBuffer[g_bufferHead];
-    g_fpsBuffer[g_bufferHead] = a_timer_diff(g_timer);
-    g_fpsBufferSum += g_fpsBuffer[g_bufferHead];
-    g_fps = 1000 / ((float)g_fpsBufferSum / g_bufferLen);
-    g_bufferHead = (g_bufferHead + 1) % g_bufferLen;
+        if(!done) {
+            while(!a_timer_expired(g_timer)) {
+                if(!g_canSleep) {
+                    continue;
+                }
+
+                const uint32_t waitMs = g_msPerFrame - a_timer_elapsed(g_timer);
+
+                #if A_PLATFORM_GP2X
+                    // GP2X timer granularity is too coarse
+                    if(waitMs >= 10) {
+                        a_time_waitMs(10);
+                    }
+                #else
+                    a_time_waitMs(waitMs);
+                #endif
+            }
+        }
+
+        g_fpsBufferSum -= g_fpsBuffer[g_bufferHead];
+        g_fpsBuffer[g_bufferHead] = 1000 / a_timer_elapsed(g_timer);
+        g_fpsBufferSum += g_fpsBuffer[g_bufferHead];
+        g_fps = g_fpsBufferSum / g_bufferLen;
+
+        g_bufferHead = (g_bufferHead + 1) % g_bufferLen;
+    }
 
     a_input__get();
     g_frameCounter++;
 
     if(g_skipFrames) {
-        if(g_fps < g_fpsThresholdSlow && g_skipNum < g_skipMax) {
-            a_frametimer_stop(g_fastTimer);
+        if(a_fps_notSkipped() && a_timer_expired(g_skipAdjustTimer)) {
+            int newFrameSkip = -1;
 
-            if(!a_frametimer_running(g_slowTimer)
-                || a_frametimer_check(g_slowTimer)) {
-
-                g_skipNum++;
-                g_skipCounter = 0;
+            if(g_maxFps <= g_fpsThresholdSlow && g_skipNum < g_skipMax) {
+                newFrameSkip = g_skipNum + 1;
+            } else if(g_maxFps >= g_fpsThresholdFast && g_skipNum > 0) {
+                newFrameSkip = g_skipNum - 1;
             }
 
-            if(!a_frametimer_running(g_slowTimer)) {
-                a_frametimer_start(g_slowTimer);
-            }
-        } else if(g_fps > g_fpsThresholdFast && g_skipNum > 0) {
-            a_frametimer_stop(g_slowTimer);
+            if(newFrameSkip != -1) {
+                if(newFrameSkip == 0) {
+                    a_timer_start(g_noSleepTimer);
+                } else {
+                    a_timer_stop(g_noSleepTimer);
+                }
 
-            if(!a_frametimer_running(g_fastTimer)
-                || a_frametimer_check(g_fastTimer)) {
-
-                g_skipNum--;
-                g_skipCounter = 0;
-            }
-
-            if(!a_frametimer_running(g_fastTimer)) {
-                a_frametimer_start(g_fastTimer);
+                g_canSleep = false;
+                a_fps__reset(newFrameSkip);
+            } else if(!g_canSleep && a_timer_expired(g_noSleepTimer)) {
+                g_canSleep = true;
             }
         }
 

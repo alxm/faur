@@ -19,24 +19,24 @@
 
 #include "a2x_pack_time.v.h"
 
-uint32_t a_time_getMilis(void)
+uint32_t a_time_getMs(void)
 {
     #if A_PLATFORM_WIZ || A_PLATFORM_CAANOO
-        return a_hw__getMilis();
+        return a_hw__getMs();
     #else
         return a_sdl__getTicks();
     #endif
 }
 
-void a_time_waitMilis(uint32_t Milis)
+void a_time_waitMs(uint32_t Ms)
 {
     #if A_PLATFORM_WIZ || A_PLATFORM_CAANOO
-        const uint32_t start = a_hw__getMilis();
+        const uint32_t start = a_hw__getMs();
 
-        while(a_hw__getMilis() - start < Milis) {
+        while(a_hw__getMs() - start < Ms) {
             continue;
         }
     #else
-        a_sdl__delay(Milis);
+        a_sdl__delay(Ms);
     #endif
 }

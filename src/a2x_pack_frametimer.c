@@ -59,7 +59,7 @@ bool a_frametimer_running(AFrameTimer* Timer)
     return Timer->running;
 }
 
-bool a_frametimer_check(AFrameTimer* Timer)
+bool a_frametimer_expired(AFrameTimer* Timer)
 {
     if(Timer->running) {
         Timer->diff = a_fps_getCounter() - Timer->start;
@@ -73,7 +73,7 @@ bool a_frametimer_check(AFrameTimer* Timer)
     return false;
 }
 
-uint32_t a_frametimer_diff(AFrameTimer* Timer)
+uint32_t a_frametimer_elapsed(AFrameTimer* Timer)
 {
     return Timer->diff;
 }

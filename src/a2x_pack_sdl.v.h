@@ -46,7 +46,7 @@ extern void a_sdl__sfx_setVolume(void* Sfx, int Volume);
 extern void a_sdl__sfx_play(void* Sfx);
 
 extern uint32_t a_sdl__getTicks(void);
-extern void a_sdl__delay(uint32_t Milis);
+extern void a_sdl__delay(uint32_t Ms);
 
 extern void a_sdl__input_bind(void);
 extern void a_sdl__input_get(void);

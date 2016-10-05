@@ -29,5 +29,5 @@ extern void a_frametimer_free(AFrameTimer* Timer);
 extern void a_frametimer_start(AFrameTimer* Timer);
 extern void a_frametimer_stop(AFrameTimer* Timer);
 extern bool a_frametimer_running(AFrameTimer* Timer);
-extern bool a_frametimer_check(AFrameTimer* Timer);
-extern uint32_t a_frametimer_diff(AFrameTimer* Timer);
+extern bool a_frametimer_expired(AFrameTimer* Timer);
+extern uint32_t a_frametimer_elapsed(AFrameTimer* Timer);

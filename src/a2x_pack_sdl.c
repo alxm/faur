@@ -730,9 +730,9 @@ uint32_t a_sdl__getTicks(void)
     return SDL_GetTicks();
 }
 
-void a_sdl__delay(uint32_t Milis)
+void a_sdl__delay(uint32_t Ms)
 {
-    SDL_Delay(Milis);
+    SDL_Delay(Ms);
 }
 
 void a_sdl__input_bind(void)

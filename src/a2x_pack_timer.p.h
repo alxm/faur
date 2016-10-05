@@ -23,11 +23,12 @@
 
 typedef struct ATimer ATimer;
 
-extern ATimer* a_timer_new(uint32_t MilisPeriod);
+extern ATimer* a_timer_new(uint32_t Ms);
 extern void a_timer_free(ATimer* Timer);
 
 extern void a_timer_start(ATimer* Timer);
 extern void a_timer_stop(ATimer* Timer);
 extern bool a_timer_running(ATimer* Timer);
-extern bool a_timer_check(ATimer* Timer);
-extern uint32_t a_timer_diff(ATimer* Timer);
+extern bool a_timer_expired(ATimer* Timer);
+extern uint32_t a_timer_elapsed(ATimer* Timer);
+extern void a_timer_setPeriod(ATimer* Timer, uint32_t Ms);
