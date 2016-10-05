@@ -48,9 +48,9 @@ typedef struct ASdlInputTouch {
 
 typedef struct ASdlInputController {
     SDL_Joystick* joystick;
-    #if A_USE_LIB_SDL
+    #if A_USE_LIB_SDL == 1
         uint8_t id;
-    #elif A_USE_LIB_SDL2
+    #elif A_USE_LIB_SDL == 2
         SDL_JoystickID id;
     #endif
     int numButtons;
@@ -60,9 +60,9 @@ typedef struct ASdlInputController {
 
 static uint32_t g_sdlFlags;
 
-#if A_USE_LIB_SDL
+#if A_USE_LIB_SDL == 1
     static SDL_Surface* g_sdlScreen = NULL;
-#elif A_USE_LIB_SDL2
+#elif A_USE_LIB_SDL == 2
     static SDL_Window* g_sdlWindow = NULL;
     static SDL_Renderer* g_sdlRenderer = NULL;
     static SDL_Texture* g_sdlTexture = NULL;
@@ -207,7 +207,7 @@ void a_sdl__init(void)
             continue;
         }
 
-        #if A_USE_LIB_SDL2
+        #if A_USE_LIB_SDL == 2
             SDL_JoystickID id = SDL_JoystickInstanceID(joystick);
 
             if(id < 0) {
@@ -222,9 +222,9 @@ void a_sdl__init(void)
         ASdlInputController* c = a_mem_malloc(sizeof(ASdlInputController));
 
         c->joystick = joystick;
-        #if A_USE_LIB_SDL
+        #if A_USE_LIB_SDL == 1
             c->id = i;
-        #elif A_USE_LIB_SDL2
+        #elif A_USE_LIB_SDL == 2
             c->id = id;
         #endif
         c->numButtons = SDL_JoystickNumButtons(c->joystick);
@@ -403,13 +403,13 @@ void a_sdl__uninit(void)
     }
 
     if(a_settings_getBool("video.window")) {
-        #if A_USE_LIB_SDL
+        #if A_USE_LIB_SDL == 1
             if(!a_settings_getBool("video.doubleBuffer")) {
                 if(SDL_MUSTLOCK(g_sdlScreen)) {
                     SDL_UnlockSurface(g_sdlScreen);
                 }
             }
-        #elif A_USE_LIB_SDL2
+        #elif A_USE_LIB_SDL == 2
             SDL_DestroyTexture(g_sdlTexture);
             SDL_DestroyRenderer(g_sdlRenderer);
             SDL_DestroyWindow(g_sdlWindow);
@@ -422,7 +422,7 @@ void a_sdl__uninit(void)
 
 void a_sdl__screen_set(void)
 {
-    #if A_USE_LIB_SDL
+    #if A_USE_LIB_SDL == 1
         int bpp = 0;
         uint32_t videoFlags = SDL_SWSURFACE;
 
@@ -461,7 +461,7 @@ void a_sdl__screen_set(void)
         }
 
         a_screen__pixels = g_sdlScreen->pixels;
-    #elif A_USE_LIB_SDL2
+    #elif A_USE_LIB_SDL == 2
         int ret;
 
         g_sdlWindow = SDL_CreateWindow("",
@@ -525,9 +525,9 @@ void a_sdl__screen_set(void)
             a_settings_getString("app.title"),
             a_settings_getString("app.version"));
 
-        #if A_USE_LIB_SDL
+        #if A_USE_LIB_SDL == 1
             SDL_WM_SetCaption(caption, NULL);
-        #elif A_USE_LIB_SDL2
+        #elif A_USE_LIB_SDL == 2
             SDL_SetWindowTitle(g_sdlWindow, caption);
         #endif
     #else
@@ -537,7 +537,7 @@ void a_sdl__screen_set(void)
 
 void a_sdl__screen_show(void)
 {
-    #if A_USE_LIB_SDL
+    #if A_USE_LIB_SDL == 1
         #if A_PLATFORM_WIZ
             if(a_settings_getBool("video.fixWizTearing")) { // also video.doubleBuffer
                 #define A_WIDTH 320
@@ -604,7 +604,7 @@ void a_sdl__screen_show(void)
             a_screen__pixels = g_sdlScreen->pixels;
             a_screen__savedPixels = a_screen__pixels;
         }
-    #elif A_USE_LIB_SDL2
+    #elif A_USE_LIB_SDL == 2
         int ret;
 
         ret = SDL_RenderClear(g_sdlRenderer);

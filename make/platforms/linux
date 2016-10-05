@@ -12,5 +12,5 @@ ifdef USE_LIB_SDL
     CFLAGS += $(shell sdl-config --cflags) -DA_USE_LIB_SDL=1
 else
     LIBS := $(shell sdl2-config --libs) -lSDL2_mixer $(LIBS)
-    CFLAGS += $(shell sdl2-config --cflags) -DA_USE_LIB_SDL2=1
+    CFLAGS += $(shell sdl2-config --cflags) -DA_USE_LIB_SDL=2
 endif

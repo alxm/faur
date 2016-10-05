@@ -40,10 +40,10 @@
     #define A_PIXEL_GREEN_BITS 8
     #define A_PIXEL_BLUE_BITS  8
 
-    #if A_USE_LIB_SDL
+    #if A_USE_LIB_SDL == 1
         // XRGB8888
         #define A_PIXEL_PAD_BITS 0
-    #elif A_USE_LIB_SDL2
+    #elif A_USE_LIB_SDL == 2
         // RGBX8888
         #define A_PIXEL_PAD_BITS 8
     #endif
