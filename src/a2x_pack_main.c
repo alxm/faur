@@ -60,6 +60,7 @@ int main(int Argc, const char** Argv)
     a_fix__init();
     a_font__init();
     a_state__init();
+    a_entity__init();
     a_fade__init();
 
     a_console__init2();
@@ -70,6 +71,7 @@ int main(int Argc, const char** Argv)
     a_out__message("A_MAIN closed");
 
     a_fade__uninit();
+    a_entity__uninit();
     a_state__uninit();
     a_sound__uninit();
     a_input__uninit();
