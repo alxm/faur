@@ -8,32 +8,37 @@ Install
 
 ### Download & Dependencies
 
-    $ git clone git://github.com/alxm/a2x.git a2x
-    $ apt install build-essentials python3 libpng12-dev libsdl2-dev libsdl2-mixer-dev
+```sh
+$ git clone git://github.com/alxm/a2x.git a2x
+$ apt install build-essentials python3 libpng12-dev libsdl2-dev libsdl2-mixer-dev
+```
+
+Add `a2x/bin/` to your `$PATH` variable, or prepend it to all calls to `a2x_*` scripts below.
 
 ### Build
 
-1. Add `a2x/bin` to your `$PATH` variable.
-2. Run `a2x_install` to build a2x for desktop Linux.
+```sh
+$ a2x_install
+```
 
-Run `a2x_install clean` to delete all compiled and generated files from the step above.
+### Hello World Project
 
-Simple Project
---------------
+```sh
+$ a2x_new hello
+$ cd hello/make/
+$ make run
+```
 
-    $ a2x_new simple
-    $ cd simple/make/ && make run
-
-`a2x_new` generated some bare-bones code:
+`a2x_new` generated some bare-bones code in `hello/src/main.c`:
 
 ```C
 #include <a2x.h>
 
 A_SETUP
 {
-    a_settings_set("app.title", "simple");
+    a_settings_set("app.title", "hello");
     a_settings_set("app.version", "1.0");
-    a_settings_set("app.author", "alex");
+    a_settings_set("app.author", "<your username>");
     a_settings_set("app.output.on", "yes");
 }
 
@@ -43,8 +48,7 @@ A_MAIN
 }
 ```
 
-Cross-compile for Other Platforms
----------------------------------
+### Cross-Compile for Other Platforms
 
 I originally wrote a2x for my GP2X games. The following targets are also supported now:
 
@@ -53,11 +57,13 @@ I originally wrote a2x for my GP2X games. The following targets are also support
 * Open2x SDK (GP2X, Wiz)
 * Pandora SDK (Open Pandora)
 
-### Setup
+Edit `a2x/cfg/sdk.config` with your SDK paths, then:
 
-* Edit `a2x/cfg/sdk.config` with your SDK paths.
-* Run `a2x_install` again to pick up your `sdk.config` changes.
-* `cd a2x/make/a2x && make -f Makefile.X` to build a2x for platform `X`.
+```sh
+$ a2x_install
+$ cd a2x/make/a2x
+$ make -f Makefile.gp2x
+```
 
 License
 -------
