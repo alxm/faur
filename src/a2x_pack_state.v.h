@@ -21,9 +21,10 @@
 
 #include "a2x_pack_state.p.h"
 
+#include "a2x_pack_entity.v.h"
 #include "a2x_pack_fps.v.h"
-#include "a2x_pack_strhash.v.h"
 #include "a2x_pack_list.v.h"
+#include "a2x_pack_strhash.v.h"
 
 extern void a_state__init(void);
 extern void a_state__uninit(void);

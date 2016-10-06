@@ -19,42 +19,159 @@
 
 #include "a2x_pack_entity.v.h"
 
+struct AEntity {
+    AStrHash* components;
+};
+
+struct AComponentHeader {
+    size_t size;
+    AComponentTick tick;
+    AComponentDraw draw;
+    AEntity* parent;
+    AListNode* collectionNode;
+};
+
+static AStrHash* g_prototypes;
+static AList* g_stack;
+
 void a_entity__init(void)
 {
-    //
+    g_prototypes = a_strhash_new();
+    g_stack = a_list_new();
 }
 
 void a_entity__uninit(void)
 {
-    //
+    A_STRHASH_ITERATE(g_prototypes, AComponentHeader*, prototype) {
+        free(prototype);
+    }
+
+    a_strhash_free(g_prototypes);
+    a_list_free(g_stack);
 }
 
 void a_component_new(const char* Name, size_t Size, AComponentTick Tick, AComponentDraw Draw)
 {
-    //
+    if(a_strhash_contains(g_prototypes, Name)) {
+        a_out__fatal("Component '%s' was already defined");
+    }
+
+    AComponentHeader* h = a_mem_malloc(sizeof(AComponentHeader));
+
+    h->size = sizeof(AComponentHeader) + Size;
+    h->tick = Tick;
+    h->draw = Draw;
+    h->parent = NULL;
+    h->collectionNode = NULL;
+
+    a_strhash_add(g_prototypes, Name, h);
 }
 
 AEntity* a_component_getEntity(void* Component)
 {
-    return NULL;
+    AComponentHeader* header = (AComponentHeader*)
+                               ((uint8_t*)Component - sizeof(AComponentHeader));
+    return header->parent;
 }
 
 AEntity* a_entity_new(void)
 {
-    return NULL;
+    AEntity* e = a_mem_malloc(sizeof(AEntity));
+
+    e->components = a_strhash_new();
+
+    return e;
 }
 
 void a_entity_free(AEntity* Entity)
 {
-    //
+    A_STRHASH_ITERATE(Entity->components, AComponentHeader*, component) {
+        if(component->collectionNode) {
+            a_list_removeNode(component->collectionNode);
+        }
+
+        free(component);
+    }
+
+    a_strhash_free(Entity->components);
+    free(Entity);
 }
 
 void a_entity_addComponent(AEntity* Entity, const char* Component)
 {
-    //
+    const AComponentHeader* proto = a_strhash_get(g_prototypes, Component);
+
+    if(proto == NULL) {
+        a_out__fatal("Component '%s' is undefined");
+    }
+
+    AComponentHeader* c = a_mem_malloc(proto->size);
+
+    *c = *proto;
+    c->parent = Entity;
+
+    a_strhash_add(Entity->components, Component, c);
+
+    AStrHash* collection = a_list_peek(g_stack);
+
+    if(collection != NULL) {
+        AList* components = a_strhash_get(collection, Component);
+
+        if(components == NULL) {
+            components = a_list_new();
+            a_strhash_add(collection, Component, components);
+        }
+
+        c->collectionNode = a_list_addLast(components, c);
+    }
 }
 
 void* a_entity_getComponent(AEntity* Entity, const char* Component)
 {
-    return NULL;
+    AComponentHeader* header = a_strhash_get(Entity->components, Component);
+
+    if(header == NULL) {
+        return NULL;
+    }
+
+    return (uint8_t*)header + sizeof(AComponentHeader);
+}
+
+void a_entity__pushCollection(void)
+{
+    a_list_push(g_stack, a_strhash_new());
+}
+
+void a_entity__popCollection(void)
+{
+    AStrHash* collection = a_list_pop(g_stack);
+
+    A_STRHASH_ITERATE(collection, AList*, components) {
+        a_list_free(components);
+    }
+
+    a_strhash_free(collection);
+}
+
+void a_entity__handleComponents(void)
+{
+    AStrHash* collection = a_list_peek(g_stack);
+
+    A_STRHASH_ITERATE(collection, AList*, components) {
+        A_LIST_ITERATE(components, AComponentHeader*, c) {
+            if(c->tick) {
+                c->tick((uint8_t*)c + sizeof(AComponentHeader));
+            }
+        }
+    }
+
+    if(a_fps_notSkipped()) {
+        A_STRHASH_ITERATE(collection, AList*, components) {
+            A_LIST_ITERATE(components, AComponentHeader*, c) {
+                if(c->draw) {
+                    c->draw((uint8_t*)c + sizeof(AComponentHeader));
+                }
+            }
+        }
+    }
 }

@@ -21,5 +21,14 @@
 
 #include "a2x_pack_entity.p.h"
 
+typedef struct AComponentHeader AComponentHeader;
+
+#include "a2x_pack_strhash.v.h"
+
 extern void a_entity__init(void);
 extern void a_entity__uninit(void);
+
+extern void a_entity__pushCollection(void);
+extern void a_entity__popCollection(void);
+
+extern void a_entity__handleComponents(void);

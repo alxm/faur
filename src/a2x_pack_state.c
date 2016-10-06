@@ -135,6 +135,7 @@ static void state_handle(void)
         case A_STATE_ACTION_PUSH: {
             AStateInstance* s = state_new(pending->name);
             a_list_push(g_stack, s);
+            a_entity__pushCollection();
         } break;
 
         case A_STATE_ACTION_POP: {
@@ -334,6 +335,7 @@ bool a_state__nothingPending(void)
         first = false;
         a_fps__reset(0);
     } else {
+        a_entity__handleComponents();
         a_fps_frame();
     }
 
@@ -369,6 +371,7 @@ void a_state__run(void)
         if(s->stage == A_STATE_STAGE_FREE) {
             state_free(s);
             a_list_pop(g_stack);
+            a_entity__popCollection();
         }
 
         state_handle();
