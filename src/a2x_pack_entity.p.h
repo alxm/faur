@@ -25,7 +25,10 @@ typedef struct AEntity AEntity;
 typedef void (*AComponentTick)(void* Self);
 typedef void (*AComponentDraw)(void* Self);
 
-extern void a_component_new(const char* Name, size_t Size, AComponentTick Tick, AComponentDraw Draw);
+extern void a_component_declare(const char* Name, size_t Size);
+extern void a_component_setTick(const char* Name, AComponentTick Tick);
+extern void a_component_setDraw(const char* Name, AComponentDraw Draw);
+
 extern AEntity* a_component_getEntity(void* Component);
 
 extern AEntity* a_entity_new(void);

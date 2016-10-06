@@ -50,7 +50,7 @@ void a_entity__uninit(void)
     a_list_free(g_stack);
 }
 
-void a_component_new(const char* Name, size_t Size, AComponentTick Tick, AComponentDraw Draw)
+void a_component_declare(const char* Name, size_t Size)
 {
     if(a_strhash_contains(g_prototypes, Name)) {
         a_out__fatal("Component '%s' was already defined");
@@ -59,12 +59,34 @@ void a_component_new(const char* Name, size_t Size, AComponentTick Tick, ACompon
     AComponentHeader* h = a_mem_malloc(sizeof(AComponentHeader));
 
     h->size = sizeof(AComponentHeader) + Size;
-    h->tick = Tick;
-    h->draw = Draw;
+    h->tick = NULL;
+    h->draw = NULL;
     h->parent = NULL;
     h->collectionNode = NULL;
 
     a_strhash_add(g_prototypes, Name, h);
+}
+
+void a_component_setTick(const char* Name, AComponentTick Tick)
+{
+    AComponentHeader* h = a_strhash_get(g_prototypes, Name);
+
+    if(h == NULL) {
+        a_out__fatal("Undeclared component '%s'", Name);
+    }
+
+    h->tick = Tick;
+}
+
+void a_component_setDraw(const char* Name, AComponentDraw Draw)
+{
+    AComponentHeader* h = a_strhash_get(g_prototypes, Name);
+
+    if(h == NULL) {
+        a_out__fatal("Undeclared component '%s'", Name);
+    }
+
+    h->draw = Draw;
 }
 
 AEntity* a_component_getEntity(void* Component)
@@ -102,7 +124,7 @@ void a_entity_addComponent(AEntity* Entity, const char* Component)
     const AComponentHeader* proto = a_strhash_get(g_prototypes, Component);
 
     if(proto == NULL) {
-        a_out__fatal("Component '%s' is undefined");
+        a_out__fatal("Undeclared component '%s'");
     }
 
     AComponentHeader* c = a_mem_malloc(proto->size);
