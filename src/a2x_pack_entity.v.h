@@ -1,5 +1,5 @@
 /*
-    Copyright 2010 Alex Margarit
+    Copyright 2016 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -19,14 +19,14 @@
 
 #pragma once
 
-#include "a2x_pack_state.p.h"
+#include "a2x_pack_entity.p.h"
 
-#include "a2x_pack_entity.v.h"
-#include "a2x_pack_fps.v.h"
-#include "a2x_pack_list.v.h"
+typedef struct AComponentHeader AComponentHeader;
+
 #include "a2x_pack_strhash.v.h"
 
-extern void a_state__init(void);
-extern void a_state__uninit(void);
+extern void a_entity__init(void);
+extern void a_entity__uninit(void);
 
-extern void a_state__run(void);
+extern void a_entity__pushCollection(void);
+extern void a_entity__popCollection(void);
