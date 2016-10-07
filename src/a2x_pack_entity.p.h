@@ -22,10 +22,13 @@
 #include "a2x_system_includes.h"
 
 typedef struct AEntity AEntity;
+
+typedef void (*AComponentFree)(void* Self);
 typedef void (*AComponentTick)(void* Self);
 typedef void (*AComponentDraw)(void* Self);
 
 extern void a_component_declare(const char* Name, size_t Size);
+extern void a_component_setFree(const char* Name, AComponentFree Free);
 extern void a_component_setTick(const char* Name, AComponentTick Tick);
 extern void a_component_setDraw(const char* Name, AComponentDraw Draw);
 

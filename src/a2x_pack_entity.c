@@ -25,6 +25,7 @@ struct AEntity {
 
 struct AComponentHeader {
     size_t size;
+    AComponentFree free;
     AComponentTick tick;
     AComponentDraw draw;
     AEntity* parent;
@@ -59,12 +60,24 @@ void a_component_declare(const char* Name, size_t Size)
     AComponentHeader* h = a_mem_malloc(sizeof(AComponentHeader));
 
     h->size = sizeof(AComponentHeader) + Size;
+    h->free = NULL;
     h->tick = NULL;
     h->draw = NULL;
     h->parent = NULL;
     h->collectionNode = NULL;
 
     a_strhash_add(g_prototypes, Name, h);
+}
+
+void a_component_setFree(const char* Name, AComponentFree Free)
+{
+    AComponentHeader* h = a_strhash_get(g_prototypes, Name);
+
+    if(h == NULL) {
+        a_out__fatal("Undeclared component '%s'", Name);
+    }
+
+    h->free = Free;
 }
 
 void a_component_setTick(const char* Name, AComponentTick Tick)
@@ -110,6 +123,10 @@ void a_entity_free(AEntity* Entity)
     A_STRHASH_ITERATE(Entity->components, AComponentHeader*, component) {
         if(component->collectionNode) {
             a_list_removeNode(component->collectionNode);
+        }
+
+        if(component->free) {
+            component->free((uint8_t*)component + sizeof(AComponentHeader));
         }
 
         free(component);
