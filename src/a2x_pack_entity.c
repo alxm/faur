@@ -32,6 +32,9 @@ struct AComponentHeader {
     AListNode* collectionNode;
 };
 
+#define GET_COMPONENT(Header) ((void*)(Header + 1))
+#define GET_HEADER(Component) ((AComponentHeader*)Component - 1)
+
 static AStrHash* g_prototypes;
 static AList* g_stack;
 
@@ -104,9 +107,7 @@ void a_component_setDraw(const char* Name, AComponentDraw Draw)
 
 AEntity* a_component_getEntity(void* Component)
 {
-    AComponentHeader* header = (AComponentHeader*)
-                               ((uint8_t*)Component - sizeof(AComponentHeader));
-    return header->parent;
+    return GET_HEADER(Component)->parent;
 }
 
 AEntity* a_entity_new(void)
@@ -120,16 +121,16 @@ AEntity* a_entity_new(void)
 
 void a_entity_free(AEntity* Entity)
 {
-    A_STRHASH_ITERATE(Entity->components, AComponentHeader*, component) {
-        if(component->collectionNode) {
-            a_list_removeNode(component->collectionNode);
+    A_STRHASH_ITERATE(Entity->components, AComponentHeader*, header) {
+        if(header->collectionNode) {
+            a_list_removeNode(header->collectionNode);
         }
 
-        if(component->free) {
-            component->free((uint8_t*)component + sizeof(AComponentHeader));
+        if(header->free) {
+            header->free(GET_COMPONENT(header));
         }
 
-        free(component);
+        free(header);
     }
 
     a_strhash_free(Entity->components);
@@ -144,12 +145,12 @@ void* a_entity_addComponent(AEntity* Entity, const char* Component)
         a_out__fatal("Undeclared component '%s'");
     }
 
-    AComponentHeader* c = a_mem_malloc(proto->size);
+    AComponentHeader* header = a_mem_malloc(proto->size);
 
-    *c = *proto;
-    c->parent = Entity;
+    *header = *proto;
+    header->parent = Entity;
 
-    a_strhash_add(Entity->components, Component, c);
+    a_strhash_add(Entity->components, Component, header);
 
     AStrHash* collection = a_list_peek(g_stack);
 
@@ -161,10 +162,10 @@ void* a_entity_addComponent(AEntity* Entity, const char* Component)
             a_strhash_add(collection, Component, components);
         }
 
-        c->collectionNode = a_list_addLast(components, c);
+        header->collectionNode = a_list_addLast(components, header);
     }
 
-    return (uint8_t*)c + sizeof(AComponentHeader);
+    return GET_COMPONENT(header);
 }
 
 void* a_entity_getComponent(AEntity* Entity, const char* Component)
@@ -175,7 +176,7 @@ void* a_entity_getComponent(AEntity* Entity, const char* Component)
         return NULL;
     }
 
-    return (uint8_t*)header + sizeof(AComponentHeader);
+    return GET_COMPONENT(header);
 }
 
 void a_entity__pushCollection(void)
@@ -199,18 +200,18 @@ void a_entity__handleComponents(void)
     AStrHash* collection = a_list_peek(g_stack);
 
     A_STRHASH_ITERATE(collection, AList*, components) {
-        A_LIST_ITERATE(components, AComponentHeader*, c) {
-            if(c->tick) {
-                c->tick((uint8_t*)c + sizeof(AComponentHeader));
+        A_LIST_ITERATE(components, AComponentHeader*, header) {
+            if(header->tick) {
+                header->tick(GET_COMPONENT(header));
             }
         }
     }
 
     if(a_fps_notSkipped()) {
         A_STRHASH_ITERATE(collection, AList*, components) {
-            A_LIST_ITERATE(components, AComponentHeader*, c) {
-                if(c->draw) {
-                    c->draw((uint8_t*)c + sizeof(AComponentHeader));
+            A_LIST_ITERATE(components, AComponentHeader*, header) {
+                if(header->draw) {
+                    header->draw(GET_COMPONENT(header));
                 }
             }
         }
