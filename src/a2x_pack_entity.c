@@ -42,10 +42,15 @@ void a_entity__init(void)
 {
     g_prototypes = a_strhash_new();
     g_stack = a_list_new();
+
+    // In case application isn't using states
+    a_entity__pushCollection();
 }
 
 void a_entity__uninit(void)
 {
+    a_entity__popCollection();
+
     A_STRHASH_ITERATE(g_prototypes, AComponentHeader*, prototype) {
         free(prototype);
     }
@@ -122,9 +127,7 @@ AEntity* a_entity_new(void)
 void a_entity_free(AEntity* Entity)
 {
     A_STRHASH_ITERATE(Entity->components, AComponentHeader*, header) {
-        if(header->collectionNode) {
-            a_list_removeNode(header->collectionNode);
-        }
+        a_list_removeNode(header->collectionNode);
 
         if(header->free) {
             header->free(GET_COMPONENT(header));
@@ -153,17 +156,14 @@ void* a_entity_addComponent(AEntity* Entity, const char* Component)
     a_strhash_add(Entity->components, Component, header);
 
     AStrHash* collection = a_list_peek(g_stack);
+    AList* components = a_strhash_get(collection, Component);
 
-    if(collection != NULL) {
-        AList* components = a_strhash_get(collection, Component);
-
-        if(components == NULL) {
-            components = a_list_new();
-            a_strhash_add(collection, Component, components);
-        }
-
-        header->collectionNode = a_list_addLast(components, header);
+    if(components == NULL) {
+        components = a_list_new();
+        a_strhash_add(collection, Component, components);
     }
+
+    header->collectionNode = a_list_addLast(components, header);
 
     return GET_COMPONENT(header);
 }
