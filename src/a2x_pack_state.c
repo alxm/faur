@@ -101,10 +101,19 @@ static void state_free(AStateInstance* State)
 
 static void state_handle(void)
 {
+    AStateInstance* current = a_list_peek(g_stack);
+
+    // Check if the current state just ran its Free stage
+    if(current && current->stage == A_STATE_STAGE_FREE) {
+        state_free(current);
+        a_entity__popCollection();
+
+        a_list_pop(g_stack);
+        current = a_list_peek(g_stack);
+    }
+
     // If there are no pending state changes, do any automatic transitions
     if(a_list_empty(g_pending)) {
-        AStateInstance* current = a_list_peek(g_stack);
-
         if(current && current->stage == A_STATE_STAGE_INIT) {
             current->stage = A_STATE_STAGE_BODY;
 
@@ -127,21 +136,19 @@ static void state_handle(void)
         } break;
 
         case A_STATE_ACTION_POP: {
-            AStateInstance* s = a_list_peek(g_stack);
-
-            if(s == NULL) {
+            if(current == NULL) {
                 a_out__fatal("Pop state: stack is empty");
-            } else if(s->stage != A_STATE_STAGE_BODY) {
+            } else if(current->stage != A_STATE_STAGE_BODY) {
                 a_out__fatal("Pop state '%s': only call from A_STATE_BODY",
-                    s->name);
+                    current->name);
             }
 
             a_out__stateVerbose("  '%s' going from %s to %s",
-                s->name,
+                current->name,
                 g_stageNames[A_STATE_STAGE_BODY],
                 g_stageNames[A_STATE_STAGE_FREE]);
 
-            s->stage = A_STATE_STAGE_FREE;
+            current->stage = A_STATE_STAGE_FREE;
         } break;
 
         case A_STATE_ACTION_EXIT: {
@@ -269,14 +276,6 @@ void a_state__run(void)
             g_stageNames[s->stage]);
 
         s->function();
-
-        // Check if the state just ran its Free stage
-        if(s->stage == A_STATE_STAGE_FREE) {
-            state_free(s);
-            a_list_pop(g_stack);
-            a_entity__popCollection();
-        }
-
         state_handle();
     }
 }
