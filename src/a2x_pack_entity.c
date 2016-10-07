@@ -119,7 +119,7 @@ void a_entity_free(AEntity* Entity)
     free(Entity);
 }
 
-void a_entity_addComponent(AEntity* Entity, const char* Component)
+void* a_entity_addComponent(AEntity* Entity, const char* Component)
 {
     const AComponentHeader* proto = a_strhash_get(g_prototypes, Component);
 
@@ -146,6 +146,8 @@ void a_entity_addComponent(AEntity* Entity, const char* Component)
 
         c->collectionNode = a_list_addLast(components, c);
     }
+
+    return (uint8_t*)c + sizeof(AComponentHeader);
 }
 
 void* a_entity_getComponent(AEntity* Entity, const char* Component)
