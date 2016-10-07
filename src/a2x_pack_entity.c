@@ -36,11 +36,15 @@ struct AComponentHeader {
 #define GET_HEADER(Component) ((AComponentHeader*)Component - 1)
 
 static AStrHash* g_prototypes;
+static AList* g_tickOrder;
+static AList* g_drawOrder;
 static AList* g_stack;
 
 void a_entity__init(void)
 {
     g_prototypes = a_strhash_new();
+    g_tickOrder = a_list_new();
+    g_drawOrder = a_list_new();
     g_stack = a_list_new();
 
     // In case application isn't using states
@@ -50,13 +54,16 @@ void a_entity__init(void)
 void a_entity__uninit(void)
 {
     a_entity__popCollection();
+    a_list_free(g_stack);
+
+    a_list_free(g_tickOrder);
+    a_list_free(g_drawOrder);
 
     A_STRHASH_ITERATE(g_prototypes, AComponentHeader*, prototype) {
         free(prototype);
     }
 
     a_strhash_free(g_prototypes);
-    a_list_free(g_stack);
 }
 
 void a_component_declare(const char* Name, size_t Size)
@@ -97,6 +104,7 @@ void a_component_setTick(const char* Name, AComponentTick Tick)
     }
 
     h->tick = Tick;
+    a_list_addLast(g_tickOrder, (char*)Name);
 }
 
 void a_component_setDraw(const char* Name, AComponentDraw Draw)
@@ -108,6 +116,7 @@ void a_component_setDraw(const char* Name, AComponentDraw Draw)
     }
 
     h->draw = Draw;
+    a_list_addLast(g_drawOrder, (char*)Name);
 }
 
 AEntity* a_component_getEntity(void* Component)
@@ -199,7 +208,13 @@ void a_entity_handle(void)
 {
     AStrHash* collection = a_list_peek(g_stack);
 
-    A_STRHASH_ITERATE(collection, AList*, components) {
+    A_LIST_ITERATE(g_tickOrder, const char*, Name) {
+        AList* components = a_strhash_get(collection, Name);
+
+        if(components == NULL) {
+            continue;
+        }
+
         A_LIST_ITERATE(components, AComponentHeader*, header) {
             if(header->tick) {
                 header->tick(GET_COMPONENT(header));
@@ -208,7 +223,13 @@ void a_entity_handle(void)
     }
 
     if(a_fps_notSkipped()) {
-        A_STRHASH_ITERATE(collection, AList*, components) {
+        A_LIST_ITERATE(g_drawOrder, const char*, Name) {
+            AList* components = a_strhash_get(collection, Name);
+
+            if(components == NULL) {
+                continue;
+            }
+
             A_LIST_ITERATE(components, AComponentHeader*, header) {
                 if(header->draw) {
                     header->draw(GET_COMPONENT(header));
