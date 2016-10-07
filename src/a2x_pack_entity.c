@@ -195,7 +195,7 @@ void a_entity__popCollection(void)
     a_strhash_free(collection);
 }
 
-void a_entity__handleComponents(void)
+void a_entity_handle(void)
 {
     AStrHash* collection = a_list_peek(g_stack);
 

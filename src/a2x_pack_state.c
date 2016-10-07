@@ -335,7 +335,7 @@ bool a_state__nothingPending(void)
         first = false;
         a_fps__reset(0);
     } else {
-        a_entity__handleComponents();
+        a_entity_handle();
         a_fps_frame();
     }
 

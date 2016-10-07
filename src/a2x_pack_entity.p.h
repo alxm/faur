@@ -39,3 +39,5 @@ extern void a_entity_free(AEntity* Entity);
 
 extern void* a_entity_addComponent(AEntity* Entity, const char* Component);
 extern void* a_entity_getComponent(AEntity* Entity, const char* Component);
+
+extern void a_entity_handle(void);

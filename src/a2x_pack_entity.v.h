@@ -30,5 +30,3 @@ extern void a_entity__uninit(void);
 
 extern void a_entity__pushCollection(void);
 extern void a_entity__popCollection(void);
-
-extern void a_entity__handleComponents(void);
