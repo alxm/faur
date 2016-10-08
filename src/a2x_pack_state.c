@@ -29,7 +29,6 @@ struct AStateInstance {
 typedef enum {
     A_STATE_ACTION_PUSH,
     A_STATE_ACTION_POP,
-    A_STATE_ACTION_EXIT,
 } AStateAction;
 
 typedef struct AStatePendingAction {
@@ -149,19 +148,6 @@ static void state_handle(void)
             current->stage = A_STATE_STAGE_FREE;
         } break;
 
-        case A_STATE_ACTION_EXIT: {
-            a_out__state("Telling all states to exit");
-
-            A_LIST_ITERATE(g_stack, AStateInstance*, s) {
-                a_out__stateVerbose("  '%s' going from %s to %s",
-                                    s->name,
-                                    g_stageNames[s->stage],
-                                    g_stageNames[A_STATE_STAGE_FREE]);
-
-                s->stage = A_STATE_STAGE_FREE;
-            }
-        } break;
-
         default: {
             a_out__fatal("Invalid state action");
         }
@@ -208,7 +194,11 @@ void a_state_replace(const char* Name)
 
 void a_state_exit(void)
 {
-    pending_new(A_STATE_ACTION_EXIT, NULL);
+    a_out__state("Telling all states to exit");
+
+    for(int i = a_list_size(g_stack); i--; ) {
+        pending_new(A_STATE_ACTION_POP, NULL);
+    }
 }
 
 void a_state_add(const char* Name, void* Object)
