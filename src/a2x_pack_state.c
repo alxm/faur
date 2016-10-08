@@ -138,15 +138,12 @@ static void state_handle(void)
         case A_STATE_ACTION_POP: {
             if(current == NULL) {
                 a_out__fatal("Pop state: stack is empty");
-            } else if(current->stage != A_STATE_STAGE_BODY) {
-                a_out__fatal("Pop state '%s': only call from A_STATE_BODY",
-                             current->name);
             }
 
             a_out__stateVerbose("Pop '%s'", current->name);
             a_out__stateVerbose("  '%s' going from %s to %s",
                                 current->name,
-                                g_stageNames[A_STATE_STAGE_BODY],
+                                g_stageNames[current->stage],
                                 g_stageNames[A_STATE_STAGE_FREE]);
 
             current->stage = A_STATE_STAGE_FREE;
