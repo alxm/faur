@@ -186,6 +186,29 @@ void a_state_pop(void)
     pending_new(A_STATE_ACTION_POP, NULL);
 }
 
+void a_state_popUntil(const char* Name)
+{
+    int pops = 0;
+    bool found = false;
+
+    A_LIST_ITERATE(g_stack, AStateInstance*, state) {
+        if(a_str_equal(state->name, Name)) {
+            found = true;
+            break;
+        }
+
+        pops++;
+    }
+
+    if(!found) {
+        a_out__fatal("State '%s' not in stack", Name);
+    }
+
+    while(pops--) {
+        pending_new(A_STATE_ACTION_POP, NULL);
+    }
+}
+
 void a_state_replace(const char* Name)
 {
     pending_new(A_STATE_ACTION_POP, NULL);

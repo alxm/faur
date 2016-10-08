@@ -31,6 +31,7 @@ extern void a_state__new(const char* Name, void (*Function)(void));
 
 extern void a_state_push(const char* Name);
 extern void a_state_pop(void);
+extern void a_state_popUntil(const char* Name);
 extern void a_state_replace(const char* Name);
 extern void a_state_exit(void);
 
