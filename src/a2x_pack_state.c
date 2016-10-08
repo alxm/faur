@@ -27,11 +27,9 @@ struct AStateInstance {
 };
 
 typedef enum {
-    A_STATE_ACTION_NONE,
     A_STATE_ACTION_PUSH,
     A_STATE_ACTION_POP,
     A_STATE_ACTION_EXIT,
-    A_STATE_ACTION_MAX
 } AStateAction;
 
 typedef struct AStatePendingAction {
@@ -43,7 +41,7 @@ static AStrHash* g_states;
 static AList* g_stack;
 static AList* g_pending;
 
-static char* g_stageNames[A_STATE_STAGE_NUM] = {
+static const char* g_stageNames[A_STATE_STAGE_NUM] = {
     "Invalid",
     "Init",
     "Body",
@@ -118,9 +116,9 @@ static void state_handle(void)
             current->stage = A_STATE_STAGE_BODY;
 
             a_out__stateVerbose("  '%s' going from %s to %s",
-                current->name,
-                g_stageNames[A_STATE_STAGE_INIT],
-                g_stageNames[A_STATE_STAGE_BODY]);
+                                current->name,
+                                g_stageNames[A_STATE_STAGE_INIT],
+                                g_stageNames[A_STATE_STAGE_BODY]);
         }
 
         return;
@@ -130,6 +128,8 @@ static void state_handle(void)
 
     switch(pending->action) {
         case A_STATE_ACTION_PUSH: {
+            a_out__stateVerbose("Push '%s'", pending->name);
+
             AStateInstance* s = state_new(pending->name);
             a_list_push(g_stack, s);
             a_entity__pushCollection();
@@ -140,13 +140,14 @@ static void state_handle(void)
                 a_out__fatal("Pop state: stack is empty");
             } else if(current->stage != A_STATE_STAGE_BODY) {
                 a_out__fatal("Pop state '%s': only call from A_STATE_BODY",
-                    current->name);
+                             current->name);
             }
 
+            a_out__stateVerbose("Pop '%s'", current->name);
             a_out__stateVerbose("  '%s' going from %s to %s",
-                current->name,
-                g_stageNames[A_STATE_STAGE_BODY],
-                g_stageNames[A_STATE_STAGE_FREE]);
+                                current->name,
+                                g_stageNames[A_STATE_STAGE_BODY],
+                                g_stageNames[A_STATE_STAGE_FREE]);
 
             current->stage = A_STATE_STAGE_FREE;
         } break;
@@ -156,9 +157,9 @@ static void state_handle(void)
 
             A_LIST_ITERATE(g_stack, AStateInstance*, s) {
                 a_out__stateVerbose("  '%s' going from %s to %s",
-                    s->name,
-                    g_stageNames[s->stage],
-                    g_stageNames[A_STATE_STAGE_FREE]);
+                                    s->name,
+                                    g_stageNames[s->stage],
+                                    g_stageNames[A_STATE_STAGE_FREE]);
 
                 s->stage = A_STATE_STAGE_FREE;
             }
@@ -272,8 +273,8 @@ void a_state__run(void)
         AStateInstance* s = a_list_peek(g_stack);
 
         a_out__stateVerbose("  '%s' running %s",
-            s->name,
-            g_stageNames[s->stage]);
+                            s->name,
+                            g_stageNames[s->stage]);
 
         s->function();
         state_handle();
