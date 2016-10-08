@@ -31,9 +31,8 @@ extern void a_state__new(const char* Name, void (*Function)(void));
 
 extern void a_state_push(const char* Name);
 extern void a_state_pop(void);
+extern void a_state_popUntil(const char* Name);
 extern void a_state_replace(const char* Name);
-extern void a_state_pause(void);
-extern void a_state_resume(void);
 extern void a_state_exit(void);
 
 extern void a_state_add(const char* Name, void* Object);
@@ -47,13 +46,6 @@ typedef enum {
     A_STATE_STAGE_NUM
 } AStateStage;
 
-typedef enum {
-    A_STATE_SUBSTAGE_INVALID,
-    A_STATE_SUBSTAGE_RUN,
-    A_STATE_SUBSTAGE_PAUSE,
-    A_STATE_SUBSTAGE_NUM
-} AStateSubStage;
-
 #define A_STATE(Name)                   \
     void A_STATE__MAKE_NAME(Name)(void)
 
@@ -62,14 +54,6 @@ typedef enum {
 
 #define A_STATE_BODY                       \
     if(a_state__stage(A_STATE_STAGE_BODY))
-
-#define A_STATE_RUN                                 \
-    if(a_state__stage(A_STATE_STAGE_BODY)           \
-        && a_state__substage(A_STATE_SUBSTAGE_RUN))
-
-#define A_STATE_PAUSE                                 \
-    if(a_state__stage(A_STATE_STAGE_BODY)             \
-        && a_state__substage(A_STATE_SUBSTAGE_PAUSE))
 
 #define A_STATE_LOOP                 \
     while(a_state__nothingPending())
@@ -81,5 +65,4 @@ typedef enum {
     if(a_state__stage(A_STATE_STAGE_FREE))
 
 extern bool a_state__stage(AStateStage Stage);
-extern bool a_state__substage(AStateSubStage BodyStage);
 extern bool a_state__nothingPending(void);

@@ -24,17 +24,11 @@ struct AStateInstance {
     AStateFunction function;
     AStrHash* objects;
     AStateStage stage;
-    AStateSubStage substage;
 };
 
 typedef enum {
-    A_STATE_ACTION_NONE,
     A_STATE_ACTION_PUSH,
     A_STATE_ACTION_POP,
-    A_STATE_ACTION_PAUSE,
-    A_STATE_ACTION_RESUME,
-    A_STATE_ACTION_EXIT,
-    A_STATE_ACTION_MAX
 } AStateAction;
 
 typedef struct AStatePendingAction {
@@ -46,17 +40,11 @@ static AStrHash* g_states;
 static AList* g_stack;
 static AList* g_pending;
 
-static char* g_stageNames[A_STATE_STAGE_NUM] = {
+static const char* g_stageNames[A_STATE_STAGE_NUM] = {
     "Invalid",
     "Init",
     "Body",
     "Free",
-};
-
-static char* g_subStageNames[A_STATE_SUBSTAGE_NUM] = {
-    "Invalid",
-    "Running",
-    "Paused",
 };
 
 static void pending_new(AStateAction Action, const char* Name)
@@ -92,7 +80,6 @@ static AStateInstance* state_new(const char* Name)
     s->function = function;
     s->objects = a_strhash_new();
     s->stage = A_STATE_STAGE_INIT;
-    s->substage = A_STATE_SUBSTAGE_INVALID;
 
     a_out__state("New '%s' instance", Name);
 
@@ -111,19 +98,26 @@ static void state_free(AStateInstance* State)
 
 static void state_handle(void)
 {
+    AStateInstance* current = a_list_peek(g_stack);
+
+    // Check if the current state just ran its Free stage
+    if(current && current->stage == A_STATE_STAGE_FREE) {
+        state_free(current);
+        a_entity__popCollection();
+
+        a_list_pop(g_stack);
+        current = a_list_peek(g_stack);
+    }
+
     // If there are no pending state changes, do any automatic transitions
     if(a_list_empty(g_pending)) {
-        AStateInstance* current = a_list_peek(g_stack);
-
         if(current && current->stage == A_STATE_STAGE_INIT) {
             current->stage = A_STATE_STAGE_BODY;
-            current->substage = A_STATE_SUBSTAGE_RUN;
 
-            a_out__stateVerbose("  '%s' going from %s to %s/%s",
-                current->name,
-                g_stageNames[A_STATE_STAGE_INIT],
-                g_stageNames[A_STATE_STAGE_BODY],
-                g_subStageNames[A_STATE_SUBSTAGE_RUN]);
+            a_out__stateVerbose("  '%s' going from %s to %s",
+                                current->name,
+                                g_stageNames[A_STATE_STAGE_INIT],
+                                g_stageNames[A_STATE_STAGE_BODY]);
         }
 
         return;
@@ -133,97 +127,25 @@ static void state_handle(void)
 
     switch(pending->action) {
         case A_STATE_ACTION_PUSH: {
+            a_out__stateVerbose("Push '%s'", pending->name);
+
             AStateInstance* s = state_new(pending->name);
             a_list_push(g_stack, s);
             a_entity__pushCollection();
         } break;
 
         case A_STATE_ACTION_POP: {
-            AStateInstance* s = a_list_peek(g_stack);
-
-            if(s == NULL) {
+            if(current == NULL) {
                 a_out__fatal("Pop state: stack is empty");
-            } else if(s->stage != A_STATE_STAGE_BODY) {
-                a_out__fatal("Pop state '%s': only call from A_STATE_BODY",
-                    s->name);
             }
 
-            a_out__stateVerbose("  '%s' going from %s/%s to %s",
-                s->name,
-                g_stageNames[A_STATE_STAGE_BODY],
-                g_subStageNames[s->substage],
-                g_stageNames[A_STATE_STAGE_FREE]);
+            a_out__stateVerbose("Pop '%s'", current->name);
+            a_out__stateVerbose("  '%s' going from %s to %s",
+                                current->name,
+                                g_stageNames[current->stage],
+                                g_stageNames[A_STATE_STAGE_FREE]);
 
-            s->stage = A_STATE_STAGE_FREE;
-            s->substage = A_STATE_SUBSTAGE_INVALID;
-        } break;
-
-        case A_STATE_ACTION_PAUSE: {
-            AStateInstance* s = a_list_peek(g_stack);
-
-            if(s == NULL) {
-                a_out__fatal("Pause state: stack is empty");
-            } else if(s->stage != A_STATE_STAGE_BODY) {
-                a_out__fatal("Pause state '%s': only call from A_STATE_BODY",
-                    s->name);
-            } else if(s->substage != A_STATE_SUBSTAGE_RUN) {
-                a_out__fatal("Pause state '%s': only call from A_STATE_RUN",
-                    s->name);
-            }
-
-            s->substage = A_STATE_SUBSTAGE_PAUSE;
-
-            a_out__stateVerbose("  '%s' going from %s/%s to %s/%s",
-                s->name,
-                g_stageNames[A_STATE_STAGE_BODY],
-                g_subStageNames[A_STATE_SUBSTAGE_RUN],
-                g_stageNames[A_STATE_STAGE_BODY],
-                g_subStageNames[A_STATE_SUBSTAGE_PAUSE]);
-        } break;
-
-        case A_STATE_ACTION_RESUME: {
-            AStateInstance* s = a_list_peek(g_stack);
-
-            if(s == NULL) {
-                a_out__fatal("Resume state: stack is empty");
-            } else if(s->stage != A_STATE_STAGE_BODY) {
-                a_out__fatal("Resume state '%s': only call from A_STATE_BODY",
-                    s->name);
-            } else if(s->substage != A_STATE_SUBSTAGE_PAUSE) {
-                a_out__fatal("Resume state '%s': only call from A_STATE_PAUSE",
-                    s->name);
-            }
-
-            s->substage = A_STATE_SUBSTAGE_RUN;
-
-            a_out__stateVerbose("  '%s' going from %s/%s to %s/%s",
-                s->name,
-                g_stageNames[A_STATE_STAGE_BODY],
-                g_subStageNames[A_STATE_SUBSTAGE_PAUSE],
-                g_stageNames[A_STATE_STAGE_BODY],
-                g_subStageNames[A_STATE_SUBSTAGE_RUN]);
-        } break;
-
-        case A_STATE_ACTION_EXIT: {
-            a_out__state("Telling all states to exit");
-
-            A_LIST_ITERATE(g_stack, AStateInstance*, s) {
-                if(s->stage == A_STATE_STAGE_BODY) {
-                    a_out__stateVerbose("  '%s' going from %s/%s to %s",
-                        s->name,
-                        g_stageNames[s->stage],
-                        g_subStageNames[s->substage],
-                        g_stageNames[A_STATE_STAGE_FREE]);
-                } else {
-                    a_out__stateVerbose("  '%s' going from %s to %s",
-                        s->name,
-                        g_stageNames[s->stage],
-                        g_stageNames[A_STATE_STAGE_FREE]);
-                }
-
-                s->stage = A_STATE_STAGE_FREE;
-                s->substage = A_STATE_SUBSTAGE_INVALID;
-            }
+            current->stage = A_STATE_STAGE_FREE;
         } break;
 
         default: {
@@ -264,25 +186,42 @@ void a_state_pop(void)
     pending_new(A_STATE_ACTION_POP, NULL);
 }
 
+void a_state_popUntil(const char* Name)
+{
+    int pops = 0;
+    bool found = false;
+
+    A_LIST_ITERATE(g_stack, AStateInstance*, state) {
+        if(a_str_equal(state->name, Name)) {
+            found = true;
+            break;
+        }
+
+        pops++;
+    }
+
+    if(!found) {
+        a_out__fatal("State '%s' not in stack", Name);
+    }
+
+    while(pops--) {
+        pending_new(A_STATE_ACTION_POP, NULL);
+    }
+}
+
 void a_state_replace(const char* Name)
 {
     pending_new(A_STATE_ACTION_POP, NULL);
     pending_new(A_STATE_ACTION_PUSH, Name);
 }
 
-void a_state_pause(void)
-{
-    pending_new(A_STATE_ACTION_PAUSE, NULL);
-}
-
-void a_state_resume(void)
-{
-    pending_new(A_STATE_ACTION_RESUME, NULL);
-}
-
 void a_state_exit(void)
 {
-    pending_new(A_STATE_ACTION_EXIT, NULL);
+    a_out__state("Telling all states to exit");
+
+    for(int i = a_list_size(g_stack); i--; ) {
+        pending_new(A_STATE_ACTION_POP, NULL);
+    }
 }
 
 void a_state_add(const char* Name, void* Object)
@@ -316,17 +255,6 @@ bool a_state__stage(AStateStage Stage)
     return false;
 }
 
-bool a_state__substage(AStateSubStage Substage)
-{
-    const AStateInstance* current = a_list_peek(g_stack);
-
-    if(current != NULL) {
-        return current->substage == Substage;
-    }
-
-    return false;
-}
-
 bool a_state__nothingPending(void)
 {
     static bool first = true;
@@ -354,26 +282,11 @@ void a_state__run(void)
     while(!a_list_empty(g_stack)) {
         AStateInstance* s = a_list_peek(g_stack);
 
-        if(s->stage == A_STATE_STAGE_BODY) {
-            a_out__stateVerbose("  '%s' running %s/%s",
-                s->name,
-                g_stageNames[A_STATE_STAGE_BODY],
-                g_subStageNames[s->substage]);
-        } else {
-            a_out__stateVerbose("  '%s' running %s",
-                s->name,
-                g_stageNames[s->stage]);
-        }
+        a_out__stateVerbose("  '%s' running %s",
+                            s->name,
+                            g_stageNames[s->stage]);
 
         s->function();
-
-        // Check if the state just ran its Free stage
-        if(s->stage == A_STATE_STAGE_FREE) {
-            state_free(s);
-            a_list_pop(g_stack);
-            a_entity__popCollection();
-        }
-
         state_handle();
     }
 }
