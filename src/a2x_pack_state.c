@@ -19,12 +19,12 @@
 
 #include "a2x_pack_state.v.h"
 
-struct AStateInstance {
+typedef struct AStateInstance {
     char* name;
     AStateFunction function;
     AStrHash* objects;
     AStateStage stage;
-};
+} AStateInstance;
 
 typedef enum {
     A_STATE_ACTION_PUSH,

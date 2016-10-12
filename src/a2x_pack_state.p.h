@@ -21,13 +21,12 @@
 
 #include "a2x_system_includes.h"
 
-typedef struct AStateInstance AStateInstance;
 typedef void (*AStateFunction)(void);
 
 #define A_STATE__MAKE_NAME(Name) a_state__function_##Name
 
 #define a_state_new(Name, Function) a_state__new(Name, A_STATE__MAKE_NAME(Function))
-extern void a_state__new(const char* Name, void (*Function)(void));
+extern void a_state__new(const char* Name, AStateFunction Function);
 
 extern void a_state_push(const char* Name);
 extern void a_state_pop(void);
