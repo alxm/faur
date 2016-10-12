@@ -25,9 +25,9 @@ struct AEntity {
 
 struct AComponentHeader {
     size_t size;
-    AComponentFree free;
-    AComponentTick tick;
-    AComponentDraw draw;
+    AComponentFree* free;
+    AComponentTick* tick;
+    AComponentDraw* draw;
     AEntity* parent;
     AListNode* collectionNode;
 };
@@ -84,7 +84,7 @@ void a_component_declare(const char* Name, size_t Size)
     a_strhash_add(g_prototypes, Name, h);
 }
 
-void a_component_setFree(const char* Name, AComponentFree Free)
+void a_component_setFree(const char* Name, AComponentFree* Free)
 {
     AComponentHeader* h = a_strhash_get(g_prototypes, Name);
 
@@ -95,7 +95,7 @@ void a_component_setFree(const char* Name, AComponentFree Free)
     h->free = Free;
 }
 
-void a_component_setTick(const char* Name, AComponentTick Tick)
+void a_component_setTick(const char* Name, AComponentTick* Tick)
 {
     AComponentHeader* h = a_strhash_get(g_prototypes, Name);
 
@@ -107,7 +107,7 @@ void a_component_setTick(const char* Name, AComponentTick Tick)
     a_list_addLast(g_tickOrder, (char*)Name);
 }
 
-void a_component_setDraw(const char* Name, AComponentDraw Draw)
+void a_component_setDraw(const char* Name, AComponentDraw* Draw)
 {
     AComponentHeader* h = a_strhash_get(g_prototypes, Name);
 
