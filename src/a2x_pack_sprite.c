@@ -385,6 +385,8 @@ ASprite* a_sprite_blank(int Width, int Height, bool ColorKeyed)
         for(int i = Width * Height; i--; ) {
             *pixels++ = A_SPRITE_COLORKEY;
         }
+    } else {
+        memset(s->pixels, 0, Width * Height * sizeof(APixel));
     }
 
     s->node = a_list_addLast(g_spritesList, s);
