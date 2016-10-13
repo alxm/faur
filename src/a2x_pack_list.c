@@ -266,7 +266,7 @@ void* a_list_get(const AList* List, size_t Index)
     return NULL;
 }
 
-int a_list_size(const AList* List)
+size_t a_list_size(const AList* List)
 {
     return List->items;
 }

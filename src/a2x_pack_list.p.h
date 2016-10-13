@@ -50,5 +50,5 @@ extern void** a_list_array(AList* List);
 
 extern void* a_list_get(const AList* List, size_t Index);
 
-extern int a_list_size(const AList* List);
+extern size_t a_list_size(const AList* List);
 extern bool a_list_empty(const AList* List);

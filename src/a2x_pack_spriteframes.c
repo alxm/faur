@@ -22,10 +22,10 @@
 struct ASpriteFrames {
     AList* sprites;
     ASprite** spriteArray;
-    int num;
+    size_t num;
     int countdown;
     int callsToNextFrame;
-    int index;
+    size_t index;
     bool forward;
     bool paused;
 };
@@ -89,22 +89,16 @@ void a_spriteframes_free(ASpriteFrames* Frames, bool DoFreeSprites)
 
 ASprite* a_spriteframes_next(ASpriteFrames* Frames)
 {
-    const int oldindex = Frames->index;
+    const size_t oldindex = Frames->index;
 
     if(!Frames->paused) {
         if(Frames->countdown-- == 0) {
             Frames->countdown = Frames->callsToNextFrame;
 
-            if(Frames->forward) {
-                Frames->index++;
-            } else {
-                Frames->index--;
-            }
-
-            if(Frames->index < 0) {
-                Frames->index = Frames->num - 1;
-            } else if(Frames->index >= Frames->num) {
+            if(Frames->forward && ++Frames->index == Frames->num) {
                 Frames->index = 0;
+            } else if(!Frames->forward && Frames->index-- == 0) {
+                Frames->index = Frames->num - 1;
             }
         }
     }
@@ -127,7 +121,7 @@ ASprite* a_spriteframes_getRandom(const ASpriteFrames* Frames)
     return Frames->spriteArray[a_random_int(Frames->num)];
 }
 
-int a_spriteframes_num(const ASpriteFrames* Frames)
+size_t a_spriteframes_num(const ASpriteFrames* Frames)
 {
     return Frames->num;
 }
