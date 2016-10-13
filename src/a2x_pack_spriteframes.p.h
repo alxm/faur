@@ -33,10 +33,9 @@ extern ASprite* a_spriteframes_next(ASpriteFrames* Frames);
 extern ASprite* a_spriteframes_get(const ASpriteFrames* Frames);
 extern ASprite* a_spriteframes_getByIndex(const ASpriteFrames* Frames, size_t Index);
 extern ASprite* a_spriteframes_getRandom(const ASpriteFrames* Frames);
-extern bool a_spriteframes_last(const ASpriteFrames* Frames);
 extern int a_spriteframes_num(const ASpriteFrames* Frames);
 
-extern void a_spriteframes_setDirection(ASpriteFrames* Frames, int Direction);
+extern void a_spriteframes_setDirection(ASpriteFrames* Frames, bool Forward);
 extern void a_spriteframes_flipDirection(ASpriteFrames* Frames);
 
 extern int a_spriteframes_getSpeed(const ASpriteFrames* Frames);
