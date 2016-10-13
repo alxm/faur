@@ -104,6 +104,32 @@ AListNode* a_list_addLast(AList* List, void* Content)
     return n;
 }
 
+void a_list_append(AList* Base, AList* NewEntries)
+{
+    if(NewEntries->items == 0) {
+        return;
+    }
+
+    if(Base->items == 0) {
+        AList save = *Base;
+        *Base = *NewEntries;
+        *NewEntries = save;
+        return;
+    }
+
+    Base->last->prev->next = NewEntries->first->next;
+    NewEntries->first->next->prev = Base->last->prev;
+    Base->last->prev = NewEntries->last->prev;
+    NewEntries->last->prev->next = Base->last;
+
+    Base->items += NewEntries->items;
+
+    NewEntries->first->next = NewEntries->last;
+    NewEntries->last->prev = NewEntries->first;
+
+    NewEntries->items = 0;
+}
+
 void* a_list_getFirst(const AList* List)
 {
     return a_list__first(List);
