@@ -169,9 +169,9 @@ void a_menu_input(AMenu* Menu)
         }
 
         if(Menu->selectedIndex < 0) {
-            Menu->selectedIndex = a_list__size(Menu->items) - 1;
+            Menu->selectedIndex = a_list_size(Menu->items) - 1;
             Menu->selectedItem = a_list_getLast(Menu->items);
-        } else if(Menu->selectedIndex == a_list__size(Menu->items)) {
+        } else if(Menu->selectedIndex == a_list_size(Menu->items)) {
             Menu->selectedIndex = 0;
             Menu->selectedItem = a_list_getFirst(Menu->items);
         }

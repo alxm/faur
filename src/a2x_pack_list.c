@@ -132,12 +132,12 @@ void a_list_append(AList* Base, AList* NewEntries)
 
 void* a_list_getFirst(const AList* List)
 {
-    return a_list__first(List);
+    return List->first->next->content;
 }
 
 void* a_list_getLast(const AList* List)
 {
-    return a_list__last(List);
+    return List->last->prev->content;
 }
 
 void a_list_remove(AList* List, const void* Item)
@@ -266,7 +266,7 @@ void* a_list_get(const AList* List, int Index)
 
 int a_list_size(const AList* List)
 {
-    return a_list__size(List);
+    return List->items;
 }
 
 bool a_list_empty(const AList* List)

@@ -213,7 +213,7 @@ int a_font_load(const ASprite* Sheet, int X, int Y, AFontLoad Loader)
 
     a_spriteframes_free(sf, false);
 
-    return a_list__size(g_fontsList) - 1;
+    return a_list_size(g_fontsList) - 1;
 }
 
 int a_font_copy(int Font, APixel Color)
