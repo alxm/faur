@@ -251,13 +251,15 @@ void** a_list_array(AList* List)
     return array;
 }
 
-void* a_list_get(const AList* List, int Index)
+void* a_list_get(const AList* List, size_t Index)
 {
-    int counter = -1;
+    if(Index < List->items) {
+        size_t counter = 0;
 
-    for(AListNode* n = List->first; n->next != NULL; n = n->next, counter++) {
-        if(counter == Index) {
-            return n->content;
+        for(AListNode* n = List->first->next; n != List->last; n = n->next) {
+            if(counter++ == Index) {
+                return n->content;
+            }
         }
     }
 

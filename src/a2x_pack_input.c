@@ -422,7 +422,7 @@ int a_input_numControllers(void)
     return a_list_size(g_controllers);
 }
 
-void a_input_setController(int Index)
+void a_input_setController(size_t Index)
 {
     if(Index < 0 || Index >= a_list_size(g_controllers)) {
         a_out__error("Controller %d not present", Index);
