@@ -112,7 +112,7 @@ ASprite* a_spriteframes_get(const ASpriteFrames* Frames)
     return Frames->spriteArray[Frames->index];
 }
 
-ASprite* a_spriteframes_geti(const ASpriteFrames* Frames, int Index)
+ASprite* a_spriteframes_getByIndex(const ASpriteFrames* Frames, size_t Index)
 {
     return Frames->spriteArray[Index];
 }

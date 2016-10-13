@@ -136,10 +136,10 @@ void a_console__init2(void)
     ASprite* graphics = a_sprite_fromData(g_media_console);
     ASpriteFrames* frames = a_spriteframes_new(graphics, 0, 0, 0);
 
-    g_titles[A_CONSOLE_MESSAGE] = a_spriteframes_geti(frames, 0);
-    g_titles[A_CONSOLE_WARNING] = a_spriteframes_geti(frames, 1);
-    g_titles[A_CONSOLE_ERROR] = a_spriteframes_geti(frames, 2);
-    g_titles[A_CONSOLE_STATE] = a_spriteframes_geti(frames, 4);
+    g_titles[A_CONSOLE_MESSAGE] = a_spriteframes_getByIndex(frames, 0);
+    g_titles[A_CONSOLE_WARNING] = a_spriteframes_getByIndex(frames, 1);
+    g_titles[A_CONSOLE_ERROR] = a_spriteframes_getByIndex(frames, 2);
+    g_titles[A_CONSOLE_STATE] = a_spriteframes_getByIndex(frames, 4);
 
     a_spriteframes_free(frames, false);
     a_sprite_free(graphics);
