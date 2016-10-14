@@ -5,7 +5,7 @@ sudo: required
 
 before_install:
     - sudo apt update -qq
-    - sudo apt --assume-yes --install-suggests -qq install python3 libpng12-dev libsdl2-dev libsdl2-mixer-dev
+    - sudo apt --assume-yes -qq install libsdl2-dev libsdl2-mixer-dev
 
 compiler:
     - clang
