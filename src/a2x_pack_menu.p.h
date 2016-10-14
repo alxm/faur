@@ -50,4 +50,4 @@ extern bool a_menu_running(const AMenu* Menu);
 extern bool a_menu_finished(const AMenu* Menu);
 extern bool a_menu_accept(const AMenu* Menu);
 extern bool a_menu_cancel(const AMenu* Menu);
-extern int a_menu_choice(const AMenu* Menu);
+extern size_t a_menu_choice(const AMenu* Menu);

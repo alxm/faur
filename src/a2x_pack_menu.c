@@ -29,7 +29,7 @@ typedef enum AMenuState {
 struct AMenu {
     AList* items;
     AMenuFreeItemHandler freeItem;
-    int selectedIndex;
+    size_t selectedIndex;
     void* selectedItem;
     AMenuState state;
     int pause;
@@ -133,6 +133,10 @@ void a_menu_addItem(AMenu* Menu, void* Item)
 
 void a_menu_input(AMenu* Menu)
 {
+    if(a_list_empty(Menu->items)) {
+        a_out__fatal("Menu has no items");
+    }
+
     if(!a_menu_running(Menu)) {
         Menu->state = A_MENU_SPENT;
         return;
@@ -142,11 +146,17 @@ void a_menu_input(AMenu* Menu)
 
     if(!Menu->pause) {
         if(a_button_get(Menu->back)) {
-            Menu->selectedIndex--;
+            if(Menu->selectedIndex-- == 0) {
+                Menu->selectedIndex = a_list_size(Menu->items) - 1;
+            }
+
             Menu->selectedItem = a_list_get(Menu->items, Menu->selectedIndex);
             Menu->used = true;
         } else if(a_button_get(Menu->next)) {
-            Menu->selectedIndex++;
+            if(++Menu->selectedIndex == a_list_size(Menu->items)) {
+                Menu->selectedIndex = 0;
+            }
+
             Menu->selectedItem = a_list_get(Menu->items, Menu->selectedIndex);
             Menu->used = true;
         }
@@ -166,14 +176,6 @@ void a_menu_input(AMenu* Menu)
 
         if(Menu->soundBrowse) {
             a_sfx_play(Menu->soundBrowse);
-        }
-
-        if(Menu->selectedIndex < 0) {
-            Menu->selectedIndex = a_list__size(Menu->items) - 1;
-            Menu->selectedItem = a_list_getLast(Menu->items);
-        } else if(Menu->selectedIndex == a_list__size(Menu->items)) {
-            Menu->selectedIndex = 0;
-            Menu->selectedItem = a_list_getFirst(Menu->items);
         }
     } else {
         if(a_button_get(Menu->select)) {
@@ -241,7 +243,7 @@ bool a_menu_cancel(const AMenu* Menu)
     return Menu->state == A_MENU_CANCEL;
 }
 
-int a_menu_choice(const AMenu* Menu)
+size_t a_menu_choice(const AMenu* Menu)
 {
     return Menu->selectedIndex;
 }

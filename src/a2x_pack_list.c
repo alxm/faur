@@ -104,14 +104,40 @@ AListNode* a_list_addLast(AList* List, void* Content)
     return n;
 }
 
+void a_list_append(AList* Base, AList* NewEntries)
+{
+    if(NewEntries->items == 0) {
+        return;
+    }
+
+    if(Base->items == 0) {
+        AList save = *Base;
+        *Base = *NewEntries;
+        *NewEntries = save;
+        return;
+    }
+
+    Base->last->prev->next = NewEntries->first->next;
+    NewEntries->first->next->prev = Base->last->prev;
+    Base->last->prev = NewEntries->last->prev;
+    NewEntries->last->prev->next = Base->last;
+
+    Base->items += NewEntries->items;
+
+    NewEntries->first->next = NewEntries->last;
+    NewEntries->last->prev = NewEntries->first;
+
+    NewEntries->items = 0;
+}
+
 void* a_list_getFirst(const AList* List)
 {
-    return a_list__first(List);
+    return List->first->next->content;
 }
 
 void* a_list_getLast(const AList* List)
 {
-    return a_list__last(List);
+    return List->last->prev->content;
 }
 
 void a_list_remove(AList* List, const void* Item)
@@ -225,22 +251,24 @@ void** a_list_array(AList* List)
     return array;
 }
 
-void* a_list_get(const AList* List, int Index)
+void* a_list_get(const AList* List, size_t Index)
 {
-    int counter = -1;
+    if(Index < List->items) {
+        size_t counter = 0;
 
-    for(AListNode* n = List->first; n->next != NULL; n = n->next, counter++) {
-        if(counter == Index) {
-            return n->content;
+        for(AListNode* n = List->first->next; n != List->last; n = n->next) {
+            if(counter++ == Index) {
+                return n->content;
+            }
         }
     }
 
     return NULL;
 }
 
-int a_list_size(const AList* List)
+size_t a_list_size(const AList* List)
 {
-    return a_list__size(List);
+    return List->items;
 }
 
 bool a_list_empty(const AList* List)

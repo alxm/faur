@@ -153,7 +153,7 @@ void a_font__init(void)
 
     a_font_load(fontSprite, 0, 0, A_FONT_LOAD_ALL);
 
-    for(int f = 1; f < A_FONT_FACE_DEFAULT_NUM; f++) {
+    for(size_t f = 1; f < A_FONT_FACE_DEFAULT_NUM; f++) {
         a_font_copy(A_FONT_FACE_WHITE, colors[f]);
     }
 }
@@ -168,7 +168,7 @@ void a_font__uninit(void)
     free(g_fonts);
 }
 
-int a_font_load(const ASprite* Sheet, int X, int Y, AFontLoad Loader)
+size_t a_font_load(const ASprite* Sheet, int X, int Y, AFontLoad Loader)
 {
     AFont* const f = a_mem_malloc(sizeof(AFont));
 
@@ -213,10 +213,10 @@ int a_font_load(const ASprite* Sheet, int X, int Y, AFontLoad Loader)
 
     a_spriteframes_free(sf, false);
 
-    return a_list__size(g_fontsList) - 1;
+    return a_list_size(g_fontsList) - 1;
 }
 
-int a_font_copy(int Font, APixel Color)
+size_t a_font_copy(int Font, APixel Color)
 {
     const AFont* const src = g_fonts[Font];
     AFont* const f = a_mem_malloc(sizeof(AFont));

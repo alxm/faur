@@ -27,7 +27,7 @@
 struct AList {
     AListNode* first;
     AListNode* last;
-    int items;
+    size_t items;
 };
 
 struct AListNode {
@@ -35,12 +35,3 @@ struct AListNode {
     struct AListNode* next;
     struct AListNode* prev;
 };
-
-#define a_list__first(List) ((List)->first->next->content)
-#define a_list__last(List) ((List)->last->prev->content)
-#define a_list__size(List) ((List)->items)
-#define a_list__isEmpty(List) ((List)->first->next == (List)->last)
-#define a_list__next(Node) ((Node)->next)
-#define a_list__prev(Node) ((Node)->prev)
-#define a_list__getContent(Node) ((Node)->content)
-#define a_list__setContent(Node, Content) ((Node)->content = (Content))

@@ -219,7 +219,7 @@ void a_state_exit(void)
 {
     a_out__state("Telling all states to exit");
 
-    for(int i = a_list_size(g_stack); i--; ) {
+    for(size_t i = a_list_size(g_stack); i--; ) {
         pending_new(A_STATE_ACTION_POP, NULL);
     }
 }
