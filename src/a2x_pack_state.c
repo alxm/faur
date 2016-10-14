@@ -129,6 +129,12 @@ static void state_handle(void)
         case A_STATE_ACTION_PUSH: {
             a_out__stateVerbose("Push '%s'", pending->name);
 
+            A_LIST_ITERATE(g_stack, AStateInstance*, state) {
+                if(a_str_equal(pending->name, state->name)) {
+                    a_out__fatal("State '%s' already in stack", pending->name);
+                }
+            }
+
             AStateInstance* s = state_new(pending->name);
             a_list_push(g_stack, s);
             a_entity__pushCollection();
