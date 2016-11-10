@@ -23,15 +23,19 @@ struct ASpriteFrames {
     AList* sprites;
     ASprite** spriteArray;
     size_t num;
-    int countdown;
-    int callsToNextFrame;
+    unsigned int countdown;
+    unsigned int callsToNextFrame;
     size_t index;
     bool forward;
     bool paused;
 };
 
-ASpriteFrames* a_spriteframes_new(const ASprite* Sheet, int X, int Y, int CallsToNextFrame)
+ASpriteFrames* a_spriteframes_new(const ASprite* Sheet, int X, int Y, unsigned int CallsToNextFrame)
 {
+    if(CallsToNextFrame < 1) {
+        a_out__fatal("a_spriteframes_new: CallsToNextFrame<1");
+    }
+
     ASpriteFrames* const Frames = a_mem_malloc(sizeof(ASpriteFrames));
 
     Frames->sprites = a_list_new();
@@ -92,7 +96,7 @@ ASprite* a_spriteframes_next(ASpriteFrames* Frames)
     const size_t oldindex = Frames->index;
 
     if(!Frames->paused) {
-        if(Frames->countdown-- == 0) {
+        if(--Frames->countdown == 0) {
             Frames->countdown = Frames->callsToNextFrame;
 
             if(Frames->forward && ++Frames->index == Frames->num) {
@@ -136,13 +140,17 @@ void a_spriteframes_flipDirection(ASpriteFrames* Frames)
     Frames->forward = !Frames->forward;
 }
 
-int a_spriteframes_getSpeed(const ASpriteFrames* Frames)
+unsigned int a_spriteframes_getSpeed(const ASpriteFrames* Frames)
 {
     return Frames->callsToNextFrame;
 }
 
-void a_spriteframes_setSpeed(ASpriteFrames* Frames, int CallsToNextFrame)
+void a_spriteframes_setSpeed(ASpriteFrames* Frames, unsigned int CallsToNextFrame)
 {
+    if(CallsToNextFrame < 1) {
+        a_out__fatal("a_spriteframes_setSpeed: CallsToNextFrame<1");
+    }
+
     Frames->callsToNextFrame = CallsToNextFrame;
 }
 

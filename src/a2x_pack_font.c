@@ -196,7 +196,7 @@ size_t a_font_load(const ASprite* Sheet, int X, int Y, AFontLoad Loader)
         end = charIndex('9');
     }
 
-    ASpriteFrames* sf = a_spriteframes_new(Sheet, X, Y, 0);
+    ASpriteFrames* sf = a_spriteframes_new(Sheet, X, Y, 1);
 
     for(int i = start; i <= end; i++) {
         ASprite* spr = a_spriteframes_next(sf);

@@ -134,7 +134,7 @@ void a_console__init(void)
 void a_console__init2(void)
 {
     ASprite* graphics = a_sprite_fromData(g_media_console);
-    ASpriteFrames* frames = a_spriteframes_new(graphics, 0, 0, 0);
+    ASpriteFrames* frames = a_spriteframes_new(graphics, 0, 0, 1);
 
     g_titles[A_CONSOLE_MESSAGE] = a_spriteframes_getByIndex(frames, 0);
     g_titles[A_CONSOLE_WARNING] = a_spriteframes_getByIndex(frames, 1);
