@@ -130,6 +130,11 @@ size_t a_spriteframes_num(const ASpriteFrames* Frames)
     return Frames->num;
 }
 
+size_t a_spriteframes_currentIndex(const ASpriteFrames* Frames)
+{
+    return Frames->index;
+}
+
 void a_spriteframes_setDirection(ASpriteFrames* Frames, bool Forward)
 {
     Frames->forward = Forward;
