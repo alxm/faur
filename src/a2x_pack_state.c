@@ -103,7 +103,7 @@ static void state_handle(void)
     // Check if the current state just ran its Free stage
     if(current && current->stage == A_STATE_STAGE_FREE) {
         state_free(current);
-        a_entity__popCollection();
+        a_system__popCollection();
 
         a_list_pop(g_stack);
         current = a_list_peek(g_stack);
@@ -137,7 +137,7 @@ static void state_handle(void)
 
             AStateInstance* s = state_new(pending->name);
             a_list_push(g_stack, s);
-            a_entity__pushCollection();
+            a_system__pushCollection();
         } break;
 
         case A_STATE_ACTION_POP: {
@@ -269,7 +269,7 @@ bool a_state__nothingPending(void)
         first = false;
         a_fps__reset(0);
     } else {
-        a_entity_handle();
+        a_system_run();
         a_fps_frame();
     }
 

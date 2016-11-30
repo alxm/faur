@@ -28,5 +28,5 @@ typedef struct AComponentHeader AComponentHeader;
 extern void a_entity__init(void);
 extern void a_entity__uninit(void);
 
-extern void a_entity__pushCollection(void);
-extern void a_entity__popCollection(void);
+extern void a_system__pushCollection(void);
+extern void a_system__popCollection(void);

@@ -22,22 +22,19 @@
 #include "a2x_system_includes.h"
 
 typedef struct AEntity AEntity;
-
 typedef void AComponentFree(void* Self);
-typedef void AComponentTick(void* Self);
-typedef void AComponentDraw(void* Self);
+typedef void ASystemHandler(AEntity* Entity, void* GlobalContext);
 
-extern void a_component_declare(const char* Name, size_t Size);
-extern void a_component_setFree(const char* Name, AComponentFree* Free);
-extern void a_component_setTick(const char* Name, AComponentTick* Tick);
-extern void a_component_setDraw(const char* Name, AComponentDraw* Draw);
-
+extern void a_component_declare(const char* Name, size_t Size, AComponentFree* Free);
 extern AEntity* a_component_getEntity(void* Component);
 
 extern AEntity* a_entity_new(void);
 extern void a_entity_free(AEntity* Entity);
-
 extern void* a_entity_addComponent(AEntity* Entity, const char* Component);
 extern void* a_entity_getComponent(AEntity* Entity, const char* Component);
 
-extern void a_entity_handle(void);
+extern void a_system_declare(const char* Name, const char* Components, ASystemHandler* Handler);
+extern void a_system_tick(const char* Systems);
+extern void a_system_draw(const char* Systems);
+extern void a_system_setContext(void* GlobalContext);
+extern void a_system_run(void);
