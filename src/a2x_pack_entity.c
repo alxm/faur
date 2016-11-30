@@ -26,6 +26,7 @@ typedef enum ASystemCollectionState {
 } ASystemCollectionState;
 
 typedef struct ASystemCollection {
+    AList* entities;
     AStrHash* components;
     AStrHash* systems;
     AList* tickSystems;
@@ -43,8 +44,9 @@ typedef struct ASystem {
 } ASystem;
 
 struct AEntity {
-    AStrHash* components;
+    AListNode* collectionNode;
     AList* systemNodes;
+    AStrHash* components;
     uint8_t* bits;
 };
 
@@ -113,16 +115,23 @@ AEntity* a_entity_new(void)
 
     AEntity* e = a_mem_malloc(sizeof(AEntity));
 
-    e->components = a_strhash_new();
+    e->collectionNode = a_list_addLast(g_collection->entities, e);
     e->systemNodes = a_list_new();
+    e->components = a_strhash_new();
     e->bits = a_mem_malloc(g_collection->bitFieldSize);
     memset(e->bits, 0, g_collection->bitFieldSize);
 
     return e;
 }
 
-void a_entity_free(AEntity* Entity)
+static void a_entity__free(AEntity* Entity)
 {
+    A_LIST_ITERATE(Entity->systemNodes, AListNode*, node) {
+        a_list_removeNode(node);
+    }
+
+    a_list_free(Entity->systemNodes);
+
     A_STRHASH_ITERATE(Entity->components, AComponent*, header) {
         if(header->free) {
             header->free(GET_COMPONENT(header));
@@ -133,14 +142,14 @@ void a_entity_free(AEntity* Entity)
 
     a_strhash_free(Entity->components);
 
-    A_LIST_ITERATE(Entity->systemNodes, AListNode*, node) {
-        a_list_removeNode(node);
-    }
-
-    a_list_free(Entity->systemNodes);
-
     free(Entity->bits);
     free(Entity);
+}
+
+void a_entity_free(AEntity* Entity)
+{
+    a_list_removeNode(Entity->collectionNode);
+    a_entity__free(Entity);
 }
 
 void* a_entity_addComponent(AEntity* Entity, const char* Component)
@@ -288,6 +297,7 @@ void a_system__pushCollection(void)
 {
     ASystemCollection* c = a_mem_malloc(sizeof(ASystemCollection));
 
+    c->entities = a_list_new();
     c->components = a_strhash_new();
     c->systems = a_strhash_new();
     c->tickSystems = a_list_new();
@@ -306,6 +316,17 @@ void a_system__pushCollection(void)
 
 void a_system__popCollection(void)
 {
+    if(!a_list_empty(g_collection->entities)) {
+        a_out__warning("Did not free %d entities",
+                       a_list_size(g_collection->entities));
+
+        A_LIST_ITERATE(g_collection->entities, AEntity*, entity) {
+            a_entity__free(entity);
+        }
+    }
+
+    a_list_free(g_collection->entities);
+
     A_STRHASH_ITERATE(g_collection->components, AComponent*, component) {
         free(component);
     }
@@ -323,6 +344,5 @@ void a_system__popCollection(void)
     a_list_free(g_collection->drawSystems);
 
     free(g_collection);
-
     g_collection = a_list_pop(g_stack);
 }
