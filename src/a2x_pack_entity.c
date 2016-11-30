@@ -48,15 +48,15 @@ struct AEntity {
     uint8_t* bits;
 };
 
-struct AComponentHeader {
+typedef struct AComponent {
     size_t size;
     AComponentFree* free;
     AEntity* parent;
     unsigned int bit;
-};
+} AComponent;
 
 #define GET_COMPONENT(Header) ((void*)(Header + 1))
-#define GET_HEADER(Component) ((AComponentHeader*)Component - 1)
+#define GET_HEADER(Component) ((AComponent*)Component - 1)
 
 static AList* g_stack;
 static ASystemCollection* g_collection;
@@ -92,9 +92,9 @@ void a_component_declare(const char* Name, size_t Size, AComponentFree* Free)
         g_collection->bitFieldSize++;
     }
 
-    AComponentHeader* h = a_mem_malloc(sizeof(AComponentHeader));
+    AComponent* h = a_mem_malloc(sizeof(AComponent));
 
-    h->size = sizeof(AComponentHeader) + Size;
+    h->size = sizeof(AComponent) + Size;
     h->free = Free;
     h->parent = NULL;
     h->bit = g_collection->nextBit++;
@@ -123,7 +123,7 @@ AEntity* a_entity_new(void)
 
 void a_entity_free(AEntity* Entity)
 {
-    A_STRHASH_ITERATE(Entity->components, AComponentHeader*, header) {
+    A_STRHASH_ITERATE(Entity->components, AComponent*, header) {
         if(header->free) {
             header->free(GET_COMPONENT(header));
         }
@@ -145,13 +145,13 @@ void a_entity_free(AEntity* Entity)
 
 void* a_entity_addComponent(AEntity* Entity, const char* Component)
 {
-    const AComponentHeader* c = a_strhash_get(g_collection->components, Component);
+    const AComponent* c = a_strhash_get(g_collection->components, Component);
 
     if(c == NULL) {
         a_out__fatal("Undeclared component '%s'");
     }
 
-    AComponentHeader* header = a_mem_malloc(c->size);
+    AComponent* header = a_mem_malloc(c->size);
 
     *header = *c;
     header->parent = Entity;
@@ -182,7 +182,7 @@ void* a_entity_addComponent(AEntity* Entity, const char* Component)
 
 void* a_entity_getComponent(AEntity* Entity, const char* Component)
 {
-    AComponentHeader* header = a_strhash_get(Entity->components, Component);
+    AComponent* header = a_strhash_get(Entity->components, Component);
 
     if(header == NULL) {
         return NULL;
@@ -215,7 +215,7 @@ void a_system_declare(const char* Name, const char* Components, ASystemHandler* 
     AStrTok* tok = a_strtok_new(Components, " ");
 
     A_STRTOK_ITERATE(tok, name) {
-        AComponentHeader* c = a_strhash_get(g_collection->components, name);
+        AComponent* c = a_strhash_get(g_collection->components, name);
 
         if(c == NULL) {
             a_out__fatal("Undeclared component '%s' for system '%s'",
@@ -306,7 +306,7 @@ void a_system__pushCollection(void)
 
 void a_system__popCollection(void)
 {
-    A_STRHASH_ITERATE(g_collection->components, AComponentHeader*, component) {
+    A_STRHASH_ITERATE(g_collection->components, AComponent*, component) {
         free(component);
     }
 
