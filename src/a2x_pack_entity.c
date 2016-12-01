@@ -104,7 +104,7 @@ void a_component_declare(const char* Name, size_t Size, AComponentFree* Free)
     a_strhash_add(g_collection->components, Name, h);
 }
 
-AEntity* a_component_getEntity(void* Component)
+AEntity* a_component_getEntity(const void* Component)
 {
     return GET_HEADER(Component)->parent;
 }
@@ -189,7 +189,7 @@ void* a_entity_addComponent(AEntity* Entity, const char* Component)
     return GET_COMPONENT(header);
 }
 
-void* a_entity_getComponent(AEntity* Entity, const char* Component)
+void* a_entity_getComponent(const AEntity* Entity, const char* Component)
 {
     AComponent* header = a_strhash_get(Entity->components, Component);
 
@@ -245,7 +245,7 @@ void a_system_tick(const char* Systems)
         ASystem* system = a_strhash_get(g_collection->systems, systemName);
 
         if(system == NULL) {
-            a_out__fatal("Undeclared tickSystems system '%s'", systemName);
+            a_out__fatal("Undeclared tick system '%s'", systemName);
         }
 
         a_list_addLast(g_collection->tickSystems, system);
@@ -262,7 +262,7 @@ void a_system_draw(const char* Systems)
         ASystem* system = a_strhash_get(g_collection->systems, systemName);
 
         if(system == NULL) {
-            a_out__fatal("Undeclared drawSystems system '%s'", systemName);
+            a_out__fatal("Undeclared draw system '%s'", systemName);
         }
 
         a_list_addLast(g_collection->drawSystems, system);
