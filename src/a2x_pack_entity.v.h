@@ -21,6 +21,7 @@
 
 #include "a2x_pack_entity.p.h"
 
+#include "a2x_pack_bitfield.v.h"
 #include "a2x_pack_strhash.v.h"
 
 extern void a_entity__init(void);

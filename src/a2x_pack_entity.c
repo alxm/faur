@@ -32,29 +32,29 @@ typedef struct ASystemCollection {
     AList* tickSystems;
     AList* drawSystems;
     void* context;
-    size_t bitFieldSize;
-    unsigned int nextBit;
     ASystemCollectionState state;
 } ASystemCollection;
 
 typedef struct ASystem {
     ASystemHandler* handler;
     AList* entities;
-    uint8_t* bits;
+    ABitfield* componentBits;
+    size_t bit;
 } ASystem;
 
 struct AEntity {
     AListNode* collectionNode;
     AList* systemNodes;
     AStrHash* components;
-    uint8_t* bits;
+    ABitfield* componentBits;
+    ABitfield* systemBits;
 };
 
 typedef struct AComponent {
     size_t size;
     AComponentFree* free;
     AEntity* parent;
-    unsigned int bit;
+    size_t bit;
 } AComponent;
 
 #define GET_COMPONENT(Header) ((void*)(Header + 1))
@@ -90,16 +90,12 @@ void a_component_declare(const char* Name, size_t Size, AComponentFree* Free)
         a_out__fatal("Component '%s' was already defined");
     }
 
-    if(g_collection->nextBit % CHAR_BIT == 0) {
-        g_collection->bitFieldSize++;
-    }
-
     AComponent* h = a_mem_malloc(sizeof(AComponent));
 
     h->size = sizeof(AComponent) + Size;
     h->free = Free;
     h->parent = NULL;
-    h->bit = g_collection->nextBit++;
+    h->bit = a_strhash_size(g_collection->components);
 
     a_strhash_add(g_collection->components, Name, h);
 }
@@ -118,8 +114,8 @@ AEntity* a_entity_new(void)
     e->collectionNode = a_list_addLast(g_collection->entities, e);
     e->systemNodes = a_list_new();
     e->components = a_strhash_new();
-    e->bits = a_mem_malloc(g_collection->bitFieldSize);
-    memset(e->bits, 0, g_collection->bitFieldSize);
+    e->componentBits = a_bitfield_new(a_strhash_size(g_collection->components));
+    e->systemBits = a_bitfield_new(a_strhash_size(g_collection->systems));
 
     return e;
 }
@@ -141,8 +137,8 @@ static void a_entity__free(AEntity* Entity)
     }
 
     a_strhash_free(Entity->components);
-
-    free(Entity->bits);
+    a_bitfield_free(Entity->componentBits);
+    a_bitfield_free(Entity->systemBits);
     free(Entity);
 }
 
@@ -166,21 +162,14 @@ void* a_entity_addComponent(AEntity* Entity, const char* Component)
     header->parent = Entity;
 
     a_strhash_add(Entity->components, Component, header);
-
-    Entity->bits[header->bit >> 3] |= 1 << (header->bit & 7);
+    a_bitfield_set(Entity->componentBits, header->bit);
 
     // Check if the Entity now matches a system
     A_STRHASH_ITERATE(g_collection->systems, ASystem*, system) {
-        bool matches = true;
+        if(!a_bitfield_test(Entity->systemBits, system->bit)
+            && a_bitfield_testMask(Entity->componentBits, system->componentBits)) {
 
-        for(int i = 0; i < g_collection->bitFieldSize; i++) {
-            if((Entity->bits[i] & system->bits[i]) != system->bits[i]) {
-                matches = false;
-                break;
-            }
-        }
-
-        if(matches) {
+            a_bitfield_set(Entity->systemBits, system->bit);
             a_list_addLast(Entity->systemNodes,
                            a_list_addLast(system->entities, Entity));
         }
@@ -216,8 +205,8 @@ void a_system_declare(const char* Name, const char* Components, ASystemHandler* 
 
     s->handler = Handler;
     s->entities = a_list_new();
-    s->bits = a_mem_malloc(g_collection->bitFieldSize);
-    memset(s->bits, 0, g_collection->bitFieldSize);
+    s->componentBits = a_bitfield_new(a_strhash_size(g_collection->components));
+    s->bit = a_strhash_size(g_collection->systems);
 
     a_strhash_add(g_collection->systems, Name, s);
 
@@ -231,7 +220,7 @@ void a_system_declare(const char* Name, const char* Components, ASystemHandler* 
                          name, Name);
         }
 
-        s->bits[c->bit >> 3] |= 1 << (c->bit & 7);
+        a_bitfield_set(s->componentBits, c->bit);
     }
 
     a_strtok_free(tok);
@@ -303,8 +292,6 @@ void a_system__pushCollection(void)
     c->tickSystems = a_list_new();
     c->drawSystems = a_list_new();
     c->context = NULL;
-    c->bitFieldSize = 0;
-    c->nextBit = 0;
     c->state = A_SYSTEM_STATE_DECLARE_COMPONENTS;
 
     if(g_collection != NULL) {
@@ -335,7 +322,7 @@ void a_system__popCollection(void)
 
     A_STRHASH_ITERATE(g_collection->systems, ASystem*, system) {
         a_list_free(system->entities);
-        free(system->bits);
+        a_bitfield_free(system->componentBits);
         free(system);
     }
 
