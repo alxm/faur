@@ -87,7 +87,7 @@ void a_component_declare(const char* Name, size_t Size, AComponentFree* Free)
     }
 
     if(a_strhash_contains(g_collection->components, Name)) {
-        a_out__fatal("Component '%s' was already defined");
+        a_out__fatal("Component '%s' already declared", Name);
     }
 
     AComponent* h = a_mem_malloc(sizeof(AComponent));
@@ -115,6 +115,10 @@ void a_system_declare(const char* Name, const char* Components, ASystemHandler* 
                          "systems or creating entities",
                          Name);
         }
+    }
+
+    if(a_strhash_contains(g_collection->systems, Name)) {
+        a_out__fatal("System '%s' already declared", Name);
     }
 
     ASystem* s = a_mem_malloc(sizeof(ASystem));
@@ -246,7 +250,11 @@ void* a_entity_addComponent(AEntity* Entity, const char* Component)
     const AComponent* c = a_strhash_get(g_collection->components, Component);
 
     if(c == NULL) {
-        a_out__fatal("Undeclared component '%s'");
+        a_out__fatal("Undeclared component '%s'", Component);
+    }
+
+    if(a_bitfield_test(Entity->componentBits, c->bit)) {
+        a_out__fatal("Component '%s' already added", Component);
     }
 
     AComponent* header = a_mem_malloc(c->size);
