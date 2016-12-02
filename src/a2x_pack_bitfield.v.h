@@ -19,13 +19,6 @@
 
 #pragma once
 
-#include "a2x_pack_entity.p.h"
+#include "a2x_pack_bitfield.p.h"
 
-#include "a2x_pack_bitfield.v.h"
-#include "a2x_pack_strhash.v.h"
-
-extern void a_entity__init(void);
-extern void a_entity__uninit(void);
-
-extern void a_system__pushCollection(void);
-extern void a_system__popCollection(void);
+#include "a2x_pack_mem.v.h"

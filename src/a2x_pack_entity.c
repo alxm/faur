@@ -19,125 +19,213 @@
 
 #include "a2x_pack_entity.v.h"
 
-struct AEntity {
-    AStrHash* components;
-};
+typedef enum ASystemCollectionState {
+    A_SYSTEM_STATE_DECLARE_COMPONENTS,
+    A_SYSTEM_STATE_DECLARE_SYSTEMS,
+    A_SYSTEM_STATE_CREATE_ENTITIES
+} ASystemCollectionState;
 
-struct AComponentHeader {
+typedef struct ASystemCollection {
+    AList* entities;
+    AStrHash* components;
+    AStrHash* systems;
+    AList* tickSystems;
+    AList* drawSystems;
+    void* context;
+    ASystemCollectionState state;
+} ASystemCollection;
+
+typedef struct AComponent {
     size_t size;
     AComponentFree* free;
-    AComponentTick* tick;
-    AComponentDraw* draw;
     AEntity* parent;
+    size_t bit;
+} AComponent;
+
+typedef struct ASystem {
+    ASystemHandler* handler;
+    AList* entities;
+    ABitfield* componentBits;
+    size_t bit;
+} ASystem;
+
+struct AEntity {
     AListNode* collectionNode;
+    AList* systemNodes;
+    AStrHash* components;
+    ABitfield* componentBits;
+    ABitfield* systemBits;
 };
 
 #define GET_COMPONENT(Header) ((void*)(Header + 1))
-#define GET_HEADER(Component) ((AComponentHeader*)Component - 1)
+#define GET_HEADER(Component) ((AComponent*)Component - 1)
 
-static AStrHash* g_prototypes;
-static AList* g_tickOrder;
-static AList* g_drawOrder;
 static AList* g_stack;
+static ASystemCollection* g_collection;
 
 void a_entity__init(void)
 {
-    g_prototypes = a_strhash_new();
-    g_tickOrder = a_list_new();
-    g_drawOrder = a_list_new();
     g_stack = a_list_new();
+    g_collection = NULL;
 
     // In case application isn't using states
-    a_entity__pushCollection();
+    a_system__pushCollection();
 }
 
 void a_entity__uninit(void)
 {
-    a_entity__popCollection();
+    a_system__popCollection();
     a_list_free(g_stack);
-
-    a_list_free(g_tickOrder);
-    a_list_free(g_drawOrder);
-
-    A_STRHASH_ITERATE(g_prototypes, AComponentHeader*, prototype) {
-        free(prototype);
-    }
-
-    a_strhash_free(g_prototypes);
 }
 
-void a_component_declare(const char* Name, size_t Size)
+void a_component_declare(const char* Name, size_t Size, AComponentFree* Free)
 {
-    if(a_strhash_contains(g_prototypes, Name)) {
-        a_out__fatal("Component '%s' was already defined");
+    if(g_collection->state != A_SYSTEM_STATE_DECLARE_COMPONENTS) {
+        a_out__fatal("Cannot declare component '%s' after declaring systems "
+                     "or creating entities",
+                     Name);
     }
 
-    AComponentHeader* h = a_mem_malloc(sizeof(AComponentHeader));
-
-    h->size = sizeof(AComponentHeader) + Size;
-    h->free = NULL;
-    h->tick = NULL;
-    h->draw = NULL;
-    h->parent = NULL;
-    h->collectionNode = NULL;
-
-    a_strhash_add(g_prototypes, Name, h);
-}
-
-void a_component_setFree(const char* Name, AComponentFree* Free)
-{
-    AComponentHeader* h = a_strhash_get(g_prototypes, Name);
-
-    if(h == NULL) {
-        a_out__fatal("Undeclared component '%s'", Name);
+    if(a_strhash_contains(g_collection->components, Name)) {
+        a_out__fatal("Component '%s' already declared", Name);
     }
 
+    AComponent* h = a_mem_malloc(sizeof(AComponent));
+
+    h->size = sizeof(AComponent) + Size;
     h->free = Free;
+    h->parent = NULL;
+    h->bit = a_strhash_size(g_collection->components);
+
+    a_strhash_add(g_collection->components, Name, h);
 }
 
-void a_component_setTick(const char* Name, AComponentTick* Tick)
-{
-    AComponentHeader* h = a_strhash_get(g_prototypes, Name);
-
-    if(h == NULL) {
-        a_out__fatal("Undeclared component '%s'", Name);
-    }
-
-    h->tick = Tick;
-    a_list_addLast(g_tickOrder, (char*)Name);
-}
-
-void a_component_setDraw(const char* Name, AComponentDraw* Draw)
-{
-    AComponentHeader* h = a_strhash_get(g_prototypes, Name);
-
-    if(h == NULL) {
-        a_out__fatal("Undeclared component '%s'", Name);
-    }
-
-    h->draw = Draw;
-    a_list_addLast(g_drawOrder, (char*)Name);
-}
-
-AEntity* a_component_getEntity(void* Component)
+AEntity* a_component_getEntity(const void* Component)
 {
     return GET_HEADER(Component)->parent;
 }
 
+void a_system_declare(const char* Name, const char* Components, ASystemHandler* Handler)
+{
+    if(g_collection->state != A_SYSTEM_STATE_DECLARE_SYSTEMS) {
+        if(g_collection->state == A_SYSTEM_STATE_DECLARE_COMPONENTS) {
+            g_collection->state = A_SYSTEM_STATE_DECLARE_SYSTEMS;
+        } else {
+            a_out__fatal("Cannot declare component '%s' after declaring "
+                         "systems or creating entities",
+                         Name);
+        }
+    }
+
+    if(a_strhash_contains(g_collection->systems, Name)) {
+        a_out__fatal("System '%s' already declared", Name);
+    }
+
+    ASystem* s = a_mem_malloc(sizeof(ASystem));
+
+    s->handler = Handler;
+    s->entities = a_list_new();
+    s->componentBits = a_bitfield_new(a_strhash_size(g_collection->components));
+    s->bit = a_strhash_size(g_collection->systems);
+
+    a_strhash_add(g_collection->systems, Name, s);
+
+    AStrTok* tok = a_strtok_new(Components, " ");
+
+    A_STRTOK_ITERATE(tok, name) {
+        AComponent* c = a_strhash_get(g_collection->components, name);
+
+        if(c == NULL) {
+            a_out__fatal("Undeclared component '%s' for system '%s'",
+                         name, Name);
+        }
+
+        a_bitfield_set(s->componentBits, c->bit);
+    }
+
+    a_strtok_free(tok);
+}
+
+void a_system_tick(const char* Systems)
+{
+    AStrTok* tok = a_strtok_new(Systems, " ");
+
+    A_STRTOK_ITERATE(tok, systemName) {
+        ASystem* system = a_strhash_get(g_collection->systems, systemName);
+
+        if(system == NULL) {
+            a_out__fatal("Undeclared tick system '%s'", systemName);
+        }
+
+        a_list_addLast(g_collection->tickSystems, system);
+    }
+
+    a_strtok_free(tok);
+}
+
+void a_system_draw(const char* Systems)
+{
+    AStrTok* tok = a_strtok_new(Systems, " ");
+
+    A_STRTOK_ITERATE(tok, systemName) {
+        ASystem* system = a_strhash_get(g_collection->systems, systemName);
+
+        if(system == NULL) {
+            a_out__fatal("Undeclared draw system '%s'", systemName);
+        }
+
+        a_list_addLast(g_collection->drawSystems, system);
+    }
+
+    a_strtok_free(tok);
+}
+
+void a_system_setContext(void* GlobalContext)
+{
+    g_collection->context = GlobalContext;
+}
+
+void a_system_run(void)
+{
+    A_LIST_ITERATE(g_collection->tickSystems, ASystem*, system) {
+        A_LIST_ITERATE(system->entities, AEntity*, entity) {
+            system->handler(entity, g_collection->context);
+        }
+    }
+
+    if(a_fps_notSkipped()) {
+        A_LIST_ITERATE(g_collection->drawSystems, ASystem*, system) {
+            A_LIST_ITERATE(system->entities, AEntity*, entity) {
+                system->handler(entity, g_collection->context);
+            }
+        }
+    }
+}
+
 AEntity* a_entity_new(void)
 {
+    g_collection->state = A_SYSTEM_STATE_CREATE_ENTITIES;
+
     AEntity* e = a_mem_malloc(sizeof(AEntity));
 
+    e->collectionNode = a_list_addLast(g_collection->entities, e);
+    e->systemNodes = a_list_new();
     e->components = a_strhash_new();
+    e->componentBits = a_bitfield_new(a_strhash_size(g_collection->components));
+    e->systemBits = a_bitfield_new(a_strhash_size(g_collection->systems));
 
     return e;
 }
 
-void a_entity_free(AEntity* Entity)
+static void a_entity__free(AEntity* Entity)
 {
-    A_STRHASH_ITERATE(Entity->components, AComponentHeader*, header) {
-        a_list_removeNode(header->collectionNode);
+    A_LIST_ITERATE(Entity->systemNodes, AListNode*, node) {
+        a_list_removeNode(node);
+    }
 
+    a_list_free(Entity->systemNodes);
+
+    A_STRHASH_ITERATE(Entity->components, AComponent*, header) {
         if(header->free) {
             header->free(GET_COMPONENT(header));
         }
@@ -146,40 +234,54 @@ void a_entity_free(AEntity* Entity)
     }
 
     a_strhash_free(Entity->components);
+    a_bitfield_free(Entity->componentBits);
+    a_bitfield_free(Entity->systemBits);
     free(Entity);
+}
+
+void a_entity_free(AEntity* Entity)
+{
+    a_list_removeNode(Entity->collectionNode);
+    a_entity__free(Entity);
 }
 
 void* a_entity_addComponent(AEntity* Entity, const char* Component)
 {
-    const AComponentHeader* proto = a_strhash_get(g_prototypes, Component);
+    const AComponent* c = a_strhash_get(g_collection->components, Component);
 
-    if(proto == NULL) {
-        a_out__fatal("Undeclared component '%s'");
+    if(c == NULL) {
+        a_out__fatal("Undeclared component '%s'", Component);
     }
 
-    AComponentHeader* header = a_mem_malloc(proto->size);
+    if(a_bitfield_test(Entity->componentBits, c->bit)) {
+        a_out__fatal("Component '%s' already added", Component);
+    }
 
-    *header = *proto;
+    AComponent* header = a_mem_malloc(c->size);
+
+    *header = *c;
     header->parent = Entity;
 
     a_strhash_add(Entity->components, Component, header);
+    a_bitfield_set(Entity->componentBits, header->bit);
 
-    AStrHash* collection = a_list_peek(g_stack);
-    AList* components = a_strhash_get(collection, Component);
+    // Check if the Entity now matches a system
+    A_STRHASH_ITERATE(g_collection->systems, ASystem*, system) {
+        if(!a_bitfield_test(Entity->systemBits, system->bit)
+            && a_bitfield_testMask(Entity->componentBits, system->componentBits)) {
 
-    if(components == NULL) {
-        components = a_list_new();
-        a_strhash_add(collection, Component, components);
+            a_bitfield_set(Entity->systemBits, system->bit);
+            a_list_addLast(Entity->systemNodes,
+                           a_list_addLast(system->entities, Entity));
+        }
     }
-
-    header->collectionNode = a_list_addLast(components, header);
 
     return GET_COMPONENT(header);
 }
 
-void* a_entity_getComponent(AEntity* Entity, const char* Component)
+void* a_entity_getComponent(const AEntity* Entity, const char* Component)
 {
-    AComponentHeader* header = a_strhash_get(Entity->components, Component);
+    AComponent* header = a_strhash_get(Entity->components, Component);
 
     if(header == NULL) {
         return NULL;
@@ -188,53 +290,54 @@ void* a_entity_getComponent(AEntity* Entity, const char* Component)
     return GET_COMPONENT(header);
 }
 
-void a_entity__pushCollection(void)
+void a_system__pushCollection(void)
 {
-    a_list_push(g_stack, a_strhash_new());
+    ASystemCollection* c = a_mem_malloc(sizeof(ASystemCollection));
+
+    c->entities = a_list_new();
+    c->components = a_strhash_new();
+    c->systems = a_strhash_new();
+    c->tickSystems = a_list_new();
+    c->drawSystems = a_list_new();
+    c->context = NULL;
+    c->state = A_SYSTEM_STATE_DECLARE_COMPONENTS;
+
+    if(g_collection != NULL) {
+        a_list_push(g_stack, g_collection);
+    }
+
+    g_collection = c;
 }
 
-void a_entity__popCollection(void)
+void a_system__popCollection(void)
 {
-    AStrHash* collection = a_list_pop(g_stack);
+    if(!a_list_empty(g_collection->entities)) {
+        a_out__warning("Did not free %d entities",
+                       a_list_size(g_collection->entities));
 
-    A_STRHASH_ITERATE(collection, AList*, components) {
-        a_list_free(components);
-    }
-
-    a_strhash_free(collection);
-}
-
-void a_entity_handle(void)
-{
-    AStrHash* collection = a_list_peek(g_stack);
-
-    A_LIST_ITERATE(g_tickOrder, const char*, Name) {
-        AList* components = a_strhash_get(collection, Name);
-
-        if(components == NULL) {
-            continue;
-        }
-
-        A_LIST_ITERATE(components, AComponentHeader*, header) {
-            if(header->tick) {
-                header->tick(GET_COMPONENT(header));
-            }
+        A_LIST_ITERATE(g_collection->entities, AEntity*, entity) {
+            a_entity__free(entity);
         }
     }
 
-    if(a_fps_notSkipped()) {
-        A_LIST_ITERATE(g_drawOrder, const char*, Name) {
-            AList* components = a_strhash_get(collection, Name);
+    a_list_free(g_collection->entities);
 
-            if(components == NULL) {
-                continue;
-            }
-
-            A_LIST_ITERATE(components, AComponentHeader*, header) {
-                if(header->draw) {
-                    header->draw(GET_COMPONENT(header));
-                }
-            }
-        }
+    A_STRHASH_ITERATE(g_collection->components, AComponent*, component) {
+        free(component);
     }
+
+    a_strhash_free(g_collection->components);
+
+    A_STRHASH_ITERATE(g_collection->systems, ASystem*, system) {
+        a_list_free(system->entities);
+        a_bitfield_free(system->componentBits);
+        free(system);
+    }
+
+    a_strhash_free(g_collection->systems);
+    a_list_free(g_collection->tickSystems);
+    a_list_free(g_collection->drawSystems);
+
+    free(g_collection);
+    g_collection = a_list_pop(g_stack);
 }

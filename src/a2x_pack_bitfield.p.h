@@ -21,20 +21,14 @@
 
 #include "a2x_system_includes.h"
 
-typedef struct AEntity AEntity;
-typedef void AComponentFree(void* Self);
-typedef void ASystemHandler(AEntity* Entity, void* GlobalContext);
+typedef struct ABitfield ABitfield;
 
-extern void a_component_declare(const char* Name, size_t Size, AComponentFree* Free);
-extern AEntity* a_component_getEntity(const void* Component);
+extern ABitfield* a_bitfield_new(size_t NumBits);
+extern void a_bitfield_free(ABitfield* Bitfield);
 
-extern void a_system_declare(const char* Name, const char* Components, ASystemHandler* Handler);
-extern void a_system_tick(const char* Systems);
-extern void a_system_draw(const char* Systems);
-extern void a_system_setContext(void* GlobalContext);
-extern void a_system_run(void);
+extern void a_bitfield_set(ABitfield* Bitfield, size_t Bit);
+extern void a_bitfield_clear(ABitfield* Bitfield, size_t Bit);
+extern void a_bitfield_reset(ABitfield* Bitfield);
 
-extern AEntity* a_entity_new(void);
-extern void a_entity_free(AEntity* Entity);
-extern void* a_entity_addComponent(AEntity* Entity, const char* Component);
-extern void* a_entity_getComponent(const AEntity* Entity, const char* Component);
+extern bool a_bitfield_test(const ABitfield* Bitfield, size_t Bit);
+extern bool a_bitfield_testMask(const ABitfield* Bitfield, const ABitfield* Mask);
