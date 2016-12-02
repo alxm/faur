@@ -28,13 +28,13 @@ typedef void ASystemHandler(AEntity* Entity, void* GlobalContext);
 extern void a_component_declare(const char* Name, size_t Size, AComponentFree* Free);
 extern AEntity* a_component_getEntity(const void* Component);
 
-extern AEntity* a_entity_new(void);
-extern void a_entity_free(AEntity* Entity);
-extern void* a_entity_addComponent(AEntity* Entity, const char* Component);
-extern void* a_entity_getComponent(const AEntity* Entity, const char* Component);
-
 extern void a_system_declare(const char* Name, const char* Components, ASystemHandler* Handler);
 extern void a_system_tick(const char* Systems);
 extern void a_system_draw(const char* Systems);
 extern void a_system_setContext(void* GlobalContext);
 extern void a_system_run(void);
+
+extern AEntity* a_entity_new(void);
+extern void a_entity_free(AEntity* Entity);
+extern void* a_entity_addComponent(AEntity* Entity, const char* Component);
+extern void* a_entity_getComponent(const AEntity* Entity, const char* Component);
