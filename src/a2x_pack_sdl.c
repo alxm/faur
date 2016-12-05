@@ -463,7 +463,7 @@ void a_sdl__screen_set(void)
         a_screen__pixels = g_sdlScreen->pixels;
     #elif A_USE_LIB_SDL == 2
         int ret;
-        uint32_t windowFlags = SDL_WINDOW_RESIZABLE;
+        uint32_t windowFlags = SDL_WINDOW_MAXIMIZED | SDL_WINDOW_RESIZABLE;
 
         if(a_settings_getBool("video.fullscreen")) {
             windowFlags |= SDL_WINDOW_FULLSCREEN;
