@@ -311,13 +311,8 @@ void a_system__pushCollection(void)
 
 void a_system__popCollection(void)
 {
-    if(!a_list_empty(g_collection->entities)) {
-        a_out__warning("Did not free %d entities",
-                       a_list_size(g_collection->entities));
-
-        A_LIST_ITERATE(g_collection->entities, AEntity*, entity) {
-            a_entity__free(entity);
-        }
+    A_LIST_ITERATE(g_collection->entities, AEntity*, entity) {
+        a_entity__free(entity);
     }
 
     a_list_free(g_collection->entities);
