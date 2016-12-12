@@ -584,12 +584,18 @@ bool a_button_get(const AInput* Button)
 void a_button_unpress(const AInput* Button)
 {
     A_LIST_ITERATE(Button->buttons, AInputButton*, b) {
-        b->pressed = false;
+        if(b->pressed) {
+            b->pressed = false;
+            b->waitingForUnpress = true;
+        }
     }
 
     A_LIST_ITERATE(Button->combos, AInputButtonCombo*, c) {
         A_LIST_ITERATE(c->buttons, AInputButton*, b) {
-            b->pressed = false;
+            if(b->pressed) {
+                b->pressed = false;
+                b->waitingForUnpress = true;
+            }
         }
     }
 }
