@@ -60,6 +60,7 @@ extern int a_font_getY(void);
 extern void a_font_newLine(void);
 
 extern int a_font_getLineHeight(void);
+extern void a_font_setLineHeight(int Height);
 extern void a_font_setLineWidth(int Width);
 extern void a_font_resetLineWidth(void);
 

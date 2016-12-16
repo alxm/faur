@@ -46,6 +46,7 @@ static AFontAlign g_align;
 static int g_x, g_initialX;
 static int g_y;
 static int g_lineWidth;
+static int g_lineHeight;
 
 static int charIndex(char Character)
 {
@@ -135,7 +136,6 @@ void a_font__init(void)
 {
     g_fontsList = a_list_new();
     g_fonts = NULL;
-    g_currentFont = 0;
     g_align = A_FONT_ALIGN_LEFT;
     g_x = g_initialX = 0;
     g_y = 0;
@@ -156,6 +156,8 @@ void a_font__init(void)
     for(size_t f = 1; f < A_FONT_FACE_DEFAULT_NUM; f++) {
         a_font_copy(A_FONT_FACE_WHITE, colors[f]);
     }
+
+    a_font_setFace(A_FONT_FACE_WHITE);
 }
 
 void a_font__uninit(void)
@@ -252,6 +254,7 @@ size_t a_font_copy(int Font, APixel Color)
 void a_font_setFace(int Font)
 {
     g_currentFont = Font;
+    g_lineHeight = g_fonts[g_currentFont]->maxHeight + LINE_SPACING;
 }
 
 void a_font_setAlign(AFontAlign Align)
@@ -278,12 +281,17 @@ int a_font_getY(void)
 void a_font_newLine(void)
 {
     g_x = g_initialX;
-    g_y += g_fonts[g_currentFont]->maxHeight + LINE_SPACING;
+    g_y += g_lineHeight;
 }
 
 int a_font_getLineHeight(void)
 {
-    return g_fonts[g_currentFont]->maxHeight + LINE_SPACING;
+    return g_lineHeight;
+}
+
+void a_font_setLineHeight(int Height)
+{
+    g_lineHeight = Height;
 }
 
 void a_font_setLineWidth(int Width)
