@@ -59,8 +59,8 @@ extern int a_font_getX(void);
 extern int a_font_getY(void);
 extern void a_font_newLine(void);
 
-extern int a_font_lineHeight(void);
-extern void a_font_setLineWidth(int LineWidth);
+extern int a_font_getLineHeight(void);
+extern void a_font_setLineWidth(int Width);
 extern void a_font_resetLineWidth(void);
 
 extern int a_font_width(const char* Text);

@@ -281,14 +281,14 @@ void a_font_newLine(void)
     g_y += g_fonts[g_currentFont]->maxHeight + LINE_SPACING;
 }
 
-int a_font_lineHeight(void)
+int a_font_getLineHeight(void)
 {
     return g_fonts[g_currentFont]->maxHeight + LINE_SPACING;
 }
 
-void a_font_setLineWidth(int LineWidth)
+void a_font_setLineWidth(int Width)
 {
-    g_lineWidth = LineWidth;
+    g_lineWidth = Width;
 }
 
 void a_font_resetLineWidth(void)
