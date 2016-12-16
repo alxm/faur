@@ -360,38 +360,6 @@ void a_font_textf(const char* Format, ...)
     }
 }
 
-void a_font_int(int Number)
-{
-    char s[21];
-    snprintf(s, 21, "%d", Number);
-
-    a_font_text(s);
-}
-
-void a_font_float(float Number)
-{
-    char s[64];
-    snprintf(s, 64, "%f", Number);
-
-    a_font_text(s);
-}
-
-void a_font_double(double Number)
-{
-    char s[64];
-    snprintf(s, 64, "%lf", Number);
-
-    a_font_text(s);
-}
-
-void a_font_char(char Character)
-{
-    char s[2];
-    snprintf(s, 2, "%c", Character);
-
-    a_font_text(s);
-}
-
 int a_font_width(const char* Text)
 {
     int width = 0;

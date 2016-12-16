@@ -68,8 +68,3 @@ extern int a_font_widthf(const char* Format, ...);
 
 extern void a_font_text(const char* Text);
 extern void a_font_textf(const char* Format, ...);
-
-extern void a_font_int(int Number);
-extern void a_font_float(float Number);
-extern void a_font_double(double Number);
-extern void a_font_char(char Character);
