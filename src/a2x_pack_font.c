@@ -299,11 +299,6 @@ void a_font_setLineWidth(int Width)
     g_lineWidth = Width;
 }
 
-void a_font_resetLineWidth(void)
-{
-    g_lineWidth = 0;
-}
-
 void a_font_text(const char* Text)
 {
     if(*Text == '\0') {

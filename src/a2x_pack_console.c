@@ -103,7 +103,7 @@ static void screenCallback(void)
             a_font_newLine();
         }
 
-        a_font_resetLineWidth();
+        a_font_setLineWidth(0);
     }
 
     {
