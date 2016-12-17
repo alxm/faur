@@ -43,10 +43,8 @@ static AList* g_fontsList;
 static AFont** g_fonts;
 static int g_currentFont;
 static AFontAlign g_align;
-static int g_x, g_initialX;
-static int g_y;
-static int g_lineWidth;
-static int g_lineHeight;
+static int g_x, g_initialX, g_y;
+static int g_lineWidth, g_lineHeight;
 
 static int charIndex(char Character)
 {
@@ -61,24 +59,26 @@ static bool shortenText(const char* Text, char** NewText)
 {
     int tally = 0;
     int numChars = 0;
-    const AFont* const f = g_fonts[g_currentFont];
-    const bool isMonospaced = g_align & A_FONT_ALIGN_MONOSPACED;
+    AFont* font = g_fonts[g_currentFont];
     const char* text;
 
-    for(text = Text; *text != '\0'; text++) {
-        int charWidth = 0;
-        ASprite* spr = f->sprites[(int)*text];
+    if(g_align & A_FONT_ALIGN_MONOSPACED) {
+        for(text = Text; *text != '\0'; text++) {
+            numChars++;
+            tally += font->maxWidth;
 
-        if(*text == ' ') {
-            charWidth = isMonospaced ? f->maxWidth : BLANK_SPACE;
-        } else if(spr != NULL) {
-            charWidth = isMonospaced ? f->maxWidth : spr->w;
+            if(tally > g_lineWidth) {
+                break;
+            }
+
+            tally += CHAR_SPACING;
         }
+    } else {
+        for(text = Text; *text != '\0'; text++) {
+            ASprite* spr = font->sprites[(int)*text];
 
-        numChars++;
-
-        if(charWidth > 0) {
-            tally += charWidth;
+            numChars++;
+            tally += spr ? spr->w : BLANK_SPACE;
 
             if(tally > g_lineWidth) {
                 break;
@@ -103,20 +103,17 @@ static bool shortenText(const char* Text, char** NewText)
 
     tally += CHAR_SPACING + dotsWidth;
 
-    for(const char* text = Text + numChars - 1; tally > g_lineWidth; text--) {
-        int charWidth = 0;
-        ASprite* spr = f->sprites[(int)*text];
-
-        if(*text == ' ') {
-            charWidth = isMonospaced ? f->maxWidth : BLANK_SPACE;
-        } else if(spr != NULL) {
-            charWidth = isMonospaced ? f->maxWidth : spr->w;
+    if(g_align & A_FONT_ALIGN_MONOSPACED) {
+        for(text = Text + numChars - 1; tally > g_lineWidth; text--) {
+            numChars--;
+            tally -= CHAR_SPACING + font->maxWidth;
         }
+    } else {
+        for(text = Text + numChars - 1; tally > g_lineWidth; text--) {
+            ASprite* spr = font->sprites[(int)*text];
 
-        numChars--;
-
-        if(charWidth > 0) {
-            tally -= CHAR_SPACING + charWidth;
+            tally -= CHAR_SPACING + (spr ? spr->w : BLANK_SPACE);
+            numChars--;
         }
     }
 
@@ -307,7 +304,7 @@ void a_font_text(const char* Text)
 
     char* newBuffer = NULL;
     bool freeNewBuffer = false;
-    const bool isMonospaced = g_align & A_FONT_ALIGN_MONOSPACED;
+    AFont* font = g_fonts[g_currentFont];
 
     if(g_lineWidth > 0) {
         freeNewBuffer = shortenText(Text, &newBuffer);
@@ -325,21 +322,26 @@ void a_font_text(const char* Text)
         g_x -= a_font_width(Text);
     }
 
-    const AFont* const f = g_fonts[g_currentFont];
+    if(g_align & A_FONT_ALIGN_MONOSPACED) {
+        for( ; *Text != '\0'; Text++) {
+            ASprite* spr = font->sprites[(int)*Text];
 
-    for( ; *Text != '\0'; Text++) {
-        ASprite* spr = f->sprites[(int)*Text];
+            if(spr) {
+                a_sprite_blit(spr, g_x + (font->maxWidth - spr->w) / 2, g_y);
+            }
 
-        if(spr) {
-            if(isMonospaced) {
-                a_sprite_blit(spr, g_x + (f->maxWidth - spr->w) / 2, g_y);
-                g_x += f->maxWidth + CHAR_SPACING;
-            } else {
+            g_x += font->maxWidth + CHAR_SPACING;
+        }
+    } else {
+        for( ; *Text != '\0'; Text++) {
+            ASprite* spr = font->sprites[(int)*Text];
+
+            if(spr) {
                 a_sprite_blit(spr, g_x, g_y);
                 g_x += spr->w + CHAR_SPACING;
+            } else {
+                g_x += BLANK_SPACE + CHAR_SPACING;
             }
-        } else if(*Text == ' ') {
-            g_x += (isMonospaced ? f->maxWidth : BLANK_SPACE) + CHAR_SPACING;
         }
     }
 
@@ -365,21 +367,21 @@ void a_font_textf(const char* Format, ...)
 
 int a_font_width(const char* Text)
 {
-    int width = 0;
-    AFont* const f = g_fonts[g_currentFont];
-    const bool isMonospaced = g_align & A_FONT_ALIGN_MONOSPACED;
-
     if(*Text == '\0') {
         return 0;
     }
 
-    for( ; *Text != '\0'; Text++) {
-        ASprite* spr = f->sprites[(int)*Text];
+    int width = 0;
+    AFont* font = g_fonts[g_currentFont];
 
-        if(spr) {
-            width += (isMonospaced ? f->maxWidth : spr->w) + CHAR_SPACING;
-        } else if(*Text == ' ') {
-            width += (isMonospaced ? f->maxWidth : BLANK_SPACE) + CHAR_SPACING;
+    if(g_align & A_FONT_ALIGN_MONOSPACED) {
+        while(*Text++ != '\0') {
+            width += font->maxWidth + CHAR_SPACING;
+        }
+    } else {
+        for( ; *Text != '\0'; Text++) {
+            ASprite* spr = font->sprites[(int)*Text];
+            width += (spr ? spr->w : BLANK_SPACE) + CHAR_SPACING;
         }
     }
 
