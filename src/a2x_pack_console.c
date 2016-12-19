@@ -94,7 +94,6 @@ static void screenCallback(void)
         const int xOffset = 1 + g_titles[A_CONSOLE_MESSAGE]->w + 2;
 
         a_font_setCoords(xOffset, a_font_getY());
-        a_font_setLineWidth(a_screen__width - xOffset);
         a_font_setFace(A_FONT_FACE_LIGHT_GRAY);
 
         A_LIST_ITERATE(g_lines, ALine*, line) {
@@ -102,8 +101,6 @@ static void screenCallback(void)
             a_font_text(line->text);
             a_font_newLine();
         }
-
-        a_font_setLineWidth(0);
     }
 
     {

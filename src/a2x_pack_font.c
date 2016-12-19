@@ -44,7 +44,7 @@ static AFont** g_fonts;
 static int g_currentFont;
 static AFontAlign g_align;
 static int g_x, g_initialX, g_y;
-static int g_lineWidth, g_lineHeight;
+static int g_lineHeight;
 
 static int charIndex(char Character)
 {
@@ -55,80 +55,6 @@ static int charIndex(char Character)
     return -1;
 }
 
-static bool shortenText(const char* Text, char** NewText)
-{
-    int tally = 0;
-    int numChars = 0;
-    AFont* font = g_fonts[g_currentFont];
-    const char* text;
-
-    if(g_align & A_FONT_ALIGN_MONOSPACED) {
-        for(text = Text; *text != '\0'; text++) {
-            numChars++;
-            tally += font->maxWidth;
-
-            if(tally > g_lineWidth) {
-                break;
-            }
-
-            tally += CHAR_SPACING;
-        }
-    } else {
-        for(text = Text; *text != '\0'; text++) {
-            ASprite* spr = font->sprites[(int)*text];
-
-            numChars++;
-            tally += spr ? spr->w : BLANK_SPACE;
-
-            if(tally > g_lineWidth) {
-                break;
-            }
-
-            tally += CHAR_SPACING;
-        }
-    }
-
-    if(*text == '\0') {
-        // No need to shorten text
-        return false;
-    }
-
-    const int dotsWidth = a_font_width("...");
-
-    if(dotsWidth > g_lineWidth) {
-        // No room for "..."
-        *NewText = "\0";
-        return false;
-    }
-
-    tally += CHAR_SPACING + dotsWidth;
-
-    if(g_align & A_FONT_ALIGN_MONOSPACED) {
-        for(text = Text + numChars - 1; tally > g_lineWidth; text--) {
-            numChars--;
-            tally -= CHAR_SPACING + font->maxWidth;
-        }
-    } else {
-        for(text = Text + numChars - 1; tally > g_lineWidth; text--) {
-            ASprite* spr = font->sprites[(int)*text];
-
-            tally -= CHAR_SPACING + (spr ? spr->w : BLANK_SPACE);
-            numChars--;
-        }
-    }
-
-    char* buffer = a_mem_malloc((numChars + 4) * sizeof(char));
-    memcpy(buffer, Text, numChars * sizeof(char));
-
-    buffer[numChars + 0] = '.';
-    buffer[numChars + 1] = '.';
-    buffer[numChars + 2] = '.';
-    buffer[numChars + 3] = '\0';
-
-    *NewText = buffer;
-    return true;
-}
-
 void a_font__init(void)
 {
     g_fontsList = a_list_new();
@@ -136,9 +62,8 @@ void a_font__init(void)
     g_align = A_FONT_ALIGN_LEFT;
     g_x = g_initialX = 0;
     g_y = 0;
-    g_lineWidth = 0;
 
-    ASprite* const fontSprite = a_sprite_fromData(g_media_font);
+    ASprite* fontSprite = a_sprite_fromData(g_media_font);
 
     APixel colors[A_FONT_FACE_DEFAULT_NUM];
     colors[A_FONT_FACE_WHITE] = a_pixel_make(0xff, 0xff, 0xff);
@@ -291,28 +216,13 @@ void a_font_setLineHeight(int Height)
     g_lineHeight = Height;
 }
 
-void a_font_setLineWidth(int Width)
-{
-    g_lineWidth = Width;
-}
-
 void a_font_text(const char* Text)
 {
     if(*Text == '\0') {
         return;
     }
 
-    char* newBuffer = NULL;
-    bool freeNewBuffer = false;
     AFont* font = g_fonts[g_currentFont];
-
-    if(g_lineWidth > 0) {
-        freeNewBuffer = shortenText(Text, &newBuffer);
-
-        if(newBuffer != NULL) {
-            Text = newBuffer;
-        }
-    }
 
     if(g_align & A_FONT_ALIGN_MIDDLE) {
         g_x -= a_font_width(Text) / 2;
@@ -343,10 +253,6 @@ void a_font_text(const char* Text)
                 g_x += BLANK_SPACE + CHAR_SPACING;
             }
         }
-    }
-
-    if(freeNewBuffer) {
-        free(newBuffer);
     }
 }
 

@@ -61,7 +61,6 @@ extern void a_font_newLine(void);
 
 extern int a_font_getLineHeight(void);
 extern void a_font_setLineHeight(int Height);
-extern void a_font_setLineWidth(int Width);
 
 extern int a_font_width(const char* Text);
 extern int a_font_widthf(const char* Format, ...);
