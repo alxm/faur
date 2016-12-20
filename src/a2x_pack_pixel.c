@@ -19,50 +19,53 @@
 
 #include "a2x_pack_pixel.v.h"
 
-APixelMode a_pixel__mode;
-static AList* g_modeStack;
+APixelState a_pixel__state;
+static AList* g_stateStack;
 
 void a_pixel__init(void)
 {
-    a_pixel__mode.blend = A_PIXEL_BLEND_PLAIN;
-    g_modeStack = a_list_new();
+    a_pixel__state.blend = A_PIXEL_BLEND_PLAIN;
+    g_stateStack = a_list_new();
 }
 
 void a_pixel__uninit(void)
 {
-    A_LIST_ITERATE(g_modeStack, APixelMode*, mode) {
-        free(mode);
+    A_LIST_ITERATE(g_stateStack, APixelState*, state) {
+        free(state);
     }
 
-    a_list_free(g_modeStack);
+    a_list_free(g_stateStack);
 }
 
 void a_pixel_push(void)
 {
-    APixelMode* mode = a_mem_malloc(sizeof(APixelMode));
+    APixelState* state = a_mem_malloc(sizeof(APixelState));
 
-    *mode = a_pixel__mode;
-    a_list_push(g_modeStack, mode);
+    *state = a_pixel__state;
+    a_list_push(g_stateStack, state);
 }
 
 void a_pixel_pop(void)
 {
-    APixelMode* mode = a_list_pop(g_modeStack);
+    APixelState* state = a_list_pop(g_stateStack);
 
-    if(mode == NULL) {
-        a_out__fatal("Cannot pop APixelMode: stack is empty");
+    if(state == NULL) {
+        a_out__fatal("Cannot pop APixelState: stack is empty");
     }
 
-    a_pixel__mode = *mode;
-    free(mode);
+    a_pixel__state = *state;
+    free(state);
 
-    a_pixel_setBlend(a_pixel__mode.blend);
-    a_pixel_setRGBA(a_pixel__mode.red, a_pixel__mode.green, a_pixel__mode.blue, a_pixel__mode.alpha);
+    a_pixel_setBlend(a_pixel__state.blend);
+    a_pixel_setRGBA(a_pixel__state.red,
+                    a_pixel__state.green,
+                    a_pixel__state.blue,
+                    a_pixel__state.alpha);
 }
 
 void a_pixel_setBlend(APixelBlend Blend)
 {
-    a_pixel__mode.blend = Blend;
+    a_pixel__state.blend = Blend;
 
     a_sprite__updateRoutines();
     a_draw__updateRoutines();
@@ -70,33 +73,37 @@ void a_pixel_setBlend(APixelBlend Blend)
 
 void a_pixel_setAlpha(unsigned int Alpha)
 {
-    a_pixel__mode.alpha = a_math_min(Alpha, A_PIXEL_ALPHA_MAX);
+    a_pixel__state.alpha = a_math_min(Alpha, A_PIXEL_ALPHA_MAX);
 }
 
 void a_pixel_setRGB(uint8_t Red, uint8_t Green, uint8_t Blue)
 {
-    a_pixel__mode.red = Red;
-    a_pixel__mode.green = Green;
-    a_pixel__mode.blue = Blue;
+    a_pixel__state.red = Red;
+    a_pixel__state.green = Green;
+    a_pixel__state.blue = Blue;
 
-    a_pixel__mode.pixel = a_pixel_make(a_pixel__mode.red, a_pixel__mode.green, a_pixel__mode.blue);
+    a_pixel__state.pixel = a_pixel_make(a_pixel__state.red,
+                                        a_pixel__state.green,
+                                        a_pixel__state.blue);
 }
 
 void a_pixel_setRGBA(uint8_t Red, uint8_t Green, uint8_t Blue, unsigned int Alpha)
 {
-    a_pixel__mode.red = Red;
-    a_pixel__mode.green = Green;
-    a_pixel__mode.blue = Blue;
-    a_pixel__mode.alpha = a_math_min(Alpha, A_PIXEL_ALPHA_MAX);
+    a_pixel__state.red = Red;
+    a_pixel__state.green = Green;
+    a_pixel__state.blue = Blue;
+    a_pixel__state.alpha = a_math_min(Alpha, A_PIXEL_ALPHA_MAX);
 
-    a_pixel__mode.pixel = a_pixel_make(a_pixel__mode.red, a_pixel__mode.green, a_pixel__mode.blue);
+    a_pixel__state.pixel = a_pixel_make(a_pixel__state.red,
+                                        a_pixel__state.green,
+                                        a_pixel__state.blue);
 }
 
 void a_pixel_setPixel(APixel Pixel)
 {
-    a_pixel__mode.pixel = Pixel;
+    a_pixel__state.pixel = Pixel;
 
-    a_pixel__mode.red = a_pixel_red(a_pixel__mode.pixel);
-    a_pixel__mode.green = a_pixel_green(a_pixel__mode.pixel);
-    a_pixel__mode.blue = a_pixel_blue(a_pixel__mode.pixel);
+    a_pixel__state.red = a_pixel_red(a_pixel__state.pixel);
+    a_pixel__state.green = a_pixel_green(a_pixel__state.pixel);
+    a_pixel__state.blue = a_pixel_blue(a_pixel__state.pixel);
 }
