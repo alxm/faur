@@ -80,6 +80,7 @@ void a_font__init(void)
     colors[A_FONT_FACE_BLUE] = a_pixel_make(0x3f, 0x8f, 0xdf);
 
     a_font_load(fontSprite, 0, 0, A_FONT_LOAD_ALL);
+    a_sprite_free(fontSprite);
 
     for(size_t f = 1; f < A_FONT_FACE_DEFAULT_NUM; f++) {
         a_font_copy(A_FONT_FACE_WHITE, colors[f]);
