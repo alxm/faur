@@ -38,7 +38,7 @@ static const char g_chars[] =
     "0123456789"
     "_-+=*/\\&$@!?'\"()[]{}.,~:;%^#<>|`";
 
-#define CHARS_NUM (sizeof(g_chars) / sizeof(char) - 1)
+#define CHARS_NUM (sizeof(g_chars) - 1)
 
 typedef struct AFontState {
     int currentFont;
