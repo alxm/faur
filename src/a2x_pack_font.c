@@ -20,14 +20,13 @@
 #include "a2x_pack_font.v.h"
 #include "media/font.h"
 
-#define NUM_ASCII 256
-
-#define BLANK_SPACE  3
-#define CHAR_SPACING 1
-#define LINE_SPACING 1
+#define CHAR_ENTRIES_NUM 256
+#define BLANK_SPACE      3
+#define CHAR_SPACING     1
+#define LINE_SPACING     1
 
 typedef struct AFont {
-    ASprite* sprites[NUM_ASCII];
+    ASprite* sprites[CHAR_ENTRIES_NUM];
     int maxWidth;
     int maxHeight;
 } AFont;
@@ -101,7 +100,7 @@ size_t a_font_load(const ASprite* Sheet, int X, int Y, AFontLoad Loader)
 {
     AFont* const f = a_mem_malloc(sizeof(AFont));
 
-    for(int i = NUM_ASCII; i--; ) {
+    for(int i = CHAR_ENTRIES_NUM; i--; ) {
         f->sprites[i] = NULL;
     }
 
@@ -152,7 +151,7 @@ size_t a_font_copy(int Font, APixel Color)
 
     *f = *src;
 
-    for(int i = NUM_ASCII; i--; ) {
+    for(int i = CHAR_ENTRIES_NUM; i--; ) {
         if(src->sprites[i]) {
             f->sprites[i] = a_sprite_clone(src->sprites[i]);
 
