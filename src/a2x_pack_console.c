@@ -63,10 +63,14 @@ static void screenCallback(void)
     }
 
     a_pixel_push();
+    a_font_push();
+
     a_pixel_setBlend(A_PIXEL_BLEND_RGB75);
     a_pixel_setRGB(0x1f, 0x0f, 0x0f);
     a_draw_fill();
-    a_pixel_pop();
+
+    a_pixel_reset();
+    a_font_reset();
 
     {
         a_font_setCoords(2, 2);
@@ -118,6 +122,9 @@ static void screenCallback(void)
         a_font_setFace(A_FONT_FACE_BLUE);
         a_font_textf("%u skip", a_fps_getFrameSkip());
     }
+
+    a_pixel_pop();
+    a_font_pop();
 }
 
 void a_console__init(void)
