@@ -69,12 +69,6 @@ void a_font__init(void)
 
     g_stateStack = a_list_new();
 
-    g_state.align = A_FONT_ALIGN_LEFT;
-    g_state.x = g_state.startX = 0;
-    g_state.y = 0;
-    g_state.wrapWidth = 0;
-    g_state.currentLineWidth = 0;
-
     ASprite* fontSprite = a_sprite_fromData(g_media_font);
 
     APixel colors[A_FONT_FACE_DEFAULT_NUM];
@@ -91,7 +85,7 @@ void a_font__init(void)
         a_font_copy(A_FONT_FACE_WHITE, colors[f]);
     }
 
-    a_font_setFace(A_FONT_FACE_WHITE);
+    a_font_reset();
 }
 
 void a_font__uninit(void)
@@ -209,6 +203,14 @@ void a_font_pop(void)
     free(state);
 }
 
+void a_font_reset(void)
+{
+    a_font_setFace(A_FONT_FACE_WHITE);
+    a_font_setAlign(A_FONT_ALIGN_LEFT);
+    a_font_setCoords(0, 0);
+    a_font_setWrap(0);
+}
+
 void a_font_setFace(int Font)
 {
     g_state.currentFont = Font;
@@ -257,6 +259,7 @@ void a_font_setLineHeight(int Height)
 void a_font_setWrap(int Width)
 {
     g_state.wrapWidth = Width;
+    g_state.currentLineWidth = 0;
 }
 
 static int getWidth(const char* Text, size_t Length)

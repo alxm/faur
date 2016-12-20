@@ -54,6 +54,8 @@ extern size_t a_font_copy(int Font, APixel Color);
 extern void a_font_push(void);
 extern void a_font_pop(void);
 
+extern void a_font_reset(void);
+
 extern void a_font_setFace(int Font);
 extern void a_font_setAlign(AFontAlign Align);
 
