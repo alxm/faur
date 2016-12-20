@@ -147,28 +147,27 @@ size_t a_font_load(const ASprite* Sheet, int X, int Y, AFontLoad Loader)
 
 size_t a_font_copy(int Font, APixel Color)
 {
-    const AFont* const src = g_fonts[Font];
-    AFont* const f = a_mem_malloc(sizeof(AFont));
+    AFont* src = g_fonts[Font];
+    AFont* f = a_mem_malloc(sizeof(AFont));
+
+    *f = *src;
 
     for(int i = NUM_ASCII; i--; ) {
         if(src->sprites[i]) {
             f->sprites[i] = a_sprite_clone(src->sprites[i]);
 
-            ASprite* s = f->sprites[i];
-            APixel* d = s->pixels;
+            ASprite* sprite = f->sprites[i];
+            APixel* pixels = sprite->pixels;
 
-            for(int j = s->w * s->h; j--; d++) {
-                if(*d != A_SPRITE_COLORKEY) {
-                    *d = Color;
+            for(int j = sprite->w * sprite->h; j--; pixels++) {
+                if(*pixels != A_SPRITE_COLORKEY) {
+                    *pixels = Color;
                 }
             }
         } else {
             f->sprites[i] = NULL;
         }
     }
-
-    f->maxWidth = src->maxWidth;
-    f->maxHeight = src->maxHeight;
 
     a_list_addLast(g_fontsList, f);
 
