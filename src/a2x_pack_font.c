@@ -20,10 +20,12 @@
 #include "a2x_pack_font.v.h"
 #include "media/font.h"
 
-#define CHAR_ENTRIES_NUM 256
-#define BLANK_SPACE      3
-#define CHAR_SPACING     1
-#define LINE_SPACING     1
+#define CHAR_ENTRIES_NUM    128
+#define CHAR_TO_INDEX(Char) ((unsigned int)Char & (CHAR_ENTRIES_NUM - 1))
+
+#define BLANK_SPACE  3
+#define CHAR_SPACING 1
+#define LINE_SPACING 1
 
 typedef struct AFont {
     ASprite* sprites[CHAR_ENTRIES_NUM];
@@ -137,12 +139,12 @@ size_t a_font_load(const ASprite* Sheet, int X, int Y, AFontLoad Loader)
     for(int i = start; i <= end; i++) {
         ASprite* spr = a_spriteframes_next(sf);
 
-        f->sprites[(int)g_chars[i]] = spr;
+        f->sprites[CHAR_TO_INDEX(g_chars[i])] = spr;
         f->maxWidth = a_math_max(f->maxWidth, spr->w);
         f->maxHeight = a_math_max(f->maxHeight, spr->h);
 
         if((Loader & A_FONT_LOAD_CAPS) && isalpha(g_chars[i])) {
-            f->sprites[(int)g_chars[i + 1]] = spr;
+            f->sprites[CHAR_TO_INDEX(g_chars[i + 1])] = spr;
             i++;
         }
     }
@@ -272,7 +274,7 @@ static int getWidth(const char* Text, size_t Length)
         width = (font->maxWidth + CHAR_SPACING) * Length;
     } else {
         for( ; Length--; Text++) {
-            ASprite* spr = font->sprites[(int)*Text];
+            ASprite* spr = font->sprites[CHAR_TO_INDEX(*Text)];
             width += (spr ? spr->w : BLANK_SPACE) + CHAR_SPACING;
         }
     }
@@ -296,17 +298,19 @@ static void drawString(const char* Text, size_t Length)
 
     if(g_state.align & A_FONT_ALIGN_MONOSPACED) {
         for( ; Length--; Text++) {
-            ASprite* spr = font->sprites[(int)*Text];
+            ASprite* spr = font->sprites[CHAR_TO_INDEX(*Text)];
 
             if(spr) {
-                a_sprite_blit(spr, g_state.x + (font->maxWidth - spr->w) / 2, g_state.y);
+                a_sprite_blit(spr,
+                              g_state.x + (font->maxWidth - spr->w) / 2,
+                              g_state.y);
             }
 
             g_state.x += font->maxWidth + CHAR_SPACING;
         }
     } else {
         for( ; Length--; Text++) {
-            ASprite* spr = font->sprites[(int)*Text];
+            ASprite* spr = font->sprites[CHAR_TO_INDEX(*Text)];
 
             if(spr) {
                 a_sprite_blit(spr, g_state.x, g_state.y);
@@ -352,7 +356,7 @@ static void wrapString(const char* Text)
                 }
             } else {
                 for( ; *Text != ' ' && *Text != '\0'; Text++) {
-                    ASprite* spr = font->sprites[(int)*Text];
+                    ASprite* spr = font->sprites[CHAR_TO_INDEX(*Text)];
                     tally += (spr ? spr->w : BLANK_SPACE) + CHAR_SPACING;
                 }
             }
