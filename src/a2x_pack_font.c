@@ -45,6 +45,7 @@ static int g_currentFont;
 static AFontAlign g_align;
 static int g_x, g_initialX, g_y;
 static int g_lineHeight;
+static int g_wrapWidth, g_currentLineWidth;
 
 static int charIndex(char Character)
 {
@@ -62,6 +63,8 @@ void a_font__init(void)
     g_align = A_FONT_ALIGN_LEFT;
     g_x = g_initialX = 0;
     g_y = 0;
+    g_wrapWidth = 0;
+    g_currentLineWidth = 0;
 
     ASprite* fontSprite = a_sprite_fromData(g_media_font);
 
@@ -188,6 +191,7 @@ void a_font_setCoords(int X, int Y)
 {
     g_x = g_initialX = X;
     g_y = Y;
+    g_currentLineWidth = 0;
 }
 
 int a_font_getX(void)
@@ -204,6 +208,7 @@ void a_font_newLine(void)
 {
     g_x = g_initialX;
     g_y += g_lineHeight;
+    g_currentLineWidth = 0;
 }
 
 int a_font_getLineHeight(void)
@@ -216,24 +221,44 @@ void a_font_setLineHeight(int Height)
     g_lineHeight = Height;
 }
 
-void a_font_text(const char* Text)
+void a_font_setWrap(int Width)
 {
-    if(*Text == '\0') {
-        return;
+    g_wrapWidth = Width;
+}
+
+static int getWidth(const char* Text, size_t Length)
+{
+    int width = 0;
+    AFont* font = g_fonts[g_currentFont];
+
+    if(g_align & A_FONT_ALIGN_MONOSPACED) {
+        width = (font->maxWidth + CHAR_SPACING) * Length;
+    } else {
+        for( ; Length--; Text++) {
+            ASprite* spr = font->sprites[(int)*Text];
+            width += (spr ? spr->w : BLANK_SPACE) + CHAR_SPACING;
+        }
     }
 
+    if(width > 0) {
+        width -= CHAR_SPACING;
+    }
+
+    return width;
+}
+
+static void drawString(const char* Text, size_t Length)
+{
     AFont* font = g_fonts[g_currentFont];
 
     if(g_align & A_FONT_ALIGN_MIDDLE) {
-        g_x -= a_font_width(Text) / 2;
-    }
-
-    if(g_align & A_FONT_ALIGN_RIGHT) {
-        g_x -= a_font_width(Text);
+        g_x -= getWidth(Text, Length) / 2;
+    } else if(g_align & A_FONT_ALIGN_RIGHT) {
+        g_x -= getWidth(Text, Length);
     }
 
     if(g_align & A_FONT_ALIGN_MONOSPACED) {
-        for( ; *Text != '\0'; Text++) {
+        for( ; Length--; Text++) {
             ASprite* spr = font->sprites[(int)*Text];
 
             if(spr) {
@@ -243,7 +268,7 @@ void a_font_text(const char* Text)
             g_x += font->maxWidth + CHAR_SPACING;
         }
     } else {
-        for( ; *Text != '\0'; Text++) {
+        for( ; Length--; Text++) {
             ASprite* spr = font->sprites[(int)*Text];
 
             if(spr) {
@@ -253,6 +278,89 @@ void a_font_text(const char* Text)
                 g_x += BLANK_SPACE + CHAR_SPACING;
             }
         }
+    }
+}
+
+static void wrapString(const char* Text)
+{
+    AFont* font = g_fonts[g_currentFont];
+    const char* lineStart = Text;
+
+    while(*Text != '\0') {
+        int tally = 0;
+
+        if(g_currentLineWidth > 0) {
+            if(g_align & A_FONT_ALIGN_MONOSPACED) {
+                for( ; *Text == ' '; Text++) {
+                    tally += font->maxWidth + CHAR_SPACING;
+                }
+            } else {
+                for( ; *Text == ' '; Text++) {
+                    tally += BLANK_SPACE + CHAR_SPACING;
+                }
+            }
+        } else {
+            // Do not start a line with spaces
+            for( ; *Text == ' '; Text++) {
+                lineStart++;
+            }
+        }
+
+        const char* wordStart = Text;
+
+        if(g_currentLineWidth + tally <= g_wrapWidth) {
+            if(g_align & A_FONT_ALIGN_MONOSPACED) {
+                for( ; *Text != ' ' && *Text != '\0'; Text++) {
+                    tally += font->maxWidth + CHAR_SPACING;
+                }
+            } else {
+                for( ; *Text != ' ' && *Text != '\0'; Text++) {
+                    ASprite* spr = font->sprites[(int)*Text];
+                    tally += (spr ? spr->w : BLANK_SPACE) + CHAR_SPACING;
+                }
+            }
+        }
+
+        if(tally > 0) {
+            tally -= CHAR_SPACING;
+        }
+
+        if(g_currentLineWidth + tally > g_wrapWidth) {
+            if(g_currentLineWidth == 0) {
+                // Print lone word regardless of overflow
+                drawString(lineStart, Text - lineStart);
+            } else {
+                // Print line up to overflowing word, and go back to word
+                drawString(lineStart, wordStart - lineStart);
+                Text = wordStart;
+            }
+
+            lineStart = Text;
+            g_currentLineWidth = 0;
+            a_font_newLine();
+        } else {
+            if(*Text == '\0') {
+                // Print last line
+                drawString(lineStart, Text - lineStart);
+            }
+
+            if(tally > 0) {
+                g_currentLineWidth += tally + CHAR_SPACING;
+            }
+        }
+    }
+}
+
+void a_font_text(const char* Text)
+{
+    if(*Text == '\0') {
+        return;
+    }
+
+    if(g_wrapWidth > 0) {
+        wrapString(Text);
+    } else {
+        drawString(Text, strlen(Text));
     }
 }
 
@@ -277,21 +385,7 @@ int a_font_width(const char* Text)
         return 0;
     }
 
-    int width = 0;
-    AFont* font = g_fonts[g_currentFont];
-
-    if(g_align & A_FONT_ALIGN_MONOSPACED) {
-        while(*Text++ != '\0') {
-            width += font->maxWidth + CHAR_SPACING;
-        }
-    } else {
-        for( ; *Text != '\0'; Text++) {
-            ASprite* spr = font->sprites[(int)*Text];
-            width += (spr ? spr->w : BLANK_SPACE) + CHAR_SPACING;
-        }
-    }
-
-    return width - CHAR_SPACING;
+    return getWidth(Text, strlen(Text));
 }
 
 int a_font_widthf(const char* Format, ...)
