@@ -218,7 +218,7 @@ do {                                                                        \
 
 #define A__BLEND plain
 #define A__BLEND_SETUP \
-    const APixel a__pass_color = a_pixel__mode.pixel;
+    const APixel a__pass_color = a_pixel__state.pixel;
 #define A__PIXEL_PARAMS , a__pass_color
 #include "a2x_pack_draw.inc.c"
 #undef A__BLEND
@@ -226,11 +226,11 @@ do {                                                                        \
 #undef A__PIXEL_PARAMS
 
 #define A__BLEND rgba
-#define A__BLEND_SETUP                                      \
-    const uint8_t a__pass_red = a_pixel__mode.red;          \
-    const uint8_t a__pass_green = a_pixel__mode.green;      \
-    const uint8_t a__pass_blue = a_pixel__mode.blue;        \
-    const unsigned int a__pass_alpha = a_pixel__mode.alpha;
+#define A__BLEND_SETUP                                       \
+    const uint8_t a__pass_red = a_pixel__state.red;          \
+    const uint8_t a__pass_green = a_pixel__state.green;      \
+    const uint8_t a__pass_blue = a_pixel__state.blue;        \
+    const unsigned int a__pass_alpha = a_pixel__state.alpha;
 #define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue, a__pass_alpha
 #include "a2x_pack_draw.inc.c"
 #undef A__BLEND
@@ -238,10 +238,10 @@ do {                                                                        \
 #undef A__PIXEL_PARAMS
 
 #define A__BLEND rgb25
-#define A__BLEND_SETUP                                 \
-    const uint8_t a__pass_red = a_pixel__mode.red;     \
-    const uint8_t a__pass_green = a_pixel__mode.green; \
-    const uint8_t a__pass_blue = a_pixel__mode.blue;
+#define A__BLEND_SETUP                                  \
+    const uint8_t a__pass_red = a_pixel__state.red;     \
+    const uint8_t a__pass_green = a_pixel__state.green; \
+    const uint8_t a__pass_blue = a_pixel__state.blue;
 #define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue
 #include "a2x_pack_draw.inc.c"
 #undef A__BLEND
@@ -249,10 +249,10 @@ do {                                                                        \
 #undef A__PIXEL_PARAMS
 
 #define A__BLEND rgb50
-#define A__BLEND_SETUP                                 \
-    const uint8_t a__pass_red = a_pixel__mode.red;     \
-    const uint8_t a__pass_green = a_pixel__mode.green; \
-    const uint8_t a__pass_blue = a_pixel__mode.blue;
+#define A__BLEND_SETUP                                  \
+    const uint8_t a__pass_red = a_pixel__state.red;     \
+    const uint8_t a__pass_green = a_pixel__state.green; \
+    const uint8_t a__pass_blue = a_pixel__state.blue;
 #define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue
 #include "a2x_pack_draw.inc.c"
 #undef A__BLEND
@@ -260,10 +260,10 @@ do {                                                                        \
 #undef A__PIXEL_PARAMS
 
 #define A__BLEND rgb75
-#define A__BLEND_SETUP                                 \
-    const uint8_t a__pass_red = a_pixel__mode.red;     \
-    const uint8_t a__pass_green = a_pixel__mode.green; \
-    const uint8_t a__pass_blue = a_pixel__mode.blue;
+#define A__BLEND_SETUP                                  \
+    const uint8_t a__pass_red = a_pixel__state.red;     \
+    const uint8_t a__pass_green = a_pixel__state.green; \
+    const uint8_t a__pass_blue = a_pixel__state.blue;
 #define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue
 #include "a2x_pack_draw.inc.c"
 #undef A__BLEND
@@ -301,13 +301,13 @@ void a_draw__init(void)
 
 void a_draw__updateRoutines(void)
 {
-    g_draw_pixel = g_pixel[a_pixel__mode.blend];
-    g_draw_rectangle = g_rectangle[a_pixel__mode.blend];
-    g_draw_line = g_line[a_pixel__mode.blend];
-    g_draw_hline = g_hline[a_pixel__mode.blend];
-    g_draw_vline = g_vline[a_pixel__mode.blend];
-    g_draw_circle_noclip = g_circle[a_pixel__mode.blend][0];
-    g_draw_circle_clip = g_circle[a_pixel__mode.blend][1];
+    g_draw_pixel = g_pixel[a_pixel__state.blend];
+    g_draw_rectangle = g_rectangle[a_pixel__state.blend];
+    g_draw_line = g_line[a_pixel__state.blend];
+    g_draw_hline = g_hline[a_pixel__state.blend];
+    g_draw_vline = g_vline[a_pixel__state.blend];
+    g_draw_circle_noclip = g_circle[a_pixel__state.blend][0];
+    g_draw_circle_clip = g_circle[a_pixel__state.blend][1];
 }
 
 void a_draw_fill(void)

@@ -51,6 +51,11 @@ typedef enum AFontDefaults {
 extern size_t a_font_load(const ASprite* Sheet, int X, int Y, AFontLoad Loader);
 extern size_t a_font_copy(int Font, APixel Color);
 
+extern void a_font_push(void);
+extern void a_font_pop(void);
+
+extern void a_font_reset(void);
+
 extern void a_font_setFace(int Font);
 extern void a_font_setAlign(AFontAlign Align);
 
@@ -59,17 +64,12 @@ extern int a_font_getX(void);
 extern int a_font_getY(void);
 extern void a_font_newLine(void);
 
-extern int a_font_lineHeight(void);
-extern void a_font_setLineWidth(int LineWidth);
-extern void a_font_resetLineWidth(void);
+extern int a_font_getLineHeight(void);
+extern void a_font_setLineHeight(int Height);
+extern void a_font_setWrap(int Width);
 
 extern int a_font_width(const char* Text);
 extern int a_font_widthf(const char* Format, ...);
 
 extern void a_font_text(const char* Text);
 extern void a_font_textf(const char* Format, ...);
-
-extern void a_font_int(int Number);
-extern void a_font_float(float Number);
-extern void a_font_double(double Number);
-extern void a_font_char(char Character);

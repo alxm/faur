@@ -82,7 +82,8 @@ char* a_strtok__get(AStrTok* Tokenizer)
 
     do {
         Tokenizer->index++;
-    } while(string[Tokenizer->index] != '\0' && !is_delim(string[Tokenizer->index], delims, numDelims));
+    } while(string[Tokenizer->index] != '\0'
+        && !is_delim(string[Tokenizer->index], delims, numDelims));
 
     const int len = Tokenizer->index - start;
 
@@ -91,7 +92,7 @@ char* a_strtok__get(AStrTok* Tokenizer)
             free(Tokenizer->currentToken);
         }
 
-        Tokenizer->currentToken = a_mem_malloc((len + 1) * sizeof(char));
+        Tokenizer->currentToken = a_mem_malloc(len + 1);
         Tokenizer->currentBufferLen = len;
     }
 

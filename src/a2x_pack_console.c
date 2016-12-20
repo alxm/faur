@@ -63,10 +63,14 @@ static void screenCallback(void)
     }
 
     a_pixel_push();
+    a_font_push();
+
     a_pixel_setBlend(A_PIXEL_BLEND_RGB75);
     a_pixel_setRGB(0x1f, 0x0f, 0x0f);
     a_draw_fill();
-    a_pixel_pop();
+
+    a_pixel_reset();
+    a_font_reset();
 
     {
         a_font_setCoords(2, 2);
@@ -94,7 +98,6 @@ static void screenCallback(void)
         const int xOffset = 1 + g_titles[A_CONSOLE_MESSAGE]->w + 2;
 
         a_font_setCoords(xOffset, a_font_getY());
-        a_font_setLineWidth(a_screen__width - xOffset);
         a_font_setFace(A_FONT_FACE_LIGHT_GRAY);
 
         A_LIST_ITERATE(g_lines, ALine*, line) {
@@ -102,8 +105,6 @@ static void screenCallback(void)
             a_font_text(line->text);
             a_font_newLine();
         }
-
-        a_font_resetLineWidth();
     }
 
     {
@@ -121,6 +122,9 @@ static void screenCallback(void)
         a_font_setFace(A_FONT_FACE_BLUE);
         a_font_textf("%u skip", a_fps_getFrameSkip());
     }
+
+    a_pixel_pop();
+    a_font_pop();
 }
 
 void a_console__init(void)
@@ -146,7 +150,7 @@ void a_console__init2(void)
 
     a_font_setFace(A_FONT_FACE_WHITE);
     g_linesPerScreen = a_settings_getInt("video.height")
-                            / a_font_lineHeight() - 2;
+                            / a_font_getLineHeight() - 2;
 
     // In case messages were logged between init and init2
     while(a_list_size(g_lines) > g_linesPerScreen) {

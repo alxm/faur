@@ -194,7 +194,7 @@ bool a_file_readLine(AFile* File)
             fseek(handle, -offset, SEEK_CUR);
         }
 
-        char* const str = a_mem_malloc(offset * sizeof(char));
+        char* const str = a_mem_malloc(offset);
 
         for(int i = 0; i < offset - 1; i++) {
             str[i] = fgetc(handle);

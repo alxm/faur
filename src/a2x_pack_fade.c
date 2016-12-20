@@ -103,7 +103,7 @@ void a_fade_toColor(int FramesDuration)
     }
 
     g_framesDuration = FramesDuration;
-    g_savedColor = a_pixel__mode.pixel;
+    g_savedColor = a_pixel__state.pixel;
 
     updateCachedBuffer(false);
 
@@ -119,7 +119,7 @@ void a_fade_fromColor(int FramesDuration)
     }
 
     g_framesDuration = FramesDuration;
-    g_savedColor = a_pixel__mode.pixel;
+    g_savedColor = a_pixel__state.pixel;
 
     updateCachedBuffer(false);
 

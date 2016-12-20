@@ -55,7 +55,7 @@ static void a_sprite__free(ASprite* Sprite);
 #define A__BLEND plain
 #define A__FILL flat
 #define A__BLEND_SETUP                                \
-    const APixel a__pass_color = a_pixel__mode.pixel;
+    const APixel a__pass_color = a_pixel__state.pixel;
 #define A__PIXEL_PARAMS , a__pass_color
 #include "a2x_pack_sprite.inc.c"
 #undef A__BLEND
@@ -66,7 +66,7 @@ static void a_sprite__free(ASprite* Sprite);
 #define A__BLEND rgba
 #define A__FILL data
 #define A__BLEND_SETUP \
-    const unsigned int a__pass_alpha = a_pixel__mode.alpha;
+    const unsigned int a__pass_alpha = a_pixel__state.alpha;
 #define A__PIXEL_PARAMS , a_pixel_red(*a__pass_src), a_pixel_green(*a__pass_src), a_pixel_blue(*a__pass_src), a__pass_alpha
 #include "a2x_pack_sprite.inc.c"
 #undef A__BLEND
@@ -76,11 +76,11 @@ static void a_sprite__free(ASprite* Sprite);
 
 #define A__BLEND rgba
 #define A__FILL flat
-#define A__BLEND_SETUP                                      \
-    const uint8_t a__pass_red = a_pixel__mode.red;          \
-    const uint8_t a__pass_green = a_pixel__mode.green;      \
-    const uint8_t a__pass_blue = a_pixel__mode.blue;        \
-    const unsigned int a__pass_alpha = a_pixel__mode.alpha;
+#define A__BLEND_SETUP                                       \
+    const uint8_t a__pass_red = a_pixel__state.red;          \
+    const uint8_t a__pass_green = a_pixel__state.green;      \
+    const uint8_t a__pass_blue = a_pixel__state.blue;        \
+    const unsigned int a__pass_alpha = a_pixel__state.alpha;
 #define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue, a__pass_alpha
 #include "a2x_pack_sprite.inc.c"
 #undef A__BLEND
@@ -100,10 +100,10 @@ static void a_sprite__free(ASprite* Sprite);
 
 #define A__BLEND rgb25
 #define A__FILL flat
-#define A__BLEND_SETUP                                 \
-    const uint8_t a__pass_red = a_pixel__mode.red;     \
-    const uint8_t a__pass_green = a_pixel__mode.green; \
-    const uint8_t a__pass_blue = a_pixel__mode.blue;
+#define A__BLEND_SETUP                                  \
+    const uint8_t a__pass_red = a_pixel__state.red;     \
+    const uint8_t a__pass_green = a_pixel__state.green; \
+    const uint8_t a__pass_blue = a_pixel__state.blue;
 #define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue
 #include "a2x_pack_sprite.inc.c"
 #undef A__BLEND
@@ -123,10 +123,10 @@ static void a_sprite__free(ASprite* Sprite);
 
 #define A__BLEND rgb50
 #define A__FILL flat
-#define A__BLEND_SETUP                                 \
-    const uint8_t a__pass_red = a_pixel__mode.red;     \
-    const uint8_t a__pass_green = a_pixel__mode.green; \
-    const uint8_t a__pass_blue = a_pixel__mode.blue;
+#define A__BLEND_SETUP                                  \
+    const uint8_t a__pass_red = a_pixel__state.red;     \
+    const uint8_t a__pass_green = a_pixel__state.green; \
+    const uint8_t a__pass_blue = a_pixel__state.blue;
 #define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue
 #include "a2x_pack_sprite.inc.c"
 #undef A__BLEND
@@ -146,10 +146,10 @@ static void a_sprite__free(ASprite* Sprite);
 
 #define A__BLEND rgb75
 #define A__FILL flat
-#define A__BLEND_SETUP                                 \
-    const uint8_t a__pass_red = a_pixel__mode.red;     \
-    const uint8_t a__pass_green = a_pixel__mode.green; \
-    const uint8_t a__pass_blue = a_pixel__mode.blue;
+#define A__BLEND_SETUP                                  \
+    const uint8_t a__pass_red = a_pixel__state.red;     \
+    const uint8_t a__pass_green = a_pixel__state.green; \
+    const uint8_t a__pass_blue = a_pixel__state.blue;
 #define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue
 #include "a2x_pack_sprite.inc.c"
 #undef A__BLEND
@@ -212,10 +212,10 @@ void a_sprite__uninit(void)
 
 void a_sprite__updateRoutines(void)
 {
-    g_blitter_block_noclip = g_blitters[a_pixel__mode.blend][g_fillFlat][0][0];
-    g_blitter_block_doclip = g_blitters[a_pixel__mode.blend][g_fillFlat][0][1];
-    g_blitter_keyed_noclip = g_blitters[a_pixel__mode.blend][g_fillFlat][1][0];
-    g_blitter_keyed_doclip = g_blitters[a_pixel__mode.blend][g_fillFlat][1][1];
+    g_blitter_block_noclip = g_blitters[a_pixel__state.blend][g_fillFlat][0][0];
+    g_blitter_block_doclip = g_blitters[a_pixel__state.blend][g_fillFlat][0][1];
+    g_blitter_keyed_noclip = g_blitters[a_pixel__state.blend][g_fillFlat][1][0];
+    g_blitter_keyed_doclip = g_blitters[a_pixel__state.blend][g_fillFlat][1][1];
 }
 
 ASprite* a_sprite_fromFile(const char* Path)

@@ -24,14 +24,14 @@
 #include "a2x_pack_draw.v.h"
 #include "a2x_pack_screen.v.h"
 
-typedef struct APixelMode {
+typedef struct APixelState {
     APixelBlend blend;
     uint8_t red, green, blue;
     unsigned int alpha;
     APixel pixel;
-} APixelMode;
+} APixelState;
 
-extern APixelMode a_pixel__mode;
+extern APixelState a_pixel__state;
 
 #define a_pixel__plain(Dst, Pixel) \
 ({                                 \
