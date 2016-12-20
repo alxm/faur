@@ -50,7 +50,9 @@ static int g_wrapWidth, g_currentLineWidth;
 static int charIndex(char Character)
 {
     for(int i = 0; i < CHARS_NUM; i++) {
-        if(g_chars[i] == Character) return i;
+        if(g_chars[i] == Character) {
+            return i;
+        }
     }
 
     return -1;
@@ -353,10 +355,6 @@ static void wrapString(const char* Text)
 
 void a_font_text(const char* Text)
 {
-    if(*Text == '\0') {
-        return;
-    }
-
     if(g_wrapWidth > 0) {
         wrapString(Text);
     } else {
@@ -381,10 +379,6 @@ void a_font_textf(const char* Format, ...)
 
 int a_font_width(const char* Text)
 {
-    if(*Text == '\0') {
-        return 0;
-    }
-
     return getWidth(Text, strlen(Text));
 }
 
