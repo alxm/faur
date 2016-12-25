@@ -291,6 +291,17 @@ void* a_entity_getComponent(const AEntity* Entity, const char* Component)
     return GET_COMPONENT(header);
 }
 
+void* a_entity_requireComponent(const AEntity* Entity, const char* Component)
+{
+    AComponent* header = a_strhash_get(Entity->components, Component);
+
+    if(header == NULL) {
+        a_out__fatal("Missing component '%s'", Component);
+    }
+
+    return GET_COMPONENT(header);
+}
+
 void a_system__pushCollection(void)
 {
     ASystemCollection* c = a_mem_malloc(sizeof(ASystemCollection));
