@@ -27,6 +27,7 @@ typedef enum ASystemCollectionState {
 
 typedef struct ASystemCollection {
     AList* entities;
+    AList* removed;
     AStrHash* components;
     AStrHash* systems;
     AList* tickSystems;
@@ -55,6 +56,7 @@ struct AEntity {
     AStrHash* components;
     ABitfield* componentBits;
     ABitfield* systemBits;
+    bool removed;
 };
 
 #define GET_COMPONENT(Header) ((void*)(Header + 1))
@@ -200,6 +202,11 @@ void a_system_run(void)
             }
         }
     }
+
+    A_LIST_ITERATE(g_collection->removed, AEntity*, entity) {
+        a_entity_free(entity);
+        A_LIST_REMOVE_CURRENT();
+    }
 }
 
 AEntity* a_entity_new(void)
@@ -213,6 +220,7 @@ AEntity* a_entity_new(void)
     e->components = a_strhash_new();
     e->componentBits = a_bitfield_new(a_strhash_size(g_collection->components));
     e->systemBits = a_bitfield_new(a_strhash_size(g_collection->systems));
+    e->removed = false;
 
     return e;
 }
@@ -243,6 +251,17 @@ void a_entity_free(AEntity* Entity)
 {
     a_list_removeNode(Entity->collectionNode);
     a_entity__free(Entity);
+}
+
+void a_entity_remove(AEntity* Entity)
+{
+    Entity->removed = true;
+    a_list_addLast(g_collection->removed, Entity);
+}
+
+bool a_entity_isRemoved(const AEntity* Entity)
+{
+    return Entity->removed;
 }
 
 void* a_entity_addComponent(AEntity* Entity, const char* Component)
@@ -307,6 +326,7 @@ void a_system__pushCollection(void)
     ASystemCollection* c = a_mem_malloc(sizeof(ASystemCollection));
 
     c->entities = a_list_new();
+    c->removed = a_list_new();
     c->components = a_strhash_new();
     c->systems = a_strhash_new();
     c->tickSystems = a_list_new();
@@ -327,7 +347,12 @@ void a_system__popCollection(void)
         a_entity__free(entity);
     }
 
+    A_LIST_ITERATE(g_collection->removed, AEntity*, entity) {
+        a_entity__free(entity);
+    }
+
     a_list_free(g_collection->entities);
+    a_list_free(g_collection->removed);
 
     A_STRHASH_ITERATE(g_collection->components, AComponent*, component) {
         free(component);
