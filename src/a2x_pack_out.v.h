@@ -27,6 +27,6 @@
 extern void a_out__message(char* Format, ...);
 extern void a_out__warning(char* Format, ...);
 extern void a_out__error(char* Format, ...);
-extern void a_out__fatal(char* Format, ...);
+extern void a_out__fatal(char* Format, ...) __attribute__((noreturn));
 extern void a_out__state(char* Format, ...);
 extern void a_out__stateVerbose(char* Format, ...);
