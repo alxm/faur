@@ -237,7 +237,7 @@ static void A__FUNC_NAME(a_draw__circle_clip)(int X, int Y, int Radius)
     APixel* oct8 = pixels + q4Y * width + q4X + Radius;
 
     int midx, midy;
-    findMidpoint(X, Y, Radius, &midx, &midy);
+    findMidpoint(Radius, &midx, &midy);
 
     if(midx - midy == 2) {
         a_draw_pixel(q1X + midx - 1, q1Y - midy - 1); // o1-o2

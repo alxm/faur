@@ -22,6 +22,7 @@ CURRENT_BRANCH := $(shell git symbolic-ref --short HEAD)
 
 CFLAGS += -std=c99 \
           -Wall \
+          -Wextra \
           -Werror \
           -DA__MAKE_COMPILE_TIME=\"$(COMPILE_TIME)\" \
           -DA__MAKE_CURRENT_GIT_BRANCH=\"$(CURRENT_BRANCH)\"

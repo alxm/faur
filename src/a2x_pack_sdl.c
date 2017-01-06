@@ -30,7 +30,15 @@ typedef struct ASdlInputHeader {
 typedef struct ASdlInputButton {
     ASdlInputHeader header;
     AInputButton* input;
-    int code; // SDL button/key code
+    union {
+        #if A_USE_LIB_SDL == 1
+            SDLKey key;
+        #elif A_USE_LIB_SDL == 2
+            SDL_Keycode key;
+        #endif
+        uint8_t button;
+        int code;
+    } code;
     bool lastStatePressed;
 } ASdlInputButton;
 
@@ -90,7 +98,7 @@ static void addButton(const char* Name, int Code)
     b = a_mem_malloc(sizeof(ASdlInputButton));
 
     b->header.name = a_str_dup(Name);
-    b->code = Code;
+    b->code.code = Code;
     b->lastStatePressed = false;
 
     a_strhash_add(g_buttons, Name, b);
@@ -778,7 +786,7 @@ void a_sdl__input_get(void)
                 }
 
                 A_STRHASH_ITERATE(g_buttons, ASdlInputButton*, b) {
-                    if(b->code == event.key.keysym.sym) {
+                    if(b->code.key == event.key.keysym.sym) {
                         a_input__button_setState(b->input, true);
                     }
                 }
@@ -786,7 +794,7 @@ void a_sdl__input_get(void)
 
             case SDL_KEYUP: {
                 A_STRHASH_ITERATE(g_buttons, ASdlInputButton*, b) {
-                    if(b->code == event.key.keysym.sym) {
+                    if(b->code.key == event.key.keysym.sym) {
                         a_input__button_setState(b->input, false);
                     }
                 }
@@ -794,7 +802,7 @@ void a_sdl__input_get(void)
 
             case SDL_JOYBUTTONDOWN: {
                 A_STRHASH_ITERATE(g_buttons, ASdlInputButton*, b) {
-                    if(b->code == event.jbutton.button) {
+                    if(b->code.button == event.jbutton.button) {
                         a_input__button_setState(b->input, true);
                     }
                 }
@@ -802,7 +810,7 @@ void a_sdl__input_get(void)
                 A_LIST_ITERATE(g_controllers, ASdlInputController*, c) {
                     if(c->id == event.jbutton.which) {
                         A_STRHASH_ITERATE(c->buttons, ASdlInputButton*, b) {
-                            if(b->code == event.jbutton.button) {
+                            if(b->code.button == event.jbutton.button) {
                                 a_input__button_setState(b->input, true);
                             }
                         }
@@ -814,7 +822,7 @@ void a_sdl__input_get(void)
 
             case SDL_JOYBUTTONUP: {
                 A_STRHASH_ITERATE(g_buttons, ASdlInputButton*, b) {
-                    if(b->code == event.jbutton.button) {
+                    if(b->code.button == event.jbutton.button) {
                         a_input__button_setState(b->input, false);
                     }
                 }
@@ -822,7 +830,7 @@ void a_sdl__input_get(void)
                 A_LIST_ITERATE(g_controllers, ASdlInputController*, c) {
                     if(c->id == event.jbutton.which) {
                         A_STRHASH_ITERATE(c->buttons, ASdlInputButton*, b) {
-                            if(b->code == event.jbutton.button) {
+                            if(b->code.button == event.jbutton.button) {
                                 a_input__button_setState(b->input, false);
                             }
                         }

@@ -61,7 +61,7 @@ static void pngToPixels(png_structp Png, png_infop Info, APixel** Pixels, int* W
 
 void a_png_readFile(const char* Path, APixel** Pixels, int* Width, int* Height)
 {
-    AFile* const f = a_file_open(Path, "rb");
+    AFile* f = a_file_open(Path, "rb");
 
     png_structp png = NULL;
     png_infop info = NULL;
@@ -100,7 +100,7 @@ void a_png_readFile(const char* Path, APixel** Pixels, int* Width, int* Height)
     png_set_sig_bytes(png, PNG_SIG);
     png_read_png(png, info, PNG_TRANSFORM_IDENTITY, NULL);
 
-    const int type = png_get_color_type(png, info);
+    int type = png_get_color_type(png, info);
 
     if(type != PNG_COLOR_TYPE_RGB && type != PNG_COLOR_TYPE_RGBA) {
         a_out__error("%s is not an RGBA8888 PNG", Path);
@@ -181,9 +181,9 @@ void a_png_write(const char* Path, const APixel* Data, int Width, int Height, ch
 
     png_structp png = NULL;
     png_infop info = NULL;
-    png_bytepp rows = NULL;
+    volatile png_bytepp rows = NULL;
     png_text text[2];
-    int numText = 0;
+    volatile int numText = 0;
 
     if(!f) {
         goto cleanUp;

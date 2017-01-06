@@ -73,7 +73,7 @@
 #define a_pixel_green(Pixel) ((((Pixel) >> A_PIXEL_GREEN_SHIFT) & A_PIXEL_GREEN_MASK) << A_PIXEL_GREEN_PACK)
 #define a_pixel_blue(Pixel)  ((((Pixel) >> A_PIXEL_BLUE_SHIFT)  & A_PIXEL_BLUE_MASK)  << A_PIXEL_BLUE_PACK)
 
-#define A_PIXEL_ALPHA_MAX 256
+#define A_PIXEL_ALPHA_MAX 256u
 
 typedef enum {
     A_PIXEL_BLEND_PLAIN,
