@@ -55,7 +55,7 @@ static AList* g_stateStack;
 
 static int charIndex(char Character)
 {
-    for(int i = 0; i < CHARS_NUM; i++) {
+    for(unsigned i = 0; i < CHARS_NUM; i++) {
         if(g_chars[i] == Character) {
             return i;
         }
