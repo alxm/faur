@@ -120,7 +120,7 @@ static bool cohen_sutherland_clip(int* X1, int* Y1, int* X2, int* Y2)
     }
 }
 
-static void findMidpoint(int X, int Y, int Radius, int* MidX, int* MidY)
+static void findMidpoint(int Radius, int* MidX, int* MidY)
 {
     int x = Radius;
     int y = 0;
