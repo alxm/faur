@@ -22,22 +22,87 @@
 #include "a2x_system_includes.h"
 
 typedef int32_t AFix;
+typedef uint32_t AFixu;
 
 #include "a2x_pack_math.p.h"
 
 #define A_FIX_BIT_PRECISION (8)
 #define A_FIX_ONE           (1 << A_FIX_BIT_PRECISION)
 
-#define a_fix_itofix(X) ((X) << A_FIX_BIT_PRECISION)
-#define a_fix_ftofix(X) ((X) * (1 << A_FIX_BIT_PRECISION))
-#define a_fix_fixtoi(X) ((X) >> A_FIX_BIT_PRECISION)
-#define a_fix_fixtof(X) ((float)(X) / (1 << A_FIX_BIT_PRECISION))
-#define a_fix_mul(X, Y) (int32_t)(((int64_t)(X) * (Y)) >> A_FIX_BIT_PRECISION)
-#define a_fix_div(X, Y) (int32_t)(((int64_t)(X) << A_FIX_BIT_PRECISION) / (Y))
+static inline AFix a_fix_itofix(int X)
+{
+    return X << A_FIX_BIT_PRECISION;
+}
+
+static inline AFix a_fix_ftofix(float X)
+{
+    return X * (1 << A_FIX_BIT_PRECISION);
+}
+
+static inline int a_fix_fixtoi(AFix X)
+{
+    return X >> A_FIX_BIT_PRECISION;
+}
+
+static inline float a_fix_fixtof(AFix X)
+{
+    return X / (1 << A_FIX_BIT_PRECISION);
+}
+
+static inline AFix a_fix_mul(AFix X, AFix Y)
+{
+    return ((int64_t)X * Y) >> A_FIX_BIT_PRECISION;
+}
+
+static inline AFix a_fix_div(AFix X, AFix Y)
+{
+    return ((int64_t)X << A_FIX_BIT_PRECISION) / Y;
+}
+
+static inline AFixu a_fixu_itofix(unsigned int X)
+{
+    return X << A_FIX_BIT_PRECISION;
+}
+
+static inline AFixu a_fixu_ftofix(float X)
+{
+    return X * (1 << A_FIX_BIT_PRECISION);
+}
+
+static inline unsigned int a_fixu_fixtoi(AFixu X)
+{
+    return X >> A_FIX_BIT_PRECISION;
+}
+
+static inline float a_fixu_fixtof(AFixu X)
+{
+    return X / (1 << A_FIX_BIT_PRECISION);
+}
+
+static inline AFixu a_fixu_mul(AFixu X, AFixu Y)
+{
+    return ((uint64_t)X * Y) >> A_FIX_BIT_PRECISION;
+}
+
+static inline AFixu a_fixu_div(AFixu X, AFixu Y)
+{
+    return ((uint64_t)X << A_FIX_BIT_PRECISION) / Y;
+}
 
 extern AFix a_fix_sin_val[A_MATH_ANGLES_NUM];
 extern AFix a_fix_cos_val[A_MATH_ANGLES_NUM];
 
-#define a_fix_sin(Angle)       (a_fix_sin_val[(Angle)])
-#define a_fix_cos(Angle)       (a_fix_cos_val[(Angle)])
-#define a_fix_wrapAngle(Angle) ((Angle) & ((A_MATH_ANGLES_NUM << A_FIX_BIT_PRECISION) - 1))
+static inline AFix a_fix_sin(int Angle)
+{
+    return a_fix_sin_val[Angle];
+}
+
+static inline AFix a_fix_cos(int Angle)
+{
+    return a_fix_cos_val[Angle];
+}
+
+static inline AFix a_fix_wrapAngle(AFix Angle)
+{
+    return Angle & ((A_MATH_ANGLES_NUM << A_FIX_BIT_PRECISION) - 1);
+}
