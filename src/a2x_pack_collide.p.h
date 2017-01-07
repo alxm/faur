@@ -38,7 +38,7 @@ extern void* a_colobject__getUserObject(const AColObject* Object);
 extern AList* a_colobject__getPossibleCollisions(const AColObject* Object);
 
 #define A_COL_ITERATE(ColObject, UserObjectPtrType, UserObjectName)     \
-    for(UserObjectPtrType UserObjectName = NULL + 1;                    \
+    for(UserObjectPtrType UserObjectName = (UserObjectPtrType)1;        \
         UserObjectName;                                                 \
         UserObjectName = NULL)                                          \
         A_LIST_FILTER(                                                  \

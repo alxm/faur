@@ -38,7 +38,7 @@ extern AList* a_strhash__entries(const AStrHash* Hash);
 extern void* a_strhash__entryValue(const AStrHashEntry* Entry);
 
 #define A_STRHASH_ITERATE(StrHash, PtrType, Name)             \
-    for(PtrType Name = NULL + 1; Name; Name = NULL)           \
+    for(PtrType Name = (PtrType)1; Name; Name = NULL)         \
         A_LIST_FILTER(a_strhash__entries(StrHash),            \
                       AStrHashEntry*, a__entry,               \
                       Name = a_strhash__entryValue(a__entry))
