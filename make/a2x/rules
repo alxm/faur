@@ -21,6 +21,8 @@ COMPILE_TIME := $(shell date "+%Y-%m-%d\ %H:%M:%S")
 CURRENT_BRANCH := $(shell git symbolic-ref --short HEAD)
 
 CFLAGS += -std=c99 \
+          -pedantic \
+          -pedantic-errors \
           -Wall \
           -Wextra \
           -Werror \

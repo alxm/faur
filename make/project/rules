@@ -87,6 +87,8 @@ ALL_O_FILES = $(O_FILES) \
 # compile flags
 #
 CFLAGS += -std=c99 \
+          -pedantic \
+          -pedantic-errors \
           -Wall \
           -Wextra \
           -Werror \
