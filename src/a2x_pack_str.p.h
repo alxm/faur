@@ -23,20 +23,7 @@
 
 #define a_str_equal(String1, String2) (strcmp(String1, String2) == 0)
 
-#define a_str_malloc(...)                                               \
-({                                                                      \
-    const char* const a__strs[] = {__VA_ARGS__};                        \
-    a_str__malloc((sizeof(a__strs) / sizeof(a__strs[0])), __VA_ARGS__); \
-})
-
-#define a_str_merge(...)                                               \
-({                                                                     \
-    const char* const a__strs[] = {__VA_ARGS__};                       \
-    a_str__merge((sizeof(a__strs) / sizeof(a__strs[0])), __VA_ARGS__); \
-})
-
-extern void* a_str__malloc(int Count, ...);
-extern char* a_str__merge(int Count, ...);
+extern char* a_str_merge(const char* String1, ...);
 
 extern char* a_str_dup(const char* String);
 
