@@ -563,7 +563,7 @@ void a_sdl__screen_show(void)
                     }
                 }
 
-                APixel* dst = g_sdlScreen->pixels + A_WIDTH * A_HEIGHT;
+                APixel* dst = (APixel*)g_sdlScreen->pixels + A_WIDTH * A_HEIGHT;
                 const APixel* src = a_screen__pixels;
 
                 for(int i = A_HEIGHT; i--; dst += A_WIDTH * A_HEIGHT + 1) {
