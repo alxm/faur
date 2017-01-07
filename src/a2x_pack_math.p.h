@@ -21,43 +21,68 @@
 
 #include "a2x_system_includes.h"
 
-#define a_math_min(X, Y)          \
-({                                \
-    const __typeof(X) a__x = (X); \
-    const __typeof(Y) a__y = (Y); \
-    (a__x < a__y) ? a__x : a__y;  \
-})
+static inline int a_math_min(int X, int Y)
+{
+    return X < Y ? X : Y;
+}
 
-#define a_math_max(X, Y)          \
-({                                \
-    const __typeof(X) a__x = (X); \
-    const __typeof(Y) a__y = (Y); \
-    (a__x > a__y) ? a__x : a__y;  \
-})
+static inline unsigned a_math_minu(unsigned X, unsigned Y)
+{
+    return X < Y ? X : Y;
+}
 
-#define a_math_abs(X)             \
-({                                \
-    const __typeof(X) a__x = (X); \
-    (a__x >= 0) ? a__x : -a__x;   \
-})
+static inline int a_math_max(int X, int Y)
+{
+    return X > Y ? X : Y;
+}
 
-#define A_MATH_PI                3.14159265f
-#define A_MATH_ANGLES_NUM        256
+static inline unsigned a_math_maxu(unsigned X, unsigned Y)
+{
+    return X > Y ? X : Y;
+}
 
-#define a_math_degToRad(Angle)  ((Angle) * A_MATH_PI / (A_MATH_ANGLES_NUM / 2))
-#define a_math_radToDeg(Angle)  ((int)((Angle) * (A_MATH_ANGLES_NUM / 2) / A_MATH_PI))
-#define a_math_sin(Angle)       (a_math_sin_val[(Angle)])
-#define a_math_cos(Angle)       (a_math_cos_val[(Angle)])
-#define a_math_wrap(X, Limit)   ((X) & ((Limit) - 1))
-#define a_math_wrapAngle(Angle) (a_math_wrap((Angle), A_MATH_ANGLES_NUM))
+static inline int a_math_abs(int X)
+{
+    return X >= 0 ? X : -X;
+}
 
-#define a_math_constrain(X, Min, Max)                             \
-({                                                                \
-    const __typeof(X) a__x = (X);                                 \
-    const __typeof(X) a__min = (Min);                             \
-    const __typeof(X) a__max = (Max);                             \
-    (a__x < a__min) ? a__min : ((a__x > a__max) ? a__max : a__x); \
-})
+static inline int a_math_constrain(int X, int Min, int Max)
+{
+    return X < Min ? Min : (X > Max ? Max : X);
+}
+
+static inline int a_math_constrainu(unsigned X, unsigned Min, unsigned Max)
+{
+    return X < Min ? Min : (X > Max ? Max : X);
+}
+
+#define A_MATH_PI         3.14159265359
+#define A_MATH_ANGLES_NUM 256
 
 extern double a_math_sin_val[A_MATH_ANGLES_NUM];
 extern double a_math_cos_val[A_MATH_ANGLES_NUM];
+
+static inline double a_math_sin(int Angle)
+{
+    return a_math_sin_val[(Angle)];
+}
+
+static inline double a_math_cos(int Angle)
+{
+    return a_math_cos_val[(Angle)];
+}
+
+static inline int a_math_wrapAngle(int Angle)
+{
+    return Angle & (A_MATH_ANGLES_NUM - 1);
+}
+
+static inline double a_math_degToRad(int Angle)
+{
+    return Angle * A_MATH_PI / (A_MATH_ANGLES_NUM / 2);
+}
+
+static inline int a_math_radToDeg(double Angle)
+{
+    return Angle * (A_MATH_ANGLES_NUM / 2) / A_MATH_PI;
+}

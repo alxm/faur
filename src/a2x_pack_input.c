@@ -71,6 +71,10 @@ typedef struct APoint {
     int y;
 } APoint;
 
+typedef struct AInputCallbackContainer {
+    AInputCallback callback;
+} AInputCallbackContainer;
+
 static AStrHash* g_buttons;
 static AStrHash* g_analogs;
 static AStrHash* g_touchScreens;
@@ -143,6 +147,11 @@ void a_input__uninit(void)
     }
 
     a_list_free(g_userInputs);
+
+    A_LIST_ITERATE(g_callbacks, AInputCallbackContainer*, c) {
+        free(c);
+    }
+
     a_list_free(g_callbacks);
 
     A_STRHASH_ITERATE(g_buttons, AInputButton*, b) {
@@ -245,7 +254,10 @@ AInputTouch* a_input__newTouch(const char* Name)
 
 void a_input__addCallback(AInputCallback Callback)
 {
-    a_list_addLast(g_callbacks, Callback);
+    AInputCallbackContainer* c = a_mem_malloc(sizeof(AInputCallbackContainer));
+    c->callback = Callback;
+
+    a_list_addLast(g_callbacks, c);
 }
 
 void a_input__get(void)
@@ -266,8 +278,8 @@ void a_input__get(void)
 
     a_sdl__input_get();
 
-    A_LIST_ITERATE(g_callbacks, AInputCallback, callback) {
-        callback();
+    A_LIST_ITERATE(g_callbacks, AInputCallbackContainer*, c) {
+        c->callback();
     }
 
     // GP2X and Wiz dpad diagonals show up as dedicated buttons instead of a

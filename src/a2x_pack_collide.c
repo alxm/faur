@@ -32,16 +32,20 @@ struct AColObject {
     void* userObject; // the game object that owns this AColObject
 };
 
+static inline int nextpow(int X)
+{
+    int power = 0;
+
+    while((1 << power) < X) {
+        power++;
+    }
+
+    return power;
+}
+
 AColMap* a_colmap_new(int Width, int Height, int MaxObjectDim)
 {
-    AColMap* const m = a_mem_malloc(sizeof(AColMap));
-
-    #define nextpow(value)           \
-    ({                               \
-        int p = 0;                   \
-        while((1 << p) < value) p++; \
-        p;                           \
-    })
+    AColMap* m = a_mem_malloc(sizeof(AColMap));
 
     m->bitShift = nextpow(MaxObjectDim);
     m->w = 1 << a_math_max(0, nextpow(Width) - m->bitShift);
@@ -84,7 +88,7 @@ void a_colmap_free(AColMap* Map)
 
 AColObject* a_colobject_new(const AColMap* Map, void* UserObject)
 {
-    AColObject* const o = a_mem_malloc(sizeof(AColObject));
+    AColObject* o = a_mem_malloc(sizeof(AColObject));
 
     o->colmap = Map;
     o->nodes = a_list_new();

@@ -28,7 +28,7 @@
 #endif
 
 #define A_OUT__WORKER(Title, Color, Stream)       \
-({                                                \
+{                                                 \
     va_list args;                                 \
     va_start(args, Format);                       \
                                                   \
@@ -37,10 +37,10 @@
     fprintf(Stream, "\n");                        \
                                                   \
     va_end(args);                                 \
-})
+}
 
 #define A_OUT__CONSOLE(Type)              \
-({                                        \
+{                                         \
     char buffer[256];                     \
     va_list args;                         \
     va_start(args, Format);               \
@@ -49,7 +49,7 @@
     a_console__write(Type, buffer);       \
                                           \
     va_end(args);                         \
-})
+}
 
 void a_out__message(char* Format, ...)
 {

@@ -19,6 +19,10 @@
 
 #include "a2x_pack_state.v.h"
 
+typedef struct AState {
+    AStateFunction function;
+} AState;
+
 typedef struct AStateInstance {
     char* name;
     AStateFunction function;
@@ -68,16 +72,16 @@ static void pending_free(AStatePendingAction* Pending)
 
 static AStateInstance* state_new(const char* Name)
 {
-    AStateFunction function = a_strhash_get(g_states, Name);
+    AState* state = a_strhash_get(g_states, Name);
 
-    if(function == NULL) {
+    if(state == NULL) {
         a_out__fatal("State '%s' does not exist", Name);
     }
 
-    AStateInstance* const s = a_mem_malloc(sizeof(AStateInstance));
+    AStateInstance* s = a_mem_malloc(sizeof(AStateInstance));
 
     s->name = a_str_dup(Name);
-    s->function = function;
+    s->function = state->function;
     s->objects = a_strhash_new();
     s->stage = A_STATE_STAGE_INIT;
 
@@ -171,6 +175,10 @@ void a_state__init(void)
 
 void a_state__uninit(void)
 {
+    A_STRHASH_ITERATE(g_states, AState*, state) {
+        free(state);
+    }
+
     a_strhash_free(g_states);
     a_list_free(g_stack);
     a_list_free(g_pending);
@@ -178,7 +186,10 @@ void a_state__uninit(void)
 
 void a_state__new(const char* Name, AStateFunction Function)
 {
-    a_strhash_add(g_states, Name, Function);
+    AState* state = a_mem_malloc(sizeof(AState));
+    state->function = Function;
+
+    a_strhash_add(g_states, Name, state);
     a_out__stateVerbose("Declared '%s'", Name);
 }
 

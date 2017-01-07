@@ -40,12 +40,12 @@ extern bool a_listit__isFirst(AListIt* Iterator);
 extern bool a_listit__isLast(AListIt* Iterator);
 
 #define A_LIST_ITERATE(List, PtrType, Name)                                  \
-    for(PtrType Name = NULL + 1; Name; Name = NULL)                          \
+    for(PtrType Name = (PtrType)1; Name; Name = NULL)                        \
         for(AListIt a__it = a_listit__new(List, false);                      \
             a_listit__getNext(&a__it) && (Name = a__it.currentItem, true); )
 
 #define A_LIST_ITERATE_BACKWARDS(List, PtrType, Name)                        \
-    for(PtrType Name = NULL + 1; Name; Name = NULL)                          \
+    for(PtrType Name = (PtrType)1; Name; Name = NULL)                        \
         for(AListIt a__it = a_listit__new(List, true);                       \
             a_listit__getNext(&a__it) && (Name = a__it.currentItem, true); )
 

@@ -72,7 +72,8 @@ static bool lazy_init(void)
         g_filePrefix = a_str_merge(screensDir,
                                    "/",
                                    a_settings_getString("app.title"),
-                                   "-");
+                                   "-",
+                                   NULL);
 
         // No spaces in file name
         for(char* s = g_filePrefix; *s != '\0'; s++) {
@@ -85,7 +86,8 @@ static bool lazy_init(void)
                               " ",
                               a_settings_getString("app.version"),
                               " by ",
-                              a_settings_getString("app.author"));
+                              a_settings_getString("app.author"),
+                              NULL);
 
         g_description = a_str_merge(a_settings_getString("app.title"),
                                     " ",
@@ -98,7 +100,8 @@ static bool lazy_init(void)
                                     A__MAKE_CURRENT_GIT_BRANCH,
                                     ", built on ",
                                     A__MAKE_COMPILE_TIME,
-                                    ".");
+                                    ".",
+                                    NULL);
     }
 
     return g_isInit;
@@ -117,7 +120,7 @@ static void takeScreenshot(void)
 
     char num[6];
     snprintf(num, 6, "%05d", g_screenshotNumber);
-    char* name = a_str_merge(g_filePrefix, num, ".png");
+    char* name = a_str_merge(g_filePrefix, num, ".png", NULL);
 
     a_out__message("Saving screenshot '%s'", name);
     a_png_write(name,

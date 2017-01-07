@@ -62,25 +62,24 @@ static bool cohen_sutherland_clip(int* X1, int* Y1, int* X2, int* Y2)
     #define OUT_TOP   4
     #define OUT_DOWN  8
 
-    #define outcode(x, y)                     \
-    ({                                        \
-        int o = 0;                            \
-                                              \
+    #define outcode(o, x, y)                  \
+    {                                         \
         if(x < clipX1) o |= OUT_LEFT;         \
         else if(x >= clipX2) o |= OUT_RIGHT;  \
                                               \
         if(y < clipY1) o |= OUT_TOP;          \
         else if(y >= clipY2) o |= OUT_DOWN;   \
-                                              \
-        o;                                    \
-    })
+    }
 
     #define solvey() (float)(y1 - y2) / (x1 - x2) * (x - x1) + y1;
     #define solvex() (float)(x1 - x2) / (y1 - y2) * (y - y1) + x1;
 
     while(true) {
-        const int outcode1 = outcode(x1, y1);
-        const int outcode2 = outcode(x2, y2);
+        int outcode1 = 0;
+        int outcode2 = 0;
+
+        outcode(outcode1, x1, y1);
+        outcode(outcode2, x2, y2);
 
         if((outcode1 | outcode2) == 0) {
             *X1 = x1;

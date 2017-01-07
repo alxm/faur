@@ -101,7 +101,7 @@ ADir* a_dir_open(const char* Path)
         ADirEntry* e = a_mem_malloc(sizeof(ADirEntry));
 
         e->name = a_str_dup(ent->d_name);
-        e->full = a_str_merge(Path, "/", e->name);
+        e->full = a_str_merge(Path, "/", e->name, NULL);
 
         a_list_addLast(files, e);
     }

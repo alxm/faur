@@ -19,67 +19,31 @@
 
 #include "a2x_pack_str.v.h"
 
-#define NULL_STRING "(null)"
-
-void* a_str__malloc(int Count, ...)
+char* a_str_merge(const char* String1, ...)
 {
     va_list args;
-    unsigned int size = 0;
+    size_t size = 0;
 
-    va_start(args, Count);
+    va_start(args, String1);
 
-    for(int i = Count; i--; ) {
-        char* const s = va_arg(args, char*);
-
-        if(s) {
-            size += strlen(s);
-        } else {
-            size += strlen(NULL_STRING);
-        }
+    for(const char* s = String1; s != NULL; s = va_arg(args, const char*)) {
+        size += strlen(s);
     }
 
     va_end(args);
 
-    return a_mem_malloc(size + 1);
-}
+    char* buffer = a_mem_malloc(size + 1);
+    buffer[0] = '\0';
 
-char* a_str__merge(int Count, ...)
-{
-    va_list args;
-    int size = 0;
+    va_start(args, String1);
 
-    va_start(args, Count);
-
-    for(int i = Count; i--; ) {
-        char* const s = va_arg(args, char*);
-
-        if(s) {
-            size += strlen(s);
-        } else {
-            size += strlen(NULL_STRING);
-        }
+    for(const char* s = String1; s != NULL; s = va_arg(args, const char*)) {
+        strcat(buffer, s);
     }
 
     va_end(args);
 
-    char* const str = a_mem_malloc(size + 1);
-    str[0] = '\0';
-
-    va_start(args, Count);
-
-    for(int i = Count; i--; ) {
-        char* const s = va_arg(args, char*);
-
-        if(s) {
-            strcat(str, s);
-        } else {
-            strcat(str, NULL_STRING);
-        }
-    }
-
-    va_end(args);
-
-    return str;
+    return buffer;
 }
 
 char* a_str_dup(const char* String)

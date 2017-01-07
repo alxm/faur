@@ -34,12 +34,12 @@ typedef struct APixelState {
 extern APixelState a_pixel__state;
 
 #define a_pixel__plain(Dst, Pixel) \
-({                                 \
+{                                  \
     *Dst = Pixel;                  \
-})
+}
 
 #define a_pixel__rgba(Dst, Red, Green, Blue, Alpha) \
-({                                                  \
+{                                                   \
     const APixel p = *Dst;                          \
                                                     \
     const uint8_t r = a_pixel_red(p);               \
@@ -51,10 +51,10 @@ extern APixelState a_pixel__state;
         g + ((((Green) - g) * (Alpha)) >> 8),       \
         b + ((((Blue) - b) * (Alpha)) >> 8)         \
     );                                              \
-})
+}
 
 #define a_pixel__rgb25(Dst, Red, Green, Blue) \
-({                                            \
+{                                             \
     const APixel p = *Dst;                    \
                                               \
     const uint8_t r = a_pixel_red(p);         \
@@ -66,10 +66,10 @@ extern APixelState a_pixel__state;
         (g >> 1) + ((g + (Green)) >> 2),      \
         (b >> 1) + ((b + (Blue)) >> 2)        \
     );                                        \
-})
+}
 
 #define a_pixel__rgb50(Dst, Red, Green, Blue) \
-({                                            \
+{                                             \
     const APixel p = *Dst;                    \
                                               \
     const uint8_t r = a_pixel_red(p);         \
@@ -81,10 +81,10 @@ extern APixelState a_pixel__state;
         (g + (Green)) >> 1,                   \
         (b + (Blue)) >> 1                     \
     );                                        \
-})
+}
 
 #define a_pixel__rgb75(Dst, Red, Green, Blue)       \
-({                                                  \
+{                                                   \
     const APixel p = *Dst;                          \
                                                     \
     const uint8_t r = a_pixel_red(p);               \
@@ -96,12 +96,12 @@ extern APixelState a_pixel__state;
         (g >> 2) + ((Green) >> 2) + ((Green) >> 1), \
         (b >> 2) + ((Blue) >> 2) + ((Blue) >> 1)    \
     );                                              \
-})
+}
 
 #define a_pixel__inverse(Dst) \
-({                            \
+{                             \
     *Dst = ~*Dst;             \
-})
+}
 
 extern void a_pixel__init(void);
 extern void a_pixel__uninit(void);

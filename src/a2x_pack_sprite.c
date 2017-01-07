@@ -376,7 +376,7 @@ ASprite* a_sprite_blank(int Width, int Height, bool ColorKeyed)
     s->w = Width;
     s->wLog2 = (int)log2f(Width);
     s->h = Height;
-    s->spans = ColorKeyed ? NULL : NULL + 1;
+    s->spans = ColorKeyed ? NULL : (uint16_t*)1;
     s->spansSize = 0;
 
     if(ColorKeyed) {

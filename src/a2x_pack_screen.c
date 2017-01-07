@@ -19,6 +19,10 @@
 
 #include "a2x_pack_screen.v.h"
 
+typedef struct AScreenOverlayContainer {
+    AScreenOverlay callback;
+} AScreenOverlayContainer;
+
 APixel* a_screen__pixels = NULL;
 int a_screen__width = 0;
 int a_screen__height = 0;
@@ -81,6 +85,10 @@ void a_screen__uninit(void)
         free(a_screen__savedPixels);
     }
 
+    A_LIST_ITERATE(g_overlays, AScreenOverlayContainer*, c) {
+        free(c);
+    }
+
     a_list_free(g_overlays);
 }
 
@@ -105,8 +113,8 @@ void a_screen_show(void)
         a_out__fatal("Must call a_screen_resetTarget before drawing frame");
     }
 
-    A_LIST_ITERATE(g_overlays, AScreenOverlay, callback) {
-        callback();
+    A_LIST_ITERATE(g_overlays, AScreenOverlayContainer*, c) {
+        c->callback();
     }
 
     a_sdl__screen_show();
@@ -225,5 +233,8 @@ bool a_screen_boxInsideClip(int X, int Y, int W, int H)
 
 void a_screen__addOverlay(AScreenOverlay Callback)
 {
-    a_list_addLast(g_overlays, Callback);
+    AScreenOverlayContainer* c = a_mem_malloc(sizeof(AScreenOverlayContainer));
+    c->callback = Callback;
+
+    a_list_addLast(g_overlays, c);
 }

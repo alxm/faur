@@ -20,11 +20,12 @@
 #include "a2x_pack_bitfield.v.h"
 
 typedef unsigned long AChunk;
-#define BITS_PER_CHUNK (sizeof(AChunk) * CHAR_BIT)
+#define BITS_PER_CHUNK (sizeof(AChunk) * 8)
+#define BITS_PER_CHUNK_MASK (BITS_PER_CHUNK - 1)
 
 struct ABitfield {
     size_t numChunks;
-    AChunk bits[0];
+    AChunk bits[];
 };
 
 ABitfield* a_bitfield_new(size_t NumBits)
@@ -49,13 +50,13 @@ void a_bitfield_free(ABitfield* Bitfield)
 
 void a_bitfield_set(ABitfield* Bitfield, size_t Bit)
 {
-    const AChunk bit = 1 << (Bit % BITS_PER_CHUNK);
+    const AChunk bit = 1 << (Bit & BITS_PER_CHUNK_MASK);
     Bitfield->bits[Bit / BITS_PER_CHUNK] |= bit;
 }
 
 void a_bitfield_clear(ABitfield* Bitfield, size_t Bit)
 {
-    const AChunk bit = 1 << (Bit % BITS_PER_CHUNK);
+    const AChunk bit = 1 << (Bit & BITS_PER_CHUNK_MASK);
     Bitfield->bits[Bit / BITS_PER_CHUNK] &= ~bit;
 }
 
@@ -67,7 +68,7 @@ void a_bitfield_reset(ABitfield* Bitfield)
 bool a_bitfield_test(const ABitfield* Bitfield, size_t Bit)
 {
     const AChunk value = Bitfield->bits[Bit / BITS_PER_CHUNK];
-    const AChunk bit = 1 << (Bit % BITS_PER_CHUNK);
+    const AChunk bit = 1 << (Bit & BITS_PER_CHUNK_MASK);
 
     return (value & bit) != 0;
 }
