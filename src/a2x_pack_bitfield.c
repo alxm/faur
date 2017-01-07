@@ -24,7 +24,7 @@ typedef unsigned long AChunk;
 
 struct ABitfield {
     size_t numChunks;
-    AChunk bits[0];
+    AChunk bits[];
 };
 
 ABitfield* a_bitfield_new(size_t NumBits)
