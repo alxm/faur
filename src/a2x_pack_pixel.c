@@ -79,7 +79,7 @@ void a_pixel_setBlend(APixelBlend Blend)
 
 void a_pixel_setAlpha(unsigned int Alpha)
 {
-    a_pixel__state.alpha = a_math_min(Alpha, A_PIXEL_ALPHA_MAX);
+    a_pixel__state.alpha = a_math_minu(Alpha, A_PIXEL_ALPHA_MAX);
 }
 
 void a_pixel_setRGB(uint8_t Red, uint8_t Green, uint8_t Blue)
@@ -95,7 +95,7 @@ void a_pixel_setRGBA(uint8_t Red, uint8_t Green, uint8_t Blue, unsigned int Alph
     a_pixel__state.red = Red;
     a_pixel__state.green = Green;
     a_pixel__state.blue = Blue;
-    a_pixel__state.alpha = a_math_min(Alpha, A_PIXEL_ALPHA_MAX);
+    a_pixel__state.alpha = a_math_minu(Alpha, A_PIXEL_ALPHA_MAX);
     a_pixel__state.pixel = a_pixel_make(Red, Green, Blue);
 }
 
