@@ -56,6 +56,7 @@ struct AEntity {
     AStrHash* components;
     ABitfield* componentBits;
     ABitfield* systemBits;
+    uint32_t lastActive;
     bool removed;
 };
 
@@ -220,6 +221,7 @@ AEntity* a_entity_new(void)
     e->components = a_strhash_new();
     e->componentBits = a_bitfield_new(a_strhash_size(g_collection->components));
     e->systemBits = a_bitfield_new(a_strhash_size(g_collection->systems));
+    e->lastActive = 0;
     e->removed = false;
 
     return e;
@@ -262,6 +264,16 @@ void a_entity_remove(AEntity* Entity)
 bool a_entity_isRemoved(const AEntity* Entity)
 {
     return Entity->removed;
+}
+
+void a_entity_markActive(AEntity* Entity)
+{
+    Entity->lastActive = a_fps_getCounter();
+}
+
+bool a_entity_isActive(const AEntity* Entity)
+{
+    return Entity->lastActive == a_fps_getCounter();
 }
 
 void* a_entity_addComponent(AEntity* Entity, const char* Component)
