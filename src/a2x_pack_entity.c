@@ -185,6 +185,11 @@ void a_system_draw(const char* Systems)
     a_strtok_free(tok);
 }
 
+void* a_system_getContext(void)
+{
+    return g_collection->context;
+}
+
 void a_system_setContext(void* GlobalContext)
 {
     g_collection->context = GlobalContext;
@@ -195,12 +200,12 @@ static void a_system__run(const ASystem* System)
     if(System->onlyActiveEntities) {
         A_LIST_ITERATE(System->entities, AEntity*, entity) {
             if(a_entity_isActive(entity)) {
-                System->handler(entity, g_collection->context);
+                System->handler(entity);
             }
         }
     } else {
         A_LIST_ITERATE(System->entities, AEntity*, entity) {
-            System->handler(entity, g_collection->context);
+            System->handler(entity);
         }
     }
 }
