@@ -27,6 +27,7 @@ typedef enum ASystemCollectionState {
 
 typedef struct ASystemCollection {
     AList* entities;
+    AList* removed;
     AStrHash* components;
     AStrHash* systems;
     AList* tickSystems;
@@ -47,6 +48,7 @@ typedef struct ASystem {
     AList* entities;
     ABitfield* componentBits;
     size_t bit;
+    bool onlyActiveEntities;
 } ASystem;
 
 struct AEntity {
@@ -55,6 +57,8 @@ struct AEntity {
     AStrHash* components;
     ABitfield* componentBits;
     ABitfield* systemBits;
+    uint32_t lastActive;
+    bool removed;
 };
 
 #define GET_COMPONENT(Header) ((void*)(Header + 1))
@@ -105,7 +109,7 @@ AEntity* a_component_getEntity(const void* Component)
     return GET_HEADER(Component)->parent;
 }
 
-void a_system_declare(const char* Name, const char* Components, ASystemHandler* Handler)
+void a_system_declare(const char* Name, const char* Components, ASystemHandler* Handler, bool OnlyActiveEntities)
 {
     if(g_collection->state != A_SYSTEM_STATE_DECLARE_SYSTEMS) {
         if(g_collection->state == A_SYSTEM_STATE_DECLARE_COMPONENTS) {
@@ -127,6 +131,7 @@ void a_system_declare(const char* Name, const char* Components, ASystemHandler* 
     s->entities = a_list_new();
     s->componentBits = a_bitfield_new(a_strhash_size(g_collection->components));
     s->bit = a_strhash_size(g_collection->systems);
+    s->onlyActiveEntities = OnlyActiveEntities;
 
     a_strhash_add(g_collection->systems, Name, s);
 
@@ -180,25 +185,46 @@ void a_system_draw(const char* Systems)
     a_strtok_free(tok);
 }
 
+void* a_system_getContext(void)
+{
+    return g_collection->context;
+}
+
 void a_system_setContext(void* GlobalContext)
 {
     g_collection->context = GlobalContext;
 }
 
+static void a_system__run(const ASystem* System)
+{
+    if(System->onlyActiveEntities) {
+        A_LIST_ITERATE(System->entities, AEntity*, entity) {
+            if(a_entity_isActive(entity)) {
+                System->handler(entity);
+            }
+        }
+    } else {
+        A_LIST_ITERATE(System->entities, AEntity*, entity) {
+            System->handler(entity);
+        }
+    }
+}
+
 void a_system_run(void)
 {
     A_LIST_ITERATE(g_collection->tickSystems, ASystem*, system) {
-        A_LIST_ITERATE(system->entities, AEntity*, entity) {
-            system->handler(entity, g_collection->context);
-        }
+        a_system__run(system);
     }
 
     if(a_fps_notSkipped()) {
         A_LIST_ITERATE(g_collection->drawSystems, ASystem*, system) {
-            A_LIST_ITERATE(system->entities, AEntity*, entity) {
-                system->handler(entity, g_collection->context);
-            }
+            a_system__run(system);
         }
+    }
+
+    A_LIST_ITERATE(g_collection->removed, AEntity*, entity) {
+        a_entity_free(entity);
+        A_LIST_REMOVE_CURRENT();
     }
 }
 
@@ -213,6 +239,8 @@ AEntity* a_entity_new(void)
     e->components = a_strhash_new();
     e->componentBits = a_bitfield_new(a_strhash_size(g_collection->components));
     e->systemBits = a_bitfield_new(a_strhash_size(g_collection->systems));
+    e->lastActive = 0;
+    e->removed = false;
 
     return e;
 }
@@ -243,6 +271,27 @@ void a_entity_free(AEntity* Entity)
 {
     a_list_removeNode(Entity->collectionNode);
     a_entity__free(Entity);
+}
+
+void a_entity_remove(AEntity* Entity)
+{
+    Entity->removed = true;
+    a_list_addLast(g_collection->removed, Entity);
+}
+
+bool a_entity_isRemoved(const AEntity* Entity)
+{
+    return Entity->removed;
+}
+
+void a_entity_markActive(AEntity* Entity)
+{
+    Entity->lastActive = a_fps_getCounter();
+}
+
+bool a_entity_isActive(const AEntity* Entity)
+{
+    return Entity->lastActive == a_fps_getCounter();
 }
 
 void* a_entity_addComponent(AEntity* Entity, const char* Component)
@@ -291,11 +340,23 @@ void* a_entity_getComponent(const AEntity* Entity, const char* Component)
     return GET_COMPONENT(header);
 }
 
+void* a_entity_requireComponent(const AEntity* Entity, const char* Component)
+{
+    AComponent* header = a_strhash_get(Entity->components, Component);
+
+    if(header == NULL) {
+        a_out__fatal("Missing component '%s'", Component);
+    }
+
+    return GET_COMPONENT(header);
+}
+
 void a_system__pushCollection(void)
 {
     ASystemCollection* c = a_mem_malloc(sizeof(ASystemCollection));
 
     c->entities = a_list_new();
+    c->removed = a_list_new();
     c->components = a_strhash_new();
     c->systems = a_strhash_new();
     c->tickSystems = a_list_new();
@@ -316,7 +377,12 @@ void a_system__popCollection(void)
         a_entity__free(entity);
     }
 
+    A_LIST_ITERATE(g_collection->removed, AEntity*, entity) {
+        a_entity__free(entity);
+    }
+
     a_list_free(g_collection->entities);
+    a_list_free(g_collection->removed);
 
     A_STRHASH_ITERATE(g_collection->components, AComponent*, component) {
         free(component);
