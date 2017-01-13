@@ -48,6 +48,7 @@ typedef struct ASystem {
     AList* entities;
     ABitfield* componentBits;
     size_t bit;
+    bool onlyActiveEntities;
 } ASystem;
 
 struct AEntity {
@@ -108,7 +109,7 @@ AEntity* a_component_getEntity(const void* Component)
     return GET_HEADER(Component)->parent;
 }
 
-void a_system_declare(const char* Name, const char* Components, ASystemHandler* Handler)
+void a_system_declare(const char* Name, const char* Components, ASystemHandler* Handler, bool OnlyActiveEntities)
 {
     if(g_collection->state != A_SYSTEM_STATE_DECLARE_SYSTEMS) {
         if(g_collection->state == A_SYSTEM_STATE_DECLARE_COMPONENTS) {
@@ -130,6 +131,7 @@ void a_system_declare(const char* Name, const char* Components, ASystemHandler* 
     s->entities = a_list_new();
     s->componentBits = a_bitfield_new(a_strhash_size(g_collection->components));
     s->bit = a_strhash_size(g_collection->systems);
+    s->onlyActiveEntities = OnlyActiveEntities;
 
     a_strhash_add(g_collection->systems, Name, s);
 
@@ -188,19 +190,30 @@ void a_system_setContext(void* GlobalContext)
     g_collection->context = GlobalContext;
 }
 
+static void a_system__run(const ASystem* System)
+{
+    if(System->onlyActiveEntities) {
+        A_LIST_ITERATE(System->entities, AEntity*, entity) {
+            if(a_entity_isActive(entity)) {
+                System->handler(entity, g_collection->context);
+            }
+        }
+    } else {
+        A_LIST_ITERATE(System->entities, AEntity*, entity) {
+            System->handler(entity, g_collection->context);
+        }
+    }
+}
+
 void a_system_run(void)
 {
     A_LIST_ITERATE(g_collection->tickSystems, ASystem*, system) {
-        A_LIST_ITERATE(system->entities, AEntity*, entity) {
-            system->handler(entity, g_collection->context);
-        }
+        a_system__run(system);
     }
 
     if(a_fps_notSkipped()) {
         A_LIST_ITERATE(g_collection->drawSystems, ASystem*, system) {
-            A_LIST_ITERATE(system->entities, AEntity*, entity) {
-                system->handler(entity, g_collection->context);
-            }
+            a_system__run(system);
         }
     }
 
