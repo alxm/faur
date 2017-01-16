@@ -27,7 +27,7 @@
 struct AList {
     AListNode* first;
     AListNode* last;
-    size_t items;
+    unsigned items;
 };
 
 struct AListNode {

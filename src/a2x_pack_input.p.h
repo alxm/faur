@@ -30,8 +30,8 @@ extern AInput* a_input_new(const char* Names);
 extern const char* a_input_name(const AInput* Input);
 extern bool a_input_working(const AInput* Input);
 
-extern size_t a_input_numControllers(void);
-extern void a_input_setController(size_t Index);
+extern unsigned a_input_numControllers(void);
+extern void a_input_setController(unsigned Index);
 
 extern bool a_button_get(const AInput* Button);
 extern void a_button_unpress(const AInput* Button);

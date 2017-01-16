@@ -40,14 +40,14 @@ typedef struct AComponent {
     size_t size;
     AComponentFree* free;
     AEntity* parent;
-    size_t bit;
+    unsigned bit;
 } AComponent;
 
 typedef struct ASystem {
     ASystemHandler* handler;
     AList* entities;
     ABitfield* componentBits;
-    size_t bit;
+    unsigned bit;
     bool onlyActiveEntities;
 } ASystem;
 

@@ -429,12 +429,12 @@ void a_input__get(void)
     #endif
 }
 
-size_t a_input_numControllers(void)
+unsigned a_input_numControllers(void)
 {
     return a_list_size(g_controllers);
 }
 
-void a_input_setController(size_t Index)
+void a_input_setController(unsigned Index)
 {
     if(Index >= a_list_size(g_controllers)) {
         a_out__error("Controller %u not present", Index);

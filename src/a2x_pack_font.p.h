@@ -48,8 +48,8 @@ typedef enum AFontDefaults {
     A_FONT_FACE_DEFAULT_NUM
 } AFontDefaults;
 
-extern size_t a_font_load(const ASprite* Sheet, int X, int Y, AFontLoad Loader);
-extern size_t a_font_copy(int Font, APixel Color);
+extern unsigned a_font_load(const ASprite* Sheet, int X, int Y, AFontLoad Loader);
+extern unsigned a_font_copy(int Font, APixel Color);
 
 extern void a_font_push(void);
 extern void a_font_pop(void);

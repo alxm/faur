@@ -22,10 +22,10 @@
 struct ASpriteFrames {
     AList* sprites;
     ASprite** spriteArray;
-    size_t num;
+    unsigned num;
     unsigned int countdown;
     unsigned int callsToNextFrame;
-    size_t index;
+    unsigned index;
     bool forward;
     bool paused;
 };
@@ -93,7 +93,7 @@ void a_spriteframes_free(ASpriteFrames* Frames, bool DoFreeSprites)
 
 ASprite* a_spriteframes_next(ASpriteFrames* Frames)
 {
-    const size_t oldindex = Frames->index;
+    const unsigned oldindex = Frames->index;
 
     if(!Frames->paused) {
         if(--Frames->countdown == 0) {
@@ -115,7 +115,7 @@ ASprite* a_spriteframes_get(const ASpriteFrames* Frames)
     return Frames->spriteArray[Frames->index];
 }
 
-ASprite* a_spriteframes_getByIndex(const ASpriteFrames* Frames, size_t Index)
+ASprite* a_spriteframes_getByIndex(const ASpriteFrames* Frames, unsigned Index)
 {
     return Frames->spriteArray[Index];
 }
@@ -125,12 +125,12 @@ ASprite* a_spriteframes_getRandom(const ASpriteFrames* Frames)
     return Frames->spriteArray[a_random_int(Frames->num)];
 }
 
-size_t a_spriteframes_num(const ASpriteFrames* Frames)
+unsigned a_spriteframes_num(const ASpriteFrames* Frames)
 {
     return Frames->num;
 }
 
-size_t a_spriteframes_currentIndex(const ASpriteFrames* Frames)
+unsigned a_spriteframes_currentIndex(const ASpriteFrames* Frames)
 {
     return Frames->index;
 }

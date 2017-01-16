@@ -31,11 +31,11 @@ extern void a_spriteframes_free(ASpriteFrames* Frames, bool DoFreeSprites);
 
 extern ASprite* a_spriteframes_next(ASpriteFrames* Frames);
 extern ASprite* a_spriteframes_get(const ASpriteFrames* Frames);
-extern ASprite* a_spriteframes_getByIndex(const ASpriteFrames* Frames, size_t Index);
+extern ASprite* a_spriteframes_getByIndex(const ASpriteFrames* Frames, unsigned Index);
 extern ASprite* a_spriteframes_getRandom(const ASpriteFrames* Frames);
 
-extern size_t a_spriteframes_num(const ASpriteFrames* Frames);
-extern size_t a_spriteframes_currentIndex(const ASpriteFrames* Frames);
+extern unsigned a_spriteframes_num(const ASpriteFrames* Frames);
+extern unsigned a_spriteframes_currentIndex(const ASpriteFrames* Frames);
 
 extern void a_spriteframes_setDirection(ASpriteFrames* Frames, bool Forward);
 extern void a_spriteframes_flipDirection(ASpriteFrames* Frames);

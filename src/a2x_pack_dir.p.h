@@ -70,7 +70,7 @@ extern AList* a_dir__files(const ADir* Dir);
 
 extern const char* a_dir_path(const ADir* Dir);
 extern const char* a_dir_name(const ADir* Dir);
-extern size_t a_dir_numEntries(const ADir* Dir);
+extern unsigned a_dir_numEntries(const ADir* Dir);
 
 extern bool a_dir_exists(const char* Path);
 extern bool a_dir_make(const char* Path);

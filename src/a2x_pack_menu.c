@@ -29,7 +29,7 @@ typedef enum AMenuState {
 struct AMenu {
     AList* items;
     AMenuFreeItemHandler freeItem;
-    size_t selectedIndex;
+    unsigned selectedIndex;
     void* selectedItem;
     AMenuState state;
     int pause;
@@ -243,7 +243,7 @@ bool a_menu_cancel(const AMenu* Menu)
     return Menu->state == A_MENU_CANCEL;
 }
 
-size_t a_menu_choice(const AMenu* Menu)
+unsigned a_menu_choice(const AMenu* Menu)
 {
     return Menu->selectedIndex;
 }

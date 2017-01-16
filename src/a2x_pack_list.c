@@ -251,10 +251,10 @@ void** a_list_array(AList* List)
     return array;
 }
 
-void* a_list_get(const AList* List, size_t Index)
+void* a_list_get(const AList* List, unsigned Index)
 {
     if(Index < List->items) {
-        size_t counter = 0;
+        unsigned counter = 0;
 
         for(AListNode* n = List->first->next; n != List->last; n = n->next) {
             if(counter++ == Index) {
@@ -266,7 +266,7 @@ void* a_list_get(const AList* List, size_t Index)
     return NULL;
 }
 
-size_t a_list_size(const AList* List)
+unsigned a_list_size(const AList* List)
 {
     return List->items;
 }

@@ -140,7 +140,7 @@ static void A__FUNC_NAME(a_draw__circle_noclip)(int X, int Y, int Radius)
     const int q3X = X - 1, q3Y = Y;
     const int q4X = X,     q4Y = Y;
 
-    const size_t width = a_screen__width;
+    const unsigned width = a_screen__width;
     APixel* const pixels = a_screen__pixels;
 
     APixel* oct1 = pixels + q1Y * width + q1X + Radius;

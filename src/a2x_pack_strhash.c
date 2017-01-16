@@ -104,7 +104,7 @@ bool a_strhash_contains(const AStrHash* Hash, const char* Key)
     return false;
 }
 
-size_t a_strhash_size(const AStrHash* Hash)
+unsigned a_strhash_size(const AStrHash* Hash)
 {
     return a_list_size(Hash->entriesList);
 }

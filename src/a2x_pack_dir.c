@@ -23,7 +23,7 @@ struct ADir {
     char* path;
     char* name;
     AList* files;
-    size_t num;
+    unsigned num;
     AListNode* node;
 };
 
@@ -123,7 +123,7 @@ ADir* a_dir_open(const char* Path)
     a_list_clear(files);
     d->files = files;
 
-    for(size_t i = d->num; i--; ) {
+    for(unsigned i = d->num; i--; ) {
         a_list_addFirst(d->files, array[i]);
     }
 
@@ -169,7 +169,7 @@ const char* a_dir_name(const ADir* Dir)
     return Dir->name;
 }
 
-size_t a_dir_numEntries(const ADir* Dir)
+unsigned a_dir_numEntries(const ADir* Dir)
 {
     return Dir->num;
 }

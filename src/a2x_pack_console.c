@@ -29,7 +29,7 @@ typedef struct ALine {
 bool g_enabled;
 bool g_show;
 static AList* g_lines;
-static size_t g_linesPerScreen;
+static unsigned g_linesPerScreen;
 static ASprite* g_titles[A_CONSOLE_MAX];
 static AInput* g_toggle;
 
@@ -132,7 +132,7 @@ void a_console__init(void)
     g_enabled = true;
     g_show = false;
     g_lines = a_list_new();
-    g_linesPerScreen = SIZE_MAX;
+    g_linesPerScreen = UINT_MAX;
 }
 
 void a_console__init2(void)
