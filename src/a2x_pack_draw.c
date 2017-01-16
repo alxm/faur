@@ -229,7 +229,7 @@ do {                                                                        \
     const uint8_t a__pass_red = a_pixel__state.red;          \
     const uint8_t a__pass_green = a_pixel__state.green;      \
     const uint8_t a__pass_blue = a_pixel__state.blue;        \
-    const unsigned int a__pass_alpha = a_pixel__state.alpha;
+    const unsigned a__pass_alpha = a_pixel__state.alpha;
 #define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue, a__pass_alpha
 #include "a2x_pack_draw.inc.c"
 #undef A__BLEND

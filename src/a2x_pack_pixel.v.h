@@ -27,7 +27,7 @@
 typedef struct APixelState {
     APixelBlend blend;
     uint8_t red, green, blue;
-    unsigned int alpha;
+    unsigned alpha;
     APixel pixel;
 } APixelState;
 

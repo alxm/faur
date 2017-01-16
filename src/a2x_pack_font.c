@@ -21,7 +21,7 @@
 #include "media/font.h"
 
 #define CHAR_ENTRIES_NUM    128
-#define CHAR_TO_INDEX(Char) ((unsigned int)Char & (CHAR_ENTRIES_NUM - 1))
+#define CHAR_TO_INDEX(Char) ((unsigned)Char & (CHAR_ENTRIES_NUM - 1))
 
 #define BLANK_SPACE  3
 #define CHAR_SPACING 1

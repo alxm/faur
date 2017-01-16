@@ -59,7 +59,7 @@ static inline AFix a_fix_div(AFix X, AFix Y)
     return ((int64_t)X << A_FIX_BIT_PRECISION) / Y;
 }
 
-static inline AFixu a_fixu_itofix(unsigned int X)
+static inline AFixu a_fixu_itofix(unsigned X)
 {
     return X << A_FIX_BIT_PRECISION;
 }
@@ -69,7 +69,7 @@ static inline AFixu a_fixu_ftofix(float X)
     return X * (1 << A_FIX_BIT_PRECISION);
 }
 
-static inline unsigned int a_fixu_fixtoi(AFixu X)
+static inline unsigned a_fixu_fixtoi(AFixu X)
 {
     return X >> A_FIX_BIT_PRECISION;
 }

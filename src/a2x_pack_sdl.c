@@ -841,7 +841,7 @@ void a_sdl__input_get(void)
             } break;
 
             case SDL_JOYHATMOTION: {
-                unsigned int state = 0;
+                unsigned state = 0;
                 #define UP_PRESSED    (1 << 0)
                 #define DOWN_PRESSED  (1 << 1)
                 #define LEFT_PRESSED  (1 << 2)

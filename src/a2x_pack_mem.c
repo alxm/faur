@@ -57,7 +57,7 @@ void* a_mem_encodeRLE(const void* Data, int Length, int Size, int* EncodedLength
         }
 
         for(int i = 0; i < Length; ) {
-            unsigned int span = 1;
+            unsigned span = 1;
 
             for(int j = i; j < Length - 1; j++) {
                 if((Size == 1 && data8[j] == data8[j + 1]) || (Size == 2 && data16[j] == data16[j + 1]) || (Size == 4 && data32[j] == data32[j + 1])) {

@@ -51,15 +51,15 @@
         volatile uint32_t* memregs32 = mmap(0, 0x10000, PROT_READ | PROT_WRITE, MAP_SHARED, memfd, 0xc0000000);
         volatile uint16_t* memregs16 = (uint16_t*)memregs32;
 
-        unsigned int pdiv = 3;
-        unsigned int mdiv = (mhz * pdiv) / freq;
+        unsigned pdiv = 3;
+        unsigned mdiv = (mhz * pdiv) / freq;
 
         pdiv = ((pdiv - 2) << 2) & 0xfc;
         mdiv = ((mdiv - 8) << 8) & 0xff00;
 
-        unsigned int v = pdiv | mdiv;
+        unsigned v = pdiv | mdiv;
 
-        unsigned int l = memregs32[0x808 >> 2]; // Get interupt flags
+        unsigned l = memregs32[0x808 >> 2]; // Get interupt flags
         memregs32[0x808 >> 2] = 0xFF8FFFE7; // Turn off interrupts
         memregs16[0x910 >> 1] = v; // Set frequentie
         while(memregs16[0x0902 >> 1] & 1) continue; // Wait for the frequentie to be ajused
@@ -159,11 +159,11 @@ void a_hw__uninit(void)
     void a_hw__setWizPortraitMode(void)
     {
         #define FBIO_MAGIC 'D'
-        #define FBIO_LCD_CHANGE_CONTROL _IOW(FBIO_MAGIC, 90, unsigned int[2])
+        #define FBIO_LCD_CHANGE_CONTROL _IOW(FBIO_MAGIC, 90, unsigned[2])
         #define LCD_DIRECTION_ON_CMD 5 // 320x240
         #define LCD_DIRECTION_OFF_CMD 6 // 240x320
 
-        unsigned int send[2];
+        unsigned send[2];
         int fb_fd = open("/dev/fb0", O_RDWR);
         send[0] = LCD_DIRECTION_OFF_CMD;
         ioctl(fb_fd, FBIO_LCD_CHANGE_CONTROL, &send);
