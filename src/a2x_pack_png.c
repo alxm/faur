@@ -24,12 +24,12 @@
 
 typedef struct AByteStream {
     const uint8_t* data;
-    int offset;
+    size_t offset;
 } AByteStream;
 
 static void readFunction(png_structp Png, png_bytep Data, png_size_t Length)
 {
-    AByteStream* const stream = png_get_io_ptr(Png);
+    AByteStream* stream = png_get_io_ptr(Png);
 
     memcpy(Data, stream->data + stream->offset, Length);
     stream->offset += Length;
@@ -37,25 +37,23 @@ static void readFunction(png_structp Png, png_bytep Data, png_size_t Length)
 
 static void pngToPixels(png_structp Png, png_infop Info, APixel** Pixels, int* Width, int* Height)
 {
-    const int w = png_get_image_width(Png, Info);
-    const int h = png_get_image_height(Png, Info);
-    const int channels = png_get_channels(Png, Info);
+    png_uint_32 w = png_get_image_width(Png, Info);
+    png_uint_32 h = png_get_image_height(Png, Info);
+    unsigned channels = png_get_channels(Png, Info);
 
-    APixel* const px = a_mem_malloc(w * h * sizeof(APixel));
+    APixel* px = a_mem_malloc(w * h * sizeof(APixel));
     png_bytepp rows = png_get_rows(Png, Info);
 
-    for(int i = 0; i < h; i++) {
-        for(int j = 0; j < w; j++) {
-            *(px + i * w + j) = a_pixel_make(
-                rows[i][j * channels + 0],
-                rows[i][j * channels + 1],
-                rows[i][j * channels + 2]
-            );
+    for(unsigned i = 0; i < h; i++) {
+        for(unsigned j = 0; j < w; j++) {
+            *(px + i * w + j) = a_pixel_make(rows[i][j * channels + 0],
+                                             rows[i][j * channels + 1],
+                                             rows[i][j * channels + 2]);
         }
     }
 
-    *Width = w;
-    *Height = h;
+    *Width = (int)w;
+    *Height = (int)h;
     *Pixels = px;
 }
 
@@ -121,7 +119,7 @@ cleanUp:
 
 void a_png_readMemory(const uint8_t* Data, APixel** Pixels, int* Width, int* Height)
 {
-    AByteStream* const stream = a_mem_malloc(sizeof(AByteStream));
+    AByteStream* stream = a_mem_malloc(sizeof(AByteStream));
 
     stream->data = Data;
     stream->offset = 0;
@@ -189,8 +187,8 @@ void a_png_write(const char* Path, const APixel* Data, int Width, int Height, ch
         goto cleanUp;
     }
 
-    rows = a_mem_malloc(Height * sizeof(png_bytep));
-    memset(rows, 0, Height * sizeof(png_bytep));
+    rows = a_mem_malloc((unsigned)Height * sizeof(png_bytep));
+    memset(rows, 0, (unsigned)Height * sizeof(png_bytep));
 
     png = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 
@@ -210,23 +208,25 @@ void a_png_write(const char* Path, const APixel* Data, int Width, int Height, ch
 
     png_set_compression_level(png, Z_BEST_COMPRESSION);
 
-    png_set_IHDR(
-        png, info,
-        Width, Height,
-        8, PNG_COLOR_TYPE_RGB,
-        PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT,
-        PNG_FILTER_TYPE_DEFAULT
-    );
+    png_set_IHDR(png,
+                 info,
+                 (unsigned)Width,
+                 (unsigned)Height,
+                 8,
+                 PNG_COLOR_TYPE_RGB,
+                 PNG_INTERLACE_NONE,
+                 PNG_COMPRESSION_TYPE_DEFAULT,
+                 PNG_FILTER_TYPE_DEFAULT);
 
     for(int i = 0; i < Height; i++) {
-        rows[i] = a_mem_malloc(Width * 3 * sizeof(png_byte));
+        rows[i] = a_mem_malloc((unsigned)Width * 3 * sizeof(png_byte));
 
         for(int j = 0; j < Width; j++) {
             const APixel p = *(Data + i * Width + j);
 
-            rows[i][j * 3 + 0] = a_pixel_red(p);
-            rows[i][j * 3 + 1] = a_pixel_green(p);
-            rows[i][j * 3 + 2] = a_pixel_blue(p);
+            rows[i][j * 3 + 0] = (png_byte)a_pixel_red(p);
+            rows[i][j * 3 + 1] = (png_byte)a_pixel_green(p);
+            rows[i][j * 3 + 2] = (png_byte)a_pixel_blue(p);
         }
     }
 

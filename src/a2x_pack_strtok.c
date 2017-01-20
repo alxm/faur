@@ -22,15 +22,15 @@
 struct AStrTok {
     const char* string;
     const char* delims;
-    int numDelims;
-    int index;
+    size_t numDelims;
+    size_t index;
     char* currentToken;
-    int currentBufferLen;
+    size_t currentBufferLen;
 };
 
-static bool is_delim(char Character, const char* Delimiters, int NumDelimiters)
+static bool is_delim(char Character, const char* Delimiters, size_t NumDelimiters)
 {
-    for(int i = NumDelimiters; i--; ) {
+    for(size_t i = NumDelimiters; i--; ) {
         if(Character == Delimiters[i]) {
             return true;
         }
@@ -64,9 +64,9 @@ void a_strtok_free(AStrTok* Tokenizer)
 
 char* a_strtok__get(AStrTok* Tokenizer)
 {
-    const char* const string = Tokenizer->string;
-    const char* const delims = Tokenizer->delims;
-    const int numDelims = Tokenizer->numDelims;
+    const char* string = Tokenizer->string;
+    const char* delims = Tokenizer->delims;
+    size_t numDelims = Tokenizer->numDelims;
 
     while(is_delim(string[Tokenizer->index], delims, numDelims)) {
         Tokenizer->index++;
@@ -78,14 +78,14 @@ char* a_strtok__get(AStrTok* Tokenizer)
         return NULL;
     }
 
-    const int start = Tokenizer->index;
+    size_t start = Tokenizer->index;
 
     do {
         Tokenizer->index++;
     } while(string[Tokenizer->index] != '\0'
         && !is_delim(string[Tokenizer->index], delims, numDelims));
 
-    const int len = Tokenizer->index - start;
+    size_t len = Tokenizer->index - start;
 
     if(len > Tokenizer->currentBufferLen) {
         if(Tokenizer->currentToken) {

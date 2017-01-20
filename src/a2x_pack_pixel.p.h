@@ -63,17 +63,30 @@
 #define A_PIXEL_GREEN_PACK (8 - A_PIXEL_GREEN_BITS)
 #define A_PIXEL_BLUE_PACK  (8 - A_PIXEL_BLUE_BITS)
 
-#define a_pixel_make(Red, Green, Blue)                               \
-    (APixel)(                                                        \
-        ((((Red)   >> A_PIXEL_RED_PACK))   << A_PIXEL_RED_SHIFT)   | \
-        ((((Green) >> A_PIXEL_GREEN_PACK)) << A_PIXEL_GREEN_SHIFT) | \
-        ((((Blue)  >> A_PIXEL_BLUE_PACK))  << A_PIXEL_BLUE_SHIFT))
+#define A_PIXEL_ALPHA_MAX 256
 
-#define a_pixel_red(Pixel)   ((((Pixel) >> A_PIXEL_RED_SHIFT)   & A_PIXEL_RED_MASK)   << A_PIXEL_RED_PACK)
-#define a_pixel_green(Pixel) ((((Pixel) >> A_PIXEL_GREEN_SHIFT) & A_PIXEL_GREEN_MASK) << A_PIXEL_GREEN_PACK)
-#define a_pixel_blue(Pixel)  ((((Pixel) >> A_PIXEL_BLUE_SHIFT)  & A_PIXEL_BLUE_MASK)  << A_PIXEL_BLUE_PACK)
+static inline APixel a_pixel_make(int Red, int Green, int Blue)
+{
+    return (APixel)
+        (((Red   >> A_PIXEL_RED_PACK)   << A_PIXEL_RED_SHIFT)   |
+         ((Green >> A_PIXEL_GREEN_PACK) << A_PIXEL_GREEN_SHIFT) |
+         ((Blue  >> A_PIXEL_BLUE_PACK)  << A_PIXEL_BLUE_SHIFT));
+}
 
-#define A_PIXEL_ALPHA_MAX 256u
+static inline int a_pixel_red(APixel Pixel)
+{
+    return (int)((Pixel >> A_PIXEL_RED_SHIFT) & A_PIXEL_RED_MASK) << A_PIXEL_RED_PACK;
+}
+
+static inline int a_pixel_green(APixel Pixel)
+{
+    return (int)((Pixel >> A_PIXEL_GREEN_SHIFT) & A_PIXEL_GREEN_MASK) << A_PIXEL_GREEN_PACK;
+}
+
+static inline int a_pixel_blue(APixel Pixel)
+{
+    return (int)((Pixel >> A_PIXEL_BLUE_SHIFT) & A_PIXEL_BLUE_MASK) << A_PIXEL_BLUE_PACK;
+}
 
 typedef enum {
     A_PIXEL_BLEND_PLAIN,
@@ -91,7 +104,7 @@ extern void a_pixel_pop(void);
 extern void a_pixel_reset(void);
 
 extern void a_pixel_setBlend(APixelBlend Blend);
-extern void a_pixel_setAlpha(unsigned Alpha);
-extern void a_pixel_setRGB(uint8_t Red, uint8_t Green, uint8_t Blue);
-extern void a_pixel_setRGBA(uint8_t Red, uint8_t Green, uint8_t Blue, unsigned Alpha);
+extern void a_pixel_setAlpha(int Alpha);
+extern void a_pixel_setRGB(int Red, int Green, int Blue);
+extern void a_pixel_setRGBA(int Red, int Green, int Blue, int Alpha);
 extern void a_pixel_setPixel(APixel Pixel);

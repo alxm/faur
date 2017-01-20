@@ -36,7 +36,7 @@ static inline AFix a_fix_itofix(int X)
 
 static inline AFix a_fix_ftofix(float X)
 {
-    return X * (1 << A_FIX_BIT_PRECISION);
+    return (AFix)(X * (1 << A_FIX_BIT_PRECISION));
 }
 
 static inline int a_fix_fixtoi(AFix X)
@@ -46,17 +46,17 @@ static inline int a_fix_fixtoi(AFix X)
 
 static inline float a_fix_fixtof(AFix X)
 {
-    return X / (1 << A_FIX_BIT_PRECISION);
+    return (float)X / (1 << A_FIX_BIT_PRECISION);
 }
 
 static inline AFix a_fix_mul(AFix X, AFix Y)
 {
-    return ((int64_t)X * Y) >> A_FIX_BIT_PRECISION;
+    return (AFix)(((int64_t)X * Y) >> A_FIX_BIT_PRECISION);
 }
 
 static inline AFix a_fix_div(AFix X, AFix Y)
 {
-    return ((int64_t)X << A_FIX_BIT_PRECISION) / Y;
+    return (AFix)(((int64_t)X << A_FIX_BIT_PRECISION) / Y);
 }
 
 static inline AFixu a_fixu_itofix(unsigned X)
@@ -66,7 +66,7 @@ static inline AFixu a_fixu_itofix(unsigned X)
 
 static inline AFixu a_fixu_ftofix(float X)
 {
-    return X * (1 << A_FIX_BIT_PRECISION);
+    return (AFixu)(X * (1 << A_FIX_BIT_PRECISION));
 }
 
 static inline unsigned a_fixu_fixtoi(AFixu X)
@@ -76,33 +76,33 @@ static inline unsigned a_fixu_fixtoi(AFixu X)
 
 static inline float a_fixu_fixtof(AFixu X)
 {
-    return X / (1 << A_FIX_BIT_PRECISION);
+    return (float)X / (1 << A_FIX_BIT_PRECISION);
 }
 
 static inline AFixu a_fixu_mul(AFixu X, AFixu Y)
 {
-    return ((uint64_t)X * Y) >> A_FIX_BIT_PRECISION;
+    return (AFixu)(((uint64_t)X * Y) >> A_FIX_BIT_PRECISION);
 }
 
 static inline AFixu a_fixu_div(AFixu X, AFixu Y)
 {
-    return ((uint64_t)X << A_FIX_BIT_PRECISION) / Y;
+    return (AFixu)(((uint64_t)X << A_FIX_BIT_PRECISION) / Y);
 }
 
 extern AFix a_fix_sin_val[A_MATH_ANGLES_NUM];
 extern AFix a_fix_cos_val[A_MATH_ANGLES_NUM];
 
-static inline AFix a_fix_sin(int Angle)
+static inline AFix a_fix_sin(unsigned Angle)
 {
     return a_fix_sin_val[Angle];
 }
 
-static inline AFix a_fix_cos(int Angle)
+static inline AFix a_fix_cos(unsigned Angle)
 {
     return a_fix_cos_val[Angle];
 }
 
-static inline AFix a_fix_wrapAngle(AFix Angle)
+static inline AFixu a_fix_wrapAngle(AFixu Angle)
 {
     return Angle & ((A_MATH_ANGLES_NUM << A_FIX_BIT_PRECISION) - 1);
 }

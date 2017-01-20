@@ -49,14 +49,14 @@ void a_file__uninit(void)
 
 AFile* a_file_open(const char* Path, const char* Modes)
 {
-    FILE* const handle = fopen(Path, Modes);
+    FILE* handle = fopen(Path, Modes);
 
     if(!handle) {
         a_out__error("a_file_open: Can't open %s for '%s'", Path, Modes);
         return NULL;
     }
 
-    AFile* const f = a_mem_malloc(sizeof(AFile));
+    AFile* f = a_mem_malloc(sizeof(AFile));
 
     f->handle = handle;
     f->path = a_str_getPrefixLastFind(Path, '/');
@@ -97,7 +97,7 @@ void a_file__close(AFile* File)
 
 bool a_file_checkPrefix(AFile* File, const char* Prefix)
 {
-    const size_t size = strlen(Prefix) + 1;
+    size_t size = strlen(Prefix) + 1;
     char buffer[size];
 
     fseek(File->handle, 0, SEEK_SET);
@@ -174,7 +174,7 @@ bool a_file_readLine(AFile* File)
     }
 
     int offset = 1;
-    FILE* const handle = File->handle;
+    FILE* handle = File->handle;
 
     while(offset == 1 && !File->eof) {
         int c;
@@ -194,10 +194,10 @@ bool a_file_readLine(AFile* File)
             fseek(handle, -offset, SEEK_CUR);
         }
 
-        char* const str = a_mem_malloc(offset);
+        char* str = a_mem_malloc((unsigned)offset);
 
         for(int i = 0; i < offset - 1; i++) {
-            str[i] = fgetc(handle);
+            str[i] = (char)fgetc(handle);
         }
 
         str[offset - 1] = '\0';
@@ -262,7 +262,7 @@ FILE* a_file_handle(const AFile* File)
 
 bool a_file_exists(const char* Path)
 {
-    FILE* const f = fopen(Path, "r");
+    FILE* f = fopen(Path, "r");
 
     if(f) {
         fclose(f);
@@ -293,7 +293,7 @@ size_t a_file_size(const char* Path)
         return 0;
     }
 
-    return info.st_size;
+    return (size_t)info.st_size;
 }
 
 uint8_t* a_file_toBuffer(const char* Path)
@@ -304,7 +304,7 @@ uint8_t* a_file_toBuffer(const char* Path)
         return NULL;
     }
 
-    const size_t size = a_file_size(Path);
+    size_t size = a_file_size(Path);
     uint8_t* buffer = a_mem_malloc(size);
 
     if(!a_file_read(f, buffer, size)) {

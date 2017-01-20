@@ -51,7 +51,7 @@ struct AMenu {
 
 AMenu* a_menu_new(AInput* Next, AInput* Back, AInput* Select, AInput* Cancel, AMenuFreeItemHandler FreeItemHandler)
 {
-    AMenu* const m = a_mem_malloc(sizeof(AMenu));
+    AMenu* m = a_mem_malloc(sizeof(AMenu));
 
     m->items = a_list_new();
     m->freeItem = FreeItemHandler;

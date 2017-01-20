@@ -21,14 +21,14 @@
 
 struct AFrameTimer {
     bool running;
-    uint32_t period;
-    uint32_t start;
-    uint32_t diff;
+    unsigned period;
+    unsigned start;
+    unsigned diff;
 };
 
-AFrameTimer* a_frametimer_new(uint32_t FramesPeriod)
+AFrameTimer* a_frametimer_new(unsigned FramesPeriod)
 {
-    AFrameTimer* const t = a_mem_malloc(sizeof(AFrameTimer));
+    AFrameTimer* t = a_mem_malloc(sizeof(AFrameTimer));
 
     t->running = false;
     t->period = FramesPeriod;
@@ -73,7 +73,7 @@ bool a_frametimer_expired(AFrameTimer* Timer)
     return false;
 }
 
-uint32_t a_frametimer_elapsed(AFrameTimer* Timer)
+unsigned a_frametimer_elapsed(AFrameTimer* Timer)
 {
     return Timer->diff;
 }

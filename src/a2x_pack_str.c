@@ -54,7 +54,7 @@ char* a_str_dup(const char* String)
 
 char* a_str_sub(const char* String, int Start, int End)
 {
-    const int len = End - Start;
+    size_t len = (size_t)(End - Start);
     char* str = a_mem_malloc(len + 1);
 
     memcpy(str, String + Start, len);
@@ -70,7 +70,7 @@ char* a_str_prefix(const char* String, int Length)
 
 char* a_str_suffix(const char* String, int Length)
 {
-    const int sLen = strlen(String);
+    int sLen = (int)strlen(String);
     return a_str_sub(String, sLen - Length, sLen);
 }
 
@@ -87,7 +87,7 @@ int a_str_firstIndex(const char* String, char Character)
 
 int a_str_lastIndex(const char* String, char Character)
 {
-    for(int i = strlen(String); i--; ) {
+    for(int i = (int)strlen(String); i--; ) {
         if(String[i] == Character) {
             return i;
         }
@@ -165,12 +165,12 @@ char* a_str_getSuffixLastFind(const char* String, char Marker)
         return NULL;
     }
 
-    return a_str_sub(String, index + 1, strlen(String));
+    return a_str_sub(String, index + 1, (int)strlen(String));
 }
 
 char* a_str_extractPath(const char* String)
 {
-    char* const path = a_str_getPrefixLastFind(String, '/');
+    char* path = a_str_getPrefixLastFind(String, '/');
 
     if(path) {
         return path;
@@ -181,7 +181,7 @@ char* a_str_extractPath(const char* String)
 
 char* a_str_extractFile(const char* String)
 {
-    char* const c = a_str_getSuffixLastFind(String, '/');
+    char* c = a_str_getSuffixLastFind(String, '/');
 
     if(c) {
         return c;
@@ -192,8 +192,8 @@ char* a_str_extractFile(const char* String)
 
 char* a_str_extractName(const char* String)
 {
-    char* const file = a_str_extractFile(String);
-    char* const name = a_str_getPrefixLastFind(file, '.');
+    char* file = a_str_extractFile(String);
+    char* name = a_str_getPrefixLastFind(file, '.');
 
     if(name) {
         free(file);
@@ -205,14 +205,15 @@ char* a_str_extractName(const char* String)
 
 char* a_str_trim(const char* String)
 {
-    int start, end;
+    int start = 0;
+    int end = (int)strlen(String) - 1;
 
-    for(start = 0; isspace(String[start]); start++) {
-        continue;
+    while(isspace(String[start])) {
+        start++;
     }
 
-    for(end = strlen(String) - 1; end >= start && isspace(String[end]); end--) {
-        continue;
+    while(end > start && isspace(String[end])) {
+        end--;
     }
 
     return a_str_sub(String, start, end + 1);

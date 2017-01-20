@@ -49,7 +49,7 @@ static bool lazy_init(void)
                     free(numberStr);
 
                     if(number > 0) {
-                        g_screenshotNumber = number;
+                        g_screenshotNumber = (unsigned)number;
                         g_isInit = true;
                         break;
                     }

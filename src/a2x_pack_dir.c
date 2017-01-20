@@ -47,7 +47,7 @@ void a_dir__uninit(void)
 
 static int a_dir__sort(const void* A, const void* B)
 {
-    char a, b;
+    int a, b;
     const char* nameA = (*(ADirEntry**)A)->name;
     const char* nameB = (*(ADirEntry**)B)->name;
 
@@ -61,8 +61,8 @@ static int a_dir__sort(const void* A, const void* B)
     }
 
     if(isalpha(a) && isalpha(b)) {
-        const char a_lower = tolower(a);
-        const char b_lower = tolower(b);
+        const int a_lower = tolower(a);
+        const int b_lower = tolower(b);
 
         if(a_lower == b_lower) {
             if(a == a_lower) {

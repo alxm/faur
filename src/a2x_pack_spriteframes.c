@@ -36,7 +36,7 @@ ASpriteFrames* a_spriteframes_new(const ASprite* Sheet, int X, int Y, unsigned C
         a_out__fatal("a_spriteframes_new: CallsToNextFrame<1");
     }
 
-    ASpriteFrames* const Frames = a_mem_malloc(sizeof(ASpriteFrames));
+    ASpriteFrames* Frames = a_mem_malloc(sizeof(ASpriteFrames));
 
     Frames->sprites = a_list_new();
     Frames->spriteArray = NULL;
@@ -122,7 +122,7 @@ ASprite* a_spriteframes_getByIndex(const ASpriteFrames* Frames, unsigned Index)
 
 ASprite* a_spriteframes_getRandom(const ASpriteFrames* Frames)
 {
-    return Frames->spriteArray[a_random_int(Frames->num)];
+    return Frames->spriteArray[a_random_int((int)Frames->num)];
 }
 
 unsigned a_spriteframes_num(const ASpriteFrames* Frames)
@@ -182,7 +182,7 @@ void a_spriteframes_reset(ASpriteFrames* Frames)
 
 ASpriteFrames* a_spriteframes_clone(const ASpriteFrames* Frames)
 {
-    ASpriteFrames* const f = a_mem_malloc(sizeof(ASpriteFrames));
+    ASpriteFrames* f = a_mem_malloc(sizeof(ASpriteFrames));
 
     f->sprites = a_list_clone(Frames->sprites);
     f->spriteArray = (ASprite**)a_list_array(Frames->sprites);

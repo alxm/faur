@@ -57,7 +57,7 @@ struct AEntity {
     AStrHash* components;
     ABitfield* componentBits;
     ABitfield* systemBits;
-    uint32_t lastActive;
+    unsigned lastActive;
     bool removed;
 };
 

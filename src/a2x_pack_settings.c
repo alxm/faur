@@ -54,7 +54,7 @@ static int parseBool(const char* Value)
 
 static void add(ASettingType Type, ASettingUpdate Update, const char* Key, const char* DefaultValue)
 {
-    ASetting* const s = a_mem_malloc(sizeof(ASetting));
+    ASetting* s = a_mem_malloc(sizeof(ASetting));
 
     s->type = Type;
     s->update = Update;
@@ -78,7 +78,7 @@ static void add(ASettingType Type, ASettingUpdate Update, const char* Key, const
 
 static void set(const char* Key, const char* Value, bool HonorFrozen)
 {
-    ASetting* const s = a_strhash_get(g_settings, Key);
+    ASetting* s = a_strhash_get(g_settings, Key);
 
     if(s == NULL) {
         a_out__error("Setting '%s' does not exist", Key);
@@ -111,7 +111,7 @@ static void set(const char* Key, const char* Value, bool HonorFrozen)
 
 static bool flip(const char* Key, bool HonorFrozen)
 {
-    ASetting* const s = a_strhash_get(g_settings, Key);
+    ASetting* s = a_strhash_get(g_settings, Key);
 
     if(s == NULL) {
         a_out__error("Setting '%s' does not exist", Key);
@@ -236,7 +236,7 @@ bool a_settings__flip(const char* Key)
 
 const char* a_settings_getString(const char* Key)
 {
-    ASetting* const s = a_strhash_get(g_settings, Key);
+    ASetting* s = a_strhash_get(g_settings, Key);
 
     if(s == NULL) {
         a_out__error("Setting '%s' does not exist", Key);
@@ -251,7 +251,7 @@ const char* a_settings_getString(const char* Key)
 
 bool a_settings_getBool(const char* Key)
 {
-    ASetting* const s = a_strhash_get(g_settings, Key);
+    ASetting* s = a_strhash_get(g_settings, Key);
 
     if(s == NULL) {
         a_out__error("Setting '%s' does not exist", Key);
@@ -266,7 +266,7 @@ bool a_settings_getBool(const char* Key)
 
 int a_settings_getInt(const char* Key)
 {
-    ASetting* const s = a_strhash_get(g_settings, Key);
+    ASetting* s = a_strhash_get(g_settings, Key);
 
     if(s == NULL) {
         a_out__error("Setting '%s' does not exist", Key);

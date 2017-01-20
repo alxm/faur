@@ -23,45 +23,45 @@
 #define FRAMESKIP_ADJUST_DELAY_SEC 2
 #define NO_SLEEP_RESET_SEC 20
 
-static uint32_t g_idealFps;
+static unsigned g_idealFps;
 static bool g_skipFrames;
-static int g_skipMax;
+static unsigned g_skipMax;
 
-static uint32_t g_fpsRate;
-static uint32_t g_msPerFrame;
+static unsigned g_fpsRate;
+static unsigned g_msPerFrame;
 static ATimer* g_timer;
 
-static uint32_t g_fps;
-static uint32_t g_maxFps;
-static uint32_t g_frameCounter;
+static unsigned g_fps;
+static unsigned g_maxFps;
+static unsigned g_frameCounter;
 
-static size_t g_bufferHead;
-static size_t g_bufferLen;
-static uint32_t* g_fpsBuffer;
-static uint32_t* g_maxFpsBuffer;
-static uint32_t g_fpsBufferSum;
-static uint32_t g_maxFpsBufferSum;
+static unsigned g_bufferHead;
+static unsigned g_bufferLen;
+static unsigned* g_fpsBuffer;
+static unsigned* g_maxFpsBuffer;
+static unsigned g_fpsBufferSum;
+static unsigned g_maxFpsBufferSum;
 
-static int g_skipNum;
-static int g_skipCounter;
-static uint32_t g_fpsThresholdFast;
-static uint32_t g_fpsThresholdSlow;
+static unsigned g_skipNum;
+static unsigned g_skipCounter;
+static unsigned g_fpsThresholdFast;
+static unsigned g_fpsThresholdSlow;
 static ATimer* g_skipAdjustTimer;
 static ATimer* g_noSleepTimer;
 static bool g_canSleep;
 
 void a_fps__init(void)
 {
-    g_idealFps = a_settings_getInt("video.fps");
+    g_idealFps = (unsigned)a_settings_getInt("video.fps");
     g_skipFrames = a_settings_getBool("video.fps.skip");
-    g_skipMax = a_settings_getInt("video.fps.skip.max");
+    g_skipMax = (unsigned)a_settings_getInt("video.fps.skip.max");
 
     g_timer = NULL;
     g_frameCounter = 0;
     g_bufferHead = 0;
     g_bufferLen = g_idealFps * AVERAGE_WINDOW_SEC;
-    g_fpsBuffer = a_mem_malloc(g_bufferLen * sizeof(uint32_t));
-    g_maxFpsBuffer = a_mem_malloc(g_bufferLen * sizeof(uint32_t));
+    g_fpsBuffer = a_mem_malloc(g_bufferLen * sizeof(unsigned));
+    g_maxFpsBuffer = a_mem_malloc(g_bufferLen * sizeof(unsigned));
 
     g_skipAdjustTimer = a_timer_new(FRAMESKIP_ADJUST_DELAY_SEC * 1000);
     a_timer_start(g_skipAdjustTimer);
@@ -82,7 +82,7 @@ void a_fps__uninit(void)
     free(g_maxFpsBuffer);
 }
 
-void a_fps__reset(int NumFramesToSkip)
+void a_fps__reset(unsigned NumFramesToSkip)
 {
     g_skipNum = NumFramesToSkip;
     g_skipCounter = 0;
@@ -93,7 +93,7 @@ void a_fps__reset(int NumFramesToSkip)
     g_fps = g_fpsRate;
     g_maxFps = g_fpsRate;
 
-    for(int i = g_bufferLen; i--; ) {
+    for(unsigned i = g_bufferLen; i--; ) {
         g_fpsBuffer[i] = g_fpsRate;
         g_maxFpsBuffer[i] = g_fpsRate;
     }
@@ -108,9 +108,9 @@ void a_fps__reset(int NumFramesToSkip)
     g_fpsThresholdSlow = g_fpsRate - 2;
 
     if(g_timer == NULL) {
-        g_timer = a_timer_new(g_msPerFrame);
+        g_timer = a_timer_new((uint32_t)g_msPerFrame);
     } else {
-        a_timer_setPeriod(g_timer, g_msPerFrame);
+        a_timer_setPeriod(g_timer, (uint32_t)g_msPerFrame);
     }
 
     a_timer_start(g_timer);
@@ -122,7 +122,7 @@ void a_fps_frame(void)
         a_screen_show();
 
         const bool done = a_timer_expired(g_timer);
-        const uint32_t elapsedMs = a_timer_elapsed(g_timer);
+        const unsigned elapsedMs = a_timer_elapsed(g_timer);
 
         if(elapsedMs > 0) {
             g_maxFpsBufferSum -= g_maxFpsBuffer[g_bufferHead];
@@ -137,7 +137,7 @@ void a_fps_frame(void)
                     continue;
                 }
 
-                const uint32_t waitMs = g_msPerFrame - a_timer_elapsed(g_timer);
+                unsigned waitMs = g_msPerFrame - a_timer_elapsed(g_timer);
 
                 #if A_PLATFORM_GP2X
                     // GP2X timer granularity is too coarse
@@ -145,7 +145,7 @@ void a_fps_frame(void)
                         a_time_waitMs(10);
                     }
                 #else
-                    a_time_waitMs(waitMs);
+                    a_time_waitMs((uint32_t)waitMs);
                 #endif
             }
         }
@@ -163,15 +163,18 @@ void a_fps_frame(void)
 
     if(g_skipFrames) {
         if(a_fps_notSkipped() && a_timer_expired(g_skipAdjustTimer)) {
-            int newFrameSkip = -1;
+            unsigned newFrameSkip;
+            bool adjustFrameSkip = false;
 
             if(g_maxFps <= g_fpsThresholdSlow && g_skipNum < g_skipMax) {
+                adjustFrameSkip = true;
                 newFrameSkip = g_skipNum + 1;
             } else if(g_maxFps >= g_fpsThresholdFast && g_skipNum > 0) {
+                adjustFrameSkip = true;
                 newFrameSkip = g_skipNum - 1;
             }
 
-            if(newFrameSkip != -1) {
+            if(adjustFrameSkip) {
                 if(newFrameSkip == 0) {
                     a_timer_start(g_noSleepTimer);
                 } else {
@@ -196,27 +199,27 @@ bool a_fps_notSkipped(void)
     return g_skipCounter == g_skipNum;
 }
 
-uint32_t a_fps_getFps(void)
+unsigned a_fps_getFps(void)
 {
     return g_fps;
 }
 
-uint32_t a_fps_getMaxFps(void)
+unsigned a_fps_getMaxFps(void)
 {
     return g_maxFps;
 }
 
-int a_fps_getFrameSkip(void)
+unsigned a_fps_getFrameSkip(void)
 {
     return g_skipNum;
 }
 
-uint32_t a_fps_getCounter(void)
+unsigned a_fps_getCounter(void)
 {
     return g_frameCounter;
 }
 
-bool a_fps_nthFrame(uint32_t N)
+bool a_fps_nthFrame(unsigned N)
 {
     return (g_frameCounter % N) == 0;
 }

@@ -21,7 +21,7 @@
 
 void a_random__init(void)
 {
-    srand(time(NULL));
+    srand((unsigned)time(NULL));
 }
 
 int a_random_int(int Max)

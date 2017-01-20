@@ -41,7 +41,7 @@ static const char g_chars[] =
 #define CHARS_NUM (sizeof(g_chars) - 1)
 
 typedef struct AFontState {
-    int currentFont;
+    unsigned currentFont;
     AFontAlign align;
     int x, startX, y;
     int lineHeight;
@@ -53,7 +53,7 @@ static AFont** g_fonts;
 static AFontState g_state;
 static AList* g_stateStack;
 
-static int charIndex(char Character)
+static unsigned charIndex(char Character)
 {
     for(unsigned i = 0; i < CHARS_NUM; i++) {
         if(g_chars[i] == Character) {
@@ -61,7 +61,7 @@ static int charIndex(char Character)
         }
     }
 
-    return -1;
+    a_out__fatal("Unsupported character '%c'", Character);
 }
 
 void a_font__init(void)
@@ -108,7 +108,7 @@ void a_font__uninit(void)
 
 unsigned a_font_load(const ASprite* Sheet, int X, int Y, AFontLoad Loader)
 {
-    AFont* const f = a_mem_malloc(sizeof(AFont));
+    AFont* f = a_mem_malloc(sizeof(AFont));
 
     for(int i = CHAR_ENTRIES_NUM; i--; ) {
         f->sprites[i] = NULL;
@@ -122,8 +122,8 @@ unsigned a_font_load(const ASprite* Sheet, int X, int Y, AFontLoad Loader)
     free(g_fonts);
     g_fonts = (AFont**)a_list_array(g_fontsList);
 
-    int start = 0;
-    int end = CHARS_NUM - 1;
+    unsigned start = 0;
+    unsigned end = CHARS_NUM - 1;
 
     if(Loader & A_FONT_LOAD_ALPHANUMERIC) {
         end = charIndex('9');
@@ -136,7 +136,7 @@ unsigned a_font_load(const ASprite* Sheet, int X, int Y, AFontLoad Loader)
 
     ASpriteFrames* sf = a_spriteframes_new(Sheet, X, Y, 1);
 
-    for(int i = start; i <= end; i++) {
+    for(unsigned i = start; i <= end; i++) {
         ASprite* spr = a_spriteframes_next(sf);
 
         f->sprites[CHAR_TO_INDEX(g_chars[i])] = spr;
@@ -154,7 +154,7 @@ unsigned a_font_load(const ASprite* Sheet, int X, int Y, AFontLoad Loader)
     return a_list_size(g_fontsList) - 1;
 }
 
-unsigned a_font_copy(int Font, APixel Color)
+unsigned a_font_copy(unsigned Font, APixel Color)
 {
     AFont* src = g_fonts[Font];
     AFont* f = a_mem_malloc(sizeof(AFont));
@@ -214,7 +214,7 @@ void a_font_reset(void)
     a_font_setWrap(0);
 }
 
-void a_font_setFace(int Font)
+void a_font_setFace(unsigned Font)
 {
     g_state.currentFont = Font;
     g_state.lineHeight = g_fonts[Font]->maxHeight + LINE_SPACING;
@@ -265,13 +265,13 @@ void a_font_setWrap(int Width)
     g_state.currentLineWidth = 0;
 }
 
-static int getWidth(const char* Text, size_t Length)
+static int getWidth(const char* Text, ptrdiff_t Length)
 {
     int width = 0;
     AFont* font = g_fonts[g_state.currentFont];
 
     if(g_state.align & A_FONT_ALIGN_MONOSPACED) {
-        width = (font->maxWidth + CHAR_SPACING) * Length;
+        width = (font->maxWidth + CHAR_SPACING) * (int)Length;
     } else {
         for( ; Length--; Text++) {
             ASprite* spr = font->sprites[CHAR_TO_INDEX(*Text)];
@@ -286,7 +286,7 @@ static int getWidth(const char* Text, size_t Length)
     return width;
 }
 
-static void drawString(const char* Text, size_t Length)
+static void drawString(const char* Text, ptrdiff_t Length)
 {
     AFont* font = g_fonts[g_state.currentFont];
 
@@ -397,7 +397,7 @@ void a_font_text(const char* Text)
     if(g_state.wrapWidth > 0) {
         wrapString(Text);
     } else {
-        drawString(Text, strlen(Text));
+        drawString(Text, (ptrdiff_t)strlen(Text));
     }
 }
 
@@ -418,7 +418,7 @@ void a_font_textf(const char* Format, ...)
 
 int a_font_width(const char* Text)
 {
-    return getWidth(Text, strlen(Text));
+    return getWidth(Text, (ptrdiff_t)strlen(Text));
 }
 
 int a_font_widthf(const char* Format, ...)

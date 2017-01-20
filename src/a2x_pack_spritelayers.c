@@ -22,8 +22,7 @@
 typedef struct ALayer {
     const ASprite* sprite;
     APixelBlend blend;
-    uint8_t r, g, b;
-    unsigned a;
+    int r, g, b, a;
 } ALayer;
 
 ASpriteLayers* a_spritelayers_new(void)
@@ -40,9 +39,9 @@ void a_spritelayers_free(ASpriteLayers* Layers)
     a_list_free(Layers);
 }
 
-void a_spritelayers_add(ASpriteLayers* Layers, const ASprite* Sprite, APixelBlend Blend, uint8_t Red, uint8_t Green, uint8_t Blue, unsigned Alpha)
+void a_spritelayers_add(ASpriteLayers* Layers, const ASprite* Sprite, APixelBlend Blend, int Red, int Green, int Blue, int Alpha)
 {
-    ALayer* const l = a_mem_malloc(sizeof(ALayer));
+    ALayer* l = a_mem_malloc(sizeof(ALayer));
 
     l->sprite = Sprite;
     l->blend = Blend;
