@@ -31,11 +31,11 @@ C_SFX_HEADER = $(C_GEN_DIR)/sfx.h
 C_GEN_HEADERS =
 
 ifdef GFX_DIR
-	C_GEN_HEADERS += $(C_GFX_HEADER)
+    C_GEN_HEADERS += $(C_GFX_HEADER)
 endif
 
 ifdef SFX_DIR
-	C_GEN_HEADERS += $(C_SFX_HEADER)
+    C_GEN_HEADERS += $(C_SFX_HEADER)
 endif
 
 #
@@ -66,11 +66,11 @@ O_SFX_DIR = $(O_GEN_DIR)/sfx
 ALL_DIRS = $(C_GEN_DIR) $(OBJ_DIR) $(O_DIR) $(O_GEN_DIR)
 
 ifdef GFX_DIR
-	ALL_DIRS += $(C_GFX_DIR) $(O_GFX_DIR)
+    ALL_DIRS += $(C_GFX_DIR) $(O_GFX_DIR)
 endif
 
 ifdef SFX_DIR
-	ALL_DIRS += $(C_SFX_DIR) $(O_SFX_DIR)
+    ALL_DIRS += $(C_SFX_DIR) $(O_SFX_DIR)
 endif
 
 #
@@ -86,13 +86,20 @@ ALL_O_FILES = $(O_FILES) \
 #
 # compile flags
 #
-CFLAGS += -std=c99 \
-          -pedantic \
-          -pedantic-errors \
-          -Wall \
-          -Wextra \
-          -Werror \
-          -I$(A2X_PATH)/inc
+CFLAGS = \
+    -std=c99 \
+    -Wall \
+    -Wextra \
+    -Wconversion \
+    -Wcast-align \
+    -Wformat-security \
+    -Werror \
+    -I$(A2X_PATH)/inc \
+    $(A_PLATFORM_CFLAGS) \
+
+ifneq ($(A_PLATFORM_COMPILER_PEDANTIC), false)
+    CFLAGS += -pedantic -pedantic-errors
+endif
 
 #
 # the main target
@@ -103,7 +110,7 @@ $(TARGET_BINARY) : $(ALL_DIRS) $(C_GFX_FILES) $(C_SFX_FILES) $(C_GEN_HEADERS) $(
 	@ echo "Building $(APP)"
 	@ $(CC) -o $(TARGET_BINARY) $(ALL_O_FILES) \
 	-Wl,--whole-archive $(A2X_PATH)/lib/a2x_$(PLATFORM).a -Wl,--no-whole-archive \
-	$(LIBS)
+	$(A_PLATFORM_LIBS)
 
 #
 # make all the needed dirs

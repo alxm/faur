@@ -43,12 +43,8 @@ static int g_volumeMax;
 static void adjustSoundVolume(int Volume)
 {
     g_volume = a_math_constrain(Volume, 0, g_volumeMax);
-
-    g_musicVolume = (float)a_settings_getInt("sound.music.scale")
-                        / 100 * g_volume;
-
-    g_sfxVolume = (float)a_settings_getInt("sound.sfx.scale")
-                        / 100 * g_volume;
+    g_musicVolume = a_settings_getInt("sound.music.scale") * g_volume / 100;
+    g_sfxVolume = a_settings_getInt("sound.sfx.scale") * g_volume / 100;
 }
 
 static void inputCallback(void)
@@ -120,7 +116,7 @@ void a_sound__init(void)
 
         #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
             adjustSoundVolume(g_volumeMax / 16);
-            g_lastVolAdjustment = -A_VOLBAR_SHOW_MS;
+            g_lastVolAdjustment = UINT32_MAX - A_VOLBAR_SHOW_MS;
         #else
             adjustSoundVolume(g_volumeMax);
         #endif
@@ -137,24 +133,24 @@ void a_sound__init(void)
         #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
             char* end;
             const char* color;
-            uint8_t r, g, b;
+            int r, g, b;
 
             color = a_settings_getString("sound.volbar.background");
-            r = strtol(color, &end, 0);
-            g = strtol(end, &end, 0);
-            b = strtol(end, NULL, 0);
+            r = (int)strtol(color, &end, 0);
+            g = (int)strtol(end, &end, 0);
+            b = (int)strtol(end, NULL, 0);
             g_volbarBackground = a_pixel_make(r, g, b);
 
             color = a_settings_getString("sound.volbar.border");
-            r = strtol(color, &end, 0);
-            g = strtol(end, &end, 0);
-            b = strtol(end, NULL, 0);
+            r = (int)strtol(color, &end, 0);
+            g = (int)strtol(end, &end, 0);
+            b = (int)strtol(end, NULL, 0);
             g_volbarBorder = a_pixel_make(r, g, b);
 
             color = a_settings_getString("sound.volbar.fill");
-            r = strtol(color, &end, 0);
-            g = strtol(end, &end, 0);
-            b = strtol(end, NULL, 0);
+            r = (int)strtol(color, &end, 0);
+            g = (int)strtol(end, &end, 0);
+            b = (int)strtol(end, NULL, 0);
             g_volbarFill = a_pixel_make(r, g, b);
 
             a_screen__addOverlay(screenCallback);

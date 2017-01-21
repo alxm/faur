@@ -24,7 +24,7 @@ AFix a_fix_cos_val[A_MATH_ANGLES_NUM];
 
 void a_fix__init(void)
 {
-    for(int a = 0; a < A_MATH_ANGLES_NUM; a++) {
+    for(unsigned a = 0; a < A_MATH_ANGLES_NUM; a++) {
         a_fix_sin_val[a] = a_fix_ftofix(a_math_sin(a));
 		a_fix_cos_val[a] = a_fix_ftofix(a_math_cos(a));
 	}

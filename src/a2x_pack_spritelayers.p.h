@@ -30,5 +30,5 @@ typedef AList ASpriteLayers;
 extern ASpriteLayers* a_spritelayers_new(void);
 extern void a_spritelayers_free(ASpriteLayers* Layers);
 
-extern void a_spritelayers_add(ASpriteLayers* Layers, const ASprite* Sprite, APixelBlend Blend, uint8_t Red, uint8_t Green, uint8_t Blue, unsigned int Alpha);
+extern void a_spritelayers_add(ASpriteLayers* Layers, const ASprite* Sprite, APixelBlend Blend, int Red, int Green, int Blue, int Alpha);
 extern void a_spritelayers_blit(ASpriteLayers* Layers, int X, int Y);

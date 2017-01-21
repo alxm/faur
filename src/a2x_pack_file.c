@@ -23,7 +23,8 @@ struct AFile {
     FILE* handle;
     char* path;
     char* name;
-    char* line;
+    char* lineBuffer;
+    size_t lineBufferSize;
     int eof;
     AListNode* node;
 };
@@ -49,19 +50,20 @@ void a_file__uninit(void)
 
 AFile* a_file_open(const char* Path, const char* Modes)
 {
-    FILE* const handle = fopen(Path, Modes);
+    FILE* handle = fopen(Path, Modes);
 
     if(!handle) {
         a_out__error("a_file_open: Can't open %s for '%s'", Path, Modes);
         return NULL;
     }
 
-    AFile* const f = a_mem_malloc(sizeof(AFile));
+    AFile* f = a_mem_malloc(sizeof(AFile));
 
     f->handle = handle;
     f->path = a_str_getPrefixLastFind(Path, '/');
     f->name = a_str_getSuffixLastFind(Path, '/');
-    f->line = NULL;
+    f->lineBuffer = NULL;
+    f->lineBufferSize = 0;
     f->eof = 0;
     f->node = a_list_addLast(g_openedFiles, f);
 
@@ -86,7 +88,7 @@ void a_file__close(AFile* File)
 {
     free(File->path);
     free(File->name);
-    free(File->line);
+    free(File->lineBuffer);
 
     if(File->handle) {
         fclose(File->handle);
@@ -97,7 +99,7 @@ void a_file__close(AFile* File)
 
 bool a_file_checkPrefix(AFile* File, const char* Prefix)
 {
-    const size_t size = strlen(Prefix) + 1;
+    size_t size = strlen(Prefix) + 1;
     char buffer[size];
 
     fseek(File->handle, 0, SEEK_SET);
@@ -166,42 +168,40 @@ bool a_file_writef(AFile* File, char* Format, ...)
 
 bool a_file_readLine(AFile* File)
 {
-    free(File->line);
-    File->line = NULL;
-
     if(File->eof) {
         return false;
     }
 
-    int offset = 1;
-    FILE* const handle = File->handle;
+    long offset = 0;
+    FILE* handle = File->handle;
 
-    while(offset == 1 && !File->eof) {
-        int c;
-
-        for(c = fgetc(handle); !iscntrl(c) && c != EOF; c = fgetc(handle)) {
-            offset++;
+    while(!File->eof && offset == 0) {
+        for(int c = fgetc(handle); !iscntrl(c); c = fgetc(handle), offset++) {
+            if(c == EOF) {
+                File->eof = true;
+                break;
+            }
         }
-
-        File->eof = c == EOF;
     }
 
-    if(offset > 1) {
+    if(offset > 0) {
         if(File->eof) {
-            rewind(handle);
-            fseek(handle, -(offset - 1), SEEK_END);
+            fseek(handle, 0 - offset, SEEK_CUR);
         } else {
-            fseek(handle, -offset, SEEK_CUR);
+            fseek(handle, 0 - offset - 1, SEEK_CUR);
         }
 
-        char* const str = a_mem_malloc(offset);
-
-        for(int i = 0; i < offset - 1; i++) {
-            str[i] = fgetc(handle);
+        if((unsigned long)offset >= File->lineBufferSize) {
+            free(File->lineBuffer);
+            File->lineBufferSize = (unsigned long)offset + 1;
+            File->lineBuffer = a_mem_malloc(File->lineBufferSize);
         }
 
-        str[offset - 1] = '\0';
-        File->line = str;
+        for(int i = 0; i < offset; i++) {
+            File->lineBuffer[i] = (char)fgetc(handle);
+        }
+
+        File->lineBuffer[offset] = '\0';
 
         fseek(handle, 1, SEEK_CUR);
 
@@ -213,7 +213,7 @@ bool a_file_readLine(AFile* File)
 
 char* a_file_getLine(const AFile* File)
 {
-    return File->line;
+    return File->lineBuffer;
 }
 
 void a_file_rewind(const AFile* File)
@@ -262,7 +262,7 @@ FILE* a_file_handle(const AFile* File)
 
 bool a_file_exists(const char* Path)
 {
-    FILE* const f = fopen(Path, "r");
+    FILE* f = fopen(Path, "r");
 
     if(f) {
         fclose(f);
@@ -293,7 +293,7 @@ size_t a_file_size(const char* Path)
         return 0;
     }
 
-    return info.st_size;
+    return (size_t)info.st_size;
 }
 
 uint8_t* a_file_toBuffer(const char* Path)
@@ -304,7 +304,7 @@ uint8_t* a_file_toBuffer(const char* Path)
         return NULL;
     }
 
-    const size_t size = a_file_size(Path);
+    size_t size = a_file_size(Path);
     uint8_t* buffer = a_mem_malloc(size);
 
     if(!a_file_read(f, buffer, size)) {

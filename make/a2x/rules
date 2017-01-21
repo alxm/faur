@@ -20,14 +20,21 @@ LIBRARY = $(LIB_DIR)/a2x_$(PLATFORM).a
 COMPILE_TIME := $(shell date "+%Y-%m-%d\ %H:%M:%S")
 CURRENT_BRANCH := $(shell git symbolic-ref --short HEAD)
 
-CFLAGS += -std=c99 \
-          -pedantic \
-          -pedantic-errors \
-          -Wall \
-          -Wextra \
-          -Werror \
-          -DA__MAKE_COMPILE_TIME=\"$(COMPILE_TIME)\" \
-          -DA__MAKE_CURRENT_GIT_BRANCH=\"$(CURRENT_BRANCH)\"
+CFLAGS = \
+    -std=c99 \
+    -Wall \
+    -Wextra \
+    -Wconversion \
+    -Wcast-align \
+    -Wformat-security \
+    -Werror \
+    -DA__MAKE_COMPILE_TIME=\"$(COMPILE_TIME)\" \
+    -DA__MAKE_CURRENT_GIT_BRANCH=\"$(CURRENT_BRANCH)\" \
+    $(A_PLATFORM_CFLAGS) \
+
+ifneq ($(A_PLATFORM_COMPILER_PEDANTIC), false)
+    CFLAGS += -pedantic -pedantic-errors
+endif
 
 A2X_PREFIX = a2x_
 

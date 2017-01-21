@@ -30,7 +30,8 @@ typedef void (*AScreenOverlay)(void);
 #include "a2x_pack_sound.v.h"
 #include "a2x_pack_sprite.v.h"
 
-#define A_SCREEN_SIZE (a_screen__width * a_screen__height * sizeof(APixel))
+#define A_SCREEN_SIZE \
+    ((unsigned)a_screen__width * (unsigned)a_screen__height * sizeof(APixel))
 
 extern APixel* a_screen__pixels;
 extern APixel* a_screen__savedPixels;

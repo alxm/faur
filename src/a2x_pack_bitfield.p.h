@@ -23,12 +23,12 @@
 
 typedef struct ABitfield ABitfield;
 
-extern ABitfield* a_bitfield_new(size_t NumBits);
+extern ABitfield* a_bitfield_new(unsigned NumBits);
 extern void a_bitfield_free(ABitfield* Bitfield);
 
-extern void a_bitfield_set(ABitfield* Bitfield, size_t Bit);
-extern void a_bitfield_clear(ABitfield* Bitfield, size_t Bit);
+extern void a_bitfield_set(ABitfield* Bitfield, unsigned Bit);
+extern void a_bitfield_clear(ABitfield* Bitfield, unsigned Bit);
 extern void a_bitfield_reset(ABitfield* Bitfield);
 
-extern bool a_bitfield_test(const ABitfield* Bitfield, size_t Bit);
+extern bool a_bitfield_test(const ABitfield* Bitfield, unsigned Bit);
 extern bool a_bitfield_testMask(const ABitfield* Bitfield, const ABitfield* Mask);

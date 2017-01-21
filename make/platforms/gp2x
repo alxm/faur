@@ -2,32 +2,35 @@ PLATFORM = gp2x
 
 OPEN2X = $(OPEN2X_ROOT)/$(OPEN2X_GLIBC)
 
-LIBS = -static \
-       -L$(OPEN2X)/lib \
-       -L$(OPEN2X)/arm-open2x-linux/lib \
-       -lpng12 \
-       -lz \
-       -lSDL_mixer \
-       -lsmpeg \
-       -lmikmod \
-       -logg \
-       -lvorbisidec \
-       -lSDL \
-       -lpthread \
-       -lm \
-       -lstdc++ \
-       -ldl
+A_PLATFORM_LIBS = \
+    -static \
+    -L$(OPEN2X)/lib \
+    -L$(OPEN2X)/arm-open2x-linux/lib \
+    -lpng12 \
+    -lz \
+    -lSDL_mixer \
+    -lsmpeg \
+    -lmikmod \
+    -logg \
+    -lvorbisidec \
+    -lSDL \
+    -lpthread \
+    -lm \
+    -lstdc++ \
+    -ldl \
 
-CFLAGS = -DA_PLATFORM_GP2X=1 \
-         -DA_USE_LIB_SDL=1 \
-         -O3 \
-         -s \
-         -msoft-float \
-         -ffast-math \
-         -fomit-frame-pointer \
-         `$(OPEN2X)/bin/sdl-config --cflags` \
-         -I$(OPEN2X)/include \
-         -I$(OPEN2X)/arm-open2x-linux/include
+A_PLATFORM_CFLAGS = \
+    -DA_PLATFORM_GP2X=1 \
+    -DA_USE_LIB_SDL=1 \
+    -O3 \
+    -s \
+    -msoft-float \
+    -ffast-math \
+    -fomit-frame-pointer \
+    `$(OPEN2X)/bin/sdl-config --cflags` \
+    -I$(OPEN2X)/include \
+    -I$(OPEN2X)/arm-open2x-linux/include \
+    -Wno-conversion \
 
 PREFIX := arm-open2x-linux-
 

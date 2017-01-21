@@ -2,31 +2,34 @@ PLATFORM = caanoo
 
 CAANOO_SDK = $(CAANOO_ROOT)/$(CAANOO_GLIBC)
 
-LIBS = -L$(CAANOO_ROOT)/lib/target \
-       -L$(CAANOO_ROOT)/DGE/lib/target \
-       -L$(CAANOO_SDK)/lib \
-       -L$(CAANOO_SDK)/arm-gph-linux-gnueabi/lib \
-       -lpng12 \
-       -lz \
-       -lSDL_mixer \
-       -lsmpeg \
-       -lSDL \
-       -lpthread \
-       -lm \
-       -ldl
+A_PLATFORM_LIBS = \
+    -L$(CAANOO_ROOT)/lib/target \
+    -L$(CAANOO_ROOT)/DGE/lib/target \
+    -L$(CAANOO_SDK)/lib \
+    -L$(CAANOO_SDK)/arm-gph-linux-gnueabi/lib \
+    -lpng12 \
+    -lz \
+    -lSDL_mixer \
+    -lsmpeg \
+    -lSDL \
+    -lpthread \
+    -lm \
+    -ldl \
 
-CFLAGS = -DA_PLATFORM_CAANOO=1 \
-         -DA_USE_LIB_SDL=1 \
-         -O3 \
-         -s \
-         -msoft-float \
-         -ffast-math \
-         -fomit-frame-pointer \
-         -I$(CAANOO_ROOT)/include \
-         -I$(CAANOO_ROOT)/DGE/include \
-         -I$(CAANOO_ROOT)/DGE/include/SDL \
-         -I$(CAANOO_SDK)/include \
-         -I$(CAANOO_SDK)/arm-gph-linux-gnueabi/include
+A_PLATFORM_CFLAGS = \
+    -DA_PLATFORM_CAANOO=1 \
+    -DA_USE_LIB_SDL=1 \
+    -O3 \
+    -s \
+    -msoft-float \
+    -ffast-math \
+    -fomit-frame-pointer \
+    -I$(CAANOO_ROOT)/include \
+    -I$(CAANOO_ROOT)/DGE/include \
+    -I$(CAANOO_ROOT)/DGE/include/SDL \
+    -I$(CAANOO_SDK)/include \
+    -I$(CAANOO_SDK)/arm-gph-linux-gnueabi/include \
+    -Wno-conversion \
 
 PREFIX := arm-gph-linux-gnueabi-
 

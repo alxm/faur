@@ -51,10 +51,10 @@ AColMap* a_colmap_new(int Width, int Height, int MaxObjectDim)
     m->w = 1 << a_math_max(0, nextpow(Width) - m->bitShift);
     m->h = 1 << a_math_max(0, nextpow(Height) - m->bitShift);
 
-    m->submaps = a_mem_malloc(m->h * sizeof(AList**));
+    m->submaps = a_mem_malloc((unsigned)m->h * sizeof(AList**));
 
     for(int i = m->h; i--; ) {
-        m->submaps[i] = a_mem_malloc(m->w * sizeof(AList*));
+        m->submaps[i] = a_mem_malloc((unsigned)m->w * sizeof(AList*));
 
         for(int j = m->w; j--; ) {
             m->submaps[i][j] = a_list_new();

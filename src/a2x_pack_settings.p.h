@@ -30,3 +30,4 @@ extern bool a_settings_flip(const char* Key);
 extern const char* a_settings_getString(const char* Key);
 extern bool a_settings_getBool(const char* Key);
 extern int a_settings_getInt(const char* Key);
+extern unsigned a_settings_getUnsigned(const char* Key);

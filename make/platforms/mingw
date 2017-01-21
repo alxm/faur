@@ -2,15 +2,17 @@ PLATFORM = mingw
 
 MINGW_BIN = $(MINGW_ROOT)/$(MINGW_ARCH)/bin
 
-CFLAGS = -DA_PLATFORM_MINGW=1 \
-         -DA_USE_LIB_SDL=2 \
-         -O3 \
-         $(shell $(MINGW_BIN)/sdl2-config --cflags)
+A_PLATFORM_LIBS = \
+    $(shell $(MINGW_BIN)/sdl2-config --libs) \
+    -lSDL2_mixer \
+    -lpng \
+    -lm \
 
-LIBS = $(shell $(MINGW_BIN)/sdl2-config --libs) \
-       -lSDL2_mixer \
-       -lpng \
-       -lm
+A_PLATFORM_CFLAGS = \
+    -DA_PLATFORM_MINGW=1 \
+    -DA_USE_LIB_SDL=2 \
+    -O3 \
+    $(shell $(MINGW_BIN)/sdl2-config --cflags) \
 
 PREFIX := $(MINGW_ARCH)-
 

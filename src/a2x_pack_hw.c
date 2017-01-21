@@ -42,41 +42,68 @@
 #endif
 
 #if A_PLATFORM_GP2X
-    static void setCpuSpeed(int MHz)
+    static void setCpuSpeed(unsigned MHz)
     {
-        int mhz = MHz * 1000000;
-        int freq = 7372800;
+        unsigned mhz = MHz * 1000000;
+        unsigned freq = 7372800;
 
         int memfd = open("/dev/mem", O_RDWR);
-        volatile uint32_t* memregs32 = mmap(0, 0x10000, PROT_READ | PROT_WRITE, MAP_SHARED, memfd, 0xc0000000);
+        volatile uint32_t* memregs32 = mmap(0,
+                                            0x10000,
+                                            PROT_READ | PROT_WRITE,
+                                            MAP_SHARED,
+                                            memfd,
+                                            0xc0000000);
         volatile uint16_t* memregs16 = (uint16_t*)memregs32;
 
-        unsigned int pdiv = 3;
-        unsigned int mdiv = (mhz * pdiv) / freq;
+        unsigned pdiv = 3;
+        unsigned mdiv = (mhz * pdiv) / freq;
 
         pdiv = ((pdiv - 2) << 2) & 0xfc;
         mdiv = ((mdiv - 8) << 8) & 0xff00;
 
-        unsigned int v = pdiv | mdiv;
+        unsigned v = pdiv | mdiv;
+        unsigned l = memregs32[0x808 >> 2]; // Get interupt flags
 
-        unsigned int l = memregs32[0x808 >> 2]; // Get interupt flags
         memregs32[0x808 >> 2] = 0xFF8FFFE7; // Turn off interrupts
-        memregs16[0x910 >> 1] = v; // Set frequentie
-        while(memregs16[0x0902 >> 1] & 1) continue; // Wait for the frequentie to be ajused
+        memregs16[0x910 >> 1] = (uint16_t)v; // Set frequency
+
+        while(memregs16[0x0902 >> 1] & 1) {
+            // Wait for the frequency to be adjusted
+            continue;
+        }
+
         memregs32[0x808 >> 2] = l; // Turn on interrupts
 
         close(memfd);
     }
 
-    static void setRamTimings(int tRC, int tRAS, int tWR, int tMRD, int tRFC, int tRP, int tRCD)
+    static void setRamTimings(unsigned tRC, unsigned tRAS, unsigned tWR, unsigned tMRD, unsigned tRFC, unsigned tRP, unsigned tRCD)
     {
         int memfd = open("/dev/mem", O_RDWR);
-        volatile uint32_t* memregs32 = mmap(0, 0x10000, PROT_READ | PROT_WRITE, MAP_SHARED, memfd, 0xc0000000);
-        volatile uint16_t* memregs16 = (uint16_t*)memregs32;
+        volatile uint16_t* memregs16 = mmap(0,
+                                            0x10000,
+                                            PROT_READ | PROT_WRITE,
+                                            MAP_SHARED,
+                                            memfd,
+                                            0xc0000000);
 
-        tRC -= 1; tRAS -= 1; tWR -= 1; tMRD -= 1; tRFC -= 1; tRP -= 1; tRCD -= 1;
-        memregs16[0x3802>>1] = ((tMRD & 0xF) << 12) | ((tRFC & 0xF) << 8) | ((tRP & 0xF) << 4) | (tRCD & 0xF);
-        memregs16[0x3804>>1] = ((tRC & 0xF) << 8) | ((tRAS & 0xF) << 4) | (tWR & 0xF);
+        tRC -= 1;
+        tRAS -= 1;
+        tWR -= 1;
+        tMRD -= 1;
+        tRFC -= 1;
+        tRP -= 1;
+        tRCD -= 1;
+
+        memregs16[0x3802 >> 1] = (uint16_t)(((tMRD & 0xF) << 12) |
+                                            ((tRFC & 0xF) << 8)  |
+                                            ((tRP  & 0xF) << 4)  |
+                                             (tRCD & 0xF));
+
+        memregs16[0x3804 >> 1] = (uint16_t)(((tRC  & 0xF) << 8) |
+                                            ((tRAS & 0xF) << 4) |
+                                             (tWR  & 0xF));
 
         close(memfd);
     }
@@ -97,8 +124,8 @@ void a_hw__init(void)
             }
         }
 
-        if(a_settings_getInt("app.mhz") > 0) {
-            setCpuSpeed(a_settings_getInt("app.mhz"));
+        if(a_settings_getUnsigned("app.mhz") > 0) {
+            setCpuSpeed(a_settings_getUnsigned("app.mhz"));
         }
 
         setRamTimings(6, 4, 1, 1, 1, 2, 2);
@@ -159,11 +186,11 @@ void a_hw__uninit(void)
     void a_hw__setWizPortraitMode(void)
     {
         #define FBIO_MAGIC 'D'
-        #define FBIO_LCD_CHANGE_CONTROL _IOW(FBIO_MAGIC, 90, unsigned int[2])
+        #define FBIO_LCD_CHANGE_CONTROL _IOW(FBIO_MAGIC, 90, unsigned[2])
         #define LCD_DIRECTION_ON_CMD 5 // 320x240
         #define LCD_DIRECTION_OFF_CMD 6 // 240x320
 
-        unsigned int send[2];
+        unsigned send[2];
         int fb_fd = open("/dev/fb0", O_RDWR);
         send[0] = LCD_DIRECTION_OFF_CMD;
         ioctl(fb_fd, FBIO_LCD_CHANGE_CONTROL, &send);

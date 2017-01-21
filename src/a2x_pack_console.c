@@ -29,7 +29,7 @@ typedef struct ALine {
 bool g_enabled;
 bool g_show;
 static AList* g_lines;
-static size_t g_linesPerScreen;
+static unsigned g_linesPerScreen;
 static ASprite* g_titles[A_CONSOLE_MAX];
 static AInput* g_toggle;
 
@@ -132,7 +132,7 @@ void a_console__init(void)
     g_enabled = true;
     g_show = false;
     g_lines = a_list_new();
-    g_linesPerScreen = SIZE_MAX;
+    g_linesPerScreen = UINT_MAX;
 }
 
 void a_console__init2(void)
@@ -149,8 +149,8 @@ void a_console__init2(void)
     a_sprite_free(graphics);
 
     a_font_setFace(A_FONT_FACE_WHITE);
-    g_linesPerScreen = a_settings_getInt("video.height")
-                            / a_font_getLineHeight() - 2;
+    g_linesPerScreen = (unsigned)(a_settings_getInt("video.height")
+                                  / a_font_getLineHeight() - 2);
 
     // In case messages were logged between init and init2
     while(a_list_size(g_lines) > g_linesPerScreen) {

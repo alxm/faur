@@ -22,21 +22,21 @@
 struct ASpriteFrames {
     AList* sprites;
     ASprite** spriteArray;
-    size_t num;
-    unsigned int countdown;
-    unsigned int callsToNextFrame;
-    size_t index;
+    unsigned num;
+    unsigned countdown;
+    unsigned callsToNextFrame;
+    unsigned index;
     bool forward;
     bool paused;
 };
 
-ASpriteFrames* a_spriteframes_new(const ASprite* Sheet, int X, int Y, unsigned int CallsToNextFrame)
+ASpriteFrames* a_spriteframes_new(const ASprite* Sheet, int X, int Y, unsigned CallsToNextFrame)
 {
     if(CallsToNextFrame < 1) {
         a_out__fatal("a_spriteframes_new: CallsToNextFrame<1");
     }
 
-    ASpriteFrames* const Frames = a_mem_malloc(sizeof(ASpriteFrames));
+    ASpriteFrames* Frames = a_mem_malloc(sizeof(ASpriteFrames));
 
     Frames->sprites = a_list_new();
     Frames->spriteArray = NULL;
@@ -93,7 +93,7 @@ void a_spriteframes_free(ASpriteFrames* Frames, bool DoFreeSprites)
 
 ASprite* a_spriteframes_next(ASpriteFrames* Frames)
 {
-    const size_t oldindex = Frames->index;
+    const unsigned oldindex = Frames->index;
 
     if(!Frames->paused) {
         if(--Frames->countdown == 0) {
@@ -115,22 +115,22 @@ ASprite* a_spriteframes_get(const ASpriteFrames* Frames)
     return Frames->spriteArray[Frames->index];
 }
 
-ASprite* a_spriteframes_getByIndex(const ASpriteFrames* Frames, size_t Index)
+ASprite* a_spriteframes_getByIndex(const ASpriteFrames* Frames, unsigned Index)
 {
     return Frames->spriteArray[Index];
 }
 
 ASprite* a_spriteframes_getRandom(const ASpriteFrames* Frames)
 {
-    return Frames->spriteArray[a_random_int(Frames->num)];
+    return Frames->spriteArray[a_random_int((int)Frames->num)];
 }
 
-size_t a_spriteframes_num(const ASpriteFrames* Frames)
+unsigned a_spriteframes_num(const ASpriteFrames* Frames)
 {
     return Frames->num;
 }
 
-size_t a_spriteframes_currentIndex(const ASpriteFrames* Frames)
+unsigned a_spriteframes_currentIndex(const ASpriteFrames* Frames)
 {
     return Frames->index;
 }
@@ -145,12 +145,12 @@ void a_spriteframes_flipDirection(ASpriteFrames* Frames)
     Frames->forward = !Frames->forward;
 }
 
-unsigned int a_spriteframes_getSpeed(const ASpriteFrames* Frames)
+unsigned a_spriteframes_getSpeed(const ASpriteFrames* Frames)
 {
     return Frames->callsToNextFrame;
 }
 
-void a_spriteframes_setSpeed(ASpriteFrames* Frames, unsigned int CallsToNextFrame)
+void a_spriteframes_setSpeed(ASpriteFrames* Frames, unsigned CallsToNextFrame)
 {
     if(CallsToNextFrame < 1) {
         a_out__fatal("a_spriteframes_setSpeed: CallsToNextFrame<1");
@@ -182,7 +182,7 @@ void a_spriteframes_reset(ASpriteFrames* Frames)
 
 ASpriteFrames* a_spriteframes_clone(const ASpriteFrames* Frames)
 {
-    ASpriteFrames* const f = a_mem_malloc(sizeof(ASpriteFrames));
+    ASpriteFrames* f = a_mem_malloc(sizeof(ASpriteFrames));
 
     f->sprites = a_list_clone(Frames->sprites);
     f->spriteArray = (ASprite**)a_list_array(Frames->sprites);

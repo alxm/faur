@@ -71,8 +71,8 @@ static bool cohen_sutherland_clip(int* X1, int* Y1, int* X2, int* Y2)
         else if(y >= clipY2) o |= OUT_DOWN;   \
     }
 
-    #define solvey() (float)(y1 - y2) / (x1 - x2) * (x - x1) + y1;
-    #define solvex() (float)(x1 - x2) / (y1 - y2) * (y - y1) + x1;
+    #define solvex() (x1 + (x1 - x2) * (y - y1) / (y1 - y2))
+    #define solvey() (y1 + (y1 - y2) * (x - x1) / (x1 - x2))
 
     while(true) {
         int outcode1 = 0;
@@ -225,11 +225,11 @@ do {                                                                        \
 #undef A__PIXEL_PARAMS
 
 #define A__BLEND rgba
-#define A__BLEND_SETUP                                       \
-    const uint8_t a__pass_red = a_pixel__state.red;          \
-    const uint8_t a__pass_green = a_pixel__state.green;      \
-    const uint8_t a__pass_blue = a_pixel__state.blue;        \
-    const unsigned int a__pass_alpha = a_pixel__state.alpha;
+#define A__BLEND_SETUP                              \
+    const int a__pass_red = a_pixel__state.red;     \
+    const int a__pass_green = a_pixel__state.green; \
+    const int a__pass_blue = a_pixel__state.blue;   \
+    const int a__pass_alpha = a_pixel__state.alpha;
 #define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue, a__pass_alpha
 #include "a2x_pack_draw.inc.c"
 #undef A__BLEND
@@ -237,10 +237,10 @@ do {                                                                        \
 #undef A__PIXEL_PARAMS
 
 #define A__BLEND rgb25
-#define A__BLEND_SETUP                                  \
-    const uint8_t a__pass_red = a_pixel__state.red;     \
-    const uint8_t a__pass_green = a_pixel__state.green; \
-    const uint8_t a__pass_blue = a_pixel__state.blue;
+#define A__BLEND_SETUP                              \
+    const int a__pass_red = a_pixel__state.red;     \
+    const int a__pass_green = a_pixel__state.green; \
+    const int a__pass_blue = a_pixel__state.blue;
 #define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue
 #include "a2x_pack_draw.inc.c"
 #undef A__BLEND
@@ -248,10 +248,10 @@ do {                                                                        \
 #undef A__PIXEL_PARAMS
 
 #define A__BLEND rgb50
-#define A__BLEND_SETUP                                  \
-    const uint8_t a__pass_red = a_pixel__state.red;     \
-    const uint8_t a__pass_green = a_pixel__state.green; \
-    const uint8_t a__pass_blue = a_pixel__state.blue;
+#define A__BLEND_SETUP                              \
+    const int a__pass_red = a_pixel__state.red;     \
+    const int a__pass_green = a_pixel__state.green; \
+    const int a__pass_blue = a_pixel__state.blue;
 #define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue
 #include "a2x_pack_draw.inc.c"
 #undef A__BLEND
@@ -259,10 +259,10 @@ do {                                                                        \
 #undef A__PIXEL_PARAMS
 
 #define A__BLEND rgb75
-#define A__BLEND_SETUP                                  \
-    const uint8_t a__pass_red = a_pixel__state.red;     \
-    const uint8_t a__pass_green = a_pixel__state.green; \
-    const uint8_t a__pass_blue = a_pixel__state.blue;
+#define A__BLEND_SETUP                              \
+    const int a__pass_red = a_pixel__state.red;     \
+    const int a__pass_green = a_pixel__state.green; \
+    const int a__pass_blue = a_pixel__state.blue;
 #define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue
 #include "a2x_pack_draw.inc.c"
 #undef A__BLEND

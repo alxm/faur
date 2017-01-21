@@ -34,14 +34,14 @@ struct AStrHashEntry {
 
 static inline uint8_t getSlot(const char* Key)
 {
-    uint8_t s = 0;
+    unsigned s = 0;
 
     for( ; *Key != '\0'; Key++) {
         s <<= 1;
-        s ^= *Key;
+        s ^= (unsigned)*Key;
     }
 
-    return s;
+    return s & 0xff;
 }
 
 AStrHash* a_strhash_new(void)
@@ -104,7 +104,7 @@ bool a_strhash_contains(const AStrHash* Hash, const char* Key)
     return false;
 }
 
-size_t a_strhash_size(const AStrHash* Hash)
+unsigned a_strhash_size(const AStrHash* Hash)
 {
     return a_list_size(Hash->entriesList);
 }

@@ -66,7 +66,7 @@ static void a_sprite__free(ASprite* Sprite);
 #define A__BLEND rgba
 #define A__FILL data
 #define A__BLEND_SETUP \
-    const unsigned int a__pass_alpha = a_pixel__state.alpha;
+    const int a__pass_alpha = a_pixel__state.alpha;
 #define A__PIXEL_PARAMS , a_pixel_red(*a__pass_src), a_pixel_green(*a__pass_src), a_pixel_blue(*a__pass_src), a__pass_alpha
 #include "a2x_pack_sprite.inc.c"
 #undef A__BLEND
@@ -76,11 +76,11 @@ static void a_sprite__free(ASprite* Sprite);
 
 #define A__BLEND rgba
 #define A__FILL flat
-#define A__BLEND_SETUP                                       \
-    const uint8_t a__pass_red = a_pixel__state.red;          \
-    const uint8_t a__pass_green = a_pixel__state.green;      \
-    const uint8_t a__pass_blue = a_pixel__state.blue;        \
-    const unsigned int a__pass_alpha = a_pixel__state.alpha;
+#define A__BLEND_SETUP                              \
+    const int a__pass_red = a_pixel__state.red;     \
+    const int a__pass_green = a_pixel__state.green; \
+    const int a__pass_blue = a_pixel__state.blue;   \
+    const int a__pass_alpha = a_pixel__state.alpha;
 #define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue, a__pass_alpha
 #include "a2x_pack_sprite.inc.c"
 #undef A__BLEND
@@ -100,10 +100,10 @@ static void a_sprite__free(ASprite* Sprite);
 
 #define A__BLEND rgb25
 #define A__FILL flat
-#define A__BLEND_SETUP                                  \
-    const uint8_t a__pass_red = a_pixel__state.red;     \
-    const uint8_t a__pass_green = a_pixel__state.green; \
-    const uint8_t a__pass_blue = a_pixel__state.blue;
+#define A__BLEND_SETUP                              \
+    const int a__pass_red = a_pixel__state.red;     \
+    const int a__pass_green = a_pixel__state.green; \
+    const int a__pass_blue = a_pixel__state.blue;
 #define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue
 #include "a2x_pack_sprite.inc.c"
 #undef A__BLEND
@@ -123,10 +123,10 @@ static void a_sprite__free(ASprite* Sprite);
 
 #define A__BLEND rgb50
 #define A__FILL flat
-#define A__BLEND_SETUP                                  \
-    const uint8_t a__pass_red = a_pixel__state.red;     \
-    const uint8_t a__pass_green = a_pixel__state.green; \
-    const uint8_t a__pass_blue = a_pixel__state.blue;
+#define A__BLEND_SETUP                              \
+    const int a__pass_red = a_pixel__state.red;     \
+    const int a__pass_green = a_pixel__state.green; \
+    const int a__pass_blue = a_pixel__state.blue;
 #define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue
 #include "a2x_pack_sprite.inc.c"
 #undef A__BLEND
@@ -146,10 +146,10 @@ static void a_sprite__free(ASprite* Sprite);
 
 #define A__BLEND rgb75
 #define A__FILL flat
-#define A__BLEND_SETUP                                  \
-    const uint8_t a__pass_red = a_pixel__state.red;     \
-    const uint8_t a__pass_green = a_pixel__state.green; \
-    const uint8_t a__pass_blue = a_pixel__state.blue;
+#define A__BLEND_SETUP                              \
+    const int a__pass_red = a_pixel__state.red;     \
+    const int a__pass_green = a_pixel__state.green; \
+    const int a__pass_blue = a_pixel__state.blue;
 #define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue
 #include "a2x_pack_sprite.inc.c"
 #undef A__BLEND
@@ -269,7 +269,10 @@ ASprite* a_sprite_fromPixels(const APixel* Pixels, int Width, int Height)
 
     ASprite* s = a_sprite_blank(Width, Height, foundColorKey);
 
-    memcpy(s->pixels, Pixels, Width * Height * sizeof(APixel));
+    memcpy(s->pixels,
+           Pixels,
+           (unsigned)Width * (unsigned)Height * sizeof(APixel));
+
     a_sprite__refreshSpans(s);
 
     return s;
@@ -359,7 +362,7 @@ doneColorKey:
     APixel* dst = sprite->pixels;
 
     for(int i = spriteHeight; i--; ) {
-        memcpy(dst, src, spriteWidth * sizeof(APixel));
+        memcpy(dst, src, (unsigned)spriteWidth * sizeof(APixel));
         src += sheetWidth;
         dst += spriteWidth;
     }
@@ -371,10 +374,11 @@ doneColorKey:
 
 ASprite* a_sprite_blank(int Width, int Height, bool ColorKeyed)
 {
-    ASprite* s = a_mem_malloc(sizeof(ASprite) + Width * Height * sizeof(APixel));
+    ASprite* s = a_mem_malloc(
+        sizeof(ASprite) + (unsigned)Width * (unsigned)Height * sizeof(APixel));
 
     s->w = Width;
-    s->wLog2 = (int)log2f(Width);
+    s->wLog2 = (int)log2f((float)Width);
     s->h = Height;
     s->spans = ColorKeyed ? NULL : (uint16_t*)1;
     s->spansSize = 0;
@@ -386,7 +390,9 @@ ASprite* a_sprite_blank(int Width, int Height, bool ColorKeyed)
             *pixels++ = A_SPRITE_COLORKEY;
         }
     } else {
-        memset(s->pixels, 0, Width * Height * sizeof(APixel));
+        memset(s->pixels,
+               0,
+               (unsigned)Width * (unsigned)Height * sizeof(APixel));
     }
 
     s->node = a_list_addLast(g_spritesList, s);
@@ -541,7 +547,7 @@ void a_sprite__refreshSpans(ASprite* Sprite)
         }
 
         *spans++ = spanLength; // record the last span's length
-        *lineStart |= numSpans << 1; // record line's number of spans
+        *lineStart |= (uint16_t)(numSpans << 1); // record line's number of spans
     }
 }
 
@@ -549,7 +555,10 @@ ASprite* a_sprite_clone(const ASprite* Sprite)
 {
     ASprite* s = a_sprite_blank(Sprite->w, Sprite->h, Sprite->spansSize > 0);
 
-    memcpy(s->pixels, Sprite->pixels, Sprite->w * Sprite->h * sizeof(APixel));
+    memcpy(s->pixels,
+           Sprite->pixels,
+           (unsigned)Sprite->w * (unsigned)Sprite->h * sizeof(APixel));
+
     a_sprite__refreshSpans(s);
 
     return s;

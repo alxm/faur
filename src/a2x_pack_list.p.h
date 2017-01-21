@@ -48,7 +48,7 @@ extern AList* a_list_clone(const AList* List);
 extern void a_list_reverse(AList* List);
 extern void** a_list_array(AList* List);
 
-extern void* a_list_get(const AList* List, size_t Index);
+extern void* a_list_get(const AList* List, unsigned Index);
 
-extern size_t a_list_size(const AList* List);
+extern unsigned a_list_size(const AList* List);
 extern bool a_list_empty(const AList* List);

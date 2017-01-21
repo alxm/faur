@@ -122,7 +122,7 @@ void a_screen_show(void)
 
 APixel* a_screen_dup(void)
 {
-    APixel* const dst = a_screen_new();
+    APixel* dst = a_screen_new();
     a_screen_copy(dst, a_screen__pixels);
     return dst;
 }
@@ -144,7 +144,7 @@ void a_screen_copyPart(APixel* Dst, int X, int Y, int Width, int Height)
     const APixel* screen = a_screen__pixels + Y * a_screen__width + X;
 
     for(int i = Height; i--; ) {
-        memcpy(Dst, screen, Width * sizeof(APixel));
+        memcpy(Dst, screen, (unsigned)Width * sizeof(APixel));
         Dst += Width;
         screen += a_screen__width;
     }

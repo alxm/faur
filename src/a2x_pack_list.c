@@ -21,9 +21,9 @@
 
 AList* a_list_new(void)
 {
-    AList* const list = a_mem_malloc(sizeof(AList));
-    AListNode* const first = a_mem_malloc(sizeof(AListNode));
-    AListNode* const last = a_mem_malloc(sizeof(AListNode));
+    AList* list = a_mem_malloc(sizeof(AList));
+    AListNode* first = a_mem_malloc(sizeof(AListNode));
+    AListNode* last = a_mem_malloc(sizeof(AListNode));
 
     first->content = NULL;
     first->next = last;
@@ -45,7 +45,7 @@ void a_list_free(AList* List)
     AListNode* n = List->first->next;
 
     while(n != List->last) {
-        AListNode* const t = n;
+        AListNode* t = n;
         n = n->next;
 
         free(t);
@@ -74,7 +74,7 @@ void a_list_clear(AList* List)
 
 AListNode* a_list_addFirst(AList* List, void* Content)
 {
-    AListNode* const n = a_mem_malloc(sizeof(AListNode));
+    AListNode* n = a_mem_malloc(sizeof(AListNode));
 
     n->content = Content;
     n->next = List->first->next;
@@ -90,7 +90,7 @@ AListNode* a_list_addFirst(AList* List, void* Content)
 
 AListNode* a_list_addLast(AList* List, void* Content)
 {
-    AListNode* const n = a_mem_malloc(sizeof(AListNode));
+    AListNode* n = a_mem_malloc(sizeof(AListNode));
 
     n->content = Content;
     n->next = List->last;
@@ -152,7 +152,7 @@ void a_list_remove(AList* List, const void* Item)
 
 void* a_list_removeFirst(AList* List)
 {
-    AListNode* const n = List->first->next;
+    AListNode* n = List->first->next;
 
     if(n == List->last) {
         return NULL;
@@ -172,7 +172,7 @@ void* a_list_removeFirst(AList* List)
 
 void* a_list_removeLast(AList* List)
 {
-    AListNode* const n = List->last->prev;
+    AListNode* n = List->last->prev;
 
     if(n == List->first) {
         return NULL;
@@ -251,10 +251,10 @@ void** a_list_array(AList* List)
     return array;
 }
 
-void* a_list_get(const AList* List, size_t Index)
+void* a_list_get(const AList* List, unsigned Index)
 {
     if(Index < List->items) {
-        size_t counter = 0;
+        unsigned counter = 0;
 
         for(AListNode* n = List->first->next; n != List->last; n = n->next) {
             if(counter++ == Index) {
@@ -266,7 +266,7 @@ void* a_list_get(const AList* List, size_t Index)
     return NULL;
 }
 
-size_t a_list_size(const AList* List)
+unsigned a_list_size(const AList* List)
 {
     return List->items;
 }

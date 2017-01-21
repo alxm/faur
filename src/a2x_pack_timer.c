@@ -28,7 +28,7 @@ struct ATimer {
 
 ATimer* a_timer_new(uint32_t Ms)
 {
-    ATimer* const t = a_mem_malloc(sizeof(ATimer));
+    ATimer* t = a_mem_malloc(sizeof(ATimer));
 
     t->running = false;
     t->period = Ms;

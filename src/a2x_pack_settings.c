@@ -20,11 +20,16 @@
 #include "a2x_pack_settings.v.h"
 
 typedef enum ASettingType {
-    A_SETTING_STR, A_SETTING_BOOL, A_SETTING_INT
+    A_SETTING_INT,
+    A_SETTING_UINT,
+    A_SETTING_BOOL,
+    A_SETTING_STR,
 } ASettingType;
 
 typedef enum ASettingUpdate {
-    A_SETTING_SET_ONCE, A_SETTING_SET_ANY, A_SETTING_SET_FROZEN
+    A_SETTING_SET_ONCE,
+    A_SETTING_SET_ANY,
+    A_SETTING_SET_FROZEN,
 } ASettingUpdate;
 
 typedef struct ASetting {
@@ -33,6 +38,7 @@ typedef struct ASetting {
 
     union {
         int integer;
+        unsigned uinteger;
         bool boolean;
         char* string;
     } value;
@@ -54,7 +60,7 @@ static int parseBool(const char* Value)
 
 static void add(ASettingType Type, ASettingUpdate Update, const char* Key, const char* DefaultValue)
 {
-    ASetting* const s = a_mem_malloc(sizeof(ASetting));
+    ASetting* s = a_mem_malloc(sizeof(ASetting));
 
     s->type = Type;
     s->update = Update;
@@ -62,6 +68,10 @@ static void add(ASettingType Type, ASettingUpdate Update, const char* Key, const
     switch(Type) {
         case A_SETTING_INT: {
             s->value.integer = atoi(DefaultValue);
+        } break;
+
+        case A_SETTING_UINT: {
+            s->value.uinteger = (unsigned)atoi(DefaultValue);;
         } break;
 
         case A_SETTING_BOOL: {
@@ -78,7 +88,7 @@ static void add(ASettingType Type, ASettingUpdate Update, const char* Key, const
 
 static void set(const char* Key, const char* Value, bool HonorFrozen)
 {
-    ASetting* const s = a_strhash_get(g_settings, Key);
+    ASetting* s = a_strhash_get(g_settings, Key);
 
     if(s == NULL) {
         a_out__error("Setting '%s' does not exist", Key);
@@ -92,6 +102,18 @@ static void set(const char* Key, const char* Value, bool HonorFrozen)
     switch(s->type) {
         case A_SETTING_INT: {
             s->value.integer = atoi(Value);
+        } break;
+
+        case A_SETTING_UINT: {
+            int x = atoi(Value);
+
+            if(x < 0) {
+                a_out__error("Invalid value '%s' for setting '%s'",
+                             Value,
+                             Key);
+            }
+
+            s->value.uinteger = (unsigned)x;
         } break;
 
         case A_SETTING_BOOL: {
@@ -111,7 +133,7 @@ static void set(const char* Key, const char* Value, bool HonorFrozen)
 
 static bool flip(const char* Key, bool HonorFrozen)
 {
-    ASetting* const s = a_strhash_get(g_settings, Key);
+    ASetting* s = a_strhash_get(g_settings, Key);
 
     if(s == NULL) {
         a_out__error("Setting '%s' does not exist", Key);
@@ -148,7 +170,7 @@ void a_settings__init(void)
     add(A_SETTING_BOOL, A_SETTING_SET_ANY, "app.output.verbose", "0");
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "app.tool", "0");
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "app.gp2xMenu", "0");
-    add(A_SETTING_INT, A_SETTING_SET_ONCE, "app.mhz", "0");
+    add(A_SETTING_UINT, A_SETTING_SET_ONCE, "app.mhz", "0");
 
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.on", "1");
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.window", "1");
@@ -158,9 +180,9 @@ void a_settings__init(void)
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.fullscreen", "0");
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.fixWizTearing", "0");
     add(A_SETTING_STR, A_SETTING_SET_ONCE, "video.borderColor", "0x1f 0x0f 0x0f");
-    add(A_SETTING_INT, A_SETTING_SET_ONCE, "video.fps", "60");
+    add(A_SETTING_UINT, A_SETTING_SET_ONCE, "video.fps", "60");
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.fps.skip", "0");
-    add(A_SETTING_INT, A_SETTING_SET_ONCE, "video.fps.skip.max", "2");
+    add(A_SETTING_UINT, A_SETTING_SET_ONCE, "video.fps.skip.max", "2");
 
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "sound.on", "1");
     add(A_SETTING_INT, A_SETTING_SET_ANY, "sound.music.scale", "100");
@@ -236,7 +258,7 @@ bool a_settings__flip(const char* Key)
 
 const char* a_settings_getString(const char* Key)
 {
-    ASetting* const s = a_strhash_get(g_settings, Key);
+    ASetting* s = a_strhash_get(g_settings, Key);
 
     if(s == NULL) {
         a_out__error("Setting '%s' does not exist", Key);
@@ -251,7 +273,7 @@ const char* a_settings_getString(const char* Key)
 
 bool a_settings_getBool(const char* Key)
 {
-    ASetting* const s = a_strhash_get(g_settings, Key);
+    ASetting* s = a_strhash_get(g_settings, Key);
 
     if(s == NULL) {
         a_out__error("Setting '%s' does not exist", Key);
@@ -266,7 +288,7 @@ bool a_settings_getBool(const char* Key)
 
 int a_settings_getInt(const char* Key)
 {
-    ASetting* const s = a_strhash_get(g_settings, Key);
+    ASetting* s = a_strhash_get(g_settings, Key);
 
     if(s == NULL) {
         a_out__error("Setting '%s' does not exist", Key);
@@ -276,5 +298,20 @@ int a_settings_getInt(const char* Key)
         return 0;
     } else {
         return s->value.integer;
+    }
+}
+
+unsigned a_settings_getUnsigned(const char* Key)
+{
+    ASetting* s = a_strhash_get(g_settings, Key);
+
+    if(s == NULL) {
+        a_out__error("Setting '%s' does not exist", Key);
+        return 0;
+    } else if(s->type != A_SETTING_UINT) {
+        a_out__error("Setting '%s' is not an unsigned integer", Key);
+        return 0;
+    } else {
+        return s->value.uinteger;
     }
 }

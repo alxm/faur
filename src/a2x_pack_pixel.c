@@ -77,12 +77,12 @@ void a_pixel_setBlend(APixelBlend Blend)
     a_draw__updateRoutines();
 }
 
-void a_pixel_setAlpha(unsigned int Alpha)
+void a_pixel_setAlpha(int Alpha)
 {
-    a_pixel__state.alpha = a_math_minu(Alpha, A_PIXEL_ALPHA_MAX);
+    a_pixel__state.alpha = a_math_min(Alpha, A_PIXEL_ALPHA_MAX);
 }
 
-void a_pixel_setRGB(uint8_t Red, uint8_t Green, uint8_t Blue)
+void a_pixel_setRGB(int Red, int Green, int Blue)
 {
     a_pixel__state.red = Red;
     a_pixel__state.green = Green;
@@ -90,12 +90,12 @@ void a_pixel_setRGB(uint8_t Red, uint8_t Green, uint8_t Blue)
     a_pixel__state.pixel = a_pixel_make(Red, Green, Blue);
 }
 
-void a_pixel_setRGBA(uint8_t Red, uint8_t Green, uint8_t Blue, unsigned int Alpha)
+void a_pixel_setRGBA(int Red, int Green, int Blue, int Alpha)
 {
     a_pixel__state.red = Red;
     a_pixel__state.green = Green;
     a_pixel__state.blue = Blue;
-    a_pixel__state.alpha = a_math_minu(Alpha, A_PIXEL_ALPHA_MAX);
+    a_pixel__state.alpha = a_math_min(Alpha, A_PIXEL_ALPHA_MAX);
     a_pixel__state.pixel = a_pixel_make(Red, Green, Blue);
 }
 

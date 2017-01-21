@@ -23,7 +23,7 @@ struct ADir {
     char* path;
     char* name;
     AList* files;
-    size_t num;
+    unsigned num;
     AListNode* node;
 };
 
@@ -47,7 +47,7 @@ void a_dir__uninit(void)
 
 static int a_dir__sort(const void* A, const void* B)
 {
-    char a, b;
+    int a, b;
     const char* nameA = (*(ADirEntry**)A)->name;
     const char* nameB = (*(ADirEntry**)B)->name;
 
@@ -61,8 +61,8 @@ static int a_dir__sort(const void* A, const void* B)
     }
 
     if(isalpha(a) && isalpha(b)) {
-        const char a_lower = tolower(a);
-        const char b_lower = tolower(b);
+        const int a_lower = tolower(a);
+        const int b_lower = tolower(b);
 
         if(a_lower == b_lower) {
             if(a == a_lower) {
@@ -123,7 +123,7 @@ ADir* a_dir_open(const char* Path)
     a_list_clear(files);
     d->files = files;
 
-    for(size_t i = d->num; i--; ) {
+    for(unsigned i = d->num; i--; ) {
         a_list_addFirst(d->files, array[i]);
     }
 
@@ -169,7 +169,7 @@ const char* a_dir_name(const ADir* Dir)
     return Dir->name;
 }
 
-size_t a_dir_numEntries(const ADir* Dir)
+unsigned a_dir_numEntries(const ADir* Dir)
 {
     return Dir->num;
 }

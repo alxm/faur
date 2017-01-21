@@ -51,38 +51,27 @@ static inline int a_math_constrain(int X, int Min, int Max)
     return X < Min ? Min : (X > Max ? Max : X);
 }
 
-static inline int a_math_constrainu(unsigned X, unsigned Min, unsigned Max)
+static inline unsigned a_math_constrainu(unsigned X, unsigned Min, unsigned Max)
 {
     return X < Min ? Min : (X > Max ? Max : X);
 }
 
-#define A_MATH_PI         3.14159265359
-#define A_MATH_ANGLES_NUM 256
+#define A_MATH_ANGLES_NUM 256u
 
-extern double a_math_sin_val[A_MATH_ANGLES_NUM];
-extern double a_math_cos_val[A_MATH_ANGLES_NUM];
+extern float a_math_sin_val[A_MATH_ANGLES_NUM];
+extern float a_math_cos_val[A_MATH_ANGLES_NUM];
 
-static inline double a_math_sin(int Angle)
+static inline float a_math_sin(unsigned Angle)
 {
-    return a_math_sin_val[(Angle)];
+    return a_math_sin_val[Angle];
 }
 
-static inline double a_math_cos(int Angle)
+static inline float a_math_cos(unsigned Angle)
 {
-    return a_math_cos_val[(Angle)];
+    return a_math_cos_val[Angle];
 }
 
-static inline int a_math_wrapAngle(int Angle)
+static inline unsigned a_math_wrapAngle(unsigned Angle)
 {
     return Angle & (A_MATH_ANGLES_NUM - 1);
-}
-
-static inline double a_math_degToRad(int Angle)
-{
-    return Angle * A_MATH_PI / (A_MATH_ANGLES_NUM / 2);
-}
-
-static inline int a_math_radToDeg(double Angle)
-{
-    return Angle * (A_MATH_ANGLES_NUM / 2) / A_MATH_PI;
 }

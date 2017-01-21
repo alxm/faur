@@ -24,7 +24,7 @@ static int g_framesDuration;
 static APixel g_savedColor;
 static APixel* g_screenBuffer;
 static APixel* g_savedScreen;
-static int g_savedWidth, g_savedHeight;
+static unsigned g_savedWidth, g_savedHeight;
 
 static A_STATE(a_fade__toColor);
 static A_STATE(a_fade__fromColor);
@@ -57,13 +57,15 @@ static void updateCachedBuffer(bool UpdateSavedScreen)
         a_screen_copy(g_savedScreen, a_screen__pixels);
     }
 
-    g_savedWidth = a_screen__width;
-    g_savedHeight = a_screen__height;
+    g_savedWidth = (unsigned)a_screen__width;
+    g_savedHeight = (unsigned)a_screen__height;
 }
 
 static void validateCachedBuffer(void)
 {
-    if(a_screen__width != g_savedWidth || a_screen__height != g_savedHeight) {
+    if((unsigned)a_screen__width != g_savedWidth
+        || (unsigned)a_screen__height != g_savedHeight) {
+
         a_out__fatal("Screen size changed before fading");
     }
 }

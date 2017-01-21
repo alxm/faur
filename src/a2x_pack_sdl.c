@@ -231,7 +231,7 @@ void a_sdl__init(void)
 
         c->joystick = joystick;
         #if A_USE_LIB_SDL == 1
-            c->id = i;
+            c->id = (uint8_t)i;
         #elif A_USE_LIB_SDL == 2
             c->id = id;
         #endif
@@ -522,9 +522,9 @@ void a_sdl__screen_set(void)
 
         char* end;
         const char* color = a_settings_getString("video.borderColor");
-        uint8_t r = strtol(color, &end, 0);
-        uint8_t g = strtol(end, &end, 0);
-        uint8_t b = strtol(end, NULL, 0);
+        uint8_t r = (uint8_t)strtol(color, &end, 0);
+        uint8_t g = (uint8_t)strtol(end, &end, 0);
+        uint8_t b = (uint8_t)strtol(end, NULL, 0);
 
         ret = SDL_SetRenderDrawColor(g_sdlRenderer, r, g, b, 255);
         if(ret < 0) {
@@ -628,7 +628,7 @@ void a_sdl__screen_show(void)
         ret = SDL_UpdateTexture(g_sdlTexture,
                                 NULL,
                                 a_screen__pixels,
-                                a_screen__width * sizeof(APixel));
+                                a_screen__width * (int)sizeof(APixel));
         if(ret < 0) {
             a_out__fatal("SDL_UpdateTexture failed: %s", SDL_GetError());
         }
@@ -841,7 +841,7 @@ void a_sdl__input_get(void)
             } break;
 
             case SDL_JOYHATMOTION: {
-                unsigned int state = 0;
+                unsigned state = 0;
                 #define UP_PRESSED    (1 << 0)
                 #define DOWN_PRESSED  (1 << 1)
                 #define LEFT_PRESSED  (1 << 2)
