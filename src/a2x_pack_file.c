@@ -23,7 +23,8 @@ struct AFile {
     FILE* handle;
     char* path;
     char* name;
-    char* line;
+    char* lineBuffer;
+    size_t lineBufferSize;
     int eof;
     AListNode* node;
 };
@@ -61,7 +62,8 @@ AFile* a_file_open(const char* Path, const char* Modes)
     f->handle = handle;
     f->path = a_str_getPrefixLastFind(Path, '/');
     f->name = a_str_getSuffixLastFind(Path, '/');
-    f->line = NULL;
+    f->lineBuffer = NULL;
+    f->lineBufferSize = 0;
     f->eof = 0;
     f->node = a_list_addLast(g_openedFiles, f);
 
@@ -86,7 +88,7 @@ void a_file__close(AFile* File)
 {
     free(File->path);
     free(File->name);
-    free(File->line);
+    free(File->lineBuffer);
 
     if(File->handle) {
         fclose(File->handle);
@@ -166,9 +168,6 @@ bool a_file_writef(AFile* File, char* Format, ...)
 
 bool a_file_readLine(AFile* File)
 {
-    free(File->line);
-    File->line = NULL;
-
     if(File->eof) {
         return false;
     }
@@ -192,14 +191,17 @@ bool a_file_readLine(AFile* File)
             fseek(handle, 0 - offset - 1, SEEK_CUR);
         }
 
-        char* str = a_mem_malloc((unsigned)offset + 1);
-
-        for(int i = 0; i < offset; i++) {
-            str[i] = (char)fgetc(handle);
+        if((unsigned long)offset >= File->lineBufferSize) {
+            free(File->lineBuffer);
+            File->lineBufferSize = (unsigned long)offset + 1;
+            File->lineBuffer = a_mem_malloc(File->lineBufferSize);
         }
 
-        str[offset] = '\0';
-        File->line = str;
+        for(int i = 0; i < offset; i++) {
+            File->lineBuffer[i] = (char)fgetc(handle);
+        }
+
+        File->lineBuffer[offset] = '\0';
 
         fseek(handle, 1, SEEK_CUR);
 
@@ -211,7 +213,7 @@ bool a_file_readLine(AFile* File)
 
 char* a_file_getLine(const AFile* File)
 {
-    return File->line;
+    return File->lineBuffer;
 }
 
 void a_file_rewind(const AFile* File)
