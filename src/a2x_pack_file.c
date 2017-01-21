@@ -173,34 +173,32 @@ bool a_file_readLine(AFile* File)
         return false;
     }
 
-    int offset = 1;
+    long offset = 0;
     FILE* handle = File->handle;
 
-    while(offset == 1 && !File->eof) {
-        int c;
-
-        for(c = fgetc(handle); !iscntrl(c) && c != EOF; c = fgetc(handle)) {
-            offset++;
+    while(!File->eof && offset == 0) {
+        for(int c = fgetc(handle); !iscntrl(c); c = fgetc(handle), offset++) {
+            if(c == EOF) {
+                File->eof = true;
+                break;
+            }
         }
-
-        File->eof = c == EOF;
     }
 
-    if(offset > 1) {
+    if(offset > 0) {
         if(File->eof) {
-            rewind(handle);
-            fseek(handle, -(offset - 1), SEEK_END);
+            fseek(handle, 0 - offset, SEEK_CUR);
         } else {
-            fseek(handle, -offset, SEEK_CUR);
+            fseek(handle, 0 - offset - 1, SEEK_CUR);
         }
 
-        char* str = a_mem_malloc((unsigned)offset);
+        char* str = a_mem_malloc((unsigned)offset + 1);
 
-        for(int i = 0; i < offset - 1; i++) {
+        for(int i = 0; i < offset; i++) {
             str[i] = (char)fgetc(handle);
         }
 
-        str[offset - 1] = '\0';
+        str[offset] = '\0';
         File->line = str;
 
         fseek(handle, 1, SEEK_CUR);
