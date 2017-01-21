@@ -23,7 +23,7 @@
 #define FRAMESKIP_ADJUST_DELAY_SEC 2
 #define NO_SLEEP_RESET_SEC 20
 
-static unsigned g_idealFps;
+static unsigned g_idealFpsRate;
 static bool g_skipFrames;
 static unsigned g_skipMax;
 
@@ -52,14 +52,22 @@ static bool g_canSleep;
 
 void a_fps__init(void)
 {
-    g_idealFps = (unsigned)a_settings_getInt("video.fps");
+    g_idealFpsRate = (unsigned)a_settings_getInt("video.fps");
     g_skipFrames = a_settings_getBool("video.fps.skip");
     g_skipMax = (unsigned)a_settings_getInt("video.fps.skip.max");
+
+    if(g_idealFpsRate < 1) {
+        a_out__fatal("Invalid setting video.fps=0");
+    } else if(g_skipMax >= g_idealFpsRate) {
+        a_out__fatal("Invalid setting video.fps.skip.max=%u for video.fps=%u",
+                     g_skipMax,
+                     g_idealFpsRate);
+    }
 
     g_timer = NULL;
     g_frameCounter = 0;
     g_bufferHead = 0;
-    g_bufferLen = g_idealFps * AVERAGE_WINDOW_SEC;
+    g_bufferLen = g_idealFpsRate * AVERAGE_WINDOW_SEC;
     g_fpsBuffer = a_mem_malloc(g_bufferLen * sizeof(unsigned));
     g_maxFpsBuffer = a_mem_malloc(g_bufferLen * sizeof(unsigned));
 
@@ -87,7 +95,7 @@ void a_fps__reset(unsigned NumFramesToSkip)
     g_skipNum = NumFramesToSkip;
     g_skipCounter = 0;
 
-    g_fpsRate = g_idealFps / (1 + g_skipNum);
+    g_fpsRate = g_idealFpsRate / (1 + g_skipNum);
     g_msPerFrame = 1000 / g_fpsRate;
 
     g_fps = g_fpsRate;
@@ -102,10 +110,10 @@ void a_fps__reset(unsigned NumFramesToSkip)
     g_maxFpsBufferSum = g_fpsRate * g_bufferLen;
 
     if(g_skipNum > 0) {
-        g_fpsThresholdFast = g_idealFps / g_skipNum;
+        g_fpsThresholdFast = g_idealFpsRate / g_skipNum;
     }
 
-    g_fpsThresholdSlow = g_fpsRate - 2;
+    g_fpsThresholdSlow = (g_fpsRate > 3) ? (g_fpsRate - 2) : 1;
 
     if(g_timer == NULL) {
         g_timer = a_timer_new((uint32_t)g_msPerFrame);
