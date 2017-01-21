@@ -32,7 +32,7 @@ struct AMenu {
     unsigned selectedIndex;
     void* selectedItem;
     AMenuState state;
-    int pause;
+    unsigned pause;
     bool used;
     AMenuInputHandler inputHandler;
     void* context;
@@ -47,7 +47,7 @@ struct AMenu {
     AInput* cancel;
 };
 
-#define A_MENU_PAUSE (a_settings_getInt("video.fps") / 6)
+#define A_MENU_PAUSE (a_settings_getUnsigned("video.fps") / 6)
 
 AMenu* a_menu_new(AInput* Next, AInput* Back, AInput* Select, AInput* Cancel, AMenuFreeItemHandler FreeItemHandler)
 {
@@ -144,7 +144,7 @@ void a_menu_input(AMenu* Menu)
 
     Menu->used = false;
 
-    if(!Menu->pause) {
+    if(Menu->pause == 0) {
         if(a_button_get(Menu->back)) {
             if(Menu->selectedIndex-- == 0) {
                 Menu->selectedIndex = a_list_size(Menu->items) - 1;

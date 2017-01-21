@@ -124,8 +124,8 @@ void a_hw__init(void)
             }
         }
 
-        if(a_settings_getInt("app.mhz") > 0) {
-            setCpuSpeed((unsigned)a_settings_getInt("app.mhz"));
+        if(a_settings_getUnsigned("app.mhz") > 0) {
+            setCpuSpeed(a_settings_getUnsigned("app.mhz"));
         }
 
         setRamTimings(6, 4, 1, 1, 1, 2, 2);

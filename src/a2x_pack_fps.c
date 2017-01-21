@@ -52,9 +52,9 @@ static bool g_canSleep;
 
 void a_fps__init(void)
 {
-    g_idealFpsRate = (unsigned)a_settings_getInt("video.fps");
+    g_idealFpsRate = a_settings_getUnsigned("video.fps");
     g_skipFrames = a_settings_getBool("video.fps.skip");
-    g_skipMax = (unsigned)a_settings_getInt("video.fps.skip.max");
+    g_skipMax = a_settings_getUnsigned("video.fps.skip.max");
 
     if(g_idealFpsRate < 1) {
         a_out__fatal("Invalid setting video.fps=0");
