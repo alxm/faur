@@ -2,27 +2,30 @@ PLATFORM = wiz
 
 OPEN2X = $(OPEN2X_ROOT)/$(OPEN2X_GLIBC)
 
-LIBS = -L$(OPEN2X)/lib \
-       -L$(OPEN2X)/arm-open2x-linux/lib \
-       -lpng12 \
-       -lz \
-       -lSDL_mixer \
-       -lsmpeg \
-       -lSDL \
-       -lpthread \
-       -lm \
-       -ldl
+A_PLATFORM_LIBS = \
+    -L$(OPEN2X)/lib \
+    -L$(OPEN2X)/arm-open2x-linux/lib \
+    -lpng12 \
+    -lz \
+    -lSDL_mixer \
+    -lsmpeg \
+    -lSDL \
+    -lpthread \
+    -lm \
+    -ldl \
 
-CFLAGS = -DA_PLATFORM_WIZ=1 \
-         -DA_USE_LIB_SDL=1 \
-         -O3 \
-         -s \
-         -msoft-float \
-         -ffast-math \
-         -fomit-frame-pointer \
-         `$(OPEN2X)/bin/sdl-config --cflags` \
-         -I$(OPEN2X)/include \
-         -I$(OPEN2X)/arm-open2x-linux/include
+A_PLATFORM_CFLAGS = \
+    -DA_PLATFORM_WIZ=1 \
+    -DA_USE_LIB_SDL=1 \
+    -O3 \
+    -s \
+    -msoft-float \
+    -ffast-math \
+    -fomit-frame-pointer \
+    `$(OPEN2X)/bin/sdl-config --cflags` \
+    -I$(OPEN2X)/include \
+    -I$(OPEN2X)/arm-open2x-linux/include \
+    -Wno-conversion \
 
 PREFIX := arm-open2x-linux-
 
