@@ -44,4 +44,4 @@ extern AFix a_analog_yaxis_fix(const AInput* Analog);
 
 extern bool a_touch_tapped(const AInput* Touch);
 extern bool a_touch_point(const AInput* Touch, int X, int Y);
-extern bool a_touch_rect(const AInput* Touch, int X, int Y, int W, int H);
+extern bool a_touch_box(const AInput* Touch, int X, int Y, int W, int H);
