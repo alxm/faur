@@ -695,8 +695,7 @@ bool a_touch_point(const AInput* Touch, int X, int Y)
 bool a_touch_box(const AInput* Touch, int X, int Y, int W, int H)
 {
     A_LIST_ITERATE(Touch->touchScreens, AInputTouch*, t) {
-        if(t->tap && a_collide_boxAndBox(X, Y, W, H,
-                                         t->x, t->y, 1, 1)) {
+        if(t->tap && a_collide_pointInBox(t->x, t->y, X, Y, W, H)) {
             return true;
         }
     }

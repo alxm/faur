@@ -49,3 +49,5 @@ extern AList* a_colobject__getPossibleCollisions(const AColObject* Object);
 
 extern bool a_collide_boxAndBox(int X1, int Y1, int W1, int H1, int X2, int Y2, int W2, int H2);
 extern bool a_collide_circleAndCircle(int X1, int Y1, int R1, int X2, int Y2, int R2);
+extern bool a_collide_pointInBox(int X, int Y, int BoxX, int BoxY, int BoxW, int BoxH);
+extern bool a_collide_pointInCircle(int X, int Y, int CircleX, int CircleY, int CircleR);

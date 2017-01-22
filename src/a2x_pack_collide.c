@@ -198,3 +198,16 @@ bool a_collide_circleAndCircle(int X1, int Y1, int R1, int X2, int Y2, int R2)
 
     return x * x + y * y < r * r;
 }
+
+bool a_collide_pointInBox(int X, int Y, int BoxX, int BoxY, int BoxW, int BoxH)
+{
+    return X >= BoxX && X < BoxX + BoxW && Y >= BoxY && Y < BoxY + BoxH;
+}
+
+bool a_collide_pointInCircle(int X, int Y, int CircleX, int CircleY, int CircleR)
+{
+    const int dx = X - CircleX;
+    const int dy = Y - CircleY;
+
+    return dx * dx + dy * dy < CircleR * CircleR;
+}
