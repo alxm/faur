@@ -689,15 +689,13 @@ bool a_touch_tapped(const AInput* Touch)
 
 bool a_touch_point(const AInput* Touch, int X, int Y)
 {
-    return a_touch_rect(Touch, X - 1, Y - 1, 3, 3);
+    return a_touch_box(Touch, X - 1, Y - 1, 3, 3);
 }
 
-bool a_touch_rect(const AInput* Touch, int X, int Y, int W, int H)
+bool a_touch_box(const AInput* Touch, int X, int Y, int W, int H)
 {
     A_LIST_ITERATE(Touch->touchScreens, AInputTouch*, t) {
-        if(t->tap
-            && a_collide_boxes(X, Y, W, H,
-                               t->x, t->y, 1, 1)) {
+        if(t->tap && a_collide_pointInBox(t->x, t->y, X, Y, W, H)) {
             return true;
         }
     }

@@ -208,8 +208,8 @@ void a_screen_resetClip(void)
 
 bool a_screen_boxOnScreen(int X, int Y, int W, int H)
 {
-    return a_collide_boxes(X, Y, W, H,
-                           0, 0, a_screen__width, a_screen__height);
+    return a_collide_boxAndBox(X, Y, W, H,
+                               0, 0, a_screen__width, a_screen__height);
 }
 
 bool a_screen_boxInsideScreen(int X, int Y, int W, int H)
@@ -220,9 +220,9 @@ bool a_screen_boxInsideScreen(int X, int Y, int W, int H)
 
 bool a_screen_boxOnClip(int X, int Y, int W, int H)
 {
-    return a_collide_boxes(X, Y, W, H,
-                           a_screen__clipX, a_screen__clipY,
-                           a_screen__clipWidth, a_screen__clipHeight);
+    return a_collide_boxAndBox(X, Y, W, H,
+                               a_screen__clipX, a_screen__clipY,
+                               a_screen__clipWidth, a_screen__clipHeight);
 }
 
 bool a_screen_boxInsideClip(int X, int Y, int W, int H)
