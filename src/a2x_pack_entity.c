@@ -141,7 +141,7 @@ void a_system_declare(const char* Name, const char* Components, ASystemHandler* 
         AComponent* c = a_strhash_get(g_collection->components, name);
 
         if(c == NULL) {
-            a_out__fatal("Undeclared component '%s' for system '%s'",
+            a_out__fatal("Unknown component '%s' for system '%s'",
                          name, Name);
         }
 
@@ -159,7 +159,7 @@ void a_system_tick(const char* Systems)
         ASystem* system = a_strhash_get(g_collection->systems, systemName);
 
         if(system == NULL) {
-            a_out__fatal("Undeclared tick system '%s'", systemName);
+            a_out__fatal("Unknown tick system '%s'", systemName);
         }
 
         a_list_addLast(g_collection->tickSystems, system);
@@ -176,7 +176,7 @@ void a_system_draw(const char* Systems)
         ASystem* system = a_strhash_get(g_collection->systems, systemName);
 
         if(system == NULL) {
-            a_out__fatal("Undeclared draw system '%s'", systemName);
+            a_out__fatal("Unknown draw system '%s'", systemName);
         }
 
         a_list_addLast(g_collection->drawSystems, system);
@@ -299,7 +299,7 @@ void* a_entity_addComponent(AEntity* Entity, const char* Component)
     const AComponent* c = a_strhash_get(g_collection->components, Component);
 
     if(c == NULL) {
-        a_out__fatal("Undeclared component '%s'", Component);
+        a_out__fatal("Unknown component '%s'", Component);
     }
 
     if(a_bitfield_test(Entity->componentBits, c->bit)) {
@@ -334,6 +334,10 @@ void* a_entity_getComponent(const AEntity* Entity, const char* Component)
     AComponent* header = a_strhash_get(Entity->components, Component);
 
     if(header == NULL) {
+        if(!a_strhash_contains(g_collection->components, Component)) {
+            a_out__fatal("Unknown component '%s'", Component);
+        }
+
         return NULL;
     }
 
@@ -345,6 +349,10 @@ void* a_entity_requireComponent(const AEntity* Entity, const char* Component)
     AComponent* header = a_strhash_get(Entity->components, Component);
 
     if(header == NULL) {
+        if(!a_strhash_contains(g_collection->components, Component)) {
+            a_out__fatal("Unknown component '%s'", Component);
+        }
+
         a_out__fatal("Missing component '%s'", Component);
     }
 
