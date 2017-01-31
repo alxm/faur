@@ -27,7 +27,11 @@ typedef struct ASpriteFrames ASpriteFrames;
 #include "a2x_pack_sprite.p.h"
 
 extern ASpriteFrames* a_spriteframes_new(const ASprite* Sheet, int X, int Y, unsigned CallsToNextFrame);
+extern ASpriteFrames* a_spriteframes_blank(unsigned CallsToNextFrame);
 extern void a_spriteframes_free(ASpriteFrames* Frames, bool DoFreeSprites);
+
+extern void a_spriteframes_push(ASpriteFrames* Frames, ASprite* Sprite);
+extern ASprite* a_spriteframes_pop(ASpriteFrames* Frames);
 
 extern ASprite* a_spriteframes_next(ASpriteFrames* Frames);
 extern ASprite* a_spriteframes_get(const ASpriteFrames* Frames);
@@ -50,5 +54,3 @@ extern void a_spriteframes_reset(ASpriteFrames* Frames);
 
 extern ASpriteFrames* a_spriteframes_clone(const ASpriteFrames* Frames);
 extern AList* a_spriteframes_sprites(const ASpriteFrames* Frames);
-
-extern ASprite* a_spriteframes_pop(ASpriteFrames* Frames);

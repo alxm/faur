@@ -20,7 +20,7 @@
 #include "a2x_pack_fade.v.h"
 
 static bool g_fadePending;
-static int g_framesDuration;
+static unsigned g_framesDuration;
 static APixel g_savedColor;
 static APixel* g_screenBuffer;
 static APixel* g_savedScreen;
@@ -97,7 +97,7 @@ void a_fade__uninit(void)
     }
 }
 
-void a_fade_toColor(int FramesDuration)
+void a_fade_toColor(unsigned FramesDuration)
 {
     if(g_fadePending) {
         a_out__warning("a_fade_toColor: fade pending, ignoring");
@@ -113,7 +113,7 @@ void a_fade_toColor(int FramesDuration)
     g_fadePending = true;
 }
 
-void a_fade_fromColor(int FramesDuration)
+void a_fade_fromColor(unsigned FramesDuration)
 {
     if(g_fadePending) {
         a_out__warning("a_fade_fromColor: fade pending, ignoring");
@@ -129,7 +129,7 @@ void a_fade_fromColor(int FramesDuration)
     g_fadePending = true;
 }
 
-void a_fade_screens(int FramesDuration)
+void a_fade_screens(unsigned FramesDuration)
 {
     if(g_fadePending) {
         a_out__warning("a_fade_screens: fade pending, ignoring");
@@ -151,7 +151,7 @@ static A_STATE(a_fade__toColor)
         validateCachedBuffer();
 
         AFix alpha = 0;
-        AFix alpha_inc = a_fix_itofix(A_PIXEL_ALPHA_MAX) / g_framesDuration;
+        AFix alpha_inc = a_fix_itofix(A_PIXEL_ALPHA_MAX) / (int)g_framesDuration;
 
         a_pixel_push();
         a_pixel_setBlend(A_PIXEL_BLEND_RGBA);
@@ -185,7 +185,7 @@ static A_STATE(a_fade__fromColor)
         validateCachedBuffer();
 
         AFix alpha = a_fix_itofix(A_PIXEL_ALPHA_MAX);
-        AFix alpha_inc = a_fix_itofix(A_PIXEL_ALPHA_MAX) / g_framesDuration;
+        AFix alpha_inc = a_fix_itofix(A_PIXEL_ALPHA_MAX) / (int)g_framesDuration;
 
         a_pixel_push();
         a_pixel_setBlend(A_PIXEL_BLEND_RGBA);
@@ -219,7 +219,7 @@ static A_STATE(a_fade__screens)
         validateCachedBuffer();
 
         AFix alpha = a_fix_itofix(A_PIXEL_ALPHA_MAX);
-        AFix alpha_inc = a_fix_itofix(A_PIXEL_ALPHA_MAX) / g_framesDuration;
+        AFix alpha_inc = a_fix_itofix(A_PIXEL_ALPHA_MAX) / (int)g_framesDuration;
         ASprite* oldScreen = a_sprite_fromPixels(g_savedScreen,
                                                  a_screen__width,
                                                  a_screen__height);

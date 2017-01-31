@@ -380,8 +380,9 @@ ASprite* a_sprite_blank(int Width, int Height, bool ColorKeyed)
     s->w = Width;
     s->wLog2 = (int)log2f((float)Width);
     s->h = Height;
-    s->spans = ColorKeyed ? NULL : (uint16_t*)1;
+    s->spans = NULL;
     s->spansSize = 0;
+    s->colorKeyed = ColorKeyed;
 
     if(ColorKeyed) {
         APixel* pixels = s->pixels;
@@ -408,23 +409,20 @@ void a_sprite_free(ASprite* Sprite)
 
 void a_sprite__free(ASprite* Sprite)
 {
-    if(Sprite->spansSize > 0) {
-        free(Sprite->spans);
-    }
-
+    free(Sprite->spans);
     free(Sprite);
 }
 
 void a_sprite_blit(const ASprite* Sprite, int X, int Y)
 {
     if(a_screen_boxInsideClip(X, Y, Sprite->w, Sprite->h)) {
-        if(Sprite->spansSize > 0) {
+        if(Sprite->colorKeyed) {
             g_blitter_keyed_noclip(Sprite, X, Y);
         } else {
             g_blitter_block_noclip(Sprite, X, Y);
         }
     } else if(a_screen_boxOnClip(X, Y, Sprite->w, Sprite->h)) {
-        if(Sprite->spansSize > 0) {
+        if(Sprite->colorKeyed) {
             g_blitter_keyed_doclip(Sprite, X, Y);
         } else {
             g_blitter_block_doclip(Sprite, X, Y);
@@ -486,7 +484,7 @@ APixel a_sprite_getPixel(const ASprite* Sprite, int X, int Y)
 
 void a_sprite__refreshSpans(ASprite* Sprite)
 {
-    if(Sprite->spansSize == 0 && Sprite->spans != NULL) {
+    if(!Sprite->colorKeyed) {
         return;
     }
 
@@ -501,19 +499,19 @@ void a_sprite__refreshSpans(ASprite* Sprite)
     const APixel* dest = dst;
 
     for(int y = spriteHeight; y--; ) {
-        bytesNeeded += sizeof(uint16_t); // total spans size and initial state
+        bytesNeeded += sizeof(unsigned); // total spans size and initial state
         bool lastState = *dest != A_SPRITE_COLORKEY; // initial state
 
         for(int x = spriteWidth; x--; ) {
             bool newState = *dest++ != A_SPRITE_COLORKEY;
 
             if(newState != lastState) {
-                bytesNeeded += sizeof(uint16_t); // length of new span
+                bytesNeeded += sizeof(unsigned); // length of new span
                 lastState = newState;
             }
         }
 
-        bytesNeeded += sizeof(uint16_t); // line's last span length
+        bytesNeeded += sizeof(unsigned); // line's last span length
     }
 
     if(Sprite->spansSize < bytesNeeded) {
@@ -523,12 +521,12 @@ void a_sprite__refreshSpans(ASprite* Sprite)
     }
 
     dest = dst;
-    uint16_t* spans = Sprite->spans;
+    unsigned* spans = Sprite->spans;
 
     for(int y = spriteHeight; y--; ) {
-        uint16_t* lineStart = spans;
-        uint16_t numSpans = 1; // line has at least 1 span
-        uint16_t spanLength = 0;
+        unsigned* lineStart = spans;
+        unsigned numSpans = 1; // line has at least 1 span
+        unsigned spanLength = 0;
 
         bool lastState = *dest != A_SPRITE_COLORKEY; // initial draw state
         *spans++ = lastState;
@@ -547,13 +545,13 @@ void a_sprite__refreshSpans(ASprite* Sprite)
         }
 
         *spans++ = spanLength; // record the last span's length
-        *lineStart |= (uint16_t)(numSpans << 1); // record line's number of spans
+        *lineStart |= numSpans << 1; // record line's number of spans
     }
 }
 
 ASprite* a_sprite_clone(const ASprite* Sprite)
 {
-    ASprite* s = a_sprite_blank(Sprite->w, Sprite->h, Sprite->spansSize > 0);
+    ASprite* s = a_sprite_blank(Sprite->w, Sprite->h, Sprite->colorKeyed);
 
     memcpy(s->pixels,
            Sprite->pixels,

@@ -23,6 +23,6 @@
 
 #include "a2x_pack_pixel.p.h"
 
-extern void a_fade_toColor(int FramesDuration);
-extern void a_fade_fromColor(int FramesDuration);
-extern void a_fade_screens(int FramesDuration);
+extern void a_fade_toColor(unsigned FramesDuration);
+extern void a_fade_fromColor(unsigned FramesDuration);
+extern void a_fade_screens(unsigned FramesDuration);
