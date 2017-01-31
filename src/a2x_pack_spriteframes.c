@@ -98,6 +98,30 @@ void a_spriteframes_free(ASpriteFrames* Frames, bool DoFreeSprites)
     free(Frames);
 }
 
+void a_spriteframes_push(ASpriteFrames* Frames, ASprite* Sprite)
+{
+    a_list_push(Frames->sprites, Sprite);
+    Frames->num++;
+
+    free(Frames->spriteArray);
+    Frames->spriteArray = (ASprite**)a_list_array(Frames->sprites);
+
+    a_spriteframes_reset(Frames);
+}
+
+ASprite* a_spriteframes_pop(ASpriteFrames* Frames)
+{
+    ASprite* s = a_list_pop(Frames->sprites);
+    Frames->num--;
+
+    free(Frames->spriteArray);
+    Frames->spriteArray = (ASprite**)a_list_array(Frames->sprites);
+
+    a_spriteframes_reset(Frames);
+
+    return s;
+}
+
 ASprite* a_spriteframes_next(ASpriteFrames* Frames)
 {
     const unsigned oldindex = Frames->index;
@@ -206,17 +230,4 @@ ASpriteFrames* a_spriteframes_clone(const ASpriteFrames* Frames)
 AList* a_spriteframes_sprites(const ASpriteFrames* Frames)
 {
     return Frames->sprites;
-}
-
-ASprite* a_spriteframes_pop(ASpriteFrames* Frames)
-{
-    ASprite* s = a_list_pop(Frames->sprites);
-
-    free(Frames->spriteArray);
-    Frames->spriteArray = (ASprite**)a_list_array(Frames->sprites);
-    Frames->num = a_list_size(Frames->sprites);
-
-    a_spriteframes_reset(Frames);
-
-    return s;
 }
