@@ -32,25 +32,12 @@ struct ASpriteFrames {
 
 ASpriteFrames* a_spriteframes_new(const ASprite* Sheet, int X, int Y, unsigned CallsToNextFrame)
 {
-    if(CallsToNextFrame < 1) {
-        a_out__fatal("a_spriteframes_new: CallsToNextFrame<1");
-    }
-
-    ASpriteFrames* Frames = a_mem_malloc(sizeof(ASpriteFrames));
-
-    Frames->sprites = a_list_new();
-    Frames->spriteArray = NULL;
-    Frames->num = 0;
-    Frames->countdown = CallsToNextFrame;
-    Frames->callsToNextFrame = CallsToNextFrame;
-    Frames->index = 0;
-    Frames->forward = true;
-    Frames->paused = false;
+    ASpriteFrames* f = a_spriteframes_blank(CallsToNextFrame);
 
     while(X < Sheet->w) {
         ASprite* s = a_sprite_fromSprite(Sheet, X, Y);
 
-        a_list_addLast(Frames->sprites, s);
+        a_list_addLast(f->sprites, s);
         X += s->w;
 
         if(X < Sheet->w) {
@@ -71,10 +58,30 @@ ASpriteFrames* a_spriteframes_new(const ASprite* Sheet, int X, int Y, unsigned C
         X += 1;
     }
 
-    Frames->spriteArray = (ASprite**)a_list_array(Frames->sprites);
-    Frames->num = a_list_size(Frames->sprites);
+    f->spriteArray = (ASprite**)a_list_array(f->sprites);
+    f->num = a_list_size(f->sprites);
 
-    return Frames;
+    return f;
+}
+
+ASpriteFrames* a_spriteframes_blank(unsigned CallsToNextFrame)
+{
+    if(CallsToNextFrame < 1) {
+        a_out__fatal("a_spriteframes_blank: CallsToNextFrame<1");
+    }
+
+    ASpriteFrames* f = a_mem_malloc(sizeof(ASpriteFrames));
+
+    f->sprites = a_list_new();
+    f->spriteArray = NULL;
+    f->num = 0;
+    f->countdown = CallsToNextFrame;
+    f->callsToNextFrame = CallsToNextFrame;
+    f->index = 0;
+    f->forward = true;
+    f->paused = false;
+
+    return f;
 }
 
 void a_spriteframes_free(ASpriteFrames* Frames, bool DoFreeSprites)

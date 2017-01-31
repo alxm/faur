@@ -27,6 +27,7 @@ typedef struct ASpriteFrames ASpriteFrames;
 #include "a2x_pack_sprite.p.h"
 
 extern ASpriteFrames* a_spriteframes_new(const ASprite* Sheet, int X, int Y, unsigned CallsToNextFrame);
+extern ASpriteFrames* a_spriteframes_blank(unsigned CallsToNextFrame);
 extern void a_spriteframes_free(ASpriteFrames* Frames, bool DoFreeSprites);
 
 extern ASprite* a_spriteframes_next(ASpriteFrames* Frames);
