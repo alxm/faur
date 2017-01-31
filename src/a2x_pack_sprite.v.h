@@ -31,6 +31,7 @@ struct ASprite {
     int h;
     unsigned* spans;
     size_t spansSize;
+    bool colorKeyed;
     APixel pixels[];
 };
 

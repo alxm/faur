@@ -380,8 +380,9 @@ ASprite* a_sprite_blank(int Width, int Height, bool ColorKeyed)
     s->w = Width;
     s->wLog2 = (int)log2f((float)Width);
     s->h = Height;
-    s->spans = ColorKeyed ? NULL : (unsigned*)1;
+    s->spans = NULL;
     s->spansSize = 0;
+    s->colorKeyed = ColorKeyed;
 
     if(ColorKeyed) {
         APixel* pixels = s->pixels;
@@ -408,23 +409,20 @@ void a_sprite_free(ASprite* Sprite)
 
 void a_sprite__free(ASprite* Sprite)
 {
-    if(Sprite->spansSize > 0) {
-        free(Sprite->spans);
-    }
-
+    free(Sprite->spans);
     free(Sprite);
 }
 
 void a_sprite_blit(const ASprite* Sprite, int X, int Y)
 {
     if(a_screen_boxInsideClip(X, Y, Sprite->w, Sprite->h)) {
-        if(Sprite->spansSize > 0) {
+        if(Sprite->colorKeyed) {
             g_blitter_keyed_noclip(Sprite, X, Y);
         } else {
             g_blitter_block_noclip(Sprite, X, Y);
         }
     } else if(a_screen_boxOnClip(X, Y, Sprite->w, Sprite->h)) {
-        if(Sprite->spansSize > 0) {
+        if(Sprite->colorKeyed) {
             g_blitter_keyed_doclip(Sprite, X, Y);
         } else {
             g_blitter_block_doclip(Sprite, X, Y);
@@ -486,7 +484,7 @@ APixel a_sprite_getPixel(const ASprite* Sprite, int X, int Y)
 
 void a_sprite__refreshSpans(ASprite* Sprite)
 {
-    if(Sprite->spansSize == 0 && Sprite->spans != NULL) {
+    if(!Sprite->colorKeyed) {
         return;
     }
 
@@ -553,7 +551,7 @@ void a_sprite__refreshSpans(ASprite* Sprite)
 
 ASprite* a_sprite_clone(const ASprite* Sprite)
 {
-    ASprite* s = a_sprite_blank(Sprite->w, Sprite->h, Sprite->spansSize > 0);
+    ASprite* s = a_sprite_blank(Sprite->w, Sprite->h, Sprite->colorKeyed);
 
     memcpy(s->pixels,
            Sprite->pixels,
