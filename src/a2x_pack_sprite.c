@@ -380,7 +380,7 @@ ASprite* a_sprite_blank(int Width, int Height, bool ColorKeyed)
     s->w = Width;
     s->wLog2 = (int)log2f((float)Width);
     s->h = Height;
-    s->spans = ColorKeyed ? NULL : (uint16_t*)1;
+    s->spans = ColorKeyed ? NULL : (unsigned*)1;
     s->spansSize = 0;
 
     if(ColorKeyed) {
@@ -501,19 +501,19 @@ void a_sprite__refreshSpans(ASprite* Sprite)
     const APixel* dest = dst;
 
     for(int y = spriteHeight; y--; ) {
-        bytesNeeded += sizeof(uint16_t); // total spans size and initial state
+        bytesNeeded += sizeof(unsigned); // total spans size and initial state
         bool lastState = *dest != A_SPRITE_COLORKEY; // initial state
 
         for(int x = spriteWidth; x--; ) {
             bool newState = *dest++ != A_SPRITE_COLORKEY;
 
             if(newState != lastState) {
-                bytesNeeded += sizeof(uint16_t); // length of new span
+                bytesNeeded += sizeof(unsigned); // length of new span
                 lastState = newState;
             }
         }
 
-        bytesNeeded += sizeof(uint16_t); // line's last span length
+        bytesNeeded += sizeof(unsigned); // line's last span length
     }
 
     if(Sprite->spansSize < bytesNeeded) {
@@ -523,12 +523,12 @@ void a_sprite__refreshSpans(ASprite* Sprite)
     }
 
     dest = dst;
-    uint16_t* spans = Sprite->spans;
+    unsigned* spans = Sprite->spans;
 
     for(int y = spriteHeight; y--; ) {
-        uint16_t* lineStart = spans;
-        uint16_t numSpans = 1; // line has at least 1 span
-        uint16_t spanLength = 0;
+        unsigned* lineStart = spans;
+        unsigned numSpans = 1; // line has at least 1 span
+        unsigned spanLength = 0;
 
         bool lastState = *dest != A_SPRITE_COLORKEY; // initial draw state
         *spans++ = lastState;
@@ -547,7 +547,7 @@ void a_sprite__refreshSpans(ASprite* Sprite)
         }
 
         *spans++ = spanLength; // record the last span's length
-        *lineStart |= (uint16_t)(numSpans << 1); // record line's number of spans
+        *lineStart |= numSpans << 1; // record line's number of spans
     }
 }
 

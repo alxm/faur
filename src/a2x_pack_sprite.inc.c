@@ -26,15 +26,15 @@ static void A__FUNC_NAME(A__BLEND, A__FILL, keyed, noclip)(const ASprite* Sprite
     const int screenW = a_screen__width;
     APixel* dst = a_screen__pixels + Y * screenW + X;
     const APixel* a__pass_src = Sprite->pixels;
-    const uint16_t* spans = Sprite->spans;
+    const unsigned* spans = Sprite->spans;
 
     for(int i = Sprite->h; i--; dst += screenW) {
         bool draw = *spans & 1;
-        int numSpans = *spans++ >> 1;
+        unsigned numSpans = *spans++ >> 1;
         APixel* a__pass_dst = dst;
 
         while(numSpans--) {
-            int len = *spans++;
+            int len = (int)*spans++;
 
             if(draw) {
                 while(len--) {
@@ -70,7 +70,7 @@ static void A__FUNC_NAME(A__BLEND, A__FILL, keyed, doclip)(const ASprite* Sprite
 
     APixel* startDst = a_screen__pixels + (Y + yClipUp) * screenW + X + xClipLeft;
     const APixel* startSrc = Sprite->pixels + yClipUp * spriteW + xClipLeft;
-    const uint16_t* spans = Sprite->spans;
+    const unsigned* spans = Sprite->spans;
 
     // skip clipped top rows
     for(int i = yClipUp; i--; ) {
@@ -80,7 +80,7 @@ static void A__FUNC_NAME(A__BLEND, A__FILL, keyed, doclip)(const ASprite* Sprite
     // draw visible rows
     for(int i = rows; i--; startDst += screenW, startSrc += spriteW) {
         bool draw = *spans & 1;
-        const uint16_t* nextLine = spans + 1 + (*spans >> 1);
+        const unsigned* nextLine = spans + 1 + (*spans >> 1);
         APixel* a__pass_dst = startDst;
         const APixel* a__pass_src = startSrc;
         int clippedLen = 0;
@@ -88,7 +88,7 @@ static void A__FUNC_NAME(A__BLEND, A__FILL, keyed, doclip)(const ASprite* Sprite
 
         // skip clipped left columns
         while(clippedLen < xClipLeft) {
-            clippedLen += *++spans;
+            clippedLen += (int)*++spans;
             draw = !draw;
         }
 
@@ -112,7 +112,7 @@ static void A__FUNC_NAME(A__BLEND, A__FILL, keyed, doclip)(const ASprite* Sprite
 
         // draw visible columns
         while(drawColumns > 0) {
-            int len = *++spans;
+            int len = (int)*++spans;
 
             if(draw) {
                 while(len-- && drawColumns--) {
