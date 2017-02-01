@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016 Alex Margarit
+    Copyright 2010, 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -280,4 +280,84 @@ unsigned a_list_size(const AList* List)
 bool a_list_empty(const AList* List)
 {
     return List->first->next == List->last;
+}
+
+static AListNode* getNode(AListNode* Start, unsigned Index)
+{
+    while(Index--) {
+        Start = Start->next;
+    }
+
+    return Start;
+}
+
+static AListNode* sort(AList* List, AListNode* Start, unsigned Length, AListCompare* Compare)
+{
+    if(Length == 1) {
+        return Start;
+    }
+
+    unsigned halfPoint = Length / 2;
+
+    AListNode* firstHalfHead = getNode(Start, 0);
+    AListNode* secondHalfHead = getNode(Start, halfPoint);
+
+    secondHalfHead->prev->next = List->last;
+    secondHalfHead->prev = List->first;
+
+    // sort [0, halfPoint) and [halfPoint, Length)
+    AListNode* a = sort(List, firstHalfHead, halfPoint, Compare);
+    AListNode* b = sort(List, secondHalfHead, Length - halfPoint, Compare);
+
+    AListNode* merged = List->first;
+
+    // Merge a and b
+    while(true) {
+        if(a == List->last) {
+            merged->next = b;
+            b->prev = merged;
+            break;
+        }
+
+        if(b == List->last) {
+            merged->next = a;
+            a->prev = merged;
+            break;
+        }
+
+        int result = Compare(a->content, b->content);
+
+        if(result <= 0) {
+            AListNode* a_next = a->next;
+
+            merged->next = a;
+            a->prev = merged;
+            a->next = List->last;
+            merged = a;
+
+            a = a_next;
+            a->prev = List->first;
+        } else if(result > 0) {
+            AListNode* b_next = b->next;
+
+            merged->next = b;
+            b->prev = merged;
+            b->next = List->last;
+            merged = b;
+
+            b = b_next;
+            b->prev = List->first;
+        }
+    }
+
+    return List->first->next;
+}
+
+void a_list_sort(AList* List, AListCompare* Compare)
+{
+    if(List->items < 2) {
+        return;
+    }
+
+    sort(List, List->first->next, List->items, Compare);
 }

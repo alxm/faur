@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016 Alex Margarit
+    Copyright 2010, 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -23,6 +23,7 @@
 
 typedef struct AList AList;
 typedef struct AListNode AListNode;
+typedef int AListCompare(void* ItemA, void* ItemB);
 
 extern AList* a_list_new(void);
 extern void a_list_free(AList* List);
@@ -52,3 +53,5 @@ extern void* a_list_get(const AList* List, unsigned Index);
 
 extern unsigned a_list_size(const AList* List);
 extern bool a_list_empty(const AList* List);
+
+extern void a_list_sort(AList* List, AListCompare* Compare);
