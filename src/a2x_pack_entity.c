@@ -1,5 +1,5 @@
 /*
-    Copyright 2016 Alex Margarit
+    Copyright 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -45,6 +45,7 @@ typedef struct AComponent {
 
 typedef struct ASystem {
     ASystemHandler* handler;
+    ASystemSort* compare;
     AList* entities;
     ABitfield* componentBits;
     unsigned bit;
@@ -109,7 +110,7 @@ AEntity* a_component_getEntity(const void* Component)
     return GET_HEADER(Component)->parent;
 }
 
-void a_system_declare(const char* Name, const char* Components, ASystemHandler* Handler, bool OnlyActiveEntities)
+void a_system_declare(const char* Name, const char* Components, ASystemHandler* Handler, ASystemSort* Compare, bool OnlyActiveEntities)
 {
     if(g_collection->state != A_SYSTEM_STATE_DECLARE_SYSTEMS) {
         if(g_collection->state == A_SYSTEM_STATE_DECLARE_COMPONENTS) {
@@ -128,6 +129,7 @@ void a_system_declare(const char* Name, const char* Components, ASystemHandler* 
     ASystem* s = a_mem_malloc(sizeof(ASystem));
 
     s->handler = Handler;
+    s->compare = Compare;
     s->entities = a_list_new();
     s->componentBits = a_bitfield_new(a_strhash_size(g_collection->components));
     s->bit = a_strhash_size(g_collection->systems);
@@ -197,6 +199,10 @@ void a_system_setContext(void* GlobalContext)
 
 static void a_system__run(const ASystem* System)
 {
+    if(System->compare) {
+        a_list_sort(System->entities, (AListCompare*)System->compare);
+    }
+
     if(System->onlyActiveEntities) {
         A_LIST_ITERATE(System->entities, AEntity*, entity) {
             if(a_entity_isActive(entity)) {
