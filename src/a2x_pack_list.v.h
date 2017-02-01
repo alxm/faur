@@ -32,6 +32,7 @@ struct AList {
 
 struct AListNode {
     void* content;
-    struct AListNode* next;
-    struct AListNode* prev;
+    AList* list;
+    AListNode* next;
+    AListNode* prev;
 };

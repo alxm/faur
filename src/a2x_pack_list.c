@@ -26,10 +26,12 @@ AList* a_list_new(void)
     AListNode* last = a_mem_malloc(sizeof(AListNode));
 
     first->content = NULL;
+    first->list = list;
     first->next = last;
     first->prev = NULL;
 
     last->content = NULL;
+    last->list = list;
     last->next = NULL;
     last->prev = first;
 
@@ -77,6 +79,7 @@ AListNode* a_list_addFirst(AList* List, void* Content)
     AListNode* n = a_mem_malloc(sizeof(AListNode));
 
     n->content = Content;
+    n->list = List;
     n->next = List->first->next;
     n->prev = List->first;
 
@@ -93,6 +96,7 @@ AListNode* a_list_addLast(AList* List, void* Content)
     AListNode* n = a_mem_malloc(sizeof(AListNode));
 
     n->content = Content;
+    n->list = List;
     n->next = List->last;
     n->prev = List->last->prev;
 
@@ -194,6 +198,8 @@ void a_list_removeNode(AListNode* Node)
 {
     Node->prev->next = Node->next;
     Node->next->prev = Node->prev;
+
+    Node->list->items--;
 
     free(Node);
 }
