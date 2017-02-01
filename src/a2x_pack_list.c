@@ -282,13 +282,26 @@ bool a_list_empty(const AList* List)
     return List->first->next == List->last;
 }
 
-static AListNode* getNode(AListNode* Start, unsigned Index)
+static inline AListNode* getNode(AListNode* Start, unsigned Index)
 {
     while(Index--) {
         Start = Start->next;
     }
 
     return Start;
+}
+
+static inline void addHeadToMerged(AList* List, AListNode** MergedTail, AListNode** SortedHead)
+{
+    AListNode* nextSortedHead = (*SortedHead)->next;
+    nextSortedHead->prev = List->first;
+
+    (*MergedTail)->next = *SortedHead;
+    (*SortedHead)->prev = (*MergedTail);
+    (*SortedHead)->next = List->last;
+
+    *MergedTail = *SortedHead;
+    *SortedHead = nextSortedHead;
 }
 
 static AListNode* sort(AList* List, AListNode* Start, unsigned Length, AListCompare* Compare)
@@ -328,25 +341,9 @@ static AListNode* sort(AList* List, AListNode* Start, unsigned Length, AListComp
         int result = Compare(a->content, b->content);
 
         if(result <= 0) {
-            AListNode* a_next = a->next;
-
-            merged->next = a;
-            a->prev = merged;
-            a->next = List->last;
-            merged = a;
-
-            a = a_next;
-            a->prev = List->first;
+            addHeadToMerged(List, &merged, &a);
         } else if(result > 0) {
-            AListNode* b_next = b->next;
-
-            merged->next = b;
-            b->prev = merged;
-            b->next = List->last;
-            merged = b;
-
-            b = b_next;
-            b->prev = List->first;
+            addHeadToMerged(List, &merged, &b);
         }
     }
 
