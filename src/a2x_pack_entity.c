@@ -323,6 +323,10 @@ bool a_entity_isActive(const AEntity* Entity)
 
 void* a_entity_addComponent(AEntity* Entity, const char* Component)
 {
+    if(Entity->collectionNode != NULL) {
+        a_out__fatal("Too late to add component '%s'", Component);
+    }
+
     const AComponent* c = a_strhash_get(g_collection->components, Component);
 
     if(c == NULL) {
