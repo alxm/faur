@@ -281,8 +281,10 @@ void a_entity_free(AEntity* Entity)
 
 void a_entity_remove(AEntity* Entity)
 {
-    Entity->removed = true;
-    a_list_addLast(g_collection->removed, Entity);
+    if(!Entity->removed) {
+        Entity->removed = true;
+        a_list_addLast(g_collection->removed, Entity);
+    }
 }
 
 bool a_entity_isRemoved(const AEntity* Entity)
