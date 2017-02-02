@@ -1,5 +1,5 @@
 /*
-    Copyright 2016 Alex Margarit
+    Copyright 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -27,7 +27,8 @@ typedef enum ASystemCollectionState {
 
 typedef struct ASystemCollection {
     AList* entities;
-    AList* removed;
+    AList* newEntities;
+    AList* removedEntities;
     AStrHash* components;
     AStrHash* systems;
     AList* tickSystems;
@@ -45,6 +46,7 @@ typedef struct AComponent {
 
 typedef struct ASystem {
     ASystemHandler* handler;
+    ASystemSort* compare;
     AList* entities;
     ABitfield* componentBits;
     unsigned bit;
@@ -109,7 +111,7 @@ AEntity* a_component_getEntity(const void* Component)
     return GET_HEADER(Component)->parent;
 }
 
-void a_system_declare(const char* Name, const char* Components, ASystemHandler* Handler, bool OnlyActiveEntities)
+void a_system_declare(const char* Name, const char* Components, ASystemHandler* Handler, ASystemSort* Compare, bool OnlyActiveEntities)
 {
     if(g_collection->state != A_SYSTEM_STATE_DECLARE_SYSTEMS) {
         if(g_collection->state == A_SYSTEM_STATE_DECLARE_COMPONENTS) {
@@ -128,6 +130,7 @@ void a_system_declare(const char* Name, const char* Components, ASystemHandler* 
     ASystem* s = a_mem_malloc(sizeof(ASystem));
 
     s->handler = Handler;
+    s->compare = Compare;
     s->entities = a_list_new();
     s->componentBits = a_bitfield_new(a_strhash_size(g_collection->components));
     s->bit = a_strhash_size(g_collection->systems);
@@ -197,6 +200,10 @@ void a_system_setContext(void* GlobalContext)
 
 static void a_system__run(const ASystem* System)
 {
+    if(System->compare) {
+        a_list_sort(System->entities, (AListCompare*)System->compare);
+    }
+
     if(System->onlyActiveEntities) {
         A_LIST_ITERATE(System->entities, AEntity*, entity) {
             if(a_entity_isActive(entity)) {
@@ -212,6 +219,19 @@ static void a_system__run(const ASystem* System)
 
 void a_system_run(void)
 {
+    A_LIST_ITERATE(g_collection->newEntities, AEntity*, e) {
+        // Check if the entity matches any systems
+        A_STRHASH_ITERATE(g_collection->systems, ASystem*, s) {
+            if(a_bitfield_testMask(e->componentBits, s->componentBits)) {
+                a_bitfield_set(e->systemBits, s->bit);
+                a_list_addLast(e->systemNodes, a_list_addLast(s->entities, e));
+            }
+        }
+
+        e->collectionNode = a_list_addLast(g_collection->entities, e);
+        A_LIST_REMOVE_CURRENT();
+    }
+
     A_LIST_ITERATE(g_collection->tickSystems, ASystem*, system) {
         a_system__run(system);
     }
@@ -222,7 +242,7 @@ void a_system_run(void)
         }
     }
 
-    A_LIST_ITERATE(g_collection->removed, AEntity*, entity) {
+    A_LIST_ITERATE(g_collection->removedEntities, AEntity*, entity) {
         a_entity_free(entity);
         A_LIST_REMOVE_CURRENT();
     }
@@ -234,13 +254,15 @@ AEntity* a_entity_new(void)
 
     AEntity* e = a_mem_malloc(sizeof(AEntity));
 
-    e->collectionNode = a_list_addLast(g_collection->entities, e);
+    e->collectionNode = NULL;
     e->systemNodes = a_list_new();
     e->components = a_strhash_new();
     e->componentBits = a_bitfield_new(a_strhash_size(g_collection->components));
     e->systemBits = a_bitfield_new(a_strhash_size(g_collection->systems));
     e->lastActive = 0;
     e->removed = false;
+
+    a_list_addLast(g_collection->newEntities, e);
 
     return e;
 }
@@ -269,14 +291,19 @@ static void a_entity__free(AEntity* Entity)
 
 void a_entity_free(AEntity* Entity)
 {
-    a_list_removeNode(Entity->collectionNode);
+    if(Entity->collectionNode != NULL) {
+        a_list_removeNode(Entity->collectionNode);
+    }
+
     a_entity__free(Entity);
 }
 
 void a_entity_remove(AEntity* Entity)
 {
-    Entity->removed = true;
-    a_list_addLast(g_collection->removed, Entity);
+    if(!Entity->removed) {
+        Entity->removed = true;
+        a_list_addLast(g_collection->removedEntities, Entity);
+    }
 }
 
 bool a_entity_isRemoved(const AEntity* Entity)
@@ -296,6 +323,10 @@ bool a_entity_isActive(const AEntity* Entity)
 
 void* a_entity_addComponent(AEntity* Entity, const char* Component)
 {
+    if(Entity->collectionNode != NULL) {
+        a_out__fatal("Too late to add component '%s'", Component);
+    }
+
     const AComponent* c = a_strhash_get(g_collection->components, Component);
 
     if(c == NULL) {
@@ -314,17 +345,6 @@ void* a_entity_addComponent(AEntity* Entity, const char* Component)
 
     a_strhash_add(Entity->components, Component, header);
     a_bitfield_set(Entity->componentBits, header->bit);
-
-    // Check if the Entity now matches a system
-    A_STRHASH_ITERATE(g_collection->systems, ASystem*, system) {
-        if(!a_bitfield_test(Entity->systemBits, system->bit)
-            && a_bitfield_testMask(Entity->componentBits, system->componentBits)) {
-
-            a_bitfield_set(Entity->systemBits, system->bit);
-            a_list_addLast(Entity->systemNodes,
-                           a_list_addLast(system->entities, Entity));
-        }
-    }
 
     return GET_COMPONENT(header);
 }
@@ -364,7 +384,8 @@ void a_system__pushCollection(void)
     ASystemCollection* c = a_mem_malloc(sizeof(ASystemCollection));
 
     c->entities = a_list_new();
-    c->removed = a_list_new();
+    c->newEntities = a_list_new();
+    c->removedEntities = a_list_new();
     c->components = a_strhash_new();
     c->systems = a_strhash_new();
     c->tickSystems = a_list_new();
@@ -385,12 +406,17 @@ void a_system__popCollection(void)
         a_entity__free(entity);
     }
 
-    A_LIST_ITERATE(g_collection->removed, AEntity*, entity) {
+    A_LIST_ITERATE(g_collection->newEntities, AEntity*, entity) {
+        a_entity__free(entity);
+    }
+
+    A_LIST_ITERATE(g_collection->removedEntities, AEntity*, entity) {
         a_entity__free(entity);
     }
 
     a_list_free(g_collection->entities);
-    a_list_free(g_collection->removed);
+    a_list_free(g_collection->newEntities);
+    a_list_free(g_collection->removedEntities);
 
     A_STRHASH_ITERATE(g_collection->components, AComponent*, component) {
         free(component);

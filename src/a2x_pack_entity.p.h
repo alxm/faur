@@ -1,5 +1,5 @@
 /*
-    Copyright 2016 Alex Margarit
+    Copyright 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -24,11 +24,12 @@
 typedef struct AEntity AEntity;
 typedef void AComponentFree(void* Self);
 typedef void ASystemHandler(AEntity* Entity);
+typedef int ASystemSort(AEntity* A, AEntity* B);
 
 extern void a_component_declare(const char* Name, size_t Size, AComponentFree* Free);
 extern AEntity* a_component_getEntity(const void* Component);
 
-extern void a_system_declare(const char* Name, const char* Components, ASystemHandler* Handler, bool OnlyActiveEntities);
+extern void a_system_declare(const char* Name, const char* Components, ASystemHandler* Handler, ASystemSort* Compare, bool OnlyActiveEntities);
 extern void a_system_tick(const char* Systems);
 extern void a_system_draw(const char* Systems);
 extern void* a_system_getContext(void);

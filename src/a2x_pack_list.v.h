@@ -1,5 +1,5 @@
 /*
-    Copyright 2010 Alex Margarit
+    Copyright 2010, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -32,6 +32,7 @@ struct AList {
 
 struct AListNode {
     void* content;
-    struct AListNode* next;
-    struct AListNode* prev;
+    AList* list;
+    AListNode* next;
+    AListNode* prev;
 };

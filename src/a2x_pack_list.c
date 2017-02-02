@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016 Alex Margarit
+    Copyright 2010, 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -26,10 +26,12 @@ AList* a_list_new(void)
     AListNode* last = a_mem_malloc(sizeof(AListNode));
 
     first->content = NULL;
+    first->list = list;
     first->next = last;
     first->prev = NULL;
 
     last->content = NULL;
+    last->list = list;
     last->next = NULL;
     last->prev = first;
 
@@ -77,6 +79,7 @@ AListNode* a_list_addFirst(AList* List, void* Content)
     AListNode* n = a_mem_malloc(sizeof(AListNode));
 
     n->content = Content;
+    n->list = List;
     n->next = List->first->next;
     n->prev = List->first;
 
@@ -93,6 +96,7 @@ AListNode* a_list_addLast(AList* List, void* Content)
     AListNode* n = a_mem_malloc(sizeof(AListNode));
 
     n->content = Content;
+    n->list = List;
     n->next = List->last;
     n->prev = List->last->prev;
 
@@ -195,6 +199,8 @@ void a_list_removeNode(AListNode* Node)
     Node->prev->next = Node->next;
     Node->next->prev = Node->prev;
 
+    Node->list->items--;
+
     free(Node);
 }
 
@@ -274,4 +280,81 @@ unsigned a_list_size(const AList* List)
 bool a_list_empty(const AList* List)
 {
     return List->first->next == List->last;
+}
+
+static inline AListNode* getNode(AListNode* Start, unsigned Index)
+{
+    while(Index--) {
+        Start = Start->next;
+    }
+
+    return Start;
+}
+
+static inline void addHeadToMerged(AList* List, AListNode** MergedTail, AListNode** SortedHead)
+{
+    AListNode* nextSortedHead = (*SortedHead)->next;
+    nextSortedHead->prev = List->first;
+
+    (*MergedTail)->next = *SortedHead;
+    (*SortedHead)->prev = (*MergedTail);
+    (*SortedHead)->next = List->last;
+
+    *MergedTail = *SortedHead;
+    *SortedHead = nextSortedHead;
+}
+
+static AListNode* sort(AList* List, AListNode* Start, unsigned Length, AListCompare* Compare)
+{
+    if(Length == 1) {
+        return Start;
+    }
+
+    unsigned halfPoint = Length / 2;
+
+    AListNode* firstHalfHead = getNode(Start, 0);
+    AListNode* secondHalfHead = getNode(Start, halfPoint);
+
+    secondHalfHead->prev->next = List->last;
+    secondHalfHead->prev = List->first;
+
+    // sort [0, halfPoint) and [halfPoint, Length)
+    AListNode* a = sort(List, firstHalfHead, halfPoint, Compare);
+    AListNode* b = sort(List, secondHalfHead, Length - halfPoint, Compare);
+
+    AListNode* merged = List->first;
+
+    // Merge a and b
+    while(true) {
+        if(a == List->last) {
+            merged->next = b;
+            b->prev = merged;
+            break;
+        }
+
+        if(b == List->last) {
+            merged->next = a;
+            a->prev = merged;
+            break;
+        }
+
+        int result = Compare(a->content, b->content);
+
+        if(result <= 0) {
+            addHeadToMerged(List, &merged, &a);
+        } else if(result > 0) {
+            addHeadToMerged(List, &merged, &b);
+        }
+    }
+
+    return List->first->next;
+}
+
+void a_list_sort(AList* List, AListCompare* Compare)
+{
+    if(List->items < 2) {
+        return;
+    }
+
+    sort(List, List->first->next, List->items, Compare);
 }
