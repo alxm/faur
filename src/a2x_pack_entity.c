@@ -27,6 +27,7 @@ typedef enum ASystemCollectionState {
 
 typedef struct ASystemCollection {
     AList* entities;
+    AList* newEntities;
     AList* removedEntities;
     AStrHash* components;
     AStrHash* systems;
@@ -218,6 +219,19 @@ static void a_system__run(const ASystem* System)
 
 void a_system_run(void)
 {
+    A_LIST_ITERATE(g_collection->newEntities, AEntity*, e) {
+        // Check if the entity matches any systems
+        A_STRHASH_ITERATE(g_collection->systems, ASystem*, s) {
+            if(a_bitfield_testMask(e->componentBits, s->componentBits)) {
+                a_bitfield_set(e->systemBits, s->bit);
+                a_list_addLast(e->systemNodes, a_list_addLast(s->entities, e));
+            }
+        }
+
+        e->collectionNode = a_list_addLast(g_collection->entities, e);
+        A_LIST_REMOVE_CURRENT();
+    }
+
     A_LIST_ITERATE(g_collection->tickSystems, ASystem*, system) {
         a_system__run(system);
     }
@@ -240,13 +254,15 @@ AEntity* a_entity_new(void)
 
     AEntity* e = a_mem_malloc(sizeof(AEntity));
 
-    e->collectionNode = a_list_addLast(g_collection->entities, e);
+    e->collectionNode = NULL;
     e->systemNodes = a_list_new();
     e->components = a_strhash_new();
     e->componentBits = a_bitfield_new(a_strhash_size(g_collection->components));
     e->systemBits = a_bitfield_new(a_strhash_size(g_collection->systems));
     e->lastActive = 0;
     e->removed = false;
+
+    a_list_addLast(g_collection->newEntities, e);
 
     return e;
 }
@@ -275,7 +291,10 @@ static void a_entity__free(AEntity* Entity)
 
 void a_entity_free(AEntity* Entity)
 {
-    a_list_removeNode(Entity->collectionNode);
+    if(Entity->collectionNode != NULL) {
+        a_list_removeNode(Entity->collectionNode);
+    }
+
     a_entity__free(Entity);
 }
 
@@ -323,17 +342,6 @@ void* a_entity_addComponent(AEntity* Entity, const char* Component)
     a_strhash_add(Entity->components, Component, header);
     a_bitfield_set(Entity->componentBits, header->bit);
 
-    // Check if the Entity now matches a system
-    A_STRHASH_ITERATE(g_collection->systems, ASystem*, system) {
-        if(!a_bitfield_test(Entity->systemBits, system->bit)
-            && a_bitfield_testMask(Entity->componentBits, system->componentBits)) {
-
-            a_bitfield_set(Entity->systemBits, system->bit);
-            a_list_addLast(Entity->systemNodes,
-                           a_list_addLast(system->entities, Entity));
-        }
-    }
-
     return GET_COMPONENT(header);
 }
 
@@ -372,6 +380,7 @@ void a_system__pushCollection(void)
     ASystemCollection* c = a_mem_malloc(sizeof(ASystemCollection));
 
     c->entities = a_list_new();
+    c->newEntities = a_list_new();
     c->removedEntities = a_list_new();
     c->components = a_strhash_new();
     c->systems = a_strhash_new();
@@ -393,11 +402,16 @@ void a_system__popCollection(void)
         a_entity__free(entity);
     }
 
+    A_LIST_ITERATE(g_collection->newEntities, AEntity*, entity) {
+        a_entity__free(entity);
+    }
+
     A_LIST_ITERATE(g_collection->removedEntities, AEntity*, entity) {
         a_entity__free(entity);
     }
 
     a_list_free(g_collection->entities);
+    a_list_free(g_collection->newEntities);
     a_list_free(g_collection->removedEntities);
 
     A_STRHASH_ITERATE(g_collection->components, AComponent*, component) {
