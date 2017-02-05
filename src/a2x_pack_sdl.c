@@ -163,6 +163,11 @@ void a_sdl__init(void)
 
     if(a_settings_getBool("video.window")) {
         g_sdlFlags |= SDL_INIT_VIDEO;
+
+        #if A_PLATFORM_PANDORA
+            putenv("SDL_VIDEODRIVER=omapdss");
+            putenv("SDL_OMAP_LAYER_SIZE=pixelperfect");
+        #endif
     }
 
     if(a_settings_getBool("sound.on")) {
