@@ -24,7 +24,7 @@ struct AFile {
     char* path;
     char* name;
     char* lineBuffer;
-    size_t lineBufferSize;
+    unsigned lineBufferSize;
     int eof;
     AListNode* node;
 };
@@ -172,43 +172,43 @@ bool a_file_readLine(AFile* File)
         return false;
     }
 
-    long offset = 0;
-    FILE* handle = File->handle;
+    unsigned index = 0;
+    int ch = fgetc(File->handle);
 
-    while(!File->eof && offset == 0) {
-        for(int c = fgetc(handle); !iscntrl(c); c = fgetc(handle), offset++) {
-            if(c == EOF) {
-                File->eof = true;
-                break;
+    while(iscntrl(ch)) {
+        ch = fgetc(File->handle);
+    }
+
+    if(ch == EOF) {
+        File->eof = true;
+        return false;
+    }
+
+    while(!iscntrl(ch)) {
+        if(index + 1 >= File->lineBufferSize) {
+            unsigned newSize = a_math_maxu(File->lineBufferSize * 2, 64);
+            char* newBuffer = a_mem_malloc(newSize);
+
+            if(File->lineBufferSize > 0) {
+                memcpy(newBuffer, File->lineBuffer, File->lineBufferSize);
             }
-        }
-    }
 
-    if(offset > 0) {
-        if(File->eof) {
-            fseek(handle, 0 - offset, SEEK_CUR);
-        } else {
-            fseek(handle, 0 - offset - 1, SEEK_CUR);
-        }
-
-        if((unsigned long)offset >= File->lineBufferSize) {
             free(File->lineBuffer);
-            File->lineBufferSize = (unsigned long)offset + 1;
-            File->lineBuffer = a_mem_malloc(File->lineBufferSize);
+            File->lineBuffer = newBuffer;
+            File->lineBufferSize = newSize;
         }
 
-        for(int i = 0; i < offset; i++) {
-            File->lineBuffer[i] = (char)fgetc(handle);
+        File->lineBuffer[index++] = (char)ch;
+        ch = fgetc(File->handle);
+
+        if(ch == EOF) {
+            File->eof = true;
+            break;
         }
-
-        File->lineBuffer[offset] = '\0';
-
-        fseek(handle, 1, SEEK_CUR);
-
-        return true;
     }
 
-    return false;
+    File->lineBuffer[index] = '\0';
+    return true;
 }
 
 char* a_file_getLine(const AFile* File)
