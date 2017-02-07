@@ -45,8 +45,9 @@ int main(int Argc, const char** Argv)
     a_file__init();
     a_dir__init();
     a_conf__init();
+    a_hw__init_preSDL();
     a_sdl__init();
-    a_hw__init();
+    a_hw__init_postSDL();
     a_screen__init();
     a_pixel__init();
     a_draw__init();

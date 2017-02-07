@@ -24,7 +24,8 @@
 #include "a2x_pack_file.v.h"
 #include "a2x_pack_settings.v.h"
 
-extern void a_hw__init(void);
+extern void a_hw__init_preSDL(void);
+extern void a_hw__init_postSDL(void);
 extern void a_hw__uninit(void);
 
 #if A_PLATFORM_WIZ || A_PLATFORM_CAANOO
