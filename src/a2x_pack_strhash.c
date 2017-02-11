@@ -118,3 +118,8 @@ void* a_strhash__entryValue(const AStrHashEntry* Entry)
 {
     return Entry->content;
 }
+
+const char* a_strhash__entryKey(const AStrHashEntry* Entry)
+{
+    return Entry->key;
+}
