@@ -30,6 +30,7 @@ extern AStrHash* a_strhash_new(void);
 extern void a_strhash_free(AStrHash* Hash);
 
 extern void a_strhash_add(AStrHash* Hash, const char* Key, void* Content);
+extern void* a_strhash_update(AStrHash* Hash, const char* Key, void* NewContent);
 extern void* a_strhash_get(const AStrHash* Hash, const char* Key);
 extern bool a_strhash_contains(const AStrHash* Hash, const char* Key);
 extern unsigned a_strhash_size(const AStrHash* Hash);
