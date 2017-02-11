@@ -82,6 +82,21 @@ void a_strhash_add(AStrHash* Hash, const char* Key, void* Content)
     a_list_addLast(Hash->entriesList, newEntry);
 }
 
+void* a_strhash_update(AStrHash* Hash, const char* Key, void* NewContent)
+{
+    for(AStrHashEntry* e = Hash->entriesTable[getSlot(Key)]; e; e = e->next) {
+        if(a_str_equal(Key, e->key)) {
+            void* oldContent = e->content;
+            e->content = NewContent;
+            return oldContent;
+        }
+    }
+
+    a_out__error("a_strhash_update: key '%s' not found", Key);
+
+    return NULL;
+}
+
 void* a_strhash_get(const AStrHash* Hash, const char* Key)
 {
     for(AStrHashEntry* e = Hash->entriesTable[getSlot(Key)]; e; e = e->next) {
@@ -117,4 +132,9 @@ AList* a_strhash__entries(const AStrHash* Hash)
 void* a_strhash__entryValue(const AStrHashEntry* Entry)
 {
     return Entry->content;
+}
+
+const char* a_strhash__entryKey(const AStrHashEntry* Entry)
+{
+    return Entry->key;
 }
