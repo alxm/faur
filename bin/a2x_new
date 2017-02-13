@@ -35,6 +35,13 @@ class NewTool(Tool):
         if os.path.exists(project_dir):
             Output.error('{} already exists'.format(project_dir))
 
+        author = '<your username>'
+
+        for key in ['USER', 'USERNAME', 'LOGNAME']:
+            if key in os.environ:
+                author = os.environ[key]
+                break
+
         make_dir = os.path.join(project_dir, 'make')
         src_dir = os.path.join(project_dir, 'src')
 
@@ -75,7 +82,7 @@ A_MAIN
 {{
     printf("Code me!\\n");
 }}
-""".format(project_name, os.environ['USERNAME']))
+""".format(project_name, author))
 
 if __name__ == '__main__':
     tool = NewTool('ProjectName')
