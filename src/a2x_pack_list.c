@@ -157,19 +157,15 @@ void a_list_remove(AList* List, const void* Item)
 void* a_list_removeFirst(AList* List)
 {
     AListNode* n = List->first->next;
-
-    if(n == List->last) {
-        return NULL;
-    }
-
     void* v = n->content;
 
-    n->prev->next = n->next;
-    n->next->prev = n->prev;
+    if(n != List->last) {
+        n->prev->next = n->next;
+        n->next->prev = n->prev;
+        List->items--;
 
-    free(n);
-
-    List->items--;
+        free(n);
+    }
 
     return v;
 }
@@ -177,19 +173,15 @@ void* a_list_removeFirst(AList* List)
 void* a_list_removeLast(AList* List)
 {
     AListNode* n = List->last->prev;
-
-    if(n == List->first) {
-        return NULL;
-    }
-
     void* v = n->content;
 
-    n->prev->next = n->next;
-    n->next->prev = n->prev;
+    if(n != List->first) {
+        n->prev->next = n->next;
+        n->next->prev = n->prev;
+        List->items--;
 
-    free(n);
-
-    List->items--;
+        free(n);
+    }
 
     return v;
 }
@@ -198,7 +190,6 @@ void a_list_removeNode(AListNode* Node)
 {
     Node->prev->next = Node->next;
     Node->next->prev = Node->prev;
-
     Node->list->items--;
 
     free(Node);
@@ -247,11 +238,10 @@ void a_list_reverse(AList* List)
 
 void** a_list_array(AList* List)
 {
-    int i = 0;
     void** array = a_mem_malloc(List->items * sizeof(void*));
 
     A_LIST_ITERATE(List, void*, item) {
-        array[i++] = item;
+        array[A_LIST_INDEX()] = item;
     }
 
     return array;
@@ -259,17 +249,15 @@ void** a_list_array(AList* List)
 
 void* a_list_get(const AList* List, unsigned Index)
 {
-    if(Index < List->items) {
-        unsigned counter = 0;
+    AListNode* n;
 
-        for(AListNode* n = List->first->next; n != List->last; n = n->next) {
-            if(counter++ == Index) {
-                return n->content;
-            }
+    for(n = List->first->next; n != List->last; n = n->next) {
+        if(Index-- == 0) {
+            break;
         }
     }
 
-    return NULL;
+    return n->content;
 }
 
 unsigned a_list_size(const AList* List)
@@ -291,20 +279,23 @@ static inline AListNode* getNode(AListNode* Start, unsigned Index)
     return Start;
 }
 
-static inline void addHeadToMerged(AList* List, AListNode** MergedTail, AListNode** SortedHead)
+static inline void addHeadToMerged(AListNode** MergedTail, AListNode** SortedHead)
 {
     AListNode* nextSortedHead = (*SortedHead)->next;
-    nextSortedHead->prev = List->first;
+
+    if(nextSortedHead != NULL) {
+        nextSortedHead->prev = NULL;
+    }
 
     (*MergedTail)->next = *SortedHead;
     (*SortedHead)->prev = (*MergedTail);
-    (*SortedHead)->next = List->last;
+    (*SortedHead)->next = NULL;
 
     *MergedTail = *SortedHead;
     *SortedHead = nextSortedHead;
 }
 
-static AListNode* sort(AList* List, AListNode* Start, unsigned Length, AListCompare* Compare)
+static AListNode* sort(AListNode* Start, unsigned Length, AListCompare* Compare)
 {
     if(Length == 1) {
         return Start;
@@ -315,39 +306,40 @@ static AListNode* sort(AList* List, AListNode* Start, unsigned Length, AListComp
     AListNode* firstHalfHead = getNode(Start, 0);
     AListNode* secondHalfHead = getNode(Start, halfPoint);
 
-    secondHalfHead->prev->next = List->last;
-    secondHalfHead->prev = List->first;
+    secondHalfHead->prev->next = NULL;
+    secondHalfHead->prev = NULL;
 
     // sort [0, halfPoint) and [halfPoint, Length)
-    AListNode* a = sort(List, firstHalfHead, halfPoint, Compare);
-    AListNode* b = sort(List, secondHalfHead, Length - halfPoint, Compare);
+    AListNode* a = sort(firstHalfHead, halfPoint, Compare);
+    AListNode* b = sort(secondHalfHead, Length - halfPoint, Compare);
 
-    AListNode* merged = List->first;
+    AListNode mergedHead = {NULL};
+    AListNode* mergedTail = &mergedHead;
 
     // Merge a and b
     while(true) {
-        if(a == List->last) {
-            merged->next = b;
-            b->prev = merged;
+        if(a == NULL) {
+            mergedTail->next = b;
+            b->prev = mergedTail;
             break;
         }
 
-        if(b == List->last) {
-            merged->next = a;
-            a->prev = merged;
+        if(b == NULL) {
+            mergedTail->next = a;
+            a->prev = mergedTail;
             break;
         }
 
         int result = Compare(a->content, b->content);
 
         if(result <= 0) {
-            addHeadToMerged(List, &merged, &a);
+            addHeadToMerged(&mergedTail, &a);
         } else if(result > 0) {
-            addHeadToMerged(List, &merged, &b);
+            addHeadToMerged(&mergedTail, &b);
         }
     }
 
-    return List->first->next;
+    return mergedHead.next;
 }
 
 void a_list_sort(AList* List, AListCompare* Compare)
@@ -356,5 +348,18 @@ void a_list_sort(AList* List, AListCompare* Compare)
         return;
     }
 
-    sort(List, List->first->next, List->items, Compare);
+    List->first->next->prev = NULL;
+    List->last->prev->next = NULL;
+
+    AListNode* sorted = sort(List->first->next, List->items, Compare);
+
+    List->first->next = sorted;
+    sorted->prev = List->first;
+
+    while(sorted->next != NULL) {
+        sorted = sorted->next;
+    }
+
+    sorted->next = List->last;
+    List->last->prev = sorted;
 }
