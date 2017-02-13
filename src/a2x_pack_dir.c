@@ -1,5 +1,5 @@
 /*
-    Copyright 2011, 2016 Alex Margarit
+    Copyright 2011, 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -22,8 +22,7 @@
 struct ADir {
     char* path;
     char* name;
-    AList* files;
-    unsigned num;
+    AList* files; // list of ADirEntry
     AListNode* node;
 };
 
@@ -45,19 +44,16 @@ void a_dir__uninit(void)
     a_list_free(g_openedDirs);
 }
 
-static int a_dir__sort(const void* A, const void* B)
+static int a_dir__sort(const ADirEntry* A, const ADirEntry* B)
 {
-    int a, b;
-    const char* nameA = (*(ADirEntry**)A)->name;
-    const char* nameB = (*(ADirEntry**)B)->name;
+    const char* nameA = A->name;
+    const char* nameB = B->name;
+    int a = *nameA;
+    int b = *nameB;
 
-    for(a = *nameA, b = *nameB;
-        a != '\0' && b != '\0';
-        a = *++nameA, b = *++nameB) {
-
-        if(a != b) {
-            break;
-        }
+    while(a != '\0' && b != '\0' && a == b) {
+        a = *++nameA;
+        b = *++nameB;
     }
 
     if(isalpha(a) && isalpha(b)) {
@@ -76,13 +72,7 @@ static int a_dir__sort(const void* A, const void* B)
         }
     }
 
-    if(a < b) {
-        return -1;
-    } else if(a > b) {
-        return 1;
-    } else {
-        return 0;
-    }
+    return a - b;
 }
 
 ADir* a_dir_open(const char* Path)
@@ -108,28 +98,19 @@ ADir* a_dir_open(const char* Path)
 
     closedir(dir);
 
-    void** array = a_list_array(files);
-    qsort(array, a_list_size(files), sizeof(void*), a_dir__sort);
-
     ADir* d = a_mem_malloc(sizeof(ADir));
 
     d->path = a_str_dup(Path);
     d->name = a_str_getSuffixLastFind(Path, '/');
+    d->files = files;
+    d->node = a_list_addLast(g_openedDirs, d);
+
     if(d->name == NULL) {
         d->name = a_str_dup(Path);
     }
 
-    d->num = a_list_size(files);
-    a_list_clear(files);
-    d->files = files;
+    a_list_sort(files, (AListCompare*)a_dir__sort);
 
-    for(unsigned i = d->num; i--; ) {
-        a_list_addFirst(d->files, array[i]);
-    }
-
-    free(array);
-
-    d->node = a_list_addLast(g_openedDirs, d);
     return d;
 }
 
@@ -171,7 +152,7 @@ const char* a_dir_name(const ADir* Dir)
 
 unsigned a_dir_numEntries(const ADir* Dir)
 {
-    return Dir->num;
+    return a_list_size(Dir->files);
 }
 
 bool a_dir_exists(const char* Path)
