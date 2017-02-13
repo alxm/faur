@@ -157,19 +157,15 @@ void a_list_remove(AList* List, const void* Item)
 void* a_list_removeFirst(AList* List)
 {
     AListNode* n = List->first->next;
-
-    if(n == List->last) {
-        return NULL;
-    }
-
     void* v = n->content;
 
-    n->prev->next = n->next;
-    n->next->prev = n->prev;
+    if(n != List->last) {
+        n->prev->next = n->next;
+        n->next->prev = n->prev;
+        List->items--;
 
-    free(n);
-
-    List->items--;
+        free(n);
+    }
 
     return v;
 }
@@ -177,19 +173,15 @@ void* a_list_removeFirst(AList* List)
 void* a_list_removeLast(AList* List)
 {
     AListNode* n = List->last->prev;
-
-    if(n == List->first) {
-        return NULL;
-    }
-
     void* v = n->content;
 
-    n->prev->next = n->next;
-    n->next->prev = n->prev;
+    if(n != List->first) {
+        n->prev->next = n->next;
+        n->next->prev = n->prev;
+        List->items--;
 
-    free(n);
-
-    List->items--;
+        free(n);
+    }
 
     return v;
 }
@@ -198,7 +190,6 @@ void a_list_removeNode(AListNode* Node)
 {
     Node->prev->next = Node->next;
     Node->next->prev = Node->prev;
-
     Node->list->items--;
 
     free(Node);
@@ -259,17 +250,15 @@ void** a_list_array(AList* List)
 
 void* a_list_get(const AList* List, unsigned Index)
 {
-    if(Index < List->items) {
-        unsigned counter = 0;
+    AListNode* n;
 
-        for(AListNode* n = List->first->next; n != List->last; n = n->next) {
-            if(counter++ == Index) {
-                return n->content;
-            }
+    for(n = List->first->next; n != List->last; n = n->next) {
+        if(Index-- == 0) {
+            break;
         }
     }
 
-    return NULL;
+    return n->content;
 }
 
 unsigned a_list_size(const AList* List)
