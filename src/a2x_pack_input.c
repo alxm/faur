@@ -278,10 +278,6 @@ void a_input__get(void)
 
     a_sdl__input_get();
 
-    A_LIST_ITERATE(g_callbacks, AInputCallbackContainer*, c) {
-        c->callback();
-    }
-
     // GP2X and Wiz dpad diagonals show up as dedicated buttons instead of a
     // combination of two separate buttons. This code checks diagonal events
     // and sets the state of each actual button accordingly.
@@ -427,6 +423,10 @@ void a_input__get(void)
             }
         }
     #endif
+
+    A_LIST_ITERATE(g_callbacks, AInputCallbackContainer*, c) {
+        c->callback();
+    }
 }
 
 unsigned a_input_numControllers(void)
