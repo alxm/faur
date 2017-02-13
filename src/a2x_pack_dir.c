@@ -23,7 +23,7 @@ struct ADir {
     char* path;
     char* name;
     AList* files; // list of ADirEntry
-    AListNode* node;
+    AListNode* openedDirsNode;
 };
 
 static AList* g_openedDirs;
@@ -80,7 +80,7 @@ ADir* a_dir_open(const char* Path)
     DIR* dir = opendir(Path);
 
     if(dir == NULL) {
-        a_out__error("a_dir_open(%s): opendir failed", Path);
+        a_out__error("opendir(%s) failed", Path);
         return NULL;
     }
 
@@ -103,7 +103,7 @@ ADir* a_dir_open(const char* Path)
     d->path = a_str_dup(Path);
     d->name = a_str_getSuffixLastFind(Path, '/');
     d->files = files;
-    d->node = a_list_addLast(g_openedDirs, d);
+    d->openedDirsNode = a_list_addLast(g_openedDirs, d);
 
     if(d->name == NULL) {
         d->name = a_str_dup(Path);
@@ -116,7 +116,7 @@ ADir* a_dir_open(const char* Path)
 
 void a_dir_close(ADir* Dir)
 {
-    a_list_removeNode(Dir->node);
+    a_list_removeNode(Dir->openedDirsNode);
     a_dir__close(Dir);
 }
 
