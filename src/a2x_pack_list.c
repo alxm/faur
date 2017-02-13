@@ -238,11 +238,10 @@ void a_list_reverse(AList* List)
 
 void** a_list_array(AList* List)
 {
-    int i = 0;
     void** array = a_mem_malloc(List->items * sizeof(void*));
 
     A_LIST_ITERATE(List, void*, item) {
-        array[i++] = item;
+        array[A_LIST_INDEX()] = item;
     }
 
     return array;
