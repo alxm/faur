@@ -75,7 +75,7 @@ static void inputCallback(void)
         }
     #elif A_PLATFORM_LINUXPC || A_PLATFORM_PANDORA
         if(a_settings_getBool("sound.on")) {
-            if(a_button_getAndUnpress(g_musicOnOffButton)) {
+            if(a_button_getOnce(g_musicOnOffButton)) {
                 a_sdl__music_toggle();
             }
         }

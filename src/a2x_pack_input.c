@@ -374,7 +374,7 @@ void a_input__get(void)
 
         if(stick->xaxis < -ANALOG_TRESH) {
             // Tracking analog direction pushes with analogPushedPast lets us
-            // call a_button_getAndUnpress and a_button_unpress on the simulated
+            // call a_button_getOnce and a_button_release on the simulated
             // dpad buttons while maintaining correct press/unpress states here.
             if(!left->analogPushedPast) {
                 left->analogPushedPast = true;
@@ -593,7 +593,7 @@ bool a_button_get(const AInput* Button)
     return false;
 }
 
-void a_button_unpress(const AInput* Button)
+void a_button_release(const AInput* Button)
 {
     A_LIST_ITERATE(Button->buttons, AInputButton*, b) {
         if(b->pressed) {
@@ -612,7 +612,7 @@ void a_button_unpress(const AInput* Button)
     }
 }
 
-bool a_button_getAndUnpress(const AInput* Button)
+bool a_button_getOnce(const AInput* Button)
 {
     bool foundPressed = false;
 

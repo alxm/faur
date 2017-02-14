@@ -34,8 +34,8 @@ extern unsigned a_input_numControllers(void);
 extern void a_input_setController(unsigned Index);
 
 extern bool a_button_get(const AInput* Button);
-extern void a_button_unpress(const AInput* Button);
-extern bool a_button_getAndUnpress(const AInput* Button);
+extern void a_button_release(const AInput* Button);
+extern bool a_button_getOnce(const AInput* Button);
 
 extern int a_analog_xaxis(const AInput* Analog);
 extern int a_analog_yaxis(const AInput* Analog);

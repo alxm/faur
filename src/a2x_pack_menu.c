@@ -198,12 +198,12 @@ void a_menu_input(AMenu* Menu)
     }
 
     if(Menu->state != A_MENU_RUNNING) {
-        a_button_unpress(Menu->next);
-        a_button_unpress(Menu->back);
-        a_button_unpress(Menu->select);
+        a_button_release(Menu->next);
+        a_button_release(Menu->back);
+        a_button_release(Menu->select);
 
         if(Menu->cancel) {
-            a_button_unpress(Menu->cancel);
+            a_button_release(Menu->cancel);
         }
     }
 }

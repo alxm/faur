@@ -132,7 +132,7 @@ static void takeScreenshot(void)
 
 static void inputCallback(void)
 {
-    if(a_button_getAndUnpress(g_button)) {
+    if(a_button_getOnce(g_button)) {
         takeScreenshot();
     }
 }
