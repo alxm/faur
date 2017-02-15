@@ -38,7 +38,7 @@ typedef struct AInputHeader {
 struct AInputButton {
     AInputHeader header;
     bool pressed;
-    bool waitingForUnpress;
+    bool ignorePressed;
     bool analogPushedPast; // used to simulate key events for analog
     bool freshEvent; // used to simulate separate directions from diagonals
 };
@@ -209,7 +209,7 @@ AInputButton* a_input__newButton(const char* Name)
     b->header.name = a_str_dup(Name);
     b->header.shortName = a_str_getSuffixLastFind(Name, '.');
     b->pressed = false;
-    b->waitingForUnpress = false;
+    b->ignorePressed = false;
     b->analogPushedPast = false;
     b->freshEvent = false;
 
@@ -573,14 +573,14 @@ bool a_input_working(const AInput* Input)
 bool a_button_get(const AInput* Button)
 {
     A_LIST_ITERATE(Button->buttons, AInputButton*, b) {
-        if(b->pressed) {
+        if(b->pressed && !b->ignorePressed) {
             return true;
         }
     }
 
     A_LIST_ITERATE(Button->combos, AInputButtonCombo*, c) {
         A_LIST_ITERATE(c->buttons, AInputButton*, b) {
-            if(!b->pressed) {
+            if(!b->pressed || b->ignorePressed) {
                 break;
             } else if(A_LIST_IS_LAST()) {
                 return true;
@@ -595,16 +595,14 @@ void a_button_release(const AInput* Button)
 {
     A_LIST_ITERATE(Button->buttons, AInputButton*, b) {
         if(b->pressed) {
-            b->pressed = false;
-            b->waitingForUnpress = true;
+            b->ignorePressed = true;
         }
     }
 
     A_LIST_ITERATE(Button->combos, AInputButtonCombo*, c) {
         A_LIST_ITERATE(c->buttons, AInputButton*, b) {
             if(b->pressed) {
-                b->pressed = false;
-                b->waitingForUnpress = true;
+                b->ignorePressed = true;
             }
         }
     }
@@ -682,13 +680,11 @@ bool a_touch_box(const AInput* Touch, int X, int Y, int W, int H)
 
 void a_input__button_setState(AInputButton* Button, bool Pressed)
 {
-    if(Button->waitingForUnpress && Pressed) {
-        // Ignore press until getting an unpress
-        return;
+    if(!Pressed && Button->ignorePressed) {
+        Button->ignorePressed = false;
     }
 
     Button->pressed = Pressed;
-    Button->waitingForUnpress = false;
     Button->freshEvent = true;
 }
 
