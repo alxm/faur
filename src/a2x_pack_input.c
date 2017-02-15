@@ -303,60 +303,23 @@ void a_input__get(void)
         #endif
 
         if(upLeft->freshEvent) {
-            if(upLeft->pressed) {
-                up->pressed = left->pressed = true;
-            } else {
-                // if the up button itself was not pressed, unpress it
-                if(!up->freshEvent) {
-                    up->pressed = false;
-                }
-
-                if(!left->freshEvent) {
-                    left->pressed = false;
-                }
-            }
+            a_input__button_setState(up, upLeft->pressed);
+            a_input__button_setState(left, upLeft->pressed);
         }
 
         if(upRight->freshEvent) {
-            if(upRight->pressed) {
-                up->pressed = right->pressed = true;
-            } else {
-                if(!up->freshEvent) {
-                    up->pressed = false;
-                }
-
-                if(!right->freshEvent) {
-                    right->pressed = false;
-                }
-            }
+            a_input__button_setState(up, upRight->pressed);
+            a_input__button_setState(right, upRight->pressed);
         }
 
         if(downLeft->freshEvent) {
-            if(downLeft->pressed) {
-                down->pressed = left->pressed = true;
-            } else {
-                if(!down->freshEvent) {
-                    down->pressed = false;
-                }
-
-                if(!left->freshEvent) {
-                    left->pressed = false;
-                }
-            }
+            a_input__button_setState(down, downLeft->pressed);
+            a_input__button_setState(left, downLeft->pressed);
         }
 
         if(downRight->freshEvent) {
-            if(downRight->pressed) {
-                down->pressed = right->pressed = true;
-            } else {
-                if(!down->freshEvent) {
-                    down->pressed = false;
-                }
-
-                if(!right->freshEvent) {
-                    right->pressed = false;
-                }
-            }
+            a_input__button_setState(down, downRight->pressed);
+            a_input__button_setState(right, downRight->pressed);
         }
     #endif
 
