@@ -614,34 +614,13 @@ void a_button_release(const AInput* Button)
 
 bool a_button_getOnce(const AInput* Button)
 {
-    bool foundPressed = false;
+    bool pressed = a_button_get(Button);
 
-    A_LIST_ITERATE(Button->buttons, AInputButton*, b) {
-        if(b->pressed) {
-            b->pressed = false;
-            b->waitingForUnpress = true;
-            foundPressed = true;
-        }
+    if(pressed) {
+        a_button_release(Button);
     }
 
-    bool anyComboAllPressed = false;
-
-    A_LIST_ITERATE(Button->combos, AInputButtonCombo*, c) {
-        A_LIST_ITERATE(c->buttons, AInputButton*, b) {
-            if(!b->pressed) {
-                break;
-            } else if(A_LIST_IS_LAST()) {
-                anyComboAllPressed = true;
-
-                A_LIST_ITERATE(c->buttons, AInputButton*, b) {
-                    b->pressed = false;
-                    b->waitingForUnpress = true;
-                }
-            }
-        }
-    }
-
-    return foundPressed || anyComboAllPressed;
+    return pressed;
 }
 
 int a_analog_xaxis(const AInput* Analog)
