@@ -40,7 +40,6 @@ struct AInputButton {
     AInputHeader header;
     bool pressed;
     bool ignorePressed;
-    bool analogPushedPast; // used to simulate key events for analog
 };
 
 struct AInputAnalog {
@@ -98,7 +97,7 @@ static void freeHeader(AInputHeader* Header)
     free(Header->shortName);
 }
 
-#if A_PLATFORM_GP2X || A_PLATFORM_WIZ
+#if A_PLATFORM_GP2X || A_PLATFORM_WIZ || A_PLATFORM_CAANOO
     static inline bool isFreshEvent(const AInputHeader* Header)
     {
         return Header->lastEventFrame == a_fps_getCounter();
@@ -228,7 +227,6 @@ AInputButton* a_input__newButton(const char* Name)
 
     b->pressed = false;
     b->ignorePressed = false;
-    b->analogPushedPast = false;
 
     if(g_activeController == NULL) {
         a_strhash_add(g_buttons, Name, b);
@@ -339,64 +337,21 @@ void a_input__get(void)
     // Caanoo has an analog stick instead of a dpad, but in most cases it's
     // useful to be able to use it as a dpad like on the other platforms.
     #if A_PLATFORM_CAANOO
-        // pressed at least half-way
-        #define ANALOG_TRESH ((1 << 15) / 2)
-
         AInputAnalog* stick = a_strhash_get(g_analogs, "caanoo.stick");
-        AInputButton* up = a_strhash_get(g_buttons, "caanoo.up");
-        AInputButton* down = a_strhash_get(g_buttons, "caanoo.down");
-        AInputButton* left = a_strhash_get(g_buttons, "caanoo.left");
-        AInputButton* right = a_strhash_get(g_buttons, "caanoo.right");
 
-        if(stick->xaxis < -ANALOG_TRESH) {
-            // Tracking analog direction pushes with analogPushedPast lets us
-            // call a_button_getOnce and a_button_release on the simulated
-            // dpad buttons while maintaining correct press/unpress states here.
-            if(!left->analogPushedPast) {
-                left->analogPushedPast = true;
-                left->pressed = true;
-            }
-        } else {
-            if(left->analogPushedPast) {
-                left->analogPushedPast = false;
-                left->pressed = false;
-            }
-        }
+        if(isFreshEvent(&stick->header)) {
+            AInputButton* up = a_strhash_get(g_buttons, "caanoo.up");
+            AInputButton* down = a_strhash_get(g_buttons, "caanoo.down");
+            AInputButton* left = a_strhash_get(g_buttons, "caanoo.left");
+            AInputButton* right = a_strhash_get(g_buttons, "caanoo.right");
 
-        if(stick->xaxis > ANALOG_TRESH) {
-            if(!right->analogPushedPast) {
-                right->analogPushedPast = true;
-                right->pressed = true;
-            }
-        } else {
-            if(right->analogPushedPast) {
-                right->analogPushedPast = false;
-                right->pressed = false;
-            }
-        }
+            // Pressed at least half-way
+            #define ANALOG_TRESH ((1 << 15) / 2)
 
-        if(stick->yaxis < -ANALOG_TRESH) {
-            if(!up->analogPushedPast) {
-                up->analogPushedPast = true;
-                up->pressed = true;
-            }
-        } else {
-            if(up->analogPushedPast) {
-                up->analogPushedPast = false;
-                up->pressed = false;
-            }
-        }
-
-        if(stick->yaxis > ANALOG_TRESH) {
-            if(!down->analogPushedPast) {
-                down->analogPushedPast = true;
-                down->pressed = true;
-            }
-        } else {
-            if(down->analogPushedPast) {
-                down->analogPushedPast = false;
-                down->pressed = false;
-            }
+            a_input__button_setState(left, stick->xaxis < -ANALOG_TRESH);
+            a_input__button_setState(right, stick->xaxis > ANALOG_TRESH);
+            a_input__button_setState(up, stick->yaxis < -ANALOG_TRESH);
+            a_input__button_setState(down, stick->yaxis > ANALOG_TRESH);
         }
     #endif
 
