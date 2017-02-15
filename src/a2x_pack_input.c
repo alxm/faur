@@ -578,14 +578,12 @@ bool a_button_get(const AInput* Button)
         }
     }
 
-    if(!a_list_empty(Button->combos)) {
-        A_LIST_ITERATE(Button->combos, AInputButtonCombo*, c) {
-            A_LIST_ITERATE(c->buttons, AInputButton*, b) {
-                if(!b->pressed) {
-                    break;
-                } else if(A_LIST_IS_LAST()) {
-                    return true;
-                }
+    A_LIST_ITERATE(Button->combos, AInputButtonCombo*, c) {
+        A_LIST_ITERATE(c->buttons, AInputButton*, b) {
+            if(!b->pressed) {
+                break;
+            } else if(A_LIST_IS_LAST()) {
+                return true;
             }
         }
     }
