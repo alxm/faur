@@ -33,6 +33,7 @@ struct AInput {
 typedef struct AInputHeader {
     char* name;
     char* shortName;
+    unsigned lastEventFrame;
 } AInputHeader;
 
 struct AInputButton {
@@ -40,7 +41,6 @@ struct AInputButton {
     bool pressed;
     bool ignorePressed;
     bool analogPushedPast; // used to simulate key events for analog
-    bool freshEvent; // used to simulate separate directions from diagonals
 };
 
 struct AInputAnalog {
@@ -82,14 +82,32 @@ static AStrHash* g_umbrellas;
 static AList* g_controllers;
 static AInputController* g_activeController;
 
-// all inputs returned by a_input_new()
 static AList* g_userInputs;
 static AList* g_callbacks;
+
+static void initHeader(AInputHeader* Header, const char* Name)
+{
+    Header->name = a_str_dup(Name);
+    Header->shortName = a_str_getSuffixLastFind(Name, '.');
+    Header->lastEventFrame = 0;
+}
 
 static void freeHeader(AInputHeader* Header)
 {
     free(Header->name);
     free(Header->shortName);
+}
+
+#if A_PLATFORM_GP2X || A_PLATFORM_WIZ
+    static inline bool isFreshEvent(const AInputHeader* Header)
+    {
+        return Header->lastEventFrame == a_fps_getCounter();
+    }
+#endif
+
+static inline void setFreshEvent(AInputHeader* Header)
+{
+    Header->lastEventFrame = a_fps_getCounter();
 }
 
 static void addUmbrella(const char* Name, const char* Inputs)
@@ -206,12 +224,11 @@ AInputButton* a_input__newButton(const char* Name)
 {
     AInputButton* b = a_mem_malloc(sizeof(AInputButton));
 
-    b->header.name = a_str_dup(Name);
-    b->header.shortName = a_str_getSuffixLastFind(Name, '.');
+    initHeader(&b->header, Name);
+
     b->pressed = false;
     b->ignorePressed = false;
     b->analogPushedPast = false;
-    b->freshEvent = false;
 
     if(g_activeController == NULL) {
         a_strhash_add(g_buttons, Name, b);
@@ -226,8 +243,8 @@ AInputAnalog* a_input__newAnalog(const char* Name)
 {
     AInputAnalog* a = a_mem_malloc(sizeof(AInputAnalog));
 
-    a->header.name = a_str_dup(Name);
-    a->header.shortName = a_str_getSuffixLastFind(Name, '.');
+    initHeader(&a->header, Name);
+
     a->xaxis = 0;
     a->yaxis = 0;
 
@@ -240,8 +257,8 @@ AInputTouch* a_input__newTouch(const char* Name)
 {
     AInputTouch* t = a_mem_malloc(sizeof(AInputTouch));
 
-    t->header.name = a_str_dup(Name);
-    t->header.shortName = a_str_getSuffixLastFind(Name, '.');
+    initHeader(&t->header, Name);
+
     t->tap = false;
     t->x = 0;
     t->y = 0;
@@ -272,10 +289,6 @@ void a_input__get(void)
         a_list_clear(touchScreen->motion);
     }
 
-    A_STRHASH_ITERATE(g_buttons, AInputButton*, button) {
-        button->freshEvent = false;
-    }
-
     a_sdl__input_get();
 
     // GP2X and Wiz dpad diagonals show up as dedicated buttons instead of a
@@ -302,22 +315,22 @@ void a_input__get(void)
             AInputButton* right = a_strhash_get(g_buttons, "wiz.right");
         #endif
 
-        if(upLeft->freshEvent) {
+        if(isFreshEvent(&upLeft->header)) {
             a_input__button_setState(up, upLeft->pressed);
             a_input__button_setState(left, upLeft->pressed);
         }
 
-        if(upRight->freshEvent) {
+        if(isFreshEvent(&upRight->header)) {
             a_input__button_setState(up, upRight->pressed);
             a_input__button_setState(right, upRight->pressed);
         }
 
-        if(downLeft->freshEvent) {
+        if(isFreshEvent(&downLeft->header)) {
             a_input__button_setState(down, downLeft->pressed);
             a_input__button_setState(left, downLeft->pressed);
         }
 
-        if(downRight->freshEvent) {
+        if(isFreshEvent(&downRight->header)) {
             a_input__button_setState(down, downRight->pressed);
             a_input__button_setState(right, downRight->pressed);
         }
@@ -450,6 +463,7 @@ AInput* a_input_new(const char* Names)
 
                 combo->header.name = a_str_dup(a_strbuilder_string(sb));
                 combo->header.shortName = NULL;
+                combo->header.lastEventFrame = 0;
                 combo->buttons = buttons;
 
                 a_list_addLast(i->combos, combo);
@@ -648,17 +662,22 @@ void a_input__button_setState(AInputButton* Button, bool Pressed)
     }
 
     Button->pressed = Pressed;
-    Button->freshEvent = true;
+
+    setFreshEvent(&Button->header);
 }
 
 void a_input__analog_setXAxis(AInputAnalog* Analog, int Value)
 {
     Analog->xaxis = Value;
+
+    setFreshEvent(&Analog->header);
 }
 
 void a_input__analog_setYAxis(AInputAnalog* Analog, int Value)
 {
     Analog->yaxis = Value;
+
+    setFreshEvent(&Analog->header);
 }
 
 void a_input__touch_addMotion(AInputTouch* Touch, int X, int Y)
@@ -674,6 +693,8 @@ void a_input__touch_addMotion(AInputTouch* Touch, int X, int Y)
 
         a_list_addLast(Touch->motion, p);
     }
+
+    setFreshEvent(&Touch->header);
 }
 
 void a_input__touch_setCoords(AInputTouch* Touch, int X, int Y, bool Tapped)
@@ -681,4 +702,6 @@ void a_input__touch_setCoords(AInputTouch* Touch, int X, int Y, bool Tapped)
     Touch->x = X;
     Touch->y = Y;
     Touch->tap = Tapped;
+
+    setFreshEvent(&Touch->header);
 }
