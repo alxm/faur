@@ -1,5 +1,5 @@
 /*
-    Copyright 2010 Alex Margarit
+    Copyright 2010, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -33,9 +33,11 @@ extern bool a_input_working(const AInput* Input);
 extern unsigned a_input_numControllers(void);
 extern void a_input_setController(unsigned Index);
 
-extern bool a_button_get(const AInput* Button);
-extern void a_button_unpress(const AInput* Button);
-extern bool a_button_getAndUnpress(const AInput* Button);
+extern void a_input_setRepeat(AInput* input, unsigned RepeatFrames);
+
+extern bool a_button_get(AInput* Button);
+extern void a_button_release(const AInput* Button);
+extern bool a_button_getOnce(AInput* Button);
 
 extern int a_analog_xaxis(const AInput* Analog);
 extern int a_analog_yaxis(const AInput* Analog);

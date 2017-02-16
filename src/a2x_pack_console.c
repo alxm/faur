@@ -51,7 +51,7 @@ static void line_free(ALine* Line)
 
 static void inputCallback(void)
 {
-    if(a_button_getAndUnpress(g_toggle)) {
+    if(a_button_getOnce(g_toggle)) {
         g_show = !g_show;
     }
 }

@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016 Alex Margarit
+    Copyright 2010, 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -28,19 +28,20 @@ struct AInput {
     AList* analogs; // List of AInputAnalog
     AList* touchScreens; // List of AInputTouch
     AList* combos; // List of AInputButtonCombo
+    unsigned repeatFrames;
+    unsigned lastPressedFrame;
 };
 
 typedef struct AInputHeader {
     char* name;
     char* shortName;
+    unsigned lastEventFrame;
 } AInputHeader;
 
 struct AInputButton {
     AInputHeader header;
     bool pressed;
-    bool waitingForUnpress;
-    bool analogPushedPast; // used to simulate key events for analog
-    bool freshEvent; // used to simulate separate directions from diagonals
+    bool ignorePressed;
 };
 
 struct AInputAnalog {
@@ -82,14 +83,32 @@ static AStrHash* g_umbrellas;
 static AList* g_controllers;
 static AInputController* g_activeController;
 
-// all inputs returned by a_input_new()
 static AList* g_userInputs;
 static AList* g_callbacks;
+
+static void initHeader(AInputHeader* Header, const char* Name)
+{
+    Header->name = a_str_dup(Name);
+    Header->shortName = a_str_getSuffixLastFind(Name, '.');
+    Header->lastEventFrame = 0;
+}
 
 static void freeHeader(AInputHeader* Header)
 {
     free(Header->name);
     free(Header->shortName);
+}
+
+#if A_PLATFORM_GP2X || A_PLATFORM_WIZ || A_PLATFORM_CAANOO
+    static inline bool isFreshEvent(const AInputHeader* Header)
+    {
+        return Header->lastEventFrame == a_fps_getCounter();
+    }
+#endif
+
+static inline void setFreshEvent(AInputHeader* Header)
+{
+    Header->lastEventFrame = a_fps_getCounter();
 }
 
 static void addUmbrella(const char* Name, const char* Inputs)
@@ -206,12 +225,10 @@ AInputButton* a_input__newButton(const char* Name)
 {
     AInputButton* b = a_mem_malloc(sizeof(AInputButton));
 
-    b->header.name = a_str_dup(Name);
-    b->header.shortName = a_str_getSuffixLastFind(Name, '.');
+    initHeader(&b->header, Name);
+
     b->pressed = false;
-    b->waitingForUnpress = false;
-    b->analogPushedPast = false;
-    b->freshEvent = false;
+    b->ignorePressed = false;
 
     if(g_activeController == NULL) {
         a_strhash_add(g_buttons, Name, b);
@@ -226,8 +243,8 @@ AInputAnalog* a_input__newAnalog(const char* Name)
 {
     AInputAnalog* a = a_mem_malloc(sizeof(AInputAnalog));
 
-    a->header.name = a_str_dup(Name);
-    a->header.shortName = a_str_getSuffixLastFind(Name, '.');
+    initHeader(&a->header, Name);
+
     a->xaxis = 0;
     a->yaxis = 0;
 
@@ -240,8 +257,8 @@ AInputTouch* a_input__newTouch(const char* Name)
 {
     AInputTouch* t = a_mem_malloc(sizeof(AInputTouch));
 
-    t->header.name = a_str_dup(Name);
-    t->header.shortName = a_str_getSuffixLastFind(Name, '.');
+    initHeader(&t->header, Name);
+
     t->tap = false;
     t->x = 0;
     t->y = 0;
@@ -272,15 +289,7 @@ void a_input__get(void)
         a_list_clear(touchScreen->motion);
     }
 
-    A_STRHASH_ITERATE(g_buttons, AInputButton*, button) {
-        button->freshEvent = false;
-    }
-
     a_sdl__input_get();
-
-    A_LIST_ITERATE(g_callbacks, AInputCallbackContainer*, c) {
-        c->callback();
-    }
 
     // GP2X and Wiz dpad diagonals show up as dedicated buttons instead of a
     // combination of two separate buttons. This code checks diagonal events
@@ -306,127 +315,51 @@ void a_input__get(void)
             AInputButton* right = a_strhash_get(g_buttons, "wiz.right");
         #endif
 
-        if(upLeft->freshEvent) {
-            if(upLeft->pressed) {
-                up->pressed = left->pressed = true;
-            } else {
-                // if the up button itself was not pressed, unpress it
-                if(!up->freshEvent) {
-                    up->pressed = false;
-                }
-
-                if(!left->freshEvent) {
-                    left->pressed = false;
-                }
-            }
+        if(isFreshEvent(&upLeft->header)) {
+            a_input__button_setState(up, upLeft->pressed);
+            a_input__button_setState(left, upLeft->pressed);
         }
 
-        if(upRight->freshEvent) {
-            if(upRight->pressed) {
-                up->pressed = right->pressed = true;
-            } else {
-                if(!up->freshEvent) {
-                    up->pressed = false;
-                }
-
-                if(!right->freshEvent) {
-                    right->pressed = false;
-                }
-            }
+        if(isFreshEvent(&upRight->header)) {
+            a_input__button_setState(up, upRight->pressed);
+            a_input__button_setState(right, upRight->pressed);
         }
 
-        if(downLeft->freshEvent) {
-            if(downLeft->pressed) {
-                down->pressed = left->pressed = true;
-            } else {
-                if(!down->freshEvent) {
-                    down->pressed = false;
-                }
-
-                if(!left->freshEvent) {
-                    left->pressed = false;
-                }
-            }
+        if(isFreshEvent(&downLeft->header)) {
+            a_input__button_setState(down, downLeft->pressed);
+            a_input__button_setState(left, downLeft->pressed);
         }
 
-        if(downRight->freshEvent) {
-            if(downRight->pressed) {
-                down->pressed = right->pressed = true;
-            } else {
-                if(!down->freshEvent) {
-                    down->pressed = false;
-                }
-
-                if(!right->freshEvent) {
-                    right->pressed = false;
-                }
-            }
+        if(isFreshEvent(&downRight->header)) {
+            a_input__button_setState(down, downRight->pressed);
+            a_input__button_setState(right, downRight->pressed);
         }
     #endif
 
     // Caanoo has an analog stick instead of a dpad, but in most cases it's
     // useful to be able to use it as a dpad like on the other platforms.
     #if A_PLATFORM_CAANOO
-        // pressed at least half-way
-        #define ANALOG_TRESH ((1 << 15) / 2)
-
         AInputAnalog* stick = a_strhash_get(g_analogs, "caanoo.stick");
-        AInputButton* up = a_strhash_get(g_buttons, "caanoo.up");
-        AInputButton* down = a_strhash_get(g_buttons, "caanoo.down");
-        AInputButton* left = a_strhash_get(g_buttons, "caanoo.left");
-        AInputButton* right = a_strhash_get(g_buttons, "caanoo.right");
 
-        if(stick->xaxis < -ANALOG_TRESH) {
-            // Tracking analog direction pushes with analogPushedPast lets us
-            // call a_button_getAndUnpress and a_button_unpress on the simulated
-            // dpad buttons while maintaining correct press/unpress states here.
-            if(!left->analogPushedPast) {
-                left->analogPushedPast = true;
-                left->pressed = true;
-            }
-        } else {
-            if(left->analogPushedPast) {
-                left->analogPushedPast = false;
-                left->pressed = false;
-            }
-        }
+        if(isFreshEvent(&stick->header)) {
+            AInputButton* up = a_strhash_get(g_buttons, "caanoo.up");
+            AInputButton* down = a_strhash_get(g_buttons, "caanoo.down");
+            AInputButton* left = a_strhash_get(g_buttons, "caanoo.left");
+            AInputButton* right = a_strhash_get(g_buttons, "caanoo.right");
 
-        if(stick->xaxis > ANALOG_TRESH) {
-            if(!right->analogPushedPast) {
-                right->analogPushedPast = true;
-                right->pressed = true;
-            }
-        } else {
-            if(right->analogPushedPast) {
-                right->analogPushedPast = false;
-                right->pressed = false;
-            }
-        }
+            // Pressed at least half-way
+            #define ANALOG_TRESH ((1 << 15) / 2)
 
-        if(stick->yaxis < -ANALOG_TRESH) {
-            if(!up->analogPushedPast) {
-                up->analogPushedPast = true;
-                up->pressed = true;
-            }
-        } else {
-            if(up->analogPushedPast) {
-                up->analogPushedPast = false;
-                up->pressed = false;
-            }
-        }
-
-        if(stick->yaxis > ANALOG_TRESH) {
-            if(!down->analogPushedPast) {
-                down->analogPushedPast = true;
-                down->pressed = true;
-            }
-        } else {
-            if(down->analogPushedPast) {
-                down->analogPushedPast = false;
-                down->pressed = false;
-            }
+            a_input__button_setState(left, stick->xaxis < -ANALOG_TRESH);
+            a_input__button_setState(right, stick->xaxis > ANALOG_TRESH);
+            a_input__button_setState(up, stick->yaxis < -ANALOG_TRESH);
+            a_input__button_setState(down, stick->yaxis > ANALOG_TRESH);
         }
     #endif
+
+    A_LIST_ITERATE(g_callbacks, AInputCallbackContainer*, c) {
+        c->callback();
+    }
 }
 
 unsigned a_input_numControllers(void)
@@ -454,6 +387,8 @@ AInput* a_input_new(const char* Names)
     i->analogs = a_list_new();
     i->touchScreens = a_list_new();
     i->combos = a_list_new();
+    i->repeatFrames = 0;
+    i->lastPressedFrame = 0;
 
     A_STRTOK_ITERATE(tok, name) {
         if(a_str_firstIndex(name, '+') > 0) {
@@ -487,6 +422,7 @@ AInput* a_input_new(const char* Names)
 
                 combo->header.name = a_str_dup(a_strbuilder_string(sb));
                 combo->header.shortName = NULL;
+                combo->header.lastEventFrame = 0;
                 combo->buttons = buttons;
 
                 a_list_addLast(i->combos, combo);
@@ -570,22 +506,47 @@ bool a_input_working(const AInput* Input)
         || !a_list_empty(Input->combos);
 }
 
-bool a_button_get(const AInput* Button)
+void a_input_setRepeat(AInput* Input, unsigned RepeatFrames)
 {
+    Input->repeatFrames = RepeatFrames;
+    Input->lastPressedFrame = a_fps_getCounter() - RepeatFrames;
+}
+
+bool a_button_get(AInput* Button)
+{
+    const unsigned now = a_fps_getCounter();
+
     A_LIST_ITERATE(Button->buttons, AInputButton*, b) {
-        if(b->pressed) {
-            return true;
+        if(b->pressed && !b->ignorePressed) {
+            if(Button->repeatFrames > 0) {
+                if(now - Button->lastPressedFrame >= Button->repeatFrames) {
+                    Button->lastPressedFrame = now;
+                    return true;
+                }
+            } else {
+                return true;
+            }
         }
     }
 
-    if(!a_list_empty(Button->combos)) {
-        A_LIST_ITERATE(Button->combos, AInputButtonCombo*, c) {
-            A_LIST_ITERATE(c->buttons, AInputButton*, b) {
-                if(!b->pressed) {
-                    break;
-                } else if(A_LIST_IS_LAST()) {
-                    return true;
+    A_LIST_ITERATE(Button->combos, AInputButtonCombo*, c) {
+        A_LIST_ITERATE(c->buttons, AInputButton*, b) {
+            if(!b->pressed || b->ignorePressed) {
+                break;
+            }
+
+            if(Button->repeatFrames > 0
+                && now - Button->lastPressedFrame < Button->repeatFrames) {
+
+                break;
+            }
+
+            if(A_LIST_IS_LAST()) {
+                if(Button->repeatFrames > 0) {
+                    Button->lastPressedFrame = now;
                 }
+
+                return true;
             }
         }
     }
@@ -593,55 +554,32 @@ bool a_button_get(const AInput* Button)
     return false;
 }
 
-void a_button_unpress(const AInput* Button)
+void a_button_release(const AInput* Button)
 {
     A_LIST_ITERATE(Button->buttons, AInputButton*, b) {
         if(b->pressed) {
-            b->pressed = false;
-            b->waitingForUnpress = true;
+            b->ignorePressed = true;
         }
     }
 
     A_LIST_ITERATE(Button->combos, AInputButtonCombo*, c) {
         A_LIST_ITERATE(c->buttons, AInputButton*, b) {
             if(b->pressed) {
-                b->pressed = false;
-                b->waitingForUnpress = true;
+                b->ignorePressed = true;
             }
         }
     }
 }
 
-bool a_button_getAndUnpress(const AInput* Button)
+bool a_button_getOnce(AInput* Button)
 {
-    bool foundPressed = false;
+    bool pressed = a_button_get(Button);
 
-    A_LIST_ITERATE(Button->buttons, AInputButton*, b) {
-        if(b->pressed) {
-            b->pressed = false;
-            b->waitingForUnpress = true;
-            foundPressed = true;
-        }
+    if(pressed) {
+        a_button_release(Button);
     }
 
-    bool anyComboAllPressed = false;
-
-    A_LIST_ITERATE(Button->combos, AInputButtonCombo*, c) {
-        A_LIST_ITERATE(c->buttons, AInputButton*, b) {
-            if(!b->pressed) {
-                break;
-            } else if(A_LIST_IS_LAST()) {
-                anyComboAllPressed = true;
-
-                A_LIST_ITERATE(c->buttons, AInputButton*, b) {
-                    b->pressed = false;
-                    b->waitingForUnpress = true;
-                }
-            }
-        }
-    }
-
-    return foundPressed || anyComboAllPressed;
+    return pressed;
 }
 
 int a_analog_xaxis(const AInput* Analog)
@@ -705,24 +643,27 @@ bool a_touch_box(const AInput* Touch, int X, int Y, int W, int H)
 
 void a_input__button_setState(AInputButton* Button, bool Pressed)
 {
-    if(Button->waitingForUnpress && Pressed) {
-        // Ignore press until getting an unpress
-        return;
+    if(!Pressed && Button->ignorePressed) {
+        Button->ignorePressed = false;
     }
 
     Button->pressed = Pressed;
-    Button->waitingForUnpress = false;
-    Button->freshEvent = true;
+
+    setFreshEvent(&Button->header);
 }
 
 void a_input__analog_setXAxis(AInputAnalog* Analog, int Value)
 {
     Analog->xaxis = Value;
+
+    setFreshEvent(&Analog->header);
 }
 
 void a_input__analog_setYAxis(AInputAnalog* Analog, int Value)
 {
     Analog->yaxis = Value;
+
+    setFreshEvent(&Analog->header);
 }
 
 void a_input__touch_addMotion(AInputTouch* Touch, int X, int Y)
@@ -738,6 +679,8 @@ void a_input__touch_addMotion(AInputTouch* Touch, int X, int Y)
 
         a_list_addLast(Touch->motion, p);
     }
+
+    setFreshEvent(&Touch->header);
 }
 
 void a_input__touch_setCoords(AInputTouch* Touch, int X, int Y, bool Tapped)
@@ -745,4 +688,6 @@ void a_input__touch_setCoords(AInputTouch* Touch, int X, int Y, bool Tapped)
     Touch->x = X;
     Touch->y = Y;
     Touch->tap = Tapped;
+
+    setFreshEvent(&Touch->header);
 }
