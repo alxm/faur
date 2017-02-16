@@ -36,7 +36,6 @@ A_PLATFORM_CFLAGS = \
     -I$(PANDORA_SDK)/usr/include/SDL \
     -I$(PANDORA_SDK)/arm-none-linux-gnueabi/include \
     -Wno-conversion \
-    -Wno-missing-field-initializers \
 
 A_PLATFORM_COMPILER_PEDANTIC = false
 

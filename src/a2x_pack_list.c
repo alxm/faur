@@ -313,7 +313,7 @@ static AListNode* sort(AListNode* Start, unsigned Length, AListCompare* Compare)
     AListNode* a = sort(firstHalfHead, halfPoint, Compare);
     AListNode* b = sort(secondHalfHead, Length - halfPoint, Compare);
 
-    AListNode mergedHead = {NULL};
+    AListNode mergedHead = {NULL, NULL, NULL, NULL};
     AListNode* mergedTail = &mergedHead;
 
     // Merge a and b

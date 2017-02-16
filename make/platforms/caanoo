@@ -30,7 +30,6 @@ A_PLATFORM_CFLAGS = \
     -I$(CAANOO_SDK)/include \
     -I$(CAANOO_SDK)/arm-gph-linux-gnueabi/include \
     -Wno-conversion \
-    -Wno-missing-field-initializers \
 
 PREFIX := arm-gph-linux-gnueabi-
 
