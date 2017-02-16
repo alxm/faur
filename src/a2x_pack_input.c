@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016 Alex Margarit
+    Copyright 2010, 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -28,6 +28,8 @@ struct AInput {
     AList* analogs; // List of AInputAnalog
     AList* touchScreens; // List of AInputTouch
     AList* combos; // List of AInputButtonCombo
+    unsigned repeatFrames;
+    unsigned lastPressedFrame;
 };
 
 typedef struct AInputHeader {
@@ -385,6 +387,8 @@ AInput* a_input_new(const char* Names)
     i->analogs = a_list_new();
     i->touchScreens = a_list_new();
     i->combos = a_list_new();
+    i->repeatFrames = 0;
+    i->lastPressedFrame = 0;
 
     A_STRTOK_ITERATE(tok, name) {
         if(a_str_firstIndex(name, '+') > 0) {
@@ -502,11 +506,26 @@ bool a_input_working(const AInput* Input)
         || !a_list_empty(Input->combos);
 }
 
-bool a_button_get(const AInput* Button)
+void a_input_setRepeat(AInput* Input, unsigned RepeatFrames)
 {
+    Input->repeatFrames = RepeatFrames;
+    Input->lastPressedFrame = a_fps_getCounter() - RepeatFrames;
+}
+
+bool a_button_get(AInput* Button)
+{
+    const unsigned now = a_fps_getCounter();
+
     A_LIST_ITERATE(Button->buttons, AInputButton*, b) {
         if(b->pressed && !b->ignorePressed) {
-            return true;
+            if(Button->repeatFrames > 0) {
+                if(now - Button->lastPressedFrame >= Button->repeatFrames) {
+                    Button->lastPressedFrame = now;
+                    return true;
+                }
+            } else {
+                return true;
+            }
         }
     }
 
@@ -514,7 +533,19 @@ bool a_button_get(const AInput* Button)
         A_LIST_ITERATE(c->buttons, AInputButton*, b) {
             if(!b->pressed || b->ignorePressed) {
                 break;
-            } else if(A_LIST_IS_LAST()) {
+            }
+
+            if(Button->repeatFrames > 0
+                && now - Button->lastPressedFrame < Button->repeatFrames) {
+
+                break;
+            }
+
+            if(A_LIST_IS_LAST()) {
+                if(Button->repeatFrames > 0) {
+                    Button->lastPressedFrame = now;
+                }
+
                 return true;
             }
         }
@@ -540,7 +571,7 @@ void a_button_release(const AInput* Button)
     }
 }
 
-bool a_button_getOnce(const AInput* Button)
+bool a_button_getOnce(AInput* Button)
 {
     bool pressed = a_button_get(Button);
 
