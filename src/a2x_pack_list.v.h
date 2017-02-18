@@ -36,3 +36,8 @@ struct AListNode {
     AListNode* next;
     AListNode* prev;
 };
+
+static inline AList* a_list__nodeGetList(const AListNode* Node)
+{
+    return Node->list;
+}
