@@ -148,12 +148,6 @@ static void a_entity__free(AEntity* Entity)
     free(Entity);
 }
 
-void a_entity_free(AEntity* Entity)
-{
-    a_list_removeNode(Entity->collectionNode);
-    a_entity__free(Entity);
-}
-
 void a_entity_remove(AEntity* Entity)
 {
     if(a_list__nodeGetList(Entity->collectionNode) != g_collection->removedEntities) {

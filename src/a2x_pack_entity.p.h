@@ -30,7 +30,6 @@ extern void a_component_declare(const char* Name, size_t Size, AComponentFree* F
 extern AEntity* a_component_getEntity(const void* Component);
 
 extern AEntity* a_entity_new(void);
-extern void a_entity_free(AEntity* Entity);
 extern void a_entity_remove(AEntity* Entity);
 extern bool a_entity_isRemoved(const AEntity* Entity);
 extern void a_entity_markActive(AEntity* Entity);
