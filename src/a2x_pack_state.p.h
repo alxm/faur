@@ -23,10 +23,10 @@
 
 typedef void (*AStateFunction)(void);
 
-#define A_STATE__MAKE_NAME(Name) a_state__function_##Name
+#define A_STATE__NAME(Name) a_state__function_##Name
 
-#define a_state_new(Name, Function) a_state__new(Name, A_STATE__MAKE_NAME(Function))
 extern void a_state__new(const char* Name, AStateFunction Function);
+#define a_state_new(Name, Function) a_state__new(Name, A_STATE__NAME(Function))
 
 extern void a_state_push(const char* Name);
 extern void a_state_pop(void);
@@ -45,23 +45,13 @@ typedef enum {
     A_STATE_STAGE_NUM
 } AStateStage;
 
-#define A_STATE(Name)                   \
-    void A_STATE__MAKE_NAME(Name)(void)
+#define A_STATE(Name) void A_STATE__NAME(Name)(void)
 
-#define A_STATE_INIT                       \
-    if(a_state__stage(A_STATE_STAGE_INIT))
-
-#define A_STATE_BODY                       \
-    if(a_state__stage(A_STATE_STAGE_BODY))
-
-#define A_STATE_LOOP                 \
-    while(a_state__nothingPending())
-
-#define A_STATE_LOOP_DRAW  \
-    if(a_fps_notSkipped())
-
-#define A_STATE_FREE                       \
-    if(a_state__stage(A_STATE_STAGE_FREE))
+#define A_STATE_INIT if(a_state__stage(A_STATE_STAGE_INIT))
+#define A_STATE_BODY if(a_state__stage(A_STATE_STAGE_BODY))
+#define A_STATE_LOOP while(a_state__nothingPending())
+#define A_STATE_LOOP_DRAW if(a_fps_notSkipped())
+#define A_STATE_FREE if(a_state__stage(A_STATE_STAGE_FREE))
 
 extern bool a_state__stage(AStateStage Stage);
 extern bool a_state__nothingPending(void);

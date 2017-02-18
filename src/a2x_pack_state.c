@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016 Alex Margarit
+    Copyright 2010, 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -43,6 +43,7 @@ typedef struct AStatePendingAction {
 static AStrHash* g_states;
 static AList* g_stack;
 static AList* g_pending;
+static bool g_exiting;
 
 static const char* g_stageNames[A_STATE_STAGE_NUM] = {
     "Invalid",
@@ -171,6 +172,7 @@ void a_state__init(void)
     g_states = a_strhash_new();
     g_stack = a_list_new();
     g_pending = a_list_new();
+    g_exiting = false;
 }
 
 void a_state__uninit(void)
@@ -195,16 +197,31 @@ void a_state__new(const char* Name, AStateFunction Function)
 
 void a_state_push(const char* Name)
 {
+    if(g_exiting) {
+        a_out__state("Exiting, ignoring a_state_push(%s)", Name);
+        return;
+    }
+
     pending_new(A_STATE_ACTION_PUSH, Name);
 }
 
 void a_state_pop(void)
 {
+    if(g_exiting) {
+        a_out__state("Exiting, ignoring a_state_pop()");
+        return;
+    }
+
     pending_new(A_STATE_ACTION_POP, NULL);
 }
 
 void a_state_popUntil(const char* Name)
 {
+    if(g_exiting) {
+        a_out__state("Exiting, ignoring a_state_popUntil(%s)", Name);
+        return;
+    }
+
     int pops = 0;
     bool found = false;
 
@@ -228,12 +245,23 @@ void a_state_popUntil(const char* Name)
 
 void a_state_replace(const char* Name)
 {
+    if(g_exiting) {
+        a_out__state("Exiting, ignoring a_state_replace(%s)", Name);
+        return;
+    }
+
     pending_new(A_STATE_ACTION_POP, NULL);
     pending_new(A_STATE_ACTION_PUSH, Name);
 }
 
 void a_state_exit(void)
 {
+    if(g_exiting) {
+        a_out__state("Exiting, ignoring a_state_exit()");
+        return;
+    }
+
+    g_exiting = true;
     a_out__state("Telling all states to exit");
 
     for(unsigned i = a_list_size(g_stack); i--; ) {
