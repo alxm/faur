@@ -68,8 +68,6 @@ struct AEntity {
 static AList* g_stack;
 static ASystemCollection* g_collection;
 
-static void a_entity__free(AEntity* Entity);
-
 void a_entity__init(void)
 {
     g_stack = a_list_new();
@@ -110,6 +108,132 @@ void a_component_declare(const char* Name, size_t Size, AComponentFree* Free)
 AEntity* a_component_getEntity(const void* Component)
 {
     return GET_HEADER(Component)->parent;
+}
+
+AEntity* a_entity_new(void)
+{
+    g_collection->state = A_SYSTEM_STATE_CREATE_ENTITIES;
+
+    AEntity* e = a_mem_malloc(sizeof(AEntity));
+
+    e->collectionNode = a_list_addLast(g_collection->newEntities, e);
+    e->systemNodes = a_list_new();
+    e->components = a_strhash_new();
+    e->componentBits = a_bitfield_new(a_strhash_size(g_collection->components));
+    e->systemBits = a_bitfield_new(a_strhash_size(g_collection->systems));
+    e->lastActive = 0;
+
+    return e;
+}
+
+static void a_entity__free(AEntity* Entity)
+{
+    A_LIST_ITERATE(Entity->systemNodes, AListNode*, node) {
+        a_list_removeNode(node);
+    }
+
+    a_list_free(Entity->systemNodes);
+
+    A_STRHASH_ITERATE(Entity->components, AComponent*, header) {
+        if(header->free) {
+            header->free(GET_COMPONENT(header));
+        }
+
+        free(header);
+    }
+
+    a_strhash_free(Entity->components);
+    a_bitfield_free(Entity->componentBits);
+    a_bitfield_free(Entity->systemBits);
+    free(Entity);
+}
+
+void a_entity_free(AEntity* Entity)
+{
+    a_list_removeNode(Entity->collectionNode);
+    a_entity__free(Entity);
+}
+
+void a_entity_remove(AEntity* Entity)
+{
+    if(a_list__nodeGetList(Entity->collectionNode) != g_collection->removedEntities) {
+        a_list_removeNode(Entity->collectionNode);
+        Entity->collectionNode = a_list_addLast(g_collection->removedEntities,
+                                                Entity);
+    }
+}
+
+bool a_entity_isRemoved(const AEntity* Entity)
+{
+    return a_list__nodeGetList(Entity->collectionNode) == g_collection->removedEntities;
+}
+
+void a_entity_markActive(AEntity* Entity)
+{
+    Entity->lastActive = a_fps_getCounter();
+}
+
+bool a_entity_isActive(const AEntity* Entity)
+{
+    return Entity->lastActive == a_fps_getCounter();
+}
+
+void* a_entity_addComponent(AEntity* Entity, const char* Component)
+{
+    if(a_list__nodeGetList(Entity->collectionNode) != g_collection->newEntities) {
+        a_out__fatal("Too late to add component '%s'", Component);
+    }
+
+    const AComponent* c = a_strhash_get(g_collection->components, Component);
+
+    if(c == NULL) {
+        a_out__fatal("Unknown component '%s'", Component);
+    }
+
+    if(a_bitfield_test(Entity->componentBits, c->bit)) {
+        a_out__fatal("Component '%s' already added", Component);
+    }
+
+    AComponent* header = a_mem_malloc(c->size);
+    memset(header, 0, c->size);
+
+    *header = *c;
+    header->parent = Entity;
+
+    a_strhash_add(Entity->components, Component, header);
+    a_bitfield_set(Entity->componentBits, header->bit);
+
+    return GET_COMPONENT(header);
+}
+
+void* a_entity_getComponent(const AEntity* Entity, const char* Component)
+{
+    AComponent* header = a_strhash_get(Entity->components, Component);
+
+    if(header == NULL) {
+        if(!a_strhash_contains(g_collection->components, Component)) {
+            a_out__fatal("Unknown component '%s'", Component);
+        }
+
+        return NULL;
+    }
+
+    return GET_COMPONENT(header);
+}
+
+void* a_entity_requireComponent(const AEntity* Entity, const char* Component)
+{
+    AComponent* header = a_strhash_get(Entity->components, Component);
+
+    if(header == NULL) {
+        if(!a_strhash_contains(g_collection->components, Component)) {
+            a_out__fatal("Unknown component '%s'", Component);
+        }
+
+        a_out__fatal("Missing component '%s'", Component);
+    }
+
+    return GET_COMPONENT(header);
 }
 
 void a_system_declare(const char* Name, const char* Components, ASystemHandler* Handler, ASystemSort* Compare, bool OnlyActiveEntities)
@@ -247,132 +371,6 @@ void a_system_run(void)
         a_entity__free(entity);
         A_LIST_REMOVE_CURRENT();
     }
-}
-
-AEntity* a_entity_new(void)
-{
-    g_collection->state = A_SYSTEM_STATE_CREATE_ENTITIES;
-
-    AEntity* e = a_mem_malloc(sizeof(AEntity));
-
-    e->collectionNode = a_list_addLast(g_collection->newEntities, e);
-    e->systemNodes = a_list_new();
-    e->components = a_strhash_new();
-    e->componentBits = a_bitfield_new(a_strhash_size(g_collection->components));
-    e->systemBits = a_bitfield_new(a_strhash_size(g_collection->systems));
-    e->lastActive = 0;
-
-    return e;
-}
-
-static void a_entity__free(AEntity* Entity)
-{
-    A_LIST_ITERATE(Entity->systemNodes, AListNode*, node) {
-        a_list_removeNode(node);
-    }
-
-    a_list_free(Entity->systemNodes);
-
-    A_STRHASH_ITERATE(Entity->components, AComponent*, header) {
-        if(header->free) {
-            header->free(GET_COMPONENT(header));
-        }
-
-        free(header);
-    }
-
-    a_strhash_free(Entity->components);
-    a_bitfield_free(Entity->componentBits);
-    a_bitfield_free(Entity->systemBits);
-    free(Entity);
-}
-
-void a_entity_free(AEntity* Entity)
-{
-    a_list_removeNode(Entity->collectionNode);
-    a_entity__free(Entity);
-}
-
-void a_entity_remove(AEntity* Entity)
-{
-    if(a_list__nodeGetList(Entity->collectionNode) != g_collection->removedEntities) {
-        a_list_removeNode(Entity->collectionNode);
-        Entity->collectionNode = a_list_addLast(g_collection->removedEntities,
-                                                Entity);
-    }
-}
-
-bool a_entity_isRemoved(const AEntity* Entity)
-{
-    return a_list__nodeGetList(Entity->collectionNode) == g_collection->removedEntities;
-}
-
-void a_entity_markActive(AEntity* Entity)
-{
-    Entity->lastActive = a_fps_getCounter();
-}
-
-bool a_entity_isActive(const AEntity* Entity)
-{
-    return Entity->lastActive == a_fps_getCounter();
-}
-
-void* a_entity_addComponent(AEntity* Entity, const char* Component)
-{
-    if(a_list__nodeGetList(Entity->collectionNode) != g_collection->newEntities) {
-        a_out__fatal("Too late to add component '%s'", Component);
-    }
-
-    const AComponent* c = a_strhash_get(g_collection->components, Component);
-
-    if(c == NULL) {
-        a_out__fatal("Unknown component '%s'", Component);
-    }
-
-    if(a_bitfield_test(Entity->componentBits, c->bit)) {
-        a_out__fatal("Component '%s' already added", Component);
-    }
-
-    AComponent* header = a_mem_malloc(c->size);
-    memset(header, 0, c->size);
-
-    *header = *c;
-    header->parent = Entity;
-
-    a_strhash_add(Entity->components, Component, header);
-    a_bitfield_set(Entity->componentBits, header->bit);
-
-    return GET_COMPONENT(header);
-}
-
-void* a_entity_getComponent(const AEntity* Entity, const char* Component)
-{
-    AComponent* header = a_strhash_get(Entity->components, Component);
-
-    if(header == NULL) {
-        if(!a_strhash_contains(g_collection->components, Component)) {
-            a_out__fatal("Unknown component '%s'", Component);
-        }
-
-        return NULL;
-    }
-
-    return GET_COMPONENT(header);
-}
-
-void* a_entity_requireComponent(const AEntity* Entity, const char* Component)
-{
-    AComponent* header = a_strhash_get(Entity->components, Component);
-
-    if(header == NULL) {
-        if(!a_strhash_contains(g_collection->components, Component)) {
-            a_out__fatal("Unknown component '%s'", Component);
-        }
-
-        a_out__fatal("Missing component '%s'", Component);
-    }
-
-    return GET_COMPONENT(header);
 }
 
 void a_system__pushCollection(void)
