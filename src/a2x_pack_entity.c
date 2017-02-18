@@ -60,7 +60,6 @@ struct AEntity {
     ABitfield* componentBits;
     ABitfield* systemBits;
     unsigned lastActive;
-    bool removed;
 };
 
 #define GET_COMPONENT(Header) ((void*)(Header + 1))
@@ -68,6 +67,8 @@ struct AEntity {
 
 static AList* g_stack;
 static ASystemCollection* g_collection;
+
+static void a_entity__free(AEntity* Entity);
 
 void a_entity__init(void)
 {
@@ -243,7 +244,7 @@ void a_system_run(void)
     }
 
     A_LIST_ITERATE(g_collection->removedEntities, AEntity*, entity) {
-        a_entity_free(entity);
+        a_entity__free(entity);
         A_LIST_REMOVE_CURRENT();
     }
 }
@@ -254,15 +255,12 @@ AEntity* a_entity_new(void)
 
     AEntity* e = a_mem_malloc(sizeof(AEntity));
 
-    e->collectionNode = NULL;
+    e->collectionNode = a_list_addLast(g_collection->newEntities, e);
     e->systemNodes = a_list_new();
     e->components = a_strhash_new();
     e->componentBits = a_bitfield_new(a_strhash_size(g_collection->components));
     e->systemBits = a_bitfield_new(a_strhash_size(g_collection->systems));
     e->lastActive = 0;
-    e->removed = false;
-
-    a_list_addLast(g_collection->newEntities, e);
 
     return e;
 }
@@ -291,24 +289,22 @@ static void a_entity__free(AEntity* Entity)
 
 void a_entity_free(AEntity* Entity)
 {
-    if(Entity->collectionNode != NULL) {
-        a_list_removeNode(Entity->collectionNode);
-    }
-
+    a_list_removeNode(Entity->collectionNode);
     a_entity__free(Entity);
 }
 
 void a_entity_remove(AEntity* Entity)
 {
-    if(!Entity->removed) {
-        Entity->removed = true;
-        a_list_addLast(g_collection->removedEntities, Entity);
+    if(a_list__nodeGetList(Entity->collectionNode) != g_collection->removedEntities) {
+        a_list_removeNode(Entity->collectionNode);
+        Entity->collectionNode = a_list_addLast(g_collection->removedEntities,
+                                                Entity);
     }
 }
 
 bool a_entity_isRemoved(const AEntity* Entity)
 {
-    return Entity->removed;
+    return a_list__nodeGetList(Entity->collectionNode) == g_collection->removedEntities;
 }
 
 void a_entity_markActive(AEntity* Entity)
@@ -323,7 +319,7 @@ bool a_entity_isActive(const AEntity* Entity)
 
 void* a_entity_addComponent(AEntity* Entity, const char* Component)
 {
-    if(Entity->collectionNode != NULL) {
+    if(a_list__nodeGetList(Entity->collectionNode) != g_collection->newEntities) {
         a_out__fatal("Too late to add component '%s'", Component);
     }
 
