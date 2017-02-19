@@ -26,8 +26,8 @@ typedef enum ASystemCollectionState {
 } ASystemCollectionState;
 
 typedef struct ASystemCollection {
-    AList* entities;
     AList* newEntities;
+    AList* runningEntities;
     AList* removedEntities;
     AStrHash* components;
     AStrHash* systems;
@@ -361,7 +361,7 @@ void a_system_run(void)
             }
         }
 
-        e->collectionNode = a_list_addLast(g_collection->entities, e);
+        e->collectionNode = a_list_addLast(g_collection->runningEntities, e);
         A_LIST_REMOVE_CURRENT();
     }
 
@@ -387,8 +387,8 @@ void a_system__pushCollection(void)
 {
     ASystemCollection* c = a_mem_malloc(sizeof(ASystemCollection));
 
-    c->entities = a_list_new();
     c->newEntities = a_list_new();
+    c->runningEntities = a_list_new();
     c->removedEntities = a_list_new();
     c->components = a_strhash_new();
     c->systems = a_strhash_new();
@@ -406,11 +406,11 @@ void a_system__pushCollection(void)
 
 void a_system__popCollection(void)
 {
-    A_LIST_ITERATE(g_collection->entities, AEntity*, entity) {
+    A_LIST_ITERATE(g_collection->newEntities, AEntity*, entity) {
         a_entity__free(entity);
     }
 
-    A_LIST_ITERATE(g_collection->newEntities, AEntity*, entity) {
+    A_LIST_ITERATE(g_collection->runningEntities, AEntity*, entity) {
         a_entity__free(entity);
     }
 
@@ -418,8 +418,8 @@ void a_system__popCollection(void)
         a_entity__free(entity);
     }
 
-    a_list_free(g_collection->entities);
     a_list_free(g_collection->newEntities);
+    a_list_free(g_collection->runningEntities);
     a_list_free(g_collection->removedEntities);
 
     A_STRHASH_ITERATE(g_collection->components, AComponent*, component) {
