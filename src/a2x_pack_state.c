@@ -300,7 +300,7 @@ bool a_state__stage(AStateStage Stage)
     return false;
 }
 
-bool a_state__nothingPending(void)
+bool a_state__loop(void)
 {
     static bool first = true;
 

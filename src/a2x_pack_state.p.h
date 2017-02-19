@@ -49,9 +49,9 @@ typedef enum {
 
 #define A_STATE_INIT if(a_state__stage(A_STATE_STAGE_INIT))
 #define A_STATE_BODY if(a_state__stage(A_STATE_STAGE_BODY))
-#define A_STATE_LOOP while(a_state__nothingPending())
+#define A_STATE_LOOP while(a_state__loop())
 #define A_STATE_LOOP_DRAW if(a_fps_notSkipped())
 #define A_STATE_FREE if(a_state__stage(A_STATE_STAGE_FREE))
 
 extern bool a_state__stage(AStateStage Stage);
-extern bool a_state__nothingPending(void);
+extern bool a_state__loop(void);
