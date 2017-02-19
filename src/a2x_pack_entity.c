@@ -54,6 +54,7 @@ typedef struct ASystem {
 } ASystem;
 
 struct AEntity {
+    char* id;
     AListNode* collectionNode;
     AList* systemNodes;
     AStrHash* components;
@@ -61,6 +62,8 @@ struct AEntity {
     unsigned lastActive;
     unsigned references;
 };
+
+#define ENTITY_NAME(Entity) (Entity->id ? Entity->id : "entity")
 
 #define GET_COMPONENT(Header) ((void*)(Header + 1))
 #define GET_HEADER(Component) ((AComponent*)Component - 1)
@@ -116,6 +119,7 @@ AEntity* a_entity_new(void)
 
     AEntity* e = a_mem_malloc(sizeof(AEntity));
 
+    e->id = NULL;
     e->collectionNode = a_list_addLast(g_collection->newEntities, e);
     e->systemNodes = a_list_new();
     e->components = a_strhash_new();
@@ -144,7 +148,13 @@ static void a_entity__free(AEntity* Entity)
 
     a_strhash_free(Entity->components);
     a_bitfield_free(Entity->componentBits);
+    free(Entity->id);
     free(Entity);
+}
+
+void a_entity_setId(AEntity* Entity, const char* Id)
+{
+    Entity->id = a_str_dup(Id);
 }
 
 void a_entity_reference(AEntity* Entity)
@@ -155,7 +165,8 @@ void a_entity_reference(AEntity* Entity)
 void a_entity_release(AEntity* Entity)
 {
     if(Entity->references-- == 0) {
-        a_out__fatal("Entity release count exceeded reference count");
+        a_out__fatal("Release count exceeds reference count for '%s'",
+                     ENTITY_NAME(Entity));
     }
 }
 
@@ -186,7 +197,9 @@ bool a_entity_isActive(const AEntity* Entity)
 void* a_entity_addComponent(AEntity* Entity, const char* Component)
 {
     if(a_list__nodeGetList(Entity->collectionNode) != g_collection->newEntities) {
-        a_out__fatal("Too late to add component '%s'", Component);
+        a_out__fatal("Too late to add component '%s' to '%s'",
+                     Component,
+                     ENTITY_NAME(Entity));
     }
 
     const AComponent* c = a_strhash_get(g_collection->components, Component);
@@ -196,7 +209,9 @@ void* a_entity_addComponent(AEntity* Entity, const char* Component)
     }
 
     if(a_bitfield_test(Entity->componentBits, c->bit)) {
-        a_out__fatal("Component '%s' already added", Component);
+        a_out__fatal("Component '%s' was already added to '%s'",
+                     Component,
+                     ENTITY_NAME(Entity));
     }
 
     AComponent* header = a_mem_malloc(c->size);
@@ -235,7 +250,9 @@ void* a_entity_requireComponent(const AEntity* Entity, const char* Component)
             a_out__fatal("Unknown component '%s'", Component);
         }
 
-        a_out__fatal("Missing component '%s'", Component);
+        a_out__fatal("Missing required component '%s' in '%s'",
+                     Component,
+                     ENTITY_NAME(Entity));
     }
 
     return GET_COMPONENT(header);
