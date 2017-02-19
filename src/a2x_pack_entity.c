@@ -60,6 +60,7 @@ struct AEntity {
     ABitfield* componentBits;
     ABitfield* systemBits;
     unsigned lastActive;
+    unsigned references;
 };
 
 #define GET_COMPONENT(Header) ((void*)(Header + 1))
@@ -122,6 +123,7 @@ AEntity* a_entity_new(void)
     e->componentBits = a_bitfield_new(a_strhash_size(g_collection->components));
     e->systemBits = a_bitfield_new(a_strhash_size(g_collection->systems));
     e->lastActive = 0;
+    e->references = 0;
 
     return e;
 }
@@ -146,6 +148,18 @@ static void a_entity__free(AEntity* Entity)
     a_bitfield_free(Entity->componentBits);
     a_bitfield_free(Entity->systemBits);
     free(Entity);
+}
+
+void a_entity_reference(AEntity* Entity)
+{
+    Entity->references++;
+}
+
+void a_entity_release(AEntity* Entity)
+{
+    if(Entity->references-- == 0) {
+        a_out__fatal("Entity release count exceeded reference count");
+    }
 }
 
 void a_entity_remove(AEntity* Entity)
@@ -362,8 +376,10 @@ void a_system_run(void)
     }
 
     A_LIST_ITERATE(g_collection->removedEntities, AEntity*, entity) {
-        a_entity__free(entity);
-        A_LIST_REMOVE_CURRENT();
+        if(entity->references == 0) {
+            a_entity__free(entity);
+            A_LIST_REMOVE_CURRENT();
+        }
     }
 }
 
