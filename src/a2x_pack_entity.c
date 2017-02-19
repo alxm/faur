@@ -120,7 +120,7 @@ AEntity* a_entity_new(void)
     e->systemNodes = a_list_new();
     e->components = a_strhash_new();
     e->componentBits = a_bitfield_new(a_strhash_size(g_collection->components));
-    e->lastActive = 0;
+    e->lastActive = a_fps_getCounter() - 1;
     e->references = 0;
 
     return e;
