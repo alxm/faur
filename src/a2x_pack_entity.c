@@ -58,7 +58,6 @@ struct AEntity {
     AList* systemNodes;
     AStrHash* components;
     ABitfield* componentBits;
-    ABitfield* systemBits;
     unsigned lastActive;
     unsigned references;
 };
@@ -121,7 +120,6 @@ AEntity* a_entity_new(void)
     e->systemNodes = a_list_new();
     e->components = a_strhash_new();
     e->componentBits = a_bitfield_new(a_strhash_size(g_collection->components));
-    e->systemBits = a_bitfield_new(a_strhash_size(g_collection->systems));
     e->lastActive = 0;
     e->references = 0;
 
@@ -146,7 +144,6 @@ static void a_entity__free(AEntity* Entity)
 
     a_strhash_free(Entity->components);
     a_bitfield_free(Entity->componentBits);
-    a_bitfield_free(Entity->systemBits);
     free(Entity);
 }
 
@@ -356,7 +353,6 @@ void a_system_run(void)
         // Check if the entity matches any systems
         A_STRHASH_ITERATE(g_collection->systems, ASystem*, s) {
             if(a_bitfield_testMask(e->componentBits, s->componentBits)) {
-                a_bitfield_set(e->systemBits, s->bit);
                 a_list_addLast(e->systemNodes, a_list_addLast(s->entities, e));
             }
         }
