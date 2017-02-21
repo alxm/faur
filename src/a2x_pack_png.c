@@ -39,22 +39,22 @@ static void pngToPixels(png_structp Png, png_infop Info, APixel** Pixels, int* W
 {
     png_uint_32 w = png_get_image_width(Png, Info);
     png_uint_32 h = png_get_image_height(Png, Info);
-    unsigned channels = png_get_channels(Png, Info);
+    unsigned numChannels = png_get_channels(Png, Info);
 
-    APixel* px = a_mem_malloc(w * h * sizeof(APixel));
+    APixel* pixels = a_mem_malloc(w * h * sizeof(APixel));
     png_bytepp rows = png_get_rows(Png, Info);
-
-    for(unsigned i = 0; i < h; i++) {
-        for(unsigned j = 0; j < w; j++) {
-            *(px + i * w + j) = a_pixel_make(rows[i][j * channels + 0],
-                                             rows[i][j * channels + 1],
-                                             rows[i][j * channels + 2]);
-        }
-    }
 
     *Width = (int)w;
     *Height = (int)h;
-    *Pixels = px;
+    *Pixels = pixels;
+
+    for(png_uint_32 y = h; y--; rows++) {
+        for(png_uint_32 x = w, chOffset = 0; x--; chOffset += numChannels) {
+            *pixels++ = a_pixel_make(rows[0][chOffset + 0],
+                                     rows[0][chOffset + 1],
+                                     rows[0][chOffset + 2]);
+        }
+    }
 }
 
 void a_png_readFile(const char* Path, APixel** Pixels, int* Width, int* Height)
