@@ -69,17 +69,56 @@ void a_pixel_reset(void)
     a_pixel_setRGBA(0, 0, 0, A_PIXEL_ALPHA_MAX);
 }
 
+static void optimizeAlphaBlending(bool UpdateRoutines)
+{
+    if(a_pixel__state.canonicalBlend == A_PIXEL_BLEND_RGBA) {
+        APixelBlend fastestBlend = A_PIXEL_BLEND_RGBA;
+
+        switch(a_pixel__state.alpha) {
+            case A_PIXEL_ALPHA_MAX / 4: {
+                fastestBlend = A_PIXEL_BLEND_RGB25;
+            } break;
+
+            case A_PIXEL_ALPHA_MAX / 2: {
+                fastestBlend = A_PIXEL_BLEND_RGB50;
+            } break;
+
+            case A_PIXEL_ALPHA_MAX * 3 / 4: {
+                fastestBlend = A_PIXEL_BLEND_RGB75;
+            } break;
+
+            case A_PIXEL_ALPHA_MAX: {
+                fastestBlend = A_PIXEL_BLEND_PLAIN;
+            } break;
+        }
+
+        if(a_pixel__state.blend != fastestBlend) {
+            a_pixel__state.blend = fastestBlend;
+
+            if(UpdateRoutines) {
+                a_draw__updateRoutines();
+                a_sprite__updateRoutines();
+            }
+        }
+    }
+}
+
 void a_pixel_setBlend(APixelBlend Blend)
 {
     a_pixel__state.blend = Blend;
+    a_pixel__state.canonicalBlend = Blend;
 
-    a_sprite__updateRoutines();
+    optimizeAlphaBlending(false);
+
     a_draw__updateRoutines();
+    a_sprite__updateRoutines();
 }
 
 void a_pixel_setAlpha(int Alpha)
 {
     a_pixel__state.alpha = a_math_min(Alpha, A_PIXEL_ALPHA_MAX);
+
+    optimizeAlphaBlending(true);
 }
 
 void a_pixel_setRGB(int Red, int Green, int Blue)
@@ -97,6 +136,8 @@ void a_pixel_setRGBA(int Red, int Green, int Blue, int Alpha)
     a_pixel__state.blue = Blue;
     a_pixel__state.alpha = a_math_min(Alpha, A_PIXEL_ALPHA_MAX);
     a_pixel__state.pixel = a_pixel_make(Red, Green, Blue);
+
+    optimizeAlphaBlending(true);
 }
 
 void a_pixel_setPixel(APixel Pixel)
