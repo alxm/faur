@@ -39,22 +39,22 @@ static void pngToPixels(png_structp Png, png_infop Info, APixel** Pixels, int* W
 {
     png_uint_32 w = png_get_image_width(Png, Info);
     png_uint_32 h = png_get_image_height(Png, Info);
-    unsigned channels = png_get_channels(Png, Info);
+    unsigned numChannels = png_get_channels(Png, Info);
 
-    APixel* px = a_mem_malloc(w * h * sizeof(APixel));
+    APixel* pixels = a_mem_malloc(w * h * sizeof(APixel));
     png_bytepp rows = png_get_rows(Png, Info);
-
-    for(unsigned i = 0; i < h; i++) {
-        for(unsigned j = 0; j < w; j++) {
-            *(px + i * w + j) = a_pixel_make(rows[i][j * channels + 0],
-                                             rows[i][j * channels + 1],
-                                             rows[i][j * channels + 2]);
-        }
-    }
 
     *Width = (int)w;
     *Height = (int)h;
-    *Pixels = px;
+    *Pixels = pixels;
+
+    for(png_uint_32 y = h; y--; rows++) {
+        for(png_uint_32 x = w, chOffset = 0; x--; chOffset += numChannels) {
+            *pixels++ = a_pixel_make(rows[0][chOffset + 0],
+                                     rows[0][chOffset + 1],
+                                     rows[0][chOffset + 2]);
+        }
+    }
 }
 
 void a_png_readFile(const char* Path, APixel** Pixels, int* Width, int* Height)
@@ -74,7 +74,7 @@ void a_png_readFile(const char* Path, APixel** Pixels, int* Width, int* Height)
     a_file_read(f, sig, PNG_SIG);
 
     if(png_sig_cmp(sig, 0, PNG_SIG) != 0) {
-        a_out__error("%s is not a PNG", Path);
+        a_out__error("File '%s' not a PNG", Path);
         goto cleanUp;
     }
 
@@ -96,12 +96,12 @@ void a_png_readFile(const char* Path, APixel** Pixels, int* Width, int* Height)
 
     png_init_io(png, a_file_handle(f));
     png_set_sig_bytes(png, PNG_SIG);
-    png_read_png(png, info, PNG_TRANSFORM_IDENTITY, NULL);
+    png_read_png(png, info, PNG_TRANSFORM_EXPAND, NULL);
 
     int type = png_get_color_type(png, info);
 
     if(type != PNG_COLOR_TYPE_RGB && type != PNG_COLOR_TYPE_RGBA) {
-        a_out__error("%s is not an RGBA8888 PNG", Path);
+        a_out__error("File '%s' not an RGB or RGBA PNG", Path);
         goto cleanUp;
     }
 
@@ -154,12 +154,12 @@ void a_png_readMemory(const uint8_t* Data, APixel** Pixels, int* Width, int* Hei
     }
 
     png_set_read_fn(png, stream, readFunction);
-    png_read_png(png, info, PNG_TRANSFORM_IDENTITY, NULL);
+    png_read_png(png, info, PNG_TRANSFORM_EXPAND, NULL);
 
     const int type = png_get_color_type(png, info);
 
     if(type != PNG_COLOR_TYPE_RGB && type != PNG_COLOR_TYPE_RGBA) {
-        a_out__error("Data not 8-bit RGBA PNG");
+        a_out__error("Data not an RGB or RGBA PNG");
         goto cleanUp;
     }
 
