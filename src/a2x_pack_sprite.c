@@ -240,10 +240,12 @@ ASprite* a_sprite_fromFile(const char* Path)
     s = a_sprite_fromPixels(pixels, w, h);
     free(pixels);
 
+    s->nameId = a_str_dup(Path);
+
     return s;
 }
 
-ASprite* a_sprite_fromData(const uint8_t* Data)
+ASprite* a_sprite_fromData(const uint8_t* Data, const char* Id)
 {
     int w;
     int h;
@@ -258,6 +260,10 @@ ASprite* a_sprite_fromData(const uint8_t* Data)
 
     s = a_sprite_fromPixels(pixels, w, h);
     free(pixels);
+
+    if(Id != NULL) {
+        s->nameId = a_str_dup(Id);
+    }
 
     return s;
 }
@@ -291,6 +297,13 @@ ASprite* a_sprite_fromSprite(const ASprite* Sheet, int X, int Y)
     int spriteHeight = 0;
     const int sheetWidth = Sheet->w;
     const int sheetHeight = Sheet->h;
+
+    if(X < 0 || X >= Sheet->w || Y < 0 || Y >= Sheet->h) {
+        a_out__fatal("%s coords %d, %d are invalid",
+                     A_SPRITE__NAME(Sheet),
+                     X,
+                     Y);
+    }
 
     for(int endX = X; endX < sheetWidth; endX++) {
         APixel p = a_sprite__getPixel(Sheet, endX, Y);
@@ -344,8 +357,10 @@ doneEdges:
             spriteWidth = sheetWidth;
             spriteHeight = sheetHeight;
         } else {
-            a_out__error("Sprite coords %d, %d are invalid", X, Y);
-            return NULL;
+            a_out__fatal("%s coords %d, %d are invalid",
+                         A_SPRITE__NAME(Sheet),
+                         X,
+                         Y);
         }
     }
 
@@ -388,6 +403,7 @@ ASprite* a_sprite_blank(int Width, int Height, bool ColorKeyed)
     s->h = Height;
     s->spans = NULL;
     s->spansSize = 0;
+    s->nameId = NULL;
     s->colorKeyed = ColorKeyed;
 
     if(ColorKeyed) {
@@ -416,6 +432,7 @@ void a_sprite_free(ASprite* Sprite)
 void a_sprite__free(ASprite* Sprite)
 {
     free(Sprite->spans);
+    free(Sprite->nameId);
     free(Sprite);
 }
 

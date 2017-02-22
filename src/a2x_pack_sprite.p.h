@@ -26,7 +26,7 @@ typedef struct ASprite ASprite;
 #include "a2x_pack_pixel.p.h"
 
 extern ASprite* a_sprite_fromFile(const char* Path);
-extern ASprite* a_sprite_fromData(const uint8_t* Data);
+extern ASprite* a_sprite_fromData(const uint8_t* Data, const char* Id);
 extern ASprite* a_sprite_fromPixels(const APixel* Pixels, int Width, int Height);
 extern ASprite* a_sprite_fromSprite(const ASprite* Sheet, int X, int Y);
 extern ASprite* a_sprite_blank(int Width, int Height, bool ColorKeyed);

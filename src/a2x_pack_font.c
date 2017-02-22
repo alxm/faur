@@ -71,7 +71,7 @@ void a_font__init(void)
 
     g_stateStack = a_list_new();
 
-    ASprite* fontSprite = a_sprite_fromData(g_media_font);
+    ASprite* fontSprite = a_sprite_fromData(g_media_font, "defaultFont");
 
     APixel colors[A_FONT_FACE_DEFAULT_NUM];
     colors[A_FONT_FACE_WHITE] = a_pixel_make(0xff, 0xff, 0xff);
