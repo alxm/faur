@@ -20,7 +20,7 @@
 #include "a2x_pack_spritelayers.v.h"
 
 typedef struct ALayer {
-    const ASprite* sprite;
+    ASprite* sprite;
     APixelBlend blend;
     int r, g, b, a;
 } ALayer;
@@ -30,16 +30,20 @@ ASpriteLayers* a_spritelayers_new(void)
     return a_list_new();
 }
 
-void a_spritelayers_free(ASpriteLayers* Layers)
+void a_spritelayers_free(ASpriteLayers* Layers, bool FreeSprites)
 {
     A_LIST_ITERATE(Layers, ALayer*, l) {
+        if(FreeSprites) {
+            a_sprite_free(l->sprite);
+        }
+
         free(l);
     }
 
     a_list_free(Layers);
 }
 
-void a_spritelayers_add(ASpriteLayers* Layers, const ASprite* Sprite, APixelBlend Blend, int Red, int Green, int Blue, int Alpha)
+void a_spritelayers_add(ASpriteLayers* Layers, ASprite* Sprite, APixelBlend Blend, int Red, int Green, int Blue, int Alpha)
 {
     ALayer* l = a_mem_malloc(sizeof(ALayer));
 

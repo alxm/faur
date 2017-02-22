@@ -31,6 +31,7 @@ struct ASprite {
     int h;
     unsigned* spans;
     size_t spansSize;
+    char* nameId;
     bool colorKeyed;
     APixel pixels[];
 };
@@ -41,4 +42,5 @@ extern void a_sprite__uninit(void);
 extern void a_sprite__updateRoutines(void);
 extern void a_sprite__refreshSpans(ASprite* Sprite);
 
+#define A_SPRITE__NAME(Sprite) (Sprite->nameId ? Sprite->nameId : "Sprite")
 #define a_sprite__getPixel(s, x, y) (*((s)->pixels + (y) * (s)->w + (x)))

@@ -34,6 +34,13 @@ ASpriteFrames* a_spriteframes_new(const ASprite* Sheet, int X, int Y, unsigned C
 {
     ASpriteFrames* f = a_spriteframes_blank(CallsToNextFrame);
 
+    if(X < 0 || X >= Sheet->w || Y < 0 || Y >= Sheet->h) {
+        a_out__fatal("%s coords %d, %d are invalid",
+                     A_SPRITE__NAME(Sheet),
+                     X,
+                     Y);
+    }
+
     while(X < Sheet->w) {
         ASprite* s = a_sprite_fromSprite(Sheet, X, Y);
 
@@ -84,9 +91,9 @@ ASpriteFrames* a_spriteframes_blank(unsigned CallsToNextFrame)
     return f;
 }
 
-void a_spriteframes_free(ASpriteFrames* Frames, bool DoFreeSprites)
+void a_spriteframes_free(ASpriteFrames* Frames, bool FreeSprites)
 {
-    if(DoFreeSprites) {
+    if(FreeSprites) {
         A_LIST_ITERATE(Frames->sprites, ASprite*, sprite) {
             a_sprite_free(sprite);
         }
