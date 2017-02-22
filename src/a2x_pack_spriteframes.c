@@ -91,9 +91,9 @@ ASpriteFrames* a_spriteframes_blank(unsigned CallsToNextFrame)
     return f;
 }
 
-void a_spriteframes_free(ASpriteFrames* Frames, bool DoFreeSprites)
+void a_spriteframes_free(ASpriteFrames* Frames, bool FreeSprites)
 {
-    if(DoFreeSprites) {
+    if(FreeSprites) {
         A_LIST_ITERATE(Frames->sprites, ASprite*, sprite) {
             a_sprite_free(sprite);
         }

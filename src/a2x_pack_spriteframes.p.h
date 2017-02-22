@@ -28,7 +28,7 @@ typedef struct ASpriteFrames ASpriteFrames;
 
 extern ASpriteFrames* a_spriteframes_new(const ASprite* Sheet, int X, int Y, unsigned CallsToNextFrame);
 extern ASpriteFrames* a_spriteframes_blank(unsigned CallsToNextFrame);
-extern void a_spriteframes_free(ASpriteFrames* Frames, bool DoFreeSprites);
+extern void a_spriteframes_free(ASpriteFrames* Frames, bool FreeSprites);
 
 extern void a_spriteframes_push(ASpriteFrames* Frames, ASprite* Sprite);
 extern ASprite* a_spriteframes_pop(ASpriteFrames* Frames);
