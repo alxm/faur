@@ -25,6 +25,29 @@ import time
 from utils.output import Output
 from utils.tool import Tool
 
+"""
+a2x_pack_sample.p.h
+    <system headers>
+    <public typedefs>
+    <other public a2x headers>
+    <public typedef implementations>
+    <public api prototypes>
+
+a2x_pack_sample.v.h
+    <a2x_pack_sample.p.h>
+    <system headers>
+    <private typedefs>
+    <other private a2x headers>
+    <private typedef implementations>
+    <private api prototypes>
+
+a2x_pack_sample.c
+    <system headers>
+    <a2x_pack_sample.v.h>
+    <private types>
+    <implementations>
+"""
+
 class PackTool(Tool):
     def main(self):
         pack_name = self.get_arg('PackName').strip().lower()
