@@ -116,7 +116,7 @@ void a_pixel_setBlend(APixelBlend Blend)
 
 void a_pixel_setAlpha(int Alpha)
 {
-    a_pixel__state.alpha = a_math_min(Alpha, A_PIXEL_ALPHA_MAX);
+    a_pixel__state.alpha = a_math_constrain(Alpha, 0, A_PIXEL_ALPHA_MAX);
 
     optimizeAlphaBlending(true);
 }
@@ -134,7 +134,7 @@ void a_pixel_setRGBA(int Red, int Green, int Blue, int Alpha)
     a_pixel__state.red = Red;
     a_pixel__state.green = Green;
     a_pixel__state.blue = Blue;
-    a_pixel__state.alpha = a_math_min(Alpha, A_PIXEL_ALPHA_MAX);
+    a_pixel__state.alpha = a_math_constrain(Alpha, 0, A_PIXEL_ALPHA_MAX);
     a_pixel__state.pixel = a_pixel_make(Red, Green, Blue);
 
     optimizeAlphaBlending(true);

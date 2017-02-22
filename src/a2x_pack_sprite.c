@@ -66,7 +66,10 @@ static void a_sprite__free(ASprite* Sprite);
 #define A__BLEND rgba
 #define A__FILL data
 #define A__BLEND_SETUP \
-    const int a__pass_alpha = a_pixel__state.alpha;
+    const int a__pass_alpha = a_pixel__state.alpha; \
+    if(a__pass_alpha == 0) {                        \
+        return;                                     \
+    }
 #define A__PIXEL_PARAMS , a_pixel_red(*a__pass_src), a_pixel_green(*a__pass_src), a_pixel_blue(*a__pass_src), a__pass_alpha
 #include "a2x_pack_sprite.inc.c"
 #undef A__BLEND
@@ -80,7 +83,10 @@ static void a_sprite__free(ASprite* Sprite);
     const int a__pass_red = a_pixel__state.red;     \
     const int a__pass_green = a_pixel__state.green; \
     const int a__pass_blue = a_pixel__state.blue;   \
-    const int a__pass_alpha = a_pixel__state.alpha;
+    const int a__pass_alpha = a_pixel__state.alpha; \
+    if(a__pass_alpha == 0) {                        \
+        return;                                     \
+    }
 #define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue, a__pass_alpha
 #include "a2x_pack_sprite.inc.c"
 #undef A__BLEND
