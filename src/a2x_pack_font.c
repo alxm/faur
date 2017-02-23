@@ -169,7 +169,7 @@ unsigned a_font_copy(unsigned Font, APixel Color)
             APixel* pixels = sprite->pixels;
 
             for(int j = sprite->w * sprite->h; j--; pixels++) {
-                if(*pixels != A_SPRITE_COLORKEY) {
+                if(*pixels != a_sprite__colorKey) {
                     *pixels = Color;
                 }
             }
