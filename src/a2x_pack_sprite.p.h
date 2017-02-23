@@ -39,9 +39,9 @@ extern void a_sprite_blitCenterX(const ASprite* Sprite, int Y);
 extern void a_sprite_blitCenterY(const ASprite* Sprite, int X);
 extern void a_sprite_fillFlat(bool FillFlatColor);
 
-extern int a_sprite_w(const ASprite* Sprite);
-extern int a_sprite_wLog2(const ASprite* Sprite);
-extern int a_sprite_h(const ASprite* Sprite);
+extern int a_sprite_width(const ASprite* Sprite);
+extern int a_sprite_widthLog2(const ASprite* Sprite);
+extern int a_sprite_height(const ASprite* Sprite);
 extern APixel* a_sprite_pixels(ASprite* Sprite);
 extern APixel a_sprite_getPixel(const ASprite* Sprite, int X, int Y);
 

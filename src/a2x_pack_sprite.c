@@ -480,17 +480,17 @@ void a_sprite_fillFlat(bool FillFlatColor)
     a_sprite__updateRoutines();
 }
 
-int a_sprite_w(const ASprite* Sprite)
+int a_sprite_width(const ASprite* Sprite)
 {
     return Sprite->w;
 }
 
-int a_sprite_wLog2(const ASprite* Sprite)
+int a_sprite_widthLog2(const ASprite* Sprite)
 {
     return Sprite->wLog2;
 }
 
-int a_sprite_h(const ASprite* Sprite)
+int a_sprite_height(const ASprite* Sprite)
 {
     return Sprite->h;
 }
