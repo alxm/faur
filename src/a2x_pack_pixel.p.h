@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016 Alex Margarit
+    Copyright 2010, 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -71,6 +71,22 @@ static inline APixel a_pixel_make(int Red, int Green, int Blue)
         (((((unsigned)Red   & 0xff) >> A_PIXEL_RED_PACK)   << A_PIXEL_RED_SHIFT)   |
          ((((unsigned)Green & 0xff) >> A_PIXEL_GREEN_PACK) << A_PIXEL_GREEN_SHIFT) |
          ((((unsigned)Blue  & 0xff) >> A_PIXEL_BLUE_PACK)  << A_PIXEL_BLUE_SHIFT));
+}
+
+static inline APixel a_pixel_hex(uint32_t Hexcode)
+{
+    #if A_PIXEL_BPP == 32
+        #if A_USE_LIB_SDL == 1
+            return (APixel)(Hexcode & 0xffffff);
+        #elif A_USE_LIB_SDL == 2
+            return (APixel)(Hexcode << A_PIXEL_PAD_BITS);
+        #endif
+    #else
+        return (APixel)
+            (((((Hexcode >> 16) & 0xff) >> A_PIXEL_RED_PACK)   << A_PIXEL_RED_SHIFT)   |
+             ((((Hexcode >> 8)  & 0xff) >> A_PIXEL_GREEN_PACK) << A_PIXEL_GREEN_SHIFT) |
+             ((((Hexcode)       & 0xff) >> A_PIXEL_BLUE_PACK)  << A_PIXEL_BLUE_SHIFT));
+    #endif
 }
 
 static inline int a_pixel_red(APixel Pixel)
