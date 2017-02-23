@@ -123,4 +123,5 @@ extern void a_pixel_setBlend(APixelBlend Blend);
 extern void a_pixel_setAlpha(int Alpha);
 extern void a_pixel_setRGB(int Red, int Green, int Blue);
 extern void a_pixel_setRGBA(int Red, int Green, int Blue, int Alpha);
+extern void a_pixel_setHex(uint32_t Hexcode);
 extern void a_pixel_setPixel(APixel Pixel);
