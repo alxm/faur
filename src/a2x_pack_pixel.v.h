@@ -58,9 +58,9 @@ static inline void a_pixel__rgb25(APixel* Dst, int Red, int Green, int Blue)
     const int g = a_pixel_green(p);
     const int b = a_pixel_blue(p);
 
-    *Dst = a_pixel_rgb((r >> 1) + ((r + Red)   >> 2),
-                       (g >> 1) + ((g + Green) >> 2),
-                       (b >> 1) + ((b + Blue)  >> 2));
+    *Dst = a_pixel_rgb(r - (r >> 2) + (Red   >> 2),
+                       g - (g >> 2) + (Green >> 2),
+                       b - (b >> 2) + (Blue  >> 2));
 }
 
 static inline void a_pixel__rgb50(APixel* Dst, int Red, int Green, int Blue)
@@ -84,9 +84,9 @@ static inline void a_pixel__rgb75(APixel* Dst, int Red, int Green, int Blue)
     const int g = a_pixel_green(p);
     const int b = a_pixel_blue(p);
 
-    *Dst = a_pixel_rgb((r >> 2) + (Red   >> 2) + (Red   >> 1),
-                       (g >> 2) + (Green >> 2) + (Green >> 1),
-                       (b >> 2) + (Blue  >> 2) + (Blue  >> 1));
+    *Dst = a_pixel_rgb((r >> 2) + Red   - (Red   >> 2),
+                       (g >> 2) + Green - (Green >> 2),
+                       (b >> 2) + Blue  - (Blue  >> 2));
 }
 
 static inline void a_pixel__inverse(APixel* Dst)
