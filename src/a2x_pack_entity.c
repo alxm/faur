@@ -35,6 +35,7 @@ typedef struct ASystemCollection {
     AList* drawSystems;
     void* context;
     ASystemCollectionState state;
+    bool deleting;
 } ASystemCollection;
 
 typedef struct AComponent {
@@ -164,6 +165,12 @@ void a_entity_reference(AEntity* Entity)
 
 void a_entity_release(AEntity* Entity)
 {
+    if(g_collection->deleting) {
+        // Entity could have already been freed. This is the only ECS function
+        // that may be called from AComponentFree callbacks.
+        return;
+    }
+
     if(Entity->references-- == 0) {
         a_out__fatal("Release count exceeds reference count for '%s'",
                      ENTITY_NAME(Entity));
@@ -409,6 +416,7 @@ void a_system__pushCollection(void)
     c->drawSystems = a_list_new();
     c->context = NULL;
     c->state = A_SYSTEM_STATE_DECLARE_COMPONENTS;
+    c->deleting = false;
 
     if(g_collection != NULL) {
         a_list_push(g_stack, g_collection);
@@ -419,6 +427,8 @@ void a_system__pushCollection(void)
 
 void a_system__popCollection(void)
 {
+    g_collection->deleting = true;
+
     A_LIST_ITERATE(g_collection->newEntities, AEntity*, entity) {
         a_entity__free(entity);
     }
