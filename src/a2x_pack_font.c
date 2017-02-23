@@ -74,12 +74,12 @@ void a_font__init(void)
     ASprite* fontSprite = a_sprite_fromData(g_media_font, "defaultFont");
 
     APixel colors[A_FONT_FACE_DEFAULT_NUM];
-    colors[A_FONT_FACE_WHITE] = a_pixel_make(0xff, 0xff, 0xff);
-    colors[A_FONT_FACE_LIGHT_GRAY] = a_pixel_make(0xaf, 0xaf, 0xaf);
-    colors[A_FONT_FACE_GREEN] = a_pixel_make(0x3f, 0xbf, 0x9f);
-    colors[A_FONT_FACE_YELLOW] = a_pixel_make(0x9f, 0xcf, 0x3f);
-    colors[A_FONT_FACE_RED] = a_pixel_make(0xcf, 0x2f, 0x4f);
-    colors[A_FONT_FACE_BLUE] = a_pixel_make(0x3f, 0x8f, 0xdf);
+    colors[A_FONT_FACE_WHITE] = a_pixel_hex(0xffffff);
+    colors[A_FONT_FACE_LIGHT_GRAY] = a_pixel_hex(0xafafaf);
+    colors[A_FONT_FACE_GREEN] = a_pixel_hex(0x3fbf9f);
+    colors[A_FONT_FACE_YELLOW] = a_pixel_hex(0x9fcf3f);
+    colors[A_FONT_FACE_RED] = a_pixel_hex(0xcf2f4f);
+    colors[A_FONT_FACE_BLUE] = a_pixel_hex(0x3f8fdf);
 
     a_font_load(fontSprite, 0, 0, A_FONT_LOAD_ALL);
     a_sprite_free(fontSprite);
@@ -169,7 +169,7 @@ unsigned a_font_copy(unsigned Font, APixel Color)
             APixel* pixels = sprite->pixels;
 
             for(int j = sprite->w * sprite->h; j--; pixels++) {
-                if(*pixels != A_SPRITE_COLORKEY) {
+                if(*pixels != a_sprite__colorKey) {
                     *pixels = Color;
                 }
             }

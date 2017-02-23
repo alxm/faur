@@ -50,9 +50,9 @@ static void pngToPixels(png_structp Png, png_infop Info, APixel** Pixels, int* W
 
     for(png_uint_32 y = h; y--; rows++) {
         for(png_uint_32 x = w, chOffset = 0; x--; chOffset += numChannels) {
-            *pixels++ = a_pixel_make(rows[0][chOffset + 0],
-                                     rows[0][chOffset + 1],
-                                     rows[0][chOffset + 2]);
+            *pixels++ = a_pixel_rgb(rows[0][chOffset + 0],
+                                    rows[0][chOffset + 1],
+                                    rows[0][chOffset + 2]);
         }
     }
 }

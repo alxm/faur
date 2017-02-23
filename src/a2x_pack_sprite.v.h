@@ -36,6 +36,10 @@ struct ASprite {
     APixel pixels[];
 };
 
+extern APixel a_sprite__colorKey;
+extern APixel a_sprite__colorLimit;
+extern APixel a_sprite__colorEnd;
+
 extern void a_sprite__init(void);
 extern void a_sprite__uninit(void);
 

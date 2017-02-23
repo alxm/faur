@@ -33,6 +33,10 @@ static bool g_fillFlat;
 static AList* g_spritesList;
 static void a_sprite__free(ASprite* Sprite);
 
+APixel a_sprite__colorKey;
+APixel a_sprite__colorLimit;
+APixel a_sprite__colorEnd;
+
 #define A__FUNC_NAME_JOIN_WORKER(A, B, C, D) a_blit__##A##_##B##_##C##_##D
 #define A__FUNC_NAME_JOIN(A, B, C, D) A__FUNC_NAME_JOIN_WORKER(A, B, C, D)
 #define A__FUNC_NAME(Blend, Fill, ColorKey, Clip) A__FUNC_NAME_JOIN(Blend, Fill, ColorKey, Clip)
@@ -205,6 +209,10 @@ void a_sprite__init(void)
     g_fillFlat = false;
     a_sprite__updateRoutines();
     g_spritesList = a_list_new();
+
+    a_sprite__colorKey = a_pixel_hex(0xFF00FF);
+    a_sprite__colorLimit = a_pixel_hex(0x00FF00);
+    a_sprite__colorEnd = a_pixel_hex(0x00FFFF);
 }
 
 void a_sprite__uninit(void)
@@ -273,7 +281,7 @@ ASprite* a_sprite_fromPixels(const APixel* Pixels, int Width, int Height)
     bool foundColorKey = false;
 
     for(int i = Width * Height; i--; ) {
-        if(Pixels[i] == A_SPRITE_COLORKEY) {
+        if(Pixels[i] == a_sprite__colorKey) {
             foundColorKey = true;
             break;
         }
@@ -308,14 +316,14 @@ ASprite* a_sprite_fromSprite(const ASprite* Sheet, int X, int Y)
     for(int endX = X; endX < sheetWidth; endX++) {
         APixel p = a_sprite__getPixel(Sheet, endX, Y);
 
-        if(p != A_SPRITE_LIMIT && p != A_SPRITE_END) {
+        if(p != a_sprite__colorLimit && p != a_sprite__colorEnd) {
             continue;
         }
 
         for(int endY = Y; endY < sheetHeight; endY++) {
             p = a_sprite__getPixel(Sheet, X, endY);
 
-            if(p != A_SPRITE_LIMIT) {
+            if(p != a_sprite__colorLimit) {
                 continue;
             }
 
@@ -325,7 +333,7 @@ ASprite* a_sprite_fromSprite(const ASprite* Sheet, int X, int Y)
             for(int x = X; x < endX; x++) {
                 p = a_sprite__getPixel(Sheet, x, endY);
 
-                if(p != A_SPRITE_LIMIT) {
+                if(p != a_sprite__colorLimit) {
                     foundBottomEdge = false;
                     break;
                 }
@@ -335,7 +343,7 @@ ASprite* a_sprite_fromSprite(const ASprite* Sheet, int X, int Y)
                 for(int y = Y; y < endY; y++) {
                     p = a_sprite__getPixel(Sheet, endX, y);
 
-                    if(p != A_SPRITE_LIMIT && p != A_SPRITE_END) {
+                    if(p != a_sprite__colorLimit && p != a_sprite__colorEnd) {
                         foundRightEdge = false;
                         break;
                     }
@@ -369,7 +377,7 @@ doneEdges:
 
     for(int i = spriteHeight; i--; pixels += sheetWidth - spriteWidth) {
         for(int j = spriteWidth; j--; ) {
-            if(*pixels++ == A_SPRITE_COLORKEY) {
+            if(*pixels++ == a_sprite__colorKey) {
                 foundColorKey = true;
                 goto doneColorKey;
             }
@@ -410,7 +418,7 @@ ASprite* a_sprite_blank(int Width, int Height, bool ColorKeyed)
         APixel* pixels = s->pixels;
 
         for(int i = Width * Height; i--; ) {
-            *pixels++ = A_SPRITE_COLORKEY;
+            *pixels++ = a_sprite__colorKey;
         }
     } else {
         memset(s->pixels,
@@ -480,17 +488,17 @@ void a_sprite_fillFlat(bool FillFlatColor)
     a_sprite__updateRoutines();
 }
 
-int a_sprite_w(const ASprite* Sprite)
+int a_sprite_width(const ASprite* Sprite)
 {
     return Sprite->w;
 }
 
-int a_sprite_wLog2(const ASprite* Sprite)
+int a_sprite_widthLog2(const ASprite* Sprite)
 {
     return Sprite->wLog2;
 }
 
-int a_sprite_h(const ASprite* Sprite)
+int a_sprite_height(const ASprite* Sprite)
 {
     return Sprite->h;
 }
@@ -523,10 +531,10 @@ void a_sprite__refreshSpans(ASprite* Sprite)
 
     for(int y = spriteHeight; y--; ) {
         bytesNeeded += sizeof(unsigned); // total spans size and initial state
-        bool lastState = *dest != A_SPRITE_COLORKEY; // initial state
+        bool lastState = *dest != a_sprite__colorKey; // initial state
 
         for(int x = spriteWidth; x--; ) {
-            bool newState = *dest++ != A_SPRITE_COLORKEY;
+            bool newState = *dest++ != a_sprite__colorKey;
 
             if(newState != lastState) {
                 bytesNeeded += sizeof(unsigned); // length of new span
@@ -551,11 +559,11 @@ void a_sprite__refreshSpans(ASprite* Sprite)
         unsigned numSpans = 1; // line has at least 1 span
         unsigned spanLength = 0;
 
-        bool lastState = *dest != A_SPRITE_COLORKEY; // initial draw state
+        bool lastState = *dest != a_sprite__colorKey; // initial draw state
         *spans++ = lastState;
 
         for(int x = spriteWidth; x--; ) {
-            bool newState = *dest++ != A_SPRITE_COLORKEY;
+            bool newState = *dest++ != a_sprite__colorKey;
 
             if(newState == lastState) {
                 spanLength++; // keep growing current span
@@ -583,4 +591,9 @@ ASprite* a_sprite_clone(const ASprite* Sprite)
     a_sprite__refreshSpans(s);
 
     return s;
+}
+
+APixel a_sprite_getColorKey(void)
+{
+    return a_sprite__colorKey;
 }

@@ -51,7 +51,7 @@ ASpriteFrames* a_spriteframes_new(const ASprite* Sheet, int X, int Y, unsigned C
             bool end = true;
 
             for(int y = Y + s->h; y-- > Y; ) {
-                if(a_sprite__getPixel(Sheet, X, y) != A_SPRITE_END) {
+                if(a_sprite__getPixel(Sheet, X, y) != a_sprite__colorEnd) {
                     end = false;
                     break;
                 }
