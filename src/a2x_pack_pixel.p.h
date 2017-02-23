@@ -65,7 +65,7 @@
 
 #define A_PIXEL_ALPHA_MAX 256
 
-static inline APixel a_pixel_make(int Red, int Green, int Blue)
+static inline APixel a_pixel_rgb(int Red, int Green, int Blue)
 {
     return (APixel)
         (((((unsigned)Red   & 0xff) >> A_PIXEL_RED_PACK)   << A_PIXEL_RED_SHIFT)   |

@@ -126,7 +126,7 @@ void a_pixel_setRGB(int Red, int Green, int Blue)
     a_pixel__state.red = (unsigned)Red & 0xff;
     a_pixel__state.green = (unsigned)Green & 0xff;
     a_pixel__state.blue = (unsigned)Blue & 0xff;
-    a_pixel__state.pixel = a_pixel_make(Red, Green, Blue);
+    a_pixel__state.pixel = a_pixel_rgb(Red, Green, Blue);
 }
 
 void a_pixel_setRGBA(int Red, int Green, int Blue, int Alpha)
@@ -135,7 +135,7 @@ void a_pixel_setRGBA(int Red, int Green, int Blue, int Alpha)
     a_pixel__state.green = (unsigned)Green & 0xff;
     a_pixel__state.blue = (unsigned)Blue & 0xff;
     a_pixel__state.alpha = a_math_constrain(Alpha, 0, A_PIXEL_ALPHA_MAX);
-    a_pixel__state.pixel = a_pixel_make(Red, Green, Blue);
+    a_pixel__state.pixel = a_pixel_rgb(Red, Green, Blue);
 
     optimizeAlphaBlending(true);
 }
