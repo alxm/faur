@@ -55,8 +55,8 @@
     #endif
 #endif
 
-// Feature macro for scandir, alphasort, realpath, etc.
-#define _GNU_SOURCE 1
+// For putenv
+#define _XOPEN_SOURCE
 
 #include <ctype.h>
 #include <dirent.h>
