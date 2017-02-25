@@ -1,5 +1,5 @@
 /*
-    Copyright 2016 Alex Margarit
+    Copyright 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -66,7 +66,7 @@ static void screenCallback(void)
     a_font_push();
 
     a_pixel_setBlend(A_PIXEL_BLEND_RGB75);
-    a_pixel_setRGB(0x1f, 0x0f, 0x0f);
+    a_pixel_setHex(0x1f0f0f);
     a_draw_fill();
 
     a_pixel_reset();
@@ -140,10 +140,9 @@ void a_console__init2(void)
     ASprite* graphics = a_sprite_fromData(g_media_console, "consoleTitles");
     ASpriteFrames* frames = a_spriteframes_new(graphics, 0, 0, 1);
 
-    g_titles[A_CONSOLE_MESSAGE] = a_spriteframes_getByIndex(frames, 0);
-    g_titles[A_CONSOLE_WARNING] = a_spriteframes_getByIndex(frames, 1);
-    g_titles[A_CONSOLE_ERROR] = a_spriteframes_getByIndex(frames, 2);
-    g_titles[A_CONSOLE_STATE] = a_spriteframes_getByIndex(frames, 4);
+    for(AConsoleOutType type = 0; type < A_CONSOLE_MAX; type++) {
+        g_titles[type] = a_spriteframes_next(frames);
+    }
 
     a_spriteframes_free(frames, false);
     a_sprite_free(graphics);

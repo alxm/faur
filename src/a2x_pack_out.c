@@ -1,5 +1,5 @@
 /*
-    Copyright 2016 Alex Margarit
+    Copyright 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -113,5 +113,26 @@ void a_out__stateVerbose(const char* Format, ...)
 
         A_OUT__PRINT("Stt", A_COLOR_BLUE, stdout);
         A_OUT__CONSOLE(A_CONSOLE_STATE);
+    }
+}
+
+void a_out_textf(const char* Format, ...)
+{
+    if(a_settings_getBool("app.output.on")) {
+        A_OUT__PRINT("App", A_COLOR_MAGENTA, stdout);
+        A_OUT__CONSOLE(A_CONSOLE_APP);
+    }
+}
+
+void a_out_textv(const char* Format, va_list Args)
+{
+    if(a_settings_getBool("app.output.on")) {
+        va_list consoleArgs;
+        va_copy(consoleArgs, Args);
+
+        outPrint("App", A_COLOR_MAGENTA, stdout, Format, Args);
+        outConsole(A_CONSOLE_APP, Format, consoleArgs);
+
+        va_end(consoleArgs);
     }
 }

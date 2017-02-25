@@ -1,5 +1,5 @@
 /*
-    Copyright 2016 Alex Margarit
+    Copyright 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -21,4 +21,5 @@
 
 #include "a2x_system_includes.h"
 
-//
+extern void a_out_textf(const char* Format, ...);
+extern void a_out_textv(const char* Format, va_list Args);

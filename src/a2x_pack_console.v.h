@@ -1,5 +1,5 @@
 /*
-    Copyright 2016 Alex Margarit
+    Copyright 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -35,6 +35,7 @@ typedef enum {
     A_CONSOLE_WARNING,
     A_CONSOLE_ERROR,
     A_CONSOLE_STATE,
+    A_CONSOLE_APP,
     A_CONSOLE_MAX
 } AConsoleOutType;
 
