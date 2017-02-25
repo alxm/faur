@@ -19,10 +19,21 @@
 
 #include "a2x_pack_out.v.h"
 
-static void outPrint(const char* Title, int Color, FILE* Stream, const char* Format, va_list Args)
+typedef enum {
+    A_COLOR_BLACK = 30,
+    A_COLOR_RED = 31,
+    A_COLOR_GREEN = 32,
+    A_COLOR_YELLOW = 33,
+    A_COLOR_BLUE = 34,
+    A_COLOR_MAGENTA = 35,
+    A_COLOR_CYAN = 36,
+    A_COLOR_WHITE = 37
+} AColorCode;
+
+static void outPrint(const char* Title, AColorCode Color, FILE* Stream, const char* Format, va_list Args)
 {
     #if A_PLATFORM_LINUXPC
-        fprintf(Stream, "\033[%d;1m[ a2x %s ]\033[0m ", Color, Title);
+        fprintf(Stream, "\033[1;%dm[ a2x %s ]\033[0m ", Color, Title);
     #else
         (void)Color;
         fprintf(Stream, "[ a2x %s ] ", Title);
@@ -64,33 +75,33 @@ static void outConsole(AConsoleOutType Type, const char* Format, va_list Args)
 void a_out__message(const char* Format, ...)
 {
     if(a_settings_getBool("app.output.on")) {
-        A_OUT__PRINT("Msg", 32, stdout);
+        A_OUT__PRINT("Msg", A_COLOR_GREEN, stdout);
         A_OUT__CONSOLE(A_CONSOLE_MESSAGE);
     }
 }
 
 void a_out__warning(const char* Format, ...)
 {
-    A_OUT__PRINT("Wrn", 33, stderr);
+    A_OUT__PRINT("Wrn", A_COLOR_YELLOW, stderr);
     A_OUT__CONSOLE(A_CONSOLE_WARNING);
 }
 
 void a_out__error(const char* Format, ...)
 {
-    A_OUT__PRINT("Err", 31, stderr);
+    A_OUT__PRINT("Err", A_COLOR_RED, stderr);
     A_OUT__CONSOLE(A_CONSOLE_ERROR);
 }
 
 void a_out__fatal(const char* Format, ...)
 {
-    A_OUT__PRINT("Ftl", 35, stderr);
+    A_OUT__PRINT("Ftl", A_COLOR_RED, stderr);
     exit(1);
 }
 
 void a_out__state(const char* Format, ...)
 {
     if(a_settings_getBool("app.output.on")) {
-        A_OUT__PRINT("Stt", 34, stdout);
+        A_OUT__PRINT("Stt", A_COLOR_BLUE, stdout);
         A_OUT__CONSOLE(A_CONSOLE_STATE);
     }
 }
@@ -100,7 +111,7 @@ void a_out__stateVerbose(const char* Format, ...)
     if(a_settings_getBool("app.output.on")
         && a_settings_getBool("app.output.verbose")) {
 
-        A_OUT__PRINT("Stt", 34, stdout);
+        A_OUT__PRINT("Stt", A_COLOR_BLUE, stdout);
         A_OUT__CONSOLE(A_CONSOLE_STATE);
     }
 }
