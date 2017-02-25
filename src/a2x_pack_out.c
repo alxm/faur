@@ -51,7 +51,7 @@
     va_end(args);                         \
 }
 
-void a_out__message(char* Format, ...)
+void a_out__message(const char* Format, ...)
 {
     if(a_settings_getBool("app.output.on")) {
         A_OUT__WORKER("Msg", 32, stdout);
@@ -59,25 +59,25 @@ void a_out__message(char* Format, ...)
     }
 }
 
-void a_out__warning(char* Format, ...)
+void a_out__warning(const char* Format, ...)
 {
     A_OUT__WORKER("Wrn", 33, stderr);
     A_OUT__CONSOLE(A_CONSOLE_WARNING);
 }
 
-void a_out__error(char* Format, ...)
+void a_out__error(const char* Format, ...)
 {
     A_OUT__WORKER("Err", 31, stderr);
     A_OUT__CONSOLE(A_CONSOLE_ERROR);
 }
 
-void a_out__fatal(char* Format, ...)
+void a_out__fatal(const char* Format, ...)
 {
     A_OUT__WORKER("Ftl", 35, stderr);
     exit(1);
 }
 
-void a_out__state(char* Format, ...)
+void a_out__state(const char* Format, ...)
 {
     if(a_settings_getBool("app.output.on")) {
         A_OUT__WORKER("Stt", 34, stdout);
@@ -85,7 +85,7 @@ void a_out__state(char* Format, ...)
     }
 }
 
-void a_out__stateVerbose(char* Format, ...)
+void a_out__stateVerbose(const char* Format, ...)
 {
     if(a_settings_getBool("app.output.on")
         && a_settings_getBool("app.output.verbose")) {
