@@ -70,6 +70,8 @@ extern void a_font_setWrap(int Width);
 
 extern int a_font_width(const char* Text);
 extern int a_font_widthf(const char* Format, ...);
+extern int a_font_widthv(const char* Format, va_list Args);
 
 extern void a_font_text(const char* Text);
 extern void a_font_textf(const char* Format, ...);
+extern void a_font_textv(const char* Format, va_list Args);

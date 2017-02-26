@@ -1,5 +1,5 @@
 /*
-    Copyright 2016 Alex Margarit
+    Copyright 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -19,78 +19,120 @@
 
 #include "a2x_pack_out.v.h"
 
-#if A_PLATFORM_LINUXPC
-    #define A_OUT__HEADER(Title, Color) \
-        "\033[" #Color ";1m[ a2x " Title " ]\033[0m "
-#else
-    #define A_OUT__HEADER(Title, Color) \
-        "[ a2x " Title " ] "
-#endif
+typedef enum {
+    A_COLOR_BLACK = 30,
+    A_COLOR_RED = 31,
+    A_COLOR_GREEN = 32,
+    A_COLOR_YELLOW = 33,
+    A_COLOR_BLUE = 34,
+    A_COLOR_MAGENTA = 35,
+    A_COLOR_CYAN = 36,
+    A_COLOR_WHITE = 37
+} AColorCode;
 
-#define A_OUT__WORKER(Title, Color, Stream)       \
-{                                                 \
-    va_list args;                                 \
-    va_start(args, Format);                       \
-                                                  \
-    fprintf(Stream, A_OUT__HEADER(Title, Color)); \
-    vfprintf(Stream, Format, args);               \
-    fprintf(Stream, "\n");                        \
-                                                  \
-    va_end(args);                                 \
+static void outPrint(const char* Title, AColorCode Color, FILE* Stream, const char* Format, va_list Args)
+{
+    #if A_PLATFORM_LINUXPC
+        fprintf(Stream, "\033[1;%dm[ a2x %s ]\033[0m ", Color, Title);
+    #else
+        (void)Color;
+        fprintf(Stream, "[ a2x %s ] ", Title);
+    #endif
+
+    vfprintf(Stream, Format, Args);
+    fprintf(Stream, "\n");
 }
 
-#define A_OUT__CONSOLE(Type)              \
-{                                         \
-    char buffer[256];                     \
-    va_list args;                         \
-    va_start(args, Format);               \
-                                          \
-    vsnprintf(buffer, 256, Format, args); \
-    a_console__write(Type, buffer);       \
-                                          \
-    va_end(args);                         \
+static void outConsole(AConsoleOutType Type, const char* Format, va_list Args)
+{
+    char buffer[256];
+
+    if(vsnprintf(buffer, sizeof(buffer), Format, Args) > 0) {
+        a_console__write(Type, buffer);
+    }
 }
 
-void a_out__message(char* Format, ...)
+#define A_OUT__ARGS(FunctionCall) \
+{                                 \
+    va_list args;                 \
+    va_start(args, Format);       \
+                                  \
+    FunctionCall;                 \
+                                  \
+    va_end(args);                 \
+}
+
+#define A_OUT__PRINT(Title, Color, Stream)                     \
+{                                                              \
+    A_OUT__ARGS(outPrint(Title, Color, Stream, Format, args)); \
+}
+
+#define A_OUT__CONSOLE(Type)                     \
+{                                                \
+    A_OUT__ARGS(outConsole(Type, Format, args)); \
+}
+
+void a_out__message(const char* Format, ...)
 {
     if(a_settings_getBool("app.output.on")) {
-        A_OUT__WORKER("Msg", 32, stdout);
+        A_OUT__PRINT("Msg", A_COLOR_GREEN, stdout);
         A_OUT__CONSOLE(A_CONSOLE_MESSAGE);
     }
 }
 
-void a_out__warning(char* Format, ...)
+void a_out__warning(const char* Format, ...)
 {
-    A_OUT__WORKER("Wrn", 33, stderr);
+    A_OUT__PRINT("Wrn", A_COLOR_YELLOW, stderr);
     A_OUT__CONSOLE(A_CONSOLE_WARNING);
 }
 
-void a_out__error(char* Format, ...)
+void a_out__error(const char* Format, ...)
 {
-    A_OUT__WORKER("Err", 31, stderr);
+    A_OUT__PRINT("Err", A_COLOR_RED, stderr);
     A_OUT__CONSOLE(A_CONSOLE_ERROR);
 }
 
-void a_out__fatal(char* Format, ...)
+void a_out__fatal(const char* Format, ...)
 {
-    A_OUT__WORKER("Ftl", 35, stderr);
+    A_OUT__PRINT("Ftl", A_COLOR_RED, stderr);
     exit(1);
 }
 
-void a_out__state(char* Format, ...)
+void a_out__state(const char* Format, ...)
 {
     if(a_settings_getBool("app.output.on")) {
-        A_OUT__WORKER("Stt", 34, stdout);
+        A_OUT__PRINT("Stt", A_COLOR_BLUE, stdout);
         A_OUT__CONSOLE(A_CONSOLE_STATE);
     }
 }
 
-void a_out__stateVerbose(char* Format, ...)
+void a_out__stateVerbose(const char* Format, ...)
 {
     if(a_settings_getBool("app.output.on")
         && a_settings_getBool("app.output.verbose")) {
 
-        A_OUT__WORKER("Stt", 34, stdout);
+        A_OUT__PRINT("Stt", A_COLOR_BLUE, stdout);
         A_OUT__CONSOLE(A_CONSOLE_STATE);
+    }
+}
+
+void a_out_textf(const char* Format, ...)
+{
+    if(a_settings_getBool("app.output.on")) {
+        A_OUT__PRINT("App", A_COLOR_MAGENTA, stdout);
+        A_OUT__CONSOLE(A_CONSOLE_APP);
+    }
+}
+
+void a_out_textv(const char* Format, va_list Args)
+{
+    if(a_settings_getBool("app.output.on")) {
+        va_list consoleArgs;
+        va_copy(consoleArgs, Args);
+
+        outPrint("App", A_COLOR_MAGENTA, stdout, Format, Args);
+        outConsole(A_CONSOLE_APP, Format, consoleArgs);
+
+        va_end(consoleArgs);
     }
 }

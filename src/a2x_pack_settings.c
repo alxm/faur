@@ -197,7 +197,14 @@ void a_settings__init(void)
     add(A_SETTING_STR, A_SETTING_SET_ONCE, "screenshot.button", "pc.f12, pandora.s");
 
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "console.on", "0");
-    add(A_SETTING_STR, A_SETTING_SET_ONCE, "console.button", "pc.f11");
+    add(A_SETTING_STR,
+        A_SETTING_SET_ONCE,
+        "console.button",
+        "pc.f11 "
+        "gp2x.l+gp2x.r+gp2x.x "
+        "wiz.l+wiz.r+wiz.x "
+        "caanoo.l+caanoo.r+caanoo.x "
+        "pandora.l+pandora.r+pandora.x ");
 }
 
 void a_settings__uninit(void)

@@ -403,15 +403,19 @@ void a_font_text(const char* Text)
 
 void a_font_textf(const char* Format, ...)
 {
-    int ret;
     va_list args;
+    va_start(args, Format);
+
+    a_font_textv(Format, args);
+
+    va_end(args);
+}
+
+void a_font_textv(const char* Format, va_list Args)
+{
     char buffer[256];
 
-    va_start(args, Format);
-    ret = vsnprintf(buffer, sizeof(buffer), Format, args);
-    va_end(args);
-
-    if(ret > 0) {
+    if(vsnprintf(buffer, sizeof(buffer), Format, Args) > 0) {
         a_font_text(buffer);
     }
 }
@@ -423,17 +427,23 @@ int a_font_width(const char* Text)
 
 int a_font_widthf(const char* Format, ...)
 {
-    int ret;
+    int width;
     va_list args;
-    char buffer[256];
 
     va_start(args, Format);
-    ret = vsnprintf(buffer, sizeof(buffer), Format, args);
+    width = a_font_widthv(Format, args);
     va_end(args);
 
-    if(ret < 0) {
-        return 0;
+    return width;
+}
+
+int a_font_widthv(const char* Format, va_list Args)
+{
+    char buffer[256];
+
+    if(vsnprintf(buffer, sizeof(buffer), Format, Args) > 0) {
+        return a_font_width(buffer);
     }
 
-    return a_font_width(buffer);
+    return 0;
 }
