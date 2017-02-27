@@ -19,14 +19,24 @@
 
 #pragma once
 
-#include "a2x_pack_sdl.p.h"
+#include "a2x_pack_sdl_sound.p.h"
 
-#include "a2x_pack_sdl_video.v.h"
-#include "a2x_pack_sdl_sound.v.h"
-#include "a2x_pack_sdl_input.v.h"
+#include "a2x_pack_out.v.h"
 
-extern void a_sdl__init(void);
-extern void a_sdl__uninit(void);
+extern void a_sdl_sound__init(void);
+extern void a_sdl_sound__uninit(void);
 
-extern uint32_t a_sdl_time__getTicks(void);
-extern void a_sdl_time__delay(uint32_t Ms);
+extern int a_sdl_sound__getMaxVolome(void);
+
+extern void* a_sdl_sound__musicLoad(const char* Path);
+extern void a_sdl_sound__musicFree(void* Music);
+extern void a_sdl_sound__musicSetVolume(int Volume);
+extern void a_sdl_sound__musicPlay(void* Music);
+extern void a_sdl_sound__musicStop(void);
+extern void a_sdl_sound__musicToggle(void);
+
+extern void* a_sdl_sound__sfxLoadFromFile(const char* Path);
+extern void* a_sdl_sound__sfxLoadFromData(const uint8_t* Data, int Size);
+extern void a_sdl_sound__sfxFree(void* Sfx);
+extern void a_sdl_sound__sfxSetVolume(void* Sfx, int Volume);
+extern void a_sdl_sound__sfxPlay(void* Sfx);

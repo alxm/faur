@@ -142,7 +142,7 @@ void a_input__init(void)
     g_userInputs = a_list_new();
     g_callbacks = a_list_new();
 
-    a_sdl__input_bind();
+    a_sdl_input__bind();
 
     if(a_input_numControllers() > 0) {
         a_input_setController(0);
@@ -289,7 +289,7 @@ void a_input__get(void)
         a_list_clear(touchScreen->motion);
     }
 
-    a_sdl__input_get();
+    a_sdl_input__get();
 
     // GP2X and Wiz dpad diagonals show up as dedicated buttons instead of a
     // combination of two separate buttons. This code checks diagonal events
