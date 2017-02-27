@@ -28,7 +28,7 @@ typedef struct ASdlInputHeader {
 
 typedef struct ASdlInputButton {
     ASdlInputHeader header;
-    AInputButton* input;
+    AInputButton* logicalButton;
     union {
         #if A_USE_LIB_SDL == 1
             SDLKey key;
@@ -43,14 +43,14 @@ typedef struct ASdlInputButton {
 
 typedef struct ASdlInputAnalog {
     ASdlInputHeader header;
-    AInputAnalog* input;
+    AInputAnalog* logicalAnalog;
     int xaxis_index;
     int yaxis_index;
 } ASdlInputAnalog;
 
 typedef struct ASdlInputTouch {
     ASdlInputHeader header;
-    AInputTouch* input;
+    AInputTouch* logicalTouch;
 } ASdlInputTouch;
 
 typedef struct ASdlInputController {
@@ -366,22 +366,22 @@ void a_sdl_input__uninit(void)
 void a_sdl_input__bind(void)
 {
     A_STRHASH_ITERATE(g_buttons, ASdlInputButton*, b) {
-        b->input = a_input__newButton(b->header.name);
+        b->logicalButton = a_input__newButton(b->header.name);
     }
 
     A_STRHASH_ITERATE(g_analogs, ASdlInputAnalog*, a) {
-        a->input = a_input__newAnalog(a->header.name);
+        a->logicalAnalog = a_input__newAnalog(a->header.name);
     }
 
     A_STRHASH_ITERATE(g_touchScreens, ASdlInputTouch*, t) {
-        t->input = a_input__newTouch(t->header.name);
+        t->logicalTouch = a_input__newTouch(t->header.name);
     }
 
     A_LIST_ITERATE(g_controllers, ASdlInputController*, c) {
         a_input__newController();
 
         A_STRHASH_ITERATE(c->buttons, ASdlInputButton*, b) {
-            b->input = a_input__newButton(b->header.name);
+            b->logicalButton = a_input__newButton(b->header.name);
         }
     }
 }
@@ -402,7 +402,7 @@ void a_sdl_input__get(void)
 
                 A_STRHASH_ITERATE(g_buttons, ASdlInputButton*, b) {
                     if(b->code.key == event.key.keysym.sym) {
-                        a_input__button_setState(b->input, true);
+                        a_input__button_setState(b->logicalButton, true);
                     }
                 }
             } break;
@@ -410,7 +410,7 @@ void a_sdl_input__get(void)
             case SDL_KEYUP: {
                 A_STRHASH_ITERATE(g_buttons, ASdlInputButton*, b) {
                     if(b->code.key == event.key.keysym.sym) {
-                        a_input__button_setState(b->input, false);
+                        a_input__button_setState(b->logicalButton, false);
                     }
                 }
             } break;
@@ -418,7 +418,7 @@ void a_sdl_input__get(void)
             case SDL_JOYBUTTONDOWN: {
                 A_STRHASH_ITERATE(g_buttons, ASdlInputButton*, b) {
                     if(b->code.button == event.jbutton.button) {
-                        a_input__button_setState(b->input, true);
+                        a_input__button_setState(b->logicalButton, true);
                     }
                 }
 
@@ -426,7 +426,7 @@ void a_sdl_input__get(void)
                     if(c->id == event.jbutton.which) {
                         A_STRHASH_ITERATE(c->buttons, ASdlInputButton*, b) {
                             if(b->code.button == event.jbutton.button) {
-                                a_input__button_setState(b->input, true);
+                                a_input__button_setState(b->logicalButton, true);
                             }
                         }
 
@@ -438,7 +438,7 @@ void a_sdl_input__get(void)
             case SDL_JOYBUTTONUP: {
                 A_STRHASH_ITERATE(g_buttons, ASdlInputButton*, b) {
                     if(b->code.button == event.jbutton.button) {
-                        a_input__button_setState(b->input, false);
+                        a_input__button_setState(b->logicalButton, false);
                     }
                 }
 
@@ -446,7 +446,7 @@ void a_sdl_input__get(void)
                     if(c->id == event.jbutton.which) {
                         A_STRHASH_ITERATE(c->buttons, ASdlInputButton*, b) {
                             if(b->code.button == event.jbutton.button) {
-                                a_input__button_setState(b->input, false);
+                                a_input__button_setState(b->logicalButton, false);
                             }
                         }
 
@@ -511,12 +511,12 @@ void a_sdl_input__get(void)
                             if(state & 1) {
                                 if(!b->lastStatePressed) {
                                     b->lastStatePressed = true;
-                                    a_input__button_setState(b->input, true);
+                                    a_input__button_setState(b->logicalButton, true);
                                 }
                             } else {
                                 if(b->lastStatePressed) {
                                     b->lastStatePressed = false;
-                                    a_input__button_setState(b->input, false);
+                                    a_input__button_setState(b->logicalButton, false);
                                 }
                             }
                         }
@@ -530,10 +530,10 @@ void a_sdl_input__get(void)
                 A_STRHASH_ITERATE(g_analogs, ASdlInputAnalog*, a) {
                     if(a->header.device_index == event.jaxis.which) {
                         if(event.jaxis.axis == a->xaxis_index) {
-                            a_input__analog_setXAxis(a->input,
+                            a_input__analog_setXAxis(a->logicalAnalog,
                                                      event.jaxis.value);
                         } else if(event.jaxis.axis == a->yaxis_index) {
-                            a_input__analog_setYAxis(a->input,
+                            a_input__analog_setYAxis(a->logicalAnalog,
                                                      event.jaxis.value);
                         }
                     }
@@ -542,7 +542,7 @@ void a_sdl_input__get(void)
 
             case SDL_MOUSEMOTION: {
                 A_STRHASH_ITERATE(g_touchScreens, ASdlInputTouch*, t) {
-                    a_input__touch_addMotion(t->input,
+                    a_input__touch_addMotion(t->logicalTouch,
                                              event.button.x,
                                              event.button.y);
                 }
@@ -552,7 +552,7 @@ void a_sdl_input__get(void)
                 switch(event.button.button) {
                     case SDL_BUTTON_LEFT: {
                         A_STRHASH_ITERATE(g_touchScreens, ASdlInputTouch*, t) {
-                            a_input__touch_setCoords(t->input,
+                            a_input__touch_setCoords(t->logicalTouch,
                                                      event.button.x,
                                                      event.button.y,
                                                      true);
@@ -565,7 +565,7 @@ void a_sdl_input__get(void)
                 switch(event.button.button) {
                     case SDL_BUTTON_LEFT: {
                         A_STRHASH_ITERATE(g_touchScreens, ASdlInputTouch*, t) {
-                            a_input__touch_setCoords(t->input,
+                            a_input__touch_setCoords(t->logicalTouch,
                                                      event.button.x,
                                                      event.button.y,
                                                      false);
