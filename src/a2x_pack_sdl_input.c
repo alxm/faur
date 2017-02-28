@@ -200,6 +200,11 @@ void a_sdl_input__init(void)
                 // Joystick 0 is the built-in controls on these platforms
                 continue;
             }
+        #elif A_PLATFORM_PANDORA
+            if(i < 2) {
+                // Joysticks 0 and 1 are the built-in nubs
+                continue;
+            }
         #endif
 
         AStrHash* savedButtons = g_buttons;
