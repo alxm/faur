@@ -296,9 +296,9 @@ void a_sdl_input__init(void)
         }
     }
 
-    addTouch("touchScreen");
-
     #if A_PLATFORM_PANDORA
+        // Because these are defined before the generic keys, they
+        // will take precedence in the a_sdl_input__get event loop.
         addKey("pandora.up", SDLK_UP);
         addKey("pandora.down", SDLK_DOWN);
         addKey("pandora.left", SDLK_LEFT);
@@ -311,35 +311,35 @@ void a_sdl_input__init(void)
         addKey("pandora.y", SDLK_PAGEUP);
         addKey("pandora.start", SDLK_LALT);
         addKey("pandora.select", SDLK_LCTRL);
-        addKey("pandora.m", SDLK_m);
-        addKey("pandora.s", SDLK_s);
-    #elif A_PLATFORM_LINUXPC || A_PLATFORM_MINGW
-        addKey("pc.up", SDLK_UP);
-        addKey("pc.down", SDLK_DOWN);
-        addKey("pc.left", SDLK_LEFT);
-        addKey("pc.right", SDLK_RIGHT);
-        addKey("pc.z", SDLK_z);
-        addKey("pc.x", SDLK_x);
-        addKey("pc.c", SDLK_c);
-        addKey("pc.v", SDLK_v);
-        addKey("pc.m", SDLK_m);
-        addKey("pc.enter", SDLK_RETURN);
-        addKey("pc.space", SDLK_SPACE);
-        addKey("pc.f1", SDLK_F1);
-        addKey("pc.f2", SDLK_F2);
-        addKey("pc.f3", SDLK_F3);
-        addKey("pc.f4", SDLK_F4);
-        addKey("pc.f5", SDLK_F5);
-        addKey("pc.f6", SDLK_F6);
-        addKey("pc.f7", SDLK_F7);
-        addKey("pc.f8", SDLK_F8);
-        addKey("pc.f9", SDLK_F9);
-        addKey("pc.f10", SDLK_F10);
-        addKey("pc.f11", SDLK_F11);
-        addKey("pc.f12", SDLK_F12);
-        addKey("pc.1", SDLK_1);
-        addKey("pc.0", SDLK_0);
     #endif
+
+    addKey("key.up", SDLK_UP);
+    addKey("key.down", SDLK_DOWN);
+    addKey("key.left", SDLK_LEFT);
+    addKey("key.right", SDLK_RIGHT);
+    addKey("key.z", SDLK_z);
+    addKey("key.x", SDLK_x);
+    addKey("key.c", SDLK_c);
+    addKey("key.v", SDLK_v);
+    addKey("key.m", SDLK_m);
+    addKey("key.enter", SDLK_RETURN);
+    addKey("key.space", SDLK_SPACE);
+    addKey("key.f1", SDLK_F1);
+    addKey("key.f2", SDLK_F2);
+    addKey("key.f3", SDLK_F3);
+    addKey("key.f4", SDLK_F4);
+    addKey("key.f5", SDLK_F5);
+    addKey("key.f6", SDLK_F6);
+    addKey("key.f7", SDLK_F7);
+    addKey("key.f8", SDLK_F8);
+    addKey("key.f9", SDLK_F9);
+    addKey("key.f10", SDLK_F10);
+    addKey("key.f11", SDLK_F11);
+    addKey("key.f12", SDLK_F12);
+    addKey("key.1", SDLK_1);
+    addKey("key.0", SDLK_0);
+
+    addTouch("touchScreen");
 }
 
 void a_sdl_input__uninit(void)

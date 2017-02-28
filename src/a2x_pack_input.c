@@ -148,15 +148,15 @@ void a_input__init(void)
         a_input_setController(0);
     }
 
-    addUmbrella("generic.up", "pc.up controller.up gp2x.up wiz.up caanoo.up pandora.up");
-    addUmbrella("generic.down", "pc.down controller.down gp2x.down wiz.down caanoo.down pandora.down");
-    addUmbrella("generic.left", "pc.left controller.left gp2x.left wiz.left caanoo.left pandora.left");
-    addUmbrella("generic.right", "pc.right controller.right gp2x.right wiz.right caanoo.right pandora.right");
+    addUmbrella("generic.up", "key.up controller.up gp2x.up wiz.up caanoo.up pandora.up");
+    addUmbrella("generic.down", "key.down controller.down gp2x.down wiz.down caanoo.down pandora.down");
+    addUmbrella("generic.left", "key.left controller.left gp2x.left wiz.left caanoo.left pandora.left");
+    addUmbrella("generic.right", "key.right controller.right gp2x.right wiz.right caanoo.right pandora.right");
 
-    addUmbrella("generic.b0", "pc.z controller.b0 gp2x.x wiz.x caanoo.x pandora.x");
-    addUmbrella("generic.b1", "pc.x controller.b1 gp2x.b wiz.b caanoo.b pandora.b");
-    addUmbrella("generic.b2", "pc.c controller.b2 gp2x.a wiz.a caanoo.a pandora.a");
-    addUmbrella("generic.b3", "pc.v controller.b3 gp2x.y wiz.y caanoo.y pandora.y");
+    addUmbrella("generic.b0", "key.z controller.b0 gp2x.x wiz.x caanoo.x pandora.x");
+    addUmbrella("generic.b1", "key.x controller.b1 gp2x.b wiz.b caanoo.b pandora.b");
+    addUmbrella("generic.b2", "key.c controller.b2 gp2x.a wiz.a caanoo.a pandora.a");
+    addUmbrella("generic.b3", "key.v controller.b3 gp2x.y wiz.y caanoo.y pandora.y");
 }
 
 void a_input__uninit(void)

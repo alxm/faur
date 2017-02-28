@@ -125,7 +125,7 @@ void a_sound__init(void)
             g_volumeUpButton = a_input_new("gp2x.volup, wiz.volup");
             g_volumeDownButton = a_input_new("gp2x.voldown, wiz.voldown");
         #elif A_PLATFORM_LINUXPC || A_PLATFORM_PANDORA
-            g_musicOnOffButton = a_input_new("pc.m, pandora.m");
+            g_musicOnOffButton = a_input_new("key.m");
         #endif
 
         a_input__addCallback(inputCallback);

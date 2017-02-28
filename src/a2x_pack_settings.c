@@ -194,13 +194,13 @@ void a_settings__init(void)
     add(A_SETTING_BOOL, A_SETTING_SET_ANY, "input.trackMouse", "0");
 
     add(A_SETTING_STR, A_SETTING_SET_ONCE, "screenshot.dir", "./screenshots");
-    add(A_SETTING_STR, A_SETTING_SET_ONCE, "screenshot.button", "pc.f12, pandora.s");
+    add(A_SETTING_STR, A_SETTING_SET_ONCE, "screenshot.button", "key.f12");
 
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "console.on", "0");
     add(A_SETTING_STR,
         A_SETTING_SET_ONCE,
         "console.button",
-        "pc.f11 "
+        "key.f11 "
         "gp2x.l+gp2x.r+gp2x.a+gp2x.b+gp2x.x+gp2x.y "
         "wiz.l+wiz.r+wiz.a+wiz.b+wiz.x+wiz.y "
         "caanoo.l+caanoo.r+caanoo.a+caanoo.b+caanoo.x+caanoo.y "
