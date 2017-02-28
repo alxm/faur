@@ -296,13 +296,9 @@ void a_sdl_input__init(void)
         }
     }
 
-    #if A_PLATFORM_GP2X
-        addTouch("gp2x.touch");
-    #elif A_PLATFORM_WIZ
-        addTouch("wiz.touch");
-    #elif A_PLATFORM_CAANOO
-        addTouch("caanoo.touch");
-    #elif A_PLATFORM_PANDORA
+    addTouch("touchScreen");
+
+    #if A_PLATFORM_PANDORA
         addKey("pandora.up", SDLK_UP);
         addKey("pandora.down", SDLK_DOWN);
         addKey("pandora.left", SDLK_LEFT);
@@ -315,7 +311,6 @@ void a_sdl_input__init(void)
         addKey("pandora.y", SDLK_PAGEUP);
         addKey("pandora.start", SDLK_LALT);
         addKey("pandora.select", SDLK_LCTRL);
-        addTouch("pandora.touch");
         addKey("pandora.m", SDLK_m);
         addKey("pandora.s", SDLK_s);
     #elif A_PLATFORM_LINUXPC || A_PLATFORM_MINGW
@@ -344,7 +339,6 @@ void a_sdl_input__init(void)
         addKey("pc.f12", SDLK_F12);
         addKey("pc.1", SDLK_1);
         addKey("pc.0", SDLK_0);
-        addTouch("pc.mouse");
     #endif
 }
 
