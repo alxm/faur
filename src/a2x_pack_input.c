@@ -64,6 +64,7 @@ typedef struct AInputButtonCombo {
 
 typedef struct AInputController {
     AStrHash* buttons;
+    AStrHash* axes;
 } AInputController;
 
 typedef struct APoint {
@@ -199,7 +200,13 @@ void a_input__uninit(void)
             free(b);
         }
 
+        A_STRHASH_ITERATE(c->axes, AInputAnalog*, a) {
+            freeHeader(&a->header);
+            free(a);
+        }
+
         a_strhash_free(c->buttons);
+        a_strhash_free(c->axes);
         free(c);
     }
 
@@ -215,6 +222,7 @@ void a_input__newController(void)
     AInputController* c = a_mem_malloc(sizeof(AInputController));
 
     c->buttons = a_strhash_new();
+    c->axes = a_strhash_new();
 
     a_list_addLast(g_controllers, c);
     g_activeController = c;
@@ -246,7 +254,11 @@ AInputAnalog* a_input__newAnalog(const char* Name)
 
     a->axisValue = 0;
 
-    a_strhash_add(g_analogs, Name, a);
+    if(g_activeController == NULL) {
+        a_strhash_add(g_analogs, Name, a);
+    } else {
+        a_strhash_add(g_activeController->axes, Name, a);
+    }
 
     return a;
 }
