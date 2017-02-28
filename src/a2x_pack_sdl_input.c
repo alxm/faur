@@ -21,9 +21,15 @@
 
 #include <SDL.h>
 
+#if A_USE_LIB_SDL == 1
+    typedef uint8_t ASdlJoystickId;
+#elif A_USE_LIB_SDL == 2
+    typedef SDL_JoystickID ASdlJoystickId;
+#endif
+
 typedef struct ASdlInputHeader {
     char* name;
-    int device_index;
+    ASdlJoystickId id;
 } ASdlInputHeader;
 
 typedef struct ASdlInputButton {
@@ -54,11 +60,7 @@ typedef struct ASdlInputTouch {
 
 typedef struct ASdlInputController {
     SDL_Joystick* joystick;
-    #if A_USE_LIB_SDL == 1
-        uint8_t id;
-    #elif A_USE_LIB_SDL == 2
-        SDL_JoystickID id;
-    #endif
+    ASdlJoystickId id;
     int numButtons;
     int numHats;
     int numAxes;
@@ -94,9 +96,9 @@ static void addButton(const char* Name, int Code)
     a_strhash_add(g_buttons, Name, b);
 }
 
-static void addAnalog(const char* Name, int DeviceIndex, char* DeviceName, int AxisIndex)
+static void addAnalog(const char* Name, int DeviceId, char* DeviceName, int AxisIndex)
 {
-    if(DeviceIndex == -1 && DeviceName == NULL) {
+    if(DeviceId == -1 && DeviceName == NULL) {
         a_out__error("Inputs must specify device index or name");
         return;
     }
@@ -111,7 +113,7 @@ static void addAnalog(const char* Name, int DeviceIndex, char* DeviceName, int A
     a = a_mem_malloc(sizeof(ASdlInputAnalog));
 
     a->header.name = a_str_dup(Name);
-    a->header.device_index = DeviceIndex;
+    a->header.id = DeviceId;
     a->axisIndex = AxisIndex;
 
     // check if we requested a specific device by Name
@@ -124,7 +126,7 @@ static void addAnalog(const char* Name, int DeviceIndex, char* DeviceName, int A
             #endif
 
             if(a_str_equal(DeviceName, joystickName)) {
-                a->header.device_index = c->id;
+                a->header.id = c->id;
                 break;
             }
         }
@@ -173,8 +175,10 @@ void a_sdl_input__init(void)
             continue;
         }
 
-        #if A_USE_LIB_SDL == 2
-            SDL_JoystickID id = SDL_JoystickInstanceID(joystick);
+        #if A_USE_LIB_SDL == 1
+            ASdlJoystickId id = (uint8_t)i;
+        #elif A_USE_LIB_SDL == 2
+            ASdlJoystickId id = SDL_JoystickInstanceID(joystick);
 
             if(id < 0) {
                 a_out__error("SDL_JoystickInstanceID(%d) failed: %s",
@@ -188,11 +192,7 @@ void a_sdl_input__init(void)
         ASdlInputController* c = a_mem_malloc(sizeof(ASdlInputController));
 
         c->joystick = joystick;
-        #if A_USE_LIB_SDL == 1
-            c->id = (uint8_t)i;
-        #elif A_USE_LIB_SDL == 2
-            c->id = id;
-        #endif
+        c->id = id;
         c->numButtons = SDL_JoystickNumButtons(c->joystick);
         c->numHats = SDL_JoystickNumHats(c->joystick);
         c->numAxes = SDL_JoystickNumAxes(c->joystick);
@@ -228,7 +228,7 @@ void a_sdl_input__init(void)
         for(int j = 0; j < c->numAxes; j++) {
             char name[32];
             snprintf(name, sizeof(name), "controller.axis%d", j);
-            addAnalog(name, i, NULL, j);
+            addAnalog(name, c->id, NULL, j);
         }
 
         if(c->numHats > 0) {
@@ -572,7 +572,7 @@ void a_sdl_input__get(void)
 
             case SDL_JOYAXISMOTION: {
                 A_STRHASH_ITERATE(g_analogs, ASdlInputAnalog*, a) {
-                    if(a->header.device_index == event.jaxis.which) {
+                    if(a->header.id == event.jaxis.which) {
                         if(event.jaxis.axis == a->axisIndex) {
                             a_input__analog_setAxisValue(a->logicalAnalog,
                                                          event.jaxis.value);
