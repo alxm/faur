@@ -68,6 +68,7 @@ typedef struct ASdlInputController {
     AStrHash* axes;
 } ASdlInputController;
 
+static AStrHash* g_keys;
 static AStrHash* g_buttons;
 static AStrHash* g_analogs;
 static AStrHash* g_touchScreens;
@@ -76,6 +77,24 @@ static AList* g_controllers;
 static void freeHeader(ASdlInputHeader* Header)
 {
     free(Header->name);
+}
+
+static void addKey(const char* Name, int Code)
+{
+    ASdlInputButton* k = a_strhash_get(g_keys, Name);
+
+    if(k) {
+        a_out__error("Key '%s' already defined", Name);
+        return;
+    }
+
+    k = a_mem_malloc(sizeof(ASdlInputButton));
+
+    k->header.name = a_str_dup(Name);
+    k->code.code = Code;
+    k->lastStatePressed = false;
+
+    a_strhash_add(g_keys, Name, k);
 }
 
 static void addButton(const char* Name, int Code)
@@ -157,6 +176,7 @@ void a_sdl_input__init(void)
         a_out__fatal("SDL_InitSubSystem: %s", SDL_GetError());
     }
 
+    g_keys = a_strhash_new();
     g_buttons = a_strhash_new();
     g_analogs = a_strhash_new();
     g_touchScreens = a_strhash_new();
@@ -302,57 +322,62 @@ void a_sdl_input__init(void)
         addAnalog("caanoo.stickY", 0, NULL, 1);
         addTouch("caanoo.touch");
     #elif A_PLATFORM_PANDORA
-        addButton("pandora.up", SDLK_UP);
-        addButton("pandora.down", SDLK_DOWN);
-        addButton("pandora.left", SDLK_LEFT);
-        addButton("pandora.right", SDLK_RIGHT);
-        addButton("pandora.l", SDLK_RSHIFT);
-        addButton("pandora.r", SDLK_RCTRL);
-        addButton("pandora.a", SDLK_HOME);
-        addButton("pandora.b", SDLK_END);
-        addButton("pandora.x", SDLK_PAGEDOWN);
-        addButton("pandora.y", SDLK_PAGEUP);
-        addButton("pandora.start", SDLK_LALT);
-        addButton("pandora.select", SDLK_LCTRL);
+        addKey("pandora.up", SDLK_UP);
+        addKey("pandora.down", SDLK_DOWN);
+        addKey("pandora.left", SDLK_LEFT);
+        addKey("pandora.right", SDLK_RIGHT);
+        addKey("pandora.l", SDLK_RSHIFT);
+        addKey("pandora.r", SDLK_RCTRL);
+        addKey("pandora.a", SDLK_HOME);
+        addKey("pandora.b", SDLK_END);
+        addKey("pandora.x", SDLK_PAGEDOWN);
+        addKey("pandora.y", SDLK_PAGEUP);
+        addKey("pandora.start", SDLK_LALT);
+        addKey("pandora.select", SDLK_LCTRL);
         addTouch("pandora.touch");
         addAnalog("pandora.leftNubX", -1, "nub0", 0);
         addAnalog("pandora.leftNubY", -1, "nub0", 1);
         addAnalog("pandora.rightNubX", -1, "nub1", 0);
         addAnalog("pandora.rightNubY", -1, "nub1", 1);
-        addButton("pandora.m", SDLK_m);
-        addButton("pandora.s", SDLK_s);
+        addKey("pandora.m", SDLK_m);
+        addKey("pandora.s", SDLK_s);
     #elif A_PLATFORM_LINUXPC || A_PLATFORM_MINGW
-        addButton("pc.up", SDLK_UP);
-        addButton("pc.down", SDLK_DOWN);
-        addButton("pc.left", SDLK_LEFT);
-        addButton("pc.right", SDLK_RIGHT);
-        addButton("pc.z", SDLK_z);
-        addButton("pc.x", SDLK_x);
-        addButton("pc.c", SDLK_c);
-        addButton("pc.v", SDLK_v);
-        addButton("pc.m", SDLK_m);
-        addButton("pc.enter", SDLK_RETURN);
-        addButton("pc.space", SDLK_SPACE);
-        addButton("pc.f1", SDLK_F1);
-        addButton("pc.f2", SDLK_F2);
-        addButton("pc.f3", SDLK_F3);
-        addButton("pc.f4", SDLK_F4);
-        addButton("pc.f5", SDLK_F5);
-        addButton("pc.f6", SDLK_F6);
-        addButton("pc.f7", SDLK_F7);
-        addButton("pc.f8", SDLK_F8);
-        addButton("pc.f9", SDLK_F9);
-        addButton("pc.f10", SDLK_F10);
-        addButton("pc.f11", SDLK_F11);
-        addButton("pc.f12", SDLK_F12);
-        addButton("pc.1", SDLK_1);
-        addButton("pc.0", SDLK_0);
+        addKey("pc.up", SDLK_UP);
+        addKey("pc.down", SDLK_DOWN);
+        addKey("pc.left", SDLK_LEFT);
+        addKey("pc.right", SDLK_RIGHT);
+        addKey("pc.z", SDLK_z);
+        addKey("pc.x", SDLK_x);
+        addKey("pc.c", SDLK_c);
+        addKey("pc.v", SDLK_v);
+        addKey("pc.m", SDLK_m);
+        addKey("pc.enter", SDLK_RETURN);
+        addKey("pc.space", SDLK_SPACE);
+        addKey("pc.f1", SDLK_F1);
+        addKey("pc.f2", SDLK_F2);
+        addKey("pc.f3", SDLK_F3);
+        addKey("pc.f4", SDLK_F4);
+        addKey("pc.f5", SDLK_F5);
+        addKey("pc.f6", SDLK_F6);
+        addKey("pc.f7", SDLK_F7);
+        addKey("pc.f8", SDLK_F8);
+        addKey("pc.f9", SDLK_F9);
+        addKey("pc.f10", SDLK_F10);
+        addKey("pc.f11", SDLK_F11);
+        addKey("pc.f12", SDLK_F12);
+        addKey("pc.1", SDLK_1);
+        addKey("pc.0", SDLK_0);
         addTouch("pc.mouse");
     #endif
 }
 
 void a_sdl_input__uninit(void)
 {
+    A_STRHASH_ITERATE(g_keys, ASdlInputButton*, k) {
+        freeHeader(&k->header);
+        free(k);
+    }
+
     A_STRHASH_ITERATE(g_buttons, ASdlInputButton*, b) {
         freeHeader(&b->header);
         free(b);
@@ -381,9 +406,11 @@ void a_sdl_input__uninit(void)
 
         SDL_JoystickClose(c->joystick);
         a_strhash_free(c->buttons);
+        a_strhash_free(c->axes);
         free(c);
     }
 
+    a_strhash_free(g_keys);
     a_strhash_free(g_buttons);
     a_strhash_free(g_analogs);
     a_strhash_free(g_touchScreens);
@@ -394,6 +421,10 @@ void a_sdl_input__uninit(void)
 
 void a_sdl_input__bind(void)
 {
+    A_STRHASH_ITERATE(g_keys, ASdlInputButton*, k) {
+        k->logicalButton = a_input__newButton(k->header.name);
+    }
+
     A_STRHASH_ITERATE(g_buttons, ASdlInputButton*, b) {
         b->logicalButton = a_input__newButton(b->header.name);
     }
@@ -434,18 +465,18 @@ void a_sdl_input__get(void)
                     break;
                 }
 
-                A_STRHASH_ITERATE(g_buttons, ASdlInputButton*, b) {
-                    if(b->code.key == event.key.keysym.sym) {
-                        a_input__button_setState(b->logicalButton, true);
+                A_STRHASH_ITERATE(g_keys, ASdlInputButton*, k) {
+                    if(k->code.key == event.key.keysym.sym) {
+                        a_input__button_setState(k->logicalButton, true);
                         break;
                     }
                 }
             } break;
 
             case SDL_KEYUP: {
-                A_STRHASH_ITERATE(g_buttons, ASdlInputButton*, b) {
-                    if(b->code.key == event.key.keysym.sym) {
-                        a_input__button_setState(b->logicalButton, false);
+                A_STRHASH_ITERATE(g_keys, ASdlInputButton*, k) {
+                    if(k->code.key == event.key.keysym.sym) {
+                        a_input__button_setState(k->logicalButton, false);
                         break;
                     }
                 }
