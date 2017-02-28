@@ -44,8 +44,7 @@ typedef struct ASdlInputButton {
 typedef struct ASdlInputAnalog {
     ASdlInputHeader header;
     AInputAnalog* logicalAnalog;
-    int xaxis_index;
-    int yaxis_index;
+    int axisIndex;
 } ASdlInputAnalog;
 
 typedef struct ASdlInputTouch {
@@ -94,7 +93,7 @@ static void addButton(const char* Name, int Code)
 }
 
 #if A_PLATFORM_CAANOO || A_PLATFORM_PANDORA
-    static void addAnalog(const char* Name, int DeviceIndex, char* DeviceName, int XAxisIndex, int YAxisIndex)
+    static void addAnalog(const char* Name, int DeviceIndex, char* DeviceName, int AxisIndex)
     {
         if(DeviceIndex == -1 && DeviceName == NULL) {
             a_out__error("Inputs must specify device index or name");
@@ -112,8 +111,7 @@ static void addButton(const char* Name, int Code)
 
         a->header.name = a_str_dup(Name);
         a->header.device_index = DeviceIndex;
-        a->xaxis_index = XAxisIndex;
-        a->yaxis_index = YAxisIndex;
+        a->axisIndex = AxisIndex;
 
         // check if we requested a specific device by Name
         if(DeviceName) {
@@ -282,7 +280,8 @@ void a_sdl_input__init(void)
         addButton("caanoo.hold", 7);
         addButton("caanoo.1", 8);
         addButton("caanoo.2", 9);
-        addAnalog("caanoo.stick", 0, NULL, 0, 1);
+        addAnalog("caanoo.stickX", 0, NULL, 0);
+        addAnalog("caanoo.stickY", 0, NULL, 1);
         addTouch("caanoo.touch");
     #elif A_PLATFORM_PANDORA
         addButton("pandora.up", SDLK_UP);
@@ -298,8 +297,10 @@ void a_sdl_input__init(void)
         addButton("pandora.start", SDLK_LALT);
         addButton("pandora.select", SDLK_LCTRL);
         addTouch("pandora.touch");
-        addAnalog("pandora.nub1", -1, "nub0", 0, 1);
-        addAnalog("pandora.nub2", -1, "nub1", 0, 1);
+        addAnalog("pandora.leftNubX", -1, "nub0", 0);
+        addAnalog("pandora.leftNubY", -1, "nub0", 1);
+        addAnalog("pandora.rightNubX", -1, "nub1", 0);
+        addAnalog("pandora.rightNubY", -1, "nub1", 1);
         addButton("pandora.m", SDLK_m);
         addButton("pandora.s", SDLK_s);
     #elif A_PLATFORM_LINUXPC || A_PLATFORM_MINGW
@@ -534,12 +535,9 @@ void a_sdl_input__get(void)
             case SDL_JOYAXISMOTION: {
                 A_STRHASH_ITERATE(g_analogs, ASdlInputAnalog*, a) {
                     if(a->header.device_index == event.jaxis.which) {
-                        if(event.jaxis.axis == a->xaxis_index) {
-                            a_input__analog_setXAxis(a->logicalAnalog,
-                                                     event.jaxis.value);
-                        } else if(event.jaxis.axis == a->yaxis_index) {
-                            a_input__analog_setYAxis(a->logicalAnalog,
-                                                     event.jaxis.value);
+                        if(event.jaxis.axis == a->axisIndex) {
+                            a_input__analog_setAxisValue(a->logicalAnalog,
+                                                         event.jaxis.value);
                         }
                     }
                 }

@@ -46,8 +46,7 @@ struct AInputButton {
 
 struct AInputAnalog {
     AInputHeader header;
-    int xaxis;
-    int yaxis;
+    int axisValue;
 };
 
 struct AInputTouch {
@@ -245,8 +244,7 @@ AInputAnalog* a_input__newAnalog(const char* Name)
 
     initHeader(&a->header, Name);
 
-    a->xaxis = 0;
-    a->yaxis = 0;
+    a->axisValue = 0;
 
     a_strhash_add(g_analogs, Name, a);
 
@@ -339,21 +337,26 @@ void a_input__get(void)
     // Caanoo has an analog stick instead of a dpad, but in most cases it's
     // useful to be able to use it as a dpad like on the other platforms.
     #if A_PLATFORM_CAANOO
-        AInputAnalog* stick = a_strhash_get(g_analogs, "caanoo.stick");
+        // Pressed at least half-way
+        #define ANALOG_TRESH ((1 << 15) / 2)
 
-        if(isFreshEvent(&stick->header)) {
-            AInputButton* up = a_strhash_get(g_buttons, "caanoo.up");
-            AInputButton* down = a_strhash_get(g_buttons, "caanoo.down");
+        AInputAnalog* stickx = a_strhash_get(g_analogs, "caanoo.stickX");
+        AInputAnalog* sticky = a_strhash_get(g_analogs, "caanoo.stickY");
+
+        if(isFreshEvent(&stickx->header)) {
             AInputButton* left = a_strhash_get(g_buttons, "caanoo.left");
+            a_input__button_setState(left, stickx->axisValue < -ANALOG_TRESH);
+
             AInputButton* right = a_strhash_get(g_buttons, "caanoo.right");
+            a_input__button_setState(right, stickx->axisValue > ANALOG_TRESH);
+        }
 
-            // Pressed at least half-way
-            #define ANALOG_TRESH ((1 << 15) / 2)
+        if(isFreshEvent(&sticky->header)) {
+            AInputButton* up = a_strhash_get(g_buttons, "caanoo.up");
+            a_input__button_setState(up, sticky->axisValue < -ANALOG_TRESH);
 
-            a_input__button_setState(left, stick->xaxis < -ANALOG_TRESH);
-            a_input__button_setState(right, stick->xaxis > ANALOG_TRESH);
-            a_input__button_setState(up, stick->yaxis < -ANALOG_TRESH);
-            a_input__button_setState(down, stick->yaxis > ANALOG_TRESH);
+            AInputButton* down = a_strhash_get(g_buttons, "caanoo.down");
+            a_input__button_setState(down, sticky->axisValue > ANALOG_TRESH);
         }
     #endif
 
@@ -582,36 +585,20 @@ bool a_button_getOnce(AInput* Button)
     return pressed;
 }
 
-int a_analog_xaxis(const AInput* Analog)
+int a_analog_axisRaw(const AInput* Analog)
 {
     A_LIST_ITERATE(Analog->analogs, AInputAnalog*, a) {
-        if(a_math_abs(a->xaxis) > A_ANALOG_ERROR_MARGIN) {
-            return a->xaxis;
+        if(a_math_abs(a->axisValue) > A_ANALOG_ERROR_MARGIN) {
+            return a->axisValue;
         }
     }
 
     return 0;
 }
 
-int a_analog_yaxis(const AInput* Analog)
+AFix a_analog_axisFix(const AInput* Analog)
 {
-    A_LIST_ITERATE(Analog->analogs, AInputAnalog*, a) {
-        if(a_math_abs(a->yaxis) > A_ANALOG_ERROR_MARGIN) {
-            return a->yaxis;
-        }
-    }
-
-    return 0;
-}
-
-AFix a_analog_xaxis_fix(const AInput* Analog)
-{
-    return a_analog_xaxis(Analog) >> (15 - A_FIX_BIT_PRECISION);
-}
-
-AFix a_analog_yaxis_fix(const AInput* Analog)
-{
-    return a_analog_yaxis(Analog) >> (15 - A_FIX_BIT_PRECISION);
+    return a_analog_axisRaw(Analog) >> (15 - A_FIX_BIT_PRECISION);
 }
 
 bool a_touch_tapped(const AInput* Touch)
@@ -652,16 +639,9 @@ void a_input__button_setState(AInputButton* Button, bool Pressed)
     setFreshEvent(&Button->header);
 }
 
-void a_input__analog_setXAxis(AInputAnalog* Analog, int Value)
+void a_input__analog_setAxisValue(AInputAnalog* Analog, int Value)
 {
-    Analog->xaxis = Value;
-
-    setFreshEvent(&Analog->header);
-}
-
-void a_input__analog_setYAxis(AInputAnalog* Analog, int Value)
-{
-    Analog->yaxis = Value;
+    Analog->axisValue = Value;
 
     setFreshEvent(&Analog->header);
 }
