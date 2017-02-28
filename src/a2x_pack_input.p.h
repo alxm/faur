@@ -39,10 +39,8 @@ extern bool a_button_get(AInput* Button);
 extern void a_button_release(const AInput* Button);
 extern bool a_button_getOnce(AInput* Button);
 
-extern int a_analog_xaxis(const AInput* Analog);
-extern int a_analog_yaxis(const AInput* Analog);
-extern AFix a_analog_xaxis_fix(const AInput* Analog);
-extern AFix a_analog_yaxis_fix(const AInput* Analog);
+extern int a_analog_axisRaw(const AInput* Analog);
+extern AFix a_analog_axisFix(const AInput* Analog);
 
 extern bool a_touch_tapped(const AInput* Touch);
 extern bool a_touch_point(const AInput* Touch, int X, int Y);

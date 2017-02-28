@@ -54,7 +54,7 @@ void a_screen__init(void)
     a_screen_resetClip();
 
     if(a_settings_getBool("video.window")) {
-        a_sdl__screen_set();
+        a_sdl_screen__set();
 
         #if A_PLATFORM_WIZ
             if(a_settings_getBool("video.fixWizTearing")) {
@@ -117,7 +117,7 @@ void a_screen_show(void)
         c->callback();
     }
 
-    a_sdl__screen_show();
+    a_sdl_screen__show();
 }
 
 APixel* a_screen_dup(void)

@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016 Alex Margarit
+    Copyright 2010, 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -17,26 +17,14 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a2x_pack_time.v.h"
+#pragma once
 
-uint32_t a_time_getMs(void)
-{
-    #if A_PLATFORM_WIZ || A_PLATFORM_CAANOO
-        return a_hw__getMs();
-    #else
-        return a_sdl_time__getTicks();
-    #endif
-}
+#include "a2x_pack_sdl_video.p.h"
 
-void a_time_waitMs(uint32_t Ms)
-{
-    #if A_PLATFORM_WIZ || A_PLATFORM_CAANOO
-        const uint32_t start = a_hw__getMs();
+#include "a2x_pack_pixel.v.h"
 
-        while(a_hw__getMs() - start < Ms) {
-            continue;
-        }
-    #else
-        a_sdl_time__delay(Ms);
-    #endif
-}
+extern void a_sdl_video__init(void);
+extern void a_sdl_video__uninit(void);
+
+extern void a_sdl_screen__set(void);
+extern void a_sdl_screen__show(void);

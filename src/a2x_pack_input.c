@@ -46,8 +46,7 @@ struct AInputButton {
 
 struct AInputAnalog {
     AInputHeader header;
-    int xaxis;
-    int yaxis;
+    int axisValue;
 };
 
 struct AInputTouch {
@@ -65,6 +64,7 @@ typedef struct AInputButtonCombo {
 
 typedef struct AInputController {
     AStrHash* buttons;
+    AStrHash* axes;
 } AInputController;
 
 typedef struct APoint {
@@ -142,21 +142,21 @@ void a_input__init(void)
     g_userInputs = a_list_new();
     g_callbacks = a_list_new();
 
-    a_sdl__input_bind();
+    a_sdl_input__bind();
 
     if(a_input_numControllers() > 0) {
         a_input_setController(0);
     }
 
-    addUmbrella("generic.up", "pc.up controller.up gp2x.up wiz.up caanoo.up pandora.up");
-    addUmbrella("generic.down", "pc.down controller.down gp2x.down wiz.down caanoo.down pandora.down");
-    addUmbrella("generic.left", "pc.left controller.left gp2x.left wiz.left caanoo.left pandora.left");
-    addUmbrella("generic.right", "pc.right controller.right gp2x.right wiz.right caanoo.right pandora.right");
+    addUmbrella("generic.up", "key.up controller.up gp2x.up wiz.up caanoo.up pandora.up");
+    addUmbrella("generic.down", "key.down controller.down gp2x.down wiz.down caanoo.down pandora.down");
+    addUmbrella("generic.left", "key.left controller.left gp2x.left wiz.left caanoo.left pandora.left");
+    addUmbrella("generic.right", "key.right controller.right gp2x.right wiz.right caanoo.right pandora.right");
 
-    addUmbrella("generic.b0", "pc.z controller.b0 gp2x.x wiz.x caanoo.x pandora.x");
-    addUmbrella("generic.b1", "pc.x controller.b1 gp2x.b wiz.b caanoo.b pandora.b");
-    addUmbrella("generic.b2", "pc.c controller.b2 gp2x.a wiz.a caanoo.a pandora.a");
-    addUmbrella("generic.b3", "pc.v controller.b3 gp2x.y wiz.y caanoo.y pandora.y");
+    addUmbrella("generic.b0", "key.z controller.b0 gp2x.x wiz.x caanoo.x pandora.x");
+    addUmbrella("generic.b1", "key.x controller.b1 gp2x.b wiz.b caanoo.b pandora.b");
+    addUmbrella("generic.b2", "key.c controller.b2 gp2x.a wiz.a caanoo.a pandora.a");
+    addUmbrella("generic.b3", "key.v controller.b3 gp2x.y wiz.y caanoo.y pandora.y");
 }
 
 void a_input__uninit(void)
@@ -200,7 +200,13 @@ void a_input__uninit(void)
             free(b);
         }
 
+        A_STRHASH_ITERATE(c->axes, AInputAnalog*, a) {
+            freeHeader(&a->header);
+            free(a);
+        }
+
         a_strhash_free(c->buttons);
+        a_strhash_free(c->axes);
         free(c);
     }
 
@@ -216,6 +222,7 @@ void a_input__newController(void)
     AInputController* c = a_mem_malloc(sizeof(AInputController));
 
     c->buttons = a_strhash_new();
+    c->axes = a_strhash_new();
 
     a_list_addLast(g_controllers, c);
     g_activeController = c;
@@ -245,10 +252,13 @@ AInputAnalog* a_input__newAnalog(const char* Name)
 
     initHeader(&a->header, Name);
 
-    a->xaxis = 0;
-    a->yaxis = 0;
+    a->axisValue = 0;
 
-    a_strhash_add(g_analogs, Name, a);
+    if(g_activeController == NULL) {
+        a_strhash_add(g_analogs, Name, a);
+    } else {
+        a_strhash_add(g_activeController->axes, Name, a);
+    }
 
     return a;
 }
@@ -289,7 +299,7 @@ void a_input__get(void)
         a_list_clear(touchScreen->motion);
     }
 
-    a_sdl__input_get();
+    a_sdl_input__get();
 
     // GP2X and Wiz dpad diagonals show up as dedicated buttons instead of a
     // combination of two separate buttons. This code checks diagonal events
@@ -339,21 +349,26 @@ void a_input__get(void)
     // Caanoo has an analog stick instead of a dpad, but in most cases it's
     // useful to be able to use it as a dpad like on the other platforms.
     #if A_PLATFORM_CAANOO
-        AInputAnalog* stick = a_strhash_get(g_analogs, "caanoo.stick");
+        // Pressed at least half-way
+        #define ANALOG_TRESH ((1 << 15) / 2)
 
-        if(isFreshEvent(&stick->header)) {
-            AInputButton* up = a_strhash_get(g_buttons, "caanoo.up");
-            AInputButton* down = a_strhash_get(g_buttons, "caanoo.down");
+        AInputAnalog* stickx = a_strhash_get(g_analogs, "caanoo.stickX");
+        AInputAnalog* sticky = a_strhash_get(g_analogs, "caanoo.stickY");
+
+        if(isFreshEvent(&stickx->header)) {
             AInputButton* left = a_strhash_get(g_buttons, "caanoo.left");
+            a_input__button_setState(left, stickx->axisValue < -ANALOG_TRESH);
+
             AInputButton* right = a_strhash_get(g_buttons, "caanoo.right");
+            a_input__button_setState(right, stickx->axisValue > ANALOG_TRESH);
+        }
 
-            // Pressed at least half-way
-            #define ANALOG_TRESH ((1 << 15) / 2)
+        if(isFreshEvent(&sticky->header)) {
+            AInputButton* up = a_strhash_get(g_buttons, "caanoo.up");
+            a_input__button_setState(up, sticky->axisValue < -ANALOG_TRESH);
 
-            a_input__button_setState(left, stick->xaxis < -ANALOG_TRESH);
-            a_input__button_setState(right, stick->xaxis > ANALOG_TRESH);
-            a_input__button_setState(up, stick->yaxis < -ANALOG_TRESH);
-            a_input__button_setState(down, stick->yaxis > ANALOG_TRESH);
+            AInputButton* down = a_strhash_get(g_buttons, "caanoo.down");
+            a_input__button_setState(down, sticky->axisValue > ANALOG_TRESH);
         }
     #endif
 
@@ -582,36 +597,20 @@ bool a_button_getOnce(AInput* Button)
     return pressed;
 }
 
-int a_analog_xaxis(const AInput* Analog)
+int a_analog_axisRaw(const AInput* Analog)
 {
     A_LIST_ITERATE(Analog->analogs, AInputAnalog*, a) {
-        if(a_math_abs(a->xaxis) > A_ANALOG_ERROR_MARGIN) {
-            return a->xaxis;
+        if(a_math_abs(a->axisValue) > A_ANALOG_ERROR_MARGIN) {
+            return a->axisValue;
         }
     }
 
     return 0;
 }
 
-int a_analog_yaxis(const AInput* Analog)
+AFix a_analog_axisFix(const AInput* Analog)
 {
-    A_LIST_ITERATE(Analog->analogs, AInputAnalog*, a) {
-        if(a_math_abs(a->yaxis) > A_ANALOG_ERROR_MARGIN) {
-            return a->yaxis;
-        }
-    }
-
-    return 0;
-}
-
-AFix a_analog_xaxis_fix(const AInput* Analog)
-{
-    return a_analog_xaxis(Analog) >> (15 - A_FIX_BIT_PRECISION);
-}
-
-AFix a_analog_yaxis_fix(const AInput* Analog)
-{
-    return a_analog_yaxis(Analog) >> (15 - A_FIX_BIT_PRECISION);
+    return a_analog_axisRaw(Analog) >> (15 - A_FIX_BIT_PRECISION);
 }
 
 bool a_touch_tapped(const AInput* Touch)
@@ -652,16 +651,9 @@ void a_input__button_setState(AInputButton* Button, bool Pressed)
     setFreshEvent(&Button->header);
 }
 
-void a_input__analog_setXAxis(AInputAnalog* Analog, int Value)
+void a_input__analog_setAxisValue(AInputAnalog* Analog, int Value)
 {
-    Analog->xaxis = Value;
-
-    setFreshEvent(&Analog->header);
-}
-
-void a_input__analog_setYAxis(AInputAnalog* Analog, int Value)
-{
-    Analog->yaxis = Value;
+    Analog->axisValue = Value;
 
     setFreshEvent(&Analog->header);
 }
