@@ -78,14 +78,12 @@ static void freeHeader(ASdlInputHeader* Header)
 
 static void addKey(const char* Name, int Code)
 {
-    ASdlInputButton* k = a_strhash_get(g_keys, Name);
-
-    if(k) {
+    if(a_strhash_contains(g_keys, Name)) {
         a_out__error("Key '%s' already defined", Name);
         return;
     }
 
-    k = a_mem_malloc(sizeof(ASdlInputButton));
+    ASdlInputButton* k = a_mem_malloc(sizeof(ASdlInputButton));
 
     k->header.name = a_str_dup(Name);
     k->code.code = Code;
@@ -96,14 +94,12 @@ static void addKey(const char* Name, int Code)
 
 static void addButton(AStrHash* ButtonsCollection, const char* Name, int Code)
 {
-    ASdlInputButton* b = a_strhash_get(ButtonsCollection, Name);
-
-    if(b) {
+    if(a_strhash_contains(ButtonsCollection, Name)) {
         a_out__error("Button '%s' already defined", Name);
         return;
     }
 
-    b = a_mem_malloc(sizeof(ASdlInputButton));
+    ASdlInputButton* b = a_mem_malloc(sizeof(ASdlInputButton));
 
     b->header.name = a_str_dup(Name);
     b->code.code = Code;
@@ -114,14 +110,12 @@ static void addButton(AStrHash* ButtonsCollection, const char* Name, int Code)
 
 static void addAnalog(AStrHash* AxesCollection, const char* Name, int AxisIndex)
 {
-    ASdlInputAnalog* a = a_strhash_get(AxesCollection, Name);
-
-    if(a) {
+    if(a_strhash_contains(AxesCollection, Name)) {
         a_out__error("Analog '%s' is already defined", Name);
         return;
     }
 
-    a = a_mem_malloc(sizeof(ASdlInputAnalog));
+    ASdlInputAnalog* a = a_mem_malloc(sizeof(ASdlInputAnalog));
 
     a->header.name = a_str_dup(Name);
     a->axisIndex = AxisIndex;
@@ -131,14 +125,12 @@ static void addAnalog(AStrHash* AxesCollection, const char* Name, int AxisIndex)
 
 static void addTouch(const char* Name)
 {
-    ASdlInputTouch* t = a_strhash_get(g_touchScreens, Name);
-
-    if(t) {
+    if(a_strhash_contains(g_touchScreens, Name)) {
         a_out__error("Touchscreen '%s' is already defined", Name);
         return;
     }
 
-    t = a_mem_malloc(sizeof(ASdlInputTouch));
+    ASdlInputTouch* t = a_mem_malloc(sizeof(ASdlInputTouch));
 
     t->header.name = a_str_dup(Name);
 
