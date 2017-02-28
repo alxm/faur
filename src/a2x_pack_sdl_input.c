@@ -29,7 +29,6 @@
 
 typedef struct ASdlInputHeader {
     char* name;
-    ASdlJoystickId id;
 } ASdlInputHeader;
 
 typedef struct ASdlInputButton {
@@ -69,7 +68,6 @@ typedef struct ASdlInputController {
 } ASdlInputController;
 
 static AStrHash* g_keys;
-static AStrHash* g_analogs;
 static AStrHash* g_touchScreens;
 static AList* g_controllers;
 
@@ -114,14 +112,9 @@ static void addButton(AStrHash* ButtonsCollection, const char* Name, int Code)
     a_strhash_add(ButtonsCollection, Name, b);
 }
 
-static void addAnalog(const char* Name, int DeviceId, char* DeviceName, int AxisIndex)
+static void addAnalog(AStrHash* AxesCollection, const char* Name, int AxisIndex)
 {
-    if(DeviceId == -1 && DeviceName == NULL) {
-        a_out__error("Inputs must specify device index or name");
-        return;
-    }
-
-    ASdlInputAnalog* a = a_strhash_get(g_analogs, Name);
+    ASdlInputAnalog* a = a_strhash_get(AxesCollection, Name);
 
     if(a) {
         a_out__error("Analog '%s' is already defined", Name);
@@ -131,26 +124,9 @@ static void addAnalog(const char* Name, int DeviceId, char* DeviceName, int Axis
     a = a_mem_malloc(sizeof(ASdlInputAnalog));
 
     a->header.name = a_str_dup(Name);
-    a->header.id = DeviceId;
     a->axisIndex = AxisIndex;
 
-    // check if we requested a specific device by Name
-    if(DeviceName) {
-        A_LIST_ITERATE(g_controllers, ASdlInputController*, c) {
-            #if A_USE_LIB_SDL == 1
-                const char* joystickName = SDL_JoystickName(c->id);
-            #elif A_USE_LIB_SDL == 2
-                const char* joystickName = SDL_JoystickName(c->joystick);
-            #endif
-
-            if(a_str_equal(DeviceName, joystickName)) {
-                a->header.id = c->id;
-                break;
-            }
-        }
-    }
-
-    a_strhash_add(g_analogs, Name, a);
+    a_strhash_add(AxesCollection, Name, a);
 }
 
 static void addTouch(const char* Name)
@@ -176,7 +152,6 @@ void a_sdl_input__init(void)
     }
 
     g_keys = a_strhash_new();
-    g_analogs = a_strhash_new();
     g_touchScreens = a_strhash_new();
     g_controllers = a_list_new();
 
@@ -276,19 +251,30 @@ void a_sdl_input__init(void)
                     addButton(c->buttons, "caanoo.hold", 7);
                     addButton(c->buttons, "caanoo.1", 8);
                     addButton(c->buttons, "caanoo.2", 9);
+                    addAnalog(c->axes, "caanoo.stickX", 0);
+                    addAnalog(c->axes, "caanoo.stickY", 1);
                 #endif
 
                 continue;
             }
         #elif A_PLATFORM_PANDORA
-            if(i < 2) {
-                // Joysticks 0 and 1 are the built-in nubs
+            #if A_USE_LIB_SDL == 1
+                const char* joystickName = SDL_JoystickName(c->id);
+            #elif A_USE_LIB_SDL == 2
+                const char* joystickName = SDL_JoystickName(c->joystick);
+            #endif
+
+            // Check if this is one of the built-in nubs
+            if(a_str_equal(joystickName, "nub0")) {
+                addAnalog(c->axes, "pandora.leftNubX", 0);
+                addAnalog(c->axes, "pandora.leftNubY", 1);
+                continue;
+            } else if(a_str_equal(joystickName, "nub1")) {
+                addAnalog(c->axes, "pandora.rightNubX", 0);
+                addAnalog(c->axes, "pandora.rightNubY", 1);
                 continue;
             }
         #endif
-
-        AStrHash* savedAnalogs = g_analogs;
-        g_analogs = c->axes;
 
         for(int j = 0; j < c->numButtons; j++) {
             char name[32];
@@ -299,7 +285,7 @@ void a_sdl_input__init(void)
         for(int j = 0; j < c->numAxes; j++) {
             char name[32];
             snprintf(name, sizeof(name), "controller.axis%d", j);
-            addAnalog(name, c->id, NULL, j);
+            addAnalog(c->axes, name, j);
         }
 
         if(c->numHats > 0) {
@@ -308,8 +294,6 @@ void a_sdl_input__init(void)
             addButton(c->buttons, "controller.left", -1);
             addButton(c->buttons, "controller.right", -1);
         }
-
-        g_analogs = savedAnalogs;
     }
 
     #if A_PLATFORM_GP2X
@@ -317,8 +301,6 @@ void a_sdl_input__init(void)
     #elif A_PLATFORM_WIZ
         addTouch("wiz.touch");
     #elif A_PLATFORM_CAANOO
-        addAnalog("caanoo.stickX", 0, NULL, 0);
-        addAnalog("caanoo.stickY", 0, NULL, 1);
         addTouch("caanoo.touch");
     #elif A_PLATFORM_PANDORA
         addKey("pandora.up", SDLK_UP);
@@ -334,10 +316,6 @@ void a_sdl_input__init(void)
         addKey("pandora.start", SDLK_LALT);
         addKey("pandora.select", SDLK_LCTRL);
         addTouch("pandora.touch");
-        addAnalog("pandora.leftNubX", -1, "nub0", 0);
-        addAnalog("pandora.leftNubY", -1, "nub0", 1);
-        addAnalog("pandora.rightNubX", -1, "nub1", 0);
-        addAnalog("pandora.rightNubY", -1, "nub1", 1);
         addKey("pandora.m", SDLK_m);
         addKey("pandora.s", SDLK_s);
     #elif A_PLATFORM_LINUXPC || A_PLATFORM_MINGW
@@ -377,11 +355,6 @@ void a_sdl_input__uninit(void)
         free(k);
     }
 
-    A_STRHASH_ITERATE(g_analogs, ASdlInputAnalog*, a) {
-        freeHeader(&a->header);
-        free(a);
-    }
-
     A_STRHASH_ITERATE(g_touchScreens, ASdlInputTouch*, t) {
         freeHeader(&t->header);
         free(t);
@@ -405,7 +378,6 @@ void a_sdl_input__uninit(void)
     }
 
     a_strhash_free(g_keys);
-    a_strhash_free(g_analogs);
     a_strhash_free(g_touchScreens);
     a_list_free(g_controllers);
 
@@ -416,10 +388,6 @@ void a_sdl_input__bind(void)
 {
     A_STRHASH_ITERATE(g_keys, ASdlInputButton*, k) {
         k->logicalButton = a_input__newButton(k->header.name);
-    }
-
-    A_STRHASH_ITERATE(g_analogs, ASdlInputAnalog*, a) {
-        a->logicalAnalog = a_input__newAnalog(a->header.name);
     }
 
     A_STRHASH_ITERATE(g_touchScreens, ASdlInputTouch*, t) {
@@ -577,16 +545,6 @@ void a_sdl_input__get(void)
             } break;
 
             case SDL_JOYAXISMOTION: {
-                A_STRHASH_ITERATE(g_analogs, ASdlInputAnalog*, a) {
-                    if(a->header.id == event.jaxis.which) {
-                        if(event.jaxis.axis == a->axisIndex) {
-                            a_input__analog_setAxisValue(a->logicalAnalog,
-                                                         event.jaxis.value);
-                            break;
-                        }
-                    }
-                }
-
                 A_LIST_ITERATE(g_controllers, ASdlInputController*, c) {
                     if(c->id == event.jaxis.which) {
                         A_STRHASH_ITERATE(c->axes, ASdlInputAnalog*, a) {
