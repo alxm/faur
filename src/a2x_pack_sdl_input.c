@@ -69,7 +69,6 @@ typedef struct ASdlInputController {
 } ASdlInputController;
 
 static AStrHash* g_keys;
-static AStrHash* g_buttons;
 static AStrHash* g_analogs;
 static AStrHash* g_touchScreens;
 static AList* g_controllers;
@@ -97,9 +96,9 @@ static void addKey(const char* Name, int Code)
     a_strhash_add(g_keys, Name, k);
 }
 
-static void addButton(const char* Name, int Code)
+static void addButton(AStrHash* ButtonsCollection, const char* Name, int Code)
 {
-    ASdlInputButton* b = a_strhash_get(g_buttons, Name);
+    ASdlInputButton* b = a_strhash_get(ButtonsCollection, Name);
 
     if(b) {
         a_out__error("Button '%s' already defined", Name);
@@ -112,7 +111,7 @@ static void addButton(const char* Name, int Code)
     b->code.code = Code;
     b->lastStatePressed = false;
 
-    a_strhash_add(g_buttons, Name, b);
+    a_strhash_add(ButtonsCollection, Name, b);
 }
 
 static void addAnalog(const char* Name, int DeviceId, char* DeviceName, int AxisIndex)
@@ -177,7 +176,6 @@ void a_sdl_input__init(void)
     }
 
     g_keys = a_strhash_new();
-    g_buttons = a_strhash_new();
     g_analogs = a_strhash_new();
     g_touchScreens = a_strhash_new();
     g_controllers = a_list_new();
@@ -224,6 +222,62 @@ void a_sdl_input__init(void)
         #if A_PLATFORM_GP2X || A_PLATFORM_WIZ || A_PLATFORM_CAANOO
             if(i == 0) {
                 // Joystick 0 is the built-in controls on these platforms
+                #if A_PLATFORM_GP2X
+                    addButton(c->buttons, "gp2x.up", 0);
+                    addButton(c->buttons, "gp2x.down", 4);
+                    addButton(c->buttons, "gp2x.left", 2);
+                    addButton(c->buttons, "gp2x.right", 6);
+                    addButton(c->buttons, "gp2x.upleft", 1);
+                    addButton(c->buttons, "gp2x.upright", 7);
+                    addButton(c->buttons, "gp2x.downleft", 3);
+                    addButton(c->buttons, "gp2x.downright", 5);
+                    addButton(c->buttons, "gp2x.l", 10);
+                    addButton(c->buttons, "gp2x.r", 11);
+                    addButton(c->buttons, "gp2x.a", 12);
+                    addButton(c->buttons, "gp2x.b", 13);
+                    addButton(c->buttons, "gp2x.x", 14);
+                    addButton(c->buttons, "gp2x.y", 15);
+                    addButton(c->buttons, "gp2x.start", 8);
+                    addButton(c->buttons, "gp2x.select", 9);
+                    addButton(c->buttons, "gp2x.volup", 16);
+                    addButton(c->buttons, "gp2x.voldown", 17);
+                    addButton(c->buttons, "gp2x.stickclick", 18);
+                #elif A_PLATFORM_WIZ
+                    addButton(c->buttons, "wiz.up", 0);
+                    addButton(c->buttons, "wiz.down", 4);
+                    addButton(c->buttons, "wiz.left", 2);
+                    addButton(c->buttons, "wiz.right", 6);
+                    addButton(c->buttons, "wiz.upleft", 1);
+                    addButton(c->buttons, "wiz.upright", 7);
+                    addButton(c->buttons, "wiz.downleft", 3);
+                    addButton(c->buttons, "wiz.downright", 5);
+                    addButton(c->buttons, "wiz.l", 10);
+                    addButton(c->buttons, "wiz.r", 11);
+                    addButton(c->buttons, "wiz.a", 12);
+                    addButton(c->buttons, "wiz.b", 13);
+                    addButton(c->buttons, "wiz.x", 14);
+                    addButton(c->buttons, "wiz.y", 15);
+                    addButton(c->buttons, "wiz.menu", 8);
+                    addButton(c->buttons, "wiz.select", 9);
+                    addButton(c->buttons, "wiz.volup", 16);
+                    addButton(c->buttons, "wiz.voldown", 17);
+                #elif A_PLATFORM_CAANOO
+                    addButton(c->buttons, "caanoo.up", -1);
+                    addButton(c->buttons, "caanoo.down", -1);
+                    addButton(c->buttons, "caanoo.left", -1);
+                    addButton(c->buttons, "caanoo.right", -1);
+                    addButton(c->buttons, "caanoo.l", 4);
+                    addButton(c->buttons, "caanoo.r", 5);
+                    addButton(c->buttons, "caanoo.a", 0);
+                    addButton(c->buttons, "caanoo.b", 2);
+                    addButton(c->buttons, "caanoo.x", 1);
+                    addButton(c->buttons, "caanoo.y", 3);
+                    addButton(c->buttons, "caanoo.home", 6);
+                    addButton(c->buttons, "caanoo.hold", 7);
+                    addButton(c->buttons, "caanoo.1", 8);
+                    addButton(c->buttons, "caanoo.2", 9);
+                #endif
+
                 continue;
             }
         #elif A_PLATFORM_PANDORA
@@ -233,16 +287,13 @@ void a_sdl_input__init(void)
             }
         #endif
 
-        AStrHash* savedButtons = g_buttons;
         AStrHash* savedAnalogs = g_analogs;
-
-        g_buttons = c->buttons;
         g_analogs = c->axes;
 
         for(int j = 0; j < c->numButtons; j++) {
             char name[32];
             snprintf(name, sizeof(name), "controller.b%d", j);
-            addButton(name, j);
+            addButton(c->buttons, name, j);
         }
 
         for(int j = 0; j < c->numAxes; j++) {
@@ -252,72 +303,20 @@ void a_sdl_input__init(void)
         }
 
         if(c->numHats > 0) {
-            addButton("controller.up", -1);
-            addButton("controller.down", -1);
-            addButton("controller.left", -1);
-            addButton("controller.right", -1);
+            addButton(c->buttons, "controller.up", -1);
+            addButton(c->buttons, "controller.down", -1);
+            addButton(c->buttons, "controller.left", -1);
+            addButton(c->buttons, "controller.right", -1);
         }
 
-        g_buttons = savedButtons;
         g_analogs = savedAnalogs;
     }
 
     #if A_PLATFORM_GP2X
-        addButton("gp2x.up", 0);
-        addButton("gp2x.down", 4);
-        addButton("gp2x.left", 2);
-        addButton("gp2x.right", 6);
-        addButton("gp2x.upleft", 1);
-        addButton("gp2x.upright", 7);
-        addButton("gp2x.downleft", 3);
-        addButton("gp2x.downright", 5);
-        addButton("gp2x.l", 10);
-        addButton("gp2x.r", 11);
-        addButton("gp2x.a", 12);
-        addButton("gp2x.b", 13);
-        addButton("gp2x.x", 14);
-        addButton("gp2x.y", 15);
-        addButton("gp2x.start", 8);
-        addButton("gp2x.select", 9);
-        addButton("gp2x.volup", 16);
-        addButton("gp2x.voldown", 17);
-        addButton("gp2x.stickclick", 18);
         addTouch("gp2x.touch");
     #elif A_PLATFORM_WIZ
-        addButton("wiz.up", 0);
-        addButton("wiz.down", 4);
-        addButton("wiz.left", 2);
-        addButton("wiz.right", 6);
-        addButton("wiz.upleft", 1);
-        addButton("wiz.upright", 7);
-        addButton("wiz.downleft", 3);
-        addButton("wiz.downright", 5);
-        addButton("wiz.l", 10);
-        addButton("wiz.r", 11);
-        addButton("wiz.a", 12);
-        addButton("wiz.b", 13);
-        addButton("wiz.x", 14);
-        addButton("wiz.y", 15);
-        addButton("wiz.menu", 8);
-        addButton("wiz.select", 9);
-        addButton("wiz.volup", 16);
-        addButton("wiz.voldown", 17);
         addTouch("wiz.touch");
     #elif A_PLATFORM_CAANOO
-        addButton("caanoo.up", -1);
-        addButton("caanoo.down", -1);
-        addButton("caanoo.left", -1);
-        addButton("caanoo.right", -1);
-        addButton("caanoo.l", 4);
-        addButton("caanoo.r", 5);
-        addButton("caanoo.a", 0);
-        addButton("caanoo.b", 2);
-        addButton("caanoo.x", 1);
-        addButton("caanoo.y", 3);
-        addButton("caanoo.home", 6);
-        addButton("caanoo.hold", 7);
-        addButton("caanoo.1", 8);
-        addButton("caanoo.2", 9);
         addAnalog("caanoo.stickX", 0, NULL, 0);
         addAnalog("caanoo.stickY", 0, NULL, 1);
         addTouch("caanoo.touch");
@@ -378,11 +377,6 @@ void a_sdl_input__uninit(void)
         free(k);
     }
 
-    A_STRHASH_ITERATE(g_buttons, ASdlInputButton*, b) {
-        freeHeader(&b->header);
-        free(b);
-    }
-
     A_STRHASH_ITERATE(g_analogs, ASdlInputAnalog*, a) {
         freeHeader(&a->header);
         free(a);
@@ -411,7 +405,6 @@ void a_sdl_input__uninit(void)
     }
 
     a_strhash_free(g_keys);
-    a_strhash_free(g_buttons);
     a_strhash_free(g_analogs);
     a_strhash_free(g_touchScreens);
     a_list_free(g_controllers);
@@ -423,10 +416,6 @@ void a_sdl_input__bind(void)
 {
     A_STRHASH_ITERATE(g_keys, ASdlInputButton*, k) {
         k->logicalButton = a_input__newButton(k->header.name);
-    }
-
-    A_STRHASH_ITERATE(g_buttons, ASdlInputButton*, b) {
-        b->logicalButton = a_input__newButton(b->header.name);
     }
 
     A_STRHASH_ITERATE(g_analogs, ASdlInputAnalog*, a) {
@@ -483,13 +472,6 @@ void a_sdl_input__get(void)
             } break;
 
             case SDL_JOYBUTTONDOWN: {
-                A_STRHASH_ITERATE(g_buttons, ASdlInputButton*, b) {
-                    if(b->code.button == event.jbutton.button) {
-                        a_input__button_setState(b->logicalButton, true);
-                        break;
-                    }
-                }
-
                 A_LIST_ITERATE(g_controllers, ASdlInputController*, c) {
                     if(c->id == event.jbutton.which) {
                         A_STRHASH_ITERATE(c->buttons, ASdlInputButton*, b) {
@@ -506,13 +488,6 @@ void a_sdl_input__get(void)
             } break;
 
             case SDL_JOYBUTTONUP: {
-                A_STRHASH_ITERATE(g_buttons, ASdlInputButton*, b) {
-                    if(b->code.button == event.jbutton.button) {
-                        a_input__button_setState(b->logicalButton, false);
-                        break;
-                    }
-                }
-
                 A_LIST_ITERATE(g_controllers, ASdlInputController*, c) {
                     if(c->id == event.jbutton.which) {
                         A_STRHASH_ITERATE(c->buttons, ASdlInputButton*, b) {
