@@ -136,8 +136,10 @@ void a_list_appendMove(AList* Dst, AList* Src)
 
 void a_list_appendCopy(AList* Dst, AList* Src)
 {
-    for(AListNode* n = Src->first->next; n != Src->last; n = n->next) {
-        a_list_addLast(Dst, n->content);
+    AListNode* lastSrcEntry = Src->last->prev;
+
+    for(AListNode* n = Src->first; n != lastSrcEntry; n = n->next) {
+        a_list_addLast(Dst, n->next->content);
     }
 }
 
