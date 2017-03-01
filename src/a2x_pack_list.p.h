@@ -31,7 +31,9 @@ extern void a_list_clear(AList* List);
 
 extern AListNode* a_list_addFirst(AList* List, void* Content);
 extern AListNode* a_list_addLast(AList* List, void* Content);
-extern void a_list_append(AList* Base, AList* Addition);
+
+extern void a_list_appendMove(AList* Dst, AList* Src);
+extern void a_list_appendCopy(AList* Dst, AList* Src);
 
 extern void* a_list_getFirst(const AList* List);
 extern void* a_list_getLast(const AList* List);
