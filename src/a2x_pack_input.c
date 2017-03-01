@@ -103,6 +103,10 @@ static void initSourceHeader(AInputSourceHeader* Header, const char* Name)
     Header->name = a_str_dup(Name);
     Header->shortName = a_str_getSuffixLastFind(Name, '.');
     Header->lastEventFrame = 0;
+
+    if(Header->shortName == NULL) {
+        Header->shortName = a_str_dup(Name);
+    }
 }
 
 static void freeSourceHeader(AInputSourceHeader* Header)
@@ -473,7 +477,7 @@ AInputButton* a_button_new(const char* Names)
                 }
 
                 combo->header.name = a_str_dup(a_strbuilder_string(sb));
-                combo->header.shortName = NULL;
+                combo->header.shortName = a_str_dup(combo->header.name);
                 combo->header.lastEventFrame = 0;
                 combo->buttons = buttons;
 
