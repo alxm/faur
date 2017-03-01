@@ -19,9 +19,9 @@
 
 #pragma once
 
-typedef struct AInputButton AInputButton;
-typedef struct AInputAnalog AInputAnalog;
-typedef struct AInputTouch AInputTouch;
+typedef struct AInputSourceButton AInputSourceButton;
+typedef struct AInputSourceAnalog AInputSourceAnalog;
+typedef struct AInputSourceTouch AInputSourceTouch;
 
 typedef void (*AInputCallback)(void);
 
@@ -40,18 +40,16 @@ typedef void (*AInputCallback)(void);
 extern void a_input__init(void);
 extern void a_input__uninit(void);
 
-extern void a_input__free(AInput* Input);
-
 extern void a_input__newController(void);
 
-extern AInputButton* a_input__newButton(const char* Name);
-extern AInputAnalog* a_input__newAnalog(const char* Name);
-extern AInputTouch* a_input__newTouch(const char* Name);
+extern AInputSourceButton* a_input__newSourceButton(const char* Name);
+extern AInputSourceAnalog* a_input__newSourceAnalog(const char* Name);
+extern AInputSourceTouch* a_input__newSourceTouch(const char* Name);
 
 extern void a_input__addCallback(AInputCallback Callback);
 extern void a_input__get(void);
 
-extern void a_input__button_setState(AInputButton* Button, bool Pressed);
-extern void a_input__analog_setAxisValue(AInputAnalog* Analog, int Value);
-extern void a_input__touch_addMotion(AInputTouch* Touch, int X, int Y);
-extern void a_input__touch_setCoords(AInputTouch* Touch, int X, int Y, bool Tapped);
+extern void a_input__button_setState(AInputSourceButton* Button, bool Pressed);
+extern void a_input__analog_setAxisValue(AInputSourceAnalog* Analog, int Value);
+extern void a_input__touch_addMotion(AInputSourceTouch* Touch, int X, int Y);
+extern void a_input__touch_setCoords(AInputSourceTouch* Touch, int X, int Y, bool Tapped);

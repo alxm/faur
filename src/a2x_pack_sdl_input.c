@@ -35,7 +35,7 @@ typedef struct ASdlInputHeader {
 
 typedef struct ASdlInputButton {
     ASdlInputHeader header;
-    AInputButton* logicalButton;
+    AInputSourceButton* logicalButton;
     union {
         ASdlKeyCode keyCode;
         uint8_t buttonIndex;
@@ -46,13 +46,13 @@ typedef struct ASdlInputButton {
 
 typedef struct ASdlInputAnalog {
     ASdlInputHeader header;
-    AInputAnalog* logicalAnalog;
+    AInputSourceAnalog* logicalAnalog;
     int axisIndex;
 } ASdlInputAnalog;
 
 typedef struct ASdlInputTouch {
     ASdlInputHeader header;
-    AInputTouch* logicalTouch;
+    AInputSourceTouch* logicalTouch;
 } ASdlInputTouch;
 
 typedef struct ASdlInputController {
@@ -371,11 +371,11 @@ void a_sdl_input__uninit(void)
 void a_sdl_input__bind(void)
 {
     A_STRHASH_ITERATE(g_keys, ASdlInputButton*, k) {
-        k->logicalButton = a_input__newButton(k->header.name);
+        k->logicalButton = a_input__newSourceButton(k->header.name);
     }
 
     A_STRHASH_ITERATE(g_touchScreens, ASdlInputTouch*, t) {
-        t->logicalTouch = a_input__newTouch(t->header.name);
+        t->logicalTouch = a_input__newSourceTouch(t->header.name);
     }
 
     A_LIST_ITERATE(g_controllers, ASdlInputController*, c) {
@@ -383,11 +383,11 @@ void a_sdl_input__bind(void)
 
 
         A_STRHASH_ITERATE(c->buttons, ASdlInputButton*, b) {
-            b->logicalButton = a_input__newButton(b->header.name);
+            b->logicalButton = a_input__newSourceButton(b->header.name);
         }
 
         A_STRHASH_ITERATE(c->axes, ASdlInputAnalog*, a) {
-            a->logicalAnalog = a_input__newAnalog(a->header.name);
+            a->logicalAnalog = a_input__newSourceAnalog(a->header.name);
         }
     }
 }

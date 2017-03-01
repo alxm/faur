@@ -23,25 +23,28 @@
 
 #include "a2x_pack_fix.p.h"
 
-typedef struct AInput AInput;
-
-extern AInput* a_input_new(const char* Names);
-
-extern const char* a_input_name(const AInput* Input);
-extern bool a_input_working(const AInput* Input);
+typedef struct AInputButton AInputButton;
+typedef struct AInputAnalog AInputAnalog;
+typedef struct AInputTouch AInputTouch;
 
 extern unsigned a_input_numControllers(void);
 extern void a_input_setController(unsigned Index);
 
-extern void a_input_setRepeat(AInput* input, unsigned RepeatFrames);
+extern AInputButton* a_button_new(const char* Names);
+extern bool a_button_working(const AInputButton* Button);
+extern const char* a_button_name(const AInputButton* Button);
+extern bool a_button_get(AInputButton* Button);
+extern void a_button_release(const AInputButton* Button);
+extern bool a_button_getOnce(AInputButton* Button);
+extern void a_button_setRepeat(AInputButton* Button, unsigned RepeatFrames);
 
-extern bool a_button_get(AInput* Button);
-extern void a_button_release(const AInput* Button);
-extern bool a_button_getOnce(AInput* Button);
+extern AInputAnalog* a_analog_new(const char* Names);
+extern bool a_analog_working(const AInputAnalog* Analog);
+extern int a_analog_axisRaw(const AInputAnalog* Analog);
+extern AFix a_analog_axisFix(const AInputAnalog* Analog);
 
-extern int a_analog_axisRaw(const AInput* Analog);
-extern AFix a_analog_axisFix(const AInput* Analog);
-
-extern bool a_touch_tapped(const AInput* Touch);
-extern bool a_touch_point(const AInput* Touch, int X, int Y);
-extern bool a_touch_box(const AInput* Touch, int X, int Y, int W, int H);
+extern AInputTouch* a_touch_new(const char* Names);
+extern bool a_touch_working(const AInputTouch* Touch);
+extern bool a_touch_tapped(const AInputTouch* Touch);
+extern bool a_touch_point(const AInputTouch* Touch, int X, int Y);
+extern bool a_touch_box(const AInputTouch* Touch, int X, int Y, int W, int H);

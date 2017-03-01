@@ -31,13 +31,13 @@ static int g_volumeMax;
     #define A_VOLUME_STEP 1
     #define A_VOLBAR_SHOW_MS 500
     static uint32_t g_lastVolAdjustment;
-    static AInput* g_volumeUpButton;
-    static AInput* g_volumeDownButton;
+    static AInputButton* g_volumeUpButton;
+    static AInputButton* g_volumeDownButton;
     static APixel g_volbarBackground;
     static APixel g_volbarBorder;
     static APixel g_volbarFill;
 #elif A_PLATFORM_LINUXPC || A_PLATFORM_PANDORA
-    static AInput* g_musicOnOffButton;
+    static AInputButton* g_musicOnOffButton;
 #endif
 
 static void adjustSoundVolume(int Volume)
@@ -122,10 +122,10 @@ void a_sound__init(void)
         #endif
 
         #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
-            g_volumeUpButton = a_input_new("gp2x.volup, wiz.volup");
-            g_volumeDownButton = a_input_new("gp2x.voldown, wiz.voldown");
+            g_volumeUpButton = a_button_new("gp2x.volup, wiz.volup");
+            g_volumeDownButton = a_button_new("gp2x.voldown, wiz.voldown");
         #elif A_PLATFORM_LINUXPC || A_PLATFORM_PANDORA
-            g_musicOnOffButton = a_input_new("key.m");
+            g_musicOnOffButton = a_button_new("key.m");
         #endif
 
         a_input__addCallback(inputCallback);

@@ -28,7 +28,7 @@ typedef void (*AMenuInputHandler)(AMenu* Menu, void* Context);
 #include "a2x_pack_sound.p.h"
 #include "a2x_pack_sprite.p.h"
 
-extern AMenu* a_menu_new(AInput* Next, AInput* Back, AInput* Select, AInput* Cancel, AMenuFreeItemHandler FreeItemHandler);
+extern AMenu* a_menu_new(AInputButton* Next, AInputButton* Back, AInputButton* Select, AInputButton* Cancel, AMenuFreeItemHandler FreeItemHandler);
 extern void a_menu_free(AMenu* Menu);
 
 extern void a_menu_addInput(AMenu* Menu, AMenuInputHandler InputHandler);

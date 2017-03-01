@@ -26,7 +26,7 @@ static char* g_filePrefix;
 static char* g_title;
 static char* g_description;
 static unsigned g_screenshotNumber;
-static AInput* g_button;
+static AInputButton* g_button;
 
 static bool lazy_init(void)
 {
@@ -144,7 +144,7 @@ void a_screenshot__init(void)
     g_title = NULL;
     g_description = NULL;
     g_screenshotNumber = 0;
-    g_button = a_input_new(a_settings_getString("screenshot.button"));
+    g_button = a_button_new(a_settings_getString("screenshot.button"));
     a_input__addCallback(inputCallback);
 }
 
