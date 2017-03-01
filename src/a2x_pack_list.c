@@ -110,7 +110,7 @@ AListNode* a_list_addLast(AList* List, void* Content)
 
 void a_list_appendMove(AList* Dst, AList* Src)
 {
-    if(Src->items == 0) {
+    if(Dst == Src || Src->items == 0) {
         return;
     }
 
