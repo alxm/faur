@@ -381,7 +381,6 @@ void a_sdl_input__bind(void)
     A_LIST_ITERATE(g_controllers, ASdlInputController*, c) {
         a_input__newController();
 
-
         A_STRHASH_ITERATE(c->buttons, ASdlInputButton*, b) {
             b->logicalButton = a_input__newSourceButton(b->header.name);
         }

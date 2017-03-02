@@ -20,7 +20,7 @@
 #include "a2x_pack_input.v.h"
 
 typedef struct AInputHeader {
-    const char* name;
+    char* name;
     AList* sourceInputs; // List of AInputSourceButton/Analog/Touch
 } AInputHeader;
 
@@ -32,20 +32,23 @@ typedef struct AInputSourceHeader {
 
 struct AInputButton {
     AInputHeader header;
-    AList* combos; // List of AInputButtonCombo
+    AList* combos; // List of lists of AInputSourceButton; for combo buttons
     unsigned repeatFrames;
     unsigned lastPressedFrame;
 };
 
-typedef struct AInputButtonCombo {
-    AInputSourceHeader header;
-    AList* buttons; // List of AInputSourceButton
-} AInputButtonCombo;
-
 struct AInputSourceButton {
     AInputSourceHeader header;
-    bool pressed;
-    bool ignorePressed;
+    bool isLeaf;
+    union {
+        struct {
+            AList* orList; // List of AInputSourceButton; for alias buttons
+        } node;
+        struct {
+            bool pressed;
+            bool ignorePressed;
+        } leaf;
+    } u;
 };
 
 struct AInputAnalog {
@@ -84,7 +87,6 @@ typedef struct AInputCallbackContainer {
 } AInputCallbackContainer;
 
 static AList* g_buttons;
-static AStrHash* g_umbrellaButtons;
 static AStrHash* g_sourceButtons;
 
 static AList* g_analogs;
@@ -97,6 +99,20 @@ static AList* g_controllers;
 static AInputSourceController* g_activeController;
 
 static AList* g_callbacks;
+
+static void a_input__newSourceButtonNode(const char* Name, const char* ButtonNames);
+
+static void initHeader(AInputHeader* Header)
+{
+    Header->name = NULL;
+    Header->sourceInputs = a_list_new();
+}
+
+static void freeHeader(AInputHeader* Header)
+{
+    free(Header->name);
+    a_list_free(Header->sourceInputs);
+}
 
 static void initSourceHeader(AInputSourceHeader* Header, const char* Name)
 {
@@ -127,29 +143,26 @@ static inline void setFreshEvent(AInputSourceHeader* Header)
     Header->lastEventFrame = a_fps_getCounter();
 }
 
-static void addUmbrella(const char* Name, const char* Inputs)
+static bool findSourceInput(const char* Name, const AStrHash* Collection, AInputHeader* UserInput)
 {
-    AInputButton* umbrella = a_button_new(Inputs);
-    a_strhash_add(g_umbrellaButtons, Name, umbrella);
-}
+    AInputSourceHeader* source = a_strhash_get(Collection, Name);
 
-static void findSourceInput(const char* Name, const AStrHash* Collection, AInputHeader* UserInput)
-{
-    AInputSourceHeader* h = a_strhash_get(Collection, Name);
-
-    if(h) {
-        a_list_addLast(UserInput->sourceInputs, h);
-
-        if(UserInput->name == NULL) {
-            UserInput->name = h->shortName;
-        }
+    if(source == NULL) {
+        return false;
     }
+
+    if(UserInput->name == NULL) {
+        UserInput->name = a_str_dup(source->shortName);
+    }
+
+    a_list_addLast(UserInput->sourceInputs, source);
+
+    return true;
 }
 
 void a_input__init(void)
 {
     g_buttons = a_list_new();
-    g_umbrellaButtons = a_strhash_new();
     g_sourceButtons = a_strhash_new();
 
     g_analogs = a_list_new();
@@ -169,37 +182,40 @@ void a_input__init(void)
         a_input_setController(0);
     }
 
-    addUmbrella("generic.up", "key.up controller.up gp2x.up wiz.up caanoo.up pandora.up");
-    addUmbrella("generic.down", "key.down controller.down gp2x.down wiz.down caanoo.down pandora.down");
-    addUmbrella("generic.left", "key.left controller.left gp2x.left wiz.left caanoo.left pandora.left");
-    addUmbrella("generic.right", "key.right controller.right gp2x.right wiz.right caanoo.right pandora.right");
+    a_input__newSourceButtonNode("generic.up", "key.up controller.up gp2x.up wiz.up caanoo.up pandora.up");
+    a_input__newSourceButtonNode("generic.down", "key.down controller.down gp2x.down wiz.down caanoo.down pandora.down");
+    a_input__newSourceButtonNode("generic.left", "key.left controller.left gp2x.left wiz.left caanoo.left pandora.left");
+    a_input__newSourceButtonNode("generic.right", "key.right controller.right gp2x.right wiz.right caanoo.right pandora.right");
 
-    addUmbrella("generic.b0", "key.z controller.b0 gp2x.x wiz.x caanoo.x pandora.x");
-    addUmbrella("generic.b1", "key.x controller.b1 gp2x.b wiz.b caanoo.b pandora.b");
-    addUmbrella("generic.b2", "key.c controller.b2 gp2x.a wiz.a caanoo.a pandora.a");
-    addUmbrella("generic.b3", "key.v controller.b3 gp2x.y wiz.y caanoo.y pandora.y");
+    a_input__newSourceButtonNode("generic.b0", "key.z controller.b0 gp2x.x wiz.x caanoo.x pandora.x");
+    a_input__newSourceButtonNode("generic.b1", "key.x controller.b1 gp2x.b wiz.b caanoo.b pandora.b");
+    a_input__newSourceButtonNode("generic.b2", "key.c controller.b2 gp2x.a wiz.a caanoo.a pandora.a");
+    a_input__newSourceButtonNode("generic.b3", "key.v controller.b3 gp2x.y wiz.y caanoo.y pandora.y");
 }
 
 void a_input__uninit(void)
 {
     A_LIST_ITERATE(g_buttons, AInputButton*, b) {
-        A_LIST_ITERATE(b->combos, AInputButtonCombo*, c) {
-            freeSourceHeader(&c->header);
-            a_list_free(c->buttons);
+        A_LIST_ITERATE(b->combos, AList*, andList) {
+            a_list_free(andList);
         }
 
-        a_list_free(b->header.sourceInputs);
         a_list_free(b->combos);
+        freeHeader(&b->header);
         free(b);
     }
 
     A_STRHASH_ITERATE(g_sourceButtons, AInputSourceButton*, b) {
+        if(!b->isLeaf) {
+            a_list_free(b->u.node.orList);
+        }
+
         freeSourceHeader(&b->header);
         free(b);
     }
 
     A_LIST_ITERATE(g_analogs, AInputAnalog*, a) {
-        a_list_free(a->header.sourceInputs);
+        freeHeader(&a->header);
         free(a);
     }
 
@@ -209,7 +225,7 @@ void a_input__uninit(void)
     }
 
     A_LIST_ITERATE(g_touchScreens, AInputTouch*, t) {
-        a_list_free(t->header.sourceInputs);
+        freeHeader(&t->header);
         free(t);
     }
 
@@ -245,7 +261,6 @@ void a_input__uninit(void)
     }
 
     a_list_free(g_buttons);
-    a_strhash_free(g_umbrellaButtons);
     a_strhash_free(g_sourceButtons);
 
     a_list_free(g_analogs);
@@ -276,8 +291,9 @@ AInputSourceButton* a_input__newSourceButton(const char* Name)
 
     initSourceHeader(&b->header, Name);
 
-    b->pressed = false;
-    b->ignorePressed = false;
+    b->isLeaf = true;
+    b->u.leaf.pressed = false;
+    b->u.leaf.ignorePressed = false;
 
     if(g_activeController == NULL) {
         a_strhash_add(g_sourceButtons, Name, b);
@@ -286,6 +302,38 @@ AInputSourceButton* a_input__newSourceButton(const char* Name)
     }
 
     return b;
+}
+
+static void a_input__newSourceButtonNode(const char* Name, const char* ButtonNames)
+{
+    AInputSourceButton* b = a_mem_malloc(sizeof(AInputSourceButton));
+
+    initSourceHeader(&b->header, Name);
+
+    b->isLeaf = false;
+    b->u.node.orList = a_list_new();
+
+    AStrTok* tok = a_strtok_new(ButtonNames, ", ");
+
+    A_STRTOK_ITERATE(tok, name) {
+        AInputSourceButton* btn = a_strhash_get(g_sourceButtons, name);
+
+        if(btn == NULL && g_activeController != NULL) {
+            btn = a_strhash_get(g_activeController->buttons, name);
+        }
+
+        if(btn != NULL) {
+            a_list_addLast(b->u.node.orList, btn);
+        }
+    }
+
+    a_strtok_free(tok);
+
+    if(a_list_empty(b->u.node.orList)) {
+        a_out__fatal("'%s' found no buttons in '%s'", Name, ButtonNames);
+    }
+
+    a_strhash_add(g_sourceButtons, Name, b);
 }
 
 AInputSourceAnalog* a_input__newSourceAnalog(const char* Name)
@@ -368,23 +416,23 @@ void a_input__get(void)
         #endif
 
         if(isFreshEvent(&upLeft->header)) {
-            a_input__button_setState(up, upLeft->pressed);
-            a_input__button_setState(left, upLeft->pressed);
+            a_input__button_setState(up, upLeft->u.leaf.pressed);
+            a_input__button_setState(left, upLeft->u.leaf.pressed);
         }
 
         if(isFreshEvent(&upRight->header)) {
-            a_input__button_setState(up, upRight->pressed);
-            a_input__button_setState(right, upRight->pressed);
+            a_input__button_setState(up, upRight->u.leaf.pressed);
+            a_input__button_setState(right, upRight->u.leaf.pressed);
         }
 
         if(isFreshEvent(&downLeft->header)) {
-            a_input__button_setState(down, downLeft->pressed);
-            a_input__button_setState(left, downLeft->pressed);
+            a_input__button_setState(down, downLeft->u.leaf.pressed);
+            a_input__button_setState(left, downLeft->u.leaf.pressed);
         }
 
         if(isFreshEvent(&downRight->header)) {
-            a_input__button_setState(down, downRight->pressed);
-            a_input__button_setState(right, downRight->pressed);
+            a_input__button_setState(down, downRight->u.leaf.pressed);
+            a_input__button_setState(right, downRight->u.leaf.pressed);
         }
     #endif
 
@@ -438,8 +486,8 @@ AInputButton* a_button_new(const char* Names)
 {
     AInputButton* b = a_mem_malloc(sizeof(AInputButton));
 
-    b->header.name = NULL;
-    b->header.sourceInputs = a_list_new();
+    initHeader(&b->header);
+
     b->combos = a_list_new();
     b->repeatFrames = 0;
     b->lastPressedFrame = 0;
@@ -453,52 +501,50 @@ AInputButton* a_button_new(const char* Names)
             bool missing = false;
 
             A_STRTOK_ITERATE(tok, part) {
-                AInputSourceButton* button = a_strhash_get(g_sourceButtons, part);
+                AInputSourceButton* button = a_strhash_get(g_sourceButtons,
+                                                           part);
 
                 if(button == NULL) {
-                    missing = true;
-                    a_list_free(buttons);
-                    break;
+                    if(g_activeController != NULL) {
+                        button = a_strhash_get(g_activeController->buttons,
+                                               part);
+                    }
+
+                    if(button == NULL) {
+                        missing = true;
+                        a_list_free(buttons);
+                        break;
+                    }
                 }
 
                 a_list_addLast(buttons, button);
             }
 
             if(!missing) {
-                AInputButtonCombo* combo = a_mem_malloc(sizeof(AInputButtonCombo));
-                AStrBuilder* sb = a_strbuilder_new(128);
-
-                A_LIST_ITERATE(buttons, AInputSourceButton*, button) {
-                    a_strbuilder_addString(sb, button->header.shortName);
-
-                    if(!A_LIST_IS_LAST()) {
-                        a_strbuilder_addString(sb, "+");
-                    }
-                }
-
-                combo->header.name = a_str_dup(a_strbuilder_string(sb));
-                combo->header.shortName = a_str_dup(combo->header.name);
-                combo->header.lastEventFrame = 0;
-                combo->buttons = buttons;
-
-                a_list_addLast(b->combos, combo);
+                a_list_addLast(b->combos, buttons);
 
                 if(b->header.name == NULL) {
-                    b->header.name = combo->header.name;
-                }
+                    AStrBuilder* sb = a_strbuilder_new(128);
 
-                a_strbuilder_free(sb);
+                    A_LIST_ITERATE(buttons, AInputSourceButton*, button) {
+                        a_strbuilder_addString(sb, button->header.shortName);
+
+                        if(!A_LIST_IS_LAST()) {
+                            a_strbuilder_addString(sb, "+");
+                        }
+                    }
+
+                    b->header.name = a_str_dup(a_strbuilder_string(sb));
+
+                    a_strbuilder_free(sb);
+                }
             }
 
             a_strtok_free(tok);
-        } else if(a_strhash_contains(g_umbrellaButtons, name)) {
-            AInputButton* umbrella = a_strhash_get(g_umbrellaButtons, name);
-            a_list_appendCopy(b->header.sourceInputs, umbrella->header.sourceInputs);
-            a_list_appendCopy(b->combos, umbrella->combos);
-        } else if(g_activeController != NULL && a_str_startsWith(name, "controller.")) {
-            findSourceInput(name, g_activeController->buttons, &b->header);
-        } else {
-            findSourceInput(name, g_sourceButtons, &b->header);
+        } else if(!findSourceInput(name, g_sourceButtons, &b->header)) {
+            if(g_activeController != NULL) {
+                findSourceInput(name, g_activeController->buttons, &b->header);
+            }
         }
     }
 
@@ -524,12 +570,40 @@ const char* a_button_name(const AInputButton* Button)
     return Button->header.name;
 }
 
+static bool isSourceButtonPressed(const AInputSourceButton* Button)
+{
+    if(Button->isLeaf) {
+        return Button->u.leaf.pressed && !Button->u.leaf.ignorePressed;
+    } else {
+        A_LIST_ITERATE(Button->u.node.orList, AInputSourceButton*, b) {
+            if(isSourceButtonPressed(b)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+}
+
+static void releaseSourceButton(AInputSourceButton* Button)
+{
+    if(Button->isLeaf) {
+        if(Button->u.leaf.pressed) {
+            Button->u.leaf.ignorePressed = true;
+        }
+    } else {
+        A_LIST_ITERATE(Button->u.node.orList, AInputSourceButton*, b) {
+            releaseSourceButton(b);
+        }
+    }
+}
+
 bool a_button_get(AInputButton* Button)
 {
     const unsigned now = a_fps_getCounter();
 
     A_LIST_ITERATE(Button->header.sourceInputs, AInputSourceButton*, b) {
-        if(b->pressed && !b->ignorePressed) {
+        if(isSourceButtonPressed(b)) {
             if(Button->repeatFrames > 0) {
                 if(now - Button->lastPressedFrame >= Button->repeatFrames) {
                     Button->lastPressedFrame = now;
@@ -541,9 +615,9 @@ bool a_button_get(AInputButton* Button)
         }
     }
 
-    A_LIST_ITERATE(Button->combos, AInputButtonCombo*, c) {
-        A_LIST_ITERATE(c->buttons, AInputSourceButton*, b) {
-            if(!b->pressed || b->ignorePressed) {
+    A_LIST_ITERATE(Button->combos, AList*, andList) {
+        A_LIST_ITERATE(andList, AInputSourceButton*, b) {
+            if(!isSourceButtonPressed(b)) {
                 break;
             }
 
@@ -569,16 +643,12 @@ bool a_button_get(AInputButton* Button)
 void a_button_release(const AInputButton* Button)
 {
     A_LIST_ITERATE(Button->header.sourceInputs, AInputSourceButton*, b) {
-        if(b->pressed) {
-            b->ignorePressed = true;
-        }
+        releaseSourceButton(b);
     }
 
-    A_LIST_ITERATE(Button->combos, AInputButtonCombo*, c) {
-        A_LIST_ITERATE(c->buttons, AInputSourceButton*, b) {
-            if(b->pressed) {
-                b->ignorePressed = true;
-            }
+    A_LIST_ITERATE(Button->combos, AList*, andList) {
+        A_LIST_ITERATE(andList, AInputSourceButton*, b) {
+            releaseSourceButton(b);
         }
     }
 }
@@ -604,16 +674,15 @@ AInputAnalog* a_analog_new(const char* Names)
 {
     AInputAnalog* a = a_mem_malloc(sizeof(AInputAnalog));
 
-    a->header.name = NULL;
-    a->header.sourceInputs = a_list_new();
+    initHeader(&a->header);
 
     AStrTok* tok = a_strtok_new(Names, ", ");
 
     A_STRTOK_ITERATE(tok, name) {
-        if(g_activeController != NULL && a_str_startsWith(name, "controller.")) {
-            findSourceInput(name, g_activeController->axes, &a->header);
-        } else {
-            findSourceInput(name, g_sourceAnalogs, &a->header);
+        if(!findSourceInput(name, g_sourceAnalogs, &a->header)) {
+            if(g_activeController != NULL) {
+                findSourceInput(name, g_activeController->axes, &a->header);
+            }
         }
     }
 
@@ -656,8 +725,7 @@ AInputTouch* a_touch_new(const char* Names)
 {
     AInputTouch* t = a_mem_malloc(sizeof(AInputTouch));
 
-    t->header.name = NULL;
-    t->header.sourceInputs = a_list_new();
+    initHeader(&t->header);
 
     AStrTok* tok = a_strtok_new(Names, ", ");
 
@@ -710,11 +778,11 @@ bool a_touch_box(const AInputTouch* Touch, int X, int Y, int W, int H)
 
 void a_input__button_setState(AInputSourceButton* Button, bool Pressed)
 {
-    if(!Pressed && Button->ignorePressed) {
-        Button->ignorePressed = false;
+    if(!Pressed && Button->u.leaf.ignorePressed) {
+        Button->u.leaf.ignorePressed = false;
     }
 
-    Button->pressed = Pressed;
+    Button->u.leaf.pressed = Pressed;
 
     setFreshEvent(&Button->header);
 }
