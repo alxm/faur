@@ -144,32 +144,3 @@ void a_input__analog_setAxisValue(AInputSourceAnalog* Analog, int Value)
         a_input__button_setState(b->positive, Value > PRESS_THRESHOLD);
     }
 }
-
-void a_input_analog__adjust(void)
-{
-    // Caanoo has an analog stick instead of a dpad, but in most cases it's
-    // useful to be able to use it as a dpad like on the other platforms.
-    #if A_PLATFORM_CAANOO
-        // Pressed at least half-way
-        #define ANALOG_TRESH ((1 << 15) / 2)
-
-        AInputSourceAnalog* stickx = a_controller__getAnalog("caanoo.stickX");
-        AInputSourceAnalog* sticky = a_controller__getAnalog("caanoo.stickY");
-
-        if(a_input__hasFreshEvent(&stickx->header)) {
-            AInputSourceButton* left = a_controller__getButton("caanoo.left");
-            a_input__button_setState(left, stickx->axisValue < -ANALOG_TRESH);
-
-            AInputSourceButton* right = a_controller__getButton("caanoo.right");
-            a_input__button_setState(right, stickx->axisValue > ANALOG_TRESH);
-        }
-
-        if(a_input__hasFreshEvent(&sticky->header)) {
-            AInputSourceButton* up = a_controller__getButton("caanoo.up");
-            a_input__button_setState(up, sticky->axisValue < -ANALOG_TRESH);
-
-            AInputSourceButton* down = a_controller__getButton("caanoo.down");
-            a_input__button_setState(down, sticky->axisValue > ANALOG_TRESH);
-        }
-    #endif
-}

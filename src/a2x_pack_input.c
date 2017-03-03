@@ -129,7 +129,6 @@ void a_input__get(void)
 
     a_sdl_input__get();
 
-    a_input_analog__adjust();
     a_input_button__adjust();
 
     A_LIST_ITERATE(g_callbacks, AInputCallbackContainer*, c) {

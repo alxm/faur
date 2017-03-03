@@ -34,5 +34,3 @@ extern void a_input__freeSourceAnalog(AInputSourceAnalog* Analog);
 extern void a_input__axisButtonsBinding(AInputSourceAnalog* Axis, AInputSourceButton* Negative, AInputSourceButton* Positive);
 
 extern void a_input__analog_setAxisValue(AInputSourceAnalog* Analog, int Value);
-
-extern void a_input_analog__adjust(void);

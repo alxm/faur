@@ -40,8 +40,27 @@ void a_input_controller__init2(void)
         return;
     }
 
-    A_LIST_ITERATE(g_controllers, AInputSourceController*, c) {
-        if(!c->generic || a_strhash_size(c->axes) < 2) {
+    A_LIST_FILTER(g_controllers,
+                  AInputSourceController*,
+                  c,
+                  a_strhash_size(c->axes) >= 2) {
+
+        if(!c->generic) {
+            // Caanoo has an analog stick instead of direction buttons,
+            // this lets us use it as a dpad like on the other platforms.
+            #if A_PLATFORM_CAANOO
+                AInputSourceAnalog* x = a_strhash_get(c->axes, "caanoo.stickX");
+                AInputSourceAnalog* y = a_strhash_get(c->axes, "caanoo.stickY");
+
+                AInputSourceButton* u = a_strhash_get(c->buttons, "caanoo.up");
+                AInputSourceButton* d = a_strhash_get(c->buttons, "caanoo.down");
+                AInputSourceButton* l = a_strhash_get(c->buttons, "caanoo.left");
+                AInputSourceButton* r = a_strhash_get(c->buttons, "caanoo.right");
+
+                a_input__axisButtonsBinding(x, l, r);
+                a_input__axisButtonsBinding(y, u, d);
+            #endif
+
             continue;
         }
 
@@ -53,6 +72,7 @@ void a_input_controller__init2(void)
         AInputSourceButton* l = a_strhash_get(c->buttons, "controller.left");
         AInputSourceButton* r = a_strhash_get(c->buttons, "controller.right");
 
+        // Guess that the first two axes are for X and Y movement.
         a_input__axisButtonsBinding(x, l, r);
         a_input__axisButtonsBinding(y, u, d);
     }
