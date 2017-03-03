@@ -279,7 +279,7 @@ void a_sdl_input__init(void)
             addAnalog(c->axes, name, j);
         }
 
-        if(c->numHats > 0) {
+        if(c->numHats > 0 || c->numAxes >= 2) {
             addButton(c->buttons, "controller.up", -1);
             addButton(c->buttons, "controller.down", -1);
             addButton(c->buttons, "controller.left", -1);

@@ -35,9 +35,30 @@ void a_input_controller__init(void)
 
 void a_input_controller__init2(void)
 {
-    if(a_input_numControllers() > 0) {
-        a_input_setController(0);
+    if(a_input_numControllers() == 0) {
+        return;
     }
+
+    A_LIST_ITERATE(g_controllers, AInputSourceController*, c) {
+        if(a_strhash_size(c->axes) < 2) {
+            continue;
+        }
+
+        AInputSourceAnalog* x = a_strhash_get(c->axes, "controller.axis0");
+        AInputSourceAnalog* y = a_strhash_get(c->axes, "controller.axis1");
+
+        AInputSourceButton* u = a_strhash_get(c->buttons, "controller.up");
+        AInputSourceButton* d = a_strhash_get(c->buttons, "controller.down");
+        AInputSourceButton* l = a_strhash_get(c->buttons, "controller.left");
+        AInputSourceButton* r = a_strhash_get(c->buttons, "controller.right");
+
+        if(x && y && u && d && l && r) {
+            a_input__axisButtonsBinding(x, l, r);
+            a_input__axisButtonsBinding(y, u, d);
+        }
+    }
+
+    a_input_setController(0);
 }
 
 void a_input_controller__uninit(void)
@@ -47,8 +68,9 @@ void a_input_controller__uninit(void)
             a_input__freeSourceHeader(b);
         }
 
-        A_STRHASH_ITERATE(c->axes, AInputSourceHeader*, a) {
-            a_input__freeSourceHeader(a);
+        A_STRHASH_ITERATE(c->axes, AInputSourceAnalog*, a) {
+            a_input__freeSourceAnalog(a);
+            a_input__freeSourceHeader((AInputSourceHeader*)a);
         }
 
         a_strhash_free(c->buttons);

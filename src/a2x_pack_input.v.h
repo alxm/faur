@@ -36,8 +36,8 @@ typedef void (*AInputCallback)(void);
 #include "a2x_pack_strbuilder.v.h"
 #include "a2x_pack_strtok.v.h"
 
-#include "a2x_pack_input_analog.v.h"
 #include "a2x_pack_input_button.v.h"
+#include "a2x_pack_input_analog.v.h"
 #include "a2x_pack_input_controller.v.h"
 #include "a2x_pack_input_touch.v.h"
 

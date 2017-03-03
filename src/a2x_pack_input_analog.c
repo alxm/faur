@@ -25,8 +25,14 @@ struct AInputAnalog {
 
 struct AInputSourceAnalog {
     AInputSourceHeader header;
+    AList* buttonBindings; // List of AInputSourceAxisToButtons
     int axisValue;
 };
+
+typedef struct AInputSourceAxisToButtons {
+    AInputSourceButton* negative;
+    AInputSourceButton* positive;
+} AInputSourceAxisToButtons;
 
 static AList* g_analogs;
 
@@ -50,9 +56,29 @@ AInputSourceAnalog* a_input__newSourceAnalog(const char* Name)
     AInputSourceAnalog* a = a_mem_malloc(sizeof(AInputSourceAnalog));
 
     a_input__initSourceHeader(&a->header, Name);
+    a->buttonBindings = a_list_new();
     a->axisValue = 0;
 
     return a;
+}
+
+void a_input__freeSourceAnalog(AInputSourceAnalog* Analog)
+{
+    A_LIST_ITERATE(Analog->buttonBindings, AInputSourceAxisToButtons*, b) {
+        free(b);
+    }
+
+    a_list_free(Analog->buttonBindings);
+}
+
+void a_input__axisButtonsBinding(AInputSourceAnalog* Axis, AInputSourceButton* Negative, AInputSourceButton* Positive)
+{
+    AInputSourceAxisToButtons* b = a_mem_malloc(sizeof(AInputSourceAxisToButtons));
+
+    b->negative = Negative;
+    b->positive = Positive;
+
+    a_list_addLast(Axis->buttonBindings, b);
 }
 
 AInputAnalog* a_analog_new(const char* Names)
@@ -110,6 +136,13 @@ void a_input__analog_setAxisValue(AInputSourceAnalog* Analog, int Value)
     Analog->axisValue = Value;
 
     a_input__setFreshEvent(&Analog->header);
+
+    #define PRESS_THRESHOLD ((1 << 15) / 2)
+
+    A_LIST_ITERATE(Analog->buttonBindings, AInputSourceAxisToButtons*, b) {
+        a_input__button_setState(b->negative, Value < -PRESS_THRESHOLD);
+        a_input__button_setState(b->positive, Value > PRESS_THRESHOLD);
+    }
 }
 
 void a_input_analog__adjust(void)
