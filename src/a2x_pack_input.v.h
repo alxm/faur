@@ -19,8 +19,6 @@
 
 #pragma once
 
-typedef struct AInputSourceController AInputSourceController;
-
 typedef struct AInputHeader AInputHeader;
 typedef struct AInputSourceHeader AInputSourceHeader;
 
@@ -40,12 +38,8 @@ typedef void (*AInputCallback)(void);
 
 #include "a2x_pack_input_analog.v.h"
 #include "a2x_pack_input_button.v.h"
+#include "a2x_pack_input_controller.v.h"
 #include "a2x_pack_input_touch.v.h"
-
-struct AInputSourceController {
-    AStrHash* buttons;
-    AStrHash* axes;
-};
 
 struct AInputHeader {
     char* name;
@@ -58,21 +52,17 @@ struct AInputSourceHeader {
     unsigned lastEventFrame;
 };
 
-extern AInputSourceController* a_input__activeController;
-
 extern void a_input__init(void);
 extern void a_input__uninit(void);
 
 extern void a_input__addCallback(AInputCallback Callback);
-
-extern void a_input__newController(void);
 
 extern void a_input__initHeader(AInputHeader* Header);
 extern void a_input__freeHeader(AInputHeader* Header);
 extern void a_input__initSourceHeader(AInputSourceHeader* Header, const char* Name);
 extern void a_input__freeSourceHeader(AInputSourceHeader* Header);
 
-extern bool a_input__findSourceInput(const char* Name, const AStrHash* Collection, AInputHeader* UserInput);
+extern void a_input__findSourceInput(const char* Name, const AStrHash* GlobalCollection, const AStrHash* ControllerCollection, AInputHeader* UserInput);
 
 extern bool a_input__hasFreshEvent(const AInputSourceHeader* Header);
 extern void a_input__setFreshEvent(AInputSourceHeader* Header);

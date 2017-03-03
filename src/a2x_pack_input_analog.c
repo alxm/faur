@@ -29,12 +29,10 @@ struct AInputSourceAnalog {
 };
 
 static AList* g_analogs;
-static AStrHash* g_sourceAnalogs;
 
 void a_input_analog__init(void)
 {
     g_analogs = a_list_new();
-    g_sourceAnalogs = a_strhash_new();
 }
 
 void a_input_analog__uninit(void)
@@ -44,12 +42,7 @@ void a_input_analog__uninit(void)
         free(a);
     }
 
-    A_STRHASH_ITERATE(g_sourceAnalogs, AInputSourceAnalog*, a) {
-        a_input__freeSourceHeader(&a->header);
-    }
-
     a_list_free(g_analogs);
-    a_strhash_free(g_sourceAnalogs);
 }
 
 AInputSourceAnalog* a_input__newSourceAnalog(const char* Name)
@@ -57,14 +50,7 @@ AInputSourceAnalog* a_input__newSourceAnalog(const char* Name)
     AInputSourceAnalog* a = a_mem_malloc(sizeof(AInputSourceAnalog));
 
     a_input__initSourceHeader(&a->header, Name);
-
     a->axisValue = 0;
-
-    if(a_input__activeController == NULL) {
-        a_strhash_add(g_sourceAnalogs, Name, a);
-    } else {
-        a_strhash_add(a_input__activeController->axes, Name, a);
-    }
 
     return a;
 }
@@ -78,11 +64,10 @@ AInputAnalog* a_analog_new(const char* Names)
     AStrTok* tok = a_strtok_new(Names, ", ");
 
     A_STRTOK_ITERATE(tok, name) {
-        if(!a_input__findSourceInput(name, g_sourceAnalogs, &a->header)) {
-            if(a_input__activeController != NULL) {
-                a_input__findSourceInput(name, a_input__activeController->axes, &a->header);
-            }
-        }
+        a_input__findSourceInput(name,
+                                 NULL,
+                                 a_controller__getAnalogsCollection(),
+                                 &a->header);
     }
 
     a_strtok_free(tok);
@@ -135,22 +120,22 @@ void a_input_analog__adjust(void)
         // Pressed at least half-way
         #define ANALOG_TRESH ((1 << 15) / 2)
 
-        AInputSourceAnalog* stickx = a_strhash_get(g_sourceAnalogs, "caanoo.stickX");
-        AInputSourceAnalog* sticky = a_strhash_get(g_sourceAnalogs, "caanoo.stickY");
+        AInputSourceAnalog* stickx = a_controller__getAnalog("caanoo.stickX");
+        AInputSourceAnalog* sticky = a_controller__getAnalog("caanoo.stickY");
 
         if(a_input__hasFreshEvent(&stickx->header)) {
-            AInputSourceButton* left = a_input__getSourceButton("caanoo.left");
+            AInputSourceButton* left = a_controller__getButton("caanoo.left");
             a_input__button_setState(left, stickx->axisValue < -ANALOG_TRESH);
 
-            AInputSourceButton* right = a_input__getSourceButton("caanoo.right");
+            AInputSourceButton* right = a_controller__getButton("caanoo.right");
             a_input__button_setState(right, stickx->axisValue > ANALOG_TRESH);
         }
 
         if(a_input__hasFreshEvent(&sticky->header)) {
-            AInputSourceButton* up = a_input__getSourceButton("caanoo.up");
+            AInputSourceButton* up = a_controller__getButton("caanoo.up");
             a_input__button_setState(up, sticky->axisValue < -ANALOG_TRESH);
 
-            AInputSourceButton* down = a_input__getSourceButton("caanoo.down");
+            AInputSourceButton* down = a_controller__getButton("caanoo.down");
             a_input__button_setState(down, sticky->axisValue > ANALOG_TRESH);
         }
     #endif

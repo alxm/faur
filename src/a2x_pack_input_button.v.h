@@ -30,7 +30,6 @@ extern void a_input_button__init2(void);
 extern void a_input_button__uninit(void);
 
 extern AInputSourceButton* a_input__newSourceButton(const char* Name);
-extern AInputSourceButton* a_input__getSourceButton(const char* Name);
 
 extern void a_input__button_setState(AInputSourceButton* Button, bool Pressed);
 

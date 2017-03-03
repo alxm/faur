@@ -91,7 +91,7 @@ AInputTouch* a_touch_new(const char* Names)
     AStrTok* tok = a_strtok_new(Names, ", ");
 
     A_STRTOK_ITERATE(tok, name) {
-        a_input__findSourceInput(name, g_sourceTouchScreens, &t->header);
+        a_input__findSourceInput(name, g_sourceTouchScreens, NULL, &t->header);
     }
 
     a_strtok_free(tok);

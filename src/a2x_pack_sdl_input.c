@@ -376,14 +376,16 @@ void a_sdl_input__bind(void)
     }
 
     A_LIST_ITERATE(g_controllers, ASdlInputController*, c) {
-        a_input__newController();
+        a_controller__new();
 
         A_STRHASH_ITERATE(c->buttons, ASdlInputButton*, b) {
             b->logicalButton = a_input__newSourceButton(b->header.name);
+            a_controller__addButton(b->logicalButton, b->header.name);
         }
 
         A_STRHASH_ITERATE(c->axes, ASdlInputAnalog*, a) {
             a->logicalAnalog = a_input__newSourceAnalog(a->header.name);
+            a_controller__addAnalog(a->logicalAnalog, a->header.name);
         }
     }
 }

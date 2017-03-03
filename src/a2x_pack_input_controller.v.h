@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2017 Alex Margarit
+    Copyright 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -19,4 +19,21 @@
 
 #pragma once
 
-#include "a2x_system_includes.h"
+#include "a2x_pack_input_controller.p.h"
+
+#include "a2x_pack_input.v.h"
+
+extern void a_input_controller__init(void);
+extern void a_input_controller__init2(void);
+extern void a_input_controller__uninit(void);
+
+extern void a_controller__new(void);
+
+extern void a_controller__addButton(AInputSourceButton* Button, const char* Name);
+extern AInputSourceButton* a_controller__getButton(const char* Name);
+extern AStrHash* a_controller__getButtonsCollection(void);
+
+extern void a_controller__addAnalog(AInputSourceAnalog* Analog, const char* Name);
+extern AInputSourceAnalog* a_controller__getAnalog(const char* Name);
+extern AStrHash* a_controller__getAnalogsCollection(void);
+

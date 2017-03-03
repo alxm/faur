@@ -98,18 +98,12 @@ AInputSourceButton* a_input__newSourceButton(const char* Name)
     b->u.leaf.pressed = false;
     b->u.leaf.ignorePressed = false;
 
-    if(a_input__activeController == NULL) {
+    if(a_input_numControllers() == 0) {
+        // Keys are declared before controllers are created
         a_strhash_add(g_sourceButtons, Name, b);
-    } else {
-        a_strhash_add(a_input__activeController->buttons, Name, b);
     }
 
     return b;
-}
-
-AInputSourceButton* a_input__getSourceButton(const char* Name)
-{
-    return a_strhash_get(g_sourceButtons, Name);
 }
 
 static void a_input__newSourceButtonNode(const char* Name, const char* ButtonNames)
@@ -126,8 +120,8 @@ static void a_input__newSourceButtonNode(const char* Name, const char* ButtonNam
     A_STRTOK_ITERATE(tok, name) {
         AInputSourceButton* btn = a_strhash_get(g_sourceButtons, name);
 
-        if(btn == NULL && a_input__activeController != NULL) {
-            btn = a_strhash_get(a_input__activeController->buttons, name);
+        if(btn == NULL) {
+            btn = a_controller__getButton(name);
         }
 
         if(btn != NULL) {
@@ -167,10 +161,7 @@ AInputButton* a_button_new(const char* Names)
                                                            part);
 
                 if(button == NULL) {
-                    if(a_input__activeController != NULL) {
-                        button = a_strhash_get(a_input__activeController->buttons,
-                                               part);
-                    }
+                    button = a_controller__getButton(part);
 
                     if(button == NULL) {
                         missing = true;
@@ -203,10 +194,11 @@ AInputButton* a_button_new(const char* Names)
             }
 
             a_strtok_free(tok);
-        } else if(!a_input__findSourceInput(name, g_sourceButtons, &b->header)) {
-            if(a_input__activeController != NULL) {
-                a_input__findSourceInput(name, a_input__activeController->buttons, &b->header);
-            }
+        } else {
+            a_input__findSourceInput(name,
+                                     g_sourceButtons,
+                                     a_controller__getButtonsCollection(),
+                                     &b->header);
         }
     }
 
