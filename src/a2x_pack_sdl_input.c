@@ -63,6 +63,7 @@ typedef struct ASdlInputController {
     int numAxes;
     AStrHash* buttons;
     AStrHash* axes;
+    bool generic;
 } ASdlInputController;
 
 static AStrHash* g_keys;
@@ -182,6 +183,7 @@ void a_sdl_input__init(void)
         c->numAxes = SDL_JoystickNumAxes(c->joystick);
         c->buttons = a_strhash_new();
         c->axes = a_strhash_new();
+        c->generic = false;
 
         a_list_addLast(g_controllers, c);
 
@@ -245,7 +247,6 @@ void a_sdl_input__init(void)
                     addAnalog(c->axes, "caanoo.stickX", 0);
                     addAnalog(c->axes, "caanoo.stickY", 1);
                 #endif
-
                 continue;
             }
         #elif A_PLATFORM_PANDORA
@@ -266,6 +267,8 @@ void a_sdl_input__init(void)
                 continue;
             }
         #endif
+
+        c->generic = true;
 
         for(int j = 0; j < c->numButtons; j++) {
             char name[32];
@@ -376,7 +379,7 @@ void a_sdl_input__bind(void)
     }
 
     A_LIST_ITERATE(g_controllers, ASdlInputController*, c) {
-        a_controller__new();
+        a_controller__new(c->generic);
 
         A_STRHASH_ITERATE(c->buttons, ASdlInputButton*, b) {
             b->logicalButton = a_input__newSourceButton(b->header.name);

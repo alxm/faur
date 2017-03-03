@@ -27,7 +27,7 @@ extern void a_input_controller__init(void);
 extern void a_input_controller__init2(void);
 extern void a_input_controller__uninit(void);
 
-extern void a_controller__new(void);
+extern void a_controller__new(bool Generic);
 
 extern void a_controller__addButton(AInputSourceButton* Button, const char* Name);
 extern AInputSourceButton* a_controller__getButton(const char* Name);

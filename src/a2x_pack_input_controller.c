@@ -22,6 +22,7 @@
 typedef struct AInputSourceController {
     AStrHash* buttons;
     AStrHash* axes;
+    bool generic;
 } AInputSourceController;
 
 static AList* g_controllers;
@@ -40,7 +41,7 @@ void a_input_controller__init2(void)
     }
 
     A_LIST_ITERATE(g_controllers, AInputSourceController*, c) {
-        if(a_strhash_size(c->axes) < 2) {
+        if(!c->generic || a_strhash_size(c->axes) < 2) {
             continue;
         }
 
@@ -52,10 +53,8 @@ void a_input_controller__init2(void)
         AInputSourceButton* l = a_strhash_get(c->buttons, "controller.left");
         AInputSourceButton* r = a_strhash_get(c->buttons, "controller.right");
 
-        if(x && y && u && d && l && r) {
-            a_input__axisButtonsBinding(x, l, r);
-            a_input__axisButtonsBinding(y, u, d);
-        }
+        a_input__axisButtonsBinding(x, l, r);
+        a_input__axisButtonsBinding(y, u, d);
     }
 
     a_input_setController(0);
@@ -96,12 +95,13 @@ void a_input_setController(unsigned Index)
     g_activeController = a_list_get(g_controllers, Index);
 }
 
-void a_controller__new(void)
+void a_controller__new(bool Generic)
 {
     AInputSourceController* c = a_mem_malloc(sizeof(AInputSourceController));
 
     c->buttons = a_strhash_new();
     c->axes = a_strhash_new();
+    c->generic = Generic;
 
     a_list_addLast(g_controllers, c);
     g_activeController = c;
