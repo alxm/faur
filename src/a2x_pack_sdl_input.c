@@ -545,7 +545,7 @@ void a_sdl_input__get(void)
 
             case SDL_MOUSEMOTION: {
                 A_STRHASH_ITERATE(g_touchScreens, ASdlInputTouch*, t) {
-                    a_input__touch_addMotion(t->logicalTouch,
+                    a_input_touch__addMotion(t->logicalTouch,
                                              event.button.x,
                                              event.button.y);
                 }
@@ -555,7 +555,7 @@ void a_sdl_input__get(void)
                 switch(event.button.button) {
                     case SDL_BUTTON_LEFT: {
                         A_STRHASH_ITERATE(g_touchScreens, ASdlInputTouch*, t) {
-                            a_input__touch_setCoords(t->logicalTouch,
+                            a_input_touch__setCoords(t->logicalTouch,
                                                      event.button.x,
                                                      event.button.y,
                                                      true);
@@ -568,7 +568,7 @@ void a_sdl_input__get(void)
                 switch(event.button.button) {
                     case SDL_BUTTON_LEFT: {
                         A_STRHASH_ITERATE(g_touchScreens, ASdlInputTouch*, t) {
-                            a_input__touch_setCoords(t->logicalTouch,
+                            a_input_touch__setCoords(t->logicalTouch,
                                                      event.button.x,
                                                      event.button.y,
                                                      false);

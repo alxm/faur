@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2017 Alex Margarit
+    Copyright 2010, 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -19,7 +19,17 @@
 
 #pragma once
 
-#include "a2x_system_includes.h"
+#include "a2x_pack_input_analog.p.h"
 
-extern unsigned a_input_numControllers(void);
-extern void a_input_setController(unsigned Index);
+typedef struct AInputSourceAnalog AInputSourceAnalog;
+
+#include "a2x_pack_input.v.h"
+
+extern void a_input_analog__init(void);
+extern void a_input_analog__uninit(void);
+
+extern AInputSourceAnalog* a_input__newSourceAnalog(const char* Name);
+
+extern void a_input__analog_setAxisValue(AInputSourceAnalog* Analog, int Value);
+
+extern void a_input_analog__adjust(void);

@@ -23,7 +23,7 @@ typedef struct AMenu AMenu;
 typedef void (*AMenuFreeItemHandler)(void* Item);
 typedef void (*AMenuInputHandler)(AMenu* Menu, void* Context);
 
-#include "a2x_pack_input.p.h"
+#include "a2x_pack_input_button.p.h"
 #include "a2x_pack_list.p.h"
 #include "a2x_pack_sound.p.h"
 #include "a2x_pack_sprite.p.h"

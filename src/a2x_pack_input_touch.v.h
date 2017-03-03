@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2017 Alex Margarit
+    Copyright 2010, 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -19,7 +19,18 @@
 
 #pragma once
 
-#include "a2x_system_includes.h"
+#include "a2x_pack_input_touch.p.h"
 
-extern unsigned a_input_numControllers(void);
-extern void a_input_setController(unsigned Index);
+typedef struct AInputSourceTouch AInputSourceTouch;
+
+#include "a2x_pack_input.v.h"
+
+extern void a_input_touch__init(void);
+extern void a_input_touch__uninit(void);
+
+extern AInputSourceTouch* a_input__newSourceTouch(const char* Name);
+
+extern void a_input_touch__addMotion(AInputSourceTouch* Touch, int X, int Y);
+extern void a_input_touch__setCoords(AInputSourceTouch* Touch, int X, int Y, bool Tapped);
+
+extern void a_input_touch__clearMotion(void);

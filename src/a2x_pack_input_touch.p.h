@@ -21,5 +21,11 @@
 
 #include "a2x_system_includes.h"
 
-extern unsigned a_input_numControllers(void);
-extern void a_input_setController(unsigned Index);
+typedef struct AInputTouch AInputTouch;
+
+extern AInputTouch* a_touch_new(const char* Names);
+extern bool a_touch_working(const AInputTouch* Touch);
+
+extern bool a_touch_tapped(const AInputTouch* Touch);
+extern bool a_touch_point(const AInputTouch* Touch, int X, int Y);
+extern bool a_touch_box(const AInputTouch* Touch, int X, int Y, int W, int H);

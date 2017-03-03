@@ -19,9 +19,10 @@
 
 #pragma once
 
-typedef struct AInputSourceButton AInputSourceButton;
-typedef struct AInputSourceAnalog AInputSourceAnalog;
-typedef struct AInputSourceTouch AInputSourceTouch;
+typedef struct AInputSourceController AInputSourceController;
+
+typedef struct AInputHeader AInputHeader;
+typedef struct AInputSourceHeader AInputSourceHeader;
 
 typedef void (*AInputCallback)(void);
 
@@ -37,19 +38,43 @@ typedef void (*AInputCallback)(void);
 #include "a2x_pack_strbuilder.v.h"
 #include "a2x_pack_strtok.v.h"
 
+#include "a2x_pack_input_analog.v.h"
+#include "a2x_pack_input_button.v.h"
+#include "a2x_pack_input_touch.v.h"
+
+struct AInputSourceController {
+    AStrHash* buttons;
+    AStrHash* axes;
+};
+
+struct AInputHeader {
+    char* name;
+    AList* sourceInputs; // List of AInputSourceButton/Analog/Touch
+};
+
+struct AInputSourceHeader {
+    char* name;
+    char* shortName;
+    unsigned lastEventFrame;
+};
+
+extern AInputSourceController* a_input__activeController;
+
 extern void a_input__init(void);
 extern void a_input__uninit(void);
 
+extern void a_input__addCallback(AInputCallback Callback);
+
 extern void a_input__newController(void);
 
-extern AInputSourceButton* a_input__newSourceButton(const char* Name);
-extern AInputSourceAnalog* a_input__newSourceAnalog(const char* Name);
-extern AInputSourceTouch* a_input__newSourceTouch(const char* Name);
+extern void a_input__initHeader(AInputHeader* Header);
+extern void a_input__freeHeader(AInputHeader* Header);
+extern void a_input__initSourceHeader(AInputSourceHeader* Header, const char* Name);
+extern void a_input__freeSourceHeader(AInputSourceHeader* Header);
 
-extern void a_input__addCallback(AInputCallback Callback);
+extern bool a_input__findSourceInput(const char* Name, const AStrHash* Collection, AInputHeader* UserInput);
+
+extern bool a_input__hasFreshEvent(const AInputSourceHeader* Header);
+extern void a_input__setFreshEvent(AInputSourceHeader* Header);
+
 extern void a_input__get(void);
-
-extern void a_input__button_setState(AInputSourceButton* Button, bool Pressed);
-extern void a_input__analog_setAxisValue(AInputSourceAnalog* Analog, int Value);
-extern void a_input__touch_addMotion(AInputSourceTouch* Touch, int X, int Y);
-extern void a_input__touch_setCoords(AInputSourceTouch* Touch, int X, int Y, bool Tapped);

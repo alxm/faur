@@ -21,5 +21,12 @@
 
 #include "a2x_system_includes.h"
 
-extern unsigned a_input_numControllers(void);
-extern void a_input_setController(unsigned Index);
+typedef struct AInputAnalog AInputAnalog;
+
+#include "a2x_pack_fix.p.h"
+
+extern AInputAnalog* a_analog_new(const char* Names);
+extern bool a_analog_working(const AInputAnalog* Analog);
+
+extern int a_analog_axisRaw(const AInputAnalog* Analog);
+extern AFix a_analog_axisFix(const AInputAnalog* Analog);
