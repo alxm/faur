@@ -72,6 +72,7 @@ static AList* g_controllers;
 static void freeHeader(ASdlInputHeader* Header)
 {
     free(Header->name);
+    free(Header);
 }
 
 static void addKey(const char* Name, int Code)
@@ -336,23 +337,19 @@ void a_sdl_input__uninit(void)
 {
     A_STRHASH_ITERATE(g_keys, ASdlInputButton*, k) {
         freeHeader(&k->header);
-        free(k);
     }
 
     A_STRHASH_ITERATE(g_touchScreens, ASdlInputTouch*, t) {
         freeHeader(&t->header);
-        free(t);
     }
 
     A_LIST_ITERATE(g_controllers, ASdlInputController*, c) {
         A_STRHASH_ITERATE(c->buttons, ASdlInputButton*, b) {
             freeHeader(&b->header);
-            free(b);
         }
 
         A_STRHASH_ITERATE(c->axes, ASdlInputAnalog*, a) {
             freeHeader(&a->header);
-            free(a);
         }
 
         SDL_JoystickClose(c->joystick);
