@@ -69,6 +69,7 @@ void a_input__freeSourceAnalog(AInputSourceAnalog* Analog)
     }
 
     a_list_free(Analog->buttonBindings);
+    a_input__freeSourceHeader(&Analog->header);
 }
 
 void a_input__axisButtonsBinding(AInputSourceAnalog* Axis, AInputSourceButton* Negative, AInputSourceButton* Positive)

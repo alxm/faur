@@ -106,13 +106,12 @@ void a_input_controller__init2(void)
 void a_input_controller__uninit(void)
 {
     A_LIST_ITERATE(g_controllers, AInputSourceController*, c) {
-        A_STRHASH_ITERATE(c->buttons, AInputSourceHeader*, b) {
-            a_input__freeSourceHeader(b);
+        A_STRHASH_ITERATE(c->buttons, AInputSourceButton*, b) {
+            a_input__freeSourceButton(b);
         }
 
         A_STRHASH_ITERATE(c->axes, AInputSourceAnalog*, a) {
             a_input__freeSourceAnalog(a);
-            a_input__freeSourceHeader((AInputSourceHeader*)a);
         }
 
         a_strhash_free(c->buttons);

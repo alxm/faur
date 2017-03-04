@@ -36,6 +36,7 @@ struct AInputSourceButton {
         struct {
             bool pressed;
             bool ignorePressed;
+            AList* buttonBindings; // List of AInputSourceButton
         } leaf;
     } u;
 };
@@ -77,11 +78,7 @@ void a_input_button__uninit(void)
     }
 
     A_STRHASH_ITERATE(g_sourceButtons, AInputSourceButton*, b) {
-        if(!b->isLeaf) {
-            a_list_free(b->u.node.orList);
-        }
-
-        a_input__freeSourceHeader(&b->header);
+        a_input__freeSourceButton(b);
     }
 
     a_list_free(g_buttons);
@@ -97,6 +94,7 @@ AInputSourceButton* a_input__newSourceButton(const char* Name)
     b->isLeaf = true;
     b->u.leaf.pressed = false;
     b->u.leaf.ignorePressed = false;
+    b->u.leaf.buttonBindings = a_list_new();
 
     if(a_input_numControllers() == 0) {
         // Keys are declared before controllers are created
@@ -136,6 +134,22 @@ static void a_input__newSourceButtonNode(const char* Name, const char* ButtonNam
     }
 
     a_strhash_add(g_sourceButtons, Name, b);
+}
+
+void a_input__freeSourceButton(AInputSourceButton* Button)
+{
+    if(Button->isLeaf) {
+        a_list_free(Button->u.leaf.buttonBindings);
+    } else {
+        a_list_free(Button->u.node.orList);
+    }
+
+    a_input__freeSourceHeader(&Button->header);
+}
+
+void a_input__buttonButtonBinding(AInputSourceButton* Button,AInputSourceButton* Binding)
+{
+    a_list_addLast(Button->u.leaf.buttonBindings, Binding);
 }
 
 AInputButton* a_button_new(const char* Names)
@@ -333,6 +347,10 @@ void a_input__button_setState(AInputSourceButton* Button, bool Pressed)
     Button->u.leaf.pressed = Pressed;
 
     a_input__setFreshEvent(&Button->header);
+
+    A_LIST_ITERATE(Button->u.leaf.buttonBindings, AInputSourceButton*, b) {
+        a_input__button_setState(b, Pressed);
+    }
 }
 
 void a_input_button__adjust(void)
