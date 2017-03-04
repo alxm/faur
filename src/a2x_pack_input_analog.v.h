@@ -21,16 +21,16 @@
 
 #include "a2x_pack_input_analog.p.h"
 
-typedef struct AInputSourceAnalog AInputSourceAnalog;
+typedef struct AInputAnalogSource AInputAnalogSource;
 
 #include "a2x_pack_input.v.h"
 
 extern void a_input_analog__init(void);
 extern void a_input_analog__uninit(void);
 
-extern AInputSourceAnalog* a_input__newSourceAnalog(const char* Name);
-extern void a_input__freeSourceAnalog(AInputSourceAnalog* Analog);
+extern AInputAnalogSource* a_input_analog__newSource(const char* Name);
+extern void a_input_analog__freeSource(AInputAnalogSource* Analog);
 
-extern void a_input__axisButtonsBinding(AInputSourceAnalog* Axis, AInputSourceButton* Negative, AInputSourceButton* Positive);
+extern void a_input_analog__axisButtonsBinding(AInputAnalogSource* Axis, AInputButtonSource* Negative, AInputButtonSource* Positive);
 
-extern void a_input__analog_setAxisValue(AInputSourceAnalog* Analog, int Value);
+extern void a_input_analog__setAxisValue(AInputAnalogSource* Analog, int Value);

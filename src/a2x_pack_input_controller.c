@@ -19,14 +19,14 @@
 
 #include "a2x_pack_input_controller.v.h"
 
-typedef struct AInputSourceController {
-    AStrHash* buttons;
-    AStrHash* axes;
+typedef struct AInputController {
+    AStrHash* buttons; // table of AInputButtonSource
+    AStrHash* axes; // table of AInputAnalogSource
     bool generic;
-} AInputSourceController;
+} AInputController;
 
 static AList* g_controllers;
-AInputSourceController* g_activeController;
+AInputController* g_activeController;
 
 void a_input_controller__init(void)
 {
@@ -43,7 +43,7 @@ void a_input_controller__init2(void)
     bool switchAxes = a_settings_getBool("input.switchAxes");
     bool invertAxes = a_settings_getBool("input.invertAxes");
 
-    A_LIST_ITERATE(g_controllers, AInputSourceController*, c) {
+    A_LIST_ITERATE(g_controllers, AInputController*, c) {
         if(!c->generic) {
             // GP2X and Wiz dpad diagonals are dedicated buttons instead of a
             // combination of two separate buttons. This splits them into
@@ -55,41 +55,41 @@ void a_input_controller__init2(void)
                     #define PREFIX "wiz"
                 #endif
 
-                AInputSourceButton* ul = a_strhash_get(c->buttons, PREFIX ".upleft");
-                AInputSourceButton* ur = a_strhash_get(c->buttons, PREFIX ".upright");
-                AInputSourceButton* dl = a_strhash_get(c->buttons, PREFIX ".downleft");
-                AInputSourceButton* dr = a_strhash_get(c->buttons, PREFIX ".downright");
-                AInputSourceButton* u = a_strhash_get(c->buttons, PREFIX ".up");
-                AInputSourceButton* d = a_strhash_get(c->buttons, PREFIX ".down");
-                AInputSourceButton* l = a_strhash_get(c->buttons, PREFIX ".left");
-                AInputSourceButton* r = a_strhash_get(c->buttons, PREFIX ".right");
+                AInputButtonSource* ul = a_strhash_get(c->buttons, PREFIX ".upleft");
+                AInputButtonSource* ur = a_strhash_get(c->buttons, PREFIX ".upright");
+                AInputButtonSource* dl = a_strhash_get(c->buttons, PREFIX ".downleft");
+                AInputButtonSource* dr = a_strhash_get(c->buttons, PREFIX ".downright");
+                AInputButtonSource* u = a_strhash_get(c->buttons, PREFIX ".up");
+                AInputButtonSource* d = a_strhash_get(c->buttons, PREFIX ".down");
+                AInputButtonSource* l = a_strhash_get(c->buttons, PREFIX ".left");
+                AInputButtonSource* r = a_strhash_get(c->buttons, PREFIX ".right");
 
-                a_input__buttonButtonBinding(ul, u);
-                a_input__buttonButtonBinding(ul, l);
+                a_input_button__forwardTo(ul, u);
+                a_input_button__forwardTo(ul, l);
 
-                a_input__buttonButtonBinding(ur, u);
-                a_input__buttonButtonBinding(ur, r);
+                a_input_button__forwardTo(ur, u);
+                a_input_button__forwardTo(ur, r);
 
-                a_input__buttonButtonBinding(dl, d);
-                a_input__buttonButtonBinding(dl, l);
+                a_input_button__forwardTo(dl, d);
+                a_input_button__forwardTo(dl, l);
 
-                a_input__buttonButtonBinding(dr, d);
-                a_input__buttonButtonBinding(dr, r);
+                a_input_button__forwardTo(dr, d);
+                a_input_button__forwardTo(dr, r);
             #endif
 
             // Caanoo has an analog stick instead of direction buttons,
             // this lets us use it as a dpad like on the other platforms.
             #if A_PLATFORM_CAANOO
-                AInputSourceAnalog* x = a_strhash_get(c->axes, "caanoo.stickX");
-                AInputSourceAnalog* y = a_strhash_get(c->axes, "caanoo.stickY");
+                AInputAnalogSource* x = a_strhash_get(c->axes, "caanoo.stickX");
+                AInputAnalogSource* y = a_strhash_get(c->axes, "caanoo.stickY");
 
-                AInputSourceButton* u = a_strhash_get(c->buttons, "caanoo.up");
-                AInputSourceButton* d = a_strhash_get(c->buttons, "caanoo.down");
-                AInputSourceButton* l = a_strhash_get(c->buttons, "caanoo.left");
-                AInputSourceButton* r = a_strhash_get(c->buttons, "caanoo.right");
+                AInputButtonSource* u = a_strhash_get(c->buttons, "caanoo.up");
+                AInputButtonSource* d = a_strhash_get(c->buttons, "caanoo.down");
+                AInputButtonSource* l = a_strhash_get(c->buttons, "caanoo.left");
+                AInputButtonSource* r = a_strhash_get(c->buttons, "caanoo.right");
 
-                a_input__axisButtonsBinding(x, l, r);
-                a_input__axisButtonsBinding(y, u, d);
+                a_input_analog__axisButtonsBinding(x, l, r);
+                a_input_analog__axisButtonsBinding(y, u, d);
             #endif
 
             continue;
@@ -99,16 +99,16 @@ void a_input_controller__init2(void)
             continue;
         }
 
-        AInputSourceAnalog* x = a_strhash_get(c->axes, "controller.axis0");
-        AInputSourceAnalog* y = a_strhash_get(c->axes, "controller.axis1");
+        AInputAnalogSource* x = a_strhash_get(c->axes, "controller.axis0");
+        AInputAnalogSource* y = a_strhash_get(c->axes, "controller.axis1");
 
-        AInputSourceButton* u = a_strhash_get(c->buttons, "controller.up");
-        AInputSourceButton* d = a_strhash_get(c->buttons, "controller.down");
-        AInputSourceButton* l = a_strhash_get(c->buttons, "controller.left");
-        AInputSourceButton* r = a_strhash_get(c->buttons, "controller.right");
+        AInputButtonSource* u = a_strhash_get(c->buttons, "controller.up");
+        AInputButtonSource* d = a_strhash_get(c->buttons, "controller.down");
+        AInputButtonSource* l = a_strhash_get(c->buttons, "controller.left");
+        AInputButtonSource* r = a_strhash_get(c->buttons, "controller.right");
 
         if(switchAxes) {
-            AInputSourceAnalog* save;
+            AInputAnalogSource* save;
 
             save = x;
             x = y;
@@ -116,7 +116,7 @@ void a_input_controller__init2(void)
         }
 
         if(invertAxes) {
-            AInputSourceButton* save;
+            AInputButtonSource* save;
 
             save = u;
             u = d;
@@ -128,8 +128,8 @@ void a_input_controller__init2(void)
         }
 
         // Guess that the first two axes are for X and Y movement.
-        a_input__axisButtonsBinding(x, l, r);
-        a_input__axisButtonsBinding(y, u, d);
+        a_input_analog__axisButtonsBinding(x, l, r);
+        a_input_analog__axisButtonsBinding(y, u, d);
     }
 
     a_input_setController(0);
@@ -137,13 +137,13 @@ void a_input_controller__init2(void)
 
 void a_input_controller__uninit(void)
 {
-    A_LIST_ITERATE(g_controllers, AInputSourceController*, c) {
-        A_STRHASH_ITERATE(c->buttons, AInputSourceButton*, b) {
-            a_input__freeSourceButton(b);
+    A_LIST_ITERATE(g_controllers, AInputController*, c) {
+        A_STRHASH_ITERATE(c->buttons, AInputButtonSource*, b) {
+            a_input_button__freeSource(b);
         }
 
-        A_STRHASH_ITERATE(c->axes, AInputSourceAnalog*, a) {
-            a_input__freeSourceAnalog(a);
+        A_STRHASH_ITERATE(c->axes, AInputAnalogSource*, a) {
+            a_input_analog__freeSource(a);
         }
 
         a_strhash_free(c->buttons);
@@ -171,7 +171,7 @@ void a_input_setController(unsigned Index)
 
 void a_controller__new(bool Generic)
 {
-    AInputSourceController* c = a_mem_malloc(sizeof(AInputSourceController));
+    AInputController* c = a_mem_malloc(sizeof(AInputController));
 
     c->buttons = a_strhash_new();
     c->axes = a_strhash_new();
@@ -181,12 +181,12 @@ void a_controller__new(bool Generic)
     g_activeController = c;
 }
 
-void a_controller__addButton(AInputSourceButton* Button, const char* Name)
+void a_controller__addButton(AInputButtonSource* Button, const char* Name)
 {
     a_strhash_add(g_activeController->buttons, Name, Button);
 }
 
-AInputSourceButton* a_controller__getButton(const char* Name)
+AInputButtonSource* a_controller__getButton(const char* Name)
 {
     if(g_activeController == NULL) {
         return NULL;
@@ -195,7 +195,7 @@ AInputSourceButton* a_controller__getButton(const char* Name)
     return a_strhash_get(g_activeController->buttons, Name);
 }
 
-AStrHash* a_controller__getButtonsCollection(void)
+AStrHash* a_controller__getButtonCollection(void)
 {
     if(g_activeController == NULL) {
         return NULL;
@@ -204,12 +204,12 @@ AStrHash* a_controller__getButtonsCollection(void)
     return g_activeController->buttons;
 }
 
-void a_controller__addAnalog(AInputSourceAnalog* Analog, const char* Name)
+void a_controller__addAnalog(AInputAnalogSource* Analog, const char* Name)
 {
     a_strhash_add(g_activeController->axes, Name, Analog);
 }
 
-AInputSourceAnalog* a_controller__getAnalog(const char* Name)
+AInputAnalogSource* a_controller__getAnalog(const char* Name)
 {
     if(g_activeController == NULL) {
         return NULL;
@@ -218,7 +218,7 @@ AInputSourceAnalog* a_controller__getAnalog(const char* Name)
     return a_strhash_get(g_activeController->axes, Name);
 }
 
-AStrHash* a_controller__getAnalogsCollection(void)
+AStrHash* a_controller__getAnalogCollection(void)
 {
     if(g_activeController == NULL) {
         return NULL;

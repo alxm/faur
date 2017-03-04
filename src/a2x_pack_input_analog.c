@@ -20,18 +20,18 @@
 #include "a2x_pack_input_analog.v.h"
 
 struct AInputAnalog {
-    AInputHeader header;
+    AInputUserHeader header;
 };
 
-struct AInputSourceAnalog {
+struct AInputAnalogSource {
     AInputSourceHeader header;
     AList* buttonBindings; // List of AInputSourceAxisToButtons
     int axisValue;
 };
 
 typedef struct AInputSourceAxisToButtons {
-    AInputSourceButton* negative;
-    AInputSourceButton* positive;
+    AInputButtonSource* negative;
+    AInputButtonSource* positive;
 } AInputSourceAxisToButtons;
 
 static AList* g_analogs;
@@ -44,16 +44,16 @@ void a_input_analog__init(void)
 void a_input_analog__uninit(void)
 {
     A_LIST_ITERATE(g_analogs, AInputAnalog*, a) {
-        a_input__freeHeader(&a->header);
+        a_input__freeUserHeader(&a->header);
         free(a);
     }
 
     a_list_free(g_analogs);
 }
 
-AInputSourceAnalog* a_input__newSourceAnalog(const char* Name)
+AInputAnalogSource* a_input_analog__newSource(const char* Name)
 {
-    AInputSourceAnalog* a = a_mem_malloc(sizeof(AInputSourceAnalog));
+    AInputAnalogSource* a = a_mem_malloc(sizeof(AInputAnalogSource));
 
     a_input__initSourceHeader(&a->header, Name);
     a->buttonBindings = a_list_new();
@@ -62,7 +62,7 @@ AInputSourceAnalog* a_input__newSourceAnalog(const char* Name)
     return a;
 }
 
-void a_input__freeSourceAnalog(AInputSourceAnalog* Analog)
+void a_input_analog__freeSource(AInputAnalogSource* Analog)
 {
     A_LIST_ITERATE(Analog->buttonBindings, AInputSourceAxisToButtons*, b) {
         free(b);
@@ -72,7 +72,7 @@ void a_input__freeSourceAnalog(AInputSourceAnalog* Analog)
     a_input__freeSourceHeader(&Analog->header);
 }
 
-void a_input__axisButtonsBinding(AInputSourceAnalog* Axis, AInputSourceButton* Negative, AInputSourceButton* Positive)
+void a_input_analog__axisButtonsBinding(AInputAnalogSource* Axis, AInputButtonSource* Negative, AInputButtonSource* Positive)
 {
     AInputSourceAxisToButtons* b = a_mem_malloc(sizeof(AInputSourceAxisToButtons));
 
@@ -86,14 +86,14 @@ AInputAnalog* a_analog_new(const char* Names)
 {
     AInputAnalog* a = a_mem_malloc(sizeof(AInputAnalog));
 
-    a_input__initHeader(&a->header);
+    a_input__initUserHeader(&a->header);
 
     AStrTok* tok = a_strtok_new(Names, ", ");
 
     A_STRTOK_ITERATE(tok, name) {
         a_input__findSourceInput(name,
                                  NULL,
-                                 a_controller__getAnalogsCollection(),
+                                 a_controller__getAnalogCollection(),
                                  &a->header);
     }
 
@@ -113,12 +113,12 @@ bool a_analog_working(const AInputAnalog* Analog)
     return !a_list_empty(Analog->header.sourceInputs);
 }
 
-int a_analog_axisRaw(const AInputAnalog* Analog)
+int a_analog_valueRaw(const AInputAnalog* Analog)
 {
     #define A_ANALOG_MAX_DISTANCE (1 << 15)
     #define A_ANALOG_ERROR_MARGIN (A_ANALOG_MAX_DISTANCE / 20)
 
-    A_LIST_ITERATE(Analog->header.sourceInputs, AInputSourceAnalog*, a) {
+    A_LIST_ITERATE(Analog->header.sourceInputs, AInputAnalogSource*, a) {
         if(a_math_abs(a->axisValue) > A_ANALOG_ERROR_MARGIN) {
             return a->axisValue;
         }
@@ -127,12 +127,12 @@ int a_analog_axisRaw(const AInputAnalog* Analog)
     return 0;
 }
 
-AFix a_analog_axisFix(const AInputAnalog* Analog)
+AFix a_analog_valueFix(const AInputAnalog* Analog)
 {
-    return a_analog_axisRaw(Analog) >> (15 - A_FIX_BIT_PRECISION);
+    return a_analog_valueRaw(Analog) >> (15 - A_FIX_BIT_PRECISION);
 }
 
-void a_input__analog_setAxisValue(AInputSourceAnalog* Analog, int Value)
+void a_input_analog__setAxisValue(AInputAnalogSource* Analog, int Value)
 {
     Analog->axisValue = Value;
 
@@ -141,7 +141,7 @@ void a_input__analog_setAxisValue(AInputSourceAnalog* Analog, int Value)
     #define PRESS_THRESHOLD ((1 << 15) / 2)
 
     A_LIST_ITERATE(Analog->buttonBindings, AInputSourceAxisToButtons*, b) {
-        a_input__button_setState(b->negative, Value < -PRESS_THRESHOLD);
-        a_input__button_setState(b->positive, Value > PRESS_THRESHOLD);
+        a_input_button__setState(b->negative, Value < -PRESS_THRESHOLD);
+        a_input_button__setState(b->positive, Value > PRESS_THRESHOLD);
     }
 }

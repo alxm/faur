@@ -62,13 +62,13 @@ void a_input__addCallback(AInputCallback Callback)
     a_list_addLast(g_callbacks, c);
 }
 
-void a_input__initHeader(AInputHeader* Header)
+void a_input__initUserHeader(AInputUserHeader* Header)
 {
     Header->name = NULL;
     Header->sourceInputs = a_list_new();
 }
 
-void a_input__freeHeader(AInputHeader* Header)
+void a_input__freeUserHeader(AInputUserHeader* Header)
 {
     free(Header->name);
     a_list_free(Header->sourceInputs);
@@ -92,7 +92,7 @@ void a_input__freeSourceHeader(AInputSourceHeader* Header)
     free(Header);
 }
 
-void a_input__findSourceInput(const char* Name, const AStrHash* GlobalCollection, const AStrHash* ControllerCollection, AInputHeader* UserInput)
+void a_input__findSourceInput(const char* Name, const AStrHash* GlobalCollection, const AStrHash* ControllerCollection, AInputUserHeader* UserInput)
 {
     AInputSourceHeader* source = NULL;
 

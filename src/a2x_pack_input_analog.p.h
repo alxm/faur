@@ -28,5 +28,5 @@ typedef struct AInputAnalog AInputAnalog;
 extern AInputAnalog* a_analog_new(const char* Names);
 extern bool a_analog_working(const AInputAnalog* Analog);
 
-extern int a_analog_axisRaw(const AInputAnalog* Analog);
-extern AFix a_analog_axisFix(const AInputAnalog* Analog);
+extern int a_analog_valueRaw(const AInputAnalog* Analog);
+extern AFix a_analog_valueFix(const AInputAnalog* Analog);

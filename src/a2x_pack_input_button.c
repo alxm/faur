@@ -20,23 +20,23 @@
 #include "a2x_pack_input_button.v.h"
 
 struct AInputButton {
-    AInputHeader header;
-    AList* combos; // List of lists of AInputSourceButton; for combo buttons
+    AInputUserHeader header;
+    AList* combos; // List of lists of AInputButtonSource; for combo buttons
     unsigned repeatFrames;
     unsigned lastPressedFrame;
 };
 
-struct AInputSourceButton {
+struct AInputButtonSource {
     AInputSourceHeader header;
     bool isLeaf;
     union {
         struct {
-            AList* orList; // List of AInputSourceButton; for alias buttons
+            AList* orList; // List of AInputButtonSource; for alias buttons
         } node;
         struct {
             bool pressed;
             bool ignorePressed;
-            AList* buttonBindings; // List of AInputSourceButton
+            AList* forwardButtons; // List of AInputButtonSource
         } leaf;
     } u;
 };
@@ -77,12 +77,12 @@ void a_input_button__uninit(void)
         }
 
         a_list_free(b->combos);
-        a_input__freeHeader(&b->header);
+        a_input__freeUserHeader(&b->header);
         free(b);
     }
 
-    A_STRHASH_ITERATE(g_sourceButtons, AInputSourceButton*, b) {
-        a_input__freeSourceButton(b);
+    A_STRHASH_ITERATE(g_sourceButtons, AInputButtonSource*, b) {
+        a_input_button__freeSource(b);
     }
 
     a_list_free(g_buttons);
@@ -91,16 +91,16 @@ void a_input_button__uninit(void)
     a_list_free(g_releaseQueue);
 }
 
-AInputSourceButton* a_input__newSourceButton(const char* Name)
+AInputButtonSource* a_input_button__newSource(const char* Name)
 {
-    AInputSourceButton* b = a_mem_malloc(sizeof(AInputSourceButton));
+    AInputButtonSource* b = a_mem_malloc(sizeof(AInputButtonSource));
 
     a_input__initSourceHeader(&b->header, Name);
 
     b->isLeaf = true;
     b->u.leaf.pressed = false;
     b->u.leaf.ignorePressed = false;
-    b->u.leaf.buttonBindings = a_list_new();
+    b->u.leaf.forwardButtons = a_list_new();
 
     if(a_input_numControllers() == 0) {
         // Keys are declared before controllers are created
@@ -112,7 +112,7 @@ AInputSourceButton* a_input__newSourceButton(const char* Name)
 
 static void a_input__newSourceButtonNode(const char* Name, const char* ButtonNames)
 {
-    AInputSourceButton* b = a_mem_malloc(sizeof(AInputSourceButton));
+    AInputButtonSource* b = a_mem_malloc(sizeof(AInputButtonSource));
 
     a_input__initSourceHeader(&b->header, Name);
 
@@ -122,7 +122,7 @@ static void a_input__newSourceButtonNode(const char* Name, const char* ButtonNam
     AStrTok* tok = a_strtok_new(ButtonNames, ", ");
 
     A_STRTOK_ITERATE(tok, name) {
-        AInputSourceButton* btn = a_strhash_get(g_sourceButtons, name);
+        AInputButtonSource* btn = a_strhash_get(g_sourceButtons, name);
 
         if(btn == NULL) {
             btn = a_controller__getButton(name);
@@ -142,10 +142,10 @@ static void a_input__newSourceButtonNode(const char* Name, const char* ButtonNam
     a_strhash_add(g_sourceButtons, Name, b);
 }
 
-void a_input__freeSourceButton(AInputSourceButton* Button)
+void a_input_button__freeSource(AInputButtonSource* Button)
 {
     if(Button->isLeaf) {
-        a_list_free(Button->u.leaf.buttonBindings);
+        a_list_free(Button->u.leaf.forwardButtons);
     } else {
         a_list_free(Button->u.node.orList);
     }
@@ -153,16 +153,16 @@ void a_input__freeSourceButton(AInputSourceButton* Button)
     a_input__freeSourceHeader(&Button->header);
 }
 
-void a_input__buttonButtonBinding(AInputSourceButton* Button,AInputSourceButton* Binding)
+void a_input_button__forwardTo(AInputButtonSource* Button, AInputButtonSource* Binding)
 {
-    a_list_addLast(Button->u.leaf.buttonBindings, Binding);
+    a_list_addLast(Button->u.leaf.forwardButtons, Binding);
 }
 
 AInputButton* a_button_new(const char* Names)
 {
     AInputButton* b = a_mem_malloc(sizeof(AInputButton));
 
-    a_input__initHeader(&b->header);
+    a_input__initUserHeader(&b->header);
 
     b->combos = a_list_new();
     b->repeatFrames = 0;
@@ -177,7 +177,7 @@ AInputButton* a_button_new(const char* Names)
             bool missing = false;
 
             A_STRTOK_ITERATE(tok, part) {
-                AInputSourceButton* button = a_strhash_get(g_sourceButtons,
+                AInputButtonSource* button = a_strhash_get(g_sourceButtons,
                                                            part);
 
                 if(button == NULL) {
@@ -199,7 +199,7 @@ AInputButton* a_button_new(const char* Names)
                 if(b->header.name == NULL) {
                     AStrBuilder* sb = a_strbuilder_new(128);
 
-                    A_LIST_ITERATE(buttons, AInputSourceButton*, button) {
+                    A_LIST_ITERATE(buttons, AInputButtonSource*, button) {
                         a_strbuilder_addString(sb, button->header.shortName);
 
                         if(!A_LIST_IS_LAST()) {
@@ -217,7 +217,7 @@ AInputButton* a_button_new(const char* Names)
         } else {
             a_input__findSourceInput(name,
                                      g_sourceButtons,
-                                     a_controller__getButtonsCollection(),
+                                     a_controller__getButtonCollection(),
                                      &b->header);
         }
     }
@@ -244,12 +244,12 @@ const char* a_button_name(const AInputButton* Button)
     return Button->header.name;
 }
 
-static bool isSourceButtonPressed(const AInputSourceButton* Button)
+static bool isSourceButtonPressed(const AInputButtonSource* Button)
 {
     if(Button->isLeaf) {
         return Button->u.leaf.pressed && !Button->u.leaf.ignorePressed;
     } else {
-        A_LIST_ITERATE(Button->u.node.orList, AInputSourceButton*, b) {
+        A_LIST_ITERATE(Button->u.node.orList, AInputButtonSource*, b) {
             if(isSourceButtonPressed(b)) {
                 return true;
             }
@@ -259,14 +259,14 @@ static bool isSourceButtonPressed(const AInputSourceButton* Button)
     }
 }
 
-static void releaseSourceButton(AInputSourceButton* Button)
+static void releaseSourceButton(AInputButtonSource* Button)
 {
     if(Button->isLeaf) {
         if(Button->u.leaf.pressed) {
             Button->u.leaf.ignorePressed = true;
         }
     } else {
-        A_LIST_ITERATE(Button->u.node.orList, AInputSourceButton*, b) {
+        A_LIST_ITERATE(Button->u.node.orList, AInputButtonSource*, b) {
             releaseSourceButton(b);
         }
     }
@@ -276,7 +276,7 @@ bool a_button_get(AInputButton* Button)
 {
     const unsigned now = a_fps_getCounter();
 
-    A_LIST_ITERATE(Button->header.sourceInputs, AInputSourceButton*, b) {
+    A_LIST_ITERATE(Button->header.sourceInputs, AInputButtonSource*, b) {
         if(isSourceButtonPressed(b)) {
             if(Button->repeatFrames > 0) {
                 if(now - Button->lastPressedFrame >= Button->repeatFrames) {
@@ -290,7 +290,7 @@ bool a_button_get(AInputButton* Button)
     }
 
     A_LIST_ITERATE(Button->combos, AList*, andList) {
-        A_LIST_ITERATE(andList, AInputSourceButton*, b) {
+        A_LIST_ITERATE(andList, AInputButtonSource*, b) {
             if(!isSourceButtonPressed(b)) {
                 break;
             }
@@ -316,12 +316,12 @@ bool a_button_get(AInputButton* Button)
 
 void a_button_release(const AInputButton* Button)
 {
-    A_LIST_ITERATE(Button->header.sourceInputs, AInputSourceButton*, b) {
+    A_LIST_ITERATE(Button->header.sourceInputs, AInputButtonSource*, b) {
         releaseSourceButton(b);
     }
 
     A_LIST_ITERATE(Button->combos, AList*, andList) {
-        A_LIST_ITERATE(andList, AInputSourceButton*, b) {
+        A_LIST_ITERATE(andList, AInputButtonSource*, b) {
             releaseSourceButton(b);
         }
     }
@@ -344,7 +344,7 @@ void a_button_setRepeat(AInputButton* Button, unsigned RepeatFrames)
     Button->lastPressedFrame = a_fps_getCounter() - RepeatFrames;
 }
 
-void a_input__button_setState(AInputSourceButton* Button, bool Pressed)
+void a_input_button__setState(AInputButtonSource* Button, bool Pressed)
 {
     if(!Pressed && Button->u.leaf.ignorePressed) {
         Button->u.leaf.ignorePressed = false;
@@ -354,7 +354,7 @@ void a_input__button_setState(AInputSourceButton* Button, bool Pressed)
 
     a_input__setFreshEvent(&Button->header);
 
-    A_LIST_ITERATE(Button->u.leaf.buttonBindings, AInputSourceButton*, b) {
+    A_LIST_ITERATE(Button->u.leaf.forwardButtons, AInputButtonSource*, b) {
         // Queue forwarded button presses and releases to be processed after
         // all input events were received, so they don't conflict with them.
         if(Pressed) {
@@ -367,15 +367,15 @@ void a_input__button_setState(AInputSourceButton* Button, bool Pressed)
 
 void a_input_button__processQueue(void)
 {
-    A_LIST_ITERATE(g_pressQueue, AInputSourceButton*, b) {
+    A_LIST_ITERATE(g_pressQueue, AInputButtonSource*, b) {
         // Overwrite whatever current state with a press
-        a_input__button_setState(b, true);
+        a_input_button__setState(b, true);
     }
 
-    A_LIST_ITERATE(g_releaseQueue, AInputSourceButton*, b) {
+    A_LIST_ITERATE(g_releaseQueue, AInputButtonSource*, b) {
         // Only release if hadn't just received a press
         if(!a_input__hasFreshEvent(&b->header)) {
-            a_input__button_setState(b, false);
+            a_input_button__setState(b, false);
         }
     }
 

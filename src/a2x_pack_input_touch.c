@@ -20,10 +20,10 @@
 #include "a2x_pack_input_touch.v.h"
 
 struct AInputTouch {
-    AInputHeader header;
+    AInputUserHeader header;
 };
 
-struct AInputSourceTouch {
+struct AInputTouchSource {
     AInputSourceHeader header;
     int x;
     int y;
@@ -48,11 +48,11 @@ void a_input_touch__init(void)
 void a_input_touch__uninit(void)
 {
     A_LIST_ITERATE(g_touchScreens, AInputTouch*, t) {
-        a_input__freeHeader(&t->header);
+        a_input__freeUserHeader(&t->header);
         free(t);
     }
 
-    A_STRHASH_ITERATE(g_sourceTouchScreens, AInputSourceTouch*, t) {
+    A_STRHASH_ITERATE(g_sourceTouchScreens, AInputTouchSource*, t) {
         A_LIST_ITERATE(t->motion, AInputTouchPoint*, p) {
             free(p);
         }
@@ -66,9 +66,9 @@ void a_input_touch__uninit(void)
     a_strhash_free(g_sourceTouchScreens);
 }
 
-AInputSourceTouch* a_input__newSourceTouch(const char* Name)
+AInputTouchSource* a_input_touch__newSource(const char* Name)
 {
-    AInputSourceTouch* t = a_mem_malloc(sizeof(AInputSourceTouch));
+    AInputTouchSource* t = a_mem_malloc(sizeof(AInputTouchSource));
 
     a_input__initSourceHeader(&t->header, Name);
 
@@ -86,7 +86,7 @@ AInputTouch* a_touch_new(const char* Names)
 {
     AInputTouch* t = a_mem_malloc(sizeof(AInputTouch));
 
-    a_input__initHeader(&t->header);
+    a_input__initUserHeader(&t->header);
 
     AStrTok* tok = a_strtok_new(Names, ", ");
 
@@ -112,7 +112,7 @@ bool a_touch_working(const AInputTouch* Touch)
 
 bool a_touch_tapped(const AInputTouch* Touch)
 {
-    A_LIST_ITERATE(Touch->header.sourceInputs, AInputSourceTouch*, t) {
+    A_LIST_ITERATE(Touch->header.sourceInputs, AInputTouchSource*, t) {
         if(t->tap) {
             return true;
         }
@@ -128,7 +128,7 @@ bool a_touch_point(const AInputTouch* Touch, int X, int Y)
 
 bool a_touch_box(const AInputTouch* Touch, int X, int Y, int W, int H)
 {
-    A_LIST_ITERATE(Touch->header.sourceInputs, AInputSourceTouch*, t) {
+    A_LIST_ITERATE(Touch->header.sourceInputs, AInputTouchSource*, t) {
         if(t->tap && a_collide_pointInBox(t->x, t->y, X, Y, W, H)) {
             return true;
         }
@@ -137,7 +137,7 @@ bool a_touch_box(const AInputTouch* Touch, int X, int Y, int W, int H)
     return false;
 }
 
-void a_input_touch__addMotion(AInputSourceTouch* Touch, int X, int Y)
+void a_input_touch__addMotion(AInputTouchSource* Touch, int X, int Y)
 {
     Touch->x = X;
     Touch->y = Y;
@@ -154,7 +154,7 @@ void a_input_touch__addMotion(AInputSourceTouch* Touch, int X, int Y)
     a_input__setFreshEvent(&Touch->header);
 }
 
-void a_input_touch__setCoords(AInputSourceTouch* Touch, int X, int Y, bool Tapped)
+void a_input_touch__setCoords(AInputTouchSource* Touch, int X, int Y, bool Tapped)
 {
     Touch->x = X;
     Touch->y = Y;
@@ -165,7 +165,7 @@ void a_input_touch__setCoords(AInputSourceTouch* Touch, int X, int Y, bool Tappe
 
 void a_input_touch__clearMotion(void)
 {
-    A_STRHASH_ITERATE(g_sourceTouchScreens, AInputSourceTouch*, touchScreen) {
+    A_STRHASH_ITERATE(g_sourceTouchScreens, AInputTouchSource*, touchScreen) {
         touchScreen->tap = false;
 
         A_LIST_ITERATE(touchScreen->motion, AInputTouchPoint*, p) {

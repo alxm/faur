@@ -35,7 +35,7 @@ typedef struct ASdlInputHeader {
 
 typedef struct ASdlInputButton {
     ASdlInputHeader header;
-    AInputSourceButton* logicalButton;
+    AInputButtonSource* logicalButton;
     union {
         ASdlKeyCode keyCode;
         uint8_t buttonIndex;
@@ -46,13 +46,13 @@ typedef struct ASdlInputButton {
 
 typedef struct ASdlInputAnalog {
     ASdlInputHeader header;
-    AInputSourceAnalog* logicalAnalog;
+    AInputAnalogSource* logicalAnalog;
     int axisIndex;
 } ASdlInputAnalog;
 
 typedef struct ASdlInputTouch {
     ASdlInputHeader header;
-    AInputSourceTouch* logicalTouch;
+    AInputTouchSource* logicalTouch;
 } ASdlInputTouch;
 
 typedef struct ASdlInputController {
@@ -371,23 +371,23 @@ void a_sdl_input__uninit(void)
 void a_sdl_input__bind(void)
 {
     A_STRHASH_ITERATE(g_keys, ASdlInputButton*, k) {
-        k->logicalButton = a_input__newSourceButton(k->header.name);
+        k->logicalButton = a_input_button__newSource(k->header.name);
     }
 
     A_STRHASH_ITERATE(g_touchScreens, ASdlInputTouch*, t) {
-        t->logicalTouch = a_input__newSourceTouch(t->header.name);
+        t->logicalTouch = a_input_touch__newSource(t->header.name);
     }
 
     A_LIST_ITERATE(g_controllers, ASdlInputController*, c) {
         a_controller__new(c->generic);
 
         A_STRHASH_ITERATE(c->buttons, ASdlInputButton*, b) {
-            b->logicalButton = a_input__newSourceButton(b->header.name);
+            b->logicalButton = a_input_button__newSource(b->header.name);
             a_controller__addButton(b->logicalButton, b->header.name);
         }
 
         A_STRHASH_ITERATE(c->axes, ASdlInputAnalog*, a) {
-            a->logicalAnalog = a_input__newSourceAnalog(a->header.name);
+            a->logicalAnalog = a_input_analog__newSource(a->header.name);
             a_controller__addAnalog(a->logicalAnalog, a->header.name);
         }
     }
@@ -409,7 +409,7 @@ void a_sdl_input__get(void)
 
                 A_STRHASH_ITERATE(g_keys, ASdlInputButton*, k) {
                     if(k->code.keyCode == event.key.keysym.sym) {
-                        a_input__button_setState(k->logicalButton, true);
+                        a_input_button__setState(k->logicalButton, true);
                         break;
                     }
                 }
@@ -418,7 +418,7 @@ void a_sdl_input__get(void)
             case SDL_KEYUP: {
                 A_STRHASH_ITERATE(g_keys, ASdlInputButton*, k) {
                     if(k->code.keyCode == event.key.keysym.sym) {
-                        a_input__button_setState(k->logicalButton, false);
+                        a_input_button__setState(k->logicalButton, false);
                         break;
                     }
                 }
@@ -429,7 +429,7 @@ void a_sdl_input__get(void)
                     if(c->id == event.jbutton.which) {
                         A_STRHASH_ITERATE(c->buttons, ASdlInputButton*, b) {
                             if(b->code.buttonIndex == event.jbutton.button) {
-                                a_input__button_setState(b->logicalButton,
+                                a_input_button__setState(b->logicalButton,
                                                          true);
                                 break;
                             }
@@ -445,7 +445,7 @@ void a_sdl_input__get(void)
                     if(c->id == event.jbutton.which) {
                         A_STRHASH_ITERATE(c->buttons, ASdlInputButton*, b) {
                             if(b->code.buttonIndex == event.jbutton.button) {
-                                a_input__button_setState(b->logicalButton,
+                                a_input_button__setState(b->logicalButton,
                                                          false);
                                 break;
                             }
@@ -512,13 +512,13 @@ void a_sdl_input__get(void)
                             if(state & 1) {
                                 if(!b->lastStatePressed) {
                                     b->lastStatePressed = true;
-                                    a_input__button_setState(b->logicalButton,
+                                    a_input_button__setState(b->logicalButton,
                                                              true);
                                 }
                             } else {
                                 if(b->lastStatePressed) {
                                     b->lastStatePressed = false;
-                                    a_input__button_setState(b->logicalButton,
+                                    a_input_button__setState(b->logicalButton,
                                                              false);
                                 }
                             }
@@ -534,7 +534,7 @@ void a_sdl_input__get(void)
                     if(c->id == event.jaxis.which) {
                         A_STRHASH_ITERATE(c->axes, ASdlInputAnalog*, a) {
                             if(event.jaxis.axis == a->axisIndex) {
-                                a_input__analog_setAxisValue(a->logicalAnalog,
+                                a_input_analog__setAxisValue(a->logicalAnalog,
                                                              event.jaxis.value);
                                 break;
                             }
