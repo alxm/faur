@@ -43,11 +43,7 @@ void a_input_controller__init2(void)
     bool switchAxes = a_settings_getBool("input.switchAxes");
     bool invertAxes = a_settings_getBool("input.invertAxes");
 
-    A_LIST_FILTER(g_controllers,
-                  AInputSourceController*,
-                  c,
-                  a_strhash_size(c->axes) >= 2) {
-
+    A_LIST_ITERATE(g_controllers, AInputSourceController*, c) {
         if(!c->generic) {
             // GP2X and Wiz dpad diagonals are dedicated buttons instead of a
             // combination of two separate buttons. This splits them into
@@ -96,6 +92,10 @@ void a_input_controller__init2(void)
                 a_input__axisButtonsBinding(y, u, d);
             #endif
 
+            continue;
+        }
+
+        if(a_strhash_size(c->axes) < 2) {
             continue;
         }
 

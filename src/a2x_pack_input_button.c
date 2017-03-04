@@ -43,6 +43,8 @@ struct AInputSourceButton {
 
 static AList* g_buttons;
 static AStrHash* g_sourceButtons;
+static AList* g_pressQueue;
+static AList* g_releaseQueue;
 
 static void a_input__newSourceButtonNode(const char* Name, const char* ButtonNames);
 
@@ -50,6 +52,8 @@ void a_input_button__init(void)
 {
     g_buttons = a_list_new();
     g_sourceButtons = a_strhash_new();
+    g_pressQueue = a_list_new();
+    g_releaseQueue = a_list_new();
 }
 
 void a_input_button__init2(void)
@@ -83,6 +87,8 @@ void a_input_button__uninit(void)
 
     a_list_free(g_buttons);
     a_strhash_free(g_sourceButtons);
+    a_list_free(g_pressQueue);
+    a_list_free(g_releaseQueue);
 }
 
 AInputSourceButton* a_input__newSourceButton(const char* Name)
@@ -349,6 +355,30 @@ void a_input__button_setState(AInputSourceButton* Button, bool Pressed)
     a_input__setFreshEvent(&Button->header);
 
     A_LIST_ITERATE(Button->u.leaf.buttonBindings, AInputSourceButton*, b) {
-        a_input__button_setState(b, Pressed);
+        // Queue forwarded button presses and releases to be processed after
+        // all input events were received, so they don't conflict with them.
+        if(Pressed) {
+            a_list_addLast(g_pressQueue, b);
+        } else {
+            a_list_addLast(g_releaseQueue, b);
+        }
     }
+}
+
+void a_input_button__processQueue(void)
+{
+    A_LIST_ITERATE(g_pressQueue, AInputSourceButton*, b) {
+        // Overwrite whatever current state with a press
+        a_input__button_setState(b, true);
+    }
+
+    A_LIST_ITERATE(g_releaseQueue, AInputSourceButton*, b) {
+        // Only release if hadn't just received a press
+        if(!a_input__hasFreshEvent(&b->header)) {
+            a_input__button_setState(b, false);
+        }
+    }
+
+    a_list_clear(g_pressQueue);
+    a_list_clear(g_releaseQueue);
 }
