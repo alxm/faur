@@ -49,6 +49,38 @@ void a_input_controller__init2(void)
                   a_strhash_size(c->axes) >= 2) {
 
         if(!c->generic) {
+            // GP2X and Wiz dpad diagonals are dedicated buttons instead of a
+            // combination of two separate buttons. This splits them into
+            // individual directions.
+            #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
+                #if A_PLATFORM_GP2X
+                    #define PREFIX "gp2x"
+                #elif A_PLATFORM_WIZ
+                    #define PREFIX "wiz"
+                #endif
+
+                AInputSourceButton* ul = a_strhash_get(c->buttons, PREFIX ".upleft");
+                AInputSourceButton* ur = a_strhash_get(c->buttons, PREFIX ".upright");
+                AInputSourceButton* dl = a_strhash_get(c->buttons, PREFIX ".downleft");
+                AInputSourceButton* dr = a_strhash_get(c->buttons, PREFIX ".downright");
+                AInputSourceButton* u = a_strhash_get(c->buttons, PREFIX ".up");
+                AInputSourceButton* d = a_strhash_get(c->buttons, PREFIX ".down");
+                AInputSourceButton* l = a_strhash_get(c->buttons, PREFIX ".left");
+                AInputSourceButton* r = a_strhash_get(c->buttons, PREFIX ".right");
+
+                a_input__buttonButtonBinding(ul, u);
+                a_input__buttonButtonBinding(ul, l);
+
+                a_input__buttonButtonBinding(ur, u);
+                a_input__buttonButtonBinding(ur, r);
+
+                a_input__buttonButtonBinding(dl, d);
+                a_input__buttonButtonBinding(dl, l);
+
+                a_input__buttonButtonBinding(dr, d);
+                a_input__buttonButtonBinding(dr, r);
+            #endif
+
             // Caanoo has an analog stick instead of direction buttons,
             // this lets us use it as a dpad like on the other platforms.
             #if A_PLATFORM_CAANOO

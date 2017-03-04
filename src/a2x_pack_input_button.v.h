@@ -35,5 +35,3 @@ extern void a_input__freeSourceButton(AInputSourceButton* Button);
 extern void a_input__buttonButtonBinding(AInputSourceButton* Button,AInputSourceButton* Binding);
 
 extern void a_input__button_setState(AInputSourceButton* Button, bool Pressed);
-
-extern void a_input_button__adjust(void);
