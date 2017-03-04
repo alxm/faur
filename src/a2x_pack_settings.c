@@ -192,6 +192,8 @@ void a_settings__init(void)
     add(A_SETTING_STR, A_SETTING_SET_ONCE, "sound.volbar.fill", "0x9f 0xcf 0x3f");
 
     add(A_SETTING_BOOL, A_SETTING_SET_ANY, "input.trackMouse", "0");
+    add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "input.switchAxes", "0");
+    add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "input.invertAxes", "0");
 
     add(A_SETTING_STR, A_SETTING_SET_ONCE, "screenshot.dir", "./screenshots");
     add(A_SETTING_STR, A_SETTING_SET_ONCE, "screenshot.button", "key.f12");

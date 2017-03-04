@@ -40,6 +40,9 @@ void a_input_controller__init2(void)
         return;
     }
 
+    bool switchAxes = a_settings_getBool("input.switchAxes");
+    bool invertAxes = a_settings_getBool("input.invertAxes");
+
     A_LIST_FILTER(g_controllers,
                   AInputSourceController*,
                   c,
@@ -71,6 +74,26 @@ void a_input_controller__init2(void)
         AInputSourceButton* d = a_strhash_get(c->buttons, "controller.down");
         AInputSourceButton* l = a_strhash_get(c->buttons, "controller.left");
         AInputSourceButton* r = a_strhash_get(c->buttons, "controller.right");
+
+        if(switchAxes) {
+            AInputSourceAnalog* save;
+
+            save = x;
+            x = y;
+            y = save;
+        }
+
+        if(invertAxes) {
+            AInputSourceButton* save;
+
+            save = u;
+            u = d;
+            d = save;
+
+            save = l;
+            l = r;
+            r = save;
+        }
 
         // Guess that the first two axes are for X and Y movement.
         a_input__axisButtonsBinding(x, l, r);
