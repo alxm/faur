@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2017 Alex Margarit
+    Copyright 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -20,3 +20,6 @@
 #pragma once
 
 #include "a2x_system_includes.h"
+
+extern unsigned a_input_numControllers(void);
+extern void a_input_setController(unsigned Index);

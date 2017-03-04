@@ -31,7 +31,7 @@ bool g_show;
 static AList* g_lines;
 static unsigned g_linesPerScreen;
 static ASprite* g_titles[A_CONSOLE_MAX];
-static AInput* g_toggle;
+static AInputButton* g_toggle;
 
 static ALine* line_new(AConsoleOutType Type, const char* Text)
 {
@@ -161,7 +161,7 @@ void a_console__init2(void)
     }
 
     g_show = a_settings_getBool("console.on");
-    g_toggle = a_input_new(a_settings_getString("console.button"));
+    g_toggle = a_button_new(a_settings_getString("console.button"));
 
     a_input__addCallback(inputCallback);
     a_screen__addOverlay(screenCallback);

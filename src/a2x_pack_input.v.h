@@ -19,9 +19,8 @@
 
 #pragma once
 
-typedef struct AInputButton AInputButton;
-typedef struct AInputAnalog AInputAnalog;
-typedef struct AInputTouch AInputTouch;
+typedef struct AInputUserHeader AInputUserHeader;
+typedef struct AInputSourceHeader AInputSourceHeader;
 
 typedef void (*AInputCallback)(void);
 
@@ -37,21 +36,35 @@ typedef void (*AInputCallback)(void);
 #include "a2x_pack_strbuilder.v.h"
 #include "a2x_pack_strtok.v.h"
 
+#include "a2x_pack_input_button.v.h"
+#include "a2x_pack_input_analog.v.h"
+#include "a2x_pack_input_controller.v.h"
+#include "a2x_pack_input_touch.v.h"
+
+struct AInputUserHeader {
+    char* name;
+    AList* sourceInputs; // List of AInputButtonSource/Analog/Touch
+};
+
+struct AInputSourceHeader {
+    char* name;
+    char* shortName;
+    unsigned lastEventFrame;
+};
+
 extern void a_input__init(void);
 extern void a_input__uninit(void);
 
-extern void a_input__free(AInput* Input);
-
-extern void a_input__newController(void);
-
-extern AInputButton* a_input__newButton(const char* Name);
-extern AInputAnalog* a_input__newAnalog(const char* Name);
-extern AInputTouch* a_input__newTouch(const char* Name);
-
 extern void a_input__addCallback(AInputCallback Callback);
-extern void a_input__get(void);
 
-extern void a_input__button_setState(AInputButton* Button, bool Pressed);
-extern void a_input__analog_setAxisValue(AInputAnalog* Analog, int Value);
-extern void a_input__touch_addMotion(AInputTouch* Touch, int X, int Y);
-extern void a_input__touch_setCoords(AInputTouch* Touch, int X, int Y, bool Tapped);
+extern void a_input__initUserHeader(AInputUserHeader* Header);
+extern void a_input__freeUserHeader(AInputUserHeader* Header);
+extern void a_input__initSourceHeader(AInputSourceHeader* Header, const char* Name);
+extern void a_input__freeSourceHeader(AInputSourceHeader* Header);
+
+extern void a_input__findSourceInput(const char* Name, const AStrHash* GlobalCollection, const AStrHash* ControllerCollection, AInputUserHeader* UserInput);
+
+extern bool a_input__hasFreshEvent(const AInputSourceHeader* Header);
+extern void a_input__setFreshEvent(AInputSourceHeader* Header);
+
+extern void a_input__get(void);

@@ -41,15 +41,15 @@ struct AMenu {
     ASound* soundAccept;
     ASound* soundCancel;
     ASound* soundBrowse;
-    AInput* next;
-    AInput* back;
-    AInput* select;
-    AInput* cancel;
+    AInputButton* next;
+    AInputButton* back;
+    AInputButton* select;
+    AInputButton* cancel;
 };
 
 #define A_MENU_PAUSE (a_settings_getUnsigned("video.fps") / 6)
 
-AMenu* a_menu_new(AInput* Next, AInput* Back, AInput* Select, AInput* Cancel, AMenuFreeItemHandler FreeItemHandler)
+AMenu* a_menu_new(AInputButton* Next, AInputButton* Back, AInputButton* Select, AInputButton* Cancel, AMenuFreeItemHandler FreeItemHandler)
 {
     AMenu* m = a_mem_malloc(sizeof(AMenu));
 

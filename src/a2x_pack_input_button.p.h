@@ -20,3 +20,15 @@
 #pragma once
 
 #include "a2x_system_includes.h"
+
+typedef struct AInputButton AInputButton;
+
+extern AInputButton* a_button_new(const char* Names);
+extern bool a_button_working(const AInputButton* Button);
+
+extern const char* a_button_name(const AInputButton* Button);
+
+extern bool a_button_get(AInputButton* Button);
+extern void a_button_release(const AInputButton* Button);
+extern bool a_button_getOnce(AInputButton* Button);
+extern void a_button_setRepeat(AInputButton* Button, unsigned RepeatFrames);

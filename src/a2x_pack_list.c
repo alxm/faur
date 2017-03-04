@@ -108,30 +108,39 @@ AListNode* a_list_addLast(AList* List, void* Content)
     return n;
 }
 
-void a_list_append(AList* Base, AList* NewEntries)
+void a_list_appendMove(AList* Dst, AList* Src)
 {
-    if(NewEntries->items == 0) {
+    if(Dst == Src || Src->items == 0) {
         return;
     }
 
-    if(Base->items == 0) {
-        AList save = *Base;
-        *Base = *NewEntries;
-        *NewEntries = save;
+    if(Dst->items == 0) {
+        AList save = *Dst;
+        *Dst = *Src;
+        *Src = save;
         return;
     }
 
-    Base->last->prev->next = NewEntries->first->next;
-    NewEntries->first->next->prev = Base->last->prev;
-    Base->last->prev = NewEntries->last->prev;
-    NewEntries->last->prev->next = Base->last;
+    Dst->last->prev->next = Src->first->next;
+    Src->first->next->prev = Dst->last->prev;
+    Dst->last->prev = Src->last->prev;
+    Src->last->prev->next = Dst->last;
 
-    Base->items += NewEntries->items;
+    Dst->items += Src->items;
 
-    NewEntries->first->next = NewEntries->last;
-    NewEntries->last->prev = NewEntries->first;
+    Src->first->next = Src->last;
+    Src->last->prev = Src->first;
 
-    NewEntries->items = 0;
+    Src->items = 0;
+}
+
+void a_list_appendCopy(AList* Dst, AList* Src)
+{
+    AListNode* lastSrcEntry = Src->last->prev;
+
+    for(AListNode* n = Src->first; n != lastSrcEntry; n = n->next) {
+        a_list_addLast(Dst, n->next->content);
+    }
 }
 
 void* a_list_getFirst(const AList* List)

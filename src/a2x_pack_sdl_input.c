@@ -35,7 +35,7 @@ typedef struct ASdlInputHeader {
 
 typedef struct ASdlInputButton {
     ASdlInputHeader header;
-    AInputButton* logicalButton;
+    AInputButtonSource* logicalButton;
     union {
         ASdlKeyCode keyCode;
         uint8_t buttonIndex;
@@ -46,13 +46,13 @@ typedef struct ASdlInputButton {
 
 typedef struct ASdlInputAnalog {
     ASdlInputHeader header;
-    AInputAnalog* logicalAnalog;
+    AInputAnalogSource* logicalAnalog;
     int axisIndex;
 } ASdlInputAnalog;
 
 typedef struct ASdlInputTouch {
     ASdlInputHeader header;
-    AInputTouch* logicalTouch;
+    AInputTouchSource* logicalTouch;
 } ASdlInputTouch;
 
 typedef struct ASdlInputController {
@@ -63,6 +63,7 @@ typedef struct ASdlInputController {
     int numAxes;
     AStrHash* buttons;
     AStrHash* axes;
+    bool generic;
 } ASdlInputController;
 
 static AStrHash* g_keys;
@@ -72,6 +73,7 @@ static AList* g_controllers;
 static void freeHeader(ASdlInputHeader* Header)
 {
     free(Header->name);
+    free(Header);
 }
 
 static void addKey(const char* Name, int Code)
@@ -181,6 +183,7 @@ void a_sdl_input__init(void)
         c->numAxes = SDL_JoystickNumAxes(c->joystick);
         c->buttons = a_strhash_new();
         c->axes = a_strhash_new();
+        c->generic = false;
 
         a_list_addLast(g_controllers, c);
 
@@ -244,7 +247,6 @@ void a_sdl_input__init(void)
                     addAnalog(c->axes, "caanoo.stickX", 0);
                     addAnalog(c->axes, "caanoo.stickY", 1);
                 #endif
-
                 continue;
             }
         #elif A_PLATFORM_PANDORA
@@ -266,6 +268,8 @@ void a_sdl_input__init(void)
             }
         #endif
 
+        c->generic = true;
+
         for(int j = 0; j < c->numButtons; j++) {
             char name[32];
             snprintf(name, sizeof(name), "controller.b%d", j);
@@ -278,7 +282,7 @@ void a_sdl_input__init(void)
             addAnalog(c->axes, name, j);
         }
 
-        if(c->numHats > 0) {
+        if(c->numHats > 0 || c->numAxes >= 2) {
             addButton(c->buttons, "controller.up", -1);
             addButton(c->buttons, "controller.down", -1);
             addButton(c->buttons, "controller.left", -1);
@@ -336,23 +340,19 @@ void a_sdl_input__uninit(void)
 {
     A_STRHASH_ITERATE(g_keys, ASdlInputButton*, k) {
         freeHeader(&k->header);
-        free(k);
     }
 
     A_STRHASH_ITERATE(g_touchScreens, ASdlInputTouch*, t) {
         freeHeader(&t->header);
-        free(t);
     }
 
     A_LIST_ITERATE(g_controllers, ASdlInputController*, c) {
         A_STRHASH_ITERATE(c->buttons, ASdlInputButton*, b) {
             freeHeader(&b->header);
-            free(b);
         }
 
         A_STRHASH_ITERATE(c->axes, ASdlInputAnalog*, a) {
             freeHeader(&a->header);
-            free(a);
         }
 
         SDL_JoystickClose(c->joystick);
@@ -371,23 +371,24 @@ void a_sdl_input__uninit(void)
 void a_sdl_input__bind(void)
 {
     A_STRHASH_ITERATE(g_keys, ASdlInputButton*, k) {
-        k->logicalButton = a_input__newButton(k->header.name);
+        k->logicalButton = a_input_button__newSource(k->header.name);
     }
 
     A_STRHASH_ITERATE(g_touchScreens, ASdlInputTouch*, t) {
-        t->logicalTouch = a_input__newTouch(t->header.name);
+        t->logicalTouch = a_input_touch__newSource(t->header.name);
     }
 
     A_LIST_ITERATE(g_controllers, ASdlInputController*, c) {
-        a_input__newController();
-
+        a_controller__new(c->generic);
 
         A_STRHASH_ITERATE(c->buttons, ASdlInputButton*, b) {
-            b->logicalButton = a_input__newButton(b->header.name);
+            b->logicalButton = a_input_button__newSource(b->header.name);
+            a_controller__addButton(b->logicalButton, b->header.name);
         }
 
         A_STRHASH_ITERATE(c->axes, ASdlInputAnalog*, a) {
-            a->logicalAnalog = a_input__newAnalog(a->header.name);
+            a->logicalAnalog = a_input_analog__newSource(a->header.name);
+            a_controller__addAnalog(a->logicalAnalog, a->header.name);
         }
     }
 }
@@ -408,7 +409,7 @@ void a_sdl_input__get(void)
 
                 A_STRHASH_ITERATE(g_keys, ASdlInputButton*, k) {
                     if(k->code.keyCode == event.key.keysym.sym) {
-                        a_input__button_setState(k->logicalButton, true);
+                        a_input_button__setState(k->logicalButton, true);
                         break;
                     }
                 }
@@ -417,7 +418,7 @@ void a_sdl_input__get(void)
             case SDL_KEYUP: {
                 A_STRHASH_ITERATE(g_keys, ASdlInputButton*, k) {
                     if(k->code.keyCode == event.key.keysym.sym) {
-                        a_input__button_setState(k->logicalButton, false);
+                        a_input_button__setState(k->logicalButton, false);
                         break;
                     }
                 }
@@ -428,7 +429,7 @@ void a_sdl_input__get(void)
                     if(c->id == event.jbutton.which) {
                         A_STRHASH_ITERATE(c->buttons, ASdlInputButton*, b) {
                             if(b->code.buttonIndex == event.jbutton.button) {
-                                a_input__button_setState(b->logicalButton,
+                                a_input_button__setState(b->logicalButton,
                                                          true);
                                 break;
                             }
@@ -444,7 +445,7 @@ void a_sdl_input__get(void)
                     if(c->id == event.jbutton.which) {
                         A_STRHASH_ITERATE(c->buttons, ASdlInputButton*, b) {
                             if(b->code.buttonIndex == event.jbutton.button) {
-                                a_input__button_setState(b->logicalButton,
+                                a_input_button__setState(b->logicalButton,
                                                          false);
                                 break;
                             }
@@ -511,13 +512,13 @@ void a_sdl_input__get(void)
                             if(state & 1) {
                                 if(!b->lastStatePressed) {
                                     b->lastStatePressed = true;
-                                    a_input__button_setState(b->logicalButton,
+                                    a_input_button__setState(b->logicalButton,
                                                              true);
                                 }
                             } else {
                                 if(b->lastStatePressed) {
                                     b->lastStatePressed = false;
-                                    a_input__button_setState(b->logicalButton,
+                                    a_input_button__setState(b->logicalButton,
                                                              false);
                                 }
                             }
@@ -533,7 +534,7 @@ void a_sdl_input__get(void)
                     if(c->id == event.jaxis.which) {
                         A_STRHASH_ITERATE(c->axes, ASdlInputAnalog*, a) {
                             if(event.jaxis.axis == a->axisIndex) {
-                                a_input__analog_setAxisValue(a->logicalAnalog,
+                                a_input_analog__setAxisValue(a->logicalAnalog,
                                                              event.jaxis.value);
                                 break;
                             }
@@ -546,7 +547,7 @@ void a_sdl_input__get(void)
 
             case SDL_MOUSEMOTION: {
                 A_STRHASH_ITERATE(g_touchScreens, ASdlInputTouch*, t) {
-                    a_input__touch_addMotion(t->logicalTouch,
+                    a_input_touch__addMotion(t->logicalTouch,
                                              event.button.x,
                                              event.button.y);
                 }
@@ -556,7 +557,7 @@ void a_sdl_input__get(void)
                 switch(event.button.button) {
                     case SDL_BUTTON_LEFT: {
                         A_STRHASH_ITERATE(g_touchScreens, ASdlInputTouch*, t) {
-                            a_input__touch_setCoords(t->logicalTouch,
+                            a_input_touch__setCoords(t->logicalTouch,
                                                      event.button.x,
                                                      event.button.y,
                                                      true);
@@ -569,7 +570,7 @@ void a_sdl_input__get(void)
                 switch(event.button.button) {
                     case SDL_BUTTON_LEFT: {
                         A_STRHASH_ITERATE(g_touchScreens, ASdlInputTouch*, t) {
-                            a_input__touch_setCoords(t->logicalTouch,
+                            a_input_touch__setCoords(t->logicalTouch,
                                                      event.button.x,
                                                      event.button.y,
                                                      false);
