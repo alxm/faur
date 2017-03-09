@@ -373,17 +373,7 @@ static void a_system__run(const ASystem* System)
 
 void a_system_run(void)
 {
-    A_LIST_ITERATE(g_collection->newEntities, AEntity*, e) {
-        // Check if the entity matches any systems
-        A_STRHASH_ITERATE(g_collection->systems, ASystem*, s) {
-            if(a_bitfield_testMask(e->componentBits, s->componentBits)) {
-                a_list_addLast(e->systemNodes, a_list_addLast(s->entities, e));
-            }
-        }
-
-        e->collectionNode = a_list_addLast(g_collection->runningEntities, e);
-        A_LIST_REMOVE_CURRENT();
-    }
+    a_system_flushNewEntities();
 
     A_LIST_ITERATE(g_collection->tickSystems, ASystem*, system) {
         a_system__run(system);
@@ -400,6 +390,21 @@ void a_system_run(void)
             a_entity__free(entity);
             A_LIST_REMOVE_CURRENT();
         }
+    }
+}
+
+void a_system_flushNewEntities(void)
+{
+    A_LIST_ITERATE(g_collection->newEntities, AEntity*, e) {
+        // Check if the entity matches any systems
+        A_STRHASH_ITERATE(g_collection->systems, ASystem*, s) {
+            if(a_bitfield_testMask(e->componentBits, s->componentBits)) {
+                a_list_addLast(e->systemNodes, a_list_addLast(s->entities, e));
+            }
+        }
+
+        e->collectionNode = a_list_addLast(g_collection->runningEntities, e);
+        A_LIST_REMOVE_CURRENT();
     }
 }
 

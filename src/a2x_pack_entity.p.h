@@ -47,3 +47,4 @@ extern void a_system_draw(const char* Systems);
 extern void* a_system_getContext(void);
 extern void a_system_setContext(void* GlobalContext);
 extern void a_system_run(void);
+extern void a_system_flushNewEntities(void);
