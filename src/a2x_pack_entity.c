@@ -62,6 +62,7 @@ struct AEntity {
     ABitfield* componentBits;
     unsigned lastActive;
     unsigned references;
+    bool muted;
 };
 
 #define ENTITY_NAME(Entity) (Entity->id ? Entity->id : "entity")
@@ -127,6 +128,7 @@ AEntity* a_entity_new(void)
     e->componentBits = a_bitfield_new(a_strhash_size(g_collection->components));
     e->lastActive = a_fps_getCounter() - 1;
     e->references = 0;
+    e->muted = false;
 
     return e;
 }
@@ -265,6 +267,16 @@ void* a_entity_requireComponent(const AEntity* Entity, const char* Component)
     return GET_COMPONENT(header);
 }
 
+void a_entity_mute(AEntity* Entity)
+{
+    Entity->muted = true;
+}
+
+void a_entity_unmute(AEntity* Entity)
+{
+    Entity->muted = false;
+}
+
 void a_system_declare(const char* Name, const char* Components, ASystemHandler* Handler, ASystemSort* Compare, bool OnlyActiveEntities)
 {
     if(g_collection->state != A_SYSTEM_STATE_DECLARE_SYSTEMS) {
@@ -359,13 +371,13 @@ static void a_system__run(const ASystem* System)
     }
 
     if(System->onlyActiveEntities) {
-        A_LIST_ITERATE(System->entities, AEntity*, entity) {
+        A_LIST_FILTER(System->entities, AEntity*, entity, !entity->muted) {
             if(a_entity_isActive(entity)) {
                 System->handler(entity);
             }
         }
     } else {
-        A_LIST_ITERATE(System->entities, AEntity*, entity) {
+        A_LIST_FILTER(System->entities, AEntity*, entity, !entity->muted) {
             System->handler(entity);
         }
     }
