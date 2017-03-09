@@ -19,50 +19,40 @@
 
 #include "a2x_pack_entity.v.h"
 
-typedef enum ASystemCollectionState {
-    A_SYSTEM_STATE_DECLARE_COMPONENTS,
-    A_SYSTEM_STATE_DECLARE_SYSTEMS,
-    A_SYSTEM_STATE_CREATE_ENTITIES
-} ASystemCollectionState;
-
-typedef struct ASystemCollection {
-    AList* newEntities;
-    AList* runningEntities;
-    AList* removedEntities;
-    AStrHash* components;
-    AStrHash* systems;
-    AList* tickSystems;
-    AList* drawSystems;
-    void* context;
-    ASystemCollectionState state;
-    bool deleting;
-} ASystemCollection;
-
 typedef struct AComponent {
-    size_t size;
+    size_t size; // total size of AComponent + user data that follows
     AComponentFree* free;
-    AEntity* parent;
-    unsigned bit;
+    AEntity* parent; // only valid for AComponent instances, not prototype
+    unsigned bit; // component's unique bit ID
 } AComponent;
 
 typedef struct ASystem {
     ASystemHandler* handler;
     ASystemSort* compare;
-    AList* entities;
-    ABitfield* componentBits;
-    unsigned bit;
+    ABitfield* componentBits; // IDs of components that this system works on
+    AList* entities; // entities currently picked up by this system
     bool onlyActiveEntities;
 } ASystem;
 
+typedef struct ARunningCollection {
+    AList* newEntities; // new entities are added to this list
+    AList* runningEntities; // entities in this list are picked up by systems
+    AList* removedEntities; // removed entities with outstanding references
+    AList* tickSystems; // tick systems in the specified order
+    AList* drawSystems; // draw systems in the specified order
+    void* context; // global context
+    bool deleting; // set when this collection is popped off the stack
+} ARunningCollection;
+
 struct AEntity {
-    char* id;
-    AListNode* collectionNode;
-    AList* systemNodes;
+    char* id; // specified name for debugging
+    AListNode* collectionNode; // list node in one of new, running, or removed
+    AList* systemNodes; // list of nodes in ASystem.entities lists
     AStrHash* components;
     ABitfield* componentBits;
-    unsigned lastActive;
-    unsigned references;
-    bool muted;
+    unsigned lastActive; // frame when a_entity_markActive was last called
+    unsigned references; // if >0, then the entity lingers in the removed list
+    bool muted; // systems don't run on this entity if this is set
 };
 
 #define ENTITY_NAME(Entity) (Entity->id ? Entity->id : "entity")
@@ -70,13 +60,19 @@ struct AEntity {
 #define GET_COMPONENT(Header) ((void*)(Header + 1))
 #define GET_HEADER(Component) ((AComponent*)Component - 1)
 
-static AList* g_stack;
-static ASystemCollection* g_collection;
+static AList* g_stack; // list of ARunningCollection (one for each state)
+static ARunningCollection* g_collection;
+
+static AStrHash* g_components; // table of declared AComponent
+static AStrHash* g_systems; // table of declared ASystem
 
 void a_entity__init(void)
 {
     g_stack = a_list_new();
     g_collection = NULL;
+
+    g_components = a_strhash_new();
+    g_systems = a_strhash_new();
 
     // In case application isn't using states
     a_system__pushCollection();
@@ -86,17 +82,24 @@ void a_entity__uninit(void)
 {
     a_system__popCollection();
     a_list_free(g_stack);
+
+    A_STRHASH_ITERATE(g_systems, ASystem*, system) {
+        a_list_free(system->entities);
+        a_bitfield_free(system->componentBits);
+        free(system);
+    }
+
+    A_STRHASH_ITERATE(g_components, AComponent*, component) {
+        free(component);
+    }
+
+    a_strhash_free(g_systems);
+    a_strhash_free(g_components);
 }
 
 void a_component_declare(const char* Name, size_t Size, AComponentFree* Free)
 {
-    if(g_collection->state != A_SYSTEM_STATE_DECLARE_COMPONENTS) {
-        a_out__fatal("Cannot declare component '%s' after declaring systems "
-                     "or creating entities",
-                     Name);
-    }
-
-    if(a_strhash_contains(g_collection->components, Name)) {
+    if(a_strhash_contains(g_components, Name)) {
         a_out__fatal("Component '%s' already declared", Name);
     }
 
@@ -105,9 +108,9 @@ void a_component_declare(const char* Name, size_t Size, AComponentFree* Free)
     h->size = sizeof(AComponent) + Size;
     h->free = Free;
     h->parent = NULL;
-    h->bit = a_strhash_size(g_collection->components);
+    h->bit = a_strhash_size(g_components);
 
-    a_strhash_add(g_collection->components, Name, h);
+    a_strhash_add(g_components, Name, h);
 }
 
 AEntity* a_component_getEntity(const void* Component)
@@ -117,15 +120,13 @@ AEntity* a_component_getEntity(const void* Component)
 
 AEntity* a_entity_new(void)
 {
-    g_collection->state = A_SYSTEM_STATE_CREATE_ENTITIES;
-
     AEntity* e = a_mem_malloc(sizeof(AEntity));
 
     e->id = NULL;
     e->collectionNode = a_list_addLast(g_collection->newEntities, e);
     e->systemNodes = a_list_new();
     e->components = a_strhash_new();
-    e->componentBits = a_bitfield_new(a_strhash_size(g_collection->components));
+    e->componentBits = a_bitfield_new(a_strhash_size(g_components));
     e->lastActive = a_fps_getCounter() - 1;
     e->references = 0;
     e->muted = false;
@@ -211,7 +212,7 @@ void* a_entity_addComponent(AEntity* Entity, const char* Component)
                      ENTITY_NAME(Entity));
     }
 
-    const AComponent* c = a_strhash_get(g_collection->components, Component);
+    const AComponent* c = a_strhash_get(g_components, Component);
 
     if(c == NULL) {
         a_out__fatal("Unknown component '%s'", Component);
@@ -240,7 +241,7 @@ void* a_entity_getComponent(const AEntity* Entity, const char* Component)
     AComponent* header = a_strhash_get(Entity->components, Component);
 
     if(header == NULL) {
-        if(!a_strhash_contains(g_collection->components, Component)) {
+        if(!a_strhash_contains(g_components, Component)) {
             a_out__fatal("Unknown component '%s'", Component);
         }
 
@@ -255,7 +256,7 @@ void* a_entity_requireComponent(const AEntity* Entity, const char* Component)
     AComponent* header = a_strhash_get(Entity->components, Component);
 
     if(header == NULL) {
-        if(!a_strhash_contains(g_collection->components, Component)) {
+        if(!a_strhash_contains(g_components, Component)) {
             a_out__fatal("Unknown component '%s'", Component);
         }
 
@@ -279,17 +280,7 @@ void a_entity_unmute(AEntity* Entity)
 
 void a_system_declare(const char* Name, const char* Components, ASystemHandler* Handler, ASystemSort* Compare, bool OnlyActiveEntities)
 {
-    if(g_collection->state != A_SYSTEM_STATE_DECLARE_SYSTEMS) {
-        if(g_collection->state == A_SYSTEM_STATE_DECLARE_COMPONENTS) {
-            g_collection->state = A_SYSTEM_STATE_DECLARE_SYSTEMS;
-        } else {
-            a_out__fatal("Cannot declare component '%s' after declaring "
-                         "systems or creating entities",
-                         Name);
-        }
-    }
-
-    if(a_strhash_contains(g_collection->systems, Name)) {
+    if(a_strhash_contains(g_systems, Name)) {
         a_out__fatal("System '%s' already declared", Name);
     }
 
@@ -298,16 +289,15 @@ void a_system_declare(const char* Name, const char* Components, ASystemHandler* 
     s->handler = Handler;
     s->compare = Compare;
     s->entities = a_list_new();
-    s->componentBits = a_bitfield_new(a_strhash_size(g_collection->components));
-    s->bit = a_strhash_size(g_collection->systems);
+    s->componentBits = a_bitfield_new(a_strhash_size(g_components));
     s->onlyActiveEntities = OnlyActiveEntities;
 
-    a_strhash_add(g_collection->systems, Name, s);
+    a_strhash_add(g_systems, Name, s);
 
     AStrTok* tok = a_strtok_new(Components, " ");
 
     A_STRTOK_ITERATE(tok, name) {
-        AComponent* c = a_strhash_get(g_collection->components, name);
+        AComponent* c = a_strhash_get(g_components, name);
 
         if(c == NULL) {
             a_out__fatal("Unknown component '%s' for system '%s'",
@@ -325,7 +315,7 @@ void a_system_tick(const char* Systems)
     AStrTok* tok = a_strtok_new(Systems, " ");
 
     A_STRTOK_ITERATE(tok, systemName) {
-        ASystem* system = a_strhash_get(g_collection->systems, systemName);
+        ASystem* system = a_strhash_get(g_systems, systemName);
 
         if(system == NULL) {
             a_out__fatal("Unknown tick system '%s'", systemName);
@@ -342,7 +332,7 @@ void a_system_draw(const char* Systems)
     AStrTok* tok = a_strtok_new(Systems, " ");
 
     A_STRTOK_ITERATE(tok, systemName) {
-        ASystem* system = a_strhash_get(g_collection->systems, systemName);
+        ASystem* system = a_strhash_get(g_systems, systemName);
 
         if(system == NULL) {
             a_out__fatal("Unknown draw system '%s'", systemName);
@@ -388,7 +378,7 @@ void a_system_execute(const char* Systems)
     AStrTok* tok = a_strtok_new(Systems, " ");
 
     A_STRTOK_ITERATE(tok, name) {
-        ASystem* system = a_strhash_get(g_collection->systems, name);
+        ASystem* system = a_strhash_get(g_systems, name);
 
         if(system == NULL) {
             a_out__fatal("a_system_execute: unknown system '%s'", name);
@@ -426,7 +416,7 @@ void a_system_flushNewEntities(void)
 {
     A_LIST_ITERATE(g_collection->newEntities, AEntity*, e) {
         // Check if the entity matches any systems
-        A_STRHASH_ITERATE(g_collection->systems, ASystem*, s) {
+        A_STRHASH_ITERATE(g_systems, ASystem*, s) {
             if(a_bitfield_testMask(e->componentBits, s->componentBits)) {
                 a_list_addLast(e->systemNodes, a_list_addLast(s->entities, e));
             }
@@ -439,17 +429,14 @@ void a_system_flushNewEntities(void)
 
 void a_system__pushCollection(void)
 {
-    ASystemCollection* c = a_mem_malloc(sizeof(ASystemCollection));
+    ARunningCollection* c = a_mem_malloc(sizeof(ARunningCollection));
 
     c->newEntities = a_list_new();
     c->runningEntities = a_list_new();
     c->removedEntities = a_list_new();
-    c->components = a_strhash_new();
-    c->systems = a_strhash_new();
     c->tickSystems = a_list_new();
     c->drawSystems = a_list_new();
     c->context = NULL;
-    c->state = A_SYSTEM_STATE_DECLARE_COMPONENTS;
     c->deleting = false;
 
     if(g_collection != NULL) {
@@ -479,19 +466,6 @@ void a_system__popCollection(void)
     a_list_free(g_collection->runningEntities);
     a_list_free(g_collection->removedEntities);
 
-    A_STRHASH_ITERATE(g_collection->components, AComponent*, component) {
-        free(component);
-    }
-
-    a_strhash_free(g_collection->components);
-
-    A_STRHASH_ITERATE(g_collection->systems, ASystem*, system) {
-        a_list_free(system->entities);
-        a_bitfield_free(system->componentBits);
-        free(system);
-    }
-
-    a_strhash_free(g_collection->systems);
     a_list_free(g_collection->tickSystems);
     a_list_free(g_collection->drawSystems);
 
