@@ -371,6 +371,23 @@ static void a_system__run(const ASystem* System)
     }
 }
 
+void a_system_execute(const char* Systems)
+{
+    AStrTok* tok = a_strtok_new(Systems, " ");
+
+    A_STRTOK_ITERATE(tok, name) {
+        ASystem* system = a_strhash_get(g_collection->systems, name);
+
+        if(system == NULL) {
+            a_out__fatal("a_system_execute: unknown system '%s'", name);
+        }
+
+        a_system__run(system);
+    }
+
+    a_strtok_free(tok);
+}
+
 void a_system_run(void)
 {
     a_system_flushNewEntities();
