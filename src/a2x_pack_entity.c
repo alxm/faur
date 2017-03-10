@@ -156,6 +156,11 @@ static void a_entity__free(AEntity* Entity)
     free(Entity);
 }
 
+const char* a_entity_getId(const AEntity* Entity)
+{
+    return Entity->id;
+}
+
 void a_entity_setId(AEntity* Entity, const char* Id)
 {
     Entity->id = a_str_dup(Id);
