@@ -220,7 +220,9 @@ void* a_entity_addComponent(AEntity* Entity, const char* Component)
     const AComponent* c = a_strhash_get(g_components, Component);
 
     if(c == NULL) {
-        a_out__fatal("Unknown component '%s'", Component);
+        a_out__fatal("Unknown component '%s' for '%s'",
+                     Component,
+                     ENTITY_NAME(Entity));
     }
 
     if(a_bitfield_test(Entity->componentBits, c->bit)) {
@@ -247,7 +249,9 @@ void* a_entity_getComponent(const AEntity* Entity, const char* Component)
 
     if(header == NULL) {
         if(!a_strhash_contains(g_components, Component)) {
-            a_out__fatal("Unknown component '%s'", Component);
+            a_out__fatal("Unknown component '%s' for '%s'",
+                         Component,
+                         ENTITY_NAME(Entity));
         }
 
         return NULL;
@@ -262,7 +266,9 @@ void* a_entity_requireComponent(const AEntity* Entity, const char* Component)
 
     if(header == NULL) {
         if(!a_strhash_contains(g_components, Component)) {
-            a_out__fatal("Unknown component '%s'", Component);
+            a_out__fatal("Unknown component '%s' for '%s'",
+                         Component,
+                         ENTITY_NAME(Entity));
         }
 
         a_out__fatal("Missing required component '%s' in '%s'",
