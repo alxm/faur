@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016 Alex Margarit
+    Copyright 2010, 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -230,4 +230,9 @@ unsigned a_fps_getCounter(void)
 bool a_fps_nthFrame(unsigned N)
 {
     return (g_frameCounter % N) == 0;
+}
+
+unsigned a_fps_msToFrames(unsigned Ms)
+{
+    return Ms * g_idealFpsRate / 1000;
 }
