@@ -243,6 +243,19 @@ void* a_entity_addComponent(AEntity* Entity, const char* Component)
     return GET_COMPONENT(header);
 }
 
+bool a_entity_hasComponent(const AEntity* Entity, const char* Component)
+{
+    bool has = a_strhash_contains(Entity->components, Component);
+
+    if(!has && !a_strhash_contains(g_components, Component)) {
+        a_out__fatal("Unknown component '%s' for '%s'",
+                     Component,
+                     ENTITY_NAME(Entity));
+    }
+
+    return has;
+}
+
 void* a_entity_getComponent(const AEntity* Entity, const char* Component)
 {
     AComponent* header = a_strhash_get(Entity->components, Component);
