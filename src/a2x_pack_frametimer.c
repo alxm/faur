@@ -31,7 +31,7 @@ AFrameTimer* a_frametimer_new(unsigned FramesPeriod)
     AFrameTimer* t = a_mem_malloc(sizeof(AFrameTimer));
 
     t->running = false;
-    t->period = FramesPeriod;
+    t->period = a_math_maxu(FramesPeriod, 1);
     t->start = 0;
     t->diff = 0;
 

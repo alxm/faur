@@ -31,7 +31,7 @@ ATimer* a_timer_new(uint32_t Ms)
     ATimer* t = a_mem_malloc(sizeof(ATimer));
 
     t->running = false;
-    t->period = Ms;
+    t->period = a_math_maxu(Ms, 1);
     t->start = 0;
     t->diff = 0;
 
