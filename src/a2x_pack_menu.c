@@ -204,3 +204,10 @@ unsigned a_menu_numItems(const AMenu* Menu)
 {
     return a_list_size(Menu->items);
 }
+
+void a_menu_reset(AMenu* Menu)
+{
+    Menu->state = A_MENU_RUNNING;
+    Menu->selectedItem = a_list_getFirst(Menu->items);
+    Menu->selectedIndex = 0;
+}

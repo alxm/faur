@@ -45,3 +45,4 @@ extern bool a_menu_accept(const AMenu* Menu);
 extern bool a_menu_cancel(const AMenu* Menu);
 extern unsigned a_menu_choice(const AMenu* Menu);
 extern unsigned a_menu_numItems(const AMenu* Menu);
+extern void a_menu_reset(AMenu* Menu);
