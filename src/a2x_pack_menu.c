@@ -199,3 +199,8 @@ unsigned a_menu_choice(const AMenu* Menu)
 {
     return Menu->selectedIndex;
 }
+
+unsigned a_menu_numItems(const AMenu* Menu)
+{
+    return a_list_size(Menu->items);
+}
