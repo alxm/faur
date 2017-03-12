@@ -30,6 +30,7 @@ extern void a_component_declare(const char* Name, size_t Size, AComponentFree* F
 extern AEntity* a_component_getEntity(const void* Component);
 
 extern AEntity* a_entity_new(void);
+extern const char* a_entity_getId(const AEntity* Entity);
 extern void a_entity_setId(AEntity* Entity, const char* Id);
 extern void a_entity_reference(AEntity* Entity);
 extern void a_entity_release(AEntity* Entity);
@@ -38,12 +39,19 @@ extern bool a_entity_isRemoved(const AEntity* Entity);
 extern void a_entity_markActive(AEntity* Entity);
 extern bool a_entity_isActive(const AEntity* Entity);
 extern void* a_entity_addComponent(AEntity* Entity, const char* Component);
+extern bool a_entity_hasComponent(const AEntity* Entity, const char* Component);
 extern void* a_entity_getComponent(const AEntity* Entity, const char* Component);
 extern void* a_entity_requireComponent(const AEntity* Entity, const char* Component);
+extern void a_entity_mute(AEntity* Entity);
+extern void a_entity_unmute(AEntity* Entity);
 
 extern void a_system_declare(const char* Name, const char* Components, ASystemHandler* Handler, ASystemSort* Compare, bool OnlyActiveEntities);
 extern void a_system_tick(const char* Systems);
 extern void a_system_draw(const char* Systems);
 extern void* a_system_getContext(void);
 extern void a_system_setContext(void* GlobalContext);
+extern void a_system_execute(const char* Systems);
 extern void a_system_run(void);
+extern void a_system_flushNewEntities(void);
+extern void a_system_mute(const char* Systems);
+extern void a_system_unmute(const char* Systems);

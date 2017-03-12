@@ -19,9 +19,28 @@
 
 #include "a2x_pack_random.v.h"
 
+static unsigned g_seed;
+
 void a_random__init(void)
 {
-    srand((unsigned)time(NULL));
+    time_t t = time(NULL);
+
+    if(t < 0) {
+        a_random_setSeed(0);
+    } else {
+        a_random_setSeed((unsigned)t);
+    }
+}
+
+unsigned a_random_getSeed(void)
+{
+    return g_seed;
+}
+
+void a_random_setSeed(unsigned Seed)
+{
+    g_seed = Seed;
+    srand(Seed);
 }
 
 int a_random_int(int Max)

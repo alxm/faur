@@ -1,5 +1,5 @@
 /*
-    Copyright 2010 Alex Margarit
+    Copyright 2010, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -27,5 +27,8 @@ extern bool a_fps_notSkipped(void);
 extern unsigned a_fps_getFps(void);
 extern unsigned a_fps_getMaxFps(void);
 extern unsigned a_fps_getFrameSkip(void);
+
 extern unsigned a_fps_getCounter(void);
 extern bool a_fps_nthFrame(unsigned N);
+
+extern unsigned a_fps_msToFrames(unsigned Ms);

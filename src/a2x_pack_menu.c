@@ -27,17 +27,12 @@ typedef enum AMenuState {
 } AMenuState;
 
 struct AMenu {
-    AList* items;
-    AMenuFreeItemHandler freeItem;
-    unsigned selectedIndex;
-    void* selectedItem;
     AMenuState state;
+    AList* items;
+    void* selectedItem;
+    unsigned selectedIndex;
     unsigned pause;
     bool used;
-    AMenuInputHandler inputHandler;
-    void* context;
-    char* title;
-    ASprite* sprite;
     ASound* soundAccept;
     ASound* soundCancel;
     ASound* soundBrowse;
@@ -49,30 +44,19 @@ struct AMenu {
 
 #define A_MENU_PAUSE (a_settings_getUnsigned("video.fps") / 6)
 
-AMenu* a_menu_new(AInputButton* Next, AInputButton* Back, AInputButton* Select, AInputButton* Cancel, AMenuFreeItemHandler FreeItemHandler)
+AMenu* a_menu_new(AInputButton* Next, AInputButton* Back, AInputButton* Select, AInputButton* Cancel)
 {
     AMenu* m = a_mem_malloc(sizeof(AMenu));
 
-    m->items = a_list_new();
-    m->freeItem = FreeItemHandler;
-
-    m->selectedIndex = 0;
-    m->selectedItem = NULL;
-
     m->state = A_MENU_RUNNING;
+    m->items = a_list_new();
+    m->selectedItem = NULL;
+    m->selectedIndex = 0;
     m->pause = A_MENU_PAUSE;
     m->used = false;
-
-    m->inputHandler = NULL;
-    m->context = NULL;
-    m->title = NULL;
-
-    m->sprite = NULL;
-
     m->soundAccept = NULL;
     m->soundCancel = NULL;
     m->soundBrowse = NULL;
-
     m->next = Next;
     m->back = Back;
     m->select = Select;
@@ -83,36 +67,8 @@ AMenu* a_menu_new(AInputButton* Next, AInputButton* Back, AInputButton* Select, 
 
 void a_menu_free(AMenu* Menu)
 {
-    if(Menu->freeItem) {
-        A_LIST_ITERATE(Menu->items, void*, item) {
-            Menu->freeItem(item);
-        }
-    }
-
     a_list_free(Menu->items);
-    free(Menu->title);
-
     free(Menu);
-}
-
-void a_menu_addInput(AMenu* Menu, AMenuInputHandler InputHandler)
-{
-    Menu->inputHandler = InputHandler;
-}
-
-void a_menu_addContext(AMenu* Menu, void* Context)
-{
-    Menu->context = Context;
-}
-
-void a_menu_addTitle(AMenu* Menu, const char* Title)
-{
-    Menu->title = a_str_dup(Title);
-}
-
-void a_menu_addSprite(AMenu* Menu, ASprite* Sprite)
-{
-    Menu->sprite = Sprite;
 }
 
 void a_menu_addSounds(AMenu* Menu, ASound* Accept, ASound* Cancel, ASound* Browse)
@@ -193,10 +149,6 @@ void a_menu_input(AMenu* Menu)
         }
     }
 
-    if(Menu->inputHandler) {
-        Menu->inputHandler(Menu, Menu->context);
-    }
-
     if(Menu->state != A_MENU_RUNNING) {
         a_button_release(Menu->next);
         a_button_release(Menu->back);
@@ -246,4 +198,16 @@ bool a_menu_cancel(const AMenu* Menu)
 unsigned a_menu_choice(const AMenu* Menu)
 {
     return Menu->selectedIndex;
+}
+
+unsigned a_menu_numItems(const AMenu* Menu)
+{
+    return a_list_size(Menu->items);
+}
+
+void a_menu_reset(AMenu* Menu)
+{
+    Menu->state = A_MENU_RUNNING;
+    Menu->selectedItem = a_list_getFirst(Menu->items);
+    Menu->selectedIndex = 0;
 }
