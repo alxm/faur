@@ -20,21 +20,14 @@
 #pragma once
 
 typedef struct AMenu AMenu;
-typedef void (*AMenuFreeItemHandler)(void* Item);
-typedef void (*AMenuInputHandler)(AMenu* Menu, void* Context);
 
 #include "a2x_pack_input_button.p.h"
 #include "a2x_pack_list.p.h"
 #include "a2x_pack_sound.p.h"
-#include "a2x_pack_sprite.p.h"
 
-extern AMenu* a_menu_new(AInputButton* Next, AInputButton* Back, AInputButton* Select, AInputButton* Cancel, AMenuFreeItemHandler FreeItemHandler);
+extern AMenu* a_menu_new(AInputButton* Next, AInputButton* Back, AInputButton* Select, AInputButton* Cancel);
 extern void a_menu_free(AMenu* Menu);
 
-extern void a_menu_addInput(AMenu* Menu, AMenuInputHandler InputHandler);
-extern void a_menu_addContext(AMenu* Menu, void* Context);
-extern void a_menu_addTitle(AMenu* Menu, const char* Title);
-extern void a_menu_addSprite(AMenu* Menu, ASprite* Sprite);
 extern void a_menu_addSounds(AMenu* Menu, ASound* Accept, ASound* Cancel, ASound* Browse);
 extern void a_menu_addItem(AMenu* Menu, void* Item);
 
