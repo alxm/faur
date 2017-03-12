@@ -31,7 +31,8 @@ typedef struct ASystem {
     ASystemSort* compare;
     ABitfield* componentBits; // IDs of components that this system works on
     AList* entities; // entities currently picked up by this system
-    bool onlyActiveEntities;
+    bool onlyActiveEntities; // skip entities that are not active
+    bool muted; // a_system__run skips muted systems
 } ASystem;
 
 typedef struct ARunningCollection {
@@ -315,6 +316,7 @@ void a_system_declare(const char* Name, const char* Components, ASystemHandler* 
     s->entities = a_list_new();
     s->componentBits = a_bitfield_new(a_strhash_size(g_components));
     s->onlyActiveEntities = OnlyActiveEntities;
+    s->muted = false;
 
     a_strhash_add(g_systems, Name, s);
 
@@ -380,6 +382,10 @@ void a_system_setContext(void* GlobalContext)
 
 static void a_system__run(const ASystem* System)
 {
+    if(System->muted) {
+        return;
+    }
+
     if(System->compare) {
         a_list_sort(System->entities, (AListCompare*)System->compare);
     }
@@ -451,6 +457,35 @@ void a_system_flushNewEntities(void)
     }
 }
 
+static void muteSystems(const char* Systems, bool Muted)
+{
+    AStrTok* tok = a_strtok_new(Systems, " ");
+
+    A_STRTOK_ITERATE(tok, name) {
+        ASystem* system = a_strhash_get(g_systems, name);
+
+        if(system == NULL) {
+            a_out__fatal("%s: unknown system '%s'",
+                         Muted ? "a_system_mute" : "a_system_unmute",
+                         name);
+        }
+
+        system->muted = Muted;
+    }
+
+    a_strtok_free(tok);
+}
+
+void a_system_mute(const char* Systems)
+{
+    muteSystems(Systems, true);
+}
+
+void a_system_unmute(const char* Systems)
+{
+    muteSystems(Systems, false);
+}
+
 void a_system__pushCollection(void)
 {
     ARunningCollection* c = a_mem_malloc(sizeof(ARunningCollection));
@@ -484,6 +519,14 @@ void a_system__popCollection(void)
 
     A_LIST_ITERATE(g_collection->removedEntities, AEntity*, entity) {
         a_entity__free(entity);
+    }
+
+    A_LIST_ITERATE(g_collection->tickSystems, ASystem*, system) {
+        system->muted = false;
+    }
+
+    A_LIST_ITERATE(g_collection->drawSystems, ASystem*, system) {
+        system->muted = false;
     }
 
     a_list_free(g_collection->newEntities);

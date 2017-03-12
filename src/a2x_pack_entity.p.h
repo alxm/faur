@@ -53,3 +53,5 @@ extern void a_system_setContext(void* GlobalContext);
 extern void a_system_execute(const char* Systems);
 extern void a_system_run(void);
 extern void a_system_flushNewEntities(void);
+extern void a_system_mute(const char* Systems);
+extern void a_system_unmute(const char* Systems);
