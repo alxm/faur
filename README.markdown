@@ -9,8 +9,8 @@ Install
 ### Download & Dependencies
 
 ```sh
-$ git clone git://github.com/alxm/a2x.git a2x
-$ apt install build-essentials python3 libpng12-dev libsdl2-dev libsdl2-mixer-dev
+$ git clone git://github.com/alxm/a2x.git
+$ apt install build-essential python3 libpng-dev libsdl2-dev libsdl2-mixer-dev
 ```
 
 Add `a2x/bin/` to your `$PATH` variable, or prepend it to all calls to `a2x_*` scripts below.
@@ -68,7 +68,7 @@ $ make -f Makefile.gp2x
 License
 -------
 
-Copyright 2010-2016 Alex Margarit (alex@alxm.org)
+Copyright 2010-2017 Alex Margarit (alex@alxm.org)
 
 * Code licensed under [GNU LGPL3](https://www.gnu.org/licenses/lgpl.html) (see `COPYING` and `COPYING.LESSER`)
 * Logo licensed under [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/) (see `doc/CC-BY-NC-ND`)
