@@ -1,0 +1,25 @@
+PLATFORM = mingw64
+
+MINGW_BIN = $(MINGW64_ROOT)/$(MINGW64_ARCH)/bin
+
+A_PLATFORM_LIBS = \
+    $(shell $(MINGW_BIN)/sdl2-config --libs) \
+    -lSDL2_mixer \
+    -lpng \
+    -lm \
+
+A_PLATFORM_CFLAGS = \
+    -DA_PLATFORM_MINGW=1 \
+    -DA_USE_LIB_SDL=2 \
+    -O3 \
+    $(shell $(MINGW_BIN)/sdl2-config --cflags) \
+
+PREFIX := $(MINGW64_ARCH)-
+
+export CC      := $(PREFIX)gcc
+export CXX     := $(PREFIX)g++
+export AS      := $(PREFIX)as
+export AR      := $(PREFIX)ar
+export OBJCOPY := $(PREFIX)objcopy
+export READELF := $(PREFIX)readelf
+export STRIP   := $(PREFIX)strip

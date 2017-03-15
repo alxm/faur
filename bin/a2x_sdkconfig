@@ -61,9 +61,13 @@ class SdkConfigTool(Tool):
 
         sdks = {}
 
-        sdks['mingw'] = Sdk('MinGW (Windows)')
-        sdks['mingw'].add_var('root', 'MINGW_ROOT')
-        sdks['mingw'].add_var('arch', 'MINGW_ARCH')
+        sdks['mingw32'] = Sdk('Mingw32 (Windows 32bit)')
+        sdks['mingw32'].add_var('root', 'MINGW32_ROOT')
+        sdks['mingw32'].add_var('arch', 'MINGW32_ARCH')
+
+        sdks['mingw64'] = Sdk('Mingw64 (Windows 64bit)')
+        sdks['mingw64'].add_var('root', 'MINGW64_ROOT')
+        sdks['mingw64'].add_var('arch', 'MINGW64_ARCH')
 
         sdks['caanoo'] = Sdk('GPH SDK (Caanoo)')
         sdks['caanoo'].add_var('root', 'CAANOO_ROOT')

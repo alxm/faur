@@ -1,6 +1,6 @@
-PLATFORM = mingw
+PLATFORM = mingw32
 
-MINGW_BIN = $(MINGW_ROOT)/$(MINGW_ARCH)/bin
+MINGW_BIN = $(MINGW32_ROOT)/$(MINGW32_ARCH)/bin
 
 A_PLATFORM_LIBS = \
     $(shell $(MINGW_BIN)/sdl2-config --libs) \
@@ -14,7 +14,7 @@ A_PLATFORM_CFLAGS = \
     -O3 \
     $(shell $(MINGW_BIN)/sdl2-config --cflags) \
 
-PREFIX := $(MINGW_ARCH)-
+PREFIX := $(MINGW32_ARCH)-
 
 export CC      := $(PREFIX)gcc
 export CXX     := $(PREFIX)g++
