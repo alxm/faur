@@ -1,3 +1,3 @@
 include ../sdk.config
-include ../platforms/mingw
+include ../platforms/mingw64
 include rules
