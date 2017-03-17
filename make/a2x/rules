@@ -32,6 +32,9 @@ CFLAGS = \
     -DA__MAKE_CURRENT_GIT_BRANCH=\"$(CURRENT_BRANCH)\" \
     $(A_PLATFORM_CFLAGS) \
 
+#
+# Accomodate older toolchains
+#
 ifneq ($(A_PLATFORM_COMPILER_PEDANTIC), false)
     CFLAGS += -pedantic -pedantic-errors
 endif
@@ -47,28 +50,26 @@ O_FILES = $(addprefix $(O_DIR)/, $(C_FILES:.c=.o)) \
 
 H_FILES = $(wildcard $(C_DIR)/$(A2X_PREFIX)*.p.h)
 
-ALL_DIRS = $(INC_DIR) $(LIB_DIR) $(OBJ_DIR) $(O_DIR) $(MEDIA_O_DIR)
-
-all : $(ALL_DIRS) $(HEADER) $(LIBRARY)
-
-$(ALL_DIRS) :
-	@ mkdir -p $@
+all : $(HEADER) $(LIBRARY)
 
 $(HEADER) : $(H_FILES)
+	@ mkdir -p $(@D)
 	@ $(BIN_DIR)/a2x_header $(C_DIR) .p.h $(HEADER)
 	@ $(BIN_DIR)/a2x_tags $(HEADER)
 
 $(LIBRARY) : $(MEDIA_C_FILES) $(O_FILES)
 	@ echo "Building $(notdir $(LIBRARY))"
+	@ mkdir -p $(@D)
 	@ $(AR) rs $(LIBRARY) $(O_FILES)
 
 $(O_DIR)/%.o : $(C_DIR)/%.c
 	@ echo "Compiling $(notdir $<)"
+	@ mkdir -p $(@D)
 	@ $(CC) -c -o $@ $< $(CFLAGS)
 
 $(MEDIA_C_DIR)/%.c : $(MEDIA_C_DIR)/%.png
 	@ $(BIN_DIR)/a2x_bin $< $@ $(@:.c=.h) g_media
 
 clean :
-	@ echo "Cleaning a2x $(ALL_DIRS) $(MEDIA_GEN_FILES)"
-	@ rm -rf $(ALL_DIRS) $(MEDIA_GEN_FILES)
+	@ echo "Removing $(INC_DIR) $(LIB_DIR) $(OBJ_DIR) $(MEDIA_GEN_FILES)"
+	@ rm -rf $(INC_DIR) $(LIB_DIR) $(OBJ_DIR) $(MEDIA_GEN_FILES)
