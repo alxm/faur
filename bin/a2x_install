@@ -53,7 +53,7 @@ class InstallTool(Tool):
 
             Output.info('Compiling a2x')
 
-        Shell.run('cd {} && {} {}'
+        Shell.run('cd {} && {} -j {}'
             .format(os.path.join(self.make_dir, 'a2x'), make, command))
 
         if command == 'clean':
