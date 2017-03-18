@@ -10,7 +10,7 @@ color_text ()
 
 do_make ()
 {
-    make -f $2 $make_arg
+    make -j -f $2 $make_arg
 
     if [ $? -eq 0 ];
     then
