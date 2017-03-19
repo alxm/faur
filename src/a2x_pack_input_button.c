@@ -24,6 +24,7 @@ struct AInputButton {
     AList* combos; // List of lists of AInputButtonSource; for combo buttons
     unsigned repeatFrames;
     unsigned lastPressedFrame;
+    bool isClone;
 };
 
 struct AInputButtonSource {
@@ -72,12 +73,15 @@ void a_input_button__init2(void)
 void a_input_button__uninit(void)
 {
     A_LIST_ITERATE(g_buttons, AInputButton*, b) {
-        A_LIST_ITERATE(b->combos, AList*, andList) {
-            a_list_free(andList);
+        if(!b->isClone) {
+            A_LIST_ITERATE(b->combos, AList*, andList) {
+                a_list_free(andList);
+            }
+
+            a_list_free(b->combos);
+            a_input__freeUserHeader(&b->header);
         }
 
-        a_list_free(b->combos);
-        a_input__freeUserHeader(&b->header);
         free(b);
     }
 
@@ -167,6 +171,7 @@ AInputButton* a_button_new(const char* Names)
     b->combos = a_list_new();
     b->repeatFrames = 0;
     b->lastPressedFrame = 0;
+    b->isClone = false;
 
     AStrTok* tok = a_strtok_new(Names, ", ");
 
@@ -227,6 +232,18 @@ AInputButton* a_button_new(const char* Names)
     if(a_list_empty(b->header.sourceInputs) && a_list_empty(b->combos)) {
         a_out__error("No buttons found for '%s'", Names);
     }
+
+    a_list_addLast(g_buttons, b);
+
+    return b;
+}
+
+AInputButton* a_button_clone(const AInputButton* Button)
+{
+    AInputButton* b = a_mem_malloc(sizeof(AInputButton));
+
+    *b = *Button;
+    b->isClone = true;
 
     a_list_addLast(g_buttons, b);
 
