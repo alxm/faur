@@ -551,6 +551,7 @@ void a_sdl_input__get(void)
                 a_state_exit();
             } break;
 
+            case SDL_KEYUP:
             case SDL_KEYDOWN: {
                 if(event.key.keysym.sym == SDLK_ESCAPE) {
                     a_state_exit();
@@ -559,21 +560,15 @@ void a_sdl_input__get(void)
 
                 A_STRHASH_ITERATE(g_keys, ASdlInputButton*, k) {
                     if(k->code.keyCode == event.key.keysym.sym) {
-                        a_input_button__setState(k->logicalButton, true);
+                        a_input_button__setState(
+                            k->logicalButton,
+                            event.key.state == SDL_PRESSED);
                         break;
                     }
                 }
             } break;
 
-            case SDL_KEYUP: {
-                A_STRHASH_ITERATE(g_keys, ASdlInputButton*, k) {
-                    if(k->code.keyCode == event.key.keysym.sym) {
-                        a_input_button__setState(k->logicalButton, false);
-                        break;
-                    }
-                }
-            } break;
-
+            case SDL_JOYBUTTONUP:
             case SDL_JOYBUTTONDOWN: {
                 A_LIST_ITERATE(g_controllers, ASdlInputController*, c) {
                     #if A_USE_LIB_SDL == 2
@@ -588,30 +583,9 @@ void a_sdl_input__get(void)
 
                     A_STRHASH_ITERATE(c->buttons, ASdlInputButton*, b) {
                         if(b->code.buttonIndex == event.jbutton.button) {
-                            a_input_button__setState(b->logicalButton, true);
-                            break;
-                        }
-                    }
-
-                    break;
-                }
-            } break;
-
-            case SDL_JOYBUTTONUP: {
-                A_LIST_ITERATE(g_controllers, ASdlInputController*, c) {
-                    #if A_USE_LIB_SDL == 2
-                        if(c->controller != NULL) {
-                            continue;
-                        }
-                    #endif
-
-                    if(c->id != event.jbutton.which) {
-                        continue;
-                    }
-
-                    A_STRHASH_ITERATE(c->buttons, ASdlInputButton*, b) {
-                        if(b->code.buttonIndex == event.jbutton.button) {
-                            a_input_button__setState(b->logicalButton, false);
+                            a_input_button__setState(
+                                b->logicalButton,
+                                event.jbutton.state == SDL_PRESSED);
                             break;
                         }
                     }
