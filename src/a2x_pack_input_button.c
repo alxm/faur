@@ -24,6 +24,7 @@ struct AInputButton {
     AList* combos; // List of lists of AInputButtonSource; for combo buttons
     unsigned repeatFrames;
     unsigned lastPressedFrame;
+    AListNode* buttonsListNode;
     bool isClone;
 };
 
@@ -48,6 +49,7 @@ static AList* g_pressQueue;
 static AList* g_releaseQueue;
 
 static void a_input__newSourceButtonNode(const char* Name, const char* ButtonNames);
+static void a_button__free(AInputButton* Button);
 
 void a_input_button__init(void)
 {
@@ -73,16 +75,7 @@ void a_input_button__init2(void)
 void a_input_button__uninit(void)
 {
     A_LIST_ITERATE(g_buttons, AInputButton*, b) {
-        if(!b->isClone) {
-            A_LIST_ITERATE(b->combos, AList*, andList) {
-                a_list_free(andList);
-            }
-
-            a_list_free(b->combos);
-            a_input__freeUserHeader(&b->header);
-        }
-
-        free(b);
+        a_button__free(b);
     }
 
     A_STRHASH_ITERATE(g_sourceButtons, AInputButtonSource*, b) {
@@ -171,6 +164,7 @@ AInputButton* a_button_new(const char* Names)
     b->combos = a_list_new();
     b->repeatFrames = 0;
     b->lastPressedFrame = 0;
+    b->buttonsListNode = a_list_addLast(g_buttons, b);
     b->isClone = false;
 
     AStrTok* tok = a_strtok_new(Names, ", ");
@@ -233,8 +227,6 @@ AInputButton* a_button_new(const char* Names)
         a_out__error("No buttons found for '%s'", Names);
     }
 
-    a_list_addLast(g_buttons, b);
-
     return b;
 }
 
@@ -243,11 +235,30 @@ AInputButton* a_button_clone(const AInputButton* Button)
     AInputButton* b = a_mem_malloc(sizeof(AInputButton));
 
     *b = *Button;
+    b->buttonsListNode = a_list_addLast(g_buttons, b);
     b->isClone = true;
 
-    a_list_addLast(g_buttons, b);
-
     return b;
+}
+
+void a_button__free(AInputButton* Button)
+{
+    if(!Button->isClone) {
+        A_LIST_ITERATE(Button->combos, AList*, andList) {
+            a_list_free(andList);
+        }
+
+        a_list_free(Button->combos);
+        a_input__freeUserHeader(&Button->header);
+    }
+
+    free(Button);
+}
+
+void a_button_free(AInputButton* Button)
+{
+    a_list_removeNode(Button->buttonsListNode);
+    a_button__free(Button);
 }
 
 bool a_button_working(const AInputButton* Button)
