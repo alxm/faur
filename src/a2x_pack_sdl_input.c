@@ -26,7 +26,7 @@
     typedef SDLKey ASdlKeyCode;
 #elif A_USE_LIB_SDL == 2
     typedef SDL_JoystickID ASdlJoystickId;
-    typedef SDL_Keycode ASdlKeyCode;
+    typedef SDL_Scancode ASdlKeyCode;
 #endif
 
 typedef struct ASdlInputHeader {
@@ -443,31 +443,59 @@ void a_sdl_input__init(void)
         addKey("pandora.select", SDLK_LCTRL);
     #endif
 
-    addKey("key.up", SDLK_UP);
-    addKey("key.down", SDLK_DOWN);
-    addKey("key.left", SDLK_LEFT);
-    addKey("key.right", SDLK_RIGHT);
-    addKey("key.z", SDLK_z);
-    addKey("key.x", SDLK_x);
-    addKey("key.c", SDLK_c);
-    addKey("key.v", SDLK_v);
-    addKey("key.m", SDLK_m);
-    addKey("key.enter", SDLK_RETURN);
-    addKey("key.space", SDLK_SPACE);
-    addKey("key.f1", SDLK_F1);
-    addKey("key.f2", SDLK_F2);
-    addKey("key.f3", SDLK_F3);
-    addKey("key.f4", SDLK_F4);
-    addKey("key.f5", SDLK_F5);
-    addKey("key.f6", SDLK_F6);
-    addKey("key.f7", SDLK_F7);
-    addKey("key.f8", SDLK_F8);
-    addKey("key.f9", SDLK_F9);
-    addKey("key.f10", SDLK_F10);
-    addKey("key.f11", SDLK_F11);
-    addKey("key.f12", SDLK_F12);
-    addKey("key.1", SDLK_1);
-    addKey("key.0", SDLK_0);
+    #if A_USE_LIB_SDL == 1
+        addKey("key.up", SDLK_UP);
+        addKey("key.down", SDLK_DOWN);
+        addKey("key.left", SDLK_LEFT);
+        addKey("key.right", SDLK_RIGHT);
+        addKey("key.z", SDLK_z);
+        addKey("key.x", SDLK_x);
+        addKey("key.c", SDLK_c);
+        addKey("key.v", SDLK_v);
+        addKey("key.m", SDLK_m);
+        addKey("key.enter", SDLK_RETURN);
+        addKey("key.space", SDLK_SPACE);
+        addKey("key.f1", SDLK_F1);
+        addKey("key.f2", SDLK_F2);
+        addKey("key.f3", SDLK_F3);
+        addKey("key.f4", SDLK_F4);
+        addKey("key.f5", SDLK_F5);
+        addKey("key.f6", SDLK_F6);
+        addKey("key.f7", SDLK_F7);
+        addKey("key.f8", SDLK_F8);
+        addKey("key.f9", SDLK_F9);
+        addKey("key.f10", SDLK_F10);
+        addKey("key.f11", SDLK_F11);
+        addKey("key.f12", SDLK_F12);
+        addKey("key.1", SDLK_1);
+        addKey("key.0", SDLK_0);
+    #elif A_USE_LIB_SDL == 2
+        addKey("key.up", SDL_SCANCODE_UP);
+        addKey("key.down", SDL_SCANCODE_DOWN);
+        addKey("key.left", SDL_SCANCODE_LEFT);
+        addKey("key.right", SDL_SCANCODE_RIGHT);
+        addKey("key.z", SDL_SCANCODE_Z);
+        addKey("key.x", SDL_SCANCODE_X);
+        addKey("key.c", SDL_SCANCODE_C);
+        addKey("key.v", SDL_SCANCODE_V);
+        addKey("key.m", SDL_SCANCODE_M);
+        addKey("key.enter", SDL_SCANCODE_RETURN);
+        addKey("key.space", SDL_SCANCODE_SPACE);
+        addKey("key.f1", SDL_SCANCODE_F1);
+        addKey("key.f2", SDL_SCANCODE_F2);
+        addKey("key.f3", SDL_SCANCODE_F3);
+        addKey("key.f4", SDL_SCANCODE_F4);
+        addKey("key.f5", SDL_SCANCODE_F5);
+        addKey("key.f6", SDL_SCANCODE_F6);
+        addKey("key.f7", SDL_SCANCODE_F7);
+        addKey("key.f8", SDL_SCANCODE_F8);
+        addKey("key.f9", SDL_SCANCODE_F9);
+        addKey("key.f10", SDL_SCANCODE_F10);
+        addKey("key.f11", SDL_SCANCODE_F11);
+        addKey("key.f12", SDL_SCANCODE_F12);
+        addKey("key.1", SDL_SCANCODE_1);
+        addKey("key.0", SDL_SCANCODE_0);
+    #endif
 
     addTouch("touchScreen");
 }
@@ -559,7 +587,12 @@ void a_sdl_input__get(void)
                 }
 
                 A_STRHASH_ITERATE(g_keys, ASdlInputButton*, k) {
-                    if(k->code.keyCode == event.key.keysym.sym) {
+                    #if A_USE_LIB_SDL == 1
+                        if(k->code.keyCode == event.key.keysym.sym) {
+                    #elif A_USE_LIB_SDL == 2
+                        if(k->code.keyCode == event.key.keysym.scancode) {
+                    #endif
+
                         a_input_button__setState(
                             k->logicalButton,
                             event.key.state == SDL_PRESSED);
