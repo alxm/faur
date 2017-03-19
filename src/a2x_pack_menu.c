@@ -157,14 +157,9 @@ AMenuState a_menu_getState(const AMenu* Menu)
     return Menu->state;
 }
 
-AList* a_menu__items(const AMenu* Menu)
+AList* a_menu_getItems(const AMenu* Menu)
 {
     return Menu->items;
-}
-
-unsigned a_menu_numItems(const AMenu* Menu)
-{
-    return a_list_size(Menu->items);
 }
 
 bool a_menu_isItemSelected(const AMenu* Menu, const void* Item)

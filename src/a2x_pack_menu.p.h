@@ -40,12 +40,7 @@ extern void a_menu_addItem(AMenu* Menu, void* Item);
 extern void a_menu_handleInput(AMenu* Menu);
 extern AMenuState a_menu_getState(const AMenu* Menu);
 
-extern AList* a_menu__items(const AMenu* Menu);
-extern unsigned a_menu_numItems(const AMenu* Menu);
-
-#define A_MENU_ITERATE(Menu, PtrType, Name)            \
-    A_LIST_ITERATE(a_menu__items(Menu), PtrType, Name)
-
+extern AList* a_menu_getItems(const AMenu* Menu);
 extern bool a_menu_isItemSelected(const AMenu* Menu, const void* Item);
 extern unsigned a_menu_getSelectedIndex(const AMenu* Menu);
 
