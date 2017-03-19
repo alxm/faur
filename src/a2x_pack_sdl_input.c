@@ -519,16 +519,17 @@ void a_sdl_input__uninit(void)
             freeHeader(&a->header);
         }
 
-        #if A_USE_LIB_SDL == 2
+        #if A_USE_LIB_SDL == 1
+            if(SDL_JoystickOpened(c->id)) {
+                SDL_JoystickClose(c->joystick);
+            }
+        #elif A_USE_LIB_SDL == 2
             if(c->controller) {
                 SDL_GameControllerClose(c->controller);
-                c->joystick = NULL;
+            } else if(SDL_JoystickGetAttached(c->joystick)) {
+                SDL_JoystickClose(c->joystick);
             }
         #endif
-
-        if(c->joystick) {
-            SDL_JoystickClose(c->joystick);
-        }
 
         a_strhash_free(c->buttons);
         a_strhash_free(c->axes);
