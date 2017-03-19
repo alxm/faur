@@ -19,13 +19,6 @@
 
 #include "a2x_pack_menu.v.h"
 
-typedef enum AMenuState {
-    A_MENU_RUNNING,
-    A_MENU_ACCEPT,
-    A_MENU_CANCEL,
-    A_MENU_SPENT
-} AMenuState;
-
 struct AMenu {
     AMenuState state;
     AList* items;
@@ -48,7 +41,7 @@ AMenu* a_menu_new(AInputButton* Next, AInputButton* Back, AInputButton* Select, 
 {
     AMenu* m = a_mem_malloc(sizeof(AMenu));
 
-    m->state = A_MENU_RUNNING;
+    m->state = A_MENU_STATE_RUNNING;
     m->items = a_list_new();
     m->selectedItem = NULL;
     m->selectedIndex = 0;
@@ -87,14 +80,13 @@ void a_menu_addItem(AMenu* Menu, void* Item)
     }
 }
 
-void a_menu_input(AMenu* Menu)
+void a_menu_handleInput(AMenu* Menu)
 {
     if(a_list_empty(Menu->items)) {
         a_out__fatal("Menu has no items");
     }
 
-    if(!a_menu_running(Menu)) {
-        Menu->state = A_MENU_SPENT;
+    if(Menu->state != A_MENU_STATE_RUNNING) {
         return;
     }
 
@@ -135,13 +127,13 @@ void a_menu_input(AMenu* Menu)
         }
     } else {
         if(a_button_get(Menu->select)) {
-            Menu->state = A_MENU_ACCEPT;
+            Menu->state = A_MENU_STATE_SELECTED;
 
             if(Menu->soundAccept) {
                 a_sfx_play(Menu->soundAccept);
             }
         } else if(Menu->cancel && a_button_get(Menu->cancel)) {
-            Menu->state = A_MENU_CANCEL;
+            Menu->state = A_MENU_STATE_CANCELED;
 
             if(Menu->soundCancel) {
                 a_sfx_play(Menu->soundCancel);
@@ -149,7 +141,7 @@ void a_menu_input(AMenu* Menu)
         }
     }
 
-    if(Menu->state != A_MENU_RUNNING) {
+    if(Menu->state != A_MENU_STATE_RUNNING) {
         a_button_release(Menu->next);
         a_button_release(Menu->back);
         a_button_release(Menu->select);
@@ -160,44 +152,14 @@ void a_menu_input(AMenu* Menu)
     }
 }
 
+AMenuState a_menu_getState(const AMenu* Menu)
+{
+    return Menu->state;
+}
+
 AList* a_menu__items(const AMenu* Menu)
 {
     return Menu->items;
-}
-
-bool a_menu_isSelected(const AMenu* Menu, const void* Item)
-{
-    return Item == Menu->selectedItem;
-}
-
-void a_menu_keepRunning(AMenu* Menu)
-{
-    Menu->state = A_MENU_RUNNING;
-}
-
-bool a_menu_running(const AMenu* Menu)
-{
-    return Menu->state == A_MENU_RUNNING;
-}
-
-bool a_menu_finished(const AMenu* Menu)
-{
-    return Menu->state == A_MENU_ACCEPT || Menu->state == A_MENU_CANCEL;
-}
-
-bool a_menu_accept(const AMenu* Menu)
-{
-    return Menu->state == A_MENU_ACCEPT;
-}
-
-bool a_menu_cancel(const AMenu* Menu)
-{
-    return Menu->state == A_MENU_CANCEL;
-}
-
-unsigned a_menu_choice(const AMenu* Menu)
-{
-    return Menu->selectedIndex;
 }
 
 unsigned a_menu_numItems(const AMenu* Menu)
@@ -205,9 +167,24 @@ unsigned a_menu_numItems(const AMenu* Menu)
     return a_list_size(Menu->items);
 }
 
+bool a_menu_isItemSelected(const AMenu* Menu, const void* Item)
+{
+    return Item == Menu->selectedItem;
+}
+
+unsigned a_menu_getSelectedIndex(const AMenu* Menu)
+{
+    return Menu->selectedIndex;
+}
+
+void a_menu_keepRunning(AMenu* Menu)
+{
+    Menu->state = A_MENU_STATE_RUNNING;
+}
+
 void a_menu_reset(AMenu* Menu)
 {
-    Menu->state = A_MENU_RUNNING;
+    Menu->state = A_MENU_STATE_RUNNING;
     Menu->selectedItem = a_list_getFirst(Menu->items);
     Menu->selectedIndex = 0;
 }
