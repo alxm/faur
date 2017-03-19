@@ -25,7 +25,6 @@ struct AMenu {
     void* selectedItem;
     unsigned selectedIndex;
     unsigned pause;
-    bool used;
     ASound* soundAccept;
     ASound* soundCancel;
     ASound* soundBrowse;
@@ -46,7 +45,6 @@ AMenu* a_menu_new(AInputButton* Next, AInputButton* Back, AInputButton* Select, 
     m->selectedItem = NULL;
     m->selectedIndex = 0;
     m->pause = A_MENU_PAUSE;
-    m->used = false;
     m->soundAccept = NULL;
     m->soundCancel = NULL;
     m->soundBrowse = NULL;
@@ -90,7 +88,7 @@ void a_menu_handleInput(AMenu* Menu)
         return;
     }
 
-    Menu->used = false;
+    bool used = false;
 
     if(Menu->pause == 0) {
         if(a_button_get(Menu->back)) {
@@ -99,14 +97,14 @@ void a_menu_handleInput(AMenu* Menu)
             }
 
             Menu->selectedItem = a_list_get(Menu->items, Menu->selectedIndex);
-            Menu->used = true;
+            used = true;
         } else if(a_button_get(Menu->next)) {
             if(++Menu->selectedIndex == a_list_size(Menu->items)) {
                 Menu->selectedIndex = 0;
             }
 
             Menu->selectedItem = a_list_get(Menu->items, Menu->selectedIndex);
-            Menu->used = true;
+            used = true;
         }
     } else {
         if(!a_button_get(Menu->back)
@@ -119,7 +117,7 @@ void a_menu_handleInput(AMenu* Menu)
         }
     }
 
-    if(Menu->used) {
+    if(used) {
         Menu->pause = A_MENU_PAUSE;
 
         if(Menu->soundBrowse) {
