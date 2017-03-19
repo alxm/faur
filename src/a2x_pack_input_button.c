@@ -58,15 +58,15 @@ void a_input_button__init(void)
 
 void a_input_button__init2(void)
 {
-    a_input__newSourceButtonNode("generic.up", "key.up controller.up gp2x.up wiz.up caanoo.up pandora.up");
-    a_input__newSourceButtonNode("generic.down", "key.down controller.down gp2x.down wiz.down caanoo.down pandora.down");
-    a_input__newSourceButtonNode("generic.left", "key.left controller.left gp2x.left wiz.left caanoo.left pandora.left");
-    a_input__newSourceButtonNode("generic.right", "key.right controller.right gp2x.right wiz.right caanoo.right pandora.right");
+    a_input__newSourceButtonNode("generic.up", "key.up gamepad.b.up gp2x.up wiz.up caanoo.up pandora.up");
+    a_input__newSourceButtonNode("generic.down", "key.down gamepad.b.down gp2x.down wiz.down caanoo.down pandora.down");
+    a_input__newSourceButtonNode("generic.left", "key.left gamepad.b.left gp2x.left wiz.left caanoo.left pandora.left");
+    a_input__newSourceButtonNode("generic.right", "key.right gamepad.b.right gp2x.right wiz.right caanoo.right pandora.right");
 
-    a_input__newSourceButtonNode("generic.b0", "key.z controller.b0 gp2x.x wiz.x caanoo.x pandora.x");
-    a_input__newSourceButtonNode("generic.b1", "key.x controller.b1 gp2x.b wiz.b caanoo.b pandora.b");
-    a_input__newSourceButtonNode("generic.b2", "key.c controller.b2 gp2x.a wiz.a caanoo.a pandora.a");
-    a_input__newSourceButtonNode("generic.b3", "key.v controller.b3 gp2x.y wiz.y caanoo.y pandora.y");
+    a_input__newSourceButtonNode("generic.b0", "key.z gamepad.b.0 gamepad.b.a gp2x.x wiz.x caanoo.x pandora.x");
+    a_input__newSourceButtonNode("generic.b1", "key.x gamepad.b.1 gamepad.b.b gp2x.b wiz.b caanoo.b pandora.b");
+    a_input__newSourceButtonNode("generic.b2", "key.c gamepad.b.2 gamepad.b.x gp2x.a wiz.a caanoo.a pandora.a");
+    a_input__newSourceButtonNode("generic.b3", "key.v gamepad.b.3 gamepad.b.y gp2x.y wiz.y caanoo.y pandora.y");
 }
 
 void a_input_button__uninit(void)

@@ -23,6 +23,7 @@ typedef struct AInputController {
     AStrHash* buttons; // table of AInputButtonSource
     AStrHash* axes; // table of AInputAnalogSource
     bool generic;
+    bool mapped;
 } AInputController;
 
 static AList* g_controllers;
@@ -36,13 +37,6 @@ void a_input_controller__init(void)
 
 void a_input_controller__init2(void)
 {
-    if(a_input_numControllers() == 0) {
-        return;
-    }
-
-    bool switchAxes = a_settings_getBool("input.switchAxes");
-    bool invertAxes = a_settings_getBool("input.invertAxes");
-
     A_LIST_ITERATE(g_controllers, AInputController*, c) {
         if(!c->generic) {
             // GP2X and Wiz dpad diagonals are dedicated buttons instead of a
@@ -99,40 +93,51 @@ void a_input_controller__init2(void)
             continue;
         }
 
-        AInputAnalogSource* x = a_strhash_get(c->axes, "controller.axis0");
-        AInputAnalogSource* y = a_strhash_get(c->axes, "controller.axis1");
+        AInputAnalogSource *x, *y;
+        AInputButtonSource* u = a_strhash_get(c->buttons, "gamepad.b.up");
+        AInputButtonSource* d = a_strhash_get(c->buttons, "gamepad.b.down");
+        AInputButtonSource* l = a_strhash_get(c->buttons, "gamepad.b.left");
+        AInputButtonSource* r = a_strhash_get(c->buttons, "gamepad.b.right");
 
-        AInputButtonSource* u = a_strhash_get(c->buttons, "controller.up");
-        AInputButtonSource* d = a_strhash_get(c->buttons, "controller.down");
-        AInputButtonSource* l = a_strhash_get(c->buttons, "controller.left");
-        AInputButtonSource* r = a_strhash_get(c->buttons, "controller.right");
+        if(c->mapped) {
+            x = a_strhash_get(c->axes, "gamepad.a.leftX");
+            y = a_strhash_get(c->axes, "gamepad.a.leftY");
 
-        if(switchAxes) {
-            AInputAnalogSource* save;
+            if(!x || !y) {
+                continue;
+            }
+        } else {
+            // Assume that the first two axes are for X and Y movement.
+            x = a_strhash_get(c->axes, "gamepad.a.0");
+            y = a_strhash_get(c->axes, "gamepad.a.1");
 
-            save = x;
-            x = y;
-            y = save;
+            if(a_settings_getBool("input.switchAxes")) {
+                AInputAnalogSource* save = x;
+
+                x = y;
+                y = save;
+            }
+
+            if(a_settings_getBool("input.invertAxes")) {
+                AInputButtonSource* save;
+
+                save = u;
+                u = d;
+                d = save;
+
+                save = l;
+                l = r;
+                r = save;
+            }
         }
 
-        if(invertAxes) {
-            AInputButtonSource* save;
-
-            save = u;
-            u = d;
-            d = save;
-
-            save = l;
-            l = r;
-            r = save;
-        }
-
-        // Guess that the first two axes are for X and Y movement.
         a_input_analog__axisButtonsBinding(x, l, r);
         a_input_analog__axisButtonsBinding(y, u, d);
     }
 
-    a_input_setController(0);
+    if(a_input_numControllers() > 0) {
+        a_input_setController(0);
+    }
 }
 
 void a_input_controller__uninit(void)
@@ -169,13 +174,14 @@ void a_input_setController(unsigned Index)
     g_activeController = a_list_get(g_controllers, Index);
 }
 
-void a_controller__new(bool Generic)
+void a_controller__new(bool Generic, bool IsMapped)
 {
     AInputController* c = a_mem_malloc(sizeof(AInputController));
 
     c->buttons = a_strhash_new();
     c->axes = a_strhash_new();
     c->generic = Generic;
+    c->mapped = IsMapped;
 
     a_list_addLast(g_controllers, c);
     g_activeController = c;
