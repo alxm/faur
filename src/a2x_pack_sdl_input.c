@@ -57,6 +57,9 @@ typedef struct ASdlInputTouch {
 
 typedef struct ASdlInputController {
     SDL_Joystick* joystick;
+    #if A_USE_LIB_SDL == 2
+        SDL_GameController* controller;
+    #endif
     ASdlJoystickId id;
     int numButtons;
     int numHats;
@@ -69,6 +72,7 @@ typedef struct ASdlInputController {
 static AStrHash* g_keys;
 static AStrHash* g_touchScreens;
 static AList* g_controllers;
+static uint32_t g_sdlFlags;
 
 static void freeHeader(ASdlInputHeader* Header)
 {
@@ -137,9 +141,24 @@ static void addTouch(const char* Name)
     a_strhash_add(g_touchScreens, Name, t);
 }
 
+static const char* joystickName(ASdlInputController* Controller)
+{
+    #if A_USE_LIB_SDL == 1
+        return SDL_JoystickName(Controller->id);
+    #elif A_USE_LIB_SDL == 2
+        return SDL_JoystickName(Controller->joystick);
+    #endif
+}
+
 void a_sdl_input__init(void)
 {
-    if(SDL_InitSubSystem(SDL_INIT_JOYSTICK) != 0) {
+    #if A_USE_LIB_SDL == 1
+        g_sdlFlags = SDL_INIT_JOYSTICK;
+    #elif A_USE_LIB_SDL == 2
+        g_sdlFlags = SDL_INIT_GAMECONTROLLER;
+    #endif
+
+    if(SDL_InitSubSystem(g_sdlFlags) != 0) {
         a_out__fatal("SDL_InitSubSystem: %s", SDL_GetError());
     }
 
@@ -150,14 +169,52 @@ void a_sdl_input__init(void)
     const int joysticksNum = SDL_NumJoysticks();
     a_out__message("Found %d controllers", joysticksNum);
 
+    #if A_USE_LIB_SDL == 2
+        int m = SDL_GameControllerAddMappingsFromFile("gamecontrollerdb.txt");
+
+        if(m < 0) {
+            a_out__error("Cannot load gamepad mappings: %s", SDL_GetError());
+        } else {
+            a_out__message("Loaded %d gamepad mappings", m);
+        }
+    #endif
+
     for(int i = 0; i < joysticksNum; i++) {
-        SDL_Joystick* joystick = SDL_JoystickOpen(i);
+        SDL_Joystick* joystick = NULL;
+
+        #if A_USE_LIB_SDL == 2
+            SDL_GameController* controller = NULL;
+
+            if(SDL_IsGameController(i)) {
+                controller = SDL_GameControllerOpen(i);
+
+                if(controller == NULL) {
+                    a_out__error("SDL_GameControllerOpen(%d): %s",
+                                 i,
+                                 SDL_GetError());
+                } else {
+                    joystick = SDL_GameControllerGetJoystick(controller);
+
+                    if(joystick == NULL) {
+                        a_out__error("SDL_GameControllerGetJoystick: %s",
+                                     SDL_GetError());
+
+                        SDL_GameControllerClose(controller);
+                        continue;
+                    }
+                }
+            }
+        #endif
 
         if(joystick == NULL) {
-            a_out__error("SDL_JoystickOpen(%d) failed: %s",
-                         i,
-                         SDL_GetError());
-            continue;
+            joystick = SDL_JoystickOpen(i);
+
+            if(joystick == NULL) {
+                a_out__error("SDL_JoystickOpen(%d) failed: %s",
+                             i,
+                             SDL_GetError());
+                continue;
+            }
         }
 
         #if A_USE_LIB_SDL == 1
@@ -166,10 +223,14 @@ void a_sdl_input__init(void)
             ASdlJoystickId id = SDL_JoystickInstanceID(joystick);
 
             if(id < 0) {
-                a_out__error("SDL_JoystickInstanceID(%d) failed: %s",
-                             i,
-                             SDL_GetError());
-                SDL_JoystickClose(joystick);
+                a_out__error("SDL_JoystickInstanceID: %s", SDL_GetError());
+
+                if(controller) {
+                    SDL_GameControllerClose(controller);
+                } else {
+                    SDL_JoystickClose(joystick);
+                }
+
                 continue;
             }
         #endif
@@ -177,6 +238,9 @@ void a_sdl_input__init(void)
         ASdlInputController* c = a_mem_malloc(sizeof(ASdlInputController));
 
         c->joystick = joystick;
+        #if A_USE_LIB_SDL == 2
+            c->controller = controller;
+        #endif
         c->id = id;
         c->numButtons = SDL_JoystickNumButtons(c->joystick);
         c->numHats = SDL_JoystickNumHats(c->joystick);
@@ -250,18 +314,14 @@ void a_sdl_input__init(void)
                 continue;
             }
         #elif A_PLATFORM_PANDORA
-            #if A_USE_LIB_SDL == 1
-                const char* joystickName = SDL_JoystickName(c->id);
-            #elif A_USE_LIB_SDL == 2
-                const char* joystickName = SDL_JoystickName(c->joystick);
-            #endif
+            const char* name = joystickName(c);
 
             // Check if this is one of the built-in nubs
-            if(a_str_equal(joystickName, "nub0")) {
+            if(a_str_equal(name, "nub0")) {
                 addAnalog(c->axes, "pandora.leftNubX", 0);
                 addAnalog(c->axes, "pandora.leftNubY", 1);
                 continue;
-            } else if(a_str_equal(joystickName, "nub1")) {
+            } else if(a_str_equal(name, "nub1")) {
                 addAnalog(c->axes, "pandora.rightNubX", 0);
                 addAnalog(c->axes, "pandora.rightNubY", 1);
                 continue;
@@ -270,23 +330,99 @@ void a_sdl_input__init(void)
 
         c->generic = true;
 
+        #if A_USE_LIB_SDL == 2
+            if(c->controller) {
+                a_out__message("Found gamepad %s: %d buttons, %d axes, %d hats",
+                               SDL_GameControllerName(controller),
+                               c->numButtons,
+                               c->numAxes,
+                               c->numHats);
+
+                static const char* buttonNames[SDL_CONTROLLER_BUTTON_MAX] = {
+                    "gamepad.b.a",
+                    "gamepad.b.b",
+                    "gamepad.b.x",
+                    "gamepad.b.y",
+                    "gamepad.b.select",
+                    "gamepad.b.guide",
+                    "gamepad.b.start",
+                    "gamepad.b.leftStick",
+                    "gamepad.b.rightStick",
+                    "gamepad.b.leftShoulder",
+                    "gamepad.b.rightShoulder",
+                    "gamepad.b.up",
+                    "gamepad.b.down",
+                    "gamepad.b.left",
+                    "gamepad.b.right"
+                };
+
+                static const char* axisNames[SDL_CONTROLLER_AXIS_MAX] = {
+                    "gamepad.a.leftX",
+                    "gamepad.a.leftY",
+                    "gamepad.a.rightX",
+                    "gamepad.a.rightY",
+                    "gamepad.a.leftTrigger",
+                    "gamepad.a.rightTrigger"
+                };
+
+                for(SDL_GameControllerButton b = SDL_CONTROLLER_BUTTON_A;
+                    b < SDL_CONTROLLER_BUTTON_MAX;
+                    b++) {
+
+                    SDL_GameControllerButtonBind bind =
+                        SDL_GameControllerGetBindForButton(controller, b);
+
+                    if(bind.bindType == SDL_CONTROLLER_BINDTYPE_NONE) {
+                        continue;
+                    }
+
+                    addButton(c->buttons, buttonNames[b], b);
+                }
+
+                for(SDL_GameControllerAxis a = SDL_CONTROLLER_AXIS_LEFTX;
+                    a < SDL_CONTROLLER_AXIS_MAX;
+                    a++) {
+
+                    SDL_GameControllerButtonBind bind =
+                        SDL_GameControllerGetBindForAxis(controller, a);
+
+                    if(bind.bindType == SDL_CONTROLLER_BINDTYPE_NONE) {
+                        continue;
+                    }
+
+                    addAnalog(c->axes, axisNames[a], a);
+                }
+            } else {
+        #endif
+
+        a_out__message("Found gamepad %s: %d buttons, %d axes, %d hats",
+                       joystickName(c),
+                       c->numButtons,
+                       c->numAxes,
+                       c->numHats);
+
         for(int j = 0; j < c->numButtons; j++) {
-            char name[32];
-            snprintf(name, sizeof(name), "controller.b%d", j);
+            char name[16];
+            snprintf(name, sizeof(name), "gamepad.b.%d", j);
             addButton(c->buttons, name, j);
         }
 
         for(int j = 0; j < c->numAxes; j++) {
-            char name[32];
-            snprintf(name, sizeof(name), "controller.axis%d", j);
+            char name[16];
+            snprintf(name, sizeof(name), "gamepad.a.%d", j);
             addAnalog(c->axes, name, j);
         }
 
+        #if A_USE_LIB_SDL == 2
+            }
+        #endif
+
         if(c->numHats > 0 || c->numAxes >= 2) {
-            addButton(c->buttons, "controller.up", -1);
-            addButton(c->buttons, "controller.down", -1);
-            addButton(c->buttons, "controller.left", -1);
-            addButton(c->buttons, "controller.right", -1);
+            // Declare virtual direction buttons
+            addButton(c->buttons, "gamepad.b.up", -1);
+            addButton(c->buttons, "gamepad.b.down", -1);
+            addButton(c->buttons, "gamepad.b.left", -1);
+            addButton(c->buttons, "gamepad.b.right", -1);
         }
     }
 
@@ -355,7 +491,17 @@ void a_sdl_input__uninit(void)
             freeHeader(&a->header);
         }
 
-        SDL_JoystickClose(c->joystick);
+        #if A_USE_LIB_SDL == 2
+            if(c->controller) {
+                SDL_GameControllerClose(c->controller);
+                c->joystick = NULL;
+            }
+        #endif
+
+        if(c->joystick) {
+            SDL_JoystickClose(c->joystick);
+        }
+
         a_strhash_free(c->buttons);
         a_strhash_free(c->axes);
         free(c);
@@ -365,7 +511,7 @@ void a_sdl_input__uninit(void)
     a_strhash_free(g_touchScreens);
     a_list_free(g_controllers);
 
-    SDL_QuitSubSystem(SDL_INIT_JOYSTICK);
+    SDL_QuitSubSystem(g_sdlFlags);
 }
 
 void a_sdl_input__bind(void)
@@ -379,7 +525,11 @@ void a_sdl_input__bind(void)
     }
 
     A_LIST_ITERATE(g_controllers, ASdlInputController*, c) {
-        a_controller__new(c->generic);
+        #if A_USE_LIB_SDL == 1
+            a_controller__new(c->generic, false);
+        #elif A_USE_LIB_SDL == 2
+            a_controller__new(c->generic, c->controller != NULL);
+        #endif
 
         A_STRHASH_ITERATE(c->buttons, ASdlInputButton*, b) {
             b->logicalButton = a_input_button__newSource(b->header.name);
@@ -426,33 +576,47 @@ void a_sdl_input__get(void)
 
             case SDL_JOYBUTTONDOWN: {
                 A_LIST_ITERATE(g_controllers, ASdlInputController*, c) {
-                    if(c->id == event.jbutton.which) {
-                        A_STRHASH_ITERATE(c->buttons, ASdlInputButton*, b) {
-                            if(b->code.buttonIndex == event.jbutton.button) {
-                                a_input_button__setState(b->logicalButton,
-                                                         true);
-                                break;
-                            }
+                    #if A_USE_LIB_SDL == 2
+                        if(c->controller != NULL) {
+                            continue;
                         }
+                    #endif
 
-                        break;
+                    if(c->id != event.jbutton.which) {
+                        continue;
                     }
+
+                    A_STRHASH_ITERATE(c->buttons, ASdlInputButton*, b) {
+                        if(b->code.buttonIndex == event.jbutton.button) {
+                            a_input_button__setState(b->logicalButton, true);
+                            break;
+                        }
+                    }
+
+                    break;
                 }
             } break;
 
             case SDL_JOYBUTTONUP: {
                 A_LIST_ITERATE(g_controllers, ASdlInputController*, c) {
-                    if(c->id == event.jbutton.which) {
-                        A_STRHASH_ITERATE(c->buttons, ASdlInputButton*, b) {
-                            if(b->code.buttonIndex == event.jbutton.button) {
-                                a_input_button__setState(b->logicalButton,
-                                                         false);
-                                break;
-                            }
+                    #if A_USE_LIB_SDL == 2
+                        if(c->controller != NULL) {
+                            continue;
                         }
+                    #endif
 
-                        break;
+                    if(c->id != event.jbutton.which) {
+                        continue;
                     }
+
+                    A_STRHASH_ITERATE(c->buttons, ASdlInputButton*, b) {
+                        if(b->code.buttonIndex == event.jbutton.button) {
+                            a_input_button__setState(b->logicalButton, false);
+                            break;
+                        }
+                    }
+
+                    break;
                 }
             } break;
 
@@ -498,52 +662,108 @@ void a_sdl_input__get(void)
                 }
 
                 A_LIST_ITERATE(g_controllers, ASdlInputController*, c) {
-                    if(c->id == event.jhat.which) {
-                        ASdlInputButton* buttons[4] = {
-                            a_strhash_get(c->buttons, "controller.up"),
-                            a_strhash_get(c->buttons, "controller.down"),
-                            a_strhash_get(c->buttons, "controller.left"),
-                            a_strhash_get(c->buttons, "controller.right")
-                        };
+                    #if A_USE_LIB_SDL == 2
+                        if(c->controller != NULL) {
+                            continue;
+                        }
+                    #endif
 
-                        for(int i = 0; i < 4; i++, state >>= 1) {
-                            ASdlInputButton* b = buttons[i];
+                    if(c->id != event.jhat.which) {
+                        continue;
+                    }
 
-                            if(state & 1) {
-                                if(!b->lastStatePressed) {
-                                    b->lastStatePressed = true;
-                                    a_input_button__setState(b->logicalButton,
-                                                             true);
-                                }
-                            } else {
-                                if(b->lastStatePressed) {
-                                    b->lastStatePressed = false;
-                                    a_input_button__setState(b->logicalButton,
-                                                             false);
-                                }
+                    ASdlInputButton* buttons[4] = {
+                        a_strhash_get(c->buttons, "gamepad.b.up"),
+                        a_strhash_get(c->buttons, "gamepad.b.down"),
+                        a_strhash_get(c->buttons, "gamepad.b.left"),
+                        a_strhash_get(c->buttons, "gamepad.b.right")
+                    };
+
+                    for(int i = 0; i < 4; i++, state >>= 1) {
+                        ASdlInputButton* b = buttons[i];
+
+                        if(state & 1) {
+                            if(!b->lastStatePressed) {
+                                b->lastStatePressed = true;
+                                a_input_button__setState(b->logicalButton,
+                                                         true);
+                            }
+                        } else {
+                            if(b->lastStatePressed) {
+                                b->lastStatePressed = false;
+                                a_input_button__setState(b->logicalButton,
+                                                         false);
                             }
                         }
-
-                        break;
                     }
+
+                    break;
                 }
             } break;
 
             case SDL_JOYAXISMOTION: {
                 A_LIST_ITERATE(g_controllers, ASdlInputController*, c) {
-                    if(c->id == event.jaxis.which) {
-                        A_STRHASH_ITERATE(c->axes, ASdlInputAnalog*, a) {
-                            if(event.jaxis.axis == a->axisIndex) {
-                                a_input_analog__setAxisValue(a->logicalAnalog,
-                                                             event.jaxis.value);
-                                break;
-                            }
+                    #if A_USE_LIB_SDL == 2
+                        if(c->controller != NULL) {
+                            continue;
                         }
+                    #endif
 
-                        break;
+                    if(c->id != event.jaxis.which) {
+                        continue;
                     }
+
+                    A_STRHASH_ITERATE(c->axes, ASdlInputAnalog*, a) {
+                        if(event.jaxis.axis == a->axisIndex) {
+                            a_input_analog__setAxisValue(a->logicalAnalog,
+                                                         event.jaxis.value);
+                            break;
+                        }
+                    }
+
+                    break;
                 }
             } break;
+
+#if A_USE_LIB_SDL == 2
+            case SDL_CONTROLLERBUTTONUP:
+            case SDL_CONTROLLERBUTTONDOWN: {
+                A_LIST_ITERATE(g_controllers, ASdlInputController*, c) {
+                    if(c->controller == NULL || c->id != event.cbutton.which) {
+                        continue;
+                    }
+
+                    A_STRHASH_ITERATE(c->buttons, ASdlInputButton*, b) {
+                        if(b->code.buttonIndex == event.cbutton.button) {
+                            a_input_button__setState(
+                                b->logicalButton,
+                                event.cbutton.state == SDL_PRESSED);
+                            break;
+                        }
+                    }
+
+                    break;
+                }
+            } break;
+
+            case SDL_CONTROLLERAXISMOTION: {
+                A_LIST_ITERATE(g_controllers, ASdlInputController*, c) {
+                    if(c->controller == NULL || c->id != event.caxis.which) {
+                        continue;
+                    }
+
+                    A_STRHASH_ITERATE(c->axes, ASdlInputAnalog*, a) {
+                        if(event.caxis.axis == a->axisIndex) {
+                            a_input_analog__setAxisValue(a->logicalAnalog,
+                                                         event.caxis.value);
+                            break;
+                        }
+                    }
+
+                    break;
+                }
+            } break;
+#endif
 
             case SDL_MOUSEMOTION: {
                 A_STRHASH_ITERATE(g_touchScreens, ASdlInputTouch*, t) {
