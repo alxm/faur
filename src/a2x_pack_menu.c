@@ -24,7 +24,6 @@ struct AMenu {
     AList* items;
     void* selectedItem;
     unsigned selectedIndex;
-    unsigned pause;
     ASound* soundAccept;
     ASound* soundCancel;
     ASound* soundBrowse;
@@ -34,8 +33,6 @@ struct AMenu {
     AInputButton* cancel;
 };
 
-#define A_MENU_PAUSE (a_settings_getUnsigned("video.fps") / 6)
-
 AMenu* a_menu_new(AInputButton* Next, AInputButton* Back, AInputButton* Select, AInputButton* Cancel)
 {
     AMenu* m = a_mem_malloc(sizeof(AMenu));
@@ -44,14 +41,16 @@ AMenu* a_menu_new(AInputButton* Next, AInputButton* Back, AInputButton* Select, 
     m->items = a_list_new();
     m->selectedItem = NULL;
     m->selectedIndex = 0;
-    m->pause = A_MENU_PAUSE;
     m->soundAccept = NULL;
     m->soundCancel = NULL;
     m->soundBrowse = NULL;
-    m->next = Next;
-    m->back = Back;
+    m->next = a_button_clone(Next);
+    m->back = a_button_clone(Back);
     m->select = Select;
     m->cancel = Cancel;
+
+    a_button_setRepeat(m->next, a_fps_msToFrames(200));
+    a_button_setRepeat(m->back, a_fps_msToFrames(200));
 
     return m;
 }
@@ -59,6 +58,8 @@ AMenu* a_menu_new(AInputButton* Next, AInputButton* Back, AInputButton* Select, 
 void a_menu_free(AMenu* Menu)
 {
     a_list_free(Menu->items);
+    a_button_free(Menu->next);
+    a_button_free(Menu->back);
     free(Menu);
 }
 
@@ -88,37 +89,24 @@ void a_menu_handleInput(AMenu* Menu)
         return;
     }
 
-    bool used = false;
+    bool browsed = false;
 
-    if(Menu->pause == 0) {
-        if(a_button_get(Menu->back)) {
-            if(Menu->selectedIndex-- == 0) {
-                Menu->selectedIndex = a_list_size(Menu->items) - 1;
-            }
+    if(a_button_get(Menu->back)) {
+        browsed = true;
 
-            Menu->selectedItem = a_list_get(Menu->items, Menu->selectedIndex);
-            used = true;
-        } else if(a_button_get(Menu->next)) {
-            if(++Menu->selectedIndex == a_list_size(Menu->items)) {
-                Menu->selectedIndex = 0;
-            }
-
-            Menu->selectedItem = a_list_get(Menu->items, Menu->selectedIndex);
-            used = true;
+        if(Menu->selectedIndex-- == 0) {
+            Menu->selectedIndex = a_list_size(Menu->items) - 1;
         }
-    } else {
-        if(!a_button_get(Menu->back)
-            && !a_button_get(Menu->next)
-            && !a_button_get(Menu->select)
-            && !(Menu->cancel && a_button_get(Menu->cancel))) {
-            Menu->pause = 0;
-        } else {
-            Menu->pause--;
+    } else if(a_button_get(Menu->next)) {
+        browsed = true;
+
+        if(++Menu->selectedIndex == a_list_size(Menu->items)) {
+            Menu->selectedIndex = 0;
         }
     }
 
-    if(used) {
-        Menu->pause = A_MENU_PAUSE;
+    if(browsed) {
+        Menu->selectedItem = a_list_get(Menu->items, Menu->selectedIndex);
 
         if(Menu->soundBrowse) {
             a_sfx_play(Menu->soundBrowse);
