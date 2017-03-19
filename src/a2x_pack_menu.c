@@ -81,11 +81,7 @@ void a_menu_addItem(AMenu* Menu, void* Item)
 
 void a_menu_handleInput(AMenu* Menu)
 {
-    if(a_list_empty(Menu->items)) {
-        a_out__fatal("Menu has no items");
-    }
-
-    if(Menu->state != A_MENU_STATE_RUNNING) {
+    if(a_list_empty(Menu->items) || Menu->state != A_MENU_STATE_RUNNING) {
         return;
     }
 
