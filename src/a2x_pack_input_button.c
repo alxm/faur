@@ -302,18 +302,12 @@ static void releaseSourceButton(AInputButtonSource* Button)
 
 bool a_button_get(AInputButton* Button)
 {
-    const unsigned now = a_fps_getCounter();
+    bool pressed = false;
 
     A_LIST_ITERATE(Button->header.sourceInputs, AInputButtonSource*, b) {
         if(isSourceButtonPressed(b)) {
-            if(Button->repeatFrames > 0) {
-                if(now - Button->lastPressedFrame >= Button->repeatFrames) {
-                    Button->lastPressedFrame = now;
-                    return true;
-                }
-            } else {
-                return true;
-            }
+            pressed = true;
+            goto done;
         }
     }
 
@@ -321,25 +315,30 @@ bool a_button_get(AInputButton* Button)
         A_LIST_ITERATE(andList, AInputButtonSource*, b) {
             if(!isSourceButtonPressed(b)) {
                 break;
-            }
-
-            if(Button->repeatFrames > 0
-                && now - Button->lastPressedFrame < Button->repeatFrames) {
-
-                break;
-            }
-
-            if(A_LIST_IS_LAST()) {
-                if(Button->repeatFrames > 0) {
-                    Button->lastPressedFrame = now;
-                }
-
-                return true;
+            } else if(A_LIST_IS_LAST()) {
+                pressed = true;
+                goto done;
             }
         }
     }
 
-    return false;
+done:
+    if(Button->repeatFrames > 0) {
+        unsigned now = a_fps_getCounter();
+        bool mustWait = now - Button->lastPressedFrame < Button->repeatFrames;
+
+        if(pressed) {
+            if(mustWait) {
+                pressed = false;
+            } else {
+                Button->lastPressedFrame = now;
+            }
+        } else if(mustWait) {
+            Button->lastPressedFrame = now - Button->repeatFrames;
+        }
+    }
+
+    return pressed;
 }
 
 void a_button_release(const AInputButton* Button)
