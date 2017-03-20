@@ -21,6 +21,12 @@
 
 typedef struct AMenu AMenu;
 
+typedef enum {
+    A_MENU_STATE_RUNNING,
+    A_MENU_STATE_SELECTED,
+    A_MENU_STATE_CANCELED
+} AMenuState;
+
 #include "a2x_pack_input_button.p.h"
 #include "a2x_pack_list.p.h"
 #include "a2x_pack_sound.p.h"
@@ -31,18 +37,12 @@ extern void a_menu_free(AMenu* Menu);
 extern void a_menu_addSounds(AMenu* Menu, ASound* Accept, ASound* Cancel, ASound* Browse);
 extern void a_menu_addItem(AMenu* Menu, void* Item);
 
-extern void a_menu_input(AMenu* Menu);
-extern AList* a_menu__items(const AMenu* Menu);
+extern void a_menu_handleInput(AMenu* Menu);
+extern AMenuState a_menu_getState(const AMenu* Menu);
 
-#define A_MENU_ITERATE(Menu, PtrType, Name)            \
-    A_LIST_ITERATE(a_menu__items(Menu), PtrType, Name)
+extern AList* a_menu_getItems(const AMenu* Menu);
+extern bool a_menu_isItemSelected(const AMenu* Menu, const void* Item);
+extern unsigned a_menu_getSelectedIndex(const AMenu* Menu);
 
-extern bool a_menu_isSelected(const AMenu* Menu, const void* Item);
 extern void a_menu_keepRunning(AMenu* Menu);
-extern bool a_menu_running(const AMenu* Menu);
-extern bool a_menu_finished(const AMenu* Menu);
-extern bool a_menu_accept(const AMenu* Menu);
-extern bool a_menu_cancel(const AMenu* Menu);
-extern unsigned a_menu_choice(const AMenu* Menu);
-extern unsigned a_menu_numItems(const AMenu* Menu);
 extern void a_menu_reset(AMenu* Menu);
