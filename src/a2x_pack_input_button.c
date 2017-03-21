@@ -22,8 +22,7 @@
 struct AInputButton {
     AInputUserHeader header;
     AList* combos; // List of lists of AInputButtonSource; for combo buttons
-    unsigned repeatFrames;
-    unsigned lastPressedFrame;
+    ATimer* autoRepeat;
     AListNode* buttonsListNode;
     bool isClone;
 };
@@ -162,8 +161,7 @@ AInputButton* a_button_new(const char* Names)
     a_input__initUserHeader(&b->header);
 
     b->combos = a_list_new();
-    b->repeatFrames = 0;
-    b->lastPressedFrame = 0;
+    b->autoRepeat = NULL;
     b->buttonsListNode = a_list_addLast(g_buttons, b);
     b->isClone = false;
 
@@ -252,6 +250,10 @@ void a_button__free(AInputButton* Button)
         a_input__freeUserHeader(&Button->header);
     }
 
+    if(Button->autoRepeat) {
+        a_timer_free(Button->autoRepeat);
+    }
+
     free(Button);
 }
 
@@ -323,18 +325,17 @@ bool a_button_get(AInputButton* Button)
     }
 
 done:
-    if(Button->repeatFrames > 0) {
-        unsigned now = a_fps_getCounter();
-        bool mustWait = now - Button->lastPressedFrame < Button->repeatFrames;
-
+    if(Button->autoRepeat) {
         if(pressed) {
-            if(mustWait) {
-                pressed = false;
+            if(!a_timer_running(Button->autoRepeat)
+                || a_timer_expired(Button->autoRepeat)) {
+
+                a_timer_start(Button->autoRepeat);
             } else {
-                Button->lastPressedFrame = now;
+                pressed = false;
             }
-        } else if(mustWait) {
-            Button->lastPressedFrame = now - Button->repeatFrames;
+        } else {
+            a_timer_stop(Button->autoRepeat);
         }
     }
 
@@ -367,8 +368,12 @@ bool a_button_getOnce(AInputButton* Button)
 
 void a_button_setRepeat(AInputButton* Button, unsigned RepeatFrames)
 {
-    Button->repeatFrames = RepeatFrames;
-    Button->lastPressedFrame = a_fps_getCounter() - RepeatFrames;
+    if(Button->autoRepeat == NULL) {
+        Button->autoRepeat = a_timer_new(A_TIMER_FRAMES, RepeatFrames);
+    } else {
+        a_timer_setPeriod(Button->autoRepeat, RepeatFrames);
+        a_timer_stop(Button->autoRepeat);
+    }
 }
 
 void a_input_button__setState(AInputButtonSource* Button, bool Pressed)
