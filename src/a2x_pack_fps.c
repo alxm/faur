@@ -71,10 +71,10 @@ void a_fps__init(void)
     g_fpsBuffer = a_mem_malloc(g_bufferLen * sizeof(unsigned));
     g_maxFpsBuffer = a_mem_malloc(g_bufferLen * sizeof(unsigned));
 
-    g_skipAdjustTimer = a_timer_new(A_TIMER_MS, FRAMESKIP_ADJUST_DELAY_SEC * 1000);
+    g_skipAdjustTimer = a_timer_new(A_TIMER_SEC, FRAMESKIP_ADJUST_DELAY_SEC);
     a_timer_start(g_skipAdjustTimer);
 
-    g_noSleepTimer = a_timer_new(A_TIMER_MS, NO_SLEEP_RESET_SEC * 1000);
+    g_noSleepTimer = a_timer_new(A_TIMER_SEC, NO_SLEEP_RESET_SEC);
     g_canSleep = true;
 
     a_fps__reset(0);

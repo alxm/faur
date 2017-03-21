@@ -33,6 +33,9 @@ static inline unsigned getNow(const ATimer* Timer)
         case A_TIMER_MS:
             return a_time_getMs();
 
+        case A_TIMER_SEC:
+            return a_time_getMs() / 1000;
+
         case A_TIMER_FRAMES:
             return a_fps_getCounter();
 
