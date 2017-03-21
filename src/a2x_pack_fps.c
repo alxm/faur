@@ -71,10 +71,10 @@ void a_fps__init(void)
     g_fpsBuffer = a_mem_malloc(g_bufferLen * sizeof(unsigned));
     g_maxFpsBuffer = a_mem_malloc(g_bufferLen * sizeof(unsigned));
 
-    g_skipAdjustTimer = a_timer_new(FRAMESKIP_ADJUST_DELAY_SEC * 1000);
+    g_skipAdjustTimer = a_timer_new(A_TIMER_MS, FRAMESKIP_ADJUST_DELAY_SEC * 1000);
     a_timer_start(g_skipAdjustTimer);
 
-    g_noSleepTimer = a_timer_new(NO_SLEEP_RESET_SEC * 1000);
+    g_noSleepTimer = a_timer_new(A_TIMER_MS, NO_SLEEP_RESET_SEC * 1000);
     g_canSleep = true;
 
     a_fps__reset(0);
@@ -116,9 +116,10 @@ void a_fps__reset(unsigned NumFramesToSkip)
     g_fpsThresholdSlow = (g_fpsRate > 3) ? (g_fpsRate - 2) : 1;
 
     if(g_timer == NULL) {
-        g_timer = a_timer_new((uint32_t)g_msPerFrame);
+        g_timer = a_timer_new(A_TIMER_MS, g_msPerFrame);
     } else {
-        a_timer_setPeriod(g_timer, (uint32_t)g_msPerFrame);
+        a_timer_setPeriod(g_timer, g_msPerFrame);
+        a_timer_start(g_timer);
     }
 
     a_timer_start(g_timer);
