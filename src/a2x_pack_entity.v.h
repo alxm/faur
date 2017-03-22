@@ -29,3 +29,5 @@ extern void a_entity__uninit(void);
 
 extern void a_system__pushCollection(void);
 extern void a_system__popCollection(void);
+
+extern void a_system__run(void);

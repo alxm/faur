@@ -47,4 +47,5 @@ extern int a_screen__clipHeight;
 extern void a_screen__init(void);
 extern void a_screen__uninit(void);
 
+extern void a_screen__show(void);
 extern void a_screen__addOverlay(AScreenOverlay Callback);

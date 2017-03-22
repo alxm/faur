@@ -290,8 +290,8 @@ bool a_state__loop(void)
         return false;
     }
 
-    a_system_run();
-    a_fps_frame();
+    a_system__run();
+    a_fps__frame();
 
     return true;
 }
