@@ -275,13 +275,13 @@ void a_state_exit(void)
 
 bool a_state__stage(AStateStage Stage)
 {
-    const AStateInstance* current = a_list_peek(g_stack);
+    AStateInstance* current = a_list_peek(g_stack);
 
-    if(current != NULL) {
-        return current->stage == Stage;
+    if(current == NULL) {
+        a_out__fatal("a_state__stage: no state");
     }
 
-    return false;
+    return current->stage == Stage;
 }
 
 bool a_state__loop(void)
