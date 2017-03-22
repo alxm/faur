@@ -1,5 +1,5 @@
 /*
-    Copyright 2011, 2016 Alex Margarit
+    Copyright 2011, 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -20,20 +20,39 @@
 #include "a2x_pack_timer.v.h"
 
 struct ATimer {
+    ATimerType type;
+    unsigned period;
+    unsigned start;
+    unsigned diff;
     bool running;
-    uint32_t period;
-    uint32_t start;
-    uint32_t diff;
 };
 
-ATimer* a_timer_new(uint32_t Ms)
+static inline unsigned getNow(const ATimer* Timer)
+{
+    switch(Timer->type) {
+        case A_TIMER_MS:
+            return a_time_getMs();
+
+        case A_TIMER_SEC:
+            return a_time_getMs() / 1000;
+
+        case A_TIMER_FRAMES:
+            return a_fps_getCounter();
+
+        default:
+            return 0;
+    }
+}
+
+ATimer* a_timer_new(ATimerType Type, unsigned Period)
 {
     ATimer* t = a_mem_malloc(sizeof(ATimer));
 
-    t->running = false;
-    t->period = a_math_maxu(Ms, 1);
+    t->type = Type;
+    t->period = a_math_maxu(Period, 1);
     t->start = 0;
     t->diff = 0;
+    t->running = false;
 
     return t;
 }
@@ -45,8 +64,9 @@ void a_timer_free(ATimer* Timer)
 
 void a_timer_start(ATimer* Timer)
 {
+    Timer->start = getNow(Timer);
+    Timer->diff = 0;
     Timer->running = true;
-    Timer->start = a_time_getMs();
 }
 
 void a_timer_stop(ATimer* Timer)
@@ -62,7 +82,7 @@ bool a_timer_running(ATimer* Timer)
 bool a_timer_expired(ATimer* Timer)
 {
     if(Timer->running) {
-        Timer->diff = a_time_getMs() - Timer->start;
+        Timer->diff = getNow(Timer) - Timer->start;
 
         if(Timer->diff >= Timer->period) {
             Timer->start += (Timer->diff / Timer->period) * Timer->period;
@@ -73,14 +93,12 @@ bool a_timer_expired(ATimer* Timer)
     return false;
 }
 
-uint32_t a_timer_elapsed(ATimer* Timer)
+unsigned a_timer_elapsed(ATimer* Timer)
 {
     return Timer->diff;
 }
 
-void a_timer_setPeriod(ATimer* Timer, uint32_t Ms)
+void a_timer_setPeriod(ATimer* Timer, unsigned Period)
 {
-    Timer->period = Ms;
-    Timer->start = a_time_getMs();
-    Timer->diff = 0;
+    Timer->period = a_math_maxu(Period, 1);
 }

@@ -23,7 +23,7 @@
 
 typedef struct AInputTouch AInputTouch;
 
-extern AInputTouch* a_touch_new(const char* Names);
+extern AInputTouch* a_touch_new(const char* Ids);
 extern bool a_touch_working(const AInputTouch* Touch);
 
 extern bool a_touch_tapped(const AInputTouch* Touch);

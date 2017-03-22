@@ -66,38 +66,38 @@ void a_input_touch__uninit(void)
     a_strhash_free(g_sourceTouchScreens);
 }
 
-AInputTouchSource* a_input_touch__newSource(const char* Name)
+AInputTouchSource* a_input_touch__newSource(const char* Id)
 {
     AInputTouchSource* t = a_mem_malloc(sizeof(AInputTouchSource));
 
-    a_input__initSourceHeader(&t->header, Name);
+    a_input__initSourceHeader(&t->header, Id);
 
     t->tap = false;
     t->x = 0;
     t->y = 0;
     t->motion = a_list_new();
 
-    a_strhash_add(g_sourceTouchScreens, Name, t);
+    a_strhash_add(g_sourceTouchScreens, Id, t);
 
     return t;
 }
 
-AInputTouch* a_touch_new(const char* Names)
+AInputTouch* a_touch_new(const char* Ids)
 {
     AInputTouch* t = a_mem_malloc(sizeof(AInputTouch));
 
     a_input__initUserHeader(&t->header);
 
-    AStrTok* tok = a_strtok_new(Names, ", ");
+    AStrTok* tok = a_strtok_new(Ids, ", ");
 
-    A_STRTOK_ITERATE(tok, name) {
-        a_input__findSourceInput(name, g_sourceTouchScreens, NULL, &t->header);
+    A_STRTOK_ITERATE(tok, id) {
+        a_input__findSourceInput(g_sourceTouchScreens, NULL, id, &t->header);
     }
 
     a_strtok_free(tok);
 
     if(a_list_empty(t->header.sourceInputs)) {
-        a_out__error("No touch screen found for '%s'", Names);
+        a_out__error("No touch screen found for '%s'", Ids);
     }
 
     a_list_addLast(g_touchScreens, t);

@@ -50,3 +50,5 @@ extern const char* a_strhash__entryKey(const AStrHashEntry* Entry);
         A_LIST_FILTER(a_strhash__entries(StrHash),            \
                       AStrHashEntry*, a__entry,               \
                       Name = a_strhash__entryKey(a__entry))
+
+#define A_STRHASH_KEY() a_strhash__entryKey(a__entry)

@@ -25,7 +25,7 @@ typedef struct AInputAnalog AInputAnalog;
 
 #include "a2x_pack_fix.p.h"
 
-extern AInputAnalog* a_analog_new(const char* Names);
+extern AInputAnalog* a_analog_new(const char* Ids);
 extern bool a_analog_working(const AInputAnalog* Analog);
 
 extern int a_analog_valueRaw(const AInputAnalog* Analog);
