@@ -29,7 +29,7 @@ extern void a_input_button__init(void);
 extern void a_input_button__init2(void);
 extern void a_input_button__uninit(void);
 
-extern AInputButtonSource* a_input_button__newSource(const char* Name);
+extern AInputButtonSource* a_input_button__newSource(const char* Name, const char* Id);
 extern void a_input_button__freeSource(AInputButtonSource* Button);
 
 extern void a_input_button__forwardTo(AInputButtonSource* Button, AInputButtonSource* Binding);

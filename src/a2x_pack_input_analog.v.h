@@ -28,7 +28,7 @@ typedef struct AInputAnalogSource AInputAnalogSource;
 extern void a_input_analog__init(void);
 extern void a_input_analog__uninit(void);
 
-extern AInputAnalogSource* a_input_analog__newSource(const char* Name);
+extern AInputAnalogSource* a_input_analog__newSource(const char* Id);
 extern void a_input_analog__freeSource(AInputAnalogSource* Analog);
 
 extern void a_input_analog__axisButtonsBinding(AInputAnalogSource* Axis, AInputButtonSource* Negative, AInputButtonSource* Positive);

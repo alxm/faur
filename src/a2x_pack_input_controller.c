@@ -187,18 +187,18 @@ void a_controller__new(bool Generic, bool IsMapped)
     g_activeController = c;
 }
 
-void a_controller__addButton(AInputButtonSource* Button, const char* Name)
+void a_controller__addButton(AInputButtonSource* Button, const char* Id)
 {
-    a_strhash_add(g_activeController->buttons, Name, Button);
+    a_strhash_add(g_activeController->buttons, Id, Button);
 }
 
-AInputButtonSource* a_controller__getButton(const char* Name)
+AInputButtonSource* a_controller__getButton(const char* Id)
 {
     if(g_activeController == NULL) {
         return NULL;
     }
 
-    return a_strhash_get(g_activeController->buttons, Name);
+    return a_strhash_get(g_activeController->buttons, Id);
 }
 
 AStrHash* a_controller__getButtonCollection(void)
@@ -210,18 +210,18 @@ AStrHash* a_controller__getButtonCollection(void)
     return g_activeController->buttons;
 }
 
-void a_controller__addAnalog(AInputAnalogSource* Analog, const char* Name)
+void a_controller__addAnalog(AInputAnalogSource* Analog, const char* Id)
 {
-    a_strhash_add(g_activeController->axes, Name, Analog);
+    a_strhash_add(g_activeController->axes, Id, Analog);
 }
 
-AInputAnalogSource* a_controller__getAnalog(const char* Name)
+AInputAnalogSource* a_controller__getAnalog(const char* Id)
 {
     if(g_activeController == NULL) {
         return NULL;
     }
 
-    return a_strhash_get(g_activeController->axes, Name);
+    return a_strhash_get(g_activeController->axes, Id);
 }
 
 AStrHash* a_controller__getAnalogCollection(void)

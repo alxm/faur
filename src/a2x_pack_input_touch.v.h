@@ -28,7 +28,7 @@ typedef struct AInputTouchSource AInputTouchSource;
 extern void a_input_touch__init(void);
 extern void a_input_touch__uninit(void);
 
-extern AInputTouchSource* a_input_touch__newSource(const char* Name);
+extern AInputTouchSource* a_input_touch__newSource(const char* Id);
 
 extern void a_input_touch__addMotion(AInputTouchSource* Touch, int X, int Y);
 extern void a_input_touch__setCoords(AInputTouchSource* Touch, int X, int Y, bool Tapped);

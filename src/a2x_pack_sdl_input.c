@@ -80,65 +80,65 @@ static void freeHeader(ASdlInputHeader* Header)
     free(Header);
 }
 
-static void addKey(const char* Name, int Code)
+static void addKey(const char* Name, const char* Id, int Code)
 {
-    if(a_strhash_contains(g_keys, Name)) {
-        a_out__error("Key '%s' already defined", Name);
+    if(a_strhash_contains(g_keys, Id)) {
+        a_out__error("Key '%s' already defined", Id);
         return;
     }
 
     ASdlInputButton* k = a_mem_malloc(sizeof(ASdlInputButton));
 
-    k->header.name = a_str_dup(Name);
+    k->header.name = a_str_merge("[", Name, "]", NULL);
     k->code.code = Code;
     k->lastStatePressed = false;
 
-    a_strhash_add(g_keys, Name, k);
+    a_strhash_add(g_keys, Id, k);
 }
 
-static void addButton(AStrHash* ButtonsCollection, const char* Name, int Code)
+static void addButton(AStrHash* ButtonsCollection, const char* Name, const char* Id, int Code)
 {
-    if(a_strhash_contains(ButtonsCollection, Name)) {
-        a_out__error("Button '%s' already defined", Name);
+    if(a_strhash_contains(ButtonsCollection, Id)) {
+        a_out__error("Button '%s' already defined", Id);
         return;
     }
 
     ASdlInputButton* b = a_mem_malloc(sizeof(ASdlInputButton));
 
-    b->header.name = a_str_dup(Name);
+    b->header.name = a_str_merge("(", Name, ")", NULL);
     b->code.code = Code;
     b->lastStatePressed = false;
 
-    a_strhash_add(ButtonsCollection, Name, b);
+    a_strhash_add(ButtonsCollection, Id, b);
 }
 
-static void addAnalog(AStrHash* AxesCollection, const char* Name, int AxisIndex)
+static void addAnalog(AStrHash* AxesCollection, const char* Id, int AxisIndex)
 {
-    if(a_strhash_contains(AxesCollection, Name)) {
-        a_out__error("Analog '%s' is already defined", Name);
+    if(a_strhash_contains(AxesCollection, Id)) {
+        a_out__error("Analog '%s' is already defined", Id);
         return;
     }
 
     ASdlInputAnalog* a = a_mem_malloc(sizeof(ASdlInputAnalog));
 
-    a->header.name = a_str_dup(Name);
+    a->header.name = a_str_dup(Id);
     a->axisIndex = AxisIndex;
 
-    a_strhash_add(AxesCollection, Name, a);
+    a_strhash_add(AxesCollection, Id, a);
 }
 
-static void addTouch(const char* Name)
+static void addTouch(const char* Id)
 {
-    if(a_strhash_contains(g_touchScreens, Name)) {
-        a_out__error("Touchscreen '%s' is already defined", Name);
+    if(a_strhash_contains(g_touchScreens, Id)) {
+        a_out__error("Touchscreen '%s' is already defined", Id);
         return;
     }
 
     ASdlInputTouch* t = a_mem_malloc(sizeof(ASdlInputTouch));
 
-    t->header.name = a_str_dup(Name);
+    t->header.name = a_str_dup(Id);
 
-    a_strhash_add(g_touchScreens, Name, t);
+    a_strhash_add(g_touchScreens, Id, t);
 }
 
 static const char* joystickName(ASdlInputController* Controller)
@@ -255,59 +255,59 @@ void a_sdl_input__init(void)
             if(i == 0) {
                 // Joystick 0 is the built-in controls on these platforms
                 #if A_PLATFORM_GP2X
-                    addButton(c->buttons, "gp2x.up", 0);
-                    addButton(c->buttons, "gp2x.down", 4);
-                    addButton(c->buttons, "gp2x.left", 2);
-                    addButton(c->buttons, "gp2x.right", 6);
-                    addButton(c->buttons, "gp2x.upleft", 1);
-                    addButton(c->buttons, "gp2x.upright", 7);
-                    addButton(c->buttons, "gp2x.downleft", 3);
-                    addButton(c->buttons, "gp2x.downright", 5);
-                    addButton(c->buttons, "gp2x.l", 10);
-                    addButton(c->buttons, "gp2x.r", 11);
-                    addButton(c->buttons, "gp2x.a", 12);
-                    addButton(c->buttons, "gp2x.b", 13);
-                    addButton(c->buttons, "gp2x.x", 14);
-                    addButton(c->buttons, "gp2x.y", 15);
-                    addButton(c->buttons, "gp2x.start", 8);
-                    addButton(c->buttons, "gp2x.select", 9);
-                    addButton(c->buttons, "gp2x.volup", 16);
-                    addButton(c->buttons, "gp2x.voldown", 17);
-                    addButton(c->buttons, "gp2x.stickclick", 18);
+                    addButton(c->buttons, "Up", "gp2x.up", 0);
+                    addButton(c->buttons, "Down", "gp2x.down", 4);
+                    addButton(c->buttons, "Left", "gp2x.left", 2);
+                    addButton(c->buttons, "Right", "gp2x.right", 6);
+                    addButton(c->buttons, "Up-Left", "gp2x.upLeft", 1);
+                    addButton(c->buttons, "Up-Right", "gp2x.upRight", 7);
+                    addButton(c->buttons, "Down-Left", "gp2x.downLeft", 3);
+                    addButton(c->buttons, "Down-Right", "gp2x.downRight", 5);
+                    addButton(c->buttons, "L", "gp2x.l", 10);
+                    addButton(c->buttons, "R", "gp2x.r", 11);
+                    addButton(c->buttons, "A", "gp2x.a", 12);
+                    addButton(c->buttons, "B", "gp2x.b", 13);
+                    addButton(c->buttons, "X", "gp2x.x", 14);
+                    addButton(c->buttons, "Y", "gp2x.y", 15);
+                    addButton(c->buttons, "Start", "gp2x.start", 8);
+                    addButton(c->buttons, "Select", "gp2x.select", 9);
+                    addButton(c->buttons, "Vol-Up", "gp2x.volUp", 16);
+                    addButton(c->buttons, "Vol-Down", "gp2x.volDown", 17);
+                    addButton(c->buttons, "Stick-Click", "gp2x.stickClick", 18);
                 #elif A_PLATFORM_WIZ
-                    addButton(c->buttons, "wiz.up", 0);
-                    addButton(c->buttons, "wiz.down", 4);
-                    addButton(c->buttons, "wiz.left", 2);
-                    addButton(c->buttons, "wiz.right", 6);
-                    addButton(c->buttons, "wiz.upleft", 1);
-                    addButton(c->buttons, "wiz.upright", 7);
-                    addButton(c->buttons, "wiz.downleft", 3);
-                    addButton(c->buttons, "wiz.downright", 5);
-                    addButton(c->buttons, "wiz.l", 10);
-                    addButton(c->buttons, "wiz.r", 11);
-                    addButton(c->buttons, "wiz.a", 12);
-                    addButton(c->buttons, "wiz.b", 13);
-                    addButton(c->buttons, "wiz.x", 14);
-                    addButton(c->buttons, "wiz.y", 15);
-                    addButton(c->buttons, "wiz.menu", 8);
-                    addButton(c->buttons, "wiz.select", 9);
-                    addButton(c->buttons, "wiz.volup", 16);
-                    addButton(c->buttons, "wiz.voldown", 17);
+                    addButton(c->buttons, "Up", "wiz.up", 0);
+                    addButton(c->buttons, "Down", "wiz.down", 4);
+                    addButton(c->buttons, "Left", "wiz.left", 2);
+                    addButton(c->buttons, "Right", "wiz.right", 6);
+                    addButton(c->buttons, "Up-Left", "wiz.upLeft", 1);
+                    addButton(c->buttons, "Up-Right", "wiz.upRight", 7);
+                    addButton(c->buttons, "Down-Left", "wiz.downLeft", 3);
+                    addButton(c->buttons, "Down-Right", "wiz.downRight", 5);
+                    addButton(c->buttons, "L", "wiz.l", 10);
+                    addButton(c->buttons, "R", "wiz.r", 11);
+                    addButton(c->buttons, "A", "wiz.a", 12);
+                    addButton(c->buttons, "B", "wiz.b", 13);
+                    addButton(c->buttons, "X", "wiz.x", 14);
+                    addButton(c->buttons, "Y", "wiz.y", 15);
+                    addButton(c->buttons, "Menu", "wiz.menu", 8);
+                    addButton(c->buttons, "Select", "wiz.select", 9);
+                    addButton(c->buttons, "Vol-Up", "wiz.volUp", 16);
+                    addButton(c->buttons, "Vol-Down", "wiz.volDown", 17);
                 #elif A_PLATFORM_CAANOO
-                    addButton(c->buttons, "caanoo.up", -1);
-                    addButton(c->buttons, "caanoo.down", -1);
-                    addButton(c->buttons, "caanoo.left", -1);
-                    addButton(c->buttons, "caanoo.right", -1);
-                    addButton(c->buttons, "caanoo.l", 4);
-                    addButton(c->buttons, "caanoo.r", 5);
-                    addButton(c->buttons, "caanoo.a", 0);
-                    addButton(c->buttons, "caanoo.b", 2);
-                    addButton(c->buttons, "caanoo.x", 1);
-                    addButton(c->buttons, "caanoo.y", 3);
-                    addButton(c->buttons, "caanoo.home", 6);
-                    addButton(c->buttons, "caanoo.hold", 7);
-                    addButton(c->buttons, "caanoo.1", 8);
-                    addButton(c->buttons, "caanoo.2", 9);
+                    addButton(c->buttons, "Up", "caanoo.up", -1);
+                    addButton(c->buttons, "Down", "caanoo.down", -1);
+                    addButton(c->buttons, "Left", "caanoo.left", -1);
+                    addButton(c->buttons, "Right", "caanoo.right", -1);
+                    addButton(c->buttons, "L", "caanoo.l", 4);
+                    addButton(c->buttons, "R", "caanoo.r", 5);
+                    addButton(c->buttons, "A", "caanoo.a", 0);
+                    addButton(c->buttons, "B", "caanoo.b", 2);
+                    addButton(c->buttons, "X", "caanoo.x", 1);
+                    addButton(c->buttons, "Y", "caanoo.y", 3);
+                    addButton(c->buttons, "Home", "caanoo.home", 6);
+                    addButton(c->buttons, "Hold", "caanoo.hold", 7);
+                    addButton(c->buttons, "I", "caanoo.1", 8);
+                    addButton(c->buttons, "II", "caanoo.2", 9);
                     addAnalog(c->axes, "caanoo.stickX", 0);
                     addAnalog(c->axes, "caanoo.stickY", 1);
                 #endif
@@ -338,22 +338,22 @@ void a_sdl_input__init(void)
                                c->numAxes,
                                c->numHats);
 
-                static const char* buttonNames[SDL_CONTROLLER_BUTTON_MAX] = {
-                    "gamepad.b.a",
-                    "gamepad.b.b",
-                    "gamepad.b.x",
-                    "gamepad.b.y",
-                    "gamepad.b.select",
-                    "gamepad.b.guide",
-                    "gamepad.b.start",
-                    "gamepad.b.leftStick",
-                    "gamepad.b.rightStick",
-                    "gamepad.b.leftShoulder",
-                    "gamepad.b.rightShoulder",
-                    "gamepad.b.up",
-                    "gamepad.b.down",
-                    "gamepad.b.left",
-                    "gamepad.b.right"
+                static const char* buttonNames[SDL_CONTROLLER_BUTTON_MAX][2] = {
+                    {"A", "gamepad.b.a"},
+                    {"B", "gamepad.b.b"},
+                    {"X", "gamepad.b.x"},
+                    {"Y", "gamepad.b.y"},
+                    {"Select", "gamepad.b.select"},
+                    {"Guide", "gamepad.b.guide"},
+                    {"Start", "gamepad.b.start"},
+                    {"Left Stick", "gamepad.b.lStick"},
+                    {"Right Stick", "gamepad.b.rStick"},
+                    {"L", "gamepad.b.l"},
+                    {"R", "gamepad.b.r"},
+                    {"Up", "gamepad.b.up"},
+                    {"Down", "gamepad.b.down"},
+                    {"Left", "gamepad.b.left"},
+                    {"Right", "gamepad.b.right"}
                 };
 
                 static const char* axisNames[SDL_CONTROLLER_AXIS_MAX] = {
@@ -376,7 +376,10 @@ void a_sdl_input__init(void)
                         continue;
                     }
 
-                    addButton(c->buttons, buttonNames[b], b);
+                    addButton(c->buttons,
+                              buttonNames[b][0],
+                              buttonNames[b][1],
+                              b);
                 }
 
                 for(SDL_GameControllerAxis a = SDL_CONTROLLER_AXIS_LEFTX;
@@ -402,15 +405,18 @@ void a_sdl_input__init(void)
                        c->numHats);
 
         for(int j = 0; j < c->numButtons; j++) {
-            char name[16];
-            snprintf(name, sizeof(name), "gamepad.b.%d", j);
-            addButton(c->buttons, name, j);
+            char name[16], id[16];
+            snprintf(name, sizeof(name), "B%d", j);
+            snprintf(id, sizeof(id), "gamepad.b.%d", j);
+
+            addButton(c->buttons, name, id, j);
         }
 
         for(int j = 0; j < c->numAxes; j++) {
-            char name[16];
-            snprintf(name, sizeof(name), "gamepad.a.%d", j);
-            addAnalog(c->axes, name, j);
+            char id[16];
+            snprintf(id, sizeof(id), "gamepad.a.%d", j);
+
+            addAnalog(c->axes, id, j);
         }
 
         #if A_USE_LIB_SDL == 2
@@ -419,82 +425,78 @@ void a_sdl_input__init(void)
 
         if(c->numHats > 0 || c->numAxes >= 2) {
             // Declare virtual direction buttons
-            addButton(c->buttons, "gamepad.b.up", -1);
-            addButton(c->buttons, "gamepad.b.down", -1);
-            addButton(c->buttons, "gamepad.b.left", -1);
-            addButton(c->buttons, "gamepad.b.right", -1);
+            addButton(c->buttons, "Up", "gamepad.b.up", -1);
+            addButton(c->buttons, "Down", "gamepad.b.down", -1);
+            addButton(c->buttons, "Left", "gamepad.b.left", -1);
+            addButton(c->buttons, "Right", "gamepad.b.right", -1);
         }
     }
 
     #if A_PLATFORM_PANDORA
         // Because these are defined before the generic keys, they
         // will take precedence in the a_sdl_input__get event loop.
-        addKey("pandora.up", SDLK_UP);
-        addKey("pandora.down", SDLK_DOWN);
-        addKey("pandora.left", SDLK_LEFT);
-        addKey("pandora.right", SDLK_RIGHT);
-        addKey("pandora.l", SDLK_RSHIFT);
-        addKey("pandora.r", SDLK_RCTRL);
-        addKey("pandora.a", SDLK_HOME);
-        addKey("pandora.b", SDLK_END);
-        addKey("pandora.x", SDLK_PAGEDOWN);
-        addKey("pandora.y", SDLK_PAGEUP);
-        addKey("pandora.start", SDLK_LALT);
-        addKey("pandora.select", SDLK_LCTRL);
+        addKey("Up", "pandora.up", SDLK_UP);
+        addKey("Down", "pandora.down", SDLK_DOWN);
+        addKey("Left", "pandora.left", SDLK_LEFT);
+        addKey("Right", "pandora.right", SDLK_RIGHT);
+        addKey("L", "pandora.l", SDLK_RSHIFT);
+        addKey("R", "pandora.r", SDLK_RCTRL);
+        addKey("A", "pandora.a", SDLK_HOME);
+        addKey("B", "pandora.b", SDLK_END);
+        addKey("X", "pandora.x", SDLK_PAGEDOWN);
+        addKey("Y", "pandora.y", SDLK_PAGEUP);
+        addKey("Start", "pandora.start", SDLK_LALT);
+        addKey("Select", "pandora.select", SDLK_LCTRL);
     #endif
 
     #if A_USE_LIB_SDL == 1
-        addKey("key.up", SDLK_UP);
-        addKey("key.down", SDLK_DOWN);
-        addKey("key.left", SDLK_LEFT);
-        addKey("key.right", SDLK_RIGHT);
-        addKey("key.z", SDLK_z);
-        addKey("key.x", SDLK_x);
-        addKey("key.c", SDLK_c);
-        addKey("key.v", SDLK_v);
-        addKey("key.m", SDLK_m);
-        addKey("key.enter", SDLK_RETURN);
-        addKey("key.space", SDLK_SPACE);
-        addKey("key.f1", SDLK_F1);
-        addKey("key.f2", SDLK_F2);
-        addKey("key.f3", SDLK_F3);
-        addKey("key.f4", SDLK_F4);
-        addKey("key.f5", SDLK_F5);
-        addKey("key.f6", SDLK_F6);
-        addKey("key.f7", SDLK_F7);
-        addKey("key.f8", SDLK_F8);
-        addKey("key.f9", SDLK_F9);
-        addKey("key.f10", SDLK_F10);
-        addKey("key.f11", SDLK_F11);
-        addKey("key.f12", SDLK_F12);
-        addKey("key.1", SDLK_1);
-        addKey("key.0", SDLK_0);
+        addKey("Up", "key.up", SDLK_UP);
+        addKey("Down", "key.down", SDLK_DOWN);
+        addKey("Left", "key.left", SDLK_LEFT);
+        addKey("Right", "key.right", SDLK_RIGHT);
+        addKey("z", "key.z", SDLK_z);
+        addKey("x", "key.x", SDLK_x);
+        addKey("c", "key.c", SDLK_c);
+        addKey("v", "key.v", SDLK_v);
+        addKey("m", "key.m", SDLK_m);
+        addKey("Enter", "key.enter", SDLK_RETURN);
+        addKey("Space", "key.space", SDLK_SPACE);
+        addKey("F1", "key.f1", SDLK_F1);
+        addKey("F2", "key.f2", SDLK_F2);
+        addKey("F3", "key.f3", SDLK_F3);
+        addKey("F4", "key.f4", SDLK_F4);
+        addKey("F5", "key.f5", SDLK_F5);
+        addKey("F6", "key.f6", SDLK_F6);
+        addKey("F7", "key.f7", SDLK_F7);
+        addKey("F8", "key.f8", SDLK_F8);
+        addKey("F9", "key.f9", SDLK_F9);
+        addKey("F10", "key.f10", SDLK_F10);
+        addKey("F11", "key.f11", SDLK_F11);
+        addKey("F12", "key.f12", SDLK_F12);
     #elif A_USE_LIB_SDL == 2
-        addKey("key.up", SDL_SCANCODE_UP);
-        addKey("key.down", SDL_SCANCODE_DOWN);
-        addKey("key.left", SDL_SCANCODE_LEFT);
-        addKey("key.right", SDL_SCANCODE_RIGHT);
-        addKey("key.z", SDL_SCANCODE_Z);
-        addKey("key.x", SDL_SCANCODE_X);
-        addKey("key.c", SDL_SCANCODE_C);
-        addKey("key.v", SDL_SCANCODE_V);
-        addKey("key.m", SDL_SCANCODE_M);
-        addKey("key.enter", SDL_SCANCODE_RETURN);
-        addKey("key.space", SDL_SCANCODE_SPACE);
-        addKey("key.f1", SDL_SCANCODE_F1);
-        addKey("key.f2", SDL_SCANCODE_F2);
-        addKey("key.f3", SDL_SCANCODE_F3);
-        addKey("key.f4", SDL_SCANCODE_F4);
-        addKey("key.f5", SDL_SCANCODE_F5);
-        addKey("key.f6", SDL_SCANCODE_F6);
-        addKey("key.f7", SDL_SCANCODE_F7);
-        addKey("key.f8", SDL_SCANCODE_F8);
-        addKey("key.f9", SDL_SCANCODE_F9);
-        addKey("key.f10", SDL_SCANCODE_F10);
-        addKey("key.f11", SDL_SCANCODE_F11);
-        addKey("key.f12", SDL_SCANCODE_F12);
-        addKey("key.1", SDL_SCANCODE_1);
-        addKey("key.0", SDL_SCANCODE_0);
+        addKey("Up", "key.up", SDL_SCANCODE_UP);
+        addKey("Down", "key.down", SDL_SCANCODE_DOWN);
+        addKey("Left", "key.left", SDL_SCANCODE_LEFT);
+        addKey("Right", "key.right", SDL_SCANCODE_RIGHT);
+        addKey("z", "key.z", SDL_SCANCODE_Z);
+        addKey("x", "key.x", SDL_SCANCODE_X);
+        addKey("c", "key.c", SDL_SCANCODE_C);
+        addKey("v", "key.v", SDL_SCANCODE_V);
+        addKey("m", "key.m", SDL_SCANCODE_M);
+        addKey("Enter", "key.enter", SDL_SCANCODE_RETURN);
+        addKey("Space", "key.space", SDL_SCANCODE_SPACE);
+        addKey("F1", "key.f1", SDL_SCANCODE_F1);
+        addKey("F2", "key.f2", SDL_SCANCODE_F2);
+        addKey("F3", "key.f3", SDL_SCANCODE_F3);
+        addKey("F4", "key.f4", SDL_SCANCODE_F4);
+        addKey("F5", "key.f5", SDL_SCANCODE_F5);
+        addKey("F6", "key.f6", SDL_SCANCODE_F6);
+        addKey("F7", "key.f7", SDL_SCANCODE_F7);
+        addKey("F8", "key.f8", SDL_SCANCODE_F8);
+        addKey("F9", "key.f9", SDL_SCANCODE_F9);
+        addKey("F10", "key.f10", SDL_SCANCODE_F10);
+        addKey("F11", "key.f11", SDL_SCANCODE_F11);
+        addKey("F12", "key.f12", SDL_SCANCODE_F12);
     #endif
 
     addTouch("touchScreen");
@@ -546,7 +548,8 @@ void a_sdl_input__uninit(void)
 void a_sdl_input__bind(void)
 {
     A_STRHASH_ITERATE(g_keys, ASdlInputButton*, k) {
-        k->logicalButton = a_input_button__newSource(k->header.name);
+        k->logicalButton = a_input_button__newSource(k->header.name,
+                                                     A_STRHASH_KEY());
     }
 
     A_STRHASH_ITERATE(g_touchScreens, ASdlInputTouch*, t) {
@@ -561,8 +564,9 @@ void a_sdl_input__bind(void)
         #endif
 
         A_STRHASH_ITERATE(c->buttons, ASdlInputButton*, b) {
-            b->logicalButton = a_input_button__newSource(b->header.name);
-            a_controller__addButton(b->logicalButton, b->header.name);
+            b->logicalButton = a_input_button__newSource(b->header.name,
+                                                         A_STRHASH_KEY());
+            a_controller__addButton(b->logicalButton, A_STRHASH_KEY());
         }
 
         A_STRHASH_ITERATE(c->axes, ASdlInputAnalog*, a) {

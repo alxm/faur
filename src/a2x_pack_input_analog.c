@@ -51,11 +51,11 @@ void a_input_analog__uninit(void)
     a_list_free(g_analogs);
 }
 
-AInputAnalogSource* a_input_analog__newSource(const char* Name)
+AInputAnalogSource* a_input_analog__newSource(const char* Id)
 {
     AInputAnalogSource* a = a_mem_malloc(sizeof(AInputAnalogSource));
 
-    a_input__initSourceHeader(&a->header, Name);
+    a_input__initSourceHeader(&a->header, Id);
     a->buttonBindings = a_list_new();
     a->axisValue = 0;
 
@@ -82,25 +82,25 @@ void a_input_analog__axisButtonsBinding(AInputAnalogSource* Axis, AInputButtonSo
     a_list_addLast(Axis->buttonBindings, b);
 }
 
-AInputAnalog* a_analog_new(const char* Names)
+AInputAnalog* a_analog_new(const char* Ids)
 {
     AInputAnalog* a = a_mem_malloc(sizeof(AInputAnalog));
 
     a_input__initUserHeader(&a->header);
 
-    AStrTok* tok = a_strtok_new(Names, ", ");
+    AStrTok* tok = a_strtok_new(Ids, ", ");
 
-    A_STRTOK_ITERATE(tok, name) {
-        a_input__findSourceInput(name,
-                                 NULL,
+    A_STRTOK_ITERATE(tok, id) {
+        a_input__findSourceInput(NULL,
                                  a_controller__getAnalogCollection(),
+                                 id,
                                  &a->header);
     }
 
     a_strtok_free(tok);
 
     if(a_list_empty(a->header.sourceInputs)) {
-        a_out__error("No analog axes found for '%s'", Names);
+        a_out__error("No analog axes found for '%s'", Ids);
     }
 
     a_list_addLast(g_analogs, a);

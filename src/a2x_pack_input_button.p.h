@@ -23,7 +23,7 @@
 
 typedef struct AInputButton AInputButton;
 
-extern AInputButton* a_button_new(const char* Names);
+extern AInputButton* a_button_new(const char* Ids);
 extern AInputButton* a_button_clone(const AInputButton* Button);
 extern void a_button_free(AInputButton* Button);
 

@@ -77,38 +77,28 @@ void a_input__freeUserHeader(AInputUserHeader* Header)
 void a_input__initSourceHeader(AInputSourceHeader* Header, const char* Name)
 {
     Header->name = a_str_dup(Name);
-    Header->shortName = a_str_getSuffixLastFind(Name, '.');
     Header->lastEventFrame = 0;
-
-    if(Header->shortName == NULL) {
-        Header->shortName = a_str_dup(Name);
-    }
 }
 
 void a_input__freeSourceHeader(AInputSourceHeader* Header)
 {
     free(Header->name);
-    free(Header->shortName);
     free(Header);
 }
 
-void a_input__findSourceInput(const char* Name, const AStrHash* GlobalCollection, const AStrHash* ControllerCollection, AInputUserHeader* UserInput)
+void a_input__findSourceInput(const AStrHash* GlobalCollection, const AStrHash* ControllerCollection, const char* Id, AInputUserHeader* UserInput)
 {
     AInputSourceHeader* source = NULL;
 
     if(GlobalCollection) {
-        source = a_strhash_get(GlobalCollection, Name);
+        source = a_strhash_get(GlobalCollection, Id);
     }
 
     if(source == NULL && ControllerCollection) {
-        source = a_strhash_get(ControllerCollection, Name);
+        source = a_strhash_get(ControllerCollection, Id);
     }
 
     if(source != NULL) {
-        if(UserInput->name == NULL) {
-            UserInput->name = a_str_dup(source->shortName);
-        }
-
         a_list_addLast(UserInput->sourceInputs, source);
     }
 }

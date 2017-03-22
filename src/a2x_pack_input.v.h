@@ -48,7 +48,6 @@ struct AInputUserHeader {
 
 struct AInputSourceHeader {
     char* name;
-    char* shortName;
     unsigned lastEventFrame;
 };
 
@@ -62,7 +61,7 @@ extern void a_input__freeUserHeader(AInputUserHeader* Header);
 extern void a_input__initSourceHeader(AInputSourceHeader* Header, const char* Name);
 extern void a_input__freeSourceHeader(AInputSourceHeader* Header);
 
-extern void a_input__findSourceInput(const char* Name, const AStrHash* GlobalCollection, const AStrHash* ControllerCollection, AInputUserHeader* UserInput);
+extern void a_input__findSourceInput(const AStrHash* GlobalCollection, const AStrHash* ControllerCollection, const char* Id, AInputUserHeader* UserInput);
 
 extern bool a_input__hasFreshEvent(const AInputSourceHeader* Header);
 extern void a_input__setFreshEvent(AInputSourceHeader* Header);
