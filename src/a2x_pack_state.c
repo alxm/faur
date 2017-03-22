@@ -136,8 +136,7 @@ static void state_handle(void)
                 }
             }
 
-            AStateInstance* s = state_new(pending->name);
-            a_list_push(g_stack, s);
+            a_list_push(g_stack, state_new(pending->name));
             a_system__pushCollection();
         } break;
 
@@ -286,22 +285,15 @@ bool a_state__stage(AStateStage Stage)
 
 bool a_state__loop(void)
 {
-    static bool first = true;
-
-    if(first) {
-        first = false;
+    if(!a_list_empty(g_pending)) {
         a_fps__reset(0);
-    } else {
-        a_system_run();
-        a_fps_frame();
-    }
-
-    if(a_list_empty(g_pending)) {
-        return true;
-    } else {
-        first = true;
         return false;
     }
+
+    a_system_run();
+    a_fps_frame();
+
+    return true;
 }
 
 void a_state__run(void)
