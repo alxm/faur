@@ -423,7 +423,9 @@ void a_sdl_input__init(void)
             }
         #endif
 
-        if(c->numHats > 0 || c->numAxes >= 2) {
+        if((c->numHats > 0 || c->numAxes >= 2)
+            && !a_strhash_contains(c->buttons, "gamepad.b.up")) {
+
             // Declare virtual direction buttons
             addButton(c->buttons, "Up", "gamepad.b.up", -1);
             addButton(c->buttons, "Down", "gamepad.b.down", -1);
