@@ -28,8 +28,6 @@ extern APixel* a_screen_pixels(void);
 extern int a_screen_width(void);
 extern int a_screen_height(void);
 
-extern void a_screen_show(void);
-
 extern APixel* a_screen_dup(void);
 extern APixel* a_screen_new(void);
 extern void a_screen_copy(APixel* Dst, const APixel* Src);

@@ -26,7 +26,6 @@ typedef struct AState {
 typedef struct AStateInstance {
     char* name;
     AStateFunction function;
-    AStrHash* objects;
     AStateStage stage;
 } AStateInstance;
 
@@ -83,7 +82,6 @@ static AStateInstance* state_new(const char* Name)
 
     s->name = a_str_dup(Name);
     s->function = state->function;
-    s->objects = a_strhash_new();
     s->stage = A_STATE_STAGE_INIT;
 
     a_out__state("New '%s' instance", Name);
@@ -96,8 +94,6 @@ static void state_free(AStateInstance* State)
     a_out__stateVerbose("Destroying '%s' instance", State->name);
 
     free(State->name);
-    a_strhash_free(State->objects);
-
     free(State);
 }
 
@@ -140,8 +136,7 @@ static void state_handle(void)
                 }
             }
 
-            AStateInstance* s = state_new(pending->name);
-            a_list_push(g_stack, s);
+            a_list_push(g_stack, state_new(pending->name));
             a_system__pushCollection();
         } break;
 
@@ -264,64 +259,51 @@ void a_state_exit(void)
     g_exiting = true;
     a_out__state("*** Telling all states to exit ***");
 
+    // Clear the pending actions queue
+    A_LIST_ITERATE(g_pending, AStatePendingAction*, a) {
+        pending_free(a);
+    }
+
+    a_list_clear(g_pending);
+
+    // Queue a pop for every state in the stack
     for(unsigned i = a_list_size(g_stack); i--; ) {
         pending_new(A_STATE_ACTION_POP, NULL);
     }
 }
 
-void a_state_add(const char* Name, void* Object)
-{
-    const AStateInstance* s = a_list_peek(g_stack);
-
-    if(s) {
-        a_strhash_add(s->objects, Name, Object);
-    }
-}
-
-void* a_state_get(const char* Name)
-{
-    const AStateInstance* s = a_list_peek(g_stack);
-
-    if(s) {
-        return a_strhash_get(s->objects, Name);
-    }
-
-    return NULL;
-}
-
 bool a_state__stage(AStateStage Stage)
 {
-    const AStateInstance* current = a_list_peek(g_stack);
+    AStateInstance* current = a_list_peek(g_stack);
 
-    if(current != NULL) {
-        return current->stage == Stage;
+    if(current == NULL) {
+        a_out__fatal("a_state__stage: no state");
     }
 
-    return false;
+    return current->stage == Stage;
 }
 
 bool a_state__loop(void)
 {
-    static bool first = true;
-
-    if(first) {
-        first = false;
+    if(!a_list_empty(g_pending)) {
         a_fps__reset(0);
-    } else {
-        a_system_run();
-        a_fps_frame();
-    }
-
-    if(a_list_empty(g_pending)) {
-        return true;
-    } else {
-        first = true;
         return false;
     }
+
+    a_system__run();
+    a_fps__frame();
+
+    return true;
 }
 
 void a_state__run(void)
 {
+    if(a_list_empty(g_pending)) {
+        return;
+    }
+
+    a_out__state("Running states");
+
     state_handle();
 
     while(!a_list_empty(g_stack)) {
@@ -334,4 +316,6 @@ void a_state__run(void)
         s->function();
         state_handle();
     }
+
+    a_out__state("States finished");
 }

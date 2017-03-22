@@ -27,7 +27,6 @@ typedef int AListCompare(void* ItemA, void* ItemB);
 
 extern AList* a_list_new(void);
 extern void a_list_free(AList* List);
-extern void a_list_clear(AList* List);
 
 extern AListNode* a_list_addFirst(AList* List, void* Content);
 extern AListNode* a_list_addLast(AList* List, void* Content);
@@ -35,6 +34,7 @@ extern AListNode* a_list_addLast(AList* List, void* Content);
 extern void a_list_appendMove(AList* Dst, AList* Src);
 extern void a_list_appendCopy(AList* Dst, AList* Src);
 
+extern void* a_list_get(const AList* List, unsigned Index);
 extern void* a_list_getFirst(const AList* List);
 extern void* a_list_getLast(const AList* List);
 
@@ -42,18 +42,28 @@ extern void a_list_remove(AList* List, const void* Item);
 extern void* a_list_removeFirst(AList* List);
 extern void* a_list_removeLast(AList* List);
 extern void a_list_removeNode(AListNode* Node);
-
-extern AListNode* a_list_push(AList* List, void* Content);
-extern void* a_list_pop(AList* List);
-extern void* a_list_peek(AList* List);
+extern void a_list_clear(AList* List);
 
 extern AList* a_list_clone(const AList* List);
-extern void a_list_reverse(AList* List);
 extern void** a_list_array(AList* List);
 
-extern void* a_list_get(const AList* List, unsigned Index);
+extern void a_list_reverse(AList* List);
+extern void a_list_sort(AList* List, AListCompare* Compare);
 
 extern unsigned a_list_size(const AList* List);
 extern bool a_list_empty(const AList* List);
 
-extern void a_list_sort(AList* List, AListCompare* Compare);
+static inline AListNode* a_list_push(AList* List, void* Content)
+{
+    return a_list_addFirst(List, Content);
+}
+
+static inline void* a_list_pop(AList* List)
+{
+    return a_list_removeFirst(List);
+}
+
+static inline void* a_list_peek(AList* List)
+{
+    return a_list_getFirst(List);
+}

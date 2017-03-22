@@ -34,9 +34,6 @@ extern void a_state_popUntil(const char* Name);
 extern void a_state_replace(const char* Name);
 extern void a_state_exit(void);
 
-extern void a_state_add(const char* Name, void* Object);
-extern void* a_state_get(const char* Name);
-
 typedef enum {
     A_STATE_STAGE_INVALID,
     A_STATE_STAGE_INIT,
@@ -50,7 +47,7 @@ typedef enum {
 #define A_STATE_INIT if(a_state__stage(A_STATE_STAGE_INIT))
 #define A_STATE_BODY if(a_state__stage(A_STATE_STAGE_BODY))
 #define A_STATE_LOOP while(a_state__loop())
-#define A_STATE_LOOP_DRAW if(a_fps_notSkipped())
+#define A_STATE_LOOP_DRAW if(a_fps__notSkipped())
 #define A_STATE_FREE if(a_state__stage(A_STATE_STAGE_FREE))
 
 extern bool a_state__stage(AStateStage Stage);

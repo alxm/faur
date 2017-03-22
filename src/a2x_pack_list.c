@@ -58,22 +58,6 @@ void a_list_free(AList* List)
     free(List);
 }
 
-void a_list_clear(AList* List)
-{
-    AListNode* n = List->first->next;
-
-    while(n != List->last) {
-        AListNode* saved = n;
-        n = n->next;
-        free(saved);
-    }
-
-    List->first->next = List->last;
-    List->last->prev = List->first;
-
-    List->items = 0;
-}
-
 AListNode* a_list_addFirst(AList* List, void* Content)
 {
     AListNode* n = a_mem_malloc(sizeof(AListNode));
@@ -143,6 +127,19 @@ void a_list_appendCopy(AList* Dst, AList* Src)
     }
 }
 
+void* a_list_get(const AList* List, unsigned Index)
+{
+    AListNode* n;
+
+    for(n = List->first->next; n != List->last; n = n->next) {
+        if(Index-- == 0) {
+            break;
+        }
+    }
+
+    return n->content;
+}
+
 void* a_list_getFirst(const AList* List)
 {
     return List->first->next->content;
@@ -204,19 +201,20 @@ void a_list_removeNode(AListNode* Node)
     free(Node);
 }
 
-AListNode* a_list_push(AList* List, void* Content)
+void a_list_clear(AList* List)
 {
-    return a_list_addFirst(List, Content);
-}
+    AListNode* n = List->first->next;
 
-void* a_list_pop(AList* List)
-{
-    return a_list_removeFirst(List);
-}
+    while(n != List->last) {
+        AListNode* saved = n;
+        n = n->next;
+        free(saved);
+    }
 
-void* a_list_peek(AList* List)
-{
-    return a_list_getFirst(List);
+    List->first->next = List->last;
+    List->last->prev = List->first;
+
+    List->items = 0;
 }
 
 AList* a_list_clone(const AList* List)
@@ -228,6 +226,17 @@ AList* a_list_clone(const AList* List)
     }
 
     return l;
+}
+
+void** a_list_array(AList* List)
+{
+    void** array = a_mem_malloc(List->items * sizeof(void*));
+
+    A_LIST_ITERATE(List, void*, item) {
+        array[A_LIST_INDEX()] = item;
+    }
+
+    return array;
 }
 
 void a_list_reverse(AList* List)
@@ -243,40 +252,6 @@ void a_list_reverse(AList* List)
     save = List->first;
     List->first = List->last;
     List->last = save;
-}
-
-void** a_list_array(AList* List)
-{
-    void** array = a_mem_malloc(List->items * sizeof(void*));
-
-    A_LIST_ITERATE(List, void*, item) {
-        array[A_LIST_INDEX()] = item;
-    }
-
-    return array;
-}
-
-void* a_list_get(const AList* List, unsigned Index)
-{
-    AListNode* n;
-
-    for(n = List->first->next; n != List->last; n = n->next) {
-        if(Index-- == 0) {
-            break;
-        }
-    }
-
-    return n->content;
-}
-
-unsigned a_list_size(const AList* List)
-{
-    return List->items;
-}
-
-bool a_list_empty(const AList* List)
-{
-    return List->first->next == List->last;
 }
 
 static inline AListNode* getNode(AListNode* Start, unsigned Index)
@@ -371,4 +346,14 @@ void a_list_sort(AList* List, AListCompare* Compare)
 
     sorted->next = List->last;
     List->last->prev = sorted;
+}
+
+unsigned a_list_size(const AList* List)
+{
+    return List->items;
+}
+
+bool a_list_empty(const AList* List)
+{
+    return List->first->next == List->last;
 }

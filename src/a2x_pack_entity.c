@@ -32,7 +32,7 @@ typedef struct ASystem {
     ABitfield* componentBits; // IDs of components that this system works on
     AList* entities; // entities currently picked up by this system
     bool onlyActiveEntities; // skip entities that are not active
-    bool muted; // a_system__run skips muted systems
+    bool muted; // runSystem skips muted systems
 } ASystem;
 
 typedef struct ARunningCollection {
@@ -61,27 +61,21 @@ struct AEntity {
 #define GET_COMPONENT(Header) ((void*)(Header + 1))
 #define GET_HEADER(Component) ((AComponent*)Component - 1)
 
-static AList* g_stack; // list of ARunningCollection (one for each state)
 static ARunningCollection* g_collection;
-
+static AList* g_stack; // list of ARunningCollection (one for each state)
 static AStrHash* g_components; // table of declared AComponent
 static AStrHash* g_systems; // table of declared ASystem
 
 void a_entity__init(void)
 {
-    g_stack = a_list_new();
     g_collection = NULL;
-
+    g_stack = a_list_new();
     g_components = a_strhash_new();
     g_systems = a_strhash_new();
-
-    // In case application isn't using states
-    a_system__pushCollection();
 }
 
 void a_entity__uninit(void)
 {
-    a_system__popCollection();
     a_list_free(g_stack);
 
     A_STRHASH_ITERATE(g_systems, ASystem*, system) {
@@ -380,7 +374,7 @@ void a_system_setContext(void* GlobalContext)
     g_collection->context = GlobalContext;
 }
 
-static void a_system__run(const ASystem* System)
+static void runSystem(const ASystem* System)
 {
     if(System->muted) {
         return;
@@ -414,23 +408,23 @@ void a_system_execute(const char* Systems)
             a_out__fatal("a_system_execute: unknown system '%s'", name);
         }
 
-        a_system__run(system);
+        runSystem(system);
     }
 
     a_strtok_free(tok);
 }
 
-void a_system_run(void)
+void a_system__run(void)
 {
     a_system_flushNewEntities();
 
     A_LIST_ITERATE(g_collection->tickSystems, ASystem*, system) {
-        a_system__run(system);
+        runSystem(system);
     }
 
-    if(a_fps_notSkipped()) {
+    if(a_fps__notSkipped()) {
         A_LIST_ITERATE(g_collection->drawSystems, ASystem*, system) {
-            a_system__run(system);
+            runSystem(system);
         }
     }
 

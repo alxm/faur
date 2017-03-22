@@ -66,10 +66,11 @@ int main(int Argc, const char** Argv)
 
     a_console__init2();
 
-    a_out__message("Opening A_MAIN");
+    a_out__message("Calling A_MAIN");
     a_main();
+    a_out__message("A_MAIN returned");
+
     a_state__run();
-    a_out__message("A_MAIN closed");
 
     a_fade__uninit();
     a_entity__uninit();

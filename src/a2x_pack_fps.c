@@ -125,10 +125,10 @@ void a_fps__reset(unsigned NumFramesToSkip)
     a_timer_start(g_timer);
 }
 
-void a_fps_frame(void)
+void a_fps__frame(void)
 {
-    if(a_fps_notSkipped()) {
-        a_screen_show();
+    if(a_fps__notSkipped()) {
+        a_screen__show();
 
         const bool done = a_timer_expired(g_timer);
         const unsigned elapsedMs = a_timer_elapsed(g_timer);
@@ -171,7 +171,7 @@ void a_fps_frame(void)
     g_frameCounter++;
 
     if(g_skipFrames) {
-        if(a_fps_notSkipped() && a_timer_expired(g_skipAdjustTimer)) {
+        if(a_fps__notSkipped() && a_timer_expired(g_skipAdjustTimer)) {
             unsigned newFrameSkip;
             bool adjustFrameSkip = false;
 
@@ -203,7 +203,7 @@ void a_fps_frame(void)
     }
 }
 
-bool a_fps_notSkipped(void)
+bool a_fps__notSkipped(void)
 {
     return g_skipCounter == g_skipNum;
 }
