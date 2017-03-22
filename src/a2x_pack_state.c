@@ -298,6 +298,12 @@ bool a_state__loop(void)
 
 void a_state__run(void)
 {
+    if(a_list_empty(g_pending)) {
+        return;
+    }
+
+    a_out__state("Running states");
+
     state_handle();
 
     while(!a_list_empty(g_stack)) {
@@ -310,4 +316,6 @@ void a_state__run(void)
         s->function();
         state_handle();
     }
+
+    a_out__state("States finished");
 }
