@@ -26,7 +26,6 @@ typedef struct AState {
 typedef struct AStateInstance {
     char* name;
     AStateFunction function;
-    AStrHash* objects;
     AStateStage stage;
 } AStateInstance;
 
@@ -83,7 +82,6 @@ static AStateInstance* state_new(const char* Name)
 
     s->name = a_str_dup(Name);
     s->function = state->function;
-    s->objects = a_strhash_new();
     s->stage = A_STATE_STAGE_INIT;
 
     a_out__state("New '%s' instance", Name);
@@ -96,8 +94,6 @@ static void state_free(AStateInstance* State)
     a_out__stateVerbose("Destroying '%s' instance", State->name);
 
     free(State->name);
-    a_strhash_free(State->objects);
-
     free(State);
 }
 
@@ -275,26 +271,6 @@ void a_state_exit(void)
     for(unsigned i = a_list_size(g_stack); i--; ) {
         pending_new(A_STATE_ACTION_POP, NULL);
     }
-}
-
-void a_state_add(const char* Name, void* Object)
-{
-    const AStateInstance* s = a_list_peek(g_stack);
-
-    if(s) {
-        a_strhash_add(s->objects, Name, Object);
-    }
-}
-
-void* a_state_get(const char* Name)
-{
-    const AStateInstance* s = a_list_peek(g_stack);
-
-    if(s) {
-        return a_strhash_get(s->objects, Name);
-    }
-
-    return NULL;
 }
 
 bool a_state__stage(AStateStage Stage)

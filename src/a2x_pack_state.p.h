@@ -34,9 +34,6 @@ extern void a_state_popUntil(const char* Name);
 extern void a_state_replace(const char* Name);
 extern void a_state_exit(void);
 
-extern void a_state_add(const char* Name, void* Object);
-extern void* a_state_get(const char* Name);
-
 typedef enum {
     A_STATE_STAGE_INVALID,
     A_STATE_STAGE_INIT,
