@@ -216,8 +216,7 @@ void* a_entity_addComponent(AEntity* Entity, const char* Component)
                      ENTITY_NAME(Entity));
     }
 
-    AComponent* header = a_mem_malloc(c->size);
-    memset(header, 0, c->size);
+    AComponent* header = a_mem_zalloc(c->size);
 
     *header = *c;
     header->parent = Entity;

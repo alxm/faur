@@ -187,9 +187,7 @@ void a_png_write(const char* Path, const APixel* Data, int Width, int Height, ch
         goto cleanUp;
     }
 
-    rows = a_mem_malloc((unsigned)Height * sizeof(png_bytep));
-    memset(rows, 0, (unsigned)Height * sizeof(png_bytep));
-
+    rows = a_mem_zalloc((unsigned)Height * sizeof(png_bytep));
     png = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 
     if(!png) {
