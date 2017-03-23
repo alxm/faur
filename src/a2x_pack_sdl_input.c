@@ -170,12 +170,17 @@ void a_sdl_input__init(void)
     a_out__message("Found %d controllers", joysticksNum);
 
     #if A_USE_LIB_SDL == 2
-        int m = SDL_GameControllerAddMappingsFromFile("gamecontrollerdb.txt");
+        if(joysticksNum > 0) {
+            const char* mapFile = a_settings_getString("input.mapfile");
+            int mapsNum = SDL_GameControllerAddMappingsFromFile(mapFile);
 
-        if(m < 0) {
-            a_out__error("Cannot load gamepad mappings: %s", SDL_GetError());
-        } else {
-            a_out__message("Loaded %d gamepad mappings", m);
+            if(mapsNum < 0) {
+                a_out__error("Cannot load mappings from %s: %s",
+                             mapFile,
+                             SDL_GetError());
+            } else {
+                a_out__message("Loaded %d mappings from %s", mapsNum, mapFile);
+            }
         }
     #endif
 
