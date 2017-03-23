@@ -22,3 +22,4 @@
 #include "a2x_system_includes.h"
 
 extern void* a_mem_malloc(size_t Size);
+extern void* a_mem_zalloc(size_t Size);

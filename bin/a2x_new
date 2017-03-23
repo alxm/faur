@@ -26,7 +26,7 @@ from utils.tool import Tool
 
 class NewTool(Tool):
     def main(self):
-        project_name = self.get_arg('ProjectName')
+        project_name = self.get_arg('ProjectName').replace(' ', '-')
         project_dir = os.path.abspath(project_name)
 
         if project_name != os.path.basename(project_name):

@@ -35,10 +35,9 @@ ABitfield* a_bitfield_new(unsigned NumBits)
     }
 
     const unsigned numChunks = (NumBits + BITS_PER_CHUNK - 1) / BITS_PER_CHUNK;
-    ABitfield* b = a_mem_malloc(sizeof(ABitfield) + numChunks * sizeof(AChunk));
+    ABitfield* b = a_mem_zalloc(sizeof(ABitfield) + numChunks * sizeof(AChunk));
 
     b->numChunks = numChunks;
-    memset(b->bits, 0, numChunks * sizeof(AChunk));
 
     return b;
 }

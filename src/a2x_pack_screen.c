@@ -129,9 +129,7 @@ APixel* a_screen_dup(void)
 
 APixel* a_screen_new(void)
 {
-    APixel* buffer = a_mem_malloc(A_SCREEN_SIZE);
-    memset(buffer, 0, A_SCREEN_SIZE);
-    return buffer;
+    return a_mem_zalloc(A_SCREEN_SIZE);;
 }
 
 void a_screen_copy(APixel* Dst, const APixel* Src)

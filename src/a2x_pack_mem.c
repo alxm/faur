@@ -29,3 +29,14 @@ void* a_mem_malloc(size_t Size)
 
     return ptr;
 }
+
+void* a_mem_zalloc(size_t Size)
+{
+    void* ptr = calloc(1, Size);
+
+    if(ptr == NULL) {
+        a_out__fatal("calloc(1, %u) failed", Size);
+    }
+
+    return ptr;
+}
