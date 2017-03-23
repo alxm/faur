@@ -29,9 +29,7 @@ typedef int ASystemSort(AEntity* A, AEntity* B);
 extern void a_component_declare(const char* Name, size_t Size, AComponentFree* Free);
 extern AEntity* a_component_getEntity(const void* Component);
 
-extern AEntity* a_entity_new(void);
-extern const char* a_entity_getId(const AEntity* Entity);
-extern void a_entity_setId(AEntity* Entity, const char* Id);
+extern AEntity* a_entity_new(const char* Id);
 extern void a_entity_reference(AEntity* Entity);
 extern void a_entity_release(AEntity* Entity);
 extern void a_entity_remove(AEntity* Entity);

@@ -113,11 +113,11 @@ AEntity* a_component_getEntity(const void* Component)
     return GET_HEADER(Component)->parent;
 }
 
-AEntity* a_entity_new(void)
+AEntity* a_entity_new(const char* Id)
 {
     AEntity* e = a_mem_malloc(sizeof(AEntity));
 
-    e->id = NULL;
+    e->id = Id ? a_str_dup(Id) : NULL;
     e->collectionNode = a_list_addLast(g_collection->newEntities, e);
     e->systemNodes = a_list_new();
     e->components = a_strhash_new();
@@ -149,16 +149,6 @@ static void a_entity__free(AEntity* Entity)
     a_bitfield_free(Entity->componentBits);
     free(Entity->id);
     free(Entity);
-}
-
-const char* a_entity_getId(const AEntity* Entity)
-{
-    return Entity->id;
-}
-
-void a_entity_setId(AEntity* Entity, const char* Id)
-{
-    Entity->id = a_str_dup(Id);
 }
 
 void a_entity_reference(AEntity* Entity)
