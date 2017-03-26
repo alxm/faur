@@ -37,23 +37,20 @@ static void updateCachedBuffer(bool UpdateSavedScreen)
             free(g_screenBuffer);
         }
 
-        g_screenBuffer = a_mem_malloc(A_SCREEN_SIZE);
-
-        if(UpdateSavedScreen) {
-            if(g_savedScreen != NULL) {
-                free(g_savedScreen);
-            }
-
-            g_savedScreen = a_mem_malloc(A_SCREEN_SIZE);
+        if(g_savedScreen != NULL) {
+            free(g_savedScreen);
+            g_savedScreen = NULL;
         }
+
+        g_screenBuffer = a_screen_new();
     }
 
     if(UpdateSavedScreen) {
         if(g_savedScreen == NULL) {
-            g_savedScreen = a_mem_malloc(A_SCREEN_SIZE);
+            g_savedScreen = a_screen_new();
         }
 
-        // capture current screen
+        // Capture current screen
         a_screen_copy(g_savedScreen, a_screen__pixels);
     }
 
