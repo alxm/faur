@@ -228,6 +228,7 @@ static A_STATE(a_fade__screens)
         a_pixel_setBlend(A_PIXEL_BLEND_RGBA);
 
         a_screen_copy(g_screenBuffer, a_screen__pixels);
+        a_screen_copy(a_screen__pixels, g_savedScreen);
 
         A_STATE_LOOP
         {
