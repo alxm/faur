@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016 Alex Margarit
+    Copyright 2010, 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -20,61 +20,63 @@
 #include "a2x_pack_fade.v.h"
 
 static bool g_fadePending;
-static unsigned g_framesDuration;
+static unsigned g_frames;
 static APixel g_savedColor;
-static APixel* g_screenBuffer;
-static APixel* g_savedScreen;
+static APixel* g_capturedScreen;
+static APixel* g_oldCapturedScreen;
 static unsigned g_savedWidth, g_savedHeight;
 
 static A_STATE(a_fade__toColor);
 static A_STATE(a_fade__fromColor);
 static A_STATE(a_fade__screens);
 
-static void updateCachedBuffer(bool UpdateSavedScreen)
+static void allocateScreenBuffers(bool CaptureCurrentScreen)
 {
     if(A_SCREEN_SIZE > g_savedWidth * g_savedHeight * sizeof(APixel)) {
-        if(g_screenBuffer != NULL) {
-            free(g_screenBuffer);
+        if(g_capturedScreen != NULL) {
+            free(g_capturedScreen);
         }
 
-        if(g_savedScreen != NULL) {
-            free(g_savedScreen);
-            g_savedScreen = NULL;
+        if(g_oldCapturedScreen != NULL) {
+            free(g_oldCapturedScreen);
+            g_oldCapturedScreen = NULL;
         }
 
-        g_screenBuffer = a_screen_new();
+        g_capturedScreen = a_screen_new();
     }
 
-    if(UpdateSavedScreen) {
-        if(g_savedScreen == NULL) {
-            g_savedScreen = a_screen_new();
+    if(CaptureCurrentScreen) {
+        if(g_oldCapturedScreen == NULL) {
+            g_oldCapturedScreen = a_screen_new();
         }
 
-        // Capture current screen
-        a_screen_copy(g_savedScreen, a_screen__pixels);
+        // Capture the screen before the caller will draw something new
+        a_screen_copy(g_oldCapturedScreen, a_screen__pixels);
     }
 
     g_savedWidth = (unsigned)a_screen__width;
     g_savedHeight = (unsigned)a_screen__height;
 }
 
-static void validateCachedBuffer(void)
+static void updateCapturedScreenBuffer(void)
 {
     if((unsigned)a_screen__width != g_savedWidth
         || (unsigned)a_screen__height != g_savedHeight) {
 
         a_out__fatal("Screen size changed before fading");
     }
+
+    a_screen_copy(g_capturedScreen, a_screen__pixels);
 }
 
 void a_fade__init(void)
 {
     g_fadePending = false;
-    g_framesDuration = 0;
+    g_frames = 0;
 
     g_savedColor = 0;
-    g_screenBuffer = NULL;
-    g_savedScreen = NULL;
+    g_capturedScreen = NULL;
+    g_oldCapturedScreen = NULL;
     g_savedWidth = 0;
     g_savedHeight = 0;
 
@@ -85,12 +87,12 @@ void a_fade__init(void)
 
 void a_fade__uninit(void)
 {
-    if(g_screenBuffer != NULL) {
-        free(g_screenBuffer);
+    if(g_capturedScreen != NULL) {
+        free(g_capturedScreen);
     }
 
-    if(g_savedScreen != NULL) {
-        free(g_savedScreen);
+    if(g_oldCapturedScreen != NULL) {
+        free(g_oldCapturedScreen);
     }
 }
 
@@ -101,10 +103,9 @@ void a_fade_toColor(unsigned FramesDuration)
         return;
     }
 
-    g_framesDuration = FramesDuration;
+    g_frames = FramesDuration;
     g_savedColor = a_pixel__state.pixel;
-
-    updateCachedBuffer(false);
+    allocateScreenBuffers(false);
 
     a_state_push("a__fadeToColor");
     g_fadePending = true;
@@ -117,10 +118,9 @@ void a_fade_fromColor(unsigned FramesDuration)
         return;
     }
 
-    g_framesDuration = FramesDuration;
+    g_frames = FramesDuration;
     g_savedColor = a_pixel__state.pixel;
-
-    updateCachedBuffer(false);
+    allocateScreenBuffers(false);
 
     a_state_push("a__fadeFromColor");
     g_fadePending = true;
@@ -133,9 +133,8 @@ void a_fade_screens(unsigned FramesDuration)
         return;
     }
 
-    g_framesDuration = FramesDuration;
-
-    updateCachedBuffer(true);
+    g_frames = FramesDuration;
+    allocateScreenBuffers(true);
 
     a_state_push("a__fadeScreens");
     g_fadePending = true;
@@ -145,20 +144,18 @@ static A_STATE(a_fade__toColor)
 {
     A_STATE_BODY
     {
-        validateCachedBuffer();
+        updateCapturedScreenBuffer();
 
         AFix alpha = 0;
-        AFix alpha_inc = a_fix_itofix(A_PIXEL_ALPHA_MAX) / (int)g_framesDuration;
+        AFix alpha_inc = a_fix_itofix(A_PIXEL_ALPHA_MAX) / (int)g_frames;
 
         a_pixel_push();
         a_pixel_setBlend(A_PIXEL_BLEND_RGBA);
         a_pixel_setPixel(g_savedColor);
 
-        a_screen_copy(g_screenBuffer, a_screen__pixels);
-
         A_STATE_LOOP
         {
-            a_screen_copy(a_screen__pixels, g_screenBuffer);
+            a_screen_copy(a_screen__pixels, g_capturedScreen);
 
             a_pixel_setAlpha(a_fix_fixtoi(alpha));
             a_draw_fill();
@@ -171,6 +168,7 @@ static A_STATE(a_fade__toColor)
         }
 
         a_pixel_pop();
+
         g_fadePending = false;
     }
 }
@@ -179,20 +177,23 @@ static A_STATE(a_fade__fromColor)
 {
     A_STATE_BODY
     {
-        validateCachedBuffer();
-
-        AFix alpha = a_fix_itofix(A_PIXEL_ALPHA_MAX);
-        AFix alpha_inc = a_fix_itofix(A_PIXEL_ALPHA_MAX) / (int)g_framesDuration;
+        updateCapturedScreenBuffer();
 
         a_pixel_push();
-        a_pixel_setBlend(A_PIXEL_BLEND_RGBA);
-        a_pixel_setPixel(g_savedColor);
 
-        a_screen_copy(g_screenBuffer, a_screen__pixels);
+        // For the first frame, before the LOOP body runs
+        a_pixel_setBlend(A_PIXEL_BLEND_PLAIN);
+        a_pixel_setPixel(g_savedColor);
+        a_draw_fill();
+
+        a_pixel_setBlend(A_PIXEL_BLEND_RGBA);
+
+        AFix alpha = a_fix_itofix(A_PIXEL_ALPHA_MAX);
+        AFix alpha_inc = a_fix_itofix(A_PIXEL_ALPHA_MAX) / (int)g_frames;
 
         A_STATE_LOOP
         {
-            a_screen_copy(a_screen__pixels, g_screenBuffer);
+            a_screen_copy(a_screen__pixels, g_capturedScreen);
 
             a_pixel_setAlpha(a_fix_fixtoi(alpha));
             a_draw_fill();
@@ -205,6 +206,7 @@ static A_STATE(a_fade__fromColor)
         }
 
         a_pixel_pop();
+
         g_fadePending = false;
     }
 }
@@ -213,23 +215,23 @@ static A_STATE(a_fade__screens)
 {
     A_STATE_BODY
     {
-        validateCachedBuffer();
+        updateCapturedScreenBuffer();
 
         AFix alpha = a_fix_itofix(A_PIXEL_ALPHA_MAX);
-        AFix alpha_inc = a_fix_itofix(A_PIXEL_ALPHA_MAX) / (int)g_framesDuration;
-        ASprite* oldScreen = a_sprite_fromPixels(g_savedScreen,
+        AFix alpha_inc = a_fix_itofix(A_PIXEL_ALPHA_MAX) / (int)g_frames;
+        ASprite* oldScreen = a_sprite_fromPixels(g_oldCapturedScreen,
                                                  a_screen__width,
                                                  a_screen__height);
 
         a_pixel_push();
         a_pixel_setBlend(A_PIXEL_BLEND_RGBA);
 
-        a_screen_copy(g_screenBuffer, a_screen__pixels);
-        a_screen_copy(a_screen__pixels, g_savedScreen);
+        // For the first frame, before the LOOP body runs
+        a_screen_copy(a_screen__pixels, g_oldCapturedScreen);
 
         A_STATE_LOOP
         {
-            a_screen_copy(a_screen__pixels, g_screenBuffer);
+            a_screen_copy(a_screen__pixels, g_capturedScreen);
 
             a_pixel_setAlpha(a_fix_fixtoi(alpha));
             a_sprite_blit(oldScreen, 0, 0);
@@ -242,6 +244,7 @@ static A_STATE(a_fade__screens)
         }
 
         a_pixel_pop();
+
         a_sprite_free(oldScreen);
         g_fadePending = false;
     }
