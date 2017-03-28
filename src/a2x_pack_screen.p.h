@@ -21,6 +21,8 @@
 
 #include "a2x_system_includes.h"
 
+typedef struct AScreen AScreen;
+
 #include "a2x_pack_pixel.p.h"
 #include "a2x_pack_sprite.p.h"
 
@@ -28,13 +30,17 @@ extern APixel* a_screen_pixels(void);
 extern int a_screen_width(void);
 extern int a_screen_height(void);
 
-extern APixel* a_screen_dup(void);
-extern APixel* a_screen_new(void);
-extern void a_screen_copy(APixel* Dst, const APixel* Src);
-extern void a_screen_copyPart(APixel* Dst, int X, int Y, int Width, int Height);
+extern AScreen* a_screen_new(int Width, int Height);
+extern AScreen* a_screen_fromBuffer(APixel* Pixels, int Width, int Height);
+extern AScreen* a_screen_dup(void);
+extern void a_screen_free(AScreen* Screen);
+
+extern void a_screen_copy(AScreen* Dst, const AScreen* Src);
+extern void a_screen_blit(const AScreen* Screen);
 extern APixel a_screen_getPixel(int X, int Y);
 
-extern void a_screen_setTarget(APixel* Pixels, int Width, int Height);
+extern void a_screen_setTargetBuffer(APixel* Pixels, int Width, int Height);
+extern void a_screen_setTargetScreen(AScreen* Screen);
 extern void a_screen_setTargetSprite(ASprite* Sprite);
 extern void a_screen_resetTarget(void);
 

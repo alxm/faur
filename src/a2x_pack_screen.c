@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016 Alex Margarit
+    Copyright 2010, 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -23,24 +23,32 @@ typedef struct AScreenOverlayContainer {
     AScreenOverlay callback;
 } AScreenOverlayContainer;
 
-APixel* a_screen__pixels = NULL;
-int a_screen__width = 0;
-int a_screen__height = 0;
-
-int a_screen__clipX;
-int a_screen__clipY;
-int a_screen__clipX2;
-int a_screen__clipY2;
-int a_screen__clipWidth;
-int a_screen__clipHeight;
-
-APixel* a_screen__savedPixels = NULL;
-static int g_savedWidth = 0;
-static int g_savedHeight = 0;
-
+AScreen a__screen;
+static AScreen g_savedScreen;
 static ASprite* g_spriteTarget = NULL;
 
 static AList* g_overlays;
+
+static void initScreen(AScreen* Screen, APixel* Pixels, int Width, int Height, bool OwnsBuffer)
+{
+    Screen->pixels = Pixels;
+    Screen->width = Width;
+    Screen->height = Height;
+    Screen->clipX = 0;
+    Screen->clipY = 0;
+    Screen->clipX2 = Width;
+    Screen->clipY2 = Height;
+    Screen->clipWidth = Width;
+    Screen->clipHeight = Height;
+    Screen->ownsBuffer = OwnsBuffer;
+}
+
+static void freeScreen(AScreen* Screen)
+{
+    if(Screen->ownsBuffer) {
+        free(Screen->pixels);
+    }
+}
 
 void a_screen__init(void)
 {
@@ -48,10 +56,22 @@ void a_screen__init(void)
         return;
     }
 
-    a_screen__width = a_settings_getInt("video.width");
-    a_screen__height = a_settings_getInt("video.height");
+    int width = a_settings_getInt("video.width");
+    int height = a_settings_getInt("video.height");
 
-    a_screen_resetClip();
+    if(a_settings_getBool("video.doubleBuffer")) {
+        initScreen(&a__screen,
+                   a_mem_zalloc(
+                       (unsigned)width * (unsigned)height * sizeof(APixel)),
+                   width,
+                   height,
+                   true);
+    } else {
+        // Will use SDL's pixel buffer directly
+        initScreen(&a__screen, NULL, width, height, false);
+    }
+
+    g_savedScreen = a__screen;
 
     if(a_settings_getBool("video.window")) {
         a_sdl_screen__set();
@@ -62,14 +82,6 @@ void a_screen__init(void)
             }
         #endif
     }
-
-    if(a_settings_getBool("video.doubleBuffer")) {
-        a_screen__pixels = a_screen_new();
-    }
-
-    g_savedWidth = a_screen__width;
-    g_savedHeight = a_screen__height;
-    a_screen__savedPixels = a_screen__pixels;
 
     g_overlays = a_list_new();
 }
@@ -82,7 +94,7 @@ void a_screen__uninit(void)
 
     if(a_settings_getBool("video.doubleBuffer")) {
         // Use savedPixels in case app forgot to call a_screen_resetTarget
-        free(a_screen__savedPixels);
+        freeScreen(&g_savedScreen);
     }
 
     A_LIST_ITERATE(g_overlays, AScreenOverlayContainer*, c) {
@@ -92,24 +104,15 @@ void a_screen__uninit(void)
     a_list_free(g_overlays);
 }
 
-APixel* a_screen_pixels(void)
+void a_screen__setPixelBuffer(APixel* Pixels)
 {
-    return a_screen__pixels;
-}
-
-int a_screen_width(void)
-{
-    return a_screen__width;
-}
-
-int a_screen_height(void)
-{
-    return a_screen__height;
+    a__screen.pixels = Pixels;
+    g_savedScreen.pixels = Pixels;
 }
 
 void a_screen__show(void)
 {
-    if(a_screen__pixels != a_screen__savedPixels) {
+    if(a__screen.pixels != g_savedScreen.pixels) {
         a_out__fatal("Must call a_screen_resetTarget before drawing frame");
     }
 
@@ -120,62 +123,109 @@ void a_screen__show(void)
     a_sdl_screen__show();
 }
 
-APixel* a_screen_dup(void)
+void a_screen__addOverlay(AScreenOverlay Callback)
 {
-    APixel* dst = a_screen_new();
-    a_screen_copy(dst, a_screen__pixels);
-    return dst;
+    AScreenOverlayContainer* c = a_mem_malloc(sizeof(AScreenOverlayContainer));
+    c->callback = Callback;
+
+    a_list_addLast(g_overlays, c);
 }
 
-APixel* a_screen_new(void)
+APixel* a_screen_pixels(void)
 {
-    return a_mem_zalloc(A_SCREEN_SIZE);
+    return a__screen.pixels;
 }
 
-void a_screen_copy(APixel* Dst, const APixel* Src)
+int a_screen_width(void)
 {
-    memcpy(Dst, Src, A_SCREEN_SIZE);
+    return a__screen.width;
 }
 
-void a_screen_copyPart(APixel* Dst, int X, int Y, int Width, int Height)
+int a_screen_height(void)
 {
-    const APixel* screen = a_screen__pixels + Y * a_screen__width + X;
+    return a__screen.height;
+}
 
-    for(int i = Height; i--; ) {
-        memcpy(Dst, screen, (unsigned)Width * sizeof(APixel));
-        Dst += Width;
-        screen += a_screen__width;
-    }
+AScreen* a_screen_new(int Width, int Height)
+{
+    AScreen* s = a_mem_malloc(sizeof(AScreen));
+
+    initScreen(s,
+               a_mem_zalloc(
+                   (unsigned)Width * (unsigned)Height * sizeof(APixel)),
+               Width,
+               Height,
+               true);
+
+    return s;
+}
+
+AScreen* a_screen_fromBuffer(APixel* Pixels, int Width, int Height)
+{
+    AScreen* s = a_mem_malloc(sizeof(AScreen));
+
+    initScreen(s, Pixels, Width, Height, false);
+
+    return s;
+}
+
+AScreen* a_screen_dup(void)
+{
+    AScreen* s = a_screen_new(a__screen.width, a__screen.height);
+
+    a_screen_copy(s, &a__screen);
+
+    return s;
+}
+
+void a_screen_free(AScreen* Screen)
+{
+    freeScreen(Screen);
+    free(Screen);
+}
+
+void a_screen_copy(AScreen* Dst, const AScreen* Src)
+{
+    memcpy(Dst->pixels,
+           Src->pixels,
+           (unsigned)Src->width * (unsigned)Src->height * sizeof(APixel));
+}
+
+void a_screen_blit(const AScreen* Screen)
+{
+    a_screen_copy(&a__screen, Screen);
 }
 
 APixel a_screen_getPixel(int X, int Y)
 {
-    return *(a_screen__pixels + Y * a_screen__width + X);
+    return *(a__screen.pixels + Y * a__screen.width + X);
 }
 
-void a_screen_setTarget(APixel* Pixels, int Width, int Height)
+void a_screen_setTargetBuffer(APixel* Pixels, int Width, int Height)
 {
-    a_screen__pixels = Pixels;
-    a_screen__width = Width;
-    a_screen__height = Height;
+    a_screen_resetTarget();
+
+    a__screen.pixels = Pixels;
+    a__screen.width = Width;
+    a__screen.height = Height;
 
     a_screen_resetClip();
 }
 
+void a_screen_setTargetScreen(AScreen* Screen)
+{
+    a_screen_setTargetBuffer(Screen->pixels, Screen->width, Screen->height);
+}
+
 void a_screen_setTargetSprite(ASprite* Sprite)
 {
-    a_screen_setTarget(Sprite->pixels, Sprite->w, Sprite->h);
-
+    a_screen_setTargetBuffer(Sprite->pixels, Sprite->w, Sprite->h);
     g_spriteTarget = Sprite;
 }
 
 void a_screen_resetTarget(void)
 {
-    a_screen__pixels = a_screen__savedPixels;
-    a_screen__width = g_savedWidth;
-    a_screen__height = g_savedHeight;
-
-    a_screen_resetClip();
+    a__screen = g_savedScreen;
 
     if(g_spriteTarget) {
         a_sprite__refreshSpans(g_spriteTarget);
@@ -191,48 +241,40 @@ void a_screen_setClip(int X, int Y, int Width, int Height)
         return;
     }
 
-    a_screen__clipX = X;
-    a_screen__clipY = Y;
-    a_screen__clipX2 = X + Width;
-    a_screen__clipY2 = Y + Height;
-    a_screen__clipWidth = Width;
-    a_screen__clipHeight = Height;
+    a__screen.clipX = X;
+    a__screen.clipY = Y;
+    a__screen.clipX2 = X + Width;
+    a__screen.clipY2 = Y + Height;
+    a__screen.clipWidth = Width;
+    a__screen.clipHeight = Height;
 }
 
 void a_screen_resetClip(void)
 {
-    a_screen_setClip(0, 0, a_screen__width, a_screen__height);
+    a_screen_setClip(0, 0, a__screen.width, a__screen.height);
 }
 
 bool a_screen_boxOnScreen(int X, int Y, int W, int H)
 {
     return a_collide_boxAndBox(X, Y, W, H,
-                               0, 0, a_screen__width, a_screen__height);
+                               0, 0, a__screen.width, a__screen.height);
 }
 
 bool a_screen_boxInsideScreen(int X, int Y, int W, int H)
 {
     return X >= 0 && Y >= 0
-        && X + W <= a_screen__width && Y + H <= a_screen__height;
+        && X + W <= a__screen.width && Y + H <= a__screen.height;
 }
 
 bool a_screen_boxOnClip(int X, int Y, int W, int H)
 {
     return a_collide_boxAndBox(X, Y, W, H,
-                               a_screen__clipX, a_screen__clipY,
-                               a_screen__clipWidth, a_screen__clipHeight);
+                               a__screen.clipX, a__screen.clipY,
+                               a__screen.clipWidth, a__screen.clipHeight);
 }
 
 bool a_screen_boxInsideClip(int X, int Y, int W, int H)
 {
-    return X >= a_screen__clipX && Y >= a_screen__clipY
-        && X + W <= a_screen__clipX2 && Y + H <= a_screen__clipY2;
-}
-
-void a_screen__addOverlay(AScreenOverlay Callback)
-{
-    AScreenOverlayContainer* c = a_mem_malloc(sizeof(AScreenOverlayContainer));
-    c->callback = Callback;
-
-    a_list_addLast(g_overlays, c);
+    return X >= a__screen.clipX && Y >= a__screen.clipY
+        && X + W <= a__screen.clipX2 && Y + H <= a__screen.clipY2;
 }

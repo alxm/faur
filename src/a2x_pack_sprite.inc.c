@@ -23,8 +23,8 @@ static void A__FUNC_NAME(A__BLEND, A__FILL, keyed, noclip)(const ASprite* Sprite
 {
     A__BLEND_SETUP;
 
-    const int screenW = a_screen__width;
-    APixel* dst = a_screen__pixels + Y * screenW + X;
+    const int screenW = a__screen.width;
+    APixel* dst = a__screen.pixels + Y * screenW + X;
     const APixel* a__pass_src = Sprite->pixels;
     const unsigned* spans = Sprite->spans;
 
@@ -56,19 +56,19 @@ static void A__FUNC_NAME(A__BLEND, A__FILL, keyed, doclip)(const ASprite* Sprite
 {
     A__BLEND_SETUP;
 
-    const int screenW = a_screen__width;
+    const int screenW = a__screen.width;
     const int spriteW = Sprite->w;
     const int spriteH = Sprite->h;
 
-    const int yClipUp = a_math_max(0, a_screen__clipY - Y);
-    const int yClipDown = a_math_max(0, Y + spriteH - a_screen__clipY2);
-    const int xClipLeft = a_math_max(0, a_screen__clipX - X);
-    const int xClipRight = a_math_max(0, X + spriteW - a_screen__clipX2);
+    const int yClipUp = a_math_max(0, a__screen.clipY - Y);
+    const int yClipDown = a_math_max(0, Y + spriteH - a__screen.clipY2);
+    const int xClipLeft = a_math_max(0, a__screen.clipX - X);
+    const int xClipRight = a_math_max(0, X + spriteW - a__screen.clipX2);
 
     const int rows = spriteH - yClipUp - yClipDown;
     const int columns = spriteW - xClipLeft - xClipRight;
 
-    APixel* startDst = a_screen__pixels + (Y + yClipUp) * screenW + X + xClipLeft;
+    APixel* startDst = a__screen.pixels + (Y + yClipUp) * screenW + X + xClipLeft;
     const APixel* startSrc = Sprite->pixels + yClipUp * spriteW + xClipLeft;
     const unsigned* spans = Sprite->spans;
 
@@ -138,8 +138,8 @@ static void A__FUNC_NAME(A__BLEND, A__FILL, block, noclip)(const ASprite* Sprite
 {
     A__BLEND_SETUP;
 
-    const int screenW = a_screen__width;
-    APixel* dst = a_screen__pixels + Y * screenW + X;
+    const int screenW = a__screen.width;
+    APixel* dst = a__screen.pixels + Y * screenW + X;
     const APixel* a__pass_src = Sprite->pixels;
 
     for(int i = Sprite->h; i--; dst += screenW) {
@@ -157,19 +157,19 @@ static void A__FUNC_NAME(A__BLEND, A__FILL, block, doclip)(const ASprite* Sprite
 {
     A__BLEND_SETUP;
 
-    const int screenW = a_screen__width;
+    const int screenW = a__screen.width;
     const int spriteW = Sprite->w;
     const int spriteH = Sprite->h;
 
-    const int yClipUp = a_math_max(0, a_screen__clipY - Y);
-    const int yClipDown = a_math_max(0, Y + spriteH - a_screen__clipY2);
-    const int xClipLeft = a_math_max(0, a_screen__clipX - X);
-    const int xClipRight = a_math_max(0, X + spriteW - a_screen__clipX2);
+    const int yClipUp = a_math_max(0, a__screen.clipY - Y);
+    const int yClipDown = a_math_max(0, Y + spriteH - a__screen.clipY2);
+    const int xClipLeft = a_math_max(0, a__screen.clipX - X);
+    const int xClipRight = a_math_max(0, X + spriteW - a__screen.clipX2);
 
     const int rows = spriteH - yClipUp - yClipDown;
     const int columns = spriteW - xClipLeft - xClipRight;
 
-    APixel* startDst = a_screen__pixels + (Y + yClipUp) * screenW + X + xClipLeft;
+    APixel* startDst = a__screen.pixels + (Y + yClipUp) * screenW + X + xClipLeft;
     const APixel* startSrc = Sprite->pixels + yClipUp * spriteW + xClipLeft;
 
     for(int i = rows; i--; startDst += screenW, startSrc += spriteW) {

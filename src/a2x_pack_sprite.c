@@ -464,14 +464,14 @@ void a_sprite_blit(const ASprite* Sprite, int X, int Y)
 void a_sprite_blitCenter(const ASprite* Sprite)
 {
     a_sprite_blit(Sprite,
-                  (a_screen__width - Sprite->w) / 2,
-                  (a_screen__height - Sprite->h) / 2);
+                  (a__screen.width - Sprite->w) / 2,
+                  (a__screen.height - Sprite->h) / 2);
 }
 
 void a_sprite_blitCenterX(const ASprite* Sprite, int Y)
 {
     a_sprite_blit(Sprite,
-                  (a_screen__width - Sprite->w) / 2,
+                  (a__screen.width - Sprite->w) / 2,
                   Y);
 }
 
@@ -479,7 +479,7 @@ void a_sprite_blitCenterY(const ASprite* Sprite, int X)
 {
     a_sprite_blit(Sprite,
                   X,
-                  (a_screen__height - Sprite->h) / 2);
+                  (a__screen.height - Sprite->h) / 2);
 }
 
 void a_sprite_fillFlat(bool FillFlatColor)

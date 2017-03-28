@@ -22,9 +22,9 @@
 static bool g_fadePending;
 static unsigned g_frames;
 static APixel g_savedColor;
-static APixel* g_capturedScreen;
-static APixel* g_oldCapturedScreen;
-static unsigned g_savedWidth, g_savedHeight;
+static AScreen* g_capturedScreen;
+static AScreen* g_oldCapturedScreen;
+static int g_savedWidth, g_savedHeight;
 
 static A_STATE(a_fade__toColor);
 static A_STATE(a_fade__fromColor);
@@ -32,41 +32,40 @@ static A_STATE(a_fade__screens);
 
 static void allocateScreenBuffers(bool CaptureCurrentScreen)
 {
-    if(A_SCREEN_SIZE > g_savedWidth * g_savedHeight * sizeof(APixel)) {
+    if(a__screen.width * a__screen.height > g_savedWidth * g_savedHeight) {
         if(g_capturedScreen != NULL) {
-            free(g_capturedScreen);
+            a_screen_free(g_capturedScreen);
         }
 
         if(g_oldCapturedScreen != NULL) {
-            free(g_oldCapturedScreen);
+            a_screen_free(g_oldCapturedScreen);
             g_oldCapturedScreen = NULL;
         }
 
-        g_capturedScreen = a_screen_new();
+        g_capturedScreen = a_screen_new(a__screen.width, a__screen.height);
     }
 
     if(CaptureCurrentScreen) {
         if(g_oldCapturedScreen == NULL) {
-            g_oldCapturedScreen = a_screen_new();
+            g_oldCapturedScreen = a_screen_new(a__screen.width,
+                                               a__screen.height);
         }
 
         // Capture the screen before the caller will draw something new
-        a_screen_copy(g_oldCapturedScreen, a_screen__pixels);
+        a_screen_copy(g_oldCapturedScreen, &a__screen);
     }
 
-    g_savedWidth = (unsigned)a_screen__width;
-    g_savedHeight = (unsigned)a_screen__height;
+    g_savedWidth = a__screen.width;
+    g_savedHeight = a__screen.height;
 }
 
 static void updateCapturedScreenBuffer(void)
 {
-    if((unsigned)a_screen__width != g_savedWidth
-        || (unsigned)a_screen__height != g_savedHeight) {
-
+    if(a__screen.width != g_savedWidth || a__screen.height != g_savedHeight) {
         a_out__fatal("Screen size changed before fading");
     }
 
-    a_screen_copy(g_capturedScreen, a_screen__pixels);
+    a_screen_copy(g_capturedScreen, &a__screen);
 }
 
 void a_fade__init(void)
@@ -88,11 +87,11 @@ void a_fade__init(void)
 void a_fade__uninit(void)
 {
     if(g_capturedScreen != NULL) {
-        free(g_capturedScreen);
+        a_screen_free(g_capturedScreen);
     }
 
     if(g_oldCapturedScreen != NULL) {
-        free(g_oldCapturedScreen);
+        a_screen_free(g_oldCapturedScreen);
     }
 }
 
@@ -155,7 +154,7 @@ static A_STATE(a_fade__toColor)
 
         A_STATE_LOOP
         {
-            a_screen_copy(a_screen__pixels, g_capturedScreen);
+            a_screen_blit(g_capturedScreen);
 
             a_pixel_setAlpha(a_fix_fixtoi(alpha));
             a_draw_fill();
@@ -193,7 +192,7 @@ static A_STATE(a_fade__fromColor)
 
         A_STATE_LOOP
         {
-            a_screen_copy(a_screen__pixels, g_capturedScreen);
+            a_screen_blit(g_capturedScreen);
 
             a_pixel_setAlpha(a_fix_fixtoi(alpha));
             a_draw_fill();
@@ -219,19 +218,19 @@ static A_STATE(a_fade__screens)
 
         AFix alpha = a_fix_itofix(A_PIXEL_ALPHA_MAX);
         AFix alpha_inc = a_fix_itofix(A_PIXEL_ALPHA_MAX) / (int)g_frames;
-        ASprite* oldScreen = a_sprite_fromPixels(g_oldCapturedScreen,
-                                                 a_screen__width,
-                                                 a_screen__height);
+        ASprite* oldScreen = a_sprite_fromPixels(g_oldCapturedScreen->pixels,
+                                                 a__screen.width,
+                                                 a__screen.height);
 
         a_pixel_push();
         a_pixel_setBlend(A_PIXEL_BLEND_RGBA);
 
         // For the first frame, before the LOOP body runs
-        a_screen_copy(a_screen__pixels, g_oldCapturedScreen);
+        a_screen_blit(g_oldCapturedScreen);
 
         A_STATE_LOOP
         {
-            a_screen_copy(a_screen__pixels, g_capturedScreen);
+            a_screen_blit(g_capturedScreen);
 
             a_pixel_setAlpha(a_fix_fixtoi(alpha));
             a_sprite_blit(oldScreen, 0, 0);

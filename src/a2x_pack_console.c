@@ -108,7 +108,7 @@ static void screenCallback(void)
     }
 
     {
-        a_font_setCoords(a_screen__width - 2, 2);
+        a_font_setCoords(a__screen.width - 2, 2);
         a_font_setAlign(A_FONT_ALIGN_RIGHT);
 
         a_font_setFace(A_FONT_FACE_YELLOW);

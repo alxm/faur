@@ -52,10 +52,10 @@ static bool cohen_sutherland_clip(int* X1, int* Y1, int* X2, int* Y2)
     int x2 = *X2;
     int y2 = *Y2;
 
-    const int clipX1 = a_screen__clipX;
-    const int clipX2 = a_screen__clipX2;
-    const int clipY1 = a_screen__clipY;
-    const int clipY2 = a_screen__clipY2;
+    const int clipX1 = a__screen.clipX;
+    const int clipX2 = a__screen.clipX2;
+    const int clipY1 = a__screen.clipY;
+    const int clipY2 = a__screen.clipY2;
 
     #define OUT_LEFT  1
     #define OUT_RIGHT 2
@@ -314,7 +314,7 @@ void a_draw__updateRoutines(void)
 
 void a_draw_fill(void)
 {
-    g_draw_rectangle(0, 0, a_screen__width, a_screen__height);
+    g_draw_rectangle(0, 0, a__screen.width, a__screen.height);
 }
 
 void a_draw_rectangleThick(int X, int Y, int Width, int Height, int Thickness)
@@ -343,11 +343,11 @@ void a_draw_rectangle(int X, int Y, int Width, int Height)
         return;
     }
 
-    const int x2 = a_math_min(X + Width, a_screen__clipX2);
-    const int y2 = a_math_min(Y + Height, a_screen__clipY2);
+    const int x2 = a_math_min(X + Width, a__screen.clipX2);
+    const int y2 = a_math_min(Y + Height, a__screen.clipY2);
 
-    X = a_math_max(X, a_screen__clipX);
-    Y = a_math_max(Y, a_screen__clipY);
+    X = a_math_max(X, a__screen.clipX);
+    Y = a_math_max(Y, a__screen.clipY);
     Width = a_math_min(Width, x2 - X);
     Height = a_math_min(Height, y2 - Y);
 
@@ -369,8 +369,8 @@ void a_draw_hline(int X1, int X2, int Y)
         return;
     }
 
-    X1 = a_math_max(X1, a_screen__clipX);
-    X2 = a_math_min(X2, a_screen__clipX2);
+    X1 = a_math_max(X1, a__screen.clipX);
+    X2 = a_math_min(X2, a__screen.clipX2);
 
     g_draw_hline(X1, X2, Y);
 }
@@ -381,8 +381,8 @@ void a_draw_vline(int X, int Y1, int Y2)
         return;
     }
 
-    Y1 = a_math_max(Y1, a_screen__clipY);
-    Y2 = a_math_min(Y2, a_screen__clipY2);
+    Y1 = a_math_max(Y1, a__screen.clipY);
+    Y2 = a_math_min(Y2, a__screen.clipY2);
 
     g_draw_vline(X, Y1, Y2);
 }

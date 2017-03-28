@@ -30,22 +30,24 @@ typedef void (*AScreenOverlay)(void);
 #include "a2x_pack_sound.v.h"
 #include "a2x_pack_sprite.v.h"
 
-#define A_SCREEN_SIZE \
-    ((unsigned)a_screen__width * (unsigned)a_screen__height * sizeof(APixel))
+struct AScreen {
+    APixel* pixels;
+    int width;
+    int height;
+    int clipX;
+    int clipY;
+    int clipX2;
+    int clipY2;
+    int clipWidth;
+    int clipHeight;
+    bool ownsBuffer;
+};
 
-extern APixel* a_screen__pixels;
-extern APixel* a_screen__savedPixels;
-extern int a_screen__width;
-extern int a_screen__height;
-extern int a_screen__clipX;
-extern int a_screen__clipY;
-extern int a_screen__clipX2;
-extern int a_screen__clipY2;
-extern int a_screen__clipWidth;
-extern int a_screen__clipHeight;
+extern AScreen a__screen;
 
 extern void a_screen__init(void);
 extern void a_screen__uninit(void);
 
+extern void a_screen__setPixelBuffer(APixel* Pixels);
 extern void a_screen__show(void);
 extern void a_screen__addOverlay(AScreenOverlay Callback);
