@@ -65,6 +65,7 @@ int main(int Argc, const char** Argv)
     a_fade__init();
 
     a_console__init2();
+    a_screen__init2();
 
     a_out__message("Calling A_MAIN");
     a_main();

@@ -178,6 +178,7 @@ void a_settings__init(void)
     add(A_SETTING_INT, A_SETTING_SET_ONCE, "video.height", "240");
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.doubleBuffer", "0");
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.fullscreen", "0");
+    add(A_SETTING_STR, A_SETTING_SET_ONCE, "video.fullscreen.button", "key.f4");
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.fixWizTearing", "0");
     add(A_SETTING_STR, A_SETTING_SET_ONCE, "video.borderColor", "0x1f 0x0f 0x0f");
     add(A_SETTING_UINT, A_SETTING_SET_ONCE, "video.fps", "60");

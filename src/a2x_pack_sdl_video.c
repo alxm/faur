@@ -268,3 +268,17 @@ void a_sdl_screen__show(void)
         SDL_RenderPresent(g_sdlRenderer);
     #endif
 }
+
+void a_sdl_screen__setFullScreen(bool FullScreen)
+{
+    #if A_USE_LIB_SDL == 1
+        FullScreen = FullScreen;
+    #elif A_USE_LIB_SDL == 2
+        uint32_t flag = FullScreen ? SDL_WINDOW_FULLSCREEN : 0;
+        int ret = SDL_SetWindowFullscreen(g_sdlWindow, flag);
+
+        if(ret < 0) {
+            a_out__error("SDL_SetWindowFullscreen failed: %s", SDL_GetError());
+        }
+    #endif
+}

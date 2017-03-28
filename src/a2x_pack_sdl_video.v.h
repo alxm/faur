@@ -28,3 +28,4 @@ extern void a_sdl_video__uninit(void);
 
 extern void a_sdl_screen__set(void);
 extern void a_sdl_screen__show(void);
+extern void a_sdl_screen__setFullScreen(bool FullScreen);

@@ -46,6 +46,7 @@ struct AScreen {
 extern AScreen a__screen;
 
 extern void a_screen__init(void);
+extern void a_screen__init2(void);
 extern void a_screen__uninit(void);
 
 extern void a_screen__setPixelBuffer(APixel* Pixels);

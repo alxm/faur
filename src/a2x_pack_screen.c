@@ -26,8 +26,9 @@ typedef struct AScreenOverlayContainer {
 AScreen a__screen;
 static AScreen g_savedScreen;
 static ASprite* g_spriteTarget = NULL;
-
 static AList* g_overlays;
+static bool g_fullScreenState;
+static AInputButton* g_fullScreenButton;
 
 static void initScreen(AScreen* Screen, APixel* Pixels, int Width, int Height, bool OwnsBuffer)
 {
@@ -84,6 +85,22 @@ void a_screen__init(void)
     }
 
     g_overlays = a_list_new();
+}
+
+static void inputCallback(void)
+{
+    if(a_button_getOnce(g_fullScreenButton)) {
+        g_fullScreenState = !g_fullScreenState;
+        a_sdl_screen__setFullScreen(g_fullScreenState);
+    }
+}
+
+void a_screen__init2(void)
+{
+    g_fullScreenState = false;
+    g_fullScreenButton = a_button_new(
+                             a_settings_getString("video.fullscreen.button"));
+    a_input__addCallback(inputCallback);
 }
 
 void a_screen__uninit(void)
