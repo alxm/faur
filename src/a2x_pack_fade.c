@@ -148,10 +148,13 @@ static A_STATE(a_fade__toColor)
 
         A_STATE_LOOP
         {
-            a_screen_blit(g_capturedScreen);
+            A_STATE_LOOP_DRAW
+            {
+                a_screen_blit(g_capturedScreen);
 
-            a_pixel_setAlpha(a_fix_fixtoi(alpha));
-            a_draw_fill();
+                a_pixel_setAlpha(a_fix_fixtoi(alpha));
+                a_draw_fill();
+            }
 
             alpha += alpha_inc;
 
@@ -186,10 +189,13 @@ static A_STATE(a_fade__fromColor)
 
         A_STATE_LOOP
         {
-            a_screen_blit(g_capturedScreen);
+            A_STATE_LOOP_DRAW
+            {
+                a_screen_blit(g_capturedScreen);
 
-            a_pixel_setAlpha(a_fix_fixtoi(alpha));
-            a_draw_fill();
+                a_pixel_setAlpha(a_fix_fixtoi(alpha));
+                a_draw_fill();
+            }
 
             alpha -= alpha_inc;
 
@@ -224,10 +230,13 @@ static A_STATE(a_fade__screens)
 
         A_STATE_LOOP
         {
-            a_screen_blit(g_capturedScreen);
+            A_STATE_LOOP_DRAW
+            {
+                a_screen_blit(g_capturedScreen);
 
-            a_pixel_setAlpha(a_fix_fixtoi(alpha));
-            a_sprite_blit(oldScreen, 0, 0);
+                a_pixel_setAlpha(a_fix_fixtoi(alpha));
+                a_sprite_blit(oldScreen, 0, 0);
+            }
 
             alpha -= alpha_inc;
 
