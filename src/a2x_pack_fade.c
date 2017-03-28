@@ -24,7 +24,6 @@ static unsigned g_frames;
 static APixel g_savedColor;
 static AScreen* g_capturedScreen;
 static AScreen* g_oldCapturedScreen;
-static int g_savedWidth, g_savedHeight;
 
 static A_STATE(a_fade__toColor);
 static A_STATE(a_fade__fromColor);
@@ -32,7 +31,7 @@ static A_STATE(a_fade__screens);
 
 static void allocateScreenBuffers(bool CaptureCurrentScreen)
 {
-    if(a__screen.width * a__screen.height > g_savedWidth * g_savedHeight) {
+    if(g_capturedScreen == NULL || !a_screen_fitsInside(g_capturedScreen)) {
         if(g_capturedScreen != NULL) {
             a_screen_free(g_capturedScreen);
         }
@@ -54,14 +53,11 @@ static void allocateScreenBuffers(bool CaptureCurrentScreen)
         // Capture the screen before the caller will draw something new
         a_screen_copy(g_oldCapturedScreen, &a__screen);
     }
-
-    g_savedWidth = a__screen.width;
-    g_savedHeight = a__screen.height;
 }
 
 static void updateCapturedScreenBuffer(void)
 {
-    if(a__screen.width != g_savedWidth || a__screen.height != g_savedHeight) {
+    if(!a_screen_sameSizeAs(g_capturedScreen)) {
         a_out__fatal("Screen size changed before fading");
     }
 
@@ -76,8 +72,6 @@ void a_fade__init(void)
     g_savedColor = 0;
     g_capturedScreen = NULL;
     g_oldCapturedScreen = NULL;
-    g_savedWidth = 0;
-    g_savedHeight = 0;
 
     a_state_new("a__fadeToColor", a_fade__toColor);
     a_state_new("a__fadeFromColor", a_fade__fromColor);

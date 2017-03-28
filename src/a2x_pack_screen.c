@@ -254,6 +254,17 @@ void a_screen_resetClip(void)
     a_screen_setClip(0, 0, a__screen.width, a__screen.height);
 }
 
+bool a_screen_fitsInside(const AScreen* Screen)
+{
+    return a__screen.width * a__screen.height <= Screen->width * Screen->height;
+}
+
+bool a_screen_sameSizeAs(const AScreen* Screen)
+{
+    return a__screen.width == Screen->width
+        && a__screen.height == Screen->height;
+}
+
 bool a_screen_boxOnScreen(int X, int Y, int W, int H)
 {
     return a_collide_boxAndBox(X, Y, W, H,
