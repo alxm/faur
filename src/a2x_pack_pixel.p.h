@@ -34,7 +34,7 @@
     #define A_PIXEL_RED_BITS   5
     #define A_PIXEL_GREEN_BITS 6
     #define A_PIXEL_BLUE_BITS  5
-    #define A_PIXEL_PAD_BITS   0
+    #define A_PIXEL_ALPHA_BITS 0
 #elif A_PIXEL_BPP == 32
     #define A_PIXEL_RED_BITS   8
     #define A_PIXEL_GREEN_BITS 8
@@ -42,20 +42,22 @@
 
     #if A_CONFIG_LIB_SDL == 1
         // XRGB8888
-        #define A_PIXEL_PAD_BITS 0
+        #define A_PIXEL_ALPHA_BITS 0
     #elif A_CONFIG_LIB_SDL == 2
-        // RGBX8888
-        #define A_PIXEL_PAD_BITS 8
+        // RGBXA8888 / RGBA8888
+        #define A_PIXEL_ALPHA_BITS 8
     #endif
 #endif
 
-#define A_PIXEL_RED_SHIFT   (A_PIXEL_GREEN_BITS + A_PIXEL_BLUE_BITS + A_PIXEL_PAD_BITS)
-#define A_PIXEL_GREEN_SHIFT (A_PIXEL_BLUE_BITS + A_PIXEL_PAD_BITS)
-#define A_PIXEL_BLUE_SHIFT  (A_PIXEL_PAD_BITS)
+#define A_PIXEL_RED_SHIFT   (A_PIXEL_GREEN_BITS + A_PIXEL_BLUE_BITS + A_PIXEL_ALPHA_BITS)
+#define A_PIXEL_GREEN_SHIFT (A_PIXEL_BLUE_BITS + A_PIXEL_ALPHA_BITS)
+#define A_PIXEL_BLUE_SHIFT  (A_PIXEL_ALPHA_BITS)
+#define A_PIXEL_ALPHA_SHIFT (0)
 
 #define A_PIXEL_RED_MASK   ((1 << A_PIXEL_RED_BITS) - 1)
 #define A_PIXEL_GREEN_MASK ((1 << A_PIXEL_GREEN_BITS) - 1)
 #define A_PIXEL_BLUE_MASK  ((1 << A_PIXEL_BLUE_BITS) - 1)
+#define A_PIXEL_ALPHA_MASK ((1 << A_PIXEL_ALPHA_BITS) - 1)
 
 #define A_PIXEL_RED_PACK   (8 - A_PIXEL_RED_BITS)
 #define A_PIXEL_GREEN_PACK (8 - A_PIXEL_GREEN_BITS)
@@ -77,17 +79,17 @@ static inline APixel a_pixel_rgb(int Red, int Green, int Blue)
 
 static inline APixel a_pixel_hex(uint32_t Hexcode)
 {
-    #if A_PIXEL_BPP == 32
-        #if A_CONFIG_LIB_SDL == 1
-            return (APixel)(Hexcode & 0xffffff);
-        #elif A_CONFIG_LIB_SDL == 2
-            return (APixel)(Hexcode << A_PIXEL_PAD_BITS);
-        #endif
-    #else
+    #if A_PIXEL_BPP == 16
         return (APixel)
             (((((Hexcode >> 16) & 0xff) >> A_PIXEL_RED_PACK)   << A_PIXEL_RED_SHIFT)   |
              ((((Hexcode >> 8)  & 0xff) >> A_PIXEL_GREEN_PACK) << A_PIXEL_GREEN_SHIFT) |
              ((((Hexcode)       & 0xff) >> A_PIXEL_BLUE_PACK)  << A_PIXEL_BLUE_SHIFT));
+    #elif A_PIXEL_BPP == 32
+        #if A_CONFIG_LIB_SDL == 1
+            return (APixel)(Hexcode & 0xffffff);
+        #elif A_CONFIG_LIB_SDL == 2
+            return (APixel)(Hexcode << A_PIXEL_ALPHA_BITS);
+        #endif
     #endif
 }
 

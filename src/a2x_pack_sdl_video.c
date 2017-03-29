@@ -337,17 +337,26 @@ void a_sdl_render__fillRect(int X, int Y, int Width, int Height)
     }
 }
 
-void* a_sdl_render__makeTexture(APixel* Pixels, int Width, int Height)
+void* a_sdl_render__makeTexture(const APixel* Pixels, int Width, int Height)
 {
-    SDL_Surface* s = SDL_CreateRGBSurfaceFrom(Pixels,
+    size_t bufferSize = (unsigned)Width * (unsigned)Height * sizeof(APixel);
+    APixel* pixels = a_mem_dup(Pixels, bufferSize);
+
+    for(int i = Width * Height; i--;) {
+        if(pixels[i] != a_sprite__colorKey) {
+            pixels[i] |= 0xff;
+        }
+    }
+
+    SDL_Surface* s = SDL_CreateRGBSurfaceFrom(pixels,
                                               Width,
                                               Height,
                                               A_PIXEL_BPP,
                                               Width * (int)sizeof(APixel),
-                                              (APixel)A_PIXEL_RED_MASK << A_PIXEL_RED_SHIFT,
-                                              (APixel)A_PIXEL_GREEN_MASK << A_PIXEL_GREEN_SHIFT,
-                                              (APixel)A_PIXEL_BLUE_MASK << A_PIXEL_BLUE_SHIFT,
-                                              0);
+                                              (uint32_t)A_PIXEL_RED_MASK << A_PIXEL_RED_SHIFT,
+                                              (uint32_t)A_PIXEL_GREEN_MASK << A_PIXEL_GREEN_SHIFT,
+                                              (uint32_t)A_PIXEL_BLUE_MASK << A_PIXEL_BLUE_SHIFT,
+                                              (uint32_t)A_PIXEL_ALPHA_MASK << A_PIXEL_ALPHA_SHIFT);
     if(s == NULL) {
         a_out__fatal("SDL_CreateRGBSurfaceFrom failed: %s", SDL_GetError());
     }
@@ -357,7 +366,12 @@ void* a_sdl_render__makeTexture(APixel* Pixels, int Width, int Height)
         a_out__fatal("SDL_CreateTextureFromSurface failed: %s", SDL_GetError());
     }
 
+    if(SDL_SetTextureBlendMode(t, SDL_BLENDMODE_BLEND) < 0) {
+        a_out__error("SDL_SetTextureBlendMode failed: %s", SDL_GetError());
+    }
+
     SDL_FreeSurface(s);
+    free(pixels);
 
     return t;
 }
@@ -371,17 +385,6 @@ void a_sdl_render__blitTexture(void* Texture, int X, int Y, int Width, int Heigh
 {
     SDL_Texture* t = Texture;
     SDL_Rect dest = {X, Y, Width, Height};
-    SDL_BlendMode mode = SDL_BLENDMODE_NONE;
-
-    if(a_pixel__state.blend >= A_PIXEL_BLEND_RGBA
-        && a_pixel__state.blend <= A_PIXEL_BLEND_RGB75) {
-
-        mode = SDL_BLENDMODE_BLEND;
-    }
-
-    if(SDL_SetTextureBlendMode(t, mode) < 0) {
-        a_out__error("SDL_SetTextureBlendMode failed: %s", SDL_GetError());
-    }
 
     SDL_RenderCopy(g_sdlRenderer, t, NULL, &dest);
 }
