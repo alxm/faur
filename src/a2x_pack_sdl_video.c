@@ -385,7 +385,20 @@ void a_sdl_render__blitTexture(void* Texture, int X, int Y, int Width, int Heigh
 {
     SDL_Texture* t = Texture;
     SDL_Rect dest = {X, Y, Width, Height};
+    uint8_t alphaMod = SDL_ALPHA_OPAQUE;
 
-    SDL_RenderCopy(g_sdlRenderer, t, NULL, &dest);
+    if(a_pixel__state.blend >= A_PIXEL_BLEND_RGBA
+        && a_pixel__state.blend <= A_PIXEL_BLEND_RGB75) {
+
+        alphaMod = (uint8_t)a_pixel__state.alpha;
+    }
+
+    if(SDL_SetTextureAlphaMod(t, alphaMod) < 0) {
+        a_out__error("SDL_SetTextureAlphaMod failed: %s", SDL_GetError());
+    }
+
+    if(SDL_RenderCopy(g_sdlRenderer, t, NULL, &dest) < 0) {
+        a_out__error("SDL_RenderCopy failed: %s", SDL_GetError());
+    }
 }
 #endif
