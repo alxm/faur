@@ -55,16 +55,16 @@
     #endif
 #endif
 
-#ifndef A_USE_LIB_SDL
-    #define A_USE_LIB_SDL 0
+#ifndef A_CONFIG_LIB_SDL
+    #define A_CONFIG_LIB_SDL 0
 #endif
 
-#ifndef A_USE_RENDER_SOFTWARE
-    #define A_USE_RENDER_SOFTWARE 0
+#ifndef A_CONFIG_RENDER_SOFTWARE
+    #define A_CONFIG_RENDER_SOFTWARE 0
 #endif
 
-#ifndef A_USE_RENDER_SDL2
-    #define A_USE_RENDER_SDL2 0
+#ifndef A_CONFIG_RENDER_SDL2
+    #define A_CONFIG_RENDER_SDL2 0
 #endif
 
 // For putenv

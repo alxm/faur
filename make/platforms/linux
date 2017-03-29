@@ -14,8 +14,8 @@ A_PLATFORM_CFLAGS = \
 
 ifdef USE_LIB_SDL1
     A_PLATFORM_LIBS := $(shell sdl-config --libs) -lSDL_mixer $(A_PLATFORM_LIBS)
-    A_PLATFORM_CFLAGS += $(shell sdl-config --cflags) -DA_USE_LIB_SDL=1 -DA_USE_RENDER_SOFTWARE=1
+    A_PLATFORM_CFLAGS += $(shell sdl-config --cflags) -DA_CONFIG_LIB_SDL=1 -DA_CONFIG_RENDER_SOFTWARE=1
 else
     A_PLATFORM_LIBS := $(shell sdl2-config --libs) -lSDL2_mixer $(A_PLATFORM_LIBS)
-    A_PLATFORM_CFLAGS += $(shell sdl2-config --cflags) -DA_USE_LIB_SDL=2 -DA_USE_RENDER_SDL2=1
+    A_PLATFORM_CFLAGS += $(shell sdl2-config --cflags) -DA_CONFIG_LIB_SDL=2 -DA_CONFIG_RENDER_SDL2=1
 endif

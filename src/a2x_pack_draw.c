@@ -19,7 +19,7 @@
 
 #include "a2x_pack_draw.v.h"
 
-#if A_USE_RENDER_SOFTWARE
+#if A_CONFIG_RENDER_SOFTWARE
 
 typedef void (*ADrawPixel)(int X, int Y);
 typedef void (*ADrawRectangle)(int X, int Y, int Width, int Height);
@@ -314,7 +314,7 @@ void a_draw__updateRoutines(void)
     g_draw_circle_clip = g_circle[a_pixel__state.blend][1];
 }
 
-#elif A_USE_RENDER_SDL2
+#elif A_CONFIG_RENDER_SDL2
 
 void a_draw__init(void)
 {
@@ -325,21 +325,21 @@ void a_draw__init(void)
 
 void a_draw_fill(void)
 {
-    #if A_USE_RENDER_SOFTWARE
+    #if A_CONFIG_RENDER_SOFTWARE
         g_draw_rectangle(0, 0, a__screen.width, a__screen.height);
-    #elif A_USE_RENDER_SDL2
+    #elif A_CONFIG_RENDER_SDL2
         a_sdl_render__fillRect(0, 0, a__screen.width, a__screen.height);
     #endif
 }
 
 void a_draw_rectangleThick(int X, int Y, int Width, int Height, int Thickness)
 {
-    #if A_USE_RENDER_SOFTWARE
+    #if A_CONFIG_RENDER_SOFTWARE
         g_draw_rectangle(X, Y, Width, Thickness); // top
         g_draw_rectangle(X, Y + Height - Thickness, Width, Thickness); // bottom
         g_draw_rectangle(X, Y + Thickness, Thickness, Height - 2 * Thickness); // left
         g_draw_rectangle(X + Width - Thickness, Y + Thickness, Thickness, Height - 2 * Thickness); // right
-    #elif A_USE_RENDER_SDL2
+    #elif A_CONFIG_RENDER_SDL2
         X = X;
         Y = Y;
         Width = Width;
@@ -350,11 +350,11 @@ void a_draw_rectangleThick(int X, int Y, int Width, int Height, int Thickness)
 
 void a_draw_pixel(int X, int Y)
 {
-    #if A_USE_RENDER_SOFTWARE
+    #if A_CONFIG_RENDER_SOFTWARE
         if(a_screen_boxInsideClip(X, Y, 1, 1)) {
             g_draw_pixel(X, Y);
         }
-    #elif A_USE_RENDER_SDL2
+    #elif A_CONFIG_RENDER_SDL2
         X = X;
         Y = Y;
     #endif
@@ -362,7 +362,7 @@ void a_draw_pixel(int X, int Y)
 
 void a_draw_rectangle(int X, int Y, int Width, int Height)
 {
-    #if A_USE_RENDER_SOFTWARE
+    #if A_CONFIG_RENDER_SOFTWARE
         if(a_screen_boxInsideClip(X, Y, Width, Height)) {
             g_draw_rectangle(X, Y, Width, Height);
             return;
@@ -381,7 +381,7 @@ void a_draw_rectangle(int X, int Y, int Width, int Height)
         Height = a_math_min(Height, y2 - Y);
 
         g_draw_rectangle(X, Y, Width, Height);
-    #elif A_USE_RENDER_SDL2
+    #elif A_CONFIG_RENDER_SDL2
         X = X;
         Y = Y;
         Width = Width;
@@ -391,13 +391,13 @@ void a_draw_rectangle(int X, int Y, int Width, int Height)
 
 void a_draw_line(int X1, int Y1, int X2, int Y2)
 {
-    #if A_USE_RENDER_SOFTWARE
+    #if A_CONFIG_RENDER_SOFTWARE
         if(!cohen_sutherland_clip(&X1, &Y1, &X2, &Y2)) {
             return;
         }
 
         g_draw_line(X1, Y1, X2, Y2);
-    #elif A_USE_RENDER_SDL2
+    #elif A_CONFIG_RENDER_SDL2
         X1 = X1;
         Y1 = Y1;
         X2 = X2;
@@ -407,7 +407,7 @@ void a_draw_line(int X1, int Y1, int X2, int Y2)
 
 void a_draw_hline(int X1, int X2, int Y)
 {
-    #if A_USE_RENDER_SOFTWARE
+    #if A_CONFIG_RENDER_SOFTWARE
         if(X1 >= X2 || !a_screen_boxOnClip(X1, Y, X2 - X1, 1)) {
             return;
         }
@@ -416,7 +416,7 @@ void a_draw_hline(int X1, int X2, int Y)
         X2 = a_math_min(X2, a__screen.clipX2);
 
         g_draw_hline(X1, X2, Y);
-    #elif A_USE_RENDER_SDL2
+    #elif A_CONFIG_RENDER_SDL2
         X1 = X1;
         X2 = X2;
         Y = Y;
@@ -425,7 +425,7 @@ void a_draw_hline(int X1, int X2, int Y)
 
 void a_draw_vline(int X, int Y1, int Y2)
 {
-    #if A_USE_RENDER_SOFTWARE
+    #if A_CONFIG_RENDER_SOFTWARE
         if(Y1 >= Y2 || !a_screen_boxOnClip(X, Y1, 1, Y2 - Y1)) {
             return;
         }
@@ -434,7 +434,7 @@ void a_draw_vline(int X, int Y1, int Y2)
         Y2 = a_math_min(Y2, a__screen.clipY2);
 
         g_draw_vline(X, Y1, Y2);
-    #elif A_USE_RENDER_SDL2
+    #elif A_CONFIG_RENDER_SDL2
         X = X;
         Y1 = Y1;
         Y2 = Y2;
@@ -443,7 +443,7 @@ void a_draw_vline(int X, int Y1, int Y2)
 
 void a_draw_circle(int X, int Y, int Radius)
 {
-    #if A_USE_RENDER_SOFTWARE
+    #if A_CONFIG_RENDER_SOFTWARE
         if(a_screen_boxInsideClip(X - Radius, Y - Radius, 2 * Radius, 2 * Radius)) {
             g_draw_circle_noclip(X, Y, Radius);
             return;
@@ -452,7 +452,7 @@ void a_draw_circle(int X, int Y, int Radius)
         if(a_screen_boxOnClip(X - Radius, Y - Radius, 2 * Radius, 2 * Radius)) {
             g_draw_circle_clip(X, Y, Radius);
         }
-    #elif A_USE_RENDER_SDL2
+    #elif A_CONFIG_RENDER_SDL2
         X = X;
         Y = Y;
         Radius = Radius;

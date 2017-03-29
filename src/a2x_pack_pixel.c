@@ -69,7 +69,7 @@ void a_pixel_reset(void)
     a_pixel_setRGBA(0, 0, 0, A_PIXEL_ALPHA_MAX);
 }
 
-#if A_USE_RENDER_SOFTWARE
+#if A_CONFIG_RENDER_SOFTWARE
 static void optimizeAlphaBlending(bool UpdateRoutines)
 {
     if(a_pixel__state.canonicalBlend == A_PIXEL_BLEND_RGBA) {
@@ -110,11 +110,11 @@ void a_pixel_setBlend(APixelBlend Blend)
     a_pixel__state.blend = Blend;
     a_pixel__state.canonicalBlend = Blend;
 
-    #if A_USE_RENDER_SOFTWARE
+    #if A_CONFIG_RENDER_SOFTWARE
         optimizeAlphaBlending(false);
         a_draw__updateRoutines();
         a_sprite__updateRoutines();
-    #elif A_USE_RENDER_SDL2
+    #elif A_CONFIG_RENDER_SDL2
         if(Blend == A_PIXEL_BLEND_RGB25) {
             a_pixel_setAlpha(A_PIXEL_ALPHA_MAX / 4);
         } else if(Blend == A_PIXEL_BLEND_RGB50) {
@@ -131,9 +131,9 @@ void a_pixel_setAlpha(int Alpha)
 {
     a_pixel__state.alpha = a_math_constrain(Alpha, 0, A_PIXEL_ALPHA_MAX);
 
-    #if A_USE_RENDER_SOFTWARE
+    #if A_CONFIG_RENDER_SOFTWARE
         optimizeAlphaBlending(true);
-    #elif A_USE_RENDER_SDL2
+    #elif A_CONFIG_RENDER_SDL2
         a_sdl_render__setDrawColor();
     #endif
 }
@@ -145,7 +145,7 @@ void a_pixel_setRGB(int Red, int Green, int Blue)
     a_pixel__state.blue = (unsigned)Blue & 0xff;
     a_pixel__state.pixel = a_pixel_rgb(Red, Green, Blue);
 
-    #if A_USE_RENDER_SDL2
+    #if A_CONFIG_RENDER_SDL2
         a_sdl_render__setDrawColor();
     #endif
 }
@@ -158,9 +158,9 @@ void a_pixel_setRGBA(int Red, int Green, int Blue, int Alpha)
     a_pixel__state.alpha = a_math_constrain(Alpha, 0, A_PIXEL_ALPHA_MAX);
     a_pixel__state.pixel = a_pixel_rgb(Red, Green, Blue);
 
-    #if A_USE_RENDER_SOFTWARE
+    #if A_CONFIG_RENDER_SOFTWARE
         optimizeAlphaBlending(true);
-    #elif A_USE_RENDER_SDL2
+    #elif A_CONFIG_RENDER_SDL2
         a_sdl_render__setDrawColor();
     #endif
 }
@@ -172,7 +172,7 @@ void a_pixel_setHex(uint32_t Hexcode)
     a_pixel__state.blue = Hexcode & 0xff;
     a_pixel__state.pixel = a_pixel_hex(Hexcode);
 
-    #if A_USE_RENDER_SDL2
+    #if A_CONFIG_RENDER_SDL2
         a_sdl_render__setDrawColor();
     #endif
 }
@@ -184,7 +184,7 @@ void a_pixel_setPixel(APixel Pixel)
     a_pixel__state.blue = a_pixel_blue(Pixel);
     a_pixel__state.pixel = Pixel;
 
-    #if A_USE_RENDER_SDL2
+    #if A_CONFIG_RENDER_SDL2
         a_sdl_render__setDrawColor();
     #endif
 }

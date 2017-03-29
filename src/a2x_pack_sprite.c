@@ -295,7 +295,7 @@ ASprite* a_sprite_fromPixels(const APixel* Pixels, int Width, int Height)
 
     a_sprite__refreshSpans(s);
 
-    #if A_USE_RENDER_SDL2
+    #if A_CONFIG_RENDER_SDL2
         s->texture = a_sdl_render__makeTexture(s->pixels, Width, Height);
     #endif
 
@@ -402,7 +402,7 @@ doneColorKey:
 
     a_sprite__refreshSpans(sprite);
 
-    #if A_USE_RENDER_SDL2
+    #if A_CONFIG_RENDER_SDL2
         sprite->texture = a_sdl_render__makeTexture(sprite->pixels,
                                                     spriteWidth,
                                                     spriteHeight);
@@ -449,7 +449,7 @@ void a_sprite_free(ASprite* Sprite)
 
 void a_sprite__free(ASprite* Sprite)
 {
-    #if A_USE_RENDER_SDL2
+    #if A_CONFIG_RENDER_SDL2
         a_sdl_render__freeTexture(Sprite->texture);
     #endif
 
@@ -460,7 +460,7 @@ void a_sprite__free(ASprite* Sprite)
 
 void a_sprite_blit(const ASprite* Sprite, int X, int Y)
 {
-    #if A_USE_RENDER_SOFTWARE
+    #if A_CONFIG_RENDER_SOFTWARE
         if(a_screen_boxInsideClip(X, Y, Sprite->w, Sprite->h)) {
             if(Sprite->colorKeyed) {
                 g_blitter_keyed_noclip(Sprite, X, Y);
@@ -474,7 +474,7 @@ void a_sprite_blit(const ASprite* Sprite, int X, int Y)
                 g_blitter_block_doclip(Sprite, X, Y);
             }
         }
-    #elif A_USE_RENDER_SDL2
+    #elif A_CONFIG_RENDER_SDL2
         a_sdl_render__blitTexture(Sprite->texture, X, Y, Sprite->w, Sprite->h);
     #endif
 }
@@ -608,7 +608,7 @@ ASprite* a_sprite_clone(const ASprite* Sprite)
 
     a_sprite__refreshSpans(s);
 
-    #if A_USE_RENDER_SDL2
+    #if A_CONFIG_RENDER_SDL2
         s->texture = a_sdl_render__makeTexture(s->pixels, s->w, s->h);
     #endif
 

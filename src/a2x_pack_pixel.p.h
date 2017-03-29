@@ -40,10 +40,10 @@
     #define A_PIXEL_GREEN_BITS 8
     #define A_PIXEL_BLUE_BITS  8
 
-    #if A_USE_LIB_SDL == 1
+    #if A_CONFIG_LIB_SDL == 1
         // XRGB8888
         #define A_PIXEL_PAD_BITS 0
-    #elif A_USE_LIB_SDL == 2
+    #elif A_CONFIG_LIB_SDL == 2
         // RGBX8888
         #define A_PIXEL_PAD_BITS 8
     #endif
@@ -61,9 +61,9 @@
 #define A_PIXEL_GREEN_PACK (8 - A_PIXEL_GREEN_BITS)
 #define A_PIXEL_BLUE_PACK  (8 - A_PIXEL_BLUE_BITS)
 
-#if A_USE_RENDER_SOFTWARE
+#if A_CONFIG_RENDER_SOFTWARE
     #define A_PIXEL_ALPHA_MAX 256
-#elif A_USE_RENDER_SDL2
+#elif A_CONFIG_RENDER_SDL2
     #define A_PIXEL_ALPHA_MAX 255
 #endif
 
@@ -78,9 +78,9 @@ static inline APixel a_pixel_rgb(int Red, int Green, int Blue)
 static inline APixel a_pixel_hex(uint32_t Hexcode)
 {
     #if A_PIXEL_BPP == 32
-        #if A_USE_LIB_SDL == 1
+        #if A_CONFIG_LIB_SDL == 1
             return (APixel)(Hexcode & 0xffffff);
-        #elif A_USE_LIB_SDL == 2
+        #elif A_CONFIG_LIB_SDL == 2
             return (APixel)(Hexcode << A_PIXEL_PAD_BITS);
         #endif
     #else

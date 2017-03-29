@@ -228,7 +228,7 @@ void a_settings__freeze(void)
 {
     g_settingsAreFrozen = true;
 
-    #if A_USE_LIB_SDL == 2
+    #if A_CONFIG_LIB_SDL == 2
         a_settings__set("video.doubleBuffer", "1");
     #endif
 

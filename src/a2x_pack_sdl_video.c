@@ -21,20 +21,20 @@
 
 #include <SDL.h>
 
-#if A_USE_LIB_SDL == 1
+#if A_CONFIG_LIB_SDL == 1
     static SDL_Surface* g_sdlScreen = NULL;
-#elif A_USE_LIB_SDL == 2
+#elif A_CONFIG_LIB_SDL == 2
     static SDL_Window* g_sdlWindow = NULL;
     static SDL_Renderer* g_sdlRenderer = NULL;
 
-    #if A_USE_RENDER_SOFTWARE
+    #if A_CONFIG_RENDER_SOFTWARE
         static SDL_Texture* g_sdlTexture = NULL;
     #endif
 
     static uint8_t g_clearR, g_clearG, g_clearB;
 #endif
 
-#if A_USE_LIB_SDL == 2
+#if A_CONFIG_LIB_SDL == 2
 static void clearScreen(void)
 {
     if(SDL_SetRenderDrawColor(g_sdlRenderer,
@@ -66,14 +66,14 @@ void a_sdl_video__init(void)
 
 void a_sdl_video__uninit(void)
 {
-    #if A_USE_LIB_SDL == 1
+    #if A_CONFIG_LIB_SDL == 1
         if(!a_settings_getBool("video.doubleBuffer")) {
             if(SDL_MUSTLOCK(g_sdlScreen)) {
                 SDL_UnlockSurface(g_sdlScreen);
             }
         }
-    #elif A_USE_LIB_SDL == 2
-        #if A_USE_RENDER_SOFTWARE
+    #elif A_CONFIG_LIB_SDL == 2
+        #if A_CONFIG_RENDER_SOFTWARE
             SDL_DestroyTexture(g_sdlTexture);
         #endif
         SDL_DestroyRenderer(g_sdlRenderer);
@@ -85,7 +85,7 @@ void a_sdl_video__uninit(void)
 
 void a_sdl_screen__set(void)
 {
-    #if A_USE_LIB_SDL == 1
+    #if A_CONFIG_LIB_SDL == 1
         int bpp = 0;
         uint32_t videoFlags = SDL_SWSURFACE;
 
@@ -123,7 +123,7 @@ void a_sdl_screen__set(void)
         }
 
         a_screen__setPixelBuffer(g_sdlScreen->pixels);
-    #elif A_USE_LIB_SDL == 2
+    #elif A_CONFIG_LIB_SDL == 2
         int ret;
         uint32_t windowFlags = SDL_WINDOW_MAXIMIZED | SDL_WINDOW_RESIZABLE;
 
@@ -155,7 +155,7 @@ void a_sdl_screen__set(void)
             a_out__fatal("SDL_RenderSetLogicalSize failed: %s", SDL_GetError());
         }
 
-        #if A_USE_RENDER_SOFTWARE
+        #if A_CONFIG_RENDER_SOFTWARE
             g_sdlTexture = SDL_CreateTexture(g_sdlRenderer,
                                              #if A_PIXEL_BPP == 16
                                                  SDL_PIXELFORMAT_RGB565,
@@ -189,9 +189,9 @@ void a_sdl_screen__set(void)
             a_settings_getString("app.title"),
             a_settings_getString("app.version"));
 
-        #if A_USE_LIB_SDL == 1
+        #if A_CONFIG_LIB_SDL == 1
             SDL_WM_SetCaption(caption, NULL);
-        #elif A_USE_LIB_SDL == 2
+        #elif A_CONFIG_LIB_SDL == 2
             SDL_SetWindowTitle(g_sdlWindow, caption);
         #endif
     #else
@@ -201,7 +201,7 @@ void a_sdl_screen__set(void)
 
 void a_sdl_screen__show(void)
 {
-    #if A_USE_LIB_SDL == 1
+    #if A_CONFIG_LIB_SDL == 1
         #if A_PLATFORM_WIZ
             if(a_settings_getBool("video.fixWizTearing")) { // also video.doubleBuffer
                 #define A_WIDTH 320
@@ -266,8 +266,8 @@ void a_sdl_screen__show(void)
 
             a_screen__setPixelBuffer(g_sdlScreen->pixels);
         }
-    #elif A_USE_LIB_SDL == 2
-        #if A_USE_RENDER_SOFTWARE
+    #elif A_CONFIG_LIB_SDL == 2
+        #if A_CONFIG_RENDER_SOFTWARE
             if(SDL_UpdateTexture(g_sdlTexture,
                                  NULL,
                                  a__screen.pixels,
@@ -288,9 +288,9 @@ void a_sdl_screen__show(void)
 
 void a_sdl_screen__setFullScreen(bool FullScreen)
 {
-    #if A_USE_LIB_SDL == 1
+    #if A_CONFIG_LIB_SDL == 1
         FullScreen = FullScreen;
-    #elif A_USE_LIB_SDL == 2
+    #elif A_CONFIG_LIB_SDL == 2
         uint32_t flag = FullScreen ? SDL_WINDOW_FULLSCREEN : 0;
         int ret = SDL_SetWindowFullscreen(g_sdlWindow, flag);
 
@@ -300,7 +300,7 @@ void a_sdl_screen__setFullScreen(bool FullScreen)
     #endif
 }
 
-#if A_USE_RENDER_SDL2
+#if A_CONFIG_RENDER_SDL2
 void a_sdl_render__setDrawColor(void)
 {
     if(SDL_SetRenderDrawColor(g_sdlRenderer,
