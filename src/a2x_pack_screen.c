@@ -245,7 +245,7 @@ void a_screen_resetTarget(void)
     a__screen = g_savedScreen;
 
     if(g_spriteTarget) {
-        a_sprite__refreshSpans(g_spriteTarget);
+        a_sprite__refreshTransparency(g_spriteTarget);
         g_spriteTarget = NULL;
     }
 }

@@ -26,14 +26,13 @@
 
 struct ASprite {
     AListNode* node;
-    int w;
-    int wLog2;
-    int h;
-    unsigned* spans;
-    size_t spansSize;
     char* nameId;
-    bool colorKeyed;
-    #if A_CONFIG_RENDER_SDL2
+    int w, wLog2, h;
+    #if A_CONFIG_RENDER_SOFTWARE
+        unsigned* spans;
+        size_t spansSize;
+        bool colorKeyed;
+    #elif A_CONFIG_RENDER_SDL2
         void* texture;
     #endif
     APixel pixels[];
@@ -47,7 +46,7 @@ extern void a_sprite__init(void);
 extern void a_sprite__uninit(void);
 
 extern void a_sprite__updateRoutines(void);
-extern void a_sprite__refreshSpans(ASprite* Sprite);
+extern void a_sprite__refreshTransparency(ASprite* Sprite);
 
 #define A_SPRITE__NAME(Sprite) (Sprite->nameId ? Sprite->nameId : "Sprite")
 #define a_sprite__getPixel(s, x, y) (*((s)->pixels + (y) * (s)->w + (x)))
