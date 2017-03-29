@@ -11,6 +11,7 @@ A_PLATFORM_LIBS = \
 A_PLATFORM_CFLAGS = \
     -DA_PLATFORM_MINGW=1 \
     -DA_USE_LIB_SDL=2 \
+    -DA_USE_RENDER_SDL2=1 \
     -O3 \
     $(shell $(MINGW_BIN)/sdl2-config --cflags) \
 

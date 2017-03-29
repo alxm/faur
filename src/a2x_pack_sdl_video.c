@@ -26,7 +26,30 @@
 #elif A_USE_LIB_SDL == 2
     static SDL_Window* g_sdlWindow = NULL;
     static SDL_Renderer* g_sdlRenderer = NULL;
-    static SDL_Texture* g_sdlTexture = NULL;
+
+    #if A_USE_RENDER_SOFTWARE
+        static SDL_Texture* g_sdlTexture = NULL;
+    #endif
+
+    static uint8_t g_clearR, g_clearG, g_clearB;
+#endif
+
+#if A_USE_LIB_SDL == 2
+static void clearScreen(void)
+{
+    if(SDL_SetRenderDrawColor(g_sdlRenderer,
+                              g_clearR,
+                              g_clearG,
+                              g_clearB,
+                              SDL_ALPHA_OPAQUE) < 0) {
+
+        a_out__error("SDL_SetRenderDrawColor failed: %s", SDL_GetError());
+    }
+
+    if(SDL_RenderClear(g_sdlRenderer) < 0) {
+        a_out__error("SDL_RenderClear failed: %s", SDL_GetError());
+    }
+}
 #endif
 
 void a_sdl_video__init(void)
@@ -50,7 +73,9 @@ void a_sdl_video__uninit(void)
             }
         }
     #elif A_USE_LIB_SDL == 2
-        SDL_DestroyTexture(g_sdlTexture);
+        #if A_USE_RENDER_SOFTWARE
+            SDL_DestroyTexture(g_sdlTexture);
+        #endif
         SDL_DestroyRenderer(g_sdlRenderer);
         SDL_DestroyWindow(g_sdlWindow);
     #endif
@@ -130,20 +155,20 @@ void a_sdl_screen__set(void)
             a_out__fatal("SDL_RenderSetLogicalSize failed: %s", SDL_GetError());
         }
 
-        g_sdlTexture = SDL_CreateTexture(g_sdlRenderer,
-                                         #if A_PIXEL_BPP == 16
-                                             SDL_PIXELFORMAT_RGB565,
-                                         #elif A_PIXEL_BPP == 32
-                                             SDL_PIXELFORMAT_RGBX8888,
-                                         #else
-                                             #error Invalid A_PIXEL_BPP value
-                                         #endif
-                                         SDL_TEXTUREACCESS_STREAMING,
-                                         a__screen.width,
-                                         a__screen.height);
-        if(g_sdlTexture == NULL) {
-            a_out__fatal("SDL_CreateTexture failed: %s", SDL_GetError());
-        }
+        #if A_USE_RENDER_SOFTWARE
+            g_sdlTexture = SDL_CreateTexture(g_sdlRenderer,
+                                             #if A_PIXEL_BPP == 16
+                                                 SDL_PIXELFORMAT_RGB565,
+                                             #elif A_PIXEL_BPP == 32
+                                                 SDL_PIXELFORMAT_RGBX8888,
+                                             #endif
+                                             SDL_TEXTUREACCESS_STREAMING,
+                                             a__screen.width,
+                                             a__screen.height);
+            if(g_sdlTexture == NULL) {
+                a_out__fatal("SDL_CreateTexture failed: %s", SDL_GetError());
+            }
+        #endif
 
         SDL_SetHintWithPriority(SDL_HINT_RENDER_SCALE_QUALITY,
                                 "nearest",
@@ -151,14 +176,11 @@ void a_sdl_screen__set(void)
 
         char* end;
         const char* color = a_settings_getString("video.borderColor");
-        uint8_t r = (uint8_t)strtol(color, &end, 0);
-        uint8_t g = (uint8_t)strtol(end, &end, 0);
-        uint8_t b = (uint8_t)strtol(end, NULL, 0);
+        g_clearR = (uint8_t)strtol(color, &end, 0);
+        g_clearG = (uint8_t)strtol(end, &end, 0);
+        g_clearB = (uint8_t)strtol(end, NULL, 0);
 
-        ret = SDL_SetRenderDrawColor(g_sdlRenderer, r, g, b, 255);
-        if(ret < 0) {
-            a_out__fatal("SDL_SetRenderDrawColor failed: %s", SDL_GetError());
-        }
+        clearScreen();
     #endif
 
     #if A_PLATFORM_LINUXPC
@@ -245,27 +267,22 @@ void a_sdl_screen__show(void)
             a_screen__setPixelBuffer(g_sdlScreen->pixels);
         }
     #elif A_USE_LIB_SDL == 2
-        int ret;
+        #if A_USE_RENDER_SOFTWARE
+            if(SDL_UpdateTexture(g_sdlTexture,
+                                 NULL,
+                                 a__screen.pixels,
+                                 a__screen.width * (int)sizeof(APixel)) < 0) {
 
-        ret = SDL_RenderClear(g_sdlRenderer);
-        if(ret < 0) {
-            a_out__fatal("SDL_RenderClear failed: %s", SDL_GetError());
-        }
+                a_out__fatal("SDL_UpdateTexture failed: %s", SDL_GetError());
+            }
 
-        ret = SDL_UpdateTexture(g_sdlTexture,
-                                NULL,
-                                a__screen.pixels,
-                                a__screen.width * (int)sizeof(APixel));
-        if(ret < 0) {
-            a_out__fatal("SDL_UpdateTexture failed: %s", SDL_GetError());
-        }
-
-        ret = SDL_RenderCopy(g_sdlRenderer, g_sdlTexture, NULL, NULL);
-        if(ret < 0) {
-            a_out__fatal("SDL_RenderCopy failed: %s", SDL_GetError());
-        }
+            if(SDL_RenderCopy(g_sdlRenderer, g_sdlTexture, NULL, NULL) < 0) {
+                a_out__fatal("SDL_RenderCopy failed: %s", SDL_GetError());
+            }
+        #endif
 
         SDL_RenderPresent(g_sdlRenderer);
+        clearScreen();
     #endif
 }
 
@@ -282,3 +299,90 @@ void a_sdl_screen__setFullScreen(bool FullScreen)
         }
     #endif
 }
+
+#if A_USE_RENDER_SDL2
+void a_sdl_render__setDrawColor(void)
+{
+    if(SDL_SetRenderDrawColor(g_sdlRenderer,
+                              (uint8_t)a_pixel__state.red,
+                              (uint8_t)a_pixel__state.green,
+                              (uint8_t)a_pixel__state.blue,
+                              (uint8_t)a_pixel__state.alpha) < 0) {
+
+        a_out__error("SDL_SetRenderDrawColor failed: %s", SDL_GetError());
+    }
+}
+
+void a_sdl_render__setBlendMode(void)
+{
+    SDL_BlendMode mode = SDL_BLENDMODE_NONE;
+
+    if(a_pixel__state.blend >= A_PIXEL_BLEND_RGBA
+        && a_pixel__state.blend <= A_PIXEL_BLEND_RGB75) {
+
+        mode = SDL_BLENDMODE_BLEND;
+    }
+
+    if(SDL_SetRenderDrawBlendMode(g_sdlRenderer, mode) < 0) {
+        a_out__error("SDL_SetRenderDrawBlendMode failed: %s", SDL_GetError());
+    }
+}
+
+void a_sdl_render__fillRect(int X, int Y, int Width, int Height)
+{
+    SDL_Rect area = {X, Y, Width, Height};
+
+    if(SDL_RenderFillRect(g_sdlRenderer, &area) < 0) {
+        a_out__error("SDL_RenderFillRect failed: %s", SDL_GetError());
+    }
+}
+
+void* a_sdl_render__makeTexture(APixel* Pixels, int Width, int Height)
+{
+    SDL_Surface* s = SDL_CreateRGBSurfaceFrom(Pixels,
+                                              Width,
+                                              Height,
+                                              A_PIXEL_BPP,
+                                              Width * (int)sizeof(APixel),
+                                              (APixel)A_PIXEL_RED_MASK << A_PIXEL_RED_SHIFT,
+                                              (APixel)A_PIXEL_GREEN_MASK << A_PIXEL_GREEN_SHIFT,
+                                              (APixel)A_PIXEL_BLUE_MASK << A_PIXEL_BLUE_SHIFT,
+                                              0);
+    if(s == NULL) {
+        a_out__fatal("SDL_CreateRGBSurfaceFrom failed: %s", SDL_GetError());
+    }
+
+    SDL_Texture* t = SDL_CreateTextureFromSurface(g_sdlRenderer, s);
+    if(t == NULL) {
+        a_out__fatal("SDL_CreateTextureFromSurface failed: %s", SDL_GetError());
+    }
+
+    SDL_FreeSurface(s);
+
+    return t;
+}
+
+void a_sdl_render__freeTexture(void* Texture)
+{
+    SDL_DestroyTexture(Texture);
+}
+
+void a_sdl_render__blitTexture(void* Texture, int X, int Y, int Width, int Height)
+{
+    SDL_Texture* t = Texture;
+    SDL_Rect dest = {X, Y, Width, Height};
+    SDL_BlendMode mode = SDL_BLENDMODE_NONE;
+
+    if(a_pixel__state.blend >= A_PIXEL_BLEND_RGBA
+        && a_pixel__state.blend <= A_PIXEL_BLEND_RGB75) {
+
+        mode = SDL_BLENDMODE_BLEND;
+    }
+
+    if(SDL_SetTextureBlendMode(t, mode) < 0) {
+        a_out__error("SDL_SetTextureBlendMode failed: %s", SDL_GetError());
+    }
+
+    SDL_RenderCopy(g_sdlRenderer, t, NULL, &dest);
+}
+#endif

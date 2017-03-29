@@ -29,3 +29,12 @@ extern void a_sdl_video__uninit(void);
 extern void a_sdl_screen__set(void);
 extern void a_sdl_screen__show(void);
 extern void a_sdl_screen__setFullScreen(bool FullScreen);
+
+#if A_USE_RENDER_SDL2
+    extern void a_sdl_render__setDrawColor(void);
+    extern void a_sdl_render__setBlendMode(void);
+    extern void a_sdl_render__fillRect(int X, int Y, int Width, int Height);
+    extern void* a_sdl_render__makeTexture(APixel* Pixels, int Width, int Height);
+    extern void a_sdl_render__freeTexture(void* Texture);
+    extern void a_sdl_render__blitTexture(void* Texture, int X, int Y, int Width, int Height);
+#endif

@@ -295,6 +295,10 @@ ASprite* a_sprite_fromPixels(const APixel* Pixels, int Width, int Height)
 
     a_sprite__refreshSpans(s);
 
+    #if A_USE_RENDER_SDL2
+        s->texture = a_sdl_render__makeTexture(s->pixels, Width, Height);
+    #endif
+
     return s;
 }
 
@@ -398,6 +402,12 @@ doneColorKey:
 
     a_sprite__refreshSpans(sprite);
 
+    #if A_USE_RENDER_SDL2
+        sprite->texture = a_sdl_render__makeTexture(sprite->pixels,
+                                                    spriteWidth,
+                                                    spriteHeight);
+    #endif
+
     return sprite;
 }
 
@@ -439,6 +449,10 @@ void a_sprite_free(ASprite* Sprite)
 
 void a_sprite__free(ASprite* Sprite)
 {
+    #if A_USE_RENDER_SDL2
+        a_sdl_render__freeTexture(Sprite->texture);
+    #endif
+
     free(Sprite->spans);
     free(Sprite->nameId);
     free(Sprite);
@@ -446,19 +460,23 @@ void a_sprite__free(ASprite* Sprite)
 
 void a_sprite_blit(const ASprite* Sprite, int X, int Y)
 {
-    if(a_screen_boxInsideClip(X, Y, Sprite->w, Sprite->h)) {
-        if(Sprite->colorKeyed) {
-            g_blitter_keyed_noclip(Sprite, X, Y);
-        } else {
-            g_blitter_block_noclip(Sprite, X, Y);
+    #if A_USE_RENDER_SOFTWARE
+        if(a_screen_boxInsideClip(X, Y, Sprite->w, Sprite->h)) {
+            if(Sprite->colorKeyed) {
+                g_blitter_keyed_noclip(Sprite, X, Y);
+            } else {
+                g_blitter_block_noclip(Sprite, X, Y);
+            }
+        } else if(a_screen_boxOnClip(X, Y, Sprite->w, Sprite->h)) {
+            if(Sprite->colorKeyed) {
+                g_blitter_keyed_doclip(Sprite, X, Y);
+            } else {
+                g_blitter_block_doclip(Sprite, X, Y);
+            }
         }
-    } else if(a_screen_boxOnClip(X, Y, Sprite->w, Sprite->h)) {
-        if(Sprite->colorKeyed) {
-            g_blitter_keyed_doclip(Sprite, X, Y);
-        } else {
-            g_blitter_block_doclip(Sprite, X, Y);
-        }
-    }
+    #elif A_USE_RENDER_SDL2
+        a_sdl_render__blitTexture(Sprite->texture, X, Y, Sprite->w, Sprite->h);
+    #endif
 }
 
 void a_sprite_blitCenter(const ASprite* Sprite)
@@ -589,6 +607,10 @@ ASprite* a_sprite_clone(const ASprite* Sprite)
            (unsigned)Sprite->w * (unsigned)Sprite->h * sizeof(APixel));
 
     a_sprite__refreshSpans(s);
+
+    #if A_USE_RENDER_SDL2
+        s->texture = a_sdl_render__makeTexture(s->pixels, s->w, s->h);
+    #endif
 
     return s;
 }

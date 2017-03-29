@@ -33,6 +33,9 @@ struct ASprite {
     size_t spansSize;
     char* nameId;
     bool colorKeyed;
+    #if A_USE_RENDER_SDL2
+        void* texture;
+    #endif
     APixel pixels[];
 };
 

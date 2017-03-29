@@ -47,8 +47,6 @@
         // RGBX8888
         #define A_PIXEL_PAD_BITS 8
     #endif
-#else
-    #error Invalid A_PIXEL_BPP value
 #endif
 
 #define A_PIXEL_RED_SHIFT   (A_PIXEL_GREEN_BITS + A_PIXEL_BLUE_BITS + A_PIXEL_PAD_BITS)
@@ -63,7 +61,11 @@
 #define A_PIXEL_GREEN_PACK (8 - A_PIXEL_GREEN_BITS)
 #define A_PIXEL_BLUE_PACK  (8 - A_PIXEL_BLUE_BITS)
 
-#define A_PIXEL_ALPHA_MAX 256
+#if A_USE_RENDER_SOFTWARE
+    #define A_PIXEL_ALPHA_MAX 256
+#elif A_USE_RENDER_SDL2
+    #define A_PIXEL_ALPHA_MAX 255
+#endif
 
 static inline APixel a_pixel_rgb(int Red, int Green, int Blue)
 {

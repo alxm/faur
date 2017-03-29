@@ -1,5 +1,5 @@
 /*
-    Copyright 2011, 2016 Alex Margarit
+    Copyright 2011, 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -53,6 +53,18 @@
     #else
         #define A_PLATFORM_LINUX 0
     #endif
+#endif
+
+#ifndef A_USE_LIB_SDL
+    #define A_USE_LIB_SDL 0
+#endif
+
+#ifndef A_USE_RENDER_SOFTWARE
+    #define A_USE_RENDER_SOFTWARE 0
+#endif
+
+#ifndef A_USE_RENDER_SDL2
+    #define A_USE_RENDER_SDL2 0
 #endif
 
 // For putenv

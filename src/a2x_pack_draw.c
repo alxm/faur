@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016 Alex Margarit
+    Copyright 2010, 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -18,6 +18,8 @@
 */
 
 #include "a2x_pack_draw.v.h"
+
+#if A_USE_RENDER_SOFTWARE
 
 typedef void (*ADrawPixel)(int X, int Y);
 typedef void (*ADrawRectangle)(int X, int Y, int Width, int Height);
@@ -312,89 +314,147 @@ void a_draw__updateRoutines(void)
     g_draw_circle_clip = g_circle[a_pixel__state.blend][1];
 }
 
+#elif A_USE_RENDER_SDL2
+
+void a_draw__init(void)
+{
+    //
+}
+
+#endif
+
 void a_draw_fill(void)
 {
-    g_draw_rectangle(0, 0, a__screen.width, a__screen.height);
+    #if A_USE_RENDER_SOFTWARE
+        g_draw_rectangle(0, 0, a__screen.width, a__screen.height);
+    #elif A_USE_RENDER_SDL2
+        a_sdl_render__fillRect(0, 0, a__screen.width, a__screen.height);
+    #endif
 }
 
 void a_draw_rectangleThick(int X, int Y, int Width, int Height, int Thickness)
 {
-    g_draw_rectangle(X, Y, Width, Thickness); // top
-    g_draw_rectangle(X, Y + Height - Thickness, Width, Thickness); // bottom
-    g_draw_rectangle(X, Y + Thickness, Thickness, Height - 2 * Thickness); // left
-    g_draw_rectangle(X + Width - Thickness, Y + Thickness, Thickness, Height - 2 * Thickness); // right
+    #if A_USE_RENDER_SOFTWARE
+        g_draw_rectangle(X, Y, Width, Thickness); // top
+        g_draw_rectangle(X, Y + Height - Thickness, Width, Thickness); // bottom
+        g_draw_rectangle(X, Y + Thickness, Thickness, Height - 2 * Thickness); // left
+        g_draw_rectangle(X + Width - Thickness, Y + Thickness, Thickness, Height - 2 * Thickness); // right
+    #elif A_USE_RENDER_SDL2
+        X = X;
+        Y = Y;
+        Width = Width;
+        Height = Height;
+        Thickness = Thickness;
+    #endif
 }
 
 void a_draw_pixel(int X, int Y)
 {
-    if(a_screen_boxInsideClip(X, Y, 1, 1)) {
-        g_draw_pixel(X, Y);
-    }
+    #if A_USE_RENDER_SOFTWARE
+        if(a_screen_boxInsideClip(X, Y, 1, 1)) {
+            g_draw_pixel(X, Y);
+        }
+    #elif A_USE_RENDER_SDL2
+        X = X;
+        Y = Y;
+    #endif
 }
 
 void a_draw_rectangle(int X, int Y, int Width, int Height)
 {
-    if(a_screen_boxInsideClip(X, Y, Width, Height)) {
+    #if A_USE_RENDER_SOFTWARE
+        if(a_screen_boxInsideClip(X, Y, Width, Height)) {
+            g_draw_rectangle(X, Y, Width, Height);
+            return;
+        }
+
+        if(!a_screen_boxOnClip(X, Y, Width, Height)) {
+            return;
+        }
+
+        const int x2 = a_math_min(X + Width, a__screen.clipX2);
+        const int y2 = a_math_min(Y + Height, a__screen.clipY2);
+
+        X = a_math_max(X, a__screen.clipX);
+        Y = a_math_max(Y, a__screen.clipY);
+        Width = a_math_min(Width, x2 - X);
+        Height = a_math_min(Height, y2 - Y);
+
         g_draw_rectangle(X, Y, Width, Height);
-        return;
-    }
-
-    if(!a_screen_boxOnClip(X, Y, Width, Height)) {
-        return;
-    }
-
-    const int x2 = a_math_min(X + Width, a__screen.clipX2);
-    const int y2 = a_math_min(Y + Height, a__screen.clipY2);
-
-    X = a_math_max(X, a__screen.clipX);
-    Y = a_math_max(Y, a__screen.clipY);
-    Width = a_math_min(Width, x2 - X);
-    Height = a_math_min(Height, y2 - Y);
-
-    g_draw_rectangle(X, Y, Width, Height);
+    #elif A_USE_RENDER_SDL2
+        X = X;
+        Y = Y;
+        Width = Width;
+        Height = Height;
+    #endif
 }
 
 void a_draw_line(int X1, int Y1, int X2, int Y2)
 {
-    if(!cohen_sutherland_clip(&X1, &Y1, &X2, &Y2)) {
-        return;
-    }
+    #if A_USE_RENDER_SOFTWARE
+        if(!cohen_sutherland_clip(&X1, &Y1, &X2, &Y2)) {
+            return;
+        }
 
-    g_draw_line(X1, Y1, X2, Y2);
+        g_draw_line(X1, Y1, X2, Y2);
+    #elif A_USE_RENDER_SDL2
+        X1 = X1;
+        Y1 = Y1;
+        X2 = X2;
+        Y2 = Y2;
+    #endif
 }
 
 void a_draw_hline(int X1, int X2, int Y)
 {
-    if(X1 >= X2 || !a_screen_boxOnClip(X1, Y, X2 - X1, 1)) {
-        return;
-    }
+    #if A_USE_RENDER_SOFTWARE
+        if(X1 >= X2 || !a_screen_boxOnClip(X1, Y, X2 - X1, 1)) {
+            return;
+        }
 
-    X1 = a_math_max(X1, a__screen.clipX);
-    X2 = a_math_min(X2, a__screen.clipX2);
+        X1 = a_math_max(X1, a__screen.clipX);
+        X2 = a_math_min(X2, a__screen.clipX2);
 
-    g_draw_hline(X1, X2, Y);
+        g_draw_hline(X1, X2, Y);
+    #elif A_USE_RENDER_SDL2
+        X1 = X1;
+        X2 = X2;
+        Y = Y;
+    #endif
 }
 
 void a_draw_vline(int X, int Y1, int Y2)
 {
-    if(Y1 >= Y2 || !a_screen_boxOnClip(X, Y1, 1, Y2 - Y1)) {
-        return;
-    }
+    #if A_USE_RENDER_SOFTWARE
+        if(Y1 >= Y2 || !a_screen_boxOnClip(X, Y1, 1, Y2 - Y1)) {
+            return;
+        }
 
-    Y1 = a_math_max(Y1, a__screen.clipY);
-    Y2 = a_math_min(Y2, a__screen.clipY2);
+        Y1 = a_math_max(Y1, a__screen.clipY);
+        Y2 = a_math_min(Y2, a__screen.clipY2);
 
-    g_draw_vline(X, Y1, Y2);
+        g_draw_vline(X, Y1, Y2);
+    #elif A_USE_RENDER_SDL2
+        X = X;
+        Y1 = Y1;
+        Y2 = Y2;
+    #endif
 }
 
 void a_draw_circle(int X, int Y, int Radius)
 {
-    if(a_screen_boxInsideClip(X - Radius, Y - Radius, 2 * Radius, 2 * Radius)) {
-        g_draw_circle_noclip(X, Y, Radius);
-        return;
-    }
+    #if A_USE_RENDER_SOFTWARE
+        if(a_screen_boxInsideClip(X - Radius, Y - Radius, 2 * Radius, 2 * Radius)) {
+            g_draw_circle_noclip(X, Y, Radius);
+            return;
+        }
 
-    if(a_screen_boxOnClip(X - Radius, Y - Radius, 2 * Radius, 2 * Radius)) {
-        g_draw_circle_clip(X, Y, Radius);
-    }
+        if(a_screen_boxOnClip(X - Radius, Y - Radius, 2 * Radius, 2 * Radius)) {
+            g_draw_circle_clip(X, Y, Radius);
+        }
+    #elif A_USE_RENDER_SDL2
+        X = X;
+        Y = Y;
+        Radius = Radius;
+    #endif
 }
