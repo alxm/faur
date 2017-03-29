@@ -21,6 +21,10 @@
 
 #include "a2x_pack_sdl_video.p.h"
 
+#if A_CONFIG_RENDER_SDL2
+    typedef struct ASdlTexture ASdlTexture;
+#endif
+
 #include "a2x_pack_pixel.v.h"
 
 extern void a_sdl_video__init(void);
@@ -33,8 +37,10 @@ extern void a_sdl_screen__setFullScreen(bool FullScreen);
 #if A_CONFIG_RENDER_SDL2
     extern void a_sdl_render__setDrawColor(void);
     extern void a_sdl_render__setBlendMode(void);
+
     extern void a_sdl_render__fillRect(int X, int Y, int Width, int Height);
-    extern void* a_sdl_render__makeTexture(const APixel* Pixels, int Width, int Height);
-    extern void a_sdl_render__freeTexture(void* Texture);
-    extern void a_sdl_render__blitTexture(void* Texture, int X, int Y, int Width, int Height);
+
+    extern ASdlTexture* a_sdl_render__makeTexture(const APixel* Pixels, int Width, int Height);
+    extern void a_sdl_render__freeTexture(ASdlTexture* Texture);
+    extern void a_sdl_render__blitTexture(ASdlTexture* Texture, int X, int Y, int Width, int Height, bool FillFlat);
 #endif

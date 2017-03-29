@@ -26,12 +26,17 @@
 #elif A_CONFIG_LIB_SDL == 2
     static SDL_Window* g_sdlWindow = NULL;
     static SDL_Renderer* g_sdlRenderer = NULL;
+    static uint8_t g_clearR, g_clearG, g_clearB;
 
     #if A_CONFIG_RENDER_SOFTWARE
         static SDL_Texture* g_sdlTexture = NULL;
-    #endif
+    #elif A_CONFIG_RENDER_SDL2
+        #define NUM_SPRITE_TEXTURES 2
 
-    static uint8_t g_clearR, g_clearG, g_clearB;
+        struct ASdlTexture {
+            SDL_Texture* texture[NUM_SPRITE_TEXTURES];
+        };
+    #endif
 #endif
 
 #if A_CONFIG_LIB_SDL == 2
@@ -337,53 +342,74 @@ void a_sdl_render__fillRect(int X, int Y, int Width, int Height)
     }
 }
 
-void* a_sdl_render__makeTexture(const APixel* Pixels, int Width, int Height)
+ASdlTexture* a_sdl_render__makeTexture(const APixel* Pixels, int Width, int Height)
 {
+    ASdlTexture* sprite = a_mem_malloc(sizeof(ASdlTexture));
+
     size_t bufferSize = (unsigned)Width * (unsigned)Height * sizeof(APixel);
     APixel* pixels = a_mem_dup(Pixels, bufferSize);
 
-    for(int i = Width * Height; i--;) {
-        if(pixels[i] != a_sprite__colorKey) {
-            pixels[i] |= 0xff;
+    for(int i = 0; i < NUM_SPRITE_TEXTURES; i++) {
+        if(i == 0) {
+            for(int i = Width * Height; i--;) {
+                if(Pixels[i] != a_sprite__colorKey) {
+                    // Set full alpha for non-transparent pixel
+                    pixels[i] |= A_PIXEL_ALPHA_MASK;
+                }
+            }
+        } else if(i == 1) {
+            for(int i = Width * Height; i--;) {
+                if(Pixels[i] != a_sprite__colorKey) {
+                    // Set full color for non-transparent pixel
+                    pixels[i] |= a_pixel_hex(0xffffff);
+                }
+            }
         }
+
+        SDL_Surface* s = SDL_CreateRGBSurfaceFrom(pixels,
+                                                  Width,
+                                                  Height,
+                                                  A_PIXEL_BPP,
+                                                  Width * (int)sizeof(APixel),
+                                                  (uint32_t)A_PIXEL_RED_MASK << A_PIXEL_RED_SHIFT,
+                                                  (uint32_t)A_PIXEL_GREEN_MASK << A_PIXEL_GREEN_SHIFT,
+                                                  (uint32_t)A_PIXEL_BLUE_MASK << A_PIXEL_BLUE_SHIFT,
+                                                  (uint32_t)A_PIXEL_ALPHA_MASK << A_PIXEL_ALPHA_SHIFT);
+
+        if(s == NULL) {
+            a_out__fatal("SDL_CreateRGBSurfaceFrom failed: %s", SDL_GetError());
+        }
+
+        sprite->texture[i] = SDL_CreateTextureFromSurface(g_sdlRenderer, s);
+
+        if(sprite->texture[i] == NULL) {
+            a_out__fatal("SDL_CreateTextureFromSurface failed: %s", SDL_GetError());
+        }
+
+        if(SDL_SetTextureBlendMode(sprite->texture[i], SDL_BLENDMODE_BLEND) < 0) {
+            a_out__error("SDL_SetTextureBlendMode failed: %s", SDL_GetError());
+        }
+
+        SDL_FreeSurface(s);
     }
 
-    SDL_Surface* s = SDL_CreateRGBSurfaceFrom(pixels,
-                                              Width,
-                                              Height,
-                                              A_PIXEL_BPP,
-                                              Width * (int)sizeof(APixel),
-                                              (uint32_t)A_PIXEL_RED_MASK << A_PIXEL_RED_SHIFT,
-                                              (uint32_t)A_PIXEL_GREEN_MASK << A_PIXEL_GREEN_SHIFT,
-                                              (uint32_t)A_PIXEL_BLUE_MASK << A_PIXEL_BLUE_SHIFT,
-                                              (uint32_t)A_PIXEL_ALPHA_MASK << A_PIXEL_ALPHA_SHIFT);
-    if(s == NULL) {
-        a_out__fatal("SDL_CreateRGBSurfaceFrom failed: %s", SDL_GetError());
-    }
-
-    SDL_Texture* t = SDL_CreateTextureFromSurface(g_sdlRenderer, s);
-    if(t == NULL) {
-        a_out__fatal("SDL_CreateTextureFromSurface failed: %s", SDL_GetError());
-    }
-
-    if(SDL_SetTextureBlendMode(t, SDL_BLENDMODE_BLEND) < 0) {
-        a_out__error("SDL_SetTextureBlendMode failed: %s", SDL_GetError());
-    }
-
-    SDL_FreeSurface(s);
     free(pixels);
 
-    return t;
+    return sprite;
 }
 
-void a_sdl_render__freeTexture(void* Texture)
+void a_sdl_render__freeTexture(ASdlTexture* Texture)
 {
-    SDL_DestroyTexture(Texture);
+    for(int i = 0; i < NUM_SPRITE_TEXTURES; i++) {
+        SDL_DestroyTexture(Texture->texture[i]);
+    }
+
+    free(Texture);
 }
 
-void a_sdl_render__blitTexture(void* Texture, int X, int Y, int Width, int Height)
+void a_sdl_render__blitTexture(ASdlTexture* Texture, int X, int Y, int Width, int Height, bool FillFlat)
 {
-    SDL_Texture* t = Texture;
+    SDL_Texture* t = Texture->texture[FillFlat];
     SDL_Rect dest = {X, Y, Width, Height};
     uint8_t alphaMod = SDL_ALPHA_OPAQUE;
 
@@ -395,6 +421,16 @@ void a_sdl_render__blitTexture(void* Texture, int X, int Y, int Width, int Heigh
 
     if(SDL_SetTextureAlphaMod(t, alphaMod) < 0) {
         a_out__error("SDL_SetTextureAlphaMod failed: %s", SDL_GetError());
+    }
+
+    if(FillFlat) {
+        if(SDL_SetTextureColorMod(t,
+                                  (uint8_t)a_pixel__state.red,
+                                  (uint8_t)a_pixel__state.green,
+                                  (uint8_t)a_pixel__state.blue) < 0) {
+
+            a_out__error("SDL_SetTextureColorMod failed: %s", SDL_GetError());
+        }
     }
 
     if(SDL_RenderCopy(g_sdlRenderer, t, NULL, &dest) < 0) {

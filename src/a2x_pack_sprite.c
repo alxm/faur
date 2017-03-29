@@ -486,7 +486,12 @@ void a_sprite_blit(const ASprite* Sprite, int X, int Y)
             }
         }
     #elif A_CONFIG_RENDER_SDL2
-        a_sdl_render__blitTexture(Sprite->texture, X, Y, Sprite->w, Sprite->h);
+        a_sdl_render__blitTexture(Sprite->texture,
+                                  X,
+                                  Y,
+                                  Sprite->w,
+                                  Sprite->h,
+                                  g_fillFlat);
     #endif
 }
 
