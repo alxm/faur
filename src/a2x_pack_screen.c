@@ -177,15 +177,6 @@ AScreen* a_screen_new(int Width, int Height)
     return s;
 }
 
-AScreen* a_screen_fromBuffer(APixel* Pixels, int Width, int Height)
-{
-    AScreen* s = a_mem_malloc(sizeof(AScreen));
-
-    initScreen(s, Pixels, Width, Height, false);
-
-    return s;
-}
-
 AScreen* a_screen_dup(void)
 {
     AScreen* s = a_screen_new(a__screen.width, a__screen.height);

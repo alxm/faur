@@ -31,7 +31,6 @@ extern int a_screen_width(void);
 extern int a_screen_height(void);
 
 extern AScreen* a_screen_new(int Width, int Height);
-extern AScreen* a_screen_fromBuffer(APixel* Pixels, int Width, int Height);
 extern AScreen* a_screen_dup(void);
 extern void a_screen_free(AScreen* Screen);
 
