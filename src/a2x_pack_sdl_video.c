@@ -335,7 +335,7 @@ void a_sdl_render__setBlendMode(void)
     }
 }
 
-void a_sdl_render__fillRect(int X, int Y, int Width, int Height)
+void a_sdl_render__drawRect(int X, int Y, int Width, int Height)
 {
     SDL_Rect area = {X, Y, Width, Height};
 
@@ -344,7 +344,7 @@ void a_sdl_render__fillRect(int X, int Y, int Width, int Height)
     }
 }
 
-ASdlTexture* a_sdl_render__makeScreenTexture(int Width, int Height)
+ASdlTexture* a_sdl_render__textureMakeScreen(int Width, int Height)
 {
     SDL_Texture* t = SDL_CreateTexture(g_sdlRenderer,
                                        SDL_PIXELFORMAT_RGBA8888,
@@ -363,7 +363,7 @@ ASdlTexture* a_sdl_render__makeScreenTexture(int Width, int Height)
     return screen;
 }
 
-ASdlTexture* a_sdl_render__makeSpriteTexture(const APixel* Pixels, int Width, int Height)
+ASdlTexture* a_sdl_render__textureMakeSprite(const APixel* Pixels, int Width, int Height)
 {
     ASdlTexture* sprite = a_mem_malloc(sizeof(ASdlTexture));
 
@@ -416,7 +416,7 @@ ASdlTexture* a_sdl_render__makeSpriteTexture(const APixel* Pixels, int Width, in
     return sprite;
 }
 
-void a_sdl_render__freeTexture(ASdlTexture* Texture)
+void a_sdl_render__textureFree(ASdlTexture* Texture)
 {
     for(int i = 0; i < NUM_SPRITE_TEXTURES; i++) {
         SDL_DestroyTexture(Texture->texture[i]);
@@ -425,7 +425,7 @@ void a_sdl_render__freeTexture(ASdlTexture* Texture)
     free(Texture);
 }
 
-void a_sdl_render__blitTexture(ASdlTexture* Texture, int X, int Y, int Width, int Height, bool FillFlat)
+void a_sdl_render__textureBlit(ASdlTexture* Texture, int X, int Y, int Width, int Height, bool FillFlat)
 {
     SDL_Texture* t = Texture->texture[FillFlat];
     SDL_Rect dest = {X, Y, Width, Height};
@@ -456,14 +456,14 @@ void a_sdl_render__blitTexture(ASdlTexture* Texture, int X, int Y, int Width, in
     }
 }
 
-void a_sdl_render__setRenderTarget(ASdlTexture* Texture)
+void a_sdl_render__targetSet(ASdlTexture* Texture)
 {
     if(SDL_SetRenderTarget(g_sdlRenderer, Texture->texture[0]) < 0) {
         a_out__fatal("SDL_SetRenderTarget failed: %s", SDL_GetError());
     }
 }
 
-void a_sdl_render__resetRenderTarget(void)
+void a_sdl_render__targetReset(void)
 {
     if(SDL_SetRenderTarget(g_sdlRenderer, NULL) < 0) {
         a_out__fatal("SDL_SetRenderTarget failed: %s", SDL_GetError());
@@ -472,7 +472,7 @@ void a_sdl_render__resetRenderTarget(void)
     clearScreen();
 }
 
-void a_sdl_render__getPixels(APixel* Pixels, int Width)
+void a_sdl_render__targetGetPixels(APixel* Pixels, int Width)
 {
     // Unreliable on texture targets
     if(SDL_RenderReadPixels(g_sdlRenderer,

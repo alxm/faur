@@ -443,7 +443,7 @@ ASprite* a_sprite_blank(int Width, int Height, bool ColorKeyed)
         s->spansSize = 0;
         s->colorKeyed = ColorKeyed;
     #elif A_CONFIG_RENDER_SDL2
-        s->texture = a_sdl_render__makeSpriteTexture(s->pixels, Width, Height);
+        s->texture = a_sdl_render__textureMakeSprite(s->pixels, Width, Height);
     #endif
 
     return s;
@@ -460,7 +460,7 @@ void a_sprite__free(ASprite* Sprite)
     #if A_CONFIG_RENDER_SOFTWARE
         free(Sprite->spans);
     #elif A_CONFIG_RENDER_SDL2
-        a_sdl_render__freeTexture(Sprite->texture);
+        a_sdl_render__textureFree(Sprite->texture);
     #endif
 
     free(Sprite->nameId);
@@ -484,7 +484,7 @@ void a_sprite_blit(const ASprite* Sprite, int X, int Y)
             }
         }
     #elif A_CONFIG_RENDER_SDL2
-        a_sdl_render__blitTexture(Sprite->texture,
+        a_sdl_render__textureBlit(Sprite->texture,
                                   X,
                                   Y,
                                   Sprite->w,
@@ -616,10 +616,10 @@ void a_sprite__refreshTransparency(ASprite* Sprite)
         }
     #elif A_CONFIG_RENDER_SDL2
         if(Sprite->texture != NULL) {
-            a_sdl_render__freeTexture(Sprite->texture);
+            a_sdl_render__textureFree(Sprite->texture);
         }
 
-        Sprite->texture = a_sdl_render__makeSpriteTexture(Sprite->pixels,
+        Sprite->texture = a_sdl_render__textureMakeSprite(Sprite->pixels,
                                                           Sprite->w,
                                                           Sprite->h);
     #endif

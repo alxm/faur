@@ -40,7 +40,7 @@ static void initScreen(AScreen* Screen, int Width, int Height, bool AllocBuffer)
     }
 
     #if A_CONFIG_RENDER_SDL2
-        Screen->texture = a_sdl_render__makeScreenTexture(Width, Height);
+        Screen->texture = a_sdl_render__textureMakeScreen(Width, Height);
     #endif
 
     Screen->width = Width;
@@ -61,7 +61,7 @@ static void freeScreen(AScreen* Screen)
     }
 
     #if A_CONFIG_RENDER_SDL2
-        a_sdl_render__freeTexture(Screen->texture);
+        a_sdl_render__textureFree(Screen->texture);
     #endif
 }
 
@@ -162,16 +162,16 @@ void a_screen__show(void)
     }
 
     #if A_CONFIG_RENDER_SDL2
-        a_sdl_render__resetRenderTarget();
+        a_sdl_render__targetReset();
 
-        a_sdl_render__blitTexture(a__screen.texture,
+        a_sdl_render__textureBlit(a__screen.texture,
                                   0,
                                   0,
                                   a__screen.width,
                                   a__screen.height,
                                   false);
 
-        a_sdl_render__setRenderTarget(a__screen.texture);
+        a_sdl_render__targetSet(a__screen.texture);
     #endif
 
     a_sdl_screen__show();
@@ -188,7 +188,7 @@ void a_screen__addOverlay(AScreenOverlay Callback)
 APixel* a_screen_pixels(void)
 {
     #if A_CONFIG_RENDER_SDL2
-        a_sdl_render__getPixels(a__screen.pixels, a__screen.width);
+        a_sdl_render__targetGetPixels(a__screen.pixels, a__screen.width);
     #endif
 
     return a__screen.pixels;
@@ -235,16 +235,16 @@ void a_screen_copy(AScreen* Dst, const AScreen* Src)
                Src->pixels,
                (unsigned)Src->width * (unsigned)Src->height * sizeof(APixel));
     #elif A_CONFIG_RENDER_SDL2
-        a_sdl_render__setRenderTarget(Dst->texture);
+        a_sdl_render__targetSet(Dst->texture);
 
-        a_sdl_render__blitTexture(Src->texture,
+        a_sdl_render__textureBlit(Src->texture,
                                   0,
                                   0,
                                   Src->width,
                                   Src->height,
                                   false);
 
-        a_sdl_render__setRenderTarget(a__screen.texture);
+        a_sdl_render__targetSet(a__screen.texture);
     #endif
 }
 
@@ -279,7 +279,7 @@ static void setRenderTarget(ASdlTexture* Texture, int Width, int Height)
     a__screen.height = Height;
 
     a_screen_resetClip();
-    a_sdl_render__setRenderTarget(Texture);
+    a_sdl_render__targetSet(Texture);
 }
 #endif
 
@@ -307,7 +307,7 @@ void a_screen_resetTarget(void)
     a__screen = g_savedScreen;
 
     #if A_CONFIG_RENDER_SDL2
-        a_sdl_render__setRenderTarget(a__screen.texture);
+        a_sdl_render__targetSet(a__screen.texture);
     #endif
 
     if(g_spriteTarget) {

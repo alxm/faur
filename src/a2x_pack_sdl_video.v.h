@@ -38,13 +38,14 @@ extern void a_sdl_screen__setFullScreen(bool FullScreen);
     extern void a_sdl_render__setDrawColor(void);
     extern void a_sdl_render__setBlendMode(void);
 
-    extern void a_sdl_render__fillRect(int X, int Y, int Width, int Height);
+    extern void a_sdl_render__drawRect(int X, int Y, int Width, int Height);
 
-    extern ASdlTexture* a_sdl_render__makeScreenTexture(int Width, int Height);
-    extern ASdlTexture* a_sdl_render__makeSpriteTexture(const APixel* Pixels, int Width, int Height);
-    extern void a_sdl_render__freeTexture(ASdlTexture* Texture);
-    extern void a_sdl_render__blitTexture(ASdlTexture* Texture, int X, int Y, int Width, int Height, bool FillFlat);
-    extern void a_sdl_render__setRenderTarget(ASdlTexture* Texture);
-    extern void a_sdl_render__resetRenderTarget(void);
-    extern void a_sdl_render__getPixels(APixel* Pixels, int Width);
+    extern ASdlTexture* a_sdl_render__textureMakeScreen(int Width, int Height);
+    extern ASdlTexture* a_sdl_render__textureMakeSprite(const APixel* Pixels, int Width, int Height);
+    extern void a_sdl_render__textureFree(ASdlTexture* Texture);
+    extern void a_sdl_render__textureBlit(ASdlTexture* Texture, int X, int Y, int Width, int Height, bool FillFlat);
+
+    extern void a_sdl_render__targetSet(ASdlTexture* Texture);
+    extern void a_sdl_render__targetReset(void);
+    extern void a_sdl_render__targetGetPixels(APixel* Pixels, int Width);
 #endif

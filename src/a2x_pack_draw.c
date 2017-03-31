@@ -328,7 +328,7 @@ void a_draw_fill(void)
     #if A_CONFIG_RENDER_SOFTWARE
         g_draw_rectangle(0, 0, a__screen.width, a__screen.height);
     #elif A_CONFIG_RENDER_SDL2
-        a_sdl_render__fillRect(0, 0, a__screen.width, a__screen.height);
+        a_sdl_render__drawRect(0, 0, a__screen.width, a__screen.height);
     #endif
 }
 
