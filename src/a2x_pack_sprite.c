@@ -19,7 +19,6 @@
 
 #include "a2x_pack_sprite.v.h"
 
-static bool g_fillFlat;
 static AList* g_spritesList;
 static void a_sprite__free(ASprite* Sprite);
 
@@ -208,7 +207,6 @@ void a_sprite__init(void)
     initRoutines(A_PIXEL_BLEND_RGB75, rgb75);
     initRoutines(A_PIXEL_BLEND_INVERSE, inverse);
 
-    g_fillFlat = false;
     a_sprite__updateRoutines();
     g_spritesList = a_list_new();
 
@@ -219,17 +217,16 @@ void a_sprite__init(void)
 
 void a_sprite__updateRoutines(void)
 {
-    g_blitter_block_noclip = g_blitters[a_pixel__state.blend][g_fillFlat][0][0];
-    g_blitter_block_doclip = g_blitters[a_pixel__state.blend][g_fillFlat][0][1];
-    g_blitter_keyed_noclip = g_blitters[a_pixel__state.blend][g_fillFlat][1][0];
-    g_blitter_keyed_doclip = g_blitters[a_pixel__state.blend][g_fillFlat][1][1];
+    g_blitter_block_noclip = g_blitters[a_pixel__state.blend][a_pixel__state.blitFillFlat][0][0];
+    g_blitter_block_doclip = g_blitters[a_pixel__state.blend][a_pixel__state.blitFillFlat][0][1];
+    g_blitter_keyed_noclip = g_blitters[a_pixel__state.blend][a_pixel__state.blitFillFlat][1][0];
+    g_blitter_keyed_doclip = g_blitters[a_pixel__state.blend][a_pixel__state.blitFillFlat][1][1];
 }
 
 #elif A_CONFIG_RENDER_SDL2
 
 void a_sprite__init(void)
 {
-    g_fillFlat = false;
     g_spritesList = a_list_new();
 
     a_sprite__colorKey = a_pixel_hex(0xFF00FF);
@@ -489,7 +486,7 @@ void a_sprite_blit(const ASprite* Sprite, int X, int Y)
                                   Y,
                                   Sprite->w,
                                   Sprite->h,
-                                  g_fillFlat);
+                                  a_pixel__state.blitFillFlat);
     #endif
 }
 
@@ -512,15 +509,6 @@ void a_sprite_blitCenterY(const ASprite* Sprite, int X)
     a_sprite_blit(Sprite,
                   X,
                   (a__screen.height - Sprite->h) / 2);
-}
-
-void a_sprite_fillFlat(bool FillFlatColor)
-{
-    g_fillFlat = FillFlatColor;
-
-    #if A_CONFIG_RENDER_SOFTWARE
-        a_sprite__updateRoutines();
-    #endif
 }
 
 int a_sprite_width(const ASprite* Sprite)

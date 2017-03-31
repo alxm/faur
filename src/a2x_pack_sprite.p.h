@@ -37,7 +37,6 @@ extern void a_sprite_blit(const ASprite* Sprite, int X, int Y);
 extern void a_sprite_blitCenter(const ASprite* Sprite);
 extern void a_sprite_blitCenterX(const ASprite* Sprite, int Y);
 extern void a_sprite_blitCenterY(const ASprite* Sprite, int X);
-extern void a_sprite_fillFlat(bool FillFlatColor);
 
 extern int a_sprite_width(const ASprite* Sprite);
 extern int a_sprite_widthLog2(const ASprite* Sprite);
