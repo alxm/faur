@@ -257,10 +257,11 @@ void a_screen_setTargetBuffer(APixel* Pixels, int Width, int Height)
     a_screen_resetClip();
 }
 #elif A_CONFIG_RENDER_SDL2
-static void setRenderTarget(ASdlTexture* Texture, int Width, int Height)
+static void setRenderTarget(APixel* Pixels, ASdlTexture* Texture, int Width, int Height)
 {
     a_screen_resetTarget();
 
+    a__screen.pixels = Pixels;
     a__screen.texture = Texture;
     a__screen.width = Width;
     a__screen.height = Height;
@@ -275,7 +276,7 @@ void a_screen_setTargetScreen(AScreen* Screen)
     #if A_CONFIG_RENDER_SOFTWARE
         a_screen_setTargetBuffer(Screen->pixels, Screen->width, Screen->height);
     #elif A_CONFIG_RENDER_SDL2
-        setRenderTarget(Screen->texture, Screen->width, Screen->height);
+        setRenderTarget(Screen->pixels, Screen->texture, Screen->width, Screen->height);
     #endif
 }
 
@@ -285,7 +286,7 @@ void a_screen_setTargetSprite(ASprite* Sprite)
         a_screen_setTargetBuffer(Sprite->pixels, Sprite->w, Sprite->h);
         g_spriteTarget = Sprite;
     #elif A_CONFIG_RENDER_SDL2
-        setRenderTarget(Sprite->texture, Sprite->w, Sprite->h);
+        setRenderTarget(Sprite->pixels, Sprite->texture, Sprite->w, Sprite->h);
     #endif
 }
 
