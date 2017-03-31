@@ -218,9 +218,14 @@ static A_STATE(a_fade__screens)
 
         AFix alpha = a_fix_itofix(A_PIXEL_ALPHA_MAX);
         AFix alpha_inc = a_fix_itofix(A_PIXEL_ALPHA_MAX) / (int)g_frames;
-        ASprite* oldScreen = a_sprite_fromPixels(g_oldCapturedScreen->pixels,
-                                                 a__screen.width,
-                                                 a__screen.height);
+
+        ASprite* oldScreen = a_sprite_blank(a__screen.width,
+                                            a__screen.height,
+                                            false);
+
+        a_screen_setTargetSprite(oldScreen);
+        a_screen_blit(g_oldCapturedScreen);
+        a_screen_resetTarget();
 
         a_pixel_push();
         a_pixel_setBlend(A_PIXEL_BLEND_RGBA);

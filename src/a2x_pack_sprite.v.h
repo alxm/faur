@@ -28,13 +28,13 @@ struct ASprite {
     AListNode* node;
     char* nameId;
     int w, wLog2, h;
-    #if A_CONFIG_RENDER_SOFTWARE
-        unsigned* spans;
-        size_t spansSize;
-        bool colorKeyed;
-    #elif A_CONFIG_RENDER_SDL2
-        ASdlTexture* texture;
-    #endif
+#if A_CONFIG_RENDER_SOFTWARE
+    unsigned* spans;
+    size_t spansSize;
+    bool colorKeyed;
+#elif A_CONFIG_RENDER_SDL2
+    ASdlTexture* texture;
+#endif
     APixel pixels[];
 };
 

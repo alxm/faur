@@ -119,12 +119,12 @@ static void takeScreenshot(void)
     }
 
     char num[6];
-    snprintf(num, 6, "%05d", g_screenshotNumber);
+    snprintf(num, sizeof(num), "%05d", g_screenshotNumber);
     char* name = a_str_merge(g_filePrefix, num, ".png", NULL);
 
     a_out__message("Saving screenshot '%s'", name);
     a_png_write(name,
-                a__screen.pixels,
+                a_screen_pixels(),
                 a__screen.width,
                 a__screen.height,
                 g_title, g_description);

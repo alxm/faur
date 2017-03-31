@@ -419,22 +419,14 @@ doneColorKey:
 
 ASprite* a_sprite_blank(int Width, int Height, bool ColorKeyed)
 {
-    ASprite* s = a_mem_malloc(
-        sizeof(ASprite) + (unsigned)Width * (unsigned)Height * sizeof(APixel));
+    size_t bufferSize = (unsigned)Width * (unsigned)Height * sizeof(APixel);
+    ASprite* s = a_mem_malloc(sizeof(ASprite) + bufferSize);
 
     s->node = a_list_addLast(g_spritesList, s);
     s->nameId = NULL;
     s->w = Width;
     s->wLog2 = (int)log2f((float)Width);
     s->h = Height;
-
-    #if A_CONFIG_RENDER_SOFTWARE
-        s->spans = NULL;
-        s->spansSize = 0;
-        s->colorKeyed = ColorKeyed;
-    #elif A_CONFIG_RENDER_SDL2
-        s->texture = NULL;
-    #endif
 
     if(ColorKeyed) {
         APixel* pixels = s->pixels;
@@ -443,10 +435,16 @@ ASprite* a_sprite_blank(int Width, int Height, bool ColorKeyed)
             *pixels++ = a_sprite__colorKey;
         }
     } else {
-        memset(s->pixels,
-               0,
-               (unsigned)Width * (unsigned)Height * sizeof(APixel));
+        memset(s->pixels, 0, bufferSize);
     }
+
+    #if A_CONFIG_RENDER_SOFTWARE
+        s->spans = NULL;
+        s->spansSize = 0;
+        s->colorKeyed = ColorKeyed;
+    #elif A_CONFIG_RENDER_SDL2
+        s->texture = a_sdl_render__makeSpriteTexture(s->pixels, Width, Height);
+    #endif
 
     return s;
 }
@@ -621,9 +619,9 @@ void a_sprite__refreshTransparency(ASprite* Sprite)
             a_sdl_render__freeTexture(Sprite->texture);
         }
 
-        Sprite->texture = a_sdl_render__makeTexture(Sprite->pixels,
-                                                    Sprite->w,
-                                                    Sprite->h);
+        Sprite->texture = a_sdl_render__makeSpriteTexture(Sprite->pixels,
+                                                          Sprite->w,
+                                                          Sprite->h);
     #endif
 }
 
@@ -632,7 +630,7 @@ ASprite* a_sprite_clone(const ASprite* Sprite)
     #if A_CONFIG_RENDER_SOFTWARE
         ASprite* s = a_sprite_blank(Sprite->w, Sprite->h, Sprite->colorKeyed);
     #elif A_CONFIG_RENDER_SDL2
-        ASprite* s = a_sprite_blank(Sprite->w, Sprite->h, true);
+        ASprite* s = a_sprite_blank(Sprite->w, Sprite->h, false);
     #endif
 
     memcpy(s->pixels,
