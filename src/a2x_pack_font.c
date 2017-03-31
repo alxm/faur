@@ -161,22 +161,25 @@ unsigned a_font_copy(unsigned Font, APixel Color)
 
     *f = *src;
 
+    a_pixel_push();
+    a_pixel_setPixel(Color);
+    a_pixel_setBlitFillFlat(true);
+
     for(int i = CHAR_ENTRIES_NUM; i--; ) {
+        ASprite* sprite = NULL;
+
         if(src->sprites[i]) {
-            f->sprites[i] = a_sprite_clone(src->sprites[i]);
+            sprite = a_sprite_clone(src->sprites[i]);
 
-            ASprite* sprite = f->sprites[i];
-            APixel* pixels = sprite->pixels;
-
-            for(int j = sprite->w * sprite->h; j--; pixels++) {
-                if(*pixels != a_sprite__colorKey) {
-                    *pixels = Color;
-                }
-            }
-        } else {
-            f->sprites[i] = NULL;
+            a_screen_setTargetSprite(sprite);
+            a_sprite_blit(sprite, 0, 0);
+            a_screen_resetTarget();
         }
+
+        f->sprites[i] = sprite;
     }
+
+    a_pixel_pop();
 
     a_list_addLast(g_fontsList, f);
 
