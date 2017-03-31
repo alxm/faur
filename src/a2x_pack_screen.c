@@ -161,19 +161,6 @@ void a_screen__show(void)
         c->callback();
     }
 
-    #if A_CONFIG_RENDER_SDL2
-        a_sdl_render__targetReset();
-
-        a_sdl_render__textureBlit(a__screen.texture,
-                                  0,
-                                  0,
-                                  a__screen.width,
-                                  a__screen.height,
-                                  false);
-
-        a_sdl_render__targetSet(a__screen.texture);
-    #endif
-
     a_sdl_screen__show();
 }
 

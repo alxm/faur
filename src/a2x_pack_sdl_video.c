@@ -39,24 +39,6 @@
     #endif
 #endif
 
-#if A_CONFIG_LIB_SDL == 2
-static void clearScreen(void)
-{
-    if(SDL_SetRenderDrawColor(g_sdlRenderer,
-                              g_clearR,
-                              g_clearG,
-                              g_clearB,
-                              SDL_ALPHA_OPAQUE) < 0) {
-
-        a_out__error("SDL_SetRenderDrawColor failed: %s", SDL_GetError());
-    }
-
-    if(SDL_RenderClear(g_sdlRenderer) < 0) {
-        a_out__error("SDL_RenderClear failed: %s", SDL_GetError());
-    }
-}
-#endif
-
 void a_sdl_video__init(void)
 {
     if(SDL_InitSubSystem(SDL_INIT_VIDEO) != 0) {
@@ -184,8 +166,6 @@ void a_sdl_screen__set(int Width, int Height)
         g_clearR = (uint8_t)strtol(color, &end, 0);
         g_clearG = (uint8_t)strtol(end, &end, 0);
         g_clearB = (uint8_t)strtol(end, NULL, 0);
-
-        clearScreen();
     #endif
 
     #if A_PLATFORM_LINUXPC
@@ -274,6 +254,23 @@ void a_sdl_screen__show(void)
             a_screen__setPixelBuffer(g_sdlScreen->pixels);
         }
     #elif A_CONFIG_LIB_SDL == 2
+        #if A_CONFIG_RENDER_SDL2
+            a_sdl_render__targetReset();
+        #endif
+
+        if(SDL_SetRenderDrawColor(g_sdlRenderer,
+                                  g_clearR,
+                                  g_clearG,
+                                  g_clearB,
+                                  SDL_ALPHA_OPAQUE) < 0) {
+
+            a_out__error("SDL_SetRenderDrawColor failed: %s", SDL_GetError());
+        }
+
+        if(SDL_RenderClear(g_sdlRenderer) < 0) {
+            a_out__error("SDL_RenderClear failed: %s", SDL_GetError());
+        }
+
         #if A_CONFIG_RENDER_SOFTWARE
             if(SDL_UpdateTexture(g_sdlTexture,
                                  NULL,
@@ -286,10 +283,18 @@ void a_sdl_screen__show(void)
             if(SDL_RenderCopy(g_sdlRenderer, g_sdlTexture, NULL, NULL) < 0) {
                 a_out__fatal("SDL_RenderCopy failed: %s", SDL_GetError());
             }
+        #elif A_CONFIG_RENDER_SDL2
+            a_sdl_render__textureBlit(a__screen.texture,
+                                      0,
+                                      0,
+                                      a__screen.width,
+                                      a__screen.height,
+                                      false);
+
+            a_sdl_render__targetSet(a__screen.texture);
         #endif
 
         SDL_RenderPresent(g_sdlRenderer);
-        clearScreen();
     #endif
 }
 
@@ -482,8 +487,6 @@ void a_sdl_render__targetReset(void)
     if(SDL_SetRenderTarget(g_sdlRenderer, NULL) < 0) {
         a_out__fatal("SDL_SetRenderTarget failed: %s", SDL_GetError());
     }
-
-    clearScreen();
 }
 
 void a_sdl_render__targetGetPixels(APixel* Pixels, int Width)
