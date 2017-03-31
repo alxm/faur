@@ -290,7 +290,13 @@ bool a_state__loop(void)
         return false;
     }
 
+    a_input__get();
     a_system__run();
+
+    if(a_fps__notSkipped()) {
+        a_screen__show();
+    }
+
     a_fps__frame();
 
     return true;
