@@ -332,22 +332,6 @@ void a_draw_fill(void)
     #endif
 }
 
-void a_draw_rectangleThick(int X, int Y, int Width, int Height, int Thickness)
-{
-    #if A_CONFIG_RENDER_SOFTWARE
-        g_draw_rectangle(X, Y, Width, Thickness); // top
-        g_draw_rectangle(X, Y + Height - Thickness, Width, Thickness); // bottom
-        g_draw_rectangle(X, Y + Thickness, Thickness, Height - 2 * Thickness); // left
-        g_draw_rectangle(X + Width - Thickness, Y + Thickness, Thickness, Height - 2 * Thickness); // right
-    #elif A_CONFIG_RENDER_SDL2
-        X = X;
-        Y = Y;
-        Width = Width;
-        Height = Height;
-        Thickness = Thickness;
-    #endif
-}
-
 void a_draw_pixel(int X, int Y)
 {
     #if A_CONFIG_RENDER_SOFTWARE
