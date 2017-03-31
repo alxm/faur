@@ -48,6 +48,5 @@ extern void a_sdl_screen__setFullScreen(bool FullScreen);
     extern void a_sdl_render__textureBlit(ASdlTexture* Texture, int X, int Y, int Width, int Height, bool FillFlat);
 
     extern void a_sdl_render__targetSet(ASdlTexture* Texture);
-    extern void a_sdl_render__targetReset(void);
     extern void a_sdl_render__targetGetPixels(APixel* Pixels, int Width);
 #endif

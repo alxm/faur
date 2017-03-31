@@ -255,7 +255,9 @@ void a_sdl_screen__show(void)
         }
     #elif A_CONFIG_LIB_SDL == 2
         #if A_CONFIG_RENDER_SDL2
-            a_sdl_render__targetReset();
+            if(SDL_SetRenderTarget(g_sdlRenderer, NULL) < 0) {
+                a_out__fatal("SDL_SetRenderTarget failed: %s", SDL_GetError());
+            }
         #endif
 
         if(SDL_SetRenderDrawColor(g_sdlRenderer,
@@ -478,13 +480,6 @@ void a_sdl_render__textureBlit(ASdlTexture* Texture, int X, int Y, int Width, in
 void a_sdl_render__targetSet(ASdlTexture* Texture)
 {
     if(SDL_SetRenderTarget(g_sdlRenderer, Texture->texture[0]) < 0) {
-        a_out__fatal("SDL_SetRenderTarget failed: %s", SDL_GetError());
-    }
-}
-
-void a_sdl_render__targetReset(void)
-{
-    if(SDL_SetRenderTarget(g_sdlRenderer, NULL) < 0) {
         a_out__fatal("SDL_SetRenderTarget failed: %s", SDL_GetError());
     }
 }
