@@ -335,7 +335,21 @@ void a_sdl_render__setBlendMode(void)
     }
 }
 
-void a_sdl_render__drawRect(int X, int Y, int Width, int Height)
+void a_sdl_render__drawPoint(int X, int Y)
+{
+    if(SDL_RenderDrawPoint(g_sdlRenderer, X, Y) < 0) {
+        a_out__error("SDL_RenderDrawPoint failed: %s", SDL_GetError());
+    }
+}
+
+void a_sdl_render__drawLine(int X1, int Y1, int X2, int Y2)
+{
+    if(SDL_RenderDrawLine(g_sdlRenderer, X1, Y1, X2, Y2) < 0) {
+        a_out__error("SDL_RenderDrawLine failed: %s", SDL_GetError());
+    }
+}
+
+void a_sdl_render__drawRectangle(int X, int Y, int Width, int Height)
 {
     SDL_Rect area = {X, Y, Width, Height};
 

@@ -328,7 +328,7 @@ void a_draw_fill(void)
     #if A_CONFIG_RENDER_SOFTWARE
         g_draw_rectangle(0, 0, a__screen.width, a__screen.height);
     #elif A_CONFIG_RENDER_SDL2
-        a_sdl_render__drawRect(0, 0, a__screen.width, a__screen.height);
+        a_sdl_render__drawRectangle(0, 0, a__screen.width, a__screen.height);
     #endif
 }
 
@@ -339,8 +339,7 @@ void a_draw_pixel(int X, int Y)
             g_draw_pixel(X, Y);
         }
     #elif A_CONFIG_RENDER_SDL2
-        X = X;
-        Y = Y;
+        a_sdl_render__drawPoint(X, Y);
     #endif
 }
 
@@ -366,10 +365,7 @@ void a_draw_rectangle(int X, int Y, int Width, int Height)
 
         g_draw_rectangle(X, Y, Width, Height);
     #elif A_CONFIG_RENDER_SDL2
-        X = X;
-        Y = Y;
-        Width = Width;
-        Height = Height;
+        a_sdl_render__drawRectangle(X, Y, Width, Height);
     #endif
 }
 
@@ -382,10 +378,7 @@ void a_draw_line(int X1, int Y1, int X2, int Y2)
 
         g_draw_line(X1, Y1, X2, Y2);
     #elif A_CONFIG_RENDER_SDL2
-        X1 = X1;
-        Y1 = Y1;
-        X2 = X2;
-        Y2 = Y2;
+        a_sdl_render__drawLine(X1, Y1, X2, Y2);
     #endif
 }
 
@@ -401,9 +394,7 @@ void a_draw_hline(int X1, int X2, int Y)
 
         g_draw_hline(X1, X2, Y);
     #elif A_CONFIG_RENDER_SDL2
-        X1 = X1;
-        X2 = X2;
-        Y = Y;
+        a_sdl_render__drawLine(X1, Y, X2, Y);
     #endif
 }
 
@@ -419,9 +410,7 @@ void a_draw_vline(int X, int Y1, int Y2)
 
         g_draw_vline(X, Y1, Y2);
     #elif A_CONFIG_RENDER_SDL2
-        X = X;
-        Y1 = Y1;
-        Y2 = Y2;
+        a_sdl_render__drawLine(X, Y1, X, Y2);
     #endif
 }
 
