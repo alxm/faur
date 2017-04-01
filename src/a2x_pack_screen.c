@@ -147,15 +147,9 @@ void a_screen__setPixelBuffer(APixel* Pixels)
 
 void a_screen__show(void)
 {
-    #if A_CONFIG_RENDER_SOFTWARE
-        if(a__screen.pixels != g_savedScreen.pixels) {
-            a_out__fatal("Call a_screen_resetTarget before drawing frame");
-        }
-    #elif A_CONFIG_RENDER_SDL2
-        if(a__screen.texture != g_savedScreen.texture) {
-            a_out__fatal("Call a_screen_resetTarget before drawing frame");
-        }
-    #endif
+    if(a__screen.pixels != g_savedScreen.pixels) {
+        a_out__fatal("Call a_screen_resetTarget before drawing frame");
+    }
 
     A_LIST_ITERATE(g_overlays, AScreenOverlayContainer*, c) {
         c->callback();
@@ -312,8 +306,13 @@ void a_screen_resetTarget(void)
 void a_screen_setClip(int X, int Y, int Width, int Height)
 {
     if(!a_screen_boxInsideScreen(X, Y, Width, Height)) {
-        a_out__error("Invalid clipping area: (%d, %d) %d x %d",
-                     X, Y, Width, Height);
+        a_out__error("Invalid clipping area %dx%d @ %d,%d in %dx%d screen",
+                     Width,
+                     Height,
+                     X,
+                     Y,
+                     a__screen.width,
+                     a__screen.height);
         return;
     }
 
