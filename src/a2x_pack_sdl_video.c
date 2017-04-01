@@ -294,6 +294,10 @@ void a_sdl_screen__show(void)
                                       false);
 
             a_sdl_render__targetSet(a__screen.texture);
+            a_sdl_render__targetSetClip(a__screen.clipX,
+                                        a__screen.clipY,
+                                        a__screen.clipWidth,
+                                        a__screen.clipHeight);
         #endif
 
         SDL_RenderPresent(g_sdlRenderer);
@@ -494,6 +498,15 @@ void a_sdl_render__targetGetPixels(APixel* Pixels, int Width)
                             Width * (int)sizeof(APixel)) < 0) {
 
         a_out__fatal("SDL_RenderReadPixels failed: %s", SDL_GetError());
+    }
+}
+
+void a_sdl_render__targetSetClip(int X, int Y, int Width, int Height)
+{
+    SDL_Rect area = {X, Y, Width, Height};
+
+    if(SDL_RenderSetClipRect(g_sdlRenderer, &area) < 0) {
+        a_out__error("SDL_RenderSetClipRect failed: %s", SDL_GetError());
     }
 }
 

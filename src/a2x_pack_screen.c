@@ -305,6 +305,8 @@ void a_screen_resetTarget(void)
 
         g_spriteTarget = NULL;
     }
+
+    a_screen_resetClip();
 }
 
 void a_screen_setClip(int X, int Y, int Width, int Height)
@@ -321,6 +323,10 @@ void a_screen_setClip(int X, int Y, int Width, int Height)
     a__screen.clipY2 = Y + Height;
     a__screen.clipWidth = Width;
     a__screen.clipHeight = Height;
+
+    #if A_CONFIG_RENDER_SDL2
+        a_sdl_render__targetSetClip(X, Y, Width, Height);
+    #endif
 }
 
 void a_screen_resetClip(void)
