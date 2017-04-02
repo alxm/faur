@@ -286,6 +286,9 @@ void a_sdl_screen__show(void)
                 a_out__fatal("SDL_RenderCopy failed: %s", SDL_GetError());
             }
         #elif A_CONFIG_RENDER_SDL2
+            a_pixel_push();
+            a_pixel_setBlend(A_PIXEL_BLEND_PLAIN);
+
             a_sdl_render__textureBlit(a__screen.texture,
                                       0,
                                       0,
@@ -298,6 +301,7 @@ void a_sdl_screen__show(void)
                                         a__screen.clipY,
                                         a__screen.clipWidth,
                                         a__screen.clipHeight);
+            a_pixel_pop();
         #endif
 
         SDL_RenderPresent(g_sdlRenderer);
