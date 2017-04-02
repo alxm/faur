@@ -37,11 +37,6 @@ extern void a_screen_free(AScreen* Screen);
 extern void a_screen_copy(AScreen* Dst, const AScreen* Src);
 extern void a_screen_blit(const AScreen* Screen);
 
-#if A_CONFIG_RENDER_SOFTWARE
-    extern void a_screen_setTargetBuffer(APixel* Pixels, int Width, int Height);
-    extern APixel a_screen_getPixel(int X, int Y);
-#endif
-
 extern void a_screen_setTargetScreen(AScreen* Screen);
 extern void a_screen_setTargetSprite(ASprite* Sprite);
 extern void a_screen_resetTarget(void);

@@ -235,12 +235,7 @@ void a_screen_blit(const AScreen* Screen)
 }
 
 #if A_CONFIG_RENDER_SOFTWARE
-APixel a_screen_getPixel(int X, int Y)
-{
-    return *(a__screen.pixels + Y * a__screen.width + X);
-}
-
-void a_screen_setTargetBuffer(APixel* Pixels, int Width, int Height)
+static void setTarget(APixel* Pixels, int Width, int Height)
 {
     a_screen_resetTarget();
 
@@ -251,7 +246,7 @@ void a_screen_setTargetBuffer(APixel* Pixels, int Width, int Height)
     a_screen_resetClip();
 }
 #elif A_CONFIG_RENDER_SDL2
-static void setRenderTarget(APixel* Pixels, ASdlTexture* Texture, int Width, int Height)
+static void setTarget(APixel* Pixels, ASdlTexture* Texture, int Width, int Height)
 {
     a_screen_resetTarget();
 
@@ -268,19 +263,19 @@ static void setRenderTarget(APixel* Pixels, ASdlTexture* Texture, int Width, int
 void a_screen_setTargetScreen(AScreen* Screen)
 {
     #if A_CONFIG_RENDER_SOFTWARE
-        a_screen_setTargetBuffer(Screen->pixels, Screen->width, Screen->height);
+        setTarget(Screen->pixels, Screen->width, Screen->height);
     #elif A_CONFIG_RENDER_SDL2
-        setRenderTarget(Screen->pixels, Screen->texture, Screen->width, Screen->height);
+        setTarget(Screen->pixels, Screen->texture, Screen->width, Screen->height);
     #endif
 }
 
 void a_screen_setTargetSprite(ASprite* Sprite)
 {
     #if A_CONFIG_RENDER_SOFTWARE
-        a_screen_setTargetBuffer(Sprite->pixels, Sprite->w, Sprite->h);
+        setTarget(Sprite->pixels, Sprite->w, Sprite->h);
         g_spriteTarget = Sprite;
     #elif A_CONFIG_RENDER_SDL2
-        setRenderTarget(Sprite->pixels, Sprite->texture, Sprite->w, Sprite->h);
+        setTarget(Sprite->pixels, Sprite->texture, Sprite->w, Sprite->h);
     #endif
 }
 
