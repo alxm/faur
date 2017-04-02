@@ -188,6 +188,26 @@ static ABlitter g_blitter_keyed_doclip;
 #undef A__BLEND_SETUP
 #undef A__PIXEL_PARAMS
 
+#define A__BLEND colormod
+#define A__FILL data
+#define A__BLEND_SETUP
+#define A__PIXEL_PARAMS , a_pixel_red(*a__pass_src), a_pixel_green(*a__pass_src), a_pixel_blue(*a__pass_src)
+#include "a2x_pack_sprite.inc.c"
+#undef A__BLEND
+#undef A__FILL
+#undef A__BLEND_SETUP
+#undef A__PIXEL_PARAMS
+
+#define A__BLEND colormod
+#define A__FILL flat
+#define A__BLEND_SETUP
+#define A__PIXEL_PARAMS , a_pixel_red(*a__pass_dst), a_pixel_green(*a__pass_dst), a_pixel_blue(*a__pass_dst)
+#include "a2x_pack_sprite.inc.c"
+#undef A__BLEND
+#undef A__FILL
+#undef A__BLEND_SETUP
+#undef A__PIXEL_PARAMS
+
 void a_sprite__init(void)
 {
     #define initRoutines(Index, Blend)                                         \
@@ -206,6 +226,7 @@ void a_sprite__init(void)
     initRoutines(A_PIXEL_BLEND_RGB50, rgb50);
     initRoutines(A_PIXEL_BLEND_RGB75, rgb75);
     initRoutines(A_PIXEL_BLEND_INVERSE, inverse);
+    initRoutines(A_PIXEL_BLEND_COLORMOD, colormod);
 
     a_sprite__updateRoutines();
     g_spritesList = a_list_new();

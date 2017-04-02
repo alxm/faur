@@ -95,5 +95,12 @@ static inline void a_pixel__inverse(APixel* Dst)
     *Dst = (APixel)~*Dst;
 }
 
+static inline void a_pixel__colormod(APixel* Dst, int Red, int Green, int Blue)
+{
+    *Dst = a_pixel_rgb((Red * a_pixel__state.red) >> 8,
+                       (Green * a_pixel__state.green) >> 8,
+                       (Blue * a_pixel__state.blue) >> 8);
+}
+
 extern void a_pixel__init(void);
 extern void a_pixel__uninit(void);

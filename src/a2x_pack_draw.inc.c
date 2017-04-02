@@ -143,6 +143,7 @@ static void A__FUNC_NAME(a_draw__circle_noclip)(int X, int Y, int Radius)
     const int width = a__screen.width;
     APixel* const pixels = a__screen.pixels;
 
+    APixel* a__pass_dst;
     APixel* oct1 = pixels + q1Y * width + q1X + Radius;
     APixel* oct2 = pixels + (q1Y - Radius) * width + q1X;
     APixel* oct3 = pixels + (q2Y - Radius) * width + q2X;
@@ -152,15 +153,19 @@ static void A__FUNC_NAME(a_draw__circle_noclip)(int X, int Y, int Radius)
     APixel* oct7 = pixels + (q4Y + Radius) * width + q4X;
     APixel* oct8 = pixels + q4Y * width + q4X + Radius;
 
+    #define A__PIXEL_DRAW2(Buffer)  \
+        a__pass_dst = Buffer;       \
+        A__PIXEL_DRAW(a__pass_dst);
+
     while(x > y) {
-        A__PIXEL_DRAW(oct1);
-        A__PIXEL_DRAW(oct2);
-        A__PIXEL_DRAW(oct3);
-        A__PIXEL_DRAW(oct4);
-        A__PIXEL_DRAW(oct5);
-        A__PIXEL_DRAW(oct6);
-        A__PIXEL_DRAW(oct7);
-        A__PIXEL_DRAW(oct8);
+        A__PIXEL_DRAW2(oct1);
+        A__PIXEL_DRAW2(oct2);
+        A__PIXEL_DRAW2(oct3);
+        A__PIXEL_DRAW2(oct4);
+        A__PIXEL_DRAW2(oct5);
+        A__PIXEL_DRAW2(oct6);
+        A__PIXEL_DRAW2(oct7);
+        A__PIXEL_DRAW2(oct8);
 
         oct1 -= width;
         oct2 += 1;
@@ -190,11 +195,13 @@ static void A__FUNC_NAME(a_draw__circle_noclip)(int X, int Y, int Radius)
     }
 
     if(x == y) {
-        A__PIXEL_DRAW(oct1);
-        A__PIXEL_DRAW(oct3);
-        A__PIXEL_DRAW(oct5);
-        A__PIXEL_DRAW(oct7);
+        A__PIXEL_DRAW2(oct1);
+        A__PIXEL_DRAW2(oct3);
+        A__PIXEL_DRAW2(oct5);
+        A__PIXEL_DRAW2(oct7);
     }
+
+    #undef A__PIXEL_DRAW2
 }
 
 static void A__FUNC_NAME(a_draw__circle_clip)(int X, int Y, int Radius)
