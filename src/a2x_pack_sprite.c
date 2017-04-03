@@ -530,6 +530,20 @@ void a_sprite_blitCenterY(const ASprite* Sprite, int X)
                   (a__screen.height - Sprite->h) / 2);
 }
 
+#if A_CONFIG_RENDER_SDL2
+void a_sprite_blitEx(const ASprite* Sprite, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY)
+{
+    a_sdl_render__textureBlitEx(Sprite->texture,
+                                X,
+                                Y,
+                                Scale,
+                                Angle,
+                                CenterX,
+                                CenterY,
+                                a_pixel__state.blitFillFlat);
+}
+#endif
+
 int a_sprite_width(const ASprite* Sprite)
 {
     return Sprite->w;

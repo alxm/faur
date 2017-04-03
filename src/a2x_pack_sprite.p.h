@@ -23,6 +23,7 @@
 
 typedef struct ASprite ASprite;
 
+#include "a2x_pack_fix.p.h"
 #include "a2x_pack_pixel.p.h"
 
 extern ASprite* a_sprite_fromFile(const char* Path);
@@ -37,6 +38,10 @@ extern void a_sprite_blit(const ASprite* Sprite, int X, int Y);
 extern void a_sprite_blitCenter(const ASprite* Sprite);
 extern void a_sprite_blitCenterX(const ASprite* Sprite, int Y);
 extern void a_sprite_blitCenterY(const ASprite* Sprite, int X);
+
+#if A_CONFIG_RENDER_SDL2
+extern void a_sprite_blitEx(const ASprite* Sprite, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY);
+#endif
 
 extern int a_sprite_width(const ASprite* Sprite);
 extern int a_sprite_widthLog2(const ASprite* Sprite);

@@ -494,6 +494,57 @@ void a_sdl_render__textureBlit(ASdlTexture* Texture, int X, int Y, bool FillFlat
     }
 }
 
+void a_sdl_render__textureBlitEx(ASdlTexture* Texture, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY, bool FillFlat)
+{
+    SDL_Texture* t = Texture->texture[FillFlat];
+    uint8_t alphaMod = SDL_ALPHA_OPAQUE;
+
+    if(a_pixel__state.blend >= A_PIXEL_BLEND_RGBA
+        && a_pixel__state.blend <= A_PIXEL_BLEND_RGB75) {
+
+        alphaMod = (uint8_t)a_pixel__state.alpha;
+    }
+
+    if(SDL_SetTextureAlphaMod(t, alphaMod) < 0) {
+        a_out__error("SDL_SetTextureAlphaMod failed: %s", SDL_GetError());
+    }
+
+    if(FillFlat || a_pixel__state.blend == A_PIXEL_BLEND_COLORMOD) {
+        if(SDL_SetTextureColorMod(t,
+                                  (uint8_t)a_pixel__state.red,
+                                  (uint8_t)a_pixel__state.green,
+                                  (uint8_t)a_pixel__state.blue) < 0) {
+
+            a_out__error("SDL_SetTextureColorMod failed: %s", SDL_GetError());
+        }
+    }
+
+    SDL_Point center = {a_fix_fixtoi((Texture->width / 2 + CenterX) * Scale),
+                        a_fix_fixtoi((Texture->height / 2 + CenterY) * Scale)};
+
+    SDL_Rect dest = {X - center.x,
+                     Y - center.y,
+                     a_fix_fixtoi(Texture->width * Scale),
+                     a_fix_fixtoi(Texture->height * Scale)};
+
+    if(SDL_RenderCopyEx(g_sdlRenderer,
+                        t,
+                        NULL,
+                        &dest,
+                        360 - 360 * Angle / A_MATH_ANGLES_NUM,
+                        &center,
+                        SDL_FLIP_NONE) < 0) {
+
+        a_out__error("SDL_RenderCopyEx failed: %s", SDL_GetError());
+    }
+
+    if(a_pixel__state.blend == A_PIXEL_BLEND_COLORMOD) {
+        if(SDL_SetTextureColorMod(t, 0xff, 0xff, 0xff) < 0) {
+            a_out__error("SDL_SetTextureColorMod failed: %s", SDL_GetError());
+        }
+    }
+}
+
 void a_sdl_render__targetSet(ASdlTexture* Texture)
 {
     if(SDL_SetRenderTarget(g_sdlRenderer, Texture->texture[0]) < 0) {
