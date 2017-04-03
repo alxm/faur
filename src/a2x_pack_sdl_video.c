@@ -34,6 +34,7 @@
         #define NUM_SPRITE_TEXTURES 2
 
         struct ASdlTexture {
+            int width, height;
             SDL_Texture* texture[NUM_SPRITE_TEXTURES];
         };
     #endif
@@ -289,18 +290,13 @@ void a_sdl_screen__show(void)
             a_pixel_push();
             a_pixel_setBlend(A_PIXEL_BLEND_PLAIN);
 
-            a_sdl_render__textureBlit(a__screen.texture,
-                                      0,
-                                      0,
-                                      a__screen.width,
-                                      a__screen.height,
-                                      false);
-
+            a_sdl_render__textureBlit(a__screen.texture, 0, 0, false);
             a_sdl_render__targetSet(a__screen.texture);
             a_sdl_render__targetSetClip(a__screen.clipX,
                                         a__screen.clipY,
                                         a__screen.clipWidth,
                                         a__screen.clipHeight);
+
             a_pixel_pop();
         #endif
 
@@ -388,6 +384,8 @@ ASdlTexture* a_sdl_render__textureMakeScreen(int Width, int Height)
 
     ASdlTexture* screen = a_mem_malloc(sizeof(ASdlTexture));
 
+    screen->width = Width;
+    screen->height = Height;
     screen->texture[0] = t;
     screen->texture[1] = NULL;
 
@@ -397,6 +395,9 @@ ASdlTexture* a_sdl_render__textureMakeScreen(int Width, int Height)
 ASdlTexture* a_sdl_render__textureMakeSprite(const APixel* Pixels, int Width, int Height)
 {
     ASdlTexture* sprite = a_mem_malloc(sizeof(ASdlTexture));
+
+    sprite->width = Width;
+    sprite->height = Height;
 
     size_t bufferSize = (unsigned)Width * (unsigned)Height * sizeof(APixel);
     APixel* pixels = a_mem_dup(Pixels, bufferSize);
@@ -456,10 +457,10 @@ void a_sdl_render__textureFree(ASdlTexture* Texture)
     free(Texture);
 }
 
-void a_sdl_render__textureBlit(ASdlTexture* Texture, int X, int Y, int Width, int Height, bool FillFlat)
+void a_sdl_render__textureBlit(ASdlTexture* Texture, int X, int Y, bool FillFlat)
 {
     SDL_Texture* t = Texture->texture[FillFlat];
-    SDL_Rect dest = {X, Y, Width, Height};
+    SDL_Rect dest = {X, Y, Texture->width, Texture->height};
     uint8_t alphaMod = SDL_ALPHA_OPAQUE;
 
     if(a_pixel__state.blend >= A_PIXEL_BLEND_RGBA

@@ -505,8 +505,6 @@ void a_sprite_blit(const ASprite* Sprite, int X, int Y)
         a_sdl_render__textureBlit(Sprite->texture,
                                   X,
                                   Y,
-                                  Sprite->w,
-                                  Sprite->h,
                                   a_pixel__state.blitFillFlat);
     #endif
 }

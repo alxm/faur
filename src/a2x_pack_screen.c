@@ -217,14 +217,7 @@ void a_screen_copy(AScreen* Dst, const AScreen* Src)
                (unsigned)Src->width * (unsigned)Src->height * sizeof(APixel));
     #elif A_CONFIG_RENDER_SDL2
         a_sdl_render__targetSet(Dst->texture);
-
-        a_sdl_render__textureBlit(Src->texture,
-                                  0,
-                                  0,
-                                  Src->width,
-                                  Src->height,
-                                  false);
-
+        a_sdl_render__textureBlit(Src->texture, 0, 0, false);
         a_sdl_render__targetSet(a__screen.texture);
     #endif
 }
