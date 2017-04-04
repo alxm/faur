@@ -120,8 +120,8 @@ void a_sdl_screen__set(int Width, int Height)
         }
 
         g_sdlWindow = SDL_CreateWindow("",
-                                       SDL_WINDOWPOS_UNDEFINED,
-                                       SDL_WINDOWPOS_UNDEFINED,
+                                       SDL_WINDOWPOS_CENTERED,
+                                       SDL_WINDOWPOS_CENTERED,
                                        Width,
                                        Height,
                                        windowFlags);
