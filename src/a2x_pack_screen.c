@@ -74,6 +74,16 @@ void a_screen__init(void)
     int width = a_settings_getInt("video.width");
     int height = a_settings_getInt("video.height");
 
+    #if A_CONFIG_RENDER_SDL2
+        if(width == 0 && height == 0) {
+            a_sdl_video__getFullResolution(&width, &height);
+        }
+    #endif
+
+    if(width == 0 || height == 0) {
+        a_out__fatal("Invalid screen resolution %dx%d", width, height);
+    }
+
     #if A_CONFIG_RENDER_SOFTWARE
         if(a_settings_getBool("video.doubleBuffer")) {
             initScreen(&a__screen, width, height, true);

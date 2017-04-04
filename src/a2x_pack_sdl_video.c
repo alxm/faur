@@ -319,6 +319,25 @@ void a_sdl_screen__setFullScreen(bool FullScreen)
 }
 
 #if A_CONFIG_RENDER_SDL2
+void a_sdl_video__getFullResolution(int* Width, int* Height)
+{
+    SDL_DisplayMode mode;
+
+    if(SDL_GetCurrentDisplayMode(0, &mode) < 0) {
+        a_out__error("SDL_GetCurrentDisplayMode failed: %s",
+                     SDL_GetError());
+        return;
+    }
+
+    a_out__message("Display info: %dx%d %dbpp",
+                   mode.w,
+                   mode.h,
+                   SDL_BITSPERPIXEL(mode.format));
+
+    *Width = mode.w;
+    *Height = mode.h;
+}
+
 void a_sdl_render__setDrawColor(void)
 {
     if(SDL_SetRenderDrawColor(g_sdlRenderer,
