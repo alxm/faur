@@ -131,7 +131,7 @@ void a_sdl_screen__set(int Width, int Height)
 
         g_sdlRenderer = SDL_CreateRenderer(g_sdlWindow,
                                            -1,
-                                           0);
+                                           SDL_RENDERER_TARGETTEXTURE);
         if(g_sdlRenderer == NULL) {
             a_out__fatal("SDL_CreateRenderer failed: %s", SDL_GetError());
         }
