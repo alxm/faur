@@ -223,9 +223,9 @@ static A_STATE(a_fade__screens)
                                             a__screen.height,
                                             false);
 
-        a_screen_setTargetSprite(oldScreen);
+        a_screen_targetPushSprite(oldScreen);
         a_screen_blit(g_oldCapturedScreen);
-        a_screen_resetTarget();
+        a_screen_targetPop();
 
         a_pixel_push();
         a_pixel_setBlend(A_PIXEL_BLEND_RGBA);

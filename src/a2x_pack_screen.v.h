@@ -32,9 +32,11 @@ typedef void (*AScreenOverlay)(void);
 
 struct AScreen {
     APixel* pixels;
-#if A_CONFIG_RENDER_SDL2
-    ASdlTexture* texture;
-#endif
+    #if A_CONFIG_RENDER_SOFTWARE
+        ASprite* sprite;
+    #elif A_CONFIG_RENDER_SDL2
+        ASdlTexture* texture;
+    #endif
     int width;
     int height;
     int clipX;
@@ -51,10 +53,6 @@ extern AScreen a__screen;
 extern void a_screen__init(void);
 extern void a_screen__init2(void);
 extern void a_screen__uninit(void);
-
-#if A_CONFIG_RENDER_SOFTWARE
-    extern void a_screen__setPixelBuffer(APixel* Pixels);
-#endif
 
 extern void a_screen__show(void);
 extern void a_screen__addOverlay(AScreenOverlay Callback);

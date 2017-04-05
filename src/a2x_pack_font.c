@@ -167,13 +167,22 @@ unsigned a_font_copy(unsigned Font, APixel Color)
 
     for(int i = CHAR_ENTRIES_NUM; i--; ) {
         ASprite* sprite = NULL;
+        ASprite* srcSprite = src->sprites[i];
 
-        if(src->sprites[i]) {
-            sprite = a_sprite_clone(src->sprites[i]);
+        if(srcSprite) {
+            #if A_CONFIG_RENDER_SOFTWARE
+                sprite = a_sprite_blank(srcSprite->w,
+                                        srcSprite->h,
+                                        srcSprite->colorKeyed);
+            #elif A_CONFIG_RENDER_SDL2
+                sprite = a_sprite_blank(srcSprite->w,
+                                        srcSprite->h,
+                                        true);
+            #endif
 
-            a_screen_setTargetSprite(sprite);
-            a_sprite_blit(sprite, 0, 0);
-            a_screen_resetTarget();
+            a_screen_targetPushSprite(sprite);
+            a_sprite_blit(srcSprite, 0, 0);
+            a_screen_targetPop();
         }
 
         f->sprites[i] = sprite;

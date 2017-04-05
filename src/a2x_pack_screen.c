@@ -24,9 +24,10 @@ typedef struct AScreenOverlayContainer {
 } AScreenOverlayContainer;
 
 AScreen a__screen;
-static AScreen g_savedScreen;
-static ASprite* g_spriteTarget = NULL;
-static AList* g_overlays;
+static AList* g_stack; // list of AScreen
+
+static AList* g_overlays; // list of AScreenOverlayContainer
+
 static bool g_fullScreenState;
 static AInputButton* g_fullScreenButton;
 
@@ -39,7 +40,9 @@ static void initScreen(AScreen* Screen, int Width, int Height, bool AllocBuffer)
         Screen->pixels = NULL;
     }
 
-    #if A_CONFIG_RENDER_SDL2
+    #if A_CONFIG_RENDER_SOFTWARE
+        Screen->sprite = NULL;
+    #elif A_CONFIG_RENDER_SDL2
         Screen->texture = a_sdl_render__textureMakeScreen(Width, Height);
     #endif
 
@@ -105,12 +108,11 @@ void a_screen__init(void)
 
     #if A_CONFIG_RENDER_SDL2
         initScreen(&a__screen, width, height, true);
+        a_sdl_render__targetSet(a__screen.texture);
     #endif
 
-    g_savedScreen = a__screen;
+    g_stack = a_list_new();
     g_overlays = a_list_new();
-
-    a_screen_setTargetScreen(&a__screen);
 }
 
 static void inputCallback(void)
@@ -135,30 +137,28 @@ void a_screen__uninit(void)
         return;
     }
 
-    if(a_settings_getBool("video.doubleBuffer")) {
-        // Use g_savedScreen in case app forgot to call a_screen_resetTarget
-        freeScreen(&g_savedScreen);
+    freeScreen(&a__screen);
+
+    if(!a_list_empty(g_stack)) {
+        a_out__warning("Leaked %u screen targets", a_list_size(g_stack));
+
+        A_LIST_ITERATE(g_stack, AScreen*, screen) {
+            a_screen_free(screen);
+        }
     }
 
     A_LIST_ITERATE(g_overlays, AScreenOverlayContainer*, c) {
         free(c);
     }
 
+    a_list_free(g_stack);
     a_list_free(g_overlays);
 }
 
-#if A_CONFIG_RENDER_SOFTWARE
-void a_screen__setPixelBuffer(APixel* Pixels)
-{
-    a__screen.pixels = Pixels;
-    g_savedScreen.pixels = Pixels;
-}
-#endif
-
 void a_screen__show(void)
 {
-    if(a__screen.pixels != g_savedScreen.pixels) {
-        a_out__fatal("Call a_screen_resetTarget before drawing frame");
+    if(!a_list_empty(g_stack)) {
+        a_out__fatal("Call a_screen_targetPop for each a_screen_targetPush");
     }
 
     A_LIST_ITERATE(g_overlays, AScreenOverlayContainer*, c) {
@@ -237,68 +237,67 @@ void a_screen_blit(const AScreen* Screen)
     a_screen_copy(&a__screen, Screen);
 }
 
-#if A_CONFIG_RENDER_SOFTWARE
-static void setTarget(APixel* Pixels, int Width, int Height)
+static void pushTarget(APixel* Pixels, int Width, int Height, void* Data)
 {
-    a_screen_resetTarget();
+    a_list_push(g_stack, a_mem_dup(&a__screen, sizeof(AScreen)));
 
     a__screen.pixels = Pixels;
     a__screen.width = Width;
     a__screen.height = Height;
+    a__screen.ownsBuffer = false;
+
+    #if A_CONFIG_RENDER_SOFTWARE
+        a__screen.sprite = Data;
+    #elif A_CONFIG_RENDER_SDL2
+        a__screen.texture = Data;
+        a_sdl_render__targetSet(Data);
+    #endif
 
     a_screen_resetClip();
 }
-#elif A_CONFIG_RENDER_SDL2
-static void setTarget(APixel* Pixels, ASdlTexture* Texture, int Width, int Height)
-{
-    a_screen_resetTarget();
 
-    a__screen.pixels = Pixels;
-    a__screen.texture = Texture;
-    a__screen.width = Width;
-    a__screen.height = Height;
-
-    a_screen_resetClip();
-    a_sdl_render__targetSet(Texture);
-}
-#endif
-
-void a_screen_setTargetScreen(AScreen* Screen)
+void a_screen_targetPushScreen(AScreen* Screen)
 {
     #if A_CONFIG_RENDER_SOFTWARE
-        setTarget(Screen->pixels, Screen->width, Screen->height);
+        pushTarget(Screen->pixels, Screen->width, Screen->height, NULL);
     #elif A_CONFIG_RENDER_SDL2
-        setTarget(Screen->pixels, Screen->texture, Screen->width, Screen->height);
+        pushTarget(Screen->pixels, Screen->width, Screen->height, Screen->texture);
     #endif
 }
 
-void a_screen_setTargetSprite(ASprite* Sprite)
+void a_screen_targetPushSprite(ASprite* Sprite)
 {
     #if A_CONFIG_RENDER_SOFTWARE
-        setTarget(Sprite->pixels, Sprite->w, Sprite->h);
-        g_spriteTarget = Sprite;
+        pushTarget(Sprite->pixels, Sprite->w, Sprite->h, Sprite);
     #elif A_CONFIG_RENDER_SDL2
-        setTarget(Sprite->pixels, Sprite->texture, Sprite->w, Sprite->h);
+        pushTarget(Sprite->pixels, Sprite->w, Sprite->h, Sprite->texture);
     #endif
 }
 
-void a_screen_resetTarget(void)
+void a_screen_targetPop(void)
 {
-    a__screen = g_savedScreen;
+    #if A_CONFIG_RENDER_SOFTWARE
+        if(a__screen.sprite) {
+            a_sprite__refreshTransparency(a__screen.sprite);
+        }
+    #endif
+
+    AScreen* screen = a_list_pop(g_stack);
+
+    if(screen == NULL) {
+        a_out__fatal("a_screen_targetPop: stack is empty");
+    }
+
+    a__screen = *screen;
+    free(screen);
 
     #if A_CONFIG_RENDER_SDL2
         a_sdl_render__targetSet(a__screen.texture);
+        a_sdl_render__targetSetClip(a__screen.clipX,
+                                    a__screen.clipY,
+                                    a__screen.clipWidth,
+                                    a__screen.clipHeight);
     #endif
-
-    if(g_spriteTarget) {
-        #if A_CONFIG_RENDER_SOFTWARE
-            a_sprite__refreshTransparency(g_spriteTarget);
-        #endif
-
-        g_spriteTarget = NULL;
-    }
-
-    a_screen_resetClip();
 }
 
 void a_screen_setClip(int X, int Y, int Width, int Height)

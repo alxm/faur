@@ -110,7 +110,7 @@ void a_sdl_screen__set(int Width, int Height)
             }
         }
 
-        a_screen__setPixelBuffer(g_sdlScreen->pixels);
+        a__screen.pixels = g_sdlScreen->pixels;
     #elif A_CONFIG_LIB_SDL == 2
         int ret;
         uint32_t windowFlags = SDL_WINDOW_MAXIMIZED | SDL_WINDOW_RESIZABLE;
@@ -252,7 +252,7 @@ void a_sdl_screen__show(void)
                 }
             }
 
-            a_screen__setPixelBuffer(g_sdlScreen->pixels);
+            a__screen.pixels = g_sdlScreen->pixels;
         }
     #elif A_CONFIG_LIB_SDL == 2
         #if A_CONFIG_RENDER_SDL2
