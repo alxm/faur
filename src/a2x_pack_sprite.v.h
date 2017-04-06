@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016 Alex Margarit
+    Copyright 2010, 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -35,7 +35,7 @@ struct ASprite {
 #elif A_CONFIG_RENDER_SDL2
     ASdlTexture* texture;
 #endif
-    APixel pixels[];
+    APixel* pixels;
 };
 
 extern APixel a_sprite__colorKey;

@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016 Alex Margarit
+    Copyright 2010, 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -437,14 +437,16 @@ doneColorKey:
 
 ASprite* a_sprite_blank(int Width, int Height, bool ColorKeyed)
 {
-    size_t bufferSize = (unsigned)Width * (unsigned)Height * sizeof(APixel);
-    ASprite* s = a_mem_malloc(sizeof(ASprite) + bufferSize);
+    ASprite* s = a_mem_malloc(sizeof(ASprite));
 
     s->node = a_list_addLast(g_spritesList, s);
     s->nameId = NULL;
     s->w = Width;
     s->wLog2 = (int)log2f((float)Width);
     s->h = Height;
+
+    size_t bufferSize = (unsigned)Width * (unsigned)Height * sizeof(APixel);
+    s->pixels = a_mem_malloc(bufferSize);
 
     if(ColorKeyed) {
         APixel* pixels = s->pixels;
@@ -482,6 +484,7 @@ void a_sprite__free(ASprite* Sprite)
     #endif
 
     free(Sprite->nameId);
+    free(Sprite->pixels);
     free(Sprite);
 }
 
