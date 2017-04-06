@@ -658,7 +658,13 @@ ASprite* a_sprite_clone(const ASprite* Sprite)
            Sprite->pixels,
            (unsigned)Sprite->w * (unsigned)Sprite->h * sizeof(APixel));
 
-    a_sprite__refreshTransparency(s);
+    #if A_CONFIG_RENDER_SOFTWARE
+        a_sprite__refreshTransparency(s);
+    #elif A_CONFIG_RENDER_SDL2
+        a_screen_targetPushSprite(s);
+        a_sprite_blit(Sprite, 0, 0);
+        a_screen_targetPop();
+    #endif
 
     return s;
 }
