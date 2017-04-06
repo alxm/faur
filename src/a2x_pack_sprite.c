@@ -266,6 +266,28 @@ void a_sprite__uninit(void)
     a_list_free(g_spritesList);
 }
 
+static ASprite* makeFromPixels(const APixel* Pixels, int Width, int Height)
+{
+    bool foundColorKey = false;
+
+    for(int i = Width * Height; i--; ) {
+        if(Pixels[i] == a_sprite__colorKey) {
+            foundColorKey = true;
+            break;
+        }
+    }
+
+    ASprite* s = a_sprite_blank(Width, Height, foundColorKey);
+
+    memcpy(s->pixels,
+           Pixels,
+           (unsigned)Width * (unsigned)Height * sizeof(APixel));
+
+    a_sprite__refreshTransparency(s);
+
+    return s;
+}
+
 ASprite* a_sprite_fromFile(const char* Path)
 {
     int w = 0;
@@ -279,7 +301,7 @@ ASprite* a_sprite_fromFile(const char* Path)
         return NULL;
     }
 
-    s = a_sprite_fromPixels(pixels, w, h);
+    s = makeFromPixels(pixels, w, h);
     free(pixels);
 
     s->nameId = a_str_dup(Path);
@@ -300,34 +322,12 @@ ASprite* a_sprite_fromData(const uint8_t* Data, const char* Id)
         return NULL;
     }
 
-    s = a_sprite_fromPixels(pixels, w, h);
+    s = makeFromPixels(pixels, w, h);
     free(pixels);
 
     if(Id != NULL) {
         s->nameId = a_str_dup(Id);
     }
-
-    return s;
-}
-
-ASprite* a_sprite_fromPixels(const APixel* Pixels, int Width, int Height)
-{
-    bool foundColorKey = false;
-
-    for(int i = Width * Height; i--; ) {
-        if(Pixels[i] == a_sprite__colorKey) {
-            foundColorKey = true;
-            break;
-        }
-    }
-
-    ASprite* s = a_sprite_blank(Width, Height, foundColorKey);
-
-    memcpy(s->pixels,
-           Pixels,
-           (unsigned)Width * (unsigned)Height * sizeof(APixel));
-
-    a_sprite__refreshTransparency(s);
 
     return s;
 }
