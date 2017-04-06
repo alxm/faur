@@ -30,6 +30,7 @@ extern ASprite* a_sprite_fromFile(const char* Path);
 extern ASprite* a_sprite_fromData(const uint8_t* Data, const char* Id);
 extern ASprite* a_sprite_fromSprite(const ASprite* Sheet, int X, int Y);
 extern ASprite* a_sprite_blank(int Width, int Height, bool ColorKeyed);
+extern ASprite* a_sprite_clone(const ASprite* Sprite);
 
 extern void a_sprite_free(ASprite* Sprite);
 
@@ -45,9 +46,8 @@ extern void a_sprite_blitEx(const ASprite* Sprite, int X, int Y, AFix Scale, uns
 extern int a_sprite_width(const ASprite* Sprite);
 extern int a_sprite_widthLog2(const ASprite* Sprite);
 extern int a_sprite_height(const ASprite* Sprite);
+
 extern APixel* a_sprite_pixels(ASprite* Sprite);
 extern APixel a_sprite_getPixel(const ASprite* Sprite, int X, int Y);
-
-extern ASprite* a_sprite_clone(const ASprite* Sprite);
 
 extern APixel a_sprite_getColorKey(void);

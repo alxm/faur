@@ -266,33 +266,53 @@ void a_sprite__uninit(void)
     a_list_free(g_spritesList);
 }
 
-static ASprite* makeFromPixels(const APixel* Pixels, int Width, int Height)
+static ASprite* makeEmptySprite(int Width, int Height)
 {
-    bool foundColorKey = false;
+    ASprite* s = a_mem_malloc(sizeof(ASprite));
 
-    for(int i = Width * Height; i--; ) {
-        if(Pixels[i] == a_sprite__colorKey) {
-            foundColorKey = true;
-            break;
-        }
-    }
+    s->node = a_list_addLast(g_spritesList, s);
+    s->pixels = NULL;
+    s->pixelsSize = (unsigned)Width * (unsigned)Height * sizeof(APixel);
+    s->nameId = NULL;
+    s->w = Width;
+    s->wLog2 = (int)log2f((float)Width);
+    s->h = Height;
 
-    ASprite* s = a_sprite_blank(Width, Height, foundColorKey);
-
-    memcpy(s->pixels,
-           Pixels,
-           (unsigned)Width * (unsigned)Height * sizeof(APixel));
-
-    a_sprite__refreshTransparency(s);
+    #if A_CONFIG_RENDER_SOFTWARE
+        s->spans = NULL;
+        s->spansSize = 0;
+        s->colorKeyed = false;
+    #elif A_CONFIG_RENDER_SDL2
+        s->texture = NULL;
+    #endif
 
     return s;
+}
+
+static void assignPixels(ASprite* Sprite, APixel* Pixels)
+{
+    Sprite->pixels = Pixels;
+
+    #if A_CONFIG_RENDER_SOFTWARE
+        for(int i = Sprite->pixelsSize / sizeof(APixel); i--; ) {
+            if(*Pixels++ == a_sprite__colorKey) {
+                Sprite->colorKeyed = true;
+                break;
+            }
+        }
+
+        a_sprite__refreshTransparency(Sprite);
+    #elif A_CONFIG_RENDER_SDL2
+        Sprite->texture = a_sdl_render__textureMakeSprite(Sprite->pixels,
+                                                          Sprite->w,
+                                                          Sprite->h);
+    #endif
 }
 
 ASprite* a_sprite_fromFile(const char* Path)
 {
     int w = 0;
     int h = 0;
-    ASprite* s;
     APixel* pixels = NULL;
 
     a_png_readFile(Path, &pixels, &w, &h);
@@ -301,8 +321,8 @@ ASprite* a_sprite_fromFile(const char* Path)
         return NULL;
     }
 
-    s = makeFromPixels(pixels, w, h);
-    free(pixels);
+    ASprite* s = makeEmptySprite(w, h);
+    assignPixels(s, pixels);
 
     s->nameId = a_str_dup(Path);
 
@@ -313,7 +333,6 @@ ASprite* a_sprite_fromData(const uint8_t* Data, const char* Id)
 {
     int w;
     int h;
-    ASprite* s;
     APixel* pixels = NULL;
 
     a_png_readMemory(Data, &pixels, &w, &h);
@@ -322,8 +341,8 @@ ASprite* a_sprite_fromData(const uint8_t* Data, const char* Id)
         return NULL;
     }
 
-    s = makeFromPixels(pixels, w, h);
-    free(pixels);
+    ASprite* s = makeEmptySprite(w, h);
+    assignPixels(s, pixels);
 
     if(Id != NULL) {
         s->nameId = a_str_dup(Id);
@@ -334,7 +353,6 @@ ASprite* a_sprite_fromData(const uint8_t* Data, const char* Id)
 
 ASprite* a_sprite_fromSprite(const ASprite* Sheet, int X, int Y)
 {
-    ASprite* sprite;
     int spriteWidth = 0;
     int spriteHeight = 0;
     const int sheetWidth = Sheet->w;
@@ -406,23 +424,11 @@ doneEdges:
         }
     }
 
-    bool foundColorKey = false;
-    const APixel* pixels = Sheet->pixels + Y * sheetWidth + X;
-
-    for(int i = spriteHeight; i--; pixels += sheetWidth - spriteWidth) {
-        for(int j = spriteWidth; j--; ) {
-            if(*pixels++ == a_sprite__colorKey) {
-                foundColorKey = true;
-                goto doneColorKey;
-            }
-        }
-    }
-
-doneColorKey:
-    sprite = a_sprite_blank(spriteWidth, spriteHeight, foundColorKey);
+    ASprite* sprite = makeEmptySprite(spriteWidth, spriteHeight);
+    APixel* pixels = a_mem_malloc(sprite->pixelsSize);
 
     const APixel* src = Sheet->pixels + Y * sheetWidth + X;
-    APixel* dst = sprite->pixels;
+    APixel* dst = pixels;
 
     for(int i = spriteHeight; i--; ) {
         memcpy(dst, src, (unsigned)spriteWidth * sizeof(APixel));
@@ -430,43 +436,40 @@ doneColorKey:
         dst += spriteWidth;
     }
 
-    a_sprite__refreshTransparency(sprite);
+    assignPixels(sprite, pixels);
 
     return sprite;
 }
 
 ASprite* a_sprite_blank(int Width, int Height, bool ColorKeyed)
 {
-    ASprite* s = a_mem_malloc(sizeof(ASprite));
-
-    s->node = a_list_addLast(g_spritesList, s);
-    s->nameId = NULL;
-    s->w = Width;
-    s->wLog2 = (int)log2f((float)Width);
-    s->h = Height;
-
-    size_t bufferSize = (unsigned)Width * (unsigned)Height * sizeof(APixel);
-    s->pixels = a_mem_malloc(bufferSize);
+    ASprite* s = makeEmptySprite(Width, Height);
+    APixel* pixels;
 
     if(ColorKeyed) {
-        APixel* pixels = s->pixels;
+        pixels = a_mem_malloc(s->pixelsSize);
+        APixel* p = pixels;
 
         for(int i = Width * Height; i--; ) {
-            *pixels++ = a_sprite__colorKey;
+            *p++ = a_sprite__colorKey;
         }
     } else {
-        memset(s->pixels, 0, bufferSize);
+        pixels = a_mem_zalloc(s->pixelsSize);
     }
 
-    #if A_CONFIG_RENDER_SOFTWARE
-        s->spans = NULL;
-        s->spansSize = 0;
-        s->colorKeyed = ColorKeyed;
-    #elif A_CONFIG_RENDER_SDL2
-        s->texture = a_sdl_render__textureMakeSprite(s->pixels, Width, Height);
-    #endif
+    assignPixels(s, pixels);
 
     return s;
+}
+
+ASprite* a_sprite_clone(const ASprite* Sprite)
+{
+    ASprite* clone = makeEmptySprite(Sprite->w, Sprite->h);
+    APixel* pixels = a_mem_dup(Sprite->pixels, Sprite->pixelsSize);
+
+    assignPixels(clone, pixels);
+
+    return clone;
 }
 
 void a_sprite_free(ASprite* Sprite)
@@ -572,107 +575,76 @@ APixel a_sprite_getPixel(const ASprite* Sprite, int X, int Y)
     return *(Sprite->pixels + Y * Sprite->w + X);
 }
 
-void a_sprite__refreshTransparency(ASprite* Sprite)
-{
-    #if A_CONFIG_RENDER_SOFTWARE
-        if(!Sprite->colorKeyed) {
-            return;
-        }
-
-        const int spriteWidth = Sprite->w;
-        const int spriteHeight = Sprite->h;
-        const APixel* const dst = Sprite->pixels;
-
-        // Spans format for each graphic line:
-        // [NumSpans << 1 | 1 (draw) / 0 (transparent)][[len]...]
-
-        size_t bytesNeeded = 0;
-        const APixel* dest = dst;
-
-        for(int y = spriteHeight; y--; ) {
-            bytesNeeded += sizeof(unsigned); // total size and initial state
-            bool lastState = *dest != a_sprite__colorKey; // initial state
-
-            for(int x = spriteWidth; x--; ) {
-                bool newState = *dest++ != a_sprite__colorKey;
-
-                if(newState != lastState) {
-                    bytesNeeded += sizeof(unsigned); // length of new span
-                    lastState = newState;
-                }
-            }
-
-            bytesNeeded += sizeof(unsigned); // line's last span length
-        }
-
-        if(Sprite->spansSize < bytesNeeded) {
-            free(Sprite->spans);
-            Sprite->spans = a_mem_malloc(bytesNeeded);
-            Sprite->spansSize = bytesNeeded;
-        }
-
-        dest = dst;
-        unsigned* spans = Sprite->spans;
-
-        for(int y = spriteHeight; y--; ) {
-            unsigned* lineStart = spans;
-            unsigned numSpans = 1; // line has at least 1 span
-            unsigned spanLength = 0;
-
-            bool lastState = *dest != a_sprite__colorKey; // initial draw state
-            *spans++ = lastState;
-
-            for(int x = spriteWidth; x--; ) {
-                bool newState = *dest++ != a_sprite__colorKey;
-
-                if(newState == lastState) {
-                    spanLength++; // keep growing current span
-                } else {
-                    *spans++ = spanLength; // record the just-ended span length
-                    numSpans++;
-                    spanLength = 1; // start a new span from this pixel
-                    lastState = newState;
-                }
-            }
-
-            *spans++ = spanLength; // record the last span's length
-            *lineStart |= numSpans << 1; // record line's number of spans
-        }
-    #elif A_CONFIG_RENDER_SDL2
-        if(Sprite->texture != NULL) {
-            a_sdl_render__textureFree(Sprite->texture);
-        }
-
-        Sprite->texture = a_sdl_render__textureMakeSprite(Sprite->pixels,
-                                                          Sprite->w,
-                                                          Sprite->h);
-    #endif
-}
-
-ASprite* a_sprite_clone(const ASprite* Sprite)
-{
-    #if A_CONFIG_RENDER_SOFTWARE
-        ASprite* s = a_sprite_blank(Sprite->w, Sprite->h, Sprite->colorKeyed);
-    #elif A_CONFIG_RENDER_SDL2
-        ASprite* s = a_sprite_blank(Sprite->w, Sprite->h, false);
-    #endif
-
-    memcpy(s->pixels,
-           Sprite->pixels,
-           (unsigned)Sprite->w * (unsigned)Sprite->h * sizeof(APixel));
-
-    #if A_CONFIG_RENDER_SOFTWARE
-        a_sprite__refreshTransparency(s);
-    #elif A_CONFIG_RENDER_SDL2
-        a_screen_targetPushSprite(s);
-        a_sprite_blit(Sprite, 0, 0);
-        a_screen_targetPop();
-    #endif
-
-    return s;
-}
-
 APixel a_sprite_getColorKey(void)
 {
     return a_sprite__colorKey;
 }
+
+#if A_CONFIG_RENDER_SOFTWARE
+void a_sprite__refreshTransparency(ASprite* Sprite)
+{
+    if(!Sprite->colorKeyed) {
+        return;
+    }
+
+    const int spriteWidth = Sprite->w;
+    const int spriteHeight = Sprite->h;
+    const APixel* const dst = Sprite->pixels;
+
+    // Spans format for each graphic line:
+    // [NumSpans << 1 | 1 (draw) / 0 (transparent)][[len]...]
+
+    size_t bytesNeeded = 0;
+    const APixel* dest = dst;
+
+    for(int y = spriteHeight; y--; ) {
+        bytesNeeded += sizeof(unsigned); // total size and initial state
+        bool lastState = *dest != a_sprite__colorKey; // initial state
+
+        for(int x = spriteWidth; x--; ) {
+            bool newState = *dest++ != a_sprite__colorKey;
+
+            if(newState != lastState) {
+                bytesNeeded += sizeof(unsigned); // length of new span
+                lastState = newState;
+            }
+        }
+
+        bytesNeeded += sizeof(unsigned); // line's last span length
+    }
+
+    if(Sprite->spansSize < bytesNeeded) {
+        free(Sprite->spans);
+        Sprite->spans = a_mem_malloc(bytesNeeded);
+        Sprite->spansSize = bytesNeeded;
+    }
+
+    dest = dst;
+    unsigned* spans = Sprite->spans;
+
+    for(int y = spriteHeight; y--; ) {
+        unsigned* lineStart = spans;
+        unsigned numSpans = 1; // line has at least 1 span
+        unsigned spanLength = 0;
+
+        bool lastState = *dest != a_sprite__colorKey; // initial draw state
+        *spans++ = lastState;
+
+        for(int x = spriteWidth; x--; ) {
+            bool newState = *dest++ != a_sprite__colorKey;
+
+            if(newState == lastState) {
+                spanLength++; // keep growing current span
+            } else {
+                *spans++ = spanLength; // record the just-ended span length
+                numSpans++;
+                spanLength = 1; // start a new span from this pixel
+                lastState = newState;
+            }
+        }
+
+        *spans++ = spanLength; // record the last span's length
+        *lineStart |= numSpans << 1; // record line's number of spans
+    }
+}
+#endif
