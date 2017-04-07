@@ -48,12 +48,12 @@ int main(int Argc, const char** Argv)
     a_hw__init_preSDL();
     a_sdl__init();
     a_hw__init_postSDL();
+    a_input__init();
     a_screen__init();
     a_pixel__init();
     a_draw__init();
     a_sprite__init();
     a_fps__init();
-    a_input__init();
     a_screenshot__init();
     a_sound__init();
     a_math__init();
@@ -65,7 +65,6 @@ int main(int Argc, const char** Argv)
     a_fade__init();
 
     a_console__init2();
-    a_screen__init2();
 
     a_out__message("Calling A_MAIN");
     a_main();

@@ -29,7 +29,18 @@ static AList* g_stack; // list of AScreen
 static AList* g_overlays; // list of AScreenOverlayContainer
 
 static bool g_fullScreenState;
-static AInputButton* g_fullScreenButton;
+
+#if A_PLATFORM_DESKTOP
+    static AInputButton* g_fullScreenButton;
+
+    static void inputCallback(void)
+    {
+        if(a_button_getOnce(g_fullScreenButton)) {
+            g_fullScreenState = !g_fullScreenState;
+            a_sdl_screen__setFullScreen(g_fullScreenState);
+        }
+    }
+#endif
 
 static void initScreen(AScreen* Screen, int Width, int Height, bool AllocBuffer)
 {
@@ -105,6 +116,13 @@ void a_screen__init(void)
                 a_hw__setWizPortraitMode();
             }
         #endif
+
+        #if A_PLATFORM_DESKTOP
+            g_fullScreenButton = a_button_new(
+                a_settings_getString("video.fullscreen.button"));
+
+            a_input__addCallback(inputCallback);
+        #endif
     }
 
     #if A_CONFIG_RENDER_SDL2
@@ -114,24 +132,6 @@ void a_screen__init(void)
 
     g_stack = a_list_new();
     g_overlays = a_list_new();
-}
-
-static void inputCallback(void)
-{
-    if(a_button_getOnce(g_fullScreenButton)) {
-        g_fullScreenState = !g_fullScreenState;
-        a_sdl_screen__setFullScreen(g_fullScreenState);
-    }
-}
-
-void a_screen__init2(void)
-{
-    if(a_settings_getBool("video.window")) {
-        const char* buttonId = a_settings_getString("video.fullscreen.button");
-        g_fullScreenButton = a_button_new(buttonId);
-
-        a_input__addCallback(inputCallback);
-    }
 }
 
 void a_screen__uninit(void)
