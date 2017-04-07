@@ -71,13 +71,13 @@ void a_sdl_video__uninit(void)
     SDL_QuitSubSystem(SDL_INIT_VIDEO);
 }
 
-void a_sdl_screen__set(int Width, int Height)
+void a_sdl_screen__set(int Width, int Height, bool FullScreen)
 {
     #if A_CONFIG_LIB_SDL == 1
         int bpp = 0;
         uint32_t videoFlags = SDL_SWSURFACE;
 
-        if(a_settings_getBool("video.fullscreen")) {
+        if(FullScreen) {
             videoFlags |= SDL_FULLSCREEN;
         }
 
@@ -115,7 +115,7 @@ void a_sdl_screen__set(int Width, int Height)
         int ret;
         uint32_t windowFlags = SDL_WINDOW_MAXIMIZED | SDL_WINDOW_RESIZABLE;
 
-        if(a_settings_getBool("video.fullscreen")) {
+        if(FullScreen) {
             windowFlags |= SDL_WINDOW_FULLSCREEN;
         }
 

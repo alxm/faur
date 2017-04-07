@@ -30,7 +30,7 @@
 extern void a_sdl_video__init(void);
 extern void a_sdl_video__uninit(void);
 
-extern void a_sdl_screen__set(int Width, int Height);
+extern void a_sdl_screen__set(int Width, int Height, bool FullScreen);
 extern void a_sdl_screen__show(void);
 extern void a_sdl_screen__setFullScreen(bool FullScreen);
 

@@ -97,7 +97,8 @@ void a_screen__init(void)
     #endif
 
     if(a_settings_getBool("video.window")) {
-        a_sdl_screen__set(width, height);
+        g_fullScreenState = a_settings_getBool("video.fullscreen");
+        a_sdl_screen__set(width, height, g_fullScreenState);
 
         #if A_PLATFORM_WIZ
             if(a_settings_getBool("video.fixWizTearing")) {
@@ -125,10 +126,12 @@ static void inputCallback(void)
 
 void a_screen__init2(void)
 {
-    g_fullScreenState = false;
-    g_fullScreenButton = a_button_new(
-                             a_settings_getString("video.fullscreen.button"));
-    a_input__addCallback(inputCallback);
+    if(a_settings_getBool("video.window")) {
+        const char* buttonId = a_settings_getString("video.fullscreen.button");
+        g_fullScreenButton = a_button_new(buttonId);
+
+        a_input__addCallback(inputCallback);
+    }
 }
 
 void a_screen__uninit(void)
