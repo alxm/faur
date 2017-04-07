@@ -32,7 +32,7 @@ typedef enum {
 
 static void outPrint(const char* Title, AColorCode Color, FILE* Stream, const char* Format, va_list Args)
 {
-    #if A_PLATFORM_LINUXPC
+    #if A_PLATFORM_LINUX
         fprintf(Stream, "\033[1;%dm[ a2x %s ]\033[0m ", Color, Title);
     #else
         (void)Color;

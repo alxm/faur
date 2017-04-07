@@ -169,7 +169,7 @@ void a_sdl_screen__set(int Width, int Height)
         g_clearB = (uint8_t)strtol(end, NULL, 0);
     #endif
 
-    #if A_PLATFORM_LINUXPC
+    #if A_PLATFORM_DESKTOP
         char caption[64];
         snprintf(caption,
                  sizeof(caption),

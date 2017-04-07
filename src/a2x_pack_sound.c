@@ -36,7 +36,7 @@ static int g_volumeMax;
     static APixel g_volbarBackground;
     static APixel g_volbarBorder;
     static APixel g_volbarFill;
-#elif A_PLATFORM_LINUXPC || A_PLATFORM_PANDORA
+#elif A_PLATFORM_DESKTOP || A_PLATFORM_PANDORA
     static AInputButton* g_musicOnOffButton;
 #endif
 
@@ -73,7 +73,7 @@ static void inputCallback(void)
                 g_lastVolAdjustment = a_time_getMs();
             }
         }
-    #elif A_PLATFORM_LINUXPC || A_PLATFORM_PANDORA
+    #elif A_PLATFORM_DESKTOP || A_PLATFORM_PANDORA
         if(a_settings_getBool("sound.on")) {
             if(a_button_getOnce(g_musicOnOffButton)) {
                 a_sdl_sound__musicToggle();
@@ -124,7 +124,7 @@ void a_sound__init(void)
         #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
             g_volumeUpButton = a_button_new("gp2x.volUp wiz.volUp");
             g_volumeDownButton = a_button_new("gp2x.volDown wiz.volDown");
-        #elif A_PLATFORM_LINUXPC || A_PLATFORM_PANDORA
+        #elif A_PLATFORM_DESKTOP || A_PLATFORM_PANDORA
             g_musicOnOffButton = a_button_new("key.m");
         #endif
 

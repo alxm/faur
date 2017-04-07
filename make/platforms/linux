@@ -5,7 +5,8 @@ A_PLATFORM_LIBS = \
     -lm \
 
 A_PLATFORM_CFLAGS = \
-    -DA_PLATFORM_LINUXPC=1 \
+    -DA_PLATFORM_LINUX=1 \
+    -DA_PLATFORM_DESKTOP=1 \
     -O0 \
     -g \
 

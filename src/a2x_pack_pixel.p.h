@@ -21,7 +21,7 @@
 
 #include "a2x_system_includes.h"
 
-#if A_PLATFORM_LINUXPC
+#if A_PLATFORM_DESKTOP
     #define A_PIXEL_BPP 32
     typedef uint32_t APixel;
 #else
