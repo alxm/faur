@@ -32,6 +32,7 @@ typedef void (*AScreenOverlay)(void);
 
 struct AScreen {
     APixel* pixels;
+    size_t pixelsSize;
     #if A_CONFIG_RENDER_SOFTWARE
         ASprite* sprite;
     #elif A_CONFIG_RENDER_SDL2

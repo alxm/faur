@@ -294,7 +294,7 @@ static void assignPixels(ASprite* Sprite, APixel* Pixels)
     Sprite->pixels = Pixels;
 
     #if A_CONFIG_RENDER_SOFTWARE
-        for(int i = Sprite->pixelsSize / sizeof(APixel); i--; ) {
+        for(size_t i = Sprite->pixelsSize / sizeof(APixel); i--; ) {
             if(*Pixels++ == a_sprite__colorKey) {
                 Sprite->colorKeyed = true;
                 break;

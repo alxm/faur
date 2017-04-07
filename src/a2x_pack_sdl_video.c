@@ -235,9 +235,7 @@ void a_sdl_screen__show(void)
                 }
             }
 
-            memcpy(g_sdlScreen->pixels,
-                   a__screen.pixels,
-                   a__screen.width * a__screen.height * sizeof(APixel));
+            memcpy(g_sdlScreen->pixels, a__screen.pixels, a__screen.pixelsSize);
 
             if(SDL_MUSTLOCK(g_sdlScreen)) {
                 SDL_UnlockSurface(g_sdlScreen);

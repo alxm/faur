@@ -44,9 +44,10 @@ static bool g_fullScreenState;
 
 static void initScreen(AScreen* Screen, int Width, int Height, bool AllocBuffer)
 {
+    Screen->pixelsSize = (unsigned)Width * (unsigned)Height * sizeof(APixel);
+
     if(AllocBuffer) {
-        size_t size = (unsigned)Width * (unsigned)Height * sizeof(APixel);
-        Screen->pixels = a_mem_zalloc(size);
+        Screen->pixels = a_mem_zalloc(Screen->pixelsSize);
     } else {
         Screen->pixels = NULL;
     }
@@ -225,9 +226,7 @@ void a_screen_free(AScreen* Screen)
 void a_screen_copy(AScreen* Dst, const AScreen* Src)
 {
     #if A_CONFIG_RENDER_SOFTWARE
-        memcpy(Dst->pixels,
-               Src->pixels,
-               (unsigned)Src->width * (unsigned)Src->height * sizeof(APixel));
+        memcpy(Dst->pixels, Src->pixels, Src->pixelsSize);
     #elif A_CONFIG_RENDER_SDL2
         a_sdl_render__targetSet(Dst->texture);
         a_sdl_render__textureBlit(Src->texture, 0, 0, false);
@@ -240,11 +239,12 @@ void a_screen_blit(const AScreen* Screen)
     a_screen_copy(&a__screen, Screen);
 }
 
-static void pushTarget(APixel* Pixels, int Width, int Height, void* Data)
+static void pushTarget(APixel* Pixels, size_t PixelsSize, int Width, int Height, void* Data)
 {
     a_list_push(g_stack, a_mem_dup(&a__screen, sizeof(AScreen)));
 
     a__screen.pixels = Pixels;
+    a__screen.pixelsSize = PixelsSize;
     a__screen.width = Width;
     a__screen.height = Height;
     a__screen.ownsBuffer = false;
@@ -262,19 +262,31 @@ static void pushTarget(APixel* Pixels, int Width, int Height, void* Data)
 void a_screen_targetPushScreen(AScreen* Screen)
 {
     #if A_CONFIG_RENDER_SOFTWARE
-        pushTarget(Screen->pixels, Screen->width, Screen->height, NULL);
+        void* data = NULL;
     #elif A_CONFIG_RENDER_SDL2
-        pushTarget(Screen->pixels, Screen->width, Screen->height, Screen->texture);
+        void* data = Screen->texture;
     #endif
+
+    pushTarget(Screen->pixels,
+               Screen->pixelsSize,
+               Screen->width,
+               Screen->height,
+               data);
 }
 
 void a_screen_targetPushSprite(ASprite* Sprite)
 {
     #if A_CONFIG_RENDER_SOFTWARE
-        pushTarget(Sprite->pixels, Sprite->w, Sprite->h, Sprite);
+        void* data = Sprite;
     #elif A_CONFIG_RENDER_SDL2
-        pushTarget(Sprite->pixels, Sprite->w, Sprite->h, Sprite->texture);
+        void* data = Sprite->texture;
     #endif
+
+    pushTarget(Sprite->pixels,
+               Sprite->pixelsSize,
+               Sprite->w,
+               Sprite->h,
+               data);
 }
 
 void a_screen_targetPop(void)
