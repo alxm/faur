@@ -30,11 +30,19 @@
 #endif
 
 #if A_PIXEL_BPP == 16
-    // RGB565
-    #define A_PIXEL_RED_BITS   5
-    #define A_PIXEL_GREEN_BITS 6
-    #define A_PIXEL_BLUE_BITS  5
-    #define A_PIXEL_ALPHA_BITS 0
+    #if A_CONFIG_RENDER_SOFTWARE
+        // RGB565
+        #define A_PIXEL_RED_BITS   5
+        #define A_PIXEL_GREEN_BITS 6
+        #define A_PIXEL_BLUE_BITS  5
+        #define A_PIXEL_ALPHA_BITS 0
+    #elif A_CONFIG_RENDER_SDL2
+        // RGBA5551
+        #define A_PIXEL_RED_BITS   5
+        #define A_PIXEL_GREEN_BITS 5
+        #define A_PIXEL_BLUE_BITS  5
+        #define A_PIXEL_ALPHA_BITS 1
+    #endif
 #elif A_PIXEL_BPP == 32
     #define A_PIXEL_RED_BITS   8
     #define A_PIXEL_GREEN_BITS 8
@@ -44,7 +52,7 @@
         // XRGB8888
         #define A_PIXEL_ALPHA_BITS 0
     #elif A_CONFIG_LIB_SDL == 2
-        // RGBXA8888 / RGBA8888
+        // RGBX8888 / RGBA8888
         #define A_PIXEL_ALPHA_BITS 8
     #endif
 #endif

@@ -38,6 +38,20 @@
             SDL_Texture* texture[NUM_SPRITE_TEXTURES];
         };
     #endif
+
+    #if A_PIXEL_BPP == 16
+        #if A_CONFIG_RENDER_SOFTWARE
+            #define A_PIXEL_FORMAT SDL_PIXELFORMAT_RGB565
+        #elif A_CONFIG_RENDER_SDL2
+            #define A_PIXEL_FORMAT SDL_PIXELFORMAT_RGBA5551
+        #endif
+    #elif A_PIXEL_BPP == 32
+        #if A_CONFIG_RENDER_SOFTWARE
+            #define A_PIXEL_FORMAT SDL_PIXELFORMAT_RGBX8888
+        #elif A_CONFIG_RENDER_SDL2
+            #define A_PIXEL_FORMAT SDL_PIXELFORMAT_RGBA8888
+        #endif
+    #endif
 #endif
 
 void a_sdl_video__init(void)
@@ -145,11 +159,7 @@ void a_sdl_screen__set(int Width, int Height, bool FullScreen)
 
         #if A_CONFIG_RENDER_SOFTWARE
             g_sdlTexture = SDL_CreateTexture(g_sdlRenderer,
-                                             #if A_PIXEL_BPP == 16
-                                                 SDL_PIXELFORMAT_RGB565,
-                                             #elif A_PIXEL_BPP == 32
-                                                 SDL_PIXELFORMAT_RGBX8888,
-                                             #endif
+                                             A_PIXEL_FORMAT,
                                              SDL_TEXTUREACCESS_STREAMING,
                                              Width,
                                              Height);
@@ -398,7 +408,7 @@ void a_sdl_render__drawRectangle(int X, int Y, int Width, int Height)
 ASdlTexture* a_sdl_render__textureMakeScreen(int Width, int Height)
 {
     SDL_Texture* t = SDL_CreateTexture(g_sdlRenderer,
-                                       SDL_PIXELFORMAT_RGBA8888,
+                                       A_PIXEL_FORMAT,
                                        SDL_TEXTUREACCESS_TARGET,
                                        Width,
                                        Height);
@@ -444,7 +454,7 @@ ASdlTexture* a_sdl_render__textureMakeSprite(const APixel* Pixels, int Width, in
         }
 
         SDL_Texture* t = SDL_CreateTexture(g_sdlRenderer,
-                                           SDL_PIXELFORMAT_RGBA8888,
+                                           A_PIXEL_FORMAT,
                                            SDL_TEXTUREACCESS_TARGET,
                                            Width,
                                            Height);
@@ -581,7 +591,7 @@ void a_sdl_render__targetGetPixels(APixel* Pixels, int Width)
     // Unreliable on texture targets
     if(SDL_RenderReadPixels(g_sdlRenderer,
                             NULL,
-                            SDL_PIXELFORMAT_RGBA8888,
+                            A_PIXEL_FORMAT,
                             Pixels,
                             Width * (int)sizeof(APixel)) < 0) {
 
