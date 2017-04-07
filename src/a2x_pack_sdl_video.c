@@ -182,9 +182,9 @@ void a_sdl_screen__set(int Width, int Height, bool FullScreen)
         #elif A_CONFIG_LIB_SDL == 2
             SDL_SetWindowTitle(g_sdlWindow, caption);
         #endif
-    #else
-        SDL_ShowCursor(SDL_DISABLE);
     #endif
+
+    a_sdl_screen__setFullScreen(FullScreen);
 }
 
 void a_sdl_screen__show(void)
@@ -312,16 +312,17 @@ void a_sdl_screen__show(void)
 
 void a_sdl_screen__setFullScreen(bool FullScreen)
 {
-    #if A_CONFIG_LIB_SDL == 1
-        FullScreen = FullScreen;
-    #elif A_CONFIG_LIB_SDL == 2
-        uint32_t flag = FullScreen ? SDL_WINDOW_FULLSCREEN : 0;
-        int ret = SDL_SetWindowFullscreen(g_sdlWindow, flag);
+    #if A_CONFIG_LIB_SDL == 2
+        if(SDL_SetWindowFullscreen(g_sdlWindow,
+                                   FullScreen? SDL_WINDOW_FULLSCREEN : 0) < 0) {
 
-        if(ret < 0) {
             a_out__error("SDL_SetWindowFullscreen failed: %s", SDL_GetError());
         }
     #endif
+
+    if(SDL_ShowCursor(FullScreen ? SDL_DISABLE : SDL_ENABLE) < 0) {
+        a_out__error("SDL_ShowCursor failed: %s", SDL_GetError());
+    }
 }
 
 #if A_CONFIG_RENDER_SDL2
