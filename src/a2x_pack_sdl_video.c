@@ -191,7 +191,13 @@ void a_sdl_screen__show(void)
 {
     #if A_CONFIG_LIB_SDL == 1
         #if A_PLATFORM_WIZ
-            if(a_settings_getBool("video.fixWizTearing")) { // also video.doubleBuffer
+            if(a_settings_getBool("video.fixWizTearing")) {
+                // The Wiz screen has diagonal tearing in landscape mode. As a
+                // slow but simple workaround, the screen is set to portrait
+                // mode where top-right is 0,0 and bottom-left is 240,320, and
+                // the game's landscape pixel buffer is rotated to this format
+                // every frame.
+
                 #define A_WIDTH 320
                 #define A_HEIGHT 240
 
