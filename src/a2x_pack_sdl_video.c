@@ -56,14 +56,14 @@
 
 void a_sdl_video__init(void)
 {
-    if(SDL_InitSubSystem(SDL_INIT_VIDEO) != 0) {
-        a_out__fatal("SDL_InitSubSystem: %s", SDL_GetError());
-    }
-
     #if A_PLATFORM_PANDORA
         putenv("SDL_VIDEODRIVER=omapdss");
         putenv("SDL_OMAP_LAYER_SIZE=pixelperfect");
     #endif
+
+    if(SDL_InitSubSystem(SDL_INIT_VIDEO) != 0) {
+        a_out__fatal("SDL_InitSubSystem: %s", SDL_GetError());
+    }
 }
 
 void a_sdl_video__uninit(void)
