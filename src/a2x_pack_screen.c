@@ -180,6 +180,12 @@ void a_screen__addOverlay(AScreenOverlay Callback)
     a_list_addLast(g_overlays, c);
 }
 
+bool a_screen__sameSize(const AScreen* Screen1, const AScreen* Screen2)
+{
+    return Screen1->width == Screen2->width
+        && Screen1->height == Screen2->height;
+}
+
 APixel* a_screen_pixels(void)
 {
     #if A_CONFIG_RENDER_SDL2
@@ -225,6 +231,14 @@ void a_screen_free(AScreen* Screen)
 
 void a_screen_copy(AScreen* Dst, const AScreen* Src)
 {
+    if(!a_screen__sameSize(Dst, Src)) {
+        a_out__fatal("a_screen_copy: different screen sizes %d,%d and %d,%d",
+                     Dst->width,
+                     Dst->height,
+                     Src->width,
+                     Src->height);
+    }
+
     #if A_CONFIG_RENDER_SOFTWARE
         memcpy(Dst->pixels, Src->pixels, Src->pixelsSize);
     #elif A_CONFIG_RENDER_SDL2
@@ -248,6 +262,14 @@ void a_screen_copy(AScreen* Dst, const AScreen* Src)
 
 void a_screen_blit(const AScreen* Screen)
 {
+    if(!a_screen__sameSize(&a__screen, Screen)) {
+        a_out__fatal("a_screen_blit: different screen sizes %d,%d and %d,%d",
+                     a__screen.width,
+                     a__screen.height,
+                     Screen->width,
+                     Screen->height);
+    }
+
     #if A_CONFIG_RENDER_SOFTWARE
         APixel* dst = a__screen.pixels;
         APixel* src = Screen->pixels;
@@ -416,17 +438,6 @@ void a_screen_clipSet(int X, int Y, int Width, int Height)
 void a_screen_clipReset(void)
 {
     a_screen_clipSet(0, 0, a__screen.width, a__screen.height);
-}
-
-bool a_screen_fitsInside(const AScreen* Screen)
-{
-    return a__screen.width * a__screen.height <= Screen->width * Screen->height;
-}
-
-bool a_screen_sameSizeAs(const AScreen* Screen)
-{
-    return a__screen.width == Screen->width
-        && a__screen.height == Screen->height;
 }
 
 bool a_screen_boxOnScreen(int X, int Y, int W, int H)

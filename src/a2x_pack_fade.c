@@ -31,7 +31,9 @@ static A_STATE(a_fade__screens);
 
 static void allocateScreenBuffers(bool CaptureCurrentScreen)
 {
-    if(g_capturedScreen == NULL || !a_screen_fitsInside(g_capturedScreen)) {
+    if(g_capturedScreen == NULL
+        || !a_screen__sameSize(&a__screen, g_capturedScreen)) {
+
         if(g_capturedScreen != NULL) {
             a_screen_free(g_capturedScreen);
         }
@@ -57,7 +59,7 @@ static void allocateScreenBuffers(bool CaptureCurrentScreen)
 
 static void updateCapturedScreenBuffer(void)
 {
-    if(!a_screen_sameSizeAs(g_capturedScreen)) {
+    if(!a_screen__sameSize(&a__screen, g_capturedScreen)) {
         a_out__fatal("Screen size changed before fading");
     }
 

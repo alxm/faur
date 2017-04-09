@@ -44,9 +44,6 @@ extern void a_screen_targetPop(void);
 extern void a_screen_clipSet(int X, int Y, int Width, int Height);
 extern void a_screen_clipReset(void);
 
-extern bool a_screen_fitsInside(const AScreen* Screen);
-extern bool a_screen_sameSizeAs(const AScreen* Screen);
-
 extern bool a_screen_boxOnScreen(int X, int Y, int W, int H);
 extern bool a_screen_boxInsideScreen(int X, int Y, int W, int H);
 extern bool a_screen_boxOnClip(int X, int Y, int W, int H);
