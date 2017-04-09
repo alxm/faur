@@ -361,11 +361,19 @@ void a_sdl_video__getFullResolution(int* Width, int* Height)
 
 void a_sdl_render__setDrawColor(void)
 {
+    int alpha = SDL_ALPHA_OPAQUE;
+
+    if(a_pixel__state.blend >= A_PIXEL_BLEND_RGBA
+        && a_pixel__state.blend <= A_PIXEL_BLEND_RGB75) {
+
+        alpha = a_pixel__state.alpha;
+    }
+
     if(SDL_SetRenderDrawColor(g_sdlRenderer,
                               (uint8_t)a_pixel__state.red,
                               (uint8_t)a_pixel__state.green,
                               (uint8_t)a_pixel__state.blue,
-                              (uint8_t)a_pixel__state.alpha) < 0) {
+                              (uint8_t)alpha) < 0) {
 
         a_out__error("SDL_SetRenderDrawColor failed: %s", SDL_GetError());
     }
