@@ -416,6 +416,10 @@ ASdlTexture* a_sdl_render__textureMakeScreen(int Width, int Height)
         a_out__fatal("SDL_CreateTexture failed: %s", SDL_GetError());
     }
 
+    if(SDL_SetTextureBlendMode(t, SDL_BLENDMODE_BLEND) < 0) {
+        a_out__error("SDL_SetTextureBlendMode failed: %s", SDL_GetError());
+    }
+
     ASdlTexture* screen = a_mem_malloc(sizeof(ASdlTexture));
 
     screen->width = Width;

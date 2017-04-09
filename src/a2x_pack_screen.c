@@ -228,15 +228,88 @@ void a_screen_copy(AScreen* Dst, const AScreen* Src)
     #if A_CONFIG_RENDER_SOFTWARE
         memcpy(Dst->pixels, Src->pixels, Src->pixelsSize);
     #elif A_CONFIG_RENDER_SDL2
+        a_pixel_push();
+        a_pixel_setBlend(A_PIXEL_BLEND_PLAIN);
+
         a_sdl_render__targetSet(Dst->texture);
+        a_sdl_render__targetSetClip(0, 0, Dst->width, Dst->height);
+
         a_sdl_render__textureBlit(Src->texture, 0, 0, false);
+
         a_sdl_render__targetSet(a__screen.texture);
+        a_sdl_render__targetSetClip(a__screen.clipX,
+                                    a__screen.clipY,
+                                    a__screen.clipWidth,
+                                    a__screen.clipHeight);
+
+        a_pixel_pop();
     #endif
 }
 
 void a_screen_blit(const AScreen* Screen)
 {
-    a_screen_copy(&a__screen, Screen);
+    #if A_CONFIG_RENDER_SOFTWARE
+        APixel* dst = a__screen.pixels;
+        APixel* src = Screen->pixels;
+        APixel srcPixel;
+        int alpha = a_pixel__state.alpha;
+
+        #define LOOP(blend, params)                                          \
+            for(int i = Screen->width * Screen->height; i--; dst++, src++) { \
+                srcPixel = *src;                                             \
+                a_pixel__##blend params;                                     \
+            }
+
+        switch(a_pixel__state.blend) {
+            case A_PIXEL_BLEND_PLAIN: {
+                memcpy(a__screen.pixels, Screen->pixels, Screen->pixelsSize);
+            } break;
+
+            case A_PIXEL_BLEND_RGBA: {
+                LOOP(rgba, (dst,
+                            a_pixel_red(srcPixel),
+                            a_pixel_green(srcPixel),
+                            a_pixel_blue(srcPixel),
+                            alpha));
+            } break;
+
+            case A_PIXEL_BLEND_RGB25: {
+                LOOP(rgb25, (dst,
+                             a_pixel_red(srcPixel),
+                             a_pixel_green(srcPixel),
+                             a_pixel_blue(srcPixel)));
+            } break;
+
+            case A_PIXEL_BLEND_RGB50: {
+                LOOP(rgb50, (dst,
+                             a_pixel_red(srcPixel),
+                             a_pixel_green(srcPixel),
+                             a_pixel_blue(srcPixel)));
+            } break;
+
+            case A_PIXEL_BLEND_RGB75: {
+                LOOP(rgb75, (dst,
+                             a_pixel_red(srcPixel),
+                             a_pixel_green(srcPixel),
+                             a_pixel_blue(srcPixel)));
+            } break;
+
+            case A_PIXEL_BLEND_INVERSE: {
+                LOOP(inverse, (dst));
+            } break;
+
+            case A_PIXEL_BLEND_COLORMOD: {
+                LOOP(colormod, (dst,
+                                a_pixel_red(srcPixel),
+                                a_pixel_green(srcPixel),
+                                a_pixel_blue(srcPixel)));
+            } break;
+
+            default: break;
+        }
+    #elif A_CONFIG_RENDER_SDL2
+        a_sdl_render__textureBlit(Screen->texture, 0, 0, false);
+    #endif
 }
 
 static void pushTarget(APixel* Pixels, size_t PixelsSize, int Width, int Height, void* Data)

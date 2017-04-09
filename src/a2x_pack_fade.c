@@ -143,15 +143,16 @@ static A_STATE(a_fade__toColor)
         AFix alpha_inc = a_fix_itofix(A_PIXEL_ALPHA_MAX) / (int)g_frames;
 
         a_pixel_push();
-        a_pixel_setBlend(A_PIXEL_BLEND_RGBA);
         a_pixel_setPixel(g_savedColor);
 
         A_STATE_LOOP
         {
             A_STATE_LOOP_DRAW
             {
+                a_pixel_setBlend(A_PIXEL_BLEND_PLAIN);
                 a_screen_blit(g_capturedScreen);
 
+                a_pixel_setBlend(A_PIXEL_BLEND_RGBA);
                 a_pixel_setAlpha(a_fix_fixtoi(alpha));
                 a_draw_fill();
             }
@@ -176,13 +177,11 @@ static A_STATE(a_fade__fromColor)
         updateCapturedScreenBuffer();
 
         a_pixel_push();
+        a_pixel_setPixel(g_savedColor);
 
         // For the first frame, before the LOOP body runs
         a_pixel_setBlend(A_PIXEL_BLEND_PLAIN);
-        a_pixel_setPixel(g_savedColor);
         a_draw_fill();
-
-        a_pixel_setBlend(A_PIXEL_BLEND_RGBA);
 
         AFix alpha = a_fix_itofix(A_PIXEL_ALPHA_MAX);
         AFix alpha_inc = a_fix_itofix(A_PIXEL_ALPHA_MAX) / (int)g_frames;
@@ -191,8 +190,10 @@ static A_STATE(a_fade__fromColor)
         {
             A_STATE_LOOP_DRAW
             {
+                a_pixel_setBlend(A_PIXEL_BLEND_PLAIN);
                 a_screen_blit(g_capturedScreen);
 
+                a_pixel_setBlend(A_PIXEL_BLEND_RGBA);
                 a_pixel_setAlpha(a_fix_fixtoi(alpha));
                 a_draw_fill();
             }
@@ -219,28 +220,22 @@ static A_STATE(a_fade__screens)
         AFix alpha = a_fix_itofix(A_PIXEL_ALPHA_MAX);
         AFix alpha_inc = a_fix_itofix(A_PIXEL_ALPHA_MAX) / (int)g_frames;
 
-        ASprite* oldScreen = a_sprite_blank(a__screen.width,
-                                            a__screen.height,
-                                            false);
-
-        a_screen_targetPushSprite(oldScreen);
-        a_screen_blit(g_oldCapturedScreen);
-        a_screen_targetPop();
-
         a_pixel_push();
-        a_pixel_setBlend(A_PIXEL_BLEND_RGBA);
 
         // For the first frame, before the LOOP body runs
+        a_pixel_setBlend(A_PIXEL_BLEND_PLAIN);
         a_screen_blit(g_oldCapturedScreen);
 
         A_STATE_LOOP
         {
             A_STATE_LOOP_DRAW
             {
+                a_pixel_setBlend(A_PIXEL_BLEND_PLAIN);
                 a_screen_blit(g_capturedScreen);
 
+                a_pixel_setBlend(A_PIXEL_BLEND_RGBA);
                 a_pixel_setAlpha(a_fix_fixtoi(alpha));
-                a_sprite_blit(oldScreen, 0, 0);
+                a_screen_blit(g_oldCapturedScreen);
             }
 
             alpha -= alpha_inc;
@@ -252,7 +247,6 @@ static A_STATE(a_fade__screens)
 
         a_pixel_pop();
 
-        a_sprite_free(oldScreen);
         g_fadePending = false;
     }
 }
