@@ -363,9 +363,7 @@ void a_sdl_render__setDrawColor(void)
 {
     int alpha = SDL_ALPHA_OPAQUE;
 
-    if(a_pixel__state.blend >= A_PIXEL_BLEND_RGBA
-        && a_pixel__state.blend <= A_PIXEL_BLEND_RGB75) {
-
+    if(a_pixel__alphaBlending()) {
         alpha = a_pixel__state.alpha;
     }
 
@@ -383,9 +381,7 @@ void a_sdl_render__setBlendMode(void)
 {
     SDL_BlendMode mode = SDL_BLENDMODE_NONE;
 
-    if(a_pixel__state.blend >= A_PIXEL_BLEND_RGBA
-        && a_pixel__state.blend <= A_PIXEL_BLEND_RGB75) {
-
+    if(a_pixel__alphaBlending()) {
         mode = SDL_BLENDMODE_BLEND;
     } else if(a_pixel__state.blend == A_PIXEL_BLEND_COLORMOD) {
         mode = SDL_BLENDMODE_MOD;
@@ -515,9 +511,7 @@ void a_sdl_render__textureBlit(ASdlTexture* Texture, int X, int Y, bool FillFlat
     SDL_Rect dest = {X, Y, Texture->width, Texture->height};
     uint8_t alphaMod = SDL_ALPHA_OPAQUE;
 
-    if(a_pixel__state.blend >= A_PIXEL_BLEND_RGBA
-        && a_pixel__state.blend <= A_PIXEL_BLEND_RGB75) {
-
+    if(a_pixel__alphaBlending()) {
         alphaMod = (uint8_t)a_pixel__state.alpha;
     }
 
@@ -551,9 +545,7 @@ void a_sdl_render__textureBlitEx(ASdlTexture* Texture, int X, int Y, AFix Scale,
     SDL_Texture* t = Texture->texture[FillFlat];
     uint8_t alphaMod = SDL_ALPHA_OPAQUE;
 
-    if(a_pixel__state.blend >= A_PIXEL_BLEND_RGBA
-        && a_pixel__state.blend <= A_PIXEL_BLEND_RGB75) {
-
+    if(a_pixel__alphaBlending()) {
         alphaMod = (uint8_t)a_pixel__state.alpha;
     }
 
