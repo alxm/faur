@@ -64,6 +64,7 @@ static void screenCallback(void)
 
     a_pixel_push();
     a_font_push();
+    a_screen_clipReset();
 
     a_pixel_setBlend(A_PIXEL_BLEND_RGB75);
     a_pixel_setHex(0x1f0f0f);
