@@ -329,7 +329,7 @@ static void pushTarget(APixel* Pixels, size_t PixelsSize, int Width, int Height,
         a_sdl_render__targetSet(Data);
     #endif
 
-    a_screen_resetClip();
+    a_screen_clipReset();
 }
 
 void a_screen_targetPushScreen(AScreen* Screen)
@@ -388,7 +388,7 @@ void a_screen_targetPop(void)
     #endif
 }
 
-void a_screen_setClip(int X, int Y, int Width, int Height)
+void a_screen_clipSet(int X, int Y, int Width, int Height)
 {
     if(!a_screen_boxInsideScreen(X, Y, Width, Height)) {
         a_out__error("Invalid clipping area %dx%d @ %d,%d in %dx%d screen",
@@ -413,9 +413,9 @@ void a_screen_setClip(int X, int Y, int Width, int Height)
     #endif
 }
 
-void a_screen_resetClip(void)
+void a_screen_clipReset(void)
 {
-    a_screen_setClip(0, 0, a__screen.width, a__screen.height);
+    a_screen_clipSet(0, 0, a__screen.width, a__screen.height);
 }
 
 bool a_screen_fitsInside(const AScreen* Screen)

@@ -41,8 +41,8 @@ extern void a_screen_targetPushScreen(AScreen* Screen);
 extern void a_screen_targetPushSprite(ASprite* Sprite);
 extern void a_screen_targetPop(void);
 
-extern void a_screen_setClip(int X, int Y, int Width, int Height);
-extern void a_screen_resetClip(void);
+extern void a_screen_clipSet(int X, int Y, int Width, int Height);
+extern void a_screen_clipReset(void);
 
 extern bool a_screen_fitsInside(const AScreen* Screen);
 extern bool a_screen_sameSizeAs(const AScreen* Screen);
