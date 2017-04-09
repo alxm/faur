@@ -271,20 +271,58 @@ void a_screen_blit(const AScreen* Screen)
     }
 
     #if A_CONFIG_RENDER_SOFTWARE
+        bool noClipping = a_screen_boxInsideClip(0,
+                                                 0,
+                                                 a__screen.width,
+                                                 a__screen.height);
         APixel* dst = a__screen.pixels;
         APixel* src = Screen->pixels;
         APixel srcPixel;
         int alpha = a_pixel__state.alpha;
 
-        #define LOOP(blend, params)                                          \
-            for(int i = Screen->width * Screen->height; i--; dst++, src++) { \
-                srcPixel = *src;                                             \
-                a_pixel__##blend params;                                     \
+        #define LOOP(blend, params)                                         \
+            if(noClipping) {                                                \
+                for(int i = Screen->width * Screen->height; i--; ) {        \
+                    srcPixel = *src;                                        \
+                    a_pixel__##blend params;                                \
+                    dst++;                                                  \
+                    src++;                                                  \
+                }                                                           \
+            } else {                                                        \
+                ptrdiff_t offset = a__screen.width - a__screen.clipWidth;   \
+                                                                            \
+                dst += a__screen.width * a__screen.clipY + a__screen.clipX; \
+                src += a__screen.width * a__screen.clipY + a__screen.clipX; \
+                                                                            \
+                for(int i = a__screen.clipHeight; i--; ) {                  \
+                    for(int j = a__screen.clipWidth; j--; ) {               \
+                        srcPixel = *src;                                    \
+                        a_pixel__##blend params;                            \
+                        dst++;                                              \
+                        src++;                                              \
+                    }                                                       \
+                                                                            \
+                    dst += offset;                                          \
+                    src += offset;                                          \
+                }                                                           \
             }
 
         switch(a_pixel__state.blend) {
             case A_PIXEL_BLEND_PLAIN: {
-                memcpy(a__screen.pixels, Screen->pixels, Screen->pixelsSize);
+                if(noClipping) {
+                    memcpy(dst, src, Screen->pixelsSize);
+                } else {
+                    dst += a__screen.width * a__screen.clipY + a__screen.clipX;
+                    src += a__screen.width * a__screen.clipY + a__screen.clipX;
+
+                    for(int i = a__screen.clipHeight; i--; ) {
+                        memcpy(dst,
+                               src,
+                               (unsigned)a__screen.clipWidth * sizeof(APixel));
+                        dst += a__screen.width;
+                        src += a__screen.width;
+                    }
+                }
             } break;
 
             case A_PIXEL_BLEND_RGBA: {
