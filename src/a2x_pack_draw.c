@@ -405,7 +405,7 @@ void a_draw_hline(int X1, int X2, int Y)
 
         g_draw_hline(X1, X2, Y);
     #elif A_CONFIG_RENDER_SDL2
-        a_sdl_render__drawLine(X1, Y, X2, Y);
+        a_sdl_render__drawRectangle(X1, Y, X2 - X1, 1);
     #endif
 }
 
@@ -421,7 +421,7 @@ void a_draw_vline(int X, int Y1, int Y2)
 
         g_draw_vline(X, Y1, Y2);
     #elif A_CONFIG_RENDER_SDL2
-        a_sdl_render__drawLine(X, Y1, X, Y2);
+        a_sdl_render__drawRectangle(X, Y1, 1, Y2 - Y1);
     #endif
 }
 
