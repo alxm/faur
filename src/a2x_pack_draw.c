@@ -337,9 +337,15 @@ void a_draw__init(void)
 void a_draw_fill(void)
 {
     #if A_CONFIG_RENDER_SOFTWARE
-        g_draw_rectangle(0, 0, a__screen.width, a__screen.height);
+        g_draw_rectangle(a__screen.clipX,
+                         a__screen.clipY,
+                         a__screen.clipWidth,
+                         a__screen.clipHeight);
     #elif A_CONFIG_RENDER_SDL2
-        a_sdl_render__drawRectangle(0, 0, a__screen.width, a__screen.height);
+        a_sdl_render__drawRectangle(a__screen.clipX,
+                                    a__screen.clipY,
+                                    a__screen.clipWidth,
+                                    a__screen.clipHeight);
     #endif
 }
 
