@@ -30,7 +30,7 @@ extern ASprite* a_sprite_fromFile(const char* Path);
 extern ASprite* a_sprite_fromData(const uint8_t* Data, const char* Id);
 extern ASprite* a_sprite_fromSprite(const ASprite* Sheet, int X, int Y);
 extern ASprite* a_sprite_blank(int Width, int Height, bool ColorKeyed);
-extern ASprite* a_sprite_clone(const ASprite* Sprite);
+extern ASprite* a_sprite_dup(const ASprite* Sprite);
 
 extern void a_sprite_free(ASprite* Sprite);
 

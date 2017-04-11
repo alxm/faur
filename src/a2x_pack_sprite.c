@@ -462,7 +462,7 @@ ASprite* a_sprite_blank(int Width, int Height, bool ColorKeyed)
     return s;
 }
 
-ASprite* a_sprite_clone(const ASprite* Sprite)
+ASprite* a_sprite_dup(const ASprite* Sprite)
 {
     ASprite* clone = makeEmptySprite(Sprite->w, Sprite->h);
     APixel* pixels = a_mem_dup(Sprite->pixels, Sprite->pixelsSize);
