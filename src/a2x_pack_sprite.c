@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016 Alex Margarit
+    Copyright 2010, 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -19,6 +19,15 @@
 
 #include "a2x_pack_sprite.v.h"
 
+static AList* g_spritesList;
+static void a_sprite__free(ASprite* Sprite);
+
+APixel a_sprite__colorKey;
+APixel a_sprite__colorLimit;
+APixel a_sprite__colorEnd;
+
+#if A_CONFIG_RENDER_SOFTWARE
+
 typedef void (*ABlitter)(const ASprite* Sprite, int X, int Y);
 
 // [Blend][Fill][ColorKey][Clip]
@@ -28,14 +37,6 @@ static ABlitter g_blitter_block_noclip;
 static ABlitter g_blitter_block_doclip;
 static ABlitter g_blitter_keyed_noclip;
 static ABlitter g_blitter_keyed_doclip;
-
-static bool g_fillFlat;
-static AList* g_spritesList;
-static void a_sprite__free(ASprite* Sprite);
-
-APixel a_sprite__colorKey;
-APixel a_sprite__colorLimit;
-APixel a_sprite__colorEnd;
 
 #define A__FUNC_NAME_JOIN_WORKER(A, B, C, D) a_blit__##A##_##B##_##C##_##D
 #define A__FUNC_NAME_JOIN(A, B, C, D) A__FUNC_NAME_JOIN_WORKER(A, B, C, D)
@@ -187,6 +188,26 @@ APixel a_sprite__colorEnd;
 #undef A__BLEND_SETUP
 #undef A__PIXEL_PARAMS
 
+#define A__BLEND colormod
+#define A__FILL data
+#define A__BLEND_SETUP
+#define A__PIXEL_PARAMS , a_pixel_red(*a__pass_src), a_pixel_green(*a__pass_src), a_pixel_blue(*a__pass_src)
+#include "a2x_pack_sprite.inc.c"
+#undef A__BLEND
+#undef A__FILL
+#undef A__BLEND_SETUP
+#undef A__PIXEL_PARAMS
+
+#define A__BLEND colormod
+#define A__FILL flat
+#define A__BLEND_SETUP
+#define A__PIXEL_PARAMS , a_pixel_red(*a__pass_dst), a_pixel_green(*a__pass_dst), a_pixel_blue(*a__pass_dst)
+#include "a2x_pack_sprite.inc.c"
+#undef A__BLEND
+#undef A__FILL
+#undef A__BLEND_SETUP
+#undef A__PIXEL_PARAMS
+
 void a_sprite__init(void)
 {
     #define initRoutines(Index, Blend)                                         \
@@ -205,8 +226,8 @@ void a_sprite__init(void)
     initRoutines(A_PIXEL_BLEND_RGB50, rgb50);
     initRoutines(A_PIXEL_BLEND_RGB75, rgb75);
     initRoutines(A_PIXEL_BLEND_INVERSE, inverse);
+    initRoutines(A_PIXEL_BLEND_COLORMOD, colormod);
 
-    g_fillFlat = false;
     a_sprite__updateRoutines();
     g_spritesList = a_list_new();
 
@@ -214,6 +235,27 @@ void a_sprite__init(void)
     a_sprite__colorLimit = a_pixel_hex(0x00FF00);
     a_sprite__colorEnd = a_pixel_hex(0x00FFFF);
 }
+
+void a_sprite__updateRoutines(void)
+{
+    g_blitter_block_noclip = g_blitters[a_pixel__state.blend][a_pixel__state.blitFillFlat][0][0];
+    g_blitter_block_doclip = g_blitters[a_pixel__state.blend][a_pixel__state.blitFillFlat][0][1];
+    g_blitter_keyed_noclip = g_blitters[a_pixel__state.blend][a_pixel__state.blitFillFlat][1][0];
+    g_blitter_keyed_doclip = g_blitters[a_pixel__state.blend][a_pixel__state.blitFillFlat][1][1];
+}
+
+#elif A_CONFIG_RENDER_SDL2
+
+void a_sprite__init(void)
+{
+    g_spritesList = a_list_new();
+
+    a_sprite__colorKey = a_pixel_hex(0xFF00FF);
+    a_sprite__colorLimit = a_pixel_hex(0x00FF00);
+    a_sprite__colorEnd = a_pixel_hex(0x00FFFF);
+}
+
+#endif
 
 void a_sprite__uninit(void)
 {
@@ -224,19 +266,53 @@ void a_sprite__uninit(void)
     a_list_free(g_spritesList);
 }
 
-void a_sprite__updateRoutines(void)
+static ASprite* makeEmptySprite(int Width, int Height)
 {
-    g_blitter_block_noclip = g_blitters[a_pixel__state.blend][g_fillFlat][0][0];
-    g_blitter_block_doclip = g_blitters[a_pixel__state.blend][g_fillFlat][0][1];
-    g_blitter_keyed_noclip = g_blitters[a_pixel__state.blend][g_fillFlat][1][0];
-    g_blitter_keyed_doclip = g_blitters[a_pixel__state.blend][g_fillFlat][1][1];
+    ASprite* s = a_mem_malloc(sizeof(ASprite));
+
+    s->node = a_list_addLast(g_spritesList, s);
+    s->pixels = NULL;
+    s->pixelsSize = (unsigned)Width * (unsigned)Height * sizeof(APixel);
+    s->nameId = NULL;
+    s->w = Width;
+    s->wLog2 = (int)log2f((float)Width);
+    s->h = Height;
+
+    #if A_CONFIG_RENDER_SOFTWARE
+        s->spans = NULL;
+        s->spansSize = 0;
+        s->colorKeyed = false;
+    #elif A_CONFIG_RENDER_SDL2
+        s->texture = NULL;
+    #endif
+
+    return s;
+}
+
+static void assignPixels(ASprite* Sprite, APixel* Pixels)
+{
+    Sprite->pixels = Pixels;
+
+    #if A_CONFIG_RENDER_SOFTWARE
+        for(size_t i = Sprite->pixelsSize / sizeof(APixel); i--; ) {
+            if(*Pixels++ == a_sprite__colorKey) {
+                Sprite->colorKeyed = true;
+                break;
+            }
+        }
+
+        a_sprite__refreshTransparency(Sprite);
+    #elif A_CONFIG_RENDER_SDL2
+        Sprite->texture = a_sdl_render__textureMakeSprite(Sprite->pixels,
+                                                          Sprite->w,
+                                                          Sprite->h);
+    #endif
 }
 
 ASprite* a_sprite_fromFile(const char* Path)
 {
     int w = 0;
     int h = 0;
-    ASprite* s;
     APixel* pixels = NULL;
 
     a_png_readFile(Path, &pixels, &w, &h);
@@ -245,8 +321,8 @@ ASprite* a_sprite_fromFile(const char* Path)
         return NULL;
     }
 
-    s = a_sprite_fromPixels(pixels, w, h);
-    free(pixels);
+    ASprite* s = makeEmptySprite(w, h);
+    assignPixels(s, pixels);
 
     s->nameId = a_str_dup(Path);
 
@@ -257,7 +333,6 @@ ASprite* a_sprite_fromData(const uint8_t* Data, const char* Id)
 {
     int w;
     int h;
-    ASprite* s;
     APixel* pixels = NULL;
 
     a_png_readMemory(Data, &pixels, &w, &h);
@@ -266,8 +341,8 @@ ASprite* a_sprite_fromData(const uint8_t* Data, const char* Id)
         return NULL;
     }
 
-    s = a_sprite_fromPixels(pixels, w, h);
-    free(pixels);
+    ASprite* s = makeEmptySprite(w, h);
+    assignPixels(s, pixels);
 
     if(Id != NULL) {
         s->nameId = a_str_dup(Id);
@@ -276,31 +351,8 @@ ASprite* a_sprite_fromData(const uint8_t* Data, const char* Id)
     return s;
 }
 
-ASprite* a_sprite_fromPixels(const APixel* Pixels, int Width, int Height)
-{
-    bool foundColorKey = false;
-
-    for(int i = Width * Height; i--; ) {
-        if(Pixels[i] == a_sprite__colorKey) {
-            foundColorKey = true;
-            break;
-        }
-    }
-
-    ASprite* s = a_sprite_blank(Width, Height, foundColorKey);
-
-    memcpy(s->pixels,
-           Pixels,
-           (unsigned)Width * (unsigned)Height * sizeof(APixel));
-
-    a_sprite__refreshSpans(s);
-
-    return s;
-}
-
 ASprite* a_sprite_fromSprite(const ASprite* Sheet, int X, int Y)
 {
-    ASprite* sprite;
     int spriteWidth = 0;
     int spriteHeight = 0;
     const int sheetWidth = Sheet->w;
@@ -372,23 +424,11 @@ doneEdges:
         }
     }
 
-    bool foundColorKey = false;
-    const APixel* pixels = Sheet->pixels + Y * sheetWidth + X;
-
-    for(int i = spriteHeight; i--; pixels += sheetWidth - spriteWidth) {
-        for(int j = spriteWidth; j--; ) {
-            if(*pixels++ == a_sprite__colorKey) {
-                foundColorKey = true;
-                goto doneColorKey;
-            }
-        }
-    }
-
-doneColorKey:
-    sprite = a_sprite_blank(spriteWidth, spriteHeight, foundColorKey);
+    ASprite* sprite = makeEmptySprite(spriteWidth, spriteHeight);
+    APixel* pixels = a_mem_malloc(sprite->pixelsSize);
 
     const APixel* src = Sheet->pixels + Y * sheetWidth + X;
-    APixel* dst = sprite->pixels;
+    APixel* dst = pixels;
 
     for(int i = spriteHeight; i--; ) {
         memcpy(dst, src, (unsigned)spriteWidth * sizeof(APixel));
@@ -396,39 +436,40 @@ doneColorKey:
         dst += spriteWidth;
     }
 
-    a_sprite__refreshSpans(sprite);
+    assignPixels(sprite, pixels);
 
     return sprite;
 }
 
 ASprite* a_sprite_blank(int Width, int Height, bool ColorKeyed)
 {
-    ASprite* s = a_mem_malloc(
-        sizeof(ASprite) + (unsigned)Width * (unsigned)Height * sizeof(APixel));
-
-    s->w = Width;
-    s->wLog2 = (int)log2f((float)Width);
-    s->h = Height;
-    s->spans = NULL;
-    s->spansSize = 0;
-    s->nameId = NULL;
-    s->colorKeyed = ColorKeyed;
+    ASprite* s = makeEmptySprite(Width, Height);
+    APixel* pixels;
 
     if(ColorKeyed) {
-        APixel* pixels = s->pixels;
+        pixels = a_mem_malloc(s->pixelsSize);
+        APixel* p = pixels;
 
         for(int i = Width * Height; i--; ) {
-            *pixels++ = a_sprite__colorKey;
+            *p++ = a_sprite__colorKey;
         }
     } else {
-        memset(s->pixels,
-               0,
-               (unsigned)Width * (unsigned)Height * sizeof(APixel));
+        pixels = a_mem_zalloc(s->pixelsSize);
     }
 
-    s->node = a_list_addLast(g_spritesList, s);
+    assignPixels(s, pixels);
 
     return s;
+}
+
+ASprite* a_sprite_dup(const ASprite* Sprite)
+{
+    ASprite* clone = makeEmptySprite(Sprite->w, Sprite->h);
+    APixel* pixels = a_mem_dup(Sprite->pixels, Sprite->pixelsSize);
+
+    assignPixels(clone, pixels);
+
+    return clone;
 }
 
 void a_sprite_free(ASprite* Sprite)
@@ -439,39 +480,52 @@ void a_sprite_free(ASprite* Sprite)
 
 void a_sprite__free(ASprite* Sprite)
 {
-    free(Sprite->spans);
+    #if A_CONFIG_RENDER_SOFTWARE
+        free(Sprite->spans);
+    #elif A_CONFIG_RENDER_SDL2
+        a_sdl_render__textureFree(Sprite->texture);
+    #endif
+
     free(Sprite->nameId);
+    free(Sprite->pixels);
     free(Sprite);
 }
 
 void a_sprite_blit(const ASprite* Sprite, int X, int Y)
 {
-    if(a_screen_boxInsideClip(X, Y, Sprite->w, Sprite->h)) {
-        if(Sprite->colorKeyed) {
-            g_blitter_keyed_noclip(Sprite, X, Y);
-        } else {
-            g_blitter_block_noclip(Sprite, X, Y);
+    #if A_CONFIG_RENDER_SOFTWARE
+        if(a_screen_boxInsideClip(X, Y, Sprite->w, Sprite->h)) {
+            if(Sprite->colorKeyed) {
+                g_blitter_keyed_noclip(Sprite, X, Y);
+            } else {
+                g_blitter_block_noclip(Sprite, X, Y);
+            }
+        } else if(a_screen_boxOnClip(X, Y, Sprite->w, Sprite->h)) {
+            if(Sprite->colorKeyed) {
+                g_blitter_keyed_doclip(Sprite, X, Y);
+            } else {
+                g_blitter_block_doclip(Sprite, X, Y);
+            }
         }
-    } else if(a_screen_boxOnClip(X, Y, Sprite->w, Sprite->h)) {
-        if(Sprite->colorKeyed) {
-            g_blitter_keyed_doclip(Sprite, X, Y);
-        } else {
-            g_blitter_block_doclip(Sprite, X, Y);
-        }
-    }
+    #elif A_CONFIG_RENDER_SDL2
+        a_sdl_render__textureBlit(Sprite->texture,
+                                  X,
+                                  Y,
+                                  a_pixel__state.blitFillFlat);
+    #endif
 }
 
 void a_sprite_blitCenter(const ASprite* Sprite)
 {
     a_sprite_blit(Sprite,
-                  (a_screen__width - Sprite->w) / 2,
-                  (a_screen__height - Sprite->h) / 2);
+                  (a__screen.width - Sprite->w) / 2,
+                  (a__screen.height - Sprite->h) / 2);
 }
 
 void a_sprite_blitCenterX(const ASprite* Sprite, int Y)
 {
     a_sprite_blit(Sprite,
-                  (a_screen__width - Sprite->w) / 2,
+                  (a__screen.width - Sprite->w) / 2,
                   Y);
 }
 
@@ -479,14 +533,22 @@ void a_sprite_blitCenterY(const ASprite* Sprite, int X)
 {
     a_sprite_blit(Sprite,
                   X,
-                  (a_screen__height - Sprite->h) / 2);
+                  (a__screen.height - Sprite->h) / 2);
 }
 
-void a_sprite_fillFlat(bool FillFlatColor)
+#if A_CONFIG_RENDER_SDL2
+void a_sprite_blitEx(const ASprite* Sprite, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY)
 {
-    g_fillFlat = FillFlatColor;
-    a_sprite__updateRoutines();
+    a_sdl_render__textureBlitEx(Sprite->texture,
+                                X,
+                                Y,
+                                Scale,
+                                Angle,
+                                CenterX,
+                                CenterY,
+                                a_pixel__state.blitFillFlat);
 }
+#endif
 
 int a_sprite_width(const ASprite* Sprite)
 {
@@ -513,7 +575,13 @@ APixel a_sprite_getPixel(const ASprite* Sprite, int X, int Y)
     return *(Sprite->pixels + Y * Sprite->w + X);
 }
 
-void a_sprite__refreshSpans(ASprite* Sprite)
+APixel a_sprite_getColorKey(void)
+{
+    return a_sprite__colorKey;
+}
+
+#if A_CONFIG_RENDER_SOFTWARE
+void a_sprite__refreshTransparency(ASprite* Sprite)
 {
     if(!Sprite->colorKeyed) {
         return;
@@ -530,7 +598,7 @@ void a_sprite__refreshSpans(ASprite* Sprite)
     const APixel* dest = dst;
 
     for(int y = spriteHeight; y--; ) {
-        bytesNeeded += sizeof(unsigned); // total spans size and initial state
+        bytesNeeded += sizeof(unsigned); // total size and initial state
         bool lastState = *dest != a_sprite__colorKey; // initial state
 
         for(int x = spriteWidth; x--; ) {
@@ -568,7 +636,7 @@ void a_sprite__refreshSpans(ASprite* Sprite)
             if(newState == lastState) {
                 spanLength++; // keep growing current span
             } else {
-                *spans++ = spanLength; // record the just-ended span's length
+                *spans++ = spanLength; // record the just-ended span length
                 numSpans++;
                 spanLength = 1; // start a new span from this pixel
                 lastState = newState;
@@ -579,21 +647,4 @@ void a_sprite__refreshSpans(ASprite* Sprite)
         *lineStart |= numSpans << 1; // record line's number of spans
     }
 }
-
-ASprite* a_sprite_clone(const ASprite* Sprite)
-{
-    ASprite* s = a_sprite_blank(Sprite->w, Sprite->h, Sprite->colorKeyed);
-
-    memcpy(s->pixels,
-           Sprite->pixels,
-           (unsigned)Sprite->w * (unsigned)Sprite->h * sizeof(APixel));
-
-    a_sprite__refreshSpans(s);
-
-    return s;
-}
-
-APixel a_sprite_getColorKey(void)
-{
-    return a_sprite__colorKey;
-}
+#endif

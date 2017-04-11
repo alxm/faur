@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016 Alex Margarit
+    Copyright 2010, 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -26,14 +26,17 @@
 
 struct ASprite {
     AListNode* node;
-    int w;
-    int wLog2;
-    int h;
+    APixel* pixels;
+    size_t pixelsSize;
+    char* nameId;
+    int w, wLog2, h;
+#if A_CONFIG_RENDER_SOFTWARE
     unsigned* spans;
     size_t spansSize;
-    char* nameId;
     bool colorKeyed;
-    APixel pixels[];
+#elif A_CONFIG_RENDER_SDL2
+    ASdlTexture* texture;
+#endif
 };
 
 extern APixel a_sprite__colorKey;
@@ -44,7 +47,10 @@ extern void a_sprite__init(void);
 extern void a_sprite__uninit(void);
 
 extern void a_sprite__updateRoutines(void);
-extern void a_sprite__refreshSpans(ASprite* Sprite);
+
+#if A_CONFIG_RENDER_SOFTWARE
+extern void a_sprite__refreshTransparency(ASprite* Sprite);
+#endif
 
 #define A_SPRITE__NAME(Sprite) (Sprite->nameId ? Sprite->nameId : "Sprite")
 #define a_sprite__getPixel(s, x, y) (*((s)->pixels + (y) * (s)->w + (x)))

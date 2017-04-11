@@ -49,10 +49,10 @@ void a_input_controller__init2(void)
                     #define PREFIX "wiz"
                 #endif
 
-                AInputButtonSource* ul = a_strhash_get(c->buttons, PREFIX ".upleft");
-                AInputButtonSource* ur = a_strhash_get(c->buttons, PREFIX ".upright");
-                AInputButtonSource* dl = a_strhash_get(c->buttons, PREFIX ".downleft");
-                AInputButtonSource* dr = a_strhash_get(c->buttons, PREFIX ".downright");
+                AInputButtonSource* ul = a_strhash_get(c->buttons, PREFIX ".upLeft");
+                AInputButtonSource* ur = a_strhash_get(c->buttons, PREFIX ".upRight");
+                AInputButtonSource* dl = a_strhash_get(c->buttons, PREFIX ".downLeft");
+                AInputButtonSource* dr = a_strhash_get(c->buttons, PREFIX ".downRight");
                 AInputButtonSource* u = a_strhash_get(c->buttons, PREFIX ".up");
                 AInputButtonSource* d = a_strhash_get(c->buttons, PREFIX ".down");
                 AInputButtonSource* l = a_strhash_get(c->buttons, PREFIX ".left");

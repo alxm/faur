@@ -21,7 +21,8 @@ A_PLATFORM_LIBS = \
 
 A_PLATFORM_CFLAGS = \
     -DA_PLATFORM_GP2X=1 \
-    -DA_USE_LIB_SDL=1 \
+    -DA_CONFIG_LIB_SDL=1 \
+    -DA_CONFIG_RENDER_SOFTWARE=1 \
     -O3 \
     -s \
     -msoft-float \

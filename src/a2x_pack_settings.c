@@ -177,7 +177,14 @@ void a_settings__init(void)
     add(A_SETTING_INT, A_SETTING_SET_ONCE, "video.width", "320");
     add(A_SETTING_INT, A_SETTING_SET_ONCE, "video.height", "240");
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.doubleBuffer", "0");
-    add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.fullscreen", "0");
+
+    #if A_PLATFORM_GP2X || A_PLATFORM_WIZ || A_PLATFORM_CAANOO || A_PLATFORM_PANDORA
+        add(A_SETTING_BOOL, A_SETTING_SET_FROZEN, "video.fullscreen", "1");
+    #else
+        add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.fullscreen", "0");
+    #endif
+
+    add(A_SETTING_STR, A_SETTING_SET_ONCE, "video.fullscreen.button", "key.f4");
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.fixWizTearing", "0");
     add(A_SETTING_STR, A_SETTING_SET_ONCE, "video.borderColor", "0x1f 0x0f 0x0f");
     add(A_SETTING_UINT, A_SETTING_SET_ONCE, "video.fps", "60");
@@ -227,7 +234,7 @@ void a_settings__freeze(void)
 {
     g_settingsAreFrozen = true;
 
-    #if A_USE_LIB_SDL == 2
+    #if A_CONFIG_LIB_SDL == 2
         a_settings__set("video.doubleBuffer", "1");
     #endif
 

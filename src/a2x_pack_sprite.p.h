@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016 Alex Margarit
+    Copyright 2010, 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -23,13 +23,14 @@
 
 typedef struct ASprite ASprite;
 
+#include "a2x_pack_fix.p.h"
 #include "a2x_pack_pixel.p.h"
 
 extern ASprite* a_sprite_fromFile(const char* Path);
 extern ASprite* a_sprite_fromData(const uint8_t* Data, const char* Id);
-extern ASprite* a_sprite_fromPixels(const APixel* Pixels, int Width, int Height);
 extern ASprite* a_sprite_fromSprite(const ASprite* Sheet, int X, int Y);
 extern ASprite* a_sprite_blank(int Width, int Height, bool ColorKeyed);
+extern ASprite* a_sprite_dup(const ASprite* Sprite);
 
 extern void a_sprite_free(ASprite* Sprite);
 
@@ -37,14 +38,16 @@ extern void a_sprite_blit(const ASprite* Sprite, int X, int Y);
 extern void a_sprite_blitCenter(const ASprite* Sprite);
 extern void a_sprite_blitCenterX(const ASprite* Sprite, int Y);
 extern void a_sprite_blitCenterY(const ASprite* Sprite, int X);
-extern void a_sprite_fillFlat(bool FillFlatColor);
+
+#if A_CONFIG_RENDER_SDL2
+extern void a_sprite_blitEx(const ASprite* Sprite, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY);
+#endif
 
 extern int a_sprite_width(const ASprite* Sprite);
 extern int a_sprite_widthLog2(const ASprite* Sprite);
 extern int a_sprite_height(const ASprite* Sprite);
+
 extern APixel* a_sprite_pixels(ASprite* Sprite);
 extern APixel a_sprite_getPixel(const ASprite* Sprite, int X, int Y);
-
-extern ASprite* a_sprite_clone(const ASprite* Sprite);
 
 extern APixel a_sprite_getColorKey(void);

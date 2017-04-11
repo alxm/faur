@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016 Alex Margarit
+    Copyright 2010, 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -18,6 +18,8 @@
 */
 
 #include "a2x_pack_draw.v.h"
+
+#if A_CONFIG_RENDER_SOFTWARE
 
 typedef void (*ADrawPixel)(int X, int Y);
 typedef void (*ADrawRectangle)(int X, int Y, int Width, int Height);
@@ -52,10 +54,10 @@ static bool cohen_sutherland_clip(int* X1, int* Y1, int* X2, int* Y2)
     int x2 = *X2;
     int y2 = *Y2;
 
-    const int clipX1 = a_screen__clipX;
-    const int clipX2 = a_screen__clipX2;
-    const int clipY1 = a_screen__clipY;
-    const int clipY2 = a_screen__clipY2;
+    const int clipX1 = a__screen.clipX;
+    const int clipX2 = a__screen.clipX2;
+    const int clipY1 = a__screen.clipY;
+    const int clipY2 = a__screen.clipY2;
 
     #define OUT_LEFT  1
     #define OUT_RIGHT 2
@@ -185,13 +187,15 @@ do {                                                                        \
         }                                                                   \
     }                                                                       \
                                                                             \
+    APixel* a__pass_dst = Buffer;                                           \
+                                                                            \
     if((PrimaryOnScreen) && (SecondaryOnScreen)) {                          \
         while(PrimaryCoord < SecondaryCoord && (PrimaryOnScreen)) {         \
             error += 2 * PrimaryCoord + 1;                                  \
             PrimaryCoord++;                                                 \
                                                                             \
-            A__PIXEL_DRAW(Buffer);                                          \
-            Buffer += PrimaryBufferInc;                                     \
+            A__PIXEL_DRAW(a__pass_dst);                                     \
+            a__pass_dst += PrimaryBufferInc;                                \
                                                                             \
             if(error > 0) {                                                 \
                 error += -2 * SecondaryCoord + 1;                           \
@@ -201,7 +205,7 @@ do {                                                                        \
                     break;                                                  \
                 }                                                           \
                                                                             \
-                Buffer += SecondaryBufferInc;                               \
+                a__pass_dst += SecondaryBufferInc;                          \
             }                                                               \
         }                                                                   \
     }                                                                       \
@@ -280,6 +284,14 @@ do {                                                                        \
 #undef A__BLEND_SETUP
 #undef A__PIXEL_PARAMS
 
+#define A__BLEND colormod
+#define A__BLEND_SETUP
+#define A__PIXEL_PARAMS , a_pixel_red(*a__pass_dst), a_pixel_green(*a__pass_dst), a_pixel_blue(*a__pass_dst)
+#include "a2x_pack_draw.inc.c"
+#undef A__BLEND
+#undef A__BLEND_SETUP
+#undef A__PIXEL_PARAMS
+
 void a_draw__init(void)
 {
     #define initRoutines(Index, Blend)                                      \
@@ -297,6 +309,7 @@ void a_draw__init(void)
     initRoutines(A_PIXEL_BLEND_RGB50, rgb50);
     initRoutines(A_PIXEL_BLEND_RGB75, rgb75);
     initRoutines(A_PIXEL_BLEND_INVERSE, inverse);
+    initRoutines(A_PIXEL_BLEND_COLORMOD, colormod);
 
     a_draw__updateRoutines();
 }
@@ -312,89 +325,124 @@ void a_draw__updateRoutines(void)
     g_draw_circle_clip = g_circle[a_pixel__state.blend][1];
 }
 
-void a_draw_fill(void)
+#elif A_CONFIG_RENDER_SDL2
+
+void a_draw__init(void)
 {
-    g_draw_rectangle(0, 0, a_screen__width, a_screen__height);
+    //
 }
 
-void a_draw_rectangleThick(int X, int Y, int Width, int Height, int Thickness)
+#endif
+
+void a_draw_fill(void)
 {
-    g_draw_rectangle(X, Y, Width, Thickness); // top
-    g_draw_rectangle(X, Y + Height - Thickness, Width, Thickness); // bottom
-    g_draw_rectangle(X, Y + Thickness, Thickness, Height - 2 * Thickness); // left
-    g_draw_rectangle(X + Width - Thickness, Y + Thickness, Thickness, Height - 2 * Thickness); // right
+    #if A_CONFIG_RENDER_SOFTWARE
+        g_draw_rectangle(a__screen.clipX,
+                         a__screen.clipY,
+                         a__screen.clipWidth,
+                         a__screen.clipHeight);
+    #elif A_CONFIG_RENDER_SDL2
+        a_sdl_render__drawRectangle(a__screen.clipX,
+                                    a__screen.clipY,
+                                    a__screen.clipWidth,
+                                    a__screen.clipHeight);
+    #endif
 }
 
 void a_draw_pixel(int X, int Y)
 {
-    if(a_screen_boxInsideClip(X, Y, 1, 1)) {
-        g_draw_pixel(X, Y);
-    }
+    #if A_CONFIG_RENDER_SOFTWARE
+        if(a_screen_boxInsideClip(X, Y, 1, 1)) {
+            g_draw_pixel(X, Y);
+        }
+    #elif A_CONFIG_RENDER_SDL2
+        a_sdl_render__drawPoint(X, Y);
+    #endif
 }
 
 void a_draw_rectangle(int X, int Y, int Width, int Height)
 {
-    if(a_screen_boxInsideClip(X, Y, Width, Height)) {
+    #if A_CONFIG_RENDER_SOFTWARE
+        if(a_screen_boxInsideClip(X, Y, Width, Height)) {
+            g_draw_rectangle(X, Y, Width, Height);
+            return;
+        }
+
+        if(!a_screen_boxOnClip(X, Y, Width, Height)) {
+            return;
+        }
+
+        const int x2 = a_math_min(X + Width, a__screen.clipX2);
+        const int y2 = a_math_min(Y + Height, a__screen.clipY2);
+
+        X = a_math_max(X, a__screen.clipX);
+        Y = a_math_max(Y, a__screen.clipY);
+        Width = a_math_min(Width, x2 - X);
+        Height = a_math_min(Height, y2 - Y);
+
         g_draw_rectangle(X, Y, Width, Height);
-        return;
-    }
-
-    if(!a_screen_boxOnClip(X, Y, Width, Height)) {
-        return;
-    }
-
-    const int x2 = a_math_min(X + Width, a_screen__clipX2);
-    const int y2 = a_math_min(Y + Height, a_screen__clipY2);
-
-    X = a_math_max(X, a_screen__clipX);
-    Y = a_math_max(Y, a_screen__clipY);
-    Width = a_math_min(Width, x2 - X);
-    Height = a_math_min(Height, y2 - Y);
-
-    g_draw_rectangle(X, Y, Width, Height);
+    #elif A_CONFIG_RENDER_SDL2
+        a_sdl_render__drawRectangle(X, Y, Width, Height);
+    #endif
 }
 
 void a_draw_line(int X1, int Y1, int X2, int Y2)
 {
-    if(!cohen_sutherland_clip(&X1, &Y1, &X2, &Y2)) {
-        return;
-    }
+    #if A_CONFIG_RENDER_SOFTWARE
+        if(!cohen_sutherland_clip(&X1, &Y1, &X2, &Y2)) {
+            return;
+        }
 
-    g_draw_line(X1, Y1, X2, Y2);
+        g_draw_line(X1, Y1, X2, Y2);
+    #elif A_CONFIG_RENDER_SDL2
+        a_sdl_render__drawLine(X1, Y1, X2, Y2);
+    #endif
 }
 
 void a_draw_hline(int X1, int X2, int Y)
 {
-    if(X1 >= X2 || !a_screen_boxOnClip(X1, Y, X2 - X1, 1)) {
-        return;
-    }
+    #if A_CONFIG_RENDER_SOFTWARE
+        if(X1 >= X2 || !a_screen_boxOnClip(X1, Y, X2 - X1, 1)) {
+            return;
+        }
 
-    X1 = a_math_max(X1, a_screen__clipX);
-    X2 = a_math_min(X2, a_screen__clipX2);
+        X1 = a_math_max(X1, a__screen.clipX);
+        X2 = a_math_min(X2, a__screen.clipX2);
 
-    g_draw_hline(X1, X2, Y);
+        g_draw_hline(X1, X2, Y);
+    #elif A_CONFIG_RENDER_SDL2
+        a_sdl_render__drawRectangle(X1, Y, X2 - X1, 1);
+    #endif
 }
 
 void a_draw_vline(int X, int Y1, int Y2)
 {
-    if(Y1 >= Y2 || !a_screen_boxOnClip(X, Y1, 1, Y2 - Y1)) {
-        return;
-    }
+    #if A_CONFIG_RENDER_SOFTWARE
+        if(Y1 >= Y2 || !a_screen_boxOnClip(X, Y1, 1, Y2 - Y1)) {
+            return;
+        }
 
-    Y1 = a_math_max(Y1, a_screen__clipY);
-    Y2 = a_math_min(Y2, a_screen__clipY2);
+        Y1 = a_math_max(Y1, a__screen.clipY);
+        Y2 = a_math_min(Y2, a__screen.clipY2);
 
-    g_draw_vline(X, Y1, Y2);
+        g_draw_vline(X, Y1, Y2);
+    #elif A_CONFIG_RENDER_SDL2
+        a_sdl_render__drawRectangle(X, Y1, 1, Y2 - Y1);
+    #endif
 }
 
 void a_draw_circle(int X, int Y, int Radius)
 {
-    if(a_screen_boxInsideClip(X - Radius, Y - Radius, 2 * Radius, 2 * Radius)) {
-        g_draw_circle_noclip(X, Y, Radius);
-        return;
-    }
+    #if A_CONFIG_RENDER_SOFTWARE
+        if(a_screen_boxInsideClip(X - Radius, Y - Radius, 2 * Radius, 2 * Radius)) {
+            g_draw_circle_noclip(X, Y, Radius);
+            return;
+        }
 
-    if(a_screen_boxOnClip(X - Radius, Y - Radius, 2 * Radius, 2 * Radius)) {
-        g_draw_circle_clip(X, Y, Radius);
-    }
+        if(a_screen_boxOnClip(X - Radius, Y - Radius, 2 * Radius, 2 * Radius)) {
+            g_draw_circle_clip(X, Y, Radius);
+        }
+    #elif A_CONFIG_RENDER_SDL2
+        a_sdl_render__drawCircle(X, Y, Radius);
+    #endif
 }

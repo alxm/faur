@@ -21,10 +21,10 @@
 
 #include <SDL.h>
 
-#if A_USE_LIB_SDL == 1
+#if A_CONFIG_LIB_SDL == 1
     typedef uint8_t ASdlJoystickId;
     typedef SDLKey ASdlKeyCode;
-#elif A_USE_LIB_SDL == 2
+#elif A_CONFIG_LIB_SDL == 2
     typedef SDL_JoystickID ASdlJoystickId;
     typedef SDL_Scancode ASdlKeyCode;
 #endif
@@ -57,7 +57,7 @@ typedef struct ASdlInputTouch {
 
 typedef struct ASdlInputController {
     SDL_Joystick* joystick;
-    #if A_USE_LIB_SDL == 2
+    #if A_CONFIG_LIB_SDL == 2
         SDL_GameController* controller;
     #endif
     ASdlJoystickId id;
@@ -143,18 +143,18 @@ static void addTouch(const char* Id)
 
 static const char* joystickName(ASdlInputController* Controller)
 {
-    #if A_USE_LIB_SDL == 1
+    #if A_CONFIG_LIB_SDL == 1
         return SDL_JoystickName(Controller->id);
-    #elif A_USE_LIB_SDL == 2
+    #elif A_CONFIG_LIB_SDL == 2
         return SDL_JoystickName(Controller->joystick);
     #endif
 }
 
 void a_sdl_input__init(void)
 {
-    #if A_USE_LIB_SDL == 1
+    #if A_CONFIG_LIB_SDL == 1
         g_sdlFlags = SDL_INIT_JOYSTICK;
-    #elif A_USE_LIB_SDL == 2
+    #elif A_CONFIG_LIB_SDL == 2
         g_sdlFlags = SDL_INIT_GAMECONTROLLER;
     #endif
 
@@ -169,7 +169,7 @@ void a_sdl_input__init(void)
     const int joysticksNum = SDL_NumJoysticks();
     a_out__message("Found %d controllers", joysticksNum);
 
-    #if A_USE_LIB_SDL == 2
+    #if A_CONFIG_LIB_SDL == 2
         if(joysticksNum > 0) {
             const char* mapFile = a_settings_getString("input.mapfile");
             int mapsNum = SDL_GameControllerAddMappingsFromFile(mapFile);
@@ -187,7 +187,7 @@ void a_sdl_input__init(void)
     for(int i = 0; i < joysticksNum; i++) {
         SDL_Joystick* joystick = NULL;
 
-        #if A_USE_LIB_SDL == 2
+        #if A_CONFIG_LIB_SDL == 2
             SDL_GameController* controller = NULL;
 
             if(SDL_IsGameController(i)) {
@@ -222,9 +222,9 @@ void a_sdl_input__init(void)
             }
         }
 
-        #if A_USE_LIB_SDL == 1
+        #if A_CONFIG_LIB_SDL == 1
             ASdlJoystickId id = (uint8_t)i;
-        #elif A_USE_LIB_SDL == 2
+        #elif A_CONFIG_LIB_SDL == 2
             ASdlJoystickId id = SDL_JoystickInstanceID(joystick);
 
             if(id < 0) {
@@ -243,7 +243,7 @@ void a_sdl_input__init(void)
         ASdlInputController* c = a_mem_malloc(sizeof(ASdlInputController));
 
         c->joystick = joystick;
-        #if A_USE_LIB_SDL == 2
+        #if A_CONFIG_LIB_SDL == 2
             c->controller = controller;
         #endif
         c->id = id;
@@ -335,7 +335,7 @@ void a_sdl_input__init(void)
 
         c->generic = true;
 
-        #if A_USE_LIB_SDL == 2
+        #if A_CONFIG_LIB_SDL == 2
             if(c->controller) {
                 a_out__message("Found gamepad %s: %d buttons, %d axes, %d hats",
                                SDL_GameControllerName(controller),
@@ -424,7 +424,7 @@ void a_sdl_input__init(void)
             addAnalog(c->axes, id, j);
         }
 
-        #if A_USE_LIB_SDL == 2
+        #if A_CONFIG_LIB_SDL == 2
             }
         #endif
 
@@ -456,7 +456,7 @@ void a_sdl_input__init(void)
         addKey("Select", "pandora.select", SDLK_LCTRL);
     #endif
 
-    #if A_USE_LIB_SDL == 1
+    #if A_CONFIG_LIB_SDL == 1
         addKey("Up", "key.up", SDLK_UP);
         addKey("Down", "key.down", SDLK_DOWN);
         addKey("Left", "key.left", SDLK_LEFT);
@@ -480,7 +480,7 @@ void a_sdl_input__init(void)
         addKey("F10", "key.f10", SDLK_F10);
         addKey("F11", "key.f11", SDLK_F11);
         addKey("F12", "key.f12", SDLK_F12);
-    #elif A_USE_LIB_SDL == 2
+    #elif A_CONFIG_LIB_SDL == 2
         addKey("Up", "key.up", SDL_SCANCODE_UP);
         addKey("Down", "key.down", SDL_SCANCODE_DOWN);
         addKey("Left", "key.left", SDL_SCANCODE_LEFT);
@@ -528,11 +528,11 @@ void a_sdl_input__uninit(void)
             freeHeader(&a->header);
         }
 
-        #if A_USE_LIB_SDL == 1
+        #if A_CONFIG_LIB_SDL == 1
             if(SDL_JoystickOpened(c->id)) {
                 SDL_JoystickClose(c->joystick);
             }
-        #elif A_USE_LIB_SDL == 2
+        #elif A_CONFIG_LIB_SDL == 2
             if(c->controller) {
                 SDL_GameControllerClose(c->controller);
             } else if(SDL_JoystickGetAttached(c->joystick)) {
@@ -564,9 +564,9 @@ void a_sdl_input__bind(void)
     }
 
     A_LIST_ITERATE(g_controllers, ASdlInputController*, c) {
-        #if A_USE_LIB_SDL == 1
+        #if A_CONFIG_LIB_SDL == 1
             a_controller__new(c->generic, false);
-        #elif A_USE_LIB_SDL == 2
+        #elif A_CONFIG_LIB_SDL == 2
             a_controller__new(c->generic, c->controller != NULL);
         #endif
 
@@ -599,9 +599,9 @@ void a_sdl_input__get(void)
                 }
 
                 A_STRHASH_ITERATE(g_keys, ASdlInputButton*, k) {
-                    #if A_USE_LIB_SDL == 1
+                    #if A_CONFIG_LIB_SDL == 1
                         if(k->code.keyCode == event.key.keysym.sym) {
-                    #elif A_USE_LIB_SDL == 2
+                    #elif A_CONFIG_LIB_SDL == 2
                         if(k->code.keyCode == event.key.keysym.scancode) {
                     #endif
 
@@ -616,7 +616,7 @@ void a_sdl_input__get(void)
             case SDL_JOYBUTTONUP:
             case SDL_JOYBUTTONDOWN: {
                 A_LIST_ITERATE(g_controllers, ASdlInputController*, c) {
-                    #if A_USE_LIB_SDL == 2
+                    #if A_CONFIG_LIB_SDL == 2
                         if(c->controller != NULL) {
                             continue;
                         }
@@ -681,7 +681,7 @@ void a_sdl_input__get(void)
                 }
 
                 A_LIST_ITERATE(g_controllers, ASdlInputController*, c) {
-                    #if A_USE_LIB_SDL == 2
+                    #if A_CONFIG_LIB_SDL == 2
                         if(c->controller != NULL) {
                             continue;
                         }
@@ -722,7 +722,7 @@ void a_sdl_input__get(void)
 
             case SDL_JOYAXISMOTION: {
                 A_LIST_ITERATE(g_controllers, ASdlInputController*, c) {
-                    #if A_USE_LIB_SDL == 2
+                    #if A_CONFIG_LIB_SDL == 2
                         if(c->controller != NULL) {
                             continue;
                         }
@@ -744,7 +744,7 @@ void a_sdl_input__get(void)
                 }
             } break;
 
-#if A_USE_LIB_SDL == 2
+#if A_CONFIG_LIB_SDL == 2
             case SDL_CONTROLLERBUTTONUP:
             case SDL_CONTROLLERBUTTONDOWN: {
                 A_LIST_ITERATE(g_controllers, ASdlInputController*, c) {

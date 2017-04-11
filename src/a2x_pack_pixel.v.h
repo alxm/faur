@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016 Alex Margarit
+    Copyright 2010, 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -28,6 +28,7 @@ typedef struct APixelState {
     APixelBlend blend, canonicalBlend;
     int red, green, blue, alpha;
     APixel pixel;
+    bool blitFillFlat;
 } APixelState;
 
 extern APixelState a_pixel__state;
@@ -94,5 +95,14 @@ static inline void a_pixel__inverse(APixel* Dst)
     *Dst = (APixel)~*Dst;
 }
 
+static inline void a_pixel__colormod(APixel* Dst, int Red, int Green, int Blue)
+{
+    *Dst = a_pixel_rgb((Red * a_pixel__state.red) >> 8,
+                       (Green * a_pixel__state.green) >> 8,
+                       (Blue * a_pixel__state.blue) >> 8);
+}
+
 extern void a_pixel__init(void);
 extern void a_pixel__uninit(void);
+
+extern bool a_pixel__alphaBlending(void);

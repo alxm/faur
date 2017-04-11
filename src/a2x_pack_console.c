@@ -64,6 +64,7 @@ static void screenCallback(void)
 
     a_pixel_push();
     a_font_push();
+    a_screen_clipReset();
 
     a_pixel_setBlend(A_PIXEL_BLEND_RGB75);
     a_pixel_setHex(0x1f0f0f);
@@ -108,7 +109,7 @@ static void screenCallback(void)
     }
 
     {
-        a_font_setCoords(a_screen__width - 2, 2);
+        a_font_setCoords(a__screen.width - 2, 2);
         a_font_setAlign(A_FONT_ALIGN_RIGHT);
 
         a_font_setFace(A_FONT_FACE_YELLOW);

@@ -1,5 +1,5 @@
 /*
-    Copyright 2011, 2016 Alex Margarit
+    Copyright 2011, 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -19,8 +19,8 @@
 
 #pragma once
 
-#ifndef A_PLATFORM_LINUXPC
-    #define A_PLATFORM_LINUXPC 0
+#ifndef A_PLATFORM_DESKTOP
+    #define A_PLATFORM_DESKTOP 0
 #endif
 
 #ifndef A_PLATFORM_MINGW
@@ -48,11 +48,23 @@
 #endif
 
 #ifndef A_PLATFORM_LINUX
-    #if A_PLATFORM_LINUXPC || A_PLATFORM_GP2X || A_PLATFORM_WIZ || A_PLATFORM_CAANOO || A_PLATFORM_PANDORA
+    #if A_PLATFORM_GP2X || A_PLATFORM_WIZ || A_PLATFORM_CAANOO || A_PLATFORM_PANDORA
         #define A_PLATFORM_LINUX 1
     #else
         #define A_PLATFORM_LINUX 0
     #endif
+#endif
+
+#ifndef A_CONFIG_LIB_SDL
+    #define A_CONFIG_LIB_SDL 0
+#endif
+
+#ifndef A_CONFIG_RENDER_SOFTWARE
+    #define A_CONFIG_RENDER_SOFTWARE 0
+#endif
+
+#ifndef A_CONFIG_RENDER_SDL2
+    #define A_CONFIG_RENDER_SDL2 0
 #endif
 
 // For putenv

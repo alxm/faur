@@ -85,7 +85,7 @@ void a_font__init(void)
     a_sprite_free(fontSprite);
 
     for(unsigned f = 1; f < A_FONT_FACE_DEFAULT_NUM; f++) {
-        a_font_copy(A_FONT_FACE_WHITE, colors[f]);
+        a_font_dup(A_FONT_FACE_WHITE, colors[f]);
     }
 
     a_font_reset();
@@ -154,29 +154,41 @@ unsigned a_font_load(const ASprite* Sheet, int X, int Y, AFontLoad Loader)
     return a_list_size(g_fontsList) - 1;
 }
 
-unsigned a_font_copy(unsigned Font, APixel Color)
+unsigned a_font_dup(unsigned Font, APixel Color)
 {
     AFont* src = g_fonts[Font];
     AFont* f = a_mem_malloc(sizeof(AFont));
 
     *f = *src;
 
+    a_pixel_push();
+    a_pixel_setPixel(Color);
+    a_pixel_setBlitFillFlat(true);
+
     for(int i = CHAR_ENTRIES_NUM; i--; ) {
-        if(src->sprites[i]) {
-            f->sprites[i] = a_sprite_clone(src->sprites[i]);
+        ASprite* sprite = NULL;
+        ASprite* srcSprite = src->sprites[i];
 
-            ASprite* sprite = f->sprites[i];
-            APixel* pixels = sprite->pixels;
+        if(srcSprite) {
+            #if A_CONFIG_RENDER_SOFTWARE
+                sprite = a_sprite_blank(srcSprite->w,
+                                        srcSprite->h,
+                                        srcSprite->colorKeyed);
+            #elif A_CONFIG_RENDER_SDL2
+                sprite = a_sprite_blank(srcSprite->w,
+                                        srcSprite->h,
+                                        true);
+            #endif
 
-            for(int j = sprite->w * sprite->h; j--; pixels++) {
-                if(*pixels != a_sprite__colorKey) {
-                    *pixels = Color;
-                }
-            }
-        } else {
-            f->sprites[i] = NULL;
+            a_screen_targetPushSprite(sprite);
+            a_sprite_blit(srcSprite, 0, 0);
+            a_screen_targetPop();
         }
+
+        f->sprites[i] = sprite;
     }
+
+    a_pixel_pop();
 
     a_list_addLast(g_fontsList, f);
 

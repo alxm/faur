@@ -20,7 +20,7 @@
 static void A__FUNC_NAME(a_draw__pixel)(int X, int Y)
 {
     A__BLEND_SETUP;
-    APixel* a__pass_dst = a_screen__pixels + Y * a_screen__width + X;
+    APixel* a__pass_dst = a__screen.pixels + Y * a__screen.width + X;
 
     A__PIXEL_DRAW(a__pass_dst);
 }
@@ -29,8 +29,8 @@ static void A__FUNC_NAME(a_draw__rectangle)(int X, int Y, int Width, int Height)
 {
     A__BLEND_SETUP;
 
-    APixel* pixels = a_screen__pixels + Y * a_screen__width + X;
-    const int screenw = a_screen__width;
+    APixel* pixels = a__screen.pixels + Y * a__screen.width + X;
+    const int screenw = a__screen.width;
 
     for(int i = Height; i--; pixels += screenw) {
         APixel* a__pass_dst = pixels;
@@ -71,8 +71,8 @@ static void A__FUNC_NAME(a_draw__line)(int X1, int Y1, int X2, int Y2)
         const int xinc2 = (denominator == deltax) ? 0 : xinct;
         const int yinc2 = (denominator == deltax) ? yinct : 0;
 
-        const int screenw = a_screen__width;
-        APixel* a__pass_dst = a_screen__pixels + Y1 * screenw + X1;
+        const int screenw = a__screen.width;
+        APixel* a__pass_dst = a__screen.pixels + Y1 * screenw + X1;
 
         for(int i = denominator + 1; i--; ) {
             A__PIXEL_DRAW(a__pass_dst);
@@ -95,7 +95,7 @@ static void A__FUNC_NAME(a_draw__hline)(int X1, int X2, int Y)
 {
     A__BLEND_SETUP;
 
-    APixel* a__pass_dst = a_screen__pixels + Y * a_screen__width + X1;
+    APixel* a__pass_dst = a__screen.pixels + Y * a__screen.width + X1;
 
     for(int i = X2 - X1; i--; a__pass_dst++) {
         A__PIXEL_DRAW(a__pass_dst);
@@ -106,8 +106,8 @@ static void A__FUNC_NAME(a_draw__vline)(int X, int Y1, int Y2)
 {
     A__BLEND_SETUP;
 
-    const int screenw = a_screen__width;
-    APixel* a__pass_dst = a_screen__pixels + Y1 * screenw + X;
+    const int screenw = a__screen.width;
+    APixel* a__pass_dst = a__screen.pixels + Y1 * screenw + X;
 
     for(int i = Y2 - Y1; i--; a__pass_dst += screenw) {
         A__PIXEL_DRAW(a__pass_dst);
@@ -140,9 +140,10 @@ static void A__FUNC_NAME(a_draw__circle_noclip)(int X, int Y, int Radius)
     const int q3X = X - 1, q3Y = Y;
     const int q4X = X,     q4Y = Y;
 
-    const int width = a_screen__width;
-    APixel* const pixels = a_screen__pixels;
+    const int width = a__screen.width;
+    APixel* const pixels = a__screen.pixels;
 
+    APixel* a__pass_dst;
     APixel* oct1 = pixels + q1Y * width + q1X + Radius;
     APixel* oct2 = pixels + (q1Y - Radius) * width + q1X;
     APixel* oct3 = pixels + (q2Y - Radius) * width + q2X;
@@ -152,15 +153,19 @@ static void A__FUNC_NAME(a_draw__circle_noclip)(int X, int Y, int Radius)
     APixel* oct7 = pixels + (q4Y + Radius) * width + q4X;
     APixel* oct8 = pixels + q4Y * width + q4X + Radius;
 
+    #define A__PIXEL_DRAW2(Buffer)  \
+        a__pass_dst = Buffer;       \
+        A__PIXEL_DRAW(a__pass_dst);
+
     while(x > y) {
-        A__PIXEL_DRAW(oct1);
-        A__PIXEL_DRAW(oct2);
-        A__PIXEL_DRAW(oct3);
-        A__PIXEL_DRAW(oct4);
-        A__PIXEL_DRAW(oct5);
-        A__PIXEL_DRAW(oct6);
-        A__PIXEL_DRAW(oct7);
-        A__PIXEL_DRAW(oct8);
+        A__PIXEL_DRAW2(oct1);
+        A__PIXEL_DRAW2(oct2);
+        A__PIXEL_DRAW2(oct3);
+        A__PIXEL_DRAW2(oct4);
+        A__PIXEL_DRAW2(oct5);
+        A__PIXEL_DRAW2(oct6);
+        A__PIXEL_DRAW2(oct7);
+        A__PIXEL_DRAW2(oct8);
 
         oct1 -= width;
         oct2 += 1;
@@ -190,11 +195,13 @@ static void A__FUNC_NAME(a_draw__circle_noclip)(int X, int Y, int Radius)
     }
 
     if(x == y) {
-        A__PIXEL_DRAW(oct1);
-        A__PIXEL_DRAW(oct3);
-        A__PIXEL_DRAW(oct5);
-        A__PIXEL_DRAW(oct7);
+        A__PIXEL_DRAW2(oct1);
+        A__PIXEL_DRAW2(oct3);
+        A__PIXEL_DRAW2(oct5);
+        A__PIXEL_DRAW2(oct7);
     }
+
+    #undef A__PIXEL_DRAW2
 }
 
 static void A__FUNC_NAME(a_draw__circle_clip)(int X, int Y, int Radius)
@@ -219,13 +226,13 @@ static void A__FUNC_NAME(a_draw__circle_clip)(int X, int Y, int Radius)
     const int q3X = X - 1, q3Y = Y;
     const int q4X = X,     q4Y = Y;
 
-    const int width = a_screen__width;
-    APixel* const pixels = a_screen__pixels;
+    const int width = a__screen.width;
+    APixel* const pixels = a__screen.pixels;
 
-    const int clipX1 = a_screen__clipX;
-    const int clipX2 = a_screen__clipX2;
-    const int clipY1 = a_screen__clipY;
-    const int clipY2 = a_screen__clipY2;
+    const int clipX1 = a__screen.clipX;
+    const int clipX2 = a__screen.clipX2;
+    const int clipY1 = a__screen.clipY;
+    const int clipY2 = a__screen.clipY2;
 
     APixel* oct1 = pixels + q1Y * width + q1X + Radius;
     APixel* oct2 = pixels + (q1Y - Radius) * width + q1X;

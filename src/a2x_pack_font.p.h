@@ -49,7 +49,7 @@ typedef enum AFontDefaults {
 } AFontDefaults;
 
 extern unsigned a_font_load(const ASprite* Sheet, int X, int Y, AFontLoad Loader);
-extern unsigned a_font_copy(unsigned Font, APixel Color);
+extern unsigned a_font_dup(unsigned Font, APixel Color);
 
 extern void a_font_push(void);
 extern void a_font_pop(void);

@@ -21,7 +21,7 @@
 
 #include "a2x_system_includes.h"
 
-#if A_PLATFORM_LINUXPC
+#if A_PLATFORM_DESKTOP
     #define A_PIXEL_BPP 32
     typedef uint32_t APixel;
 #else
@@ -30,40 +30,52 @@
 #endif
 
 #if A_PIXEL_BPP == 16
-    // RGB565
-    #define A_PIXEL_RED_BITS   5
-    #define A_PIXEL_GREEN_BITS 6
-    #define A_PIXEL_BLUE_BITS  5
-    #define A_PIXEL_PAD_BITS   0
+    #if A_CONFIG_RENDER_SOFTWARE
+        // RGB565
+        #define A_PIXEL_RED_BITS   5
+        #define A_PIXEL_GREEN_BITS 6
+        #define A_PIXEL_BLUE_BITS  5
+        #define A_PIXEL_ALPHA_BITS 0
+    #elif A_CONFIG_RENDER_SDL2
+        // RGBA5551
+        #define A_PIXEL_RED_BITS   5
+        #define A_PIXEL_GREEN_BITS 5
+        #define A_PIXEL_BLUE_BITS  5
+        #define A_PIXEL_ALPHA_BITS 1
+    #endif
 #elif A_PIXEL_BPP == 32
     #define A_PIXEL_RED_BITS   8
     #define A_PIXEL_GREEN_BITS 8
     #define A_PIXEL_BLUE_BITS  8
 
-    #if A_USE_LIB_SDL == 1
+    #if A_CONFIG_LIB_SDL == 1
         // XRGB8888
-        #define A_PIXEL_PAD_BITS 0
-    #elif A_USE_LIB_SDL == 2
-        // RGBX8888
-        #define A_PIXEL_PAD_BITS 8
+        #define A_PIXEL_ALPHA_BITS 0
+    #elif A_CONFIG_LIB_SDL == 2
+        // RGBX8888 / RGBA8888
+        #define A_PIXEL_ALPHA_BITS 8
     #endif
-#else
-    #error Invalid A_PIXEL_BPP value
 #endif
 
-#define A_PIXEL_RED_SHIFT   (A_PIXEL_GREEN_BITS + A_PIXEL_BLUE_BITS + A_PIXEL_PAD_BITS)
-#define A_PIXEL_GREEN_SHIFT (A_PIXEL_BLUE_BITS + A_PIXEL_PAD_BITS)
-#define A_PIXEL_BLUE_SHIFT  (A_PIXEL_PAD_BITS)
+#define A_PIXEL_RED_SHIFT   (A_PIXEL_GREEN_BITS + A_PIXEL_BLUE_BITS + A_PIXEL_ALPHA_BITS)
+#define A_PIXEL_GREEN_SHIFT (A_PIXEL_BLUE_BITS + A_PIXEL_ALPHA_BITS)
+#define A_PIXEL_BLUE_SHIFT  (A_PIXEL_ALPHA_BITS)
+#define A_PIXEL_ALPHA_SHIFT (0)
 
 #define A_PIXEL_RED_MASK   ((1 << A_PIXEL_RED_BITS) - 1)
 #define A_PIXEL_GREEN_MASK ((1 << A_PIXEL_GREEN_BITS) - 1)
 #define A_PIXEL_BLUE_MASK  ((1 << A_PIXEL_BLUE_BITS) - 1)
+#define A_PIXEL_ALPHA_MASK ((1 << A_PIXEL_ALPHA_BITS) - 1)
 
 #define A_PIXEL_RED_PACK   (8 - A_PIXEL_RED_BITS)
 #define A_PIXEL_GREEN_PACK (8 - A_PIXEL_GREEN_BITS)
 #define A_PIXEL_BLUE_PACK  (8 - A_PIXEL_BLUE_BITS)
 
-#define A_PIXEL_ALPHA_MAX 256
+#if A_CONFIG_RENDER_SOFTWARE
+    #define A_PIXEL_ALPHA_MAX 256
+#elif A_CONFIG_RENDER_SDL2
+    #define A_PIXEL_ALPHA_MAX 255
+#endif
 
 static inline APixel a_pixel_rgb(int Red, int Green, int Blue)
 {
@@ -75,17 +87,17 @@ static inline APixel a_pixel_rgb(int Red, int Green, int Blue)
 
 static inline APixel a_pixel_hex(uint32_t Hexcode)
 {
-    #if A_PIXEL_BPP == 32
-        #if A_USE_LIB_SDL == 1
-            return (APixel)(Hexcode & 0xffffff);
-        #elif A_USE_LIB_SDL == 2
-            return (APixel)(Hexcode << A_PIXEL_PAD_BITS);
-        #endif
-    #else
+    #if A_PIXEL_BPP == 16
         return (APixel)
             (((((Hexcode >> 16) & 0xff) >> A_PIXEL_RED_PACK)   << A_PIXEL_RED_SHIFT)   |
              ((((Hexcode >> 8)  & 0xff) >> A_PIXEL_GREEN_PACK) << A_PIXEL_GREEN_SHIFT) |
              ((((Hexcode)       & 0xff) >> A_PIXEL_BLUE_PACK)  << A_PIXEL_BLUE_SHIFT));
+    #elif A_PIXEL_BPP == 32
+        #if A_CONFIG_LIB_SDL == 1
+            return (APixel)(Hexcode & 0xffffff);
+        #elif A_CONFIG_LIB_SDL == 2
+            return (APixel)(Hexcode << A_PIXEL_ALPHA_BITS);
+        #endif
     #endif
 }
 
@@ -111,6 +123,7 @@ typedef enum {
     A_PIXEL_BLEND_RGB50,
     A_PIXEL_BLEND_RGB75,
     A_PIXEL_BLEND_INVERSE,
+    A_PIXEL_BLEND_COLORMOD,
     A_PIXEL_BLEND_NUM
 } APixelBlend;
 
@@ -125,3 +138,4 @@ extern void a_pixel_setRGB(int Red, int Green, int Blue);
 extern void a_pixel_setRGBA(int Red, int Green, int Blue, int Alpha);
 extern void a_pixel_setHex(uint32_t Hexcode);
 extern void a_pixel_setPixel(APixel Pixel);
+extern void a_pixel_setBlitFillFlat(bool FillFlat);

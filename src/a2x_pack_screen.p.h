@@ -21,6 +21,8 @@
 
 #include "a2x_system_includes.h"
 
+typedef struct AScreen AScreen;
+
 #include "a2x_pack_pixel.p.h"
 #include "a2x_pack_sprite.p.h"
 
@@ -28,18 +30,19 @@ extern APixel* a_screen_pixels(void);
 extern int a_screen_width(void);
 extern int a_screen_height(void);
 
-extern APixel* a_screen_dup(void);
-extern APixel* a_screen_new(void);
-extern void a_screen_copy(APixel* Dst, const APixel* Src);
-extern void a_screen_copyPart(APixel* Dst, int X, int Y, int Width, int Height);
-extern APixel a_screen_getPixel(int X, int Y);
+extern AScreen* a_screen_new(int Width, int Height);
+extern AScreen* a_screen_dup(void);
+extern void a_screen_free(AScreen* Screen);
 
-extern void a_screen_setTarget(APixel* Pixels, int Width, int Height);
-extern void a_screen_setTargetSprite(ASprite* Sprite);
-extern void a_screen_resetTarget(void);
+extern void a_screen_copy(AScreen* Dst, const AScreen* Src);
+extern void a_screen_blit(const AScreen* Screen);
 
-extern void a_screen_setClip(int X, int Y, int Width, int Height);
-extern void a_screen_resetClip(void);
+extern void a_screen_targetPushScreen(AScreen* Screen);
+extern void a_screen_targetPushSprite(ASprite* Sprite);
+extern void a_screen_targetPop(void);
+
+extern void a_screen_clipSet(int X, int Y, int Width, int Height);
+extern void a_screen_clipReset(void);
 
 extern bool a_screen_boxOnScreen(int X, int Y, int W, int H);
 extern bool a_screen_boxInsideScreen(int X, int Y, int W, int H);

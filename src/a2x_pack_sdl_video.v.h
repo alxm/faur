@@ -21,10 +21,38 @@
 
 #include "a2x_pack_sdl_video.p.h"
 
+#if A_CONFIG_RENDER_SDL2
+    typedef struct ASdlTexture ASdlTexture;
+#endif
+
 #include "a2x_pack_pixel.v.h"
 
 extern void a_sdl_video__init(void);
 extern void a_sdl_video__uninit(void);
 
-extern void a_sdl_screen__set(void);
+extern void a_sdl_screen__set(int Width, int Height, bool FullScreen);
 extern void a_sdl_screen__show(void);
+extern void a_sdl_screen__setFullScreen(bool FullScreen);
+
+#if A_CONFIG_RENDER_SDL2
+extern void a_sdl_video__getFullResolution(int* Width, int* Height);
+
+extern void a_sdl_render__setDrawColor(void);
+extern void a_sdl_render__setBlendMode(void);
+
+extern void a_sdl_render__drawPoint(int X, int Y);
+extern void a_sdl_render__drawLine(int X1, int Y1, int X2, int Y2);
+extern void a_sdl_render__drawRectangle(int X, int Y, int Width, int Height);
+extern void a_sdl_render__drawCircle(int X, int Y, int Radius);
+
+extern ASdlTexture* a_sdl_render__textureMakeScreen(int Width, int Height);
+extern ASdlTexture* a_sdl_render__textureMakeSprite(const APixel* Pixels, int Width, int Height);
+extern void a_sdl_render__textureFree(ASdlTexture* Texture);
+
+extern void a_sdl_render__textureBlit(ASdlTexture* Texture, int X, int Y, bool FillFlat);
+extern void a_sdl_render__textureBlitEx(ASdlTexture* Texture, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY, bool FillFlat);
+
+extern void a_sdl_render__targetSet(ASdlTexture* Texture);
+extern void a_sdl_render__targetGetPixels(APixel* Pixels, int Width);
+extern void a_sdl_render__targetSetClip(int X, int Y, int Width, int Height);
+#endif

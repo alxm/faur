@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016 Alex Margarit
+    Copyright 2010, 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -39,4 +39,17 @@ void* a_mem_zalloc(size_t Size)
     }
 
     return ptr;
+}
+
+void* a_mem_dup(const void* Buffer, size_t Size)
+{
+    void* copy = malloc(Size);
+
+    if(copy == NULL) {
+        a_out__fatal("malloc(%u) failed", Size);
+    }
+
+    memcpy(copy, Buffer, Size);
+
+    return copy;
 }

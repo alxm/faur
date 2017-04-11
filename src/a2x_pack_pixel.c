@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016 Alex Margarit
+    Copyright 2010, 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -37,6 +37,12 @@ void a_pixel__uninit(void)
     a_list_free(g_stateStack);
 }
 
+bool a_pixel__alphaBlending(void)
+{
+    return a_pixel__state.blend >= A_PIXEL_BLEND_RGBA
+        && a_pixel__state.blend <= A_PIXEL_BLEND_RGB75;
+}
+
 void a_pixel_push(void)
 {
     APixelState* state = a_mem_malloc(sizeof(APixelState));
@@ -67,8 +73,10 @@ void a_pixel_reset(void)
 {
     a_pixel_setBlend(A_PIXEL_BLEND_PLAIN);
     a_pixel_setRGBA(0, 0, 0, A_PIXEL_ALPHA_MAX);
+    a_pixel_setBlitFillFlat(false);
 }
 
+#if A_CONFIG_RENDER_SOFTWARE
 static void optimizeAlphaBlending(bool UpdateRoutines)
 {
     if(a_pixel__state.canonicalBlend == A_PIXEL_BLEND_RGBA) {
@@ -102,23 +110,39 @@ static void optimizeAlphaBlending(bool UpdateRoutines)
         }
     }
 }
+#endif
 
 void a_pixel_setBlend(APixelBlend Blend)
 {
     a_pixel__state.blend = Blend;
     a_pixel__state.canonicalBlend = Blend;
 
-    optimizeAlphaBlending(false);
+    #if A_CONFIG_RENDER_SOFTWARE
+        optimizeAlphaBlending(false);
+        a_draw__updateRoutines();
+        a_sprite__updateRoutines();
+    #elif A_CONFIG_RENDER_SDL2
+        if(Blend == A_PIXEL_BLEND_RGB25) {
+            a_pixel_setAlpha(A_PIXEL_ALPHA_MAX / 4);
+        } else if(Blend == A_PIXEL_BLEND_RGB50) {
+            a_pixel_setAlpha(A_PIXEL_ALPHA_MAX / 2);
+        } else if(Blend == A_PIXEL_BLEND_RGB75) {
+            a_pixel_setAlpha(A_PIXEL_ALPHA_MAX * 3 / 4);
+        }
 
-    a_draw__updateRoutines();
-    a_sprite__updateRoutines();
+        a_sdl_render__setBlendMode();
+    #endif
 }
 
 void a_pixel_setAlpha(int Alpha)
 {
     a_pixel__state.alpha = a_math_constrain(Alpha, 0, A_PIXEL_ALPHA_MAX);
 
-    optimizeAlphaBlending(true);
+    #if A_CONFIG_RENDER_SOFTWARE
+        optimizeAlphaBlending(true);
+    #elif A_CONFIG_RENDER_SDL2
+        a_sdl_render__setDrawColor();
+    #endif
 }
 
 void a_pixel_setRGB(int Red, int Green, int Blue)
@@ -127,6 +151,10 @@ void a_pixel_setRGB(int Red, int Green, int Blue)
     a_pixel__state.green = (unsigned)Green & 0xff;
     a_pixel__state.blue = (unsigned)Blue & 0xff;
     a_pixel__state.pixel = a_pixel_rgb(Red, Green, Blue);
+
+    #if A_CONFIG_RENDER_SDL2
+        a_sdl_render__setDrawColor();
+    #endif
 }
 
 void a_pixel_setRGBA(int Red, int Green, int Blue, int Alpha)
@@ -137,7 +165,11 @@ void a_pixel_setRGBA(int Red, int Green, int Blue, int Alpha)
     a_pixel__state.alpha = a_math_constrain(Alpha, 0, A_PIXEL_ALPHA_MAX);
     a_pixel__state.pixel = a_pixel_rgb(Red, Green, Blue);
 
-    optimizeAlphaBlending(true);
+    #if A_CONFIG_RENDER_SOFTWARE
+        optimizeAlphaBlending(true);
+    #elif A_CONFIG_RENDER_SDL2
+        a_sdl_render__setDrawColor();
+    #endif
 }
 
 void a_pixel_setHex(uint32_t Hexcode)
@@ -146,6 +178,10 @@ void a_pixel_setHex(uint32_t Hexcode)
     a_pixel__state.green = (Hexcode >> 8) & 0xff;
     a_pixel__state.blue = Hexcode & 0xff;
     a_pixel__state.pixel = a_pixel_hex(Hexcode);
+
+    #if A_CONFIG_RENDER_SDL2
+        a_sdl_render__setDrawColor();
+    #endif
 }
 
 void a_pixel_setPixel(APixel Pixel)
@@ -154,4 +190,17 @@ void a_pixel_setPixel(APixel Pixel)
     a_pixel__state.green = a_pixel_green(Pixel);
     a_pixel__state.blue = a_pixel_blue(Pixel);
     a_pixel__state.pixel = Pixel;
+
+    #if A_CONFIG_RENDER_SDL2
+        a_sdl_render__setDrawColor();
+    #endif
+}
+
+void a_pixel_setBlitFillFlat(bool FillFlat)
+{
+    a_pixel__state.blitFillFlat = FillFlat;
+
+    #if A_CONFIG_RENDER_SOFTWARE
+        a_sprite__updateRoutines();
+    #endif
 }
