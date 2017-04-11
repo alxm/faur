@@ -437,8 +437,6 @@ void a_draw_circle(int X, int Y, int Radius)
             g_draw_circle_clip(X, Y, Radius);
         }
     #elif A_CONFIG_RENDER_SDL2
-        X = X;
-        Y = Y;
-        Radius = Radius;
+        a_sdl_render__drawCircle(X, Y, Radius);
     #endif
 }

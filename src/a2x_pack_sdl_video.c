@@ -415,6 +415,25 @@ void a_sdl_render__drawRectangle(int X, int Y, int Width, int Height)
     }
 }
 
+void a_sdl_render__drawCircle(int X, int Y, int Radius)
+{
+    unsigned segments = 32;
+    unsigned angleInc = A_MATH_ANGLES_NUM / segments;
+    SDL_Point points[segments + 1];
+    float radius = (float)Radius;
+
+    for(unsigned p = 0, angle = 0; p < segments; p++, angle += angleInc) {
+        points[p].x = X + (int)(a_math_cos(angle) * radius);
+        points[p].y = Y + (int)(a_math_sin(angle) * radius);
+    }
+
+    points[segments] = points[0];
+
+    if(SDL_RenderDrawLines(g_sdlRenderer, points, (int)segments + 1) < 0) {
+        a_out__error("SDL_RenderDrawLines failed: %s", SDL_GetError());
+    }
+}
+
 ASdlTexture* a_sdl_render__textureMakeScreen(int Width, int Height)
 {
     SDL_Texture* t = SDL_CreateTexture(g_sdlRenderer,
