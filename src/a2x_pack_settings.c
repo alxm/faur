@@ -210,11 +210,7 @@ void a_settings__init(void)
     add(A_SETTING_STR,
         A_SETTING_SET_ONCE,
         "console.button",
-        "key.f11 "
-        "gp2x.l+gp2x.r+gp2x.a+gp2x.b+gp2x.x+gp2x.y "
-        "wiz.l+wiz.r+wiz.a+wiz.b+wiz.x+wiz.y "
-        "caanoo.l+caanoo.r+caanoo.a+caanoo.b+caanoo.x+caanoo.y "
-        "pandora.l+pandora.r+pandora.a+pandora.b+pandora.x+pandora.y ");
+        "key.f11 gamepad.b.l+gamepad.b.r+gamepad.b.a+gamepad.b.b+gamepad.b.x+gamepad.b.y");
 }
 
 void a_settings__uninit(void)

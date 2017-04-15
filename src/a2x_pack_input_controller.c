@@ -43,20 +43,14 @@ void a_input_controller__init2(void)
             // combination of two separate buttons. This splits them into
             // individual directions.
             #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
-                #if A_PLATFORM_GP2X
-                    #define PREFIX "gp2x"
-                #elif A_PLATFORM_WIZ
-                    #define PREFIX "wiz"
-                #endif
-
-                AInputButtonSource* ul = a_strhash_get(c->buttons, PREFIX ".upLeft");
-                AInputButtonSource* ur = a_strhash_get(c->buttons, PREFIX ".upRight");
-                AInputButtonSource* dl = a_strhash_get(c->buttons, PREFIX ".downLeft");
-                AInputButtonSource* dr = a_strhash_get(c->buttons, PREFIX ".downRight");
-                AInputButtonSource* u = a_strhash_get(c->buttons, PREFIX ".up");
-                AInputButtonSource* d = a_strhash_get(c->buttons, PREFIX ".down");
-                AInputButtonSource* l = a_strhash_get(c->buttons, PREFIX ".left");
-                AInputButtonSource* r = a_strhash_get(c->buttons, PREFIX ".right");
+                AInputButtonSource* ul = a_strhash_get(c->buttons, "gamepad.b.upLeft");
+                AInputButtonSource* ur = a_strhash_get(c->buttons, "gamepad.b.upRight");
+                AInputButtonSource* dl = a_strhash_get(c->buttons, "gamepad.b.downLeft");
+                AInputButtonSource* dr = a_strhash_get(c->buttons, "gamepad.b.downRight");
+                AInputButtonSource* u = a_strhash_get(c->buttons, "gamepad.b.up");
+                AInputButtonSource* d = a_strhash_get(c->buttons, "gamepad.b.down");
+                AInputButtonSource* l = a_strhash_get(c->buttons, "gamepad.b.left");
+                AInputButtonSource* r = a_strhash_get(c->buttons, "gamepad.b.right");
 
                 a_input_button__forwardTo(ul, u);
                 a_input_button__forwardTo(ul, l);
@@ -74,13 +68,13 @@ void a_input_controller__init2(void)
             // Caanoo has an analog stick instead of direction buttons,
             // this lets us use it as a dpad like on the other platforms.
             #if A_PLATFORM_CAANOO
-                AInputAnalogSource* x = a_strhash_get(c->axes, "caanoo.stickX");
-                AInputAnalogSource* y = a_strhash_get(c->axes, "caanoo.stickY");
+                AInputAnalogSource* x = a_strhash_get(c->axes, "gamepad.a.leftX");
+                AInputAnalogSource* y = a_strhash_get(c->axes, "gamepad.a.leftY");
 
-                AInputButtonSource* u = a_strhash_get(c->buttons, "caanoo.up");
-                AInputButtonSource* d = a_strhash_get(c->buttons, "caanoo.down");
-                AInputButtonSource* l = a_strhash_get(c->buttons, "caanoo.left");
-                AInputButtonSource* r = a_strhash_get(c->buttons, "caanoo.right");
+                AInputButtonSource* u = a_strhash_get(c->buttons, "gamepad.b.up");
+                AInputButtonSource* d = a_strhash_get(c->buttons, "gamepad.b.down");
+                AInputButtonSource* l = a_strhash_get(c->buttons, "gamepad.b.left");
+                AInputButtonSource* r = a_strhash_get(c->buttons, "gamepad.b.right");
 
                 a_input_analog__axisButtonsBinding(x, l, r);
                 a_input_analog__axisButtonsBinding(y, u, d);

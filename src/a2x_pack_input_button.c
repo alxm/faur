@@ -61,15 +61,15 @@ void a_input_button__init(void)
 void a_input_button__init2(void)
 {
     // IDs are in order of increasing platform-specificity
-    newSourceNode("Up", "generic.up", "key.up gamepad.b.up gp2x.up wiz.up caanoo.up pandora.up");
-    newSourceNode("Down", "generic.down", "key.down gamepad.b.down gp2x.down wiz.down caanoo.down pandora.down");
-    newSourceNode("Left", "generic.left", "key.left gamepad.b.left gp2x.left wiz.left caanoo.left pandora.left");
-    newSourceNode("Right", "generic.right", "key.right gamepad.b.right gp2x.right wiz.right caanoo.right pandora.right");
+    newSourceNode("Up", "generic.up", "key.up gamepad.b.up");
+    newSourceNode("Down", "generic.down", "key.down gamepad.b.down");
+    newSourceNode("Left", "generic.left", "key.left gamepad.b.left");
+    newSourceNode("Right", "generic.right", "key.right gamepad.b.right");
 
-    newSourceNode("B0", "generic.b0", "key.z gamepad.b.0 gamepad.b.a gp2x.x wiz.x caanoo.x pandora.x");
-    newSourceNode("B1", "generic.b1", "key.x gamepad.b.1 gamepad.b.b gp2x.b wiz.b caanoo.b pandora.b");
-    newSourceNode("B2", "generic.b2", "key.c gamepad.b.2 gamepad.b.x gp2x.a wiz.a caanoo.a pandora.a");
-    newSourceNode("B3", "generic.b3", "key.v gamepad.b.3 gamepad.b.y gp2x.y wiz.y caanoo.y pandora.y");
+    newSourceNode("B0", "generic.b0", "key.z gamepad.b.0 gamepad.b.a");
+    newSourceNode("B1", "generic.b1", "key.x gamepad.b.1 gamepad.b.b");
+    newSourceNode("B2", "generic.b2", "key.c gamepad.b.2 gamepad.b.x");
+    newSourceNode("B3", "generic.b3", "key.v gamepad.b.3 gamepad.b.y");
 }
 
 void a_input_button__uninit(void)
