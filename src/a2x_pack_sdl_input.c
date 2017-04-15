@@ -294,7 +294,7 @@ void a_sdl_input__init(void)
                     addButton(c->buttons, "B", "gamepad.b.b", 2);
                     addButton(c->buttons, "X", "gamepad.b.a", 1);
                     addButton(c->buttons, "Y", "gamepad.b.y", 3);
-                    addButton(c->buttons, "Home", "gamepad.b.home", 6);
+                    addButton(c->buttons, "Home", "gamepad.b.guide", 6);
                     addButton(c->buttons, "Hold", "gamepad.b.hold", 7);
                     addButton(c->buttons, "I", "gamepad.b.start", 8);
                     addButton(c->buttons, "II", "gamepad.b.select", 9);
@@ -387,28 +387,46 @@ void a_sdl_input__init(void)
                 }
             } else {
         #endif
+                a_out__message("Found %s: %d buttons, %d axes, %d hats",
+                               joystickName(c),
+                               c->numButtons,
+                               c->numAxes,
+                               c->numHats);
 
-        a_out__message("Found %s: %d buttons, %d axes, %d hats",
-                       joystickName(c),
-                       c->numButtons,
-                       c->numAxes,
-                       c->numHats);
+                static const char* buttons[][2] = {
+                    {"A", "gamepad.b.a"},
+                    {"B", "gamepad.b.b"},
+                    {"X", "gamepad.b.x"},
+                    {"Y", "gamepad.b.y"},
+                    {"L", "gamepad.b.l"},
+                    {"R", "gamepad.b.r"},
+                    {"Select", "gamepad.b.select"},
+                    {"Start", "gamepad.b.start"},
+                    {"Guide", "gamepad.b.guide"}
+                };
 
-        for(int j = 0; j < c->numButtons; j++) {
-            char name[16], id[16];
-            snprintf(name, sizeof(name), "B%d", j);
-            snprintf(id, sizeof(id), "gamepad.b.%d", j);
+                static const char* axes[] = {
+                    "gamepad.a.leftX",
+                    "gamepad.a.leftY",
+                    "gamepad.a.rightX",
+                    "gamepad.a.rightY",
+                    "gamepad.a.leftTrigger",
+                    "gamepad.a.rightTrigger"
+                };
 
-            addButton(c->buttons, name, id, j);
-        }
+                for(int j = a_math_min(c->numButtons,
+                                       sizeof(buttons) / sizeof(buttons[0]));
+                    j--; ) {
 
-        for(int j = 0; j < c->numAxes; j++) {
-            char id[16];
-            snprintf(id, sizeof(id), "gamepad.a.%d", j);
+                    addButton(c->buttons, buttons[j][0], buttons[j][1], j);
+                }
 
-            addAnalog(c->axes, id, j);
-        }
+                for(int j = a_math_min(c->numAxes,
+                                       sizeof(axes) / sizeof(axes[0]));
+                    j--; ) {
 
+                    addAnalog(c->axes, axes[j], j);
+                }
         #if A_CONFIG_LIB_SDL == 2
             }
         #endif

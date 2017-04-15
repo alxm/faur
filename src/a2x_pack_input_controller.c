@@ -87,24 +87,18 @@ void a_input_controller__init2(void)
             continue;
         }
 
-        AInputAnalogSource *x, *y;
+        AInputAnalogSource* x = a_strhash_get(c->axes, "gamepad.a.leftX");
+        AInputAnalogSource* y = a_strhash_get(c->axes, "gamepad.a.leftY");
         AInputButtonSource* u = a_strhash_get(c->buttons, "gamepad.b.up");
         AInputButtonSource* d = a_strhash_get(c->buttons, "gamepad.b.down");
         AInputButtonSource* l = a_strhash_get(c->buttons, "gamepad.b.left");
         AInputButtonSource* r = a_strhash_get(c->buttons, "gamepad.b.right");
 
-        if(c->mapped) {
-            x = a_strhash_get(c->axes, "gamepad.a.leftX");
-            y = a_strhash_get(c->axes, "gamepad.a.leftY");
+        if(!x || !y) {
+            continue;
+        }
 
-            if(!x || !y) {
-                continue;
-            }
-        } else {
-            // Assume that the first two axes are for X and Y movement.
-            x = a_strhash_get(c->axes, "gamepad.a.0");
-            y = a_strhash_get(c->axes, "gamepad.a.1");
-
+        if(!c->mapped) {
             if(a_settings_getBool("input.switchAxes")) {
                 AInputAnalogSource* save = x;
 
