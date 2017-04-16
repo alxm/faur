@@ -217,7 +217,7 @@ void a_list_clear(AList* List)
     List->items = 0;
 }
 
-AList* a_list_clone(const AList* List)
+AList* a_list_dup(const AList* List)
 {
     AList* l = a_list_new();
 

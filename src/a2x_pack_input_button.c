@@ -171,7 +171,7 @@ AInputButton* a_button_new(const char* Ids)
     return b;
 }
 
-AInputButton* a_button_clone(const AInputButton* Button)
+AInputButton* a_button_dup(const AInputButton* Button)
 {
     AInputButton* b = a_mem_malloc(sizeof(AInputButton));
 

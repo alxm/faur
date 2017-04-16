@@ -52,5 +52,5 @@ extern void a_spriteframes_resume(ASpriteFrames* Frames);
 
 extern void a_spriteframes_reset(ASpriteFrames* Frames);
 
-extern ASpriteFrames* a_spriteframes_clone(const ASpriteFrames* Frames);
+extern ASpriteFrames* a_spriteframes_dup(const ASpriteFrames* Frames);
 extern AList* a_spriteframes_sprites(const ASpriteFrames* Frames);
