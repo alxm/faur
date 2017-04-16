@@ -32,6 +32,8 @@ struct AInputAnalogSource {
 typedef struct AInputSourceAxisToButtons {
     AInputButtonSource* negative;
     AInputButtonSource* positive;
+    bool lastPressedNegative;
+    bool lastPressedPositive;
 } AInputSourceAxisToButtons;
 
 static AList* g_analogs;
@@ -78,6 +80,8 @@ void a_input_analog__axisButtonsBinding(AInputAnalogSource* Axis, AInputButtonSo
 
     b->negative = Negative;
     b->positive = Positive;
+    b->lastPressedNegative = false;
+    b->lastPressedPositive = false;
 
     a_list_addLast(Axis->buttonBindings, b);
 }
@@ -135,13 +139,21 @@ AFix a_analog_valueFix(const AInputAnalog* Analog)
 void a_input_analog__setAxisValue(AInputAnalogSource* Analog, int Value)
 {
     Analog->axisValue = Value;
-
     a_input__setFreshEvent(&Analog->header);
 
-    #define PRESS_THRESHOLD ((1 << 15) / 2)
+    #define PRESS_THRESHOLD ((1 << 15) / 3)
+    bool pressedNegative = Value < -PRESS_THRESHOLD;
+    bool pressedPositive = Value > PRESS_THRESHOLD;
 
     A_LIST_ITERATE(Analog->buttonBindings, AInputSourceAxisToButtons*, b) {
-        a_input_button__setState(b->negative, Value < -PRESS_THRESHOLD);
-        a_input_button__setState(b->positive, Value > PRESS_THRESHOLD);
+        if(pressedNegative != b->lastPressedNegative) {
+            a_input_button__setState(b->negative, pressedNegative);
+            b->lastPressedNegative = pressedNegative;
+        }
+
+        if(pressedPositive != b->lastPressedPositive) {
+            a_input_button__setState(b->positive, pressedPositive);
+            b->lastPressedPositive = pressedPositive;
+        }
     }
 }
