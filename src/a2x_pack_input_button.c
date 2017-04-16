@@ -29,17 +29,9 @@ struct AInputButton {
 
 struct AInputButtonSource {
     AInputSourceHeader header;
-    bool isLeaf;
-    union {
-        struct {
-            AList* orList; // List of AInputButtonSource; for alias buttons
-        } node;
-        struct {
-            bool pressed;
-            bool ignorePressed;
-            AList* forwardButtons; // List of AInputButtonSource
-        } leaf;
-    } u;
+    AList* forwardButtons; // List of AInputButtonSource
+    bool pressed;
+    bool ignorePressed;
 };
 
 static AList* g_buttons;
@@ -47,7 +39,6 @@ static AStrHash* g_sourceButtons;
 static AList* g_pressQueue;
 static AList* g_releaseQueue;
 
-static void newSourceNode(const char* Name, const char* Id, const char* ButtonNames);
 static void a_button__free(AInputButton* Button);
 
 void a_input_button__init(void)
@@ -56,20 +47,6 @@ void a_input_button__init(void)
     g_sourceButtons = a_strhash_new();
     g_pressQueue = a_list_new();
     g_releaseQueue = a_list_new();
-}
-
-void a_input_button__init2(void)
-{
-    // IDs are in order of increasing platform-specificity
-    newSourceNode("Up", "generic.up", "key.up gamepad.b.up");
-    newSourceNode("Down", "generic.down", "key.down gamepad.b.down");
-    newSourceNode("Left", "generic.left", "key.left gamepad.b.left");
-    newSourceNode("Right", "generic.right", "key.right gamepad.b.right");
-
-    newSourceNode("B0", "generic.b0", "key.z gamepad.b.0 gamepad.b.a");
-    newSourceNode("B1", "generic.b1", "key.x gamepad.b.1 gamepad.b.b");
-    newSourceNode("B2", "generic.b2", "key.c gamepad.b.2 gamepad.b.x");
-    newSourceNode("B3", "generic.b3", "key.v gamepad.b.3 gamepad.b.y");
 }
 
 void a_input_button__uninit(void)
@@ -94,10 +71,9 @@ AInputButtonSource* a_input_button__newSource(const char* Name, const char* Id)
 
     a_input__initSourceHeader(&b->header, Name);
 
-    b->isLeaf = true;
-    b->u.leaf.pressed = false;
-    b->u.leaf.ignorePressed = false;
-    b->u.leaf.forwardButtons = a_list_new();
+    b->forwardButtons = a_list_new();
+    b->pressed = false;
+    b->ignorePressed = false;
 
     if(a_input_numControllers() == 0) {
         // Keys are declared before controllers are created
@@ -107,61 +83,15 @@ AInputButtonSource* a_input_button__newSource(const char* Name, const char* Id)
     return b;
 }
 
-static void newSourceNode(const char* Name, const char* Id, const char* ButtonIds)
-{
-    AInputButtonSource* b = a_mem_malloc(sizeof(AInputButtonSource));
-
-    a_input__initSourceHeader(&b->header, Name);
-
-    b->isLeaf = false;
-    b->u.node.orList = a_list_new();
-
-    AStrTok* tok = a_strtok_new(ButtonIds, ", ");
-
-    A_STRTOK_ITERATE(tok, id) {
-        AInputButtonSource* btn = a_strhash_get(g_sourceButtons, id);
-
-        if(btn == NULL) {
-            btn = a_controller__getButton(id);
-        }
-
-        if(btn != NULL) {
-            a_list_addLast(b->u.node.orList, btn);
-        }
-    }
-
-    a_strtok_free(tok);
-
-    if(a_list_empty(b->u.node.orList)) {
-        a_out__fatal("'%s' found no buttons in '%s'", Id, ButtonIds);
-    }
-
-    a_strhash_add(g_sourceButtons, Id, b);
-}
-
-static const char* getButtonName(AInputButtonSource* Button)
-{
-    if(Button->isLeaf) {
-        return Button->header.name;
-    } else {
-        return getButtonName(a_list_getLast(Button->u.node.orList));
-    }
-}
-
 void a_input_button__freeSource(AInputButtonSource* Button)
 {
-    if(Button->isLeaf) {
-        a_list_free(Button->u.leaf.forwardButtons);
-    } else {
-        a_list_free(Button->u.node.orList);
-    }
-
+    a_list_free(Button->forwardButtons);
     a_input__freeSourceHeader(&Button->header);
 }
 
 void a_input_button__forwardTo(AInputButtonSource* Button, AInputButtonSource* Binding)
 {
-    a_list_addLast(Button->u.leaf.forwardButtons, Binding);
+    a_list_addLast(Button->forwardButtons, Binding);
 }
 
 AInputButton* a_button_new(const char* Ids)
@@ -217,14 +147,14 @@ AInputButton* a_button_new(const char* Ids)
     a_strtok_free(tok);
 
     if(!a_list_empty(b->header.sourceInputs)) {
-        b->header.name = a_str_dup(
-            getButtonName(a_list_getLast(b->header.sourceInputs)));
+        AInputButtonSource* btn = a_list_getLast(b->header.sourceInputs);
+        b->header.name = a_str_dup(btn->header.name);
     } else if(!a_list_empty(b->combos)) {
         AStrBuilder* sb = a_strbuilder_new(128);
         AList* combo = a_list_getLast(b->combos);
 
         A_LIST_ITERATE(combo, AInputButtonSource*, button) {
-            a_strbuilder_addString(sb, getButtonName(button));
+            a_strbuilder_addString(sb, button->header.name);
 
             if(!A_LIST_IS_LAST()) {
                 a_strbuilder_addString(sb, "+");
@@ -287,40 +217,12 @@ const char* a_button_name(const AInputButton* Button)
     return Button->header.name;
 }
 
-static bool isSourceButtonPressed(const AInputButtonSource* Button)
-{
-    if(Button->isLeaf) {
-        return Button->u.leaf.pressed && !Button->u.leaf.ignorePressed;
-    } else {
-        A_LIST_ITERATE(Button->u.node.orList, AInputButtonSource*, b) {
-            if(isSourceButtonPressed(b)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-}
-
-static void releaseSourceButton(AInputButtonSource* Button)
-{
-    if(Button->isLeaf) {
-        if(Button->u.leaf.pressed) {
-            Button->u.leaf.ignorePressed = true;
-        }
-    } else {
-        A_LIST_ITERATE(Button->u.node.orList, AInputButtonSource*, b) {
-            releaseSourceButton(b);
-        }
-    }
-}
-
 bool a_button_get(AInputButton* Button)
 {
     bool pressed = false;
 
     A_LIST_ITERATE(Button->header.sourceInputs, AInputButtonSource*, b) {
-        if(isSourceButtonPressed(b)) {
+        if(b->pressed && !b->ignorePressed) {
             pressed = true;
             goto done;
         }
@@ -328,7 +230,7 @@ bool a_button_get(AInputButton* Button)
 
     A_LIST_ITERATE(Button->combos, AList*, andList) {
         A_LIST_ITERATE(andList, AInputButtonSource*, b) {
-            if(!isSourceButtonPressed(b)) {
+            if(!b->pressed || b->ignorePressed) {
                 break;
             } else if(A_LIST_IS_LAST()) {
                 pressed = true;
@@ -358,12 +260,16 @@ done:
 void a_button_release(const AInputButton* Button)
 {
     A_LIST_ITERATE(Button->header.sourceInputs, AInputButtonSource*, b) {
-        releaseSourceButton(b);
+        if(b->pressed) {
+            b->ignorePressed = true;
+        }
     }
 
     A_LIST_ITERATE(Button->combos, AList*, andList) {
         A_LIST_ITERATE(andList, AInputButtonSource*, b) {
-            releaseSourceButton(b);
+            if(b->pressed) {
+                b->ignorePressed = true;
+            }
         }
     }
 }
@@ -391,15 +297,15 @@ void a_button_setRepeat(AInputButton* Button, unsigned RepeatFrames)
 
 void a_input_button__setState(AInputButtonSource* Button, bool Pressed)
 {
-    if(!Pressed && Button->u.leaf.ignorePressed) {
-        Button->u.leaf.ignorePressed = false;
+    if(!Pressed && Button->ignorePressed) {
+        Button->ignorePressed = false;
     }
 
-    Button->u.leaf.pressed = Pressed;
+    Button->pressed = Pressed;
 
     a_input__setFreshEvent(&Button->header);
 
-    A_LIST_ITERATE(Button->u.leaf.forwardButtons, AInputButtonSource*, b) {
+    A_LIST_ITERATE(Button->forwardButtons, AInputButtonSource*, b) {
         // Queue forwarded button presses and releases to be processed after
         // all input events were received, so they don't conflict with them.
         if(Pressed) {

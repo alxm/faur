@@ -26,7 +26,6 @@ typedef struct AInputButtonSource AInputButtonSource;
 #include "a2x_pack_input.v.h"
 
 extern void a_input_button__init(void);
-extern void a_input_button__init2(void);
 extern void a_input_button__uninit(void);
 
 extern AInputButtonSource* a_input_button__newSource(const char* Name, const char* Id);

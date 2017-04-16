@@ -37,7 +37,6 @@ void a_input__init(void)
     a_sdl_input__bind();
 
     a_input_controller__init2();
-    a_input_button__init2();
 }
 
 void a_input__uninit(void)
