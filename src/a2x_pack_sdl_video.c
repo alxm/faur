@@ -273,6 +273,11 @@ void a_sdl_screen__show(void)
             if(SDL_SetRenderTarget(g_sdlRenderer, NULL) < 0) {
                 a_out__fatal("SDL_SetRenderTarget failed: %s", SDL_GetError());
             }
+
+            if(SDL_RenderSetClipRect(g_sdlRenderer, NULL) < 0) {
+                a_out__error("SDL_RenderSetClipRect failed: %s",
+                             SDL_GetError());
+            }
         #endif
 
         if(SDL_SetRenderDrawColor(g_sdlRenderer,
@@ -303,11 +308,6 @@ void a_sdl_screen__show(void)
         #elif A_CONFIG_RENDER_SDL2
             a_pixel_push();
             a_pixel_setBlend(A_PIXEL_BLEND_PLAIN);
-
-            a_sdl_render__targetSetClip(0,
-                                        0,
-                                        a__screen.width,
-                                        a__screen.height);
 
             a_sdl_render__textureBlit(a__screen.texture, 0, 0, false);
 
