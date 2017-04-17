@@ -176,6 +176,7 @@ AInputButton* a_button_dup(const AInputButton* Button)
     AInputButton* b = a_mem_malloc(sizeof(AInputButton));
 
     *b = *Button;
+    b->autoRepeat = NULL;
     b->buttonsListNode = a_list_addLast(g_buttons, b);
     b->isClone = true;
 
