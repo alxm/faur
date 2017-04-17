@@ -146,12 +146,12 @@ void a_input_analog__setAxisValue(AInputAnalogSource* Analog, int Value)
     bool pressedPositive = Value > PRESS_THRESHOLD;
 
     A_LIST_ITERATE(Analog->buttonBindings, AInputSourceAxisToButtons*, b) {
-        if(pressedNegative != b->lastPressedNegative) {
+        if(b->negative && pressedNegative != b->lastPressedNegative) {
             a_input_button__setState(b->negative, pressedNegative);
             b->lastPressedNegative = pressedNegative;
         }
 
-        if(pressedPositive != b->lastPressedPositive) {
+        if(b->positive && pressedPositive != b->lastPressedPositive) {
             a_input_button__setState(b->positive, pressedPositive);
             b->lastPressedPositive = pressedPositive;
         }

@@ -83,44 +83,50 @@ void a_input_controller__init2(void)
             continue;
         }
 
-        if(a_strhash_size(c->axes) < 2) {
-            continue;
-        }
-
         AInputAnalogSource* x = a_strhash_get(c->axes, "gamepad.a.leftX");
         AInputAnalogSource* y = a_strhash_get(c->axes, "gamepad.a.leftY");
+
         AInputButtonSource* u = a_strhash_get(c->buttons, "gamepad.b.up");
         AInputButtonSource* d = a_strhash_get(c->buttons, "gamepad.b.down");
         AInputButtonSource* l = a_strhash_get(c->buttons, "gamepad.b.left");
         AInputButtonSource* r = a_strhash_get(c->buttons, "gamepad.b.right");
 
-        if(!x || !y) {
-            continue;
-        }
+        if(x && y && u && d && l && r) {
+            if(!c->mapped) {
+                if(a_settings_getBool("input.switchAxes")) {
+                    AInputAnalogSource* save = x;
 
-        if(!c->mapped) {
-            if(a_settings_getBool("input.switchAxes")) {
-                AInputAnalogSource* save = x;
+                    x = y;
+                    y = save;
+                }
 
-                x = y;
-                y = save;
+                if(a_settings_getBool("input.invertAxes")) {
+                    AInputButtonSource* save;
+
+                    save = u;
+                    u = d;
+                    d = save;
+
+                    save = l;
+                    l = r;
+                    r = save;
+                }
             }
 
-            if(a_settings_getBool("input.invertAxes")) {
-                AInputButtonSource* save;
-
-                save = u;
-                u = d;
-                d = save;
-
-                save = l;
-                l = r;
-                r = save;
-            }
+            a_input_analog__axisButtonsBinding(x, l, r);
+            a_input_analog__axisButtonsBinding(y, u, d);
         }
 
-        a_input_analog__axisButtonsBinding(x, l, r);
-        a_input_analog__axisButtonsBinding(y, u, d);
+        AInputAnalogSource* lt = a_strhash_get(c->axes, "gamepad.a.leftTrigger");
+        AInputAnalogSource* rt = a_strhash_get(c->axes, "gamepad.a.rightTrigger");
+
+        AInputButtonSource* lb = a_strhash_get(c->buttons, "gamepad.b.l");
+        AInputButtonSource* rb = a_strhash_get(c->buttons, "gamepad.b.r");
+
+        if(lt && rt && lb && rb) {
+            a_input_analog__axisButtonsBinding(lt, NULL, lb);
+            a_input_analog__axisButtonsBinding(rt, NULL, rb);
+        }
     }
 
     if(a_input_numControllers() > 0) {

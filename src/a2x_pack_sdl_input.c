@@ -99,7 +99,6 @@ static void addKey(const char* Name, const char* Id, int Code)
 static void addButton(AStrHash* ButtonsCollection, const char* Name, const char* Id, int Code)
 {
     if(a_strhash_contains(ButtonsCollection, Id)) {
-        a_out__error("Button '%s' already defined", Id);
         return;
     }
 
@@ -431,14 +430,14 @@ void a_sdl_input__init(void)
             }
         #endif
 
-        if((c->numHats > 0 || c->numAxes >= 2)
-            && !a_strhash_contains(c->buttons, "gamepad.b.up")) {
-
-            // Declare virtual direction buttons
+        if(c->numHats > 0 || c->numAxes >= 2) {
+            // These buttons will be controlled by hats and analog axes
             addButton(c->buttons, "Up", "gamepad.b.up", -1);
             addButton(c->buttons, "Down", "gamepad.b.down", -1);
             addButton(c->buttons, "Left", "gamepad.b.left", -1);
             addButton(c->buttons, "Right", "gamepad.b.right", -1);
+            addButton(c->buttons, "L", "gamepad.b.l", -1);
+            addButton(c->buttons, "R", "gamepad.b.r", -1);
         }
     }
 
