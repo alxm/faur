@@ -35,7 +35,7 @@ struct AInputButtonSource {
 };
 
 static AList* g_buttons;
-static AStrHash* g_sourceButtons;
+static AStrHash* g_keys;
 static AList* g_pressQueue;
 static AList* g_releaseQueue;
 
@@ -44,7 +44,7 @@ static void a_button__free(AInputButton* Button);
 void a_input_button__init(void)
 {
     g_buttons = a_list_new();
-    g_sourceButtons = a_strhash_new();
+    g_keys = a_strhash_new();
     g_pressQueue = a_list_new();
     g_releaseQueue = a_list_new();
 }
@@ -55,12 +55,12 @@ void a_input_button__uninit(void)
         a_button__free(b);
     }
 
-    A_STRHASH_ITERATE(g_sourceButtons, AInputButtonSource*, b) {
+    A_STRHASH_ITERATE(g_keys, AInputButtonSource*, b) {
         a_input_button__freeSource(b);
     }
 
     a_list_free(g_buttons);
-    a_strhash_free(g_sourceButtons);
+    a_strhash_free(g_keys);
     a_list_free(g_pressQueue);
     a_list_free(g_releaseQueue);
 }
@@ -77,7 +77,7 @@ AInputButtonSource* a_input_button__newSource(const char* Name, const char* Id)
 
     if(a_input_numControllers() == 0) {
         // Keys are declared before controllers are created
-        a_strhash_add(g_sourceButtons, Id, b);
+        a_strhash_add(g_keys, Id, b);
     }
 
     return b;
@@ -91,7 +91,7 @@ void a_input_button__freeSource(AInputButtonSource* Button)
 
 AInputButtonSource* a_input_button__getKey(const char* Id)
 {
-    return a_strhash_get(g_sourceButtons, Id);
+    return a_strhash_get(g_keys, Id);
 }
 
 void a_input_button__forwardToButton(AInputButtonSource* Button, AInputButtonSource* Binding)
@@ -119,8 +119,7 @@ AInputButton* a_button_new(const char* Ids)
             bool missing = false;
 
             A_STRTOK_ITERATE(tok, part) {
-                AInputButtonSource* button = a_strhash_get(g_sourceButtons,
-                                                           part);
+                AInputButtonSource* button = a_strhash_get(g_keys, part);
 
                 if(button == NULL) {
                     button = a_controller__getButton(part);
@@ -142,7 +141,7 @@ AInputButton* a_button_new(const char* Ids)
 
             a_strtok_free(tok);
         } else {
-            a_input__findSourceInput(g_sourceButtons,
+            a_input__findSourceInput(g_keys,
                                      a_controller__getButtonCollection(),
                                      id,
                                      &b->header);
