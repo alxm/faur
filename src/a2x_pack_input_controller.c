@@ -170,6 +170,18 @@ void a_input_setController(unsigned Index)
 
 void a_controller__new(bool Generic, bool IsMapped)
 {
+    #if A_PLATFORM_PANDORA
+        // Assign both analog nubs to the same logical controller
+        if(!Generic) {
+            A_LIST_ITERATE(g_controllers, AInputController*, c) {
+                if(!c->generic) {
+                    g_activeController = c;
+                    return;
+                }
+            }
+        }
+    #endif
+
     AInputController* c = a_mem_malloc(sizeof(AInputController));
 
     c->buttons = a_strhash_new();
