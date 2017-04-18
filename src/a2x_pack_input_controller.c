@@ -38,59 +38,38 @@ void a_input_controller__init(void)
 void a_input_controller__init2(void)
 {
     A_LIST_ITERATE(g_controllers, AInputController*, c) {
-        if(!c->generic) {
-            // GP2X and Wiz dpad diagonals are dedicated buttons instead of a
-            // combination of two separate buttons. This splits them into
-            // individual directions.
-            #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
-                AInputButtonSource* ul = a_strhash_get(c->buttons, "gamepad.b.upLeft");
-                AInputButtonSource* ur = a_strhash_get(c->buttons, "gamepad.b.upRight");
-                AInputButtonSource* dl = a_strhash_get(c->buttons, "gamepad.b.downLeft");
-                AInputButtonSource* dr = a_strhash_get(c->buttons, "gamepad.b.downRight");
-                AInputButtonSource* u = a_strhash_get(c->buttons, "gamepad.b.up");
-                AInputButtonSource* d = a_strhash_get(c->buttons, "gamepad.b.down");
-                AInputButtonSource* l = a_strhash_get(c->buttons, "gamepad.b.left");
-                AInputButtonSource* r = a_strhash_get(c->buttons, "gamepad.b.right");
-
-                a_input_button__forwardTo(ul, u);
-                a_input_button__forwardTo(ul, l);
-
-                a_input_button__forwardTo(ur, u);
-                a_input_button__forwardTo(ur, r);
-
-                a_input_button__forwardTo(dl, d);
-                a_input_button__forwardTo(dl, l);
-
-                a_input_button__forwardTo(dr, d);
-                a_input_button__forwardTo(dr, r);
-            #endif
-
-            // Caanoo has an analog stick instead of direction buttons,
-            // this lets us use it as a dpad like on the other platforms.
-            #if A_PLATFORM_CAANOO
-                AInputAnalogSource* x = a_strhash_get(c->axes, "gamepad.a.leftX");
-                AInputAnalogSource* y = a_strhash_get(c->axes, "gamepad.a.leftY");
-
-                AInputButtonSource* u = a_strhash_get(c->buttons, "gamepad.b.up");
-                AInputButtonSource* d = a_strhash_get(c->buttons, "gamepad.b.down");
-                AInputButtonSource* l = a_strhash_get(c->buttons, "gamepad.b.left");
-                AInputButtonSource* r = a_strhash_get(c->buttons, "gamepad.b.right");
-
-                a_input_analog__axisButtonsBinding(x, l, r);
-                a_input_analog__axisButtonsBinding(y, u, d);
-            #endif
-
-            continue;
-        }
-
         AInputAnalogSource* x = a_strhash_get(c->axes, "gamepad.a.leftX");
         AInputAnalogSource* y = a_strhash_get(c->axes, "gamepad.a.leftY");
-
+        AInputAnalogSource* lt = a_strhash_get(c->axes, "gamepad.a.leftTrigger");
+        AInputAnalogSource* rt = a_strhash_get(c->axes, "gamepad.a.rightTrigger");
         AInputButtonSource* u = a_strhash_get(c->buttons, "gamepad.b.up");
         AInputButtonSource* d = a_strhash_get(c->buttons, "gamepad.b.down");
         AInputButtonSource* l = a_strhash_get(c->buttons, "gamepad.b.left");
         AInputButtonSource* r = a_strhash_get(c->buttons, "gamepad.b.right");
+        AInputButtonSource* ul = a_strhash_get(c->buttons, "gamepad.b.upLeft");
+        AInputButtonSource* ur = a_strhash_get(c->buttons, "gamepad.b.upRight");
+        AInputButtonSource* dl = a_strhash_get(c->buttons, "gamepad.b.downLeft");
+        AInputButtonSource* dr = a_strhash_get(c->buttons, "gamepad.b.downRight");
+        AInputButtonSource* lb = a_strhash_get(c->buttons, "gamepad.b.l");
+        AInputButtonSource* rb = a_strhash_get(c->buttons, "gamepad.b.r");
 
+        // GP2X and Wiz dpad diagonals are dedicated buttons, split them into
+        // their cardinal directions.
+        if(u && d && l && r && ul && ur && dl && dr) {
+            a_input_button__forwardTo(ul, u);
+            a_input_button__forwardTo(ul, l);
+
+            a_input_button__forwardTo(ur, u);
+            a_input_button__forwardTo(ur, r);
+
+            a_input_button__forwardTo(dl, d);
+            a_input_button__forwardTo(dl, l);
+
+            a_input_button__forwardTo(dr, d);
+            a_input_button__forwardTo(dr, r);
+        }
+
+        // Forward the left analog stick to the direction buttons
         if(x && y && u && d && l && r) {
             if(!c->mapped) {
                 if(a_settings_getBool("input.switchAxes")) {
@@ -117,12 +96,7 @@ void a_input_controller__init2(void)
             a_input_analog__axisButtonsBinding(y, u, d);
         }
 
-        AInputAnalogSource* lt = a_strhash_get(c->axes, "gamepad.a.leftTrigger");
-        AInputAnalogSource* rt = a_strhash_get(c->axes, "gamepad.a.rightTrigger");
-
-        AInputButtonSource* lb = a_strhash_get(c->buttons, "gamepad.b.l");
-        AInputButtonSource* rb = a_strhash_get(c->buttons, "gamepad.b.r");
-
+        // Forward analog shoulder triggers to the shoulder buttons
         if(lt && rt && lb && rb) {
             a_input_analog__axisButtonsBinding(lt, NULL, lb);
             a_input_analog__axisButtonsBinding(rt, NULL, rb);
