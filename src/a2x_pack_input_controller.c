@@ -101,6 +101,20 @@ void a_input_controller__init2(void)
             a_input_analog__forwardToButtons(lt, NULL, lb);
             a_input_analog__forwardToButtons(rt, NULL, rb);
         }
+
+        #if A_PLATFORM_PANDORA
+            if(!c->generic && x && y) {
+                // Pandora buttons are keyboard keys, not controller buttons
+                u = a_input_button__getKey("gamepad.b.up");
+                d = a_input_button__getKey("gamepad.b.down");
+                l = a_input_button__getKey("gamepad.b.left");
+                r = a_input_button__getKey("gamepad.b.right");
+
+                // Forward the left analog nub to the direction buttons
+                a_input_analog__forwardToButtons(x, l, r);
+                a_input_analog__forwardToButtons(y, u, d);
+            }
+        #endif
     }
 
     if(a_input_numControllers() > 0) {

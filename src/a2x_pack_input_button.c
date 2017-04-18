@@ -89,6 +89,11 @@ void a_input_button__freeSource(AInputButtonSource* Button)
     a_input__freeSourceHeader(&Button->header);
 }
 
+AInputButtonSource* a_input_button__getKey(const char* Id)
+{
+    return a_strhash_get(g_sourceButtons, Id);
+}
+
 void a_input_button__forwardToButton(AInputButtonSource* Button, AInputButtonSource* Binding)
 {
     a_list_addLast(Button->forwardButtons, Binding);
