@@ -119,6 +119,14 @@ void a_input_controller__init2(void)
 
     if(a_input_numControllers() > 0) {
         a_input_setController(0);
+
+        // Set built-in controller as default, if one exists
+        A_LIST_ITERATE(g_controllers, AInputController*, c) {
+            if(!c->generic) {
+                a_input_setController(A_LIST_INDEX());
+                break;
+            }
+        }
     }
 }
 
