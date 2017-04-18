@@ -89,7 +89,7 @@ void a_input_button__freeSource(AInputButtonSource* Button)
     a_input__freeSourceHeader(&Button->header);
 }
 
-void a_input_button__forwardTo(AInputButtonSource* Button, AInputButtonSource* Binding)
+void a_input_button__forwardToButton(AInputButtonSource* Button, AInputButtonSource* Binding)
 {
     a_list_addLast(Button->forwardButtons, Binding);
 }

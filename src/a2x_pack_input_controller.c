@@ -56,17 +56,17 @@ void a_input_controller__init2(void)
         // GP2X and Wiz dpad diagonals are dedicated buttons, split them into
         // their cardinal directions.
         if(u && d && l && r && ul && ur && dl && dr) {
-            a_input_button__forwardTo(ul, u);
-            a_input_button__forwardTo(ul, l);
+            a_input_button__forwardToButton(ul, u);
+            a_input_button__forwardToButton(ul, l);
 
-            a_input_button__forwardTo(ur, u);
-            a_input_button__forwardTo(ur, r);
+            a_input_button__forwardToButton(ur, u);
+            a_input_button__forwardToButton(ur, r);
 
-            a_input_button__forwardTo(dl, d);
-            a_input_button__forwardTo(dl, l);
+            a_input_button__forwardToButton(dl, d);
+            a_input_button__forwardToButton(dl, l);
 
-            a_input_button__forwardTo(dr, d);
-            a_input_button__forwardTo(dr, r);
+            a_input_button__forwardToButton(dr, d);
+            a_input_button__forwardToButton(dr, r);
         }
 
         // Forward the left analog stick to the direction buttons
@@ -92,14 +92,14 @@ void a_input_controller__init2(void)
                 }
             }
 
-            a_input_analog__axisButtonsBinding(x, l, r);
-            a_input_analog__axisButtonsBinding(y, u, d);
+            a_input_analog__forwardToButtons(x, l, r);
+            a_input_analog__forwardToButtons(y, u, d);
         }
 
         // Forward analog shoulder triggers to the shoulder buttons
         if(lt && rt && lb && rb) {
-            a_input_analog__axisButtonsBinding(lt, NULL, lb);
-            a_input_analog__axisButtonsBinding(rt, NULL, rb);
+            a_input_analog__forwardToButtons(lt, NULL, lb);
+            a_input_analog__forwardToButtons(rt, NULL, rb);
         }
     }
 
