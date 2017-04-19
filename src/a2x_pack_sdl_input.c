@@ -99,7 +99,6 @@ static void addKey(const char* Name, const char* Id, int Code)
 static void addButton(AStrHash* ButtonsCollection, const char* Name, const char* Id, int Code)
 {
     if(a_strhash_contains(ButtonsCollection, Id)) {
-        a_out__error("Button '%s' already defined", Id);
         return;
     }
 
@@ -259,62 +258,47 @@ void a_sdl_input__init(void)
         #if A_PLATFORM_GP2X || A_PLATFORM_WIZ || A_PLATFORM_CAANOO
             if(i == 0) {
                 // Joystick 0 is the built-in controls on these platforms
-                #if A_PLATFORM_GP2X
-                    addButton(c->buttons, "Up", "gp2x.up", 0);
-                    addButton(c->buttons, "Down", "gp2x.down", 4);
-                    addButton(c->buttons, "Left", "gp2x.left", 2);
-                    addButton(c->buttons, "Right", "gp2x.right", 6);
-                    addButton(c->buttons, "Up-Left", "gp2x.upLeft", 1);
-                    addButton(c->buttons, "Up-Right", "gp2x.upRight", 7);
-                    addButton(c->buttons, "Down-Left", "gp2x.downLeft", 3);
-                    addButton(c->buttons, "Down-Right", "gp2x.downRight", 5);
-                    addButton(c->buttons, "L", "gp2x.l", 10);
-                    addButton(c->buttons, "R", "gp2x.r", 11);
-                    addButton(c->buttons, "A", "gp2x.a", 12);
-                    addButton(c->buttons, "B", "gp2x.b", 13);
-                    addButton(c->buttons, "X", "gp2x.x", 14);
-                    addButton(c->buttons, "Y", "gp2x.y", 15);
-                    addButton(c->buttons, "Start", "gp2x.start", 8);
-                    addButton(c->buttons, "Select", "gp2x.select", 9);
-                    addButton(c->buttons, "Vol-Up", "gp2x.volUp", 16);
-                    addButton(c->buttons, "Vol-Down", "gp2x.volDown", 17);
-                    addButton(c->buttons, "Stick-Click", "gp2x.stickClick", 18);
-                #elif A_PLATFORM_WIZ
-                    addButton(c->buttons, "Up", "wiz.up", 0);
-                    addButton(c->buttons, "Down", "wiz.down", 4);
-                    addButton(c->buttons, "Left", "wiz.left", 2);
-                    addButton(c->buttons, "Right", "wiz.right", 6);
-                    addButton(c->buttons, "Up-Left", "wiz.upLeft", 1);
-                    addButton(c->buttons, "Up-Right", "wiz.upRight", 7);
-                    addButton(c->buttons, "Down-Left", "wiz.downLeft", 3);
-                    addButton(c->buttons, "Down-Right", "wiz.downRight", 5);
-                    addButton(c->buttons, "L", "wiz.l", 10);
-                    addButton(c->buttons, "R", "wiz.r", 11);
-                    addButton(c->buttons, "A", "wiz.a", 12);
-                    addButton(c->buttons, "B", "wiz.b", 13);
-                    addButton(c->buttons, "X", "wiz.x", 14);
-                    addButton(c->buttons, "Y", "wiz.y", 15);
-                    addButton(c->buttons, "Menu", "wiz.menu", 8);
-                    addButton(c->buttons, "Select", "wiz.select", 9);
-                    addButton(c->buttons, "Vol-Up", "wiz.volUp", 16);
-                    addButton(c->buttons, "Vol-Down", "wiz.volDown", 17);
+                #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
+                    addButton(c->buttons, "Up", "gamepad.b.up", 0);
+                    addButton(c->buttons, "Down", "gamepad.b.down", 4);
+                    addButton(c->buttons, "Left", "gamepad.b.left", 2);
+                    addButton(c->buttons, "Right", "gamepad.b.right", 6);
+                    addButton(c->buttons, "Up-Left", "gamepad.b.upLeft", 1);
+                    addButton(c->buttons, "Up-Right", "gamepad.b.upRight", 7);
+                    addButton(c->buttons, "Down-Left", "gamepad.b.downLeft", 3);
+                    addButton(c->buttons, "Down-Right", "gamepad.b.downRight", 5);
+                    addButton(c->buttons, "L", "gamepad.b.l", 10);
+                    addButton(c->buttons, "R", "gamepad.b.r", 11);
+                    addButton(c->buttons, "A", "gamepad.b.x", 12);
+                    addButton(c->buttons, "B", "gamepad.b.b", 13);
+                    addButton(c->buttons, "X", "gamepad.b.a", 14);
+                    addButton(c->buttons, "Y", "gamepad.b.y", 15);
+                    addButton(c->buttons, "Select", "gamepad.b.select", 9);
+                    addButton(c->buttons, "Vol-Up", "gamepad.b.volUp", 16);
+                    addButton(c->buttons, "Vol-Down", "gamepad.b.volDown", 17);
+                    #if A_PLATFORM_GP2X
+                        addButton(c->buttons, "Start", "gamepad.b.start", 8);
+                        addButton(c->buttons, "Stick-Click", "gamepad.b.stickClick", 18);
+                    #elif A_PLATFORM_WIZ
+                        addButton(c->buttons, "Menu", "gamepad.b.start", 8);
+                    #endif
                 #elif A_PLATFORM_CAANOO
-                    addButton(c->buttons, "Up", "caanoo.up", -1);
-                    addButton(c->buttons, "Down", "caanoo.down", -1);
-                    addButton(c->buttons, "Left", "caanoo.left", -1);
-                    addButton(c->buttons, "Right", "caanoo.right", -1);
-                    addButton(c->buttons, "L", "caanoo.l", 4);
-                    addButton(c->buttons, "R", "caanoo.r", 5);
-                    addButton(c->buttons, "A", "caanoo.a", 0);
-                    addButton(c->buttons, "B", "caanoo.b", 2);
-                    addButton(c->buttons, "X", "caanoo.x", 1);
-                    addButton(c->buttons, "Y", "caanoo.y", 3);
-                    addButton(c->buttons, "Home", "caanoo.home", 6);
-                    addButton(c->buttons, "Hold", "caanoo.hold", 7);
-                    addButton(c->buttons, "I", "caanoo.1", 8);
-                    addButton(c->buttons, "II", "caanoo.2", 9);
-                    addAnalog(c->axes, "caanoo.stickX", 0);
-                    addAnalog(c->axes, "caanoo.stickY", 1);
+                    addButton(c->buttons, "Up", "gamepad.b.up", -1);
+                    addButton(c->buttons, "Down", "gamepad.b.down", -1);
+                    addButton(c->buttons, "Left", "gamepad.b.left", -1);
+                    addButton(c->buttons, "Right", "gamepad.b.right", -1);
+                    addButton(c->buttons, "L", "gamepad.b.l", 4);
+                    addButton(c->buttons, "R", "gamepad.b.r", 5);
+                    addButton(c->buttons, "A", "gamepad.b.x", 0);
+                    addButton(c->buttons, "B", "gamepad.b.b", 2);
+                    addButton(c->buttons, "X", "gamepad.b.a", 1);
+                    addButton(c->buttons, "Y", "gamepad.b.y", 3);
+                    addButton(c->buttons, "Home", "gamepad.b.guide", 6);
+                    addButton(c->buttons, "Hold", "gamepad.b.hold", 7);
+                    addButton(c->buttons, "I", "gamepad.b.start", 8);
+                    addButton(c->buttons, "II", "gamepad.b.select", 9);
+                    addAnalog(c->axes, "gamepad.a.leftX", 0);
+                    addAnalog(c->axes, "gamepad.a.leftY", 1);
                 #endif
                 continue;
             }
@@ -323,12 +307,12 @@ void a_sdl_input__init(void)
 
             // Check if this is one of the built-in nubs
             if(a_str_equal(name, "nub0")) {
-                addAnalog(c->axes, "pandora.leftNubX", 0);
-                addAnalog(c->axes, "pandora.leftNubY", 1);
+                addAnalog(c->axes, "gamepad.a.leftX", 0);
+                addAnalog(c->axes, "gamepad.a.leftY", 1);
                 continue;
             } else if(a_str_equal(name, "nub1")) {
-                addAnalog(c->axes, "pandora.rightNubX", 0);
-                addAnalog(c->axes, "pandora.rightNubY", 1);
+                addAnalog(c->axes, "gamepad.a.rightX", 0);
+                addAnalog(c->axes, "gamepad.a.rightY", 1);
                 continue;
             }
         #endif
@@ -337,7 +321,7 @@ void a_sdl_input__init(void)
 
         #if A_CONFIG_LIB_SDL == 2
             if(c->controller) {
-                a_out__message("Found gamepad %s: %d buttons, %d axes, %d hats",
+                a_out__message("Mapped %s: %d buttons, %d axes, %d hats",
                                SDL_GameControllerName(controller),
                                c->numButtons,
                                c->numAxes,
@@ -402,58 +386,76 @@ void a_sdl_input__init(void)
                 }
             } else {
         #endif
+                a_out__message("Found %s: %d buttons, %d axes, %d hats",
+                               joystickName(c),
+                               c->numButtons,
+                               c->numAxes,
+                               c->numHats);
 
-        a_out__message("Found gamepad %s: %d buttons, %d axes, %d hats",
-                       joystickName(c),
-                       c->numButtons,
-                       c->numAxes,
-                       c->numHats);
+                static const char* buttons[][2] = {
+                    {"A", "gamepad.b.a"},
+                    {"B", "gamepad.b.b"},
+                    {"X", "gamepad.b.x"},
+                    {"Y", "gamepad.b.y"},
+                    {"L", "gamepad.b.l"},
+                    {"R", "gamepad.b.r"},
+                    {"Select", "gamepad.b.select"},
+                    {"Start", "gamepad.b.start"},
+                    {"Guide", "gamepad.b.guide"}
+                };
 
-        for(int j = 0; j < c->numButtons; j++) {
-            char name[16], id[16];
-            snprintf(name, sizeof(name), "B%d", j);
-            snprintf(id, sizeof(id), "gamepad.b.%d", j);
+                static const char* axes[] = {
+                    "gamepad.a.leftX",
+                    "gamepad.a.leftY",
+                    "gamepad.a.rightX",
+                    "gamepad.a.rightY",
+                    "gamepad.a.leftTrigger",
+                    "gamepad.a.rightTrigger"
+                };
 
-            addButton(c->buttons, name, id, j);
-        }
+                for(int j = a_math_min(c->numButtons,
+                                       sizeof(buttons) / sizeof(buttons[0]));
+                    j--; ) {
 
-        for(int j = 0; j < c->numAxes; j++) {
-            char id[16];
-            snprintf(id, sizeof(id), "gamepad.a.%d", j);
+                    addButton(c->buttons, buttons[j][0], buttons[j][1], j);
+                }
 
-            addAnalog(c->axes, id, j);
-        }
+                for(int j = a_math_min(c->numAxes,
+                                       sizeof(axes) / sizeof(axes[0]));
+                    j--; ) {
 
+                    addAnalog(c->axes, axes[j], j);
+                }
         #if A_CONFIG_LIB_SDL == 2
             }
         #endif
 
-        if((c->numHats > 0 || c->numAxes >= 2)
-            && !a_strhash_contains(c->buttons, "gamepad.b.up")) {
-
-            // Declare virtual direction buttons
+        if(c->numHats > 0 || c->numAxes >= 2) {
+            // These buttons will be controlled by hats and analog axes
             addButton(c->buttons, "Up", "gamepad.b.up", -1);
             addButton(c->buttons, "Down", "gamepad.b.down", -1);
             addButton(c->buttons, "Left", "gamepad.b.left", -1);
             addButton(c->buttons, "Right", "gamepad.b.right", -1);
+            addButton(c->buttons, "L", "gamepad.b.l", -1);
+            addButton(c->buttons, "R", "gamepad.b.r", -1);
         }
     }
 
     #if A_PLATFORM_PANDORA
         // Because these are defined before the generic keys, they
         // will take precedence in the a_sdl_input__get event loop.
-        addKey("Up", "pandora.up", SDLK_UP);
-        addKey("Down", "pandora.down", SDLK_DOWN);
-        addKey("Left", "pandora.left", SDLK_LEFT);
-        addKey("Right", "pandora.right", SDLK_RIGHT);
-        addKey("L", "pandora.l", SDLK_RSHIFT);
-        addKey("R", "pandora.r", SDLK_RCTRL);
-        addKey("A", "pandora.a", SDLK_HOME);
-        addKey("B", "pandora.b", SDLK_END);
-        addKey("X", "pandora.x", SDLK_PAGEDOWN);
-        addKey("Y", "pandora.y", SDLK_PAGEUP);
-        addKey("Start", "pandora.start", SDLK_LALT);
-        addKey("Select", "pandora.select", SDLK_LCTRL);
+        addKey("Up", "gamepad.b.up", SDLK_UP);
+        addKey("Down", "gamepad.b.down", SDLK_DOWN);
+        addKey("Left", "gamepad.b.left", SDLK_LEFT);
+        addKey("Right", "gamepad.b.right", SDLK_RIGHT);
+        addKey("L", "gamepad.b.l", SDLK_RSHIFT);
+        addKey("R", "gamepad.b.r", SDLK_RCTRL);
+        addKey("A", "gamepad.b.x", SDLK_HOME);
+        addKey("B", "gamepad.b.b", SDLK_END);
+        addKey("X", "gamepad.b.a", SDLK_PAGEDOWN);
+        addKey("Y", "gamepad.b.y", SDLK_PAGEUP);
+        addKey("Start", "gamepad.b.start", SDLK_LALT);
+        addKey("Select", "gamepad.b.select", SDLK_LCTRL);
     #endif
 
     #if A_CONFIG_LIB_SDL == 1

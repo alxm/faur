@@ -44,8 +44,8 @@ AMenu* a_menu_new(AInputButton* Next, AInputButton* Back, AInputButton* Select, 
     m->soundAccept = NULL;
     m->soundCancel = NULL;
     m->soundBrowse = NULL;
-    m->next = a_button_clone(Next);
-    m->back = a_button_clone(Back);
+    m->next = a_button_dup(Next);
+    m->back = a_button_dup(Back);
     m->select = Select;
     m->cancel = Cancel;
 

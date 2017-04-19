@@ -218,11 +218,11 @@ void a_spriteframes_reset(ASpriteFrames* Frames)
     }
 }
 
-ASpriteFrames* a_spriteframes_clone(const ASpriteFrames* Frames)
+ASpriteFrames* a_spriteframes_dup(const ASpriteFrames* Frames)
 {
     ASpriteFrames* f = a_mem_malloc(sizeof(ASpriteFrames));
 
-    f->sprites = a_list_clone(Frames->sprites);
+    f->sprites = a_list_dup(Frames->sprites);
     f->spriteArray = (ASprite**)a_list_array(Frames->sprites);
     f->num = Frames->num;
     f->countdown = Frames->callsToNextFrame;

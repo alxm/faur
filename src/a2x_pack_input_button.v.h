@@ -26,12 +26,13 @@ typedef struct AInputButtonSource AInputButtonSource;
 #include "a2x_pack_input.v.h"
 
 extern void a_input_button__init(void);
-extern void a_input_button__init2(void);
 extern void a_input_button__uninit(void);
 
 extern AInputButtonSource* a_input_button__newSource(const char* Name, const char* Id);
 extern void a_input_button__freeSource(AInputButtonSource* Button);
 
-extern void a_input_button__forwardTo(AInputButtonSource* Button, AInputButtonSource* Binding);
+extern AInputButtonSource* a_input_button__getKey(const char* Id);
+
+extern void a_input_button__forwardToButton(AInputButtonSource* Button, AInputButtonSource* Binding);
 extern void a_input_button__setState(AInputButtonSource* Button, bool Pressed);
 extern void a_input_button__processQueue(void);

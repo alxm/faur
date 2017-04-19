@@ -44,7 +44,7 @@ extern void* a_list_removeLast(AList* List);
 extern void a_list_removeNode(AListNode* Node);
 extern void a_list_clear(AList* List);
 
-extern AList* a_list_clone(const AList* List);
+extern AList* a_list_dup(const AList* List);
 extern void** a_list_array(AList* List);
 
 extern void a_list_reverse(AList* List);

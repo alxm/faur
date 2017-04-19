@@ -122,8 +122,8 @@ void a_sound__init(void)
         #endif
 
         #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
-            g_volumeUpButton = a_button_new("gp2x.volUp wiz.volUp");
-            g_volumeDownButton = a_button_new("gp2x.volDown wiz.volDown");
+            g_volumeUpButton = a_button_new("gamepad.b.volUp");
+            g_volumeDownButton = a_button_new("gamepad.b.volDown");
         #elif A_PLATFORM_DESKTOP || A_PLATFORM_PANDORA
             g_musicOnOffButton = a_button_new("key.m");
         #endif
