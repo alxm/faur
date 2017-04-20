@@ -36,8 +36,8 @@ extern void a_timer_free(ATimer* Timer);
 extern void a_timer_start(ATimer* Timer);
 extern void a_timer_stop(ATimer* Timer);
 
-extern bool a_timer_running(ATimer* Timer);
-extern bool a_timer_expired(ATimer* Timer);
+extern bool a_timer_isRunning(ATimer* Timer);
+extern bool a_timer_isExpired(ATimer* Timer);
 
-extern unsigned a_timer_elapsed(ATimer* Timer);
+extern unsigned a_timer_getElapsed(ATimer* Timer);
 extern void a_timer_setPeriod(ATimer* Timer, unsigned Period);
