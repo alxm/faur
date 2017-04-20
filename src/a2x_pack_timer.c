@@ -71,6 +71,7 @@ void a_timer_start(ATimer* Timer)
 
 void a_timer_stop(ATimer* Timer)
 {
+    Timer->diff = 0;
     Timer->running = false;
 }
 
