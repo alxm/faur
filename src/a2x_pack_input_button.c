@@ -247,8 +247,8 @@ bool a_button_get(AInputButton* Button)
 done:
     if(Button->autoRepeat) {
         if(pressed) {
-            if(!a_timer_running(Button->autoRepeat)
-                || a_timer_expired(Button->autoRepeat)) {
+            if(!a_timer_isRunning(Button->autoRepeat)
+                || a_timer_isExpired(Button->autoRepeat)) {
 
                 a_timer_start(Button->autoRepeat);
             } else {

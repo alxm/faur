@@ -128,8 +128,8 @@ void a_fps__reset(unsigned NumFramesToSkip)
 void a_fps__frame(void)
 {
     if(a_fps__notSkipped()) {
-        const bool done = a_timer_expired(g_timer);
-        const unsigned elapsedMs = a_timer_elapsed(g_timer);
+        const bool done = a_timer_isExpired(g_timer);
+        const unsigned elapsedMs = a_timer_getElapsed(g_timer);
 
         if(elapsedMs > 0) {
             g_maxFpsBufferSum -= g_maxFpsBuffer[g_bufferHead];
@@ -139,12 +139,12 @@ void a_fps__frame(void)
         }
 
         if(!done) {
-            while(!a_timer_expired(g_timer)) {
+            while(!a_timer_isExpired(g_timer)) {
                 if(!g_canSleep) {
                     continue;
                 }
 
-                unsigned waitMs = g_msPerFrame - a_timer_elapsed(g_timer);
+                unsigned waitMs = g_msPerFrame - a_timer_getElapsed(g_timer);
 
                 #if A_PLATFORM_GP2X
                     // GP2X timer granularity is too coarse
@@ -158,7 +158,7 @@ void a_fps__frame(void)
         }
 
         g_fpsBufferSum -= g_fpsBuffer[g_bufferHead];
-        g_fpsBuffer[g_bufferHead] = 1000 / a_timer_elapsed(g_timer);
+        g_fpsBuffer[g_bufferHead] = 1000 / a_timer_getElapsed(g_timer);
         g_fpsBufferSum += g_fpsBuffer[g_bufferHead];
         g_fps = g_fpsBufferSum / g_bufferLen;
 
@@ -166,7 +166,7 @@ void a_fps__frame(void)
     }
 
     if(g_skipFrames) {
-        if(a_fps__notSkipped() && a_timer_expired(g_skipAdjustTimer)) {
+        if(a_fps__notSkipped() && a_timer_isExpired(g_skipAdjustTimer)) {
             unsigned newFrameSkip;
             bool adjustFrameSkip = false;
 
@@ -187,7 +187,7 @@ void a_fps__frame(void)
 
                 g_canSleep = false;
                 a_fps__reset(newFrameSkip);
-            } else if(!g_canSleep && a_timer_expired(g_noSleepTimer)) {
+            } else if(!g_canSleep && a_timer_isExpired(g_noSleepTimer)) {
                 g_canSleep = true;
             }
         }

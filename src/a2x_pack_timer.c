@@ -75,12 +75,12 @@ void a_timer_stop(ATimer* Timer)
     Timer->running = false;
 }
 
-bool a_timer_running(ATimer* Timer)
+bool a_timer_isRunning(ATimer* Timer)
 {
     return Timer->running;
 }
 
-bool a_timer_expired(ATimer* Timer)
+bool a_timer_isExpired(ATimer* Timer)
 {
     if(Timer->running) {
         Timer->diff = getNow(Timer) - Timer->start;
@@ -94,7 +94,7 @@ bool a_timer_expired(ATimer* Timer)
     return false;
 }
 
-unsigned a_timer_elapsed(ATimer* Timer)
+unsigned a_timer_getElapsed(ATimer* Timer)
 {
     return Timer->diff;
 }
