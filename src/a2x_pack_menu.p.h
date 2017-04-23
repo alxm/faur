@@ -43,6 +43,7 @@ extern AMenuState a_menu_getState(const AMenu* Menu);
 extern AList* a_menu_getItems(const AMenu* Menu);
 extern bool a_menu_isItemSelected(const AMenu* Menu, const void* Item);
 extern unsigned a_menu_getSelectedIndex(const AMenu* Menu);
+extern void* a_menu_getSelectedItem(const AMenu* Menu);
 
 extern void a_menu_keepRunning(AMenu* Menu);
 extern void a_menu_reset(AMenu* Menu);
