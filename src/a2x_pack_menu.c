@@ -154,6 +154,11 @@ unsigned a_menu_getSelectedIndex(const AMenu* Menu)
     return Menu->selectedIndex;
 }
 
+void* a_menu_getSelectedItem(const AMenu* Menu)
+{
+    return Menu->selectedItem;
+}
+
 void a_menu_keepRunning(AMenu* Menu)
 {
     Menu->state = A_MENU_STATE_RUNNING;
