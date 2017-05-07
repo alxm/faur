@@ -20,9 +20,11 @@ do_make ()
     fi
 }
 
-do_make "Desktop Linux" Makefile
-do_make "Mingw32" Makefile.mingw32
-do_make "Mingw64" Makefile.mingw64
+do_make "Linux native" Makefile
+do_make "Linux 32bit" Makefile.linux32
+do_make "Linux 64bit" Makefile.linux64
+do_make "Mingw 32bit" Makefile.mingw32
+do_make "Mingw 64bit" Makefile.mingw64
 do_make "Caanoo" Makefile.caanoo
 do_make "GP2X" Makefile.gp2x
 do_make "Pandora" Makefile.pandora

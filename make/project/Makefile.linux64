@@ -1,0 +1,3 @@
+include $(A2X_PATH)/make/sdk.config
+include $(A2X_PATH)/make/platforms/linux64
+include $(A2X_PATH)/make/project/rules
