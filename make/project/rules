@@ -98,6 +98,7 @@ $(TARGET_BINARY) : $(O_FILES) $(O_BUILDTIME)
 	@ echo "Building $(A_APP_NAME)"
 	@ mkdir -p $(@D)
 	@ $(CC) -o $@ $^ \
+	$(A_EXTRA_LIBS) \
 	-Wl,--whole-archive $(A2X_PATH)/lib/a2x_$(PLATFORM).a -Wl,--no-whole-archive \
 	$(A_PLATFORM_LIBS)
 
