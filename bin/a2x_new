@@ -42,21 +42,22 @@ class NewTool(Tool):
                 author = os.environ[key]
                 break
 
-        make_dir = os.path.join(project_dir, 'make')
-        src_dir = os.path.join(project_dir, 'src')
+        dirs = {}
 
-        self.makedir(project_dir)
-        self.makedir(make_dir)
-        self.makedir(src_dir)
+        def new_dir(Name):
+            dirs[Name] = os.path.join(project_dir, Name)
+            self.makedir(dirs[Name])
 
-        self.writefile(os.path.join(make_dir, 'Makefile'),
+        new_dir('bin')
+        new_dir('gfx')
+        new_dir('make')
+        new_dir('obj')
+        new_dir('sfx')
+        new_dir('src')
+
+        self.writefile(os.path.join(dirs['make'], 'Makefile'),
 """\
 A_APP_NAME = {0}
-A_BIN_DIR = ..
-A_SRC_DIR = ../src
-A_GFX_DIR =
-A_SFX_DIR =
-A_OBJ_DIR = ../obj
 
 #
 # You can set A2X_PATH to a hard-coded value
@@ -66,7 +67,7 @@ A2X_PATH := $(shell a2x_path)
 include $(A2X_PATH)/make/project/Makefile.linux
 """.format(project_name))
 
-        self.writefile(os.path.join(src_dir, 'main.c'),
+        self.writefile(os.path.join(dirs['src'], 'main.c'),
 """\
 #include <a2x.h>
 

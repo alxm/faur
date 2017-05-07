@@ -94,7 +94,7 @@ class Tool:
 
     def makedir(self, name):
         Output.info('Making dir {}'.format(name))
-        os.mkdir(name)
+        os.makedirs(name)
 
     def writefile(self, name, contents):
         Output.info('Writing file {}'.format(name))

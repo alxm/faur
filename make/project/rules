@@ -1,4 +1,13 @@
 #
+# Project dirs created by a2x_new
+#
+A_BIN_DIR = ../bin
+A_GFX_DIR = ../gfx
+A_OBJ_DIR = ../obj
+A_SFX_DIR = ../sfx
+A_SRC_DIR = ../src
+
+#
 # this is what gets built
 #
 TARGET_BINARY = $(A_BIN_DIR)/$(A_APP_NAME)
@@ -27,16 +36,7 @@ C_GFX_DIR = $(C_GEN_DIR)/gfx
 C_SFX_DIR = $(C_GEN_DIR)/sfx
 C_GFX_HEADER = $(C_GEN_DIR)/gfx.h
 C_SFX_HEADER = $(C_GEN_DIR)/sfx.h
-
-C_GEN_HEADERS =
-
-ifdef A_GFX_DIR
-    C_GEN_HEADERS += $(C_GFX_HEADER)
-endif
-
-ifdef A_SFX_DIR
-    C_GEN_HEADERS += $(C_SFX_HEADER)
-endif
+C_GEN_HEADERS = $(C_GFX_HEADER) $(C_SFX_HEADER)
 
 #
 # PNG and WAV files in .c form
@@ -119,9 +119,11 @@ $(C_SFX_DIR)/sfx_%.c : $(A_SFX_DIR)/%.wav
 	@ $(A2X_PATH)/bin/a2x_bin $< $@ $(@:.c=.h) sfx
 
 $(C_GFX_HEADER) : $(C_GFX_FILES)
+	@ mkdir -p $(@D)
 	@ $(A2X_PATH)/bin/a2x_header $(C_GFX_DIR) .h $@
 
 $(C_SFX_HEADER) : $(C_SFX_FILES)
+	@ mkdir -p $(@D)
 	@ $(A2X_PATH)/bin/a2x_header $(C_SFX_DIR) .h $@
 
 $(O_DIR)/%.o : $(A_SRC_DIR)/%.c $(C_GEN_HEADERS)
