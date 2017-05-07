@@ -51,12 +51,12 @@ class NewTool(Tool):
 
         self.writefile(os.path.join(make_dir, 'Makefile'),
 """\
-APP = {0}
-BIN_DIR = ..
-SRC_DIR = ../src
-GFX_DIR =
-SFX_DIR =
-OBJ_DIR = ../obj
+A_APP_NAME = {0}
+A_BIN_DIR = ..
+A_SRC_DIR = ../src
+A_GFX_DIR =
+A_SFX_DIR =
+A_OBJ_DIR = ../obj
 
 #
 # You can set A2X_PATH to a hard-coded value
