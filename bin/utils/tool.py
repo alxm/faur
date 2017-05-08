@@ -94,7 +94,11 @@ class Tool:
 
     def makedir(self, name):
         Output.info('Making dir {}'.format(name))
-        os.mkdir(name)
+        os.makedirs(name)
+
+    def symlink(self, Target, Name):
+        Output.info('New symlink {} to {}'.format(Name, Target))
+        os.symlink(Target, Name)
 
     def writefile(self, name, contents):
         Output.info('Writing file {}'.format(name))

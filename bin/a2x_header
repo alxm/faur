@@ -33,9 +33,13 @@ class HeaderTool(Tool):
         umbrella_header_dir = os.path.dirname(umbrella_header)
         path_prefix = os.path.relpath(source_dir, start = umbrella_header_dir)
 
-        headers = [f for f in os.listdir(source_dir) \
-            if f.find(ext, -len(ext)) != -1]
-        headers.sort(key = lambda h: h)
+        if os.path.exists(source_dir):
+            headers = [f for f in os.listdir(source_dir) \
+                       if f.find(ext, -len(ext)) != -1]
+
+            headers.sort(key = lambda h: h)
+        else:
+            headers = []
 
         out = '#pragma once\n\n'
 

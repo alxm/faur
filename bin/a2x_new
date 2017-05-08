@@ -42,21 +42,29 @@ class NewTool(Tool):
                 author = os.environ[key]
                 break
 
-        make_dir = os.path.join(project_dir, 'make')
-        src_dir = os.path.join(project_dir, 'src')
+        class Dir:
+            def __init__(self, Tool, Name):
+                self.name = Name
+                self.path = os.path.join(project_dir, Name)
 
-        self.makedir(project_dir)
-        self.makedir(make_dir)
-        self.makedir(src_dir)
+                Tool.makedir(self.path)
 
-        self.writefile(os.path.join(make_dir, 'Makefile'),
+        dir_bin = Dir(self, 'bin')
+        dir_gfx = Dir(self, 'gfx')
+        dir_mke = Dir(self, 'make')
+        dir_obj = Dir(self, 'obj')
+        dir_sfx = Dir(self, 'sfx')
+        dir_src = Dir(self, 'src')
+
+        self.symlink(os.path.join('..', dir_gfx.name),
+                     os.path.join(dir_bin.path, dir_gfx.name))
+
+        self.symlink(os.path.join('..', dir_sfx.name),
+                     os.path.join(dir_bin.path, dir_sfx.name))
+
+        self.writefile(os.path.join(dir_mke.path, 'Makefile'),
 """\
-APP = {0}
-BIN_DIR = ..
-SRC_DIR = ../src
-GFX_DIR =
-SFX_DIR =
-OBJ_DIR = ../obj
+A_APP_NAME = {0}
 
 #
 # You can set A2X_PATH to a hard-coded value
@@ -66,7 +74,7 @@ A2X_PATH := $(shell a2x_path)
 include $(A2X_PATH)/make/project/Makefile.linux
 """.format(project_name))
 
-        self.writefile(os.path.join(src_dir, 'main.c'),
+        self.writefile(os.path.join(dir_src.path, 'main.c'),
 """\
 #include <a2x.h>
 
