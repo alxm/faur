@@ -225,7 +225,7 @@ unsigned a_fps_getCounter(void)
     return g_frameCounter;
 }
 
-bool a_fps_nthFrame(unsigned N)
+bool a_fps_isNthFrame(unsigned N)
 {
     return (g_frameCounter % N) == 0;
 }

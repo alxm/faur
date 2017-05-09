@@ -47,7 +47,7 @@ extern bool a_listit__isLast(AListIt* Iterator);
                 a__it_i++)
 
 #define A_LIST_ITERATE_BACKWARDS(List, PtrType, Name)                          \
-    for(unsigned a__it_i = a_list_size(List) - 1;                              \
+    for(unsigned a__it_i = a_list_getSize(List) - 1;                           \
         a__it_i != UINT_MAX;                                                   \
         a__it_i = UINT_MAX)                                                    \
         for(PtrType Name = (PtrType)1; Name; Name = NULL)                      \

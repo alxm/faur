@@ -26,12 +26,11 @@ typedef struct ASprite ASprite;
 #include "a2x_pack_fix.p.h"
 #include "a2x_pack_pixel.p.h"
 
-extern ASprite* a_sprite_fromFile(const char* Path);
-extern ASprite* a_sprite_fromData(const uint8_t* Data, const char* Id);
-extern ASprite* a_sprite_fromSprite(const ASprite* Sheet, int X, int Y);
-extern ASprite* a_sprite_blank(int Width, int Height, bool ColorKeyed);
+extern ASprite* a_sprite_newFromFile(const char* Path);
+extern ASprite* a_sprite_newFromData(const uint8_t* Data, const char* Id);
+extern ASprite* a_sprite_newFromSprite(const ASprite* Sheet, int X, int Y);
+extern ASprite* a_sprite_newBlank(int Width, int Height, bool ColorKeyed);
 extern ASprite* a_sprite_dup(const ASprite* Sprite);
-
 extern void a_sprite_free(ASprite* Sprite);
 
 extern void a_sprite_blit(const ASprite* Sprite, int X, int Y);
@@ -43,11 +42,11 @@ extern void a_sprite_blitCenterY(const ASprite* Sprite, int X);
 extern void a_sprite_blitEx(const ASprite* Sprite, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY);
 #endif
 
-extern int a_sprite_width(const ASprite* Sprite);
-extern int a_sprite_widthLog2(const ASprite* Sprite);
-extern int a_sprite_height(const ASprite* Sprite);
+extern int a_sprite_getWidth(const ASprite* Sprite);
+extern int a_sprite_getWidthLog2(const ASprite* Sprite);
+extern int a_sprite_getHeight(const ASprite* Sprite);
 
-extern APixel* a_sprite_pixels(ASprite* Sprite);
+extern APixel* a_sprite_getPixels(ASprite* Sprite);
 extern APixel a_sprite_getPixel(const ASprite* Sprite, int X, int Y);
 
 extern APixel a_sprite_getColorKey(void);

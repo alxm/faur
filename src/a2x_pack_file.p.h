@@ -41,12 +41,12 @@ extern void a_file_seekStart(const AFile* File, long int Offset);
 extern void a_file_seekEnd(const AFile* File, long int Offset);
 extern void a_file_seekCurrent(const AFile* File, long int Offset);
 
-extern const char* a_file_path(const AFile* File);
-extern const char* a_file_name(const AFile* File);
-extern FILE* a_file_handle(const AFile* File);
+extern const char* a_file_getPath(const AFile* File);
+extern const char* a_file_getName(const AFile* File);
+extern FILE* a_file_getHandle(const AFile* File);
 
 extern bool a_file_exists(const char* Path);
 extern bool a_file_isDir(const char* Path);
-extern size_t a_file_size(const char* Path);
+extern size_t a_file_getSize(const char* Path);
 
 extern uint8_t* a_file_toBuffer(const char* Path);

@@ -52,7 +52,23 @@ char* a_str_dup(const char* String)
     return strcpy(buffer, String);
 }
 
-char* a_str_sub(const char* String, int Start, int End)
+char* a_str_trim(const char* String)
+{
+    int start = 0;
+    int end = (int)strlen(String) - 1;
+
+    while(isspace(String[start])) {
+        start++;
+    }
+
+    while(end > start && isspace(String[end])) {
+        end--;
+    }
+
+    return a_str_getSub(String, start, end + 1);
+}
+
+char* a_str_getSub(const char* String, int Start, int End)
 {
     size_t len = (size_t)(End - Start);
     char* str = a_mem_malloc(len + 1);
@@ -63,18 +79,18 @@ char* a_str_sub(const char* String, int Start, int End)
     return str;
 }
 
-char* a_str_prefix(const char* String, int Length)
+char* a_str_getPrefix(const char* String, int Length)
 {
-    return a_str_sub(String, 0, Length);
+    return a_str_getSub(String, 0, Length);
 }
 
-char* a_str_suffix(const char* String, int Length)
+char* a_str_getSuffix(const char* String, int Length)
 {
     int sLen = (int)strlen(String);
-    return a_str_sub(String, sLen - Length, sLen);
+    return a_str_getSub(String, sLen - Length, sLen);
 }
 
-int a_str_firstIndex(const char* String, char Character)
+int a_str_getFirstIndex(const char* String, char Character)
 {
     for(int i = 0; String[i] != '\0'; i++) {
         if(String[i] == Character) {
@@ -85,7 +101,7 @@ int a_str_firstIndex(const char* String, char Character)
     return -1;
 }
 
-int a_str_lastIndex(const char* String, char Character)
+int a_str_getLastIndex(const char* String, char Character)
 {
     for(int i = (int)strlen(String); i--; ) {
         if(String[i] == Character) {
@@ -121,29 +137,29 @@ bool a_str_endsWith(const char* String, const char* Suffix)
 
 char* a_str_getPrefixFirstFind(const char* String, char Marker)
 {
-    const int index = a_str_firstIndex(String, Marker);
+    const int index = a_str_getFirstIndex(String, Marker);
 
     if(index == -1) {
         return NULL;
     }
 
-    return a_str_sub(String, 0, index);
+    return a_str_getSub(String, 0, index);
 }
 
 char* a_str_getPrefixLastFind(const char* String, char Marker)
 {
-    const int index = a_str_lastIndex(String, Marker);
+    const int index = a_str_getLastIndex(String, Marker);
 
     if(index == -1) {
         return NULL;
     }
 
-    return a_str_sub(String, 0, index);
+    return a_str_getSub(String, 0, index);
 }
 
 char* a_str_getSuffixFirstFind(const char* String, char Marker)
 {
-    const int start = a_str_firstIndex(String, Marker) + 1;
+    const int start = a_str_getFirstIndex(String, Marker) + 1;
     int end = start;
 
     if(start == 0) {
@@ -154,18 +170,18 @@ char* a_str_getSuffixFirstFind(const char* String, char Marker)
         end++;
     }
 
-    return a_str_sub(String, start, end);
+    return a_str_getSub(String, start, end);
 }
 
 char* a_str_getSuffixLastFind(const char* String, char Marker)
 {
-    const int index = a_str_lastIndex(String, Marker);
+    const int index = a_str_getLastIndex(String, Marker);
 
     if(index == -1) {
         return NULL;
     }
 
-    return a_str_sub(String, index + 1, (int)strlen(String));
+    return a_str_getSub(String, index + 1, (int)strlen(String));
 }
 
 char* a_str_extractPath(const char* String)
@@ -201,20 +217,4 @@ char* a_str_extractName(const char* String)
     } else {
         return file;
     }
-}
-
-char* a_str_trim(const char* String)
-{
-    int start = 0;
-    int end = (int)strlen(String) - 1;
-
-    while(isspace(String[start])) {
-        start++;
-    }
-
-    while(end > start && isspace(String[end])) {
-        end--;
-    }
-
-    return a_str_sub(String, start, end + 1);
 }

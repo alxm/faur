@@ -26,5 +26,6 @@ typedef struct AStrBuilder AStrBuilder;
 extern AStrBuilder* a_strbuilder_new(size_t Bytes);
 extern void a_strbuilder_free(AStrBuilder* Builder);
 
-extern const char* a_strbuilder_string(AStrBuilder* Builder);
+extern const char* a_strbuilder_getString(AStrBuilder* Builder);
+
 extern bool a_strbuilder_addString(AStrBuilder* Builder, const char* String);

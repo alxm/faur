@@ -68,10 +68,10 @@ extern int a_font_getLineHeight(void);
 extern void a_font_setLineHeight(int Height);
 extern void a_font_setWrap(int Width);
 
-extern int a_font_width(const char* Text);
-extern int a_font_widthf(const char* Format, ...);
-extern int a_font_widthv(const char* Format, va_list Args);
+extern int a_font_getWidth(const char* Text);
+extern int a_font_getWidthf(const char* Format, ...);
+extern int a_font_getWidthv(const char* Format, va_list Args);
 
-extern void a_font_text(const char* Text);
-extern void a_font_textf(const char* Format, ...);
-extern void a_font_textv(const char* Format, va_list Args);
+extern void a_font_print(const char* Text);
+extern void a_font_printf(const char* Format, ...);
+extern void a_font_printv(const char* Format, va_list Args);

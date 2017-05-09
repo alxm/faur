@@ -71,7 +71,7 @@ void a_font__init(void)
 
     g_stateStack = a_list_new();
 
-    ASprite* fontSprite = a_sprite_fromData(g_media_font, "defaultFont");
+    ASprite* fontSprite = a_sprite_newFromData(g_media_font, "defaultFont");
 
     APixel colors[A_FONT_FACE_DEFAULT_NUM];
     colors[A_FONT_FACE_WHITE] = a_pixel_hex(0xffffff);
@@ -120,7 +120,7 @@ unsigned a_font_load(const ASprite* Sheet, int X, int Y, AFontLoad Loader)
     a_list_addLast(g_fontsList, f);
 
     free(g_fonts);
-    g_fonts = (AFont**)a_list_array(g_fontsList);
+    g_fonts = (AFont**)a_list_toArray(g_fontsList);
 
     unsigned start = 0;
     unsigned end = CHARS_NUM - 1;
@@ -151,7 +151,7 @@ unsigned a_font_load(const ASprite* Sheet, int X, int Y, AFontLoad Loader)
 
     a_spriteframes_free(sf, false);
 
-    return a_list_size(g_fontsList) - 1;
+    return a_list_getSize(g_fontsList) - 1;
 }
 
 unsigned a_font_dup(unsigned Font, APixel Color)
@@ -171,13 +171,13 @@ unsigned a_font_dup(unsigned Font, APixel Color)
 
         if(srcSprite) {
             #if A_CONFIG_RENDER_SOFTWARE
-                sprite = a_sprite_blank(srcSprite->w,
-                                        srcSprite->h,
-                                        srcSprite->colorKeyed);
+                sprite = a_sprite_newBlank(srcSprite->w,
+                                           srcSprite->h,
+                                           srcSprite->colorKeyed);
             #elif A_CONFIG_RENDER_SDL2
-                sprite = a_sprite_blank(srcSprite->w,
-                                        srcSprite->h,
-                                        true);
+                sprite = a_sprite_newBlank(srcSprite->w,
+                                           srcSprite->h,
+                                           true);
             #endif
 
             a_screen_targetPushSprite(sprite);
@@ -193,9 +193,9 @@ unsigned a_font_dup(unsigned Font, APixel Color)
     a_list_addLast(g_fontsList, f);
 
     free(g_fonts);
-    g_fonts = (AFont**)a_list_array(g_fontsList);
+    g_fonts = (AFont**)a_list_toArray(g_fontsList);
 
-    return a_list_size(g_fontsList) - 1;
+    return a_list_getSize(g_fontsList) - 1;
 }
 
 void a_font_push(void)
@@ -404,7 +404,7 @@ static void wrapString(const char* Text)
     }
 }
 
-void a_font_text(const char* Text)
+void a_font_print(const char* Text)
 {
     if(g_state.wrapWidth > 0) {
         wrapString(Text);
@@ -413,48 +413,48 @@ void a_font_text(const char* Text)
     }
 }
 
-void a_font_textf(const char* Format, ...)
+void a_font_printf(const char* Format, ...)
 {
     va_list args;
     va_start(args, Format);
 
-    a_font_textv(Format, args);
+    a_font_printv(Format, args);
 
     va_end(args);
 }
 
-void a_font_textv(const char* Format, va_list Args)
+void a_font_printv(const char* Format, va_list Args)
 {
     char buffer[256];
 
     if(vsnprintf(buffer, sizeof(buffer), Format, Args) > 0) {
-        a_font_text(buffer);
+        a_font_print(buffer);
     }
 }
 
-int a_font_width(const char* Text)
+int a_font_getWidth(const char* Text)
 {
     return getWidth(Text, (ptrdiff_t)strlen(Text));
 }
 
-int a_font_widthf(const char* Format, ...)
+int a_font_getWidthf(const char* Format, ...)
 {
     int width;
     va_list args;
 
     va_start(args, Format);
-    width = a_font_widthv(Format, args);
+    width = a_font_getWidthv(Format, args);
     va_end(args);
 
     return width;
 }
 
-int a_font_widthv(const char* Format, va_list Args)
+int a_font_getWidthv(const char* Format, va_list Args)
 {
     char buffer[256];
 
     if(vsnprintf(buffer, sizeof(buffer), Format, Args) > 0) {
-        return a_font_width(buffer);
+        return a_font_getWidth(buffer);
     }
 
     return 0;

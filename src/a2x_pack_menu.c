@@ -81,40 +81,40 @@ void a_menu_addItem(AMenu* Menu, void* Item)
 
 void a_menu_handleInput(AMenu* Menu)
 {
-    if(a_list_empty(Menu->items) || Menu->state != A_MENU_STATE_RUNNING) {
+    if(a_list_isEmpty(Menu->items) || Menu->state != A_MENU_STATE_RUNNING) {
         return;
     }
 
     bool browsed = false;
 
-    if(a_button_get(Menu->back)) {
+    if(a_button_getPressed(Menu->back)) {
         browsed = true;
 
         if(Menu->selectedIndex-- == 0) {
-            Menu->selectedIndex = a_list_size(Menu->items) - 1;
+            Menu->selectedIndex = a_list_getSize(Menu->items) - 1;
         }
-    } else if(a_button_get(Menu->next)) {
+    } else if(a_button_getPressed(Menu->next)) {
         browsed = true;
 
-        if(++Menu->selectedIndex == a_list_size(Menu->items)) {
+        if(++Menu->selectedIndex == a_list_getSize(Menu->items)) {
             Menu->selectedIndex = 0;
         }
     }
 
     if(browsed) {
-        Menu->selectedItem = a_list_get(Menu->items, Menu->selectedIndex);
+        Menu->selectedItem = a_list_getIndex(Menu->items, Menu->selectedIndex);
 
         if(Menu->soundBrowse) {
             a_sfx_play(Menu->soundBrowse);
         }
     } else {
-        if(a_button_get(Menu->select)) {
+        if(a_button_getPressed(Menu->select)) {
             Menu->state = A_MENU_STATE_SELECTED;
 
             if(Menu->soundAccept) {
                 a_sfx_play(Menu->soundAccept);
             }
-        } else if(Menu->cancel && a_button_get(Menu->cancel)) {
+        } else if(Menu->cancel && a_button_getPressed(Menu->cancel)) {
             Menu->state = A_MENU_STATE_CANCELED;
 
             if(Menu->soundCancel) {

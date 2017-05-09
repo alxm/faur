@@ -126,7 +126,7 @@ void a_out__stateVerbose(const char* Format, ...)
     }
 }
 
-void a_out_textf(const char* Format, ...)
+void a_out_printf(const char* Format, ...)
 {
     if(a_settings_getBool("app.output.on")) {
         A_OUT__PRINT("App", A_COLOR_MAGENTA, stdout);
@@ -134,7 +134,7 @@ void a_out_textf(const char* Format, ...)
     }
 }
 
-void a_out_textv(const char* Format, va_list Args)
+void a_out_printv(const char* Format, va_list Args)
 {
     if(a_settings_getBool("app.output.on")) {
         va_list consoleArgs;

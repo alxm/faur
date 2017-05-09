@@ -75,7 +75,7 @@ AInputButtonSource* a_input_button__newSource(const char* Name, const char* Id)
     b->pressed = false;
     b->ignorePressed = false;
 
-    if(a_input_numControllers() == 0) {
+    if(a_input_getNumControllers() == 0) {
         // Keys are declared before controllers are created
         a_strhash_add(g_keys, Id, b);
     }
@@ -113,7 +113,7 @@ AInputButton* a_button_new(const char* Ids)
     AStrTok* tok = a_strtok_new(Ids, ", ");
 
     A_STRTOK_ITERATE(tok, id) {
-        if(a_str_firstIndex(id, '+') > 0) {
+        if(a_str_getFirstIndex(id, '+') > 0) {
             AList* combo = a_list_new();
             AStrTok* tok = a_strtok_new(id, "+");
             bool missing = false;
@@ -133,7 +133,7 @@ AInputButton* a_button_new(const char* Ids)
                 a_list_addLast(combo, button);
             }
 
-            if(missing || a_list_empty(combo)) {
+            if(missing || a_list_isEmpty(combo)) {
                 a_list_free(combo);
             } else {
                 a_list_addLast(b->combos, combo);
@@ -150,10 +150,10 @@ AInputButton* a_button_new(const char* Ids)
 
     a_strtok_free(tok);
 
-    if(!a_list_empty(b->header.sourceInputs)) {
+    if(!a_list_isEmpty(b->header.sourceInputs)) {
         AInputButtonSource* btn = a_list_getLast(b->header.sourceInputs);
         b->header.name = a_str_dup(btn->header.name);
-    } else if(!a_list_empty(b->combos)) {
+    } else if(!a_list_isEmpty(b->combos)) {
         AStrBuilder* sb = a_strbuilder_new(128);
         AList* combo = a_list_getLast(b->combos);
 
@@ -165,7 +165,7 @@ AInputButton* a_button_new(const char* Ids)
             }
         }
 
-        b->header.name = a_str_dup(a_strbuilder_string(sb));
+        b->header.name = a_str_dup(a_strbuilder_getString(sb));
         a_strbuilder_free(sb);
     } else {
         a_out__error("No buttons found for '%s'", Ids);
@@ -211,18 +211,18 @@ void a_button_free(AInputButton* Button)
     a_button__free(Button);
 }
 
-bool a_button_working(const AInputButton* Button)
+bool a_button_isWorking(const AInputButton* Button)
 {
-    return !a_list_empty(Button->header.sourceInputs)
-        || !a_list_empty(Button->combos);
+    return !a_list_isEmpty(Button->header.sourceInputs)
+        || !a_list_isEmpty(Button->combos);
 }
 
-const char* a_button_name(const AInputButton* Button)
+const char* a_button_getName(const AInputButton* Button)
 {
     return Button->header.name;
 }
 
-bool a_button_get(AInputButton* Button)
+bool a_button_getPressed(AInputButton* Button)
 {
     bool pressed = false;
 
@@ -279,9 +279,9 @@ void a_button_release(const AInputButton* Button)
     }
 }
 
-bool a_button_getOnce(AInputButton* Button)
+bool a_button_getPressedOnce(AInputButton* Button)
 {
-    bool pressed = a_button_get(Button);
+    bool pressed = a_button_getPressed(Button);
 
     if(pressed) {
         a_button_release(Button);

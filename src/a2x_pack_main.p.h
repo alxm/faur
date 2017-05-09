@@ -24,5 +24,5 @@
 #define A_MAIN void a_main(void)
 extern A_MAIN;
 
-extern int a_main_numArgs(void);
+extern int a_main_getNumArgs(void);
 extern const char* a_main_getArg(int ArgNum);

@@ -26,9 +26,9 @@ typedef struct AScreen AScreen;
 #include "a2x_pack_pixel.p.h"
 #include "a2x_pack_sprite.p.h"
 
-extern APixel* a_screen_pixels(void);
-extern int a_screen_width(void);
-extern int a_screen_height(void);
+extern APixel* a_screen_getPixels(void);
+extern int a_screen_getWidth(void);
+extern int a_screen_getHeight(void);
 
 extern AScreen* a_screen_new(int Width, int Height);
 extern AScreen* a_screen_dup(void);
@@ -44,7 +44,7 @@ extern void a_screen_targetPop(void);
 extern void a_screen_clipSet(int X, int Y, int Width, int Height);
 extern void a_screen_clipReset(void);
 
-extern bool a_screen_boxOnScreen(int X, int Y, int W, int H);
-extern bool a_screen_boxInsideScreen(int X, int Y, int W, int H);
-extern bool a_screen_boxOnClip(int X, int Y, int W, int H);
-extern bool a_screen_boxInsideClip(int X, int Y, int W, int H);
+extern bool a_screen_isBoxOnScreen(int X, int Y, int W, int H);
+extern bool a_screen_isBoxInsideScreen(int X, int Y, int W, int H);
+extern bool a_screen_isBoxOnClip(int X, int Y, int W, int H);
+extern bool a_screen_isBoxInsideClip(int X, int Y, int W, int H);

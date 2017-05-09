@@ -68,9 +68,9 @@ extern AList* a_dir__files(const ADir* Dir);
             a_dir__files(Dir), ADirEntry*, entry,                             \
             ((NameVar = entry->name, FullPathVar = entry->full) && (Filter)))
 
-extern const char* a_dir_path(const ADir* Dir);
-extern const char* a_dir_name(const ADir* Dir);
-extern unsigned a_dir_numEntries(const ADir* Dir);
+extern const char* a_dir_getPath(const ADir* Dir);
+extern const char* a_dir_getName(const ADir* Dir);
+extern unsigned a_dir_getNumEntries(const ADir* Dir);
 
 extern bool a_dir_exists(const char* Path);
 extern bool a_dir_make(const char* Path);

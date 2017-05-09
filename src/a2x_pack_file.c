@@ -246,17 +246,17 @@ void a_file_seekCurrent(const AFile* File, long int Offset)
     }
 }
 
-const char* a_file_path(const AFile* File)
+const char* a_file_getPath(const AFile* File)
 {
     return File->path;
 }
 
-const char* a_file_name(const AFile* File)
+const char* a_file_getName(const AFile* File)
 {
     return File->name;
 }
 
-FILE* a_file_handle(const AFile* File)
+FILE* a_file_getHandle(const AFile* File)
 {
     return File->handle;
 }
@@ -285,12 +285,12 @@ bool a_file_isDir(const char* Path)
     return S_ISDIR(info.st_mode);
 }
 
-size_t a_file_size(const char* Path)
+size_t a_file_getSize(const char* Path)
 {
     struct stat info;
 
     if(stat(Path, &info) != 0) {
-        a_out__error("a_file_size: stat(%s) failed", Path);
+        a_out__error("a_file_getSize: stat(%s) failed", Path);
         return 0;
     }
 
@@ -305,7 +305,7 @@ uint8_t* a_file_toBuffer(const char* Path)
         return NULL;
     }
 
-    size_t size = a_file_size(Path);
+    size_t size = a_file_getSize(Path);
     uint8_t* buffer = a_mem_malloc(size);
 
     if(!a_file_read(f, buffer, size)) {

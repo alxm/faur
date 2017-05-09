@@ -151,7 +151,7 @@ static void findMidpoint(int Radius, int* MidX, int* MidY)
                           YOffScreen, XOffScreen,                           \
                           PrimaryOnScreen, SecondaryOnScreen)               \
 do {                                                                        \
-    if(!a_screen_boxOnClip(BoundX, BoundY, BoundW, BoundH)) {               \
+    if(!a_screen_isBoxOnClip(BoundX, BoundY, BoundW, BoundH)) {             \
         break;                                                              \
     }                                                                       \
                                                                             \
@@ -352,7 +352,7 @@ void a_draw_fill(void)
 void a_draw_pixel(int X, int Y)
 {
     #if A_CONFIG_RENDER_SOFTWARE
-        if(a_screen_boxInsideClip(X, Y, 1, 1)) {
+        if(a_screen_isBoxInsideClip(X, Y, 1, 1)) {
             g_draw_pixel(X, Y);
         }
     #elif A_CONFIG_RENDER_SDL2
@@ -363,12 +363,12 @@ void a_draw_pixel(int X, int Y)
 void a_draw_rectangle(int X, int Y, int Width, int Height)
 {
     #if A_CONFIG_RENDER_SOFTWARE
-        if(a_screen_boxInsideClip(X, Y, Width, Height)) {
+        if(a_screen_isBoxInsideClip(X, Y, Width, Height)) {
             g_draw_rectangle(X, Y, Width, Height);
             return;
         }
 
-        if(!a_screen_boxOnClip(X, Y, Width, Height)) {
+        if(!a_screen_isBoxOnClip(X, Y, Width, Height)) {
             return;
         }
 
@@ -402,7 +402,7 @@ void a_draw_line(int X1, int Y1, int X2, int Y2)
 void a_draw_hline(int X1, int X2, int Y)
 {
     #if A_CONFIG_RENDER_SOFTWARE
-        if(X1 >= X2 || !a_screen_boxOnClip(X1, Y, X2 - X1, 1)) {
+        if(X1 >= X2 || !a_screen_isBoxOnClip(X1, Y, X2 - X1, 1)) {
             return;
         }
 
@@ -418,7 +418,7 @@ void a_draw_hline(int X1, int X2, int Y)
 void a_draw_vline(int X, int Y1, int Y2)
 {
     #if A_CONFIG_RENDER_SOFTWARE
-        if(Y1 >= Y2 || !a_screen_boxOnClip(X, Y1, 1, Y2 - Y1)) {
+        if(Y1 >= Y2 || !a_screen_isBoxOnClip(X, Y1, 1, Y2 - Y1)) {
             return;
         }
 
@@ -434,12 +434,12 @@ void a_draw_vline(int X, int Y1, int Y2)
 void a_draw_circle(int X, int Y, int Radius)
 {
     #if A_CONFIG_RENDER_SOFTWARE
-        if(a_screen_boxInsideClip(X - Radius, Y - Radius, 2 * Radius, 2 * Radius)) {
+        if(a_screen_isBoxInsideClip(X - Radius, Y - Radius, 2 * Radius, 2 * Radius)) {
             g_draw_circle_noclip(X, Y, Radius);
             return;
         }
 
-        if(a_screen_boxOnClip(X - Radius, Y - Radius, 2 * Radius, 2 * Radius)) {
+        if(a_screen_isBoxOnClip(X - Radius, Y - Radius, 2 * Radius, 2 * Radius)) {
             g_draw_circle_clip(X, Y, Radius);
         }
     #elif A_CONFIG_RENDER_SDL2

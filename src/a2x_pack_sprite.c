@@ -309,7 +309,7 @@ static void assignPixels(ASprite* Sprite, APixel* Pixels)
     #endif
 }
 
-ASprite* a_sprite_fromFile(const char* Path)
+ASprite* a_sprite_newFromFile(const char* Path)
 {
     int w = 0;
     int h = 0;
@@ -329,7 +329,7 @@ ASprite* a_sprite_fromFile(const char* Path)
     return s;
 }
 
-ASprite* a_sprite_fromData(const uint8_t* Data, const char* Id)
+ASprite* a_sprite_newFromData(const uint8_t* Data, const char* Id)
 {
     int w;
     int h;
@@ -351,7 +351,7 @@ ASprite* a_sprite_fromData(const uint8_t* Data, const char* Id)
     return s;
 }
 
-ASprite* a_sprite_fromSprite(const ASprite* Sheet, int X, int Y)
+ASprite* a_sprite_newFromSprite(const ASprite* Sheet, int X, int Y)
 {
     int spriteWidth = 0;
     int spriteHeight = 0;
@@ -441,7 +441,7 @@ doneEdges:
     return sprite;
 }
 
-ASprite* a_sprite_blank(int Width, int Height, bool ColorKeyed)
+ASprite* a_sprite_newBlank(int Width, int Height, bool ColorKeyed)
 {
     ASprite* s = makeEmptySprite(Width, Height);
     APixel* pixels;
@@ -494,13 +494,13 @@ void a_sprite__free(ASprite* Sprite)
 void a_sprite_blit(const ASprite* Sprite, int X, int Y)
 {
     #if A_CONFIG_RENDER_SOFTWARE
-        if(a_screen_boxInsideClip(X, Y, Sprite->w, Sprite->h)) {
+        if(a_screen_isBoxInsideClip(X, Y, Sprite->w, Sprite->h)) {
             if(Sprite->colorKeyed) {
                 g_blitter_keyed_noclip(Sprite, X, Y);
             } else {
                 g_blitter_block_noclip(Sprite, X, Y);
             }
-        } else if(a_screen_boxOnClip(X, Y, Sprite->w, Sprite->h)) {
+        } else if(a_screen_isBoxOnClip(X, Y, Sprite->w, Sprite->h)) {
             if(Sprite->colorKeyed) {
                 g_blitter_keyed_doclip(Sprite, X, Y);
             } else {
@@ -550,22 +550,22 @@ void a_sprite_blitEx(const ASprite* Sprite, int X, int Y, AFix Scale, unsigned A
 }
 #endif
 
-int a_sprite_width(const ASprite* Sprite)
+int a_sprite_getWidth(const ASprite* Sprite)
 {
     return Sprite->w;
 }
 
-int a_sprite_widthLog2(const ASprite* Sprite)
+int a_sprite_getWidthLog2(const ASprite* Sprite)
 {
     return Sprite->wLog2;
 }
 
-int a_sprite_height(const ASprite* Sprite)
+int a_sprite_getHeight(const ASprite* Sprite)
 {
     return Sprite->h;
 }
 
-APixel* a_sprite_pixels(ASprite* Sprite)
+APixel* a_sprite_getPixels(ASprite* Sprite)
 {
     return Sprite->pixels;
 }

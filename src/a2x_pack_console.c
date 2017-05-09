@@ -51,7 +51,7 @@ static void line_free(ALine* Line)
 
 static void inputCallback(void)
 {
-    if(a_button_getOnce(g_toggle)) {
+    if(a_button_getPressedOnce(g_toggle)) {
         g_show = !g_show;
     }
 }
@@ -77,17 +77,17 @@ static void screenCallback(void)
         a_font_setCoords(2, 2);
         a_font_setAlign(A_FONT_ALIGN_LEFT);
 
-        a_font_setFace(A_FONT_FACE_BLUE); a_font_text("a");
-        a_font_setFace(A_FONT_FACE_GREEN); a_font_text("2");
-        a_font_setFace(A_FONT_FACE_YELLOW); a_font_text("x");
+        a_font_setFace(A_FONT_FACE_BLUE); a_font_print("a");
+        a_font_setFace(A_FONT_FACE_GREEN); a_font_print("2");
+        a_font_setFace(A_FONT_FACE_YELLOW); a_font_print("x");
 
         a_font_setFace(A_FONT_FACE_WHITE);
-        a_font_textf(" %s, %s",
+        a_font_printf(" %s, %s",
                      A__MAKE_CURRENT_GIT_BRANCH,
                      A__MAKE_COMPILE_TIME);
         a_font_newLine();
 
-        a_font_textf("%s %s by %s, %s",
+        a_font_printf("%s %s by %s, %s",
                      a_settings_getString("app.title"),
                      a_settings_getString("app.version"),
                      a_settings_getString("app.author"),
@@ -103,7 +103,7 @@ static void screenCallback(void)
 
         A_LIST_ITERATE(g_lines, ALine*, line) {
             a_sprite_blit(g_titles[line->type], 1, a_font_getY());
-            a_font_text(line->text);
+            a_font_print(line->text);
             a_font_newLine();
         }
     }
@@ -113,15 +113,15 @@ static void screenCallback(void)
         a_font_setAlign(A_FONT_ALIGN_RIGHT);
 
         a_font_setFace(A_FONT_FACE_YELLOW);
-        a_font_textf("%u fps", a_fps_getFps());
+        a_font_printf("%u fps", a_fps_getFps());
         a_font_newLine();
 
         a_font_setFace(A_FONT_FACE_GREEN);
-        a_font_textf("%u max", a_fps_getMaxFps());
+        a_font_printf("%u max", a_fps_getMaxFps());
         a_font_newLine();
 
         a_font_setFace(A_FONT_FACE_BLUE);
-        a_font_textf("%u skip", a_fps_getFrameSkip());
+        a_font_printf("%u skip", a_fps_getFrameSkip());
     }
 
     a_pixel_pop();
@@ -142,7 +142,7 @@ void a_console__init2(void)
         return;
     }
 
-    ASprite* graphics = a_sprite_fromData(g_media_console, "consoleTitles");
+    ASprite* graphics = a_sprite_newFromData(g_media_console, "consoleTitles");
     ASpriteFrames* frames = a_spriteframes_new(graphics, 0, 0, 1);
 
     for(AConsoleOutType type = 0; type < A_CONSOLE_MAX; type++) {
@@ -157,7 +157,7 @@ void a_console__init2(void)
                                   / a_font_getLineHeight() - 2);
 
     // In case messages were logged between init and init2
-    while(a_list_size(g_lines) > g_linesPerScreen) {
+    while(a_list_getSize(g_lines) > g_linesPerScreen) {
         line_free(a_list_pop(g_lines));
     }
 
@@ -187,7 +187,7 @@ void a_console__write(AConsoleOutType Type, const char* Text)
 
     a_list_addLast(g_lines, line_new(Type, Text));
 
-    if(a_list_size(g_lines) > g_linesPerScreen) {
+    if(a_list_getSize(g_lines) > g_linesPerScreen) {
         line_free(a_list_pop(g_lines));
     }
 }

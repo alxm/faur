@@ -94,7 +94,7 @@ void a_png_readFile(const char* Path, APixel** Pixels, int* Width, int* Height)
         goto cleanUp;
     }
 
-    png_init_io(png, a_file_handle(f));
+    png_init_io(png, a_file_getHandle(f));
     png_set_sig_bytes(png, PNG_SIG);
     png_read_png(png, info, PNG_TRANSFORM_EXPAND, NULL);
 
@@ -242,7 +242,7 @@ void a_png_write(const char* Path, const APixel* Data, int Width, int Height, ch
         numText++;
     }
 
-    png_init_io(png, a_file_handle(f));
+    png_init_io(png, a_file_getHandle(f));
     png_set_rows(png, info, rows);
     png_set_text(png, info, text, numText);
     png_write_png(png, info, PNG_TRANSFORM_IDENTITY, NULL);

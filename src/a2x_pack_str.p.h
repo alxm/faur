@@ -24,15 +24,15 @@
 #define a_str_equal(String1, String2) (strcmp(String1, String2) == 0)
 
 extern char* a_str_merge(const char* String1, ...);
-
 extern char* a_str_dup(const char* String);
+extern char* a_str_trim(const char* String);
 
-extern char* a_str_sub(const char* String, int Start, int End);
-extern char* a_str_prefix(const char* String, int Length);
-extern char* a_str_suffix(const char* String, int Length);
+extern char* a_str_getSub(const char* String, int Start, int End);
+extern char* a_str_getPrefix(const char* String, int Length);
+extern char* a_str_getSuffix(const char* String, int Length);
 
-extern int a_str_firstIndex(const char* String, char Character);
-extern int a_str_lastIndex(const char* String, char Character);
+extern int a_str_getFirstIndex(const char* String, char Character);
+extern int a_str_getLastIndex(const char* String, char Character);
 
 extern bool a_str_startsWith(const char* String, const char* Prefix);
 extern bool a_str_endsWith(const char* String, const char* Suffix);
@@ -45,5 +45,3 @@ extern char* a_str_getSuffixLastFind(const char* String, char Marker);
 extern char* a_str_extractPath(const char* String);
 extern char* a_str_extractFile(const char* String);
 extern char* a_str_extractName(const char* String);
-
-extern char* a_str_trim(const char* String);

@@ -102,7 +102,7 @@ int main(int Argc, const char** Argv)
     return 0;
 }
 
-int a_main_numArgs(void)
+int a_main_getNumArgs(void)
 {
     return g_argsNum;
 }

@@ -35,16 +35,16 @@ static bool lazy_init(void)
     if(a_dir_exists(screensDir)) {
         ADir* dir = a_dir_open(screensDir);
 
-        if(a_dir_numEntries(dir) == 0) {
+        if(a_dir_getNumEntries(dir) == 0) {
             g_isInit = true;
         } else {
             // Only interested in the last file, to get the number from its name
             A_DIR_ITERATE_BACKWARDS(dir, file, fullPath) {
-                int start = a_str_lastIndex(file, '-');
-                int end = a_str_lastIndex(file, '.');
+                int start = a_str_getLastIndex(file, '-');
+                int end = a_str_getLastIndex(file, '.');
 
                 if(start != -1 && end != -1 && end - start == 6) {
-                    char* numberStr = a_str_sub(file, start + 1, end);
+                    char* numberStr = a_str_getSub(file, start + 1, end);
                     int number = atoi(numberStr);
                     free(numberStr);
 
@@ -124,7 +124,7 @@ static void takeScreenshot(void)
 
     a_out__message("Saving screenshot '%s'", name);
     a_png_write(name,
-                a_screen_pixels(),
+                a_screen_getPixels(),
                 a__screen.width,
                 a__screen.height,
                 g_title, g_description);
@@ -134,7 +134,7 @@ static void takeScreenshot(void)
 
 static void inputCallback(void)
 {
-    if(a_button_getOnce(g_button)) {
+    if(a_button_getPressedOnce(g_button)) {
         takeScreenshot();
     }
 }

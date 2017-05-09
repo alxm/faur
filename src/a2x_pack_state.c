@@ -111,7 +111,7 @@ static void state_handle(void)
     }
 
     // If there are no pending state changes, do any automatic transitions
-    if(a_list_empty(g_pending)) {
+    if(a_list_isEmpty(g_pending)) {
         if(current && current->stage == A_STATE_STAGE_INIT) {
             current->stage = A_STATE_STAGE_BODY;
 
@@ -267,7 +267,7 @@ void a_state_exit(void)
     a_list_clear(g_pending);
 
     // Queue a pop for every state in the stack
-    for(unsigned i = a_list_size(g_stack); i--; ) {
+    for(unsigned i = a_list_getSize(g_stack); i--; ) {
         pending_new(A_STATE_ACTION_POP, NULL);
     }
 }
@@ -285,7 +285,7 @@ bool a_state__stage(AStateStage Stage)
 
 bool a_state__loop(void)
 {
-    if(!a_list_empty(g_pending)) {
+    if(!a_list_isEmpty(g_pending)) {
         a_fps__reset(0);
         return false;
     }
@@ -304,7 +304,7 @@ bool a_state__loop(void)
 
 void a_state__run(void)
 {
-    if(a_list_empty(g_pending)) {
+    if(a_list_isEmpty(g_pending)) {
         return;
     }
 
@@ -312,7 +312,7 @@ void a_state__run(void)
 
     state_handle();
 
-    while(!a_list_empty(g_stack)) {
+    while(!a_list_isEmpty(g_stack)) {
         AStateInstance* s = a_list_peek(g_stack);
 
         a_out__stateVerbose("  '%s' running %s",

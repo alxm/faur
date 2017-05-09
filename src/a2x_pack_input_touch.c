@@ -96,7 +96,7 @@ AInputTouch* a_touch_new(const char* Ids)
 
     a_strtok_free(tok);
 
-    if(a_list_empty(t->header.sourceInputs)) {
+    if(a_list_isEmpty(t->header.sourceInputs)) {
         a_out__error("No touch screen found for '%s'", Ids);
     }
 
@@ -105,12 +105,12 @@ AInputTouch* a_touch_new(const char* Ids)
     return t;
 }
 
-bool a_touch_working(const AInputTouch* Touch)
+bool a_touch_isWorking(const AInputTouch* Touch)
 {
-    return !a_list_empty(Touch->header.sourceInputs);
+    return !a_list_isEmpty(Touch->header.sourceInputs);
 }
 
-bool a_touch_tapped(const AInputTouch* Touch)
+bool a_touch_getTap(const AInputTouch* Touch)
 {
     A_LIST_ITERATE(Touch->header.sourceInputs, AInputTouchSource*, t) {
         if(t->tap) {
@@ -121,12 +121,12 @@ bool a_touch_tapped(const AInputTouch* Touch)
     return false;
 }
 
-bool a_touch_point(const AInputTouch* Touch, int X, int Y)
+bool a_touch_getPoint(const AInputTouch* Touch, int X, int Y)
 {
-    return a_touch_box(Touch, X - 1, Y - 1, 3, 3);
+    return a_touch_getBox(Touch, X - 1, Y - 1, 3, 3);
 }
 
-bool a_touch_box(const AInputTouch* Touch, int X, int Y, int W, int H)
+bool a_touch_getBox(const AInputTouch* Touch, int X, int Y, int W, int H)
 {
     A_LIST_ITERATE(Touch->header.sourceInputs, AInputTouchSource*, t) {
         if(t->tap && a_collide_pointInBox(t->x, t->y, X, Y, W, H)) {

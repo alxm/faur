@@ -117,7 +117,7 @@ void a_input_controller__init2(void)
         #endif
     }
 
-    if(a_input_numControllers() > 0) {
+    if(a_input_getNumControllers() > 0) {
         a_input_setController(0);
 
         // Set built-in controller as default, if one exists
@@ -149,19 +149,19 @@ void a_input_controller__uninit(void)
     a_list_free(g_controllers);
 }
 
-unsigned a_input_numControllers(void)
+unsigned a_input_getNumControllers(void)
 {
-    return a_list_size(g_controllers);
+    return a_list_getSize(g_controllers);
 }
 
 void a_input_setController(unsigned Index)
 {
-    if(Index >= a_list_size(g_controllers)) {
+    if(Index >= a_list_getSize(g_controllers)) {
         a_out__error("Controller %u not present", Index);
         return;
     }
 
-    g_activeController = a_list_get(g_controllers, Index);
+    g_activeController = a_list_getIndex(g_controllers, Index);
 }
 
 void a_controller__new(bool Generic, bool IsMapped)

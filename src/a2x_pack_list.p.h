@@ -34,24 +34,24 @@ extern AListNode* a_list_addLast(AList* List, void* Content);
 extern void a_list_appendMove(AList* Dst, AList* Src);
 extern void a_list_appendCopy(AList* Dst, AList* Src);
 
-extern void* a_list_get(const AList* List, unsigned Index);
+extern void* a_list_getIndex(const AList* List, unsigned Index);
 extern void* a_list_getFirst(const AList* List);
 extern void* a_list_getLast(const AList* List);
 
-extern void a_list_remove(AList* List, const void* Item);
+extern void a_list_removeItem(AList* List, const void* Item);
 extern void* a_list_removeFirst(AList* List);
 extern void* a_list_removeLast(AList* List);
 extern void a_list_removeNode(AListNode* Node);
 extern void a_list_clear(AList* List);
 
 extern AList* a_list_dup(const AList* List);
-extern void** a_list_array(AList* List);
+extern void** a_list_toArray(AList* List);
 
 extern void a_list_reverse(AList* List);
 extern void a_list_sort(AList* List, AListCompare* Compare);
 
-extern unsigned a_list_size(const AList* List);
-extern bool a_list_empty(const AList* List);
+extern unsigned a_list_getSize(const AList* List);
+extern bool a_list_isEmpty(const AList* List);
 
 static inline AListNode* a_list_push(AList* List, void* Content)
 {

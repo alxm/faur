@@ -32,7 +32,7 @@ struct ASpriteFrames {
 
 ASpriteFrames* a_spriteframes_new(const ASprite* Sheet, int X, int Y, unsigned CallsToNextFrame)
 {
-    ASpriteFrames* f = a_spriteframes_blank(CallsToNextFrame);
+    ASpriteFrames* f = a_spriteframes_newBlank(CallsToNextFrame);
 
     if(X < 0 || X >= Sheet->w || Y < 0 || Y >= Sheet->h) {
         a_out__fatal("%s coords %d, %d are invalid",
@@ -42,7 +42,7 @@ ASpriteFrames* a_spriteframes_new(const ASprite* Sheet, int X, int Y, unsigned C
     }
 
     while(X < Sheet->w) {
-        ASprite* s = a_sprite_fromSprite(Sheet, X, Y);
+        ASprite* s = a_sprite_newFromSprite(Sheet, X, Y);
 
         a_list_addLast(f->sprites, s);
         X += s->w;
@@ -65,16 +65,16 @@ ASpriteFrames* a_spriteframes_new(const ASprite* Sheet, int X, int Y, unsigned C
         X += 1;
     }
 
-    f->spriteArray = (ASprite**)a_list_array(f->sprites);
-    f->num = a_list_size(f->sprites);
+    f->spriteArray = (ASprite**)a_list_toArray(f->sprites);
+    f->num = a_list_getSize(f->sprites);
 
     return f;
 }
 
-ASpriteFrames* a_spriteframes_blank(unsigned CallsToNextFrame)
+ASpriteFrames* a_spriteframes_newBlank(unsigned CallsToNextFrame)
 {
     if(CallsToNextFrame < 1) {
-        a_out__fatal("a_spriteframes_blank: CallsToNextFrame<1");
+        a_out__fatal("a_spriteframes_newBlank: CallsToNextFrame<1");
     }
 
     ASpriteFrames* f = a_mem_malloc(sizeof(ASpriteFrames));
@@ -84,6 +84,22 @@ ASpriteFrames* a_spriteframes_blank(unsigned CallsToNextFrame)
     f->num = 0;
     f->countdown = CallsToNextFrame;
     f->callsToNextFrame = CallsToNextFrame;
+    f->index = 0;
+    f->forward = true;
+    f->paused = false;
+
+    return f;
+}
+
+ASpriteFrames* a_spriteframes_dup(const ASpriteFrames* Frames)
+{
+    ASpriteFrames* f = a_mem_malloc(sizeof(ASpriteFrames));
+
+    f->sprites = a_list_dup(Frames->sprites);
+    f->spriteArray = (ASprite**)a_list_toArray(Frames->sprites);
+    f->num = Frames->num;
+    f->countdown = Frames->callsToNextFrame;
+    f->callsToNextFrame = Frames->callsToNextFrame;
     f->index = 0;
     f->forward = true;
     f->paused = false;
@@ -111,7 +127,7 @@ void a_spriteframes_push(ASpriteFrames* Frames, ASprite* Sprite)
     Frames->num++;
 
     free(Frames->spriteArray);
-    Frames->spriteArray = (ASprite**)a_list_array(Frames->sprites);
+    Frames->spriteArray = (ASprite**)a_list_toArray(Frames->sprites);
 
     a_spriteframes_reset(Frames);
 }
@@ -122,7 +138,7 @@ ASprite* a_spriteframes_pop(ASpriteFrames* Frames)
     Frames->num--;
 
     free(Frames->spriteArray);
-    Frames->spriteArray = (ASprite**)a_list_array(Frames->sprites);
+    Frames->spriteArray = (ASprite**)a_list_toArray(Frames->sprites);
 
     a_spriteframes_reset(Frames);
 
@@ -148,27 +164,27 @@ ASprite* a_spriteframes_next(ASpriteFrames* Frames)
     return Frames->spriteArray[oldindex];
 }
 
-ASprite* a_spriteframes_get(const ASpriteFrames* Frames)
+ASprite* a_spriteframes_getCurrent(const ASpriteFrames* Frames)
 {
     return Frames->spriteArray[Frames->index];
 }
 
-ASprite* a_spriteframes_getByIndex(const ASpriteFrames* Frames, unsigned Index)
+ASprite* a_spriteframes_getIndex(const ASpriteFrames* Frames, unsigned Index)
 {
     return Frames->spriteArray[Index];
 }
 
 ASprite* a_spriteframes_getRandom(const ASpriteFrames* Frames)
 {
-    return Frames->spriteArray[a_random_int((int)Frames->num)];
+    return Frames->spriteArray[a_random_getInt((int)Frames->num)];
 }
 
-unsigned a_spriteframes_num(const ASpriteFrames* Frames)
+unsigned a_spriteframes_getNum(const ASpriteFrames* Frames)
 {
     return Frames->num;
 }
 
-unsigned a_spriteframes_currentIndex(const ASpriteFrames* Frames)
+unsigned a_spriteframes_getCurrentIndex(const ASpriteFrames* Frames)
 {
     return Frames->index;
 }
@@ -218,23 +234,7 @@ void a_spriteframes_reset(ASpriteFrames* Frames)
     }
 }
 
-ASpriteFrames* a_spriteframes_dup(const ASpriteFrames* Frames)
-{
-    ASpriteFrames* f = a_mem_malloc(sizeof(ASpriteFrames));
-
-    f->sprites = a_list_dup(Frames->sprites);
-    f->spriteArray = (ASprite**)a_list_array(Frames->sprites);
-    f->num = Frames->num;
-    f->countdown = Frames->callsToNextFrame;
-    f->callsToNextFrame = Frames->callsToNextFrame;
-    f->index = 0;
-    f->forward = true;
-    f->paused = false;
-
-    return f;
-}
-
-AList* a_spriteframes_sprites(const ASpriteFrames* Frames)
+AList* a_spriteframes_getSprites(const ASpriteFrames* Frames)
 {
     return Frames->sprites;
 }

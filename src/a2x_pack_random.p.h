@@ -24,5 +24,5 @@
 extern unsigned a_random_getSeed(void);
 extern void a_random_setSeed(unsigned Seed);
 
-extern int a_random_int(int Max);
-extern int a_random_range(int Min, int Max);
+extern int a_random_getInt(int Max);
+extern int a_random_getInRange(int Min, int Max);

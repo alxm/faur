@@ -53,16 +53,16 @@ static void inputCallback(void)
         if(a_settings_getBool("sound.on")) {
             int adjust = 0;
 
-            if(a_button_get(g_volumeUpButton)) {
+            if(a_button_getPressed(g_volumeUpButton)) {
                 adjust = A_VOLUME_STEP;
-            } else if(a_button_get(g_volumeDownButton)) {
+            } else if(a_button_getPressed(g_volumeDownButton)) {
                 adjust = -A_VOLUME_STEP;
             }
 
             if(adjust) {
                 adjustSoundVolume(g_volume + adjust);
 
-                if(!a_list_empty(g_musicList)) {
+                if(!a_list_isEmpty(g_musicList)) {
                     a_sdl_sound__musicSetVolume(g_musicVolume);
                 }
 
@@ -75,7 +75,7 @@ static void inputCallback(void)
         }
     #elif A_PLATFORM_DESKTOP || A_PLATFORM_PANDORA
         if(a_settings_getBool("sound.on")) {
-            if(a_button_getOnce(g_musicOnOffButton)) {
+            if(a_button_getPressedOnce(g_musicOnOffButton)) {
                 a_sdl_sound__musicToggle();
             }
         }

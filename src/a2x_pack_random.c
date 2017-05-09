@@ -43,19 +43,19 @@ void a_random_setSeed(unsigned Seed)
     srand(Seed);
 }
 
-int a_random_int(int Max)
+int a_random_getInt(int Max)
 {
     if(Max == 0) {
-        a_out__fatal("a_random_int: invalid arg 0");
+        a_out__fatal("a_random_getInt: invalid arg 0");
     }
 
     return rand() % Max;
 }
 
-int a_random_range(int Min, int Max)
+int a_random_getInRange(int Min, int Max)
 {
     if(Min >= Max) {
-        a_out__fatal("a_random_range: invalid args %d, %d", Min, Max);
+        a_out__fatal("a_random_getInRange: invalid args %d, %d", Min, Max);
     }
 
     return Min + (rand() % (Max - Min));

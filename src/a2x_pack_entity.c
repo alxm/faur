@@ -103,7 +103,7 @@ void a_component_declare(const char* Name, size_t Size, AComponentFree* Free)
     h->size = sizeof(AComponent) + Size;
     h->free = Free;
     h->parent = NULL;
-    h->bit = a_strhash_size(g_components);
+    h->bit = a_strhash_getSize(g_components);
 
     a_strhash_add(g_components, Name, h);
 }
@@ -121,7 +121,7 @@ AEntity* a_entity_new(const char* Id)
     e->collectionNode = a_list_addLast(g_collection->newEntities, e);
     e->systemNodes = a_list_new();
     e->components = a_strhash_new();
-    e->componentBits = a_bitfield_new(a_strhash_size(g_components));
+    e->componentBits = a_bitfield_new(a_strhash_getSize(g_components));
     e->lastActive = a_fps_getCounter() - 1;
     e->references = 0;
     e->muted = false;
@@ -297,7 +297,7 @@ void a_system_declare(const char* Name, const char* Components, ASystemHandler* 
     s->handler = Handler;
     s->compare = Compare;
     s->entities = a_list_new();
-    s->componentBits = a_bitfield_new(a_strhash_size(g_components));
+    s->componentBits = a_bitfield_new(a_strhash_getSize(g_components));
     s->onlyActiveEntities = OnlyActiveEntities;
     s->muted = false;
 

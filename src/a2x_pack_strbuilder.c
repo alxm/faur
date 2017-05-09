@@ -48,7 +48,7 @@ void a_strbuilder_free(AStrBuilder* Builder)
     free(Builder);
 }
 
-const char* a_strbuilder_string(AStrBuilder* Builder)
+const char* a_strbuilder_getString(AStrBuilder* Builder)
 {
     return Builder->buffer;
 }

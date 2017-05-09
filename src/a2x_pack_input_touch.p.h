@@ -24,8 +24,8 @@
 typedef struct AInputTouch AInputTouch;
 
 extern AInputTouch* a_touch_new(const char* Ids);
-extern bool a_touch_working(const AInputTouch* Touch);
+extern bool a_touch_isWorking(const AInputTouch* Touch);
 
-extern bool a_touch_tapped(const AInputTouch* Touch);
-extern bool a_touch_point(const AInputTouch* Touch, int X, int Y);
-extern bool a_touch_box(const AInputTouch* Touch, int X, int Y, int W, int H);
+extern bool a_touch_getTap(const AInputTouch* Touch);
+extern bool a_touch_getPoint(const AInputTouch* Touch, int X, int Y);
+extern bool a_touch_getBox(const AInputTouch* Touch, int X, int Y, int W, int H);

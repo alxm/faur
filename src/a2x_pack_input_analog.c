@@ -103,7 +103,7 @@ AInputAnalog* a_analog_new(const char* Ids)
 
     a_strtok_free(tok);
 
-    if(a_list_empty(a->header.sourceInputs)) {
+    if(a_list_isEmpty(a->header.sourceInputs)) {
         a_out__error("No analog axes found for '%s'", Ids);
     }
 
@@ -112,12 +112,12 @@ AInputAnalog* a_analog_new(const char* Ids)
     return a;
 }
 
-bool a_analog_working(const AInputAnalog* Analog)
+bool a_analog_isWorking(const AInputAnalog* Analog)
 {
-    return !a_list_empty(Analog->header.sourceInputs);
+    return !a_list_isEmpty(Analog->header.sourceInputs);
 }
 
-int a_analog_valueRaw(const AInputAnalog* Analog)
+int a_analog_getValueRaw(const AInputAnalog* Analog)
 {
     #define A_ANALOG_MAX_DISTANCE (1 << 15)
     #define A_ANALOG_ERROR_MARGIN (A_ANALOG_MAX_DISTANCE / 20)
@@ -131,9 +131,9 @@ int a_analog_valueRaw(const AInputAnalog* Analog)
     return 0;
 }
 
-AFix a_analog_valueFix(const AInputAnalog* Analog)
+AFix a_analog_getValueFix(const AInputAnalog* Analog)
 {
-    return a_analog_valueRaw(Analog) >> (15 - A_FIX_BIT_PRECISION);
+    return a_analog_getValueRaw(Analog) >> (15 - A_FIX_BIT_PRECISION);
 }
 
 void a_input_analog__setAxisValue(AInputAnalogSource* Analog, int Value)

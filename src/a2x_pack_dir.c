@@ -140,19 +140,19 @@ AList* a_dir__files(const ADir* Dir)
     return Dir->files;
 }
 
-const char* a_dir_path(const ADir* Dir)
+const char* a_dir_getPath(const ADir* Dir)
 {
     return Dir->path;
 }
 
-const char* a_dir_name(const ADir* Dir)
+const char* a_dir_getName(const ADir* Dir)
 {
     return Dir->name;
 }
 
-unsigned a_dir_numEntries(const ADir* Dir)
+unsigned a_dir_getNumEntries(const ADir* Dir)
 {
-    return a_list_size(Dir->files);
+    return a_list_getSize(Dir->files);
 }
 
 bool a_dir_exists(const char* Path)
@@ -169,12 +169,10 @@ bool a_dir_exists(const char* Path)
 
 bool a_dir_make(const char* Path)
 {
-    int result;
-
     #if A_PLATFORM_LINUX
-        result = mkdir(Path, S_IRWXU);
+        int result = mkdir(Path, S_IRWXU);
     #else
-        result = mkdir(Path);
+        int result = mkdir(Path);
     #endif
 
     if(result == -1) {

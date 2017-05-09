@@ -27,19 +27,20 @@ typedef struct ASpriteFrames ASpriteFrames;
 #include "a2x_pack_sprite.p.h"
 
 extern ASpriteFrames* a_spriteframes_new(const ASprite* Sheet, int X, int Y, unsigned CallsToNextFrame);
-extern ASpriteFrames* a_spriteframes_blank(unsigned CallsToNextFrame);
+extern ASpriteFrames* a_spriteframes_newBlank(unsigned CallsToNextFrame);
+extern ASpriteFrames* a_spriteframes_dup(const ASpriteFrames* Frames);
 extern void a_spriteframes_free(ASpriteFrames* Frames, bool FreeSprites);
 
 extern void a_spriteframes_push(ASpriteFrames* Frames, ASprite* Sprite);
 extern ASprite* a_spriteframes_pop(ASpriteFrames* Frames);
 
 extern ASprite* a_spriteframes_next(ASpriteFrames* Frames);
-extern ASprite* a_spriteframes_get(const ASpriteFrames* Frames);
-extern ASprite* a_spriteframes_getByIndex(const ASpriteFrames* Frames, unsigned Index);
+extern ASprite* a_spriteframes_getCurrent(const ASpriteFrames* Frames);
+extern ASprite* a_spriteframes_getIndex(const ASpriteFrames* Frames, unsigned Index);
 extern ASprite* a_spriteframes_getRandom(const ASpriteFrames* Frames);
 
-extern unsigned a_spriteframes_num(const ASpriteFrames* Frames);
-extern unsigned a_spriteframes_currentIndex(const ASpriteFrames* Frames);
+extern unsigned a_spriteframes_getNum(const ASpriteFrames* Frames);
+extern unsigned a_spriteframes_getCurrentIndex(const ASpriteFrames* Frames);
 
 extern void a_spriteframes_setDirection(ASpriteFrames* Frames, bool Forward);
 extern void a_spriteframes_flipDirection(ASpriteFrames* Frames);
@@ -52,5 +53,4 @@ extern void a_spriteframes_resume(ASpriteFrames* Frames);
 
 extern void a_spriteframes_reset(ASpriteFrames* Frames);
 
-extern ASpriteFrames* a_spriteframes_dup(const ASpriteFrames* Frames);
-extern AList* a_spriteframes_sprites(const ASpriteFrames* Frames);
+extern AList* a_spriteframes_getSprites(const ASpriteFrames* Frames);

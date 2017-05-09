@@ -127,7 +127,7 @@ void a_list_appendCopy(AList* Dst, AList* Src)
     }
 }
 
-void* a_list_get(const AList* List, unsigned Index)
+void* a_list_getIndex(const AList* List, unsigned Index)
 {
     AListNode* n;
 
@@ -150,7 +150,7 @@ void* a_list_getLast(const AList* List)
     return List->last->prev->content;
 }
 
-void a_list_remove(AList* List, const void* Item)
+void a_list_removeItem(AList* List, const void* Item)
 {
     A_LIST_ITERATE(List, void*, item) {
         if(item == Item) {
@@ -228,7 +228,7 @@ AList* a_list_dup(const AList* List)
     return l;
 }
 
-void** a_list_array(AList* List)
+void** a_list_toArray(AList* List)
 {
     void** array = a_mem_malloc(List->items * sizeof(void*));
 
@@ -348,12 +348,12 @@ void a_list_sort(AList* List, AListCompare* Compare)
     List->last->prev = sorted;
 }
 
-unsigned a_list_size(const AList* List)
+unsigned a_list_getSize(const AList* List)
 {
     return List->items;
 }
 
-bool a_list_empty(const AList* List)
+bool a_list_isEmpty(const AList* List)
 {
     return List->first->next == List->last;
 }

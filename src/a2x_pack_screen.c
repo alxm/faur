@@ -35,7 +35,7 @@ static bool g_fullScreenState;
 
     static void inputCallback(void)
     {
-        if(a_button_getOnce(g_fullScreenButton)) {
+        if(a_button_getPressedOnce(g_fullScreenButton)) {
             g_fullScreenState = !g_fullScreenState;
             a_sdl_screen__setFullScreen(g_fullScreenState);
         }
@@ -143,8 +143,8 @@ void a_screen__uninit(void)
 
     freeScreen(&a__screen);
 
-    if(!a_list_empty(g_stack)) {
-        a_out__warning("Leaked %u screen targets", a_list_size(g_stack));
+    if(!a_list_isEmpty(g_stack)) {
+        a_out__warning("Leaked %u screen targets", a_list_getSize(g_stack));
 
         A_LIST_ITERATE(g_stack, AScreen*, screen) {
             a_screen_free(screen);
@@ -161,7 +161,7 @@ void a_screen__uninit(void)
 
 void a_screen__show(void)
 {
-    if(!a_list_empty(g_stack)) {
+    if(!a_list_isEmpty(g_stack)) {
         a_out__fatal("Call a_screen_targetPop for each a_screen_targetPush");
     }
 
@@ -186,7 +186,7 @@ bool a_screen__sameSize(const AScreen* Screen1, const AScreen* Screen2)
         && Screen1->height == Screen2->height;
 }
 
-APixel* a_screen_pixels(void)
+APixel* a_screen_getPixels(void)
 {
     #if A_CONFIG_RENDER_SDL2
         a_sdl_render__targetGetPixels(a__screen.pixels, a__screen.width);
@@ -195,12 +195,12 @@ APixel* a_screen_pixels(void)
     return a__screen.pixels;
 }
 
-int a_screen_width(void)
+int a_screen_getWidth(void)
 {
     return a__screen.width;
 }
 
-int a_screen_height(void)
+int a_screen_getHeight(void)
 {
     return a__screen.height;
 }
@@ -271,10 +271,10 @@ void a_screen_blit(const AScreen* Screen)
     }
 
     #if A_CONFIG_RENDER_SOFTWARE
-        bool noClipping = a_screen_boxInsideClip(0,
-                                                 0,
-                                                 a__screen.width,
-                                                 a__screen.height);
+        bool noClipping = a_screen_isBoxInsideClip(0,
+                                                   0,
+                                                   a__screen.width,
+                                                   a__screen.height);
         APixel* dst = a__screen.pixels;
         APixel* src = Screen->pixels;
         APixel srcPixel;
@@ -450,7 +450,7 @@ void a_screen_targetPop(void)
 
 void a_screen_clipSet(int X, int Y, int Width, int Height)
 {
-    if(!a_screen_boxInsideScreen(X, Y, Width, Height)) {
+    if(!a_screen_isBoxInsideScreen(X, Y, Width, Height)) {
         a_out__error("Invalid clipping area %dx%d @ %d,%d in %dx%d screen",
                      Width,
                      Height,
@@ -478,26 +478,26 @@ void a_screen_clipReset(void)
     a_screen_clipSet(0, 0, a__screen.width, a__screen.height);
 }
 
-bool a_screen_boxOnScreen(int X, int Y, int W, int H)
+bool a_screen_isBoxOnScreen(int X, int Y, int W, int H)
 {
     return a_collide_boxAndBox(X, Y, W, H,
                                0, 0, a__screen.width, a__screen.height);
 }
 
-bool a_screen_boxInsideScreen(int X, int Y, int W, int H)
+bool a_screen_isBoxInsideScreen(int X, int Y, int W, int H)
 {
     return X >= 0 && Y >= 0
         && X + W <= a__screen.width && Y + H <= a__screen.height;
 }
 
-bool a_screen_boxOnClip(int X, int Y, int W, int H)
+bool a_screen_isBoxOnClip(int X, int Y, int W, int H)
 {
     return a_collide_boxAndBox(X, Y, W, H,
                                a__screen.clipX, a__screen.clipY,
                                a__screen.clipWidth, a__screen.clipHeight);
 }
 
-bool a_screen_boxInsideClip(int X, int Y, int W, int H)
+bool a_screen_isBoxInsideClip(int X, int Y, int W, int H)
 {
     return X >= a__screen.clipX && Y >= a__screen.clipY
         && X + W <= a__screen.clipX2 && Y + H <= a__screen.clipY2;

@@ -21,5 +21,5 @@
 
 #include "a2x_system_includes.h"
 
-extern unsigned a_input_numControllers(void);
+extern unsigned a_input_getNumControllers(void);
 extern void a_input_setController(unsigned Index);

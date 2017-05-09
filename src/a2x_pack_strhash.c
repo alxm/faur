@@ -119,9 +119,9 @@ bool a_strhash_contains(const AStrHash* Hash, const char* Key)
     return false;
 }
 
-unsigned a_strhash_size(const AStrHash* Hash)
+unsigned a_strhash_getSize(const AStrHash* Hash)
 {
-    return a_list_size(Hash->entriesList);
+    return a_list_getSize(Hash->entriesList);
 }
 
 AList* a_strhash__entries(const AStrHash* Hash)
