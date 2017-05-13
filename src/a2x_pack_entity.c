@@ -56,15 +56,25 @@ struct AEntity {
     bool muted; // systems don't run on this entity if this is set
 };
 
-#define ENTITY_NAME(Entity) (Entity->id ? Entity->id : "entity")
-
-#define GET_COMPONENT(Header) ((void*)(Header + 1))
-#define GET_HEADER(Component) ((AComponent*)Component - 1)
-
 static ARunningCollection* g_collection;
 static AList* g_stack; // list of ARunningCollection (one for each state)
 static AStrHash* g_components; // table of declared AComponent
 static AStrHash* g_systems; // table of declared ASystem
+
+static inline const char* entityName(const AEntity* Entity)
+{
+    return Entity->id ? Entity->id : "entity";
+}
+
+static inline void* getComponent(const AComponent* Header)
+{
+    return (void*)(Header + 1);
+}
+
+static AComponent* getHeader(const void* Component)
+{
+    return (AComponent*)Component - 1;
+}
 
 void a_entity__init(void)
 {
@@ -110,7 +120,7 @@ void a_component_declare(const char* Name, size_t Size, AComponentFree* Free)
 
 AEntity* a_component_getEntity(const void* Component)
 {
-    return GET_HEADER(Component)->parent;
+    return getHeader(Component)->parent;
 }
 
 AEntity* a_entity_new(const char* Id)
@@ -139,7 +149,7 @@ static void a_entity__free(AEntity* Entity)
 
     A_STRHASH_ITERATE(Entity->components, AComponent*, header) {
         if(header->free) {
-            header->free(GET_COMPONENT(header));
+            header->free(getComponent(header));
         }
 
         free(header);
@@ -166,7 +176,7 @@ void a_entity_release(AEntity* Entity)
 
     if(Entity->references-- == 0) {
         a_out__fatal("Release count exceeds reference count for '%s'",
-                     ENTITY_NAME(Entity));
+                     entityName(Entity));
     }
 }
 
@@ -199,7 +209,7 @@ void* a_entity_addComponent(AEntity* Entity, const char* Component)
     if(a_list__nodeGetList(Entity->collectionNode) != g_collection->newEntities) {
         a_out__fatal("Too late to add component '%s' to '%s'",
                      Component,
-                     ENTITY_NAME(Entity));
+                     entityName(Entity));
     }
 
     const AComponent* c = a_strhash_get(g_components, Component);
@@ -207,13 +217,13 @@ void* a_entity_addComponent(AEntity* Entity, const char* Component)
     if(c == NULL) {
         a_out__fatal("Unknown component '%s' for '%s'",
                      Component,
-                     ENTITY_NAME(Entity));
+                     entityName(Entity));
     }
 
     if(a_bitfield_test(Entity->componentBits, c->bit)) {
         a_out__fatal("Component '%s' was already added to '%s'",
                      Component,
-                     ENTITY_NAME(Entity));
+                     entityName(Entity));
     }
 
     AComponent* header = a_mem_zalloc(c->size);
@@ -224,7 +234,7 @@ void* a_entity_addComponent(AEntity* Entity, const char* Component)
     a_strhash_add(Entity->components, Component, header);
     a_bitfield_set(Entity->componentBits, header->bit);
 
-    return GET_COMPONENT(header);
+    return getComponent(header);
 }
 
 bool a_entity_hasComponent(const AEntity* Entity, const char* Component)
@@ -234,7 +244,7 @@ bool a_entity_hasComponent(const AEntity* Entity, const char* Component)
     if(!has && !a_strhash_contains(g_components, Component)) {
         a_out__fatal("Unknown component '%s' for '%s'",
                      Component,
-                     ENTITY_NAME(Entity));
+                     entityName(Entity));
     }
 
     return has;
@@ -248,13 +258,13 @@ void* a_entity_getComponent(const AEntity* Entity, const char* Component)
         if(!a_strhash_contains(g_components, Component)) {
             a_out__fatal("Unknown component '%s' for '%s'",
                          Component,
-                         ENTITY_NAME(Entity));
+                         entityName(Entity));
         }
 
         return NULL;
     }
 
-    return GET_COMPONENT(header);
+    return getComponent(header);
 }
 
 void* a_entity_requireComponent(const AEntity* Entity, const char* Component)
@@ -265,15 +275,15 @@ void* a_entity_requireComponent(const AEntity* Entity, const char* Component)
         if(!a_strhash_contains(g_components, Component)) {
             a_out__fatal("Unknown component '%s' for '%s'",
                          Component,
-                         ENTITY_NAME(Entity));
+                         entityName(Entity));
         }
 
         a_out__fatal("Missing required component '%s' in '%s'",
                      Component,
-                     ENTITY_NAME(Entity));
+                     entityName(Entity));
     }
 
-    return GET_COMPONENT(header);
+    return getComponent(header);
 }
 
 void a_entity_mute(AEntity* Entity)
