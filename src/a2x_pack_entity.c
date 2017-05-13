@@ -66,6 +66,18 @@ static inline const char* entityName(const AEntity* Entity)
     return Entity->id ? Entity->id : "entity";
 }
 
+static inline bool entityIsNew(const AEntity* Entity)
+{
+    return a_list__nodeGetList(Entity->collectionNode)
+        == g_collection->newEntities;
+}
+
+static inline bool entityIsRemoved(const AEntity* Entity)
+{
+    return a_list__nodeGetList(Entity->collectionNode)
+        == g_collection->removedEntities;
+}
+
 static inline void* getComponent(const AComponent* Header)
 {
     return (void*)(Header + 1);
@@ -182,7 +194,7 @@ void a_entity_release(AEntity* Entity)
 
 void a_entity_remove(AEntity* Entity)
 {
-    if(a_list__nodeGetList(Entity->collectionNode) != g_collection->removedEntities) {
+    if(!entityIsRemoved(Entity)) {
         a_list_removeNode(Entity->collectionNode);
         Entity->collectionNode = a_list_addLast(g_collection->removedEntities,
                                                 Entity);
@@ -191,7 +203,7 @@ void a_entity_remove(AEntity* Entity)
 
 bool a_entity_isRemoved(const AEntity* Entity)
 {
-    return a_list__nodeGetList(Entity->collectionNode) == g_collection->removedEntities;
+    return entityIsRemoved(Entity);
 }
 
 void a_entity_markActive(AEntity* Entity)
@@ -206,7 +218,7 @@ bool a_entity_isActive(const AEntity* Entity)
 
 void* a_entity_addComponent(AEntity* Entity, const char* Component)
 {
-    if(a_list__nodeGetList(Entity->collectionNode) != g_collection->newEntities) {
+    if(!entityIsNew(Entity)) {
         a_out__fatal("Too late to add component '%s' to '%s'",
                      Component,
                      entityName(Entity));
