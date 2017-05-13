@@ -443,6 +443,13 @@ void a_system__run(void)
         if(entity->references == 0) {
             a_entity__free(entity);
             A_LIST_REMOVE_CURRENT();
+        } else if(!a_list_isEmpty(entity->systemNodes)) {
+            // Remove entity from any systems it's in
+            A_LIST_ITERATE(entity->systemNodes, AListNode*, node) {
+                a_list_removeNode(node);
+            }
+
+            a_list_clear(entity->systemNodes);
         }
     }
 }
