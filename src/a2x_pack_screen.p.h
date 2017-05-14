@@ -36,6 +36,7 @@ extern void a_screen_free(AScreen* Screen);
 
 extern void a_screen_copy(AScreen* Dst, const AScreen* Src);
 extern void a_screen_blit(const AScreen* Screen);
+extern void a_screen_clear(void);
 
 extern void a_screen_targetPushScreen(AScreen* Screen);
 extern void a_screen_targetPushSprite(ASprite* Sprite);

@@ -372,6 +372,21 @@ void a_screen_blit(const AScreen* Screen)
     #endif
 }
 
+void a_screen_clear(void)
+{
+    #if A_CONFIG_RENDER_SOFTWARE
+        memset(a__screen.pixels, 0, a__screen.pixelsSize);
+    #elif A_CONFIG_RENDER_SDL2
+        a_pixel_push();
+
+        a_pixel_setBlend(A_PIXEL_BLEND_PLAIN);
+        a_pixel_setPixel(0);
+        a_draw_fill();
+
+        a_pixel_pop();
+    #endif
+}
+
 static void pushTarget(APixel* Pixels, size_t PixelsSize, int Width, int Height, void* Data)
 {
     a_list_push(g_stack, a_mem_dup(&a__screen, sizeof(AScreen)));
