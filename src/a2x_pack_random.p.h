@@ -32,3 +32,5 @@ extern void a_random_setSeed(unsigned Seed);
 
 extern int a_random_getInt(int Max);
 extern int a_random_getInRange(int Min, int Max);
+
+extern bool a_random_chance(int Something, int OutOf);

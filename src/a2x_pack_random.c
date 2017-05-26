@@ -78,3 +78,12 @@ int a_random_getInRange(int Min, int Max)
 
     return Min + (g_rand() % (Max - Min));
 }
+
+bool a_random_chance(int Something, int OutOf)
+{
+    if(Something > OutOf) {
+        a_out__fatal("a_random_chance: invalid args %d, %d", Something, OutOf);
+    }
+
+    return a_random_getInt(OutOf) < Something;
+}
