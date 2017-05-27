@@ -1,5 +1,5 @@
 /*
-    Copyright 2016 Alex Margarit
+    Copyright 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -21,8 +21,16 @@
 
 #include "a2x_system_includes.h"
 
+typedef int ARandomPrng(void);
+typedef void ARandomPrngSeed(unsigned Seed);
+
+extern void a_random_setGenerator(ARandomPrng* Rand, ARandomPrngSeed* Srand);
+extern void a_random_resetGenerator(void);
+
 extern unsigned a_random_getSeed(void);
 extern void a_random_setSeed(unsigned Seed);
 
 extern int a_random_getInt(int Max);
 extern int a_random_getInRange(int Min, int Max);
+
+extern bool a_random_chance(int Something, int OutOf);

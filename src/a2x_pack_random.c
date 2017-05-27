@@ -1,5 +1,5 @@
 /*
-    Copyright 2016 Alex Margarit
+    Copyright 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -19,10 +19,20 @@
 
 #include "a2x_pack_random.v.h"
 
+static ARandomPrng* g_rand;
+static ARandomPrngSeed* g_srand;
 static unsigned g_seed;
 
 void a_random__init(void)
 {
+    a_random_resetGenerator();
+}
+
+void a_random_setGenerator(ARandomPrng* Rand, ARandomPrngSeed* Srand)
+{
+    g_rand = Rand;
+    g_srand = Srand;
+
     time_t t = time(NULL);
 
     if(t < 0) {
@@ -30,6 +40,11 @@ void a_random__init(void)
     } else {
         a_random_setSeed((unsigned)t);
     }
+}
+
+void a_random_resetGenerator(void)
+{
+    a_random_setGenerator(rand, srand);
 }
 
 unsigned a_random_getSeed(void)
@@ -40,7 +55,10 @@ unsigned a_random_getSeed(void)
 void a_random_setSeed(unsigned Seed)
 {
     g_seed = Seed;
-    srand(Seed);
+
+    if(g_srand != NULL) {
+        g_srand(Seed);
+    }
 }
 
 int a_random_getInt(int Max)
@@ -49,7 +67,7 @@ int a_random_getInt(int Max)
         a_out__fatal("a_random_getInt: invalid arg 0");
     }
 
-    return rand() % Max;
+    return g_rand() % Max;
 }
 
 int a_random_getInRange(int Min, int Max)
@@ -58,5 +76,14 @@ int a_random_getInRange(int Min, int Max)
         a_out__fatal("a_random_getInRange: invalid args %d, %d", Min, Max);
     }
 
-    return Min + (rand() % (Max - Min));
+    return Min + (g_rand() % (Max - Min));
+}
+
+bool a_random_chance(int Something, int OutOf)
+{
+    if(Something > OutOf) {
+        a_out__fatal("a_random_chance: invalid args %d, %d", Something, OutOf);
+    }
+
+    return a_random_getInt(OutOf) < Something;
 }
