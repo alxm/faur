@@ -25,21 +25,21 @@ static unsigned g_seed;
 
 void a_random__init(void)
 {
-    time_t t = time(NULL);
-
     a_random_resetGenerator();
-
-    if(t < 0) {
-        a_random_setSeed(0);
-    } else {
-        a_random_setSeed((unsigned)t);
-    }
 }
 
 void a_random_setGenerator(ARandomPrng* Rand, ARandomPrngSeed* Srand)
 {
     g_rand = Rand;
     g_srand = Srand;
+
+    time_t t = time(NULL);
+
+    if(t < 0) {
+        a_random_setSeed(0);
+    } else {
+        a_random_setSeed((unsigned)t);
+    }
 }
 
 void a_random_resetGenerator(void)
