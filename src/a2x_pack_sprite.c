@@ -300,13 +300,9 @@ static void assignPixels(ASprite* Sprite, APixel* Pixels)
                 break;
             }
         }
-
-        a_sprite__refreshTransparency(Sprite);
-    #elif A_CONFIG_RENDER_SDL2
-        Sprite->texture = a_sdl_render__textureMakeSprite(Sprite->pixels,
-                                                          Sprite->w,
-                                                          Sprite->h);
     #endif
+
+    a_sprite__commit(Sprite);
 }
 
 ASprite* a_sprite_newFromFile(const char* Path)
@@ -580,71 +576,79 @@ APixel a_sprite_getColorKey(void)
     return a_sprite__colorKey;
 }
 
-#if A_CONFIG_RENDER_SOFTWARE
-void a_sprite__refreshTransparency(ASprite* Sprite)
+void a_sprite__commit(ASprite* Sprite)
 {
-    if(!Sprite->colorKeyed) {
-        return;
-    }
-
-    const int spriteWidth = Sprite->w;
-    const int spriteHeight = Sprite->h;
-    const APixel* const dst = Sprite->pixels;
-
-    // Spans format for each graphic line:
-    // [NumSpans << 1 | 1 (draw) / 0 (transparent)][[len]...]
-
-    size_t bytesNeeded = 0;
-    const APixel* dest = dst;
-
-    for(int y = spriteHeight; y--; ) {
-        bytesNeeded += sizeof(unsigned); // total size and initial state
-        bool lastState = *dest != a_sprite__colorKey; // initial state
-
-        for(int x = spriteWidth; x--; ) {
-            bool newState = *dest++ != a_sprite__colorKey;
-
-            if(newState != lastState) {
-                bytesNeeded += sizeof(unsigned); // length of new span
-                lastState = newState;
-            }
+    #if A_CONFIG_RENDER_SOFTWARE
+        if(!Sprite->colorKeyed) {
+            return;
         }
 
-        bytesNeeded += sizeof(unsigned); // line's last span length
-    }
+        const int spriteWidth = Sprite->w;
+        const int spriteHeight = Sprite->h;
+        const APixel* const dst = Sprite->pixels;
 
-    if(Sprite->spansSize < bytesNeeded) {
-        free(Sprite->spans);
-        Sprite->spans = a_mem_malloc(bytesNeeded);
-        Sprite->spansSize = bytesNeeded;
-    }
+        // Spans format for each graphic line:
+        // [NumSpans << 1 | 1 (draw) / 0 (transparent)][[len]...]
 
-    dest = dst;
-    unsigned* spans = Sprite->spans;
+        size_t bytesNeeded = 0;
+        const APixel* dest = dst;
 
-    for(int y = spriteHeight; y--; ) {
-        unsigned* lineStart = spans;
-        unsigned numSpans = 1; // line has at least 1 span
-        unsigned spanLength = 0;
+        for(int y = spriteHeight; y--; ) {
+            bytesNeeded += sizeof(unsigned); // total size and initial state
+            bool lastState = *dest != a_sprite__colorKey; // initial state
 
-        bool lastState = *dest != a_sprite__colorKey; // initial draw state
-        *spans++ = lastState;
+            for(int x = spriteWidth; x--; ) {
+                bool newState = *dest++ != a_sprite__colorKey;
 
-        for(int x = spriteWidth; x--; ) {
-            bool newState = *dest++ != a_sprite__colorKey;
-
-            if(newState == lastState) {
-                spanLength++; // keep growing current span
-            } else {
-                *spans++ = spanLength; // record the just-ended span length
-                numSpans++;
-                spanLength = 1; // start a new span from this pixel
-                lastState = newState;
+                if(newState != lastState) {
+                    bytesNeeded += sizeof(unsigned); // length of new span
+                    lastState = newState;
+                }
             }
+
+            bytesNeeded += sizeof(unsigned); // line's last span length
         }
 
-        *spans++ = spanLength; // record the last span's length
-        *lineStart |= numSpans << 1; // record line's number of spans
-    }
+        if(Sprite->spansSize < bytesNeeded) {
+            free(Sprite->spans);
+            Sprite->spans = a_mem_malloc(bytesNeeded);
+            Sprite->spansSize = bytesNeeded;
+        }
+
+        dest = dst;
+        unsigned* spans = Sprite->spans;
+
+        for(int y = spriteHeight; y--; ) {
+            unsigned* lineStart = spans;
+            unsigned numSpans = 1; // line has at least 1 span
+            unsigned spanLength = 0;
+
+            bool lastState = *dest != a_sprite__colorKey; // initial draw state
+            *spans++ = lastState;
+
+            for(int x = spriteWidth; x--; ) {
+                bool newState = *dest++ != a_sprite__colorKey;
+
+                if(newState == lastState) {
+                    spanLength++; // keep growing current span
+                } else {
+                    *spans++ = spanLength; // record the just-ended span length
+                    numSpans++;
+                    spanLength = 1; // start a new span from this pixel
+                    lastState = newState;
+                }
+            }
+
+            *spans++ = spanLength; // record the last span's length
+            *lineStart |= numSpans << 1; // record line's number of spans
+        }
+    #elif A_CONFIG_RENDER_SDL2
+        if(Sprite->texture != NULL) {
+            a_sdl_render__textureFree(Sprite->texture);
+        }
+
+        Sprite->texture = a_sdl_render__textureMakeSprite(Sprite->pixels,
+                                                          Sprite->w,
+                                                          Sprite->h);
+    #endif
 }
-#endif

@@ -48,9 +48,7 @@ extern void a_sprite__uninit(void);
 
 extern void a_sprite__updateRoutines(void);
 
-#if A_CONFIG_RENDER_SOFTWARE
-extern void a_sprite__refreshTransparency(ASprite* Sprite);
-#endif
+extern void a_sprite__commit(ASprite* Sprite);
 
 #define A_SPRITE__NAME(Sprite) (Sprite->nameId ? Sprite->nameId : "Sprite")
 #define a_sprite__getPixel(s, x, y) (*((s)->pixels + (y) * (s)->w + (x)))
