@@ -546,6 +546,17 @@ void a_sprite_blitEx(const ASprite* Sprite, int X, int Y, AFix Scale, unsigned A
 }
 #endif
 
+void a_sprite_replaceColor(ASprite* Sprite, APixel OldColor, APixel NewColor)
+{
+    for(size_t i = Sprite->pixelsSize / sizeof(APixel); i--; ) {
+        if(Sprite->pixels[i] == OldColor) {
+            Sprite->pixels[i] = NewColor;
+        }
+    }
+
+    a_sprite__commit(Sprite);
+}
+
 int a_sprite_getWidth(const ASprite* Sprite)
 {
     return Sprite->w;
