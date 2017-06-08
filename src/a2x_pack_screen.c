@@ -441,7 +441,7 @@ void a_screen_targetPop(void)
 {
     #if A_CONFIG_RENDER_SOFTWARE
         if(a__screen.sprite) {
-            a_sprite__refreshTransparency(a__screen.sprite);
+            a_sprite__commit(a__screen.sprite);
         }
     #endif
 
