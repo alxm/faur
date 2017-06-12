@@ -50,29 +50,33 @@ static int a_dir__sort(const ADirEntry* A, const ADirEntry* B)
     const char* nameB = B->name;
     int a = *nameA;
     int b = *nameB;
+    int lowerCaseComp = 0;
 
-    while(a != '\0' && b != '\0' && a == b) {
+    while(a != '\0' && b != '\0') {
+        if(a != b) {
+            int lower_a = tolower(a);
+            int lower_b = tolower(b);
+
+            if(lower_a == lower_b) {
+                if(lowerCaseComp == 0) {
+                    lowerCaseComp = b - a;
+                }
+            } else {
+                a = lower_a;
+                b = lower_b;
+                break;
+            }
+        }
+
         a = *++nameA;
         b = *++nameB;
     }
 
-    if(isalpha(a) && isalpha(b)) {
-        const int a_lower = tolower(a);
-        const int b_lower = tolower(b);
-
-        if(a_lower == b_lower) {
-            if(a == a_lower) {
-                return -1;
-            } else {
-                return 1;
-            }
-        } else {
-            a = a_lower;
-            b = b_lower;
-        }
+    if(a == '\0' && b == '\0' && lowerCaseComp != 0) {
+        return lowerCaseComp;
+    } else {
+        return a - b;
     }
-
-    return a - b;
 }
 
 ADir* a_dir_open(const char* Path)
