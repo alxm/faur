@@ -263,14 +263,7 @@ FILE* a_file_getHandle(const AFile* File)
 
 bool a_file_exists(const char* Path)
 {
-    FILE* f = fopen(Path, "r");
-
-    if(f) {
-        fclose(f);
-        return true;
-    }
-
-    return false;
+    return access(Path, F_OK) == 0;
 }
 
 bool a_file_isDir(const char* Path)
