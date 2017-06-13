@@ -30,8 +30,10 @@ extern ADir* a_dir_open(const char* Path);
 extern void a_dir_close(ADir* Dir);
 
 extern AList* a_dir_getEntries(const ADir* Dir);
+
 extern const char* a_dir_entryGetName(const ADirEntry* Entry);
 extern const char* a_dir_entryGetPath(const ADirEntry* Entry);
+extern bool a_dir_entryIsDir(const ADirEntry* Entry);
 
 extern const char* a_dir_getPath(const ADir* Dir);
 extern const char* a_dir_getName(const ADir* Dir);

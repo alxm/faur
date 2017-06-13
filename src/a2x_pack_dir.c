@@ -29,6 +29,7 @@ struct ADir {
 struct ADirEntry {
     char* name;
     char* full;
+    bool isDir;
 };
 
 static AList* g_openedDirs;
@@ -101,6 +102,7 @@ ADir* a_dir_open(const char* Path)
 
         e->name = a_str_dup(ent->d_name);
         e->full = a_str_merge(Path, "/", e->name, NULL);
+        e->isDir = a_dir_exists(e->full);
 
         a_list_addLast(files, e);
     }
@@ -157,6 +159,11 @@ const char* a_dir_entryGetName(const ADirEntry* Entry)
 const char* a_dir_entryGetPath(const ADirEntry* Entry)
 {
     return Entry->full;
+}
+
+bool a_dir_entryIsDir(const ADirEntry* Entry)
+{
+    return Entry->isDir;
 }
 
 const char* a_dir_getPath(const ADir* Dir)
