@@ -161,14 +161,13 @@ unsigned a_dir_getNumEntries(const ADir* Dir)
 
 bool a_dir_exists(const char* Path)
 {
-    DIR* d = opendir(Path);
+    struct stat info;
 
-    if(d) {
-        closedir(d);
-        return true;
+    if(stat(Path, &info) != 0) {
+        return false;
     }
 
-    return false;
+    return S_ISDIR(info.st_mode);
 }
 
 bool a_dir_make(const char* Path)
