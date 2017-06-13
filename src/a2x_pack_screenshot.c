@@ -35,34 +35,38 @@ static bool lazy_init(void)
     if(a_dir_exists(screensDir)) {
         ADir* dir = a_dir_open(screensDir);
 
-        if(a_dir_getNumEntries(dir) == 0) {
+        // Only interested in the last file, to get the number from its name
+        ADirEntry* entry = a_list_getLast(a_dir_getEntries(dir));
+
+        if(entry == NULL) {
             g_isInit = true;
         } else {
-            // Only interested in the last file, to get the number from its name
-            A_DIR_ITERATE_BACKWARDS(dir, file, fullPath) {
-                int start = a_str_getLastIndex(file, '-');
-                int end = a_str_getLastIndex(file, '.');
+            const char* file = a_dir_entryGetName(entry);
+            const char* fullPath = a_dir_entryGetPath(entry);
 
-                if(start != -1 && end != -1 && end - start == 6) {
-                    char* numberStr = a_str_getSub(file, start + 1, end);
-                    int number = atoi(numberStr);
-                    free(numberStr);
+            int start = a_str_getLastIndex(file, '-');
+            int end = a_str_getLastIndex(file, '.');
 
-                    if(number > 0) {
-                        g_screenshotNumber = (unsigned)number;
-                        g_isInit = true;
-                        break;
-                    }
+            if(start != -1 && end != -1 && end - start == 6) {
+                char* numberStr = a_str_getSub(file, start + 1, end);
+                int number = atoi(numberStr);
+                free(numberStr);
+
+                if(number > 0) {
+                    g_screenshotNumber = (unsigned)number;
+                    g_isInit = true;
                 }
+            }
 
+            if(!g_isInit) {
                 a_out__error("Invalid file name %s", fullPath);
-                break;
             }
         }
 
         a_dir_close(dir);
     } else {
         a_out__message("Making screenshots dir: %s", screensDir);
+
         if(a_dir_make(screensDir)) {
             g_isInit = true;
         }

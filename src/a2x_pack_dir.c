@@ -26,6 +26,11 @@ struct ADir {
     AListNode* openedDirsNode;
 };
 
+struct ADirEntry {
+    char* name;
+    char* full;
+};
+
 static AList* g_openedDirs;
 static void a_dir__close(ADir* Dir);
 
@@ -139,9 +144,19 @@ void a_dir__close(ADir* Dir)
     free(Dir);
 }
 
-AList* a_dir__files(const ADir* Dir)
+AList* a_dir_getEntries(const ADir* Dir)
 {
     return Dir->files;
+}
+
+const char* a_dir_entryGetName(const ADirEntry* Entry)
+{
+    return Entry->name;
+}
+
+const char* a_dir_entryGetPath(const ADirEntry* Entry)
+{
+    return Entry->full;
 }
 
 const char* a_dir_getPath(const ADir* Dir)
