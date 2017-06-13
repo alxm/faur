@@ -46,7 +46,6 @@ extern const char* a_file_getName(const AFile* File);
 extern FILE* a_file_getHandle(const AFile* File);
 
 extern bool a_file_exists(const char* Path);
-extern bool a_file_isDir(const char* Path);
 extern size_t a_file_getSize(const char* Path);
 
 extern uint8_t* a_file_toBuffer(const char* Path);

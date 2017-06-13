@@ -266,18 +266,6 @@ bool a_file_exists(const char* Path)
     return access(Path, F_OK) == 0;
 }
 
-bool a_file_isDir(const char* Path)
-{
-    struct stat info;
-
-    if(stat(Path, &info) != 0) {
-        a_out__error("a_file_isDir: stat(%s) failed", Path);
-        return false;
-    }
-
-    return S_ISDIR(info.st_mode);
-}
-
 size_t a_file_getSize(const char* Path)
 {
     struct stat info;
