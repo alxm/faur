@@ -26,47 +26,14 @@ typedef struct ADirEntry ADirEntry;
 
 #include "a2x_pack_list.p.h"
 
-struct ADirEntry {
-    char* name;
-    char* full;
-};
-
 extern ADir* a_dir_open(const char* Path);
 extern void a_dir_close(ADir* Dir);
 
-extern AList* a_dir__files(const ADir* Dir);
+extern AList* a_dir_getEntries(const ADir* Dir);
 
-#define A_DIR_ITERATE(Dir, NameVar, FullPathVar)                \
-    for(const char *NameVar = (char*)1, *FullPathVar;           \
-        NameVar;                                                \
-        NameVar = NULL)                                         \
-        A_LIST_FILTER(                                          \
-            a_dir__files(Dir), ADirEntry*, entry,               \
-            (NameVar = entry->name, FullPathVar = entry->full))
-
-#define A_DIR_ITERATE_BACKWARDS(Dir, NameVar, FullPathVar)      \
-    for(const char *NameVar = (char*)1, *FullPathVar;           \
-        NameVar;                                                \
-        NameVar = NULL)                                         \
-        A_LIST_FILTER_BACKWARDS(                                \
-            a_dir__files(Dir), ADirEntry*, entry,               \
-            (NameVar = entry->name, FullPathVar = entry->full))
-
-#define A_DIR_FILTER(Dir, NameVar, FullPathVar, Filter)                       \
-    for(const char *NameVar = (char*)1, *FullPathVar;                         \
-        NameVar;                                                              \
-        NameVar = NULL)                                                       \
-        A_LIST_FILTER(                                                        \
-            a_dir__files(Dir), ADirEntry*, entry,                             \
-            ((NameVar = entry->name, FullPathVar = entry->full) && (Filter)))
-
-#define A_DIR_FILTER_BACKWARDS(Dir, NameVar, FullPathVar, Filter)             \
-    for(const char *NameVar = (char*)1, *FullPathVar;                         \
-        NameVar;                                                              \
-        NameVar = NULL)                                                       \
-        A_LIST_FILTER_BACKWARDS(                                              \
-            a_dir__files(Dir), ADirEntry*, entry,                             \
-            ((NameVar = entry->name, FullPathVar = entry->full) && (Filter)))
+extern const char* a_dir_entryGetName(const ADirEntry* Entry);
+extern const char* a_dir_entryGetPath(const ADirEntry* Entry);
+extern bool a_dir_entryIsDir(const ADirEntry* Entry);
 
 extern const char* a_dir_getPath(const ADir* Dir);
 extern const char* a_dir_getName(const ADir* Dir);

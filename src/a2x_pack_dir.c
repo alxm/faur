@@ -26,6 +26,12 @@ struct ADir {
     AListNode* openedDirsNode;
 };
 
+struct ADirEntry {
+    char* name;
+    char* full;
+    bool isDir;
+};
+
 static AList* g_openedDirs;
 static void a_dir__close(ADir* Dir);
 
@@ -50,29 +56,33 @@ static int a_dir__sort(const ADirEntry* A, const ADirEntry* B)
     const char* nameB = B->name;
     int a = *nameA;
     int b = *nameB;
+    int lowerCaseComp = 0;
 
-    while(a != '\0' && b != '\0' && a == b) {
+    while(a != '\0' && b != '\0') {
+        if(a != b) {
+            int lower_a = tolower(a);
+            int lower_b = tolower(b);
+
+            if(lower_a == lower_b) {
+                if(lowerCaseComp == 0) {
+                    lowerCaseComp = b - a;
+                }
+            } else {
+                a = lower_a;
+                b = lower_b;
+                break;
+            }
+        }
+
         a = *++nameA;
         b = *++nameB;
     }
 
-    if(isalpha(a) && isalpha(b)) {
-        const int a_lower = tolower(a);
-        const int b_lower = tolower(b);
-
-        if(a_lower == b_lower) {
-            if(a == a_lower) {
-                return -1;
-            } else {
-                return 1;
-            }
-        } else {
-            a = a_lower;
-            b = b_lower;
-        }
+    if(a == '\0' && b == '\0' && lowerCaseComp != 0) {
+        return lowerCaseComp;
+    } else {
+        return a - b;
     }
-
-    return a - b;
 }
 
 ADir* a_dir_open(const char* Path)
@@ -92,6 +102,7 @@ ADir* a_dir_open(const char* Path)
 
         e->name = a_str_dup(ent->d_name);
         e->full = a_str_merge(Path, "/", e->name, NULL);
+        e->isDir = a_dir_exists(e->full);
 
         a_list_addLast(files, e);
     }
@@ -135,9 +146,24 @@ void a_dir__close(ADir* Dir)
     free(Dir);
 }
 
-AList* a_dir__files(const ADir* Dir)
+AList* a_dir_getEntries(const ADir* Dir)
 {
     return Dir->files;
+}
+
+const char* a_dir_entryGetName(const ADirEntry* Entry)
+{
+    return Entry->name;
+}
+
+const char* a_dir_entryGetPath(const ADirEntry* Entry)
+{
+    return Entry->full;
+}
+
+bool a_dir_entryIsDir(const ADirEntry* Entry)
+{
+    return Entry->isDir;
 }
 
 const char* a_dir_getPath(const ADir* Dir)
@@ -157,14 +183,13 @@ unsigned a_dir_getNumEntries(const ADir* Dir)
 
 bool a_dir_exists(const char* Path)
 {
-    DIR* d = opendir(Path);
+    struct stat info;
 
-    if(d) {
-        closedir(d);
-        return true;
+    if(stat(Path, &info) != 0) {
+        return false;
     }
 
-    return false;
+    return S_ISDIR(info.st_mode);
 }
 
 bool a_dir_make(const char* Path)

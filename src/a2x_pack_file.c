@@ -263,26 +263,7 @@ FILE* a_file_getHandle(const AFile* File)
 
 bool a_file_exists(const char* Path)
 {
-    FILE* f = fopen(Path, "r");
-
-    if(f) {
-        fclose(f);
-        return true;
-    }
-
-    return false;
-}
-
-bool a_file_isDir(const char* Path)
-{
-    struct stat info;
-
-    if(stat(Path, &info) != 0) {
-        a_out__error("a_file_isDir: stat(%s) failed", Path);
-        return false;
-    }
-
-    return S_ISDIR(info.st_mode);
+    return access(Path, F_OK) == 0;
 }
 
 size_t a_file_getSize(const char* Path)
