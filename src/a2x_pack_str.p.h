@@ -21,6 +21,8 @@
 
 #include "a2x_system_includes.h"
 
+#include "a2x_pack_list.p.h"
+
 #define a_str_equal(String1, String2) (strcmp(String1, String2) == 0)
 
 extern char* a_str_merge(const char* String1, ...);
@@ -45,3 +47,5 @@ extern char* a_str_getSuffixLastFind(const char* String, char Marker);
 extern char* a_str_extractPath(const char* String);
 extern char* a_str_extractFile(const char* String);
 extern char* a_str_extractName(const char* String);
+
+extern AList* a_str_split(const char* String, const char* Delimiters);

@@ -218,3 +218,44 @@ char* a_str_extractName(const char* String)
         return file;
     }
 }
+
+AList* a_str_split(const char* String, const char* Delimiters)
+{
+    AList* strings = a_list_new();
+
+    const char* str = String;
+    const char* start = String;
+
+    while(*str != '\0') {
+        for(const char* d = Delimiters; *d != '\0'; d++) {
+            if(*str == *d) {
+                if(str > start) {
+                    size_t len = (size_t)(str - start);
+                    char* split = a_mem_malloc(len + 1);
+
+                    memcpy(split, start, len);
+                    split[len] = '\0';
+
+                    a_list_addLast(strings, split);
+                }
+
+                start = str + 1;
+                break;
+            }
+        }
+
+        str++;
+    }
+
+    if(str > start) {
+        size_t len = (size_t)(str - start);
+        char* split = a_mem_malloc(len + 1);
+
+        memcpy(split, start, len);
+        split[len] = '\0';
+
+        a_list_addLast(strings, split);
+    }
+
+    return strings;
+}
