@@ -325,9 +325,9 @@ void a_system_declare(const char* Name, const char* Components, ASystemHandler* 
 
     a_strhash_add(g_systems, Name, s);
 
-    AStrTok* tok = a_strtok_new(Components, " ");
+    AList* tok = a_str_split(Components, " ");
 
-    A_STRTOK_ITERATE(tok, name) {
+    A_LIST_ITERATE(tok, char*, name) {
         AComponent* c = a_strhash_get(g_components, name);
 
         if(c == NULL) {
@@ -338,14 +338,14 @@ void a_system_declare(const char* Name, const char* Components, ASystemHandler* 
         a_bitfield_set(s->componentBits, c->bit);
     }
 
-    a_strtok_free(tok);
+    a_list_freeEx(tok, free);
 }
 
 void a_system_tick(const char* Systems)
 {
-    AStrTok* tok = a_strtok_new(Systems, " ");
+    AList* tok = a_str_split(Systems, " ");
 
-    A_STRTOK_ITERATE(tok, systemName) {
+    A_LIST_ITERATE(tok, char*, systemName) {
         ASystem* system = a_strhash_get(g_systems, systemName);
 
         if(system == NULL) {
@@ -355,14 +355,14 @@ void a_system_tick(const char* Systems)
         a_list_addLast(g_collection->tickSystems, system);
     }
 
-    a_strtok_free(tok);
+    a_list_freeEx(tok, free);
 }
 
 void a_system_draw(const char* Systems)
 {
-    AStrTok* tok = a_strtok_new(Systems, " ");
+    AList* tok = a_str_split(Systems, " ");
 
-    A_STRTOK_ITERATE(tok, systemName) {
+    A_LIST_ITERATE(tok, char*, systemName) {
         ASystem* system = a_strhash_get(g_systems, systemName);
 
         if(system == NULL) {
@@ -372,7 +372,7 @@ void a_system_draw(const char* Systems)
         a_list_addLast(g_collection->drawSystems, system);
     }
 
-    a_strtok_free(tok);
+    a_list_freeEx(tok, free);
 }
 
 void* a_system_getContext(void)
@@ -410,9 +410,9 @@ static void runSystem(const ASystem* System)
 
 void a_system_execute(const char* Systems)
 {
-    AStrTok* tok = a_strtok_new(Systems, " ");
+    AList* tok = a_str_split(Systems, " ");
 
-    A_STRTOK_ITERATE(tok, name) {
+    A_LIST_ITERATE(tok, char*, name) {
         ASystem* system = a_strhash_get(g_systems, name);
 
         if(system == NULL) {
@@ -422,7 +422,7 @@ void a_system_execute(const char* Systems)
         runSystem(system);
     }
 
-    a_strtok_free(tok);
+    a_list_freeEx(tok, free);
 }
 
 void a_system__run(void)
@@ -471,9 +471,9 @@ void a_system_flushNewEntities(void)
 
 static void muteSystems(const char* Systems, bool Muted)
 {
-    AStrTok* tok = a_strtok_new(Systems, " ");
+    AList* tok = a_str_split(Systems, " ");
 
-    A_STRTOK_ITERATE(tok, name) {
+    A_LIST_ITERATE(tok, char*, name) {
         ASystem* system = a_strhash_get(g_systems, name);
 
         if(system == NULL) {
@@ -485,7 +485,7 @@ static void muteSystems(const char* Systems, bool Muted)
         system->muted = Muted;
     }
 
-    a_strtok_free(tok);
+    a_list_freeEx(tok, free);
 }
 
 void a_system_mute(const char* Systems)

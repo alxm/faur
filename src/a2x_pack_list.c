@@ -44,11 +44,20 @@ AList* a_list_new(void)
 
 void a_list_free(AList* List)
 {
+    a_list_freeEx(List, NULL);
+}
+
+void a_list_freeEx(AList* List, AListFree* Free)
+{
     AListNode* n = List->first->next;
 
     while(n != List->last) {
         AListNode* t = n;
         n = n->next;
+
+        if(Free) {
+            Free(t->content);
+        }
 
         free(t);
     }

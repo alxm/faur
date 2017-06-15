@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016 Alex Margarit
+    Copyright 2010, 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -21,7 +21,7 @@
 
 #include "a2x_system_includes.h"
 
-#define a_str_equal(String1, String2) (strcmp(String1, String2) == 0)
+#include "a2x_pack_list.p.h"
 
 extern char* a_str_merge(const char* String1, ...);
 extern char* a_str_dup(const char* String);
@@ -45,3 +45,10 @@ extern char* a_str_getSuffixLastFind(const char* String, char Marker);
 extern char* a_str_extractPath(const char* String);
 extern char* a_str_extractFile(const char* String);
 extern char* a_str_extractName(const char* String);
+
+extern AList* a_str_split(const char* String, const char* Delimiters);
+
+static inline bool a_str_equal(const char* String1, const char* String2)
+{
+    return strcmp(String1, String2) == 0;
+}

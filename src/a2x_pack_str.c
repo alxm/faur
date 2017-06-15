@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016 Alex Margarit
+    Copyright 2010, 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -32,18 +32,22 @@ char* a_str_merge(const char* String1, ...)
 
     va_end(args);
 
-    char* buffer = a_mem_malloc(size + 1);
-    buffer[0] = '\0';
+    char* string = a_mem_malloc(size + 1);
+    char* buffer = string;
 
     va_start(args, String1);
 
     for(const char* s = String1; s != NULL; s = va_arg(args, const char*)) {
-        strcat(buffer, s);
+        while(*s != '\0') {
+            *buffer++ = *s++;
+        }
     }
+
+    *buffer = '\0';
 
     va_end(args);
 
-    return buffer;
+    return string;
 }
 
 char* a_str_dup(const char* String)
@@ -217,4 +221,45 @@ char* a_str_extractName(const char* String)
     } else {
         return file;
     }
+}
+
+AList* a_str_split(const char* String, const char* Delimiters)
+{
+    AList* strings = a_list_new();
+
+    const char* str = String;
+    const char* start = String;
+
+    while(*str != '\0') {
+        for(const char* d = Delimiters; *d != '\0'; d++) {
+            if(*str == *d) {
+                if(str > start) {
+                    size_t len = (size_t)(str - start);
+                    char* split = a_mem_malloc(len + 1);
+
+                    memcpy(split, start, len);
+                    split[len] = '\0';
+
+                    a_list_addLast(strings, split);
+                }
+
+                start = str + 1;
+                break;
+            }
+        }
+
+        str++;
+    }
+
+    if(str > start) {
+        size_t len = (size_t)(str - start);
+        char* split = a_mem_malloc(len + 1);
+
+        memcpy(split, start, len);
+        split[len] = '\0';
+
+        a_list_addLast(strings, split);
+    }
+
+    return strings;
 }
