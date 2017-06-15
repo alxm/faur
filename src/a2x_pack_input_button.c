@@ -139,7 +139,7 @@ AInputButton* a_button_new(const char* Ids)
                 a_list_addLast(b->combos, combo);
             }
 
-            a_list_free(tok);
+            a_list_freeEx(tok, free);
         } else {
             a_input__findSourceInput(g_keys,
                                      a_controller__getButtonCollection(),
@@ -148,7 +148,7 @@ AInputButton* a_button_new(const char* Ids)
         }
     }
 
-    a_list_free(tok);
+    a_list_freeEx(tok, free);
 
     if(!a_list_isEmpty(b->header.sourceInputs)) {
         AInputButtonSource* btn = a_list_getLast(b->header.sourceInputs);

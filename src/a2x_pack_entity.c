@@ -338,7 +338,7 @@ void a_system_declare(const char* Name, const char* Components, ASystemHandler* 
         a_bitfield_set(s->componentBits, c->bit);
     }
 
-    a_list_free(tok);
+    a_list_freeEx(tok, free);
 }
 
 void a_system_tick(const char* Systems)
@@ -355,7 +355,7 @@ void a_system_tick(const char* Systems)
         a_list_addLast(g_collection->tickSystems, system);
     }
 
-    a_list_free(tok);
+    a_list_freeEx(tok, free);
 }
 
 void a_system_draw(const char* Systems)
@@ -372,7 +372,7 @@ void a_system_draw(const char* Systems)
         a_list_addLast(g_collection->drawSystems, system);
     }
 
-    a_list_free(tok);
+    a_list_freeEx(tok, free);
 }
 
 void* a_system_getContext(void)
@@ -422,7 +422,7 @@ void a_system_execute(const char* Systems)
         runSystem(system);
     }
 
-    a_list_free(tok);
+    a_list_freeEx(tok, free);
 }
 
 void a_system__run(void)
@@ -485,7 +485,7 @@ static void muteSystems(const char* Systems, bool Muted)
         system->muted = Muted;
     }
 
-    a_list_free(tok);
+    a_list_freeEx(tok, free);
 }
 
 void a_system_mute(const char* Systems)
