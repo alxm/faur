@@ -1,5 +1,5 @@
 /*
-    Copyright 2016 Alex Margarit
+    Copyright 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -68,4 +68,31 @@ bool a_strbuilder_addString(AStrBuilder* Builder, const char* String)
     Builder->index = index;
 
     return *String == '\0';
+}
+
+bool a_strbuilder_addStringf(AStrBuilder* Builder, const char* Format, ...)
+{
+    va_list args;
+    va_start(args, Format);
+
+    int bytesNeeded = vsnprintf(NULL, 0, Format, args) + 1;
+
+    if(bytesNeeded <= 0) {
+        return false;
+    }
+
+    va_end(args);
+    va_start(args, Format);
+
+    bool ret = false;
+    char* buffer = a_mem_malloc((size_t)bytesNeeded);
+
+    if(vsnprintf(buffer, (size_t)bytesNeeded, Format, args) >= 0) {
+        ret = a_strbuilder_addString(Builder, buffer);
+    }
+
+    free(buffer);
+    va_end(args);
+
+    return ret;
 }
