@@ -110,15 +110,15 @@ AInputButton* a_button_new(const char* Ids)
     b->buttonsListNode = a_list_addLast(g_buttons, b);
     b->isClone = false;
 
-    AStrTok* tok = a_strtok_new(Ids, ", ");
+    AList* tok = a_str_split(Ids, ", ");
 
-    A_STRTOK_ITERATE(tok, id) {
+    A_LIST_ITERATE(tok, char*, id) {
         if(a_str_getFirstIndex(id, '+') > 0) {
             AList* combo = a_list_new();
-            AStrTok* tok = a_strtok_new(id, "+");
+            AList* tok = a_str_split(id, "+");
             bool missing = false;
 
-            A_STRTOK_ITERATE(tok, part) {
+            A_LIST_ITERATE(tok, char*, part) {
                 AInputButtonSource* button = a_strhash_get(g_keys, part);
 
                 if(button == NULL) {
@@ -139,7 +139,7 @@ AInputButton* a_button_new(const char* Ids)
                 a_list_addLast(b->combos, combo);
             }
 
-            a_strtok_free(tok);
+            a_list_free(tok);
         } else {
             a_input__findSourceInput(g_keys,
                                      a_controller__getButtonCollection(),
@@ -148,7 +148,7 @@ AInputButton* a_button_new(const char* Ids)
         }
     }
 
-    a_strtok_free(tok);
+    a_list_free(tok);
 
     if(!a_list_isEmpty(b->header.sourceInputs)) {
         AInputButtonSource* btn = a_list_getLast(b->header.sourceInputs);

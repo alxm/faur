@@ -92,16 +92,16 @@ AInputAnalog* a_analog_new(const char* Ids)
 
     a_input__initUserHeader(&a->header);
 
-    AStrTok* tok = a_strtok_new(Ids, ", ");
+    AList* tok = a_str_split(Ids, ", ");
 
-    A_STRTOK_ITERATE(tok, id) {
+    A_LIST_ITERATE(tok, char*, id) {
         a_input__findSourceInput(NULL,
                                  a_controller__getAnalogCollection(),
                                  id,
                                  &a->header);
     }
 
-    a_strtok_free(tok);
+    a_list_free(tok);
 
     if(a_list_isEmpty(a->header.sourceInputs)) {
         a_out__error("No analog axes found for '%s'", Ids);
