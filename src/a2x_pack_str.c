@@ -32,18 +32,22 @@ char* a_str_merge(const char* String1, ...)
 
     va_end(args);
 
-    char* buffer = a_mem_malloc(size + 1);
-    buffer[0] = '\0';
+    char* string = a_mem_malloc(size + 1);
+    char* buffer = string;
 
     va_start(args, String1);
 
     for(const char* s = String1; s != NULL; s = va_arg(args, const char*)) {
-        strcat(buffer, s);
+        while(*s != '\0') {
+            *buffer++ = *s++;
+        }
     }
+
+    *buffer = '\0';
 
     va_end(args);
 
-    return buffer;
+    return string;
 }
 
 char* a_str_dup(const char* String)
