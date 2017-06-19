@@ -41,6 +41,7 @@ typedef struct ARunningCollection {
     AList* removedEntities; // removed entities with outstanding references
     AList* tickSystems; // tick systems in the specified order
     AList* drawSystems; // draw systems in the specified order
+    AList* messageQueue; // queued messages
     void* context; // global context
     bool deleting; // set when this collection is popped off the stack
 } ARunningCollection;
@@ -51,10 +52,21 @@ struct AEntity {
     AList* systemNodes; // list of nodes in ASystem.entities lists
     AStrHash* components;
     ABitfield* componentBits;
+    AStrHash* handlers; // table of AEventHandlerContainer
     unsigned lastActive; // frame when a_entity_markActive was last called
     unsigned references; // if >0, then the entity lingers in the removed list
     bool muted; // systems don't run on this entity if this is set
 };
+
+typedef struct AEventHandlerContainer {
+    AEventHandler* handler;
+} AEventHandlerContainer;
+
+typedef struct AMessage {
+    AEntity* sender;
+    AEntity* destination;
+    char* event;
+} AMessage;
 
 static ARunningCollection* g_collection;
 static AList* g_stack; // list of ARunningCollection (one for each state)
@@ -86,6 +98,29 @@ static inline void* getComponent(const AComponent* Header)
 static AComponent* getHeader(const void* Component)
 {
     return (AComponent*)Component - 1;
+}
+
+static AMessage* message_new(AEntity* Sender, AEntity* Destination, const char* Event)
+{
+    AMessage* m = a_mem_malloc(sizeof(AMessage));
+
+    m->sender = Sender;
+    m->destination = Destination;
+    m->event = a_str_dup(Event);
+
+    a_entity_reference(Sender);
+    a_entity_reference(Destination);
+
+    return m;
+}
+
+static void message_free(AMessage* Message)
+{
+    a_entity_release(Message->sender);
+    a_entity_release(Message->destination);
+
+    free(Message->event);
+    free(Message);
 }
 
 void a_entity__init(void)
@@ -144,6 +179,7 @@ AEntity* a_entity_new(const char* Id)
     e->systemNodes = a_list_new();
     e->components = a_strhash_new();
     e->componentBits = a_bitfield_new(a_strhash_getSize(g_components));
+    e->handlers = a_strhash_new();
     e->lastActive = a_fps_getCounter() - 1;
     e->references = 0;
     e->muted = false;
@@ -168,6 +204,13 @@ static void a_entity__free(AEntity* Entity)
     }
 
     a_strhash_free(Entity->components);
+
+    A_STRHASH_ITERATE(Entity->handlers, AEventHandlerContainer*, c) {
+        free(c);
+    }
+
+    a_strhash_free(Entity->handlers);
+
     a_bitfield_free(Entity->componentBits);
     free(Entity->id);
     free(Entity);
@@ -308,6 +351,45 @@ void a_entity_unmute(AEntity* Entity)
     Entity->muted = false;
 }
 
+void a_entity_setEventHandler(AEntity* Entity, const char* Event, AEventHandler* Handler)
+{
+    if(a_strhash_contains(Entity->handlers, Event)) {
+        a_out__fatal("'%s' event handler already set for '%s'",
+                     Event,
+                     entityName(Entity));
+    }
+
+    AEventHandlerContainer* c = a_mem_malloc(sizeof(AEventHandlerContainer));
+
+    c->handler = Handler;
+
+    a_strhash_add(Entity->handlers, Event, c);
+}
+
+void a_entity_sendEvent(AEntity* Sender, AEntity* Destination, const char* Event)
+{
+    a_list_addLast(g_collection->messageQueue,
+                   message_new(Sender, Destination, Event));
+}
+
+void a_entity_flushMessages(void)
+{
+    A_LIST_ITERATE(g_collection->messageQueue, AMessage*, m) {
+        AEventHandlerContainer* h = a_strhash_get(m->destination->handlers,
+                                                  m->event);
+
+        if(h == NULL) {
+            continue;
+        }
+
+        h->handler(m->destination, m->sender);
+
+        message_free(m);
+    }
+
+    a_list_clear(g_collection->messageQueue);
+}
+
 void a_system_declare(const char* Name, const char* Components, ASystemHandler* Handler, ASystemSort* Compare, bool OnlyActiveEntities)
 {
     if(a_strhash_contains(g_systems, Name)) {
@@ -433,6 +515,8 @@ void a_system__run(void)
         runSystem(system);
     }
 
+    a_entity_flushMessages();
+
     if(a_fps__notSkipped()) {
         A_LIST_ITERATE(g_collection->drawSystems, ASystem*, system) {
             runSystem(system);
@@ -507,6 +591,7 @@ void a_system__pushCollection(void)
     c->removedEntities = a_list_new();
     c->tickSystems = a_list_new();
     c->drawSystems = a_list_new();
+    c->messageQueue = a_list_new();
     c->context = NULL;
     c->deleting = false;
 
@@ -541,12 +626,18 @@ void a_system__popCollection(void)
         system->muted = false;
     }
 
+    A_LIST_ITERATE(g_collection->messageQueue, AMessage*, m) {
+        message_free(m);
+    }
+
     a_list_free(g_collection->newEntities);
     a_list_free(g_collection->runningEntities);
     a_list_free(g_collection->removedEntities);
 
     a_list_free(g_collection->tickSystems);
     a_list_free(g_collection->drawSystems);
+
+    a_list_free(g_collection->messageQueue);
 
     free(g_collection);
     g_collection = a_list_pop(g_stack);
