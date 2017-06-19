@@ -95,7 +95,7 @@ static inline void* getComponent(const AComponent* Header)
     return (void*)(Header + 1);
 }
 
-static AComponent* getHeader(const void* Component)
+static inline AComponent* getHeader(const void* Component)
 {
     return (AComponent*)Component - 1;
 }
@@ -378,11 +378,12 @@ void a_entity_flushMessages(void)
         AEventHandlerContainer* h = a_strhash_get(m->destination->handlers,
                                                   m->event);
 
-        if(h == NULL) {
-            continue;
-        }
+        if(h != NULL
+            && !a_entity_isRemoved(m->sender)
+            && !a_entity_isRemoved(m->destination)) {
 
-        h->handler(m->destination, m->sender);
+            h->handler(m->destination, m->sender);
+        }
 
         message_free(m);
     }
