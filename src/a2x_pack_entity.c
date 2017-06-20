@@ -378,8 +378,11 @@ void a_entity_flushMessages(void)
         AEventHandlerContainer* h = a_strhash_get(m->destination->handlers,
                                                   m->event);
 
-        if(h != NULL
-            && !a_entity_isRemoved(m->sender)
+        if(h == NULL) {
+            a_out__warning("'%s' does not handle '%s'",
+                           entityName(m->destination),
+                           m->event);
+        } else if(!a_entity_isRemoved(m->sender)
             && !a_entity_isRemoved(m->destination)) {
 
             h->handler(m->destination, m->sender);
