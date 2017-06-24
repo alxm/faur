@@ -372,33 +372,6 @@ void a_entity_sendEvent(AEntity* Sender, AEntity* Destination, const char* Event
                    message_new(Sender, Destination, Event));
 }
 
-void a_entity_flushMessages(void)
-{
-    A_LIST_ITERATE(g_collection->messageQueue, AMessage*, m) {
-        AEventHandlerContainer* h = a_strhash_get(m->destination->handlers,
-                                                  m->event);
-
-        if(h == NULL) {
-            a_out__warning("'%s' does not handle '%s'",
-                           entityName(m->destination),
-                           m->event);
-        } else if(!entityIsRemoved(m->sender)
-            && !entityIsRemoved(m->destination)) {
-
-            if(m->destination->muted) {
-                // Keep message in queue
-                continue;
-            } else {
-                h->handler(m->destination, m->sender);
-            }
-        }
-
-        message_free(m);
-    }
-
-    a_list_clear(g_collection->messageQueue);
-}
-
 void a_system_declare(const char* Name, const char* Components, ASystemHandler* Handler, ASystemSort* Compare, bool OnlyActiveEntities)
 {
     if(a_strhash_contains(g_systems, Name)) {
@@ -524,7 +497,29 @@ void a_system__run(void)
         runSystem(system);
     }
 
-    a_entity_flushMessages();
+    A_LIST_ITERATE(g_collection->messageQueue, AMessage*, m) {
+        AEventHandlerContainer* h = a_strhash_get(m->destination->handlers,
+                                                  m->event);
+
+        if(h == NULL) {
+            a_out__warning("'%s' does not handle '%s'",
+                           entityName(m->destination),
+                           m->event);
+        } else if(!entityIsRemoved(m->sender)
+            && !entityIsRemoved(m->destination)) {
+
+            if(m->destination->muted) {
+                // Keep message in queue
+                continue;
+            } else {
+                h->handler(m->destination, m->sender);
+            }
+        }
+
+        message_free(m);
+    }
+
+    a_list_clear(g_collection->messageQueue);
 
     if(a_fps__notSkipped()) {
         A_LIST_ITERATE(g_collection->drawSystems, ASystem*, system) {
