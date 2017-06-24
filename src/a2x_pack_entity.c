@@ -382,10 +382,15 @@ void a_entity_flushMessages(void)
             a_out__warning("'%s' does not handle '%s'",
                            entityName(m->destination),
                            m->event);
-        } else if(!a_entity_isRemoved(m->sender)
-            && !a_entity_isRemoved(m->destination)) {
+        } else if(!entityIsRemoved(m->sender)
+            && !entityIsRemoved(m->destination)) {
 
-            h->handler(m->destination, m->sender);
+            if(m->destination->muted) {
+                // Keep message in queue
+                continue;
+            } else {
+                h->handler(m->destination, m->sender);
+            }
         }
 
         message_free(m);
