@@ -42,12 +42,12 @@ typedef struct ARunningCollection {
     AList* tickSystems; // tick systems in the specified order
     AList* drawSystems; // draw systems in the specified order
     AList* messageQueue; // queued messages
-    void* context; // global context
     bool deleting; // set when this collection is popped off the stack
 } ARunningCollection;
 
 struct AEntity {
     char* id; // specified name for debugging
+    void* context; // global context
     AListNode* collectionNode; // list node in one of new, running, or removed
     AList* systemNodes; // list of nodes in ASystem.entities lists
     AStrHash* components;
@@ -170,11 +170,12 @@ AEntity* a_component_getEntity(const void* Component)
     return getHeader(Component)->parent;
 }
 
-AEntity* a_entity_new(const char* Id)
+AEntity* a_entity_new(const char* Id, void* Context)
 {
     AEntity* e = a_mem_malloc(sizeof(AEntity));
 
     e->id = Id ? a_str_dup(Id) : NULL;
+    e->context = Context;
     e->collectionNode = a_list_addLast(g_collection->newEntities, e);
     e->systemNodes = a_list_new();
     e->components = a_strhash_new();
@@ -214,6 +215,11 @@ static void a_entity__free(AEntity* Entity)
     a_bitfield_free(Entity->componentBits);
     free(Entity->id);
     free(Entity);
+}
+
+void* a_entity_getContext(const AEntity* Entity)
+{
+    return Entity->context;
 }
 
 void a_entity_reference(AEntity* Entity)
@@ -439,16 +445,6 @@ void a_system_draw(const char* Systems)
     a_list_freeEx(tok, free);
 }
 
-void* a_system_getContext(void)
-{
-    return g_collection->context;
-}
-
-void a_system_setContext(void* GlobalContext)
-{
-    g_collection->context = GlobalContext;
-}
-
 static void runSystem(const ASystem* System)
 {
     if(System->muted) {
@@ -596,7 +592,6 @@ void a_system__pushCollection(void)
     c->tickSystems = a_list_new();
     c->drawSystems = a_list_new();
     c->messageQueue = a_list_new();
-    c->context = NULL;
     c->deleting = false;
 
     if(g_collection != NULL) {
