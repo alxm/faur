@@ -52,20 +52,20 @@ struct AEntity {
     AList* systemNodes; // list of nodes in ASystem.entities lists
     AStrHash* components;
     ABitfield* componentBits;
-    AStrHash* handlers; // table of AEventHandlerContainer
+    AStrHash* handlers; // table of AMessageHandlerContainer
     unsigned lastActive; // frame when a_entity_markActive was last called
     unsigned references; // if >0, then the entity lingers in the removed list
     bool muted; // systems don't run on this entity if this is set
 };
 
-typedef struct AEventHandlerContainer {
-    AEventHandler* handler;
-} AEventHandlerContainer;
+typedef struct AMessageHandlerContainer {
+    AMessageHandler* handler;
+} AMessageHandlerContainer;
 
 typedef struct AMessage {
     AEntity* sender;
-    AEntity* destination;
-    char* event;
+    AEntity* recipient;
+    char* message;
 } AMessage;
 
 static ARunningCollection* g_collection;
@@ -100,16 +100,16 @@ static inline AComponent* getHeader(const void* Component)
     return (AComponent*)Component - 1;
 }
 
-static AMessage* message_new(AEntity* Sender, AEntity* Destination, const char* Event)
+static AMessage* message_new(AEntity* Sender, AEntity* Recipient, const char* Message)
 {
     AMessage* m = a_mem_malloc(sizeof(AMessage));
 
     m->sender = Sender;
-    m->destination = Destination;
-    m->event = a_str_dup(Event);
+    m->recipient = Recipient;
+    m->message = a_str_dup(Message);
 
     a_entity_reference(Sender);
-    a_entity_reference(Destination);
+    a_entity_reference(Recipient);
 
     return m;
 }
@@ -117,9 +117,9 @@ static AMessage* message_new(AEntity* Sender, AEntity* Destination, const char* 
 static void message_free(AMessage* Message)
 {
     a_entity_release(Message->sender);
-    a_entity_release(Message->destination);
+    a_entity_release(Message->recipient);
 
-    free(Message->event);
+    free(Message->message);
     free(Message);
 }
 
@@ -205,8 +205,8 @@ static void a_entity__free(AEntity* Entity)
 
     a_strhash_free(Entity->components);
 
-    A_STRHASH_ITERATE(Entity->handlers, AEventHandlerContainer*, c) {
-        free(c);
+    A_STRHASH_ITERATE(Entity->handlers, AMessageHandlerContainer*, h) {
+        free(h);
     }
 
     a_strhash_free(Entity->handlers);
@@ -351,25 +351,25 @@ void a_entity_unmute(AEntity* Entity)
     Entity->muted = false;
 }
 
-void a_entity_setEventHandler(AEntity* Entity, const char* Event, AEventHandler* Handler)
+void a_entity_setMessageHandler(AEntity* Entity, const char* Message, AMessageHandler* Handler)
 {
-    if(a_strhash_contains(Entity->handlers, Event)) {
-        a_out__fatal("'%s' event handler already set for '%s'",
-                     Event,
+    if(a_strhash_contains(Entity->handlers, Message)) {
+        a_out__fatal("'%s' handler already set for '%s'",
+                     Message,
                      entityName(Entity));
     }
 
-    AEventHandlerContainer* c = a_mem_malloc(sizeof(AEventHandlerContainer));
+    AMessageHandlerContainer* h = a_mem_malloc(sizeof(AMessageHandlerContainer));
 
-    c->handler = Handler;
+    h->handler = Handler;
 
-    a_strhash_add(Entity->handlers, Event, c);
+    a_strhash_add(Entity->handlers, Message, h);
 }
 
-void a_entity_sendEvent(AEntity* Sender, AEntity* Destination, const char* Event)
+void a_entity_sendMessage(AEntity* Sender, AEntity* Recipient, const char* Message)
 {
     a_list_addLast(g_collection->messageQueue,
-                   message_new(Sender, Destination, Event));
+                   message_new(Sender, Recipient, Message));
 }
 
 void a_system_declare(const char* Name, const char* Components, ASystemHandler* Handler, ASystemSort* Compare, bool OnlyActiveEntities)
@@ -498,21 +498,21 @@ void a_system__run(void)
     }
 
     A_LIST_ITERATE(g_collection->messageQueue, AMessage*, m) {
-        AEventHandlerContainer* h = a_strhash_get(m->destination->handlers,
-                                                  m->event);
+        AMessageHandlerContainer* h = a_strhash_get(m->recipient->handlers,
+                                                    m->message);
 
         if(h == NULL) {
             a_out__warning("'%s' does not handle '%s'",
-                           entityName(m->destination),
-                           m->event);
+                           entityName(m->recipient),
+                           m->message);
         } else if(!entityIsRemoved(m->sender)
-            && !entityIsRemoved(m->destination)) {
+            && !entityIsRemoved(m->recipient)) {
 
-            if(m->destination->muted) {
+            if(m->recipient->muted) {
                 // Keep message in queue
                 continue;
             } else {
-                h->handler(m->destination, m->sender);
+                h->handler(m->recipient, m->sender);
             }
         }
 

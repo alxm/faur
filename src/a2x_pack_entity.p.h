@@ -23,7 +23,7 @@
 
 typedef struct AEntity AEntity;
 typedef void AComponentFree(void* Self);
-typedef void AEventHandler(AEntity* Entity, AEntity* Sender);
+typedef void AMessageHandler(AEntity* Recipient, AEntity* Sender);
 typedef void ASystemHandler(AEntity* Entity);
 typedef int ASystemSort(AEntity* A, AEntity* B);
 
@@ -43,8 +43,8 @@ extern void* a_entity_getComponent(const AEntity* Entity, const char* Component)
 extern void* a_entity_requireComponent(const AEntity* Entity, const char* Component);
 extern void a_entity_mute(AEntity* Entity);
 extern void a_entity_unmute(AEntity* Entity);
-extern void a_entity_setEventHandler(AEntity* Entity, const char* Event, AEventHandler* Handler);
-extern void a_entity_sendEvent(AEntity* Sender, AEntity* Destination, const char* Event);
+extern void a_entity_setMessageHandler(AEntity* Entity, const char* Message, AMessageHandler* Handler);
+extern void a_entity_sendMessage(AEntity* Sender, AEntity* Recipient, const char* Message);
 
 extern void a_system_declare(const char* Name, const char* Components, ASystemHandler* Handler, ASystemSort* Compare, bool OnlyActiveEntities);
 extern void a_system_tick(const char* Systems);
