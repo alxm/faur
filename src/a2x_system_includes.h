@@ -67,6 +67,8 @@
     #define A_CONFIG_RENDER_SDL2 0
 #endif
 
+#define A_UNUSED(X) (X = X)
+
 // For putenv
 #define _XOPEN_SOURCE
 
