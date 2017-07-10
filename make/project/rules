@@ -81,6 +81,7 @@ CFLAGS = \
     -Werror \
     -I$(A2X_PATH)/inc \
     $(A_PLATFORM_CFLAGS) \
+    $(A_EXTRA_CFLAGS) \
 
 #
 # Accomodate older toolchains
