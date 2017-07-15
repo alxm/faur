@@ -210,7 +210,7 @@ void a_music_stop(void)
     }
 }
 
-ASound* a_sfx_fromFile(const char* Path)
+ASound* a_sfx_newFromFile(const char* Path)
 {
     if(a_settings_getBool("sound.on")) {
         ASound* s = a_sdl_sound__sfxLoadFromFile(Path);
@@ -223,17 +223,18 @@ ASound* a_sfx_fromFile(const char* Path)
     }
 }
 
-ASound* a_sfx__fromData(const uint8_t* Data, int Size)
+ASound* a_sfx_newFromData(const uint8_t* Data, size_t Size)
 {
-    if(a_settings_getBool("sound.on")) {
-        ASound* s = a_sdl_sound__sfxLoadFromData(Data, Size);
-        a_sdl_sound__sfxSetVolume(s, g_sfxVolume);
-
-        a_list_addLast(g_sfxList, s);
-        return s;
-    } else {
+    if(!a_settings_getBool("sound.on")) {
         return NULL;
     }
+
+    ASound* s = a_sdl_sound__sfxLoadFromData(Data, (int)Size);
+
+    a_sdl_sound__sfxSetVolume(s, g_sfxVolume);
+    a_list_addLast(g_sfxList, s);
+
+    return s;
 }
 
 void a_sfx__free(ASound* Sfx)
