@@ -24,27 +24,6 @@ C_GEN_DIR = $(A_SRC_DIR)/$(A2X_GEN)
 C_BUILDTIME_FILE = $(C_GEN_DIR)/time.c
 
 #
-# PNG and WAV files we can convert to C code
-#
-GFX_FILES = $(notdir $(wildcard $(A_GFX_DIR)/*.png))
-SFX_FILES = $(notdir $(wildcard $(A_SFX_DIR)/*.wav))
-
-#
-# .c gfx & sfx files
-#
-C_GFX_DIR = $(C_GEN_DIR)/gfx
-C_SFX_DIR = $(C_GEN_DIR)/sfx
-C_GFX_HEADER = $(C_GEN_DIR)/gfx.h
-C_SFX_HEADER = $(C_GEN_DIR)/sfx.h
-C_GEN_HEADERS = $(C_GFX_HEADER) $(C_SFX_HEADER)
-
-#
-# PNG and WAV files in .c form
-#
-C_GFX_FILES = $(addprefix $(C_GFX_DIR)/gfx_, $(GFX_FILES:.png=.c))
-C_SFX_FILES = $(addprefix $(C_SFX_DIR)/sfx_, $(SFX_FILES:.wav=.c))
-
-#
 # .c source files
 #
 C_INC_FILES = $(notdir $(wildcard $(A_SRC_DIR)/*.inc.c))
@@ -64,9 +43,36 @@ O_SFX_DIR = $(O_GEN_DIR)/sfx
 # Keep buildtime separate from the rest, since they are its prerequisites.
 #
 O_BUILDTIME = $(addprefix $(O_GEN_DIR)/, $(notdir $(C_BUILDTIME_FILE:.c=.o)))
-O_FILES = $(addprefix $(O_DIR)/, $(C_FILES:.c=.o)) \
-          $(addprefix $(O_GFX_DIR)/, $(notdir $(C_GFX_FILES:.c=.o))) \
-          $(addprefix $(O_SFX_DIR)/, $(notdir $(C_SFX_FILES:.c=.o)))
+O_FILES = $(addprefix $(O_DIR)/, $(C_FILES:.c=.o))
+
+#
+# Check if project wants a2x_bin media conversion
+#
+ifeq ($(A_BIN_MEDIA), true)
+    #
+    # PNG and WAV files we can convert to C code
+    #
+    GFX_FILES = $(notdir $(wildcard $(A_GFX_DIR)/*.png))
+    SFX_FILES = $(notdir $(wildcard $(A_SFX_DIR)/*.wav))
+
+    #
+    # .c gfx & sfx files
+    #
+    C_GFX_DIR = $(C_GEN_DIR)/gfx
+    C_SFX_DIR = $(C_GEN_DIR)/sfx
+    C_GFX_HEADER = $(C_GEN_DIR)/gfx.h
+    C_SFX_HEADER = $(C_GEN_DIR)/sfx.h
+    C_GEN_HEADERS = $(C_GFX_HEADER) $(C_SFX_HEADER)
+
+    #
+    # PNG and WAV files in .c form
+    #
+    C_GFX_FILES = $(addprefix $(C_GFX_DIR)/gfx_, $(GFX_FILES:.png=.c))
+    C_SFX_FILES = $(addprefix $(C_SFX_DIR)/sfx_, $(SFX_FILES:.wav=.c))
+
+    O_FILES += $(addprefix $(O_GFX_DIR)/, $(notdir $(C_GFX_FILES:.c=.o))) \
+               $(addprefix $(O_SFX_DIR)/, $(notdir $(C_SFX_FILES:.c=.o)))
+endif
 
 #
 # compile flags
