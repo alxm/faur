@@ -59,6 +59,11 @@ static inline AFix a_fix_div(AFix X, AFix Y)
     return (AFix)(((int64_t)X << A_FIX_BIT_PRECISION) / Y);
 }
 
+static inline AFix a_fix_sqrt(AFix X)
+{
+    return (AFix)(sqrtf((float)X) * (1 << (A_FIX_BIT_PRECISION / 2)));
+}
+
 static inline AFixu a_fixu_itofix(unsigned X)
 {
     return X << A_FIX_BIT_PRECISION;
@@ -87,6 +92,11 @@ static inline AFixu a_fixu_mul(AFixu X, AFixu Y)
 static inline AFixu a_fixu_div(AFixu X, AFixu Y)
 {
     return (AFixu)(((uint64_t)X << A_FIX_BIT_PRECISION) / Y);
+}
+
+static inline AFixu a_fixu_sqrt(AFixu X)
+{
+    return (AFixu)(sqrtf((float)X) * (1 << (A_FIX_BIT_PRECISION / 2)));
 }
 
 extern AFix a_fix_sin_val[A_MATH_ANGLES_NUM];
