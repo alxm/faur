@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016 Alex Margarit
+    Copyright 2010, 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -28,6 +28,7 @@ typedef uint32_t AFixu;
 
 #define A_FIX_BIT_PRECISION (8)
 #define A_FIX_ONE           (1 << A_FIX_BIT_PRECISION)
+#define A_FIX_FRACTION_MASK (A_FIX_ONE - 1)
 
 static inline AFix a_fix_itofix(int X)
 {
@@ -64,6 +65,30 @@ static inline AFix a_fix_sqrt(AFix X)
     return (AFix)(sqrtf((float)X) * (1 << (A_FIX_BIT_PRECISION / 2)));
 }
 
+static inline AFix a_fix_round(AFix X)
+{
+    return (X + A_FIX_ONE / 2) & (AFix)~A_FIX_FRACTION_MASK;
+}
+
+static inline AFix a_fix_floor(AFix X)
+{
+    return X & (AFix)~A_FIX_FRACTION_MASK;
+}
+
+static inline AFix a_fix_ceiling(AFix X)
+{
+    return (X + A_FIX_ONE - 1) & (AFix)~A_FIX_FRACTION_MASK;
+}
+
+static inline AFix a_fix_truncate(AFix X)
+{
+    if(X >= 0) {
+        return X & (AFix)~A_FIX_FRACTION_MASK;
+    } else {
+        return -((-X) & (AFix)~A_FIX_FRACTION_MASK);
+    }
+}
+
 static inline AFixu a_fixu_itofix(unsigned X)
 {
     return X << A_FIX_BIT_PRECISION;
@@ -97,6 +122,26 @@ static inline AFixu a_fixu_div(AFixu X, AFixu Y)
 static inline AFixu a_fixu_sqrt(AFixu X)
 {
     return (AFixu)(sqrtf((float)X) * (1 << (A_FIX_BIT_PRECISION / 2)));
+}
+
+static inline AFixu a_fixu_round(AFixu X)
+{
+    return (X + A_FIX_ONE / 2) & (AFixu)~A_FIX_FRACTION_MASK;
+}
+
+static inline AFixu a_fixu_floor(AFixu X)
+{
+    return X & (AFixu)~A_FIX_FRACTION_MASK;
+}
+
+static inline AFixu a_fixu_ceiling(AFixu X)
+{
+    return (X + A_FIX_ONE - 1) & (AFixu)~A_FIX_FRACTION_MASK;
+}
+
+static inline AFixu a_fixu_truncate(AFixu X)
+{
+    return X & (AFixu)~A_FIX_FRACTION_MASK;
 }
 
 extern AFix a_fix_sin_val[A_MATH_ANGLES_NUM];
