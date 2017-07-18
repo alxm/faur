@@ -161,3 +161,5 @@ static inline AFixu a_fix_wrapAngle(AFixu Angle)
 {
     return Angle & ((A_MATH_ANGLES_NUM << A_FIX_BIT_PRECISION) - 1);
 }
+
+extern void a_fix_rotate(AFix X, AFix Y, unsigned Angle, AFix* NewX, AFix* NewY);

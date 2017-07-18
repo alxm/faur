@@ -29,3 +29,12 @@ void a_fix__init(void)
 		a_fix_cos_val[a] = a_fix_ftofix(a_math_cos(a));
 	}
 }
+
+void a_fix_rotate(AFix X, AFix Y, unsigned Angle, AFix* NewX, AFix* NewY)
+{
+    const AFix sin = a_fix_sin(Angle);
+    const AFix cos = a_fix_cos(Angle);
+
+    *NewX = a_fix_mul(X,  cos) + a_fix_mul(Y, sin);
+    *NewY = a_fix_mul(X, -sin) + a_fix_mul(Y, cos);
+}
