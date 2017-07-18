@@ -58,6 +58,15 @@ static inline unsigned a_math_constrainu(unsigned X, unsigned Min, unsigned Max)
 
 #define A_MATH_ANGLES_NUM 256u
 
+#define A_MATH_DEG_045 (A_MATH_ANGLES_NUM / 8)
+#define A_MATH_DEG_090 (2 * A_MATH_DEG_045)
+#define A_MATH_DEG_135 (3 * A_MATH_DEG_045)
+#define A_MATH_DEG_180 (4 * A_MATH_DEG_045)
+#define A_MATH_DEG_225 (5 * A_MATH_DEG_045)
+#define A_MATH_DEG_270 (6 * A_MATH_DEG_045)
+#define A_MATH_DEG_315 (7 * A_MATH_DEG_045)
+#define A_MATH_DEG_360 (8 * A_MATH_DEG_045)
+
 extern float a_math_sin_val[A_MATH_ANGLES_NUM];
 extern float a_math_cos_val[A_MATH_ANGLES_NUM];
 
