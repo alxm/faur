@@ -30,6 +30,9 @@ typedef uint32_t AFixu;
 #define A_FIX_ONE           (1 << A_FIX_BIT_PRECISION)
 #define A_FIX_FRACTION_MASK (A_FIX_ONE - 1)
 
+extern AFix a_fix__sin[A_MATH_ANGLES_NUM];
+extern AFix a_fix__cos[A_MATH_ANGLES_NUM];
+
 static inline AFix a_fix_itofix(int X)
 {
     return X << A_FIX_BIT_PRECISION;
@@ -144,17 +147,14 @@ static inline AFixu a_fixu_truncate(AFixu X)
     return X & (AFixu)~A_FIX_FRACTION_MASK;
 }
 
-extern AFix a_fix_sin_val[A_MATH_ANGLES_NUM];
-extern AFix a_fix_cos_val[A_MATH_ANGLES_NUM];
-
 static inline AFix a_fix_sin(unsigned Angle)
 {
-    return a_fix_sin_val[a_math_wrapAngle(Angle)];
+    return a_fix__sin[a_math_wrapAngle(Angle)];
 }
 
 static inline AFix a_fix_cos(unsigned Angle)
 {
-    return a_fix_cos_val[a_math_wrapAngle(Angle)];
+    return a_fix__cos[a_math_wrapAngle(Angle)];
 }
 
 static inline AFixu a_fix_wrapAngle(AFixu Angle)

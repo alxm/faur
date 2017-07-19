@@ -19,16 +19,16 @@
 
 #include "a2x_pack_fix.v.h"
 
-AFix a_fix_sin_val[A_MATH_ANGLES_NUM];
-AFix a_fix_cos_val[A_MATH_ANGLES_NUM];
+AFix a_fix__sin[A_MATH_ANGLES_NUM];
+AFix a_fix__cos[A_MATH_ANGLES_NUM];
 
 static unsigned g_atan_angles[A_FIX_ONE];
 
 void a_fix__init(void)
 {
     for(unsigned a = 0; a < A_MATH_ANGLES_NUM; a++) {
-        a_fix_sin_val[a] = a_fix_ftofix(a_math_sin(a));
-		a_fix_cos_val[a] = a_fix_ftofix(a_math_cos(a));
+        a_fix__sin[a] = a_fix_ftofix(a_math_sin(a));
+        a_fix__cos[a] = a_fix_ftofix(a_math_cos(a));
 	}
 
     unsigned angle = 0;
