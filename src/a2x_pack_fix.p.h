@@ -147,11 +147,6 @@ static inline AFixu a_fixu_truncate(AFixu X)
     return X & (AFixu)~A_FIX_FRACTION_MASK;
 }
 
-static inline AFixu a_fix_wrapAngle(AFixu Angle)
-{
-    return Angle & ((A_MATH_ANGLES_NUM << A_FIX_BIT_PRECISION) - 1);
-}
-
 static inline AFix a_fix_sin(unsigned Angle)
 {
     return a_fix__sin[a_math_wrapAngle(Angle)];
