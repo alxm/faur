@@ -21,6 +21,20 @@
 
 #include "a2x_system_includes.h"
 
+#define A_MATH_ANGLES_NUM 256u
+
+#define A_MATH_DEG_045 (A_MATH_ANGLES_NUM / 8)
+#define A_MATH_DEG_090 (2 * A_MATH_DEG_045)
+#define A_MATH_DEG_135 (3 * A_MATH_DEG_045)
+#define A_MATH_DEG_180 (4 * A_MATH_DEG_045)
+#define A_MATH_DEG_225 (5 * A_MATH_DEG_045)
+#define A_MATH_DEG_270 (6 * A_MATH_DEG_045)
+#define A_MATH_DEG_315 (7 * A_MATH_DEG_045)
+#define A_MATH_DEG_360 (8 * A_MATH_DEG_045)
+
+extern float a_math__sin[A_MATH_ANGLES_NUM];
+extern float a_math__cos[A_MATH_ANGLES_NUM];
+
 static inline int a_math_min(int X, int Y)
 {
     return X < Y ? X : Y;
@@ -56,22 +70,17 @@ static inline unsigned a_math_constrainu(unsigned X, unsigned Min, unsigned Max)
     return X < Min ? Min : (X > Max ? Max : X);
 }
 
-#define A_MATH_ANGLES_NUM 256u
-
-extern float a_math_sin_val[A_MATH_ANGLES_NUM];
-extern float a_math_cos_val[A_MATH_ANGLES_NUM];
+static inline unsigned a_math_wrapAngle(unsigned Angle)
+{
+    return Angle & (A_MATH_ANGLES_NUM - 1);
+}
 
 static inline float a_math_sin(unsigned Angle)
 {
-    return a_math_sin_val[Angle];
+    return a_math__sin[a_math_wrapAngle(Angle)];
 }
 
 static inline float a_math_cos(unsigned Angle)
 {
-    return a_math_cos_val[Angle];
-}
-
-static inline unsigned a_math_wrapAngle(unsigned Angle)
-{
-    return Angle & (A_MATH_ANGLES_NUM - 1);
+    return a_math__cos[a_math_wrapAngle(Angle)];
 }

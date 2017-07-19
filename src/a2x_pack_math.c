@@ -19,8 +19,8 @@
 
 #include "a2x_pack_math.v.h"
 
-float a_math_sin_val[A_MATH_ANGLES_NUM];
-float a_math_cos_val[A_MATH_ANGLES_NUM];
+float a_math__sin[A_MATH_ANGLES_NUM];
+float a_math__cos[A_MATH_ANGLES_NUM];
 
 #define A_MATH_PI 3.14159265359f
 
@@ -29,7 +29,7 @@ void a_math__init(void)
     for(unsigned a = 0; a < A_MATH_ANGLES_NUM; a++) {
         float rad = (float)a * A_MATH_PI / (A_MATH_ANGLES_NUM / 2);
 
-        a_math_sin_val[a] = sinf(rad);
-        a_math_cos_val[a] = cosf(rad);
+        a_math__sin[a] = sinf(rad);
+        a_math__cos[a] = cosf(rad);
     }
 }
