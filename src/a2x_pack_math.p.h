@@ -70,17 +70,17 @@ static inline unsigned a_math_constrainu(unsigned X, unsigned Min, unsigned Max)
 extern float a_math_sin_val[A_MATH_ANGLES_NUM];
 extern float a_math_cos_val[A_MATH_ANGLES_NUM];
 
+static inline unsigned a_math_wrapAngle(unsigned Angle)
+{
+    return Angle & (A_MATH_ANGLES_NUM - 1);
+}
+
 static inline float a_math_sin(unsigned Angle)
 {
-    return a_math_sin_val[Angle];
+    return a_math_sin_val[a_math_wrapAngle(Angle)];
 }
 
 static inline float a_math_cos(unsigned Angle)
 {
-    return a_math_cos_val[Angle];
-}
-
-static inline unsigned a_math_wrapAngle(unsigned Angle)
-{
-    return Angle & (A_MATH_ANGLES_NUM - 1);
+    return a_math_cos_val[a_math_wrapAngle(Angle)];
 }

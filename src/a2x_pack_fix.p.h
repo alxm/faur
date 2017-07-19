@@ -149,12 +149,12 @@ extern AFix a_fix_cos_val[A_MATH_ANGLES_NUM];
 
 static inline AFix a_fix_sin(unsigned Angle)
 {
-    return a_fix_sin_val[Angle];
+    return a_fix_sin_val[a_math_wrapAngle(Angle)];
 }
 
 static inline AFix a_fix_cos(unsigned Angle)
 {
-    return a_fix_cos_val[Angle];
+    return a_fix_cos_val[a_math_wrapAngle(Angle)];
 }
 
 static inline AFixu a_fix_wrapAngle(AFixu Angle)
