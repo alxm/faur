@@ -23,6 +23,7 @@ struct AColMap {
     int w, h; // width and height of map, in submaps
     int bitShift; // right-shift object coords by this to get submap index
     AList*** submaps; // AList*[h][w] of AColObjects
+    AList** submapsData; // AList*[h * w] of AColObjects
 };
 
 struct AColObject {
@@ -52,9 +53,11 @@ AColMap* a_colmap_new(int Width, int Height, int MaxObjectDim)
     m->h = 1 << a_math_max(0, nextpow(Height) - m->bitShift);
 
     m->submaps = a_mem_malloc((unsigned)m->h * sizeof(AList**));
+    m->submapsData = a_mem_malloc((unsigned)m->h * (unsigned)m->w
+                                    * sizeof(AList*));
 
     for(int i = m->h; i--; ) {
-        m->submaps[i] = a_mem_malloc((unsigned)m->w * sizeof(AList*));
+        m->submaps[i] = m->submapsData + i * m->w;
 
         for(int j = m->w; j--; ) {
             m->submaps[i][j] = a_list_new();
@@ -78,11 +81,10 @@ void a_colmap_free(AColMap* Map)
 
             a_list_free(Map->submaps[i][j]);
         }
-
-        free(Map->submaps[i]);
     }
 
     free(Map->submaps);
+    free(Map->submapsData);
     free(Map);
 }
 
