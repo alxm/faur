@@ -147,6 +147,11 @@ static inline AFixu a_fixu_truncate(AFixu X)
     return X & (AFixu)~A_FIX_FRACTION_MASK;
 }
 
+static inline AFixu a_fix_wrapAngle(AFixu Angle)
+{
+    return Angle & ((A_MATH_ANGLES_NUM << A_FIX_BIT_PRECISION) - 1);
+}
+
 static inline AFix a_fix_sin(unsigned Angle)
 {
     return a_fix__sin[a_math_wrapAngle(Angle)];
@@ -157,9 +162,14 @@ static inline AFix a_fix_cos(unsigned Angle)
     return a_fix__cos[a_math_wrapAngle(Angle)];
 }
 
-static inline AFixu a_fix_wrapAngle(AFixu Angle)
+static inline AFix a_fix_sinf(AFixu Angle)
 {
-    return Angle & ((A_MATH_ANGLES_NUM << A_FIX_BIT_PRECISION) - 1);
+    return a_fix__sin[a_math_wrapAngle(a_fixu_fixtoi(Angle))];
+}
+
+static inline AFix a_fix_cosf(AFixu Angle)
+{
+    return a_fix__cos[a_math_wrapAngle(a_fixu_fixtoi(Angle))];
 }
 
 extern unsigned a_fix_atan(AFix X1, AFix Y1, AFix X2, AFix Y2);
