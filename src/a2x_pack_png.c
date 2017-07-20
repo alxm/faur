@@ -180,6 +180,7 @@ void a_png_write(const char* Path, const APixel* Data, int Width, int Height, ch
     png_structp png = NULL;
     png_infop info = NULL;
     volatile png_bytepp rows = NULL;
+    volatile png_bytep rowsData = NULL;
     png_text text[2];
     volatile int numText = 0;
 
@@ -187,7 +188,11 @@ void a_png_write(const char* Path, const APixel* Data, int Width, int Height, ch
         goto cleanUp;
     }
 
-    rows = a_mem_zalloc((unsigned)Height * sizeof(png_bytep));
+    #define COLOR_CHANNELS 3
+    rows = a_mem_malloc((unsigned)Height * sizeof(png_bytep));
+    rowsData = a_mem_malloc((unsigned)Height * (unsigned)Width * COLOR_CHANNELS
+                                * sizeof(png_byte));
+
     png = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 
     if(!png) {
@@ -217,14 +222,14 @@ void a_png_write(const char* Path, const APixel* Data, int Width, int Height, ch
                  PNG_FILTER_TYPE_DEFAULT);
 
     for(int i = 0; i < Height; i++) {
-        rows[i] = a_mem_malloc((unsigned)Width * 3 * sizeof(png_byte));
+        rows[i] = rowsData + i * Width * COLOR_CHANNELS;
 
         for(int j = 0; j < Width; j++) {
             const APixel p = *(Data + i * Width + j);
 
-            rows[i][j * 3 + 0] = (png_byte)a_pixel_red(p);
-            rows[i][j * 3 + 1] = (png_byte)a_pixel_green(p);
-            rows[i][j * 3 + 2] = (png_byte)a_pixel_blue(p);
+            rows[i][j * COLOR_CHANNELS + 0] = (png_byte)a_pixel_red(p);
+            rows[i][j * COLOR_CHANNELS + 1] = (png_byte)a_pixel_green(p);
+            rows[i][j * COLOR_CHANNELS + 2] = (png_byte)a_pixel_blue(p);
         }
     }
 
@@ -254,11 +259,11 @@ cleanUp:
     }
 
     if(rows) {
-        for(int i = 0; i < Height; i++) {
-            free(rows[i]);
-        }
-
         free(rows);
+    }
+
+    if(rowsData) {
+        free(rowsData);
     }
 
     if(f) {

@@ -37,15 +37,16 @@ extern void a_colobject_setCoords(AColObject* Object, int X, int Y);
 extern void* a_colobject__getUserObject(const AColObject* Object);
 extern AList* a_colobject__getPossibleCollisions(const AColObject* Object);
 
-#define A_COL_ITERATE(ColObject, UserObjectPtrType, UserObjectName)     \
-    for(UserObjectPtrType UserObjectName = (UserObjectPtrType)1;        \
-        UserObjectName;                                                 \
-        UserObjectName = NULL)                                          \
-        A_LIST_FILTER(                                                  \
-            a_colobject__getPossibleCollisions(ColObject),              \
-            AColObject*, a__o,                                          \
-            a__o != ColObject                                           \
-                && (UserObjectName = a_colobject__getUserObject(a__o)))
+#define A_COL_ITERATE(ColObject, UserObjectPtrType, UserObjectName)         \
+    for(AColObject* a__co = ColObject; a__co; a__co = NULL)                 \
+        for(UserObjectPtrType UserObjectName = (UserObjectPtrType)1;        \
+            UserObjectName;                                                 \
+            UserObjectName = NULL)                                          \
+            A_LIST_FILTER(                                                  \
+                a_colobject__getPossibleCollisions(a__co),                  \
+                AColObject*, a__o,                                          \
+                a__o != a__co                                               \
+                    && (UserObjectName = a_colobject__getUserObject(a__o)))
 
 extern bool a_collide_boxAndBox(int X1, int Y1, int W1, int H1, int X2, int Y2, int W2, int H2);
 extern bool a_collide_circleAndCircle(int X1, int Y1, int R1, int X2, int Y2, int R2);
