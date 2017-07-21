@@ -21,6 +21,16 @@
 
 #include "a2x_pack_font.p.h"
 
+typedef enum AFontDefaults {
+    A_FONT_FACE_WHITE,
+    A_FONT_FACE_LIGHT_GRAY,
+    A_FONT_FACE_GREEN,
+    A_FONT_FACE_YELLOW,
+    A_FONT_FACE_RED,
+    A_FONT_FACE_BLUE,
+    A_FONT_FACE_DEFAULT_NUM
+} AFontDefaults;
+
 #include "a2x_pack_list.v.h"
 #include "a2x_pack_screen.v.h"
 #include "a2x_pack_sprite.v.h"
@@ -28,3 +38,5 @@
 
 extern void a_font__init(void);
 extern void a_font__uninit(void);
+
+extern void a_font__setFace(AFontDefaults Font);

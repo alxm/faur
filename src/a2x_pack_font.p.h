@@ -21,7 +21,7 @@
 
 #include "a2x_system_includes.h"
 
-#include "a2x_pack_sprite.p.h"
+typedef struct AFont AFont;
 
 typedef enum AFontLoad  {
     A_FONT_LOAD_ALL = 1,
@@ -38,25 +38,17 @@ typedef enum AFontAlign {
     A_FONT_ALIGN_MONOSPACED = 8
 } AFontAlign;
 
-typedef enum AFontDefaults {
-    A_FONT_FACE_WHITE,
-    A_FONT_FACE_LIGHT_GRAY,
-    A_FONT_FACE_GREEN,
-    A_FONT_FACE_YELLOW,
-    A_FONT_FACE_RED,
-    A_FONT_FACE_BLUE,
-    A_FONT_FACE_DEFAULT_NUM
-} AFontDefaults;
+#include "a2x_pack_sprite.p.h"
 
-extern unsigned a_font_load(const ASprite* Sheet, int X, int Y, AFontLoad Loader);
-extern unsigned a_font_dup(unsigned Font, APixel Color);
+extern AFont* a_font_load(const ASprite* Sheet, int X, int Y, AFontLoad Loader);
+extern AFont* a_font_dup(AFont* Font, APixel Color);
 
 extern void a_font_push(void);
 extern void a_font_pop(void);
 
 extern void a_font_reset(void);
 
-extern void a_font_setFace(unsigned Font);
+extern void a_font_setFace(AFont* Font);
 extern void a_font_setAlign(AFontAlign Align);
 
 extern void a_font_setCoords(int X, int Y);
