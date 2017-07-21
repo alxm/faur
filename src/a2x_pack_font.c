@@ -214,6 +214,10 @@ void a_font_reset(void)
 
 void a_font_setFace(AFont* Font)
 {
+    if(Font == NULL) {
+        Font = g_defaultFonts[A_FONT_FACE_WHITE];
+    }
+
     g_state.currentFont = Font;
     g_state.lineHeight = Font->maxHeight + LINE_SPACING;
 }
