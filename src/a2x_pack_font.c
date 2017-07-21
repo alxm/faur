@@ -79,15 +79,15 @@ void a_font__init(void)
     colors[A_FONT_FACE_RED] = a_pixel_hex(0xcf2f4f);
     colors[A_FONT_FACE_BLUE] = a_pixel_hex(0x3f8fdf);
 
-    g_defaultFonts[A_FONT_FACE_DEFAULT] = a_font_load(fontSprite,
-                                                      0,
-                                                      9,
-                                                      A_FONT_LOAD_ALL);
+    g_defaultFonts[A_FONT_FACE_DEFAULT] = a_font_new(fontSprite,
+                                                     0,
+                                                     9,
+                                                     A_FONT_LOAD_ALL);
 
-    g_defaultFonts[A_FONT_FACE_WHITE] = a_font_load(fontSprite,
-                                                    0,
-                                                    0,
-                                                    A_FONT_LOAD_ALL);
+    g_defaultFonts[A_FONT_FACE_WHITE] = a_font_new(fontSprite,
+                                                   0,
+                                                   0,
+                                                   A_FONT_LOAD_ALL);
 
     a_sprite_free(fontSprite);
 
@@ -108,7 +108,7 @@ void a_font__uninit(void)
     a_list_freeEx(g_fontsList, free);
 }
 
-AFont* a_font_load(const ASprite* Sheet, int X, int Y, AFontLoad Loader)
+AFont* a_font_new(const ASprite* Sheet, int X, int Y, AFontLoad Loader)
 {
     AFont* f = a_mem_malloc(sizeof(AFont));
 
@@ -213,13 +213,13 @@ void a_font_pop(void)
 
 void a_font_reset(void)
 {
-    a_font__setFace(A_FONT_FACE_DEFAULT);
+    a_font__setFont(A_FONT_FACE_DEFAULT);
     a_font_setAlign(A_FONT_ALIGN_LEFT);
     a_font_setCoords(0, 0);
     a_font_setWrap(0);
 }
 
-void a_font_setFace(AFont* Font)
+void a_font_setFont(AFont* Font)
 {
     if(Font == NULL) {
         Font = g_defaultFonts[A_FONT_FACE_DEFAULT];
@@ -229,9 +229,9 @@ void a_font_setFace(AFont* Font)
     g_state.lineHeight = Font->maxHeight + LINE_SPACING;
 }
 
-void a_font__setFace(AFontDefaults Font)
+void a_font__setFont(AFontDefaults Font)
 {
-    a_font_setFace(g_defaultFonts[Font]);
+    a_font_setFont(g_defaultFonts[Font]);
 }
 
 void a_font_setAlign(AFontAlign Align)

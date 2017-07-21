@@ -40,4 +40,4 @@ typedef enum AFontDefaults {
 extern void a_font__init(void);
 extern void a_font__uninit(void);
 
-extern void a_font__setFace(AFontDefaults Font);
+extern void a_font__setFont(AFontDefaults Font);

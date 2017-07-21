@@ -40,7 +40,7 @@ typedef enum AFontAlign {
 
 #include "a2x_pack_sprite.p.h"
 
-extern AFont* a_font_load(const ASprite* Sheet, int X, int Y, AFontLoad Loader);
+extern AFont* a_font_new(const ASprite* Sheet, int X, int Y, AFontLoad Loader);
 extern AFont* a_font_dup(AFont* Font, APixel Color);
 
 extern void a_font_push(void);
@@ -48,7 +48,7 @@ extern void a_font_pop(void);
 
 extern void a_font_reset(void);
 
-extern void a_font_setFace(AFont* Font);
+extern void a_font_setFont(AFont* Font);
 extern void a_font_setAlign(AFontAlign Align);
 
 extern void a_font_setCoords(int X, int Y);

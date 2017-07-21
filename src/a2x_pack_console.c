@@ -77,21 +77,21 @@ static void screenCallback(void)
         a_font_setCoords(2, 2);
         a_font_setAlign(A_FONT_ALIGN_LEFT);
 
-        a_font__setFace(A_FONT_FACE_BLUE); a_font_print("a");
-        a_font__setFace(A_FONT_FACE_GREEN); a_font_print("2");
-        a_font__setFace(A_FONT_FACE_YELLOW); a_font_print("x");
+        a_font__setFont(A_FONT_FACE_BLUE); a_font_print("a");
+        a_font__setFont(A_FONT_FACE_GREEN); a_font_print("2");
+        a_font__setFont(A_FONT_FACE_YELLOW); a_font_print("x");
 
-        a_font__setFace(A_FONT_FACE_WHITE);
+        a_font__setFont(A_FONT_FACE_WHITE);
         a_font_printf(" %s, %s",
-                     A__MAKE_CURRENT_GIT_BRANCH,
-                     A__MAKE_COMPILE_TIME);
+                      A__MAKE_CURRENT_GIT_BRANCH,
+                      A__MAKE_COMPILE_TIME);
         a_font_newLine();
 
         a_font_printf("%s %s by %s, %s",
-                     a_settings_getString("app.title"),
-                     a_settings_getString("app.version"),
-                     a_settings_getString("app.author"),
-                     a_settings_getString("app.buildtime"));
+                      a_settings_getString("app.title"),
+                      a_settings_getString("app.version"),
+                      a_settings_getString("app.author"),
+                      a_settings_getString("app.buildtime"));
         a_font_newLine();
     }
 
@@ -99,7 +99,7 @@ static void screenCallback(void)
         const int xOffset = 1 + g_titles[A_CONSOLE_MESSAGE]->w + 2;
 
         a_font_setCoords(xOffset, a_font_getY());
-        a_font__setFace(A_FONT_FACE_LIGHT_GRAY);
+        a_font__setFont(A_FONT_FACE_LIGHT_GRAY);
 
         A_LIST_ITERATE(g_lines, ALine*, line) {
             a_sprite_blit(g_titles[line->type], 1, a_font_getY());
@@ -112,15 +112,15 @@ static void screenCallback(void)
         a_font_setCoords(a__screen.width - 2, 2);
         a_font_setAlign(A_FONT_ALIGN_RIGHT);
 
-        a_font__setFace(A_FONT_FACE_YELLOW);
+        a_font__setFont(A_FONT_FACE_YELLOW);
         a_font_printf("%u fps", a_fps_getFps());
         a_font_newLine();
 
-        a_font__setFace(A_FONT_FACE_GREEN);
+        a_font__setFont(A_FONT_FACE_GREEN);
         a_font_printf("%u max", a_fps_getMaxFps());
         a_font_newLine();
 
-        a_font__setFace(A_FONT_FACE_BLUE);
+        a_font__setFont(A_FONT_FACE_BLUE);
         a_font_printf("%u skip", a_fps_getFrameSkip());
     }
 
