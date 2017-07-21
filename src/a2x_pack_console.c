@@ -152,7 +152,6 @@ void a_console__init2(void)
     a_spriteframes_free(frames, false);
     a_sprite_free(graphics);
 
-    a_font__setFace(A_FONT_FACE_WHITE);
     g_linesPerScreen = (unsigned)(a_settings_getInt("video.height")
                                   / a_font_getLineHeight() - 2);
 

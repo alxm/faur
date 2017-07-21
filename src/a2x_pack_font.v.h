@@ -22,6 +22,7 @@
 #include "a2x_pack_font.p.h"
 
 typedef enum AFontDefaults {
+    A_FONT_FACE_DEFAULT,
     A_FONT_FACE_WHITE,
     A_FONT_FACE_LIGHT_GRAY,
     A_FONT_FACE_GREEN,

@@ -73,12 +73,16 @@ void a_font__init(void)
     ASprite* fontSprite = a_sprite_newFromData(g_media_font, "defaultFont");
 
     APixel colors[A_FONT_FACE_DEFAULT_NUM];
-    colors[A_FONT_FACE_WHITE] = a_pixel_hex(0xffffff);
     colors[A_FONT_FACE_LIGHT_GRAY] = a_pixel_hex(0xafafaf);
     colors[A_FONT_FACE_GREEN] = a_pixel_hex(0x3fbf9f);
     colors[A_FONT_FACE_YELLOW] = a_pixel_hex(0x9fcf3f);
     colors[A_FONT_FACE_RED] = a_pixel_hex(0xcf2f4f);
     colors[A_FONT_FACE_BLUE] = a_pixel_hex(0x3f8fdf);
+
+    g_defaultFonts[A_FONT_FACE_DEFAULT] = a_font_load(fontSprite,
+                                                      0,
+                                                      9,
+                                                      A_FONT_LOAD_ALL);
 
     g_defaultFonts[A_FONT_FACE_WHITE] = a_font_load(fontSprite,
                                                     0,
@@ -87,7 +91,10 @@ void a_font__init(void)
 
     a_sprite_free(fontSprite);
 
-    for(AFontDefaults f = 1; f < A_FONT_FACE_DEFAULT_NUM; f++) {
+    for(AFontDefaults f = A_FONT_FACE_WHITE + 1;
+        f < A_FONT_FACE_DEFAULT_NUM;
+        f++) {
+
         g_defaultFonts[f] = a_font_dup(g_defaultFonts[A_FONT_FACE_WHITE],
                                        colors[f]);
     }
@@ -206,7 +213,7 @@ void a_font_pop(void)
 
 void a_font_reset(void)
 {
-    a_font__setFace(A_FONT_FACE_WHITE);
+    a_font__setFace(A_FONT_FACE_DEFAULT);
     a_font_setAlign(A_FONT_ALIGN_LEFT);
     a_font_setCoords(0, 0);
     a_font_setWrap(0);
@@ -215,7 +222,7 @@ void a_font_reset(void)
 void a_font_setFace(AFont* Font)
 {
     if(Font == NULL) {
-        Font = g_defaultFonts[A_FONT_FACE_WHITE];
+        Font = g_defaultFonts[A_FONT_FACE_DEFAULT];
     }
 
     g_state.currentFont = Font;
@@ -224,8 +231,7 @@ void a_font_setFace(AFont* Font)
 
 void a_font__setFace(AFontDefaults Font)
 {
-    g_state.currentFont = g_defaultFonts[Font];
-    g_state.lineHeight = g_defaultFonts[Font]->maxHeight + LINE_SPACING;
+    a_font_setFace(g_defaultFonts[Font]);
 }
 
 void a_font_setAlign(AFontAlign Align)
