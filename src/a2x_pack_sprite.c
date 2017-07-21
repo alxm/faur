@@ -26,6 +26,15 @@ APixel a_sprite__colorKey;
 APixel a_sprite__colorLimit;
 APixel a_sprite__colorEnd;
 
+static inline void initCommon(void)
+{
+    g_spritesList = a_list_new();
+
+    a_sprite__colorKey = a_pixel_hex(0xFF00FF);
+    a_sprite__colorLimit = a_pixel_hex(0x00FF00);
+    a_sprite__colorEnd = a_pixel_hex(0x00FFFF);
+}
+
 #if A_CONFIG_RENDER_SOFTWARE
 
 typedef void (*ABlitter)(const ASprite* Sprite, int X, int Y);
@@ -229,11 +238,8 @@ void a_sprite__init(void)
     initRoutines(A_PIXEL_BLEND_COLORMOD, colormod);
 
     a_sprite__updateRoutines();
-    g_spritesList = a_list_new();
 
-    a_sprite__colorKey = a_pixel_hex(0xFF00FF);
-    a_sprite__colorLimit = a_pixel_hex(0x00FF00);
-    a_sprite__colorEnd = a_pixel_hex(0x00FFFF);
+    initCommon();
 }
 
 void a_sprite__updateRoutines(void)
@@ -248,11 +254,7 @@ void a_sprite__updateRoutines(void)
 
 void a_sprite__init(void)
 {
-    g_spritesList = a_list_new();
-
-    a_sprite__colorKey = a_pixel_hex(0xFF00FF);
-    a_sprite__colorLimit = a_pixel_hex(0x00FF00);
-    a_sprite__colorEnd = a_pixel_hex(0x00FFFF);
+    initCommon();
 }
 
 #endif
