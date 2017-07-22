@@ -24,7 +24,7 @@ $ a2x_install
 Hello World Project
 -------------------
 
-`a2x_new` generates a small project that draws a square on the screen which you can move around with the arrow keys.
+`a2x_new` generates a small starter project:
 
 ```sh
 $ a2x_new hello
@@ -34,7 +34,7 @@ $ make run
 
 ![Screenshot](https://github.com/alxm/a2x/raw/master/doc/draw-a-box-00001.png "Screenshot")
 
-The code is in `hello/src/main.c`:
+The starter project draws a square on the screen which you can move around with the arrow keys. The code is in `hello/src/main.c`:
 
 ```C
 #include <a2x.h>
