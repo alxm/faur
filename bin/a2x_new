@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-    Copyright 2016 Alex Margarit
+    Copyright 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -78,6 +78,8 @@ include $(A2X_PATH)/make/project/Makefile.linux
 """\
 #include <a2x.h>
 
+A_STATE(drawBox);
+
 A_SETUP
 {{
     a_settings_set("app.title", "{0}");
@@ -88,7 +90,47 @@ A_SETUP
 
 A_MAIN
 {{
-    printf("Code me!\\n");
+    a_state_new("drawBox", drawBox);
+    a_state_push("drawBox");
+}}
+
+A_STATE(drawBox)
+{{
+    A_STATE_BODY
+    {{
+        int x = a_screen_getWidth() / 2;
+        int y = a_screen_getHeight() / 2;
+        int dim = a_screen_getWidth() / 4;
+
+        AInputButton* up = a_button_new("key.up");
+        AInputButton* down = a_button_new("key.down");
+        AInputButton* left = a_button_new("key.left");
+        AInputButton* right = a_button_new("key.right");
+
+        A_STATE_LOOP
+        {{
+            if(a_button_getPressed(up)) {{
+                y--;
+            }} else if(a_button_getPressed(down)) {{
+                y++;
+            }}
+
+            if(a_button_getPressed(left)) {{
+                x--;
+            }} else if(a_button_getPressed(right)) {{
+                x++;
+            }}
+
+            A_STATE_LOOP_DRAW
+            {{
+                a_pixel_setHex(0xaaff88);
+                a_draw_fill();
+
+                a_pixel_setHex(0xffaa44);
+                a_draw_rectangle(x - dim / 2, y - dim / 2, dim, dim);
+            }}
+        }}
+    }}
 }}
 """.format(project_name, author))
 

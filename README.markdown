@@ -21,7 +21,10 @@ Add `a2x/bin/` to your `$PATH` variable, or prepend it to all calls to `a2x_*` s
 $ a2x_install
 ```
 
-### Hello World Project
+Hello World Project
+-------------------
+
+`a2x_new` generates a small project that draws a square on the screen which you can move around with the arrow keys.
 
 ```sh
 $ a2x_new hello
@@ -29,10 +32,14 @@ $ cd hello/make/
 $ make run
 ```
 
-`a2x_new` generated some bare-bones code in `hello/src/main.c`:
+![Screenshot](https://github.com/alxm/a2x/raw/master/doc/draw-a-box-00001.png "Screenshot")
+
+The code is in `hello/src/main.c`:
 
 ```C
 #include <a2x.h>
+
+A_STATE(drawBox);
 
 A_SETUP
 {
@@ -44,7 +51,47 @@ A_SETUP
 
 A_MAIN
 {
-    printf("Code me!\n");
+    a_state_new("drawBox", drawBox);
+    a_state_push("drawBox");
+}
+
+A_STATE(drawBox)
+{
+    A_STATE_BODY
+    {
+        int x = a_screen_getWidth() / 2;
+        int y = a_screen_getHeight() / 2;
+        int dim = a_screen_getWidth() / 4;
+
+        AInputButton* up = a_button_new("key.up");
+        AInputButton* down = a_button_new("key.down");
+        AInputButton* left = a_button_new("key.left");
+        AInputButton* right = a_button_new("key.right");
+
+        A_STATE_LOOP
+        {
+            if(a_button_getPressed(up)) {
+                y--;
+            } else if(a_button_getPressed(down)) {
+                y++;
+            }
+
+            if(a_button_getPressed(left)) {
+                x--;
+            } else if(a_button_getPressed(right)) {
+                x++;
+            }
+
+            A_STATE_LOOP_DRAW
+            {
+                a_pixel_setHex(0xaaff88);
+                a_draw_fill();
+
+                a_pixel_setHex(0xffaa44);
+                a_draw_rectangle(x - dim / 2, y - dim / 2, dim, dim);
+            }
+        }
+    }
 }
 ```
 
