@@ -9,8 +9,8 @@ Install
 ### Download & Dependencies
 
 ```sh
+$ apt install git build-essential python3 libpng-dev libsdl2-dev libsdl2-mixer-dev
 $ git clone git://github.com/alxm/a2x.git
-$ apt install build-essential python3 libpng-dev libsdl2-dev libsdl2-mixer-dev
 ```
 
 Add `a2x/bin/` to your `$PATH` variable, or prepend it to all calls to `a2x_*` scripts below.

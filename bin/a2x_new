@@ -22,6 +22,7 @@
 import os
 
 from utils.output import Output
+from utils.shell import Shell
 from utils.tool import Tool
 
 class NewTool(Tool):
@@ -133,6 +134,21 @@ A_STATE(drawBox)
     }}
 }}
 """.format(project_name, author))
+
+        Shell.run('git init {}'.format(project_dir))
+
+        self.writefile(os.path.join(project_dir, '.gitignore'),
+"""\
+/bin/
+/obj/
+/src/a2x_gen/
+""")
+
+        Shell.run('cd {} && git add .gitignore make/Makefile src/main.c'
+            .format(project_dir))
+
+        Output.note('To build and run:')
+        Output.note('cd {} && make run'.format(dir_mke.path))
 
 if __name__ == '__main__':
     tool = NewTool('ProjectName')
