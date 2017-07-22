@@ -159,6 +159,11 @@ void* a_list_getLast(const AList* List)
     return List->last->prev->content;
 }
 
+void* a_list_getRandom(const AList* List)
+{
+    return a_list_getIndex(List, a_random_getIntu(List->items));
+}
+
 void a_list_removeItem(AList* List, const void* Item)
 {
     A_LIST_ITERATE(List, void*, item) {
