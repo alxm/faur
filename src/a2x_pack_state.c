@@ -172,11 +172,7 @@ void a_state__init(void)
 
 void a_state__uninit(void)
 {
-    A_STRHASH_ITERATE(g_states, AState*, state) {
-        free(state);
-    }
-
-    a_strhash_free(g_states);
+    a_strhash_freeEx(g_states, free);
     a_list_free(g_stack);
     a_list_free(g_pending);
 }

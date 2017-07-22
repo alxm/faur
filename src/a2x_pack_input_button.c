@@ -52,12 +52,7 @@ void a_input_button__init(void)
 void a_input_button__uninit(void)
 {
     a_list_freeEx(g_buttons, (AListFree*)a_button__free);
-
-    A_STRHASH_ITERATE(g_keys, AInputButtonSource*, b) {
-        a_input_button__freeSource(b);
-    }
-
-    a_strhash_free(g_keys);
+    a_strhash_freeEx(g_keys, (AStrHashFree*)a_input_button__freeSource);
     a_list_free(g_pressQueue);
     a_list_free(g_releaseQueue);
 }

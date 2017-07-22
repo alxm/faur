@@ -141,12 +141,8 @@ void a_entity__uninit(void)
         free(system);
     }
 
-    A_STRHASH_ITERATE(g_components, AComponent*, component) {
-        free(component);
-    }
-
     a_strhash_free(g_systems);
-    a_strhash_free(g_components);
+    a_strhash_freeEx(g_components, free);
 }
 
 void a_component_declare(const char* Name, size_t Size, AComponentFree* Free)
@@ -201,13 +197,7 @@ static void a_entity__free(AEntity* Entity)
     }
 
     a_strhash_free(Entity->components);
-
-    A_STRHASH_ITERATE(Entity->handlers, AMessageHandlerContainer*, h) {
-        free(h);
-    }
-
-    a_strhash_free(Entity->handlers);
-
+    a_strhash_freeEx(Entity->handlers, free);
     a_bitfield_free(Entity->componentBits);
     free(Entity->id);
     free(Entity);
