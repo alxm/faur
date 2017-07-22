@@ -190,11 +190,7 @@ AEntity* a_entity_new(const char* Id, void* Context)
 
 static void a_entity__free(AEntity* Entity)
 {
-    A_LIST_ITERATE(Entity->systemNodes, AListNode*, node) {
-        a_list_removeNode(node);
-    }
-
-    a_list_free(Entity->systemNodes);
+    a_list_freeEx(Entity->systemNodes, (AListFree*)a_list_removeNode);
 
     A_STRHASH_ITERATE(Entity->components, AComponent*, header) {
         if(header->free) {
@@ -529,11 +525,7 @@ void a_system__run(void)
             A_LIST_REMOVE_CURRENT();
         } else if(!a_list_isEmpty(entity->systemNodes)) {
             // Remove entity from any systems it's in
-            A_LIST_ITERATE(entity->systemNodes, AListNode*, node) {
-                a_list_removeNode(node);
-            }
-
-            a_list_clear(entity->systemNodes);
+            a_list_clearEx(entity->systemNodes, (AListFree*)a_list_removeNode);
         }
     }
 }
@@ -605,17 +597,10 @@ void a_system__popCollection(void)
 {
     g_collection->deleting = true;
 
-    A_LIST_ITERATE(g_collection->newEntities, AEntity*, entity) {
-        a_entity__free(entity);
-    }
-
-    A_LIST_ITERATE(g_collection->runningEntities, AEntity*, entity) {
-        a_entity__free(entity);
-    }
-
-    A_LIST_ITERATE(g_collection->removedEntities, AEntity*, entity) {
-        a_entity__free(entity);
-    }
+    a_list_freeEx(g_collection->messageQueue, (AListFree*)message_free);
+    a_list_freeEx(g_collection->newEntities, (AListFree*)a_entity__free);
+    a_list_freeEx(g_collection->runningEntities, (AListFree*)a_entity__free);
+    a_list_freeEx(g_collection->removedEntities, (AListFree*)a_entity__free);
 
     A_LIST_ITERATE(g_collection->tickSystems, ASystem*, system) {
         system->muted = false;
@@ -625,18 +610,8 @@ void a_system__popCollection(void)
         system->muted = false;
     }
 
-    A_LIST_ITERATE(g_collection->messageQueue, AMessage*, m) {
-        message_free(m);
-    }
-
-    a_list_free(g_collection->newEntities);
-    a_list_free(g_collection->runningEntities);
-    a_list_free(g_collection->removedEntities);
-
     a_list_free(g_collection->tickSystems);
     a_list_free(g_collection->drawSystems);
-
-    a_list_free(g_collection->messageQueue);
 
     free(g_collection);
     g_collection = a_list_pop(g_stack);

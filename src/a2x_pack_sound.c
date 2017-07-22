@@ -163,16 +163,8 @@ void a_sound__uninit(void)
     if(a_settings_getBool("sound.on")) {
         a_music_stop();
 
-        A_LIST_ITERATE(g_sfxList, ASound*, s) {
-            a_sfx__free(s);
-        }
-
-        A_LIST_ITERATE(g_musicList, AMusic*, m) {
-            a_music__free(m);
-        }
-
-        a_list_free(g_sfxList);
-        a_list_free(g_musicList);
+        a_list_freeEx(g_sfxList, (AListFree*)a_sfx__free);
+        a_list_freeEx(g_musicList, (AListFree*)a_music__free);
     }
 }
 

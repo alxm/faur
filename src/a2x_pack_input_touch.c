@@ -53,12 +53,7 @@ void a_input_touch__uninit(void)
     }
 
     A_STRHASH_ITERATE(g_sourceTouchScreens, AInputTouchSource*, t) {
-        A_LIST_ITERATE(t->motion, AInputTouchPoint*, p) {
-            free(p);
-        }
-
-        a_list_free(t->motion);
-
+        a_list_freeEx(t->motion, free);
         a_input__freeSourceHeader(&t->header);
     }
 
@@ -167,11 +162,6 @@ void a_input_touch__clearMotion(void)
 {
     A_STRHASH_ITERATE(g_sourceTouchScreens, AInputTouchSource*, touchScreen) {
         touchScreen->tap = false;
-
-        A_LIST_ITERATE(touchScreen->motion, AInputTouchPoint*, p) {
-            free(p);
-        }
-
-        a_list_clear(touchScreen->motion);
+        a_list_clearEx(touchScreen->motion, free);
     }
 }

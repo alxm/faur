@@ -30,11 +30,7 @@ void a_pixel__init(void)
 
 void a_pixel__uninit(void)
 {
-    A_LIST_ITERATE(g_stateStack, APixelState*, state) {
-        free(state);
-    }
-
-    a_list_free(g_stateStack);
+    a_list_freeEx(g_stateStack, free);
 }
 
 bool a_pixel__alphaBlending(void)

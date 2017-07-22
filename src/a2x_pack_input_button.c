@@ -51,15 +51,12 @@ void a_input_button__init(void)
 
 void a_input_button__uninit(void)
 {
-    A_LIST_ITERATE(g_buttons, AInputButton*, b) {
-        a_button__free(b);
-    }
+    a_list_freeEx(g_buttons, (AListFree*)a_button__free);
 
     A_STRHASH_ITERATE(g_keys, AInputButtonSource*, b) {
         a_input_button__freeSource(b);
     }
 
-    a_list_free(g_buttons);
     a_strhash_free(g_keys);
     a_list_free(g_pressQueue);
     a_list_free(g_releaseQueue);
@@ -190,11 +187,7 @@ AInputButton* a_button_dup(const AInputButton* Button)
 void a_button__free(AInputButton* Button)
 {
     if(!Button->isClone) {
-        A_LIST_ITERATE(Button->combos, AList*, andList) {
-            a_list_free(andList);
-        }
-
-        a_list_free(Button->combos);
+        a_list_freeEx(Button->combos, (AListFree*)a_list_free);
         a_input__freeUserHeader(&Button->header);
     }
 

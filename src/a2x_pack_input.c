@@ -46,11 +46,7 @@ void a_input__uninit(void)
     a_input_button__uninit();
     a_input_touch__uninit();
 
-    A_LIST_ITERATE(g_callbacks, AInputCallbackContainer*, c) {
-        free(c);
-    }
-
-    a_list_free(g_callbacks);
+    a_list_freeEx(g_callbacks, free);
 }
 
 void a_input__addCallback(AInputCallback Callback)
