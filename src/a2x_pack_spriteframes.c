@@ -174,7 +174,7 @@ ASprite* a_spriteframes_getIndex(const ASpriteFrames* Frames, unsigned Index)
 
 ASprite* a_spriteframes_getRandom(const ASpriteFrames* Frames)
 {
-    return Frames->spriteArray[a_random_getInt((int)Frames->num)];
+    return Frames->spriteArray[a_random_getIntu(Frames->num)];
 }
 
 unsigned a_spriteframes_getNum(const ASpriteFrames* Frames)
