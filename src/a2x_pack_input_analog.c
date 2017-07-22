@@ -66,11 +66,7 @@ AInputAnalogSource* a_input_analog__newSource(const char* Id)
 
 void a_input_analog__freeSource(AInputAnalogSource* Analog)
 {
-    A_LIST_ITERATE(Analog->forwardButtons, AInputSourceAxisButtons*, b) {
-        free(b);
-    }
-
-    a_list_free(Analog->forwardButtons);
+    a_list_freeEx(Analog->forwardButtons, free);
     a_input__freeSourceHeader(&Analog->header);
 }
 

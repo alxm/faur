@@ -159,6 +159,11 @@ void* a_list_getLast(const AList* List)
     return List->last->prev->content;
 }
 
+void* a_list_getRandom(const AList* List)
+{
+    return a_list_getIndex(List, a_random_getIntu(List->items));
+}
+
 void a_list_removeItem(AList* List, const void* Item)
 {
     A_LIST_ITERATE(List, void*, item) {
@@ -212,11 +217,21 @@ void a_list_removeNode(AListNode* Node)
 
 void a_list_clear(AList* List)
 {
+    a_list_clearEx(List, NULL);
+}
+
+void a_list_clearEx(AList* List, AListFree* Free)
+{
     AListNode* n = List->first->next;
 
     while(n != List->last) {
         AListNode* saved = n;
         n = n->next;
+
+        if(Free) {
+            Free(saved->content);
+        }
+
         free(saved);
     }
 

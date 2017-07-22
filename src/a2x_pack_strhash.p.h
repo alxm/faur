@@ -23,11 +23,13 @@
 
 typedef struct AStrHash AStrHash;
 typedef struct AStrHashEntry AStrHashEntry;
+typedef void AStrHashFree(void* Pointer);
 
 #include "a2x_pack_list.p.h"
 
 extern AStrHash* a_strhash_new(void);
 extern void a_strhash_free(AStrHash* Hash);
+extern void a_strhash_freeEx(AStrHash* Hash, AStrHashFree* Free);
 
 extern void a_strhash_add(AStrHash* Hash, const char* Key, void* Content);
 extern void* a_strhash_update(AStrHash* Hash, const char* Key, void* NewContent);

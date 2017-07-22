@@ -110,14 +110,12 @@ ASpriteFrames* a_spriteframes_dup(const ASpriteFrames* Frames)
 void a_spriteframes_free(ASpriteFrames* Frames, bool FreeSprites)
 {
     if(FreeSprites) {
-        A_LIST_ITERATE(Frames->sprites, ASprite*, sprite) {
-            a_sprite_free(sprite);
-        }
+        a_list_freeEx(Frames->sprites, (AListFree*)a_sprite_free);
+    } else {
+        a_list_free(Frames->sprites);
     }
 
-    a_list_free(Frames->sprites);
     free(Frames->spriteArray);
-
     free(Frames);
 }
 
@@ -176,7 +174,7 @@ ASprite* a_spriteframes_getIndex(const ASpriteFrames* Frames, unsigned Index)
 
 ASprite* a_spriteframes_getRandom(const ASpriteFrames* Frames)
 {
-    return Frames->spriteArray[a_random_getInt((int)Frames->num)];
+    return Frames->spriteArray[a_random_getIntu(Frames->num)];
 }
 
 unsigned a_spriteframes_getNum(const ASpriteFrames* Frames)

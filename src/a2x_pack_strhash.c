@@ -59,7 +59,16 @@ AStrHash* a_strhash_new(void)
 
 void a_strhash_free(AStrHash* Hash)
 {
+    a_strhash_freeEx(Hash, NULL);
+}
+
+void a_strhash_freeEx(AStrHash* Hash, AStrHashFree* Free)
+{
     A_LIST_ITERATE(Hash->entriesList, AStrHashEntry*, e) {
+        if(Free) {
+            Free(e->content);
+        }
+
         free(e->key);
         free(e);
     }

@@ -39,12 +39,15 @@ extern void a_list_appendCopy(AList* Dst, AList* Src);
 extern void* a_list_getIndex(const AList* List, unsigned Index);
 extern void* a_list_getFirst(const AList* List);
 extern void* a_list_getLast(const AList* List);
+extern void* a_list_getRandom(const AList* List);
 
 extern void a_list_removeItem(AList* List, const void* Item);
 extern void* a_list_removeFirst(AList* List);
 extern void* a_list_removeLast(AList* List);
 extern void a_list_removeNode(AListNode* Node);
+
 extern void a_list_clear(AList* List);
+extern void a_list_clearEx(AList* List, AListFree* Free);
 
 extern AList* a_list_dup(const AList* List);
 extern void** a_list_toArray(AList* List);

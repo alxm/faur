@@ -170,12 +170,7 @@ void a_console__init2(void)
 void a_console__uninit(void)
 {
     g_enabled = false;
-
-    A_LIST_ITERATE(g_lines, ALine*, line) {
-        line_free(line);
-    }
-
-    a_list_free(g_lines);
+    a_list_freeEx(g_lines, (AListFree*)line_free);
 }
 
 void a_console__write(AConsoleOutType Type, const char* Text)

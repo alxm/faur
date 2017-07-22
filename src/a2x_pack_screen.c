@@ -145,18 +145,10 @@ void a_screen__uninit(void)
 
     if(!a_list_isEmpty(g_stack)) {
         a_out__warning("Leaked %u screen targets", a_list_getSize(g_stack));
-
-        A_LIST_ITERATE(g_stack, AScreen*, screen) {
-            a_screen_free(screen);
-        }
     }
 
-    A_LIST_ITERATE(g_overlays, AScreenOverlayContainer*, c) {
-        free(c);
-    }
-
-    a_list_free(g_stack);
-    a_list_free(g_overlays);
+    a_list_freeEx(g_stack, (AListFree*)a_screen_free);
+    a_list_freeEx(g_overlays, free);
 }
 
 void a_screen__show(void)

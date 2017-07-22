@@ -172,11 +172,7 @@ void a_state__init(void)
 
 void a_state__uninit(void)
 {
-    A_STRHASH_ITERATE(g_states, AState*, state) {
-        free(state);
-    }
-
-    a_strhash_free(g_states);
+    a_strhash_freeEx(g_states, free);
     a_list_free(g_stack);
     a_list_free(g_pending);
 }
@@ -260,11 +256,7 @@ void a_state_exit(void)
     a_out__state("*** Telling all states to exit ***");
 
     // Clear the pending actions queue
-    A_LIST_ITERATE(g_pending, AStatePendingAction*, a) {
-        pending_free(a);
-    }
-
-    a_list_clear(g_pending);
+    a_list_clearEx(g_pending, (AListFree*)pending_free);
 
     // Queue a pop for every state in the stack
     for(unsigned i = a_list_getSize(g_stack); i--; ) {
