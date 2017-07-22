@@ -212,11 +212,21 @@ void a_list_removeNode(AListNode* Node)
 
 void a_list_clear(AList* List)
 {
+    a_list_clearEx(List, NULL);
+}
+
+void a_list_clearEx(AList* List, AListFree* Free)
+{
     AListNode* n = List->first->next;
 
     while(n != List->last) {
         AListNode* saved = n;
         n = n->next;
+
+        if(Free) {
+            Free(saved->content);
+        }
+
         free(saved);
     }
 
