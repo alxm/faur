@@ -289,6 +289,7 @@ static ASprite* makeEmptySprite(int Width, int Height)
 
 static void assignPixels(ASprite* Sprite, APixel* Pixels)
 {
+    free(Sprite->pixels);
     Sprite->pixels = Pixels;
 
     #if A_CONFIG_RENDER_SOFTWARE
@@ -543,6 +544,49 @@ void a_sprite_blitEx(const ASprite* Sprite, int X, int Y, AFix Scale, unsigned A
                                 a_pixel__state.blitFillFlat);
 }
 #endif
+
+void a_sprite_pow2Width(ASprite* Sprite)
+{
+    if((Sprite->w & (Sprite->w - 1)) == 0) {
+        return;
+    }
+
+    int power = 1;
+
+    while((1 << power) < Sprite->w) {
+        power++;
+    }
+
+    int newWidth = 1 << power;
+    size_t newSize = (unsigned)newWidth * (unsigned)Sprite->h * sizeof(APixel);
+    APixel* newPixels = a_mem_malloc(newSize);
+
+    int oldWidth = Sprite->w;
+    size_t oldLineSize = (unsigned)oldWidth * sizeof(APixel);
+    APixel* oldPixels = Sprite->pixels;
+
+    int leftPadding = (newWidth - oldWidth) / 2;
+    int rightPadding = newWidth - oldWidth - leftPadding;
+
+    for(int i = Sprite->h; i--; ) {
+        for(int j = leftPadding; j--; ) {
+            *newPixels++ = a_sprite__colorKey;
+        }
+
+        memcpy(newPixels, oldPixels, oldLineSize);
+        newPixels += oldWidth;
+        oldPixels += oldWidth;
+
+        for(int j = rightPadding; j--; ) {
+            *newPixels++ = a_sprite__colorKey;
+        }
+    }
+
+    Sprite->w = newWidth;
+    Sprite->wLog2 = power;
+    Sprite->pixelsSize = newSize;
+    assignPixels(Sprite, newPixels - newSize / sizeof(APixel));
+}
 
 void a_sprite_replaceColor(ASprite* Sprite, APixel OldColor, APixel NewColor)
 {

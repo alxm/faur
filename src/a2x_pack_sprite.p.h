@@ -42,6 +42,7 @@ extern void a_sprite_blitCenterY(const ASprite* Sprite, int X);
 extern void a_sprite_blitEx(const ASprite* Sprite, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY);
 #endif
 
+extern void a_sprite_pow2Width(ASprite* Sprite);
 extern void a_sprite_replaceColor(ASprite* Sprite, APixel OldColor, APixel NewColor);
 
 extern int a_sprite_getWidth(const ASprite* Sprite);
