@@ -1,5 +1,11 @@
 /*
-    Copyright 2010, 2016 Alex Margarit
+    Copyright 2010, 2016 Alex Margarit and:
+
+    - GP2X clock speed from the GP2X Wiki
+    - GP2X mmuhack by Squidge and NK
+    - GP2X ram timings by JyCet
+    - Wiz framebuffer direction by Orkie
+    - Wiz/Caanoo timer by notaz (https://github.com/notaz/libpicofe)
 
     This file is part of a2x-framework.
 
@@ -17,16 +23,6 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/*
-    Many thanks to:
-
-    - A wiki poster for the GP2X clock speed setter
-    - Squidge and NK for the GP2X mmuhack
-    - JyCet for the GP2X ram timings code
-    - Notaz for the Wiz mmuhack and accurate timer code
-    - Orkie for the Wiz framebuffer direction code
-*/
-
 #include "a2x_pack_hw.v.h"
 
 #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
@@ -39,6 +35,60 @@
 
     static int g_memfd;
     static volatile uint32_t* g_memregs;
+
+    static int decode_pll(unsigned reg)
+    {
+        long long v;
+        int p, m, s;
+
+        p = (reg >> 18) & 0x3f;
+        m = (reg >> 8) & 0x3ff;
+        s = reg & 0xff;
+
+        if(p == 0) {
+            p = 1;
+        }
+
+        v = 27000000; // master clock
+        v = v * m / (p << s);
+
+        return v;
+    }
+
+    static void timer_clean(void)
+    {
+        TIMER_REG(0x40) = 0x0c; // Be sure clocks are on
+        TIMER_REG(0x08) = 0x23; // Stop the timer, clear irq in case it's pending
+        TIMER_REG(0x00) = 0; // Clear counter
+        TIMER_REG(0x40) = 0; // Clocks off
+        TIMER_REG(0x44) = 0; // Dividers back to default
+    }
+
+    static void timer_init(void)
+    {
+        unsigned rate = decode_pll(g_memregs[0xf008 >> 2]);
+        unsigned div = (rate + 500000) / 1000000;
+        unsigned div2 = 0;
+
+        while(div > 256) {
+            div /= 2;
+            div2++;
+        }
+
+        if(div < 1 || div > 256 || div2 >= 4) {
+            a_out__fatal("Could not set up timer");
+        }
+
+        if(TIMER_REG(0x08) & 8) { // Timer in use
+            timer_clean();
+        }
+
+        div2 = (div2 + 3) & 3;
+
+        TIMER_REG(0x44) = ((div - 1) << 4) | 2; // Using PLL1
+        TIMER_REG(0x40) = 0x0c; // Clocks on
+        TIMER_REG(0x08) = 0x68 | div2; // Run timer, clear irq, latch value
+    }
 #endif
 
 #if A_PLATFORM_PANDORA
@@ -228,23 +278,21 @@ void a_hw__init_postSDL(void)
 
     #if A_PLATFORM_WIZ || A_PLATFORM_CAANOO
         g_memfd = open("/dev/mem", O_RDWR);
-        g_memregs = mmap(0, 0x20000, PROT_READ | PROT_WRITE, MAP_SHARED, g_memfd, 0xc0000000);
+        g_memregs = mmap(0,
+                         0x20000,
+                         PROT_READ | PROT_WRITE,
+                         MAP_SHARED,
+                         g_memfd,
+                         0xc0000000);
 
-        TIMER_REG(0x44) = 0x922;
-        TIMER_REG(0x40) = 0x0c;
-        TIMER_REG(0x08) = 0x6b;
+        timer_init();
     #endif
 }
 
 void a_hw__uninit(void)
 {
     #if A_PLATFORM_WIZ || A_PLATFORM_CAANOO
-        TIMER_REG(0x40) = 0x0c;
-        TIMER_REG(0x08) = 0x23;
-        TIMER_REG(0x00) = 0;
-        TIMER_REG(0x40) = 0;
-        TIMER_REG(0x44) = 0;
-
+        timer_clean();
         close(g_memfd);
     #endif
 
@@ -273,7 +321,9 @@ void a_hw__uninit(void)
 #if A_PLATFORM_WIZ || A_PLATFORM_CAANOO
     uint32_t a_hw__getMs(void)
     {
-        TIMER_REG(0x08) = 0x4b; // run timer, latch value
+        unsigned div = TIMER_REG(0x08) & 3;
+        TIMER_REG(0x08) = 0x48 | div; // Run timer, latch value
+
         return TIMER_REG(0) / 1000;
     }
 

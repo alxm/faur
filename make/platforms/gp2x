@@ -25,6 +25,8 @@ A_PLATFORM_CFLAGS = \
     -DA_CONFIG_RENDER_SOFTWARE=1 \
     -O3 \
     -s \
+    -mcpu=arm920t \
+    -mtune=arm920t \
     -msoft-float \
     -ffast-math \
     -fomit-frame-pointer \
