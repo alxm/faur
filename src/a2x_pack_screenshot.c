@@ -131,7 +131,8 @@ static void takeScreenshot(void)
                 a_screen_getPixels(),
                 a__screen.width,
                 a__screen.height,
-                g_title, g_description);
+                g_title,
+                g_description);
 
     free(name);
 }

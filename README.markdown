@@ -1,19 +1,18 @@
-![a2x](https://github.com/alxm/a2x/raw/master/doc/a2x-logo.png "a2x") [![Build Status](https://travis-ci.org/alxm/a2x.svg?branch=master)](https://travis-ci.org/alxm/a2x)
-=========================================================================================================================================================================
+# ![a2x](https://github.com/alxm/a2x/raw/master/doc/a2x-logo.png "a2x") [![Build Status](https://travis-ci.org/alxm/a2x.svg?branch=master)](https://travis-ci.org/alxm/a2x)
 
-a2x is a C framework I wrote for my video games. It runs natively on Linux and FreeBSD, and can be cross-compiled for Windows, GP2X, GP2X Wiz, Caanoo, and Open Pandora.
+a2x is a C framework I wrote for my video games. It runs natively on Linux and FreeBSD, and can be cross-compiled for Windows, GP2X, Wiz, Caanoo, and Open Pandora.
 
-Install
--------
+## Install
 
 ### Download & Dependencies
 
 ```sh
+$ cd ~
 $ apt install git build-essential python3 libpng-dev libsdl2-dev libsdl2-mixer-dev
 $ git clone git://github.com/alxm/a2x.git
 ```
 
-Add `a2x/bin/` to your `$PATH` variable, or prepend it to all calls to `a2x_*` scripts below.
+Add `~/a2x/bin` to the `$PATH` variable, or prepend it to all calls to `a2x_*` scripts below.
 
 ### Build
 
@@ -21,8 +20,7 @@ Add `a2x/bin/` to your `$PATH` variable, or prepend it to all calls to `a2x_*` s
 $ a2x_install
 ```
 
-Hello World Project
--------------------
+### Hello World Project
 
 `a2x_new` generates a small starter project:
 
@@ -97,7 +95,7 @@ A_STATE(drawBox)
 
 ### Cross-Compile for Other Platforms
 
-I originally wrote a2x for my GP2X games. The following targets are also supported now:
+I originally wrote a2x for my GP2X games. The following targets are also supported:
 
 * GPH SDK (Caanoo)
 * MinGW (Windows)
@@ -112,10 +110,11 @@ $ cd a2x/make/a2x
 $ make -f Makefile.gp2x
 ```
 
-License
--------
+## License
 
 Copyright 2010-2017 Alex Margarit (alex@alxm.org)
 
 * Code licensed under [GNU LGPL3](https://www.gnu.org/licenses/lgpl.html) (see `COPYING` and `COPYING.LESSER`)
 * Logo licensed under [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/) (see `doc/CC-BY-NC-ND`)
+
+a2x is a small project that supports my other personal projects. In the interest of focus and simplicity, it is a solo endeavor.
