@@ -55,8 +55,8 @@ class InstallTool(Tool):
 
             Output.info('Compiling a2x')
 
-        Shell.run('cd {} && {} -j {}'
-            .format(os.path.join(self.make_dir, 'a2x'), make, command))
+        Shell.run('{} --directory={} --jobs {}'
+            .format(make, os.path.join(self.make_dir, 'a2x'), command))
 
         if command == 'clean':
             Shell.run('rm {}'.format(sdkconfig))
