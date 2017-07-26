@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-    Copyright 2016 Alex Margarit
+    Copyright 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -45,6 +45,8 @@ class InstallTool(Tool):
                 Output.error('{} does not exist'.format(sdkconfig))
 
             Output.info('Removing compiled and generated a2x files')
+        elif command != '':
+            Output.error('Unknown command {}'.format(command))
         else:
             Shell.run('{} {} {}'
                 .format(os.path.join(self.bin_dir, 'a2x_sdkconfig'),
@@ -53,8 +55,8 @@ class InstallTool(Tool):
 
             Output.info('Compiling a2x')
 
-        Shell.run('cd {} && {} -j {}'
-            .format(os.path.join(self.make_dir, 'a2x'), make, command))
+        Shell.run('{} --directory={} --jobs {}'
+            .format(make, os.path.join(self.make_dir, 'a2x'), command))
 
         if command == 'clean':
             Shell.run('rm {}'.format(sdkconfig))
