@@ -186,7 +186,7 @@ void a_settings__init(void)
 
     add(A_SETTING_STR, A_SETTING_SET_ONCE, "video.fullscreen.button", "key.f4");
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.fixWizTearing", "0");
-    add(A_SETTING_STR, A_SETTING_SET_ONCE, "video.borderColor", "0x1f 0x0f 0x0f");
+    add(A_SETTING_STR, A_SETTING_SET_ONCE, "video.borderColor", "0x1f0f0f");
     add(A_SETTING_UINT, A_SETTING_SET_ONCE, "video.fps", "60");
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.fps.skip", "0");
     add(A_SETTING_UINT, A_SETTING_SET_ONCE, "video.fps.skip.max", "2");
