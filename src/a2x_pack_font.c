@@ -23,11 +23,12 @@
 #define CHAR_ENTRIES_NUM    128
 #define CHAR_INDEX(Char) ((unsigned)Char & (CHAR_ENTRIES_NUM - 1))
 
-#define CHAR_SPACING 1
 #define LINE_SPACING 1
 
 struct AFont {
     ASprite* sprites[CHAR_ENTRIES_NUM];
+    ASprite* gapSprite;
+    int gap;
     int blankWidth;
     int maxWidth;
     int maxHeight;
@@ -113,15 +114,18 @@ AFont* a_font_new(const ASprite* Sheet, int X, int Y, AFontLoad Loader)
     AFont* f = a_mem_malloc(sizeof(AFont));
 
     ASpriteFrames* frames = a_spriteframes_new(Sheet, X, Y, 1);
-    ASprite* blank = a_spriteframes_next(frames);
+    ASprite* gapSprite = a_spriteframes_next(frames);
+    ASprite* blankSprite = a_spriteframes_next(frames);
 
     for(int i = CHAR_ENTRIES_NUM; i--; ) {
-        f->sprites[i] = blank;
+        f->sprites[i] = blankSprite;
     }
 
-    f->blankWidth = blank->w;
-    f->maxWidth = blank->w;
-    f->maxHeight = blank->h;
+    f->gapSprite = gapSprite;
+    f->gap = gapSprite->w;
+    f->blankWidth = blankSprite->w;
+    f->maxWidth = blankSprite->w;
+    f->maxHeight = blankSprite->h;
 
     a_list_addLast(g_fontsList, f);
 
@@ -285,15 +289,15 @@ static int getWidth(const char* Text, ptrdiff_t Length)
     AFont* font = g_state.currentFont;
 
     if(g_state.align & A_FONT_ALIGN_MONOSPACED) {
-        width = (font->maxWidth + CHAR_SPACING) * (int)Length;
+        width = (font->maxWidth + font->gap) * (int)Length;
     } else {
         for( ; Length--; Text++) {
-            width += font->sprites[CHAR_INDEX(*Text)]->w + CHAR_SPACING;
+            width += font->sprites[CHAR_INDEX(*Text)]->w + font->gap;
         }
     }
 
     if(width > 0) {
-        width -= CHAR_SPACING;
+        width -= font->gap;
     }
 
     return width;
@@ -312,19 +316,23 @@ static void drawString(const char* Text, ptrdiff_t Length)
     if(g_state.align & A_FONT_ALIGN_MONOSPACED) {
         for( ; Length--; Text++) {
             ASprite* spr = font->sprites[CHAR_INDEX(*Text)];
+            int xOffset = (font->maxWidth - spr->w) / 2;
 
-            a_sprite_blit(spr,
-                          g_state.x + (font->maxWidth - spr->w) / 2,
-                          g_state.y);
+            a_sprite_blit(spr, g_state.x + xOffset, g_state.y);
+            g_state.x += font->maxWidth;
 
-            g_state.x += font->maxWidth + CHAR_SPACING;
+            a_sprite_blit(font->gapSprite, g_state.x, g_state.y);
+            g_state.x += font->gap;
         }
     } else {
         for( ; Length--; Text++) {
             ASprite* spr = font->sprites[CHAR_INDEX(*Text)];
 
             a_sprite_blit(spr, g_state.x, g_state.y);
-            g_state.x += spr->w + CHAR_SPACING;
+            g_state.x += spr->w;
+
+            a_sprite_blit(font->gapSprite, g_state.x, g_state.y);
+            g_state.x += font->gap;
         }
     }
 }
@@ -340,11 +348,11 @@ static void wrapString(const char* Text)
         if(g_state.currentLineWidth > 0) {
             if(g_state.align & A_FONT_ALIGN_MONOSPACED) {
                 for( ; *Text == ' '; Text++) {
-                    tally += font->maxWidth + CHAR_SPACING;
+                    tally += font->maxWidth + font->gap;
                 }
             } else {
                 for( ; *Text == ' '; Text++) {
-                    tally += font->blankWidth + CHAR_SPACING;
+                    tally += font->blankWidth + font->gap;
                 }
             }
         } else {
@@ -359,17 +367,17 @@ static void wrapString(const char* Text)
         if(g_state.currentLineWidth + tally <= g_state.wrapWidth) {
             if(g_state.align & A_FONT_ALIGN_MONOSPACED) {
                 for( ; *Text != ' ' && *Text != '\0'; Text++) {
-                    tally += font->maxWidth + CHAR_SPACING;
+                    tally += font->maxWidth + font->gap;
                 }
             } else {
                 for( ; *Text != ' ' && *Text != '\0'; Text++) {
-                    tally += font->sprites[CHAR_INDEX(*Text)]->w + CHAR_SPACING;
+                    tally += font->sprites[CHAR_INDEX(*Text)]->w + font->gap;
                 }
             }
         }
 
         if(tally > 0) {
-            tally -= CHAR_SPACING;
+            tally -= font->gap;
         }
 
         if(g_state.currentLineWidth + tally > g_state.wrapWidth) {
@@ -392,7 +400,7 @@ static void wrapString(const char* Text)
             }
 
             if(tally > 0) {
-                g_state.currentLineWidth += tally + CHAR_SPACING;
+                g_state.currentLineWidth += tally + font->gap;
             }
         }
     }

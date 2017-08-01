@@ -30,7 +30,7 @@ typedef enum {
     A_COLOR_WHITE = 37
 } AColorCode;
 
-static void outPrint(const char* Title, AColorCode Color, FILE* Stream, const char* Format, va_list Args)
+static void outPrintHeader(const char* Title, AColorCode Color, FILE* Stream)
 {
     #if A_PLATFORM_LINUX && A_PLATFORM_DESKTOP
         fprintf(Stream, "\033[1;%dm[ a2x %s ]\033[0m ", Color, Title);
@@ -38,7 +38,11 @@ static void outPrint(const char* Title, AColorCode Color, FILE* Stream, const ch
         (void)Color;
         fprintf(Stream, "[ a2x %s ] ", Title);
     #endif
+}
 
+static void outPrint(const char* Title, AColorCode Color, FILE* Stream, const char* Format, va_list Args)
+{
+    outPrintHeader(Title, Color, Stream);
     vfprintf(Stream, Format, Args);
     fprintf(Stream, "\n");
 }
@@ -123,6 +127,16 @@ void a_out__stateVerbose(const char* Format, ...)
 
         A_OUT__PRINT("Stt", A_COLOR_BLUE, stdout);
         A_OUT__CONSOLE(A_CONSOLE_STATE);
+    }
+}
+
+void a_out_print(const char* Text)
+{
+    if(a_settings_getBool("app.output.on")) {
+        outPrintHeader("App", A_COLOR_MAGENTA, stdout);
+        puts(Text);
+
+        a_console__write(A_CONSOLE_APP, Text);
     }
 }
 

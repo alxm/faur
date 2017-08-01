@@ -57,7 +57,12 @@ AMenu* a_menu_new(AInputButton* Next, AInputButton* Back, AInputButton* Select, 
 
 void a_menu_free(AMenu* Menu)
 {
-    a_list_free(Menu->items);
+    a_menu_freeEx(Menu, NULL);
+}
+
+void a_menu_freeEx(AMenu* Menu, AListFree* ItemFree)
+{
+    a_list_freeEx(Menu->items, ItemFree);
     a_button_free(Menu->next);
     a_button_free(Menu->back);
     free(Menu);
