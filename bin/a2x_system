@@ -1,0 +1,56 @@
+#!/usr/bin/env python3
+
+"""
+    Copyright 2017 Alex Margarit
+
+    This file is part of a2x-framework.
+
+    a2x-framework is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    a2x-framework is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
+import os
+
+from utils.output import Output
+from utils.tool import Tool
+
+class CompTool(Tool):
+    def main(self):
+        sys_name = self.get_arg('SystemName').strip().lower()
+        sys_c = os.path.join('.', 'system_{}.c'.format(sys_name))
+        sys_h = os.path.join('.', 'system_{}.h'.format(sys_name))
+
+        for f in [sys_c, sys_h]:
+            if os.path.exists(f):
+                Output.error('Error: {} already exists'.format(f))
+
+        self.writefile(sys_c,
+"""\
+#include <a2x.h>
+
+#include "system_{name}.h"
+
+void z_system_{name}(AEntity* Entity)
+{{
+    A_UNUSED(Entity);
+}}
+""".format(name=sys_name))
+
+        self.writefile(sys_h,
+"""\
+extern ASystemHandler z_system_{name};
+""".format(name=sys_name))
+
+if __name__ == '__main__':
+    tool = CompTool('SystemName')
+    tool.run()
