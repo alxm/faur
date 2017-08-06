@@ -44,6 +44,7 @@ extern void* a_entity_getComponent(const AEntity* Entity, const char* Component)
 extern void* a_entity_requireComponent(const AEntity* Entity, const char* Component);
 extern void a_entity_mute(AEntity* Entity);
 extern void a_entity_unmute(AEntity* Entity);
+extern bool a_entity_isMuted(const AEntity* Entity);
 extern void a_entity_setMessageHandler(AEntity* Entity, const char* Message, AMessageHandler* Handler);
 extern void a_entity_sendMessage(AEntity* Sender, AEntity* Recipient, const char* Message);
 
