@@ -343,6 +343,11 @@ void a_entity_unmute(AEntity* Entity)
     Entity->muted = false;
 }
 
+bool a_entity_isMuted(const AEntity* Entity)
+{
+    return Entity->muted;
+}
+
 void a_entity_setMessageHandler(AEntity* Entity, const char* Message, AMessageHandler* Handler)
 {
     if(a_strhash_contains(Entity->handlers, Message)) {
