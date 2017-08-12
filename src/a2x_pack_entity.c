@@ -63,8 +63,8 @@ typedef struct AMessageHandlerContainer {
 } AMessageHandlerContainer;
 
 typedef struct AMessage {
-    AEntity* sender;
-    AEntity* recipient;
+    AEntity* to;
+    AEntity* from;
     char* message;
 } AMessage;
 
@@ -100,24 +100,24 @@ static inline AComponent* getHeader(const void* Component)
     return (AComponent*)Component - 1;
 }
 
-static AMessage* message_new(AEntity* Sender, AEntity* Recipient, const char* Message)
+static AMessage* message_new(AEntity* To, AEntity* From, const char* Message)
 {
     AMessage* m = a_mem_malloc(sizeof(AMessage));
 
-    m->sender = Sender;
-    m->recipient = Recipient;
+    m->to = To;
+    m->from = From;
     m->message = a_str_dup(Message);
 
-    a_entity_reference(Sender);
-    a_entity_reference(Recipient);
+    a_entity_reference(To);
+    a_entity_reference(From);
 
     return m;
 }
 
 static void message_free(AMessage* Message)
 {
-    a_entity_release(Message->sender);
-    a_entity_release(Message->recipient);
+    a_entity_release(Message->to);
+    a_entity_release(Message->from);
 
     free(Message->message);
     free(Message);
@@ -363,10 +363,10 @@ void a_entity_setMessageHandler(AEntity* Entity, const char* Message, AMessageHa
     a_strhash_add(Entity->handlers, Message, h);
 }
 
-void a_entity_sendMessage(AEntity* Sender, AEntity* Recipient, const char* Message)
+void a_entity_sendMessage(AEntity* To, AEntity* From, const char* Message)
 {
-    a_list_addLast(g_collection->messageQueue,
-                   message_new(Sender, Recipient, Message));
+    AMessage* message = message_new(To, From, Message);
+    a_list_addLast(g_collection->messageQueue, message);
 }
 
 void a_system_declare(const char* Name, const char* Components, ASystemHandler* Handler, ASystemSort* Compare, bool OnlyActiveEntities)
@@ -485,21 +485,19 @@ void a_system__run(void)
     }
 
     A_LIST_ITERATE(g_collection->messageQueue, AMessage*, m) {
-        AMessageHandlerContainer* h = a_strhash_get(m->recipient->handlers,
+        AMessageHandlerContainer* h = a_strhash_get(m->to->handlers,
                                                     m->message);
 
         if(h == NULL) {
             a_out__warning("'%s' does not handle '%s'",
-                           entityName(m->recipient),
+                           entityName(m->to),
                            m->message);
-        } else if(!entityIsRemoved(m->sender)
-            && !entityIsRemoved(m->recipient)) {
-
-            if(m->recipient->muted) {
+        } else if(!entityIsRemoved(m->to) && !entityIsRemoved(m->from)) {
+            if(m->to->muted) {
                 // Keep message in queue
                 continue;
             } else {
-                h->handler(m->recipient, m->sender);
+                h->handler(m->to, m->from);
             }
         }
 
