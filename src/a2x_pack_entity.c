@@ -60,6 +60,7 @@ struct AEntity {
 
 typedef struct AMessageHandlerContainer {
     AMessageHandler* handler;
+    bool handleImmediately;
 } AMessageHandlerContainer;
 
 typedef struct AMessage {
@@ -348,7 +349,7 @@ bool a_entity_isMuted(const AEntity* Entity)
     return Entity->muted;
 }
 
-void a_entity_setMessageHandler(AEntity* Entity, const char* Message, AMessageHandler* Handler)
+void a_entity_setMessageHandler(AEntity* Entity, const char* Message, AMessageHandler* Handler, bool HandleImmediately)
 {
     if(a_strhash_contains(Entity->handlers, Message)) {
         a_out__fatal("'%s' handler already set for '%s'",
@@ -359,14 +360,28 @@ void a_entity_setMessageHandler(AEntity* Entity, const char* Message, AMessageHa
     AMessageHandlerContainer* h = a_mem_malloc(sizeof(AMessageHandlerContainer));
 
     h->handler = Handler;
+    h->handleImmediately = HandleImmediately;
 
     a_strhash_add(Entity->handlers, Message, h);
 }
 
 void a_entity_sendMessage(AEntity* To, AEntity* From, const char* Message)
 {
-    AMessage* message = message_new(To, From, Message);
-    a_list_addLast(g_collection->messageQueue, message);
+    AMessageHandlerContainer* h = a_strhash_get(To->handlers, Message);
+
+    if(h == NULL) {
+        a_out__warning("'%s' does not handle '%s'", entityName(To), Message);
+        return;
+    }
+
+    if(h->handleImmediately) {
+        if(!entityIsRemoved(To) && !entityIsRemoved(From) && !To->muted) {
+            h->handler(To, From);
+        }
+    } else {
+        AMessage* message = message_new(To, From, Message);
+        a_list_addLast(g_collection->messageQueue, message);
+    }
 }
 
 void a_system_declare(const char* Name, const char* Components, ASystemHandler* Handler, ASystemSort* Compare, bool OnlyActiveEntities)
@@ -488,11 +503,7 @@ void a_system__run(void)
         AMessageHandlerContainer* h = a_strhash_get(m->to->handlers,
                                                     m->message);
 
-        if(h == NULL) {
-            a_out__warning("'%s' does not handle '%s'",
-                           entityName(m->to),
-                           m->message);
-        } else if(!entityIsRemoved(m->to) && !entityIsRemoved(m->from)) {
+        if(!entityIsRemoved(m->to) && !entityIsRemoved(m->from)) {
             if(m->to->muted) {
                 // Keep message in queue
                 continue;
