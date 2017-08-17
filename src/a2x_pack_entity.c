@@ -530,6 +530,12 @@ static void muteSystems(const char* Systems, bool Muted)
                          name);
         }
 
+        if(!system->runsInCurrentState) {
+            a_out__fatal("%s: '%s' does not run in state",
+                         Muted ? "a_system_mute" : "a_system_unmute",
+                         name);
+        }
+
         system->muted = Muted;
     }
 
