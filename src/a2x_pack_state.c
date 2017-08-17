@@ -20,14 +20,10 @@
 #include "a2x_pack_state.v.h"
 
 typedef struct AState {
-    AStateFunction function;
-} AState;
-
-typedef struct AStateInstance {
     char* name;
     AStateFunction function;
     AStateStage stage;
-} AStateInstance;
+} AState;
 
 typedef enum {
     A_STATE_ACTION_PUSH,
@@ -39,9 +35,9 @@ typedef struct AStatePendingAction {
     char* name;
 } AStatePendingAction;
 
-static AStrHash* g_states;
-static AList* g_stack;
-static AList* g_pending;
+static AStrHash* g_states; // table of AState
+static AList* g_stack; // list of AState
+static AList* g_pending; // list of AStatePendingAction
 static bool g_exiting;
 
 static const char* g_stageNames[A_STATE_STAGE_NUM] = {
@@ -70,42 +66,15 @@ static void pending_free(AStatePendingAction* Pending)
     free(Pending);
 }
 
-static AStateInstance* state_new(const char* Name)
-{
-    AState* state = a_strhash_get(g_states, Name);
-
-    if(state == NULL) {
-        a_out__fatal("State '%s' does not exist", Name);
-    }
-
-    AStateInstance* s = a_mem_malloc(sizeof(AStateInstance));
-
-    s->name = a_str_dup(Name);
-    s->function = state->function;
-    s->stage = A_STATE_STAGE_INIT;
-
-    a_out__state("New '%s' instance", Name);
-
-    return s;
-}
-
-static void state_free(AStateInstance* State)
-{
-    a_out__stateVerbose("Destroying '%s' instance", State->name);
-
-    free(State->name);
-    free(State);
-}
-
 static void state_handle(void)
 {
-    AStateInstance* current = a_list_peek(g_stack);
+    AState* current = a_list_peek(g_stack);
 
     // Check if the current state just ran its Free stage
     if(current && current->stage == A_STATE_STAGE_FREE) {
-        state_free(current);
-        a_system__popCollection();
+        a_out__stateVerbose("Destroying '%s' instance", current->name);
 
+        a_system__popCollection();
         a_list_pop(g_stack);
         current = a_list_peek(g_stack);
     }
@@ -129,14 +98,22 @@ static void state_handle(void)
     switch(pending->action) {
         case A_STATE_ACTION_PUSH: {
             a_out__stateVerbose("Push '%s'", pending->name);
+            AState* state = a_strhash_get(g_states, pending->name);
 
-            A_LIST_ITERATE(g_stack, AStateInstance*, state) {
-                if(a_str_equal(pending->name, state->name)) {
+            if(state == NULL) {
+                a_out__fatal("State '%s' does not exist", pending->name);
+            }
+
+            A_LIST_ITERATE(g_stack, AState*, s) {
+                if(state == s) {
                     a_out__fatal("State '%s' already in stack", pending->name);
                 }
             }
 
-            a_list_push(g_stack, state_new(pending->name));
+            a_out__state("New '%s' instance", pending->name);
+
+            state->stage = A_STATE_STAGE_INIT;
+            a_list_push(g_stack, state);
             a_system__pushCollection();
         } break;
 
@@ -172,7 +149,12 @@ void a_state__init(void)
 
 void a_state__uninit(void)
 {
-    a_strhash_freeEx(g_states, free);
+    A_STRHASH_ITERATE(g_states, AState*, s) {
+        free(s->name);
+        free(s);
+    }
+
+    a_strhash_free(g_states);
     a_list_free(g_stack);
     a_list_free(g_pending);
 }
@@ -180,7 +162,10 @@ void a_state__uninit(void)
 void a_state__new(const char* Name, AStateFunction Function)
 {
     AState* state = a_mem_malloc(sizeof(AState));
+
+    state->name = a_str_dup(Name);
     state->function = Function;
+    state->stage = A_STATE_STAGE_INIT;
 
     a_strhash_add(g_states, Name, state);
     a_out__stateVerbose("Declared '%s'", Name);
@@ -216,8 +201,8 @@ void a_state_popUntil(const char* Name)
     int pops = 0;
     bool found = false;
 
-    A_LIST_ITERATE(g_stack, AStateInstance*, state) {
-        if(a_str_equal(state->name, Name)) {
+    A_LIST_ITERATE(g_stack, AState*, s) {
+        if(a_str_equal(s->name, Name)) {
             found = true;
             break;
         }
@@ -266,7 +251,7 @@ void a_state_exit(void)
 
 bool a_state__stage(AStateStage Stage)
 {
-    AStateInstance* current = a_list_peek(g_stack);
+    AState* current = a_list_peek(g_stack);
 
     if(current == NULL) {
         a_out__fatal("a_state__stage: no state");
@@ -305,7 +290,7 @@ void a_state__run(void)
     state_handle();
 
     while(!a_list_isEmpty(g_stack)) {
-        AStateInstance* s = a_list_peek(g_stack);
+        AState* s = a_list_peek(g_stack);
 
         a_out__stateVerbose("  '%s' running %s",
                             s->name,
