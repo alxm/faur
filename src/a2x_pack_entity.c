@@ -453,6 +453,10 @@ void a_system_execute(const char* Systems)
             a_out__fatal("a_system_execute: unknown system '%s'", name);
         }
 
+        if(!system->runsInCurrentState) {
+            a_out__fatal("a_system_execute: '%s' does not run in state", name);
+        }
+
         runSystem(system);
     }
 
