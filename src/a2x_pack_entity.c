@@ -510,7 +510,13 @@ void a_system_flushNewEntities(void)
 {
     A_LIST_ITERATE(g_collection->newEntities, AEntity*, e) {
         // Check if the entity matches any systems
-        A_STRHASH_ITERATE(g_systems, ASystem*, s) {
+        A_LIST_ITERATE(g_collection->tickSystems, ASystem*, s) {
+            if(a_bitfield_testMask(e->componentBits, s->componentBits)) {
+                a_list_addLast(e->systemNodes, a_list_addLast(s->entities, e));
+            }
+        }
+
+        A_LIST_ITERATE(g_collection->drawSystems, ASystem*, s) {
             if(a_bitfield_testMask(e->componentBits, s->componentBits)) {
                 a_list_addLast(e->systemNodes, a_list_addLast(s->entities, e));
             }
