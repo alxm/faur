@@ -49,8 +49,6 @@ extern void a_entity_setMessageHandler(AEntity* Entity, const char* Message, AMe
 extern void a_entity_sendMessage(AEntity* To, AEntity* From, const char* Message);
 
 extern void a_system_declare(const char* Name, const char* Components, ASystemHandler* Handler, ASystemSort* Compare, bool OnlyActiveEntities);
-extern void a_system_tick(const char* Systems);
-extern void a_system_draw(const char* Systems);
 extern void a_system_execute(const char* Systems);
 extern void a_system_flushNewEntities(void);
 extern void a_system_mute(const char* Systems);

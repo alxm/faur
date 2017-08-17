@@ -23,6 +23,8 @@ typedef struct AState {
     char* name;
     AStateFunction function;
     AStateStage stage;
+    AList* tickSystems;
+    AList* drawSystems;
 } AState;
 
 typedef enum {
@@ -113,8 +115,8 @@ static void state_handle(void)
             a_out__state("New '%s' instance", pending->name);
 
             state->stage = A_STATE_STAGE_INIT;
+            a_system__pushCollection(state->tickSystems, state->drawSystems);
             a_list_push(g_stack, state);
-            a_system__pushCollection();
         } break;
 
         case A_STATE_ACTION_POP: {
@@ -150,6 +152,8 @@ void a_state__init(void)
 void a_state__uninit(void)
 {
     A_STRHASH_ITERATE(g_states, AState*, s) {
+        a_list_free(s->tickSystems);
+        a_list_free(s->drawSystems);
         free(s->name);
         free(s);
     }
@@ -159,13 +163,15 @@ void a_state__uninit(void)
     a_list_free(g_pending);
 }
 
-void a_state__new(const char* Name, AStateFunction Function)
+void a_state__new(const char* Name, AStateFunction Function, const char* TickSystems, const char* DrawSystems)
 {
     AState* state = a_mem_malloc(sizeof(AState));
 
     state->name = a_str_dup(Name);
     state->function = Function;
     state->stage = A_STATE_STAGE_INIT;
+    state->tickSystems = a_system__parse(TickSystems);
+    state->drawSystems = a_system__parse(DrawSystems);
 
     a_strhash_add(g_states, Name, state);
     a_out__stateVerbose("Declared '%s'", Name);

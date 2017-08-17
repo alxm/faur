@@ -417,40 +417,6 @@ void a_system_declare(const char* Name, const char* Components, ASystemHandler* 
     a_list_freeEx(tok, free);
 }
 
-void a_system_tick(const char* Systems)
-{
-    AList* tok = a_str_split(Systems, " ");
-
-    A_LIST_ITERATE(tok, char*, systemName) {
-        ASystem* system = a_strhash_get(g_systems, systemName);
-
-        if(system == NULL) {
-            a_out__fatal("Unknown tick system '%s'", systemName);
-        }
-
-        a_list_addLast(g_collection->tickSystems, system);
-    }
-
-    a_list_freeEx(tok, free);
-}
-
-void a_system_draw(const char* Systems)
-{
-    AList* tok = a_str_split(Systems, " ");
-
-    A_LIST_ITERATE(tok, char*, systemName) {
-        ASystem* system = a_strhash_get(g_systems, systemName);
-
-        if(system == NULL) {
-            a_out__fatal("Unknown draw system '%s'", systemName);
-        }
-
-        a_list_addLast(g_collection->drawSystems, system);
-    }
-
-    a_list_freeEx(tok, free);
-}
-
 static void runSystem(const ASystem* System)
 {
     if(System->muted) {
@@ -578,15 +544,35 @@ void a_system_unmute(const char* Systems)
     muteSystems(Systems, false);
 }
 
-void a_system__pushCollection(void)
+AList* a_system__parse(const char* Systems)
+{
+    AList* systems = a_list_new();
+    AList* tok = a_str_split(Systems, " ");
+
+    A_LIST_ITERATE(tok, char*, name) {
+        ASystem* system = a_strhash_get(g_systems, name);
+
+        if(system == NULL) {
+            a_out__fatal("Unknown system '%s'", name);
+        }
+
+        a_list_addLast(systems, system);
+    }
+
+    a_list_freeEx(tok, free);
+
+    return systems;
+}
+
+void a_system__pushCollection(AList* TickSystems, AList* DrawSystems)
 {
     ARunningCollection* c = a_mem_malloc(sizeof(ARunningCollection));
 
     c->newEntities = a_list_new();
     c->runningEntities = a_list_new();
     c->removedEntities = a_list_new();
-    c->tickSystems = a_list_new();
-    c->drawSystems = a_list_new();
+    c->tickSystems = TickSystems;
+    c->drawSystems = DrawSystems;
     c->messageQueue = a_list_new();
     c->deleting = false;
 
@@ -613,9 +599,6 @@ void a_system__popCollection(void)
     A_LIST_ITERATE(g_collection->drawSystems, ASystem*, system) {
         system->muted = false;
     }
-
-    a_list_free(g_collection->tickSystems);
-    a_list_free(g_collection->drawSystems);
 
     free(g_collection);
     g_collection = a_list_pop(g_stack);
