@@ -27,7 +27,9 @@
 extern void a_entity__init(void);
 extern void a_entity__uninit(void);
 
-extern void a_system__pushCollection(void);
-extern void a_system__popCollection(void);
-
 extern void a_system__run(void);
+
+extern AList* a_system__parse(const char* Systems);
+
+extern void a_system__pushCollection(AList* TickSystems, AList* DrawSystems);
+extern void a_system__popCollection(void);

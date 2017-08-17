@@ -33,6 +33,7 @@ typedef struct ASystem {
     AList* entities; // entities currently picked up by this system
     bool onlyActiveEntities; // skip entities that are not active
     bool muted; // runSystem skips muted systems
+    bool runsInCurrentState; // whether this system runs in the current state
 } ASystem;
 
 typedef struct ARunningCollection {
@@ -41,6 +42,7 @@ typedef struct ARunningCollection {
     AList* removedEntities; // removed entities with outstanding references
     AList* tickSystems; // tick systems in the specified order
     AList* drawSystems; // draw systems in the specified order
+    AList* allSystems; // tick & draw systems
     AList* messageQueue; // queued messages
     bool deleting; // set when this collection is popped off the stack
 } ARunningCollection;
@@ -60,11 +62,12 @@ struct AEntity {
 
 typedef struct AMessageHandlerContainer {
     AMessageHandler* handler;
+    bool handleImmediately;
 } AMessageHandlerContainer;
 
 typedef struct AMessage {
-    AEntity* sender;
-    AEntity* recipient;
+    AEntity* to;
+    AEntity* from;
     char* message;
 } AMessage;
 
@@ -100,24 +103,24 @@ static inline AComponent* getHeader(const void* Component)
     return (AComponent*)Component - 1;
 }
 
-static AMessage* message_new(AEntity* Sender, AEntity* Recipient, const char* Message)
+static AMessage* message_new(AEntity* To, AEntity* From, const char* Message)
 {
     AMessage* m = a_mem_malloc(sizeof(AMessage));
 
-    m->sender = Sender;
-    m->recipient = Recipient;
+    m->to = To;
+    m->from = From;
     m->message = a_str_dup(Message);
 
-    a_entity_reference(Sender);
-    a_entity_reference(Recipient);
+    a_entity_reference(To);
+    a_entity_reference(From);
 
     return m;
 }
 
 static void message_free(AMessage* Message)
 {
-    a_entity_release(Message->sender);
-    a_entity_release(Message->recipient);
+    a_entity_release(Message->to);
+    a_entity_release(Message->from);
 
     free(Message->message);
     free(Message);
@@ -348,7 +351,7 @@ bool a_entity_isMuted(const AEntity* Entity)
     return Entity->muted;
 }
 
-void a_entity_setMessageHandler(AEntity* Entity, const char* Message, AMessageHandler* Handler)
+void a_entity_setMessageHandler(AEntity* Entity, const char* Message, AMessageHandler* Handler, bool HandleImmediately)
 {
     if(a_strhash_contains(Entity->handlers, Message)) {
         a_out__fatal("'%s' handler already set for '%s'",
@@ -359,14 +362,28 @@ void a_entity_setMessageHandler(AEntity* Entity, const char* Message, AMessageHa
     AMessageHandlerContainer* h = a_mem_malloc(sizeof(AMessageHandlerContainer));
 
     h->handler = Handler;
+    h->handleImmediately = HandleImmediately;
 
     a_strhash_add(Entity->handlers, Message, h);
 }
 
-void a_entity_sendMessage(AEntity* Sender, AEntity* Recipient, const char* Message)
+void a_entity_sendMessage(AEntity* To, AEntity* From, const char* Message)
 {
-    a_list_addLast(g_collection->messageQueue,
-                   message_new(Sender, Recipient, Message));
+    AMessageHandlerContainer* h = a_strhash_get(To->handlers, Message);
+
+    if(h == NULL) {
+        a_out__warningv("'%s' does not handle '%s'", entityName(To), Message);
+        return;
+    }
+
+    if(h->handleImmediately) {
+        if(!entityIsRemoved(To) && !entityIsRemoved(From) && !To->muted) {
+            h->handler(To, From);
+        }
+    } else {
+        AMessage* message = message_new(To, From, Message);
+        a_list_addLast(g_collection->messageQueue, message);
+    }
 }
 
 void a_system_declare(const char* Name, const char* Components, ASystemHandler* Handler, ASystemSort* Compare, bool OnlyActiveEntities)
@@ -383,6 +400,7 @@ void a_system_declare(const char* Name, const char* Components, ASystemHandler* 
     s->componentBits = a_bitfield_new(a_strhash_getSize(g_components));
     s->onlyActiveEntities = OnlyActiveEntities;
     s->muted = false;
+    s->runsInCurrentState = false;
 
     a_strhash_add(g_systems, Name, s);
 
@@ -397,40 +415,6 @@ void a_system_declare(const char* Name, const char* Components, ASystemHandler* 
         }
 
         a_bitfield_set(s->componentBits, c->bit);
-    }
-
-    a_list_freeEx(tok, free);
-}
-
-void a_system_tick(const char* Systems)
-{
-    AList* tok = a_str_split(Systems, " ");
-
-    A_LIST_ITERATE(tok, char*, systemName) {
-        ASystem* system = a_strhash_get(g_systems, systemName);
-
-        if(system == NULL) {
-            a_out__fatal("Unknown tick system '%s'", systemName);
-        }
-
-        a_list_addLast(g_collection->tickSystems, system);
-    }
-
-    a_list_freeEx(tok, free);
-}
-
-void a_system_draw(const char* Systems)
-{
-    AList* tok = a_str_split(Systems, " ");
-
-    A_LIST_ITERATE(tok, char*, systemName) {
-        ASystem* system = a_strhash_get(g_systems, systemName);
-
-        if(system == NULL) {
-            a_out__fatal("Unknown draw system '%s'", systemName);
-        }
-
-        a_list_addLast(g_collection->drawSystems, system);
     }
 
     a_list_freeEx(tok, free);
@@ -470,6 +454,10 @@ void a_system_execute(const char* Systems)
             a_out__fatal("a_system_execute: unknown system '%s'", name);
         }
 
+        if(!system->runsInCurrentState) {
+            a_out__fatal("a_system_execute: '%s' does not run in state", name);
+        }
+
         runSystem(system);
     }
 
@@ -485,21 +473,15 @@ void a_system__run(void)
     }
 
     A_LIST_ITERATE(g_collection->messageQueue, AMessage*, m) {
-        AMessageHandlerContainer* h = a_strhash_get(m->recipient->handlers,
+        AMessageHandlerContainer* h = a_strhash_get(m->to->handlers,
                                                     m->message);
 
-        if(h == NULL) {
-            a_out__warning("'%s' does not handle '%s'",
-                           entityName(m->recipient),
-                           m->message);
-        } else if(!entityIsRemoved(m->sender)
-            && !entityIsRemoved(m->recipient)) {
-
-            if(m->recipient->muted) {
+        if(!entityIsRemoved(m->to) && !entityIsRemoved(m->from)) {
+            if(m->to->muted) {
                 // Keep message in queue
                 continue;
             } else {
-                h->handler(m->recipient, m->sender);
+                h->handler(m->to, m->from);
             }
         }
 
@@ -529,7 +511,7 @@ void a_system_flushNewEntities(void)
 {
     A_LIST_ITERATE(g_collection->newEntities, AEntity*, e) {
         // Check if the entity matches any systems
-        A_STRHASH_ITERATE(g_systems, ASystem*, s) {
+        A_LIST_ITERATE(g_collection->allSystems, ASystem*, s) {
             if(a_bitfield_testMask(e->componentBits, s->componentBits)) {
                 a_list_addLast(e->systemNodes, a_list_addLast(s->entities, e));
             }
@@ -553,6 +535,12 @@ static void muteSystems(const char* Systems, bool Muted)
                          name);
         }
 
+        if(!system->runsInCurrentState) {
+            a_out__fatal("%s: '%s' does not run in state",
+                         Muted ? "a_system_mute" : "a_system_unmute",
+                         name);
+        }
+
         system->muted = Muted;
     }
 
@@ -569,45 +557,74 @@ void a_system_unmute(const char* Systems)
     muteSystems(Systems, false);
 }
 
-void a_system__pushCollection(void)
+AList* a_system__parse(const char* Systems)
+{
+    AList* systems = a_list_new();
+    AList* tok = a_str_split(Systems, " ");
+
+    A_LIST_ITERATE(tok, char*, name) {
+        ASystem* system = a_strhash_get(g_systems, name);
+
+        if(system == NULL) {
+            a_out__fatal("Unknown system '%s'", name);
+        }
+
+        a_list_addLast(systems, system);
+    }
+
+    a_list_freeEx(tok, free);
+
+    return systems;
+}
+
+void a_system__pushCollection(AList* TickSystems, AList* DrawSystems)
 {
     ARunningCollection* c = a_mem_malloc(sizeof(ARunningCollection));
 
     c->newEntities = a_list_new();
     c->runningEntities = a_list_new();
     c->removedEntities = a_list_new();
-    c->tickSystems = a_list_new();
-    c->drawSystems = a_list_new();
+    c->tickSystems = TickSystems;
+    c->drawSystems = DrawSystems;
+    c->allSystems = a_list_new();
     c->messageQueue = a_list_new();
     c->deleting = false;
+
+    a_list_appendCopy(c->allSystems, TickSystems);
+    a_list_appendCopy(c->allSystems, DrawSystems);
 
     if(g_collection != NULL) {
         a_list_push(g_stack, g_collection);
     }
 
     g_collection = c;
+
+    A_LIST_ITERATE(g_collection->allSystems, ASystem*, system) {
+        system->runsInCurrentState = true;
+    }
 }
 
 void a_system__popCollection(void)
 {
     g_collection->deleting = true;
 
+    A_LIST_ITERATE(g_collection->allSystems, ASystem*, system) {
+        system->muted = false;
+        system->runsInCurrentState = false;
+    }
+
     a_list_freeEx(g_collection->messageQueue, (AListFree*)message_free);
     a_list_freeEx(g_collection->newEntities, (AListFree*)a_entity__free);
     a_list_freeEx(g_collection->runningEntities, (AListFree*)a_entity__free);
     a_list_freeEx(g_collection->removedEntities, (AListFree*)a_entity__free);
-
-    A_LIST_ITERATE(g_collection->tickSystems, ASystem*, system) {
-        system->muted = false;
-    }
-
-    A_LIST_ITERATE(g_collection->drawSystems, ASystem*, system) {
-        system->muted = false;
-    }
-
-    a_list_free(g_collection->tickSystems);
-    a_list_free(g_collection->drawSystems);
+    a_list_free(g_collection->allSystems);
 
     free(g_collection);
     g_collection = a_list_pop(g_stack);
+
+    if(g_collection != NULL) {
+        A_LIST_ITERATE(g_collection->allSystems, ASystem*, system) {
+            system->runsInCurrentState = true;
+        }
+    }
 }

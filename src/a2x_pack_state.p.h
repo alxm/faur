@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016 Alex Margarit
+    Copyright 2010, 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -25,8 +25,9 @@ typedef void (*AStateFunction)(void);
 
 #define A_STATE__NAME(Name) a_state__function_##Name
 
-extern void a_state__new(const char* Name, AStateFunction Function);
-#define a_state_new(Name, Function) a_state__new(Name, A_STATE__NAME(Function))
+extern void a_state__new(const char* Name, AStateFunction Function, const char* TickSystems, const char* DrawSystems);
+#define a_state_new(Name, Function, TickSystems, DrawSystems) \
+    a_state__new(Name, A_STATE__NAME(Function), TickSystems, DrawSystems)
 
 extern void a_state_push(const char* Name);
 extern void a_state_pop(void);
