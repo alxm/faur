@@ -33,6 +33,7 @@ typedef struct ASystem {
     AList* entities; // entities currently picked up by this system
     bool onlyActiveEntities; // skip entities that are not active
     bool muted; // runSystem skips muted systems
+    bool runsInCurrentState; // whether this system runs in the current state
 } ASystem;
 
 typedef struct ARunningCollection {
@@ -398,6 +399,7 @@ void a_system_declare(const char* Name, const char* Components, ASystemHandler* 
     s->componentBits = a_bitfield_new(a_strhash_getSize(g_components));
     s->onlyActiveEntities = OnlyActiveEntities;
     s->muted = false;
+    s->runsInCurrentState = false;
 
     a_strhash_add(g_systems, Name, s);
 
@@ -564,6 +566,17 @@ AList* a_system__parse(const char* Systems)
     return systems;
 }
 
+static void resetCollection(void)
+{
+    A_LIST_ITERATE(g_collection->tickSystems, ASystem*, system) {
+        system->runsInCurrentState = true;
+    }
+
+    A_LIST_ITERATE(g_collection->drawSystems, ASystem*, system) {
+        system->runsInCurrentState = true;
+    }
+}
+
 void a_system__pushCollection(AList* TickSystems, AList* DrawSystems)
 {
     ARunningCollection* c = a_mem_malloc(sizeof(ARunningCollection));
@@ -581,6 +594,7 @@ void a_system__pushCollection(AList* TickSystems, AList* DrawSystems)
     }
 
     g_collection = c;
+    resetCollection();
 }
 
 void a_system__popCollection(void)
@@ -594,12 +608,18 @@ void a_system__popCollection(void)
 
     A_LIST_ITERATE(g_collection->tickSystems, ASystem*, system) {
         system->muted = false;
+        system->runsInCurrentState = false;
     }
 
     A_LIST_ITERATE(g_collection->drawSystems, ASystem*, system) {
         system->muted = false;
+        system->runsInCurrentState = false;
     }
 
     free(g_collection);
     g_collection = a_list_pop(g_stack);
+
+    if(g_collection != NULL) {
+        resetCollection();
+    }
 }
