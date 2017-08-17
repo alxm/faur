@@ -42,6 +42,7 @@ typedef struct ARunningCollection {
     AList* removedEntities; // removed entities with outstanding references
     AList* tickSystems; // tick systems in the specified order
     AList* drawSystems; // draw systems in the specified order
+    AList* allSystems; // tick & draw systems
     AList* messageQueue; // queued messages
     bool deleting; // set when this collection is popped off the stack
 } ARunningCollection;
@@ -510,13 +511,7 @@ void a_system_flushNewEntities(void)
 {
     A_LIST_ITERATE(g_collection->newEntities, AEntity*, e) {
         // Check if the entity matches any systems
-        A_LIST_ITERATE(g_collection->tickSystems, ASystem*, s) {
-            if(a_bitfield_testMask(e->componentBits, s->componentBits)) {
-                a_list_addLast(e->systemNodes, a_list_addLast(s->entities, e));
-            }
-        }
-
-        A_LIST_ITERATE(g_collection->drawSystems, ASystem*, s) {
+        A_LIST_ITERATE(g_collection->allSystems, ASystem*, s) {
             if(a_bitfield_testMask(e->componentBits, s->componentBits)) {
                 a_list_addLast(e->systemNodes, a_list_addLast(s->entities, e));
             }
@@ -582,17 +577,6 @@ AList* a_system__parse(const char* Systems)
     return systems;
 }
 
-static void resetCollection(void)
-{
-    A_LIST_ITERATE(g_collection->tickSystems, ASystem*, system) {
-        system->runsInCurrentState = true;
-    }
-
-    A_LIST_ITERATE(g_collection->drawSystems, ASystem*, system) {
-        system->runsInCurrentState = true;
-    }
-}
-
 void a_system__pushCollection(AList* TickSystems, AList* DrawSystems)
 {
     ARunningCollection* c = a_mem_malloc(sizeof(ARunningCollection));
@@ -602,40 +586,45 @@ void a_system__pushCollection(AList* TickSystems, AList* DrawSystems)
     c->removedEntities = a_list_new();
     c->tickSystems = TickSystems;
     c->drawSystems = DrawSystems;
+    c->allSystems = a_list_new();
     c->messageQueue = a_list_new();
     c->deleting = false;
+
+    a_list_appendCopy(c->allSystems, TickSystems);
+    a_list_appendCopy(c->allSystems, DrawSystems);
 
     if(g_collection != NULL) {
         a_list_push(g_stack, g_collection);
     }
 
     g_collection = c;
-    resetCollection();
+
+    A_LIST_ITERATE(g_collection->allSystems, ASystem*, system) {
+        system->runsInCurrentState = true;
+    }
 }
 
 void a_system__popCollection(void)
 {
     g_collection->deleting = true;
 
+    A_LIST_ITERATE(g_collection->allSystems, ASystem*, system) {
+        system->muted = false;
+        system->runsInCurrentState = false;
+    }
+
     a_list_freeEx(g_collection->messageQueue, (AListFree*)message_free);
     a_list_freeEx(g_collection->newEntities, (AListFree*)a_entity__free);
     a_list_freeEx(g_collection->runningEntities, (AListFree*)a_entity__free);
     a_list_freeEx(g_collection->removedEntities, (AListFree*)a_entity__free);
-
-    A_LIST_ITERATE(g_collection->tickSystems, ASystem*, system) {
-        system->muted = false;
-        system->runsInCurrentState = false;
-    }
-
-    A_LIST_ITERATE(g_collection->drawSystems, ASystem*, system) {
-        system->muted = false;
-        system->runsInCurrentState = false;
-    }
+    a_list_free(g_collection->allSystems);
 
     free(g_collection);
     g_collection = a_list_pop(g_stack);
 
     if(g_collection != NULL) {
-        resetCollection();
+        A_LIST_ITERATE(g_collection->allSystems, ASystem*, system) {
+            system->runsInCurrentState = true;
+        }
     }
 }
