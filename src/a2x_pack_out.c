@@ -84,20 +84,20 @@ void a_out__message(const char* Format, ...)
     }
 }
 
-void a_out__verbose(const char* Format, ...)
-{
-    if(a_settings_getBool("app.output.on")
-        && a_settings_getBool("app.output.verbose")) {
-
-        A_OUT__PRINT("Msg", A_COLOR_GREEN, stdout);
-        A_OUT__CONSOLE(A_CONSOLE_MESSAGE);
-    }
-}
-
 void a_out__warning(const char* Format, ...)
 {
     A_OUT__PRINT("Wrn", A_COLOR_YELLOW, stderr);
     A_OUT__CONSOLE(A_CONSOLE_WARNING);
+}
+
+void a_out__warningv(const char* Format, ...)
+{
+    if(a_settings_getBool("app.output.on")
+        && a_settings_getBool("app.output.verbose")) {
+
+        A_OUT__PRINT("Wrn", A_COLOR_YELLOW, stdout);
+        A_OUT__CONSOLE(A_CONSOLE_WARNING);
+    }
 }
 
 void a_out__error(const char* Format, ...)

@@ -370,7 +370,7 @@ void a_entity_sendMessage(AEntity* To, AEntity* From, const char* Message)
     AMessageHandlerContainer* h = a_strhash_get(To->handlers, Message);
 
     if(h == NULL) {
-        a_out__warning("'%s' does not handle '%s'", entityName(To), Message);
+        a_out__warningv("'%s' does not handle '%s'", entityName(To), Message);
         return;
     }
 

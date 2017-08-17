@@ -25,8 +25,8 @@
 #include "a2x_pack_settings.v.h"
 
 extern void a_out__message(const char* Format, ...);
-extern void a_out__verbose(const char* Format, ...);
 extern void a_out__warning(const char* Format, ...);
+extern void a_out__warningv(const char* Format, ...);
 extern void a_out__error(const char* Format, ...);
 extern void a_out__fatal(const char* Format, ...) __attribute__((noreturn));
 extern void a_out__state(const char* Format, ...);
