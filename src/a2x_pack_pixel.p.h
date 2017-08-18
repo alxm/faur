@@ -29,6 +29,12 @@
     typedef uint16_t APixel;
 #endif
 
+#if A_PLATFORM_EMSCRIPTEN
+    #define A_PIXEL_ORDER_ABGR 1
+#else
+    #define A_PIXEL_ORDER_RGBA 1
+#endif
+
 #if A_PIXEL_BPP == 16
     #if A_CONFIG_RENDER_SOFTWARE
         // RGB565
@@ -57,10 +63,17 @@
     #endif
 #endif
 
-#define A_PIXEL_RED_SHIFT   (A_PIXEL_GREEN_BITS + A_PIXEL_BLUE_BITS + A_PIXEL_ALPHA_BITS)
-#define A_PIXEL_GREEN_SHIFT (A_PIXEL_BLUE_BITS + A_PIXEL_ALPHA_BITS)
-#define A_PIXEL_BLUE_SHIFT  (A_PIXEL_ALPHA_BITS)
-#define A_PIXEL_ALPHA_SHIFT (0)
+#if A_PIXEL_ORDER_RGBA
+    #define A_PIXEL_ALPHA_SHIFT (0)
+    #define A_PIXEL_BLUE_SHIFT  (A_PIXEL_ALPHA_BITS)
+    #define A_PIXEL_GREEN_SHIFT (A_PIXEL_ALPHA_BITS + A_PIXEL_BLUE_BITS)
+    #define A_PIXEL_RED_SHIFT   (A_PIXEL_ALPHA_BITS + A_PIXEL_BLUE_BITS + A_PIXEL_GREEN_BITS)
+#elif A_PIXEL_ORDER_ABGR
+    #define A_PIXEL_RED_SHIFT   (0)
+    #define A_PIXEL_GREEN_SHIFT (A_PIXEL_RED_BITS)
+    #define A_PIXEL_BLUE_SHIFT  (A_PIXEL_RED_BITS + A_PIXEL_GREEN_BITS)
+    #define A_PIXEL_ALPHA_SHIFT (A_PIXEL_RED_BITS + A_PIXEL_GREEN_BITS + A_PIXEL_BLUE_BITS)
+#endif
 
 #define A_PIXEL_RED_MASK   ((1 << A_PIXEL_RED_BITS) - 1)
 #define A_PIXEL_GREEN_MASK ((1 << A_PIXEL_GREEN_BITS) - 1)
@@ -87,17 +100,13 @@ static inline APixel a_pixel_rgb(int Red, int Green, int Blue)
 
 static inline APixel a_pixel_hex(uint32_t Hexcode)
 {
-    #if A_PIXEL_BPP == 16
+    #if A_PIXEL_BPP == 16 || A_PIXEL_ORDER_ABGR
         return (APixel)
             (((((Hexcode >> 16) & 0xff) >> A_PIXEL_RED_PACK)   << A_PIXEL_RED_SHIFT)   |
              ((((Hexcode >> 8)  & 0xff) >> A_PIXEL_GREEN_PACK) << A_PIXEL_GREEN_SHIFT) |
              ((((Hexcode)       & 0xff) >> A_PIXEL_BLUE_PACK)  << A_PIXEL_BLUE_SHIFT));
-    #elif A_PIXEL_BPP == 32
-        #if A_CONFIG_LIB_SDL == 1
-            return (APixel)(Hexcode & 0xffffff);
-        #elif A_CONFIG_LIB_SDL == 2
-            return (APixel)(Hexcode << A_PIXEL_ALPHA_BITS);
-        #endif
+    #elif A_PIXEL_BPP == 32 && A_PIXEL_ORDER_RGBA
+        return (APixel)((Hexcode & 0xffffff) << A_PIXEL_ALPHA_BITS);
     #endif
 }
 
