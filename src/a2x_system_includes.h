@@ -19,50 +19,6 @@
 
 #pragma once
 
-#ifndef A_PLATFORM_CAANOO
-    #define A_PLATFORM_CAANOO 0
-#endif
-
-#ifndef A_PLATFORM_DESKTOP
-    #define A_PLATFORM_DESKTOP 0
-#endif
-
-#ifndef A_PLATFORM_EMSCRIPTEN
-    #define A_PLATFORM_EMSCRIPTEN 0
-#endif
-
-#ifndef A_PLATFORM_GP2X
-    #define A_PLATFORM_GP2X 0
-#endif
-
-#ifndef A_PLATFORM_LINUX
-    #define A_PLATFORM_LINUX 0
-#endif
-
-#ifndef A_PLATFORM_MINGW
-    #define A_PLATFORM_MINGW 0
-#endif
-
-#ifndef A_PLATFORM_PANDORA
-    #define A_PLATFORM_PANDORA 0
-#endif
-
-#ifndef A_PLATFORM_WIZ
-    #define A_PLATFORM_WIZ 0
-#endif
-
-#ifndef A_CONFIG_LIB_SDL
-    #define A_CONFIG_LIB_SDL 0
-#endif
-
-#ifndef A_CONFIG_RENDER_SDL2
-    #define A_CONFIG_RENDER_SDL2 0
-#endif
-
-#ifndef A_CONFIG_RENDER_SOFTWARE
-    #define A_CONFIG_RENDER_SOFTWARE 0
-#endif
-
 #if A_PLATFORM_DESKTOP || A_PLATFORM_EMSCRIPTEN || A_PLATFORM_PANDORA
     #define A_DEVICE_HAS_KEYBOARD 1
 #else
