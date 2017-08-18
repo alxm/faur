@@ -19,52 +19,44 @@
 
 #pragma once
 
-#ifndef A_PLATFORM_DESKTOP
-    #define A_PLATFORM_DESKTOP 0
-#endif
-
-#ifndef A_PLATFORM_MINGW
-    #define A_PLATFORM_MINGW 0
-#endif
-
 #ifndef A_PLATFORM_CAANOO
     #define A_PLATFORM_CAANOO 0
 #endif
 
-#ifndef A_PLATFORM_WIZ
-    #define A_PLATFORM_WIZ 0
+#ifndef A_PLATFORM_DESKTOP
+    #define A_PLATFORM_DESKTOP 0
 #endif
 
 #ifndef A_PLATFORM_GP2X
     #define A_PLATFORM_GP2X 0
 #endif
 
+#ifndef A_PLATFORM_LINUX
+    #define A_PLATFORM_LINUX 0
+#endif
+
+#ifndef A_PLATFORM_MINGW
+    #define A_PLATFORM_MINGW 0
+#endif
+
 #ifndef A_PLATFORM_PANDORA
     #define A_PLATFORM_PANDORA 0
 #endif
 
-#ifndef A_PLATFORM_GP32
-    #define A_PLATFORM_GP32 0
-#endif
-
-#ifndef A_PLATFORM_LINUX
-    #if A_PLATFORM_GP2X || A_PLATFORM_WIZ || A_PLATFORM_CAANOO || A_PLATFORM_PANDORA
-        #define A_PLATFORM_LINUX 1
-    #else
-        #define A_PLATFORM_LINUX 0
-    #endif
+#ifndef A_PLATFORM_WIZ
+    #define A_PLATFORM_WIZ 0
 #endif
 
 #ifndef A_CONFIG_LIB_SDL
     #define A_CONFIG_LIB_SDL 0
 #endif
 
-#ifndef A_CONFIG_RENDER_SOFTWARE
-    #define A_CONFIG_RENDER_SOFTWARE 0
-#endif
-
 #ifndef A_CONFIG_RENDER_SDL2
     #define A_CONFIG_RENDER_SDL2 0
+#endif
+
+#ifndef A_CONFIG_RENDER_SOFTWARE
+    #define A_CONFIG_RENDER_SOFTWARE 0
 #endif
 
 #define A_UNUSED(X) (X = X)
