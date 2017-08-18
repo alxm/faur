@@ -137,35 +137,40 @@ void a_fade_screens(unsigned FramesDuration)
 
 static A_STATE(a_fade__toColor)
 {
-    A_STATE_BODY
+    static AFix alpha, alpha_inc;
+
+    A_STATE_INIT
     {
         updateCapturedScreenBuffer();
 
-        AFix alpha = 0;
-        AFix alpha_inc = a_fix_itofix(A_PIXEL_ALPHA_MAX) / (int)g_frames;
+        alpha = 0;
+        alpha_inc = a_fix_itofix(A_PIXEL_ALPHA_MAX) / (int)g_frames;
 
         a_pixel_push();
         a_pixel_setPixel(g_savedColor);
+    }
 
-        A_STATE_LOOP
+    A_STATE_LOOP
+    {
+        A_STATE_LOOP_DRAW
         {
-            A_STATE_LOOP_DRAW
-            {
-                a_pixel_setBlend(A_PIXEL_BLEND_PLAIN);
-                a_screen_blit(g_capturedScreen);
+            a_pixel_setBlend(A_PIXEL_BLEND_PLAIN);
+            a_screen_blit(g_capturedScreen);
 
-                a_pixel_setBlend(A_PIXEL_BLEND_RGBA);
-                a_pixel_setAlpha(a_fix_fixtoi(alpha));
-                a_draw_fill();
-            }
-
-            alpha += alpha_inc;
-
-            if(alpha > a_fix_itofix(A_PIXEL_ALPHA_MAX)) {
-                a_state_pop();
-            }
+            a_pixel_setBlend(A_PIXEL_BLEND_RGBA);
+            a_pixel_setAlpha(a_fix_fixtoi(alpha));
+            a_draw_fill();
         }
 
+        alpha += alpha_inc;
+
+        if(alpha > a_fix_itofix(A_PIXEL_ALPHA_MAX)) {
+            a_state_pop();
+        }
+    }
+
+    A_STATE_FREE
+    {
         a_pixel_pop();
 
         g_fadePending = false;
@@ -174,7 +179,9 @@ static A_STATE(a_fade__toColor)
 
 static A_STATE(a_fade__fromColor)
 {
-    A_STATE_BODY
+    static AFix alpha, alpha_inc;
+
+    A_STATE_INIT
     {
         updateCapturedScreenBuffer();
 
@@ -185,28 +192,31 @@ static A_STATE(a_fade__fromColor)
         a_pixel_setBlend(A_PIXEL_BLEND_PLAIN);
         a_draw_fill();
 
-        AFix alpha = a_fix_itofix(A_PIXEL_ALPHA_MAX);
-        AFix alpha_inc = a_fix_itofix(A_PIXEL_ALPHA_MAX) / (int)g_frames;
+        alpha = a_fix_itofix(A_PIXEL_ALPHA_MAX);
+        alpha_inc = a_fix_itofix(A_PIXEL_ALPHA_MAX) / (int)g_frames;
+    }
 
-        A_STATE_LOOP
+    A_STATE_LOOP
+    {
+        A_STATE_LOOP_DRAW
         {
-            A_STATE_LOOP_DRAW
-            {
-                a_pixel_setBlend(A_PIXEL_BLEND_PLAIN);
-                a_screen_blit(g_capturedScreen);
+            a_pixel_setBlend(A_PIXEL_BLEND_PLAIN);
+            a_screen_blit(g_capturedScreen);
 
-                a_pixel_setBlend(A_PIXEL_BLEND_RGBA);
-                a_pixel_setAlpha(a_fix_fixtoi(alpha));
-                a_draw_fill();
-            }
-
-            alpha -= alpha_inc;
-
-            if(alpha < 0) {
-                a_state_pop();
-            }
+            a_pixel_setBlend(A_PIXEL_BLEND_RGBA);
+            a_pixel_setAlpha(a_fix_fixtoi(alpha));
+            a_draw_fill();
         }
 
+        alpha -= alpha_inc;
+
+        if(alpha < 0) {
+            a_state_pop();
+        }
+    }
+
+    A_STATE_FREE
+    {
         a_pixel_pop();
 
         g_fadePending = false;
@@ -215,38 +225,43 @@ static A_STATE(a_fade__fromColor)
 
 static A_STATE(a_fade__screens)
 {
-    A_STATE_BODY
+    static AFix alpha, alpha_inc;
+
+    A_STATE_INIT
     {
         updateCapturedScreenBuffer();
 
-        AFix alpha = a_fix_itofix(A_PIXEL_ALPHA_MAX);
-        AFix alpha_inc = a_fix_itofix(A_PIXEL_ALPHA_MAX) / (int)g_frames;
+        alpha = a_fix_itofix(A_PIXEL_ALPHA_MAX);
+        alpha_inc = a_fix_itofix(A_PIXEL_ALPHA_MAX) / (int)g_frames;
 
         a_pixel_push();
 
         // For the first frame, before the LOOP body runs
         a_pixel_setBlend(A_PIXEL_BLEND_PLAIN);
         a_screen_blit(g_oldCapturedScreen);
+    }
 
-        A_STATE_LOOP
+    A_STATE_LOOP
+    {
+        A_STATE_LOOP_DRAW
         {
-            A_STATE_LOOP_DRAW
-            {
-                a_pixel_setBlend(A_PIXEL_BLEND_PLAIN);
-                a_screen_blit(g_capturedScreen);
+            a_pixel_setBlend(A_PIXEL_BLEND_PLAIN);
+            a_screen_blit(g_capturedScreen);
 
-                a_pixel_setBlend(A_PIXEL_BLEND_RGBA);
-                a_pixel_setAlpha(a_fix_fixtoi(alpha));
-                a_screen_blit(g_oldCapturedScreen);
-            }
-
-            alpha -= alpha_inc;
-
-            if(alpha < 0) {
-                a_state_pop();
-            }
+            a_pixel_setBlend(A_PIXEL_BLEND_RGBA);
+            a_pixel_setAlpha(a_fix_fixtoi(alpha));
+            a_screen_blit(g_oldCapturedScreen);
         }
 
+        alpha -= alpha_inc;
+
+        if(alpha < 0) {
+            a_state_pop();
+        }
+    }
+
+    A_STATE_FREE
+    {
         a_pixel_pop();
 
         g_fadePending = false;
