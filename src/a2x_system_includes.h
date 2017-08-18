@@ -71,7 +71,9 @@
 #define A_ARRAY_LEN(A) (sizeof(A) / sizeof(A[0]))
 
 // For putenv
-#define _XOPEN_SOURCE
+#ifndef _XOPEN_SOURCE
+    #define _XOPEN_SOURCE
+#endif
 
 #include <ctype.h>
 #include <dirent.h>
