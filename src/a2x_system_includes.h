@@ -27,6 +27,10 @@
     #define A_PLATFORM_DESKTOP 0
 #endif
 
+#ifndef A_PLATFORM_EMSCRIPTEN
+    #define A_PLATFORM_EMSCRIPTEN 0
+#endif
+
 #ifndef A_PLATFORM_GP2X
     #define A_PLATFORM_GP2X 0
 #endif
