@@ -63,6 +63,12 @@
     #define A_CONFIG_RENDER_SOFTWARE 0
 #endif
 
+#if A_PLATFORM_DESKTOP || A_PLATFORM_EMSCRIPTEN || A_PLATFORM_PANDORA
+    #define A_DEVICE_HAS_KEYBOARD 1
+#else
+    #define A_DEVICE_HAS_KEYBOARD 0
+#endif
+
 #define A_UNUSED(X) (X = X)
 #define A_ARRAY_LEN(A) (sizeof(A) / sizeof(A[0]))
 
