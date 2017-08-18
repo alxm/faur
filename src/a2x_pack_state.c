@@ -288,7 +288,10 @@ static bool iteration(void)
 
     a_input__get();
     s->function();
-    a_system__run();
+
+    if(s->stage == A_STATE__STAGE_LOOP) {
+        a_system__run();
+    }
 
     if(a_fps__notSkipped()) {
         a_screen__show();
