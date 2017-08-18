@@ -39,13 +39,13 @@
         };
     #endif
 
-    #if A_PIXEL_BPP == 16
+    #if A_PIXEL__BPP == 16
         #if A_CONFIG_RENDER_SOFTWARE
             #define A_PIXEL_FORMAT SDL_PIXELFORMAT_RGB565
         #elif A_CONFIG_RENDER_SDL2
             #define A_PIXEL_FORMAT SDL_PIXELFORMAT_RGBA5551
         #endif
-    #elif A_PIXEL_BPP == 32
+    #elif A_PIXEL__BPP == 32
         #if A_CONFIG_RENDER_SOFTWARE
             #define A_PIXEL_FORMAT SDL_PIXELFORMAT_RGBX8888
         #elif A_CONFIG_RENDER_SDL2
@@ -97,18 +97,18 @@ void a_sdl_screen__set(int Width, int Height, bool FullScreen)
 
         bpp = SDL_VideoModeOK(Width,
                               Height,
-                              A_PIXEL_BPP,
+                              A_PIXEL__BPP,
                               videoFlags);
         if(bpp == 0) {
             a_out__fatal("SDL: %dx%d:%d video not available",
                          Width,
                          Height,
-                         A_PIXEL_BPP);
+                         A_PIXEL__BPP);
         }
 
         g_sdlScreen = SDL_SetVideoMode(Width,
                                        Height,
-                                       A_PIXEL_BPP,
+                                       A_PIXEL__BPP,
                                        videoFlags);
         if(g_sdlScreen == NULL) {
             a_out__fatal("SDL: %s", SDL_GetError());
@@ -473,7 +473,7 @@ ASdlTexture* a_sdl_render__textureMakeSprite(const APixel* Pixels, int Width, in
             for(int i = Width * Height; i--;) {
                 if(Pixels[i] != a_sprite__colorKey) {
                     // Set full alpha for non-transparent pixel
-                    pixels[i] |= A_PIXEL_ALPHA_MASK;
+                    pixels[i] |= A_PIXEL__MASK_ALPHA;
                 }
             }
         } else if(i == 1) {
