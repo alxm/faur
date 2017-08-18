@@ -28,7 +28,7 @@ void a_sdl_sound__init(void)
         a_out__fatal("SDL_InitSubSystem: %s", SDL_GetError());
     }
 
-    #if A_PLATFORM_DESKTOP
+    #if A_PLATFORM_DESKTOP || A_PLATFORM_EMSCRIPTEN
         if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096) != 0) {
             a_settings__set("sound.on", "0");
         }

@@ -178,7 +178,7 @@ void a_sdl_screen__set(int Width, int Height, bool FullScreen)
         g_clearB = (uint8_t)((val >>  0) & 255);
     #endif
 
-    #if A_PLATFORM_DESKTOP
+    #if A_PLATFORM_DESKTOP || A_PLATFORM_EMSCRIPTEN
         char caption[64];
         snprintf(caption,
                  sizeof(caption),
