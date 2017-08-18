@@ -17,6 +17,10 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#if A_PLATFORM_EMSCRIPTEN
+    #include <emscripten.h>
+#endif
+
 #include "a2x_pack_state.v.h"
 
 typedef struct AState {
@@ -42,10 +46,10 @@ static AList* g_stack; // list of AState
 static AList* g_pending; // list of AStatePendingAction
 static bool g_exiting;
 
-static const char* g_stageNames[A_STATE_STAGE_NUM] = {
+static const char* g_stageNames[A_STATE__STAGE_NUM] = {
     "Invalid",
     "Init",
-    "Body",
+    "Loop",
     "Free",
 };
 
@@ -68,12 +72,12 @@ static void pending_free(AStatePendingAction* Pending)
     free(Pending);
 }
 
-static void state_handle(void)
+static void pending_handle(void)
 {
     AState* current = a_list_peek(g_stack);
 
     // Check if the current state just ran its Free stage
-    if(current && current->stage == A_STATE_STAGE_FREE) {
+    if(current && current->stage == A_STATE__STAGE_FREE) {
         a_out__stateVerbose("Destroying '%s' instance", current->name);
 
         a_system__popCollection();
@@ -83,13 +87,13 @@ static void state_handle(void)
 
     // If there are no pending state changes, do any automatic transitions
     if(a_list_isEmpty(g_pending)) {
-        if(current && current->stage == A_STATE_STAGE_INIT) {
-            current->stage = A_STATE_STAGE_BODY;
+        if(current && current->stage == A_STATE__STAGE_INIT) {
+            current->stage = A_STATE__STAGE_LOOP;
 
             a_out__stateVerbose("  '%s' going from %s to %s",
                                 current->name,
-                                g_stageNames[A_STATE_STAGE_INIT],
-                                g_stageNames[A_STATE_STAGE_BODY]);
+                                g_stageNames[A_STATE__STAGE_INIT],
+                                g_stageNames[A_STATE__STAGE_LOOP]);
         }
 
         return;
@@ -114,7 +118,7 @@ static void state_handle(void)
 
             a_out__state("New '%s' instance", pending->name);
 
-            state->stage = A_STATE_STAGE_INIT;
+            state->stage = A_STATE__STAGE_INIT;
             a_system__pushCollection(state->tickSystems, state->drawSystems);
             a_list_push(g_stack, state);
         } break;
@@ -128,9 +132,9 @@ static void state_handle(void)
             a_out__stateVerbose("  '%s' going from %s to %s",
                                 current->name,
                                 g_stageNames[current->stage],
-                                g_stageNames[A_STATE_STAGE_FREE]);
+                                g_stageNames[A_STATE__STAGE_FREE]);
 
-            current->stage = A_STATE_STAGE_FREE;
+            current->stage = A_STATE__STAGE_FREE;
         } break;
 
         default: {
@@ -169,7 +173,7 @@ void a_state__new(const char* Name, AStateFunction Function, const char* TickSys
 
     state->name = a_str_dup(Name);
     state->function = Function;
-    state->stage = A_STATE_STAGE_INIT;
+    state->stage = A_STATE__STAGE_INIT;
     state->tickSystems = a_system__parse(TickSystems);
     state->drawSystems = a_system__parse(DrawSystems);
 
@@ -266,45 +270,55 @@ bool a_state__stage(AStateStage Stage)
     return current->stage == Stage;
 }
 
-bool a_state__loop(void)
+static bool iteration(void)
 {
-    if(!a_list_isEmpty(g_pending)) {
-        a_fps__reset(0);
+    #if !A_PLATFORM_EMSCRIPTEN
+        if(!a_list_isEmpty(g_pending)) {
+            a_fps__reset(0);
+        }
+    #endif
+
+    pending_handle();
+
+    AState* s = a_list_peek(g_stack);
+
+    if(s == NULL) {
         return false;
     }
 
     a_input__get();
+    s->function();
     a_system__run();
 
     if(a_fps__notSkipped()) {
         a_screen__show();
     }
 
-    a_fps__frame();
+    #if !A_PLATFORM_EMSCRIPTEN
+        a_fps__frame();
+    #endif
 
     return true;
 }
 
+#if A_PLATFORM_EMSCRIPTEN
+static void loop(void)
+{
+    if(!iteration()) {
+        emscripten_cancel_main_loop();
+    }
+}
+#endif
+
 void a_state__run(void)
 {
-    if(a_list_isEmpty(g_pending)) {
-        return;
-    }
-
-    a_out__state("Running states");
-
-    state_handle();
-
-    while(!a_list_isEmpty(g_stack)) {
-        AState* s = a_list_peek(g_stack);
-
-        a_out__stateVerbose("  '%s' running %s",
-                            s->name,
-                            g_stageNames[s->stage]);
-
-        s->function();
-        state_handle();
-    }
-
-    a_out__state("States finished");
+    #if A_PLATFORM_EMSCRIPTEN
+        emscripten_set_main_loop(loop,
+                                 (int)a_settings_getUnsigned("video.fps"),
+                                 true);
+    #else
+        while(iteration()) {
+            continue;
+        }
+    #endif
 }
