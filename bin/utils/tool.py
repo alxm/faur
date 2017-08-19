@@ -1,5 +1,5 @@
 """
-    Copyright 2016 Alex Margarit
+    Copyright 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -24,7 +24,13 @@ from utils.output import Output, Color
 
 class Tool:
     def __init__(self, arg_names):
+        self.quiet = False
         self.args = sys.argv[1 : ]
+
+        if len(self.args) > 0 and self.args[0] == '-q':
+            self.quiet = True
+            self.args = self.args[1 : ]
+
         self.arg_names = arg_names.split()
         self.args_db = {}
         self.name = os.path.basename(sys.argv[0])
@@ -37,6 +43,9 @@ class Tool:
         self.src_dir = os.path.join(self.a2x_dir, 'src')
 
     def title(self):
+        if self.quiet:
+            return
+
         arguments = ' '.join(self.args) + ' ' if len(self.args) > 0 else ''
         whole_text = ' {} {}'.format(self.name, arguments)
         border = '-' * len(whole_text)
@@ -48,6 +57,12 @@ class Tool:
         Output.colored('{} '.format(self.name[3 : ]), Color.White)
         print(arguments)
         Output.coloredln(border, Color.DarkGray)
+
+    def done(self):
+        if self.quiet:
+            return
+
+        Output.coloredln('[ Done ]', Color.LightGreen)
 
     def usage(self):
         message = 'Usage: {}'.format(self.name)
@@ -90,7 +105,7 @@ class Tool:
         self.title()
         self.validate()
         self.main()
-        Output.coloredln('[ Done ]', Color.LightGreen)
+        self.done()
 
     def makedir(self, name):
         Output.info('Making dir {}'.format(name))
