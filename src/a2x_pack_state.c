@@ -297,9 +297,7 @@ static bool iteration(void)
         a_screen__show();
     }
 
-    #if !A_PLATFORM_EMSCRIPTEN
-        a_fps__frame();
-    #endif
+    a_fps__frame();
 
     return true;
 }
