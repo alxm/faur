@@ -1,6 +1,6 @@
 # ![a2x](https://github.com/alxm/a2x/raw/master/doc/a2x-logo.png "a2x") [![Build Status](https://travis-ci.org/alxm/a2x.svg?branch=master)](https://travis-ci.org/alxm/a2x)
 
-a2x is a C framework I wrote for my video games. It runs natively on Linux and FreeBSD, and can be cross-compiled for Windows, GP2X, Wiz, Caanoo, and Open Pandora.
+a2x is a C framework I wrote for my video games. It runs natively on Linux and FreeBSD, and can be cross-compiled for Windows, GP2X, Wiz, Caanoo, Open Pandora, and HTML5.
 
 ## Install
 
@@ -102,6 +102,7 @@ A_MAIN
 
 I originally wrote a2x for my GP2X games. The following targets are also supported:
 
+* Emscripten (HTML5)
 * GPH SDK (Caanoo)
 * MinGW (Windows)
 * Open2x SDK (GP2X, Wiz)
