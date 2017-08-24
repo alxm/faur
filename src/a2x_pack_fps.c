@@ -127,6 +127,12 @@ void a_fps__reset(unsigned NumFramesToSkip)
 
 void a_fps__frame(void)
 {
+    g_frameCounter++;
+
+    #if A_PLATFORM_EMSCRIPTEN
+        return;
+    #endif
+
     if(a_fps__notSkipped()) {
         const bool done = a_timer_isExpired(g_timer);
         const unsigned elapsedMs = a_timer_getElapsed(g_timer);
@@ -196,8 +202,6 @@ void a_fps__frame(void)
             g_skipCounter = 0;
         }
     }
-
-    g_frameCounter++;
 }
 
 bool a_fps__notSkipped(void)

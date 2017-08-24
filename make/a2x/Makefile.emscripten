@@ -1,0 +1,3 @@
+include ../sdk.config
+include ../platforms/emscripten
+include rules

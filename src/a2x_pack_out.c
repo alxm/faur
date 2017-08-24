@@ -17,6 +17,10 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#if A_PLATFORM_EMSCRIPTEN
+    #include <emscripten.h>
+#endif
+
 #include "a2x_pack_out.v.h"
 
 typedef enum {
@@ -109,6 +113,11 @@ void a_out__error(const char* Format, ...)
 void a_out__fatal(const char* Format, ...)
 {
     A_OUT__PRINT("Ftl", A_COLOR_RED, stderr);
+
+    #if A_PLATFORM_EMSCRIPTEN
+        emscripten_force_exit(1);
+    #endif
+
     exit(1);
 }
 

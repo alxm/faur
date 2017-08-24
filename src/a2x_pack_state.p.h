@@ -36,20 +36,18 @@ extern void a_state_replace(const char* Name);
 extern void a_state_exit(void);
 
 typedef enum {
-    A_STATE_STAGE_INVALID,
-    A_STATE_STAGE_INIT,
-    A_STATE_STAGE_BODY,
-    A_STATE_STAGE_FREE,
-    A_STATE_STAGE_NUM
+    A_STATE__STAGE_INVALID,
+    A_STATE__STAGE_INIT,
+    A_STATE__STAGE_LOOP,
+    A_STATE__STAGE_FREE,
+    A_STATE__STAGE_NUM
 } AStateStage;
 
 #define A_STATE(Name) void A_STATE__NAME(Name)(void)
 
-#define A_STATE_INIT if(a_state__stage(A_STATE_STAGE_INIT))
-#define A_STATE_BODY if(a_state__stage(A_STATE_STAGE_BODY))
-#define A_STATE_LOOP while(a_state__loop())
+#define A_STATE_INIT if(a_state__stage(A_STATE__STAGE_INIT))
+#define A_STATE_LOOP if(a_state__stage(A_STATE__STAGE_LOOP))
 #define A_STATE_LOOP_DRAW if(a_fps__notSkipped())
-#define A_STATE_FREE if(a_state__stage(A_STATE_STAGE_FREE))
+#define A_STATE_FREE if(a_state__stage(A_STATE__STAGE_FREE))
 
 extern bool a_state__stage(AStateStage Stage);
-extern bool a_state__loop(void);

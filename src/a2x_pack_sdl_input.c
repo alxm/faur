@@ -589,10 +589,12 @@ void a_sdl_input__get(void)
 
             case SDL_KEYUP:
             case SDL_KEYDOWN: {
-                if(event.key.keysym.sym == SDLK_ESCAPE) {
-                    a_state_exit();
-                    break;
-                }
+                #if !A_PLATFORM_EMSCRIPTEN
+                    if(event.key.keysym.sym == SDLK_ESCAPE) {
+                        a_state_exit();
+                        break;
+                    }
+                #endif
 
                 A_STRHASH_ITERATE(g_keys, ASdlInputButton*, k) {
                     #if A_CONFIG_LIB_SDL == 1
