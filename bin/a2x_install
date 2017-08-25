@@ -23,7 +23,6 @@ import os
 import sys
 
 from utils.output import Output
-from utils.shell import Shell
 from utils.tool import Tool
 
 class InstallTool(Tool):
@@ -48,18 +47,18 @@ class InstallTool(Tool):
         elif command != '':
             self.output.error('Unknown command {}'.format(command))
         else:
-            self.shell.run('{} {} {}'
+            self.shell('{} {} {}'
                 .format(os.path.join(self.bin_dir, 'a2x_sdkconfig'),
                         userconfig,
                         sdkconfig))
 
             self.output.info('Compiling a2x')
 
-        self.shell.run('{} --directory={} --jobs {}'
+        self.shell('{} --directory={} --jobs {}'
             .format(make, os.path.join(self.make_dir, 'a2x'), command))
 
         if command == 'clean':
-            self.shell.run('rm {}'.format(sdkconfig))
+            self.shell('rm {}'.format(sdkconfig))
         else:
             self.output.note('Add {} to your $PATH'.format(self.bin_dir))
 

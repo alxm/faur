@@ -22,7 +22,6 @@
 import os
 
 from utils.output import Output
-from utils.shell import Shell
 from utils.tool import Tool
 
 class TagsTool(Tool):
@@ -38,7 +37,7 @@ class TagsTool(Tool):
 
         if os.path.exists(path):
             header_file = os.path.abspath(header_file)
-            self.shell.run('geany -g {} {}'.format(tags_file, header_file))
+            self.shell('geany -g {} {}'.format(tags_file, header_file))
 
     def main(self):
         header_file = self.get_arg('[HeaderFile]')

@@ -22,7 +22,6 @@
 import os
 
 from utils.output import Output
-from utils.shell import Shell
 from utils.tool import Tool
 
 class NewTool(Tool):
@@ -140,7 +139,7 @@ A_MAIN
 }}
 """.format(project_name, author))
 
-        self.shell.run('git init {}'.format(project_dir))
+        self.shell('git init {}'.format(project_dir))
 
         self.writefile(os.path.join(project_dir, '.gitignore'),
 """\
@@ -149,7 +148,7 @@ A_MAIN
 /src/a2x_gen/
 """)
 
-        self.shell.run('cd {} && git add .gitignore make/Makefile src/main.c'
+        self.shell('cd {} && git add .gitignore make/Makefile src/main.c'
             .format(project_dir))
 
         self.output.note('To build and run:')

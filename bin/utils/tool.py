@@ -18,10 +18,10 @@
 """
 
 import os
+import subprocess
 import sys
 
 from utils.output import Output, Color
-from utils.shell import Shell
 
 class Tool:
     def __init__(self, arg_names):
@@ -36,7 +36,6 @@ class Tool:
         self.args_db = {}
         self.name = os.path.basename(sys.argv[0])
         self.output = Output(quiet)
-        self.shell = Shell(self.output)
 
         current_dir = os.path.dirname(__file__)
         self.a2x_dir = os.path.abspath(os.path.join(current_dir, '..', '..'))
@@ -129,3 +128,14 @@ class Tool:
 
         with open(name, 'rU') as f:
             return f.read()
+
+    def shell(self, cmd):
+        self.output.shell(cmd)
+        status, output = subprocess.getstatusoutput(cmd)
+
+        if not self.output.quiet:
+            for line in output.splitlines():
+                print('    {}'.format(line))
+
+        if status != 0:
+            sys.exit(status)
