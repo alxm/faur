@@ -46,9 +46,11 @@ O_BUILDTIME = $(addprefix $(O_GEN_DIR)/, $(notdir $(C_BUILDTIME_FILE:.c=.o)))
 O_FILES = $(addprefix $(O_DIR)/, $(C_FILES:.c=.o))
 
 #
-# Check if project wants a2x_bin media conversion
+# Check if project wants to embed images and sound effects with a2x_bin
 #
-ifeq ($(A_BIN_MEDIA), true)
+ifeq ($(A_EMBED_MEDIA), true)
+    A_EXTRA_CFLAGS += -DA_EMBED_MEDIA=1
+
     #
     # PNG and WAV files we can convert to C code
     #
