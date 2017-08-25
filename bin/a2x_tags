@@ -34,11 +34,11 @@ class TagsTool(Tool):
             print(tags_file)
             return
 
-        Output.info('Looking for Geany tags in: {}'.format(path))
+        self.output.info('Looking for Geany tags in: {}'.format(path))
 
         if os.path.exists(path):
             header_file = os.path.abspath(header_file)
-            Shell.run('geany -g {} {}'.format(tags_file, header_file))
+            self.shell.run('geany -g {} {}'.format(tags_file, header_file))
 
     def main(self):
         header_file = self.get_arg('[HeaderFile]')

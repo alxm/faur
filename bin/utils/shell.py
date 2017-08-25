@@ -1,5 +1,5 @@
 """
-    Copyright 2016 Alex Margarit
+    Copyright 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -23,13 +23,16 @@ import sys
 from utils.output import Output
 
 class Shell:
-    @staticmethod
-    def run(cmd):
-        Output.shell(cmd)
+    def __init__(self, output):
+        self.output = output
+
+    def run(self, cmd):
+        self.output.shell(cmd)
         status, output = subprocess.getstatusoutput(cmd)
 
-        for line in output.splitlines():
-            print('    {}'.format(line))
+        if not self.output.quiet:
+            for line in output.splitlines():
+                print('    {}'.format(line))
 
         if status != 0:
             sys.exit(status)

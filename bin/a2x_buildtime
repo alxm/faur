@@ -28,7 +28,7 @@ from utils.tool import Tool
 class BuildTimeTool(Tool):
     def main(self):
         timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
-        Output.info('Stamping with {}'.format(timestamp))
+        self.output.info('Stamping with {}'.format(timestamp))
 
         self.writefile(self.get_arg('File.c'),
 """\

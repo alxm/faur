@@ -32,7 +32,7 @@ class CompTool(Tool):
 
         for f in [sys_c, sys_h]:
             if os.path.exists(f):
-                Output.error('Error: {} already exists'.format(f))
+                self.output.error('Error: {} already exists'.format(f))
 
         self.writefile(sys_c,
 """\

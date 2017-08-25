@@ -57,7 +57,7 @@ class PackTool(Tool):
 
         for f in [pack_c, pack_ph, pack_vh]:
             if os.path.exists(f):
-                Output.error('Error: {} already exists'.format(f))
+                self.output.error('Error: {} already exists'.format(f))
 
         license_header = """\
 /*

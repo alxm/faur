@@ -21,19 +21,22 @@ import os
 import sys
 
 from utils.output import Output, Color
+from utils.shell import Shell
 
 class Tool:
     def __init__(self, arg_names):
-        self.quiet = False
+        quiet = False
         self.args = sys.argv[1 : ]
 
         if len(self.args) > 0 and self.args[0] == '-q':
-            self.quiet = True
+            quiet = True
             self.args = self.args[1 : ]
 
         self.arg_names = arg_names.split()
         self.args_db = {}
         self.name = os.path.basename(sys.argv[0])
+        self.output = Output(quiet)
+        self.shell = Shell(self.output)
 
         current_dir = os.path.dirname(__file__)
         self.a2x_dir = os.path.abspath(os.path.join(current_dir, '..', '..'))
@@ -43,26 +46,20 @@ class Tool:
         self.src_dir = os.path.join(self.a2x_dir, 'src')
 
     def title(self):
-        if self.quiet:
-            return
-
         arguments = ' '.join(self.args) + ' ' if len(self.args) > 0 else ''
         whole_text = ' {} {}'.format(self.name, arguments)
         border = '-' * len(whole_text)
 
-        Output.coloredln(border, Color.DarkGray)
-        Output.colored(' a', Color.LightBlue)
-        Output.colored('2', Color.LightGreen)
-        Output.colored('x', Color.Yellow)
-        Output.colored('{} '.format(self.name[3 : ]), Color.White)
+        self.output.coloredln(border, Color.DarkGray)
+        self.output.colored(' a', Color.LightBlue)
+        self.output.colored('2', Color.LightGreen)
+        self.output.colored('x', Color.Yellow)
+        self.output.colored('{} '.format(self.name[3 : ]), Color.White)
         print(arguments)
-        Output.coloredln(border, Color.DarkGray)
+        self.output.coloredln(border, Color.DarkGray)
 
     def done(self):
-        if self.quiet:
-            return
-
-        Output.coloredln('[ Done ]', Color.LightGreen)
+        self.output.coloredln('[ Done ]', Color.LightGreen)
 
     def usage(self):
         message = 'Usage: {}'.format(self.name)
@@ -70,7 +67,7 @@ class Tool:
         for arg in self.arg_names:
             message += ' {}'.format(arg)
 
-        Output.error(message)
+        self.output.error(message)
 
     def validate(self):
         required_num = 0
@@ -99,7 +96,7 @@ class Tool:
             return ''
 
     def main(self):
-        Output.error('{} does not implement main'.format(self.name))
+        self.output.error('{} does not implement main'.format(self.name))
 
     def run(self):
         self.title()
@@ -108,27 +105,27 @@ class Tool:
         self.done()
 
     def makedir(self, name):
-        Output.info('Making dir {}'.format(name))
+        self.output.info('Making dir {}'.format(name))
         os.makedirs(name)
 
     def symlink(self, Target, Name):
-        Output.info('New symlink {} to {}'.format(Name, Target))
+        self.output.info('New symlink {} to {}'.format(Name, Target))
         os.symlink(Target, Name)
 
     def writefile(self, name, contents):
-        Output.info('Writing file {}'.format(name))
+        self.output.info('Writing file {}'.format(name))
 
         with open(name, 'w') as f:
             f.write(contents)
 
     def readbytes(self, name):
-        Output.info('Reading bytes from {}'.format(name))
+        self.output.info('Reading bytes from {}'.format(name))
 
         with open(name, 'rb') as f:
             return f.read()
 
     def readtext(self, name):
-        Output.info('Reading text from {}'.format(name))
+        self.output.info('Reading text from {}'.format(name))
 
         with open(name, 'rU') as f:
             return f.read()

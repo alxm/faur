@@ -33,7 +33,7 @@ class InstallTool(Tool):
         elif sys.platform.startswith('freebsd'):
             make = 'gmake'
         else:
-            Output.error('Unknown platform {}'.format(sys.platform))
+            self.output.error('Unknown platform {}'.format(sys.platform))
 
         command = self.get_arg('[clean]')
         userconfig = os.path.join(self.cfg_dir, 'sdk.config')
@@ -41,27 +41,27 @@ class InstallTool(Tool):
 
         if command == 'clean':
             if not os.path.exists(sdkconfig):
-                Output.note('Run {} first'.format(self.name))
-                Output.error('{} does not exist'.format(sdkconfig))
+                self.output.note('Run {} first'.format(self.name))
+                self.output.error('{} does not exist'.format(sdkconfig))
 
-            Output.info('Removing compiled and generated a2x files')
+            self.output.info('Removing compiled and generated a2x files')
         elif command != '':
-            Output.error('Unknown command {}'.format(command))
+            self.output.error('Unknown command {}'.format(command))
         else:
-            Shell.run('{} {} {}'
+            self.shell.run('{} {} {}'
                 .format(os.path.join(self.bin_dir, 'a2x_sdkconfig'),
                         userconfig,
                         sdkconfig))
 
-            Output.info('Compiling a2x')
+            self.output.info('Compiling a2x')
 
-        Shell.run('{} --directory={} --jobs {}'
+        self.shell.run('{} --directory={} --jobs {}'
             .format(make, os.path.join(self.make_dir, 'a2x'), command))
 
         if command == 'clean':
-            Shell.run('rm {}'.format(sdkconfig))
+            self.shell.run('rm {}'.format(sdkconfig))
         else:
-            Output.note('Add {} to your $PATH'.format(self.bin_dir))
+            self.output.note('Add {} to your $PATH'.format(self.bin_dir))
 
 if __name__ == '__main__':
     tool = InstallTool('[clean]')

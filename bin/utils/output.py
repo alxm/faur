@@ -1,5 +1,5 @@
 """
-    Copyright 2016 Alex Margarit
+    Copyright 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -38,31 +38,39 @@ class Color:
     White = '1;37'
 
 class Output:
-    @staticmethod
-    def colored(text, color):
-        print('\033[{}m{}\033[0m'.format(color, text), end = '')
+    def __init__(self, quiet):
+        self.quiet = quiet
 
-    @staticmethod
-    def coloredln(text, color):
-        print('\033[{}m{}\033[0m'.format(color, text))
+    def __colored(self, text, color, newline = False):
+        print('\033[{}m{}\033[0m'.format(color, text),
+              end = '\n' if newline else '')
 
-    @staticmethod
-    def note(text):
-        Output.colored('[ Note ] ', Color.LightGreen)
-        print(text)
+    def colored(self, text, color):
+        if not self.quiet:
+            self.__colored(text, color)
 
-    @staticmethod
-    def info(text):
-        Output.colored('[ Info ] ', Color.LightBlue)
-        print(text)
+    def coloredln(self, text, color):
+        if not self.quiet:
+            self.__colored(text, color, True)
 
-    @staticmethod
-    def error(text):
-        Output.colored('[ Error ] ', Color.LightRed)
-        print(text)
+    def note(self, text):
+        if not self.quiet:
+            self.__colored('[ Note ] ', Color.LightGreen)
+            print(text)
+
+    def info(self, text):
+        if not self.quiet:
+            self.__colored('[ Info ] ', Color.LightBlue)
+            print(text)
+
+    def error(self, text):
+        if not self.quiet:
+            self.__colored('[ Error ] ', Color.LightRed)
+            print(text)
+
         sys.exit(1)
 
-    @staticmethod
-    def shell(text):
-        Output.colored('[ Shell ] ', Color.LightPurple)
-        print(text)
+    def shell(self, text):
+        if not self.quiet:
+            self.__colored('[ Shell ] ', Color.LightPurple)
+            print(text)
