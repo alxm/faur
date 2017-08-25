@@ -35,8 +35,8 @@ class InstallTool(Tool):
             self.output.error('Unknown platform {}'.format(sys.platform))
 
         command = self.get_arg('[clean]')
-        userconfig = os.path.join(self.cfg_dir, 'sdk.config')
-        sdkconfig = os.path.join(self.make_dir, 'sdk.config')
+        userconfig = os.path.join(self.dir_cfg, 'sdk.config')
+        sdkconfig = os.path.join(self.dir_make, 'sdk.config')
 
         if command == 'clean':
             if not os.path.exists(sdkconfig):
@@ -48,20 +48,19 @@ class InstallTool(Tool):
             self.output.error('Unknown command {}'.format(command))
         else:
             self.shell('{} {} {}'
-                .format(os.path.join(self.bin_dir, 'a2x_sdkconfig'),
+                .format(os.path.join(self.dir_bin, 'a2x_sdkconfig'),
                         userconfig,
                         sdkconfig))
 
             self.output.info('Compiling a2x')
 
         self.shell('{} --directory={} --jobs {}'
-            .format(make, os.path.join(self.make_dir, 'a2x'), command))
+            .format(make, os.path.join(self.dir_make, 'a2x'), command))
 
         if command == 'clean':
             self.shell('rm {}'.format(sdkconfig))
         else:
-            self.output.note('Add {} to your $PATH'.format(self.bin_dir))
+            self.output.note('Add {} to your $PATH'.format(self.dir_bin))
 
 if __name__ == '__main__':
-    tool = InstallTool('[clean]')
-    tool.run()
+    InstallTool('[clean]').run()

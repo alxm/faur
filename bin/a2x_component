@@ -24,7 +24,7 @@ import os
 from utils.output import Output
 from utils.tool import Tool
 
-class CompTool(Tool):
+class ComponentTool(Tool):
     def main(self):
         comp_name = self.get_arg('ComponentName').strip()
         comp_lowername = comp_name.lower()
@@ -75,5 +75,4 @@ extern AComponentFree z_comp_{name}_free;
 """.format(struct=struct_name, name=comp_lowername, varname=comp_name))
 
 if __name__ == '__main__':
-    tool = CompTool('ComponentName')
-    tool.run()
+    ComponentTool('ComponentName').run()

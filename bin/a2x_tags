@@ -44,5 +44,4 @@ class TagsTool(Tool):
         self.geany_tags(header_file)
 
 if __name__ == '__main__':
-    tool = TagsTool('[HeaderFile]')
-    tool.run()
+    TagsTool('[HeaderFile]').run()

@@ -116,5 +116,4 @@ class SdkConfigTool(Tool):
         self.writefile(config_write, out)
 
 if __name__ == '__main__':
-    tool = SdkConfigTool('UserConfig GeneratedConfig')
-    tool.run()
+    SdkConfigTool('UserConfig GeneratedConfig').run()

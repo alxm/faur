@@ -51,9 +51,9 @@ a2x_pack_sample.c
 class PackTool(Tool):
     def main(self):
         pack_name = self.get_arg('PackName').strip().lower().replace(' ', '_')
-        pack_c = os.path.join(self.src_dir, 'a2x_pack_{}.c'.format(pack_name))
-        pack_ph = os.path.join(self.src_dir, 'a2x_pack_{}.p.h'.format(pack_name))
-        pack_vh = os.path.join(self.src_dir, 'a2x_pack_{}.v.h'.format(pack_name))
+        pack_c = os.path.join(self.dir_src, 'a2x_pack_{}.c'.format(pack_name))
+        pack_ph = os.path.join(self.dir_src, 'a2x_pack_{}.p.h'.format(pack_name))
+        pack_vh = os.path.join(self.dir_src, 'a2x_pack_{}.v.h'.format(pack_name))
 
         for f in [pack_c, pack_ph, pack_vh]:
             if os.path.exists(f):
@@ -118,5 +118,4 @@ extern void a_{1}__uninit(void);
 """.format(license_header, pack_name))
 
 if __name__ == '__main__':
-    tool = PackTool('PackName')
-    tool.run()
+    PackTool('PackName').run()

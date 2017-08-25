@@ -155,5 +155,4 @@ A_MAIN
         self.output.note('cd {} && make run'.format(dir_mke.path))
 
 if __name__ == '__main__':
-    tool = NewTool('ProjectName')
-    tool.run()
+    NewTool('ProjectName').run()

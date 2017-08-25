@@ -24,7 +24,7 @@ import os
 from utils.output import Output
 from utils.tool import Tool
 
-class CompTool(Tool):
+class SystemTool(Tool):
     def main(self):
         sys_name = self.get_arg('SystemName').strip().lower()
         sys_c = os.path.join('.', 'system_{}.c'.format(sys_name))
@@ -52,5 +52,4 @@ extern ASystemHandler z_system_{name};
 """.format(name=sys_name))
 
 if __name__ == '__main__':
-    tool = CompTool('SystemName')
-    tool.run()
+    SystemTool('SystemName').run()

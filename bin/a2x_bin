@@ -74,5 +74,4 @@ uint8_t {prefix}_{name}[] = {{{data}
            data = bin_data))
 
 if __name__ == '__main__':
-    tool = BinTool('File.bin File.c File.h VariablePrefix')
-    tool.run()
+    BinTool('File.bin File.c File.h VariablePrefix').run()

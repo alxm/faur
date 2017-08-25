@@ -38,11 +38,11 @@ class Tool:
         self.output = Output(quiet)
 
         current_dir = os.path.dirname(__file__)
-        self.a2x_dir = os.path.abspath(os.path.join(current_dir, '..', '..'))
-        self.bin_dir = os.path.join(self.a2x_dir, 'bin')
-        self.cfg_dir = os.path.join(self.a2x_dir, 'cfg')
-        self.make_dir = os.path.join(self.a2x_dir, 'make')
-        self.src_dir = os.path.join(self.a2x_dir, 'src')
+        self.dir_a2x = os.path.abspath(os.path.join(current_dir, '..', '..'))
+        self.dir_bin = os.path.join(self.dir_a2x, 'bin')
+        self.dir_cfg = os.path.join(self.dir_a2x, 'cfg')
+        self.dir_make = os.path.join(self.dir_a2x, 'make')
+        self.dir_src = os.path.join(self.dir_a2x, 'src')
 
     def title(self):
         arguments = ' '.join(self.args) + ' ' if len(self.args) > 0 else ''

@@ -36,5 +36,4 @@ const char* a_app__buildtime = "{}";
 """.format(timestamp))
 
 if __name__ == '__main__':
-    tool = BuildTimeTool('File.c')
-    tool.run()
+    BuildTimeTool('File.c').run()
