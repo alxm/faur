@@ -30,6 +30,5 @@ extern void a_music_play(AMusic* Music);
 extern void a_music_stop(void);
 
 extern ASound* a_sfx_newFromFile(const char* Path);
-extern ASound* a_sfx_newFromData(const uint8_t* Data, size_t Size);
 
 extern void a_sfx_play(ASound* Sfx);
