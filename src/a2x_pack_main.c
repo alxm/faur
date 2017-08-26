@@ -59,11 +59,11 @@ int main(int Argc, const char** Argv)
     a_math__init();
     a_random__init();
     a_fix__init();
-    a_font__init();
     a_state__init();
     a_entity__init();
     a_fade__init();
-
+    a_embed__init();
+    a_font__init();
     a_console__init2();
 
     a_out__message("Calling A_MAIN");
@@ -72,6 +72,7 @@ int main(int Argc, const char** Argv)
 
     a_state__run();
 
+    a_embed__uninit();
     a_fade__uninit();
     a_entity__uninit();
     a_state__uninit();
