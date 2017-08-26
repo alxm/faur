@@ -59,6 +59,13 @@ class PackTool(Tool):
             if os.path.exists(f):
                 self.output.error('Error: {} already exists'.format(f))
 
+        author = '<your username>'
+
+        for key in ['USER', 'USERNAME', 'LOGNAME']:
+            if key in os.environ:
+                author = os.environ[key]
+                break
+
         license_header = """\
 /*
     Copyright {0} {1}
@@ -77,7 +84,7 @@ class PackTool(Tool):
 
     You should have received a copy of the GNU Lesser General Public License
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
-*/""".format(time.strftime('%Y'), os.environ['USERNAME'])
+*/""".format(time.strftime('%Y'), author)
 
         self.writefile(pack_c,
 """\
