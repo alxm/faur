@@ -306,6 +306,7 @@ static bool iteration(void)
 static void loop(void)
 {
     if(!iteration()) {
+        a_out__message("Finished running states");
         emscripten_cancel_main_loop();
     }
 }
@@ -313,6 +314,8 @@ static void loop(void)
 
 void a_state__run(void)
 {
+    a_out__message("Running states");
+
     #if A_PLATFORM_EMSCRIPTEN
         emscripten_set_main_loop(loop,
                                  (int)a_settings_getUnsigned("video.fps"),
@@ -321,5 +324,7 @@ void a_state__run(void)
         while(iteration()) {
             continue;
         }
+
+        a_out__message("Finished running states");
     #endif
 }
