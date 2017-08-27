@@ -24,6 +24,11 @@ C_GEN_DIR = $(A_SRC_DIR)/$(A2X_GEN)
 C_BUILDTIME_FILE = $(C_GEN_DIR)/time.c
 
 #
+# a_embed__application
+#
+C_EMBED_FILE = $(C_GEN_DIR)/embed.c
+
+#
 # .c source files
 #
 C_INC_FILES = $(notdir $(wildcard $(A_SRC_DIR)/*.inc.c))
@@ -43,7 +48,8 @@ O_SFX_DIR = $(O_GEN_DIR)/sfx
 # Keep buildtime separate from the rest, since they are its prerequisites.
 #
 O_BUILDTIME = $(addprefix $(O_GEN_DIR)/, $(notdir $(C_BUILDTIME_FILE:.c=.o)))
-O_FILES = $(addprefix $(O_DIR)/, $(C_FILES:.c=.o))
+O_EMBED = $(addprefix $(O_GEN_DIR)/, $(notdir $(C_EMBED_FILE:.c=.o)))
+O_FILES = $(addprefix $(O_DIR)/, $(C_FILES:.c=.o)) $(O_EMBED)
 
 #
 # Check if project wants to embed images and sound effects with a2x_bin
@@ -62,15 +68,12 @@ ifeq ($(A_EMBED_MEDIA), true)
     #
     C_GFX_DIR = $(C_GEN_DIR)/gfx
     C_SFX_DIR = $(C_GEN_DIR)/sfx
-    C_GFX_HEADER = $(C_GEN_DIR)/gfx.h
-    C_SFX_HEADER = $(C_GEN_DIR)/sfx.h
-    C_GEN_HEADERS = $(C_GFX_HEADER) $(C_SFX_HEADER)
 
     #
     # PNG and WAV files in .c form
     #
-    C_GFX_FILES = $(addprefix $(C_GFX_DIR)/gfx_, $(GFX_FILES:.png=.c))
-    C_SFX_FILES = $(addprefix $(C_SFX_DIR)/sfx_, $(SFX_FILES:.wav=.c))
+    C_GFX_FILES = $(addprefix $(C_GFX_DIR)/gfx_, $(GFX_FILES:.png=_png.c))
+    C_SFX_FILES = $(addprefix $(C_SFX_DIR)/sfx_, $(SFX_FILES:.wav=_wav.c))
 
     O_FILES += $(addprefix $(O_GFX_DIR)/, $(notdir $(C_GFX_FILES:.c=.o))) \
                $(addprefix $(O_SFX_DIR)/, $(notdir $(C_SFX_FILES:.c=.o)))
@@ -119,23 +122,19 @@ $(C_BUILDTIME_FILE) : $(O_FILES)
 	@ mkdir -p $(@D)
 	@ $(A2X_PATH)/bin/a2x_buildtime $@
 
-$(C_GFX_DIR)/gfx_%.c : $(A_GFX_DIR)/%.png
+$(C_GFX_DIR)/gfx_%_png.c : $(A_GFX_DIR)/%.png
 	@ mkdir -p $(@D)
 	@ $(A2X_PATH)/bin/a2x_bin $< $@ $(@:.c=.h) gfx
 
-$(C_SFX_DIR)/sfx_%.c : $(A_SFX_DIR)/%.wav
+$(C_SFX_DIR)/sfx_%_wav.c : $(A_SFX_DIR)/%.wav
 	@ mkdir -p $(@D)
 	@ $(A2X_PATH)/bin/a2x_bin $< $@ $(@:.c=.h) sfx
 
-$(C_GFX_HEADER) : $(C_GFX_FILES)
+$(C_EMBED_FILE) : $(C_GFX_FILES) $(C_SFX_FILES)
 	@ mkdir -p $(@D)
-	@ $(A2X_PATH)/bin/a2x_header $(C_GFX_DIR) .h $@
+	@ $(A2X_PATH)/bin/a2x_embed $@ $(C_GEN_DIR) gfx sfx
 
-$(C_SFX_HEADER) : $(C_SFX_FILES)
-	@ mkdir -p $(@D)
-	@ $(A2X_PATH)/bin/a2x_header $(C_SFX_DIR) .h $@
-
-$(O_DIR)/%.o : $(A_SRC_DIR)/%.c $(C_GEN_HEADERS)
+$(O_DIR)/%.o : $(A_SRC_DIR)/%.c
 	@ echo "Compiling $(notdir $<)"
 	@ mkdir -p $(@D)
 	@ $(CC) -c -o $@ $< $(CFLAGS)

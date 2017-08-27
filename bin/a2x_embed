@@ -1,0 +1,61 @@
+#!/usr/bin/env python3
+
+"""
+    Copyright 2017 Alex Margarit
+
+    This file is part of a2x-framework.
+
+    a2x-framework is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    a2x-framework is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
+import os
+
+from utils.tool import Tool
+
+class EmbedTool(Tool):
+    def main(self):
+        c_file = self.get_arg('file.c')
+        gen_dir = self.get_arg('GenDir')
+        sub_dirs = self.get_arg_tail()
+
+        includes = ''
+        embed_calls = ''
+
+        for d in sub_dirs:
+            subdir = os.path.join(gen_dir, d)
+
+            if not os.path.exists(subdir):
+                continue
+
+            for header in [f for f in os.listdir(subdir) if f.endswith('.h')]:
+                includes += '    #include "{}/{}"\n'.format(d, header)
+                embed_calls += '        ' \
+                    + 'a_embed__add({0}_path, {0}_data, {0}_size);\n' \
+                    .format(header[: -2])
+
+        self.writefile(c_file,
+"""\
+#if A_EMBED_MEDIA
+    #include <a2x.h>
+{}#endif
+
+void a_embed__application(void)
+{{
+    #if A_EMBED_MEDIA
+{}    #endif
+}}
+""".format(includes, embed_calls))
+
+if __name__ == '__main__':
+    EmbedTool('file.c GenDir').run()

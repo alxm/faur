@@ -33,8 +33,13 @@ void a_embed__init(void)
 {
     g_data = a_strhash_new();
 
-    a_embed__add("/a2x/consoleTitles", g_media_console, g_media_console_size);
-    a_embed__add("/a2x/defaultFont", g_media_font, g_media_font_size);
+    a_embed__add("/a2x/consoleTitles",
+                 g_media_console_png_data,
+                 g_media_console_png_size);
+
+    a_embed__add("/a2x/defaultFont",
+                 g_media_font_png_data,
+                 g_media_font_png_size);
 
     a_embed__application();
 }
