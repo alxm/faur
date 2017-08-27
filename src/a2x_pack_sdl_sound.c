@@ -22,6 +22,14 @@
 #include <SDL.h>
 #include <SDL_mixer.h>
 
+struct ASdlSfx {
+    Mix_Chunk* chunk;
+    int channel;
+};
+
+int g_numSfxChannels;
+int g_currentSfxChannel;
+
 void a_sdl_sound__init(void)
 {
     if(SDL_InitSubSystem(SDL_INIT_AUDIO) != 0) {
@@ -41,6 +49,11 @@ void a_sdl_sound__init(void)
             a_settings__set("sound.on", "0");
         }
     #endif
+
+    g_numSfxChannels = Mix_AllocateChannels(64);
+    g_currentSfxChannel = 0;
+
+    a_out__message("Allocated %d sfx channels", g_numSfxChannels);
 }
 
 void a_sdl_sound__uninit(void)
@@ -98,58 +111,64 @@ void a_sdl_sound__musicToggle(void)
     }
 }
 
-void* a_sdl_sound__sfxLoadFromFile(const char* Path)
+ASdlSfx* a_sdl_sound__sfxLoadFromFile(const char* Path)
 {
-    Mix_Chunk* sfx = Mix_LoadWAV(Path);
+    ASdlSfx* sfx = a_mem_zalloc(sizeof(ASdlSfx));
 
-    if(sfx == NULL) {
+    sfx->chunk = Mix_LoadWAV(Path);
+
+    if(sfx->chunk) {
+        sfx->channel = g_currentSfxChannel++ % g_numSfxChannels;
+    } else {
         a_out__error("Mix_LoadWAV(%s) failed: %s", Path, SDL_GetError());
     }
 
     return sfx;
 }
 
-void* a_sdl_sound__sfxLoadFromData(const uint8_t* Data, int Size)
+ASdlSfx* a_sdl_sound__sfxLoadFromData(const uint8_t* Data, int Size)
 {
-    SDL_RWops* rw;
-    Mix_Chunk* sfx = NULL;
+    ASdlSfx* sfx = a_mem_zalloc(sizeof(ASdlSfx));
+    SDL_RWops* rw = SDL_RWFromMem((void*)Data, Size);
 
-    rw = SDL_RWFromMem((void*)Data, Size);
-    if(rw == NULL) {
-        a_out__error("SDL_RWFromMem failed: %s", SDL_GetError());
-        goto Done;
-    }
-
-    sfx = Mix_LoadWAV_RW(rw, 0);
-    if(sfx == NULL) {
-        a_out__error("Mix_LoadWAV_RW failed: %s", SDL_GetError());
-        goto Done;
-    }
-
-Done:
     if(rw) {
+        sfx->chunk = Mix_LoadWAV_RW(rw, 0);
+
+        if(sfx->chunk) {
+            sfx->channel = g_currentSfxChannel++ % g_numSfxChannels;
+        } else {
+            a_out__error("Mix_LoadWAV_RW failed: %s", SDL_GetError());
+        }
+
         SDL_FreeRW(rw);
+    } else {
+        a_out__error("SDL_RWFromMem failed: %s", SDL_GetError());
     }
 
     return sfx;
 }
 
-void a_sdl_sound__sfxFree(void* Sfx)
+void a_sdl_sound__sfxFree(ASdlSfx* Sfx)
 {
-    Mix_FreeChunk(Sfx);
+    if(Sfx->chunk) {
+        Mix_FreeChunk(Sfx->chunk);
+    }
+
+    free(Sfx);
 }
 
-void a_sdl_sound__sfxSetVolume(void* Sfx, int Volume)
+void a_sdl_sound__sfxSetVolume(ASdlSfx* Sfx, int Volume)
 {
     #if A_PLATFORM_EMSCRIPTEN
         A_UNUSED(Sfx);
         A_UNUSED(Volume);
     #else
-        Mix_VolumeChunk(Sfx, Volume);
+        Mix_VolumeChunk(Sfx->chunk, Volume);
     #endif
 }
 
-void a_sdl_sound__sfxPlay(void* Sfx)
+void a_sdl_sound__sfxPlay(ASdlSfx* Sfx)
 {
-    Mix_PlayChannel(-1, Sfx, 0);
+    Mix_HaltChannel(Sfx->channel);
+    Mix_PlayChannel(Sfx->channel, Sfx->chunk, 0);
 }
