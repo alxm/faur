@@ -22,4 +22,4 @@
 from utils.tool import Tool
 
 if __name__ == '__main__':
-    print(Tool('').a2x_dir)
+    print(Tool('').dir_a2x)

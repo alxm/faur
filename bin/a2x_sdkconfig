@@ -57,7 +57,7 @@ class SdkConfigTool(Tool):
         config_write = self.get_arg('GeneratedConfig')
 
         if not os.path.exists(config_read):
-            Output.error('{} does not exist'.format(config_read))
+            self.output.error('{} does not exist'.format(config_read))
 
         sdks = {}
 
@@ -95,26 +95,25 @@ class SdkConfigTool(Tool):
             value = assignment.group(3)
 
             if sdk_name not in sdks:
-                Output.note('You can comment out config lines with #')
-                Output.error('Unknown SDK {} - only aware of {}'
+                self.output.note('You can comment out config lines with #')
+                self.output.error('Unknown SDK {} - only aware of {}'
                     .format(sdk_name, ', '.join(sorted([s for s in sdks]))))
 
             sdk = sdks[sdk_name]
 
             if not sdk.has_var(variable):
-                Output.note('You can comment out config lines with #')
-                Output.error('Unknown variable {}.{} - only aware of {}'
+                self.output.note('You can comment out config lines with #')
+                self.output.error('Unknown variable {}.{} - only aware of {}'
                     .format(sdk_name, variable,
                     ', '.join(sorted([v for v in sdk.variables]))))
 
             sdk.set_var(variable, value)
 
             if sdk.is_complete():
-                Output.note('Processed config for {}'.format(sdk.title))
+                self.output.note('Processed config for {}'.format(sdk.title))
 
         out = '\n'.join([str(sdks[sdk]) for sdk in sdks])
         self.writefile(config_write, out)
 
 if __name__ == '__main__':
-    tool = SdkConfigTool('UserConfig GeneratedConfig')
-    tool.run()
+    SdkConfigTool('UserConfig GeneratedConfig').run()

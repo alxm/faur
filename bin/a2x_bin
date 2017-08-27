@@ -32,12 +32,8 @@ class BinTool(Tool):
         header_file = os.path.basename(h_file)
         prefix = self.get_arg('VariablePrefix')
 
-        bin_name = os.path.basename(bin_file)
-        extension_index = bin_name.rfind('.')
-        bin_name = bin_name.replace('.', '_')
-
-        if extension_index > 0:
-            bin_name = bin_name[ : extension_index]
+        bin_file_name = os.path.basename(bin_file)
+        bin_file_name_clean = bin_file_name.replace('.', '_')
 
         bin_data = ''
         bin_bytes = self.readbytes(bin_file)
@@ -50,29 +46,30 @@ class BinTool(Tool):
             bin_data += '0x{:0>2x},'.format(byte)
 
         self.writefile(h_file, """\
-#pragma once
-
 #include <stddef.h>
 #include <stdint.h>
 
-extern uint8_t {prefix}_{name}[];
+extern const char* {prefix}_{name}_path;
 extern size_t {prefix}_{name}_size;
+extern uint8_t {prefix}_{name}_data[];
 """.format(prefix = prefix,
-           name = bin_name))
+           name = bin_file_name_clean))
 
         self.writefile(c_file, """\
 #include "{header}"
 
+const char* {prefix}_{name}_path = "{prefix}/{originalName}";
+
 size_t {prefix}_{name}_size = {size};
 
-uint8_t {prefix}_{name}[] = {{{data}
+uint8_t {prefix}_{name}_data[] = {{{data}
 }};
 """.format(header = header_file,
            prefix = prefix,
-           name = bin_name,
+           name = bin_file_name_clean,
+           originalName = bin_file_name,
            size = bin_size,
            data = bin_data))
 
 if __name__ == '__main__':
-    tool = BinTool('File.bin File.c File.h VariablePrefix')
-    tool.run()
+    BinTool('File.bin File.c File.h VariablePrefix').run()

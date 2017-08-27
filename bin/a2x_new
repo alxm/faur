@@ -22,7 +22,6 @@
 import os
 
 from utils.output import Output
-from utils.shell import Shell
 from utils.tool import Tool
 
 class NewTool(Tool):
@@ -31,10 +30,10 @@ class NewTool(Tool):
         project_dir = os.path.abspath(project_name)
 
         if project_name != os.path.basename(project_name):
-            Output.error('Project name cannot be a path'.format(project_name))
+            self.output.error('Project name cannot be a path'.format(project_name))
 
         if os.path.exists(project_dir):
-            Output.error('{} already exists'.format(project_dir))
+            self.output.error('{} already exists'.format(project_dir))
 
         author = '<your username>'
 
@@ -140,7 +139,7 @@ A_MAIN
 }}
 """.format(project_name, author))
 
-        Shell.run('git init {}'.format(project_dir))
+        self.shell('git init {}'.format(project_dir))
 
         self.writefile(os.path.join(project_dir, '.gitignore'),
 """\
@@ -149,12 +148,11 @@ A_MAIN
 /src/a2x_gen/
 """)
 
-        Shell.run('cd {} && git add .gitignore make/Makefile src/main.c'
+        self.shell('cd {} && git add .gitignore make/Makefile src/main.c'
             .format(project_dir))
 
-        Output.note('To build and run:')
-        Output.note('cd {} && make run'.format(dir_mke.path))
+        self.output.note('To build and run:')
+        self.output.note('cd {} && make run'.format(dir_mke.path))
 
 if __name__ == '__main__':
-    tool = NewTool('ProjectName')
-    tool.run()
+    NewTool('ProjectName').run()

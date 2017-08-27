@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 output=""
 make_arg=$1
@@ -30,6 +30,8 @@ do_emmake ()
     record_result "$1" $?
 }
 
+source /opt/emsdk-portable/emsdk_env.sh
+
 do_make "Linux native" Makefile
 do_make "Linux 32bit" Makefile.linux32
 do_make "Linux 64bit" Makefile.linux64
@@ -41,4 +43,4 @@ do_make "Pandora" Makefile.pandora
 do_make "Wiz" Makefile.wiz
 do_emmake "Emscripten" Makefile.emscripten
 
-echo $output
+echo -e $output

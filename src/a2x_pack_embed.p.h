@@ -1,7 +1,5 @@
-#!/usr/bin/env python3
-
-"""
-    Copyright 2016 Alex Margarit
+/*
+    Copyright 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -17,23 +15,11 @@
 
     You should have received a copy of the GNU Lesser General Public License
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
-"""
+*/
 
-import os
-import time
+#pragma once
 
-from utils.output import Output
-from utils.tool import Tool
+#include "a2x_system_includes.h"
 
-class BuildTimeTool(Tool):
-    def main(self):
-        timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
-        self.output.info('Stamping with {}'.format(timestamp))
-
-        self.writefile(self.get_arg('File.c'),
-"""\
-const char* a_app__buildtime = "{}";
-""".format(timestamp))
-
-if __name__ == '__main__':
-    BuildTimeTool('File.c').run()
+extern void a_embed__application(void);
+extern void a_embed__add(const char* Key, const uint8_t* Buffer, size_t Size);

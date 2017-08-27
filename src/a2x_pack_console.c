@@ -19,7 +19,6 @@
 */
 
 #include "a2x_pack_console.v.h"
-#include "media/console.h"
 
 typedef struct ALine {
     AConsoleOutType type;
@@ -142,7 +141,7 @@ void a_console__init2(void)
         return;
     }
 
-    ASprite* graphics = a_sprite_newFromData(g_media_console, "consoleTitles");
+    ASprite* graphics = a_sprite_newFromFile("/a2x/consoleTitles");
     ASpriteFrames* frames = a_spriteframes_new(graphics, 0, 0, 1);
 
     for(AConsoleOutType type = 0; type < A_CONSOLE_MAX; type++) {

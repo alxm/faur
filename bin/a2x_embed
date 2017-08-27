@@ -21,35 +21,41 @@
 
 import os
 
-from utils.output import Output
 from utils.tool import Tool
 
-class SystemTool(Tool):
+class EmbedTool(Tool):
     def main(self):
-        sys_name = self.get_arg('SystemName').strip().lower()
-        sys_c = os.path.join('.', 'system_{}.c'.format(sys_name))
-        sys_h = os.path.join('.', 'system_{}.h'.format(sys_name))
+        c_file = self.get_arg('file.c')
+        gen_dir = self.get_arg('GenDir')
+        sub_dirs = self.get_arg_tail()
 
-        for f in [sys_c, sys_h]:
-            if os.path.exists(f):
-                self.output.error('Error: {} already exists'.format(f))
+        includes = ''
+        embed_calls = ''
 
-        self.writefile(sys_c,
+        for d in sub_dirs:
+            subdir = os.path.join(gen_dir, d)
+
+            if not os.path.exists(subdir):
+                continue
+
+            for header in [f for f in os.listdir(subdir) if f.endswith('.h')]:
+                includes += '    #include "{}/{}"\n'.format(d, header)
+                embed_calls += '        ' \
+                    + 'a_embed__add({0}_path, {0}_data, {0}_size);\n' \
+                    .format(header[: -2])
+
+        self.writefile(c_file,
 """\
-#include <a2x.h>
+#if A_EMBED_MEDIA
+    #include <a2x.h>
+{}#endif
 
-#include "system_{name}.h"
-
-void z_system_{name}(AEntity* Entity)
+void a_embed__application(void)
 {{
-    A_UNUSED(Entity);
+    #if A_EMBED_MEDIA
+{}    #endif
 }}
-""".format(name=sys_name))
-
-        self.writefile(sys_h,
-"""\
-extern ASystemHandler z_system_{name};
-""".format(name=sys_name))
+""".format(includes, embed_calls))
 
 if __name__ == '__main__':
-    SystemTool('SystemName').run()
+    EmbedTool('file.c GenDir').run()

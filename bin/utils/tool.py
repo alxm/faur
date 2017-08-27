@@ -18,61 +18,27 @@
 """
 
 import os
+import subprocess
 import sys
 
 from utils.output import Output, Color
 
 class Tool:
     def __init__(self, arg_names):
-        self.quiet = False
-        self.args = sys.argv[1 : ]
+        quiet = False
+        args = sys.argv[1 : ]
 
-        if len(self.args) > 0 and self.args[0] == '-q':
-            self.quiet = True
-            self.args = self.args[1 : ]
+        if len(args) > 0 and args[0] == '-q':
+            quiet = True
+            args = args[1 : ]
 
-        self.arg_names = arg_names.split()
-        self.args_db = {}
         self.name = os.path.basename(sys.argv[0])
+        self.output = Output(quiet)
+        self.arg_names = arg_names.split()
+        self.arg_values = args
+        self.arg_db = {}
+        self.args_tail = self.arg_values[len(self.arg_names) :]
 
-        current_dir = os.path.dirname(__file__)
-        self.a2x_dir = os.path.abspath(os.path.join(current_dir, '..', '..'))
-        self.bin_dir = os.path.join(self.a2x_dir, 'bin')
-        self.cfg_dir = os.path.join(self.a2x_dir, 'cfg')
-        self.make_dir = os.path.join(self.a2x_dir, 'make')
-        self.src_dir = os.path.join(self.a2x_dir, 'src')
-
-    def title(self):
-        if self.quiet:
-            return
-
-        arguments = ' '.join(self.args) + ' ' if len(self.args) > 0 else ''
-        whole_text = ' {} {}'.format(self.name, arguments)
-        border = '-' * len(whole_text)
-
-        Output.coloredln(border, Color.DarkGray)
-        Output.colored(' a', Color.LightBlue)
-        Output.colored('2', Color.LightGreen)
-        Output.colored('x', Color.Yellow)
-        Output.colored('{} '.format(self.name[3 : ]), Color.White)
-        print(arguments)
-        Output.coloredln(border, Color.DarkGray)
-
-    def done(self):
-        if self.quiet:
-            return
-
-        Output.coloredln('[ Done ]', Color.LightGreen)
-
-    def usage(self):
-        message = 'Usage: {}'.format(self.name)
-
-        for arg in self.arg_names:
-            message += ' {}'.format(arg)
-
-        Output.error(message)
-
-    def validate(self):
         required_num = 0
         optional_num = 0
 
@@ -82,53 +48,98 @@ class Tool:
             else:
                 required_num += 1
 
-                # Optional args are only allowed after required args
+                # Optional args are only allowed after all required args
                 if optional_num > 0:
                     self.usage()
 
-        if not required_num <= len(self.args) <= required_num + optional_num:
+        if len(self.arg_values) < required_num:
             self.usage()
 
-        for name, value in zip(self.arg_names, self.args):
-            self.args_db[name] = value
+        for name, value in zip(self.arg_names, self.arg_values):
+            self.arg_db[name] = value
+
+        current_dir = os.path.dirname(__file__)
+        self.dir_a2x = os.path.abspath(os.path.join(current_dir, '..', '..'))
+        self.dir_bin = os.path.join(self.dir_a2x, 'bin')
+        self.dir_cfg = os.path.join(self.dir_a2x, 'cfg')
+        self.dir_make = os.path.join(self.dir_a2x, 'make')
+        self.dir_src = os.path.join(self.dir_a2x, 'src')
+
+    def title(self):
+        arguments = ' '.join(self.arg_values) \
+                    + ' ' if len(self.arg_values) > 0 else ''
+        whole_text = ' {} {}'.format(self.name, arguments)
+        border = '-' * len(whole_text)
+
+        self.output.coloredln(border, Color.DarkGray)
+        self.output.colored(' a', Color.LightBlue)
+        self.output.colored('2', Color.LightGreen)
+        self.output.colored('x', Color.Yellow)
+        self.output.colored('{} '.format(self.name[3 : ]), Color.White)
+        print(arguments)
+        self.output.coloredln(border, Color.DarkGray)
+
+    def done(self):
+        self.output.coloredln('[ Done ]', Color.LightGreen)
+
+    def usage(self):
+        message = 'Usage: {}'.format(self.name)
+
+        for arg in self.arg_names:
+            message += ' {}'.format(arg)
+
+        self.output.error(message)
 
     def get_arg(self, name):
-        if name in self.args_db:
-            return self.args_db[name]
+        if name in self.arg_db:
+            return self.arg_db[name]
         else:
             return ''
 
+    def get_arg_tail(self):
+        return self.args_tail
+
     def main(self):
-        Output.error('{} does not implement main'.format(self.name))
+        self.output.error('{} does not implement main'.format(self.name))
 
     def run(self):
         self.title()
-        self.validate()
         self.main()
         self.done()
 
     def makedir(self, name):
-        Output.info('Making dir {}'.format(name))
+        self.output.info('Making dir {}'.format(name))
         os.makedirs(name)
 
     def symlink(self, Target, Name):
-        Output.info('New symlink {} to {}'.format(Name, Target))
+        self.output.info('New symlink {} to {}'.format(Name, Target))
         os.symlink(Target, Name)
 
     def writefile(self, name, contents):
-        Output.info('Writing file {}'.format(name))
+        self.output.info('Writing file {}'.format(name))
 
         with open(name, 'w') as f:
             f.write(contents)
 
     def readbytes(self, name):
-        Output.info('Reading bytes from {}'.format(name))
+        self.output.info('Reading bytes from {}'.format(name))
 
         with open(name, 'rb') as f:
             return f.read()
 
     def readtext(self, name):
-        Output.info('Reading text from {}'.format(name))
+        self.output.info('Reading text from {}'.format(name))
 
         with open(name, 'rU') as f:
             return f.read()
+
+    def shell(self, cmd):
+        self.output.shell(cmd)
+        status, output = subprocess.getstatusoutput(cmd)
+
+        if not self.output.quiet:
+            for line in output.splitlines():
+                print('    {}'.format(line))
+
+        if status != 0:
+            sys.exit(status)

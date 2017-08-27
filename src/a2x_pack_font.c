@@ -18,7 +18,6 @@
 */
 
 #include "a2x_pack_font.v.h"
-#include "media/font.h"
 
 #define CHAR_ENTRIES_NUM    128
 #define CHAR_INDEX(Char) ((unsigned)Char & (CHAR_ENTRIES_NUM - 1))
@@ -71,7 +70,7 @@ void a_font__init(void)
 
     g_stateStack = a_list_new();
 
-    ASprite* fontSprite = a_sprite_newFromData(g_media_font, "defaultFont");
+    ASprite* fontSprite = a_sprite_newFromFile("/a2x/defaultFont");
 
     APixel colors[A_FONT_FACE_DEFAULT_NUM];
     colors[A_FONT_FACE_LIGHT_GRAY] = a_pixel_hex(0xafafaf);

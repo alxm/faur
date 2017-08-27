@@ -49,5 +49,4 @@ class HeaderTool(Tool):
         self.writefile(umbrella_header, out)
 
 if __name__ == '__main__':
-    tool = HeaderTool('SourceDir Extension UmbrellaHeader')
-    tool.run()
+    HeaderTool('SourceDir Extension UmbrellaHeader').run()

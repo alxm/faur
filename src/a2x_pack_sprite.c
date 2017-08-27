@@ -310,38 +310,24 @@ ASprite* a_sprite_newFromFile(const char* Path)
     int h = 0;
     APixel* pixels = NULL;
 
-    a_png_readFile(Path, &pixels, &w, &h);
+    if(a_file_exists(Path)) {
+        a_png_readFile(Path, &pixels, &w, &h);
+    } else {
+        const uint8_t* data = NULL;
+
+        if(a_embed__get(Path, &data, NULL)) {
+            a_png_readMemory(data, &pixels, &w, &h);
+        }
+    }
 
     if(pixels == NULL) {
         return NULL;
     }
 
     ASprite* s = makeEmptySprite(w, h);
-    assignPixels(s, pixels);
 
+    assignPixels(s, pixels);
     s->nameId = a_str_dup(Path);
-
-    return s;
-}
-
-ASprite* a_sprite_newFromData(const uint8_t* Data, const char* Id)
-{
-    int w;
-    int h;
-    APixel* pixels = NULL;
-
-    a_png_readMemory(Data, &pixels, &w, &h);
-
-    if(pixels == NULL) {
-        return NULL;
-    }
-
-    ASprite* s = makeEmptySprite(w, h);
-    assignPixels(s, pixels);
-
-    if(Id != NULL) {
-        s->nameId = a_str_dup(Id);
-    }
 
     return s;
 }

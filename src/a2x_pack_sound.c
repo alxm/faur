@@ -204,27 +204,27 @@ void a_music_stop(void)
 
 ASound* a_sfx_newFromFile(const char* Path)
 {
-    if(a_settings_getBool("sound.on")) {
-        ASound* s = a_sdl_sound__sfxLoadFromFile(Path);
-        a_sdl_sound__sfxSetVolume(s, g_sfxVolume);
-
-        a_list_addLast(g_sfxList, s);
-        return s;
-    } else {
-        return NULL;
-    }
-}
-
-ASound* a_sfx_newFromData(const uint8_t* Data, size_t Size)
-{
     if(!a_settings_getBool("sound.on")) {
         return NULL;
     }
 
-    ASound* s = a_sdl_sound__sfxLoadFromData(Data, (int)Size);
+    ASound* s = NULL;
 
-    a_sdl_sound__sfxSetVolume(s, g_sfxVolume);
-    a_list_addLast(g_sfxList, s);
+    if(a_file_exists(Path)) {
+        s = a_sdl_sound__sfxLoadFromFile(Path);
+    } else {
+        const uint8_t* data;
+        size_t size;
+
+        if(a_embed__get(Path, &data, &size)) {
+            s = a_sdl_sound__sfxLoadFromData(data, (int)size);
+        }
+    }
+
+    if(s) {
+        a_sdl_sound__sfxSetVolume(s, g_sfxVolume);
+        a_list_addLast(g_sfxList, s);
+    }
 
     return s;
 }

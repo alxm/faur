@@ -1,5 +1,5 @@
-"""
-    Copyright 2016 Alex Margarit
+/*
+    Copyright 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -15,21 +15,15 @@
 
     You should have received a copy of the GNU Lesser General Public License
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
-"""
+*/
 
-import subprocess
-import sys
+#pragma once
 
-from utils.output import Output
+#include "a2x_pack_embed.p.h"
 
-class Shell:
-    @staticmethod
-    def run(cmd):
-        Output.shell(cmd)
-        status, output = subprocess.getstatusoutput(cmd)
+#include "a2x_pack_strhash.v.h"
 
-        for line in output.splitlines():
-            print('    {}'.format(line))
+extern void a_embed__init(void);
+extern void a_embed__uninit(void);
 
-        if status != 0:
-            sys.exit(status)
+extern bool a_embed__get(const char* Key, const uint8_t** Buffer, size_t* Size);

@@ -24,7 +24,7 @@ import os
 from utils.output import Output
 from utils.tool import Tool
 
-class CompTool(Tool):
+class ComponentTool(Tool):
     def main(self):
         comp_name = self.get_arg('ComponentName').strip()
         comp_lowername = comp_name.lower()
@@ -33,7 +33,7 @@ class CompTool(Tool):
 
         for f in [comp_c, comp_h]:
             if os.path.exists(f):
-                Output.error('Error: {} already exists'.format(f))
+                self.output.error('Error: {} already exists'.format(f))
 
         struct_name = 'ZComp{}'.format(comp_name)
 
@@ -75,5 +75,4 @@ extern AComponentFree z_comp_{name}_free;
 """.format(struct=struct_name, name=comp_lowername, varname=comp_name))
 
 if __name__ == '__main__':
-    tool = CompTool('ComponentName')
-    tool.run()
+    ComponentTool('ComponentName').run()
