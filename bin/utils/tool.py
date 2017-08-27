@@ -26,16 +26,37 @@ from utils.output import Output, Color
 class Tool:
     def __init__(self, arg_names):
         quiet = False
-        self.args = sys.argv[1 : ]
+        args = sys.argv[1 : ]
 
-        if len(self.args) > 0 and self.args[0] == '-q':
+        if len(args) > 0 and args[0] == '-q':
             quiet = True
-            self.args = self.args[1 : ]
+            args = args[1 : ]
 
-        self.arg_names = arg_names.split()
-        self.args_db = {}
         self.name = os.path.basename(sys.argv[0])
         self.output = Output(quiet)
+        self.arg_names = arg_names.split()
+        self.arg_values = args
+        self.arg_db = {}
+        self.args_tail = self.arg_values[len(self.arg_names) :]
+
+        required_num = 0
+        optional_num = 0
+
+        for name in self.arg_names:
+            if name[0] == '[' and name[-1] == ']':
+                optional_num += 1
+            else:
+                required_num += 1
+
+                # Optional args are only allowed after all required args
+                if optional_num > 0:
+                    self.usage()
+
+        if len(self.arg_values) < required_num:
+            self.usage()
+
+        for name, value in zip(self.arg_names, self.arg_values):
+            self.arg_db[name] = value
 
         current_dir = os.path.dirname(__file__)
         self.dir_a2x = os.path.abspath(os.path.join(current_dir, '..', '..'))
@@ -45,7 +66,8 @@ class Tool:
         self.dir_src = os.path.join(self.dir_a2x, 'src')
 
     def title(self):
-        arguments = ' '.join(self.args) + ' ' if len(self.args) > 0 else ''
+        arguments = ' '.join(self.arg_values) \
+                    + ' ' if len(self.arg_values) > 0 else ''
         whole_text = ' {} {}'.format(self.name, arguments)
         border = '-' * len(whole_text)
 
@@ -68,38 +90,20 @@ class Tool:
 
         self.output.error(message)
 
-    def validate(self):
-        required_num = 0
-        optional_num = 0
-
-        for name in self.arg_names:
-            if name[0] == '[' and name[-1] == ']':
-                optional_num += 1
-            else:
-                required_num += 1
-
-                # Optional args are only allowed after required args
-                if optional_num > 0:
-                    self.usage()
-
-        if not required_num <= len(self.args) <= required_num + optional_num:
-            self.usage()
-
-        for name, value in zip(self.arg_names, self.args):
-            self.args_db[name] = value
-
     def get_arg(self, name):
-        if name in self.args_db:
-            return self.args_db[name]
+        if name in self.arg_db:
+            return self.arg_db[name]
         else:
             return ''
+
+    def get_arg_tail(self):
+        return self.args_tail
 
     def main(self):
         self.output.error('{} does not implement main'.format(self.name))
 
     def run(self):
         self.title()
-        self.validate()
         self.main()
         self.done()
 
