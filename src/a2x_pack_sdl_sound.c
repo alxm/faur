@@ -36,24 +36,19 @@ void a_sdl_sound__init(void)
         a_out__fatal("SDL_InitSubSystem: %s", SDL_GetError());
     }
 
-    #if A_PLATFORM_DESKTOP || A_PLATFORM_EMSCRIPTEN
-        if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096) != 0) {
-            a_settings__set("sound.on", "0");
-        }
-    #elif A_PLATFORM_GP2X
-        if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 256) != 0) {
-            a_settings__set("sound.on", "0");
-        }
+    #if A_PLATFORM_GP2X
+        int frequency = 44100;
     #else
-        if(Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 512) != 0) {
-            a_settings__set("sound.on", "0");
-        }
+        int frequency = MIX_DEFAULT_FREQUENCY;
     #endif
 
-    g_numSfxChannels = Mix_AllocateChannels(64);
-    g_currentSfxChannel = 0;
-
-    a_out__message("Allocated %d sfx channels", g_numSfxChannels);
+    if(Mix_OpenAudio(frequency, MIX_DEFAULT_FORMAT, 2, 256) != 0) {
+        a_out__error("Mix_OpenAudio failed: %s", Mix_GetError());
+        a_settings__set("sound.on", "0");
+    } else {
+        g_numSfxChannels = Mix_AllocateChannels(64);
+        a_out__message("Allocated %d sfx channels", g_numSfxChannels);
+    }
 }
 
 void a_sdl_sound__uninit(void)
@@ -120,7 +115,7 @@ ASdlSfx* a_sdl_sound__sfxLoadFromFile(const char* Path)
     if(sfx->chunk) {
         sfx->channel = g_currentSfxChannel++ % g_numSfxChannels;
     } else {
-        a_out__error("Mix_LoadWAV(%s) failed: %s", Path, SDL_GetError());
+        a_out__error("Mix_LoadWAV(%s) failed: %s", Path, Mix_GetError());
     }
 
     return sfx;
@@ -137,7 +132,7 @@ ASdlSfx* a_sdl_sound__sfxLoadFromData(const uint8_t* Data, int Size)
         if(sfx->chunk) {
             sfx->channel = g_currentSfxChannel++ % g_numSfxChannels;
         } else {
-            a_out__error("Mix_LoadWAV_RW failed: %s", SDL_GetError());
+            a_out__error("Mix_LoadWAV_RW failed: %s", Mix_GetError());
         }
 
         SDL_FreeRW(rw);
