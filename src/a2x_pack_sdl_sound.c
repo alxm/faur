@@ -72,7 +72,11 @@ void a_sdl_sound__musicFree(void* Music)
 
 void a_sdl_sound__musicSetVolume(int Volume)
 {
-    Mix_VolumeMusic(Volume);
+    #if A_PLATFORM_EMSCRIPTEN
+        A_UNUSED(Volume);
+    #else
+        Mix_VolumeMusic(Volume);
+    #endif
 }
 
 void a_sdl_sound__musicPlay(void* Music)
@@ -137,7 +141,12 @@ void a_sdl_sound__sfxFree(void* Sfx)
 
 void a_sdl_sound__sfxSetVolume(void* Sfx, int Volume)
 {
-    Mix_VolumeChunk(Sfx, Volume);
+    #if A_PLATFORM_EMSCRIPTEN
+        A_UNUSED(Sfx);
+        A_UNUSED(Volume);
+    #else
+        Mix_VolumeChunk(Sfx, Volume);
+    #endif
 }
 
 void a_sdl_sound__sfxPlay(void* Sfx)
