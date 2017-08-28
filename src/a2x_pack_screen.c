@@ -108,23 +108,21 @@ void a_screen__init(void)
         }
     #endif
 
-    if(a_settings_getBool("video.window")) {
-        g_fullScreenState = a_settings_getBool("video.fullscreen");
-        a_sdl_screen__set(width, height, g_fullScreenState);
+    g_fullScreenState = a_settings_getBool("video.fullscreen");
+    a_sdl_screen__set(width, height, g_fullScreenState);
 
-        #if A_PLATFORM_WIZ
-            if(a_settings_getBool("video.fixWizTearing")) {
-                a_hw__setWizPortraitMode();
-            }
-        #endif
+    #if A_PLATFORM_WIZ
+        if(a_settings_getBool("video.fixWizTearing")) {
+            a_hw__setWizPortraitMode();
+        }
+    #endif
 
-        #if A_PLATFORM_DESKTOP
-            g_fullScreenButton = a_button_new(
-                a_settings_getString("video.fullscreen.button"));
+    #if A_PLATFORM_DESKTOP
+        g_fullScreenButton = a_button_new(
+            a_settings_getString("video.fullscreen.button"));
 
-            a_input__addCallback(inputCallback);
-        #endif
-    }
+        a_input__addCallback(inputCallback);
+    #endif
 
     #if A_CONFIG_RENDER_SDL2
         initScreen(&a__screen, width, height, true);

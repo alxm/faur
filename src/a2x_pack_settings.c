@@ -169,7 +169,6 @@ void a_settings__init(void)
     add(A_SETTING_UINT, A_SETTING_SET_ONCE, "app.mhz", "0");
 
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.on", "1");
-    add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.window", "1");
     add(A_SETTING_INT, A_SETTING_SET_ONCE, "video.width", "320");
     add(A_SETTING_INT, A_SETTING_SET_ONCE, "video.height", "240");
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.doubleBuffer", "0");
@@ -233,14 +232,6 @@ void a_settings__freeze(void)
     #if A_CONFIG_LIB_SDL == 2
         a_settings__set("video.doubleBuffer", "1");
     #endif
-
-    if(a_settings_getBool("video.window")) {
-        a_settings__set("video.on", "1");
-    }
-
-    if(a_settings_getBool("video.on") && !a_settings_getBool("video.window")) {
-        a_settings__set("video.doubleBuffer", "1");
-    }
 
     #if A_PLATFORM_WIZ
         if(a_settings_getBool("video.fixWizTearing")) {

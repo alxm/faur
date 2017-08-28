@@ -35,27 +35,21 @@ void a_sdl__init(void)
         a_out__fatal("SDL_Init: %s", SDL_GetError());
     }
 
-    if(a_settings_getBool("video.window")) {
-        a_sdl_video__init();
-    }
+    a_sdl_input__init();
+    a_sdl_video__init();
 
     if(a_settings_getBool("sound.on")) {
         a_sdl_sound__init();
     }
-
-    a_sdl_input__init();
 }
 
 void a_sdl__uninit(void)
 {
     a_sdl_input__uninit();
+    a_sdl_video__uninit();
 
     if(a_settings_getBool("sound.on")) {
         a_sdl_sound__uninit();
-    }
-
-    if(a_settings_getBool("video.window")) {
-        a_sdl_video__uninit();
     }
 
     SDL_QuitSubSystem(g_sdlFlags);
