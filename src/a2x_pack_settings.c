@@ -27,15 +27,14 @@ typedef enum ASettingType {
 } ASettingType;
 
 typedef enum ASettingUpdate {
-    A_SETTING_SET_ONCE,
-    A_SETTING_SET_ANY,
-    A_SETTING_SET_FROZEN,
+    A_SETTING_SET_ANY = 0,
+    A_SETTING_SET_ONCE = 1,
+    A_SETTING_SET_FROZEN = 2,
 } ASettingUpdate;
 
 typedef struct ASetting {
     ASettingType type;
     ASettingUpdate update;
-
     union {
         int integer;
         unsigned uinteger;
@@ -44,8 +43,7 @@ typedef struct ASetting {
     } value;
 } ASetting;
 
-static AStrHash* g_settings;
-static bool g_settingsAreFrozen = false;
+static AStrHash* g_settings; // table of ASetting
 
 static int parseBool(const char* Value)
 {
@@ -93,8 +91,7 @@ static void set(const char* Key, const char* Value, bool HonorFrozen)
     if(s == NULL) {
         a_out__error("Setting '%s' does not exist", Key);
         return;
-    } else if(HonorFrozen
-        && (s->update == A_SETTING_SET_FROZEN || (s->update == A_SETTING_SET_ONCE && g_settingsAreFrozen))) {
+    } else if(HonorFrozen && s->update & A_SETTING_SET_FROZEN) {
         a_out__error("Setting '%s' is frozen", Key);
         return;
     }
@@ -126,8 +123,8 @@ static void set(const char* Key, const char* Value, bool HonorFrozen)
         } break;
     }
 
-    if(s->update == A_SETTING_SET_ONCE) {
-        s->update = A_SETTING_SET_FROZEN;
+    if(s->update & A_SETTING_SET_ONCE) {
+        s->update |= A_SETTING_SET_FROZEN;
     }
 }
 
@@ -141,16 +138,15 @@ static bool flip(const char* Key, bool HonorFrozen)
     } else if(s->type != A_SETTING_BOOL) {
         a_out__error("Setting '%s' is not a boolean - can't flip it", Key);
         return false;
-    } else if(HonorFrozen
-        && (s->update == A_SETTING_SET_FROZEN || (s->update == A_SETTING_SET_ONCE && g_settingsAreFrozen))) {
+    } else if(HonorFrozen && s->update & A_SETTING_SET_FROZEN) {
         a_out__error("Setting '%s' is frozen", Key);
         return false;
     }
 
     s->value.boolean = !s->value.boolean;
 
-    if(s->update == A_SETTING_SET_ONCE) {
-        s->update = A_SETTING_SET_FROZEN;
+    if(s->update & A_SETTING_SET_ONCE) {
+        s->update |= A_SETTING_SET_FROZEN;
     }
 
     return s->value.boolean;
@@ -228,7 +224,11 @@ void a_settings__uninit(void)
 
 void a_settings__freeze(void)
 {
-    g_settingsAreFrozen = true;
+    A_STRHASH_ITERATE(g_settings, ASetting*, s) {
+        if(s->update & A_SETTING_SET_ONCE) {
+            s->update |= A_SETTING_SET_FROZEN;
+        }
+    }
 
     #if A_CONFIG_LIB_SDL == 2
         a_settings__set("video.doubleBuffer", "1");
