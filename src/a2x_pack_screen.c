@@ -373,7 +373,7 @@ void a_screen_clear(void)
 
         a_pixel_setBlend(A_PIXEL_BLEND_PLAIN);
         a_pixel_setPixel(0);
-        a_draw_fill();
+        a_sdl_render__clear();
 
         a_pixel_pop();
     #endif

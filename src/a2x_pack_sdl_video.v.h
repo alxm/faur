@@ -39,6 +39,7 @@ extern void a_sdl_video__getFullResolution(int* Width, int* Height);
 
 extern void a_sdl_render__setDrawColor(void);
 extern void a_sdl_render__setBlendMode(void);
+extern void a_sdl_render__clear(void);
 
 extern void a_sdl_render__drawPoint(int X, int Y);
 extern void a_sdl_render__drawLine(int X1, int Y1, int X2, int Y2);
