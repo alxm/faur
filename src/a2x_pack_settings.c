@@ -171,14 +171,9 @@ void a_settings__init(void)
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.on", "1");
     add(A_SETTING_INT, A_SETTING_SET_ONCE, "video.width", "320");
     add(A_SETTING_INT, A_SETTING_SET_ONCE, "video.height", "240");
+    add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.vsync", "0");
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.doubleBuffer", "0");
-
-    #if A_PLATFORM_GP2X || A_PLATFORM_WIZ || A_PLATFORM_CAANOO || A_PLATFORM_PANDORA
-        add(A_SETTING_BOOL, A_SETTING_SET_FROZEN, "video.fullscreen", "1");
-    #else
-        add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.fullscreen", "0");
-    #endif
-
+    add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.fullscreen", "0");
     add(A_SETTING_STR, A_SETTING_SET_ONCE, "video.fullscreen.button", "key.f4");
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.fixWizTearing", "0");
     add(A_SETTING_STR, A_SETTING_SET_ONCE, "video.borderColor", "0x1f0f0f");
@@ -231,12 +226,20 @@ void a_settings__freeze(void)
 
     #if A_CONFIG_LIB_SDL == 2
         a_settings__set("video.doubleBuffer", "1");
+
+        #if A_CONFIG_RENDER_SDL2
+            a_settings__set("video.vsync", "1");
+        #endif
     #endif
 
-    #if A_PLATFORM_WIZ
-        if(a_settings_getBool("video.fixWizTearing")) {
-            a_settings__set("video.doubleBuffer", "1");
-        }
+    #if A_PLATFORM_GP2X || A_PLATFORM_WIZ || A_PLATFORM_CAANOO || A_PLATFORM_PANDORA
+        a_settings__set("video.fullscreen", "1");
+
+        #if A_PLATFORM_WIZ
+            if(a_settings_getBool("video.fixWizTearing")) {
+                a_settings__set("video.doubleBuffer", "1");
+            }
+        #endif
     #endif
 }
 
