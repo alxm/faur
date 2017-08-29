@@ -24,8 +24,10 @@
 #define NO_SLEEP_RESET_SEC 20
 
 static unsigned g_idealFpsRate;
+static unsigned g_idealMsPerFrame;
 static bool g_skipFrames;
 static unsigned g_skipMax;
+static bool g_vsync;
 
 static unsigned g_fpsRate;
 static unsigned g_msPerFrame;
@@ -49,12 +51,15 @@ static unsigned g_fpsThresholdSlow;
 static ATimer* g_skipAdjustTimer;
 static ATimer* g_noSleepTimer;
 static bool g_canSleep;
+static unsigned g_tickCredit;
 
 void a_fps__init(void)
 {
     g_idealFpsRate = a_settings_getUnsigned("video.fps");
+    g_idealMsPerFrame = 1000 / g_idealFpsRate;
     g_skipFrames = a_settings_getBool("video.fps.skip");
     g_skipMax = a_settings_getUnsigned("video.fps.skip.max");
+    g_vsync = a_settings_getBool("video.vsync");
 
     if(g_idealFpsRate < 1) {
         a_out__fatal("Invalid setting video.fps=0");
@@ -123,15 +128,21 @@ void a_fps__reset(unsigned NumFramesToSkip)
     }
 
     a_timer_start(g_timer);
+    g_tickCredit = g_idealMsPerFrame;
 }
 
 void a_fps__frame(void)
 {
-    g_frameCounter++;
+    if(g_vsync) {
+        if(a_timer_isExpired(g_timer)) {
+            g_tickCredit += a_timer_getElapsed(g_timer);
+        }
 
-    #if A_PLATFORM_EMSCRIPTEN
         return;
-    #endif
+    }
+
+    // For capped FPS
+    g_tickCredit = g_idealMsPerFrame;
 
     if(a_fps__notSkipped()) {
         const bool done = a_timer_isExpired(g_timer);
@@ -207,6 +218,27 @@ void a_fps__frame(void)
 bool a_fps__notSkipped(void)
 {
     return g_skipCounter == g_skipNum;
+}
+
+bool a_fps__tick(void)
+{
+    if(g_tickCredit >= g_idealMsPerFrame) {
+        g_tickCredit -= g_idealMsPerFrame;
+        g_frameCounter++;
+
+        return true;
+    }
+
+    return false;
+}
+
+bool a_fps__draw(void)
+{
+    if(g_vsync) {
+        return true;
+    } else {
+        return a_fps__notSkipped();
+    }
 }
 
 unsigned a_fps_getFps(void)

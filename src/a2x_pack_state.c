@@ -46,12 +46,22 @@ static AList* g_stack; // list of AState
 static AList* g_pending; // list of AStatePendingAction
 static bool g_exiting;
 
-static const char* g_stageNames[A_STATE__STAGE_NUM] = {
-    "Invalid",
-    "Init",
-    "Loop",
-    "Free",
-};
+static const char* stageName(AStateStage Stage)
+{
+    switch(Stage) {
+        case A_STATE__STAGE_INIT:
+            return "Init";
+
+        case A_STATE__STAGE_LOOP:
+            return "Loop";
+
+        case A_STATE__STAGE_FREE:
+            return "Free";
+
+        default:
+            return "Invalid";
+    }
+}
 
 static void pending_new(AStateAction Action, const char* Name)
 {
@@ -83,17 +93,19 @@ static void pending_handle(void)
         a_system__popCollection();
         a_list_pop(g_stack);
         current = a_list_peek(g_stack);
+        a_fps__reset(0);
     }
 
     // If there are no pending state changes, do any automatic transitions
     if(a_list_isEmpty(g_pending)) {
         if(current && current->stage == A_STATE__STAGE_INIT) {
             current->stage = A_STATE__STAGE_LOOP;
+            a_fps__reset(0);
 
             a_out__stateVerbose("  '%s' going from %s to %s",
                                 current->name,
-                                g_stageNames[A_STATE__STAGE_INIT],
-                                g_stageNames[A_STATE__STAGE_LOOP]);
+                                stageName(A_STATE__STAGE_INIT),
+                                stageName(A_STATE__STAGE_LOOP));
         }
 
         return;
@@ -131,8 +143,8 @@ static void pending_handle(void)
             a_out__stateVerbose("Pop '%s'", current->name);
             a_out__stateVerbose("  '%s' going from %s to %s",
                                 current->name,
-                                g_stageNames[current->stage],
-                                g_stageNames[A_STATE__STAGE_FREE]);
+                                stageName(current->stage),
+                                stageName(A_STATE__STAGE_FREE));
 
             current->stage = A_STATE__STAGE_FREE;
         } break;
@@ -259,25 +271,8 @@ void a_state_exit(void)
     }
 }
 
-bool a_state__stage(AStateStage Stage)
-{
-    AState* current = a_list_peek(g_stack);
-
-    if(current == NULL) {
-        a_out__fatal("a_state__stage: no state");
-    }
-
-    return current->stage == Stage;
-}
-
 static bool iteration(void)
 {
-    #if !A_PLATFORM_EMSCRIPTEN
-        if(!a_list_isEmpty(g_pending)) {
-            a_fps__reset(0);
-        }
-    #endif
-
     pending_handle();
 
     AState* s = a_list_peek(g_stack);
@@ -286,18 +281,23 @@ static bool iteration(void)
         return false;
     }
 
-    a_input__get();
-    s->function();
-
     if(s->stage == A_STATE__STAGE_LOOP) {
-        a_system__run();
-    }
+        while(a_fps__tick() && a_list_isEmpty(g_pending)) {
+            a_input__get();
+            s->function(A_STATE__STAGE_LOOP | A_STATE__STAGE_TICK);
+            a_system__tick();
+        }
 
-    if(a_fps__notSkipped()) {
-        a_screen__show();
-    }
+        if(a_fps__draw()) {
+            s->function(A_STATE__STAGE_LOOP | A_STATE__STAGE_DRAW);
+            a_system__draw();
+            a_screen__show();
+        }
 
-    a_fps__frame();
+        a_fps__frame();
+    } else {
+        s->function(s->stage);
+    }
 
     return true;
 }

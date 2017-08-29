@@ -152,7 +152,16 @@ static A_STATE(a_fade__toColor)
 
     A_STATE_LOOP
     {
-        A_STATE_LOOP_DRAW
+        A_STATE_TICK
+        {
+            alpha += alpha_inc;
+
+            if(alpha > a_fix_itofix(A_PIXEL_ALPHA_MAX)) {
+                a_state_pop();
+            }
+        }
+
+        A_STATE_DRAW
         {
             a_pixel_setBlend(A_PIXEL_BLEND_PLAIN);
             a_screen_blit(g_capturedScreen);
@@ -160,12 +169,6 @@ static A_STATE(a_fade__toColor)
             a_pixel_setBlend(A_PIXEL_BLEND_RGBA);
             a_pixel_setAlpha(a_fix_fixtoi(alpha));
             a_draw_fill();
-        }
-
-        alpha += alpha_inc;
-
-        if(alpha > a_fix_itofix(A_PIXEL_ALPHA_MAX)) {
-            a_state_pop();
         }
     }
 
@@ -198,7 +201,16 @@ static A_STATE(a_fade__fromColor)
 
     A_STATE_LOOP
     {
-        A_STATE_LOOP_DRAW
+        A_STATE_TICK
+        {
+            alpha -= alpha_inc;
+
+            if(alpha < 0) {
+                a_state_pop();
+            }
+        }
+
+        A_STATE_DRAW
         {
             a_pixel_setBlend(A_PIXEL_BLEND_PLAIN);
             a_screen_blit(g_capturedScreen);
@@ -206,12 +218,6 @@ static A_STATE(a_fade__fromColor)
             a_pixel_setBlend(A_PIXEL_BLEND_RGBA);
             a_pixel_setAlpha(a_fix_fixtoi(alpha));
             a_draw_fill();
-        }
-
-        alpha -= alpha_inc;
-
-        if(alpha < 0) {
-            a_state_pop();
         }
     }
 
@@ -243,7 +249,16 @@ static A_STATE(a_fade__screens)
 
     A_STATE_LOOP
     {
-        A_STATE_LOOP_DRAW
+        A_STATE_TICK
+        {
+            alpha -= alpha_inc;
+
+            if(alpha < 0) {
+                a_state_pop();
+            }
+        }
+
+        A_STATE_DRAW
         {
             a_pixel_setBlend(A_PIXEL_BLEND_PLAIN);
             a_screen_blit(g_capturedScreen);
@@ -251,12 +266,6 @@ static A_STATE(a_fade__screens)
             a_pixel_setBlend(A_PIXEL_BLEND_RGBA);
             a_pixel_setAlpha(a_fix_fixtoi(alpha));
             a_screen_blit(g_oldCapturedScreen);
-        }
-
-        alpha -= alpha_inc;
-
-        if(alpha < 0) {
-            a_state_pop();
         }
     }
 
