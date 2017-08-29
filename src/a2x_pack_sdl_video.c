@@ -143,11 +143,27 @@ void a_sdl_screen__set(int Width, int Height, bool FullScreen)
             a_out__fatal("SDL_CreateWindow failed: %s", SDL_GetError());
         }
 
-        g_sdlRenderer = SDL_CreateRenderer(g_sdlWindow,
-                                           -1,
-                                           SDL_RENDERER_TARGETTEXTURE);
+        uint32_t rendererFlags = SDL_RENDERER_ACCELERATED
+                               | SDL_RENDERER_TARGETTEXTURE;
+
+        if(a_settings_getBool("video.vsync")) {
+            rendererFlags |= SDL_RENDERER_PRESENTVSYNC;
+        }
+
+        g_sdlRenderer = SDL_CreateRenderer(g_sdlWindow, -1, rendererFlags);
+
         if(g_sdlRenderer == NULL) {
             a_out__fatal("SDL_CreateRenderer failed: %s", SDL_GetError());
+        }
+
+        if(rendererFlags & SDL_RENDERER_PRESENTVSYNC) {
+            SDL_RendererInfo info;
+            SDL_GetRendererInfo(g_sdlRenderer, &info);
+
+            if(!(info.flags & SDL_RENDERER_PRESENTVSYNC))  {
+                a_out__warning("Cannot use vsync");
+                a_settings__set("video.vsync", "0");
+            }
         }
 
         ret = SDL_RenderSetLogicalSize(g_sdlRenderer,
