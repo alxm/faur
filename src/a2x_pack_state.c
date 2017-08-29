@@ -318,7 +318,9 @@ void a_state__run(void)
 
     #if A_PLATFORM_EMSCRIPTEN
         emscripten_set_main_loop(loop,
-                                 (int)a_settings_getUnsigned("video.fps"),
+                                 a_settings_getBool("video.vsync")
+                                     ? 0
+                                     : (int)a_settings_getUnsigned("video.fps"),
                                  true);
     #else
         while(iteration()) {

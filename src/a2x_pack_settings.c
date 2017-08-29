@@ -232,6 +232,10 @@ void a_settings__freeze(void)
         #endif
     #endif
 
+    #if A_PLATFORM_EMSCRIPTEN
+        a_settings__set("video.vsync", "1");
+    #endif
+
     #if A_PLATFORM_GP2X || A_PLATFORM_WIZ || A_PLATFORM_CAANOO || A_PLATFORM_PANDORA
         a_settings__set("video.fullscreen", "1");
 
