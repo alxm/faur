@@ -195,8 +195,10 @@ void a_state__new(const char* Name, AStateFunction Function, const char* TickSys
 
 void a_state_push(const char* Name)
 {
+    a_out__stateVerbose("a_state_push('%s')", Name);
+
     if(g_exiting) {
-        a_out__state("Exiting, ignoring a_state_push(%s)", Name);
+        a_out__stateVerbose("  Already exiting, ignoring");
         return;
     }
 
@@ -205,8 +207,10 @@ void a_state_push(const char* Name)
 
 void a_state_pop(void)
 {
+    a_out__stateVerbose("a_state_pop()");
+
     if(g_exiting) {
-        a_out__state("Exiting, ignoring a_state_pop()");
+        a_out__stateVerbose("  Already exiting, ignoring");
         return;
     }
 
@@ -215,8 +219,10 @@ void a_state_pop(void)
 
 void a_state_popUntil(const char* Name)
 {
+    a_out__stateVerbose("a_state_popUntil('%s')", Name);
+
     if(g_exiting) {
-        a_out__state("Exiting, ignoring a_state_popUntil(%s)", Name);
+        a_out__stateVerbose("  Already exiting, ignoring");
         return;
     }
 
@@ -243,8 +249,10 @@ void a_state_popUntil(const char* Name)
 
 void a_state_replace(const char* Name)
 {
+    a_out__stateVerbose("a_state_replace('%s')", Name);
+
     if(g_exiting) {
-        a_out__state("Exiting, ignoring a_state_replace(%s)", Name);
+        a_out__stateVerbose("  Already exiting, ignoring");
         return;
     }
 
@@ -254,13 +262,14 @@ void a_state_replace(const char* Name)
 
 void a_state_exit(void)
 {
+    a_out__state("*** Telling all states to exit ***");
+
     if(g_exiting) {
-        a_out__state("Exiting, ignoring a_state_exit()");
+        a_out__stateVerbose("  Already exiting, ignoring");
         return;
     }
 
     g_exiting = true;
-    a_out__state("*** Telling all states to exit ***");
 
     // Clear the pending actions queue
     a_list_clearEx(g_pending, (AListFree*)pending_free);
@@ -296,6 +305,7 @@ static bool iteration(void)
 
         a_fps__frame();
     } else {
+        a_out__stateVerbose("  '%s' running %s", s->name, stageName(s->stage));
         s->function(s->stage);
     }
 
