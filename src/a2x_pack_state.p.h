@@ -46,7 +46,6 @@ extern void a_state_replace(const char* Name);
 extern void a_state_exit(void);
 
 #define A_STATE_INIT if(A__stage & A_STATE__STAGE_INIT)
-#define A_STATE_LOOP if(A__stage & A_STATE__STAGE_LOOP)
 #define A_STATE_TICK if(A__stage & A_STATE__STAGE_TICK)
 #define A_STATE_DRAW if(A__stage & A_STATE__STAGE_DRAW)
 #define A_STATE_FREE if(A__stage & A_STATE__STAGE_FREE)
