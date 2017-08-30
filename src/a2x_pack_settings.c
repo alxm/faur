@@ -30,6 +30,7 @@ typedef enum ASettingUpdate {
     A_SETTING_SET_ANY = 0,
     A_SETTING_SET_ONCE = 1,
     A_SETTING_SET_FROZEN = 2,
+    A_SETTING_SET_USER = 4,
 } ASettingUpdate;
 
 typedef struct ASetting {
@@ -126,6 +127,10 @@ static void set(const char* Key, const char* Value, bool HonorFrozen)
     if(s->update & A_SETTING_SET_ONCE) {
         s->update |= A_SETTING_SET_FROZEN;
     }
+
+    if(HonorFrozen) {
+        s->update |= A_SETTING_SET_USER;
+    }
 }
 
 static bool flip(const char* Key, bool HonorFrozen)
@@ -147,6 +152,10 @@ static bool flip(const char* Key, bool HonorFrozen)
 
     if(s->update & A_SETTING_SET_ONCE) {
         s->update |= A_SETTING_SET_FROZEN;
+    }
+
+    if(HonorFrozen) {
+        s->update |= A_SETTING_SET_USER;
     }
 
     return s->value.boolean;
