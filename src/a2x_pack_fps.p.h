@@ -21,7 +21,6 @@
 
 #include "a2x_system_includes.h"
 
-extern bool a_fps__notSkipped(void);
 extern bool a_fps__tick(void);
 extern bool a_fps__draw(void);
 

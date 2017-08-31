@@ -53,6 +53,11 @@ static ATimer* g_noSleepTimer;
 static bool g_canSleep;
 static unsigned g_tickCredit;
 
+static inline bool frameNotSkipped(void)
+{
+    return g_skipCounter == g_skipNum;
+}
+
 void a_fps__init(void)
 {
     g_idealFpsRate = a_settings_getUnsigned("video.fps");
@@ -144,7 +149,7 @@ void a_fps__frame(void)
     // For capped FPS
     g_tickCredit = g_idealMsPerFrame;
 
-    if(a_fps__notSkipped()) {
+    if(frameNotSkipped()) {
         const bool done = a_timer_isExpired(g_timer);
         const unsigned elapsedMs = a_timer_getElapsed(g_timer);
 
@@ -183,7 +188,7 @@ void a_fps__frame(void)
     }
 
     if(g_skipFrames) {
-        if(a_fps__notSkipped() && a_timer_isExpired(g_skipAdjustTimer)) {
+        if(frameNotSkipped() && a_timer_isExpired(g_skipAdjustTimer)) {
             unsigned newFrameSkip;
             bool adjustFrameSkip = false;
 
@@ -215,11 +220,6 @@ void a_fps__frame(void)
     }
 }
 
-bool a_fps__notSkipped(void)
-{
-    return g_skipCounter == g_skipNum;
-}
-
 bool a_fps__tick(void)
 {
     if(g_tickCredit >= g_idealMsPerFrame) {
@@ -237,7 +237,7 @@ bool a_fps__draw(void)
     if(g_vsync) {
         return true;
     } else {
-        return a_fps__notSkipped();
+        return frameNotSkipped();
     }
 }
 
