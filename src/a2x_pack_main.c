@@ -22,6 +22,39 @@
 static int g_argsNum;
 static const char** g_args;
 
+static void a__atexit(void)
+{
+    a_out__message("Running atexit callback");
+
+    a_embed__uninit();
+    a_fade__uninit();
+    a_entity__uninit();
+    a_state__uninit();
+    a_sound__uninit();
+    a_input__uninit();
+    a_console__uninit();
+    a_font__uninit();
+    a_screenshot__uninit();
+    a_screen__uninit();
+    a_sprite__uninit();
+    a_pixel__uninit();
+    a_fps__uninit();
+    a_hw__uninit();
+    a_sdl__uninit();
+    a_dir__uninit();
+    a_file__uninit();
+
+    #if A_PLATFORM_GP2X || A_PLATFORM_WIZ || A_PLATFORM_CAANOO
+        if(a_settings_getBool("app.gp2xMenu")) {
+            a_settings__uninit();
+            chdir("/usr/gp2x");
+            execl("gp2xmenu", "gp2xmenu", NULL);
+        }
+    #endif
+
+    a_settings__uninit();
+}
+
 int main(int Argc, const char** Argv)
 {
     g_argsNum = Argc;
@@ -64,39 +97,15 @@ int main(int Argc, const char** Argv)
     a_font__init();
     a_console__init2();
 
+    if(atexit(a__atexit)) {
+        a_out__error("Cannot register atexit callback");
+    }
+
     a_out__message("Calling A_MAIN");
     a_main();
     a_out__message("A_MAIN returned");
 
     a_state__run();
-
-    a_embed__uninit();
-    a_fade__uninit();
-    a_entity__uninit();
-    a_state__uninit();
-    a_sound__uninit();
-    a_input__uninit();
-    a_console__uninit();
-    a_font__uninit();
-    a_screenshot__uninit();
-    a_screen__uninit();
-    a_sprite__uninit();
-    a_pixel__uninit();
-    a_fps__uninit();
-    a_hw__uninit();
-    a_sdl__uninit();
-    a_dir__uninit();
-    a_file__uninit();
-
-    #if A_PLATFORM_GP2X || A_PLATFORM_WIZ || A_PLATFORM_CAANOO
-        if(a_settings_getBool("app.gp2xMenu")) {
-            a_settings__uninit();
-            chdir("/usr/gp2x");
-            execl("gp2xmenu", "gp2xmenu", NULL);
-        }
-    #endif
-
-    a_settings__uninit();
 
     return 0;
 }

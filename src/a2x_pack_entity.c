@@ -136,6 +136,10 @@ void a_entity__init(void)
 
 void a_entity__uninit(void)
 {
+    while(g_collection != NULL) {
+        a_system__popCollection();
+    }
+
     a_list_free(g_stack);
 
     A_STRHASH_ITERATE(g_systems, ASystem*, system) {
