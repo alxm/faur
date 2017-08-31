@@ -27,6 +27,7 @@
 
 #define A_UNUSED(X) (X = X)
 #define A_ARRAY_LEN(A) (sizeof(A) / sizeof(A[0]))
+typedef void AFree(void* Pointer);
 
 // For putenv
 #ifndef _XOPEN_SOURCE

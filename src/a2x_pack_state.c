@@ -272,7 +272,7 @@ void a_state_exit(void)
     g_exiting = true;
 
     // Clear the pending actions queue
-    a_list_clearEx(g_pending, (AListFree*)pending_free);
+    a_list_clearEx(g_pending, (AFree*)pending_free);
 
     // Queue a pop for every state in the stack
     for(unsigned i = a_list_getSize(g_stack); i--; ) {

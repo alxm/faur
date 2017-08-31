@@ -23,12 +23,11 @@
 
 typedef struct AList AList;
 typedef struct AListNode AListNode;
-typedef void AListFree(void* Pointer);
 typedef int AListCompare(void* ItemA, void* ItemB);
 
 extern AList* a_list_new(void);
 extern void a_list_free(AList* List);
-extern void a_list_freeEx(AList* List, AListFree* Free);
+extern void a_list_freeEx(AList* List, AFree* Free);
 
 extern AListNode* a_list_addFirst(AList* List, void* Content);
 extern AListNode* a_list_addLast(AList* List, void* Content);
@@ -47,7 +46,7 @@ extern void* a_list_removeLast(AList* List);
 extern void a_list_removeNode(AListNode* Node);
 
 extern void a_list_clear(AList* List);
-extern void a_list_clearEx(AList* List, AListFree* Free);
+extern void a_list_clearEx(AList* List, AFree* Free);
 
 extern AList* a_list_dup(const AList* List);
 extern void** a_list_toArray(AList* List);

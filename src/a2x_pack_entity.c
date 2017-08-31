@@ -21,7 +21,7 @@
 
 typedef struct AComponent {
     size_t size; // total size of AComponent + user data that follows
-    AComponentFree* free;
+    AFree* free; // does not free the actual pointer
     AEntity* parent; // only valid for AComponent instances, not prototype
     unsigned bit; // component's unique bit ID
 } AComponent;
@@ -148,7 +148,7 @@ void a_entity__uninit(void)
     a_strhash_freeEx(g_components, free);
 }
 
-void a_component_declare(const char* Name, size_t Size, AComponentFree* Free)
+void a_component_declare(const char* Name, size_t Size, AFree* Free)
 {
     if(a_strhash_contains(g_components, Name)) {
         a_out__fatal("Component '%s' already declared", Name);
@@ -189,7 +189,7 @@ AEntity* a_entity_new(const char* Id, void* Context)
 
 static void a_entity__free(AEntity* Entity)
 {
-    a_list_freeEx(Entity->systemNodes, (AListFree*)a_list_removeNode);
+    a_list_freeEx(Entity->systemNodes, (AFree*)a_list_removeNode);
 
     A_STRHASH_ITERATE(Entity->components, AComponent*, header) {
         if(header->free) {
@@ -220,7 +220,7 @@ void a_entity_release(AEntity* Entity)
 {
     if(g_collection->deleting) {
         // Entity could have already been freed. This is the only ECS function
-        // that may be called from AComponentFree callbacks.
+        // that may be called from AFree callbacks.
         return;
     }
 
@@ -496,7 +496,7 @@ void a_system__tick(void)
             A_LIST_REMOVE_CURRENT();
         } else if(!a_list_isEmpty(entity->systemNodes)) {
             // Remove entity from any systems it's in
-            a_list_clearEx(entity->systemNodes, (AListFree*)a_list_removeNode);
+            a_list_clearEx(entity->systemNodes, (AFree*)a_list_removeNode);
         }
     }
 }
@@ -614,10 +614,10 @@ void a_system__popCollection(void)
         system->runsInCurrentState = false;
     }
 
-    a_list_freeEx(g_collection->messageQueue, (AListFree*)message_free);
-    a_list_freeEx(g_collection->newEntities, (AListFree*)a_entity__free);
-    a_list_freeEx(g_collection->runningEntities, (AListFree*)a_entity__free);
-    a_list_freeEx(g_collection->removedEntities, (AListFree*)a_entity__free);
+    a_list_freeEx(g_collection->messageQueue, (AFree*)message_free);
+    a_list_freeEx(g_collection->newEntities, (AFree*)a_entity__free);
+    a_list_freeEx(g_collection->runningEntities, (AFree*)a_entity__free);
+    a_list_freeEx(g_collection->removedEntities, (AFree*)a_entity__free);
     a_list_free(g_collection->allSystems);
 
     free(g_collection);

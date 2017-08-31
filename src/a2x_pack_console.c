@@ -169,7 +169,7 @@ void a_console__init2(void)
 void a_console__uninit(void)
 {
     g_enabled = false;
-    a_list_freeEx(g_lines, (AListFree*)line_free);
+    a_list_freeEx(g_lines, (AFree*)line_free);
 }
 
 void a_console__write(AConsoleOutType Type, const char* Text)

@@ -22,12 +22,11 @@
 #include "a2x_system_includes.h"
 
 typedef struct AEntity AEntity;
-typedef void AComponentFree(void* Self);
 typedef void AMessageHandler(AEntity* To, AEntity* From);
 typedef void ASystemHandler(AEntity* Entity);
 typedef int ASystemSort(AEntity* A, AEntity* B);
 
-extern void a_component_declare(const char* Name, size_t Size, AComponentFree* Free);
+extern void a_component_declare(const char* Name, size_t Size, AFree* Free);
 extern AEntity* a_component_getEntity(const void* Component);
 
 extern AEntity* a_entity_new(const char* Id, void* Context);

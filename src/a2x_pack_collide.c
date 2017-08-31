@@ -103,7 +103,7 @@ void a_colobject_free(AColObject* Object)
 {
     // Remove object from any lists it is in
     if(Object->nodes != NULL) {
-        a_list_freeEx(Object->nodes, (AListFree*)a_list_removeNode);
+        a_list_freeEx(Object->nodes, (AFree*)a_list_removeNode);
     }
 
     free(Object);
@@ -116,7 +116,7 @@ void a_colobject_setCoords(AColObject* Object, int X, int Y)
     AList*** submaps = m->submaps;
 
     // remove point from all the submaps it was previously in
-    a_list_clearEx(pt_nodes, (AListFree*)a_list_removeNode);
+    a_list_clearEx(pt_nodes, (AFree*)a_list_removeNode);
 
     // set new coords
     Object->x = X;

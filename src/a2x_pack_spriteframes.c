@@ -110,7 +110,7 @@ ASpriteFrames* a_spriteframes_dup(const ASpriteFrames* Frames)
 void a_spriteframes_free(ASpriteFrames* Frames, bool FreeSprites)
 {
     if(FreeSprites) {
-        a_list_freeEx(Frames->sprites, (AListFree*)a_sprite_free);
+        a_list_freeEx(Frames->sprites, (AFree*)a_sprite_free);
     } else {
         a_list_free(Frames->sprites);
     }

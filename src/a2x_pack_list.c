@@ -47,7 +47,7 @@ void a_list_free(AList* List)
     a_list_freeEx(List, NULL);
 }
 
-void a_list_freeEx(AList* List, AListFree* Free)
+void a_list_freeEx(AList* List, AFree* Free)
 {
     AListNode* n = List->first->next;
 
@@ -220,7 +220,7 @@ void a_list_clear(AList* List)
     a_list_clearEx(List, NULL);
 }
 
-void a_list_clearEx(AList* List, AListFree* Free)
+void a_list_clearEx(AList* List, AFree* Free)
 {
     AListNode* n = List->first->next;
 

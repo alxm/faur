@@ -33,7 +33,7 @@ typedef enum {
 
 extern AMenu* a_menu_new(AInputButton* Next, AInputButton* Back, AInputButton* Select, AInputButton* Cancel);
 extern void a_menu_free(AMenu* Menu);
-extern void a_menu_freeEx(AMenu* Menu, AListFree* ItemFree);
+extern void a_menu_freeEx(AMenu* Menu, AFree* ItemFree);
 
 extern void a_menu_addSounds(AMenu* Menu, ASound* Accept, ASound* Cancel, ASound* Browse);
 extern void a_menu_addItem(AMenu* Menu, void* Item);

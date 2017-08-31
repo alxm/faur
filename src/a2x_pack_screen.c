@@ -145,7 +145,7 @@ void a_screen__uninit(void)
         a_out__warning("Leaked %u screen targets", a_list_getSize(g_stack));
     }
 
-    a_list_freeEx(g_stack, (AListFree*)a_screen_free);
+    a_list_freeEx(g_stack, (AFree*)a_screen_free);
     a_list_freeEx(g_overlays, free);
 }
 

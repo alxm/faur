@@ -152,8 +152,8 @@ void a_sound__uninit(void)
     if(a_settings_getBool("sound.on")) {
         a_music_stop();
 
-        a_list_freeEx(g_sfxList, (AListFree*)a_sfx__free);
-        a_list_freeEx(g_musicList, (AListFree*)a_music__free);
+        a_list_freeEx(g_sfxList, (AFree*)a_sfx__free);
+        a_list_freeEx(g_musicList, (AFree*)a_music__free);
     }
 }
 

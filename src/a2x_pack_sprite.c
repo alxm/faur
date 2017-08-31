@@ -261,7 +261,7 @@ void a_sprite__init(void)
 
 void a_sprite__uninit(void)
 {
-    a_list_freeEx(g_spritesList, (AListFree*)a_sprite__free);
+    a_list_freeEx(g_spritesList, (AFree*)a_sprite__free);
 }
 
 static ASprite* makeEmptySprite(int Width, int Height)

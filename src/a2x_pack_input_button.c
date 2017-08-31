@@ -51,8 +51,8 @@ void a_input_button__init(void)
 
 void a_input_button__uninit(void)
 {
-    a_list_freeEx(g_buttons, (AListFree*)a_button__free);
-    a_strhash_freeEx(g_keys, (AStrHashFree*)a_input_button__freeSource);
+    a_list_freeEx(g_buttons, (AFree*)a_button__free);
+    a_strhash_freeEx(g_keys, (AFree*)a_input_button__freeSource);
     a_list_free(g_pressQueue);
     a_list_free(g_releaseQueue);
 }
@@ -182,7 +182,7 @@ AInputButton* a_button_dup(const AInputButton* Button)
 void a_button__free(AInputButton* Button)
 {
     if(!Button->isClone) {
-        a_list_freeEx(Button->combos, (AListFree*)a_list_free);
+        a_list_freeEx(Button->combos, (AFree*)a_list_free);
         a_input__freeUserHeader(&Button->header);
     }
 
