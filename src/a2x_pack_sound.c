@@ -131,27 +131,16 @@ void a_sound__init(void)
         a_input__addCallback(inputCallback);
 
         #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
-            char* end;
             const char* color;
-            int r, g, b;
 
             color = a_settings_getString("sound.volbar.background");
-            r = (int)strtol(color, &end, 0);
-            g = (int)strtol(end, &end, 0);
-            b = (int)strtol(end, NULL, 0);
-            g_volbarBackground = a_pixel_rgb(r, g, b);
+            g_volbarBackground = a_pixel_hex((uint32_t)strtol(color, NULL, 16));
 
             color = a_settings_getString("sound.volbar.border");
-            r = (int)strtol(color, &end, 0);
-            g = (int)strtol(end, &end, 0);
-            b = (int)strtol(end, NULL, 0);
-            g_volbarBorder = a_pixel_rgb(r, g, b);
+            g_volbarBorder = a_pixel_hex((uint32_t)strtol(color, NULL, 16));
 
             color = a_settings_getString("sound.volbar.fill");
-            r = (int)strtol(color, &end, 0);
-            g = (int)strtol(end, &end, 0);
-            b = (int)strtol(end, NULL, 0);
-            g_volbarFill = a_pixel_rgb(r, g, b);
+            g_volbarFill = a_pixel_hex((uint32_t)strtol(color, NULL, 16));
 
             a_screen__addOverlay(screenCallback);
         #endif
