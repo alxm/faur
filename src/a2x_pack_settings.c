@@ -233,23 +233,9 @@ void a_settings__init(void)
         A_SETTING_SET_ONCE,
         "console.button",
         "key.f11 gamepad.b.l+gamepad.b.r+gamepad.b.a+gamepad.b.b+gamepad.b.x+gamepad.b.y");
-}
 
-void a_settings__uninit(void)
-{
-    A_STRHASH_ITERATE(g_settings, ASetting*, s) {
-        if(s->type == A_SETTING_STR) {
-            free(s->value.string);
-        }
+    a_settings__application();
 
-        free(s);
-    }
-
-    a_strhash_free(g_settings);
-}
-
-void a_settings__freeze(void)
-{
     A_STRHASH_ITERATE(g_settings, ASetting*, s) {
         if(s->update & A_SETTING_SET_ONCE) {
             s->update |= A_SETTING_SET_FROZEN;
@@ -277,6 +263,19 @@ void a_settings__freeze(void)
             }
         #endif
     #endif
+}
+
+void a_settings__uninit(void)
+{
+    A_STRHASH_ITERATE(g_settings, ASetting*, s) {
+        if(s->type == A_SETTING_STR) {
+            free(s->value.string);
+        }
+
+        free(s);
+    }
+
+    a_strhash_free(g_settings);
 }
 
 void a_settings_set(const char* Key, const char* Value)

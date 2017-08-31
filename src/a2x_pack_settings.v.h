@@ -28,7 +28,5 @@
 extern void a_settings__init(void);
 extern void a_settings__uninit(void);
 
-extern void a_settings__freeze(void);
-
 extern void a_settings__set(const char* Key, const char* Value);
 extern bool a_settings__flip(const char* Key);
