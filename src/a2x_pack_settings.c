@@ -57,6 +57,37 @@ static int parseBool(const char* Value)
         || a_str_equal(Value, "1");
 }
 
+static ASetting* getValidate(const char* Key, ASettingType Type)
+{
+    ASetting* s = a_strhash_get(g_settings, Key);
+
+    if(s == NULL) {
+        a_out__error("Setting '%s' does not exist", Key);
+    } else if(s->type != Type) {
+        a_out__error("Setting '%s' is not a %s", Key);
+        s = NULL;
+    }
+
+    return s;
+}
+
+static ASetting* setValidate(const char* Key, bool UserSet)
+{
+    ASetting* s = a_strhash_get(g_settings, Key);
+
+    if(s == NULL) {
+        a_out__error("Setting '%s' does not exist", Key);
+    } else if(UserSet && s->update & A_SETTING_SET_FROZEN) {
+        a_out__error("Setting '%s' is frozen", Key);
+        s = NULL;
+    } else if(!UserSet && s->update & A_SETTING_SET_USER) {
+        a_out__warning("Cannot overwrite user-set '%s'", Key);
+        s = NULL;
+    }
+
+    return s;
+}
+
 static void add(ASettingType Type, ASettingUpdate Update, const char* Key, const char* DefaultValue)
 {
     ASetting* s = a_mem_malloc(sizeof(ASetting));
@@ -85,15 +116,11 @@ static void add(ASettingType Type, ASettingUpdate Update, const char* Key, const
     a_strhash_add(g_settings, Key, s);
 }
 
-static void set(const char* Key, const char* Value, bool HonorFrozen)
+static void set(const char* Key, const char* Value, bool UserSet)
 {
-    ASetting* s = a_strhash_get(g_settings, Key);
+    ASetting* s = setValidate(Key, UserSet);
 
     if(s == NULL) {
-        a_out__error("Setting '%s' does not exist", Key);
-        return;
-    } else if(HonorFrozen && s->update & A_SETTING_SET_FROZEN) {
-        a_out__error("Setting '%s' is frozen", Key);
         return;
     }
 
@@ -128,23 +155,19 @@ static void set(const char* Key, const char* Value, bool HonorFrozen)
         s->update |= A_SETTING_SET_FROZEN;
     }
 
-    if(HonorFrozen) {
+    if(UserSet) {
         s->update |= A_SETTING_SET_USER;
     }
 }
 
-static bool flip(const char* Key, bool HonorFrozen)
+static bool flip(const char* Key, bool UserSet)
 {
-    ASetting* s = a_strhash_get(g_settings, Key);
+    ASetting* s = setValidate(Key, UserSet);
 
     if(s == NULL) {
-        a_out__error("Setting '%s' does not exist", Key);
         return false;
     } else if(s->type != A_SETTING_BOOL) {
         a_out__error("Setting '%s' is not a boolean - can't flip it", Key);
-        return false;
-    } else if(HonorFrozen && s->update & A_SETTING_SET_FROZEN) {
-        a_out__error("Setting '%s' is frozen", Key);
         return false;
     }
 
@@ -154,7 +177,7 @@ static bool flip(const char* Key, bool HonorFrozen)
         s->update |= A_SETTING_SET_FROZEN;
     }
 
-    if(HonorFrozen) {
+    if(UserSet) {
         s->update |= A_SETTING_SET_USER;
     }
 
@@ -278,60 +301,28 @@ bool a_settings__flip(const char* Key)
 
 const char* a_settings_getString(const char* Key)
 {
-    ASetting* s = a_strhash_get(g_settings, Key);
+    ASetting* s = getValidate(Key, A_SETTING_STR);
 
-    if(s == NULL) {
-        a_out__error("Setting '%s' does not exist", Key);
-        return NULL;
-    } else if(s->type != A_SETTING_STR) {
-        a_out__error("Setting '%s' is not a string", Key);
-        return NULL;
-    } else {
-        return s->value.string;
-    }
+    return s ? s->value.string : "";
 }
 
 bool a_settings_getBool(const char* Key)
 {
-    ASetting* s = a_strhash_get(g_settings, Key);
+    ASetting* s = getValidate(Key, A_SETTING_BOOL);
 
-    if(s == NULL) {
-        a_out__error("Setting '%s' does not exist", Key);
-        return false;
-    } else if(s->type != A_SETTING_BOOL) {
-        a_out__error("Setting '%s' is not a boolean", Key);
-        return false;
-    } else {
-        return s->value.boolean;
-    }
+    return s ? s->value.boolean : false;
 }
 
 int a_settings_getInt(const char* Key)
 {
-    ASetting* s = a_strhash_get(g_settings, Key);
+    ASetting* s = getValidate(Key, A_SETTING_INT);
 
-    if(s == NULL) {
-        a_out__error("Setting '%s' does not exist", Key);
-        return 0;
-    } else if(s->type != A_SETTING_INT) {
-        a_out__error("Setting '%s' is not an integer", Key);
-        return 0;
-    } else {
-        return s->value.integer;
-    }
+    return s ? s->value.integer : 0;
 }
 
 unsigned a_settings_getUnsigned(const char* Key)
 {
-    ASetting* s = a_strhash_get(g_settings, Key);
+    ASetting* s = getValidate(Key, A_SETTING_UINT);
 
-    if(s == NULL) {
-        a_out__error("Setting '%s' does not exist", Key);
-        return 0;
-    } else if(s->type != A_SETTING_UINT) {
-        a_out__error("Setting '%s' is not an unsigned integer", Key);
-        return 0;
-    } else {
-        return s->value.uinteger;
-    }
+    return s ? s->value.uinteger : 0;
 }
