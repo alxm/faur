@@ -143,11 +143,27 @@ void a_sdl_screen__set(int Width, int Height, bool FullScreen)
             a_out__fatal("SDL_CreateWindow failed: %s", SDL_GetError());
         }
 
-        g_sdlRenderer = SDL_CreateRenderer(g_sdlWindow,
-                                           -1,
-                                           SDL_RENDERER_TARGETTEXTURE);
+        uint32_t rendererFlags = SDL_RENDERER_ACCELERATED
+                               | SDL_RENDERER_TARGETTEXTURE;
+
+        if(a_settings_getBool("video.vsync")) {
+            rendererFlags |= SDL_RENDERER_PRESENTVSYNC;
+        }
+
+        g_sdlRenderer = SDL_CreateRenderer(g_sdlWindow, -1, rendererFlags);
+
         if(g_sdlRenderer == NULL) {
             a_out__fatal("SDL_CreateRenderer failed: %s", SDL_GetError());
+        }
+
+        if(rendererFlags & SDL_RENDERER_PRESENTVSYNC) {
+            SDL_RendererInfo info;
+            SDL_GetRendererInfo(g_sdlRenderer, &info);
+
+            if(!(info.flags & SDL_RENDERER_PRESENTVSYNC))  {
+                a_out__warning("Cannot use vsync");
+                a_settings__set("video.vsync", "0");
+            }
         }
 
         ret = SDL_RenderSetLogicalSize(g_sdlRenderer,
@@ -288,9 +304,7 @@ void a_sdl_screen__show(void)
             a_out__error("SDL_SetRenderDrawColor failed: %s", SDL_GetError());
         }
 
-        if(SDL_RenderClear(g_sdlRenderer) < 0) {
-            a_out__error("SDL_RenderClear failed: %s", SDL_GetError());
-        }
+        a_sdl_render__clear();
 
         #if A_CONFIG_RENDER_SOFTWARE
             if(SDL_UpdateTexture(g_sdlTexture,
@@ -360,11 +374,9 @@ void a_sdl_video__getFullResolution(int* Width, int* Height)
 
 void a_sdl_render__setDrawColor(void)
 {
-    int alpha = SDL_ALPHA_OPAQUE;
-
-    if(a_pixel__alphaBlending()) {
-        alpha = a_pixel__state.alpha;
-    }
+    int alpha = a_pixel__alphaBlending()
+                ? a_pixel__state.alpha
+                : SDL_ALPHA_OPAQUE;
 
     if(SDL_SetRenderDrawColor(g_sdlRenderer,
                               (uint8_t)a_pixel__state.red,
@@ -388,6 +400,13 @@ void a_sdl_render__setBlendMode(void)
 
     if(SDL_SetRenderDrawBlendMode(g_sdlRenderer, mode) < 0) {
         a_out__error("SDL_SetRenderDrawBlendMode failed: %s", SDL_GetError());
+    }
+}
+
+void a_sdl_render__clear(void)
+{
+    if(SDL_RenderClear(g_sdlRenderer) < 0) {
+        a_out__error("SDL_RenderClear failed: %s", SDL_GetError());
     }
 }
 

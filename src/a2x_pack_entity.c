@@ -464,7 +464,7 @@ void a_system_execute(const char* Systems)
     a_list_freeEx(tok, free);
 }
 
-void a_system__run(void)
+void a_system__tick(void)
 {
     a_system_flushNewEntities();
 
@@ -490,12 +490,6 @@ void a_system__run(void)
 
     a_list_clear(g_collection->messageQueue);
 
-    if(a_fps__notSkipped()) {
-        A_LIST_ITERATE(g_collection->drawSystems, ASystem*, system) {
-            runSystem(system);
-        }
-    }
-
     A_LIST_ITERATE(g_collection->removedEntities, AEntity*, entity) {
         if(entity->references == 0) {
             a_entity__free(entity);
@@ -504,6 +498,13 @@ void a_system__run(void)
             // Remove entity from any systems it's in
             a_list_clearEx(entity->systemNodes, (AListFree*)a_list_removeNode);
         }
+    }
+}
+
+void a_system__draw(void)
+{
+    A_LIST_ITERATE(g_collection->drawSystems, ASystem*, system) {
+        runSystem(system);
     }
 }
 

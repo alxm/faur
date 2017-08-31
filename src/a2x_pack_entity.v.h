@@ -27,7 +27,8 @@
 extern void a_entity__init(void);
 extern void a_entity__uninit(void);
 
-extern void a_system__run(void);
+extern void a_system__tick(void);
+extern void a_system__draw(void);
 
 extern AList* a_system__parse(const char* Systems);
 

@@ -46,12 +46,22 @@ static AList* g_stack; // list of AState
 static AList* g_pending; // list of AStatePendingAction
 static bool g_exiting;
 
-static const char* g_stageNames[A_STATE__STAGE_NUM] = {
-    "Invalid",
-    "Init",
-    "Loop",
-    "Free",
-};
+static const char* stageName(AStateStage Stage)
+{
+    switch(Stage) {
+        case A_STATE__STAGE_INIT:
+            return "Init";
+
+        case A_STATE__STAGE_LOOP:
+            return "Loop";
+
+        case A_STATE__STAGE_FREE:
+            return "Free";
+
+        default:
+            return "Invalid";
+    }
+}
 
 static void pending_new(AStateAction Action, const char* Name)
 {
@@ -83,17 +93,19 @@ static void pending_handle(void)
         a_system__popCollection();
         a_list_pop(g_stack);
         current = a_list_peek(g_stack);
+        a_fps__reset(0);
     }
 
     // If there are no pending state changes, do any automatic transitions
     if(a_list_isEmpty(g_pending)) {
         if(current && current->stage == A_STATE__STAGE_INIT) {
             current->stage = A_STATE__STAGE_LOOP;
+            a_fps__reset(0);
 
             a_out__stateVerbose("  '%s' going from %s to %s",
                                 current->name,
-                                g_stageNames[A_STATE__STAGE_INIT],
-                                g_stageNames[A_STATE__STAGE_LOOP]);
+                                stageName(A_STATE__STAGE_INIT),
+                                stageName(A_STATE__STAGE_LOOP));
         }
 
         return;
@@ -131,8 +143,8 @@ static void pending_handle(void)
             a_out__stateVerbose("Pop '%s'", current->name);
             a_out__stateVerbose("  '%s' going from %s to %s",
                                 current->name,
-                                g_stageNames[current->stage],
-                                g_stageNames[A_STATE__STAGE_FREE]);
+                                stageName(current->stage),
+                                stageName(A_STATE__STAGE_FREE));
 
             current->stage = A_STATE__STAGE_FREE;
         } break;
@@ -183,8 +195,10 @@ void a_state__new(const char* Name, AStateFunction Function, const char* TickSys
 
 void a_state_push(const char* Name)
 {
+    a_out__stateVerbose("a_state_push('%s')", Name);
+
     if(g_exiting) {
-        a_out__state("Exiting, ignoring a_state_push(%s)", Name);
+        a_out__stateVerbose("  Already exiting, ignoring");
         return;
     }
 
@@ -193,8 +207,10 @@ void a_state_push(const char* Name)
 
 void a_state_pop(void)
 {
+    a_out__stateVerbose("a_state_pop()");
+
     if(g_exiting) {
-        a_out__state("Exiting, ignoring a_state_pop()");
+        a_out__stateVerbose("  Already exiting, ignoring");
         return;
     }
 
@@ -203,8 +219,10 @@ void a_state_pop(void)
 
 void a_state_popUntil(const char* Name)
 {
+    a_out__stateVerbose("a_state_popUntil('%s')", Name);
+
     if(g_exiting) {
-        a_out__state("Exiting, ignoring a_state_popUntil(%s)", Name);
+        a_out__stateVerbose("  Already exiting, ignoring");
         return;
     }
 
@@ -231,8 +249,10 @@ void a_state_popUntil(const char* Name)
 
 void a_state_replace(const char* Name)
 {
+    a_out__stateVerbose("a_state_replace('%s')", Name);
+
     if(g_exiting) {
-        a_out__state("Exiting, ignoring a_state_replace(%s)", Name);
+        a_out__stateVerbose("  Already exiting, ignoring");
         return;
     }
 
@@ -242,13 +262,14 @@ void a_state_replace(const char* Name)
 
 void a_state_exit(void)
 {
+    a_out__state("*** Telling all states to exit ***");
+
     if(g_exiting) {
-        a_out__state("Exiting, ignoring a_state_exit()");
+        a_out__stateVerbose("  Already exiting, ignoring");
         return;
     }
 
     g_exiting = true;
-    a_out__state("*** Telling all states to exit ***");
 
     // Clear the pending actions queue
     a_list_clearEx(g_pending, (AListFree*)pending_free);
@@ -259,25 +280,8 @@ void a_state_exit(void)
     }
 }
 
-bool a_state__stage(AStateStage Stage)
-{
-    AState* current = a_list_peek(g_stack);
-
-    if(current == NULL) {
-        a_out__fatal("a_state__stage: no state");
-    }
-
-    return current->stage == Stage;
-}
-
 static bool iteration(void)
 {
-    #if !A_PLATFORM_EMSCRIPTEN
-        if(!a_list_isEmpty(g_pending)) {
-            a_fps__reset(0);
-        }
-    #endif
-
     pending_handle();
 
     AState* s = a_list_peek(g_stack);
@@ -286,18 +290,24 @@ static bool iteration(void)
         return false;
     }
 
-    a_input__get();
-    s->function();
-
     if(s->stage == A_STATE__STAGE_LOOP) {
-        a_system__run();
-    }
+        while(a_fps__tick() && a_list_isEmpty(g_pending)) {
+            a_input__get();
+            s->function(A_STATE__STAGE_LOOP | A_STATE__STAGE_TICK);
+            a_system__tick();
+        }
 
-    if(a_fps__notSkipped()) {
-        a_screen__show();
-    }
+        if(a_fps__draw()) {
+            s->function(A_STATE__STAGE_LOOP | A_STATE__STAGE_DRAW);
+            a_system__draw();
+            a_screen__show();
+        }
 
-    a_fps__frame();
+        a_fps__frame();
+    } else {
+        a_out__stateVerbose("  '%s' running %s", s->name, stageName(s->stage));
+        s->function(s->stage);
+    }
 
     return true;
 }
@@ -318,7 +328,9 @@ void a_state__run(void)
 
     #if A_PLATFORM_EMSCRIPTEN
         emscripten_set_main_loop(loop,
-                                 (int)a_settings_getUnsigned("video.fps"),
+                                 a_settings_getBool("video.vsync")
+                                     ? 0
+                                     : (int)a_settings_getUnsigned("video.fps"),
                                  true);
     #else
         while(iteration()) {

@@ -27,15 +27,15 @@ typedef enum ASettingType {
 } ASettingType;
 
 typedef enum ASettingUpdate {
-    A_SETTING_SET_ONCE,
-    A_SETTING_SET_ANY,
-    A_SETTING_SET_FROZEN,
+    A_SETTING_SET_ANY = 0,
+    A_SETTING_SET_ONCE = 1,
+    A_SETTING_SET_FROZEN = 2,
+    A_SETTING_SET_USER = 4,
 } ASettingUpdate;
 
 typedef struct ASetting {
     ASettingType type;
     ASettingUpdate update;
-
     union {
         int integer;
         unsigned uinteger;
@@ -44,8 +44,7 @@ typedef struct ASetting {
     } value;
 } ASetting;
 
-static AStrHash* g_settings;
-static bool g_settingsAreFrozen = false;
+static AStrHash* g_settings; // table of ASetting
 
 static int parseBool(const char* Value)
 {
@@ -56,6 +55,37 @@ static int parseBool(const char* Value)
         || a_str_equal(Value, "da")
         || a_str_equal(Value, "on")
         || a_str_equal(Value, "1");
+}
+
+static ASetting* getValidate(const char* Key, ASettingType Type)
+{
+    ASetting* s = a_strhash_get(g_settings, Key);
+
+    if(s == NULL) {
+        a_out__error("Setting '%s' does not exist", Key);
+    } else if(s->type != Type) {
+        a_out__error("Setting '%s' is not a %s", Key);
+        s = NULL;
+    }
+
+    return s;
+}
+
+static ASetting* setValidate(const char* Key, bool UserSet)
+{
+    ASetting* s = a_strhash_get(g_settings, Key);
+
+    if(s == NULL) {
+        a_out__error("Setting '%s' does not exist", Key);
+    } else if(UserSet && s->update & A_SETTING_SET_FROZEN) {
+        a_out__error("Setting '%s' is frozen", Key);
+        s = NULL;
+    } else if(!UserSet && s->update & A_SETTING_SET_USER) {
+        a_out__warning("Cannot overwrite user-set '%s'", Key);
+        s = NULL;
+    }
+
+    return s;
 }
 
 static void add(ASettingType Type, ASettingUpdate Update, const char* Key, const char* DefaultValue)
@@ -86,16 +116,11 @@ static void add(ASettingType Type, ASettingUpdate Update, const char* Key, const
     a_strhash_add(g_settings, Key, s);
 }
 
-static void set(const char* Key, const char* Value, bool HonorFrozen)
+static void set(const char* Key, const char* Value, bool UserSet)
 {
-    ASetting* s = a_strhash_get(g_settings, Key);
+    ASetting* s = setValidate(Key, UserSet);
 
     if(s == NULL) {
-        a_out__error("Setting '%s' does not exist", Key);
-        return;
-    } else if(HonorFrozen
-        && (s->update == A_SETTING_SET_FROZEN || (s->update == A_SETTING_SET_ONCE && g_settingsAreFrozen))) {
-        a_out__error("Setting '%s' is frozen", Key);
         return;
     }
 
@@ -126,31 +151,34 @@ static void set(const char* Key, const char* Value, bool HonorFrozen)
         } break;
     }
 
-    if(s->update == A_SETTING_SET_ONCE) {
-        s->update = A_SETTING_SET_FROZEN;
+    if(s->update & A_SETTING_SET_ONCE) {
+        s->update |= A_SETTING_SET_FROZEN;
+    }
+
+    if(UserSet) {
+        s->update |= A_SETTING_SET_USER;
     }
 }
 
-static bool flip(const char* Key, bool HonorFrozen)
+static bool flip(const char* Key, bool UserSet)
 {
-    ASetting* s = a_strhash_get(g_settings, Key);
+    ASetting* s = setValidate(Key, UserSet);
 
     if(s == NULL) {
-        a_out__error("Setting '%s' does not exist", Key);
         return false;
     } else if(s->type != A_SETTING_BOOL) {
         a_out__error("Setting '%s' is not a boolean - can't flip it", Key);
-        return false;
-    } else if(HonorFrozen
-        && (s->update == A_SETTING_SET_FROZEN || (s->update == A_SETTING_SET_ONCE && g_settingsAreFrozen))) {
-        a_out__error("Setting '%s' is frozen", Key);
         return false;
     }
 
     s->value.boolean = !s->value.boolean;
 
-    if(s->update == A_SETTING_SET_ONCE) {
-        s->update = A_SETTING_SET_FROZEN;
+    if(s->update & A_SETTING_SET_ONCE) {
+        s->update |= A_SETTING_SET_FROZEN;
+    }
+
+    if(UserSet) {
+        s->update |= A_SETTING_SET_USER;
     }
 
     return s->value.boolean;
@@ -173,21 +201,15 @@ void a_settings__init(void)
     add(A_SETTING_UINT, A_SETTING_SET_ONCE, "app.mhz", "0");
 
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.on", "1");
-    add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.window", "1");
     add(A_SETTING_INT, A_SETTING_SET_ONCE, "video.width", "320");
     add(A_SETTING_INT, A_SETTING_SET_ONCE, "video.height", "240");
+    add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.vsync", "0");
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.doubleBuffer", "0");
-
-    #if A_PLATFORM_GP2X || A_PLATFORM_WIZ || A_PLATFORM_CAANOO || A_PLATFORM_PANDORA
-        add(A_SETTING_BOOL, A_SETTING_SET_FROZEN, "video.fullscreen", "1");
-    #else
-        add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.fullscreen", "0");
-    #endif
-
+    add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.fullscreen", "0");
     add(A_SETTING_STR, A_SETTING_SET_ONCE, "video.fullscreen.button", "key.f4");
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.fixWizTearing", "0");
     add(A_SETTING_STR, A_SETTING_SET_ONCE, "video.borderColor", "0x1f0f0f");
-    add(A_SETTING_UINT, A_SETTING_SET_ONCE, "video.fps", "60");
+    add(A_SETTING_UINT, A_SETTING_SET_ONCE, "video.fps", "30");
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.fps.skip", "0");
     add(A_SETTING_UINT, A_SETTING_SET_ONCE, "video.fps.skip.max", "2");
 
@@ -211,6 +233,36 @@ void a_settings__init(void)
         A_SETTING_SET_ONCE,
         "console.button",
         "key.f11 gamepad.b.l+gamepad.b.r+gamepad.b.a+gamepad.b.b+gamepad.b.x+gamepad.b.y");
+
+    a_settings__application();
+
+    A_STRHASH_ITERATE(g_settings, ASetting*, s) {
+        if(s->update & A_SETTING_SET_ONCE) {
+            s->update |= A_SETTING_SET_FROZEN;
+        }
+    }
+
+    #if A_CONFIG_LIB_SDL == 2
+        a_settings__set("video.doubleBuffer", "1");
+
+        #if A_CONFIG_RENDER_SDL2
+            a_settings__set("video.vsync", "1");
+        #endif
+    #endif
+
+    #if A_PLATFORM_EMSCRIPTEN
+        a_settings__set("video.vsync", "1");
+    #endif
+
+    #if A_PLATFORM_GP2X || A_PLATFORM_WIZ || A_PLATFORM_CAANOO || A_PLATFORM_PANDORA
+        a_settings__set("video.fullscreen", "1");
+
+        #if A_PLATFORM_WIZ
+            if(a_settings_getBool("video.fixWizTearing")) {
+                a_settings__set("video.doubleBuffer", "1");
+            }
+        #endif
+    #endif
 }
 
 void a_settings__uninit(void)
@@ -224,29 +276,6 @@ void a_settings__uninit(void)
     }
 
     a_strhash_free(g_settings);
-}
-
-void a_settings__freeze(void)
-{
-    g_settingsAreFrozen = true;
-
-    #if A_CONFIG_LIB_SDL == 2
-        a_settings__set("video.doubleBuffer", "1");
-    #endif
-
-    if(a_settings_getBool("video.window")) {
-        a_settings__set("video.on", "1");
-    }
-
-    if(a_settings_getBool("video.on") && !a_settings_getBool("video.window")) {
-        a_settings__set("video.doubleBuffer", "1");
-    }
-
-    #if A_PLATFORM_WIZ
-        if(a_settings_getBool("video.fixWizTearing")) {
-            a_settings__set("video.doubleBuffer", "1");
-        }
-    #endif
 }
 
 void a_settings_set(const char* Key, const char* Value)
@@ -271,60 +300,28 @@ bool a_settings__flip(const char* Key)
 
 const char* a_settings_getString(const char* Key)
 {
-    ASetting* s = a_strhash_get(g_settings, Key);
+    ASetting* s = getValidate(Key, A_SETTING_STR);
 
-    if(s == NULL) {
-        a_out__error("Setting '%s' does not exist", Key);
-        return NULL;
-    } else if(s->type != A_SETTING_STR) {
-        a_out__error("Setting '%s' is not a string", Key);
-        return NULL;
-    } else {
-        return s->value.string;
-    }
+    return s ? s->value.string : "";
 }
 
 bool a_settings_getBool(const char* Key)
 {
-    ASetting* s = a_strhash_get(g_settings, Key);
+    ASetting* s = getValidate(Key, A_SETTING_BOOL);
 
-    if(s == NULL) {
-        a_out__error("Setting '%s' does not exist", Key);
-        return false;
-    } else if(s->type != A_SETTING_BOOL) {
-        a_out__error("Setting '%s' is not a boolean", Key);
-        return false;
-    } else {
-        return s->value.boolean;
-    }
+    return s ? s->value.boolean : false;
 }
 
 int a_settings_getInt(const char* Key)
 {
-    ASetting* s = a_strhash_get(g_settings, Key);
+    ASetting* s = getValidate(Key, A_SETTING_INT);
 
-    if(s == NULL) {
-        a_out__error("Setting '%s' does not exist", Key);
-        return 0;
-    } else if(s->type != A_SETTING_INT) {
-        a_out__error("Setting '%s' is not an integer", Key);
-        return 0;
-    } else {
-        return s->value.integer;
-    }
+    return s ? s->value.integer : 0;
 }
 
 unsigned a_settings_getUnsigned(const char* Key)
 {
-    ASetting* s = a_strhash_get(g_settings, Key);
+    ASetting* s = getValidate(Key, A_SETTING_UINT);
 
-    if(s == NULL) {
-        a_out__error("Setting '%s' does not exist", Key);
-        return 0;
-    } else if(s->type != A_SETTING_UINT) {
-        a_out__error("Setting '%s' is not an unsigned integer", Key);
-        return 0;
-    } else {
-        return s->value.uinteger;
-    }
+    return s ? s->value.uinteger : 0;
 }
