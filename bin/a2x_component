@@ -71,7 +71,7 @@ typedef struct {struct} {struct};
 
 extern size_t z_comp_{name}_size(void);
 extern void z_comp_{name}_init({struct}* {varname});
-extern AComponentFree z_comp_{name}_free;
+extern AFree z_comp_{name}_free;
 """.format(struct=struct_name, name=comp_lowername, varname=comp_name))
 
 if __name__ == '__main__':
