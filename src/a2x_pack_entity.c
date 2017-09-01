@@ -76,11 +76,6 @@ static AList* g_stack; // list of ARunningCollection (one for each state)
 static AStrHash* g_components; // table of declared AComponent
 static AStrHash* g_systems; // table of declared ASystem
 
-static inline const char* entityName(const AEntity* Entity)
-{
-    return Entity->id ? Entity->id : "entity";
-}
-
 static inline bool entityIsNew(const AEntity* Entity)
 {
     return a_list__nodeGetList(Entity->collectionNode)
@@ -210,6 +205,11 @@ static void a_entity__free(AEntity* Entity)
     free(Entity);
 }
 
+const char* a_entity_getId(const AEntity* Entity)
+{
+    return Entity->id ? Entity->id : "AEntity";
+}
+
 void* a_entity_getContext(const AEntity* Entity)
 {
     return Entity->context;
@@ -230,7 +230,7 @@ void a_entity_release(AEntity* Entity)
 
     if(Entity->references-- == 0) {
         a_out__fatal("Release count exceeds reference count for '%s'",
-                     entityName(Entity));
+                     a_entity_getId(Entity));
     }
 }
 
@@ -263,7 +263,7 @@ void* a_entity_addComponent(AEntity* Entity, const char* Component)
     if(!entityIsNew(Entity)) {
         a_out__fatal("Too late to add component '%s' to '%s'",
                      Component,
-                     entityName(Entity));
+                     a_entity_getId(Entity));
     }
 
     const AComponent* c = a_strhash_get(g_components, Component);
@@ -271,13 +271,13 @@ void* a_entity_addComponent(AEntity* Entity, const char* Component)
     if(c == NULL) {
         a_out__fatal("Unknown component '%s' for '%s'",
                      Component,
-                     entityName(Entity));
+                     a_entity_getId(Entity));
     }
 
     if(a_bitfield_test(Entity->componentBits, c->bit)) {
         a_out__fatal("Component '%s' was already added to '%s'",
                      Component,
-                     entityName(Entity));
+                     a_entity_getId(Entity));
     }
 
     AComponent* header = a_mem_zalloc(c->size);
@@ -298,7 +298,7 @@ bool a_entity_hasComponent(const AEntity* Entity, const char* Component)
     if(!has && !a_strhash_contains(g_components, Component)) {
         a_out__fatal("Unknown component '%s' for '%s'",
                      Component,
-                     entityName(Entity));
+                     a_entity_getId(Entity));
     }
 
     return has;
@@ -312,7 +312,7 @@ void* a_entity_getComponent(const AEntity* Entity, const char* Component)
         if(!a_strhash_contains(g_components, Component)) {
             a_out__fatal("Unknown component '%s' for '%s'",
                          Component,
-                         entityName(Entity));
+                         a_entity_getId(Entity));
         }
 
         return NULL;
@@ -329,12 +329,12 @@ void* a_entity_requireComponent(const AEntity* Entity, const char* Component)
         if(!a_strhash_contains(g_components, Component)) {
             a_out__fatal("Unknown component '%s' for '%s'",
                          Component,
-                         entityName(Entity));
+                         a_entity_getId(Entity));
         }
 
         a_out__fatal("Missing required component '%s' in '%s'",
                      Component,
-                     entityName(Entity));
+                     a_entity_getId(Entity));
     }
 
     return getComponent(header);
@@ -360,7 +360,7 @@ void a_entity_setMessageHandler(AEntity* Entity, const char* Message, AMessageHa
     if(a_strhash_contains(Entity->handlers, Message)) {
         a_out__fatal("'%s' handler already set for '%s'",
                      Message,
-                     entityName(Entity));
+                     a_entity_getId(Entity));
     }
 
     AMessageHandlerContainer* h = a_mem_malloc(sizeof(AMessageHandlerContainer));
@@ -376,7 +376,9 @@ void a_entity_sendMessage(AEntity* To, AEntity* From, const char* Message)
     AMessageHandlerContainer* h = a_strhash_get(To->handlers, Message);
 
     if(h == NULL) {
-        a_out__warningv("'%s' does not handle '%s'", entityName(To), Message);
+        a_out__warningv("'%s' does not handle '%s'",
+                        a_entity_getId(To),
+                        Message);
         return;
     }
 
