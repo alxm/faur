@@ -167,3 +167,8 @@ void a_sdl_sound__sfxPlay(ASdlSfx* Sfx)
     Mix_HaltChannel(Sfx->channel);
     Mix_PlayChannel(Sfx->channel, Sfx->chunk, 0);
 }
+
+bool a_sdl_sound__sfxIsPlaying(ASdlSfx* Sfx)
+{
+    return Mix_Playing(Sfx->channel);
+}

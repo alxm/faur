@@ -231,3 +231,12 @@ void a_sfx_play(ASound* Sfx)
         a_sdl_sound__sfxPlay(Sfx);
     }
 }
+
+void a_sfx_playOnce(ASound* Sfx)
+{
+    if(a_settings_getBool("sound.on")) {
+        if(!a_sdl_sound__sfxIsPlaying(Sfx)) {
+            a_sdl_sound__sfxPlay(Sfx);
+        }
+    }
+}
