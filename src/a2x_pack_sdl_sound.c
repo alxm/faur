@@ -164,8 +164,12 @@ void a_sdl_sound__sfxSetVolume(ASdlSfx* Sfx, int Volume)
 
 void a_sdl_sound__sfxPlay(ASdlSfx* Sfx)
 {
-    Mix_HaltChannel(Sfx->channel);
     Mix_PlayChannel(Sfx->channel, Sfx->chunk, 0);
+}
+
+void a_sdl_sound__sfxStop(ASdlSfx* Sfx)
+{
+    Mix_HaltChannel(Sfx->channel);
 }
 
 bool a_sdl_sound__sfxIsPlaying(ASdlSfx* Sfx)

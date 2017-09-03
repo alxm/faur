@@ -42,4 +42,5 @@ extern ASdlSfx* a_sdl_sound__sfxLoadFromData(const uint8_t* Data, int Size);
 extern void a_sdl_sound__sfxFree(ASdlSfx* Sfx);
 extern void a_sdl_sound__sfxSetVolume(ASdlSfx* Sfx, int Volume);
 extern void a_sdl_sound__sfxPlay(ASdlSfx* Sfx);
+extern void a_sdl_sound__sfxStop(ASdlSfx* Sfx);
 extern bool a_sdl_sound__sfxIsPlaying(ASdlSfx* Sfx);
