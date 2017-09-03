@@ -89,7 +89,9 @@ void a_sdl_sound__musicSetVolume(int Volume)
 
 void a_sdl_sound__musicPlay(void* Music)
 {
-    Mix_PlayMusic(Music, -1);
+    if(Mix_PlayMusic(Music, -1) == -1) {
+        a_out__error("Mix_PlayMusic failed: %s", Mix_GetError());
+    }
 }
 
 void a_sdl_sound__musicStop(void)
@@ -164,7 +166,9 @@ void a_sdl_sound__sfxSetVolume(ASdlSfx* Sfx, int Volume)
 
 void a_sdl_sound__sfxPlay(ASdlSfx* Sfx)
 {
-    Mix_PlayChannel(Sfx->channel, Sfx->chunk, 0);
+    if(Mix_PlayChannel(Sfx->channel, Sfx->chunk, 0) == -1) {
+        a_out__error("Mix_PlayChannel failed: %s", Mix_GetError());
+    }
 }
 
 void a_sdl_sound__sfxStop(ASdlSfx* Sfx)
