@@ -22,6 +22,7 @@
 static AList* g_musicList;
 static AList* g_sfxList;
 
+static bool g_soundOn;
 static int g_volume;
 static int g_musicVolume;
 static int g_sfxVolume;
@@ -50,7 +51,7 @@ static void adjustSoundVolume(int Volume)
 static void inputCallback(void)
 {
     #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
-        if(a_settings_getBool("sound.on")) {
+        if(g_soundOn) {
             int adjust = 0;
 
             if(a_button_getPressed(g_volumeUpButton)) {
@@ -74,7 +75,7 @@ static void inputCallback(void)
             }
         }
     #elif A_DEVICE_HAS_KEYBOARD
-        if(a_settings_getBool("sound.on")) {
+        if(g_soundOn) {
             if(a_button_getPressedOnce(g_musicOnOffButton)) {
                 a_sdl_sound__musicToggle();
             }
@@ -85,7 +86,7 @@ static void inputCallback(void)
 #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
     static void screenCallback(void)
     {
-        if(a_settings_getBool("sound.on")) {
+        if(g_soundOn) {
             if(a_time_getMs() - g_lastVolAdjustment >= A_VOLBAR_SHOW_MS) {
                 return;
             }
@@ -108,48 +109,52 @@ static void inputCallback(void)
 
 void a_sound__init(void)
 {
-    if(a_settings_getBool("sound.on")) {
-        g_musicList = a_list_new();
-        g_sfxList = a_list_new();
+    g_soundOn = a_settings_getBool("sound.on");
 
-        g_volumeMax = a_sdl_sound__getMaxVolome();
-
-        #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
-            adjustSoundVolume(g_volumeMax / 16);
-            g_lastVolAdjustment = UINT32_MAX - A_VOLBAR_SHOW_MS;
-        #else
-            adjustSoundVolume(g_volumeMax);
-        #endif
-
-        #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
-            g_volumeUpButton = a_button_new("gamepad.b.volUp");
-            g_volumeDownButton = a_button_new("gamepad.b.volDown");
-        #elif A_DEVICE_HAS_KEYBOARD
-            g_musicOnOffButton = a_button_new("key.m");
-        #endif
-
-        a_input__addCallback(inputCallback);
-
-        #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
-            const char* color;
-
-            color = a_settings_getString("sound.volbar.background");
-            g_volbarBackground = a_pixel_hex((uint32_t)strtol(color, NULL, 16));
-
-            color = a_settings_getString("sound.volbar.border");
-            g_volbarBorder = a_pixel_hex((uint32_t)strtol(color, NULL, 16));
-
-            color = a_settings_getString("sound.volbar.fill");
-            g_volbarFill = a_pixel_hex((uint32_t)strtol(color, NULL, 16));
-
-            a_screen__addOverlay(screenCallback);
-        #endif
+    if(!g_soundOn) {
+        return;
     }
+
+    g_musicList = a_list_new();
+    g_sfxList = a_list_new();
+
+    g_volumeMax = a_sdl_sound__getMaxVolome();
+
+    #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
+        adjustSoundVolume(g_volumeMax / 16);
+        g_lastVolAdjustment = UINT32_MAX - A_VOLBAR_SHOW_MS;
+    #else
+        adjustSoundVolume(g_volumeMax);
+    #endif
+
+    #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
+        g_volumeUpButton = a_button_new("gamepad.b.volUp");
+        g_volumeDownButton = a_button_new("gamepad.b.volDown");
+    #elif A_DEVICE_HAS_KEYBOARD
+        g_musicOnOffButton = a_button_new("key.m");
+    #endif
+
+    a_input__addCallback(inputCallback);
+
+    #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
+        const char* color;
+
+        color = a_settings_getString("sound.volbar.background");
+        g_volbarBackground = a_pixel_hex((uint32_t)strtol(color, NULL, 16));
+
+        color = a_settings_getString("sound.volbar.border");
+        g_volbarBorder = a_pixel_hex((uint32_t)strtol(color, NULL, 16));
+
+        color = a_settings_getString("sound.volbar.fill");
+        g_volbarFill = a_pixel_hex((uint32_t)strtol(color, NULL, 16));
+
+        a_screen__addOverlay(screenCallback);
+    #endif
 }
 
 void a_sound__uninit(void)
 {
-    if(a_settings_getBool("sound.on")) {
+    if(g_soundOn) {
         a_music_stop();
 
         a_list_freeEx(g_sfxList, (AFree*)a_sfx__free);
@@ -159,7 +164,7 @@ void a_sound__uninit(void)
 
 AMusic* a_music_load(const char* Path)
 {
-    if(a_settings_getBool("sound.on")) {
+    if(g_soundOn) {
         AMusic* music = a_sdl_sound__musicLoad(Path);
         a_sdl_sound__musicSetVolume(g_musicVolume);
 
@@ -172,28 +177,28 @@ AMusic* a_music_load(const char* Path)
 
 void a_music__free(AMusic* Music)
 {
-    if(a_settings_getBool("sound.on")) {
+    if(g_soundOn) {
         a_sdl_sound__musicFree(Music);
     }
 }
 
 void a_music_play(AMusic* Music)
 {
-    if(a_settings_getBool("sound.on") && Music) {
+    if(g_soundOn && Music) {
         a_sdl_sound__musicPlay(Music);
     }
 }
 
 void a_music_stop(void)
 {
-    if(a_settings_getBool("sound.on")) {
+    if(g_soundOn) {
         a_sdl_sound__musicStop();
     }
 }
 
 ASound* a_sfx_newFromFile(const char* Path)
 {
-    if(!a_settings_getBool("sound.on")) {
+    if(!g_soundOn) {
         return NULL;
     }
 
@@ -220,14 +225,24 @@ ASound* a_sfx_newFromFile(const char* Path)
 
 void a_sfx__free(ASound* Sfx)
 {
-    if(a_settings_getBool("sound.on")) {
+    if(g_soundOn) {
         a_sdl_sound__sfxFree(Sfx);
     }
 }
 
 void a_sfx_play(ASound* Sfx)
 {
-    if(a_settings_getBool("sound.on")) {
+    if(g_soundOn) {
+        a_sdl_sound__sfxStop(Sfx);
         a_sdl_sound__sfxPlay(Sfx);
+    }
+}
+
+void a_sfx_playOnce(ASound* Sfx)
+{
+    if(g_soundOn) {
+        if(!a_sdl_sound__sfxIsPlaying(Sfx)) {
+            a_sdl_sound__sfxPlay(Sfx);
+        }
     }
 }
