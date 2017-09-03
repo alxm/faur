@@ -73,10 +73,6 @@ ASpriteFrames* a_spriteframes_new(const ASprite* Sheet, int X, int Y, unsigned C
 
 ASpriteFrames* a_spriteframes_newBlank(unsigned CallsToNextFrame)
 {
-    if(CallsToNextFrame < 1) {
-        a_out__fatal("a_spriteframes_newBlank: CallsToNextFrame<1");
-    }
-
     ASpriteFrames* f = a_mem_malloc(sizeof(ASpriteFrames));
 
     f->sprites = a_list_new();
@@ -148,7 +144,7 @@ ASprite* a_spriteframes_next(ASpriteFrames* Frames)
     const unsigned oldindex = Frames->index;
 
     if(!Frames->paused) {
-        if(--Frames->countdown == 0) {
+        if(Frames->countdown-- == 0) {
             Frames->countdown = Frames->callsToNextFrame;
 
             if(Frames->forward && ++Frames->index == Frames->num) {

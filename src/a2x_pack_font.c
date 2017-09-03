@@ -112,7 +112,7 @@ AFont* a_font_new(const ASprite* Sheet, int X, int Y, AFontLoad Loader)
 {
     AFont* f = a_mem_malloc(sizeof(AFont));
 
-    ASpriteFrames* frames = a_spriteframes_new(Sheet, X, Y, 1);
+    ASpriteFrames* frames = a_spriteframes_new(Sheet, X, Y, 0);
     ASprite* gapSprite = a_spriteframes_next(frames);
     ASprite* blankSprite = a_spriteframes_next(frames);
 
