@@ -50,6 +50,7 @@ typedef struct ARunningCollection {
 struct AEntity {
     char* id; // specified name for debugging
     void* context; // global context
+    AEntity* parent; // manually associated parent entity
     AListNode* collectionNode; // list node in one of new, running, or removed
     AList* systemNodes; // list of nodes in ASystem.entities lists
     AStrHash* components;
@@ -174,6 +175,7 @@ AEntity* a_entity_new(const char* Id, void* Context)
 
     e->id = Id ? a_str_dup(Id) : NULL;
     e->context = Context;
+    e->parent = NULL;
     e->collectionNode = a_list_addLast(g_collection->newEntities, e);
     e->systemNodes = a_list_new();
     e->components = a_strhash_new();
@@ -213,6 +215,16 @@ const char* a_entity_getId(const AEntity* Entity)
 void* a_entity_getContext(const AEntity* Entity)
 {
     return Entity->context;
+}
+
+AEntity* a_entity_getParent(AEntity* Entity)
+{
+    return Entity->parent;
+}
+
+void a_entity_setParent(AEntity* Entity, AEntity* Parent)
+{
+    Entity->parent = Parent;
 }
 
 void a_entity_reference(AEntity* Entity)

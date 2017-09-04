@@ -32,6 +32,8 @@ extern AEntity* a_component_getEntity(const void* Component);
 extern AEntity* a_entity_new(const char* Id, void* Context);
 extern const char* a_entity_getId(const AEntity* Entity);
 extern void* a_entity_getContext(const AEntity* Entity);
+extern AEntity* a_entity_getParent(AEntity* Entity);
+extern void a_entity_setParent(AEntity* Entity, AEntity* Parent);
 extern void a_entity_reference(AEntity* Entity);
 extern void a_entity_release(AEntity* Entity);
 extern void a_entity_remove(AEntity* Entity);
