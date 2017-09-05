@@ -53,7 +53,7 @@ struct AEntity {
     AEntity* parent; // manually associated parent entity
     AListNode* collectionNode; // list node in one of new, running, or removed
     AList* systemNodes; // list of nodes in ASystem.entities lists
-    AStrHash* components;
+    AStrHash* components; // table of AComponent
     ABitfield* componentBits;
     AStrHash* handlers; // table of AMessageHandlerContainer
     unsigned lastActive; // frame when a_entity_markActive was last called
@@ -200,6 +200,10 @@ static void a_entity__free(AEntity* Entity)
         free(header);
     }
 
+    if(Entity->parent) {
+        a_entity_release(Entity->parent);
+    }
+
     a_strhash_free(Entity->components);
     a_strhash_freeEx(Entity->handlers, free);
     a_bitfield_free(Entity->componentBits);
@@ -217,7 +221,7 @@ void* a_entity_getContext(const AEntity* Entity)
     return Entity->context;
 }
 
-AEntity* a_entity_getParent(AEntity* Entity)
+AEntity* a_entity_getParent(const AEntity* Entity)
 {
     return Entity->parent;
 }
@@ -225,6 +229,7 @@ AEntity* a_entity_getParent(AEntity* Entity)
 void a_entity_setParent(AEntity* Entity, AEntity* Parent)
 {
     Entity->parent = Parent;
+    a_entity_reference(Parent);
 }
 
 void a_entity_reference(AEntity* Entity)
