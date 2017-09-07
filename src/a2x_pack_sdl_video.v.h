@@ -34,12 +34,15 @@ extern void a_sdl_screen__set(int Width, int Height, bool FullScreen);
 extern void a_sdl_screen__show(void);
 extern void a_sdl_screen__setFullScreen(bool FullScreen);
 
+#if A_CONFIG_LIB_SDL == 2
+extern void a_sdl_render__clear(void);
+#endif
+
 #if A_CONFIG_RENDER_SDL2
 extern void a_sdl_video__getFullResolution(int* Width, int* Height);
 
 extern void a_sdl_render__setDrawColor(void);
 extern void a_sdl_render__setBlendMode(void);
-extern void a_sdl_render__clear(void);
 
 extern void a_sdl_render__drawPoint(int X, int Y);
 extern void a_sdl_render__drawLine(int X1, int Y1, int X2, int Y2);

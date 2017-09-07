@@ -352,6 +352,15 @@ void a_sdl_screen__setFullScreen(bool FullScreen)
     }
 }
 
+#if A_CONFIG_LIB_SDL == 2
+void a_sdl_render__clear(void)
+{
+    if(SDL_RenderClear(g_sdlRenderer) < 0) {
+        a_out__error("SDL_RenderClear failed: %s", SDL_GetError());
+    }
+}
+#endif
+
 #if A_CONFIG_RENDER_SDL2
 void a_sdl_video__getFullResolution(int* Width, int* Height)
 {
@@ -400,13 +409,6 @@ void a_sdl_render__setBlendMode(void)
 
     if(SDL_SetRenderDrawBlendMode(g_sdlRenderer, mode) < 0) {
         a_out__error("SDL_SetRenderDrawBlendMode failed: %s", SDL_GetError());
-    }
-}
-
-void a_sdl_render__clear(void)
-{
-    if(SDL_RenderClear(g_sdlRenderer) < 0) {
-        a_out__error("SDL_RenderClear failed: %s", SDL_GetError());
     }
 }
 
