@@ -338,7 +338,7 @@ void* a_entity_getComponent(const AEntity* Entity, const char* Component)
     return getComponent(header);
 }
 
-void* a_entity_requireComponent(const AEntity* Entity, const char* Component)
+void* a_entity_reqComponent(const AEntity* Entity, const char* Component)
 {
     AComponent* header = a_strhash_get(Entity->components, Component);
 
