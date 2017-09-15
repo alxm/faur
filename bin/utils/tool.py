@@ -61,9 +61,12 @@ class Tool:
         current_dir = os.path.dirname(__file__)
         self.dir_a2x = os.path.abspath(os.path.join(current_dir, '..', '..'))
         self.dir_bin = os.path.join(self.dir_a2x, 'bin')
-        self.dir_cfg = os.path.join(self.dir_a2x, 'cfg')
+        self.dir_cfg = os.path.join(os.environ['HOME'], '.config', 'a2x')
         self.dir_make = os.path.join(self.dir_a2x, 'make')
         self.dir_src = os.path.join(self.dir_a2x, 'src')
+
+        if not os.path.exists(self.dir_cfg):
+            os.makedirs(self.dir_cfg)
 
     def title(self):
         arguments = ' '.join(self.arg_values) \

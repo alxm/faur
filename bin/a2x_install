@@ -36,7 +36,7 @@ class InstallTool(Tool):
 
         command = self.get_arg('[clean]')
         userconfig = os.path.join(self.dir_cfg, 'sdk.config')
-        sdkconfig = os.path.join(self.dir_make, 'sdk.config')
+        sdkconfig = os.path.join(self.dir_cfg, 'sdk.config.make')
 
         if command == 'clean':
             if not os.path.exists(sdkconfig):

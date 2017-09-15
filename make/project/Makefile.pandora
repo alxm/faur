@@ -1,4 +1,4 @@
-include $(A2X_PATH)/make/sdk.config
+include $(HOME)/.config/a2x/sdk.config.make
 include $(A2X_PATH)/make/platforms/pandora
 include $(A2X_PATH)/make/project/rules
 
