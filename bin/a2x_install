@@ -40,8 +40,8 @@ class InstallTool(Tool):
 
         if command == 'clean':
             if not os.path.exists(sdkconfig):
-                self.output.note('Run {} first'.format(self.name))
-                self.output.error('{} does not exist'.format(sdkconfig))
+                self.output.error('{} does not exist, run {} first'
+                    .format(sdkconfig, self.name))
 
             self.output.info('Removing compiled and generated a2x files')
         elif command != '':
