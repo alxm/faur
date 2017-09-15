@@ -297,11 +297,9 @@ static bool iteration(void)
             a_system__tick();
         }
 
-        if(a_fps__draw()) {
-            s->function(A_STATE__STAGE_LOOP | A_STATE__STAGE_DRAW);
-            a_system__draw();
-            a_screen__show();
-        }
+        s->function(A_STATE__STAGE_LOOP | A_STATE__STAGE_DRAW);
+        a_system__draw();
+        a_screen__show();
 
         a_fps__frame();
     } else {

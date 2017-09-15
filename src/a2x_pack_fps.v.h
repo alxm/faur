@@ -27,4 +27,5 @@ extern void a_fps__init(void);
 extern void a_fps__uninit(void);
 
 extern void a_fps__reset(unsigned NumFramesToSkip);
+extern bool a_fps__tick(void);
 extern void a_fps__frame(void);

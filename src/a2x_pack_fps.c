@@ -28,9 +28,9 @@ static bool g_skipFrames;
 static unsigned g_skipMax;
 static bool g_vsync;
 
+static unsigned g_skipNum;
 static unsigned g_fpsRate;
 static unsigned g_msPerFrame;
-static ATimer* g_timer;
 
 static unsigned g_fps;
 static unsigned g_maxFps;
@@ -43,8 +43,6 @@ static unsigned* g_maxFpsBuffer;
 static unsigned g_fpsBufferSum;
 static unsigned g_maxFpsBufferSum;
 
-static unsigned g_skipNum;
-static unsigned g_skipCounter;
 static unsigned g_fpsThresholdFast;
 static unsigned g_fpsThresholdSlow;
 static ATimer* g_skipAdjustTimer;
@@ -53,11 +51,6 @@ static bool g_canSleep;
 
 static uint32_t g_lastMs;
 static unsigned g_tickCredit;
-
-static inline bool frameNotSkipped(void)
-{
-    return g_skipCounter == g_skipNum;
-}
 
 void a_fps__init(void)
 {
@@ -74,8 +67,8 @@ void a_fps__init(void)
                      g_idealFpsRate);
     }
 
-    g_timer = NULL;
     g_frameCounter = 0;
+
     g_bufferHead = 0;
     g_bufferLen = g_idealFpsRate * AVERAGE_WINDOW_SEC;
     g_fpsBuffer = a_mem_malloc(g_bufferLen * sizeof(unsigned));
@@ -92,7 +85,6 @@ void a_fps__init(void)
 
 void a_fps__uninit(void)
 {
-    a_timer_free(g_timer);
     a_timer_free(g_skipAdjustTimer);
     a_timer_free(g_noSleepTimer);
 
@@ -103,8 +95,6 @@ void a_fps__uninit(void)
 void a_fps__reset(unsigned NumFramesToSkip)
 {
     g_skipNum = NumFramesToSkip;
-    g_skipCounter = 0;
-
     g_fpsRate = g_idealFpsRate / (1 + g_skipNum);
     g_msPerFrame = 1000 / g_fpsRate;
 
@@ -125,102 +115,8 @@ void a_fps__reset(unsigned NumFramesToSkip)
 
     g_fpsThresholdSlow = (g_fpsRate > 3) ? (g_fpsRate - 2) : 1;
 
-    if(g_timer == NULL) {
-        g_timer = a_timer_new(A_TIMER_MS, g_msPerFrame);
-    } else {
-        a_timer_setPeriod(g_timer, g_msPerFrame);
-        a_timer_start(g_timer);
-    }
-
-    a_timer_start(g_timer);
-
     g_lastMs = a_time_getMs();
-    g_tickCredit = 1000;
-}
-
-void a_fps__frame(void)
-{
-    if(g_vsync) {
-        uint32_t now = a_time_getMs();
-
-        g_tickCredit += (now - g_lastMs) * g_idealFpsRate;
-        g_lastMs = now;
-
-        return;
-    }
-
-    // For capped FPS
-    g_tickCredit = 1000;
-
-    if(frameNotSkipped()) {
-        const bool done = a_timer_isExpired(g_timer);
-        const unsigned elapsedMs = a_timer_getElapsed(g_timer);
-
-        if(elapsedMs > 0) {
-            g_maxFpsBufferSum -= g_maxFpsBuffer[g_bufferHead];
-            g_maxFpsBuffer[g_bufferHead] = 1000 / elapsedMs;
-            g_maxFpsBufferSum += g_maxFpsBuffer[g_bufferHead];
-            g_maxFps = g_maxFpsBufferSum / g_bufferLen;
-        }
-
-        if(!done) {
-            while(!a_timer_isExpired(g_timer)) {
-                if(!g_canSleep) {
-                    continue;
-                }
-
-                unsigned waitMs = g_msPerFrame - a_timer_getElapsed(g_timer);
-
-                #if A_PLATFORM_GP2X
-                    // GP2X timer granularity is too coarse
-                    if(waitMs >= 10) {
-                        a_time_waitMs(10);
-                    }
-                #else
-                    a_time_waitMs((uint32_t)waitMs);
-                #endif
-            }
-        }
-
-        g_fpsBufferSum -= g_fpsBuffer[g_bufferHead];
-        g_fpsBuffer[g_bufferHead] = 1000 / a_timer_getElapsed(g_timer);
-        g_fpsBufferSum += g_fpsBuffer[g_bufferHead];
-        g_fps = g_fpsBufferSum / g_bufferLen;
-
-        g_bufferHead = (g_bufferHead + 1) % g_bufferLen;
-    }
-
-    if(g_skipFrames) {
-        if(frameNotSkipped() && a_timer_isExpired(g_skipAdjustTimer)) {
-            unsigned newFrameSkip;
-            bool adjustFrameSkip = false;
-
-            if(g_maxFps <= g_fpsThresholdSlow && g_skipNum < g_skipMax) {
-                adjustFrameSkip = true;
-                newFrameSkip = g_skipNum + 1;
-            } else if(g_maxFps >= g_fpsThresholdFast && g_skipNum > 0) {
-                adjustFrameSkip = true;
-                newFrameSkip = g_skipNum - 1;
-            }
-
-            if(adjustFrameSkip) {
-                if(newFrameSkip == 0) {
-                    a_timer_start(g_noSleepTimer);
-                } else {
-                    a_timer_stop(g_noSleepTimer);
-                }
-
-                g_canSleep = false;
-                a_fps__reset(newFrameSkip);
-            } else if(!g_canSleep && a_timer_isExpired(g_noSleepTimer)) {
-                g_canSleep = true;
-            }
-        }
-
-        if(g_skipCounter++ == g_skipNum) {
-            g_skipCounter = 0;
-        }
-    }
+    g_tickCredit = (1 + g_skipNum) * 1000;
 }
 
 bool a_fps__tick(void)
@@ -235,13 +131,76 @@ bool a_fps__tick(void)
     return false;
 }
 
-bool a_fps__draw(void)
+void a_fps__frame(void)
 {
+    uint32_t nowMs = a_time_getMs();
+    uint32_t elapsedMs = nowMs - g_lastMs;
+
     if(g_vsync) {
-        return true;
-    } else {
-        return frameNotSkipped();
+        g_tickCredit += elapsedMs * g_idealFpsRate;
+        g_lastMs = nowMs;
+
+        return;
     }
+
+    if(elapsedMs > 0) {
+        g_maxFpsBufferSum -= g_maxFpsBuffer[g_bufferHead];
+        g_maxFpsBuffer[g_bufferHead] = 1000 / elapsedMs;
+        g_maxFpsBufferSum += g_maxFpsBuffer[g_bufferHead];
+        g_maxFps = g_maxFpsBufferSum / g_bufferLen;
+    }
+
+    while(elapsedMs < g_msPerFrame) {
+        if(g_canSleep) {
+            uint32_t waitMs = g_msPerFrame - elapsedMs;
+
+            #if A_PLATFORM_GP2X
+                // GP2X timer granularity is too coarse
+                if(waitMs >= 10) {
+                    a_time_waitMs(10);
+                }
+            #else
+                a_time_waitMs(waitMs);
+            #endif
+        }
+
+        nowMs = a_time_getMs();
+        elapsedMs = nowMs - g_lastMs;
+    }
+
+    g_lastMs = nowMs;
+
+    g_fpsBufferSum -= g_fpsBuffer[g_bufferHead];
+    g_fpsBuffer[g_bufferHead] = 1000 / elapsedMs;
+    g_fpsBufferSum += g_fpsBuffer[g_bufferHead];
+    g_fps = g_fpsBufferSum / g_bufferLen;
+
+    g_bufferHead = (g_bufferHead + 1) % g_bufferLen;
+
+    if(g_skipFrames && a_timer_isExpired(g_skipAdjustTimer)) {
+        unsigned newFrameSkip = UINT_MAX;
+
+        if(g_maxFps <= g_fpsThresholdSlow && g_skipNum < g_skipMax) {
+            newFrameSkip = g_skipNum + 1;
+        } else if(g_maxFps >= g_fpsThresholdFast && g_skipNum > 0) {
+            newFrameSkip = g_skipNum - 1;
+        }
+
+        if(newFrameSkip != UINT_MAX) {
+            if(newFrameSkip == 0) {
+                a_timer_start(g_noSleepTimer);
+            } else {
+                a_timer_stop(g_noSleepTimer);
+            }
+
+            g_canSleep = false;
+            a_fps__reset(newFrameSkip);
+        } else if(!g_canSleep && a_timer_isExpired(g_noSleepTimer)) {
+            g_canSleep = true;
+        }
+    }
+
+    g_tickCredit = (g_skipNum + 1) * 1000;
 }
 
 unsigned a_fps_getFps(void)
