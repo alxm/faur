@@ -131,7 +131,7 @@ sdk.pandora.utils = sdk_utils
             if sdk.is_complete():
                 self.output.note('Processed config for {}'.format(sdk.title))
 
-        out = '\n'.join([str(sdks[sdk]) for sdk in sdks])
+        out = '\n'.join([str(sdks[sdk]) for sdk in sdks]) + '\n'
         self.writefile(config_write, out)
 
 if __name__ == '__main__':
