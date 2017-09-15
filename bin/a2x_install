@@ -36,12 +36,12 @@ class InstallTool(Tool):
 
         command = self.get_arg('[clean]')
         userconfig = os.path.join(self.dir_cfg, 'sdk.config')
-        sdkconfig = os.path.join(self.dir_make, 'sdk.config')
+        sdkconfig = os.path.join(self.dir_cfg, 'sdk.config.make')
 
         if command == 'clean':
             if not os.path.exists(sdkconfig):
-                self.output.note('Run {} first'.format(self.name))
-                self.output.error('{} does not exist'.format(sdkconfig))
+                self.output.error('{} does not exist, run {} first'
+                    .format(sdkconfig, self.name))
 
             self.output.info('Removing compiled and generated a2x files')
         elif command != '':
