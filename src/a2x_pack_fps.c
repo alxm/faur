@@ -46,6 +46,7 @@ static unsigned g_maxFpsBufferSum;
 static unsigned g_fpsThresholdFast;
 static unsigned g_fpsThresholdSlow;
 static ATimer* g_skipAdjustTimer;
+static bool g_allowSleep;
 static ATimer* g_noSleepTimer;
 static bool g_canSleep;
 
@@ -77,8 +78,14 @@ void a_fps__init(void)
     g_skipAdjustTimer = a_timer_new(A_TIMER_SEC, FRAMESKIP_ADJUST_DELAY_SEC);
     a_timer_start(g_skipAdjustTimer);
 
+    #if A_PLATFORM_EMSCRIPTEN
+        g_allowSleep = false;
+    #else
+        g_allowSleep = true;
+    #endif
+
     g_noSleepTimer = a_timer_new(A_TIMER_SEC, NO_SLEEP_RESET_SEC);
-    g_canSleep = true;
+    g_canSleep = g_allowSleep;
 
     a_fps__reset(0);
 }
@@ -195,7 +202,7 @@ void a_fps__frame(void)
                 g_canSleep = false;
                 a_fps__reset(newFrameSkip);
             } else if(!g_canSleep && a_timer_isExpired(g_noSleepTimer)) {
-                g_canSleep = true;
+                g_canSleep = g_allowSleep;
             }
         }
 
