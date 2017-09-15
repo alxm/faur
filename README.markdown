@@ -108,7 +108,7 @@ I originally wrote a2x for my GP2X games. The following targets are also support
 * Open2x SDK (GP2X, Wiz)
 * Pandora SDK (Open Pandora)
 
-Edit `a2x/cfg/sdk.config` with your SDK paths, then:
+Run `a2x_install`, then edit `~/.config/a2x/sdk.config` with your SDK paths and:
 
 ```sh
 $ a2x_install
