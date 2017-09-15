@@ -1,3 +1,3 @@
-#include $(HOME)/.config/a2x/sdk.config.make
+include $(HOME)/.config/a2x/sdk.config.make
 include $(A2X_PATH)/make/platforms/linux
 include $(A2X_PATH)/make/project/rules
