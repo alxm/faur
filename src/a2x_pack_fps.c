@@ -24,7 +24,6 @@
 #define NO_SLEEP_RESET_SEC 20
 
 static unsigned g_idealFpsRate;
-static unsigned g_idealMsPerFrame;
 static bool g_skipFrames;
 static unsigned g_skipMax;
 static bool g_vsync;
@@ -51,6 +50,8 @@ static unsigned g_fpsThresholdSlow;
 static ATimer* g_skipAdjustTimer;
 static ATimer* g_noSleepTimer;
 static bool g_canSleep;
+
+static uint32_t g_lastMs;
 static unsigned g_tickCredit;
 
 static inline bool frameNotSkipped(void)
@@ -61,7 +62,6 @@ static inline bool frameNotSkipped(void)
 void a_fps__init(void)
 {
     g_idealFpsRate = a_settings_getUnsigned("video.fps");
-    g_idealMsPerFrame = 1000 / g_idealFpsRate;
     g_skipFrames = a_settings_getBool("video.fps.skip");
     g_skipMax = a_settings_getUnsigned("video.fps.skip.max");
     g_vsync = a_settings_getBool("video.vsync");
@@ -133,21 +133,24 @@ void a_fps__reset(unsigned NumFramesToSkip)
     }
 
     a_timer_start(g_timer);
-    g_tickCredit = g_idealMsPerFrame;
+
+    g_lastMs = a_time_getMs();
+    g_tickCredit = 1000;
 }
 
 void a_fps__frame(void)
 {
     if(g_vsync) {
-        if(a_timer_isExpired(g_timer)) {
-            g_tickCredit += a_timer_getElapsed(g_timer);
-        }
+        uint32_t now = a_time_getMs();
+
+        g_tickCredit += (now - g_lastMs) * g_idealFpsRate;
+        g_lastMs = now;
 
         return;
     }
 
     // For capped FPS
-    g_tickCredit = g_idealMsPerFrame;
+    g_tickCredit = 1000;
 
     if(frameNotSkipped()) {
         const bool done = a_timer_isExpired(g_timer);
@@ -222,8 +225,8 @@ void a_fps__frame(void)
 
 bool a_fps__tick(void)
 {
-    if(g_tickCredit >= g_idealMsPerFrame) {
-        g_tickCredit -= g_idealMsPerFrame;
+    if(g_tickCredit >= 1000) {
+        g_tickCredit -= 1000;
         g_frameCounter++;
 
         return true;
