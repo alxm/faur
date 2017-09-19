@@ -61,37 +61,37 @@ void a_random_setSeed(unsigned Seed)
     }
 }
 
-int a_random_getInt(int Max)
+int a_random_int(int Max)
 {
     if(Max <= 0) {
-        a_out__fatal("a_random_getInt: invalid arg %d", Max);
+        a_out__fatal("a_random_int: invalid arg %d", Max);
     }
 
     return g_rand() % Max;
 }
 
-unsigned a_random_getIntu(unsigned Max)
+unsigned a_random_intu(unsigned Max)
 {
     if(Max == 0) {
-        a_out__fatal("a_random_getIntu: invalid arg 0");
+        a_out__fatal("a_random_intu: invalid arg 0");
     }
 
     return (unsigned)g_rand() % Max;
 }
 
-int a_random_getInRange(int Min, int Max)
+int a_random_range(int Min, int Max)
 {
     if(Min >= Max) {
-        a_out__fatal("a_random_getInRange: invalid args %d, %d", Min, Max);
+        a_out__fatal("a_random_range: invalid args %d, %d", Min, Max);
     }
 
     return Min + (g_rand() % (Max - Min));
 }
 
-unsigned a_random_getInRangeu(unsigned Min, unsigned Max)
+unsigned a_random_rangeu(unsigned Min, unsigned Max)
 {
     if(Min >= Max) {
-        a_out__fatal("a_random_getInRangeu: invalid args %d, %d", Min, Max);
+        a_out__fatal("a_random_rangeu: invalid args %d, %d", Min, Max);
     }
 
     return Min + ((unsigned)g_rand() % (Max - Min));
@@ -103,7 +103,7 @@ bool a_random_chance(int Something, int OutOf)
         a_out__fatal("a_random_chance: invalid args %d, %d", Something, OutOf);
     }
 
-    return a_random_getInt(OutOf) < Something;
+    return a_random_int(OutOf) < Something;
 }
 
 bool a_random_chanceu(unsigned Something, unsigned OutOf)
@@ -112,5 +112,5 @@ bool a_random_chanceu(unsigned Something, unsigned OutOf)
         a_out__fatal("a_random_chanceu: invalid args %d, %d", Something, OutOf);
     }
 
-    return a_random_getIntu(OutOf) < Something;
+    return a_random_intu(OutOf) < Something;
 }

@@ -30,11 +30,11 @@ extern void a_random_resetGenerator(void);
 extern unsigned a_random_getSeed(void);
 extern void a_random_setSeed(unsigned Seed);
 
-extern int a_random_getInt(int Max);
-extern unsigned a_random_getIntu(unsigned Max);
+extern int a_random_int(int Max);
+extern unsigned a_random_intu(unsigned Max);
 
-extern int a_random_getInRange(int Min, int Max);
-extern unsigned a_random_getInRangeu(unsigned Min, unsigned Max);
+extern int a_random_range(int Min, int Max);
+extern unsigned a_random_rangeu(unsigned Min, unsigned Max);
 
 extern bool a_random_chance(int Something, int OutOf);
 extern bool a_random_chanceu(unsigned Something, unsigned OutOf);
