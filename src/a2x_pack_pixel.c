@@ -108,6 +108,11 @@ static void optimizeAlphaBlending(bool UpdateRoutines)
 }
 #endif
 
+APixelBlend a_pixel_getBlend(void)
+{
+    return a_pixel__state.blend;
+}
+
 void a_pixel_setBlend(APixelBlend Blend)
 {
     a_pixel__state.blend = Blend;

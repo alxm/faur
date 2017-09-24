@@ -141,7 +141,9 @@ extern void a_pixel_pop(void);
 
 extern void a_pixel_reset(void);
 
+extern APixelBlend a_pixel_getBlend(void);
 extern void a_pixel_setBlend(APixelBlend Blend);
+
 extern void a_pixel_setAlpha(int Alpha);
 extern void a_pixel_setRGB(int Red, int Green, int Blue);
 extern void a_pixel_setRGBA(int Red, int Green, int Blue, int Alpha);
