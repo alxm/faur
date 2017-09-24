@@ -135,6 +135,11 @@ void a_pixel_setBlend(APixelBlend Blend)
     #endif
 }
 
+int a_pixel_getAlpha(void)
+{
+    return a_pixel__state.alpha;
+}
+
 void a_pixel_setAlpha(int Alpha)
 {
     a_pixel__state.alpha = a_math_constrain(Alpha, 0, A_PIXEL_ALPHA_MAX);
