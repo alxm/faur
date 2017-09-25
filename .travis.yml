@@ -1,15 +1,17 @@
-language: c
-
 dist: trusty
-sudo: required
+sudo: false
 
-before_install:
-    - sudo apt update -qq
-    - sudo apt --assume-yes -qq install libsdl2-dev libsdl2-mixer-dev
+language: c
 
 compiler:
     - clang
     - gcc
+
+addons:
+    apt:
+        packages:
+            - libsdl2-dev
+            - libsdl2-mixer-dev
 
 script:
     - ./bin/a2x_install
