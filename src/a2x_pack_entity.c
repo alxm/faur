@@ -228,8 +228,15 @@ AEntity* a_entity_getParent(const AEntity* Entity)
 
 void a_entity_setParent(AEntity* Entity, AEntity* Parent)
 {
+    if(Entity->parent != NULL) {
+        a_entity_release(Entity->parent);
+    }
+
     Entity->parent = Parent;
-    a_entity_reference(Parent);
+
+    if(Parent != NULL) {
+        a_entity_reference(Parent);
+    }
 }
 
 void a_entity_reference(AEntity* Entity)
