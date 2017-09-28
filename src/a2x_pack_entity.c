@@ -20,11 +20,15 @@
 #include "a2x_pack_entity.v.h"
 
 typedef struct AComponent {
-    size_t size; // total size of AComponent + user data that follows
+    size_t size; // total size of AComponentHeader + user data that follows
     AFree* free; // does not free the actual pointer
-    AEntity* parent; // only valid for AComponent instances, not prototype
     unsigned bit; // component's unique bit ID
 } AComponent;
+
+typedef struct AComponentHeader {
+    const AComponent* component;
+    AEntity* entity; // entity this component belongs to
+} AComponentHeader;
 
 typedef struct ASystem {
     ASystemHandler* handler;
@@ -53,7 +57,7 @@ struct AEntity {
     AEntity* parent; // manually associated parent entity
     AListNode* collectionNode; // list node in one of new, running, or removed
     AList* systemNodes; // list of nodes in ASystem.entities lists
-    AStrHash* components; // table of AComponent
+    AStrHash* components; // table of AComponentHeader
     ABitfield* componentBits;
     AStrHash* handlers; // table of AMessageHandlerContainer
     unsigned lastActive; // frame when a_entity_markActive was last called
@@ -89,14 +93,14 @@ static inline bool entityIsRemoved(const AEntity* Entity)
         == g_collection->removedEntities;
 }
 
-static inline void* getComponent(const AComponent* Header)
+static inline void* getComponent(const AComponentHeader* Header)
 {
     return (void*)(Header + 1);
 }
 
-static inline AComponent* getHeader(const void* Component)
+static inline AComponentHeader* getHeader(const void* Component)
 {
-    return (AComponent*)Component - 1;
+    return (AComponentHeader*)Component - 1;
 }
 
 static AMessage* message_new(AEntity* To, AEntity* From, const char* Message)
@@ -154,19 +158,18 @@ void a_component_declare(const char* Name, size_t Size, AFree* Free)
         a_out__fatal("Component '%s' already declared", Name);
     }
 
-    AComponent* h = a_mem_malloc(sizeof(AComponent));
+    AComponent* c = a_mem_malloc(sizeof(AComponent));
 
-    h->size = sizeof(AComponent) + Size;
-    h->free = Free;
-    h->parent = NULL;
-    h->bit = a_strhash_getSize(g_components);
+    c->size = sizeof(AComponentHeader) + Size;
+    c->free = Free;
+    c->bit = a_strhash_getSize(g_components);
 
-    a_strhash_add(g_components, Name, h);
+    a_strhash_add(g_components, Name, c);
 }
 
 AEntity* a_component_getEntity(const void* Component)
 {
-    return getHeader(Component)->parent;
+    return getHeader(Component)->entity;
 }
 
 AEntity* a_entity_new(const char* Id, void* Context)
@@ -192,9 +195,9 @@ static void a_entity__free(AEntity* Entity)
 {
     a_list_freeEx(Entity->systemNodes, (AFree*)a_list_removeNode);
 
-    A_STRHASH_ITERATE(Entity->components, AComponent*, header) {
-        if(header->free) {
-            header->free(getComponent(header));
+    A_STRHASH_ITERATE(Entity->components, AComponentHeader*, header) {
+        if(header->component->free) {
+            header->component->free(getComponent(header));
         }
 
         free(header);
@@ -304,13 +307,13 @@ void* a_entity_addComponent(AEntity* Entity, const char* Component)
                      a_entity_getId(Entity));
     }
 
-    AComponent* header = a_mem_zalloc(c->size);
+    AComponentHeader* header = a_mem_zalloc(c->size);
 
-    *header = *c;
-    header->parent = Entity;
+    header->component = c;
+    header->entity = Entity;
 
     a_strhash_add(Entity->components, Component, header);
-    a_bitfield_set(Entity->componentBits, header->bit);
+    a_bitfield_set(Entity->componentBits, c->bit);
 
     return getComponent(header);
 }
@@ -330,7 +333,7 @@ bool a_entity_hasComponent(const AEntity* Entity, const char* Component)
 
 void* a_entity_getComponent(const AEntity* Entity, const char* Component)
 {
-    AComponent* header = a_strhash_get(Entity->components, Component);
+    AComponentHeader* header = a_strhash_get(Entity->components, Component);
 
     if(header == NULL) {
         if(!a_strhash_contains(g_components, Component)) {
@@ -347,7 +350,7 @@ void* a_entity_getComponent(const AEntity* Entity, const char* Component)
 
 void* a_entity_reqComponent(const AEntity* Entity, const char* Component)
 {
-    AComponent* header = a_strhash_get(Entity->components, Component);
+    AComponentHeader* header = a_strhash_get(Entity->components, Component);
 
     if(header == NULL) {
         if(!a_strhash_contains(g_components, Component)) {
