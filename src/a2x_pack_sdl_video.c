@@ -559,36 +559,14 @@ void a_sdl_render__textureFree(ASdlTexture* Texture)
 
 void a_sdl_render__textureBlit(ASdlTexture* Texture, int X, int Y, bool FillFlat)
 {
-    SDL_Texture* t = Texture->texture[FillFlat];
-    SDL_Rect dest = {X, Y, Texture->width, Texture->height};
-
-    if(SDL_SetTextureBlendMode(t, pixelBlendToSdlBlend()) < 0) {
-        a_out__error("SDL_SetTextureBlendMode failed: %s", SDL_GetError());
-    }
-
-    if(SDL_SetTextureAlphaMod(t, pixelAlphaToSdlAlpha()) < 0) {
-        a_out__error("SDL_SetTextureAlphaMod failed: %s", SDL_GetError());
-    }
-
-    if(FillFlat) {
-        if(SDL_SetTextureColorMod(t,
-                                  (uint8_t)a_pixel__state.red,
-                                  (uint8_t)a_pixel__state.green,
-                                  (uint8_t)a_pixel__state.blue) < 0) {
-
-            a_out__error("SDL_SetTextureColorMod failed: %s", SDL_GetError());
-        }
-    }
-
-    if(SDL_RenderCopy(g_sdlRenderer, t, NULL, &dest) < 0) {
-        a_out__error("SDL_RenderCopy failed: %s", SDL_GetError());
-    }
-
-    if(FillFlat) {
-        if(SDL_SetTextureColorMod(t, 0xff, 0xff, 0xff) < 0) {
-            a_out__error("SDL_SetTextureColorMod failed: %s", SDL_GetError());
-        }
-    }
+    a_sdl_render__textureBlitEx(Texture,
+                                X + Texture->width / 2,
+                                Y + Texture->height / 2,
+                                A_FIX_ONE,
+                                0,
+                                0,
+                                0,
+                                FillFlat);
 }
 
 void a_sdl_render__textureBlitEx(ASdlTexture* Texture, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY, bool FillFlat)
