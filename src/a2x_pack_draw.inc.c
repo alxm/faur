@@ -393,3 +393,7 @@ static void A__FUNC_NAME(a_draw__circle_clip)(int X, int Y, int Radius)
         q4X + x >= clipX1 // SecondaryOnScreen
         );
 }
+
+#undef A__BLEND
+#undef A__BLEND_SETUP
+#undef A__PIXEL_PARAMS

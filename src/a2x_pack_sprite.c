@@ -61,10 +61,6 @@ static ABlitter g_blitter_keyed_doclip;
 #define A__BLEND_SETUP
 #define A__PIXEL_PARAMS , *a__pass_src
 #include "a2x_pack_sprite.inc.c"
-#undef A__BLEND
-#undef A__FILL
-#undef A__BLEND_SETUP
-#undef A__PIXEL_PARAMS
 
 #define A__BLEND plain
 #define A__FILL flat
@@ -72,10 +68,6 @@ static ABlitter g_blitter_keyed_doclip;
     const APixel a__pass_color = a_pixel__state.pixel;
 #define A__PIXEL_PARAMS , a__pass_color
 #include "a2x_pack_sprite.inc.c"
-#undef A__BLEND
-#undef A__FILL
-#undef A__BLEND_SETUP
-#undef A__PIXEL_PARAMS
 
 #define A__BLEND rgba
 #define A__FILL data
@@ -86,10 +78,6 @@ static ABlitter g_blitter_keyed_doclip;
     }
 #define A__PIXEL_PARAMS , a_pixel_red(*a__pass_src), a_pixel_green(*a__pass_src), a_pixel_blue(*a__pass_src), a__pass_alpha
 #include "a2x_pack_sprite.inc.c"
-#undef A__BLEND
-#undef A__FILL
-#undef A__BLEND_SETUP
-#undef A__PIXEL_PARAMS
 
 #define A__BLEND rgba
 #define A__FILL flat
@@ -103,20 +91,12 @@ static ABlitter g_blitter_keyed_doclip;
     }
 #define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue, a__pass_alpha
 #include "a2x_pack_sprite.inc.c"
-#undef A__BLEND
-#undef A__FILL
-#undef A__BLEND_SETUP
-#undef A__PIXEL_PARAMS
 
 #define A__BLEND rgb25
 #define A__FILL data
 #define A__BLEND_SETUP
 #define A__PIXEL_PARAMS , a_pixel_red(*a__pass_src), a_pixel_green(*a__pass_src), a_pixel_blue(*a__pass_src)
 #include "a2x_pack_sprite.inc.c"
-#undef A__BLEND
-#undef A__FILL
-#undef A__BLEND_SETUP
-#undef A__PIXEL_PARAMS
 
 #define A__BLEND rgb25
 #define A__FILL flat
@@ -126,20 +106,12 @@ static ABlitter g_blitter_keyed_doclip;
     const int a__pass_blue = a_pixel__state.blue;
 #define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue
 #include "a2x_pack_sprite.inc.c"
-#undef A__BLEND
-#undef A__FILL
-#undef A__BLEND_SETUP
-#undef A__PIXEL_PARAMS
 
 #define A__BLEND rgb50
 #define A__FILL data
 #define A__BLEND_SETUP
 #define A__PIXEL_PARAMS , a_pixel_red(*a__pass_src), a_pixel_green(*a__pass_src), a_pixel_blue(*a__pass_src)
 #include "a2x_pack_sprite.inc.c"
-#undef A__BLEND
-#undef A__FILL
-#undef A__BLEND_SETUP
-#undef A__PIXEL_PARAMS
 
 #define A__BLEND rgb50
 #define A__FILL flat
@@ -149,20 +121,12 @@ static ABlitter g_blitter_keyed_doclip;
     const int a__pass_blue = a_pixel__state.blue;
 #define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue
 #include "a2x_pack_sprite.inc.c"
-#undef A__BLEND
-#undef A__FILL
-#undef A__BLEND_SETUP
-#undef A__PIXEL_PARAMS
 
 #define A__BLEND rgb75
 #define A__FILL data
 #define A__BLEND_SETUP
 #define A__PIXEL_PARAMS , a_pixel_red(*a__pass_src), a_pixel_green(*a__pass_src), a_pixel_blue(*a__pass_src)
 #include "a2x_pack_sprite.inc.c"
-#undef A__BLEND
-#undef A__FILL
-#undef A__BLEND_SETUP
-#undef A__PIXEL_PARAMS
 
 #define A__BLEND rgb75
 #define A__FILL flat
@@ -172,40 +136,24 @@ static ABlitter g_blitter_keyed_doclip;
     const int a__pass_blue = a_pixel__state.blue;
 #define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue
 #include "a2x_pack_sprite.inc.c"
-#undef A__BLEND
-#undef A__FILL
-#undef A__BLEND_SETUP
-#undef A__PIXEL_PARAMS
 
 #define A__BLEND inverse
 #define A__FILL data
 #define A__BLEND_SETUP
 #define A__PIXEL_PARAMS
 #include "a2x_pack_sprite.inc.c"
-#undef A__BLEND
-#undef A__FILL
-#undef A__BLEND_SETUP
-#undef A__PIXEL_PARAMS
 
 #define A__BLEND inverse
 #define A__FILL flat
 #define A__BLEND_SETUP
 #define A__PIXEL_PARAMS
 #include "a2x_pack_sprite.inc.c"
-#undef A__BLEND
-#undef A__FILL
-#undef A__BLEND_SETUP
-#undef A__PIXEL_PARAMS
 
 #define A__BLEND mod
 #define A__FILL data
 #define A__BLEND_SETUP
 #define A__PIXEL_PARAMS , a_pixel_red(*a__pass_src), a_pixel_green(*a__pass_src), a_pixel_blue(*a__pass_src)
 #include "a2x_pack_sprite.inc.c"
-#undef A__BLEND
-#undef A__FILL
-#undef A__BLEND_SETUP
-#undef A__PIXEL_PARAMS
 
 #define A__BLEND mod
 #define A__FILL flat
@@ -215,10 +163,6 @@ static ABlitter g_blitter_keyed_doclip;
     const int a__pass_blue = a_pixel__state.blue;
 #define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue
 #include "a2x_pack_sprite.inc.c"
-#undef A__BLEND
-#undef A__FILL
-#undef A__BLEND_SETUP
-#undef A__PIXEL_PARAMS
 
 void a_sprite__init(void)
 {

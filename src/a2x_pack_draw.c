@@ -224,9 +224,6 @@ do {                                                                        \
     const APixel a__pass_color = a_pixel__state.pixel;
 #define A__PIXEL_PARAMS , a__pass_color
 #include "a2x_pack_draw.inc.c"
-#undef A__BLEND
-#undef A__BLEND_SETUP
-#undef A__PIXEL_PARAMS
 
 #define A__BLEND rgba
 #define A__BLEND_SETUP                              \
@@ -239,9 +236,6 @@ do {                                                                        \
     }
 #define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue, a__pass_alpha
 #include "a2x_pack_draw.inc.c"
-#undef A__BLEND
-#undef A__BLEND_SETUP
-#undef A__PIXEL_PARAMS
 
 #define A__BLEND rgb25
 #define A__BLEND_SETUP                              \
@@ -250,9 +244,6 @@ do {                                                                        \
     const int a__pass_blue = a_pixel__state.blue;
 #define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue
 #include "a2x_pack_draw.inc.c"
-#undef A__BLEND
-#undef A__BLEND_SETUP
-#undef A__PIXEL_PARAMS
 
 #define A__BLEND rgb50
 #define A__BLEND_SETUP                              \
@@ -261,9 +252,6 @@ do {                                                                        \
     const int a__pass_blue = a_pixel__state.blue;
 #define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue
 #include "a2x_pack_draw.inc.c"
-#undef A__BLEND
-#undef A__BLEND_SETUP
-#undef A__PIXEL_PARAMS
 
 #define A__BLEND rgb75
 #define A__BLEND_SETUP                              \
@@ -272,17 +260,11 @@ do {                                                                        \
     const int a__pass_blue = a_pixel__state.blue;
 #define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue
 #include "a2x_pack_draw.inc.c"
-#undef A__BLEND
-#undef A__BLEND_SETUP
-#undef A__PIXEL_PARAMS
 
 #define A__BLEND inverse
 #define A__BLEND_SETUP
 #define A__PIXEL_PARAMS
 #include "a2x_pack_draw.inc.c"
-#undef A__BLEND
-#undef A__BLEND_SETUP
-#undef A__PIXEL_PARAMS
 
 #define A__BLEND mod
 #define A__BLEND_SETUP                              \
@@ -291,9 +273,6 @@ do {                                                                        \
     const int a__pass_blue = a_pixel__state.blue;
 #define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue
 #include "a2x_pack_draw.inc.c"
-#undef A__BLEND
-#undef A__BLEND_SETUP
-#undef A__PIXEL_PARAMS
 
 void a_draw__init(void)
 {
