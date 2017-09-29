@@ -285,8 +285,11 @@ do {                                                                        \
 #undef A__PIXEL_PARAMS
 
 #define A__BLEND colormod
-#define A__BLEND_SETUP
-#define A__PIXEL_PARAMS , a_pixel_red(*a__pass_dst), a_pixel_green(*a__pass_dst), a_pixel_blue(*a__pass_dst)
+#define A__BLEND_SETUP                              \
+    const int a__pass_red = a_pixel__state.red;     \
+    const int a__pass_green = a_pixel__state.green; \
+    const int a__pass_blue = a_pixel__state.blue;
+#define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue
 #include "a2x_pack_draw.inc.c"
 #undef A__BLEND
 #undef A__BLEND_SETUP
