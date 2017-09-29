@@ -108,5 +108,3 @@ static inline void a_pixel__colormod(APixel* Dst, int Red, int Green, int Blue)
 
 extern void a_pixel__init(void);
 extern void a_pixel__uninit(void);
-
-extern bool a_pixel__alphaBlending(void);

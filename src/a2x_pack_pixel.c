@@ -33,12 +33,6 @@ void a_pixel__uninit(void)
     a_list_freeEx(g_stateStack, free);
 }
 
-bool a_pixel__alphaBlending(void)
-{
-    return a_pixel__state.blend >= A_PIXEL_BLEND_RGBA
-        && a_pixel__state.blend <= A_PIXEL_BLEND_RGB75;
-}
-
 void a_pixel_push(void)
 {
     APixelState* state = a_mem_malloc(sizeof(APixelState));
