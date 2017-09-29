@@ -95,7 +95,7 @@ static inline void a_pixel__inverse(APixel* Dst)
     *Dst = (APixel)~*Dst;
 }
 
-static inline void a_pixel__colormod(APixel* Dst, int Red, int Green, int Blue)
+static inline void a_pixel__mod(APixel* Dst, int Red, int Green, int Blue)
 {
     const APixel p = *Dst;
 

@@ -284,7 +284,7 @@ do {                                                                        \
 #undef A__BLEND_SETUP
 #undef A__PIXEL_PARAMS
 
-#define A__BLEND colormod
+#define A__BLEND mod
 #define A__BLEND_SETUP                              \
     const int a__pass_red = a_pixel__state.red;     \
     const int a__pass_green = a_pixel__state.green; \
@@ -312,7 +312,7 @@ void a_draw__init(void)
     initRoutines(A_PIXEL_BLEND_RGB50, rgb50);
     initRoutines(A_PIXEL_BLEND_RGB75, rgb75);
     initRoutines(A_PIXEL_BLEND_INVERSE, inverse);
-    initRoutines(A_PIXEL_BLEND_COLORMOD, colormod);
+    initRoutines(A_PIXEL_BLEND_MOD, mod);
 
     a_draw__updateRoutines();
 }

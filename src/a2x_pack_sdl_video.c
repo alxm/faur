@@ -365,7 +365,7 @@ void a_sdl_render__clear(void)
 static inline SDL_BlendMode pixelBlendToSdlBlend(void)
 {
     switch(a_pixel__state.blend) {
-        case A_PIXEL_BLEND_COLORMOD:
+        case A_PIXEL_BLEND_MOD:
             return SDL_BLENDMODE_MOD;
 
         default:
