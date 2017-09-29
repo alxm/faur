@@ -368,6 +368,9 @@ static inline SDL_BlendMode pixelBlendToSdlBlend(void)
         case A_PIXEL_BLEND_MOD:
             return SDL_BLENDMODE_MOD;
 
+        case A_PIXEL_BLEND_ADD:
+            return SDL_BLENDMODE_ADD;
+
         default:
             return SDL_BLENDMODE_BLEND;
     }

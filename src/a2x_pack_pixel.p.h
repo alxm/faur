@@ -133,6 +133,7 @@ typedef enum {
     A_PIXEL_BLEND_RGB75,
     A_PIXEL_BLEND_INVERSE,
     A_PIXEL_BLEND_MOD,
+    A_PIXEL_BLEND_ADD,
     A_PIXEL_BLEND_NUM
 } APixelBlend;
 
