@@ -183,3 +183,8 @@ static void A__FUNC_NAME(A__BLEND, A__FILL, block, doclip)(const ASprite* Sprite
         }
     }
 }
+
+#undef A__BLEND
+#undef A__FILL
+#undef A__BLEND_SETUP
+#undef A__PIXEL_PARAMS

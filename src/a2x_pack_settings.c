@@ -244,10 +244,7 @@ void a_settings__init(void)
 
     #if A_CONFIG_LIB_SDL == 2
         a_settings__set("video.doubleBuffer", "1");
-
-        #if A_CONFIG_RENDER_SDL2
-            a_settings__set("video.vsync", "1");
-        #endif
+        a_settings__set("video.vsync", "1");
     #endif
 
     #if A_PLATFORM_EMSCRIPTEN

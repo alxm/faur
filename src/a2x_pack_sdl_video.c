@@ -362,6 +362,34 @@ void a_sdl_render__clear(void)
 #endif
 
 #if A_CONFIG_RENDER_SDL2
+static inline SDL_BlendMode pixelBlendToSdlBlend(void)
+{
+    switch(a_pixel__state.blend) {
+        case A_PIXEL_BLEND_MOD:
+            return SDL_BLENDMODE_MOD;
+
+        case A_PIXEL_BLEND_ADD:
+            return SDL_BLENDMODE_ADD;
+
+        default:
+            return SDL_BLENDMODE_BLEND;
+    }
+}
+
+static inline uint8_t pixelAlphaToSdlAlpha(void)
+{
+    switch(a_pixel__state.blend) {
+        case A_PIXEL_BLEND_RGBA:
+        case A_PIXEL_BLEND_RGB25:
+        case A_PIXEL_BLEND_RGB50:
+        case A_PIXEL_BLEND_RGB75:
+            return (uint8_t)a_pixel__state.alpha;
+
+        default:
+            return SDL_ALPHA_OPAQUE;
+    }
+}
+
 void a_sdl_video__getFullResolution(int* Width, int* Height)
 {
     SDL_DisplayMode mode;
@@ -383,15 +411,11 @@ void a_sdl_video__getFullResolution(int* Width, int* Height)
 
 void a_sdl_render__setDrawColor(void)
 {
-    int alpha = a_pixel__alphaBlending()
-                ? a_pixel__state.alpha
-                : SDL_ALPHA_OPAQUE;
-
     if(SDL_SetRenderDrawColor(g_sdlRenderer,
                               (uint8_t)a_pixel__state.red,
                               (uint8_t)a_pixel__state.green,
                               (uint8_t)a_pixel__state.blue,
-                              (uint8_t)alpha) < 0) {
+                              pixelAlphaToSdlAlpha()) < 0) {
 
         a_out__error("SDL_SetRenderDrawColor failed: %s", SDL_GetError());
     }
@@ -399,15 +423,7 @@ void a_sdl_render__setDrawColor(void)
 
 void a_sdl_render__setBlendMode(void)
 {
-    SDL_BlendMode mode = SDL_BLENDMODE_NONE;
-
-    if(a_pixel__alphaBlending()) {
-        mode = SDL_BLENDMODE_BLEND;
-    } else if(a_pixel__state.blend == A_PIXEL_BLEND_COLORMOD) {
-        mode = SDL_BLENDMODE_MOD;
-    }
-
-    if(SDL_SetRenderDrawBlendMode(g_sdlRenderer, mode) < 0) {
+    if(SDL_SetRenderDrawBlendMode(g_sdlRenderer, pixelBlendToSdlBlend()) < 0) {
         a_out__error("SDL_SetRenderDrawBlendMode failed: %s", SDL_GetError());
     }
 }
@@ -546,53 +562,29 @@ void a_sdl_render__textureFree(ASdlTexture* Texture)
 
 void a_sdl_render__textureBlit(ASdlTexture* Texture, int X, int Y, bool FillFlat)
 {
-    SDL_Texture* t = Texture->texture[FillFlat];
-    SDL_Rect dest = {X, Y, Texture->width, Texture->height};
-    uint8_t alphaMod = SDL_ALPHA_OPAQUE;
-
-    if(a_pixel__alphaBlending()) {
-        alphaMod = (uint8_t)a_pixel__state.alpha;
-    }
-
-    if(SDL_SetTextureAlphaMod(t, alphaMod) < 0) {
-        a_out__error("SDL_SetTextureAlphaMod failed: %s", SDL_GetError());
-    }
-
-    if(FillFlat || a_pixel__state.blend == A_PIXEL_BLEND_COLORMOD) {
-        if(SDL_SetTextureColorMod(t,
-                                  (uint8_t)a_pixel__state.red,
-                                  (uint8_t)a_pixel__state.green,
-                                  (uint8_t)a_pixel__state.blue) < 0) {
-
-            a_out__error("SDL_SetTextureColorMod failed: %s", SDL_GetError());
-        }
-    }
-
-    if(SDL_RenderCopy(g_sdlRenderer, t, NULL, &dest) < 0) {
-        a_out__error("SDL_RenderCopy failed: %s", SDL_GetError());
-    }
-
-    if(a_pixel__state.blend == A_PIXEL_BLEND_COLORMOD) {
-        if(SDL_SetTextureColorMod(t, 0xff, 0xff, 0xff) < 0) {
-            a_out__error("SDL_SetTextureColorMod failed: %s", SDL_GetError());
-        }
-    }
+    a_sdl_render__textureBlitEx(Texture,
+                                X + Texture->width / 2,
+                                Y + Texture->height / 2,
+                                A_FIX_ONE,
+                                0,
+                                0,
+                                0,
+                                FillFlat);
 }
 
 void a_sdl_render__textureBlitEx(ASdlTexture* Texture, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY, bool FillFlat)
 {
     SDL_Texture* t = Texture->texture[FillFlat];
-    uint8_t alphaMod = SDL_ALPHA_OPAQUE;
 
-    if(a_pixel__alphaBlending()) {
-        alphaMod = (uint8_t)a_pixel__state.alpha;
+    if(SDL_SetTextureBlendMode(t, pixelBlendToSdlBlend()) < 0) {
+        a_out__error("SDL_SetTextureBlendMode failed: %s", SDL_GetError());
     }
 
-    if(SDL_SetTextureAlphaMod(t, alphaMod) < 0) {
+    if(SDL_SetTextureAlphaMod(t, pixelAlphaToSdlAlpha()) < 0) {
         a_out__error("SDL_SetTextureAlphaMod failed: %s", SDL_GetError());
     }
 
-    if(FillFlat || a_pixel__state.blend == A_PIXEL_BLEND_COLORMOD) {
+    if(FillFlat) {
         if(SDL_SetTextureColorMod(t,
                                   (uint8_t)a_pixel__state.red,
                                   (uint8_t)a_pixel__state.green,
@@ -621,7 +613,7 @@ void a_sdl_render__textureBlitEx(ASdlTexture* Texture, int X, int Y, AFix Scale,
         a_out__error("SDL_RenderCopyEx failed: %s", SDL_GetError());
     }
 
-    if(a_pixel__state.blend == A_PIXEL_BLEND_COLORMOD) {
+    if(FillFlat) {
         if(SDL_SetTextureColorMod(t, 0xff, 0xff, 0xff) < 0) {
             a_out__error("SDL_SetTextureColorMod failed: %s", SDL_GetError());
         }

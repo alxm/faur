@@ -348,11 +348,11 @@ void a_screen_blit(const AScreen* Screen)
                 LOOP(inverse, (dst));
             } break;
 
-            case A_PIXEL_BLEND_COLORMOD: {
-                LOOP(colormod, (dst,
-                                a_pixel_red(srcPixel),
-                                a_pixel_green(srcPixel),
-                                a_pixel_blue(srcPixel)));
+            case A_PIXEL_BLEND_MOD: {
+                LOOP(mod, (dst,
+                           a_pixel_red(srcPixel),
+                           a_pixel_green(srcPixel),
+                           a_pixel_blue(srcPixel)));
             } break;
 
             default: break;
