@@ -106,5 +106,18 @@ static inline void a_pixel__mod(APixel* Dst, int Red, int Green, int Blue)
     *Dst = a_pixel_rgb((r * Red) >> 8, (g * Green) >> 8, (b * Blue) >> 8);
 }
 
+static inline void a_pixel__add(APixel* Dst, int Red, int Green, int Blue)
+{
+    const APixel p = *Dst;
+
+    const int r = a_pixel_red(p);
+    const int g = a_pixel_green(p);
+    const int b = a_pixel_blue(p);
+
+    *Dst = a_pixel_rgb(a_math_min(r + Red, 255),
+                       a_math_min(g + Green, 255),
+                       a_math_min(b + Blue, 255));
+}
+
 extern void a_pixel__init(void);
 extern void a_pixel__uninit(void);

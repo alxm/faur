@@ -274,6 +274,14 @@ do {                                                                        \
 #define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue
 #include "a2x_pack_draw.inc.c"
 
+#define A__BLEND add
+#define A__BLEND_SETUP                              \
+    const int a__pass_red = a_pixel__state.red;     \
+    const int a__pass_green = a_pixel__state.green; \
+    const int a__pass_blue = a_pixel__state.blue;
+#define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue
+#include "a2x_pack_draw.inc.c"
+
 void a_draw__init(void)
 {
     #define initRoutines(Index, Blend)                                      \
@@ -292,6 +300,7 @@ void a_draw__init(void)
     initRoutines(A_PIXEL_BLEND_RGB75, rgb75);
     initRoutines(A_PIXEL_BLEND_INVERSE, inverse);
     initRoutines(A_PIXEL_BLEND_MOD, mod);
+    initRoutines(A_PIXEL_BLEND_ADD, add);
 
     a_draw__updateRoutines();
 }
