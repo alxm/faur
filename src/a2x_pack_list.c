@@ -164,6 +164,11 @@ void* a_list_getRandom(const AList* List)
     return a_list_getIndex(List, a_random_intu(List->items));
 }
 
+void* a_list_getNodeContent(const AListNode* Node)
+{
+    return Node->content;
+}
+
 void a_list_removeItem(AList* List, const void* Item)
 {
     A_LIST_ITERATE(List, void*, item) {
