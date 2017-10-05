@@ -114,6 +114,10 @@ void a_list_appendMove(AList* Dst, AList* Src)
         return;
     }
 
+    for(AListNode* n = Src->first->next; n != Src->last; n = n->next) {
+        n->list = Dst;
+    }
+
     Dst->last->prev->next = Src->first->next;
     Src->first->next->prev = Dst->last->prev;
     Dst->last->prev = Src->last->prev;
@@ -162,6 +166,11 @@ void* a_list_getLast(const AList* List)
 void* a_list_getRandom(const AList* List)
 {
     return a_list_getIndex(List, a_random_intu(List->items));
+}
+
+void* a_list_getNodeContent(const AListNode* Node)
+{
+    return Node->content;
 }
 
 void a_list_removeItem(AList* List, const void* Item)
