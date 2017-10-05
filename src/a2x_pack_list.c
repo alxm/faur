@@ -114,6 +114,10 @@ void a_list_appendMove(AList* Dst, AList* Src)
         return;
     }
 
+    for(AListNode* n = Src->first->next; n != Src->last; n = n->next) {
+        n->list = Dst;
+    }
+
     Dst->last->prev->next = Src->first->next;
     Src->first->next->prev = Dst->last->prev;
     Dst->last->prev = Src->last->prev;
