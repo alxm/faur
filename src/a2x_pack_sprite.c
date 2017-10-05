@@ -413,6 +413,17 @@ ASprite* a_sprite_dup(const ASprite* Sprite)
 
     assignPixels(clone, pixels);
 
+    #if A_CONFIG_RENDER_SDL2
+        a_pixel_push();
+        a_screen_targetPushSprite(clone);
+
+        a_pixel_reset();
+        a_sprite_blit(Sprite, 0, 0);
+
+        a_screen_targetPop();
+        a_pixel_pop();
+    #endif
+
     return clone;
 }
 
