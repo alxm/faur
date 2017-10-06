@@ -87,18 +87,28 @@ ASpriteFrames* a_spriteframes_newBlank(unsigned CallsToNextFrame)
     return f;
 }
 
-ASpriteFrames* a_spriteframes_dup(const ASpriteFrames* Frames)
+ASpriteFrames* a_spriteframes_dup(const ASpriteFrames* Frames, bool DupSprites)
 {
     ASpriteFrames* f = a_mem_malloc(sizeof(ASpriteFrames));
 
-    f->sprites = a_list_dup(Frames->sprites);
-    f->spriteArray = (ASprite**)a_list_toArray(Frames->sprites);
     f->num = Frames->num;
     f->countdown = Frames->callsToNextFrame;
     f->callsToNextFrame = Frames->callsToNextFrame;
     f->index = 0;
     f->forward = true;
     f->paused = false;
+
+    if(DupSprites) {
+        f->sprites = a_list_new();
+
+        A_LIST_ITERATE(Frames->sprites, ASprite*, s) {
+            a_list_addLast(f->sprites, a_sprite_dup(s));
+        }
+    } else {
+        f->sprites = a_list_dup(Frames->sprites);
+    }
+
+    f->spriteArray = (ASprite**)a_list_toArray(f->sprites);
 
     return f;
 }
