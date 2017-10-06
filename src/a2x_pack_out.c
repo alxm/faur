@@ -37,10 +37,10 @@ typedef enum {
 static void outPrintHeader(const char* Title, AColorCode Color, FILE* Stream)
 {
     #if A_PLATFORM_LINUX && A_PLATFORM_DESKTOP
-        fprintf(Stream, "\033[1;%dm[ a2x %s ]\033[0m ", Color, Title);
+        fprintf(Stream, "\033[1;%dm[a2x][%s]\033[0m ", Color, Title);
     #else
-        (void)Color;
-        fprintf(Stream, "[ a2x %s ] ", Title);
+        A_UNUSED(Color);
+        fprintf(Stream, "[a2x][%s] ", Title);
     #endif
 }
 
@@ -99,7 +99,7 @@ void a_out__warningv(const char* Format, ...)
     if(a_settings_getBool("app.output.on")
         && a_settings_getBool("app.output.verbose")) {
 
-        A_OUT__PRINT("Wrn", A_COLOR_YELLOW, stdout);
+        A_OUT__PRINT("Wrn", A_COLOR_YELLOW, stderr);
         A_OUT__CONSOLE(A_CONSOLE_WARNING);
     }
 }
