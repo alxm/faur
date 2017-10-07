@@ -24,3 +24,5 @@
 extern void a_out_print(const char* Text);
 extern void a_out_printf(const char* Format, ...);
 extern void a_out_printv(const char* Format, va_list Args);
+extern void a_out_warning(const char* Format, ...);
+extern void a_out_error(const char* Format, ...);
