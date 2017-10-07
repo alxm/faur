@@ -405,8 +405,8 @@ void a_sdl_video__getFullResolution(int* Width, int* Height)
                    mode.h,
                    SDL_BITSPERPIXEL(mode.format));
 
-    *Width = mode.w;
-    *Height = mode.h;
+    *Width = mode.w / -*Width;
+    *Height = mode.h / -*Height;
 }
 
 void a_sdl_render__setDrawColor(void)
