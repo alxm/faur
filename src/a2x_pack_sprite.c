@@ -544,6 +544,7 @@ void a_sprite_pow2Width(ASprite* Sprite)
 
     Sprite->w = newWidth;
     Sprite->wLog2 = power;
+    Sprite->wOriginal = oldWidth;
     Sprite->pixelsSize = newSize;
     assignPixels(Sprite, newPixels - newSize / sizeof(APixel));
 }
@@ -567,6 +568,11 @@ int a_sprite_getWidth(const ASprite* Sprite)
 int a_sprite_getWidthLog2(const ASprite* Sprite)
 {
     return Sprite->wLog2;
+}
+
+int a_sprite_getWidthOriginal(const ASprite* Sprite)
+{
+    return Sprite->wOriginal;
 }
 
 int a_sprite_getHeight(const ASprite* Sprite)

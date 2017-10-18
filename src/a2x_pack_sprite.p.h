@@ -46,6 +46,7 @@ extern void a_sprite_replaceColor(ASprite* Sprite, APixel OldColor, APixel NewCo
 
 extern int a_sprite_getWidth(const ASprite* Sprite);
 extern int a_sprite_getWidthLog2(const ASprite* Sprite);
+extern int a_sprite_getWidthOriginal(const ASprite* Sprite);
 extern int a_sprite_getHeight(const ASprite* Sprite);
 
 extern APixel* a_sprite_getPixels(ASprite* Sprite);
