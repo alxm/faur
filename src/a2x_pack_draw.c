@@ -194,7 +194,7 @@ do {                                                                        \
             error += 2 * PrimaryCoord + 1;                                  \
             PrimaryCoord++;                                                 \
                                                                             \
-            A__PIXEL_DRAW(a__pass_dst);                                     \
+            A__PIXEL_DRAW;                                                  \
             a__pass_dst += PrimaryBufferInc;                                \
                                                                             \
             if(error > 0) {                                                 \
@@ -211,13 +211,13 @@ do {                                                                        \
     }                                                                       \
 } while(0)
 
-#define A__CONCAT_WORKER(A, B) A##B
-#define A__CONCAT(A, B) A__CONCAT_WORKER(A, B)
+#define A__FUNC_NAME_EXPAND2(Name, Blend) a_draw__##Name##_##Blend
+#define A__FUNC_NAME_EXPAND(Name, Blend) A__FUNC_NAME_EXPAND2(Name, Blend)
+#define A__FUNC_NAME(Name) A__FUNC_NAME_EXPAND(Name, A__BLEND)
 
-#define A__FUNC_NAME(Prefix) A__CONCAT(Prefix##_, A__BLEND)
-
-#define A__PIXEL_DRAW_WORKER(Params) A__CONCAT(a_pixel__, A__BLEND)(Params)
-#define A__PIXEL_DRAW(Dst) A__PIXEL_DRAW_WORKER(Dst A__PIXEL_PARAMS)
+#define A__PIXEL_DRAW_EXPAND2(Blend) a_pixel__##Blend
+#define A__PIXEL_DRAW_EXPAND(Blend, Params) A__PIXEL_DRAW_EXPAND2(Blend)(Params)
+#define A__PIXEL_DRAW A__PIXEL_DRAW_EXPAND(A__BLEND, a__pass_dst A__PIXEL_PARAMS)
 
 #define A__BLEND plain
 #define A__BLEND_SETUP \
@@ -284,14 +284,14 @@ do {                                                                        \
 
 void a_draw__init(void)
 {
-    #define initRoutines(Index, Blend)                                      \
-        g_pixel[Index] = a_draw__pixel_##Blend;                             \
-        g_rectangle[Index] = a_draw__rectangle_##Blend;                     \
-        g_line[Index] = a_draw__line_##Blend;                               \
-        g_hline[Index] = a_draw__hline_##Blend;                             \
-        g_vline[Index] = a_draw__vline_##Blend;                             \
-        g_circle[Index][0] = a_draw__circle_noclip_##Blend;                 \
-        g_circle[Index][1] = a_draw__circle_clip_##Blend;                   \
+    #define initRoutines(Index, Blend)                      \
+        g_pixel[Index] = a_draw__pixel_##Blend;             \
+        g_rectangle[Index] = a_draw__rectangle_##Blend;     \
+        g_line[Index] = a_draw__line_##Blend;               \
+        g_hline[Index] = a_draw__hline_##Blend;             \
+        g_vline[Index] = a_draw__vline_##Blend;             \
+        g_circle[Index][0] = a_draw__circle_noclip_##Blend; \
+        g_circle[Index][1] = a_draw__circle_clip_##Blend;   \
 
     initRoutines(A_PIXEL_BLEND_PLAIN, plain);
     initRoutines(A_PIXEL_BLEND_RGBA, rgba);

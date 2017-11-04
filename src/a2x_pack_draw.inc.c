@@ -17,15 +17,16 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-static void A__FUNC_NAME(a_draw__pixel)(int X, int Y)
+static void A__FUNC_NAME(pixel)(int X, int Y)
 {
     A__BLEND_SETUP;
+
     APixel* a__pass_dst = a__screen.pixels + Y * a__screen.width + X;
 
-    A__PIXEL_DRAW(a__pass_dst);
+    A__PIXEL_DRAW;
 }
 
-static void A__FUNC_NAME(a_draw__rectangle)(int X, int Y, int Width, int Height)
+static void A__FUNC_NAME(rectangle)(int X, int Y, int Width, int Height)
 {
     A__BLEND_SETUP;
 
@@ -36,12 +37,12 @@ static void A__FUNC_NAME(a_draw__rectangle)(int X, int Y, int Width, int Height)
         APixel* a__pass_dst = pixels;
 
         for(int j = Width; j--; a__pass_dst++) {
-            A__PIXEL_DRAW(a__pass_dst);
+            A__PIXEL_DRAW;
         }
     }
 }
 
-static void A__FUNC_NAME(a_draw__line)(int X1, int Y1, int X2, int Y2)
+static void A__FUNC_NAME(line)(int X1, int Y1, int X2, int Y2)
 {
     A__BLEND_SETUP;
 
@@ -75,7 +76,7 @@ static void A__FUNC_NAME(a_draw__line)(int X1, int Y1, int X2, int Y2)
         APixel* a__pass_dst = a__screen.pixels + Y1 * screenw + X1;
 
         for(int i = denominator + 1; i--; ) {
-            A__PIXEL_DRAW(a__pass_dst);
+            A__PIXEL_DRAW;
 
             numerator += numeratorinc;
 
@@ -91,18 +92,18 @@ static void A__FUNC_NAME(a_draw__line)(int X1, int Y1, int X2, int Y2)
     }
 }
 
-static void A__FUNC_NAME(a_draw__hline)(int X1, int X2, int Y)
+static void A__FUNC_NAME(hline)(int X1, int X2, int Y)
 {
     A__BLEND_SETUP;
 
     APixel* a__pass_dst = a__screen.pixels + Y * a__screen.width + X1;
 
     for(int i = X2 - X1; i--; a__pass_dst++) {
-        A__PIXEL_DRAW(a__pass_dst);
+        A__PIXEL_DRAW;
     }
 }
 
-static void A__FUNC_NAME(a_draw__vline)(int X, int Y1, int Y2)
+static void A__FUNC_NAME(vline)(int X, int Y1, int Y2)
 {
     A__BLEND_SETUP;
 
@@ -110,11 +111,11 @@ static void A__FUNC_NAME(a_draw__vline)(int X, int Y1, int Y2)
     APixel* a__pass_dst = a__screen.pixels + Y1 * screenw + X;
 
     for(int i = Y2 - Y1; i--; a__pass_dst += screenw) {
-        A__PIXEL_DRAW(a__pass_dst);
+        A__PIXEL_DRAW;
     }
 }
 
-static void A__FUNC_NAME(a_draw__circle_noclip)(int X, int Y, int Radius)
+static void A__FUNC_NAME(circle_noclip)(int X, int Y, int Radius)
 {
     A__BLEND_SETUP;
 
@@ -155,7 +156,7 @@ static void A__FUNC_NAME(a_draw__circle_noclip)(int X, int Y, int Radius)
 
     #define A__PIXEL_DRAW2(Buffer)  \
         a__pass_dst = Buffer;       \
-        A__PIXEL_DRAW(a__pass_dst);
+        A__PIXEL_DRAW;
 
     while(x > y) {
         A__PIXEL_DRAW2(oct1);
@@ -204,7 +205,7 @@ static void A__FUNC_NAME(a_draw__circle_noclip)(int X, int Y, int Radius)
     #undef A__PIXEL_DRAW2
 }
 
-static void A__FUNC_NAME(a_draw__circle_clip)(int X, int Y, int Radius)
+static void A__FUNC_NAME(circle_clip)(int X, int Y, int Radius)
 {
     A__BLEND_SETUP;
 

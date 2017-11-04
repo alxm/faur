@@ -30,7 +30,7 @@ struct ASprite {
     APixel* pixels;
     size_t pixelsSize;
     char* nameId;
-    int w, wLog2, h;
+    int w, wLog2, wOriginal, h;
 #if A_CONFIG_RENDER_SOFTWARE
     unsigned* spans;
     size_t spansSize;

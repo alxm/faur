@@ -33,6 +33,13 @@ struct AFont {
     int maxHeight;
 };
 
+enum {
+    A_FONT__NUM_ALPHA = 52,
+    A_FONT__NUM_NUMERIC = 10,
+    A_FONT__NUM_ALPHANUMERIC = A_FONT__NUM_ALPHA + A_FONT__NUM_NUMERIC,
+    A_FONT__NUM_ALL = A_FONT__NUM_ALPHANUMERIC + 32
+};
+
 static const char g_chars[] =
     "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz"
     "0123456789"
@@ -113,7 +120,25 @@ AFont* a_font_new(const ASprite* Sheet, int X, int Y, AFontLoad Loader)
     AFont* f = a_mem_malloc(sizeof(AFont));
 
     ASpriteFrames* frames = a_spriteframes_new(Sheet, X, Y, 0);
-    ASprite* gapSprite = a_spriteframes_next(frames);
+    unsigned numFrames = a_spriteframes_getNum(frames);
+    bool hasGapSprite = numFrames > A_FONT__NUM_ALL + 1;
+
+    unsigned start = 0;
+    unsigned end = CHARS_NUM - 1;
+
+    if(Loader & A_FONT_LOAD_ALPHANUMERIC) {
+        end = charIndex('9');
+        hasGapSprite = numFrames > A_FONT__NUM_ALPHANUMERIC + 1;
+    } else if(Loader & A_FONT_LOAD_ALPHA) {
+        end = charIndex('z');
+        hasGapSprite = numFrames > A_FONT__NUM_ALPHA + 1;
+    } else if(Loader & A_FONT_LOAD_NUMERIC) {
+        start = charIndex('0');
+        end = charIndex('9');
+        hasGapSprite = numFrames > A_FONT__NUM_NUMERIC + 1;
+    }
+
+    ASprite* gapSprite = hasGapSprite ? a_spriteframes_next(frames) : NULL;
     ASprite* blankSprite = a_spriteframes_next(frames);
 
     for(int i = CHAR_ENTRIES_NUM; i--; ) {
@@ -121,24 +146,12 @@ AFont* a_font_new(const ASprite* Sheet, int X, int Y, AFontLoad Loader)
     }
 
     f->gapSprite = gapSprite;
-    f->gap = gapSprite->w;
+    f->gap = gapSprite ? gapSprite->w : 0;
     f->blankWidth = blankSprite->w;
     f->maxWidth = blankSprite->w;
     f->maxHeight = blankSprite->h;
 
     a_list_addLast(g_fontsList, f);
-
-    unsigned start = 0;
-    unsigned end = CHARS_NUM - 1;
-
-    if(Loader & A_FONT_LOAD_ALPHANUMERIC) {
-        end = charIndex('9');
-    } else if(Loader & A_FONT_LOAD_ALPHA) {
-        end = charIndex('z');
-    } else if(Loader & A_FONT_LOAD_NUMERIC) {
-        start = charIndex('0');
-        end = charIndex('9');
-    }
 
     for(unsigned i = start; i <= end; i++) {
         ASprite* spr = a_spriteframes_next(frames);
@@ -320,8 +333,10 @@ static void drawString(const char* Text, ptrdiff_t Length)
             a_sprite_blit(spr, g_state.x + xOffset, g_state.y);
             g_state.x += font->maxWidth;
 
-            a_sprite_blit(font->gapSprite, g_state.x, g_state.y);
-            g_state.x += font->gap;
+            if(font->gap > 0) {
+                a_sprite_blit(font->gapSprite, g_state.x, g_state.y);
+                g_state.x += font->gap;
+            }
         }
     } else {
         for( ; Length--; Text++) {
@@ -330,8 +345,10 @@ static void drawString(const char* Text, ptrdiff_t Length)
             a_sprite_blit(spr, g_state.x, g_state.y);
             g_state.x += spr->w;
 
-            a_sprite_blit(font->gapSprite, g_state.x, g_state.y);
-            g_state.x += font->gap;
+            if(font->gap > 0) {
+                a_sprite_blit(font->gapSprite, g_state.x, g_state.y);
+                g_state.x += font->gap;
+            }
         }
     }
 }

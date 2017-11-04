@@ -47,14 +47,13 @@ static ABlitter g_blitter_block_doclip;
 static ABlitter g_blitter_keyed_noclip;
 static ABlitter g_blitter_keyed_doclip;
 
-#define A__FUNC_NAME_JOIN_WORKER(A, B, C, D) a_blit__##A##_##B##_##C##_##D
-#define A__FUNC_NAME_JOIN(A, B, C, D) A__FUNC_NAME_JOIN_WORKER(A, B, C, D)
-#define A__FUNC_NAME(Blend, Fill, ColorKey, Clip) A__FUNC_NAME_JOIN(Blend, Fill, ColorKey, Clip)
+#define A__FUNC_NAME_EXPAND2(Blend, Fill, ColorKey, Clip) a_blit__##Blend##_##Fill##_##ColorKey##_##Clip
+#define A__FUNC_NAME_EXPAND(Blend, Fill, ColorKey, Clip) A__FUNC_NAME_EXPAND2(Blend, Fill, ColorKey, Clip)
+#define A__FUNC_NAME(ColorKey, Clip) A__FUNC_NAME_EXPAND(A__BLEND, A__FILL, ColorKey, Clip)
 
-#define A__PIXEL_DRAW_JOIN_WORKER(A) a_pixel__##A
-#define A__PIXEL_DRAW_JOIN(A) A__PIXEL_DRAW_JOIN_WORKER(A)
-#define A__PIXEL_DRAW_WORKER(Params) A__PIXEL_DRAW_JOIN(A__BLEND)(Params)
-#define A__PIXEL_DRAW(Dst) A__PIXEL_DRAW_WORKER(Dst A__PIXEL_PARAMS)
+#define A__PIXEL_DRAW_EXPAND2(Blend) a_pixel__##Blend
+#define A__PIXEL_DRAW_EXPAND(Blend, Params) A__PIXEL_DRAW_EXPAND2(Blend)(Params)
+#define A__PIXEL_DRAW A__PIXEL_DRAW_EXPAND(A__BLEND, a__pass_dst A__PIXEL_PARAMS)
 
 #define A__BLEND plain
 #define A__FILL data
@@ -181,15 +180,15 @@ static ABlitter g_blitter_keyed_doclip;
 
 void a_sprite__init(void)
 {
-    #define initRoutines(Index, Blend)                                         \
-        g_blitters[Index][0][0][0] = A__FUNC_NAME(Blend, data, block, noclip); \
-        g_blitters[Index][0][0][1] = A__FUNC_NAME(Blend, data, block, doclip); \
-        g_blitters[Index][0][1][0] = A__FUNC_NAME(Blend, data, keyed, noclip); \
-        g_blitters[Index][0][1][1] = A__FUNC_NAME(Blend, data, keyed, doclip); \
-        g_blitters[Index][1][0][0] = A__FUNC_NAME(Blend, flat, block, noclip); \
-        g_blitters[Index][1][0][1] = A__FUNC_NAME(Blend, flat, block, doclip); \
-        g_blitters[Index][1][1][0] = A__FUNC_NAME(Blend, flat, keyed, noclip); \
-        g_blitters[Index][1][1][1] = A__FUNC_NAME(Blend, flat, keyed, doclip); \
+    #define initRoutines(Index, Blend)                                    \
+        g_blitters[Index][0][0][0] = a_blit__##Blend##_data_block_noclip; \
+        g_blitters[Index][0][0][1] = a_blit__##Blend##_data_block_doclip; \
+        g_blitters[Index][0][1][0] = a_blit__##Blend##_data_keyed_noclip; \
+        g_blitters[Index][0][1][1] = a_blit__##Blend##_data_keyed_doclip; \
+        g_blitters[Index][1][0][0] = a_blit__##Blend##_flat_block_noclip; \
+        g_blitters[Index][1][0][1] = a_blit__##Blend##_flat_block_doclip; \
+        g_blitters[Index][1][1][0] = a_blit__##Blend##_flat_keyed_noclip; \
+        g_blitters[Index][1][1][1] = a_blit__##Blend##_flat_keyed_doclip;
 
     initRoutines(A_PIXEL_BLEND_PLAIN, plain);
     initRoutines(A_PIXEL_BLEND_RGBA, rgba);
@@ -544,6 +543,7 @@ void a_sprite_pow2Width(ASprite* Sprite)
 
     Sprite->w = newWidth;
     Sprite->wLog2 = power;
+    Sprite->wOriginal = oldWidth;
     Sprite->pixelsSize = newSize;
     assignPixels(Sprite, newPixels - newSize / sizeof(APixel));
 }
@@ -567,6 +567,11 @@ int a_sprite_getWidth(const ASprite* Sprite)
 int a_sprite_getWidthLog2(const ASprite* Sprite)
 {
     return Sprite->wLog2;
+}
+
+int a_sprite_getWidthOriginal(const ASprite* Sprite)
+{
+    return Sprite->wOriginal;
 }
 
 int a_sprite_getHeight(const ASprite* Sprite)

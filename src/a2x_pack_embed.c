@@ -27,7 +27,7 @@ typedef struct AEmbeddedData {
     size_t size;
 } AEmbeddedData;
 
-AStrHash* g_data; // table of AEmbeddedData
+static AStrHash* g_data; // table of AEmbeddedData
 
 void a_embed__init(void)
 {
