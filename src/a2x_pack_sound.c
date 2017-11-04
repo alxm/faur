@@ -43,7 +43,7 @@ static int g_volumeMax;
 
 static void adjustSoundVolume(int Volume)
 {
-    g_volume = a_math_constrain(Volume, 0, g_volumeMax);
+    g_volume = a_math_clamp(Volume, 0, g_volumeMax);
     g_musicVolume = a_settings_getInt("sound.music.scale") * g_volume / 100;
     g_sfxVolume = a_settings_getInt("sound.sfx.scale") * g_volume / 100;
 }

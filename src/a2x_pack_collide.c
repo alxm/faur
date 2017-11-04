@@ -136,19 +136,19 @@ void a_colobject_setCoords(AColObject* Object, int X, int Y)
     int start_y, end_y;
 
     if(offset_x < submapDim / 2) {
-        start_x = a_math_constrain(submap_x - 1, 0, m->w - 1);
-        end_x = a_math_constrain(submap_x, 0, m->w - 1);
+        start_x = a_math_clamp(submap_x - 1, 0, m->w - 1);
+        end_x = a_math_clamp(submap_x, 0, m->w - 1);
     } else {
-        start_x = a_math_constrain(submap_x, 0, m->w - 1);
-        end_x = a_math_constrain(submap_x + 1, 0, m->w - 1);
+        start_x = a_math_clamp(submap_x, 0, m->w - 1);
+        end_x = a_math_clamp(submap_x + 1, 0, m->w - 1);
     }
 
     if(offset_y < submapDim / 2) {
-        start_y = a_math_constrain(submap_y - 1, 0, m->h - 1);
-        end_y = a_math_constrain(submap_y, 0, m->h - 1);
+        start_y = a_math_clamp(submap_y - 1, 0, m->h - 1);
+        end_y = a_math_clamp(submap_y, 0, m->h - 1);
     } else {
-        start_y = a_math_constrain(submap_y, 0, m->h - 1);
-        end_y = a_math_constrain(submap_y + 1, 0, m->h - 1);
+        start_y = a_math_clamp(submap_y, 0, m->h - 1);
+        end_y = a_math_clamp(submap_y + 1, 0, m->h - 1);
     }
 
     // add object to every submap in its surrounding perimeter
@@ -169,8 +169,8 @@ AList* a_colobject__getPossibleCollisions(const AColObject* Object)
 {
     const AColMap* map = Object->colmap;
 
-    int submap_x = a_math_constrain(Object->x >> map->bitShift, 0, map->w - 1);
-    int submap_y = a_math_constrain(Object->y >> map->bitShift, 0, map->h - 1);
+    int submap_x = a_math_clamp(Object->x >> map->bitShift, 0, map->w - 1);
+    int submap_y = a_math_clamp(Object->y >> map->bitShift, 0, map->h - 1);
 
     return map->submaps[submap_y][submap_x];
 }

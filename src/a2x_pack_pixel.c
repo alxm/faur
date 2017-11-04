@@ -136,7 +136,7 @@ int a_pixel_getAlpha(void)
 
 void a_pixel_setAlpha(int Alpha)
 {
-    a_pixel__state.alpha = a_math_constrain(Alpha, 0, A_PIXEL_ALPHA_MAX);
+    a_pixel__state.alpha = a_math_clamp(Alpha, 0, A_PIXEL_ALPHA_MAX);
 
     #if A_CONFIG_RENDER_SOFTWARE
         optimizeAlphaBlending(true);
@@ -162,7 +162,7 @@ void a_pixel_setRGBA(int Red, int Green, int Blue, int Alpha)
     a_pixel__state.red = (unsigned)Red & 0xff;
     a_pixel__state.green = (unsigned)Green & 0xff;
     a_pixel__state.blue = (unsigned)Blue & 0xff;
-    a_pixel__state.alpha = a_math_constrain(Alpha, 0, A_PIXEL_ALPHA_MAX);
+    a_pixel__state.alpha = a_math_clamp(Alpha, 0, A_PIXEL_ALPHA_MAX);
     a_pixel__state.pixel = a_pixel_rgb(Red, Green, Blue);
 
     #if A_CONFIG_RENDER_SOFTWARE

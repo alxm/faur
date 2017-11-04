@@ -60,12 +60,12 @@ static inline int a_math_abs(int X)
     return X >= 0 ? X : -X;
 }
 
-static inline int a_math_constrain(int X, int Min, int Max)
+static inline int a_math_clamp(int X, int Min, int Max)
 {
     return X < Min ? Min : (X > Max ? Max : X);
 }
 
-static inline unsigned a_math_constrainu(unsigned X, unsigned Min, unsigned Max)
+static inline unsigned a_math_clampu(unsigned X, unsigned Min, unsigned Max)
 {
     return X < Min ? Min : (X > Max ? Max : X);
 }
