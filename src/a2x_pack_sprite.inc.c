@@ -19,7 +19,7 @@
 
 // Spans format for each graphic line:
 // [NumSpans << 1 | 1 (draw) / 0 (transparent)][[len]...]
-static void A__FUNC_NAME(A__BLEND, A__FILL, keyed, noclip)(const ASprite* Sprite, int X, int Y)
+static void A__FUNC_NAME(keyed, noclip)(const ASprite* Sprite, int X, int Y)
 {
     A__BLEND_SETUP;
 
@@ -38,7 +38,7 @@ static void A__FUNC_NAME(A__BLEND, A__FILL, keyed, noclip)(const ASprite* Sprite
 
             if(draw) {
                 while(len--) {
-                    A__PIXEL_DRAW(a__pass_dst);
+                    A__PIXEL_DRAW;
                     a__pass_dst++;
                     a__pass_src++;
                 }
@@ -52,7 +52,7 @@ static void A__FUNC_NAME(A__BLEND, A__FILL, keyed, noclip)(const ASprite* Sprite
     }
 }
 
-static void A__FUNC_NAME(A__BLEND, A__FILL, keyed, doclip)(const ASprite* Sprite, int X, int Y)
+static void A__FUNC_NAME(keyed, doclip)(const ASprite* Sprite, int X, int Y)
 {
     A__BLEND_SETUP;
 
@@ -103,7 +103,7 @@ static void A__FUNC_NAME(A__BLEND, A__FILL, keyed, doclip)(const ASprite* Sprite
                 drawColumns -= len;
             } else {
                 while(len-- && drawColumns--) {
-                    A__PIXEL_DRAW(a__pass_dst);
+                    A__PIXEL_DRAW;
                     a__pass_dst++;
                     a__pass_src++;
                 }
@@ -116,7 +116,7 @@ static void A__FUNC_NAME(A__BLEND, A__FILL, keyed, doclip)(const ASprite* Sprite
 
             if(draw) {
                 while(len-- && drawColumns--) {
-                    A__PIXEL_DRAW(a__pass_dst);
+                    A__PIXEL_DRAW;
                     a__pass_dst++;
                     a__pass_src++;
                 }
@@ -134,7 +134,7 @@ static void A__FUNC_NAME(A__BLEND, A__FILL, keyed, doclip)(const ASprite* Sprite
     }
 }
 
-static void A__FUNC_NAME(A__BLEND, A__FILL, block, noclip)(const ASprite* Sprite, int X, int Y)
+static void A__FUNC_NAME(block, noclip)(const ASprite* Sprite, int X, int Y)
 {
     A__BLEND_SETUP;
 
@@ -146,14 +146,14 @@ static void A__FUNC_NAME(A__BLEND, A__FILL, block, noclip)(const ASprite* Sprite
         APixel* a__pass_dst = dst;
 
         for(int j = Sprite->w; j--; ) {
-            A__PIXEL_DRAW(a__pass_dst);
+            A__PIXEL_DRAW;
             a__pass_dst++;
             a__pass_src++;
         }
     }
 }
 
-static void A__FUNC_NAME(A__BLEND, A__FILL, block, doclip)(const ASprite* Sprite, int X, int Y)
+static void A__FUNC_NAME(block, doclip)(const ASprite* Sprite, int X, int Y)
 {
     A__BLEND_SETUP;
 
@@ -177,7 +177,7 @@ static void A__FUNC_NAME(A__BLEND, A__FILL, block, doclip)(const ASprite* Sprite
         const APixel* a__pass_src = startSrc;
 
         for(int j = columns; j--; ) {
-            A__PIXEL_DRAW(a__pass_dst);
+            A__PIXEL_DRAW;
             a__pass_dst++;
             a__pass_src++;
         }
