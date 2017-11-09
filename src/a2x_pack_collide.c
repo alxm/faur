@@ -177,10 +177,7 @@ AList* a_colobject__getPossibleCollisions(const AColObject* Object)
 
 bool a_collide_boxAndBox(int X1, int Y1, int W1, int H1, int X2, int Y2, int W2, int H2)
 {
-    return !(Y1 >= Y2 + H2
-          || Y2 >= Y1 + H1
-          || X1 >= X2 + W2
-          || X2 >= X1 + W1);
+    return !(Y1 >= Y2 + H2 || Y2 >= Y1 + H1 || X1 >= X2 + W2 || X2 >= X1 + W1);
 }
 
 bool a_collide_circleAndCircle(int X1, int Y1, int R1, int X2, int Y2, int R2)
