@@ -30,7 +30,7 @@ $ cd hello/make/
 $ make run
 ```
 
-![Screenshot](https://github.com/alxm/a2x/raw/master/doc/draw-a-box-00001.png "Screenshot")
+![Starter Project Screenshot](https://github.com/alxm/a2x/raw/master/doc/hello.gif "Starter Project Screenshot")
 
 The starter project draws a square on the screen which you can move around with the arrow keys. The code is in `hello/src/main.c`:
 
