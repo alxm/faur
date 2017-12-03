@@ -347,7 +347,11 @@ void a_sdl_screen__setFullScreen(bool FullScreen)
         }
     #endif
 
-    if(SDL_ShowCursor(FullScreen ? SDL_DISABLE : SDL_ENABLE) < 0) {
+    int toggle = FullScreen || a_settings_getBool("input.hideCursor")
+                    ? SDL_DISABLE
+                    : SDL_ENABLE;
+
+    if(SDL_ShowCursor(toggle) < 0) {
         a_out__error("SDL_ShowCursor failed: %s", SDL_GetError());
     }
 }
