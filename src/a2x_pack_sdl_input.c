@@ -819,4 +819,11 @@ void a_sdl_input__get(void)
             default:break;
         }
     }
+
+    int mouseDx = 0, mouseDy = 0;
+    SDL_GetRelativeMouseState(&mouseDx, &mouseDy);
+
+    A_STRHASH_ITERATE(g_touchScreens, ASdlInputTouch*, t) {
+        a_input_touch__setDelta(t->logicalTouch, mouseDx, mouseDy);
+    }
 }

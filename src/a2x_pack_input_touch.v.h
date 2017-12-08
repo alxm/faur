@@ -32,5 +32,6 @@ extern AInputTouchSource* a_input_touch__newSource(const char* Id);
 
 extern void a_input_touch__addMotion(AInputTouchSource* Touch, int X, int Y);
 extern void a_input_touch__setCoords(AInputTouchSource* Touch, int X, int Y, bool Tapped);
+extern void a_input_touch__setDelta(AInputTouchSource* Touch, int Dx, int Dy);
 
 extern void a_input_touch__clearMotion(void);

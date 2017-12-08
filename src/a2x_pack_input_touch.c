@@ -25,8 +25,8 @@ struct AInputTouch {
 
 struct AInputTouchSource {
     AInputSourceHeader header;
-    int x;
-    int y;
+    int x, y;
+    int dx, dy;
     bool tap;
     AList* motion; // AInputTouchPoints captured by motion event
 };
@@ -70,6 +70,8 @@ AInputTouchSource* a_input_touch__newSource(const char* Id)
     t->tap = false;
     t->x = 0;
     t->y = 0;
+    t->dx = 0;
+    t->dy = 0;
     t->motion = a_list_new();
 
     a_strhash_add(g_sourceTouchScreens, Id, t);
@@ -103,6 +105,14 @@ AInputTouch* a_touch_new(const char* Ids)
 bool a_touch_isWorking(const AInputTouch* Touch)
 {
     return !a_list_isEmpty(Touch->header.sourceInputs);
+}
+
+void a_touch_getDelta(const AInputTouch* Touch, int* Dx, int* Dy)
+{
+    AInputTouchSource* t = a_list_getFirst(Touch->header.sourceInputs);
+
+    *Dx = t->dx;
+    *Dy = t->dy;
 }
 
 bool a_touch_getTap(const AInputTouch* Touch)
@@ -156,6 +166,12 @@ void a_input_touch__setCoords(AInputTouchSource* Touch, int X, int Y, bool Tappe
     Touch->tap = Tapped;
 
     a_input__setFreshEvent(&Touch->header);
+}
+
+void a_input_touch__setDelta(AInputTouchSource* Touch, int Dx, int Dy)
+{
+    Touch->dx = Dx;
+    Touch->dy = Dy;
 }
 
 void a_input_touch__clearMotion(void)
