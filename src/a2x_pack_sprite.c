@@ -53,7 +53,7 @@ static ABlitter g_blitter_keyed_doclip;
 
 #define A__PIXEL_DRAW_EXPAND2(Blend) a_pixel__##Blend
 #define A__PIXEL_DRAW_EXPAND(Blend, Params) A__PIXEL_DRAW_EXPAND2(Blend)(Params)
-#define A__PIXEL_DRAW A__PIXEL_DRAW_EXPAND(A__BLEND, a__pass_dst A__PIXEL_PARAMS)
+#define A__PIXEL_DRAW(Dst) A__PIXEL_DRAW_EXPAND(A__BLEND, Dst A__PIXEL_PARAMS)
 
 #define A__BLEND plain
 #define A__FILL data

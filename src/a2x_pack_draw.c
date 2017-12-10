@@ -187,15 +187,15 @@ do {                                                                        \
         }                                                                   \
     }                                                                       \
                                                                             \
-    APixel* a__pass_dst = Buffer;                                           \
+    APixel* dst = Buffer;                                                   \
                                                                             \
     if((PrimaryOnScreen) && (SecondaryOnScreen)) {                          \
         while(PrimaryCoord < SecondaryCoord && (PrimaryOnScreen)) {         \
             error += 2 * PrimaryCoord + 1;                                  \
             PrimaryCoord++;                                                 \
                                                                             \
-            A__PIXEL_DRAW;                                                  \
-            a__pass_dst += PrimaryBufferInc;                                \
+            A__PIXEL_DRAW(dst);                                             \
+            dst += PrimaryBufferInc;                                        \
                                                                             \
             if(error > 0) {                                                 \
                 error += -2 * SecondaryCoord + 1;                           \
@@ -205,7 +205,7 @@ do {                                                                        \
                     break;                                                  \
                 }                                                           \
                                                                             \
-                a__pass_dst += SecondaryBufferInc;                          \
+                dst += SecondaryBufferInc;                                  \
             }                                                               \
         }                                                                   \
     }                                                                       \
@@ -217,7 +217,7 @@ do {                                                                        \
 
 #define A__PIXEL_DRAW_EXPAND2(Blend) a_pixel__##Blend
 #define A__PIXEL_DRAW_EXPAND(Blend, Params) A__PIXEL_DRAW_EXPAND2(Blend)(Params)
-#define A__PIXEL_DRAW A__PIXEL_DRAW_EXPAND(A__BLEND, a__pass_dst A__PIXEL_PARAMS)
+#define A__PIXEL_DRAW(Dst) A__PIXEL_DRAW_EXPAND(A__BLEND, Dst A__PIXEL_PARAMS)
 
 #define A__BLEND plain
 #define A__BLEND_SETUP \
