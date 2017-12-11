@@ -71,21 +71,34 @@ static void A__FUNC_NAME(line)(int X1, int Y1, int X2, int Y2)
         const int yinc2 = (denominator == deltax) ? yinct : 0;
 
         const int screenw = a__screen.width;
-        APixel* dst = a__screen.pixels + Y1 * screenw + X1;
+        APixel* dst1 = a__screen.pixels + Y1 * screenw + X1;
+        APixel* dst2 = a__screen.pixels + Y2 * screenw + X2;
 
-        for(int i = denominator + 1; i--; ) {
-            A__PIXEL_DRAW(dst);
+        for(int i = (denominator + 1) / 2; i--; ) {
+            A__PIXEL_DRAW(dst1);
+            A__PIXEL_DRAW(dst2);
 
             numerator += numeratorinc;
 
             if(numerator >= denominator) {
                 numerator -= denominator;
-                dst += xinc2;
-                dst += yinc2 * screenw;
+
+                dst1 += xinc2;
+                dst1 += yinc2 * screenw;
+
+                dst2 -= xinc2;
+                dst2 -= yinc2 * screenw;
             }
 
-            dst += xinc1;
-            dst += yinc1 * screenw;
+            dst1 += xinc1;
+            dst1 += yinc1 * screenw;
+
+            dst2 -= xinc1;
+            dst2 -= yinc1 * screenw;
+        }
+
+        if((denominator & 1) == 0) {
+            A__PIXEL_DRAW(dst1);
         }
     }
 }
