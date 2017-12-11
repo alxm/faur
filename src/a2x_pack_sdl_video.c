@@ -363,6 +363,25 @@ void a_sdl_render__clear(void)
         a_out__error("SDL_RenderClear failed: %s", SDL_GetError());
     }
 }
+
+void a_sdl_video__getFullResolution(int* Width, int* Height)
+{
+    SDL_DisplayMode mode;
+
+    if(SDL_GetCurrentDisplayMode(0, &mode) < 0) {
+        a_out__error("SDL_GetCurrentDisplayMode failed: %s",
+                     SDL_GetError());
+        return;
+    }
+
+    a_out__message("Display info: %dx%d %dbpp",
+                   mode.w,
+                   mode.h,
+                   SDL_BITSPERPIXEL(mode.format));
+
+    *Width = mode.w / -*Width;
+    *Height = mode.h / -*Height;
+}
 #endif
 
 #if A_CONFIG_RENDER_SDL2
@@ -392,25 +411,6 @@ static inline uint8_t pixelAlphaToSdlAlpha(void)
         default:
             return SDL_ALPHA_OPAQUE;
     }
-}
-
-void a_sdl_video__getFullResolution(int* Width, int* Height)
-{
-    SDL_DisplayMode mode;
-
-    if(SDL_GetCurrentDisplayMode(0, &mode) < 0) {
-        a_out__error("SDL_GetCurrentDisplayMode failed: %s",
-                     SDL_GetError());
-        return;
-    }
-
-    a_out__message("Display info: %dx%d %dbpp",
-                   mode.w,
-                   mode.h,
-                   SDL_BITSPERPIXEL(mode.format));
-
-    *Width = mode.w / -*Width;
-    *Height = mode.h / -*Height;
 }
 
 void a_sdl_render__setDrawColor(void)
