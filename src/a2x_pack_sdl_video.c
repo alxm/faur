@@ -379,8 +379,13 @@ void a_sdl_video__getFullResolution(int* Width, int* Height)
                    mode.h,
                    SDL_BITSPERPIXEL(mode.format));
 
-    *Width = mode.w / -*Width;
-    *Height = mode.h / -*Height;
+    if(*Width < 0) {
+        *Width = mode.w / -*Width;
+    }
+
+    if(*Height < 0) {
+        *Height = mode.h / -*Height;
+    }
 }
 #endif
 

@@ -90,7 +90,7 @@ void a_screen__init(void)
     int height = a_settings_getInt("video.height");
 
     #if A_CONFIG_LIB_SDL == 2
-        if(width < 0 && height < 0) {
+        if(width < 0 || height < 0) {
             a_sdl_video__getFullResolution(&width, &height);
         }
     #endif
