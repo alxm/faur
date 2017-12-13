@@ -24,7 +24,24 @@ static void A__FUNC_NAME(pixel)(int X, int Y)
     A__PIXEL_DRAW(a__screen.pixels + Y * a__screen.width + X);
 }
 
-static void A__FUNC_NAME(rectangle)(int X, int Y, int Width, int Height)
+static void A__FUNC_NAME(rectangle_nofill)(int X, int Y, int Width, int Height)
+{
+    g_draw_hline(X, X + Width - 1, Y);
+
+    if(Height > 1) {
+        g_draw_hline(X, X + Width - 1, Y + Height - 1);
+
+        if(Height > 2) {
+            g_draw_vline(X, Y + 1, Y + Height - 2);
+
+            if(Width > 1) {
+                g_draw_vline(X + Width - 1, Y + 1, Y + Height - 2);
+            }
+        }
+    }
+}
+
+static void A__FUNC_NAME(rectangle_fill)(int X, int Y, int Width, int Height)
 {
     A__BLEND_SETUP;
 

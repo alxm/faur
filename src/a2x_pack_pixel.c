@@ -201,6 +201,7 @@ void a_pixel_setFill(bool Fill)
     a_pixel__state.fill = Fill;
 
     #if A_CONFIG_RENDER_SOFTWARE
+        a_draw__updateRoutines();
         a_sprite__updateRoutines();
     #endif
 }

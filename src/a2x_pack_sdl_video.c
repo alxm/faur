@@ -455,8 +455,14 @@ void a_sdl_render__drawRectangle(int X, int Y, int Width, int Height)
 {
     SDL_Rect area = {X, Y, Width, Height};
 
-    if(SDL_RenderFillRect(g_sdlRenderer, &area) < 0) {
-        a_out__error("SDL_RenderFillRect failed: %s", SDL_GetError());
+    if(a_pixel__state.fill) {
+        if(SDL_RenderFillRect(g_sdlRenderer, &area) < 0) {
+            a_out__error("SDL_RenderFillRect failed: %s", SDL_GetError());
+        }
+    } else {
+        if(SDL_RenderDrawRect(g_sdlRenderer, &area) < 0) {
+            a_out__error("SDL_RenderDrawRect failed: %s", SDL_GetError());
+        }
     }
 }
 
