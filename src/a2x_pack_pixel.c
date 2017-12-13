@@ -63,7 +63,7 @@ void a_pixel_reset(void)
 {
     a_pixel_setBlend(A_PIXEL_BLEND_PLAIN);
     a_pixel_setRGBA(0, 0, 0, A_PIXEL_ALPHA_MAX);
-    a_pixel_setBlitFillFlat(false);
+    a_pixel_setFill(false);
 }
 
 #if A_CONFIG_RENDER_SOFTWARE
@@ -196,9 +196,9 @@ void a_pixel_setPixel(APixel Pixel)
     #endif
 }
 
-void a_pixel_setBlitFillFlat(bool FillFlat)
+void a_pixel_setFill(bool Fill)
 {
-    a_pixel__state.blitFillFlat = FillFlat;
+    a_pixel__state.fill = Fill;
 
     #if A_CONFIG_RENDER_SOFTWARE
         a_sprite__updateRoutines();

@@ -152,4 +152,4 @@ extern void a_pixel_setRGB(int Red, int Green, int Blue);
 extern void a_pixel_setRGBA(int Red, int Green, int Blue, int Alpha);
 extern void a_pixel_setHex(uint32_t Hexcode);
 extern void a_pixel_setPixel(APixel Pixel);
-extern void a_pixel_setBlitFillFlat(bool FillFlat);
+extern void a_pixel_setFill(bool Fill);

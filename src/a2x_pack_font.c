@@ -177,7 +177,7 @@ AFont* a_font_dup(AFont* Font, APixel Color)
 
     a_pixel_push();
     a_pixel_setPixel(Color);
-    a_pixel_setBlitFillFlat(true);
+    a_pixel_setFill(true);
 
     for(int i = CHAR_ENTRIES_NUM; i--; ) {
         ASprite* sprite = NULL;
