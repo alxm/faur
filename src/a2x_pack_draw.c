@@ -380,7 +380,14 @@ void a_draw_rectangle(int X, int Y, int Width, int Height)
 void a_draw_line(int X1, int Y1, int X2, int Y2)
 {
     #if A_CONFIG_RENDER_SOFTWARE
-        if(!cohen_sutherland_clip(&X1, &Y1, &X2, &Y2)) {
+        int x = a_math_min(X1, X2);
+        int y = a_math_min(Y1, Y2);
+        int w = a_math_abs(X2 - X1) + 1;
+        int h = a_math_abs(Y2 - Y1) + 1;
+
+        if(!a_screen_isBoxOnClip(x, y, w, h)
+            || !cohen_sutherland_clip(&X1, &Y1, &X2, &Y2)) {
+
             return;
         }
 
