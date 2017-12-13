@@ -465,11 +465,10 @@ void a_sdl_render__drawCircle(int X, int Y, int Radius)
     unsigned segments = 32;
     unsigned angleInc = A_MATH_ANGLES_NUM / segments;
     SDL_Point points[segments + 1];
-    float radius = (float)Radius;
 
     for(unsigned p = 0, angle = 0; p < segments; p++, angle += angleInc) {
-        points[p].x = X + (int)(a_math_cos(angle) * radius);
-        points[p].y = Y + (int)(a_math_sin(angle) * radius);
+        points[p].x = X + a_fix_fixtoi(a_fix_round(a_fix_cos(angle) * Radius));
+        points[p].y = Y + a_fix_fixtoi(a_fix_round(a_fix_sin(angle) * Radius));
     }
 
     points[segments] = points[0];
