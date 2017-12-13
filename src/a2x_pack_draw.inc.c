@@ -109,7 +109,7 @@ static void A__FUNC_NAME(hline)(int X1, int X2, int Y)
 
     APixel* dst = a__screen.pixels + Y * a__screen.width + X1;
 
-    for(int i = X2 - X1; i--; dst++) {
+    for(int i = X2 - X1 + 1; i--; dst++) {
         A__PIXEL_DRAW(dst);
     }
 }
@@ -121,7 +121,7 @@ static void A__FUNC_NAME(vline)(int X, int Y1, int Y2)
     const int screenw = a__screen.width;
     APixel* dst = a__screen.pixels + Y1 * screenw + X;
 
-    for(int i = Y2 - Y1; i--; dst += screenw) {
+    for(int i = Y2 - Y1 + 1; i--; dst += screenw) {
         A__PIXEL_DRAW(dst);
     }
 }

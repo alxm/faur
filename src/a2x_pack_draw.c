@@ -392,33 +392,41 @@ void a_draw_line(int X1, int Y1, int X2, int Y2)
 
 void a_draw_hline(int X1, int X2, int Y)
 {
+    int xMin = a_math_min(X1, X2);
+    int xMax = a_math_max(X1, X2);
+    int length = xMax - xMin + 1;
+
     #if A_CONFIG_RENDER_SOFTWARE
-        if(X1 >= X2 || !a_screen_isBoxOnClip(X1, Y, X2 - X1, 1)) {
+        if(!a_screen_isBoxOnClip(xMin, Y, length, 1)) {
             return;
         }
 
-        X1 = a_math_max(X1, a__screen.clipX);
-        X2 = a_math_min(X2, a__screen.clipX2);
+        xMin = a_math_max(xMin, a__screen.clipX);
+        xMax = a_math_min(xMax, a__screen.clipX2 - 1);
 
-        g_draw_hline(X1, X2, Y);
+        g_draw_hline(xMin, xMax, Y);
     #elif A_CONFIG_RENDER_SDL2
-        a_sdl_render__drawRectangle(X1, Y, X2 - X1, 1);
+        a_sdl_render__drawRectangle(xMin, Y, length, 1);
     #endif
 }
 
 void a_draw_vline(int X, int Y1, int Y2)
 {
+    int yMin = a_math_min(Y1, Y2);
+    int yMax = a_math_max(Y1, Y2);
+    int length = yMax - yMin + 1;
+
     #if A_CONFIG_RENDER_SOFTWARE
-        if(Y1 >= Y2 || !a_screen_isBoxOnClip(X, Y1, 1, Y2 - Y1)) {
+        if(!a_screen_isBoxOnClip(X, yMin, 1, length)) {
             return;
         }
 
-        Y1 = a_math_max(Y1, a__screen.clipY);
-        Y2 = a_math_min(Y2, a__screen.clipY2);
+        yMin = a_math_max(yMin, a__screen.clipY);
+        yMax = a_math_min(yMax, a__screen.clipY2 - 1);
 
-        g_draw_vline(X, Y1, Y2);
+        g_draw_vline(X, yMin, yMax);
     #elif A_CONFIG_RENDER_SDL2
-        a_sdl_render__drawRectangle(X, Y1, 1, Y2 - Y1);
+        a_sdl_render__drawRectangle(X, yMin, 1, length);
     #endif
 }
 
