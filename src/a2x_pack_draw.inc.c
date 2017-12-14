@@ -143,7 +143,7 @@ static void A__FUNC_NAME(vline)(int X, int Y1, int Y2)
     }
 }
 
-static void A__FUNC_NAME(circle_noclip)(int X, int Y, int Radius)
+static void A__FUNC_NAME(circle_noclip_nofill)(int X, int Y, int Radius)
 {
     A__BLEND_SETUP;
 
@@ -228,7 +228,43 @@ static void A__FUNC_NAME(circle_noclip)(int X, int Y, int Radius)
     #undef A__PIXEL_DRAW2
 }
 
-static void A__FUNC_NAME(circle_clip)(int X, int Y, int Radius)
+static void A__FUNC_NAME(circle_noclip_fill)(int X, int Y, int Radius)
+{
+    if(--Radius <= 0) {
+        if(Radius == 0) {
+            g_draw_rectangle(X - 1, Y - 1, 2, 2);
+        }
+
+        return;
+    }
+
+    int x = Radius;
+    int y = 0;
+    int error = -Radius / 2;
+
+    while(x > y) {
+        g_draw_hline(X - 1 - x, X + x, Y - 1 - y);
+        g_draw_hline(X - 1 - x, X + x, Y + y);
+
+        error += 2 * y + 1; // (y+1)^2 = y^2 + 2y + 1
+        y++;
+
+        if(error > 0) { // check if x^2 + y^2 > r^2
+            g_draw_hline(X - 1 - y, X + y, Y - 1 - x);
+            g_draw_hline(X - 1 - y, X + y, Y + x);
+
+            error += -2 * x + 1; // (x-1)^2 = x^2 - 2x + 1
+            x--;
+        }
+    }
+
+    if(x == y) {
+        g_draw_hline(X - 1 - y, X + y, Y - 1 - x);
+        g_draw_hline(X - 1 - y, X + y, Y + x);
+    }
+}
+
+static void A__FUNC_NAME(circle_clip_nofill)(int X, int Y, int Radius)
 {
     A__BLEND_SETUP;
 
@@ -416,6 +452,42 @@ static void A__FUNC_NAME(circle_clip)(int X, int Y, int Radius)
         q4Y + y < clipY2, // PrimaryOnScreen
         q4X + x >= clipX1 // SecondaryOnScreen
         );
+}
+
+static void A__FUNC_NAME(circle_clip_fill)(int X, int Y, int Radius)
+{
+    if(--Radius <= 0) {
+        if(Radius == 0) {
+            a_draw_rectangle(X - 1, Y - 1, 2, 2);
+        }
+
+        return;
+    }
+
+    int x = Radius;
+    int y = 0;
+    int error = -Radius / 2;
+
+    while(x > y) {
+        a_draw_hline(X - 1 - x, X + x, Y - 1 - y);
+        a_draw_hline(X - 1 - x, X + x, Y + y);
+
+        error += 2 * y + 1; // (y+1)^2 = y^2 + 2y + 1
+        y++;
+
+        if(error > 0) { // check if x^2 + y^2 > r^2
+            a_draw_hline(X - 1 - y, X + y, Y - 1 - x);
+            a_draw_hline(X - 1 - y, X + y, Y + x);
+
+            error += -2 * x + 1; // (x-1)^2 = x^2 - 2x + 1
+            x--;
+        }
+    }
+
+    if(x == y) {
+        a_draw_hline(X - 1 - y, X + y, Y - 1 - x);
+        a_draw_hline(X - 1 - y, X + y, Y + x);
+    }
 }
 
 #undef A__BLEND

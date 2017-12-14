@@ -45,7 +45,7 @@ static ADrawHLine g_vline[A_PIXEL_BLEND_NUM];
 
 static ADrawCircle g_draw_circle_noclip;
 static ADrawCircle g_draw_circle_clip;
-static ADrawCircle g_circle[A_PIXEL_BLEND_NUM][2]; // [Blend][Clip]
+static ADrawCircle g_circle[A_PIXEL_BLEND_NUM][2][2]; // [Blend][Clip][Fill]
 
 static bool cohen_sutherland_clip(int* X1, int* Y1, int* X2, int* Y2)
 {
@@ -284,15 +284,17 @@ do {                                                                        \
 
 void a_draw__init(void)
 {
-    #define initRoutines(Index, Blend)                             \
-        g_pixel[Index] = a_draw__pixel_##Blend;                    \
-        g_rectangle[Index][0] = a_draw__rectangle_nofill_##Blend;  \
-        g_rectangle[Index][1] = a_draw__rectangle_fill_##Blend;    \
-        g_line[Index] = a_draw__line_##Blend;                      \
-        g_hline[Index] = a_draw__hline_##Blend;                    \
-        g_vline[Index] = a_draw__vline_##Blend;                    \
-        g_circle[Index][0] = a_draw__circle_noclip_##Blend;        \
-        g_circle[Index][1] = a_draw__circle_clip_##Blend;          \
+    #define initRoutines(Index, Blend)                                \
+        g_pixel[Index] = a_draw__pixel_##Blend;                       \
+        g_rectangle[Index][0] = a_draw__rectangle_nofill_##Blend;     \
+        g_rectangle[Index][1] = a_draw__rectangle_fill_##Blend;       \
+        g_line[Index] = a_draw__line_##Blend;                         \
+        g_hline[Index] = a_draw__hline_##Blend;                       \
+        g_vline[Index] = a_draw__vline_##Blend;                       \
+        g_circle[Index][0][0] = a_draw__circle_noclip_nofill_##Blend; \
+        g_circle[Index][0][1] = a_draw__circle_noclip_fill_##Blend;   \
+        g_circle[Index][1][0] = a_draw__circle_clip_nofill_##Blend;   \
+        g_circle[Index][1][1] = a_draw__circle_clip_fill_##Blend;
 
     initRoutines(A_PIXEL_BLEND_PLAIN, plain);
     initRoutines(A_PIXEL_BLEND_RGBA, rgba);
@@ -316,8 +318,8 @@ void a_draw__updateRoutines(void)
     g_draw_line = g_line[blend];
     g_draw_hline = g_hline[blend];
     g_draw_vline = g_vline[blend];
-    g_draw_circle_noclip = g_circle[blend][0];
-    g_draw_circle_clip = g_circle[blend][1];
+    g_draw_circle_noclip = g_circle[blend][0][fill];
+    g_draw_circle_clip = g_circle[blend][1][fill];
 }
 
 #elif A_CONFIG_RENDER_SDL2
@@ -449,12 +451,16 @@ void a_draw_vline(int X, int Y1, int Y2)
 void a_draw_circle(int X, int Y, int Radius)
 {
     #if A_CONFIG_RENDER_SOFTWARE
-        if(a_screen_isBoxInsideClip(X - Radius, Y - Radius, 2 * Radius, 2 * Radius)) {
+        int boxX = X - Radius;
+        int boxY = Y - Radius;
+        int boxDim = 2 * Radius;
+
+        if(a_screen_isBoxInsideClip(boxX, boxY, boxDim, boxDim)) {
             g_draw_circle_noclip(X, Y, Radius);
             return;
         }
 
-        if(a_screen_isBoxOnClip(X - Radius, Y - Radius, 2 * Radius, 2 * Radius)) {
+        if(a_screen_isBoxOnClip(boxX, boxY, boxDim, boxDim)) {
             g_draw_circle_clip(X, Y, Radius);
         }
     #elif A_CONFIG_RENDER_SDL2
