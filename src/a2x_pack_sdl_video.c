@@ -451,18 +451,21 @@ void a_sdl_render__drawLine(int X1, int Y1, int X2, int Y2)
     }
 }
 
-void a_sdl_render__drawRectangle(int X, int Y, int Width, int Height)
+void a_sdl_render__drawRectangleFilled(int X, int Y, int Width, int Height)
 {
     SDL_Rect area = {X, Y, Width, Height};
 
-    if(a_pixel__state.fill) {
-        if(SDL_RenderFillRect(g_sdlRenderer, &area) < 0) {
-            a_out__error("SDL_RenderFillRect failed: %s", SDL_GetError());
-        }
-    } else {
-        if(SDL_RenderDrawRect(g_sdlRenderer, &area) < 0) {
-            a_out__error("SDL_RenderDrawRect failed: %s", SDL_GetError());
-        }
+    if(SDL_RenderFillRect(g_sdlRenderer, &area) < 0) {
+        a_out__error("SDL_RenderFillRect failed: %s", SDL_GetError());
+    }
+}
+
+void a_sdl_render__drawRectangleOutline(int X, int Y, int Width, int Height)
+{
+    SDL_Rect area = {X, Y, Width, Height};
+
+    if(SDL_RenderDrawRect(g_sdlRenderer, &area) < 0) {
+        a_out__error("SDL_RenderDrawRect failed: %s", SDL_GetError());
     }
 }
 

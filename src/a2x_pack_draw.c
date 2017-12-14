@@ -336,17 +336,10 @@ void a_draw_fill(void)
     a_pixel_push();
     a_pixel_setFill(true);
 
-    #if A_CONFIG_RENDER_SOFTWARE
-        g_draw_rectangle(a__screen.clipX,
-                         a__screen.clipY,
-                         a__screen.clipWidth,
-                         a__screen.clipHeight);
-    #elif A_CONFIG_RENDER_SDL2
-        a_sdl_render__drawRectangle(a__screen.clipX,
-                                    a__screen.clipY,
-                                    a__screen.clipWidth,
-                                    a__screen.clipHeight);
-    #endif
+    a_draw_rectangle(a__screen.clipX,
+                     a__screen.clipY,
+                     a__screen.clipWidth,
+                     a__screen.clipHeight);
 
     a_pixel_pop();
 }
@@ -384,7 +377,11 @@ void a_draw_rectangle(int X, int Y, int Width, int Height)
 
         g_draw_rectangle(X, Y, Width, Height);
     #elif A_CONFIG_RENDER_SDL2
-        a_sdl_render__drawRectangle(X, Y, Width, Height);
+        if(a_pixel__state.fill) {
+            a_sdl_render__drawRectangleFilled(X, Y, Width, Height);
+        } else {
+            a_sdl_render__drawRectangleOutline(X, Y, Width, Height);
+        }
     #endif
 }
 
@@ -424,7 +421,7 @@ void a_draw_hline(int X1, int X2, int Y)
 
         g_draw_hline(xMin, xMax, Y);
     #elif A_CONFIG_RENDER_SDL2
-        a_sdl_render__drawRectangle(xMin, Y, length, 1);
+        a_sdl_render__drawRectangleFilled(xMin, Y, length, 1);
     #endif
 }
 
@@ -444,7 +441,7 @@ void a_draw_vline(int X, int Y1, int Y2)
 
         g_draw_vline(X, yMin, yMax);
     #elif A_CONFIG_RENDER_SDL2
-        a_sdl_render__drawRectangle(X, yMin, 1, length);
+        a_sdl_render__drawRectangleFilled(X, yMin, 1, length);
     #endif
 }
 
