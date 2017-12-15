@@ -257,6 +257,7 @@ static void A__FUNC_NAME(circle_noclip_fill)(int X, int Y, int Radius)
 
         error += 2 * y + 1; // (y+1)^2 = y^2 + 2y + 1
         y++;
+
         y1--;
         y2++;
         x3--;
@@ -268,6 +269,7 @@ static void A__FUNC_NAME(circle_noclip_fill)(int X, int Y, int Radius)
 
             error += -2 * x + 1; // (x-1)^2 = x^2 - 2x + 1
             x--;
+
             x1++;
             x2--;
             y3++;
@@ -500,6 +502,7 @@ static void A__FUNC_NAME(circle_clip_fill)(int X, int Y, int Radius)
 
         error += 2 * y + 1; // (y+1)^2 = y^2 + 2y + 1
         y++;
+
         y1--;
         y2++;
         x3--;
@@ -511,6 +514,7 @@ static void A__FUNC_NAME(circle_clip_fill)(int X, int Y, int Radius)
 
             error += -2 * x + 1; // (x-1)^2 = x^2 - 2x + 1
             x--;
+
             x1++;
             x2--;
             y3++;
