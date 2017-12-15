@@ -504,31 +504,53 @@ void a_sdl_render__drawCircleFilled(int X, int Y, int Radius)
     const int numScanlines = (Radius + 1) * 2;
     SDL_Rect scanlines[numScanlines];
 
+    int scanline1 = numScanlines / 2 - 1 - y;
+    int x1 = X - 1 - x;
+    int y1 = Y - 1 - y;
+    int w1 = 2 * x + 2;
+
+    int scanline2 = numScanlines / 2 + y;
+    int y2 = Y + y;
+
+    int scanline3 = numScanlines / 2 - 1 - x;
+    int x3 = X - 1 - y;
+    int y3 = Y - 1 - x;
+    int w3 = 2 * y + 2;
+
+    int scanline4 = numScanlines / 2 + x;
+    int y4 = Y + x;
+
     while(x > y) {
-        scanlines[numScanlines / 2 - 1 - y] =
-            (SDL_Rect){X - 1 - x, Y - 1 - y, 2 * x + 2, 1};
-        scanlines[numScanlines / 2 + y] =
-            (SDL_Rect){X - 1 - x, Y + y, 2 * x + 2, 1};
+        scanlines[scanline1] = (SDL_Rect){x1, y1, w1, 1};
+        scanlines[scanline2] = (SDL_Rect){x1, y2, w1, 1};
 
         error += 2 * y + 1; // (y+1)^2 = y^2 + 2y + 1
         y++;
+        scanline1--;
+        y1--;
+        scanline2++;
+        y2++;
+        x3--;
+        w3 += 2;
 
         if(error > 0) { // check if x^2 + y^2 > r^2
-            scanlines[numScanlines / 2 - 1 - x] =
-                (SDL_Rect){X - 1 - y, Y - 1 - x, 2 * y + 2, 1};
-            scanlines[numScanlines / 2 + x] =
-                (SDL_Rect){X - 1 - y, Y + x, 2 * y + 2, 1};
+            scanlines[scanline3] = (SDL_Rect){x3, y3, w3, 1};
+            scanlines[scanline4] = (SDL_Rect){x3, y4, w3, 1};
 
             error += -2 * x + 1; // (x-1)^2 = x^2 - 2x + 1
             x--;
+            x1++;
+            w1 -= 2;
+            scanline3++;
+            y3++;
+            scanline4--;
+            y4--;
         }
     }
 
     if(x == y) {
-        scanlines[numScanlines / 2 - 1 - x] =
-            (SDL_Rect){X - 1 - y, Y - 1 - x, 2 * y + 2, 1};
-        scanlines[numScanlines / 2 + x] =
-            (SDL_Rect){X - 1 - y, Y + x, 2 * y + 2, 1};
+        scanlines[scanline3] = (SDL_Rect){x3, y3, w3, 1};
+        scanlines[scanline4] = (SDL_Rect){x3, y4, w3, 1};
     }
 
     if(SDL_RenderFillRects(g_sdlRenderer,

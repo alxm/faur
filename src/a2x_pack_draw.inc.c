@@ -242,25 +242,42 @@ static void A__FUNC_NAME(circle_noclip_fill)(int X, int Y, int Radius)
     int y = 0;
     int error = -Radius / 2;
 
+    int x1 = X - 1 - x;
+    int x2 = X + x;
+    int y1 = Y - 1 - y;
+    int y2 = Y + y;
+    int x3 = X - 1 - y;
+    int x4 = X + y;
+    int y3 = Y - 1 - x;
+    int y4 = Y + x;
+
     while(x > y) {
-        g_draw_hline(X - 1 - x, X + x, Y - 1 - y);
-        g_draw_hline(X - 1 - x, X + x, Y + y);
+        g_draw_hline(x1, x2, y1);
+        g_draw_hline(x1, x2, y2);
 
         error += 2 * y + 1; // (y+1)^2 = y^2 + 2y + 1
         y++;
+        y1--;
+        y2++;
+        x3--;
+        x4++;
 
         if(error > 0) { // check if x^2 + y^2 > r^2
-            g_draw_hline(X - 1 - y, X + y, Y - 1 - x);
-            g_draw_hline(X - 1 - y, X + y, Y + x);
+            g_draw_hline(x3, x4, y3);
+            g_draw_hline(x3, x4, y4);
 
             error += -2 * x + 1; // (x-1)^2 = x^2 - 2x + 1
             x--;
+            x1++;
+            x2--;
+            y3++;
+            y4--;
         }
     }
 
     if(x == y) {
-        g_draw_hline(X - 1 - y, X + y, Y - 1 - x);
-        g_draw_hline(X - 1 - y, X + y, Y + x);
+        g_draw_hline(x3, x4, y3);
+        g_draw_hline(x3, x4, y4);
     }
 }
 
@@ -468,25 +485,42 @@ static void A__FUNC_NAME(circle_clip_fill)(int X, int Y, int Radius)
     int y = 0;
     int error = -Radius / 2;
 
+    int x1 = X - 1 - x;
+    int x2 = X + x;
+    int y1 = Y - 1 - y;
+    int y2 = Y + y;
+    int x3 = X - 1 - y;
+    int x4 = X + y;
+    int y3 = Y - 1 - x;
+    int y4 = Y + x;
+
     while(x > y) {
-        a_draw_hline(X - 1 - x, X + x, Y - 1 - y);
-        a_draw_hline(X - 1 - x, X + x, Y + y);
+        a_draw_hline(x1, x2, y1);
+        a_draw_hline(x1, x2, y2);
 
         error += 2 * y + 1; // (y+1)^2 = y^2 + 2y + 1
         y++;
+        y1--;
+        y2++;
+        x3--;
+        x4++;
 
         if(error > 0) { // check if x^2 + y^2 > r^2
-            a_draw_hline(X - 1 - y, X + y, Y - 1 - x);
-            a_draw_hline(X - 1 - y, X + y, Y + x);
+            a_draw_hline(x3, x4, y3);
+            a_draw_hline(x3, x4, y4);
 
             error += -2 * x + 1; // (x-1)^2 = x^2 - 2x + 1
             x--;
+            x1++;
+            x2--;
+            y3++;
+            y4--;
         }
     }
 
     if(x == y) {
-        a_draw_hline(X - 1 - y, X + y, Y - 1 - x);
-        a_draw_hline(X - 1 - y, X + y, Y + x);
+        a_draw_hline(x3, x4, y3);
+        a_draw_hline(x3, x4, y4);
     }
 }
 
