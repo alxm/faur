@@ -461,6 +461,10 @@ void a_draw_circle(int X, int Y, int Radius)
             g_draw_circle_clip(X, Y, Radius);
         }
     #elif A_CONFIG_RENDER_SDL2
-        a_sdl_render__drawCircle(X, Y, Radius);
+        if(a_pixel__state.fill) {
+            a_sdl_render__drawCircleFilled(X, Y, Radius);
+        } else {
+            a_sdl_render__drawCircleOutline(X, Y, Radius);
+        }
     #endif
 }
