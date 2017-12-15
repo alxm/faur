@@ -462,11 +462,20 @@ void a_sdl_render__drawRectangleFilled(int X, int Y, int Width, int Height)
 
 void a_sdl_render__drawRectangleOutline(int X, int Y, int Width, int Height)
 {
-    SDL_Rect area = {X, Y, Width, Height};
+    a_sdl_render__drawRectangleFilled(X, Y, Width, 1);
 
-    if(SDL_RenderDrawRect(g_sdlRenderer, &area) < 0) {
-        a_out__error("SDL_RenderDrawRect failed: %s", SDL_GetError());
+    if(Height <= 1) {
+        return;
     }
+
+    a_sdl_render__drawRectangleFilled(X, Y + Height - 1, Width, 1);
+
+    if(Width <= 1 || Height <= 2) {
+        return;
+    }
+
+    a_sdl_render__drawRectangleFilled(X, Y + 1, 1, Height - 2);
+    a_sdl_render__drawRectangleFilled(X + Width - 1, Y + 1, 1, Height - 2);
 }
 
 void a_sdl_render__drawCircleOutline(int X, int Y, int Radius)
