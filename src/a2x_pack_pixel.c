@@ -35,10 +35,7 @@ void a_pixel__uninit(void)
 
 void a_pixel_push(void)
 {
-    APixelState* state = a_mem_malloc(sizeof(APixelState));
-
-    *state = a_pixel__state;
-    a_list_push(g_stateStack, state);
+    a_list_push(g_stateStack, a_mem_dup(&a_pixel__state, sizeof(APixelState)));
 }
 
 void a_pixel_pop(void)
