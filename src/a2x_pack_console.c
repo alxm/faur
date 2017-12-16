@@ -108,8 +108,8 @@ static void screenCallback(void)
     }
 
     {
-        a_font_setCoords(a__screen.width - 2, 2);
         a_font_setAlign(A_FONT_ALIGN_RIGHT);
+        a_font_setCoords(a__screen.width - 1, 2);
 
         a_font__setFont(A_FONT_FACE_YELLOW);
         a_font_printf("%u fps", a_fps_getFps());

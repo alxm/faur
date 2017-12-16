@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016 Alex Margarit
+    Copyright 2010, 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -19,7 +19,7 @@
 
 #include "a2x_pack_font.v.h"
 
-#define CHAR_ENTRIES_NUM    128
+#define CHAR_ENTRIES_NUM 128
 #define CHAR_INDEX(Char) ((unsigned)Char & (CHAR_ENTRIES_NUM - 1))
 
 #define LINE_SPACING 1
@@ -48,7 +48,7 @@ static const char g_chars[] =
 #define CHARS_NUM (sizeof(g_chars) - 1)
 
 typedef struct AFontState {
-    AFont* currentFont;
+    AFont* font;
     AFontAlign align;
     int x, startX, y;
     int lineHeight;
@@ -238,7 +238,7 @@ void a_font_setFont(AFont* Font)
         Font = g_defaultFonts[A_FONT_FACE_DEFAULT];
     }
 
-    g_state.currentFont = Font;
+    g_state.font = Font;
     g_state.lineHeight = Font->maxHeight + LINE_SPACING;
 }
 
@@ -295,7 +295,7 @@ void a_font_setWrap(int Width)
 static int getWidth(const char* Text, ptrdiff_t Length)
 {
     int width = 0;
-    AFont* font = g_state.currentFont;
+    AFont* font = g_state.font;
 
     if(g_state.align & A_FONT_ALIGN_MONOSPACED) {
         width = (font->maxWidth + font->gap) * (int)Length;
@@ -305,16 +305,12 @@ static int getWidth(const char* Text, ptrdiff_t Length)
         }
     }
 
-    if(width > 0) {
-        width -= font->gap;
-    }
-
     return width;
 }
 
 static void drawString(const char* Text, ptrdiff_t Length)
 {
-    AFont* font = g_state.currentFont;
+    AFont* font = g_state.font;
 
     if(g_state.align & A_FONT_ALIGN_MIDDLE) {
         g_state.x -= getWidth(Text, Length) / 2;
@@ -352,7 +348,7 @@ static void drawString(const char* Text, ptrdiff_t Length)
 
 static void wrapString(const char* Text)
 {
-    AFont* font = g_state.currentFont;
+    AFont* font = g_state.font;
     const char* lineStart = Text;
 
     while(*Text != '\0') {
