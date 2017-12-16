@@ -177,7 +177,7 @@ AFont* a_font_dup(AFont* Font, APixel Color)
 
     a_pixel_push();
     a_pixel_setPixel(Color);
-    a_pixel_setBlitFillFlat(true);
+    a_pixel_setFill(true);
 
     for(int i = CHAR_ENTRIES_NUM; i--; ) {
         ASprite* sprite = NULL;
@@ -209,10 +209,7 @@ AFont* a_font_dup(AFont* Font, APixel Color)
 
 void a_font_push(void)
 {
-    AFontState* state = a_mem_malloc(sizeof(AFontState));
-
-    *state = g_state;
-    a_list_push(g_stateStack, state);
+    a_list_push(g_stateStack, a_mem_dup(&g_state, sizeof(AFontState)));
 }
 
 void a_font_pop(void)

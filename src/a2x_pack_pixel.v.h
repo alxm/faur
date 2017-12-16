@@ -28,7 +28,7 @@ typedef struct APixelState {
     APixelBlend blend, canonicalBlend;
     int red, green, blue, alpha;
     APixel pixel;
-    bool blitFillFlat;
+    bool fill;
 } APixelState;
 
 extern APixelState a_pixel__state;

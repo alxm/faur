@@ -35,10 +35,7 @@ void a_pixel__uninit(void)
 
 void a_pixel_push(void)
 {
-    APixelState* state = a_mem_malloc(sizeof(APixelState));
-
-    *state = a_pixel__state;
-    a_list_push(g_stateStack, state);
+    a_list_push(g_stateStack, a_mem_dup(&a_pixel__state, sizeof(APixelState)));
 }
 
 void a_pixel_pop(void)
@@ -63,7 +60,7 @@ void a_pixel_reset(void)
 {
     a_pixel_setBlend(A_PIXEL_BLEND_PLAIN);
     a_pixel_setRGBA(0, 0, 0, A_PIXEL_ALPHA_MAX);
-    a_pixel_setBlitFillFlat(false);
+    a_pixel_setFill(false);
 }
 
 #if A_CONFIG_RENDER_SOFTWARE
@@ -196,11 +193,12 @@ void a_pixel_setPixel(APixel Pixel)
     #endif
 }
 
-void a_pixel_setBlitFillFlat(bool FillFlat)
+void a_pixel_setFill(bool Fill)
 {
-    a_pixel__state.blitFillFlat = FillFlat;
+    a_pixel__state.fill = Fill;
 
     #if A_CONFIG_RENDER_SOFTWARE
+        a_draw__updateRoutines();
         a_sprite__updateRoutines();
     #endif
 }

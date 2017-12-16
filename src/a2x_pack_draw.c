@@ -32,7 +32,7 @@ static ADrawPixel g_draw_pixel;
 static ADrawPixel g_pixel[A_PIXEL_BLEND_NUM];
 
 static ADrawRectangle g_draw_rectangle;
-static ADrawRectangle g_rectangle[A_PIXEL_BLEND_NUM];
+static ADrawRectangle g_rectangle[A_PIXEL_BLEND_NUM][2]; // [Blend][Fill]
 
 static ADrawLine g_draw_line;
 static ADrawLine g_line[A_PIXEL_BLEND_NUM];
@@ -45,7 +45,7 @@ static ADrawHLine g_vline[A_PIXEL_BLEND_NUM];
 
 static ADrawCircle g_draw_circle_noclip;
 static ADrawCircle g_draw_circle_clip;
-static ADrawCircle g_circle[A_PIXEL_BLEND_NUM][2];
+static ADrawCircle g_circle[A_PIXEL_BLEND_NUM][2][2]; // [Blend][Clip][Fill]
 
 static bool cohen_sutherland_clip(int* X1, int* Y1, int* X2, int* Y2)
 {
@@ -187,15 +187,15 @@ do {                                                                        \
         }                                                                   \
     }                                                                       \
                                                                             \
-    APixel* a__pass_dst = Buffer;                                           \
+    APixel* dst = Buffer;                                                   \
                                                                             \
     if((PrimaryOnScreen) && (SecondaryOnScreen)) {                          \
         while(PrimaryCoord < SecondaryCoord && (PrimaryOnScreen)) {         \
             error += 2 * PrimaryCoord + 1;                                  \
             PrimaryCoord++;                                                 \
                                                                             \
-            A__PIXEL_DRAW;                                                  \
-            a__pass_dst += PrimaryBufferInc;                                \
+            A__PIXEL_DRAW(dst);                                             \
+            dst += PrimaryBufferInc;                                        \
                                                                             \
             if(error > 0) {                                                 \
                 error += -2 * SecondaryCoord + 1;                           \
@@ -205,7 +205,7 @@ do {                                                                        \
                     break;                                                  \
                 }                                                           \
                                                                             \
-                a__pass_dst += SecondaryBufferInc;                          \
+                dst += SecondaryBufferInc;                                  \
             }                                                               \
         }                                                                   \
     }                                                                       \
@@ -217,7 +217,7 @@ do {                                                                        \
 
 #define A__PIXEL_DRAW_EXPAND2(Blend) a_pixel__##Blend
 #define A__PIXEL_DRAW_EXPAND(Blend, Params) A__PIXEL_DRAW_EXPAND2(Blend)(Params)
-#define A__PIXEL_DRAW A__PIXEL_DRAW_EXPAND(A__BLEND, a__pass_dst A__PIXEL_PARAMS)
+#define A__PIXEL_DRAW(Dst) A__PIXEL_DRAW_EXPAND(A__BLEND, Dst A__PIXEL_PARAMS)
 
 #define A__BLEND plain
 #define A__BLEND_SETUP \
@@ -284,14 +284,17 @@ do {                                                                        \
 
 void a_draw__init(void)
 {
-    #define initRoutines(Index, Blend)                      \
-        g_pixel[Index] = a_draw__pixel_##Blend;             \
-        g_rectangle[Index] = a_draw__rectangle_##Blend;     \
-        g_line[Index] = a_draw__line_##Blend;               \
-        g_hline[Index] = a_draw__hline_##Blend;             \
-        g_vline[Index] = a_draw__vline_##Blend;             \
-        g_circle[Index][0] = a_draw__circle_noclip_##Blend; \
-        g_circle[Index][1] = a_draw__circle_clip_##Blend;   \
+    #define initRoutines(Index, Blend)                                \
+        g_pixel[Index] = a_draw__pixel_##Blend;                       \
+        g_rectangle[Index][0] = a_draw__rectangle_nofill_##Blend;     \
+        g_rectangle[Index][1] = a_draw__rectangle_fill_##Blend;       \
+        g_line[Index] = a_draw__line_##Blend;                         \
+        g_hline[Index] = a_draw__hline_##Blend;                       \
+        g_vline[Index] = a_draw__vline_##Blend;                       \
+        g_circle[Index][0][0] = a_draw__circle_noclip_nofill_##Blend; \
+        g_circle[Index][0][1] = a_draw__circle_noclip_fill_##Blend;   \
+        g_circle[Index][1][0] = a_draw__circle_clip_nofill_##Blend;   \
+        g_circle[Index][1][1] = a_draw__circle_clip_fill_##Blend;
 
     initRoutines(A_PIXEL_BLEND_PLAIN, plain);
     initRoutines(A_PIXEL_BLEND_RGBA, rgba);
@@ -307,13 +310,16 @@ void a_draw__init(void)
 
 void a_draw__updateRoutines(void)
 {
-    g_draw_pixel = g_pixel[a_pixel__state.blend];
-    g_draw_rectangle = g_rectangle[a_pixel__state.blend];
-    g_draw_line = g_line[a_pixel__state.blend];
-    g_draw_hline = g_hline[a_pixel__state.blend];
-    g_draw_vline = g_vline[a_pixel__state.blend];
-    g_draw_circle_noclip = g_circle[a_pixel__state.blend][0];
-    g_draw_circle_clip = g_circle[a_pixel__state.blend][1];
+    APixelBlend blend = a_pixel__state.blend;
+    bool fill = a_pixel__state.fill;
+
+    g_draw_pixel = g_pixel[blend];
+    g_draw_rectangle = g_rectangle[blend][fill];
+    g_draw_line = g_line[blend];
+    g_draw_hline = g_hline[blend];
+    g_draw_vline = g_vline[blend];
+    g_draw_circle_noclip = g_circle[blend][0][fill];
+    g_draw_circle_clip = g_circle[blend][1][fill];
 }
 
 #elif A_CONFIG_RENDER_SDL2
@@ -327,17 +333,15 @@ void a_draw__init(void)
 
 void a_draw_fill(void)
 {
-    #if A_CONFIG_RENDER_SOFTWARE
-        g_draw_rectangle(a__screen.clipX,
-                         a__screen.clipY,
-                         a__screen.clipWidth,
-                         a__screen.clipHeight);
-    #elif A_CONFIG_RENDER_SDL2
-        a_sdl_render__drawRectangle(a__screen.clipX,
-                                    a__screen.clipY,
-                                    a__screen.clipWidth,
-                                    a__screen.clipHeight);
-    #endif
+    a_pixel_push();
+    a_pixel_setFill(true);
+
+    a_draw_rectangle(a__screen.clipX,
+                     a__screen.clipY,
+                     a__screen.clipWidth,
+                     a__screen.clipHeight);
+
+    a_pixel_pop();
 }
 
 void a_draw_pixel(int X, int Y)
@@ -373,14 +377,25 @@ void a_draw_rectangle(int X, int Y, int Width, int Height)
 
         g_draw_rectangle(X, Y, Width, Height);
     #elif A_CONFIG_RENDER_SDL2
-        a_sdl_render__drawRectangle(X, Y, Width, Height);
+        if(a_pixel__state.fill) {
+            a_sdl_render__drawRectangleFilled(X, Y, Width, Height);
+        } else {
+            a_sdl_render__drawRectangleOutline(X, Y, Width, Height);
+        }
     #endif
 }
 
 void a_draw_line(int X1, int Y1, int X2, int Y2)
 {
     #if A_CONFIG_RENDER_SOFTWARE
-        if(!cohen_sutherland_clip(&X1, &Y1, &X2, &Y2)) {
+        int x = a_math_min(X1, X2);
+        int y = a_math_min(Y1, Y2);
+        int w = a_math_abs(X2 - X1) + 1;
+        int h = a_math_abs(Y2 - Y1) + 1;
+
+        if(!a_screen_isBoxOnClip(x, y, w, h)
+            || !cohen_sutherland_clip(&X1, &Y1, &X2, &Y2)) {
+
             return;
         }
 
@@ -392,48 +407,64 @@ void a_draw_line(int X1, int Y1, int X2, int Y2)
 
 void a_draw_hline(int X1, int X2, int Y)
 {
+    int xMin = a_math_min(X1, X2);
+    int xMax = a_math_max(X1, X2);
+    int length = xMax - xMin + 1;
+
     #if A_CONFIG_RENDER_SOFTWARE
-        if(X1 >= X2 || !a_screen_isBoxOnClip(X1, Y, X2 - X1, 1)) {
+        if(!a_screen_isBoxOnClip(xMin, Y, length, 1)) {
             return;
         }
 
-        X1 = a_math_max(X1, a__screen.clipX);
-        X2 = a_math_min(X2, a__screen.clipX2);
+        xMin = a_math_max(xMin, a__screen.clipX);
+        xMax = a_math_min(xMax, a__screen.clipX2 - 1);
 
-        g_draw_hline(X1, X2, Y);
+        g_draw_hline(xMin, xMax, Y);
     #elif A_CONFIG_RENDER_SDL2
-        a_sdl_render__drawRectangle(X1, Y, X2 - X1, 1);
+        a_sdl_render__drawRectangleFilled(xMin, Y, length, 1);
     #endif
 }
 
 void a_draw_vline(int X, int Y1, int Y2)
 {
+    int yMin = a_math_min(Y1, Y2);
+    int yMax = a_math_max(Y1, Y2);
+    int length = yMax - yMin + 1;
+
     #if A_CONFIG_RENDER_SOFTWARE
-        if(Y1 >= Y2 || !a_screen_isBoxOnClip(X, Y1, 1, Y2 - Y1)) {
+        if(!a_screen_isBoxOnClip(X, yMin, 1, length)) {
             return;
         }
 
-        Y1 = a_math_max(Y1, a__screen.clipY);
-        Y2 = a_math_min(Y2, a__screen.clipY2);
+        yMin = a_math_max(yMin, a__screen.clipY);
+        yMax = a_math_min(yMax, a__screen.clipY2 - 1);
 
-        g_draw_vline(X, Y1, Y2);
+        g_draw_vline(X, yMin, yMax);
     #elif A_CONFIG_RENDER_SDL2
-        a_sdl_render__drawRectangle(X, Y1, 1, Y2 - Y1);
+        a_sdl_render__drawRectangleFilled(X, yMin, 1, length);
     #endif
 }
 
 void a_draw_circle(int X, int Y, int Radius)
 {
     #if A_CONFIG_RENDER_SOFTWARE
-        if(a_screen_isBoxInsideClip(X - Radius, Y - Radius, 2 * Radius, 2 * Radius)) {
+        int boxX = X - Radius;
+        int boxY = Y - Radius;
+        int boxDim = 2 * Radius;
+
+        if(a_screen_isBoxInsideClip(boxX, boxY, boxDim, boxDim)) {
             g_draw_circle_noclip(X, Y, Radius);
             return;
         }
 
-        if(a_screen_isBoxOnClip(X - Radius, Y - Radius, 2 * Radius, 2 * Radius)) {
+        if(a_screen_isBoxOnClip(boxX, boxY, boxDim, boxDim)) {
             g_draw_circle_clip(X, Y, Radius);
         }
     #elif A_CONFIG_RENDER_SDL2
-        a_sdl_render__drawCircle(X, Y, Radius);
+        if(a_pixel__state.fill) {
+            a_sdl_render__drawCircleFilled(X, Y, Radius);
+        } else {
+            a_sdl_render__drawCircleOutline(X, Y, Radius);
+        }
     #endif
 }

@@ -53,7 +53,7 @@ static ABlitter g_blitter_keyed_doclip;
 
 #define A__PIXEL_DRAW_EXPAND2(Blend) a_pixel__##Blend
 #define A__PIXEL_DRAW_EXPAND(Blend, Params) A__PIXEL_DRAW_EXPAND2(Blend)(Params)
-#define A__PIXEL_DRAW A__PIXEL_DRAW_EXPAND(A__BLEND, a__pass_dst A__PIXEL_PARAMS)
+#define A__PIXEL_DRAW(Dst) A__PIXEL_DRAW_EXPAND(A__BLEND, Dst A__PIXEL_PARAMS)
 
 #define A__BLEND plain
 #define A__FILL data
@@ -206,10 +206,13 @@ void a_sprite__init(void)
 
 void a_sprite__updateRoutines(void)
 {
-    g_blitter_block_noclip = g_blitters[a_pixel__state.blend][a_pixel__state.blitFillFlat][0][0];
-    g_blitter_block_doclip = g_blitters[a_pixel__state.blend][a_pixel__state.blitFillFlat][0][1];
-    g_blitter_keyed_noclip = g_blitters[a_pixel__state.blend][a_pixel__state.blitFillFlat][1][0];
-    g_blitter_keyed_doclip = g_blitters[a_pixel__state.blend][a_pixel__state.blitFillFlat][1][1];
+    APixelBlend blend = a_pixel__state.blend;
+    bool fill = a_pixel__state.fill;
+
+    g_blitter_block_noclip = g_blitters[blend][fill][0][0];
+    g_blitter_block_doclip = g_blitters[blend][fill][0][1];
+    g_blitter_keyed_noclip = g_blitters[blend][fill][1][0];
+    g_blitter_keyed_doclip = g_blitters[blend][fill][1][1];
 }
 
 #elif A_CONFIG_RENDER_SDL2
@@ -462,10 +465,7 @@ void a_sprite_blit(const ASprite* Sprite, int X, int Y)
             }
         }
     #elif A_CONFIG_RENDER_SDL2
-        a_sdl_render__textureBlit(Sprite->texture,
-                                  X,
-                                  Y,
-                                  a_pixel__state.blitFillFlat);
+        a_sdl_render__textureBlit(Sprite->texture, X, Y, a_pixel__state.fill);
     #endif
 }
 
@@ -500,7 +500,7 @@ void a_sprite_blitEx(const ASprite* Sprite, int X, int Y, AFix Scale, unsigned A
                                 a_math_wrapAngle(Angle),
                                 CenterX,
                                 CenterY,
-                                a_pixel__state.blitFillFlat);
+                                a_pixel__state.fill);
 }
 #endif
 

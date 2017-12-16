@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016 Alex Margarit
+    Copyright 2010, 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -24,26 +24,26 @@ static void A__FUNC_NAME(keyed, noclip)(const ASprite* Sprite, int X, int Y)
     A__BLEND_SETUP;
 
     const int screenW = a__screen.width;
-    APixel* dst = a__screen.pixels + Y * screenW + X;
+    APixel* startDst = a__screen.pixels + Y * screenW + X;
     const APixel* a__pass_src = Sprite->pixels;
     const unsigned* spans = Sprite->spans;
 
-    for(int i = Sprite->h; i--; dst += screenW) {
+    for(int i = Sprite->h; i--; startDst += screenW) {
         bool draw = *spans & 1;
         unsigned numSpans = *spans++ >> 1;
-        APixel* a__pass_dst = dst;
+        APixel* dst = startDst;
 
         while(numSpans--) {
             int len = (int)*spans++;
 
             if(draw) {
                 while(len--) {
-                    A__PIXEL_DRAW;
-                    a__pass_dst++;
+                    A__PIXEL_DRAW(dst);
+                    dst++;
                     a__pass_src++;
                 }
             } else {
-                a__pass_dst += len;
+                dst += len;
                 a__pass_src += len;
             }
 
@@ -81,7 +81,7 @@ static void A__FUNC_NAME(keyed, doclip)(const ASprite* Sprite, int X, int Y)
     for(int i = rows; i--; startDst += screenW, startSrc += spriteW) {
         bool draw = *spans & 1;
         const unsigned* nextLine = spans + 1 + (*spans >> 1);
-        APixel* a__pass_dst = startDst;
+        APixel* dst = startDst;
         const APixel* a__pass_src = startSrc;
         int clippedLen = 0;
         int drawColumns = columns;
@@ -98,13 +98,13 @@ static void A__FUNC_NAME(keyed, doclip)(const ASprite* Sprite, int X, int Y)
 
             // Inverse logic because we're drawing from the previous span
             if(draw) {
-                a__pass_dst += len;
+                dst += len;
                 a__pass_src += len;
                 drawColumns -= len;
             } else {
                 while(len-- && drawColumns--) {
-                    A__PIXEL_DRAW;
-                    a__pass_dst++;
+                    A__PIXEL_DRAW(dst);
+                    dst++;
                     a__pass_src++;
                 }
             }
@@ -116,12 +116,12 @@ static void A__FUNC_NAME(keyed, doclip)(const ASprite* Sprite, int X, int Y)
 
             if(draw) {
                 while(len-- && drawColumns--) {
-                    A__PIXEL_DRAW;
-                    a__pass_dst++;
+                    A__PIXEL_DRAW(dst);
+                    dst++;
                     a__pass_src++;
                 }
             } else {
-                a__pass_dst += len;
+                dst += len;
                 a__pass_src += len;
                 drawColumns -= len;
             }
@@ -139,15 +139,15 @@ static void A__FUNC_NAME(block, noclip)(const ASprite* Sprite, int X, int Y)
     A__BLEND_SETUP;
 
     const int screenW = a__screen.width;
-    APixel* dst = a__screen.pixels + Y * screenW + X;
+    APixel* startDst = a__screen.pixels + Y * screenW + X;
     const APixel* a__pass_src = Sprite->pixels;
 
-    for(int i = Sprite->h; i--; dst += screenW) {
-        APixel* a__pass_dst = dst;
+    for(int i = Sprite->h; i--; startDst += screenW) {
+        APixel* dst = startDst;
 
         for(int j = Sprite->w; j--; ) {
-            A__PIXEL_DRAW;
-            a__pass_dst++;
+            A__PIXEL_DRAW(dst);
+            dst++;
             a__pass_src++;
         }
     }
@@ -173,12 +173,12 @@ static void A__FUNC_NAME(block, doclip)(const ASprite* Sprite, int X, int Y)
     const APixel* startSrc = Sprite->pixels + yClipUp * spriteW + xClipLeft;
 
     for(int i = rows; i--; startDst += screenW, startSrc += spriteW) {
-        APixel* a__pass_dst = startDst;
+        APixel* dst = startDst;
         const APixel* a__pass_src = startSrc;
 
         for(int j = columns; j--; ) {
-            A__PIXEL_DRAW;
-            a__pass_dst++;
+            A__PIXEL_DRAW(dst);
+            dst++;
             a__pass_src++;
         }
     }
