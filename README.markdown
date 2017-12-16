@@ -86,6 +86,7 @@ A_STATE(drawBox)
         a_pixel_setHex(0xaaff88);
         a_draw_fill();
 
+        a_pixel_setFill(true);
         a_pixel_setHex(0xffaa44);
         a_draw_rectangle(context.x - 40, context.y - 40, 80, 80);
     }
