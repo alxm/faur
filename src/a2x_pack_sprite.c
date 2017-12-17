@@ -548,7 +548,7 @@ void a_sprite_pow2Width(ASprite* Sprite)
     assignPixels(Sprite, newPixels - newSize / sizeof(APixel));
 }
 
-void a_sprite_replaceColor(ASprite* Sprite, APixel OldColor, APixel NewColor)
+void a_sprite_swapColor(ASprite* Sprite, APixel OldColor, APixel NewColor)
 {
     for(size_t i = Sprite->pixelsSize / sizeof(APixel); i--; ) {
         if(Sprite->pixels[i] == OldColor) {
