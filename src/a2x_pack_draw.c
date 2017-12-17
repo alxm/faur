@@ -311,7 +311,7 @@ void a_draw__init(void)
 void a_draw__updateRoutines(void)
 {
     APixelBlend blend = a_pixel__state.blend;
-    bool fill = a_pixel__state.fill;
+    bool fill = a_pixel__state.fillDraw;
 
     g_draw_pixel = g_pixel[blend];
     g_draw_rectangle = g_rectangle[blend][fill];
@@ -334,7 +334,7 @@ void a_draw__init(void)
 void a_draw_fill(void)
 {
     a_pixel_push();
-    a_pixel_setFill(true);
+    a_pixel_setFillDraw(true);
 
     a_draw_rectangle(a__screen.clipX,
                      a__screen.clipY,
@@ -377,7 +377,7 @@ void a_draw_rectangle(int X, int Y, int Width, int Height)
 
         g_draw_rectangle(X, Y, Width, Height);
     #elif A_CONFIG_RENDER_SDL2
-        if(a_pixel__state.fill) {
+        if(a_pixel__state.fillDraw) {
             a_sdl_render__drawRectangleFilled(X, Y, Width, Height);
         } else {
             a_sdl_render__drawRectangleOutline(X, Y, Width, Height);
@@ -461,7 +461,7 @@ void a_draw_circle(int X, int Y, int Radius)
             g_draw_circle_clip(X, Y, Radius);
         }
     #elif A_CONFIG_RENDER_SDL2
-        if(a_pixel__state.fill) {
+        if(a_pixel__state.fillDraw) {
             a_sdl_render__drawCircleFilled(X, Y, Radius);
         } else {
             a_sdl_render__drawCircleOutline(X, Y, Radius);
