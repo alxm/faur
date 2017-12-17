@@ -125,6 +125,17 @@ void a_spriteframes_free(ASpriteFrames* Frames, bool FreeSprites)
     free(Frames);
 }
 
+void a_spriteframes_reset(ASpriteFrames* Frames)
+{
+    Frames->countdown = Frames->callsToNextFrame;
+
+    if(Frames->forward) {
+        Frames->index = 0;
+    } else {
+        Frames->index = Frames->num - 1;
+    }
+}
+
 void a_spriteframes_push(ASpriteFrames* Frames, ASprite* Sprite)
 {
     a_list_push(Frames->sprites, Sprite);
@@ -149,7 +160,7 @@ ASprite* a_spriteframes_pop(ASpriteFrames* Frames)
     return s;
 }
 
-ASprite* a_spriteframes_next(ASpriteFrames* Frames)
+ASprite* a_spriteframes_getNext(ASpriteFrames* Frames)
 {
     const unsigned oldindex = Frames->index;
 
@@ -173,7 +184,7 @@ ASprite* a_spriteframes_getCurrent(const ASpriteFrames* Frames)
     return Frames->spriteArray[Frames->index];
 }
 
-ASprite* a_spriteframes_getIndex(const ASpriteFrames* Frames, unsigned Index)
+ASprite* a_spriteframes_getByIndex(const ASpriteFrames* Frames, unsigned Index)
 {
     return Frames->spriteArray[Index];
 }
@@ -188,7 +199,7 @@ unsigned a_spriteframes_getNum(const ASpriteFrames* Frames)
     return Frames->num;
 }
 
-unsigned a_spriteframes_getCurrentIndex(const ASpriteFrames* Frames)
+unsigned a_spriteframes_getIndex(const ASpriteFrames* Frames)
 {
     return Frames->index;
 }
@@ -225,17 +236,6 @@ void a_spriteframes_pause(ASpriteFrames* Frames)
 void a_spriteframes_resume(ASpriteFrames* Frames)
 {
     Frames->paused = false;
-}
-
-void a_spriteframes_reset(ASpriteFrames* Frames)
-{
-    Frames->countdown = Frames->callsToNextFrame;
-
-    if(Frames->forward) {
-        Frames->index = 0;
-    } else {
-        Frames->index = Frames->num - 1;
-    }
 }
 
 AList* a_spriteframes_getSprites(const ASpriteFrames* Frames)

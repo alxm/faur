@@ -138,8 +138,8 @@ AFont* a_font_new(const ASprite* Sheet, int X, int Y, AFontLoad Loader)
         hasGapSprite = numFrames > A_FONT__NUM_NUMERIC + 1;
     }
 
-    ASprite* gapSprite = hasGapSprite ? a_spriteframes_next(frames) : NULL;
-    ASprite* blankSprite = a_spriteframes_next(frames);
+    ASprite* gapSprite = hasGapSprite ? a_spriteframes_getNext(frames) : NULL;
+    ASprite* blankSprite = a_spriteframes_getNext(frames);
 
     for(int i = CHAR_ENTRIES_NUM; i--; ) {
         f->sprites[i] = blankSprite;
@@ -154,7 +154,7 @@ AFont* a_font_new(const ASprite* Sheet, int X, int Y, AFontLoad Loader)
     a_list_addLast(g_fontsList, f);
 
     for(unsigned i = start; i <= end; i++) {
-        ASprite* spr = a_spriteframes_next(frames);
+        ASprite* spr = a_spriteframes_getNext(frames);
 
         f->sprites[CHAR_INDEX(g_chars[i])] = spr;
         f->maxWidth = a_math_max(f->maxWidth, spr->w);

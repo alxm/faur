@@ -145,7 +145,7 @@ void a_console__init2(void)
     ASpriteFrames* frames = a_spriteframes_new(graphics, 0, 0, 0);
 
     for(AConsoleOutType type = 0; type < A_CONSOLE_MAX; type++) {
-        g_titles[type] = a_spriteframes_next(frames);
+        g_titles[type] = a_spriteframes_getNext(frames);
     }
 
     a_spriteframes_free(frames, false);
