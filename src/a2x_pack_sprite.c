@@ -559,6 +559,22 @@ void a_sprite_swapColor(ASprite* Sprite, APixel OldColor, APixel NewColor)
     a_sprite__commit(Sprite);
 }
 
+void a_sprite_swapColors(ASprite* Sprite, APixel* OldColors, APixel* NewColors, unsigned NumColors)
+{
+    for(size_t i = Sprite->pixelsSize / sizeof(APixel); i--; ) {
+        const APixel pixel = Sprite->pixels[i];
+
+        for(unsigned c = NumColors; c--; ) {
+            if(pixel == OldColors[c]) {
+                Sprite->pixels[i] = NewColors[c];
+                break;
+            }
+        }
+    }
+
+    a_sprite__commit(Sprite);
+}
+
 int a_sprite_getWidth(const ASprite* Sprite)
 {
     return Sprite->w;
