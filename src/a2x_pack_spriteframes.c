@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016 Alex Margarit
+    Copyright 2010, 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -136,6 +136,11 @@ void a_spriteframes_reset(ASpriteFrames* Frames)
     }
 }
 
+void a_spriteframes_randomize(ASpriteFrames* Frames)
+{
+    a_spriteframes_setIndex(Frames, a_random_intu(Frames->num));
+}
+
 void a_spriteframes_push(ASpriteFrames* Frames, ASprite* Sprite)
 {
     a_list_push(Frames->sprites, Sprite);
@@ -202,6 +207,12 @@ unsigned a_spriteframes_getNum(const ASpriteFrames* Frames)
 unsigned a_spriteframes_getIndex(const ASpriteFrames* Frames)
 {
     return Frames->index;
+}
+
+void a_spriteframes_setIndex(ASpriteFrames* Frames, unsigned Index)
+{
+    Frames->countdown = Frames->callsToNextFrame;
+    Frames->index = Index;
 }
 
 void a_spriteframes_setDirection(ASpriteFrames* Frames, bool Forward)
