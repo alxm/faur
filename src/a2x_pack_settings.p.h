@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016 Alex Margarit
+    Copyright 2010, 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -21,6 +21,8 @@
 
 #include "a2x_system_includes.h"
 
+#include "a2x_pack_pixel.p.h"
+
 #define A_SETUP void a_settings__application(void)
 extern A_SETUP;
 
@@ -31,3 +33,4 @@ extern const char* a_settings_getString(const char* Key);
 extern bool a_settings_getBool(const char* Key);
 extern int a_settings_getInt(const char* Key);
 extern unsigned a_settings_getUnsigned(const char* Key);
+extern APixel a_settings_getPixel(const char* Key);
