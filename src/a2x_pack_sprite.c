@@ -30,9 +30,9 @@ static inline void initCommon(void)
 {
     g_spritesList = a_list_new();
 
-    a_sprite__colorKey = a_pixel_hex(0xFF00FF);
-    a_sprite__colorLimit = a_pixel_hex(0x00FF00);
-    a_sprite__colorEnd = a_pixel_hex(0x00FFFF);
+    a_sprite__colorKey = a_settings_getPixel("video.color.key");
+    a_sprite__colorLimit = a_settings_getPixel("video.color.limit");
+    a_sprite__colorEnd = a_settings_getPixel("video.color.end");
 }
 
 #if A_CONFIG_RENDER_SOFTWARE

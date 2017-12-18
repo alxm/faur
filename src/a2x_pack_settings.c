@@ -238,12 +238,13 @@ void a_settings__init(void)
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.fullscreen", "0");
     add(A_SETTING_STR, A_SETTING_SET_ONCE, "video.fullscreen.button", "key.f4");
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.fixWizTearing", "0");
-    add(A_SETTING_STR, A_SETTING_SET_ONCE, "video.borderColor", "0x1f0f0f");
     add(A_SETTING_UINT, A_SETTING_SET_ONCE, "video.fps", "30");
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.fps.skip", "0");
     add(A_SETTING_UINT, A_SETTING_SET_ONCE, "video.fps.skip.max", "2");
-
     add(A_SETTING_COLOR, A_SETTING_SET_ONCE, "video.color.border", "0x1f0f0f");
+    add(A_SETTING_COLOR, A_SETTING_SET_ONCE, "video.color.key", "0xFF00FF");
+    add(A_SETTING_COLOR, A_SETTING_SET_ONCE, "video.color.limit", "0x00FF00");
+    add(A_SETTING_COLOR, A_SETTING_SET_ONCE, "video.color.end", "0x00FFFF");
 
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "sound.on", "1");
     add(A_SETTING_INT, A_SETTING_SET_ANY, "sound.music.scale", "100");
