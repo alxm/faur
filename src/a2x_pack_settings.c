@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016 Alex Margarit
+    Copyright 2010, 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -23,7 +23,9 @@ typedef enum ASettingType {
     A_SETTING_INT,
     A_SETTING_UINT,
     A_SETTING_BOOL,
+    A_SETTING_COLOR,
     A_SETTING_STR,
+    A_SETTING_NUM
 } ASettingType;
 
 typedef enum ASettingUpdate {
@@ -40,13 +42,22 @@ typedef struct ASetting {
         int integer;
         unsigned uinteger;
         bool boolean;
+        APixel pixel;
         char* string;
     } value;
 } ASetting;
 
 static AStrHash* g_settings; // table of ASetting
+static const char* g_settingTypeNames[A_SETTING_NUM + 1] = {
+    "int",
+    "uint",
+    "bool",
+    "color",
+    "str",
+    "invalid"
+};
 
-static int parseBool(const char* Value)
+static bool parseBool(const char* Value)
 {
     return a_str_equal(Value, "yes")
         || a_str_equal(Value, "y")
@@ -64,7 +75,10 @@ static ASetting* getValidate(const char* Key, ASettingType Type)
     if(s == NULL) {
         a_out__error("Setting '%s' does not exist", Key);
     } else if(s->type != Type) {
-        a_out__error("Setting '%s' is not a %s", Key);
+        a_out__error("Setting '%s' is %s, not %s",
+                     Key,
+                     g_settingTypeNames[s->type],
+                     g_settingTypeNames[Type]);
         s = NULL;
     }
 
@@ -88,7 +102,7 @@ static ASetting* setValidate(const char* Key, bool UserSet)
     return s;
 }
 
-static void add(ASettingType Type, ASettingUpdate Update, const char* Key, const char* DefaultValue)
+static void add(ASettingType Type, ASettingUpdate Update, const char* Key, const char* Value)
 {
     ASetting* s = a_mem_malloc(sizeof(ASetting));
 
@@ -97,20 +111,28 @@ static void add(ASettingType Type, ASettingUpdate Update, const char* Key, const
 
     switch(Type) {
         case A_SETTING_INT: {
-            s->value.integer = atoi(DefaultValue);
+            s->value.integer = atoi(Value);
         } break;
 
         case A_SETTING_UINT: {
-            s->value.uinteger = (unsigned)atoi(DefaultValue);;
+            s->value.uinteger = (unsigned)atoi(Value);
         } break;
 
         case A_SETTING_BOOL: {
-            s->value.boolean = parseBool(DefaultValue);
+            s->value.boolean = parseBool(Value);
+        } break;
+
+        case A_SETTING_COLOR: {
+            s->value.pixel = a_pixel_hex((uint32_t)strtol(Value, NULL, 16));
         } break;
 
         case A_SETTING_STR: {
-            s->value.string = a_str_dup(DefaultValue);
+            s->value.string = a_str_dup(Value);
         } break;
+
+        default: {
+            a_out__error("Setting '%s' has invalid type", Key);
+        } return;
     }
 
     a_strhash_add(g_settings, Key, s);
@@ -145,10 +167,18 @@ static void set(const char* Key, const char* Value, bool UserSet)
             s->value.boolean = parseBool(Value);
         } break;
 
+        case A_SETTING_COLOR: {
+            s->value.pixel = a_pixel_hex((uint32_t)strtol(Value, NULL, 16));
+        } break;
+
         case A_SETTING_STR: {
             free(s->value.string);
             s->value.string = a_str_dup(Value);
         } break;
+
+        default: {
+            a_out__error("Setting '%s' has invalid type", Key);
+        } return;
     }
 
     if(s->update & A_SETTING_SET_ONCE) {
@@ -208,10 +238,13 @@ void a_settings__init(void)
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.fullscreen", "0");
     add(A_SETTING_STR, A_SETTING_SET_ONCE, "video.fullscreen.button", "key.f4");
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.fixWizTearing", "0");
-    add(A_SETTING_STR, A_SETTING_SET_ONCE, "video.borderColor", "0x1f0f0f");
     add(A_SETTING_UINT, A_SETTING_SET_ONCE, "video.fps", "30");
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.fps.skip", "0");
     add(A_SETTING_UINT, A_SETTING_SET_ONCE, "video.fps.skip.max", "2");
+    add(A_SETTING_COLOR, A_SETTING_SET_ONCE, "video.color.border", "0x1f0f0f");
+    add(A_SETTING_COLOR, A_SETTING_SET_ONCE, "video.color.key", "0xFF00FF");
+    add(A_SETTING_COLOR, A_SETTING_SET_ONCE, "video.color.limit", "0x00FF00");
+    add(A_SETTING_COLOR, A_SETTING_SET_ONCE, "video.color.end", "0x00FFFF");
 
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "sound.on", "1");
     add(A_SETTING_INT, A_SETTING_SET_ANY, "sound.music.scale", "100");
@@ -322,4 +355,11 @@ unsigned a_settings_getUnsigned(const char* Key)
     ASetting* s = getValidate(Key, A_SETTING_UINT);
 
     return s ? s->value.uinteger : 0;
+}
+
+APixel a_settings_getPixel(const char* Key)
+{
+    ASetting* s = getValidate(Key, A_SETTING_COLOR);
+
+    return s ? s->value.pixel : 0;
 }

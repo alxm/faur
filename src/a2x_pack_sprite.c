@@ -30,9 +30,9 @@ static inline void initCommon(void)
 {
     g_spritesList = a_list_new();
 
-    a_sprite__colorKey = a_pixel_hex(0xFF00FF);
-    a_sprite__colorLimit = a_pixel_hex(0x00FF00);
-    a_sprite__colorEnd = a_pixel_hex(0x00FFFF);
+    a_sprite__colorKey = a_settings_getPixel("video.color.key");
+    a_sprite__colorLimit = a_settings_getPixel("video.color.limit");
+    a_sprite__colorEnd = a_settings_getPixel("video.color.end");
 }
 
 #if A_CONFIG_RENDER_SOFTWARE
@@ -207,7 +207,7 @@ void a_sprite__init(void)
 void a_sprite__updateRoutines(void)
 {
     APixelBlend blend = a_pixel__state.blend;
-    bool fill = a_pixel__state.fill;
+    bool fill = a_pixel__state.fillBlit;
 
     g_blitter_block_noclip = g_blitters[blend][fill][0][0];
     g_blitter_block_doclip = g_blitters[blend][fill][0][1];
@@ -465,7 +465,10 @@ void a_sprite_blit(const ASprite* Sprite, int X, int Y)
             }
         }
     #elif A_CONFIG_RENDER_SDL2
-        a_sdl_render__textureBlit(Sprite->texture, X, Y, a_pixel__state.fill);
+        a_sdl_render__textureBlit(Sprite->texture,
+                                  X,
+                                  Y,
+                                  a_pixel__state.fillBlit);
     #endif
 }
 
@@ -500,7 +503,7 @@ void a_sprite_blitEx(const ASprite* Sprite, int X, int Y, AFix Scale, unsigned A
                                 a_math_wrapAngle(Angle),
                                 CenterX,
                                 CenterY,
-                                a_pixel__state.fill);
+                                a_pixel__state.fillBlit);
 }
 #endif
 
@@ -548,11 +551,27 @@ void a_sprite_pow2Width(ASprite* Sprite)
     assignPixels(Sprite, newPixels - newSize / sizeof(APixel));
 }
 
-void a_sprite_replaceColor(ASprite* Sprite, APixel OldColor, APixel NewColor)
+void a_sprite_swapColor(ASprite* Sprite, APixel OldColor, APixel NewColor)
 {
     for(size_t i = Sprite->pixelsSize / sizeof(APixel); i--; ) {
         if(Sprite->pixels[i] == OldColor) {
             Sprite->pixels[i] = NewColor;
+        }
+    }
+
+    a_sprite__commit(Sprite);
+}
+
+void a_sprite_swapColors(ASprite* Sprite, APixel* OldColors, APixel* NewColors, unsigned NumColors)
+{
+    for(size_t i = Sprite->pixelsSize / sizeof(APixel); i--; ) {
+        const APixel pixel = Sprite->pixels[i];
+
+        for(unsigned c = NumColors; c--; ) {
+            if(pixel == OldColors[c]) {
+                Sprite->pixels[i] = NewColors[c];
+                break;
+            }
         }
     }
 

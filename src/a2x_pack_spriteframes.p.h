@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016 Alex Margarit
+    Copyright 2010, 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -31,16 +31,20 @@ extern ASpriteFrames* a_spriteframes_newBlank(unsigned CallsToNextFrame);
 extern ASpriteFrames* a_spriteframes_dup(const ASpriteFrames* Frames, bool DupSprites);
 extern void a_spriteframes_free(ASpriteFrames* Frames, bool FreeSprites);
 
+extern void a_spriteframes_reset(ASpriteFrames* Frames);
+extern void a_spriteframes_randomize(ASpriteFrames* Frames);
+
 extern void a_spriteframes_push(ASpriteFrames* Frames, ASprite* Sprite);
 extern ASprite* a_spriteframes_pop(ASpriteFrames* Frames);
 
-extern ASprite* a_spriteframes_next(ASpriteFrames* Frames);
+extern ASprite* a_spriteframes_getNext(ASpriteFrames* Frames);
 extern ASprite* a_spriteframes_getCurrent(const ASpriteFrames* Frames);
-extern ASprite* a_spriteframes_getIndex(const ASpriteFrames* Frames, unsigned Index);
+extern ASprite* a_spriteframes_getByIndex(const ASpriteFrames* Frames, unsigned Index);
 extern ASprite* a_spriteframes_getRandom(const ASpriteFrames* Frames);
 
 extern unsigned a_spriteframes_getNum(const ASpriteFrames* Frames);
-extern unsigned a_spriteframes_getCurrentIndex(const ASpriteFrames* Frames);
+extern unsigned a_spriteframes_getIndex(const ASpriteFrames* Frames);
+extern void a_spriteframes_setIndex(ASpriteFrames* Frames, unsigned Index);
 
 extern void a_spriteframes_setDirection(ASpriteFrames* Frames, bool Forward);
 extern void a_spriteframes_flipDirection(ASpriteFrames* Frames);
@@ -50,7 +54,5 @@ extern void a_spriteframes_setSpeed(ASpriteFrames* Frames, unsigned CallsToNextF
 
 extern void a_spriteframes_pause(ASpriteFrames* Frames);
 extern void a_spriteframes_resume(ASpriteFrames* Frames);
-
-extern void a_spriteframes_reset(ASpriteFrames* Frames);
 
 extern AList* a_spriteframes_getSprites(const ASpriteFrames* Frames);

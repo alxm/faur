@@ -60,7 +60,8 @@ void a_pixel_reset(void)
 {
     a_pixel_setBlend(A_PIXEL_BLEND_PLAIN);
     a_pixel_setRGBA(0, 0, 0, A_PIXEL_ALPHA_MAX);
-    a_pixel_setFill(false);
+    a_pixel_setFillBlit(false);
+    a_pixel_setFillDraw(true);
 }
 
 #if A_CONFIG_RENDER_SOFTWARE
@@ -193,12 +194,20 @@ void a_pixel_setPixel(APixel Pixel)
     #endif
 }
 
-void a_pixel_setFill(bool Fill)
+void a_pixel_setFillBlit(bool Fill)
 {
-    a_pixel__state.fill = Fill;
+    a_pixel__state.fillBlit = Fill;
+
+    #if A_CONFIG_RENDER_SOFTWARE
+        a_sprite__updateRoutines();
+    #endif
+}
+
+void a_pixel_setFillDraw(bool Fill)
+{
+    a_pixel__state.fillDraw = Fill;
 
     #if A_CONFIG_RENDER_SOFTWARE
         a_draw__updateRoutines();
-        a_sprite__updateRoutines();
     #endif
 }

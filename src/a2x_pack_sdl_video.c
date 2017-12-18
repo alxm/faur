@@ -188,10 +188,10 @@ void a_sdl_screen__set(int Width, int Height, bool FullScreen)
                                 "nearest",
                                 SDL_HINT_OVERRIDE);
 
-        long val = strtol(a_settings_getString("video.borderColor"), NULL, 16);
-        g_clearR = (uint8_t)((val >> 16) & 255);
-        g_clearG = (uint8_t)((val >>  8) & 255);
-        g_clearB = (uint8_t)((val >>  0) & 255);
+        APixel color = a_settings_getPixel("video.color.border");
+        g_clearR = (uint8_t)a_pixel_red(color);
+        g_clearG = (uint8_t)a_pixel_green(color);
+        g_clearB = (uint8_t)a_pixel_blue(color);
     #endif
 
     #if A_PLATFORM_DESKTOP || A_PLATFORM_EMSCRIPTEN
