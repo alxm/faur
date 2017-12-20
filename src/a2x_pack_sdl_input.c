@@ -29,11 +29,11 @@
     typedef SDL_Scancode ASdlKeyCode;
 #endif
 
-typedef struct ASdlInputHeader {
+typedef struct {
     char* name;
 } ASdlInputHeader;
 
-typedef struct ASdlInputButton {
+typedef struct {
     ASdlInputHeader header;
     AInputButtonSource* logicalButton;
     union {
@@ -44,18 +44,18 @@ typedef struct ASdlInputButton {
     bool lastStatePressed;
 } ASdlInputButton;
 
-typedef struct ASdlInputAnalog {
+typedef struct {
     ASdlInputHeader header;
     AInputAnalogSource* logicalAnalog;
     int axisIndex;
 } ASdlInputAnalog;
 
-typedef struct ASdlInputTouch {
+typedef struct {
     ASdlInputHeader header;
     AInputTouchSource* logicalTouch;
 } ASdlInputTouch;
 
-typedef struct ASdlInputController {
+typedef struct {
     SDL_Joystick* joystick;
     #if A_CONFIG_LIB_SDL == 2
         SDL_GameController* controller;

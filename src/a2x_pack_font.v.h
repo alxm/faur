@@ -21,7 +21,8 @@
 
 #include "a2x_pack_font.p.h"
 
-typedef enum AFontDefaults {
+typedef enum {
+    A_FONT_FACE_INVALID = -1,
     A_FONT_FACE_DEFAULT,
     A_FONT_FACE_WHITE,
     A_FONT_FACE_LIGHT_GRAY,

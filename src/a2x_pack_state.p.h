@@ -22,7 +22,6 @@
 #include "a2x_system_includes.h"
 
 typedef enum {
-    A_STATE__STAGE_INVALID = 0,
     A_STATE__STAGE_INIT = 1,
     A_STATE__STAGE_LOOP = 2,
     A_STATE__STAGE_TICK = 4,

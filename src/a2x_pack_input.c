@@ -19,7 +19,7 @@
 
 #include "a2x_pack_input.v.h"
 
-typedef struct AInputCallbackContainer {
+typedef struct {
     AInputCallback callback;
 } AInputCallbackContainer;
 

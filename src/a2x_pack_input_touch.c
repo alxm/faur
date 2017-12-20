@@ -31,7 +31,7 @@ struct AInputTouchSource {
     AList* motion; // AInputTouchPoints captured by motion event
 };
 
-typedef struct AInputTouchPoint {
+typedef struct {
     int x;
     int y;
 } AInputTouchPoint;

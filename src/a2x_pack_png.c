@@ -22,7 +22,7 @@
 #include <zlib.h>
 #include <png.h>
 
-typedef struct AByteStream {
+typedef struct {
     const uint8_t* data;
     size_t offset;
 } AByteStream;

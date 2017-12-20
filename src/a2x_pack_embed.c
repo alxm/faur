@@ -22,7 +22,7 @@
 #include "media/console.h"
 #include "media/font.h"
 
-typedef struct AEmbeddedData {
+typedef struct {
     const uint8_t* buffer;
     size_t size;
 } AEmbeddedData;

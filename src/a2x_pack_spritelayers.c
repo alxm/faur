@@ -19,7 +19,7 @@
 
 #include "a2x_pack_spritelayers.v.h"
 
-typedef struct ALayer {
+typedef struct {
     ASprite* sprite;
     APixelBlend blend;
     int r, g, b, a;

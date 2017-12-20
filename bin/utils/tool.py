@@ -79,7 +79,7 @@ class Tool:
         self.output.colored('2', Color.LightGreen)
         self.output.colored('x', Color.Yellow)
         self.output.colored('{} '.format(self.name[3 : ]), Color.White)
-        print(arguments)
+        self.output.coloredln(arguments, Color.LightGray)
         self.output.coloredln(border, Color.DarkGray)
 
     def done(self):

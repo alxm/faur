@@ -24,7 +24,7 @@
 #include "a2x_pack_draw.v.h"
 #include "a2x_pack_screen.v.h"
 
-typedef struct APixelState {
+typedef struct {
     APixelBlend blend, canonicalBlend;
     int red, green, blue, alpha;
     APixel pixel;

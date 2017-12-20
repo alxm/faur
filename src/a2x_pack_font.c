@@ -47,7 +47,7 @@ static const char g_chars[] =
 
 #define CHARS_NUM (sizeof(g_chars) - 1)
 
-typedef struct AFontState {
+typedef struct {
     AFont* font;
     AFontAlign align;
     int x, startX, y;

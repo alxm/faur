@@ -29,7 +29,7 @@ struct AInputAnalogSource {
     int axisValue;
 };
 
-typedef struct AInputSourceAxisButtons {
+typedef struct {
     AInputButtonSource* negative;
     AInputButtonSource* positive;
     bool lastPressedNegative;

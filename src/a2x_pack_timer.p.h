@@ -24,6 +24,7 @@
 typedef struct ATimer ATimer;
 
 typedef enum {
+    A_TIMER_INVALID = -1,
     A_TIMER_MS,
     A_TIMER_SEC,
     A_TIMER_FRAMES,

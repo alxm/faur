@@ -126,6 +126,7 @@ static inline int a_pixel_blue(APixel Pixel)
 }
 
 typedef enum {
+    A_PIXEL_BLEND_INVALID = -1,
     A_PIXEL_BLEND_PLAIN,
     A_PIXEL_BLEND_RGBA,
     A_PIXEL_BLEND_RGB25,
