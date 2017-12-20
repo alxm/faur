@@ -24,6 +24,7 @@
 #include "a2x_pack_out.v.h"
 
 typedef enum {
+    A_COLOR_INVALID = -1,
     A_COLOR_BLACK = 30,
     A_COLOR_RED = 31,
     A_COLOR_GREEN = 32,

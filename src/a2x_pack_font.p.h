@@ -23,7 +23,7 @@
 
 typedef struct AFont AFont;
 
-typedef enum AFontLoad  {
+typedef enum  {
     A_FONT_LOAD_ALL = 1,
     A_FONT_LOAD_ALPHANUMERIC = 2,
     A_FONT_LOAD_ALPHA = 4,
@@ -31,7 +31,7 @@ typedef enum AFontLoad  {
     A_FONT_LOAD_CAPS = 16,
 } AFontLoad;
 
-typedef enum AFontAlign {
+typedef enum {
     A_FONT_ALIGN_LEFT = 1,
     A_FONT_ALIGN_MIDDLE = 2,
     A_FONT_ALIGN_RIGHT = 4,

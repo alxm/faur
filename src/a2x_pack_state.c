@@ -32,6 +32,7 @@ typedef struct AState {
 } AState;
 
 typedef enum {
+    A_STATE_ACTION_INVALID = -1,
     A_STATE_ACTION_PUSH,
     A_STATE_ACTION_POP,
 } AStateAction;

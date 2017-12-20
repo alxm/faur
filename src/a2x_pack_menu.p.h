@@ -22,6 +22,7 @@
 typedef struct AMenu AMenu;
 
 typedef enum {
+    A_MENU_STATE_INVALID = -1,
     A_MENU_STATE_RUNNING,
     A_MENU_STATE_SELECTED,
     A_MENU_STATE_CANCELED

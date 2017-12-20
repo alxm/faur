@@ -19,7 +19,8 @@
 
 #include "a2x_pack_settings.v.h"
 
-typedef enum ASettingType {
+typedef enum {
+    A_SETTING_INVALID = -1,
     A_SETTING_INT,
     A_SETTING_UINT,
     A_SETTING_BOOL,
@@ -28,7 +29,7 @@ typedef enum ASettingType {
     A_SETTING_NUM
 } ASettingType;
 
-typedef enum ASettingUpdate {
+typedef enum {
     A_SETTING_SET_ANY = 0,
     A_SETTING_SET_ONCE = 1,
     A_SETTING_SET_FROZEN = 2,

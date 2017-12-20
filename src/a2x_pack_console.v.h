@@ -31,6 +31,7 @@ extern void a_console__init2(void);
 extern void a_console__uninit(void);
 
 typedef enum {
+    A_CONSOLE_INVALID = -1,
     A_CONSOLE_MESSAGE,
     A_CONSOLE_WARNING,
     A_CONSOLE_ERROR,
