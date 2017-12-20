@@ -23,7 +23,7 @@
 
 #include "a2x_pack_state.v.h"
 
-typedef struct AState {
+typedef struct {
     char* name;
     AStateFunction function;
     AStateStage stage;
@@ -37,7 +37,7 @@ typedef enum {
     A_STATE_ACTION_POP,
 } AStateAction;
 
-typedef struct AStatePendingAction {
+typedef struct {
     AStateAction action;
     char* name;
 } AStatePendingAction;

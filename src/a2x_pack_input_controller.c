@@ -19,7 +19,7 @@
 
 #include "a2x_pack_input_controller.v.h"
 
-typedef struct AInputController {
+typedef struct {
     AStrHash* buttons; // table of AInputButtonSource
     AStrHash* axes; // table of AInputAnalogSource
     bool generic;

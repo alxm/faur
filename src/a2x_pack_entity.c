@@ -19,18 +19,18 @@
 
 #include "a2x_pack_entity.v.h"
 
-typedef struct AComponent {
+typedef struct {
     size_t size; // total size of AComponentHeader + user data that follows
     AFree* free; // does not free the actual pointer
     unsigned bit; // component's unique bit ID
 } AComponent;
 
-typedef struct AComponentHeader {
+typedef struct {
     const AComponent* component;
     AEntity* entity; // entity this component belongs to
 } AComponentHeader;
 
-typedef struct ASystem {
+typedef struct {
     ASystemHandler* handler;
     ASystemSort* compare;
     ABitfield* componentBits; // IDs of components that this system works on
@@ -40,7 +40,7 @@ typedef struct ASystem {
     bool runsInCurrentState; // whether this system runs in the current state
 } ASystem;
 
-typedef struct ARunningCollection {
+typedef struct {
     AList* newEntities; // new entities are added to this list
     AList* runningEntities; // entities in this list are picked up by systems
     AList* removedEntities; // removed entities with outstanding references
@@ -65,12 +65,12 @@ struct AEntity {
     bool muted; // systems don't run on this entity if this is set
 };
 
-typedef struct AMessageHandlerContainer {
+typedef struct {
     AMessageHandler* handler;
     bool handleImmediately;
 } AMessageHandlerContainer;
 
-typedef struct AMessage {
+typedef struct {
     AEntity* to;
     AEntity* from;
     char* message;

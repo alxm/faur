@@ -20,7 +20,7 @@
 
 #include "a2x_pack_console.v.h"
 
-typedef struct ALine {
+typedef struct {
     AConsoleOutType type;
     char* text;
 } ALine;

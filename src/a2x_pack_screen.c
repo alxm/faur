@@ -19,7 +19,7 @@
 
 #include "a2x_pack_screen.v.h"
 
-typedef struct AScreenOverlayContainer {
+typedef struct {
     AScreenOverlay callback;
 } AScreenOverlayContainer;
 

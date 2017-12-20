@@ -36,7 +36,7 @@ typedef enum {
     A_SETTING_SET_USER = 4,
 } ASettingUpdate;
 
-typedef struct ASetting {
+typedef struct {
     ASettingType type;
     ASettingUpdate update;
     union {
