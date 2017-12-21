@@ -36,7 +36,6 @@ static void a__atexit(void)
     a_font__uninit();
     a_screenshot__uninit();
     a_screen__uninit();
-    a_sprite__uninit();
     a_pixel__uninit();
     a_fps__uninit();
     a_hw__uninit();

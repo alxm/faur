@@ -26,7 +26,6 @@
 #include "a2x_pack_screen.v.h"
 
 struct ASprite {
-    AListNode* node;
     APixel* pixels;
     size_t pixelsSize;
     char* nameId;
@@ -45,10 +44,8 @@ extern APixel a_sprite__colorLimit;
 extern APixel a_sprite__colorEnd;
 
 extern void a_sprite__init(void);
-extern void a_sprite__uninit(void);
 
 extern void a_sprite__updateRoutines(void);
-
 extern void a_sprite__commit(ASprite* Sprite);
 
 #define A_SPRITE__NAME(Sprite) (Sprite->nameId ? Sprite->nameId : "Sprite")

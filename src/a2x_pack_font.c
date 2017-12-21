@@ -25,6 +25,8 @@
 #define LINE_SPACING 1
 
 struct AFont {
+    AFontLoad loader;
+    ASpriteFrames* frames;
     ASprite* sprites[CHAR_ENTRIES_NUM];
     ASprite* gapSprite;
     int gap;
@@ -55,7 +57,6 @@ typedef struct {
     int wrapWidth, currentLineWidth;
 } AFontState;
 
-static AList* g_fontsList;
 AFont* g_defaultFonts[A_FONT_FACE_DEFAULT_NUM];
 static AFontState g_state;
 static AList* g_stateStack;
@@ -73,8 +74,6 @@ static unsigned charIndex(char Character)
 
 void a_font__init(void)
 {
-    g_fontsList = a_list_new();
-
     g_stateStack = a_list_new();
 
     ASprite* fontSprite = a_sprite_newFromFile("/a2x/defaultFont");
@@ -111,35 +110,40 @@ void a_font__init(void)
 
 void a_font__uninit(void)
 {
+    for(AFontDefaults f = 0; f < A_FONT_FACE_DEFAULT_NUM; f++) {
+        a_font_free(g_defaultFonts[f]);
+    }
+
     a_list_freeEx(g_stateStack, free);
-    a_list_freeEx(g_fontsList, free);
 }
 
-AFont* a_font_new(const ASprite* Sheet, int X, int Y, AFontLoad Loader)
+static AFont* a_font__new(AFontLoad Loader, ASpriteFrames* Frames)
 {
     AFont* f = a_mem_malloc(sizeof(AFont));
 
-    ASpriteFrames* frames = a_spriteframes_new(Sheet, X, Y, 0);
-    unsigned numFrames = a_spriteframes_getNum(frames);
-    bool hasGapSprite = numFrames > A_FONT__NUM_ALL + 1;
+    f->loader = Loader;
+    f->frames = Frames;
+
+    unsigned numFrames = a_spriteframes_getNum(Frames);
+    bool hasGap = numFrames > A_FONT__NUM_ALL + 1;
 
     unsigned start = 0;
     unsigned end = CHARS_NUM - 1;
 
     if(Loader & A_FONT_LOAD_ALPHANUMERIC) {
         end = charIndex('9');
-        hasGapSprite = numFrames > A_FONT__NUM_ALPHANUMERIC + 1;
+        hasGap = numFrames > A_FONT__NUM_ALPHANUMERIC + 1;
     } else if(Loader & A_FONT_LOAD_ALPHA) {
         end = charIndex('z');
-        hasGapSprite = numFrames > A_FONT__NUM_ALPHA + 1;
+        hasGap = numFrames > A_FONT__NUM_ALPHA + 1;
     } else if(Loader & A_FONT_LOAD_NUMERIC) {
         start = charIndex('0');
         end = charIndex('9');
-        hasGapSprite = numFrames > A_FONT__NUM_NUMERIC + 1;
+        hasGap = numFrames > A_FONT__NUM_NUMERIC + 1;
     }
 
-    ASprite* gapSprite = hasGapSprite ? a_spriteframes_getNext(frames) : NULL;
-    ASprite* blankSprite = a_spriteframes_getNext(frames);
+    ASprite* gapSprite = hasGap ? a_spriteframes_getNext(Frames) : NULL;
+    ASprite* blankSprite = a_spriteframes_getNext(Frames);
 
     for(int i = CHAR_ENTRIES_NUM; i--; ) {
         f->sprites[i] = blankSprite;
@@ -151,10 +155,8 @@ AFont* a_font_new(const ASprite* Sheet, int X, int Y, AFontLoad Loader)
     f->maxWidth = blankSprite->w;
     f->maxHeight = blankSprite->h;
 
-    a_list_addLast(g_fontsList, f);
-
     for(unsigned i = start; i <= end; i++) {
-        ASprite* spr = a_spriteframes_getNext(frames);
+        ASprite* spr = a_spriteframes_getNext(Frames);
 
         f->sprites[CHAR_INDEX(g_chars[i])] = spr;
         f->maxWidth = a_math_max(f->maxWidth, spr->w);
@@ -166,45 +168,41 @@ AFont* a_font_new(const ASprite* Sheet, int X, int Y, AFontLoad Loader)
         }
     }
 
-    a_spriteframes_free(frames, false);
-
     return f;
+}
+
+AFont* a_font_new(const ASprite* Sheet, int X, int Y, AFontLoad Loader)
+{
+    ASpriteFrames* frames = a_spriteframes_new(Sheet, X, Y, 0);
+
+    return a_font__new(Loader, frames);
 }
 
 AFont* a_font_dup(AFont* Font, APixel Color)
 {
-    AFont* f = a_mem_dup(Font, sizeof(AFont));
-
     a_pixel_push();
     a_pixel_setPixel(Color);
     a_pixel_setFillBlit(true);
 
-    for(int i = CHAR_ENTRIES_NUM; i--; ) {
-        ASprite* sprite = NULL;
-        ASprite* srcSprite = Font->sprites[i];
+    ASpriteFrames* frames = a_spriteframes_dup(Font->frames, true);
 
-        #if A_CONFIG_RENDER_SOFTWARE
-            sprite = a_sprite_newBlank(srcSprite->w,
-                                       srcSprite->h,
-                                       srcSprite->colorKeyed);
-        #elif A_CONFIG_RENDER_SDL2
-            sprite = a_sprite_newBlank(srcSprite->w,
-                                       srcSprite->h,
-                                       true);
-        #endif
+    for(unsigned i = a_spriteframes_getNum(frames); i--; ) {
+        ASprite* sprite = a_spriteframes_getNext(frames);
 
         a_screen_targetPushSprite(sprite);
-        a_sprite_blit(srcSprite, 0, 0);
+        a_sprite_blit(sprite, 0, 0);
         a_screen_targetPop();
-
-        f->sprites[i] = sprite;
     }
 
     a_pixel_pop();
 
-    a_list_addLast(g_fontsList, f);
+    return a_font__new(Font->loader, frames);
+}
 
-    return f;
+void a_font_free(AFont* Font)
+{
+    a_spriteframes_free(Font->frames, true);
+    free(Font);
 }
 
 void a_font_push(void)

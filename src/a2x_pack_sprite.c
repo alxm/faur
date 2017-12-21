@@ -19,17 +19,12 @@
 
 #include "a2x_pack_sprite.v.h"
 
-static AList* g_spritesList;
-static void a_sprite__free(ASprite* Sprite);
-
 APixel a_sprite__colorKey;
 APixel a_sprite__colorLimit;
 APixel a_sprite__colorEnd;
 
 static inline void initCommon(void)
 {
-    g_spritesList = a_list_new();
-
     a_sprite__colorKey = a_settings_getPixel("video.color.key");
     a_sprite__colorLimit = a_settings_getPixel("video.color.limit");
     a_sprite__colorEnd = a_settings_getPixel("video.color.end");
@@ -224,16 +219,10 @@ void a_sprite__init(void)
 
 #endif
 
-void a_sprite__uninit(void)
-{
-    a_list_freeEx(g_spritesList, (AFree*)a_sprite__free);
-}
-
 static ASprite* makeEmptySprite(int Width, int Height)
 {
     ASprite* s = a_mem_malloc(sizeof(ASprite));
 
-    s->node = a_list_addLast(g_spritesList, s);
     s->pixels = NULL;
     s->pixelsSize = (unsigned)Width * (unsigned)Height * sizeof(APixel);
     s->nameId = NULL;
@@ -430,12 +419,6 @@ ASprite* a_sprite_dup(const ASprite* Sprite)
 }
 
 void a_sprite_free(ASprite* Sprite)
-{
-    a_list_removeNode(Sprite->node);
-    a_sprite__free(Sprite);
-}
-
-void a_sprite__free(ASprite* Sprite)
 {
     #if A_CONFIG_RENDER_SOFTWARE
         free(Sprite->spans);

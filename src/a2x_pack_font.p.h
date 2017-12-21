@@ -42,6 +42,7 @@ typedef enum {
 
 extern AFont* a_font_new(const ASprite* Sheet, int X, int Y, AFontLoad Loader);
 extern AFont* a_font_dup(AFont* Font, APixel Color);
+extern void a_font_free(AFont* Font);
 
 extern void a_font_push(void);
 extern void a_font_pop(void);
