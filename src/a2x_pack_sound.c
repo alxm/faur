@@ -160,7 +160,7 @@ void a_sound__uninit(void)
     }
 }
 
-AMusic* a_music_load(const char* Path)
+AMusic* a_music_new(const char* Path)
 {
     if(g_soundOn) {
         AMusic* music = a_sdl_sound__musicLoad(Path);
@@ -193,7 +193,7 @@ void a_music_stop(void)
     }
 }
 
-ASound* a_sfx_newFromFile(const char* Path)
+ASound* a_sfx_new(const char* Path)
 {
     if(!g_soundOn) {
         return NULL;

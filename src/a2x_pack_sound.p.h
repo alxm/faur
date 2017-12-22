@@ -24,13 +24,13 @@
 typedef void AMusic;
 typedef void ASound;
 
-extern AMusic* a_music_load(const char* Path);
+extern AMusic* a_music_new(const char* Path);
 extern void a_music_free(AMusic* Music);
 
 extern void a_music_play(AMusic* Music);
 extern void a_music_stop(void);
 
-extern ASound* a_sfx_newFromFile(const char* Path);
+extern ASound* a_sfx_new(const char* Path);
 extern void a_sfx_free(ASound* Sfx);
 
 extern void a_sfx_play(ASound* Sfx);
