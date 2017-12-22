@@ -23,7 +23,6 @@ struct ADir {
     char* path;
     char* name;
     AList* files; // list of ADirEntry
-    AListNode* openedDirsNode;
 };
 
 struct ADirEntry {
@@ -31,24 +30,6 @@ struct ADirEntry {
     char* full;
     bool isDir;
 };
-
-static AList* g_openedDirs;
-static void a_dir__close(ADir* Dir);
-
-void a_dir__init(void)
-{
-    g_openedDirs = a_list_new();
-}
-
-void a_dir__uninit(void)
-{
-    A_LIST_ITERATE(g_openedDirs, ADir*, d) {
-        a_out__warning("You should close %s with a_dir_close", d->path);
-        a_dir__close(d);
-    }
-
-    a_list_free(g_openedDirs);
-}
 
 static int a_dir__sort(const ADirEntry* A, const ADirEntry* B)
 {
@@ -114,7 +95,6 @@ ADir* a_dir_open(const char* Path)
     d->path = a_str_dup(Path);
     d->name = a_str_getSuffixLastFind(Path, '/');
     d->files = files;
-    d->openedDirsNode = a_list_addLast(g_openedDirs, d);
 
     if(d->name == NULL) {
         d->name = a_str_dup(Path);
@@ -126,12 +106,6 @@ ADir* a_dir_open(const char* Path)
 }
 
 void a_dir_close(ADir* Dir)
-{
-    a_list_removeNode(Dir->openedDirsNode);
-    a_dir__close(Dir);
-}
-
-void a_dir__close(ADir* Dir)
 {
     free(Dir->path);
     free(Dir->name);

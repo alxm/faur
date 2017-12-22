@@ -25,6 +25,3 @@
 #include "a2x_pack_math.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_str.v.h"
-
-extern void a_dir__init(void);
-extern void a_dir__uninit(void);
