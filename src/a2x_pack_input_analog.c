@@ -36,23 +36,6 @@ typedef struct {
     bool lastPressedPositive;
 } AInputSourceAxisButtons;
 
-static AList* g_analogs;
-
-void a_input_analog__init(void)
-{
-    g_analogs = a_list_new();
-}
-
-void a_input_analog__uninit(void)
-{
-    A_LIST_ITERATE(g_analogs, AInputAnalog*, a) {
-        a_input__freeUserHeader(&a->header);
-        free(a);
-    }
-
-    a_list_free(g_analogs);
-}
-
 AInputAnalogSource* a_input_analog__newSource(const char* Id)
 {
     AInputAnalogSource* a = a_mem_malloc(sizeof(AInputAnalogSource));
@@ -103,9 +86,13 @@ AInputAnalog* a_analog_new(const char* Ids)
         a_out__error("No analog axes found for '%s'", Ids);
     }
 
-    a_list_addLast(g_analogs, a);
-
     return a;
+}
+
+void a_analog_free(AInputAnalog* Analog)
+{
+    a_input__freeUserHeader(&Analog->header);
+    free(Analog);
 }
 
 bool a_analog_isWorking(const AInputAnalog* Analog)

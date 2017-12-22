@@ -36,28 +36,20 @@ typedef struct {
     int y;
 } AInputTouchPoint;
 
-static AList* g_touchScreens;
 static AStrHash* g_sourceTouchScreens;
 
 void a_input_touch__init(void)
 {
-    g_touchScreens = a_list_new();
     g_sourceTouchScreens = a_strhash_new();
 }
 
 void a_input_touch__uninit(void)
 {
-    A_LIST_ITERATE(g_touchScreens, AInputTouch*, t) {
-        a_input__freeUserHeader(&t->header);
-        free(t);
-    }
-
     A_STRHASH_ITERATE(g_sourceTouchScreens, AInputTouchSource*, t) {
         a_list_freeEx(t->motion, free);
         a_input__freeSourceHeader(&t->header);
     }
 
-    a_list_free(g_touchScreens);
     a_strhash_free(g_sourceTouchScreens);
 }
 
@@ -97,9 +89,13 @@ AInputTouch* a_touch_new(const char* Ids)
         a_out__error("No touch screen found for '%s'", Ids);
     }
 
-    a_list_addLast(g_touchScreens, t);
-
     return t;
+}
+
+void a_touch_free(AInputTouch* Touch)
+{
+    a_input__freeUserHeader(&Touch->header);
+    free(Touch);
 }
 
 bool a_touch_isWorking(const AInputTouch* Touch)

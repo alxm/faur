@@ -30,7 +30,6 @@ void a_input__init(void)
     g_callbacks = a_list_new();
 
     a_input_controller__init();
-    a_input_analog__init();
     a_input_button__init();
     a_input_touch__init();
 
@@ -42,7 +41,6 @@ void a_input__init(void)
 void a_input__uninit(void)
 {
     a_input_controller__uninit();
-    a_input_analog__uninit();
     a_input_button__uninit();
     a_input_touch__uninit();
 

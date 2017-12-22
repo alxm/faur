@@ -23,7 +23,6 @@ struct AInputButton {
     AInputUserHeader header;
     AList* combos; // List of lists of AInputButtonSource; for combo buttons
     ATimer* autoRepeat;
-    AListNode* buttonsListNode;
     bool isClone;
 };
 
@@ -34,16 +33,12 @@ struct AInputButtonSource {
     bool ignorePressed;
 };
 
-static AList* g_buttons;
 static AStrHash* g_keys;
 static AList* g_pressQueue;
 static AList* g_releaseQueue;
 
-static void a_button__free(AInputButton* Button);
-
 void a_input_button__init(void)
 {
-    g_buttons = a_list_new();
     g_keys = a_strhash_new();
     g_pressQueue = a_list_new();
     g_releaseQueue = a_list_new();
@@ -51,7 +46,6 @@ void a_input_button__init(void)
 
 void a_input_button__uninit(void)
 {
-    a_list_freeEx(g_buttons, (AFree*)a_button__free);
     a_strhash_freeEx(g_keys, (AFree*)a_input_button__freeSource);
     a_list_free(g_pressQueue);
     a_list_free(g_releaseQueue);
@@ -99,7 +93,6 @@ AInputButton* a_button_new(const char* Ids)
 
     b->combos = a_list_new();
     b->autoRepeat = NULL;
-    b->buttonsListNode = a_list_addLast(g_buttons, b);
     b->isClone = false;
 
     AList* tok = a_str_split(Ids, ", ");
@@ -173,13 +166,12 @@ AInputButton* a_button_dup(const AInputButton* Button)
 
     *b = *Button;
     b->autoRepeat = NULL;
-    b->buttonsListNode = a_list_addLast(g_buttons, b);
     b->isClone = true;
 
     return b;
 }
 
-void a_button__free(AInputButton* Button)
+void a_button_free(AInputButton* Button)
 {
     if(!Button->isClone) {
         a_list_freeEx(Button->combos, (AFree*)a_list_free);
@@ -191,12 +183,6 @@ void a_button__free(AInputButton* Button)
     }
 
     free(Button);
-}
-
-void a_button_free(AInputButton* Button)
-{
-    a_list_removeNode(Button->buttonsListNode);
-    a_button__free(Button);
 }
 
 bool a_button_isWorking(const AInputButton* Button)
