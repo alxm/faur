@@ -22,4 +22,4 @@
 #include "a2x_pack_time.p.h"
 
 #include "a2x_pack_hw.v.h"
-#include "a2x_pack_sdl.v.h"
+#include "a2x_pack_platform_sdl.v.h"

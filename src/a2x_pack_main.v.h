@@ -40,7 +40,7 @@
 #include "a2x_pack_random.v.h"
 #include "a2x_pack_screen.v.h"
 #include "a2x_pack_screenshot.v.h"
-#include "a2x_pack_sdl.v.h"
+#include "a2x_pack_platform_sdl.v.h"
 #include "a2x_pack_settings.v.h"
 #include "a2x_pack_sound.v.h"
 #include "a2x_pack_sprite.v.h"

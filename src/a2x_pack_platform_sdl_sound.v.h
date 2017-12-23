@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include "a2x_pack_sdl_sound.p.h"
+#include "a2x_pack_platform_sdl_sound.p.h"
 
 typedef struct ASdlSfx ASdlSfx;
 

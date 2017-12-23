@@ -25,7 +25,7 @@ typedef void (*AScreenOverlay)(void);
 
 #include "a2x_pack_draw.v.h"
 #include "a2x_pack_pixel.v.h"
-#include "a2x_pack_sdl.v.h"
+#include "a2x_pack_platform_sdl.v.h"
 #include "a2x_pack_settings.v.h"
 #include "a2x_pack_sound.v.h"
 #include "a2x_pack_sprite.v.h"

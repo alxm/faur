@@ -17,7 +17,7 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a2x_pack_sdl_sound.v.h"
+#include "a2x_pack_platform_sdl_sound.v.h"
 
 #include <SDL.h>
 #include <SDL_mixer.h>

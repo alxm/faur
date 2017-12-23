@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include "a2x_pack_sdl_video.p.h"
+#include "a2x_pack_platform_sdl_video.p.h"
 
 #if A_CONFIG_RENDER_SDL2
     typedef struct ASdlTexture ASdlTexture;

@@ -19,12 +19,14 @@
 
 #pragma once
 
-#include "a2x_pack_sdl_input.p.h"
+#include "a2x_pack_platform_sdl.p.h"
 
-#include "a2x_pack_input.v.h"
+#include "a2x_pack_platform_sdl_video.v.h"
+#include "a2x_pack_platform_sdl_sound.v.h"
+#include "a2x_pack_platform_sdl_input.v.h"
 
-extern void a_sdl_input__init(void);
-extern void a_sdl_input__uninit(void);
+extern void a_sdl__init(void);
+extern void a_sdl__uninit(void);
 
-extern void a_sdl_input__bind(void);
-extern void a_sdl_input__get(void);
+extern uint32_t a_sdl_time__getTicks(void);
+extern void a_sdl_time__delay(uint32_t Ms);
