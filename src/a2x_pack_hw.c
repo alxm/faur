@@ -1,8 +1,7 @@
 /*
     Copyright 2010, 2016 Alex Margarit and:
 
-    - Wiz framebuffer direction set by Orkie
-    - Wiz/Caanoo accurate timer by notaz (https://github.com/notaz/libpicofe)
+    - Caanoo timer code by notaz (https://github.com/notaz/libpicofe)
 
     This file is part of a2x-framework.
 
@@ -22,11 +21,7 @@
 
 #include "a2x_pack_hw.v.h"
 
-#if A_PLATFORM_WIZ
-    static int g_mmuHackOn = 0;
-#endif
-
-#if A_PLATFORM_WIZ || A_PLATFORM_CAANOO
+#if A_PLATFORM_CAANOO
     #define TIMER_BASE3  0x1980
     #define TIMER_REG(x) g_memregs[(TIMER_BASE3 + x) >> 2]
 
@@ -90,21 +85,7 @@
 
 void a_hw__init_postSDL(void)
 {
-    #if A_PLATFORM_WIZ
-        if(a_file_exists("./mmuhack.ko")) {
-            system("/sbin/rmmod mmuhack");
-            system("/sbin/insmod mmuhack.ko");
-
-            int mmufd = open("/dev/mmuhack", O_RDWR);
-
-            if(mmufd >= 0) {
-                close(mmufd);
-                g_mmuHackOn = 1;
-            }
-        }
-    #endif
-
-    #if A_PLATFORM_WIZ || A_PLATFORM_CAANOO
+    #if A_PLATFORM_CAANOO
         g_memfd = open("/dev/mem", O_RDWR);
         g_memregs = mmap(0,
                          0x20000,
@@ -119,19 +100,13 @@ void a_hw__init_postSDL(void)
 
 void a_hw__uninit(void)
 {
-    #if A_PLATFORM_WIZ || A_PLATFORM_CAANOO
+    #if A_PLATFORM_CAANOO
         timer_clean();
         close(g_memfd);
     #endif
-
-    #if A_PLATFORM_WIZ
-        if(g_mmuHackOn) {
-            system("/sbin/rmmod mmuhack");
-        }
-    #endif
 }
 
-#if A_PLATFORM_WIZ || A_PLATFORM_CAANOO
+#if A_PLATFORM_CAANOO
     uint32_t a_hw__getMs(void)
     {
         unsigned div = TIMER_REG(0x08) & 3;

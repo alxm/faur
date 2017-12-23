@@ -30,6 +30,8 @@ void a_platform__init(void)
 
     #if A_PLATFORM_GP2X
         a_platform_gp2x__init();
+    #elif A_PLATFORM_WIZ
+        a_platform_wiz__init();
     #endif
 }
 
@@ -39,6 +41,8 @@ void a_platform__uninit(void)
         a_platform_gp2x__uninit();
     #elif A_PLATFORM_PANDORA
         a_platform_pandora__uninit();
+    #elif A_PLATFORM_WIZ
+        a_platform_wiz__uninit();
     #endif
 
     a_hw__uninit();

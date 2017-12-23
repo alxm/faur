@@ -19,13 +19,9 @@
 
 #pragma once
 
-#include "a2x_pack_platform.p.h"
+#include "a2x_pack_platform_wiz.p.h"
 
-#include "a2x_pack_hw.v.h"
-#include "a2x_pack_platform_gp2x.v.h"
-#include "a2x_pack_platform_pandora.v.h"
-#include "a2x_pack_platform_sdl.v.h"
-#include "a2x_pack_platform_wiz.v.h"
+#include "a2x_pack_file.v.h"
 
-extern void a_platform__init(void);
-extern void a_platform__uninit(void);
+extern void a_platform_wiz__init(void);
+extern void a_platform_wiz__uninit(void);
