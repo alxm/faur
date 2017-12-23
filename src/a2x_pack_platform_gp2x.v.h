@@ -17,25 +17,12 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a2x_pack_platform.v.h"
+#pragma once
 
-void a_platform__init(void)
-{
-    a_hw__init_preSDL();
-    a_sdl__init();
-    a_hw__init_postSDL();
+#include "a2x_pack_platform_gp2x.p.h"
 
-    #if A_PLATFORM_GP2X
-        a_platform_gp2x__init();
-    #endif
-}
+#include "a2x_pack_file.v.h"
+#include "a2x_pack_settings.v.h"
 
-void a_platform__uninit(void)
-{
-    #if A_PLATFORM_GP2X
-        a_platform_gp2x__uninit();
-    #endif
-
-    a_hw__uninit();
-    a_sdl__uninit();
-}
+extern void a_platform_gp2x__init(void);
+extern void a_platform_gp2x__uninit(void);

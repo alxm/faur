@@ -17,25 +17,6 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a2x_pack_platform.v.h"
+#pragma once
 
-void a_platform__init(void)
-{
-    a_hw__init_preSDL();
-    a_sdl__init();
-    a_hw__init_postSDL();
-
-    #if A_PLATFORM_GP2X
-        a_platform_gp2x__init();
-    #endif
-}
-
-void a_platform__uninit(void)
-{
-    #if A_PLATFORM_GP2X
-        a_platform_gp2x__uninit();
-    #endif
-
-    a_hw__uninit();
-    a_sdl__uninit();
-}
+#include "a2x_system_includes.h"

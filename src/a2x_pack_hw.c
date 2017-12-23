@@ -1,11 +1,8 @@
 /*
     Copyright 2010, 2016 Alex Margarit and:
 
-    - GP2X clock speed from the GP2X Wiki
-    - GP2X mmuhack by Squidge and NK
-    - GP2X ram timings by JyCet
-    - Wiz framebuffer direction by Orkie
-    - Wiz/Caanoo timer by notaz (https://github.com/notaz/libpicofe)
+    - Wiz framebuffer direction set by Orkie
+    - Wiz/Caanoo accurate timer by notaz (https://github.com/notaz/libpicofe)
 
     This file is part of a2x-framework.
 
@@ -25,7 +22,7 @@
 
 #include "a2x_pack_hw.v.h"
 
-#if A_PLATFORM_GP2X || A_PLATFORM_WIZ
+#if A_PLATFORM_WIZ
     static int g_mmuHackOn = 0;
 #endif
 
@@ -141,74 +138,6 @@
     }
 #endif
 
-#if A_PLATFORM_GP2X
-    static void setCpuSpeed(unsigned MHz)
-    {
-        unsigned mhz = MHz * 1000000;
-        unsigned freq = 7372800;
-
-        int memfd = open("/dev/mem", O_RDWR);
-        volatile uint32_t* memregs32 = mmap(0,
-                                            0x10000,
-                                            PROT_READ | PROT_WRITE,
-                                            MAP_SHARED,
-                                            memfd,
-                                            0xc0000000);
-        volatile uint16_t* memregs16 = (uint16_t*)memregs32;
-
-        unsigned pdiv = 3;
-        unsigned mdiv = (mhz * pdiv) / freq;
-
-        pdiv = ((pdiv - 2) << 2) & 0xfc;
-        mdiv = ((mdiv - 8) << 8) & 0xff00;
-
-        unsigned v = pdiv | mdiv;
-        unsigned l = memregs32[0x808 >> 2]; // Get interupt flags
-
-        memregs32[0x808 >> 2] = 0xFF8FFFE7; // Turn off interrupts
-        memregs16[0x910 >> 1] = (uint16_t)v; // Set frequency
-
-        while(memregs16[0x0902 >> 1] & 1) {
-            // Wait for the frequency to be adjusted
-            continue;
-        }
-
-        memregs32[0x808 >> 2] = l; // Turn on interrupts
-
-        close(memfd);
-    }
-
-    static void setRamTimings(unsigned tRC, unsigned tRAS, unsigned tWR, unsigned tMRD, unsigned tRFC, unsigned tRP, unsigned tRCD)
-    {
-        int memfd = open("/dev/mem", O_RDWR);
-        volatile uint16_t* memregs16 = mmap(0,
-                                            0x10000,
-                                            PROT_READ | PROT_WRITE,
-                                            MAP_SHARED,
-                                            memfd,
-                                            0xc0000000);
-
-        tRC -= 1;
-        tRAS -= 1;
-        tWR -= 1;
-        tMRD -= 1;
-        tRFC -= 1;
-        tRP -= 1;
-        tRCD -= 1;
-
-        memregs16[0x3802 >> 1] = (uint16_t)(((tMRD & 0xF) << 12) |
-                                            ((tRFC & 0xF) << 8)  |
-                                            ((tRP  & 0xF) << 4)  |
-                                             (tRCD & 0xF));
-
-        memregs16[0x3804 >> 1] = (uint16_t)(((tRC  & 0xF) << 8) |
-                                            ((tRAS & 0xF) << 4) |
-                                             (tWR  & 0xF));
-
-        close(memfd);
-    }
-#endif
-
 void a_hw__init_preSDL(void)
 {
     #if A_PLATFORM_PANDORA
@@ -244,25 +173,7 @@ void a_hw__init_preSDL(void)
 
 void a_hw__init_postSDL(void)
 {
-    #if A_PLATFORM_GP2X
-        if(a_file_exists("./mmuhack.o")) {
-            system("/sbin/rmmod mmuhack");
-            system("/sbin/insmod mmuhack.o");
-
-            int mmufd = open("/dev/mmuhack", O_RDWR);
-
-            if(mmufd >= 0) {
-                close(mmufd);
-                g_mmuHackOn = 1;
-            }
-        }
-
-        if(a_settings_getUnsigned("app.mhz") > 0) {
-            setCpuSpeed(a_settings_getUnsigned("app.mhz"));
-        }
-
-        setRamTimings(6, 4, 1, 1, 1, 2, 2);
-    #elif A_PLATFORM_WIZ
+    #if A_PLATFORM_WIZ
         if(a_file_exists("./mmuhack.ko")) {
             system("/sbin/rmmod mmuhack");
             system("/sbin/insmod mmuhack.ko");
@@ -296,14 +207,10 @@ void a_hw__uninit(void)
         close(g_memfd);
     #endif
 
-    #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
+    #if A_PLATFORM_WIZ
         if(g_mmuHackOn) {
             system("/sbin/rmmod mmuhack");
         }
-    #endif
-
-    #if A_PLATFORM_GP2X
-        setRamTimings(8, 16, 3, 8, 8, 8, 8);
     #endif
 
     #if A_PLATFORM_PANDORA
