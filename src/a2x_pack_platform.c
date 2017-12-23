@@ -21,7 +21,10 @@
 
 void a_platform__init(void)
 {
-    a_hw__init_preSDL();
+    #if A_PLATFORM_PANDORA
+        a_platform_pandora__init();
+    #endif
+
     a_sdl__init();
     a_hw__init_postSDL();
 
@@ -34,6 +37,8 @@ void a_platform__uninit(void)
 {
     #if A_PLATFORM_GP2X
         a_platform_gp2x__uninit();
+    #elif A_PLATFORM_PANDORA
+        a_platform_pandora__uninit();
     #endif
 
     a_hw__uninit();

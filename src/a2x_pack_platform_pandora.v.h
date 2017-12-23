@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016 Alex Margarit
+    Copyright 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -19,15 +19,9 @@
 
 #pragma once
 
-#include "a2x_pack_hw.p.h"
+#include "a2x_pack_platform_pandora.p.h"
 
 #include "a2x_pack_file.v.h"
-#include "a2x_pack_settings.v.h"
 
-extern void a_hw__init_postSDL(void);
-extern void a_hw__uninit(void);
-
-#if A_PLATFORM_WIZ || A_PLATFORM_CAANOO
-    extern uint32_t a_hw__getMs(void);
-    extern void a_hw__setWizPortraitMode(void);
-#endif
+extern void a_platform_pandora__init(void);
+extern void a_platform_pandora__uninit(void);

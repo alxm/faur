@@ -23,6 +23,7 @@
 
 #include "a2x_pack_hw.v.h"
 #include "a2x_pack_platform_gp2x.v.h"
+#include "a2x_pack_platform_pandora.v.h"
 #include "a2x_pack_platform_sdl.v.h"
 
 extern void a_platform__init(void);
