@@ -38,8 +38,6 @@ static void a__atexit(void)
     a_screen__uninit();
     a_pixel__uninit();
     a_fps__uninit();
-    a_hw__uninit();
-    a_sdl__uninit();
     a_platform__uninit();
 
     #if A_PLATFORM_GP2X || A_PLATFORM_WIZ || A_PLATFORM_CAANOO
@@ -73,9 +71,6 @@ int main(int Argc, const char** Argv)
 
     a_conf__init();
     a_platform__init();
-    a_hw__init_preSDL();
-    a_sdl__init();
-    a_hw__init_postSDL();
     a_input__init();
     a_screen__init();
     a_pixel__init();

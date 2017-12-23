@@ -21,10 +21,13 @@
 
 void a_platform__init(void)
 {
-    //
+    a_hw__init_preSDL();
+    a_sdl__init();
+    a_hw__init_postSDL();
 }
 
 void a_platform__uninit(void)
 {
-    //
+    a_hw__uninit();
+    a_sdl__uninit();
 }
