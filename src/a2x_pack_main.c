@@ -40,6 +40,7 @@ static void a__atexit(void)
     a_fps__uninit();
     a_hw__uninit();
     a_sdl__uninit();
+    a_platform__uninit();
 
     #if A_PLATFORM_GP2X || A_PLATFORM_WIZ || A_PLATFORM_CAANOO
         if(a_settings_getBool("app.gp2xMenu")) {
@@ -71,6 +72,7 @@ int main(int Argc, const char** Argv)
         a_settings_getString("app.buildtime"));
 
     a_conf__init();
+    a_platform__init();
     a_hw__init_preSDL();
     a_sdl__init();
     a_hw__init_postSDL();
