@@ -28,6 +28,3 @@
 
 extern void a_sound__init(void);
 extern void a_sound__uninit(void);
-
-extern void a_sfx__free(ASound* Sfx);
-extern void a_music__free(AMusic* Music);

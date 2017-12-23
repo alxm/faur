@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016 Alex Margarit
+    Copyright 2010, 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -19,9 +19,6 @@
 
 #include "a2x_pack_sound.v.h"
 
-static AList* g_musicList;
-static AList* g_sfxList;
-
 static bool g_soundOn;
 static int g_volume;
 static int g_musicVolume;
@@ -29,6 +26,7 @@ static int g_sfxVolume;
 static int g_volumeMax;
 
 #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
+    #define A_SFX_LIST 1
     #define A_VOLUME_STEP 1
     #define A_VOLBAR_SHOW_MS 500
     static uint32_t g_lastVolAdjustment;
@@ -37,6 +35,7 @@ static int g_volumeMax;
     static APixel g_volbarBackground;
     static APixel g_volbarBorder;
     static APixel g_volbarFill;
+    static AList* g_sfxList;
 #elif A_DEVICE_HAS_KEYBOARD
     static AInputButton* g_musicOnOffButton;
 #endif
@@ -62,10 +61,7 @@ static void inputCallback(void)
 
             if(adjust) {
                 adjustSoundVolume(g_volume + adjust);
-
-                if(!a_list_isEmpty(g_musicList)) {
-                    a_sdl_sound__musicSetVolume(g_musicVolume);
-                }
+                a_sdl_sound__musicSetVolume(g_musicVolume);
 
                 A_LIST_ITERATE(g_sfxList, ASound*, s) {
                     a_sdl_sound__sfxSetVolume(s, g_sfxVolume);
@@ -115,8 +111,9 @@ void a_sound__init(void)
         return;
     }
 
-    g_musicList = a_list_new();
-    g_sfxList = a_list_new();
+    #if A_SFX_LIST
+        g_sfxList = a_list_new();
+    #endif
 
     g_volumeMax = a_sdl_sound__getMaxVolome();
 
@@ -157,25 +154,25 @@ void a_sound__uninit(void)
     if(g_soundOn) {
         a_music_stop();
 
-        a_list_freeEx(g_sfxList, (AFree*)a_sfx__free);
-        a_list_freeEx(g_musicList, (AFree*)a_music__free);
+        #if A_SFX_LIST
+            a_list_freeEx(g_sfxList, (AFree*)a_sfx_free);
+        #endif
     }
 }
 
-AMusic* a_music_load(const char* Path)
+AMusic* a_music_new(const char* Path)
 {
     if(g_soundOn) {
         AMusic* music = a_sdl_sound__musicLoad(Path);
         a_sdl_sound__musicSetVolume(g_musicVolume);
 
-        a_list_addLast(g_musicList, music);
         return music;
     } else {
         return NULL;
     }
 }
 
-void a_music__free(AMusic* Music)
+void a_music_free(AMusic* Music)
 {
     if(g_soundOn) {
         a_sdl_sound__musicFree(Music);
@@ -196,7 +193,7 @@ void a_music_stop(void)
     }
 }
 
-ASound* a_sfx_newFromFile(const char* Path)
+ASound* a_sfx_new(const char* Path)
 {
     if(!g_soundOn) {
         return NULL;
@@ -217,13 +214,16 @@ ASound* a_sfx_newFromFile(const char* Path)
 
     if(s) {
         a_sdl_sound__sfxSetVolume(s, g_sfxVolume);
-        a_list_addLast(g_sfxList, s);
+
+        #if A_SFX_LIST
+            a_list_addLast(g_sfxList, s);
+        #endif
     }
 
     return s;
 }
 
-void a_sfx__free(ASound* Sfx)
+void a_sfx_free(ASound* Sfx)
 {
     if(g_soundOn) {
         a_sdl_sound__sfxFree(Sfx);

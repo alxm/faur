@@ -25,12 +25,8 @@ typedef struct AInputAnalogSource AInputAnalogSource;
 
 #include "a2x_pack_input.v.h"
 
-extern void a_input_analog__init(void);
-extern void a_input_analog__uninit(void);
-
 extern AInputAnalogSource* a_input_analog__newSource(const char* Id);
 extern void a_input_analog__freeSource(AInputAnalogSource* Analog);
 
 extern void a_input_analog__forwardToButtons(AInputAnalogSource* Axis, AInputButtonSource* Negative, AInputButtonSource* Positive);
-
 extern void a_input_analog__setAxisValue(AInputAnalogSource* Analog, int Value);

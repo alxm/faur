@@ -24,6 +24,8 @@
 typedef struct AInputTouch AInputTouch;
 
 extern AInputTouch* a_touch_new(const char* Ids);
+extern void a_touch_free(AInputTouch* Touch);
+
 extern bool a_touch_isWorking(const AInputTouch* Touch);
 
 extern void a_touch_getDelta(const AInputTouch* Touch, int* Dx, int* Dy);
