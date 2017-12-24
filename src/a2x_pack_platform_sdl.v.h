@@ -27,6 +27,3 @@
 
 extern void a_sdl__init(void);
 extern void a_sdl__uninit(void);
-
-extern uint32_t a_sdl_time__getTicks(void);
-extern void a_sdl_time__delay(uint32_t Ms);

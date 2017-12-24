@@ -56,12 +56,9 @@ void a_sdl__uninit(void)
     SDL_Quit();
 }
 
-uint32_t a_sdl_time__getTicks(void)
+#if !(A_PLATFORM_WIZ || A_PLATFORM_CAANOO)
+uint32_t a_platform__getMs(void)
 {
     return SDL_GetTicks();
 }
-
-void a_sdl_time__delay(uint32_t Ms)
-{
-    SDL_Delay(Ms);
-}
+#endif

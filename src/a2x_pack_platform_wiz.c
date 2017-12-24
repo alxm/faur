@@ -127,7 +127,7 @@ void a_platform_wiz__uninit(void)
     #endif
 }
 
-uint32_t a_hw__getMs(void)
+uint32_t a_platform__getMs(void)
 {
     unsigned div = TIMER_REG(0x08) & 3;
     TIMER_REG(0x08) = 0x48 | div; // Run timer, latch value

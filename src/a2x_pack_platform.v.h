@@ -28,3 +28,5 @@
 
 extern void a_platform__init(void);
 extern void a_platform__uninit(void);
+
+extern uint32_t a_platform__getMs(void);
