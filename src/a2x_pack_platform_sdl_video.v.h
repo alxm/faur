@@ -31,13 +31,6 @@ extern void a_sdl_video__init(void);
 extern void a_sdl_video__uninit(void);
 
 #if A_CONFIG_RENDER_SDL2
-extern void a_sdl_render__drawPoint(int X, int Y);
-extern void a_sdl_render__drawLine(int X1, int Y1, int X2, int Y2);
-extern void a_sdl_render__drawRectangleFilled(int X, int Y, int Width, int Height);
-extern void a_sdl_render__drawRectangleOutline(int X, int Y, int Width, int Height);
-extern void a_sdl_render__drawCircleOutline(int X, int Y, int Radius);
-extern void a_sdl_render__drawCircleFilled(int X, int Y, int Radius);
-
 extern ASdlTexture* a_sdl_render__textureMakeScreen(int Width, int Height);
 extern ASdlTexture* a_sdl_render__textureMakeSprite(const APixel* Pixels, int Width, int Height);
 extern void a_sdl_render__textureFree(ASdlTexture* Texture);

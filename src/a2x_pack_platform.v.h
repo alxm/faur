@@ -39,3 +39,10 @@ extern void a_platform__getNativeResolution(int* Width, int* Height);
 extern void a_platform__renderClear(void);
 extern void a_platform__renderSetDrawColor(void);
 extern void a_platform__renderSetBlendMode(void);
+
+extern void a_platform__drawPixel(int X, int Y);
+extern void a_platform__drawLine(int X1, int Y1, int X2, int Y2);
+extern void a_platform__drawRectangleFilled(int X, int Y, int Width, int Height);
+extern void a_platform__drawRectangleOutline(int X, int Y, int Width, int Height);
+extern void a_platform__drawCircleOutline(int X, int Y, int Radius);
+extern void a_platform__drawCircleFilled(int X, int Y, int Radius);

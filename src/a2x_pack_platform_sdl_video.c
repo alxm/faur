@@ -448,21 +448,21 @@ void a_platform__renderSetBlendMode(void)
     }
 }
 
-void a_sdl_render__drawPoint(int X, int Y)
+void a_platform__drawPixel(int X, int Y)
 {
     if(SDL_RenderDrawPoint(g_sdlRenderer, X, Y) < 0) {
         a_out__error("SDL_RenderDrawPoint failed: %s", SDL_GetError());
     }
 }
 
-void a_sdl_render__drawLine(int X1, int Y1, int X2, int Y2)
+void a_platform__drawLine(int X1, int Y1, int X2, int Y2)
 {
     if(SDL_RenderDrawLine(g_sdlRenderer, X1, Y1, X2, Y2) < 0) {
         a_out__error("SDL_RenderDrawLine failed: %s", SDL_GetError());
     }
 }
 
-void a_sdl_render__drawRectangleFilled(int X, int Y, int Width, int Height)
+void a_platform__drawRectangleFilled(int X, int Y, int Width, int Height)
 {
     SDL_Rect area = {X, Y, Width, Height};
 
@@ -471,30 +471,30 @@ void a_sdl_render__drawRectangleFilled(int X, int Y, int Width, int Height)
     }
 }
 
-void a_sdl_render__drawRectangleOutline(int X, int Y, int Width, int Height)
+void a_platform__drawRectangleOutline(int X, int Y, int Width, int Height)
 {
-    a_sdl_render__drawRectangleFilled(X, Y, Width, 1);
+    a_platform__drawRectangleFilled(X, Y, Width, 1);
 
     if(Height <= 1) {
         return;
     }
 
-    a_sdl_render__drawRectangleFilled(X, Y + Height - 1, Width, 1);
+    a_platform__drawRectangleFilled(X, Y + Height - 1, Width, 1);
 
     if(Width <= 1 || Height <= 2) {
         return;
     }
 
-    a_sdl_render__drawRectangleFilled(X, Y + 1, 1, Height - 2);
-    a_sdl_render__drawRectangleFilled(X + Width - 1, Y + 1, 1, Height - 2);
+    a_platform__drawRectangleFilled(X, Y + 1, 1, Height - 2);
+    a_platform__drawRectangleFilled(X + Width - 1, Y + 1, 1, Height - 2);
 }
 
-void a_sdl_render__drawCircleOutline(int X, int Y, int Radius)
+void a_platform__drawCircleOutline(int X, int Y, int Radius)
 {
     // Using inclusive coords
     if(--Radius <= 0) {
         if(Radius == 0) {
-            a_sdl_render__drawRectangleFilled(X - 1, Y - 1, 2, 2);
+            a_platform__drawRectangleFilled(X - 1, Y - 1, 2, 2);
         }
 
         return;
@@ -597,12 +597,12 @@ void a_sdl_render__drawCircleOutline(int X, int Y, int Radius)
     }
 }
 
-void a_sdl_render__drawCircleFilled(int X, int Y, int Radius)
+void a_platform__drawCircleFilled(int X, int Y, int Radius)
 {
     // Using inclusive coords
     if(--Radius <= 0) {
         if(Radius == 0) {
-            a_sdl_render__drawRectangleFilled(X - 1, Y - 1, 2, 2);
+            a_platform__drawRectangleFilled(X - 1, Y - 1, 2, 2);
         }
 
         return;

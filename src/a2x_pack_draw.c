@@ -322,7 +322,7 @@ void a_draw__updateRoutines(void)
     g_draw_circle_clip = g_circle[blend][1][fill];
 }
 
-#elif A_CONFIG_RENDER_SDL2
+#else
 
 void a_draw__init(void)
 {
@@ -350,8 +350,8 @@ void a_draw_pixel(int X, int Y)
         if(a_screen_isBoxInsideClip(X, Y, 1, 1)) {
             g_draw_pixel(X, Y);
         }
-    #elif A_CONFIG_RENDER_SDL2
-        a_sdl_render__drawPoint(X, Y);
+    #else
+        a_platform__drawPixel(X, Y);
     #endif
 }
 
@@ -376,11 +376,11 @@ void a_draw_rectangle(int X, int Y, int Width, int Height)
         Height = a_math_min(Height, y2 - Y);
 
         g_draw_rectangle(X, Y, Width, Height);
-    #elif A_CONFIG_RENDER_SDL2
+    #else
         if(a_pixel__state.fillDraw) {
-            a_sdl_render__drawRectangleFilled(X, Y, Width, Height);
+            a_platform__drawRectangleFilled(X, Y, Width, Height);
         } else {
-            a_sdl_render__drawRectangleOutline(X, Y, Width, Height);
+            a_platform__drawRectangleOutline(X, Y, Width, Height);
         }
     #endif
 }
@@ -400,8 +400,8 @@ void a_draw_line(int X1, int Y1, int X2, int Y2)
         }
 
         g_draw_line(X1, Y1, X2, Y2);
-    #elif A_CONFIG_RENDER_SDL2
-        a_sdl_render__drawLine(X1, Y1, X2, Y2);
+    #else
+        a_platform__drawLine(X1, Y1, X2, Y2);
     #endif
 }
 
@@ -420,8 +420,8 @@ void a_draw_hline(int X1, int X2, int Y)
         xMax = a_math_min(xMax, a__screen.clipX2 - 1);
 
         g_draw_hline(xMin, xMax, Y);
-    #elif A_CONFIG_RENDER_SDL2
-        a_sdl_render__drawRectangleFilled(xMin, Y, length, 1);
+    #else
+        a_platform__drawRectangleFilled(xMin, Y, length, 1);
     #endif
 }
 
@@ -440,8 +440,8 @@ void a_draw_vline(int X, int Y1, int Y2)
         yMax = a_math_min(yMax, a__screen.clipY2 - 1);
 
         g_draw_vline(X, yMin, yMax);
-    #elif A_CONFIG_RENDER_SDL2
-        a_sdl_render__drawRectangleFilled(X, yMin, 1, length);
+    #else
+        a_platform__drawRectangleFilled(X, yMin, 1, length);
     #endif
 }
 
@@ -460,11 +460,11 @@ void a_draw_circle(int X, int Y, int Radius)
         if(a_screen_isBoxOnClip(boxX, boxY, boxDim, boxDim)) {
             g_draw_circle_clip(X, Y, Radius);
         }
-    #elif A_CONFIG_RENDER_SDL2
+    #else
         if(a_pixel__state.fillDraw) {
-            a_sdl_render__drawCircleFilled(X, Y, Radius);
+            a_platform__drawCircleFilled(X, Y, Radius);
         } else {
-            a_sdl_render__drawCircleOutline(X, Y, Radius);
+            a_platform__drawCircleOutline(X, Y, Radius);
         }
     #endif
 }
