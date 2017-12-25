@@ -123,4 +123,10 @@ void a_platform_gp2x__uninit(void)
     setRamTimings(8, 16, 3, 8, 8, 8, 8);
 }
 
+void a_platform__getNativeResolution(int* Width, int* Height)
+{
+    *Width = 320;
+    *Height = 240;
+}
+
 #endif // A_PLATFORM_GP2X

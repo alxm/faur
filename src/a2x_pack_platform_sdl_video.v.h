@@ -30,11 +30,6 @@
 extern void a_sdl_video__init(void);
 extern void a_sdl_video__uninit(void);
 
-#if A_CONFIG_LIB_SDL == 2
-extern void a_sdl_render__clear(void);
-extern void a_sdl_video__getFullResolution(int* Width, int* Height);
-#endif
-
 #if A_CONFIG_RENDER_SDL2
 extern void a_sdl_render__setDrawColor(void);
 extern void a_sdl_render__setBlendMode(void);

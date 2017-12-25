@@ -89,11 +89,22 @@ void a_screen__init(void)
     int width = a_settings_getInt("video.width");
     int height = a_settings_getInt("video.height");
 
-    #if A_CONFIG_LIB_SDL == 2
-        if(width < 0 || height < 0) {
-            a_sdl_video__getFullResolution(&width, &height);
+    if(width < 0 || height < 0) {
+        int w = width;
+        int h = height;
+
+        a_platform__getNativeResolution(&w, &h);
+
+        if(w > 0 && h > 0) {
+            if(width < 0) {
+                width = w / -width;
+            }
+
+            if(height < 0) {
+                height = h / -height;
+            }
         }
-    #endif
+    }
 
     if(width <= 0 || height <= 0) {
         a_out__fatal("Invalid screen resolution %dx%d", width, height);
@@ -366,12 +377,12 @@ void a_screen_clear(void)
 {
     #if A_CONFIG_RENDER_SOFTWARE
         memset(a__screen.pixels, 0, a__screen.pixelsSize);
-    #elif A_CONFIG_RENDER_SDL2
+    #else
         a_pixel_push();
 
         a_pixel_setBlend(A_PIXEL_BLEND_PLAIN);
         a_pixel_setPixel(0);
-        a_sdl_render__clear();
+        a_platform__renderClear();
 
         a_pixel_pop();
     #endif

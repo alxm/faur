@@ -302,7 +302,7 @@ void a_platform__showScreen(void)
             a_out__error("SDL_SetRenderDrawColor failed: %s", SDL_GetError());
         }
 
-        a_sdl_render__clear();
+        a_platform__renderClear();
 
         #if A_CONFIG_RENDER_SOFTWARE
             if(SDL_UpdateTexture(g_sdlTexture,
@@ -355,14 +355,14 @@ void a_platform__setFullScreen(bool FullScreen)
 }
 
 #if A_CONFIG_LIB_SDL == 2
-void a_sdl_render__clear(void)
+void a_platform__renderClear(void)
 {
     if(SDL_RenderClear(g_sdlRenderer) < 0) {
         a_out__error("SDL_RenderClear failed: %s", SDL_GetError());
     }
 }
 
-void a_sdl_video__getFullResolution(int* Width, int* Height)
+void a_platform__getNativeResolution(int* Width, int* Height)
 {
     SDL_DisplayMode mode;
 
@@ -378,11 +378,24 @@ void a_sdl_video__getFullResolution(int* Width, int* Height)
                    SDL_BITSPERPIXEL(mode.format));
 
     if(*Width < 0) {
-        *Width = mode.w / -*Width;
+        *Width = mode.w;
     }
 
     if(*Height < 0) {
-        *Height = mode.h / -*Height;
+        *Height = mode.h;
+    }
+}
+#elif !(A_PLATFORM_GP2X || A_PLATFORM_WIZ || A_PLATFORM_CAANOO)
+void a_platform__getNativeResolution(int* Width, int* Height)
+{
+    const SDL_VideoInfo* info = SDL_GetVideoInfo();
+
+    if(*Width < 0) {
+        *Width = info->current_w;
+    }
+
+    if(*Height < 0) {
+        *Height = info->current_h;
     }
 }
 #endif

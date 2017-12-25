@@ -156,4 +156,10 @@ void a_platform_wiz__setScreenPortraitMode(void)
 }
 #endif
 
+void a_platform__getNativeResolution(int* Width, int* Height)
+{
+    *Width = 320;
+    *Height = 240;
+}
+
 #endif // A_PLATFORM_WIZ || A_PLATFORM_CAANOO
