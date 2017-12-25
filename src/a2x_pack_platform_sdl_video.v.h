@@ -31,9 +31,6 @@ extern void a_sdl_video__init(void);
 extern void a_sdl_video__uninit(void);
 
 #if A_CONFIG_RENDER_SDL2
-extern void a_sdl_render__setDrawColor(void);
-extern void a_sdl_render__setBlendMode(void);
-
 extern void a_sdl_render__drawPoint(int X, int Y);
 extern void a_sdl_render__drawLine(int X1, int Y1, int X2, int Y2);
 extern void a_sdl_render__drawRectangleFilled(int X, int Y, int Width, int Height);

@@ -429,7 +429,7 @@ static inline uint8_t pixelAlphaToSdlAlpha(void)
     }
 }
 
-void a_sdl_render__setDrawColor(void)
+void a_platform__renderSetDrawColor(void)
 {
     if(SDL_SetRenderDrawColor(g_sdlRenderer,
                               (uint8_t)a_pixel__state.red,
@@ -441,7 +441,7 @@ void a_sdl_render__setDrawColor(void)
     }
 }
 
-void a_sdl_render__setBlendMode(void)
+void a_platform__renderSetBlendMode(void)
 {
     if(SDL_SetRenderDrawBlendMode(g_sdlRenderer, pixelBlendToSdlBlend()) < 0) {
         a_out__error("SDL_SetRenderDrawBlendMode failed: %s", SDL_GetError());

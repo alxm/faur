@@ -114,7 +114,7 @@ void a_pixel_setBlend(APixelBlend Blend)
         optimizeAlphaBlending(false);
         a_draw__updateRoutines();
         a_sprite__updateRoutines();
-    #elif A_CONFIG_RENDER_SDL2
+    #else
         if(Blend == A_PIXEL_BLEND_RGB25) {
             a_pixel_setAlpha(A_PIXEL_ALPHA_MAX / 4);
         } else if(Blend == A_PIXEL_BLEND_RGB50) {
@@ -123,7 +123,7 @@ void a_pixel_setBlend(APixelBlend Blend)
             a_pixel_setAlpha(A_PIXEL_ALPHA_MAX * 3 / 4);
         }
 
-        a_sdl_render__setBlendMode();
+        a_platform__renderSetBlendMode();
     #endif
 }
 
@@ -138,8 +138,8 @@ void a_pixel_setAlpha(int Alpha)
 
     #if A_CONFIG_RENDER_SOFTWARE
         optimizeAlphaBlending(true);
-    #elif A_CONFIG_RENDER_SDL2
-        a_sdl_render__setDrawColor();
+    #else
+        a_platform__renderSetDrawColor();
     #endif
 }
 
@@ -150,8 +150,8 @@ void a_pixel_setRGB(int Red, int Green, int Blue)
     a_pixel__state.blue = (unsigned)Blue & 0xff;
     a_pixel__state.pixel = a_pixel_rgb(Red, Green, Blue);
 
-    #if A_CONFIG_RENDER_SDL2
-        a_sdl_render__setDrawColor();
+    #if !A_CONFIG_RENDER_SOFTWARE
+        a_platform__renderSetDrawColor();
     #endif
 }
 
@@ -165,8 +165,8 @@ void a_pixel_setRGBA(int Red, int Green, int Blue, int Alpha)
 
     #if A_CONFIG_RENDER_SOFTWARE
         optimizeAlphaBlending(true);
-    #elif A_CONFIG_RENDER_SDL2
-        a_sdl_render__setDrawColor();
+    #else
+        a_platform__renderSetDrawColor();
     #endif
 }
 
@@ -177,8 +177,8 @@ void a_pixel_setHex(uint32_t Hexcode)
     a_pixel__state.blue = Hexcode & 0xff;
     a_pixel__state.pixel = a_pixel_hex(Hexcode);
 
-    #if A_CONFIG_RENDER_SDL2
-        a_sdl_render__setDrawColor();
+    #if !A_CONFIG_RENDER_SOFTWARE
+        a_platform__renderSetDrawColor();
     #endif
 }
 
@@ -189,8 +189,8 @@ void a_pixel_setPixel(APixel Pixel)
     a_pixel__state.blue = a_pixel_blue(Pixel);
     a_pixel__state.pixel = Pixel;
 
-    #if A_CONFIG_RENDER_SDL2
-        a_sdl_render__setDrawColor();
+    #if !A_CONFIG_RENDER_SOFTWARE
+        a_platform__renderSetDrawColor();
     #endif
 }
 

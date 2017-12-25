@@ -37,3 +37,5 @@ extern void a_platform__setFullScreen(bool FullScreen);
 extern void a_platform__getNativeResolution(int* Width, int* Height);
 
 extern void a_platform__renderClear(void);
+extern void a_platform__renderSetDrawColor(void);
+extern void a_platform__renderSetBlendMode(void);
