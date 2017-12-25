@@ -30,10 +30,6 @@
 extern void a_sdl_video__init(void);
 extern void a_sdl_video__uninit(void);
 
-extern void a_sdl_screen__set(int Width, int Height, bool FullScreen);
-extern void a_sdl_screen__show(void);
-extern void a_sdl_screen__setFullScreen(bool FullScreen);
-
 #if A_CONFIG_LIB_SDL == 2
 extern void a_sdl_render__clear(void);
 extern void a_sdl_video__getFullResolution(int* Width, int* Height);

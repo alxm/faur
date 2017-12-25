@@ -135,8 +135,14 @@ uint32_t a_platform__getMs(void)
     return TIMER_REG(0) / 1000;
 }
 
-void a_hw__setWizPortraitMode(void)
+#if A_PLATFORM_WIZ
+void a_platform_wiz__setScreenPortraitMode(void)
 {
+    // Set Wiz screen to portrait mode to avoid diagonal tearing
+    if(!a_settings_getBool("video.fixWizTearing")) {
+        return;
+    }
+
     #define FBIO_MAGIC 'D'
     #define FBIO_LCD_CHANGE_CONTROL _IOW(FBIO_MAGIC, 90, unsigned[2])
     #define LCD_DIRECTION_ON_CMD 5 // 320x240
@@ -148,5 +154,6 @@ void a_hw__setWizPortraitMode(void)
     ioctl(fb_fd, FBIO_LCD_CHANGE_CONTROL, &send);
     close(fb_fd);
 }
+#endif
 
-#endif // A_PLATFORM_WIZ
+#endif // A_PLATFORM_WIZ || A_PLATFORM_CAANOO

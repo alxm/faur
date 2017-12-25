@@ -30,3 +30,7 @@ extern void a_platform__init(void);
 extern void a_platform__uninit(void);
 
 extern uint32_t a_platform__getMs(void);
+
+extern void a_platform__setScreen(int Width, int Height, bool FullScreen);
+extern void a_platform__showScreen(void);
+extern void a_platform__setFullScreen(bool FullScreen);

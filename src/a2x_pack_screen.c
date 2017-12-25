@@ -37,7 +37,7 @@ static bool g_fullScreenState;
     {
         if(a_button_getPressedOnce(g_fullScreenButton)) {
             g_fullScreenState = !g_fullScreenState;
-            a_sdl_screen__setFullScreen(g_fullScreenState);
+            a_platform__setFullScreen(g_fullScreenState);
         }
     }
 #endif
@@ -101,6 +101,7 @@ void a_screen__init(void)
 
     #if A_CONFIG_RENDER_SOFTWARE
         if(a_settings_getBool("video.doubleBuffer")) {
+            // Allocate pixel buffer
             initScreen(&a__screen, width, height, true);
         } else {
             // Will use SDL's pixel buffer directly
@@ -109,12 +110,11 @@ void a_screen__init(void)
     #endif
 
     g_fullScreenState = a_settings_getBool("video.fullscreen");
-    a_sdl_screen__set(width, height, g_fullScreenState);
+    a_platform__setScreen(width, height, g_fullScreenState);
+    a_platform__setFullScreen(g_fullScreenState);
 
     #if A_PLATFORM_WIZ
-        if(a_settings_getBool("video.fixWizTearing")) {
-            a_hw__setWizPortraitMode();
-        }
+        a_platform_wiz__setScreenPortraitMode();
     #endif
 
     #if A_PLATFORM_DESKTOP
@@ -159,7 +159,7 @@ void a_screen__show(void)
         c->callback();
     }
 
-    a_sdl_screen__show();
+    a_platform__showScreen();
 }
 
 void a_screen__addOverlay(AScreenOverlay Callback)

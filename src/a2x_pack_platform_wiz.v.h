@@ -26,4 +26,4 @@
 extern void a_platform_wiz__init(void);
 extern void a_platform_wiz__uninit(void);
 
-extern void a_hw__setWizPortraitMode(void);
+extern void a_platform_wiz__setScreenPortraitMode(void);

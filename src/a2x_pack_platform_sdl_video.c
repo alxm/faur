@@ -85,7 +85,7 @@ void a_sdl_video__uninit(void)
     SDL_QuitSubSystem(SDL_INIT_VIDEO);
 }
 
-void a_sdl_screen__set(int Width, int Height, bool FullScreen)
+void a_platform__setScreen(int Width, int Height, bool FullScreen)
 {
     #if A_CONFIG_LIB_SDL == 1
         int bpp = 0;
@@ -208,11 +208,9 @@ void a_sdl_screen__set(int Width, int Height, bool FullScreen)
             SDL_SetWindowTitle(g_sdlWindow, caption);
         #endif
     #endif
-
-    a_sdl_screen__setFullScreen(FullScreen);
 }
 
-void a_sdl_screen__show(void)
+void a_platform__showScreen(void)
 {
     #if A_CONFIG_LIB_SDL == 1
         #if A_PLATFORM_WIZ
@@ -337,7 +335,7 @@ void a_sdl_screen__show(void)
     #endif
 }
 
-void a_sdl_screen__setFullScreen(bool FullScreen)
+void a_platform__setFullScreen(bool FullScreen)
 {
     #if A_CONFIG_LIB_SDL == 2
         if(SDL_SetWindowFullscreen(g_sdlWindow,
