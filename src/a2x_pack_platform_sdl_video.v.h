@@ -21,24 +21,8 @@
 
 #include "a2x_pack_platform_sdl_video.p.h"
 
-#if A_CONFIG_RENDER_SDL2
-    typedef struct ASdlTexture ASdlTexture;
-#endif
-
 #include "a2x_pack_pixel.v.h"
+#include "a2x_pack_platform.v.h"
 
 extern void a_sdl_video__init(void);
 extern void a_sdl_video__uninit(void);
-
-#if A_CONFIG_RENDER_SDL2
-extern ASdlTexture* a_sdl_render__textureMakeScreen(int Width, int Height);
-extern ASdlTexture* a_sdl_render__textureMakeSprite(const APixel* Pixels, int Width, int Height);
-extern void a_sdl_render__textureFree(ASdlTexture* Texture);
-
-extern void a_sdl_render__textureBlit(ASdlTexture* Texture, int X, int Y, bool FillFlat);
-extern void a_sdl_render__textureBlitEx(ASdlTexture* Texture, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY, bool FillFlat);
-
-extern void a_sdl_render__targetSet(ASdlTexture* Texture);
-extern void a_sdl_render__targetGetPixels(APixel* Pixels, int Width);
-extern void a_sdl_render__targetSetClip(int X, int Y, int Width, int Height);
-#endif

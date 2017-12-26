@@ -54,8 +54,8 @@ static void initScreen(AScreen* Screen, int Width, int Height, bool AllocBuffer)
 
     #if A_CONFIG_RENDER_SOFTWARE
         Screen->sprite = NULL;
-    #elif A_CONFIG_RENDER_SDL2
-        Screen->texture = a_sdl_render__textureMakeScreen(Width, Height);
+    #else
+        Screen->texture = a_platform__newScreenTexture(Width, Height);
     #endif
 
     Screen->width = Width;
@@ -75,8 +75,8 @@ static void freeScreen(AScreen* Screen)
         free(Screen->pixels);
     }
 
-    #if A_CONFIG_RENDER_SDL2
-        a_sdl_render__textureFree(Screen->texture);
+    #if !A_CONFIG_RENDER_SOFTWARE
+        a_platform__freeTexture(Screen->texture);
     #endif
 }
 
@@ -135,9 +135,9 @@ void a_screen__init(void)
         a_input__addCallback(inputCallback);
     #endif
 
-    #if A_CONFIG_RENDER_SDL2
+    #if !A_CONFIG_RENDER_SOFTWARE
         initScreen(&a__screen, width, height, true);
-        a_sdl_render__targetSet(a__screen.texture);
+        a_platform__setRenderTarget(a__screen.texture);
     #endif
 
     g_stack = a_list_new();
@@ -189,8 +189,8 @@ bool a_screen__sameSize(const AScreen* Screen1, const AScreen* Screen2)
 
 APixel* a_screen_getPixels(void)
 {
-    #if A_CONFIG_RENDER_SDL2
-        a_sdl_render__targetGetPixels(a__screen.pixels, a__screen.width);
+    #if !A_CONFIG_RENDER_SOFTWARE
+        a_platform__getTargetPixels(a__screen.pixels, a__screen.width);
     #endif
 
     return a__screen.pixels;
@@ -242,20 +242,20 @@ void a_screen_copy(AScreen* Dst, const AScreen* Src)
 
     #if A_CONFIG_RENDER_SOFTWARE
         memcpy(Dst->pixels, Src->pixels, Src->pixelsSize);
-    #elif A_CONFIG_RENDER_SDL2
+    #else
         a_pixel_push();
         a_pixel_setBlend(A_PIXEL_BLEND_PLAIN);
 
-        a_sdl_render__targetSet(Dst->texture);
-        a_sdl_render__targetSetClip(0, 0, Dst->width, Dst->height);
+        a_platform__setRenderTarget(Dst->texture);
+        a_platform__setTargetClip(0, 0, Dst->width, Dst->height);
 
-        a_sdl_render__textureBlit(Src->texture, 0, 0, false);
+        a_platform__blitTexture(Src->texture, 0, 0, false);
 
-        a_sdl_render__targetSet(a__screen.texture);
-        a_sdl_render__targetSetClip(a__screen.clipX,
-                                    a__screen.clipY,
-                                    a__screen.clipWidth,
-                                    a__screen.clipHeight);
+        a_platform__setRenderTarget(a__screen.texture);
+        a_platform__setTargetClip(a__screen.clipX,
+                                  a__screen.clipY,
+                                  a__screen.clipWidth,
+                                  a__screen.clipHeight);
 
         a_pixel_pop();
     #endif
@@ -368,8 +368,8 @@ void a_screen_blit(const AScreen* Screen)
 
             default: break;
         }
-    #elif A_CONFIG_RENDER_SDL2
-        a_sdl_render__textureBlit(Screen->texture, 0, 0, false);
+    #else
+        a_platform__blitTexture(Screen->texture, 0, 0, false);
     #endif
 }
 
@@ -400,9 +400,9 @@ static void pushTarget(APixel* Pixels, size_t PixelsSize, int Width, int Height,
 
     #if A_CONFIG_RENDER_SOFTWARE
         a__screen.sprite = Data;
-    #elif A_CONFIG_RENDER_SDL2
+    #else
         a__screen.texture = Data;
-        a_sdl_render__targetSet(Data);
+        a_platform__setRenderTarget(Data);
     #endif
 
     a_screen_clipReset();
@@ -455,12 +455,12 @@ void a_screen_targetPop(void)
     a__screen = *screen;
     free(screen);
 
-    #if A_CONFIG_RENDER_SDL2
-        a_sdl_render__targetSet(a__screen.texture);
-        a_sdl_render__targetSetClip(a__screen.clipX,
-                                    a__screen.clipY,
-                                    a__screen.clipWidth,
-                                    a__screen.clipHeight);
+    #if !A_CONFIG_RENDER_SOFTWARE
+        a_platform__setRenderTarget(a__screen.texture);
+        a_platform__setTargetClip(a__screen.clipX,
+                                  a__screen.clipY,
+                                  a__screen.clipWidth,
+                                  a__screen.clipHeight);
     #endif
 }
 
@@ -484,8 +484,8 @@ void a_screen_clipSet(int X, int Y, int Width, int Height)
     a__screen.clipWidth = Width;
     a__screen.clipHeight = Height;
 
-    #if A_CONFIG_RENDER_SDL2
-        a_sdl_render__targetSetClip(X, Y, Width, Height);
+    #if !A_CONFIG_RENDER_SOFTWARE
+        a_platform__setTargetClip(X, Y, Width, Height);
     #endif
 }
 

@@ -33,7 +33,7 @@
     #elif A_CONFIG_RENDER_SDL2
         #define NUM_SPRITE_TEXTURES 2
 
-        struct ASdlTexture {
+        struct APlatformTexture {
             int width, height;
             SDL_Texture* texture[NUM_SPRITE_TEXTURES];
         };
@@ -316,17 +316,17 @@ void a_platform__showScreen(void)
             if(SDL_RenderCopy(g_sdlRenderer, g_sdlTexture, NULL, NULL) < 0) {
                 a_out__fatal("SDL_RenderCopy failed: %s", SDL_GetError());
             }
-        #elif A_CONFIG_RENDER_SDL2
+        #else
             a_pixel_push();
             a_pixel_setBlend(A_PIXEL_BLEND_PLAIN);
 
-            a_sdl_render__textureBlit(a__screen.texture, 0, 0, false);
+            a_platform__blitTexture(a__screen.texture, 0, 0, false);
 
-            a_sdl_render__targetSet(a__screen.texture);
-            a_sdl_render__targetSetClip(a__screen.clipX,
-                                        a__screen.clipY,
-                                        a__screen.clipWidth,
-                                        a__screen.clipHeight);
+            a_platform__setRenderTarget(a__screen.texture);
+            a_platform__setTargetClip(a__screen.clipX,
+                                      a__screen.clipY,
+                                      a__screen.clipWidth,
+                                      a__screen.clipHeight);
 
             a_pixel_pop();
         #endif
@@ -674,7 +674,7 @@ void a_platform__drawCircleFilled(int X, int Y, int Radius)
     }
 }
 
-ASdlTexture* a_sdl_render__textureMakeScreen(int Width, int Height)
+APlatformTexture* a_platform__newScreenTexture(int Width, int Height)
 {
     SDL_Texture* t = SDL_CreateTexture(g_sdlRenderer,
                                        A_PIXEL_FORMAT,
@@ -689,7 +689,7 @@ ASdlTexture* a_sdl_render__textureMakeScreen(int Width, int Height)
         a_out__error("SDL_SetTextureBlendMode failed: %s", SDL_GetError());
     }
 
-    ASdlTexture* screen = a_mem_malloc(sizeof(ASdlTexture));
+    APlatformTexture* screen = a_mem_malloc(sizeof(APlatformTexture));
 
     screen->width = Width;
     screen->height = Height;
@@ -699,9 +699,9 @@ ASdlTexture* a_sdl_render__textureMakeScreen(int Width, int Height)
     return screen;
 }
 
-ASdlTexture* a_sdl_render__textureMakeSprite(const APixel* Pixels, int Width, int Height)
+APlatformTexture* a_platform__newSpriteTexture(const APixel* Pixels, int Width, int Height)
 {
-    ASdlTexture* sprite = a_mem_malloc(sizeof(ASdlTexture));
+    APlatformTexture* sprite = a_mem_malloc(sizeof(APlatformTexture));
 
     sprite->width = Width;
     sprite->height = Height;
@@ -755,7 +755,7 @@ ASdlTexture* a_sdl_render__textureMakeSprite(const APixel* Pixels, int Width, in
     return sprite;
 }
 
-void a_sdl_render__textureFree(ASdlTexture* Texture)
+void a_platform__freeTexture(APlatformTexture* Texture)
 {
     for(int i = 0; i < NUM_SPRITE_TEXTURES; i++) {
         SDL_DestroyTexture(Texture->texture[i]);
@@ -764,19 +764,19 @@ void a_sdl_render__textureFree(ASdlTexture* Texture)
     free(Texture);
 }
 
-void a_sdl_render__textureBlit(ASdlTexture* Texture, int X, int Y, bool FillFlat)
+void a_platform__blitTexture(APlatformTexture* Texture, int X, int Y, bool FillFlat)
 {
-    a_sdl_render__textureBlitEx(Texture,
-                                X + Texture->width / 2,
-                                Y + Texture->height / 2,
-                                A_FIX_ONE,
-                                0,
-                                0,
-                                0,
-                                FillFlat);
+    a_platform__blitTextureEx(Texture,
+                              X + Texture->width / 2,
+                              Y + Texture->height / 2,
+                              A_FIX_ONE,
+                              0,
+                              0,
+                              0,
+                              FillFlat);
 }
 
-void a_sdl_render__textureBlitEx(ASdlTexture* Texture, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY, bool FillFlat)
+void a_platform__blitTextureEx(APlatformTexture* Texture, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY, bool FillFlat)
 {
     SDL_Texture* t = Texture->texture[FillFlat];
 
@@ -824,14 +824,14 @@ void a_sdl_render__textureBlitEx(ASdlTexture* Texture, int X, int Y, AFix Scale,
     }
 }
 
-void a_sdl_render__targetSet(ASdlTexture* Texture)
+void a_platform__setRenderTarget(APlatformTexture* Texture)
 {
     if(SDL_SetRenderTarget(g_sdlRenderer, Texture->texture[0]) < 0) {
         a_out__fatal("SDL_SetRenderTarget failed: %s", SDL_GetError());
     }
 }
 
-void a_sdl_render__targetGetPixels(APixel* Pixels, int Width)
+void a_platform__getTargetPixels(APixel* Pixels, int Width)
 {
     // Unreliable on texture targets
     if(SDL_RenderReadPixels(g_sdlRenderer,
@@ -844,7 +844,7 @@ void a_sdl_render__targetGetPixels(APixel* Pixels, int Width)
     }
 }
 
-void a_sdl_render__targetSetClip(int X, int Y, int Width, int Height)
+void a_platform__setTargetClip(int X, int Y, int Width, int Height)
 {
     SDL_Rect area = {X, Y, Width, Height};
 
@@ -853,4 +853,4 @@ void a_sdl_render__targetSetClip(int X, int Y, int Width, int Height)
     }
 }
 
-#endif
+#endif // A_CONFIG_RENDER_SDL2

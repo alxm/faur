@@ -23,6 +23,7 @@
 
 #include "a2x_pack_embed.v.h"
 #include "a2x_pack_list.v.h"
+#include "a2x_pack_platform.v.h"
 #include "a2x_pack_screen.v.h"
 
 struct ASprite {
@@ -35,7 +36,7 @@ struct ASprite {
     size_t spansSize;
     bool colorKeyed;
 #elif A_CONFIG_RENDER_SDL2
-    ASdlTexture* texture;
+    APlatformTexture* texture;
 #endif
 };
 

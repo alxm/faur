@@ -422,8 +422,8 @@ void a_sprite_free(ASprite* Sprite)
 {
     #if A_CONFIG_RENDER_SOFTWARE
         free(Sprite->spans);
-    #elif A_CONFIG_RENDER_SDL2
-        a_sdl_render__textureFree(Sprite->texture);
+    #else
+        a_platform__freeTexture(Sprite->texture);
     #endif
 
     free(Sprite->nameId);
@@ -447,11 +447,11 @@ void a_sprite_blit(const ASprite* Sprite, int X, int Y)
                 g_blitter_block_doclip(Sprite, X, Y);
             }
         }
-    #elif A_CONFIG_RENDER_SDL2
-        a_sdl_render__textureBlit(Sprite->texture,
-                                  X,
-                                  Y,
-                                  a_pixel__state.fillBlit);
+    #else
+        a_platform__blitTexture(Sprite->texture,
+                                X,
+                                Y,
+                                a_pixel__state.fillBlit);
     #endif
 }
 
@@ -476,17 +476,17 @@ void a_sprite_blitCenterY(const ASprite* Sprite, int X)
                   (a__screen.height - Sprite->h) / 2);
 }
 
-#if A_CONFIG_RENDER_SDL2
+#if !A_CONFIG_RENDER_SOFTWARE
 void a_sprite_blitEx(const ASprite* Sprite, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY)
 {
-    a_sdl_render__textureBlitEx(Sprite->texture,
-                                X,
-                                Y,
-                                Scale,
-                                a_math_wrapAngle(Angle),
-                                CenterX,
-                                CenterY,
-                                a_pixel__state.fillBlit);
+    a_platform__blitTextureEx(Sprite->texture,
+                              X,
+                              Y,
+                              Scale,
+                              a_math_wrapAngle(Angle),
+                              CenterX,
+                              CenterY,
+                              a_pixel__state.fillBlit);
 }
 #endif
 
@@ -662,13 +662,13 @@ void a_sprite__commit(ASprite* Sprite)
             *spans++ = spanLength; // record the last span's length
             *lineStart |= numSpans << 1; // record line's number of spans
         }
-    #elif A_CONFIG_RENDER_SDL2
+    #else
         if(Sprite->texture != NULL) {
-            a_sdl_render__textureFree(Sprite->texture);
+            a_platform__freeTexture(Sprite->texture);
         }
 
-        Sprite->texture = a_sdl_render__textureMakeSprite(Sprite->pixels,
-                                                          Sprite->w,
-                                                          Sprite->h);
+        Sprite->texture = a_platform__newSpriteTexture(Sprite->pixels,
+                                                       Sprite->w,
+                                                       Sprite->h);
     #endif
 }
