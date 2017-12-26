@@ -27,7 +27,7 @@ void a_platform_sdl__init(void)
 {
     g_sdlFlags = 0;
 
-    #if !(A_PLATFORM_SYSTEM_WIZ || A_PLATFORM_SYSTEM_CAANOO)
+    #if A_PLATFORM_LIB_SDL_TIME
         g_sdlFlags |= SDL_INIT_TIMER;
     #endif
 
@@ -56,7 +56,7 @@ void a_platform_sdl__uninit(void)
     SDL_Quit();
 }
 
-#if !(A_PLATFORM_SYSTEM_WIZ || A_PLATFORM_SYSTEM_CAANOO)
+#if A_PLATFORM_LIB_SDL_TIME
 uint32_t a_platform__getMs(void)
 {
     return SDL_GetTicks();
