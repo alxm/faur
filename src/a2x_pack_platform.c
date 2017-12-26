@@ -37,6 +37,7 @@ void a_platform__init(void)
 void a_platform__init2(void)
 {
     #if A_PLATFORM_RENDER_SOFTWARE
+        a_platform_software_blit__init();
         a_platform_software_draw__init();
     #endif
 }

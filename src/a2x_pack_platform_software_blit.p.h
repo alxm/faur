@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2017 Alex Margarit
+    Copyright 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -19,28 +19,4 @@
 
 #pragma once
 
-#include "a2x_pack_sprite.p.h"
-
-#include "a2x_pack_embed.v.h"
-#include "a2x_pack_list.v.h"
-#include "a2x_pack_platform.v.h"
-#include "a2x_pack_screen.v.h"
-
-struct ASprite {
-    APixel* pixels;
-    size_t pixelsSize;
-    char* nameId;
-    int w, wLog2, wOriginal, h;
-    APlatformTexture* texture;
-};
-
-extern APixel a_sprite__colorKey;
-extern APixel a_sprite__colorLimit;
-extern APixel a_sprite__colorEnd;
-
-extern void a_sprite__init(void);
-
-extern void a_sprite__commit(ASprite* Sprite);
-
-#define A_SPRITE__NAME(Sprite) (Sprite->nameId ? Sprite->nameId : "Sprite")
-#define a_sprite__getPixel(s, x, y) (*((s)->pixels + (y) * (s)->w + (x)))
+#include "a2x_system_includes.h"

@@ -19,7 +19,7 @@
 
 // Spans format for each graphic line:
 // [NumSpans << 1 | 1 (draw) / 0 (transparent)][[len]...]
-static void A__FUNC_NAME(keyed, noclip)(const ASprite* Sprite, int X, int Y)
+static void A__FUNC_NAME(keyed, noclip)(const APlatformTexture* Sprite, int X, int Y)
 {
     A__BLEND_SETUP;
 
@@ -28,7 +28,7 @@ static void A__FUNC_NAME(keyed, noclip)(const ASprite* Sprite, int X, int Y)
     const APixel* a__pass_src = Sprite->pixels;
     const unsigned* spans = Sprite->spans;
 
-    for(int i = Sprite->h; i--; startDst += screenW) {
+    for(int i = Sprite->height; i--; startDst += screenW) {
         bool draw = *spans & 1;
         unsigned numSpans = *spans++ >> 1;
         APixel* dst = startDst;
@@ -52,13 +52,13 @@ static void A__FUNC_NAME(keyed, noclip)(const ASprite* Sprite, int X, int Y)
     }
 }
 
-static void A__FUNC_NAME(keyed, doclip)(const ASprite* Sprite, int X, int Y)
+static void A__FUNC_NAME(keyed, doclip)(const APlatformTexture* Sprite, int X, int Y)
 {
     A__BLEND_SETUP;
 
     const int screenW = a__screen.width;
-    const int spriteW = Sprite->w;
-    const int spriteH = Sprite->h;
+    const int spriteW = Sprite->width;
+    const int spriteH = Sprite->height;
 
     const int yClipUp = a_math_max(0, a__screen.clipY - Y);
     const int yClipDown = a_math_max(0, Y + spriteH - a__screen.clipY2);
@@ -134,7 +134,7 @@ static void A__FUNC_NAME(keyed, doclip)(const ASprite* Sprite, int X, int Y)
     }
 }
 
-static void A__FUNC_NAME(block, noclip)(const ASprite* Sprite, int X, int Y)
+static void A__FUNC_NAME(block, noclip)(const APlatformTexture* Sprite, int X, int Y)
 {
     A__BLEND_SETUP;
 
@@ -142,10 +142,10 @@ static void A__FUNC_NAME(block, noclip)(const ASprite* Sprite, int X, int Y)
     APixel* startDst = a__screen.pixels + Y * screenW + X;
     const APixel* a__pass_src = Sprite->pixels;
 
-    for(int i = Sprite->h; i--; startDst += screenW) {
+    for(int i = Sprite->height; i--; startDst += screenW) {
         APixel* dst = startDst;
 
-        for(int j = Sprite->w; j--; ) {
+        for(int j = Sprite->width; j--; ) {
             A__PIXEL_DRAW(dst);
             dst++;
             a__pass_src++;
@@ -153,13 +153,13 @@ static void A__FUNC_NAME(block, noclip)(const ASprite* Sprite, int X, int Y)
     }
 }
 
-static void A__FUNC_NAME(block, doclip)(const ASprite* Sprite, int X, int Y)
+static void A__FUNC_NAME(block, doclip)(const APlatformTexture* Sprite, int X, int Y)
 {
     A__BLEND_SETUP;
 
     const int screenW = a__screen.width;
-    const int spriteW = Sprite->w;
-    const int spriteH = Sprite->h;
+    const int spriteW = Sprite->width;
+    const int spriteH = Sprite->height;
 
     const int yClipUp = a_math_max(0, a__screen.clipY - Y);
     const int yClipDown = a_math_max(0, Y + spriteH - a__screen.clipY2);

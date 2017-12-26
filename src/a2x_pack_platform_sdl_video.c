@@ -35,6 +35,7 @@
 
         struct APlatformTexture {
             int width, height;
+            APixel* pixels;
             SDL_Texture* texture[NUM_SPRITE_TEXTURES];
         };
     #endif
@@ -705,33 +706,43 @@ APlatformTexture* a_platform__newScreenTexture(int Width, int Height)
     screen->height = Height;
     screen->texture[0] = t;
     screen->texture[1] = NULL;
+    screen->pixels = NULL;
 
     return screen;
 }
 
-APlatformTexture* a_platform__newSpriteTexture(const APixel* Pixels, int Width, int Height)
+APlatformTexture* a_platform__newSpriteTexture(APlatformTexture* Texture, const APixel* Pixels, int Width, int Height)
 {
-    APlatformTexture* sprite = a_mem_malloc(sizeof(APlatformTexture));
+    size_t pixelsSize = (unsigned)Width * (unsigned)Height * sizeof(APixel);
 
-    sprite->width = Width;
-    sprite->height = Height;
+    if(Texture == NULL || Width > Texture->width) {
+        a_platform__freeTexture(Texture);
+        Texture = a_mem_zalloc(sizeof(APlatformTexture));
 
-    size_t bufferSize = (unsigned)Width * (unsigned)Height * sizeof(APixel);
-    APixel* pixels = a_mem_dup(Pixels, bufferSize);
+        Texture->width = Width;
+        Texture->height = Height;
+        Texture->pixels = a_mem_dup(Pixels, pixelsSize);
+    } else {
+        memcpy(Texture->pixels, Pixels, pixelsSize);
+    }
 
     for(int i = 0; i < NUM_SPRITE_TEXTURES; i++) {
+        if(Texture->texture[i] != NULL) {
+            SDL_DestroyTexture(Texture->texture[i]);
+        }
+
         if(i == 0) {
             for(int i = Width * Height; i--;) {
                 if(Pixels[i] != a_sprite__colorKey) {
                     // Set full alpha for non-transparent pixel
-                    pixels[i] |= A_PIXEL__MASK_ALPHA;
+                    Texture->pixels[i] |= A_PIXEL__MASK_ALPHA;
                 }
             }
         } else if(i == 1) {
             for(int i = Width * Height; i--;) {
                 if(Pixels[i] != a_sprite__colorKey) {
                     // Set full color for non-transparent pixel
-                    pixels[i] |= a_pixel_hex(0xffffff);
+                    Texture->pixels[i] |= a_pixel_hex(0xffffff);
                 }
             }
         }
@@ -747,7 +758,7 @@ APlatformTexture* a_platform__newSpriteTexture(const APixel* Pixels, int Width, 
 
         if(SDL_UpdateTexture(t,
                              NULL,
-                             pixels,
+                             Texture->pixels,
                              Width * (int)sizeof(APixel)) < 0) {
 
             a_out__fatal("SDL_UpdateTexture failed: %s", SDL_GetError());
@@ -757,20 +768,23 @@ APlatformTexture* a_platform__newSpriteTexture(const APixel* Pixels, int Width, 
             a_out__error("SDL_SetTextureBlendMode failed: %s", SDL_GetError());
         }
 
-        sprite->texture[i] = t;
+        Texture->texture[i] = t;
     }
 
-    free(pixels);
-
-    return sprite;
+    return Texture;
 }
 
 void a_platform__freeTexture(APlatformTexture* Texture)
 {
+    if(Texture == NULL) {
+        return;
+    }
+
     for(int i = 0; i < NUM_SPRITE_TEXTURES; i++) {
         SDL_DestroyTexture(Texture->texture[i]);
     }
 
+    free(Texture->pixels);
     free(Texture);
 }
 

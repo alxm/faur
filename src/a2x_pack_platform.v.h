@@ -28,6 +28,7 @@ typedef void APlatformMusic;
 #include "a2x_pack_platform_gp2x.v.h"
 #include "a2x_pack_platform_pandora.v.h"
 #include "a2x_pack_platform_sdl.v.h"
+#include "a2x_pack_platform_software_blit.v.h"
 #include "a2x_pack_platform_software_draw.v.h"
 #include "a2x_pack_platform_wiz.v.h"
 
@@ -56,7 +57,7 @@ extern void a_platform__drawCircleOutline(int X, int Y, int Radius);
 extern void a_platform__drawCircleFilled(int X, int Y, int Radius);
 
 extern APlatformTexture* a_platform__newScreenTexture(int Width, int Height);
-extern APlatformTexture* a_platform__newSpriteTexture(const APixel* Pixels, int Width, int Height);
+extern APlatformTexture* a_platform__newSpriteTexture(APlatformTexture* Texture, const APixel* Pixels, int Width, int Height);
 extern void a_platform__freeTexture(APlatformTexture* Texture);
 extern void a_platform__blitTexture(APlatformTexture* Texture, int X, int Y, bool FillFlat);
 extern void a_platform__blitTextureEx(APlatformTexture* Texture, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY, bool FillFlat);

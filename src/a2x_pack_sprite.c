@@ -23,201 +23,12 @@ APixel a_sprite__colorKey;
 APixel a_sprite__colorLimit;
 APixel a_sprite__colorEnd;
 
-static inline void initCommon(void)
+void a_sprite__init(void)
 {
     a_sprite__colorKey = a_settings_getPixel("video.color.key");
     a_sprite__colorLimit = a_settings_getPixel("video.color.limit");
     a_sprite__colorEnd = a_settings_getPixel("video.color.end");
 }
-
-#if A_PLATFORM_RENDER_SOFTWARE
-
-typedef void (*ABlitter)(const ASprite* Sprite, int X, int Y);
-
-// [Blend][Fill][ColorKey][Clip]
-static ABlitter g_blitters[A_PIXEL_BLEND_NUM][2][2][2];
-
-static ABlitter g_blitter_block_noclip;
-static ABlitter g_blitter_block_doclip;
-static ABlitter g_blitter_keyed_noclip;
-static ABlitter g_blitter_keyed_doclip;
-
-#define A__FUNC_NAME_EXPAND2(Blend, Fill, ColorKey, Clip) a_blit__##Blend##_##Fill##_##ColorKey##_##Clip
-#define A__FUNC_NAME_EXPAND(Blend, Fill, ColorKey, Clip) A__FUNC_NAME_EXPAND2(Blend, Fill, ColorKey, Clip)
-#define A__FUNC_NAME(ColorKey, Clip) A__FUNC_NAME_EXPAND(A__BLEND, A__FILL, ColorKey, Clip)
-
-#define A__PIXEL_DRAW_EXPAND2(Blend) a_pixel__##Blend
-#define A__PIXEL_DRAW_EXPAND(Blend, Params) A__PIXEL_DRAW_EXPAND2(Blend)(Params)
-#define A__PIXEL_DRAW(Dst) A__PIXEL_DRAW_EXPAND(A__BLEND, Dst A__PIXEL_PARAMS)
-
-#define A__BLEND plain
-#define A__FILL data
-#define A__BLEND_SETUP
-#define A__PIXEL_PARAMS , *a__pass_src
-#include "a2x_pack_sprite.inc.c"
-
-#define A__BLEND plain
-#define A__FILL flat
-#define A__BLEND_SETUP                                \
-    const APixel a__pass_color = a_pixel__state.pixel;
-#define A__PIXEL_PARAMS , a__pass_color
-#include "a2x_pack_sprite.inc.c"
-
-#define A__BLEND rgba
-#define A__FILL data
-#define A__BLEND_SETUP \
-    const int a__pass_alpha = a_pixel__state.alpha; \
-    if(a__pass_alpha == 0) {                        \
-        return;                                     \
-    }
-#define A__PIXEL_PARAMS , a_pixel_red(*a__pass_src), a_pixel_green(*a__pass_src), a_pixel_blue(*a__pass_src), a__pass_alpha
-#include "a2x_pack_sprite.inc.c"
-
-#define A__BLEND rgba
-#define A__FILL flat
-#define A__BLEND_SETUP                              \
-    const int a__pass_red = a_pixel__state.red;     \
-    const int a__pass_green = a_pixel__state.green; \
-    const int a__pass_blue = a_pixel__state.blue;   \
-    const int a__pass_alpha = a_pixel__state.alpha; \
-    if(a__pass_alpha == 0) {                        \
-        return;                                     \
-    }
-#define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue, a__pass_alpha
-#include "a2x_pack_sprite.inc.c"
-
-#define A__BLEND rgb25
-#define A__FILL data
-#define A__BLEND_SETUP
-#define A__PIXEL_PARAMS , a_pixel_red(*a__pass_src), a_pixel_green(*a__pass_src), a_pixel_blue(*a__pass_src)
-#include "a2x_pack_sprite.inc.c"
-
-#define A__BLEND rgb25
-#define A__FILL flat
-#define A__BLEND_SETUP                              \
-    const int a__pass_red = a_pixel__state.red;     \
-    const int a__pass_green = a_pixel__state.green; \
-    const int a__pass_blue = a_pixel__state.blue;
-#define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue
-#include "a2x_pack_sprite.inc.c"
-
-#define A__BLEND rgb50
-#define A__FILL data
-#define A__BLEND_SETUP
-#define A__PIXEL_PARAMS , a_pixel_red(*a__pass_src), a_pixel_green(*a__pass_src), a_pixel_blue(*a__pass_src)
-#include "a2x_pack_sprite.inc.c"
-
-#define A__BLEND rgb50
-#define A__FILL flat
-#define A__BLEND_SETUP                              \
-    const int a__pass_red = a_pixel__state.red;     \
-    const int a__pass_green = a_pixel__state.green; \
-    const int a__pass_blue = a_pixel__state.blue;
-#define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue
-#include "a2x_pack_sprite.inc.c"
-
-#define A__BLEND rgb75
-#define A__FILL data
-#define A__BLEND_SETUP
-#define A__PIXEL_PARAMS , a_pixel_red(*a__pass_src), a_pixel_green(*a__pass_src), a_pixel_blue(*a__pass_src)
-#include "a2x_pack_sprite.inc.c"
-
-#define A__BLEND rgb75
-#define A__FILL flat
-#define A__BLEND_SETUP                              \
-    const int a__pass_red = a_pixel__state.red;     \
-    const int a__pass_green = a_pixel__state.green; \
-    const int a__pass_blue = a_pixel__state.blue;
-#define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue
-#include "a2x_pack_sprite.inc.c"
-
-#define A__BLEND inverse
-#define A__FILL data
-#define A__BLEND_SETUP
-#define A__PIXEL_PARAMS
-#include "a2x_pack_sprite.inc.c"
-
-#define A__BLEND inverse
-#define A__FILL flat
-#define A__BLEND_SETUP
-#define A__PIXEL_PARAMS
-#include "a2x_pack_sprite.inc.c"
-
-#define A__BLEND mod
-#define A__FILL data
-#define A__BLEND_SETUP
-#define A__PIXEL_PARAMS , a_pixel_red(*a__pass_src), a_pixel_green(*a__pass_src), a_pixel_blue(*a__pass_src)
-#include "a2x_pack_sprite.inc.c"
-
-#define A__BLEND mod
-#define A__FILL flat
-#define A__BLEND_SETUP                              \
-    const int a__pass_red = a_pixel__state.red;     \
-    const int a__pass_green = a_pixel__state.green; \
-    const int a__pass_blue = a_pixel__state.blue;
-#define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue
-#include "a2x_pack_sprite.inc.c"
-
-#define A__BLEND add
-#define A__FILL data
-#define A__BLEND_SETUP
-#define A__PIXEL_PARAMS , a_pixel_red(*a__pass_src), a_pixel_green(*a__pass_src), a_pixel_blue(*a__pass_src)
-#include "a2x_pack_sprite.inc.c"
-
-#define A__BLEND add
-#define A__FILL flat
-#define A__BLEND_SETUP                              \
-    const int a__pass_red = a_pixel__state.red;     \
-    const int a__pass_green = a_pixel__state.green; \
-    const int a__pass_blue = a_pixel__state.blue;
-#define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue
-#include "a2x_pack_sprite.inc.c"
-
-void a_sprite__init(void)
-{
-    #define initRoutines(Index, Blend)                                    \
-        g_blitters[Index][0][0][0] = a_blit__##Blend##_data_block_noclip; \
-        g_blitters[Index][0][0][1] = a_blit__##Blend##_data_block_doclip; \
-        g_blitters[Index][0][1][0] = a_blit__##Blend##_data_keyed_noclip; \
-        g_blitters[Index][0][1][1] = a_blit__##Blend##_data_keyed_doclip; \
-        g_blitters[Index][1][0][0] = a_blit__##Blend##_flat_block_noclip; \
-        g_blitters[Index][1][0][1] = a_blit__##Blend##_flat_block_doclip; \
-        g_blitters[Index][1][1][0] = a_blit__##Blend##_flat_keyed_noclip; \
-        g_blitters[Index][1][1][1] = a_blit__##Blend##_flat_keyed_doclip;
-
-    initRoutines(A_PIXEL_BLEND_PLAIN, plain);
-    initRoutines(A_PIXEL_BLEND_RGBA, rgba);
-    initRoutines(A_PIXEL_BLEND_RGB25, rgb25);
-    initRoutines(A_PIXEL_BLEND_RGB50, rgb50);
-    initRoutines(A_PIXEL_BLEND_RGB75, rgb75);
-    initRoutines(A_PIXEL_BLEND_INVERSE, inverse);
-    initRoutines(A_PIXEL_BLEND_MOD, mod);
-    initRoutines(A_PIXEL_BLEND_ADD, add);
-
-    a_sprite__updateRoutines();
-
-    initCommon();
-}
-
-void a_sprite__updateRoutines(void)
-{
-    APixelBlend blend = a_pixel__state.blend;
-    bool fill = a_pixel__state.fillBlit;
-
-    g_blitter_block_noclip = g_blitters[blend][fill][0][0];
-    g_blitter_block_doclip = g_blitters[blend][fill][0][1];
-    g_blitter_keyed_noclip = g_blitters[blend][fill][1][0];
-    g_blitter_keyed_doclip = g_blitters[blend][fill][1][1];
-}
-
-#else
-
-void a_sprite__init(void)
-{
-    initCommon();
-}
-
-#endif
 
 static ASprite* makeEmptySprite(int Width, int Height)
 {
@@ -229,14 +40,7 @@ static ASprite* makeEmptySprite(int Width, int Height)
     s->w = Width;
     s->wLog2 = (int)log2f((float)Width);
     s->h = Height;
-
-    #if A_PLATFORM_RENDER_SOFTWARE
-        s->spans = NULL;
-        s->spansSize = 0;
-        s->colorKeyed = false;
-    #else
-        s->texture = NULL;
-    #endif
+    s->texture = NULL;
 
     return s;
 }
@@ -245,15 +49,6 @@ static void assignPixels(ASprite* Sprite, APixel* Pixels)
 {
     free(Sprite->pixels);
     Sprite->pixels = Pixels;
-
-    #if A_PLATFORM_RENDER_SOFTWARE
-        for(size_t i = Sprite->pixelsSize / sizeof(APixel); i--; ) {
-            if(*Pixels++ == a_sprite__colorKey) {
-                Sprite->colorKeyed = true;
-                break;
-            }
-        }
-    #endif
 
     a_sprite__commit(Sprite);
 }
@@ -420,11 +215,7 @@ ASprite* a_sprite_dup(const ASprite* Sprite)
 
 void a_sprite_free(ASprite* Sprite)
 {
-    #if A_PLATFORM_RENDER_SOFTWARE
-        free(Sprite->spans);
-    #else
-        a_platform__freeTexture(Sprite->texture);
-    #endif
+    a_platform__freeTexture(Sprite->texture);
 
     free(Sprite->nameId);
     free(Sprite->pixels);
@@ -433,26 +224,7 @@ void a_sprite_free(ASprite* Sprite)
 
 void a_sprite_blit(const ASprite* Sprite, int X, int Y)
 {
-    #if A_PLATFORM_RENDER_SOFTWARE
-        if(a_screen_isBoxInsideClip(X, Y, Sprite->w, Sprite->h)) {
-            if(Sprite->colorKeyed) {
-                g_blitter_keyed_noclip(Sprite, X, Y);
-            } else {
-                g_blitter_block_noclip(Sprite, X, Y);
-            }
-        } else if(a_screen_isBoxOnClip(X, Y, Sprite->w, Sprite->h)) {
-            if(Sprite->colorKeyed) {
-                g_blitter_keyed_doclip(Sprite, X, Y);
-            } else {
-                g_blitter_block_doclip(Sprite, X, Y);
-            }
-        }
-    #else
-        a_platform__blitTexture(Sprite->texture,
-                                X,
-                                Y,
-                                a_pixel__state.fillBlit);
-    #endif
+    a_platform__blitTexture(Sprite->texture, X, Y, a_pixel__state.fillBlit);
 }
 
 void a_sprite_blitCenter(const ASprite* Sprite)
@@ -476,7 +248,6 @@ void a_sprite_blitCenterY(const ASprite* Sprite, int X)
                   (a__screen.height - Sprite->h) / 2);
 }
 
-#if !A_PLATFORM_RENDER_SOFTWARE
 void a_sprite_blitEx(const ASprite* Sprite, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY)
 {
     a_platform__blitTextureEx(Sprite->texture,
@@ -488,7 +259,6 @@ void a_sprite_blitEx(const ASprite* Sprite, int X, int Y, AFix Scale, unsigned A
                               CenterY,
                               a_pixel__state.fillBlit);
 }
-#endif
 
 void a_sprite_pow2Width(ASprite* Sprite)
 {
@@ -531,6 +301,7 @@ void a_sprite_pow2Width(ASprite* Sprite)
     Sprite->wLog2 = power;
     Sprite->wOriginal = oldWidth;
     Sprite->pixelsSize = newSize;
+
     assignPixels(Sprite, newPixels - newSize / sizeof(APixel));
 }
 
@@ -598,77 +369,8 @@ APixel a_sprite_getColorKey(void)
 
 void a_sprite__commit(ASprite* Sprite)
 {
-    #if A_PLATFORM_RENDER_SOFTWARE
-        if(!Sprite->colorKeyed) {
-            return;
-        }
-
-        const int spriteWidth = Sprite->w;
-        const int spriteHeight = Sprite->h;
-        const APixel* const dst = Sprite->pixels;
-
-        // Spans format for each graphic line:
-        // [NumSpans << 1 | 1 (draw) / 0 (transparent)][[len]...]
-
-        size_t bytesNeeded = 0;
-        const APixel* dest = dst;
-
-        for(int y = spriteHeight; y--; ) {
-            bytesNeeded += sizeof(unsigned); // total size and initial state
-            bool lastState = *dest != a_sprite__colorKey; // initial state
-
-            for(int x = spriteWidth; x--; ) {
-                bool newState = *dest++ != a_sprite__colorKey;
-
-                if(newState != lastState) {
-                    bytesNeeded += sizeof(unsigned); // length of new span
-                    lastState = newState;
-                }
-            }
-
-            bytesNeeded += sizeof(unsigned); // line's last span length
-        }
-
-        if(Sprite->spansSize < bytesNeeded) {
-            free(Sprite->spans);
-            Sprite->spans = a_mem_malloc(bytesNeeded);
-            Sprite->spansSize = bytesNeeded;
-        }
-
-        dest = dst;
-        unsigned* spans = Sprite->spans;
-
-        for(int y = spriteHeight; y--; ) {
-            unsigned* lineStart = spans;
-            unsigned numSpans = 1; // line has at least 1 span
-            unsigned spanLength = 0;
-
-            bool lastState = *dest != a_sprite__colorKey; // initial draw state
-            *spans++ = lastState;
-
-            for(int x = spriteWidth; x--; ) {
-                bool newState = *dest++ != a_sprite__colorKey;
-
-                if(newState == lastState) {
-                    spanLength++; // keep growing current span
-                } else {
-                    *spans++ = spanLength; // record the just-ended span length
-                    numSpans++;
-                    spanLength = 1; // start a new span from this pixel
-                    lastState = newState;
-                }
-            }
-
-            *spans++ = spanLength; // record the last span's length
-            *lineStart |= numSpans << 1; // record line's number of spans
-        }
-    #else
-        if(Sprite->texture != NULL) {
-            a_platform__freeTexture(Sprite->texture);
-        }
-
-        Sprite->texture = a_platform__newSpriteTexture(Sprite->pixels,
-                                                       Sprite->w,
-                                                       Sprite->h);
-    #endif
+    Sprite->texture = a_platform__newSpriteTexture(Sprite->texture,
+                                                   Sprite->pixels,
+                                                   Sprite->w,
+                                                   Sprite->h);
 }
