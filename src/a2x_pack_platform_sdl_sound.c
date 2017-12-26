@@ -22,7 +22,7 @@
 #include <SDL.h>
 #include <SDL_mixer.h>
 
-struct ASdlSfx {
+struct APlatformSfx {
     Mix_Chunk* chunk;
     int channel;
 };
@@ -57,12 +57,12 @@ void a_sdl_sound__uninit(void)
     SDL_QuitSubSystem(SDL_INIT_AUDIO);
 }
 
-int a_sdl_sound__getMaxVolome(void)
+int a_platform__getMaxVolome(void)
 {
     return MIX_MAX_VOLUME;
 }
 
-void* a_sdl_sound__musicLoad(const char* Path)
+APlatformMusic* a_platform__newMusic(const char* Path)
 {
     Mix_Music* m = Mix_LoadMUS(Path);
 
@@ -73,12 +73,12 @@ void* a_sdl_sound__musicLoad(const char* Path)
     return m;
 }
 
-void a_sdl_sound__musicFree(void* Music)
+void a_platform__freeMusic(APlatformMusic* Music)
 {
     Mix_FreeMusic(Music);
 }
 
-void a_sdl_sound__musicSetVolume(int Volume)
+void a_platform__setMusicVolume(int Volume)
 {
     #if A_PLATFORM_EMSCRIPTEN
         A_UNUSED(Volume);
@@ -87,19 +87,19 @@ void a_sdl_sound__musicSetVolume(int Volume)
     #endif
 }
 
-void a_sdl_sound__musicPlay(void* Music)
+void a_platform__playMusic(APlatformMusic* Music)
 {
     if(Mix_PlayMusic(Music, -1) == -1) {
         a_out__error("Mix_PlayMusic failed: %s", Mix_GetError());
     }
 }
 
-void a_sdl_sound__musicStop(void)
+void a_platform__stopMusic(void)
 {
     Mix_HaltMusic();
 }
 
-void a_sdl_sound__musicToggle(void)
+void a_platform__toggleMusic(void)
 {
     if(Mix_PausedMusic()) {
         Mix_ResumeMusic();
@@ -108,9 +108,9 @@ void a_sdl_sound__musicToggle(void)
     }
 }
 
-ASdlSfx* a_sdl_sound__sfxLoadFromFile(const char* Path)
+APlatformSfx* a_platform__newSfxFromFile(const char* Path)
 {
-    ASdlSfx* sfx = a_mem_zalloc(sizeof(ASdlSfx));
+    APlatformSfx* sfx = a_mem_zalloc(sizeof(APlatformSfx));
 
     sfx->chunk = Mix_LoadWAV(Path);
 
@@ -123,9 +123,9 @@ ASdlSfx* a_sdl_sound__sfxLoadFromFile(const char* Path)
     return sfx;
 }
 
-ASdlSfx* a_sdl_sound__sfxLoadFromData(const uint8_t* Data, int Size)
+APlatformSfx* a_platform__newSfxFromData(const uint8_t* Data, int Size)
 {
-    ASdlSfx* sfx = a_mem_zalloc(sizeof(ASdlSfx));
+    APlatformSfx* sfx = a_mem_zalloc(sizeof(APlatformSfx));
     SDL_RWops* rw = SDL_RWFromMem((void*)Data, Size);
 
     if(rw) {
@@ -145,7 +145,7 @@ ASdlSfx* a_sdl_sound__sfxLoadFromData(const uint8_t* Data, int Size)
     return sfx;
 }
 
-void a_sdl_sound__sfxFree(ASdlSfx* Sfx)
+void a_platform__freeSfx(APlatformSfx* Sfx)
 {
     if(Sfx->chunk) {
         Mix_FreeChunk(Sfx->chunk);
@@ -154,7 +154,7 @@ void a_sdl_sound__sfxFree(ASdlSfx* Sfx)
     free(Sfx);
 }
 
-void a_sdl_sound__sfxSetVolume(ASdlSfx* Sfx, int Volume)
+void a_platform__setSfxVolume(APlatformSfx* Sfx, int Volume)
 {
     #if A_PLATFORM_EMSCRIPTEN
         A_UNUSED(Sfx);
@@ -164,19 +164,19 @@ void a_sdl_sound__sfxSetVolume(ASdlSfx* Sfx, int Volume)
     #endif
 }
 
-void a_sdl_sound__sfxPlay(ASdlSfx* Sfx)
+void a_platform__playSfx(APlatformSfx* Sfx)
 {
     if(Mix_PlayChannel(Sfx->channel, Sfx->chunk, 0) == -1) {
         a_out__error("Mix_PlayChannel failed: %s", Mix_GetError());
     }
 }
 
-void a_sdl_sound__sfxStop(ASdlSfx* Sfx)
+void a_platform__stopSfx(APlatformSfx* Sfx)
 {
     Mix_HaltChannel(Sfx->channel);
 }
 
-bool a_sdl_sound__sfxIsPlaying(ASdlSfx* Sfx)
+bool a_platform__isSfxPlaying(APlatformSfx* Sfx)
 {
     return Mix_Playing(Sfx->channel);
 }

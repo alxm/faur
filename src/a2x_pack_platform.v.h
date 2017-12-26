@@ -1,5 +1,5 @@
 /*
-    Copyright 2017 Alex Margarit
+    Copyright 2010, 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -22,6 +22,8 @@
 #include "a2x_pack_platform.p.h"
 
 typedef struct APlatformTexture APlatformTexture;
+typedef struct APlatformSfx APlatformSfx;
+typedef void APlatformMusic;
 
 #include "a2x_pack_platform_gp2x.v.h"
 #include "a2x_pack_platform_pandora.v.h"
@@ -58,3 +60,20 @@ extern void a_platform__blitTextureEx(APlatformTexture* Texture, int X, int Y, A
 extern void a_platform__setRenderTarget(APlatformTexture* Texture);
 extern void a_platform__getTargetPixels(APixel* Pixels, int Width);
 extern void a_platform__setTargetClip(int X, int Y, int Width, int Height);
+
+extern int a_platform__getMaxVolome(void);
+
+extern APlatformMusic* a_platform__newMusic(const char* Path);
+extern void a_platform__freeMusic(APlatformMusic* Music);
+extern void a_platform__setMusicVolume(int Volume);
+extern void a_platform__playMusic(APlatformMusic* Music);
+extern void a_platform__stopMusic(void);
+extern void a_platform__toggleMusic(void);
+
+extern APlatformSfx* a_platform__newSfxFromFile(const char* Path);
+extern APlatformSfx* a_platform__newSfxFromData(const uint8_t* Data, int Size);
+extern void a_platform__freeSfx(APlatformSfx* Sfx);
+extern void a_platform__setSfxVolume(APlatformSfx* Sfx, int Volume);
+extern void a_platform__playSfx(APlatformSfx* Sfx);
+extern void a_platform__stopSfx(APlatformSfx* Sfx);
+extern bool a_platform__isSfxPlaying(APlatformSfx* Sfx);

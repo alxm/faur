@@ -61,10 +61,10 @@ static void inputCallback(void)
 
             if(adjust) {
                 adjustSoundVolume(g_volume + adjust);
-                a_sdl_sound__musicSetVolume(g_musicVolume);
+                a_platform__setMusicVolume(g_musicVolume);
 
                 A_LIST_ITERATE(g_sfxList, ASound*, s) {
-                    a_sdl_sound__sfxSetVolume(s, g_sfxVolume);
+                    a_platform__setSfxVolume(s, g_sfxVolume);
                 }
 
                 g_lastVolAdjustment = a_time_getMs();
@@ -73,7 +73,7 @@ static void inputCallback(void)
     #elif A_DEVICE_HAS_KEYBOARD
         if(g_soundOn) {
             if(a_button_getPressedOnce(g_musicOnOffButton)) {
-                a_sdl_sound__musicToggle();
+                a_platform__toggleMusic();
             }
         }
     #endif
@@ -115,7 +115,7 @@ void a_sound__init(void)
         g_sfxList = a_list_new();
     #endif
 
-    g_volumeMax = a_sdl_sound__getMaxVolome();
+    g_volumeMax = a_platform__getMaxVolome();
 
     #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
         adjustSoundVolume(g_volumeMax / 16);
@@ -163,8 +163,8 @@ void a_sound__uninit(void)
 AMusic* a_music_new(const char* Path)
 {
     if(g_soundOn) {
-        AMusic* music = a_sdl_sound__musicLoad(Path);
-        a_sdl_sound__musicSetVolume(g_musicVolume);
+        AMusic* music = a_platform__newMusic(Path);
+        a_platform__setMusicVolume(g_musicVolume);
 
         return music;
     } else {
@@ -175,21 +175,21 @@ AMusic* a_music_new(const char* Path)
 void a_music_free(AMusic* Music)
 {
     if(g_soundOn) {
-        a_sdl_sound__musicFree(Music);
+        a_platform__freeMusic(Music);
     }
 }
 
 void a_music_play(AMusic* Music)
 {
     if(g_soundOn && Music) {
-        a_sdl_sound__musicPlay(Music);
+        a_platform__playMusic(Music);
     }
 }
 
 void a_music_stop(void)
 {
     if(g_soundOn) {
-        a_sdl_sound__musicStop();
+        a_platform__stopMusic();
     }
 }
 
@@ -202,18 +202,18 @@ ASound* a_sfx_new(const char* Path)
     ASound* s = NULL;
 
     if(a_file_exists(Path)) {
-        s = a_sdl_sound__sfxLoadFromFile(Path);
+        s = a_platform__newSfxFromFile(Path);
     } else {
         const uint8_t* data;
         size_t size;
 
         if(a_embed__get(Path, &data, &size)) {
-            s = a_sdl_sound__sfxLoadFromData(data, (int)size);
+            s = a_platform__newSfxFromData(data, (int)size);
         }
     }
 
     if(s) {
-        a_sdl_sound__sfxSetVolume(s, g_sfxVolume);
+        a_platform__setSfxVolume(s, g_sfxVolume);
 
         #if A_SFX_LIST
             a_list_addLast(g_sfxList, s);
@@ -226,23 +226,23 @@ ASound* a_sfx_new(const char* Path)
 void a_sfx_free(ASound* Sfx)
 {
     if(g_soundOn) {
-        a_sdl_sound__sfxFree(Sfx);
+        a_platform__freeSfx(Sfx);
     }
 }
 
 void a_sfx_play(ASound* Sfx)
 {
     if(g_soundOn) {
-        a_sdl_sound__sfxStop(Sfx);
-        a_sdl_sound__sfxPlay(Sfx);
+        a_platform__stopSfx(Sfx);
+        a_platform__playSfx(Sfx);
     }
 }
 
 void a_sfx_playOnce(ASound* Sfx)
 {
     if(g_soundOn) {
-        if(!a_sdl_sound__sfxIsPlaying(Sfx)) {
-            a_sdl_sound__sfxPlay(Sfx);
+        if(!a_platform__isSfxPlaying(Sfx)) {
+            a_platform__playSfx(Sfx);
         }
     }
 }
