@@ -386,7 +386,7 @@ void a_platform__getNativeResolution(int* Width, int* Height)
         *Height = mode.h;
     }
 }
-#elif !(A_PLATFORM_SYSTEM_GP2X || A_PLATFORM_SYSTEM_WIZ || A_PLATFORM_SYSTEM_CAANOO)
+#elif A_PLATFORM_LIB_SDL_GETFULLRES
 void a_platform__getNativeResolution(int* Width, int* Height)
 {
     const SDL_VideoInfo* info = SDL_GetVideoInfo();
