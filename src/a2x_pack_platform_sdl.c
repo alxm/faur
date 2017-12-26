@@ -19,8 +19,6 @@
 
 #include "a2x_pack_platform_sdl.v.h"
 
-#include <SDL.h>
-
 static uint32_t g_sdlFlags;
 
 void a_platform_sdl__init(void)

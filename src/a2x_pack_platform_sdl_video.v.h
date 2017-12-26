@@ -21,8 +21,38 @@
 
 #include "a2x_pack_platform_sdl_video.p.h"
 
+#include <SDL.h>
+
 #include "a2x_pack_pixel.v.h"
 #include "a2x_pack_platform.v.h"
+
+#if A_PLATFORM_LIB_SDL == 2
+    extern SDL_Renderer* a__sdlRenderer;
+
+    #if A_PIXEL__BPP == 16
+        #if A_PLATFORM_RENDER_SOFTWARE
+            #define A_PIXEL_FORMAT SDL_PIXELFORMAT_RGB565
+        #elif A_PLATFORM_RENDER_SDL
+            #define A_PIXEL_FORMAT SDL_PIXELFORMAT_RGBA5551
+        #endif
+    #elif A_PIXEL__BPP == 32
+        #if A_PLATFORM_RENDER_SOFTWARE
+            #define A_PIXEL_FORMAT SDL_PIXELFORMAT_RGBX8888
+        #elif A_PLATFORM_RENDER_SDL
+            #define A_PIXEL_FORMAT SDL_PIXELFORMAT_RGBA8888
+        #endif
+    #endif
+
+    #if A_PLATFORM_RENDER_SDL
+        #define NUM_SPRITE_TEXTURES 2
+
+        struct APlatformTexture {
+            int width, height;
+            APixel* pixels;
+            SDL_Texture* texture[NUM_SPRITE_TEXTURES];
+        };
+    #endif
+#endif
 
 extern void a_platform_sdl_video__init(void);
 extern void a_platform_sdl_video__uninit(void);
