@@ -462,6 +462,16 @@ void a_platform__drawLine(int X1, int Y1, int X2, int Y2)
     }
 }
 
+void a_platform__drawHLine(int X1, int X2, int Y)
+{
+    a_platform__drawRectangleFilled(X1, Y, X2 - X1 + 1, 1);
+}
+
+void a_platform__drawVLine(int X, int Y1, int Y2)
+{
+    a_platform__drawRectangleFilled(X, Y1, 1, Y2 - Y1 + 1);
+}
+
 void a_platform__drawRectangleFilled(int X, int Y, int Width, int Height)
 {
     SDL_Rect area = {X, Y, Width, Height};
@@ -852,5 +862,4 @@ void a_platform__setTargetClip(int X, int Y, int Width, int Height)
         a_out__error("SDL_RenderSetClipRect failed: %s", SDL_GetError());
     }
 }
-
 #endif // A_PLATFORM_RENDER_SDL

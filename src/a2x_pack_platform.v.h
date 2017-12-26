@@ -28,9 +28,11 @@ typedef void APlatformMusic;
 #include "a2x_pack_platform_gp2x.v.h"
 #include "a2x_pack_platform_pandora.v.h"
 #include "a2x_pack_platform_sdl.v.h"
+#include "a2x_pack_platform_software_draw.v.h"
 #include "a2x_pack_platform_wiz.v.h"
 
 extern void a_platform__init(void);
+extern void a_platform__init2(void);
 extern void a_platform__uninit(void);
 
 extern uint32_t a_platform__getMs(void);
@@ -46,6 +48,8 @@ extern void a_platform__renderSetBlendMode(void);
 
 extern void a_platform__drawPixel(int X, int Y);
 extern void a_platform__drawLine(int X1, int Y1, int X2, int Y2);
+extern void a_platform__drawHLine(int X1, int X2, int Y);
+extern void a_platform__drawVLine(int X, int Y1, int Y2);
 extern void a_platform__drawRectangleFilled(int X, int Y, int Width, int Height);
 extern void a_platform__drawRectangleOutline(int X, int Y, int Width, int Height);
 extern void a_platform__drawCircleOutline(int X, int Y, int Radius);

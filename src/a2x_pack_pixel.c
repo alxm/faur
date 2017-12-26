@@ -92,7 +92,7 @@ static void optimizeAlphaBlending(bool UpdateRoutines)
             a_pixel__state.blend = fastestBlend;
 
             if(UpdateRoutines) {
-                a_draw__updateRoutines();
+                a_platform_software_draw__updateRoutines();
                 a_sprite__updateRoutines();
             }
         }
@@ -112,7 +112,7 @@ void a_pixel_setBlend(APixelBlend Blend)
 
     #if A_PLATFORM_RENDER_SOFTWARE
         optimizeAlphaBlending(false);
-        a_draw__updateRoutines();
+        a_platform_software_draw__updateRoutines();
         a_sprite__updateRoutines();
     #else
         if(Blend == A_PIXEL_BLEND_RGB25) {
@@ -208,6 +208,6 @@ void a_pixel_setFillDraw(bool Fill)
     a_pixel__state.fillDraw = Fill;
 
     #if A_PLATFORM_RENDER_SOFTWARE
-        a_draw__updateRoutines();
+        a_platform_software_draw__updateRoutines();
     #endif
 }

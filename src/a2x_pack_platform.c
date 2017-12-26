@@ -34,6 +34,13 @@ void a_platform__init(void)
     #endif
 }
 
+void a_platform__init2(void)
+{
+    #if A_PLATFORM_RENDER_SOFTWARE
+        a_platform_software_draw__init();
+    #endif
+}
+
 void a_platform__uninit(void)
 {
     #if A_PLATFORM_SYSTEM_GP2X

@@ -74,7 +74,7 @@ int main(int Argc, const char** Argv)
     a_input__init();
     a_screen__init();
     a_pixel__init();
-    a_draw__init();
+    a_platform__init2();
     a_sprite__init();
     a_fps__init();
     a_screenshot__init();

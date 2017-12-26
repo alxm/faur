@@ -24,7 +24,3 @@
 #include "a2x_pack_fix.v.h"
 #include "a2x_pack_pixel.v.h"
 #include "a2x_pack_screen.v.h"
-
-extern void a_draw__init(void);
-
-extern void a_draw__updateRoutines(void);
