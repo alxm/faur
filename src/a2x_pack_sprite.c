@@ -50,7 +50,7 @@ static void assignPixels(ASprite* Sprite, APixel* Pixels)
     free(Sprite->pixels);
     Sprite->pixels = Pixels;
 
-    a_sprite__commit(Sprite);
+    a_platform__commitSpriteTexture(Sprite);
 }
 
 ASprite* a_sprite_newFromFile(const char* Path)
@@ -313,7 +313,7 @@ void a_sprite_swapColor(ASprite* Sprite, APixel OldColor, APixel NewColor)
         }
     }
 
-    a_sprite__commit(Sprite);
+    a_platform__commitSpriteTexture(Sprite);
 }
 
 void a_sprite_swapColors(ASprite* Sprite, APixel* OldColors, APixel* NewColors, unsigned NumColors)
@@ -329,7 +329,7 @@ void a_sprite_swapColors(ASprite* Sprite, APixel* OldColors, APixel* NewColors, 
         }
     }
 
-    a_sprite__commit(Sprite);
+    a_platform__commitSpriteTexture(Sprite);
 }
 
 int a_sprite_getWidth(const ASprite* Sprite)
@@ -365,12 +365,4 @@ APixel a_sprite_getPixel(const ASprite* Sprite, int X, int Y)
 APixel a_sprite_getColorKey(void)
 {
     return a_sprite__colorKey;
-}
-
-void a_sprite__commit(ASprite* Sprite)
-{
-    Sprite->texture = a_platform__newSpriteTexture(Sprite->texture,
-                                                   Sprite->pixels,
-                                                   Sprite->w,
-                                                   Sprite->h);
 }

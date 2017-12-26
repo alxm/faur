@@ -21,8 +21,7 @@
 
 #if A_PLATFORM_RENDER_SOFTWARE
 struct APlatformTexture {
-    int width, height;
-    const APixel* pixels;
+    ASprite* spr;
     bool colorKeyed;
     size_t spansSize;
     unsigned spans[];
@@ -208,6 +207,7 @@ size_t spanBytesNeeded(const APixel* Pixels, int Width, int Height)
 {
     // Spans format for each graphic line:
     // [NumSpans << 1 | 1 (draw) / 0 (transparent)][[len]...]
+
     size_t bytesNeeded = 0;
 
     for(int y = Height; y--; ) {
@@ -248,43 +248,46 @@ APlatformTexture* a_platform__newScreenTexture(int Width, int Height)
     return NULL;
 }
 
-APlatformTexture* a_platform__newSpriteTexture(APlatformTexture* Texture, const APixel* Pixels, int Width, int Height)
+void a_platform__commitSpriteTexture(ASprite* Sprite)
 {
-    bool colorKeyed = hasTransparency(Pixels, Width, Height);
+    APlatformTexture* texture = Sprite->texture;
+    const APixel* pixels = Sprite->pixels;
+    int width = Sprite->w;
+    int height = Sprite->h;
+
+    bool colorKeyed = hasTransparency(pixels, width, height);
     size_t bytesNeeded = colorKeyed
-                            ? spanBytesNeeded(Pixels, Width, Height)
+                            ? spanBytesNeeded(pixels, width, height)
                             : 0;
 
-    if(Texture == NULL
-        || bytesNeeded > Texture->spansSize || Width > Texture->width) {
+    if(texture == NULL || bytesNeeded > texture->spansSize) {
+        a_platform__freeTexture(texture);
+        texture = a_mem_malloc(sizeof(APlatformTexture) + bytesNeeded);
 
-        a_platform__freeTexture(Texture);
-        Texture = a_mem_malloc(sizeof(APlatformTexture) + bytesNeeded);
+        Sprite->texture = texture;
 
-        Texture->width = Width;
-        Texture->height = Height;
-        Texture->spansSize = bytesNeeded;
+        texture->spr = Sprite;
+        texture->spansSize = bytesNeeded;
     }
 
-    Texture->pixels = Pixels;
-    Texture->colorKeyed = colorKeyed;
+    texture->colorKeyed = colorKeyed;
 
-    if(Texture->spansSize == 0) {
-        return Texture;
+    if(texture->spansSize == 0) {
+        return;
     }
 
-    unsigned* spans = Texture->spans;
+    unsigned* spans = texture->spans;
 
-    for(int y = Height; y--; ) {
+    for(int y = height; y--; ) {
         unsigned* lineStart = spans;
         unsigned numSpans = 1; // line has at least 1 span
         unsigned spanLength = 0;
 
-        bool lastState = *Pixels != a_sprite__colorKey; // initial draw state
+        bool lastState = *pixels != a_sprite__colorKey; // initial draw state
         *spans++ = lastState;
 
-        for(int x = Width; x--; ) {
-            bool newState = *Pixels++ != a_sprite__colorKey;
+        for(int x = width; x--; ) {
+            bool newState = *pixels++ != a_sprite__colorKey;
 
             if(newState == lastState) {
                 spanLength++; // keep growing current span
@@ -299,8 +302,6 @@ APlatformTexture* a_platform__newSpriteTexture(APlatformTexture* Texture, const 
         *spans++ = spanLength; // record the last span's length
         *lineStart |= numSpans << 1; // record line's number of spans
     }
-
-    return Texture;
 }
 
 void a_platform__freeTexture(APlatformTexture* Texture)
@@ -316,13 +317,13 @@ void a_platform__blitTexture(APlatformTexture* Texture, int X, int Y, bool FillF
 {
     A_UNUSED(FillFlat);
 
-    if(a_screen_isBoxInsideClip(X, Y, Texture->width, Texture->height)) {
+    if(a_screen_isBoxInsideClip(X, Y, Texture->spr->w, Texture->spr->h)) {
         if(Texture->colorKeyed) {
             g_blitter_keyed_noclip(Texture, X, Y);
         } else {
             g_blitter_block_noclip(Texture, X, Y);
         }
-    } else if(a_screen_isBoxOnClip(X, Y, Texture->width, Texture->height)) {
+    } else if(a_screen_isBoxOnClip(X, Y, Texture->spr->w , Texture->spr->h)) {
         if(Texture->colorKeyed) {
             g_blitter_keyed_doclip(Texture, X, Y);
         } else {

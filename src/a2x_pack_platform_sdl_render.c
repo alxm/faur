@@ -20,6 +20,15 @@
 #include "a2x_pack_platform_sdl_render.v.h"
 
 #if A_PLATFORM_RENDER_SDL
+#define NUM_SPRITE_TEXTURES 2
+
+struct APlatformTexture {
+    APixel* pixels;
+    size_t pixelsSize;
+    int w, h;
+    SDL_Texture* texture[NUM_SPRITE_TEXTURES];
+};
+
 static inline SDL_BlendMode pixelBlendToSdlBlend(void)
 {
     switch(a_pixel__state.blend) {
@@ -320,47 +329,54 @@ APlatformTexture* a_platform__newScreenTexture(int Width, int Height)
 
     APlatformTexture* screen = a_mem_malloc(sizeof(APlatformTexture));
 
-    screen->width = Width;
-    screen->height = Height;
+    screen->pixels = NULL;
+    screen->pixelsSize = 0;
+    screen->w = Width;
+    screen->h = Height;
     screen->texture[0] = t;
     screen->texture[1] = NULL;
-    screen->pixels = NULL;
 
     return screen;
 }
 
-APlatformTexture* a_platform__newSpriteTexture(APlatformTexture* Texture, const APixel* Pixels, int Width, int Height)
+void a_platform__commitSpriteTexture(ASprite* Sprite)
 {
-    size_t pixelsSize = (unsigned)Width * (unsigned)Height * sizeof(APixel);
+    APlatformTexture* texture = Sprite->texture;
+    int width = Sprite->w;
+    int height = Sprite->h;
 
-    if(Texture == NULL || Width > Texture->width) {
-        a_platform__freeTexture(Texture);
-        Texture = a_mem_zalloc(sizeof(APlatformTexture));
-
-        Texture->width = Width;
-        Texture->height = Height;
-        Texture->pixels = a_mem_dup(Pixels, pixelsSize);
-    } else {
-        memcpy(Texture->pixels, Pixels, pixelsSize);
+    if(texture == NULL ) {
+        texture = a_mem_zalloc(sizeof(APlatformTexture));
+        Sprite->texture = texture;
     }
 
+    if(Sprite->pixelsSize > texture->pixelsSize) {
+        free(texture->pixels);
+        texture->pixels = a_mem_malloc(Sprite->pixelsSize);
+        texture->pixelsSize = Sprite->pixelsSize;
+    }
+
+    memcpy(texture->pixels, Sprite->pixels, Sprite->pixelsSize);
+    texture->w = Sprite->w;
+    texture->h = Sprite->h;
+
     for(int i = 0; i < NUM_SPRITE_TEXTURES; i++) {
-        if(Texture->texture[i] != NULL) {
-            SDL_DestroyTexture(Texture->texture[i]);
+        if(texture->texture[i] != NULL) {
+            SDL_DestroyTexture(texture->texture[i]);
         }
 
         if(i == 0) {
-            for(int i = Width * Height; i--;) {
-                if(Pixels[i] != a_sprite__colorKey) {
+            for(int i = width * height; i--;) {
+                if(Sprite->pixels[i] != a_sprite__colorKey) {
                     // Set full alpha for non-transparent pixel
-                    Texture->pixels[i] |= A_PIXEL__MASK_ALPHA;
+                    texture->pixels[i] |= A_PIXEL__MASK_ALPHA;
                 }
             }
         } else if(i == 1) {
-            for(int i = Width * Height; i--;) {
-                if(Pixels[i] != a_sprite__colorKey) {
+            for(int i = width * height; i--;) {
+                if(Sprite->pixels[i] != a_sprite__colorKey) {
                     // Set full color for non-transparent pixel
-                    Texture->pixels[i] |= a_pixel_hex(0xffffff);
+                    texture->pixels[i] |= a_pixel_hex(0xffffff);
                 }
             }
         }
@@ -368,16 +384,16 @@ APlatformTexture* a_platform__newSpriteTexture(APlatformTexture* Texture, const 
         SDL_Texture* t = SDL_CreateTexture(a__sdlRenderer,
                                            A_SDL__PIXEL_FORMAT,
                                            SDL_TEXTUREACCESS_TARGET,
-                                           Width,
-                                           Height);
+                                           width,
+                                           height);
         if(t == NULL) {
             a_out__fatal("SDL_CreateTexture failed: %s", SDL_GetError());
         }
 
         if(SDL_UpdateTexture(t,
                              NULL,
-                             Texture->pixels,
-                             Width * (int)sizeof(APixel)) < 0) {
+                             texture->pixels,
+                             width * (int)sizeof(APixel)) < 0) {
 
             a_out__fatal("SDL_UpdateTexture failed: %s", SDL_GetError());
         }
@@ -386,10 +402,8 @@ APlatformTexture* a_platform__newSpriteTexture(APlatformTexture* Texture, const 
             a_out__error("SDL_SetTextureBlendMode failed: %s", SDL_GetError());
         }
 
-        Texture->texture[i] = t;
+        texture->texture[i] = t;
     }
-
-    return Texture;
 }
 
 void a_platform__freeTexture(APlatformTexture* Texture)
@@ -409,8 +423,8 @@ void a_platform__freeTexture(APlatformTexture* Texture)
 void a_platform__blitTexture(APlatformTexture* Texture, int X, int Y, bool FillFlat)
 {
     a_platform__blitTextureEx(Texture,
-                              X + Texture->width / 2,
-                              Y + Texture->height / 2,
+                              X + Texture->w / 2,
+                              Y + Texture->h / 2,
                               A_FIX_ONE,
                               0,
                               0,
@@ -440,13 +454,13 @@ void a_platform__blitTextureEx(APlatformTexture* Texture, int X, int Y, AFix Sca
         }
     }
 
-    SDL_Point center = {a_fix_fixtoi((Texture->width / 2 + CenterX) * Scale),
-                        a_fix_fixtoi((Texture->height / 2 + CenterY) * Scale)};
+    SDL_Point center = {a_fix_fixtoi((Texture->w / 2 + CenterX) * Scale),
+                        a_fix_fixtoi((Texture->h / 2 + CenterY) * Scale)};
 
     SDL_Rect dest = {X - center.x,
                      Y - center.y,
-                     a_fix_fixtoi(Texture->width * Scale),
-                     a_fix_fixtoi(Texture->height * Scale)};
+                     a_fix_fixtoi(Texture->w * Scale),
+                     a_fix_fixtoi(Texture->h * Scale)};
 
     if(SDL_RenderCopyEx(a__sdlRenderer,
                         t,

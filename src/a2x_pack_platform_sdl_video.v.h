@@ -42,16 +42,6 @@
             #define A_SDL__PIXEL_FORMAT SDL_PIXELFORMAT_RGBA8888
         #endif
     #endif
-
-    #if A_PLATFORM_RENDER_SDL
-        #define NUM_SPRITE_TEXTURES 2
-
-        struct APlatformTexture {
-            int width, height;
-            APixel* pixels;
-            SDL_Texture* texture[NUM_SPRITE_TEXTURES];
-        };
-    #endif
 #endif
 
 extern void a_platform_sdl_video__init(void);

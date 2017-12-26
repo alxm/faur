@@ -57,7 +57,7 @@ extern void a_platform__drawCircleOutline(int X, int Y, int Radius);
 extern void a_platform__drawCircleFilled(int X, int Y, int Radius);
 
 extern APlatformTexture* a_platform__newScreenTexture(int Width, int Height);
-extern APlatformTexture* a_platform__newSpriteTexture(APlatformTexture* Texture, const APixel* Pixels, int Width, int Height);
+extern void a_platform__commitSpriteTexture(ASprite* Sprite);
 extern void a_platform__freeTexture(APlatformTexture* Texture);
 extern void a_platform__blitTexture(APlatformTexture* Texture, int X, int Y, bool FillFlat);
 extern void a_platform__blitTextureEx(APlatformTexture* Texture, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY, bool FillFlat);
