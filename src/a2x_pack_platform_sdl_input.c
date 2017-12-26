@@ -820,10 +820,12 @@ void a_platform__pollInputs(void)
         }
     }
 
-    int mouseDx = 0, mouseDy = 0;
-    SDL_GetRelativeMouseState(&mouseDx, &mouseDy);
+    #if !A_PLATFORM_SYSTEM_EMSCRIPTEN
+        int mouseDx = 0, mouseDy = 0;
+        SDL_GetRelativeMouseState(&mouseDx, &mouseDy);
 
-    A_STRHASH_ITERATE(g_touchScreens, ASdlInputTouch*, t) {
-        a_input_touch__setDelta(t->logicalTouch, mouseDx, mouseDy);
-    }
+        A_STRHASH_ITERATE(g_touchScreens, ASdlInputTouch*, t) {
+            a_input_touch__setDelta(t->logicalTouch, mouseDx, mouseDy);
+        }
+    #endif
 }
