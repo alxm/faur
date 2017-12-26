@@ -54,7 +54,7 @@
     #endif
 #endif
 
-void a_sdl_video__init(void)
+void a_platform_sdl_video__init(void)
 {
     #if A_PLATFORM_PANDORA
         putenv("SDL_VIDEODRIVER=omapdss");
@@ -66,7 +66,7 @@ void a_sdl_video__init(void)
     }
 }
 
-void a_sdl_video__uninit(void)
+void a_platform_sdl_video__uninit(void)
 {
     #if A_CONFIG_LIB_SDL == 1
         if(!a_settings_getBool("video.doubleBuffer")) {

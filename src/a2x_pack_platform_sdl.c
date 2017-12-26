@@ -23,7 +23,7 @@
 
 static uint32_t g_sdlFlags;
 
-void a_sdl__init(void)
+void a_platform_sdl__init(void)
 {
     g_sdlFlags = 0;
 
@@ -35,21 +35,21 @@ void a_sdl__init(void)
         a_out__fatal("SDL_Init: %s", SDL_GetError());
     }
 
-    a_sdl_input__init();
-    a_sdl_video__init();
+    a_platform_sdl_input__init();
+    a_platform_sdl_video__init();
 
     if(a_settings_getBool("sound.on")) {
-        a_sdl_sound__init();
+        a_platform_sdl_sound__init();
     }
 }
 
-void a_sdl__uninit(void)
+void a_platform_sdl__uninit(void)
 {
-    a_sdl_input__uninit();
-    a_sdl_video__uninit();
+    a_platform_sdl_input__uninit();
+    a_platform_sdl_video__uninit();
 
     if(a_settings_getBool("sound.on")) {
-        a_sdl_sound__uninit();
+        a_platform_sdl_sound__uninit();
     }
 
     SDL_QuitSubSystem(g_sdlFlags);

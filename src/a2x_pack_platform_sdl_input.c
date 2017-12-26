@@ -149,7 +149,7 @@ static const char* joystickName(ASdlInputController* Controller)
     #endif
 }
 
-void a_sdl_input__init(void)
+void a_platform_sdl_input__init(void)
 {
     #if A_CONFIG_LIB_SDL == 1
         g_sdlFlags = SDL_INIT_JOYSTICK;
@@ -505,7 +505,7 @@ void a_sdl_input__init(void)
     addTouch("touchScreen");
 }
 
-void a_sdl_input__uninit(void)
+void a_platform_sdl_input__uninit(void)
 {
     A_STRHASH_ITERATE(g_keys, ASdlInputButton*, k) {
         freeHeader(&k->header);

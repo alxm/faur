@@ -24,5 +24,5 @@
 #include "a2x_pack_pixel.v.h"
 #include "a2x_pack_platform.v.h"
 
-extern void a_sdl_video__init(void);
-extern void a_sdl_video__uninit(void);
+extern void a_platform_sdl_video__init(void);
+extern void a_platform_sdl_video__uninit(void);

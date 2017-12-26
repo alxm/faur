@@ -23,5 +23,5 @@
 
 #include "a2x_pack_out.v.h"
 
-extern void a_sdl_sound__init(void);
-extern void a_sdl_sound__uninit(void);
+extern void a_platform_sdl_sound__init(void);
+extern void a_platform_sdl_sound__uninit(void);

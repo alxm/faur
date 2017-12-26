@@ -25,7 +25,7 @@ void a_platform__init(void)
         a_platform_pandora__init();
     #endif
 
-    a_sdl__init();
+    a_platform_sdl__init();
 
     #if A_PLATFORM_GP2X
         a_platform_gp2x__init();
@@ -44,5 +44,5 @@ void a_platform__uninit(void)
         a_platform_wiz__uninit();
     #endif
 
-    a_sdl__uninit();
+    a_platform_sdl__uninit();
 }

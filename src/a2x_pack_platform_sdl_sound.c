@@ -30,7 +30,7 @@ struct APlatformSfx {
 int g_numSfxChannels;
 int g_currentSfxChannel;
 
-void a_sdl_sound__init(void)
+void a_platform_sdl_sound__init(void)
 {
     if(SDL_InitSubSystem(SDL_INIT_AUDIO) != 0) {
         a_out__fatal("SDL_InitSubSystem: %s", SDL_GetError());
@@ -51,7 +51,7 @@ void a_sdl_sound__init(void)
     }
 }
 
-void a_sdl_sound__uninit(void)
+void a_platform_sdl_sound__uninit(void)
 {
     Mix_CloseAudio();
     SDL_QuitSubSystem(SDL_INIT_AUDIO);

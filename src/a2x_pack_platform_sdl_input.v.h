@@ -23,5 +23,5 @@
 
 #include "a2x_pack_input.v.h"
 
-extern void a_sdl_input__init(void);
-extern void a_sdl_input__uninit(void);
+extern void a_platform_sdl_input__init(void);
+extern void a_platform_sdl_input__uninit(void);
