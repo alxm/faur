@@ -19,7 +19,7 @@
 
 #include "a2x_pack_platform_pandora.v.h"
 
-#if A_PLATFORM_PANDORA
+#if A_PLATFORM_SYSTEM_PANDORA
 
 static struct {
     char* nub0Mode;
@@ -112,4 +112,4 @@ void a_platform_pandora__uninit(void)
     pandora_setScreenFilter("default");
 }
 
-#endif // A_PLATFORM_PANDORA
+#endif // A_PLATFORM_SYSTEM_PANDORA

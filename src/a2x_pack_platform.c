@@ -21,26 +21,26 @@
 
 void a_platform__init(void)
 {
-    #if A_PLATFORM_PANDORA
+    #if A_PLATFORM_SYSTEM_PANDORA
         a_platform_pandora__init();
     #endif
 
     a_platform_sdl__init();
 
-    #if A_PLATFORM_GP2X
+    #if A_PLATFORM_SYSTEM_GP2X
         a_platform_gp2x__init();
-    #elif A_PLATFORM_WIZ || A_PLATFORM_CAANOO
+    #elif A_PLATFORM_SYSTEM_WIZ || A_PLATFORM_SYSTEM_CAANOO
         a_platform_wiz__init();
     #endif
 }
 
 void a_platform__uninit(void)
 {
-    #if A_PLATFORM_GP2X
+    #if A_PLATFORM_SYSTEM_GP2X
         a_platform_gp2x__uninit();
-    #elif A_PLATFORM_PANDORA
+    #elif A_PLATFORM_SYSTEM_PANDORA
         a_platform_pandora__uninit();
-    #elif A_PLATFORM_WIZ || A_PLATFORM_CAANOO
+    #elif A_PLATFORM_SYSTEM_WIZ || A_PLATFORM_SYSTEM_CAANOO
         a_platform_wiz__uninit();
     #endif
 

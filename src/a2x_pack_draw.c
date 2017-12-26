@@ -19,7 +19,7 @@
 
 #include "a2x_pack_draw.v.h"
 
-#if A_CONFIG_RENDER_SOFTWARE
+#if A_PLATFORM_RENDER_SOFTWARE
 
 typedef void (*ADrawPixel)(int X, int Y);
 typedef void (*ADrawRectangle)(int X, int Y, int Width, int Height);
@@ -346,7 +346,7 @@ void a_draw_fill(void)
 
 void a_draw_pixel(int X, int Y)
 {
-    #if A_CONFIG_RENDER_SOFTWARE
+    #if A_PLATFORM_RENDER_SOFTWARE
         if(a_screen_isBoxInsideClip(X, Y, 1, 1)) {
             g_draw_pixel(X, Y);
         }
@@ -357,7 +357,7 @@ void a_draw_pixel(int X, int Y)
 
 void a_draw_rectangle(int X, int Y, int Width, int Height)
 {
-    #if A_CONFIG_RENDER_SOFTWARE
+    #if A_PLATFORM_RENDER_SOFTWARE
         if(a_screen_isBoxInsideClip(X, Y, Width, Height)) {
             g_draw_rectangle(X, Y, Width, Height);
             return;
@@ -387,7 +387,7 @@ void a_draw_rectangle(int X, int Y, int Width, int Height)
 
 void a_draw_line(int X1, int Y1, int X2, int Y2)
 {
-    #if A_CONFIG_RENDER_SOFTWARE
+    #if A_PLATFORM_RENDER_SOFTWARE
         int x = a_math_min(X1, X2);
         int y = a_math_min(Y1, Y2);
         int w = a_math_abs(X2 - X1) + 1;
@@ -411,7 +411,7 @@ void a_draw_hline(int X1, int X2, int Y)
     int xMax = a_math_max(X1, X2);
     int length = xMax - xMin + 1;
 
-    #if A_CONFIG_RENDER_SOFTWARE
+    #if A_PLATFORM_RENDER_SOFTWARE
         if(!a_screen_isBoxOnClip(xMin, Y, length, 1)) {
             return;
         }
@@ -431,7 +431,7 @@ void a_draw_vline(int X, int Y1, int Y2)
     int yMax = a_math_max(Y1, Y2);
     int length = yMax - yMin + 1;
 
-    #if A_CONFIG_RENDER_SOFTWARE
+    #if A_PLATFORM_RENDER_SOFTWARE
         if(!a_screen_isBoxOnClip(X, yMin, 1, length)) {
             return;
         }
@@ -447,7 +447,7 @@ void a_draw_vline(int X, int Y1, int Y2)
 
 void a_draw_circle(int X, int Y, int Radius)
 {
-    #if A_CONFIG_RENDER_SOFTWARE
+    #if A_PLATFORM_RENDER_SOFTWARE
         int boxX = X - Radius;
         int boxY = Y - Radius;
         int boxDim = 2 * Radius;

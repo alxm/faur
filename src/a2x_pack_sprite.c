@@ -30,7 +30,7 @@ static inline void initCommon(void)
     a_sprite__colorEnd = a_settings_getPixel("video.color.end");
 }
 
-#if A_CONFIG_RENDER_SOFTWARE
+#if A_PLATFORM_RENDER_SOFTWARE
 
 typedef void (*ABlitter)(const ASprite* Sprite, int X, int Y);
 
@@ -210,7 +210,7 @@ void a_sprite__updateRoutines(void)
     g_blitter_keyed_doclip = g_blitters[blend][fill][1][1];
 }
 
-#elif A_CONFIG_RENDER_SDL2
+#else
 
 void a_sprite__init(void)
 {
@@ -230,11 +230,11 @@ static ASprite* makeEmptySprite(int Width, int Height)
     s->wLog2 = (int)log2f((float)Width);
     s->h = Height;
 
-    #if A_CONFIG_RENDER_SOFTWARE
+    #if A_PLATFORM_RENDER_SOFTWARE
         s->spans = NULL;
         s->spansSize = 0;
         s->colorKeyed = false;
-    #elif A_CONFIG_RENDER_SDL2
+    #else
         s->texture = NULL;
     #endif
 
@@ -246,7 +246,7 @@ static void assignPixels(ASprite* Sprite, APixel* Pixels)
     free(Sprite->pixels);
     Sprite->pixels = Pixels;
 
-    #if A_CONFIG_RENDER_SOFTWARE
+    #if A_PLATFORM_RENDER_SOFTWARE
         for(size_t i = Sprite->pixelsSize / sizeof(APixel); i--; ) {
             if(*Pixels++ == a_sprite__colorKey) {
                 Sprite->colorKeyed = true;
@@ -404,7 +404,7 @@ ASprite* a_sprite_dup(const ASprite* Sprite)
 
     assignPixels(clone, pixels);
 
-    #if A_CONFIG_RENDER_SDL2
+    #if !A_PLATFORM_RENDER_SOFTWARE
         a_pixel_push();
         a_screen_targetPushSprite(clone);
 
@@ -420,7 +420,7 @@ ASprite* a_sprite_dup(const ASprite* Sprite)
 
 void a_sprite_free(ASprite* Sprite)
 {
-    #if A_CONFIG_RENDER_SOFTWARE
+    #if A_PLATFORM_RENDER_SOFTWARE
         free(Sprite->spans);
     #else
         a_platform__freeTexture(Sprite->texture);
@@ -433,7 +433,7 @@ void a_sprite_free(ASprite* Sprite)
 
 void a_sprite_blit(const ASprite* Sprite, int X, int Y)
 {
-    #if A_CONFIG_RENDER_SOFTWARE
+    #if A_PLATFORM_RENDER_SOFTWARE
         if(a_screen_isBoxInsideClip(X, Y, Sprite->w, Sprite->h)) {
             if(Sprite->colorKeyed) {
                 g_blitter_keyed_noclip(Sprite, X, Y);
@@ -476,7 +476,7 @@ void a_sprite_blitCenterY(const ASprite* Sprite, int X)
                   (a__screen.height - Sprite->h) / 2);
 }
 
-#if !A_CONFIG_RENDER_SOFTWARE
+#if !A_PLATFORM_RENDER_SOFTWARE
 void a_sprite_blitEx(const ASprite* Sprite, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY)
 {
     a_platform__blitTextureEx(Sprite->texture,
@@ -598,7 +598,7 @@ APixel a_sprite_getColorKey(void)
 
 void a_sprite__commit(ASprite* Sprite)
 {
-    #if A_CONFIG_RENDER_SOFTWARE
+    #if A_PLATFORM_RENDER_SOFTWARE
         if(!Sprite->colorKeyed) {
             return;
         }

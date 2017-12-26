@@ -21,16 +21,16 @@
 
 #include <SDL.h>
 
-#if A_CONFIG_LIB_SDL == 1
+#if A_PLATFORM_LIB_SDL == 1
     static SDL_Surface* g_sdlScreen = NULL;
-#elif A_CONFIG_LIB_SDL == 2
+#elif A_PLATFORM_LIB_SDL == 2
     static SDL_Window* g_sdlWindow = NULL;
     static SDL_Renderer* g_sdlRenderer = NULL;
     static uint8_t g_clearR, g_clearG, g_clearB;
 
-    #if A_CONFIG_RENDER_SOFTWARE
+    #if A_PLATFORM_RENDER_SOFTWARE
         static SDL_Texture* g_sdlTexture = NULL;
-    #elif A_CONFIG_RENDER_SDL2
+    #elif A_PLATFORM_RENDER_SDL
         #define NUM_SPRITE_TEXTURES 2
 
         struct APlatformTexture {
@@ -40,15 +40,15 @@
     #endif
 
     #if A_PIXEL__BPP == 16
-        #if A_CONFIG_RENDER_SOFTWARE
+        #if A_PLATFORM_RENDER_SOFTWARE
             #define A_PIXEL_FORMAT SDL_PIXELFORMAT_RGB565
-        #elif A_CONFIG_RENDER_SDL2
+        #elif A_PLATFORM_RENDER_SDL
             #define A_PIXEL_FORMAT SDL_PIXELFORMAT_RGBA5551
         #endif
     #elif A_PIXEL__BPP == 32
-        #if A_CONFIG_RENDER_SOFTWARE
+        #if A_PLATFORM_RENDER_SOFTWARE
             #define A_PIXEL_FORMAT SDL_PIXELFORMAT_RGBX8888
-        #elif A_CONFIG_RENDER_SDL2
+        #elif A_PLATFORM_RENDER_SDL
             #define A_PIXEL_FORMAT SDL_PIXELFORMAT_RGBA8888
         #endif
     #endif
@@ -56,7 +56,7 @@
 
 void a_platform_sdl_video__init(void)
 {
-    #if A_PLATFORM_PANDORA
+    #if A_PLATFORM_SYSTEM_PANDORA
         putenv("SDL_VIDEODRIVER=omapdss");
         putenv("SDL_OMAP_LAYER_SIZE=pixelperfect");
     #endif
@@ -68,14 +68,14 @@ void a_platform_sdl_video__init(void)
 
 void a_platform_sdl_video__uninit(void)
 {
-    #if A_CONFIG_LIB_SDL == 1
+    #if A_PLATFORM_LIB_SDL == 1
         if(!a_settings_getBool("video.doubleBuffer")) {
             if(SDL_MUSTLOCK(g_sdlScreen)) {
                 SDL_UnlockSurface(g_sdlScreen);
             }
         }
-    #elif A_CONFIG_LIB_SDL == 2
-        #if A_CONFIG_RENDER_SOFTWARE
+    #elif A_PLATFORM_LIB_SDL == 2
+        #if A_PLATFORM_RENDER_SOFTWARE
             SDL_DestroyTexture(g_sdlTexture);
         #endif
         SDL_DestroyRenderer(g_sdlRenderer);
@@ -87,7 +87,7 @@ void a_platform_sdl_video__uninit(void)
 
 void a_platform__setScreen(int Width, int Height, bool FullScreen)
 {
-    #if A_CONFIG_LIB_SDL == 1
+    #if A_PLATFORM_LIB_SDL == 1
         int bpp = 0;
         uint32_t videoFlags = SDL_SWSURFACE;
 
@@ -125,7 +125,7 @@ void a_platform__setScreen(int Width, int Height, bool FullScreen)
         }
 
         a__screen.pixels = g_sdlScreen->pixels;
-    #elif A_CONFIG_LIB_SDL == 2
+    #elif A_PLATFORM_LIB_SDL == 2
         int ret;
         uint32_t windowFlags = SDL_WINDOW_MAXIMIZED | SDL_WINDOW_RESIZABLE;
 
@@ -173,7 +173,7 @@ void a_platform__setScreen(int Width, int Height, bool FullScreen)
             a_out__fatal("SDL_RenderSetLogicalSize failed: %s", SDL_GetError());
         }
 
-        #if A_CONFIG_RENDER_SOFTWARE
+        #if A_PLATFORM_RENDER_SOFTWARE
             g_sdlTexture = SDL_CreateTexture(g_sdlRenderer,
                                              A_PIXEL_FORMAT,
                                              SDL_TEXTUREACCESS_STREAMING,
@@ -194,7 +194,7 @@ void a_platform__setScreen(int Width, int Height, bool FullScreen)
         g_clearB = (uint8_t)a_pixel_blue(color);
     #endif
 
-    #if A_PLATFORM_DESKTOP || A_PLATFORM_EMSCRIPTEN
+    #if A_PLATFORM_SYSTEM_DESKTOP || A_PLATFORM_SYSTEM_EMSCRIPTEN
         char caption[64];
         snprintf(caption,
                  sizeof(caption),
@@ -202,9 +202,9 @@ void a_platform__setScreen(int Width, int Height, bool FullScreen)
                  a_settings_getString("app.title"),
                  a_settings_getString("app.version"));
 
-        #if A_CONFIG_LIB_SDL == 1
+        #if A_PLATFORM_LIB_SDL == 1
             SDL_WM_SetCaption(caption, NULL);
-        #elif A_CONFIG_LIB_SDL == 2
+        #elif A_PLATFORM_LIB_SDL == 2
             SDL_SetWindowTitle(g_sdlWindow, caption);
         #endif
     #endif
@@ -212,8 +212,8 @@ void a_platform__setScreen(int Width, int Height, bool FullScreen)
 
 void a_platform__showScreen(void)
 {
-    #if A_CONFIG_LIB_SDL == 1
-        #if A_PLATFORM_WIZ
+    #if A_PLATFORM_LIB_SDL == 1
+        #if A_PLATFORM_SYSTEM_WIZ
             if(a_settings_getBool("video.fixWizTearing")) {
                 // The Wiz screen has diagonal tearing in landscape mode. As a
                 // slow but simple workaround, the screen is set to portrait
@@ -281,8 +281,8 @@ void a_platform__showScreen(void)
 
             a__screen.pixels = g_sdlScreen->pixels;
         }
-    #elif A_CONFIG_LIB_SDL == 2
-        #if A_CONFIG_RENDER_SDL2
+    #elif A_PLATFORM_LIB_SDL == 2
+        #if A_PLATFORM_RENDER_SDL
             if(SDL_SetRenderTarget(g_sdlRenderer, NULL) < 0) {
                 a_out__fatal("SDL_SetRenderTarget failed: %s", SDL_GetError());
             }
@@ -304,7 +304,7 @@ void a_platform__showScreen(void)
 
         a_platform__renderClear();
 
-        #if A_CONFIG_RENDER_SOFTWARE
+        #if A_PLATFORM_RENDER_SOFTWARE
             if(SDL_UpdateTexture(g_sdlTexture,
                                  NULL,
                                  a__screen.pixels,
@@ -337,7 +337,7 @@ void a_platform__showScreen(void)
 
 void a_platform__setFullScreen(bool FullScreen)
 {
-    #if A_CONFIG_LIB_SDL == 2
+    #if A_PLATFORM_LIB_SDL == 2
         if(SDL_SetWindowFullscreen(g_sdlWindow,
                                    FullScreen? SDL_WINDOW_FULLSCREEN : 0) < 0) {
 
@@ -354,7 +354,7 @@ void a_platform__setFullScreen(bool FullScreen)
     }
 }
 
-#if A_CONFIG_LIB_SDL == 2
+#if A_PLATFORM_LIB_SDL == 2
 void a_platform__renderClear(void)
 {
     if(SDL_RenderClear(g_sdlRenderer) < 0) {
@@ -385,7 +385,7 @@ void a_platform__getNativeResolution(int* Width, int* Height)
         *Height = mode.h;
     }
 }
-#elif !(A_PLATFORM_GP2X || A_PLATFORM_WIZ || A_PLATFORM_CAANOO)
+#elif !(A_PLATFORM_SYSTEM_GP2X || A_PLATFORM_SYSTEM_WIZ || A_PLATFORM_SYSTEM_CAANOO)
 void a_platform__getNativeResolution(int* Width, int* Height)
 {
     const SDL_VideoInfo* info = SDL_GetVideoInfo();
@@ -400,7 +400,7 @@ void a_platform__getNativeResolution(int* Width, int* Height)
 }
 #endif
 
-#if A_CONFIG_RENDER_SDL2
+#if A_PLATFORM_RENDER_SDL
 static inline SDL_BlendMode pixelBlendToSdlBlend(void)
 {
     switch(a_pixel__state.blend) {
@@ -853,4 +853,4 @@ void a_platform__setTargetClip(int X, int Y, int Width, int Height)
     }
 }
 
-#endif // A_CONFIG_RENDER_SDL2
+#endif // A_PLATFORM_RENDER_SDL

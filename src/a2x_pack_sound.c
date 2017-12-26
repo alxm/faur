@@ -25,7 +25,7 @@ static int g_musicVolume;
 static int g_sfxVolume;
 static int g_volumeMax;
 
-#if A_PLATFORM_GP2X || A_PLATFORM_WIZ
+#if A_PLATFORM_SYSTEM_GP2X || A_PLATFORM_SYSTEM_WIZ
     #define A_SFX_LIST 1
     #define A_VOLUME_STEP 1
     #define A_VOLBAR_SHOW_MS 500
@@ -49,7 +49,7 @@ static void adjustSoundVolume(int Volume)
 
 static void inputCallback(void)
 {
-    #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
+    #if A_PLATFORM_SYSTEM_GP2X || A_PLATFORM_SYSTEM_WIZ
         if(g_soundOn) {
             int adjust = 0;
 
@@ -79,7 +79,7 @@ static void inputCallback(void)
     #endif
 }
 
-#if A_PLATFORM_GP2X || A_PLATFORM_WIZ
+#if A_PLATFORM_SYSTEM_GP2X || A_PLATFORM_SYSTEM_WIZ
     static void screenCallback(void)
     {
         if(g_soundOn) {
@@ -117,14 +117,14 @@ void a_sound__init(void)
 
     g_volumeMax = a_platform__getMaxVolome();
 
-    #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
+    #if A_PLATFORM_SYSTEM_GP2X || A_PLATFORM_SYSTEM_WIZ
         adjustSoundVolume(g_volumeMax / 16);
         g_lastVolAdjustment = UINT32_MAX - A_VOLBAR_SHOW_MS;
     #else
         adjustSoundVolume(g_volumeMax);
     #endif
 
-    #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
+    #if A_PLATFORM_SYSTEM_GP2X || A_PLATFORM_SYSTEM_WIZ
         g_volumeUpButton = a_button_new("gamepad.b.volUp");
         g_volumeDownButton = a_button_new("gamepad.b.volDown");
     #elif A_DEVICE_HAS_KEYBOARD
@@ -133,7 +133,7 @@ void a_sound__init(void)
 
     a_input__addCallback(inputCallback);
 
-    #if A_PLATFORM_GP2X || A_PLATFORM_WIZ
+    #if A_PLATFORM_SYSTEM_GP2X || A_PLATFORM_SYSTEM_WIZ
         const char* color;
 
         color = a_settings_getString("sound.volbar.background");

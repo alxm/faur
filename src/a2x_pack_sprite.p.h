@@ -36,10 +36,7 @@ extern void a_sprite_blit(const ASprite* Sprite, int X, int Y);
 extern void a_sprite_blitCenter(const ASprite* Sprite);
 extern void a_sprite_blitCenterX(const ASprite* Sprite, int Y);
 extern void a_sprite_blitCenterY(const ASprite* Sprite, int X);
-
-#if A_CONFIG_RENDER_SDL2
 extern void a_sprite_blitEx(const ASprite* Sprite, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY);
-#endif
 
 extern void a_sprite_pow2Width(ASprite* Sprite);
 

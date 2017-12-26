@@ -17,7 +17,7 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#if A_PLATFORM_EMSCRIPTEN
+#if A_PLATFORM_SYSTEM_EMSCRIPTEN
     #include <emscripten.h>
 #endif
 
@@ -37,7 +37,7 @@ typedef enum {
 
 static void outPrintHeader(const char* Source, const char* Title, AColorCode Color, FILE* Stream)
 {
-    #if A_PLATFORM_LINUX && A_PLATFORM_DESKTOP
+    #if A_PLATFORM_SYSTEM_LINUX && A_PLATFORM_SYSTEM_DESKTOP
         fprintf(Stream, "\033[1;%dm[%s][%s]\033[0m ", Color, Source, Title);
     #else
         A_UNUSED(Color);
@@ -115,7 +115,7 @@ void a_out__fatal(const char* Format, ...)
 {
     A_OUT__PRINT("a2x", "Ftl", A_COLOR_MAGENTA, stderr);
 
-    #if A_PLATFORM_EMSCRIPTEN
+    #if A_PLATFORM_SYSTEM_EMSCRIPTEN
         emscripten_force_exit(1);
     #endif
 

@@ -31,11 +31,11 @@ struct ASprite {
     size_t pixelsSize;
     char* nameId;
     int w, wLog2, wOriginal, h;
-#if A_CONFIG_RENDER_SOFTWARE
+#if A_PLATFORM_RENDER_SOFTWARE
     unsigned* spans;
     size_t spansSize;
     bool colorKeyed;
-#elif A_CONFIG_RENDER_SDL2
+#else
     APlatformTexture* texture;
 #endif
 };

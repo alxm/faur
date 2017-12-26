@@ -30,7 +30,7 @@ static AList* g_overlays; // list of AScreenOverlayContainer
 
 static bool g_fullScreenState;
 
-#if A_PLATFORM_DESKTOP
+#if A_PLATFORM_SYSTEM_DESKTOP
     static AInputButton* g_fullScreenButton;
 
     static void inputCallback(void)
@@ -52,7 +52,7 @@ static void initScreen(AScreen* Screen, int Width, int Height, bool AllocBuffer)
         Screen->pixels = NULL;
     }
 
-    #if A_CONFIG_RENDER_SOFTWARE
+    #if A_PLATFORM_RENDER_SOFTWARE
         Screen->sprite = NULL;
     #else
         Screen->texture = a_platform__newScreenTexture(Width, Height);
@@ -75,7 +75,7 @@ static void freeScreen(AScreen* Screen)
         free(Screen->pixels);
     }
 
-    #if !A_CONFIG_RENDER_SOFTWARE
+    #if !A_PLATFORM_RENDER_SOFTWARE
         a_platform__freeTexture(Screen->texture);
     #endif
 }
@@ -110,7 +110,7 @@ void a_screen__init(void)
         a_out__fatal("Invalid screen resolution %dx%d", width, height);
     }
 
-    #if A_CONFIG_RENDER_SOFTWARE
+    #if A_PLATFORM_RENDER_SOFTWARE
         if(a_settings_getBool("video.doubleBuffer")) {
             // Allocate pixel buffer
             initScreen(&a__screen, width, height, true);
@@ -124,18 +124,18 @@ void a_screen__init(void)
     a_platform__setScreen(width, height, g_fullScreenState);
     a_platform__setFullScreen(g_fullScreenState);
 
-    #if A_PLATFORM_WIZ
+    #if A_PLATFORM_SYSTEM_WIZ
         a_platform_wiz__setScreenPortraitMode();
     #endif
 
-    #if A_PLATFORM_DESKTOP
+    #if A_PLATFORM_SYSTEM_DESKTOP
         g_fullScreenButton = a_button_new(
             a_settings_getString("video.fullscreen.button"));
 
         a_input__addCallback(inputCallback);
     #endif
 
-    #if !A_CONFIG_RENDER_SOFTWARE
+    #if !A_PLATFORM_RENDER_SOFTWARE
         initScreen(&a__screen, width, height, true);
         a_platform__setRenderTarget(a__screen.texture);
     #endif
@@ -189,7 +189,7 @@ bool a_screen__sameSize(const AScreen* Screen1, const AScreen* Screen2)
 
 APixel* a_screen_getPixels(void)
 {
-    #if !A_CONFIG_RENDER_SOFTWARE
+    #if !A_PLATFORM_RENDER_SOFTWARE
         a_platform__getTargetPixels(a__screen.pixels, a__screen.width);
     #endif
 
@@ -240,7 +240,7 @@ void a_screen_copy(AScreen* Dst, const AScreen* Src)
                      Src->height);
     }
 
-    #if A_CONFIG_RENDER_SOFTWARE
+    #if A_PLATFORM_RENDER_SOFTWARE
         memcpy(Dst->pixels, Src->pixels, Src->pixelsSize);
     #else
         a_pixel_push();
@@ -271,7 +271,7 @@ void a_screen_blit(const AScreen* Screen)
                      Screen->height);
     }
 
-    #if A_CONFIG_RENDER_SOFTWARE
+    #if A_PLATFORM_RENDER_SOFTWARE
         bool noClipping = a_screen_isBoxInsideClip(0,
                                                    0,
                                                    a__screen.width,
@@ -375,7 +375,7 @@ void a_screen_blit(const AScreen* Screen)
 
 void a_screen_clear(void)
 {
-    #if A_CONFIG_RENDER_SOFTWARE
+    #if A_PLATFORM_RENDER_SOFTWARE
         memset(a__screen.pixels, 0, a__screen.pixelsSize);
     #else
         a_pixel_push();
@@ -398,7 +398,7 @@ static void pushTarget(APixel* Pixels, size_t PixelsSize, int Width, int Height,
     a__screen.height = Height;
     a__screen.ownsBuffer = false;
 
-    #if A_CONFIG_RENDER_SOFTWARE
+    #if A_PLATFORM_RENDER_SOFTWARE
         a__screen.sprite = Data;
     #else
         a__screen.texture = Data;
@@ -410,9 +410,9 @@ static void pushTarget(APixel* Pixels, size_t PixelsSize, int Width, int Height,
 
 void a_screen_targetPushScreen(AScreen* Screen)
 {
-    #if A_CONFIG_RENDER_SOFTWARE
+    #if A_PLATFORM_RENDER_SOFTWARE
         void* data = NULL;
-    #elif A_CONFIG_RENDER_SDL2
+    #else
         void* data = Screen->texture;
     #endif
 
@@ -425,22 +425,18 @@ void a_screen_targetPushScreen(AScreen* Screen)
 
 void a_screen_targetPushSprite(ASprite* Sprite)
 {
-    #if A_CONFIG_RENDER_SOFTWARE
+    #if A_PLATFORM_RENDER_SOFTWARE
         void* data = Sprite;
-    #elif A_CONFIG_RENDER_SDL2
+    #else
         void* data = Sprite->texture;
     #endif
 
-    pushTarget(Sprite->pixels,
-               Sprite->pixelsSize,
-               Sprite->w,
-               Sprite->h,
-               data);
+    pushTarget(Sprite->pixels, Sprite->pixelsSize, Sprite->w, Sprite->h, data);
 }
 
 void a_screen_targetPop(void)
 {
-    #if A_CONFIG_RENDER_SOFTWARE
+    #if A_PLATFORM_RENDER_SOFTWARE
         if(a__screen.sprite) {
             a_sprite__commit(a__screen.sprite);
         }
@@ -455,7 +451,7 @@ void a_screen_targetPop(void)
     a__screen = *screen;
     free(screen);
 
-    #if !A_CONFIG_RENDER_SOFTWARE
+    #if !A_PLATFORM_RENDER_SOFTWARE
         a_platform__setRenderTarget(a__screen.texture);
         a_platform__setTargetClip(a__screen.clipX,
                                   a__screen.clipY,
@@ -484,7 +480,7 @@ void a_screen_clipSet(int X, int Y, int Width, int Height)
     a__screen.clipWidth = Width;
     a__screen.clipHeight = Height;
 
-    #if !A_CONFIG_RENDER_SOFTWARE
+    #if !A_PLATFORM_RENDER_SOFTWARE
         a_platform__setTargetClip(X, Y, Width, Height);
     #endif
 }

@@ -36,7 +36,7 @@ void a_platform_sdl_sound__init(void)
         a_out__fatal("SDL_InitSubSystem: %s", SDL_GetError());
     }
 
-    #if A_PLATFORM_GP2X
+    #if A_PLATFORM_SYSTEM_GP2X
         int frequency = 44100;
     #else
         int frequency = MIX_DEFAULT_FREQUENCY;
@@ -80,7 +80,7 @@ void a_platform__freeMusic(APlatformMusic* Music)
 
 void a_platform__setMusicVolume(int Volume)
 {
-    #if A_PLATFORM_EMSCRIPTEN
+    #if A_PLATFORM_SYSTEM_EMSCRIPTEN
         A_UNUSED(Volume);
     #else
         Mix_VolumeMusic(Volume);
@@ -156,7 +156,7 @@ void a_platform__freeSfx(APlatformSfx* Sfx)
 
 void a_platform__setSfxVolume(APlatformSfx* Sfx, int Volume)
 {
-    #if A_PLATFORM_EMSCRIPTEN
+    #if A_PLATFORM_SYSTEM_EMSCRIPTEN
         A_UNUSED(Sfx);
         A_UNUSED(Volume);
     #else

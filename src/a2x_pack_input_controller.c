@@ -102,7 +102,7 @@ void a_input_controller__init2(void)
             a_input_analog__forwardToButtons(rt, NULL, rb);
         }
 
-        #if A_PLATFORM_PANDORA
+        #if A_PLATFORM_SYSTEM_PANDORA
             if(!c->generic && x && y) {
                 // Pandora buttons are keyboard keys, not controller buttons
                 u = a_input_button__getKey("gamepad.b.up");
@@ -158,7 +158,7 @@ void a_input_setController(unsigned Index)
 
 void a_controller__new(bool Generic, bool IsMapped)
 {
-    #if A_PLATFORM_PANDORA
+    #if A_PLATFORM_SYSTEM_PANDORA
         // Assign both analog nubs to the same logical controller
         if(!Generic) {
             A_LIST_ITERATE(g_controllers, AInputController*, c) {

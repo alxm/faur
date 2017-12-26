@@ -40,7 +40,7 @@ static void a__atexit(void)
     a_fps__uninit();
     a_platform__uninit();
 
-    #if A_PLATFORM_GP2X || A_PLATFORM_WIZ || A_PLATFORM_CAANOO
+    #if A_PLATFORM_SYSTEM_GP2X || A_PLATFORM_SYSTEM_WIZ || A_PLATFORM_SYSTEM_CAANOO
         if(a_settings_getBool("app.gp2xMenu")) {
             a_settings__uninit();
             chdir("/usr/gp2x");

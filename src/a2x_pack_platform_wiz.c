@@ -22,9 +22,9 @@
 
 #include "a2x_pack_platform_wiz.v.h"
 
-#if A_PLATFORM_WIZ || A_PLATFORM_CAANOO
+#if A_PLATFORM_SYSTEM_WIZ || A_PLATFORM_SYSTEM_CAANOO
 
-#if A_PLATFORM_WIZ
+#if A_PLATFORM_SYSTEM_WIZ
     static bool g_mmuHackOn = false;
 #endif
 
@@ -90,7 +90,7 @@ static void timer_init(void)
 
 void a_platform_wiz__init(void)
 {
-    #if A_PLATFORM_WIZ
+    #if A_PLATFORM_SYSTEM_WIZ
         if(a_file_exists("./mmuhack.ko")) {
             system("/sbin/rmmod mmuhack");
             system("/sbin/insmod mmuhack.ko");
@@ -120,7 +120,7 @@ void a_platform_wiz__uninit(void)
     timer_clean();
     close(g_memfd);
 
-    #if A_PLATFORM_WIZ
+    #if A_PLATFORM_SYSTEM_WIZ
         if(g_mmuHackOn) {
             system("/sbin/rmmod mmuhack");
         }
@@ -135,7 +135,7 @@ uint32_t a_platform__getMs(void)
     return TIMER_REG(0) / 1000;
 }
 
-#if A_PLATFORM_WIZ
+#if A_PLATFORM_SYSTEM_WIZ
 void a_platform_wiz__setScreenPortraitMode(void)
 {
     // Set Wiz screen to portrait mode to avoid diagonal tearing
@@ -162,4 +162,4 @@ void a_platform__getNativeResolution(int* Width, int* Height)
     *Height = 240;
 }
 
-#endif // A_PLATFORM_WIZ || A_PLATFORM_CAANOO
+#endif // A_PLATFORM_SYSTEM_WIZ || A_PLATFORM_SYSTEM_CAANOO

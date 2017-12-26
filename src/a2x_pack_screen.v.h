@@ -33,7 +33,7 @@ typedef void (*AScreenOverlay)(void);
 struct AScreen {
     APixel* pixels;
     size_t pixelsSize;
-    #if A_CONFIG_RENDER_SOFTWARE
+    #if A_PLATFORM_RENDER_SOFTWARE
         ASprite* sprite;
     #else
         APlatformTexture* texture;

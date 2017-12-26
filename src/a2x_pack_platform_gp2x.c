@@ -23,7 +23,7 @@
 
 #include "a2x_pack_platform_gp2x.v.h"
 
-#if A_PLATFORM_GP2X
+#if A_PLATFORM_SYSTEM_GP2X
 
 static int g_mmuHackOn = 0;
 
@@ -129,4 +129,4 @@ void a_platform__getNativeResolution(int* Width, int* Height)
     *Height = 240;
 }
 
-#endif // A_PLATFORM_GP2X
+#endif // A_PLATFORM_SYSTEM_GP2X
