@@ -51,10 +51,10 @@ static void a__atexit(void)
     a_settings__uninit();
 }
 
-int main(int Argc, const char** Argv)
+int main(int Argc, char* Argv[])
 {
     g_argsNum = Argc;
-    g_args = Argv;
+    g_args = (const char**)Argv;
 
     a_console__init();
     a_settings__init();
