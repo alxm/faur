@@ -25,7 +25,9 @@ void a_platform__init(void)
         a_platform_pandora__init();
     #endif
 
-    a_platform_sdl__init();
+    #if A_PLATFORM_LIB_SDL
+        a_platform_sdl__init();
+    #endif
 
     #if A_PLATFORM_SYSTEM_GP2X
         a_platform_gp2x__init();

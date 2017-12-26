@@ -19,7 +19,7 @@
 
 #include "a2x_pack_platform_sdl_sound.v.h"
 
-#include <SDL.h>
+#if A_PLATFORM_LIB_SDL
 #include <SDL_mixer.h>
 
 struct APlatformSfx {
@@ -180,3 +180,4 @@ bool a_platform__isSfxPlaying(APlatformSfx* Sfx)
 {
     return Mix_Playing(Sfx->channel);
 }
+#endif // A_PLATFORM_LIB_SDL

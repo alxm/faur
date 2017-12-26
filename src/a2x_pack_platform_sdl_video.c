@@ -19,6 +19,7 @@
 
 #include "a2x_pack_platform_sdl_video.v.h"
 
+#if A_PLATFORM_LIB_SDL
 #if A_PLATFORM_LIB_SDL == 1
     static SDL_Surface* g_sdlScreen = NULL;
 #elif A_PLATFORM_LIB_SDL == 2
@@ -376,3 +377,4 @@ void a_platform__getNativeResolution(int* Width, int* Height)
     }
 }
 #endif
+#endif // A_PLATFORM_LIB_SDL

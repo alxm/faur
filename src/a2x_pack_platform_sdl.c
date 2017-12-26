@@ -19,6 +19,7 @@
 
 #include "a2x_pack_platform_sdl.v.h"
 
+#if A_PLATFORM_LIB_SDL
 static uint32_t g_sdlFlags;
 
 void a_platform_sdl__init(void)
@@ -60,3 +61,4 @@ uint32_t a_platform__getMs(void)
     return SDL_GetTicks();
 }
 #endif
+#endif // A_PLATFORM_LIB_SDL

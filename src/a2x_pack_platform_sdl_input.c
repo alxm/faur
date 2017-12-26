@@ -19,8 +19,7 @@
 
 #include "a2x_pack_platform_sdl_input.v.h"
 
-#include <SDL.h>
-
+#if A_PLATFORM_LIB_SDL
 #if A_PLATFORM_LIB_SDL == 1
     typedef uint8_t ASdlJoystickId;
     typedef SDLKey ASdlKeyCode;
@@ -829,3 +828,4 @@ void a_platform__pollInputs(void)
         }
     #endif
 }
+#endif // A_PLATFORM_LIB_SDL
