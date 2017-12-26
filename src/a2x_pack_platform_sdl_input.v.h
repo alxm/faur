@@ -25,6 +25,3 @@
 
 extern void a_sdl_input__init(void);
 extern void a_sdl_input__uninit(void);
-
-extern void a_sdl_input__bind(void);
-extern void a_sdl_input__get(void);

@@ -77,3 +77,6 @@ extern void a_platform__setSfxVolume(APlatformSfx* Sfx, int Volume);
 extern void a_platform__playSfx(APlatformSfx* Sfx);
 extern void a_platform__stopSfx(APlatformSfx* Sfx);
 extern bool a_platform__isSfxPlaying(APlatformSfx* Sfx);
+
+extern void a_platform__bindInputs(void);
+extern void a_platform__pollInputs(void);

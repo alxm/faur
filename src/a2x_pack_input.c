@@ -33,7 +33,7 @@ void a_input__init(void)
     a_input_button__init();
     a_input_touch__init();
 
-    a_sdl_input__bind();
+    a_platform__bindInputs();
 
     a_input_controller__init2();
 }
@@ -109,9 +109,7 @@ void a_input__setFreshEvent(AInputSourceHeader* Header)
 void a_input__get(void)
 {
     a_input_touch__clearMotion();
-
-    a_sdl_input__get();
-
+    a_platform__pollInputs();
     a_input_button__processQueue();
 
     A_LIST_ITERATE(g_callbacks, AInputCallbackContainer*, c) {

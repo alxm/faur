@@ -437,7 +437,7 @@ void a_sdl_input__init(void)
 
     #if A_PLATFORM_PANDORA
         // Because these are defined before the generic keys, they
-        // will take precedence in the a_sdl_input__get event loop.
+        // will take precedence in the a_platform__pollInputs event loop.
         addKey("Up", "gamepad.b.up", SDLK_UP);
         addKey("Down", "gamepad.b.down", SDLK_DOWN);
         addKey("Left", "gamepad.b.left", SDLK_LEFT);
@@ -548,7 +548,7 @@ void a_sdl_input__uninit(void)
     SDL_QuitSubSystem(g_sdlFlags);
 }
 
-void a_sdl_input__bind(void)
+void a_platform__bindInputs(void)
 {
     A_STRHASH_ITERATE(g_keys, ASdlInputButton*, k) {
         k->logicalButton = a_input_button__newSource(k->header.name,
@@ -579,7 +579,7 @@ void a_sdl_input__bind(void)
     }
 }
 
-void a_sdl_input__get(void)
+void a_platform__pollInputs(void)
 {
     for(SDL_Event event; SDL_PollEvent(&event); ) {
         switch(event.type) {
