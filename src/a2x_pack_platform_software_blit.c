@@ -240,6 +240,14 @@ bool hasTransparency(const APixel* Pixels, int Width, int Height)
     return false;
 }
 
+APlatformTexture* a_platform__newScreenTexture(int Width, int Height)
+{
+    A_UNUSED(Width);
+    A_UNUSED(Height);
+
+    return NULL;
+}
+
 APlatformTexture* a_platform__newSpriteTexture(APlatformTexture* Texture, const APixel* Pixels, int Width, int Height)
 {
     bool colorKeyed = hasTransparency(Pixels, Width, Height);

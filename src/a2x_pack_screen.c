@@ -52,12 +52,8 @@ static void initScreen(AScreen* Screen, int Width, int Height, bool AllocBuffer)
         Screen->pixels = NULL;
     }
 
-    #if A_PLATFORM_RENDER_SOFTWARE
-        Screen->sprite = NULL;
-    #else
-        Screen->texture = a_platform__newScreenTexture(Width, Height);
-    #endif
-
+    Screen->sprite = NULL;
+    Screen->texture = a_platform__newScreenTexture(Width, Height);
     Screen->width = Width;
     Screen->height = Height;
     Screen->clipX = 0;
@@ -388,21 +384,20 @@ void a_screen_clear(void)
     #endif
 }
 
-static void pushTarget(APixel* Pixels, size_t PixelsSize, int Width, int Height, void* Data)
+static void pushTarget(APixel* Pixels, size_t PixelsSize, int Width, int Height, APlatformTexture* Texture, ASprite* Sprite)
 {
     a_list_push(g_stack, a_mem_dup(&a__screen, sizeof(AScreen)));
 
     a__screen.pixels = Pixels;
     a__screen.pixelsSize = PixelsSize;
+    a__screen.sprite = Sprite;
+    a__screen.texture = Texture;
     a__screen.width = Width;
     a__screen.height = Height;
     a__screen.ownsBuffer = false;
 
-    #if A_PLATFORM_RENDER_SOFTWARE
-        a__screen.sprite = Data;
-    #else
-        a__screen.texture = Data;
-        a_platform__setRenderTarget(Data);
+    #if !A_PLATFORM_RENDER_SOFTWARE
+        a_platform__setRenderTarget(Texture);
     #endif
 
     a_screen_clipReset();
@@ -410,28 +405,22 @@ static void pushTarget(APixel* Pixels, size_t PixelsSize, int Width, int Height,
 
 void a_screen_targetPushScreen(AScreen* Screen)
 {
-    #if A_PLATFORM_RENDER_SOFTWARE
-        void* data = NULL;
-    #else
-        void* data = Screen->texture;
-    #endif
-
     pushTarget(Screen->pixels,
                Screen->pixelsSize,
                Screen->width,
                Screen->height,
-               data);
+               Screen->texture,
+               NULL);
 }
 
 void a_screen_targetPushSprite(ASprite* Sprite)
 {
-    #if A_PLATFORM_RENDER_SOFTWARE
-        void* data = Sprite;
-    #else
-        void* data = Sprite->texture;
-    #endif
-
-    pushTarget(Sprite->pixels, Sprite->pixelsSize, Sprite->w, Sprite->h, data);
+    pushTarget(Sprite->pixels,
+               Sprite->pixelsSize,
+               Sprite->w,
+               Sprite->h,
+               Sprite->texture,
+               Sprite);
 }
 
 void a_screen_targetPop(void)
