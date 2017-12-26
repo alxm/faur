@@ -153,7 +153,7 @@ void a_platform__setScreen(int Width, int Height, bool FullScreen)
 
         #if A_PLATFORM_RENDER_SOFTWARE
             g_sdlTexture = SDL_CreateTexture(a__sdlRenderer,
-                                             A_PIXEL_FORMAT,
+                                             A_SDL__PIXEL_FORMAT,
                                              SDL_TEXTUREACCESS_STREAMING,
                                              Width,
                                              Height);

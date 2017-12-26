@@ -306,7 +306,7 @@ void a_platform__drawCircleFilled(int X, int Y, int Radius)
 APlatformTexture* a_platform__newScreenTexture(int Width, int Height)
 {
     SDL_Texture* t = SDL_CreateTexture(a__sdlRenderer,
-                                       A_PIXEL_FORMAT,
+                                       A_SDL__PIXEL_FORMAT,
                                        SDL_TEXTUREACCESS_TARGET,
                                        Width,
                                        Height);
@@ -366,7 +366,7 @@ APlatformTexture* a_platform__newSpriteTexture(APlatformTexture* Texture, const 
         }
 
         SDL_Texture* t = SDL_CreateTexture(a__sdlRenderer,
-                                           A_PIXEL_FORMAT,
+                                           A_SDL__PIXEL_FORMAT,
                                            SDL_TEXTUREACCESS_TARGET,
                                            Width,
                                            Height);
@@ -478,7 +478,7 @@ void a_platform__getTargetPixels(APixel* Pixels, int Width)
     // Unreliable on texture targets
     if(SDL_RenderReadPixels(a__sdlRenderer,
                             NULL,
-                            A_PIXEL_FORMAT,
+                            A_SDL__PIXEL_FORMAT,
                             Pixels,
                             Width * (int)sizeof(APixel)) < 0) {
 

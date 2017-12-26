@@ -31,15 +31,15 @@
 
     #if A_PIXEL__BPP == 16
         #if A_PLATFORM_RENDER_SOFTWARE
-            #define A_PIXEL_FORMAT SDL_PIXELFORMAT_RGB565
+            #define A_SDL__PIXEL_FORMAT SDL_PIXELFORMAT_RGB565
         #elif A_PLATFORM_RENDER_SDL
-            #define A_PIXEL_FORMAT SDL_PIXELFORMAT_RGBA5551
+            #define A_SDL__PIXEL_FORMAT SDL_PIXELFORMAT_RGBA5551
         #endif
     #elif A_PIXEL__BPP == 32
         #if A_PLATFORM_RENDER_SOFTWARE
-            #define A_PIXEL_FORMAT SDL_PIXELFORMAT_RGBX8888
+            #define A_SDL__PIXEL_FORMAT SDL_PIXELFORMAT_RGBX8888
         #elif A_PLATFORM_RENDER_SDL
-            #define A_PIXEL_FORMAT SDL_PIXELFORMAT_RGBA8888
+            #define A_SDL__PIXEL_FORMAT SDL_PIXELFORMAT_RGBA8888
         #endif
     #endif
 
