@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016 Alex Margarit
+    Copyright 2010, 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -19,14 +19,9 @@
 
 #pragma once
 
-#include "a2x_system_includes.h"
+#include "a2x_pack_platform_sdl_input.p.h"
 
-#include "a2x_pack_pixel.p.h"
+#include "a2x_pack_input.v.h"
 
-extern void a_draw_fill(void);
-extern void a_draw_pixel(int X, int Y);
-extern void a_draw_line(int X1, int Y1, int X2, int Y2);
-extern void a_draw_hline(int X1, int X2, int Y);
-extern void a_draw_vline(int X, int Y1, int Y2);
-extern void a_draw_rectangle(int X, int Y, int Width, int Height);
-extern void a_draw_circle(int X, int Y, int Radius);
+extern void a_platform_sdl_input__init(void);
+extern void a_platform_sdl_input__uninit(void);

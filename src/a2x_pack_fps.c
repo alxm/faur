@@ -78,7 +78,7 @@ void a_fps__init(void)
     g_skipAdjustTimer = a_timer_new(A_TIMER_SEC, FRAMESKIP_ADJUST_DELAY_SEC);
     a_timer_start(g_skipAdjustTimer);
 
-    #if A_PLATFORM_EMSCRIPTEN
+    #if A_PLATFORM_SYSTEM_EMSCRIPTEN
         g_allowSleep = false;
     #else
         g_allowSleep = true;
@@ -155,7 +155,7 @@ void a_fps__frame(void)
             if(g_canSleep) {
                 uint32_t waitMs = g_msPerFrame - elapsedMs;
 
-                #if A_PLATFORM_GP2X
+                #if A_PLATFORM_SYSTEM_GP2X
                     // GP2X timer granularity is too coarse
                     if(waitMs >= 10) {
                         a_time_waitMs(10);

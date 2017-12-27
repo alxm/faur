@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016 Alex Margarit
+    Copyright 2010, 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -19,28 +19,30 @@
 
 #pragma once
 
-#include "a2x_pack_main.p.h"
+#include "a2x_pack_platform_sdl_video.p.h"
 
-#include "a2x_pack_conf.v.h"
-#include "a2x_pack_console.v.h"
-#include "a2x_pack_draw.v.h"
-#include "a2x_pack_embed.v.h"
-#include "a2x_pack_entity.v.h"
-#include "a2x_pack_fade.v.h"
-#include "a2x_pack_fix.v.h"
-#include "a2x_pack_font.v.h"
-#include "a2x_pack_fps.v.h"
-#include "a2x_pack_input.v.h"
-#include "a2x_pack_math.v.h"
-#include "a2x_pack_mem.v.h"
-#include "a2x_pack_out.v.h"
+#include <SDL.h>
+
 #include "a2x_pack_pixel.v.h"
 #include "a2x_pack_platform.v.h"
-#include "a2x_pack_random.v.h"
-#include "a2x_pack_screen.v.h"
-#include "a2x_pack_screenshot.v.h"
-#include "a2x_pack_settings.v.h"
-#include "a2x_pack_sound.v.h"
-#include "a2x_pack_sprite.v.h"
-#include "a2x_pack_state.v.h"
-#include "a2x_pack_time.v.h"
+
+#if A_PLATFORM_LIB_SDL == 2
+    extern SDL_Renderer* a__sdlRenderer;
+
+    #if A_PIXEL__BPP == 16
+        #if A_PLATFORM_RENDER_SOFTWARE
+            #define A_SDL__PIXEL_FORMAT SDL_PIXELFORMAT_RGB565
+        #elif A_PLATFORM_RENDER_SDL
+            #define A_SDL__PIXEL_FORMAT SDL_PIXELFORMAT_RGBA5551
+        #endif
+    #elif A_PIXEL__BPP == 32
+        #if A_PLATFORM_RENDER_SOFTWARE
+            #define A_SDL__PIXEL_FORMAT SDL_PIXELFORMAT_RGBX8888
+        #elif A_PLATFORM_RENDER_SDL
+            #define A_SDL__PIXEL_FORMAT SDL_PIXELFORMAT_RGBA8888
+        #endif
+    #endif
+#endif
+
+extern void a_platform_sdl_video__init(void);
+extern void a_platform_sdl_video__uninit(void);

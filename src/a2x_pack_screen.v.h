@@ -25,7 +25,7 @@ typedef void (*AScreenOverlay)(void);
 
 #include "a2x_pack_draw.v.h"
 #include "a2x_pack_pixel.v.h"
-#include "a2x_pack_sdl.v.h"
+#include "a2x_pack_platform_sdl.v.h"
 #include "a2x_pack_settings.v.h"
 #include "a2x_pack_sound.v.h"
 #include "a2x_pack_sprite.v.h"
@@ -33,11 +33,8 @@ typedef void (*AScreenOverlay)(void);
 struct AScreen {
     APixel* pixels;
     size_t pixelsSize;
-    #if A_CONFIG_RENDER_SOFTWARE
-        ASprite* sprite;
-    #elif A_CONFIG_RENDER_SDL2
-        ASdlTexture* texture;
-    #endif
+    ASprite* sprite;
+    APlatformTexture* texture;
     int width;
     int height;
     int clipX;

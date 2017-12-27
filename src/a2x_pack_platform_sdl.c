@@ -17,17 +17,16 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a2x_pack_sdl.v.h"
+#include "a2x_pack_platform_sdl.v.h"
 
-#include <SDL.h>
-
+#if A_PLATFORM_LIB_SDL
 static uint32_t g_sdlFlags;
 
-void a_sdl__init(void)
+void a_platform_sdl__init(void)
 {
     g_sdlFlags = 0;
 
-    #if !(A_PLATFORM_WIZ || A_PLATFORM_CAANOO)
+    #if A_PLATFORM_LIB_SDL_TIME
         g_sdlFlags |= SDL_INIT_TIMER;
     #endif
 
@@ -35,33 +34,31 @@ void a_sdl__init(void)
         a_out__fatal("SDL_Init: %s", SDL_GetError());
     }
 
-    a_sdl_input__init();
-    a_sdl_video__init();
+    a_platform_sdl_input__init();
+    a_platform_sdl_video__init();
 
     if(a_settings_getBool("sound.on")) {
-        a_sdl_sound__init();
+        a_platform_sdl_sound__init();
     }
 }
 
-void a_sdl__uninit(void)
+void a_platform_sdl__uninit(void)
 {
-    a_sdl_input__uninit();
-    a_sdl_video__uninit();
+    a_platform_sdl_input__uninit();
+    a_platform_sdl_video__uninit();
 
     if(a_settings_getBool("sound.on")) {
-        a_sdl_sound__uninit();
+        a_platform_sdl_sound__uninit();
     }
 
     SDL_QuitSubSystem(g_sdlFlags);
     SDL_Quit();
 }
 
-uint32_t a_sdl_time__getTicks(void)
+#if A_PLATFORM_LIB_SDL_TIME
+uint32_t a_platform__getMs(void)
 {
     return SDL_GetTicks();
 }
-
-void a_sdl_time__delay(uint32_t Ms)
-{
-    SDL_Delay(Ms);
-}
+#endif
+#endif // A_PLATFORM_LIB_SDL

@@ -38,10 +38,9 @@ static void a__atexit(void)
     a_screen__uninit();
     a_pixel__uninit();
     a_fps__uninit();
-    a_hw__uninit();
-    a_sdl__uninit();
+    a_platform__uninit();
 
-    #if A_PLATFORM_GP2X || A_PLATFORM_WIZ || A_PLATFORM_CAANOO
+    #if A_PLATFORM_SYSTEM_GP2X || A_PLATFORM_SYSTEM_WIZ || A_PLATFORM_SYSTEM_CAANOO
         if(a_settings_getBool("app.gp2xMenu")) {
             a_settings__uninit();
             chdir("/usr/gp2x");
@@ -52,10 +51,10 @@ static void a__atexit(void)
     a_settings__uninit();
 }
 
-int main(int Argc, const char** Argv)
+int main(int Argc, char* Argv[])
 {
     g_argsNum = Argc;
-    g_args = Argv;
+    g_args = (const char**)Argv;
 
     a_console__init();
     a_settings__init();
@@ -71,13 +70,11 @@ int main(int Argc, const char** Argv)
         a_settings_getString("app.buildtime"));
 
     a_conf__init();
-    a_hw__init_preSDL();
-    a_sdl__init();
-    a_hw__init_postSDL();
+    a_platform__init();
     a_input__init();
     a_screen__init();
     a_pixel__init();
-    a_draw__init();
+    a_platform__init2();
     a_sprite__init();
     a_fps__init();
     a_screenshot__init();

@@ -277,19 +277,19 @@ void a_settings__init(void)
         }
     }
 
-    #if A_CONFIG_LIB_SDL == 2
+    #if A_PLATFORM_LIB_SDL == 2
         a_settings__set("video.doubleBuffer", "1");
         a_settings__set("video.vsync", "1");
     #endif
 
-    #if A_PLATFORM_EMSCRIPTEN
+    #if A_PLATFORM_SYSTEM_EMSCRIPTEN
         a_settings__set("video.vsync", "1");
     #endif
 
-    #if A_PLATFORM_GP2X || A_PLATFORM_WIZ || A_PLATFORM_CAANOO || A_PLATFORM_PANDORA
+    #if A_PLATFORM_SYSTEM_GP2X || A_PLATFORM_SYSTEM_WIZ || A_PLATFORM_SYSTEM_CAANOO || A_PLATFORM_SYSTEM_PANDORA
         a_settings__set("video.fullscreen", "1");
 
-        #if A_PLATFORM_WIZ
+        #if A_PLATFORM_SYSTEM_WIZ
             if(a_settings_getBool("video.fixWizTearing")) {
                 a_settings__set("video.doubleBuffer", "1");
             }

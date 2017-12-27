@@ -23,6 +23,7 @@
 
 #include "a2x_pack_embed.v.h"
 #include "a2x_pack_list.v.h"
+#include "a2x_pack_platform.v.h"
 #include "a2x_pack_screen.v.h"
 
 struct ASprite {
@@ -30,13 +31,7 @@ struct ASprite {
     size_t pixelsSize;
     char* nameId;
     int w, wLog2, wOriginal, h;
-#if A_CONFIG_RENDER_SOFTWARE
-    unsigned* spans;
-    size_t spansSize;
-    bool colorKeyed;
-#elif A_CONFIG_RENDER_SDL2
-    ASdlTexture* texture;
-#endif
+    APlatformTexture* texture;
 };
 
 extern APixel a_sprite__colorKey;
@@ -44,9 +39,6 @@ extern APixel a_sprite__colorLimit;
 extern APixel a_sprite__colorEnd;
 
 extern void a_sprite__init(void);
-
-extern void a_sprite__updateRoutines(void);
-extern void a_sprite__commit(ASprite* Sprite);
 
 #define A_SPRITE__NAME(Sprite) (Sprite->nameId ? Sprite->nameId : "Sprite")
 #define a_sprite__getPixel(s, x, y) (*((s)->pixels + (y) * (s)->w + (x)))

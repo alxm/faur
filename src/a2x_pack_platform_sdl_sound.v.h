@@ -1,5 +1,5 @@
 /*
-    Copyright 2010 Alex Margarit
+    Copyright 2010, 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -19,4 +19,9 @@
 
 #pragma once
 
-#include "a2x_system_includes.h"
+#include "a2x_pack_platform_sdl_sound.p.h"
+
+#include "a2x_pack_out.v.h"
+
+extern void a_platform_sdl_sound__init(void);
+extern void a_platform_sdl_sound__uninit(void);

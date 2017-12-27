@@ -30,14 +30,14 @@ static AList* g_overlays; // list of AScreenOverlayContainer
 
 static bool g_fullScreenState;
 
-#if A_PLATFORM_DESKTOP
+#if A_PLATFORM_SYSTEM_DESKTOP
     static AInputButton* g_fullScreenButton;
 
     static void inputCallback(void)
     {
         if(a_button_getPressedOnce(g_fullScreenButton)) {
             g_fullScreenState = !g_fullScreenState;
-            a_sdl_screen__setFullScreen(g_fullScreenState);
+            a_platform__setFullScreen(g_fullScreenState);
         }
     }
 #endif
@@ -52,12 +52,8 @@ static void initScreen(AScreen* Screen, int Width, int Height, bool AllocBuffer)
         Screen->pixels = NULL;
     }
 
-    #if A_CONFIG_RENDER_SOFTWARE
-        Screen->sprite = NULL;
-    #elif A_CONFIG_RENDER_SDL2
-        Screen->texture = a_sdl_render__textureMakeScreen(Width, Height);
-    #endif
-
+    Screen->sprite = NULL;
+    Screen->texture = a_platform__newScreenTexture(Width, Height);
     Screen->width = Width;
     Screen->height = Height;
     Screen->clipX = 0;
@@ -75,8 +71,8 @@ static void freeScreen(AScreen* Screen)
         free(Screen->pixels);
     }
 
-    #if A_CONFIG_RENDER_SDL2
-        a_sdl_render__textureFree(Screen->texture);
+    #if !A_PLATFORM_RENDER_SOFTWARE
+        a_platform__freeTexture(Screen->texture);
     #endif
 }
 
@@ -89,18 +85,30 @@ void a_screen__init(void)
     int width = a_settings_getInt("video.width");
     int height = a_settings_getInt("video.height");
 
-    #if A_CONFIG_LIB_SDL == 2
-        if(width < 0 || height < 0) {
-            a_sdl_video__getFullResolution(&width, &height);
+    if(width < 0 || height < 0) {
+        int w = width;
+        int h = height;
+
+        a_platform__getNativeResolution(&w, &h);
+
+        if(w > 0 && h > 0) {
+            if(width < 0) {
+                width = w / -width;
+            }
+
+            if(height < 0) {
+                height = h / -height;
+            }
         }
-    #endif
+    }
 
     if(width <= 0 || height <= 0) {
         a_out__fatal("Invalid screen resolution %dx%d", width, height);
     }
 
-    #if A_CONFIG_RENDER_SOFTWARE
+    #if A_PLATFORM_RENDER_SOFTWARE
         if(a_settings_getBool("video.doubleBuffer")) {
+            // Allocate pixel buffer
             initScreen(&a__screen, width, height, true);
         } else {
             // Will use SDL's pixel buffer directly
@@ -109,24 +117,23 @@ void a_screen__init(void)
     #endif
 
     g_fullScreenState = a_settings_getBool("video.fullscreen");
-    a_sdl_screen__set(width, height, g_fullScreenState);
+    a_platform__setScreen(width, height, g_fullScreenState);
+    a_platform__setFullScreen(g_fullScreenState);
 
-    #if A_PLATFORM_WIZ
-        if(a_settings_getBool("video.fixWizTearing")) {
-            a_hw__setWizPortraitMode();
-        }
+    #if A_PLATFORM_SYSTEM_WIZ
+        a_platform_wiz__setScreenPortraitMode();
     #endif
 
-    #if A_PLATFORM_DESKTOP
+    #if A_PLATFORM_SYSTEM_DESKTOP
         g_fullScreenButton = a_button_new(
             a_settings_getString("video.fullscreen.button"));
 
         a_input__addCallback(inputCallback);
     #endif
 
-    #if A_CONFIG_RENDER_SDL2
+    #if !A_PLATFORM_RENDER_SOFTWARE
         initScreen(&a__screen, width, height, true);
-        a_sdl_render__targetSet(a__screen.texture);
+        a_platform__setRenderTarget(a__screen.texture);
     #endif
 
     g_stack = a_list_new();
@@ -159,7 +166,7 @@ void a_screen__show(void)
         c->callback();
     }
 
-    a_sdl_screen__show();
+    a_platform__showScreen();
 }
 
 void a_screen__addOverlay(AScreenOverlay Callback)
@@ -178,8 +185,8 @@ bool a_screen__sameSize(const AScreen* Screen1, const AScreen* Screen2)
 
 APixel* a_screen_getPixels(void)
 {
-    #if A_CONFIG_RENDER_SDL2
-        a_sdl_render__targetGetPixels(a__screen.pixels, a__screen.width);
+    #if !A_PLATFORM_RENDER_SOFTWARE
+        a_platform__getTargetPixels(a__screen.pixels, a__screen.width);
     #endif
 
     return a__screen.pixels;
@@ -229,22 +236,22 @@ void a_screen_copy(AScreen* Dst, const AScreen* Src)
                      Src->height);
     }
 
-    #if A_CONFIG_RENDER_SOFTWARE
+    #if A_PLATFORM_RENDER_SOFTWARE
         memcpy(Dst->pixels, Src->pixels, Src->pixelsSize);
-    #elif A_CONFIG_RENDER_SDL2
+    #else
         a_pixel_push();
         a_pixel_setBlend(A_PIXEL_BLEND_PLAIN);
 
-        a_sdl_render__targetSet(Dst->texture);
-        a_sdl_render__targetSetClip(0, 0, Dst->width, Dst->height);
+        a_platform__setRenderTarget(Dst->texture);
+        a_platform__setTargetClip(0, 0, Dst->width, Dst->height);
 
-        a_sdl_render__textureBlit(Src->texture, 0, 0, false);
+        a_platform__blitTexture(Src->texture, 0, 0, false);
 
-        a_sdl_render__targetSet(a__screen.texture);
-        a_sdl_render__targetSetClip(a__screen.clipX,
-                                    a__screen.clipY,
-                                    a__screen.clipWidth,
-                                    a__screen.clipHeight);
+        a_platform__setRenderTarget(a__screen.texture);
+        a_platform__setTargetClip(a__screen.clipX,
+                                  a__screen.clipY,
+                                  a__screen.clipWidth,
+                                  a__screen.clipHeight);
 
         a_pixel_pop();
     #endif
@@ -260,7 +267,7 @@ void a_screen_blit(const AScreen* Screen)
                      Screen->height);
     }
 
-    #if A_CONFIG_RENDER_SOFTWARE
+    #if A_PLATFORM_RENDER_SOFTWARE
         bool noClipping = a_screen_isBoxInsideClip(0,
                                                    0,
                                                    a__screen.width,
@@ -357,41 +364,40 @@ void a_screen_blit(const AScreen* Screen)
 
             default: break;
         }
-    #elif A_CONFIG_RENDER_SDL2
-        a_sdl_render__textureBlit(Screen->texture, 0, 0, false);
+    #else
+        a_platform__blitTexture(Screen->texture, 0, 0, false);
     #endif
 }
 
 void a_screen_clear(void)
 {
-    #if A_CONFIG_RENDER_SOFTWARE
+    #if A_PLATFORM_RENDER_SOFTWARE
         memset(a__screen.pixels, 0, a__screen.pixelsSize);
-    #elif A_CONFIG_RENDER_SDL2
+    #else
         a_pixel_push();
 
         a_pixel_setBlend(A_PIXEL_BLEND_PLAIN);
         a_pixel_setPixel(0);
-        a_sdl_render__clear();
+        a_platform__renderClear();
 
         a_pixel_pop();
     #endif
 }
 
-static void pushTarget(APixel* Pixels, size_t PixelsSize, int Width, int Height, void* Data)
+static void pushTarget(APixel* Pixels, size_t PixelsSize, int Width, int Height, APlatformTexture* Texture, ASprite* Sprite)
 {
     a_list_push(g_stack, a_mem_dup(&a__screen, sizeof(AScreen)));
 
     a__screen.pixels = Pixels;
     a__screen.pixelsSize = PixelsSize;
+    a__screen.sprite = Sprite;
+    a__screen.texture = Texture;
     a__screen.width = Width;
     a__screen.height = Height;
     a__screen.ownsBuffer = false;
 
-    #if A_CONFIG_RENDER_SOFTWARE
-        a__screen.sprite = Data;
-    #elif A_CONFIG_RENDER_SDL2
-        a__screen.texture = Data;
-        a_sdl_render__targetSet(Data);
+    #if !A_PLATFORM_RENDER_SOFTWARE
+        a_platform__setRenderTarget(Texture);
     #endif
 
     a_screen_clipReset();
@@ -399,39 +405,29 @@ static void pushTarget(APixel* Pixels, size_t PixelsSize, int Width, int Height,
 
 void a_screen_targetPushScreen(AScreen* Screen)
 {
-    #if A_CONFIG_RENDER_SOFTWARE
-        void* data = NULL;
-    #elif A_CONFIG_RENDER_SDL2
-        void* data = Screen->texture;
-    #endif
-
     pushTarget(Screen->pixels,
                Screen->pixelsSize,
                Screen->width,
                Screen->height,
-               data);
+               Screen->texture,
+               NULL);
 }
 
 void a_screen_targetPushSprite(ASprite* Sprite)
 {
-    #if A_CONFIG_RENDER_SOFTWARE
-        void* data = Sprite;
-    #elif A_CONFIG_RENDER_SDL2
-        void* data = Sprite->texture;
-    #endif
-
     pushTarget(Sprite->pixels,
                Sprite->pixelsSize,
                Sprite->w,
                Sprite->h,
-               data);
+               Sprite->texture,
+               Sprite);
 }
 
 void a_screen_targetPop(void)
 {
-    #if A_CONFIG_RENDER_SOFTWARE
+    #if A_PLATFORM_RENDER_SOFTWARE
         if(a__screen.sprite) {
-            a_sprite__commit(a__screen.sprite);
+            a_platform__commitSpriteTexture(a__screen.sprite);
         }
     #endif
 
@@ -444,12 +440,12 @@ void a_screen_targetPop(void)
     a__screen = *screen;
     free(screen);
 
-    #if A_CONFIG_RENDER_SDL2
-        a_sdl_render__targetSet(a__screen.texture);
-        a_sdl_render__targetSetClip(a__screen.clipX,
-                                    a__screen.clipY,
-                                    a__screen.clipWidth,
-                                    a__screen.clipHeight);
+    #if !A_PLATFORM_RENDER_SOFTWARE
+        a_platform__setRenderTarget(a__screen.texture);
+        a_platform__setTargetClip(a__screen.clipX,
+                                  a__screen.clipY,
+                                  a__screen.clipWidth,
+                                  a__screen.clipHeight);
     #endif
 }
 
@@ -473,8 +469,8 @@ void a_screen_clipSet(int X, int Y, int Width, int Height)
     a__screen.clipWidth = Width;
     a__screen.clipHeight = Height;
 
-    #if A_CONFIG_RENDER_SDL2
-        a_sdl_render__targetSetClip(X, Y, Width, Height);
+    #if !A_PLATFORM_RENDER_SOFTWARE
+        a_platform__setTargetClip(X, Y, Width, Height);
     #endif
 }
 

@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2017 Alex Margarit
+    Copyright 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -19,14 +19,9 @@
 
 #pragma once
 
-#include "a2x_pack_sdl.p.h"
+#include "a2x_pack_platform_pandora.p.h"
 
-#include "a2x_pack_sdl_video.v.h"
-#include "a2x_pack_sdl_sound.v.h"
-#include "a2x_pack_sdl_input.v.h"
+#include "a2x_pack_file.v.h"
 
-extern void a_sdl__init(void);
-extern void a_sdl__uninit(void);
-
-extern uint32_t a_sdl_time__getTicks(void);
-extern void a_sdl_time__delay(uint32_t Ms);
+extern void a_platform_pandora__init(void);
+extern void a_platform_pandora__uninit(void);

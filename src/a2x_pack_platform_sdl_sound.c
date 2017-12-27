@@ -17,12 +17,12 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a2x_pack_sdl_sound.v.h"
+#include "a2x_pack_platform_sdl_sound.v.h"
 
-#include <SDL.h>
+#if A_PLATFORM_LIB_SDL
 #include <SDL_mixer.h>
 
-struct ASdlSfx {
+struct APlatformSfx {
     Mix_Chunk* chunk;
     int channel;
 };
@@ -30,13 +30,13 @@ struct ASdlSfx {
 int g_numSfxChannels;
 int g_currentSfxChannel;
 
-void a_sdl_sound__init(void)
+void a_platform_sdl_sound__init(void)
 {
     if(SDL_InitSubSystem(SDL_INIT_AUDIO) != 0) {
         a_out__fatal("SDL_InitSubSystem: %s", SDL_GetError());
     }
 
-    #if A_PLATFORM_GP2X
+    #if A_PLATFORM_SYSTEM_GP2X
         int frequency = 44100;
     #else
         int frequency = MIX_DEFAULT_FREQUENCY;
@@ -51,18 +51,18 @@ void a_sdl_sound__init(void)
     }
 }
 
-void a_sdl_sound__uninit(void)
+void a_platform_sdl_sound__uninit(void)
 {
     Mix_CloseAudio();
     SDL_QuitSubSystem(SDL_INIT_AUDIO);
 }
 
-int a_sdl_sound__getMaxVolome(void)
+int a_platform__getMaxVolome(void)
 {
     return MIX_MAX_VOLUME;
 }
 
-void* a_sdl_sound__musicLoad(const char* Path)
+APlatformMusic* a_platform__newMusic(const char* Path)
 {
     Mix_Music* m = Mix_LoadMUS(Path);
 
@@ -73,33 +73,33 @@ void* a_sdl_sound__musicLoad(const char* Path)
     return m;
 }
 
-void a_sdl_sound__musicFree(void* Music)
+void a_platform__freeMusic(APlatformMusic* Music)
 {
     Mix_FreeMusic(Music);
 }
 
-void a_sdl_sound__musicSetVolume(int Volume)
+void a_platform__setMusicVolume(int Volume)
 {
-    #if A_PLATFORM_EMSCRIPTEN
+    #if A_PLATFORM_SYSTEM_EMSCRIPTEN
         A_UNUSED(Volume);
     #else
         Mix_VolumeMusic(Volume);
     #endif
 }
 
-void a_sdl_sound__musicPlay(void* Music)
+void a_platform__playMusic(APlatformMusic* Music)
 {
     if(Mix_PlayMusic(Music, -1) == -1) {
         a_out__error("Mix_PlayMusic failed: %s", Mix_GetError());
     }
 }
 
-void a_sdl_sound__musicStop(void)
+void a_platform__stopMusic(void)
 {
     Mix_HaltMusic();
 }
 
-void a_sdl_sound__musicToggle(void)
+void a_platform__toggleMusic(void)
 {
     if(Mix_PausedMusic()) {
         Mix_ResumeMusic();
@@ -108,9 +108,9 @@ void a_sdl_sound__musicToggle(void)
     }
 }
 
-ASdlSfx* a_sdl_sound__sfxLoadFromFile(const char* Path)
+APlatformSfx* a_platform__newSfxFromFile(const char* Path)
 {
-    ASdlSfx* sfx = a_mem_zalloc(sizeof(ASdlSfx));
+    APlatformSfx* sfx = a_mem_zalloc(sizeof(APlatformSfx));
 
     sfx->chunk = Mix_LoadWAV(Path);
 
@@ -123,9 +123,9 @@ ASdlSfx* a_sdl_sound__sfxLoadFromFile(const char* Path)
     return sfx;
 }
 
-ASdlSfx* a_sdl_sound__sfxLoadFromData(const uint8_t* Data, int Size)
+APlatformSfx* a_platform__newSfxFromData(const uint8_t* Data, int Size)
 {
-    ASdlSfx* sfx = a_mem_zalloc(sizeof(ASdlSfx));
+    APlatformSfx* sfx = a_mem_zalloc(sizeof(APlatformSfx));
     SDL_RWops* rw = SDL_RWFromMem((void*)Data, Size);
 
     if(rw) {
@@ -145,7 +145,7 @@ ASdlSfx* a_sdl_sound__sfxLoadFromData(const uint8_t* Data, int Size)
     return sfx;
 }
 
-void a_sdl_sound__sfxFree(ASdlSfx* Sfx)
+void a_platform__freeSfx(APlatformSfx* Sfx)
 {
     if(Sfx->chunk) {
         Mix_FreeChunk(Sfx->chunk);
@@ -154,9 +154,9 @@ void a_sdl_sound__sfxFree(ASdlSfx* Sfx)
     free(Sfx);
 }
 
-void a_sdl_sound__sfxSetVolume(ASdlSfx* Sfx, int Volume)
+void a_platform__setSfxVolume(APlatformSfx* Sfx, int Volume)
 {
-    #if A_PLATFORM_EMSCRIPTEN
+    #if A_PLATFORM_SYSTEM_EMSCRIPTEN
         A_UNUSED(Sfx);
         A_UNUSED(Volume);
     #else
@@ -164,19 +164,20 @@ void a_sdl_sound__sfxSetVolume(ASdlSfx* Sfx, int Volume)
     #endif
 }
 
-void a_sdl_sound__sfxPlay(ASdlSfx* Sfx)
+void a_platform__playSfx(APlatformSfx* Sfx)
 {
     if(Mix_PlayChannel(Sfx->channel, Sfx->chunk, 0) == -1) {
         a_out__error("Mix_PlayChannel failed: %s", Mix_GetError());
     }
 }
 
-void a_sdl_sound__sfxStop(ASdlSfx* Sfx)
+void a_platform__stopSfx(APlatformSfx* Sfx)
 {
     Mix_HaltChannel(Sfx->channel);
 }
 
-bool a_sdl_sound__sfxIsPlaying(ASdlSfx* Sfx)
+bool a_platform__isSfxPlaying(APlatformSfx* Sfx)
 {
     return Mix_Playing(Sfx->channel);
 }
+#endif // A_PLATFORM_LIB_SDL

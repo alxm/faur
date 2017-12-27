@@ -19,7 +19,7 @@
 
 #pragma once
 
-#if A_PLATFORM_DESKTOP || A_PLATFORM_EMSCRIPTEN || A_PLATFORM_PANDORA
+#if A_PLATFORM_SYSTEM_DESKTOP || A_PLATFORM_SYSTEM_EMSCRIPTEN || A_PLATFORM_SYSTEM_PANDORA
     #define A_DEVICE_HAS_KEYBOARD 1
 #else
     #define A_DEVICE_HAS_KEYBOARD 0
@@ -50,7 +50,7 @@ typedef void AFree(void* Pointer);
 #include <time.h>
 #include <unistd.h>
 
-#if A_PLATFORM_GP2X || A_PLATFORM_WIZ || A_PLATFORM_CAANOO
+#if A_PLATFORM_SYSTEM_GP2X || A_PLATFORM_SYSTEM_WIZ || A_PLATFORM_SYSTEM_CAANOO
     #include <sys/ioctl.h>
     #include <sys/mman.h>
 #endif

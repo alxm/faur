@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2017 Alex Margarit
+    Copyright 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -19,12 +19,11 @@
 
 #pragma once
 
-#include "a2x_pack_sdl_input.p.h"
+#include "a2x_pack_platform_wiz.p.h"
 
-#include "a2x_pack_input.v.h"
+#include "a2x_pack_file.v.h"
 
-extern void a_sdl_input__init(void);
-extern void a_sdl_input__uninit(void);
+extern void a_platform_wiz__init(void);
+extern void a_platform_wiz__uninit(void);
 
-extern void a_sdl_input__bind(void);
-extern void a_sdl_input__get(void);
+extern void a_platform_wiz__setScreenPortraitMode(void);

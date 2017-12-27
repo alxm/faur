@@ -17,7 +17,7 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#if A_PLATFORM_EMSCRIPTEN
+#if A_PLATFORM_SYSTEM_EMSCRIPTEN
     #include <emscripten.h>
 #endif
 
@@ -311,7 +311,7 @@ static bool iteration(void)
     return true;
 }
 
-#if A_PLATFORM_EMSCRIPTEN
+#if A_PLATFORM_SYSTEM_EMSCRIPTEN
 static void loop(void)
 {
     if(!iteration()) {
@@ -325,7 +325,7 @@ void a_state__run(void)
 {
     a_out__message("Running states");
 
-    #if A_PLATFORM_EMSCRIPTEN
+    #if A_PLATFORM_SYSTEM_EMSCRIPTEN
         emscripten_set_main_loop(loop,
                                  a_settings_getBool("video.vsync")
                                      ? 0

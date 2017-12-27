@@ -21,22 +21,14 @@
 
 uint32_t a_time_getMs(void)
 {
-    #if A_PLATFORM_WIZ || A_PLATFORM_CAANOO
-        return a_hw__getMs();
-    #else
-        return a_sdl_time__getTicks();
-    #endif
+    return a_platform__getMs();
 }
 
 void a_time_waitMs(uint32_t Ms)
 {
-    #if A_PLATFORM_WIZ || A_PLATFORM_CAANOO
-        const uint32_t start = a_hw__getMs();
+    const uint32_t start = a_platform__getMs();
 
-        while(a_hw__getMs() - start < Ms) {
-            continue;
-        }
-    #else
-        a_sdl_time__delay(Ms);
-    #endif
+    while(a_platform__getMs() - start < Ms) {
+        continue;
+    }
 }
