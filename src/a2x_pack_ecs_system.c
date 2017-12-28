@@ -71,7 +71,7 @@ void a_system_declare(const char* Name, const char* Components, ASystemHandler* 
     a_list_freeEx(tok, free);
 }
 
-void a_ecs_system__run(const ASystem* System)
+void a_ecs_system__run(ASystem* System)
 {
     if(System->muted) {
         return;
@@ -85,6 +85,16 @@ void a_ecs_system__run(const ASystem* System)
         A_LIST_FILTER(System->entities, AEntity*, entity, !entity->muted) {
             if(a_entity_isActive(entity)) {
                 System->handler(entity);
+            } else {
+                A_LIST_ITERATE(entity->systemNodes, AListNode*, node) {
+                    if(a_list__nodeGetList(node) == System->entities) {
+                        A_LIST_REMOVE_CURRENT();
+                        break;
+                    }
+                }
+
+                A_LIST_REMOVE_CURRENT();
+                a_list_addLast(entity->sleepingInSystems, System);
             }
         }
     } else {

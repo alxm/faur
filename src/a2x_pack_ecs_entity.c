@@ -39,12 +39,14 @@ AEntity* a_entity_new(const char* Id, void* Context)
     e->parent = NULL;
     e->node = a_list_addLast(a__ecsCollection->newEntities, e);
     e->systemNodes = a_list_new();
+    e->sleepingInSystems = a_list_new();
     e->components = a_strhash_new();
     e->componentBits = a_bitfield_new(a_strhash_getSize(a__ecsComponents));
     e->handlers = a_strhash_new();
     e->lastActive = a_fps_getCounter() - 1;
     e->references = 0;
     e->muted = false;
+    e->cleared = false;
 
     return e;
 }
@@ -52,6 +54,7 @@ AEntity* a_entity_new(const char* Id, void* Context)
 void a_entity__free(AEntity* Entity)
 {
     a_list_freeEx(Entity->systemNodes, (AFree*)a_list_removeNode);
+    a_list_free(Entity->sleepingInSystems);
 
     A_STRHASH_ITERATE(Entity->components, AComponentHeader*, header) {
         if(header->component->free) {
@@ -124,7 +127,7 @@ void a_entity_remove(AEntity* Entity)
     if(!a_entity_isRemoved(Entity)) {
         a_list_removeNode(Entity->node);
         Entity->node = a_list_addLast(a__ecsCollection->removedEntities,
-                                                Entity);
+                                      Entity);
     }
 }
 
@@ -137,6 +140,15 @@ bool a_entity_isRemoved(const AEntity* Entity)
 void a_entity_markActive(AEntity* Entity)
 {
     Entity->lastActive = a_fps_getCounter();
+
+    if(!a_list_isEmpty(Entity->sleepingInSystems)) {
+        A_LIST_ITERATE(Entity->sleepingInSystems, ASystem*, system) {
+            a_list_addLast(Entity->systemNodes,
+                           a_list_addLast(system->entities, Entity));
+        }
+
+        a_list_clear(Entity->sleepingInSystems);
+    }
 }
 
 bool a_entity_isActive(const AEntity* Entity)

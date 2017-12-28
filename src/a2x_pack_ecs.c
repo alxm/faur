@@ -125,9 +125,11 @@ void a_ecs__tick(void)
         if(entity->references == 0) {
             a_entity__free(entity);
             A_LIST_REMOVE_CURRENT();
-        } else if(!a_list_isEmpty(entity->systemNodes)) {
+        } else if(!entity->cleared) {
             // Remove entity from any systems it's in
             a_list_clearEx(entity->systemNodes, (AFree*)a_list_removeNode);
+            a_list_clear(entity->sleepingInSystems);
+            entity->cleared = true;
         }
     }
 }

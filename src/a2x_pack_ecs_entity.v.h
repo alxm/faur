@@ -31,12 +31,14 @@ struct AEntity {
     AEntity* parent; // manually associated parent entity
     AListNode* node; // list node in one of new, running, or removed
     AList* systemNodes; // list of nodes in ASystem.entities lists
+    AList* sleepingInSystems; // list of ASystem that entity is asleep in
     AStrHash* components; // table of AComponentHeader
     ABitfield* componentBits;
     AStrHash* handlers; // table of AMessageHandlerContainer
     unsigned lastActive; // frame when a_entity_markActive was last called
     unsigned references; // if >0, then the entity lingers in the removed list
     bool muted; // systems don't run on this entity if this is set
+    bool cleared; // set after entity was removed from all systems it was in
 };
 
 extern void a_entity__free(AEntity* Entity);

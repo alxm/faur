@@ -37,5 +37,5 @@ typedef struct {
 extern void a_ecs_system__init(void);
 extern void a_ecs_system__uninit(void);
 
-extern void a_ecs_system__run(const ASystem* System);
+extern void a_ecs_system__run(ASystem* System);
 extern AList* a_ecs_system__parseIds(const char* Systems);
