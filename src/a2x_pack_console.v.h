@@ -41,4 +41,5 @@ typedef enum {
 } AConsoleOutType;
 
 extern void a_console__write(AConsoleOutType Type, const char* Text);
+extern void a_console__overwrite(AConsoleOutType Type, const char* Text);
 extern void a_console__setShow(bool DoShow);

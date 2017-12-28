@@ -48,6 +48,14 @@ static void line_free(ALine* Line)
     free(Line);
 }
 
+static void line_set(ALine* Line, AConsoleOutType Type, const char* Text)
+{
+    free(Line->text);
+
+    Line->type = Type;
+    Line->text = a_str_dup(Text);
+}
+
 static void inputCallback(void)
 {
     if(a_button_getPressedOnce(g_toggle)) {
@@ -187,6 +195,19 @@ void a_console__write(AConsoleOutType Type, const char* Text)
 
     if(a_list_getSize(g_lines) > g_linesPerScreen) {
         line_free(a_list_pop(g_lines));
+    }
+}
+
+void a_console__overwrite(AConsoleOutType Type, const char* Text)
+{
+    if(!g_enabled) {
+        return;
+    }
+
+    if(a_list_isEmpty(g_lines)) {
+        a_list_addLast(g_lines, line_new(Type, Text));
+    } else {
+        line_set(a_list_getLast(g_lines), Type, Text);
     }
 }
 
