@@ -91,7 +91,7 @@ static void pending_handle(void)
     if(current && current->stage == A_STATE__STAGE_FREE) {
         a_out__stateVerbose("Destroying '%s' instance", current->name);
 
-        a_system__popCollection();
+        a_ecs__popCollection();
         a_list_pop(g_stack);
         current = a_list_peek(g_stack);
         a_fps__reset(0);
@@ -132,7 +132,7 @@ static void pending_handle(void)
             a_out__state("New '%s' instance", pending->name);
 
             state->stage = A_STATE__STAGE_INIT;
-            a_system__pushCollection(state->tickSystems, state->drawSystems);
+            a_ecs__pushCollection(state->tickSystems, state->drawSystems);
             a_list_push(g_stack, state);
         } break;
 
@@ -187,8 +187,8 @@ void a_state__new(const char* Name, AStateFunction Function, const char* TickSys
     state->name = a_str_dup(Name);
     state->function = Function;
     state->stage = A_STATE__STAGE_INIT;
-    state->tickSystems = a_system__parse(TickSystems);
-    state->drawSystems = a_system__parse(DrawSystems);
+    state->tickSystems = a_ecs_system__parseIds(TickSystems);
+    state->drawSystems = a_ecs_system__parseIds(DrawSystems);
 
     a_strhash_add(g_states, Name, state);
     a_out__stateVerbose("Declared '%s'", Name);
@@ -295,11 +295,11 @@ static bool iteration(void)
         while(a_fps__tick() && a_list_isEmpty(g_pending)) {
             a_input__get();
             s->function(A_STATE__STAGE_LOOP | A_STATE__STAGE_TICK);
-            a_system__tick();
+            a_ecs__tick();
         }
 
         s->function(A_STATE__STAGE_LOOP | A_STATE__STAGE_DRAW);
-        a_system__draw();
+        a_ecs__draw();
         a_screen__show();
 
         a_fps__frame();

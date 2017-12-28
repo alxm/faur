@@ -22,15 +22,21 @@
 #include "a2x_pack_ecs_entity.p.h"
 
 #include "a2x_pack_bitfield.v.h"
+#include "a2x_pack_ecs.v.h"
 #include "a2x_pack_strhash.v.h"
 
-extern void a_entity__init(void);
-extern void a_entity__uninit(void);
+struct AEntity {
+    char* id; // specified name for debugging
+    void* context; // global context
+    AEntity* parent; // manually associated parent entity
+    AListNode* node; // list node in one of new, running, or removed
+    AList* systemNodes; // list of nodes in ASystem.entities lists
+    AStrHash* components; // table of AComponentHeader
+    ABitfield* componentBits;
+    AStrHash* handlers; // table of AMessageHandlerContainer
+    unsigned lastActive; // frame when a_entity_markActive was last called
+    unsigned references; // if >0, then the entity lingers in the removed list
+    bool muted; // systems don't run on this entity if this is set
+};
 
-extern void a_system__tick(void);
-extern void a_system__draw(void);
-
-extern AList* a_system__parse(const char* Systems);
-
-extern void a_system__pushCollection(AList* TickSystems, AList* DrawSystems);
-extern void a_system__popCollection(void);
+extern void a_entity__free(AEntity* Entity);

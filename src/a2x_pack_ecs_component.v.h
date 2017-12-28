@@ -1,5 +1,5 @@
 /*
-    Copyright 2010 Alex Margarit
+    Copyright 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -19,14 +19,23 @@
 
 #pragma once
 
-#include "a2x_pack_state.p.h"
+#include "a2x_pack_ecs_component.p.h"
 
-#include "a2x_pack_ecs.v.h"
-#include "a2x_pack_fps.v.h"
-#include "a2x_pack_list.v.h"
+#include "a2x_pack_bitfield.v.h"
 #include "a2x_pack_strhash.v.h"
 
-extern void a_state__init(void);
-extern void a_state__uninit(void);
+typedef struct {
+    size_t size; // total size of AComponentHeader + user data that follows
+    AFree* free; // does not free the actual pointer
+    unsigned bit; // component's unique bit ID
+} AComponent;
 
-extern void a_state__run(void);
+typedef struct {
+    const AComponent* component;
+    AEntity* entity; // entity this component belongs to
+} AComponentHeader;
+
+extern AStrHash* a__ecsComponents;
+
+extern void a_ecs_component__init(void);
+extern void a_ecs_component__uninit(void);

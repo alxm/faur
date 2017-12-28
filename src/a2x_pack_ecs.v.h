@@ -1,0 +1,49 @@
+/*
+    Copyright 2016, 2017 Alex Margarit
+
+    This file is part of a2x-framework.
+
+    a2x-framework is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    a2x-framework is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+#pragma once
+
+#include "a2x_pack_ecs.p.h"
+
+#include "a2x_pack_ecs_component.v.h"
+#include "a2x_pack_ecs_message.v.h"
+#include "a2x_pack_ecs_system.v.h"
+#include "a2x_pack_ecs_entity.v.h"
+
+typedef struct {
+    AList* newEntities; // new entities are added to this list
+    AList* runningEntities; // entities in this list are picked up by systems
+    AList* removedEntities; // removed entities with outstanding references
+    AList* tickSystems; // tick systems in the specified order
+    AList* drawSystems; // draw systems in the specified order
+    AList* allSystems; // tick & draw systems
+    AList* messageQueue; // queued messages
+    bool deleting; // set when this collection is popped off the stack
+} AEcsCollection;
+
+extern AEcsCollection* a__ecsCollection;
+
+extern void a_ecs__init(void);
+extern void a_ecs__uninit(void);
+
+extern void a_ecs__tick(void);
+extern void a_ecs__draw(void);
+
+extern void a_ecs__pushCollection(AList* TickSystems, AList* DrawSystems);
+extern void a_ecs__popCollection(void);

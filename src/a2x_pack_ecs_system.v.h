@@ -1,5 +1,5 @@
 /*
-    Copyright 2010 Alex Margarit
+    Copyright 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -19,14 +19,23 @@
 
 #pragma once
 
-#include "a2x_pack_state.p.h"
+#include "a2x_pack_ecs_system.p.h"
 
-#include "a2x_pack_ecs.v.h"
-#include "a2x_pack_fps.v.h"
-#include "a2x_pack_list.v.h"
+#include "a2x_pack_bitfield.v.h"
 #include "a2x_pack_strhash.v.h"
 
-extern void a_state__init(void);
-extern void a_state__uninit(void);
+typedef struct {
+    ASystemHandler* handler;
+    ASystemSort* compare;
+    ABitfield* componentBits; // IDs of components that this system works on
+    AList* entities; // entities currently picked up by this system
+    bool onlyActiveEntities; // skip entities that are not active
+    bool muted; // a_ecs_system__run skips muted systems
+    bool runsInCurrentState; // whether this system runs in the current state
+} ASystem;
 
-extern void a_state__run(void);
+extern void a_ecs_system__init(void);
+extern void a_ecs_system__uninit(void);
+
+extern void a_ecs_system__run(const ASystem* System);
+extern AList* a_ecs_system__parseIds(const char* Systems);
