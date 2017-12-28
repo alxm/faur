@@ -114,6 +114,11 @@ void a_out__error(const char* Format, ...)
 void a_out__fatal(const char* Format, ...)
 {
     A_OUT__PRINT("a2x", "Ftl", A_COLOR_MAGENTA, stderr);
+    A_OUT__CONSOLE(A_CONSOLE_ERROR);
+
+    a_console__setShow(true);
+    a_screen__show();
+    a_time_waitMs(10000);
 
     #if A_PLATFORM_SYSTEM_EMSCRIPTEN
         emscripten_force_exit(1);

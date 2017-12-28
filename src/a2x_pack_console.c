@@ -189,3 +189,8 @@ void a_console__write(AConsoleOutType Type, const char* Text)
         line_free(a_list_pop(g_lines));
     }
 }
+
+void a_console__setShow(bool DoShow)
+{
+    g_show = DoShow;
+}
