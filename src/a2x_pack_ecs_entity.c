@@ -17,7 +17,7 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a2x_pack_entity.v.h"
+#include "a2x_pack_ecs_entity.v.h"
 
 typedef struct {
     size_t size; // total size of AComponentHeader + user data that follows

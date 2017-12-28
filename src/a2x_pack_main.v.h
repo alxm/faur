@@ -25,7 +25,7 @@
 #include "a2x_pack_console.v.h"
 #include "a2x_pack_draw.v.h"
 #include "a2x_pack_embed.v.h"
-#include "a2x_pack_entity.v.h"
+#include "a2x_pack_ecs_entity.v.h"
 #include "a2x_pack_fade.v.h"
 #include "a2x_pack_fix.v.h"
 #include "a2x_pack_font.v.h"

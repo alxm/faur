@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include "a2x_pack_entity.p.h"
+#include "a2x_pack_ecs_entity.p.h"
 
 #include "a2x_pack_bitfield.v.h"
 #include "a2x_pack_strhash.v.h"
