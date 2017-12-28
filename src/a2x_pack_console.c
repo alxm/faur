@@ -48,6 +48,14 @@ static void line_free(ALine* Line)
     free(Line);
 }
 
+static void line_set(ALine* Line, AConsoleOutType Type, const char* Text)
+{
+    free(Line->text);
+
+    Line->type = Type;
+    Line->text = a_str_dup(Text);
+}
+
 static void inputCallback(void)
 {
     if(a_button_getPressedOnce(g_toggle)) {
@@ -81,14 +89,19 @@ static void screenCallback(void)
         a_font__setFont(A_FONT_FACE_YELLOW); a_font_print("x");
 
         a_font__setFont(A_FONT_FACE_WHITE);
-        a_font_printf(" %s, %s",
+        a_font_printf(" %s", A__MAKE_PLATFORM_NAME);
+        a_font__setFont(A_FONT_FACE_LIGHT_GRAY);
+        a_font_printf(" %s (%s)",
                       A__MAKE_CURRENT_GIT_BRANCH,
                       A__MAKE_COMPILE_TIME);
         a_font_newLine();
 
-        a_font_printf("%s %s by %s, %s",
+        a_font__setFont(A_FONT_FACE_WHITE);
+        a_font_printf("%s %s",
                       a_settings_getString("app.title"),
-                      a_settings_getString("app.version"),
+                      a_settings_getString("app.version"));
+        a_font__setFont(A_FONT_FACE_LIGHT_GRAY);
+        a_font_printf(" by %s (%s)",
                       a_settings_getString("app.author"),
                       a_settings_getString("app.buildtime"));
         a_font_newLine();
@@ -151,8 +164,8 @@ void a_console__init2(void)
     a_spriteframes_free(frames, false);
     a_sprite_free(graphics);
 
-    g_linesPerScreen = (unsigned)(a_settings_getInt("video.height")
-                                  / a_font_getLineHeight() - 2);
+    g_linesPerScreen = (unsigned)
+                        (a_screen_getHeight() / a_font_getLineHeight() - 2);
 
     // In case messages were logged between init and init2
     while(a_list_getSize(g_lines) > g_linesPerScreen) {
@@ -183,4 +196,22 @@ void a_console__write(AConsoleOutType Type, const char* Text)
     if(a_list_getSize(g_lines) > g_linesPerScreen) {
         line_free(a_list_pop(g_lines));
     }
+}
+
+void a_console__overwrite(AConsoleOutType Type, const char* Text)
+{
+    if(!g_enabled) {
+        return;
+    }
+
+    if(a_list_isEmpty(g_lines)) {
+        a_list_addLast(g_lines, line_new(Type, Text));
+    } else {
+        line_set(a_list_getLast(g_lines), Type, Text);
+    }
+}
+
+void a_console__setShow(bool DoShow)
+{
+    g_show = DoShow;
 }

@@ -61,6 +61,20 @@ static void outConsole(AConsoleOutType Type, const char* Format, va_list Args)
     }
 }
 
+static void outConsoleOverwrite(AConsoleOutType Type, const char* Format, ...)
+{
+    char buffer[256];
+
+    va_list args;
+    va_start(args, Format);
+
+    if(vsnprintf(buffer, sizeof(buffer), Format, args) > 0) {
+        a_console__overwrite(Type, buffer);
+    }
+
+    va_end(args);
+}
+
 #define A_OUT__ARGS(FunctionCall) \
 {                                 \
     va_list args;                 \
@@ -114,6 +128,16 @@ void a_out__error(const char* Format, ...)
 void a_out__fatal(const char* Format, ...)
 {
     A_OUT__PRINT("a2x", "Ftl", A_COLOR_MAGENTA, stderr);
+    A_OUT__CONSOLE(A_CONSOLE_ERROR);
+
+    a_console__setShow(true);
+    a_out__message("Exiting in 10 seconds");
+
+    for(int s = 10; s > 0; s--) {
+        outConsoleOverwrite(A_CONSOLE_MESSAGE, "Exiting in %d seconds", s);
+        a_screen__show();
+        a_time_waitMs(1000);
+    }
 
     #if A_PLATFORM_SYSTEM_EMSCRIPTEN
         emscripten_force_exit(1);
