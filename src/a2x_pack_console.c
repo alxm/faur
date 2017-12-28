@@ -81,14 +81,19 @@ static void screenCallback(void)
         a_font__setFont(A_FONT_FACE_YELLOW); a_font_print("x");
 
         a_font__setFont(A_FONT_FACE_WHITE);
-        a_font_printf(" %s, %s",
+        a_font_printf(" %s", A__MAKE_PLATFORM_NAME);
+        a_font__setFont(A_FONT_FACE_LIGHT_GRAY);
+        a_font_printf(" %s (%s)",
                       A__MAKE_CURRENT_GIT_BRANCH,
                       A__MAKE_COMPILE_TIME);
         a_font_newLine();
 
-        a_font_printf("%s %s by %s, %s",
+        a_font__setFont(A_FONT_FACE_WHITE);
+        a_font_printf("%s %s",
                       a_settings_getString("app.title"),
-                      a_settings_getString("app.version"),
+                      a_settings_getString("app.version"));
+        a_font__setFont(A_FONT_FACE_LIGHT_GRAY);
+        a_font_printf(" by %s (%s)",
                       a_settings_getString("app.author"),
                       a_settings_getString("app.buildtime"));
         a_font_newLine();
