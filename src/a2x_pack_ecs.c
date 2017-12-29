@@ -19,13 +19,13 @@
 
 #include "a2x_pack_ecs.v.h"
 
-AEcsCollection* a__ecsCollection;
-static AList* g_collectionStack; // list of AEcsCollection (one for each state)
+AEcs* a__ecs;
+static AList* g_stack; // list of AEcs (one for each state)
 
 void a_ecs__init(void)
 {
-    a__ecsCollection = NULL;
-    g_collectionStack = a_list_new();
+    a__ecs = NULL;
+    g_stack = a_list_new();
 
     a_ecs_component__init();
     a_ecs_system__init();
@@ -33,11 +33,11 @@ void a_ecs__init(void)
 
 void a_ecs__uninit(void)
 {
-    while(a__ecsCollection != NULL) {
+    while(a__ecs != NULL) {
         a_ecs__popCollection();
     }
 
-    a_list_free(g_collectionStack);
+    a_list_free(g_stack);
 
     a_ecs_system__uninit();
     a_ecs_component__uninit();
@@ -45,11 +45,12 @@ void a_ecs__uninit(void)
 
 void a_ecs__pushCollection(AList* TickSystems, AList* DrawSystems)
 {
-    AEcsCollection* c = a_mem_malloc(sizeof(AEcsCollection));
+    AEcs* c = a_mem_malloc(sizeof(AEcs));
 
-    c->newEntities = a_list_new();
-    c->runningEntities = a_list_new();
-    c->removedEntities = a_list_new();
+    for(int i = A_ECS__NUM; i--; ) {
+        c->lists[i] = a_list_new();
+    }
+
     c->tickSystems = TickSystems;
     c->drawSystems = DrawSystems;
     c->allSystems = a_list_new();
@@ -59,37 +60,39 @@ void a_ecs__pushCollection(AList* TickSystems, AList* DrawSystems)
     a_list_appendCopy(c->allSystems, TickSystems);
     a_list_appendCopy(c->allSystems, DrawSystems);
 
-    if(a__ecsCollection != NULL) {
-        a_list_push(g_collectionStack, a__ecsCollection);
+    if(a__ecs != NULL) {
+        a_list_push(g_stack, a__ecs);
     }
 
-    a__ecsCollection = c;
+    a__ecs = c;
 
-    A_LIST_ITERATE(a__ecsCollection->allSystems, ASystem*, system) {
+    A_LIST_ITERATE(a__ecs->allSystems, ASystem*, system) {
         system->runsInCurrentState = true;
     }
 }
 
 void a_ecs__popCollection(void)
 {
-    a__ecsCollection->deleting = true;
+    a__ecs->deleting = true;
 
-    A_LIST_ITERATE(a__ecsCollection->allSystems, ASystem*, system) {
+    A_LIST_ITERATE(a__ecs->allSystems, ASystem*, system) {
         system->muted = false;
         system->runsInCurrentState = false;
     }
 
-    a_list_freeEx(a__ecsCollection->messageQueue, (AFree*)a_ecs_message__free);
-    a_list_freeEx(a__ecsCollection->newEntities, (AFree*)a_entity__free);
-    a_list_freeEx(a__ecsCollection->runningEntities, (AFree*)a_entity__free);
-    a_list_freeEx(a__ecsCollection->removedEntities, (AFree*)a_entity__free);
-    a_list_free(a__ecsCollection->allSystems);
+    a_list_freeEx(a__ecs->messageQueue, (AFree*)a_ecs_message__free);
 
-    free(a__ecsCollection);
-    a__ecsCollection = a_list_pop(g_collectionStack);
+    for(int i = A_ECS__NUM; i--; ) {
+        a_list_freeEx(a__ecs->lists[i], (AFree*)a_entity__free);
+    }
 
-    if(a__ecsCollection != NULL) {
-        A_LIST_ITERATE(a__ecsCollection->allSystems, ASystem*, system) {
+    a_list_free(a__ecs->allSystems);
+
+    free(a__ecs);
+    a__ecs = a_list_pop(g_stack);
+
+    if(a__ecs != NULL) {
+        A_LIST_ITERATE(a__ecs->allSystems, ASystem*, system) {
             system->runsInCurrentState = true;
         }
     }
@@ -99,11 +102,11 @@ void a_ecs__tick(void)
 {
     a_ecs_flushNewEntities();
 
-    A_LIST_ITERATE(a__ecsCollection->tickSystems, ASystem*, system) {
+    A_LIST_ITERATE(a__ecs->tickSystems, ASystem*, system) {
         a_ecs_system__run(system);
     }
 
-    A_LIST_ITERATE(a__ecsCollection->messageQueue, AMessage*, m) {
+    A_LIST_ITERATE(a__ecs->messageQueue, AMessage*, m) {
         AMessageHandlerContainer* h = a_strhash_get(m->to->handlers,
                                                     m->message);
 
@@ -119,9 +122,9 @@ void a_ecs__tick(void)
         a_ecs_message__free(m);
     }
 
-    a_list_clear(a__ecsCollection->messageQueue);
+    a_list_clear(a__ecs->messageQueue);
 
-    A_LIST_ITERATE(a__ecsCollection->removedEntities, AEntity*, entity) {
+    A_LIST_ITERATE(a__ecs->lists[A_ECS__REMOVED], AEntity*, entity) {
         if(entity->references == 0) {
             a_entity__free(entity);
             A_LIST_REMOVE_CURRENT();
@@ -136,22 +139,22 @@ void a_ecs__tick(void)
 
 void a_ecs__draw(void)
 {
-    A_LIST_ITERATE(a__ecsCollection->drawSystems, ASystem*, system) {
+    A_LIST_ITERATE(a__ecs->drawSystems, ASystem*, system) {
         a_ecs_system__run(system);
     }
 }
 
 void a_ecs_flushNewEntities(void)
 {
-    A_LIST_ITERATE(a__ecsCollection->newEntities, AEntity*, e) {
+    A_LIST_ITERATE(a__ecs->lists[A_ECS__NEW], AEntity*, e) {
         // Check if the entity matches any systems
-        A_LIST_ITERATE(a__ecsCollection->allSystems, ASystem*, s) {
+        A_LIST_ITERATE(a__ecs->allSystems, ASystem*, s) {
             if(a_bitfield_testMask(e->componentBits, s->componentBits)) {
                 a_list_addLast(e->systemNodes, a_list_addLast(s->entities, e));
             }
         }
 
-        e->node = a_list_addLast(a__ecsCollection->runningEntities, e);
+        e->node = a_list_addLast(a__ecs->lists[A_ECS__RUNNING], e);
         A_LIST_REMOVE_CURRENT();
     }
 }

@@ -21,8 +21,7 @@
 
 static inline bool entityIsNew(const AEntity* Entity)
 {
-    return a_list__nodeGetList(Entity->node)
-        == a__ecsCollection->newEntities;
+    return a_list__nodeGetList(Entity->node) == a__ecs->lists[A_ECS__NEW];
 }
 
 static inline void* getComponent(const AComponentHeader* Header)
@@ -37,7 +36,7 @@ AEntity* a_entity_new(const char* Id, void* Context)
     e->id = Id ? a_str_dup(Id) : NULL;
     e->context = Context;
     e->parent = NULL;
-    e->node = a_list_addLast(a__ecsCollection->newEntities, e);
+    e->node = a_list_addLast(a__ecs->lists[A_ECS__NEW], e);
     e->systemNodes = a_list_new();
     e->sleepingInSystems = a_list_new();
     e->components = a_strhash_new();
@@ -110,7 +109,7 @@ void a_entity_reference(AEntity* Entity)
 
 void a_entity_release(AEntity* Entity)
 {
-    if(a__ecsCollection->deleting) {
+    if(a__ecs->deleting) {
         // Entity could have already been freed. This is the only ECS function
         // that may be called from AFree callbacks.
         return;
@@ -126,15 +125,13 @@ void a_entity_remove(AEntity* Entity)
 {
     if(!a_entity_isRemoved(Entity)) {
         a_list_removeNode(Entity->node);
-        Entity->node = a_list_addLast(a__ecsCollection->removedEntities,
-                                      Entity);
+        Entity->node = a_list_addLast(a__ecs->lists[A_ECS__REMOVED], Entity);
     }
 }
 
 bool a_entity_isRemoved(const AEntity* Entity)
 {
-    return a_list__nodeGetList(Entity->node)
-        == a__ecsCollection->removedEntities;
+    return a_list__nodeGetList(Entity->node) == a__ecs->lists[A_ECS__REMOVED];
 }
 
 void a_entity_markActive(AEntity* Entity)

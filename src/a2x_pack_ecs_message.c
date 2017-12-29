@@ -72,6 +72,6 @@ void a_entity_sendMessage(AEntity* To, AEntity* From, const char* Message)
         }
     } else {
         AMessage* message = a_ecs_message__new(To, From, Message);
-        a_list_addLast(a__ecsCollection->messageQueue, message);
+        a_list_addLast(a__ecs->messageQueue, message);
     }
 }

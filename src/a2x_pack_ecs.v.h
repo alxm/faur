@@ -26,18 +26,24 @@
 #include "a2x_pack_ecs_system.v.h"
 #include "a2x_pack_ecs_entity.v.h"
 
+typedef enum {
+    A_ECS__INVALID = -1,
+    A_ECS__NEW, // new entities are added to this list
+    A_ECS__RUNNING, // entities in this list are picked up by systems
+    A_ECS__REMOVED, // removed entities with outstanding references
+    A_ECS__NUM
+} AEcsListType;
+
 typedef struct {
-    AList* newEntities; // new entities are added to this list
-    AList* runningEntities; // entities in this list are picked up by systems
-    AList* removedEntities; // removed entities with outstanding references
+    AList* lists[A_ECS__NUM]; // each entity is in at most one list
     AList* tickSystems; // tick systems in the specified order
     AList* drawSystems; // draw systems in the specified order
     AList* allSystems; // tick & draw systems
     AList* messageQueue; // queued messages
     bool deleting; // set when this collection is popped off the stack
-} AEcsCollection;
+} AEcs;
 
-extern AEcsCollection* a__ecsCollection;
+extern AEcs* a__ecs;
 
 extern void a_ecs__init(void);
 extern void a_ecs__uninit(void);
