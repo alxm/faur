@@ -53,3 +53,6 @@ extern void a_ecs__draw(void);
 
 extern void a_ecs__pushCollection(AList* TickSystems, AList* DrawSystems);
 extern void a_ecs__popCollection(void);
+
+extern bool a_ecs__isEntityInList(const AEntity* Entity, AEcsListType List);
+extern void a_ecs__addEntityToList(AEntity* Entity, AEcsListType List);

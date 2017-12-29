@@ -19,11 +19,6 @@
 
 #include "a2x_pack_ecs_entity.v.h"
 
-static inline bool entityIsNew(const AEntity* Entity)
-{
-    return a_list__nodeGetList(Entity->node) == a__ecs->lists[A_ECS__NEW];
-}
-
 static inline void* getComponent(const AComponentHeader* Header)
 {
     return (void*)(Header + 1);
@@ -36,7 +31,7 @@ AEntity* a_entity_new(const char* Id, void* Context)
     e->id = Id ? a_str_dup(Id) : NULL;
     e->context = Context;
     e->parent = NULL;
-    e->node = a_list_addLast(a__ecs->lists[A_ECS__NEW], e);
+    e->node = NULL;
     e->systemNodes = a_list_new();
     e->sleepingInSystems = a_list_new();
     e->components = a_strhash_new();
@@ -46,6 +41,8 @@ AEntity* a_entity_new(const char* Id, void* Context)
     e->references = 0;
     e->muted = false;
     e->cleared = false;
+
+    a_ecs__addEntityToList(e, A_ECS__NEW);
 
     return e;
 }
@@ -125,13 +122,13 @@ void a_entity_remove(AEntity* Entity)
 {
     if(!a_entity_isRemoved(Entity)) {
         a_list_removeNode(Entity->node);
-        Entity->node = a_list_addLast(a__ecs->lists[A_ECS__REMOVED], Entity);
+        a_ecs__addEntityToList(Entity, A_ECS__REMOVED);
     }
 }
 
 bool a_entity_isRemoved(const AEntity* Entity)
 {
-    return a_list__nodeGetList(Entity->node) == a__ecs->lists[A_ECS__REMOVED];
+    return a_ecs__isEntityInList(Entity, A_ECS__REMOVED);
 }
 
 void a_entity_markActive(AEntity* Entity)
@@ -155,7 +152,7 @@ bool a_entity_isActive(const AEntity* Entity)
 
 void* a_entity_addComponent(AEntity* Entity, const char* Component)
 {
-    if(!entityIsNew(Entity)) {
+    if(!a_ecs__isEntityInList(Entity, A_ECS__NEW)) {
         a_out__fatal("Too late to add component '%s' to '%s'",
                      Component,
                      a_entity_getId(Entity));

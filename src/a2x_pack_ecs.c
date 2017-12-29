@@ -154,7 +154,17 @@ void a_ecs_flushNewEntities(void)
             }
         }
 
-        e->node = a_list_addLast(a__ecs->lists[A_ECS__RUNNING], e);
         A_LIST_REMOVE_CURRENT();
+        a_ecs__addEntityToList(e, A_ECS__RUNNING);
     }
+}
+
+bool a_ecs__isEntityInList(const AEntity* Entity, AEcsListType List)
+{
+    return a_list__nodeGetList(Entity->node) == a__ecs->lists[List];
+}
+
+void a_ecs__addEntityToList(AEntity* Entity, AEcsListType List)
+{
+    Entity->node = a_list_addLast(a__ecs->lists[List], Entity);
 }
