@@ -1,5 +1,5 @@
 /*
-    Copyright 2016 Alex Margarit
+    Copyright 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -19,18 +19,10 @@
 
 #pragma once
 
-#include "a2x_pack_entity.p.h"
+#include "a2x_system_includes.h"
 
-#include "a2x_pack_bitfield.v.h"
-#include "a2x_pack_strhash.v.h"
+#include "a2x_pack_ecs.p.h"
 
-extern void a_entity__init(void);
-extern void a_entity__uninit(void);
+extern void a_component_declare(const char* Name, size_t Size, AFree* Free);
 
-extern void a_system__tick(void);
-extern void a_system__draw(void);
-
-extern AList* a_system__parse(const char* Systems);
-
-extern void a_system__pushCollection(AList* TickSystems, AList* DrawSystems);
-extern void a_system__popCollection(void);
+extern AEntity* a_component_getEntity(const void* Component);

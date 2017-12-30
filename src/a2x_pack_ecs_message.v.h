@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016 Alex Margarit
+    Copyright 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -19,28 +19,19 @@
 
 #pragma once
 
-#include "a2x_pack_main.p.h"
+#include "a2x_pack_ecs_message.p.h"
 
-#include "a2x_pack_conf.v.h"
-#include "a2x_pack_console.v.h"
-#include "a2x_pack_draw.v.h"
-#include "a2x_pack_embed.v.h"
 #include "a2x_pack_ecs.v.h"
-#include "a2x_pack_fade.v.h"
-#include "a2x_pack_fix.v.h"
-#include "a2x_pack_font.v.h"
-#include "a2x_pack_fps.v.h"
-#include "a2x_pack_input.v.h"
-#include "a2x_pack_math.v.h"
-#include "a2x_pack_mem.v.h"
-#include "a2x_pack_out.v.h"
-#include "a2x_pack_pixel.v.h"
-#include "a2x_pack_platform.v.h"
-#include "a2x_pack_random.v.h"
-#include "a2x_pack_screen.v.h"
-#include "a2x_pack_screenshot.v.h"
-#include "a2x_pack_settings.v.h"
-#include "a2x_pack_sound.v.h"
-#include "a2x_pack_sprite.v.h"
-#include "a2x_pack_state.v.h"
-#include "a2x_pack_time.v.h"
+
+typedef struct {
+    AEntity* to;
+    AEntity* from;
+    char* message;
+} AMessage;
+
+typedef struct {
+    AMessageHandler* handler;
+    bool handleImmediately;
+} AMessageHandlerContainer;
+
+extern void a_ecs_message__free(AMessage* Message);

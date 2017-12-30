@@ -28,7 +28,7 @@ static void a__atexit(void)
 
     a_embed__uninit();
     a_fade__uninit();
-    a_entity__uninit();
+    a_ecs__uninit();
     a_state__uninit();
     a_sound__uninit();
     a_input__uninit();
@@ -83,7 +83,7 @@ int main(int Argc, char* Argv[])
     a_random__init();
     a_fix__init();
     a_state__init();
-    a_entity__init();
+    a_ecs__init();
     a_fade__init();
     a_embed__init();
     a_font__init();

@@ -52,7 +52,12 @@ char* a_str_merge(const char* String1, ...)
 
 char* a_str_dup(const char* String)
 {
+    if(String == NULL) {
+        return NULL;
+    }
+
     char* buffer = a_mem_malloc(strlen(String) + 1);
+
     return strcpy(buffer, String);
 }
 

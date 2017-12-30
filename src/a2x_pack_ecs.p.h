@@ -1,5 +1,5 @@
 /*
-    Copyright 2010 Alex Margarit
+    Copyright 2016, 2017 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -19,14 +19,11 @@
 
 #pragma once
 
-#include "a2x_pack_state.p.h"
+#include "a2x_system_includes.h"
 
-#include "a2x_pack_ecs.v.h"
-#include "a2x_pack_fps.v.h"
-#include "a2x_pack_list.v.h"
-#include "a2x_pack_strhash.v.h"
+typedef struct AEntity AEntity;
+typedef void AMessageHandler(AEntity* To, AEntity* From);
+typedef void ASystemHandler(AEntity* Entity);
+typedef int ASystemSort(AEntity* A, AEntity* B);
 
-extern void a_state__init(void);
-extern void a_state__uninit(void);
-
-extern void a_state__run(void);
+extern void a_ecs_flushNewEntities(void);
