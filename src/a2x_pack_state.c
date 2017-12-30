@@ -69,7 +69,7 @@ static void pending_new(AStateAction Action, const char* Name)
     AStatePendingAction* a = a_mem_malloc(sizeof(AStatePendingAction));
 
     a->action = Action;
-    a->name = Name == NULL ? NULL : a_str_dup(Name);
+    a->name = a_str_dup(Name);
 
     a_list_addLast(g_pending, a);
 }

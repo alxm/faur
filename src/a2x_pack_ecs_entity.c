@@ -28,7 +28,7 @@ AEntity* a_entity_new(const char* Id, void* Context)
 {
     AEntity* e = a_mem_malloc(sizeof(AEntity));
 
-    e->id = Id ? a_str_dup(Id) : NULL;
+    e->id = a_str_dup(Id);
     e->context = Context;
     e->parent = NULL;
     e->node = NULL;
