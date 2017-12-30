@@ -82,7 +82,7 @@ void a_ecs_system__run(ASystem* System)
     }
 
     if(System->onlyActiveEntities) {
-        A_LIST_FILTER(System->entities, AEntity*, entity, !entity->muted) {
+        A_LIST_ITERATE(System->entities, AEntity*, entity) {
             if(a_entity_isActive(entity)) {
                 System->handler(entity);
             } else {
@@ -98,7 +98,7 @@ void a_ecs_system__run(ASystem* System)
             }
         }
     } else {
-        A_LIST_FILTER(System->entities, AEntity*, entity, !entity->muted) {
+        A_LIST_ITERATE(System->entities, AEntity*, entity) {
             System->handler(entity);
         }
     }

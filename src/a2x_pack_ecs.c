@@ -129,12 +129,17 @@ void a_ecs__tick(void)
             a_entity__free(entity);
             A_LIST_REMOVE_CURRENT();
         } else if(!entity->cleared) {
-            // Remove entity from any systems it's in
-            a_list_clearEx(entity->systemNodes, (AFree*)a_list_removeNode);
-            a_list_clear(entity->sleepingInSystems);
+            a_entity__removeFromSystems(entity);
             entity->cleared = true;
         }
     }
+
+    A_LIST_ITERATE(a__ecs->lists[A_ECS__MUTED], AEntity*, entity) {
+        a_entity__removeFromSystems(entity);
+        entity->node = NULL;
+    }
+
+    a_list_clear(a__ecs->lists[A_ECS__MUTED]);
 }
 
 void a_ecs__draw(void)
@@ -161,10 +166,27 @@ void a_ecs_flushNewEntities(void)
 
 bool a_ecs__isEntityInList(const AEntity* Entity, AEcsListType List)
 {
+    if(Entity->node == NULL) {
+        return false;
+    }
+
     return a_list__nodeGetList(Entity->node) == a__ecs->lists[List];
 }
 
 void a_ecs__addEntityToList(AEntity* Entity, AEcsListType List)
 {
+    Entity->node = a_list_addLast(a__ecs->lists[List], Entity);
+}
+
+void a_ecs__moveEntityToList(AEntity* Entity, AEcsListType List)
+{
+    if(Entity->node != NULL) {
+        if(a_list__nodeGetList(Entity->node) == a__ecs->lists[List]) {
+            return;
+        }
+
+        a_list_removeNode(Entity->node);
+    }
+
     Entity->node = a_list_addLast(a__ecs->lists[List], Entity);
 }

@@ -42,3 +42,5 @@ struct AEntity {
 };
 
 extern void a_entity__free(AEntity* Entity);
+
+extern void a_entity__removeFromSystems(AEntity* Entity);

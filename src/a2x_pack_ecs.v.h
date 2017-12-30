@@ -31,6 +31,7 @@ typedef enum {
     A_ECS__NEW, // new entities are added to this list
     A_ECS__RUNNING, // entities in this list are picked up by systems
     A_ECS__REMOVED, // removed entities with outstanding references
+    A_ECS__MUTED, // recently muted entities
     A_ECS__NUM
 } AEcsListType;
 
@@ -56,3 +57,4 @@ extern void a_ecs__popCollection(void);
 
 extern bool a_ecs__isEntityInList(const AEntity* Entity, AEcsListType List);
 extern void a_ecs__addEntityToList(AEntity* Entity, AEcsListType List);
+extern void a_ecs__moveEntityToList(AEntity* Entity, AEcsListType List);
