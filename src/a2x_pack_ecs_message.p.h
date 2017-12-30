@@ -23,5 +23,5 @@
 
 #include "a2x_pack_ecs.p.h"
 
-extern void a_entity_setMessageHandler(AEntity* Entity, const char* Message, AMessageHandler* Handler, bool HandleImmediately);
-extern void a_entity_sendMessage(AEntity* To, AEntity* From, const char* Message);
+extern void a_message_setHandler(AEntity* Entity, const char* Message, AMessageHandler* Handler, bool HandleImmediately);
+extern void a_message_send(AEntity* To, AEntity* From, const char* Message);

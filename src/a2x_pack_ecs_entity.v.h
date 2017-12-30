@@ -41,6 +41,6 @@ struct AEntity {
     bool cleared; // set after entity was removed from all systems it was in
 };
 
-extern void a_entity__free(AEntity* Entity);
+extern void a_ecs_entity__free(AEntity* Entity);
 
-extern void a_entity__removeFromSystems(AEntity* Entity);
+extern void a_ecs_entity__removeFromSystems(AEntity* Entity);

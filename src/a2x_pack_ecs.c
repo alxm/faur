@@ -83,7 +83,7 @@ void a_ecs__popCollection(void)
     a_list_freeEx(a__ecs->messageQueue, (AFree*)a_ecs_message__free);
 
     for(int i = A_ECS__NUM; i--; ) {
-        a_list_freeEx(a__ecs->lists[i], (AFree*)a_entity__free);
+        a_list_freeEx(a__ecs->lists[i], (AFree*)a_ecs_entity__free);
     }
 
     a_list_free(a__ecs->allSystems);
@@ -126,16 +126,16 @@ void a_ecs__tick(void)
 
     A_LIST_ITERATE(a__ecs->lists[A_ECS__REMOVED], AEntity*, entity) {
         if(entity->references == 0) {
-            a_entity__free(entity);
+            a_ecs_entity__free(entity);
             A_LIST_REMOVE_CURRENT();
         } else if(!entity->cleared) {
-            a_entity__removeFromSystems(entity);
+            a_ecs_entity__removeFromSystems(entity);
             entity->cleared = true;
         }
     }
 
     A_LIST_ITERATE(a__ecs->lists[A_ECS__MUTED], AEntity*, entity) {
-        a_entity__removeFromSystems(entity);
+        a_ecs_entity__removeFromSystems(entity);
         entity->node = NULL;
     }
 
