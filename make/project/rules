@@ -90,16 +90,11 @@ CFLAGS = \
     -Wcast-align \
     -Wformat-security \
     -Werror \
+    -pedantic \
+    -pedantic-errors \
     -I$(A2X_PATH)/inc \
     $(A_PLATFORM_CFLAGS) \
     $(A_EXTRA_CFLAGS) \
-
-#
-# Accomodate older toolchains
-#
-ifneq ($(A_PLATFORM_COMPILER_PEDANTIC), false)
-    CFLAGS += -pedantic -pedantic-errors
-endif
 
 #
 # the main target

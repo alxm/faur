@@ -29,17 +29,12 @@ CFLAGS = \
     -Wcast-align \
     -Wformat-security \
     -Werror \
+    -pedantic \
+    -pedantic-errors \
     -DA__MAKE_COMPILE_TIME=\"$(COMPILE_TIME)\" \
     -DA__MAKE_CURRENT_GIT_BRANCH=\"$(CURRENT_BRANCH)\" \
     -DA__MAKE_PLATFORM_NAME=\"$(PLATFORM)\" \
     $(A_PLATFORM_CFLAGS) \
-
-#
-# Accomodate older toolchains
-#
-ifneq ($(A_PLATFORM_COMPILER_PEDANTIC), false)
-    CFLAGS += -pedantic -pedantic-errors
-endif
 
 A2X_PREFIX = a2x_
 
