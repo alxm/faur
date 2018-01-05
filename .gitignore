@@ -2,6 +2,6 @@
 /inc
 /lib
 /bin/utils/__pycache__
-/src/media/*.c
-/src/media/*.h
+/src/media/*/*.c
+/src/media/*/*.h
 /todo

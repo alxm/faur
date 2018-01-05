@@ -1,27 +1,42 @@
-A2X_ROOT = ../..
-BIN_DIR  = $(A2X_ROOT)/bin
-CFG_DIR  = $(A2X_ROOT)/cfg
-INC_DIR  = $(A2X_ROOT)/inc
-LIB_DIR  = $(A2X_ROOT)/lib
-MAKE_DIR = $(A2X_ROOT)/make
-C_DIR    = $(A2X_ROOT)/src
-OBJ_DIR  = obj
-O_DIR    = $(OBJ_DIR)/obj_$(PLATFORM)
+A_PREFIX = a2x_
 
-MEDIA_C_DIR = $(C_DIR)/media
-MEDIA_O_DIR = $(O_DIR)/media
-MEDIA_BIN_FILES = $(wildcard $(MEDIA_C_DIR)/*.png)
-MEDIA_C_FILES = $(MEDIA_BIN_FILES:.png=.c)
-MEDIA_H_FILES = $(MEDIA_C_FILES:.c=.h)
+A_DIR_ROOT = ../..
+A_DIR_BIN = $(A_DIR_ROOT)/bin
+A_DIR_INC = $(A_DIR_ROOT)/inc
+A_DIR_LIB = $(A_DIR_ROOT)/lib
+A_DIR_SRC = $(A_DIR_ROOT)/src
+A_DIR_SRC_MEDIA = $(A_DIR_SRC)/media
+A_DIR_SRC_MEDIA_PLATFORM = $(A_DIR_SRC_MEDIA)/$(A_PLATFORM)
+A_DIR_OBJ = ./obj
+A_DIR_OBJ_PLATFORM = $(A_DIR_OBJ)/$(A_PLATFORM)
+A_DIR_OBJ_PLATFORM_MEDIA = $(A_DIR_OBJ_PLATFORM)/media
 
-PUBLIC_HEADER = $(INC_DIR)/a2x.h
-LIBRARY = $(LIB_DIR)/a2x_$(PLATFORM).a
+A_FILES_MEDIA_PNG = $(wildcard $(A_DIR_SRC_MEDIA)/*.png)
+A_FILES_MEDIA_PNG_C = $(addprefix $(A_DIR_SRC_MEDIA_PLATFORM)/, $(notdir $(A_FILES_MEDIA_PNG:.png=.c)))
+A_FILES_MEDIA_PNG_H = $(A_FILES_MEDIA_PNG_C:.c=.h)
 
-COMPILE_TIME := $(shell date "+%Y-%m-%d\ %H:%M:%S")
-CURRENT_BRANCH := $(shell git symbolic-ref --short HEAD)
-TAGS_FILE := $(shell $(BIN_DIR)/a2x_tags -q)
+A_FILE_PUBLIC_A2X_HEADER = $(A_DIR_INC)/$(A_PLATFORM)/a2x.h
+A_FILES_PUBLIC_A2X_HEADERS = $(wildcard $(A_DIR_SRC)/$(A_PREFIX)*.p.h)
+A_FILE_PUBLIC_A2X_LIB = $(A_DIR_LIB)/$(A_PLATFORM)/a2x.a
+A_FILE_EDITOR_TAGS := $(shell $(A_DIR_BIN)/a2x_tags -q)
 
-CFLAGS = \
+A_FILES_SRC_C_INC = $(notdir $(wildcard $(A_DIR_SRC)/$(A_PREFIX)*.inc.c))
+A_FILES_SRC_C_ALL = $(notdir $(wildcard $(A_DIR_SRC)/$(A_PREFIX)*.c))
+A_FILES_SRC_C = $(filter-out $(A_FILES_SRC_C_INC), $(A_FILES_SRC_C_ALL))
+
+A_FILES_OBJ = $(addprefix $(A_DIR_OBJ_PLATFORM)/, $(A_FILES_SRC_C:.c=.o)) \
+              $(addprefix $(A_DIR_OBJ_PLATFORM_MEDIA)/, $(notdir $(A_FILES_MEDIA_PNG_C:.c=.o)))
+
+A_INFO_COMPILE_TIME := $(shell date "+%Y-%m-%d\ %H:%M:%S")
+A_INFO_CURRENT_BRANCH := $(shell git symbolic-ref --short HEAD)
+
+ALL_TARGETS = $(A_FILE_PUBLIC_A2X_HEADER) $(A_FILE_PUBLIC_A2X_LIB)
+
+ifeq ($(A_PLATFORM), linux)
+    ALL_TARGETS += $(A_FILE_EDITOR_TAGS)
+endif
+
+A_GENERIC_CFLAGS = \
     -std=c99 \
     -Wall \
     -Wextra \
@@ -29,62 +44,45 @@ CFLAGS = \
     -Wcast-align \
     -Wformat-security \
     -Werror \
-    -DA__MAKE_COMPILE_TIME=\"$(COMPILE_TIME)\" \
-    -DA__MAKE_CURRENT_GIT_BRANCH=\"$(CURRENT_BRANCH)\" \
-    -DA__MAKE_PLATFORM_NAME=\"$(PLATFORM)\" \
+    -pedantic \
+    -pedantic-errors \
+    -DA__MAKE_COMPILE_TIME=\"$(A_INFO_COMPILE_TIME)\" \
+    -DA__MAKE_CURRENT_GIT_BRANCH=\"$(A_INFO_CURRENT_BRANCH)\" \
+    -DA__MAKE_PLATFORM_NAME=\"$(A_PLATFORM)\" \
+    -I../../src/media/$(A_PLATFORM) \
     $(A_PLATFORM_CFLAGS) \
-
-#
-# Accomodate older toolchains
-#
-ifneq ($(A_PLATFORM_COMPILER_PEDANTIC), false)
-    CFLAGS += -pedantic -pedantic-errors
-endif
-
-A2X_PREFIX = a2x_
-
-C_INC_FILES = $(notdir $(wildcard $(C_DIR)/$(A2X_PREFIX)*.inc.c))
-C_SRC_FILES = $(notdir $(wildcard $(C_DIR)/$(A2X_PREFIX)*.c))
-C_FILES = $(filter-out $(C_INC_FILES), $(C_SRC_FILES))
-
-O_FILES = $(addprefix $(O_DIR)/, $(C_FILES:.c=.o)) \
-          $(addprefix $(MEDIA_O_DIR)/, $(notdir $(MEDIA_C_FILES:.c=.o)))
-
-PUBLIC_H_FILES = $(wildcard $(C_DIR)/$(A2X_PREFIX)*.p.h)
-
-#
-# Do not delete these intermediate files
-#
-.SECONDARY: $(MEDIA_C_FILES)
-
-ALL_TARGETS = $(PUBLIC_HEADER) $(LIBRARY)
-
-ifeq ($(PLATFORM), linux)
-    ALL_TARGETS += $(TAGS_FILE)
-endif
 
 all : $(ALL_TARGETS)
 
-$(PUBLIC_HEADER) : $(PUBLIC_H_FILES)
+$(A_FILE_PUBLIC_A2X_HEADER) : $(A_FILES_PUBLIC_A2X_HEADERS) $(A_DIR_BIN)/a2x_header
 	@ mkdir -p $(@D)
-	@ $(BIN_DIR)/a2x_header $(C_DIR) .p.h $@
+	@ $(A_DIR_BIN)/a2x_header $(A_DIR_SRC) .p.h $@
 
-$(TAGS_FILE) : $(PUBLIC_HEADER)
-	@ $(BIN_DIR)/a2x_tags $<
+$(A_FILE_EDITOR_TAGS) : $(A_FILE_PUBLIC_A2X_HEADER) $(A_DIR_BIN)/a2x_tags
+	@ $(A_DIR_BIN)/a2x_tags $<
 
-$(LIBRARY) : $(O_FILES)
-	@ echo "Building $(notdir $(LIBRARY))"
+$(A_FILE_PUBLIC_A2X_LIB) : $(A_FILES_OBJ)
+	@ echo "Building $(notdir $(A_FILE_PUBLIC_A2X_LIB))"
 	@ mkdir -p $(@D)
-	@ $(AR) rs $@ $(O_FILES)
+	@ $(AR) rs $@ $(A_FILES_OBJ)
 
-$(O_DIR)/%.o : $(C_DIR)/%.c $(MEDIA_C_FILES)
+$(A_DIR_OBJ_PLATFORM)/%.o : $(A_DIR_SRC)/%.c
 	@ echo "Compiling $(notdir $<)"
 	@ mkdir -p $(@D)
-	@ $(CC) -c -o $@ $< $(CFLAGS)
+	@ $(CC) -c -o $@ $< $(A_GENERIC_CFLAGS)
 
-$(MEDIA_C_DIR)/%.c : $(MEDIA_C_DIR)/%.png
-	@ $(BIN_DIR)/a2x_bin $< $@ $(@:.c=.h) g_media
+$(A_DIR_OBJ_PLATFORM)/media/%.o : $(A_DIR_SRC_MEDIA_PLATFORM)/%.c
+	@ echo "Compiling generated $(notdir $<)"
+	@ mkdir -p $(@D)
+	@ $(CC) -c -o $@ $< $(A_GENERIC_CFLAGS)
+
+$(A_DIR_OBJ_PLATFORM)/a2x_pack_embed.o : $(A_FILES_MEDIA_PNG_H)
+$(A_FILES_MEDIA_PNG_H) : $(A_FILES_MEDIA_PNG_C)
+
+$(A_DIR_SRC_MEDIA_PLATFORM)/%.c : $(A_DIR_SRC_MEDIA)/%.png $(A_DIR_BIN)/a2x_bin
+	@ mkdir -p $(@D)
+	@ $(A_DIR_BIN)/a2x_bin $< $@ $(@:.c=.h) g_media
 
 clean :
-	@ echo "Removing $(INC_DIR) $(LIB_DIR) $(OBJ_DIR) $(MEDIA_C_FILES) $(MEDIA_H_FILES)"
-	@ rm -rf $(INC_DIR) $(LIB_DIR) $(OBJ_DIR) $(MEDIA_C_FILES) $(MEDIA_H_FILES)
+	@ echo "Removing $(A_FILE_PUBLIC_A2X_HEADER) $(A_FILE_PUBLIC_A2X_LIB) $(A_DIR_OBJ_PLATFORM) $(A_DIR_SRC_MEDIA_PLATFORM)"
+	@ rm -rf $(A_FILE_PUBLIC_A2X_HEADER) $(A_FILE_PUBLIC_A2X_LIB) $(A_DIR_OBJ_PLATFORM) $(A_DIR_SRC_MEDIA_PLATFORM)

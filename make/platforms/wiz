@@ -1,4 +1,4 @@
-PLATFORM = wiz
+A_PLATFORM = wiz
 
 OPEN2X = $(OPEN2X_ROOT)/$(OPEN2X_GLIBC)
 
@@ -27,8 +27,8 @@ A_PLATFORM_CFLAGS = \
     -ffast-math \
     -fomit-frame-pointer \
     `$(OPEN2X)/bin/sdl-config --cflags` \
-    -I$(OPEN2X)/include \
-    -I$(OPEN2X)/arm-open2x-linux/include \
+    -isystem$(OPEN2X)/include \
+    -isystem$(OPEN2X)/arm-open2x-linux/include \
     -Wno-conversion \
 
 PREFIX := arm-open2x-linux-

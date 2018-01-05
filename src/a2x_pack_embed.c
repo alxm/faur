@@ -19,8 +19,8 @@
 
 #include "a2x_pack_embed.v.h"
 
-#include "media/console.h"
-#include "media/font.h"
+#include "console.h"
+#include "font.h"
 
 typedef struct {
     const uint8_t* buffer;

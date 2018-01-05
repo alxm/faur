@@ -1,4 +1,4 @@
-PLATFORM = linux64
+A_PLATFORM = linux64
 
 A_PLATFORM_LIBS = \
     -lpng \

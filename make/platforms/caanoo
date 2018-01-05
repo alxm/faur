@@ -1,4 +1,4 @@
-PLATFORM = caanoo
+A_PLATFORM = caanoo
 
 CAANOO_SDK = $(CAANOO_ROOT)/$(CAANOO_GLIBC)
 
@@ -28,11 +28,11 @@ A_PLATFORM_CFLAGS = \
     -msoft-float \
     -ffast-math \
     -fomit-frame-pointer \
-    -I$(CAANOO_ROOT)/include \
-    -I$(CAANOO_ROOT)/DGE/include \
-    -I$(CAANOO_ROOT)/DGE/include/SDL \
-    -I$(CAANOO_SDK)/include \
-    -I$(CAANOO_SDK)/arm-gph-linux-gnueabi/include \
+    -isystem$(CAANOO_ROOT)/include \
+    -isystem$(CAANOO_ROOT)/DGE/include \
+    -isystem$(CAANOO_ROOT)/DGE/include/SDL \
+    -isystem$(CAANOO_SDK)/include \
+    -isystem$(CAANOO_SDK)/arm-gph-linux-gnueabi/include \
     -Wno-conversion \
 
 PREFIX := arm-gph-linux-gnueabi-

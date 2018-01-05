@@ -1,4 +1,4 @@
-PLATFORM = pandora
+A_PLATFORM = pandora
 
 PANDORA_SDK = $(PANDORA_ROOT)/$(PANDORA_TOOLCHAIN)
 PANDORA_UTILS = $(PANDORA_ROOT)/$(PANDORA_SDKUTILS)
@@ -35,13 +35,10 @@ A_PLATFORM_CFLAGS = \
     -fsingle-precision-constant \
     -ftree-vectorize \
     -fomit-frame-pointer \
-    -I$(PANDORA_SDK)/include \
-    -I$(PANDORA_SDK)/usr/include \
-    -I$(PANDORA_SDK)/usr/include/SDL \
-    -I$(PANDORA_SDK)/arm-none-linux-gnueabi/include \
-    -Wno-conversion \
-
-A_PLATFORM_COMPILER_PEDANTIC = false
+    -isystem$(PANDORA_SDK)/include \
+    -isystem$(PANDORA_SDK)/usr/include \
+    -isystem$(PANDORA_SDK)/usr/include/SDL \
+    -isystem$(PANDORA_SDK)/arm-none-linux-gnueabi/include \
 
 PREFIX := arm-none-linux-gnueabi-
 

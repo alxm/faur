@@ -1,4 +1,4 @@
-PLATFORM = linux32
+A_PLATFORM = linux32
 
 A_PLATFORM_LIBS = \
     -L/usr/lib/i386-linux-gnu \

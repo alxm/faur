@@ -1,4 +1,4 @@
-PLATFORM = mingw64
+A_PLATFORM = mingw64
 
 MINGW_BIN = $(MINGW64_ROOT)/$(MINGW64_ARCH)/bin
 
