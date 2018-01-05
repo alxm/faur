@@ -73,8 +73,6 @@ A_FILES_OBJ = $(addprefix $(A_DIR_OBJ_PLATFORM)/, $(A_FILES_SRC_C:.c=.o)) $(A_FI
 # Check if project wants to embed images and sound effects with a2x_bin
 #
 ifeq ($(A_EMBED_MEDIA), true)
-    A_EXTRA_CFLAGS += -DA_EMBED_MEDIA=1
-
     #
     # PNG and WAV files we can convert to C code
     #
