@@ -1,4 +1,23 @@
 #
+# User-settable variables:
+#
+# A_APP_NAME
+#   Target binary file name
+#
+# A_EXTRA_CFLAGS
+#   Passed to compiler
+#
+# A_EMBED_MEDIA
+#   true or false
+#
+# A_PND_DIR
+#   Path to dir that PND is packaged from
+#
+# A_PND_NAME
+#   Target PND file name
+#
+
+#
 # Project dirs created by a2x_new
 #
 A_DIR_BIN = ../bin
