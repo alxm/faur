@@ -57,11 +57,11 @@ endif
 
 all : $(ALL_TARGETS)
 
-$(A_FILE_PUBLIC_A2X_HEADER) : $(A_FILES_PUBLIC_A2X_HEADERS)
+$(A_FILE_PUBLIC_A2X_HEADER) : $(A_FILES_PUBLIC_A2X_HEADERS) $(A_DIR_BIN)/a2x_header
 	@ mkdir -p $(@D)
 	@ $(A_DIR_BIN)/a2x_header $(A_DIR_SRC) .p.h $@
 
-$(A_FILE_EDITOR_TAGS) : $(A_FILE_PUBLIC_A2X_HEADER)
+$(A_FILE_EDITOR_TAGS) : $(A_FILE_PUBLIC_A2X_HEADER) $(A_DIR_BIN)/a2x_tags
 	@ $(A_DIR_BIN)/a2x_tags $<
 
 $(A_FILE_PUBLIC_A2X_LIB) : $(A_FILES_OBJ)
@@ -74,7 +74,7 @@ $(A_DIR_OBJ_PLATFORM)/%.o : $(A_DIR_SRC)/%.c $(A_FILES_MEDIA_PNG_C)
 	@ mkdir -p $(@D)
 	@ $(CC) -c -o $@ $< $(A_GENERIC_CFLAGS)
 
-$(A_DIR_SRC_MEDIA)/%.c : $(A_DIR_SRC_MEDIA)/%.png
+$(A_DIR_SRC_MEDIA)/%.c : $(A_DIR_SRC_MEDIA)/%.png $(A_DIR_BIN)/a2x_bin
 	@ $(A_DIR_BIN)/a2x_bin $< $@ $(@:.c=.h) g_media
 
 clean :
