@@ -19,8 +19,21 @@ A_FILES_PUBLIC_A2X_HEADERS = $(wildcard $(A_DIR_SRC)/$(A_PREFIX)*.p.h)
 A_FILE_PUBLIC_A2X_LIB = $(A_DIR_LIB)/a2x_$(A_PLATFORM).a
 A_FILE_EDITOR_TAGS := $(shell $(A_DIR_BIN)/a2x_tags -q)
 
+A_FILES_SRC_C_INC = $(notdir $(wildcard $(A_DIR_SRC)/$(A_PREFIX)*.inc.c))
+A_FILES_SRC_C_ALL = $(notdir $(wildcard $(A_DIR_SRC)/$(A_PREFIX)*.c))
+A_FILES_SRC_C = $(filter-out $(A_FILES_SRC_C_INC), $(A_FILES_SRC_C_ALL))
+
+A_FILES_OBJ = $(addprefix $(A_DIR_OBJ_PLATFORM)/, $(A_FILES_SRC_C:.c=.o)) \
+              $(addprefix $(A_DIR_OBJ_PLATFORM_MEDIA)/, $(notdir $(A_FILES_MEDIA_PNG_C:.c=.o)))
+
 A_INFO_COMPILE_TIME := $(shell date "+%Y-%m-%d\ %H:%M:%S")
 A_INFO_CURRENT_BRANCH := $(shell git symbolic-ref --short HEAD)
+
+ALL_TARGETS = $(A_FILE_PUBLIC_A2X_HEADER) $(A_FILE_PUBLIC_A2X_LIB)
+
+ifeq ($(A_PLATFORM), linux)
+    ALL_TARGETS += $(A_FILE_EDITOR_TAGS)
+endif
 
 A_GENERIC_CFLAGS = \
     -std=c99 \
@@ -36,19 +49,6 @@ A_GENERIC_CFLAGS = \
     -DA__MAKE_CURRENT_GIT_BRANCH=\"$(A_INFO_CURRENT_BRANCH)\" \
     -DA__MAKE_PLATFORM_NAME=\"$(A_PLATFORM)\" \
     $(A_PLATFORM_CFLAGS) \
-
-A_FILES_SRC_C_INC = $(notdir $(wildcard $(A_DIR_SRC)/$(A_PREFIX)*.inc.c))
-A_FILES_SRC_C_ALL = $(notdir $(wildcard $(A_DIR_SRC)/$(A_PREFIX)*.c))
-A_FILES_SRC_C = $(filter-out $(A_FILES_SRC_C_INC), $(A_FILES_SRC_C_ALL))
-
-A_FILES_OBJ = $(addprefix $(A_DIR_OBJ_PLATFORM)/, $(A_FILES_SRC_C:.c=.o)) \
-              $(addprefix $(A_DIR_OBJ_PLATFORM_MEDIA)/, $(notdir $(A_FILES_MEDIA_PNG_C:.c=.o)))
-
-ALL_TARGETS = $(A_FILE_PUBLIC_A2X_HEADER) $(A_FILE_PUBLIC_A2X_LIB)
-
-ifeq ($(A_PLATFORM), linux)
-    ALL_TARGETS += $(A_FILE_EDITOR_TAGS)
-endif
 
 all : $(ALL_TARGETS)
 
