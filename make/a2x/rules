@@ -12,7 +12,7 @@ A_DIR_OBJ_PLATFORM_MEDIA = $(A_DIR_OBJ_PLATFORM)/media
 
 A_FILES_MEDIA_PNG = $(wildcard $(A_DIR_SRC_MEDIA)/*.png)
 A_FILES_MEDIA_PNG_C = $(A_FILES_MEDIA_PNG:.png=.c)
-A_FILES_MEDIA_PNG_H = $(A_FILES_MEDIA_PNG_C:.c=.h)
+A_FILES_MEDIA_PNG_H = $(A_FILES_MEDIA_PNG:.png=.h)
 
 A_FILE_PUBLIC_A2X_HEADER = $(A_DIR_INC)/a2x.h
 A_FILES_PUBLIC_A2X_HEADERS = $(wildcard $(A_DIR_SRC)/$(A_PREFIX)*.p.h)
@@ -44,11 +44,6 @@ A_FILES_SRC_C = $(filter-out $(A_FILES_SRC_C_INC), $(A_FILES_SRC_C_ALL))
 A_FILES_OBJ = $(addprefix $(A_DIR_OBJ_PLATFORM)/, $(A_FILES_SRC_C:.c=.o)) \
               $(addprefix $(A_DIR_OBJ_PLATFORM_MEDIA)/, $(notdir $(A_FILES_MEDIA_PNG_C:.c=.o)))
 
-#
-# Do not delete these intermediate files
-#
-.SECONDARY: $(A_FILES_MEDIA_PNG_C)
-
 ALL_TARGETS = $(A_FILE_PUBLIC_A2X_HEADER) $(A_FILE_PUBLIC_A2X_LIB)
 
 ifeq ($(A_PLATFORM), linux)
@@ -69,10 +64,13 @@ $(A_FILE_PUBLIC_A2X_LIB) : $(A_FILES_OBJ)
 	@ mkdir -p $(@D)
 	@ $(AR) rs $@ $(A_FILES_OBJ)
 
-$(A_DIR_OBJ_PLATFORM)/%.o : $(A_DIR_SRC)/%.c $(A_FILES_MEDIA_PNG_C)
+$(A_DIR_OBJ_PLATFORM)/%.o : $(A_DIR_SRC)/%.c
 	@ echo "Compiling $(notdir $<)"
 	@ mkdir -p $(@D)
 	@ $(CC) -c -o $@ $< $(A_GENERIC_CFLAGS)
+
+$(A_DIR_OBJ_PLATFORM)/a2x_pack_embed.o : $(A_FILES_MEDIA_PNG_H)
+$(A_FILES_MEDIA_PNG_H) : $(A_FILES_MEDIA_PNG_C)
 
 $(A_DIR_SRC_MEDIA)/%.c : $(A_DIR_SRC_MEDIA)/%.png $(A_DIR_BIN)/a2x_bin
 	@ $(A_DIR_BIN)/a2x_bin $< $@ $(@:.c=.h) g_media
