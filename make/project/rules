@@ -29,7 +29,7 @@ A_DIR_SRC = ../src
 #
 # Subdir for generated code and object files
 #
-A_DIR_SRC_GEN = $(A_DIR_SRC)/a2x_gen
+A_DIR_SRC_GEN = $(A_DIR_SRC)/a2x_gen/$(A_PLATFORM)
 
 #
 # this is what gets built
@@ -56,7 +56,7 @@ A_FILES_SRC_C = $(filter-out $(A_FILES_SRC_C_INC), $(A_FILES_SRC_C_ALL))
 #
 # object file dirs
 #
-A_DIR_OBJ_PLATFORM = $(A_DIR_OBJ)/obj_$(A_PLATFORM)
+A_DIR_OBJ_PLATFORM = $(A_DIR_OBJ)/$(A_PLATFORM)
 A_DIR_OBJ_PLATFORM_GEN = $(A_DIR_OBJ_PLATFORM)/a2x_gen
 A_DIR_OBJ_PLATFORM_GEN_GFX = $(A_DIR_OBJ_PLATFORM_GEN)/gfx
 A_DIR_OBJ_PLATFORM_GEN_SFX = $(A_DIR_OBJ_PLATFORM_GEN)/sfx
@@ -152,13 +152,18 @@ $(A_DIR_OBJ_PLATFORM)/%.o : $(A_DIR_SRC)/%.c
 	@ mkdir -p $(@D)
 	@ $(CC) -c -o $@ $< $(A_GENERIC_CFLAGS)
 
+$(A_DIR_OBJ_PLATFORM_GEN)/%.o : $(A_DIR_SRC_GEN)/%.c
+	@ echo "Compiling generated $(notdir $<)"
+	@ mkdir -p $(@D)
+	@ $(CC) -c -o $@ $< $(A_GENERIC_CFLAGS)
+
 $(A_DIR_OBJ_PLATFORM_GEN_GFX)/%.o : $(A_DIR_SRC_GEN_GFX)/%.c
-	@ echo "Compiling $(notdir $<)"
+	@ echo "Compiling generated $(notdir $<)"
 	@ mkdir -p $(@D)
 	@ $(CC) -c -o $@ $< $(A_GENERIC_CFLAGS)
 
 $(A_DIR_OBJ_PLATFORM_GEN_SFX)/%.o : $(A_DIR_SRC_GEN_SFX)/%.c
-	@ echo "Compiling $(notdir $<)"
+	@ echo "Compiling generated $(notdir $<)"
 	@ mkdir -p $(@D)
 	@ $(CC) -c -o $@ $< $(A_GENERIC_CFLAGS)
 
@@ -166,8 +171,8 @@ $(A_DIR_OBJ_PLATFORM_GEN_SFX)/%.o : $(A_DIR_SRC_GEN_SFX)/%.c
 # delete all .o files and all generated .c files
 #
 clean :
-	@ echo "Removing $(A_FILE_TARGET_BIN) $(A_DIR_OBJ) $(A_DIR_SRC_GEN)"
-	@ rm -rf $(A_FILE_TARGET_BIN) $(A_DIR_OBJ) $(A_DIR_SRC_GEN)
+	@ echo "Removing $(A_FILE_TARGET_BIN) $(A_DIR_OBJ_PLATFORM) $(A_DIR_SRC_GEN)"
+	@ rm -rf $(A_FILE_TARGET_BIN) $(A_DIR_OBJ_PLATFORM) $(A_DIR_SRC_GEN)
 
 #
 # clean-up rule that deletes the built binary
