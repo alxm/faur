@@ -155,12 +155,7 @@ $(A_DIR_OBJ_PLATFORM_GEN)/%.o : $(A_DIR_SRC_GEN)/%.c
 	@ mkdir -p $(@D)
 	@ $(CC) -c -o $@ $< $(A_GENERIC_CFLAGS)
 
-$(A_DIR_OBJ_PLATFORM_GEN_GFX)/%.o : $(A_DIR_SRC_GEN_GFX)/%.c
-	@ echo "Compiling generated $(notdir $<)"
-	@ mkdir -p $(@D)
-	@ $(CC) -c -o $@ $< $(A_GENERIC_CFLAGS)
-
-$(A_DIR_OBJ_PLATFORM_GEN_SFX)/%.o : $(A_DIR_SRC_GEN_SFX)/%.c
+$(A_DIR_OBJ_PLATFORM_GEN)/%.o : $(A_DIR_SRC_GEN)/%.c
 	@ echo "Compiling generated $(notdir $<)"
 	@ mkdir -p $(@D)
 	@ $(CC) -c -o $@ $< $(A_GENERIC_CFLAGS)
