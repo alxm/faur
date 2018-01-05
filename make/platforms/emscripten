@@ -1,4 +1,4 @@
-PLATFORM = emscripten
+A_PLATFORM = emscripten
 
 A_PLATFORM_LIBS = \
     -s USE_SDL=1 \

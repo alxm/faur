@@ -1,55 +1,54 @@
 #
 # Project dirs created by a2x_new
 #
-A_BIN_DIR = ../bin
-A_GFX_DIR = ../gfx
-A_OBJ_DIR = ../obj
-A_SFX_DIR = ../sfx
-A_SRC_DIR = ../src
-
-#
-# this is what gets built
-#
-TARGET_BINARY = $(A_BIN_DIR)/$(A_APP_NAME)
+A_DIR_BIN = ../bin
+A_DIR_GFX = ../gfx
+A_DIR_OBJ = ../obj
+A_DIR_SFX = ../sfx
+A_DIR_SRC = ../src
 
 #
 # Subdir for generated code and object files
 #
-A2X_GEN = a2x_gen
-C_GEN_DIR = $(A_SRC_DIR)/$(A2X_GEN)
+A_DIR_SRC_GEN = $(A_DIR_SRC)/a2x_gen
+
+#
+# this is what gets built
+#
+A_FILE_TARGET_BIN = $(A_DIR_BIN)/$(A_APP_NAME)
 
 #
 # Project build time
 #
-C_BUILDTIME_FILE = $(C_GEN_DIR)/time.c
+A_FILE_SRC_GEN_BUILDTIME = $(A_DIR_SRC_GEN)/time.c
 
 #
 # a_embed__application
 #
-C_EMBED_FILE = $(C_GEN_DIR)/embed.c
+A_FILE_SRC_GEN_EMBED = $(A_DIR_SRC_GEN)/embed.c
 
 #
 # .c source files
 #
-C_INC_FILES = $(notdir $(wildcard $(A_SRC_DIR)/*.inc.c))
-C_SRC_FILES = $(notdir $(wildcard $(A_SRC_DIR)/*.c))
-C_FILES = $(filter-out $(C_INC_FILES), $(C_SRC_FILES))
+A_FILES_SRC_C_INC = $(notdir $(wildcard $(A_DIR_SRC)/*.inc.c))
+A_FILES_SRC_C_ALL = $(notdir $(wildcard $(A_DIR_SRC)/*.c))
+A_FILES_SRC_C = $(filter-out $(A_FILES_SRC_C_INC), $(A_FILES_SRC_C_ALL))
 
 #
 # object file dirs
 #
-O_DIR = $(A_OBJ_DIR)/obj_$(PLATFORM)
-O_GEN_DIR = $(O_DIR)/$(A2X_GEN)
-O_GFX_DIR = $(O_GEN_DIR)/gfx
-O_SFX_DIR = $(O_GEN_DIR)/sfx
+A_DIR_OBJ_PLATFORM = $(A_DIR_OBJ)/obj_$(A_PLATFORM)
+A_DIR_OBJ_PLATFORM_GEN = $(A_DIR_OBJ_PLATFORM)/a2x_gen
+A_DIR_OBJ_PLATFORM_GEN_GFX = $(A_DIR_OBJ_PLATFORM_GEN)/gfx
+A_DIR_OBJ_PLATFORM_GEN_SFX = $(A_DIR_OBJ_PLATFORM_GEN)/sfx
 
 #
 # All the object files.
 # Keep buildtime separate from the rest, since they are its prerequisites.
 #
-O_BUILDTIME = $(addprefix $(O_GEN_DIR)/, $(notdir $(C_BUILDTIME_FILE:.c=.o)))
-O_EMBED = $(addprefix $(O_GEN_DIR)/, $(notdir $(C_EMBED_FILE:.c=.o)))
-O_FILES = $(addprefix $(O_DIR)/, $(C_FILES:.c=.o)) $(O_EMBED)
+A_FILE_OBJ_GEN_BUILDTIME = $(addprefix $(A_DIR_OBJ_PLATFORM_GEN)/, $(notdir $(A_FILE_SRC_GEN_BUILDTIME:.c=.o)))
+A_FILE_OBJ_GEN_EMBED = $(addprefix $(A_DIR_OBJ_PLATFORM_GEN)/, $(notdir $(A_FILE_SRC_GEN_EMBED:.c=.o)))
+A_FILES_OBJ = $(addprefix $(A_DIR_OBJ_PLATFORM)/, $(A_FILES_SRC_C:.c=.o)) $(A_FILE_OBJ_GEN_EMBED)
 
 #
 # Check if project wants to embed images and sound effects with a2x_bin
@@ -60,29 +59,29 @@ ifeq ($(A_EMBED_MEDIA), true)
     #
     # PNG and WAV files we can convert to C code
     #
-    GFX_FILES = $(notdir $(wildcard $(A_GFX_DIR)/*.png))
-    SFX_FILES = $(notdir $(wildcard $(A_SFX_DIR)/*.wav))
+    A_FILES_MEDIA_PNG = $(notdir $(wildcard $(A_DIR_GFX)/*.png))
+    A_FILES_MEDIA_WAV = $(notdir $(wildcard $(A_DIR_SFX)/*.wav))
 
     #
     # .c gfx & sfx files
     #
-    C_GFX_DIR = $(C_GEN_DIR)/gfx
-    C_SFX_DIR = $(C_GEN_DIR)/sfx
+    A_DIR_SRC_GEN_GFX = $(A_DIR_SRC_GEN)/gfx
+    A_DIR_SRC_GEN_SFX = $(A_DIR_SRC_GEN)/sfx
 
     #
     # PNG and WAV files in .c form
     #
-    C_GFX_FILES = $(addprefix $(C_GFX_DIR)/gfx_, $(GFX_FILES:.png=_png.c))
-    C_SFX_FILES = $(addprefix $(C_SFX_DIR)/sfx_, $(SFX_FILES:.wav=_wav.c))
+    A_FILES_SRC_GEN_GFX = $(addprefix $(A_DIR_SRC_GEN_GFX)/gfx_, $(A_FILES_MEDIA_PNG:.png=_png.c))
+    A_FILES_SRC_GEN_SFX = $(addprefix $(A_DIR_SRC_GEN_SFX)/sfx_, $(A_FILES_MEDIA_WAV:.wav=_wav.c))
 
-    O_FILES += $(addprefix $(O_GFX_DIR)/, $(notdir $(C_GFX_FILES:.c=.o))) \
-               $(addprefix $(O_SFX_DIR)/, $(notdir $(C_SFX_FILES:.c=.o)))
+    A_FILES_OBJ += $(addprefix $(A_DIR_OBJ_PLATFORM_GEN_GFX)/, $(notdir $(A_FILES_SRC_GEN_GFX:.c=.o))) \
+                   $(addprefix $(A_DIR_OBJ_PLATFORM_GEN_SFX)/, $(notdir $(A_FILES_SRC_GEN_SFX:.c=.o)))
 endif
 
 #
 # compile flags
 #
-CFLAGS = \
+A_GENERIC_CFLAGS = \
     -std=c99 \
     -Wall \
     -Wextra \
@@ -99,57 +98,57 @@ CFLAGS = \
 #
 # the main target
 #
-all : $(TARGET_BINARY)
+all : $(A_FILE_TARGET_BIN)
 
-$(TARGET_BINARY) : $(O_FILES) $(O_BUILDTIME)
+$(A_FILE_TARGET_BIN) : $(A_FILES_OBJ) $(A_FILE_OBJ_GEN_BUILDTIME)
 	@ echo "Building $(A_APP_NAME)"
 	@ mkdir -p $(@D)
 	@ $(CC) -o $@ $^ \
 	$(A_PLATFORM_CFLAGS) \
 	$(A_EXTRA_LIBS) \
-	-Wl,--whole-archive $(A2X_PATH)/lib/a2x_$(PLATFORM).a -Wl,--no-whole-archive \
+	-Wl,--whole-archive $(A2X_PATH)/lib/a2x_$(A_PLATFORM).a -Wl,--no-whole-archive \
 	$(A_PLATFORM_LIBS)
 
 #
 # pattern rules for building the universe
 #
-$(C_BUILDTIME_FILE) : $(O_FILES)
+$(A_FILE_SRC_GEN_BUILDTIME) : $(A_FILES_OBJ)
 	@ mkdir -p $(@D)
 	@ $(A2X_PATH)/bin/a2x_buildtime $@
 
-$(C_GFX_DIR)/gfx_%_png.c : $(A_GFX_DIR)/%.png
+$(A_DIR_SRC_GEN_GFX)/gfx_%_png.c : $(A_DIR_GFX)/%.png
 	@ mkdir -p $(@D)
 	@ $(A2X_PATH)/bin/a2x_bin $< $@ $(@:.c=.h) gfx
 
-$(C_SFX_DIR)/sfx_%_wav.c : $(A_SFX_DIR)/%.wav
+$(A_DIR_SRC_GEN_SFX)/sfx_%_wav.c : $(A_DIR_SFX)/%.wav
 	@ mkdir -p $(@D)
 	@ $(A2X_PATH)/bin/a2x_bin $< $@ $(@:.c=.h) sfx
 
-$(C_EMBED_FILE) : $(C_GFX_FILES) $(C_SFX_FILES)
+$(A_FILE_SRC_GEN_EMBED) : $(A_FILES_SRC_GEN_GFX) $(A_FILES_SRC_GEN_SFX)
 	@ mkdir -p $(@D)
-	@ $(A2X_PATH)/bin/a2x_embed $@ $(C_GEN_DIR) gfx sfx
+	@ $(A2X_PATH)/bin/a2x_embed $@ $(A_DIR_SRC_GEN) gfx sfx
 
-$(O_DIR)/%.o : $(A_SRC_DIR)/%.c
+$(A_DIR_OBJ_PLATFORM)/%.o : $(A_DIR_SRC)/%.c
 	@ echo "Compiling $(notdir $<)"
 	@ mkdir -p $(@D)
-	@ $(CC) -c -o $@ $< $(CFLAGS)
+	@ $(CC) -c -o $@ $< $(A_GENERIC_CFLAGS)
 
-$(O_GFX_DIR)/%.o : $(C_GFX_DIR)/%.c
+$(A_DIR_OBJ_PLATFORM_GEN_GFX)/%.o : $(A_DIR_SRC_GEN_GFX)/%.c
 	@ echo "Compiling $(notdir $<)"
 	@ mkdir -p $(@D)
-	@ $(CC) -c -o $@ $< $(CFLAGS)
+	@ $(CC) -c -o $@ $< $(A_GENERIC_CFLAGS)
 
-$(O_SFX_DIR)/%.o : $(C_SFX_DIR)/%.c
+$(A_DIR_OBJ_PLATFORM_GEN_SFX)/%.o : $(A_DIR_SRC_GEN_SFX)/%.c
 	@ echo "Compiling $(notdir $<)"
 	@ mkdir -p $(@D)
-	@ $(CC) -c -o $@ $< $(CFLAGS)
+	@ $(CC) -c -o $@ $< $(A_GENERIC_CFLAGS)
 
 #
 # delete all .o files and all generated .c files
 #
 clean :
-	@ echo "Removing $(TARGET_BINARY) $(A_OBJ_DIR) $(C_GEN_DIR)"
-	@ rm -rf $(TARGET_BINARY) $(A_OBJ_DIR) $(C_GEN_DIR)
+	@ echo "Removing $(A_FILE_TARGET_BIN) $(A_DIR_OBJ) $(A_DIR_SRC_GEN)"
+	@ rm -rf $(A_FILE_TARGET_BIN) $(A_DIR_OBJ) $(A_DIR_SRC_GEN)
 
 #
 # clean-up rule that deletes the built binary
@@ -158,11 +157,11 @@ cb : cleanbin
 
 cleanbin :
 	@ echo "Removing $(A_APP_NAME) binary"
-	@ rm -f $(TARGET_BINARY)
+	@ rm -f $(A_FILE_TARGET_BIN)
 
 #
 # run the program
 #
 run : all
 	@ echo "Running $(notdir $(A_APP_NAME))"
-	@ cd $(A_BIN_DIR) ; ./$(A_APP_NAME)
+	@ cd $(A_DIR_BIN) ; ./$(A_APP_NAME)

@@ -1,4 +1,4 @@
-PLATFORM = caanoo
+A_PLATFORM = caanoo
 
 CAANOO_SDK = $(CAANOO_ROOT)/$(CAANOO_GLIBC)
 
