@@ -55,15 +55,15 @@ static unsigned g_tickCredit;
 
 void a_fps__init(void)
 {
-    g_idealFpsRate = a_settings_getUnsigned("video.fps");
-    g_skipFrames = a_settings_getBool("video.fps.skip");
-    g_skipMax = a_settings_getUnsigned("video.fps.skip.max");
+    g_idealFpsRate = a_settings_getUnsigned("fps.draw");
+    g_skipFrames = a_settings_getBool("fps.draw.skip");
+    g_skipMax = a_settings_getUnsigned("fps.draw.skip.max");
     g_vsync = a_settings_getBool("video.vsync");
 
     if(g_idealFpsRate < 1) {
-        a_out__fatal("Invalid setting video.fps=0");
+        a_out__fatal("Invalid setting fps.draw=0");
     } else if(g_skipMax >= g_idealFpsRate) {
-        a_out__fatal("Invalid setting video.fps.skip.max=%u for video.fps=%u",
+        a_out__fatal("Invalid setting fps.draw.skip.max=%u for fps.draw=%u",
                      g_skipMax,
                      g_idealFpsRate);
     }
