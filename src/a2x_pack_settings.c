@@ -231,6 +231,7 @@ void a_settings__init(void)
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "app.gp2xMenu", "0");
     add(A_SETTING_UINT, A_SETTING_SET_ONCE, "app.mhz", "0");
 
+    add(A_SETTING_UINT, A_SETTING_SET_ONCE, "fps.tick", "30");
     add(A_SETTING_UINT, A_SETTING_SET_ONCE, "fps.draw", "30");
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "fps.draw.skip", "0");
     add(A_SETTING_UINT, A_SETTING_SET_ONCE, "fps.draw.skip.max", "2");

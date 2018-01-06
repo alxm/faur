@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2017 Alex Margarit
+    Copyright 2010, 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -23,6 +23,7 @@
 #define FRAMESKIP_ADJUST_DELAY_SEC 2
 #define NO_SLEEP_RESET_SEC 20
 
+static unsigned g_tickRate;
 static unsigned g_idealFpsRate;
 static bool g_skipFrames;
 static unsigned g_skipMax;
@@ -55,10 +56,15 @@ static unsigned g_tickCredit;
 
 void a_fps__init(void)
 {
+    g_tickRate = a_settings_getUnsigned("fps.tick");
     g_idealFpsRate = a_settings_getUnsigned("fps.draw");
     g_skipFrames = a_settings_getBool("fps.draw.skip");
     g_skipMax = a_settings_getUnsigned("fps.draw.skip.max");
     g_vsync = a_settings_getBool("video.vsync");
+
+    if(g_tickRate < 1) {
+        a_out__fatal("Invalid setting fps.tick=0");
+    }
 
     if(g_idealFpsRate < 1) {
         a_out__fatal("Invalid setting fps.draw=0");
@@ -123,7 +129,7 @@ void a_fps__reset(unsigned NumFramesToSkip)
     g_fpsThresholdSlow = (g_fpsRate > 3) ? (g_fpsRate - 2) : 1;
 
     g_lastMs = a_time_getMs();
-    g_tickCredit = (1 + g_skipNum) * 1000;
+    g_tickCredit = 1000;
 }
 
 bool a_fps__tick(void)
@@ -180,9 +186,7 @@ void a_fps__frame(void)
     g_bufferHead = (g_bufferHead + 1) % g_bufferLen;
     g_lastMs = nowMs;
 
-    if(g_vsync) {
-        g_tickCredit += elapsedMs * g_idealFpsRate;
-    } else {
+    if(!g_vsync) {
         if(g_skipFrames && a_timer_isExpired(g_skipAdjustTimer)) {
             unsigned newFrameSkip = UINT_MAX;
 
@@ -205,9 +209,9 @@ void a_fps__frame(void)
                 g_canSleep = g_allowSleep;
             }
         }
-
-        g_tickCredit = (g_skipNum + 1) * 1000;
     }
+
+    g_tickCredit += elapsedMs * g_tickRate;
 }
 
 unsigned a_fps_getFps(void)
@@ -237,5 +241,5 @@ bool a_fps_isNthFrame(unsigned N)
 
 unsigned a_fps_msToFrames(unsigned Ms)
 {
-    return Ms * g_idealFpsRate / 1000;
+    return Ms * g_tickRate / 1000;
 }
