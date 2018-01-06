@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2017 Alex Margarit
+    Copyright 2010, 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -231,6 +231,11 @@ void a_settings__init(void)
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "app.gp2xMenu", "0");
     add(A_SETTING_UINT, A_SETTING_SET_ONCE, "app.mhz", "0");
 
+    add(A_SETTING_UINT, A_SETTING_SET_ONCE, "fps.tick", "30");
+    add(A_SETTING_UINT, A_SETTING_SET_ONCE, "fps.draw", "30");
+    add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "fps.draw.skip", "0");
+    add(A_SETTING_UINT, A_SETTING_SET_ONCE, "fps.draw.skip.max", "2");
+
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.on", "1");
     add(A_SETTING_INT, A_SETTING_SET_ONCE, "video.width", "320");
     add(A_SETTING_INT, A_SETTING_SET_ONCE, "video.height", "240");
@@ -239,9 +244,6 @@ void a_settings__init(void)
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.fullscreen", "0");
     add(A_SETTING_STR, A_SETTING_SET_ONCE, "video.fullscreen.button", "key.f4");
     add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.fixWizTearing", "0");
-    add(A_SETTING_UINT, A_SETTING_SET_ONCE, "video.fps", "30");
-    add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.fps.skip", "0");
-    add(A_SETTING_UINT, A_SETTING_SET_ONCE, "video.fps.skip.max", "2");
     add(A_SETTING_COLOR, A_SETTING_SET_ONCE, "video.color.border", "0x1f0f0f");
     add(A_SETTING_COLOR, A_SETTING_SET_ONCE, "video.color.key", "0xFF00FF");
     add(A_SETTING_COLOR, A_SETTING_SET_ONCE, "video.color.limit", "0x00FF00");
