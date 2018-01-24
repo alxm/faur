@@ -3,6 +3,7 @@ A_PLATFORM = mingw32
 MINGW_BIN = $(MINGW32_ROOT)/$(MINGW32_ARCH)/bin
 
 A_PLATFORM_LIBS = \
+    -u _SDL_main \
     $(shell $(MINGW_BIN)/sdl2-config --libs) \
     -lSDL2_mixer \
     -lpng \

@@ -123,7 +123,7 @@ $(A_FILE_TARGET_BIN) : $(A_FILES_OBJ) $(A_FILE_OBJ_GEN_BUILDTIME)
 	@ $(CC) -o $@ $^ \
 	$(A_PLATFORM_CFLAGS) \
 	$(A_EXTRA_LIBS) \
-	-Wl,--whole-archive $(A2X_PATH)/lib/$(A_PLATFORM)/a2x.a -Wl,--no-whole-archive \
+	$(A2X_PATH)/lib/$(A_PLATFORM)/a2x.a \
 	$(A_PLATFORM_LIBS)
 
 #
