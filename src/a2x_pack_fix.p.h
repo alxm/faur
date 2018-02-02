@@ -29,6 +29,9 @@ typedef uint32_t AFixu;
 #define A_FIX_BIT_PRECISION (8)
 #define A_FIX_ONE           (1 << A_FIX_BIT_PRECISION)
 #define A_FIX_FRACTION_MASK (A_FIX_ONE - 1)
+#define A_FIX_MIN_INT       (INT32_MIN >> A_FIX_BIT_PRECISION)
+#define A_FIX_MAX_INT       (INT32_MAX >> A_FIX_BIT_PRECISION)
+#define A_FIXU_MAX_INT      (UINT32_MAX >> A_FIX_BIT_PRECISION)
 
 extern AFix a_fix__sin[A_MATH_ANGLES_NUM];
 extern AFix a_fix__cos[A_MATH_ANGLES_NUM];
