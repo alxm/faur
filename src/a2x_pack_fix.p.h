@@ -26,7 +26,7 @@ typedef uint32_t AFixu;
 
 #include "a2x_pack_math.p.h"
 
-#define A_FIX_BIT_PRECISION (8)
+#define A_FIX_BIT_PRECISION (16)
 #define A_FIX_ONE           (1 << A_FIX_BIT_PRECISION)
 #define A_FIX_FRACTION_MASK (A_FIX_ONE - 1)
 #define A_FIX_MIN_INT       (INT32_MIN >> A_FIX_BIT_PRECISION)
