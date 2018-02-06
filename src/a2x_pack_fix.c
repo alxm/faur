@@ -1,5 +1,5 @@
 /*
-    Copyright 2010 Alex Margarit
+    Copyright 2010, 2014, 2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -27,8 +27,10 @@ static unsigned g_atan_angles[A_FIX_ONE];
 void a_fix__init(void)
 {
     for(unsigned a = 0; a < A_MATH_ANGLES_NUM; a++) {
-        a_fix__sin[a] = a_fix_fromFloat(a_math_sin(a));
-        a_fix__cos[a] = a_fix_fromFloat(a_math_cos(a));
+        double rad = M_PI * (double)a / (A_MATH_ANGLES_NUM / 2);
+
+        a_fix__sin[a] = a_fix_fromDouble(sin(rad));
+        a_fix__cos[a] = a_fix_fromDouble(cos(rad));
 	}
 
     unsigned angle = 0;

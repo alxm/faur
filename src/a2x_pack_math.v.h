@@ -20,5 +20,3 @@
 #pragma once
 
 #include "a2x_pack_math.p.h"
-
-extern void a_math__init(void);
