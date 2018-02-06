@@ -43,7 +43,12 @@ static inline AFix a_fix_fromInt(int X)
 
 static inline AFix a_fix_fromFloat(float X)
 {
-    return (AFix)(X * (1 << A_FIX_BIT_PRECISION));
+    return (AFix)(X * A_FIX_ONE);
+}
+
+static inline AFix a_fix_fromDouble(double X)
+{
+    return (AFix)(X * A_FIX_ONE);
 }
 
 static inline int a_fix_toInt(AFix X)
@@ -53,7 +58,12 @@ static inline int a_fix_toInt(AFix X)
 
 static inline float a_fix_toFloat(AFix X)
 {
-    return (float)X / (1 << A_FIX_BIT_PRECISION);
+    return (float)X / A_FIX_ONE;
+}
+
+static inline double a_fix_toDouble(AFix X)
+{
+    return (double)X / A_FIX_ONE;
 }
 
 static inline AFix a_fix_mul(AFix X, AFix Y)
@@ -102,7 +112,12 @@ static inline AFixu a_fixu_fromInt(unsigned X)
 
 static inline AFixu a_fixu_fromFloat(float X)
 {
-    return (AFixu)(X * (1 << A_FIX_BIT_PRECISION));
+    return (AFixu)(X * A_FIX_ONE);
+}
+
+static inline AFixu a_fixu_fromDouble(double X)
+{
+    return (AFixu)(X * A_FIX_ONE);
 }
 
 static inline unsigned a_fixu_toInt(AFixu X)
@@ -112,7 +127,12 @@ static inline unsigned a_fixu_toInt(AFixu X)
 
 static inline float a_fixu_toFloat(AFixu X)
 {
-    return (float)X / (1 << A_FIX_BIT_PRECISION);
+    return (float)X / A_FIX_ONE;
+}
+
+static inline double a_fixu_toDouble(AFixu X)
+{
+    return (double)X / A_FIX_ONE;
 }
 
 static inline AFixu a_fixu_mul(AFixu X, AFixu Y)
