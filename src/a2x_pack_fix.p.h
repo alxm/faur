@@ -24,8 +24,6 @@
 typedef int32_t AFix;
 typedef uint32_t AFixu;
 
-#include "a2x_pack_math.p.h"
-
 #define A_FIX_BIT_PRECISION (16)
 #define A_FIX_ONE           (1 << A_FIX_BIT_PRECISION)
 #define A_FIX_FRACTION_MASK (A_FIX_ONE - 1)
@@ -33,8 +31,19 @@ typedef uint32_t AFixu;
 #define A_FIX_MAX_INT       (INT32_MAX >> A_FIX_BIT_PRECISION)
 #define A_FIXU_MAX_INT      (UINT32_MAX >> A_FIX_BIT_PRECISION)
 
-extern AFix a_fix__sin[A_MATH_ANGLES_NUM];
-extern AFix a_fix__cos[A_MATH_ANGLES_NUM];
+#define A_FIX_ANGLES_NUM 256u
+
+#define A_MATH_DEG_045 (A_FIX_ANGLES_NUM / 8)
+#define A_MATH_DEG_090 (2 * A_MATH_DEG_045)
+#define A_MATH_DEG_135 (3 * A_MATH_DEG_045)
+#define A_MATH_DEG_180 (4 * A_MATH_DEG_045)
+#define A_MATH_DEG_225 (5 * A_MATH_DEG_045)
+#define A_MATH_DEG_270 (6 * A_MATH_DEG_045)
+#define A_MATH_DEG_315 (7 * A_MATH_DEG_045)
+#define A_MATH_DEG_360 (8 * A_MATH_DEG_045)
+
+extern AFix a_fix__sin[A_FIX_ANGLES_NUM];
+extern AFix a_fix__cos[A_FIX_ANGLES_NUM];
 
 static inline AFix a_fix_fromInt(int X)
 {
@@ -170,24 +179,34 @@ static inline AFixu a_fixu_truncate(AFixu X)
     return X & (AFixu)~A_FIX_FRACTION_MASK;
 }
 
+static inline unsigned a_fix_wrapAngleInt(unsigned Angle)
+{
+    return Angle & (A_FIX_ANGLES_NUM - 1);
+}
+
+static inline AFixu a_fix_wrapAngleFix(AFixu Angle)
+{
+    return Angle & (A_FIX_ANGLES_NUM * A_FIX_ONE - 1);
+}
+
 static inline AFix a_fix_sin(unsigned Angle)
 {
-    return a_fix__sin[a_math_wrapAngle(Angle)];
+    return a_fix__sin[a_fix_wrapAngleInt(Angle)];
 }
 
 static inline AFix a_fix_cos(unsigned Angle)
 {
-    return a_fix__cos[a_math_wrapAngle(Angle)];
+    return a_fix__cos[a_fix_wrapAngleInt(Angle)];
 }
 
 static inline AFix a_fix_sinf(AFixu Angle)
 {
-    return a_fix__sin[a_math_wrapAngle(a_fixu_toInt(Angle))];
+    return a_fix__sin[a_fix_wrapAngleInt(a_fixu_toInt(Angle))];
 }
 
 static inline AFix a_fix_cosf(AFixu Angle)
 {
-    return a_fix__cos[a_math_wrapAngle(a_fixu_toInt(Angle))];
+    return a_fix__cos[a_fix_wrapAngleInt(a_fixu_toInt(Angle))];
 }
 
 extern unsigned a_fix_atan(AFix X1, AFix Y1, AFix X2, AFix Y2);

@@ -19,15 +19,15 @@
 
 #include "a2x_pack_fix.v.h"
 
-AFix a_fix__sin[A_MATH_ANGLES_NUM];
-AFix a_fix__cos[A_MATH_ANGLES_NUM];
+AFix a_fix__sin[A_FIX_ANGLES_NUM];
+AFix a_fix__cos[A_FIX_ANGLES_NUM];
 
 static unsigned g_atan_angles[A_FIX_ONE];
 
 void a_fix__init(void)
 {
-    for(unsigned a = 0; a < A_MATH_ANGLES_NUM; a++) {
-        double rad = M_PI * (double)a / (A_MATH_ANGLES_NUM / 2);
+    for(unsigned a = 0; a < A_FIX_ANGLES_NUM; a++) {
+        double rad = M_PI * (double)a / (A_FIX_ANGLES_NUM / 2);
 
         a_fix__sin[a] = a_fix_fromDouble(sin(rad));
         a_fix__cos[a] = a_fix_fromDouble(cos(rad));
@@ -97,7 +97,7 @@ unsigned a_fix_atan(AFix X1, AFix Y1, AFix X2, AFix Y2)
             if(Y2 <= Y1) {
                 return cachedAngle;
             } else {
-                return a_math_wrapAngle(-cachedAngle);
+                return a_fix_wrapAngleInt(-cachedAngle);
             }
         } else {
             if(Y2 <= Y1) {

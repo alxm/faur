@@ -466,7 +466,7 @@ void a_platform__blitTextureEx(APlatformTexture* Texture, int X, int Y, AFix Sca
                         t,
                         NULL,
                         &dest,
-                        360 - 360 * Angle / A_MATH_ANGLES_NUM,
+                        360 - 360 * Angle / A_FIX_ANGLES_NUM,
                         &center,
                         SDL_FLIP_NONE) < 0) {
 

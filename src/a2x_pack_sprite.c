@@ -254,7 +254,7 @@ void a_sprite_blitEx(const ASprite* Sprite, int X, int Y, AFix Scale, unsigned A
                               X,
                               Y,
                               Scale,
-                              a_math_wrapAngle(Angle),
+                              a_fix_wrapAngleInt(Angle),
                               CenterX,
                               CenterY,
                               a_pixel__state.fillBlit);
