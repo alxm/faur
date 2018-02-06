@@ -33,14 +33,27 @@ typedef uint32_t AFixu;
 
 #define A_FIX_ANGLES_NUM 256u
 
-#define A_MATH_DEG_045 (A_FIX_ANGLES_NUM / 8)
-#define A_MATH_DEG_090 (2 * A_MATH_DEG_045)
-#define A_MATH_DEG_135 (3 * A_MATH_DEG_045)
-#define A_MATH_DEG_180 (4 * A_MATH_DEG_045)
-#define A_MATH_DEG_225 (5 * A_MATH_DEG_045)
-#define A_MATH_DEG_270 (6 * A_MATH_DEG_045)
-#define A_MATH_DEG_315 (7 * A_MATH_DEG_045)
-#define A_MATH_DEG_360 (8 * A_MATH_DEG_045)
+typedef enum {
+    A_INT_DEG_045 = (A_FIX_ANGLES_NUM / 8),
+    A_INT_DEG_090 = (2 * A_INT_DEG_045),
+    A_INT_DEG_135 = (3 * A_INT_DEG_045),
+    A_INT_DEG_180 = (4 * A_INT_DEG_045),
+    A_INT_DEG_225 = (5 * A_INT_DEG_045),
+    A_INT_DEG_270 = (6 * A_INT_DEG_045),
+    A_INT_DEG_315 = (7 * A_INT_DEG_045),
+    A_INT_DEG_360 = (8 * A_INT_DEG_045),
+} AIntAngles;
+
+typedef enum {
+    A_FIX_DEG_045 = A_INT_DEG_045 * A_FIX_ONE,
+    A_FIX_DEG_090 = A_INT_DEG_090 * A_FIX_ONE,
+    A_FIX_DEG_135 = A_INT_DEG_135 * A_FIX_ONE,
+    A_FIX_DEG_180 = A_INT_DEG_180 * A_FIX_ONE,
+    A_FIX_DEG_225 = A_INT_DEG_225 * A_FIX_ONE,
+    A_FIX_DEG_270 = A_INT_DEG_270 * A_FIX_ONE,
+    A_FIX_DEG_315 = A_INT_DEG_315 * A_FIX_ONE,
+    A_FIX_DEG_360 = A_INT_DEG_360 * A_FIX_ONE,
+} AFixAngles;
 
 extern AFix a_fix__sin[A_FIX_ANGLES_NUM];
 extern AFix a_fix__cos[A_FIX_ANGLES_NUM];
