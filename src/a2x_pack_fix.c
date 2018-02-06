@@ -123,11 +123,20 @@ unsigned a_fix_atan(AFix X1, AFix Y1, AFix X2, AFix Y2)
     }
 }
 
-void a_fix_rotate(AFix X, AFix Y, unsigned Angle, AFix* NewX, AFix* NewY)
+void a_fix_rotateCounter(AFix X, AFix Y, unsigned Angle, AFix* NewX, AFix* NewY)
 {
     const AFix sin = a_fix_sin(Angle);
     const AFix cos = a_fix_cos(Angle);
 
     *NewX = a_fix_mul(X,  cos) + a_fix_mul(Y, sin);
     *NewY = a_fix_mul(X, -sin) + a_fix_mul(Y, cos);
+}
+
+void a_fix_rotateClockwise(AFix X, AFix Y, unsigned Angle, AFix* NewX, AFix* NewY)
+{
+    const AFix sin = a_fix_sin(Angle);
+    const AFix cos = a_fix_cos(Angle);
+
+    *NewX = a_fix_mul(X, cos) + a_fix_mul(Y, -sin);
+    *NewY = a_fix_mul(X, sin) + a_fix_mul(Y,  cos);
 }

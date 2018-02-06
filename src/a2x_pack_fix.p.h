@@ -191,4 +191,6 @@ static inline AFix a_fix_cosf(AFixu Angle)
 }
 
 extern unsigned a_fix_atan(AFix X1, AFix Y1, AFix X2, AFix Y2);
-extern void a_fix_rotate(AFix X, AFix Y, unsigned Angle, AFix* NewX, AFix* NewY);
+
+extern void a_fix_rotateCounter(AFix X, AFix Y, unsigned Angle, AFix* NewX, AFix* NewY);
+extern void a_fix_rotateClockwise(AFix X, AFix Y, unsigned Angle, AFix* NewX, AFix* NewY);
