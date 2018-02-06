@@ -27,8 +27,8 @@ static unsigned g_atan_angles[A_FIX_ONE];
 void a_fix__init(void)
 {
     for(unsigned a = 0; a < A_MATH_ANGLES_NUM; a++) {
-        a_fix__sin[a] = a_fix_ftofix(a_math_sin(a));
-        a_fix__cos[a] = a_fix_ftofix(a_math_cos(a));
+        a_fix__sin[a] = a_fix_fromFloat(a_math_sin(a));
+        a_fix__cos[a] = a_fix_fromFloat(a_math_cos(a));
 	}
 
     unsigned angle = 0;

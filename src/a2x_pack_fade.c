@@ -144,7 +144,7 @@ static A_STATE(a_fade__toColor)
         updateCapturedScreenBuffer();
 
         alpha = 0;
-        alpha_inc = a_fix_itofix(A_PIXEL_ALPHA_MAX) / (int)g_frames;
+        alpha_inc = a_fix_fromInt(A_PIXEL_ALPHA_MAX) / (int)g_frames;
 
         a_pixel_push();
         a_pixel_setPixel(g_savedColor);
@@ -154,8 +154,8 @@ static A_STATE(a_fade__toColor)
     {
         alpha += alpha_inc;
 
-        if(alpha > a_fix_itofix(A_PIXEL_ALPHA_MAX)) {
-            alpha = a_fix_itofix(A_PIXEL_ALPHA_MAX);
+        if(alpha > a_fix_fromInt(A_PIXEL_ALPHA_MAX)) {
+            alpha = a_fix_fromInt(A_PIXEL_ALPHA_MAX);
             a_state_pop();
         }
     }
@@ -166,7 +166,7 @@ static A_STATE(a_fade__toColor)
         a_screen_blit(g_capturedScreen);
 
         a_pixel_setBlend(A_PIXEL_BLEND_RGBA);
-        a_pixel_setAlpha(a_fix_fixtoi(alpha));
+        a_pixel_setAlpha(a_fix_toInt(alpha));
         a_draw_fill();
     }
 
@@ -188,8 +188,8 @@ static A_STATE(a_fade__fromColor)
         a_pixel_push();
         a_pixel_setPixel(g_savedColor);
 
-        alpha = a_fix_itofix(A_PIXEL_ALPHA_MAX);
-        alpha_inc = a_fix_itofix(A_PIXEL_ALPHA_MAX) / (int)g_frames;
+        alpha = a_fix_fromInt(A_PIXEL_ALPHA_MAX);
+        alpha_inc = a_fix_fromInt(A_PIXEL_ALPHA_MAX) / (int)g_frames;
     }
 
     A_STATE_TICK
@@ -208,7 +208,7 @@ static A_STATE(a_fade__fromColor)
         a_screen_blit(g_capturedScreen);
 
         a_pixel_setBlend(A_PIXEL_BLEND_RGBA);
-        a_pixel_setAlpha(a_fix_fixtoi(alpha));
+        a_pixel_setAlpha(a_fix_toInt(alpha));
         a_draw_fill();
     }
 
@@ -227,8 +227,8 @@ static A_STATE(a_fade__screens)
     {
         updateCapturedScreenBuffer();
 
-        alpha = a_fix_itofix(A_PIXEL_ALPHA_MAX);
-        alpha_inc = a_fix_itofix(A_PIXEL_ALPHA_MAX) / (int)g_frames;
+        alpha = a_fix_fromInt(A_PIXEL_ALPHA_MAX);
+        alpha_inc = a_fix_fromInt(A_PIXEL_ALPHA_MAX) / (int)g_frames;
 
         a_pixel_push();
     }
@@ -249,7 +249,7 @@ static A_STATE(a_fade__screens)
         a_screen_blit(g_capturedScreen);
 
         a_pixel_setBlend(A_PIXEL_BLEND_RGBA);
-        a_pixel_setAlpha(a_fix_fixtoi(alpha));
+        a_pixel_setAlpha(a_fix_toInt(alpha));
         a_screen_blit(g_oldCapturedScreen);
     }
 

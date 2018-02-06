@@ -454,13 +454,13 @@ void a_platform__blitTextureEx(APlatformTexture* Texture, int X, int Y, AFix Sca
         }
     }
 
-    SDL_Point center = {a_fix_fixtoi((Texture->w / 2 + CenterX) * Scale),
-                        a_fix_fixtoi((Texture->h / 2 + CenterY) * Scale)};
+    SDL_Point center = {a_fix_toInt((Texture->w / 2 + CenterX) * Scale),
+                        a_fix_toInt((Texture->h / 2 + CenterY) * Scale)};
 
     SDL_Rect dest = {X - center.x,
                      Y - center.y,
-                     a_fix_fixtoi(Texture->w * Scale),
-                     a_fix_fixtoi(Texture->h * Scale)};
+                     a_fix_toInt(Texture->w * Scale),
+                     a_fix_toInt(Texture->h * Scale)};
 
     if(SDL_RenderCopyEx(a__sdlRenderer,
                         t,

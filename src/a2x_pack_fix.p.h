@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2017 Alex Margarit
+    Copyright 2010, 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -36,22 +36,22 @@ typedef uint32_t AFixu;
 extern AFix a_fix__sin[A_MATH_ANGLES_NUM];
 extern AFix a_fix__cos[A_MATH_ANGLES_NUM];
 
-static inline AFix a_fix_itofix(int X)
+static inline AFix a_fix_fromInt(int X)
 {
     return X << A_FIX_BIT_PRECISION;
 }
 
-static inline AFix a_fix_ftofix(float X)
+static inline AFix a_fix_fromFloat(float X)
 {
     return (AFix)(X * (1 << A_FIX_BIT_PRECISION));
 }
 
-static inline int a_fix_fixtoi(AFix X)
+static inline int a_fix_toInt(AFix X)
 {
     return X >> A_FIX_BIT_PRECISION;
 }
 
-static inline float a_fix_fixtof(AFix X)
+static inline float a_fix_toFloat(AFix X)
 {
     return (float)X / (1 << A_FIX_BIT_PRECISION);
 }
@@ -95,22 +95,22 @@ static inline AFix a_fix_truncate(AFix X)
     }
 }
 
-static inline AFixu a_fixu_itofix(unsigned X)
+static inline AFixu a_fixu_fromInt(unsigned X)
 {
     return X << A_FIX_BIT_PRECISION;
 }
 
-static inline AFixu a_fixu_ftofix(float X)
+static inline AFixu a_fixu_fromFloat(float X)
 {
     return (AFixu)(X * (1 << A_FIX_BIT_PRECISION));
 }
 
-static inline unsigned a_fixu_fixtoi(AFixu X)
+static inline unsigned a_fixu_toInt(AFixu X)
 {
     return X >> A_FIX_BIT_PRECISION;
 }
 
-static inline float a_fixu_fixtof(AFixu X)
+static inline float a_fixu_toFloat(AFixu X)
 {
     return (float)X / (1 << A_FIX_BIT_PRECISION);
 }
@@ -162,12 +162,12 @@ static inline AFix a_fix_cos(unsigned Angle)
 
 static inline AFix a_fix_sinf(AFixu Angle)
 {
-    return a_fix__sin[a_math_wrapAngle(a_fixu_fixtoi(Angle))];
+    return a_fix__sin[a_math_wrapAngle(a_fixu_toInt(Angle))];
 }
 
 static inline AFix a_fix_cosf(AFixu Angle)
 {
-    return a_fix__cos[a_math_wrapAngle(a_fixu_fixtoi(Angle))];
+    return a_fix__cos[a_math_wrapAngle(a_fixu_toInt(Angle))];
 }
 
 extern unsigned a_fix_atan(AFix X1, AFix Y1, AFix X2, AFix Y2);
