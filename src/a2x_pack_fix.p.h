@@ -72,7 +72,6 @@ typedef enum {
 } AFixAngles;
 
 extern AFix a_fix__sin[A_FIX_ANGLES_NUM];
-extern AFix a_fix__cos[A_FIX_ANGLES_NUM];
 
 static inline AFix a_fix_fromInt(int X)
 {
@@ -225,7 +224,7 @@ static inline AFix a_fix_sin(unsigned Angle)
 
 static inline AFix a_fix_cos(unsigned Angle)
 {
-    return a_fix__cos[a_fix_wrapAngleInt(Angle)];
+    return a_fix__sin[a_fix_wrapAngleInt(Angle + A_INT_DEG_090)];
 }
 
 static inline AFix a_fix_sinf(AFixu Angle)
@@ -235,7 +234,7 @@ static inline AFix a_fix_sinf(AFixu Angle)
 
 static inline AFix a_fix_cosf(AFixu Angle)
 {
-    return a_fix__cos[a_fix_wrapAngleInt(a_fixu_toInt(Angle))];
+    return a_fix__sin[a_fix_wrapAngleInt(a_fixu_toInt(Angle + A_FIX_DEG_090))];
 }
 
 extern unsigned a_fix_atan(AFix X1, AFix Y1, AFix X2, AFix Y2);

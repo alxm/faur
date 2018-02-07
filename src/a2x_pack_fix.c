@@ -20,19 +20,18 @@
 #include "a2x_pack_fix.v.h"
 
 AFix a_fix__sin[A_FIX_ANGLES_NUM];
-AFix a_fix__cos[A_FIX_ANGLES_NUM];
-
 static unsigned g_atan_angles[A_FIX_ONE];
 
-void a_fix__init(void)
+static void initSin(void)
 {
     for(unsigned a = 0; a < A_FIX_ANGLES_NUM; a++) {
         double rad = M_PI * (double)a / (A_FIX_ANGLES_NUM / 2);
-
         a_fix__sin[a] = a_fix_fromDouble(sin(rad));
-        a_fix__cos[a] = a_fix_fromDouble(cos(rad));
 	}
+}
 
+static void initAtan(void)
+{
     unsigned angle = 0;
     AFix lastRatio = 0;
 
@@ -54,6 +53,12 @@ void a_fix__init(void)
             g_atan_angles[referenceRatio] = angle - 1;
         }
     }
+}
+
+void a_fix__init(void)
+{
+    initSin();
+    initAtan();
 }
 
 unsigned a_fix_atan(AFix X1, AFix Y1, AFix X2, AFix Y2)
