@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2017 Alex Margarit
+    Copyright 2010, 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -116,7 +116,15 @@ int a_analog_getValueRaw(const AInputAnalog* Analog)
 
 AFix a_analog_getValueFix(const AInputAnalog* Analog)
 {
-    return a_analog_getValueRaw(Analog) >> (15 - A_FIX_BIT_PRECISION);
+    #define A__ANALOG_BITS 15
+
+    #if A_FIX_BIT_PRECISION < A__ANALOG_BITS
+        return a_analog_getValueRaw(Analog)
+            >> (A__ANALOG_BITS - A_FIX_BIT_PRECISION);
+    #else
+        return a_analog_getValueRaw(Analog)
+            << (A_FIX_BIT_PRECISION - A__ANALOG_BITS);
+    #endif
 }
 
 void a_input_analog__setAxisValue(AInputAnalogSource* Analog, int Value)

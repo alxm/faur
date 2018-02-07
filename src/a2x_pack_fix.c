@@ -1,5 +1,5 @@
 /*
-    Copyright 2010 Alex Margarit
+    Copyright 2010, 2014, 2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -19,18 +19,19 @@
 
 #include "a2x_pack_fix.v.h"
 
-AFix a_fix__sin[A_MATH_ANGLES_NUM];
-AFix a_fix__cos[A_MATH_ANGLES_NUM];
-
+AFix a_fix__sin[A_FIX_ANGLES_NUM];
 static unsigned g_atan_angles[A_FIX_ONE];
 
-void a_fix__init(void)
+static void initSin(void)
 {
-    for(unsigned a = 0; a < A_MATH_ANGLES_NUM; a++) {
-        a_fix__sin[a] = a_fix_ftofix(a_math_sin(a));
-        a_fix__cos[a] = a_fix_ftofix(a_math_cos(a));
+    for(unsigned a = 0; a < A_FIX_ANGLES_NUM; a++) {
+        double rad = M_PI * (double)a / (A_FIX_ANGLES_NUM / 2);
+        a_fix__sin[a] = a_fix_fromDouble(sin(rad));
 	}
+}
 
+static void initAtan(void)
+{
     unsigned angle = 0;
     AFix lastRatio = 0;
 
@@ -54,6 +55,12 @@ void a_fix__init(void)
     }
 }
 
+void a_fix__init(void)
+{
+    initSin();
+    initAtan();
+}
+
 unsigned a_fix_atan(AFix X1, AFix Y1, AFix X2, AFix Y2)
 {
     const AFix dx = a_math_abs(X2 - X1);
@@ -62,28 +69,28 @@ unsigned a_fix_atan(AFix X1, AFix Y1, AFix X2, AFix Y2)
     if(dx == dy) {
         if(X2 >= X1) {
             if(Y2 <= Y1) {
-                return A_MATH_DEG_045;
+                return A_INT_DEG_045;
             } else {
-                return A_MATH_DEG_315;
+                return A_INT_DEG_315;
             }
         } else {
             if(Y2 <= Y1) {
-                return A_MATH_DEG_135;
+                return A_INT_DEG_135;
             } else {
-                return A_MATH_DEG_225;
+                return A_INT_DEG_225;
             }
         }
     } else if(dx == 0) {
         if(Y2 <= Y1) {
-            return A_MATH_DEG_090;
+            return A_INT_DEG_090;
         } else {
-            return A_MATH_DEG_270;
+            return A_INT_DEG_270;
         }
     } else if(dy == 0) {
         if(X2 >= X1) {
             return 0;
         } else {
-            return A_MATH_DEG_180;
+            return A_INT_DEG_180;
         }
     }
 
@@ -95,37 +102,46 @@ unsigned a_fix_atan(AFix X1, AFix Y1, AFix X2, AFix Y2)
             if(Y2 <= Y1) {
                 return cachedAngle;
             } else {
-                return a_math_wrapAngle(-cachedAngle);
+                return a_fix_wrapAngleInt(-cachedAngle);
             }
         } else {
             if(Y2 <= Y1) {
-                return A_MATH_DEG_180 - cachedAngle;
+                return A_INT_DEG_180 - cachedAngle;
             } else {
-                return A_MATH_DEG_180 + cachedAngle;
+                return A_INT_DEG_180 + cachedAngle;
             }
         }
     } else {
         if(X2 >= X1) {
             if(Y2 <= Y1) {
-                return A_MATH_DEG_090 - cachedAngle;
+                return A_INT_DEG_090 - cachedAngle;
             } else {
-                return A_MATH_DEG_270 + cachedAngle;
+                return A_INT_DEG_270 + cachedAngle;
             }
         } else {
             if(Y2 <= Y1) {
-                return A_MATH_DEG_090 + cachedAngle;
+                return A_INT_DEG_090 + cachedAngle;
             } else {
-                return A_MATH_DEG_270 - cachedAngle;
+                return A_INT_DEG_270 - cachedAngle;
             }
         }
     }
 }
 
-void a_fix_rotate(AFix X, AFix Y, unsigned Angle, AFix* NewX, AFix* NewY)
+void a_fix_rotateCounter(AFix X, AFix Y, unsigned Angle, AFix* NewX, AFix* NewY)
 {
     const AFix sin = a_fix_sin(Angle);
     const AFix cos = a_fix_cos(Angle);
 
     *NewX = a_fix_mul(X,  cos) + a_fix_mul(Y, sin);
     *NewY = a_fix_mul(X, -sin) + a_fix_mul(Y, cos);
+}
+
+void a_fix_rotateClockwise(AFix X, AFix Y, unsigned Angle, AFix* NewX, AFix* NewY)
+{
+    const AFix sin = a_fix_sin(Angle);
+    const AFix cos = a_fix_cos(Angle);
+
+    *NewX = a_fix_mul(X, cos) + a_fix_mul(Y, -sin);
+    *NewY = a_fix_mul(X, sin) + a_fix_mul(Y,  cos);
 }

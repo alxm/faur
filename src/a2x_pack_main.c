@@ -79,7 +79,6 @@ int main(int Argc, char* Argv[])
     a_fps__init();
     a_screenshot__init();
     a_sound__init();
-    a_math__init();
     a_random__init();
     a_fix__init();
     a_state__init();
