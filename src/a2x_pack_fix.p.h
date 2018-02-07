@@ -31,7 +31,7 @@ typedef uint32_t AFixu;
 #define A_FIX_MAX_INT       (INT32_MAX >> A_FIX_BIT_PRECISION)
 #define A_FIXU_MAX_INT      (UINT32_MAX >> A_FIX_BIT_PRECISION)
 
-#define A_FIX_ANGLES_NUM 256u
+#define A_FIX_ANGLES_NUM 4096u
 
 typedef enum {
     A_INT_DEG_022 = (A_FIX_ANGLES_NUM / 16),
