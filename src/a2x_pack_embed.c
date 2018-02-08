@@ -18,6 +18,8 @@
 */
 
 #include "a2x_pack_embed.v.h"
+#include "a2x_pack_mem.v.h"
+#include "a2x_pack_strhash.v.h"
 
 #include "console.h"
 #include "font.h"

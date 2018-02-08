@@ -18,6 +18,10 @@
 */
 
 #include "a2x_pack_dir.v.h"
+#include "a2x_pack_listit.v.h"
+#include "a2x_pack_mem.v.h"
+#include "a2x_pack_out.v.h"
+#include "a2x_pack_str.v.h"
 
 struct ADir {
     char* path;

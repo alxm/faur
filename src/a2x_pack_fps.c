@@ -18,6 +18,11 @@
 */
 
 #include "a2x_pack_fps.v.h"
+#include "a2x_pack_mem.v.h"
+#include "a2x_pack_out.v.h"
+#include "a2x_pack_settings.v.h"
+#include "a2x_pack_time.v.h"
+#include "a2x_pack_timer.v.h"
 
 #define AVERAGE_WINDOW_SEC 2
 #define FRAMESKIP_ADJUST_DELAY_SEC 2

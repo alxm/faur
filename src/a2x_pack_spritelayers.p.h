@@ -21,6 +21,9 @@
 
 #include "a2x_system_includes.h"
 
+#include "a2x_pack_list.p.h"
+#include "a2x_pack_sprite.p.h"
+
 typedef AList ASpriteLayers;
 
 extern ASpriteLayers* a_spritelayers_new(void);

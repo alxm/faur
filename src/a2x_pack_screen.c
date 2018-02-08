@@ -17,7 +17,16 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "a2x_pack_collide.v.h"
+#include "a2x_pack_input.v.h"
+#include "a2x_pack_input_button.v.h"
+#include "a2x_pack_list.v.h"
+#include "a2x_pack_mem.v.h"
+#include "a2x_pack_out.v.h"
+#include "a2x_pack_pixel.v.h"
+#include "a2x_pack_platform_wiz.v.h"
 #include "a2x_pack_screen.v.h"
+#include "a2x_pack_settings.v.h"
 
 typedef struct {
     AScreenOverlay callback;

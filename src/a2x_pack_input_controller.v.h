@@ -21,6 +21,9 @@
 
 #include "a2x_pack_input_controller.p.h"
 
+#include "a2x_pack_input_analog.v.h"
+#include "a2x_pack_strhash.v.h"
+
 extern void a_input_controller__init(void);
 extern void a_input_controller__init2(void);
 extern void a_input_controller__uninit(void);

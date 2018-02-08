@@ -29,6 +29,8 @@ typedef struct {
     bool fillDraw;
 } APixelState;
 
+#include "a2x_pack_math.v.h"
+
 extern APixelState a_pixel__state;
 
 static inline void a_pixel__plain(APixel* Dst, APixel Pixel)

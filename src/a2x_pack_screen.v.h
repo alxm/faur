@@ -23,6 +23,8 @@
 
 typedef void (*AScreenOverlay)(void);
 
+#include "a2x_pack_platform.v.h"
+
 struct AScreen {
     APixel* pixels;
     size_t pixelsSize;

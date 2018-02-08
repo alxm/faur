@@ -18,6 +18,9 @@
 */
 
 #include "a2x_pack_list.v.h"
+#include "a2x_pack_listit.v.h"
+#include "a2x_pack_mem.v.h"
+#include "a2x_pack_random.v.h"
 
 AList* a_list_new(void)
 {

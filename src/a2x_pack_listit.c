@@ -17,6 +17,7 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "a2x_pack_list.v.h"
 #include "a2x_pack_listit.v.h"
 
 AListIt a_listit__new(AList* List, bool Reversed)

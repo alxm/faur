@@ -25,6 +25,8 @@ typedef struct APlatformTexture APlatformTexture;
 typedef struct APlatformSfx APlatformSfx;
 typedef void APlatformMusic;
 
+#include "a2x_pack_sprite.v.h"
+
 extern void a_platform__init(void);
 extern void a_platform__init2(void);
 extern void a_platform__uninit(void);

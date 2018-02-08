@@ -32,6 +32,8 @@ typedef struct {
     AEntity* entity; // entity this component belongs to
 } AComponentHeader;
 
+#include "a2x_pack_strhash.v.h"
+
 extern AStrHash* a__ecsComponents;
 
 extern void a_ecs_component__init(void);

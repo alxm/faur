@@ -20,7 +20,10 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "a2x_pack_file.v.h"
+#include "a2x_pack_out.v.h"
 #include "a2x_pack_platform_wiz.v.h"
+#include "a2x_pack_settings.v.h"
 
 #if A_PLATFORM_SYSTEM_WIZ || A_PLATFORM_SYSTEM_CAANOO
 

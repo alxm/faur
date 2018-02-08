@@ -21,6 +21,9 @@
 
 #include "a2x_pack_ecs_system.p.h"
 
+#include "a2x_pack_bitfield.v.h"
+#include "a2x_pack_list.v.h"
+
 typedef struct {
     ASystemHandler* handler;
     ASystemSort* compare;

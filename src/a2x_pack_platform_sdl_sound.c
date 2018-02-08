@@ -17,7 +17,11 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "a2x_pack_mem.v.h"
+#include "a2x_pack_out.v.h"
+#include "a2x_pack_platform.v.h"
 #include "a2x_pack_platform_sdl_sound.v.h"
+#include "a2x_pack_settings.v.h"
 
 #if A_PLATFORM_LIB_SDL
 #include <SDL_mixer.h>

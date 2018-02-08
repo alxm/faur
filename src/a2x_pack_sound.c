@@ -17,7 +17,17 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "a2x_pack_draw.v.h"
+#include "a2x_pack_embed.v.h"
+#include "a2x_pack_file.v.h"
+#include "a2x_pack_input.v.h"
+#include "a2x_pack_input_button.v.h"
+#include "a2x_pack_math.v.h"
+#include "a2x_pack_platform.v.h"
+#include "a2x_pack_screen.v.h"
+#include "a2x_pack_settings.v.h"
 #include "a2x_pack_sound.v.h"
+#include "a2x_pack_time.v.h"
 
 static bool g_soundOn;
 static int g_volume;

@@ -18,6 +18,9 @@
 */
 
 #include "a2x_pack_collide.v.h"
+#include "a2x_pack_listit.v.h"
+#include "a2x_pack_math.v.h"
+#include "a2x_pack_mem.v.h"
 
 struct AColMap {
     int w, h; // width and height of map, in submaps

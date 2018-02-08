@@ -21,6 +21,8 @@
 
 #include "a2x_system_includes.h"
 
+#include "a2x_pack_ecs.p.h"
+
 extern void a_system_declare(const char* Name, const char* Components, ASystemHandler* Handler, ASystemSort* Compare, bool OnlyActiveEntities);
 
 extern void a_system_execute(const char* Systems);

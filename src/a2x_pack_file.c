@@ -18,6 +18,10 @@
 */
 
 #include "a2x_pack_file.v.h"
+#include "a2x_pack_math.v.h"
+#include "a2x_pack_mem.v.h"
+#include "a2x_pack_out.v.h"
+#include "a2x_pack_str.v.h"
 
 struct AFile {
     FILE* handle;

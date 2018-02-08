@@ -21,7 +21,18 @@
     #include <emscripten.h>
 #endif
 
+#include "a2x_pack_ecs.v.h"
+#include "a2x_pack_ecs_system.v.h"
+#include "a2x_pack_fps.v.h"
+#include "a2x_pack_input.v.h"
+#include "a2x_pack_list.v.h"
+#include "a2x_pack_mem.v.h"
+#include "a2x_pack_out.v.h"
+#include "a2x_pack_screen.v.h"
+#include "a2x_pack_settings.v.h"
 #include "a2x_pack_state.v.h"
+#include "a2x_pack_str.v.h"
+#include "a2x_pack_strhash.v.h"
 
 typedef struct {
     char* name;

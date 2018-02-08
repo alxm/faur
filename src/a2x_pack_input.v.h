@@ -19,12 +19,14 @@
 
 #pragma once
 
+#include "a2x_pack_input.p.h"
+
 typedef struct AInputUserHeader AInputUserHeader;
 typedef struct AInputSourceHeader AInputSourceHeader;
 
 typedef void (*AInputCallback)(void);
 
-#include "a2x_pack_input.p.h"
+#include "a2x_pack_strhash.v.h"
 
 struct AInputUserHeader {
     char* name;

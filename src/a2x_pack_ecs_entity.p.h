@@ -21,6 +21,8 @@
 
 #include "a2x_system_includes.h"
 
+#include "a2x_pack_ecs.p.h"
+
 extern AEntity* a_entity_new(const char* Id, void* Context);
 
 extern const char* a_entity_getId(const AEntity* Entity);

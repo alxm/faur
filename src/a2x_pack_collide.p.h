@@ -24,6 +24,8 @@
 typedef struct AColMap AColMap;
 typedef struct AColObject AColObject;
 
+#include "a2x_pack_list.p.h"
+
 extern AColMap* a_colmap_new(int Width, int Height, int MaxObjectDim);
 extern void a_colmap_free(AColMap* Map);
 

@@ -17,6 +17,9 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "a2x_pack_file.v.h"
+#include "a2x_pack_mem.v.h"
+#include "a2x_pack_out.v.h"
 #include "a2x_pack_png.v.h"
 
 #include <zlib.h>

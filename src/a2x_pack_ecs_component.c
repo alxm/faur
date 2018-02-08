@@ -18,6 +18,8 @@
 */
 
 #include "a2x_pack_ecs_component.v.h"
+#include "a2x_pack_mem.v.h"
+#include "a2x_pack_out.v.h"
 
 AStrHash* a__ecsComponents; // table of declared AComponent
 

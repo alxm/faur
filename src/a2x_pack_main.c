@@ -17,7 +17,24 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "a2x_pack_conf.v.h"
+#include "a2x_pack_console.v.h"
+#include "a2x_pack_ecs.v.h"
+#include "a2x_pack_embed.v.h"
+#include "a2x_pack_fade.v.h"
+#include "a2x_pack_fix.v.h"
+#include "a2x_pack_font.v.h"
+#include "a2x_pack_fps.v.h"
+#include "a2x_pack_input.v.h"
 #include "a2x_pack_main.v.h"
+#include "a2x_pack_out.v.h"
+#include "a2x_pack_pixel.v.h"
+#include "a2x_pack_random.v.h"
+#include "a2x_pack_screen.v.h"
+#include "a2x_pack_screenshot.v.h"
+#include "a2x_pack_settings.v.h"
+#include "a2x_pack_sound.v.h"
+#include "a2x_pack_state.v.h"
 
 static int g_argsNum;
 static const char** g_args;
