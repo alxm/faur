@@ -27,7 +27,6 @@ from utils.tool import Tool
 
 """
 a2x_pack_sample.p.h
-    <a2x_system_includes.h>
     <public typedefs>
     <a2x_pack_*.p.h>
     <public typedef implementations>
@@ -35,13 +34,13 @@ a2x_pack_sample.p.h
 
 a2x_pack_sample.v.h
     <a2x_pack_sample.p.h>
-    <system headers>
     <private typedefs>
     <a2x_pack_*.v.h>
     <private typedef implementations>
     <private api prototypes>
 
 a2x_pack_sample.c
+    <a2x_system_includes.h>
     <system headers>
     <a2x_pack_*.v.h>
     <a2x_pack_sample.v.h>
@@ -91,6 +90,8 @@ class PackTool(Tool):
         self.writefile(pack_c,
 """\
 {0}
+
+#include "a2x_system_includes.h"
 
 #include "a2x_pack_{1}.v.h"
 
