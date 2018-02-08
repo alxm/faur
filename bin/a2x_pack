@@ -27,7 +27,7 @@ from utils.tool import Tool
 
 """
 a2x_pack_sample.p.h
-    <system headers>
+    <a2x_system_includes.h>
     <public typedefs>
     <a2x_pack_*.p.h>
     <public typedef implementations>

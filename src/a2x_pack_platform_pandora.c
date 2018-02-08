@@ -23,7 +23,6 @@
 #include "a2x_pack_str.v.h"
 
 #if A_PLATFORM_SYSTEM_PANDORA
-
 static struct {
     char* nub0Mode;
     char* nub1Mode;
@@ -114,5 +113,4 @@ void a_platform_pandora__uninit(void)
 
     pandora_setScreenFilter("default");
 }
-
 #endif // A_PLATFORM_SYSTEM_PANDORA

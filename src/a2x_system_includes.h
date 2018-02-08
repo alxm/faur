@@ -29,11 +29,6 @@
 #define A_ARRAY_LEN(A) (sizeof(A) / sizeof(A[0]))
 typedef void AFree(void* Pointer);
 
-// For putenv
-#ifndef _XOPEN_SOURCE
-    #define _XOPEN_SOURCE
-#endif
-
 #include <ctype.h>
 #include <dirent.h>
 #include <fcntl.h>
@@ -49,12 +44,3 @@ typedef void AFree(void* Pointer);
 #include <sys/stat.h>
 #include <time.h>
 #include <unistd.h>
-
-#if A_PLATFORM_SYSTEM_GP2X || A_PLATFORM_SYSTEM_WIZ || A_PLATFORM_SYSTEM_CAANOO
-    #include <sys/ioctl.h>
-    #include <sys/mman.h>
-#endif
-
-#if A_PLATFORM_LIB_SDL
-    #include <SDL.h>
-#endif

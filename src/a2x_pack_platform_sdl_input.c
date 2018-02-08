@@ -17,6 +17,10 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#if A_PLATFORM_LIB_SDL
+    #include <SDL.h>
+#endif
+
 #include "a2x_pack_input_analog.v.h"
 #include "a2x_pack_input_button.v.h"
 #include "a2x_pack_input_controller.v.h"

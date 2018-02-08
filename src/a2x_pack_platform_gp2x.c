@@ -21,11 +21,14 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "a2x_system_includes.h"
+
+#if A_PLATFORM_SYSTEM_GP2X
+#include <sys/mman.h>
+
 #include "a2x_pack_file.v.h"
 #include "a2x_pack_platform_gp2x.v.h"
 #include "a2x_pack_settings.v.h"
-
-#if A_PLATFORM_SYSTEM_GP2X
 
 static int g_mmuHackOn = 0;
 
@@ -130,5 +133,4 @@ void a_platform__getNativeResolution(int* Width, int* Height)
     *Width = 320;
     *Height = 240;
 }
-
 #endif // A_PLATFORM_SYSTEM_GP2X
