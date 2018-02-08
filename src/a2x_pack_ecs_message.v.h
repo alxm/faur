@@ -21,8 +21,6 @@
 
 #include "a2x_pack_ecs_message.p.h"
 
-#include "a2x_pack_ecs.v.h"
-
 typedef struct {
     AEntity* to;
     AEntity* from;

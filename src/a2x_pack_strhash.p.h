@@ -24,8 +24,6 @@
 typedef struct AStrHash AStrHash;
 typedef struct AStrHashEntry AStrHashEntry;
 
-#include "a2x_pack_list.p.h"
-
 extern AStrHash* a_strhash_new(void);
 extern void a_strhash_free(AStrHash* Hash);
 extern void a_strhash_freeEx(AStrHash* Hash, AFree* Free);

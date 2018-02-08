@@ -21,11 +21,6 @@
 
 #include "a2x_pack_console.p.h"
 
-#include "a2x_pack_font.v.h"
-#include "a2x_pack_list.v.h"
-#include "a2x_pack_pixel.v.h"
-#include "a2x_pack_str.v.h"
-
 extern void a_console__init(void);
 extern void a_console__init2(void);
 extern void a_console__uninit(void);

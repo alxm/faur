@@ -21,8 +21,6 @@
 
 #include "a2x_system_includes.h"
 
-#include "a2x_pack_pixel.p.h"
-
 #define A_SETUP void a_settings__application(void)
 extern A_SETUP;
 

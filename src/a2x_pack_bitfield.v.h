@@ -20,5 +20,3 @@
 #pragma once
 
 #include "a2x_pack_bitfield.p.h"
-
-#include "a2x_pack_mem.v.h"

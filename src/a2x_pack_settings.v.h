@@ -21,10 +21,6 @@
 
 #include "a2x_pack_settings.p.h"
 
-#include "a2x_pack_out.v.h"
-#include "a2x_pack_str.v.h"
-#include "a2x_pack_strhash.v.h"
-
 extern void a_settings__init(void);
 extern void a_settings__uninit(void);
 

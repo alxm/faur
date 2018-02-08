@@ -21,11 +21,6 @@
 
 #include "a2x_pack_sprite.p.h"
 
-#include "a2x_pack_embed.v.h"
-#include "a2x_pack_list.v.h"
-#include "a2x_pack_platform.v.h"
-#include "a2x_pack_screen.v.h"
-
 struct ASprite {
     APixel* pixels;
     size_t pixelsSize;

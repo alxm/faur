@@ -21,7 +21,5 @@
 
 #include "a2x_pack_platform_pandora.p.h"
 
-#include "a2x_pack_file.v.h"
-
 extern void a_platform_pandora__init(void);
 extern void a_platform_pandora__uninit(void);

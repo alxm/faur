@@ -21,8 +21,5 @@
 
 #include "a2x_pack_platform_gp2x.p.h"
 
-#include "a2x_pack_file.v.h"
-#include "a2x_pack_settings.v.h"
-
 extern void a_platform_gp2x__init(void);
 extern void a_platform_gp2x__uninit(void);

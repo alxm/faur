@@ -20,6 +20,3 @@
 #pragma once
 
 #include "a2x_pack_str.p.h"
-
-#include "a2x_pack_list.v.h"
-#include "a2x_pack_math.v.h"

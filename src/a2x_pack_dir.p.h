@@ -24,8 +24,6 @@
 typedef struct ADir ADir;
 typedef struct ADirEntry ADirEntry;
 
-#include "a2x_pack_list.p.h"
-
 extern ADir* a_dir_open(const char* Path);
 extern void a_dir_close(ADir* Dir);
 

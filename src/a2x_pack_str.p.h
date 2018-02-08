@@ -21,8 +21,6 @@
 
 #include "a2x_system_includes.h"
 
-#include "a2x_pack_list.p.h"
-
 extern char* a_str_merge(const char* String1, ...);
 extern char* a_str_dup(const char* String);
 extern char* a_str_trim(const char* String);

@@ -23,8 +23,6 @@
 
 typedef struct AInputAnalog AInputAnalog;
 
-#include "a2x_pack_fix.p.h"
-
 extern AInputAnalog* a_analog_new(const char* Ids);
 extern void a_analog_free(AInputAnalog* Analog);
 

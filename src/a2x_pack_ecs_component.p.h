@@ -21,8 +21,6 @@
 
 #include "a2x_system_includes.h"
 
-#include "a2x_pack_ecs.p.h"
-
 extern void a_component_declare(const char* Name, size_t Size, AFree* Free);
 
 extern AEntity* a_component_getEntity(const void* Component);

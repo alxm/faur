@@ -26,20 +26,6 @@ typedef void (*AInputCallback)(void);
 
 #include "a2x_pack_input.p.h"
 
-#include "a2x_pack_collide.v.h"
-#include "a2x_pack_fps.v.h"
-#include "a2x_pack_strhash.v.h"
-#include "a2x_pack_list.v.h"
-#include "a2x_pack_screen.v.h"
-#include "a2x_pack_screenshot.v.h"
-#include "a2x_pack_state.v.h"
-#include "a2x_pack_strbuilder.v.h"
-
-#include "a2x_pack_input_button.v.h"
-#include "a2x_pack_input_analog.v.h"
-#include "a2x_pack_input_controller.v.h"
-#include "a2x_pack_input_touch.v.h"
-
 struct AInputUserHeader {
     char* name;
     AList* sourceInputs; // List of AInputButtonSource/Analog/Touch

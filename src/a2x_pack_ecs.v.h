@@ -21,11 +21,6 @@
 
 #include "a2x_pack_ecs.p.h"
 
-#include "a2x_pack_ecs_component.v.h"
-#include "a2x_pack_ecs_message.v.h"
-#include "a2x_pack_ecs_system.v.h"
-#include "a2x_pack_ecs_entity.v.h"
-
 typedef enum {
     A_ECS__INVALID = -1,
     A_ECS__NEW, // new entities are added to this list

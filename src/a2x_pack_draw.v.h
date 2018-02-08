@@ -20,7 +20,3 @@
 #pragma once
 
 #include "a2x_pack_draw.p.h"
-
-#include "a2x_pack_fix.v.h"
-#include "a2x_pack_pixel.v.h"
-#include "a2x_pack_screen.v.h"

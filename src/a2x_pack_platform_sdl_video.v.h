@@ -21,11 +21,6 @@
 
 #include "a2x_pack_platform_sdl_video.p.h"
 
-#include <SDL.h>
-
-#include "a2x_pack_pixel.v.h"
-#include "a2x_pack_platform.v.h"
-
 #if A_PLATFORM_LIB_SDL == 2
     extern SDL_Renderer* a__sdlRenderer;
 

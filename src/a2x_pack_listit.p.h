@@ -23,8 +23,6 @@
 
 typedef struct AListIt AListIt;
 
-#include "a2x_pack_list.p.h"
-
 struct AListIt {
     AList* list;
     AListNode* currentNode;

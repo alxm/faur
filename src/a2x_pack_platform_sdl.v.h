@@ -21,9 +21,5 @@
 
 #include "a2x_pack_platform_sdl.p.h"
 
-#include "a2x_pack_platform_sdl_video.v.h"
-#include "a2x_pack_platform_sdl_sound.v.h"
-#include "a2x_pack_platform_sdl_input.v.h"
-
 extern void a_platform_sdl__init(void);
 extern void a_platform_sdl__uninit(void);

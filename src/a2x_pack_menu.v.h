@@ -20,9 +20,3 @@
 #pragma once
 
 #include "a2x_pack_menu.p.h"
-
-#include "a2x_pack_fps.v.h"
-#include "a2x_pack_input_button.v.h"
-#include "a2x_pack_list.v.h"
-#include "a2x_pack_settings.v.h"
-#include "a2x_pack_sound.v.h"

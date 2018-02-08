@@ -23,9 +23,6 @@
 
 typedef struct AScreen AScreen;
 
-#include "a2x_pack_pixel.p.h"
-#include "a2x_pack_sprite.p.h"
-
 extern APixel* a_screen_getPixels(void);
 extern int a_screen_getWidth(void);
 extern int a_screen_getHeight(void);

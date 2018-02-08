@@ -25,13 +25,6 @@ typedef struct APlatformTexture APlatformTexture;
 typedef struct APlatformSfx APlatformSfx;
 typedef void APlatformMusic;
 
-#include "a2x_pack_platform_gp2x.v.h"
-#include "a2x_pack_platform_pandora.v.h"
-#include "a2x_pack_platform_sdl.v.h"
-#include "a2x_pack_platform_software_blit.v.h"
-#include "a2x_pack_platform_software_draw.v.h"
-#include "a2x_pack_platform_wiz.v.h"
-
 extern void a_platform__init(void);
 extern void a_platform__init2(void);
 extern void a_platform__uninit(void);

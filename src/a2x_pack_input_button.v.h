@@ -23,8 +23,6 @@
 
 typedef struct AInputButtonSource AInputButtonSource;
 
-#include "a2x_pack_input.v.h"
-
 extern void a_input_button__init(void);
 extern void a_input_button__uninit(void);
 

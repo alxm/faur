@@ -33,11 +33,6 @@ typedef enum {
     A_FONT_FACE_DEFAULT_NUM
 } AFontDefaults;
 
-#include "a2x_pack_list.v.h"
-#include "a2x_pack_screen.v.h"
-#include "a2x_pack_sprite.v.h"
-#include "a2x_pack_spriteframes.v.h"
-
 extern void a_font__init(void);
 extern void a_font__uninit(void);
 

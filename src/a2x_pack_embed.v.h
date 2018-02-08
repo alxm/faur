@@ -21,8 +21,6 @@
 
 #include "a2x_pack_embed.p.h"
 
-#include "a2x_pack_strhash.v.h"
-
 extern void a_embed__init(void);
 extern void a_embed__uninit(void);
 

@@ -21,8 +21,6 @@
 
 #include "a2x_pack_platform_software_draw.p.h"
 
-#include "a2x_pack_pixel.v.h"
-
 extern void a_platform_software_draw__init(void);
 
 extern void a_platform_software_draw__updateRoutines(void);

@@ -54,3 +54,7 @@ typedef void AFree(void* Pointer);
     #include <sys/ioctl.h>
     #include <sys/mman.h>
 #endif
+
+#if A_PLATFORM_LIB_SDL
+    #include <SDL.h>
+#endif
