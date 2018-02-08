@@ -17,14 +17,9 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#if A_PLATFORM_SYSTEM_DESKTOP || A_PLATFORM_SYSTEM_EMSCRIPTEN || A_PLATFORM_SYSTEM_PANDORA
-    #define A_DEVICE_HAS_KEYBOARD 1
-#else
-    #define A_DEVICE_HAS_KEYBOARD 0
-#endif
-
 #define A_UNUSED(X) (X = X)
 #define A_ARRAY_LEN(A) (sizeof(A) / sizeof(A[0]))
+
 typedef void AFree(void* Pointer);
 
 #include <ctype.h>
