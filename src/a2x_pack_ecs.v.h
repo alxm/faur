@@ -32,6 +32,7 @@ typedef enum {
     A_ECS__NUM
 } AEcsListType;
 
+#include "a2x_pack_ecs_entity.v.h"
 #include "a2x_pack_list.v.h"
 
 struct AEcs {

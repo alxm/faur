@@ -19,9 +19,4 @@
 
 #pragma once
 
-typedef struct AEntity AEntity;
-typedef void AMessageHandler(AEntity* To, AEntity* From);
-typedef void ASystemHandler(AEntity* Entity);
-typedef int ASystemSort(AEntity* A, AEntity* B);
-
 extern void a_ecs_flushNewEntities(void);

@@ -1,5 +1,5 @@
 /*
-    Copyright 2017 Alex Margarit
+    Copyright 2017, 2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -18,6 +18,10 @@
 */
 
 #pragma once
+
+#include "a2x_pack_ecs_entity.p.h"
+
+typedef void AMessageHandler(AEntity* To, AEntity* From);
 
 extern void a_message_setHandler(AEntity* Entity, const char* Message, AMessageHandler* Handler, bool HandleImmediately);
 extern void a_message_send(AEntity* To, AEntity* From, const char* Message);
