@@ -20,6 +20,9 @@
 #define A_UNUSED(X) (X = X)
 #define A_ARRAY_LEN(A) (sizeof(A) / sizeof(A[0]))
 
+#define A_STRINGIFY__DO_NOT_CALL(X) #X
+#define A_STRINGIFY(X) A_STRINGIFY__DO_NOT_CALL(X)
+
 typedef void AFree(void* Pointer);
 
 #include <ctype.h>
