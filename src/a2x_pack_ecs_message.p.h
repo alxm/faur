@@ -19,8 +19,6 @@
 
 #pragma once
 
-#include "a2x_system_includes.h"
-
 #include "a2x_pack_ecs.v.h"
 
 extern void a_message_setHandler(AEntity* Entity, const char* Message, AMessageHandler* Handler, bool HandleImmediately);

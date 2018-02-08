@@ -17,6 +17,8 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "a2x_system_includes.h"
+
 #include "a2x_pack_ecs.v.h"
 #include "a2x_pack_ecs_component.v.h"
 #include "a2x_pack_ecs_entity.v.h"

@@ -19,8 +19,6 @@
 
 #pragma once
 
-#include "a2x_system_includes.h"
-
 typedef struct AStrBuilder AStrBuilder;
 
 extern AStrBuilder* a_strbuilder_new(size_t Bytes);

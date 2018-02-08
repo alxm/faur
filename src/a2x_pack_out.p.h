@@ -19,8 +19,6 @@
 
 #pragma once
 
-#include "a2x_system_includes.h"
-
 extern void a_out_print(const char* Text);
 extern void a_out_printf(const char* Format, ...);
 extern void a_out_printv(const char* Format, va_list Args);

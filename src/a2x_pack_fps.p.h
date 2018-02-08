@@ -19,8 +19,6 @@
 
 #pragma once
 
-#include "a2x_system_includes.h"
-
 extern unsigned a_fps_getFps(void);
 extern unsigned a_fps_getMaxFps(void);
 extern unsigned a_fps_getFrameSkip(void);

@@ -19,8 +19,6 @@
 
 #pragma once
 
-#include "a2x_system_includes.h"
-
 typedef struct ASprite ASprite;
 
 #include "a2x_pack_fix.p.h"

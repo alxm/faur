@@ -19,8 +19,6 @@
 
 #pragma once
 
-#include "a2x_system_includes.h"
-
 extern void a_draw_fill(void);
 extern void a_draw_pixel(int X, int Y);
 extern void a_draw_line(int X1, int Y1, int X2, int Y2);

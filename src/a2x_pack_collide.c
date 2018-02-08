@@ -17,6 +17,8 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "a2x_system_includes.h"
+
 #include "a2x_pack_collide.v.h"
 #include "a2x_pack_listit.v.h"
 #include "a2x_pack_math.v.h"

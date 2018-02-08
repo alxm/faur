@@ -17,8 +17,6 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
-
 #if A_PLATFORM_SYSTEM_DESKTOP || A_PLATFORM_SYSTEM_EMSCRIPTEN || A_PLATFORM_SYSTEM_PANDORA
     #define A_DEVICE_HAS_KEYBOARD 1
 #else

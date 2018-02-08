@@ -19,8 +19,6 @@
 
 #pragma once
 
-#include "a2x_system_includes.h"
-
 typedef struct ADir ADir;
 typedef struct ADirEntry ADirEntry;
 
