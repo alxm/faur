@@ -19,13 +19,10 @@
 
 #pragma once
 
-#include "a2x_system_includes.h"
+typedef struct AList ASpriteLayers;
 
 #include "a2x_pack_list.p.h"
-#include "a2x_pack_pixel.p.h"
 #include "a2x_pack_sprite.p.h"
-
-typedef AList ASpriteLayers;
 
 extern ASpriteLayers* a_spritelayers_new(void);
 extern void a_spritelayers_free(ASpriteLayers* Layers, bool FreeSprites);

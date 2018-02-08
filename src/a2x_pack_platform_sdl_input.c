@@ -17,9 +17,24 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a2x_pack_platform_sdl_input.v.h"
+#include "a2x_system_includes.h"
 
 #if A_PLATFORM_LIB_SDL
+#include <SDL.h>
+
+#include "a2x_pack_input_analog.v.h"
+#include "a2x_pack_input_button.v.h"
+#include "a2x_pack_input_controller.v.h"
+#include "a2x_pack_input_touch.v.h"
+#include "a2x_pack_math.v.h"
+#include "a2x_pack_mem.v.h"
+#include "a2x_pack_out.v.h"
+#include "a2x_pack_platform_sdl_input.v.h"
+#include "a2x_pack_settings.v.h"
+#include "a2x_pack_state.v.h"
+#include "a2x_pack_str.v.h"
+#include "a2x_pack_strhash.v.h"
+
 #if A_PLATFORM_LIB_SDL == 1
     typedef uint8_t ASdlJoystickId;
     typedef SDLKey ASdlKeyCode;

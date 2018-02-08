@@ -20,5 +20,3 @@
 #pragma once
 
 #include "a2x_pack_mem.p.h"
-
-#include "a2x_pack_out.v.h"

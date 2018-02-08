@@ -23,8 +23,6 @@
 
 typedef struct AInputTouchSource AInputTouchSource;
 
-#include "a2x_pack_input.v.h"
-
 extern void a_input_touch__init(void);
 extern void a_input_touch__uninit(void);
 

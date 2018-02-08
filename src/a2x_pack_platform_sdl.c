@@ -17,9 +17,18 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a2x_pack_platform_sdl.v.h"
+#include "a2x_system_includes.h"
 
 #if A_PLATFORM_LIB_SDL
+#include <SDL.h>
+
+#include "a2x_pack_out.v.h"
+#include "a2x_pack_platform_sdl.v.h"
+#include "a2x_pack_platform_sdl_input.v.h"
+#include "a2x_pack_platform_sdl_sound.v.h"
+#include "a2x_pack_platform_sdl_video.v.h"
+#include "a2x_pack_settings.v.h"
+
 static uint32_t g_sdlFlags;
 
 void a_platform_sdl__init(void)

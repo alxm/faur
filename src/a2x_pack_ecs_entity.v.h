@@ -22,7 +22,7 @@
 #include "a2x_pack_ecs_entity.p.h"
 
 #include "a2x_pack_bitfield.v.h"
-#include "a2x_pack_ecs.v.h"
+#include "a2x_pack_list.v.h"
 #include "a2x_pack_strhash.v.h"
 
 struct AEntity {

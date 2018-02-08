@@ -21,9 +21,6 @@
 
 #include "a2x_pack_ecs_component.p.h"
 
-#include "a2x_pack_bitfield.v.h"
-#include "a2x_pack_strhash.v.h"
-
 typedef struct {
     size_t size; // total size of AComponentHeader + user data that follows
     AFree* free; // does not free the actual pointer
@@ -34,6 +31,8 @@ typedef struct {
     const AComponent* component;
     AEntity* entity; // entity this component belongs to
 } AComponentHeader;
+
+#include "a2x_pack_strhash.v.h"
 
 extern AStrHash* a__ecsComponents;
 

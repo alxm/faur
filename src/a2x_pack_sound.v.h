@@ -21,10 +21,5 @@
 
 #include "a2x_pack_sound.p.h"
 
-#include "a2x_pack_input.v.h"
-#include "a2x_pack_list.v.h"
-#include "a2x_pack_mem.v.h"
-#include "a2x_pack_settings.v.h"
-
 extern void a_sound__init(void);
 extern void a_sound__uninit(void);

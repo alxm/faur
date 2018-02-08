@@ -19,8 +19,6 @@
 
 #pragma once
 
-#include "a2x_system_includes.h"
-
 static inline int a_math_min(int X, int Y)
 {
     return X < Y ? X : Y;

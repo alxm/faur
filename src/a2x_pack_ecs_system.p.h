@@ -1,5 +1,5 @@
 /*
-    Copyright 2016, 2017 Alex Margarit
+    Copyright 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -19,9 +19,10 @@
 
 #pragma once
 
-#include "a2x_system_includes.h"
+#include "a2x_pack_ecs_entity.p.h"
 
-#include "a2x_pack_ecs.p.h"
+typedef void ASystemHandler(AEntity* Entity);
+typedef int ASystemSort(AEntity* A, AEntity* B);
 
 extern void a_system_declare(const char* Name, const char* Components, ASystemHandler* Handler, ASystemSort* Compare, bool OnlyActiveEntities);
 

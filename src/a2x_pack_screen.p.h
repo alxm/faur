@@ -19,11 +19,8 @@
 
 #pragma once
 
-#include "a2x_system_includes.h"
-
 typedef struct AScreen AScreen;
 
-#include "a2x_pack_pixel.p.h"
 #include "a2x_pack_sprite.p.h"
 
 extern APixel* a_screen_getPixels(void);

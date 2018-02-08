@@ -20,6 +20,3 @@
 #pragma once
 
 #include "a2x_pack_collide.p.h"
-
-#include "a2x_pack_math.v.h"
-#include "a2x_pack_mem.v.h"

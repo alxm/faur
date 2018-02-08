@@ -19,10 +19,6 @@
 
 #pragma once
 
-#include "a2x_system_includes.h"
-
-#include "a2x_pack_pixel.p.h"
-
 extern void a_fade_toColor(unsigned FramesDuration);
 extern void a_fade_fromColor(unsigned FramesDuration);
 extern void a_fade_screens(unsigned FramesDuration);

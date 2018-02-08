@@ -17,9 +17,14 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a2x_pack_platform_software_draw.v.h"
+#include "a2x_system_includes.h"
 
 #if A_PLATFORM_RENDER_SOFTWARE
+#include "a2x_pack_draw.v.h"
+#include "a2x_pack_pixel.v.h"
+#include "a2x_pack_platform_software_draw.v.h"
+#include "a2x_pack_screen.v.h"
+
 typedef void (*ADrawPixel)(int X, int Y);
 typedef void (*ADrawRectangle)(int X, int Y, int Width, int Height);
 typedef void (*ADrawLine)(int X1, int Y1, int X2, int Y2);

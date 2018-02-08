@@ -19,8 +19,6 @@
 
 #pragma once
 
-#include "a2x_system_includes.h"
-
 typedef struct AList AList;
 typedef struct AListNode AListNode;
 typedef int AListCompare(void* ItemA, void* ItemB);

@@ -21,10 +21,7 @@
 
 #include "a2x_pack_ecs.p.h"
 
-#include "a2x_pack_ecs_component.v.h"
-#include "a2x_pack_ecs_message.v.h"
-#include "a2x_pack_ecs_system.v.h"
-#include "a2x_pack_ecs_entity.v.h"
+typedef struct AEcs AEcs;
 
 typedef enum {
     A_ECS__INVALID = -1,
@@ -35,14 +32,17 @@ typedef enum {
     A_ECS__NUM
 } AEcsListType;
 
-typedef struct {
+#include "a2x_pack_ecs_entity.v.h"
+#include "a2x_pack_list.v.h"
+
+struct AEcs {
     AList* lists[A_ECS__NUM]; // each entity is in at most one list
     AList* tickSystems; // tick systems in the specified order
     AList* drawSystems; // draw systems in the specified order
     AList* allSystems; // tick & draw systems
     AList* messageQueue; // queued messages
     bool deleting; // set when this collection is popped off the stack
-} AEcs;
+};
 
 extern AEcs* a__ecs;
 

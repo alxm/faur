@@ -21,9 +21,6 @@
 
 #include "a2x_pack_out.p.h"
 
-#include "a2x_pack_console.v.h"
-#include "a2x_pack_settings.v.h"
-
 extern void a_out__message(const char* Format, ...);
 extern void a_out__warning(const char* Format, ...);
 extern void a_out__warningv(const char* Format, ...);

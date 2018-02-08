@@ -17,7 +17,13 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "a2x_system_includes.h"
+
 #include "a2x_pack_conf.v.h"
+#include "a2x_pack_file.v.h"
+#include "a2x_pack_out.v.h"
+#include "a2x_pack_settings.v.h"
+#include "a2x_pack_str.v.h"
 
 void a_conf__init(void)
 {

@@ -108,6 +108,7 @@ A_GENERIC_CFLAGS = \
     -Werror \
     -pedantic \
     -pedantic-errors \
+    -D_XOPEN_SOURCE \
     -I$(A2X_PATH)/inc/$(A_PLATFORM) \
     $(A_PLATFORM_CFLAGS) \
     $(A_EXTRA_CFLAGS) \

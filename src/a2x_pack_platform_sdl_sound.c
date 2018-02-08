@@ -17,10 +17,17 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a2x_pack_platform_sdl_sound.v.h"
+#include "a2x_system_includes.h"
 
 #if A_PLATFORM_LIB_SDL
+#include <SDL.h>
 #include <SDL_mixer.h>
+
+#include "a2x_pack_mem.v.h"
+#include "a2x_pack_out.v.h"
+#include "a2x_pack_platform.v.h"
+#include "a2x_pack_platform_sdl_sound.v.h"
+#include "a2x_pack_settings.v.h"
 
 struct APlatformSfx {
     Mix_Chunk* chunk;

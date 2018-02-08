@@ -17,7 +17,12 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "a2x_system_includes.h"
+
 #include "a2x_pack_list.v.h"
+#include "a2x_pack_listit.v.h"
+#include "a2x_pack_mem.v.h"
+#include "a2x_pack_random.v.h"
 
 AList* a_list_new(void)
 {

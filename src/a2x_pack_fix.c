@@ -17,7 +17,10 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "a2x_system_includes.h"
+
 #include "a2x_pack_fix.v.h"
+#include "a2x_pack_math.v.h"
 
 AFix a_fix__sin[A_FIX_ANGLES_NUM];
 static unsigned g_atan_angles[A_FIX_ONE];

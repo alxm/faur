@@ -18,7 +18,21 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "a2x_system_includes.h"
+
 #include "a2x_pack_console.v.h"
+#include "a2x_pack_draw.v.h"
+#include "a2x_pack_font.v.h"
+#include "a2x_pack_fps.v.h"
+#include "a2x_pack_input.v.h"
+#include "a2x_pack_input_button.v.h"
+#include "a2x_pack_listit.v.h"
+#include "a2x_pack_mem.v.h"
+#include "a2x_pack_screen.v.h"
+#include "a2x_pack_settings.v.h"
+#include "a2x_pack_sprite.v.h"
+#include "a2x_pack_spriteframes.v.h"
+#include "a2x_pack_str.v.h"
 
 typedef struct {
     AConsoleOutType type;

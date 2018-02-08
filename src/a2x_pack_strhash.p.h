@@ -19,12 +19,11 @@
 
 #pragma once
 
-#include "a2x_system_includes.h"
-
 typedef struct AStrHash AStrHash;
 typedef struct AStrHashEntry AStrHashEntry;
 
 #include "a2x_pack_list.p.h"
+#include "a2x_pack_listit.p.h"
 
 extern AStrHash* a_strhash_new(void);
 extern void a_strhash_free(AStrHash* Hash);

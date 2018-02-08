@@ -21,8 +21,6 @@
 
 #include "a2x_pack_platform_wiz.p.h"
 
-#include "a2x_pack_file.v.h"
-
 extern void a_platform_wiz__init(void);
 extern void a_platform_wiz__uninit(void);
 

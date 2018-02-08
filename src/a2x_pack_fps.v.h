@@ -21,8 +21,6 @@
 
 #include "a2x_pack_fps.p.h"
 
-#include "a2x_pack_timer.v.h"
-
 extern void a_fps__init(void);
 extern void a_fps__uninit(void);
 

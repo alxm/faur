@@ -17,6 +17,10 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "a2x_system_includes.h"
+
+#include "a2x_pack_fps.v.h"
+#include "a2x_pack_mem.v.h"
 #include "a2x_pack_menu.v.h"
 
 struct AMenu {

@@ -20,9 +20,17 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a2x_pack_platform_wiz.v.h"
+#include "a2x_system_includes.h"
 
 #if A_PLATFORM_SYSTEM_WIZ || A_PLATFORM_SYSTEM_CAANOO
+#include <fcntl.h>
+#include <sys/ioctl.h>
+#include <sys/mman.h>
+
+#include "a2x_pack_file.v.h"
+#include "a2x_pack_out.v.h"
+#include "a2x_pack_platform_wiz.v.h"
+#include "a2x_pack_settings.v.h"
 
 #if A_PLATFORM_SYSTEM_WIZ
     static bool g_mmuHackOn = false;
@@ -161,5 +169,4 @@ void a_platform__getNativeResolution(int* Width, int* Height)
     *Width = 320;
     *Height = 240;
 }
-
 #endif // A_PLATFORM_SYSTEM_WIZ || A_PLATFORM_SYSTEM_CAANOO

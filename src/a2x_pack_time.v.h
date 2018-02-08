@@ -20,5 +20,3 @@
 #pragma once
 
 #include "a2x_pack_time.p.h"
-
-#include "a2x_pack_platform.v.h"

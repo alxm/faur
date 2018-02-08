@@ -19,6 +19,4 @@
 
 #pragma once
 
-#include "a2x_system_includes.h"
-
 extern void a_screenshot_take(void);

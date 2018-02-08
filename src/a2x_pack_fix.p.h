@@ -19,8 +19,6 @@
 
 #pragma once
 
-#include "a2x_system_includes.h"
-
 typedef int32_t AFix;
 typedef uint32_t AFixu;
 

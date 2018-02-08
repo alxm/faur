@@ -20,5 +20,3 @@
 #pragma once
 
 #include "a2x_pack_platform_sdl_render.p.h"
-
-#include "a2x_pack_platform_sdl_video.v.h"

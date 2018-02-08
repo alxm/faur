@@ -21,10 +21,12 @@
 
 #include "a2x_pack_ecs_system.p.h"
 
-#include "a2x_pack_bitfield.v.h"
-#include "a2x_pack_strhash.v.h"
+typedef struct ASystem ASystem;
 
-typedef struct {
+#include "a2x_pack_bitfield.v.h"
+#include "a2x_pack_list.v.h"
+
+struct ASystem {
     ASystemHandler* handler;
     ASystemSort* compare;
     ABitfield* componentBits; // IDs of components that this system works on
@@ -32,7 +34,7 @@ typedef struct {
     bool onlyActiveEntities; // skip entities that are not active
     bool muted; // a_ecs_system__run skips muted systems
     bool runsInCurrentState; // whether this system runs in the current state
-} ASystem;
+};
 
 extern void a_ecs_system__init(void);
 extern void a_ecs_system__uninit(void);

@@ -21,8 +21,5 @@
 
 #include "a2x_pack_screenshot.p.h"
 
-#include "a2x_pack_dir.v.h"
-#include "a2x_pack_png.v.h"
-
 extern void a_screenshot__init(void);
 extern void a_screenshot__uninit(void);
