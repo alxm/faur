@@ -24,6 +24,7 @@
 #include "a2x_system_includes.h"
 
 #if A_PLATFORM_SYSTEM_GP2X
+#include <fcntl.h>
 #include <sys/mman.h>
 
 #include "a2x_pack_file.v.h"

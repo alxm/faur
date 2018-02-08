@@ -19,6 +19,8 @@
 
 #include "a2x_system_includes.h"
 
+#include <sys/stat.h>
+
 #include "a2x_pack_file.v.h"
 #include "a2x_pack_math.v.h"
 #include "a2x_pack_mem.v.h"

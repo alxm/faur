@@ -19,6 +19,8 @@
 
 #include "a2x_system_includes.h"
 
+#include <time.h>
+
 #include "a2x_pack_out.v.h"
 #include "a2x_pack_random.v.h"
 

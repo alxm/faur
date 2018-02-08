@@ -23,6 +23,7 @@
 #include "a2x_system_includes.h"
 
 #if A_PLATFORM_SYSTEM_WIZ || A_PLATFORM_SYSTEM_CAANOO
+#include <fcntl.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 
