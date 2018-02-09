@@ -1,5 +1,5 @@
 #
-# User-settable variables:
+# User variables:
 #
 # A_APP_NAME
 #   Target binary file name
@@ -15,6 +15,9 @@
 #
 # A_PND_NAME
 #   Target PND file name
+#
+# A_RULES_CLEAN
+#   Rules to run before the default clean
 #
 
 #
@@ -159,7 +162,7 @@ $(A_DIR_OBJ_PLATFORM_GEN)/%.c.o : $(A_DIR_SRC_GEN)/%.c
 #
 # delete all .o files and all generated .c files
 #
-clean :
+clean : $(A_RULES_CLEAN)
 	@ echo "Removing $(A_FILE_TARGET_BIN) $(A_DIR_OBJ_PLATFORM) $(A_DIR_SRC_GEN)"
 	@ rm -rf $(A_FILE_TARGET_BIN) $(A_DIR_OBJ_PLATFORM) $(A_DIR_SRC_GEN)
 
