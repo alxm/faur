@@ -24,8 +24,8 @@ A_FILES_SRC_C_INC = $(notdir $(wildcard $(A_DIR_SRC)/$(A_PREFIX)*.inc.c))
 A_FILES_SRC_C_ALL = $(notdir $(wildcard $(A_DIR_SRC)/$(A_PREFIX)*.c))
 A_FILES_SRC_C = $(filter-out $(A_FILES_SRC_C_INC), $(A_FILES_SRC_C_ALL))
 
-A_FILES_OBJ = $(addprefix $(A_DIR_OBJ_PLATFORM)/, $(A_FILES_SRC_C:.c=.o)) \
-              $(addprefix $(A_DIR_OBJ_PLATFORM_MEDIA)/, $(notdir $(A_FILES_MEDIA_PNG_C:.c=.o)))
+A_FILES_OBJ = $(addprefix $(A_DIR_OBJ_PLATFORM)/, $(A_FILES_SRC_C:=.o)) \
+              $(addprefix $(A_DIR_OBJ_PLATFORM_MEDIA)/, $(notdir $(A_FILES_MEDIA_PNG_C:=.o)))
 
 A_INFO_COMPILE_TIME := $(shell date "+%Y-%m-%d\ %H:%M:%S")
 A_INFO_CURRENT_BRANCH := $(shell git symbolic-ref --short HEAD)
@@ -67,17 +67,17 @@ $(A_FILE_PUBLIC_A2X_LIB) : $(A_FILES_OBJ)
 	@ mkdir -p $(@D)
 	@ $(AR) rs $@ $(A_FILES_OBJ)
 
-$(A_DIR_OBJ_PLATFORM)/%.o : $(A_DIR_SRC)/%.c
+$(A_DIR_OBJ_PLATFORM)/%.c.o : $(A_DIR_SRC)/%.c
 	@ echo "Compiling $(notdir $<)"
 	@ mkdir -p $(@D)
 	@ $(CC) -c -o $@ $< $(A_GENERIC_CFLAGS)
 
-$(A_DIR_OBJ_PLATFORM)/media/%.o : $(A_DIR_SRC_MEDIA_PLATFORM)/%.c
+$(A_DIR_OBJ_PLATFORM)/media/%.c.o : $(A_DIR_SRC_MEDIA_PLATFORM)/%.c
 	@ echo "Compiling generated $(notdir $<)"
 	@ mkdir -p $(@D)
 	@ $(CC) -c -o $@ $< $(A_GENERIC_CFLAGS)
 
-$(A_DIR_OBJ_PLATFORM)/a2x_pack_embed.o : $(A_FILES_MEDIA_PNG_H)
+$(A_DIR_OBJ_PLATFORM)/a2x_pack_embed.c.o : $(A_FILES_MEDIA_PNG_H)
 $(A_FILES_MEDIA_PNG_H) : $(A_FILES_MEDIA_PNG_C)
 
 $(A_DIR_SRC_MEDIA_PLATFORM)/%.c : $(A_DIR_SRC_MEDIA)/%.png $(A_DIR_BIN)/a2x_bin
