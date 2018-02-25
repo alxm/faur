@@ -142,6 +142,15 @@ static inline AFix a_fix_truncate(AFix X)
     }
 }
 
+static inline AFix a_fix_fraction(AFix X)
+{
+    if(X >= 0) {
+        return X & A_FIX_FRACTION_MASK;
+    } else {
+        return -((-X) & A_FIX_FRACTION_MASK);
+    }
+}
+
 static inline AFixu a_fixu_fromInt(unsigned X)
 {
     return X << A_FIX_BIT_PRECISION;
@@ -205,6 +214,11 @@ static inline AFixu a_fixu_ceiling(AFixu X)
 static inline AFixu a_fixu_truncate(AFixu X)
 {
     return X & (AFixu)~A_FIX_FRACTION_MASK;
+}
+
+static inline AFixu a_fixu_fraction(AFixu X)
+{
+    return X & A_FIX_FRACTION_MASK;
 }
 
 static inline unsigned a_fix_wrapAngleInt(unsigned Angle)
