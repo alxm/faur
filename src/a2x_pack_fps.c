@@ -122,12 +122,12 @@ void a_fps__reset(unsigned NumFramesToSkip)
     g_maxFps = g_fpsRate;
 
     for(unsigned i = g_bufferLen; i--; ) {
-        g_fpsBuffer[i] = g_fpsRate;
-        g_maxFpsBuffer[i] = g_fpsRate;
+        g_fpsBuffer[i] = g_msPerFrame;
+        g_maxFpsBuffer[i] = g_msPerFrame;
     }
 
-    g_fpsBufferSum = g_fpsRate * g_bufferLen;
-    g_maxFpsBufferSum = g_fpsRate * g_bufferLen;
+    g_fpsBufferSum = g_bufferLen * 1000 / g_fpsRate;
+    g_maxFpsBufferSum = g_fpsBufferSum;
 
     if(g_skipNum > 0) {
         g_fpsThresholdFast = g_drawRate / g_skipNum;
@@ -158,9 +158,9 @@ void a_fps__frame(void)
 
     if(elapsedMs > 0) {
         g_maxFpsBufferSum -= g_maxFpsBuffer[g_bufferHead];
-        g_maxFpsBuffer[g_bufferHead] = 1000 / elapsedMs;
-        g_maxFpsBufferSum += g_maxFpsBuffer[g_bufferHead];
-        g_maxFps = g_maxFpsBufferSum / g_bufferLen;
+        g_maxFpsBuffer[g_bufferHead] = elapsedMs;
+        g_maxFpsBufferSum += elapsedMs;
+        g_maxFps = g_bufferLen * 1000 / g_maxFpsBufferSum;
     }
 
     if(!g_vsync) {
@@ -185,9 +185,9 @@ void a_fps__frame(void)
 
     if(elapsedMs > 0) {
         g_fpsBufferSum -= g_fpsBuffer[g_bufferHead];
-        g_fpsBuffer[g_bufferHead] = 1000 / elapsedMs;
+        g_fpsBuffer[g_bufferHead] = elapsedMs;
         g_fpsBufferSum += g_fpsBuffer[g_bufferHead];
-        g_fps = g_fpsBufferSum / g_bufferLen;
+        g_fps = g_bufferLen * 1000 / g_fpsBufferSum;
     }
 
     g_bufferHead = (g_bufferHead + 1) % g_bufferLen;
