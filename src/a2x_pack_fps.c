@@ -30,6 +30,12 @@
 #define FRAMESKIP_ADJUST_DELAY_SEC 2
 #define NO_SLEEP_RESET_SEC 20
 
+#if A_PLATFORM_SYSTEM_EMSCRIPTEN
+    #define ALLOW_SLEEP false
+#else
+    #define ALLOW_SLEEP true
+#endif
+
 static unsigned g_tickRate;
 static unsigned g_drawRate;
 static bool g_skipFrames;
@@ -54,7 +60,6 @@ static unsigned g_maxFpsBufferSum;
 static unsigned g_fpsThresholdFast;
 static unsigned g_fpsThresholdSlow;
 static ATimer* g_skipAdjustTimer;
-static bool g_allowSleep;
 static ATimer* g_noSleepTimer;
 static bool g_canSleep;
 
@@ -91,14 +96,8 @@ void a_fps__init(void)
     g_skipAdjustTimer = a_timer_new(A_TIMER_SEC, FRAMESKIP_ADJUST_DELAY_SEC);
     a_timer_start(g_skipAdjustTimer);
 
-    #if A_PLATFORM_SYSTEM_EMSCRIPTEN
-        g_allowSleep = false;
-    #else
-        g_allowSleep = true;
-    #endif
-
     g_noSleepTimer = a_timer_new(A_TIMER_SEC, NO_SLEEP_RESET_SEC);
-    g_canSleep = g_allowSleep;
+    g_canSleep = ALLOW_SLEEP;
 
     a_fps__reset(0);
 }
@@ -122,12 +121,12 @@ void a_fps__reset(unsigned NumFramesToSkip)
     g_maxFps = g_fpsRate;
 
     for(unsigned i = g_bufferLen; i--; ) {
-        g_fpsBuffer[i] = g_fpsRate;
-        g_maxFpsBuffer[i] = g_fpsRate;
+        g_fpsBuffer[i] = g_msPerFrame;
+        g_maxFpsBuffer[i] = g_msPerFrame;
     }
 
-    g_fpsBufferSum = g_fpsRate * g_bufferLen;
-    g_maxFpsBufferSum = g_fpsRate * g_bufferLen;
+    g_fpsBufferSum = g_bufferLen * 1000 / g_fpsRate;
+    g_maxFpsBufferSum = g_fpsBufferSum;
 
     if(g_skipNum > 0) {
         g_fpsThresholdFast = g_drawRate / g_skipNum;
@@ -158,9 +157,9 @@ void a_fps__frame(void)
 
     if(elapsedMs > 0) {
         g_maxFpsBufferSum -= g_maxFpsBuffer[g_bufferHead];
-        g_maxFpsBuffer[g_bufferHead] = 1000 / elapsedMs;
-        g_maxFpsBufferSum += g_maxFpsBuffer[g_bufferHead];
-        g_maxFps = g_maxFpsBufferSum / g_bufferLen;
+        g_maxFpsBuffer[g_bufferHead] = elapsedMs;
+        g_maxFpsBufferSum += elapsedMs;
+        g_maxFps = g_bufferLen * 1000 / g_maxFpsBufferSum;
     }
 
     if(!g_vsync) {
@@ -185,9 +184,9 @@ void a_fps__frame(void)
 
     if(elapsedMs > 0) {
         g_fpsBufferSum -= g_fpsBuffer[g_bufferHead];
-        g_fpsBuffer[g_bufferHead] = 1000 / elapsedMs;
+        g_fpsBuffer[g_bufferHead] = elapsedMs;
         g_fpsBufferSum += g_fpsBuffer[g_bufferHead];
-        g_fps = g_fpsBufferSum / g_bufferLen;
+        g_fps = g_bufferLen * 1000 / g_fpsBufferSum;
     }
 
     g_bufferHead = (g_bufferHead + 1) % g_bufferLen;
@@ -212,11 +211,11 @@ void a_fps__frame(void)
             g_canSleep = false;
             a_fps__reset(newFrameSkip);
         } else if(!g_canSleep && a_timer_isExpired(g_noSleepTimer)) {
-            g_canSleep = g_allowSleep;
+            g_canSleep = ALLOW_SLEEP;
         }
     }
 
-    g_tickCredit += elapsedMs * g_tickRate;
+    g_tickCredit += g_vsync ? elapsedMs * g_tickRate : 1000;
 }
 
 unsigned a_fps_getFps(void)
