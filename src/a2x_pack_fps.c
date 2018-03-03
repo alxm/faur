@@ -216,7 +216,7 @@ void a_fps__frame(void)
         }
     }
 
-    g_tickCredit += elapsedMs * g_tickRate;
+    g_tickCredit += g_vsync ? elapsedMs * g_tickRate : 1000;
 }
 
 unsigned a_fps_getFps(void)
