@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016 Alex Margarit
+    Copyright 2010, 2016, 2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -38,7 +38,8 @@ typedef enum {
 
 #include "a2x_pack_sprite.p.h"
 
-extern AFont* a_font_new(const ASprite* Sheet, int X, int Y, AFontLoad Loader);
+extern AFont* a_font_newFromFile(const char* Path, AFontLoad Loader);
+extern AFont* a_font_newFromSprite(const ASprite* Sheet, int X, int Y, AFontLoad Loader);
 extern AFont* a_font_dup(AFont* Font, APixel Color);
 extern void a_font_free(AFont* Font);
 

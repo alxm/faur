@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2017 Alex Margarit
+    Copyright 2010, 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -37,7 +37,17 @@ struct ASpriteFrames {
     bool paused;
 };
 
-ASpriteFrames* a_spriteframes_new(const ASprite* Sheet, int X, int Y, unsigned CallsToNextFrame)
+ASpriteFrames* a_spriteframes_newFromFile(const char* Path, unsigned CallsToNextFrame)
+{
+    ASprite* s = a_sprite_newFromFile(Path);
+    ASpriteFrames* f = a_spriteframes_newFromSprite(s, 0, 0, CallsToNextFrame);
+
+    a_sprite_free(s);
+
+    return f;
+}
+
+ASpriteFrames* a_spriteframes_newFromSprite(const ASprite* Sheet, int X, int Y, unsigned CallsToNextFrame)
 {
     ASpriteFrames* f = a_spriteframes_newBlank(CallsToNextFrame);
 
@@ -148,9 +158,8 @@ void a_spriteframes_randomize(ASpriteFrames* Frames)
     a_spriteframes_setIndex(Frames, a_random_intu(Frames->num));
 }
 
-void a_spriteframes_push(ASpriteFrames* Frames, ASprite* Sprite)
+static void addedSprite(ASpriteFrames* Frames)
 {
-    a_list_push(Frames->sprites, Sprite);
     Frames->num++;
 
     free(Frames->spriteArray);
@@ -159,15 +168,42 @@ void a_spriteframes_push(ASpriteFrames* Frames, ASprite* Sprite)
     a_spriteframes_reset(Frames);
 }
 
-ASprite* a_spriteframes_pop(ASpriteFrames* Frames)
+void a_spriteframes_addFirst(ASpriteFrames* Frames, ASprite* Sprite)
 {
-    ASprite* s = a_list_pop(Frames->sprites);
+    a_list_addFirst(Frames->sprites, Sprite);
+    addedSprite(Frames);
+}
+
+void a_spriteframes_addLast(ASpriteFrames* Frames, ASprite* Sprite)
+{
+    a_list_addLast(Frames->sprites, Sprite);
+    addedSprite(Frames);
+}
+
+static void removedSprite(ASpriteFrames* Frames)
+{
     Frames->num--;
 
     free(Frames->spriteArray);
     Frames->spriteArray = (ASprite**)a_list_toArray(Frames->sprites);
 
     a_spriteframes_reset(Frames);
+}
+
+ASprite* a_spriteframes_removeFirst(ASpriteFrames* Frames)
+{
+    ASprite* s = a_list_removeFirst(Frames->sprites);
+
+    removedSprite(Frames);
+
+    return s;
+}
+
+ASprite* a_spriteframes_removeLast(ASpriteFrames* Frames)
+{
+    ASprite* s = a_list_removeLast(Frames->sprites);
+
+    removedSprite(Frames);
 
     return s;
 }

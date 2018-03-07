@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2017 Alex Margarit
+    Copyright 2010, 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -24,7 +24,8 @@ typedef struct ASpriteFrames ASpriteFrames;
 #include "a2x_pack_list.p.h"
 #include "a2x_pack_sprite.p.h"
 
-extern ASpriteFrames* a_spriteframes_new(const ASprite* Sheet, int X, int Y, unsigned CallsToNextFrame);
+extern ASpriteFrames* a_spriteframes_newFromFile(const char* Path, unsigned CallsToNextFrame);
+extern ASpriteFrames* a_spriteframes_newFromSprite(const ASprite* Sheet, int X, int Y, unsigned CallsToNextFrame);
 extern ASpriteFrames* a_spriteframes_newBlank(unsigned CallsToNextFrame);
 extern ASpriteFrames* a_spriteframes_dup(const ASpriteFrames* Frames, bool DupSprites);
 extern void a_spriteframes_free(ASpriteFrames* Frames, bool FreeSprites);
@@ -32,8 +33,10 @@ extern void a_spriteframes_free(ASpriteFrames* Frames, bool FreeSprites);
 extern void a_spriteframes_reset(ASpriteFrames* Frames);
 extern void a_spriteframes_randomize(ASpriteFrames* Frames);
 
-extern void a_spriteframes_push(ASpriteFrames* Frames, ASprite* Sprite);
-extern ASprite* a_spriteframes_pop(ASpriteFrames* Frames);
+extern void a_spriteframes_addFirst(ASpriteFrames* Frames, ASprite* Sprite);
+extern void a_spriteframes_addLast(ASpriteFrames* Frames, ASprite* Sprite);
+extern ASprite* a_spriteframes_removeFirst(ASpriteFrames* Frames);
+extern ASprite* a_spriteframes_removeLast(ASpriteFrames* Frames);
 
 extern ASprite* a_spriteframes_getNext(ASpriteFrames* Frames);
 extern ASprite* a_spriteframes_getCurrent(const ASpriteFrames* Frames);
