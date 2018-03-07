@@ -158,9 +158,8 @@ void a_spriteframes_randomize(ASpriteFrames* Frames)
     a_spriteframes_setIndex(Frames, a_random_intu(Frames->num));
 }
 
-void a_spriteframes_push(ASpriteFrames* Frames, ASprite* Sprite)
+static void addedSprite(ASpriteFrames* Frames)
 {
-    a_list_push(Frames->sprites, Sprite);
     Frames->num++;
 
     free(Frames->spriteArray);
@@ -169,15 +168,42 @@ void a_spriteframes_push(ASpriteFrames* Frames, ASprite* Sprite)
     a_spriteframes_reset(Frames);
 }
 
-ASprite* a_spriteframes_pop(ASpriteFrames* Frames)
+void a_spriteframes_addFirst(ASpriteFrames* Frames, ASprite* Sprite)
 {
-    ASprite* s = a_list_pop(Frames->sprites);
+    a_list_addFirst(Frames->sprites, Sprite);
+    addedSprite(Frames);
+}
+
+void a_spriteframes_addLast(ASpriteFrames* Frames, ASprite* Sprite)
+{
+    a_list_addLast(Frames->sprites, Sprite);
+    addedSprite(Frames);
+}
+
+static void removedSprite(ASpriteFrames* Frames)
+{
     Frames->num--;
 
     free(Frames->spriteArray);
     Frames->spriteArray = (ASprite**)a_list_toArray(Frames->sprites);
 
     a_spriteframes_reset(Frames);
+}
+
+ASprite* a_spriteframes_removeFirst(ASpriteFrames* Frames)
+{
+    ASprite* s = a_list_removeFirst(Frames->sprites);
+
+    removedSprite(Frames);
+
+    return s;
+}
+
+ASprite* a_spriteframes_removeLast(ASpriteFrames* Frames)
+{
+    ASprite* s = a_list_removeLast(Frames->sprites);
+
+    removedSprite(Frames);
 
     return s;
 }
