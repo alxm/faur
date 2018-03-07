@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2017 Alex Margarit
+    Copyright 2010, 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -24,7 +24,8 @@ typedef struct ASpriteFrames ASpriteFrames;
 #include "a2x_pack_list.p.h"
 #include "a2x_pack_sprite.p.h"
 
-extern ASpriteFrames* a_spriteframes_new(const ASprite* Sheet, int X, int Y, unsigned CallsToNextFrame);
+extern ASpriteFrames* a_spriteframes_newFromFile(const char* Path, unsigned CallsToNextFrame);
+extern ASpriteFrames* a_spriteframes_newFromSprite(const ASprite* Sheet, int X, int Y, unsigned CallsToNextFrame);
 extern ASpriteFrames* a_spriteframes_newBlank(unsigned CallsToNextFrame);
 extern ASpriteFrames* a_spriteframes_dup(const ASpriteFrames* Frames, bool DupSprites);
 extern void a_spriteframes_free(ASpriteFrames* Frames, bool FreeSprites);

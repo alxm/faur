@@ -180,7 +180,7 @@ static AFont* a_font__new(AFontLoad Loader, ASpriteFrames* Frames)
 
 AFont* a_font_new(const ASprite* Sheet, int X, int Y, AFontLoad Loader)
 {
-    ASpriteFrames* frames = a_spriteframes_new(Sheet, X, Y, 0);
+    ASpriteFrames* frames = a_spriteframes_newFromSprite(Sheet, X, Y, 0);
 
     return a_font__new(Loader, frames);
 }

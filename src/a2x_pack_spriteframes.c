@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2017 Alex Margarit
+    Copyright 2010, 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -37,7 +37,17 @@ struct ASpriteFrames {
     bool paused;
 };
 
-ASpriteFrames* a_spriteframes_new(const ASprite* Sheet, int X, int Y, unsigned CallsToNextFrame)
+ASpriteFrames* a_spriteframes_newFromFile(const char* Path, unsigned CallsToNextFrame)
+{
+    ASprite* s = a_sprite_newFromFile(Path);
+    ASpriteFrames* f = a_spriteframes_newFromSprite(s, 0, 0, CallsToNextFrame);
+
+    a_sprite_free(s);
+
+    return f;
+}
+
+ASpriteFrames* a_spriteframes_newFromSprite(const ASprite* Sheet, int X, int Y, unsigned CallsToNextFrame)
 {
     ASpriteFrames* f = a_spriteframes_newBlank(CallsToNextFrame);
 
