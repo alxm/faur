@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2017 Alex Margarit
+    Copyright 2010, 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -92,15 +92,15 @@ void a_font__init(void)
     colors[A_FONT_FACE_RED] = a_pixel_hex(0xcf2f4f);
     colors[A_FONT_FACE_BLUE] = a_pixel_hex(0x3f8fdf);
 
-    g_defaultFonts[A_FONT_FACE_DEFAULT] = a_font_new(fontSprite,
-                                                     0,
-                                                     9,
-                                                     A_FONT_LOAD_ALL);
+    g_defaultFonts[A_FONT_FACE_DEFAULT] = a_font_newFromSprite(fontSprite,
+                                                               0,
+                                                               9,
+                                                               A_FONT_LOAD_ALL);
 
-    g_defaultFonts[A_FONT_FACE_WHITE] = a_font_new(fontSprite,
-                                                   0,
-                                                   0,
-                                                   A_FONT_LOAD_ALL);
+    g_defaultFonts[A_FONT_FACE_WHITE] = a_font_newFromSprite(fontSprite,
+                                                             0,
+                                                             0,
+                                                             A_FONT_LOAD_ALL);
 
     a_sprite_free(fontSprite);
 
@@ -178,7 +178,17 @@ static AFont* a_font__new(AFontLoad Loader, ASpriteFrames* Frames)
     return f;
 }
 
-AFont* a_font_new(const ASprite* Sheet, int X, int Y, AFontLoad Loader)
+AFont* a_font_newFromFile(const char* Path, AFontLoad Loader)
+{
+    ASprite* s = a_sprite_newFromFile(Path);
+    AFont* f = a_font_newFromSprite(s, 0, 0, Loader);
+
+    a_sprite_free(s);
+
+    return f;
+}
+
+AFont* a_font_newFromSprite(const ASprite* Sheet, int X, int Y, AFontLoad Loader)
 {
     ASpriteFrames* frames = a_spriteframes_newFromSprite(Sheet, X, Y, 0);
 
