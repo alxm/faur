@@ -48,7 +48,7 @@ typedef enum {
     A_INT_DEG_315 = (7 * A_INT_DEG_045),
     A_INT_DEG_337 = (A_INT_DEG_315 + A_INT_DEG_022),
     A_INT_DEG_360 = (8 * A_INT_DEG_045),
-} AIntAngles;
+} AIntDeg;
 
 typedef enum {
     A_FIX_DEG_022 = (A_INT_DEG_022 * A_FIX_ONE),
@@ -68,7 +68,7 @@ typedef enum {
     A_FIX_DEG_337 = (A_INT_DEG_337 * A_FIX_ONE),
     A_FIX_DEG_360 = (A_INT_DEG_360 * A_FIX_ONE),
     A_FIX_DEG_001 = (A_FIX_DEG_360 / 360),
-} AFixAngles;
+} AFixDeg;
 
 extern AFix a_fix__sin[A_FIX_ANGLES_NUM];
 extern AFix a_fix__csc[A_FIX_ANGLES_NUM];

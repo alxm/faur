@@ -171,7 +171,7 @@ void a_ecs_flushNewEntities(void)
     }
 }
 
-bool a_ecs__isEntityInList(const AEntity* Entity, AEcsListType List)
+bool a_ecs__isEntityInList(const AEntity* Entity, AEcsListId List)
 {
     if(Entity->node == NULL) {
         return false;
@@ -180,12 +180,12 @@ bool a_ecs__isEntityInList(const AEntity* Entity, AEcsListType List)
     return a_list__nodeGetList(Entity->node) == a__ecs->lists[List];
 }
 
-void a_ecs__addEntityToList(AEntity* Entity, AEcsListType List)
+void a_ecs__addEntityToList(AEntity* Entity, AEcsListId List)
 {
     Entity->node = a_list_addLast(a__ecs->lists[List], Entity);
 }
 
-void a_ecs__moveEntityToList(AEntity* Entity, AEcsListType List)
+void a_ecs__moveEntityToList(AEntity* Entity, AEcsListId List)
 {
     if(Entity->node != NULL) {
         if(a_list__nodeGetList(Entity->node) == a__ecs->lists[List]) {

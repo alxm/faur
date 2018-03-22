@@ -22,18 +22,18 @@
 #include "a2x_pack_font.p.h"
 
 typedef enum {
-    A_FONT_FACE_INVALID = -1,
-    A_FONT_FACE_DEFAULT,
-    A_FONT_FACE_WHITE,
-    A_FONT_FACE_LIGHT_GRAY,
-    A_FONT_FACE_GREEN,
-    A_FONT_FACE_YELLOW,
-    A_FONT_FACE_RED,
-    A_FONT_FACE_BLUE,
-    A_FONT_FACE_DEFAULT_NUM
-} AFontDefaults;
+    A_FONT_ID_INVALID = -1,
+    A_FONT_ID_DEFAULT,
+    A_FONT_ID_WHITE,
+    A_FONT_ID_LIGHT_GRAY,
+    A_FONT_ID_GREEN,
+    A_FONT_ID_YELLOW,
+    A_FONT_ID_RED,
+    A_FONT_ID_BLUE,
+    A_FONT_ID_NUM
+} AFontId;
 
 extern void a_font__init(void);
 extern void a_font__uninit(void);
 
-extern void a_font__setFont(AFontDefaults Font);
+extern void a_font__setFont(AFontId Font);
