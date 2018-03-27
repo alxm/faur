@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2017 Alex Margarit
+    Copyright 2010, 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -285,14 +285,14 @@ void a_screen_blit(const AScreen* Screen)
                                                    a__screen.height);
         APixel* dst = a__screen.pixels;
         APixel* src = Screen->pixels;
-        APixel srcPixel;
+        int r = 0, g = 0, b = 0;
         int alpha = a_pixel__state.alpha;
 
-        #define LOOP(blend, params)                                         \
+        #define LOOP(Blend, Setup, Params)                                  \
             if(noClipping) {                                                \
                 for(int i = Screen->width * Screen->height; i--; ) {        \
-                    srcPixel = *src;                                        \
-                    a_pixel__##blend params;                                \
+                    Setup;                                                  \
+                    a_pixel__##Blend Params;                                \
                     dst++;                                                  \
                     src++;                                                  \
                 }                                                           \
@@ -304,8 +304,8 @@ void a_screen_blit(const AScreen* Screen)
                                                                             \
                 for(int i = a__screen.clipHeight; i--; ) {                  \
                     for(int j = a__screen.clipWidth; j--; ) {               \
-                        srcPixel = *src;                                    \
-                        a_pixel__##blend params;                            \
+                        Setup;                                              \
+                        a_pixel__##Blend Params;                            \
                         dst++;                                              \
                         src++;                                              \
                     }                                                       \
@@ -334,43 +334,27 @@ void a_screen_blit(const AScreen* Screen)
             } break;
 
             case A_PIXEL_BLEND_RGBA: {
-                LOOP(rgba, (dst,
-                            a_pixel_red(srcPixel),
-                            a_pixel_green(srcPixel),
-                            a_pixel_blue(srcPixel),
-                            alpha));
+                LOOP(rgba, {}, (dst, r, g, b, alpha));
             } break;
 
             case A_PIXEL_BLEND_RGB25: {
-                LOOP(rgb25, (dst,
-                             a_pixel_red(srcPixel),
-                             a_pixel_green(srcPixel),
-                             a_pixel_blue(srcPixel)));
+                LOOP(rgb25, {a_pixel_toRgb(*src, &r, &g, &b);}, (dst, r, g, b));
             } break;
 
             case A_PIXEL_BLEND_RGB50: {
-                LOOP(rgb50, (dst,
-                             a_pixel_red(srcPixel),
-                             a_pixel_green(srcPixel),
-                             a_pixel_blue(srcPixel)));
+                LOOP(rgb50, {a_pixel_toRgb(*src, &r, &g, &b);}, (dst, r, g, b));
             } break;
 
             case A_PIXEL_BLEND_RGB75: {
-                LOOP(rgb75, (dst,
-                             a_pixel_red(srcPixel),
-                             a_pixel_green(srcPixel),
-                             a_pixel_blue(srcPixel)));
+                LOOP(rgb75, {a_pixel_toRgb(*src, &r, &g, &b);}, (dst, r, g, b));
             } break;
 
             case A_PIXEL_BLEND_INVERSE: {
-                LOOP(inverse, (dst));
+                LOOP(inverse, {}, (dst));
             } break;
 
             case A_PIXEL_BLEND_MOD: {
-                LOOP(mod, (dst,
-                           a_pixel_red(srcPixel),
-                           a_pixel_green(srcPixel),
-                           a_pixel_blue(srcPixel)));
+                LOOP(mod, {a_pixel_toRgb(*src, &r, &g, &b);}, (dst, r, g, b));
             } break;
 
             default: break;

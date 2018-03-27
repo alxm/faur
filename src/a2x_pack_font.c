@@ -86,11 +86,11 @@ void a_font__init(void)
     ASprite* fontSprite = a_sprite_newFromFile("/a2x/defaultFont");
 
     APixel colors[A_FONT_ID_NUM];
-    colors[A_FONT_ID_LIGHT_GRAY] = a_pixel_hex(0xafafaf);
-    colors[A_FONT_ID_GREEN] = a_pixel_hex(0x3fbf9f);
-    colors[A_FONT_ID_YELLOW] = a_pixel_hex(0x9fcf3f);
-    colors[A_FONT_ID_RED] = a_pixel_hex(0xcf2f4f);
-    colors[A_FONT_ID_BLUE] = a_pixel_hex(0x3f8fdf);
+    colors[A_FONT_ID_LIGHT_GRAY] = a_pixel_fromHex(0xafafaf);
+    colors[A_FONT_ID_GREEN] = a_pixel_fromHex(0x3fbf9f);
+    colors[A_FONT_ID_YELLOW] = a_pixel_fromHex(0x9fcf3f);
+    colors[A_FONT_ID_RED] = a_pixel_fromHex(0xcf2f4f);
+    colors[A_FONT_ID_BLUE] = a_pixel_fromHex(0x3f8fdf);
 
     g_defaultFonts[A_FONT_ID_DEFAULT] = a_font_newFromSprite(fontSprite,
                                                              0,

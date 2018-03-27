@@ -55,9 +55,9 @@ static void pngToPixels(png_structp Png, png_infop Info, APixel** Pixels, int* W
 
     for(png_uint_32 y = h; y--; rows++) {
         for(png_uint_32 x = w, chOffset = 0; x--; chOffset += numChannels) {
-            *pixels++ = a_pixel_rgb(rows[0][chOffset + 0],
-                                    rows[0][chOffset + 1],
-                                    rows[0][chOffset + 2]);
+            *pixels++ = a_pixel_fromRgb(rows[0][chOffset + 0],
+                                        rows[0][chOffset + 1],
+                                        rows[0][chOffset + 2]);
         }
     }
 }
@@ -230,11 +230,12 @@ void a_png_write(const char* Path, const APixel* Data, int Width, int Height, ch
         rows[i] = rowsData + i * Width * COLOR_CHANNELS;
 
         for(int j = 0; j < Width; j++) {
-            const APixel p = *(Data + i * Width + j);
+            int r, g, b;
+            a_pixel_toRgb(*(Data + i * Width + j), &r, &g, &b);
 
-            rows[i][j * COLOR_CHANNELS + 0] = (png_byte)a_pixel_red(p);
-            rows[i][j * COLOR_CHANNELS + 1] = (png_byte)a_pixel_green(p);
-            rows[i][j * COLOR_CHANNELS + 2] = (png_byte)a_pixel_blue(p);
+            rows[i][j * COLOR_CHANNELS + 0] = (png_byte)r;
+            rows[i][j * COLOR_CHANNELS + 1] = (png_byte)g;
+            rows[i][j * COLOR_CHANNELS + 2] = (png_byte)b;
         }
     }
 

@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2017 Alex Margarit
+    Copyright 2010, 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -156,7 +156,7 @@ void a_pixel_setRGB(int Red, int Green, int Blue)
     a_pixel__state.red = (unsigned)Red & 0xff;
     a_pixel__state.green = (unsigned)Green & 0xff;
     a_pixel__state.blue = (unsigned)Blue & 0xff;
-    a_pixel__state.pixel = a_pixel_rgb(Red, Green, Blue);
+    a_pixel__state.pixel = a_pixel_fromRgb(Red, Green, Blue);
 
     #if !A_PLATFORM_RENDER_SOFTWARE
         a_platform__renderSetDrawColor();
@@ -169,7 +169,7 @@ void a_pixel_setRGBA(int Red, int Green, int Blue, int Alpha)
     a_pixel__state.green = (unsigned)Green & 0xff;
     a_pixel__state.blue = (unsigned)Blue & 0xff;
     a_pixel__state.alpha = a_math_clamp(Alpha, 0, A_PIXEL_ALPHA_MAX);
-    a_pixel__state.pixel = a_pixel_rgb(Red, Green, Blue);
+    a_pixel__state.pixel = a_pixel_fromRgb(Red, Green, Blue);
 
     #if A_PLATFORM_RENDER_SOFTWARE
         optimizeAlphaBlending(true);
@@ -183,7 +183,7 @@ void a_pixel_setHex(uint32_t Hexcode)
     a_pixel__state.red = (Hexcode >> 16) & 0xff;
     a_pixel__state.green = (Hexcode >> 8) & 0xff;
     a_pixel__state.blue = Hexcode & 0xff;
-    a_pixel__state.pixel = a_pixel_hex(Hexcode);
+    a_pixel__state.pixel = a_pixel_fromHex(Hexcode);
 
     #if !A_PLATFORM_RENDER_SOFTWARE
         a_platform__renderSetDrawColor();
@@ -192,9 +192,11 @@ void a_pixel_setHex(uint32_t Hexcode)
 
 void a_pixel_setPixel(APixel Pixel)
 {
-    a_pixel__state.red = a_pixel_red(Pixel);
-    a_pixel__state.green = a_pixel_green(Pixel);
-    a_pixel__state.blue = a_pixel_blue(Pixel);
+    a_pixel_toRgb(Pixel,
+                  &a_pixel__state.red,
+                  &a_pixel__state.green,
+                  &a_pixel__state.blue);
+
     a_pixel__state.pixel = Pixel;
 
     #if !A_PLATFORM_RENDER_SOFTWARE

@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2017 Alex Margarit
+    Copyright 2010, 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -33,7 +33,7 @@
 #elif A_PLATFORM_LIB_SDL == 2
     SDL_Renderer* a__sdlRenderer = NULL;
     static SDL_Window* g_sdlWindow = NULL;
-    static uint8_t g_clearR, g_clearG, g_clearB;
+    static int g_clearR, g_clearG, g_clearB;
 
     #if A_PLATFORM_RENDER_SOFTWARE
         static SDL_Texture* g_sdlTexture = NULL;
@@ -174,10 +174,10 @@ void a_platform__setScreen(int Width, int Height, bool FullScreen)
                                 "nearest",
                                 SDL_HINT_OVERRIDE);
 
-        APixel color = a_settings_getPixel("video.color.border");
-        g_clearR = (uint8_t)a_pixel_red(color);
-        g_clearG = (uint8_t)a_pixel_green(color);
-        g_clearB = (uint8_t)a_pixel_blue(color);
+        a_pixel_toRgb(a_settings_getPixel("video.color.border"),
+                      &g_clearR,
+                      &g_clearG,
+                      &g_clearB);
     #endif
 
     #if A_PLATFORM_SYSTEM_DESKTOP || A_PLATFORM_SYSTEM_EMSCRIPTEN
@@ -280,9 +280,9 @@ void a_platform__showScreen(void)
         #endif
 
         if(SDL_SetRenderDrawColor(a__sdlRenderer,
-                                  g_clearR,
-                                  g_clearG,
-                                  g_clearB,
+                                  (uint8_t)g_clearR,
+                                  (uint8_t)g_clearG,
+                                  (uint8_t)g_clearB,
                                   SDL_ALPHA_OPAQUE) < 0) {
 
             a_out__error("SDL_SetRenderDrawColor failed: %s", SDL_GetError());

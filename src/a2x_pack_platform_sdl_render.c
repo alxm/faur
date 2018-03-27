@@ -385,7 +385,7 @@ void a_platform__commitSpriteTexture(ASprite* Sprite)
             for(int i = width * height; i--;) {
                 if(Sprite->pixels[i] != a_sprite__colorKey) {
                     // Set full color for non-transparent pixel
-                    texture->pixels[i] |= a_pixel_hex(0xffffff);
+                    texture->pixels[i] |= a_pixel_fromHex(0xffffff);
                 }
             }
         }

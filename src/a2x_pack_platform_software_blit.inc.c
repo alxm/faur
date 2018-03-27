@@ -38,6 +38,7 @@ static void A__FUNC_NAME(keyed, noclip)(const APlatformTexture* Texture, int X, 
 
             if(draw) {
                 while(len--) {
+                    A__PIXEL_SETUP;
                     A__PIXEL_DRAW(dst);
                     dst++;
                     a__pass_src++;
@@ -105,6 +106,7 @@ static void A__FUNC_NAME(keyed, doclip)(const APlatformTexture* Texture, int X, 
                 drawColumns -= len;
             } else {
                 while(len-- && drawColumns--) {
+                    A__PIXEL_SETUP;
                     A__PIXEL_DRAW(dst);
                     dst++;
                     a__pass_src++;
@@ -118,6 +120,7 @@ static void A__FUNC_NAME(keyed, doclip)(const APlatformTexture* Texture, int X, 
 
             if(draw) {
                 while(len-- && drawColumns--) {
+                    A__PIXEL_SETUP;
                     A__PIXEL_DRAW(dst);
                     dst++;
                     a__pass_src++;
@@ -148,6 +151,7 @@ static void A__FUNC_NAME(block, noclip)(const APlatformTexture* Texture, int X, 
         APixel* dst = startDst;
 
         for(int j = Texture->spr->w; j--; ) {
+            A__PIXEL_SETUP;
             A__PIXEL_DRAW(dst);
             dst++;
             a__pass_src++;
@@ -181,6 +185,7 @@ static void A__FUNC_NAME(block, doclip)(const APlatformTexture* Texture, int X, 
         const APixel* a__pass_src = startSrc;
 
         for(int j = columns; j--; ) {
+            A__PIXEL_SETUP;
             A__PIXEL_DRAW(dst);
             dst++;
             a__pass_src++;
@@ -191,4 +196,5 @@ static void A__FUNC_NAME(block, doclip)(const APlatformTexture* Texture, int X, 
 #undef A__BLEND
 #undef A__FILL
 #undef A__BLEND_SETUP
+#undef A__PIXEL_SETUP
 #undef A__PIXEL_PARAMS
