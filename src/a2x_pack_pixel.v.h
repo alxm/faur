@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2017 Alex Margarit
+    Copyright 2010, 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -40,54 +40,42 @@ static inline void a_pixel__plain(APixel* Dst, APixel Pixel)
 
 static inline void a_pixel__rgba(APixel* Dst, int Red, int Green, int Blue, int Alpha)
 {
-    const APixel p = *Dst;
+    int r, g, b;
+    a_pixel_toRgb(*Dst, &r, &g, &b);
 
-    const int r = a_pixel_red(p);
-    const int g = a_pixel_green(p);
-    const int b = a_pixel_blue(p);
-
-    *Dst = a_pixel_rgb(r + (((Red   - r) * Alpha) >> 8),
-                       g + (((Green - g) * Alpha) >> 8),
-                       b + (((Blue  - b) * Alpha) >> 8));
+    *Dst = a_pixel_fromRgb(r + (((Red   - r) * Alpha) >> 8),
+                           g + (((Green - g) * Alpha) >> 8),
+                           b + (((Blue  - b) * Alpha) >> 8));
 }
 
 static inline void a_pixel__rgb25(APixel* Dst, int Red, int Green, int Blue)
 {
-    const APixel p = *Dst;
+    int r, g, b;
+    a_pixel_toRgb(*Dst, &r, &g, &b);
 
-    const int r = a_pixel_red(p);
-    const int g = a_pixel_green(p);
-    const int b = a_pixel_blue(p);
-
-    *Dst = a_pixel_rgb(r - (r >> 2) + (Red   >> 2),
-                       g - (g >> 2) + (Green >> 2),
-                       b - (b >> 2) + (Blue  >> 2));
+    *Dst = a_pixel_fromRgb(r - (r >> 2) + (Red   >> 2),
+                           g - (g >> 2) + (Green >> 2),
+                           b - (b >> 2) + (Blue  >> 2));
 }
 
 static inline void a_pixel__rgb50(APixel* Dst, int Red, int Green, int Blue)
 {
-    const APixel p = *Dst;
+    int r, g, b;
+    a_pixel_toRgb(*Dst, &r, &g, &b);
 
-    const int r = a_pixel_red(p);
-    const int g = a_pixel_green(p);
-    const int b = a_pixel_blue(p);
-
-    *Dst = a_pixel_rgb((r + Red)   >> 1,
-                       (g + Green) >> 1,
-                       (b + Blue)  >> 1);
+    *Dst = a_pixel_fromRgb((r + Red)   >> 1,
+                           (g + Green) >> 1,
+                           (b + Blue)  >> 1);
 }
 
 static inline void a_pixel__rgb75(APixel* Dst, int Red, int Green, int Blue)
 {
-    const APixel p = *Dst;
+    int r, g, b;
+    a_pixel_toRgb(*Dst, &r, &g, &b);
 
-    const int r = a_pixel_red(p);
-    const int g = a_pixel_green(p);
-    const int b = a_pixel_blue(p);
-
-    *Dst = a_pixel_rgb((r >> 2) + Red   - (Red   >> 2),
-                       (g >> 2) + Green - (Green >> 2),
-                       (b >> 2) + Blue  - (Blue  >> 2));
+    *Dst = a_pixel_fromRgb((r >> 2) + Red   - (Red   >> 2),
+                           (g >> 2) + Green - (Green >> 2),
+                           (b >> 2) + Blue  - (Blue  >> 2));
 }
 
 static inline void a_pixel__inverse(APixel* Dst)
@@ -97,26 +85,20 @@ static inline void a_pixel__inverse(APixel* Dst)
 
 static inline void a_pixel__mod(APixel* Dst, int Red, int Green, int Blue)
 {
-    const APixel p = *Dst;
+    int r, g, b;
+    a_pixel_toRgb(*Dst, &r, &g, &b);
 
-    const int r = a_pixel_red(p);
-    const int g = a_pixel_green(p);
-    const int b = a_pixel_blue(p);
-
-    *Dst = a_pixel_rgb((r * Red) >> 8, (g * Green) >> 8, (b * Blue) >> 8);
+    *Dst = a_pixel_fromRgb((r * Red) >> 8, (g * Green) >> 8, (b * Blue) >> 8);
 }
 
 static inline void a_pixel__add(APixel* Dst, int Red, int Green, int Blue)
 {
-    const APixel p = *Dst;
+    int r, g, b;
+    a_pixel_toRgb(*Dst, &r, &g, &b);
 
-    const int r = a_pixel_red(p);
-    const int g = a_pixel_green(p);
-    const int b = a_pixel_blue(p);
-
-    *Dst = a_pixel_rgb(a_math_min(r + Red, 255),
-                       a_math_min(g + Green, 255),
-                       a_math_min(b + Blue, 255));
+    *Dst = a_pixel_fromRgb(a_math_min(r + Red, 255),
+                           a_math_min(g + Green, 255),
+                           a_math_min(b + Blue, 255));
 }
 
 extern void a_pixel__init(void);

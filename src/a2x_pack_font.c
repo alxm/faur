@@ -64,7 +64,7 @@ typedef struct {
     int wrapWidth, currentLineWidth;
 } AFontState;
 
-AFont* g_defaultFonts[A_FONT_FACE_DEFAULT_NUM];
+AFont* g_defaultFonts[A_FONT_ID_NUM];
 static AFontState g_state;
 static AList* g_stateStack;
 
@@ -85,30 +85,27 @@ void a_font__init(void)
 
     ASprite* fontSprite = a_sprite_newFromFile("/a2x/defaultFont");
 
-    APixel colors[A_FONT_FACE_DEFAULT_NUM];
-    colors[A_FONT_FACE_LIGHT_GRAY] = a_pixel_hex(0xafafaf);
-    colors[A_FONT_FACE_GREEN] = a_pixel_hex(0x3fbf9f);
-    colors[A_FONT_FACE_YELLOW] = a_pixel_hex(0x9fcf3f);
-    colors[A_FONT_FACE_RED] = a_pixel_hex(0xcf2f4f);
-    colors[A_FONT_FACE_BLUE] = a_pixel_hex(0x3f8fdf);
+    APixel colors[A_FONT_ID_NUM];
+    colors[A_FONT_ID_LIGHT_GRAY] = a_pixel_fromHex(0xafafaf);
+    colors[A_FONT_ID_GREEN] = a_pixel_fromHex(0x3fbf9f);
+    colors[A_FONT_ID_YELLOW] = a_pixel_fromHex(0x9fcf3f);
+    colors[A_FONT_ID_RED] = a_pixel_fromHex(0xcf2f4f);
+    colors[A_FONT_ID_BLUE] = a_pixel_fromHex(0x3f8fdf);
 
-    g_defaultFonts[A_FONT_FACE_DEFAULT] = a_font_newFromSprite(fontSprite,
-                                                               0,
-                                                               9,
-                                                               A_FONT_LOAD_ALL);
-
-    g_defaultFonts[A_FONT_FACE_WHITE] = a_font_newFromSprite(fontSprite,
+    g_defaultFonts[A_FONT_ID_DEFAULT] = a_font_newFromSprite(fontSprite,
                                                              0,
-                                                             0,
+                                                             9,
                                                              A_FONT_LOAD_ALL);
+
+    g_defaultFonts[A_FONT_ID_WHITE] = a_font_newFromSprite(fontSprite,
+                                                           0,
+                                                           0,
+                                                           A_FONT_LOAD_ALL);
 
     a_sprite_free(fontSprite);
 
-    for(AFontDefaults f = A_FONT_FACE_WHITE + 1;
-        f < A_FONT_FACE_DEFAULT_NUM;
-        f++) {
-
-        g_defaultFonts[f] = a_font_dup(g_defaultFonts[A_FONT_FACE_WHITE],
+    for(AFontId f = A_FONT_ID_WHITE + 1; f < A_FONT_ID_NUM; f++) {
+        g_defaultFonts[f] = a_font_dup(g_defaultFonts[A_FONT_ID_WHITE],
                                        colors[f]);
     }
 
@@ -117,7 +114,7 @@ void a_font__init(void)
 
 void a_font__uninit(void)
 {
-    for(AFontDefaults f = 0; f < A_FONT_FACE_DEFAULT_NUM; f++) {
+    for(AFontId f = 0; f < A_FONT_ID_NUM; f++) {
         a_font_free(g_defaultFonts[f]);
     }
 
@@ -241,7 +238,7 @@ void a_font_pop(void)
 
 void a_font_reset(void)
 {
-    a_font__setFont(A_FONT_FACE_DEFAULT);
+    a_font__setFont(A_FONT_ID_DEFAULT);
     a_font_setAlign(A_FONT_ALIGN_LEFT);
     a_font_setCoords(0, 0);
     a_font_setWrap(0);
@@ -250,14 +247,14 @@ void a_font_reset(void)
 void a_font_setFont(AFont* Font)
 {
     if(Font == NULL) {
-        Font = g_defaultFonts[A_FONT_FACE_DEFAULT];
+        Font = g_defaultFonts[A_FONT_ID_DEFAULT];
     }
 
     g_state.font = Font;
     g_state.lineHeight = Font->maxHeight + LINE_SPACING;
 }
 
-void a_font__setFont(AFontDefaults Font)
+void a_font__setFont(AFontId Font)
 {
     a_font_setFont(g_defaultFonts[Font]);
 }

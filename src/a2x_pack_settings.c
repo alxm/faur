@@ -130,7 +130,7 @@ static void add(ASettingType Type, ASettingUpdate Update, const char* Key, const
         } break;
 
         case A_SETTING_COLOR: {
-            s->value.pixel = a_pixel_hex((uint32_t)strtol(Value, NULL, 16));
+            s->value.pixel = a_pixel_fromHex((uint32_t)strtol(Value, NULL, 16));
         } break;
 
         case A_SETTING_STR: {
@@ -175,7 +175,7 @@ static void set(const char* Key, const char* Value, bool UserSet)
         } break;
 
         case A_SETTING_COLOR: {
-            s->value.pixel = a_pixel_hex((uint32_t)strtol(Value, NULL, 16));
+            s->value.pixel = a_pixel_fromHex((uint32_t)strtol(Value, NULL, 16));
         } break;
 
         case A_SETTING_STR: {

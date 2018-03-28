@@ -30,7 +30,7 @@ typedef enum {
     A_ECS__REMOVED, // removed entities with outstanding references
     A_ECS__MUTED, // recently muted entities
     A_ECS__NUM
-} AEcsListType;
+} AEcsListId;
 
 #include "a2x_pack_ecs_entity.v.h"
 #include "a2x_pack_list.v.h"
@@ -55,6 +55,6 @@ extern void a_ecs__draw(void);
 extern void a_ecs__pushCollection(AList* TickSystems, AList* DrawSystems);
 extern void a_ecs__popCollection(void);
 
-extern bool a_ecs__isEntityInList(const AEntity* Entity, AEcsListType List);
-extern void a_ecs__addEntityToList(AEntity* Entity, AEcsListType List);
-extern void a_ecs__moveEntityToList(AEntity* Entity, AEcsListType List);
+extern bool a_ecs__isEntityInList(const AEntity* Entity, AEcsListId List);
+extern void a_ecs__addEntityToList(AEntity* Entity, AEcsListId List);
+extern void a_ecs__moveEntityToList(AEntity* Entity, AEcsListId List);

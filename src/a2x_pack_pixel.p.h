@@ -88,7 +88,7 @@
     #define A_PIXEL_ALPHA_MAX 255
 #endif
 
-static inline APixel a_pixel_rgb(int Red, int Green, int Blue)
+static inline APixel a_pixel_fromRgb(int Red, int Green, int Blue)
 {
     return (APixel)
         (((((unsigned)Red   & 0xff) >> A_PIXEL__PACK_RED)   << A_PIXEL__SHIFT_RED)   |
@@ -96,7 +96,7 @@ static inline APixel a_pixel_rgb(int Red, int Green, int Blue)
          ((((unsigned)Blue  & 0xff) >> A_PIXEL__PACK_BLUE)  << A_PIXEL__SHIFT_BLUE));
 }
 
-static inline APixel a_pixel_hex(uint32_t Hexcode)
+static inline APixel a_pixel_fromHex(uint32_t Hexcode)
 {
     #if A_PIXEL__BPP == 16 || A_PIXEL__ORDER_ABGR
         return (APixel)
@@ -108,19 +108,19 @@ static inline APixel a_pixel_hex(uint32_t Hexcode)
     #endif
 }
 
-static inline int a_pixel_red(APixel Pixel)
+static inline void a_pixel_toRgb(APixel Pixel, int* Red, int* Green, int* Blue)
 {
-    return (int)((Pixel >> A_PIXEL__SHIFT_RED) & A_PIXEL__MASK_RED) << A_PIXEL__PACK_RED;
-}
+    if(Red) {
+        *Red = (int)((Pixel >> A_PIXEL__SHIFT_RED) & A_PIXEL__MASK_RED) << A_PIXEL__PACK_RED;
+    }
 
-static inline int a_pixel_green(APixel Pixel)
-{
-    return (int)((Pixel >> A_PIXEL__SHIFT_GREEN) & A_PIXEL__MASK_GREEN) << A_PIXEL__PACK_GREEN;
-}
+    if(Green) {
+        *Green = (int)((Pixel >> A_PIXEL__SHIFT_GREEN) & A_PIXEL__MASK_GREEN) << A_PIXEL__PACK_GREEN;
+    }
 
-static inline int a_pixel_blue(APixel Pixel)
-{
-    return (int)((Pixel >> A_PIXEL__SHIFT_BLUE) & A_PIXEL__MASK_BLUE) << A_PIXEL__PACK_BLUE;
+    if(Blue) {
+        *Blue = (int)((Pixel >> A_PIXEL__SHIFT_BLUE) & A_PIXEL__MASK_BLUE) << A_PIXEL__PACK_BLUE;
+    }
 }
 
 typedef enum {

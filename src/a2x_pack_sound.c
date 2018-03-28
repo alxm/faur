@@ -149,13 +149,13 @@ void a_sound__init(void)
         const char* color;
 
         color = a_settings_getString("sound.volbar.background");
-        g_volbarBackground = a_pixel_hex((uint32_t)strtol(color, NULL, 16));
+        g_volbarBackground = a_pixel_fromHex((uint32_t)strtol(color, NULL, 16));
 
         color = a_settings_getString("sound.volbar.border");
-        g_volbarBorder = a_pixel_hex((uint32_t)strtol(color, NULL, 16));
+        g_volbarBorder = a_pixel_fromHex((uint32_t)strtol(color, NULL, 16));
 
         color = a_settings_getString("sound.volbar.fill");
-        g_volbarFill = a_pixel_hex((uint32_t)strtol(color, NULL, 16));
+        g_volbarFill = a_pixel_fromHex((uint32_t)strtol(color, NULL, 16));
 
         a_screen__addOverlay(screenCallback);
     #endif
