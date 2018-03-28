@@ -199,29 +199,24 @@ void a_console__uninit(void)
     a_list_freeEx(g_lines, (AFree*)line_free);
 }
 
-void a_console__write(AOutType Type, const char* Text)
+void a_console__write(AOutType Type, const char* Text, bool Overwrite)
 {
     if(!g_enabled) {
         return;
     }
 
-    a_list_addLast(g_lines, line_new(Type, Text));
-
-    if(a_list_getSize(g_lines) > g_linesPerScreen) {
-        line_free(a_list_pop(g_lines));
-    }
-}
-
-void a_console__overwrite(AOutType Type, const char* Text)
-{
-    if(!g_enabled) {
-        return;
-    }
-
-    if(a_list_isEmpty(g_lines)) {
-        a_list_addLast(g_lines, line_new(Type, Text));
+    if(Overwrite) {
+        if(a_list_isEmpty(g_lines)) {
+            a_list_addLast(g_lines, line_new(Type, Text));
+        } else {
+            line_set(a_list_getLast(g_lines), Type, Text);
+        }
     } else {
-        line_set(a_list_getLast(g_lines), Type, Text);
+        a_list_addLast(g_lines, line_new(Type, Text));
+
+        if(a_list_getSize(g_lines) > g_linesPerScreen) {
+            line_free(a_list_pop(g_lines));
+        }
     }
 }
 

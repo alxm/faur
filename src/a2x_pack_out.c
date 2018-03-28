@@ -96,11 +96,7 @@ static void outWorker(AOutSource Source, AOutType Type, bool Verbose, bool Overw
     fputs(buffer, Stream);
     fputs("\n", Stream);
 
-    if(Overwrite) {
-        a_console__overwrite(Type, buffer);
-    } else {
-        a_console__write(Type, buffer);
-    }
+    a_console__write(Type, buffer, Overwrite);
 }
 
 void a_out__message(const char* Format, ...)

@@ -27,6 +27,5 @@ extern void a_console__init(void);
 extern void a_console__init2(void);
 extern void a_console__uninit(void);
 
-extern void a_console__write(AOutType Type, const char* Text);
-extern void a_console__overwrite(AOutType Type, const char* Text);
+extern void a_console__write(AOutType Type, const char* Text, bool Overwrite);
 extern void a_console__setShow(bool DoShow);
