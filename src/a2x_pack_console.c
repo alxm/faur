@@ -1,5 +1,5 @@
 /*
-    Copyright 2016, 2017 Alex Margarit
+    Copyright 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -35,7 +35,7 @@
 #include "a2x_pack_str.v.h"
 
 typedef struct {
-    AConsoleOutType type;
+    AOutType type;
     char* text;
 } ALine;
 
@@ -43,10 +43,10 @@ bool g_enabled;
 bool g_show;
 static AList* g_lines;
 static unsigned g_linesPerScreen;
-static ASprite* g_titles[A_CONSOLE_MAX];
+static ASprite* g_titles[A_OUT__TYPE_NUM];
 static AInputButton* g_toggle;
 
-static ALine* line_new(AConsoleOutType Type, const char* Text)
+static ALine* line_new(AOutType Type, const char* Text)
 {
     ALine* line = a_mem_malloc(sizeof(ALine));
 
@@ -62,7 +62,7 @@ static void line_free(ALine* Line)
     free(Line);
 }
 
-static void line_set(ALine* Line, AConsoleOutType Type, const char* Text)
+static void line_set(ALine* Line, AOutType Type, const char* Text)
 {
     free(Line->text);
 
@@ -122,7 +122,7 @@ static void screenCallback(void)
     }
 
     {
-        const int xOffset = 1 + g_titles[A_CONSOLE_MESSAGE]->w + 2;
+        const int xOffset = 1 + g_titles[A_OUT__TYPE_MESSAGE]->w + 2;
 
         a_font_setCoords(xOffset, a_font_getY());
         a_font__setFont(A_FONT_ID_LIGHT_GRAY);
@@ -171,7 +171,7 @@ void a_console__init2(void)
     ASprite* graphics = a_sprite_newFromFile("/a2x/consoleTitles");
     ASpriteFrames* frames = a_spriteframes_newFromSprite(graphics, 0, 0, 0);
 
-    for(AConsoleOutType type = 0; type < A_CONSOLE_MAX; type++) {
+    for(AOutType type = 0; type < A_OUT__TYPE_NUM; type++) {
         g_titles[type] = a_spriteframes_getNext(frames);
     }
 
@@ -199,7 +199,7 @@ void a_console__uninit(void)
     a_list_freeEx(g_lines, (AFree*)line_free);
 }
 
-void a_console__write(AConsoleOutType Type, const char* Text)
+void a_console__write(AOutType Type, const char* Text)
 {
     if(!g_enabled) {
         return;
@@ -212,7 +212,7 @@ void a_console__write(AConsoleOutType Type, const char* Text)
     }
 }
 
-void a_console__overwrite(AConsoleOutType Type, const char* Text)
+void a_console__overwrite(AOutType Type, const char* Text)
 {
     if(!g_enabled) {
         return;

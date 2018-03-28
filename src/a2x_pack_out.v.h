@@ -1,5 +1,5 @@
 /*
-    Copyright 2016, 2017 Alex Margarit
+    Copyright 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -21,6 +21,15 @@
 
 #include "a2x_pack_out.p.h"
 
+typedef enum {
+    A_OUT__TYPE_MESSAGE,
+    A_OUT__TYPE_WARNING,
+    A_OUT__TYPE_ERROR,
+    A_OUT__TYPE_STATE,
+    A_OUT__TYPE_FATAL,
+    A_OUT__TYPE_NUM
+} AOutType;
+
 extern void a_out__message(const char* Format, ...);
 extern void a_out__warning(const char* Format, ...);
 extern void a_out__warningv(const char* Format, ...);
@@ -28,3 +37,4 @@ extern void a_out__error(const char* Format, ...);
 extern void a_out__fatal(const char* Format, ...) __attribute__((noreturn));
 extern void a_out__state(const char* Format, ...);
 extern void a_out__stateVerbose(const char* Format, ...);
+extern void a_out__overwrite(AOutType Type, const char* Format, ...);

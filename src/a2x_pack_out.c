@@ -1,5 +1,5 @@
 /*
-    Copyright 2016, 2017 Alex Margarit
+    Copyright 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -41,106 +41,152 @@ typedef enum {
     A_COLOR_WHITE = 37
 } AColorCode;
 
-static void outPrintHeader(const char* Source, const char* Title, AColorCode Color, FILE* Stream)
+typedef enum {
+    A_OUT__SOURCE_A2X,
+    A_OUT__SOURCE_APP,
+    A_OUT__SOURCE_NUM
+} AOutSource;
+
+static const char* g_sources[A_OUT__SOURCE_NUM] = {
+    [A_OUT__SOURCE_A2X] = "a2x",
+    [A_OUT__SOURCE_APP] = "App",
+};
+
+static const struct {
+    const char* name;
+    AColorCode color;
+} g_types[A_OUT__TYPE_NUM] = {
+    [A_OUT__TYPE_MESSAGE] = {"Msg", A_COLOR_GREEN},
+    [A_OUT__TYPE_WARNING] = {"Wrn", A_COLOR_YELLOW},
+    [A_OUT__TYPE_ERROR] = {"Err", A_COLOR_RED},
+    [A_OUT__TYPE_STATE] = {"Stt", A_COLOR_BLUE},
+    [A_OUT__TYPE_FATAL] = {"Ftl", A_COLOR_MAGENTA},
+};
+
+static void outPrintHeader(AOutSource Source, AOutType Type, FILE* Stream)
 {
     #if A_PLATFORM_SYSTEM_LINUX && A_PLATFORM_SYSTEM_DESKTOP
-        fprintf(Stream, "\033[1;%dm[%s][%s]\033[0m ", Color, Source, Title);
+        fprintf(Stream,
+                "\033[1;%dm[%s][%s]\033[0m ",
+                g_types[Type].color,
+                g_sources[Source],
+                g_types[Type].name);
     #else
-        A_UNUSED(Color);
-        fprintf(Stream, "[%s][%s] ", Source, Title);
+        fprintf(Stream, "[%s][%s] ", g_sources[Source], g_types[Type].name);
     #endif
 }
 
-static void outPrint(const char* Source, const char* Title, AColorCode Color, FILE* Stream, const char* Format, va_list Args)
+static void outWorker(AOutSource Source, AOutType Type, bool Verbose, bool Overwrite, FILE* Stream, const char* Format, va_list Args)
 {
-    outPrintHeader(Source, Title, Color, Stream);
-    vfprintf(Stream, Format, Args);
-    fprintf(Stream, "\n");
-}
+    if(!a_settings_getBool("app.output.on")) {
+        return;
+    }
 
-static void outConsole(AConsoleOutType Type, const char* Format, va_list Args)
-{
+    if(Verbose && !a_settings_getBool("app.output.verbose")) {
+        return;
+    }
+
     char buffer[256];
 
-    if(vsnprintf(buffer, sizeof(buffer), Format, Args) > 0) {
+    if(vsnprintf(buffer, sizeof(buffer), Format, Args) <= 0) {
+        return;
+    }
+
+    outPrintHeader(Source, Type, Stream);
+    fputs(buffer, Stream);
+    fputs("\n", Stream);
+
+    if(Overwrite) {
+        a_console__overwrite(Type, buffer);
+    } else {
         a_console__write(Type, buffer);
     }
 }
 
-static void outConsoleOverwrite(AConsoleOutType Type, const char* Format, ...)
+void a_out__message(const char* Format, ...)
 {
-    char buffer[256];
-
     va_list args;
     va_start(args, Format);
 
-    if(vsnprintf(buffer, sizeof(buffer), Format, args) > 0) {
-        a_console__overwrite(Type, buffer);
-    }
+    outWorker(A_OUT__SOURCE_A2X,
+              A_OUT__TYPE_MESSAGE,
+              false,
+              false,
+              stdout,
+              Format,
+              args);
 
     va_end(args);
 }
 
-#define A_OUT__ARGS(FunctionCall) \
-{                                 \
-    va_list args;                 \
-    va_start(args, Format);       \
-                                  \
-    FunctionCall;                 \
-                                  \
-    va_end(args);                 \
-}
-
-#define A_OUT__PRINT(Source, Title, Color, Stream)                     \
-{                                                                      \
-    A_OUT__ARGS(outPrint(Source, Title, Color, Stream, Format, args)); \
-}
-
-#define A_OUT__CONSOLE(Type)                     \
-{                                                \
-    A_OUT__ARGS(outConsole(Type, Format, args)); \
-}
-
-void a_out__message(const char* Format, ...)
-{
-    if(a_settings_getBool("app.output.on")) {
-        A_OUT__PRINT("a2x", "Msg", A_COLOR_GREEN, stdout);
-        A_OUT__CONSOLE(A_CONSOLE_MESSAGE);
-    }
-}
-
 void a_out__warning(const char* Format, ...)
 {
-    A_OUT__PRINT("a2x", "Wrn", A_COLOR_YELLOW, stderr);
-    A_OUT__CONSOLE(A_CONSOLE_WARNING);
+    va_list args;
+    va_start(args, Format);
+
+    outWorker(A_OUT__SOURCE_A2X,
+              A_OUT__TYPE_WARNING,
+              false,
+              false,
+              stderr,
+              Format,
+              args);
+
+    va_end(args);
 }
 
 void a_out__warningv(const char* Format, ...)
 {
-    if(a_settings_getBool("app.output.on")
-        && a_settings_getBool("app.output.verbose")) {
+    va_list args;
+    va_start(args, Format);
 
-        A_OUT__PRINT("a2x", "Wrn", A_COLOR_YELLOW, stderr);
-        A_OUT__CONSOLE(A_CONSOLE_WARNING);
-    }
+    outWorker(A_OUT__SOURCE_A2X,
+              A_OUT__TYPE_WARNING,
+              true,
+              false,
+              stderr,
+              Format,
+              args);
+
+    va_end(args);
 }
 
 void a_out__error(const char* Format, ...)
 {
-    A_OUT__PRINT("a2x", "Err", A_COLOR_RED, stderr);
-    A_OUT__CONSOLE(A_CONSOLE_ERROR);
+    va_list args;
+    va_start(args, Format);
+
+    outWorker(A_OUT__SOURCE_A2X,
+              A_OUT__TYPE_ERROR,
+              false,
+              false,
+              stderr,
+              Format,
+              args);
+
+    va_end(args);
 }
 
 void a_out__fatal(const char* Format, ...)
 {
-    A_OUT__PRINT("a2x", "Ftl", A_COLOR_MAGENTA, stderr);
-    A_OUT__CONSOLE(A_CONSOLE_ERROR);
+    va_list args;
+    va_start(args, Format);
+
+    outWorker(A_OUT__SOURCE_A2X,
+              A_OUT__TYPE_FATAL,
+              false,
+              false,
+              stderr,
+              Format,
+              args);
+
+    va_end(args);
 
     a_console__setShow(true);
-    a_out__message("Exiting in 10 seconds");
+    a_out__message("Exiting...");
 
     for(int s = 10; s > 0; s--) {
-        outConsoleOverwrite(A_CONSOLE_MESSAGE, "Exiting in %d seconds", s);
+        a_out__overwrite(A_OUT__TYPE_MESSAGE, "Exiting in %d seconds", s);
         a_screen__show();
         a_time_waitMs(1000);
     }
@@ -154,65 +200,115 @@ void a_out__fatal(const char* Format, ...)
 
 void a_out__state(const char* Format, ...)
 {
-    if(a_settings_getBool("app.output.on")) {
-        A_OUT__PRINT("a2x", "Stt", A_COLOR_BLUE, stdout);
-        A_OUT__CONSOLE(A_CONSOLE_STATE);
-    }
+    va_list args;
+    va_start(args, Format);
+
+    outWorker(A_OUT__SOURCE_A2X,
+              A_OUT__TYPE_STATE,
+              false,
+              false,
+              stderr,
+              Format,
+              args);
+
+    va_end(args);
 }
 
 void a_out__stateVerbose(const char* Format, ...)
 {
-    if(a_settings_getBool("app.output.on")
-        && a_settings_getBool("app.output.verbose")) {
+    va_list args;
+    va_start(args, Format);
 
-        A_OUT__PRINT("a2x", "Stt", A_COLOR_BLUE, stdout);
-        A_OUT__CONSOLE(A_CONSOLE_STATE);
-    }
+    outWorker(A_OUT__SOURCE_A2X,
+              A_OUT__TYPE_STATE,
+              true,
+              false,
+              stderr,
+              Format,
+              args);
+
+    va_end(args);
+}
+
+void a_out__overwrite(AOutType Type, const char* Format, ...)
+{
+    va_list args;
+    va_start(args, Format);
+
+    outWorker(A_OUT__SOURCE_A2X,
+              Type,
+              false,
+              true,
+              stdout,
+              Format,
+              args);
+
+    va_end(args);
 }
 
 void a_out_print(const char* Text)
 {
     if(a_settings_getBool("app.output.on")) {
-        outPrintHeader("App", "Msg", A_COLOR_GREEN, stdout);
+        outPrintHeader(A_OUT__SOURCE_APP, A_OUT__TYPE_MESSAGE, stdout);
         puts(Text);
-
-        a_console__write(A_CONSOLE_APP, Text);
     }
 }
 
 void a_out_printf(const char* Format, ...)
 {
-    if(a_settings_getBool("app.output.on")) {
-        A_OUT__PRINT("App", "Msg", A_COLOR_GREEN, stdout);
-        A_OUT__CONSOLE(A_CONSOLE_APP);
-    }
+    va_list args;
+    va_start(args, Format);
+
+    outWorker(A_OUT__SOURCE_APP,
+              A_OUT__TYPE_MESSAGE,
+              false,
+              false,
+              stdout,
+              Format,
+              args);
+
+    va_end(args);
 }
 
 void a_out_printv(const char* Format, va_list Args)
 {
-    if(a_settings_getBool("app.output.on")) {
-        va_list consoleArgs;
-        va_copy(consoleArgs, Args);
-
-        outPrint("App", "Msg", A_COLOR_GREEN, stdout, Format, Args);
-        outConsole(A_CONSOLE_APP, Format, consoleArgs);
-
-        va_end(consoleArgs);
-    }
+    outWorker(A_OUT__SOURCE_APP,
+              A_OUT__TYPE_MESSAGE,
+              false,
+              false,
+              stdout,
+              Format,
+              Args);
 }
 
 void a_out_warning(const char* Format, ...)
 {
-    if(a_settings_getBool("app.output.on")) {
-        A_OUT__PRINT("App", "Wrn", A_COLOR_YELLOW, stderr);
-        A_OUT__CONSOLE(A_CONSOLE_APP);
-    }
+    va_list args;
+    va_start(args, Format);
+
+    outWorker(A_OUT__SOURCE_APP,
+              A_OUT__TYPE_WARNING,
+              false,
+              false,
+              stdout,
+              Format,
+              args);
+
+    va_end(args);
 }
 
 void a_out_error(const char* Format, ...)
 {
-    if(a_settings_getBool("app.output.on")) {
-        A_OUT__PRINT("App", "Err", A_COLOR_RED, stderr);
-        A_OUT__CONSOLE(A_CONSOLE_APP);
-    }
+    va_list args;
+    va_start(args, Format);
+
+    outWorker(A_OUT__SOURCE_APP,
+              A_OUT__TYPE_ERROR,
+              false,
+              false,
+              stdout,
+              Format,
+              args);
+
+    va_end(args);
 }
