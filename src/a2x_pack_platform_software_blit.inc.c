@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2017 Alex Margarit
+    Copyright 2010, 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -25,7 +25,7 @@ static void A__FUNC_NAME(keyed, noclip)(const APlatformTexture* Texture, int X, 
 
     const int screenW = a__screen.width;
     APixel* startDst = a__screen.pixels + Y * screenW + X;
-    const APixel* a__pass_src = Texture->spr->pixels;
+    const APixel* src = Texture->spr->pixels;
     const unsigned* spans = Texture->spans;
 
     for(int i = Texture->spr->h; i--; startDst += screenW) {
@@ -41,11 +41,11 @@ static void A__FUNC_NAME(keyed, noclip)(const APlatformTexture* Texture, int X, 
                     A__PIXEL_SETUP;
                     A__PIXEL_DRAW(dst);
                     dst++;
-                    a__pass_src++;
+                    src++;
                 }
             } else {
                 dst += len;
-                a__pass_src += len;
+                src += len;
             }
 
             draw = !draw;
@@ -85,7 +85,7 @@ static void A__FUNC_NAME(keyed, doclip)(const APlatformTexture* Texture, int X, 
         bool draw = *spans & 1;
         const unsigned* nextLine = spans + 1 + (*spans >> 1);
         APixel* dst = startDst;
-        const APixel* a__pass_src = startSrc;
+        const APixel* src = startSrc;
         int clippedLen = 0;
         int drawColumns = columns;
 
@@ -102,14 +102,14 @@ static void A__FUNC_NAME(keyed, doclip)(const APlatformTexture* Texture, int X, 
             // Inverse logic because we're drawing from the previous span
             if(draw) {
                 dst += len;
-                a__pass_src += len;
+                src += len;
                 drawColumns -= len;
             } else {
                 while(len-- && drawColumns--) {
                     A__PIXEL_SETUP;
                     A__PIXEL_DRAW(dst);
                     dst++;
-                    a__pass_src++;
+                    src++;
                 }
             }
         }
@@ -123,11 +123,11 @@ static void A__FUNC_NAME(keyed, doclip)(const APlatformTexture* Texture, int X, 
                     A__PIXEL_SETUP;
                     A__PIXEL_DRAW(dst);
                     dst++;
-                    a__pass_src++;
+                    src++;
                 }
             } else {
                 dst += len;
-                a__pass_src += len;
+                src += len;
                 drawColumns -= len;
             }
 
@@ -145,7 +145,7 @@ static void A__FUNC_NAME(block, noclip)(const APlatformTexture* Texture, int X, 
 
     const int screenW = a__screen.width;
     APixel* startDst = a__screen.pixels + Y * screenW + X;
-    const APixel* a__pass_src = Texture->spr->pixels;
+    const APixel* src = Texture->spr->pixels;
 
     for(int i = Texture->spr->h; i--; startDst += screenW) {
         APixel* dst = startDst;
@@ -154,7 +154,7 @@ static void A__FUNC_NAME(block, noclip)(const APlatformTexture* Texture, int X, 
             A__PIXEL_SETUP;
             A__PIXEL_DRAW(dst);
             dst++;
-            a__pass_src++;
+            src++;
         }
     }
 }
@@ -182,13 +182,13 @@ static void A__FUNC_NAME(block, doclip)(const APlatformTexture* Texture, int X, 
 
     for(int i = rows; i--; startDst += screenW, startSrc += spriteW) {
         APixel* dst = startDst;
-        const APixel* a__pass_src = startSrc;
+        const APixel* src = startSrc;
 
         for(int j = columns; j--; ) {
             A__PIXEL_SETUP;
             A__PIXEL_DRAW(dst);
             dst++;
-            a__pass_src++;
+            src++;
         }
     }
 }

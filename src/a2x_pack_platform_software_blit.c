@@ -55,92 +55,92 @@ static ABlitter g_blitter_keyed_doclip;
 #define A__FILL data
 #define A__BLEND_SETUP
 #define A__PIXEL_SETUP
-#define A__PIXEL_PARAMS , *a__pass_src
+#define A__PIXEL_PARAMS , *src
 #include "a2x_pack_platform_software_blit.inc.c"
 
 #define A__BLEND plain
 #define A__FILL flat
-#define A__BLEND_SETUP                                 \
-    const APixel a__pass_color = a_pixel__state.pixel;
+#define A__BLEND_SETUP                         \
+    const APixel color = a_pixel__state.pixel;
 #define A__PIXEL_SETUP
-#define A__PIXEL_PARAMS , a__pass_color
+#define A__PIXEL_PARAMS , color
 #include "a2x_pack_platform_software_blit.inc.c"
 
 #define A__BLEND rgba
 #define A__FILL data
-#define A__BLEND_SETUP                              \
-    int r, g, b;                                    \
-    const int a__pass_alpha = a_pixel__state.alpha; \
-    if(a__pass_alpha == 0) {                        \
-        return;                                     \
+#define A__BLEND_SETUP                      \
+    int r, g, b;                            \
+    const int alpha = a_pixel__state.alpha; \
+    if(alpha == 0) {                        \
+        return;                             \
     }
-#define A__PIXEL_SETUP a_pixel_toRgb(*a__pass_src, &r, &g, &b);
-#define A__PIXEL_PARAMS , r, g, b, a__pass_alpha
+#define A__PIXEL_SETUP a_pixel_toRgb(*src, &r, &g, &b);
+#define A__PIXEL_PARAMS , r, g, b, alpha
 #include "a2x_pack_platform_software_blit.inc.c"
 
 #define A__BLEND rgba
 #define A__FILL flat
-#define A__BLEND_SETUP                              \
-    const int a__pass_red = a_pixel__state.red;     \
-    const int a__pass_green = a_pixel__state.green; \
-    const int a__pass_blue = a_pixel__state.blue;   \
-    const int a__pass_alpha = a_pixel__state.alpha; \
-    if(a__pass_alpha == 0) {                        \
-        return;                                     \
+#define A__BLEND_SETUP                      \
+    const int red = a_pixel__state.red;     \
+    const int green = a_pixel__state.green; \
+    const int blue = a_pixel__state.blue;   \
+    const int alpha = a_pixel__state.alpha; \
+    if(alpha == 0) {                        \
+        return;                             \
     }
 #define A__PIXEL_SETUP
-#define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue, a__pass_alpha
+#define A__PIXEL_PARAMS , red, green, blue, alpha
 #include "a2x_pack_platform_software_blit.inc.c"
 
 #define A__BLEND rgb25
 #define A__FILL data
 #define A__BLEND_SETUP int r, g, b;
-#define A__PIXEL_SETUP a_pixel_toRgb(*a__pass_src, &r, &g, &b);
+#define A__PIXEL_SETUP a_pixel_toRgb(*src, &r, &g, &b);
 #define A__PIXEL_PARAMS , r, g, b
 #include "a2x_pack_platform_software_blit.inc.c"
 
 #define A__BLEND rgb25
 #define A__FILL flat
-#define A__BLEND_SETUP                              \
-    const int a__pass_red = a_pixel__state.red;     \
-    const int a__pass_green = a_pixel__state.green; \
-    const int a__pass_blue = a_pixel__state.blue;
+#define A__BLEND_SETUP                      \
+    const int red = a_pixel__state.red;     \
+    const int green = a_pixel__state.green; \
+    const int blue = a_pixel__state.blue;
 #define A__PIXEL_SETUP
-#define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue
+#define A__PIXEL_PARAMS , red, green, blue
 #include "a2x_pack_platform_software_blit.inc.c"
 
 #define A__BLEND rgb50
 #define A__FILL data
 #define A__BLEND_SETUP int r, g, b;
-#define A__PIXEL_SETUP a_pixel_toRgb(*a__pass_src, &r, &g, &b);
+#define A__PIXEL_SETUP a_pixel_toRgb(*src, &r, &g, &b);
 #define A__PIXEL_PARAMS , r, g, b
 #include "a2x_pack_platform_software_blit.inc.c"
 
 #define A__BLEND rgb50
 #define A__FILL flat
-#define A__BLEND_SETUP                              \
-    const int a__pass_red = a_pixel__state.red;     \
-    const int a__pass_green = a_pixel__state.green; \
-    const int a__pass_blue = a_pixel__state.blue;
+#define A__BLEND_SETUP                      \
+    const int red = a_pixel__state.red;     \
+    const int green = a_pixel__state.green; \
+    const int blue = a_pixel__state.blue;
 #define A__PIXEL_SETUP
-#define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue
+#define A__PIXEL_PARAMS , red, green, blue
 #include "a2x_pack_platform_software_blit.inc.c"
 
 #define A__BLEND rgb75
 #define A__FILL data
 #define A__BLEND_SETUP int r, g, b;
-#define A__PIXEL_SETUP a_pixel_toRgb(*a__pass_src, &r, &g, &b);
+#define A__PIXEL_SETUP a_pixel_toRgb(*src, &r, &g, &b);
 #define A__PIXEL_PARAMS , r, g, b
 #include "a2x_pack_platform_software_blit.inc.c"
 
 #define A__BLEND rgb75
 #define A__FILL flat
-#define A__BLEND_SETUP                              \
-    const int a__pass_red = a_pixel__state.red;     \
-    const int a__pass_green = a_pixel__state.green; \
-    const int a__pass_blue = a_pixel__state.blue;
+#define A__BLEND_SETUP                      \
+    const int red = a_pixel__state.red;     \
+    const int green = a_pixel__state.green; \
+    const int blue = a_pixel__state.blue;
 #define A__PIXEL_SETUP
-#define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue
+#define A__PIXEL_PARAMS , red, green, blue
 #include "a2x_pack_platform_software_blit.inc.c"
 
 #define A__BLEND inverse
@@ -160,35 +160,35 @@ static ABlitter g_blitter_keyed_doclip;
 #define A__BLEND mod
 #define A__FILL data
 #define A__BLEND_SETUP int r, g, b;
-#define A__PIXEL_SETUP a_pixel_toRgb(*a__pass_src, &r, &g, &b);
+#define A__PIXEL_SETUP a_pixel_toRgb(*src, &r, &g, &b);
 #define A__PIXEL_PARAMS , r, g, b
 #include "a2x_pack_platform_software_blit.inc.c"
 
 #define A__BLEND mod
 #define A__FILL flat
-#define A__BLEND_SETUP                              \
-    const int a__pass_red = a_pixel__state.red;     \
-    const int a__pass_green = a_pixel__state.green; \
-    const int a__pass_blue = a_pixel__state.blue;
+#define A__BLEND_SETUP                      \
+    const int red = a_pixel__state.red;     \
+    const int green = a_pixel__state.green; \
+    const int blue = a_pixel__state.blue;
 #define A__PIXEL_SETUP
-#define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue
+#define A__PIXEL_PARAMS , red, green, blue
 #include "a2x_pack_platform_software_blit.inc.c"
 
 #define A__BLEND add
 #define A__FILL data
 #define A__BLEND_SETUP int r, g, b;
-#define A__PIXEL_SETUP a_pixel_toRgb(*a__pass_src, &r, &g, &b);
+#define A__PIXEL_SETUP a_pixel_toRgb(*src, &r, &g, &b);
 #define A__PIXEL_PARAMS , r, g, b
 #include "a2x_pack_platform_software_blit.inc.c"
 
 #define A__BLEND add
 #define A__FILL flat
-#define A__BLEND_SETUP                              \
-    const int a__pass_red = a_pixel__state.red;     \
-    const int a__pass_green = a_pixel__state.green; \
-    const int a__pass_blue = a_pixel__state.blue;
+#define A__BLEND_SETUP                      \
+    const int red = a_pixel__state.red;     \
+    const int green = a_pixel__state.green; \
+    const int blue = a_pixel__state.blue;
 #define A__PIXEL_SETUP
-#define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue
+#define A__PIXEL_PARAMS , red, green, blue
 #include "a2x_pack_platform_software_blit.inc.c"
 
 void a_platform_software_blit__init(void)

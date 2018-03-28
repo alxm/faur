@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2017 Alex Margarit
+    Copyright 2010, 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -225,44 +225,44 @@ do {                                                                        \
 
 #define A__BLEND plain
 #define A__BLEND_SETUP \
-    const APixel a__pass_color = a_pixel__state.pixel;
-#define A__PIXEL_PARAMS , a__pass_color
+    const APixel color = a_pixel__state.pixel;
+#define A__PIXEL_PARAMS , color
 #include "a2x_pack_platform_software_draw.inc.c"
 
 #define A__BLEND rgba
-#define A__BLEND_SETUP                              \
-    const int a__pass_red = a_pixel__state.red;     \
-    const int a__pass_green = a_pixel__state.green; \
-    const int a__pass_blue = a_pixel__state.blue;   \
-    const int a__pass_alpha = a_pixel__state.alpha; \
-    if(a__pass_alpha == 0) {                        \
-        return;                                     \
+#define A__BLEND_SETUP                      \
+    const int red = a_pixel__state.red;     \
+    const int green = a_pixel__state.green; \
+    const int blue = a_pixel__state.blue;   \
+    const int alpha = a_pixel__state.alpha; \
+    if(alpha == 0) {                        \
+        return;                             \
     }
-#define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue, a__pass_alpha
+#define A__PIXEL_PARAMS , red, green, blue, alpha
 #include "a2x_pack_platform_software_draw.inc.c"
 
 #define A__BLEND rgb25
-#define A__BLEND_SETUP                              \
-    const int a__pass_red = a_pixel__state.red;     \
-    const int a__pass_green = a_pixel__state.green; \
-    const int a__pass_blue = a_pixel__state.blue;
-#define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue
+#define A__BLEND_SETUP                      \
+    const int red = a_pixel__state.red;     \
+    const int green = a_pixel__state.green; \
+    const int blue = a_pixel__state.blue;
+#define A__PIXEL_PARAMS , red, green, blue
 #include "a2x_pack_platform_software_draw.inc.c"
 
 #define A__BLEND rgb50
-#define A__BLEND_SETUP                              \
-    const int a__pass_red = a_pixel__state.red;     \
-    const int a__pass_green = a_pixel__state.green; \
-    const int a__pass_blue = a_pixel__state.blue;
-#define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue
+#define A__BLEND_SETUP                      \
+    const int red = a_pixel__state.red;     \
+    const int green = a_pixel__state.green; \
+    const int blue = a_pixel__state.blue;
+#define A__PIXEL_PARAMS , red, green, blue
 #include "a2x_pack_platform_software_draw.inc.c"
 
 #define A__BLEND rgb75
-#define A__BLEND_SETUP                              \
-    const int a__pass_red = a_pixel__state.red;     \
-    const int a__pass_green = a_pixel__state.green; \
-    const int a__pass_blue = a_pixel__state.blue;
-#define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue
+#define A__BLEND_SETUP                      \
+    const int red = a_pixel__state.red;     \
+    const int green = a_pixel__state.green; \
+    const int blue = a_pixel__state.blue;
+#define A__PIXEL_PARAMS , red, green, blue
 #include "a2x_pack_platform_software_draw.inc.c"
 
 #define A__BLEND inverse
@@ -271,19 +271,19 @@ do {                                                                        \
 #include "a2x_pack_platform_software_draw.inc.c"
 
 #define A__BLEND mod
-#define A__BLEND_SETUP                              \
-    const int a__pass_red = a_pixel__state.red;     \
-    const int a__pass_green = a_pixel__state.green; \
-    const int a__pass_blue = a_pixel__state.blue;
-#define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue
+#define A__BLEND_SETUP                      \
+    const int red = a_pixel__state.red;     \
+    const int green = a_pixel__state.green; \
+    const int blue = a_pixel__state.blue;
+#define A__PIXEL_PARAMS , red, green, blue
 #include "a2x_pack_platform_software_draw.inc.c"
 
 #define A__BLEND add
-#define A__BLEND_SETUP                              \
-    const int a__pass_red = a_pixel__state.red;     \
-    const int a__pass_green = a_pixel__state.green; \
-    const int a__pass_blue = a_pixel__state.blue;
-#define A__PIXEL_PARAMS , a__pass_red, a__pass_green, a__pass_blue
+#define A__BLEND_SETUP                      \
+    const int red = a_pixel__state.red;     \
+    const int green = a_pixel__state.green; \
+    const int blue = a_pixel__state.blue;
+#define A__PIXEL_PARAMS , red, green, blue
 #include "a2x_pack_platform_software_draw.inc.c"
 
 void a_platform_software_draw__init(void)
