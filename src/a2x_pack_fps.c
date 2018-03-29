@@ -45,6 +45,7 @@ static bool g_vsync;
 static unsigned g_skipNum;
 static unsigned g_fpsRate;
 static unsigned g_msPerFrame;
+static unsigned g_msPerTickFrame;
 
 static unsigned g_fps;
 static unsigned g_maxFps;
@@ -116,6 +117,7 @@ void a_fps__reset(unsigned NumFramesToSkip)
     g_skipNum = NumFramesToSkip;
     g_fpsRate = g_drawRate / (1 + g_skipNum);
     g_msPerFrame = 1000 / g_fpsRate;
+    g_msPerTickFrame = 1000 / g_tickRate;
 
     g_fps = g_fpsRate;
     g_maxFps = g_fpsRate;
@@ -135,13 +137,13 @@ void a_fps__reset(unsigned NumFramesToSkip)
     g_fpsThresholdSlow = (g_fpsRate > 3) ? (g_fpsRate - 2) : 1;
 
     g_lastMs = a_time_getMs();
-    g_tickCredit = 1000;
+    g_tickCredit = g_msPerTickFrame;
 }
 
 bool a_fps__tick(void)
 {
-    if(g_tickCredit >= 1000) {
-        g_tickCredit -= 1000;
+    if(g_tickCredit >= g_msPerTickFrame) {
+        g_tickCredit -= g_msPerTickFrame;
         g_frameCounter++;
 
         return true;
@@ -215,7 +217,7 @@ void a_fps__frame(void)
         }
     }
 
-    g_tickCredit += g_vsync ? elapsedMs * g_tickRate : 1000;
+    g_tickCredit += elapsedMs;
 }
 
 unsigned a_fps_getFps(void)
