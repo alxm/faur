@@ -179,10 +179,14 @@ void a_out__fatal(const char* Format, ...)
     va_end(args);
 
     a_console__setShow(true);
-    a_out__message("Exiting...");
 
     for(int s = 10; s > 0; s--) {
-        a_out__overwrite(A_OUT__TYPE_MESSAGE, "Exiting in %d seconds", s);
+        if(s == 10) {
+            a_out__message("Exiting in %ds", s);
+        } else {
+            a_out__overwrite(A_OUT__TYPE_MESSAGE, "Exiting in %ds", s);
+        }
+
         a_screen__show();
         a_time_waitMs(1000);
     }

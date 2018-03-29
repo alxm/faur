@@ -39,8 +39,14 @@ typedef struct {
     char* text;
 } ALine;
 
-bool g_enabled;
-bool g_show;
+typedef enum {
+    A_CONSOLE__STATE_INVALID,
+    A_CONSOLE__STATE_BASIC,
+    A_CONSOLE__STATE_FULL,
+    A_CONSOLE__STATE_VISIBLE,
+} AConsoleState;
+
+AConsoleState g_state;
 static AList* g_lines;
 static unsigned g_linesPerScreen;
 static ASprite* g_titles[A_OUT__TYPE_NUM];
@@ -73,13 +79,17 @@ static void line_set(ALine* Line, AOutType Type, const char* Text)
 static void inputCallback(void)
 {
     if(a_button_getPressedOnce(g_toggle)) {
-        g_show = !g_show;
+        if(g_state == A_CONSOLE__STATE_FULL) {
+            a_console__setShow(true);
+        } else {
+            a_console__setShow(false);
+        }
     }
 }
 
 static void screenCallback(void)
 {
-    if(!g_enabled || !g_show) {
+    if(g_state != A_CONSOLE__STATE_VISIBLE) {
         return;
     }
 
@@ -156,10 +166,9 @@ static void screenCallback(void)
 
 void a_console__init(void)
 {
-    g_enabled = true;
-    g_show = false;
     g_lines = a_list_new();
     g_linesPerScreen = UINT_MAX;
+    g_state = A_CONSOLE__STATE_BASIC;
 }
 
 void a_console__init2(void)
@@ -186,22 +195,34 @@ void a_console__init2(void)
         line_free(a_list_pop(g_lines));
     }
 
-    g_show = a_settings_getBool("console.on");
     g_toggle = a_button_new(a_settings_getString("console.button"));
 
     a_input__addCallback(inputCallback);
     a_screen__addOverlay(screenCallback);
+
+    g_state = a_settings_getBool("console.on")
+                ? A_CONSOLE__STATE_VISIBLE
+                : A_CONSOLE__STATE_FULL;
 }
 
 void a_console__uninit(void)
 {
-    g_enabled = false;
+    g_state = A_CONSOLE__STATE_INVALID;
     a_list_freeEx(g_lines, (AFree*)line_free);
+}
+
+void a_console__setShow(bool DoShow)
+{
+    if(g_state < A_CONSOLE__STATE_FULL) {
+        return;
+    }
+
+    g_state = A_CONSOLE__STATE_FULL + DoShow;
 }
 
 void a_console__write(AOutType Type, const char* Text, bool Overwrite)
 {
-    if(!g_enabled) {
+    if(g_state == A_CONSOLE__STATE_INVALID) {
         return;
     }
 
@@ -218,9 +239,4 @@ void a_console__write(AOutType Type, const char* Text, bool Overwrite)
             line_free(a_list_pop(g_lines));
         }
     }
-}
-
-void a_console__setShow(bool DoShow)
-{
-    g_show = DoShow;
 }
