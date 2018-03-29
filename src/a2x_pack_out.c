@@ -165,6 +165,10 @@ void a_out__error(const char* Format, ...)
 
 void a_out__fatal(const char* Format, ...)
 {
+    if(!a_settings_getBool("app.output.on")) {
+        a_settings_set("app.output.on", "y");
+    }
+
     va_list args;
     va_start(args, Format);
 
