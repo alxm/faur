@@ -211,6 +211,11 @@ void a_console__uninit(void)
     a_list_freeEx(g_lines, (AFree*)line_free);
 }
 
+bool a_console__isInitialized(void)
+{
+    return g_state >= A_CONSOLE__STATE_FULL;
+}
+
 void a_console__setShow(bool DoShow)
 {
     if(g_state < A_CONSOLE__STATE_FULL) {
