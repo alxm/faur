@@ -182,20 +182,28 @@ void a_out__fatal(const char* Format, ...)
 
     va_end(args);
 
-    if(a_console__isInitialized()) {
-        a_console__setShow(true);
+    a_console__setShow(true);
+    a_screen__show();
 
-        for(int s = 10; s > 0; s--) {
-            if(s == 10) {
-                a_out__message("Exiting in %ds", s);
-            } else {
-                a_out__overwrite(A_OUT__TYPE_MESSAGE, "Exiting in %ds", s);
-            }
-
-            a_screen__show();
+    #if A_BUILD_DEBUG
+        while(true) {
+            printf("Waiting to attach debugger: PID %d\n", getpid());
             a_time_waitMs(1000);
         }
-    }
+    #else
+        if(a_console__isInitialized()) {
+            for(int s = 10; s > 0; s--) {
+                if(s == 10) {
+                    a_out__message("Exiting in %ds", s);
+                } else {
+                    a_out__overwrite(A_OUT__TYPE_MESSAGE, "Exiting in %ds", s);
+                }
+
+                a_screen__show();
+                a_time_waitMs(1000);
+            }
+        }
+    #endif
 
     #if A_PLATFORM_SYSTEM_EMSCRIPTEN
         emscripten_force_exit(1);
