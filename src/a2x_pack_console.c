@@ -149,15 +149,22 @@ static void screenCallback(void)
         a_font_setCoords(a__screen.width - 1, 2);
 
         a_font__setFont(A_FONT_ID_YELLOW);
-        a_font_printf("%u fps", a_fps_getFps());
+        a_font_printf("%u tick fps", a_fps_getTickRate());
+        a_font_newLine();
+        a_font_printf("%u draw fps", a_fps_getDrawRate());
         a_font_newLine();
 
         a_font__setFont(A_FONT_ID_GREEN);
-        a_font_printf("%u max", a_fps_getMaxFps());
+        a_font_printf("%u draw max", a_fps_getDrawRateMax());
+        a_font_newLine();
+
+        a_font_printf("%u draw skip", a_fps_getDrawSkip());
         a_font_newLine();
 
         a_font__setFont(A_FONT_ID_BLUE);
-        a_font_printf("%u skip", a_fps_getFrameSkip());
+        a_font_printf("Vsync is %s",
+                      a_settings_getBool("video.vsync") ? "on" : "off");
+        a_font_newLine();
     }
 
     a_pixel_pop();

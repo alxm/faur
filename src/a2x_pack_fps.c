@@ -220,17 +220,22 @@ void a_fps__frame(void)
     g_tickCredit += elapsedMs;
 }
 
-unsigned a_fps_getFps(void)
+unsigned a_fps_getTickRate(void)
+{
+    return g_tickRate;
+}
+
+unsigned a_fps_getDrawRate(void)
 {
     return g_fps;
 }
 
-unsigned a_fps_getMaxFps(void)
+unsigned a_fps_getDrawRateMax(void)
 {
     return g_maxFps;
 }
 
-unsigned a_fps_getFrameSkip(void)
+unsigned a_fps_getDrawSkip(void)
 {
     return g_skipNum;
 }

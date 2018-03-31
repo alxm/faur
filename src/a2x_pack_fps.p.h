@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2017 Alex Margarit
+    Copyright 2010, 2017, 2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -19,9 +19,10 @@
 
 #pragma once
 
-extern unsigned a_fps_getFps(void);
-extern unsigned a_fps_getMaxFps(void);
-extern unsigned a_fps_getFrameSkip(void);
+extern unsigned a_fps_getTickRate(void);
+extern unsigned a_fps_getDrawRate(void);
+extern unsigned a_fps_getDrawRateMax(void);
+extern unsigned a_fps_getDrawSkip(void);
 
 extern unsigned a_fps_getCounter(void);
 extern bool a_fps_isNthFrame(unsigned N);
