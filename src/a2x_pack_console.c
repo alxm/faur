@@ -222,6 +222,14 @@ void a_console__uninit(void)
 {
     g_state = A_CONSOLE__STATE_INVALID;
     a_list_freeEx(g_lines, (AFree*)line_free);
+
+    for(AOutSource s = 0; s < A_OUT__SOURCE_NUM; s++) {
+        a_sprite_free(g_sources[s]);
+    }
+
+    for(AOutType t = 0; t < A_OUT__TYPE_NUM; t++) {
+        a_sprite_free(g_titles[t]);
+    }
 }
 
 bool a_console__isInitialized(void)
