@@ -35,6 +35,7 @@
 #include "a2x_pack_str.v.h"
 
 typedef struct {
+    AOutSource source;
     AOutType type;
     char* text;
 } ALine;
@@ -49,15 +50,25 @@ typedef enum {
 AConsoleState g_state;
 static AList* g_lines;
 static unsigned g_linesPerScreen;
+static ASprite* g_sources[A_OUT__SOURCE_NUM];
 static ASprite* g_titles[A_OUT__TYPE_NUM];
 static AInputButton* g_toggle;
 
-static ALine* line_new(AOutType Type, const char* Text)
+static void line_set(ALine* Line, AOutSource Source, AOutType Type, const char* Text)
+{
+    free(Line->text);
+
+    Line->source = Source;
+    Line->type = Type;
+    Line->text = a_str_dup(Text);
+}
+
+static ALine* line_new(AOutSource Source, AOutType Type, const char* Text)
 {
     ALine* line = a_mem_malloc(sizeof(ALine));
 
-    line->type = Type;
-    line->text = a_str_dup(Text);
+    line->text = NULL;
+    line_set(line, Source, Type, Text);
 
     return line;
 }
@@ -66,14 +77,6 @@ static void line_free(ALine* Line)
 {
     free(Line->text);
     free(Line);
-}
-
-static void line_set(ALine* Line, AOutType Type, const char* Text)
-{
-    free(Line->text);
-
-    Line->type = Type;
-    Line->text = a_str_dup(Text);
 }
 
 static void inputCallback(void)
@@ -132,14 +135,15 @@ static void screenCallback(void)
     }
 
     {
-        const int xOffset = 1 + g_titles[A_OUT__TYPE_MESSAGE]->w + 2;
+        int tagWidth = g_sources[A_OUT__SOURCE_A2X]->w;
 
-        a_font_setCoords(xOffset, a_font_getY());
+        a_font_setCoords(1 + tagWidth + 1 + tagWidth + 2, a_font_getY());
         a_font__setFont(A_FONT_ID_LIGHT_GRAY);
 
-        A_LIST_ITERATE(g_lines, ALine*, line) {
-            a_sprite_blit(g_titles[line->type], 1, a_font_getY());
-            a_font_print(line->text);
+        A_LIST_ITERATE(g_lines, ALine*, l) {
+            a_sprite_blit(g_sources[l->source], 1, a_font_getY());
+            a_sprite_blit(g_titles[l->type], 1 + tagWidth + 1, a_font_getY());
+            a_font_print(l->text);
             a_font_newLine();
         }
     }
@@ -184,15 +188,17 @@ void a_console__init2(void)
         return;
     }
 
-    ASprite* graphics = a_sprite_newFromFile("/a2x/consoleTitles");
-    ASpriteFrames* frames = a_spriteframes_newFromSprite(graphics, 0, 0, 0);
+    ASpriteFrames* frames = a_spriteframes_newFromFile("/a2x/consoleTitles", 0);
 
-    for(AOutType type = 0; type < A_OUT__TYPE_NUM; type++) {
-        g_titles[type] = a_spriteframes_getNext(frames);
+    for(AOutSource s = 0; s < A_OUT__SOURCE_NUM; s++) {
+        g_sources[s] = a_spriteframes_getNext(frames);
+    }
+
+    for(AOutType t = 0; t < A_OUT__TYPE_NUM; t++) {
+        g_titles[t] = a_spriteframes_getNext(frames);
     }
 
     a_spriteframes_free(frames, false);
-    a_sprite_free(graphics);
 
     g_linesPerScreen = (unsigned)
                         (a_screen_getHeight() / a_font_getLineHeight() - 2);
@@ -232,7 +238,7 @@ void a_console__setShow(bool DoShow)
     g_state = A_CONSOLE__STATE_FULL + DoShow;
 }
 
-void a_console__write(AOutType Type, const char* Text, bool Overwrite)
+void a_console__write(AOutSource Source, AOutType Type, const char* Text, bool Overwrite)
 {
     if(g_state == A_CONSOLE__STATE_INVALID) {
         return;
@@ -240,12 +246,12 @@ void a_console__write(AOutType Type, const char* Text, bool Overwrite)
 
     if(Overwrite) {
         if(a_list_isEmpty(g_lines)) {
-            a_list_addLast(g_lines, line_new(Type, Text));
+            a_list_addLast(g_lines, line_new(Source, Type, Text));
         } else {
-            line_set(a_list_getLast(g_lines), Type, Text);
+            line_set(a_list_getLast(g_lines), Source, Type, Text);
         }
     } else {
-        a_list_addLast(g_lines, line_new(Type, Text));
+        a_list_addLast(g_lines, line_new(Source, Type, Text));
 
         if(a_list_getSize(g_lines) > g_linesPerScreen) {
             line_free(a_list_pop(g_lines));

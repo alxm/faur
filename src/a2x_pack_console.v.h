@@ -29,4 +29,4 @@ extern void a_console__uninit(void);
 
 extern bool a_console__isInitialized(void);
 extern void a_console__setShow(bool DoShow);
-extern void a_console__write(AOutType Type, const char* Text, bool Overwrite);
+extern void a_console__write(AOutSource Source, AOutType Type, const char* Text, bool Overwrite);

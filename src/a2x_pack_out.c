@@ -41,12 +41,6 @@ typedef enum {
     A_COLOR_WHITE = 37
 } AColorCode;
 
-typedef enum {
-    A_OUT__SOURCE_A2X,
-    A_OUT__SOURCE_APP,
-    A_OUT__SOURCE_NUM
-} AOutSource;
-
 static const char* g_sources[A_OUT__SOURCE_NUM] = {
     [A_OUT__SOURCE_A2X] = "a2x",
     [A_OUT__SOURCE_APP] = "App",
@@ -96,7 +90,7 @@ static void outWorker(AOutSource Source, AOutType Type, bool Verbose, bool Overw
     fputs(buffer, Stream);
     fputs("\n", Stream);
 
-    a_console__write(Type, buffer, Overwrite);
+    a_console__write(Source, Type, buffer, Overwrite);
 }
 
 void a_out__message(const char* Format, ...)
