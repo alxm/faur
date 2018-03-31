@@ -1,5 +1,5 @@
 /*
-    Copyright 2016, 2017 Alex Margarit
+    Copyright 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -21,20 +21,12 @@
 
 #include "a2x_pack_console.p.h"
 
+#include "a2x_pack_out.v.h"
+
 extern void a_console__init(void);
 extern void a_console__init2(void);
 extern void a_console__uninit(void);
 
-typedef enum {
-    A_CONSOLE_INVALID = -1,
-    A_CONSOLE_MESSAGE,
-    A_CONSOLE_WARNING,
-    A_CONSOLE_ERROR,
-    A_CONSOLE_STATE,
-    A_CONSOLE_APP,
-    A_CONSOLE_MAX
-} AConsoleOutType;
-
-extern void a_console__write(AConsoleOutType Type, const char* Text);
-extern void a_console__overwrite(AConsoleOutType Type, const char* Text);
+extern bool a_console__isInitialized(void);
 extern void a_console__setShow(bool DoShow);
+extern void a_console__write(AOutSource Source, AOutType Type, const char* Text, bool Overwrite);
