@@ -42,7 +42,7 @@ class EmbedTool(Tool):
                 includes += '#include "{}/{}"\n'.format(d, header)
                 embed_calls += \
                     '    a_embed__add({0}_path, {0}_data, {0}_size);\n' \
-                        .format(header[: -2])
+                        .format(self.sanitizeFileNameForCVar(header[: -2]))
 
         self.writefile(c_file,
 """\
