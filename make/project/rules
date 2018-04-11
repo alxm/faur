@@ -21,13 +21,27 @@
 #
 
 #
-# Project dirs created by a2x_new
+# Project dirs created by a2x_new or overrode by user makefile
 #
-A_DIR_BIN = ../bin
-A_DIR_GFX = ../gfx
-A_DIR_OBJ = ../obj
-A_DIR_SFX = ../sfx
-A_DIR_SRC = ../src
+ifndef A_DIR_BIN
+    A_DIR_BIN = ../bin
+endif
+
+ifndef A_DIR_GFX
+    A_DIR_GFX = ../gfx
+endif
+
+ifndef A_DIR_OBJ
+    A_DIR_OBJ = ../obj
+endif
+
+ifndef A_DIR_SFX
+    A_DIR_SFX = ../sfx
+endif
+
+ifndef A_DIR_SRC
+    A_DIR_SRC = ../src
+endif
 
 #
 # Subdir for generated code and object files
@@ -102,6 +116,7 @@ endif
 # compile flags
 #
 A_GENERIC_CFLAGS = \
+    -DA2X=1 \
     -std=c99 \
     -Wall \
     -Wextra \
