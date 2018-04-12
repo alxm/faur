@@ -23,8 +23,8 @@
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_strhash.v.h"
 
-#include "console.h"
-#include "font.h"
+#include "a__gfx_console_png.h"
+#include "a__gfx_font_png.h"
 
 typedef struct {
     const uint8_t* buffer;
@@ -38,12 +38,12 @@ void a_embed__init(void)
     g_data = a_strhash_new();
 
     a_embed__add("/a2x/consoleTitles",
-                 g_media_console_png_data,
-                 g_media_console_png_size);
+                 a__gfx_console_png_data,
+                 a__gfx_console_png_size);
 
     a_embed__add("/a2x/defaultFont",
-                 g_media_font_png_data,
-                 g_media_font_png_size);
+                 a__gfx_font_png_data,
+                 a__gfx_font_png_size);
 
     a_embed__application();
 }

@@ -147,5 +147,6 @@ class Tool:
         if status != 0:
             sys.exit(status)
 
-    def sanitizeFileNameForCVar(self, text):
-        return text.replace('.', '_').replace('-', '_')
+    def sanitizeFileNameForCVar(self, FileName):
+        return os.path.splitext(os.path.basename(FileName))[0] \
+            .replace('.', '_').replace('-', '_')

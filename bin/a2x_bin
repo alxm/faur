@@ -29,11 +29,9 @@ class BinTool(Tool):
         bin_file = self.get_arg('File.bin')
         c_file = self.get_arg('File.c')
         h_file = self.get_arg('File.h')
-        header_file = os.path.basename(h_file)
-        prefix = self.get_arg('VariablePrefix')
+        original_path = self.get_arg('[OriginalPath]')
 
-        bin_file_name = os.path.basename(bin_file)
-        bin_file_name_clean = self.sanitizeFileNameForCVar(bin_file_name)
+        c_var = self.sanitizeFileNameForCVar(h_file)
 
         bin_data = ''
         bin_bytes = self.readbytes(bin_file)
@@ -49,27 +47,25 @@ class BinTool(Tool):
 #include <stddef.h>
 #include <stdint.h>
 
-extern const char* {prefix}_{name}_path;
-extern size_t {prefix}_{name}_size;
-extern uint8_t {prefix}_{name}_data[];
-""".format(prefix = prefix,
-           name = bin_file_name_clean))
+extern const char* {var}_path;
+extern size_t {var}_size;
+extern uint8_t {var}_data[];
+""".format(var = c_var))
 
         self.writefile(c_file, """\
 #include "{header}"
 
-const char* {prefix}_{name}_path = "{prefix}/{originalName}";
+const char* {var}_path = "{file_path}";
 
-size_t {prefix}_{name}_size = {size};
+size_t {var}_size = {size};
 
-uint8_t {prefix}_{name}_data[] = {{{data}
+uint8_t {var}_data[] = {{{data}
 }};
-""".format(header = header_file,
-           prefix = prefix,
-           name = bin_file_name_clean,
-           originalName = bin_file_name,
+""".format(header = os.path.basename(h_file),
+           var = c_var,
+           file_path = original_path,
            size = bin_size,
            data = bin_data))
 
 if __name__ == '__main__':
-    BinTool('File.bin File.c File.h VariablePrefix').run()
+    BinTool('File.bin File.c File.h [OriginalPath]').run()
