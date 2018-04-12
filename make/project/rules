@@ -111,11 +111,8 @@ ifeq ($(A_EMBED_MEDIA), true)
     #
     # PNG and WAV files in .c form
     #
-    A_FILES_SRC_GEN_GFX = $(addprefix $(A_DIR_SRC_GEN_GFX)/$(A_PREFIX_GEN_GFX), $(A_FILES_MEDIA_PNG:.png=_png.c))
-    A_FILES_SRC_GEN_SFX = $(addprefix $(A_DIR_SRC_GEN_SFX)/$(A_PREFIX_GEN_SFX), $(A_FILES_MEDIA_WAV:.wav=_wav.c))
-
-    A_FILES_OBJ += $(addprefix $(A_DIR_OBJ_PLATFORM_GEN_GFX)/, $(notdir $(A_FILES_SRC_GEN_GFX:=.o))) \
-                   $(addprefix $(A_DIR_OBJ_PLATFORM_GEN_SFX)/, $(notdir $(A_FILES_SRC_GEN_SFX:=.o)))
+    A_FILES_SRC_GEN_GFX = $(addprefix $(A_DIR_SRC_GEN_GFX)/$(A_PREFIX_GEN_GFX), $(A_FILES_MEDIA_PNG:.png=_png.h))
+    A_FILES_SRC_GEN_SFX = $(addprefix $(A_DIR_SRC_GEN_SFX)/$(A_PREFIX_GEN_SFX), $(A_FILES_MEDIA_WAV:.wav=_wav.h))
 endif
 
 #
@@ -158,13 +155,13 @@ $(A_FILE_SRC_GEN_BUILDTIME) : $(A_FILES_OBJ) $(A2X_PATH)/bin/a2x_buildtime
 	@ mkdir -p $(@D)
 	@ $(A2X_PATH)/bin/a2x_buildtime $@
 
-$(A_DIR_SRC_GEN_GFX)/$(A_PREFIX_GEN_GFX)%_png.c : ../$(A_DIR_GFX)/%.png $(A2X_PATH)/bin/a2x_bin
+$(A_DIR_SRC_GEN_GFX)/$(A_PREFIX_GEN_GFX)%_png.h : ../$(A_DIR_GFX)/%.png $(A2X_PATH)/bin/a2x_bin
 	@ mkdir -p $(@D)
-	@ $(A2X_PATH)/bin/a2x_bin $< $@ $(@:.c=.h) $(A_DIR_GFX)/$(<F)
+	@ $(A2X_PATH)/bin/a2x_bin $< $@ $(A_DIR_GFX)/$(<F)
 
-$(A_DIR_SRC_GEN_SFX)/$(A_PREFIX_GEN_SFX)%_wav.c : ../$(A_DIR_SFX)/%.wav $(A2X_PATH)/bin/a2x_bin
+$(A_DIR_SRC_GEN_SFX)/$(A_PREFIX_GEN_SFX)%_wav.h : ../$(A_DIR_SFX)/%.wav $(A2X_PATH)/bin/a2x_bin
 	@ mkdir -p $(@D)
-	@ $(A2X_PATH)/bin/a2x_bin $< $@ $(@:.c=.h) $(A_DIR_SFX)/$(<F)
+	@ $(A2X_PATH)/bin/a2x_bin $< $@ $(A_DIR_SFX)/$(<F)
 
 $(A_FILE_SRC_GEN_EMBED) : $(A_FILES_SRC_GEN_GFX) $(A_FILES_SRC_GEN_SFX) $(A2X_PATH)/bin/a2x_embed
 	@ mkdir -p $(@D)

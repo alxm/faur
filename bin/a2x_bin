@@ -27,7 +27,6 @@ from utils.tool import Tool
 class BinTool(Tool):
     def main(self):
         bin_file = self.get_arg('File.bin')
-        c_file = self.get_arg('File.c')
         h_file = self.get_arg('File.h')
         original_path = self.get_arg('[OriginalPath]')
 
@@ -47,25 +46,16 @@ class BinTool(Tool):
 #include <stddef.h>
 #include <stdint.h>
 
-extern const char* {var}_path;
-extern size_t {var}_size;
-extern uint8_t {var}_data[];
-""".format(var = c_var))
+static const char* {var}_path = "{file_path}";
 
-        self.writefile(c_file, """\
-#include "{header}"
+static const size_t {var}_size = {size};
 
-const char* {var}_path = "{file_path}";
-
-size_t {var}_size = {size};
-
-uint8_t {var}_data[] = {{{data}
+static const uint8_t {var}_data[] = {{{data}
 }};
-""".format(header = os.path.basename(h_file),
-           var = c_var,
+""".format(var = c_var,
            file_path = original_path,
            size = bin_size,
            data = bin_data))
 
 if __name__ == '__main__':
-    BinTool('File.bin File.c File.h [OriginalPath]').run()
+    BinTool('File.bin File.h [OriginalPath]').run()
