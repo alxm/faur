@@ -1,5 +1,5 @@
 """
-    Copyright 2016, 2017 Alex Margarit
+    Copyright 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -67,6 +67,8 @@ class Tool:
 
         if not os.path.exists(self.dir_cfg):
             os.makedirs(self.dir_cfg)
+        elif not os.path.isdir(self.dir_cfg):
+            self.output.error('{} is not a dir'.format(self.dir_cfg))
 
     def title(self):
         arguments = ' '.join(self.arg_values) \
@@ -146,3 +148,7 @@ class Tool:
 
         if status != 0:
             sys.exit(status)
+
+    def sanitizeFileNameForCVar(self, FileName):
+        return os.path.splitext(os.path.basename(FileName))[0] \
+            .replace('.', '_').replace('-', '_')

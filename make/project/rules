@@ -21,13 +21,27 @@
 #
 
 #
-# Project dirs created by a2x_new
+# Project dirs created by a2x_new or overrode by user makefile
 #
-A_DIR_BIN = ../bin
-A_DIR_GFX = ../gfx
-A_DIR_OBJ = ../obj
-A_DIR_SFX = ../sfx
-A_DIR_SRC = ../src
+ifndef A_DIR_BIN
+    A_DIR_BIN = ../bin
+endif
+
+ifndef A_DIR_GFX
+    A_DIR_GFX = gfx
+endif
+
+ifndef A_DIR_OBJ
+    A_DIR_OBJ = ../obj
+endif
+
+ifndef A_DIR_SFX
+    A_DIR_SFX = sfx
+endif
+
+ifndef A_DIR_SRC
+    A_DIR_SRC = ../src
+endif
 
 #
 # Subdir for generated code and object files
@@ -61,8 +75,6 @@ A_FILES_SRC_C = $(filter-out $(A_FILES_SRC_C_INC), $(A_FILES_SRC_C_ALL))
 #
 A_DIR_OBJ_PLATFORM = $(A_DIR_OBJ)/$(A_PLATFORM)
 A_DIR_OBJ_PLATFORM_GEN = $(A_DIR_OBJ_PLATFORM)/a2x_gen
-A_DIR_OBJ_PLATFORM_GEN_GFX = $(A_DIR_OBJ_PLATFORM_GEN)/gfx
-A_DIR_OBJ_PLATFORM_GEN_SFX = $(A_DIR_OBJ_PLATFORM_GEN)/sfx
 
 #
 # All the object files.
@@ -79,29 +91,35 @@ ifeq ($(A_EMBED_MEDIA), true)
     #
     # PNG and WAV files we can convert to C code
     #
-    A_FILES_MEDIA_PNG = $(notdir $(wildcard $(A_DIR_GFX)/*.png))
-    A_FILES_MEDIA_WAV = $(notdir $(wildcard $(A_DIR_SFX)/*.wav))
+    A_FILES_MEDIA_PNG = $(notdir $(wildcard ../$(A_DIR_GFX)/*.png))
+    A_FILES_MEDIA_WAV = $(notdir $(wildcard ../$(A_DIR_SFX)/*.wav))
 
     #
-    # .c gfx & sfx files
+    # Private prefixes
     #
-    A_DIR_SRC_GEN_GFX = $(A_DIR_SRC_GEN)/gfx
-    A_DIR_SRC_GEN_SFX = $(A_DIR_SRC_GEN)/sfx
+    A_PREFIX_GEN_GFX = a_gfx__
+    A_PREFIX_GEN_SFX = a_sfx__
+
+    #
+    # .c and .o gfx & sfx files
+    #
+    A_DIR_SRC_GEN_GFX = $(A_DIR_SRC_GEN)/$(A_PREFIX_GEN_GFX)
+    A_DIR_SRC_GEN_SFX = $(A_DIR_SRC_GEN)/$(A_PREFIX_GEN_SFX)
+    A_DIR_OBJ_PLATFORM_GEN_GFX = $(A_DIR_OBJ_PLATFORM_GEN)/$(A_PREFIX_GEN_GFX)
+    A_DIR_OBJ_PLATFORM_GEN_SFX = $(A_DIR_OBJ_PLATFORM_GEN)/$(A_PREFIX_GEN_SFX)
 
     #
     # PNG and WAV files in .c form
     #
-    A_FILES_SRC_GEN_GFX = $(addprefix $(A_DIR_SRC_GEN_GFX)/gfx_, $(A_FILES_MEDIA_PNG:.png=_png.c))
-    A_FILES_SRC_GEN_SFX = $(addprefix $(A_DIR_SRC_GEN_SFX)/sfx_, $(A_FILES_MEDIA_WAV:.wav=_wav.c))
-
-    A_FILES_OBJ += $(addprefix $(A_DIR_OBJ_PLATFORM_GEN_GFX)/, $(notdir $(A_FILES_SRC_GEN_GFX:=.o))) \
-                   $(addprefix $(A_DIR_OBJ_PLATFORM_GEN_SFX)/, $(notdir $(A_FILES_SRC_GEN_SFX:=.o)))
+    A_FILES_SRC_GEN_GFX = $(addprefix $(A_DIR_SRC_GEN_GFX)/$(A_PREFIX_GEN_GFX), $(A_FILES_MEDIA_PNG:.png=_png.h))
+    A_FILES_SRC_GEN_SFX = $(addprefix $(A_DIR_SRC_GEN_SFX)/$(A_PREFIX_GEN_SFX), $(A_FILES_MEDIA_WAV:.wav=_wav.h))
 endif
 
 #
 # compile flags
 #
 A_GENERIC_CFLAGS = \
+    -DA2X=1 \
     -std=c99 \
     -Wall \
     -Wextra \
@@ -137,17 +155,17 @@ $(A_FILE_SRC_GEN_BUILDTIME) : $(A_FILES_OBJ) $(A2X_PATH)/bin/a2x_buildtime
 	@ mkdir -p $(@D)
 	@ $(A2X_PATH)/bin/a2x_buildtime $@
 
-$(A_DIR_SRC_GEN_GFX)/gfx_%_png.c : $(A_DIR_GFX)/%.png $(A2X_PATH)/bin/a2x_bin
+$(A_DIR_SRC_GEN_GFX)/$(A_PREFIX_GEN_GFX)%_png.h : ../$(A_DIR_GFX)/%.png $(A2X_PATH)/bin/a2x_bin
 	@ mkdir -p $(@D)
-	@ $(A2X_PATH)/bin/a2x_bin $< $@ $(@:.c=.h) gfx
+	@ $(A2X_PATH)/bin/a2x_bin $< $@ $(A_DIR_GFX)/$(<F)
 
-$(A_DIR_SRC_GEN_SFX)/sfx_%_wav.c : $(A_DIR_SFX)/%.wav $(A2X_PATH)/bin/a2x_bin
+$(A_DIR_SRC_GEN_SFX)/$(A_PREFIX_GEN_SFX)%_wav.h : ../$(A_DIR_SFX)/%.wav $(A2X_PATH)/bin/a2x_bin
 	@ mkdir -p $(@D)
-	@ $(A2X_PATH)/bin/a2x_bin $< $@ $(@:.c=.h) sfx
+	@ $(A2X_PATH)/bin/a2x_bin $< $@ $(A_DIR_SFX)/$(<F)
 
 $(A_FILE_SRC_GEN_EMBED) : $(A_FILES_SRC_GEN_GFX) $(A_FILES_SRC_GEN_SFX) $(A2X_PATH)/bin/a2x_embed
 	@ mkdir -p $(@D)
-	@ $(A2X_PATH)/bin/a2x_embed $@ $(A_DIR_SRC_GEN) gfx sfx
+	@ $(A2X_PATH)/bin/a2x_embed $@ $(A_DIR_SRC_GEN) $(A_PREFIX_GEN_GFX) $(A_PREFIX_GEN_SFX)
 
 $(A_DIR_OBJ_PLATFORM)/%.c.o : $(A_DIR_SRC)/%.c
 	@ echo "Compiling $(notdir $<)"

@@ -11,9 +11,8 @@ A_DIR_OBJ = ./obj
 A_DIR_OBJ_PLATFORM = $(A_DIR_OBJ)/$(A_PLATFORM)
 A_DIR_OBJ_PLATFORM_MEDIA = $(A_DIR_OBJ_PLATFORM)/media
 
-A_FILES_MEDIA_PNG = $(wildcard $(A_DIR_SRC_MEDIA)/*.png)
-A_FILES_MEDIA_PNG_C = $(addprefix $(A_DIR_SRC_MEDIA_PLATFORM)/, $(notdir $(A_FILES_MEDIA_PNG:.png=.c)))
-A_FILES_MEDIA_PNG_H = $(A_FILES_MEDIA_PNG_C:.c=.h)
+A_FILES_MEDIA_PNG = $(notdir $(wildcard $(A_DIR_SRC_MEDIA)/*.png))
+A_FILES_MEDIA_PNG_H = $(addprefix $(A_DIR_SRC_MEDIA_PLATFORM)/a__gfx_, $(A_FILES_MEDIA_PNG:.png=_png.h))
 
 A_FILE_PUBLIC_A2X_HEADER = $(A_DIR_INC)/$(A_PLATFORM)/a2x.h
 A_FILE_SYSTEM_INCLUDES = $(A_DIR_SRC)/$(A_PREFIX)system_includes.h
@@ -25,8 +24,7 @@ A_FILES_SRC_C_INC = $(notdir $(wildcard $(A_DIR_SRC)/$(A_PREFIX)*.inc.c))
 A_FILES_SRC_C_ALL = $(notdir $(wildcard $(A_DIR_SRC)/$(A_PREFIX)*.c))
 A_FILES_SRC_C = $(filter-out $(A_FILES_SRC_C_INC), $(A_FILES_SRC_C_ALL))
 
-A_FILES_OBJ = $(addprefix $(A_DIR_OBJ_PLATFORM)/, $(A_FILES_SRC_C:=.o)) \
-              $(addprefix $(A_DIR_OBJ_PLATFORM_MEDIA)/, $(notdir $(A_FILES_MEDIA_PNG_C:=.o)))
+A_FILES_OBJ = $(addprefix $(A_DIR_OBJ_PLATFORM)/, $(A_FILES_SRC_C:=.o))
 
 A_INFO_COMPILE_TIME := $(shell date "+%Y-%m-%d\ %H:%M:%S")
 A_INFO_CURRENT_BRANCH := $(shell git symbolic-ref --short HEAD)
@@ -79,11 +77,10 @@ $(A_DIR_OBJ_PLATFORM)/media/%.c.o : $(A_DIR_SRC_MEDIA_PLATFORM)/%.c
 	@ $(CC) -c -o $@ $< $(A_GENERIC_CFLAGS)
 
 $(A_DIR_OBJ_PLATFORM)/a2x_pack_embed.c.o : $(A_FILES_MEDIA_PNG_H)
-$(A_FILES_MEDIA_PNG_H) : $(A_FILES_MEDIA_PNG_C)
 
-$(A_DIR_SRC_MEDIA_PLATFORM)/%.c : $(A_DIR_SRC_MEDIA)/%.png $(A_DIR_BIN)/a2x_bin
+$(A_DIR_SRC_MEDIA_PLATFORM)/a__gfx_%_png.h : $(A_DIR_SRC_MEDIA)/%.png $(A_DIR_BIN)/a2x_bin
 	@ mkdir -p $(@D)
-	@ $(A_DIR_BIN)/a2x_bin $< $@ $(@:.c=.h) g_media
+	@ $(A_DIR_BIN)/a2x_bin $< $@
 
 clean :
 	@ echo "Removing $(A_FILE_PUBLIC_A2X_HEADER) $(A_FILE_PUBLIC_A2X_LIB) $(A_DIR_OBJ_PLATFORM) $(A_DIR_SRC_MEDIA_PLATFORM)"
