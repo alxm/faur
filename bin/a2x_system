@@ -32,7 +32,7 @@ class SystemTool(Tool):
 
         for f in [sys_c, sys_h]:
             if os.path.exists(f):
-                self.output.error('Error: {} already exists'.format(f))
+                self.output.error('{} already exists'.format(f))
 
         self.writefile(sys_c,
 """\

@@ -77,6 +77,8 @@ sdk.pandora.root = /opt/pandora
 sdk.pandora.toolchain = arm-2011.09
 sdk.pandora.utils = sdk_utils
 """)
+        elif not os.path.isfile(config_read):
+            self.output.error('{} is not a file'.format(config_read))
 
         sdks = {}
 

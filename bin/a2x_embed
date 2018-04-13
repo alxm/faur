@@ -37,6 +37,8 @@ class EmbedTool(Tool):
 
             if not os.path.exists(subdir):
                 continue
+            elif not os.path.isdir(subdir):
+                self.output.error('{} is not a dir'.format(subdir))
 
             for header in [f for f in os.listdir(subdir) if f.endswith('.h')]:
                 includes += '#include "{}/{}"\n'.format(d, header)
