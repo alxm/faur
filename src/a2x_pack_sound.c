@@ -71,31 +71,31 @@ static void adjustSoundVolume(int Volume)
 static void inputCallback(void)
 {
     #if A_PLATFORM_SYSTEM_GP2X || A_PLATFORM_SYSTEM_WIZ
-        if(g_soundOn) {
-            int adjust = 0;
+        if(!g_soundOn) {
+            return;
+        }
 
-            if(a_button_getPressed(g_volumeUpButton)) {
-                adjust = A_VOLUME_STEP;
-            } else if(a_button_getPressed(g_volumeDownButton)) {
-                adjust = -A_VOLUME_STEP;
+        int adjust = 0;
+
+        if(a_button_getPressed(g_volumeUpButton)) {
+            adjust = A_VOLUME_STEP;
+        } else if(a_button_getPressed(g_volumeDownButton)) {
+            adjust = -A_VOLUME_STEP;
+        }
+
+        if(adjust) {
+            adjustSoundVolume(g_volume + adjust);
+            a_platform__setMusicVolume(g_musicVolume);
+
+            A_LIST_ITERATE(g_sfxList, ASfx*, s) {
+                a_platform__setSfxVolume(s->platformSfx, g_sfxVolume);
             }
 
-            if(adjust) {
-                adjustSoundVolume(g_volume + adjust);
-                a_platform__setMusicVolume(g_musicVolume);
-
-                A_LIST_ITERATE(g_sfxList, ASfx*, s) {
-                    a_platform__setSfxVolume(s->platformSfx, g_sfxVolume);
-                }
-
-                a_timer_start(g_volTimer);
-            }
+            a_timer_start(g_volTimer);
         }
     #elif A_DEVICE_HAS_KEYBOARD
-        if(g_soundOn) {
-            if(a_button_getPressedOnce(g_musicOnOffButton)) {
-                a_platform__toggleMusic();
-            }
+        if(g_soundOn && a_button_getPressedOnce(g_musicOnOffButton)) {
+            a_platform__toggleMusic();
         }
     #endif
 }
@@ -103,27 +103,25 @@ static void inputCallback(void)
 #if A_PLATFORM_SYSTEM_GP2X || A_PLATFORM_SYSTEM_WIZ
     static void screenCallback(void)
     {
-        if(g_soundOn) {
-            if(!a_timer_isRunning(g_volTimer)) {
-                return;
-            } else if(a_timer_isExpired(g_volTimer)) {
-                a_timer_stop(g_volTimer);
-                return;
-            }
-
-            a_pixel_setBlend(A_PIXEL_BLEND_PLAIN);
-
-            a_pixel_setPixel(g_volbarBackground);
-            a_draw_rectangle(0, 181, g_volumeMax / A_VOLUME_STEP + 5, 16);
-
-            a_pixel_setPixel(g_volbarBorder);
-            a_draw_hline(0, g_volumeMax / A_VOLUME_STEP + 4, 180);
-            a_draw_hline(0, g_volumeMax / A_VOLUME_STEP + 4, 183 + 14);
-            a_draw_vline(g_volumeMax / A_VOLUME_STEP + 4 + 1, 181, 183 + 13);
-
-            a_pixel_setPixel(g_volbarFill);
-            a_draw_rectangle(0, 186, g_volume / A_VOLUME_STEP, 6);
+        if(!g_soundOn || !a_timer_isRunning(g_volTimer)) {
+            return;
+        } else if(a_timer_isExpired(g_volTimer)) {
+            a_timer_stop(g_volTimer);
+            return;
         }
+
+        a_pixel_setBlend(A_PIXEL_BLEND_PLAIN);
+
+        a_pixel_setPixel(g_volbarBackground);
+        a_draw_rectangle(0, 181, g_volumeMax / A_VOLUME_STEP + 5, 16);
+
+        a_pixel_setPixel(g_volbarBorder);
+        a_draw_hline(0, g_volumeMax / A_VOLUME_STEP + 4, 180);
+        a_draw_hline(0, g_volumeMax / A_VOLUME_STEP + 4, 183 + 14);
+        a_draw_vline(g_volumeMax / A_VOLUME_STEP + 4 + 1, 181, 183 + 13);
+
+        a_pixel_setPixel(g_volbarFill);
+        a_draw_rectangle(0, 186, g_volume / A_VOLUME_STEP, 6);
     }
 #endif
 
@@ -175,17 +173,19 @@ void a_sound__init(void)
 
 void a_sound__uninit(void)
 {
-    if(g_soundOn) {
-        #if A_PLATFORM_SYSTEM_GP2X || A_PLATFORM_SYSTEM_WIZ
-            a_timer_free(g_volTimer);
-        #endif
-
-        a_music_stop();
-
-        #if A_SFX_LIST
-            a_list_freeEx(g_sfxList, (AFree*)a_sfx_free);
-        #endif
+    if(!g_soundOn) {
+        return;
     }
+
+    #if A_PLATFORM_SYSTEM_GP2X || A_PLATFORM_SYSTEM_WIZ
+        a_timer_free(g_volTimer);
+    #endif
+
+    a_music_stop();
+
+    #if A_SFX_LIST
+        a_list_freeEx(g_sfxList, (AFree*)a_sfx_free);
+    #endif
 }
 
 AMusic* a_music_new(const char* Path)
@@ -204,10 +204,15 @@ AMusic* a_music_new(const char* Path)
 
 void a_music_free(AMusic* Music)
 {
-    if(g_soundOn) {
-        a_platform__freeMusic(Music->platformMusic);
-        free(Music);
+    if(!g_soundOn) {
+        return;
     }
+
+    if(Music->platformMusic) {
+        a_platform__freeMusic(Music->platformMusic);
+    }
+
+    free(Music);
 }
 
 void a_music_play(AMusic* Music)
@@ -240,6 +245,8 @@ ASfx* a_sfx_new(const char* Path)
 
         if(a_embed__get(Path, &data, &size)) {
             s->platformSfx = a_platform__newSfxFromData(data, (int)size);
+        } else {
+            s->platformSfx = NULL;
         }
     }
 
@@ -256,15 +263,20 @@ ASfx* a_sfx_new(const char* Path)
 
 void a_sfx_free(ASfx* Sfx)
 {
-    if(g_soundOn) {
-        a_platform__freeSfx(Sfx->platformSfx);
-        free(Sfx);
+    if(!g_soundOn) {
+        return;
     }
+
+    if(Sfx->platformSfx) {
+        a_platform__freeSfx(Sfx->platformSfx);
+    }
+
+    free(Sfx);
 }
 
 void a_sfx_play(ASfx* Sfx)
 {
-    if(g_soundOn) {
+    if(g_soundOn && Sfx->platformSfx) {
         a_platform__stopSfx(Sfx->platformSfx);
         a_platform__playSfx(Sfx->platformSfx, false);
     }
@@ -272,7 +284,7 @@ void a_sfx_play(ASfx* Sfx)
 
 void a_sfx_playOnce(ASfx* Sfx)
 {
-    if(g_soundOn) {
+    if(g_soundOn && Sfx->platformSfx) {
         if(!a_platform__isSfxPlaying(Sfx->platformSfx)) {
             a_platform__playSfx(Sfx->platformSfx, false);
         }
@@ -281,7 +293,7 @@ void a_sfx_playOnce(ASfx* Sfx)
 
 void a_sfx_playLoop(ASfx* Sfx)
 {
-    if(g_soundOn) {
+    if(g_soundOn && Sfx->platformSfx) {
         a_platform__stopSfx(Sfx->platformSfx);
         a_platform__playSfx(Sfx->platformSfx, true);
     }
@@ -289,7 +301,7 @@ void a_sfx_playLoop(ASfx* Sfx)
 
 void a_sfx_stop(ASfx* Sfx)
 {
-    if(g_soundOn) {
+    if(g_soundOn && Sfx->platformSfx) {
         a_platform__stopSfx(Sfx->platformSfx);
     }
 }
