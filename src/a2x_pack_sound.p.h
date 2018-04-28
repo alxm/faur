@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016 Alex Margarit
+    Copyright 2010, 2016, 2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -33,3 +33,4 @@ extern void a_sfx_free(ASound* Sfx);
 
 extern void a_sfx_play(ASound* Sfx);
 extern void a_sfx_playOnce(ASound* Sfx);
+extern void a_sfx_playLoop(ASound* Sfx);

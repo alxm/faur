@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2017 Alex Margarit
+    Copyright 2010, 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -246,7 +246,7 @@ void a_sfx_play(ASound* Sfx)
 {
     if(g_soundOn) {
         a_platform__stopSfx(Sfx);
-        a_platform__playSfx(Sfx);
+        a_platform__playSfx(Sfx, false);
     }
 }
 
@@ -254,7 +254,15 @@ void a_sfx_playOnce(ASound* Sfx)
 {
     if(g_soundOn) {
         if(!a_platform__isSfxPlaying(Sfx)) {
-            a_platform__playSfx(Sfx);
+            a_platform__playSfx(Sfx, false);
         }
+    }
+}
+
+void a_sfx_playLoop(ASound* Sfx)
+{
+    if(g_soundOn) {
+        a_platform__stopSfx(Sfx);
+        a_platform__playSfx(Sfx, true);
     }
 }

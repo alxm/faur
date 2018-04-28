@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2017 Alex Margarit
+    Copyright 2010, 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -171,9 +171,9 @@ void a_platform__setSfxVolume(APlatformSfx* Sfx, int Volume)
     #endif
 }
 
-void a_platform__playSfx(APlatformSfx* Sfx)
+void a_platform__playSfx(APlatformSfx* Sfx, bool Loop)
 {
-    if(Mix_PlayChannel(Sfx->channel, Sfx->chunk, 0) == -1) {
+    if(Mix_PlayChannel(Sfx->channel, Sfx->chunk, Loop ? -1 : 0) == -1) {
         a_out__error("Mix_PlayChannel failed: %s", Mix_GetError());
     }
 }

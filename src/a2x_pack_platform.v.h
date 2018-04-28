@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2017 Alex Margarit
+    Copyright 2010, 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -74,7 +74,7 @@ extern APlatformSfx* a_platform__newSfxFromFile(const char* Path);
 extern APlatformSfx* a_platform__newSfxFromData(const uint8_t* Data, int Size);
 extern void a_platform__freeSfx(APlatformSfx* Sfx);
 extern void a_platform__setSfxVolume(APlatformSfx* Sfx, int Volume);
-extern void a_platform__playSfx(APlatformSfx* Sfx);
+extern void a_platform__playSfx(APlatformSfx* Sfx, bool Loop);
 extern void a_platform__stopSfx(APlatformSfx* Sfx);
 extern bool a_platform__isSfxPlaying(APlatformSfx* Sfx);
 
