@@ -266,3 +266,10 @@ void a_sfx_playLoop(ASound* Sfx)
         a_platform__playSfx(Sfx, true);
     }
 }
+
+void a_sfx_stop(ASound* Sfx)
+{
+    if(g_soundOn) {
+        a_platform__stopSfx(Sfx);
+    }
+}

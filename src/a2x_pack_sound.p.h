@@ -34,3 +34,4 @@ extern void a_sfx_free(ASound* Sfx);
 extern void a_sfx_play(ASound* Sfx);
 extern void a_sfx_playOnce(ASound* Sfx);
 extern void a_sfx_playLoop(ASound* Sfx);
+extern void a_sfx_stop(ASound* Sfx);
