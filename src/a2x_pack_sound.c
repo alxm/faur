@@ -36,7 +36,7 @@ struct AMusic {
     APlatformMusic* platformMusic;
 };
 
-struct ASound {
+struct ASfx {
     APlatformSfx* platformSfx;
 };
 
@@ -84,7 +84,7 @@ static void inputCallback(void)
                 adjustSoundVolume(g_volume + adjust);
                 a_platform__setMusicVolume(g_musicVolume);
 
-                A_LIST_ITERATE(g_sfxList, ASound*, s) {
+                A_LIST_ITERATE(g_sfxList, ASfx*, s) {
                     a_platform__setSfxVolume(s->platformSfx, g_sfxVolume);
                 }
 
@@ -217,13 +217,13 @@ void a_music_stop(void)
     }
 }
 
-ASound* a_sfx_new(const char* Path)
+ASfx* a_sfx_new(const char* Path)
 {
     if(!g_soundOn) {
         return NULL;
     }
 
-    ASound* s = a_mem_malloc(sizeof(ASound));
+    ASfx* s = a_mem_malloc(sizeof(ASfx));
 
     if(a_file_exists(Path)) {
         s->platformSfx = a_platform__newSfxFromFile(Path);
@@ -247,7 +247,7 @@ ASound* a_sfx_new(const char* Path)
     return s;
 }
 
-void a_sfx_free(ASound* Sfx)
+void a_sfx_free(ASfx* Sfx)
 {
     if(g_soundOn) {
         a_platform__freeSfx(Sfx->platformSfx);
@@ -255,7 +255,7 @@ void a_sfx_free(ASound* Sfx)
     }
 }
 
-void a_sfx_play(ASound* Sfx)
+void a_sfx_play(ASfx* Sfx)
 {
     if(g_soundOn) {
         a_platform__stopSfx(Sfx->platformSfx);
@@ -263,7 +263,7 @@ void a_sfx_play(ASound* Sfx)
     }
 }
 
-void a_sfx_playOnce(ASound* Sfx)
+void a_sfx_playOnce(ASfx* Sfx)
 {
     if(g_soundOn) {
         if(!a_platform__isSfxPlaying(Sfx->platformSfx)) {
@@ -272,7 +272,7 @@ void a_sfx_playOnce(ASound* Sfx)
     }
 }
 
-void a_sfx_playLoop(ASound* Sfx)
+void a_sfx_playLoop(ASfx* Sfx)
 {
     if(g_soundOn) {
         a_platform__stopSfx(Sfx->platformSfx);
@@ -280,7 +280,7 @@ void a_sfx_playLoop(ASound* Sfx)
     }
 }
 
-void a_sfx_stop(ASound* Sfx)
+void a_sfx_stop(ASfx* Sfx)
 {
     if(g_soundOn) {
         a_platform__stopSfx(Sfx->platformSfx);

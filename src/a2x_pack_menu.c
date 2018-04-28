@@ -28,9 +28,9 @@ struct AMenu {
     AList* items;
     void* selectedItem;
     unsigned selectedIndex;
-    ASound* soundAccept;
-    ASound* soundCancel;
-    ASound* soundBrowse;
+    ASfx* soundAccept;
+    ASfx* soundCancel;
+    ASfx* soundBrowse;
     AInputButton* next;
     AInputButton* back;
     AInputButton* select;
@@ -72,7 +72,7 @@ void a_menu_freeEx(AMenu* Menu, AFree* ItemFree)
     free(Menu);
 }
 
-void a_menu_addSounds(AMenu* Menu, ASound* Accept, ASound* Cancel, ASound* Browse)
+void a_menu_addSounds(AMenu* Menu, ASfx* Accept, ASfx* Cancel, ASfx* Browse)
 {
     Menu->soundAccept = Accept;
     Menu->soundCancel = Cancel;

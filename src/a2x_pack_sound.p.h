@@ -20,7 +20,7 @@
 #pragma once
 
 typedef struct AMusic AMusic;
-typedef struct ASound ASound;
+typedef struct ASfx ASfx;
 
 extern AMusic* a_music_new(const char* Path);
 extern void a_music_free(AMusic* Music);
@@ -28,10 +28,10 @@ extern void a_music_free(AMusic* Music);
 extern void a_music_play(AMusic* Music);
 extern void a_music_stop(void);
 
-extern ASound* a_sfx_new(const char* Path);
-extern void a_sfx_free(ASound* Sfx);
+extern ASfx* a_sfx_new(const char* Path);
+extern void a_sfx_free(ASfx* Sfx);
 
-extern void a_sfx_play(ASound* Sfx);
-extern void a_sfx_playOnce(ASound* Sfx);
-extern void a_sfx_playLoop(ASound* Sfx);
-extern void a_sfx_stop(ASound* Sfx);
+extern void a_sfx_play(ASfx* Sfx);
+extern void a_sfx_playOnce(ASfx* Sfx);
+extern void a_sfx_playLoop(ASfx* Sfx);
+extern void a_sfx_stop(ASfx* Sfx);
