@@ -19,8 +19,8 @@
 
 #pragma once
 
-typedef void AMusic;
-typedef void ASound;
+typedef struct AMusic AMusic;
+typedef struct ASound ASound;
 
 extern AMusic* a_music_new(const char* Path);
 extern void a_music_free(AMusic* Music);
