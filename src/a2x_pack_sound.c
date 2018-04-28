@@ -30,7 +30,7 @@
 #include "a2x_pack_screen.v.h"
 #include "a2x_pack_settings.v.h"
 #include "a2x_pack_sound.v.h"
-#include "a2x_pack_time.v.h"
+#include "a2x_pack_timer.v.h"
 
 struct AMusic {
     APlatformMusic* platformMusic;
@@ -50,7 +50,7 @@ static int g_volumeMax;
     #define A_SFX_LIST 1
     #define A_VOLUME_STEP 1
     #define A_VOLBAR_SHOW_MS 500
-    static uint32_t g_lastVolAdjustment;
+    static ATimer* g_volTimer;
     static AInputButton* g_volumeUpButton;
     static AInputButton* g_volumeDownButton;
     static APixel g_volbarBackground;
@@ -88,7 +88,7 @@ static void inputCallback(void)
                     a_platform__setSfxVolume(s->platformSfx, g_sfxVolume);
                 }
 
-                g_lastVolAdjustment = a_time_getMs();
+                a_timer_start(g_volTimer);
             }
         }
     #elif A_DEVICE_HAS_KEYBOARD
@@ -104,7 +104,10 @@ static void inputCallback(void)
     static void screenCallback(void)
     {
         if(g_soundOn) {
-            if(a_time_getMs() - g_lastVolAdjustment >= A_VOLBAR_SHOW_MS) {
+            if(!a_timer_isRunning(g_volTimer)) {
+                return;
+            } else if(a_timer_isExpired(g_volTimer)) {
+                a_timer_stop(g_volTimer);
                 return;
             }
 
@@ -140,7 +143,7 @@ void a_sound__init(void)
 
     #if A_PLATFORM_SYSTEM_GP2X || A_PLATFORM_SYSTEM_WIZ
         adjustSoundVolume(g_volumeMax / 16);
-        g_lastVolAdjustment = UINT32_MAX - A_VOLBAR_SHOW_MS;
+        g_volTimer = a_timer_new(A_TIMER_MS, A_VOLBAR_SHOW_MS);
     #else
         adjustSoundVolume(g_volumeMax);
     #endif
@@ -173,6 +176,10 @@ void a_sound__init(void)
 void a_sound__uninit(void)
 {
     if(g_soundOn) {
+        #if A_PLATFORM_SYSTEM_GP2X || A_PLATFORM_SYSTEM_WIZ
+            a_timer_free(g_volTimer);
+        #endif
+
         a_music_stop();
 
         #if A_SFX_LIST
