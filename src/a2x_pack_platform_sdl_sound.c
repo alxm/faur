@@ -34,8 +34,9 @@ struct APlatformSfx {
     int channel;
 };
 
-int g_numSfxChannels;
-int g_currentSfxChannel;
+static int g_numSfxChannels;
+static int g_numSfxChannelsReserved;
+static int g_currentSfxChannel;
 
 void a_platform_sdl_sound__init(void)
 {
@@ -54,7 +55,15 @@ void a_platform_sdl_sound__init(void)
         a_settings__set("sound.on", "0");
     } else {
         g_numSfxChannels = Mix_AllocateChannels(64);
-        a_out__message("Allocated %d sfx channels", g_numSfxChannels);
+        g_numSfxChannelsReserved = Mix_ReserveChannels(g_numSfxChannels / 2);
+
+        if(g_numSfxChannelsReserved <= 0) {
+            a_out__fatal("Mix_AllocateChannels/Mix_ReserveChannels failed");
+        } else {
+            a_out__message("Allocated %d sfx channels, reserved %d",
+                           g_numSfxChannels,
+                           g_numSfxChannelsReserved);
+        }
     }
 }
 
@@ -122,7 +131,7 @@ APlatformSfx* a_platform__newSfxFromFile(const char* Path)
     sfx->chunk = Mix_LoadWAV(Path);
 
     if(sfx->chunk) {
-        sfx->channel = g_currentSfxChannel++ % g_numSfxChannels;
+        sfx->channel = g_currentSfxChannel++ % g_numSfxChannelsReserved;
     } else {
         a_out__error("Mix_LoadWAV(%s) failed: %s", Path, Mix_GetError());
     }
@@ -139,7 +148,7 @@ APlatformSfx* a_platform__newSfxFromData(const uint8_t* Data, int Size)
         sfx->chunk = Mix_LoadWAV_RW(rw, 0);
 
         if(sfx->chunk) {
-            sfx->channel = g_currentSfxChannel++ % g_numSfxChannels;
+            sfx->channel = g_currentSfxChannel++ % g_numSfxChannelsReserved;
         } else {
             a_out__error("Mix_LoadWAV_RW failed: %s", Mix_GetError());
         }
