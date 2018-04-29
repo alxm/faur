@@ -64,6 +64,9 @@ static void adjustSoundVolume(int Volume)
     g_volume = a_math_clamp(Volume, 0, g_volumeMax);
     g_musicVolume = a_settings_getInt("sound.music.scale") * g_volume / 100;
     g_sfxVolume = a_settings_getInt("sound.sfx.scale") * g_volume / 100;
+
+    a_platform__setSfxVolumeAll(g_sfxVolume);
+    a_platform__setMusicVolume(g_musicVolume);
 }
 
 static void inputCallback(void)
@@ -83,8 +86,6 @@ static void inputCallback(void)
 
         if(adjust) {
             adjustSoundVolume(g_volume + adjust);
-            a_platform__setSfxVolumeAll(g_sfxVolume);
-            a_platform__setMusicVolume(g_musicVolume);
             a_timer_start(g_volTimer);
         }
     #elif A_DEVICE_HAS_KEYBOARD
@@ -183,7 +184,6 @@ AMusic* a_music_new(const char* Path)
     AMusic* m = a_mem_malloc(sizeof(AMusic));
 
     m->platformMusic = a_platform__newMusic(Path);
-    a_platform__setMusicVolume(g_musicVolume);
 
     return m;
 }
