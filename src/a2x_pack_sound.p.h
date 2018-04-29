@@ -22,6 +22,13 @@
 typedef struct AMusic AMusic;
 typedef struct ASfx ASfx;
 
+typedef enum {
+    A_SFX_NORMAL = 0,
+    A_SFX_LOOP = 1,
+    A_SFX_RESTART = 2,
+    A_SFX_YIELD = 4,
+} ASfxFlags;
+
 extern AMusic* a_music_new(const char* Path);
 extern void a_music_free(AMusic* Music);
 
@@ -31,7 +38,6 @@ extern void a_music_stop(void);
 extern ASfx* a_sfx_new(const char* Path);
 extern void a_sfx_free(ASfx* Sfx);
 
-extern void a_sfx_play(ASfx* Sfx);
-extern void a_sfx_playOnce(ASfx* Sfx);
-extern void a_sfx_playLoop(ASfx* Sfx);
+extern void a_sfx_play(ASfx* Sfx, ASfxFlags Flags);
 extern void a_sfx_stop(ASfx* Sfx);
+extern bool a_sfx_isPlaying(ASfx* Sfx);

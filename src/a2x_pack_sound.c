@@ -236,10 +236,6 @@ ASfx* a_sfx_new(const char* Path)
         }
     }
 
-    if(s->platformSfx) {
-        a_platform__setSfxVolume(s->platformSfx, g_sfxVolume);
-    }
-
     return s;
 }
 
@@ -256,29 +252,23 @@ void a_sfx_free(ASfx* Sfx)
     free(Sfx);
 }
 
-void a_sfx_play(ASfx* Sfx)
+void a_sfx_play(ASfx* Sfx, ASfxFlags Flags)
 {
-    if(g_soundOn && Sfx->platformSfx) {
-        a_platform__stopSfx(Sfx->platformSfx);
-        a_platform__playSfx(Sfx->platformSfx, false);
+    if(!g_soundOn || Sfx->platformSfx == NULL) {
+        return;
     }
-}
 
-void a_sfx_playOnce(ASfx* Sfx)
-{
-    if(g_soundOn && Sfx->platformSfx) {
-        if(!a_platform__isSfxPlaying(Sfx->platformSfx)) {
-            a_platform__playSfx(Sfx->platformSfx, false);
+    if(Flags & A_SFX_RESTART) {
+        a_platform__stopSfx(Sfx->platformSfx);
+    } else if(Flags & A_SFX_YIELD) {
+        if(a_platform__isSfxPlaying(Sfx->platformSfx)) {
+            return;
         }
     }
-}
 
-void a_sfx_playLoop(ASfx* Sfx)
-{
-    if(g_soundOn && Sfx->platformSfx) {
-        a_platform__stopSfx(Sfx->platformSfx);
-        a_platform__playSfx(Sfx->platformSfx, true);
-    }
+    a_platform__playSfx(Sfx->platformSfx,
+                        Flags & A_SFX_LOOP,
+                        Flags & (A_SFX_RESTART | A_SFX_YIELD));
 }
 
 void a_sfx_stop(ASfx* Sfx)
@@ -286,4 +276,10 @@ void a_sfx_stop(ASfx* Sfx)
     if(g_soundOn && Sfx->platformSfx) {
         a_platform__stopSfx(Sfx->platformSfx);
     }
+}
+
+bool a_sfx_isPlaying(ASfx* Sfx)
+{
+    return g_soundOn && Sfx->platformSfx
+        && a_platform__isSfxPlaying(Sfx->platformSfx);
 }

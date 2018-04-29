@@ -183,11 +183,16 @@ void a_platform__setSfxVolumeAll(int Volume)
     #endif
 }
 
-void a_platform__playSfx(APlatformSfx* Sfx, bool Loop)
+void a_platform__playSfx(APlatformSfx* Sfx, bool Loop, bool OwnChannel)
 {
-    if(Sfx->chunk
-        && Mix_PlayChannel(Sfx->channel, Sfx->chunk, Loop ? -1 : 0) == -1) {
+    if(Sfx->chunk == NULL) {
+        return;
+    }
 
+    int loops = Loop ? -1 : 0;
+    int channel = OwnChannel ? Sfx->channel : -1;
+
+    if(Mix_PlayChannel(channel, Sfx->chunk, loops) == -1) {
         a_out__error("Mix_PlayChannel failed: %s", Mix_GetError());
     }
 }
