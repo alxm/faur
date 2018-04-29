@@ -174,6 +174,15 @@ void a_platform__setSfxVolume(APlatformSfx* Sfx, int Volume)
     #endif
 }
 
+void a_platform__setSfxVolumeAll(int Volume)
+{
+    #if A_PLATFORM_SYSTEM_EMSCRIPTEN
+        A_UNUSED(Volume);
+    #else
+        Mix_Volume(-1, Volume);
+    #endif
+}
+
 void a_platform__playSfx(APlatformSfx* Sfx, bool Loop)
 {
     if(Sfx->chunk

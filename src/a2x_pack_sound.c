@@ -47,7 +47,6 @@ static int g_sfxVolume;
 static int g_volumeMax;
 
 #if A_PLATFORM_SYSTEM_GP2X || A_PLATFORM_SYSTEM_WIZ
-    #define A_SFX_LIST 1
     #define A_VOLUME_STEP 1
     #define A_VOLBAR_SHOW_MS 500
     static ATimer* g_volTimer;
@@ -56,7 +55,6 @@ static int g_volumeMax;
     static APixel g_volbarBackground;
     static APixel g_volbarBorder;
     static APixel g_volbarFill;
-    static AList* g_sfxList;
 #elif A_DEVICE_HAS_KEYBOARD
     static AInputButton* g_musicOnOffButton;
 #endif
@@ -85,12 +83,8 @@ static void inputCallback(void)
 
         if(adjust) {
             adjustSoundVolume(g_volume + adjust);
+            a_platform__setSfxVolumeAll(g_sfxVolume);
             a_platform__setMusicVolume(g_musicVolume);
-
-            A_LIST_ITERATE(g_sfxList, ASfx*, s) {
-                a_platform__setSfxVolume(s->platformSfx, g_sfxVolume);
-            }
-
             a_timer_start(g_volTimer);
         }
     #elif A_DEVICE_HAS_KEYBOARD
@@ -132,10 +126,6 @@ void a_sound__init(void)
     if(!g_soundOn) {
         return;
     }
-
-    #if A_SFX_LIST
-        g_sfxList = a_list_new();
-    #endif
 
     g_volumeMax = a_platform__getMaxVolome();
 
@@ -182,10 +172,6 @@ void a_sound__uninit(void)
     #endif
 
     a_music_stop();
-
-    #if A_SFX_LIST
-        a_list_freeEx(g_sfxList, (AFree*)a_sfx_free);
-    #endif
 }
 
 AMusic* a_music_new(const char* Path)
@@ -252,10 +238,6 @@ ASfx* a_sfx_new(const char* Path)
 
     if(s->platformSfx) {
         a_platform__setSfxVolume(s->platformSfx, g_sfxVolume);
-
-        #if A_SFX_LIST
-            a_list_addLast(g_sfxList, s);
-        #endif
     }
 
     return s;

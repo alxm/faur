@@ -74,6 +74,7 @@ extern APlatformSfx* a_platform__newSfxFromFile(const char* Path);
 extern APlatformSfx* a_platform__newSfxFromData(const uint8_t* Data, int Size);
 extern void a_platform__freeSfx(APlatformSfx* Sfx);
 extern void a_platform__setSfxVolume(APlatformSfx* Sfx, int Volume);
+extern void a_platform__setSfxVolumeAll(int Volume);
 extern void a_platform__playSfx(APlatformSfx* Sfx, bool Loop);
 extern void a_platform__stopSfx(APlatformSfx* Sfx);
 extern bool a_platform__isSfxPlaying(APlatformSfx* Sfx);
