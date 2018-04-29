@@ -117,7 +117,7 @@ void a_platform__toggleMusic(void)
 
 APlatformSfx* a_platform__newSfxFromFile(const char* Path)
 {
-    APlatformSfx* sfx = a_mem_zalloc(sizeof(APlatformSfx));
+    APlatformSfx* sfx = a_mem_malloc(sizeof(APlatformSfx));
 
     sfx->chunk = Mix_LoadWAV(Path);
 
@@ -132,7 +132,7 @@ APlatformSfx* a_platform__newSfxFromFile(const char* Path)
 
 APlatformSfx* a_platform__newSfxFromData(const uint8_t* Data, int Size)
 {
-    APlatformSfx* sfx = a_mem_zalloc(sizeof(APlatformSfx));
+    APlatformSfx* sfx = a_mem_malloc(sizeof(APlatformSfx));
     SDL_RWops* rw = SDL_RWFromMem((void*)Data, Size);
 
     if(rw) {
@@ -146,6 +146,7 @@ APlatformSfx* a_platform__newSfxFromData(const uint8_t* Data, int Size)
 
         SDL_FreeRW(rw);
     } else {
+        sfx->chunk = NULL;
         a_out__error("SDL_RWFromMem failed: %s", SDL_GetError());
     }
 
@@ -167,13 +168,17 @@ void a_platform__setSfxVolume(APlatformSfx* Sfx, int Volume)
         A_UNUSED(Sfx);
         A_UNUSED(Volume);
     #else
-        Mix_VolumeChunk(Sfx->chunk, Volume);
+        if(Sfx->chunk) {
+            Mix_VolumeChunk(Sfx->chunk, Volume);
+        }
     #endif
 }
 
 void a_platform__playSfx(APlatformSfx* Sfx, bool Loop)
 {
-    if(Mix_PlayChannel(Sfx->channel, Sfx->chunk, Loop ? -1 : 0) == -1) {
+    if(Sfx->chunk
+        && Mix_PlayChannel(Sfx->channel, Sfx->chunk, Loop ? -1 : 0) == -1) {
+
         a_out__error("Mix_PlayChannel failed: %s", Mix_GetError());
     }
 }
