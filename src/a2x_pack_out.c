@@ -238,7 +238,7 @@ void a_out__state(const char* Format, ...)
     va_end(args);
 }
 
-void a_out__stateVerbose(const char* Format, ...)
+void a_out__statev(const char* Format, ...)
 {
     va_list args;
     va_start(args, Format);

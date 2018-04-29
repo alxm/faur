@@ -43,5 +43,5 @@ extern void a_out__error(const char* Format, ...);
 extern void a_out__errorv(const char* Format, ...);
 extern void a_out__fatal(const char* Format, ...) __attribute__((noreturn));
 extern void a_out__state(const char* Format, ...);
-extern void a_out__stateVerbose(const char* Format, ...);
+extern void a_out__statev(const char* Format, ...);
 extern void a_out__overwrite(AOutType Type, const char* Format, ...);

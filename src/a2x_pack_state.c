@@ -102,7 +102,7 @@ static void pending_handle(void)
 
     // Check if the current state just ran its Free stage
     if(current && current->stage == A_STATE__STAGE_FREE) {
-        a_out__stateVerbose("Destroying '%s' instance", current->name);
+        a_out__statev("Destroying '%s' instance", current->name);
 
         a_ecs__popCollection();
         a_list_pop(g_stack);
@@ -116,10 +116,10 @@ static void pending_handle(void)
             current->stage = A_STATE__STAGE_LOOP;
             a_fps__reset(0);
 
-            a_out__stateVerbose("  '%s' going from %s to %s",
-                                current->name,
-                                stageName(A_STATE__STAGE_INIT),
-                                stageName(A_STATE__STAGE_LOOP));
+            a_out__statev("  '%s' going from %s to %s",
+                          current->name,
+                          stageName(A_STATE__STAGE_INIT),
+                          stageName(A_STATE__STAGE_LOOP));
         }
 
         return;
@@ -129,7 +129,7 @@ static void pending_handle(void)
 
     switch(pending->action) {
         case A_STATE_ACTION_PUSH: {
-            a_out__stateVerbose("Push '%s'", pending->name);
+            a_out__statev("Push '%s'", pending->name);
             AState* state = a_strhash_get(g_states, pending->name);
 
             if(state == NULL) {
@@ -154,11 +154,11 @@ static void pending_handle(void)
                 a_out__fatal("Pop state: stack is empty");
             }
 
-            a_out__stateVerbose("Pop '%s'", current->name);
-            a_out__stateVerbose("  '%s' going from %s to %s",
-                                current->name,
-                                stageName(current->stage),
-                                stageName(A_STATE__STAGE_FREE));
+            a_out__statev("Pop '%s'", current->name);
+            a_out__statev("  '%s' going from %s to %s",
+                          current->name,
+                          stageName(current->stage),
+                          stageName(A_STATE__STAGE_FREE));
 
             current->stage = A_STATE__STAGE_FREE;
         } break;
@@ -204,15 +204,15 @@ void a_state__new(const char* Name, AStateFunction Function, const char* TickSys
     state->drawSystems = a_ecs_system__parseIds(DrawSystems);
 
     a_strhash_add(g_states, Name, state);
-    a_out__stateVerbose("Declared '%s'", Name);
+    a_out__statev("Declared '%s'", Name);
 }
 
 void a_state_push(const char* Name)
 {
-    a_out__stateVerbose("a_state_push('%s')", Name);
+    a_out__statev("a_state_push('%s')", Name);
 
     if(g_exiting) {
-        a_out__stateVerbose("  Already exiting, ignoring");
+        a_out__statev("  Already exiting, ignoring");
         return;
     }
 
@@ -221,10 +221,10 @@ void a_state_push(const char* Name)
 
 void a_state_pop(void)
 {
-    a_out__stateVerbose("a_state_pop()");
+    a_out__statev("a_state_pop()");
 
     if(g_exiting) {
-        a_out__stateVerbose("  Already exiting, ignoring");
+        a_out__statev("  Already exiting, ignoring");
         return;
     }
 
@@ -233,10 +233,10 @@ void a_state_pop(void)
 
 void a_state_popUntil(const char* Name)
 {
-    a_out__stateVerbose("a_state_popUntil('%s')", Name);
+    a_out__statev("a_state_popUntil('%s')", Name);
 
     if(g_exiting) {
-        a_out__stateVerbose("  Already exiting, ignoring");
+        a_out__statev("  Already exiting, ignoring");
         return;
     }
 
@@ -263,10 +263,10 @@ void a_state_popUntil(const char* Name)
 
 void a_state_replace(const char* Name)
 {
-    a_out__stateVerbose("a_state_replace('%s')", Name);
+    a_out__statev("a_state_replace('%s')", Name);
 
     if(g_exiting) {
-        a_out__stateVerbose("  Already exiting, ignoring");
+        a_out__statev("  Already exiting, ignoring");
         return;
     }
 
@@ -279,7 +279,7 @@ void a_state_exit(void)
     a_out__state("*** Telling all states to exit ***");
 
     if(g_exiting) {
-        a_out__stateVerbose("  Already exiting, ignoring");
+        a_out__statev("  Already exiting, ignoring");
         return;
     }
 
@@ -317,7 +317,7 @@ static bool iteration(void)
 
         a_fps__frame();
     } else {
-        a_out__stateVerbose("  '%s' running %s", s->name, stageName(s->stage));
+        a_out__statev("  '%s' running %s", s->name, stageName(s->stage));
         s->function(s->stage);
     }
 
