@@ -202,7 +202,7 @@ void a_platform__playSfx(APlatformSfx* Sfx, bool Loop, bool OwnChannel)
     int channel = OwnChannel ? Sfx->channel : -1;
 
     if(Mix_PlayChannel(channel, Sfx->chunk, loops) == -1) {
-        a_out__error("Mix_PlayChannel failed: %s", Mix_GetError());
+        a_out__errorv("Mix_PlayChannel failed: %s", Mix_GetError());
     }
 }
 
