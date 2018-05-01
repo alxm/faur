@@ -31,7 +31,6 @@
 
 struct APlatformSfx {
     Mix_Chunk* chunk;
-    int channel;
 };
 
 static int g_numSfxChannels;
@@ -130,9 +129,7 @@ APlatformSfx* a_platform__newSfxFromFile(const char* Path)
 
     sfx->chunk = Mix_LoadWAV(Path);
 
-    if(sfx->chunk) {
-        sfx->channel = g_currentSfxChannel++ % g_numSfxChannelsReserved;
-    } else {
+    if(sfx->chunk == NULL) {
         a_out__error("Mix_LoadWAV(%s) failed: %s", Path, Mix_GetError());
     }
 
@@ -147,9 +144,7 @@ APlatformSfx* a_platform__newSfxFromData(const uint8_t* Data, int Size)
     if(rw) {
         sfx->chunk = Mix_LoadWAV_RW(rw, 0);
 
-        if(sfx->chunk) {
-            sfx->channel = g_currentSfxChannel++ % g_numSfxChannelsReserved;
-        } else {
+        if(sfx->chunk == NULL) {
             a_out__error("Mix_LoadWAV_RW failed: %s", Mix_GetError());
         }
 
@@ -192,27 +187,29 @@ void a_platform__setSfxVolumeAll(int Volume)
     #endif
 }
 
-void a_platform__playSfx(APlatformSfx* Sfx, bool Loop, bool OwnChannel)
+void a_platform__playSfx(APlatformSfx* Sfx, int Channel, bool Loop)
 {
     if(Sfx->chunk == NULL) {
         return;
     }
 
-    int loops = Loop ? -1 : 0;
-    int channel = OwnChannel ? Sfx->channel : -1;
-
-    if(Mix_PlayChannel(channel, Sfx->chunk, loops) == -1) {
+    if(Mix_PlayChannel(Channel, Sfx->chunk, Loop ? -1 : 0) == -1) {
         a_out__errorv("Mix_PlayChannel failed: %s", Mix_GetError());
     }
 }
 
-void a_platform__stopSfx(APlatformSfx* Sfx)
+void a_platform__stopSfx(int Channel)
 {
-    Mix_HaltChannel(Sfx->channel);
+    Mix_HaltChannel(Channel);
 }
 
-bool a_platform__isSfxPlaying(APlatformSfx* Sfx)
+bool a_platform__isSfxPlaying(int Channel)
 {
-    return Mix_Playing(Sfx->channel);
+    return Mix_Playing(Channel);
+}
+
+int a_platform__getSfxChannel(void)
+{
+    return g_currentSfxChannel++ % g_numSfxChannelsReserved;
 }
 #endif // A_PLATFORM_LIB_SDL

@@ -38,6 +38,7 @@ struct AMusic {
 
 struct ASfx {
     APlatformSfx* platformSfx;
+    int channel;
 };
 
 static bool g_soundOn;
@@ -236,6 +237,10 @@ ASfx* a_sfx_new(const char* Path)
         }
     }
 
+    if(s->platformSfx) {
+        s->channel = a_platform__getSfxChannel();
+    }
+
     return s;
 }
 
@@ -259,27 +264,29 @@ void a_sfx_play(ASfx* Sfx, ASfxFlags Flags)
     }
 
     if(Flags & A_SFX_RESTART) {
-        a_platform__stopSfx(Sfx->platformSfx);
+        a_platform__stopSfx(Sfx->channel);
     } else if(Flags & A_SFX_YIELD) {
-        if(a_platform__isSfxPlaying(Sfx->platformSfx)) {
+        if(a_platform__isSfxPlaying(Sfx->channel)) {
             return;
         }
     }
 
     a_platform__playSfx(Sfx->platformSfx,
-                        Flags & A_SFX_LOOP,
-                        Flags & (A_SFX_RESTART | A_SFX_YIELD));
+                        Flags & (A_SFX_RESTART | A_SFX_YIELD)
+                            ? Sfx->channel
+                            : -1,
+                        Flags & A_SFX_LOOP);
 }
 
 void a_sfx_stop(ASfx* Sfx)
 {
     if(g_soundOn && Sfx->platformSfx) {
-        a_platform__stopSfx(Sfx->platformSfx);
+        a_platform__stopSfx(Sfx->channel);
     }
 }
 
 bool a_sfx_isPlaying(ASfx* Sfx)
 {
     return g_soundOn && Sfx->platformSfx
-        && a_platform__isSfxPlaying(Sfx->platformSfx);
+        && a_platform__isSfxPlaying(Sfx->channel);
 }
