@@ -30,6 +30,7 @@ typedef enum {
 } ASfxFlags;
 
 extern AMusic* a_music_new(const char* Path);
+extern ASfx* a_sfx_dup(const ASfx* Sfx);
 extern void a_music_free(AMusic* Music);
 
 extern void a_music_play(AMusic* Music);

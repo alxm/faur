@@ -244,6 +244,18 @@ ASfx* a_sfx_new(const char* Path)
     return s;
 }
 
+ASfx* a_sfx_dup(const ASfx* Sfx)
+{
+    ASfx* s = a_mem_dup(Sfx, sizeof(ASfx));
+
+    if(s->platformSfx) {
+        s->channel = a_platform__getSfxChannel();
+        a_platform__referenceSfx(s->platformSfx);
+    }
+
+    return s;
+}
+
 void a_sfx_free(ASfx* Sfx)
 {
     if(!g_soundOn) {

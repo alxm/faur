@@ -31,6 +31,7 @@
 
 struct APlatformSfx {
     Mix_Chunk* chunk;
+    int refs;
 };
 
 static int g_numSfxChannels;
@@ -128,6 +129,7 @@ APlatformSfx* a_platform__newSfxFromFile(const char* Path)
     APlatformSfx* sfx = a_mem_malloc(sizeof(APlatformSfx));
 
     sfx->chunk = Mix_LoadWAV(Path);
+    sfx->refs = 0;
 
     if(sfx->chunk == NULL) {
         a_out__error("Mix_LoadWAV(%s) failed: %s", Path, Mix_GetError());
@@ -143,6 +145,7 @@ APlatformSfx* a_platform__newSfxFromData(const uint8_t* Data, int Size)
 
     if(rw) {
         sfx->chunk = Mix_LoadWAV_RW(rw, 0);
+        sfx->refs = 0;
 
         if(sfx->chunk == NULL) {
             a_out__error("Mix_LoadWAV_RW failed: %s", Mix_GetError());
@@ -159,11 +162,20 @@ APlatformSfx* a_platform__newSfxFromData(const uint8_t* Data, int Size)
 
 void a_platform__freeSfx(APlatformSfx* Sfx)
 {
+    if(Sfx->refs--) {
+        return;
+    }
+
     if(Sfx->chunk) {
         Mix_FreeChunk(Sfx->chunk);
     }
 
     free(Sfx);
+}
+
+void a_platform__referenceSfx(APlatformSfx* Sfx)
+{
+    Sfx->refs++;
 }
 
 void a_platform__setSfxVolume(APlatformSfx* Sfx, int Volume)
