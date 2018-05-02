@@ -202,7 +202,7 @@ void a_music_free(AMusic* Music)
     free(Music);
 }
 
-void a_music_play(AMusic* Music)
+void a_music_play(const AMusic* Music)
 {
     if(g_soundOn && Music->platformMusic) {
         a_platform__playMusic(Music->platformMusic);
@@ -269,7 +269,7 @@ void a_sfx_free(ASfx* Sfx)
     free(Sfx);
 }
 
-void a_sfx_play(ASfx* Sfx, ASfxFlags Flags)
+void a_sfx_play(const ASfx* Sfx, ASfxFlags Flags)
 {
     if(!g_soundOn || Sfx->platformSfx == NULL) {
         return;
@@ -290,14 +290,14 @@ void a_sfx_play(ASfx* Sfx, ASfxFlags Flags)
                         Flags & A_SFX_LOOP);
 }
 
-void a_sfx_stop(ASfx* Sfx)
+void a_sfx_stop(const ASfx* Sfx)
 {
     if(g_soundOn && Sfx->platformSfx) {
         a_platform__stopSfx(Sfx->channel);
     }
 }
 
-bool a_sfx_isPlaying(ASfx* Sfx)
+bool a_sfx_isPlaying(const ASfx* Sfx)
 {
     return g_soundOn && Sfx->platformSfx
         && a_platform__isSfxPlaying(Sfx->channel);

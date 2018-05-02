@@ -33,12 +33,12 @@ extern AMusic* a_music_new(const char* Path);
 extern ASfx* a_sfx_dup(const ASfx* Sfx);
 extern void a_music_free(AMusic* Music);
 
-extern void a_music_play(AMusic* Music);
+extern void a_music_play(const AMusic* Music);
 extern void a_music_stop(void);
 
 extern ASfx* a_sfx_new(const char* Path);
 extern void a_sfx_free(ASfx* Sfx);
 
-extern void a_sfx_play(ASfx* Sfx, ASfxFlags Flags);
-extern void a_sfx_stop(ASfx* Sfx);
-extern bool a_sfx_isPlaying(ASfx* Sfx);
+extern void a_sfx_play(const ASfx* Sfx, ASfxFlags Flags);
+extern void a_sfx_stop(const ASfx* Sfx);
+extern bool a_sfx_isPlaying(const ASfx* Sfx);
