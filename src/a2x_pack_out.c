@@ -157,6 +157,22 @@ void a_out__error(const char* Format, ...)
     va_end(args);
 }
 
+void a_out__errorv(const char* Format, ...)
+{
+    va_list args;
+    va_start(args, Format);
+
+    outWorker(A_OUT__SOURCE_A2X,
+              A_OUT__TYPE_ERROR,
+              true,
+              false,
+              stderr,
+              Format,
+              args);
+
+    va_end(args);
+}
+
 void a_out__fatal(const char* Format, ...)
 {
     if(!a_settings_getBool("app.output.on")) {
@@ -222,7 +238,7 @@ void a_out__state(const char* Format, ...)
     va_end(args);
 }
 
-void a_out__stateVerbose(const char* Format, ...)
+void a_out__statev(const char* Format, ...)
 {
     va_list args;
     va_start(args, Format);

@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2017 Alex Margarit
+    Copyright 2010, 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -73,10 +73,13 @@ extern void a_platform__toggleMusic(void);
 extern APlatformSfx* a_platform__newSfxFromFile(const char* Path);
 extern APlatformSfx* a_platform__newSfxFromData(const uint8_t* Data, int Size);
 extern void a_platform__freeSfx(APlatformSfx* Sfx);
+extern void a_platform__referenceSfx(APlatformSfx* Sfx);
 extern void a_platform__setSfxVolume(APlatformSfx* Sfx, int Volume);
-extern void a_platform__playSfx(APlatformSfx* Sfx);
-extern void a_platform__stopSfx(APlatformSfx* Sfx);
-extern bool a_platform__isSfxPlaying(APlatformSfx* Sfx);
+extern void a_platform__setSfxVolumeAll(int Volume);
+extern void a_platform__playSfx(APlatformSfx* Sfx, int Channel, bool Loop);
+extern void a_platform__stopSfx(int Channel);
+extern bool a_platform__isSfxPlaying(int Channel);
+extern int a_platform__getSfxChannel(void);
 
 extern void a_platform__bindInputs(void);
 extern void a_platform__pollInputs(void);

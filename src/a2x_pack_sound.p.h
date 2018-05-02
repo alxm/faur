@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016 Alex Margarit
+    Copyright 2010, 2016, 2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -19,17 +19,26 @@
 
 #pragma once
 
-typedef void AMusic;
-typedef void ASound;
+typedef struct AMusic AMusic;
+typedef struct ASfx ASfx;
+
+typedef enum {
+    A_SFX_NORMAL = 0,
+    A_SFX_LOOP = 1,
+    A_SFX_RESTART = 2,
+    A_SFX_YIELD = 4,
+} ASfxFlags;
 
 extern AMusic* a_music_new(const char* Path);
+extern ASfx* a_sfx_dup(const ASfx* Sfx);
 extern void a_music_free(AMusic* Music);
 
-extern void a_music_play(AMusic* Music);
+extern void a_music_play(const AMusic* Music);
 extern void a_music_stop(void);
 
-extern ASound* a_sfx_new(const char* Path);
-extern void a_sfx_free(ASound* Sfx);
+extern ASfx* a_sfx_new(const char* Path);
+extern void a_sfx_free(ASfx* Sfx);
 
-extern void a_sfx_play(ASound* Sfx);
-extern void a_sfx_playOnce(ASound* Sfx);
+extern void a_sfx_play(const ASfx* Sfx, ASfxFlags Flags);
+extern void a_sfx_stop(const ASfx* Sfx);
+extern bool a_sfx_isPlaying(const ASfx* Sfx);
