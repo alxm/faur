@@ -54,8 +54,10 @@ void a_platform_sdl_sound__init(void)
         a_out__error("Mix_OpenAudio failed: %s", Mix_GetError());
         a_settings__set("sound.on", "0");
     } else {
-        g_numSfxChannels = Mix_AllocateChannels(64);
-        g_numSfxChannelsReserved = Mix_ReserveChannels(g_numSfxChannels / 2);
+        g_numSfxChannels =
+            Mix_AllocateChannels(a_settings_getInt("sound.sfx.chan.total"));
+        g_numSfxChannelsReserved =
+            Mix_ReserveChannels(a_settings_getInt("sound.sfx.chan.reserved"));
 
         if(g_numSfxChannelsReserved <= 0) {
             a_out__fatal("Mix_AllocateChannels/Mix_ReserveChannels failed");
