@@ -20,6 +20,8 @@
 #include "a2x_system_includes.h"
 
 #if A_PLATFORM_LIB_SDL
+#include "a2x_pack_platform_sdl_input.v.h"
+
 #include <SDL.h>
 
 #include "a2x_pack_input_analog.v.h"
@@ -29,7 +31,6 @@
 #include "a2x_pack_math.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
-#include "a2x_pack_platform_sdl_input.v.h"
 #include "a2x_pack_settings.v.h"
 #include "a2x_pack_state.v.h"
 #include "a2x_pack_str.v.h"

@@ -24,11 +24,12 @@
 #include "a2x_system_includes.h"
 
 #if A_PLATFORM_SYSTEM_GP2X
+#include "a2x_pack_platform_gp2x.v.h"
+
 #include <fcntl.h>
 #include <sys/mman.h>
 
 #include "a2x_pack_file.v.h"
-#include "a2x_pack_platform_gp2x.v.h"
 #include "a2x_pack_settings.v.h"
 
 static int g_mmuHackOn = 0;

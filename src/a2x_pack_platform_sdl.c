@@ -20,10 +20,11 @@
 #include "a2x_system_includes.h"
 
 #if A_PLATFORM_LIB_SDL
+#include "a2x_pack_platform_sdl.v.h"
+
 #include <SDL.h>
 
 #include "a2x_pack_out.v.h"
-#include "a2x_pack_platform_sdl.v.h"
 #include "a2x_pack_platform_sdl_input.v.h"
 #include "a2x_pack_platform_sdl_sound.v.h"
 #include "a2x_pack_platform_sdl_video.v.h"

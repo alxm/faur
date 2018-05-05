@@ -20,9 +20,10 @@
 #include "a2x_system_includes.h"
 
 #if A_PLATFORM_SYSTEM_PANDORA
+#include "a2x_pack_platform_pandora.v.h"
+
 #include "a2x_pack_file.v.h"
 #include "a2x_pack_out.v.h"
-#include "a2x_pack_platform_pandora.v.h"
 #include "a2x_pack_str.v.h"
 
 static struct {

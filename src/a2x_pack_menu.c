@@ -18,10 +18,10 @@
 */
 
 #include "a2x_system_includes.h"
+#include "a2x_pack_menu.v.h"
 
 #include "a2x_pack_fps.v.h"
 #include "a2x_pack_mem.v.h"
-#include "a2x_pack_menu.v.h"
 
 struct AMenu {
     AMenuState state;

@@ -18,13 +18,13 @@
 */
 
 #include "a2x_system_includes.h"
+#include "a2x_pack_out.v.h"
 
 #if A_PLATFORM_SYSTEM_EMSCRIPTEN
     #include <emscripten.h>
 #endif
 
 #include "a2x_pack_console.v.h"
-#include "a2x_pack_out.v.h"
 #include "a2x_pack_screen.v.h"
 #include "a2x_pack_settings.v.h"
 #include "a2x_pack_time.v.h"

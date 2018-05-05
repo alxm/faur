@@ -18,8 +18,8 @@
 */
 
 #include "a2x_system_includes.h"
-
 #include "a2x_pack_draw.v.h"
+
 #include "a2x_pack_pixel.v.h"
 #include "a2x_pack_screen.v.h"
 

@@ -18,8 +18,8 @@
 */
 
 #include "a2x_system_includes.h"
-
 #include "a2x_pack_platform.v.h"
+
 #include "a2x_pack_platform_gp2x.v.h"
 #include "a2x_pack_platform_pandora.v.h"
 #include "a2x_pack_platform_sdl.v.h"

@@ -20,9 +20,10 @@
 #include "a2x_system_includes.h"
 
 #if A_PLATFORM_RENDER_SOFTWARE
+#include "a2x_pack_platform_software_draw.v.h"
+
 #include "a2x_pack_draw.v.h"
 #include "a2x_pack_pixel.v.h"
-#include "a2x_pack_platform_software_draw.v.h"
 #include "a2x_pack_screen.v.h"
 
 typedef void (*ADrawPixel)(int X, int Y);

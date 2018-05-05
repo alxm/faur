@@ -18,12 +18,12 @@
 */
 
 #include "a2x_system_includes.h"
+#include "a2x_pack_timer.v.h"
 
 #include "a2x_pack_fps.v.h"
 #include "a2x_pack_math.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_time.v.h"
-#include "a2x_pack_timer.v.h"
 
 struct ATimer {
     ATimerType type;

@@ -18,10 +18,10 @@
 */
 
 #include "a2x_system_includes.h"
+#include "a2x_pack_settings.v.h"
 
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
-#include "a2x_pack_settings.v.h"
 #include "a2x_pack_str.v.h"
 #include "a2x_pack_strhash.v.h"
 

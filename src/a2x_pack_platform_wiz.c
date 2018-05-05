@@ -23,13 +23,14 @@
 #include "a2x_system_includes.h"
 
 #if A_PLATFORM_SYSTEM_WIZ || A_PLATFORM_SYSTEM_CAANOO
+#include "a2x_pack_platform_wiz.v.h"
+
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 
 #include "a2x_pack_file.v.h"
 #include "a2x_pack_out.v.h"
-#include "a2x_pack_platform_wiz.v.h"
 #include "a2x_pack_settings.v.h"
 
 #if A_PLATFORM_SYSTEM_WIZ

@@ -18,10 +18,10 @@
 */
 
 #include "a2x_system_includes.h"
+#include "a2x_pack_strbuilder.v.h"
 
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
-#include "a2x_pack_strbuilder.v.h"
 
 struct AStrBuilder {
     char* buffer;

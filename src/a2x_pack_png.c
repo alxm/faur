@@ -18,6 +18,7 @@
 */
 
 #include "a2x_system_includes.h"
+#include "a2x_pack_png.v.h"
 
 #include <zlib.h>
 #include <png.h>
@@ -25,7 +26,6 @@
 #include "a2x_pack_file.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
-#include "a2x_pack_png.v.h"
 
 typedef struct {
     const uint8_t* data;

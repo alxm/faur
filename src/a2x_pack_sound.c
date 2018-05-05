@@ -18,6 +18,7 @@
 */
 
 #include "a2x_system_includes.h"
+#include "a2x_pack_sound.v.h"
 
 #include "a2x_pack_draw.v.h"
 #include "a2x_pack_embed.v.h"
@@ -29,7 +30,6 @@
 #include "a2x_pack_platform.v.h"
 #include "a2x_pack_screen.v.h"
 #include "a2x_pack_settings.v.h"
-#include "a2x_pack_sound.v.h"
 #include "a2x_pack_timer.v.h"
 
 struct AMusic {

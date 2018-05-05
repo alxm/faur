@@ -18,6 +18,7 @@
 */
 
 #include "a2x_system_includes.h"
+#include "a2x_pack_main.v.h"
 
 #include "a2x_pack_conf.v.h"
 #include "a2x_pack_console.v.h"
@@ -28,7 +29,6 @@
 #include "a2x_pack_font.v.h"
 #include "a2x_pack_fps.v.h"
 #include "a2x_pack_input.v.h"
-#include "a2x_pack_main.v.h"
 #include "a2x_pack_out.v.h"
 #include "a2x_pack_pixel.v.h"
 #include "a2x_pack_random.v.h"

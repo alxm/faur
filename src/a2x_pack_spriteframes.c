@@ -18,13 +18,13 @@
 */
 
 #include "a2x_system_includes.h"
+#include "a2x_pack_spriteframes.v.h"
 
 #include "a2x_pack_listit.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
 #include "a2x_pack_random.v.h"
 #include "a2x_pack_sprite.v.h"
-#include "a2x_pack_spriteframes.v.h"
 
 struct ASpriteFrames {
     AList* sprites;

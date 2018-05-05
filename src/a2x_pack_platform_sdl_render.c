@@ -20,13 +20,14 @@
 #include "a2x_system_includes.h"
 
 #if A_PLATFORM_RENDER_SDL
+#include "a2x_pack_platform_sdl_render.v.h"
+
 #include <SDL.h>
 
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
 #include "a2x_pack_pixel.v.h"
 #include "a2x_pack_platform.v.h"
-#include "a2x_pack_platform_sdl_render.v.h"
 #include "a2x_pack_platform_sdl_video.v.h"
 
 #define NUM_SPRITE_TEXTURES 2

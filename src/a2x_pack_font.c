@@ -18,8 +18,8 @@
 */
 
 #include "a2x_system_includes.h"
-
 #include "a2x_pack_font.v.h"
+
 #include "a2x_pack_math.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"

@@ -18,5 +18,4 @@
 */
 
 #include "a2x_system_includes.h"
-
 #include "a2x_pack_math.v.h"

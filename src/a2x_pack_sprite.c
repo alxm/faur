@@ -18,6 +18,7 @@
 */
 
 #include "a2x_system_includes.h"
+#include "a2x_pack_sprite.v.h"
 
 #include "a2x_pack_embed.v.h"
 #include "a2x_pack_file.v.h"
@@ -27,7 +28,6 @@
 #include "a2x_pack_png.v.h"
 #include "a2x_pack_screen.v.h"
 #include "a2x_pack_settings.v.h"
-#include "a2x_pack_sprite.v.h"
 #include "a2x_pack_str.v.h"
 
 APixel a_sprite__colorKey;

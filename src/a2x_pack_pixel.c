@@ -18,11 +18,11 @@
 */
 
 #include "a2x_system_includes.h"
+#include "a2x_pack_pixel.v.h"
 
 #include "a2x_pack_list.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
-#include "a2x_pack_pixel.v.h"
 #include "a2x_pack_platform.v.h"
 #include "a2x_pack_platform_software_blit.v.h"
 #include "a2x_pack_platform_software_draw.v.h"

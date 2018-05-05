@@ -18,9 +18,9 @@
 */
 
 #include "a2x_system_includes.h"
+#include "a2x_pack_time.v.h"
 
 #include "a2x_pack_platform.v.h"
-#include "a2x_pack_time.v.h"
 
 uint32_t a_time_getMs(void)
 {

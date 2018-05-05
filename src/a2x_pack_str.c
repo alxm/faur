@@ -18,9 +18,9 @@
 */
 
 #include "a2x_system_includes.h"
+#include "a2x_pack_str.v.h"
 
 #include "a2x_pack_mem.v.h"
-#include "a2x_pack_str.v.h"
 
 char* a_str_merge(const char* String1, ...)
 {

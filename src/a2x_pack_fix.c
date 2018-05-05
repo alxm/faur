@@ -18,8 +18,8 @@
 */
 
 #include "a2x_system_includes.h"
-
 #include "a2x_pack_fix.v.h"
+
 #include "a2x_pack_math.v.h"
 
 AFix a_fix__sin[A_FIX_ANGLES_NUM];
