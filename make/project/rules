@@ -23,16 +23,19 @@
 #
 # Project dirs created by a2x_new or overrode by user makefile
 #
-A_DIR_BIN ?= ../bin
-A_DIR_OBJ ?= ../obj
-A_DIR_SRC ?= ../src
+A_DIR_BIN ?= bin
+A_DIR_OBJ ?= obj
+A_DIR_SRC ?= src
 A_DIR_GFX ?= gfx
 A_DIR_SFX ?= sfx
+
+# Relative path to project root from make subdir
+A_ROOT := ..
 
 #
 # Object files dir for current platform
 #
-A_DIR_OBJ_PLATFORM := $(A_DIR_OBJ)/$(A_PLATFORM)
+A_DIR_OBJ_PLATFORM := $(A_ROOT)/$(A_DIR_OBJ)/$(A_PLATFORM)
 
 #
 # Subdir for generated code and its object files
@@ -42,7 +45,7 @@ A_DIR_GEN := $(A_DIR_OBJ_PLATFORM)/a2x_gen
 #
 # this is what gets built
 #
-A_FILE_TARGET_BIN := $(A_DIR_BIN)/$(A_APP_NAME)
+A_FILE_TARGET_BIN := $(A_ROOT)/$(A_DIR_BIN)/$(A_APP_NAME)
 
 #
 # Project build time
@@ -57,8 +60,8 @@ A_FILE_SRC_GEN_EMBED := $(A_DIR_GEN)/embed.c
 #
 # .c source files
 #
-A_FILES_SRC_C_INC := $(shell a2x_srcfiles -q $(A_DIR_SRC) .inc.c)
-A_FILES_SRC_C_ALL := $(shell a2x_srcfiles -q $(A_DIR_SRC) .c)
+A_FILES_SRC_C_INC := $(shell a2x_srcfiles -q $(A_ROOT)/$(A_DIR_SRC) .inc.c)
+A_FILES_SRC_C_ALL := $(shell a2x_srcfiles -q $(A_ROOT)/$(A_DIR_SRC) .c)
 A_FILES_SRC_C := $(filter-out $(A_FILES_SRC_C_INC), $(A_FILES_SRC_C_ALL))
 
 #
@@ -76,8 +79,8 @@ ifeq ($(A_EMBED_MEDIA), true)
     #
     # PNG and WAV files we can convert to C code
     #
-    A_FILES_MEDIA_PNG := $(notdir $(wildcard ../$(A_DIR_GFX)/*.png))
-    A_FILES_MEDIA_WAV := $(notdir $(wildcard ../$(A_DIR_SFX)/*.wav))
+    A_FILES_MEDIA_PNG := $(notdir $(wildcard $(A_ROOT)/$(A_DIR_GFX)/*.png))
+    A_FILES_MEDIA_WAV := $(notdir $(wildcard $(A_ROOT)/$(A_DIR_SFX)/*.wav))
 
     #
     # Private prefixes
@@ -138,11 +141,11 @@ $(A_FILE_SRC_GEN_BUILDTIME) : $(A_FILES_OBJ) $(A2X_PATH)/bin/a2x_buildtime
 	@ mkdir -p $(@D)
 	@ $(A2X_PATH)/bin/a2x_buildtime $@
 
-$(A_DIR_GEN_GFX)/$(A_PREFIX_GEN_GFX)%_png.h : ../$(A_DIR_GFX)/%.png $(A2X_PATH)/bin/a2x_bin
+$(A_DIR_GEN_GFX)/$(A_PREFIX_GEN_GFX)%_png.h : $(A_ROOT)/$(A_DIR_GFX)/%.png $(A2X_PATH)/bin/a2x_bin
 	@ mkdir -p $(@D)
 	@ $(A2X_PATH)/bin/a2x_bin $< $@ $(A_DIR_GFX)/$(<F)
 
-$(A_DIR_GEN_SFX)/$(A_PREFIX_GEN_SFX)%_wav.h : ../$(A_DIR_SFX)/%.wav $(A2X_PATH)/bin/a2x_bin
+$(A_DIR_GEN_SFX)/$(A_PREFIX_GEN_SFX)%_wav.h : $(A_ROOT)/$(A_DIR_SFX)/%.wav $(A2X_PATH)/bin/a2x_bin
 	@ mkdir -p $(@D)
 	@ $(A2X_PATH)/bin/a2x_bin $< $@ $(A_DIR_SFX)/$(<F)
 
@@ -150,7 +153,7 @@ $(A_FILE_SRC_GEN_EMBED) : $(A_FILES_SRC_GEN_GFX) $(A_FILES_SRC_GEN_SFX) $(A2X_PA
 	@ mkdir -p $(@D)
 	@ $(A2X_PATH)/bin/a2x_embed $@ $(A_DIR_GEN) $(A_PREFIX_GEN_GFX) $(A_PREFIX_GEN_SFX)
 
-$(A_DIR_OBJ_PLATFORM)/%.c.o : $(A_DIR_SRC)/%.c
+$(A_DIR_OBJ_PLATFORM)/%.c.o : $(A_ROOT)/$(A_DIR_SRC)/%.c
 	@ echo "Compiling $<"
 	@ mkdir -p $(@D)
 	@ $(CC) -c -o $@ $< $(A_GENERIC_CFLAGS)
@@ -181,4 +184,4 @@ cleanbin :
 #
 run : all
 	@ echo "Running $(notdir $(A_APP_NAME))"
-	@ cd $(A_DIR_BIN) ; ./$(A_APP_NAME)
+	@ cd $(A_ROOT)/$(A_DIR_BIN) ; ./$(A_APP_NAME)
