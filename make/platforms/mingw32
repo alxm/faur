@@ -1,15 +1,15 @@
-A_PLATFORM = mingw32
+A_PLATFORM := mingw32
 
-MINGW_BIN = $(MINGW32_ROOT)/$(MINGW32_ARCH)/bin
+MINGW_BIN := $(MINGW32_ROOT)/$(MINGW32_ARCH)/bin
 
-A_PLATFORM_LIBS = \
+A_PLATFORM_LIBS := \
     -u _SDL_main \
     $(shell $(MINGW_BIN)/sdl2-config --libs) \
     -lSDL2_mixer \
     -lpng \
     -lm \
 
-A_PLATFORM_CFLAGS = \
+A_PLATFORM_CFLAGS := \
     -DA_PLATFORM_LIB_SDL=2 \
     -DA_PLATFORM_LIB_SDL_GETFULLRES=1 \
     -DA_PLATFORM_LIB_SDL_TIME=1 \

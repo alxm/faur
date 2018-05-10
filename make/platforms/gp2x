@@ -1,8 +1,8 @@
-A_PLATFORM = gp2x
+A_PLATFORM := gp2x
 
-OPEN2X = $(OPEN2X_ROOT)/$(OPEN2X_GLIBC)
+OPEN2X := $(OPEN2X_ROOT)/$(OPEN2X_GLIBC)
 
-A_PLATFORM_LIBS = \
+A_PLATFORM_LIBS := \
     -static \
     -L$(OPEN2X)/lib \
     -L$(OPEN2X)/arm-open2x-linux/lib \
@@ -19,7 +19,7 @@ A_PLATFORM_LIBS = \
     -lstdc++ \
     -ldl \
 
-A_PLATFORM_CFLAGS = \
+A_PLATFORM_CFLAGS := \
     -DA_PLATFORM_LIB_SDL=1 \
     -DA_PLATFORM_LIB_SDL_TIME=1 \
     -DA_PLATFORM_RENDER_SOFTWARE=1 \
