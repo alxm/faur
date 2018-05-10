@@ -51,18 +51,16 @@ class NewTool(Tool):
                 self.tool.writefile(os.path.join(self.path, Name), Content)
 
         dir_root = Dir(self, project_path)
+        dir_assets = dir_root.add_subdir('assets')
+        dir_assets_gfx = dir_assets.add_subdir('gfx')
+        dir_assets_sfx = dir_assets.add_subdir('sfx')
         dir_bin = dir_root.add_subdir('bin')
-        dir_gfx = dir_root.add_subdir('gfx')
         dir_make = dir_root.add_subdir('make')
         dir_obj = dir_root.add_subdir('obj')
-        dir_sfx = dir_root.add_subdir('sfx')
         dir_src = dir_root.add_subdir('src')
 
-        os.symlink(os.path.join('..', dir_gfx.name),
-                   os.path.join(dir_bin.path, dir_gfx.name))
-
-        os.symlink(os.path.join('..', dir_sfx.name),
-                   os.path.join(dir_bin.path, dir_sfx.name))
+        os.symlink(os.path.join('..', dir_assets.name),
+                   os.path.join(dir_bin.path, dir_assets.name))
 
         author = '<your username>'
 

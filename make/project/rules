@@ -20,17 +20,18 @@
 #   Rules to run before the default clean
 #
 
+# Relative path to project root from make subdir
+A_ROOT := ..
+
 #
 # Project dirs created by a2x_new or overrode by user makefile
 #
 A_DIR_BIN ?= bin
 A_DIR_OBJ ?= obj
 A_DIR_SRC ?= src
-A_DIR_GFX ?= gfx
-A_DIR_SFX ?= sfx
-
-# Relative path to project root from make subdir
-A_ROOT := ..
+A_DIR_ASSETS ?= assets
+A_DIR_GFX ?= $(A_DIR_ASSETS)/gfx
+A_DIR_SFX ?= $(A_DIR_ASSETS)/sfx
 
 #
 # Object files dir for current platform
