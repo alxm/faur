@@ -27,13 +27,42 @@ from utils.tool import Tool
 class NewTool(Tool):
     def main(self):
         project_name = self.get_arg('ProjectName').replace(' ', '-')
-        project_dir = os.path.abspath(project_name)
 
         if project_name != os.path.basename(project_name):
             self.output.error('Project name cannot be a path'.format(project_name))
 
-        if os.path.exists(project_dir):
-            self.output.error('{} already exists'.format(project_dir))
+        project_path = os.path.abspath(project_name)
+
+        if os.path.exists(project_path):
+            self.output.error('{} already exists'.format(project_path))
+
+        class Dir:
+            def __init__(self, Tool, Path):
+                self.tool = Tool
+                self.path = Path
+                self.name = os.path.basename(Path)
+
+                os.mkdir(Path)
+
+            def add_subdir(self, Name):
+                return Dir(self.tool, os.path.join(self.path, Name))
+
+            def write_file(self, Name, Content):
+                self.tool.writefile(os.path.join(self.path, Name), Content)
+
+        dir_root = Dir(self, project_path)
+        dir_bin = dir_root.add_subdir('bin')
+        dir_gfx = dir_root.add_subdir('gfx')
+        dir_make = dir_root.add_subdir('make')
+        dir_obj = dir_root.add_subdir('obj')
+        dir_sfx = dir_root.add_subdir('sfx')
+        dir_src = dir_root.add_subdir('src')
+
+        os.symlink(os.path.join('..', dir_gfx.name),
+                   os.path.join(dir_bin.path, dir_gfx.name))
+
+        os.symlink(os.path.join('..', dir_sfx.name),
+                   os.path.join(dir_bin.path, dir_sfx.name))
 
         author = '<your username>'
 
@@ -42,27 +71,7 @@ class NewTool(Tool):
                 author = os.environ[key]
                 break
 
-        class Dir:
-            def __init__(self, Tool, Name):
-                self.name = Name
-                self.path = os.path.join(project_dir, Name)
-
-                Tool.makedir(self.path)
-
-        dir_bin = Dir(self, 'bin')
-        dir_gfx = Dir(self, 'gfx')
-        dir_mke = Dir(self, 'make')
-        dir_obj = Dir(self, 'obj')
-        dir_sfx = Dir(self, 'sfx')
-        dir_src = Dir(self, 'src')
-
-        self.symlink(os.path.join('..', dir_gfx.name),
-                     os.path.join(dir_bin.path, dir_gfx.name))
-
-        self.symlink(os.path.join('..', dir_sfx.name),
-                     os.path.join(dir_bin.path, dir_sfx.name))
-
-        self.writefile(os.path.join(dir_mke.path, 'Makefile'),
+        dir_make.write_file('Makefile',
 """\
 A_APP_NAME := {0}
 
@@ -74,7 +83,7 @@ A2X_PATH := $(shell a2x_path)
 include $(A2X_PATH)/make/project/Makefile
 """.format(project_name))
 
-        self.writefile(os.path.join(dir_src.path, 'main.c'),
+        dir_src.write_file('main.c',
 """\
 #include <a2x.h>
 
@@ -139,19 +148,19 @@ A_MAIN
 }}
 """.format(project_name, author))
 
-        self.shell('git init {}'.format(project_dir))
-
-        self.writefile(os.path.join(project_dir, '.gitignore'),
+        dir_root.write_file('.gitignore',
 """\
 /bin/
 /obj/
 """)
 
-        self.shell('cd {} && git add .gitignore make/Makefile src/main.c'
-            .format(project_dir))
+        self.shell('cd {} && ' \
+                   'git init && ' \
+                   'git add .gitignore make/Makefile src/main.c'
+            .format(dir_root.path))
 
         self.output.note('To build and run:')
-        self.output.note('cd {} && make run'.format(dir_mke.path))
+        self.output.note('cd {} && make run'.format(dir_make.path))
 
 if __name__ == '__main__':
     NewTool('ProjectName').run()

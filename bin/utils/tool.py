@@ -112,14 +112,6 @@ class Tool:
         self.main()
         self.done()
 
-    def makedir(self, name):
-        self.output.info('Making dir {}'.format(name))
-        os.makedirs(name)
-
-    def symlink(self, Target, Name):
-        self.output.info('New symlink {} to {}'.format(Name, Target))
-        os.symlink(Target, Name)
-
     def writefile(self, name, contents):
         self.output.info('Writing file {}'.format(name))
 
