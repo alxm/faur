@@ -44,7 +44,7 @@ A_DIR_OBJ_PLATFORM := $(A_ROOT)/$(A_DIR_OBJ)/$(A_PLATFORM)
 A_DIR_GEN := $(A_DIR_OBJ_PLATFORM)/a2x_gen
 
 #
-# this is what gets built
+# The final bin that gets built
 #
 A_FILE_TARGET_BIN := $(A_ROOT)/$(A_DIR_BIN)/$(A_APP_NAME)
 
@@ -54,7 +54,7 @@ A_FILE_TARGET_BIN := $(A_ROOT)/$(A_DIR_BIN)/$(A_APP_NAME)
 A_FILE_SRC_GEN_BUILDTIME := $(A_DIR_GEN)/time.c
 
 #
-# a_embed__application
+# Implements the a_embed__application function
 #
 A_FILE_SRC_GEN_EMBED := $(A_DIR_GEN)/embed.c
 
@@ -103,7 +103,7 @@ ifeq ($(A_EMBED_MEDIA), true)
 endif
 
 #
-# compile flags
+# Compiler flags for all targets
 #
 A_GENERIC_CFLAGS := \
     -DA2X=1 \
@@ -121,9 +121,6 @@ A_GENERIC_CFLAGS := \
     $(A_PLATFORM_CFLAGS) \
     $(A_EXTRA_CFLAGS) \
 
-#
-# the main target
-#
 all : $(A_FILE_TARGET_BIN)
 
 $(A_FILE_TARGET_BIN) : $(A_FILES_OBJ) $(A_FILE_OBJ_GEN_BUILDTIME)
@@ -135,9 +132,6 @@ $(A_FILE_TARGET_BIN) : $(A_FILES_OBJ) $(A_FILE_OBJ_GEN_BUILDTIME)
 	$(A2X_PATH)/lib/$(A_PLATFORM)/a2x.a \
 	$(A_PLATFORM_LIBS)
 
-#
-# pattern rules for building the universe
-#
 $(A_FILE_SRC_GEN_BUILDTIME) : $(A_FILES_OBJ) $(A2X_PATH)/bin/a2x_buildtime
 	@ mkdir -p $(@D)
 	@ $(A2X_PATH)/bin/a2x_buildtime $@
@@ -164,25 +158,14 @@ $(A_DIR_GEN)/%.c.o : $(A_DIR_GEN)/%.c
 	@ mkdir -p $(@D)
 	@ $(CC) -c -o $@ $< $(A_GENERIC_CFLAGS)
 
-#
-# delete all .o files and all generated .c files
-#
 clean : $(A_RULES_CLEAN)
 	@ echo "Removing $(A_FILE_TARGET_BIN) $(A_DIR_OBJ_PLATFORM)"
 	@ rm -rf $(A_FILE_TARGET_BIN) $(A_DIR_OBJ_PLATFORM)
-
-#
-# clean-up rule that deletes the built binary
-#
-cb : cleanbin
 
 cleanbin :
 	@ echo "Removing $(A_APP_NAME) binary"
 	@ rm -f $(A_FILE_TARGET_BIN)
 
-#
-# run the program
-#
 run : all
 	@ echo "Running $(notdir $(A_APP_NAME))"
 	@ cd $(A_ROOT)/$(A_DIR_BIN) ; ./$(A_APP_NAME)
