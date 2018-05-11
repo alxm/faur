@@ -1,11 +1,11 @@
-A_PLATFORM = linux32
+A_PLATFORM := linux32
 
-A_PLATFORM_LIBS = \
+A_PLATFORM_LIBS := \
     -L/usr/lib/i386-linux-gnu \
     -lpng \
     -lm \
 
-A_PLATFORM_CFLAGS = \
+A_PLATFORM_CFLAGS := \
     -DA_PLATFORM_LIB_SDL_GETFULLRES=1 \
     -DA_PLATFORM_LIB_SDL_TIME=1 \
     -DA_PLATFORM_SYSTEM_DESKTOP=1 \
