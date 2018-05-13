@@ -1,5 +1,5 @@
 /*
-    Copyright 2016, 2017 Alex Margarit
+    Copyright 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -29,6 +29,7 @@ typedef enum {
     A_ECS__RUNNING, // entities in this list are picked up by systems
     A_ECS__REMOVED, // removed entities with outstanding references
     A_ECS__MUTED, // recently muted entities
+    A_ECS__DORMANT, // not picked up by any systems
     A_ECS__NUM
 } AEcsListId;
 

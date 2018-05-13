@@ -1,5 +1,5 @@
 /*
-    Copyright 2016, 2017 Alex Margarit
+    Copyright 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -143,10 +143,10 @@ void a_ecs__tick(void)
 
     A_LIST_ITERATE(a__ecs->lists[A_ECS__MUTED], AEntity*, entity) {
         a_ecs_entity__removeFromSystems(entity);
-        entity->node = NULL;
-    }
 
-    a_list_clear(a__ecs->lists[A_ECS__MUTED]);
+        A_LIST_REMOVE_CURRENT();
+        a_ecs__addEntityToList(entity, A_ECS__DORMANT);
+    }
 }
 
 void a_ecs__draw(void)

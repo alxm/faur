@@ -1,5 +1,5 @@
 /*
-    Copyright 2016, 2017 Alex Margarit
+    Copyright 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -271,7 +271,7 @@ void a_entity_unmute(AEntity* Entity)
         }
     } else {
         // Entity was unmuted after it was removed from all systems
-        a_ecs__addEntityToList(Entity, A_ECS__NEW);
+        a_ecs__moveEntityToList(Entity, A_ECS__NEW);
     }
 }
 
