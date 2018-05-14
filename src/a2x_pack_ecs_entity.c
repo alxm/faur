@@ -115,7 +115,7 @@ void a_entity_reference(AEntity* Entity)
 
 void a_entity_release(AEntity* Entity)
 {
-    if(a__ecs->deleting) {
+    if(a_ecs__isDeleting()) {
         // Entity could have already been freed. This is the only ECS function
         // that may be called from AFree callbacks.
         return;

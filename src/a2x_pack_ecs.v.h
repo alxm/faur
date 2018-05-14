@@ -21,8 +21,6 @@
 
 #include "a2x_pack_ecs.p.h"
 
-typedef struct AEcs AEcs;
-
 typedef enum {
     A_ECS__INVALID = -1,
     A_ECS__NEW, // new entities are added to this list
@@ -36,17 +34,6 @@ typedef enum {
 #include "a2x_pack_ecs_entity.v.h"
 #include "a2x_pack_list.v.h"
 
-struct AEcs {
-    AList* lists[A_ECS__NUM]; // each entity is in at most one list
-    AList* tickSystems; // tick systems in the specified order
-    AList* drawSystems; // draw systems in the specified order
-    AList* allSystems; // tick & draw systems
-    AList* messageQueue; // queued messages
-    bool deleting; // set when this collection is popped off the stack
-};
-
-extern AEcs* a__ecs;
-
 extern void a_ecs__init(void);
 extern void a_ecs__uninit(void);
 
@@ -55,7 +42,10 @@ extern void a_ecs__draw(void);
 
 extern void a_ecs__pushCollection(AList* TickSystems, AList* DrawSystems);
 extern void a_ecs__popCollection(void);
+extern bool a_ecs__isDeleting(void);
 
 extern bool a_ecs__isEntityInList(const AEntity* Entity, AEcsListId List);
 extern void a_ecs__addEntityToList(AEntity* Entity, AEcsListId List);
 extern void a_ecs__moveEntityToList(AEntity* Entity, AEcsListId List);
+
+extern void a_ecs__queueMessage(AEntity* To, AEntity* From, const char* Message);
