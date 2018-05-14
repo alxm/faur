@@ -121,7 +121,17 @@ bool a_ecs__isDeleting(void)
 
 void a_ecs__tick(void)
 {
-    a_ecs_flushNewEntities();
+    A_LIST_ITERATE(g_ecs->lists[A_ECS__NEW], AEntity*, e) {
+        // Check if the entity matches any systems
+        A_LIST_ITERATE(g_ecs->allSystems, ASystem*, s) {
+            if(a_bitfield_testMask(e->componentBits, s->componentBits)) {
+                a_list_addLast(e->systemNodes, a_list_addLast(s->entities, e));
+            }
+        }
+
+        A_LIST_REMOVE_CURRENT();
+        a_ecs__addEntityToList(e, A_ECS__RUNNING);
+    }
 
     A_LIST_ITERATE(g_ecs->tickSystems, ASystem*, system) {
         a_ecs_system__run(system);
@@ -167,21 +177,6 @@ void a_ecs__draw(void)
 {
     A_LIST_ITERATE(g_ecs->drawSystems, ASystem*, system) {
         a_ecs_system__run(system);
-    }
-}
-
-void a_ecs_flushNewEntities(void)
-{
-    A_LIST_ITERATE(g_ecs->lists[A_ECS__NEW], AEntity*, e) {
-        // Check if the entity matches any systems
-        A_LIST_ITERATE(g_ecs->allSystems, ASystem*, s) {
-            if(a_bitfield_testMask(e->componentBits, s->componentBits)) {
-                a_list_addLast(e->systemNodes, a_list_addLast(s->entities, e));
-            }
-        }
-
-        A_LIST_REMOVE_CURRENT();
-        a_ecs__addEntityToList(e, A_ECS__RUNNING);
     }
 }
 
