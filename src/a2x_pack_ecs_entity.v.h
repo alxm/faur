@@ -39,5 +39,5 @@ struct AEntity {
     unsigned references; // if >0, then the entity lingers in the removed list
 };
 
-extern void a_ecs_entity__free(AEntity* Entity);
-extern void a_ecs_entity__removeFromSystems(AEntity* Entity);
+extern void a_entity__free(AEntity* Entity);
+extern void a_entity__removeFromSystems(AEntity* Entity);

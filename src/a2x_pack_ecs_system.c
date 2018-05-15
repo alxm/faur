@@ -29,12 +29,12 @@
 
 static AStrHash* g_systems; // table of declared ASystem
 
-void a_ecs_system__init(void)
+void a_system__init(void)
 {
     g_systems = a_strhash_new();
 }
 
-void a_ecs_system__uninit(void)
+void a_system__uninit(void)
 {
     A_STRHASH_ITERATE(g_systems, ASystem*, system) {
         a_list_free(system->entities);
@@ -79,7 +79,7 @@ void a_system_declare(const char* Name, const char* Components, ASystemHandler* 
     a_list_freeEx(tok, free);
 }
 
-void a_ecs_system__run(ASystem* System)
+void a_system__run(ASystem* System)
 {
     if(System->muted) {
         return;
@@ -127,7 +127,7 @@ void a_system_execute(const char* Systems)
             a_out__fatal("a_system_execute: '%s' does not run in state", name);
         }
 
-        a_ecs_system__run(system);
+        a_system__run(system);
     }
 
     a_list_freeEx(tok, free);
@@ -168,7 +168,7 @@ void a_system_unmute(const char* Systems)
     muteSystems(Systems, false);
 }
 
-AList* a_ecs_system__parseIds(const char* Systems)
+AList* a_system__parseIds(const char* Systems)
 {
     AList* systems = a_list_new();
     AList* tok = a_str_split(Systems, " ");

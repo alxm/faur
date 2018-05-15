@@ -200,8 +200,8 @@ void a_state__new(const char* Name, AStateFunction Function, const char* TickSys
     state->name = a_str_dup(Name);
     state->function = Function;
     state->stage = A_STATE__STAGE_INIT;
-    state->tickSystems = a_ecs_system__parseIds(TickSystems);
-    state->drawSystems = a_ecs_system__parseIds(DrawSystems);
+    state->tickSystems = a_system__parseIds(TickSystems);
+    state->drawSystems = a_system__parseIds(DrawSystems);
 
     a_strhash_add(g_states, Name, state);
     a_out__statev("Declared '%s'", Name);

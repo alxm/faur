@@ -32,5 +32,5 @@ typedef struct {
     bool handleImmediately;
 } AMessageHandlerContainer;
 
-extern AMessage* a_ecs_message__new(AEntity* To, AEntity* From, const char* Message);
-extern void a_ecs_message__free(AMessage* Message);
+extern AMessage* a_message__new(AEntity* To, AEntity* From, const char* Message);
+extern void a_message__free(AMessage* Message);

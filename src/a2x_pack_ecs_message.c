@@ -26,7 +26,7 @@
 #include "a2x_pack_out.v.h"
 #include "a2x_pack_str.v.h"
 
-AMessage* a_ecs_message__new(AEntity* To, AEntity* From, const char* Message)
+AMessage* a_message__new(AEntity* To, AEntity* From, const char* Message)
 {
     AMessage* m = a_mem_malloc(sizeof(AMessage));
 
@@ -40,7 +40,7 @@ AMessage* a_ecs_message__new(AEntity* To, AEntity* From, const char* Message)
     return m;
 }
 
-void a_ecs_message__free(AMessage* Message)
+void a_message__free(AMessage* Message)
 {
     a_entity_release(Message->to);
     a_entity_release(Message->from);

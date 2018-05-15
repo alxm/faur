@@ -54,7 +54,7 @@ AEntity* a_entity_new(const char* Id, void* Context)
     return e;
 }
 
-void a_ecs_entity__free(AEntity* Entity)
+void a_entity__free(AEntity* Entity)
 {
     a_list_freeEx(Entity->systemNodes, (AFree*)a_list_removeNode);
     a_list_free(Entity->sleepingInSystems);
@@ -274,7 +274,7 @@ bool a_entity_isMuted(const AEntity* Entity)
         || a_ecs__isEntityInList(Entity, A_ECS__MUTED_FINAL);
 }
 
-void a_ecs_entity__removeFromSystems(AEntity* Entity)
+void a_entity__removeFromSystems(AEntity* Entity)
 {
     a_list_clearEx(Entity->systemNodes, (AFree*)a_list_removeNode);
     a_list_clear(Entity->sleepingInSystems);

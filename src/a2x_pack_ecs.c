@@ -43,8 +43,8 @@ void a_ecs__init(void)
     g_ecs = NULL;
     g_stack = a_list_new();
 
-    a_ecs_component__init();
-    a_ecs_system__init();
+    a_component__init();
+    a_system__init();
 }
 
 void a_ecs__uninit(void)
@@ -55,8 +55,8 @@ void a_ecs__uninit(void)
 
     a_list_free(g_stack);
 
-    a_ecs_system__uninit();
-    a_ecs_component__uninit();
+    a_system__uninit();
+    a_component__uninit();
 }
 
 void a_ecs__pushCollection(AList* TickSystems, AList* DrawSystems)
@@ -96,10 +96,10 @@ void a_ecs__popCollection(void)
         system->runsInCurrentState = false;
     }
 
-    a_list_freeEx(g_ecs->messageQueue, (AFree*)a_ecs_message__free);
+    a_list_freeEx(g_ecs->messageQueue, (AFree*)a_message__free);
 
     for(int i = A_ECS__NUM; i--; ) {
-        a_list_freeEx(g_ecs->lists[i], (AFree*)a_ecs_entity__free);
+        a_list_freeEx(g_ecs->lists[i], (AFree*)a_entity__free);
     }
 
     a_list_free(g_ecs->allSystems);
@@ -135,7 +135,7 @@ void a_ecs__tick(void)
     a_list_clear(g_ecs->lists[A_ECS__NEW]);
 
     A_LIST_ITERATE(g_ecs->tickSystems, ASystem*, system) {
-        a_ecs_system__run(system);
+        a_system__run(system);
     }
 
     A_LIST_ITERATE(g_ecs->messageQueue, AMessage*, m) {
@@ -151,23 +151,23 @@ void a_ecs__tick(void)
             }
         }
 
-        a_ecs_message__free(m);
+        a_message__free(m);
     }
 
     a_list_clear(g_ecs->messageQueue);
 
     A_LIST_ITERATE(g_ecs->lists[A_ECS__REMOVED_FINAL], AEntity*, e) {
         if(e->references == 0) {
-            a_ecs_entity__free(e);
+            a_entity__free(e);
             A_LIST_REMOVE_CURRENT();
         }
     }
 
     A_LIST_ITERATE(g_ecs->lists[A_ECS__REMOVED_QUEUE], AEntity*, e) {
         if(e->references == 0) {
-            a_ecs_entity__free(e);
+            a_entity__free(e);
         } else {
-            a_ecs_entity__removeFromSystems(e);
+            a_entity__removeFromSystems(e);
             a_ecs__addEntityToList(e, A_ECS__REMOVED_FINAL);
         }
     }
@@ -175,7 +175,7 @@ void a_ecs__tick(void)
     a_list_clear(g_ecs->lists[A_ECS__REMOVED_QUEUE]);
 
     A_LIST_ITERATE(g_ecs->lists[A_ECS__MUTED_QUEUE], AEntity*, e) {
-        a_ecs_entity__removeFromSystems(e);
+        a_entity__removeFromSystems(e);
         a_ecs__addEntityToList(e, A_ECS__MUTED_FINAL);
     }
 
@@ -185,7 +185,7 @@ void a_ecs__tick(void)
 void a_ecs__draw(void)
 {
     A_LIST_ITERATE(g_ecs->drawSystems, ASystem*, system) {
-        a_ecs_system__run(system);
+        a_system__run(system);
     }
 }
 
@@ -211,5 +211,5 @@ void a_ecs__moveEntityToList(AEntity* Entity, AEcsListId List)
 
 void a_ecs__queueMessage(AEntity* To, AEntity* From, const char* Message)
 {
-    a_list_addLast(g_ecs->messageQueue, a_ecs_message__new(To, From, Message));
+    a_list_addLast(g_ecs->messageQueue, a_message__new(To, From, Message));
 }

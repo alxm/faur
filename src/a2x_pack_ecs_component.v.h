@@ -36,5 +36,5 @@ typedef struct {
 
 extern AStrHash* a__ecsComponents;
 
-extern void a_ecs_component__init(void);
-extern void a_ecs_component__uninit(void);
+extern void a_component__init(void);
+extern void a_component__uninit(void);

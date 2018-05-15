@@ -30,12 +30,12 @@ static inline AComponentHeader* getHeader(const void* Component)
     return (AComponentHeader*)Component - 1;
 }
 
-void a_ecs_component__init(void)
+void a_component__init(void)
 {
     a__ecsComponents = a_strhash_new();
 }
 
-void a_ecs_component__uninit(void)
+void a_component__uninit(void)
 {
     a_strhash_freeEx(a__ecsComponents, free);
 }
