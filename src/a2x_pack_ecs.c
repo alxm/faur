@@ -27,7 +27,7 @@
 #include "a2x_pack_mem.v.h"
 
 typedef struct {
-    AList* lists[A_ECS__NUM]; // each entity is in at most one list
+    AList* lists[A_ECS__NUM]; // each entity is in exactly one list
     AList* tickSystems; // tick systems in the specified order
     AList* drawSystems; // draw systems in the specified order
     AList* allSystems; // tick & draw systems
@@ -129,9 +129,10 @@ void a_ecs__tick(void)
             }
         }
 
-        A_LIST_REMOVE_CURRENT();
         a_ecs__addEntityToList(e, A_ECS__RUNNING);
     }
+
+    a_list_clear(g_ecs->lists[A_ECS__NEW]);
 
     A_LIST_ITERATE(g_ecs->tickSystems, ASystem*, system) {
         a_ecs_system__run(system);
@@ -142,7 +143,7 @@ void a_ecs__tick(void)
                                                     m->message);
 
         if(!a_entity_isRemoved(m->to) && !a_entity_isRemoved(m->from)) {
-            if(m->to->muted) {
+            if(a_entity_isMuted(m->to)) {
                 // Keep message in queue
                 continue;
             } else {
@@ -155,22 +156,30 @@ void a_ecs__tick(void)
 
     a_list_clear(g_ecs->messageQueue);
 
-    A_LIST_ITERATE(g_ecs->lists[A_ECS__REMOVED], AEntity*, entity) {
-        if(entity->references == 0) {
-            a_ecs_entity__free(entity);
+    A_LIST_ITERATE(g_ecs->lists[A_ECS__REMOVED_FINAL], AEntity*, e) {
+        if(e->references == 0) {
+            a_ecs_entity__free(e);
             A_LIST_REMOVE_CURRENT();
-        } else if(!entity->cleared) {
-            a_ecs_entity__removeFromSystems(entity);
-            entity->cleared = true;
         }
     }
 
-    A_LIST_ITERATE(g_ecs->lists[A_ECS__MUTED], AEntity*, entity) {
-        a_ecs_entity__removeFromSystems(entity);
-
-        A_LIST_REMOVE_CURRENT();
-        a_ecs__addEntityToList(entity, A_ECS__DORMANT);
+    A_LIST_ITERATE(g_ecs->lists[A_ECS__REMOVED_QUEUE], AEntity*, e) {
+        if(e->references == 0) {
+            a_ecs_entity__free(e);
+        } else {
+            a_ecs_entity__removeFromSystems(e);
+            a_ecs__addEntityToList(e, A_ECS__REMOVED_FINAL);
+        }
     }
+
+    a_list_clear(g_ecs->lists[A_ECS__REMOVED_QUEUE]);
+
+    A_LIST_ITERATE(g_ecs->lists[A_ECS__MUTED_QUEUE], AEntity*, e) {
+        a_ecs_entity__removeFromSystems(e);
+        a_ecs__addEntityToList(e, A_ECS__MUTED_FINAL);
+    }
+
+    a_list_clear(g_ecs->lists[A_ECS__MUTED_QUEUE]);
 }
 
 void a_ecs__draw(void)
@@ -182,10 +191,6 @@ void a_ecs__draw(void)
 
 bool a_ecs__isEntityInList(const AEntity* Entity, AEcsListId List)
 {
-    if(Entity->node == NULL) {
-        return false;
-    }
-
     return a_list__nodeGetList(Entity->node) == g_ecs->lists[List];
 }
 
@@ -196,14 +201,11 @@ void a_ecs__addEntityToList(AEntity* Entity, AEcsListId List)
 
 void a_ecs__moveEntityToList(AEntity* Entity, AEcsListId List)
 {
-    if(Entity->node != NULL) {
-        if(a_list__nodeGetList(Entity->node) == g_ecs->lists[List]) {
-            return;
-        }
-
-        a_list_removeNode(Entity->node);
+    if(a_list__nodeGetList(Entity->node) == g_ecs->lists[List]) {
+        return;
     }
 
+    a_list_removeNode(Entity->node);
     Entity->node = a_list_addLast(g_ecs->lists[List], Entity);
 }
 

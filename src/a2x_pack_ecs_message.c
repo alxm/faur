@@ -74,7 +74,9 @@ void a_message_send(AEntity* To, AEntity* From, const char* Message)
     }
 
     if(h->handleImmediately) {
-        if(!a_entity_isRemoved(To) && !a_entity_isRemoved(From) && !To->muted) {
+        if(!a_entity_isRemoved(To) && !a_entity_isRemoved(From)
+            && !a_entity_isMuted(To)) {
+
             h->handler(To, From);
         }
     } else {

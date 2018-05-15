@@ -1,5 +1,5 @@
 /*
-    Copyright 2016 Alex Margarit
+    Copyright 2016, 2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -29,7 +29,7 @@ struct AEntity {
     char* id; // specified name for debugging
     void* context; // global context
     AEntity* parent; // manually associated parent entity
-    AListNode* node; // list node in one of new, running, or removed
+    AListNode* node; // list node in one of AEcsListId
     AList* systemNodes; // list of nodes in ASystem.entities lists
     AList* sleepingInSystems; // list of ASystem that entity is asleep in
     AStrHash* components; // table of AComponentHeader
@@ -37,10 +37,7 @@ struct AEntity {
     AStrHash* handlers; // table of AMessageHandlerContainer
     unsigned lastActive; // frame when a_entity_markActive was last called
     unsigned references; // if >0, then the entity lingers in the removed list
-    bool muted; // systems don't run on this entity if this is set
-    bool cleared; // set after entity was removed from all systems it was in
 };
 
 extern void a_ecs_entity__free(AEntity* Entity);
-
 extern void a_ecs_entity__removeFromSystems(AEntity* Entity);

@@ -48,8 +48,6 @@ AEntity* a_entity_new(const char* Id, void* Context)
     e->handlers = a_strhash_new();
     e->lastActive = a_fps_getCounter() - 1;
     e->references = 0;
-    e->muted = false;
-    e->cleared = false;
 
     a_ecs__addEntityToList(e, A_ECS__NEW);
 
@@ -129,12 +127,13 @@ void a_entity_release(AEntity* Entity)
 
 void a_entity_remove(AEntity* Entity)
 {
-    a_ecs__moveEntityToList(Entity, A_ECS__REMOVED);
+    a_ecs__moveEntityToList(Entity, A_ECS__REMOVED_QUEUE);
 }
 
 bool a_entity_isRemoved(const AEntity* Entity)
 {
-    return a_ecs__isEntityInList(Entity, A_ECS__REMOVED);
+    return a_ecs__isEntityInList(Entity, A_ECS__REMOVED_QUEUE)
+        || a_ecs__isEntityInList(Entity, A_ECS__REMOVED_FINAL);
 }
 
 void a_entity_markActive(AEntity* Entity)
@@ -240,44 +239,39 @@ void* a_entity_reqComponent(const AEntity* Entity, const char* Component)
 
 void a_entity_mute(AEntity* Entity)
 {
-    if(Entity->muted) {
+    if(a_entity_isMuted(Entity)) {
         a_out__warningv("Entity '%s' is already muted", a_entity_getId(Entity));
         return;
     }
 
-    Entity->muted = true;
-
-    a_ecs__moveEntityToList(Entity, A_ECS__MUTED);
+    a_ecs__moveEntityToList(Entity, A_ECS__MUTED_QUEUE);
 }
 
 void a_entity_unmute(AEntity* Entity)
 {
-    if(!Entity->muted) {
+    if(!a_entity_isMuted(Entity)) {
         a_out__warningv("Entity '%s' is not muted", a_entity_getId(Entity));
         return;
     }
 
-    Entity->muted = false;
+    if(a_ecs__isEntityInList(Entity, A_ECS__MUTED_QUEUE)
+        && (!a_list_isEmpty(Entity->systemNodes)
+            || !a_list_isEmpty(Entity->sleepingInSystems))) {
 
-    if(a_ecs__isEntityInList(Entity, A_ECS__MUTED)) {
-        if(a_list_isEmpty(Entity->systemNodes)
-            && a_list_isEmpty(Entity->sleepingInSystems)) {
-
-            // Entity was muted before ever being assigned to systems
-            a_ecs__moveEntityToList(Entity, A_ECS__NEW);
-        } else {
-            // Entity was muted and unmuted in the same frame, move back
-            a_ecs__moveEntityToList(Entity, A_ECS__RUNNING);
-        }
+        // Muted and unmuted in the same frame, was already in systems
+        // and did not have a chance to be removed from them
+        a_ecs__moveEntityToList(Entity, A_ECS__RUNNING);
     } else {
-        // Entity was unmuted after it was removed from all systems
+        // Muted and unmuted in different frames,
+        // or was not put in any systems yet
         a_ecs__moveEntityToList(Entity, A_ECS__NEW);
     }
 }
 
 bool a_entity_isMuted(const AEntity* Entity)
 {
-    return Entity->muted;
+    return a_ecs__isEntityInList(Entity, A_ECS__MUTED_QUEUE)
+        || a_ecs__isEntityInList(Entity, A_ECS__MUTED_FINAL);
 }
 
 void a_ecs_entity__removeFromSystems(AEntity* Entity)

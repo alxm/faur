@@ -23,11 +23,12 @@
 
 typedef enum {
     A_ECS__INVALID = -1,
-    A_ECS__NEW, // new entities are added to this list
-    A_ECS__RUNNING, // entities in this list are picked up by systems
-    A_ECS__REMOVED, // removed entities with outstanding references
-    A_ECS__MUTED, // recently muted entities
-    A_ECS__DORMANT, // not picked up by any systems
+    A_ECS__NEW, // new entities that aren't in any systems yet
+    A_ECS__RUNNING, // initialized, running entities
+    A_ECS__REMOVED_QUEUE, // entities marked for removal
+    A_ECS__REMOVED_FINAL, // removed entities with outstanding references
+    A_ECS__MUTED_QUEUE, // just-muted entities
+    A_ECS__MUTED_FINAL, // muted entities removed from all systems
     A_ECS__NUM
 } AEcsListId;
 
