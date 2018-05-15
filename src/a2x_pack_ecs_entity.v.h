@@ -30,6 +30,8 @@ struct AEntity {
     void* context; // global context
     AEntity* parent; // manually associated parent entity
     AListNode* node; // list node in one of AEcsListId
+    AList* matchingSystemsActive; // list of ASystem
+    AList* matchingSystemsEither; // list of ASystem
     AList* systemNodes; // list of nodes in ASystem.entities lists
     AList* sleepingInSystems; // list of ASystem that entity is asleep in
     AStrHash* components; // table of AComponentHeader

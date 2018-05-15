@@ -122,10 +122,34 @@ bool a_ecs__isDeleting(void)
 void a_ecs__tick(void)
 {
     A_LIST_ITERATE(g_ecs->lists[A_ECS__NEW], AEntity*, e) {
-        // Check if the entity matches any systems
-        A_LIST_ITERATE(g_ecs->allSystems, ASystem*, s) {
-            if(a_bitfield_testMask(e->componentBits, s->componentBits)) {
-                a_list_addLast(e->systemNodes, a_list_addLast(s->entities, e));
+        if(a_list_isEmpty(e->matchingSystemsActive)
+            && a_list_isEmpty(e->matchingSystemsEither)) {
+
+            // Check if the entity matches any systems
+            A_LIST_ITERATE(g_ecs->allSystems, ASystem*, s) {
+                if(a_bitfield_testMask(e->componentBits, s->componentBits)) {
+                    a_list_addLast(e->systemNodes,
+                                   a_list_addLast(s->entities, e));
+
+                    if(s->onlyActiveEntities) {
+                        a_list_addLast(e->matchingSystemsActive, s);
+                    } else {
+                        a_list_addLast(e->matchingSystemsEither, s);
+                    }
+                }
+            }
+        } else if(a_list_isEmpty(e->systemNodes)) {
+            // Add entity back to systems it was in before it was muted
+            if(a_list_isEmpty(e->sleepingInSystems)) {
+                A_LIST_ITERATE(e->matchingSystemsActive, ASystem*, system) {
+                    a_list_addLast(e->systemNodes,
+                                   a_list_addLast(system->entities, e));
+                }
+            }
+
+            A_LIST_ITERATE(e->matchingSystemsEither, ASystem*, system) {
+                a_list_addLast(e->systemNodes,
+                               a_list_addLast(system->entities, e));
             }
         }
 

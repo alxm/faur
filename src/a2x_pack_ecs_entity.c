@@ -41,6 +41,8 @@ AEntity* a_entity_new(const char* Id, void* Context)
     e->context = Context;
     e->parent = NULL;
     e->node = NULL;
+    e->matchingSystemsActive = a_list_new();
+    e->matchingSystemsEither = a_list_new();
     e->systemNodes = a_list_new();
     e->sleepingInSystems = a_list_new();
     e->components = a_strhash_new();
@@ -56,6 +58,8 @@ AEntity* a_entity_new(const char* Id, void* Context)
 
 void a_entity__free(AEntity* Entity)
 {
+    a_list_free(Entity->matchingSystemsActive);
+    a_list_free(Entity->matchingSystemsEither);
     a_list_freeEx(Entity->systemNodes, (AFree*)a_list_removeNode);
     a_list_free(Entity->sleepingInSystems);
 
@@ -254,18 +258,7 @@ void a_entity_unmute(AEntity* Entity)
         return;
     }
 
-    if(a_ecs__isEntityInList(Entity, A_ECS__MUTED_QUEUE)
-        && (!a_list_isEmpty(Entity->systemNodes)
-            || !a_list_isEmpty(Entity->sleepingInSystems))) {
-
-        // Muted and unmuted in the same frame, was already in systems
-        // and did not have a chance to be removed from them
-        a_ecs__moveEntityToList(Entity, A_ECS__RUNNING);
-    } else {
-        // Muted and unmuted in different frames,
-        // or was not put in any systems yet
-        a_ecs__moveEntityToList(Entity, A_ECS__NEW);
-    }
+    a_ecs__moveEntityToList(Entity, A_ECS__NEW);
 }
 
 bool a_entity_isMuted(const AEntity* Entity)
