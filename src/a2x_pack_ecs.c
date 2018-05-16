@@ -128,28 +128,31 @@ void a_ecs__tick(void)
             // Check if the entity matches any systems
             A_LIST_ITERATE(g_ecs->allSystems, ASystem*, s) {
                 if(a_bitfield_testMask(e->componentBits, s->componentBits)) {
-                    a_list_addLast(e->systemNodes,
-                                   a_list_addLast(s->entities, e));
-
                     if(s->onlyActiveEntities) {
                         a_list_addLast(e->matchingSystemsActive, s);
+                        a_list_addLast(e->systemNodesActive,
+                                       a_list_addLast(s->entities, e));
                     } else {
                         a_list_addLast(e->matchingSystemsEither, s);
+                        a_list_addLast(e->systemNodesEither,
+                                       a_list_addLast(s->entities, e));
                     }
                 }
             }
-        } else if(a_list_isEmpty(e->systemNodes)) {
+        } else {
             // Add entity back to systems it was in before it was muted
-            if(a_list_isEmpty(e->sleepingInSystems)) {
+            if(a_list_isEmpty(e->systemNodesActive) && !e->removedFromActive) {
                 A_LIST_ITERATE(e->matchingSystemsActive, ASystem*, system) {
-                    a_list_addLast(e->systemNodes,
+                    a_list_addLast(e->systemNodesActive,
                                    a_list_addLast(system->entities, e));
                 }
             }
 
-            A_LIST_ITERATE(e->matchingSystemsEither, ASystem*, system) {
-                a_list_addLast(e->systemNodes,
-                               a_list_addLast(system->entities, e));
+            if(a_list_isEmpty(e->systemNodesEither)) {
+                A_LIST_ITERATE(e->matchingSystemsEither, ASystem*, system) {
+                    a_list_addLast(e->systemNodesEither,
+                                   a_list_addLast(system->entities, e));
+                }
             }
         }
 
@@ -191,7 +194,7 @@ void a_ecs__tick(void)
         if(e->references == 0) {
             a_entity__free(e);
         } else {
-            a_entity__removeFromSystems(e);
+            a_entity__removeFromAllSystems(e);
             a_ecs__addEntityToList(e, A_ECS__REMOVED_FINAL);
         }
     }
@@ -199,7 +202,7 @@ void a_ecs__tick(void)
     a_list_clear(g_ecs->lists[A_ECS__REMOVED_QUEUE]);
 
     A_LIST_ITERATE(g_ecs->lists[A_ECS__MUTED_QUEUE], AEntity*, e) {
-        a_entity__removeFromSystems(e);
+        a_entity__removeFromAllSystems(e);
         a_ecs__addEntityToList(e, A_ECS__MUTED_FINAL);
     }
 

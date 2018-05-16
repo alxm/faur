@@ -22,6 +22,7 @@
 #include "a2x_pack_ecs_entity.p.h"
 
 #include "a2x_pack_bitfield.v.h"
+#include "a2x_pack_ecs_system.v.h"
 #include "a2x_pack_list.v.h"
 #include "a2x_pack_strhash.v.h"
 
@@ -32,14 +33,16 @@ struct AEntity {
     AListNode* node; // list node in one of AEcsListId
     AList* matchingSystemsActive; // list of ASystem
     AList* matchingSystemsEither; // list of ASystem
-    AList* systemNodes; // list of nodes in ASystem.entities lists
-    AList* sleepingInSystems; // list of ASystem that entity is asleep in
+    AList* systemNodesActive; // list of nodes in active-only ASystem lists
+    AList* systemNodesEither; // list of nodes in normal ASystem.entities lists
     AStrHash* components; // table of AComponentHeader
     ABitfield* componentBits;
     AStrHash* handlers; // table of AMessageHandlerContainer
     unsigned lastActive; // frame when a_entity_markActive was last called
     unsigned references; // if >0, then the entity lingers in the removed list
+    bool removedFromActive; // set when an active-only system kicks entity out
 };
 
 extern void a_entity__free(AEntity* Entity);
-extern void a_entity__removeFromSystems(AEntity* Entity);
+extern void a_entity__removeFromAllSystems(AEntity* Entity);
+extern void a_entity__removeFromActiveSystems(AEntity* Entity, ASystem* Detector);

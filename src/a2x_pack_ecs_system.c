@@ -94,15 +94,8 @@ void a_system__run(ASystem* System)
             if(a_entity_isActive(entity)) {
                 System->handler(entity);
             } else {
-                A_LIST_ITERATE(entity->systemNodes, AListNode*, node) {
-                    if(a_list__nodeGetList(node) == System->entities) {
-                        A_LIST_REMOVE_CURRENT();
-                        break;
-                    }
-                }
-
+                a_entity__removeFromActiveSystems(entity, System);
                 A_LIST_REMOVE_CURRENT();
-                a_list_addLast(entity->sleepingInSystems, System);
             }
         }
     } else {

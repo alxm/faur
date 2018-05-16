@@ -22,7 +22,6 @@
 
 #include "a2x_pack_ecs.v.h"
 #include "a2x_pack_ecs_component.v.h"
-#include "a2x_pack_ecs_system.v.h"
 #include "a2x_pack_fps.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
@@ -43,13 +42,14 @@ AEntity* a_entity_new(const char* Id, void* Context)
     e->node = NULL;
     e->matchingSystemsActive = a_list_new();
     e->matchingSystemsEither = a_list_new();
-    e->systemNodes = a_list_new();
-    e->sleepingInSystems = a_list_new();
+    e->systemNodesActive = a_list_new();
+    e->systemNodesEither = a_list_new();
     e->components = a_strhash_new();
     e->componentBits = a_bitfield_new(a_strhash_getSize(a__ecsComponents));
     e->handlers = a_strhash_new();
     e->lastActive = a_fps_getCounter() - 1;
     e->references = 0;
+    e->removedFromActive = false;
 
     a_ecs__addEntityToList(e, A_ECS__NEW);
 
@@ -60,8 +60,8 @@ void a_entity__free(AEntity* Entity)
 {
     a_list_free(Entity->matchingSystemsActive);
     a_list_free(Entity->matchingSystemsEither);
-    a_list_freeEx(Entity->systemNodes, (AFree*)a_list_removeNode);
-    a_list_free(Entity->sleepingInSystems);
+    a_list_freeEx(Entity->systemNodesActive, (AFree*)a_list_removeNode);
+    a_list_freeEx(Entity->systemNodesEither, (AFree*)a_list_removeNode);
 
     A_STRHASH_ITERATE(Entity->components, AComponentHeader*, header) {
         if(header->component->free) {
@@ -149,13 +149,14 @@ void a_entity_markActive(AEntity* Entity)
 {
     Entity->lastActive = a_fps_getCounter();
 
-    if(!a_list_isEmpty(Entity->sleepingInSystems)) {
-        A_LIST_ITERATE(Entity->sleepingInSystems, ASystem*, system) {
-            a_list_addLast(Entity->systemNodes,
+    if(Entity->removedFromActive) {
+        Entity->removedFromActive = false;
+
+        // Add entity back to active-only systems
+        A_LIST_ITERATE(Entity->matchingSystemsActive, ASystem*, system) {
+            a_list_addLast(Entity->systemNodesActive,
                            a_list_addLast(system->entities, Entity));
         }
-
-        a_list_clear(Entity->sleepingInSystems);
     }
 }
 
@@ -277,8 +278,21 @@ bool a_entity_isMuted(const AEntity* Entity)
         || a_ecs__isEntityInList(Entity, A_ECS__MUTED_FINAL);
 }
 
-void a_entity__removeFromSystems(AEntity* Entity)
+void a_entity__removeFromAllSystems(AEntity* Entity)
 {
-    a_list_clearEx(Entity->systemNodes, (AFree*)a_list_removeNode);
-    a_list_clear(Entity->sleepingInSystems);
+    a_list_clearEx(Entity->systemNodesActive, (AFree*)a_list_removeNode);
+    a_list_clearEx(Entity->systemNodesEither, (AFree*)a_list_removeNode);
+}
+
+void a_entity__removeFromActiveSystems(AEntity* Entity, ASystem* Detector)
+{
+    Entity->removedFromActive = true;
+
+    A_LIST_ITERATE(Entity->systemNodesActive, AListNode*, n) {
+        if(a_list__nodeGetList(n) != Detector->entities) {
+            a_list_removeNode(n);
+        }
+    }
+
+    a_list_clear(Entity->systemNodesActive);
 }
