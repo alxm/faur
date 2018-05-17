@@ -289,15 +289,7 @@ void a_entity__removeFromAllSystems(AEntity* Entity)
     a_list_clearEx(Entity->systemNodesEither, (AFree*)a_list_removeNode);
 }
 
-void a_entity__removeFromActiveSystems(AEntity* Entity, ASystem* Detector)
+void a_entity__removeFromActiveSystems(AEntity* Entity)
 {
-    Entity->removedFromActive = true;
-
-    A_LIST_ITERATE(Entity->systemNodesActive, AListNode*, n) {
-        if(a_list__nodeGetList(n) != Detector->entities) {
-            a_list_removeNode(n);
-        }
-    }
-
-    a_list_clear(Entity->systemNodesActive);
+    a_list_clearEx(Entity->systemNodesActive, (AFree*)a_list_removeNode);
 }
