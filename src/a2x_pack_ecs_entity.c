@@ -282,12 +282,16 @@ void a_entity_unmute(AEntity* Entity)
         return;
     }
 
-    if(a_ecs__isEntityInList(Entity, A_ECS__MUTED_QUEUE)
-        && a_entity__isMatchedToSystems(Entity)) {
-
-        // Entity was muted and unmuted before it was removed from systems
-        a_ecs__moveEntityToList(Entity, A_ECS__RUNNING);
+    if(a_entity__isMatchedToSystems(Entity)) {
+        if(a_ecs__isEntityInList(Entity, A_ECS__MUTED_QUEUE)) {
+            // Entity was muted and unmuted before it was removed from systems
+            a_ecs__moveEntityToList(Entity, A_ECS__RUNNING);
+        } else {
+            // To be added back to matched systems
+            a_ecs__moveEntityToList(Entity, A_ECS__RESTORE);
+        }
     } else {
+        // Entity has not been matched to systems yet, treat it as new
         a_ecs__moveEntityToList(Entity, A_ECS__NEW);
     }
 }

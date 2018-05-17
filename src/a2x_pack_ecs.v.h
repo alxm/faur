@@ -24,6 +24,7 @@
 typedef enum {
     A_ECS__INVALID = -1,
     A_ECS__NEW, // new entities that aren't in any systems yet
+    A_ECS__RESTORE, // entities that will be added to systems
     A_ECS__RUNNING, // initialized, running entities
     A_ECS__REMOVED_QUEUE, // entities marked for removal, still in systems
     A_ECS__REMOVED_LIMBO, // removed from systems, with outstanding references

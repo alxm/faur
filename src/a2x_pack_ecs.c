@@ -124,48 +124,50 @@ void a_ecs__tick(void)
     a_ecs__flushEntitiesFromSystems();
     a_list_clearEx(g_ecs->lists[A_ECS__REMOVED_FREE], (AFree*)a_entity__free);
 
+    // Check what systems the new entities match
     A_LIST_ITERATE(g_ecs->lists[A_ECS__NEW], AEntity*, e) {
-        if(!a_entity__isMatchedToSystems(e)) {
-            // Check if the entity matches any systems
-            A_LIST_ITERATE(g_ecs->allSystems, ASystem*, s) {
-                if(a_bitfield_testMask(e->componentBits, s->componentBits)) {
-                    if(s->onlyActiveEntities) {
-                        a_list_addLast(e->matchingSystemsActive, s);
-                        a_list_addLast(e->systemNodesActive,
-                                       a_list_addLast(s->entities, e));
-                    } else {
-                        a_list_addLast(e->matchingSystemsEither, s);
-                        a_list_addLast(e->systemNodesEither,
-                                       a_list_addLast(s->entities, e));
-                    }
+        A_LIST_ITERATE(g_ecs->allSystems, ASystem*, s) {
+            if(a_bitfield_testMask(e->componentBits, s->componentBits)) {
+                if(s->onlyActiveEntities) {
+                    a_list_addLast(e->matchingSystemsActive, s);
+                } else {
+                    a_list_addLast(e->matchingSystemsEither, s);
                 }
             }
-        } else {
-            // Add entity back to systems it was in before it was muted
-            if(a_list_isEmpty(e->systemNodesActive) && !e->removedFromActive) {
-                A_LIST_ITERATE(e->matchingSystemsActive, ASystem*, system) {
-                    a_list_addLast(e->systemNodesActive,
-                                   a_list_addLast(system->entities, e));
-                }
-            }
+        }
 
-            if(a_list_isEmpty(e->systemNodesEither)) {
-                A_LIST_ITERATE(e->matchingSystemsEither, ASystem*, system) {
-                    a_list_addLast(e->systemNodesEither,
-                                   a_list_addLast(system->entities, e));
-                }
+        a_ecs__addEntityToList(e, A_ECS__RESTORE);
+    }
+
+    a_list_clear(g_ecs->lists[A_ECS__NEW]);
+
+    // Add entities to the systems they match
+    A_LIST_ITERATE(g_ecs->lists[A_ECS__RESTORE], AEntity*, e) {
+        if(a_list_isEmpty(e->systemNodesActive) && !e->removedFromActive) {
+            A_LIST_ITERATE(e->matchingSystemsActive, ASystem*, system) {
+                a_list_addLast(e->systemNodesActive,
+                               a_list_addLast(system->entities, e));
+            }
+        }
+
+        if(a_list_isEmpty(e->systemNodesEither)) {
+            A_LIST_ITERATE(e->matchingSystemsEither, ASystem*, system) {
+                a_list_addLast(e->systemNodesEither,
+                               a_list_addLast(system->entities, e));
             }
         }
 
         a_ecs__addEntityToList(e, A_ECS__RUNNING);
     }
 
-    a_list_clear(g_ecs->lists[A_ECS__NEW]);
+    a_list_clear(g_ecs->lists[A_ECS__RESTORE]);
 
+    // Run tick systems
     A_LIST_ITERATE(g_ecs->tickSystems, ASystem*, system) {
         a_system__run(system);
     }
 
+    // Send non-immediate messages
     A_LIST_ITERATE(g_ecs->messageQueue, AMessage*, m) {
         AMessageHandlerContainer* h = a_strhash_get(m->to->handlers,
                                                     m->message);
