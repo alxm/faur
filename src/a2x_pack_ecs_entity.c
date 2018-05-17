@@ -297,5 +297,6 @@ void a_entity__removeFromAllSystems(AEntity* Entity)
 
 void a_entity__removeFromActiveSystems(AEntity* Entity)
 {
+    Entity->removedFromActive = true;
     a_list_clearEx(Entity->systemNodesActive, (AFree*)a_list_removeNode);
 }

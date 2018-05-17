@@ -49,5 +49,6 @@ extern bool a_ecs__isDeleting(void);
 extern bool a_ecs__isEntityInList(const AEntity* Entity, AEcsListId List);
 extern void a_ecs__addEntityToList(AEntity* Entity, AEcsListId List);
 extern void a_ecs__moveEntityToList(AEntity* Entity, AEcsListId List);
+extern void a_ecs__flushEntitiesFromSystems(void);
 
 extern void a_ecs__queueMessage(AEntity* To, AEntity* From, const char* Message);

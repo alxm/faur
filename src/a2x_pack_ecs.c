@@ -121,25 +121,8 @@ bool a_ecs__isDeleting(void)
 
 void a_ecs__tick(void)
 {
+    a_ecs__flushEntitiesFromSystems();
     a_list_clearEx(g_ecs->lists[A_ECS__REMOVED_FREE], (AFree*)a_entity__free);
-
-    A_LIST_ITERATE(g_ecs->lists[A_ECS__REMOVED_QUEUE], AEntity*, e) {
-        if(e->references == 0) {
-            a_entity__free(e);
-        } else {
-            a_entity__removeFromAllSystems(e);
-            a_ecs__addEntityToList(e, A_ECS__REMOVED_LIMBO);
-        }
-    }
-
-    a_list_clear(g_ecs->lists[A_ECS__REMOVED_QUEUE]);
-
-    A_LIST_ITERATE(g_ecs->lists[A_ECS__MUTED_QUEUE], AEntity*, e) {
-        a_entity__removeFromAllSystems(e);
-        a_ecs__addEntityToList(e, A_ECS__MUTED_LIMBO);
-    }
-
-    a_list_clear(g_ecs->lists[A_ECS__MUTED_QUEUE]);
 
     A_LIST_ITERATE(g_ecs->lists[A_ECS__NEW], AEntity*, e) {
         if(a_list_isEmpty(e->matchingSystemsActive)
@@ -229,6 +212,27 @@ void a_ecs__moveEntityToList(AEntity* Entity, AEcsListId List)
 
     a_list_removeNode(Entity->node);
     Entity->node = a_list_addLast(g_ecs->lists[List], Entity);
+}
+
+void a_ecs__flushEntitiesFromSystems(void)
+{
+    A_LIST_ITERATE(g_ecs->lists[A_ECS__MUTED_QUEUE], AEntity*, e) {
+        a_entity__removeFromAllSystems(e);
+        a_ecs__addEntityToList(e, A_ECS__MUTED_LIMBO);
+    }
+
+    A_LIST_ITERATE(g_ecs->lists[A_ECS__REMOVED_QUEUE], AEntity*, e) {
+        a_entity__removeFromAllSystems(e);
+
+        if(e->references == 0) {
+            a_ecs__addEntityToList(e, A_ECS__REMOVED_FREE);
+        } else {
+            a_ecs__addEntityToList(e, A_ECS__REMOVED_LIMBO);
+        }
+    }
+
+    a_list_clear(g_ecs->lists[A_ECS__MUTED_QUEUE]);
+    a_list_clear(g_ecs->lists[A_ECS__REMOVED_QUEUE]);
 }
 
 void a_ecs__queueMessage(AEntity* To, AEntity* From, const char* Message)

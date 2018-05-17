@@ -20,6 +20,7 @@
 #include "a2x_system_includes.h"
 #include "a2x_pack_ecs_system.v.h"
 
+#include "a2x_pack_ecs.v.h"
 #include "a2x_pack_ecs_component.v.h"
 #include "a2x_pack_ecs_entity.v.h"
 #include "a2x_pack_mem.v.h"
@@ -28,13 +29,11 @@
 #include "a2x_pack_strhash.v.h"
 
 static AStrHash* g_systems; // table of declared ASystem
-static AList* g_removed; // list of AEntity marked for removal
 static AList* g_inactive; // list of AEntity detected as inactive
 
 void a_system__init(void)
 {
     g_systems = a_strhash_new();
-    g_removed = a_list_new();
     g_inactive = a_list_new();
 }
 
@@ -47,7 +46,6 @@ void a_system__uninit(void)
     }
 
     a_strhash_free(g_systems);
-    a_list_free(g_removed);
     a_list_free(g_inactive);
 }
 
@@ -99,10 +97,6 @@ void a_system__run(ASystem* System)
         A_LIST_ITERATE(System->entities, AEntity*, entity) {
             if(a_entity_isActive(entity)) {
                 System->handler(entity);
-
-                if(a_entity_isRemoved(entity)) {
-                    a_list_addLast(g_removed, entity);
-                }
             } else {
                 a_list_addLast(g_inactive, entity);
             }
@@ -112,14 +106,10 @@ void a_system__run(ASystem* System)
     } else {
         A_LIST_ITERATE(System->entities, AEntity*, entity) {
             System->handler(entity);
-
-            if(a_entity_isRemoved(entity)) {
-                a_list_addLast(g_removed, entity);
-            }
         }
     }
 
-    a_list_clearEx(g_removed, (AFree*)a_entity__removeFromAllSystems);
+    a_ecs__flushEntitiesFromSystems();
 }
 
 void a_system_execute(const char* Systems)
