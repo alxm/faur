@@ -121,6 +121,26 @@ bool a_ecs__isDeleting(void)
 
 void a_ecs__tick(void)
 {
+    a_list_clearEx(g_ecs->lists[A_ECS__REMOVED_FREE], (AFree*)a_entity__free);
+
+    A_LIST_ITERATE(g_ecs->lists[A_ECS__REMOVED_QUEUE], AEntity*, e) {
+        if(e->references == 0) {
+            a_entity__free(e);
+        } else {
+            a_entity__removeFromAllSystems(e);
+            a_ecs__addEntityToList(e, A_ECS__REMOVED_LIMBO);
+        }
+    }
+
+    a_list_clear(g_ecs->lists[A_ECS__REMOVED_QUEUE]);
+
+    A_LIST_ITERATE(g_ecs->lists[A_ECS__MUTED_QUEUE], AEntity*, e) {
+        a_entity__removeFromAllSystems(e);
+        a_ecs__addEntityToList(e, A_ECS__MUTED_LIMBO);
+    }
+
+    a_list_clear(g_ecs->lists[A_ECS__MUTED_QUEUE]);
+
     A_LIST_ITERATE(g_ecs->lists[A_ECS__NEW], AEntity*, e) {
         if(a_list_isEmpty(e->matchingSystemsActive)
             && a_list_isEmpty(e->matchingSystemsEither)) {
@@ -182,26 +202,6 @@ void a_ecs__tick(void)
     }
 
     a_list_clear(g_ecs->messageQueue);
-
-    a_list_clearEx(g_ecs->lists[A_ECS__REMOVED_FREE], (AFree*)a_entity__free);
-
-    A_LIST_ITERATE(g_ecs->lists[A_ECS__REMOVED_QUEUE], AEntity*, e) {
-        if(e->references == 0) {
-            a_entity__free(e);
-        } else {
-            a_entity__removeFromAllSystems(e);
-            a_ecs__addEntityToList(e, A_ECS__REMOVED_LIMBO);
-        }
-    }
-
-    a_list_clear(g_ecs->lists[A_ECS__REMOVED_QUEUE]);
-
-    A_LIST_ITERATE(g_ecs->lists[A_ECS__MUTED_QUEUE], AEntity*, e) {
-        a_entity__removeFromAllSystems(e);
-        a_ecs__addEntityToList(e, A_ECS__MUTED_LIMBO);
-    }
-
-    a_list_clear(g_ecs->lists[A_ECS__MUTED_QUEUE]);
 }
 
 void a_ecs__draw(void)
