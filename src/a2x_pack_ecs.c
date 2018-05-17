@@ -183,12 +183,7 @@ void a_ecs__tick(void)
 
     a_list_clear(g_ecs->messageQueue);
 
-    A_LIST_ITERATE(g_ecs->lists[A_ECS__REMOVED_LIMBO], AEntity*, e) {
-        if(e->references == 0) {
-            a_entity__free(e);
-            A_LIST_REMOVE_CURRENT();
-        }
-    }
+    a_list_clearEx(g_ecs->lists[A_ECS__REMOVED_FREE], (AFree*)a_entity__free);
 
     A_LIST_ITERATE(g_ecs->lists[A_ECS__REMOVED_QUEUE], AEntity*, e) {
         if(e->references == 0) {

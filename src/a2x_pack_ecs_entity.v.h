@@ -39,7 +39,7 @@ struct AEntity {
     ABitfield* componentBits;
     AStrHash* handlers; // table of AMessageHandlerContainer
     unsigned lastActive; // frame when a_entity_markActive was last called
-    unsigned references; // if >0, then the entity lingers in the removed list
+    int references; // if >0, then the entity lingers in the removed limbo list
     bool removedFromActive; // set when an active-only system kicks entity out
 };
 
