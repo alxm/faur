@@ -183,7 +183,7 @@ void a_ecs__tick(void)
 
     a_list_clear(g_ecs->messageQueue);
 
-    A_LIST_ITERATE(g_ecs->lists[A_ECS__REMOVED_FINAL], AEntity*, e) {
+    A_LIST_ITERATE(g_ecs->lists[A_ECS__REMOVED_LIMBO], AEntity*, e) {
         if(e->references == 0) {
             a_entity__free(e);
             A_LIST_REMOVE_CURRENT();
@@ -195,7 +195,7 @@ void a_ecs__tick(void)
             a_entity__free(e);
         } else {
             a_entity__removeFromAllSystems(e);
-            a_ecs__addEntityToList(e, A_ECS__REMOVED_FINAL);
+            a_ecs__addEntityToList(e, A_ECS__REMOVED_LIMBO);
         }
     }
 
@@ -203,7 +203,7 @@ void a_ecs__tick(void)
 
     A_LIST_ITERATE(g_ecs->lists[A_ECS__MUTED_QUEUE], AEntity*, e) {
         a_entity__removeFromAllSystems(e);
-        a_ecs__addEntityToList(e, A_ECS__MUTED_FINAL);
+        a_ecs__addEntityToList(e, A_ECS__MUTED_LIMBO);
     }
 
     a_list_clear(g_ecs->lists[A_ECS__MUTED_QUEUE]);

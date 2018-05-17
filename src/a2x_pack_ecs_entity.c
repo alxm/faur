@@ -142,7 +142,7 @@ void a_entity_remove(AEntity* Entity)
 bool a_entity_isRemoved(const AEntity* Entity)
 {
     return a_ecs__isEntityInList(Entity, A_ECS__REMOVED_QUEUE)
-        || a_ecs__isEntityInList(Entity, A_ECS__REMOVED_FINAL);
+        || a_ecs__isEntityInList(Entity, A_ECS__REMOVED_LIMBO);
 }
 
 void a_entity_markActive(AEntity* Entity)
@@ -275,7 +275,7 @@ void a_entity_unmute(AEntity* Entity)
 bool a_entity_isMuted(const AEntity* Entity)
 {
     return a_ecs__isEntityInList(Entity, A_ECS__MUTED_QUEUE)
-        || a_ecs__isEntityInList(Entity, A_ECS__MUTED_FINAL);
+        || a_ecs__isEntityInList(Entity, A_ECS__MUTED_LIMBO);
 }
 
 void a_entity__removeFromAllSystems(AEntity* Entity)
