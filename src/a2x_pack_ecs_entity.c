@@ -112,6 +112,12 @@ void a_entity_setParent(AEntity* Entity, AEntity* Parent)
 
 void a_entity_reference(AEntity* Entity)
 {
+    if(a_entity_isRemoved(Entity)) {
+        a_out__warningv("Entity '%s' is removed, ignoring reference",
+                        a_entity_getId(Entity));
+        return;
+    }
+
     Entity->references++;
 }
 
