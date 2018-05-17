@@ -134,8 +134,10 @@ void a_entity_release(AEntity* Entity)
     if(Entity->references < 0) {
         a_out__fatal("Release count exceeds reference count for '%s'",
                      a_entity_getId(Entity));
-    } else if(Entity->references == 0 && a_entity_isRemoved(Entity)) {
-        a_ecs__moveEntityToList(Entity, A_ECS__REMOVED_FREE);
+    } else if(Entity->references == 0
+        && a_ecs__isEntityInList(Entity, A_ECS__REMOVED_LIMBO)) {
+
+        a_ecs__moveEntityToList(Entity, A_ECS__REMOVED_QUEUE);
     }
 }
 
