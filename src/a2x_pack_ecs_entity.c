@@ -280,7 +280,14 @@ void a_entity_unmute(AEntity* Entity)
         return;
     }
 
-    a_ecs__moveEntityToList(Entity, A_ECS__NEW);
+    if(a_ecs__isEntityInList(Entity, A_ECS__MUTED_QUEUE)
+        && a_entity__isMatchedToSystems(Entity)) {
+
+        // Entity was muted and unmuted before it was removed from systems
+        a_ecs__moveEntityToList(Entity, A_ECS__RUNNING);
+    } else {
+        a_ecs__moveEntityToList(Entity, A_ECS__NEW);
+    }
 }
 
 bool a_entity_isMuted(const AEntity* Entity)
@@ -299,4 +306,10 @@ void a_entity__removeFromActiveSystems(AEntity* Entity)
 {
     Entity->removedFromActive = true;
     a_list_clearEx(Entity->systemNodesActive, (AFree*)a_list_removeNode);
+}
+
+bool a_entity__isMatchedToSystems(const AEntity* Entity)
+{
+    return !a_list_isEmpty(Entity->matchingSystemsActive)
+        || !a_list_isEmpty(Entity->matchingSystemsEither);
 }

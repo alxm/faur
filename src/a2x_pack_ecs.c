@@ -125,9 +125,7 @@ void a_ecs__tick(void)
     a_list_clearEx(g_ecs->lists[A_ECS__REMOVED_FREE], (AFree*)a_entity__free);
 
     A_LIST_ITERATE(g_ecs->lists[A_ECS__NEW], AEntity*, e) {
-        if(a_list_isEmpty(e->matchingSystemsActive)
-            && a_list_isEmpty(e->matchingSystemsEither)) {
-
+        if(!a_entity__isMatchedToSystems(e)) {
             // Check if the entity matches any systems
             A_LIST_ITERATE(g_ecs->allSystems, ASystem*, s) {
                 if(a_bitfield_testMask(e->componentBits, s->componentBits)) {
