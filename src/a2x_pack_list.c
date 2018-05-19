@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2017 Alex Margarit
+    Copyright 2010, 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -57,13 +57,12 @@ void a_list_freeEx(AList* List, AFree* Free)
     AListNode* n = List->first->next;
 
     while(n != List->last) {
-        AListNode* t = n;
-        n = n->next;
-
         if(Free) {
-            Free(t->content);
+            Free(n->content);
         }
 
+        AListNode* t = n;
+        n = n->next;
         free(t);
     }
 
@@ -239,14 +238,13 @@ void a_list_clearEx(AList* List, AFree* Free)
     AListNode* n = List->first->next;
 
     while(n != List->last) {
-        AListNode* saved = n;
-        n = n->next;
-
         if(Free) {
-            Free(saved->content);
+            Free(n->content);
         }
 
-        free(saved);
+        AListNode* t = n;
+        n = n->next;
+        free(t);
     }
 
     List->first->next = List->last;
