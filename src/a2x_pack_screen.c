@@ -165,6 +165,10 @@ void a_screen__uninit(void)
 
     a_list_freeEx(g_stack, (AFree*)a_screen_free);
     a_list_freeEx(g_overlays, free);
+
+    #if A_PLATFORM_SYSTEM_DESKTOP
+        a_button_free(g_fullScreenButton);
+    #endif
 }
 
 void a_screen__show(void)

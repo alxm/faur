@@ -56,7 +56,9 @@ static int g_volumeMax;
     static APixel g_volbarBackground;
     static APixel g_volbarBorder;
     static APixel g_volbarFill;
-#elif A_DEVICE_HAS_KEYBOARD
+#endif
+
+#if A_DEVICE_HAS_KEYBOARD
     static AInputButton* g_musicOnOffButton;
 #endif
 
@@ -89,7 +91,9 @@ static void inputCallback(void)
             adjustSoundVolume(g_volume + adjust);
             a_timer_start(g_volTimer);
         }
-    #elif A_DEVICE_HAS_KEYBOARD
+    #endif
+
+    #if A_DEVICE_HAS_KEYBOARD
         if(g_soundOn && a_button_getPressedOnce(g_musicOnOffButton)) {
             a_platform__toggleMusic();
         }
@@ -141,7 +145,9 @@ void a_sound__init(void)
     #if A_PLATFORM_SYSTEM_GP2X || A_PLATFORM_SYSTEM_WIZ
         g_volumeUpButton = a_button_new("gamepad.b.volUp");
         g_volumeDownButton = a_button_new("gamepad.b.volDown");
-    #elif A_DEVICE_HAS_KEYBOARD
+    #endif
+
+    #if A_DEVICE_HAS_KEYBOARD
         g_musicOnOffButton = a_button_new("key.m");
     #endif
 
@@ -171,6 +177,10 @@ void a_sound__uninit(void)
 
     #if A_PLATFORM_SYSTEM_GP2X || A_PLATFORM_SYSTEM_WIZ
         a_timer_free(g_volTimer);
+    #endif
+
+    #if A_DEVICE_HAS_KEYBOARD
+        a_button_free(g_musicOnOffButton);
     #endif
 
     a_music_stop();

@@ -230,6 +230,8 @@ void a_console__uninit(void)
     for(AOutType t = 0; t < A_OUT__TYPE_NUM; t++) {
         a_sprite_free(g_titles[t]);
     }
+
+    a_button_free(g_toggle);
 }
 
 bool a_console__isInitialized(void)

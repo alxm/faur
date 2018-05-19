@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016 Alex Margarit
+    Copyright 2010, 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -45,18 +45,18 @@ static void a__atexit(void)
 {
     a_out__message("Running atexit callback");
 
+    a_console__uninit();
+    a_font__uninit();
     a_embed__uninit();
     a_fade__uninit();
     a_ecs__uninit();
     a_state__uninit();
     a_sound__uninit();
-    a_input__uninit();
-    a_console__uninit();
-    a_font__uninit();
     a_screenshot__uninit();
-    a_screen__uninit();
-    a_pixel__uninit();
     a_fps__uninit();
+    a_pixel__uninit();
+    a_screen__uninit();
+    a_input__uninit();
     a_platform__uninit();
 
     #if A_PLATFORM_SYSTEM_GP2X || A_PLATFORM_SYSTEM_WIZ || A_PLATFORM_SYSTEM_CAANOO

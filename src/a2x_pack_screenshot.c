@@ -1,5 +1,5 @@
 /*
-    Copyright 2011, 2016 Alex Margarit
+    Copyright 2011, 2016, 2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -172,6 +172,8 @@ void a_screenshot__uninit(void)
         free(g_title);
         free(g_description);
     }
+
+    a_button_free(g_button);
 }
 
 void a_screenshot_take(void)
