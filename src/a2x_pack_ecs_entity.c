@@ -1,5 +1,5 @@
 /*
-    Copyright 2016, 2017 Alex Margarit
+    Copyright 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -22,7 +22,6 @@
 
 #include "a2x_pack_ecs.v.h"
 #include "a2x_pack_ecs_component.v.h"
-#include "a2x_pack_ecs_system.v.h"
 #include "a2x_pack_fps.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
@@ -41,25 +40,28 @@ AEntity* a_entity_new(const char* Id, void* Context)
     e->context = Context;
     e->parent = NULL;
     e->node = NULL;
-    e->systemNodes = a_list_new();
-    e->sleepingInSystems = a_list_new();
+    e->matchingSystemsActive = a_list_new();
+    e->matchingSystemsEither = a_list_new();
+    e->systemNodesActive = a_list_new();
+    e->systemNodesEither = a_list_new();
     e->components = a_strhash_new();
     e->componentBits = a_bitfield_new(a_strhash_getSize(a__ecsComponents));
     e->handlers = a_strhash_new();
     e->lastActive = a_fps_getCounter() - 1;
     e->references = 0;
-    e->muted = false;
-    e->cleared = false;
+    e->removedFromActive = false;
 
     a_ecs__addEntityToList(e, A_ECS__NEW);
 
     return e;
 }
 
-void a_ecs_entity__free(AEntity* Entity)
+void a_entity__free(AEntity* Entity)
 {
-    a_list_freeEx(Entity->systemNodes, (AFree*)a_list_removeNode);
-    a_list_free(Entity->sleepingInSystems);
+    a_list_free(Entity->matchingSystemsActive);
+    a_list_free(Entity->matchingSystemsEither);
+    a_list_freeEx(Entity->systemNodesActive, (AFree*)a_list_removeNode);
+    a_list_freeEx(Entity->systemNodesEither, (AFree*)a_list_removeNode);
 
     A_STRHASH_ITERATE(Entity->components, AComponentHeader*, header) {
         if(header->component->free) {
@@ -110,44 +112,64 @@ void a_entity_setParent(AEntity* Entity, AEntity* Parent)
 
 void a_entity_reference(AEntity* Entity)
 {
+    if(a_entity_isRemoved(Entity)) {
+        a_out__warningv("Entity '%s' is removed, ignoring reference",
+                        a_entity_getId(Entity));
+        return;
+    }
+
     Entity->references++;
 }
 
 void a_entity_release(AEntity* Entity)
 {
-    if(a__ecs->deleting) {
+    if(a_ecs__isDeleting()) {
         // Entity could have already been freed. This is the only ECS function
         // that may be called from AFree callbacks.
         return;
     }
 
-    if(Entity->references-- == 0) {
+    Entity->references--;
+
+    if(Entity->references < 0) {
         a_out__fatal("Release count exceeds reference count for '%s'",
                      a_entity_getId(Entity));
+    } else if(Entity->references == 0
+        && a_ecs__isEntityInList(Entity, A_ECS__REMOVED_LIMBO)) {
+
+        a_ecs__moveEntityToList(Entity, A_ECS__REMOVED_QUEUE);
     }
 }
 
 void a_entity_remove(AEntity* Entity)
 {
-    a_ecs__moveEntityToList(Entity, A_ECS__REMOVED);
+    if(a_entity_isRemoved(Entity)) {
+        a_out__fatal("Entity '%s' was already removed", a_entity_getId(Entity));
+        return;
+    }
+
+    a_ecs__moveEntityToList(Entity, A_ECS__REMOVED_QUEUE);
 }
 
 bool a_entity_isRemoved(const AEntity* Entity)
 {
-    return a_ecs__isEntityInList(Entity, A_ECS__REMOVED);
+    return a_ecs__isEntityInList(Entity, A_ECS__REMOVED_QUEUE)
+        || a_ecs__isEntityInList(Entity, A_ECS__REMOVED_LIMBO)
+        || a_ecs__isEntityInList(Entity, A_ECS__REMOVED_FREE);
 }
 
 void a_entity_markActive(AEntity* Entity)
 {
     Entity->lastActive = a_fps_getCounter();
 
-    if(!a_list_isEmpty(Entity->sleepingInSystems)) {
-        A_LIST_ITERATE(Entity->sleepingInSystems, ASystem*, system) {
-            a_list_addLast(Entity->systemNodes,
+    if(Entity->removedFromActive) {
+        Entity->removedFromActive = false;
+
+        // Add entity back to active-only systems
+        A_LIST_ITERATE(Entity->matchingSystemsActive, ASystem*, system) {
+            a_list_addLast(Entity->systemNodesActive,
                            a_list_addLast(system->entities, Entity));
         }
-
-        a_list_clear(Entity->sleepingInSystems);
     }
 }
 
@@ -240,48 +262,60 @@ void* a_entity_reqComponent(const AEntity* Entity, const char* Component)
 
 void a_entity_mute(AEntity* Entity)
 {
-    if(Entity->muted) {
-        a_out__warningv("Entity '%s' is already muted", a_entity_getId(Entity));
+    if(a_entity_isMuted(Entity)) {
+        a_out__warningv("Entity '%s' is already muted",
+                        a_entity_getId(Entity));
+        return;
+    } else if(a_entity_isRemoved(Entity)) {
+        a_out__warningv("Entity '%s' was removed, cannot mute",
+                        a_entity_getId(Entity));
         return;
     }
 
-    Entity->muted = true;
-
-    a_ecs__moveEntityToList(Entity, A_ECS__MUTED);
+    a_ecs__moveEntityToList(Entity, A_ECS__MUTED_QUEUE);
 }
 
 void a_entity_unmute(AEntity* Entity)
 {
-    if(!Entity->muted) {
+    if(!a_entity_isMuted(Entity)) {
         a_out__warningv("Entity '%s' is not muted", a_entity_getId(Entity));
         return;
     }
 
-    Entity->muted = false;
-
-    if(a_ecs__isEntityInList(Entity, A_ECS__MUTED)) {
-        if(a_list_isEmpty(Entity->systemNodes)
-            && a_list_isEmpty(Entity->sleepingInSystems)) {
-
-            // Entity was muted before ever being assigned to systems
-            a_ecs__moveEntityToList(Entity, A_ECS__NEW);
-        } else {
-            // Entity was muted and unmuted in the same frame, move back
+    if(a_entity__isMatchedToSystems(Entity)) {
+        if(a_ecs__isEntityInList(Entity, A_ECS__MUTED_QUEUE)) {
+            // Entity was muted and unmuted before it was removed from systems
             a_ecs__moveEntityToList(Entity, A_ECS__RUNNING);
+        } else {
+            // To be added back to matched systems
+            a_ecs__moveEntityToList(Entity, A_ECS__RESTORE);
         }
     } else {
-        // Entity was unmuted after it was removed from all systems
-        a_ecs__addEntityToList(Entity, A_ECS__NEW);
+        // Entity has not been matched to systems yet, treat it as new
+        a_ecs__moveEntityToList(Entity, A_ECS__NEW);
     }
 }
 
 bool a_entity_isMuted(const AEntity* Entity)
 {
-    return Entity->muted;
+    return a_ecs__isEntityInList(Entity, A_ECS__MUTED_QUEUE)
+        || a_ecs__isEntityInList(Entity, A_ECS__MUTED_LIMBO);
 }
 
-void a_ecs_entity__removeFromSystems(AEntity* Entity)
+void a_entity__removeFromAllSystems(AEntity* Entity)
 {
-    a_list_clearEx(Entity->systemNodes, (AFree*)a_list_removeNode);
-    a_list_clear(Entity->sleepingInSystems);
+    a_list_clearEx(Entity->systemNodesActive, (AFree*)a_list_removeNode);
+    a_list_clearEx(Entity->systemNodesEither, (AFree*)a_list_removeNode);
+}
+
+void a_entity__removeFromActiveSystems(AEntity* Entity)
+{
+    Entity->removedFromActive = true;
+    a_list_clearEx(Entity->systemNodesActive, (AFree*)a_list_removeNode);
+}
+
+bool a_entity__isMatchedToSystems(const AEntity* Entity)
+{
+    return !a_list_isEmpty(Entity->matchingSystemsActive)
+        || !a_list_isEmpty(Entity->matchingSystemsEither);
 }

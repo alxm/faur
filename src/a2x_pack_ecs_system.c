@@ -20,6 +20,7 @@
 #include "a2x_system_includes.h"
 #include "a2x_pack_ecs_system.v.h"
 
+#include "a2x_pack_ecs.v.h"
 #include "a2x_pack_ecs_component.v.h"
 #include "a2x_pack_ecs_entity.v.h"
 #include "a2x_pack_mem.v.h"
@@ -28,13 +29,15 @@
 #include "a2x_pack_strhash.v.h"
 
 static AStrHash* g_systems; // table of declared ASystem
+static AList* g_inactive; // list of AEntity detected as inactive
 
-void a_ecs_system__init(void)
+void a_system__init(void)
 {
     g_systems = a_strhash_new();
+    g_inactive = a_list_new();
 }
 
-void a_ecs_system__uninit(void)
+void a_system__uninit(void)
 {
     A_STRHASH_ITERATE(g_systems, ASystem*, system) {
         a_list_free(system->entities);
@@ -43,6 +46,7 @@ void a_ecs_system__uninit(void)
     }
 
     a_strhash_free(g_systems);
+    a_list_free(g_inactive);
 }
 
 void a_system_declare(const char* Name, const char* Components, ASystemHandler* Handler, ASystemSort* Compare, bool OnlyActiveEntities)
@@ -79,7 +83,7 @@ void a_system_declare(const char* Name, const char* Components, ASystemHandler* 
     a_list_freeEx(tok, free);
 }
 
-void a_ecs_system__run(ASystem* System)
+void a_system__run(ASystem* System)
 {
     if(System->muted) {
         return;
@@ -94,22 +98,18 @@ void a_ecs_system__run(ASystem* System)
             if(a_entity_isActive(entity)) {
                 System->handler(entity);
             } else {
-                A_LIST_ITERATE(entity->systemNodes, AListNode*, node) {
-                    if(a_list__nodeGetList(node) == System->entities) {
-                        A_LIST_REMOVE_CURRENT();
-                        break;
-                    }
-                }
-
-                A_LIST_REMOVE_CURRENT();
-                a_list_addLast(entity->sleepingInSystems, System);
+                a_list_addLast(g_inactive, entity);
             }
         }
+
+        a_list_clearEx(g_inactive, (AFree*)a_entity__removeFromActiveSystems);
     } else {
         A_LIST_ITERATE(System->entities, AEntity*, entity) {
             System->handler(entity);
         }
     }
+
+    a_ecs__flushEntitiesFromSystems();
 }
 
 void a_system_execute(const char* Systems)
@@ -127,7 +127,7 @@ void a_system_execute(const char* Systems)
             a_out__fatal("a_system_execute: '%s' does not run in state", name);
         }
 
-        a_ecs_system__run(system);
+        a_system__run(system);
     }
 
     a_list_freeEx(tok, free);
@@ -168,7 +168,7 @@ void a_system_unmute(const char* Systems)
     muteSystems(Systems, false);
 }
 
-AList* a_ecs_system__parseIds(const char* Systems)
+AList* a_system__parseIds(const char* Systems)
 {
     AList* systems = a_list_new();
     AList* tok = a_str_split(Systems, " ");

@@ -1,5 +1,5 @@
 /*
-    Copyright 2017 Alex Margarit
+    Copyright 2017, 2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -26,7 +26,7 @@
 #include "a2x_pack_out.v.h"
 #include "a2x_pack_str.v.h"
 
-static AMessage* a_ecs_message__new(AEntity* To, AEntity* From, const char* Message)
+AMessage* a_message__new(AEntity* To, AEntity* From, const char* Message)
 {
     AMessage* m = a_mem_malloc(sizeof(AMessage));
 
@@ -40,7 +40,7 @@ static AMessage* a_ecs_message__new(AEntity* To, AEntity* From, const char* Mess
     return m;
 }
 
-void a_ecs_message__free(AMessage* Message)
+void a_message__free(AMessage* Message)
 {
     a_entity_release(Message->to);
     a_entity_release(Message->from);
@@ -74,11 +74,12 @@ void a_message_send(AEntity* To, AEntity* From, const char* Message)
     }
 
     if(h->handleImmediately) {
-        if(!a_entity_isRemoved(To) && !a_entity_isRemoved(From) && !To->muted) {
+        if(!a_entity_isRemoved(To) && !a_entity_isRemoved(From)
+            && !a_entity_isMuted(To)) {
+
             h->handler(To, From);
         }
     } else {
-        AMessage* message = a_ecs_message__new(To, From, Message);
-        a_list_addLast(a__ecs->messageQueue, message);
+        a_ecs__queueMessage(To, From, Message);
     }
 }

@@ -1,5 +1,5 @@
 /*
-    Copyright 2016 Alex Margarit
+    Copyright 2016, 2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -22,6 +22,7 @@
 #include "a2x_pack_ecs_entity.p.h"
 
 #include "a2x_pack_bitfield.v.h"
+#include "a2x_pack_ecs_system.v.h"
 #include "a2x_pack_list.v.h"
 #include "a2x_pack_strhash.v.h"
 
@@ -29,18 +30,22 @@ struct AEntity {
     char* id; // specified name for debugging
     void* context; // global context
     AEntity* parent; // manually associated parent entity
-    AListNode* node; // list node in one of new, running, or removed
-    AList* systemNodes; // list of nodes in ASystem.entities lists
-    AList* sleepingInSystems; // list of ASystem that entity is asleep in
+    AListNode* node; // list node in one of AEcsListId
+    AList* matchingSystemsActive; // list of ASystem
+    AList* matchingSystemsEither; // list of ASystem
+    AList* systemNodesActive; // list of nodes in active-only ASystem lists
+    AList* systemNodesEither; // list of nodes in normal ASystem.entities lists
     AStrHash* components; // table of AComponentHeader
     ABitfield* componentBits;
     AStrHash* handlers; // table of AMessageHandlerContainer
     unsigned lastActive; // frame when a_entity_markActive was last called
-    unsigned references; // if >0, then the entity lingers in the removed list
-    bool muted; // systems don't run on this entity if this is set
-    bool cleared; // set after entity was removed from all systems it was in
+    int references; // if >0, then the entity lingers in the removed limbo list
+    bool removedFromActive; // set when an active-only system kicks entity out
 };
 
-extern void a_ecs_entity__free(AEntity* Entity);
+extern void a_entity__free(AEntity* Entity);
 
-extern void a_ecs_entity__removeFromSystems(AEntity* Entity);
+extern void a_entity__removeFromAllSystems(AEntity* Entity);
+extern void a_entity__removeFromActiveSystems(AEntity* Entity);
+
+extern bool a_entity__isMatchedToSystems(const AEntity* Entity);

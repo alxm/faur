@@ -18,5 +18,3 @@
 */
 
 #pragma once
-
-extern void a_ecs_flushNewEntities(void);

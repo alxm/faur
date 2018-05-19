@@ -1,5 +1,5 @@
 /*
-    Copyright 2016, 2017 Alex Margarit
+    Copyright 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -26,28 +26,37 @@
 #include "a2x_pack_ecs_system.v.h"
 #include "a2x_pack_mem.v.h"
 
-AEcs* a__ecs;
+typedef struct {
+    AList* lists[A_ECS__NUM]; // each entity is in exactly one list
+    AList* tickSystems; // tick systems in the specified order
+    AList* drawSystems; // draw systems in the specified order
+    AList* allSystems; // tick & draw systems
+    AList* messageQueue; // queued messages
+    bool deleting; // set when this collection is popped off the stack
+} AEcs;
+
+static AEcs* g_ecs;
 static AList* g_stack; // list of AEcs (one for each state)
 
 void a_ecs__init(void)
 {
-    a__ecs = NULL;
+    g_ecs = NULL;
     g_stack = a_list_new();
 
-    a_ecs_component__init();
-    a_ecs_system__init();
+    a_component__init();
+    a_system__init();
 }
 
 void a_ecs__uninit(void)
 {
-    while(a__ecs != NULL) {
+    while(g_ecs != NULL) {
         a_ecs__popCollection();
     }
 
     a_list_free(g_stack);
 
-    a_ecs_system__uninit();
-    a_ecs_component__uninit();
+    a_system__uninit();
+    a_component__uninit();
 }
 
 void a_ecs__pushCollection(AList* TickSystems, AList* DrawSystems)
@@ -67,58 +76,102 @@ void a_ecs__pushCollection(AList* TickSystems, AList* DrawSystems)
     a_list_appendCopy(c->allSystems, TickSystems);
     a_list_appendCopy(c->allSystems, DrawSystems);
 
-    if(a__ecs != NULL) {
-        a_list_push(g_stack, a__ecs);
+    if(g_ecs != NULL) {
+        a_list_push(g_stack, g_ecs);
     }
 
-    a__ecs = c;
+    g_ecs = c;
 
-    A_LIST_ITERATE(a__ecs->allSystems, ASystem*, system) {
+    A_LIST_ITERATE(g_ecs->allSystems, ASystem*, system) {
         system->runsInCurrentState = true;
     }
 }
 
 void a_ecs__popCollection(void)
 {
-    a__ecs->deleting = true;
+    g_ecs->deleting = true;
 
-    A_LIST_ITERATE(a__ecs->allSystems, ASystem*, system) {
+    A_LIST_ITERATE(g_ecs->allSystems, ASystem*, system) {
         system->muted = false;
         system->runsInCurrentState = false;
     }
 
-    a_list_freeEx(a__ecs->messageQueue, (AFree*)a_ecs_message__free);
+    a_list_freeEx(g_ecs->messageQueue, (AFree*)a_message__free);
 
     for(int i = A_ECS__NUM; i--; ) {
-        a_list_freeEx(a__ecs->lists[i], (AFree*)a_ecs_entity__free);
+        a_list_freeEx(g_ecs->lists[i], (AFree*)a_entity__free);
     }
 
-    a_list_free(a__ecs->allSystems);
+    a_list_free(g_ecs->allSystems);
 
-    free(a__ecs);
-    a__ecs = a_list_pop(g_stack);
+    free(g_ecs);
+    g_ecs = a_list_pop(g_stack);
 
-    if(a__ecs != NULL) {
-        A_LIST_ITERATE(a__ecs->allSystems, ASystem*, system) {
+    if(g_ecs != NULL) {
+        A_LIST_ITERATE(g_ecs->allSystems, ASystem*, system) {
             system->runsInCurrentState = true;
         }
     }
 }
 
+bool a_ecs__isDeleting(void)
+{
+    return g_ecs->deleting;
+}
+
 void a_ecs__tick(void)
 {
-    a_ecs_flushNewEntities();
+    a_ecs__flushEntitiesFromSystems();
+    a_list_clearEx(g_ecs->lists[A_ECS__REMOVED_FREE], (AFree*)a_entity__free);
 
-    A_LIST_ITERATE(a__ecs->tickSystems, ASystem*, system) {
-        a_ecs_system__run(system);
+    // Check what systems the new entities match
+    A_LIST_ITERATE(g_ecs->lists[A_ECS__NEW], AEntity*, e) {
+        A_LIST_ITERATE(g_ecs->allSystems, ASystem*, s) {
+            if(a_bitfield_testMask(e->componentBits, s->componentBits)) {
+                if(s->onlyActiveEntities) {
+                    a_list_addLast(e->matchingSystemsActive, s);
+                } else {
+                    a_list_addLast(e->matchingSystemsEither, s);
+                }
+            }
+        }
+
+        a_ecs__addEntityToList(e, A_ECS__RESTORE);
     }
 
-    A_LIST_ITERATE(a__ecs->messageQueue, AMessage*, m) {
+    a_list_clear(g_ecs->lists[A_ECS__NEW]);
+
+    // Add entities to the systems they match
+    A_LIST_ITERATE(g_ecs->lists[A_ECS__RESTORE], AEntity*, e) {
+        if(!e->removedFromActive) {
+            A_LIST_ITERATE(e->matchingSystemsActive, ASystem*, system) {
+                a_list_addLast(e->systemNodesActive,
+                               a_list_addLast(system->entities, e));
+            }
+        }
+
+        A_LIST_ITERATE(e->matchingSystemsEither, ASystem*, system) {
+            a_list_addLast(e->systemNodesEither,
+                           a_list_addLast(system->entities, e));
+        }
+
+        a_ecs__addEntityToList(e, A_ECS__RUNNING);
+    }
+
+    a_list_clear(g_ecs->lists[A_ECS__RESTORE]);
+
+    // Run tick systems
+    A_LIST_ITERATE(g_ecs->tickSystems, ASystem*, system) {
+        a_system__run(system);
+    }
+
+    // Send non-immediate messages
+    A_LIST_ITERATE(g_ecs->messageQueue, AMessage*, m) {
         AMessageHandlerContainer* h = a_strhash_get(m->to->handlers,
                                                     m->message);
 
         if(!a_entity_isRemoved(m->to) && !a_entity_isRemoved(m->from)) {
-            if(m->to->muted) {
+            if(a_entity_isMuted(m->to)) {
                 // Keep message in queue
                 continue;
             } else {
@@ -126,74 +179,61 @@ void a_ecs__tick(void)
             }
         }
 
-        a_ecs_message__free(m);
+        a_message__free(m);
     }
 
-    a_list_clear(a__ecs->messageQueue);
-
-    A_LIST_ITERATE(a__ecs->lists[A_ECS__REMOVED], AEntity*, entity) {
-        if(entity->references == 0) {
-            a_ecs_entity__free(entity);
-            A_LIST_REMOVE_CURRENT();
-        } else if(!entity->cleared) {
-            a_ecs_entity__removeFromSystems(entity);
-            entity->cleared = true;
-        }
-    }
-
-    A_LIST_ITERATE(a__ecs->lists[A_ECS__MUTED], AEntity*, entity) {
-        a_ecs_entity__removeFromSystems(entity);
-        entity->node = NULL;
-    }
-
-    a_list_clear(a__ecs->lists[A_ECS__MUTED]);
+    a_list_clear(g_ecs->messageQueue);
 }
 
 void a_ecs__draw(void)
 {
-    A_LIST_ITERATE(a__ecs->drawSystems, ASystem*, system) {
-        a_ecs_system__run(system);
-    }
-}
-
-void a_ecs_flushNewEntities(void)
-{
-    A_LIST_ITERATE(a__ecs->lists[A_ECS__NEW], AEntity*, e) {
-        // Check if the entity matches any systems
-        A_LIST_ITERATE(a__ecs->allSystems, ASystem*, s) {
-            if(a_bitfield_testMask(e->componentBits, s->componentBits)) {
-                a_list_addLast(e->systemNodes, a_list_addLast(s->entities, e));
-            }
-        }
-
-        A_LIST_REMOVE_CURRENT();
-        a_ecs__addEntityToList(e, A_ECS__RUNNING);
+    A_LIST_ITERATE(g_ecs->drawSystems, ASystem*, system) {
+        a_system__run(system);
     }
 }
 
 bool a_ecs__isEntityInList(const AEntity* Entity, AEcsListId List)
 {
-    if(Entity->node == NULL) {
-        return false;
-    }
-
-    return a_list__nodeGetList(Entity->node) == a__ecs->lists[List];
+    return a_list__nodeGetList(Entity->node) == g_ecs->lists[List];
 }
 
 void a_ecs__addEntityToList(AEntity* Entity, AEcsListId List)
 {
-    Entity->node = a_list_addLast(a__ecs->lists[List], Entity);
+    Entity->node = a_list_addLast(g_ecs->lists[List], Entity);
 }
 
 void a_ecs__moveEntityToList(AEntity* Entity, AEcsListId List)
 {
-    if(Entity->node != NULL) {
-        if(a_list__nodeGetList(Entity->node) == a__ecs->lists[List]) {
-            return;
-        }
-
-        a_list_removeNode(Entity->node);
+    if(a_list__nodeGetList(Entity->node) == g_ecs->lists[List]) {
+        return;
     }
 
-    Entity->node = a_list_addLast(a__ecs->lists[List], Entity);
+    a_list_removeNode(Entity->node);
+    Entity->node = a_list_addLast(g_ecs->lists[List], Entity);
+}
+
+void a_ecs__flushEntitiesFromSystems(void)
+{
+    A_LIST_ITERATE(g_ecs->lists[A_ECS__MUTED_QUEUE], AEntity*, e) {
+        a_entity__removeFromAllSystems(e);
+        a_ecs__addEntityToList(e, A_ECS__MUTED_LIMBO);
+    }
+
+    A_LIST_ITERATE(g_ecs->lists[A_ECS__REMOVED_QUEUE], AEntity*, e) {
+        a_entity__removeFromAllSystems(e);
+
+        if(e->references == 0) {
+            a_ecs__addEntityToList(e, A_ECS__REMOVED_FREE);
+        } else {
+            a_ecs__addEntityToList(e, A_ECS__REMOVED_LIMBO);
+        }
+    }
+
+    a_list_clear(g_ecs->lists[A_ECS__MUTED_QUEUE]);
+    a_list_clear(g_ecs->lists[A_ECS__REMOVED_QUEUE]);
+}
+
+void a_ecs__queueMessage(AEntity* To, AEntity* From, const char* Message)
+{
+    a_list_addLast(g_ecs->messageQueue, a_message__new(To, From, Message));
 }

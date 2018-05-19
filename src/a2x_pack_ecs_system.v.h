@@ -32,12 +32,12 @@ struct ASystem {
     ABitfield* componentBits; // IDs of components that this system works on
     AList* entities; // entities currently picked up by this system
     bool onlyActiveEntities; // skip entities that are not active
-    bool muted; // a_ecs_system__run skips muted systems
+    bool muted; // a_system__run skips muted systems
     bool runsInCurrentState; // whether this system runs in the current state
 };
 
-extern void a_ecs_system__init(void);
-extern void a_ecs_system__uninit(void);
+extern void a_system__init(void);
+extern void a_system__uninit(void);
 
-extern void a_ecs_system__run(ASystem* System);
-extern AList* a_ecs_system__parseIds(const char* Systems);
+extern void a_system__run(ASystem* System);
+extern AList* a_system__parseIds(const char* Systems);
