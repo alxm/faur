@@ -175,16 +175,7 @@ void a_fps__frame(void)
     if(!g_settings.vsyncOn) {
         while(elapsedMs < g_run.drawFrameMs) {
             if(g_run.canSleep) {
-                uint32_t waitMs = g_run.drawFrameMs - elapsedMs;
-
-                #if A_PLATFORM_SYSTEM_GP2X
-                    // GP2X timer granularity is too coarse
-                    if(waitMs >= 10) {
-                        a_time_waitMs(10);
-                    }
-                #else
-                    a_time_waitMs(waitMs);
-                #endif
+                a_time_waitMs(g_run.drawFrameMs - elapsedMs);
             }
 
             nowMs = a_time_getMs();

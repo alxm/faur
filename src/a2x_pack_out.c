@@ -198,7 +198,7 @@ void a_out__fatal(const char* Format, ...)
     #if A_BUILD_DEBUG
         while(true) {
             printf("Waiting to attach debugger: PID %d\n", getpid());
-            a_time_waitMs(1000);
+            a_time_spinMs(1000);
         }
     #else
         if(a_console__isInitialized()) {

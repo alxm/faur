@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016 Alex Margarit
+    Copyright 2010, 2016, 2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -28,6 +28,11 @@ uint32_t a_time_getMs(void)
 }
 
 void a_time_waitMs(uint32_t Ms)
+{
+    a_platform__waitMs(Ms);
+}
+
+void a_time_spinMs(uint32_t Ms)
 {
     const uint32_t start = a_platform__getMs();
 

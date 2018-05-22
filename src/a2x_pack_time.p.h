@@ -1,5 +1,5 @@
 /*
-    Copyright 2010 Alex Margarit
+    Copyright 2010, 2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -21,3 +21,4 @@
 
 extern uint32_t a_time_getMs(void);
 extern void a_time_waitMs(uint32_t Ms);
+extern void a_time_spinMs(uint32_t Ms);
