@@ -56,7 +56,7 @@ static struct {
 static struct {
     unsigned fpsThresholdFast;
     unsigned fpsThresholdSlow;
-    ATimer* skipAdjustTimer;
+    ATimer* skipAdjTimer;
     ATimer* noSleepTimer;
 } g_skip;
 
@@ -98,20 +98,20 @@ void a_fps__init(void)
     g_history.drawFrameMs = a_mem_malloc(g_history.len * sizeof(unsigned));
     g_history.drawFrameMsMin = a_mem_malloc(g_history.len * sizeof(unsigned));
 
-    g_skip.skipAdjustTimer = a_timer_new(A_TIMER_SEC, SKIP_ADJUST_DELAY_SEC);
-    g_skip.noSleepTimer = a_timer_new(A_TIMER_SEC, NO_SLEEP_RESET_SEC);
+    g_skip.skipAdjTimer = a_timer_new(A_TIMER_SEC, SKIP_ADJUST_DELAY_SEC, true);
+    g_skip.noSleepTimer = a_timer_new(A_TIMER_SEC, NO_SLEEP_RESET_SEC, false);
 
     g_run.frameCounter = 0;
     g_run.canSleep = ALLOW_SLEEP;
 
-    a_timer_start(g_skip.skipAdjustTimer);
+    a_timer_start(g_skip.skipAdjTimer);
 
     a_fps__reset(0);
 }
 
 void a_fps__uninit(void)
 {
-    a_timer_free(g_skip.skipAdjustTimer);
+    a_timer_free(g_skip.skipAdjTimer);
     a_timer_free(g_skip.noSleepTimer);
 
     free(g_history.drawFrameMs);
@@ -194,7 +194,7 @@ void a_fps__frame(void)
     g_run.lastFrameMs = nowMs;
 
     if(!g_settings.vsyncOn && g_settings.allowSkipFrames
-        && a_timer_isExpired(g_skip.skipAdjustTimer)) {
+        && a_timer_isExpired(g_skip.skipAdjTimer)) {
 
         unsigned newFrameSkip = UINT_MAX;
 

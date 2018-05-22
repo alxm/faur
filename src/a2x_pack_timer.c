@@ -31,6 +31,7 @@ struct ATimer {
     unsigned start;
     unsigned diff;
     bool running;
+    bool repeat;
 };
 
 static inline unsigned getNow(const ATimer* Timer)
@@ -48,7 +49,7 @@ static inline unsigned getNow(const ATimer* Timer)
     }
 }
 
-ATimer* a_timer_new(ATimerType Type, unsigned Period)
+ATimer* a_timer_new(ATimerType Type, unsigned Period, bool Repeat)
 {
     ATimer* t = a_mem_malloc(sizeof(ATimer));
 
@@ -61,6 +62,7 @@ ATimer* a_timer_new(ATimerType Type, unsigned Period)
     t->start = 0;
     t->diff = 0;
     t->running = false;
+    t->repeat = Repeat;
 
     return t;
 }
@@ -90,16 +92,23 @@ bool a_timer_isRunning(ATimer* Timer)
 
 bool a_timer_isExpired(ATimer* Timer)
 {
+    bool expired = false;
+
     if(Timer->running) {
         Timer->diff = getNow(Timer) - Timer->start;
 
         if(Timer->diff >= Timer->period) {
-            Timer->start += (Timer->diff / Timer->period) * Timer->period;
-            return true;
+            expired = true;
+
+            if(Timer->repeat) {
+                Timer->start += (Timer->diff / Timer->period) * Timer->period;
+            } else {
+                a_timer_stop(Timer);
+            }
         }
     }
 
-    return false;
+    return expired;
 }
 
 unsigned a_timer_getElapsed(ATimer* Timer)
