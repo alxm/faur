@@ -32,6 +32,11 @@ void a_time_waitMs(uint32_t Ms)
     a_platform__waitMs(Ms);
 }
 
+void a_time_waitSec(uint32_t Sec)
+{
+    a_platform__waitMs(Sec * 1000);
+}
+
 void a_time_spinMs(uint32_t Ms)
 {
     const uint32_t start = a_platform__getMs();
@@ -39,4 +44,9 @@ void a_time_spinMs(uint32_t Ms)
     while(a_platform__getMs() - start < Ms) {
         continue;
     }
+}
+
+void a_time_spinSec(uint32_t Sec)
+{
+    a_time_spinMs(Sec * 1000);
 }
