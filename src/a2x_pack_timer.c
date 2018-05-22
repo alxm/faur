@@ -109,5 +109,9 @@ unsigned a_timer_getElapsed(ATimer* Timer)
 
 void a_timer_setPeriod(ATimer* Timer, unsigned Period)
 {
+    if(Timer->type == A_TIMER_SEC) {
+        Period *= 1000;
+    }
+
     Timer->period = a_math_maxu(Period, 1);
 }
