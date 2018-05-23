@@ -20,8 +20,8 @@
 #include "a2x_system_includes.h"
 #include "a2x_pack_menu.v.h"
 
-#include "a2x_pack_fps.v.h"
 #include "a2x_pack_mem.v.h"
+#include "a2x_pack_time.v.h"
 
 struct AMenu {
     AMenuState state;
@@ -53,8 +53,8 @@ AMenu* a_menu_new(AInputButton* Next, AInputButton* Back, AInputButton* Select, 
     m->select = Select;
     m->cancel = Cancel;
 
-    a_button_setRepeat(m->next, a_fps_msToFrames(200));
-    a_button_setRepeat(m->back, a_fps_msToFrames(200));
+    a_button_setRepeat(m->next, a_time_msToFrames(200));
+    a_button_setRepeat(m->back, a_time_msToFrames(200));
 
     return m;
 }

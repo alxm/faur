@@ -254,8 +254,3 @@ bool a_fps_isNthFrame(unsigned N)
 {
     return (g_run.frameCounter % N) == 0;
 }
-
-unsigned a_fps_msToFrames(unsigned Ms)
-{
-    return Ms * g_settings.tickRate / 1000;
-}

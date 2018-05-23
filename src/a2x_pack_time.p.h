@@ -19,6 +19,8 @@
 
 #pragma once
 
+#include "a2x_pack_fps.p.h"
+
 extern uint32_t a_time_getMs(void);
 
 extern void a_time_waitMs(uint32_t Ms);
@@ -26,3 +28,8 @@ extern void a_time_waitSec(uint32_t Sec);
 
 extern void a_time_spinMs(uint32_t Ms);
 extern void a_time_spinSec(uint32_t Sec);
+
+static inline unsigned a_time_msToFrames(unsigned Ms)
+{
+    return (a_fps_getTickRate() * Ms + 500) / 1000;
+}
