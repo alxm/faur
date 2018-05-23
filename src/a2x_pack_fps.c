@@ -30,10 +30,8 @@
 #define SKIP_ADJUST_DELAY_SEC 2
 #define NO_SLEEP_RESET_SEC 20
 
-#if A_PLATFORM_SYSTEM_EMSCRIPTEN
-    #define ALLOW_SLEEP false
-#else
-    #define ALLOW_SLEEP true
+#if !A_PLATFORM_SYSTEM_EMSCRIPTEN
+    #define ALLOW_SLEEP 1
 #endif
 
 static struct {
@@ -57,7 +55,6 @@ static struct {
     unsigned fpsThresholdFast;
     unsigned fpsThresholdSlow;
     ATimer* skipAdjTimer;
-    ATimer* noSleepTimer;
 } g_skip;
 
 static struct {
@@ -70,7 +67,10 @@ static struct {
     unsigned frameCounter;
     unsigned tickCreditMs;
     uint32_t lastFrameMs;
-    bool canSleep;
+    #if ALLOW_SLEEP
+        ATimer* canSleepAgainTimer;
+        bool canSleep;
+    #endif
 } g_run;
 
 void a_fps__init(void)
@@ -99,10 +99,14 @@ void a_fps__init(void)
     g_history.drawFrameMsMin = a_mem_malloc(g_history.len * sizeof(unsigned));
 
     g_skip.skipAdjTimer = a_timer_new(A_TIMER_SEC, SKIP_ADJUST_DELAY_SEC, true);
-    g_skip.noSleepTimer = a_timer_new(A_TIMER_SEC, NO_SLEEP_RESET_SEC, false);
+
+    #if ALLOW_SLEEP
+        g_run.canSleepAgainTimer = a_timer_new(
+                                        A_TIMER_SEC, NO_SLEEP_RESET_SEC, false);
+        g_run.canSleep = true;
+    #endif
 
     g_run.frameCounter = 0;
-    g_run.canSleep = ALLOW_SLEEP;
 
     a_timer_start(g_skip.skipAdjTimer);
 
@@ -112,7 +116,10 @@ void a_fps__init(void)
 void a_fps__uninit(void)
 {
     a_timer_free(g_skip.skipAdjTimer);
-    a_timer_free(g_skip.noSleepTimer);
+
+    #if ALLOW_SLEEP
+        a_timer_free(g_run.canSleepAgainTimer);
+    #endif
 
     free(g_history.drawFrameMs);
     free(g_history.drawFrameMsMin);
@@ -174,9 +181,11 @@ void a_fps__frame(void)
 
     if(!g_settings.vsyncOn) {
         while(elapsedMs < g_run.drawFrameMs) {
-            if(g_run.canSleep) {
-                a_time_waitMs(g_run.drawFrameMs - elapsedMs);
-            }
+            #if ALLOW_SLEEP
+                if(g_run.canSleep) {
+                    a_time_waitMs(g_run.drawFrameMs - elapsedMs);
+                }
+            #endif
 
             nowMs = a_time_getMs();
             elapsedMs = nowMs - g_run.lastFrameMs;
@@ -193,33 +202,39 @@ void a_fps__frame(void)
     g_history.head = (g_history.head + 1) % g_history.len;
     g_run.lastFrameMs = nowMs;
 
-    if(!g_settings.vsyncOn && g_settings.allowSkipFrames
-        && a_timer_isExpired(g_skip.skipAdjTimer)) {
-
+    if(!g_settings.vsyncOn && g_settings.allowSkipFrames) {
         unsigned newFrameSkip = UINT_MAX;
 
-        if(g_run.drawFpsMax <= g_skip.fpsThresholdSlow
-            && g_run.skipFramesNum < g_settings.skipFramesMax) {
+        if(a_timer_isExpired(g_skip.skipAdjTimer)) {
+            if(g_run.drawFpsMax <= g_skip.fpsThresholdSlow
+                && g_run.skipFramesNum < g_settings.skipFramesMax) {
 
-            newFrameSkip = g_run.skipFramesNum + 1;
-        } else if(g_run.drawFpsMax >= g_skip.fpsThresholdFast
-            && g_run.skipFramesNum > 0) {
+                newFrameSkip = g_run.skipFramesNum + 1;
+            } else if(g_run.drawFpsMax >= g_skip.fpsThresholdFast
+                && g_run.skipFramesNum > 0) {
 
-            newFrameSkip = g_run.skipFramesNum - 1;
-        }
-
-        if(newFrameSkip != UINT_MAX) {
-            if(newFrameSkip == 0) {
-                a_timer_start(g_skip.noSleepTimer);
-            } else {
-                a_timer_stop(g_skip.noSleepTimer);
+                newFrameSkip = g_run.skipFramesNum - 1;
             }
 
-            g_run.canSleep = false;
-            a_fps__reset(newFrameSkip);
-        } else if(!g_run.canSleep && a_timer_isExpired(g_skip.noSleepTimer)) {
-            g_run.canSleep = ALLOW_SLEEP;
+            if(newFrameSkip != UINT_MAX) {
+                a_fps__reset(newFrameSkip);
+
+                #if ALLOW_SLEEP
+                    g_run.canSleep = false;
+
+                    if(newFrameSkip == 0) {
+                        a_timer_start(g_run.canSleepAgainTimer);
+                    } else {
+                        a_timer_stop(g_run.canSleepAgainTimer);
+                    }
+                #endif
+            }
         }
+
+        #if ALLOW_SLEEP
+            g_run.canSleep = g_run.canSleep
+                                || a_timer_isExpired(g_run.canSleepAgainTimer);
+        #endif
     }
 
     g_run.tickCreditMs += elapsedMs;
