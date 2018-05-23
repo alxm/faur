@@ -33,3 +33,8 @@ static inline unsigned a_time_msToFrames(unsigned Ms)
 {
     return (a_fps_getTickRate() * Ms + 500) / 1000;
 }
+
+static inline unsigned a_time_secToFrames(unsigned Sec)
+{
+    return a_fps_getTickRate() * Sec;
+}
