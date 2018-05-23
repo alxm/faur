@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2017 Alex Margarit
+    Copyright 2010, 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -230,11 +230,9 @@ bool a_button_getPressed(AInputButton* Button)
 done:
     if(Button->autoRepeat) {
         if(pressed) {
-            if(!a_timer_isRunning(Button->autoRepeat)
-                || a_timer_isExpired(Button->autoRepeat)) {
-
+            if(!a_timer_isRunning(Button->autoRepeat)) {
                 a_timer_start(Button->autoRepeat);
-            } else {
+            } else if(!a_timer_isExpired(Button->autoRepeat)) {
                 pressed = false;
             }
         } else {
@@ -273,13 +271,13 @@ bool a_button_getPressedOnce(AInputButton* Button)
     return pressed;
 }
 
-void a_button_setRepeat(AInputButton* Button, unsigned RepeatFrames)
+void a_button_setRepeat(AInputButton* Button, unsigned RepeatTicks)
 {
     if(Button->autoRepeat == NULL) {
-        Button->autoRepeat = a_timer_new(A_TIMER_FRAMES, RepeatFrames);
+        Button->autoRepeat = a_timer_new(A_TIMER_TICKS, RepeatTicks, true);
     } else {
-        a_timer_setPeriod(Button->autoRepeat, RepeatFrames);
         a_timer_stop(Button->autoRepeat);
+        a_timer_setPeriod(Button->autoRepeat, RepeatTicks);
     }
 }
 

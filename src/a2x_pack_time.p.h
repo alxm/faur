@@ -1,5 +1,5 @@
 /*
-    Copyright 2010 Alex Margarit
+    Copyright 2010, 2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -19,5 +19,22 @@
 
 #pragma once
 
+#include "a2x_pack_fps.p.h"
+
 extern uint32_t a_time_getMs(void);
+
 extern void a_time_waitMs(uint32_t Ms);
+extern void a_time_waitSec(uint32_t Sec);
+
+extern void a_time_spinMs(uint32_t Ms);
+extern void a_time_spinSec(uint32_t Sec);
+
+static inline unsigned a_time_msToTicks(unsigned Ms)
+{
+    return (a_fps_getTickRate() * Ms + 500) / 1000;
+}
+
+static inline unsigned a_time_secToTicks(unsigned Sec)
+{
+    return a_fps_getTickRate() * Sec;
+}

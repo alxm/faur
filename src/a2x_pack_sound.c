@@ -103,10 +103,10 @@ static void inputCallback(void)
 #if A_PLATFORM_SYSTEM_GP2X || A_PLATFORM_SYSTEM_WIZ
     static void screenCallback(void)
     {
-        if(!g_soundOn || !a_timer_isRunning(g_volTimer)) {
-            return;
-        } else if(a_timer_isExpired(g_volTimer)) {
-            a_timer_stop(g_volTimer);
+        if(!g_soundOn
+            || !a_timer_isRunning(g_volTimer)
+            || a_timer_isExpired(g_volTimer)) {
+
             return;
         }
 
@@ -137,7 +137,7 @@ void a_sound__init(void)
 
     #if A_PLATFORM_SYSTEM_GP2X || A_PLATFORM_SYSTEM_WIZ
         adjustSoundVolume(g_volumeMax / 16);
-        g_volTimer = a_timer_new(A_TIMER_MS, A_VOLBAR_SHOW_MS);
+        g_volTimer = a_timer_new(A_TIMER_MS, A_VOLBAR_SHOW_MS, false);
     #else
         adjustSoundVolume(g_volumeMax);
     #endif

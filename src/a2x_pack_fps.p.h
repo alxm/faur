@@ -26,5 +26,3 @@ extern unsigned a_fps_getDrawSkip(void);
 
 extern unsigned a_fps_getCounter(void);
 extern bool a_fps_isNthFrame(unsigned N);
-
-extern unsigned a_fps_msToFrames(unsigned Ms);

@@ -1,5 +1,5 @@
 /*
-    Copyright 2011, 2016, 2017 Alex Margarit
+    Copyright 2011, 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -25,11 +25,11 @@ typedef enum {
     A_TIMER_INVALID = -1,
     A_TIMER_MS,
     A_TIMER_SEC,
-    A_TIMER_FRAMES,
+    A_TIMER_TICKS,
     A_TIMER_NUM
 } ATimerType;
 
-extern ATimer* a_timer_new(ATimerType Type, unsigned Period);
+extern ATimer* a_timer_new(ATimerType Type, unsigned Period, bool Repeat);
 extern void a_timer_free(ATimer* Timer);
 
 extern void a_timer_start(ATimer* Timer);

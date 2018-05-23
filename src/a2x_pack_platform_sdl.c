@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2017 Alex Margarit
+    Copyright 2010, 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -29,6 +29,7 @@
 #include "a2x_pack_platform_sdl_sound.v.h"
 #include "a2x_pack_platform_sdl_video.v.h"
 #include "a2x_pack_settings.v.h"
+#include "a2x_pack_time.v.h"
 
 static uint32_t g_sdlFlags;
 
@@ -69,6 +70,18 @@ void a_platform_sdl__uninit(void)
 uint32_t a_platform__getMs(void)
 {
     return SDL_GetTicks();
+}
+
+void a_platform__waitMs(uint32_t Ms)
+{
+    #if A_PLATFORM_SYSTEM_GP2X // too inaccurate
+        if(Ms < 10) {
+            a_time_spinMs(Ms);
+            return;
+        }
+    #endif
+
+    SDL_Delay(Ms);
 }
 #endif
 #endif // A_PLATFORM_LIB_SDL

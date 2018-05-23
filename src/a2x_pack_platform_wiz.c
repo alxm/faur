@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2017 Alex Margarit and:
+    Copyright 2010, 2016-2018 Alex Margarit and:
 
     - Wiz framebuffer direction set code by Orkie
     - Wiz/Caanoo timer code by notaz (https://github.com/notaz/libpicofe)
@@ -32,6 +32,7 @@
 #include "a2x_pack_file.v.h"
 #include "a2x_pack_out.v.h"
 #include "a2x_pack_settings.v.h"
+#include "a2x_pack_time.v.h"
 
 #if A_PLATFORM_SYSTEM_WIZ
     static bool g_mmuHackOn = false;
@@ -142,6 +143,11 @@ uint32_t a_platform__getMs(void)
     TIMER_REG(0x08) = 0x48 | div; // Run timer, latch value
 
     return TIMER_REG(0) / 1000;
+}
+
+void a_platform__waitMs(uint32_t Ms)
+{
+    a_time_spinMs(Ms);
 }
 
 #if A_PLATFORM_SYSTEM_WIZ

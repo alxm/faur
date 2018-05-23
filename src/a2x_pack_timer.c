@@ -1,5 +1,5 @@
 /*
-    Copyright 2011, 2016, 2017 Alex Margarit
+    Copyright 2011, 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -31,18 +31,17 @@ struct ATimer {
     unsigned start;
     unsigned diff;
     bool running;
+    bool repeat;
 };
 
 static inline unsigned getNow(const ATimer* Timer)
 {
     switch(Timer->type) {
         case A_TIMER_MS:
+        case A_TIMER_SEC:
             return a_time_getMs();
 
-        case A_TIMER_SEC:
-            return a_time_getMs() / 1000;
-
-        case A_TIMER_FRAMES:
+        case A_TIMER_TICKS:
             return a_fps_getCounter();
 
         default:
@@ -50,15 +49,20 @@ static inline unsigned getNow(const ATimer* Timer)
     }
 }
 
-ATimer* a_timer_new(ATimerType Type, unsigned Period)
+ATimer* a_timer_new(ATimerType Type, unsigned Period, bool Repeat)
 {
     ATimer* t = a_mem_malloc(sizeof(ATimer));
+
+    if(Type == A_TIMER_SEC) {
+        Period *= 1000;
+    }
 
     t->type = Type;
     t->period = a_math_maxu(Period, 1);
     t->start = 0;
     t->diff = 0;
     t->running = false;
+    t->repeat = Repeat;
 
     return t;
 }
@@ -88,16 +92,23 @@ bool a_timer_isRunning(ATimer* Timer)
 
 bool a_timer_isExpired(ATimer* Timer)
 {
+    bool expired = false;
+
     if(Timer->running) {
         Timer->diff = getNow(Timer) - Timer->start;
 
         if(Timer->diff >= Timer->period) {
-            Timer->start += (Timer->diff / Timer->period) * Timer->period;
-            return true;
+            expired = true;
+
+            if(Timer->repeat) {
+                Timer->start += (Timer->diff / Timer->period) * Timer->period;
+            } else {
+                a_timer_stop(Timer);
+            }
         }
     }
 
-    return false;
+    return expired;
 }
 
 unsigned a_timer_getElapsed(ATimer* Timer)
@@ -107,5 +118,9 @@ unsigned a_timer_getElapsed(ATimer* Timer)
 
 void a_timer_setPeriod(ATimer* Timer, unsigned Period)
 {
+    if(Timer->type == A_TIMER_SEC) {
+        Period *= 1000;
+    }
+
     Timer->period = a_math_maxu(Period, 1);
 }
