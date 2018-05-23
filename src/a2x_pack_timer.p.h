@@ -25,7 +25,7 @@ typedef enum {
     A_TIMER_INVALID = -1,
     A_TIMER_MS,
     A_TIMER_SEC,
-    A_TIMER_FRAMES,
+    A_TIMER_TICKS,
     A_TIMER_NUM
 } ATimerType;
 

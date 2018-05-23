@@ -31,4 +31,4 @@ extern const char* a_button_getName(const AInputButton* Button);
 extern bool a_button_getPressed(AInputButton* Button);
 extern void a_button_release(const AInputButton* Button);
 extern bool a_button_getPressedOnce(AInputButton* Button);
-extern void a_button_setRepeat(AInputButton* Button, unsigned RepeatFrames);
+extern void a_button_setRepeat(AInputButton* Button, unsigned RepeatTicks);

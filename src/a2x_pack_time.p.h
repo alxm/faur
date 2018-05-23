@@ -29,12 +29,12 @@ extern void a_time_waitSec(uint32_t Sec);
 extern void a_time_spinMs(uint32_t Ms);
 extern void a_time_spinSec(uint32_t Sec);
 
-static inline unsigned a_time_msToFrames(unsigned Ms)
+static inline unsigned a_time_msToTicks(unsigned Ms)
 {
     return (a_fps_getTickRate() * Ms + 500) / 1000;
 }
 
-static inline unsigned a_time_secToFrames(unsigned Sec)
+static inline unsigned a_time_secToTicks(unsigned Sec)
 {
     return a_fps_getTickRate() * Sec;
 }
