@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016 Alex Margarit
+    Copyright 2010, 2016, 2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -151,4 +151,53 @@ void* a_strhash__entryValue(const AStrHashEntry* Entry)
 const char* a_strhash__entryKey(const AStrHashEntry* Entry)
 {
     return Entry->key;
+}
+
+void a_strhash__printStats(const AStrHash* Hash, const char* Message)
+{
+    unsigned maxInSlot = 0, maxInSlotNum = 0;
+    unsigned occupiedSlots = 0;
+    unsigned slotsWithCollisions = 0;
+
+    for(int i = 0; i < A_STRHASH_NUM; i++) {
+        unsigned entriesInSlot = 0;
+
+        for(AStrHashEntry* e = Hash->entriesTable[i]; e; e = e->next) {
+            entriesInSlot++;
+        }
+
+        occupiedSlots += entriesInSlot > 0;
+
+        if(entriesInSlot >= 2) {
+            slotsWithCollisions++;
+
+            if(entriesInSlot > maxInSlot) {
+                maxInSlot = entriesInSlot;
+                maxInSlotNum = 1;
+            } else if(entriesInSlot == maxInSlot) {
+                maxInSlotNum++;
+            }
+        }
+    }
+
+    printf("%s: ", Message);
+
+    if(occupiedSlots == 0) {
+        printf("empty\n");
+        return;
+    }
+
+    printf("%d entries, %d%% slots used, %d%% have collisions - ",
+           a_list_getSize(Hash->entriesList),
+           100 * occupiedSlots / A_STRHASH_NUM,
+           100 * slotsWithCollisions / occupiedSlots);
+
+    if(maxInSlot < 2) {
+        printf("no collisions\n");
+    } else {
+        printf("longest chain is %d (%d slots, %d%%)\n",
+               maxInSlot,
+               maxInSlotNum,
+               100 * maxInSlotNum / occupiedSlots);
+    }
 }

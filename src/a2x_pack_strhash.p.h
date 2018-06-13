@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016 Alex Margarit
+    Copyright 2010, 2016, 2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -52,3 +52,5 @@ extern const char* a_strhash__entryKey(const AStrHashEntry* Entry);
                       Name = a_strhash__entryKey(a__entry))
 
 #define A_STRHASH_KEY() a_strhash__entryKey(a__entry)
+
+extern void a_strhash__printStats(const AStrHash* Hash, const char* Message);
