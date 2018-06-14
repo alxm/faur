@@ -192,7 +192,7 @@ bool a_file_readLine(AFile* File)
     return true;
 }
 
-char* a_file_getLine(const AFile* File)
+const char* a_file_getLine(const AFile* File)
 {
     return File->lineBuffer;
 }

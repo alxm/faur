@@ -1,5 +1,5 @@
 /*
-    Copyright 2016, 2017 Alex Margarit
+    Copyright 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -24,9 +24,9 @@
 #include "a2x_pack_out.v.h"
 
 struct AStrBuilder {
-    char* buffer;
     size_t size;
     size_t index;
+    char buffer[];
 };
 
 AStrBuilder* a_strbuilder_new(size_t Bytes)
@@ -35,20 +35,17 @@ AStrBuilder* a_strbuilder_new(size_t Bytes)
         a_out__fatal("a_strbuilder_new: invalid size 0");
     }
 
-    AStrBuilder* b = a_mem_malloc(sizeof(AStrBuilder));
-
-    b->buffer = a_mem_malloc(Bytes);
-    b->buffer[0] = '\0';
+    AStrBuilder* b = a_mem_malloc(sizeof(AStrBuilder) + Bytes);
 
     b->size = Bytes;
     b->index = 0;
+    b->buffer[0] = '\0';
 
     return b;
 }
 
 void a_strbuilder_free(AStrBuilder* Builder)
 {
-    free(Builder->buffer);
     free(Builder);
 }
 

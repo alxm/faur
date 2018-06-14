@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016 Alex Margarit
+    Copyright 2010, 2016, 2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -24,11 +24,12 @@
 #include "a2x_pack_out.v.h"
 #include "a2x_pack_str.v.h"
 
-#define A_STRHASH_NUM 256
+#define A_STRHASH__SLOTS 128
+#define A_STRHASH__SLOTS_MASK (A_STRHASH__SLOTS - 1)
 
 struct AStrHash {
     AList* entriesList;
-    AStrHashEntry* entriesTable[A_STRHASH_NUM];
+    AStrHashEntry* slots[A_STRHASH__SLOTS];
 };
 
 struct AStrHashEntry {
@@ -37,16 +38,15 @@ struct AStrHashEntry {
     AStrHashEntry* next;
 };
 
-static inline uint8_t getSlot(const char* Key)
+static inline unsigned getSlot(const char* Key)
 {
     unsigned s = 0;
 
     for( ; *Key != '\0'; Key++) {
-        s <<= 1;
-        s ^= (unsigned)*Key;
+        s = (unsigned)*Key + (s << 5) - s;
     }
 
-    return s & 0xff;
+    return s & A_STRHASH__SLOTS_MASK;
 }
 
 AStrHash* a_strhash_new(void)
@@ -55,8 +55,8 @@ AStrHash* a_strhash_new(void)
 
     h->entriesList = a_list_new();
 
-    for(int i = A_STRHASH_NUM; i--; ) {
-        h->entriesTable[i] = NULL;
+    for(int i = A_STRHASH__SLOTS; i--; ) {
+        h->slots[i] = NULL;
     }
 
     return h;
@@ -84,21 +84,21 @@ void a_strhash_freeEx(AStrHash* Hash, AFree* Free)
 
 void a_strhash_add(AStrHash* Hash, const char* Key, void* Content)
 {
-    const uint8_t slot = getSlot(Key);
-    AStrHashEntry* oldEntry = Hash->entriesTable[slot];
+    unsigned slot = getSlot(Key);
+    AStrHashEntry* oldEntry = Hash->slots[slot];
     AStrHashEntry* newEntry = a_mem_malloc(sizeof(AStrHashEntry));
 
     newEntry->key = a_str_dup(Key);
     newEntry->content = Content;
     newEntry->next = oldEntry;
 
-    Hash->entriesTable[slot] = newEntry;
+    Hash->slots[slot] = newEntry;
     a_list_addLast(Hash->entriesList, newEntry);
 }
 
 void* a_strhash_update(AStrHash* Hash, const char* Key, void* NewContent)
 {
-    for(AStrHashEntry* e = Hash->entriesTable[getSlot(Key)]; e; e = e->next) {
+    for(AStrHashEntry* e = Hash->slots[getSlot(Key)]; e; e = e->next) {
         if(a_str_equal(Key, e->key)) {
             void* oldContent = e->content;
             e->content = NewContent;
@@ -113,7 +113,7 @@ void* a_strhash_update(AStrHash* Hash, const char* Key, void* NewContent)
 
 void* a_strhash_get(const AStrHash* Hash, const char* Key)
 {
-    for(AStrHashEntry* e = Hash->entriesTable[getSlot(Key)]; e; e = e->next) {
+    for(AStrHashEntry* e = Hash->slots[getSlot(Key)]; e; e = e->next) {
         if(a_str_equal(Key, e->key)) {
             return e->content;
         }
@@ -124,7 +124,7 @@ void* a_strhash_get(const AStrHash* Hash, const char* Key)
 
 bool a_strhash_contains(const AStrHash* Hash, const char* Key)
 {
-    for(AStrHashEntry* e = Hash->entriesTable[getSlot(Key)]; e; e = e->next) {
+    for(AStrHashEntry* e = Hash->slots[getSlot(Key)]; e; e = e->next) {
         if(a_str_equal(Key, e->key)) {
             return true;
         }
@@ -151,4 +151,53 @@ void* a_strhash__entryValue(const AStrHashEntry* Entry)
 const char* a_strhash__entryKey(const AStrHashEntry* Entry)
 {
     return Entry->key;
+}
+
+void a_strhash__printStats(const AStrHash* Hash, const char* Message)
+{
+    unsigned maxInSlot = 0, maxInSlotNum = 0;
+    unsigned occupiedSlots = 0;
+    unsigned slotsWithCollisions = 0;
+
+    for(int i = 0; i < A_STRHASH__SLOTS; i++) {
+        unsigned entriesInSlot = 0;
+
+        for(AStrHashEntry* e = Hash->slots[i]; e; e = e->next) {
+            entriesInSlot++;
+        }
+
+        occupiedSlots += entriesInSlot > 0;
+
+        if(entriesInSlot >= 2) {
+            slotsWithCollisions++;
+
+            if(entriesInSlot > maxInSlot) {
+                maxInSlot = entriesInSlot;
+                maxInSlotNum = 1;
+            } else if(entriesInSlot == maxInSlot) {
+                maxInSlotNum++;
+            }
+        }
+    }
+
+    printf("%s: ", Message);
+
+    if(occupiedSlots == 0) {
+        printf("empty\n");
+        return;
+    }
+
+    printf("%d entries, %d%% slots used, %d%% have collisions - ",
+           a_list_getSize(Hash->entriesList),
+           100 * occupiedSlots / A_STRHASH__SLOTS,
+           100 * slotsWithCollisions / occupiedSlots);
+
+    if(maxInSlot < 2) {
+        printf("no collisions\n");
+    } else {
+        printf("longest chain is %d (%d slots, %d%%)\n",
+               maxInSlot,
+               maxInSlotNum,
+               100 * maxInSlotNum / occupiedSlots);
+    }
 }
