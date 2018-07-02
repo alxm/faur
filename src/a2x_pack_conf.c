@@ -28,11 +28,13 @@
 void a_conf__init(void)
 {
     const char* conf_name = a_settings_getString("app.conf");
+
     if(!a_file_exists(conf_name)) {
         return;
     }
 
     AFile* f = a_file_open(conf_name, "r");
+
     if(!f) {
         return;
     }

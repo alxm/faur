@@ -106,8 +106,8 @@ bool a_file_read(AFile* File, void* Buffer, size_t Size)
     readCount = fread(Buffer, Size, 1, File->handle);
 
     if(readCount != 1) {
-        a_out__warning("a_file_read: could not read %u bytes from %s",
-                       Size, File->name);
+        a_out__warning(
+            "a_file_read: could not read %u bytes from %s", Size, File->name);
         return false;
     }
 
@@ -121,8 +121,8 @@ bool a_file_write(AFile* File, const void* Buffer, size_t Size)
     writeCount = fwrite(Buffer, Size, 1, File->handle);
 
     if(writeCount != 1) {
-        a_out__error("a_file_write: could not write %u bytes to %s",
-                     Size, File->name);
+        a_out__error(
+            "a_file_write: could not write %u bytes to %s", Size, File->name);
         return false;
     }
 
@@ -205,24 +205,24 @@ void a_file_rewind(const AFile* File)
 void a_file_seekStart(const AFile* File, long int Offset)
 {
     if(fseek(File->handle, Offset, SEEK_SET) != 0) {
-        a_out__error("%s: could not seek %ld bytes from start",
-                     File->name, Offset);
+        a_out__error(
+            "%s: could not seek %ld bytes from start", File->name, Offset);
     }
 }
 
 void a_file_seekEnd(const AFile* File, long int Offset)
 {
     if(fseek(File->handle, Offset, SEEK_END) != 0) {
-        a_out__error("%s: could not seek %ld bytes from end",
-                     File->name, Offset);
+        a_out__error(
+            "%s: could not seek %ld bytes from end", File->name, Offset);
     }
 }
 
 void a_file_seekCurrent(const AFile* File, long int Offset)
 {
     if(fseek(File->handle, Offset, SEEK_CUR) != 0) {
-        a_out__error("%s: could not seek %ld bytes from current",
-                     File->name, Offset);
+        a_out__error(
+            "%s: could not seek %ld bytes from current", File->name, Offset);
     }
 }
 

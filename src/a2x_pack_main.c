@@ -78,15 +78,14 @@ int main(int Argc, char* Argv[])
     a_console__init();
     a_settings__init();
 
-    a_out__message("a2x %s, %s",
-        A__MAKE_CURRENT_GIT_BRANCH,
-        A__MAKE_COMPILE_TIME);
+    a_out__message(
+        "a2x %s, %s", A__MAKE_CURRENT_GIT_BRANCH, A__MAKE_COMPILE_TIME);
 
     a_out__message("%s %s by %s, %s",
-        a_settings_getString("app.title"),
-        a_settings_getString("app.version"),
-        a_settings_getString("app.author"),
-        a_settings_getString("app.buildtime"));
+                   a_settings_getString("app.title"),
+                   a_settings_getString("app.version"),
+                   a_settings_getString("app.author"),
+                   a_settings_getString("app.buildtime"));
 
     a_conf__init();
     a_platform__init();

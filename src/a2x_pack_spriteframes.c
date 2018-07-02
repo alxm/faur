@@ -52,10 +52,8 @@ ASpriteFrames* a_spriteframes_newFromSprite(const ASprite* Sheet, int X, int Y, 
     ASpriteFrames* f = a_spriteframes_newBlank(CallsToNextFrame);
 
     if(X < 0 || X >= Sheet->w || Y < 0 || Y >= Sheet->h) {
-        a_out__fatal("%s coords %d, %d are invalid",
-                     A_SPRITE__NAME(Sheet),
-                     X,
-                     Y);
+        a_out__fatal(
+            "%s coords %d, %d are invalid", A_SPRITE__NAME(Sheet), X, Y);
     }
 
     while(X < Sheet->w) {

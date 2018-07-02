@@ -162,9 +162,7 @@ static void set(const char* Key, const char* Value, bool UserSet)
             int x = atoi(Value);
 
             if(x < 0) {
-                a_out__error("Invalid value '%s' for setting '%s'",
-                             Value,
-                             Key);
+                a_out__error("Invalid value '%s' for setting '%s'", Value, Key);
             }
 
             s->value.uinteger = (unsigned)x;

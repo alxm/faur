@@ -82,10 +82,8 @@ void a_platform__setScreen(int Width, int Height, bool FullScreen)
             videoFlags |= SDL_FULLSCREEN;
         }
 
-        bpp = SDL_VideoModeOK(Width,
-                              Height,
-                              A_PIXEL__BPP,
-                              videoFlags);
+        bpp = SDL_VideoModeOK(Width, Height, A_PIXEL__BPP, videoFlags);
+
         if(bpp == 0) {
             a_out__fatal("SDL: %dx%d:%d video not available",
                          Width,
@@ -93,10 +91,8 @@ void a_platform__setScreen(int Width, int Height, bool FullScreen)
                          A_PIXEL__BPP);
         }
 
-        g_sdlScreen = SDL_SetVideoMode(Width,
-                                       Height,
-                                       A_PIXEL__BPP,
-                                       videoFlags);
+        g_sdlScreen = SDL_SetVideoMode(Width, Height, A_PIXEL__BPP, videoFlags);
+
         if(g_sdlScreen == NULL) {
             a_out__fatal("SDL: %s", SDL_GetError());
         }
@@ -153,9 +149,8 @@ void a_platform__setScreen(int Width, int Height, bool FullScreen)
             }
         }
 
-        ret = SDL_RenderSetLogicalSize(a__sdlRenderer,
-                                       Width,
-                                       Height);
+        ret = SDL_RenderSetLogicalSize(a__sdlRenderer, Width, Height);
+
         if(ret < 0) {
             a_out__fatal("SDL_RenderSetLogicalSize failed: %s", SDL_GetError());
         }
@@ -171,9 +166,8 @@ void a_platform__setScreen(int Width, int Height, bool FullScreen)
             }
         #endif
 
-        SDL_SetHintWithPriority(SDL_HINT_RENDER_SCALE_QUALITY,
-                                "nearest",
-                                SDL_HINT_OVERRIDE);
+        SDL_SetHintWithPriority(
+            SDL_HINT_RENDER_SCALE_QUALITY, "nearest", SDL_HINT_OVERRIDE);
 
         a_pixel_toRgb(a_settings_getPixel("video.color.border"),
                       &g_clearR,
@@ -213,8 +207,8 @@ void a_platform__showScreen(void)
 
                 if(SDL_MUSTLOCK(g_sdlScreen)) {
                     if(SDL_LockSurface(g_sdlScreen) < 0) {
-                        a_out__fatal("SDL_LockSurface failed: %s",
-                                     SDL_GetError());
+                        a_out__fatal(
+                            "SDL_LockSurface failed: %s", SDL_GetError());
                     }
                 }
 
@@ -240,8 +234,7 @@ void a_platform__showScreen(void)
         if(a_settings_getBool("video.doubleBuffer")) {
             if(SDL_MUSTLOCK(g_sdlScreen)) {
                 if(SDL_LockSurface(g_sdlScreen) < 0) {
-                    a_out__fatal("SDL_LockSurface failed: %s",
-                                 SDL_GetError());
+                    a_out__fatal("SDL_LockSurface failed: %s", SDL_GetError());
                 }
             }
 
@@ -261,8 +254,7 @@ void a_platform__showScreen(void)
 
             if(SDL_MUSTLOCK(g_sdlScreen)) {
                 if(SDL_LockSurface(g_sdlScreen) < 0) {
-                    a_out__fatal("SDL_LockSurface failed: %s",
-                                 SDL_GetError());
+                    a_out__fatal("SDL_LockSurface failed: %s", SDL_GetError());
                 }
             }
 
@@ -275,8 +267,8 @@ void a_platform__showScreen(void)
             }
 
             if(SDL_RenderSetClipRect(a__sdlRenderer, NULL) < 0) {
-                a_out__error("SDL_RenderSetClipRect failed: %s",
-                             SDL_GetError());
+                a_out__error(
+                    "SDL_RenderSetClipRect failed: %s", SDL_GetError());
             }
         #endif
 
@@ -325,8 +317,8 @@ void a_platform__showScreen(void)
 void a_platform__setFullScreen(bool FullScreen)
 {
     #if A_PLATFORM_LIB_SDL == 2
-        if(SDL_SetWindowFullscreen(g_sdlWindow,
-                                   FullScreen? SDL_WINDOW_FULLSCREEN : 0) < 0) {
+        if(SDL_SetWindowFullscreen(
+            g_sdlWindow, FullScreen? SDL_WINDOW_FULLSCREEN : 0) < 0) {
 
             a_out__error("SDL_SetWindowFullscreen failed: %s", SDL_GetError());
         }
@@ -354,8 +346,7 @@ void a_platform__getNativeResolution(int* Width, int* Height)
     SDL_DisplayMode mode;
 
     if(SDL_GetCurrentDisplayMode(0, &mode) < 0) {
-        a_out__error("SDL_GetCurrentDisplayMode failed: %s",
-                     SDL_GetError());
+        a_out__error("SDL_GetCurrentDisplayMode failed: %s", SDL_GetError());
         return;
     }
 

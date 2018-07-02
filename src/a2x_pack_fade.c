@@ -55,8 +55,8 @@ static void allocateScreenBuffers(bool CaptureCurrentScreen)
 
     if(CaptureCurrentScreen) {
         if(g_oldCapturedScreen == NULL) {
-            g_oldCapturedScreen = a_screen_new(a__screen.width,
-                                               a__screen.height);
+            g_oldCapturedScreen = a_screen_new(
+                                    a__screen.width, a__screen.height);
         }
 
         // Capture the screen before the caller will draw something new

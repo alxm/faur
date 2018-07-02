@@ -73,8 +73,8 @@ void a_system_declare(const char* Name, const char* Components, ASystemHandler* 
         AComponent* c = a_strhash_get(a__ecsComponents, name);
 
         if(c == NULL) {
-            a_out__fatal("Unknown component '%s' for system '%s'",
-                         name, Name);
+            a_out__fatal(
+                "Unknown component '%s' for system '%s'", name, Name);
         }
 
         a_bitfield_set(s->componentBits, c->bit);

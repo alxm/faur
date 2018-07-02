@@ -92,21 +92,17 @@ void a_font__init(void)
     colors[A_FONT_ID_RED] = a_pixel_fromHex(0xcf2f4f);
     colors[A_FONT_ID_BLUE] = a_pixel_fromHex(0x3f8fdf);
 
-    g_defaultFonts[A_FONT_ID_DEFAULT] = a_font_newFromSprite(fontSprite,
-                                                             0,
-                                                             9,
-                                                             A_FONT_LOAD_ALL);
+    g_defaultFonts[A_FONT_ID_DEFAULT] = a_font_newFromSprite(
+                                            fontSprite, 0, 9, A_FONT_LOAD_ALL);
 
-    g_defaultFonts[A_FONT_ID_WHITE] = a_font_newFromSprite(fontSprite,
-                                                           0,
-                                                           0,
-                                                           A_FONT_LOAD_ALL);
+    g_defaultFonts[A_FONT_ID_WHITE] = a_font_newFromSprite(
+                                            fontSprite, 0, 0, A_FONT_LOAD_ALL);
 
     a_sprite_free(fontSprite);
 
     for(AFontId f = A_FONT_ID_WHITE + 1; f < A_FONT_ID_NUM; f++) {
-        g_defaultFonts[f] = a_font_dup(g_defaultFonts[A_FONT_ID_WHITE],
-                                       colors[f]);
+        g_defaultFonts[f] = a_font_dup(
+                                g_defaultFonts[A_FONT_ID_WHITE], colors[f]);
     }
 
     a_font_reset();

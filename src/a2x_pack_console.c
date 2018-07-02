@@ -118,9 +118,8 @@ static void screenCallback(void)
         a_font__setFont(A_FONT_ID_WHITE);
         a_font_printf(" %s", A__MAKE_PLATFORM_NAME);
         a_font__setFont(A_FONT_ID_LIGHT_GRAY);
-        a_font_printf(" %s (%s)",
-                      A__MAKE_CURRENT_GIT_BRANCH,
-                      A__MAKE_COMPILE_TIME);
+        a_font_printf(
+            " %s (%s)", A__MAKE_CURRENT_GIT_BRANCH, A__MAKE_COMPILE_TIME);
         a_font_newLine();
 
         a_font__setFont(A_FONT_ID_WHITE);
@@ -166,8 +165,8 @@ static void screenCallback(void)
         a_font_newLine();
 
         a_font__setFont(A_FONT_ID_BLUE);
-        a_font_printf("Vsync is %s",
-                      a_settings_getBool("video.vsync") ? "on" : "off");
+        a_font_printf(
+            "Vsync is %s", a_settings_getBool("video.vsync") ? "on" : "off");
         a_font_newLine();
     }
 
@@ -200,8 +199,8 @@ void a_console__init2(void)
 
     a_spriteframes_free(frames, false);
 
-    g_linesPerScreen = (unsigned)
-                        (a_screen_getHeight() / a_font_getLineHeight() - 2);
+    g_linesPerScreen =
+        (unsigned)(a_screen_getHeight() / a_font_getLineHeight() - 2);
 
     // In case messages were logged between init and init2
     while(a_list_getSize(g_lines) > g_linesPerScreen) {

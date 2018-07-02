@@ -185,15 +185,14 @@ void a_platform_sdl_input__init(void)
 
     #if A_PLATFORM_LIB_SDL == 2
         if(joysticksNum > 0) {
-            const char* mapFile = a_settings_getString("input.mapfile");
-            int mapsNum = SDL_GameControllerAddMappingsFromFile(mapFile);
+            const char* mFile = a_settings_getString("input.mapfile");
+            int mNum = SDL_GameControllerAddMappingsFromFile(mFile);
 
-            if(mapsNum < 0) {
-                a_out__error("Cannot load mappings from %s: %s",
-                             mapFile,
-                             SDL_GetError());
+            if(mNum < 0) {
+                a_out__error(
+                    "Cannot load mappings from %s: %s", mFile, SDL_GetError());
             } else {
-                a_out__message("Loaded %d mappings from %s", mapsNum, mapFile);
+                a_out__message("Loaded %d mappings from %s", mNum, mFile);
             }
         }
     #endif
@@ -208,9 +207,8 @@ void a_platform_sdl_input__init(void)
                 controller = SDL_GameControllerOpen(i);
 
                 if(controller == NULL) {
-                    a_out__error("SDL_GameControllerOpen(%d): %s",
-                                 i,
-                                 SDL_GetError());
+                    a_out__error(
+                        "SDL_GameControllerOpen(%d): %s", i, SDL_GetError());
                 } else {
                     joystick = SDL_GameControllerGetJoystick(controller);
 
@@ -229,9 +227,8 @@ void a_platform_sdl_input__init(void)
             joystick = SDL_JoystickOpen(i);
 
             if(joystick == NULL) {
-                a_out__error("SDL_JoystickOpen(%d) failed: %s",
-                             i,
-                             SDL_GetError());
+                a_out__error(
+                    "SDL_JoystickOpen(%d) failed: %s", i, SDL_GetError());
                 continue;
             }
         }
@@ -380,10 +377,8 @@ void a_platform_sdl_input__init(void)
                         continue;
                     }
 
-                    addButton(c->buttons,
-                              buttonNames[b][0],
-                              buttonNames[b][1],
-                              b);
+                    addButton(
+                        c->buttons, buttonNames[b][0], buttonNames[b][1], b);
                 }
 
                 for(SDL_GameControllerAxis a = SDL_CONTROLLER_AXIS_LEFTX;
@@ -582,8 +577,8 @@ void a_platform__bindInputs(void)
         #endif
 
         A_STRHASH_ITERATE(c->buttons, ASdlInputButton*, b) {
-            b->logicalButton = a_input_button__newSource(b->header.name,
-                                                         A_STRHASH_KEY());
+            b->logicalButton = a_input_button__newSource(
+                                b->header.name, A_STRHASH_KEY());
             a_controller__addButton(b->logicalButton, A_STRHASH_KEY());
         }
 
@@ -717,14 +712,14 @@ void a_platform__pollInputs(void)
                         if(state & 1) {
                             if(!b->lastStatePressed) {
                                 b->lastStatePressed = true;
-                                a_input_button__setState(b->logicalButton,
-                                                         true);
+                                a_input_button__setState(
+                                    b->logicalButton, true);
                             }
                         } else {
                             if(b->lastStatePressed) {
                                 b->lastStatePressed = false;
-                                a_input_button__setState(b->logicalButton,
-                                                         false);
+                                a_input_button__setState(
+                                    b->logicalButton, false);
                             }
                         }
                     }
@@ -747,8 +742,8 @@ void a_platform__pollInputs(void)
 
                     A_STRHASH_ITERATE(c->axes, ASdlInputAnalog*, a) {
                         if(event.jaxis.axis == a->axisIndex) {
-                            a_input_analog__setAxisValue(a->logicalAnalog,
-                                                         event.jaxis.value);
+                            a_input_analog__setAxisValue(
+                                a->logicalAnalog, event.jaxis.value);
                             break;
                         }
                     }
@@ -786,8 +781,8 @@ void a_platform__pollInputs(void)
 
                     A_STRHASH_ITERATE(c->axes, ASdlInputAnalog*, a) {
                         if(event.caxis.axis == a->axisIndex) {
-                            a_input_analog__setAxisValue(a->logicalAnalog,
-                                                         event.caxis.value);
+                            a_input_analog__setAxisValue(
+                                a->logicalAnalog, event.caxis.value);
                             break;
                         }
                     }
@@ -799,9 +794,8 @@ void a_platform__pollInputs(void)
 
             case SDL_MOUSEMOTION: {
                 A_STRHASH_ITERATE(g_touchScreens, ASdlInputTouch*, t) {
-                    a_input_touch__addMotion(t->logicalTouch,
-                                             event.button.x,
-                                             event.button.y);
+                    a_input_touch__addMotion(
+                        t->logicalTouch, event.button.x, event.button.y);
                 }
             } break;
 

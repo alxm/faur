@@ -263,12 +263,12 @@ void* a_entity_reqComponent(const AEntity* Entity, const char* Component)
 void a_entity_mute(AEntity* Entity)
 {
     if(a_entity_isMuted(Entity)) {
-        a_out__warningv("Entity '%s' is already muted",
-                        a_entity_getId(Entity));
+        a_out__warningv(
+            "Entity '%s' is already muted", a_entity_getId(Entity));
         return;
     } else if(a_entity_isRemoved(Entity)) {
-        a_out__warningv("Entity '%s' was removed, cannot mute",
-                        a_entity_getId(Entity));
+        a_out__warningv(
+            "Entity '%s' was removed, cannot mute", a_entity_getId(Entity));
         return;
     }
 

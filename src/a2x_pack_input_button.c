@@ -135,10 +135,8 @@ AInputButton* a_button_new(const char* Ids)
 
             a_list_freeEx(tok, free);
         } else {
-            a_input__findSourceInput(g_keys,
-                                     a_controller__getButtonCollection(),
-                                     id,
-                                     &b->header);
+            a_input__findSourceInput(
+                g_keys, a_controller__getButtonCollection(), id, &b->header);
         }
     }
 

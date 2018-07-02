@@ -137,7 +137,8 @@ void a_screen__init(void)
 
     #if A_PLATFORM_SYSTEM_DESKTOP
         g_fullScreenButton = a_button_new(
-            a_settings_getString("video.fullscreen.button"));
+                                a_settings_getString(
+                                    "video.fullscreen.button"));
 
         a_input__addCallback(inputCallback);
     #endif
@@ -283,10 +284,8 @@ void a_screen_blit(const AScreen* Screen)
     }
 
     #if A_PLATFORM_RENDER_SOFTWARE
-        bool noClipping = a_screen_isBoxInsideClip(0,
-                                                   0,
-                                                   a__screen.width,
-                                                   a__screen.height);
+        bool noClipping = a_screen_isBoxInsideClip(
+                            0, 0, a__screen.width, a__screen.height);
         APixel* dst = a__screen.pixels;
         APixel* src = Screen->pixels;
         int r = 0, g = 0, b = 0;

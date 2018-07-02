@@ -100,10 +100,8 @@ ASprite* a_sprite_newFromSprite(const ASprite* Sheet, int X, int Y)
     const int sheetHeight = Sheet->h;
 
     if(X < 0 || X >= Sheet->w || Y < 0 || Y >= Sheet->h) {
-        a_out__fatal("%s coords %d, %d are invalid",
-                     A_SPRITE__NAME(Sheet),
-                     X,
-                     Y);
+        a_out__fatal(
+            "%s coords %d, %d are invalid", A_SPRITE__NAME(Sheet), X, Y);
     }
 
     for(int endX = X; endX < sheetWidth; endX++) {
@@ -158,10 +156,8 @@ doneEdges:
             spriteWidth = sheetWidth;
             spriteHeight = sheetHeight;
         } else {
-            a_out__fatal("%s coords %d, %d are invalid",
-                         A_SPRITE__NAME(Sheet),
-                         X,
-                         Y);
+            a_out__fatal(
+                "%s coords %d, %d are invalid", A_SPRITE__NAME(Sheet), X, Y);
         }
     }
 

@@ -82,10 +82,8 @@ AInputAnalog* a_analog_new(const char* Ids)
     AList* tok = a_str_split(Ids, ", ");
 
     A_LIST_ITERATE(tok, char*, id) {
-        a_input__findSourceInput(NULL,
-                                 a_controller__getAnalogCollection(),
-                                 id,
-                                 &a->header);
+        a_input__findSourceInput(
+            NULL, a_controller__getAnalogCollection(), id, &a->header);
     }
 
     a_list_freeEx(tok, free);

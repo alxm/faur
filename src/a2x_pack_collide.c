@@ -58,8 +58,8 @@ AColMap* a_colmap_new(int Width, int Height, int MaxObjectDim)
     m->h = 1 << a_math_max(0, nextpow(Height) - m->bitShift);
 
     m->submaps = a_mem_malloc((unsigned)m->h * sizeof(AList**));
-    m->submapsData = a_mem_malloc((unsigned)m->h * (unsigned)m->w
-                                    * sizeof(AList*));
+    m->submapsData = a_mem_malloc(
+                        (unsigned)m->h * (unsigned)m->w * sizeof(AList*));
 
     for(int i = m->h; i--; ) {
         m->submaps[i] = m->submapsData + i * m->w;

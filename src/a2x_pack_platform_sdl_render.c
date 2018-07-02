@@ -237,9 +237,8 @@ void a_platform__drawCircleOutline(int X, int Y, int Radius)
         scanlines[scanline4][1] = (SDL_Point){x4, y4};
     }
 
-    if(SDL_RenderDrawPoints(a__sdlRenderer,
-                            (SDL_Point*)scanlines,
-                            numPointPairs * 4 * 2) < 0) {
+    if(SDL_RenderDrawPoints(
+        a__sdlRenderer, (SDL_Point*)scanlines, numPointPairs * 4 * 2) < 0) {
 
         a_out__error("SDL_RenderDrawPoints failed: %s", SDL_GetError());
     }
@@ -314,9 +313,8 @@ void a_platform__drawCircleFilled(int X, int Y, int Radius)
         scanlines[scanline4] = (SDL_Rect){x3, y4, w3, 1};
     }
 
-    if(SDL_RenderFillRects(a__sdlRenderer,
-                           scanlines,
-                           (int)A_ARRAY_LEN(scanlines)) < 0) {
+    if(SDL_RenderFillRects(
+        a__sdlRenderer, scanlines, (int)A_ARRAY_LEN(scanlines)) < 0) {
 
         a_out__error("SDL_RenderFillRects failed: %s", SDL_GetError());
     }
@@ -400,10 +398,8 @@ void a_platform__commitSpriteTexture(ASprite* Sprite)
             a_out__fatal("SDL_CreateTexture failed: %s", SDL_GetError());
         }
 
-        if(SDL_UpdateTexture(t,
-                             NULL,
-                             texture->pixels,
-                             width * (int)sizeof(APixel)) < 0) {
+        if(SDL_UpdateTexture(
+            t, NULL, texture->pixels, width * (int)sizeof(APixel)) < 0) {
 
             a_out__fatal("SDL_UpdateTexture failed: %s", SDL_GetError());
         }

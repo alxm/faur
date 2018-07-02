@@ -145,14 +145,14 @@ void a_ecs__tick(void)
     A_LIST_ITERATE(g_ecs->lists[A_ECS__RESTORE], AEntity*, e) {
         if(!e->removedFromActive) {
             A_LIST_ITERATE(e->matchingSystemsActive, ASystem*, system) {
-                a_list_addLast(e->systemNodesActive,
-                               a_list_addLast(system->entities, e));
+                a_list_addLast(
+                    e->systemNodesActive, a_list_addLast(system->entities, e));
             }
         }
 
         A_LIST_ITERATE(e->matchingSystemsEither, ASystem*, system) {
-            a_list_addLast(e->systemNodesEither,
-                           a_list_addLast(system->entities, e));
+            a_list_addLast(
+                e->systemNodesEither, a_list_addLast(system->entities, e));
         }
 
         a_ecs__addEntityToList(e, A_ECS__RUNNING);
@@ -167,8 +167,8 @@ void a_ecs__tick(void)
 
     // Send non-immediate messages
     A_LIST_ITERATE(g_ecs->messageQueue, AMessage*, m) {
-        AMessageHandlerContainer* h = a_strhash_get(m->to->handlers,
-                                                    m->message);
+        AMessageHandlerContainer* h = a_strhash_get(
+                                        m->to->handlers, m->message);
 
         if(!a_entity_isRemoved(m->to) && !a_entity_isRemoved(m->from)) {
             if(a_entity_isMuted(m->to)) {

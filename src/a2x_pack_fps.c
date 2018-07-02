@@ -102,7 +102,7 @@ void a_fps__init(void)
 
     #if ALLOW_SLEEP
         g_run.canSleepAgainTimer = a_timer_new(
-                                        A_TIMER_SEC, NO_SLEEP_RESET_SEC, false);
+                                    A_TIMER_SEC, NO_SLEEP_RESET_SEC, false);
         g_run.canSleep = true;
     #endif
 
