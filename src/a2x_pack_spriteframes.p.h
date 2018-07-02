@@ -30,6 +30,7 @@ extern ASpriteFrames* a_spriteframes_newBlank(unsigned CallsToNextFrame);
 extern ASpriteFrames* a_spriteframes_dup(const ASpriteFrames* Frames, bool DupSprites);
 extern void a_spriteframes_free(ASpriteFrames* Frames, bool FreeSprites);
 
+extern void a_spriteframes_clear(ASpriteFrames* Frames, bool FreeSprites);
 extern void a_spriteframes_reset(ASpriteFrames* Frames);
 extern void a_spriteframes_randomize(ASpriteFrames* Frames);
 
