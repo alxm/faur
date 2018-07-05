@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2017 Alex Margarit
+    Copyright 2010, 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -27,7 +27,7 @@ struct ASprite {
     APixel* pixels;
     size_t pixelsSize;
     char* nameId;
-    int w, wLog2, wOriginal, h;
+    int w, wOriginal, wLog2, h;
     APlatformTexture* texture;
 };
 

@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2017 Alex Margarit
+    Copyright 2010, 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -49,6 +49,7 @@ static ASprite* makeEmptySprite(int Width, int Height)
     s->pixelsSize = (unsigned)Width * (unsigned)Height * sizeof(APixel);
     s->nameId = NULL;
     s->w = Width;
+    s->wOriginal = Width;
     s->wLog2 = (int)log2f((float)Width);
     s->h = Height;
     s->texture = NULL;
@@ -306,7 +307,6 @@ void a_sprite_pow2Width(ASprite* Sprite)
 
     Sprite->w = newWidth;
     Sprite->wLog2 = power;
-    Sprite->wOriginal = oldWidth;
     Sprite->pixelsSize = newSize;
 
     assignPixels(Sprite, newPixels - newSize / sizeof(APixel));
