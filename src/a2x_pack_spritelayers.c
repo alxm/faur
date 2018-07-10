@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016 Alex Margarit
+    Copyright 2010, 2016, 2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -29,25 +29,7 @@ typedef struct {
     int r, g, b, a;
 } ALayer;
 
-ASpriteLayers* a_spritelayers_new(void)
-{
-    return a_list_new();
-}
-
-void a_spritelayers_free(ASpriteLayers* Layers, bool FreeSprites)
-{
-    A_LIST_ITERATE(Layers, ALayer*, l) {
-        if(FreeSprites) {
-            a_sprite_free(l->sprite);
-        }
-
-        free(l);
-    }
-
-    a_list_free(Layers);
-}
-
-void a_spritelayers_add(ASpriteLayers* Layers, ASprite* Sprite, APixelBlend Blend, int Red, int Green, int Blue, int Alpha)
+static ALayer* layer_new(ASprite* Sprite, APixelBlend Blend, int Red, int Green, int Blue, int Alpha)
 {
     ALayer* l = a_mem_malloc(sizeof(ALayer));
 
@@ -58,7 +40,46 @@ void a_spritelayers_add(ASpriteLayers* Layers, ASprite* Sprite, APixelBlend Blen
     l->b = Blue;
     l->a = Alpha;
 
-    a_list_addLast(Layers, l);
+    return l;
+}
+
+static void layer_free(ALayer* Layer)
+{
+    free(Layer);
+}
+
+static void layer_freeEx(ALayer* Layer)
+{
+    a_sprite_free(Layer->sprite);
+    free(Layer);
+}
+
+ASpriteLayers* a_spritelayers_new(void)
+{
+    return a_list_new();
+}
+
+void a_spritelayers_free(ASpriteLayers* Layers, bool FreeSprites)
+{
+    if(FreeSprites) {
+        a_list_freeEx(Layers, (AFree*)layer_freeEx);
+    } else {
+        a_list_freeEx(Layers, (AFree*)layer_free);
+    }
+}
+
+void a_spritelayers_clear(ASpriteLayers* Layers, bool FreeSprites)
+{
+    if(FreeSprites) {
+        a_list_clearEx(Layers, (AFree*)layer_freeEx);
+    } else {
+        a_list_clearEx(Layers, (AFree*)layer_free);
+    }
+}
+
+void a_spritelayers_add(ASpriteLayers* Layers, ASprite* Sprite, APixelBlend Blend, int Red, int Green, int Blue, int Alpha)
+{
+    a_list_addLast(Layers, layer_new(Sprite, Blend, Red, Green, Blue, Alpha));
 }
 
 void a_spritelayers_blit(ASpriteLayers* Layers, int X, int Y)

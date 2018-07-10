@@ -140,6 +140,17 @@ void a_spriteframes_free(ASpriteFrames* Frames, bool FreeSprites)
     free(Frames);
 }
 
+void a_spriteframes_clear(ASpriteFrames* Frames, bool FreeSprites)
+{
+    if(FreeSprites) {
+        a_list_clearEx(Frames->sprites, (AFree*)a_sprite_free);
+    } else {
+        a_list_clear(Frames->sprites);
+    }
+
+    a_spriteframes_reset(Frames);
+}
+
 void a_spriteframes_reset(ASpriteFrames* Frames)
 {
     Frames->countdown = Frames->callsToNextFrame;

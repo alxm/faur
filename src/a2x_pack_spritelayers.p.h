@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016 Alex Margarit
+    Copyright 2010, 2016, 2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -27,5 +27,7 @@ typedef struct AList ASpriteLayers;
 extern ASpriteLayers* a_spritelayers_new(void);
 extern void a_spritelayers_free(ASpriteLayers* Layers, bool FreeSprites);
 
+extern void a_spritelayers_clear(ASpriteLayers* Layers, bool FreeSprites);
 extern void a_spritelayers_add(ASpriteLayers* Layers, ASprite* Sprite, APixelBlend Blend, int Red, int Green, int Blue, int Alpha);
+
 extern void a_spritelayers_blit(ASpriteLayers* Layers, int X, int Y);
