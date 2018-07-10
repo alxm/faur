@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016 Alex Margarit
+    Copyright 2010, 2016, 2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -72,14 +72,14 @@ void a_menu_freeEx(AMenu* Menu, AFree* ItemFree)
     free(Menu);
 }
 
-void a_menu_addSounds(AMenu* Menu, ASfx* Accept, ASfx* Cancel, ASfx* Browse)
+void a_menu_soundSet(AMenu* Menu, ASfx* Accept, ASfx* Cancel, ASfx* Browse)
 {
     Menu->soundAccept = Accept;
     Menu->soundCancel = Cancel;
     Menu->soundBrowse = Browse;
 }
 
-void a_menu_addItem(AMenu* Menu, void* Item)
+void a_menu_itemAdd(AMenu* Menu, void* Item)
 {
     a_list_addLast(Menu->items, Item);
 
@@ -88,7 +88,7 @@ void a_menu_addItem(AMenu* Menu, void* Item)
     }
 }
 
-void a_menu_handleInput(AMenu* Menu)
+void a_menu_tick(AMenu* Menu)
 {
     if(a_list_isEmpty(Menu->items) || Menu->state != A_MENU_STATE_RUNNING) {
         return;
@@ -143,27 +143,27 @@ void a_menu_handleInput(AMenu* Menu)
     }
 }
 
-AMenuState a_menu_getState(const AMenu* Menu)
+AMenuState a_menu_stateGet(const AMenu* Menu)
 {
     return Menu->state;
 }
 
-AList* a_menu_getItems(const AMenu* Menu)
+AList* a_menu_itemsListGet(const AMenu* Menu)
 {
     return Menu->items;
 }
 
-bool a_menu_isItemSelected(const AMenu* Menu, const void* Item)
+bool a_menu_itemIsSelected(const AMenu* Menu, const void* Item)
 {
     return Item == Menu->selectedItem;
 }
 
-unsigned a_menu_getSelectedIndex(const AMenu* Menu)
+unsigned a_menu_selectedIndexGet(const AMenu* Menu)
 {
     return Menu->selectedIndex;
 }
 
-void* a_menu_getSelectedItem(const AMenu* Menu)
+void* a_menu_itemGetSelected(const AMenu* Menu)
 {
     return Menu->selectedItem;
 }

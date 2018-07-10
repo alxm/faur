@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2017 Alex Margarit
+    Copyright 2010, 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -47,6 +47,6 @@ extern void a_screen__init(void);
 extern void a_screen__uninit(void);
 
 extern void a_screen__show(void);
-extern void a_screen__addOverlay(AScreenOverlay Callback);
+extern void a_screen__callbackAdd(AScreenOverlay Callback);
 
 extern bool a_screen__sameSize(const AScreen* Screen1, const AScreen* Screen2);

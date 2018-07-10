@@ -62,7 +62,7 @@ static void assignPixels(ASprite* Sprite, APixel* Pixels)
     free(Sprite->pixels);
     Sprite->pixels = Pixels;
 
-    a_platform__commitSpriteTexture(Sprite);
+    a_platform__textureSpriteCommit(Sprite);
 }
 
 ASprite* a_sprite_newFromFile(const char* Path)
@@ -223,7 +223,7 @@ ASprite* a_sprite_dup(const ASprite* Sprite)
 
 void a_sprite_free(ASprite* Sprite)
 {
-    a_platform__freeTexture(Sprite->texture);
+    a_platform__textureFree(Sprite->texture);
 
     free(Sprite->nameId);
     free(Sprite->pixels);
@@ -232,7 +232,7 @@ void a_sprite_free(ASprite* Sprite)
 
 void a_sprite_blit(const ASprite* Sprite, int X, int Y)
 {
-    a_platform__blitTexture(Sprite->texture, X, Y, a_pixel__state.fillBlit);
+    a_platform__textureBlit(Sprite->texture, X, Y, a_pixel__state.fillBlit);
 }
 
 void a_sprite_blitCenter(const ASprite* Sprite)
@@ -258,7 +258,7 @@ void a_sprite_blitCenterY(const ASprite* Sprite, int X)
 
 void a_sprite_blitEx(const ASprite* Sprite, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY)
 {
-    a_platform__blitTextureEx(Sprite->texture,
+    a_platform__textureBlitEx(Sprite->texture,
                               X,
                               Y,
                               Scale,
@@ -320,7 +320,7 @@ void a_sprite_swapColor(ASprite* Sprite, APixel OldColor, APixel NewColor)
         }
     }
 
-    a_platform__commitSpriteTexture(Sprite);
+    a_platform__textureSpriteCommit(Sprite);
 }
 
 void a_sprite_swapColors(ASprite* Sprite, APixel* OldColors, APixel* NewColors, unsigned NumColors)
@@ -336,7 +336,7 @@ void a_sprite_swapColors(ASprite* Sprite, APixel* OldColors, APixel* NewColors, 
         }
     }
 
-    a_platform__commitSpriteTexture(Sprite);
+    a_platform__textureSpriteCommit(Sprite);
 }
 
 int a_sprite_getWidth(const ASprite* Sprite)

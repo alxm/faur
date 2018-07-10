@@ -100,8 +100,8 @@ static void screenCallback(void)
     a_font_push();
     a_screen_clipReset();
 
-    a_pixel_setBlend(A_PIXEL_BLEND_RGB75);
-    a_pixel_setHex(0x1f0f0f);
+    a_pixel_blendSet(A_PIXEL_BLEND_RGB75);
+    a_pixel_hexSet(0x1f0f0f);
     a_draw_fill();
 
     a_pixel_reset();
@@ -200,7 +200,7 @@ void a_console__init2(void)
     a_spriteframes_free(frames, false);
 
     g_linesPerScreen =
-        (unsigned)(a_screen_getHeight() / a_font_lineHeightGet() - 2);
+        (unsigned)(a_screen_heightGet() / a_font_lineHeightGet() - 2);
 
     // In case messages were logged between init and init2
     while(a_list_getSize(g_lines) > g_linesPerScreen) {
@@ -210,7 +210,7 @@ void a_console__init2(void)
     g_toggle = a_button_new(a_settings_getString("console.button"));
 
     a_input__callbackAdd(inputCallback);
-    a_screen__addOverlay(screenCallback);
+    a_screen__callbackAdd(screenCallback);
 
     g_state = a_settings_getBool("console.on")
                 ? A_CONSOLE__STATE_VISIBLE

@@ -1,5 +1,5 @@
 /*
-    Copyright 2016, 2017 Alex Margarit
+    Copyright 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -22,11 +22,11 @@
 typedef int ARandomPrng(void);
 typedef void ARandomPrngSeed(unsigned Seed);
 
-extern void a_random_setGenerator(ARandomPrng* Rand, ARandomPrngSeed* Srand);
-extern void a_random_resetGenerator(void);
+extern void a_random_generatorSet(ARandomPrng* Rand, ARandomPrngSeed* Srand);
+extern void a_random_generatorReset(void);
 
-extern unsigned a_random_getSeed(void);
-extern void a_random_setSeed(unsigned Seed);
+extern unsigned a_random_seedGet(void);
+extern void a_random_seedSet(unsigned Seed);
 
 extern int a_random_int(int Max);
 extern unsigned a_random_intu(unsigned Max);

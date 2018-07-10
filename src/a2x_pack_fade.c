@@ -154,7 +154,7 @@ static A_STATE(a_fade__toColor)
         alpha_inc = a_fix_fromInt(A_PIXEL_ALPHA_MAX) / (int)g_frames;
 
         a_pixel_push();
-        a_pixel_setPixel(g_savedColor);
+        a_pixel_pixelSet(g_savedColor);
     }
 
     A_STATE_TICK
@@ -169,11 +169,11 @@ static A_STATE(a_fade__toColor)
 
     A_STATE_DRAW
     {
-        a_pixel_setBlend(A_PIXEL_BLEND_PLAIN);
+        a_pixel_blendSet(A_PIXEL_BLEND_PLAIN);
         a_screen_blit(g_capturedScreen);
 
-        a_pixel_setBlend(A_PIXEL_BLEND_RGBA);
-        a_pixel_setAlpha(a_fix_toInt(alpha));
+        a_pixel_blendSet(A_PIXEL_BLEND_RGBA);
+        a_pixel_alphaSet(a_fix_toInt(alpha));
         a_draw_fill();
     }
 
@@ -193,7 +193,7 @@ static A_STATE(a_fade__fromColor)
         updateCapturedScreenBuffer();
 
         a_pixel_push();
-        a_pixel_setPixel(g_savedColor);
+        a_pixel_pixelSet(g_savedColor);
 
         alpha = a_fix_fromInt(A_PIXEL_ALPHA_MAX);
         alpha_inc = a_fix_fromInt(A_PIXEL_ALPHA_MAX) / (int)g_frames;
@@ -211,11 +211,11 @@ static A_STATE(a_fade__fromColor)
 
     A_STATE_DRAW
     {
-        a_pixel_setBlend(A_PIXEL_BLEND_PLAIN);
+        a_pixel_blendSet(A_PIXEL_BLEND_PLAIN);
         a_screen_blit(g_capturedScreen);
 
-        a_pixel_setBlend(A_PIXEL_BLEND_RGBA);
-        a_pixel_setAlpha(a_fix_toInt(alpha));
+        a_pixel_blendSet(A_PIXEL_BLEND_RGBA);
+        a_pixel_alphaSet(a_fix_toInt(alpha));
         a_draw_fill();
     }
 
@@ -252,11 +252,11 @@ static A_STATE(a_fade__screens)
 
     A_STATE_DRAW
     {
-        a_pixel_setBlend(A_PIXEL_BLEND_PLAIN);
+        a_pixel_blendSet(A_PIXEL_BLEND_PLAIN);
         a_screen_blit(g_capturedScreen);
 
-        a_pixel_setBlend(A_PIXEL_BLEND_RGBA);
-        a_pixel_setAlpha(a_fix_toInt(alpha));
+        a_pixel_blendSet(A_PIXEL_BLEND_RGBA);
+        a_pixel_alphaSet(a_fix_toInt(alpha));
         a_screen_blit(g_oldCapturedScreen);
     }
 

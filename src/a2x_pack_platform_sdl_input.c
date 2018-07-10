@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2017 Alex Margarit
+    Copyright 2010, 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -447,7 +447,7 @@ void a_platform_sdl_input__init(void)
 
     #if A_PLATFORM_SYSTEM_PANDORA
         // Because these are defined before the generic keys, they
-        // will take precedence in the a_platform__pollInputs event loop.
+        // will take precedence in the a_platform__inputsPoll event loop.
         addKey("Up", "gamepad.b.up", SDLK_UP);
         addKey("Down", "gamepad.b.down", SDLK_DOWN);
         addKey("Left", "gamepad.b.left", SDLK_LEFT);
@@ -558,7 +558,7 @@ void a_platform_sdl_input__uninit(void)
     SDL_QuitSubSystem(g_sdlFlags);
 }
 
-void a_platform__bindInputs(void)
+void a_platform__inputsBind(void)
 {
     A_STRHASH_ITERATE(g_keys, ASdlInputButton*, k) {
         k->logicalButton = a_input_button__newSource(k->header.name,
@@ -589,7 +589,7 @@ void a_platform__bindInputs(void)
     }
 }
 
-void a_platform__pollInputs(void)
+void a_platform__inputsPoll(void)
 {
     for(SDL_Event event; SDL_PollEvent(&event); ) {
         switch(event.type) {

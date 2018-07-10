@@ -48,7 +48,7 @@ static bool g_fullScreenState;
     {
         if(a_button_pressGetOnce(g_fullScreenButton)) {
             g_fullScreenState = !g_fullScreenState;
-            a_platform__setFullScreen(g_fullScreenState);
+            a_platform__screenSetFullscreen(g_fullScreenState);
         }
     }
 #endif
@@ -64,7 +64,7 @@ static void initScreen(AScreen* Screen, int Width, int Height, bool AllocBuffer)
     }
 
     Screen->sprite = NULL;
-    Screen->texture = a_platform__newScreenTexture(Width, Height);
+    Screen->texture = a_platform__textureScreenNew(Width, Height);
     Screen->width = Width;
     Screen->height = Height;
     Screen->clipX = 0;
@@ -83,7 +83,7 @@ static void freeScreen(AScreen* Screen)
     }
 
     #if !A_PLATFORM_RENDER_SOFTWARE
-        a_platform__freeTexture(Screen->texture);
+        a_platform__textureFree(Screen->texture);
     #endif
 }
 
@@ -100,7 +100,7 @@ void a_screen__init(void)
         int w = width;
         int h = height;
 
-        a_platform__getNativeResolution(&w, &h);
+        a_platform__screenGetNativeResolution(&w, &h);
 
         if(w > 0 && h > 0) {
             if(width < 0) {
@@ -128,11 +128,11 @@ void a_screen__init(void)
     #endif
 
     g_fullScreenState = a_settings_getBool("video.fullscreen");
-    a_platform__setScreen(width, height, g_fullScreenState);
-    a_platform__setFullScreen(g_fullScreenState);
+    a_platform__screenInit(width, height, g_fullScreenState);
+    a_platform__screenSetFullscreen(g_fullScreenState);
 
     #if A_PLATFORM_SYSTEM_WIZ
-        a_platform_wiz__setScreenPortraitMode();
+        a_platform_wiz__portraitModeSet();
     #endif
 
     #if A_PLATFORM_SYSTEM_DESKTOP
@@ -145,7 +145,7 @@ void a_screen__init(void)
 
     #if !A_PLATFORM_RENDER_SOFTWARE
         initScreen(&a__screen, width, height, true);
-        a_platform__setRenderTarget(a__screen.texture);
+        a_platform__renderTargetSet(a__screen.texture);
     #endif
 
     g_stack = a_list_new();
@@ -182,10 +182,10 @@ void a_screen__show(void)
         c->callback();
     }
 
-    a_platform__showScreen();
+    a_platform__screenShow();
 }
 
-void a_screen__addOverlay(AScreenOverlay Callback)
+void a_screen__callbackAdd(AScreenOverlay Callback)
 {
     AScreenOverlayContainer* c = a_mem_malloc(sizeof(AScreenOverlayContainer));
     c->callback = Callback;
@@ -199,21 +199,21 @@ bool a_screen__sameSize(const AScreen* Screen1, const AScreen* Screen2)
         && Screen1->height == Screen2->height;
 }
 
-APixel* a_screen_getPixels(void)
+APixel* a_screen_pixelsGet(void)
 {
     #if !A_PLATFORM_RENDER_SOFTWARE
-        a_platform__getTargetPixels(a__screen.pixels, a__screen.width);
+        a_platform__renderTargetPixelsGet(a__screen.pixels, a__screen.width);
     #endif
 
     return a__screen.pixels;
 }
 
-int a_screen_getWidth(void)
+int a_screen_widthGet(void)
 {
     return a__screen.width;
 }
 
-int a_screen_getHeight(void)
+int a_screen_heightGet(void)
 {
     return a__screen.height;
 }
@@ -256,15 +256,15 @@ void a_screen_copy(AScreen* Dst, const AScreen* Src)
         memcpy(Dst->pixels, Src->pixels, Src->pixelsSize);
     #else
         a_pixel_push();
-        a_pixel_setBlend(A_PIXEL_BLEND_PLAIN);
+        a_pixel_blendSet(A_PIXEL_BLEND_PLAIN);
 
-        a_platform__setRenderTarget(Dst->texture);
-        a_platform__setTargetClip(0, 0, Dst->width, Dst->height);
+        a_platform__renderTargetSet(Dst->texture);
+        a_platform__renderTargetClipSet(0, 0, Dst->width, Dst->height);
 
-        a_platform__blitTexture(Src->texture, 0, 0, false);
+        a_platform__textureBlit(Src->texture, 0, 0, false);
 
-        a_platform__setRenderTarget(a__screen.texture);
-        a_platform__setTargetClip(a__screen.clipX,
+        a_platform__renderTargetSet(a__screen.texture);
+        a_platform__renderTargetClipSet(a__screen.clipX,
                                   a__screen.clipY,
                                   a__screen.clipWidth,
                                   a__screen.clipHeight);
@@ -363,7 +363,7 @@ void a_screen_blit(const AScreen* Screen)
             default: break;
         }
     #else
-        a_platform__blitTexture(Screen->texture, 0, 0, false);
+        a_platform__textureBlit(Screen->texture, 0, 0, false);
     #endif
 }
 
@@ -374,8 +374,8 @@ void a_screen_clear(void)
     #else
         a_pixel_push();
 
-        a_pixel_setBlend(A_PIXEL_BLEND_PLAIN);
-        a_pixel_setPixel(0);
+        a_pixel_blendSet(A_PIXEL_BLEND_PLAIN);
+        a_pixel_pixelSet(0);
         a_platform__renderClear();
 
         a_pixel_pop();
@@ -395,7 +395,7 @@ static void pushTarget(APixel* Pixels, size_t PixelsSize, int Width, int Height,
     a__screen.ownsBuffer = false;
 
     #if !A_PLATFORM_RENDER_SOFTWARE
-        a_platform__setRenderTarget(Texture);
+        a_platform__renderTargetSet(Texture);
     #endif
 
     a_screen_clipReset();
@@ -425,7 +425,7 @@ void a_screen_targetPop(void)
 {
     #if A_PLATFORM_RENDER_SOFTWARE
         if(a__screen.sprite) {
-            a_platform__commitSpriteTexture(a__screen.sprite);
+            a_platform__textureSpriteCommit(a__screen.sprite);
         }
     #endif
 
@@ -439,8 +439,8 @@ void a_screen_targetPop(void)
     free(screen);
 
     #if !A_PLATFORM_RENDER_SOFTWARE
-        a_platform__setRenderTarget(a__screen.texture);
-        a_platform__setTargetClip(a__screen.clipX,
+        a_platform__renderTargetSet(a__screen.texture);
+        a_platform__renderTargetClipSet(a__screen.clipX,
                                   a__screen.clipY,
                                   a__screen.clipWidth,
                                   a__screen.clipHeight);
@@ -468,7 +468,7 @@ void a_screen_clipSet(int X, int Y, int Width, int Height)
     a__screen.clipHeight = Height;
 
     #if !A_PLATFORM_RENDER_SOFTWARE
-        a_platform__setTargetClip(X, Y, Width, Height);
+        a_platform__renderTargetClipSet(X, Y, Width, Height);
     #endif
 }
 

@@ -87,8 +87,8 @@ void a_spritelayers_blit(ASpriteLayers* Layers, int X, int Y)
     a_pixel_push();
 
     A_LIST_ITERATE(Layers, ALayer*, l) {
-        a_pixel_setBlend(l->blend);
-        a_pixel_setRGBA(l->r, l->g, l->b, l->a);
+        a_pixel_blendSet(l->blend);
+        a_pixel_rgbaSet(l->r, l->g, l->b, l->a);
 
         a_sprite_blit(l->sprite, X, Y);
     }

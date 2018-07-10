@@ -26,7 +26,7 @@
 void a_draw_fill(void)
 {
     a_pixel_push();
-    a_pixel_setFillDraw(true);
+    a_pixel_fillDrawSet(true);
 
     a_draw_rectangle(a__screen.clipX,
                      a__screen.clipY,

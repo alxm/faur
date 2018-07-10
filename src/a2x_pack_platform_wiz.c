@@ -151,7 +151,7 @@ void a_platform__waitMs(uint32_t Ms)
 }
 
 #if A_PLATFORM_SYSTEM_WIZ
-void a_platform_wiz__setScreenPortraitMode(void)
+void a_platform_wiz__portraitModeSet(void)
 {
     // Set Wiz screen to portrait mode to avoid diagonal tearing
     if(!a_settings_getBool("video.fixWizTearing")) {
@@ -171,7 +171,7 @@ void a_platform_wiz__setScreenPortraitMode(void)
 }
 #endif
 
-void a_platform__getNativeResolution(int* Width, int* Height)
+void a_platform__screenGetNativeResolution(int* Width, int* Height)
 {
     *Width = 320;
     *Height = 240;

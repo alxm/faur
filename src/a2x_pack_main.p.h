@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016 Alex Margarit
+    Copyright 2010, 2016, 2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -22,5 +22,5 @@
 #define A_MAIN void a_main(void)
 extern A_MAIN;
 
-extern int a_main_getNumArgs(void);
-extern const char* a_main_getArg(int ArgNum);
+extern int a_main_argsGetNum(void);
+extern const char* a_main_argsGet(int ArgNum);

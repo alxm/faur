@@ -57,8 +57,8 @@ A_STATE(drawBox)
 
     A_STATE_INIT
     {
-        context.x = a_screen_getWidth() / 2;
-        context.y = a_screen_getHeight() / 2;
+        context.x = a_screen_widthGet() / 2;
+        context.y = a_screen_heightGet() / 2;
 
         context.up = a_button_new("key.up");
         context.down = a_button_new("key.down");
@@ -83,10 +83,10 @@ A_STATE(drawBox)
 
     A_STATE_DRAW
     {
-        a_pixel_setHex(0xaaff88);
+        a_pixel_hexSet(0xaaff88);
         a_draw_fill();
 
-        a_pixel_setHex(0xffaa44);
+        a_pixel_hexSet(0xffaa44);
         a_draw_rectangle(context.x - 40, context.y - 40, 80, 80);
     }
 }

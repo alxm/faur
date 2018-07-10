@@ -138,7 +138,7 @@ static void takeScreenshot(void)
 
     a_out__message("Saving screenshot '%s'", name);
     a_png_write(name,
-                a_screen_getPixels(),
+                a_screen_pixelsGet(),
                 a__screen.width,
                 a__screen.height,
                 g_title,

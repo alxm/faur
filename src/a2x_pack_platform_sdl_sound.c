@@ -76,12 +76,12 @@ void a_platform_sdl_sound__uninit(void)
     SDL_QuitSubSystem(SDL_INIT_AUDIO);
 }
 
-int a_platform__getMaxVolome(void)
+int a_platform__volumeGetMax(void)
 {
     return MIX_MAX_VOLUME;
 }
 
-APlatformMusic* a_platform__newMusic(const char* Path)
+APlatformMusic* a_platform__musicNew(const char* Path)
 {
     Mix_Music* m = Mix_LoadMUS(Path);
 
@@ -92,12 +92,12 @@ APlatformMusic* a_platform__newMusic(const char* Path)
     return m;
 }
 
-void a_platform__freeMusic(APlatformMusic* Music)
+void a_platform__musicFree(APlatformMusic* Music)
 {
     Mix_FreeMusic(Music);
 }
 
-void a_platform__setMusicVolume(int Volume)
+void a_platform__musicVolumeSet(int Volume)
 {
     #if A_PLATFORM_SYSTEM_EMSCRIPTEN
         A_UNUSED(Volume);
@@ -106,19 +106,19 @@ void a_platform__setMusicVolume(int Volume)
     #endif
 }
 
-void a_platform__playMusic(APlatformMusic* Music)
+void a_platform__musicPlay(APlatformMusic* Music)
 {
     if(Mix_PlayMusic(Music, -1) == -1) {
         a_out__error("Mix_PlayMusic failed: %s", Mix_GetError());
     }
 }
 
-void a_platform__stopMusic(void)
+void a_platform__musicStop(void)
 {
     Mix_HaltMusic();
 }
 
-void a_platform__toggleMusic(void)
+void a_platform__musicToggle(void)
 {
     if(Mix_PausedMusic()) {
         Mix_ResumeMusic();
@@ -127,7 +127,7 @@ void a_platform__toggleMusic(void)
     }
 }
 
-APlatformSfx* a_platform__newSfxFromFile(const char* Path)
+APlatformSfx* a_platform__sfxNewFromFile(const char* Path)
 {
     APlatformSfx* sfx = a_mem_malloc(sizeof(APlatformSfx));
 
@@ -141,7 +141,7 @@ APlatformSfx* a_platform__newSfxFromFile(const char* Path)
     return sfx;
 }
 
-APlatformSfx* a_platform__newSfxFromData(const uint8_t* Data, int Size)
+APlatformSfx* a_platform__sfxNewFromData(const uint8_t* Data, int Size)
 {
     APlatformSfx* sfx = a_mem_malloc(sizeof(APlatformSfx));
     SDL_RWops* rw = SDL_RWFromMem((void*)Data, Size);
@@ -163,7 +163,7 @@ APlatformSfx* a_platform__newSfxFromData(const uint8_t* Data, int Size)
     return sfx;
 }
 
-void a_platform__freeSfx(APlatformSfx* Sfx)
+void a_platform__sfxFree(APlatformSfx* Sfx)
 {
     if(Sfx->refs--) {
         return;
@@ -176,12 +176,12 @@ void a_platform__freeSfx(APlatformSfx* Sfx)
     free(Sfx);
 }
 
-void a_platform__referenceSfx(APlatformSfx* Sfx)
+void a_platform__sfxRef(APlatformSfx* Sfx)
 {
     Sfx->refs++;
 }
 
-void a_platform__setSfxVolume(APlatformSfx* Sfx, int Volume)
+void a_platform__sfxVolumeSet(APlatformSfx* Sfx, int Volume)
 {
     #if A_PLATFORM_SYSTEM_EMSCRIPTEN
         A_UNUSED(Sfx);
@@ -193,7 +193,7 @@ void a_platform__setSfxVolume(APlatformSfx* Sfx, int Volume)
     #endif
 }
 
-void a_platform__setSfxVolumeAll(int Volume)
+void a_platform__sfxVolumeSetAll(int Volume)
 {
     #if A_PLATFORM_SYSTEM_EMSCRIPTEN
         A_UNUSED(Volume);
@@ -202,7 +202,7 @@ void a_platform__setSfxVolumeAll(int Volume)
     #endif
 }
 
-void a_platform__playSfx(APlatformSfx* Sfx, int Channel, bool Loop)
+void a_platform__sfxPlay(APlatformSfx* Sfx, int Channel, bool Loop)
 {
     if(Sfx->chunk == NULL) {
         return;
@@ -213,17 +213,17 @@ void a_platform__playSfx(APlatformSfx* Sfx, int Channel, bool Loop)
     }
 }
 
-void a_platform__stopSfx(int Channel)
+void a_platform__sfxStop(int Channel)
 {
     Mix_HaltChannel(Channel);
 }
 
-bool a_platform__isSfxPlaying(int Channel)
+bool a_platform__sfxIsPlaying(int Channel)
 {
     return Mix_Playing(Channel);
 }
 
-int a_platform__getSfxChannel(void)
+int a_platform__sfxChannelGet(void)
 {
     return g_currentSfxChannel++ % g_numSfxChannelsReserved;
 }

@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016 Alex Margarit
+    Copyright 2010, 2016, 2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -36,16 +36,16 @@ extern AMenu* a_menu_new(AInputButton* Next, AInputButton* Back, AInputButton* S
 extern void a_menu_free(AMenu* Menu);
 extern void a_menu_freeEx(AMenu* Menu, AFree* ItemFree);
 
-extern void a_menu_addSounds(AMenu* Menu, ASfx* Accept, ASfx* Cancel, ASfx* Browse);
-extern void a_menu_addItem(AMenu* Menu, void* Item);
+extern void a_menu_soundSet(AMenu* Menu, ASfx* Accept, ASfx* Cancel, ASfx* Browse);
+extern void a_menu_itemAdd(AMenu* Menu, void* Item);
 
-extern void a_menu_handleInput(AMenu* Menu);
-extern AMenuState a_menu_getState(const AMenu* Menu);
+extern void a_menu_tick(AMenu* Menu);
+extern AMenuState a_menu_stateGet(const AMenu* Menu);
 
-extern AList* a_menu_getItems(const AMenu* Menu);
-extern bool a_menu_isItemSelected(const AMenu* Menu, const void* Item);
-extern unsigned a_menu_getSelectedIndex(const AMenu* Menu);
-extern void* a_menu_getSelectedItem(const AMenu* Menu);
+extern AList* a_menu_itemsListGet(const AMenu* Menu);
+extern bool a_menu_itemIsSelected(const AMenu* Menu, const void* Item);
+extern unsigned a_menu_selectedIndexGet(const AMenu* Menu);
+extern void* a_menu_itemGetSelected(const AMenu* Menu);
 
 extern void a_menu_keepRunning(AMenu* Menu);
 extern void a_menu_reset(AMenu* Menu);

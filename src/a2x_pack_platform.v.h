@@ -34,10 +34,10 @@ extern void a_platform__uninit(void);
 extern uint32_t a_platform__getMs(void);
 extern void a_platform__waitMs(uint32_t Ms);
 
-extern void a_platform__setScreen(int Width, int Height, bool FullScreen);
-extern void a_platform__showScreen(void);
-extern void a_platform__setFullScreen(bool FullScreen);
-extern void a_platform__getNativeResolution(int* Width, int* Height);
+extern void a_platform__screenInit(int Width, int Height, bool FullScreen);
+extern void a_platform__screenShow(void);
+extern void a_platform__screenSetFullscreen(bool FullScreen);
+extern void a_platform__screenGetNativeResolution(int* Width, int* Height);
 
 extern void a_platform__renderClear(void);
 extern void a_platform__renderSetDrawColor(void);
@@ -52,35 +52,35 @@ extern void a_platform__drawRectangleOutline(int X, int Y, int Width, int Height
 extern void a_platform__drawCircleOutline(int X, int Y, int Radius);
 extern void a_platform__drawCircleFilled(int X, int Y, int Radius);
 
-extern APlatformTexture* a_platform__newScreenTexture(int Width, int Height);
-extern void a_platform__commitSpriteTexture(ASprite* Sprite);
-extern void a_platform__freeTexture(APlatformTexture* Texture);
-extern void a_platform__blitTexture(APlatformTexture* Texture, int X, int Y, bool FillFlat);
-extern void a_platform__blitTextureEx(APlatformTexture* Texture, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY, bool FillFlat);
+extern APlatformTexture* a_platform__textureScreenNew(int Width, int Height);
+extern void a_platform__textureSpriteCommit(ASprite* Sprite);
+extern void a_platform__textureFree(APlatformTexture* Texture);
+extern void a_platform__textureBlit(APlatformTexture* Texture, int X, int Y, bool FillFlat);
+extern void a_platform__textureBlitEx(APlatformTexture* Texture, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY, bool FillFlat);
 
-extern void a_platform__setRenderTarget(APlatformTexture* Texture);
-extern void a_platform__getTargetPixels(APixel* Pixels, int Width);
-extern void a_platform__setTargetClip(int X, int Y, int Width, int Height);
+extern void a_platform__renderTargetSet(APlatformTexture* Texture);
+extern void a_platform__renderTargetPixelsGet(APixel* Pixels, int Width);
+extern void a_platform__renderTargetClipSet(int X, int Y, int Width, int Height);
 
-extern int a_platform__getMaxVolome(void);
+extern int a_platform__volumeGetMax(void);
 
-extern APlatformMusic* a_platform__newMusic(const char* Path);
-extern void a_platform__freeMusic(APlatformMusic* Music);
-extern void a_platform__setMusicVolume(int Volume);
-extern void a_platform__playMusic(APlatformMusic* Music);
-extern void a_platform__stopMusic(void);
-extern void a_platform__toggleMusic(void);
+extern APlatformMusic* a_platform__musicNew(const char* Path);
+extern void a_platform__musicFree(APlatformMusic* Music);
+extern void a_platform__musicVolumeSet(int Volume);
+extern void a_platform__musicPlay(APlatformMusic* Music);
+extern void a_platform__musicStop(void);
+extern void a_platform__musicToggle(void);
 
-extern APlatformSfx* a_platform__newSfxFromFile(const char* Path);
-extern APlatformSfx* a_platform__newSfxFromData(const uint8_t* Data, int Size);
-extern void a_platform__freeSfx(APlatformSfx* Sfx);
-extern void a_platform__referenceSfx(APlatformSfx* Sfx);
-extern void a_platform__setSfxVolume(APlatformSfx* Sfx, int Volume);
-extern void a_platform__setSfxVolumeAll(int Volume);
-extern void a_platform__playSfx(APlatformSfx* Sfx, int Channel, bool Loop);
-extern void a_platform__stopSfx(int Channel);
-extern bool a_platform__isSfxPlaying(int Channel);
-extern int a_platform__getSfxChannel(void);
+extern APlatformSfx* a_platform__sfxNewFromFile(const char* Path);
+extern APlatformSfx* a_platform__sfxNewFromData(const uint8_t* Data, int Size);
+extern void a_platform__sfxFree(APlatformSfx* Sfx);
+extern void a_platform__sfxRef(APlatformSfx* Sfx);
+extern void a_platform__sfxVolumeSet(APlatformSfx* Sfx, int Volume);
+extern void a_platform__sfxVolumeSetAll(int Volume);
+extern void a_platform__sfxPlay(APlatformSfx* Sfx, int Channel, bool Loop);
+extern void a_platform__sfxStop(int Channel);
+extern bool a_platform__sfxIsPlaying(int Channel);
+extern int a_platform__sfxChannelGet(void);
 
-extern void a_platform__bindInputs(void);
-extern void a_platform__pollInputs(void);
+extern void a_platform__inputsBind(void);
+extern void a_platform__inputsPoll(void);
