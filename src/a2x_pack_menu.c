@@ -53,8 +53,8 @@ AMenu* a_menu_new(AInputButton* Next, AInputButton* Back, AInputButton* Select, 
     m->select = Select;
     m->cancel = Cancel;
 
-    a_button_setRepeat(m->next, a_time_msToTicks(200));
-    a_button_setRepeat(m->back, a_time_msToTicks(200));
+    a_button_pressSetRepeat(m->next, a_time_msToTicks(200));
+    a_button_pressSetRepeat(m->back, a_time_msToTicks(200));
 
     return m;
 }
@@ -96,13 +96,13 @@ void a_menu_handleInput(AMenu* Menu)
 
     bool browsed = false;
 
-    if(a_button_getPressed(Menu->back)) {
+    if(a_button_pressGet(Menu->back)) {
         browsed = true;
 
         if(Menu->selectedIndex-- == 0) {
             Menu->selectedIndex = a_list_getSize(Menu->items) - 1;
         }
-    } else if(a_button_getPressed(Menu->next)) {
+    } else if(a_button_pressGet(Menu->next)) {
         browsed = true;
 
         if(++Menu->selectedIndex == a_list_getSize(Menu->items)) {
@@ -117,13 +117,13 @@ void a_menu_handleInput(AMenu* Menu)
             a_sfx_play(Menu->soundBrowse, A_SFX_RESTART);
         }
     } else {
-        if(a_button_getPressed(Menu->select)) {
+        if(a_button_pressGet(Menu->select)) {
             Menu->state = A_MENU_STATE_SELECTED;
 
             if(Menu->soundAccept) {
                 a_sfx_play(Menu->soundAccept, A_SFX_RESTART);
             }
-        } else if(Menu->cancel && a_button_getPressed(Menu->cancel)) {
+        } else if(Menu->cancel && a_button_pressGet(Menu->cancel)) {
             Menu->state = A_MENU_STATE_CANCELED;
 
             if(Menu->soundCancel) {
@@ -133,12 +133,12 @@ void a_menu_handleInput(AMenu* Menu)
     }
 
     if(Menu->state != A_MENU_STATE_RUNNING) {
-        a_button_release(Menu->next);
-        a_button_release(Menu->back);
-        a_button_release(Menu->select);
+        a_button_pressClear(Menu->next);
+        a_button_pressClear(Menu->back);
+        a_button_pressClear(Menu->select);
 
         if(Menu->cancel) {
-            a_button_release(Menu->cancel);
+            a_button_pressClear(Menu->cancel);
         }
     }
 }

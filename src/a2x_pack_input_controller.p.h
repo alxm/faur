@@ -1,5 +1,5 @@
 /*
-    Copyright 2016, 2017 Alex Margarit
+    Copyright 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -19,5 +19,5 @@
 
 #pragma once
 
-extern unsigned a_input_getNumControllers(void);
-extern void a_input_setController(unsigned Index);
+extern unsigned a_input_controllerNumGet(void);
+extern void a_input_controllerSet(unsigned Index);

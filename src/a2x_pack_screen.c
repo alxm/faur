@@ -46,7 +46,7 @@ static bool g_fullScreenState;
 
     static void inputCallback(void)
     {
-        if(a_button_getPressedOnce(g_fullScreenButton)) {
+        if(a_button_pressGetOnce(g_fullScreenButton)) {
             g_fullScreenState = !g_fullScreenState;
             a_platform__setFullScreen(g_fullScreenState);
         }
@@ -140,7 +140,7 @@ void a_screen__init(void)
                                 a_settings_getString(
                                     "video.fullscreen.button"));
 
-        a_input__addCallback(inputCallback);
+        a_input__callbackAdd(inputCallback);
     #endif
 
     #if !A_PLATFORM_RENDER_SOFTWARE

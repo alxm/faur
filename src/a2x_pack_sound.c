@@ -81,9 +81,9 @@ static void inputCallback(void)
 
         int adjust = 0;
 
-        if(a_button_getPressed(g_volumeUpButton)) {
+        if(a_button_pressGet(g_volumeUpButton)) {
             adjust = A_VOLUME_STEP;
-        } else if(a_button_getPressed(g_volumeDownButton)) {
+        } else if(a_button_pressGet(g_volumeDownButton)) {
             adjust = -A_VOLUME_STEP;
         }
 
@@ -94,7 +94,7 @@ static void inputCallback(void)
     #endif
 
     #if A_DEVICE_HAS_KEYBOARD
-        if(g_soundOn && a_button_getPressedOnce(g_musicOnOffButton)) {
+        if(g_soundOn && a_button_pressGetOnce(g_musicOnOffButton)) {
             a_platform__toggleMusic();
         }
     #endif
@@ -151,7 +151,7 @@ void a_sound__init(void)
         g_musicOnOffButton = a_button_new("key.m");
     #endif
 
-    a_input__addCallback(inputCallback);
+    a_input__callbackAdd(inputCallback);
 
     #if A_PLATFORM_SYSTEM_GP2X || A_PLATFORM_SYSTEM_WIZ
         const char* color;

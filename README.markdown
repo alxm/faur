@@ -68,15 +68,15 @@ A_STATE(drawBox)
 
     A_STATE_TICK
     {
-        if(a_button_getPressed(context.up)) {
+        if(a_button_pressGet(context.up)) {
             context.y--;
-        } else if(a_button_getPressed(context.down)) {
+        } else if(a_button_pressGet(context.down)) {
             context.y++;
         }
 
-        if(a_button_getPressed(context.left)) {
+        if(a_button_pressGet(context.left)) {
             context.x--;
-        } else if(a_button_getPressed(context.right)) {
+        } else if(a_button_pressGet(context.right)) {
             context.x++;
         }
     }

@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2017 Alex Margarit
+    Copyright 2010, 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -29,8 +29,7 @@ extern void a_input_button__uninit(void);
 extern AInputButtonSource* a_input_button__newSource(const char* Name, const char* Id);
 extern void a_input_button__freeSource(AInputButtonSource* Button);
 
-extern AInputButtonSource* a_input_button__getKey(const char* Id);
-
+extern AInputButtonSource* a_input_button__keyGet(const char* Id);
 extern void a_input_button__forwardToButton(AInputButtonSource* Button, AInputButtonSource* Binding);
-extern void a_input_button__setState(AInputButtonSource* Button, bool Pressed);
+extern void a_input_button__stateSet(AInputButtonSource* Button, bool Pressed);
 extern void a_input_button__processQueue(void);

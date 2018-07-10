@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2017 Alex Margarit
+    Copyright 2010, 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -55,7 +55,7 @@ void a_input_touch__uninit(void)
 {
     A_STRHASH_ITERATE(g_sourceTouchScreens, AInputTouchSource*, t) {
         a_list_freeEx(t->motion, free);
-        a_input__freeSourceHeader(&t->header);
+        a_input__sourceHeaderFree(&t->header);
     }
 
     a_strhash_free(g_sourceTouchScreens);
@@ -65,7 +65,7 @@ AInputTouchSource* a_input_touch__newSource(const char* Id)
 {
     AInputTouchSource* t = a_mem_malloc(sizeof(AInputTouchSource));
 
-    a_input__initSourceHeader(&t->header, Id);
+    a_input__sourceHeaderInit(&t->header, Id);
 
     t->tap = false;
     t->x = 0;
@@ -83,12 +83,13 @@ AInputTouch* a_touch_new(const char* Ids)
 {
     AInputTouch* t = a_mem_malloc(sizeof(AInputTouch));
 
-    a_input__initUserHeader(&t->header);
+    a_input__userHeaderInit(&t->header);
 
     AList* tok = a_str_split(Ids, ", ");
 
     A_LIST_ITERATE(tok, char*, id) {
-        a_input__findSourceInput(g_sourceTouchScreens, NULL, id, &t->header);
+        a_input__userHeaderFindSource(
+            &t->header, id, g_sourceTouchScreens, NULL);
     }
 
     a_list_freeEx(tok, free);
@@ -102,7 +103,7 @@ AInputTouch* a_touch_new(const char* Ids)
 
 void a_touch_free(AInputTouch* Touch)
 {
-    a_input__freeUserHeader(&Touch->header);
+    a_input__userHeaderFree(&Touch->header);
     free(Touch);
 }
 
@@ -111,7 +112,7 @@ bool a_touch_isWorking(const AInputTouch* Touch)
     return !a_list_isEmpty(Touch->header.sourceInputs);
 }
 
-void a_touch_getDelta(const AInputTouch* Touch, int* Dx, int* Dy)
+void a_touch_deltaGet(const AInputTouch* Touch, int* Dx, int* Dy)
 {
     AInputTouchSource* t = a_list_getFirst(Touch->header.sourceInputs);
 
@@ -119,7 +120,7 @@ void a_touch_getDelta(const AInputTouch* Touch, int* Dx, int* Dy)
     *Dy = t->dy;
 }
 
-bool a_touch_getTap(const AInputTouch* Touch)
+bool a_touch_tapGet(const AInputTouch* Touch)
 {
     A_LIST_ITERATE(Touch->header.sourceInputs, AInputTouchSource*, t) {
         if(t->tap) {
@@ -130,12 +131,12 @@ bool a_touch_getTap(const AInputTouch* Touch)
     return false;
 }
 
-bool a_touch_getPoint(const AInputTouch* Touch, int X, int Y)
+bool a_touch_pointGet(const AInputTouch* Touch, int X, int Y)
 {
-    return a_touch_getBox(Touch, X - 1, Y - 1, 3, 3);
+    return a_touch_boxGet (Touch, X - 1, Y - 1, 3, 3);
 }
 
-bool a_touch_getBox(const AInputTouch* Touch, int X, int Y, int W, int H)
+bool a_touch_boxGet(const AInputTouch* Touch, int X, int Y, int W, int H)
 {
     A_LIST_ITERATE(Touch->header.sourceInputs, AInputTouchSource*, t) {
         if(t->tap && a_collide_pointInBox(t->x, t->y, X, Y, W, H)) {
@@ -146,7 +147,7 @@ bool a_touch_getBox(const AInputTouch* Touch, int X, int Y, int W, int H)
     return false;
 }
 
-void a_input_touch__addMotion(AInputTouchSource* Touch, int X, int Y)
+void a_input_touch__motionAdd(AInputTouchSource* Touch, int X, int Y)
 {
     Touch->x = X;
     Touch->y = Y;
@@ -160,28 +161,28 @@ void a_input_touch__addMotion(AInputTouchSource* Touch, int X, int Y)
         a_list_addLast(Touch->motion, p);
     }
 
-    a_input__setFreshEvent(&Touch->header);
+    a_input__freshEventSet(&Touch->header);
 }
 
-void a_input_touch__setCoords(AInputTouchSource* Touch, int X, int Y, bool Tapped)
-{
-    Touch->x = X;
-    Touch->y = Y;
-    Touch->tap = Tapped;
-
-    a_input__setFreshEvent(&Touch->header);
-}
-
-void a_input_touch__setDelta(AInputTouchSource* Touch, int Dx, int Dy)
-{
-    Touch->dx = Dx;
-    Touch->dy = Dy;
-}
-
-void a_input_touch__clearMotion(void)
+void a_input_touch__motionClear(void)
 {
     A_STRHASH_ITERATE(g_sourceTouchScreens, AInputTouchSource*, touchScreen) {
         touchScreen->tap = false;
         a_list_clearEx(touchScreen->motion, free);
     }
+}
+
+void a_input_touch__coordsSet(AInputTouchSource* Touch, int X, int Y, bool Tapped)
+{
+    Touch->x = X;
+    Touch->y = Y;
+    Touch->tap = Tapped;
+
+    a_input__freshEventSet(&Touch->header);
+}
+
+void a_input_touch__deltaSet(AInputTouchSource* Touch, int Dx, int Dy)
+{
+    Touch->dx = Dx;
+    Touch->dy = Dy;
 }

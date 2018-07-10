@@ -149,7 +149,7 @@ static void takeScreenshot(void)
 
 static void inputCallback(void)
 {
-    if(a_button_getPressedOnce(g_button)) {
+    if(a_button_pressGetOnce(g_button)) {
         takeScreenshot();
     }
 }
@@ -162,7 +162,7 @@ void a_screenshot__init(void)
     g_description = NULL;
     g_screenshotNumber = 0;
     g_button = a_button_new(a_settings_getString("screenshot.button"));
-    a_input__addCallback(inputCallback);
+    a_input__callbackAdd(inputCallback);
 }
 
 void a_screenshot__uninit(void)

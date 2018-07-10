@@ -1,5 +1,5 @@
 /*
-    Copyright 2016, 2017 Alex Margarit
+    Copyright 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -110,10 +110,10 @@ void a_input_controller__init2(void)
         #if A_PLATFORM_SYSTEM_PANDORA
             if(!c->generic && x && y) {
                 // Pandora buttons are keyboard keys, not controller buttons
-                u = a_input_button__getKey("gamepad.b.up");
-                d = a_input_button__getKey("gamepad.b.down");
-                l = a_input_button__getKey("gamepad.b.left");
-                r = a_input_button__getKey("gamepad.b.right");
+                u = a_input_button__keyGet("gamepad.b.up");
+                d = a_input_button__keyGet("gamepad.b.down");
+                l = a_input_button__keyGet("gamepad.b.left");
+                r = a_input_button__keyGet("gamepad.b.right");
 
                 // Forward the left analog nub to the direction buttons
                 a_input_analog__forwardToButtons(x, l, r);
@@ -122,13 +122,13 @@ void a_input_controller__init2(void)
         #endif
     }
 
-    if(a_input_getNumControllers() > 0) {
-        a_input_setController(0);
+    if(a_input_controllerNumGet() > 0) {
+        a_input_controllerSet(0);
 
         // Set built-in controller as default, if one exists
         A_LIST_ITERATE(g_controllers, AInputController*, c) {
             if(!c->generic) {
-                a_input_setController(A_LIST_INDEX());
+                a_input_controllerSet(A_LIST_INDEX());
                 break;
             }
         }
@@ -146,12 +146,12 @@ void a_input_controller__uninit(void)
     a_list_free(g_controllers);
 }
 
-unsigned a_input_getNumControllers(void)
+unsigned a_input_controllerNumGet(void)
 {
     return a_list_getSize(g_controllers);
 }
 
-void a_input_setController(unsigned Index)
+void a_input_controllerSet(unsigned Index)
 {
     if(Index >= a_list_getSize(g_controllers)) {
         a_out__error("Controller %u not present", Index);
@@ -186,12 +186,12 @@ void a_controller__new(bool Generic, bool IsMapped)
     g_activeController = c;
 }
 
-void a_controller__addButton(AInputButtonSource* Button, const char* Id)
+void a_controller__buttonAdd(AInputButtonSource* Button, const char* Id)
 {
     a_strhash_add(g_activeController->buttons, Id, Button);
 }
 
-AInputButtonSource* a_controller__getButton(const char* Id)
+AInputButtonSource* a_controller__buttonGet(const char* Id)
 {
     if(g_activeController == NULL) {
         return NULL;
@@ -200,7 +200,7 @@ AInputButtonSource* a_controller__getButton(const char* Id)
     return a_strhash_get(g_activeController->buttons, Id);
 }
 
-AStrHash* a_controller__getButtonCollection(void)
+AStrHash* a_controller__buttonCollectionGet(void)
 {
     if(g_activeController == NULL) {
         return NULL;
@@ -209,12 +209,12 @@ AStrHash* a_controller__getButtonCollection(void)
     return g_activeController->buttons;
 }
 
-void a_controller__addAnalog(AInputAnalogSource* Analog, const char* Id)
+void a_controller__analogAdd(AInputAnalogSource* Analog, const char* Id)
 {
     a_strhash_add(g_activeController->axes, Id, Analog);
 }
 
-AInputAnalogSource* a_controller__getAnalog(const char* Id)
+AInputAnalogSource* a_controller__analogGet(const char* Id)
 {
     if(g_activeController == NULL) {
         return NULL;
@@ -223,7 +223,7 @@ AInputAnalogSource* a_controller__getAnalog(const char* Id)
     return a_strhash_get(g_activeController->axes, Id);
 }
 
-AStrHash* a_controller__getAnalogCollection(void)
+AStrHash* a_controller__analogCollectionGet(void)
 {
     if(g_activeController == NULL) {
         return NULL;

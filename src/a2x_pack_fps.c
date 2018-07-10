@@ -240,32 +240,32 @@ void a_fps__frame(void)
     g_run.tickCreditMs += elapsedMs;
 }
 
-unsigned a_fps_getTickRate(void)
+unsigned a_fps_tickRateGet(void)
 {
     return g_settings.tickRate;
 }
 
-unsigned a_fps_getDrawRate(void)
+unsigned a_fps_drawRateGet(void)
 {
     return g_run.drawFps;
 }
 
-unsigned a_fps_getDrawRateMax(void)
+unsigned a_fps_drawRateGetMax(void)
 {
     return g_run.drawFpsMax;
 }
 
-unsigned a_fps_getDrawSkip(void)
+unsigned a_fps_drawSkipGet(void)
 {
     return g_run.skipFramesNum;
 }
 
-unsigned a_fps_getCounter(void)
+unsigned a_fps_tickCountGet(void)
 {
     return g_run.frameCounter;
 }
 
-bool a_fps_isNthFrame(unsigned N)
+bool a_fps_tickCountNth(unsigned N)
 {
     return (g_run.frameCounter % N) == 0;
 }

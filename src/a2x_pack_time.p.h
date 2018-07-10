@@ -31,10 +31,10 @@ extern void a_time_spinSec(uint32_t Sec);
 
 static inline unsigned a_time_msToTicks(unsigned Ms)
 {
-    return (a_fps_getTickRate() * Ms + 500) / 1000;
+    return (a_fps_tickRateGet() * Ms + 500) / 1000;
 }
 
 static inline unsigned a_time_secToTicks(unsigned Sec)
 {
-    return a_fps_getTickRate() * Sec;
+    return a_fps_tickRateGet() * Sec;
 }

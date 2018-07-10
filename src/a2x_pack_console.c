@@ -81,7 +81,7 @@ static void line_free(ALine* Line)
 
 static void inputCallback(void)
 {
-    if(a_button_getPressedOnce(g_toggle)) {
+    if(a_button_pressGetOnce(g_toggle)) {
         if(g_state == A_CONSOLE__STATE_FULL) {
             a_console__showSet(true);
         } else {
@@ -108,25 +108,25 @@ static void screenCallback(void)
     a_font_reset();
 
     {
-        a_font_setCoords(2, 2);
-        a_font_setAlign(A_FONT_ALIGN_LEFT);
+        a_font_coordsSet(2, 2);
+        a_font_alignSet(A_FONT_ALIGN_LEFT);
 
-        a_font__setFont(A_FONT_ID_BLUE); a_font_print("a");
-        a_font__setFont(A_FONT_ID_GREEN); a_font_print("2");
-        a_font__setFont(A_FONT_ID_YELLOW); a_font_print("x");
+        a_font__fontSet(A_FONT_ID_BLUE); a_font_print("a");
+        a_font__fontSet(A_FONT_ID_GREEN); a_font_print("2");
+        a_font__fontSet(A_FONT_ID_YELLOW); a_font_print("x");
 
-        a_font__setFont(A_FONT_ID_WHITE);
+        a_font__fontSet(A_FONT_ID_WHITE);
         a_font_printf(" %s", A__MAKE_PLATFORM_NAME);
-        a_font__setFont(A_FONT_ID_LIGHT_GRAY);
+        a_font__fontSet(A_FONT_ID_LIGHT_GRAY);
         a_font_printf(
             " %s (%s)", A__MAKE_CURRENT_GIT_BRANCH, A__MAKE_COMPILE_TIME);
         a_font_newLine();
 
-        a_font__setFont(A_FONT_ID_WHITE);
+        a_font__fontSet(A_FONT_ID_WHITE);
         a_font_printf("%s %s",
                       a_settings_getString("app.title"),
                       a_settings_getString("app.version"));
-        a_font__setFont(A_FONT_ID_LIGHT_GRAY);
+        a_font__fontSet(A_FONT_ID_LIGHT_GRAY);
         a_font_printf(" by %s (%s)",
                       a_settings_getString("app.author"),
                       a_settings_getString("app.buildtime"));
@@ -136,35 +136,35 @@ static void screenCallback(void)
     {
         int tagWidth = g_sources[A_OUT__SOURCE_A2X]->w;
 
-        a_font_setCoords(1 + tagWidth + 1 + tagWidth + 2, a_font_getY());
-        a_font__setFont(A_FONT_ID_LIGHT_GRAY);
+        a_font_coordsSet(1 + tagWidth + 1 + tagWidth + 2, a_font_coordsGetY());
+        a_font__fontSet(A_FONT_ID_LIGHT_GRAY);
 
         A_LIST_ITERATE(g_lines, ALine*, l) {
-            a_sprite_blit(g_sources[l->source], 1, a_font_getY());
-            a_sprite_blit(g_titles[l->type], 1 + tagWidth + 1, a_font_getY());
+            a_sprite_blit(g_sources[l->source], 1, a_font_coordsGetY());
+            a_sprite_blit(g_titles[l->type], 1 + tagWidth + 1, a_font_coordsGetY());
             a_font_print(l->text);
             a_font_newLine();
         }
     }
 
     {
-        a_font_setAlign(A_FONT_ALIGN_RIGHT);
-        a_font_setCoords(a__screen.width - 1, 2);
+        a_font_alignSet(A_FONT_ALIGN_RIGHT);
+        a_font_coordsSet(a__screen.width - 1, 2);
 
-        a_font__setFont(A_FONT_ID_YELLOW);
-        a_font_printf("%u tick fps", a_fps_getTickRate());
+        a_font__fontSet(A_FONT_ID_YELLOW);
+        a_font_printf("%u tick fps", a_fps_tickRateGet());
         a_font_newLine();
-        a_font_printf("%u draw fps", a_fps_getDrawRate());
-        a_font_newLine();
-
-        a_font__setFont(A_FONT_ID_GREEN);
-        a_font_printf("%u draw max", a_fps_getDrawRateMax());
+        a_font_printf("%u draw fps", a_fps_drawRateGet());
         a_font_newLine();
 
-        a_font_printf("%u draw skip", a_fps_getDrawSkip());
+        a_font__fontSet(A_FONT_ID_GREEN);
+        a_font_printf("%u draw max", a_fps_drawRateGetMax());
         a_font_newLine();
 
-        a_font__setFont(A_FONT_ID_BLUE);
+        a_font_printf("%u draw skip", a_fps_drawSkipGet());
+        a_font_newLine();
+
+        a_font__fontSet(A_FONT_ID_BLUE);
         a_font_printf(
             "Vsync is %s", a_settings_getBool("video.vsync") ? "on" : "off");
         a_font_newLine();
@@ -200,7 +200,7 @@ void a_console__init2(void)
     a_spriteframes_free(frames, false);
 
     g_linesPerScreen =
-        (unsigned)(a_screen_getHeight() / a_font_getLineHeight() - 2);
+        (unsigned)(a_screen_getHeight() / a_font_lineHeightGet() - 2);
 
     // In case messages were logged between init and init2
     while(a_list_getSize(g_lines) > g_linesPerScreen) {
@@ -209,7 +209,7 @@ void a_console__init2(void)
 
     g_toggle = a_button_new(a_settings_getString("console.button"));
 
-    a_input__addCallback(inputCallback);
+    a_input__callbackAdd(inputCallback);
     a_screen__addOverlay(screenCallback);
 
     g_state = a_settings_getBool("console.on")

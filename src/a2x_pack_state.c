@@ -306,7 +306,7 @@ static bool iteration(void)
 
     if(s->stage == A_STATE__STAGE_LOOP) {
         while(a_fps__tick() && a_list_isEmpty(g_pending)) {
-            a_input__get();
+            a_input__tick();
             s->function(A_STATE__STAGE_LOOP | A_STATE__STAGE_TICK);
             a_ecs__tick();
         }

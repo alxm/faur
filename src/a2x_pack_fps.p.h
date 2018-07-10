@@ -19,10 +19,10 @@
 
 #pragma once
 
-extern unsigned a_fps_getTickRate(void);
-extern unsigned a_fps_getDrawRate(void);
-extern unsigned a_fps_getDrawRateMax(void);
-extern unsigned a_fps_getDrawSkip(void);
+extern unsigned a_fps_tickRateGet(void);
+extern unsigned a_fps_drawRateGet(void);
+extern unsigned a_fps_drawRateGetMax(void);
+extern unsigned a_fps_drawSkipGet(void);
 
-extern unsigned a_fps_getCounter(void);
-extern bool a_fps_isNthFrame(unsigned N);
+extern unsigned a_fps_tickCountGet(void);
+extern bool a_fps_tickCountNth(unsigned N);

@@ -42,7 +42,7 @@ static inline unsigned getNow(const ATimer* Timer)
             return a_time_getMs();
 
         case A_TIMER_TICKS:
-            return a_fps_getCounter();
+            return a_fps_tickCountGet();
 
         default:
             return 0;
