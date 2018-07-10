@@ -1,5 +1,5 @@
 /*
-    Copyright 2016, 2017 Alex Margarit
+    Copyright 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -23,4 +23,4 @@
 
 extern void a_component_declare(const char* Name, size_t Size, AFree* Free);
 
-extern AEntity* a_component_getEntity(const void* Component);
+extern AEntity* a_component_entityGet(const void* Component);

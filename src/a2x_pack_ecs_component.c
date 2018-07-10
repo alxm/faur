@@ -55,7 +55,7 @@ void a_component_declare(const char* Name, size_t Size, AFree* Free)
     a_strhash_add(a__ecsComponents, Name, c);
 }
 
-AEntity* a_component_getEntity(const void* Component)
+AEntity* a_component_entityGet(const void* Component)
 {
     return getHeader(Component)->entity;
 }

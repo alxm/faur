@@ -192,7 +192,7 @@ void a_out__fatal(const char* Format, ...)
 
     va_end(args);
 
-    a_console__setShow(true);
+    a_console__showSet(true);
     a_screen__show();
 
     #if A_BUILD_DEBUG

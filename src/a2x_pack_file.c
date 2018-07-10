@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2017 Alex Margarit
+    Copyright 2010, 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -78,7 +78,7 @@ void a_file_close(AFile* File)
     free(File);
 }
 
-bool a_file_checkPrefix(AFile* File, const char* Prefix)
+bool a_file_prefixCheck(AFile* File, const char* Prefix)
 {
     size_t size = strlen(Prefix) + 1;
     char buffer[size];
@@ -94,7 +94,7 @@ bool a_file_checkPrefix(AFile* File, const char* Prefix)
     return a_str_equal(buffer, Prefix);
 }
 
-void a_file_writePrefix(AFile* File, const char* Prefix)
+void a_file_prefixWrite(AFile* File, const char* Prefix)
 {
     a_file_write(File, Prefix, strlen(Prefix) + 1);
 }
@@ -147,7 +147,7 @@ bool a_file_writef(AFile* File, char* Format, ...)
     return true;
 }
 
-bool a_file_readLine(AFile* File)
+bool a_file_lineRead(AFile* File)
 {
     if(File->eof) {
         return false;
@@ -192,7 +192,7 @@ bool a_file_readLine(AFile* File)
     return true;
 }
 
-const char* a_file_getLine(const AFile* File)
+const char* a_file_lineGet(const AFile* File)
 {
     return File->lineBuffer;
 }
@@ -226,17 +226,17 @@ void a_file_seekCurrent(const AFile* File, long int Offset)
     }
 }
 
-const char* a_file_getPath(const AFile* File)
+const char* a_file_pathGet(const AFile* File)
 {
     return File->path;
 }
 
-const char* a_file_getName(const AFile* File)
+const char* a_file_nameGet(const AFile* File)
 {
     return File->name;
 }
 
-FILE* a_file_getHandle(const AFile* File)
+FILE* a_file_handleGet(const AFile* File)
 {
     return File->handle;
 }
@@ -246,12 +246,12 @@ bool a_file_exists(const char* Path)
     return access(Path, F_OK) == 0;
 }
 
-size_t a_file_getSize(const char* Path)
+size_t a_file_sizeGet(const char* Path)
 {
     struct stat info;
 
     if(stat(Path, &info) != 0) {
-        a_out__error("a_file_getSize: stat(%s) failed", Path);
+        a_out__error("a_file_sizeGet: stat(%s) failed", Path);
         return 0;
     }
 
@@ -266,7 +266,7 @@ uint8_t* a_file_toBuffer(const char* Path)
         return NULL;
     }
 
-    size_t size = a_file_getSize(Path);
+    size_t size = a_file_sizeGet(Path);
     uint8_t* buffer = a_mem_malloc(size);
 
     if(!a_file_read(f, buffer, size)) {

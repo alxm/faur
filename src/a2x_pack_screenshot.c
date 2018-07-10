@@ -46,13 +46,13 @@ static bool lazy_init(void)
         ADir* dir = a_dir_open(screensDir);
 
         // Only interested in the last file, to get the number from its name
-        ADirEntry* entry = a_list_getLast(a_dir_getEntries(dir));
+        ADirEntry* entry = a_list_getLast(a_dir_entriesListGet(dir));
 
         if(entry == NULL) {
             g_isInit = true;
         } else {
-            const char* file = a_dir_entryGetName(entry);
-            const char* fullPath = a_dir_entryGetPath(entry);
+            const char* file = a_dir_entryNameGet(entry);
+            const char* fullPath = a_dir_entryPathGet(entry);
 
             int start = a_str_getLastIndex(file, '-');
             int end = a_str_getLastIndex(file, '.');

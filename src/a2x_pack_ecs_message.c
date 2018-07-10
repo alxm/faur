@@ -34,27 +34,27 @@ AMessage* a_message__new(AEntity* To, AEntity* From, const char* Message)
     m->from = From;
     m->message = a_str_dup(Message);
 
-    a_entity_reference(To);
-    a_entity_reference(From);
+    a_entity_refInc(To);
+    a_entity_refInc(From);
 
     return m;
 }
 
 void a_message__free(AMessage* Message)
 {
-    a_entity_release(Message->to);
-    a_entity_release(Message->from);
+    a_entity_refDec(Message->to);
+    a_entity_refDec(Message->from);
 
     free(Message->message);
     free(Message);
 }
 
-void a_message_setHandler(AEntity* Entity, const char* Message, AMessageHandler* Handler, bool HandleImmediately)
+void a_message_handlerSet(AEntity* Entity, const char* Message, AMessageHandler* Handler, bool HandleImmediately)
 {
     if(a_strhash_contains(Entity->handlers, Message)) {
         a_out__fatal("'%s' handler already set for '%s'",
                      Message,
-                     a_entity_getId(Entity));
+                     a_entity_idGet(Entity));
     }
 
     AMessageHandlerContainer* h = a_mem_malloc(sizeof(AMessageHandlerContainer));
@@ -74,8 +74,8 @@ void a_message_send(AEntity* To, AEntity* From, const char* Message)
     }
 
     if(h->handleImmediately) {
-        if(!a_entity_isRemoved(To) && !a_entity_isRemoved(From)
-            && !a_entity_isMuted(To)) {
+        if(!a_entity_removeGet(To) && !a_entity_removeGet(From)
+            && !a_entity_muteGet(To)) {
 
             h->handler(To, From);
         }

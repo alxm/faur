@@ -95,7 +95,7 @@ void a_system__run(ASystem* System)
 
     if(System->onlyActiveEntities) {
         A_LIST_ITERATE(System->entities, AEntity*, entity) {
-            if(a_entity_isActive(entity)) {
+            if(a_entity_activeGet(entity)) {
                 System->handler(entity);
             } else {
                 a_list_addLast(g_inactive, entity);

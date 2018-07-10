@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016 Alex Margarit
+    Copyright 2010, 2016, 2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -35,7 +35,7 @@ struct AColObject {
     const AColMap* colmap;
     int x, y; // coords on the Colmap
     AList* nodes; // AListNodes from submaps this object is in
-    void* userObject; // the game object that owns this AColObject
+    void* context; // the game object that owns this AColObject
 };
 
 static inline int nextpow(int X)
@@ -93,13 +93,13 @@ void a_colmap_free(AColMap* Map)
     free(Map);
 }
 
-AColObject* a_colobject_new(const AColMap* Map, void* UserObject)
+AColObject* a_colobject_new(const AColMap* Map, void* Context)
 {
     AColObject* o = a_mem_malloc(sizeof(AColObject));
 
     o->colmap = Map;
     o->nodes = a_list_new();
-    o->userObject = UserObject;
+    o->context = Context;
 
     return o;
 }
@@ -114,7 +114,7 @@ void a_colobject_free(AColObject* Object)
     free(Object);
 }
 
-void a_colobject_setCoords(AColObject* Object, int X, int Y)
+void a_colobject_coordsSet(AColObject* Object, int X, int Y)
 {
     const AColMap* m = Object->colmap;
     AList* pt_nodes = Object->nodes;
@@ -165,12 +165,12 @@ void a_colobject_setCoords(AColObject* Object, int X, int Y)
     }
 }
 
-void* a_colobject__getUserObject(const AColObject* Object)
+void* a_colobject__contextGet(const AColObject* Object)
 {
-    return Object->userObject;
+    return Object->context;
 }
 
-AList* a_colobject__getPossibleCollisions(const AColObject* Object)
+AList* a_colobject__nearbyListGet(const AColObject* Object)
 {
     const AColMap* map = Object->colmap;
 

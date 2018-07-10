@@ -23,5 +23,5 @@
 
 typedef void AMessageHandler(AEntity* To, AEntity* From);
 
-extern void a_message_setHandler(AEntity* Entity, const char* Message, AMessageHandler* Handler, bool HandleImmediately);
+extern void a_message_handlerSet(AEntity* Entity, const char* Message, AMessageHandler* Handler, bool HandleImmediately);
 extern void a_message_send(AEntity* To, AEntity* From, const char* Message);

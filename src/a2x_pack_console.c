@@ -83,9 +83,9 @@ static void inputCallback(void)
 {
     if(a_button_getPressedOnce(g_toggle)) {
         if(g_state == A_CONSOLE__STATE_FULL) {
-            a_console__setShow(true);
+            a_console__showSet(true);
         } else {
-            a_console__setShow(false);
+            a_console__showSet(false);
         }
     }
 }
@@ -238,7 +238,7 @@ bool a_console__isInitialized(void)
     return g_state >= A_CONSOLE__STATE_FULL;
 }
 
-void a_console__setShow(bool DoShow)
+void a_console__showSet(bool DoShow)
 {
     if(g_state < A_CONSOLE__STATE_FULL) {
         return;
