@@ -60,7 +60,7 @@ void a_system_declare(const char* Name, const char* Components, ASystemHandler* 
     s->handler = Handler;
     s->compare = Compare;
     s->entities = a_list_new();
-    s->componentBits = a_bitfield_new(a_strhash_getSize(a__ecsComponents));
+    s->componentBits = a_bitfield_new(a_strhash_sizeGet(a__ecsComponents));
     s->onlyActiveEntities = OnlyActiveEntities;
     s->muted = false;
     s->runsInCurrentState = false;

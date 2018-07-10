@@ -53,7 +53,7 @@ extern void** a_list_toArray(AList* List);
 extern void a_list_reverse(AList* List);
 extern void a_list_sort(AList* List, AListCompare* Compare);
 
-extern unsigned a_list_getSize(const AList* List);
+extern unsigned a_list_sizeGet(const AList* List);
 extern bool a_list_isEmpty(const AList* List);
 
 static inline AListNode* a_list_push(AList* List, void* Content)

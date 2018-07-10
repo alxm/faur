@@ -23,7 +23,7 @@ typedef struct AScreen AScreen;
 
 #include "a2x_pack_sprite.p.h"
 
-extern APixel* a_screen_pixelsGet(void);
+extern APixel* a_screen_pixelsGetBuffer(void);
 extern int a_screen_widthGet(void);
 extern int a_screen_heightGet(void);
 

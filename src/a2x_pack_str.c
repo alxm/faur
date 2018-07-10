@@ -77,10 +77,10 @@ char* a_str_trim(const char* String)
         end--;
     }
 
-    return a_str_getSub(String, start, end + 1);
+    return a_str_subGetRange(String, start, end + 1);
 }
 
-char* a_str_getSub(const char* String, int Start, int End)
+char* a_str_subGetRange(const char* String, int Start, int End)
 {
     size_t len = (size_t)(End - Start);
     char* str = a_mem_malloc(len + 1);
@@ -91,18 +91,18 @@ char* a_str_getSub(const char* String, int Start, int End)
     return str;
 }
 
-char* a_str_getPrefix(const char* String, int Length)
+char* a_str_subGetPrefix(const char* String, int Length)
 {
-    return a_str_getSub(String, 0, Length);
+    return a_str_subGetRange(String, 0, Length);
 }
 
-char* a_str_getSuffix(const char* String, int Length)
+char* a_str_subGetSuffix(const char* String, int Length)
 {
     int sLen = (int)strlen(String);
-    return a_str_getSub(String, sLen - Length, sLen);
+    return a_str_subGetRange(String, sLen - Length, sLen);
 }
 
-int a_str_getFirstIndex(const char* String, char Character)
+int a_str_indexGetFirst(const char* String, char Character)
 {
     for(int i = 0; String[i] != '\0'; i++) {
         if(String[i] == Character) {
@@ -113,7 +113,7 @@ int a_str_getFirstIndex(const char* String, char Character)
     return -1;
 }
 
-int a_str_getLastIndex(const char* String, char Character)
+int a_str_indexGetLast(const char* String, char Character)
 {
     for(int i = (int)strlen(String); i--; ) {
         if(String[i] == Character) {
@@ -147,31 +147,31 @@ bool a_str_endsWith(const char* String, const char* Suffix)
     return strcmp(String + str_len - suf_len, Suffix) == 0;
 }
 
-char* a_str_getPrefixFirstFind(const char* String, char Marker)
+char* a_str_prefixGetToFirst(const char* String, char Marker)
 {
-    const int index = a_str_getFirstIndex(String, Marker);
+    const int index = a_str_indexGetFirst(String, Marker);
 
     if(index == -1) {
         return NULL;
     }
 
-    return a_str_getSub(String, 0, index);
+    return a_str_subGetRange(String, 0, index);
 }
 
-char* a_str_getPrefixLastFind(const char* String, char Marker)
+char* a_str_prefixGetToLast(const char* String, char Marker)
 {
-    const int index = a_str_getLastIndex(String, Marker);
+    const int index = a_str_indexGetLast(String, Marker);
 
     if(index == -1) {
         return NULL;
     }
 
-    return a_str_getSub(String, 0, index);
+    return a_str_subGetRange(String, 0, index);
 }
 
-char* a_str_getSuffixFirstFind(const char* String, char Marker)
+char* a_str_suffixGetFromFirst(const char* String, char Marker)
 {
-    const int start = a_str_getFirstIndex(String, Marker) + 1;
+    const int start = a_str_indexGetFirst(String, Marker) + 1;
     int end = start;
 
     if(start == 0) {
@@ -182,23 +182,23 @@ char* a_str_getSuffixFirstFind(const char* String, char Marker)
         end++;
     }
 
-    return a_str_getSub(String, start, end);
+    return a_str_subGetRange(String, start, end);
 }
 
-char* a_str_getSuffixLastFind(const char* String, char Marker)
+char* a_str_suffixGetFromLast(const char* String, char Marker)
 {
-    const int index = a_str_getLastIndex(String, Marker);
+    const int index = a_str_indexGetLast(String, Marker);
 
     if(index == -1) {
         return NULL;
     }
 
-    return a_str_getSub(String, index + 1, (int)strlen(String));
+    return a_str_subGetRange(String, index + 1, (int)strlen(String));
 }
 
 char* a_str_extractPath(const char* String)
 {
-    char* path = a_str_getPrefixLastFind(String, '/');
+    char* path = a_str_prefixGetToLast(String, '/');
 
     if(path) {
         return path;
@@ -209,7 +209,7 @@ char* a_str_extractPath(const char* String)
 
 char* a_str_extractFile(const char* String)
 {
-    char* c = a_str_getSuffixLastFind(String, '/');
+    char* c = a_str_suffixGetFromLast(String, '/');
 
     if(c) {
         return c;
@@ -221,7 +221,7 @@ char* a_str_extractFile(const char* String)
 char* a_str_extractName(const char* String)
 {
     char* file = a_str_extractFile(String);
-    char* name = a_str_getPrefixLastFind(file, '.');
+    char* name = a_str_prefixGetToLast(file, '.');
 
     if(name) {
         free(file);

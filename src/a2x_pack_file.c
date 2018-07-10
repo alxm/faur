@@ -48,8 +48,8 @@ AFile* a_file_open(const char* Path, const char* Modes)
     AFile* f = a_mem_malloc(sizeof(AFile));
 
     f->handle = handle;
-    f->path = a_str_getPrefixLastFind(Path, '/');
-    f->name = a_str_getSuffixLastFind(Path, '/');
+    f->path = a_str_prefixGetToLast(Path, '/');
+    f->name = a_str_suffixGetFromLast(Path, '/');
     f->lineBuffer = NULL;
     f->lineBufferSize = 0;
     f->eof = 0;

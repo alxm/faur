@@ -44,17 +44,17 @@ extern ASprite* a_spriteframes_getCurrent(const ASpriteFrames* Frames);
 extern ASprite* a_spriteframes_getByIndex(const ASpriteFrames* Frames, unsigned Index);
 extern ASprite* a_spriteframes_getRandom(const ASpriteFrames* Frames);
 
-extern unsigned a_spriteframes_getNum(const ASpriteFrames* Frames);
-extern unsigned a_spriteframes_getIndex(const ASpriteFrames* Frames);
-extern void a_spriteframes_setIndex(ASpriteFrames* Frames, unsigned Index);
+extern AList* a_spriteframes_spritesListGet(const ASpriteFrames* Frames);
+extern unsigned a_spriteframes_spritesNumGet(const ASpriteFrames* Frames);
 
-extern void a_spriteframes_setDirection(ASpriteFrames* Frames, bool Forward);
-extern void a_spriteframes_flipDirection(ASpriteFrames* Frames);
+extern unsigned a_spriteframes_indexGet(const ASpriteFrames* Frames);
+extern void a_spriteframes_indexSet(ASpriteFrames* Frames, unsigned Index);
 
-extern unsigned a_spriteframes_getSpeed(const ASpriteFrames* Frames);
-extern void a_spriteframes_setSpeed(ASpriteFrames* Frames, unsigned CallsToNextFrame);
+extern void a_spriteframes_directionSet(ASpriteFrames* Frames, bool Forward);
+extern void a_spriteframes_directionFlip(ASpriteFrames* Frames);
+
+extern unsigned a_spriteframes_speedGet(const ASpriteFrames* Frames);
+extern void a_spriteframes_speedSet(ASpriteFrames* Frames, unsigned CallsToNextFrame);
 
 extern void a_spriteframes_pause(ASpriteFrames* Frames);
 extern void a_spriteframes_resume(ASpriteFrames* Frames);
-
-extern AList* a_spriteframes_getSprites(const ASpriteFrames* Frames);

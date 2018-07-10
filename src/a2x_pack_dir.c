@@ -102,7 +102,7 @@ ADir* a_dir_open(const char* Path)
     ADir* d = a_mem_malloc(sizeof(ADir));
 
     d->path = a_str_dup(Path);
-    d->name = a_str_getSuffixLastFind(Path, '/');
+    d->name = a_str_suffixGetFromLast(Path, '/');
     d->files = files;
 
     if(d->name == NULL) {
@@ -136,7 +136,7 @@ AList* a_dir_entriesListGet(const ADir* Dir)
 
 unsigned a_dir_entriesNumGet(const ADir* Dir)
 {
-    return a_list_getSize(Dir->files);
+    return a_list_sizeGet(Dir->files);
 }
 
 const char* a_dir_entryNameGet(const ADirEntry* Entry)

@@ -161,7 +161,7 @@ void a_screen__uninit(void)
     freeScreen(&a__screen);
 
     if(!a_list_isEmpty(g_stack)) {
-        a_out__warning("Leaked %u screen targets", a_list_getSize(g_stack));
+        a_out__warning("Leaked %u screen targets", a_list_sizeGet(g_stack));
     }
 
     a_list_freeEx(g_stack, (AFree*)a_screen_free);
@@ -199,7 +199,7 @@ bool a_screen__sameSize(const AScreen* Screen1, const AScreen* Screen2)
         && Screen1->height == Screen2->height;
 }
 
-APixel* a_screen_pixelsGet(void)
+APixel* a_screen_pixelsGetBuffer(void)
 {
     #if !A_PLATFORM_RENDER_SOFTWARE
         a_platform__renderTargetPixelsGet(a__screen.pixels, a__screen.width);

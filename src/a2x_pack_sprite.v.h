@@ -38,4 +38,4 @@ extern APixel a_sprite__colorEnd;
 extern void a_sprite__init(void);
 
 #define A_SPRITE__NAME(Sprite) (Sprite->nameId ? Sprite->nameId : "Sprite")
-#define a_sprite__getPixel(s, x, y) (*((s)->pixels + (y) * (s)->w + (x)))
+#define a_sprite__pixelsGetPixel(s, x, y) (*((s)->pixels + (y) * (s)->w + (x)))

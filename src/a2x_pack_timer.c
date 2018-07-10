@@ -72,6 +72,20 @@ void a_timer_free(ATimer* Timer)
     free(Timer);
 }
 
+unsigned a_timer_elapsedGet(ATimer* Timer)
+{
+    return Timer->diff;
+}
+
+void a_timer_periodSet(ATimer* Timer, unsigned Period)
+{
+    if(Timer->type == A_TIMER_SEC) {
+        Period *= 1000;
+    }
+
+    Timer->period = a_math_maxu(Period, 1);
+}
+
 void a_timer_start(ATimer* Timer)
 {
     Timer->start = getNow(Timer);
@@ -109,18 +123,4 @@ bool a_timer_isExpired(ATimer* Timer)
     }
 
     return expired;
-}
-
-unsigned a_timer_getElapsed(ATimer* Timer)
-{
-    return Timer->diff;
-}
-
-void a_timer_setPeriod(ATimer* Timer, unsigned Period)
-{
-    if(Timer->type == A_TIMER_SEC) {
-        Period *= 1000;
-    }
-
-    Timer->period = a_math_maxu(Period, 1);
 }

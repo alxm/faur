@@ -289,7 +289,7 @@ void a_state_exit(void)
     a_list_clearEx(g_pending, (AFree*)pending_free);
 
     // Queue a pop for every state in the stack
-    for(unsigned i = a_list_getSize(g_stack); i--; ) {
+    for(unsigned i = a_list_sizeGet(g_stack); i--; ) {
         pending_new(A_STATE_ACTION_POP, NULL);
     }
 }

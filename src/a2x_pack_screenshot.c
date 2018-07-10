@@ -54,11 +54,11 @@ static bool lazy_init(void)
             const char* file = a_dir_entryNameGet(entry);
             const char* fullPath = a_dir_entryPathGet(entry);
 
-            int start = a_str_getLastIndex(file, '-');
-            int end = a_str_getLastIndex(file, '.');
+            int start = a_str_indexGetLast(file, '-');
+            int end = a_str_indexGetLast(file, '.');
 
             if(start != -1 && end != -1 && end - start == 6) {
-                char* numberStr = a_str_getSub(file, start + 1, end);
+                char* numberStr = a_str_subGetRange(file, start + 1, end);
                 int number = atoi(numberStr);
                 free(numberStr);
 
@@ -138,7 +138,7 @@ static void takeScreenshot(void)
 
     a_out__message("Saving screenshot '%s'", name);
     a_png_write(name,
-                a_screen_pixelsGet(),
+                a_screen_pixelsGetBuffer(),
                 a__screen.width,
                 a__screen.height,
                 g_title,

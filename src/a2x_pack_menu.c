@@ -100,12 +100,12 @@ void a_menu_tick(AMenu* Menu)
         browsed = true;
 
         if(Menu->selectedIndex-- == 0) {
-            Menu->selectedIndex = a_list_getSize(Menu->items) - 1;
+            Menu->selectedIndex = a_list_sizeGet(Menu->items) - 1;
         }
     } else if(a_button_pressGet(Menu->next)) {
         browsed = true;
 
-        if(++Menu->selectedIndex == a_list_getSize(Menu->items)) {
+        if(++Menu->selectedIndex == a_list_sizeGet(Menu->items)) {
             Menu->selectedIndex = 0;
         }
     }

@@ -124,7 +124,7 @@ static AFont* a_font__new(AFontLoad Loader, ASpriteFrames* Frames)
     f->loader = Loader;
     f->frames = Frames;
 
-    unsigned numFrames = a_spriteframes_getNum(Frames);
+    unsigned numFrames = a_spriteframes_spritesNumGet(Frames);
     bool hasGap = numFrames > A_FONT__NUM_ALL + 1;
 
     unsigned start = 0;
@@ -196,7 +196,7 @@ AFont* a_font_dup(AFont* Font, APixel Color)
 
     ASpriteFrames* frames = a_spriteframes_dup(Font->frames, true);
 
-    for(unsigned i = a_spriteframes_getNum(frames); i--; ) {
+    for(unsigned i = a_spriteframes_spritesNumGet(frames); i--; ) {
         ASprite* sprite = a_spriteframes_getNext(frames);
 
         a_screen_targetPushSprite(sprite);

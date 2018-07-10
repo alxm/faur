@@ -107,7 +107,7 @@ AInputButton* a_button_new(const char* Ids)
     AList* tok = a_str_split(Ids, ", ");
 
     A_LIST_ITERATE(tok, char*, id) {
-        if(a_str_getFirstIndex(id, '+') > 0) {
+        if(a_str_indexGetFirst(id, '+') > 0) {
             AList* combo = a_list_new();
             AList* tok = a_str_split(id, "+");
             bool missing = false;
@@ -150,14 +150,14 @@ AInputButton* a_button_new(const char* Ids)
         AList* combo = a_list_getLast(b->combos);
 
         A_LIST_ITERATE(combo, AInputButtonSource*, button) {
-            a_strbuilder_addString(sb, button->header.name);
+            a_strbuilder_add(sb, button->header.name);
 
             if(!A_LIST_IS_LAST()) {
-                a_strbuilder_addString(sb, "+");
+                a_strbuilder_add(sb, "+");
             }
         }
 
-        b->header.name = a_str_dup(a_strbuilder_getString(sb));
+        b->header.name = a_str_dup(a_strbuilder_get(sb));
         a_strbuilder_free(sb);
     } else {
         a_out__error("No buttons found for '%s'", Ids);
@@ -258,7 +258,7 @@ void a_button_pressSetRepeat(AInputButton* Button, unsigned RepeatTicks)
         Button->autoRepeat = a_timer_new(A_TIMER_TICKS, RepeatTicks, true);
     } else {
         a_timer_stop(Button->autoRepeat);
-        a_timer_setPeriod(Button->autoRepeat, RepeatTicks);
+        a_timer_periodSet(Button->autoRepeat, RepeatTicks);
     }
 }
 

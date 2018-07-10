@@ -148,12 +148,12 @@ void a_input_controller__uninit(void)
 
 unsigned a_input_controllerNumGet(void)
 {
-    return a_list_getSize(g_controllers);
+    return a_list_sizeGet(g_controllers);
 }
 
 void a_input_controllerSet(unsigned Index)
 {
-    if(Index >= a_list_getSize(g_controllers)) {
+    if(Index >= a_list_sizeGet(g_controllers)) {
         a_out__error("Controller %u not present", Index);
         return;
     }

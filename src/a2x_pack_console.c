@@ -203,7 +203,7 @@ void a_console__init2(void)
         (unsigned)(a_screen_heightGet() / a_font_lineHeightGet() - 2);
 
     // In case messages were logged between init and init2
-    while(a_list_getSize(g_lines) > g_linesPerScreen) {
+    while(a_list_sizeGet(g_lines) > g_linesPerScreen) {
         line_free(a_list_pop(g_lines));
     }
 
@@ -262,7 +262,7 @@ void a_console__write(AOutSource Source, AOutType Type, const char* Text, bool O
     } else {
         a_list_addLast(g_lines, line_new(Source, Type, Text));
 
-        if(a_list_getSize(g_lines) > g_linesPerScreen) {
+        if(a_list_sizeGet(g_lines) > g_linesPerScreen) {
             line_free(a_list_pop(g_lines));
         }
     }

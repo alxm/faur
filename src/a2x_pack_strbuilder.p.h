@@ -1,5 +1,5 @@
 /*
-    Copyright 2016, 2017 Alex Margarit
+    Copyright 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -24,7 +24,7 @@ typedef struct AStrBuilder AStrBuilder;
 extern AStrBuilder* a_strbuilder_new(size_t Bytes);
 extern void a_strbuilder_free(AStrBuilder* Builder);
 
-extern const char* a_strbuilder_getString(AStrBuilder* Builder);
+extern const char* a_strbuilder_get(AStrBuilder* Builder);
 
-extern bool a_strbuilder_addString(AStrBuilder* Builder, const char* String);
-extern bool a_strbuilder_addStringf(AStrBuilder* Builder, const char* Format, ...);
+extern bool a_strbuilder_add(AStrBuilder* Builder, const char* String);
+extern bool a_strbuilder_addf(AStrBuilder* Builder, const char* Format, ...);

@@ -50,8 +50,8 @@ void a_conf__init(void)
             goto next;
         }
 
-        key = a_str_getPrefixFirstFind(line, '=');
-        value = a_str_getSuffixFirstFind(line, '=');
+        key = a_str_prefixGetToFirst(line, '=');
+        value = a_str_suffixGetFromFirst(line, '=');
 
         if(key && value) {
             char* key_trim = a_str_trim(key);

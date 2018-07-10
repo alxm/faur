@@ -49,12 +49,12 @@ void a_strbuilder_free(AStrBuilder* Builder)
     free(Builder);
 }
 
-const char* a_strbuilder_getString(AStrBuilder* Builder)
+const char* a_strbuilder_get(AStrBuilder* Builder)
 {
     return Builder->buffer;
 }
 
-bool a_strbuilder_addString(AStrBuilder* Builder, const char* String)
+bool a_strbuilder_add(AStrBuilder* Builder, const char* String)
 {
     const size_t limit = Builder->size - 1;
     size_t index = Builder->index;
@@ -71,7 +71,7 @@ bool a_strbuilder_addString(AStrBuilder* Builder, const char* String)
     return *String == '\0';
 }
 
-bool a_strbuilder_addStringf(AStrBuilder* Builder, const char* Format, ...)
+bool a_strbuilder_addf(AStrBuilder* Builder, const char* Format, ...)
 {
     va_list args;
     va_start(args, Format);
@@ -89,7 +89,7 @@ bool a_strbuilder_addStringf(AStrBuilder* Builder, const char* Format, ...)
     char* buffer = a_mem_malloc((size_t)bytesNeeded);
 
     if(vsnprintf(buffer, (size_t)bytesNeeded, Format, args) >= 0) {
-        ret = a_strbuilder_addString(Builder, buffer);
+        ret = a_strbuilder_add(Builder, buffer);
     }
 
     free(buffer);

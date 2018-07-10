@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2017 Alex Margarit
+    Copyright 2010, 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -36,17 +36,17 @@ extern void a_sprite_blitCenterX(const ASprite* Sprite, int Y);
 extern void a_sprite_blitCenterY(const ASprite* Sprite, int X);
 extern void a_sprite_blitEx(const ASprite* Sprite, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY);
 
-extern void a_sprite_pow2Width(ASprite* Sprite);
-
 extern void a_sprite_swapColor(ASprite* Sprite, APixel OldColor, APixel NewColor);
 extern void a_sprite_swapColors(ASprite* Sprite, APixel* OldColors, APixel* NewColors, unsigned NumColors);
 
-extern int a_sprite_getWidth(const ASprite* Sprite);
-extern int a_sprite_getWidthLog2(const ASprite* Sprite);
-extern int a_sprite_getWidthOriginal(const ASprite* Sprite);
-extern int a_sprite_getHeight(const ASprite* Sprite);
+extern int a_sprite_widthGet(const ASprite* Sprite);
+extern int a_sprite_widthGetLog2(const ASprite* Sprite);
+extern int a_sprite_widthGetOriginal(const ASprite* Sprite);
+extern void a_sprite_widthSetPowerOf2(ASprite* Sprite);
 
-extern APixel* a_sprite_getPixels(ASprite* Sprite);
-extern APixel a_sprite_getPixel(const ASprite* Sprite, int X, int Y);
+extern int a_sprite_heightGet(const ASprite* Sprite);
 
-extern APixel a_sprite_getColorKey(void);
+extern APixel* a_sprite_pixelsGetBuffer(ASprite* Sprite);
+extern APixel a_sprite_pixelsGetPixel(const ASprite* Sprite, int X, int Y);
+
+extern APixel a_sprite_colorKeyGet(void);

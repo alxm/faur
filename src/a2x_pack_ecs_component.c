@@ -50,7 +50,7 @@ void a_component_declare(const char* Name, size_t Size, AFree* Free)
 
     c->size = sizeof(AComponentHeader) + Size;
     c->free = Free;
-    c->bit = a_strhash_getSize(a__ecsComponents);
+    c->bit = a_strhash_sizeGet(a__ecsComponents);
 
     a_strhash_add(a__ecsComponents, Name, c);
 }

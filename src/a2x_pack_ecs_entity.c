@@ -45,7 +45,7 @@ AEntity* a_entity_new(const char* Id, void* Context)
     e->systemNodesActive = a_list_new();
     e->systemNodesEither = a_list_new();
     e->components = a_strhash_new();
-    e->componentBits = a_bitfield_new(a_strhash_getSize(a__ecsComponents));
+    e->componentBits = a_bitfield_new(a_strhash_sizeGet(a__ecsComponents));
     e->handlers = a_strhash_new();
     e->lastActive = a_fps_tickCountGet() - 1;
     e->references = 0;
