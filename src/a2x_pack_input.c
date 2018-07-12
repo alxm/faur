@@ -106,12 +106,12 @@ void a_input__userHeaderFindSource(AInputUserHeader* UserInput, const char* Id, 
 
 bool a_input__freshEventGet(const AInputSourceHeader* Header)
 {
-    return Header->lastEventFrame == a_fps_tickCountGet();
+    return Header->lastEventFrame == a_fps_ticksGet();
 }
 
 void a_input__freshEventSet(AInputSourceHeader* Header)
 {
-    Header->lastEventFrame = a_fps_tickCountGet();
+    Header->lastEventFrame = a_fps_ticksGet();
 }
 
 void a_input__tick(void)

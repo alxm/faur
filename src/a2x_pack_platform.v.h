@@ -31,13 +31,13 @@ extern void a_platform__init(void);
 extern void a_platform__init2(void);
 extern void a_platform__uninit(void);
 
-extern uint32_t a_platform__getMs(void);
-extern void a_platform__waitMs(uint32_t Ms);
+extern uint32_t a_platform__msGet(void);
+extern void a_platform__msWait(uint32_t Ms);
 
 extern void a_platform__screenInit(int Width, int Height, bool FullScreen);
 extern void a_platform__screenShow(void);
 extern void a_platform__screenSetFullscreen(bool FullScreen);
-extern void a_platform__screenGetNativeResolution(int* Width, int* Height);
+extern void a_platform__screenResolutionGetNative(int* Width, int* Height);
 
 extern void a_platform__renderClear(void);
 extern void a_platform__renderSetDrawColor(void);

@@ -39,10 +39,10 @@ static inline unsigned getNow(const ATimer* Timer)
     switch(Timer->type) {
         case A_TIMER_MS:
         case A_TIMER_SEC:
-            return a_time_getMs();
+            return a_time_msGet();
 
         case A_TIMER_TICKS:
-            return a_fps_tickCountGet();
+            return a_fps_ticksGet();
 
         default:
             return 0;

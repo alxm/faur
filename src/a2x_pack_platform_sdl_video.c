@@ -341,7 +341,7 @@ void a_platform__renderClear(void)
     }
 }
 
-void a_platform__screenGetNativeResolution(int* Width, int* Height)
+void a_platform__screenResolutionGetNative(int* Width, int* Height)
 {
     SDL_DisplayMode mode;
 
@@ -364,7 +364,7 @@ void a_platform__screenGetNativeResolution(int* Width, int* Height)
     }
 }
 #elif A_PLATFORM_LIB_SDL_GETFULLRES
-void a_platform__screenGetNativeResolution(int* Width, int* Height)
+void a_platform__screenResolutionGetNative(int* Width, int* Height)
 {
     const SDL_VideoInfo* info = SDL_GetVideoInfo();
 

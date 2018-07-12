@@ -47,7 +47,7 @@ AEntity* a_entity_new(const char* Id, void* Context)
     e->components = a_strhash_new();
     e->componentBits = a_bitfield_new(a_strhash_sizeGet(a__ecsComponents));
     e->handlers = a_strhash_new();
-    e->lastActive = a_fps_tickCountGet() - 1;
+    e->lastActive = a_fps_ticksGet() - 1;
     e->references = 0;
     e->removedFromActive = false;
 
@@ -160,7 +160,7 @@ bool a_entity_removeGet(const AEntity* Entity)
 
 void a_entity_activeSet(AEntity* Entity)
 {
-    Entity->lastActive = a_fps_tickCountGet();
+    Entity->lastActive = a_fps_ticksGet();
 
     if(Entity->removedFromActive) {
         Entity->removedFromActive = false;
@@ -175,7 +175,7 @@ void a_entity_activeSet(AEntity* Entity)
 
 bool a_entity_activeGet(const AEntity* Entity)
 {
-    return Entity->lastActive == a_fps_tickCountGet();
+    return Entity->lastActive == a_fps_ticksGet();
 }
 
 void* a_entity_componentAdd(AEntity* Entity, const char* Component)

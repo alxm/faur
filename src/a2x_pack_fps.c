@@ -151,7 +151,7 @@ void a_fps__reset(unsigned NumFramesToSkip)
                                 ? (g_run.targetDrawFps - 2)
                                 : 1;
 
-    g_run.lastFrameMs = a_time_getMs();
+    g_run.lastFrameMs = a_time_msGet();
     g_run.tickCreditMs = g_run.tickFrameMs;
 }
 
@@ -169,7 +169,7 @@ bool a_fps__tick(void)
 
 void a_fps__frame(void)
 {
-    uint32_t nowMs = a_time_getMs();
+    uint32_t nowMs = a_time_msGet();
     uint32_t elapsedMs = nowMs - g_run.lastFrameMs;
 
     if(elapsedMs > 0) {
@@ -183,11 +183,11 @@ void a_fps__frame(void)
         while(elapsedMs < g_run.drawFrameMs) {
             #if ALLOW_SLEEP
                 if(g_run.canSleep) {
-                    a_time_waitMs(g_run.drawFrameMs - elapsedMs);
+                    a_time_msWait(g_run.drawFrameMs - elapsedMs);
                 }
             #endif
 
-            nowMs = a_time_getMs();
+            nowMs = a_time_msGet();
             elapsedMs = nowMs - g_run.lastFrameMs;
         }
     }
@@ -260,12 +260,12 @@ unsigned a_fps_drawSkipGet(void)
     return g_run.skipFramesNum;
 }
 
-unsigned a_fps_tickCountGet(void)
+unsigned a_fps_ticksGet(void)
 {
     return g_run.frameCounter;
 }
 
-bool a_fps_tickCountNth(unsigned N)
+bool a_fps_ticksNth(unsigned N)
 {
     return (g_run.frameCounter % N) == 0;
 }

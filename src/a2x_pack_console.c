@@ -82,11 +82,7 @@ static void line_free(ALine* Line)
 static void inputCallback(void)
 {
     if(a_button_pressGetOnce(g_toggle)) {
-        if(g_state == A_CONSOLE__STATE_FULL) {
-            a_console__showSet(true);
-        } else {
-            a_console__showSet(false);
-        }
+        a_console__showSet(g_state == A_CONSOLE__STATE_FULL);
     }
 }
 

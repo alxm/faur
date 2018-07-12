@@ -100,7 +100,7 @@ void a_screen__init(void)
         int w = width;
         int h = height;
 
-        a_platform__screenGetNativeResolution(&w, &h);
+        a_platform__screenResolutionGetNative(&w, &h);
 
         if(w > 0 && h > 0) {
             if(width < 0) {
