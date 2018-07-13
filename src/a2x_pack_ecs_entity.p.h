@@ -43,6 +43,5 @@ extern bool a_entity_componentHas(const AEntity* Entity, const char* Component);
 extern void* a_entity_componentGet(const AEntity* Entity, const char* Component);
 extern void* a_entity_componentReq(const AEntity* Entity, const char* Component);
 
-extern void a_entity_mute(AEntity* Entity);
-extern void a_entity_unmute(AEntity* Entity);
 extern bool a_entity_muteGet(const AEntity* Entity);
+extern void a_entity_muteSet(AEntity* Entity, bool DoMute);

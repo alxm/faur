@@ -260,46 +260,47 @@ void* a_entity_componentReq(const AEntity* Entity, const char* Component)
     return getComponent(header);
 }
 
-void a_entity_mute(AEntity* Entity)
-{
-    if(a_entity_muteGet(Entity)) {
-        a_out__warningv(
-            "Entity '%s' is already muted", a_entity_idGet(Entity));
-        return;
-    } else if(a_entity_removeGet(Entity)) {
-        a_out__warningv(
-            "Entity '%s' was removed, cannot mute", a_entity_idGet(Entity));
-        return;
-    }
-
-    a_ecs__entityMoveToList(Entity, A_ECS__MUTED_QUEUE);
-}
-
-void a_entity_unmute(AEntity* Entity)
-{
-    if(!a_entity_muteGet(Entity)) {
-        a_out__warningv("Entity '%s' is not muted", a_entity_idGet(Entity));
-        return;
-    }
-
-    if(a_entity__isMatchedToSystems(Entity)) {
-        if(a_ecs__entityIsInList(Entity, A_ECS__MUTED_QUEUE)) {
-            // Entity was muted and unmuted before it was removed from systems
-            a_ecs__entityMoveToList(Entity, A_ECS__RUNNING);
-        } else {
-            // To be added back to matched systems
-            a_ecs__entityMoveToList(Entity, A_ECS__RESTORE);
-        }
-    } else {
-        // Entity has not been matched to systems yet, treat it as new
-        a_ecs__entityMoveToList(Entity, A_ECS__NEW);
-    }
-}
-
 bool a_entity_muteGet(const AEntity* Entity)
 {
     return a_ecs__entityIsInList(Entity, A_ECS__MUTED_QUEUE)
         || a_ecs__entityIsInList(Entity, A_ECS__MUTED_LIMBO);
+}
+
+void a_entity_muteSet(AEntity* Entity, bool DoMute)
+{
+    if(a_entity_removeGet(Entity)) {
+        a_out__warningv(
+            "Entity '%s' was removed, cannot mute", a_entity_idGet(Entity));
+
+        return;
+    } else if(a_entity_muteGet(Entity) == DoMute) {
+        if(DoMute) {
+            a_out__warningv(
+                "Entity '%s' is already muted", a_entity_idGet(Entity));
+        } else {
+            a_out__warningv(
+                "Entity '%s' is not muted", a_entity_idGet(Entity));
+        }
+
+        return;
+    }
+
+    if(DoMute) {
+        a_ecs__entityMoveToList(Entity, A_ECS__MUTED_QUEUE);
+    } else {
+        if(a_entity__isMatchedToSystems(Entity)) {
+            if(a_ecs__entityIsInList(Entity, A_ECS__MUTED_QUEUE)) {
+                // Entity was muted and unmuted before it left systems
+                a_ecs__entityMoveToList(Entity, A_ECS__RUNNING);
+            } else {
+                // To be added back to matched systems
+                a_ecs__entityMoveToList(Entity, A_ECS__RESTORE);
+            }
+        } else {
+            // Entity has not been matched to systems yet, treat it as new
+            a_ecs__entityMoveToList(Entity, A_ECS__NEW);
+        }
+    }
 }
 
 void a_entity__removeFromAllSystems(AEntity* Entity)

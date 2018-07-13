@@ -121,6 +121,6 @@ $ make -f Makefile.gp2x
 Copyright 2010-2018 Alex Margarit (alex@alxm.org)
 
 * Code licensed under [GNU LGPL3](https://www.gnu.org/licenses/lgpl.html) (see `COPYING` and `COPYING.LESSER`)
-* Logo licensed under [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/) (see `doc/CC-BY-NC-ND`)
+* Graphics licensed under [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/) (see `doc/CC-BY-NC-ND`)
 
 a2x is a small project that supports my other personal projects. In the interest of focus and simplicity, it is a solo endeavor.
