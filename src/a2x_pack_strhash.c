@@ -133,9 +133,9 @@ bool a_strhash_contains(const AStrHash* Hash, const char* Key)
     return false;
 }
 
-unsigned a_strhash_getSize(const AStrHash* Hash)
+unsigned a_strhash_sizeGet(const AStrHash* Hash)
 {
-    return a_list_getSize(Hash->entriesList);
+    return a_list_sizeGet(Hash->entriesList);
 }
 
 AList* a_strhash__entries(const AStrHash* Hash)
@@ -188,7 +188,7 @@ void a_strhash__printStats(const AStrHash* Hash, const char* Message)
     }
 
     printf("%d entries, %d%% slots used, %d%% have collisions - ",
-           a_list_getSize(Hash->entriesList),
+           a_list_sizeGet(Hash->entriesList),
            100 * occupiedSlots / A_STRHASH__SLOTS,
            100 * slotsWithCollisions / occupiedSlots);
 

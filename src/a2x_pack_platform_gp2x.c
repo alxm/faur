@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2017 Alex Margarit and:
+    Copyright 2010, 2016-2018 Alex Margarit and:
 
     - GP2X clock speed from the GP2X Wiki
     - GP2X mmuhack by Squidge and NK
@@ -130,7 +130,7 @@ void a_platform_gp2x__uninit(void)
     setRamTimings(8, 16, 3, 8, 8, 8, 8);
 }
 
-void a_platform__getNativeResolution(int* Width, int* Height)
+void a_platform__screenResolutionGetNative(int* Width, int* Height)
 {
     *Width = 320;
     *Height = 240;

@@ -1,5 +1,5 @@
 /*
-    Copyright 2016, 2017 Alex Margarit
+    Copyright 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -30,10 +30,10 @@ static unsigned g_seed;
 
 void a_random__init(void)
 {
-    a_random_resetGenerator();
+    a_random_generatorReset();
 }
 
-void a_random_setGenerator(ARandomPrng* Rand, ARandomPrngSeed* Srand)
+void a_random_generatorSet(ARandomPrng* Rand, ARandomPrngSeed* Srand)
 {
     g_rand = Rand;
     g_srand = Srand;
@@ -41,23 +41,23 @@ void a_random_setGenerator(ARandomPrng* Rand, ARandomPrngSeed* Srand)
     time_t t = time(NULL);
 
     if(t < 0) {
-        a_random_setSeed(0);
+        a_random_seedSet(0);
     } else {
-        a_random_setSeed((unsigned)t);
+        a_random_seedSet((unsigned)t);
     }
 }
 
-void a_random_resetGenerator(void)
+void a_random_generatorReset(void)
 {
-    a_random_setGenerator(rand, srand);
+    a_random_generatorSet(rand, srand);
 }
 
-unsigned a_random_getSeed(void)
+unsigned a_random_seedGet(void)
 {
     return g_seed;
 }
 
-void a_random_setSeed(unsigned Seed)
+void a_random_seedSet(unsigned Seed)
 {
     g_seed = Seed;
 

@@ -57,8 +57,8 @@ A_STATE(drawBox)
 
     A_STATE_INIT
     {
-        context.x = a_screen_getWidth() / 2;
-        context.y = a_screen_getHeight() / 2;
+        context.x = a_screen_widthGet() / 2;
+        context.y = a_screen_heightGet() / 2;
 
         context.up = a_button_new("key.up");
         context.down = a_button_new("key.down");
@@ -68,25 +68,25 @@ A_STATE(drawBox)
 
     A_STATE_TICK
     {
-        if(a_button_getPressed(context.up)) {
+        if(a_button_pressGet(context.up)) {
             context.y--;
-        } else if(a_button_getPressed(context.down)) {
+        } else if(a_button_pressGet(context.down)) {
             context.y++;
         }
 
-        if(a_button_getPressed(context.left)) {
+        if(a_button_pressGet(context.left)) {
             context.x--;
-        } else if(a_button_getPressed(context.right)) {
+        } else if(a_button_pressGet(context.right)) {
             context.x++;
         }
     }
 
     A_STATE_DRAW
     {
-        a_pixel_setHex(0xaaff88);
+        a_pixel_hexSet(0xaaff88);
         a_draw_fill();
 
-        a_pixel_setHex(0xffaa44);
+        a_pixel_hexSet(0xffaa44);
         a_draw_rectangle(context.x - 40, context.y - 40, 80, 80);
     }
 }
@@ -121,6 +121,6 @@ $ make -f Makefile.gp2x
 Copyright 2010-2018 Alex Margarit (alex@alxm.org)
 
 * Code licensed under [GNU LGPL3](https://www.gnu.org/licenses/lgpl.html) (see `COPYING` and `COPYING.LESSER`)
-* Logo licensed under [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/) (see `doc/CC-BY-NC-ND`)
+* Graphics licensed under [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/) (see `doc/CC-BY-NC-ND`)
 
 a2x is a small project that supports my other personal projects. In the interest of focus and simplicity, it is a solo endeavor.

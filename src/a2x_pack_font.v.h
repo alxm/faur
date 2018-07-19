@@ -1,5 +1,5 @@
 /*
-    Copyright 2010 Alex Margarit
+    Copyright 2010, 2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -36,4 +36,4 @@ typedef enum {
 extern void a_font__init(void);
 extern void a_font__uninit(void);
 
-extern void a_font__setFont(AFontId Font);
+extern void a_font__fontSet(AFontId Font);

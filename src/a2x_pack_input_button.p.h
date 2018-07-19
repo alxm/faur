@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2017 Alex Margarit
+    Copyright 2010, 2017, 2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -26,9 +26,9 @@ extern AInputButton* a_button_dup(const AInputButton* Button);
 extern void a_button_free(AInputButton* Button);
 
 extern bool a_button_isWorking(const AInputButton* Button);
-extern const char* a_button_getName(const AInputButton* Button);
+extern const char* a_button_nameGet(const AInputButton* Button);
 
-extern bool a_button_getPressed(AInputButton* Button);
-extern void a_button_release(const AInputButton* Button);
-extern bool a_button_getPressedOnce(AInputButton* Button);
-extern void a_button_setRepeat(AInputButton* Button, unsigned RepeatTicks);
+extern bool a_button_pressGet(AInputButton* Button);
+extern bool a_button_pressGetOnce(AInputButton* Button);
+extern void a_button_pressSetRepeat(AInputButton* Button, unsigned RepeatTicks);
+extern void a_button_pressClear(const AInputButton* Button);

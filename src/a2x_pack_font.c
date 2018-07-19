@@ -124,7 +124,7 @@ static AFont* a_font__new(AFontLoad Loader, ASpriteFrames* Frames)
     f->loader = Loader;
     f->frames = Frames;
 
-    unsigned numFrames = a_spriteframes_getNum(Frames);
+    unsigned numFrames = a_spriteframes_spritesNumGet(Frames);
     bool hasGap = numFrames > A_FONT__NUM_ALL + 1;
 
     unsigned start = 0;
@@ -191,12 +191,12 @@ AFont* a_font_newFromSprite(const ASprite* Sheet, int X, int Y, AFontLoad Loader
 AFont* a_font_dup(AFont* Font, APixel Color)
 {
     a_pixel_push();
-    a_pixel_setPixel(Color);
-    a_pixel_setFillBlit(true);
+    a_pixel_pixelSet(Color);
+    a_pixel_fillBlitSet(true);
 
     ASpriteFrames* frames = a_spriteframes_dup(Font->frames, true);
 
-    for(unsigned i = a_spriteframes_getNum(frames); i--; ) {
+    for(unsigned i = a_spriteframes_spritesNumGet(frames); i--; ) {
         ASprite* sprite = a_spriteframes_getNext(frames);
 
         a_screen_targetPushSprite(sprite);
@@ -234,13 +234,13 @@ void a_font_pop(void)
 
 void a_font_reset(void)
 {
-    a_font__setFont(A_FONT_ID_DEFAULT);
-    a_font_setAlign(A_FONT_ALIGN_LEFT);
-    a_font_setCoords(0, 0);
-    a_font_setWrap(0);
+    a_font__fontSet(A_FONT_ID_DEFAULT);
+    a_font_alignSet(A_FONT_ALIGN_LEFT);
+    a_font_coordsSet(0, 0);
+    a_font_lineWrapSet(0);
 }
 
-void a_font_setFont(AFont* Font)
+void a_font_fontSet(AFont* Font)
 {
     if(Font == NULL) {
         Font = g_defaultFonts[A_FONT_ID_DEFAULT];
@@ -250,29 +250,29 @@ void a_font_setFont(AFont* Font)
     g_state.lineHeight = Font->maxHeight + LINE_SPACING;
 }
 
-void a_font__setFont(AFontId Font)
+void a_font__fontSet(AFontId Font)
 {
-    a_font_setFont(g_defaultFonts[Font]);
+    a_font_fontSet(g_defaultFonts[Font]);
 }
 
-void a_font_setAlign(AFontAlign Align)
+void a_font_alignSet(AFontAlign Align)
 {
     g_state.align = Align;
 }
 
-void a_font_setCoords(int X, int Y)
+void a_font_coordsSet(int X, int Y)
 {
     g_state.x = g_state.startX = X;
     g_state.y = Y;
     g_state.currentLineWidth = 0;
 }
 
-int a_font_getX(void)
+int a_font_coordsGetX(void)
 {
     return g_state.x;
 }
 
-int a_font_getY(void)
+int a_font_coordsGetY(void)
 {
     return g_state.y;
 }
@@ -281,20 +281,21 @@ void a_font_newLine(void)
 {
     g_state.x = g_state.startX;
     g_state.y += g_state.lineHeight;
+
     g_state.currentLineWidth = 0;
 }
 
-int a_font_getLineHeight(void)
+int a_font_lineHeightGet(void)
 {
     return g_state.lineHeight;
 }
 
-void a_font_setLineHeight(int Height)
+void a_font_lineHeightSet(int Height)
 {
     g_state.lineHeight = Height;
 }
 
-void a_font_setWrap(int Width)
+void a_font_lineWrapSet(int Width)
 {
     g_state.wrapWidth = Width;
     g_state.currentLineWidth = 0;
@@ -451,29 +452,29 @@ void a_font_printv(const char* Format, va_list Args)
     }
 }
 
-int a_font_getWidth(const char* Text)
+int a_font_widthGet(const char* Text)
 {
     return getWidth(Text, (ptrdiff_t)strlen(Text));
 }
 
-int a_font_getWidthf(const char* Format, ...)
+int a_font_widthGetf(const char* Format, ...)
 {
     int width;
     va_list args;
 
     va_start(args, Format);
-    width = a_font_getWidthv(Format, args);
+    width = a_font_widthGetv(Format, args);
     va_end(args);
 
     return width;
 }
 
-int a_font_getWidthv(const char* Format, va_list Args)
+int a_font_widthGetv(const char* Format, va_list Args)
 {
     char buffer[256];
 
     if(vsnprintf(buffer, sizeof(buffer), Format, Args) > 0) {
-        return a_font_getWidth(buffer);
+        return a_font_widthGet(buffer);
     }
 
     return 0;

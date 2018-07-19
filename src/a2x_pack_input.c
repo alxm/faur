@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2017 Alex Margarit
+    Copyright 2010, 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -41,7 +41,7 @@ void a_input__init(void)
     a_input_button__init();
     a_input_touch__init();
 
-    a_platform__bindInputs();
+    a_platform__inputsBind();
 
     a_input_controller__init2();
 }
@@ -55,7 +55,7 @@ void a_input__uninit(void)
     a_list_freeEx(g_callbacks, free);
 }
 
-void a_input__addCallback(AInputCallback Callback)
+void a_input__callbackAdd(AInputCallback Callback)
 {
     AInputCallbackContainer* c = a_mem_malloc(sizeof(AInputCallbackContainer));
     c->callback = Callback;
@@ -63,31 +63,31 @@ void a_input__addCallback(AInputCallback Callback)
     a_list_addLast(g_callbacks, c);
 }
 
-void a_input__initUserHeader(AInputUserHeader* Header)
+void a_input__userHeaderInit(AInputUserHeader* Header)
 {
     Header->name = NULL;
     Header->sourceInputs = a_list_new();
 }
 
-void a_input__freeUserHeader(AInputUserHeader* Header)
+void a_input__userHeaderFree(AInputUserHeader* Header)
 {
     free(Header->name);
     a_list_free(Header->sourceInputs);
 }
 
-void a_input__initSourceHeader(AInputSourceHeader* Header, const char* Name)
+void a_input__sourceHeaderInit(AInputSourceHeader* Header, const char* Name)
 {
     Header->name = a_str_dup(Name);
     Header->lastEventFrame = 0;
 }
 
-void a_input__freeSourceHeader(AInputSourceHeader* Header)
+void a_input__sourceHeaderFree(AInputSourceHeader* Header)
 {
     free(Header->name);
     free(Header);
 }
 
-void a_input__findSourceInput(const AStrHash* GlobalCollection, const AStrHash* ControllerCollection, const char* Id, AInputUserHeader* UserInput)
+void a_input__userHeaderFindSource(AInputUserHeader* UserInput, const char* Id, const AStrHash* GlobalCollection, const AStrHash* ControllerCollection)
 {
     AInputSourceHeader* source = NULL;
 
@@ -104,20 +104,20 @@ void a_input__findSourceInput(const AStrHash* GlobalCollection, const AStrHash* 
     }
 }
 
-bool a_input__hasFreshEvent(const AInputSourceHeader* Header)
+bool a_input__freshEventGet(const AInputSourceHeader* Header)
 {
-    return Header->lastEventFrame == a_fps_getCounter();
+    return Header->lastEventFrame == a_fps_ticksGet();
 }
 
-void a_input__setFreshEvent(AInputSourceHeader* Header)
+void a_input__freshEventSet(AInputSourceHeader* Header)
 {
-    Header->lastEventFrame = a_fps_getCounter();
+    Header->lastEventFrame = a_fps_ticksGet();
 }
 
-void a_input__get(void)
+void a_input__tick(void)
 {
-    a_input_touch__clearMotion();
-    a_platform__pollInputs();
+    a_input_touch__motionClear();
+    a_platform__inputsPoll();
     a_input_button__processQueue();
 
     A_LIST_ITERATE(g_callbacks, AInputCallbackContainer*, c) {

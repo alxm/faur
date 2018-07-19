@@ -22,31 +22,31 @@
 
 #include "a2x_pack_platform.v.h"
 
-uint32_t a_time_getMs(void)
+uint32_t a_time_msGet(void)
 {
-    return a_platform__getMs();
+    return a_platform__msGet();
 }
 
-void a_time_waitMs(uint32_t Ms)
+void a_time_msWait(uint32_t Ms)
 {
-    a_platform__waitMs(Ms);
+    a_platform__msWait(Ms);
 }
 
-void a_time_waitSec(uint32_t Sec)
+void a_time_secWait(uint32_t Sec)
 {
-    a_platform__waitMs(Sec * 1000);
+    a_platform__msWait(Sec * 1000);
 }
 
-void a_time_spinMs(uint32_t Ms)
+void a_time_msSpin(uint32_t Ms)
 {
-    const uint32_t start = a_platform__getMs();
+    const uint32_t start = a_platform__msGet();
 
-    while(a_platform__getMs() - start < Ms) {
+    while(a_platform__msGet() - start < Ms) {
         continue;
     }
 }
 
-void a_time_spinSec(uint32_t Sec)
+void a_time_secSpin(uint32_t Sec)
 {
-    a_time_spinMs(Sec * 1000);
+    a_time_msSpin(Sec * 1000);
 }

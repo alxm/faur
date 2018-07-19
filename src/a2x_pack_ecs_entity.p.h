@@ -23,26 +23,25 @@ typedef struct AEntity AEntity;
 
 extern AEntity* a_entity_new(const char* Id, void* Context);
 
-extern const char* a_entity_getId(const AEntity* Entity);
-extern void* a_entity_getContext(const AEntity* Entity);
+extern const char* a_entity_idGet(const AEntity* Entity);
+extern void* a_entity_contextGet(const AEntity* Entity);
 
-extern AEntity* a_entity_getParent(const AEntity* Entity);
-extern void a_entity_setParent(AEntity* Entity, AEntity* Parent);
+extern AEntity* a_entity_parentGet(const AEntity* Entity);
+extern void a_entity_parentSet(AEntity* Entity, AEntity* Parent);
 
-extern void a_entity_reference(AEntity* Entity);
-extern void a_entity_release(AEntity* Entity);
+extern void a_entity_refInc(AEntity* Entity);
+extern void a_entity_refDec(AEntity* Entity);
 
-extern void a_entity_remove(AEntity* Entity);
-extern bool a_entity_isRemoved(const AEntity* Entity);
+extern void a_entity_removeSet(AEntity* Entity);
+extern bool a_entity_removeGet(const AEntity* Entity);
 
-extern void a_entity_markActive(AEntity* Entity);
-extern bool a_entity_isActive(const AEntity* Entity);
+extern void a_entity_activeSet(AEntity* Entity);
+extern bool a_entity_activeGet(const AEntity* Entity);
 
-extern void* a_entity_addComponent(AEntity* Entity, const char* Component);
-extern bool a_entity_hasComponent(const AEntity* Entity, const char* Component);
-extern void* a_entity_getComponent(const AEntity* Entity, const char* Component);
-extern void* a_entity_reqComponent(const AEntity* Entity, const char* Component);
+extern void* a_entity_componentAdd(AEntity* Entity, const char* Component);
+extern bool a_entity_componentHas(const AEntity* Entity, const char* Component);
+extern void* a_entity_componentGet(const AEntity* Entity, const char* Component);
+extern void* a_entity_componentReq(const AEntity* Entity, const char* Component);
 
-extern void a_entity_mute(AEntity* Entity);
-extern void a_entity_unmute(AEntity* Entity);
-extern bool a_entity_isMuted(const AEntity* Entity);
+extern bool a_entity_muteGet(const AEntity* Entity);
+extern void a_entity_muteSet(AEntity* Entity, bool DoMute);

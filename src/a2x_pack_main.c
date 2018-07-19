@@ -119,15 +119,15 @@ int main(int Argc, char* Argv[])
     return 0;
 }
 
-int a_main_getNumArgs(void)
+int a_main_argsGetNum(void)
 {
     return g_argsNum;
 }
 
-const char* a_main_getArg(int ArgNum)
+const char* a_main_argsGet(int ArgNum)
 {
     if(ArgNum >= g_argsNum) {
-        a_out__error("a_main_getArg invalid arg: %u", ArgNum);
+        a_out__error("a_main_argsGet invalid arg: %u", ArgNum);
         return NULL;
     }
 

@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2017 Alex Margarit
+    Copyright 2010, 2017, 2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -26,7 +26,7 @@ extern void a_touch_free(AInputTouch* Touch);
 
 extern bool a_touch_isWorking(const AInputTouch* Touch);
 
-extern void a_touch_getDelta(const AInputTouch* Touch, int* Dx, int* Dy);
-extern bool a_touch_getTap(const AInputTouch* Touch);
-extern bool a_touch_getPoint(const AInputTouch* Touch, int X, int Y);
-extern bool a_touch_getBox(const AInputTouch* Touch, int X, int Y, int W, int H);
+extern void a_touch_deltaGet(const AInputTouch* Touch, int* Dx, int* Dy);
+extern bool a_touch_tapGet(const AInputTouch* Touch);
+extern bool a_touch_pointGet(const AInputTouch* Touch, int X, int Y);
+extern bool a_touch_boxGet(const AInputTouch* Touch, int X, int Y, int W, int H);

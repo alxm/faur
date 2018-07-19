@@ -33,7 +33,7 @@ extern void a_strhash_add(AStrHash* Hash, const char* Key, void* Content);
 extern void* a_strhash_update(AStrHash* Hash, const char* Key, void* NewContent);
 extern void* a_strhash_get(const AStrHash* Hash, const char* Key);
 extern bool a_strhash_contains(const AStrHash* Hash, const char* Key);
-extern unsigned a_strhash_getSize(const AStrHash* Hash);
+extern unsigned a_strhash_sizeGet(const AStrHash* Hash);
 
 extern AList* a_strhash__entries(const AStrHash* Hash);
 extern void* a_strhash__entryValue(const AStrHashEntry* Entry);

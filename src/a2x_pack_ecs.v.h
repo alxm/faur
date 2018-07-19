@@ -40,16 +40,17 @@ typedef enum {
 extern void a_ecs__init(void);
 extern void a_ecs__uninit(void);
 
+extern bool a_ecs__isDeleting(void);
+
 extern void a_ecs__tick(void);
 extern void a_ecs__draw(void);
 
-extern void a_ecs__pushCollection(AList* TickSystems, AList* DrawSystems);
-extern void a_ecs__popCollection(void);
-extern bool a_ecs__isDeleting(void);
+extern void a_ecs__collectionPush(AList* TickSystems, AList* DrawSystems);
+extern void a_ecs__collectionPop(void);
 
-extern bool a_ecs__isEntityInList(const AEntity* Entity, AEcsListId List);
-extern void a_ecs__addEntityToList(AEntity* Entity, AEcsListId List);
-extern void a_ecs__moveEntityToList(AEntity* Entity, AEcsListId List);
+extern bool a_ecs__entityIsInList(const AEntity* Entity, AEcsListId List);
+extern void a_ecs__entityAddToList(AEntity* Entity, AEcsListId List);
+extern void a_ecs__entityMoveToList(AEntity* Entity, AEcsListId List);
+
 extern void a_ecs__flushEntitiesFromSystems(void);
-
 extern void a_ecs__queueMessage(AEntity* To, AEntity* From, const char* Message);

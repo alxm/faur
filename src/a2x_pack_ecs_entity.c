@@ -45,13 +45,13 @@ AEntity* a_entity_new(const char* Id, void* Context)
     e->systemNodesActive = a_list_new();
     e->systemNodesEither = a_list_new();
     e->components = a_strhash_new();
-    e->componentBits = a_bitfield_new(a_strhash_getSize(a__ecsComponents));
+    e->componentBits = a_bitfield_new(a_strhash_sizeGet(a__ecsComponents));
     e->handlers = a_strhash_new();
-    e->lastActive = a_fps_getCounter() - 1;
+    e->lastActive = a_fps_ticksGet() - 1;
     e->references = 0;
     e->removedFromActive = false;
 
-    a_ecs__addEntityToList(e, A_ECS__NEW);
+    a_ecs__entityAddToList(e, A_ECS__NEW);
 
     return e;
 }
@@ -72,7 +72,7 @@ void a_entity__free(AEntity* Entity)
     }
 
     if(Entity->parent) {
-        a_entity_release(Entity->parent);
+        a_entity_refDec(Entity->parent);
     }
 
     a_strhash_free(Entity->components);
@@ -82,46 +82,46 @@ void a_entity__free(AEntity* Entity)
     free(Entity);
 }
 
-const char* a_entity_getId(const AEntity* Entity)
+const char* a_entity_idGet(const AEntity* Entity)
 {
     return Entity->id ? Entity->id : "AEntity";
 }
 
-void* a_entity_getContext(const AEntity* Entity)
+void* a_entity_contextGet(const AEntity* Entity)
 {
     return Entity->context;
 }
 
-AEntity* a_entity_getParent(const AEntity* Entity)
+AEntity* a_entity_parentGet(const AEntity* Entity)
 {
     return Entity->parent;
 }
 
-void a_entity_setParent(AEntity* Entity, AEntity* Parent)
+void a_entity_parentSet(AEntity* Entity, AEntity* Parent)
 {
     if(Entity->parent != NULL) {
-        a_entity_release(Entity->parent);
+        a_entity_refDec(Entity->parent);
     }
 
     Entity->parent = Parent;
 
     if(Parent != NULL) {
-        a_entity_reference(Parent);
+        a_entity_refInc(Parent);
     }
 }
 
-void a_entity_reference(AEntity* Entity)
+void a_entity_refInc(AEntity* Entity)
 {
-    if(a_entity_isRemoved(Entity)) {
+    if(a_entity_removeGet(Entity)) {
         a_out__warningv("Entity '%s' is removed, ignoring reference",
-                        a_entity_getId(Entity));
+                        a_entity_idGet(Entity));
         return;
     }
 
     Entity->references++;
 }
 
-void a_entity_release(AEntity* Entity)
+void a_entity_refDec(AEntity* Entity)
 {
     if(a_ecs__isDeleting()) {
         // Entity could have already been freed. This is the only ECS function
@@ -133,34 +133,34 @@ void a_entity_release(AEntity* Entity)
 
     if(Entity->references < 0) {
         a_out__fatal("Release count exceeds reference count for '%s'",
-                     a_entity_getId(Entity));
+                     a_entity_idGet(Entity));
     } else if(Entity->references == 0
-        && a_ecs__isEntityInList(Entity, A_ECS__REMOVED_LIMBO)) {
+        && a_ecs__entityIsInList(Entity, A_ECS__REMOVED_LIMBO)) {
 
-        a_ecs__moveEntityToList(Entity, A_ECS__REMOVED_QUEUE);
+        a_ecs__entityMoveToList(Entity, A_ECS__REMOVED_QUEUE);
     }
 }
 
-void a_entity_remove(AEntity* Entity)
+void a_entity_removeSet(AEntity* Entity)
 {
-    if(a_entity_isRemoved(Entity)) {
-        a_out__fatal("Entity '%s' was already removed", a_entity_getId(Entity));
+    if(a_entity_removeGet(Entity)) {
+        a_out__fatal("Entity '%s' was already removed", a_entity_idGet(Entity));
         return;
     }
 
-    a_ecs__moveEntityToList(Entity, A_ECS__REMOVED_QUEUE);
+    a_ecs__entityMoveToList(Entity, A_ECS__REMOVED_QUEUE);
 }
 
-bool a_entity_isRemoved(const AEntity* Entity)
+bool a_entity_removeGet(const AEntity* Entity)
 {
-    return a_ecs__isEntityInList(Entity, A_ECS__REMOVED_QUEUE)
-        || a_ecs__isEntityInList(Entity, A_ECS__REMOVED_LIMBO)
-        || a_ecs__isEntityInList(Entity, A_ECS__REMOVED_FREE);
+    return a_ecs__entityIsInList(Entity, A_ECS__REMOVED_QUEUE)
+        || a_ecs__entityIsInList(Entity, A_ECS__REMOVED_LIMBO)
+        || a_ecs__entityIsInList(Entity, A_ECS__REMOVED_FREE);
 }
 
-void a_entity_markActive(AEntity* Entity)
+void a_entity_activeSet(AEntity* Entity)
 {
-    Entity->lastActive = a_fps_getCounter();
+    Entity->lastActive = a_fps_ticksGet();
 
     if(Entity->removedFromActive) {
         Entity->removedFromActive = false;
@@ -173,17 +173,17 @@ void a_entity_markActive(AEntity* Entity)
     }
 }
 
-bool a_entity_isActive(const AEntity* Entity)
+bool a_entity_activeGet(const AEntity* Entity)
 {
-    return Entity->lastActive == a_fps_getCounter();
+    return Entity->lastActive == a_fps_ticksGet();
 }
 
-void* a_entity_addComponent(AEntity* Entity, const char* Component)
+void* a_entity_componentAdd(AEntity* Entity, const char* Component)
 {
-    if(!a_ecs__isEntityInList(Entity, A_ECS__NEW)) {
+    if(!a_ecs__entityIsInList(Entity, A_ECS__NEW)) {
         a_out__fatal("Too late to add component '%s' to '%s'",
                      Component,
-                     a_entity_getId(Entity));
+                     a_entity_idGet(Entity));
     }
 
     const AComponent* c = a_strhash_get(a__ecsComponents, Component);
@@ -191,13 +191,13 @@ void* a_entity_addComponent(AEntity* Entity, const char* Component)
     if(c == NULL) {
         a_out__fatal("Unknown component '%s' for '%s'",
                      Component,
-                     a_entity_getId(Entity));
+                     a_entity_idGet(Entity));
     }
 
     if(a_bitfield_test(Entity->componentBits, c->bit)) {
         a_out__fatal("Component '%s' was already added to '%s'",
                      Component,
-                     a_entity_getId(Entity));
+                     a_entity_idGet(Entity));
     }
 
     AComponentHeader* header = a_mem_zalloc(c->size);
@@ -211,20 +211,20 @@ void* a_entity_addComponent(AEntity* Entity, const char* Component)
     return getComponent(header);
 }
 
-bool a_entity_hasComponent(const AEntity* Entity, const char* Component)
+bool a_entity_componentHas(const AEntity* Entity, const char* Component)
 {
     bool has = a_strhash_contains(Entity->components, Component);
 
     if(!has && !a_strhash_contains(a__ecsComponents, Component)) {
         a_out__fatal("Unknown component '%s' for '%s'",
                      Component,
-                     a_entity_getId(Entity));
+                     a_entity_idGet(Entity));
     }
 
     return has;
 }
 
-void* a_entity_getComponent(const AEntity* Entity, const char* Component)
+void* a_entity_componentGet(const AEntity* Entity, const char* Component)
 {
     AComponentHeader* header = a_strhash_get(Entity->components, Component);
 
@@ -232,7 +232,7 @@ void* a_entity_getComponent(const AEntity* Entity, const char* Component)
         if(!a_strhash_contains(a__ecsComponents, Component)) {
             a_out__fatal("Unknown component '%s' for '%s'",
                          Component,
-                         a_entity_getId(Entity));
+                         a_entity_idGet(Entity));
         }
 
         return NULL;
@@ -241,7 +241,7 @@ void* a_entity_getComponent(const AEntity* Entity, const char* Component)
     return getComponent(header);
 }
 
-void* a_entity_reqComponent(const AEntity* Entity, const char* Component)
+void* a_entity_componentReq(const AEntity* Entity, const char* Component)
 {
     AComponentHeader* header = a_strhash_get(Entity->components, Component);
 
@@ -249,57 +249,58 @@ void* a_entity_reqComponent(const AEntity* Entity, const char* Component)
         if(!a_strhash_contains(a__ecsComponents, Component)) {
             a_out__fatal("Unknown component '%s' for '%s'",
                          Component,
-                         a_entity_getId(Entity));
+                         a_entity_idGet(Entity));
         }
 
         a_out__fatal("Missing required component '%s' in '%s'",
                      Component,
-                     a_entity_getId(Entity));
+                     a_entity_idGet(Entity));
     }
 
     return getComponent(header);
 }
 
-void a_entity_mute(AEntity* Entity)
+bool a_entity_muteGet(const AEntity* Entity)
 {
-    if(a_entity_isMuted(Entity)) {
-        a_out__warningv(
-            "Entity '%s' is already muted", a_entity_getId(Entity));
-        return;
-    } else if(a_entity_isRemoved(Entity)) {
-        a_out__warningv(
-            "Entity '%s' was removed, cannot mute", a_entity_getId(Entity));
-        return;
-    }
-
-    a_ecs__moveEntityToList(Entity, A_ECS__MUTED_QUEUE);
+    return a_ecs__entityIsInList(Entity, A_ECS__MUTED_QUEUE)
+        || a_ecs__entityIsInList(Entity, A_ECS__MUTED_LIMBO);
 }
 
-void a_entity_unmute(AEntity* Entity)
+void a_entity_muteSet(AEntity* Entity, bool DoMute)
 {
-    if(!a_entity_isMuted(Entity)) {
-        a_out__warningv("Entity '%s' is not muted", a_entity_getId(Entity));
-        return;
-    }
+    if(a_entity_removeGet(Entity)) {
+        a_out__warningv(
+            "Entity '%s' was removed, cannot mute", a_entity_idGet(Entity));
 
-    if(a_entity__isMatchedToSystems(Entity)) {
-        if(a_ecs__isEntityInList(Entity, A_ECS__MUTED_QUEUE)) {
-            // Entity was muted and unmuted before it was removed from systems
-            a_ecs__moveEntityToList(Entity, A_ECS__RUNNING);
+        return;
+    } else if(a_entity_muteGet(Entity) == DoMute) {
+        if(DoMute) {
+            a_out__warningv(
+                "Entity '%s' is already muted", a_entity_idGet(Entity));
         } else {
-            // To be added back to matched systems
-            a_ecs__moveEntityToList(Entity, A_ECS__RESTORE);
+            a_out__warningv(
+                "Entity '%s' is not muted", a_entity_idGet(Entity));
         }
-    } else {
-        // Entity has not been matched to systems yet, treat it as new
-        a_ecs__moveEntityToList(Entity, A_ECS__NEW);
-    }
-}
 
-bool a_entity_isMuted(const AEntity* Entity)
-{
-    return a_ecs__isEntityInList(Entity, A_ECS__MUTED_QUEUE)
-        || a_ecs__isEntityInList(Entity, A_ECS__MUTED_LIMBO);
+        return;
+    }
+
+    if(DoMute) {
+        a_ecs__entityMoveToList(Entity, A_ECS__MUTED_QUEUE);
+    } else {
+        if(a_entity__isMatchedToSystems(Entity)) {
+            if(a_ecs__entityIsInList(Entity, A_ECS__MUTED_QUEUE)) {
+                // Entity was muted and unmuted before it left systems
+                a_ecs__entityMoveToList(Entity, A_ECS__RUNNING);
+            } else {
+                // To be added back to matched systems
+                a_ecs__entityMoveToList(Entity, A_ECS__RESTORE);
+            }
+        } else {
+            // Entity has not been matched to systems yet, treat it as new
+            a_ecs__entityMoveToList(Entity, A_ECS__NEW);
+        }
+    }
 }
 
 void a_entity__removeFromAllSystems(AEntity* Entity)

@@ -1,5 +1,5 @@
 /*
-    Copyright 2016, 2017 Alex Margarit
+    Copyright 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -320,7 +320,7 @@ void a_platform__drawCircleFilled(int X, int Y, int Radius)
     }
 }
 
-APlatformTexture* a_platform__newScreenTexture(int Width, int Height)
+APlatformTexture* a_platform__textureScreenNew(int Width, int Height)
 {
     SDL_Texture* t = SDL_CreateTexture(a__sdlRenderer,
                                        A_SDL__PIXEL_FORMAT,
@@ -347,13 +347,13 @@ APlatformTexture* a_platform__newScreenTexture(int Width, int Height)
     return screen;
 }
 
-void a_platform__commitSpriteTexture(ASprite* Sprite)
+void a_platform__textureSpriteCommit(ASprite* Sprite)
 {
     APlatformTexture* texture = Sprite->texture;
     int width = Sprite->w;
     int height = Sprite->h;
 
-    if(texture == NULL ) {
+    if(texture == NULL) {
         texture = a_mem_zalloc(sizeof(APlatformTexture));
         Sprite->texture = texture;
     }
@@ -412,7 +412,7 @@ void a_platform__commitSpriteTexture(ASprite* Sprite)
     }
 }
 
-void a_platform__freeTexture(APlatformTexture* Texture)
+void a_platform__textureFree(APlatformTexture* Texture)
 {
     if(Texture == NULL) {
         return;
@@ -426,9 +426,9 @@ void a_platform__freeTexture(APlatformTexture* Texture)
     free(Texture);
 }
 
-void a_platform__blitTexture(APlatformTexture* Texture, int X, int Y, bool FillFlat)
+void a_platform__textureBlit(APlatformTexture* Texture, int X, int Y, bool FillFlat)
 {
-    a_platform__blitTextureEx(Texture,
+    a_platform__textureBlitEx(Texture,
                               X + Texture->w / 2,
                               Y + Texture->h / 2,
                               A_FIX_ONE,
@@ -438,7 +438,7 @@ void a_platform__blitTexture(APlatformTexture* Texture, int X, int Y, bool FillF
                               FillFlat);
 }
 
-void a_platform__blitTextureEx(APlatformTexture* Texture, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY, bool FillFlat)
+void a_platform__textureBlitEx(APlatformTexture* Texture, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY, bool FillFlat)
 {
     SDL_Texture* t = Texture->texture[FillFlat];
 
@@ -486,14 +486,14 @@ void a_platform__blitTextureEx(APlatformTexture* Texture, int X, int Y, AFix Sca
     }
 }
 
-void a_platform__setRenderTarget(APlatformTexture* Texture)
+void a_platform__renderTargetSet(APlatformTexture* Texture)
 {
     if(SDL_SetRenderTarget(a__sdlRenderer, Texture->texture[0]) < 0) {
         a_out__fatal("SDL_SetRenderTarget failed: %s", SDL_GetError());
     }
 }
 
-void a_platform__getTargetPixels(APixel* Pixels, int Width)
+void a_platform__renderTargetPixelsGet(APixel* Pixels, int Width)
 {
     // Unreliable on texture targets
     if(SDL_RenderReadPixels(a__sdlRenderer,
@@ -506,7 +506,7 @@ void a_platform__getTargetPixels(APixel* Pixels, int Width)
     }
 }
 
-void a_platform__setTargetClip(int X, int Y, int Width, int Height)
+void a_platform__renderTargetClipSet(int X, int Y, int Width, int Height)
 {
     SDL_Rect area = {X, Y, Width, Height};
 

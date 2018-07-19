@@ -29,4 +29,4 @@ extern AInputAnalogSource* a_input_analog__newSource(const char* Id);
 extern void a_input_analog__freeSource(AInputAnalogSource* Analog);
 
 extern void a_input_analog__forwardToButtons(AInputAnalogSource* Axis, AInputButtonSource* Negative, AInputButtonSource* Positive);
-extern void a_input_analog__setAxisValue(AInputAnalogSource* Analog, int Value);
+extern void a_input_analog__axisValueSet(AInputAnalogSource* Analog, int Value);

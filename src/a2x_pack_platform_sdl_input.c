@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2017 Alex Margarit
+    Copyright 2010, 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -447,7 +447,7 @@ void a_platform_sdl_input__init(void)
 
     #if A_PLATFORM_SYSTEM_PANDORA
         // Because these are defined before the generic keys, they
-        // will take precedence in the a_platform__pollInputs event loop.
+        // will take precedence in the a_platform__inputsPoll event loop.
         addKey("Up", "gamepad.b.up", SDLK_UP);
         addKey("Down", "gamepad.b.down", SDLK_DOWN);
         addKey("Left", "gamepad.b.left", SDLK_LEFT);
@@ -558,7 +558,7 @@ void a_platform_sdl_input__uninit(void)
     SDL_QuitSubSystem(g_sdlFlags);
 }
 
-void a_platform__bindInputs(void)
+void a_platform__inputsBind(void)
 {
     A_STRHASH_ITERATE(g_keys, ASdlInputButton*, k) {
         k->logicalButton = a_input_button__newSource(k->header.name,
@@ -579,17 +579,17 @@ void a_platform__bindInputs(void)
         A_STRHASH_ITERATE(c->buttons, ASdlInputButton*, b) {
             b->logicalButton = a_input_button__newSource(
                                 b->header.name, A_STRHASH_KEY());
-            a_controller__addButton(b->logicalButton, A_STRHASH_KEY());
+            a_controller__buttonAdd(b->logicalButton, A_STRHASH_KEY());
         }
 
         A_STRHASH_ITERATE(c->axes, ASdlInputAnalog*, a) {
             a->logicalAnalog = a_input_analog__newSource(a->header.name);
-            a_controller__addAnalog(a->logicalAnalog, a->header.name);
+            a_controller__analogAdd(a->logicalAnalog, a->header.name);
         }
     }
 }
 
-void a_platform__pollInputs(void)
+void a_platform__inputsPoll(void)
 {
     for(SDL_Event event; SDL_PollEvent(&event); ) {
         switch(event.type) {
@@ -613,7 +613,7 @@ void a_platform__pollInputs(void)
                         if(k->code.keyCode == event.key.keysym.scancode) {
                     #endif
 
-                        a_input_button__setState(
+                        a_input_button__stateSet(
                             k->logicalButton,
                             event.key.state == SDL_PRESSED);
                         break;
@@ -636,7 +636,7 @@ void a_platform__pollInputs(void)
 
                     A_STRHASH_ITERATE(c->buttons, ASdlInputButton*, b) {
                         if(b->code.buttonIndex == event.jbutton.button) {
-                            a_input_button__setState(
+                            a_input_button__stateSet(
                                 b->logicalButton,
                                 event.jbutton.state == SDL_PRESSED);
                             break;
@@ -712,13 +712,13 @@ void a_platform__pollInputs(void)
                         if(state & 1) {
                             if(!b->lastStatePressed) {
                                 b->lastStatePressed = true;
-                                a_input_button__setState(
+                                a_input_button__stateSet(
                                     b->logicalButton, true);
                             }
                         } else {
                             if(b->lastStatePressed) {
                                 b->lastStatePressed = false;
-                                a_input_button__setState(
+                                a_input_button__stateSet(
                                     b->logicalButton, false);
                             }
                         }
@@ -742,7 +742,7 @@ void a_platform__pollInputs(void)
 
                     A_STRHASH_ITERATE(c->axes, ASdlInputAnalog*, a) {
                         if(event.jaxis.axis == a->axisIndex) {
-                            a_input_analog__setAxisValue(
+                            a_input_analog__axisValueSet(
                                 a->logicalAnalog, event.jaxis.value);
                             break;
                         }
@@ -762,7 +762,7 @@ void a_platform__pollInputs(void)
 
                     A_STRHASH_ITERATE(c->buttons, ASdlInputButton*, b) {
                         if(b->code.buttonIndex == event.cbutton.button) {
-                            a_input_button__setState(
+                            a_input_button__stateSet(
                                 b->logicalButton,
                                 event.cbutton.state == SDL_PRESSED);
                             break;
@@ -781,7 +781,7 @@ void a_platform__pollInputs(void)
 
                     A_STRHASH_ITERATE(c->axes, ASdlInputAnalog*, a) {
                         if(event.caxis.axis == a->axisIndex) {
-                            a_input_analog__setAxisValue(
+                            a_input_analog__axisValueSet(
                                 a->logicalAnalog, event.caxis.value);
                             break;
                         }
@@ -794,7 +794,7 @@ void a_platform__pollInputs(void)
 
             case SDL_MOUSEMOTION: {
                 A_STRHASH_ITERATE(g_touchScreens, ASdlInputTouch*, t) {
-                    a_input_touch__addMotion(
+                    a_input_touch__motionAdd(
                         t->logicalTouch, event.button.x, event.button.y);
                 }
             } break;
@@ -803,7 +803,7 @@ void a_platform__pollInputs(void)
                 switch(event.button.button) {
                     case SDL_BUTTON_LEFT: {
                         A_STRHASH_ITERATE(g_touchScreens, ASdlInputTouch*, t) {
-                            a_input_touch__setCoords(t->logicalTouch,
+                            a_input_touch__coordsSet(t->logicalTouch,
                                                      event.button.x,
                                                      event.button.y,
                                                      true);
@@ -816,7 +816,7 @@ void a_platform__pollInputs(void)
                 switch(event.button.button) {
                     case SDL_BUTTON_LEFT: {
                         A_STRHASH_ITERATE(g_touchScreens, ASdlInputTouch*, t) {
-                            a_input_touch__setCoords(t->logicalTouch,
+                            a_input_touch__coordsSet(t->logicalTouch,
                                                      event.button.x,
                                                      event.button.y,
                                                      false);
@@ -834,7 +834,7 @@ void a_platform__pollInputs(void)
         SDL_GetRelativeMouseState(&mouseDx, &mouseDy);
 
         A_STRHASH_ITERATE(g_touchScreens, ASdlInputTouch*, t) {
-            a_input_touch__setDelta(t->logicalTouch, mouseDx, mouseDy);
+            a_input_touch__deltaSet(t->logicalTouch, mouseDx, mouseDy);
         }
     #endif
 }

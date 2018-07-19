@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016 Alex Margarit
+    Copyright 2010, 2016, 2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -23,9 +23,9 @@ typedef struct AScreen AScreen;
 
 #include "a2x_pack_sprite.p.h"
 
-extern APixel* a_screen_getPixels(void);
-extern int a_screen_getWidth(void);
-extern int a_screen_getHeight(void);
+extern APixel* a_screen_pixelsGetBuffer(void);
+extern int a_screen_widthGet(void);
+extern int a_screen_heightGet(void);
 
 extern AScreen* a_screen_new(int Width, int Height);
 extern AScreen* a_screen_dup(void);

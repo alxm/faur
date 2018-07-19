@@ -57,8 +57,8 @@ void a_pixel_pop(void)
     a_pixel__state = *state;
     free(state);
 
-    a_pixel_setBlend(a_pixel__state.blend);
-    a_pixel_setRGBA(a_pixel__state.red,
+    a_pixel_blendSet(a_pixel__state.blend);
+    a_pixel_rgbaSet(a_pixel__state.red,
                     a_pixel__state.green,
                     a_pixel__state.blue,
                     a_pixel__state.alpha);
@@ -66,10 +66,10 @@ void a_pixel_pop(void)
 
 void a_pixel_reset(void)
 {
-    a_pixel_setBlend(A_PIXEL_BLEND_PLAIN);
-    a_pixel_setRGBA(0, 0, 0, A_PIXEL_ALPHA_MAX);
-    a_pixel_setFillBlit(false);
-    a_pixel_setFillDraw(true);
+    a_pixel_blendSet(A_PIXEL_BLEND_PLAIN);
+    a_pixel_rgbaSet(0, 0, 0, A_PIXEL_ALPHA_MAX);
+    a_pixel_fillBlitSet(false);
+    a_pixel_fillDrawSet(true);
 }
 
 #if A_PLATFORM_RENDER_SOFTWARE
@@ -108,12 +108,12 @@ static void optimizeAlphaBlending(bool UpdateRoutines)
 }
 #endif
 
-APixelBlend a_pixel_getBlend(void)
+APixelBlend a_pixel_blendGet(void)
 {
     return a_pixel__state.blend;
 }
 
-void a_pixel_setBlend(APixelBlend Blend)
+void a_pixel_blendSet(APixelBlend Blend)
 {
     a_pixel__state.blend = Blend;
     a_pixel__state.canonicalBlend = Blend;
@@ -124,23 +124,23 @@ void a_pixel_setBlend(APixelBlend Blend)
         a_platform_software_blit__updateRoutines();
     #else
         if(Blend == A_PIXEL_BLEND_RGB25) {
-            a_pixel_setAlpha(A_PIXEL_ALPHA_MAX / 4);
+            a_pixel_alphaSet(A_PIXEL_ALPHA_MAX / 4);
         } else if(Blend == A_PIXEL_BLEND_RGB50) {
-            a_pixel_setAlpha(A_PIXEL_ALPHA_MAX / 2);
+            a_pixel_alphaSet(A_PIXEL_ALPHA_MAX / 2);
         } else if(Blend == A_PIXEL_BLEND_RGB75) {
-            a_pixel_setAlpha(A_PIXEL_ALPHA_MAX * 3 / 4);
+            a_pixel_alphaSet(A_PIXEL_ALPHA_MAX * 3 / 4);
         }
 
         a_platform__renderSetBlendMode();
     #endif
 }
 
-int a_pixel_getAlpha(void)
+int a_pixel_alphaGet(void)
 {
     return a_pixel__state.alpha;
 }
 
-void a_pixel_setAlpha(int Alpha)
+void a_pixel_alphaSet(int Alpha)
 {
     a_pixel__state.alpha = a_math_clamp(Alpha, 0, A_PIXEL_ALPHA_MAX);
 
@@ -151,7 +151,7 @@ void a_pixel_setAlpha(int Alpha)
     #endif
 }
 
-void a_pixel_setRGB(int Red, int Green, int Blue)
+void a_pixel_rgbSet(int Red, int Green, int Blue)
 {
     a_pixel__state.red = (unsigned)Red & 0xff;
     a_pixel__state.green = (unsigned)Green & 0xff;
@@ -163,7 +163,7 @@ void a_pixel_setRGB(int Red, int Green, int Blue)
     #endif
 }
 
-void a_pixel_setRGBA(int Red, int Green, int Blue, int Alpha)
+void a_pixel_rgbaSet(int Red, int Green, int Blue, int Alpha)
 {
     a_pixel__state.red = (unsigned)Red & 0xff;
     a_pixel__state.green = (unsigned)Green & 0xff;
@@ -178,7 +178,7 @@ void a_pixel_setRGBA(int Red, int Green, int Blue, int Alpha)
     #endif
 }
 
-void a_pixel_setHex(uint32_t Hexcode)
+void a_pixel_hexSet(uint32_t Hexcode)
 {
     a_pixel__state.red = (Hexcode >> 16) & 0xff;
     a_pixel__state.green = (Hexcode >> 8) & 0xff;
@@ -190,7 +190,7 @@ void a_pixel_setHex(uint32_t Hexcode)
     #endif
 }
 
-void a_pixel_setPixel(APixel Pixel)
+void a_pixel_pixelSet(APixel Pixel)
 {
     a_pixel_toRgb(Pixel,
                   &a_pixel__state.red,
@@ -204,7 +204,7 @@ void a_pixel_setPixel(APixel Pixel)
     #endif
 }
 
-void a_pixel_setFillBlit(bool Fill)
+void a_pixel_fillBlitSet(bool Fill)
 {
     a_pixel__state.fillBlit = Fill;
 
@@ -213,7 +213,7 @@ void a_pixel_setFillBlit(bool Fill)
     #endif
 }
 
-void a_pixel_setFillDraw(bool Fill)
+void a_pixel_fillDrawSet(bool Fill)
 {
     a_pixel__state.fillDraw = Fill;
 

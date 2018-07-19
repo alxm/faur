@@ -41,17 +41,17 @@ void a_conf__init(void)
 
     a_out__message("You can edit config in %s", conf_name);
 
-    while(a_file_readLine(f)) {
+    while(a_file_lineRead(f)) {
         char* key = NULL;
         char* value = NULL;
-        char* line = a_str_trim(a_file_getLine(f));
+        char* line = a_str_trim(a_file_lineGet(f));
 
         if(strlen(line) >= 2 && line[0] == '/' && line[1] == '/') {
             goto next;
         }
 
-        key = a_str_getPrefixFirstFind(line, '=');
-        value = a_str_getSuffixFirstFind(line, '=');
+        key = a_str_prefixGetToFirst(line, '=');
+        value = a_str_suffixGetFromFirst(line, '=');
 
         if(key && value) {
             char* key_trim = a_str_trim(key);

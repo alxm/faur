@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016 Alex Margarit
+    Copyright 2010, 2016, 2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -53,8 +53,8 @@ AMenu* a_menu_new(AInputButton* Next, AInputButton* Back, AInputButton* Select, 
     m->select = Select;
     m->cancel = Cancel;
 
-    a_button_setRepeat(m->next, a_time_msToTicks(200));
-    a_button_setRepeat(m->back, a_time_msToTicks(200));
+    a_button_pressSetRepeat(m->next, a_time_msToTicks(200));
+    a_button_pressSetRepeat(m->back, a_time_msToTicks(200));
 
     return m;
 }
@@ -72,14 +72,14 @@ void a_menu_freeEx(AMenu* Menu, AFree* ItemFree)
     free(Menu);
 }
 
-void a_menu_addSounds(AMenu* Menu, ASfx* Accept, ASfx* Cancel, ASfx* Browse)
+void a_menu_soundSet(AMenu* Menu, ASfx* Accept, ASfx* Cancel, ASfx* Browse)
 {
     Menu->soundAccept = Accept;
     Menu->soundCancel = Cancel;
     Menu->soundBrowse = Browse;
 }
 
-void a_menu_addItem(AMenu* Menu, void* Item)
+void a_menu_itemAdd(AMenu* Menu, void* Item)
 {
     a_list_addLast(Menu->items, Item);
 
@@ -88,7 +88,7 @@ void a_menu_addItem(AMenu* Menu, void* Item)
     }
 }
 
-void a_menu_handleInput(AMenu* Menu)
+void a_menu_tick(AMenu* Menu)
 {
     if(a_list_isEmpty(Menu->items) || Menu->state != A_MENU_STATE_RUNNING) {
         return;
@@ -96,16 +96,16 @@ void a_menu_handleInput(AMenu* Menu)
 
     bool browsed = false;
 
-    if(a_button_getPressed(Menu->back)) {
+    if(a_button_pressGet(Menu->back)) {
         browsed = true;
 
         if(Menu->selectedIndex-- == 0) {
-            Menu->selectedIndex = a_list_getSize(Menu->items) - 1;
+            Menu->selectedIndex = a_list_sizeGet(Menu->items) - 1;
         }
-    } else if(a_button_getPressed(Menu->next)) {
+    } else if(a_button_pressGet(Menu->next)) {
         browsed = true;
 
-        if(++Menu->selectedIndex == a_list_getSize(Menu->items)) {
+        if(++Menu->selectedIndex == a_list_sizeGet(Menu->items)) {
             Menu->selectedIndex = 0;
         }
     }
@@ -117,13 +117,13 @@ void a_menu_handleInput(AMenu* Menu)
             a_sfx_play(Menu->soundBrowse, A_SFX_RESTART);
         }
     } else {
-        if(a_button_getPressed(Menu->select)) {
+        if(a_button_pressGet(Menu->select)) {
             Menu->state = A_MENU_STATE_SELECTED;
 
             if(Menu->soundAccept) {
                 a_sfx_play(Menu->soundAccept, A_SFX_RESTART);
             }
-        } else if(Menu->cancel && a_button_getPressed(Menu->cancel)) {
+        } else if(Menu->cancel && a_button_pressGet(Menu->cancel)) {
             Menu->state = A_MENU_STATE_CANCELED;
 
             if(Menu->soundCancel) {
@@ -133,37 +133,37 @@ void a_menu_handleInput(AMenu* Menu)
     }
 
     if(Menu->state != A_MENU_STATE_RUNNING) {
-        a_button_release(Menu->next);
-        a_button_release(Menu->back);
-        a_button_release(Menu->select);
+        a_button_pressClear(Menu->next);
+        a_button_pressClear(Menu->back);
+        a_button_pressClear(Menu->select);
 
         if(Menu->cancel) {
-            a_button_release(Menu->cancel);
+            a_button_pressClear(Menu->cancel);
         }
     }
 }
 
-AMenuState a_menu_getState(const AMenu* Menu)
+AMenuState a_menu_stateGet(const AMenu* Menu)
 {
     return Menu->state;
 }
 
-AList* a_menu_getItems(const AMenu* Menu)
+AList* a_menu_itemsListGet(const AMenu* Menu)
 {
     return Menu->items;
 }
 
-bool a_menu_isItemSelected(const AMenu* Menu, const void* Item)
+bool a_menu_itemIsSelected(const AMenu* Menu, const void* Item)
 {
     return Item == Menu->selectedItem;
 }
 
-unsigned a_menu_getSelectedIndex(const AMenu* Menu)
+unsigned a_menu_selectedIndexGet(const AMenu* Menu)
 {
     return Menu->selectedIndex;
 }
 
-void* a_menu_getSelectedItem(const AMenu* Menu)
+void* a_menu_itemGetSelected(const AMenu* Menu)
 {
     return Menu->selectedItem;
 }

@@ -66,7 +66,9 @@ ASpriteFrames* a_spriteframes_newFromSprite(const ASprite* Sheet, int X, int Y, 
             bool end = true;
 
             for(int y = Y + s->h; y-- > Y; ) {
-                if(a_sprite__getPixel(Sheet, X, y) != a_sprite__colorEnd) {
+                if(a_sprite__pixelsGetPixel(Sheet, X, y)
+                    != a_sprite__colorEnd) {
+
                     end = false;
                     break;
                 }
@@ -81,7 +83,7 @@ ASpriteFrames* a_spriteframes_newFromSprite(const ASprite* Sheet, int X, int Y, 
     }
 
     f->spriteArray = (ASprite**)a_list_toArray(f->sprites);
-    f->num = a_list_getSize(f->sprites);
+    f->num = a_list_sizeGet(f->sprites);
 
     return f;
 }
@@ -164,7 +166,7 @@ void a_spriteframes_reset(ASpriteFrames* Frames)
 
 void a_spriteframes_randomize(ASpriteFrames* Frames)
 {
-    a_spriteframes_setIndex(Frames, a_random_intu(Frames->num));
+    a_spriteframes_indexSet(Frames, a_random_intu(Frames->num));
 }
 
 static void addedSprite(ASpriteFrames* Frames)
@@ -251,41 +253,46 @@ ASprite* a_spriteframes_getRandom(const ASpriteFrames* Frames)
     return Frames->spriteArray[a_random_intu(Frames->num)];
 }
 
-unsigned a_spriteframes_getNum(const ASpriteFrames* Frames)
+AList* a_spriteframes_spritesListGet(const ASpriteFrames* Frames)
+{
+    return Frames->sprites;
+}
+
+unsigned a_spriteframes_spritesNumGet(const ASpriteFrames* Frames)
 {
     return Frames->num;
 }
 
-unsigned a_spriteframes_getIndex(const ASpriteFrames* Frames)
+unsigned a_spriteframes_indexGet(const ASpriteFrames* Frames)
 {
     return Frames->index;
 }
 
-void a_spriteframes_setIndex(ASpriteFrames* Frames, unsigned Index)
+void a_spriteframes_indexSet(ASpriteFrames* Frames, unsigned Index)
 {
     Frames->countdown = Frames->callsToNextFrame;
     Frames->index = Index;
 }
 
-void a_spriteframes_setDirection(ASpriteFrames* Frames, bool Forward)
+void a_spriteframes_directionSet(ASpriteFrames* Frames, bool Forward)
 {
     Frames->forward = Forward;
 }
 
-void a_spriteframes_flipDirection(ASpriteFrames* Frames)
+void a_spriteframes_directionFlip(ASpriteFrames* Frames)
 {
     Frames->forward = !Frames->forward;
 }
 
-unsigned a_spriteframes_getSpeed(const ASpriteFrames* Frames)
+unsigned a_spriteframes_speedGet(const ASpriteFrames* Frames)
 {
     return Frames->callsToNextFrame;
 }
 
-void a_spriteframes_setSpeed(ASpriteFrames* Frames, unsigned CallsToNextFrame)
+void a_spriteframes_speedSet(ASpriteFrames* Frames, unsigned CallsToNextFrame)
 {
     if(CallsToNextFrame < 1) {
-        a_out__fatal("a_spriteframes_setSpeed: CallsToNextFrame<1");
+        a_out__fatal("a_spriteframes_speedSet: CallsToNextFrame<1");
     }
 
     Frames->callsToNextFrame = CallsToNextFrame;
@@ -299,9 +306,4 @@ void a_spriteframes_pause(ASpriteFrames* Frames)
 void a_spriteframes_resume(ASpriteFrames* Frames)
 {
     Frames->paused = false;
-}
-
-AList* a_spriteframes_getSprites(const ASpriteFrames* Frames)
-{
-    return Frames->sprites;
 }

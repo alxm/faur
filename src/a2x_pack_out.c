@@ -192,13 +192,13 @@ void a_out__fatal(const char* Format, ...)
 
     va_end(args);
 
-    a_console__setShow(true);
+    a_console__showSet(true);
     a_screen__show();
 
     #if A_BUILD_DEBUG
         while(true) {
             printf("Waiting to attach debugger: PID %d\n", getpid());
-            a_time_spinSec(1);
+            a_time_secSpin(1);
         }
     #else
         if(a_console__isInitialized()) {
@@ -210,7 +210,7 @@ void a_out__fatal(const char* Format, ...)
                 }
 
                 a_screen__show();
-                a_time_waitSec(1);
+                a_time_secWait(1);
             }
         }
     #endif

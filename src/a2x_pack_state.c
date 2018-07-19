@@ -104,7 +104,7 @@ static void pending_handle(void)
     if(current && current->stage == A_STATE__STAGE_FREE) {
         a_out__statev("Destroying '%s' instance", current->name);
 
-        a_ecs__popCollection();
+        a_ecs__collectionPop();
         a_list_pop(g_stack);
         current = a_list_peek(g_stack);
         a_fps__reset(0);
@@ -145,7 +145,7 @@ static void pending_handle(void)
             a_out__state("New '%s' instance", pending->name);
 
             state->stage = A_STATE__STAGE_INIT;
-            a_ecs__pushCollection(state->tickSystems, state->drawSystems);
+            a_ecs__collectionPush(state->tickSystems, state->drawSystems);
             a_list_push(g_stack, state);
         } break;
 
@@ -289,7 +289,7 @@ void a_state_exit(void)
     a_list_clearEx(g_pending, (AFree*)pending_free);
 
     // Queue a pop for every state in the stack
-    for(unsigned i = a_list_getSize(g_stack); i--; ) {
+    for(unsigned i = a_list_sizeGet(g_stack); i--; ) {
         pending_new(A_STATE_ACTION_POP, NULL);
     }
 }
@@ -306,7 +306,7 @@ static bool iteration(void)
 
     if(s->stage == A_STATE__STAGE_LOOP) {
         while(a_fps__tick() && a_list_isEmpty(g_pending)) {
-            a_input__get();
+            a_input__tick();
             s->function(A_STATE__STAGE_LOOP | A_STATE__STAGE_TICK);
             a_ecs__tick();
         }

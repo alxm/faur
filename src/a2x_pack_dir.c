@@ -1,5 +1,5 @@
 /*
-    Copyright 2011, 2016, 2017 Alex Margarit
+    Copyright 2011, 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -102,7 +102,7 @@ ADir* a_dir_open(const char* Path)
     ADir* d = a_mem_malloc(sizeof(ADir));
 
     d->path = a_str_dup(Path);
-    d->name = a_str_getSuffixLastFind(Path, '/');
+    d->name = a_str_suffixGetFromLast(Path, '/');
     d->files = files;
 
     if(d->name == NULL) {
@@ -129,17 +129,22 @@ void a_dir_close(ADir* Dir)
     free(Dir);
 }
 
-AList* a_dir_getEntries(const ADir* Dir)
+AList* a_dir_entriesListGet(const ADir* Dir)
 {
     return Dir->files;
 }
 
-const char* a_dir_entryGetName(const ADirEntry* Entry)
+unsigned a_dir_entriesNumGet(const ADir* Dir)
+{
+    return a_list_sizeGet(Dir->files);
+}
+
+const char* a_dir_entryNameGet(const ADirEntry* Entry)
 {
     return Entry->name;
 }
 
-const char* a_dir_entryGetPath(const ADirEntry* Entry)
+const char* a_dir_entryPathGet(const ADirEntry* Entry)
 {
     return Entry->full;
 }
@@ -149,19 +154,14 @@ bool a_dir_entryIsDir(const ADirEntry* Entry)
     return Entry->isDir;
 }
 
-const char* a_dir_getPath(const ADir* Dir)
+const char* a_dir_pathGet(const ADir* Dir)
 {
     return Dir->path;
 }
 
-const char* a_dir_getName(const ADir* Dir)
+const char* a_dir_nameGet(const ADir* Dir)
 {
     return Dir->name;
-}
-
-unsigned a_dir_getNumEntries(const ADir* Dir)
-{
-    return a_list_getSize(Dir->files);
 }
 
 bool a_dir_exists(const char* Path)

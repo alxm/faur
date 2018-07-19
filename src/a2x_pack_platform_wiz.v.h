@@ -1,5 +1,5 @@
 /*
-    Copyright 2017 Alex Margarit
+    Copyright 2017, 2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -24,4 +24,4 @@
 extern void a_platform_wiz__init(void);
 extern void a_platform_wiz__uninit(void);
 
-extern void a_platform_wiz__setScreenPortraitMode(void);
+extern void a_platform_wiz__portraitModeSet(void);

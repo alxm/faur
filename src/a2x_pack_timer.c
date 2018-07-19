@@ -39,10 +39,10 @@ static inline unsigned getNow(const ATimer* Timer)
     switch(Timer->type) {
         case A_TIMER_MS:
         case A_TIMER_SEC:
-            return a_time_getMs();
+            return a_time_msGet();
 
         case A_TIMER_TICKS:
-            return a_fps_getCounter();
+            return a_fps_ticksGet();
 
         default:
             return 0;
@@ -70,6 +70,20 @@ ATimer* a_timer_new(ATimerType Type, unsigned Period, bool Repeat)
 void a_timer_free(ATimer* Timer)
 {
     free(Timer);
+}
+
+unsigned a_timer_elapsedGet(ATimer* Timer)
+{
+    return Timer->diff;
+}
+
+void a_timer_periodSet(ATimer* Timer, unsigned Period)
+{
+    if(Timer->type == A_TIMER_SEC) {
+        Period *= 1000;
+    }
+
+    Timer->period = a_math_maxu(Period, 1);
 }
 
 void a_timer_start(ATimer* Timer)
@@ -109,18 +123,4 @@ bool a_timer_isExpired(ATimer* Timer)
     }
 
     return expired;
-}
-
-unsigned a_timer_getElapsed(ATimer* Timer)
-{
-    return Timer->diff;
-}
-
-void a_timer_setPeriod(ATimer* Timer, unsigned Period)
-{
-    if(Timer->type == A_TIMER_SEC) {
-        Period *= 1000;
-    }
-
-    Timer->period = a_math_maxu(Period, 1);
 }

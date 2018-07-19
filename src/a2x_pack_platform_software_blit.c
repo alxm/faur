@@ -264,7 +264,7 @@ bool hasTransparency(const APixel* Pixels, int Width, int Height)
     return false;
 }
 
-APlatformTexture* a_platform__newScreenTexture(int Width, int Height)
+APlatformTexture* a_platform__textureScreenNew(int Width, int Height)
 {
     A_UNUSED(Width);
     A_UNUSED(Height);
@@ -272,7 +272,7 @@ APlatformTexture* a_platform__newScreenTexture(int Width, int Height)
     return NULL;
 }
 
-void a_platform__commitSpriteTexture(ASprite* Sprite)
+void a_platform__textureSpriteCommit(ASprite* Sprite)
 {
     APlatformTexture* texture = Sprite->texture;
     const APixel* pixels = Sprite->pixels;
@@ -285,7 +285,7 @@ void a_platform__commitSpriteTexture(ASprite* Sprite)
                             : 0;
 
     if(texture == NULL || bytesNeeded > texture->spansSize) {
-        a_platform__freeTexture(texture);
+        a_platform__textureFree(texture);
         texture = a_mem_malloc(sizeof(APlatformTexture) + bytesNeeded);
 
         Sprite->texture = texture;
@@ -328,7 +328,7 @@ void a_platform__commitSpriteTexture(ASprite* Sprite)
     }
 }
 
-void a_platform__freeTexture(APlatformTexture* Texture)
+void a_platform__textureFree(APlatformTexture* Texture)
 {
     if(Texture == NULL) {
         return;
@@ -337,7 +337,7 @@ void a_platform__freeTexture(APlatformTexture* Texture)
     free(Texture);
 }
 
-void a_platform__blitTexture(APlatformTexture* Texture, int X, int Y, bool FillFlat)
+void a_platform__textureBlit(APlatformTexture* Texture, int X, int Y, bool FillFlat)
 {
     A_UNUSED(FillFlat);
 
@@ -356,13 +356,13 @@ void a_platform__blitTexture(APlatformTexture* Texture, int X, int Y, bool FillF
     }
 }
 
-void a_platform__blitTextureEx(APlatformTexture* Texture, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY, bool FillFlat)
+void a_platform__textureBlitEx(APlatformTexture* Texture, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY, bool FillFlat)
 {
     A_UNUSED(Scale);
     A_UNUSED(Angle);
     A_UNUSED(CenterX);
     A_UNUSED(CenterY);
 
-    a_platform__blitTexture(Texture, X, Y, FillFlat);
+    a_platform__textureBlit(Texture, X, Y, FillFlat);
 }
 #endif // A_PLATFORM_RENDER_SOFTWARE

@@ -384,7 +384,7 @@ void a_list_sort(AList* List, AListCompare* Compare)
     List->last->prev = sorted;
 }
 
-unsigned a_list_getSize(const AList* List)
+unsigned a_list_sizeGet(const AList* List)
 {
     return List->items;
 }

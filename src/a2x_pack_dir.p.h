@@ -1,5 +1,5 @@
 /*
-    Copyright 2011, 2016 Alex Margarit
+    Copyright 2011, 2016, 2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -27,15 +27,15 @@ typedef struct ADirEntry ADirEntry;
 extern ADir* a_dir_open(const char* Path);
 extern void a_dir_close(ADir* Dir);
 
-extern AList* a_dir_getEntries(const ADir* Dir);
+extern AList* a_dir_entriesListGet(const ADir* Dir);
+extern unsigned a_dir_entriesNumGet(const ADir* Dir);
 
-extern const char* a_dir_entryGetName(const ADirEntry* Entry);
-extern const char* a_dir_entryGetPath(const ADirEntry* Entry);
+extern const char* a_dir_entryNameGet(const ADirEntry* Entry);
+extern const char* a_dir_entryPathGet(const ADirEntry* Entry);
 extern bool a_dir_entryIsDir(const ADirEntry* Entry);
 
-extern const char* a_dir_getPath(const ADir* Dir);
-extern const char* a_dir_getName(const ADir* Dir);
-extern unsigned a_dir_getNumEntries(const ADir* Dir);
+extern const char* a_dir_pathGet(const ADir* Dir);
+extern const char* a_dir_nameGet(const ADir* Dir);
 
 extern bool a_dir_exists(const char* Path);
 extern bool a_dir_make(const char* Path);

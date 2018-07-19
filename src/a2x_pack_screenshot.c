@@ -46,19 +46,19 @@ static bool lazy_init(void)
         ADir* dir = a_dir_open(screensDir);
 
         // Only interested in the last file, to get the number from its name
-        ADirEntry* entry = a_list_getLast(a_dir_getEntries(dir));
+        ADirEntry* entry = a_list_getLast(a_dir_entriesListGet(dir));
 
         if(entry == NULL) {
             g_isInit = true;
         } else {
-            const char* file = a_dir_entryGetName(entry);
-            const char* fullPath = a_dir_entryGetPath(entry);
+            const char* file = a_dir_entryNameGet(entry);
+            const char* fullPath = a_dir_entryPathGet(entry);
 
-            int start = a_str_getLastIndex(file, '-');
-            int end = a_str_getLastIndex(file, '.');
+            int start = a_str_indexGetLast(file, '-');
+            int end = a_str_indexGetLast(file, '.');
 
             if(start != -1 && end != -1 && end - start == 6) {
-                char* numberStr = a_str_getSub(file, start + 1, end);
+                char* numberStr = a_str_subGetRange(file, start + 1, end);
                 int number = atoi(numberStr);
                 free(numberStr);
 
@@ -138,7 +138,7 @@ static void takeScreenshot(void)
 
     a_out__message("Saving screenshot '%s'", name);
     a_png_write(name,
-                a_screen_getPixels(),
+                a_screen_pixelsGetBuffer(),
                 a__screen.width,
                 a__screen.height,
                 g_title,
@@ -149,7 +149,7 @@ static void takeScreenshot(void)
 
 static void inputCallback(void)
 {
-    if(a_button_getPressedOnce(g_button)) {
+    if(a_button_pressGetOnce(g_button)) {
         takeScreenshot();
     }
 }
@@ -162,7 +162,7 @@ void a_screenshot__init(void)
     g_description = NULL;
     g_screenshotNumber = 0;
     g_button = a_button_new(a_settings_getString("screenshot.button"));
-    a_input__addCallback(inputCallback);
+    a_input__callbackAdd(inputCallback);
 }
 
 void a_screenshot__uninit(void)

@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2017 Alex Margarit
+    Copyright 2010, 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -141,15 +141,16 @@ extern void a_pixel_pop(void);
 
 extern void a_pixel_reset(void);
 
-extern APixelBlend a_pixel_getBlend(void);
-extern void a_pixel_setBlend(APixelBlend Blend);
+extern APixelBlend a_pixel_blendGet(void);
+extern void a_pixel_blendSet(APixelBlend Blend);
 
-extern int a_pixel_getAlpha(void);
-extern void a_pixel_setAlpha(int Alpha);
+extern int a_pixel_alphaGet(void);
+extern void a_pixel_alphaSet(int Alpha);
 
-extern void a_pixel_setRGB(int Red, int Green, int Blue);
-extern void a_pixel_setRGBA(int Red, int Green, int Blue, int Alpha);
-extern void a_pixel_setHex(uint32_t Hexcode);
-extern void a_pixel_setPixel(APixel Pixel);
-extern void a_pixel_setFillBlit(bool Fill);
-extern void a_pixel_setFillDraw(bool Fill);
+extern void a_pixel_rgbSet(int Red, int Green, int Blue);
+extern void a_pixel_rgbaSet(int Red, int Green, int Blue, int Alpha);
+extern void a_pixel_hexSet(uint32_t Hexcode);
+extern void a_pixel_pixelSet(APixel Pixel);
+
+extern void a_pixel_fillBlitSet(bool Fill);
+extern void a_pixel_fillDrawSet(bool Fill);

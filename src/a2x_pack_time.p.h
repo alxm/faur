@@ -21,20 +21,20 @@
 
 #include "a2x_pack_fps.p.h"
 
-extern uint32_t a_time_getMs(void);
+extern uint32_t a_time_msGet(void);
 
-extern void a_time_waitMs(uint32_t Ms);
-extern void a_time_waitSec(uint32_t Sec);
+extern void a_time_msWait(uint32_t Ms);
+extern void a_time_secWait(uint32_t Sec);
 
-extern void a_time_spinMs(uint32_t Ms);
-extern void a_time_spinSec(uint32_t Sec);
+extern void a_time_msSpin(uint32_t Ms);
+extern void a_time_secSpin(uint32_t Sec);
 
 static inline unsigned a_time_msToTicks(unsigned Ms)
 {
-    return (a_fps_getTickRate() * Ms + 500) / 1000;
+    return (a_fps_tickRateGet() * Ms + 500) / 1000;
 }
 
 static inline unsigned a_time_secToTicks(unsigned Sec)
 {
-    return a_fps_getTickRate() * Sec;
+    return a_fps_tickRateGet() * Sec;
 }

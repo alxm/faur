@@ -67,16 +67,16 @@ void a_platform_sdl__uninit(void)
 }
 
 #if A_PLATFORM_LIB_SDL_TIME
-uint32_t a_platform__getMs(void)
+uint32_t a_platform__msGet(void)
 {
     return SDL_GetTicks();
 }
 
-void a_platform__waitMs(uint32_t Ms)
+void a_platform__msWait(uint32_t Ms)
 {
     #if A_PLATFORM_SYSTEM_GP2X // too inaccurate
         if(Ms < 10) {
-            a_time_spinMs(Ms);
+            a_time_msSpin(Ms);
             return;
         }
     #endif

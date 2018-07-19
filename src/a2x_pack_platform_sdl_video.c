@@ -72,7 +72,7 @@ void a_platform_sdl_video__uninit(void)
     SDL_QuitSubSystem(SDL_INIT_VIDEO);
 }
 
-void a_platform__setScreen(int Width, int Height, bool FullScreen)
+void a_platform__screenInit(int Width, int Height, bool FullScreen)
 {
     #if A_PLATFORM_LIB_SDL == 1
         int bpp = 0;
@@ -191,7 +191,7 @@ void a_platform__setScreen(int Width, int Height, bool FullScreen)
     #endif
 }
 
-void a_platform__showScreen(void)
+void a_platform__screenShow(void)
 {
     #if A_PLATFORM_LIB_SDL == 1
         #if A_PLATFORM_SYSTEM_WIZ
@@ -297,12 +297,12 @@ void a_platform__showScreen(void)
             }
         #else
             a_pixel_push();
-            a_pixel_setBlend(A_PIXEL_BLEND_PLAIN);
+            a_pixel_blendSet(A_PIXEL_BLEND_PLAIN);
 
-            a_platform__blitTexture(a__screen.texture, 0, 0, false);
+            a_platform__textureBlit(a__screen.texture, 0, 0, false);
 
-            a_platform__setRenderTarget(a__screen.texture);
-            a_platform__setTargetClip(a__screen.clipX,
+            a_platform__renderTargetSet(a__screen.texture);
+            a_platform__renderTargetClipSet(a__screen.clipX,
                                       a__screen.clipY,
                                       a__screen.clipWidth,
                                       a__screen.clipHeight);
@@ -314,7 +314,7 @@ void a_platform__showScreen(void)
     #endif
 }
 
-void a_platform__setFullScreen(bool FullScreen)
+void a_platform__screenSetFullscreen(bool FullScreen)
 {
     #if A_PLATFORM_LIB_SDL == 2
         if(SDL_SetWindowFullscreen(
@@ -341,7 +341,7 @@ void a_platform__renderClear(void)
     }
 }
 
-void a_platform__getNativeResolution(int* Width, int* Height)
+void a_platform__screenResolutionGetNative(int* Width, int* Height)
 {
     SDL_DisplayMode mode;
 
@@ -364,7 +364,7 @@ void a_platform__getNativeResolution(int* Width, int* Height)
     }
 }
 #elif A_PLATFORM_LIB_SDL_GETFULLRES
-void a_platform__getNativeResolution(int* Width, int* Height)
+void a_platform__screenResolutionGetNative(int* Width, int* Height)
 {
     const SDL_VideoInfo* info = SDL_GetVideoInfo();
 

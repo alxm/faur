@@ -60,7 +60,7 @@ void a_system_declare(const char* Name, const char* Components, ASystemHandler* 
     s->handler = Handler;
     s->compare = Compare;
     s->entities = a_list_new();
-    s->componentBits = a_bitfield_new(a_strhash_getSize(a__ecsComponents));
+    s->componentBits = a_bitfield_new(a_strhash_sizeGet(a__ecsComponents));
     s->onlyActiveEntities = OnlyActiveEntities;
     s->muted = false;
     s->runsInCurrentState = false;
@@ -95,7 +95,7 @@ void a_system__run(ASystem* System)
 
     if(System->onlyActiveEntities) {
         A_LIST_ITERATE(System->entities, AEntity*, entity) {
-            if(a_entity_isActive(entity)) {
+            if(a_entity_activeGet(entity)) {
                 System->handler(entity);
             } else {
                 a_list_addLast(g_inactive, entity);
@@ -133,7 +133,7 @@ void a_system_execute(const char* Systems)
     a_list_freeEx(tok, free);
 }
 
-static void muteSystems(const char* Systems, bool Muted)
+void a_system_muteSet(const char* Systems, bool DoMute)
 {
     AList* tok = a_str_split(Systems, " ");
 
@@ -141,31 +141,17 @@ static void muteSystems(const char* Systems, bool Muted)
         ASystem* system = a_strhash_get(g_systems, name);
 
         if(system == NULL) {
-            a_out__fatal("%s: unknown system '%s'",
-                         Muted ? "a_system_mute" : "a_system_unmute",
-                         name);
+            a_out__fatal("a_system_muteSet: unknown system '%s'", name);
         }
 
         if(!system->runsInCurrentState) {
-            a_out__fatal("%s: '%s' does not run in state",
-                         Muted ? "a_system_mute" : "a_system_unmute",
-                         name);
+            a_out__fatal("a_system_muteSet: '%s' does not run in state", name);
         }
 
-        system->muted = Muted;
+        system->muted = DoMute;
     }
 
     a_list_freeEx(tok, free);
-}
-
-void a_system_mute(const char* Systems)
-{
-    muteSystems(Systems, true);
-}
-
-void a_system_unmute(const char* Systems)
-{
-    muteSystems(Systems, false);
 }
 
 AList* a_system__parseIds(const char* Systems)

@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2017 Alex Margarit
+    Copyright 2010, 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -28,8 +28,8 @@ extern void a_input_touch__uninit(void);
 
 extern AInputTouchSource* a_input_touch__newSource(const char* Id);
 
-extern void a_input_touch__addMotion(AInputTouchSource* Touch, int X, int Y);
-extern void a_input_touch__setCoords(AInputTouchSource* Touch, int X, int Y, bool Tapped);
-extern void a_input_touch__setDelta(AInputTouchSource* Touch, int Dx, int Dy);
+extern void a_input_touch__motionAdd(AInputTouchSource* Touch, int X, int Y);
+extern void a_input_touch__motionClear(void);
 
-extern void a_input_touch__clearMotion(void);
+extern void a_input_touch__coordsSet(AInputTouchSource* Touch, int X, int Y, bool Tapped);
+extern void a_input_touch__deltaSet(AInputTouchSource* Touch, int Dx, int Dy);

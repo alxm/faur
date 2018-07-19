@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2017 Alex Margarit
+    Copyright 2010, 2017, 2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -28,5 +28,5 @@ extern void a_analog_free(AInputAnalog* Analog);
 
 extern bool a_analog_isWorking(const AInputAnalog* Analog);
 
-extern int a_analog_getValueRaw(const AInputAnalog* Analog);
-extern AFix a_analog_getValueFix(const AInputAnalog* Analog);
+extern int a_analog_valueGetRaw(const AInputAnalog* Analog);
+extern AFix a_analog_valueGetFix(const AInputAnalog* Analog);
