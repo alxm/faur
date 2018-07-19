@@ -46,10 +46,7 @@ struct {struct} {{
     int x;
 }};
 
-size_t c_{name}_size(void)
-{{
-    return sizeof({struct});
-}}
+const size_t c_{name}_size = sizeof({struct});
 
 void c_{name}_init({struct}* {varname})
 {{
@@ -70,7 +67,7 @@ void c_{name}_free(void* Self)
 
 typedef struct {struct} {struct};
 
-extern size_t c_{name}_size(void);
+extern const size_t c_{name}_size;
 extern void c_{name}_init({struct}* {varname});
 extern AFree c_{name}_free;
 """.format(struct=struct_name, name=comp_lowername, varname=comp_name))
