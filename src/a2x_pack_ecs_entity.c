@@ -344,7 +344,7 @@ void a_message__free(AMessage* Message)
     free(Message);
 }
 
-void a_message_handlerSet(AEntity* Entity, const char* Message, AMessageHandler* Handler, bool HandleImmediately)
+void a_entity_messageHandlerSet(AEntity* Entity, const char* Message, AMessageHandler* Handler, bool HandleImmediately)
 {
     if(a_strhash_contains(Entity->handlers, Message)) {
         a_out__fatal("'%s' handler already set for '%s'",
@@ -360,7 +360,7 @@ void a_message_handlerSet(AEntity* Entity, const char* Message, AMessageHandler*
     a_strhash_add(Entity->handlers, Message, h);
 }
 
-void a_message_send(AEntity* To, AEntity* From, const char* Message)
+void a_entity_messageSend(AEntity* To, AEntity* From, const char* Message)
 {
     AMessageHandlerContainer* h = a_strhash_get(To->handlers, Message);
 
