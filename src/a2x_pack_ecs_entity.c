@@ -321,30 +321,7 @@ bool a_entity__isMatchedToSystems(const AEntity* Entity)
         || !a_list_isEmpty(Entity->matchingSystemsEither);
 }
 
-AMessage* a_message__new(AEntity* To, AEntity* From, const char* Message)
-{
-    AMessage* m = a_mem_malloc(sizeof(AMessage));
-
-    m->to = To;
-    m->from = From;
-    m->message = a_str_dup(Message);
-
-    a_entity_refInc(To);
-    a_entity_refInc(From);
-
-    return m;
-}
-
-void a_message__free(AMessage* Message)
-{
-    a_entity_refDec(Message->to);
-    a_entity_refDec(Message->from);
-
-    free(Message->message);
-    free(Message);
-}
-
-void a_entity_messageHandlerSet(AEntity* Entity, const char* Message, AMessageHandler* Handler, bool HandleImmediately)
+void a_entity_messageHandlerSet(AEntity* Entity, const char* Message, AMessageHandler* Handler)
 {
     if(a_strhash_contains(Entity->handlers, Message)) {
         a_out__fatal("'%s' handler already set for '%s'",
@@ -355,7 +332,6 @@ void a_entity_messageHandlerSet(AEntity* Entity, const char* Message, AMessageHa
     AMessageHandlerContainer* h = a_mem_malloc(sizeof(AMessageHandlerContainer));
 
     h->handler = Handler;
-    h->handleImmediately = HandleImmediately;
 
     a_strhash_add(Entity->handlers, Message, h);
 }
@@ -365,16 +341,17 @@ void a_entity_messageSend(AEntity* To, AEntity* From, const char* Message)
     AMessageHandlerContainer* h = a_strhash_get(To->handlers, Message);
 
     if(h == NULL) {
+        // Entity does not handle this Message
         return;
     }
 
-    if(h->handleImmediately) {
-        if(!a_entity_removeGet(To) && !a_entity_removeGet(From)
-            && !a_entity_muteGet(To)) {
+    if(a_entity_removeGet(To) || a_entity_removeGet(From)
+        || a_entity_muteGet(To)) {
 
-            h->handler(To, From);
-        }
-    } else {
-        a_ecs__queueMessage(To, From, Message);
+        // Ignore message if one of the entities was already removed,
+        // or if the destination entity is muted
+        return;
     }
+
+    h->handler(To, From);
 }

@@ -30,7 +30,6 @@ typedef struct {
     AList* tickSystems; // tick systems in the specified order
     AList* drawSystems; // draw systems in the specified order
     AList* allSystems; // tick & draw systems
-    AList* messageQueue; // queued messages
     bool deleting; // set when this collection is popped off the stack
 } AEcs;
 
@@ -74,7 +73,6 @@ void a_ecs__collectionPush(AList* TickSystems, AList* DrawSystems)
     c->tickSystems = TickSystems;
     c->drawSystems = DrawSystems;
     c->allSystems = a_list_new();
-    c->messageQueue = a_list_new();
     c->deleting = false;
 
     a_list_appendCopy(c->allSystems, TickSystems);
@@ -99,8 +97,6 @@ void a_ecs__collectionPop(void)
         system->muted = false;
         system->runsInCurrentState = false;
     }
-
-    a_list_freeEx(g_ecs->messageQueue, (AFree*)a_message__free);
 
     for(int i = A_ECS__NUM; i--; ) {
         a_list_freeEx(g_ecs->lists[i], (AFree*)a_entity__free);
@@ -163,25 +159,6 @@ void a_ecs__tick(void)
     A_LIST_ITERATE(g_ecs->tickSystems, ASystem*, system) {
         a_system__run(system);
     }
-
-    // Send non-immediate messages
-    A_LIST_ITERATE(g_ecs->messageQueue, AMessage*, m) {
-        AMessageHandlerContainer* h = a_strhash_get(
-                                        m->to->handlers, m->message);
-
-        if(!a_entity_removeGet(m->to) && !a_entity_removeGet(m->from)) {
-            if(a_entity_muteGet(m->to)) {
-                // Keep message in queue
-                continue;
-            } else {
-                h->handler(m->to, m->from);
-            }
-        }
-
-        a_message__free(m);
-    }
-
-    a_list_clear(g_ecs->messageQueue);
 }
 
 void a_ecs__draw(void)
@@ -230,9 +207,4 @@ void a_ecs__flushEntitiesFromSystems(void)
 
     a_list_clear(g_ecs->lists[A_ECS__MUTED_QUEUE]);
     a_list_clear(g_ecs->lists[A_ECS__REMOVED_QUEUE]);
-}
-
-void a_ecs__queueMessage(AEntity* To, AEntity* From, const char* Message)
-{
-    a_list_addLast(g_ecs->messageQueue, a_message__new(To, From, Message));
 }
