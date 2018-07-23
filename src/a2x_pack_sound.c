@@ -256,6 +256,10 @@ ASfx* a_sfx_new(const char* Path)
 
 ASfx* a_sfx_dup(const ASfx* Sfx)
 {
+    if(!g_soundOn) {
+        return NULL;
+    }
+
     ASfx* s = a_mem_dup(Sfx, sizeof(ASfx));
 
     if(s->platformSfx) {
