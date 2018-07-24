@@ -154,7 +154,7 @@ static A_STATE(a_fade__toColor)
         alpha_inc = a_fix_fromInt(A_PIXEL_ALPHA_MAX) / (int)g_frames;
 
         a_pixel_push();
-        a_pixel_pixelSet(g_savedColor);
+        a_pixel_colorSetPixel(g_savedColor);
     }
 
     A_STATE_TICK
@@ -193,7 +193,7 @@ static A_STATE(a_fade__fromColor)
         updateCapturedScreenBuffer();
 
         a_pixel_push();
-        a_pixel_pixelSet(g_savedColor);
+        a_pixel_colorSetPixel(g_savedColor);
 
         alpha = a_fix_fromInt(A_PIXEL_ALPHA_MAX);
         alpha_inc = a_fix_fromInt(A_PIXEL_ALPHA_MAX) / (int)g_frames;
