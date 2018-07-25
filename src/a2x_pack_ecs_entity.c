@@ -208,6 +208,10 @@ void* a_entity_componentAdd(AEntity* Entity, const char* Component)
     a_strhash_add(Entity->components, Component, header);
     a_bitfield_set(Entity->componentBits, c->bit);
 
+    if(c->init) {
+        c->init(getComponent(header));
+    }
+
     return getComponent(header);
 }
 

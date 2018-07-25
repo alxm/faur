@@ -1,5 +1,5 @@
 /*
-    Copyright 2016, 2017 Alex Margarit
+    Copyright 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -40,7 +40,7 @@ void a_component__uninit(void)
     a_strhash_freeEx(a__ecsComponents, free);
 }
 
-void a_component_declare(const char* Name, size_t Size, AFree* Free)
+void a_component_declare(const char* Name, size_t Size, AInit* Init, AFree* Free)
 {
     if(a_strhash_contains(a__ecsComponents, Name)) {
         a_out__fatal("Component '%s' already declared", Name);
@@ -49,6 +49,7 @@ void a_component_declare(const char* Name, size_t Size, AFree* Free)
     AComponent* c = a_mem_malloc(sizeof(AComponent));
 
     c->size = sizeof(AComponentHeader) + Size;
+    c->init = Init;
     c->free = Free;
     c->bit = a_strhash_sizeGet(a__ecsComponents);
 

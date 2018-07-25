@@ -1,5 +1,5 @@
 /*
-    Copyright 2016, 2017 Alex Margarit
+    Copyright 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -23,12 +23,13 @@
 
 typedef struct {
     size_t size; // total size of AComponentHeader + user data that follows
+    AInit* init; // sets default values
     AFree* free; // does not free the actual pointer
     unsigned bit; // component's unique bit ID
 } AComponent;
 
 typedef struct {
-    const AComponent* component;
+    const AComponent* component; // shared data for all components of same type
     AEntity* entity; // entity this component belongs to
 } AComponentHeader;
 
