@@ -49,6 +49,11 @@ void a_system__uninit(void)
     a_list_free(g_inactive);
 }
 
+ASystem* a_system__get(const char* System)
+{
+    return a_strhash_get(g_systems, System);
+}
+
 void a_system_declare(const char* Name, const char* Components, ASystemHandler* Handler, ASystemSort* Compare, bool OnlyActiveEntities)
 {
     if(a_strhash_contains(g_systems, Name)) {
@@ -152,24 +157,4 @@ void a_system_muteSet(const char* Systems, bool DoMute)
     }
 
     a_list_freeEx(tok, free);
-}
-
-AList* a_system__parseIds(const char* Systems)
-{
-    AList* systems = a_list_new();
-    AList* tok = a_str_split(Systems, " ");
-
-    A_LIST_ITERATE(tok, char*, name) {
-        ASystem* system = a_strhash_get(g_systems, name);
-
-        if(system == NULL) {
-            a_out__fatal("Unknown system '%s'", name);
-        }
-
-        a_list_addLast(systems, system);
-    }
-
-    a_list_freeEx(tok, free);
-
-    return systems;
 }

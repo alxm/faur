@@ -1,5 +1,5 @@
 /*
-    Copyright 2016, 2017 Alex Margarit
+    Copyright 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -18,3 +18,6 @@
 */
 
 #pragma once
+
+extern void a_ecs_tickSet(const char* System);
+extern void a_ecs_drawSet(const char* System);

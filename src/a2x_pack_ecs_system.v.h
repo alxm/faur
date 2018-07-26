@@ -1,5 +1,5 @@
 /*
-    Copyright 2016, 2017 Alex Margarit
+    Copyright 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -39,5 +39,5 @@ struct ASystem {
 extern void a_system__init(void);
 extern void a_system__uninit(void);
 
+extern ASystem* a_system__get(const char* System);
 extern void a_system__run(ASystem* System);
-extern AList* a_system__parseIds(const char* Systems);

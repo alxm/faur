@@ -93,7 +93,7 @@ A_STATE(drawBox)
 
 A_MAIN
 {
-    a_state_new("drawBox", drawBox, "", "");
+    a_state_new("drawBox", drawBox);
     a_state_push("drawBox");
 }
 ```

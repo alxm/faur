@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2017 Alex Margarit
+    Copyright 2010, 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -40,8 +40,6 @@ typedef struct {
     char* name;
     AStateFunction function;
     AStateStage stage;
-    AList* tickSystems;
-    AList* drawSystems;
 } AState;
 
 typedef enum {
@@ -145,7 +143,7 @@ static void pending_handle(void)
             a_out__state("New '%s' instance", pending->name);
 
             state->stage = A_STATE__STAGE_INIT;
-            a_ecs__collectionPush(state->tickSystems, state->drawSystems);
+            a_ecs__collectionPush();
             a_list_push(g_stack, state);
         } break;
 
@@ -182,8 +180,6 @@ void a_state__init(void)
 void a_state__uninit(void)
 {
     A_STRHASH_ITERATE(g_states, AState*, s) {
-        a_list_free(s->tickSystems);
-        a_list_free(s->drawSystems);
         free(s->name);
         free(s);
     }
@@ -193,15 +189,13 @@ void a_state__uninit(void)
     a_list_free(g_pending);
 }
 
-void a_state__new(const char* Name, AStateFunction Function, const char* TickSystems, const char* DrawSystems)
+void a_state__new(const char* Name, AStateFunction Function)
 {
     AState* state = a_mem_malloc(sizeof(AState));
 
     state->name = a_str_dup(Name);
     state->function = Function;
     state->stage = A_STATE__STAGE_INIT;
-    state->tickSystems = a_system__parseIds(TickSystems);
-    state->drawSystems = a_system__parseIds(DrawSystems);
 
     a_strhash_add(g_states, Name, state);
     a_out__statev("Declared '%s'", Name);

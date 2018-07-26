@@ -82,9 +82,9 @@ void a_fade__init(void)
     g_capturedScreen = NULL;
     g_oldCapturedScreen = NULL;
 
-    a_state_new("a__fadeToColor", a_fade__toColor, "", "");
-    a_state_new("a__fadeFromColor", a_fade__fromColor, "", "");
-    a_state_new("a__fadeScreens", a_fade__screens, "", "");
+    a_state_new("a__fadeToColor", a_fade__toColor);
+    a_state_new("a__fadeFromColor", a_fade__fromColor);
+    a_state_new("a__fadeScreens", a_fade__screens);
 }
 
 void a_fade__uninit(void)
