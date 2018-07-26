@@ -54,10 +54,10 @@ ASystem* a_system__get(const char* System)
     return a_strhash_get(g_systems, System);
 }
 
-void a_system_declare(const char* Name, const char* Components, ASystemHandler* Handler, ASystemSort* Compare, bool OnlyActiveEntities)
+void a_system_new(const char* System, ASystemHandler* Handler, ASystemSort* Compare, bool OnlyActiveEntities)
 {
-    if(a_strhash_contains(g_systems, Name)) {
-        a_out__fatal("System '%s' already declared", Name);
+    if(a_strhash_contains(g_systems, System)) {
+        a_out__fatal("a_system_new: System '%s' already declared", System);
     }
 
     ASystem* s = a_mem_malloc(sizeof(ASystem));
@@ -70,22 +70,24 @@ void a_system_declare(const char* Name, const char* Components, ASystemHandler* 
     s->muted = false;
     s->runsInCurrentState = false;
 
-    a_strhash_add(g_systems, Name, s);
+    a_strhash_add(g_systems, System, s);
+}
 
-    AList* tok = a_str_split(Components, " ");
+void a_system_add(const char* System, const char* Component)
+{
+    ASystem* s = a_strhash_get(g_systems, System);
 
-    A_LIST_ITERATE(tok, char*, name) {
-        AComponent* c = a_strhash_get(a__ecsComponents, name);
-
-        if(c == NULL) {
-            a_out__fatal(
-                "Unknown component '%s' for system '%s'", name, Name);
-        }
-
-        a_bitfield_set(s->componentBits, c->bit);
+    if(s == NULL) {
+        a_out__fatal("a_system_add: Unknown system '%s'", System);
     }
 
-    a_list_freeEx(tok, free);
+    AComponent* c = a_strhash_get(a__ecsComponents, Component);
+
+    if(c == NULL) {
+        a_out__fatal("a_system_add: Unknown component '%s'", Component);
+    }
+
+    a_bitfield_set(s->componentBits, c->bit);
 }
 
 void a_system__run(ASystem* System)

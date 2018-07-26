@@ -24,7 +24,7 @@
 typedef void ASystemHandler(AEntity* Entity);
 typedef int ASystemSort(AEntity* A, AEntity* B);
 
-extern void a_system_declare(const char* Name, const char* Components, ASystemHandler* Handler, ASystemSort* Compare, bool OnlyActiveEntities);
-
+extern void a_system_new(const char* System, ASystemHandler* Handler, ASystemSort* Compare, bool OnlyActiveEntities);
+extern void a_system_add(const char* System, const char* Component);
 extern void a_system_execute(const char* Systems);
 extern void a_system_muteSet(const char* Systems, bool DoMute);
