@@ -35,7 +35,8 @@ typedef struct {
 
 #include "a2x_pack_strhash.v.h"
 
-extern AStrHash* a__ecsComponents;
-
 extern void a_component__init(void);
 extern void a_component__uninit(void);
+
+extern AComponent* a_component__get(const char* Component);
+extern unsigned a_component__num(void);

@@ -65,7 +65,7 @@ void a_system_new(const char* System, ASystemHandler* Handler, ASystemSort* Comp
     s->handler = Handler;
     s->compare = Compare;
     s->entities = a_list_new();
-    s->componentBits = a_bitfield_new(a_strhash_sizeGet(a__ecsComponents));
+    s->componentBits = a_bitfield_new(a_component__num());
     s->onlyActiveEntities = OnlyActiveEntities;
     s->muted = false;
     s->runsInCurrentState = false;
@@ -81,7 +81,7 @@ void a_system_add(const char* System, const char* Component)
         a_out__fatal("a_system_add: Unknown system '%s'", System);
     }
 
-    AComponent* c = a_strhash_get(a__ecsComponents, Component);
+    AComponent* c = a_component__get(Component);
 
     if(c == NULL) {
         a_out__fatal("a_system_add: Unknown component '%s'", Component);

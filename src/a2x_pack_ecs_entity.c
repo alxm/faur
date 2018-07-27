@@ -45,7 +45,7 @@ AEntity* a_entity_new(const char* Id, void* Context)
     e->systemNodesActive = a_list_new();
     e->systemNodesEither = a_list_new();
     e->components = a_strhash_new();
-    e->componentBits = a_bitfield_new(a_strhash_sizeGet(a__ecsComponents));
+    e->componentBits = a_bitfield_new(a_component__num());
     e->handlers = a_strhash_new();
     e->lastActive = a_fps_ticksGet() - 1;
     e->references = 0;
@@ -186,7 +186,7 @@ void* a_entity_componentAdd(AEntity* Entity, const char* Component)
                      a_entity_idGet(Entity));
     }
 
-    const AComponent* c = a_strhash_get(a__ecsComponents, Component);
+    const AComponent* c = a_component__get(Component);
 
     if(c == NULL) {
         a_out__fatal("Unknown component '%s' for '%s'",
@@ -219,7 +219,7 @@ bool a_entity_componentHas(const AEntity* Entity, const char* Component)
 {
     bool has = a_strhash_contains(Entity->components, Component);
 
-    if(!has && !a_strhash_contains(a__ecsComponents, Component)) {
+    if(!has && a_component__get(Component) == NULL) {
         a_out__fatal("Unknown component '%s' for '%s'",
                      Component,
                      a_entity_idGet(Entity));
@@ -233,7 +233,7 @@ void* a_entity_componentGet(const AEntity* Entity, const char* Component)
     AComponentHeader* header = a_strhash_get(Entity->components, Component);
 
     if(header == NULL) {
-        if(!a_strhash_contains(a__ecsComponents, Component)) {
+        if(a_component__get(Component) == NULL) {
             a_out__fatal("Unknown component '%s' for '%s'",
                          Component,
                          a_entity_idGet(Entity));
@@ -250,7 +250,7 @@ void* a_entity_componentReq(const AEntity* Entity, const char* Component)
     AComponentHeader* header = a_strhash_get(Entity->components, Component);
 
     if(header == NULL) {
-        if(!a_strhash_contains(a__ecsComponents, Component)) {
+        if(a_component__get(Component) == NULL) {
             a_out__fatal("Unknown component '%s' for '%s'",
                          Component,
                          a_entity_idGet(Entity));
