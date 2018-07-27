@@ -119,16 +119,16 @@ void a_system__run(ASystem* System)
     a_ecs__flushEntitiesFromSystems();
 }
 
-void a_system_execute(const char* System)
+void a_system_run(const char* System)
 {
     ASystem* system = a_strhash_get(g_systems, System);
 
     if(system == NULL) {
-        a_out__fatal("a_system_execute: unknown system '%s'", System);
+        a_out__fatal("a_system_run: unknown system '%s'", System);
     }
 
     if(!system->runsInCurrentState) {
-        a_out__fatal("a_system_execute: '%s' is not set to run", System);
+        a_out__fatal("a_system_run: '%s' is not set to run", System);
     }
 
     a_system__run(system);
