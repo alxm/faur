@@ -50,7 +50,7 @@ unsigned a_component__num(void)
     return a_strhash_sizeGet(g_components);
 }
 
-void a_component_declare(const char* Name, size_t Size, AInit* Init, AFree* Free)
+void a_component_new(const char* Name, size_t Size, AInit* Init, AFree* Free)
 {
     if(a_strhash_contains(g_components, Name)) {
         a_out__fatal("Component '%s' already declared", Name);
