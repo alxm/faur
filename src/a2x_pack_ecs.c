@@ -28,9 +28,9 @@
 
 typedef struct {
     AList* lists[A_ECS__NUM]; // each entity is in exactly one list
+    AList* allSystems; // all tick & draw systems
     AList* tickSystems; // tick systems in the specified order
     AList* drawSystems; // draw systems in the specified order
-    AList* allSystems; // tick & draw systems
     bool deleting; // set when this collection is popped off the stack
 } AEcs;
 
@@ -71,9 +71,9 @@ void a_ecs__collectionPush(void)
         c->lists[i] = a_list_new();
     }
 
+    c->allSystems = a_list_new();
     c->tickSystems = a_list_new();
     c->drawSystems = a_list_new();
-    c->allSystems = a_list_new();
     c->deleting = false;
 
     if(g_ecs != NULL) {
@@ -97,8 +97,11 @@ void a_ecs__collectionPop(void)
     }
 
     a_list_free(g_ecs->allSystems);
+    a_list_free(g_ecs->tickSystems);
+    a_list_free(g_ecs->drawSystems);
 
     free(g_ecs);
+
     g_ecs = a_list_pop(g_stack);
 
     if(g_ecs != NULL) {
