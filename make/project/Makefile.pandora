@@ -3,9 +3,9 @@ include $(A2X_PATH)/make/platforms/pandora
 include $(A2X_PATH)/make/project/rules
 
 pnd:
-	cp $(A_BIN_DIR)/$(A_APP_NAME) $(A_PND_DIR)/$(A_APP_NAME)
+	cp $(A_ROOT)/$(A_DIR_BIN)/$(A_APP_NAME) $(A_ROOT)/$(A_PND_DIR)/$(A_APP_NAME)
 	$(PANDORA_UTILS)/pnd_make.sh -c \
-		-d $(PWD)/$(A_PND_DIR) \
-		-p $(PWD)/$(A_BIN_DIR)/$(A_PND_NAME) \
-		-x $(PWD)/$(A_PND_DIR)/doc/PXML.xml \
-		-i $(PWD)/$(A_PND_DIR)/img/icon.png
+		-d $(PWD)/$(A_ROOT)/$(A_PND_DIR) \
+		-p $(PWD)/$(A_ROOT)/$(A_DIR_BIN)/$(A_PND_NAME) \
+		-x $(PWD)/$(A_ROOT)/$(A_PND_DIR)/doc/PXML.xml \
+		-i $(PWD)/$(A_ROOT)/$(A_PND_DIR)/img/icon.png
