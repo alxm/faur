@@ -49,10 +49,15 @@ void a_system__uninit(void)
     a_list_free(g_inactive);
 }
 
-void a_system_declare(const char* Name, const char* Components, ASystemHandler* Handler, ASystemSort* Compare, bool OnlyActiveEntities)
+ASystem* a_system__get(const char* System)
 {
-    if(a_strhash_contains(g_systems, Name)) {
-        a_out__fatal("System '%s' already declared", Name);
+    return a_strhash_get(g_systems, System);
+}
+
+void a_system_new(const char* System, ASystemHandler* Handler, ASystemSort* Compare, bool OnlyActiveEntities)
+{
+    if(a_strhash_contains(g_systems, System)) {
+        a_out__fatal("a_system_new: System '%s' already declared", System);
     }
 
     ASystem* s = a_mem_malloc(sizeof(ASystem));
@@ -60,27 +65,29 @@ void a_system_declare(const char* Name, const char* Components, ASystemHandler* 
     s->handler = Handler;
     s->compare = Compare;
     s->entities = a_list_new();
-    s->componentBits = a_bitfield_new(a_strhash_sizeGet(a__ecsComponents));
+    s->componentBits = a_bitfield_new(a_component__num());
     s->onlyActiveEntities = OnlyActiveEntities;
     s->muted = false;
     s->runsInCurrentState = false;
 
-    a_strhash_add(g_systems, Name, s);
+    a_strhash_add(g_systems, System, s);
+}
 
-    AList* tok = a_str_split(Components, " ");
+void a_system_add(const char* System, const char* Component)
+{
+    ASystem* s = a_strhash_get(g_systems, System);
 
-    A_LIST_ITERATE(tok, char*, name) {
-        AComponent* c = a_strhash_get(a__ecsComponents, name);
-
-        if(c == NULL) {
-            a_out__fatal(
-                "Unknown component '%s' for system '%s'", name, Name);
-        }
-
-        a_bitfield_set(s->componentBits, c->bit);
+    if(s == NULL) {
+        a_out__fatal("a_system_add: Unknown system '%s'", System);
     }
 
-    a_list_freeEx(tok, free);
+    AComponent* c = a_component__get(Component);
+
+    if(c == NULL) {
+        a_out__fatal("a_system_add: Unknown component '%s'", Component);
+    }
+
+    a_bitfield_set(s->componentBits, c->bit);
 }
 
 void a_system__run(ASystem* System)
@@ -112,64 +119,32 @@ void a_system__run(ASystem* System)
     a_ecs__flushEntitiesFromSystems();
 }
 
-void a_system_execute(const char* Systems)
+void a_system_run(const char* System)
 {
-    AList* tok = a_str_split(Systems, " ");
+    ASystem* system = a_strhash_get(g_systems, System);
 
-    A_LIST_ITERATE(tok, char*, name) {
-        ASystem* system = a_strhash_get(g_systems, name);
-
-        if(system == NULL) {
-            a_out__fatal("a_system_execute: unknown system '%s'", name);
-        }
-
-        if(!system->runsInCurrentState) {
-            a_out__fatal("a_system_execute: '%s' does not run in state", name);
-        }
-
-        a_system__run(system);
+    if(system == NULL) {
+        a_out__fatal("a_system_run: unknown system '%s'", System);
     }
 
-    a_list_freeEx(tok, free);
+    if(!system->runsInCurrentState) {
+        a_out__fatal("a_system_run: '%s' is not set to run", System);
+    }
+
+    a_system__run(system);
 }
 
-void a_system_muteSet(const char* Systems, bool DoMute)
+void a_system_muteSet(const char* System, bool DoMute)
 {
-    AList* tok = a_str_split(Systems, " ");
+    ASystem* system = a_strhash_get(g_systems, System);
 
-    A_LIST_ITERATE(tok, char*, name) {
-        ASystem* system = a_strhash_get(g_systems, name);
-
-        if(system == NULL) {
-            a_out__fatal("a_system_muteSet: unknown system '%s'", name);
-        }
-
-        if(!system->runsInCurrentState) {
-            a_out__fatal("a_system_muteSet: '%s' does not run in state", name);
-        }
-
-        system->muted = DoMute;
+    if(system == NULL) {
+        a_out__fatal("a_system_muteSet: unknown system '%s'", System);
     }
 
-    a_list_freeEx(tok, free);
-}
-
-AList* a_system__parseIds(const char* Systems)
-{
-    AList* systems = a_list_new();
-    AList* tok = a_str_split(Systems, " ");
-
-    A_LIST_ITERATE(tok, char*, name) {
-        ASystem* system = a_strhash_get(g_systems, name);
-
-        if(system == NULL) {
-            a_out__fatal("Unknown system '%s'", name);
-        }
-
-        a_list_addLast(systems, system);
+    if(!system->runsInCurrentState) {
+        a_out__fatal("a_system_muteSet: '%s' is not set to run", System);
     }
 
-    a_list_freeEx(tok, free);
-
-    return systems;
+    system->muted = DoMute;
 }

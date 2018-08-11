@@ -82,9 +82,9 @@ void a_fade__init(void)
     g_capturedScreen = NULL;
     g_oldCapturedScreen = NULL;
 
-    a_state_new("a__fadeToColor", a_fade__toColor, "", "");
-    a_state_new("a__fadeFromColor", a_fade__fromColor, "", "");
-    a_state_new("a__fadeScreens", a_fade__screens, "", "");
+    a_state_new("a__fadeToColor", a_fade__toColor);
+    a_state_new("a__fadeFromColor", a_fade__fromColor);
+    a_state_new("a__fadeScreens", a_fade__screens);
 }
 
 void a_fade__uninit(void)
@@ -154,7 +154,7 @@ static A_STATE(a_fade__toColor)
         alpha_inc = a_fix_fromInt(A_PIXEL_ALPHA_MAX) / (int)g_frames;
 
         a_pixel_push();
-        a_pixel_pixelSet(g_savedColor);
+        a_pixel_colorSetPixel(g_savedColor);
     }
 
     A_STATE_TICK
@@ -193,7 +193,7 @@ static A_STATE(a_fade__fromColor)
         updateCapturedScreenBuffer();
 
         a_pixel_push();
-        a_pixel_pixelSet(g_savedColor);
+        a_pixel_colorSetPixel(g_savedColor);
 
         alpha = a_fix_fromInt(A_PIXEL_ALPHA_MAX);
         alpha_inc = a_fix_fromInt(A_PIXEL_ALPHA_MAX) / (int)g_frames;

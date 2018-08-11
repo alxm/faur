@@ -36,13 +36,13 @@ extern void* a_colobject__contextGet(const AColObject* Object);
 extern AList* a_colobject__nearbyListGet(const AColObject* Object);
 
 #define A_COL_ITERATE(ColObject, ContextPtrType, ContextVarName)         \
-    for(AColObject* a__co = ColObject; a__co; a__co = NULL)              \
+    for(const AColObject* a__co = ColObject; a__co; a__co = NULL)        \
         for(ContextPtrType ContextVarName = (ContextPtrType)1;           \
             ContextVarName;                                              \
             ContextVarName = NULL)                                       \
             A_LIST_FILTER(                                               \
                 a_colobject__nearbyListGet(a__co),                       \
-                AColObject*, a__o,                                       \
+                const AColObject*, a__o,                                 \
                 a__o != a__co                                            \
                     && (ContextVarName = a_colobject__contextGet(a__o)))
 

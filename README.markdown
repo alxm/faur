@@ -83,17 +83,17 @@ A_STATE(drawBox)
 
     A_STATE_DRAW
     {
-        a_pixel_hexSet(0xaaff88);
+        a_pixel_colorSetHex(0xaaff88);
         a_draw_fill();
 
-        a_pixel_hexSet(0xffaa44);
+        a_pixel_colorSetHex(0xffaa44);
         a_draw_rectangle(context.x - 40, context.y - 40, 80, 80);
     }
 }
 
 A_MAIN
 {
-    a_state_new("drawBox", drawBox, "", "");
+    a_state_new("drawBox", drawBox);
     a_state_push("drawBox");
 }
 ```

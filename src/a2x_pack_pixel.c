@@ -58,16 +58,16 @@ void a_pixel_pop(void)
     free(state);
 
     a_pixel_blendSet(a_pixel__state.blend);
-    a_pixel_rgbaSet(a_pixel__state.red,
-                    a_pixel__state.green,
-                    a_pixel__state.blue,
-                    a_pixel__state.alpha);
+    a_pixel_colorSetRgba(a_pixel__state.red,
+                         a_pixel__state.green,
+                         a_pixel__state.blue,
+                         a_pixel__state.alpha);
 }
 
 void a_pixel_reset(void)
 {
     a_pixel_blendSet(A_PIXEL_BLEND_PLAIN);
-    a_pixel_rgbaSet(0, 0, 0, A_PIXEL_ALPHA_MAX);
+    a_pixel_colorSetRgba(0, 0, 0, A_PIXEL_ALPHA_MAX);
     a_pixel_fillBlitSet(false);
     a_pixel_fillDrawSet(true);
 }
@@ -151,7 +151,7 @@ void a_pixel_alphaSet(int Alpha)
     #endif
 }
 
-void a_pixel_rgbSet(int Red, int Green, int Blue)
+void a_pixel_colorSetRgb(int Red, int Green, int Blue)
 {
     a_pixel__state.red = (unsigned)Red & 0xff;
     a_pixel__state.green = (unsigned)Green & 0xff;
@@ -163,7 +163,7 @@ void a_pixel_rgbSet(int Red, int Green, int Blue)
     #endif
 }
 
-void a_pixel_rgbaSet(int Red, int Green, int Blue, int Alpha)
+void a_pixel_colorSetRgba(int Red, int Green, int Blue, int Alpha)
 {
     a_pixel__state.red = (unsigned)Red & 0xff;
     a_pixel__state.green = (unsigned)Green & 0xff;
@@ -178,7 +178,7 @@ void a_pixel_rgbaSet(int Red, int Green, int Blue, int Alpha)
     #endif
 }
 
-void a_pixel_hexSet(uint32_t Hexcode)
+void a_pixel_colorSetHex(uint32_t Hexcode)
 {
     a_pixel__state.red = (Hexcode >> 16) & 0xff;
     a_pixel__state.green = (Hexcode >> 8) & 0xff;
@@ -190,7 +190,7 @@ void a_pixel_hexSet(uint32_t Hexcode)
     #endif
 }
 
-void a_pixel_pixelSet(APixel Pixel)
+void a_pixel_colorSetPixel(APixel Pixel)
 {
     a_pixel_toRgb(Pixel,
                   &a_pixel__state.red,

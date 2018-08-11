@@ -112,15 +112,15 @@ static void inputCallback(void)
 
         a_pixel_blendSet(A_PIXEL_BLEND_PLAIN);
 
-        a_pixel_pixelSet(g_volbarBackground);
+        a_pixel_colorSetPixel(g_volbarBackground);
         a_draw_rectangle(0, 181, g_volumeMax / A_VOLUME_STEP + 5, 16);
 
-        a_pixel_pixelSet(g_volbarBorder);
+        a_pixel_colorSetPixel(g_volbarBorder);
         a_draw_hline(0, g_volumeMax / A_VOLUME_STEP + 4, 180);
         a_draw_hline(0, g_volumeMax / A_VOLUME_STEP + 4, 183 + 14);
         a_draw_vline(g_volumeMax / A_VOLUME_STEP + 4 + 1, 181, 183 + 13);
 
-        a_pixel_pixelSet(g_volbarFill);
+        a_pixel_colorSetPixel(g_volbarFill);
         a_draw_rectangle(0, 186, g_volume / A_VOLUME_STEP, 6);
     }
 #endif
@@ -256,6 +256,10 @@ ASfx* a_sfx_new(const char* Path)
 
 ASfx* a_sfx_dup(const ASfx* Sfx)
 {
+    if(!g_soundOn) {
+        return NULL;
+    }
+
     ASfx* s = a_mem_dup(Sfx, sizeof(ASfx));
 
     if(s->platformSfx) {

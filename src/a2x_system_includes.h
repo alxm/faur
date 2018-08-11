@@ -1,5 +1,5 @@
 /*
-    Copyright 2011, 2016, 2017 Alex Margarit
+    Copyright 2011, 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -23,7 +23,8 @@
 #define A_STRINGIFY__DO_NOT_CALL(X) #X
 #define A_STRINGIFY(X) A_STRINGIFY__DO_NOT_CALL(X)
 
-typedef void AFree(void* Pointer);
+typedef void AFree(void* Self);
+typedef void AInit(void* Self);
 
 #include <ctype.h>
 #include <float.h>

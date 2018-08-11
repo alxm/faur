@@ -147,10 +147,10 @@ extern void a_pixel_blendSet(APixelBlend Blend);
 extern int a_pixel_alphaGet(void);
 extern void a_pixel_alphaSet(int Alpha);
 
-extern void a_pixel_rgbSet(int Red, int Green, int Blue);
-extern void a_pixel_rgbaSet(int Red, int Green, int Blue, int Alpha);
-extern void a_pixel_hexSet(uint32_t Hexcode);
-extern void a_pixel_pixelSet(APixel Pixel);
+extern void a_pixel_colorSetRgb(int Red, int Green, int Blue);
+extern void a_pixel_colorSetRgba(int Red, int Green, int Blue, int Alpha);
+extern void a_pixel_colorSetHex(uint32_t Hexcode);
+extern void a_pixel_colorSetPixel(APixel Pixel);
 
 extern void a_pixel_fillBlitSet(bool Fill);
 extern void a_pixel_fillDrawSet(bool Fill);

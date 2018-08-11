@@ -20,6 +20,7 @@
 #pragma once
 
 typedef struct AEntity AEntity;
+typedef void AMessageHandler(AEntity* To, AEntity* From);
 
 extern AEntity* a_entity_new(const char* Id, void* Context);
 
@@ -45,3 +46,6 @@ extern void* a_entity_componentReq(const AEntity* Entity, const char* Component)
 
 extern bool a_entity_muteGet(const AEntity* Entity);
 extern void a_entity_muteSet(AEntity* Entity, bool DoMute);
+
+extern void a_entity_messageHandlerSet(AEntity* Entity, const char* Message, AMessageHandler* Handler);
+extern void a_entity_messageSend(AEntity* To, AEntity* From, const char* Message);

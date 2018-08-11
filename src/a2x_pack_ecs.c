@@ -22,16 +22,15 @@
 
 #include "a2x_pack_ecs_component.v.h"
 #include "a2x_pack_ecs_entity.v.h"
-#include "a2x_pack_ecs_message.v.h"
 #include "a2x_pack_ecs_system.v.h"
 #include "a2x_pack_mem.v.h"
+#include "a2x_pack_out.v.h"
 
 typedef struct {
     AList* lists[A_ECS__NUM]; // each entity is in exactly one list
+    AList* allSystems; // all tick & draw systems
     AList* tickSystems; // tick systems in the specified order
     AList* drawSystems; // draw systems in the specified order
-    AList* allSystems; // tick & draw systems
-    AList* messageQueue; // queued messages
     bool deleting; // set when this collection is popped off the stack
 } AEcs;
 
@@ -64,7 +63,7 @@ bool a_ecs__isDeleting(void)
     return g_ecs->deleting;
 }
 
-void a_ecs__collectionPush(AList* TickSystems, AList* DrawSystems)
+void a_ecs__collectionPush(void)
 {
     AEcs* c = a_mem_malloc(sizeof(AEcs));
 
@@ -72,24 +71,16 @@ void a_ecs__collectionPush(AList* TickSystems, AList* DrawSystems)
         c->lists[i] = a_list_new();
     }
 
-    c->tickSystems = TickSystems;
-    c->drawSystems = DrawSystems;
     c->allSystems = a_list_new();
-    c->messageQueue = a_list_new();
+    c->tickSystems = a_list_new();
+    c->drawSystems = a_list_new();
     c->deleting = false;
-
-    a_list_appendCopy(c->allSystems, TickSystems);
-    a_list_appendCopy(c->allSystems, DrawSystems);
 
     if(g_ecs != NULL) {
         a_list_push(g_stack, g_ecs);
     }
 
     g_ecs = c;
-
-    A_LIST_ITERATE(g_ecs->allSystems, ASystem*, system) {
-        system->runsInCurrentState = true;
-    }
 }
 
 void a_ecs__collectionPop(void)
@@ -101,15 +92,16 @@ void a_ecs__collectionPop(void)
         system->runsInCurrentState = false;
     }
 
-    a_list_freeEx(g_ecs->messageQueue, (AFree*)a_message__free);
-
     for(int i = A_ECS__NUM; i--; ) {
         a_list_freeEx(g_ecs->lists[i], (AFree*)a_entity__free);
     }
 
     a_list_free(g_ecs->allSystems);
+    a_list_free(g_ecs->tickSystems);
+    a_list_free(g_ecs->drawSystems);
 
     free(g_ecs);
+
     g_ecs = a_list_pop(g_stack);
 
     if(g_ecs != NULL) {
@@ -164,25 +156,6 @@ void a_ecs__tick(void)
     A_LIST_ITERATE(g_ecs->tickSystems, ASystem*, system) {
         a_system__run(system);
     }
-
-    // Send non-immediate messages
-    A_LIST_ITERATE(g_ecs->messageQueue, AMessage*, m) {
-        AMessageHandlerContainer* h = a_strhash_get(
-                                        m->to->handlers, m->message);
-
-        if(!a_entity_removeGet(m->to) && !a_entity_removeGet(m->from)) {
-            if(a_entity_muteGet(m->to)) {
-                // Keep message in queue
-                continue;
-            } else {
-                h->handler(m->to, m->from);
-            }
-        }
-
-        a_message__free(m);
-    }
-
-    a_list_clear(g_ecs->messageQueue);
 }
 
 void a_ecs__draw(void)
@@ -233,7 +206,30 @@ void a_ecs__flushEntitiesFromSystems(void)
     a_list_clear(g_ecs->lists[A_ECS__REMOVED_QUEUE]);
 }
 
-void a_ecs__queueMessage(AEntity* To, AEntity* From, const char* Message)
+void a_ecs_tickSet(const char* System)
 {
-    a_list_addLast(g_ecs->messageQueue, a_message__new(To, From, Message));
+    ASystem* system = a_system__get(System);
+
+    if(system == NULL) {
+        a_out__fatal("a_ecs_tickSet: Unknown system '%s'", System);
+    }
+
+    system->runsInCurrentState = true;
+
+    a_list_addLast(g_ecs->allSystems, system);
+    a_list_addLast(g_ecs->tickSystems, system);
+}
+
+void a_ecs_drawSet(const char* System)
+{
+    ASystem* system = a_system__get(System);
+
+    if(system == NULL) {
+        a_out__fatal("a_ecs_drawSet: Unknown system '%s'", System);
+    }
+
+    system->runsInCurrentState = true;
+
+    a_list_addLast(g_ecs->allSystems, system);
+    a_list_addLast(g_ecs->drawSystems, system);
 }

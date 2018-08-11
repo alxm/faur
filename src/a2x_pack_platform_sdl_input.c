@@ -561,8 +561,8 @@ void a_platform_sdl_input__uninit(void)
 void a_platform__inputsBind(void)
 {
     A_STRHASH_ITERATE(g_keys, ASdlInputButton*, k) {
-        k->logicalButton = a_input_button__newSource(k->header.name,
-                                                     A_STRHASH_KEY());
+        k->logicalButton = a_input_button__newSource(
+                            k->header.name, A_STRHASH_KEY());
     }
 
     A_STRHASH_ITERATE(g_touchScreens, ASdlInputTouch*, t) {

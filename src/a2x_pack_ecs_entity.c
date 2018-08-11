@@ -45,7 +45,7 @@ AEntity* a_entity_new(const char* Id, void* Context)
     e->systemNodesActive = a_list_new();
     e->systemNodesEither = a_list_new();
     e->components = a_strhash_new();
-    e->componentBits = a_bitfield_new(a_strhash_sizeGet(a__ecsComponents));
+    e->componentBits = a_bitfield_new(a_component__num());
     e->handlers = a_strhash_new();
     e->lastActive = a_fps_ticksGet() - 1;
     e->references = 0;
@@ -186,7 +186,7 @@ void* a_entity_componentAdd(AEntity* Entity, const char* Component)
                      a_entity_idGet(Entity));
     }
 
-    const AComponent* c = a_strhash_get(a__ecsComponents, Component);
+    const AComponent* c = a_component__get(Component);
 
     if(c == NULL) {
         a_out__fatal("Unknown component '%s' for '%s'",
@@ -208,6 +208,10 @@ void* a_entity_componentAdd(AEntity* Entity, const char* Component)
     a_strhash_add(Entity->components, Component, header);
     a_bitfield_set(Entity->componentBits, c->bit);
 
+    if(c->init) {
+        c->init(getComponent(header));
+    }
+
     return getComponent(header);
 }
 
@@ -215,7 +219,7 @@ bool a_entity_componentHas(const AEntity* Entity, const char* Component)
 {
     bool has = a_strhash_contains(Entity->components, Component);
 
-    if(!has && !a_strhash_contains(a__ecsComponents, Component)) {
+    if(!has && a_component__get(Component) == NULL) {
         a_out__fatal("Unknown component '%s' for '%s'",
                      Component,
                      a_entity_idGet(Entity));
@@ -229,7 +233,7 @@ void* a_entity_componentGet(const AEntity* Entity, const char* Component)
     AComponentHeader* header = a_strhash_get(Entity->components, Component);
 
     if(header == NULL) {
-        if(!a_strhash_contains(a__ecsComponents, Component)) {
+        if(a_component__get(Component) == NULL) {
             a_out__fatal("Unknown component '%s' for '%s'",
                          Component,
                          a_entity_idGet(Entity));
@@ -246,7 +250,7 @@ void* a_entity_componentReq(const AEntity* Entity, const char* Component)
     AComponentHeader* header = a_strhash_get(Entity->components, Component);
 
     if(header == NULL) {
-        if(!a_strhash_contains(a__ecsComponents, Component)) {
+        if(a_component__get(Component) == NULL) {
             a_out__fatal("Unknown component '%s' for '%s'",
                          Component,
                          a_entity_idGet(Entity));
@@ -319,4 +323,39 @@ bool a_entity__isMatchedToSystems(const AEntity* Entity)
 {
     return !a_list_isEmpty(Entity->matchingSystemsActive)
         || !a_list_isEmpty(Entity->matchingSystemsEither);
+}
+
+void a_entity_messageHandlerSet(AEntity* Entity, const char* Message, AMessageHandler* Handler)
+{
+    if(a_strhash_contains(Entity->handlers, Message)) {
+        a_out__fatal("'%s' handler already set for '%s'",
+                     Message,
+                     a_entity_idGet(Entity));
+    }
+
+    AMessageHandlerContainer* h = a_mem_malloc(sizeof(AMessageHandlerContainer));
+
+    h->handler = Handler;
+
+    a_strhash_add(Entity->handlers, Message, h);
+}
+
+void a_entity_messageSend(AEntity* To, AEntity* From, const char* Message)
+{
+    AMessageHandlerContainer* h = a_strhash_get(To->handlers, Message);
+
+    if(h == NULL) {
+        // Entity does not handle this Message
+        return;
+    }
+
+    if(a_entity_removeGet(To) || a_entity_removeGet(From)
+        || a_entity_muteGet(To)) {
+
+        // Ignore message if one of the entities was already removed,
+        // or if the destination entity is muted
+        return;
+    }
+
+    h->handler(To, From);
 }

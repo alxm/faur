@@ -43,6 +43,10 @@ struct AEntity {
     bool removedFromActive; // set when an active-only system kicks entity out
 };
 
+typedef struct {
+    AMessageHandler* handler;
+} AMessageHandlerContainer;
+
 extern void a_entity__free(AEntity* Entity);
 
 extern void a_entity__removeFromAllSystems(AEntity* Entity);

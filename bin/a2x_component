@@ -35,29 +35,25 @@ class ComponentTool(Tool):
             if os.path.exists(f):
                 self.output.error('{} already exists'.format(f))
 
-        struct_name = 'ZComp{}'.format(comp_name)
+        struct_name = 'C{}'.format(comp_name)
 
         self.writefile(comp_c,
 """\
 #include <a2x.h>
-
 #include "component_{name}.h"
 
 struct {struct} {{
     int x;
 }};
 
-size_t z_comp_{name}_size(void)
-{{
-    return sizeof({struct});
-}}
+const size_t c_{name}_size = sizeof({struct});
 
-void z_comp_{name}_init({struct}* {varname})
+void c_{name}_init({struct}* {varname})
 {{
     A_UNUSED({varname});
 }}
 
-void z_comp_{name}_free(void* Self)
+void c_{name}_free(void* Self)
 {{
     {struct}* {name} = Self;
 
@@ -71,9 +67,9 @@ void z_comp_{name}_free(void* Self)
 
 typedef struct {struct} {struct};
 
-extern size_t z_comp_{name}_size(void);
-extern void z_comp_{name}_init({struct}* {varname});
-extern AFree z_comp_{name}_free;
+extern const size_t c_{name}_size;
+extern void c_{name}_init({struct}* {varname});
+extern AFree c_{name}_free;
 """.format(struct=struct_name, name=comp_lowername, varname=comp_name))
 
 if __name__ == '__main__':

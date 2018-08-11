@@ -375,7 +375,7 @@ void a_screen_clear(void)
         a_pixel_push();
 
         a_pixel_blendSet(A_PIXEL_BLEND_PLAIN);
-        a_pixel_pixelSet(0);
+        a_pixel_colorSetPixel(0);
         a_platform__renderClear();
 
         a_pixel_pop();

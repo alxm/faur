@@ -1,5 +1,5 @@
 /*
-    Copyright 2016, 2017 Alex Margarit
+    Copyright 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -23,7 +23,7 @@
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
 
-AStrHash* a__ecsComponents; // table of declared AComponent
+static AStrHash* g_components; // table of AComponent
 
 static inline AComponentHeader* getHeader(const void* Component)
 {
@@ -32,27 +32,38 @@ static inline AComponentHeader* getHeader(const void* Component)
 
 void a_component__init(void)
 {
-    a__ecsComponents = a_strhash_new();
+    g_components = a_strhash_new();
 }
 
 void a_component__uninit(void)
 {
-    a_strhash_freeEx(a__ecsComponents, free);
+    a_strhash_freeEx(g_components, free);
 }
 
-void a_component_declare(const char* Name, size_t Size, AFree* Free)
+AComponent* a_component__get(const char* Component)
 {
-    if(a_strhash_contains(a__ecsComponents, Name)) {
+    return a_strhash_get(g_components, Component);
+}
+
+unsigned a_component__num(void)
+{
+    return a_strhash_sizeGet(g_components);
+}
+
+void a_component_new(const char* Name, size_t Size, AInit* Init, AFree* Free)
+{
+    if(a_strhash_contains(g_components, Name)) {
         a_out__fatal("Component '%s' already declared", Name);
     }
 
     AComponent* c = a_mem_malloc(sizeof(AComponent));
 
     c->size = sizeof(AComponentHeader) + Size;
+    c->init = Init;
     c->free = Free;
-    c->bit = a_strhash_sizeGet(a__ecsComponents);
+    c->bit = a_strhash_sizeGet(g_components);
 
-    a_strhash_add(a__ecsComponents, Name, c);
+    a_strhash_add(g_components, Name, c);
 }
 
 AEntity* a_component_entityGet(const void* Component)

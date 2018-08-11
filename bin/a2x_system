@@ -37,10 +37,9 @@ class SystemTool(Tool):
         self.writefile(sys_c,
 """\
 #include <a2x.h>
-
 #include "system_{name}.h"
 
-void z_system_{name}(AEntity* Entity)
+void s_{name}(AEntity* Entity)
 {{
     A_UNUSED(Entity);
 }}
@@ -50,7 +49,7 @@ void z_system_{name}(AEntity* Entity)
 """\
 #pragma once
 
-extern ASystemHandler z_system_{name};
+extern ASystemHandler s_{name};
 """.format(name=sys_name))
 
 if __name__ == '__main__':

@@ -97,7 +97,7 @@ static void screenCallback(void)
     a_screen_clipReset();
 
     a_pixel_blendSet(A_PIXEL_BLEND_RGB75);
-    a_pixel_hexSet(0x1f0f0f);
+    a_pixel_colorSetHex(0x1f0f0f);
     a_draw_fill();
 
     a_pixel_reset();
