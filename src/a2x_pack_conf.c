@@ -44,7 +44,7 @@ void a_conf__init(void)
     while(a_file_lineRead(f)) {
         char* key = NULL;
         char* value = NULL;
-        char* line = a_str_trim(a_file_lineGet(f));
+        char* line = a_str_trim(a_file_lineBufferGet(f));
 
         if(strlen(line) >= 2 && line[0] == '/' && line[1] == '/') {
             goto next;

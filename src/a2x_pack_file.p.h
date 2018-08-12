@@ -32,7 +32,7 @@ extern bool a_file_write(AFile* File, const void* Buffer, size_t Size);
 extern bool a_file_writef(AFile* File, char* Format, ...);
 
 extern bool a_file_lineRead(AFile* File);
-extern const char* a_file_lineGet(const AFile* File);
+extern const char* a_file_lineBufferGet(const AFile* File);
 
 extern void a_file_rewind(const AFile* File);
 extern void a_file_seekStart(const AFile* File, long int Offset);
