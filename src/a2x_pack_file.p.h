@@ -33,8 +33,9 @@ extern bool a_file_writef(AFile* File, char* Format, ...);
 
 extern bool a_file_lineRead(AFile* File);
 extern const char* a_file_lineBufferGet(const AFile* File);
+extern unsigned a_file_lineNumberGet(const AFile* File);
 
-extern void a_file_rewind(const AFile* File);
+extern void a_file_rewind(AFile* File);
 extern void a_file_seekStart(const AFile* File, long int Offset);
 extern void a_file_seekEnd(const AFile* File, long int Offset);
 extern void a_file_seekCurrent(const AFile* File, long int Offset);
