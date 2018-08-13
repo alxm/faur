@@ -37,12 +37,12 @@ struct AFile {
     bool eof;
 };
 
-AFile* a_file_open(const char* Path, const char* Modes)
+AFile* a_file_new(const char* Path, const char* Modes)
 {
     FILE* handle = fopen(Path, Modes);
 
     if(!handle) {
-        a_out__error("a_file_open: Can't open %s for '%s'", Path, Modes);
+        a_out__error("a_file_new: Can't open %s for '%s'", Path, Modes);
         return NULL;
     }
 
@@ -67,7 +67,7 @@ AFile* a_file_open(const char* Path, const char* Modes)
     return f;
 }
 
-void a_file_close(AFile* File)
+void a_file_free(AFile* File)
 {
     free(File->path);
     free(File->name);
@@ -290,7 +290,7 @@ size_t a_file_sizeGet(const char* Path)
 
 uint8_t* a_file_toBuffer(const char* Path)
 {
-    AFile* f = a_file_open(Path, "rb");
+    AFile* f = a_file_new(Path, "rb");
 
     if(!f) {
         return NULL;
@@ -304,7 +304,7 @@ uint8_t* a_file_toBuffer(const char* Path)
         buffer = NULL;
     }
 
-    a_file_close(f);
+    a_file_free(f);
 
     return buffer;
 }

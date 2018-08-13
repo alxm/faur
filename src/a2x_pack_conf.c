@@ -33,7 +33,7 @@ void a_conf__init(void)
         return;
     }
 
-    AFile* f = a_file_open(conf_name, "r");
+    AFile* f = a_file_new(conf_name, "r");
 
     if(!f) {
         return;
@@ -69,5 +69,5 @@ next:
         free(line);
     }
 
-    a_file_close(f);
+    a_file_free(f);
 }

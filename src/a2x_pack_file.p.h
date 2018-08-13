@@ -21,8 +21,8 @@
 
 typedef struct AFile AFile;
 
-extern AFile* a_file_open(const char* Path, const char* Modes);
-extern void a_file_close(AFile* File);
+extern AFile* a_file_new(const char* Path, const char* Modes);
+extern void a_file_free(AFile* File);
 
 extern bool a_file_prefixCheck(AFile* File, const char* Prefix);
 extern void a_file_prefixWrite(AFile* File, const char* Prefix);
