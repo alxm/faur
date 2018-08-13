@@ -34,7 +34,7 @@ struct AFile {
     char* lineBuffer;
     unsigned lineBufferSize;
     unsigned lineNumber;
-    int eof;
+    bool eof;
 };
 
 AFile* a_file_open(const char* Path, const char* Modes)
@@ -54,7 +54,7 @@ AFile* a_file_open(const char* Path, const char* Modes)
     f->lineBuffer = NULL;
     f->lineBufferSize = 0;
     f->lineNumber = 0;
-    f->eof = 0;
+    f->eof = false;
 
     if(f->name == NULL) {
         f->name = a_str_dup(Path);
