@@ -75,7 +75,7 @@ static int a_dir__sort(const ADirEntry* A, const ADirEntry* B)
     }
 }
 
-ADir* a_dir_open(const char* Path)
+ADir* a_dir_new(const char* Path)
 {
     DIR* dir = opendir(Path);
 
@@ -114,7 +114,7 @@ ADir* a_dir_open(const char* Path)
     return d;
 }
 
-void a_dir_close(ADir* Dir)
+void a_dir_free(ADir* Dir)
 {
     free(Dir->path);
     free(Dir->name);

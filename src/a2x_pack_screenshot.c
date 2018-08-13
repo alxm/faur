@@ -43,7 +43,7 @@ static bool lazy_init(void)
     const char* screensDir = a_settings_getString("screenshot.dir");
 
     if(a_dir_exists(screensDir)) {
-        ADir* dir = a_dir_open(screensDir);
+        ADir* dir = a_dir_new(screensDir);
 
         // Only interested in the last file, to get the number from its name
         ADirEntry* entry = a_list_getLast(a_dir_entriesListGet(dir));
@@ -73,7 +73,7 @@ static bool lazy_init(void)
             }
         }
 
-        a_dir_close(dir);
+        a_dir_free(dir);
     } else {
         a_out__message("Making screenshots dir: %s", screensDir);
 

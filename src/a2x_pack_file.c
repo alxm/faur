@@ -33,15 +33,16 @@ struct AFile {
     char* name;
     char* lineBuffer;
     unsigned lineBufferSize;
-    int eof;
+    unsigned lineNumber;
+    bool eof;
 };
 
-AFile* a_file_open(const char* Path, const char* Modes)
+AFile* a_file_new(const char* Path, const char* Modes)
 {
     FILE* handle = fopen(Path, Modes);
 
     if(!handle) {
-        a_out__error("a_file_open: Can't open %s for '%s'", Path, Modes);
+        a_out__error("a_file_new: Can't open %s for '%s'", Path, Modes);
         return NULL;
     }
 
@@ -52,7 +53,8 @@ AFile* a_file_open(const char* Path, const char* Modes)
     f->name = a_str_suffixGetFromLast(Path, '/');
     f->lineBuffer = NULL;
     f->lineBufferSize = 0;
-    f->eof = 0;
+    f->lineNumber = 0;
+    f->eof = false;
 
     if(f->name == NULL) {
         f->name = a_str_dup(Path);
@@ -65,7 +67,7 @@ AFile* a_file_open(const char* Path, const char* Modes)
     return f;
 }
 
-void a_file_close(AFile* File)
+void a_file_free(AFile* File)
 {
     free(File->path);
     free(File->name);
@@ -147,25 +149,50 @@ bool a_file_writef(AFile* File, char* Format, ...)
     return true;
 }
 
+static int readChar(AFile* File)
+{
+    int ch = fgetc(File->handle);
+
+    if(ch == '\r') {
+        // Check if \r is followed by \n for CRLF line endings
+        ch = fgetc(File->handle);
+
+        if(ch != '\n') {
+            // \r not followed by \n, assume CR line endings and put char back
+            ch = ungetc(ch, File->handle);
+
+            if(ch != EOF) {
+                File->lineNumber++;
+                ch = '\r';
+            }
+        }
+    }
+
+    if(ch == '\n') {
+        // Sequence was \n or \r\n
+        File->lineNumber++;
+    } else if(ch == EOF) {
+        File->eof = true;
+    }
+
+    return ch;
+}
+
 bool a_file_lineRead(AFile* File)
 {
+    int ch;
+
+    do {
+        ch = readChar(File);
+    } while(ch == '\n' || ch == '\r');
+
     if(File->eof) {
         return false;
     }
 
     unsigned index = 0;
-    int ch = fgetc(File->handle);
 
-    while(iscntrl(ch)) {
-        ch = fgetc(File->handle);
-    }
-
-    if(ch == EOF) {
-        File->eof = true;
-        return false;
-    }
-
-    while(!iscntrl(ch)) {
+    do {
         if(index + 1 >= File->lineBufferSize) {
             unsigned newSize = a_math_maxu(File->lineBufferSize * 2, 64);
             char* newBuffer = a_mem_malloc(newSize);
@@ -175,31 +202,34 @@ bool a_file_lineRead(AFile* File)
             }
 
             free(File->lineBuffer);
+
             File->lineBuffer = newBuffer;
             File->lineBufferSize = newSize;
         }
 
         File->lineBuffer[index++] = (char)ch;
-        ch = fgetc(File->handle);
-
-        if(ch == EOF) {
-            File->eof = true;
-            break;
-        }
-    }
+        ch = readChar(File);
+    } while(!File->eof && ch != '\n' && ch != '\r');
 
     File->lineBuffer[index] = '\0';
+
     return true;
 }
 
-const char* a_file_lineGet(const AFile* File)
+const char* a_file_lineBufferGet(const AFile* File)
 {
     return File->lineBuffer;
 }
 
-void a_file_rewind(const AFile* File)
+unsigned a_file_lineNumberGet(const AFile* File)
+{
+    return File->lineNumber;
+}
+
+void a_file_rewind(AFile* File)
 {
     rewind(File->handle);
+    File->lineNumber = 0;
 }
 
 void a_file_seekStart(const AFile* File, long int Offset)
@@ -260,7 +290,7 @@ size_t a_file_sizeGet(const char* Path)
 
 uint8_t* a_file_toBuffer(const char* Path)
 {
-    AFile* f = a_file_open(Path, "rb");
+    AFile* f = a_file_new(Path, "rb");
 
     if(!f) {
         return NULL;
@@ -274,7 +304,7 @@ uint8_t* a_file_toBuffer(const char* Path)
         buffer = NULL;
     }
 
-    a_file_close(f);
+    a_file_free(f);
 
     return buffer;
 }

@@ -33,7 +33,7 @@ void a_conf__init(void)
         return;
     }
 
-    AFile* f = a_file_open(conf_name, "r");
+    AFile* f = a_file_new(conf_name, "r");
 
     if(!f) {
         return;
@@ -44,7 +44,7 @@ void a_conf__init(void)
     while(a_file_lineRead(f)) {
         char* key = NULL;
         char* value = NULL;
-        char* line = a_str_trim(a_file_lineGet(f));
+        char* line = a_str_trim(a_file_lineBufferGet(f));
 
         if(strlen(line) >= 2 && line[0] == '/' && line[1] == '/') {
             goto next;
@@ -69,5 +69,5 @@ next:
         free(line);
     }
 
-    a_file_close(f);
+    a_file_free(f);
 }

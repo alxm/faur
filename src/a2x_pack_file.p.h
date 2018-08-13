@@ -21,8 +21,8 @@
 
 typedef struct AFile AFile;
 
-extern AFile* a_file_open(const char* Path, const char* Modes);
-extern void a_file_close(AFile* File);
+extern AFile* a_file_new(const char* Path, const char* Modes);
+extern void a_file_free(AFile* File);
 
 extern bool a_file_prefixCheck(AFile* File, const char* Prefix);
 extern void a_file_prefixWrite(AFile* File, const char* Prefix);
@@ -32,9 +32,10 @@ extern bool a_file_write(AFile* File, const void* Buffer, size_t Size);
 extern bool a_file_writef(AFile* File, char* Format, ...);
 
 extern bool a_file_lineRead(AFile* File);
-extern const char* a_file_lineGet(const AFile* File);
+extern const char* a_file_lineBufferGet(const AFile* File);
+extern unsigned a_file_lineNumberGet(const AFile* File);
 
-extern void a_file_rewind(const AFile* File);
+extern void a_file_rewind(AFile* File);
 extern void a_file_seekStart(const AFile* File, long int Offset);
 extern void a_file_seekEnd(const AFile* File, long int Offset);
 extern void a_file_seekCurrent(const AFile* File, long int Offset);

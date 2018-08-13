@@ -79,23 +79,23 @@ void a_platform_pandora__init(void)
     g_pandora.nub0Mode = NULL;
     g_pandora.nub1Mode = NULL;
 
-    AFile* nub0 = a_file_open("/proc/pandora/nub0/mode", "r");
-    AFile* nub1 = a_file_open("/proc/pandora/nub1/mode", "r");
+    AFile* nub0 = a_file_new("/proc/pandora/nub0/mode", "r");
+    AFile* nub1 = a_file_new("/proc/pandora/nub1/mode", "r");
 
     if(nub0 && nub1 && a_file_lineRead(nub0) && a_file_lineRead(nub1)) {
-        g_pandora.nub0Mode = a_str_dup(a_file_lineGet(nub0));
+        g_pandora.nub0Mode = a_str_dup(a_file_lineBufferGet(nub0));
         a_out__message("Current nub0Mode is '%s'", g_pandora.nub0Mode);
 
-        g_pandora.nub1Mode = a_str_dup(a_file_lineGet(nub1));
+        g_pandora.nub1Mode = a_str_dup(a_file_lineBufferGet(nub1));
         a_out__message("Current nub1Mode is '%s'", g_pandora.nub1Mode);
     }
 
     if(nub0) {
-        a_file_close(nub0);
+        a_file_free(nub0);
     }
 
     if(nub1) {
-        a_file_close(nub1);
+        a_file_free(nub1);
     }
 
     // Gamepad mode
