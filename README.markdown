@@ -1,4 +1,4 @@
-# ![a2x](https://github.com/alxm/a2x/raw/master/doc/a2x-logo.png "a2x") [![Build Status](https://travis-ci.org/alxm/a2x.svg?branch=master)](https://travis-ci.org/alxm/a2x)
+# ![a2x](https://github.com/alxm/a2x/raw/master/media/a2x-logo.png "a2x") [![Build Status](https://travis-ci.org/alxm/a2x.svg?branch=master)](https://travis-ci.org/alxm/a2x)
 
 a2x is a C framework I wrote for my video games. It runs natively on Linux and FreeBSD, and can be cross-compiled for Windows, GP2X, Wiz, Caanoo, Open Pandora, and HTML5.
 
@@ -30,7 +30,7 @@ $ cd hello/make/
 $ make run
 ```
 
-![Starter Project Screenshot](https://github.com/alxm/a2x/raw/master/doc/hello.gif "Starter Project Screenshot")
+![Starter Project Screenshot](https://github.com/alxm/a2x/raw/master/media/hello.gif "Starter Project Screenshot")
 
 The starter project draws a square on the screen which you can move around with the arrow keys. The code is in `hello/src/main.c`:
 
@@ -121,6 +121,6 @@ $ make -f Makefile.gp2x
 Copyright 2010-2018 Alex Margarit (alex@alxm.org)
 
 * Code licensed under [GNU LGPL3](https://www.gnu.org/licenses/lgpl.html) (see `COPYING` and `COPYING.LESSER`)
-* Graphics licensed under [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/) (see `doc/CC-BY-NC-ND`)
+* Graphics licensed under [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/) (see `media/CC-BY-NC-ND`)
 
 a2x is a small project that supports my other personal projects. In the interest of focus and simplicity, it is a solo endeavor.
