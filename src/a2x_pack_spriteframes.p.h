@@ -44,8 +44,8 @@ extern ASprite* a_spriteframes_getCurrent(const ASpriteFrames* Frames);
 extern ASprite* a_spriteframes_getByIndex(const ASpriteFrames* Frames, unsigned Index);
 extern ASprite* a_spriteframes_getRandom(const ASpriteFrames* Frames);
 
-extern AList* a_spriteframes_spritesListGet(const ASpriteFrames* Frames);
-extern unsigned a_spriteframes_spritesNumGet(const ASpriteFrames* Frames);
+extern AList* a_spriteframes_listGet(const ASpriteFrames* Frames);
+extern unsigned a_spriteframes_numGet(const ASpriteFrames* Frames);
 
 extern unsigned a_spriteframes_indexGet(const ASpriteFrames* Frames);
 extern void a_spriteframes_indexSet(ASpriteFrames* Frames, unsigned Index);

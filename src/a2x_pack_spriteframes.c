@@ -253,12 +253,12 @@ ASprite* a_spriteframes_getRandom(const ASpriteFrames* Frames)
     return Frames->spriteArray[a_random_intu(Frames->num)];
 }
 
-AList* a_spriteframes_spritesListGet(const ASpriteFrames* Frames)
+AList* a_spriteframes_listGet(const ASpriteFrames* Frames)
 {
     return Frames->sprites;
 }
 
-unsigned a_spriteframes_spritesNumGet(const ASpriteFrames* Frames)
+unsigned a_spriteframes_numGet(const ASpriteFrames* Frames)
 {
     return Frames->num;
 }
