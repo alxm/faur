@@ -33,11 +33,12 @@ extern void a_entity_parentSet(AEntity* Entity, AEntity* Parent);
 extern void a_entity_refInc(AEntity* Entity);
 extern void a_entity_refDec(AEntity* Entity);
 
-extern void a_entity_removeSet(AEntity* Entity);
 extern bool a_entity_removeGet(const AEntity* Entity);
+extern void a_entity_removeSet(AEntity* Entity);
 
-extern void a_entity_activeSet(AEntity* Entity);
 extern bool a_entity_activeGet(const AEntity* Entity);
+extern void a_entity_activeSet(AEntity* Entity);
+extern void a_entity_activeSetPermanent(AEntity* Entity);
 
 extern void* a_entity_componentAdd(AEntity* Entity, const char* Component);
 extern bool a_entity_componentHas(const AEntity* Entity, const char* Component);

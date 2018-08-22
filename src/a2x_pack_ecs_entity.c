@@ -27,11 +27,6 @@
 #include "a2x_pack_out.v.h"
 #include "a2x_pack_str.v.h"
 
-static inline void* getComponent(const AComponentHeader* Header)
-{
-    return (void*)(Header + 1);
-}
-
 AEntity* a_entity_new(const char* Id, void* Context)
 {
     AEntity* e = a_mem_malloc(sizeof(AEntity));
@@ -50,6 +45,7 @@ AEntity* a_entity_new(const char* Id, void* Context)
     e->lastActive = a_fps_ticksGet() - 1;
     e->references = 0;
     e->removedFromActive = false;
+    e->permanentActive = false;
 
     a_ecs__entityAddToList(e, A_ECS__NEW);
 
@@ -65,7 +61,7 @@ void a_entity__free(AEntity* Entity)
 
     A_STRHASH_ITERATE(Entity->components, AComponentHeader*, header) {
         if(header->component->free) {
-            header->component->free(getComponent(header));
+            header->component->free(a_component__headerGetData(header));
         }
 
         free(header);
@@ -141,6 +137,13 @@ void a_entity_refDec(AEntity* Entity)
     }
 }
 
+bool a_entity_removeGet(const AEntity* Entity)
+{
+    return a_ecs__entityIsInList(Entity, A_ECS__REMOVED_QUEUE)
+        || a_ecs__entityIsInList(Entity, A_ECS__REMOVED_LIMBO)
+        || a_ecs__entityIsInList(Entity, A_ECS__REMOVED_FREE);
+}
+
 void a_entity_removeSet(AEntity* Entity)
 {
     if(a_entity_removeGet(Entity)) {
@@ -151,11 +154,9 @@ void a_entity_removeSet(AEntity* Entity)
     a_ecs__entityMoveToList(Entity, A_ECS__REMOVED_QUEUE);
 }
 
-bool a_entity_removeGet(const AEntity* Entity)
+bool a_entity_activeGet(const AEntity* Entity)
 {
-    return a_ecs__entityIsInList(Entity, A_ECS__REMOVED_QUEUE)
-        || a_ecs__entityIsInList(Entity, A_ECS__REMOVED_LIMBO)
-        || a_ecs__entityIsInList(Entity, A_ECS__REMOVED_FREE);
+    return Entity->permanentActive || Entity->lastActive == a_fps_ticksGet();
 }
 
 void a_entity_activeSet(AEntity* Entity)
@@ -173,9 +174,9 @@ void a_entity_activeSet(AEntity* Entity)
     }
 }
 
-bool a_entity_activeGet(const AEntity* Entity)
+void a_entity_activeSetPermanent(AEntity* Entity)
 {
-    return Entity->lastActive == a_fps_ticksGet();
+    Entity->permanentActive = true;
 }
 
 void* a_entity_componentAdd(AEntity* Entity, const char* Component)
@@ -209,10 +210,10 @@ void* a_entity_componentAdd(AEntity* Entity, const char* Component)
     a_bitfield_set(Entity->componentBits, c->bit);
 
     if(c->init) {
-        c->init(getComponent(header));
+        c->init(a_component__headerGetData(header));
     }
 
-    return getComponent(header);
+    return a_component__headerGetData(header);
 }
 
 bool a_entity_componentHas(const AEntity* Entity, const char* Component)
@@ -242,7 +243,7 @@ void* a_entity_componentGet(const AEntity* Entity, const char* Component)
         return NULL;
     }
 
-    return getComponent(header);
+    return a_component__headerGetData(header);
 }
 
 void* a_entity_componentReq(const AEntity* Entity, const char* Component)
@@ -261,7 +262,7 @@ void* a_entity_componentReq(const AEntity* Entity, const char* Component)
                      a_entity_idGet(Entity));
     }
 
-    return getComponent(header);
+    return a_component__headerGetData(header);
 }
 
 bool a_entity_muteGet(const AEntity* Entity)
