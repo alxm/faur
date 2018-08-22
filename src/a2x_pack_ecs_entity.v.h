@@ -36,11 +36,12 @@ struct AEntity {
     AList* systemNodesActive; // list of nodes in active-only ASystem lists
     AList* systemNodesEither; // list of nodes in normal ASystem.entities lists
     AStrHash* components; // table of AComponentHeader
-    ABitfield* componentBits;
+    ABitfield* componentBits; // each component's bit is set
     AStrHash* handlers; // table of AMessageHandlerContainer
     unsigned lastActive; // frame when a_entity_activeSet was last called
     int references; // if >0, then the entity lingers in the removed limbo list
     bool removedFromActive; // set when an active-only system kicks entity out
+    bool permanentActive; // if set then entity always reports as active
 };
 
 typedef struct {

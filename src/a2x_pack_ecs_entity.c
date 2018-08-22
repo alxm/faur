@@ -50,6 +50,7 @@ AEntity* a_entity_new(const char* Id, void* Context)
     e->lastActive = a_fps_ticksGet() - 1;
     e->references = 0;
     e->removedFromActive = false;
+    e->permanentActive = false;
 
     a_ecs__entityAddToList(e, A_ECS__NEW);
 
@@ -160,7 +161,7 @@ void a_entity_removeSet(AEntity* Entity)
 
 bool a_entity_activeGet(const AEntity* Entity)
 {
-    return Entity->lastActive == a_fps_ticksGet();
+    return Entity->permanentActive || Entity->lastActive == a_fps_ticksGet();
 }
 
 void a_entity_activeSet(AEntity* Entity)
@@ -176,6 +177,11 @@ void a_entity_activeSet(AEntity* Entity)
                            a_list_addLast(system->entities, Entity));
         }
     }
+}
+
+void a_entity_activeSetPermanent(AEntity* Entity)
+{
+    Entity->permanentActive = true;
 }
 
 void* a_entity_componentAdd(AEntity* Entity, const char* Component)
