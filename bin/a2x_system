@@ -26,7 +26,7 @@ from utils.tool import Tool
 
 class SystemTool(Tool):
     def main(self):
-        sys_name = self.get_arg('SystemName').strip().lower()
+        sys_name = self.get_arg('SystemName').lower()
         sys_c = os.path.join('.', 'system_{}.c'.format(sys_name))
         sys_h = os.path.join('.', 'system_{}.h'.format(sys_name))
 

@@ -26,7 +26,9 @@ from utils.output import Output, Color
 class Tool:
     def __init__(self, arg_names):
         quiet = False
-        args = sys.argv[1 : ]
+
+        args = [a.strip() for a in sys.argv[1 : ]]
+        args = [a for a in args if len(a) > 0]
 
         if len(args) > 0 and args[0] == '-q':
             quiet = True

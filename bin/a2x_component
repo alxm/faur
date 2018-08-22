@@ -26,7 +26,7 @@ from utils.tool import Tool
 
 class ComponentTool(Tool):
     def main(self):
-        comp_name = self.get_arg('ComponentName').strip()
+        comp_name = self.get_arg('ComponentName')
         comp_lowername = comp_name.lower()
         comp_c = os.path.join('.', 'component_{}.c'.format(comp_lowername))
         comp_h = os.path.join('.', 'component_{}.h'.format(comp_lowername))
