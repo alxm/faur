@@ -141,6 +141,13 @@ void a_entity_refDec(AEntity* Entity)
     }
 }
 
+bool a_entity_removeGet(const AEntity* Entity)
+{
+    return a_ecs__entityIsInList(Entity, A_ECS__REMOVED_QUEUE)
+        || a_ecs__entityIsInList(Entity, A_ECS__REMOVED_LIMBO)
+        || a_ecs__entityIsInList(Entity, A_ECS__REMOVED_FREE);
+}
+
 void a_entity_removeSet(AEntity* Entity)
 {
     if(a_entity_removeGet(Entity)) {
@@ -151,11 +158,9 @@ void a_entity_removeSet(AEntity* Entity)
     a_ecs__entityMoveToList(Entity, A_ECS__REMOVED_QUEUE);
 }
 
-bool a_entity_removeGet(const AEntity* Entity)
+bool a_entity_activeGet(const AEntity* Entity)
 {
-    return a_ecs__entityIsInList(Entity, A_ECS__REMOVED_QUEUE)
-        || a_ecs__entityIsInList(Entity, A_ECS__REMOVED_LIMBO)
-        || a_ecs__entityIsInList(Entity, A_ECS__REMOVED_FREE);
+    return Entity->lastActive == a_fps_ticksGet();
 }
 
 void a_entity_activeSet(AEntity* Entity)
@@ -171,11 +176,6 @@ void a_entity_activeSet(AEntity* Entity)
                            a_list_addLast(system->entities, Entity));
         }
     }
-}
-
-bool a_entity_activeGet(const AEntity* Entity)
-{
-    return Entity->lastActive == a_fps_ticksGet();
 }
 
 void* a_entity_componentAdd(AEntity* Entity, const char* Component)
