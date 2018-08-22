@@ -27,9 +27,8 @@ from utils.tool import Tool
 class ComponentTool(Tool):
     def main(self):
         comp_name = self.get_arg('ComponentName')
-        comp_lowername = comp_name.lower()
-        comp_c = os.path.join('.', 'component_{}.c'.format(comp_lowername))
-        comp_h = os.path.join('.', 'component_{}.h'.format(comp_lowername))
+        comp_c = os.path.join('.', 'component_{}.c'.format(comp_name.lower()))
+        comp_h = os.path.join('.', 'component_{}.h'.format(comp_name.lower()))
 
         for f in [comp_c, comp_h]:
             if os.path.exists(f):
@@ -42,35 +41,56 @@ class ComponentTool(Tool):
 #include <a2x.h>
 #include "component_{name}.h"
 
-struct {struct} {{
-    int x;
+struct {ctype} {{
+    int value;
 }};
 
-const size_t c_{name}_size = sizeof({struct});
-
-void c_{name}_init({struct}* {varname})
+static void c_{name}_init(void* Self)
 {{
-    A_UNUSED({varname});
+    {ctype}* {localVar} = Self;
+
+    {localVar}->value = 1;
 }}
 
-void c_{name}_free(void* Self)
+static void c_{name}_free(void* Self)
 {{
-    {struct}* {name} = Self;
+    {ctype}* {localVar} = Self;
 
-    A_UNUSED({name});
+    A_UNUSED({localVar});
 }}
-""".format(struct=struct_name, name=comp_lowername, varname=comp_name))
+
+void c_{name}_register(void)
+{{
+    a_component_new("{localVar}", sizeof({ctype}), c_{name}_init, c_{name}_free);
+}}
+
+int c_{name}_valueGet(const {ctype}* {paramVar})
+{{
+    return {paramVar}->value;
+}}
+
+void c_{name}_valueSet({ctype}* {paramVar}, int Value)
+{{
+    {paramVar}->value = Value;
+}}
+""".format(ctype=struct_name,
+           name=comp_name.lower(),
+           paramVar=comp_name,
+           localVar=comp_name[0].lower() + comp_name[1 :]))
 
         self.writefile(comp_h,
 """\
 #pragma once
 
-typedef struct {struct} {struct};
+typedef struct {ctype} {ctype};
 
-extern const size_t c_{name}_size;
-extern void c_{name}_init({struct}* {varname});
-extern AFree c_{name}_free;
-""".format(struct=struct_name, name=comp_lowername, varname=comp_name))
+extern void c_{name}_register(void);
+
+extern int c_{name}_valueGet(const {ctype}* {paramVar});
+extern void c_{name}_valueSet({ctype}* {paramVar}, int Value);
+""".format(ctype=struct_name,
+           name=comp_name.lower(),
+           paramVar=comp_name))
 
 if __name__ == '__main__':
     ComponentTool('ComponentName').run()
