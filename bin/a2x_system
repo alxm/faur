@@ -26,9 +26,9 @@ from utils.tool import Tool
 
 class SystemTool(Tool):
     def main(self):
-        sys_name = self.get_arg('SystemName').lower()
-        sys_c = os.path.join('.', 'system_{}.c'.format(sys_name))
-        sys_h = os.path.join('.', 'system_{}.h'.format(sys_name))
+        sys_name = self.get_arg('SystemName')
+        sys_c = os.path.join('.', 'system_{}.c'.format(sys_name.lower()))
+        sys_h = os.path.join('.', 'system_{}.h'.format(sys_name.lower()))
 
         for f in [sys_c, sys_h]:
             if os.path.exists(f):
@@ -39,18 +39,24 @@ class SystemTool(Tool):
 #include <a2x.h>
 #include "system_{name}.h"
 
-void s_{name}(AEntity* Entity)
+static void s_{name}(AEntity* Entity)
 {{
     A_UNUSED(Entity);
 }}
-""".format(name=sys_name))
+
+void s_{name}_register(void)
+{{
+    a_system_new("{idkey}", s_{name}, NULL, false);
+}}
+""".format(name=sys_name.lower(),
+           idkey=sys_name[0].lower() + sys_name[1 :]))
 
         self.writefile(sys_h,
 """\
 #pragma once
 
-extern ASystemHandler s_{name};
-""".format(name=sys_name))
+extern void s_{name}_register(void);
+""".format(name=sys_name.lower()))
 
 if __name__ == '__main__':
     SystemTool('SystemName').run()
