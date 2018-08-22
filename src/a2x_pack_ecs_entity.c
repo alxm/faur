@@ -27,11 +27,6 @@
 #include "a2x_pack_out.v.h"
 #include "a2x_pack_str.v.h"
 
-static inline void* getComponent(const AComponentHeader* Header)
-{
-    return (void*)(Header + 1);
-}
-
 AEntity* a_entity_new(const char* Id, void* Context)
 {
     AEntity* e = a_mem_malloc(sizeof(AEntity));
@@ -66,7 +61,7 @@ void a_entity__free(AEntity* Entity)
 
     A_STRHASH_ITERATE(Entity->components, AComponentHeader*, header) {
         if(header->component->free) {
-            header->component->free(getComponent(header));
+            header->component->free(a_component__headerGetData(header));
         }
 
         free(header);
@@ -215,10 +210,10 @@ void* a_entity_componentAdd(AEntity* Entity, const char* Component)
     a_bitfield_set(Entity->componentBits, c->bit);
 
     if(c->init) {
-        c->init(getComponent(header));
+        c->init(a_component__headerGetData(header));
     }
 
-    return getComponent(header);
+    return a_component__headerGetData(header);
 }
 
 bool a_entity_componentHas(const AEntity* Entity, const char* Component)
@@ -248,7 +243,7 @@ void* a_entity_componentGet(const AEntity* Entity, const char* Component)
         return NULL;
     }
 
-    return getComponent(header);
+    return a_component__headerGetData(header);
 }
 
 void* a_entity_componentReq(const AEntity* Entity, const char* Component)
@@ -267,7 +262,7 @@ void* a_entity_componentReq(const AEntity* Entity, const char* Component)
                      a_entity_idGet(Entity));
     }
 
-    return getComponent(header);
+    return a_component__headerGetData(header);
 }
 
 bool a_entity_muteGet(const AEntity* Entity)
