@@ -22,7 +22,7 @@
 #include "a2x_pack_platform.p.h"
 
 typedef struct APlatformTexture APlatformTexture;
-typedef struct APlatformSfx APlatformSfx;
+typedef void APlatformSfx;
 typedef void APlatformMusic;
 
 #include "a2x_pack_sprite.v.h"
@@ -74,7 +74,6 @@ extern void a_platform__musicToggle(void);
 extern APlatformSfx* a_platform__sfxNewFromFile(const char* Path);
 extern APlatformSfx* a_platform__sfxNewFromData(const uint8_t* Data, int Size);
 extern void a_platform__sfxFree(APlatformSfx* Sfx);
-extern void a_platform__sfxRef(APlatformSfx* Sfx);
 extern void a_platform__sfxVolumeSet(APlatformSfx* Sfx, int Volume);
 extern void a_platform__sfxVolumeSetAll(int Volume);
 extern void a_platform__sfxPlay(APlatformSfx* Sfx, int Channel, bool Loop);

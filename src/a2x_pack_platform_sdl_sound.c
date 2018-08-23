@@ -30,11 +30,6 @@
 #include "a2x_pack_platform.v.h"
 #include "a2x_pack_settings.v.h"
 
-struct APlatformSfx {
-    Mix_Chunk* chunk;
-    int refs;
-};
-
 static int g_numSfxChannels;
 static int g_numSfxChannelsReserved;
 static int g_currentSfxChannel;
@@ -127,61 +122,34 @@ APlatformSfx* a_platform__sfxNewFromFile(const char* Path)
 
     if(chunk == NULL) {
         a_out__error("Mix_LoadWAV(%s) failed: %s", Path, Mix_GetError());
-        return NULL;
     }
 
-    APlatformSfx* sfx = a_mem_malloc(sizeof(APlatformSfx));
-
-    sfx->chunk = chunk;
-    sfx->refs = 0;
-
-    return sfx;
+    return chunk;
 }
 
 APlatformSfx* a_platform__sfxNewFromData(const uint8_t* Data, int Size)
 {
-    APlatformSfx* sfx = NULL;
     SDL_RWops* rw = SDL_RWFromMem((void*)Data, Size);
 
     if(rw == NULL) {
         a_out__error("SDL_RWFromMem failed: %s", SDL_GetError());
-        goto cleanUp;
+        return NULL;
     }
 
     Mix_Chunk* chunk = Mix_LoadWAV_RW(rw, 0);
 
     if(chunk == NULL) {
         a_out__error("Mix_LoadWAV_RW failed: %s", Mix_GetError());
-        goto cleanUp;
     }
 
-    sfx = a_mem_malloc(sizeof(APlatformSfx));
+    SDL_FreeRW(rw);
 
-    sfx->chunk = chunk;
-    sfx->refs = 0;
-
-cleanUp:
-    if(rw) {
-        SDL_FreeRW(rw);
-    }
-
-    return sfx;
+    return chunk;
 }
 
 void a_platform__sfxFree(APlatformSfx* Sfx)
 {
-    if(Sfx->refs--) {
-        return;
-    }
-
-    Mix_FreeChunk(Sfx->chunk);
-
-    free(Sfx);
-}
-
-void a_platform__sfxRef(APlatformSfx* Sfx)
-{
-    Sfx->refs++;
+    Mix_FreeChunk(Sfx);
 }
 
 void a_platform__sfxVolumeSet(APlatformSfx* Sfx, int Volume)
@@ -190,7 +158,7 @@ void a_platform__sfxVolumeSet(APlatformSfx* Sfx, int Volume)
         A_UNUSED(Sfx);
         A_UNUSED(Volume);
     #else
-        Mix_VolumeChunk(Sfx->chunk, Volume);
+        Mix_VolumeChunk(Sfx, Volume);
     #endif
 }
 
@@ -205,7 +173,7 @@ void a_platform__sfxVolumeSetAll(int Volume)
 
 void a_platform__sfxPlay(APlatformSfx* Sfx, int Channel, bool Loop)
 {
-    if(Mix_PlayChannel(Channel, Sfx->chunk, Loop ? -1 : 0) == -1) {
+    if(Mix_PlayChannel(Channel, Sfx, Loop ? -1 : 0) == -1) {
         a_out__errorv("Mix_PlayChannel failed: %s", Mix_GetError());
     }
 }
