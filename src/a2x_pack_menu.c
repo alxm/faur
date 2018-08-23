@@ -114,20 +114,22 @@ void a_menu_tick(AMenu* Menu)
         Menu->selectedItem = a_list_getIndex(Menu->items, Menu->selectedIndex);
 
         if(Menu->soundBrowse) {
-            a_sfx_play(Menu->soundBrowse, A_SFX_RESTART);
+            a_channel_play(A_CHANNEL_ANY, Menu->soundBrowse, A_CHANNEL_NORMAL);
         }
     } else {
         if(a_button_pressGet(Menu->select)) {
             Menu->state = A_MENU_STATE_SELECTED;
 
             if(Menu->soundAccept) {
-                a_sfx_play(Menu->soundAccept, A_SFX_RESTART);
+                a_channel_play(
+                    A_CHANNEL_ANY, Menu->soundAccept, A_CHANNEL_NORMAL);
             }
         } else if(Menu->cancel && a_button_pressGet(Menu->cancel)) {
             Menu->state = A_MENU_STATE_CANCELED;
 
             if(Menu->soundCancel) {
-                a_sfx_play(Menu->soundCancel, A_SFX_RESTART);
+                a_channel_play(
+                    A_CHANNEL_ANY, Menu->soundCancel, A_CHANNEL_NORMAL);
             }
         }
     }

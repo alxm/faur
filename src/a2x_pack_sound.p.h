@@ -23,11 +23,13 @@ typedef struct AMusic AMusic;
 typedef struct ASfx ASfx;
 
 typedef enum {
-    A_SFX_NORMAL = 0,
-    A_SFX_LOOP = 1,
-    A_SFX_RESTART = 2,
-    A_SFX_YIELD = 4,
-} ASfxFlags;
+    A_CHANNEL_NORMAL = 0,
+    A_CHANNEL_LOOP = 1,
+    A_CHANNEL_RESTART = 2,
+    A_CHANNEL_YIELD = 4,
+} AChannelFlags;
+
+#define A_CHANNEL_ANY -1
 
 extern AMusic* a_music_new(const char* Path);
 extern void a_music_free(AMusic* Music);
@@ -39,6 +41,7 @@ extern ASfx* a_sfx_new(const char* Path);
 extern ASfx* a_sfx_dup(const ASfx* Sfx);
 extern void a_sfx_free(ASfx* Sfx);
 
-extern void a_sfx_play(const ASfx* Sfx, ASfxFlags Flags);
-extern void a_sfx_stop(const ASfx* Sfx);
-extern bool a_sfx_isPlaying(const ASfx* Sfx);
+extern int a_channel_new(void);
+extern void a_channel_play(int Channel, const ASfx* Sfx, AChannelFlags Flags);
+extern void a_channel_stop(int Channel);
+extern bool a_channel_isPlaying(int Channel);

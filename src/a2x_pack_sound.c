@@ -276,35 +276,34 @@ void a_sfx_free(ASfx* Sfx)
     }
 }
 
-void a_sfx_play(const ASfx* Sfx, ASfxFlags Flags)
+int a_channel_new(void)
+{
+    return a_platform__sfxChannelGet();
+}
+
+void a_channel_play(int Channel, const ASfx* Sfx, AChannelFlags Flags)
 {
     if(!g_soundOn) {
         return;
     }
 
-    if(Flags & A_SFX_RESTART) {
-        a_platform__sfxStop(Sfx->channel);
-    } else if(Flags & A_SFX_YIELD) {
-        if(a_platform__sfxIsPlaying(Sfx->channel)) {
-            return;
-        }
+    if(Flags & A_CHANNEL_RESTART) {
+        a_platform__sfxStop(Channel);
+    } else if((Flags & A_CHANNEL_YIELD) && a_platform__sfxIsPlaying(Channel)) {
+        return;
     }
 
-    a_platform__sfxPlay(Sfx->platformSfx,
-                        Flags & (A_SFX_RESTART | A_SFX_YIELD)
-                            ? Sfx->channel
-                            : -1,
-                        Flags & A_SFX_LOOP);
+    a_platform__sfxPlay(Sfx->platformSfx, Channel, Flags & A_CHANNEL_LOOP);
 }
 
-void a_sfx_stop(const ASfx* Sfx)
+void a_channel_stop(int Channel)
 {
     if(g_soundOn) {
-        a_platform__sfxStop(Sfx->channel);
+        a_platform__sfxStop(Channel);
     }
 }
 
-bool a_sfx_isPlaying(const ASfx* Sfx)
+bool a_channel_isPlaying(int Channel)
 {
-    return g_soundOn && a_platform__sfxIsPlaying(Sfx->channel);
+    return g_soundOn && a_platform__sfxIsPlaying(Channel);
 }
