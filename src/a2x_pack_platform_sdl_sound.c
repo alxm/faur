@@ -129,35 +129,46 @@ void a_platform__musicToggle(void)
 
 APlatformSfx* a_platform__sfxNewFromFile(const char* Path)
 {
+    Mix_Chunk* chunk = Mix_LoadWAV(Path);
+
+    if(chunk == NULL) {
+        a_out__error("Mix_LoadWAV(%s) failed: %s", Path, Mix_GetError());
+        return NULL;
+    }
+
     APlatformSfx* sfx = a_mem_malloc(sizeof(APlatformSfx));
 
-    sfx->chunk = Mix_LoadWAV(Path);
+    sfx->chunk = chunk;
     sfx->refs = 0;
-
-    if(sfx->chunk == NULL) {
-        a_out__error("Mix_LoadWAV(%s) failed: %s", Path, Mix_GetError());
-    }
 
     return sfx;
 }
 
 APlatformSfx* a_platform__sfxNewFromData(const uint8_t* Data, int Size)
 {
-    APlatformSfx* sfx = a_mem_malloc(sizeof(APlatformSfx));
+    APlatformSfx* sfx = NULL;
     SDL_RWops* rw = SDL_RWFromMem((void*)Data, Size);
 
-    if(rw) {
-        sfx->chunk = Mix_LoadWAV_RW(rw, 0);
-        sfx->refs = 0;
-
-        if(sfx->chunk == NULL) {
-            a_out__error("Mix_LoadWAV_RW failed: %s", Mix_GetError());
-        }
-
-        SDL_FreeRW(rw);
-    } else {
-        sfx->chunk = NULL;
+    if(rw == NULL) {
         a_out__error("SDL_RWFromMem failed: %s", SDL_GetError());
+        goto cleanUp;
+    }
+
+    Mix_Chunk* chunk = Mix_LoadWAV_RW(rw, 0);
+
+    if(chunk == NULL) {
+        a_out__error("Mix_LoadWAV_RW failed: %s", Mix_GetError());
+        goto cleanUp;
+    }
+
+    sfx = a_mem_malloc(sizeof(APlatformSfx));
+
+    sfx->chunk = chunk;
+    sfx->refs = 0;
+
+cleanUp:
+    if(rw) {
+        SDL_FreeRW(rw);
     }
 
     return sfx;

@@ -228,30 +228,31 @@ void a_music_stop(void)
 
 ASfx* a_sfx_new(const char* Path)
 {
-    if(!g_soundOn) {
-        return NULL;
-    }
+    if(g_soundOn) {
+        APlatformSfx* sfx = NULL;
 
-    ASfx* s = a_mem_malloc(sizeof(ASfx));
-
-    if(a_file_exists(Path)) {
-        s->platformSfx = a_platform__sfxNewFromFile(Path);
-    } else {
-        const uint8_t* data;
-        size_t size;
-
-        if(a_embed__get(Path, &data, &size)) {
-            s->platformSfx = a_platform__sfxNewFromData(data, (int)size);
+        if(a_file_exists(Path)) {
+            sfx = a_platform__sfxNewFromFile(Path);
         } else {
-            s->platformSfx = NULL;
+            const uint8_t* data;
+            size_t size;
+
+            if(a_embed__get(Path, &data, &size)) {
+                sfx = a_platform__sfxNewFromData(data, (int)size);
+            }
+        }
+
+        if(sfx) {
+            ASfx* s = a_mem_malloc(sizeof(ASfx));
+
+            s->platformSfx = sfx;
+            s->channel = a_platform__sfxChannelGet();
+
+            return s;
         }
     }
 
-    if(s->platformSfx) {
-        s->channel = a_platform__sfxChannelGet();
-    }
-
-    return s;
+    return NULL;
 }
 
 ASfx* a_sfx_dup(const ASfx* Sfx)
@@ -262,10 +263,8 @@ ASfx* a_sfx_dup(const ASfx* Sfx)
 
     ASfx* s = a_mem_dup(Sfx, sizeof(ASfx));
 
-    if(s->platformSfx) {
-        s->channel = a_platform__sfxChannelGet();
-        a_platform__sfxRef(s->platformSfx);
-    }
+    a_platform__sfxRef(s->platformSfx);
+    s->channel = a_platform__sfxChannelGet();
 
     return s;
 }
