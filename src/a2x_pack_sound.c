@@ -188,15 +188,19 @@ void a_sound__uninit(void)
 
 AMusic* a_music_new(const char* Path)
 {
-    if(!g_soundOn) {
-        return NULL;
+    if(g_soundOn) {
+        APlatformMusic* music = a_platform__musicNew(Path);
+
+        if(music) {
+            AMusic* m = a_mem_malloc(sizeof(AMusic));
+
+            m->platformMusic = music;
+
+            return m;
+        }
     }
 
-    AMusic* m = a_mem_malloc(sizeof(AMusic));
-
-    m->platformMusic = a_platform__musicNew(Path);
-
-    return m;
+    return NULL;
 }
 
 void a_music_free(AMusic* Music)
