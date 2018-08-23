@@ -180,9 +180,7 @@ void a_platform__sfxFree(APlatformSfx* Sfx)
         return;
     }
 
-    if(Sfx->chunk) {
-        Mix_FreeChunk(Sfx->chunk);
-    }
+    Mix_FreeChunk(Sfx->chunk);
 
     free(Sfx);
 }
@@ -198,9 +196,7 @@ void a_platform__sfxVolumeSet(APlatformSfx* Sfx, int Volume)
         A_UNUSED(Sfx);
         A_UNUSED(Volume);
     #else
-        if(Sfx->chunk) {
-            Mix_VolumeChunk(Sfx->chunk, Volume);
-        }
+        Mix_VolumeChunk(Sfx->chunk, Volume);
     #endif
 }
 
@@ -215,10 +211,6 @@ void a_platform__sfxVolumeSetAll(int Volume)
 
 void a_platform__sfxPlay(APlatformSfx* Sfx, int Channel, bool Loop)
 {
-    if(Sfx->chunk == NULL) {
-        return;
-    }
-
     if(Mix_PlayChannel(Channel, Sfx->chunk, Loop ? -1 : 0) == -1) {
         a_out__errorv("Mix_PlayChannel failed: %s", Mix_GetError());
     }

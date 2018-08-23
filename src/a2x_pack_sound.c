@@ -205,20 +205,15 @@ AMusic* a_music_new(const char* Path)
 
 void a_music_free(AMusic* Music)
 {
-    if(!g_soundOn) {
-        return;
-    }
-
-    if(Music->platformMusic) {
+    if(g_soundOn) {
         a_platform__musicFree(Music->platformMusic);
+        free(Music);
     }
-
-    free(Music);
 }
 
 void a_music_play(const AMusic* Music)
 {
-    if(g_soundOn && Music->platformMusic) {
+    if(g_soundOn) {
         a_platform__musicPlay(Music->platformMusic);
     }
 }
@@ -275,20 +270,15 @@ ASfx* a_sfx_dup(const ASfx* Sfx)
 
 void a_sfx_free(ASfx* Sfx)
 {
-    if(!g_soundOn) {
-        return;
-    }
-
-    if(Sfx->platformSfx) {
+    if(g_soundOn) {
         a_platform__sfxFree(Sfx->platformSfx);
+        free(Sfx);
     }
-
-    free(Sfx);
 }
 
 void a_sfx_play(const ASfx* Sfx, ASfxFlags Flags)
 {
-    if(!g_soundOn || Sfx->platformSfx == NULL) {
+    if(!g_soundOn) {
         return;
     }
 
@@ -309,13 +299,12 @@ void a_sfx_play(const ASfx* Sfx, ASfxFlags Flags)
 
 void a_sfx_stop(const ASfx* Sfx)
 {
-    if(g_soundOn && Sfx->platformSfx) {
+    if(g_soundOn) {
         a_platform__sfxStop(Sfx->channel);
     }
 }
 
 bool a_sfx_isPlaying(const ASfx* Sfx)
 {
-    return g_soundOn && Sfx->platformSfx
-        && a_platform__sfxIsPlaying(Sfx->channel);
+    return g_soundOn && a_platform__sfxIsPlaying(Sfx->channel);
 }
