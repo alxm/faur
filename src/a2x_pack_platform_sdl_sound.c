@@ -45,13 +45,7 @@ void a_platform_sdl_sound__init(void)
         a_out__fatal("SDL_InitSubSystem: %s", SDL_GetError());
     }
 
-    #if A_PLATFORM_SYSTEM_GP2X
-        int frequency = 44100;
-    #else
-        int frequency = MIX_DEFAULT_FREQUENCY;
-    #endif
-
-    if(Mix_OpenAudio(frequency, MIX_DEFAULT_FORMAT, 2, 256) != 0) {
+    if(Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 256) != 0) {
         a_out__error("Mix_OpenAudio failed: %s", Mix_GetError());
         a_settings__set("sound.on", "0");
     } else {
