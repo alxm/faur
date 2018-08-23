@@ -32,19 +32,10 @@
 #include "a2x_pack_settings.v.h"
 #include "a2x_pack_timer.v.h"
 
-struct AMusic {
-    APlatformMusic* platformMusic;
-};
-
-struct ASfx {
-    APlatformSfx* platformSfx;
-    int channel;
-};
-
 static bool g_soundOn;
 static int g_volume;
 static int g_musicVolume;
-static int g_sfxVolume;
+static int g_samplesVolume;
 static int g_volumeMax;
 
 #if A_PLATFORM_SYSTEM_GP2X || A_PLATFORM_SYSTEM_WIZ
@@ -66,9 +57,9 @@ static void adjustSoundVolume(int Volume)
 {
     g_volume = a_math_clamp(Volume, 0, g_volumeMax);
     g_musicVolume = a_settings_getInt("sound.music.scale") * g_volume / 100;
-    g_sfxVolume = a_settings_getInt("sound.sfx.scale") * g_volume / 100;
+    g_samplesVolume = a_settings_getInt("sound.sample.scale") * g_volume / 100;
 
-    a_platform__sfxVolumeSetAll(g_sfxVolume);
+    a_platform__sampleVolumeSetAll(g_samplesVolume);
     a_platform__musicVolumeSet(g_musicVolume);
 }
 
@@ -188,34 +179,24 @@ void a_sound__uninit(void)
 
 AMusic* a_music_new(const char* Path)
 {
-    if(!g_soundOn) {
-        return NULL;
+    if(g_soundOn) {
+        return a_platform__musicNew(Path);
     }
 
-    AMusic* m = a_mem_malloc(sizeof(AMusic));
-
-    m->platformMusic = a_platform__musicNew(Path);
-
-    return m;
+    return NULL;
 }
 
 void a_music_free(AMusic* Music)
 {
-    if(!g_soundOn) {
-        return;
+    if(g_soundOn) {
+        a_platform__musicFree(Music);
     }
-
-    if(Music->platformMusic) {
-        a_platform__musicFree(Music->platformMusic);
-    }
-
-    free(Music);
 }
 
-void a_music_play(const AMusic* Music)
+void a_music_play(AMusic* Music)
 {
-    if(g_soundOn && Music->platformMusic) {
-        a_platform__musicPlay(Music->platformMusic);
+    if(g_soundOn) {
+        a_platform__musicPlay(Music);
     }
 }
 
@@ -226,93 +207,65 @@ void a_music_stop(void)
     }
 }
 
-ASfx* a_sfx_new(const char* Path)
+ASample* a_sample_new(const char* Path)
 {
-    if(!g_soundOn) {
-        return NULL;
-    }
+    if(g_soundOn) {
+        APlatformSample* s = NULL;
 
-    ASfx* s = a_mem_malloc(sizeof(ASfx));
-
-    if(a_file_exists(Path)) {
-        s->platformSfx = a_platform__sfxNewFromFile(Path);
-    } else {
-        const uint8_t* data;
-        size_t size;
-
-        if(a_embed__get(Path, &data, &size)) {
-            s->platformSfx = a_platform__sfxNewFromData(data, (int)size);
+        if(a_file_exists(Path)) {
+            s = a_platform__sampleNewFromFile(Path);
         } else {
-            s->platformSfx = NULL;
+            const uint8_t* data;
+            size_t size;
+
+            if(a_embed__get(Path, &data, &size)) {
+                s = a_platform__sampleNewFromData(data, (int)size);
+            }
         }
+
+        return s;
     }
 
-    if(s->platformSfx) {
-        s->channel = a_platform__sfxChannelGet();
-    }
-
-    return s;
+    return NULL;
 }
 
-ASfx* a_sfx_dup(const ASfx* Sfx)
+void a_sample_free(ASample* Sample)
 {
-    if(!g_soundOn) {
-        return NULL;
+    if(g_soundOn) {
+        a_platform__sampleFree(Sample);
     }
-
-    ASfx* s = a_mem_dup(Sfx, sizeof(ASfx));
-
-    if(s->platformSfx) {
-        s->channel = a_platform__sfxChannelGet();
-        a_platform__sfxRef(s->platformSfx);
-    }
-
-    return s;
 }
 
-void a_sfx_free(ASfx* Sfx)
+int a_channel_new(void)
+{
+    return a_platform__sampleChannelGet();
+}
+
+void a_channel_play(int Channel, ASample* Sample, AChannelFlags Flags)
 {
     if(!g_soundOn) {
         return;
     }
 
-    if(Sfx->platformSfx) {
-        a_platform__sfxFree(Sfx->platformSfx);
-    }
+    if(Flags & A_CHANNEL_RESTART) {
+        a_platform__sampleStop(Channel);
+    } else if((Flags & A_CHANNEL_YIELD)
+        && a_platform__sampleIsPlaying(Channel)) {
 
-    free(Sfx);
-}
-
-void a_sfx_play(const ASfx* Sfx, ASfxFlags Flags)
-{
-    if(!g_soundOn || Sfx->platformSfx == NULL) {
         return;
     }
 
-    if(Flags & A_SFX_RESTART) {
-        a_platform__sfxStop(Sfx->channel);
-    } else if(Flags & A_SFX_YIELD) {
-        if(a_platform__sfxIsPlaying(Sfx->channel)) {
-            return;
-        }
-    }
-
-    a_platform__sfxPlay(Sfx->platformSfx,
-                        Flags & (A_SFX_RESTART | A_SFX_YIELD)
-                            ? Sfx->channel
-                            : -1,
-                        Flags & A_SFX_LOOP);
+    a_platform__samplePlay(Sample, Channel, Flags & A_CHANNEL_LOOP);
 }
 
-void a_sfx_stop(const ASfx* Sfx)
+void a_channel_stop(int Channel)
 {
-    if(g_soundOn && Sfx->platformSfx) {
-        a_platform__sfxStop(Sfx->channel);
+    if(g_soundOn) {
+        a_platform__sampleStop(Channel);
     }
 }
 
-bool a_sfx_isPlaying(const ASfx* Sfx)
+bool a_channel_isPlaying(int Channel)
 {
-    return g_soundOn && Sfx->platformSfx
-        && a_platform__sfxIsPlaying(Sfx->channel);
+    return g_soundOn && a_platform__sampleIsPlaying(Channel);
 }

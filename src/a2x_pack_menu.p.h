@@ -36,7 +36,7 @@ extern AMenu* a_menu_new(AInputButton* Next, AInputButton* Back, AInputButton* S
 extern void a_menu_free(AMenu* Menu);
 extern void a_menu_freeEx(AMenu* Menu, AFree* ItemFree);
 
-extern void a_menu_soundSet(AMenu* Menu, ASfx* Accept, ASfx* Cancel, ASfx* Browse);
+extern void a_menu_soundSet(AMenu* Menu, ASample* Accept, ASample* Cancel, ASample* Browse);
 extern void a_menu_itemAdd(AMenu* Menu, void* Item);
 
 extern void a_menu_tick(AMenu* Menu);

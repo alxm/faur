@@ -28,9 +28,9 @@ struct AMenu {
     AList* items;
     void* selectedItem;
     unsigned selectedIndex;
-    ASfx* soundAccept;
-    ASfx* soundCancel;
-    ASfx* soundBrowse;
+    ASample* soundAccept;
+    ASample* soundCancel;
+    ASample* soundBrowse;
     AInputButton* next;
     AInputButton* back;
     AInputButton* select;
@@ -72,7 +72,7 @@ void a_menu_freeEx(AMenu* Menu, AFree* ItemFree)
     free(Menu);
 }
 
-void a_menu_soundSet(AMenu* Menu, ASfx* Accept, ASfx* Cancel, ASfx* Browse)
+void a_menu_soundSet(AMenu* Menu, ASample* Accept, ASample* Cancel, ASample* Browse)
 {
     Menu->soundAccept = Accept;
     Menu->soundCancel = Cancel;
@@ -114,20 +114,22 @@ void a_menu_tick(AMenu* Menu)
         Menu->selectedItem = a_list_getIndex(Menu->items, Menu->selectedIndex);
 
         if(Menu->soundBrowse) {
-            a_sfx_play(Menu->soundBrowse, A_SFX_RESTART);
+            a_channel_play(A_CHANNEL_ANY, Menu->soundBrowse, A_CHANNEL_NORMAL);
         }
     } else {
         if(a_button_pressGet(Menu->select)) {
             Menu->state = A_MENU_STATE_SELECTED;
 
             if(Menu->soundAccept) {
-                a_sfx_play(Menu->soundAccept, A_SFX_RESTART);
+                a_channel_play(
+                    A_CHANNEL_ANY, Menu->soundAccept, A_CHANNEL_NORMAL);
             }
         } else if(Menu->cancel && a_button_pressGet(Menu->cancel)) {
             Menu->state = A_MENU_STATE_CANCELED;
 
             if(Menu->soundCancel) {
-                a_sfx_play(Menu->soundCancel, A_SFX_RESTART);
+                a_channel_play(
+                    A_CHANNEL_ANY, Menu->soundCancel, A_CHANNEL_NORMAL);
             }
         }
     }
