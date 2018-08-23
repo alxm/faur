@@ -32,15 +32,6 @@
 #include "a2x_pack_settings.v.h"
 #include "a2x_pack_timer.v.h"
 
-struct AMusic {
-    APlatformMusic* platformMusic;
-};
-
-struct ASfx {
-    APlatformSfx* platformSfx;
-    int channel;
-};
-
 static bool g_soundOn;
 static int g_volume;
 static int g_musicVolume;
@@ -189,15 +180,7 @@ void a_sound__uninit(void)
 AMusic* a_music_new(const char* Path)
 {
     if(g_soundOn) {
-        APlatformMusic* music = a_platform__musicNew(Path);
-
-        if(music) {
-            AMusic* m = a_mem_malloc(sizeof(AMusic));
-
-            m->platformMusic = music;
-
-            return m;
-        }
+        return a_platform__musicNew(Path);
     }
 
     return NULL;
@@ -206,15 +189,14 @@ AMusic* a_music_new(const char* Path)
 void a_music_free(AMusic* Music)
 {
     if(g_soundOn) {
-        a_platform__musicFree(Music->platformMusic);
-        free(Music);
+        a_platform__musicFree(Music);
     }
 }
 
-void a_music_play(const AMusic* Music)
+void a_music_play(AMusic* Music)
 {
     if(g_soundOn) {
-        a_platform__musicPlay(Music->platformMusic);
+        a_platform__musicPlay(Music);
     }
 }
 
@@ -241,38 +223,16 @@ ASfx* a_sfx_new(const char* Path)
             }
         }
 
-        if(sfx) {
-            ASfx* s = a_mem_malloc(sizeof(ASfx));
-
-            s->platformSfx = sfx;
-            s->channel = a_platform__sfxChannelGet();
-
-            return s;
-        }
+        return sfx;
     }
 
     return NULL;
 }
 
-ASfx* a_sfx_dup(const ASfx* Sfx)
-{
-    if(!g_soundOn) {
-        return NULL;
-    }
-
-    ASfx* s = a_mem_dup(Sfx, sizeof(ASfx));
-
-    a_platform__sfxRef(s->platformSfx);
-    s->channel = a_platform__sfxChannelGet();
-
-    return s;
-}
-
 void a_sfx_free(ASfx* Sfx)
 {
     if(g_soundOn) {
-        a_platform__sfxFree(Sfx->platformSfx);
-        free(Sfx);
+        a_platform__sfxFree(Sfx);
     }
 }
 
@@ -281,7 +241,7 @@ int a_channel_new(void)
     return a_platform__sfxChannelGet();
 }
 
-void a_channel_play(int Channel, const ASfx* Sfx, AChannelFlags Flags)
+void a_channel_play(int Channel, ASfx* Sfx, AChannelFlags Flags)
 {
     if(!g_soundOn) {
         return;
@@ -293,7 +253,7 @@ void a_channel_play(int Channel, const ASfx* Sfx, AChannelFlags Flags)
         return;
     }
 
-    a_platform__sfxPlay(Sfx->platformSfx, Channel, Flags & A_CHANNEL_LOOP);
+    a_platform__sfxPlay(Sfx, Channel, Flags & A_CHANNEL_LOOP);
 }
 
 void a_channel_stop(int Channel)
