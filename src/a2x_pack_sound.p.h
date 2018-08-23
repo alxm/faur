@@ -20,7 +20,7 @@
 #pragma once
 
 typedef void AMusic;
-typedef void ASfx;
+typedef void ASample;
 
 typedef enum {
     A_CHANNEL_NORMAL = 0,
@@ -37,10 +37,10 @@ extern void a_music_free(AMusic* Music);
 extern void a_music_play(AMusic* Music);
 extern void a_music_stop(void);
 
-extern ASfx* a_sfx_new(const char* Path);
-extern void a_sfx_free(ASfx* Sfx);
+extern ASample* a_sample_new(const char* Path);
+extern void a_sample_free(ASample* Sample);
 
 extern int a_channel_new(void);
-extern void a_channel_play(int Channel, ASfx* Sfx, AChannelFlags Flags);
+extern void a_channel_play(int Channel, ASample* Sample, AChannelFlags Flags);
 extern void a_channel_stop(int Channel);
 extern bool a_channel_isPlaying(int Channel);

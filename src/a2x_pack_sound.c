@@ -35,7 +35,7 @@
 static bool g_soundOn;
 static int g_volume;
 static int g_musicVolume;
-static int g_sfxVolume;
+static int g_samplesVolume;
 static int g_volumeMax;
 
 #if A_PLATFORM_SYSTEM_GP2X || A_PLATFORM_SYSTEM_WIZ
@@ -57,9 +57,9 @@ static void adjustSoundVolume(int Volume)
 {
     g_volume = a_math_clamp(Volume, 0, g_volumeMax);
     g_musicVolume = a_settings_getInt("sound.music.scale") * g_volume / 100;
-    g_sfxVolume = a_settings_getInt("sound.sfx.scale") * g_volume / 100;
+    g_samplesVolume = a_settings_getInt("sound.sample.scale") * g_volume / 100;
 
-    a_platform__sfxVolumeSetAll(g_sfxVolume);
+    a_platform__sampleVolumeSetAll(g_samplesVolume);
     a_platform__musicVolumeSet(g_musicVolume);
 }
 
@@ -207,63 +207,65 @@ void a_music_stop(void)
     }
 }
 
-ASfx* a_sfx_new(const char* Path)
+ASample* a_sample_new(const char* Path)
 {
     if(g_soundOn) {
-        APlatformSfx* sfx = NULL;
+        APlatformSample* s = NULL;
 
         if(a_file_exists(Path)) {
-            sfx = a_platform__sfxNewFromFile(Path);
+            s = a_platform__sampleNewFromFile(Path);
         } else {
             const uint8_t* data;
             size_t size;
 
             if(a_embed__get(Path, &data, &size)) {
-                sfx = a_platform__sfxNewFromData(data, (int)size);
+                s = a_platform__sampleNewFromData(data, (int)size);
             }
         }
 
-        return sfx;
+        return s;
     }
 
     return NULL;
 }
 
-void a_sfx_free(ASfx* Sfx)
+void a_sample_free(ASample* Sample)
 {
     if(g_soundOn) {
-        a_platform__sfxFree(Sfx);
+        a_platform__sampleFree(Sample);
     }
 }
 
 int a_channel_new(void)
 {
-    return a_platform__sfxChannelGet();
+    return a_platform__sampleChannelGet();
 }
 
-void a_channel_play(int Channel, ASfx* Sfx, AChannelFlags Flags)
+void a_channel_play(int Channel, ASample* Sample, AChannelFlags Flags)
 {
     if(!g_soundOn) {
         return;
     }
 
     if(Flags & A_CHANNEL_RESTART) {
-        a_platform__sfxStop(Channel);
-    } else if((Flags & A_CHANNEL_YIELD) && a_platform__sfxIsPlaying(Channel)) {
+        a_platform__sampleStop(Channel);
+    } else if((Flags & A_CHANNEL_YIELD)
+        && a_platform__sampleIsPlaying(Channel)) {
+
         return;
     }
 
-    a_platform__sfxPlay(Sfx, Channel, Flags & A_CHANNEL_LOOP);
+    a_platform__samplePlay(Sample, Channel, Flags & A_CHANNEL_LOOP);
 }
 
 void a_channel_stop(int Channel)
 {
     if(g_soundOn) {
-        a_platform__sfxStop(Channel);
+        a_platform__sampleStop(Channel);
     }
 }
 
 bool a_channel_isPlaying(int Channel)
 {
-    return g_soundOn && a_platform__sfxIsPlaying(Channel);
+    return g_soundOn && a_platform__sampleIsPlaying(Channel);
 }

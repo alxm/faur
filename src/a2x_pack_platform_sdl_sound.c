@@ -30,9 +30,9 @@
 #include "a2x_pack_platform.v.h"
 #include "a2x_pack_settings.v.h"
 
-static int g_numSfxChannels;
-static int g_numSfxChannelsReserved;
-static int g_currentSfxChannel;
+static int g_numSampleChannels;
+static int g_numSampleChannelsReserved;
+static int g_currentSampleChannel;
 
 void a_platform_sdl_sound__init(void)
 {
@@ -44,17 +44,19 @@ void a_platform_sdl_sound__init(void)
         a_out__error("Mix_OpenAudio failed: %s", Mix_GetError());
         a_settings__set("sound.on", "0");
     } else {
-        g_numSfxChannels =
-            Mix_AllocateChannels(a_settings_getInt("sound.sfx.chan.total"));
-        g_numSfxChannelsReserved =
-            Mix_ReserveChannels(a_settings_getInt("sound.sfx.chan.reserved"));
+        g_numSampleChannels =
+            Mix_AllocateChannels(
+                a_settings_getInt("sound.sample.channels.total"));
+        g_numSampleChannelsReserved =
+            Mix_ReserveChannels(
+                a_settings_getInt("sound.sample.channels.reserved"));
 
-        if(g_numSfxChannelsReserved <= 0) {
+        if(g_numSampleChannelsReserved <= 0) {
             a_out__fatal("Mix_AllocateChannels/Mix_ReserveChannels failed");
         } else {
-            a_out__message("Allocated %d sfx channels, reserved %d",
-                           g_numSfxChannels,
-                           g_numSfxChannelsReserved);
+            a_out__message("Allocated %d sample channels, reserved %d",
+                           g_numSampleChannels,
+                           g_numSampleChannelsReserved);
         }
     }
 }
@@ -116,7 +118,7 @@ void a_platform__musicToggle(void)
     }
 }
 
-APlatformSfx* a_platform__sfxNewFromFile(const char* Path)
+APlatformSample* a_platform__sampleNewFromFile(const char* Path)
 {
     Mix_Chunk* chunk = Mix_LoadWAV(Path);
 
@@ -127,7 +129,7 @@ APlatformSfx* a_platform__sfxNewFromFile(const char* Path)
     return chunk;
 }
 
-APlatformSfx* a_platform__sfxNewFromData(const uint8_t* Data, int Size)
+APlatformSample* a_platform__sampleNewFromData(const uint8_t* Data, int Size)
 {
     SDL_RWops* rw = SDL_RWFromMem((void*)Data, Size);
 
@@ -147,22 +149,22 @@ APlatformSfx* a_platform__sfxNewFromData(const uint8_t* Data, int Size)
     return chunk;
 }
 
-void a_platform__sfxFree(APlatformSfx* Sfx)
+void a_platform__sampleFree(APlatformSample* Sample)
 {
-    Mix_FreeChunk(Sfx);
+    Mix_FreeChunk(Sample);
 }
 
-void a_platform__sfxVolumeSet(APlatformSfx* Sfx, int Volume)
+void a_platform__sampleVolumeSet(APlatformSample* Sample, int Volume)
 {
     #if A_PLATFORM_SYSTEM_EMSCRIPTEN
-        A_UNUSED(Sfx);
+        A_UNUSED(Sample);
         A_UNUSED(Volume);
     #else
-        Mix_VolumeChunk(Sfx, Volume);
+        Mix_VolumeChunk(Sample, Volume);
     #endif
 }
 
-void a_platform__sfxVolumeSetAll(int Volume)
+void a_platform__sampleVolumeSetAll(int Volume)
 {
     #if A_PLATFORM_SYSTEM_EMSCRIPTEN
         A_UNUSED(Volume);
@@ -171,25 +173,25 @@ void a_platform__sfxVolumeSetAll(int Volume)
     #endif
 }
 
-void a_platform__sfxPlay(APlatformSfx* Sfx, int Channel, bool Loop)
+void a_platform__samplePlay(APlatformSample* Sample, int Channel, bool Loop)
 {
-    if(Mix_PlayChannel(Channel, Sfx, Loop ? -1 : 0) == -1) {
+    if(Mix_PlayChannel(Channel, Sample, Loop ? -1 : 0) == -1) {
         a_out__errorv("Mix_PlayChannel failed: %s", Mix_GetError());
     }
 }
 
-void a_platform__sfxStop(int Channel)
+void a_platform__sampleStop(int Channel)
 {
     Mix_HaltChannel(Channel);
 }
 
-bool a_platform__sfxIsPlaying(int Channel)
+bool a_platform__sampleIsPlaying(int Channel)
 {
     return Mix_Playing(Channel);
 }
 
-int a_platform__sfxChannelGet(void)
+int a_platform__sampleChannelGet(void)
 {
-    return g_currentSfxChannel++ % g_numSfxChannelsReserved;
+    return g_currentSampleChannel++ % g_numSampleChannelsReserved;
 }
 #endif // A_PLATFORM_LIB_SDL

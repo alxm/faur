@@ -22,7 +22,7 @@
 #include "a2x_pack_platform.p.h"
 
 typedef struct APlatformTexture APlatformTexture;
-typedef void APlatformSfx;
+typedef void APlatformSample;
 typedef void APlatformMusic;
 
 #include "a2x_pack_sprite.v.h"
@@ -71,15 +71,15 @@ extern void a_platform__musicPlay(APlatformMusic* Music);
 extern void a_platform__musicStop(void);
 extern void a_platform__musicToggle(void);
 
-extern APlatformSfx* a_platform__sfxNewFromFile(const char* Path);
-extern APlatformSfx* a_platform__sfxNewFromData(const uint8_t* Data, int Size);
-extern void a_platform__sfxFree(APlatformSfx* Sfx);
-extern void a_platform__sfxVolumeSet(APlatformSfx* Sfx, int Volume);
-extern void a_platform__sfxVolumeSetAll(int Volume);
-extern void a_platform__sfxPlay(APlatformSfx* Sfx, int Channel, bool Loop);
-extern void a_platform__sfxStop(int Channel);
-extern bool a_platform__sfxIsPlaying(int Channel);
-extern int a_platform__sfxChannelGet(void);
+extern APlatformSample* a_platform__sampleNewFromFile(const char* Path);
+extern APlatformSample* a_platform__sampleNewFromData(const uint8_t* Data, int Size);
+extern void a_platform__sampleFree(APlatformSample* Sample);
+extern void a_platform__sampleVolumeSet(APlatformSample* Sample, int Volume);
+extern void a_platform__sampleVolumeSetAll(int Volume);
+extern void a_platform__samplePlay(APlatformSample* Sample, int Channel, bool Loop);
+extern void a_platform__sampleStop(int Channel);
+extern bool a_platform__sampleIsPlaying(int Channel);
+extern int a_platform__sampleChannelGet(void);
 
 extern void a_platform__inputsBind(void);
 extern void a_platform__inputsPoll(void);
