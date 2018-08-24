@@ -97,6 +97,7 @@ bool a_strbuilder_addf(AStrBuilder* Builder, const char* Format, ...)
     }
 
     free(buffer);
+
     va_end(args);
 
     return ret;

@@ -108,6 +108,7 @@ void a_touch_free(AInputTouch* Touch)
     }
 
     a_input__userHeaderFree(&Touch->header);
+
     free(Touch);
 }
 

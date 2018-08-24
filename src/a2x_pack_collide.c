@@ -82,10 +82,8 @@ void a_colmap_free(AColMap* Map)
         for(int j = Map->w; j--; ) {
             // In case ColMap was freed before the ColObjects
             A_LIST_ITERATE(Map->submaps[i][j], AColObject*, o) {
-                if(o->nodes != NULL) {
-                    a_list_free(o->nodes);
-                    o->nodes = NULL;
-                }
+                a_list_free(o->nodes);
+                o->nodes = NULL;
             }
 
             a_list_free(Map->submaps[i][j]);
@@ -115,9 +113,7 @@ void a_colobject_free(AColObject* Object)
     }
 
     // Remove object from any lists it is in
-    if(Object->nodes != NULL) {
-        a_list_freeEx(Object->nodes, (AFree*)a_list_removeNode);
-    }
+    a_list_freeEx(Object->nodes, (AFree*)a_list_removeNode);
 
     free(Object);
 }

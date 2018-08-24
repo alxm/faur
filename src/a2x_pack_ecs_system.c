@@ -42,6 +42,7 @@ void a_system__uninit(void)
     A_STRHASH_ITERATE(g_systems, ASystem*, system) {
         a_list_free(system->entities);
         a_bitfield_free(system->componentBits);
+
         free(system);
     }
 

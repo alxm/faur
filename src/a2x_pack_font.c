@@ -216,6 +216,7 @@ void a_font_free(AFont* Font)
     }
 
     a_spriteframes_free(Font->frames, true);
+
     free(Font);
 }
 

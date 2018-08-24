@@ -83,6 +83,7 @@ void a_strhash_freeEx(AStrHash* Hash, AFree* Free)
     }
 
     a_list_free(Hash->entriesList);
+
     free(Hash);
 }
 

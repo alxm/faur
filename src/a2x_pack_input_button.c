@@ -189,9 +189,7 @@ void a_button_free(AInputButton* Button)
         a_input__userHeaderFree(&Button->header);
     }
 
-    if(Button->autoRepeat) {
-        a_timer_free(Button->autoRepeat);
-    }
+    a_timer_free(Button->autoRepeat);
 
     free(Button);
 }

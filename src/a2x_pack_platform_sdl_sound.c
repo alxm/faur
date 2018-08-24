@@ -76,7 +76,7 @@ APlatformMusic* a_platform__musicNew(const char* Path)
 {
     Mix_Music* m = Mix_LoadMUS(Path);
 
-    if(!m) {
+    if(m == NULL) {
         a_out__error("Mix_LoadMUS failed: %s", Mix_GetError());
     }
 

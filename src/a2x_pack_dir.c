@@ -130,6 +130,7 @@ void a_dir_free(ADir* Dir)
     }
 
     a_list_free(Dir->files);
+
     free(Dir);
 }
 

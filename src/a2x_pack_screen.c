@@ -445,9 +445,9 @@ void a_screen_targetPop(void)
     #if !A_PLATFORM_RENDER_SOFTWARE
         a_platform__renderTargetSet(a__screen.texture);
         a_platform__renderTargetClipSet(a__screen.clipX,
-                                  a__screen.clipY,
-                                  a__screen.clipWidth,
-                                  a__screen.clipHeight);
+                                        a__screen.clipY,
+                                        a__screen.clipWidth,
+                                        a__screen.clipHeight);
     #endif
 }
 

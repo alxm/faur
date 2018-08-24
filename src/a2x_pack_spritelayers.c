@@ -51,6 +51,7 @@ static void layer_free(ALayer* Layer)
 static void layer_freeEx(ALayer* Layer)
 {
     a_sprite_free(Layer->sprite);
+
     free(Layer);
 }
 

@@ -73,6 +73,7 @@ void a_menu_freeEx(AMenu* Menu, AFree* ItemFree)
     a_list_freeEx(Menu->items, ItemFree);
     a_button_free(Menu->next);
     a_button_free(Menu->back);
+
     free(Menu);
 }
 

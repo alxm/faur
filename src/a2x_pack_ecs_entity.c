@@ -78,6 +78,7 @@ void a_entity__free(AEntity* Entity)
     a_strhash_free(Entity->components);
     a_strhash_freeEx(Entity->handlers, free);
     a_bitfield_free(Entity->componentBits);
+
     free(Entity->id);
     free(Entity);
 }
@@ -99,13 +100,13 @@ AEntity* a_entity_parentGet(const AEntity* Entity)
 
 void a_entity_parentSet(AEntity* Entity, AEntity* Parent)
 {
-    if(Entity->parent != NULL) {
+    if(Entity->parent) {
         a_entity_refDec(Entity->parent);
     }
 
     Entity->parent = Parent;
 
-    if(Parent != NULL) {
+    if(Parent) {
         a_entity_refInc(Parent);
     }
 }

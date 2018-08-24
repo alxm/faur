@@ -41,7 +41,7 @@ AFile* a_file_new(const char* Path, const char* Modes)
 {
     FILE* handle = fopen(Path, Modes);
 
-    if(!handle) {
+    if(handle == NULL) {
         a_out__error("a_file_new: Can't open %s for '%s'", Path, Modes);
         return NULL;
     }
@@ -296,7 +296,7 @@ uint8_t* a_file_toBuffer(const char* Path)
 {
     AFile* f = a_file_new(Path, "rb");
 
-    if(!f) {
+    if(f == NULL) {
         return NULL;
     }
 

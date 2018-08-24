@@ -102,6 +102,7 @@ void a_analog_free(AInputAnalog* Analog)
     }
 
     a_input__userHeaderFree(&Analog->header);
+
     free(Analog);
 }
 
