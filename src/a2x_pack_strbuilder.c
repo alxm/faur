@@ -46,6 +46,10 @@ AStrBuilder* a_strbuilder_new(size_t Bytes)
 
 void a_strbuilder_free(AStrBuilder* Builder)
 {
+    if(Builder == NULL) {
+        return;
+    }
+
     free(Builder);
 }
 

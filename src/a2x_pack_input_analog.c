@@ -97,6 +97,10 @@ AInputAnalog* a_analog_new(const char* Ids)
 
 void a_analog_free(AInputAnalog* Analog)
 {
+    if(Analog == NULL) {
+        return;
+    }
+
     a_input__userHeaderFree(&Analog->header);
     free(Analog);
 }

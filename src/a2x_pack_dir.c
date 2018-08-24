@@ -116,6 +116,10 @@ ADir* a_dir_new(const char* Path)
 
 void a_dir_free(ADir* Dir)
 {
+    if(Dir == NULL) {
+        return;
+    }
+
     free(Dir->path);
     free(Dir->name);
 

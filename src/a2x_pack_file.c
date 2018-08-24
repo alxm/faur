@@ -69,6 +69,10 @@ AFile* a_file_new(const char* Path, const char* Modes)
 
 void a_file_free(AFile* File)
 {
+    if(File == NULL) {
+        return;
+    }
+
     free(File->path);
     free(File->name);
     free(File->lineBuffer);

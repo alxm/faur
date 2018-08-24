@@ -54,6 +54,10 @@ void a_list_free(AList* List)
 
 void a_list_freeEx(AList* List, AFree* Free)
 {
+    if(List == NULL) {
+        return;
+    }
+
     AListNode* n = List->first->next;
 
     while(n != List->last) {

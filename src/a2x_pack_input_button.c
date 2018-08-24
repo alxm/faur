@@ -180,6 +180,10 @@ AInputButton* a_button_dup(const AInputButton* Button)
 
 void a_button_free(AInputButton* Button)
 {
+    if(Button == NULL) {
+        return;
+    }
+
     if(!Button->isClone) {
         a_list_freeEx(Button->combos, (AFree*)a_list_free);
         a_input__userHeaderFree(&Button->header);

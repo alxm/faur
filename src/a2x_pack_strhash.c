@@ -69,6 +69,10 @@ void a_strhash_free(AStrHash* Hash)
 
 void a_strhash_freeEx(AStrHash* Hash, AFree* Free)
 {
+    if(Hash == NULL) {
+        return;
+    }
+
     A_LIST_ITERATE(Hash->entriesList, AStrHashEntry*, e) {
         if(Free) {
             Free(e->content);

@@ -238,6 +238,10 @@ AScreen* a_screen_dup(void)
 
 void a_screen_free(AScreen* Screen)
 {
+    if(Screen == NULL) {
+        return;
+    }
+
     freeScreen(Screen);
     free(Screen);
 }

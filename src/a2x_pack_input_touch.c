@@ -103,6 +103,10 @@ AInputTouch* a_touch_new(const char* Ids)
 
 void a_touch_free(AInputTouch* Touch)
 {
+    if(Touch == NULL) {
+        return;
+    }
+
     a_input__userHeaderFree(&Touch->header);
     free(Touch);
 }

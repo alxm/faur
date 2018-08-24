@@ -54,6 +54,10 @@ AEntity* a_entity_new(const char* Id, void* Context)
 
 void a_entity__free(AEntity* Entity)
 {
+    if(Entity == NULL) {
+        return;
+    }
+
     a_list_free(Entity->matchingSystemsActive);
     a_list_free(Entity->matchingSystemsEither);
     a_list_freeEx(Entity->systemNodesActive, (AFree*)a_list_removeNode);
