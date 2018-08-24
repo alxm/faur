@@ -90,13 +90,8 @@ void a_platform_pandora__init(void)
         a_out__message("Current nub1Mode is '%s'", g_pandora.nub1Mode);
     }
 
-    if(nub0) {
-        a_file_free(nub0);
-    }
-
-    if(nub1) {
-        a_file_free(nub1);
-    }
+    a_file_free(nub0);
+    a_file_free(nub1);
 
     // Gamepad mode
     pandora_setNubModes("absolute", "absolute");

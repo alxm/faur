@@ -74,14 +74,16 @@ AColMap* a_colmap_new(int Width, int Height, int MaxObjectDim)
 
 void a_colmap_free(AColMap* Map)
 {
+    if(Map == NULL) {
+        return;
+    }
+
     for(int i = Map->h; i--; ) {
         for(int j = Map->w; j--; ) {
             // In case ColMap was freed before the ColObjects
             A_LIST_ITERATE(Map->submaps[i][j], AColObject*, o) {
-                if(o->nodes != NULL) {
-                    a_list_free(o->nodes);
-                    o->nodes = NULL;
-                }
+                a_list_free(o->nodes);
+                o->nodes = NULL;
             }
 
             a_list_free(Map->submaps[i][j]);
@@ -106,10 +108,12 @@ AColObject* a_colobject_new(const AColMap* Map, void* Context)
 
 void a_colobject_free(AColObject* Object)
 {
-    // Remove object from any lists it is in
-    if(Object->nodes != NULL) {
-        a_list_freeEx(Object->nodes, (AFree*)a_list_removeNode);
+    if(Object == NULL) {
+        return;
     }
+
+    // Remove object from any lists it is in
+    a_list_freeEx(Object->nodes, (AFree*)a_list_removeNode);
 
     free(Object);
 }

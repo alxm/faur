@@ -188,7 +188,7 @@ AMusic* a_music_new(const char* Path)
 
 void a_music_free(AMusic* Music)
 {
-    if(g_soundOn) {
+    if(g_soundOn && Music) {
         a_platform__musicFree(Music);
     }
 }
@@ -231,7 +231,7 @@ ASample* a_sample_new(const char* Path)
 
 void a_sample_free(ASample* Sample)
 {
-    if(g_soundOn) {
+    if(g_soundOn && Sample) {
         a_platform__sampleFree(Sample);
     }
 }

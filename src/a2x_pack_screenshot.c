@@ -60,12 +60,13 @@ static bool lazy_init(void)
             if(start != -1 && end != -1 && end - start == 6) {
                 char* numberStr = a_str_subGetRange(file, start + 1, end);
                 int number = atoi(numberStr);
-                free(numberStr);
 
                 if(number > 0) {
                     g_screenshotNumber = (unsigned)number;
                     g_isInit = true;
                 }
+
+                free(numberStr);
             }
 
             if(!g_isInit) {
@@ -167,11 +168,9 @@ void a_screenshot__init(void)
 
 void a_screenshot__uninit(void)
 {
-    if(g_isInit) {
-        free(g_filePrefix);
-        free(g_title);
-        free(g_description);
-    }
+    free(g_filePrefix);
+    free(g_title);
+    free(g_description);
 
     a_button_free(g_button);
 }

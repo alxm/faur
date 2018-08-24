@@ -548,6 +548,7 @@ void a_platform_sdl_input__uninit(void)
 
         a_strhash_free(c->buttons);
         a_strhash_free(c->axes);
+
         free(c);
     }
 
@@ -625,7 +626,7 @@ void a_platform__inputsPoll(void)
             case SDL_JOYBUTTONDOWN: {
                 A_LIST_ITERATE(g_controllers, ASdlInputController*, c) {
                     #if A_PLATFORM_LIB_SDL == 2
-                        if(c->controller != NULL) {
+                        if(c->controller) {
                             continue;
                         }
                     #endif
@@ -690,7 +691,7 @@ void a_platform__inputsPoll(void)
 
                 A_LIST_ITERATE(g_controllers, ASdlInputController*, c) {
                     #if A_PLATFORM_LIB_SDL == 2
-                        if(c->controller != NULL) {
+                        if(c->controller) {
                             continue;
                         }
                     #endif
@@ -731,7 +732,7 @@ void a_platform__inputsPoll(void)
             case SDL_JOYAXISMOTION: {
                 A_LIST_ITERATE(g_controllers, ASdlInputController*, c) {
                     #if A_PLATFORM_LIB_SDL == 2
-                        if(c->controller != NULL) {
+                        if(c->controller) {
                             continue;
                         }
                     #endif

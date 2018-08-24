@@ -72,6 +72,7 @@ void a_input__userHeaderInit(AInputUserHeader* Header)
 void a_input__userHeaderFree(AInputUserHeader* Header)
 {
     free(Header->name);
+
     a_list_free(Header->sourceInputs);
 }
 
@@ -99,7 +100,7 @@ void a_input__userHeaderFindSource(AInputUserHeader* UserInput, const char* Id, 
         source = a_strhash_get(ControllerCollection, Id);
     }
 
-    if(source != NULL) {
+    if(source) {
         a_list_addLast(UserInput->sourceInputs, source);
     }
 }

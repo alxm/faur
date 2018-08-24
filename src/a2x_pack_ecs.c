@@ -76,7 +76,7 @@ void a_ecs__collectionPush(void)
     c->drawSystems = a_list_new();
     c->deleting = false;
 
-    if(g_ecs != NULL) {
+    if(g_ecs) {
         a_list_push(g_stack, g_ecs);
     }
 
@@ -101,10 +101,9 @@ void a_ecs__collectionPop(void)
     a_list_free(g_ecs->drawSystems);
 
     free(g_ecs);
-
     g_ecs = a_list_pop(g_stack);
 
-    if(g_ecs != NULL) {
+    if(g_ecs) {
         A_LIST_ITERATE(g_ecs->allSystems, ASystem*, system) {
             system->runsInCurrentState = true;
         }

@@ -211,7 +211,12 @@ AFont* a_font_dup(AFont* Font, APixel Color)
 
 void a_font_free(AFont* Font)
 {
+    if(Font == NULL) {
+        return;
+    }
+
     a_spriteframes_free(Font->frames, true);
+
     free(Font);
 }
 

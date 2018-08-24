@@ -69,7 +69,7 @@ void a_png_readFile(const char* Path, APixel** Pixels, int* Width, int* Height)
     png_structp png = NULL;
     png_infop info = NULL;
 
-    if(!f) {
+    if(f == NULL) {
         goto cleanUp;
     }
 
@@ -85,13 +85,13 @@ void a_png_readFile(const char* Path, APixel** Pixels, int* Width, int* Height)
 
     png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 
-    if(!png) {
+    if(png == NULL) {
         goto cleanUp;
     }
 
     info = png_create_info_struct(png);
 
-    if(!info) {
+    if(info == NULL) {
         goto cleanUp;
     }
 
@@ -117,9 +117,7 @@ cleanUp:
         png_destroy_read_struct(&png, info ? &info : NULL, NULL);
     }
 
-    if(f) {
-        a_file_free(f);
-    }
+    a_file_free(f);
 }
 
 void a_png_readMemory(const uint8_t* Data, APixel** Pixels, int* Width, int* Height)
@@ -144,13 +142,13 @@ void a_png_readMemory(const uint8_t* Data, APixel** Pixels, int* Width, int* Hei
 
     png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 
-    if(!png) {
+    if(png == NULL) {
         goto cleanUp;
     }
 
     info = png_create_info_struct(png);
 
-    if(!info) {
+    if(info == NULL) {
         goto cleanUp;
     }
 
@@ -189,7 +187,7 @@ void a_png_write(const char* Path, const APixel* Data, int Width, int Height, ch
     png_text text[2];
     volatile int numText = 0;
 
-    if(!f) {
+    if(f == NULL) {
         goto cleanUp;
     }
 
@@ -200,13 +198,13 @@ void a_png_write(const char* Path, const APixel* Data, int Width, int Height, ch
 
     png = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 
-    if(!png) {
+    if(png == NULL) {
         goto cleanUp;
     }
 
     info = png_create_info_struct(png);
 
-    if(!info) {
+    if(info == NULL) {
         goto cleanUp;
     }
 
@@ -239,14 +237,14 @@ void a_png_write(const char* Path, const APixel* Data, int Width, int Height, ch
         }
     }
 
-    if(Title != NULL) {
+    if(Title) {
         text[numText].compression = PNG_TEXT_COMPRESSION_NONE;
         text[numText].key = "Title";
         text[numText].text = Title;
         numText++;
     }
 
-    if(Description != NULL) {
+    if(Description) {
         text[numText].compression = PNG_TEXT_COMPRESSION_NONE;
         text[numText].key = "Description";
         text[numText].text = Description;
@@ -264,15 +262,8 @@ cleanUp:
         png_destroy_write_struct(&png, info ? &info : NULL);
     }
 
-    if(rows) {
-        free(rows);
-    }
+    free(rows);
+    free(rowsData);
 
-    if(rowsData) {
-        free(rowsData);
-    }
-
-    if(f) {
-        a_file_free(f);
-    }
+    a_file_free(f);
 }

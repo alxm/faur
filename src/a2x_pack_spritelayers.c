@@ -51,6 +51,7 @@ static void layer_free(ALayer* Layer)
 static void layer_freeEx(ALayer* Layer)
 {
     a_sprite_free(Layer->sprite);
+
     free(Layer);
 }
 
@@ -61,6 +62,10 @@ ASpriteLayers* a_spritelayers_new(void)
 
 void a_spritelayers_free(ASpriteLayers* Layers, bool FreeSprites)
 {
+    if(Layers == NULL) {
+        return;
+    }
+
     if(FreeSprites) {
         a_list_freeEx(Layers, (AFree*)layer_freeEx);
     } else {

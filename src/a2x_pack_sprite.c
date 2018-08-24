@@ -223,6 +223,10 @@ ASprite* a_sprite_dup(const ASprite* Sprite)
 
 void a_sprite_free(ASprite* Sprite)
 {
+    if(Sprite == NULL) {
+        return;
+    }
+
     a_platform__textureFree(Sprite->texture);
 
     free(Sprite->nameId);

@@ -41,7 +41,7 @@ AFile* a_file_new(const char* Path, const char* Modes)
 {
     FILE* handle = fopen(Path, Modes);
 
-    if(!handle) {
+    if(handle == NULL) {
         a_out__error("a_file_new: Can't open %s for '%s'", Path, Modes);
         return NULL;
     }
@@ -69,6 +69,10 @@ AFile* a_file_new(const char* Path, const char* Modes)
 
 void a_file_free(AFile* File)
 {
+    if(File == NULL) {
+        return;
+    }
+
     free(File->path);
     free(File->name);
     free(File->lineBuffer);
@@ -292,7 +296,7 @@ uint8_t* a_file_toBuffer(const char* Path)
 {
     AFile* f = a_file_new(Path, "rb");
 
-    if(!f) {
+    if(f == NULL) {
         return NULL;
     }
 

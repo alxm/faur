@@ -35,7 +35,7 @@ void a_conf__init(void)
 
     AFile* f = a_file_new(conf_name, "r");
 
-    if(!f) {
+    if(f == NULL) {
         return;
     }
 
@@ -47,7 +47,8 @@ void a_conf__init(void)
         char* line = a_str_trim(a_file_lineBufferGet(f));
 
         if(strlen(line) >= 2 && line[0] == '/' && line[1] == '/') {
-            goto next;
+            free(line);
+            continue;
         }
 
         key = a_str_prefixGetToFirst(line, '=');
@@ -63,7 +64,6 @@ void a_conf__init(void)
             free(val_trim);
         }
 
-next:
         free(key);
         free(value);
         free(line);

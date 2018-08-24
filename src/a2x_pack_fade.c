@@ -41,16 +41,11 @@ static void allocateScreenBuffers(bool CaptureCurrentScreen)
     if(g_capturedScreen == NULL
         || !a_screen__sameSize(&a__screen, g_capturedScreen)) {
 
-        if(g_capturedScreen != NULL) {
-            a_screen_free(g_capturedScreen);
-        }
-
-        if(g_oldCapturedScreen != NULL) {
-            a_screen_free(g_oldCapturedScreen);
-            g_oldCapturedScreen = NULL;
-        }
-
+        a_screen_free(g_capturedScreen);
         g_capturedScreen = a_screen_new(a__screen.width, a__screen.height);
+
+        a_screen_free(g_oldCapturedScreen);
+        g_oldCapturedScreen = NULL;
     }
 
     if(CaptureCurrentScreen) {
@@ -89,13 +84,8 @@ void a_fade__init(void)
 
 void a_fade__uninit(void)
 {
-    if(g_capturedScreen != NULL) {
-        a_screen_free(g_capturedScreen);
-    }
-
-    if(g_oldCapturedScreen != NULL) {
-        a_screen_free(g_oldCapturedScreen);
-    }
+    a_screen_free(g_capturedScreen);
+    a_screen_free(g_oldCapturedScreen);
 }
 
 void a_fade_toColor(unsigned FramesDuration)

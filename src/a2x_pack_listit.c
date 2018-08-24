@@ -68,8 +68,9 @@ void a_listit__remove(AListIt* Iterator)
     n->prev->next = n->next;
     n->next->prev = n->prev;
 
-    free(n);
     list->items--;
+
+    free(n);
 }
 
 bool a_listit__isFirst(AListIt* Iterator)

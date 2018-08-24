@@ -360,6 +360,7 @@ void a_platform__textureSpriteCommit(ASprite* Sprite)
 
     if(Sprite->pixelsSize > texture->pixelsSize) {
         free(texture->pixels);
+
         texture->pixels = a_mem_malloc(Sprite->pixelsSize);
         texture->pixelsSize = Sprite->pixelsSize;
     }
@@ -369,7 +370,7 @@ void a_platform__textureSpriteCommit(ASprite* Sprite)
     texture->h = Sprite->h;
 
     for(int i = 0; i < NUM_SPRITE_TEXTURES; i++) {
-        if(texture->texture[i] != NULL) {
+        if(texture->texture[i]) {
             SDL_DestroyTexture(texture->texture[i]);
         }
 
