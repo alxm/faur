@@ -19,6 +19,8 @@
 
 #pragma once
 
+#include "a2x_system_includes.h"
+
 #define A_MAIN void a_main(void)
 extern A_MAIN;
 

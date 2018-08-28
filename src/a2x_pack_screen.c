@@ -17,7 +17,6 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a2x_system_includes.h"
 #include "a2x_pack_screen.v.h"
 
 #include "a2x_pack_collide.v.h"
@@ -115,6 +114,8 @@ void a_screen__init(void)
 
     if(width <= 0 || height <= 0) {
         a_out__fatal("Invalid screen resolution %dx%d", width, height);
+    } else {
+        a_out__message("Screen resolution %dx%d", width, height);
     }
 
     #if A_PLATFORM_RENDER_SOFTWARE

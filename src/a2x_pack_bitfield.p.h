@@ -19,6 +19,8 @@
 
 #pragma once
 
+#include "a2x_system_includes.h"
+
 typedef struct ABitfield ABitfield;
 
 extern ABitfield* a_bitfield_new(unsigned NumBits);

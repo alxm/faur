@@ -19,6 +19,8 @@
 
 #pragma once
 
+#include "a2x_system_includes.h"
+
 extern unsigned a_fps_tickRateGet(void);
 extern unsigned a_fps_drawRateGet(void);
 extern unsigned a_fps_drawRateGetMax(void);

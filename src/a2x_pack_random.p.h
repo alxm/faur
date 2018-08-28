@@ -19,6 +19,8 @@
 
 #pragma once
 
+#include "a2x_system_includes.h"
+
 typedef int ARandomPrng(void);
 typedef void ARandomPrngSeed(unsigned Seed);
 

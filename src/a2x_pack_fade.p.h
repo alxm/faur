@@ -19,6 +19,8 @@
 
 #pragma once
 
+#include "a2x_system_includes.h"
+
 extern void a_fade_toColor(unsigned FramesDuration);
 extern void a_fade_fromColor(unsigned FramesDuration);
 extern void a_fade_screens(unsigned FramesDuration);

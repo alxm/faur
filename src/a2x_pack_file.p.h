@@ -19,6 +19,8 @@
 
 #pragma once
 
+#include "a2x_system_includes.h"
+
 typedef struct AFile AFile;
 
 extern AFile* a_file_new(const char* Path, const char* Modes);

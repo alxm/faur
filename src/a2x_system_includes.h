@@ -17,6 +17,8 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#pragma once
+
 #define A_UNUSED(X) (X = X)
 #define A_ARRAY_LEN(A) (sizeof(A) / sizeof(A[0]))
 

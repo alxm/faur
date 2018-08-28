@@ -19,6 +19,8 @@
 
 #pragma once
 
+#include "a2x_system_includes.h"
+
 #include "a2x_pack_pixel.p.h"
 
 extern void a_png_readFile(const char* Path, APixel** Pixels, int* Width, int* Height);

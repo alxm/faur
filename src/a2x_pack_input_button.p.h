@@ -19,6 +19,8 @@
 
 #pragma once
 
+#include "a2x_system_includes.h"
+
 typedef struct AInputButton AInputButton;
 
 extern AInputButton* a_button_new(const char* Ids);

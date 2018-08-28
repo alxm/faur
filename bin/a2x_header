@@ -36,10 +36,8 @@ class HeaderTool(Tool):
         umbrella_header_dir = os.path.dirname(umbrella_header)
         path_prefix = os.path.relpath(source_dir, start = umbrella_header_dir)
 
-        dirHeaders = [f for f in os.listdir(source_dir) if f.endswith(ext)]
-        dirHeaders.sort(key = lambda h: h)
-
-        headers = ['a2x_system_includes.h'] + dirHeaders
+        headers = [f for f in os.listdir(source_dir) if f.endswith(ext)]
+        headers.sort(key = lambda h: h)
 
         out = '#pragma once\n\n'
 
