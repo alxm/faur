@@ -60,12 +60,17 @@ static void outPrintHeader(AOutSource Source, AOutType Type, FILE* Stream)
 {
     #if A_PLATFORM_SYSTEM_LINUX && A_PLATFORM_SYSTEM_DESKTOP
         fprintf(Stream,
-                "\033[1;%dm[%s][%s]\033[0m ",
+                "\033[1;%dm[%s][%s][%u]\033[0m ",
                 g_types[Type].color,
                 g_sources[Source],
-                g_types[Type].name);
+                g_types[Type].name,
+                a_fps_ticksGet());
     #else
-        fprintf(Stream, "[%s][%s] ", g_sources[Source], g_types[Type].name);
+        fprintf(Stream,
+                "[%s][%s][%u] ",
+                g_sources[Source],
+                g_types[Type].name,
+                a_fps_ticksGet());
     #endif
 }
 
