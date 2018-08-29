@@ -116,6 +116,7 @@ A_GENERIC_CFLAGS := \
     -Werror \
     -pedantic \
     -pedantic-errors \
+    -fstrict-aliasing \
     -D_XOPEN_SOURCE \
     -I$(A2X_PATH)/inc/$(A_PLATFORM) \
     $(A_PLATFORM_CFLAGS) \
