@@ -45,12 +45,12 @@ A_GENERIC_CFLAGS := \
     -pedantic \
     -pedantic-errors \
     -fstrict-aliasing \
-    -DA__MAKE_COMPILE_TIME=\"$(A_INFO_COMPILE_TIME)\" \
-    -DA__MAKE_CURRENT_GIT_BRANCH=\"$(A_INFO_CURRENT_BRANCH)\" \
-    -DA__MAKE_PLATFORM_NAME=\"$(A_PLATFORM)\" \
+    -DA_BUILD__COMPILE_TIME=\"$(A_INFO_COMPILE_TIME)\" \
+    -DA_BUILD__CURRENT_GIT_BRANCH=\"$(A_INFO_CURRENT_BRANCH)\" \
+    -DA_BUILD__PLATFORM_NAME=\"$(A_PLATFORM)\" \
     -D_XOPEN_SOURCE \
     -I$(A_DIR_OBJ_PLATFORM_MEDIA) \
-    $(A_PLATFORM_CFLAGS) \
+    $(A_BUILD_CFLAGS) \
 
 all : $(ALL_TARGETS)
 

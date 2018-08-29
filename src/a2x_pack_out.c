@@ -19,7 +19,7 @@
 
 #include "a2x_pack_out.v.h"
 
-#if A_PLATFORM_SYSTEM_EMSCRIPTEN
+#if A_BUILD_SYSTEM_EMSCRIPTEN
     #include <emscripten.h>
 #endif
 
@@ -58,7 +58,7 @@ static const struct {
 
 static void outPrintHeader(AOutSource Source, AOutType Type, FILE* Stream)
 {
-    #if A_PLATFORM_SYSTEM_LINUX && A_PLATFORM_SYSTEM_DESKTOP
+    #if A_BUILD_SYSTEM_LINUX && A_BUILD_SYSTEM_DESKTOP
         fprintf(Stream,
                 "\033[1;%dm[%s][%s][%u]\033[0m ",
                 g_types[Type].color,
@@ -219,7 +219,7 @@ void a_out__fatal(const char* Format, ...)
         }
     #endif
 
-    #if A_PLATFORM_SYSTEM_EMSCRIPTEN
+    #if A_BUILD_SYSTEM_EMSCRIPTEN
         emscripten_force_exit(1);
     #endif
 

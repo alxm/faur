@@ -19,7 +19,7 @@
 
 #include "a2x_system_includes.h"
 
-#if A_PLATFORM_SYSTEM_PANDORA
+#if A_BUILD_SYSTEM_PANDORA
 #include "a2x_pack_platform_pandora.v.h"
 
 #include "a2x_pack_file.v.h"
@@ -111,4 +111,4 @@ void a_platform_pandora__uninit(void)
 
     pandora_setScreenFilter("default");
 }
-#endif // A_PLATFORM_SYSTEM_PANDORA
+#endif // A_BUILD_SYSTEM_PANDORA

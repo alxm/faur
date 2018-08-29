@@ -19,7 +19,7 @@
 
 #include "a2x_system_includes.h"
 
-#if A_PLATFORM_LIB_SDL
+#if A_BUILD_LIB_SDL
 #include "a2x_pack_platform_sdl_sound.v.h"
 
 #include <SDL.h>
@@ -90,7 +90,7 @@ void a_platform__musicFree(APlatformMusic* Music)
 
 void a_platform__musicVolumeSet(int Volume)
 {
-    #if A_PLATFORM_SYSTEM_EMSCRIPTEN
+    #if A_BUILD_SYSTEM_EMSCRIPTEN
         A_UNUSED(Volume);
     #else
         Mix_VolumeMusic(Volume);
@@ -156,7 +156,7 @@ void a_platform__sampleFree(APlatformSample* Sample)
 
 void a_platform__sampleVolumeSet(APlatformSample* Sample, int Volume)
 {
-    #if A_PLATFORM_SYSTEM_EMSCRIPTEN
+    #if A_BUILD_SYSTEM_EMSCRIPTEN
         A_UNUSED(Sample);
         A_UNUSED(Volume);
     #else
@@ -166,7 +166,7 @@ void a_platform__sampleVolumeSet(APlatformSample* Sample, int Volume)
 
 void a_platform__sampleVolumeSetAll(int Volume)
 {
-    #if A_PLATFORM_SYSTEM_EMSCRIPTEN
+    #if A_BUILD_SYSTEM_EMSCRIPTEN
         A_UNUSED(Volume);
     #else
         Mix_Volume(-1, Volume);
@@ -194,4 +194,4 @@ int a_platform__sampleChannelGet(void)
 {
     return g_currentSampleChannel++ % g_numSampleChannelsReserved;
 }
-#endif // A_PLATFORM_LIB_SDL
+#endif // A_BUILD_LIB_SDL

@@ -2,7 +2,7 @@ A_PLATFORM := caanoo
 
 CAANOO_SDK := $(CAANOO_ROOT)/$(CAANOO_GLIBC)
 
-A_PLATFORM_LIBS := \
+A_BUILD_LIBS := \
     -L$(CAANOO_ROOT)/lib/target \
     -L$(CAANOO_ROOT)/DGE/lib/target \
     -L$(CAANOO_SDK)/lib \
@@ -16,11 +16,11 @@ A_PLATFORM_LIBS := \
     -lm \
     -ldl \
 
-A_PLATFORM_CFLAGS := \
-    -DA_PLATFORM_LIB_SDL=1 \
-    -DA_PLATFORM_RENDER_SOFTWARE=1 \
-    -DA_PLATFORM_SYSTEM_CAANOO=1 \
-    -DA_PLATFORM_SYSTEM_LINUX=1 \
+A_BUILD_CFLAGS := \
+    -DA_BUILD_LIB_SDL=1 \
+    -DA_BUILD_RENDER_SOFTWARE=1 \
+    -DA_BUILD_SYSTEM_CAANOO=1 \
+    -DA_BUILD_SYSTEM_LINUX=1 \
     -O3 \
     -s \
     -march=armv5te \

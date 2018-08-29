@@ -21,7 +21,7 @@
 
 #include "a2x_system_includes.h"
 
-#if A_PLATFORM_SYSTEM_DESKTOP || A_PLATFORM_SYSTEM_EMSCRIPTEN
+#if A_BUILD_SYSTEM_DESKTOP || A_BUILD_SYSTEM_EMSCRIPTEN
     #define A_PIXEL__BPP 32
     typedef uint32_t APixel;
 #else
@@ -29,20 +29,20 @@
     typedef uint16_t APixel;
 #endif
 
-#if A_PLATFORM_SYSTEM_EMSCRIPTEN
+#if A_BUILD_SYSTEM_EMSCRIPTEN
     #define A_PIXEL__ORDER_ABGR 1
 #else
     #define A_PIXEL__ORDER_RGBA 1
 #endif
 
 #if A_PIXEL__BPP == 16
-    #if A_PLATFORM_RENDER_SOFTWARE
+    #if A_BUILD_RENDER_SOFTWARE
         // RGB565
         #define A_PIXEL__BITS_RED   5
         #define A_PIXEL__BITS_GREEN 6
         #define A_PIXEL__BITS_BLUE  5
         #define A_PIXEL__BITS_ALPHA 0
-    #elif A_PLATFORM_RENDER_SDL
+    #elif A_BUILD_RENDER_SDL
         // RGBA5551
         #define A_PIXEL__BITS_RED   5
         #define A_PIXEL__BITS_GREEN 5
@@ -54,10 +54,10 @@
     #define A_PIXEL__BITS_GREEN 8
     #define A_PIXEL__BITS_BLUE  8
 
-    #if A_PLATFORM_LIB_SDL == 1
+    #if A_BUILD_LIB_SDL == 1
         // XRGB8888
         #define A_PIXEL__BITS_ALPHA 0
-    #elif A_PLATFORM_LIB_SDL == 2
+    #elif A_BUILD_LIB_SDL == 2
         // RGBX8888 / RGBA8888
         #define A_PIXEL__BITS_ALPHA 8
     #endif
@@ -84,7 +84,7 @@
 #define A_PIXEL__PACK_GREEN (8 - A_PIXEL__BITS_GREEN)
 #define A_PIXEL__PACK_BLUE  (8 - A_PIXEL__BITS_BLUE)
 
-#if A_PLATFORM_RENDER_SOFTWARE
+#if A_BUILD_RENDER_SOFTWARE
     #define A_PIXEL_ALPHA_MAX 256
 #else
     #define A_PIXEL_ALPHA_MAX 255

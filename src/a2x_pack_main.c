@@ -58,7 +58,7 @@ static void a__atexit(void)
     a_input__uninit();
     a_platform__uninit();
 
-    #if A_PLATFORM_SYSTEM_GP2X || A_PLATFORM_SYSTEM_WIZ || A_PLATFORM_SYSTEM_CAANOO
+    #if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ || A_BUILD_SYSTEM_CAANOO
         if(a_settings_getBool("app.gp2xMenu")) {
             a_settings__uninit();
             chdir("/usr/gp2x");
@@ -78,7 +78,7 @@ int main(int Argc, char* Argv[])
     a_settings__init();
 
     a_out__message(
-        "a2x %s, %s", A__MAKE_CURRENT_GIT_BRANCH, A__MAKE_COMPILE_TIME);
+        "a2x %s, %s", A_BUILD__CURRENT_GIT_BRANCH, A_BUILD__COMPILE_TIME);
 
     a_out__message("%s %s by %s, %s",
                    a_settings_getString("app.title"),

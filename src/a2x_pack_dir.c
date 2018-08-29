@@ -181,7 +181,7 @@ bool a_dir_exists(const char* Path)
 
 bool a_dir_make(const char* Path)
 {
-    #if A_PLATFORM_SYSTEM_LINUX
+    #if A_BUILD_SYSTEM_LINUX
         int result = mkdir(Path, S_IRWXU);
     #else
         int result = mkdir(Path);

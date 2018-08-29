@@ -71,7 +71,7 @@ void a_pixel_reset(void)
     a_pixel_fillDrawSet(true);
 }
 
-#if A_PLATFORM_RENDER_SOFTWARE
+#if A_BUILD_RENDER_SOFTWARE
 static void optimizeAlphaBlending(bool UpdateRoutines)
 {
     if(a_pixel__state.canonicalBlend == A_PIXEL_BLEND_RGBA) {
@@ -117,7 +117,7 @@ void a_pixel_blendSet(APixelBlend Blend)
     a_pixel__state.blend = Blend;
     a_pixel__state.canonicalBlend = Blend;
 
-    #if A_PLATFORM_RENDER_SOFTWARE
+    #if A_BUILD_RENDER_SOFTWARE
         optimizeAlphaBlending(false);
         a_platform_software_draw__updateRoutines();
         a_platform_software_blit__updateRoutines();
@@ -143,7 +143,7 @@ void a_pixel_alphaSet(int Alpha)
 {
     a_pixel__state.alpha = a_math_clamp(Alpha, 0, A_PIXEL_ALPHA_MAX);
 
-    #if A_PLATFORM_RENDER_SOFTWARE
+    #if A_BUILD_RENDER_SOFTWARE
         optimizeAlphaBlending(true);
     #else
         a_platform__renderSetDrawColor();
@@ -157,7 +157,7 @@ void a_pixel_colorSetRgb(int Red, int Green, int Blue)
     a_pixel__state.blue = (unsigned)Blue & 0xff;
     a_pixel__state.pixel = a_pixel_fromRgb(Red, Green, Blue);
 
-    #if !A_PLATFORM_RENDER_SOFTWARE
+    #if !A_BUILD_RENDER_SOFTWARE
         a_platform__renderSetDrawColor();
     #endif
 }
@@ -170,7 +170,7 @@ void a_pixel_colorSetRgba(int Red, int Green, int Blue, int Alpha)
     a_pixel__state.alpha = a_math_clamp(Alpha, 0, A_PIXEL_ALPHA_MAX);
     a_pixel__state.pixel = a_pixel_fromRgb(Red, Green, Blue);
 
-    #if A_PLATFORM_RENDER_SOFTWARE
+    #if A_BUILD_RENDER_SOFTWARE
         optimizeAlphaBlending(true);
     #else
         a_platform__renderSetDrawColor();
@@ -184,7 +184,7 @@ void a_pixel_colorSetHex(uint32_t Hexcode)
     a_pixel__state.blue = Hexcode & 0xff;
     a_pixel__state.pixel = a_pixel_fromHex(Hexcode);
 
-    #if !A_PLATFORM_RENDER_SOFTWARE
+    #if !A_BUILD_RENDER_SOFTWARE
         a_platform__renderSetDrawColor();
     #endif
 }
@@ -198,7 +198,7 @@ void a_pixel_colorSetPixel(APixel Pixel)
 
     a_pixel__state.pixel = Pixel;
 
-    #if !A_PLATFORM_RENDER_SOFTWARE
+    #if !A_BUILD_RENDER_SOFTWARE
         a_platform__renderSetDrawColor();
     #endif
 }
@@ -207,7 +207,7 @@ void a_pixel_fillBlitSet(bool Fill)
 {
     a_pixel__state.fillBlit = Fill;
 
-    #if A_PLATFORM_RENDER_SOFTWARE
+    #if A_BUILD_RENDER_SOFTWARE
         a_platform_software_blit__updateRoutines();
     #endif
 }
@@ -216,7 +216,7 @@ void a_pixel_fillDrawSet(bool Fill)
 {
     a_pixel__state.fillDraw = Fill;
 
-    #if A_PLATFORM_RENDER_SOFTWARE
+    #if A_BUILD_RENDER_SOFTWARE
         a_platform_software_draw__updateRoutines();
     #endif
 }

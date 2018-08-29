@@ -111,10 +111,10 @@ static void screenCallback(void)
         a_font__fontSet(A_FONT_ID_YELLOW); a_font_print("x");
 
         a_font__fontSet(A_FONT_ID_WHITE);
-        a_font_printf(" %s", A__MAKE_PLATFORM_NAME);
+        a_font_printf(" %s", A_BUILD__PLATFORM_NAME);
         a_font__fontSet(A_FONT_ID_LIGHT_GRAY);
         a_font_printf(
-            " %s (%s)", A__MAKE_CURRENT_GIT_BRANCH, A__MAKE_COMPILE_TIME);
+            " %s (%s)", A_BUILD__CURRENT_GIT_BRANCH, A_BUILD__COMPILE_TIME);
         a_font_newLine();
 
         a_font__fontSet(A_FONT_ID_WHITE);

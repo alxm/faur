@@ -19,7 +19,7 @@
 
 #include "a2x_system_includes.h"
 
-#if A_PLATFORM_RENDER_SDL
+#if A_BUILD_RENDER_SDL
 #include "a2x_pack_platform_sdl_render.v.h"
 
 #include <SDL.h>
@@ -515,4 +515,4 @@ void a_platform__renderTargetClipSet(int X, int Y, int Width, int Height)
         a_out__error("SDL_RenderSetClipRect failed: %s", SDL_GetError());
     }
 }
-#endif // A_PLATFORM_RENDER_SDL
+#endif // A_BUILD_RENDER_SDL

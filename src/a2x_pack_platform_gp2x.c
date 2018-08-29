@@ -23,7 +23,7 @@
 
 #include "a2x_system_includes.h"
 
-#if A_PLATFORM_SYSTEM_GP2X
+#if A_BUILD_SYSTEM_GP2X
 #include "a2x_pack_platform_gp2x.v.h"
 
 #include <fcntl.h>
@@ -135,4 +135,4 @@ void a_platform__screenResolutionGetNative(int* Width, int* Height)
     *Width = 320;
     *Height = 240;
 }
-#endif // A_PLATFORM_SYSTEM_GP2X
+#endif // A_BUILD_SYSTEM_GP2X

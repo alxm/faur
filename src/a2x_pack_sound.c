@@ -37,7 +37,7 @@ static int g_musicVolume;
 static int g_samplesVolume;
 static int g_volumeMax;
 
-#if A_PLATFORM_SYSTEM_GP2X || A_PLATFORM_SYSTEM_WIZ
+#if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ
     #define A_VOLUME_STEP 1
     #define A_VOLBAR_SHOW_MS 500
     static ATimer* g_volTimer;
@@ -48,7 +48,7 @@ static int g_volumeMax;
     static APixel g_volbarFill;
 #endif
 
-#if A_DEVICE_HAS_KEYBOARD
+#if A_BUILD_DEVICE_KEYBOARD
     static AInputButton* g_musicOnOffButton;
 #endif
 
@@ -64,7 +64,7 @@ static void adjustSoundVolume(int Volume)
 
 static void inputCallback(void)
 {
-    #if A_PLATFORM_SYSTEM_GP2X || A_PLATFORM_SYSTEM_WIZ
+    #if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ
         if(!g_soundOn) {
             return;
         }
@@ -83,14 +83,14 @@ static void inputCallback(void)
         }
     #endif
 
-    #if A_DEVICE_HAS_KEYBOARD
+    #if A_BUILD_DEVICE_KEYBOARD
         if(g_soundOn && a_button_pressGetOnce(g_musicOnOffButton)) {
             a_platform__musicToggle();
         }
     #endif
 }
 
-#if A_PLATFORM_SYSTEM_GP2X || A_PLATFORM_SYSTEM_WIZ
+#if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ
     static void screenCallback(void)
     {
         if(!g_soundOn
@@ -125,25 +125,25 @@ void a_sound__init(void)
 
     g_volumeMax = a_platform__volumeGetMax();
 
-    #if A_PLATFORM_SYSTEM_GP2X || A_PLATFORM_SYSTEM_WIZ
+    #if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ
         adjustSoundVolume(g_volumeMax / 16);
         g_volTimer = a_timer_new(A_TIMER_MS, A_VOLBAR_SHOW_MS, false);
     #else
         adjustSoundVolume(g_volumeMax);
     #endif
 
-    #if A_PLATFORM_SYSTEM_GP2X || A_PLATFORM_SYSTEM_WIZ
+    #if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ
         g_volumeUpButton = a_button_new("gamepad.b.volUp");
         g_volumeDownButton = a_button_new("gamepad.b.volDown");
     #endif
 
-    #if A_DEVICE_HAS_KEYBOARD
+    #if A_BUILD_DEVICE_KEYBOARD
         g_musicOnOffButton = a_button_new("key.m");
     #endif
 
     a_input__callbackAdd(inputCallback);
 
-    #if A_PLATFORM_SYSTEM_GP2X || A_PLATFORM_SYSTEM_WIZ
+    #if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ
         const char* color;
 
         color = a_settings_getString("sound.volbar.background");
@@ -165,11 +165,11 @@ void a_sound__uninit(void)
         return;
     }
 
-    #if A_PLATFORM_SYSTEM_GP2X || A_PLATFORM_SYSTEM_WIZ
+    #if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ
         a_timer_free(g_volTimer);
     #endif
 
-    #if A_DEVICE_HAS_KEYBOARD
+    #if A_BUILD_DEVICE_KEYBOARD
         a_button_free(g_musicOnOffButton);
     #endif
 

@@ -119,7 +119,7 @@ A_GENERIC_CFLAGS := \
     -fstrict-aliasing \
     -D_XOPEN_SOURCE \
     -I$(A2X_PATH)/inc/$(A_PLATFORM) \
-    $(A_PLATFORM_CFLAGS) \
+    $(A_BUILD_CFLAGS) \
     $(A_EXTRA_CFLAGS) \
 
 all : $(A_FILE_TARGET_BIN)
@@ -128,10 +128,10 @@ $(A_FILE_TARGET_BIN) : $(A_FILES_OBJ) $(A_FILE_OBJ_GEN_BUILDTIME)
 	@ echo "Building $(A_APP_NAME)"
 	@ mkdir -p $(@D)
 	@ $(CC) -o $@ $^ \
-	$(A_PLATFORM_CFLAGS) \
+	$(A_BUILD_CFLAGS) \
 	$(A_EXTRA_LIBS) \
 	$(A2X_PATH)/lib/$(A_PLATFORM)/a2x.a \
-	$(A_PLATFORM_LIBS)
+	$(A_BUILD_LIBS)
 
 $(A_FILE_SRC_GEN_BUILDTIME) : $(A_FILES_OBJ) $(A2X_PATH)/bin/a2x_buildtime
 	@ mkdir -p $(@D)

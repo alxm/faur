@@ -19,7 +19,7 @@
 
 #include "a2x_system_includes.h"
 
-#if A_PLATFORM_RENDER_SOFTWARE
+#if A_BUILD_RENDER_SOFTWARE
 #include "a2x_pack_platform_software_blit.v.h"
 
 #include "a2x_pack_mem.v.h"
@@ -365,4 +365,4 @@ void a_platform__textureBlitEx(APlatformTexture* Texture, int X, int Y, AFix Sca
 
     a_platform__textureBlit(Texture, X, Y, FillFlat);
 }
-#endif // A_PLATFORM_RENDER_SOFTWARE
+#endif // A_BUILD_RENDER_SOFTWARE
