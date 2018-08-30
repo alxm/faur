@@ -113,7 +113,7 @@ void a_entity_parentSet(AEntity* Entity, AEntity* Parent)
 void a_entity_refInc(AEntity* Entity)
 {
     if(a_entity_removeGet(Entity)) {
-        a_out__warningv("Entity '%s' is removed, ignoring reference",
+        a_out__warningv("Entity '%s' is removed, ignoring ref inc",
                         a_entity_idGet(Entity));
         return;
     }
@@ -151,7 +151,7 @@ bool a_entity_removeGet(const AEntity* Entity)
 void a_entity_removeSet(AEntity* Entity)
 {
     if(a_entity_removeGet(Entity)) {
-        a_out__fatal("Entity '%s' was already removed", a_entity_idGet(Entity));
+        a_out__fatal("Entity '%s' is already removed", a_entity_idGet(Entity));
         return;
     }
 
@@ -165,6 +165,12 @@ bool a_entity_activeGet(const AEntity* Entity)
 
 void a_entity_activeSet(AEntity* Entity)
 {
+    if(a_entity_removeGet(Entity)) {
+        a_out__warningv("Entity '%s' is removed, cannot set active",
+                        a_entity_idGet(Entity));
+        return;
+    }
+
     Entity->lastActive = a_fps_ticksGet();
 
     if(Entity->removedFromActive) {
@@ -279,8 +285,7 @@ void a_entity_muteSet(AEntity* Entity, bool DoMute)
 {
     if(a_entity_removeGet(Entity)) {
         a_out__warningv(
-            "Entity '%s' was removed, cannot mute", a_entity_idGet(Entity));
-
+            "Entity '%s' is removed, cannot mute", a_entity_idGet(Entity));
         return;
     } else if(a_entity_muteGet(Entity) == DoMute) {
         if(DoMute) {
