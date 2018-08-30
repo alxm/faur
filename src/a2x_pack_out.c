@@ -17,10 +17,9 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a2x_system_includes.h"
 #include "a2x_pack_out.v.h"
 
-#if A_PLATFORM_SYSTEM_EMSCRIPTEN
+#if A_BUILD_SYSTEM_EMSCRIPTEN
     #include <emscripten.h>
 #endif
 
@@ -59,14 +58,19 @@ static const struct {
 
 static void outPrintHeader(AOutSource Source, AOutType Type, FILE* Stream)
 {
-    #if A_PLATFORM_SYSTEM_LINUX && A_PLATFORM_SYSTEM_DESKTOP
+    #if A_BUILD_SYSTEM_LINUX && A_BUILD_SYSTEM_DESKTOP
         fprintf(Stream,
-                "\033[1;%dm[%s][%s]\033[0m ",
+                "\033[1;%dm[%s][%s][%u]\033[0m ",
                 g_types[Type].color,
                 g_sources[Source],
-                g_types[Type].name);
+                g_types[Type].name,
+                a_fps_ticksGet());
     #else
-        fprintf(Stream, "[%s][%s] ", g_sources[Source], g_types[Type].name);
+        fprintf(Stream,
+                "[%s][%s][%u] ",
+                g_sources[Source],
+                g_types[Type].name,
+                a_fps_ticksGet());
     #endif
 }
 
@@ -215,7 +219,7 @@ void a_out__fatal(const char* Format, ...)
         }
     #endif
 
-    #if A_PLATFORM_SYSTEM_EMSCRIPTEN
+    #if A_BUILD_SYSTEM_EMSCRIPTEN
         emscripten_force_exit(1);
     #endif
 

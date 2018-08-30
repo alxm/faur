@@ -17,7 +17,6 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a2x_system_includes.h"
 #include "a2x_pack_dir.v.h"
 
 #include <dirent.h>
@@ -182,7 +181,7 @@ bool a_dir_exists(const char* Path)
 
 bool a_dir_make(const char* Path)
 {
-    #if A_PLATFORM_SYSTEM_LINUX
+    #if A_BUILD_SYSTEM_LINUX
         int result = mkdir(Path, S_IRWXU);
     #else
         int result = mkdir(Path);

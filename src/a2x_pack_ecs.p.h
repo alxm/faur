@@ -19,5 +19,7 @@
 
 #pragma once
 
+#include "a2x_system_includes.h"
+
 extern void a_ecs_tickSet(const char* System);
 extern void a_ecs_drawSet(const char* System);

@@ -19,7 +19,7 @@
 
 #include "a2x_system_includes.h"
 
-#if A_PLATFORM_RENDER_SOFTWARE
+#if A_BUILD_RENDER_SOFTWARE
 #include "a2x_pack_platform_software_draw.v.h"
 
 #include "a2x_pack_draw.v.h"
@@ -431,4 +431,4 @@ void a_platform__drawCircleFilled(int X, int Y, int Radius)
 {
     drawCircle(X, Y, Radius);
 }
-#endif // A_PLATFORM_RENDER_SOFTWARE
+#endif // A_BUILD_RENDER_SOFTWARE

@@ -2,7 +2,7 @@ A_PLATFORM := wiz
 
 OPEN2X := $(OPEN2X_ROOT)/$(OPEN2X_GLIBC)
 
-A_PLATFORM_LIBS := \
+A_BUILD_LIBS := \
     -L$(OPEN2X)/lib \
     -L$(OPEN2X)/arm-open2x-linux/lib \
     -lpng12 \
@@ -14,11 +14,11 @@ A_PLATFORM_LIBS := \
     -lm \
     -ldl \
 
-A_PLATFORM_CFLAGS := \
-    -DA_PLATFORM_LIB_SDL=1 \
-    -DA_PLATFORM_RENDER_SOFTWARE=1 \
-    -DA_PLATFORM_SYSTEM_LINUX=1 \
-    -DA_PLATFORM_SYSTEM_WIZ=1 \
+A_BUILD_CFLAGS := \
+    -DA_BUILD_LIB_SDL=1 \
+    -DA_BUILD_RENDER_SOFTWARE=1 \
+    -DA_BUILD_SYSTEM_LINUX=1 \
+    -DA_BUILD_SYSTEM_WIZ=1 \
     -O3 \
     -s \
     -march=armv5te \

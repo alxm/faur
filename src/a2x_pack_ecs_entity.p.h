@@ -19,6 +19,8 @@
 
 #pragma once
 
+#include "a2x_system_includes.h"
+
 typedef struct AEntity AEntity;
 typedef void AMessageHandler(AEntity* To, AEntity* From);
 

@@ -17,7 +17,6 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a2x_system_includes.h"
 #include "a2x_pack_fps.v.h"
 
 #include "a2x_pack_mem.v.h"
@@ -30,7 +29,7 @@
 #define SKIP_ADJUST_DELAY_SEC 2
 #define NO_SLEEP_RESET_SEC 20
 
-#if !A_PLATFORM_SYSTEM_EMSCRIPTEN
+#if !A_BUILD_SYSTEM_EMSCRIPTEN
     #define ALLOW_SLEEP 1
 #endif
 

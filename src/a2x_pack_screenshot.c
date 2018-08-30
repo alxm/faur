@@ -17,7 +17,6 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a2x_system_includes.h"
 #include "a2x_pack_screenshot.v.h"
 
 #include "a2x_pack_dir.v.h"
@@ -112,9 +111,9 @@ static bool lazy_init(void)
                                     ", built on ",
                                     a_settings_getString("app.buildtime"),
                                     ". Running on a2x ",
-                                    A__MAKE_CURRENT_GIT_BRANCH,
+                                    A_BUILD__CURRENT_GIT_BRANCH,
                                     ", built on ",
-                                    A__MAKE_COMPILE_TIME,
+                                    A_BUILD__COMPILE_TIME,
                                     ".",
                                     NULL);
     }

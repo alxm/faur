@@ -19,6 +19,8 @@
 
 #pragma once
 
+#include "a2x_system_includes.h"
+
 typedef struct AColMap AColMap;
 typedef struct AColObject AColObject;
 

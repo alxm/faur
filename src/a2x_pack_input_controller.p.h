@@ -19,5 +19,7 @@
 
 #pragma once
 
+#include "a2x_system_includes.h"
+
 extern unsigned a_input_controllerNumGet(void);
 extern void a_input_controllerSet(unsigned Index);

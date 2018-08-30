@@ -17,7 +17,6 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a2x_system_includes.h"
 #include "a2x_pack_screen.v.h"
 
 #include "a2x_pack_collide.v.h"
@@ -41,7 +40,7 @@ static AList* g_overlays; // list of AScreenOverlayContainer
 
 static bool g_fullScreenState;
 
-#if A_PLATFORM_SYSTEM_DESKTOP
+#if A_BUILD_SYSTEM_DESKTOP
     static AInputButton* g_fullScreenButton;
 
     static void inputCallback(void)
@@ -82,7 +81,7 @@ static void freeScreen(AScreen* Screen)
         free(Screen->pixels);
     }
 
-    #if !A_PLATFORM_RENDER_SOFTWARE
+    #if !A_BUILD_RENDER_SOFTWARE
         a_platform__textureFree(Screen->texture);
     #endif
 }
@@ -115,9 +114,11 @@ void a_screen__init(void)
 
     if(width <= 0 || height <= 0) {
         a_out__fatal("Invalid screen resolution %dx%d", width, height);
+    } else {
+        a_out__message("Screen resolution %dx%d", width, height);
     }
 
-    #if A_PLATFORM_RENDER_SOFTWARE
+    #if A_BUILD_RENDER_SOFTWARE
         if(a_settings_getBool("video.doubleBuffer")) {
             // Allocate pixel buffer
             initScreen(&a__screen, width, height, true);
@@ -131,11 +132,11 @@ void a_screen__init(void)
     a_platform__screenInit(width, height, g_fullScreenState);
     a_platform__screenSetFullscreen(g_fullScreenState);
 
-    #if A_PLATFORM_SYSTEM_WIZ
+    #if A_BUILD_SYSTEM_WIZ
         a_platform_wiz__portraitModeSet();
     #endif
 
-    #if A_PLATFORM_SYSTEM_DESKTOP
+    #if A_BUILD_SYSTEM_DESKTOP
         g_fullScreenButton = a_button_new(
                                 a_settings_getString(
                                     "video.fullscreen.button"));
@@ -143,7 +144,7 @@ void a_screen__init(void)
         a_input__callbackAdd(inputCallback);
     #endif
 
-    #if !A_PLATFORM_RENDER_SOFTWARE
+    #if !A_BUILD_RENDER_SOFTWARE
         initScreen(&a__screen, width, height, true);
         a_platform__renderTargetSet(a__screen.texture);
     #endif
@@ -167,7 +168,7 @@ void a_screen__uninit(void)
     a_list_freeEx(g_stack, (AFree*)a_screen_free);
     a_list_freeEx(g_overlays, free);
 
-    #if A_PLATFORM_SYSTEM_DESKTOP
+    #if A_BUILD_SYSTEM_DESKTOP
         a_button_free(g_fullScreenButton);
     #endif
 }
@@ -201,7 +202,7 @@ bool a_screen__sameSize(const AScreen* Screen1, const AScreen* Screen2)
 
 APixel* a_screen_pixelsGetBuffer(void)
 {
-    #if !A_PLATFORM_RENDER_SOFTWARE
+    #if !A_BUILD_RENDER_SOFTWARE
         a_platform__renderTargetPixelsGet(a__screen.pixels, a__screen.width);
     #endif
 
@@ -256,7 +257,7 @@ void a_screen_copy(AScreen* Dst, const AScreen* Src)
                      Src->height);
     }
 
-    #if A_PLATFORM_RENDER_SOFTWARE
+    #if A_BUILD_RENDER_SOFTWARE
         memcpy(Dst->pixels, Src->pixels, Src->pixelsSize);
     #else
         a_pixel_push();
@@ -287,7 +288,7 @@ void a_screen_blit(const AScreen* Screen)
                      Screen->height);
     }
 
-    #if A_PLATFORM_RENDER_SOFTWARE
+    #if A_BUILD_RENDER_SOFTWARE
         bool noClipping = a_screen_isBoxInsideClip(
                             0, 0, a__screen.width, a__screen.height);
         APixel* dst = a__screen.pixels;
@@ -373,7 +374,7 @@ void a_screen_blit(const AScreen* Screen)
 
 void a_screen_clear(void)
 {
-    #if A_PLATFORM_RENDER_SOFTWARE
+    #if A_BUILD_RENDER_SOFTWARE
         memset(a__screen.pixels, 0, a__screen.pixelsSize);
     #else
         a_pixel_push();
@@ -398,7 +399,7 @@ static void pushTarget(APixel* Pixels, size_t PixelsSize, int Width, int Height,
     a__screen.height = Height;
     a__screen.ownsBuffer = false;
 
-    #if !A_PLATFORM_RENDER_SOFTWARE
+    #if !A_BUILD_RENDER_SOFTWARE
         a_platform__renderTargetSet(Texture);
     #endif
 
@@ -427,7 +428,7 @@ void a_screen_targetPushSprite(ASprite* Sprite)
 
 void a_screen_targetPop(void)
 {
-    #if A_PLATFORM_RENDER_SOFTWARE
+    #if A_BUILD_RENDER_SOFTWARE
         if(a__screen.sprite) {
             a_platform__textureSpriteCommit(a__screen.sprite);
         }
@@ -442,7 +443,7 @@ void a_screen_targetPop(void)
     a__screen = *screen;
     free(screen);
 
-    #if !A_PLATFORM_RENDER_SOFTWARE
+    #if !A_BUILD_RENDER_SOFTWARE
         a_platform__renderTargetSet(a__screen.texture);
         a_platform__renderTargetClipSet(a__screen.clipX,
                                         a__screen.clipY,
@@ -471,7 +472,7 @@ void a_screen_clipSet(int X, int Y, int Width, int Height)
     a__screen.clipWidth = Width;
     a__screen.clipHeight = Height;
 
-    #if !A_PLATFORM_RENDER_SOFTWARE
+    #if !A_BUILD_RENDER_SOFTWARE
         a_platform__renderTargetClipSet(X, Y, Width, Height);
     #endif
 }

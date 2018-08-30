@@ -19,6 +19,8 @@
 
 #pragma once
 
+#include "a2x_system_includes.h"
+
 #include "a2x_pack_fps.p.h"
 
 extern uint32_t a_time_msGet(void);

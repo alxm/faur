@@ -17,7 +17,6 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a2x_system_includes.h"
 #include "a2x_pack_sprite.v.h"
 
 #include "a2x_pack_embed.v.h"
@@ -207,7 +206,7 @@ ASprite* a_sprite_dup(const ASprite* Sprite)
 
     assignPixels(clone, pixels);
 
-    #if !A_PLATFORM_RENDER_SOFTWARE
+    #if !A_BUILD_RENDER_SOFTWARE
         a_pixel_push();
         a_screen_targetPushSprite(clone);
 

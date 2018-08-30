@@ -19,6 +19,8 @@
 
 #pragma once
 
+#include "a2x_system_includes.h"
+
 #include "a2x_pack_ecs_entity.p.h"
 
 extern void a_component_new(const char* Name, size_t Size, AInit* Init, AFree* Free);

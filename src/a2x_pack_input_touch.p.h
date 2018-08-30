@@ -19,6 +19,8 @@
 
 #pragma once
 
+#include "a2x_system_includes.h"
+
 typedef struct AInputTouch AInputTouch;
 
 extern AInputTouch* a_touch_new(const char* Ids);

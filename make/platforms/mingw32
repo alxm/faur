@@ -2,21 +2,21 @@ A_PLATFORM := mingw32
 
 MINGW_BIN := $(MINGW32_ROOT)/$(MINGW32_ARCH)/bin
 
-A_PLATFORM_LIBS := \
+A_BUILD_LIBS := \
     -u _SDL_main \
     $(shell $(MINGW_BIN)/sdl2-config --libs) \
     -lSDL2_mixer \
     -lpng \
     -lm \
 
-A_PLATFORM_CFLAGS := \
-    -DA_PLATFORM_LIB_SDL=2 \
-    -DA_PLATFORM_LIB_SDL_GETFULLRES=1 \
-    -DA_PLATFORM_LIB_SDL_TIME=1 \
-    -DA_PLATFORM_RENDER_SDL=1 \
-    -DA_PLATFORM_SYSTEM_DESKTOP=1 \
-    -DA_PLATFORM_SYSTEM_MINGW=1 \
-    -DA_DEVICE_HAS_KEYBOARD=1 \
+A_BUILD_CFLAGS := \
+    -DA_BUILD_LIB_SDL=2 \
+    -DA_BUILD_LIB_SDL_GETFULLRES=1 \
+    -DA_BUILD_LIB_SDL_TIME=1 \
+    -DA_BUILD_RENDER_SDL=1 \
+    -DA_BUILD_SYSTEM_DESKTOP=1 \
+    -DA_BUILD_SYSTEM_MINGW=1 \
+    -DA_BUILD_DEVICE_KEYBOARD=1 \
     -O3 \
     $(shell $(MINGW_BIN)/sdl2-config --cflags) \
 

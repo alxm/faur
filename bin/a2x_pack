@@ -27,10 +27,13 @@ from utils.tool import Tool
 
 """
 a2x_pack_sample.p.h
+    <a2x_system_includes.h>
+    <a2x_pack_*.p.h>
     <public typedefs>
     <a2x_pack_*.p.h>
     <public typedef implementations>
     <public api prototypes>
+    <static inline functions>
 
 a2x_pack_sample.v.h
     <a2x_pack_sample.p.h>
@@ -38,12 +41,11 @@ a2x_pack_sample.v.h
     <a2x_pack_*.v.h>
     <private typedef implementations>
     <private api prototypes>
+    <static inline functions>
 
 a2x_pack_sample.c
-    <a2x_system_includes.h>
-    <system headers>
-    <a2x_pack_*.v.h>
     <a2x_pack_sample.v.h>
+    <system headers>
     <a2x_pack_*.v.h>
     <private types>
     <implementations>
@@ -91,8 +93,6 @@ class PackTool(Tool):
 """\
 {0}
 
-#include "a2x_system_includes.h"
-
 #include "a2x_pack_{1}.v.h"
 
 void a_{1}__init(void)
@@ -111,6 +111,8 @@ void a_{1}__uninit(void)
 {0}
 
 #pragma once
+
+#include "a2x_system_includes.h"
 """.format(license_header))
 
         self.writefile(pack_vh,
