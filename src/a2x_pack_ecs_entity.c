@@ -113,9 +113,8 @@ void a_entity_parentSet(AEntity* Entity, AEntity* Parent)
 void a_entity_refInc(AEntity* Entity)
 {
     if(a_entity_removeGet(Entity)) {
-        a_out__warningv("Entity '%s' is removed, ignoring ref inc",
-                        a_entity_idGet(Entity));
-        return;
+        a_out__fatal(
+            "Entity '%s' is removed, cannot inc ref", a_entity_idGet(Entity));
     }
 
     Entity->references++;
