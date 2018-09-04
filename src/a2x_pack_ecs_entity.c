@@ -165,8 +165,7 @@ bool a_entity_activeGet(const AEntity* Entity)
 void a_entity_activeSet(AEntity* Entity)
 {
     if(a_entity_removeGet(Entity)) {
-        a_out__warningv("Entity '%s' is removed, cannot set active",
-                        a_entity_idGet(Entity));
+        // Ignore if entity is removed
         return;
     }
 
