@@ -75,28 +75,28 @@ void a_platform__renderSetDrawColor(void)
                               (uint8_t)a_pixel__state.blue,
                               pixelAlphaToSdlAlpha()) < 0) {
 
-        a_out__error("SDL_SetRenderDrawColor failed: %s", SDL_GetError());
+        a_out__error("SDL_SetRenderDrawColor: %s", SDL_GetError());
     }
 }
 
 void a_platform__renderSetBlendMode(void)
 {
     if(SDL_SetRenderDrawBlendMode(a__sdlRenderer, pixelBlendToSdlBlend()) < 0) {
-        a_out__error("SDL_SetRenderDrawBlendMode failed: %s", SDL_GetError());
+        a_out__error("SDL_SetRenderDrawBlendMode: %s", SDL_GetError());
     }
 }
 
 void a_platform__drawPixel(int X, int Y)
 {
     if(SDL_RenderDrawPoint(a__sdlRenderer, X, Y) < 0) {
-        a_out__error("SDL_RenderDrawPoint failed: %s", SDL_GetError());
+        a_out__error("SDL_RenderDrawPoint: %s", SDL_GetError());
     }
 }
 
 void a_platform__drawLine(int X1, int Y1, int X2, int Y2)
 {
     if(SDL_RenderDrawLine(a__sdlRenderer, X1, Y1, X2, Y2) < 0) {
-        a_out__error("SDL_RenderDrawLine failed: %s", SDL_GetError());
+        a_out__error("SDL_RenderDrawLine: %s", SDL_GetError());
     }
 }
 
@@ -115,7 +115,7 @@ void a_platform__drawRectangleFilled(int X, int Y, int Width, int Height)
     SDL_Rect area = {X, Y, Width, Height};
 
     if(SDL_RenderFillRect(a__sdlRenderer, &area) < 0) {
-        a_out__error("SDL_RenderFillRect failed: %s", SDL_GetError());
+        a_out__error("SDL_RenderFillRect: %s", SDL_GetError());
     }
 }
 
@@ -240,7 +240,7 @@ void a_platform__drawCircleOutline(int X, int Y, int Radius)
     if(SDL_RenderDrawPoints(
         a__sdlRenderer, (SDL_Point*)scanlines, numPointPairs * 4 * 2) < 0) {
 
-        a_out__error("SDL_RenderDrawPoints failed: %s", SDL_GetError());
+        a_out__error("SDL_RenderDrawPoints: %s", SDL_GetError());
     }
 }
 
@@ -316,7 +316,7 @@ void a_platform__drawCircleFilled(int X, int Y, int Radius)
     if(SDL_RenderFillRects(
         a__sdlRenderer, scanlines, (int)A_ARRAY_LEN(scanlines)) < 0) {
 
-        a_out__error("SDL_RenderFillRects failed: %s", SDL_GetError());
+        a_out__error("SDL_RenderFillRects: %s", SDL_GetError());
     }
 }
 
@@ -328,11 +328,11 @@ APlatformTexture* a_platform__textureScreenNew(int Width, int Height)
                                        Width,
                                        Height);
     if(t == NULL) {
-        a_out__fatal("SDL_CreateTexture failed: %s", SDL_GetError());
+        a_out__fatal("SDL_CreateTexture: %s", SDL_GetError());
     }
 
     if(SDL_SetTextureBlendMode(t, SDL_BLENDMODE_BLEND) < 0) {
-        a_out__error("SDL_SetTextureBlendMode failed: %s", SDL_GetError());
+        a_out__error("SDL_SetTextureBlendMode: %s", SDL_GetError());
     }
 
     APlatformTexture* screen = a_mem_malloc(sizeof(APlatformTexture));
@@ -396,17 +396,17 @@ void a_platform__textureSpriteCommit(ASprite* Sprite)
                                            width,
                                            height);
         if(t == NULL) {
-            a_out__fatal("SDL_CreateTexture failed: %s", SDL_GetError());
+            a_out__fatal("SDL_CreateTexture: %s", SDL_GetError());
         }
 
         if(SDL_UpdateTexture(
             t, NULL, texture->pixels, width * (int)sizeof(APixel)) < 0) {
 
-            a_out__fatal("SDL_UpdateTexture failed: %s", SDL_GetError());
+            a_out__fatal("SDL_UpdateTexture: %s", SDL_GetError());
         }
 
         if(SDL_SetTextureBlendMode(t, SDL_BLENDMODE_BLEND) < 0) {
-            a_out__error("SDL_SetTextureBlendMode failed: %s", SDL_GetError());
+            a_out__error("SDL_SetTextureBlendMode: %s", SDL_GetError());
         }
 
         texture->texture[i] = t;
@@ -444,11 +444,11 @@ void a_platform__textureBlitEx(APlatformTexture* Texture, int X, int Y, AFix Sca
     SDL_Texture* t = Texture->texture[FillFlat];
 
     if(SDL_SetTextureBlendMode(t, pixelBlendToSdlBlend()) < 0) {
-        a_out__error("SDL_SetTextureBlendMode failed: %s", SDL_GetError());
+        a_out__error("SDL_SetTextureBlendMode: %s", SDL_GetError());
     }
 
     if(SDL_SetTextureAlphaMod(t, pixelAlphaToSdlAlpha()) < 0) {
-        a_out__error("SDL_SetTextureAlphaMod failed: %s", SDL_GetError());
+        a_out__error("SDL_SetTextureAlphaMod: %s", SDL_GetError());
     }
 
     if(FillFlat) {
@@ -457,7 +457,7 @@ void a_platform__textureBlitEx(APlatformTexture* Texture, int X, int Y, AFix Sca
                                   (uint8_t)a_pixel__state.green,
                                   (uint8_t)a_pixel__state.blue) < 0) {
 
-            a_out__error("SDL_SetTextureColorMod failed: %s", SDL_GetError());
+            a_out__error("SDL_SetTextureColorMod: %s", SDL_GetError());
         }
     }
 
@@ -477,12 +477,12 @@ void a_platform__textureBlitEx(APlatformTexture* Texture, int X, int Y, AFix Sca
                         &center,
                         SDL_FLIP_NONE) < 0) {
 
-        a_out__error("SDL_RenderCopyEx failed: %s", SDL_GetError());
+        a_out__error("SDL_RenderCopyEx: %s", SDL_GetError());
     }
 
     if(FillFlat) {
         if(SDL_SetTextureColorMod(t, 0xff, 0xff, 0xff) < 0) {
-            a_out__error("SDL_SetTextureColorMod failed: %s", SDL_GetError());
+            a_out__error("SDL_SetTextureColorMod: %s", SDL_GetError());
         }
     }
 }
@@ -490,7 +490,7 @@ void a_platform__textureBlitEx(APlatformTexture* Texture, int X, int Y, AFix Sca
 void a_platform__renderTargetSet(APlatformTexture* Texture)
 {
     if(SDL_SetRenderTarget(a__sdlRenderer, Texture->texture[0]) < 0) {
-        a_out__fatal("SDL_SetRenderTarget failed: %s", SDL_GetError());
+        a_out__fatal("SDL_SetRenderTarget: %s", SDL_GetError());
     }
 }
 
@@ -503,7 +503,7 @@ void a_platform__renderTargetPixelsGet(APixel* Pixels, int Width)
                             Pixels,
                             Width * (int)sizeof(APixel)) < 0) {
 
-        a_out__fatal("SDL_RenderReadPixels failed: %s", SDL_GetError());
+        a_out__fatal("SDL_RenderReadPixels: %s", SDL_GetError());
     }
 }
 
@@ -512,7 +512,7 @@ void a_platform__renderTargetClipSet(int X, int Y, int Width, int Height)
     SDL_Rect area = {X, Y, Width, Height};
 
     if(SDL_RenderSetClipRect(a__sdlRenderer, &area) < 0) {
-        a_out__error("SDL_RenderSetClipRect failed: %s", SDL_GetError());
+        a_out__error("SDL_RenderSetClipRect: %s", SDL_GetError());
     }
 }
 #endif // A_BUILD_RENDER_SDL

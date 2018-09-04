@@ -31,7 +31,7 @@ struct AStrBuilder {
 AStrBuilder* a_strbuilder_new(size_t Bytes)
 {
     if(Bytes == 0) {
-        a_out__fatal("a_strbuilder_new: invalid size 0");
+        a_out__fatal("a_strbuilder_new: Invalid size 0");
     }
 
     AStrBuilder* b = a_mem_malloc(sizeof(AStrBuilder) + Bytes);

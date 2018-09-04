@@ -41,23 +41,28 @@ void a_platform_sdl_sound__init(void)
     }
 
     if(Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 256) != 0) {
-        a_out__error("Mix_OpenAudio failed: %s", Mix_GetError());
+        a_out__error("Mix_OpenAudio: %s", Mix_GetError());
         a_settings__set("sound.on", "0");
     } else {
         g_numSampleChannels =
             Mix_AllocateChannels(
                 a_settings_getInt("sound.sample.channels.total"));
+
+        if(g_numSampleChannels <= 0) {
+            a_out__fatal("Mix_AllocateChannels: %s", Mix_GetError());
+        }
+
         g_numSampleChannelsReserved =
             Mix_ReserveChannels(
                 a_settings_getInt("sound.sample.channels.reserved"));
 
         if(g_numSampleChannelsReserved <= 0) {
-            a_out__fatal("Mix_AllocateChannels/Mix_ReserveChannels failed");
-        } else {
-            a_out__message("Allocated %d sample channels, reserved %d",
-                           g_numSampleChannels,
-                           g_numSampleChannelsReserved);
+            a_out__fatal("Mix_ReserveChannels: %s", Mix_GetError());
         }
+
+        a_out__message("Allocated %d sample channels, reserved %d",
+                       g_numSampleChannels,
+                       g_numSampleChannelsReserved);
     }
 }
 
@@ -77,7 +82,7 @@ APlatformMusic* a_platform__musicNew(const char* Path)
     Mix_Music* m = Mix_LoadMUS(Path);
 
     if(m == NULL) {
-        a_out__error("Mix_LoadMUS failed: %s", Mix_GetError());
+        a_out__error("Mix_LoadMUS(%s): %s", Path, Mix_GetError());
     }
 
     return m;
@@ -100,7 +105,7 @@ void a_platform__musicVolumeSet(int Volume)
 void a_platform__musicPlay(APlatformMusic* Music)
 {
     if(Mix_PlayMusic(Music, -1) == -1) {
-        a_out__error("Mix_PlayMusic failed: %s", Mix_GetError());
+        a_out__error("Mix_PlayMusic: %s", Mix_GetError());
     }
 }
 
@@ -123,7 +128,7 @@ APlatformSample* a_platform__sampleNewFromFile(const char* Path)
     Mix_Chunk* chunk = Mix_LoadWAV(Path);
 
     if(chunk == NULL) {
-        a_out__error("Mix_LoadWAV(%s) failed: %s", Path, Mix_GetError());
+        a_out__error("Mix_LoadWAV(%s): %s", Path, Mix_GetError());
     }
 
     return chunk;
@@ -134,14 +139,14 @@ APlatformSample* a_platform__sampleNewFromData(const uint8_t* Data, int Size)
     SDL_RWops* rw = SDL_RWFromMem((void*)Data, Size);
 
     if(rw == NULL) {
-        a_out__error("SDL_RWFromMem failed: %s", SDL_GetError());
+        a_out__error("SDL_RWFromMem: %s", SDL_GetError());
         return NULL;
     }
 
     Mix_Chunk* chunk = Mix_LoadWAV_RW(rw, 0);
 
     if(chunk == NULL) {
-        a_out__error("Mix_LoadWAV_RW failed: %s", Mix_GetError());
+        a_out__error("Mix_LoadWAV_RW: %s", Mix_GetError());
     }
 
     SDL_FreeRW(rw);
@@ -176,7 +181,7 @@ void a_platform__sampleVolumeSetAll(int Volume)
 void a_platform__samplePlay(APlatformSample* Sample, int Channel, bool Loop)
 {
     if(Mix_PlayChannel(Channel, Sample, Loop ? -1 : 0) == -1) {
-        a_out__errorv("Mix_PlayChannel failed: %s", Mix_GetError());
+        a_out__errorv("Mix_PlayChannel(%d): %s", Channel, Mix_GetError());
     }
 }
 

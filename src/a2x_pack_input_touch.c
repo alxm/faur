@@ -94,7 +94,7 @@ AInputTouch* a_touch_new(const char* Ids)
     a_list_freeEx(tok, free);
 
     if(a_list_isEmpty(t->header.sourceInputs)) {
-        a_out__error("No touch screen found for '%s'", Ids);
+        a_out__error("a_touch_new: No touch screen found for '%s'", Ids);
     }
 
     return t;

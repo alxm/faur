@@ -229,7 +229,7 @@ void a_font_pop(void)
     AFontState* state = a_list_pop(g_stateStack);
 
     if(state == NULL) {
-        a_out__fatal("Cannot pop AFontState: stack is empty");
+        a_out__fatal("a_font_pop: Stack is empty");
     }
 
     g_state = *state;

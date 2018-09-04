@@ -114,7 +114,7 @@ void a_entity_refInc(AEntity* Entity)
 {
     if(a_entity_removeGet(Entity)) {
         a_out__fatal(
-            "Entity '%s' is removed, cannot inc ref", a_entity_idGet(Entity));
+            "a_entity_refInc: '%s' is removed", a_entity_idGet(Entity));
     }
 
     Entity->references++;
@@ -131,7 +131,7 @@ void a_entity_refDec(AEntity* Entity)
     Entity->references--;
 
     if(Entity->references < 0) {
-        a_out__fatal("Release count exceeds reference count for '%s'",
+        a_out__fatal("a_entity_refDec: Mismatched ref count for '%s'",
                      a_entity_idGet(Entity));
     } else if(Entity->references == 0
         && a_ecs__entityIsInList(Entity, A_ECS__REMOVED_LIMBO)) {
@@ -150,7 +150,8 @@ bool a_entity_removeGet(const AEntity* Entity)
 void a_entity_removeSet(AEntity* Entity)
 {
     if(a_entity_removeGet(Entity)) {
-        a_out__fatal("Entity '%s' is already removed", a_entity_idGet(Entity));
+        a_out__fatal("a_entity_removeSet: '%s' is already removed",
+                     a_entity_idGet(Entity));
         return;
     }
 
@@ -190,7 +191,7 @@ void a_entity_activeSetPermanent(AEntity* Entity)
 void* a_entity_componentAdd(AEntity* Entity, const char* Component)
 {
     if(!a_ecs__entityIsInList(Entity, A_ECS__NEW)) {
-        a_out__fatal("Too late to add component '%s' to '%s'",
+        a_out__fatal("a_entity_componentAdd: Too late to add '%s' to '%s'",
                      Component,
                      a_entity_idGet(Entity));
     }
@@ -198,13 +199,13 @@ void* a_entity_componentAdd(AEntity* Entity, const char* Component)
     const AComponent* c = a_component__get(Component);
 
     if(c == NULL) {
-        a_out__fatal("Unknown component '%s' for '%s'",
+        a_out__fatal("a_entity_componentAdd: Unknown component '%s' for '%s'",
                      Component,
                      a_entity_idGet(Entity));
     }
 
     if(a_bitfield_test(Entity->componentBits, c->bit)) {
-        a_out__fatal("Component '%s' was already added to '%s'",
+        a_out__fatal("a_entity_componentAdd: '%s' was already added to '%s'",
                      Component,
                      a_entity_idGet(Entity));
     }
@@ -229,7 +230,7 @@ bool a_entity_componentHas(const AEntity* Entity, const char* Component)
     bool has = a_strhash_contains(Entity->components, Component);
 
     if(!has && a_component__get(Component) == NULL) {
-        a_out__fatal("Unknown component '%s' for '%s'",
+        a_out__fatal("a_entity_componentHas: Unknown component '%s' for '%s'",
                      Component,
                      a_entity_idGet(Entity));
     }
@@ -243,9 +244,10 @@ void* a_entity_componentGet(const AEntity* Entity, const char* Component)
 
     if(header == NULL) {
         if(a_component__get(Component) == NULL) {
-            a_out__fatal("Unknown component '%s' for '%s'",
-                         Component,
-                         a_entity_idGet(Entity));
+            a_out__fatal(
+                "a_entity_componentGet: Unknown component '%s' for '%s'",
+                Component,
+                a_entity_idGet(Entity));
         }
 
         return NULL;
@@ -260,14 +262,16 @@ void* a_entity_componentReq(const AEntity* Entity, const char* Component)
 
     if(header == NULL) {
         if(a_component__get(Component) == NULL) {
-            a_out__fatal("Unknown component '%s' for '%s'",
-                         Component,
-                         a_entity_idGet(Entity));
+            a_out__fatal(
+                "a_entity_componentReq: Unknown component '%s' for '%s'",
+                Component,
+                a_entity_idGet(Entity));
         }
 
-        a_out__fatal("Missing required component '%s' in '%s'",
-                     Component,
-                     a_entity_idGet(Entity));
+        a_out__fatal(
+            "a_entity_componentReq: Missing required component '%s' in '%s'",
+            Component,
+            a_entity_idGet(Entity));
     }
 
     return a_component__headerGetData(header);
@@ -282,16 +286,16 @@ bool a_entity_muteGet(const AEntity* Entity)
 void a_entity_muteSet(AEntity* Entity, bool DoMute)
 {
     if(a_entity_removeGet(Entity)) {
-        a_out__warningv(
-            "Entity '%s' is removed, cannot mute", a_entity_idGet(Entity));
+        a_out__warningv("a_entity_muteSet: Entity '%s' is removed, cannot mute",
+                        a_entity_idGet(Entity));
         return;
     } else if(a_entity_muteGet(Entity) == DoMute) {
         if(DoMute) {
-            a_out__warningv(
-                "Entity '%s' is already muted", a_entity_idGet(Entity));
+            a_out__warningv("a_entity_muteSet: '%s' is already muted",
+                            a_entity_idGet(Entity));
         } else {
-            a_out__warningv(
-                "Entity '%s' is not muted", a_entity_idGet(Entity));
+            a_out__warningv("a_entity_muteSet: '%s' is not muted",
+                            a_entity_idGet(Entity));
         }
 
         return;
@@ -336,7 +340,7 @@ bool a_entity__isMatchedToSystems(const AEntity* Entity)
 void a_entity_messageHandlerSet(AEntity* Entity, const char* Message, AMessageHandler* Handler)
 {
     if(a_strhash_contains(Entity->handlers, Message)) {
-        a_out__fatal("'%s' handler already set for '%s'",
+        a_out__fatal("a_entity_messageHandlerSet: '%s' already set for '%s'",
                      Message,
                      a_entity_idGet(Entity));
     }

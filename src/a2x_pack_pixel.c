@@ -50,7 +50,7 @@ void a_pixel_pop(void)
     APixelState* state = a_list_pop(g_stateStack);
 
     if(state == NULL) {
-        a_out__fatal("Cannot pop APixelState: stack is empty");
+        a_out__fatal("a_pixel_pop: Stack is empty");
     }
 
     a_pixel__state = *state;

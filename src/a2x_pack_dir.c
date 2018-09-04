@@ -79,7 +79,7 @@ ADir* a_dir_new(const char* Path)
     DIR* dir = opendir(Path);
 
     if(dir == NULL) {
-        a_out__error("opendir(%s) failed", Path);
+        a_out__error("a_dir_new: opendir(%s) failed", Path);
         return NULL;
     }
 
@@ -188,7 +188,7 @@ bool a_dir_make(const char* Path)
     #endif
 
     if(result == -1) {
-        a_out__error("mkdir(%s) failed", Path);
+        a_out__error("a_dir_make: mkdir(%s) failed", Path);
         return false;
     }
 

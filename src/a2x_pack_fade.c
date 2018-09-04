@@ -90,7 +90,7 @@ void a_fade__uninit(void)
 void a_fade_toColor(unsigned FramesDuration)
 {
     if(g_fadePending) {
-        a_out__warning("a_fade_toColor: fade pending, ignoring");
+        a_out__warning("a_fade_toColor: Fade pending");
         return;
     }
 
@@ -105,7 +105,7 @@ void a_fade_toColor(unsigned FramesDuration)
 void a_fade_fromColor(unsigned FramesDuration)
 {
     if(g_fadePending) {
-        a_out__warning("a_fade_fromColor: fade pending, ignoring");
+        a_out__warning("a_fade_fromColor: Fade pending");
         return;
     }
 
@@ -120,7 +120,7 @@ void a_fade_fromColor(unsigned FramesDuration)
 void a_fade_screens(unsigned FramesDuration)
 {
     if(g_fadePending) {
-        a_out__warning("a_fade_screens: fade pending, ignoring");
+        a_out__warning("a_fade_screens: Fade pending");
         return;
     }
 

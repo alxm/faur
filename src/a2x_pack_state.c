@@ -197,7 +197,6 @@ void a_state__new(const char* Name, AStateFunction Function)
     state->stage = A_STATE__STAGE_INIT;
 
     a_strhash_add(g_states, Name, state);
-    a_out__statev("Declared '%s'", Name);
 }
 
 void a_state_push(const char* Name)
@@ -205,7 +204,7 @@ void a_state_push(const char* Name)
     a_out__statev("a_state_push('%s')", Name);
 
     if(g_exiting) {
-        a_out__statev("  Already exiting, ignoring");
+        a_out__statev("a_state_push: Already exiting");
         return;
     }
 
@@ -217,7 +216,7 @@ void a_state_pop(void)
     a_out__statev("a_state_pop()");
 
     if(g_exiting) {
-        a_out__statev("  Already exiting, ignoring");
+        a_out__statev("a_state_pop: Already exiting");
         return;
     }
 
@@ -229,7 +228,7 @@ void a_state_popUntil(const char* Name)
     a_out__statev("a_state_popUntil('%s')", Name);
 
     if(g_exiting) {
-        a_out__statev("  Already exiting, ignoring");
+        a_out__statev("a_state_popUntil: Already exiting");
         return;
     }
 
@@ -246,7 +245,7 @@ void a_state_popUntil(const char* Name)
     }
 
     if(!found) {
-        a_out__fatal("State '%s' not in stack", Name);
+        a_out__fatal("a_state_popUntil: State '%s' not in stack", Name);
     }
 
     while(pops--) {
@@ -259,7 +258,7 @@ void a_state_replace(const char* Name)
     a_out__statev("a_state_replace('%s')", Name);
 
     if(g_exiting) {
-        a_out__statev("  Already exiting, ignoring");
+        a_out__statev("a_state_replace: Already exiting");
         return;
     }
 
@@ -269,12 +268,12 @@ void a_state_replace(const char* Name)
 
 void a_state_exit(void)
 {
-    a_out__state("*** Telling all states to exit ***");
-
     if(g_exiting) {
-        a_out__statev("  Already exiting, ignoring");
+        a_out__statev("a_state_exit: Already exiting");
         return;
     }
+
+    a_out__state("*** Telling all states to exit ***");
 
     g_exiting = true;
 

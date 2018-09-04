@@ -52,7 +52,7 @@ unsigned a_component__num(void)
 void a_component_new(const char* Name, size_t Size, AInit* Init, AFree* Free)
 {
     if(a_strhash_contains(g_components, Name)) {
-        a_out__fatal("Component '%s' already declared", Name);
+        a_out__fatal("a_component_new: '%s' already declared", Name);
     }
 
     AComponent* c = a_mem_malloc(sizeof(AComponent));

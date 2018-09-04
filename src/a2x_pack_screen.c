@@ -176,7 +176,7 @@ void a_screen__uninit(void)
 void a_screen__show(void)
 {
     if(!a_list_isEmpty(g_stack)) {
-        a_out__fatal("Call a_screen_targetPop for each a_screen_targetPush");
+        a_out__fatal("Screen target stack is not empty");
     }
 
     A_LIST_ITERATE(g_overlays, AScreenOverlayContainer*, c) {
@@ -250,7 +250,7 @@ void a_screen_free(AScreen* Screen)
 void a_screen_copy(AScreen* Dst, const AScreen* Src)
 {
     if(!a_screen__sameSize(Dst, Src)) {
-        a_out__fatal("a_screen_copy: different screen sizes %d,%d and %d,%d",
+        a_out__fatal("a_screen_copy: Different screen sizes %d,%d and %d,%d",
                      Dst->width,
                      Dst->height,
                      Src->width,
@@ -281,7 +281,7 @@ void a_screen_copy(AScreen* Dst, const AScreen* Src)
 void a_screen_blit(const AScreen* Screen)
 {
     if(!a_screen__sameSize(&a__screen, Screen)) {
-        a_out__fatal("a_screen_blit: different screen sizes %d,%d and %d,%d",
+        a_out__fatal("a_screen_blit: Different screen sizes %d,%d and %d,%d",
                      a__screen.width,
                      a__screen.height,
                      Screen->width,
@@ -437,7 +437,7 @@ void a_screen_targetPop(void)
     AScreen* screen = a_list_pop(g_stack);
 
     if(screen == NULL) {
-        a_out__fatal("a_screen_targetPop: stack is empty");
+        a_out__fatal("a_screen_targetPop: Stack is empty");
     }
 
     a__screen = *screen;
@@ -455,13 +455,14 @@ void a_screen_targetPop(void)
 void a_screen_clipSet(int X, int Y, int Width, int Height)
 {
     if(!a_screen_isBoxInsideScreen(X, Y, Width, Height)) {
-        a_out__error("Invalid clipping area %dx%d @ %d,%d in %dx%d screen",
-                     Width,
-                     Height,
-                     X,
-                     Y,
-                     a__screen.width,
-                     a__screen.height);
+        a_out__error(
+            "a_screen_clipSet: Invalid area %dx%d @ %d,%d on %dx%d screen",
+            Width,
+            Height,
+            X,
+            Y,
+            a__screen.width,
+            a__screen.height);
         return;
     }
 
