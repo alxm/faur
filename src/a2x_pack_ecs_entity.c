@@ -45,6 +45,7 @@ AEntity* a_entity_new(const char* Id, void* Context)
     e->references = 0;
     e->removedFromActive = false;
     e->permanentActive = false;
+    e->debug = false;
 
     a_ecs__entityAddToList(e, A_ECS__NEW);
 
@@ -82,6 +83,11 @@ void a_entity__free(AEntity* Entity)
     free(Entity);
 }
 
+void a_entity_debugSet(AEntity* Entity, bool DebugOn)
+{
+    Entity->debug = DebugOn;
+}
+
 const char* a_entity_idGet(const AEntity* Entity)
 {
     return Entity->id ? Entity->id : "AEntity";
@@ -99,6 +105,12 @@ AEntity* a_entity_parentGet(const AEntity* Entity)
 
 void a_entity_parentSet(AEntity* Entity, AEntity* Parent)
 {
+    if(Entity->debug) {
+        a_out__message("a_entity_parentSet('%s', '%s')",
+                       a_entity_idGet(Entity),
+                       a_entity_idGet(Parent));
+    }
+
     if(Entity->parent) {
         a_entity_refDec(Entity->parent);
     }
@@ -112,6 +124,10 @@ void a_entity_parentSet(AEntity* Entity, AEntity* Parent)
 
 void a_entity_refInc(AEntity* Entity)
 {
+    if(Entity->debug) {
+        a_out__message("a_entity_refInc('%s')", a_entity_idGet(Entity));
+    }
+
     if(a_entity_removeGet(Entity)) {
         a_out__fatal(
             "a_entity_refInc: '%s' is removed", a_entity_idGet(Entity));
@@ -122,6 +138,10 @@ void a_entity_refInc(AEntity* Entity)
 
 void a_entity_refDec(AEntity* Entity)
 {
+    if(Entity->debug) {
+        a_out__message("a_entity_refDec('%s')", a_entity_idGet(Entity));
+    }
+
     if(a_ecs__isDeleting()) {
         // Entity could have already been freed. This is the only ECS function
         // that may be called from AFree callbacks.
@@ -149,6 +169,10 @@ bool a_entity_removeGet(const AEntity* Entity)
 
 void a_entity_removeSet(AEntity* Entity)
 {
+    if(Entity->debug) {
+        a_out__message("a_entity_removeSet('%s')", a_entity_idGet(Entity));
+    }
+
     if(a_entity_removeGet(Entity)) {
         a_out__fatal("a_entity_removeSet: '%s' is already removed",
                      a_entity_idGet(Entity));
@@ -165,6 +189,10 @@ bool a_entity_activeGet(const AEntity* Entity)
 
 void a_entity_activeSet(AEntity* Entity)
 {
+    if(Entity->debug) {
+        a_out__message("a_entity_activeSet('%s')", a_entity_idGet(Entity));
+    }
+
     if(a_entity_removeGet(Entity)) {
         // Ignore if entity is removed
         return;
@@ -185,11 +213,22 @@ void a_entity_activeSet(AEntity* Entity)
 
 void a_entity_activeSetPermanent(AEntity* Entity)
 {
+    if(Entity->debug) {
+        a_out__message(
+            "a_entity_activeSetPermanent('%s')", a_entity_idGet(Entity));
+    }
+
     Entity->permanentActive = true;
 }
 
 void* a_entity_componentAdd(AEntity* Entity, const char* Component)
 {
+    if(Entity->debug) {
+        a_out__message("a_entity_componentAdd('%s', '%s')",
+                       a_entity_idGet(Entity),
+                       Component);
+    }
+
     if(!a_ecs__entityIsInList(Entity, A_ECS__NEW)) {
         a_out__fatal("a_entity_componentAdd: Too late to add '%s' to '%s'",
                      Component,
@@ -285,6 +324,11 @@ bool a_entity_muteGet(const AEntity* Entity)
 
 void a_entity_muteSet(AEntity* Entity, bool DoMute)
 {
+    if(Entity->debug) {
+        a_out__message(
+            "a_entity_muteSet('%s', %d)", a_entity_idGet(Entity), DoMute);
+    }
+
     if(a_entity_removeGet(Entity)) {
         a_out__warningv("a_entity_muteSet: Entity '%s' is removed, cannot mute",
                         a_entity_idGet(Entity));
@@ -354,6 +398,13 @@ void a_entity_messageHandlerSet(AEntity* Entity, const char* Message, AMessageHa
 
 void a_entity_messageSend(AEntity* To, AEntity* From, const char* Message)
 {
+    if(To->debug || From->debug) {
+        a_out__message("a_entity_messageSend('%s', '%s', '%s')",
+                       a_entity_idGet(To),
+                       a_entity_idGet(From),
+                       Message);
+    }
+
     AMessageHandlerContainer* h = a_strhash_get(To->handlers, Message);
 
     if(h == NULL) {

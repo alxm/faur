@@ -42,6 +42,7 @@ struct AEntity {
     int references; // if >0, then the entity lingers in the removed limbo list
     bool removedFromActive; // set when an active-only system kicks entity out
     bool permanentActive; // if set then entity always reports as active
+    bool debug; // whether to print debug messages for this entity
 };
 
 typedef struct {
