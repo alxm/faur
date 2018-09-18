@@ -22,12 +22,14 @@
 #include "a2x_pack_out.p.h"
 
 typedef enum {
+    A_OUT__SOURCE_INVALID = -1,
     A_OUT__SOURCE_A2X,
     A_OUT__SOURCE_APP,
     A_OUT__SOURCE_NUM
 } AOutSource;
 
 typedef enum {
+    A_OUT__TYPE_INVALID = -1,
     A_OUT__TYPE_MESSAGE,
     A_OUT__TYPE_WARNING,
     A_OUT__TYPE_ERROR,

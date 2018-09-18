@@ -22,11 +22,11 @@
 #include "a2x_system_includes.h"
 
 typedef enum {
-    A_STATE__STAGE_INIT = 1,
-    A_STATE__STAGE_LOOP = 2,
-    A_STATE__STAGE_TICK = 4,
-    A_STATE__STAGE_DRAW = 8,
-    A_STATE__STAGE_FREE = 16,
+    A_STATE__STAGE_INIT = A_BIT(0),
+    A_STATE__STAGE_LOOP = A_BIT(1),
+    A_STATE__STAGE_TICK = A_BIT(2),
+    A_STATE__STAGE_DRAW = A_BIT(3),
+    A_STATE__STAGE_FREE = A_BIT(4),
 } AStateStage;
 
 typedef void (*AStateFunction)(AStateStage A__stage);

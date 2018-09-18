@@ -40,7 +40,7 @@ typedef struct {
 } ALine;
 
 typedef enum {
-    A_CONSOLE__STATE_INVALID,
+    A_CONSOLE__STATE_INVALID = -1,
     A_CONSOLE__STATE_BASIC,
     A_CONSOLE__STATE_FULL,
     A_CONSOLE__STATE_VISIBLE,

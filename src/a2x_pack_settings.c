@@ -36,9 +36,9 @@ typedef enum {
 
 typedef enum {
     A_SETTING_SET_ANY = 0,
-    A_SETTING_SET_ONCE = 1,
-    A_SETTING_SET_FROZEN = 2,
-    A_SETTING_SET_USER = 4,
+    A_SETTING_SET_ONCE = A_BIT(0),
+    A_SETTING_SET_FROZEN = A_BIT(1),
+    A_SETTING_SET_USER = A_BIT(2),
 } ASettingUpdate;
 
 typedef struct {
