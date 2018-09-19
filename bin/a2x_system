@@ -41,7 +41,7 @@ class SystemTool(Tool):
 
 static void s_{name}(AEntity* Entity)
 {{
-    A_UNUSED(Entity);
+    A_UTIL_UNUSED(Entity);
 }}
 
 void s_{name}_register(void)

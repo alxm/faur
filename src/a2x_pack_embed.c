@@ -36,8 +36,8 @@ void a_embed__init(void)
 {
     g_data = a_strhash_new();
 
-    A_UNUSED(a__gfx_console_png_path);
-    A_UNUSED(a__gfx_font_png_path);
+    A_UTIL_UNUSED(a__gfx_console_png_path);
+    A_UTIL_UNUSED(a__gfx_font_png_path);
 
     a_embed__add("/a2x/consoleTitles",
                  a__gfx_console_png_data,

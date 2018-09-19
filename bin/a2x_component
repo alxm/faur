@@ -56,7 +56,7 @@ static void c_{name}_free(void* Self)
 {{
     {ctype}* {localVar} = Self;
 
-    A_UNUSED({localVar});
+    A_UTIL_UNUSED({localVar});
 }}
 
 void c_{name}_register(void)
