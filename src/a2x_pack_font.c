@@ -25,15 +25,15 @@
 #include "a2x_pack_screen.v.h"
 #include "a2x_pack_spriteframes.v.h"
 
-#define CHAR_ENTRIES_NUM 128
-#define CHAR_INDEX(Char) ((unsigned)Char & (CHAR_ENTRIES_NUM - 1))
+#define A__CHAR_ENTRIES_NUM 128
+#define A__CHAR_INDEX(Char) ((unsigned)Char & (A__CHAR_ENTRIES_NUM - 1))
 
-#define LINE_SPACING 1
+#define A__LINE_SPACING 1
 
 struct AFont {
     AFontLoad loader;
     ASpriteFrames* frames;
-    ASprite* sprites[CHAR_ENTRIES_NUM];
+    ASprite* sprites[A__CHAR_ENTRIES_NUM];
     ASprite* gapSprite;
     int gap;
     int blankWidth;
@@ -53,7 +53,7 @@ static const char g_chars[] =
     "0123456789"
     "_-+=*/\\&$@!?'\"()[]{}.,~:;%^#<>|`";
 
-#define CHARS_NUM (sizeof(g_chars) - 1)
+#define A__CHARS_NUM (sizeof(g_chars) - 1)
 
 typedef struct {
     AFont* font;
@@ -63,13 +63,13 @@ typedef struct {
     int wrapWidth, currentLineWidth;
 } AFontState;
 
-AFont* g_defaultFonts[A_FONT_ID_NUM];
+AFont* g_defaultFonts[A_FONT__ID_NUM];
 static AFontState g_state;
 static AList* g_stateStack;
 
 static unsigned charIndex(char Character)
 {
-    for(unsigned i = 0; i < CHARS_NUM; i++) {
+    for(unsigned i = 0; i < A__CHARS_NUM; i++) {
         if(g_chars[i] == Character) {
             return i;
         }
@@ -84,24 +84,24 @@ void a_font__init(void)
 
     ASprite* fontSprite = a_sprite_newFromFile("/a2x/defaultFont");
 
-    APixel colors[A_FONT_ID_NUM];
-    colors[A_FONT_ID_LIGHT_GRAY] = a_pixel_fromHex(0xafafaf);
-    colors[A_FONT_ID_GREEN] = a_pixel_fromHex(0x3fbf9f);
-    colors[A_FONT_ID_YELLOW] = a_pixel_fromHex(0x9fcf3f);
-    colors[A_FONT_ID_RED] = a_pixel_fromHex(0xcf2f4f);
-    colors[A_FONT_ID_BLUE] = a_pixel_fromHex(0x3f8fdf);
+    APixel colors[A_FONT__ID_NUM];
+    colors[A_FONT__ID_LIGHT_GRAY] = a_pixel_fromHex(0xafafaf);
+    colors[A_FONT__ID_GREEN] = a_pixel_fromHex(0x3fbf9f);
+    colors[A_FONT__ID_YELLOW] = a_pixel_fromHex(0x9fcf3f);
+    colors[A_FONT__ID_RED] = a_pixel_fromHex(0xcf2f4f);
+    colors[A_FONT__ID_BLUE] = a_pixel_fromHex(0x3f8fdf);
 
-    g_defaultFonts[A_FONT_ID_DEFAULT] = a_font_newFromSprite(
+    g_defaultFonts[A_FONT__ID_DEFAULT] = a_font_newFromSprite(
                                             fontSprite, 0, 9, A_FONT_LOAD_ALL);
 
-    g_defaultFonts[A_FONT_ID_WHITE] = a_font_newFromSprite(
+    g_defaultFonts[A_FONT__ID_WHITE] = a_font_newFromSprite(
                                             fontSprite, 0, 0, A_FONT_LOAD_ALL);
 
     a_sprite_free(fontSprite);
 
-    for(AFontId f = A_FONT_ID_WHITE + 1; f < A_FONT_ID_NUM; f++) {
+    for(AFontId f = A_FONT__ID_WHITE + 1; f < A_FONT__ID_NUM; f++) {
         g_defaultFonts[f] = a_font_dup(
-                                g_defaultFonts[A_FONT_ID_WHITE], colors[f]);
+                                g_defaultFonts[A_FONT__ID_WHITE], colors[f]);
     }
 
     a_font_reset();
@@ -109,7 +109,7 @@ void a_font__init(void)
 
 void a_font__uninit(void)
 {
-    for(AFontId f = 0; f < A_FONT_ID_NUM; f++) {
+    for(AFontId f = 0; f < A_FONT__ID_NUM; f++) {
         a_font_free(g_defaultFonts[f]);
     }
 
@@ -127,7 +127,7 @@ static AFont* a_font__new(AFontLoad Loader, ASpriteFrames* Frames)
     bool hasGap = numFrames > A_FONT__NUM_ALL + 1;
 
     unsigned start = 0;
-    unsigned end = CHARS_NUM - 1;
+    unsigned end = A__CHARS_NUM - 1;
 
     if(Loader & A_FONT_LOAD_ALPHANUMERIC) {
         end = charIndex('9');
@@ -144,7 +144,7 @@ static AFont* a_font__new(AFontLoad Loader, ASpriteFrames* Frames)
     ASprite* gapSprite = hasGap ? a_spriteframes_getNext(Frames) : NULL;
     ASprite* blankSprite = a_spriteframes_getNext(Frames);
 
-    for(int i = CHAR_ENTRIES_NUM; i--; ) {
+    for(int i = A__CHAR_ENTRIES_NUM; i--; ) {
         f->sprites[i] = blankSprite;
     }
 
@@ -157,12 +157,12 @@ static AFont* a_font__new(AFontLoad Loader, ASpriteFrames* Frames)
     for(unsigned i = start; i <= end; i++) {
         ASprite* spr = a_spriteframes_getNext(Frames);
 
-        f->sprites[CHAR_INDEX(g_chars[i])] = spr;
+        f->sprites[A__CHAR_INDEX(g_chars[i])] = spr;
         f->maxWidth = a_math_max(f->maxWidth, spr->w);
         f->maxHeight = a_math_max(f->maxHeight, spr->h);
 
         if((Loader & A_FONT_LOAD_CAPS) && isalpha(g_chars[i])) {
-            f->sprites[CHAR_INDEX(g_chars[i + 1])] = spr;
+            f->sprites[A__CHAR_INDEX(g_chars[i + 1])] = spr;
             i++;
         }
     }
@@ -238,7 +238,7 @@ void a_font_pop(void)
 
 void a_font_reset(void)
 {
-    a_font__fontSet(A_FONT_ID_DEFAULT);
+    a_font__fontSet(A_FONT__ID_DEFAULT);
     a_font_alignSet(A_FONT_ALIGN_LEFT);
     a_font_coordsSet(0, 0);
     a_font_lineWrapSet(0);
@@ -247,11 +247,11 @@ void a_font_reset(void)
 void a_font_fontSet(AFont* Font)
 {
     if(Font == NULL) {
-        Font = g_defaultFonts[A_FONT_ID_DEFAULT];
+        Font = g_defaultFonts[A_FONT__ID_DEFAULT];
     }
 
     g_state.font = Font;
-    g_state.lineHeight = Font->maxHeight + LINE_SPACING;
+    g_state.lineHeight = Font->maxHeight + A__LINE_SPACING;
 }
 
 void a_font__fontSet(AFontId Font)
@@ -314,7 +314,7 @@ static int getWidth(const char* Text, ptrdiff_t Length)
         width = (font->maxWidth + font->gap) * (int)Length;
     } else {
         for( ; Length--; Text++) {
-            width += font->sprites[CHAR_INDEX(*Text)]->w + font->gap;
+            width += font->sprites[A__CHAR_INDEX(*Text)]->w + font->gap;
         }
     }
 
@@ -333,7 +333,7 @@ static void drawString(const char* Text, ptrdiff_t Length)
 
     if(g_state.align & A_FONT_ALIGN_MONOSPACED) {
         for( ; Length--; Text++) {
-            ASprite* spr = font->sprites[CHAR_INDEX(*Text)];
+            ASprite* spr = font->sprites[A__CHAR_INDEX(*Text)];
             int xOffset = (font->maxWidth - spr->w) / 2;
 
             a_sprite_blit(spr, g_state.x + xOffset, g_state.y);
@@ -346,7 +346,7 @@ static void drawString(const char* Text, ptrdiff_t Length)
         }
     } else {
         for( ; Length--; Text++) {
-            ASprite* spr = font->sprites[CHAR_INDEX(*Text)];
+            ASprite* spr = font->sprites[A__CHAR_INDEX(*Text)];
 
             a_sprite_blit(spr, g_state.x, g_state.y);
             g_state.x += spr->w;
@@ -393,7 +393,7 @@ static void wrapString(const char* Text)
                 }
             } else {
                 for( ; *Text != ' ' && *Text != '\0'; Text++) {
-                    tally += font->sprites[CHAR_INDEX(*Text)]->w + font->gap;
+                    tally += font->sprites[A__CHAR_INDEX(*Text)]->w + font->gap;
                 }
             }
         }

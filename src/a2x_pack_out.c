@@ -29,15 +29,15 @@
 #include "a2x_pack_time.v.h"
 
 typedef enum {
-    A_COLOR_INVALID = -1,
-    A_COLOR_BLACK = 30,
-    A_COLOR_RED = 31,
-    A_COLOR_GREEN = 32,
-    A_COLOR_YELLOW = 33,
-    A_COLOR_BLUE = 34,
-    A_COLOR_MAGENTA = 35,
-    A_COLOR_CYAN = 36,
-    A_COLOR_WHITE = 37
+    A_COLOR__INVALID = -1,
+    A_COLOR__BLACK = 30,
+    A_COLOR__RED = 31,
+    A_COLOR__GREEN = 32,
+    A_COLOR__YELLOW = 33,
+    A_COLOR__BLUE = 34,
+    A_COLOR__MAGENTA = 35,
+    A_COLOR__CYAN = 36,
+    A_COLOR__WHITE = 37
 } AColorCode;
 
 static const char* g_sources[A_OUT__SOURCE_NUM] = {
@@ -49,11 +49,11 @@ static const struct {
     const char* name;
     AColorCode color;
 } g_types[A_OUT__TYPE_NUM] = {
-    [A_OUT__TYPE_MESSAGE] = {"Msg", A_COLOR_GREEN},
-    [A_OUT__TYPE_WARNING] = {"Wrn", A_COLOR_YELLOW},
-    [A_OUT__TYPE_ERROR] = {"Err", A_COLOR_RED},
-    [A_OUT__TYPE_STATE] = {"Stt", A_COLOR_BLUE},
-    [A_OUT__TYPE_FATAL] = {"Ftl", A_COLOR_MAGENTA},
+    [A_OUT__TYPE_MESSAGE] = {"Msg", A_COLOR__GREEN},
+    [A_OUT__TYPE_WARNING] = {"Wrn", A_COLOR__YELLOW},
+    [A_OUT__TYPE_ERROR] = {"Err", A_COLOR__RED},
+    [A_OUT__TYPE_STATE] = {"Stt", A_COLOR__BLUE},
+    [A_OUT__TYPE_FATAL] = {"Ftl", A_COLOR__MAGENTA},
 };
 
 static void outPrintHeader(AOutSource Source, AOutType Type, FILE* Stream)

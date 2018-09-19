@@ -30,13 +30,13 @@
 #include "a2x_pack_platform.v.h"
 #include "a2x_pack_platform_sdl_video.v.h"
 
-#define NUM_SPRITE_TEXTURES 2
+#define A__NUM_SPRITE_TEXTURES 2
 
 struct APlatformTexture {
     APixel* pixels;
     size_t pixelsSize;
     int w, h;
-    SDL_Texture* texture[NUM_SPRITE_TEXTURES];
+    SDL_Texture* texture[A__NUM_SPRITE_TEXTURES];
 };
 
 static inline SDL_BlendMode pixelBlendToSdlBlend(void)
@@ -369,7 +369,7 @@ void a_platform__textureSpriteCommit(ASprite* Sprite)
     texture->w = Sprite->w;
     texture->h = Sprite->h;
 
-    for(int i = 0; i < NUM_SPRITE_TEXTURES; i++) {
+    for(int i = 0; i < A__NUM_SPRITE_TEXTURES; i++) {
         if(texture->texture[i]) {
             SDL_DestroyTexture(texture->texture[i]);
         }
@@ -419,7 +419,7 @@ void a_platform__textureFree(APlatformTexture* Texture)
         return;
     }
 
-    for(int i = 0; i < NUM_SPRITE_TEXTURES; i++) {
+    for(int i = 0; i < A__NUM_SPRITE_TEXTURES; i++) {
         SDL_DestroyTexture(Texture->texture[i]);
     }
 
