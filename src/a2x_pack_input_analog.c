@@ -112,11 +112,11 @@ bool a_analog_isWorking(const AInputAnalog* Analog)
 
 int a_analog_valueGetRaw(const AInputAnalog* Analog)
 {
-    #define A_ANALOG_MAX_DISTANCE (1 << 15)
-    #define A_ANALOG_ERROR_MARGIN (A_ANALOG_MAX_DISTANCE / 20)
+    #define A__ANALOG_MAX_DISTANCE (1 << 15)
+    #define A__ANALOG_ERROR_MARGIN (A__ANALOG_MAX_DISTANCE / 20)
 
     A_LIST_ITERATE(Analog->header.sourceInputs, AInputAnalogSource*, a) {
-        if(a_math_abs(a->axisValue) > A_ANALOG_ERROR_MARGIN) {
+        if(a_math_abs(a->axisValue) > A__ANALOG_ERROR_MARGIN) {
             return a->axisValue;
         }
     }
@@ -142,9 +142,10 @@ void a_input_analog__axisValueSet(AInputAnalogSource* Analog, int Value)
     Analog->axisValue = Value;
     a_input__freshEventSet(&Analog->header);
 
-    #define PRESS_THRESHOLD ((1 << 15) / 3)
-    bool pressedNegative = Value < -PRESS_THRESHOLD;
-    bool pressedPositive = Value > PRESS_THRESHOLD;
+    #define A__PRESS_THRESHOLD ((1 << 15) / 3)
+
+    bool pressedNegative = Value < -A__PRESS_THRESHOLD;
+    bool pressedPositive = Value > A__PRESS_THRESHOLD;
 
     A_LIST_ITERATE(Analog->forwardButtons, AInputSourceAxisButtons*, b) {
         if(b->negative && pressedNegative != b->lastPressedNegative) {

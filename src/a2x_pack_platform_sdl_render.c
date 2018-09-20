@@ -30,13 +30,13 @@
 #include "a2x_pack_platform.v.h"
 #include "a2x_pack_platform_sdl_video.v.h"
 
-#define NUM_SPRITE_TEXTURES 2
+#define A__NUM_SPRITE_TEXTURES 2
 
 struct APlatformTexture {
     APixel* pixels;
     size_t pixelsSize;
     int w, h;
-    SDL_Texture* texture[NUM_SPRITE_TEXTURES];
+    SDL_Texture* texture[A__NUM_SPRITE_TEXTURES];
 };
 
 static inline SDL_BlendMode pixelBlendToSdlBlend(void)
@@ -314,7 +314,7 @@ void a_platform__drawCircleFilled(int X, int Y, int Radius)
     }
 
     if(SDL_RenderFillRects(
-        a__sdlRenderer, scanlines, (int)A_ARRAY_LEN(scanlines)) < 0) {
+        a__sdlRenderer, scanlines, (int)A_UTIL_ARRAY_LEN(scanlines)) < 0) {
 
         a_out__error("SDL_RenderFillRects: %s", SDL_GetError());
     }
@@ -369,7 +369,7 @@ void a_platform__textureSpriteCommit(ASprite* Sprite)
     texture->w = Sprite->w;
     texture->h = Sprite->h;
 
-    for(int i = 0; i < NUM_SPRITE_TEXTURES; i++) {
+    for(int i = 0; i < A__NUM_SPRITE_TEXTURES; i++) {
         if(texture->texture[i]) {
             SDL_DestroyTexture(texture->texture[i]);
         }
@@ -378,7 +378,8 @@ void a_platform__textureSpriteCommit(ASprite* Sprite)
             for(int i = width * height; i--;) {
                 if(Sprite->pixels[i] != a_sprite__colorKey) {
                     // Set full alpha for non-transparent pixel
-                    texture->pixels[i] |= A_PIXEL__MASK_ALPHA;
+                    texture->pixels[i] |=
+                        (unsigned)A_PIXEL__MASK_ALPHA << A_PIXEL__SHIFT_ALPHA;
                 }
             }
         } else if(i == 1) {
@@ -419,7 +420,7 @@ void a_platform__textureFree(APlatformTexture* Texture)
         return;
     }
 
-    for(int i = 0; i < NUM_SPRITE_TEXTURES; i++) {
+    for(int i = 0; i < A__NUM_SPRITE_TEXTURES; i++) {
         SDL_DestroyTexture(Texture->texture[i]);
     }
 

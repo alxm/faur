@@ -64,18 +64,18 @@ static bool cohen_sutherland_clip(int* X1, int* Y1, int* X2, int* Y2)
     const int clipY1 = a__screen.clipY;
     const int clipY2 = a__screen.clipY2;
 
-    #define OUT_LEFT  1
-    #define OUT_RIGHT 2
-    #define OUT_TOP   4
-    #define OUT_DOWN  8
+    #define A__OUT_LEFT  1
+    #define A__OUT_RIGHT 2
+    #define A__OUT_TOP   4
+    #define A__OUT_DOWN  8
 
     #define outcode(o, x, y)                  \
     {                                         \
-        if(x < clipX1) o |= OUT_LEFT;         \
-        else if(x >= clipX2) o |= OUT_RIGHT;  \
+        if(x < clipX1) o |= A__OUT_LEFT;         \
+        else if(x >= clipX2) o |= A__OUT_RIGHT;  \
                                               \
-        if(y < clipY1) o |= OUT_TOP;          \
-        else if(y >= clipY2) o |= OUT_DOWN;   \
+        if(y < clipY1) o |= A__OUT_TOP;          \
+        else if(y >= clipY2) o |= A__OUT_DOWN;   \
     }
 
     #define solvex() (x1 + (x1 - x2) * (y - y1) / (y1 - y2))
@@ -101,16 +101,16 @@ static bool cohen_sutherland_clip(int* X1, int* Y1, int* X2, int* Y2)
             int x, y;
             const int outcode = outcode1 ? outcode1 : outcode2;
 
-            if(outcode & OUT_LEFT) {
+            if(outcode & A__OUT_LEFT) {
                 x = clipX1;
                 y = solvey();
-            } else if(outcode & OUT_RIGHT) {
+            } else if(outcode & A__OUT_RIGHT) {
                 x = clipX2 - 1;
                 y = solvey();
-            } else if(outcode & OUT_TOP) {
+            } else if(outcode & A__OUT_TOP) {
                 y = clipY1;
                 x = solvex();
-            } else { // outcode & OUT_DOWN
+            } else { // outcode & A__OUT_DOWN
                 y = clipY2 - 1;
                 x = solvex();
             }

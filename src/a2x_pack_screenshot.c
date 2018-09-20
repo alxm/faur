@@ -28,7 +28,7 @@
 #include "a2x_pack_settings.v.h"
 #include "a2x_pack_str.v.h"
 
-#define SCREENSHOTS_LIMIT 99999
+#define A__SCREENSHOTS_LIMIT 99999
 
 static bool g_isInit;
 static char* g_filePrefix;
@@ -127,8 +127,8 @@ static void takeScreenshot(void)
         return;
     }
 
-    if(++g_screenshotNumber > SCREENSHOTS_LIMIT) {
-        a_out__error("%d screenshots limit exceeded", SCREENSHOTS_LIMIT);
+    if(++g_screenshotNumber > A__SCREENSHOTS_LIMIT) {
+        a_out__error("%d screenshots limit exceeded", A__SCREENSHOTS_LIMIT);
         return;
     }
 

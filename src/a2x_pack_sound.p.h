@@ -26,9 +26,9 @@ typedef void ASample;
 
 typedef enum {
     A_CHANNEL_NORMAL = 0,
-    A_CHANNEL_LOOP = 1,
-    A_CHANNEL_RESTART = 2,
-    A_CHANNEL_YIELD = 4,
+    A_CHANNEL_LOOP = A_UTIL_BIT(0),
+    A_CHANNEL_RESTART = A_UTIL_BIT(1),
+    A_CHANNEL_YIELD = A_UTIL_BIT(2),
 } AChannelFlags;
 
 #define A_CHANNEL_ANY -1

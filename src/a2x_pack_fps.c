@@ -25,12 +25,12 @@
 #include "a2x_pack_time.v.h"
 #include "a2x_pack_timer.v.h"
 
-#define AVERAGE_WINDOW_SEC 2
-#define SKIP_ADJUST_DELAY_SEC 2
-#define NO_SLEEP_RESET_SEC 20
+#define A__AVERAGE_WINDOW_SEC 2
+#define A__SKIP_ADJUST_DELAY_SEC 2
+#define A__NO_SLEEP_RESET_SEC 20
 
 #if !A_BUILD_SYSTEM_EMSCRIPTEN
-    #define ALLOW_SLEEP 1
+    #define A__ALLOW_SLEEP 1
 #endif
 
 static struct {
@@ -66,7 +66,7 @@ static struct {
     unsigned frameCounter;
     unsigned tickCreditMs;
     uint32_t lastFrameMs;
-    #if ALLOW_SLEEP
+    #if A__ALLOW_SLEEP
         ATimer* canSleepAgainTimer;
         bool canSleep;
     #endif
@@ -93,15 +93,15 @@ void a_fps__init(void)
     }
 
     g_history.head = 0;
-    g_history.len = g_settings.drawRate * AVERAGE_WINDOW_SEC;
+    g_history.len = g_settings.drawRate * A__AVERAGE_WINDOW_SEC;
     g_history.drawFrameMs = a_mem_malloc(g_history.len * sizeof(unsigned));
     g_history.drawFrameMsMin = a_mem_malloc(g_history.len * sizeof(unsigned));
 
-    g_skip.skipAdjTimer = a_timer_new(A_TIMER_SEC, SKIP_ADJUST_DELAY_SEC, true);
+    g_skip.skipAdjTimer = a_timer_new(A_TIMER_SEC, A__SKIP_ADJUST_DELAY_SEC, true);
 
-    #if ALLOW_SLEEP
+    #if A__ALLOW_SLEEP
         g_run.canSleepAgainTimer = a_timer_new(
-                                    A_TIMER_SEC, NO_SLEEP_RESET_SEC, false);
+                                    A_TIMER_SEC, A__NO_SLEEP_RESET_SEC, false);
         g_run.canSleep = true;
     #endif
 
@@ -116,7 +116,7 @@ void a_fps__uninit(void)
 {
     a_timer_free(g_skip.skipAdjTimer);
 
-    #if ALLOW_SLEEP
+    #if A__ALLOW_SLEEP
         a_timer_free(g_run.canSleepAgainTimer);
     #endif
 
@@ -180,7 +180,7 @@ void a_fps__frame(void)
 
     if(!g_settings.vsyncOn) {
         while(elapsedMs < g_run.drawFrameMs) {
-            #if ALLOW_SLEEP
+            #if A__ALLOW_SLEEP
                 if(g_run.canSleep) {
                     a_time_msWait(g_run.drawFrameMs - elapsedMs);
                 }
@@ -218,7 +218,7 @@ void a_fps__frame(void)
             if(newFrameSkip != UINT_MAX) {
                 a_fps__reset(newFrameSkip);
 
-                #if ALLOW_SLEEP
+                #if A__ALLOW_SLEEP
                     g_run.canSleep = false;
 
                     if(newFrameSkip == 0) {
@@ -230,7 +230,7 @@ void a_fps__frame(void)
             }
         }
 
-        #if ALLOW_SLEEP
+        #if A__ALLOW_SLEEP
             g_run.canSleep = g_run.canSleep
                                 || a_timer_isExpired(g_run.canSleepAgainTimer);
         #endif

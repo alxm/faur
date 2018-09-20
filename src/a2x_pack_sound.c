@@ -38,8 +38,8 @@ static int g_samplesVolume;
 static int g_volumeMax;
 
 #if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ
-    #define A_VOLUME_STEP 1
-    #define A_VOLBAR_SHOW_MS 500
+    #define A__VOLUME_STEP 1
+    #define A__VOLBAR_SHOW_MS 500
     static ATimer* g_volTimer;
     static AInputButton* g_volumeUpButton;
     static AInputButton* g_volumeDownButton;
@@ -72,9 +72,9 @@ static void inputCallback(void)
         int adjust = 0;
 
         if(a_button_pressGet(g_volumeUpButton)) {
-            adjust = A_VOLUME_STEP;
+            adjust = A__VOLUME_STEP;
         } else if(a_button_pressGet(g_volumeDownButton)) {
-            adjust = -A_VOLUME_STEP;
+            adjust = -A__VOLUME_STEP;
         }
 
         if(adjust) {
@@ -103,15 +103,15 @@ static void inputCallback(void)
         a_pixel_blendSet(A_PIXEL_BLEND_PLAIN);
 
         a_pixel_colorSetPixel(g_volbarBackground);
-        a_draw_rectangle(0, 181, g_volumeMax / A_VOLUME_STEP + 5, 16);
+        a_draw_rectangle(0, 181, g_volumeMax / A__VOLUME_STEP + 5, 16);
 
         a_pixel_colorSetPixel(g_volbarBorder);
-        a_draw_hline(0, g_volumeMax / A_VOLUME_STEP + 4, 180);
-        a_draw_hline(0, g_volumeMax / A_VOLUME_STEP + 4, 183 + 14);
-        a_draw_vline(g_volumeMax / A_VOLUME_STEP + 4 + 1, 181, 183 + 13);
+        a_draw_hline(0, g_volumeMax / A__VOLUME_STEP + 4, 180);
+        a_draw_hline(0, g_volumeMax / A__VOLUME_STEP + 4, 183 + 14);
+        a_draw_vline(g_volumeMax / A__VOLUME_STEP + 4 + 1, 181, 183 + 13);
 
         a_pixel_colorSetPixel(g_volbarFill);
-        a_draw_rectangle(0, 186, g_volume / A_VOLUME_STEP, 6);
+        a_draw_rectangle(0, 186, g_volume / A__VOLUME_STEP, 6);
     }
 #endif
 
@@ -127,7 +127,7 @@ void a_sound__init(void)
 
     #if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ
         adjustSoundVolume(g_volumeMax / 16);
-        g_volTimer = a_timer_new(A_TIMER_MS, A_VOLBAR_SHOW_MS, false);
+        g_volTimer = a_timer_new(A_TIMER_MS, A__VOLBAR_SHOW_MS, false);
     #else
         adjustSoundVolume(g_volumeMax);
     #endif

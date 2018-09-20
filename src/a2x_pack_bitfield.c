@@ -23,8 +23,8 @@
 #include "a2x_pack_out.v.h"
 
 typedef unsigned long AChunk;
-#define BITS_PER_CHUNK (unsigned)(sizeof(AChunk) * 8)
-#define BITS_PER_CHUNK_MASK (BITS_PER_CHUNK - 1)
+#define A__BITS_PER_CHUNK (unsigned)(sizeof(AChunk) * 8)
+#define a__BITS_PER_CHUNK_MASK (A__BITS_PER_CHUNK - 1)
 
 struct ABitfield {
     unsigned numChunks;
@@ -37,7 +37,7 @@ ABitfield* a_bitfield_new(unsigned NumBits)
         a_out__fatal("a_bitfield_new: Invalid size 0");
     }
 
-    unsigned numChunks = (NumBits + BITS_PER_CHUNK - 1) / BITS_PER_CHUNK;
+    unsigned numChunks = (NumBits + A__BITS_PER_CHUNK - 1) / A__BITS_PER_CHUNK;
     ABitfield* b = a_mem_zalloc(sizeof(ABitfield) + numChunks * sizeof(AChunk));
 
     b->numChunks = numChunks;
@@ -52,14 +52,14 @@ void a_bitfield_free(ABitfield* Bitfield)
 
 void a_bitfield_set(ABitfield* Bitfield, unsigned Bit)
 {
-    AChunk bit = (AChunk)1 << (Bit & BITS_PER_CHUNK_MASK);
-    Bitfield->bits[Bit / BITS_PER_CHUNK] |= bit;
+    AChunk bit = (AChunk)1 << (Bit & a__BITS_PER_CHUNK_MASK);
+    Bitfield->bits[Bit / A__BITS_PER_CHUNK] |= bit;
 }
 
 void a_bitfield_clear(ABitfield* Bitfield, unsigned Bit)
 {
-    AChunk bit = (AChunk)1 << (Bit & BITS_PER_CHUNK_MASK);
-    Bitfield->bits[Bit / BITS_PER_CHUNK] &= ~bit;
+    AChunk bit = (AChunk)1 << (Bit & a__BITS_PER_CHUNK_MASK);
+    Bitfield->bits[Bit / A__BITS_PER_CHUNK] &= ~bit;
 }
 
 void a_bitfield_reset(ABitfield* Bitfield)
@@ -69,8 +69,8 @@ void a_bitfield_reset(ABitfield* Bitfield)
 
 bool a_bitfield_test(const ABitfield* Bitfield, unsigned Bit)
 {
-    AChunk value = Bitfield->bits[Bit / BITS_PER_CHUNK];
-    AChunk bit = (AChunk)1 << (Bit & BITS_PER_CHUNK_MASK);
+    AChunk value = Bitfield->bits[Bit / A__BITS_PER_CHUNK];
+    AChunk bit = (AChunk)1 << (Bit & a__BITS_PER_CHUNK_MASK);
 
     return (value & bit) != 0;
 }

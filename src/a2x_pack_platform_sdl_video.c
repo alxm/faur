@@ -202,8 +202,8 @@ void a_platform__screenShow(void)
                 // the game's landscape pixel buffer is rotated to this format
                 // every frame.
 
-                #define A_WIDTH 320
-                #define A_HEIGHT 240
+                #define A__WIDTH 320
+                #define A__HEIGHT 240
 
                 if(SDL_MUSTLOCK(g_sdlScreen)) {
                     if(SDL_LockSurface(g_sdlScreen) < 0) {
@@ -211,12 +211,13 @@ void a_platform__screenShow(void)
                     }
                 }
 
-                APixel* dst = (APixel*)g_sdlScreen->pixels + A_WIDTH * A_HEIGHT;
+                APixel* dst = (APixel*)g_sdlScreen->pixels
+                                + A__WIDTH * A__HEIGHT;
                 const APixel* src = a__screen.pixels;
 
-                for(int i = A_HEIGHT; i--; dst += A_WIDTH * A_HEIGHT + 1) {
-                    for(int j = A_WIDTH; j--; ) {
-                        dst -= A_HEIGHT;
+                for(int i = A__HEIGHT; i--; dst += A__WIDTH * A__HEIGHT + 1) {
+                    for(int j = A__WIDTH; j--; ) {
+                        dst -= A__HEIGHT;
                         *dst = *src++;
                     }
                 }

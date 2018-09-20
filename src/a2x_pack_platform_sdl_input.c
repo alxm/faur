@@ -424,11 +424,11 @@ void a_platform_sdl_input__init(void)
                     "gamepad.a.rightTrigger"
                 };
 
-                for(int j = a_math_min(c->numButtons, A_ARRAY_LEN(buttons)); j--; ) {
+                for(int j = a_math_min(c->numButtons, A_UTIL_ARRAY_LEN(buttons)); j--; ) {
                     addButton(c->buttons, buttons[j][0], buttons[j][1], j);
                 }
 
-                for(int j = a_math_min(c->numAxes, A_ARRAY_LEN(axes)); j--; ) {
+                for(int j = a_math_min(c->numAxes, A_UTIL_ARRAY_LEN(axes)); j--; ) {
                     addAnalog(c->axes, axes[j], j);
                 }
         #if A_BUILD_LIB_SDL == 2
@@ -651,42 +651,42 @@ void a_platform__inputsPoll(void)
 
             case SDL_JOYHATMOTION: {
                 unsigned state = 0;
-                #define UP_PRESSED    (1 << 0)
-                #define DOWN_PRESSED  (1 << 1)
-                #define LEFT_PRESSED  (1 << 2)
-                #define RIGHT_PRESSED (1 << 3)
+                #define A__UP_PRESSED    (1 << 0)
+                #define A__DOWN_PRESSED  (1 << 1)
+                #define A__LEFT_PRESSED  (1 << 2)
+                #define A__RIGHT_PRESSED (1 << 3)
 
                 switch(event.jhat.value) {
                     case SDL_HAT_UP: {
-                        state = UP_PRESSED;
+                        state = A__UP_PRESSED;
                     } break;
 
                     case SDL_HAT_DOWN: {
-                        state = DOWN_PRESSED;
+                        state = A__DOWN_PRESSED;
                     } break;
 
                     case SDL_HAT_LEFT: {
-                        state = LEFT_PRESSED;
+                        state = A__LEFT_PRESSED;
                     } break;
 
                     case SDL_HAT_RIGHT: {
-                        state = RIGHT_PRESSED;
+                        state = A__RIGHT_PRESSED;
                     } break;
 
                     case SDL_HAT_LEFTUP: {
-                        state = LEFT_PRESSED | UP_PRESSED;
+                        state = A__LEFT_PRESSED | A__UP_PRESSED;
                     } break;
 
                     case SDL_HAT_RIGHTUP: {
-                        state = RIGHT_PRESSED | UP_PRESSED;
+                        state = A__RIGHT_PRESSED | A__UP_PRESSED;
                     } break;
 
                     case SDL_HAT_LEFTDOWN: {
-                        state = LEFT_PRESSED | DOWN_PRESSED;
+                        state = A__LEFT_PRESSED | A__DOWN_PRESSED;
                     } break;
 
                     case SDL_HAT_RIGHTDOWN: {
-                        state = RIGHT_PRESSED | DOWN_PRESSED;
+                        state = A__RIGHT_PRESSED | A__DOWN_PRESSED;
                     } break;
                 }
 

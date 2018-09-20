@@ -25,20 +25,20 @@
 #include "a2x_pack_strhash.v.h"
 
 typedef enum {
-    A_SETTING_INVALID = -1,
-    A_SETTING_INT,
-    A_SETTING_UINT,
-    A_SETTING_BOOL,
-    A_SETTING_COLOR,
-    A_SETTING_STR,
-    A_SETTING_NUM
+    A_SETTING__INVALID = -1,
+    A_SETTING__INT,
+    A_SETTING__UINT,
+    A_SETTING__BOOL,
+    A_SETTING__COLOR,
+    A_SETTING__STR,
+    A_SETTING__NUM
 } ASettingType;
 
 typedef enum {
-    A_SETTING_SET_ANY = 0,
-    A_SETTING_SET_ONCE = 1,
-    A_SETTING_SET_FROZEN = 2,
-    A_SETTING_SET_USER = 4,
+    A_SETTING__SET_ANY = 0,
+    A_SETTING__SET_ONCE = A_UTIL_BIT(0),
+    A_SETTING__SET_FROZEN = A_UTIL_BIT(1),
+    A_SETTING__SET_USER = A_UTIL_BIT(2),
 } ASettingUpdate;
 
 typedef struct {
@@ -54,7 +54,7 @@ typedef struct {
 } ASetting;
 
 static AStrHash* g_settings; // table of ASetting
-static const char* g_settingTypeNames[A_SETTING_NUM + 1] = {
+static const char* g_settingTypeNames[A_SETTING__NUM + 1] = {
     "int",
     "uint",
     "bool",
@@ -97,10 +97,10 @@ static ASetting* setValidate(const char* Key, bool UserSet)
 
     if(s == NULL) {
         a_out__error("Setting '%s' does not exist", Key);
-    } else if(UserSet && s->update & A_SETTING_SET_FROZEN) {
+    } else if(UserSet && s->update & A_SETTING__SET_FROZEN) {
         a_out__error("Setting '%s' is frozen", Key);
         s = NULL;
-    } else if(!UserSet && s->update & A_SETTING_SET_USER) {
+    } else if(!UserSet && s->update & A_SETTING__SET_USER) {
         a_out__warning("Cannot overwrite user-set '%s'", Key);
         s = NULL;
     }
@@ -116,23 +116,23 @@ static void add(ASettingType Type, ASettingUpdate Update, const char* Key, const
     s->update = Update;
 
     switch(Type) {
-        case A_SETTING_INT: {
+        case A_SETTING__INT: {
             s->value.integer = atoi(Value);
         } break;
 
-        case A_SETTING_UINT: {
+        case A_SETTING__UINT: {
             s->value.uinteger = (unsigned)atoi(Value);
         } break;
 
-        case A_SETTING_BOOL: {
+        case A_SETTING__BOOL: {
             s->value.boolean = parseBool(Value);
         } break;
 
-        case A_SETTING_COLOR: {
+        case A_SETTING__COLOR: {
             s->value.pixel = a_pixel_fromHex((uint32_t)strtol(Value, NULL, 16));
         } break;
 
-        case A_SETTING_STR: {
+        case A_SETTING__STR: {
             s->value.string = a_str_dup(Value);
         } break;
 
@@ -153,11 +153,11 @@ static void set(const char* Key, const char* Value, bool UserSet)
     }
 
     switch(s->type) {
-        case A_SETTING_INT: {
+        case A_SETTING__INT: {
             s->value.integer = atoi(Value);
         } break;
 
-        case A_SETTING_UINT: {
+        case A_SETTING__UINT: {
             int x = atoi(Value);
 
             if(x < 0) {
@@ -167,15 +167,15 @@ static void set(const char* Key, const char* Value, bool UserSet)
             s->value.uinteger = (unsigned)x;
         } break;
 
-        case A_SETTING_BOOL: {
+        case A_SETTING__BOOL: {
             s->value.boolean = parseBool(Value);
         } break;
 
-        case A_SETTING_COLOR: {
+        case A_SETTING__COLOR: {
             s->value.pixel = a_pixel_fromHex((uint32_t)strtol(Value, NULL, 16));
         } break;
 
-        case A_SETTING_STR: {
+        case A_SETTING__STR: {
             free(s->value.string);
             s->value.string = a_str_dup(Value);
         } break;
@@ -185,12 +185,12 @@ static void set(const char* Key, const char* Value, bool UserSet)
         } return;
     }
 
-    if(s->update & A_SETTING_SET_ONCE) {
-        s->update |= A_SETTING_SET_FROZEN;
+    if(s->update & A_SETTING__SET_ONCE) {
+        s->update |= A_SETTING__SET_FROZEN;
     }
 
     if(UserSet) {
-        s->update |= A_SETTING_SET_USER;
+        s->update |= A_SETTING__SET_USER;
     }
 }
 
@@ -200,19 +200,19 @@ static bool flip(const char* Key, bool UserSet)
 
     if(s == NULL) {
         return false;
-    } else if(s->type != A_SETTING_BOOL) {
+    } else if(s->type != A_SETTING__BOOL) {
         a_out__error("Setting '%s' is not a boolean - can't flip it", Key);
         return false;
     }
 
     s->value.boolean = !s->value.boolean;
 
-    if(s->update & A_SETTING_SET_ONCE) {
-        s->update |= A_SETTING_SET_FROZEN;
+    if(s->update & A_SETTING__SET_ONCE) {
+        s->update |= A_SETTING__SET_FROZEN;
     }
 
     if(UserSet) {
-        s->update |= A_SETTING_SET_USER;
+        s->update |= A_SETTING__SET_USER;
     }
 
     return s->value.boolean;
@@ -223,64 +223,64 @@ void a_settings__init(void)
     g_settings = a_strhash_new();
     extern const char* a_app__buildtime;
 
-    add(A_SETTING_STR, A_SETTING_SET_ONCE, "app.title", "Untitled");
-    add(A_SETTING_STR, A_SETTING_SET_ONCE, "app.version", "0");
-    add(A_SETTING_STR, A_SETTING_SET_ONCE, "app.author", "(unknown)");
-    add(A_SETTING_STR, A_SETTING_SET_FROZEN, "app.buildtime", a_app__buildtime);
-    add(A_SETTING_STR, A_SETTING_SET_ONCE, "app.conf", "a2x.cfg");
-    add(A_SETTING_BOOL, A_SETTING_SET_ANY, "app.output.on", "1");
-    add(A_SETTING_BOOL, A_SETTING_SET_ANY, "app.output.verbose", "0");
-    add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "app.tool", "0");
-    add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "app.gp2xMenu", "0");
-    add(A_SETTING_UINT, A_SETTING_SET_ONCE, "app.mhz", "0");
+    add(A_SETTING__STR, A_SETTING__SET_ONCE, "app.title", "Untitled");
+    add(A_SETTING__STR, A_SETTING__SET_ONCE, "app.version", "0");
+    add(A_SETTING__STR, A_SETTING__SET_ONCE, "app.author", "(unknown)");
+    add(A_SETTING__STR, A_SETTING__SET_FROZEN, "app.buildtime", a_app__buildtime);
+    add(A_SETTING__STR, A_SETTING__SET_ONCE, "app.conf", "a2x.cfg");
+    add(A_SETTING__BOOL, A_SETTING__SET_ANY, "app.output.on", "1");
+    add(A_SETTING__BOOL, A_SETTING__SET_ANY, "app.output.verbose", "0");
+    add(A_SETTING__BOOL, A_SETTING__SET_ONCE, "app.tool", "0");
+    add(A_SETTING__BOOL, A_SETTING__SET_ONCE, "app.gp2xMenu", "0");
+    add(A_SETTING__UINT, A_SETTING__SET_ONCE, "app.mhz", "0");
 
-    add(A_SETTING_UINT, A_SETTING_SET_ONCE, "fps.tick", "30");
-    add(A_SETTING_UINT, A_SETTING_SET_ONCE, "fps.draw", "30");
-    add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "fps.draw.skip", "0");
-    add(A_SETTING_UINT, A_SETTING_SET_ONCE, "fps.draw.skip.max", "2");
+    add(A_SETTING__UINT, A_SETTING__SET_ONCE, "fps.tick", "30");
+    add(A_SETTING__UINT, A_SETTING__SET_ONCE, "fps.draw", "30");
+    add(A_SETTING__BOOL, A_SETTING__SET_ONCE, "fps.draw.skip", "0");
+    add(A_SETTING__UINT, A_SETTING__SET_ONCE, "fps.draw.skip.max", "2");
 
-    add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.on", "1");
-    add(A_SETTING_INT, A_SETTING_SET_ONCE, "video.width", "320");
-    add(A_SETTING_INT, A_SETTING_SET_ONCE, "video.height", "240");
-    add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.vsync", "0");
-    add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.doubleBuffer", "0");
-    add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.fullscreen", "0");
-    add(A_SETTING_STR, A_SETTING_SET_ONCE, "video.fullscreen.button", "key.f4");
-    add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "video.fixWizTearing", "0");
-    add(A_SETTING_COLOR, A_SETTING_SET_ONCE, "video.color.border", "0x1f0f0f");
-    add(A_SETTING_COLOR, A_SETTING_SET_ONCE, "video.color.key", "0xFF00FF");
-    add(A_SETTING_COLOR, A_SETTING_SET_ONCE, "video.color.limit", "0x00FF00");
-    add(A_SETTING_COLOR, A_SETTING_SET_ONCE, "video.color.end", "0x00FFFF");
+    add(A_SETTING__BOOL, A_SETTING__SET_ONCE, "video.on", "1");
+    add(A_SETTING__INT, A_SETTING__SET_ONCE, "video.width", "320");
+    add(A_SETTING__INT, A_SETTING__SET_ONCE, "video.height", "240");
+    add(A_SETTING__BOOL, A_SETTING__SET_ONCE, "video.vsync", "0");
+    add(A_SETTING__BOOL, A_SETTING__SET_ONCE, "video.doubleBuffer", "0");
+    add(A_SETTING__BOOL, A_SETTING__SET_ONCE, "video.fullscreen", "0");
+    add(A_SETTING__STR, A_SETTING__SET_ONCE, "video.fullscreen.button", "key.f4");
+    add(A_SETTING__BOOL, A_SETTING__SET_ONCE, "video.fixWizTearing", "0");
+    add(A_SETTING__COLOR, A_SETTING__SET_ONCE, "video.color.border", "0x1f0f0f");
+    add(A_SETTING__COLOR, A_SETTING__SET_ONCE, "video.color.key", "0xFF00FF");
+    add(A_SETTING__COLOR, A_SETTING__SET_ONCE, "video.color.limit", "0x00FF00");
+    add(A_SETTING__COLOR, A_SETTING__SET_ONCE, "video.color.end", "0x00FFFF");
 
-    add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "sound.on", "1");
-    add(A_SETTING_INT, A_SETTING_SET_ANY, "sound.music.scale", "100");
-    add(A_SETTING_INT, A_SETTING_SET_ANY, "sound.sample.scale", "100");
-    add(A_SETTING_INT, A_SETTING_SET_ONCE, "sound.sample.channels.total", "64");
-    add(A_SETTING_INT, A_SETTING_SET_ONCE, "sound.sample.channels.reserved", "32");
-    add(A_SETTING_STR, A_SETTING_SET_ONCE, "sound.volbar.background", "0x1f0f0f");
-    add(A_SETTING_STR, A_SETTING_SET_ONCE, "sound.volbar.border", "0x3f8fdf");
-    add(A_SETTING_STR, A_SETTING_SET_ONCE, "sound.volbar.fill", "0x9fcf3f");
+    add(A_SETTING__BOOL, A_SETTING__SET_ONCE, "sound.on", "1");
+    add(A_SETTING__INT, A_SETTING__SET_ANY, "sound.music.scale", "100");
+    add(A_SETTING__INT, A_SETTING__SET_ANY, "sound.sample.scale", "100");
+    add(A_SETTING__INT, A_SETTING__SET_ONCE, "sound.sample.channels.total", "64");
+    add(A_SETTING__INT, A_SETTING__SET_ONCE, "sound.sample.channels.reserved", "32");
+    add(A_SETTING__STR, A_SETTING__SET_ONCE, "sound.volbar.background", "0x1f0f0f");
+    add(A_SETTING__STR, A_SETTING__SET_ONCE, "sound.volbar.border", "0x3f8fdf");
+    add(A_SETTING__STR, A_SETTING__SET_ONCE, "sound.volbar.fill", "0x9fcf3f");
 
-    add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "input.hideCursor", "0");
-    add(A_SETTING_BOOL, A_SETTING_SET_ANY, "input.trackMouse", "0");
-    add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "input.switchAxes", "0");
-    add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "input.invertAxes", "0");
-    add(A_SETTING_STR, A_SETTING_SET_ONCE, "input.mapfile", "gamecontrollerdb.txt");
+    add(A_SETTING__BOOL, A_SETTING__SET_ONCE, "input.hideCursor", "0");
+    add(A_SETTING__BOOL, A_SETTING__SET_ANY, "input.trackMouse", "0");
+    add(A_SETTING__BOOL, A_SETTING__SET_ONCE, "input.switchAxes", "0");
+    add(A_SETTING__BOOL, A_SETTING__SET_ONCE, "input.invertAxes", "0");
+    add(A_SETTING__STR, A_SETTING__SET_ONCE, "input.mapfile", "gamecontrollerdb.txt");
 
-    add(A_SETTING_STR, A_SETTING_SET_ONCE, "screenshot.dir", "./screenshots");
-    add(A_SETTING_STR, A_SETTING_SET_ONCE, "screenshot.button", "key.f12");
+    add(A_SETTING__STR, A_SETTING__SET_ONCE, "screenshot.dir", "./screenshots");
+    add(A_SETTING__STR, A_SETTING__SET_ONCE, "screenshot.button", "key.f12");
 
-    add(A_SETTING_BOOL, A_SETTING_SET_ONCE, "console.on", "0");
-    add(A_SETTING_STR,
-        A_SETTING_SET_ONCE,
+    add(A_SETTING__BOOL, A_SETTING__SET_ONCE, "console.on", "0");
+    add(A_SETTING__STR,
+        A_SETTING__SET_ONCE,
         "console.button",
         "key.f11 gamepad.b.l+gamepad.b.r+gamepad.b.a+gamepad.b.b+gamepad.b.x+gamepad.b.y");
 
     a_settings__application();
 
     A_STRHASH_ITERATE(g_settings, ASetting*, s) {
-        if(s->update & A_SETTING_SET_ONCE) {
-            s->update |= A_SETTING_SET_FROZEN;
+        if(s->update & A_SETTING__SET_ONCE) {
+            s->update |= A_SETTING__SET_FROZEN;
         }
     }
 
@@ -307,7 +307,7 @@ void a_settings__init(void)
 void a_settings__uninit(void)
 {
     A_STRHASH_ITERATE(g_settings, ASetting*, s) {
-        if(s->type == A_SETTING_STR) {
+        if(s->type == A_SETTING__STR) {
             free(s->value.string);
         }
 
@@ -339,35 +339,35 @@ bool a_settings__flip(const char* Key)
 
 const char* a_settings_getString(const char* Key)
 {
-    ASetting* s = getValidate(Key, A_SETTING_STR);
+    ASetting* s = getValidate(Key, A_SETTING__STR);
 
     return s ? s->value.string : "";
 }
 
 bool a_settings_getBool(const char* Key)
 {
-    ASetting* s = getValidate(Key, A_SETTING_BOOL);
+    ASetting* s = getValidate(Key, A_SETTING__BOOL);
 
     return s ? s->value.boolean : false;
 }
 
 int a_settings_getInt(const char* Key)
 {
-    ASetting* s = getValidate(Key, A_SETTING_INT);
+    ASetting* s = getValidate(Key, A_SETTING__INT);
 
     return s ? s->value.integer : 0;
 }
 
 unsigned a_settings_getUnsigned(const char* Key)
 {
-    ASetting* s = getValidate(Key, A_SETTING_UINT);
+    ASetting* s = getValidate(Key, A_SETTING__UINT);
 
     return s ? s->value.uinteger : 0;
 }
 
 APixel a_settings_getPixel(const char* Key)
 {
-    ASetting* s = getValidate(Key, A_SETTING_COLOR);
+    ASetting* s = getValidate(Key, A_SETTING__COLOR);
 
     return s ? s->value.pixel : 0;
 }

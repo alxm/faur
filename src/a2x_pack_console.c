@@ -40,7 +40,7 @@ typedef struct {
 } ALine;
 
 typedef enum {
-    A_CONSOLE__STATE_INVALID,
+    A_CONSOLE__STATE_INVALID = -1,
     A_CONSOLE__STATE_BASIC,
     A_CONSOLE__STATE_FULL,
     A_CONSOLE__STATE_VISIBLE,
@@ -106,22 +106,22 @@ static void screenCallback(void)
         a_font_coordsSet(2, 2);
         a_font_alignSet(A_FONT_ALIGN_LEFT);
 
-        a_font__fontSet(A_FONT_ID_BLUE); a_font_print("a");
-        a_font__fontSet(A_FONT_ID_GREEN); a_font_print("2");
-        a_font__fontSet(A_FONT_ID_YELLOW); a_font_print("x");
+        a_font__fontSet(A_FONT__ID_BLUE); a_font_print("a");
+        a_font__fontSet(A_FONT__ID_GREEN); a_font_print("2");
+        a_font__fontSet(A_FONT__ID_YELLOW); a_font_print("x");
 
-        a_font__fontSet(A_FONT_ID_WHITE);
+        a_font__fontSet(A_FONT__ID_WHITE);
         a_font_printf(" %s", A_BUILD__PLATFORM_NAME);
-        a_font__fontSet(A_FONT_ID_LIGHT_GRAY);
+        a_font__fontSet(A_FONT__ID_LIGHT_GRAY);
         a_font_printf(
             " %s (%s)", A_BUILD__CURRENT_GIT_BRANCH, A_BUILD__COMPILE_TIME);
         a_font_newLine();
 
-        a_font__fontSet(A_FONT_ID_WHITE);
+        a_font__fontSet(A_FONT__ID_WHITE);
         a_font_printf("%s %s",
                       a_settings_getString("app.title"),
                       a_settings_getString("app.version"));
-        a_font__fontSet(A_FONT_ID_LIGHT_GRAY);
+        a_font__fontSet(A_FONT__ID_LIGHT_GRAY);
         a_font_printf(" by %s (%s)",
                       a_settings_getString("app.author"),
                       a_settings_getString("app.buildtime"));
@@ -132,7 +132,7 @@ static void screenCallback(void)
         int tagWidth = g_sources[A_OUT__SOURCE_A2X]->w;
 
         a_font_coordsSet(1 + tagWidth + 1 + tagWidth + 2, a_font_coordsGetY());
-        a_font__fontSet(A_FONT_ID_LIGHT_GRAY);
+        a_font__fontSet(A_FONT__ID_LIGHT_GRAY);
 
         A_LIST_ITERATE(g_lines, ALine*, l) {
             a_sprite_blit(g_sources[l->source], 1, a_font_coordsGetY());
@@ -146,20 +146,20 @@ static void screenCallback(void)
         a_font_alignSet(A_FONT_ALIGN_RIGHT);
         a_font_coordsSet(a__screen.width - 1, 2);
 
-        a_font__fontSet(A_FONT_ID_YELLOW);
+        a_font__fontSet(A_FONT__ID_YELLOW);
         a_font_printf("%u tick fps", a_fps_tickRateGet());
         a_font_newLine();
         a_font_printf("%u draw fps", a_fps_drawRateGet());
         a_font_newLine();
 
-        a_font__fontSet(A_FONT_ID_GREEN);
+        a_font__fontSet(A_FONT__ID_GREEN);
         a_font_printf("%u draw max", a_fps_drawRateGetMax());
         a_font_newLine();
 
         a_font_printf("%u draw skip", a_fps_drawSkipGet());
         a_font_newLine();
 
-        a_font__fontSet(A_FONT_ID_BLUE);
+        a_font__fontSet(A_FONT__ID_BLUE);
         a_font_printf(
             "Vsync is %s", a_settings_getBool("video.vsync") ? "on" : "off");
         a_font_newLine();

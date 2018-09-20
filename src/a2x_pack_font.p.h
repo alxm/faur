@@ -24,18 +24,18 @@
 typedef struct AFont AFont;
 
 typedef enum  {
-    A_FONT_LOAD_ALL = 1,
-    A_FONT_LOAD_ALPHANUMERIC = 2,
-    A_FONT_LOAD_ALPHA = 4,
-    A_FONT_LOAD_NUMERIC = 8,
-    A_FONT_LOAD_CAPS = 16,
+    A_FONT_LOAD_ALL = A_UTIL_BIT(0),
+    A_FONT_LOAD_ALPHANUMERIC = A_UTIL_BIT(1),
+    A_FONT_LOAD_ALPHA = A_UTIL_BIT(2),
+    A_FONT_LOAD_NUMERIC = A_UTIL_BIT(3),
+    A_FONT_LOAD_CAPS = A_UTIL_BIT(4),
 } AFontLoad;
 
 typedef enum {
-    A_FONT_ALIGN_LEFT = 1,
-    A_FONT_ALIGN_MIDDLE = 2,
-    A_FONT_ALIGN_RIGHT = 4,
-    A_FONT_ALIGN_MONOSPACED = 8
+    A_FONT_ALIGN_LEFT = A_UTIL_BIT(0),
+    A_FONT_ALIGN_MIDDLE = A_UTIL_BIT(1),
+    A_FONT_ALIGN_RIGHT = A_UTIL_BIT(2),
+    A_FONT_ALIGN_MONOSPACED = A_UTIL_BIT(3),
 } AFontAlign;
 
 #include "a2x_pack_sprite.p.h"

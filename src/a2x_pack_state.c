@@ -42,9 +42,9 @@ typedef struct {
 } AState;
 
 typedef enum {
-    A_STATE_ACTION_INVALID = -1,
-    A_STATE_ACTION_PUSH,
-    A_STATE_ACTION_POP,
+    A_STATE__ACTION_INVALID = -1,
+    A_STATE__ACTION_PUSH,
+    A_STATE__ACTION_POP,
 } AStateAction;
 
 typedef struct {
@@ -125,7 +125,7 @@ static void pending_handle(void)
     AStatePendingAction* pending = a_list_pop(g_pending);
 
     switch(pending->action) {
-        case A_STATE_ACTION_PUSH: {
+        case A_STATE__ACTION_PUSH: {
             a_out__statev("Push '%s'", pending->name);
             AState* state = a_strhash_get(g_states, pending->name);
 
@@ -146,7 +146,7 @@ static void pending_handle(void)
             a_list_push(g_stack, state);
         } break;
 
-        case A_STATE_ACTION_POP: {
+        case A_STATE__ACTION_POP: {
             if(current == NULL) {
                 a_out__fatal("Pop state: stack is empty");
             }
@@ -208,7 +208,7 @@ void a_state_push(const char* Name)
         return;
     }
 
-    pending_new(A_STATE_ACTION_PUSH, Name);
+    pending_new(A_STATE__ACTION_PUSH, Name);
 }
 
 void a_state_pop(void)
@@ -220,7 +220,7 @@ void a_state_pop(void)
         return;
     }
 
-    pending_new(A_STATE_ACTION_POP, NULL);
+    pending_new(A_STATE__ACTION_POP, NULL);
 }
 
 void a_state_popUntil(const char* Name)
@@ -249,7 +249,7 @@ void a_state_popUntil(const char* Name)
     }
 
     while(pops--) {
-        pending_new(A_STATE_ACTION_POP, NULL);
+        pending_new(A_STATE__ACTION_POP, NULL);
     }
 }
 
@@ -262,8 +262,8 @@ void a_state_replace(const char* Name)
         return;
     }
 
-    pending_new(A_STATE_ACTION_POP, NULL);
-    pending_new(A_STATE_ACTION_PUSH, Name);
+    pending_new(A_STATE__ACTION_POP, NULL);
+    pending_new(A_STATE__ACTION_PUSH, Name);
 }
 
 void a_state_exit(void)
@@ -282,7 +282,7 @@ void a_state_exit(void)
 
     // Queue a pop for every state in the stack
     for(unsigned i = a_list_sizeGet(g_stack); i--; ) {
-        pending_new(A_STATE_ACTION_POP, NULL);
+        pending_new(A_STATE__ACTION_POP, NULL);
     }
 }
 
