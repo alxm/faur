@@ -378,7 +378,8 @@ void a_platform__textureSpriteCommit(ASprite* Sprite)
             for(int i = width * height; i--;) {
                 if(Sprite->pixels[i] != a_sprite__colorKey) {
                     // Set full alpha for non-transparent pixel
-                    texture->pixels[i] |= A_PIXEL__MASK_ALPHA;
+                    texture->pixels[i] |=
+                        (unsigned)A_PIXEL__MASK_ALPHA << A_PIXEL__SHIFT_ALPHA;
                 }
             }
         } else if(i == 1) {
