@@ -88,7 +88,7 @@ AInputAnalog* a_analog_new(const char* Ids)
     a_list_freeEx(tok, free);
 
     if(a_list_isEmpty(a->header.sourceInputs)) {
-        a_out__error("No analog axes found for '%s'", Ids);
+        a_out__error("a_analog_new: No analog axes found for '%s'", Ids);
     }
 
     return a;

@@ -57,7 +57,7 @@ ASystem* a_system__get(const char* System)
 void a_system_new(const char* System, ASystemHandler* Handler, ASystemSort* Compare, bool OnlyActiveEntities)
 {
     if(a_strhash_contains(g_systems, System)) {
-        a_out__fatal("a_system_new: System '%s' already declared", System);
+        a_out__fatal("a_system_new: '%s' already declared", System);
     }
 
     ASystem* s = a_mem_malloc(sizeof(ASystem));
@@ -124,7 +124,7 @@ void a_system_run(const char* System)
     ASystem* system = a_strhash_get(g_systems, System);
 
     if(system == NULL) {
-        a_out__fatal("a_system_run: unknown system '%s'", System);
+        a_out__fatal("a_system_run: Unknown system '%s'", System);
     }
 
     if(!system->runsInCurrentState) {
@@ -139,7 +139,7 @@ void a_system_muteSet(const char* System, bool DoMute)
     ASystem* system = a_strhash_get(g_systems, System);
 
     if(system == NULL) {
-        a_out__fatal("a_system_muteSet: unknown system '%s'", System);
+        a_out__fatal("a_system_muteSet: Unknown system '%s'", System);
     }
 
     if(!system->runsInCurrentState) {

@@ -112,7 +112,7 @@ bool a_file_read(AFile* File, void* Buffer, size_t Size)
 
     if(readCount != 1) {
         a_out__warning(
-            "a_file_read: could not read %u bytes from %s", Size, File->name);
+            "a_file_read: Could not read %u bytes from %s", Size, File->name);
         return false;
     }
 
@@ -127,7 +127,7 @@ bool a_file_write(AFile* File, const void* Buffer, size_t Size)
 
     if(writeCount != 1) {
         a_out__error(
-            "a_file_write: could not write %u bytes to %s", Size, File->name);
+            "a_file_write: Could not write %u bytes to %s", Size, File->name);
         return false;
     }
 
@@ -145,7 +145,7 @@ bool a_file_writef(AFile* File, char* Format, ...)
     va_end(args);
 
     if(ret < 0) {
-        a_out__error("a_file_writef: could not write to %s", File->name);
+        a_out__error("a_file_writef: Could not write to %s", File->name);
         return false;
     }
 
@@ -238,24 +238,27 @@ void a_file_rewind(AFile* File)
 void a_file_seekStart(const AFile* File, long int Offset)
 {
     if(fseek(File->handle, Offset, SEEK_SET) != 0) {
-        a_out__error(
-            "%s: could not seek %ld bytes from start", File->name, Offset);
+        a_out__error("a_file_seekStart(%s): fseek(%ld) failed",
+                     File->name,
+                     Offset);
     }
 }
 
 void a_file_seekEnd(const AFile* File, long int Offset)
 {
     if(fseek(File->handle, Offset, SEEK_END) != 0) {
-        a_out__error(
-            "%s: could not seek %ld bytes from end", File->name, Offset);
+        a_out__error("a_file_seekEnd(%s): fseek(%ld) failed",
+                     File->name,
+                     Offset);
     }
 }
 
 void a_file_seekCurrent(const AFile* File, long int Offset)
 {
     if(fseek(File->handle, Offset, SEEK_CUR) != 0) {
-        a_out__error(
-            "%s: could not seek %ld bytes from current", File->name, Offset);
+        a_out__error("a_file_seekCurrent(%s): fseek(%ld) failed",
+                     File->name,
+                     Offset);
     }
 }
 

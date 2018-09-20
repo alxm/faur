@@ -159,7 +159,7 @@ AInputButton* a_button_new(const char* Ids)
         b->header.name = a_str_dup(a_strbuilder_get(sb));
         a_strbuilder_free(sb);
     } else {
-        a_out__error("No buttons found for '%s'", Ids);
+        a_out__error("a_button_new: No buttons found for '%s'", Ids);
         b->header.name = a_str_dup("<none>");
     }
 

@@ -154,7 +154,7 @@ unsigned a_input_controllerNumGet(void)
 void a_input_controllerSet(unsigned Index)
 {
     if(Index >= a_list_sizeGet(g_controllers)) {
-        a_out__error("Controller %u not present", Index);
+        a_out__error("a_input_controllerSet: Controller %u not present", Index);
         return;
     }
 

@@ -38,7 +38,7 @@ void a_conf__init(void)
         return;
     }
 
-    a_out__message("You can edit config in %s", conf_name);
+    a_out__message("a_conf__init: Edit config file '%s'", conf_name);
 
     while(a_file_lineRead(f)) {
         char* key = NULL;

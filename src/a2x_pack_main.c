@@ -126,7 +126,7 @@ int a_main_argsGetNum(void)
 const char* a_main_argsGet(int ArgNum)
 {
     if(ArgNum >= g_argsNum) {
-        a_out__error("a_main_argsGet invalid arg: %u", ArgNum);
+        a_out__error("a_main_argsGet: Invalid arg %u", ArgNum);
         return NULL;
     }
 

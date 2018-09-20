@@ -189,8 +189,9 @@ void a_platform_sdl_input__init(void)
             int mNum = SDL_GameControllerAddMappingsFromFile(mFile);
 
             if(mNum < 0) {
-                a_out__error(
-                    "Cannot load mappings from %s: %s", mFile, SDL_GetError());
+                a_out__error("SDL_GameControllerAddMappingsFromFile(%s): %s",
+                             mFile,
+                             SDL_GetError());
             } else {
                 a_out__message("Loaded %d mappings from %s", mNum, mFile);
             }
@@ -228,7 +229,7 @@ void a_platform_sdl_input__init(void)
 
             if(joystick == NULL) {
                 a_out__error(
-                    "SDL_JoystickOpen(%d) failed: %s", i, SDL_GetError());
+                    "SDL_JoystickOpen(%d): %s", i, SDL_GetError());
                 continue;
             }
         }

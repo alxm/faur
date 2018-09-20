@@ -26,6 +26,8 @@ typedef void AMessageHandler(AEntity* To, AEntity* From);
 
 extern AEntity* a_entity_new(const char* Id, void* Context);
 
+extern void a_entity_debugSet(AEntity* Entity, bool DebugOn);
+
 extern const char* a_entity_idGet(const AEntity* Entity);
 extern void* a_entity_contextGet(const AEntity* Entity);
 
