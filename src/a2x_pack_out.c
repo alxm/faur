@@ -53,7 +53,7 @@ static const struct {
     [A_OUT__TYPE_WARNING] = {"Wrn", A_COLOR__YELLOW},
     [A_OUT__TYPE_ERROR] = {"Err", A_COLOR__RED},
     [A_OUT__TYPE_STATE] = {"Stt", A_COLOR__BLUE},
-    [A_OUT__TYPE_FATAL] = {"Ftl", A_COLOR__MAGENTA},
+    [A_OUT__TYPE_FATAL] = {"Ftl", A_COLOR__RED},
 };
 
 static void outPrintHeader(AOutSource Source, AOutType Type, FILE* Stream)
@@ -95,6 +95,38 @@ static void outWorker(AOutSource Source, AOutType Type, bool Verbose, bool Overw
     fputs("\n", Stream);
 
     a_console__write(Source, Type, buffer, Overwrite);
+}
+
+__attribute__((noreturn)) static void handleFatal(void)
+{
+    a_console__showSet(true);
+    a_screen__show();
+
+    #if A_BUILD_DEBUG
+        while(true) {
+            printf("Waiting to attach debugger: PID %d\n", getpid());
+            a_time_secSpin(1);
+        }
+    #else
+        if(a_console__isInitialized()) {
+            for(int s = 10; s > 0; s--) {
+                if(s == 10) {
+                    a_out__message("Exiting in %ds", s);
+                } else {
+                    a_out__overwrite(A_OUT__TYPE_MESSAGE, "Exiting in %ds", s);
+                }
+
+                a_screen__show();
+                a_time_secWait(1);
+            }
+        }
+    #endif
+
+    #if A_BUILD_SYSTEM_EMSCRIPTEN
+        emscripten_force_exit(1);
+    #endif
+
+    exit(1);
 }
 
 void a_out__message(const char* Format, ...)
@@ -196,34 +228,7 @@ void a_out__fatal(const char* Format, ...)
 
     va_end(args);
 
-    a_console__showSet(true);
-    a_screen__show();
-
-    #if A_BUILD_DEBUG
-        while(true) {
-            printf("Waiting to attach debugger: PID %d\n", getpid());
-            a_time_secSpin(1);
-        }
-    #else
-        if(a_console__isInitialized()) {
-            for(int s = 10; s > 0; s--) {
-                if(s == 10) {
-                    a_out__message("Exiting in %ds", s);
-                } else {
-                    a_out__overwrite(A_OUT__TYPE_MESSAGE, "Exiting in %ds", s);
-                }
-
-                a_screen__show();
-                a_time_secWait(1);
-            }
-        }
-    #endif
-
-    #if A_BUILD_SYSTEM_EMSCRIPTEN
-        emscripten_force_exit(1);
-    #endif
-
-    exit(1);
+    handleFatal();
 }
 
 void a_out__state(const char* Format, ...)
@@ -339,4 +344,26 @@ void a_out_error(const char* Format, ...)
               args);
 
     va_end(args);
+}
+
+void a_out_fatal(const char* Format, ...)
+{
+    if(!a_settings_getBool("app.output.on")) {
+        a_settings_set("app.output.on", "y");
+    }
+
+    va_list args;
+    va_start(args, Format);
+
+    outWorker(A_OUT__SOURCE_APP,
+              A_OUT__TYPE_FATAL,
+              false,
+              false,
+              stdout,
+              Format,
+              args);
+
+    va_end(args);
+
+    handleFatal();
 }
