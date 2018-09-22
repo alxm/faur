@@ -53,7 +53,7 @@ static const struct {
     [A_OUT__TYPE_WARNING] = {"Wrn", A_COLOR__YELLOW},
     [A_OUT__TYPE_ERROR] = {"Err", A_COLOR__RED},
     [A_OUT__TYPE_STATE] = {"Stt", A_COLOR__BLUE},
-    [A_OUT__TYPE_FATAL] = {"Ftl", A_COLOR__MAGENTA},
+    [A_OUT__TYPE_FATAL] = {"Ftl", A_COLOR__RED},
 };
 
 static void outPrintHeader(AOutSource Source, AOutType Type, FILE* Stream)
