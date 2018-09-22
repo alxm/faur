@@ -1,5 +1,5 @@
 /*
-    Copyright 2016, 2017 Alex Margarit
+    Copyright 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -26,3 +26,4 @@ extern void a_out_printf(const char* Format, ...);
 extern void a_out_printv(const char* Format, va_list Args);
 extern void a_out_warning(const char* Format, ...);
 extern void a_out_error(const char* Format, ...);
+extern void a_out_fatal(const char* Format, ...) __attribute__((noreturn));
