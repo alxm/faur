@@ -23,6 +23,8 @@
 #include "a2x_pack_out.v.h"
 
 struct AStrBuilder {
+    char* fmtBuffer;
+    size_t fmtSize;
     size_t size;
     size_t index;
     char buffer[];
@@ -36,6 +38,8 @@ AStrBuilder* a_strbuilder_new(size_t Bytes)
 
     AStrBuilder* b = a_mem_malloc(sizeof(AStrBuilder) + Bytes);
 
+    b->fmtBuffer = NULL;
+    b->fmtSize = 0;
     b->size = Bytes;
     b->index = 0;
     b->buffer[0] = '\0';
@@ -49,6 +53,7 @@ void a_strbuilder_free(AStrBuilder* Builder)
         return;
     }
 
+    free(Builder->fmtBuffer);
     free(Builder);
 }
 
@@ -81,21 +86,26 @@ bool a_strbuilder_addf(AStrBuilder* Builder, const char* Format, ...)
 
     int bytesNeeded = vsnprintf(NULL, 0, Format, args) + 1;
 
+    va_end(args);
+
     if(bytesNeeded <= 0) {
         return false;
     }
 
-    va_end(args);
-    va_start(args, Format);
+    if(Builder->fmtSize < (size_t)bytesNeeded) {
+        free(Builder->fmtBuffer);
 
-    bool ret = false;
-    char* buffer = a_mem_malloc((size_t)bytesNeeded);
-
-    if(vsnprintf(buffer, (size_t)bytesNeeded, Format, args) >= 0) {
-        ret = a_strbuilder_add(Builder, buffer);
+        Builder->fmtSize = (size_t)bytesNeeded;
+        Builder->fmtBuffer = a_mem_malloc(Builder->fmtSize);
     }
 
-    free(buffer);
+    bool ret = false;
+
+    va_start(args, Format);
+
+    if(vsnprintf(Builder->fmtBuffer, Builder->fmtSize, Format, args) >= 0) {
+        ret = a_strbuilder_add(Builder, Builder->fmtBuffer);
+    }
 
     va_end(args);
 

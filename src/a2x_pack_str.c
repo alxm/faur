@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2017 Alex Margarit
+    Copyright 2010, 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -68,11 +68,11 @@ char* a_str_trim(const char* String)
     int start = 0;
     int end = (int)strlen(String) - 1;
 
-    while(isspace(String[start])) {
+    while(isspace((int)String[start])) {
         start++;
     }
 
-    while(end > start && isspace(String[end])) {
+    while(end > start && isspace((int)String[end])) {
         end--;
     }
 
