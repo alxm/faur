@@ -58,6 +58,10 @@ void a_entity__free(AEntity* Entity)
         return;
     }
 
+    if(Entity->debug) {
+        a_out__message("a_entity__free('%s')", a_entity_idGet(Entity));
+    }
+
     a_list_free(Entity->matchingSystemsActive);
     a_list_free(Entity->matchingSystemsEither);
     a_list_freeEx(Entity->systemNodesActive, (AFree*)a_list_removeNode);
