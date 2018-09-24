@@ -58,6 +58,10 @@ void a_entity__free(AEntity* Entity)
         return;
     }
 
+    if(Entity->debug) {
+        a_out__message("a_entity__free('%s')", a_entity_idGet(Entity));
+    }
+
     a_list_free(Entity->matchingSystemsActive);
     a_list_free(Entity->matchingSystemsEither);
     a_list_freeEx(Entity->systemNodesActive, (AFree*)a_list_removeNode);
@@ -138,14 +142,14 @@ void a_entity_refInc(AEntity* Entity)
 
 void a_entity_refDec(AEntity* Entity)
 {
-    if(Entity->debug) {
-        a_out__message("a_entity_refDec('%s')", a_entity_idGet(Entity));
-    }
-
     if(a_ecs__isDeleting()) {
         // Entity could have already been freed. This is the only ECS function
         // that may be called from AFree callbacks.
         return;
+    }
+
+    if(Entity->debug) {
+        a_out__message("a_entity_refDec('%s')", a_entity_idGet(Entity));
     }
 
     Entity->references--;
