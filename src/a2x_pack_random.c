@@ -94,10 +94,6 @@ int a_random_range(int Min, int Max)
 
 unsigned a_random_rangeu(unsigned Min, unsigned Max)
 {
-    if(Min >= Max) {
-        a_out__fatal("a_random_rangeu: Invalid args %d, %d", Min, Max);
-    }
-
     return Min + ((unsigned)g_rand() % (Max - Min));
 }
 
