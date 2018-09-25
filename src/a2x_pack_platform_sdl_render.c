@@ -314,7 +314,7 @@ void a_platform__drawCircleFilled(int X, int Y, int Radius)
     }
 
     if(SDL_RenderFillRects(
-        a__sdlRenderer, scanlines, (int)A_UTIL_ARRAY_LEN(scanlines)) < 0) {
+        a__sdlRenderer, scanlines, (int)A_ARRAY_LEN(scanlines)) < 0) {
 
         a_out__error("SDL_RenderFillRects: %s", SDL_GetError());
     }

@@ -96,7 +96,7 @@ void a_platform__musicFree(APlatformMusic* Music)
 void a_platform__musicVolumeSet(int Volume)
 {
     #if A_BUILD_SYSTEM_EMSCRIPTEN
-        A_UTIL_UNUSED(Volume);
+        A_UNUSED(Volume);
     #else
         Mix_VolumeMusic(Volume);
     #endif
@@ -162,8 +162,8 @@ void a_platform__sampleFree(APlatformSample* Sample)
 void a_platform__sampleVolumeSet(APlatformSample* Sample, int Volume)
 {
     #if A_BUILD_SYSTEM_EMSCRIPTEN
-        A_UTIL_UNUSED(Sample);
-        A_UTIL_UNUSED(Volume);
+        A_UNUSED(Sample);
+        A_UNUSED(Volume);
     #else
         Mix_VolumeChunk(Sample, Volume);
     #endif
@@ -172,7 +172,7 @@ void a_platform__sampleVolumeSet(APlatformSample* Sample, int Volume)
 void a_platform__sampleVolumeSetAll(int Volume)
 {
     #if A_BUILD_SYSTEM_EMSCRIPTEN
-        A_UTIL_UNUSED(Volume);
+        A_UNUSED(Volume);
     #else
         Mix_Volume(-1, Volume);
     #endif

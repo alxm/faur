@@ -424,11 +424,11 @@ void a_platform_sdl_input__init(void)
                     "gamepad.a.rightTrigger"
                 };
 
-                for(int j = a_math_min(c->numButtons, A_UTIL_ARRAY_LEN(buttons)); j--; ) {
+                for(int j = a_math_min(c->numButtons, A_ARRAY_LEN(buttons)); j--; ) {
                     addButton(c->buttons, buttons[j][0], buttons[j][1], j);
                 }
 
-                for(int j = a_math_min(c->numAxes, A_UTIL_ARRAY_LEN(axes)); j--; ) {
+                for(int j = a_math_min(c->numAxes, A_ARRAY_LEN(axes)); j--; ) {
                     addAnalog(c->axes, axes[j], j);
                 }
         #if A_BUILD_LIB_SDL == 2

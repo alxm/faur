@@ -19,12 +19,13 @@
 
 #pragma once
 
-#define A_UTIL_UNUSED(X) (X = X)
-#define A_UTIL_ARRAY_LEN(A) (sizeof(A) / sizeof(A[0]))
-#define A_UTIL_BIT(N) (1 << (N))
+#define A_UNUSED(X) (X = X)
+#define A_ARRAY_LEN(A) (sizeof(A) / sizeof(A[0]))
 
-#define A__UTIL_STRINGIFY_DO_NOT_CALL(X) #X
-#define A_UTIL_STRINGIFY(X) A__UTIL_STRINGIFY_DO_NOT_CALL(X)
+#define A_FLAG_BIT(N) (1 << (N))
+
+#define A__STRINGIFY_DO_NOT_CALL(X) #X
+#define A_STRINGIFY(X) A__STRINGIFY_DO_NOT_CALL(X)
 
 typedef void AFree(void* Self);
 typedef void AInit(void* Self);
