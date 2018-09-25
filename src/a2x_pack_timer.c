@@ -24,13 +24,17 @@
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_time.v.h"
 
+typedef enum {
+    A_TIMER__REPEAT = A_FLAG_BIT(0),
+    A_TIMER__RUNNING = A_FLAG_BIT(1),
+} ATimerFlags;
+
 struct ATimer {
     ATimerType type;
+    ATimerFlags flags;
     unsigned period;
     unsigned start;
     unsigned diff;
-    bool running;
-    bool repeat;
 };
 
 static inline unsigned getNow(const ATimer* Timer)
@@ -57,11 +61,14 @@ ATimer* a_timer_new(ATimerType Type, unsigned Period, bool Repeat)
     }
 
     t->type = Type;
+    t->flags = 0;
     t->period = a_math_maxu(Period, 1);
     t->start = 0;
     t->diff = 0;
-    t->running = false;
-    t->repeat = Repeat;
+
+    if(Repeat) {
+        A_FLAG_SET(t->flags, A_TIMER__REPEAT);
+    }
 
     return t;
 }
@@ -89,31 +96,33 @@ void a_timer_start(ATimer* Timer)
 {
     Timer->start = getNow(Timer);
     Timer->diff = 0;
-    Timer->running = true;
+
+    A_FLAG_SET(Timer->flags, A_TIMER__RUNNING);
 }
 
 void a_timer_stop(ATimer* Timer)
 {
     Timer->diff = 0;
-    Timer->running = false;
+
+    A_FLAG_CLEAR(Timer->flags, A_TIMER__RUNNING);
 }
 
 bool a_timer_isRunning(ATimer* Timer)
 {
-    return Timer->running;
+    return Timer->flags & A_TIMER__RUNNING;
 }
 
 bool a_timer_isExpired(ATimer* Timer)
 {
     bool expired = false;
 
-    if(Timer->running) {
+    if(Timer->flags & A_TIMER__RUNNING) {
         Timer->diff = getNow(Timer) - Timer->start;
 
         if(Timer->diff >= Timer->period) {
             expired = true;
 
-            if(Timer->repeat) {
+            if(Timer->flags & A_TIMER__REPEAT) {
                 Timer->start += (Timer->diff / Timer->period) * Timer->period;
             } else {
                 a_timer_stop(Timer);

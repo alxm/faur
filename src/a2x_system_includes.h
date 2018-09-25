@@ -23,6 +23,8 @@
 #define A_ARRAY_LEN(A) (sizeof(A) / sizeof(A[0]))
 
 #define A_FLAG_BIT(N) (1 << (N))
+#define A_FLAG_SET(Value, Mask) ((Value) |= (Mask))
+#define A_FLAG_CLEAR(Value, Mask) ((Value) &= ~(unsigned)(Mask))
 
 #define A__STRINGIFY_DO_NOT_CALL(X) #X
 #define A_STRINGIFY(X) A__STRINGIFY_DO_NOT_CALL(X)
