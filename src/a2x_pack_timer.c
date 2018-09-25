@@ -40,6 +40,11 @@ struct ATimer {
     AListNode* runningListNode;
 };
 
+static struct {
+    unsigned ms;
+    unsigned ticks;
+} g_now;
+
 static AList* g_runningTimers; // list of ATimer
 
 static inline unsigned getNow(const ATimer* Timer)
@@ -47,10 +52,10 @@ static inline unsigned getNow(const ATimer* Timer)
     switch(Timer->type) {
         case A_TIMER_MS:
         case A_TIMER_SEC:
-            return a_time_msGet();
+            return g_now.ms;
 
         case A_TIMER_TICKS:
-            return a_fps_ticksGet();
+            return g_now.ticks;
 
         default:
             return 0;
@@ -69,6 +74,9 @@ void a_timer__uninit(void)
 
 void a_timer__tick(void)
 {
+    g_now.ms = a_time_msGet();
+    g_now.ticks = a_fps_ticksGet();
+
     A_LIST_ITERATE(g_runningTimers, ATimer*, t) {
         if(!(t->flags & A_TIMER__RUNNING)) {
             // Kick out timer that was marked as not running last frame
