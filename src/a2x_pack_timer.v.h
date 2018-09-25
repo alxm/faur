@@ -1,5 +1,5 @@
 /*
-    Copyright 2011 Alex Margarit
+    Copyright 2011, 2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -20,3 +20,8 @@
 #pragma once
 
 #include "a2x_pack_timer.p.h"
+
+extern void a_timer__init(void);
+extern void a_timer__uninit(void);
+
+extern void a_timer__tick(void);

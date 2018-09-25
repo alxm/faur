@@ -20,6 +20,7 @@
 #include "a2x_pack_timer.v.h"
 
 #include "a2x_pack_fps.v.h"
+#include "a2x_pack_listit.v.h"
 #include "a2x_pack_math.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_time.v.h"
@@ -27,6 +28,7 @@
 typedef enum {
     A_TIMER__REPEAT = A_FLAG_BIT(0),
     A_TIMER__RUNNING = A_FLAG_BIT(1),
+    A_TIMER__EXPIRED = A_FLAG_BIT(2),
 } ATimerFlags;
 
 struct ATimer {
@@ -35,7 +37,10 @@ struct ATimer {
     unsigned period;
     unsigned start;
     unsigned diff;
+    AListNode* runningListNode;
 };
+
+static AList* g_runningTimers; // list of ATimer
 
 static inline unsigned getNow(const ATimer* Timer)
 {
@@ -52,6 +57,48 @@ static inline unsigned getNow(const ATimer* Timer)
     }
 }
 
+void a_timer__init(void)
+{
+    g_runningTimers = a_list_new();
+}
+
+void a_timer__uninit(void)
+{
+    a_list_free(g_runningTimers);
+}
+
+void a_timer__tick(void)
+{
+    A_LIST_ITERATE(g_runningTimers, ATimer*, t) {
+        if(!(t->flags & A_TIMER__RUNNING)) {
+            // Kick out timer that was marked as not running last frame
+            A_LIST_REMOVE_CURRENT();
+            t->runningListNode = NULL;
+
+            A_FLAG_CLEAR(t->flags, A_TIMER__EXPIRED);
+
+            continue;
+        }
+
+        t->diff = getNow(t) - t->start;
+
+        if(t->diff >= t->period) {
+            A_FLAG_SET(t->flags, A_TIMER__EXPIRED);
+
+            if(t->flags & A_TIMER__REPEAT) {
+                t->start += (t->diff / t->period) * t->period;
+            } else {
+                t->diff = 0;
+
+                // Will be kicked out of running list next frame
+                A_FLAG_CLEAR(t->flags, A_TIMER__RUNNING);
+            }
+        } else {
+            A_FLAG_CLEAR(t->flags, A_TIMER__EXPIRED);
+        }
+    }
+}
+
 ATimer* a_timer_new(ATimerType Type, unsigned Period, bool Repeat)
 {
     ATimer* t = a_mem_malloc(sizeof(ATimer));
@@ -65,6 +112,7 @@ ATimer* a_timer_new(ATimerType Type, unsigned Period, bool Repeat)
     t->period = a_math_maxu(Period, 1);
     t->start = 0;
     t->diff = 0;
+    t->runningListNode = NULL;
 
     if(Repeat) {
         A_FLAG_SET(t->flags, A_TIMER__REPEAT);
@@ -75,6 +123,14 @@ ATimer* a_timer_new(ATimerType Type, unsigned Period, bool Repeat)
 
 void a_timer_free(ATimer* Timer)
 {
+    if(Timer == NULL) {
+        return;
+    }
+
+    if(Timer->runningListNode) {
+        a_list_removeNode(Timer->runningListNode);
+    }
+
     free(Timer);
 }
 
@@ -98,13 +154,23 @@ void a_timer_start(ATimer* Timer)
     Timer->diff = 0;
 
     A_FLAG_SET(Timer->flags, A_TIMER__RUNNING);
+    A_FLAG_CLEAR(Timer->flags, A_TIMER__EXPIRED);
+
+    if(Timer->runningListNode == NULL) {
+        Timer->runningListNode = a_list_addLast(g_runningTimers, Timer);
+    }
 }
 
 void a_timer_stop(ATimer* Timer)
 {
     Timer->diff = 0;
 
-    A_FLAG_CLEAR(Timer->flags, A_TIMER__RUNNING);
+    A_FLAG_CLEAR(Timer->flags, A_TIMER__RUNNING | A_TIMER__EXPIRED);
+
+    if(Timer->runningListNode) {
+        a_list_removeNode(Timer->runningListNode);
+        Timer->runningListNode = NULL;
+    }
 }
 
 bool a_timer_isRunning(ATimer* Timer)
@@ -114,21 +180,5 @@ bool a_timer_isRunning(ATimer* Timer)
 
 bool a_timer_isExpired(ATimer* Timer)
 {
-    bool expired = false;
-
-    if(Timer->flags & A_TIMER__RUNNING) {
-        Timer->diff = getNow(Timer) - Timer->start;
-
-        if(Timer->diff >= Timer->period) {
-            expired = true;
-
-            if(Timer->flags & A_TIMER__REPEAT) {
-                Timer->start += (Timer->diff / Timer->period) * Timer->period;
-            } else {
-                a_timer_stop(Timer);
-            }
-        }
-    }
-
-    return expired;
+    return Timer->flags & A_TIMER__EXPIRED;
 }
