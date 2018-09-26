@@ -253,13 +253,13 @@ bool a_button_pressGetOnce(AInputButton* Button)
     return pressed;
 }
 
-void a_button_pressSetRepeat(AInputButton* Button, unsigned RepeatTicks)
+void a_button_pressSetRepeat(AInputButton* Button, unsigned RepeatMs)
 {
     if(Button->autoRepeat == NULL) {
-        Button->autoRepeat = a_timer_new(A_TIMER_TICKS, RepeatTicks, true);
+        Button->autoRepeat = a_timer_new(A_TIMER_MS, RepeatMs, true);
     } else {
         a_timer_stop(Button->autoRepeat);
-        a_timer_periodSet(Button->autoRepeat, RepeatTicks);
+        a_timer_periodSet(Button->autoRepeat, RepeatMs);
     }
 }
 

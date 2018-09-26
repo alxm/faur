@@ -97,7 +97,8 @@ void a_fps__init(void)
     g_history.drawFrameMs = a_mem_malloc(g_history.len * sizeof(unsigned));
     g_history.drawFrameMsMin = a_mem_malloc(g_history.len * sizeof(unsigned));
 
-    g_skip.skipAdjTimer = a_timer_new(A_TIMER_SEC, A__SKIP_ADJUST_DELAY_SEC, true);
+    g_skip.skipAdjTimer = a_timer_new(
+                            A_TIMER_SEC, A__SKIP_ADJUST_DELAY_SEC, true);
 
     #if A__ALLOW_SLEEP
         g_run.canSleepAgainTimer = a_timer_new(

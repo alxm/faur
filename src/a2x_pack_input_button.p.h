@@ -32,5 +32,5 @@ extern const char* a_button_nameGet(const AInputButton* Button);
 
 extern bool a_button_pressGet(AInputButton* Button);
 extern bool a_button_pressGetOnce(AInputButton* Button);
-extern void a_button_pressSetRepeat(AInputButton* Button, unsigned RepeatTicks);
+extern void a_button_pressSetRepeat(AInputButton* Button, unsigned RepeatMs);
 extern void a_button_pressClear(const AInputButton* Button);
