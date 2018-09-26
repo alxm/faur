@@ -94,7 +94,9 @@ void a_timer__tick(void)
             A_FLAG_SET(t->flags, A_TIMER__EXPIRED);
 
             if(t->flags & A_TIMER__REPEAT) {
-                t->start += (t->diff / t->period) * t->period;
+                if(t->period > 0) {
+                    t->start += (t->diff / t->period) * t->period;
+                }
             } else {
                 t->diff = 0;
 
@@ -117,7 +119,7 @@ ATimer* a_timer_new(ATimerType Type, unsigned Period, bool Repeat)
 
     t->type = Type;
     t->flags = 0;
-    t->period = a_math_maxu(Period, 1);
+    t->period = Period;
     t->start = 0;
     t->diff = 0;
     t->runningListNode = NULL;
@@ -153,7 +155,7 @@ void a_timer_periodSet(ATimer* Timer, unsigned Period)
         Period *= 1000;
     }
 
-    Timer->period = a_math_maxu(Period, 1);
+    Timer->period = Period;
 }
 
 void a_timer_start(ATimer* Timer)
