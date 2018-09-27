@@ -206,7 +206,7 @@ bool a_timer_isRunning(const ATimer* Timer)
     return Timer->flags & A_TIMER__RUNNING;
 }
 
-bool a_timer_isExpired(const ATimer* Timer)
+bool a_timer_expiredGet(const ATimer* Timer)
 {
     return Timer->flags & A_TIMER__EXPIRED;
 }

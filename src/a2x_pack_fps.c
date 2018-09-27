@@ -205,7 +205,7 @@ void a_fps__frame(void)
     if(!g_settings.vsyncOn && g_settings.allowSkipFrames) {
         unsigned newFrameSkip = UINT_MAX;
 
-        if(a_timer_isExpired(g_skip.skipAdjTimer)) {
+        if(a_timer_expiredGet(g_skip.skipAdjTimer)) {
             if(g_run.drawFpsMax <= g_skip.fpsThresholdSlow
                 && g_run.skipFramesNum < g_settings.skipFramesMax) {
 
@@ -233,7 +233,7 @@ void a_fps__frame(void)
 
         #if A__ALLOW_SLEEP
             g_run.canSleep = g_run.canSleep
-                                || a_timer_isExpired(g_run.canSleepAgainTimer);
+                                || a_timer_expiredGet(g_run.canSleepAgainTimer);
         #endif
     }
 

@@ -95,7 +95,7 @@ static void inputCallback(void)
     {
         if(!g_soundOn
             || !a_timer_isRunning(g_volTimer)
-            || a_timer_isExpired(g_volTimer)) {
+            || a_timer_expiredGet(g_volTimer)) {
 
             return;
         }

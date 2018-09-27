@@ -231,7 +231,7 @@ done:
         if(pressed) {
             if(!a_timer_isRunning(Button->autoRepeat)) {
                 a_timer_start(Button->autoRepeat);
-            } else if(!a_timer_isExpired(Button->autoRepeat)) {
+            } else if(!a_timer_expiredGet(Button->autoRepeat)) {
                 pressed = false;
             }
         } else {
