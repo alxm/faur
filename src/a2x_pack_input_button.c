@@ -309,7 +309,7 @@ void a_input_button__processQueue(void)
     }
 
     A_LIST_ITERATE(g_releaseQueue, AButtonSource*, b) {
-        // Only release if hadn't just received a press
+        // Only release if did not receive an event this frame
         if(!a_input__freshEventGet(&b->header)) {
             a_input_button__stateSet(b, false);
         }

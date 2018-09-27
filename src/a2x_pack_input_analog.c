@@ -130,10 +130,10 @@ AFix a_analog_valueGetFix(const AAnalog* Analog)
 
     #if A_FIX_BIT_PRECISION < A__ANALOG_BITS
         return a_analog_valueGetRaw(Analog)
-            >> (A__ANALOG_BITS - A_FIX_BIT_PRECISION);
+                >> (A__ANALOG_BITS - A_FIX_BIT_PRECISION);
     #else
         return a_analog_valueGetRaw(Analog)
-            << (A_FIX_BIT_PRECISION - A__ANALOG_BITS);
+                << (A_FIX_BIT_PRECISION - A__ANALOG_BITS);
     #endif
 }
 
