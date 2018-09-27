@@ -144,7 +144,7 @@ void a_timer_free(ATimer* Timer)
     free(Timer);
 }
 
-unsigned a_timer_elapsedGet(ATimer* Timer)
+unsigned a_timer_elapsedGet(const ATimer* Timer)
 {
     return Timer->diff;
 }
@@ -201,12 +201,12 @@ void a_timer_stop(ATimer* Timer)
     }
 }
 
-bool a_timer_isRunning(ATimer* Timer)
+bool a_timer_isRunning(const ATimer* Timer)
 {
     return Timer->flags & A_TIMER__RUNNING;
 }
 
-bool a_timer_isExpired(ATimer* Timer)
+bool a_timer_isExpired(const ATimer* Timer)
 {
     return Timer->flags & A_TIMER__EXPIRED;
 }
