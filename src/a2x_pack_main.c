@@ -36,6 +36,7 @@
 #include "a2x_pack_settings.v.h"
 #include "a2x_pack_sound.v.h"
 #include "a2x_pack_state.v.h"
+#include "a2x_pack_timer.v.h"
 
 static int g_argsNum;
 static const char** g_args;
@@ -56,6 +57,7 @@ static void a__atexit(void)
     a_pixel__uninit();
     a_screen__uninit();
     a_input__uninit();
+    a_timer__uninit();
     a_platform__uninit();
 
     #if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ || A_BUILD_SYSTEM_CAANOO
@@ -88,6 +90,7 @@ int main(int Argc, char* Argv[])
 
     a_conf__init();
     a_platform__init();
+    a_timer__init();
     a_input__init();
     a_screen__init();
     a_pixel__init();

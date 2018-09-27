@@ -266,8 +266,8 @@ bool hasTransparency(const APixel* Pixels, int Width, int Height)
 
 APlatformTexture* a_platform__textureScreenNew(int Width, int Height)
 {
-    A_UTIL_UNUSED(Width);
-    A_UTIL_UNUSED(Height);
+    A_UNUSED(Width);
+    A_UNUSED(Height);
 
     return NULL;
 }
@@ -339,7 +339,7 @@ void a_platform__textureFree(APlatformTexture* Texture)
 
 void a_platform__textureBlit(APlatformTexture* Texture, int X, int Y, bool FillFlat)
 {
-    A_UTIL_UNUSED(FillFlat);
+    A_UNUSED(FillFlat);
 
     if(a_screen_isBoxInsideClip(X, Y, Texture->spr->w, Texture->spr->h)) {
         if(Texture->colorKeyed) {
@@ -358,10 +358,10 @@ void a_platform__textureBlit(APlatformTexture* Texture, int X, int Y, bool FillF
 
 void a_platform__textureBlitEx(APlatformTexture* Texture, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY, bool FillFlat)
 {
-    A_UTIL_UNUSED(Scale);
-    A_UTIL_UNUSED(Angle);
-    A_UTIL_UNUSED(CenterX);
-    A_UTIL_UNUSED(CenterY);
+    A_UNUSED(Scale);
+    A_UNUSED(Angle);
+    A_UNUSED(CenterX);
+    A_UNUSED(CenterY);
 
     a_platform__textureBlit(Texture, X, Y, FillFlat);
 }

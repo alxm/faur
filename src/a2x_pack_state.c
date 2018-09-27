@@ -34,6 +34,7 @@
 #include "a2x_pack_settings.v.h"
 #include "a2x_pack_str.v.h"
 #include "a2x_pack_strhash.v.h"
+#include "a2x_pack_timer.v.h"
 
 typedef struct {
     char* name;
@@ -298,6 +299,7 @@ static bool iteration(void)
 
     if(s->stage == A_STATE__STAGE_LOOP) {
         while(a_fps__tick() && a_list_isEmpty(g_pending)) {
+            a_timer__tick();
             a_input__tick();
             s->function(A_STATE__STAGE_LOOP | A_STATE__STAGE_TICK);
             a_ecs__tick();

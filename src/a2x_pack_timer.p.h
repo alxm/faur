@@ -32,13 +32,18 @@ typedef enum {
 } ATimerType;
 
 extern ATimer* a_timer_new(ATimerType Type, unsigned Period, bool Repeat);
+extern ATimer* a_timer_dup(const ATimer* Timer);
 extern void a_timer_free(ATimer* Timer);
 
-extern unsigned a_timer_elapsedGet(ATimer* Timer);
+extern unsigned a_timer_elapsedGet(const ATimer* Timer);
+
+extern unsigned a_timer_periodGet(const ATimer* Timer);
 extern void a_timer_periodSet(ATimer* Timer, unsigned Period);
 
 extern void a_timer_start(ATimer* Timer);
 extern void a_timer_stop(ATimer* Timer);
 
-extern bool a_timer_isRunning(ATimer* Timer);
-extern bool a_timer_isExpired(ATimer* Timer);
+extern bool a_timer_isRunning(const ATimer* Timer);
+
+extern bool a_timer_expiredGet(const ATimer* Timer);
+extern void a_timer_expiredClear(ATimer* Timer);

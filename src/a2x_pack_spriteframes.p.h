@@ -26,9 +26,9 @@ typedef struct ASpriteFrames ASpriteFrames;
 #include "a2x_pack_list.p.h"
 #include "a2x_pack_sprite.p.h"
 
-extern ASpriteFrames* a_spriteframes_newFromFile(const char* Path, unsigned CallsToNextFrame);
-extern ASpriteFrames* a_spriteframes_newFromSprite(const ASprite* Sheet, int X, int Y, unsigned CallsToNextFrame);
-extern ASpriteFrames* a_spriteframes_newBlank(unsigned CallsToNextFrame);
+extern ASpriteFrames* a_spriteframes_newFromFile(const char* Path, unsigned FrameMs);
+extern ASpriteFrames* a_spriteframes_newFromSprite(const ASprite* Sheet, int X, int Y, unsigned FrameMs);
+extern ASpriteFrames* a_spriteframes_newBlank(unsigned FrameMs);
 extern ASpriteFrames* a_spriteframes_dup(const ASpriteFrames* Frames, bool DupSprites);
 extern void a_spriteframes_free(ASpriteFrames* Frames, bool FreeSprites);
 
@@ -56,7 +56,7 @@ extern void a_spriteframes_directionSet(ASpriteFrames* Frames, bool Forward);
 extern void a_spriteframes_directionFlip(ASpriteFrames* Frames);
 
 extern unsigned a_spriteframes_speedGet(const ASpriteFrames* Frames);
-extern void a_spriteframes_speedSet(ASpriteFrames* Frames, unsigned CallsToNextFrame);
+extern void a_spriteframes_speedSet(ASpriteFrames* Frames, unsigned FrameMs);
 
 extern void a_spriteframes_pause(ASpriteFrames* Frames);
 extern void a_spriteframes_resume(ASpriteFrames* Frames);

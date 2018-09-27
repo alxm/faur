@@ -52,8 +52,8 @@ AMenu* a_menu_new(AInputButton* Next, AInputButton* Back, AInputButton* Select, 
     m->select = Select;
     m->cancel = Cancel;
 
-    a_button_pressSetRepeat(m->next, a_time_msToTicks(200));
-    a_button_pressSetRepeat(m->back, a_time_msToTicks(200));
+    a_button_pressSetRepeat(m->next, 200);
+    a_button_pressSetRepeat(m->back, 200);
 
     return m;
 }
