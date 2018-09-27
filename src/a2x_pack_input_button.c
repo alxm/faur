@@ -204,7 +204,7 @@ const char* a_button_nameGet(const AButton* Button)
     return Button->header.name;
 }
 
-bool a_button_pressGet(AButton* Button)
+bool a_button_pressGet(const AButton* Button)
 {
     bool pressed = false;
 
@@ -242,7 +242,7 @@ done:
     return pressed;
 }
 
-bool a_button_pressGetOnce(AButton* Button)
+bool a_button_pressGetOnce(const AButton* Button)
 {
     bool pressed = a_button_pressGet(Button);
 
