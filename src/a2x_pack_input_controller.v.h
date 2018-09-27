@@ -30,10 +30,10 @@ extern void a_input_controller__uninit(void);
 
 extern void a_controller__new(bool Generic, bool IsMapped);
 
-extern void a_controller__buttonAdd(AInputButtonSource* Button, const char* Id);
-extern AInputButtonSource* a_controller__buttonGet(const char* Id);
+extern void a_controller__buttonAdd(AButtonSource* Button, const char* Id);
+extern AButtonSource* a_controller__buttonGet(const char* Id);
 extern AStrHash* a_controller__buttonCollectionGet(void);
 
-extern void a_controller__analogAdd(AInputAnalogSource* Analog, const char* Id);
-extern AInputAnalogSource* a_controller__analogGet(const char* Id);
+extern void a_controller__analogAdd(AAnalogSource* Analog, const char* Id);
+extern AAnalogSource* a_controller__analogGet(const char* Id);
 extern AStrHash* a_controller__analogCollectionGet(void);

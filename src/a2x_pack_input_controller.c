@@ -24,8 +24,8 @@
 #include "a2x_pack_settings.v.h"
 
 typedef struct {
-    AStrHash* buttons; // table of AInputButtonSource
-    AStrHash* axes; // table of AInputAnalogSource
+    AStrHash* buttons; // table of AButtonSource
+    AStrHash* axes; // table of AAnalogSource
     bool generic;
     bool mapped;
 } AInputController;
@@ -42,20 +42,20 @@ void a_input_controller__init(void)
 void a_input_controller__init2(void)
 {
     A_LIST_ITERATE(g_controllers, AInputController*, c) {
-        AInputAnalogSource* x = a_strhash_get(c->axes, "gamepad.a.leftX");
-        AInputAnalogSource* y = a_strhash_get(c->axes, "gamepad.a.leftY");
-        AInputAnalogSource* lt = a_strhash_get(c->axes, "gamepad.a.leftTrigger");
-        AInputAnalogSource* rt = a_strhash_get(c->axes, "gamepad.a.rightTrigger");
-        AInputButtonSource* u = a_strhash_get(c->buttons, "gamepad.b.up");
-        AInputButtonSource* d = a_strhash_get(c->buttons, "gamepad.b.down");
-        AInputButtonSource* l = a_strhash_get(c->buttons, "gamepad.b.left");
-        AInputButtonSource* r = a_strhash_get(c->buttons, "gamepad.b.right");
-        AInputButtonSource* ul = a_strhash_get(c->buttons, "gamepad.b.upLeft");
-        AInputButtonSource* ur = a_strhash_get(c->buttons, "gamepad.b.upRight");
-        AInputButtonSource* dl = a_strhash_get(c->buttons, "gamepad.b.downLeft");
-        AInputButtonSource* dr = a_strhash_get(c->buttons, "gamepad.b.downRight");
-        AInputButtonSource* lb = a_strhash_get(c->buttons, "gamepad.b.l");
-        AInputButtonSource* rb = a_strhash_get(c->buttons, "gamepad.b.r");
+        AAnalogSource* x = a_strhash_get(c->axes, "gamepad.a.leftX");
+        AAnalogSource* y = a_strhash_get(c->axes, "gamepad.a.leftY");
+        AAnalogSource* lt = a_strhash_get(c->axes, "gamepad.a.leftTrigger");
+        AAnalogSource* rt = a_strhash_get(c->axes, "gamepad.a.rightTrigger");
+        AButtonSource* u = a_strhash_get(c->buttons, "gamepad.b.up");
+        AButtonSource* d = a_strhash_get(c->buttons, "gamepad.b.down");
+        AButtonSource* l = a_strhash_get(c->buttons, "gamepad.b.left");
+        AButtonSource* r = a_strhash_get(c->buttons, "gamepad.b.right");
+        AButtonSource* ul = a_strhash_get(c->buttons, "gamepad.b.upLeft");
+        AButtonSource* ur = a_strhash_get(c->buttons, "gamepad.b.upRight");
+        AButtonSource* dl = a_strhash_get(c->buttons, "gamepad.b.downLeft");
+        AButtonSource* dr = a_strhash_get(c->buttons, "gamepad.b.downRight");
+        AButtonSource* lb = a_strhash_get(c->buttons, "gamepad.b.l");
+        AButtonSource* rb = a_strhash_get(c->buttons, "gamepad.b.r");
 
         // GP2X and Wiz dpad diagonals are dedicated buttons, split them into
         // their cardinal directions.
@@ -77,14 +77,14 @@ void a_input_controller__init2(void)
         if(x && y && u && d && l && r) {
             if(!c->mapped) {
                 if(a_settings_getBool("input.switchAxes")) {
-                    AInputAnalogSource* save = x;
+                    AAnalogSource* save = x;
 
                     x = y;
                     y = save;
                 }
 
                 if(a_settings_getBool("input.invertAxes")) {
-                    AInputButtonSource* save;
+                    AButtonSource* save;
 
                     save = u;
                     u = d;
@@ -186,12 +186,12 @@ void a_controller__new(bool Generic, bool IsMapped)
     g_activeController = c;
 }
 
-void a_controller__buttonAdd(AInputButtonSource* Button, const char* Id)
+void a_controller__buttonAdd(AButtonSource* Button, const char* Id)
 {
     a_strhash_add(g_activeController->buttons, Id, Button);
 }
 
-AInputButtonSource* a_controller__buttonGet(const char* Id)
+AButtonSource* a_controller__buttonGet(const char* Id)
 {
     if(g_activeController == NULL) {
         return NULL;
@@ -209,12 +209,12 @@ AStrHash* a_controller__buttonCollectionGet(void)
     return g_activeController->buttons;
 }
 
-void a_controller__analogAdd(AInputAnalogSource* Analog, const char* Id)
+void a_controller__analogAdd(AAnalogSource* Analog, const char* Id)
 {
     a_strhash_add(g_activeController->axes, Id, Analog);
 }
 
-AInputAnalogSource* a_controller__analogGet(const char* Id)
+AAnalogSource* a_controller__analogGet(const char* Id)
 {
     if(g_activeController == NULL) {
         return NULL;

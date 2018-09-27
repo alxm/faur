@@ -30,13 +30,13 @@ struct AMenu {
     ASample* soundAccept;
     ASample* soundCancel;
     ASample* soundBrowse;
-    AInputButton* next;
-    AInputButton* back;
-    AInputButton* select;
-    AInputButton* cancel;
+    AButton* next;
+    AButton* back;
+    AButton* select;
+    AButton* cancel;
 };
 
-AMenu* a_menu_new(AInputButton* Next, AInputButton* Back, AInputButton* Select, AInputButton* Cancel)
+AMenu* a_menu_new(AButton* Next, AButton* Back, AButton* Select, AButton* Cancel)
 {
     AMenu* m = a_mem_malloc(sizeof(AMenu));
 

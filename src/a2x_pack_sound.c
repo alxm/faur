@@ -41,15 +41,15 @@ static int g_volumeMax;
     #define A__VOLUME_STEP 1
     #define A__VOLBAR_SHOW_MS 500
     static ATimer* g_volTimer;
-    static AInputButton* g_volumeUpButton;
-    static AInputButton* g_volumeDownButton;
+    static AButton* g_volumeUpButton;
+    static AButton* g_volumeDownButton;
     static APixel g_volbarBackground;
     static APixel g_volbarBorder;
     static APixel g_volbarFill;
 #endif
 
 #if A_BUILD_DEVICE_KEYBOARD
-    static AInputButton* g_musicOnOffButton;
+    static AButton* g_musicOnOffButton;
 #endif
 
 static void adjustSoundVolume(int Volume)

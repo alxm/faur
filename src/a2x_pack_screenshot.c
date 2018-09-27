@@ -35,7 +35,7 @@ static char* g_filePrefix;
 static char* g_title;
 static char* g_description;
 static unsigned g_screenshotNumber;
-static AInputButton* g_button;
+static AButton* g_button;
 
 static bool lazy_init(void)
 {

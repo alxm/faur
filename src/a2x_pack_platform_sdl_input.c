@@ -50,7 +50,7 @@ typedef struct {
 
 typedef struct {
     ASdlInputHeader header;
-    AInputButtonSource* logicalButton;
+    AButtonSource* logicalButton;
     union {
         ASdlKeyCode keyCode;
         uint8_t buttonIndex;
@@ -61,13 +61,13 @@ typedef struct {
 
 typedef struct {
     ASdlInputHeader header;
-    AInputAnalogSource* logicalAnalog;
+    AAnalogSource* logicalAnalog;
     int axisIndex;
 } ASdlInputAnalog;
 
 typedef struct {
     ASdlInputHeader header;
-    AInputTouchSource* logicalTouch;
+    ATouchSource* logicalTouch;
 } ASdlInputTouch;
 
 typedef struct {

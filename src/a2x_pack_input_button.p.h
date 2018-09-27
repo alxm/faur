@@ -21,16 +21,16 @@
 
 #include "a2x_system_includes.h"
 
-typedef struct AInputButton AInputButton;
+typedef struct AButton AButton;
 
-extern AInputButton* a_button_new(const char* Ids);
-extern AInputButton* a_button_dup(const AInputButton* Button);
-extern void a_button_free(AInputButton* Button);
+extern AButton* a_button_new(const char* Ids);
+extern AButton* a_button_dup(const AButton* Button);
+extern void a_button_free(AButton* Button);
 
-extern bool a_button_isWorking(const AInputButton* Button);
-extern const char* a_button_nameGet(const AInputButton* Button);
+extern bool a_button_isWorking(const AButton* Button);
+extern const char* a_button_nameGet(const AButton* Button);
 
-extern bool a_button_pressGet(AInputButton* Button);
-extern bool a_button_pressGetOnce(AInputButton* Button);
-extern void a_button_pressSetRepeat(AInputButton* Button, unsigned RepeatMs);
-extern void a_button_pressClear(const AInputButton* Button);
+extern bool a_button_pressGet(AButton* Button);
+extern bool a_button_pressGetOnce(AButton* Button);
+extern void a_button_pressSetRepeat(AButton* Button, unsigned RepeatMs);
+extern void a_button_pressClear(const AButton* Button);

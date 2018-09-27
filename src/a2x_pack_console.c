@@ -51,7 +51,7 @@ static AList* g_lines;
 static unsigned g_linesPerScreen;
 static ASprite* g_sources[A_OUT__SOURCE_NUM];
 static ASprite* g_titles[A_OUT__TYPE_NUM];
-static AInputButton* g_toggle;
+static AButton* g_toggle;
 
 static void line_set(ALine* Line, AOutSource Source, AOutType Type, const char* Text)
 {

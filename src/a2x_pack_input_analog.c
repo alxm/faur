@@ -26,26 +26,26 @@
 #include "a2x_pack_out.v.h"
 #include "a2x_pack_str.v.h"
 
-struct AInputAnalog {
+struct AAnalog {
     AInputUserHeader header;
 };
 
-struct AInputAnalogSource {
+struct AAnalogSource {
     AInputSourceHeader header;
     AList* forwardButtons; // List of AInputSourceAxisButtons
     int axisValue;
 };
 
 typedef struct {
-    AInputButtonSource* negative;
-    AInputButtonSource* positive;
+    AButtonSource* negative;
+    AButtonSource* positive;
     bool lastPressedNegative;
     bool lastPressedPositive;
 } AInputSourceAxisButtons;
 
-AInputAnalogSource* a_input_analog__newSource(const char* Id)
+AAnalogSource* a_input_analog__newSource(const char* Id)
 {
-    AInputAnalogSource* a = a_mem_malloc(sizeof(AInputAnalogSource));
+    AAnalogSource* a = a_mem_malloc(sizeof(AAnalogSource));
 
     a_input__sourceHeaderInit(&a->header, Id);
     a->forwardButtons = a_list_new();
@@ -54,13 +54,13 @@ AInputAnalogSource* a_input_analog__newSource(const char* Id)
     return a;
 }
 
-void a_input_analog__freeSource(AInputAnalogSource* Analog)
+void a_input_analog__freeSource(AAnalogSource* Analog)
 {
     a_list_freeEx(Analog->forwardButtons, free);
     a_input__sourceHeaderFree(&Analog->header);
 }
 
-void a_input_analog__forwardToButtons(AInputAnalogSource* Axis, AInputButtonSource* Negative, AInputButtonSource* Positive)
+void a_input_analog__forwardToButtons(AAnalogSource* Axis, AButtonSource* Negative, AButtonSource* Positive)
 {
     AInputSourceAxisButtons* b = a_mem_malloc(sizeof(AInputSourceAxisButtons));
 
@@ -72,9 +72,9 @@ void a_input_analog__forwardToButtons(AInputAnalogSource* Axis, AInputButtonSour
     a_list_addLast(Axis->forwardButtons, b);
 }
 
-AInputAnalog* a_analog_new(const char* Ids)
+AAnalog* a_analog_new(const char* Ids)
 {
-    AInputAnalog* a = a_mem_malloc(sizeof(AInputAnalog));
+    AAnalog* a = a_mem_malloc(sizeof(AAnalog));
 
     a_input__userHeaderInit(&a->header);
 
@@ -94,7 +94,7 @@ AInputAnalog* a_analog_new(const char* Ids)
     return a;
 }
 
-void a_analog_free(AInputAnalog* Analog)
+void a_analog_free(AAnalog* Analog)
 {
     if(Analog == NULL) {
         return;
@@ -105,17 +105,17 @@ void a_analog_free(AInputAnalog* Analog)
     free(Analog);
 }
 
-bool a_analog_isWorking(const AInputAnalog* Analog)
+bool a_analog_isWorking(const AAnalog* Analog)
 {
     return !a_list_isEmpty(Analog->header.sourceInputs);
 }
 
-int a_analog_valueGetRaw(const AInputAnalog* Analog)
+int a_analog_valueGetRaw(const AAnalog* Analog)
 {
     #define A__ANALOG_MAX_DISTANCE (1 << 15)
     #define A__ANALOG_ERROR_MARGIN (A__ANALOG_MAX_DISTANCE / 20)
 
-    A_LIST_ITERATE(Analog->header.sourceInputs, AInputAnalogSource*, a) {
+    A_LIST_ITERATE(Analog->header.sourceInputs, AAnalogSource*, a) {
         if(a_math_abs(a->axisValue) > A__ANALOG_ERROR_MARGIN) {
             return a->axisValue;
         }
@@ -124,7 +124,7 @@ int a_analog_valueGetRaw(const AInputAnalog* Analog)
     return 0;
 }
 
-AFix a_analog_valueGetFix(const AInputAnalog* Analog)
+AFix a_analog_valueGetFix(const AAnalog* Analog)
 {
     #define A__ANALOG_BITS 15
 
@@ -137,7 +137,7 @@ AFix a_analog_valueGetFix(const AInputAnalog* Analog)
     #endif
 }
 
-void a_input_analog__axisValueSet(AInputAnalogSource* Analog, int Value)
+void a_input_analog__axisValueSet(AAnalogSource* Analog, int Value)
 {
     Analog->axisValue = Value;
     a_input__freshEventSet(&Analog->header);

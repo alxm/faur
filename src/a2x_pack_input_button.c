@@ -27,16 +27,16 @@
 #include "a2x_pack_strbuilder.v.h"
 #include "a2x_pack_timer.v.h"
 
-struct AInputButton {
+struct AButton {
     AInputUserHeader header;
-    AList* combos; // List of lists of AInputButtonSource; for combo buttons
+    AList* combos; // List of lists of AButtonSource; for combo buttons
     ATimer* autoRepeat;
     bool isClone;
 };
 
-struct AInputButtonSource {
+struct AButtonSource {
     AInputSourceHeader header;
-    AList* forwardButtons; // List of AInputButtonSource
+    AList* forwardButtons; // List of AButtonSource
     bool pressed;
     bool ignorePressed;
 };
@@ -59,9 +59,9 @@ void a_input_button__uninit(void)
     a_list_free(g_releaseQueue);
 }
 
-AInputButtonSource* a_input_button__newSource(const char* Name, const char* Id)
+AButtonSource* a_input_button__newSource(const char* Name, const char* Id)
 {
-    AInputButtonSource* b = a_mem_malloc(sizeof(AInputButtonSource));
+    AButtonSource* b = a_mem_malloc(sizeof(AButtonSource));
 
     a_input__sourceHeaderInit(&b->header, Name);
 
@@ -77,25 +77,25 @@ AInputButtonSource* a_input_button__newSource(const char* Name, const char* Id)
     return b;
 }
 
-void a_input_button__freeSource(AInputButtonSource* Button)
+void a_input_button__freeSource(AButtonSource* Button)
 {
     a_list_free(Button->forwardButtons);
     a_input__sourceHeaderFree(&Button->header);
 }
 
-AInputButtonSource* a_input_button__keyGet(const char* Id)
+AButtonSource* a_input_button__keyGet(const char* Id)
 {
     return a_strhash_get(g_keys, Id);
 }
 
-void a_input_button__forwardToButton(AInputButtonSource* Button, AInputButtonSource* Binding)
+void a_input_button__forwardToButton(AButtonSource* Button, AButtonSource* Binding)
 {
     a_list_addLast(Button->forwardButtons, Binding);
 }
 
-AInputButton* a_button_new(const char* Ids)
+AButton* a_button_new(const char* Ids)
 {
-    AInputButton* b = a_mem_malloc(sizeof(AInputButton));
+    AButton* b = a_mem_malloc(sizeof(AButton));
 
     a_input__userHeaderInit(&b->header);
 
@@ -112,7 +112,7 @@ AInputButton* a_button_new(const char* Ids)
             bool missing = false;
 
             A_LIST_ITERATE(tok, char*, part) {
-                AInputButtonSource* button = a_strhash_get(g_keys, part);
+                AButtonSource* button = a_strhash_get(g_keys, part);
 
                 if(button == NULL) {
                     button = a_controller__buttonGet(part);
@@ -142,13 +142,13 @@ AInputButton* a_button_new(const char* Ids)
     a_list_freeEx(tok, free);
 
     if(!a_list_isEmpty(b->header.sourceInputs)) {
-        AInputButtonSource* btn = a_list_getLast(b->header.sourceInputs);
+        AButtonSource* btn = a_list_getLast(b->header.sourceInputs);
         b->header.name = a_str_dup(btn->header.name);
     } else if(!a_list_isEmpty(b->combos)) {
         AStrBuilder* sb = a_strbuilder_new(128);
         AList* combo = a_list_getLast(b->combos);
 
-        A_LIST_ITERATE(combo, AInputButtonSource*, button) {
+        A_LIST_ITERATE(combo, AButtonSource*, button) {
             a_strbuilder_add(sb, button->header.name);
 
             if(!A_LIST_IS_LAST()) {
@@ -166,9 +166,9 @@ AInputButton* a_button_new(const char* Ids)
     return b;
 }
 
-AInputButton* a_button_dup(const AInputButton* Button)
+AButton* a_button_dup(const AButton* Button)
 {
-    AInputButton* b = a_mem_malloc(sizeof(AInputButton));
+    AButton* b = a_mem_malloc(sizeof(AButton));
 
     *b = *Button;
     b->autoRepeat = NULL;
@@ -177,7 +177,7 @@ AInputButton* a_button_dup(const AInputButton* Button)
     return b;
 }
 
-void a_button_free(AInputButton* Button)
+void a_button_free(AButton* Button)
 {
     if(Button == NULL) {
         return;
@@ -193,22 +193,22 @@ void a_button_free(AInputButton* Button)
     free(Button);
 }
 
-bool a_button_isWorking(const AInputButton* Button)
+bool a_button_isWorking(const AButton* Button)
 {
     return !a_list_isEmpty(Button->header.sourceInputs)
         || !a_list_isEmpty(Button->combos);
 }
 
-const char* a_button_nameGet(const AInputButton* Button)
+const char* a_button_nameGet(const AButton* Button)
 {
     return Button->header.name;
 }
 
-bool a_button_pressGet(AInputButton* Button)
+bool a_button_pressGet(AButton* Button)
 {
     bool pressed = false;
 
-    A_LIST_ITERATE(Button->header.sourceInputs, AInputButtonSource*, b) {
+    A_LIST_ITERATE(Button->header.sourceInputs, AButtonSource*, b) {
         if(b->pressed && !b->ignorePressed) {
             pressed = true;
             goto done;
@@ -216,7 +216,7 @@ bool a_button_pressGet(AInputButton* Button)
     }
 
     A_LIST_ITERATE(Button->combos, AList*, andList) {
-        A_LIST_ITERATE(andList, AInputButtonSource*, b) {
+        A_LIST_ITERATE(andList, AButtonSource*, b) {
             if(!b->pressed || b->ignorePressed) {
                 break;
             } else if(A_LIST_IS_LAST()) {
@@ -242,7 +242,7 @@ done:
     return pressed;
 }
 
-bool a_button_pressGetOnce(AInputButton* Button)
+bool a_button_pressGetOnce(AButton* Button)
 {
     bool pressed = a_button_pressGet(Button);
 
@@ -253,7 +253,7 @@ bool a_button_pressGetOnce(AInputButton* Button)
     return pressed;
 }
 
-void a_button_pressSetRepeat(AInputButton* Button, unsigned RepeatMs)
+void a_button_pressSetRepeat(AButton* Button, unsigned RepeatMs)
 {
     if(Button->autoRepeat == NULL) {
         Button->autoRepeat = a_timer_new(A_TIMER_MS, RepeatMs, true);
@@ -263,16 +263,16 @@ void a_button_pressSetRepeat(AInputButton* Button, unsigned RepeatMs)
     }
 }
 
-void a_button_pressClear(const AInputButton* Button)
+void a_button_pressClear(const AButton* Button)
 {
-    A_LIST_ITERATE(Button->header.sourceInputs, AInputButtonSource*, b) {
+    A_LIST_ITERATE(Button->header.sourceInputs, AButtonSource*, b) {
         if(b->pressed) {
             b->ignorePressed = true;
         }
     }
 
     A_LIST_ITERATE(Button->combos, AList*, andList) {
-        A_LIST_ITERATE(andList, AInputButtonSource*, b) {
+        A_LIST_ITERATE(andList, AButtonSource*, b) {
             if(b->pressed) {
                 b->ignorePressed = true;
             }
@@ -280,7 +280,7 @@ void a_button_pressClear(const AInputButton* Button)
     }
 }
 
-void a_input_button__stateSet(AInputButtonSource* Button, bool Pressed)
+void a_input_button__stateSet(AButtonSource* Button, bool Pressed)
 {
     if(!Pressed && Button->ignorePressed) {
         Button->ignorePressed = false;
@@ -290,7 +290,7 @@ void a_input_button__stateSet(AInputButtonSource* Button, bool Pressed)
 
     a_input__freshEventSet(&Button->header);
 
-    A_LIST_ITERATE(Button->forwardButtons, AInputButtonSource*, b) {
+    A_LIST_ITERATE(Button->forwardButtons, AButtonSource*, b) {
         // Queue forwarded button presses and releases to be processed after
         // all input events were received, so they don't conflict with them.
         if(Pressed) {
@@ -303,12 +303,12 @@ void a_input_button__stateSet(AInputButtonSource* Button, bool Pressed)
 
 void a_input_button__processQueue(void)
 {
-    A_LIST_ITERATE(g_pressQueue, AInputButtonSource*, b) {
+    A_LIST_ITERATE(g_pressQueue, AButtonSource*, b) {
         // Overwrite whatever current state with a press
         a_input_button__stateSet(b, true);
     }
 
-    A_LIST_ITERATE(g_releaseQueue, AInputButtonSource*, b) {
+    A_LIST_ITERATE(g_releaseQueue, AButtonSource*, b) {
         // Only release if hadn't just received a press
         if(!a_input__freshEventGet(&b->header)) {
             a_input_button__stateSet(b, false);

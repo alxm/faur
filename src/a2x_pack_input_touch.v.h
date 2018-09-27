@@ -21,15 +21,15 @@
 
 #include "a2x_pack_input_touch.p.h"
 
-typedef struct AInputTouchSource AInputTouchSource;
+typedef struct ATouchSource ATouchSource;
 
 extern void a_input_touch__init(void);
 extern void a_input_touch__uninit(void);
 
-extern AInputTouchSource* a_input_touch__newSource(const char* Id);
+extern ATouchSource* a_input_touch__newSource(const char* Id);
 
-extern void a_input_touch__motionAdd(AInputTouchSource* Touch, int X, int Y);
+extern void a_input_touch__motionAdd(ATouchSource* Touch, int X, int Y);
 extern void a_input_touch__motionClear(void);
 
-extern void a_input_touch__coordsSet(AInputTouchSource* Touch, int X, int Y, bool Tapped);
-extern void a_input_touch__deltaSet(AInputTouchSource* Touch, int Dx, int Dy);
+extern void a_input_touch__coordsSet(ATouchSource* Touch, int X, int Y, bool Tapped);
+extern void a_input_touch__deltaSet(ATouchSource* Touch, int Dx, int Dy);

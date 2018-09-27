@@ -34,7 +34,7 @@ typedef enum {
 #include "a2x_pack_list.p.h"
 #include "a2x_pack_sound.p.h"
 
-extern AMenu* a_menu_new(AInputButton* Next, AInputButton* Back, AInputButton* Select, AInputButton* Cancel);
+extern AMenu* a_menu_new(AButton* Next, AButton* Back, AButton* Select, AButton* Cancel);
 extern void a_menu_free(AMenu* Menu);
 extern void a_menu_freeEx(AMenu* Menu, AFree* ItemFree);
 

@@ -30,7 +30,7 @@ typedef void (*AInputCallback)(void);
 
 struct AInputUserHeader {
     char* name;
-    AList* sourceInputs; // List of AInputButtonSource/Analog/Touch
+    AList* sourceInputs; // List of AButtonSource/Analog/Touch
 };
 
 struct AInputSourceHeader {

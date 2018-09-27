@@ -41,7 +41,7 @@ static AList* g_overlays; // list of AScreenOverlayContainer
 static bool g_fullScreenState;
 
 #if A_BUILD_SYSTEM_DESKTOP
-    static AInputButton* g_fullScreenButton;
+    static AButton* g_fullScreenButton;
 
     static void inputCallback(void)
     {

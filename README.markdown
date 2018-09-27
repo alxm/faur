@@ -49,10 +49,10 @@ A_STATE(drawBox)
 {
     static struct {
         int x, y;
-        AInputButton* up;
-        AInputButton* down;
-        AInputButton* left;
-        AInputButton* right;
+        AButton* up;
+        AButton* down;
+        AButton* left;
+        AButton* right;
     } context;
 
     A_STATE_INIT
