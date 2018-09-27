@@ -156,6 +156,10 @@ void a_timer_periodSet(ATimer* Timer, unsigned Period)
     }
 
     Timer->period = Period;
+
+    if(Period == 0 && Timer->flags & A_TIMER__RUNNING) {
+        A_FLAG_SET(Timer->flags, A_TIMER__EXPIRED);
+    }
 }
 
 void a_timer_start(ATimer* Timer)
@@ -164,7 +168,12 @@ void a_timer_start(ATimer* Timer)
     Timer->diff = 0;
 
     A_FLAG_SET(Timer->flags, A_TIMER__RUNNING);
-    A_FLAG_CLEAR(Timer->flags, A_TIMER__EXPIRED);
+
+    if(Timer->period == 0) {
+        A_FLAG_SET(Timer->flags, A_TIMER__EXPIRED);
+    } else {
+        A_FLAG_CLEAR(Timer->flags, A_TIMER__EXPIRED);
+    }
 
     if(Timer->runningListNode == NULL) {
         Timer->runningListNode = a_list_addLast(g_runningTimers, Timer);
