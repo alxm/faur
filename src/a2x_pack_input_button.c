@@ -168,9 +168,8 @@ AButton* a_button_new(const char* Ids)
 
 AButton* a_button_dup(const AButton* Button)
 {
-    AButton* b = a_mem_malloc(sizeof(AButton));
+    AButton* b = a_mem_dup(Button, sizeof(AButton));
 
-    *b = *Button;
     b->autoRepeat = NULL;
     b->isClone = true;
 
