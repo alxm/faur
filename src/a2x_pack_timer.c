@@ -149,6 +149,15 @@ unsigned a_timer_elapsedGet(ATimer* Timer)
     return Timer->diff;
 }
 
+unsigned a_timer_periodGet(const ATimer* Timer)
+{
+    if(Timer->type == A_TIMER_SEC) {
+        return Timer->period / 1000;
+    }
+
+    return Timer->period;
+}
+
 void a_timer_periodSet(ATimer* Timer, unsigned Period)
 {
     if(Timer->type == A_TIMER_SEC) {
