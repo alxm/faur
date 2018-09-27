@@ -131,6 +131,18 @@ ATimer* a_timer_new(ATimerType Type, unsigned Period, bool Repeat)
     return t;
 }
 
+ATimer* a_timer_dup(const ATimer* Timer)
+{
+    ATimer* t = a_mem_dup(Timer, sizeof(ATimer));
+
+    A_FLAG_CLEAR(t->flags, A_TIMER__RUNNING | A_TIMER__EXPIRED);
+
+    t->diff = 0;
+    t->runningListNode = NULL;
+
+    return t;
+}
+
 void a_timer_free(ATimer* Timer)
 {
     if(Timer == NULL) {

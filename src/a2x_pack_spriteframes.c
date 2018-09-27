@@ -119,7 +119,7 @@ ASpriteFrames* a_spriteframes_dup(const ASpriteFrames* Frames, bool DupSprites)
     }
 
     f->spriteArray = (ASprite**)a_list_toArray(f->sprites);
-    f->timer = a_timer_new(A_TIMER_MS, a_timer_periodGet(Frames->timer), true);
+    f->timer = a_timer_dup(Frames->timer);
     f->num = Frames->num;
     f->index = 0;
     f->forward = true;
