@@ -60,17 +60,17 @@ void a_input_controller__init2(void)
         // GP2X and Wiz dpad diagonals are dedicated buttons, split them into
         // their cardinal directions.
         if(u && d && l && r && ul && ur && dl && dr) {
-            a_input_button__forwardToButton(ul, u);
-            a_input_button__forwardToButton(ul, l);
+            a_input_button__sourceForward(ul, u);
+            a_input_button__sourceForward(ul, l);
 
-            a_input_button__forwardToButton(ur, u);
-            a_input_button__forwardToButton(ur, r);
+            a_input_button__sourceForward(ur, u);
+            a_input_button__sourceForward(ur, r);
 
-            a_input_button__forwardToButton(dl, d);
-            a_input_button__forwardToButton(dl, l);
+            a_input_button__sourceForward(dl, d);
+            a_input_button__sourceForward(dl, l);
 
-            a_input_button__forwardToButton(dr, d);
-            a_input_button__forwardToButton(dr, r);
+            a_input_button__sourceForward(dr, d);
+            a_input_button__sourceForward(dr, r);
         }
 
         // Forward the left analog stick to the direction buttons
@@ -109,10 +109,10 @@ void a_input_controller__init2(void)
         #if A_BUILD_SYSTEM_PANDORA
             if(!c->generic && x && y) {
                 // Pandora buttons are keyboard keys, not controller buttons
-                u = a_input_button__keyGet("gamepad.b.up");
-                d = a_input_button__keyGet("gamepad.b.down");
-                l = a_input_button__keyGet("gamepad.b.left");
-                r = a_input_button__keyGet("gamepad.b.right");
+                u = a_input_button__sourceKeyGet("gamepad.b.up");
+                d = a_input_button__sourceKeyGet("gamepad.b.down");
+                l = a_input_button__sourceKeyGet("gamepad.b.left");
+                r = a_input_button__sourceKeyGet("gamepad.b.right");
 
                 // Forward the left analog nub to the direction buttons
                 a_input_analog__forwardToButtons(x, l, r);
@@ -137,7 +137,7 @@ void a_input_controller__init2(void)
 void a_input_controller__uninit(void)
 {
     A_LIST_ITERATE(g_controllers, AInputController*, c) {
-        a_strhash_freeEx(c->buttons, (AFree*)a_input_button__freeSource);
+        a_strhash_freeEx(c->buttons, (AFree*)a_input_button__sourceFree);
         a_strhash_freeEx(c->axes, (AFree*)a_input_analog__freeSource);
 
         free(c);

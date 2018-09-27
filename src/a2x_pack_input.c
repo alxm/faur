@@ -118,7 +118,7 @@ void a_input__tick(void)
 {
     a_input_touch__motionClear();
     a_platform__inputsPoll();
-    a_input_button__processQueue();
+    a_input_button__sourceTick();
 
     A_LIST_ITERATE(g_callbacks, AInputCallbackContainer*, c) {
         c->callback();

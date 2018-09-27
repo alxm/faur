@@ -54,12 +54,12 @@ void a_input_button__init(void)
 
 void a_input_button__uninit(void)
 {
-    a_strhash_freeEx(g_keys, (AFree*)a_input_button__freeSource);
+    a_strhash_freeEx(g_keys, (AFree*)a_input_button__sourceFree);
     a_list_free(g_pressQueue);
     a_list_free(g_releaseQueue);
 }
 
-AButtonSource* a_input_button__newSource(const char* Name, const char* Id)
+AButtonSource* a_input_button__sourceNew(const char* Name, const char* Id)
 {
     AButtonSource* b = a_mem_malloc(sizeof(AButtonSource));
 
@@ -77,18 +77,18 @@ AButtonSource* a_input_button__newSource(const char* Name, const char* Id)
     return b;
 }
 
-void a_input_button__freeSource(AButtonSource* Button)
+void a_input_button__sourceFree(AButtonSource* Button)
 {
     a_list_free(Button->forwardButtons);
     a_input__sourceHeaderFree(&Button->header);
 }
 
-AButtonSource* a_input_button__keyGet(const char* Id)
+AButtonSource* a_input_button__sourceKeyGet(const char* Id)
 {
     return a_strhash_get(g_keys, Id);
 }
 
-void a_input_button__forwardToButton(AButtonSource* Button, AButtonSource* Binding)
+void a_input_button__sourceForward(AButtonSource* Button, AButtonSource* Binding)
 {
     a_list_addLast(Button->forwardButtons, Binding);
 }
@@ -279,7 +279,7 @@ void a_button_pressClear(const AButton* Button)
     }
 }
 
-void a_input_button__stateSet(AButtonSource* Button, bool Pressed)
+void a_input_button__sourcePressSet(AButtonSource* Button, bool Pressed)
 {
     if(!Pressed && Button->ignorePressed) {
         Button->ignorePressed = false;
@@ -300,17 +300,17 @@ void a_input_button__stateSet(AButtonSource* Button, bool Pressed)
     }
 }
 
-void a_input_button__processQueue(void)
+void a_input_button__sourceTick(void)
 {
     A_LIST_ITERATE(g_pressQueue, AButtonSource*, b) {
         // Overwrite whatever current state with a press
-        a_input_button__stateSet(b, true);
+        a_input_button__sourcePressSet(b, true);
     }
 
     A_LIST_ITERATE(g_releaseQueue, AButtonSource*, b) {
         // Only release if did not receive an event this frame
         if(!a_input__freshEventGet(&b->header)) {
-            a_input_button__stateSet(b, false);
+            a_input_button__sourcePressSet(b, false);
         }
     }
 

@@ -26,10 +26,11 @@ typedef struct AButtonSource AButtonSource;
 extern void a_input_button__init(void);
 extern void a_input_button__uninit(void);
 
-extern AButtonSource* a_input_button__newSource(const char* Name, const char* Id);
-extern void a_input_button__freeSource(AButtonSource* Button);
+extern AButtonSource* a_input_button__sourceNew(const char* Name, const char* Id);
+extern void a_input_button__sourceFree(AButtonSource* Button);
 
-extern AButtonSource* a_input_button__keyGet(const char* Id);
-extern void a_input_button__forwardToButton(AButtonSource* Button, AButtonSource* Binding);
-extern void a_input_button__stateSet(AButtonSource* Button, bool Pressed);
-extern void a_input_button__processQueue(void);
+extern AButtonSource* a_input_button__sourceKeyGet(const char* Id);
+extern void a_input_button__sourceForward(AButtonSource* Button, AButtonSource* Binding);
+extern void a_input_button__sourcePressSet(AButtonSource* Button, bool Pressed);
+
+extern void a_input_button__sourceTick(void);

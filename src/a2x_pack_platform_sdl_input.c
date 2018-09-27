@@ -563,7 +563,7 @@ void a_platform_sdl_input__uninit(void)
 void a_platform__inputsBind(void)
 {
     A_STRHASH_ITERATE(g_keys, ASdlInputButton*, k) {
-        k->logicalButton = a_input_button__newSource(
+        k->logicalButton = a_input_button__sourceNew(
                             k->header.name, A_STRHASH_KEY());
     }
 
@@ -579,7 +579,7 @@ void a_platform__inputsBind(void)
         #endif
 
         A_STRHASH_ITERATE(c->buttons, ASdlInputButton*, b) {
-            b->logicalButton = a_input_button__newSource(
+            b->logicalButton = a_input_button__sourceNew(
                                 b->header.name, A_STRHASH_KEY());
             a_controller__buttonAdd(b->logicalButton, A_STRHASH_KEY());
         }
@@ -615,7 +615,7 @@ void a_platform__inputsPoll(void)
                         if(k->code.keyCode == event.key.keysym.scancode) {
                     #endif
 
-                        a_input_button__stateSet(
+                        a_input_button__sourcePressSet(
                             k->logicalButton,
                             event.key.state == SDL_PRESSED);
                         break;
@@ -638,7 +638,7 @@ void a_platform__inputsPoll(void)
 
                     A_STRHASH_ITERATE(c->buttons, ASdlInputButton*, b) {
                         if(b->code.buttonIndex == event.jbutton.button) {
-                            a_input_button__stateSet(
+                            a_input_button__sourcePressSet(
                                 b->logicalButton,
                                 event.jbutton.state == SDL_PRESSED);
                             break;
@@ -714,13 +714,13 @@ void a_platform__inputsPoll(void)
                         if(state & 1) {
                             if(!b->lastStatePressed) {
                                 b->lastStatePressed = true;
-                                a_input_button__stateSet(
+                                a_input_button__sourcePressSet(
                                     b->logicalButton, true);
                             }
                         } else {
                             if(b->lastStatePressed) {
                                 b->lastStatePressed = false;
-                                a_input_button__stateSet(
+                                a_input_button__sourcePressSet(
                                     b->logicalButton, false);
                             }
                         }
@@ -764,7 +764,7 @@ void a_platform__inputsPoll(void)
 
                     A_STRHASH_ITERATE(c->buttons, ASdlInputButton*, b) {
                         if(b->code.buttonIndex == event.cbutton.button) {
-                            a_input_button__stateSet(
+                            a_input_button__sourcePressSet(
                                 b->logicalButton,
                                 event.cbutton.state == SDL_PRESSED);
                             break;

@@ -149,12 +149,12 @@ void a_input_analog__axisValueSet(AAnalogSource* Analog, int Value)
 
     A_LIST_ITERATE(Analog->forwardButtons, AInputSourceAxisButtons*, b) {
         if(b->negative && pressedNegative != b->lastPressedNegative) {
-            a_input_button__stateSet(b->negative, pressedNegative);
+            a_input_button__sourcePressSet(b->negative, pressedNegative);
             b->lastPressedNegative = pressedNegative;
         }
 
         if(b->positive && pressedPositive != b->lastPressedPositive) {
-            a_input_button__stateSet(b->positive, pressedPositive);
+            a_input_button__sourcePressSet(b->positive, pressedPositive);
             b->lastPressedPositive = pressedPositive;
         }
     }
