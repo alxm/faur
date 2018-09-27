@@ -210,3 +210,10 @@ bool a_timer_expiredGet(const ATimer* Timer)
 {
     return Timer->flags & A_TIMER__EXPIRED;
 }
+
+void a_timer_expiredClear(ATimer* Timer)
+{
+    if(Timer->period > 0) {
+        A_FLAG_CLEAR(Timer->flags, A_TIMER__EXPIRED);
+    }
+}
