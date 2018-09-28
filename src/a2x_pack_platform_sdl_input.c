@@ -31,6 +31,7 @@
 #include "a2x_pack_math.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
+#include "a2x_pack_platform.v.h"
 #include "a2x_pack_settings.v.h"
 #include "a2x_pack_state.v.h"
 #include "a2x_pack_str.v.h"
@@ -48,7 +49,7 @@ typedef struct {
     char* name;
 } ASdlInputHeader;
 
-typedef struct {
+struct APlatformButton {
     ASdlInputHeader header;
     AButtonSource* logicalButton;
     union {
@@ -57,18 +58,18 @@ typedef struct {
         int code;
     } code;
     bool lastStatePressed;
-} ASdlInputButton;
+};
 
-typedef struct {
+struct APlatformAnalog {
     ASdlInputHeader header;
     AAnalogSource* logicalAnalog;
     int axisIndex;
-} ASdlInputAnalog;
+};
 
-typedef struct {
+struct APlatformTouch {
     ASdlInputHeader header;
     ATouchSource* logicalTouch;
-} ASdlInputTouch;
+};
 
 typedef struct {
     SDL_Joystick* joystick;
@@ -102,7 +103,7 @@ static void addKey(const char* Name, const char* Id, int Code)
         return;
     }
 
-    ASdlInputButton* k = a_mem_malloc(sizeof(ASdlInputButton));
+    APlatformButton* k = a_mem_malloc(sizeof(APlatformButton));
 
     k->header.name = a_str_merge("[", Name, "]", NULL);
     k->code.code = Code;
@@ -117,7 +118,7 @@ static void addButton(AStrHash* ButtonsCollection, const char* Name, const char*
         return;
     }
 
-    ASdlInputButton* b = a_mem_malloc(sizeof(ASdlInputButton));
+    APlatformButton* b = a_mem_malloc(sizeof(APlatformButton));
 
     b->header.name = a_str_merge("(", Name, ")", NULL);
     b->code.code = Code;
@@ -133,7 +134,7 @@ static void addAnalog(AStrHash* AxesCollection, const char* Id, int AxisIndex)
         return;
     }
 
-    ASdlInputAnalog* a = a_mem_malloc(sizeof(ASdlInputAnalog));
+    APlatformAnalog* a = a_mem_malloc(sizeof(APlatformAnalog));
 
     a->header.name = a_str_dup(Id);
     a->axisIndex = AxisIndex;
@@ -148,7 +149,7 @@ static void addTouch(const char* Id)
         return;
     }
 
-    ASdlInputTouch* t = a_mem_malloc(sizeof(ASdlInputTouch));
+    APlatformTouch* t = a_mem_malloc(sizeof(APlatformTouch));
 
     t->header.name = a_str_dup(Id);
 
@@ -518,20 +519,20 @@ void a_platform_sdl_input__init(void)
 
 void a_platform_sdl_input__uninit(void)
 {
-    A_STRHASH_ITERATE(g_keys, ASdlInputButton*, k) {
+    A_STRHASH_ITERATE(g_keys, APlatformButton*, k) {
         freeHeader(&k->header);
     }
 
-    A_STRHASH_ITERATE(g_touchScreens, ASdlInputTouch*, t) {
+    A_STRHASH_ITERATE(g_touchScreens, APlatformTouch*, t) {
         freeHeader(&t->header);
     }
 
     A_LIST_ITERATE(g_controllers, ASdlInputController*, c) {
-        A_STRHASH_ITERATE(c->buttons, ASdlInputButton*, b) {
+        A_STRHASH_ITERATE(c->buttons, APlatformButton*, b) {
             freeHeader(&b->header);
         }
 
-        A_STRHASH_ITERATE(c->axes, ASdlInputAnalog*, a) {
+        A_STRHASH_ITERATE(c->axes, APlatformAnalog*, a) {
             freeHeader(&a->header);
         }
 
@@ -562,12 +563,12 @@ void a_platform_sdl_input__uninit(void)
 
 void a_platform__inputsBind(void)
 {
-    A_STRHASH_ITERATE(g_keys, ASdlInputButton*, k) {
+    A_STRHASH_ITERATE(g_keys, APlatformButton*, k) {
         k->logicalButton = a_input_button__sourceNew(
                             k->header.name, A_STRHASH_KEY());
     }
 
-    A_STRHASH_ITERATE(g_touchScreens, ASdlInputTouch*, t) {
+    A_STRHASH_ITERATE(g_touchScreens, APlatformTouch*, t) {
         t->logicalTouch = a_input_touch__newSource(t->header.name);
     }
 
@@ -578,13 +579,13 @@ void a_platform__inputsBind(void)
             a_controller__new(c->generic, c->controller != NULL);
         #endif
 
-        A_STRHASH_ITERATE(c->buttons, ASdlInputButton*, b) {
+        A_STRHASH_ITERATE(c->buttons, APlatformButton*, b) {
             b->logicalButton = a_input_button__sourceNew(
                                 b->header.name, A_STRHASH_KEY());
             a_controller__buttonAdd(b->logicalButton, A_STRHASH_KEY());
         }
 
-        A_STRHASH_ITERATE(c->axes, ASdlInputAnalog*, a) {
+        A_STRHASH_ITERATE(c->axes, APlatformAnalog*, a) {
             a->logicalAnalog = a_input_analog__newSource(a->header.name);
             a_controller__analogAdd(a->logicalAnalog, a->header.name);
         }
@@ -608,7 +609,7 @@ void a_platform__inputsPoll(void)
                     }
                 #endif
 
-                A_STRHASH_ITERATE(g_keys, ASdlInputButton*, k) {
+                A_STRHASH_ITERATE(g_keys, APlatformButton*, k) {
                     #if A_BUILD_LIB_SDL == 1
                         if(k->code.keyCode == event.key.keysym.sym) {
                     #elif A_BUILD_LIB_SDL == 2
@@ -636,7 +637,7 @@ void a_platform__inputsPoll(void)
                         continue;
                     }
 
-                    A_STRHASH_ITERATE(c->buttons, ASdlInputButton*, b) {
+                    A_STRHASH_ITERATE(c->buttons, APlatformButton*, b) {
                         if(b->code.buttonIndex == event.jbutton.button) {
                             a_input_button__sourcePressSet(
                                 b->logicalButton,
@@ -701,7 +702,7 @@ void a_platform__inputsPoll(void)
                         continue;
                     }
 
-                    ASdlInputButton* buttons[4] = {
+                    APlatformButton* buttons[4] = {
                         a_strhash_get(c->buttons, "gamepad.b.up"),
                         a_strhash_get(c->buttons, "gamepad.b.down"),
                         a_strhash_get(c->buttons, "gamepad.b.left"),
@@ -709,7 +710,7 @@ void a_platform__inputsPoll(void)
                     };
 
                     for(int i = 0; i < 4; i++, state >>= 1) {
-                        ASdlInputButton* b = buttons[i];
+                        APlatformButton* b = buttons[i];
 
                         if(state & 1) {
                             if(!b->lastStatePressed) {
@@ -742,7 +743,7 @@ void a_platform__inputsPoll(void)
                         continue;
                     }
 
-                    A_STRHASH_ITERATE(c->axes, ASdlInputAnalog*, a) {
+                    A_STRHASH_ITERATE(c->axes, APlatformAnalog*, a) {
                         if(event.jaxis.axis == a->axisIndex) {
                             a_input_analog__axisValueSet(
                                 a->logicalAnalog, event.jaxis.value);
@@ -762,7 +763,7 @@ void a_platform__inputsPoll(void)
                         continue;
                     }
 
-                    A_STRHASH_ITERATE(c->buttons, ASdlInputButton*, b) {
+                    A_STRHASH_ITERATE(c->buttons, APlatformButton*, b) {
                         if(b->code.buttonIndex == event.cbutton.button) {
                             a_input_button__sourcePressSet(
                                 b->logicalButton,
@@ -781,7 +782,7 @@ void a_platform__inputsPoll(void)
                         continue;
                     }
 
-                    A_STRHASH_ITERATE(c->axes, ASdlInputAnalog*, a) {
+                    A_STRHASH_ITERATE(c->axes, APlatformAnalog*, a) {
                         if(event.caxis.axis == a->axisIndex) {
                             a_input_analog__axisValueSet(
                                 a->logicalAnalog, event.caxis.value);
@@ -795,7 +796,7 @@ void a_platform__inputsPoll(void)
 #endif
 
             case SDL_MOUSEMOTION: {
-                A_STRHASH_ITERATE(g_touchScreens, ASdlInputTouch*, t) {
+                A_STRHASH_ITERATE(g_touchScreens, APlatformTouch*, t) {
                     a_input_touch__motionAdd(
                         t->logicalTouch, event.button.x, event.button.y);
                 }
@@ -804,7 +805,7 @@ void a_platform__inputsPoll(void)
             case SDL_MOUSEBUTTONDOWN: {
                 switch(event.button.button) {
                     case SDL_BUTTON_LEFT: {
-                        A_STRHASH_ITERATE(g_touchScreens, ASdlInputTouch*, t) {
+                        A_STRHASH_ITERATE(g_touchScreens, APlatformTouch*, t) {
                             a_input_touch__coordsSet(t->logicalTouch,
                                                      event.button.x,
                                                      event.button.y,
@@ -817,7 +818,7 @@ void a_platform__inputsPoll(void)
             case SDL_MOUSEBUTTONUP: {
                 switch(event.button.button) {
                     case SDL_BUTTON_LEFT: {
-                        A_STRHASH_ITERATE(g_touchScreens, ASdlInputTouch*, t) {
+                        A_STRHASH_ITERATE(g_touchScreens, APlatformTouch*, t) {
                             a_input_touch__coordsSet(t->logicalTouch,
                                                      event.button.x,
                                                      event.button.y,
@@ -835,7 +836,7 @@ void a_platform__inputsPoll(void)
         int mouseDx = 0, mouseDy = 0;
         SDL_GetRelativeMouseState(&mouseDx, &mouseDy);
 
-        A_STRHASH_ITERATE(g_touchScreens, ASdlInputTouch*, t) {
+        A_STRHASH_ITERATE(g_touchScreens, APlatformTouch*, t) {
             a_input_touch__deltaSet(t->logicalTouch, mouseDx, mouseDy);
         }
     #endif

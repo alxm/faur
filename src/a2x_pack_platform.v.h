@@ -21,7 +21,12 @@
 
 #include "a2x_pack_platform.p.h"
 
+typedef struct APlatformButton APlatformButton;
+typedef struct APlatformAnalog APlatformAnalog;
+typedef struct APlatformTouch APlatformTouch;
+
 typedef struct APlatformTexture APlatformTexture;
+
 typedef void APlatformSample;
 typedef void APlatformMusic;
 
