@@ -57,7 +57,7 @@ struct APlatformButton {
         uint8_t buttonIndex;
         int code;
     } code;
-    bool lastStatePressed;
+    bool lastHatEventPressed;
 };
 
 struct APlatformAnalog {
@@ -107,7 +107,6 @@ static void addKey(const char* Name, const char* Id, int Code)
 
     k->header.name = a_str_merge("[", Name, "]", NULL);
     k->code.code = Code;
-    k->lastStatePressed = false;
 
     a_strhash_add(g_keys, Id, k);
 }
@@ -122,7 +121,7 @@ static void addButton(AStrHash* ButtonsCollection, const char* Name, const char*
 
     b->header.name = a_str_merge("(", Name, ")", NULL);
     b->code.code = Code;
-    b->lastStatePressed = false;
+    b->lastHatEventPressed = false;
 
     a_strhash_add(ButtonsCollection, Id, b);
 }
@@ -713,14 +712,14 @@ void a_platform__inputsPoll(void)
                         APlatformButton* b = buttons[i];
 
                         if(state & 1) {
-                            if(!b->lastStatePressed) {
-                                b->lastStatePressed = true;
+                            if(!b->lastHatEventPressed) {
+                                b->lastHatEventPressed = true;
                                 a_input_button__sourcePressSet(
                                     b->logicalButton, true);
                             }
                         } else {
-                            if(b->lastStatePressed) {
-                                b->lastStatePressed = false;
+                            if(b->lastHatEventPressed) {
+                                b->lastHatEventPressed = false;
                                 a_input_button__sourcePressSet(
                                     b->logicalButton, false);
                             }
