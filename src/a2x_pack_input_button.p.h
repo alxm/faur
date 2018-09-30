@@ -31,6 +31,6 @@ extern bool a_button_isWorking(const AButton* Button);
 extern const char* a_button_nameGet(const AButton* Button);
 
 extern bool a_button_pressGet(const AButton* Button);
-extern bool a_button_pressGetOnce(const AButton* Button);
+extern bool a_button_pressGetOnce(AButton* Button);
 extern void a_button_pressSetRepeat(AButton* Button, unsigned RepeatMs);
-extern void a_button_pressClear(const AButton* Button);
+extern void a_button_pressClear(AButton* Button);

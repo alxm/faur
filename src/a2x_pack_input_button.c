@@ -23,15 +23,19 @@
 #include "a2x_pack_input_controller.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
+#include "a2x_pack_platform.v.h"
 #include "a2x_pack_str.v.h"
 #include "a2x_pack_strbuilder.v.h"
 #include "a2x_pack_timer.v.h"
 
 struct AButton {
     AInputUserHeader header;
-    AList* combos; // List of lists of AButtonSource; for combo buttons
+    AListNode* listNode;
+    AList* combos; // List of lists of APlatformButton, each a buttons combo
     ATimer* autoRepeat;
     bool isClone;
+    bool waitForRelease;
+    bool pressed;
 };
 
 struct AButtonSource {
@@ -44,12 +48,14 @@ struct AButtonSource {
 static AStrHash* g_keys;
 static AList* g_pressQueue;
 static AList* g_releaseQueue;
+static AList* g_buttons; // list of AButton
 
 void a_input_button__init(void)
 {
     g_keys = a_strhash_new();
     g_pressQueue = a_list_new();
     g_releaseQueue = a_list_new();
+    g_buttons = a_list_new();
 }
 
 void a_input_button__uninit(void)
@@ -57,6 +63,7 @@ void a_input_button__uninit(void)
     a_strhash_freeEx(g_keys, (AFree*)a_input_button__sourceFree);
     a_list_free(g_pressQueue);
     a_list_free(g_releaseQueue);
+    a_list_free(g_buttons);
 }
 
 AButtonSource* a_input_button__sourceNew(const char* Name, const char* Id)
@@ -99,9 +106,12 @@ AButton* a_button_new(const char* Ids)
 
     a_input__userHeaderInit(&b->header);
 
+    b->listNode = a_list_addLast(g_buttons, b);
     b->combos = a_list_new();
     b->autoRepeat = NULL;
     b->isClone = false;
+    b->waitForRelease = false;
+    b->pressed = false;
 
     AList* tok = a_str_split(Ids, ", ");
 
@@ -112,18 +122,14 @@ AButton* a_button_new(const char* Ids)
             bool missing = false;
 
             A_LIST_ITERATE(tok, char*, part) {
-                AButtonSource* button = a_strhash_get(g_keys, part);
+                APlatformButton* pb = a_platform__buttonGet(part);
 
-                if(button == NULL) {
-                    button = a_controller__buttonGet(part);
-
-                    if(button == NULL) {
-                        missing = true;
-                        break;
-                    }
+                if(pb == NULL) {
+                    missing = true;
+                    break;
                 }
 
-                a_list_addLast(combo, button);
+                a_list_addLast(combo, pb);
             }
 
             if(missing || a_list_isEmpty(combo)) {
@@ -134,16 +140,19 @@ AButton* a_button_new(const char* Ids)
 
             a_list_freeEx(tok, free);
         } else {
-            a_input__userHeaderFindSource(
-                &b->header, id, g_keys, a_controller__buttonCollectionGet());
+            APlatformButton* pb = a_platform__buttonGet(id);
+
+            if(pb) {
+                a_list_addLast(b->header.platformInputs, pb);
+            }
         }
     }
 
     a_list_freeEx(tok, free);
 
-    if(!a_list_isEmpty(b->header.sourceInputs)) {
-        AButtonSource* btn = a_list_getLast(b->header.sourceInputs);
-        b->header.name = a_str_dup(btn->header.name);
+    if(!a_list_isEmpty(b->header.platformInputs)) {
+        APlatformButton* pb = a_list_getLast(b->header.platformInputs);
+        b->header.name = a_str_dup(a_platform__buttonNameGet(pb));
     } else if(!a_list_isEmpty(b->combos)) {
         AStrBuilder* sb = a_strbuilder_new(128);
         AList* combo = a_list_getLast(b->combos);
@@ -170,8 +179,11 @@ AButton* a_button_dup(const AButton* Button)
 {
     AButton* b = a_mem_dup(Button, sizeof(AButton));
 
+    b->listNode = a_list_addLast(g_buttons, b);
     b->autoRepeat = NULL;
     b->isClone = true;
+    b->waitForRelease = false;
+    b->pressed = false;
 
     return b;
 }
@@ -181,6 +193,8 @@ void a_button_free(AButton* Button)
     if(Button == NULL) {
         return;
     }
+
+    a_list_removeNode(Button->listNode);
 
     if(!Button->isClone) {
         a_list_freeEx(Button->combos, (AFree*)a_list_free);
@@ -194,7 +208,7 @@ void a_button_free(AButton* Button)
 
 bool a_button_isWorking(const AButton* Button)
 {
-    return !a_list_isEmpty(Button->header.sourceInputs)
+    return !a_list_isEmpty(Button->header.platformInputs)
         || !a_list_isEmpty(Button->combos);
 }
 
@@ -205,43 +219,10 @@ const char* a_button_nameGet(const AButton* Button)
 
 bool a_button_pressGet(const AButton* Button)
 {
-    bool pressed = false;
-
-    A_LIST_ITERATE(Button->header.sourceInputs, AButtonSource*, b) {
-        if(b->pressed && !b->ignorePressed) {
-            pressed = true;
-            goto done;
-        }
-    }
-
-    A_LIST_ITERATE(Button->combos, AList*, andList) {
-        A_LIST_ITERATE(andList, AButtonSource*, b) {
-            if(!b->pressed || b->ignorePressed) {
-                break;
-            } else if(A_LIST_IS_LAST()) {
-                pressed = true;
-                goto done;
-            }
-        }
-    }
-
-done:
-    if(Button->autoRepeat) {
-        if(pressed) {
-            if(!a_timer_isRunning(Button->autoRepeat)) {
-                a_timer_start(Button->autoRepeat);
-            } else if(!a_timer_expiredGet(Button->autoRepeat)) {
-                pressed = false;
-            }
-        } else {
-            a_timer_stop(Button->autoRepeat);
-        }
-    }
-
-    return pressed;
+    return Button->pressed;
 }
 
-bool a_button_pressGetOnce(const AButton* Button)
+bool a_button_pressGetOnce(AButton* Button)
 {
     bool pressed = a_button_pressGet(Button);
 
@@ -262,21 +243,10 @@ void a_button_pressSetRepeat(AButton* Button, unsigned RepeatMs)
     }
 }
 
-void a_button_pressClear(const AButton* Button)
+void a_button_pressClear(AButton* Button)
 {
-    A_LIST_ITERATE(Button->header.sourceInputs, AButtonSource*, b) {
-        if(b->pressed) {
-            b->ignorePressed = true;
-        }
-    }
-
-    A_LIST_ITERATE(Button->combos, AList*, andList) {
-        A_LIST_ITERATE(andList, AButtonSource*, b) {
-            if(b->pressed) {
-                b->ignorePressed = true;
-            }
-        }
-    }
+    Button->waitForRelease = true;
+    Button->pressed = false;
 }
 
 void a_input_button__sourcePressSet(AButtonSource* Button, bool Pressed)
@@ -316,4 +286,48 @@ void a_input_button__sourceTick(void)
 
     a_list_clear(g_pressQueue);
     a_list_clear(g_releaseQueue);
+}
+
+void a_input_button__tick(void)
+{
+    A_LIST_ITERATE(g_buttons, AButton*, b) {
+        bool pressed = false;
+
+        A_LIST_ITERATE(b->header.platformInputs, APlatformButton*, pb) {
+            if(a_platform__buttonPressGet(pb)) {
+                pressed = true;
+                goto done;
+            }
+        }
+
+        A_LIST_ITERATE(b->combos, AList*, andList) {
+            A_LIST_ITERATE(andList, APlatformButton*, pb) {
+                if(!a_platform__buttonPressGet(pb)) {
+                    break;
+                } else if(A_LIST_IS_LAST()) {
+                    pressed = true;
+                    goto done;
+                }
+            }
+        }
+
+done:
+        if(b->waitForRelease && !pressed) {
+            b->waitForRelease = false;
+        }
+
+        if(b->autoRepeat) {
+            if(pressed) {
+                if(!a_timer_isRunning(b->autoRepeat)) {
+                    a_timer_start(b->autoRepeat);
+                } else if(!a_timer_expiredGet(b->autoRepeat)) {
+                    pressed = false;
+                }
+            } else {
+                a_timer_stop(b->autoRepeat);
+            }
+        }
+
+        b->pressed = pressed && !b->waitForRelease;
+    }
 }

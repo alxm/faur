@@ -34,3 +34,4 @@ extern void a_input_button__sourceForward(AButtonSource* Button, AButtonSource* 
 extern void a_input_button__sourcePressSet(AButtonSource* Button, bool Pressed);
 
 extern void a_input_button__sourceTick(void);
+extern void a_input_button__tick(void);

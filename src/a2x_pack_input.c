@@ -66,6 +66,7 @@ void a_input__userHeaderInit(AInputUserHeader* Header)
 {
     Header->name = NULL;
     Header->sourceInputs = a_list_new();
+    Header->platformInputs = a_list_new();
 }
 
 void a_input__userHeaderFree(AInputUserHeader* Header)
@@ -73,6 +74,7 @@ void a_input__userHeaderFree(AInputUserHeader* Header)
     free(Header->name);
 
     a_list_free(Header->sourceInputs);
+    a_list_free(Header->platformInputs);
 }
 
 void a_input__sourceHeaderInit(AInputSourceHeader* Header, const char* Name)
@@ -119,6 +121,7 @@ void a_input__tick(void)
     a_input_touch__motionClear();
     a_platform__inputsPoll();
     a_input_button__sourceTick();
+    a_input_button__tick();
 
     A_LIST_ITERATE(g_callbacks, AInputCallbackContainer*, c) {
         c->callback();

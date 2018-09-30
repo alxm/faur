@@ -58,6 +58,7 @@ struct APlatformButton {
         int code;
     } code;
     bool lastHatEventPressed;
+    bool pressed;
 };
 
 struct APlatformAnalog {
@@ -107,6 +108,7 @@ static void addKey(const char* Name, const char* Id, int Code)
 
     k->header.name = a_str_merge("[", Name, "]", NULL);
     k->code.code = Code;
+    k->pressed = false;
 
     a_strhash_add(g_keys, Id, k);
 }
@@ -122,6 +124,7 @@ static void addButton(AStrHash* ButtonsCollection, const char* Name, const char*
     b->header.name = a_str_merge("(", Name, ")", NULL);
     b->code.code = Code;
     b->lastHatEventPressed = false;
+    b->pressed = false;
 
     a_strhash_add(ButtonsCollection, Id, b);
 }
@@ -615,9 +618,7 @@ void a_platform__inputsPoll(void)
                         if(k->code.keyCode == event.key.keysym.scancode) {
                     #endif
 
-                        a_input_button__sourcePressSet(
-                            k->logicalButton,
-                            event.key.state == SDL_PRESSED);
+                        k->pressed = event.key.state == SDL_PRESSED;
                         break;
                     }
                 }
@@ -638,9 +639,7 @@ void a_platform__inputsPoll(void)
 
                     A_STRHASH_ITERATE(c->buttons, APlatformButton*, b) {
                         if(b->code.buttonIndex == event.jbutton.button) {
-                            a_input_button__sourcePressSet(
-                                b->logicalButton,
-                                event.jbutton.state == SDL_PRESSED);
+                            b->pressed = event.jbutton.state == SDL_PRESSED;
                             break;
                         }
                     }
@@ -714,14 +713,12 @@ void a_platform__inputsPoll(void)
                         if(state & 1) {
                             if(!b->lastHatEventPressed) {
                                 b->lastHatEventPressed = true;
-                                a_input_button__sourcePressSet(
-                                    b->logicalButton, true);
+                                b->pressed = true;
                             }
                         } else {
                             if(b->lastHatEventPressed) {
                                 b->lastHatEventPressed = false;
-                                a_input_button__sourcePressSet(
-                                    b->logicalButton, false);
+                                b->pressed = false;
                             }
                         }
                     }
@@ -764,9 +761,7 @@ void a_platform__inputsPoll(void)
 
                     A_STRHASH_ITERATE(c->buttons, APlatformButton*, b) {
                         if(b->code.buttonIndex == event.cbutton.button) {
-                            a_input_button__sourcePressSet(
-                                b->logicalButton,
-                                event.cbutton.state == SDL_PRESSED);
+                            b->pressed = event.cbutton.state == SDL_PRESSED;
                             break;
                         }
                     }
@@ -839,5 +834,34 @@ void a_platform__inputsPoll(void)
             a_input_touch__deltaSet(t->logicalTouch, mouseDx, mouseDy);
         }
     #endif
+}
+
+APlatformButton* a_platform__buttonGet(const char* Id)
+{
+    APlatformButton* b = a_strhash_get(g_keys, Id);
+
+    if(b != NULL) {
+        return b;
+    }
+
+    A_LIST_ITERATE(g_controllers, ASdlInputController*, c) {
+        b = a_strhash_get(c->buttons, Id);
+
+        if(b != NULL) {
+            return b;
+        }
+    }
+
+    return NULL;
+}
+
+bool a_platform__buttonPressGet(const APlatformButton* Button)
+{
+    return Button->pressed;
+}
+
+const char* a_platform__buttonNameGet(const APlatformButton* Button)
+{
+    return Button->header.name;
 }
 #endif // A_BUILD_LIB_SDL
