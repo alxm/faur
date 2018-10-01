@@ -27,6 +27,3 @@ typedef struct AAnalogSource AAnalogSource;
 
 extern AAnalogSource* a_input_analog__newSource(const char* Id);
 extern void a_input_analog__freeSource(AAnalogSource* Analog);
-
-extern void a_input_analog__forwardToButtons(AAnalogSource* Axis, AButtonSource* Negative, AButtonSource* Positive);
-extern void a_input_analog__axisValueSet(AAnalogSource* Analog, int Value);

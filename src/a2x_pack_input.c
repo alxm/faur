@@ -120,7 +120,6 @@ void a_input__tick(void)
 {
     a_input_touch__motionClear();
     a_platform__inputsPoll();
-    a_input_button__sourceTick();
     a_input_button__tick();
 
     A_LIST_ITERATE(g_callbacks, AInputCallbackContainer*, c) {

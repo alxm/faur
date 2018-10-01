@@ -33,23 +33,14 @@ struct AAnalog {
 
 struct AAnalogSource {
     AInputSourceHeader header;
-    AList* forwardButtons; // List of AInputSourceAxisButtons
     int axisValue;
 };
-
-typedef struct {
-    AButtonSource* negative;
-    AButtonSource* positive;
-    bool lastPressedNegative;
-    bool lastPressedPositive;
-} AInputSourceAxisButtons;
 
 AAnalogSource* a_input_analog__newSource(const char* Id)
 {
     AAnalogSource* a = a_mem_malloc(sizeof(AAnalogSource));
 
     a_input__sourceHeaderInit(&a->header, Id);
-    a->forwardButtons = a_list_new();
     a->axisValue = 0;
 
     return a;
@@ -57,20 +48,7 @@ AAnalogSource* a_input_analog__newSource(const char* Id)
 
 void a_input_analog__freeSource(AAnalogSource* Analog)
 {
-    a_list_freeEx(Analog->forwardButtons, free);
     a_input__sourceHeaderFree(&Analog->header);
-}
-
-void a_input_analog__forwardToButtons(AAnalogSource* Axis, AButtonSource* Negative, AButtonSource* Positive)
-{
-    AInputSourceAxisButtons* b = a_mem_malloc(sizeof(AInputSourceAxisButtons));
-
-    b->negative = Negative;
-    b->positive = Positive;
-    b->lastPressedNegative = false;
-    b->lastPressedPositive = false;
-
-    a_list_addLast(Axis->forwardButtons, b);
 }
 
 AAnalog* a_analog_new(const char* Ids)
@@ -144,27 +122,4 @@ AFix a_analog_valueGetFix(const AAnalog* Analog)
         return a_analog_valueGetRaw(Analog)
                 << (A_FIX_BIT_PRECISION - A__ANALOG_BITS);
     #endif
-}
-
-void a_input_analog__axisValueSet(AAnalogSource* Analog, int Value)
-{
-    Analog->axisValue = Value;
-    a_input__freshEventSet(&Analog->header);
-
-    #define A__PRESS_THRESHOLD ((1 << 15) / 3)
-
-    bool pressedNegative = Value < -A__PRESS_THRESHOLD;
-    bool pressedPositive = Value > A__PRESS_THRESHOLD;
-
-    A_LIST_ITERATE(Analog->forwardButtons, AInputSourceAxisButtons*, b) {
-        if(b->negative && pressedNegative != b->lastPressedNegative) {
-            a_input_button__sourcePressSet(b->negative, pressedNegative);
-            b->lastPressedNegative = pressedNegative;
-        }
-
-        if(b->positive && pressedPositive != b->lastPressedPositive) {
-            a_input_button__sourcePressSet(b->positive, pressedPositive);
-            b->lastPressedPositive = pressedPositive;
-        }
-    }
 }

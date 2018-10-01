@@ -40,29 +40,22 @@ struct AButton {
 
 struct AButtonSource {
     AInputSourceHeader header;
-    AList* forwardButtons; // List of AButtonSource
     bool pressed;
     bool ignorePressed;
 };
 
 static AStrHash* g_keys;
-static AList* g_pressQueue;
-static AList* g_releaseQueue;
 static AList* g_buttons; // list of AButton
 
 void a_input_button__init(void)
 {
     g_keys = a_strhash_new();
-    g_pressQueue = a_list_new();
-    g_releaseQueue = a_list_new();
     g_buttons = a_list_new();
 }
 
 void a_input_button__uninit(void)
 {
     a_strhash_freeEx(g_keys, (AFree*)a_input_button__sourceFree);
-    a_list_free(g_pressQueue);
-    a_list_free(g_releaseQueue);
     a_list_free(g_buttons);
 }
 
@@ -72,7 +65,6 @@ AButtonSource* a_input_button__sourceNew(const char* Name, const char* Id)
 
     a_input__sourceHeaderInit(&b->header, Name);
 
-    b->forwardButtons = a_list_new();
     b->pressed = false;
     b->ignorePressed = false;
 
@@ -86,18 +78,7 @@ AButtonSource* a_input_button__sourceNew(const char* Name, const char* Id)
 
 void a_input_button__sourceFree(AButtonSource* Button)
 {
-    a_list_free(Button->forwardButtons);
     a_input__sourceHeaderFree(&Button->header);
-}
-
-AButtonSource* a_input_button__sourceKeyGet(const char* Id)
-{
-    return a_strhash_get(g_keys, Id);
-}
-
-void a_input_button__sourceForward(AButtonSource* Button, AButtonSource* Binding)
-{
-    a_list_addLast(Button->forwardButtons, Binding);
 }
 
 AButton* a_button_new(const char* Ids)
@@ -258,34 +239,6 @@ void a_input_button__sourcePressSet(AButtonSource* Button, bool Pressed)
     Button->pressed = Pressed;
 
     a_input__freshEventSet(&Button->header);
-
-    A_LIST_ITERATE(Button->forwardButtons, AButtonSource*, b) {
-        // Queue forwarded button presses and releases to be processed after
-        // all input events were received, so they don't conflict with them.
-        if(Pressed) {
-            a_list_addLast(g_pressQueue, b);
-        } else {
-            a_list_addLast(g_releaseQueue, b);
-        }
-    }
-}
-
-void a_input_button__sourceTick(void)
-{
-    A_LIST_ITERATE(g_pressQueue, AButtonSource*, b) {
-        // Overwrite whatever current state with a press
-        a_input_button__sourcePressSet(b, true);
-    }
-
-    A_LIST_ITERATE(g_releaseQueue, AButtonSource*, b) {
-        // Only release if did not receive an event this frame
-        if(!a_input__freshEventGet(&b->header)) {
-            a_input_button__sourcePressSet(b, false);
-        }
-    }
-
-    a_list_clear(g_pressQueue);
-    a_list_clear(g_releaseQueue);
 }
 
 void a_input_button__tick(void)

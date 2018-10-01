@@ -24,6 +24,7 @@
 
 #include <SDL.h>
 
+#include "a2x_pack_fps.v.h"
 #include "a2x_pack_input_analog.v.h"
 #include "a2x_pack_input_button.v.h"
 #include "a2x_pack_input_controller.v.h"
@@ -47,6 +48,8 @@
 
 typedef struct {
     char* name;
+    AList* forwardButtons; // list of APlatformButton or NULL
+    unsigned lastEventTick;
 } ASdlInputHeader;
 
 struct APlatformButton {
@@ -67,6 +70,13 @@ struct APlatformAnalog {
     int axisIndex;
     int value;
 };
+
+typedef struct {
+    APlatformButton* negative;
+    APlatformButton* positive;
+    bool lastPressedNegative;
+    bool lastPressedPositive;
+} APlatformAnalog2Buttons;
 
 struct APlatformTouch {
     ASdlInputHeader header;
@@ -90,10 +100,20 @@ typedef struct {
 static AStrHash* g_keys;
 static AStrHash* g_touchScreens;
 static AList* g_controllers;
+static AList* g_forwardButtonsQueue[2]; // list of APlatformButton
 static uint32_t g_sdlFlags;
+
+static void initHeader(ASdlInputHeader* Header, char* Name)
+{
+    Header->name = Name;
+    Header->forwardButtons = NULL;
+    Header->lastEventTick = a_fps_ticksGet() - 1;
+}
 
 static void freeHeader(ASdlInputHeader* Header)
 {
+    a_list_free(Header->forwardButtons);
+
     free(Header->name);
     free(Header);
 }
@@ -107,7 +127,8 @@ static void addKey(const char* Name, const char* Id, int Code)
 
     APlatformButton* k = a_mem_malloc(sizeof(APlatformButton));
 
-    k->header.name = a_str_merge("[", Name, "]", NULL);
+    initHeader(&k->header, a_str_merge("[", Name, "]", NULL));
+
     k->code.code = Code;
     k->pressed = false;
 
@@ -122,12 +143,29 @@ static void addButton(AStrHash* ButtonsCollection, const char* Name, const char*
 
     APlatformButton* b = a_mem_malloc(sizeof(APlatformButton));
 
-    b->header.name = a_str_merge("(", Name, ")", NULL);
+    initHeader(&b->header, a_str_merge("(", Name, ")", NULL));
+
     b->code.code = Code;
     b->lastHatEventPressed = false;
     b->pressed = false;
 
     a_strhash_add(ButtonsCollection, Id, b);
+}
+
+static void pressButton(APlatformButton* Button, bool Pressed)
+{
+    Button->pressed = Pressed;
+    Button->header.lastEventTick = a_fps_ticksGet();
+
+    if(Button->header.forwardButtons == NULL) {
+        return;
+    }
+
+    A_LIST_ITERATE(Button->header.forwardButtons, AButtonSource*, b) {
+        // Queue forwarded button presses and releases to be processed after
+        // all input events were received, so they don't conflict with them.
+        a_list_addLast(g_forwardButtonsQueue[Pressed], b);
+    }
 }
 
 static void addAnalog(AStrHash* AxesCollection, const char* Id, int AxisIndex)
@@ -139,10 +177,38 @@ static void addAnalog(AStrHash* AxesCollection, const char* Id, int AxisIndex)
 
     APlatformAnalog* a = a_mem_malloc(sizeof(APlatformAnalog));
 
-    a->header.name = a_str_dup(Id);
+    initHeader(&a->header, a_str_dup(Id));
+
     a->axisIndex = AxisIndex;
+    a->value = 0;
 
     a_strhash_add(AxesCollection, Id, a);
+}
+
+static void setAnalog(APlatformAnalog* Analog, int Value)
+{
+    Analog->value = Value;
+
+    if(Analog->header.forwardButtons == NULL) {
+        return;
+    }
+
+    #define A__PRESS_THRESHOLD ((1 << 15) / 3)
+
+    bool pressedNegative = Value < -A__PRESS_THRESHOLD;
+    bool pressedPositive = Value > A__PRESS_THRESHOLD;
+
+    A_LIST_ITERATE(Analog->header.forwardButtons, APlatformAnalog2Buttons*, b) {
+        if(b->negative && pressedNegative != b->lastPressedNegative) {
+            pressButton(b->negative, pressedNegative);
+            b->lastPressedNegative = pressedNegative;
+        }
+
+        if(b->positive && pressedPositive != b->lastPressedPositive) {
+            pressButton(b->positive, pressedPositive);
+            b->lastPressedPositive = pressedPositive;
+        }
+    }
 }
 
 static void addTouch(const char* Id)
@@ -154,7 +220,7 @@ static void addTouch(const char* Id)
 
     APlatformTouch* t = a_mem_malloc(sizeof(APlatformTouch));
 
-    t->header.name = a_str_dup(Id);
+    initHeader(&t->header, a_str_dup(Id));
 
     a_strhash_add(g_touchScreens, Id, t);
 }
@@ -183,6 +249,8 @@ void a_platform_sdl_input__init(void)
     g_keys = a_strhash_new();
     g_touchScreens = a_strhash_new();
     g_controllers = a_list_new();
+    g_forwardButtonsQueue[0] = a_list_new();
+    g_forwardButtonsQueue[1] = a_list_new();
 
     const int joysticksNum = SDL_NumJoysticks();
     a_out__message("Found %d controllers", joysticksNum);
@@ -560,6 +628,8 @@ void a_platform_sdl_input__uninit(void)
     a_strhash_free(g_keys);
     a_strhash_free(g_touchScreens);
     a_list_free(g_controllers);
+    a_list_free(g_forwardButtonsQueue[0]);
+    a_list_free(g_forwardButtonsQueue[1]);
 
     SDL_QuitSubSystem(g_sdlFlags);
 }
@@ -619,7 +689,7 @@ void a_platform__inputsPoll(void)
                         if(k->code.keyCode == event.key.keysym.scancode) {
                     #endif
 
-                        k->pressed = event.key.state == SDL_PRESSED;
+                        pressButton(k, event.key.state == SDL_PRESSED);
                         break;
                     }
                 }
@@ -640,7 +710,7 @@ void a_platform__inputsPoll(void)
 
                     A_STRHASH_ITERATE(c->buttons, APlatformButton*, b) {
                         if(b->code.buttonIndex == event.jbutton.button) {
-                            b->pressed = event.jbutton.state == SDL_PRESSED;
+                            pressButton(b, event.jbutton.state == SDL_PRESSED);
                             break;
                         }
                     }
@@ -714,12 +784,12 @@ void a_platform__inputsPoll(void)
                         if(state & 1) {
                             if(!b->lastHatEventPressed) {
                                 b->lastHatEventPressed = true;
-                                b->pressed = true;
+                                pressButton(b, true);
                             }
                         } else {
                             if(b->lastHatEventPressed) {
                                 b->lastHatEventPressed = false;
-                                b->pressed = false;
+                                pressButton(b, false);
                             }
                         }
                     }
@@ -742,7 +812,7 @@ void a_platform__inputsPoll(void)
 
                     A_STRHASH_ITERATE(c->axes, APlatformAnalog*, a) {
                         if(event.jaxis.axis == a->axisIndex) {
-                            a->value = event.jaxis.value;
+                            setAnalog(a, event.jaxis.value);
                             break;
                         }
                     }
@@ -761,7 +831,7 @@ void a_platform__inputsPoll(void)
 
                     A_STRHASH_ITERATE(c->buttons, APlatformButton*, b) {
                         if(b->code.buttonIndex == event.cbutton.button) {
-                            b->pressed = event.cbutton.state == SDL_PRESSED;
+                            pressButton(b, event.cbutton.state == SDL_PRESSED);
                             break;
                         }
                     }
@@ -778,7 +848,7 @@ void a_platform__inputsPoll(void)
 
                     A_STRHASH_ITERATE(c->axes, APlatformAnalog*, a) {
                         if(event.caxis.axis == a->axisIndex) {
-                            a->value = event.caxis.value;
+                            setAnalog(a, event.caxis.value);
                             break;
                         }
                     }
@@ -825,6 +895,23 @@ void a_platform__inputsPoll(void)
         }
     }
 
+    A_LIST_ITERATE(g_forwardButtonsQueue[1], APlatformButton*, b) {
+        // Overwrite whatever current state with a press
+        pressButton(b, true);
+    }
+
+    unsigned ticksNow = a_fps_ticksGet();
+
+    A_LIST_ITERATE(g_forwardButtonsQueue[0], APlatformButton*, b) {
+        // Only release if did not receive an event this frame
+        if(b->header.lastEventTick != ticksNow) {
+            pressButton(b, false);
+        }
+    }
+
+    a_list_clear(g_forwardButtonsQueue[0]);
+    a_list_clear(g_forwardButtonsQueue[1]);
+
     #if !A_BUILD_SYSTEM_EMSCRIPTEN
         int mouseDx = 0, mouseDy = 0;
         SDL_GetRelativeMouseState(&mouseDx, &mouseDy);
@@ -864,6 +951,15 @@ const char* a_platform__buttonNameGet(const APlatformButton* Button)
     return Button->header.name;
 }
 
+void a_platform__buttonForward(APlatformButton* Source, APlatformButton* Destination)
+{
+    if(Source->header.forwardButtons == NULL) {
+        Source->header.forwardButtons = a_list_new();
+    }
+
+    a_list_addLast(Source->header.forwardButtons, Destination);
+}
+
 APlatformAnalog* a_platform__analogGet(const char* Id)
 {
     A_LIST_ITERATE(g_controllers, ASdlInputController*, c) {
@@ -880,5 +976,21 @@ APlatformAnalog* a_platform__analogGet(const char* Id)
 int a_platform__analogValueGet(const APlatformAnalog* Analog)
 {
     return Analog->value;
+}
+
+void a_platform__analogForward(APlatformAnalog* Source, APlatformButton* Negative, APlatformButton* Positive)
+{
+    APlatformAnalog2Buttons* f = a_mem_malloc(sizeof(APlatformAnalog2Buttons));
+
+    f->negative = Negative;
+    f->positive = Positive;
+    f->lastPressedNegative = false;
+    f->lastPressedPositive = false;
+
+    if(Source->header.forwardButtons == NULL) {
+        Source->header.forwardButtons = a_list_new();
+    }
+
+    a_list_addLast(Source->header.forwardButtons, f);
 }
 #endif // A_BUILD_LIB_SDL

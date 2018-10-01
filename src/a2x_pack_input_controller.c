@@ -21,11 +21,12 @@
 
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
+#include "a2x_pack_platform.v.h"
 #include "a2x_pack_settings.v.h"
 
 typedef struct {
-    AStrHash* buttons; // table of AButtonSource
-    AStrHash* axes; // table of AAnalogSource
+    AStrHash* buttons; // table of APlatformButton
+    AStrHash* axes; // table of APlatformAnalog
     bool generic;
     bool mapped;
 } AInputController;
@@ -42,49 +43,49 @@ void a_input_controller__init(void)
 void a_input_controller__init2(void)
 {
     A_LIST_ITERATE(g_controllers, AInputController*, c) {
-        AAnalogSource* x = a_strhash_get(c->axes, "gamepad.a.leftX");
-        AAnalogSource* y = a_strhash_get(c->axes, "gamepad.a.leftY");
-        AAnalogSource* lt = a_strhash_get(c->axes, "gamepad.a.leftTrigger");
-        AAnalogSource* rt = a_strhash_get(c->axes, "gamepad.a.rightTrigger");
-        AButtonSource* u = a_strhash_get(c->buttons, "gamepad.b.up");
-        AButtonSource* d = a_strhash_get(c->buttons, "gamepad.b.down");
-        AButtonSource* l = a_strhash_get(c->buttons, "gamepad.b.left");
-        AButtonSource* r = a_strhash_get(c->buttons, "gamepad.b.right");
-        AButtonSource* ul = a_strhash_get(c->buttons, "gamepad.b.upLeft");
-        AButtonSource* ur = a_strhash_get(c->buttons, "gamepad.b.upRight");
-        AButtonSource* dl = a_strhash_get(c->buttons, "gamepad.b.downLeft");
-        AButtonSource* dr = a_strhash_get(c->buttons, "gamepad.b.downRight");
-        AButtonSource* lb = a_strhash_get(c->buttons, "gamepad.b.l");
-        AButtonSource* rb = a_strhash_get(c->buttons, "gamepad.b.r");
+        APlatformAnalog* x = a_platform__analogGet("gamepad.a.leftX");
+        APlatformAnalog* y = a_platform__analogGet("gamepad.a.leftY");
+        APlatformAnalog* lt = a_platform__analogGet("gamepad.a.leftTrigger");
+        APlatformAnalog* rt = a_platform__analogGet("gamepad.a.rightTrigger");
+        APlatformButton* u = a_platform__buttonGet("gamepad.b.up");
+        APlatformButton* d = a_platform__buttonGet("gamepad.b.down");
+        APlatformButton* l = a_platform__buttonGet("gamepad.b.left");
+        APlatformButton* r = a_platform__buttonGet("gamepad.b.right");
+        APlatformButton* ul = a_platform__buttonGet("gamepad.b.upLeft");
+        APlatformButton* ur = a_platform__buttonGet("gamepad.b.upRight");
+        APlatformButton* dl = a_platform__buttonGet("gamepad.b.downLeft");
+        APlatformButton* dr = a_platform__buttonGet("gamepad.b.downRight");
+        APlatformButton* lb = a_platform__buttonGet("gamepad.b.l");
+        APlatformButton* rb = a_platform__buttonGet("gamepad.b.r");
 
         // GP2X and Wiz dpad diagonals are dedicated buttons, split them into
         // their cardinal directions.
         if(u && d && l && r && ul && ur && dl && dr) {
-            a_input_button__sourceForward(ul, u);
-            a_input_button__sourceForward(ul, l);
+            a_platform__buttonForward(ul, u);
+            a_platform__buttonForward(ul, l);
 
-            a_input_button__sourceForward(ur, u);
-            a_input_button__sourceForward(ur, r);
+            a_platform__buttonForward(ur, u);
+            a_platform__buttonForward(ur, r);
 
-            a_input_button__sourceForward(dl, d);
-            a_input_button__sourceForward(dl, l);
+            a_platform__buttonForward(dl, d);
+            a_platform__buttonForward(dl, l);
 
-            a_input_button__sourceForward(dr, d);
-            a_input_button__sourceForward(dr, r);
+            a_platform__buttonForward(dr, d);
+            a_platform__buttonForward(dr, r);
         }
 
         // Forward the left analog stick to the direction buttons
         if(x && y && u && d && l && r) {
             if(!c->mapped) {
                 if(a_settings_getBool("input.switchAxes")) {
-                    AAnalogSource* save = x;
+                    APlatformAnalog* save = x;
 
                     x = y;
                     y = save;
                 }
 
                 if(a_settings_getBool("input.invertAxes")) {
-                    AButtonSource* save;
+                    APlatformButton* save;
 
                     save = u;
                     u = d;
@@ -96,27 +97,26 @@ void a_input_controller__init2(void)
                 }
             }
 
-            a_input_analog__forwardToButtons(x, l, r);
-            a_input_analog__forwardToButtons(y, u, d);
+            a_platform__analogForward(x, l, r);
+            a_platform__analogForward(y, u, d);
         }
 
         // Forward analog shoulder triggers to the shoulder buttons
         if(lt && rt && lb && rb) {
-            a_input_analog__forwardToButtons(lt, NULL, lb);
-            a_input_analog__forwardToButtons(rt, NULL, rb);
+            a_platform__analogForward(lt, NULL, lb);
+            a_platform__analogForward(rt, NULL, rb);
         }
 
         #if A_BUILD_SYSTEM_PANDORA
             if(!c->generic && x && y) {
-                // Pandora buttons are keyboard keys, not controller buttons
-                u = a_input_button__sourceKeyGet("gamepad.b.up");
-                d = a_input_button__sourceKeyGet("gamepad.b.down");
-                l = a_input_button__sourceKeyGet("gamepad.b.left");
-                r = a_input_button__sourceKeyGet("gamepad.b.right");
+                u = a_platform__buttonGet("gamepad.b.up");
+                d = a_platform__buttonGet("gamepad.b.down");
+                l = a_platform__buttonGet("gamepad.b.left");
+                r = a_platform__buttonGet("gamepad.b.right");
 
                 // Forward the left analog nub to the direction buttons
-                a_input_analog__forwardToButtons(x, l, r);
-                a_input_analog__forwardToButtons(y, u, d);
+                a_platform__analogForward(x, l, r);
+                a_platform__analogForward(y, u, d);
             }
         #endif
     }
