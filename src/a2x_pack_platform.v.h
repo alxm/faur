@@ -91,3 +91,5 @@ extern void a_platform__inputsPoll(void);
 extern APlatformButton* a_platform__buttonGet(const char* Id);
 extern bool a_platform__buttonPressGet(const APlatformButton* Button);
 extern const char* a_platform__buttonNameGet(const APlatformButton* Button);
+extern APlatformAnalog* a_platform__analogGet(const char* Id);
+extern int a_platform__analogValueGet(const APlatformAnalog* Analog);

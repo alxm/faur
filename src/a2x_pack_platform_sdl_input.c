@@ -65,6 +65,7 @@ struct APlatformAnalog {
     ASdlInputHeader header;
     AAnalogSource* logicalAnalog;
     int axisIndex;
+    int value;
 };
 
 struct APlatformTouch {
@@ -741,8 +742,7 @@ void a_platform__inputsPoll(void)
 
                     A_STRHASH_ITERATE(c->axes, APlatformAnalog*, a) {
                         if(event.jaxis.axis == a->axisIndex) {
-                            a_input_analog__axisValueSet(
-                                a->logicalAnalog, event.jaxis.value);
+                            a->value = event.jaxis.value;
                             break;
                         }
                     }
@@ -778,8 +778,7 @@ void a_platform__inputsPoll(void)
 
                     A_STRHASH_ITERATE(c->axes, APlatformAnalog*, a) {
                         if(event.caxis.axis == a->axisIndex) {
-                            a_input_analog__axisValueSet(
-                                a->logicalAnalog, event.caxis.value);
+                            a->value = event.caxis.value;
                             break;
                         }
                     }
@@ -863,5 +862,23 @@ bool a_platform__buttonPressGet(const APlatformButton* Button)
 const char* a_platform__buttonNameGet(const APlatformButton* Button)
 {
     return Button->header.name;
+}
+
+APlatformAnalog* a_platform__analogGet(const char* Id)
+{
+    A_LIST_ITERATE(g_controllers, ASdlInputController*, c) {
+        APlatformAnalog* a = a_strhash_get(c->axes, Id);
+
+        if(a != NULL) {
+            return a;
+        }
+    }
+
+    return NULL;
+}
+
+int a_platform__analogValueGet(const APlatformAnalog* Analog)
+{
+    return Analog->value;
 }
 #endif // A_BUILD_LIB_SDL

@@ -24,6 +24,7 @@
 #include "a2x_pack_math.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
+#include "a2x_pack_platform.v.h"
 #include "a2x_pack_str.v.h"
 
 struct AAnalog {
@@ -83,11 +84,17 @@ AAnalog* a_analog_new(const char* Ids)
     A_LIST_ITERATE(tok, char*, id) {
         a_input__userHeaderFindSource(
             &a->header, id, NULL, a_controller__analogCollectionGet());
+
+        APlatformAnalog* pa = a_platform__analogGet(id);
+
+        if(pa) {
+            a_list_addLast(a->header.platformInputs, pa);
+        }
     }
 
     a_list_freeEx(tok, free);
 
-    if(a_list_isEmpty(a->header.sourceInputs)) {
+    if(a_list_isEmpty(a->header.platformInputs)) {
         a_out__error("a_analog_new: No analog axes found for '%s'", Ids);
     }
 
@@ -107,7 +114,7 @@ void a_analog_free(AAnalog* Analog)
 
 bool a_analog_isWorking(const AAnalog* Analog)
 {
-    return !a_list_isEmpty(Analog->header.sourceInputs);
+    return !a_list_isEmpty(Analog->header.platformInputs);
 }
 
 int a_analog_valueGetRaw(const AAnalog* Analog)
@@ -115,9 +122,11 @@ int a_analog_valueGetRaw(const AAnalog* Analog)
     #define A__ANALOG_MAX_DISTANCE (1 << 15)
     #define A__ANALOG_ERROR_MARGIN (A__ANALOG_MAX_DISTANCE / 20)
 
-    A_LIST_ITERATE(Analog->header.sourceInputs, AAnalogSource*, a) {
-        if(a_math_abs(a->axisValue) > A__ANALOG_ERROR_MARGIN) {
-            return a->axisValue;
+    A_LIST_ITERATE(Analog->header.platformInputs, APlatformAnalog*, a) {
+        int value = a_platform__analogValueGet(a);
+
+        if(a_math_abs(value) > A__ANALOG_ERROR_MARGIN) {
+            return value;
         }
     }
 
