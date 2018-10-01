@@ -20,7 +20,6 @@
 #include "a2x_pack_input_button.v.h"
 
 #include "a2x_pack_input.v.h"
-#include "a2x_pack_input_controller.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
 #include "a2x_pack_platform.v.h"
@@ -38,47 +37,16 @@ struct AButton {
     bool pressed;
 };
 
-struct AButtonSource {
-    AInputSourceHeader header;
-    bool pressed;
-    bool ignorePressed;
-};
-
-static AStrHash* g_keys;
 static AList* g_buttons; // list of AButton
 
 void a_input_button__init(void)
 {
-    g_keys = a_strhash_new();
     g_buttons = a_list_new();
 }
 
 void a_input_button__uninit(void)
 {
-    a_strhash_freeEx(g_keys, (AFree*)a_input_button__sourceFree);
     a_list_free(g_buttons);
-}
-
-AButtonSource* a_input_button__sourceNew(const char* Name, const char* Id)
-{
-    AButtonSource* b = a_mem_malloc(sizeof(AButtonSource));
-
-    a_input__sourceHeaderInit(&b->header, Name);
-
-    b->pressed = false;
-    b->ignorePressed = false;
-
-    if(a_input_controllerNumGet() == 0) {
-        // Keys are declared before controllers are created
-        a_strhash_add(g_keys, Id, b);
-    }
-
-    return b;
-}
-
-void a_input_button__sourceFree(AButtonSource* Button)
-{
-    a_input__sourceHeaderFree(&Button->header);
 }
 
 AButton* a_button_new(const char* Ids)
@@ -138,8 +106,8 @@ AButton* a_button_new(const char* Ids)
         AStrBuilder* sb = a_strbuilder_new(128);
         AList* combo = a_list_getLast(b->combos);
 
-        A_LIST_ITERATE(combo, AButtonSource*, button) {
-            a_strbuilder_add(sb, button->header.name);
+        A_LIST_ITERATE(combo, APlatformButton*, pb) {
+            a_strbuilder_add(sb, a_platform__buttonNameGet(pb));
 
             if(!A_LIST_IS_LAST()) {
                 a_strbuilder_add(sb, "+");
@@ -228,17 +196,6 @@ void a_button_pressClear(AButton* Button)
 {
     Button->waitForRelease = true;
     Button->pressed = false;
-}
-
-void a_input_button__sourcePressSet(AButtonSource* Button, bool Pressed)
-{
-    if(!Pressed && Button->ignorePressed) {
-        Button->ignorePressed = false;
-    }
-
-    Button->pressed = Pressed;
-
-    a_input__freshEventSet(&Button->header);
 }
 
 void a_input_button__tick(void)

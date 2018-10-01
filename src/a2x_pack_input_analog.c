@@ -20,7 +20,6 @@
 #include "a2x_pack_input_analog.v.h"
 
 #include "a2x_pack_input.v.h"
-#include "a2x_pack_input_controller.v.h"
 #include "a2x_pack_math.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
@@ -30,26 +29,6 @@
 struct AAnalog {
     AInputUserHeader header;
 };
-
-struct AAnalogSource {
-    AInputSourceHeader header;
-    int axisValue;
-};
-
-AAnalogSource* a_input_analog__newSource(const char* Id)
-{
-    AAnalogSource* a = a_mem_malloc(sizeof(AAnalogSource));
-
-    a_input__sourceHeaderInit(&a->header, Id);
-    a->axisValue = 0;
-
-    return a;
-}
-
-void a_input_analog__freeSource(AAnalogSource* Analog)
-{
-    a_input__sourceHeaderFree(&Analog->header);
-}
 
 AAnalog* a_analog_new(const char* Ids)
 {

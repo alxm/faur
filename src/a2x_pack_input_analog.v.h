@@ -20,10 +20,3 @@
 #pragma once
 
 #include "a2x_pack_input_analog.p.h"
-
-typedef struct AAnalogSource AAnalogSource;
-
-#include "a2x_pack_input_button.v.h"
-
-extern AAnalogSource* a_input_analog__newSource(const char* Id);
-extern void a_input_analog__freeSource(AAnalogSource* Analog);

@@ -21,14 +21,7 @@
 
 #include "a2x_pack_input_button.p.h"
 
-typedef struct AButtonSource AButtonSource;
-
 extern void a_input_button__init(void);
 extern void a_input_button__uninit(void);
-
-extern AButtonSource* a_input_button__sourceNew(const char* Name, const char* Id);
-extern void a_input_button__sourceFree(AButtonSource* Button);
-
-extern void a_input_button__sourcePressSet(AButtonSource* Button, bool Pressed);
 
 extern void a_input_button__tick(void);

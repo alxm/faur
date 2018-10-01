@@ -30,7 +30,6 @@ typedef void (*AInputCallback)(void);
 
 struct AInputUserHeader {
     char* name;
-    AList* sourceInputs; // List of AButtonSource/Analog/Touch
     AList* platformInputs; // List of APlatformButton/Analog/Touch
 };
 
@@ -46,12 +45,5 @@ extern void a_input__callbackAdd(AInputCallback Callback);
 
 extern void a_input__userHeaderInit(AInputUserHeader* Header);
 extern void a_input__userHeaderFree(AInputUserHeader* Header);
-extern void a_input__userHeaderFindSource(AInputUserHeader* UserInput, const char* Id, const AStrHash* GlobalCollection, const AStrHash* ControllerCollection);
-
-extern void a_input__sourceHeaderInit(AInputSourceHeader* Header, const char* Name);
-extern void a_input__sourceHeaderFree(AInputSourceHeader* Header);
-
-extern bool a_input__freshEventGet(const AInputSourceHeader* Header);
-extern void a_input__freshEventSet(AInputSourceHeader* Header);
 
 extern void a_input__tick(void);
