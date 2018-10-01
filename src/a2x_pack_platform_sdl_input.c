@@ -25,10 +25,6 @@
 #include <SDL.h>
 
 #include "a2x_pack_fps.v.h"
-#include "a2x_pack_input_analog.v.h"
-#include "a2x_pack_input_button.v.h"
-#include "a2x_pack_input_controller.v.h"
-#include "a2x_pack_input_touch.v.h"
 #include "a2x_pack_math.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
@@ -54,7 +50,6 @@ typedef struct {
 
 struct APlatformButton {
     ASdlInputHeader header;
-    AButtonSource* logicalButton;
     union {
         ASdlKeyCode keyCode;
         uint8_t buttonIndex;
@@ -66,7 +61,6 @@ struct APlatformButton {
 
 struct APlatformAnalog {
     ASdlInputHeader header;
-    AAnalogSource* logicalAnalog;
     int axisIndex;
     int value;
 };
@@ -80,7 +74,6 @@ typedef struct {
 
 struct APlatformTouch {
     ASdlInputHeader header;
-    ATouchSource* logicalTouch;
     int x, y;
     int dx, dy;
     bool tap;
@@ -170,7 +163,7 @@ static void pressButton(APlatformButton* Button, bool Pressed)
         return;
     }
 
-    A_LIST_ITERATE(Button->header.forwardButtons, AButtonSource*, b) {
+    A_LIST_ITERATE(Button->header.forwardButtons, APlatformButton*, b) {
         // Queue forwarded button presses and releases to be processed after
         // all input events were received, so they don't conflict with them.
         a_list_addLast(g_forwardButtonsQueue[Pressed], b);
@@ -1002,10 +995,21 @@ APlatformTouch* a_platform__touchGet(const char* Id)
     return a_strhash_get(g_touchScreens, Id);
 }
 
+void a_platform__touchCoordsGet(const APlatformTouch* Touch, int* X, int* Y)
+{
+    *X = Touch->x;
+    *Y = Touch->y;
+}
+
 void a_platform__touchDeltaGet(const APlatformTouch* Touch, int* Dx, int* Dy)
 {
     *Dx = Touch->dx;
     *Dy = Touch->dy;
+}
+
+bool a_platform__touchTapGet(const APlatformTouch* Touch)
+{
+    return Touch->tap;
 }
 
 unsigned a_platform__controllerNumGet(void)

@@ -20,10 +20,3 @@
 #pragma once
 
 #include "a2x_pack_input_touch.p.h"
-
-typedef struct ATouchSource ATouchSource;
-
-extern void a_input_touch__init(void);
-extern void a_input_touch__uninit(void);
-
-extern ATouchSource* a_input_touch__newSource(const char* Id);

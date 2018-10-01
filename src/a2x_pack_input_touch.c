@@ -31,54 +31,6 @@ struct ATouch {
     AInputUserHeader header;
 };
 
-struct ATouchSource {
-    AInputSourceHeader header;
-    int x, y;
-    int dx, dy;
-    bool tap;
-    AList* motion; // AInputTouchPoints captured by motion event
-};
-
-typedef struct {
-    int x;
-    int y;
-} AInputTouchPoint;
-
-static AStrHash* g_sourceTouchScreens;
-
-void a_input_touch__init(void)
-{
-    g_sourceTouchScreens = a_strhash_new();
-}
-
-void a_input_touch__uninit(void)
-{
-    A_STRHASH_ITERATE(g_sourceTouchScreens, ATouchSource*, t) {
-        a_list_freeEx(t->motion, free);
-        a_input__sourceHeaderFree(&t->header);
-    }
-
-    a_strhash_free(g_sourceTouchScreens);
-}
-
-ATouchSource* a_input_touch__newSource(const char* Id)
-{
-    ATouchSource* t = a_mem_malloc(sizeof(ATouchSource));
-
-    a_input__sourceHeaderInit(&t->header, Id);
-
-    t->tap = false;
-    t->x = 0;
-    t->y = 0;
-    t->dx = 0;
-    t->dy = 0;
-    t->motion = a_list_new();
-
-    a_strhash_add(g_sourceTouchScreens, Id, t);
-
-    return t;
-}
-
 ATouch* a_touch_new(const char* Ids)
 {
     ATouch* t = a_mem_malloc(sizeof(ATouch));
@@ -93,9 +45,6 @@ ATouch* a_touch_new(const char* Ids)
         if(pt) {
             a_list_addLast(t->header.platformInputs, pt);
         }
-
-        a_input__userHeaderFindSource(
-            &t->header, id, g_sourceTouchScreens, NULL);
     }
 
     a_list_freeEx(tok, free);
@@ -132,8 +81,8 @@ void a_touch_deltaGet(const ATouch* Touch, int* Dx, int* Dy)
 
 bool a_touch_tapGet(const ATouch* Touch)
 {
-    A_LIST_ITERATE(Touch->header.sourceInputs, ATouchSource*, t) {
-        if(t->tap) {
+    A_LIST_ITERATE(Touch->header.platformInputs, APlatformTouch*, pt) {
+        if(a_platform__touchTapGet(pt)) {
             return true;
         }
     }
@@ -148,8 +97,13 @@ bool a_touch_pointGet(const ATouch* Touch, int X, int Y)
 
 bool a_touch_boxGet(const ATouch* Touch, int X, int Y, int W, int H)
 {
-    A_LIST_ITERATE(Touch->header.sourceInputs, ATouchSource*, t) {
-        if(t->tap && a_collide_pointInBox(t->x, t->y, X, Y, W, H)) {
+    A_LIST_ITERATE(Touch->header.platformInputs, APlatformTouch*, pt) {
+        int x, y;
+        a_platform__touchCoordsGet(pt, &x, &y);
+
+        if(a_platform__touchTapGet(pt)
+            && a_collide_pointInBox(x, y, X, Y, W, H)) {
+
             return true;
         }
     }

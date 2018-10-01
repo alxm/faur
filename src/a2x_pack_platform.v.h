@@ -98,7 +98,9 @@ extern int a_platform__analogValueGet(const APlatformAnalog* Analog);
 extern void a_platform__analogForward(APlatformAnalog* Source, APlatformButton* Negative, APlatformButton* Positive);
 
 extern APlatformTouch* a_platform__touchGet(const char* Id);
+extern void a_platform__touchCoordsGet(const APlatformTouch* Touch, int* X, int* Y);
 extern void a_platform__touchDeltaGet(const APlatformTouch* Touch, int* Dx, int* Dy);
+extern bool a_platform__touchTapGet(const APlatformTouch* Touch);
 
 extern unsigned a_platform__controllerNumGet(void);
 extern void a_platform__controllerSet(unsigned Index);
