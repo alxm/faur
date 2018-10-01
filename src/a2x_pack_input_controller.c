@@ -19,30 +19,15 @@
 
 #include "a2x_pack_input_controller.v.h"
 
-#include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
 #include "a2x_pack_platform.v.h"
 #include "a2x_pack_settings.v.h"
 
-typedef struct {
-    AStrHash* buttons; // table of APlatformButton
-    AStrHash* axes; // table of APlatformAnalog
-    bool generic;
-    bool mapped;
-} AInputController;
-
-static AList* g_controllers;
-AInputController* g_activeController;
-
 void a_input_controller__init(void)
 {
-    g_controllers = a_list_new();
-    g_activeController = NULL;
-}
+    for(unsigned i = a_platform__controllerNumGet(); i--; ) {
+        a_platform__controllerSet(i);
 
-void a_input_controller__init2(void)
-{
-    A_LIST_ITERATE(g_controllers, AInputController*, c) {
         APlatformAnalog* x = a_platform__analogGet("gamepad.a.leftX");
         APlatformAnalog* y = a_platform__analogGet("gamepad.a.leftY");
         APlatformAnalog* lt = a_platform__analogGet("gamepad.a.leftTrigger");
@@ -76,7 +61,7 @@ void a_input_controller__init2(void)
 
         // Forward the left analog stick to the direction buttons
         if(x && y && u && d && l && r) {
-            if(!c->mapped) {
+            if(!a_platform__controllerIsMapped()) {
                 if(a_settings_getBool("input.switchAxes")) {
                     APlatformAnalog* save = x;
 
@@ -108,7 +93,7 @@ void a_input_controller__init2(void)
         }
 
         #if A_BUILD_SYSTEM_PANDORA
-            if(!c->generic && x && y) {
+            if(!a_platform__controllerIsGeneric() && x && y) {
                 u = a_platform__buttonGet("gamepad.b.up");
                 d = a_platform__buttonGet("gamepad.b.down");
                 l = a_platform__buttonGet("gamepad.b.left");
@@ -121,113 +106,34 @@ void a_input_controller__init2(void)
         #endif
     }
 
-    if(a_input_controllerNumGet() > 0) {
-        a_input_controllerSet(0);
+    // Set the built-in controller as default if one exists, else first one
+    if(a_platform__controllerNumGet() > 0) {
+        for(unsigned i = a_platform__controllerNumGet(); i--; ) {
+            a_platform__controllerSet(i);
 
-        // Set built-in controller as default, if one exists
-        A_LIST_ITERATE(g_controllers, AInputController*, c) {
-            if(!c->generic) {
-                a_input_controllerSet(A_LIST_INDEX());
-                break;
+            if(!a_platform__controllerIsGeneric()) {
+                a_platform__controllerSet(i);
+                return;
             }
         }
+
+        a_platform__controllerSet(0);
     }
-}
-
-void a_input_controller__uninit(void)
-{
-    A_LIST_ITERATE(g_controllers, AInputController*, c) {
-        a_strhash_freeEx(c->buttons, (AFree*)a_input_button__sourceFree);
-        a_strhash_freeEx(c->axes, (AFree*)a_input_analog__freeSource);
-
-        free(c);
-    }
-
-    a_list_free(g_controllers);
 }
 
 unsigned a_input_controllerNumGet(void)
 {
-    return a_list_sizeGet(g_controllers);
+    return a_platform__controllerNumGet();
 }
 
 void a_input_controllerSet(unsigned Index)
 {
-    if(Index >= a_list_sizeGet(g_controllers)) {
-        a_out__error("a_input_controllerSet: Controller %u not present", Index);
+    if(Index >= a_platform__controllerNumGet()) {
+        a_out__fatal("a_input_controllerSet: Cannot set %d, only %d total",
+                     Index,
+                     a_platform__controllerNumGet());
         return;
     }
 
-    g_activeController = a_list_getIndex(g_controllers, Index);
-}
-
-void a_controller__new(bool Generic, bool IsMapped)
-{
-    #if A_BUILD_SYSTEM_PANDORA
-        // Assign both analog nubs to the same logical controller
-        if(!Generic) {
-            A_LIST_ITERATE(g_controllers, AInputController*, c) {
-                if(!c->generic) {
-                    g_activeController = c;
-                    return;
-                }
-            }
-        }
-    #endif
-
-    AInputController* c = a_mem_malloc(sizeof(AInputController));
-
-    c->buttons = a_strhash_new();
-    c->axes = a_strhash_new();
-    c->generic = Generic;
-    c->mapped = IsMapped;
-
-    a_list_addLast(g_controllers, c);
-    g_activeController = c;
-}
-
-void a_controller__buttonAdd(AButtonSource* Button, const char* Id)
-{
-    a_strhash_add(g_activeController->buttons, Id, Button);
-}
-
-AButtonSource* a_controller__buttonGet(const char* Id)
-{
-    if(g_activeController == NULL) {
-        return NULL;
-    }
-
-    return a_strhash_get(g_activeController->buttons, Id);
-}
-
-AStrHash* a_controller__buttonCollectionGet(void)
-{
-    if(g_activeController == NULL) {
-        return NULL;
-    }
-
-    return g_activeController->buttons;
-}
-
-void a_controller__analogAdd(AAnalogSource* Analog, const char* Id)
-{
-    a_strhash_add(g_activeController->axes, Id, Analog);
-}
-
-AAnalogSource* a_controller__analogGet(const char* Id)
-{
-    if(g_activeController == NULL) {
-        return NULL;
-    }
-
-    return a_strhash_get(g_activeController->axes, Id);
-}
-
-AStrHash* a_controller__analogCollectionGet(void)
-{
-    if(g_activeController == NULL) {
-        return NULL;
-    }
-
-    return g_activeController->axes;
+    a_platform__controllerSet(Index);
 }

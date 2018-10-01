@@ -86,7 +86,6 @@ extern void a_platform__sampleStop(int Channel);
 extern bool a_platform__sampleIsPlaying(int Channel);
 extern int a_platform__sampleChannelGet(void);
 
-extern void a_platform__inputsBind(void);
 extern void a_platform__inputsPoll(void);
 
 extern APlatformButton* a_platform__buttonGet(const char* Id);
@@ -100,3 +99,8 @@ extern void a_platform__analogForward(APlatformAnalog* Source, APlatformButton* 
 
 extern APlatformTouch* a_platform__touchGet(const char* Id);
 extern void a_platform__touchDeltaGet(const APlatformTouch* Touch, int* Dx, int* Dy);
+
+extern unsigned a_platform__controllerNumGet(void);
+extern void a_platform__controllerSet(unsigned Index);
+extern bool a_platform__controllerIsMapped(void);
+extern bool a_platform__controllerIsGeneric(void);

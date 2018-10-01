@@ -60,9 +60,6 @@ AAnalog* a_analog_new(const char* Ids)
     AList* tok = a_str_split(Ids, ", ");
 
     A_LIST_ITERATE(tok, char*, id) {
-        a_input__userHeaderFindSource(
-            &a->header, id, NULL, a_controller__analogCollectionGet());
-
         APlatformAnalog* pa = a_platform__analogGet(id);
 
         if(pa) {

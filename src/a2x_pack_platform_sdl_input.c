@@ -108,6 +108,7 @@ typedef struct {
 static AStrHash* g_keys;
 static AStrHash* g_touchScreens;
 static AList* g_controllers;
+static ASdlInputController* g_setController;
 static AList* g_forwardButtonsQueue[2]; // list of APlatformButton
 static uint32_t g_sdlFlags;
 
@@ -264,6 +265,7 @@ void a_platform_sdl_input__init(void)
     g_keys = a_strhash_new();
     g_touchScreens = a_strhash_new();
     g_controllers = a_list_new();
+    g_setController = NULL;
     g_forwardButtonsQueue[0] = a_list_new();
     g_forwardButtonsQueue[1] = a_list_new();
 
@@ -650,37 +652,6 @@ void a_platform_sdl_input__uninit(void)
     SDL_QuitSubSystem(g_sdlFlags);
 }
 
-void a_platform__inputsBind(void)
-{
-    A_STRHASH_ITERATE(g_keys, APlatformButton*, k) {
-        k->logicalButton = a_input_button__sourceNew(
-                            k->header.name, A_STRHASH_KEY());
-    }
-
-    A_STRHASH_ITERATE(g_touchScreens, APlatformTouch*, t) {
-        t->logicalTouch = a_input_touch__newSource(t->header.name);
-    }
-
-    A_LIST_ITERATE(g_controllers, ASdlInputController*, c) {
-        #if A_BUILD_LIB_SDL == 1
-            a_controller__new(c->generic, false);
-        #elif A_BUILD_LIB_SDL == 2
-            a_controller__new(c->generic, c->controller != NULL);
-        #endif
-
-        A_STRHASH_ITERATE(c->buttons, APlatformButton*, b) {
-            b->logicalButton = a_input_button__sourceNew(
-                                b->header.name, A_STRHASH_KEY());
-            a_controller__buttonAdd(b->logicalButton, A_STRHASH_KEY());
-        }
-
-        A_STRHASH_ITERATE(c->axes, APlatformAnalog*, a) {
-            a->logicalAnalog = a_input_analog__newSource(a->header.name);
-            a_controller__analogAdd(a->logicalAnalog, a->header.name);
-        }
-    }
-}
-
 void a_platform__inputsPoll(void)
 {
     A_STRHASH_ITERATE(g_touchScreens, APlatformTouch*, t) {
@@ -962,8 +933,8 @@ APlatformButton* a_platform__buttonGet(const char* Id)
         return b;
     }
 
-    A_LIST_ITERATE(g_controllers, ASdlInputController*, c) {
-        b = a_strhash_get(c->buttons, Id);
+    if(g_setController) {
+        b = a_strhash_get(g_setController->buttons, Id);
 
         if(b != NULL) {
             return b;
@@ -994,8 +965,8 @@ void a_platform__buttonForward(APlatformButton* Source, APlatformButton* Destina
 
 APlatformAnalog* a_platform__analogGet(const char* Id)
 {
-    A_LIST_ITERATE(g_controllers, ASdlInputController*, c) {
-        APlatformAnalog* a = a_strhash_get(c->axes, Id);
+    if(g_setController) {
+        APlatformAnalog* a = a_strhash_get(g_setController->axes, Id);
 
         if(a != NULL) {
             return a;
@@ -1035,5 +1006,35 @@ void a_platform__touchDeltaGet(const APlatformTouch* Touch, int* Dx, int* Dy)
 {
     *Dx = Touch->dx;
     *Dy = Touch->dy;
+}
+
+unsigned a_platform__controllerNumGet(void)
+{
+    return a_list_sizeGet(g_controllers);
+}
+
+void a_platform__controllerSet(unsigned Index)
+{
+    if(Index >= a_list_sizeGet(g_controllers)) {
+        a_out__fatal("Cannot set controller %d, %d total",
+                     Index,
+                     a_list_sizeGet(g_controllers));
+    }
+
+    g_setController = a_list_getIndex(g_controllers, Index);
+}
+
+bool a_platform__controllerIsMapped(void)
+{
+    #if A_BUILD_LIB_SDL == 2
+        return g_setController && g_setController->controller != NULL;
+    #else
+        return false;
+    #endif
+}
+
+bool a_platform__controllerIsGeneric(void)
+{
+    return g_setController && g_setController->generic;
 }
 #endif // A_BUILD_LIB_SDL
