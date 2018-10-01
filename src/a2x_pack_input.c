@@ -118,7 +118,6 @@ void a_input__freshEventSet(AInputSourceHeader* Header)
 
 void a_input__tick(void)
 {
-    a_input_touch__motionClear();
     a_platform__inputsPoll();
     a_input_button__tick();
 

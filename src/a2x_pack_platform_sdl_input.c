@@ -81,7 +81,15 @@ typedef struct {
 struct APlatformTouch {
     ASdlInputHeader header;
     ATouchSource* logicalTouch;
+    int x, y;
+    int dx, dy;
+    bool tap;
+    AList* motion; // list of APlatformTouchPoint captured by motion events
 };
+
+typedef struct {
+    int x, y;
+} APlatformTouchPoint;
 
 typedef struct {
     SDL_Joystick* joystick;
@@ -221,6 +229,13 @@ static void addTouch(const char* Id)
     APlatformTouch* t = a_mem_malloc(sizeof(APlatformTouch));
 
     initHeader(&t->header, a_str_dup(Id));
+
+    t->x = 0;
+    t->y = 0;
+    t->dx = 0;
+    t->dy = 0;
+    t->tap = false;
+    t->motion = a_list_new();
 
     a_strhash_add(g_touchScreens, Id, t);
 }
@@ -595,6 +610,7 @@ void a_platform_sdl_input__uninit(void)
     }
 
     A_STRHASH_ITERATE(g_touchScreens, APlatformTouch*, t) {
+        a_list_free(t->motion);
         freeHeader(&t->header);
     }
 
@@ -667,6 +683,11 @@ void a_platform__inputsBind(void)
 
 void a_platform__inputsPoll(void)
 {
+    A_STRHASH_ITERATE(g_touchScreens, APlatformTouch*, t) {
+        t->tap = false;
+        a_list_clearEx(t->motion, free);
+    }
+
     for(SDL_Event event; SDL_PollEvent(&event); ) {
         switch(event.type) {
             case SDL_QUIT: {
@@ -859,9 +880,21 @@ void a_platform__inputsPoll(void)
 #endif
 
             case SDL_MOUSEMOTION: {
+                const bool track = a_settings_getBool("input.trackMouse");
+
                 A_STRHASH_ITERATE(g_touchScreens, APlatformTouch*, t) {
-                    a_input_touch__motionAdd(
-                        t->logicalTouch, event.button.x, event.button.y);
+                    t->x = event.button.x;
+                    t->y = event.button.y;
+
+                    if(track) {
+                        APlatformTouchPoint* p =
+                            a_mem_malloc(sizeof(APlatformTouchPoint));
+
+                        p->x = t->x;
+                        p->y = t->y;
+
+                        a_list_addLast(t->motion, p);
+                    }
                 }
             } break;
 
@@ -869,10 +902,9 @@ void a_platform__inputsPoll(void)
                 switch(event.button.button) {
                     case SDL_BUTTON_LEFT: {
                         A_STRHASH_ITERATE(g_touchScreens, APlatformTouch*, t) {
-                            a_input_touch__coordsSet(t->logicalTouch,
-                                                     event.button.x,
-                                                     event.button.y,
-                                                     true);
+                            t->x = event.button.x;
+                            t->y = event.button.y;
+                            t->tap = true;
                         }
                     } break;
                 }
@@ -882,10 +914,9 @@ void a_platform__inputsPoll(void)
                 switch(event.button.button) {
                     case SDL_BUTTON_LEFT: {
                         A_STRHASH_ITERATE(g_touchScreens, APlatformTouch*, t) {
-                            a_input_touch__coordsSet(t->logicalTouch,
-                                                     event.button.x,
-                                                     event.button.y,
-                                                     false);
+                            t->x = event.button.x;
+                            t->y = event.button.y;
+                            t->tap = false;
                         }
                     } break;
                 }
@@ -917,7 +948,8 @@ void a_platform__inputsPoll(void)
         SDL_GetRelativeMouseState(&mouseDx, &mouseDy);
 
         A_STRHASH_ITERATE(g_touchScreens, APlatformTouch*, t) {
-            a_input_touch__deltaSet(t->logicalTouch, mouseDx, mouseDy);
+            t->dx = mouseDx;
+            t->dy = mouseDy;
         }
     #endif
 }
@@ -992,5 +1024,16 @@ void a_platform__analogForward(APlatformAnalog* Source, APlatformButton* Negativ
     }
 
     a_list_addLast(Source->header.forwardButtons, f);
+}
+
+APlatformTouch* a_platform__touchGet(const char* Id)
+{
+    return a_strhash_get(g_touchScreens, Id);
+}
+
+void a_platform__touchDeltaGet(const APlatformTouch* Touch, int* Dx, int* Dy)
+{
+    *Dx = Touch->dx;
+    *Dy = Touch->dy;
 }
 #endif // A_BUILD_LIB_SDL

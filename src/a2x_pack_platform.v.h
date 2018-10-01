@@ -97,3 +97,6 @@ extern void a_platform__buttonForward(APlatformButton* Source, APlatformButton* 
 extern APlatformAnalog* a_platform__analogGet(const char* Id);
 extern int a_platform__analogValueGet(const APlatformAnalog* Analog);
 extern void a_platform__analogForward(APlatformAnalog* Source, APlatformButton* Negative, APlatformButton* Positive);
+
+extern APlatformTouch* a_platform__touchGet(const char* Id);
+extern void a_platform__touchDeltaGet(const APlatformTouch* Touch, int* Dx, int* Dy);

@@ -23,6 +23,7 @@
 #include "a2x_pack_input.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
+#include "a2x_pack_platform.v.h"
 #include "a2x_pack_settings.v.h"
 #include "a2x_pack_str.v.h"
 
@@ -87,13 +88,19 @@ ATouch* a_touch_new(const char* Ids)
     AList* tok = a_str_split(Ids, ", ");
 
     A_LIST_ITERATE(tok, char*, id) {
+        APlatformTouch* pt = a_platform__touchGet(id);
+
+        if(pt) {
+            a_list_addLast(t->header.platformInputs, pt);
+        }
+
         a_input__userHeaderFindSource(
             &t->header, id, g_sourceTouchScreens, NULL);
     }
 
     a_list_freeEx(tok, free);
 
-    if(a_list_isEmpty(t->header.sourceInputs)) {
+    if(a_list_isEmpty(t->header.platformInputs)) {
         a_out__error("a_touch_new: No touch screen found for '%s'", Ids);
     }
 
@@ -113,15 +120,14 @@ void a_touch_free(ATouch* Touch)
 
 bool a_touch_isWorking(const ATouch* Touch)
 {
-    return !a_list_isEmpty(Touch->header.sourceInputs);
+    return !a_list_isEmpty(Touch->header.platformInputs);
 }
 
 void a_touch_deltaGet(const ATouch* Touch, int* Dx, int* Dy)
 {
-    ATouchSource* t = a_list_getFirst(Touch->header.sourceInputs);
+    APlatformTouch* pt = a_list_getFirst(Touch->header.platformInputs);
 
-    *Dx = t->dx;
-    *Dy = t->dy;
+    a_platform__touchDeltaGet(pt, Dx, Dy);
 }
 
 bool a_touch_tapGet(const ATouch* Touch)
@@ -149,44 +155,4 @@ bool a_touch_boxGet(const ATouch* Touch, int X, int Y, int W, int H)
     }
 
     return false;
-}
-
-void a_input_touch__motionAdd(ATouchSource* Touch, int X, int Y)
-{
-    Touch->x = X;
-    Touch->y = Y;
-
-    if(a_settings_getBool("input.trackMouse")) {
-        AInputTouchPoint* p = a_mem_malloc(sizeof(AInputTouchPoint));
-
-        p->x = Touch->x;
-        p->y = Touch->y;
-
-        a_list_addLast(Touch->motion, p);
-    }
-
-    a_input__freshEventSet(&Touch->header);
-}
-
-void a_input_touch__motionClear(void)
-{
-    A_STRHASH_ITERATE(g_sourceTouchScreens, ATouchSource*, touchScreen) {
-        touchScreen->tap = false;
-        a_list_clearEx(touchScreen->motion, free);
-    }
-}
-
-void a_input_touch__coordsSet(ATouchSource* Touch, int X, int Y, bool Tapped)
-{
-    Touch->x = X;
-    Touch->y = Y;
-    Touch->tap = Tapped;
-
-    a_input__freshEventSet(&Touch->header);
-}
-
-void a_input_touch__deltaSet(ATouchSource* Touch, int Dx, int Dy)
-{
-    Touch->dx = Dx;
-    Touch->dy = Dy;
 }
