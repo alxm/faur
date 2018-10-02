@@ -23,3 +23,5 @@
 
 extern void a_sound__init(void);
 extern void a_sound__uninit(void);
+
+extern void a_sound__tick(void);

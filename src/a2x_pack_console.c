@@ -23,7 +23,6 @@
 #include "a2x_pack_draw.v.h"
 #include "a2x_pack_font.v.h"
 #include "a2x_pack_fps.v.h"
-#include "a2x_pack_input.v.h"
 #include "a2x_pack_input_button.v.h"
 #include "a2x_pack_listit.v.h"
 #include "a2x_pack_mem.v.h"
@@ -76,13 +75,6 @@ static void line_free(ALine* Line)
 {
     free(Line->text);
     free(Line);
-}
-
-static void inputCallback(void)
-{
-    if(a_button_pressGetOnce(g_toggle)) {
-        a_console__showSet(g_state == A_CONSOLE__STATE_FULL);
-    }
 }
 
 static void screenCallback(void)
@@ -204,7 +196,6 @@ void a_console__init2(void)
 
     g_toggle = a_button_new(a_settings_getString("console.button"));
 
-    a_input__callbackAdd(inputCallback);
     a_screen__callbackAdd(screenCallback);
 
     g_state = a_settings_getBool("console.on")
@@ -226,6 +217,13 @@ void a_console__uninit(void)
     }
 
     a_button_free(g_toggle);
+}
+
+void a_console__tick(void)
+{
+    if(a_button_pressGetOnce(g_toggle)) {
+        a_console__showSet(g_state == A_CONSOLE__STATE_FULL);
+    }
 }
 
 bool a_console__isInitialized(void)

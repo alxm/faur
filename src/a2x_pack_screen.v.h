@@ -46,6 +46,8 @@ extern AScreen a__screen;
 extern void a_screen__init(void);
 extern void a_screen__uninit(void);
 
+extern void a_screen__tick(void);
+
 extern void a_screen__show(void);
 extern void a_screen__callbackAdd(AScreenOverlay Callback);
 

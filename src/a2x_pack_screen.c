@@ -20,9 +20,8 @@
 #include "a2x_pack_screen.v.h"
 
 #include "a2x_pack_collide.v.h"
-#include "a2x_pack_input.v.h"
 #include "a2x_pack_input_button.v.h"
-#include "a2x_pack_list.v.h"
+#include "a2x_pack_listit.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
 #include "a2x_pack_pixel.v.h"
@@ -39,18 +38,7 @@ static AList* g_stack; // list of AScreen
 static AList* g_overlays; // list of AScreenOverlayContainer
 
 static bool g_fullScreenState;
-
-#if A_BUILD_SYSTEM_DESKTOP
-    static AButton* g_fullScreenButton;
-
-    static void inputCallback(void)
-    {
-        if(a_button_pressGetOnce(g_fullScreenButton)) {
-            g_fullScreenState = !g_fullScreenState;
-            a_platform__screenSetFullscreen(g_fullScreenState);
-        }
-    }
-#endif
+static AButton* g_fullScreenButton;
 
 static void initScreen(AScreen* Screen, int Width, int Height, bool AllocBuffer)
 {
@@ -136,13 +124,8 @@ void a_screen__init(void)
         a_platform_wiz__portraitModeSet();
     #endif
 
-    #if A_BUILD_SYSTEM_DESKTOP
-        g_fullScreenButton = a_button_new(
-                                a_settings_getString(
-                                    "video.fullscreen.button"));
-
-        a_input__callbackAdd(inputCallback);
-    #endif
+    g_fullScreenButton = a_button_new(
+                            a_settings_getString("video.fullscreen.button"));
 
     #if !A_BUILD_RENDER_SOFTWARE
         initScreen(&a__screen, width, height, true);
@@ -168,8 +151,16 @@ void a_screen__uninit(void)
     a_list_freeEx(g_stack, (AFree*)a_screen_free);
     a_list_freeEx(g_overlays, free);
 
+    a_button_free(g_fullScreenButton);
+}
+
+void a_screen__tick(void)
+{
     #if A_BUILD_SYSTEM_DESKTOP
-        a_button_free(g_fullScreenButton);
+        if(a_button_pressGetOnce(g_fullScreenButton)) {
+            g_fullScreenState = !g_fullScreenState;
+            a_platform__screenSetFullscreen(g_fullScreenState);
+        }
     #endif
 }
 

@@ -22,7 +22,6 @@
 #include "a2x_pack_draw.v.h"
 #include "a2x_pack_embed.v.h"
 #include "a2x_pack_file.v.h"
-#include "a2x_pack_input.v.h"
 #include "a2x_pack_input_button.v.h"
 #include "a2x_pack_math.v.h"
 #include "a2x_pack_mem.v.h"
@@ -60,34 +59,6 @@ static void adjustSoundVolume(int Volume)
 
     a_platform__sampleVolumeSetAll(g_samplesVolume);
     a_platform__musicVolumeSet(g_musicVolume);
-}
-
-static void inputCallback(void)
-{
-    #if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ
-        if(!g_soundOn) {
-            return;
-        }
-
-        int adjust = 0;
-
-        if(a_button_pressGet(g_volumeUpButton)) {
-            adjust = A__VOLUME_STEP;
-        } else if(a_button_pressGet(g_volumeDownButton)) {
-            adjust = -A__VOLUME_STEP;
-        }
-
-        if(adjust) {
-            adjustSoundVolume(g_volume + adjust);
-            a_timer_start(g_volTimer);
-        }
-    #endif
-
-    #if A_BUILD_DEVICE_KEYBOARD
-        if(g_soundOn && a_button_pressGetOnce(g_musicOnOffButton)) {
-            a_platform__musicToggle();
-        }
-    #endif
 }
 
 #if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ
@@ -141,8 +112,6 @@ void a_sound__init(void)
         g_musicOnOffButton = a_button_new("key.m");
     #endif
 
-    a_input__callbackAdd(inputCallback);
-
     #if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ
         const char* color;
 
@@ -174,6 +143,34 @@ void a_sound__uninit(void)
     #endif
 
     a_music_stop();
+}
+
+void a_sound__tick(void)
+{
+    #if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ
+        if(!g_soundOn) {
+            return;
+        }
+
+        int adjust = 0;
+
+        if(a_button_pressGet(g_volumeUpButton)) {
+            adjust = A__VOLUME_STEP;
+        } else if(a_button_pressGet(g_volumeDownButton)) {
+            adjust = -A__VOLUME_STEP;
+        }
+
+        if(adjust) {
+            adjustSoundVolume(g_volume + adjust);
+            a_timer_start(g_volTimer);
+        }
+    #endif
+
+    #if A_BUILD_DEVICE_KEYBOARD
+        if(g_soundOn && a_button_pressGetOnce(g_musicOnOffButton)) {
+            a_platform__musicToggle();
+        }
+    #endif
 }
 
 AMusic* a_music_new(const char* Path)

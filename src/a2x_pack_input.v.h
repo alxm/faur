@@ -24,8 +24,6 @@
 typedef struct AInputUserHeader AInputUserHeader;
 typedef struct AInputSourceHeader AInputSourceHeader;
 
-typedef void (*AInputCallback)(void);
-
 #include "a2x_pack_strhash.v.h"
 
 struct AInputUserHeader {
@@ -40,8 +38,6 @@ struct AInputSourceHeader {
 
 extern void a_input__init(void);
 extern void a_input__uninit(void);
-
-extern void a_input__callbackAdd(AInputCallback Callback);
 
 extern void a_input__userHeaderInit(AInputUserHeader* Header);
 extern void a_input__userHeaderFree(AInputUserHeader* Header);

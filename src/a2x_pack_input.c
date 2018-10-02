@@ -24,16 +24,8 @@
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_platform.v.h"
 
-typedef struct {
-    AInputCallback callback;
-} AInputCallbackContainer;
-
-static AList* g_callbacks;
-
 void a_input__init(void)
 {
-    g_callbacks = a_list_new();
-
     a_input_button__init();
     a_input_controller__init();
 }
@@ -41,16 +33,6 @@ void a_input__init(void)
 void a_input__uninit(void)
 {
     a_input_button__uninit();
-
-    a_list_freeEx(g_callbacks, free);
-}
-
-void a_input__callbackAdd(AInputCallback Callback)
-{
-    AInputCallbackContainer* c = a_mem_malloc(sizeof(AInputCallbackContainer));
-    c->callback = Callback;
-
-    a_list_addLast(g_callbacks, c);
 }
 
 void a_input__userHeaderInit(AInputUserHeader* Header)
@@ -69,8 +51,4 @@ void a_input__tick(void)
 {
     a_platform__inputsPoll();
     a_input_button__tick();
-
-    A_LIST_ITERATE(g_callbacks, AInputCallbackContainer*, c) {
-        c->callback();
-    }
 }

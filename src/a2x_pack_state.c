@@ -23,6 +23,7 @@
     #include <emscripten.h>
 #endif
 
+#include "a2x_pack_console.v.h"
 #include "a2x_pack_ecs.v.h"
 #include "a2x_pack_ecs_system.v.h"
 #include "a2x_pack_fps.v.h"
@@ -31,7 +32,9 @@
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
 #include "a2x_pack_screen.v.h"
+#include "a2x_pack_screenshot.v.h"
 #include "a2x_pack_settings.v.h"
+#include "a2x_pack_sound.v.h"
 #include "a2x_pack_str.v.h"
 #include "a2x_pack_strhash.v.h"
 #include "a2x_pack_timer.v.h"
@@ -301,6 +304,10 @@ static bool iteration(void)
         while(a_fps__tick() && a_list_isEmpty(g_pending)) {
             a_timer__tick();
             a_input__tick();
+            a_sound__tick();
+            a_screen__tick();
+            a_screenshot__tick();
+            a_console__tick();
             s->function(A_STATE__STAGE_LOOP | A_STATE__STAGE_TICK);
             a_ecs__tick();
         }
