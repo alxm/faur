@@ -61,31 +61,6 @@ static void adjustSoundVolume(int Volume)
     a_platform__musicVolumeSet(g_musicVolume);
 }
 
-#if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ
-    static void screenCallback(void)
-    {
-        if(!g_soundOn
-            || !a_timer_isRunning(g_volTimer)
-            || a_timer_expiredGet(g_volTimer)) {
-
-            return;
-        }
-
-        a_pixel_blendSet(A_PIXEL_BLEND_PLAIN);
-
-        a_pixel_colorSetPixel(g_volbarBackground);
-        a_draw_rectangle(0, 181, g_volumeMax / A__VOLUME_STEP + 5, 16);
-
-        a_pixel_colorSetPixel(g_volbarBorder);
-        a_draw_hline(0, g_volumeMax / A__VOLUME_STEP + 4, 180);
-        a_draw_hline(0, g_volumeMax / A__VOLUME_STEP + 4, 183 + 14);
-        a_draw_vline(g_volumeMax / A__VOLUME_STEP + 4 + 1, 181, 183 + 13);
-
-        a_pixel_colorSetPixel(g_volbarFill);
-        a_draw_rectangle(0, 186, g_volume / A__VOLUME_STEP, 6);
-    }
-#endif
-
 void a_sound__init(void)
 {
     g_soundOn = a_settings_getBool("sound.on");
@@ -123,8 +98,6 @@ void a_sound__init(void)
 
         color = a_settings_getString("sound.volbar.fill");
         g_volbarFill = a_pixel_fromHex((uint32_t)strtol(color, NULL, 16));
-
-        a_screen__callbackAdd(screenCallback);
     #endif
 }
 
@@ -170,6 +143,31 @@ void a_sound__tick(void)
         if(g_soundOn && a_button_pressGetOnce(g_musicOnOffButton)) {
             a_platform__musicToggle();
         }
+    #endif
+}
+
+void a_sound__draw(void)
+{
+    #if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ
+        if(!g_soundOn
+            || !a_timer_isRunning(g_volTimer)
+            || a_timer_expiredGet(g_volTimer)) {
+
+            return;
+        }
+
+        a_pixel_blendSet(A_PIXEL_BLEND_PLAIN);
+
+        a_pixel_colorSetPixel(g_volbarBackground);
+        a_draw_rectangle(0, 181, g_volumeMax / A__VOLUME_STEP + 5, 16);
+
+        a_pixel_colorSetPixel(g_volbarBorder);
+        a_draw_hline(0, g_volumeMax / A__VOLUME_STEP + 4, 180);
+        a_draw_hline(0, g_volumeMax / A__VOLUME_STEP + 4, 183 + 14);
+        a_draw_vline(g_volumeMax / A__VOLUME_STEP + 4 + 1, 181, 183 + 13);
+
+        a_pixel_colorSetPixel(g_volbarFill);
+        a_draw_rectangle(0, 186, g_volume / A__VOLUME_STEP, 6);
     #endif
 }
 

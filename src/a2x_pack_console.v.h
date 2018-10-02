@@ -28,6 +28,7 @@ extern void a_console__init2(void);
 extern void a_console__uninit(void);
 
 extern void a_console__tick(void);
+extern void a_console__draw(void);
 
 extern bool a_console__isInitialized(void);
 extern void a_console__showSet(bool DoShow);

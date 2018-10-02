@@ -28,14 +28,8 @@
 #include "a2x_pack_platform_wiz.v.h"
 #include "a2x_pack_settings.v.h"
 
-typedef struct {
-    AScreenOverlay callback;
-} AScreenOverlayContainer;
-
 AScreen a__screen;
 static AList* g_stack; // list of AScreen
-
-static AList* g_overlays; // list of AScreenOverlayContainer
 
 static bool g_fullScreenState;
 static AButton* g_fullScreenButton;
@@ -133,7 +127,6 @@ void a_screen__init(void)
     #endif
 
     g_stack = a_list_new();
-    g_overlays = a_list_new();
 }
 
 void a_screen__uninit(void)
@@ -149,7 +142,6 @@ void a_screen__uninit(void)
     }
 
     a_list_freeEx(g_stack, (AFree*)a_screen_free);
-    a_list_freeEx(g_overlays, free);
 
     a_button_free(g_fullScreenButton);
 }
@@ -164,25 +156,13 @@ void a_screen__tick(void)
     #endif
 }
 
-void a_screen__show(void)
+void a_screen__draw(void)
 {
     if(!a_list_isEmpty(g_stack)) {
         a_out__fatal("Screen target stack is not empty");
     }
 
-    A_LIST_ITERATE(g_overlays, AScreenOverlayContainer*, c) {
-        c->callback();
-    }
-
     a_platform__screenShow();
-}
-
-void a_screen__callbackAdd(AScreenOverlay Callback)
-{
-    AScreenOverlayContainer* c = a_mem_malloc(sizeof(AScreenOverlayContainer));
-    c->callback = Callback;
-
-    a_list_addLast(g_overlays, c);
 }
 
 bool a_screen__sameSize(const AScreen* Screen1, const AScreen* Screen2)

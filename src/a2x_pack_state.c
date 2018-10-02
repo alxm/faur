@@ -314,7 +314,9 @@ static bool iteration(void)
 
         s->function(A_STATE__STAGE_LOOP | A_STATE__STAGE_DRAW);
         a_ecs__draw();
-        a_screen__show();
+        a_sound__draw();
+        a_console__draw();
+        a_screen__draw();
 
         a_fps__frame();
     } else {

@@ -100,7 +100,7 @@ static void outWorker(AOutSource Source, AOutType Type, bool Verbose, bool Overw
 __attribute__((noreturn)) static void handleFatal(void)
 {
     a_console__showSet(true);
-    a_screen__show();
+    a_screen__draw();
 
     #if A_BUILD_DEBUG
         while(true) {
@@ -116,7 +116,7 @@ __attribute__((noreturn)) static void handleFatal(void)
                     a_out__overwrite(A_OUT__TYPE_MESSAGE, "Exiting in %ds", s);
                 }
 
-                a_screen__show();
+                a_screen__draw();
                 a_time_secWait(1);
             }
         }
