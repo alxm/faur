@@ -414,108 +414,108 @@ void a_platform_sdl_input__init(void)
 
         c->generic = true;
 
-        #if A_BUILD_LIB_SDL == 2
-            if(c->controller) {
-                a_out__message("Mapped %s: %d buttons, %d axes, %d hats",
-                               SDL_GameControllerName(controller),
-                               c->numButtons,
-                               c->numAxes,
-                               c->numHats);
+#if A_BUILD_LIB_SDL == 2
+        if(c->controller) {
+            a_out__message("Mapped %s: %d buttons, %d axes, %d hats",
+                           SDL_GameControllerName(controller),
+                           c->numButtons,
+                           c->numAxes,
+                           c->numHats);
 
-                static const char* buttonNames[SDL_CONTROLLER_BUTTON_MAX][2] = {
-                    {"A", "gamepad.b.a"},
-                    {"B", "gamepad.b.b"},
-                    {"X", "gamepad.b.x"},
-                    {"Y", "gamepad.b.y"},
-                    {"Select", "gamepad.b.select"},
-                    {"Guide", "gamepad.b.guide"},
-                    {"Start", "gamepad.b.start"},
-                    {"Left Stick", "gamepad.b.lStick"},
-                    {"Right Stick", "gamepad.b.rStick"},
-                    {"L", "gamepad.b.l"},
-                    {"R", "gamepad.b.r"},
-                    {"Up", "gamepad.b.up"},
-                    {"Down", "gamepad.b.down"},
-                    {"Left", "gamepad.b.left"},
-                    {"Right", "gamepad.b.right"}
-                };
+            static const char* buttonNames[SDL_CONTROLLER_BUTTON_MAX][2] = {
+                {"A", "gamepad.b.a"},
+                {"B", "gamepad.b.b"},
+                {"X", "gamepad.b.x"},
+                {"Y", "gamepad.b.y"},
+                {"Select", "gamepad.b.select"},
+                {"Guide", "gamepad.b.guide"},
+                {"Start", "gamepad.b.start"},
+                {"Left Stick", "gamepad.b.lStick"},
+                {"Right Stick", "gamepad.b.rStick"},
+                {"L", "gamepad.b.l"},
+                {"R", "gamepad.b.r"},
+                {"Up", "gamepad.b.up"},
+                {"Down", "gamepad.b.down"},
+                {"Left", "gamepad.b.left"},
+                {"Right", "gamepad.b.right"}
+            };
 
-                static const char* axisNames[SDL_CONTROLLER_AXIS_MAX] = {
-                    "gamepad.a.leftX",
-                    "gamepad.a.leftY",
-                    "gamepad.a.rightX",
-                    "gamepad.a.rightY",
-                    "gamepad.a.leftTrigger",
-                    "gamepad.a.rightTrigger"
-                };
+            static const char* axisNames[SDL_CONTROLLER_AXIS_MAX] = {
+                "gamepad.a.leftX",
+                "gamepad.a.leftY",
+                "gamepad.a.rightX",
+                "gamepad.a.rightY",
+                "gamepad.a.leftTrigger",
+                "gamepad.a.rightTrigger"
+            };
 
-                for(SDL_GameControllerButton b = SDL_CONTROLLER_BUTTON_A;
-                    b < SDL_CONTROLLER_BUTTON_MAX;
-                    b++) {
+            for(SDL_GameControllerButton b = SDL_CONTROLLER_BUTTON_A;
+                b < SDL_CONTROLLER_BUTTON_MAX;
+                b++) {
 
-                    SDL_GameControllerButtonBind bind =
-                        SDL_GameControllerGetBindForButton(controller, b);
+                SDL_GameControllerButtonBind bind =
+                    SDL_GameControllerGetBindForButton(controller, b);
 
-                    if(bind.bindType == SDL_CONTROLLER_BINDTYPE_NONE) {
-                        continue;
-                    }
-
-                    buttonAdd(
-                        c->buttons, buttonNames[b][0], buttonNames[b][1], b);
+                if(bind.bindType == SDL_CONTROLLER_BINDTYPE_NONE) {
+                    continue;
                 }
 
-                for(SDL_GameControllerAxis a = SDL_CONTROLLER_AXIS_LEFTX;
-                    a < SDL_CONTROLLER_AXIS_MAX;
-                    a++) {
-
-                    SDL_GameControllerButtonBind bind =
-                        SDL_GameControllerGetBindForAxis(controller, a);
-
-                    if(bind.bindType == SDL_CONTROLLER_BINDTYPE_NONE) {
-                        continue;
-                    }
-
-                    analogAdd(c->axes, axisNames[a], a);
-                }
-            } else {
-        #endif
-                a_out__message("Found %s: %d buttons, %d axes, %d hats",
-                               joystickName(c),
-                               c->numButtons,
-                               c->numAxes,
-                               c->numHats);
-
-                static const char* buttons[][2] = {
-                    {"A", "gamepad.b.a"},
-                    {"B", "gamepad.b.b"},
-                    {"X", "gamepad.b.x"},
-                    {"Y", "gamepad.b.y"},
-                    {"L", "gamepad.b.l"},
-                    {"R", "gamepad.b.r"},
-                    {"Select", "gamepad.b.select"},
-                    {"Start", "gamepad.b.start"},
-                    {"Guide", "gamepad.b.guide"}
-                };
-
-                static const char* axes[] = {
-                    "gamepad.a.leftX",
-                    "gamepad.a.leftY",
-                    "gamepad.a.rightX",
-                    "gamepad.a.rightY",
-                    "gamepad.a.leftTrigger",
-                    "gamepad.a.rightTrigger"
-                };
-
-                for(int j = a_math_min(c->numButtons, A_ARRAY_LEN(buttons)); j--; ) {
-                    buttonAdd(c->buttons, buttons[j][0], buttons[j][1], j);
-                }
-
-                for(int j = a_math_min(c->numAxes, A_ARRAY_LEN(axes)); j--; ) {
-                    analogAdd(c->axes, axes[j], j);
-                }
-        #if A_BUILD_LIB_SDL == 2
+                buttonAdd(
+                    c->buttons, buttonNames[b][0], buttonNames[b][1], b);
             }
-        #endif
+
+            for(SDL_GameControllerAxis a = SDL_CONTROLLER_AXIS_LEFTX;
+                a < SDL_CONTROLLER_AXIS_MAX;
+                a++) {
+
+                SDL_GameControllerButtonBind bind =
+                    SDL_GameControllerGetBindForAxis(controller, a);
+
+                if(bind.bindType == SDL_CONTROLLER_BINDTYPE_NONE) {
+                    continue;
+                }
+
+                analogAdd(c->axes, axisNames[a], a);
+            }
+        } else {
+#endif
+            a_out__message("Found %s: %d buttons, %d axes, %d hats",
+                           joystickName(c),
+                           c->numButtons,
+                           c->numAxes,
+                           c->numHats);
+
+            static const char* buttons[][2] = {
+                {"A", "gamepad.b.a"},
+                {"B", "gamepad.b.b"},
+                {"X", "gamepad.b.x"},
+                {"Y", "gamepad.b.y"},
+                {"L", "gamepad.b.l"},
+                {"R", "gamepad.b.r"},
+                {"Select", "gamepad.b.select"},
+                {"Start", "gamepad.b.start"},
+                {"Guide", "gamepad.b.guide"}
+            };
+
+            static const char* axes[] = {
+                "gamepad.a.leftX",
+                "gamepad.a.leftY",
+                "gamepad.a.rightX",
+                "gamepad.a.rightY",
+                "gamepad.a.leftTrigger",
+                "gamepad.a.rightTrigger"
+            };
+
+            for(int j = a_math_min(c->numButtons, A_ARRAY_LEN(buttons)); j--; ) {
+                buttonAdd(c->buttons, buttons[j][0], buttons[j][1], j);
+            }
+
+            for(int j = a_math_min(c->numAxes, A_ARRAY_LEN(axes)); j--; ) {
+                analogAdd(c->axes, axes[j], j);
+            }
+#if A_BUILD_LIB_SDL == 2
+        }
+#endif
 
         if(c->numHats > 0 || c->numAxes >= 2) {
             // These buttons will be controlled by hats and analog axes
@@ -668,12 +668,11 @@ void a_platform__inputsPoll(void)
                 #endif
 
                 A_STRHASH_ITERATE(g_keys, APlatformButton*, k) {
-                    #if A_BUILD_LIB_SDL == 1
-                        if(k->code.keyCode == event.key.keysym.sym) {
-                    #elif A_BUILD_LIB_SDL == 2
-                        if(k->code.keyCode == event.key.keysym.scancode) {
-                    #endif
-
+#if A_BUILD_LIB_SDL == 1
+                    if(k->code.keyCode == event.key.keysym.sym) {
+#elif A_BUILD_LIB_SDL == 2
+                    if(k->code.keyCode == event.key.keysym.scancode) {
+#endif
                         buttonPress(k, event.key.state == SDL_PRESSED);
                         break;
                     }
