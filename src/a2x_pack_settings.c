@@ -274,7 +274,7 @@ void a_settings__init(void)
     add(A_SETTING__STR,
         A_SETTING__SET_ONCE,
         "console.button",
-        "key.f11 gamepad.b.l+gamepad.b.r+gamepad.b.a+gamepad.b.b+gamepad.b.x+gamepad.b.y");
+        "key.f10+key.f11 gamepad.b.l+gamepad.b.r+gamepad.b.a+gamepad.b.b+gamepad.b.x+gamepad.b.y");
 
     a_settings__application();
 

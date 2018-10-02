@@ -120,7 +120,7 @@ static void freeHeader(ASdlInputHeader* Header)
     free(Header);
 }
 
-static void addKey(const char* Name, const char* Id, int Code)
+static void keyAdd(const char* Name, const char* Id, int Code)
 {
     if(a_strhash_contains(g_keys, Id)) {
         a_out__error("Key '%s' already defined", Id);
@@ -137,7 +137,7 @@ static void addKey(const char* Name, const char* Id, int Code)
     a_strhash_add(g_keys, Id, k);
 }
 
-static void addButton(AStrHash* ButtonsCollection, const char* Name, const char* Id, int Code)
+static void buttonAdd(AStrHash* ButtonsCollection, const char* Name, const char* Id, int Code)
 {
     if(a_strhash_contains(ButtonsCollection, Id)) {
         return;
@@ -154,7 +154,7 @@ static void addButton(AStrHash* ButtonsCollection, const char* Name, const char*
     a_strhash_add(ButtonsCollection, Id, b);
 }
 
-static void pressButton(APlatformButton* Button, bool Pressed)
+static void buttonPress(APlatformButton* Button, bool Pressed)
 {
     Button->pressed = Pressed;
     Button->header.lastEventTick = a_fps_ticksGet();
@@ -170,7 +170,7 @@ static void pressButton(APlatformButton* Button, bool Pressed)
     }
 }
 
-static void addAnalog(AStrHash* AxesCollection, const char* Id, int AxisIndex)
+static void analogAdd(AStrHash* AxesCollection, const char* Id, int AxisIndex)
 {
     if(a_strhash_contains(AxesCollection, Id)) {
         a_out__error("Analog '%s' is already defined", Id);
@@ -187,7 +187,7 @@ static void addAnalog(AStrHash* AxesCollection, const char* Id, int AxisIndex)
     a_strhash_add(AxesCollection, Id, a);
 }
 
-static void setAnalog(APlatformAnalog* Analog, int Value)
+static void analogSet(APlatformAnalog* Analog, int Value)
 {
     Analog->value = Value;
 
@@ -202,18 +202,18 @@ static void setAnalog(APlatformAnalog* Analog, int Value)
 
     A_LIST_ITERATE(Analog->header.forwardButtons, APlatformAnalog2Buttons*, b) {
         if(b->negative && pressedNegative != b->lastPressedNegative) {
-            pressButton(b->negative, pressedNegative);
+            buttonPress(b->negative, pressedNegative);
             b->lastPressedNegative = pressedNegative;
         }
 
         if(b->positive && pressedPositive != b->lastPressedPositive) {
-            pressButton(b->positive, pressedPositive);
+            buttonPress(b->positive, pressedPositive);
             b->lastPressedPositive = pressedPositive;
         }
     }
 }
 
-static void addTouch(const char* Id)
+static void touchAdd(const char* Id)
 {
     if(a_strhash_contains(g_touchScreens, Id)) {
         a_out__error("Touchscreen '%s' is already defined", Id);
@@ -354,46 +354,46 @@ void a_platform_sdl_input__init(void)
             if(i == 0) {
                 // Joystick 0 is the built-in controls on these platforms
                 #if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ
-                    addButton(c->buttons, "Up", "gamepad.b.up", 0);
-                    addButton(c->buttons, "Down", "gamepad.b.down", 4);
-                    addButton(c->buttons, "Left", "gamepad.b.left", 2);
-                    addButton(c->buttons, "Right", "gamepad.b.right", 6);
-                    addButton(c->buttons, "Up-Left", "gamepad.b.upLeft", 1);
-                    addButton(c->buttons, "Up-Right", "gamepad.b.upRight", 7);
-                    addButton(c->buttons, "Down-Left", "gamepad.b.downLeft", 3);
-                    addButton(c->buttons, "Down-Right", "gamepad.b.downRight", 5);
-                    addButton(c->buttons, "L", "gamepad.b.l", 10);
-                    addButton(c->buttons, "R", "gamepad.b.r", 11);
-                    addButton(c->buttons, "A", "gamepad.b.x", 12);
-                    addButton(c->buttons, "B", "gamepad.b.b", 13);
-                    addButton(c->buttons, "X", "gamepad.b.a", 14);
-                    addButton(c->buttons, "Y", "gamepad.b.y", 15);
-                    addButton(c->buttons, "Select", "gamepad.b.select", 9);
-                    addButton(c->buttons, "Vol-Up", "gamepad.b.volUp", 16);
-                    addButton(c->buttons, "Vol-Down", "gamepad.b.volDown", 17);
+                    buttonAdd(c->buttons, "Up", "gamepad.b.up", 0);
+                    buttonAdd(c->buttons, "Down", "gamepad.b.down", 4);
+                    buttonAdd(c->buttons, "Left", "gamepad.b.left", 2);
+                    buttonAdd(c->buttons, "Right", "gamepad.b.right", 6);
+                    buttonAdd(c->buttons, "Up-Left", "gamepad.b.upLeft", 1);
+                    buttonAdd(c->buttons, "Up-Right", "gamepad.b.upRight", 7);
+                    buttonAdd(c->buttons, "Down-Left", "gamepad.b.downLeft", 3);
+                    buttonAdd(c->buttons, "Down-Right", "gamepad.b.downRight", 5);
+                    buttonAdd(c->buttons, "L", "gamepad.b.l", 10);
+                    buttonAdd(c->buttons, "R", "gamepad.b.r", 11);
+                    buttonAdd(c->buttons, "A", "gamepad.b.x", 12);
+                    buttonAdd(c->buttons, "B", "gamepad.b.b", 13);
+                    buttonAdd(c->buttons, "X", "gamepad.b.a", 14);
+                    buttonAdd(c->buttons, "Y", "gamepad.b.y", 15);
+                    buttonAdd(c->buttons, "Select", "gamepad.b.select", 9);
+                    buttonAdd(c->buttons, "Vol-Up", "gamepad.b.volUp", 16);
+                    buttonAdd(c->buttons, "Vol-Down", "gamepad.b.volDown", 17);
                     #if A_BUILD_SYSTEM_GP2X
-                        addButton(c->buttons, "Start", "gamepad.b.start", 8);
-                        addButton(c->buttons, "Stick-Click", "gamepad.b.stickClick", 18);
+                        buttonAdd(c->buttons, "Start", "gamepad.b.start", 8);
+                        buttonAdd(c->buttons, "Stick-Click", "gamepad.b.stickClick", 18);
                     #elif A_BUILD_SYSTEM_WIZ
-                        addButton(c->buttons, "Menu", "gamepad.b.start", 8);
+                        buttonAdd(c->buttons, "Menu", "gamepad.b.start", 8);
                     #endif
                 #elif A_BUILD_SYSTEM_CAANOO
-                    addButton(c->buttons, "Up", "gamepad.b.up", -1);
-                    addButton(c->buttons, "Down", "gamepad.b.down", -1);
-                    addButton(c->buttons, "Left", "gamepad.b.left", -1);
-                    addButton(c->buttons, "Right", "gamepad.b.right", -1);
-                    addButton(c->buttons, "L", "gamepad.b.l", 4);
-                    addButton(c->buttons, "R", "gamepad.b.r", 5);
-                    addButton(c->buttons, "A", "gamepad.b.x", 0);
-                    addButton(c->buttons, "B", "gamepad.b.b", 2);
-                    addButton(c->buttons, "X", "gamepad.b.a", 1);
-                    addButton(c->buttons, "Y", "gamepad.b.y", 3);
-                    addButton(c->buttons, "Home", "gamepad.b.guide", 6);
-                    addButton(c->buttons, "Hold", "gamepad.b.hold", 7);
-                    addButton(c->buttons, "I", "gamepad.b.start", 8);
-                    addButton(c->buttons, "II", "gamepad.b.select", 9);
-                    addAnalog(c->axes, "gamepad.a.leftX", 0);
-                    addAnalog(c->axes, "gamepad.a.leftY", 1);
+                    buttonAdd(c->buttons, "Up", "gamepad.b.up", -1);
+                    buttonAdd(c->buttons, "Down", "gamepad.b.down", -1);
+                    buttonAdd(c->buttons, "Left", "gamepad.b.left", -1);
+                    buttonAdd(c->buttons, "Right", "gamepad.b.right", -1);
+                    buttonAdd(c->buttons, "L", "gamepad.b.l", 4);
+                    buttonAdd(c->buttons, "R", "gamepad.b.r", 5);
+                    buttonAdd(c->buttons, "A", "gamepad.b.x", 0);
+                    buttonAdd(c->buttons, "B", "gamepad.b.b", 2);
+                    buttonAdd(c->buttons, "X", "gamepad.b.a", 1);
+                    buttonAdd(c->buttons, "Y", "gamepad.b.y", 3);
+                    buttonAdd(c->buttons, "Home", "gamepad.b.guide", 6);
+                    buttonAdd(c->buttons, "Hold", "gamepad.b.hold", 7);
+                    buttonAdd(c->buttons, "I", "gamepad.b.start", 8);
+                    buttonAdd(c->buttons, "II", "gamepad.b.select", 9);
+                    analogAdd(c->axes, "gamepad.a.leftX", 0);
+                    analogAdd(c->axes, "gamepad.a.leftY", 1);
                 #endif
                 continue;
             }
@@ -402,12 +402,12 @@ void a_platform_sdl_input__init(void)
 
             // Check if this is one of the built-in nubs
             if(a_str_equal(name, "nub0")) {
-                addAnalog(c->axes, "gamepad.a.leftX", 0);
-                addAnalog(c->axes, "gamepad.a.leftY", 1);
+                analogAdd(c->axes, "gamepad.a.leftX", 0);
+                analogAdd(c->axes, "gamepad.a.leftY", 1);
                 continue;
             } else if(a_str_equal(name, "nub1")) {
-                addAnalog(c->axes, "gamepad.a.rightX", 0);
-                addAnalog(c->axes, "gamepad.a.rightY", 1);
+                analogAdd(c->axes, "gamepad.a.rightX", 0);
+                analogAdd(c->axes, "gamepad.a.rightY", 1);
                 continue;
             }
         #endif
@@ -460,7 +460,7 @@ void a_platform_sdl_input__init(void)
                         continue;
                     }
 
-                    addButton(
+                    buttonAdd(
                         c->buttons, buttonNames[b][0], buttonNames[b][1], b);
                 }
 
@@ -475,7 +475,7 @@ void a_platform_sdl_input__init(void)
                         continue;
                     }
 
-                    addAnalog(c->axes, axisNames[a], a);
+                    analogAdd(c->axes, axisNames[a], a);
                 }
             } else {
         #endif
@@ -507,11 +507,11 @@ void a_platform_sdl_input__init(void)
                 };
 
                 for(int j = a_math_min(c->numButtons, A_ARRAY_LEN(buttons)); j--; ) {
-                    addButton(c->buttons, buttons[j][0], buttons[j][1], j);
+                    buttonAdd(c->buttons, buttons[j][0], buttons[j][1], j);
                 }
 
                 for(int j = a_math_min(c->numAxes, A_ARRAY_LEN(axes)); j--; ) {
-                    addAnalog(c->axes, axes[j], j);
+                    analogAdd(c->axes, axes[j], j);
                 }
         #if A_BUILD_LIB_SDL == 2
             }
@@ -519,83 +519,83 @@ void a_platform_sdl_input__init(void)
 
         if(c->numHats > 0 || c->numAxes >= 2) {
             // These buttons will be controlled by hats and analog axes
-            addButton(c->buttons, "Up", "gamepad.b.up", -1);
-            addButton(c->buttons, "Down", "gamepad.b.down", -1);
-            addButton(c->buttons, "Left", "gamepad.b.left", -1);
-            addButton(c->buttons, "Right", "gamepad.b.right", -1);
-            addButton(c->buttons, "L", "gamepad.b.l", -1);
-            addButton(c->buttons, "R", "gamepad.b.r", -1);
+            buttonAdd(c->buttons, "Up", "gamepad.b.up", -1);
+            buttonAdd(c->buttons, "Down", "gamepad.b.down", -1);
+            buttonAdd(c->buttons, "Left", "gamepad.b.left", -1);
+            buttonAdd(c->buttons, "Right", "gamepad.b.right", -1);
+            buttonAdd(c->buttons, "L", "gamepad.b.l", -1);
+            buttonAdd(c->buttons, "R", "gamepad.b.r", -1);
         }
     }
 
     #if A_BUILD_SYSTEM_PANDORA
         // Because these are defined before the generic keys, they
         // will take precedence in the a_platform__inputsPoll event loop.
-        addKey("Up", "gamepad.b.up", SDLK_UP);
-        addKey("Down", "gamepad.b.down", SDLK_DOWN);
-        addKey("Left", "gamepad.b.left", SDLK_LEFT);
-        addKey("Right", "gamepad.b.right", SDLK_RIGHT);
-        addKey("L", "gamepad.b.l", SDLK_RSHIFT);
-        addKey("R", "gamepad.b.r", SDLK_RCTRL);
-        addKey("A", "gamepad.b.x", SDLK_HOME);
-        addKey("B", "gamepad.b.b", SDLK_END);
-        addKey("X", "gamepad.b.a", SDLK_PAGEDOWN);
-        addKey("Y", "gamepad.b.y", SDLK_PAGEUP);
-        addKey("Start", "gamepad.b.start", SDLK_LALT);
-        addKey("Select", "gamepad.b.select", SDLK_LCTRL);
+        keyAdd("Up", "gamepad.b.up", SDLK_UP);
+        keyAdd("Down", "gamepad.b.down", SDLK_DOWN);
+        keyAdd("Left", "gamepad.b.left", SDLK_LEFT);
+        keyAdd("Right", "gamepad.b.right", SDLK_RIGHT);
+        keyAdd("L", "gamepad.b.l", SDLK_RSHIFT);
+        keyAdd("R", "gamepad.b.r", SDLK_RCTRL);
+        keyAdd("A", "gamepad.b.x", SDLK_HOME);
+        keyAdd("B", "gamepad.b.b", SDLK_END);
+        keyAdd("X", "gamepad.b.a", SDLK_PAGEDOWN);
+        keyAdd("Y", "gamepad.b.y", SDLK_PAGEUP);
+        keyAdd("Start", "gamepad.b.start", SDLK_LALT);
+        keyAdd("Select", "gamepad.b.select", SDLK_LCTRL);
     #endif
 
     #if A_BUILD_LIB_SDL == 1
-        addKey("Up", "key.up", SDLK_UP);
-        addKey("Down", "key.down", SDLK_DOWN);
-        addKey("Left", "key.left", SDLK_LEFT);
-        addKey("Right", "key.right", SDLK_RIGHT);
-        addKey("z", "key.z", SDLK_z);
-        addKey("x", "key.x", SDLK_x);
-        addKey("c", "key.c", SDLK_c);
-        addKey("v", "key.v", SDLK_v);
-        addKey("m", "key.m", SDLK_m);
-        addKey("Enter", "key.enter", SDLK_RETURN);
-        addKey("Space", "key.space", SDLK_SPACE);
-        addKey("F1", "key.f1", SDLK_F1);
-        addKey("F2", "key.f2", SDLK_F2);
-        addKey("F3", "key.f3", SDLK_F3);
-        addKey("F4", "key.f4", SDLK_F4);
-        addKey("F5", "key.f5", SDLK_F5);
-        addKey("F6", "key.f6", SDLK_F6);
-        addKey("F7", "key.f7", SDLK_F7);
-        addKey("F8", "key.f8", SDLK_F8);
-        addKey("F9", "key.f9", SDLK_F9);
-        addKey("F10", "key.f10", SDLK_F10);
-        addKey("F11", "key.f11", SDLK_F11);
-        addKey("F12", "key.f12", SDLK_F12);
+        keyAdd("Up", "key.up", SDLK_UP);
+        keyAdd("Down", "key.down", SDLK_DOWN);
+        keyAdd("Left", "key.left", SDLK_LEFT);
+        keyAdd("Right", "key.right", SDLK_RIGHT);
+        keyAdd("z", "key.z", SDLK_z);
+        keyAdd("x", "key.x", SDLK_x);
+        keyAdd("c", "key.c", SDLK_c);
+        keyAdd("v", "key.v", SDLK_v);
+        keyAdd("m", "key.m", SDLK_m);
+        keyAdd("Enter", "key.enter", SDLK_RETURN);
+        keyAdd("Space", "key.space", SDLK_SPACE);
+        keyAdd("F1", "key.f1", SDLK_F1);
+        keyAdd("F2", "key.f2", SDLK_F2);
+        keyAdd("F3", "key.f3", SDLK_F3);
+        keyAdd("F4", "key.f4", SDLK_F4);
+        keyAdd("F5", "key.f5", SDLK_F5);
+        keyAdd("F6", "key.f6", SDLK_F6);
+        keyAdd("F7", "key.f7", SDLK_F7);
+        keyAdd("F8", "key.f8", SDLK_F8);
+        keyAdd("F9", "key.f9", SDLK_F9);
+        keyAdd("F10", "key.f10", SDLK_F10);
+        keyAdd("F11", "key.f11", SDLK_F11);
+        keyAdd("F12", "key.f12", SDLK_F12);
     #elif A_BUILD_LIB_SDL == 2
-        addKey("Up", "key.up", SDL_SCANCODE_UP);
-        addKey("Down", "key.down", SDL_SCANCODE_DOWN);
-        addKey("Left", "key.left", SDL_SCANCODE_LEFT);
-        addKey("Right", "key.right", SDL_SCANCODE_RIGHT);
-        addKey("z", "key.z", SDL_SCANCODE_Z);
-        addKey("x", "key.x", SDL_SCANCODE_X);
-        addKey("c", "key.c", SDL_SCANCODE_C);
-        addKey("v", "key.v", SDL_SCANCODE_V);
-        addKey("m", "key.m", SDL_SCANCODE_M);
-        addKey("Enter", "key.enter", SDL_SCANCODE_RETURN);
-        addKey("Space", "key.space", SDL_SCANCODE_SPACE);
-        addKey("F1", "key.f1", SDL_SCANCODE_F1);
-        addKey("F2", "key.f2", SDL_SCANCODE_F2);
-        addKey("F3", "key.f3", SDL_SCANCODE_F3);
-        addKey("F4", "key.f4", SDL_SCANCODE_F4);
-        addKey("F5", "key.f5", SDL_SCANCODE_F5);
-        addKey("F6", "key.f6", SDL_SCANCODE_F6);
-        addKey("F7", "key.f7", SDL_SCANCODE_F7);
-        addKey("F8", "key.f8", SDL_SCANCODE_F8);
-        addKey("F9", "key.f9", SDL_SCANCODE_F9);
-        addKey("F10", "key.f10", SDL_SCANCODE_F10);
-        addKey("F11", "key.f11", SDL_SCANCODE_F11);
-        addKey("F12", "key.f12", SDL_SCANCODE_F12);
+        keyAdd("Up", "key.up", SDL_SCANCODE_UP);
+        keyAdd("Down", "key.down", SDL_SCANCODE_DOWN);
+        keyAdd("Left", "key.left", SDL_SCANCODE_LEFT);
+        keyAdd("Right", "key.right", SDL_SCANCODE_RIGHT);
+        keyAdd("z", "key.z", SDL_SCANCODE_Z);
+        keyAdd("x", "key.x", SDL_SCANCODE_X);
+        keyAdd("c", "key.c", SDL_SCANCODE_C);
+        keyAdd("v", "key.v", SDL_SCANCODE_V);
+        keyAdd("m", "key.m", SDL_SCANCODE_M);
+        keyAdd("Enter", "key.enter", SDL_SCANCODE_RETURN);
+        keyAdd("Space", "key.space", SDL_SCANCODE_SPACE);
+        keyAdd("F1", "key.f1", SDL_SCANCODE_F1);
+        keyAdd("F2", "key.f2", SDL_SCANCODE_F2);
+        keyAdd("F3", "key.f3", SDL_SCANCODE_F3);
+        keyAdd("F4", "key.f4", SDL_SCANCODE_F4);
+        keyAdd("F5", "key.f5", SDL_SCANCODE_F5);
+        keyAdd("F6", "key.f6", SDL_SCANCODE_F6);
+        keyAdd("F7", "key.f7", SDL_SCANCODE_F7);
+        keyAdd("F8", "key.f8", SDL_SCANCODE_F8);
+        keyAdd("F9", "key.f9", SDL_SCANCODE_F9);
+        keyAdd("F10", "key.f10", SDL_SCANCODE_F10);
+        keyAdd("F11", "key.f11", SDL_SCANCODE_F11);
+        keyAdd("F12", "key.f12", SDL_SCANCODE_F12);
     #endif
 
-    addTouch("touchScreen");
+    touchAdd("touchScreen");
 }
 
 void a_platform_sdl_input__uninit(void)
@@ -674,7 +674,7 @@ void a_platform__inputsPoll(void)
                         if(k->code.keyCode == event.key.keysym.scancode) {
                     #endif
 
-                        pressButton(k, event.key.state == SDL_PRESSED);
+                        buttonPress(k, event.key.state == SDL_PRESSED);
                         break;
                     }
                 }
@@ -695,7 +695,7 @@ void a_platform__inputsPoll(void)
 
                     A_STRHASH_ITERATE(c->buttons, APlatformButton*, b) {
                         if(b->code.buttonIndex == event.jbutton.button) {
-                            pressButton(b, event.jbutton.state == SDL_PRESSED);
+                            buttonPress(b, event.jbutton.state == SDL_PRESSED);
                             break;
                         }
                     }
@@ -769,12 +769,12 @@ void a_platform__inputsPoll(void)
                         if(state & 1) {
                             if(!b->lastHatEventPressed) {
                                 b->lastHatEventPressed = true;
-                                pressButton(b, true);
+                                buttonPress(b, true);
                             }
                         } else {
                             if(b->lastHatEventPressed) {
                                 b->lastHatEventPressed = false;
-                                pressButton(b, false);
+                                buttonPress(b, false);
                             }
                         }
                     }
@@ -797,7 +797,7 @@ void a_platform__inputsPoll(void)
 
                     A_STRHASH_ITERATE(c->axes, APlatformAnalog*, a) {
                         if(event.jaxis.axis == a->axisIndex) {
-                            setAnalog(a, event.jaxis.value);
+                            analogSet(a, event.jaxis.value);
                             break;
                         }
                     }
@@ -816,7 +816,7 @@ void a_platform__inputsPoll(void)
 
                     A_STRHASH_ITERATE(c->buttons, APlatformButton*, b) {
                         if(b->code.buttonIndex == event.cbutton.button) {
-                            pressButton(b, event.cbutton.state == SDL_PRESSED);
+                            buttonPress(b, event.cbutton.state == SDL_PRESSED);
                             break;
                         }
                     }
@@ -833,7 +833,7 @@ void a_platform__inputsPoll(void)
 
                     A_STRHASH_ITERATE(c->axes, APlatformAnalog*, a) {
                         if(event.caxis.axis == a->axisIndex) {
-                            setAnalog(a, event.caxis.value);
+                            analogSet(a, event.caxis.value);
                             break;
                         }
                     }
@@ -892,7 +892,7 @@ void a_platform__inputsPoll(void)
 
     A_LIST_ITERATE(g_forwardButtonsQueue[1], APlatformButton*, b) {
         // Overwrite whatever current state with a press
-        pressButton(b, true);
+        buttonPress(b, true);
     }
 
     unsigned ticksNow = a_fps_ticksGet();
@@ -900,7 +900,7 @@ void a_platform__inputsPoll(void)
     A_LIST_ITERATE(g_forwardButtonsQueue[0], APlatformButton*, b) {
         // Only release if did not receive an event this frame
         if(b->header.lastEventTick != ticksNow) {
-            pressButton(b, false);
+            buttonPress(b, false);
         }
     }
 
