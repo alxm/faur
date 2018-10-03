@@ -245,7 +245,6 @@ void a_settings__init(void)
     add(A_SETTING__BOOL, A_SETTING__SET_ONCE, "video.vsync", "0");
     add(A_SETTING__BOOL, A_SETTING__SET_ONCE, "video.doubleBuffer", "0");
     add(A_SETTING__BOOL, A_SETTING__SET_ONCE, "video.fullscreen", "0");
-    add(A_SETTING__STR, A_SETTING__SET_ONCE, "video.fullscreen.button", "key.f4");
     add(A_SETTING__BOOL, A_SETTING__SET_ONCE, "video.fixWizTearing", "0");
     add(A_SETTING__COLOR, A_SETTING__SET_ONCE, "video.color.border", "0x1f0f0f");
     add(A_SETTING__COLOR, A_SETTING__SET_ONCE, "video.color.key", "0xFF00FF");
@@ -268,13 +267,8 @@ void a_settings__init(void)
     add(A_SETTING__STR, A_SETTING__SET_ONCE, "input.mapfile", "gamecontrollerdb.txt");
 
     add(A_SETTING__STR, A_SETTING__SET_ONCE, "screenshot.dir", "./screenshots");
-    add(A_SETTING__STR, A_SETTING__SET_ONCE, "screenshot.button", "key.f12");
 
     add(A_SETTING__BOOL, A_SETTING__SET_ONCE, "console.on", "0");
-    add(A_SETTING__STR,
-        A_SETTING__SET_ONCE,
-        "console.button",
-        "key.f10+key.f11 gamepad.b.l+gamepad.b.r+gamepad.b.a+gamepad.b.b+gamepad.b.x+gamepad.b.y");
 
     a_settings__application();
 

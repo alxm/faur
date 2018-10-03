@@ -108,10 +108,21 @@ A_STATE(drawBox)
         context.x = a_screen_widthGet() / 2;
         context.y = a_screen_heightGet() / 2;
 
-        context.up = a_button_new("key.up");
-        context.down = a_button_new("key.down");
-        context.left = a_button_new("key.left");
-        context.right = a_button_new("key.right");
+        context.up = a_button_new();
+        a_button_bind(context.up, "key.up");
+        a_button_bind(context.up, "gamepad.b.up");
+
+        context.down = a_button_new();
+        a_button_bind(context.down, "key.down");
+        a_button_bind(context.down, "gamepad.b.down");
+
+        context.left = a_button_new();
+        a_button_bind(context.left, "key.left");
+        a_button_bind(context.left, "gamepad.b.left");
+
+        context.right = a_button_new();
+        a_button_bind(context.right, "key.right");
+        a_button_bind(context.right, "gamepad.b.right");
     }}
 
     A_STATE_TICK

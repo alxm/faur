@@ -31,6 +31,7 @@ struct AButton {
     AInputUserHeader header;
     AListNode* listNode;
     AList* combos; // List of lists of APlatformButton, each a buttons combo
+    AList* currentCombo;
     ATimer* autoRepeat;
     bool isClone;
     bool waitForRelease;
@@ -49,7 +50,7 @@ void a_input_button__uninit(void)
     a_list_free(g_buttons);
 }
 
-AButton* a_button_new(const char* Ids)
+AButton* a_button_new(void)
 {
     AButton* b = a_mem_malloc(sizeof(AButton));
 
@@ -57,69 +58,11 @@ AButton* a_button_new(const char* Ids)
 
     b->listNode = a_list_addLast(g_buttons, b);
     b->combos = a_list_new();
+    b->currentCombo = NULL;
     b->autoRepeat = NULL;
     b->isClone = false;
     b->waitForRelease = false;
     b->pressed = false;
-
-    AList* tok = a_str_split(Ids, ", ");
-
-    A_LIST_ITERATE(tok, char*, id) {
-        if(a_str_indexGetFirst(id, '+') > 0) {
-            AList* combo = a_list_new();
-            AList* tok = a_str_split(id, "+");
-            bool missing = false;
-
-            A_LIST_ITERATE(tok, char*, part) {
-                APlatformButton* pb = a_platform__buttonGet(part);
-
-                if(pb == NULL) {
-                    missing = true;
-                    break;
-                }
-
-                a_list_addLast(combo, pb);
-            }
-
-            if(missing || a_list_isEmpty(combo)) {
-                a_list_free(combo);
-            } else {
-                a_list_addLast(b->combos, combo);
-            }
-
-            a_list_freeEx(tok, free);
-        } else {
-            APlatformButton* pb = a_platform__buttonGet(id);
-
-            if(pb) {
-                a_list_addLast(b->header.platformInputs, pb);
-            }
-        }
-    }
-
-    a_list_freeEx(tok, free);
-
-    if(!a_list_isEmpty(b->header.platformInputs)) {
-        APlatformButton* pb = a_list_getLast(b->header.platformInputs);
-        b->header.name = a_str_dup(a_platform__buttonNameGet(pb));
-    } else if(!a_list_isEmpty(b->combos)) {
-        AStrBuilder* sb = a_strbuilder_new(128);
-        AList* combo = a_list_getLast(b->combos);
-
-        A_LIST_ITERATE(combo, APlatformButton*, pb) {
-            a_strbuilder_add(sb, a_platform__buttonNameGet(pb));
-
-            if(!A_LIST_IS_LAST()) {
-                a_strbuilder_add(sb, "+");
-            }
-        }
-
-        b->header.name = a_str_dup(a_strbuilder_get(sb));
-        a_strbuilder_free(sb);
-    } else {
-        a_out__error("a_button_new: No buttons found for '%s'", Ids);
-        b->header.name = a_str_dup("<none>");
-    }
 
     return b;
 }
@@ -153,6 +96,37 @@ void a_button_free(AButton* Button)
     a_timer_free(Button->autoRepeat);
 
     free(Button);
+}
+
+void a_button_bind(AButton* Button, const char* Id)
+{
+    APlatformButton* pb = a_platform__buttonGet(Id);
+
+    if(pb == NULL) {
+        return;
+    }
+
+    if(Button->header.name == NULL) {
+        Button->header.name = a_str_dup(a_platform__buttonNameGet(pb));
+    }
+
+    if(Button->currentCombo) {
+        a_list_addLast(Button->currentCombo, pb);
+    } else {
+        a_list_addLast(Button->header.platformInputs, pb);
+    }
+}
+
+void a_button_bindComboStart(AButton* Button)
+{
+    Button->currentCombo = a_list_new();
+
+    a_list_push(Button->combos, Button->currentCombo);
+}
+
+void a_button_bindComboEnd(AButton* Button)
+{
+    Button->currentCombo = NULL;
 }
 
 bool a_button_isWorking(const AButton* Button)

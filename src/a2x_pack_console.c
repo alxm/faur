@@ -110,7 +110,17 @@ void a_console__init2(void)
         line_free(a_list_pop(g_lines));
     }
 
-    g_toggle = a_button_new(a_settings_getString("console.button"));
+    g_toggle = a_button_new();
+    a_button_bind(g_toggle, "key.f11");
+
+    a_button_bindComboStart(g_toggle);
+        a_button_bind(g_toggle, "gamepad.b.l");
+        a_button_bind(g_toggle, "gamepad.b.r");
+        a_button_bind(g_toggle, "gamepad.b.a");
+        a_button_bind(g_toggle, "gamepad.b.b");
+        a_button_bind(g_toggle, "gamepad.b.x");
+        a_button_bind(g_toggle, "gamepad.b.y");
+    a_button_bindComboEnd(g_toggle);
 
     g_state = a_settings_getBool("console.on")
                 ? A_CONSOLE__STATE_VISIBLE

@@ -118,8 +118,8 @@ void a_screen__init(void)
         a_platform_wiz__portraitModeSet();
     #endif
 
-    g_fullScreenButton = a_button_new(
-                            a_settings_getString("video.fullscreen.button"));
+    g_fullScreenButton = a_button_new();
+    a_button_bind(g_fullScreenButton, "key.f4");
 
     #if !A_BUILD_RENDER_SOFTWARE
         initScreen(&a__screen, width, height, true);

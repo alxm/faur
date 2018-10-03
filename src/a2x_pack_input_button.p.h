@@ -23,9 +23,13 @@
 
 typedef struct AButton AButton;
 
-extern AButton* a_button_new(const char* Ids);
+extern AButton* a_button_new(void);
 extern AButton* a_button_dup(const AButton* Button);
 extern void a_button_free(AButton* Button);
+
+extern void a_button_bind(AButton* Button, const char* Id);
+extern void a_button_bindComboStart(AButton* Button);
+extern void a_button_bindComboEnd(AButton* Button);
 
 extern bool a_button_isWorking(const AButton* Button);
 extern const char* a_button_nameGet(const AButton* Button);

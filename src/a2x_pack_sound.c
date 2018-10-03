@@ -79,12 +79,16 @@ void a_sound__init(void)
     #endif
 
     #if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ
-        g_volumeUpButton = a_button_new("gamepad.b.volUp");
-        g_volumeDownButton = a_button_new("gamepad.b.volDown");
+        g_volumeUpButton = a_button_new();
+        a_button_bind(g_volumeUpButton, "gamepad.b.volUp");
+
+        g_volumeDownButton = a_button_new();
+        a_button_bind(g_volumeDownButton, "gamepad.b.volDown");
     #endif
 
     #if A_BUILD_DEVICE_KEYBOARD
-        g_musicOnOffButton = a_button_new("key.m");
+        g_musicOnOffButton = a_button_new();
+        a_button_bind(g_musicOnOffButton, "key.m");
     #endif
 
     #if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ

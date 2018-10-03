@@ -153,7 +153,9 @@ void a_screenshot__init(void)
     g_title = NULL;
     g_description = NULL;
     g_screenshotNumber = 0;
-    g_button = a_button_new(a_settings_getString("screenshot.button"));
+
+    g_button = a_button_new();
+    a_button_bind(g_button, "key.f12");
 }
 
 void a_screenshot__uninit(void)
