@@ -112,9 +112,13 @@ static void initHeader(ASdlInputHeader* Header, char* Name)
     Header->lastEventTick = a_fps_ticksGet() - 1;
 }
 
-static void freeHeader(ASdlInputHeader* Header)
+static void freeHeader(ASdlInputHeader* Header, bool FreeForwardEntries)
 {
-    a_list_free(Header->forwardButtons);
+    if(FreeForwardEntries) {
+        a_list_freeEx(Header->forwardButtons, free);
+    } else {
+        a_list_free(Header->forwardButtons);
+    }
 
     free(Header->name);
     free(Header);
@@ -601,21 +605,21 @@ void a_platform_sdl_input__init(void)
 void a_platform_sdl_input__uninit(void)
 {
     A_STRHASH_ITERATE(g_keys, APlatformButton*, k) {
-        freeHeader(&k->header);
+        freeHeader(&k->header, false);
     }
 
     A_STRHASH_ITERATE(g_touchScreens, APlatformTouch*, t) {
         a_list_free(t->motion);
-        freeHeader(&t->header);
+        freeHeader(&t->header, false);
     }
 
     A_LIST_ITERATE(g_controllers, ASdlInputController*, c) {
         A_STRHASH_ITERATE(c->buttons, APlatformButton*, b) {
-            freeHeader(&b->header);
+            freeHeader(&b->header, false);
         }
 
         A_STRHASH_ITERATE(c->axes, APlatformAnalog*, a) {
-            freeHeader(&a->header);
+            freeHeader(&a->header, true);
         }
 
         #if A_BUILD_LIB_SDL == 1

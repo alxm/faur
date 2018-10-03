@@ -22,18 +22,12 @@
 #include "a2x_pack_input.p.h"
 
 typedef struct AInputUserHeader AInputUserHeader;
-typedef struct AInputSourceHeader AInputSourceHeader;
 
 #include "a2x_pack_strhash.v.h"
 
 struct AInputUserHeader {
     char* name;
     AList* platformInputs; // List of APlatformButton/Analog/Touch
-};
-
-struct AInputSourceHeader {
-    char* name;
-    unsigned lastEventFrame;
 };
 
 extern void a_input__init(void);

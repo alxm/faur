@@ -135,6 +135,8 @@ void a_spriteframes_free(ASpriteFrames* Frames, bool FreeSprites)
         return;
     }
 
+    a_timer_free(Frames->timer);
+
     if(FreeSprites) {
         a_list_freeEx(Frames->sprites, (AFree*)a_sprite_free);
     } else {
