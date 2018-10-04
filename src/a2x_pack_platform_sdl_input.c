@@ -71,6 +71,7 @@ struct APlatformTouch {
 };
 
 struct APlatformController {
+    APlatformController* next;
     SDL_Joystick* joystick;
     #if A_BUILD_LIB_SDL == 2
         SDL_GameController* controller;
@@ -297,6 +298,7 @@ static APlatformController* controllerAdd(int Index)
 
     APlatformController* c = a_mem_malloc(sizeof(APlatformController));
 
+    c->next = NULL;
     c->joystick = joystick;
     #if A_BUILD_LIB_SDL == 2
         c->controller = controller;
@@ -448,11 +450,19 @@ void a_platform_sdl_input__init(void)
             if(a_str_equal(name, "nub0")) {
                 analogAdd(c->axes, "gamepad.a.leftX", 0);
                 analogAdd(c->axes, "gamepad.a.leftY", 1);
-
                 continue;
             } else if(a_str_equal(name, "nub1")) {
                 analogAdd(c->axes, "gamepad.a.rightX", 0);
                 analogAdd(c->axes, "gamepad.a.rightY", 1);
+
+                // Attach to nub0 to compose a single dual-analog controller
+                A_LIST_ITERATE(g_controllers, APlatformController*, nub0) {
+                    if(a_str_equal(joystickName(nub0), "nub0")) {
+                        nub0->next = c;
+                        break;
+                    }
+                }
+
                 continue;
             }
         #endif
@@ -964,12 +974,16 @@ void a_platform__buttonForward(APlatformButton* Source, APlatformButton* Destina
 
 APlatformAnalog* a_platform__analogGet(const char* Id)
 {
-    if(g_setController) {
-        APlatformAnalog* a = a_strhash_get(g_setController->axes, Id);
+    const APlatformController* c = g_setController;
+
+    while(c) {
+        APlatformAnalog* a = a_strhash_get(c->axes, Id);
 
         if(a != NULL) {
             return a;
         }
+
+        c = c->next;
     }
 
     return NULL;
