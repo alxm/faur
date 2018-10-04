@@ -105,4 +105,3 @@ extern bool a_platform__touchTapGet(const APlatformTouch* Touch);
 extern unsigned a_platform__controllerNumGet(void);
 extern void a_platform__controllerSet(unsigned Index);
 extern bool a_platform__controllerIsMapped(void);
-extern bool a_platform__controllerIsGeneric(void);

@@ -95,7 +95,6 @@ typedef struct {
     int numAxes;
     AStrHash* buttons;
     AStrHash* axes;
-    bool generic;
 } ASdlInputController;
 
 static AStrHash* g_keys;
@@ -350,7 +349,6 @@ void a_platform_sdl_input__init(void)
         c->numAxes = SDL_JoystickNumAxes(c->joystick);
         c->buttons = a_strhash_new();
         c->axes = a_strhash_new();
-        c->generic = false;
 
         a_list_addLast(g_controllers, c);
 
@@ -408,6 +406,7 @@ void a_platform_sdl_input__init(void)
             if(a_str_equal(name, "nub0")) {
                 analogAdd(c->axes, "gamepad.a.leftX", 0);
                 analogAdd(c->axes, "gamepad.a.leftY", 1);
+
                 continue;
             } else if(a_str_equal(name, "nub1")) {
                 analogAdd(c->axes, "gamepad.a.rightX", 0);
@@ -415,8 +414,6 @@ void a_platform_sdl_input__init(void)
                 continue;
             }
         #endif
-
-        c->generic = true;
 
 #if A_BUILD_LIB_SDL == 2
         if(c->controller) {
@@ -1038,10 +1035,5 @@ bool a_platform__controllerIsMapped(void)
     #else
         return false;
     #endif
-}
-
-bool a_platform__controllerIsGeneric(void)
-{
-    return g_setController && g_setController->generic;
 }
 #endif // A_BUILD_LIB_SDL

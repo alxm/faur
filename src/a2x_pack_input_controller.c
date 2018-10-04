@@ -91,33 +91,6 @@ void a_input_controller__init(void)
             a_platform__analogForward(lt, NULL, lb);
             a_platform__analogForward(rt, NULL, rb);
         }
-
-        #if A_BUILD_SYSTEM_PANDORA
-            if(!a_platform__controllerIsGeneric() && x && y) {
-                u = a_platform__buttonGet("gamepad.b.up");
-                d = a_platform__buttonGet("gamepad.b.down");
-                l = a_platform__buttonGet("gamepad.b.left");
-                r = a_platform__buttonGet("gamepad.b.right");
-
-                // Forward the left analog nub to the direction buttons
-                a_platform__analogForward(x, l, r);
-                a_platform__analogForward(y, u, d);
-            }
-        #endif
-    }
-
-    // Set the built-in controller as default if one exists, else first one
-    if(a_platform__controllerNumGet() > 0) {
-        for(unsigned i = a_platform__controllerNumGet(); i--; ) {
-            a_platform__controllerSet(i);
-
-            if(!a_platform__controllerIsGeneric()) {
-                a_platform__controllerSet(i);
-                return;
-            }
-        }
-
-        a_platform__controllerSet(0);
     }
 }
 
