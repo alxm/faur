@@ -30,5 +30,4 @@ extern void a_analog_free(AAnalog* Analog);
 
 extern bool a_analog_isWorking(const AAnalog* Analog);
 
-extern int a_analog_valueGetRaw(const AAnalog* Analog);
-extern AFix a_analog_valueGetFix(const AAnalog* Analog);
+extern AFix a_analog_valueGet(const AAnalog* Analog);

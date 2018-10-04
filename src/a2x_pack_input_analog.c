@@ -71,31 +71,25 @@ bool a_analog_isWorking(const AAnalog* Analog)
     return !a_list_isEmpty(Analog->header.platformInputs);
 }
 
-int a_analog_valueGetRaw(const AAnalog* Analog)
+AFix a_analog_valueGet(const AAnalog* Analog)
 {
-    #define A__ANALOG_MAX_DISTANCE (1 << 15)
+    int value = 0;
+
+    #define A__ANALOG_BITS 15
+    #define A__ANALOG_MAX_DISTANCE (1 << A__ANALOG_BITS)
     #define A__ANALOG_ERROR_MARGIN (A__ANALOG_MAX_DISTANCE / 20)
 
     A_LIST_ITERATE(Analog->header.platformInputs, APlatformAnalog*, a) {
-        int value = a_platform__analogValueGet(a);
+        value = a_platform__analogValueGet(a);
 
         if(a_math_abs(value) > A__ANALOG_ERROR_MARGIN) {
-            return value;
+            break;
         }
     }
 
-    return 0;
-}
-
-AFix a_analog_valueGetFix(const AAnalog* Analog)
-{
-    #define A__ANALOG_BITS 15
-
     #if A_FIX_BIT_PRECISION < A__ANALOG_BITS
-        return a_analog_valueGetRaw(Analog)
-                >> (A__ANALOG_BITS - A_FIX_BIT_PRECISION);
+        return value >> (A__ANALOG_BITS - A_FIX_BIT_PRECISION);
     #else
-        return a_analog_valueGetRaw(Analog)
-                << (A_FIX_BIT_PRECISION - A__ANALOG_BITS);
+        return value << (A_FIX_BIT_PRECISION - A__ANALOG_BITS);
     #endif
 }
