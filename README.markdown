@@ -32,7 +32,7 @@ $ make run
 
 ![Starter Project Screenshot](https://github.com/alxm/a2x/raw/master/media/hello.gif "Starter Project Screenshot")
 
-The starter project draws a square on the screen which you can move around with the arrow keys. The code is in `hello/src/main.c`:
+The starter project draws a square on the screen, which you can move around with the arrow keys or with a gamepad. The code is in `hello/src/main.c`:
 
 ```C
 #include <a2x.h>
@@ -99,6 +99,14 @@ A_STATE(drawBox)
 
         a_pixel_colorSetHex(0xffaa44);
         a_draw_rectangle(context.x - 40, context.y - 40, 80, 80);
+    }
+
+    A_STATE_FREE
+    {
+        a_button_free(context.up);
+        a_button_free(context.down);
+        a_button_free(context.left);
+        a_button_free(context.right);
     }
 }
 
