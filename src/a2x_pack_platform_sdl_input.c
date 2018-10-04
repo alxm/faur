@@ -42,47 +42,33 @@
     typedef SDL_Scancode ASdlKeyCode;
 #endif
 
-typedef struct {
+struct APlatformButton {
     char* name;
     AList* forwardButtons; // list of APlatformButton or NULL
-    unsigned lastEventTick;
-} ASdlInputHeader;
-
-struct APlatformButton {
-    ASdlInputHeader header;
     union {
         ASdlKeyCode keyCode;
         uint8_t buttonIndex;
         int code;
     } code;
+    unsigned lastEventTick;
     bool lastHatEventPressed;
     bool pressed;
 };
 
 struct APlatformAnalog {
-    ASdlInputHeader header;
+    char* name;
+    AList* forwardButtons; // list of APlatformAnalog2Buttons or NULL
     int axisIndex;
     int value;
 };
 
-typedef struct {
-    APlatformButton* negative;
-    APlatformButton* positive;
-    bool lastPressedNegative;
-    bool lastPressedPositive;
-} APlatformAnalog2Buttons;
-
 struct APlatformTouch {
-    ASdlInputHeader header;
+    char* name;
     int x, y;
     int dx, dy;
     bool tap;
     AList* motion; // list of APlatformTouchPoint captured by motion events
 };
-
-typedef struct {
-    int x, y;
-} APlatformTouchPoint;
 
 typedef struct {
     SDL_Joystick* joystick;
@@ -97,31 +83,23 @@ typedef struct {
     AStrHash* axes;
 } ASdlInputController;
 
+typedef struct {
+    int x, y;
+} APlatformTouchPoint;
+
+typedef struct {
+    APlatformButton* negative;
+    APlatformButton* positive;
+    bool lastPressedNegative;
+    bool lastPressedPositive;
+} APlatformAnalog2Buttons;
+
 static AStrHash* g_keys;
 static AStrHash* g_touchScreens;
 static AList* g_controllers;
 static ASdlInputController* g_setController;
 static AList* g_forwardButtonsQueue[2]; // list of APlatformButton
 static uint32_t g_sdlFlags;
-
-static void initHeader(ASdlInputHeader* Header, char* Name)
-{
-    Header->name = Name;
-    Header->forwardButtons = NULL;
-    Header->lastEventTick = a_fps_ticksGet() - 1;
-}
-
-static void freeHeader(ASdlInputHeader* Header, bool FreeForwardEntries)
-{
-    if(FreeForwardEntries) {
-        a_list_freeEx(Header->forwardButtons, free);
-    } else {
-        a_list_free(Header->forwardButtons);
-    }
-
-    free(Header->name);
-    free(Header);
-}
 
 static void keyAdd(const char* Name, const char* Id, int Code)
 {
@@ -132,9 +110,10 @@ static void keyAdd(const char* Name, const char* Id, int Code)
 
     APlatformButton* k = a_mem_malloc(sizeof(APlatformButton));
 
-    initHeader(&k->header, a_str_merge("[", Name, "]", NULL));
-
+    k->name = a_str_merge("[", Name, "]", NULL);
+    k->forwardButtons = NULL;
     k->code.code = Code;
+    k->lastEventTick = a_fps_ticksGet() - 1;
     k->pressed = false;
 
     a_strhash_add(g_keys, Id, k);
@@ -148,25 +127,34 @@ static void buttonAdd(AStrHash* ButtonsCollection, const char* Name, const char*
 
     APlatformButton* b = a_mem_malloc(sizeof(APlatformButton));
 
-    initHeader(&b->header, a_str_merge("(", Name, ")", NULL));
-
+    b->name = a_str_merge("(", Name, ")", NULL);
+    b->forwardButtons = NULL;
     b->code.code = Code;
+    b->lastEventTick = a_fps_ticksGet() - 1;
     b->lastHatEventPressed = false;
     b->pressed = false;
 
     a_strhash_add(ButtonsCollection, Id, b);
 }
 
+static void buttonFree(APlatformButton* Button)
+{
+    a_list_free(Button->forwardButtons);
+
+    free(Button->name);
+    free(Button);
+}
+
 static void buttonPress(APlatformButton* Button, bool Pressed)
 {
     Button->pressed = Pressed;
-    Button->header.lastEventTick = a_fps_ticksGet();
+    Button->lastEventTick = a_fps_ticksGet();
 
-    if(Button->header.forwardButtons == NULL) {
+    if(Button->forwardButtons == NULL) {
         return;
     }
 
-    A_LIST_ITERATE(Button->header.forwardButtons, APlatformButton*, b) {
+    A_LIST_ITERATE(Button->forwardButtons, APlatformButton*, b) {
         // Queue forwarded button presses and releases to be processed after
         // all input events were received, so they don't conflict with them.
         a_list_addLast(g_forwardButtonsQueue[Pressed], b);
@@ -182,19 +170,27 @@ static void analogAdd(AStrHash* AxesCollection, const char* Id, int AxisIndex)
 
     APlatformAnalog* a = a_mem_malloc(sizeof(APlatformAnalog));
 
-    initHeader(&a->header, a_str_dup(Id));
-
+    a->name = a_str_dup(Id);
+    a->forwardButtons = NULL;
     a->axisIndex = AxisIndex;
     a->value = 0;
 
     a_strhash_add(AxesCollection, Id, a);
 }
 
+static void analogFree(APlatformAnalog* Analog)
+{
+    a_list_freeEx(Analog->forwardButtons, free);
+
+    free(Analog->name);
+    free(Analog);
+}
+
 static void analogSet(APlatformAnalog* Analog, int Value)
 {
     Analog->value = Value;
 
-    if(Analog->header.forwardButtons == NULL) {
+    if(Analog->forwardButtons == NULL) {
         return;
     }
 
@@ -203,7 +199,7 @@ static void analogSet(APlatformAnalog* Analog, int Value)
     bool pressedNegative = Value < -A__PRESS_THRESHOLD;
     bool pressedPositive = Value > A__PRESS_THRESHOLD;
 
-    A_LIST_ITERATE(Analog->header.forwardButtons, APlatformAnalog2Buttons*, b) {
+    A_LIST_ITERATE(Analog->forwardButtons, APlatformAnalog2Buttons*, b) {
         if(b->negative && pressedNegative != b->lastPressedNegative) {
             buttonPress(b->negative, pressedNegative);
             b->lastPressedNegative = pressedNegative;
@@ -225,8 +221,7 @@ static void touchAdd(const char* Id)
 
     APlatformTouch* t = a_mem_malloc(sizeof(APlatformTouch));
 
-    initHeader(&t->header, a_str_dup(Id));
-
+    t->name = a_str_dup(Id);
     t->x = 0;
     t->y = 0;
     t->dx = 0;
@@ -235,6 +230,113 @@ static void touchAdd(const char* Id)
     t->motion = a_list_new();
 
     a_strhash_add(g_touchScreens, Id, t);
+}
+
+static void touchFree(APlatformTouch* Touch)
+{
+    a_list_freeEx(Touch->motion, free);
+
+    free(Touch->name);
+    free(Touch);
+}
+
+static ASdlInputController* controllerAdd(int Index)
+{
+    SDL_Joystick* joystick = NULL;
+
+    #if A_BUILD_LIB_SDL == 2
+        SDL_GameController* controller = NULL;
+
+        if(SDL_IsGameController(Index)) {
+            controller = SDL_GameControllerOpen(Index);
+
+            if(controller == NULL) {
+                a_out__error(
+                    "SDL_GameControllerOpen(%d): %s", Index, SDL_GetError());
+            } else {
+                joystick = SDL_GameControllerGetJoystick(controller);
+
+                if(joystick == NULL) {
+                    a_out__error(
+                        "SDL_GameControllerGetJoystick: %s", SDL_GetError());
+
+                    SDL_GameControllerClose(controller);
+
+                    return NULL;
+                }
+            }
+        }
+    #endif
+
+    if(joystick == NULL) {
+        joystick = SDL_JoystickOpen(Index);
+
+        if(joystick == NULL) {
+            a_out__error("SDL_JoystickOpen(%d): %s", Index, SDL_GetError());
+            return NULL;
+        }
+    }
+
+    #if A_BUILD_LIB_SDL == 1
+        ASdlJoystickId id = (uint8_t)Index;
+    #elif A_BUILD_LIB_SDL == 2
+        ASdlJoystickId id = SDL_JoystickInstanceID(joystick);
+
+        if(id < 0) {
+            a_out__error("SDL_JoystickInstanceID: %s", SDL_GetError());
+
+            if(controller) {
+                SDL_GameControllerClose(controller);
+            } else {
+                SDL_JoystickClose(joystick);
+            }
+
+            return NULL;
+        }
+    #endif
+
+    ASdlInputController* c = a_mem_malloc(sizeof(ASdlInputController));
+
+    c->joystick = joystick;
+    #if A_BUILD_LIB_SDL == 2
+        c->controller = controller;
+    #endif
+    c->id = id;
+    c->numButtons = SDL_JoystickNumButtons(c->joystick);
+    c->numHats = SDL_JoystickNumHats(c->joystick);
+    c->numAxes = SDL_JoystickNumAxes(c->joystick);
+    c->buttons = a_strhash_new();
+    c->axes = a_strhash_new();
+
+    return c;
+}
+
+static void controllerFree(ASdlInputController* Controller)
+{
+    A_STRHASH_ITERATE(Controller->buttons, APlatformButton*, b) {
+        buttonFree(b);
+    }
+
+    A_STRHASH_ITERATE(Controller->axes, APlatformAnalog*, a) {
+        analogFree(a);
+    }
+
+    #if A_BUILD_LIB_SDL == 1
+        if(SDL_JoystickOpened(Controller->id)) {
+            SDL_JoystickClose(Controller->joystick);
+        }
+    #elif A_BUILD_LIB_SDL == 2
+        if(Controller->controller) {
+            SDL_GameControllerClose(Controller->controller);
+        } else if(SDL_JoystickGetAttached(Controller->joystick)) {
+            SDL_JoystickClose(Controller->joystick);
+        }
+    #endif
+
+    a_strhash_free(Controller->buttons);
+    a_strhash_free(Controller->axes);
+
+    free(Controller);
 }
 
 static const char* joystickName(ASdlInputController* Controller)
@@ -284,71 +386,11 @@ void a_platform_sdl_input__init(void)
     #endif
 
     for(int i = 0; i < joysticksNum; i++) {
-        SDL_Joystick* joystick = NULL;
+        ASdlInputController* c = controllerAdd(i);
 
-        #if A_BUILD_LIB_SDL == 2
-            SDL_GameController* controller = NULL;
-
-            if(SDL_IsGameController(i)) {
-                controller = SDL_GameControllerOpen(i);
-
-                if(controller == NULL) {
-                    a_out__error(
-                        "SDL_GameControllerOpen(%d): %s", i, SDL_GetError());
-                } else {
-                    joystick = SDL_GameControllerGetJoystick(controller);
-
-                    if(joystick == NULL) {
-                        a_out__error("SDL_GameControllerGetJoystick: %s",
-                                     SDL_GetError());
-
-                        SDL_GameControllerClose(controller);
-                        continue;
-                    }
-                }
-            }
-        #endif
-
-        if(joystick == NULL) {
-            joystick = SDL_JoystickOpen(i);
-
-            if(joystick == NULL) {
-                a_out__error(
-                    "SDL_JoystickOpen(%d): %s", i, SDL_GetError());
-                continue;
-            }
+        if(c == NULL) {
+            continue;
         }
-
-        #if A_BUILD_LIB_SDL == 1
-            ASdlJoystickId id = (uint8_t)i;
-        #elif A_BUILD_LIB_SDL == 2
-            ASdlJoystickId id = SDL_JoystickInstanceID(joystick);
-
-            if(id < 0) {
-                a_out__error("SDL_JoystickInstanceID: %s", SDL_GetError());
-
-                if(controller) {
-                    SDL_GameControllerClose(controller);
-                } else {
-                    SDL_JoystickClose(joystick);
-                }
-
-                continue;
-            }
-        #endif
-
-        ASdlInputController* c = a_mem_malloc(sizeof(ASdlInputController));
-
-        c->joystick = joystick;
-        #if A_BUILD_LIB_SDL == 2
-            c->controller = controller;
-        #endif
-        c->id = id;
-        c->numButtons = SDL_JoystickNumButtons(c->joystick);
-        c->numHats = SDL_JoystickNumHats(c->joystick);
-        c->numAxes = SDL_JoystickNumAxes(c->joystick);
-        c->buttons = a_strhash_new();
-        c->axes = a_strhash_new();
 
         a_list_addLast(g_controllers, c);
 
@@ -418,7 +460,7 @@ void a_platform_sdl_input__init(void)
 #if A_BUILD_LIB_SDL == 2
         if(c->controller) {
             a_out__message("Mapped %s: %d buttons, %d axes, %d hats",
-                           SDL_GameControllerName(controller),
+                           SDL_GameControllerName(c->controller),
                            c->numButtons,
                            c->numAxes,
                            c->numHats);
@@ -455,7 +497,7 @@ void a_platform_sdl_input__init(void)
                 b++) {
 
                 SDL_GameControllerButtonBind bind =
-                    SDL_GameControllerGetBindForButton(controller, b);
+                    SDL_GameControllerGetBindForButton(c->controller, b);
 
                 if(bind.bindType == SDL_CONTROLLER_BINDTYPE_NONE) {
                     continue;
@@ -470,7 +512,7 @@ void a_platform_sdl_input__init(void)
                 a++) {
 
                 SDL_GameControllerButtonBind bind =
-                    SDL_GameControllerGetBindForAxis(controller, a);
+                    SDL_GameControllerGetBindForAxis(c->controller, a);
 
                 if(bind.bindType == SDL_CONTROLLER_BINDTYPE_NONE) {
                     continue;
@@ -601,45 +643,9 @@ void a_platform_sdl_input__init(void)
 
 void a_platform_sdl_input__uninit(void)
 {
-    A_STRHASH_ITERATE(g_keys, APlatformButton*, k) {
-        freeHeader(&k->header, false);
-    }
-
-    A_STRHASH_ITERATE(g_touchScreens, APlatformTouch*, t) {
-        a_list_free(t->motion);
-        freeHeader(&t->header, false);
-    }
-
-    A_LIST_ITERATE(g_controllers, ASdlInputController*, c) {
-        A_STRHASH_ITERATE(c->buttons, APlatformButton*, b) {
-            freeHeader(&b->header, false);
-        }
-
-        A_STRHASH_ITERATE(c->axes, APlatformAnalog*, a) {
-            freeHeader(&a->header, true);
-        }
-
-        #if A_BUILD_LIB_SDL == 1
-            if(SDL_JoystickOpened(c->id)) {
-                SDL_JoystickClose(c->joystick);
-            }
-        #elif A_BUILD_LIB_SDL == 2
-            if(c->controller) {
-                SDL_GameControllerClose(c->controller);
-            } else if(SDL_JoystickGetAttached(c->joystick)) {
-                SDL_JoystickClose(c->joystick);
-            }
-        #endif
-
-        a_strhash_free(c->buttons);
-        a_strhash_free(c->axes);
-
-        free(c);
-    }
-
-    a_strhash_free(g_keys);
-    a_strhash_free(g_touchScreens);
-    a_list_free(g_controllers);
+    a_strhash_freeEx(g_keys, (AFree*)buttonFree);
+    a_strhash_freeEx(g_touchScreens, (AFree*)touchFree);
+    a_list_freeEx(g_controllers, (AFree*)controllerFree);
     a_list_free(g_forwardButtonsQueue[0]);
     a_list_free(g_forwardButtonsQueue[1]);
 
@@ -899,7 +905,7 @@ void a_platform__inputsPoll(void)
 
     A_LIST_ITERATE(g_forwardButtonsQueue[0], APlatformButton*, b) {
         // Only release if did not receive an event this frame
-        if(b->header.lastEventTick != ticksNow) {
+        if(b->lastEventTick != ticksNow) {
             buttonPress(b, false);
         }
     }
@@ -944,16 +950,16 @@ bool a_platform__buttonPressGet(const APlatformButton* Button)
 
 const char* a_platform__buttonNameGet(const APlatformButton* Button)
 {
-    return Button->header.name;
+    return Button->name;
 }
 
 void a_platform__buttonForward(APlatformButton* Source, APlatformButton* Destination)
 {
-    if(Source->header.forwardButtons == NULL) {
-        Source->header.forwardButtons = a_list_new();
+    if(Source->forwardButtons == NULL) {
+        Source->forwardButtons = a_list_new();
     }
 
-    a_list_addLast(Source->header.forwardButtons, Destination);
+    a_list_addLast(Source->forwardButtons, Destination);
 }
 
 APlatformAnalog* a_platform__analogGet(const char* Id)
@@ -983,11 +989,11 @@ void a_platform__analogForward(APlatformAnalog* Source, APlatformButton* Negativ
     f->lastPressedNegative = false;
     f->lastPressedPositive = false;
 
-    if(Source->header.forwardButtons == NULL) {
-        Source->header.forwardButtons = a_list_new();
+    if(Source->forwardButtons == NULL) {
+        Source->forwardButtons = a_list_new();
     }
 
-    a_list_addLast(Source->header.forwardButtons, f);
+    a_list_addLast(Source->forwardButtons, f);
 }
 
 APlatformTouch* a_platform__touchGet(const char* Id)
