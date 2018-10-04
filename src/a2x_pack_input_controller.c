@@ -19,72 +19,58 @@
 
 #include "a2x_pack_input_controller.v.h"
 
-#include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
+#include "a2x_pack_platform.v.h"
 #include "a2x_pack_settings.v.h"
-
-typedef struct {
-    AStrHash* buttons; // table of AInputButtonSource
-    AStrHash* axes; // table of AInputAnalogSource
-    bool generic;
-    bool mapped;
-} AInputController;
-
-static AList* g_controllers;
-AInputController* g_activeController;
 
 void a_input_controller__init(void)
 {
-    g_controllers = a_list_new();
-    g_activeController = NULL;
-}
+    for(unsigned i = a_platform__controllerNumGet(); i--; ) {
+        a_platform__controllerSet(i);
 
-void a_input_controller__init2(void)
-{
-    A_LIST_ITERATE(g_controllers, AInputController*, c) {
-        AInputAnalogSource* x = a_strhash_get(c->axes, "gamepad.a.leftX");
-        AInputAnalogSource* y = a_strhash_get(c->axes, "gamepad.a.leftY");
-        AInputAnalogSource* lt = a_strhash_get(c->axes, "gamepad.a.leftTrigger");
-        AInputAnalogSource* rt = a_strhash_get(c->axes, "gamepad.a.rightTrigger");
-        AInputButtonSource* u = a_strhash_get(c->buttons, "gamepad.b.up");
-        AInputButtonSource* d = a_strhash_get(c->buttons, "gamepad.b.down");
-        AInputButtonSource* l = a_strhash_get(c->buttons, "gamepad.b.left");
-        AInputButtonSource* r = a_strhash_get(c->buttons, "gamepad.b.right");
-        AInputButtonSource* ul = a_strhash_get(c->buttons, "gamepad.b.upLeft");
-        AInputButtonSource* ur = a_strhash_get(c->buttons, "gamepad.b.upRight");
-        AInputButtonSource* dl = a_strhash_get(c->buttons, "gamepad.b.downLeft");
-        AInputButtonSource* dr = a_strhash_get(c->buttons, "gamepad.b.downRight");
-        AInputButtonSource* lb = a_strhash_get(c->buttons, "gamepad.b.l");
-        AInputButtonSource* rb = a_strhash_get(c->buttons, "gamepad.b.r");
+        APlatformAnalog* x = a_platform__analogGet("gamepad.a.leftX");
+        APlatformAnalog* y = a_platform__analogGet("gamepad.a.leftY");
+        APlatformAnalog* lt = a_platform__analogGet("gamepad.a.leftTrigger");
+        APlatformAnalog* rt = a_platform__analogGet("gamepad.a.rightTrigger");
+        APlatformButton* u = a_platform__buttonGet("gamepad.b.up");
+        APlatformButton* d = a_platform__buttonGet("gamepad.b.down");
+        APlatformButton* l = a_platform__buttonGet("gamepad.b.left");
+        APlatformButton* r = a_platform__buttonGet("gamepad.b.right");
+        APlatformButton* ul = a_platform__buttonGet("gamepad.b.upLeft");
+        APlatformButton* ur = a_platform__buttonGet("gamepad.b.upRight");
+        APlatformButton* dl = a_platform__buttonGet("gamepad.b.downLeft");
+        APlatformButton* dr = a_platform__buttonGet("gamepad.b.downRight");
+        APlatformButton* lb = a_platform__buttonGet("gamepad.b.l");
+        APlatformButton* rb = a_platform__buttonGet("gamepad.b.r");
 
         // GP2X and Wiz dpad diagonals are dedicated buttons, split them into
         // their cardinal directions.
         if(u && d && l && r && ul && ur && dl && dr) {
-            a_input_button__forwardToButton(ul, u);
-            a_input_button__forwardToButton(ul, l);
+            a_platform__buttonForward(ul, u);
+            a_platform__buttonForward(ul, l);
 
-            a_input_button__forwardToButton(ur, u);
-            a_input_button__forwardToButton(ur, r);
+            a_platform__buttonForward(ur, u);
+            a_platform__buttonForward(ur, r);
 
-            a_input_button__forwardToButton(dl, d);
-            a_input_button__forwardToButton(dl, l);
+            a_platform__buttonForward(dl, d);
+            a_platform__buttonForward(dl, l);
 
-            a_input_button__forwardToButton(dr, d);
-            a_input_button__forwardToButton(dr, r);
+            a_platform__buttonForward(dr, d);
+            a_platform__buttonForward(dr, r);
         }
 
         // Forward the left analog stick to the direction buttons
         if(x && y && u && d && l && r) {
-            if(!c->mapped) {
+            if(!a_platform__controllerIsMapped()) {
                 if(a_settings_getBool("input.switchAxes")) {
-                    AInputAnalogSource* save = x;
+                    APlatformAnalog* save = x;
 
                     x = y;
                     y = save;
                 }
 
                 if(a_settings_getBool("input.invertAxes")) {
-                    AInputButtonSource* save;
+                    APlatformButton* save;
 
                     save = u;
                     u = d;
@@ -96,138 +82,31 @@ void a_input_controller__init2(void)
                 }
             }
 
-            a_input_analog__forwardToButtons(x, l, r);
-            a_input_analog__forwardToButtons(y, u, d);
+            a_platform__analogForward(x, l, r);
+            a_platform__analogForward(y, u, d);
         }
 
         // Forward analog shoulder triggers to the shoulder buttons
         if(lt && rt && lb && rb) {
-            a_input_analog__forwardToButtons(lt, NULL, lb);
-            a_input_analog__forwardToButtons(rt, NULL, rb);
-        }
-
-        #if A_BUILD_SYSTEM_PANDORA
-            if(!c->generic && x && y) {
-                // Pandora buttons are keyboard keys, not controller buttons
-                u = a_input_button__keyGet("gamepad.b.up");
-                d = a_input_button__keyGet("gamepad.b.down");
-                l = a_input_button__keyGet("gamepad.b.left");
-                r = a_input_button__keyGet("gamepad.b.right");
-
-                // Forward the left analog nub to the direction buttons
-                a_input_analog__forwardToButtons(x, l, r);
-                a_input_analog__forwardToButtons(y, u, d);
-            }
-        #endif
-    }
-
-    if(a_input_controllerNumGet() > 0) {
-        a_input_controllerSet(0);
-
-        // Set built-in controller as default, if one exists
-        A_LIST_ITERATE(g_controllers, AInputController*, c) {
-            if(!c->generic) {
-                a_input_controllerSet(A_LIST_INDEX());
-                break;
-            }
+            a_platform__analogForward(lt, NULL, lb);
+            a_platform__analogForward(rt, NULL, rb);
         }
     }
-}
-
-void a_input_controller__uninit(void)
-{
-    A_LIST_ITERATE(g_controllers, AInputController*, c) {
-        a_strhash_freeEx(c->buttons, (AFree*)a_input_button__freeSource);
-        a_strhash_freeEx(c->axes, (AFree*)a_input_analog__freeSource);
-
-        free(c);
-    }
-
-    a_list_free(g_controllers);
 }
 
 unsigned a_input_controllerNumGet(void)
 {
-    return a_list_sizeGet(g_controllers);
+    return a_platform__controllerNumGet();
 }
 
 void a_input_controllerSet(unsigned Index)
 {
-    if(Index >= a_list_sizeGet(g_controllers)) {
-        a_out__error("a_input_controllerSet: Controller %u not present", Index);
+    if(Index >= a_platform__controllerNumGet()) {
+        a_out__fatal("a_input_controllerSet: Cannot set %d, only %d total",
+                     Index,
+                     a_platform__controllerNumGet());
         return;
     }
 
-    g_activeController = a_list_getIndex(g_controllers, Index);
-}
-
-void a_controller__new(bool Generic, bool IsMapped)
-{
-    #if A_BUILD_SYSTEM_PANDORA
-        // Assign both analog nubs to the same logical controller
-        if(!Generic) {
-            A_LIST_ITERATE(g_controllers, AInputController*, c) {
-                if(!c->generic) {
-                    g_activeController = c;
-                    return;
-                }
-            }
-        }
-    #endif
-
-    AInputController* c = a_mem_malloc(sizeof(AInputController));
-
-    c->buttons = a_strhash_new();
-    c->axes = a_strhash_new();
-    c->generic = Generic;
-    c->mapped = IsMapped;
-
-    a_list_addLast(g_controllers, c);
-    g_activeController = c;
-}
-
-void a_controller__buttonAdd(AInputButtonSource* Button, const char* Id)
-{
-    a_strhash_add(g_activeController->buttons, Id, Button);
-}
-
-AInputButtonSource* a_controller__buttonGet(const char* Id)
-{
-    if(g_activeController == NULL) {
-        return NULL;
-    }
-
-    return a_strhash_get(g_activeController->buttons, Id);
-}
-
-AStrHash* a_controller__buttonCollectionGet(void)
-{
-    if(g_activeController == NULL) {
-        return NULL;
-    }
-
-    return g_activeController->buttons;
-}
-
-void a_controller__analogAdd(AInputAnalogSource* Analog, const char* Id)
-{
-    a_strhash_add(g_activeController->axes, Id, Analog);
-}
-
-AInputAnalogSource* a_controller__analogGet(const char* Id)
-{
-    if(g_activeController == NULL) {
-        return NULL;
-    }
-
-    return a_strhash_get(g_activeController->axes, Id);
-}
-
-AStrHash* a_controller__analogCollectionGet(void)
-{
-    if(g_activeController == NULL) {
-        return NULL;
-    }
-
-    return g_activeController->axes;
+    a_platform__controllerSet(Index);
 }

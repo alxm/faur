@@ -21,19 +21,4 @@
 
 #include "a2x_pack_input_controller.p.h"
 
-#include "a2x_pack_input_analog.v.h"
-#include "a2x_pack_strhash.v.h"
-
 extern void a_input_controller__init(void);
-extern void a_input_controller__init2(void);
-extern void a_input_controller__uninit(void);
-
-extern void a_controller__new(bool Generic, bool IsMapped);
-
-extern void a_controller__buttonAdd(AInputButtonSource* Button, const char* Id);
-extern AInputButtonSource* a_controller__buttonGet(const char* Id);
-extern AStrHash* a_controller__buttonCollectionGet(void);
-
-extern void a_controller__analogAdd(AInputAnalogSource* Analog, const char* Id);
-extern AInputAnalogSource* a_controller__analogGet(const char* Id);
-extern AStrHash* a_controller__analogCollectionGet(void);

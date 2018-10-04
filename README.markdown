@@ -32,7 +32,7 @@ $ make run
 
 ![Starter Project Screenshot](https://github.com/alxm/a2x/raw/master/media/hello.gif "Starter Project Screenshot")
 
-The starter project draws a square on the screen which you can move around with the arrow keys. The code is in `hello/src/main.c`:
+The starter project draws a square on the screen, which you can move around with the arrow keys or with a gamepad. The code is in `hello/src/main.c`:
 
 ```C
 #include <a2x.h>
@@ -49,10 +49,10 @@ A_STATE(drawBox)
 {
     static struct {
         int x, y;
-        AInputButton* up;
-        AInputButton* down;
-        AInputButton* left;
-        AInputButton* right;
+        AButton* up;
+        AButton* down;
+        AButton* left;
+        AButton* right;
     } context;
 
     A_STATE_INIT
@@ -60,10 +60,21 @@ A_STATE(drawBox)
         context.x = a_screen_widthGet() / 2;
         context.y = a_screen_heightGet() / 2;
 
-        context.up = a_button_new("key.up");
-        context.down = a_button_new("key.down");
-        context.left = a_button_new("key.left");
-        context.right = a_button_new("key.right");
+        context.up = a_button_new();
+        a_button_bind(context.up, "key.up");
+        a_button_bind(context.up, "gamepad.b.up");
+
+        context.down = a_button_new();
+        a_button_bind(context.down, "key.down");
+        a_button_bind(context.down, "gamepad.b.down");
+
+        context.left = a_button_new();
+        a_button_bind(context.left, "key.left");
+        a_button_bind(context.left, "gamepad.b.left");
+
+        context.right = a_button_new();
+        a_button_bind(context.right, "key.right");
+        a_button_bind(context.right, "gamepad.b.right");
     }
 
     A_STATE_TICK
@@ -88,6 +99,14 @@ A_STATE(drawBox)
 
         a_pixel_colorSetHex(0xffaa44);
         a_draw_rectangle(context.x - 40, context.y - 40, 80, 80);
+    }
+
+    A_STATE_FREE
+    {
+        a_button_free(context.up);
+        a_button_free(context.down);
+        a_button_free(context.left);
+        a_button_free(context.right);
     }
 }
 

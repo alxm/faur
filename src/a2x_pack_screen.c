@@ -20,37 +20,19 @@
 #include "a2x_pack_screen.v.h"
 
 #include "a2x_pack_collide.v.h"
-#include "a2x_pack_input.v.h"
 #include "a2x_pack_input_button.v.h"
-#include "a2x_pack_list.v.h"
+#include "a2x_pack_listit.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
 #include "a2x_pack_pixel.v.h"
 #include "a2x_pack_platform_wiz.v.h"
 #include "a2x_pack_settings.v.h"
 
-typedef struct {
-    AScreenOverlay callback;
-} AScreenOverlayContainer;
-
 AScreen a__screen;
 static AList* g_stack; // list of AScreen
 
-static AList* g_overlays; // list of AScreenOverlayContainer
-
 static bool g_fullScreenState;
-
-#if A_BUILD_SYSTEM_DESKTOP
-    static AInputButton* g_fullScreenButton;
-
-    static void inputCallback(void)
-    {
-        if(a_button_pressGetOnce(g_fullScreenButton)) {
-            g_fullScreenState = !g_fullScreenState;
-            a_platform__screenSetFullscreen(g_fullScreenState);
-        }
-    }
-#endif
+static AButton* g_fullScreenButton;
 
 static void initScreen(AScreen* Screen, int Width, int Height, bool AllocBuffer)
 {
@@ -136,13 +118,8 @@ void a_screen__init(void)
         a_platform_wiz__portraitModeSet();
     #endif
 
-    #if A_BUILD_SYSTEM_DESKTOP
-        g_fullScreenButton = a_button_new(
-                                a_settings_getString(
-                                    "video.fullscreen.button"));
-
-        a_input__callbackAdd(inputCallback);
-    #endif
+    g_fullScreenButton = a_button_new();
+    a_button_bind(g_fullScreenButton, "key.f4");
 
     #if !A_BUILD_RENDER_SOFTWARE
         initScreen(&a__screen, width, height, true);
@@ -150,7 +127,6 @@ void a_screen__init(void)
     #endif
 
     g_stack = a_list_new();
-    g_overlays = a_list_new();
 }
 
 void a_screen__uninit(void)
@@ -166,32 +142,27 @@ void a_screen__uninit(void)
     }
 
     a_list_freeEx(g_stack, (AFree*)a_screen_free);
-    a_list_freeEx(g_overlays, free);
 
+    a_button_free(g_fullScreenButton);
+}
+
+void a_screen__tick(void)
+{
     #if A_BUILD_SYSTEM_DESKTOP
-        a_button_free(g_fullScreenButton);
+        if(a_button_pressGetOnce(g_fullScreenButton)) {
+            g_fullScreenState = !g_fullScreenState;
+            a_platform__screenSetFullscreen(g_fullScreenState);
+        }
     #endif
 }
 
-void a_screen__show(void)
+void a_screen__draw(void)
 {
     if(!a_list_isEmpty(g_stack)) {
         a_out__fatal("Screen target stack is not empty");
     }
 
-    A_LIST_ITERATE(g_overlays, AScreenOverlayContainer*, c) {
-        c->callback();
-    }
-
     a_platform__screenShow();
-}
-
-void a_screen__callbackAdd(AScreenOverlay Callback)
-{
-    AScreenOverlayContainer* c = a_mem_malloc(sizeof(AScreenOverlayContainer));
-    c->callback = Callback;
-
-    a_list_addLast(g_overlays, c);
 }
 
 bool a_screen__sameSize(const AScreen* Screen1, const AScreen* Screen2)

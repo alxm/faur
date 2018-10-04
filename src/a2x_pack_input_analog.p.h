@@ -21,14 +21,13 @@
 
 #include "a2x_system_includes.h"
 
-typedef struct AInputAnalog AInputAnalog;
+typedef struct AAnalog AAnalog;
 
 #include "a2x_pack_fix.p.h"
 
-extern AInputAnalog* a_analog_new(const char* Ids);
-extern void a_analog_free(AInputAnalog* Analog);
+extern AAnalog* a_analog_new(const char* Ids);
+extern void a_analog_free(AAnalog* Analog);
 
-extern bool a_analog_isWorking(const AInputAnalog* Analog);
+extern bool a_analog_isWorking(const AAnalog* Analog);
 
-extern int a_analog_valueGetRaw(const AInputAnalog* Analog);
-extern AFix a_analog_valueGetFix(const AInputAnalog* Analog);
+extern AFix a_analog_valueGet(const AAnalog* Analog);

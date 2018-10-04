@@ -22,7 +22,6 @@
 #include "a2x_pack_draw.v.h"
 #include "a2x_pack_embed.v.h"
 #include "a2x_pack_file.v.h"
-#include "a2x_pack_input.v.h"
 #include "a2x_pack_input_button.v.h"
 #include "a2x_pack_math.v.h"
 #include "a2x_pack_mem.v.h"
@@ -41,15 +40,15 @@ static int g_volumeMax;
     #define A__VOLUME_STEP 1
     #define A__VOLBAR_SHOW_MS 500
     static ATimer* g_volTimer;
-    static AInputButton* g_volumeUpButton;
-    static AInputButton* g_volumeDownButton;
+    static AButton* g_volumeUpButton;
+    static AButton* g_volumeDownButton;
     static APixel g_volbarBackground;
     static APixel g_volbarBorder;
     static APixel g_volbarFill;
 #endif
 
 #if A_BUILD_DEVICE_KEYBOARD
-    static AInputButton* g_musicOnOffButton;
+    static AButton* g_musicOnOffButton;
 #endif
 
 static void adjustSoundVolume(int Volume)
@@ -62,7 +61,68 @@ static void adjustSoundVolume(int Volume)
     a_platform__musicVolumeSet(g_musicVolume);
 }
 
-static void inputCallback(void)
+void a_sound__init(void)
+{
+    g_soundOn = a_settings_getBool("sound.on");
+
+    if(!g_soundOn) {
+        return;
+    }
+
+    g_volumeMax = a_platform__volumeGetMax();
+
+    #if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ
+        adjustSoundVolume(g_volumeMax / 16);
+        g_volTimer = a_timer_new(A_TIMER_MS, A__VOLBAR_SHOW_MS, false);
+    #else
+        adjustSoundVolume(g_volumeMax);
+    #endif
+
+    #if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ
+        g_volumeUpButton = a_button_new();
+        a_button_bind(g_volumeUpButton, "gamepad.b.volUp");
+
+        g_volumeDownButton = a_button_new();
+        a_button_bind(g_volumeDownButton, "gamepad.b.volDown");
+    #endif
+
+    #if A_BUILD_DEVICE_KEYBOARD
+        g_musicOnOffButton = a_button_new();
+        a_button_bind(g_musicOnOffButton, "key.m");
+    #endif
+
+    #if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ
+        const char* color;
+
+        color = a_settings_getString("sound.volbar.background");
+        g_volbarBackground = a_pixel_fromHex((uint32_t)strtol(color, NULL, 16));
+
+        color = a_settings_getString("sound.volbar.border");
+        g_volbarBorder = a_pixel_fromHex((uint32_t)strtol(color, NULL, 16));
+
+        color = a_settings_getString("sound.volbar.fill");
+        g_volbarFill = a_pixel_fromHex((uint32_t)strtol(color, NULL, 16));
+    #endif
+}
+
+void a_sound__uninit(void)
+{
+    if(!g_soundOn) {
+        return;
+    }
+
+    #if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ
+        a_timer_free(g_volTimer);
+    #endif
+
+    #if A_BUILD_DEVICE_KEYBOARD
+        a_button_free(g_musicOnOffButton);
+    #endif
+
+    a_music_stop();
+}
+
+void a_sound__tick(void)
 {
     #if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ
         if(!g_soundOn) {
@@ -90,9 +150,9 @@ static void inputCallback(void)
     #endif
 }
 
-#if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ
-    static void screenCallback(void)
-    {
+void a_sound__draw(void)
+{
+    #if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ
         if(!g_soundOn
             || !a_timer_isRunning(g_volTimer)
             || a_timer_expiredGet(g_volTimer)) {
@@ -112,68 +172,7 @@ static void inputCallback(void)
 
         a_pixel_colorSetPixel(g_volbarFill);
         a_draw_rectangle(0, 186, g_volume / A__VOLUME_STEP, 6);
-    }
-#endif
-
-void a_sound__init(void)
-{
-    g_soundOn = a_settings_getBool("sound.on");
-
-    if(!g_soundOn) {
-        return;
-    }
-
-    g_volumeMax = a_platform__volumeGetMax();
-
-    #if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ
-        adjustSoundVolume(g_volumeMax / 16);
-        g_volTimer = a_timer_new(A_TIMER_MS, A__VOLBAR_SHOW_MS, false);
-    #else
-        adjustSoundVolume(g_volumeMax);
     #endif
-
-    #if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ
-        g_volumeUpButton = a_button_new("gamepad.b.volUp");
-        g_volumeDownButton = a_button_new("gamepad.b.volDown");
-    #endif
-
-    #if A_BUILD_DEVICE_KEYBOARD
-        g_musicOnOffButton = a_button_new("key.m");
-    #endif
-
-    a_input__callbackAdd(inputCallback);
-
-    #if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ
-        const char* color;
-
-        color = a_settings_getString("sound.volbar.background");
-        g_volbarBackground = a_pixel_fromHex((uint32_t)strtol(color, NULL, 16));
-
-        color = a_settings_getString("sound.volbar.border");
-        g_volbarBorder = a_pixel_fromHex((uint32_t)strtol(color, NULL, 16));
-
-        color = a_settings_getString("sound.volbar.fill");
-        g_volbarFill = a_pixel_fromHex((uint32_t)strtol(color, NULL, 16));
-
-        a_screen__callbackAdd(screenCallback);
-    #endif
-}
-
-void a_sound__uninit(void)
-{
-    if(!g_soundOn) {
-        return;
-    }
-
-    #if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ
-        a_timer_free(g_volTimer);
-    #endif
-
-    #if A_BUILD_DEVICE_KEYBOARD
-        a_button_free(g_musicOnOffButton);
-    #endif
-
-    a_music_stop();
 }
 
 AMusic* a_music_new(const char* Path)

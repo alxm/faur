@@ -20,7 +20,6 @@
 #include "a2x_pack_screenshot.v.h"
 
 #include "a2x_pack_dir.v.h"
-#include "a2x_pack_input.v.h"
 #include "a2x_pack_input_button.v.h"
 #include "a2x_pack_out.v.h"
 #include "a2x_pack_png.v.h"
@@ -35,7 +34,7 @@ static char* g_filePrefix;
 static char* g_title;
 static char* g_description;
 static unsigned g_screenshotNumber;
-static AInputButton* g_button;
+static AButton* g_button;
 
 static bool lazy_init(void)
 {
@@ -147,13 +146,6 @@ static void takeScreenshot(void)
     free(name);
 }
 
-static void inputCallback(void)
-{
-    if(a_button_pressGetOnce(g_button)) {
-        takeScreenshot();
-    }
-}
-
 void a_screenshot__init(void)
 {
     g_isInit = false;
@@ -161,8 +153,9 @@ void a_screenshot__init(void)
     g_title = NULL;
     g_description = NULL;
     g_screenshotNumber = 0;
-    g_button = a_button_new(a_settings_getString("screenshot.button"));
-    a_input__callbackAdd(inputCallback);
+
+    g_button = a_button_new();
+    a_button_bind(g_button, "key.f12");
 }
 
 void a_screenshot__uninit(void)
@@ -172,6 +165,13 @@ void a_screenshot__uninit(void)
     free(g_description);
 
     a_button_free(g_button);
+}
+
+void a_screenshot__tick(void)
+{
+    if(a_button_pressGetOnce(g_button)) {
+        takeScreenshot();
+    }
 }
 
 void a_screenshot_take(void)

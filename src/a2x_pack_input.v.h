@@ -22,35 +22,18 @@
 #include "a2x_pack_input.p.h"
 
 typedef struct AInputUserHeader AInputUserHeader;
-typedef struct AInputSourceHeader AInputSourceHeader;
-
-typedef void (*AInputCallback)(void);
 
 #include "a2x_pack_strhash.v.h"
 
 struct AInputUserHeader {
     char* name;
-    AList* sourceInputs; // List of AInputButtonSource/Analog/Touch
-};
-
-struct AInputSourceHeader {
-    char* name;
-    unsigned lastEventFrame;
+    AList* platformInputs; // List of APlatformButton/Analog/Touch
 };
 
 extern void a_input__init(void);
 extern void a_input__uninit(void);
 
-extern void a_input__callbackAdd(AInputCallback Callback);
-
 extern void a_input__userHeaderInit(AInputUserHeader* Header);
 extern void a_input__userHeaderFree(AInputUserHeader* Header);
-extern void a_input__userHeaderFindSource(AInputUserHeader* UserInput, const char* Id, const AStrHash* GlobalCollection, const AStrHash* ControllerCollection);
-
-extern void a_input__sourceHeaderInit(AInputSourceHeader* Header, const char* Name);
-extern void a_input__sourceHeaderFree(AInputSourceHeader* Header);
-
-extern bool a_input__freshEventGet(const AInputSourceHeader* Header);
-extern void a_input__freshEventSet(AInputSourceHeader* Header);
 
 extern void a_input__tick(void);

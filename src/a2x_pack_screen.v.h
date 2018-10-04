@@ -21,8 +21,6 @@
 
 #include "a2x_pack_screen.p.h"
 
-typedef void (*AScreenOverlay)(void);
-
 #include "a2x_pack_platform.v.h"
 
 struct AScreen {
@@ -46,7 +44,7 @@ extern AScreen a__screen;
 extern void a_screen__init(void);
 extern void a_screen__uninit(void);
 
-extern void a_screen__show(void);
-extern void a_screen__callbackAdd(AScreenOverlay Callback);
+extern void a_screen__tick(void);
+extern void a_screen__draw(void);
 
 extern bool a_screen__sameSize(const AScreen* Screen1, const AScreen* Screen2);

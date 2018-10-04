@@ -21,14 +21,14 @@
 
 #include "a2x_system_includes.h"
 
-typedef struct AInputTouch AInputTouch;
+typedef struct ATouch ATouch;
 
-extern AInputTouch* a_touch_new(const char* Ids);
-extern void a_touch_free(AInputTouch* Touch);
+extern ATouch* a_touch_new(const char* Ids);
+extern void a_touch_free(ATouch* Touch);
 
-extern bool a_touch_isWorking(const AInputTouch* Touch);
+extern bool a_touch_isWorking(const ATouch* Touch);
 
-extern void a_touch_deltaGet(const AInputTouch* Touch, int* Dx, int* Dy);
-extern bool a_touch_tapGet(const AInputTouch* Touch);
-extern bool a_touch_pointGet(const AInputTouch* Touch, int X, int Y);
-extern bool a_touch_boxGet(const AInputTouch* Touch, int X, int Y, int W, int H);
+extern void a_touch_deltaGet(const ATouch* Touch, int* Dx, int* Dy);
+extern bool a_touch_tapGet(const ATouch* Touch);
+extern bool a_touch_pointGet(const ATouch* Touch, int X, int Y);
+extern bool a_touch_boxGet(const ATouch* Touch, int X, int Y, int W, int H);

@@ -23,3 +23,5 @@
 
 extern void a_screenshot__init(void);
 extern void a_screenshot__uninit(void);
+
+extern void a_screenshot__tick(void);
