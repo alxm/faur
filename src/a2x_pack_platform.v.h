@@ -21,6 +21,7 @@
 
 #include "a2x_pack_platform.p.h"
 
+typedef struct APlatformController APlatformController;
 typedef struct APlatformButton APlatformButton;
 typedef struct APlatformAnalog APlatformAnalog;
 typedef struct APlatformTouch APlatformTouch;

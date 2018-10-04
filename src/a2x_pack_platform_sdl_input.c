@@ -70,7 +70,7 @@ struct APlatformTouch {
     AList* motion; // list of APlatformTouchPoint captured by motion events
 };
 
-typedef struct {
+struct APlatformController {
     SDL_Joystick* joystick;
     #if A_BUILD_LIB_SDL == 2
         SDL_GameController* controller;
@@ -81,7 +81,7 @@ typedef struct {
     int numAxes;
     AStrHash* buttons;
     AStrHash* axes;
-} ASdlInputController;
+};
 
 typedef struct {
     int x, y;
@@ -97,7 +97,7 @@ typedef struct {
 static AStrHash* g_keys;
 static AStrHash* g_touchScreens;
 static AList* g_controllers;
-static ASdlInputController* g_setController;
+static APlatformController* g_setController;
 static AList* g_forwardButtonsQueue[2]; // list of APlatformButton
 static uint32_t g_sdlFlags;
 
@@ -240,7 +240,7 @@ static void touchFree(APlatformTouch* Touch)
     free(Touch);
 }
 
-static ASdlInputController* controllerAdd(int Index)
+static APlatformController* controllerAdd(int Index)
 {
     SDL_Joystick* joystick = NULL;
 
@@ -295,7 +295,7 @@ static ASdlInputController* controllerAdd(int Index)
         }
     #endif
 
-    ASdlInputController* c = a_mem_malloc(sizeof(ASdlInputController));
+    APlatformController* c = a_mem_malloc(sizeof(APlatformController));
 
     c->joystick = joystick;
     #if A_BUILD_LIB_SDL == 2
@@ -311,7 +311,7 @@ static ASdlInputController* controllerAdd(int Index)
     return c;
 }
 
-static void controllerFree(ASdlInputController* Controller)
+static void controllerFree(APlatformController* Controller)
 {
     A_STRHASH_ITERATE(Controller->buttons, APlatformButton*, b) {
         buttonFree(b);
@@ -339,7 +339,7 @@ static void controllerFree(ASdlInputController* Controller)
     free(Controller);
 }
 
-static const char* joystickName(ASdlInputController* Controller)
+static const char* joystickName(APlatformController* Controller)
 {
     #if A_BUILD_LIB_SDL == 1
         return SDL_JoystickName(Controller->id);
@@ -386,7 +386,7 @@ void a_platform_sdl_input__init(void)
     #endif
 
     for(int i = 0; i < joysticksNum; i++) {
-        ASdlInputController* c = controllerAdd(i);
+        APlatformController* c = controllerAdd(i);
 
         if(c == NULL) {
             continue;
@@ -688,7 +688,7 @@ void a_platform__inputsPoll(void)
 
             case SDL_JOYBUTTONUP:
             case SDL_JOYBUTTONDOWN: {
-                A_LIST_ITERATE(g_controllers, ASdlInputController*, c) {
+                A_LIST_ITERATE(g_controllers, APlatformController*, c) {
                     #if A_BUILD_LIB_SDL == 2
                         if(c->controller) {
                             continue;
@@ -751,7 +751,7 @@ void a_platform__inputsPoll(void)
                     } break;
                 }
 
-                A_LIST_ITERATE(g_controllers, ASdlInputController*, c) {
+                A_LIST_ITERATE(g_controllers, APlatformController*, c) {
                     #if A_BUILD_LIB_SDL == 2
                         if(c->controller) {
                             continue;
@@ -790,7 +790,7 @@ void a_platform__inputsPoll(void)
             } break;
 
             case SDL_JOYAXISMOTION: {
-                A_LIST_ITERATE(g_controllers, ASdlInputController*, c) {
+                A_LIST_ITERATE(g_controllers, APlatformController*, c) {
                     #if A_BUILD_LIB_SDL == 2
                         if(c->controller) {
                             continue;
@@ -815,7 +815,7 @@ void a_platform__inputsPoll(void)
 #if A_BUILD_LIB_SDL == 2
             case SDL_CONTROLLERBUTTONUP:
             case SDL_CONTROLLERBUTTONDOWN: {
-                A_LIST_ITERATE(g_controllers, ASdlInputController*, c) {
+                A_LIST_ITERATE(g_controllers, APlatformController*, c) {
                     if(c->controller == NULL || c->id != event.cbutton.which) {
                         continue;
                     }
@@ -832,7 +832,7 @@ void a_platform__inputsPoll(void)
             } break;
 
             case SDL_CONTROLLERAXISMOTION: {
-                A_LIST_ITERATE(g_controllers, ASdlInputController*, c) {
+                A_LIST_ITERATE(g_controllers, APlatformController*, c) {
                     if(c->controller == NULL || c->id != event.caxis.which) {
                         continue;
                     }
