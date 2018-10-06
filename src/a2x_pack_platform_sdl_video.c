@@ -175,7 +175,7 @@ void a_platform__screenInit(int Width, int Height, bool FullScreen)
                       &g_clearB);
     #endif
 
-    #if A_BUILD_SYSTEM_DESKTOP || A_BUILD_SYSTEM_EMSCRIPTEN
+    #if A_BUILD_SYSTEM_DESKTOP
         char caption[64];
         snprintf(caption,
                  sizeof(caption),

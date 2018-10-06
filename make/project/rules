@@ -10,6 +10,9 @@
 # A_EMBED_MEDIA
 #   true or false
 #
+# A_EMBED_PATHS
+#   Space-separated file or dir paths
+#
 # A_PND_DIR
 #   Path to dir that PND is packaged from
 #

@@ -113,7 +113,8 @@ __attribute__((noreturn)) static void handleFatal(void)
                 if(s == 10) {
                     a_out__message("Exiting in %ds", s);
                 } else {
-                    a_out__overwrite(A_OUT__TYPE_MESSAGE, "Exiting in %ds", s);
+                    a_out__overwrite(
+                        A_OUT__TYPE_MESSAGE, stdout, "Exiting in %ds", s);
                 }
 
                 a_screen__draw();
@@ -240,7 +241,7 @@ void a_out__state(const char* Format, ...)
               A_OUT__TYPE_STATE,
               false,
               false,
-              stderr,
+              stdout,
               Format,
               args);
 
@@ -256,14 +257,14 @@ void a_out__statev(const char* Format, ...)
               A_OUT__TYPE_STATE,
               true,
               false,
-              stderr,
+              stdout,
               Format,
               args);
 
     va_end(args);
 }
 
-void a_out__overwrite(AOutType Type, const char* Format, ...)
+void a_out__overwrite(AOutType Type, FILE* Stream, const char* Format, ...)
 {
     va_list args;
     va_start(args, Format);
@@ -272,7 +273,7 @@ void a_out__overwrite(AOutType Type, const char* Format, ...)
               Type,
               false,
               true,
-              stdout,
+              Stream,
               Format,
               args);
 
@@ -323,7 +324,7 @@ void a_out_warning(const char* Format, ...)
               A_OUT__TYPE_WARNING,
               false,
               false,
-              stdout,
+              stderr,
               Format,
               args);
 
@@ -339,7 +340,7 @@ void a_out_error(const char* Format, ...)
               A_OUT__TYPE_ERROR,
               false,
               false,
-              stdout,
+              stderr,
               Format,
               args);
 
@@ -359,7 +360,7 @@ void a_out_fatal(const char* Format, ...)
               A_OUT__TYPE_FATAL,
               false,
               false,
-              stdout,
+              stderr,
               Format,
               args);
 
