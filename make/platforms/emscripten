@@ -16,3 +16,4 @@ A_BUILD_CFLAGS := \
     -O3 \
     -s TOTAL_MEMORY=67108864 \
     $(A_BUILD_LIBS) \
+    $(addprefix --preload-file ../, $(join $(addsuffix @, $(A_EMBED_PATHS)), $(A_EMBED_PATHS))) \
