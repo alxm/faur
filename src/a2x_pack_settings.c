@@ -250,7 +250,6 @@ void a_settings__init(void)
     add(A_SETTING__COLOR, A_SETTING__SET_ONCE, "video.color.limit", "0x00FF00");
     add(A_SETTING__COLOR, A_SETTING__SET_ONCE, "video.color.end", "0x00FFFF");
 
-    add(A_SETTING__BOOL, A_SETTING__SET_ONCE, "sound.on", "1");
     add(A_SETTING__INT, A_SETTING__SET_ANY, "sound.music.scale", "100");
     add(A_SETTING__INT, A_SETTING__SET_ANY, "sound.sample.scale", "100");
     add(A_SETTING__INT, A_SETTING__SET_ONCE, "sound.sample.channels.total", "64");

@@ -30,7 +30,6 @@
 #include "a2x_pack_settings.v.h"
 #include "a2x_pack_timer.v.h"
 
-static bool g_soundOn;
 static int g_volume;
 static int g_musicVolume;
 static int g_samplesVolume;
@@ -63,12 +62,6 @@ static void adjustSoundVolume(int Volume)
 
 void a_sound__init(void)
 {
-    g_soundOn = a_settings_getBool("sound.on");
-
-    if(!g_soundOn) {
-        return;
-    }
-
     g_volumeMax = a_platform__volumeGetMax();
 
     #if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ
@@ -107,10 +100,6 @@ void a_sound__init(void)
 
 void a_sound__uninit(void)
 {
-    if(!g_soundOn) {
-        return;
-    }
-
     #if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ
         a_timer_free(g_volTimer);
     #endif
@@ -125,10 +114,6 @@ void a_sound__uninit(void)
 void a_sound__tick(void)
 {
     #if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ
-        if(!g_soundOn) {
-            return;
-        }
-
         int adjust = 0;
 
         if(a_button_pressGet(g_volumeUpButton)) {
@@ -144,7 +129,7 @@ void a_sound__tick(void)
     #endif
 
     #if A_BUILD_DEVICE_KEYBOARD
-        if(g_soundOn && a_button_pressGetOnce(g_musicOnOffButton)) {
+        if(a_button_pressGetOnce(g_musicOnOffButton)) {
             a_platform__musicToggle();
         }
     #endif
@@ -153,10 +138,7 @@ void a_sound__tick(void)
 void a_sound__draw(void)
 {
     #if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ
-        if(!g_soundOn
-            || !a_timer_isRunning(g_volTimer)
-            || a_timer_expiredGet(g_volTimer)) {
-
+        if(!a_timer_isRunning(g_volTimer) || a_timer_expiredGet(g_volTimer)) {
             return;
         }
 
@@ -177,59 +159,47 @@ void a_sound__draw(void)
 
 AMusic* a_music_new(const char* Path)
 {
-    if(g_soundOn) {
-        return a_platform__musicNew(Path);
-    }
-
-    return NULL;
+    return a_platform__musicNew(Path);
 }
 
 void a_music_free(AMusic* Music)
 {
-    if(g_soundOn && Music) {
+    if(Music) {
         a_platform__musicFree(Music);
     }
 }
 
 void a_music_play(AMusic* Music)
 {
-    if(g_soundOn) {
-        a_platform__musicPlay(Music);
-    }
+    a_platform__musicPlay(Music);
 }
 
 void a_music_stop(void)
 {
-    if(g_soundOn) {
-        a_platform__musicStop();
-    }
+    a_platform__musicStop();
 }
 
 ASample* a_sample_new(const char* Path)
 {
-    if(g_soundOn) {
-        APlatformSample* s = NULL;
+    APlatformSample* s = NULL;
 
-        if(a_file_exists(Path)) {
-            s = a_platform__sampleNewFromFile(Path);
-        } else {
-            const uint8_t* data;
-            size_t size;
+    if(a_file_exists(Path)) {
+        s = a_platform__sampleNewFromFile(Path);
+    } else {
+        const uint8_t* data;
+        size_t size;
 
-            if(a_embed__get(Path, &data, &size)) {
-                s = a_platform__sampleNewFromData(data, (int)size);
-            }
+        if(a_embed__get(Path, &data, &size)) {
+            s = a_platform__sampleNewFromData(data, (int)size);
         }
-
-        return s;
     }
 
-    return NULL;
+    return s;
 }
 
 void a_sample_free(ASample* Sample)
 {
-    if(g_soundOn && Sample) {
+    if(Sample) {
         a_platform__sampleFree(Sample);
     }
 }
@@ -241,10 +211,6 @@ int a_channel_new(void)
 
 void a_channel_play(int Channel, ASample* Sample, AChannelFlags Flags)
 {
-    if(!g_soundOn) {
-        return;
-    }
-
     if(Flags & A_CHANNEL_RESTART) {
         a_platform__sampleStop(Channel);
     } else if((Flags & A_CHANNEL_YIELD)
@@ -258,12 +224,10 @@ void a_channel_play(int Channel, ASample* Sample, AChannelFlags Flags)
 
 void a_channel_stop(int Channel)
 {
-    if(g_soundOn) {
-        a_platform__sampleStop(Channel);
-    }
+    a_platform__sampleStop(Channel);
 }
 
 bool a_channel_isPlaying(int Channel)
 {
-    return g_soundOn && a_platform__sampleIsPlaying(Channel);
+    return a_platform__sampleIsPlaying(Channel);
 }
