@@ -86,10 +86,6 @@ void a_console__init(void)
 
 void a_console__init2(void)
 {
-    if(!a_settings_getBool("video.on")) {
-        return;
-    }
-
     ASpriteFrames* frames = a_spriteframes_newFromFile("/a2x/consoleTitles", 0);
 
     for(AOutSource s = 0; s < A_OUT__SOURCE_NUM; s++) {

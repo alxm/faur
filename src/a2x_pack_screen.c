@@ -70,10 +70,6 @@ static void freeScreen(AScreen* Screen)
 
 void a_screen__init(void)
 {
-    if(!a_settings_getBool("video.on")) {
-        return;
-    }
-
     int width = a_settings_getInt("video.width");
     int height = a_settings_getInt("video.height");
 
@@ -131,10 +127,6 @@ void a_screen__init(void)
 
 void a_screen__uninit(void)
 {
-    if(!a_settings_getBool("video.on")) {
-        return;
-    }
-
     freeScreen(&a__screen);
 
     if(!a_list_isEmpty(g_stack)) {
