@@ -230,14 +230,11 @@ void a_settings__init(void)
     add(A_SETTING__STR, A_SETTING__SET_ONCE, "app.conf", "a2x.cfg");
     add(A_SETTING__BOOL, A_SETTING__SET_ANY, "app.output.on", "1");
     add(A_SETTING__BOOL, A_SETTING__SET_ANY, "app.output.verbose", "0");
-    add(A_SETTING__BOOL, A_SETTING__SET_ONCE, "app.tool", "0");
     add(A_SETTING__BOOL, A_SETTING__SET_ONCE, "app.gp2xMenu", "0");
     add(A_SETTING__UINT, A_SETTING__SET_ONCE, "app.mhz", "0");
 
     add(A_SETTING__UINT, A_SETTING__SET_ONCE, "fps.tick", "30");
     add(A_SETTING__UINT, A_SETTING__SET_ONCE, "fps.draw", "30");
-    add(A_SETTING__BOOL, A_SETTING__SET_ONCE, "fps.draw.skip", "0");
-    add(A_SETTING__UINT, A_SETTING__SET_ONCE, "fps.draw.skip.max", "2");
 
     add(A_SETTING__INT, A_SETTING__SET_ONCE, "video.width", "320");
     add(A_SETTING__INT, A_SETTING__SET_ONCE, "video.height", "240");

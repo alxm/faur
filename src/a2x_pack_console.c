@@ -218,9 +218,6 @@ void a_console__draw(void)
         a_font_printf("%u draw max", a_fps_drawRateGetMax());
         a_font_newLine();
 
-        a_font_printf("%u draw skip", a_fps_drawSkipGet());
-        a_font_newLine();
-
         a_font__fontSet(A_FONT__ID_BLUE);
         a_font_printf(
             "Vsync is %s", a_settings_getBool("video.vsync") ? "on" : "off");
