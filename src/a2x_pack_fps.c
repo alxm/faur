@@ -26,10 +26,6 @@
 
 #define A__AVERAGE_WINDOW_SEC 2
 
-#if !A_BUILD_SYSTEM_EMSCRIPTEN
-    #define A__ALLOW_SLEEP 1
-#endif
-
 static struct {
     unsigned tickRate;
     unsigned drawRate;
@@ -130,9 +126,7 @@ void a_fps__frame(void)
 
     if(!g_settings.vsyncOn) {
         while(elapsedMs < g_settings.drawFrameMs) {
-            #if A__ALLOW_SLEEP
-                a_time_msWait(g_settings.drawFrameMs - elapsedMs);
-            #endif
+            a_time_msWait(g_settings.drawFrameMs - elapsedMs);
 
             nowMs = a_time_msGet();
             elapsedMs = nowMs - g_run.lastFrameMs;
@@ -148,8 +142,8 @@ void a_fps__frame(void)
 
     g_history.head = (g_history.head + 1) % g_history.len;
 
-    g_run.lastFrameMs = nowMs;
     g_run.tickCreditMs += elapsedMs;
+    g_run.lastFrameMs = nowMs;
 }
 
 unsigned a_fps_tickRateGet(void)

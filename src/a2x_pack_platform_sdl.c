@@ -68,6 +68,10 @@ uint32_t a_platform__msGet(void)
 
 void a_platform__msWait(uint32_t Ms)
 {
+    #if A_BUILD_SYSTEM_EMSCRIPTEN
+        return;
+    #endif
+
     #if A_BUILD_SYSTEM_GP2X // too inaccurate
         if(Ms < 10) {
             a_time_msSpin(Ms);
