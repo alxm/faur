@@ -24,7 +24,6 @@
 extern unsigned a_fps_tickRateGet(void);
 extern unsigned a_fps_drawRateGet(void);
 extern unsigned a_fps_drawRateGetMax(void);
-extern unsigned a_fps_drawSkipGet(void);
 
 extern unsigned a_fps_ticksGet(void);
 extern bool a_fps_ticksNth(unsigned N);

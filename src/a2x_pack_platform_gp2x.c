@@ -114,8 +114,8 @@ void a_platform_gp2x__init(void)
         }
     }
 
-    if(a_settings_getUnsigned("app.mhz") > 0) {
-        setCpuSpeed(a_settings_getUnsigned("app.mhz"));
+    if(a_settings_intuGet(A_SETTING_SYSTEM_GP2X_MHZ) > 0) {
+        setCpuSpeed(a_settings_intuGet(A_SETTING_SYSTEM_GP2X_MHZ));
     }
 
     setRamTimings(6, 4, 1, 1, 1, 2, 2);

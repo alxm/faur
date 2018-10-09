@@ -75,7 +75,7 @@ extern void a_platform__musicFree(APlatformMusic* Music);
 extern void a_platform__musicVolumeSet(int Volume);
 extern void a_platform__musicPlay(APlatformMusic* Music);
 extern void a_platform__musicStop(void);
-extern void a_platform__musicToggle(void);
+extern void a_platform__musicToggle(bool Mute);
 
 extern APlatformSample* a_platform__sampleNewFromFile(const char* Path);
 extern APlatformSample* a_platform__sampleNewFromData(const uint8_t* Data, int Size);

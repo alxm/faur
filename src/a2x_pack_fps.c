@@ -23,22 +23,12 @@
 #include "a2x_pack_out.v.h"
 #include "a2x_pack_settings.v.h"
 #include "a2x_pack_time.v.h"
-#include "a2x_pack_timer.v.h"
 
 #define A__AVERAGE_WINDOW_SEC 2
-#define A__SKIP_ADJUST_DELAY_SEC 2
-#define A__NO_SLEEP_RESET_SEC 20
-
-#if !A_BUILD_SYSTEM_EMSCRIPTEN
-    #define A__ALLOW_SLEEP 1
-#endif
 
 static struct {
-    unsigned tickRate;
-    unsigned drawRate;
-    unsigned skipFramesMax;
-    bool allowSkipFrames;
-    bool vsyncOn;
+    unsigned tickFrameMs;
+    unsigned drawFrameMs;
 } g_settings;
 
 static struct {
@@ -51,114 +41,67 @@ static struct {
 } g_history;
 
 static struct {
-    unsigned fpsThresholdFast;
-    unsigned fpsThresholdSlow;
-    ATimer* skipAdjTimer;
-} g_skip;
-
-static struct {
-    unsigned skipFramesNum;
-    unsigned targetDrawFps;
-    unsigned drawFrameMs;
-    unsigned tickFrameMs;
     unsigned drawFps;
     unsigned drawFpsMax;
     unsigned frameCounter;
     unsigned tickCreditMs;
     uint32_t lastFrameMs;
-    #if A__ALLOW_SLEEP
-        ATimer* canSleepAgainTimer;
-        bool canSleep;
-    #endif
 } g_run;
 
 void a_fps__init(void)
 {
-    g_settings.tickRate = a_settings_getUnsigned("fps.tick");
-    g_settings.drawRate = a_settings_getUnsigned("fps.draw");
-    g_settings.skipFramesMax = a_settings_getUnsigned("fps.draw.skip.max");
-    g_settings.allowSkipFrames = a_settings_getBool("fps.draw.skip");
-    g_settings.vsyncOn = a_settings_getBool("video.vsync");
+    g_settings.tickFrameMs = 1000 / a_settings_intuGet(A_SETTING_FPS_TICK);
+    g_settings.drawFrameMs = 1000 / a_settings_intuGet(A_SETTING_FPS_DRAW);
 
-    if(g_settings.tickRate < 1) {
-        a_out__fatal("Invalid setting fps.tick=0");
+    if(a_settings_intuGet(A_SETTING_FPS_TICK) < 1) {
+        a_out__fatal(
+            "Invalid %s setting", a_settings__idToString(A_SETTING_FPS_TICK));
     }
 
-    if(g_settings.drawRate < 1) {
-        a_out__fatal("Invalid setting fps.draw=0");
-    } else if(g_settings.skipFramesMax >= g_settings.drawRate) {
-        a_out__fatal("Invalid setting fps.draw.skip.max=%u for fps.draw=%u",
-                     g_settings.skipFramesMax,
-                     g_settings.drawRate);
+    if(a_settings_intuGet(A_SETTING_FPS_DRAW) < 1) {
+        a_out__fatal(
+            "Invalid %s setting", a_settings__idToString(A_SETTING_FPS_DRAW));
     }
 
     g_history.head = 0;
-    g_history.len = g_settings.drawRate * A__AVERAGE_WINDOW_SEC;
+    g_history.len =
+        a_settings_intuGet(A_SETTING_FPS_DRAW) * A__AVERAGE_WINDOW_SEC;
     g_history.drawFrameMs = a_mem_malloc(g_history.len * sizeof(unsigned));
     g_history.drawFrameMsMin = a_mem_malloc(g_history.len * sizeof(unsigned));
 
-    g_skip.skipAdjTimer = a_timer_new(
-                            A_TIMER_SEC, A__SKIP_ADJUST_DELAY_SEC, true);
-
-    #if A__ALLOW_SLEEP
-        g_run.canSleepAgainTimer = a_timer_new(
-                                    A_TIMER_SEC, A__NO_SLEEP_RESET_SEC, false);
-        g_run.canSleep = true;
-    #endif
-
     g_run.frameCounter = 0;
 
-    a_timer_start(g_skip.skipAdjTimer);
-
-    a_fps__reset(0);
+    a_fps__reset();
 }
 
 void a_fps__uninit(void)
 {
-    a_timer_free(g_skip.skipAdjTimer);
-
-    #if A__ALLOW_SLEEP
-        a_timer_free(g_run.canSleepAgainTimer);
-    #endif
-
     free(g_history.drawFrameMs);
     free(g_history.drawFrameMsMin);
 }
 
-void a_fps__reset(unsigned NumFramesToSkip)
+void a_fps__reset(void)
 {
-    g_run.skipFramesNum = NumFramesToSkip;
-    g_run.targetDrawFps = g_settings.drawRate / (1 + g_run.skipFramesNum);
-    g_run.drawFrameMs = 1000 / g_run.targetDrawFps;
-    g_run.tickFrameMs = 1000 / g_settings.tickRate;
-
-    g_run.drawFps = g_run.targetDrawFps;
-    g_run.drawFpsMax = g_run.targetDrawFps;
+    g_run.drawFps = a_settings_intuGet(A_SETTING_FPS_DRAW);
+    g_run.drawFpsMax = g_run.drawFps;
 
     for(unsigned i = g_history.len; i--; ) {
-        g_history.drawFrameMs[i] = g_run.drawFrameMs;
-        g_history.drawFrameMsMin[i] = g_run.drawFrameMs;
+        g_history.drawFrameMs[i] = g_settings.drawFrameMs;
+        g_history.drawFrameMsMin[i] = g_settings.drawFrameMs;
     }
 
-    g_history.drawFrameMsSum = g_history.len * 1000 / g_run.targetDrawFps;
+    g_history.drawFrameMsSum =
+        g_history.len * 1000 / a_settings_intuGet(A_SETTING_FPS_DRAW);
     g_history.drawFrameMsMinSum = g_history.drawFrameMsSum;
 
-    if(g_run.skipFramesNum > 0) {
-        g_skip.fpsThresholdFast = g_settings.drawRate / g_run.skipFramesNum;
-    }
-
-    g_skip.fpsThresholdSlow = (g_run.targetDrawFps > 3)
-                                ? (g_run.targetDrawFps - 2)
-                                : 1;
-
     g_run.lastFrameMs = a_time_msGet();
-    g_run.tickCreditMs = g_run.tickFrameMs;
+    g_run.tickCreditMs = g_settings.tickFrameMs;
 }
 
 bool a_fps__tick(void)
 {
-    if(g_run.tickCreditMs >= g_run.tickFrameMs) {
-        g_run.tickCreditMs -= g_run.tickFrameMs;
+    if(g_run.tickCreditMs >= g_settings.tickFrameMs) {
+        g_run.tickCreditMs -= g_settings.tickFrameMs;
         g_run.frameCounter++;
 
         return true;
@@ -179,13 +122,9 @@ void a_fps__frame(void)
         g_run.drawFpsMax = g_history.len * 1000 / g_history.drawFrameMsMinSum;
     }
 
-    if(!g_settings.vsyncOn) {
-        while(elapsedMs < g_run.drawFrameMs) {
-            #if A__ALLOW_SLEEP
-                if(g_run.canSleep) {
-                    a_time_msWait(g_run.drawFrameMs - elapsedMs);
-                }
-            #endif
+    if(!a_settings_boolGet(A_SETTING_VIDEO_VSYNC)) {
+        while(elapsedMs < g_settings.drawFrameMs) {
+            a_time_msWait(g_settings.drawFrameMs - elapsedMs);
 
             nowMs = a_time_msGet();
             elapsedMs = nowMs - g_run.lastFrameMs;
@@ -200,49 +139,14 @@ void a_fps__frame(void)
     }
 
     g_history.head = (g_history.head + 1) % g_history.len;
-    g_run.lastFrameMs = nowMs;
-
-    if(!g_settings.vsyncOn && g_settings.allowSkipFrames) {
-        unsigned newFrameSkip = UINT_MAX;
-
-        if(a_timer_expiredGet(g_skip.skipAdjTimer)) {
-            if(g_run.drawFpsMax <= g_skip.fpsThresholdSlow
-                && g_run.skipFramesNum < g_settings.skipFramesMax) {
-
-                newFrameSkip = g_run.skipFramesNum + 1;
-            } else if(g_run.drawFpsMax >= g_skip.fpsThresholdFast
-                && g_run.skipFramesNum > 0) {
-
-                newFrameSkip = g_run.skipFramesNum - 1;
-            }
-
-            if(newFrameSkip != UINT_MAX) {
-                a_fps__reset(newFrameSkip);
-
-                #if A__ALLOW_SLEEP
-                    g_run.canSleep = false;
-
-                    if(newFrameSkip == 0) {
-                        a_timer_start(g_run.canSleepAgainTimer);
-                    } else {
-                        a_timer_stop(g_run.canSleepAgainTimer);
-                    }
-                #endif
-            }
-        }
-
-        #if A__ALLOW_SLEEP
-            g_run.canSleep = g_run.canSleep
-                                || a_timer_expiredGet(g_run.canSleepAgainTimer);
-        #endif
-    }
 
     g_run.tickCreditMs += elapsedMs;
+    g_run.lastFrameMs = nowMs;
 }
 
 unsigned a_fps_tickRateGet(void)
 {
-    return g_settings.tickRate;
+    return a_settings_intuGet(A_SETTING_FPS_TICK);
 }
 
 unsigned a_fps_drawRateGet(void)
@@ -253,11 +157,6 @@ unsigned a_fps_drawRateGet(void)
 unsigned a_fps_drawRateGetMax(void)
 {
     return g_run.drawFpsMax;
-}
-
-unsigned a_fps_drawSkipGet(void)
-{
-    return g_run.skipFramesNum;
 }
 
 unsigned a_fps_ticksGet(void)

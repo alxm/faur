@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016 Alex Margarit
+    Copyright 2010, 2016, 2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -21,8 +21,19 @@
 
 #include "a2x_pack_settings.p.h"
 
+typedef enum {
+    A__SETTING_TYPE_INVALID = -1,
+    A__SETTING_TYPE_INT,
+    A__SETTING_TYPE_INTU,
+    A__SETTING_TYPE_BOOL,
+    A__SETTING_TYPE_STR,
+    A__SETTING_TYPE_PIXEL,
+    A__SETTING_TYPE_NUM
+} ASettingType;
+
 extern void a_settings__init(void);
 extern void a_settings__uninit(void);
 
-extern void a_settings__set(const char* Key, const char* Value);
-extern bool a_settings__flip(const char* Key);
+extern ASettingId a_settings__stringToId(const char* Key);
+extern const char* a_settings__idToString(ASettingId Setting);
+extern ASettingType a_settings__typeGet(ASettingId Setting);

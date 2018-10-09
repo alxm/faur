@@ -61,7 +61,7 @@ static void a__atexit(void)
     a_platform__uninit();
 
     #if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ || A_BUILD_SYSTEM_CAANOO
-        if(a_settings_getBool("app.gp2xMenu")) {
+        if(a_settings_boolGet(A_SETTING_SYSTEM_GP2X_MENU)) {
             a_settings__uninit();
             chdir("/usr/gp2x");
             execl("gp2xmenu", "gp2xmenu", NULL);
@@ -83,10 +83,10 @@ int main(int Argc, char* Argv[])
         "a2x %s, %s", A_BUILD__CURRENT_GIT_BRANCH, A_BUILD__COMPILE_TIME);
 
     a_out__message("%s %s by %s, %s",
-                   a_settings_getString("app.title"),
-                   a_settings_getString("app.version"),
-                   a_settings_getString("app.author"),
-                   a_settings_getString("app.buildtime"));
+                   a_settings_stringGet(A_SETTING_APP_TITLE),
+                   a_settings_stringGet(A_SETTING_APP_VERSION),
+                   a_settings_stringGet(A_SETTING_APP_AUTHOR),
+                   a_settings_stringGet(A_SETTING_APP_BUILDTIME));
 
     a_conf__init();
     a_platform__init();

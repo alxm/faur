@@ -47,20 +47,14 @@ void a_platform_sdl__init(void)
 
     a_platform_sdl_input__init();
     a_platform_sdl_video__init();
-
-    if(a_settings_getBool("sound.on")) {
-        a_platform_sdl_sound__init();
-    }
+    a_platform_sdl_sound__init();
 }
 
 void a_platform_sdl__uninit(void)
 {
     a_platform_sdl_input__uninit();
     a_platform_sdl_video__uninit();
-
-    if(a_settings_getBool("sound.on")) {
-        a_platform_sdl_sound__uninit();
-    }
+    a_platform_sdl_sound__uninit();
 
     SDL_QuitSubSystem(g_sdlFlags);
     SDL_Quit();
@@ -74,6 +68,10 @@ uint32_t a_platform__msGet(void)
 
 void a_platform__msWait(uint32_t Ms)
 {
+    #if A_BUILD_SYSTEM_EMSCRIPTEN
+        return;
+    #endif
+
     #if A_BUILD_SYSTEM_GP2X // too inaccurate
         if(Ms < 10) {
             a_time_msSpin(Ms);

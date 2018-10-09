@@ -374,7 +374,7 @@ void a_platform_sdl_input__init(void)
 
     #if A_BUILD_LIB_SDL == 2
         if(joysticksNum > 0) {
-            const char* mFile = a_settings_getString("input.mapfile");
+            const char* mFile = a_settings_stringGet(A_SETTING_FILE_GAMEPADMAP);
             int mNum = SDL_GameControllerAddMappingsFromFile(mFile);
 
             if(mNum < 0) {
@@ -860,7 +860,8 @@ void a_platform__inputsPoll(void)
 #endif
 
             case SDL_MOUSEMOTION: {
-                const bool track = a_settings_getBool("input.trackMouse");
+                const bool track =
+                    a_settings_boolGet(A_SETTING_INPUT_MOUSE_TRACK);
 
                 A_STRHASH_ITERATE(g_touchScreens, APlatformTouch*, t) {
                     t->x = event.button.x;

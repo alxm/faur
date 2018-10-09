@@ -38,7 +38,7 @@ static AButton* g_button;
 
 static bool lazy_init(void)
 {
-    const char* screensDir = a_settings_getString("screenshot.dir");
+    const char* screensDir = a_settings_stringGet(A_SETTING_FILE_SCREENSHOTS);
 
     if(a_dir_exists(screensDir)) {
         ADir* dir = a_dir_new(screensDir);
@@ -84,7 +84,7 @@ static bool lazy_init(void)
     if(g_isInit) {
         g_filePrefix = a_str_merge(screensDir,
                                    "/",
-                                   a_settings_getString("app.title"),
+                                   a_settings_stringGet(A_SETTING_APP_TITLE),
                                    "-",
                                    NULL);
 
@@ -95,26 +95,27 @@ static bool lazy_init(void)
             }
         }
 
-        g_title = a_str_merge(a_settings_getString("app.title"),
+        g_title = a_str_merge(a_settings_stringGet(A_SETTING_APP_TITLE),
                               " ",
-                              a_settings_getString("app.version"),
+                              a_settings_stringGet(A_SETTING_APP_VERSION),
                               " by ",
-                              a_settings_getString("app.author"),
+                              a_settings_stringGet(A_SETTING_APP_AUTHOR),
                               NULL);
 
-        g_description = a_str_merge(a_settings_getString("app.title"),
-                                    " ",
-                                    a_settings_getString("app.version"),
-                                    " by ",
-                                    a_settings_getString("app.author"),
-                                    ", built on ",
-                                    a_settings_getString("app.buildtime"),
-                                    ". Running on a2x ",
-                                    A_BUILD__CURRENT_GIT_BRANCH,
-                                    ", built on ",
-                                    A_BUILD__COMPILE_TIME,
-                                    ".",
-                                    NULL);
+        g_description = a_str_merge(
+                            a_settings_stringGet(A_SETTING_APP_TITLE),
+                            " ",
+                            a_settings_stringGet(A_SETTING_APP_VERSION),
+                            " by ",
+                            a_settings_stringGet(A_SETTING_APP_AUTHOR),
+                            ", built on ",
+                            a_settings_stringGet(A_SETTING_APP_BUILDTIME),
+                            ". Running on a2x ",
+                            A_BUILD__CURRENT_GIT_BRANCH,
+                            ", built on ",
+                            A_BUILD__COMPILE_TIME,
+                            ".",
+                            NULL);
     }
 
     return g_isInit;

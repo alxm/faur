@@ -105,22 +105,23 @@ static void pending_handle(void)
     if(current && current->stage == A_STATE__STAGE_FREE) {
         a_out__statev("Destroying '%s' instance", current->name);
 
-        a_ecs__collectionPop();
         a_list_pop(g_stack);
         current = a_list_peek(g_stack);
-        a_fps__reset(0);
+
+        a_ecs__collectionPop();
+        a_fps__reset();
     }
 
     // If there are no pending state changes, do any automatic transitions
     if(a_list_isEmpty(g_pending)) {
         if(current && current->stage == A_STATE__STAGE_INIT) {
-            current->stage = A_STATE__STAGE_LOOP;
-            a_fps__reset(0);
-
             a_out__statev("  '%s' going from %s to %s",
                           current->name,
                           stageName(A_STATE__STAGE_INIT),
                           stageName(A_STATE__STAGE_LOOP));
+
+            current->stage = A_STATE__STAGE_LOOP;
+            a_fps__reset();
         }
 
         return;
@@ -343,9 +344,10 @@ void a_state__run(void)
 
     #if A_BUILD_SYSTEM_EMSCRIPTEN
         emscripten_set_main_loop(loop,
-                                 a_settings_getBool("video.vsync")
+                                 a_settings_boolGet(A_SETTING_VIDEO_VSYNC)
                                      ? 0
-                                     : (int)a_settings_getUnsigned("fps.draw"),
+                                     : (int)
+                                        a_settings_intuGet(A_SETTING_FPS_DRAW),
                                  true);
     #else
         while(iteration()) {
