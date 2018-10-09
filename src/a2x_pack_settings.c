@@ -159,6 +159,11 @@ ASettingId a_settings__stringToId(const char* Key)
     return (ASettingId)a_strhash_get(g_settingsIndex, Key);
 }
 
+const char* a_settings__idToString(ASettingId Setting)
+{
+    return g_settings[Setting].id;
+}
+
 ASettingType a_settings__typeGet(ASettingId Setting)
 {
     return g_settings[Setting].type;
