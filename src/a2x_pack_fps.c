@@ -53,11 +53,11 @@ static struct {
 
 void a_fps__init(void)
 {
-    g_settings.tickRate = a_settings_getUnsigned("fps.tick");
-    g_settings.drawRate = a_settings_getUnsigned("fps.draw");
+    g_settings.tickRate = a_settings_intuGet(A_SETTING_FPS_TICK);
+    g_settings.drawRate = a_settings_intuGet(A_SETTING_FPS_DRAW);
     g_settings.drawFrameMs = 1000 / g_settings.drawRate;
     g_settings.tickFrameMs = 1000 / g_settings.tickRate;
-    g_settings.vsyncOn = a_settings_getBool("video.vsync");
+    g_settings.vsyncOn = a_settings_boolGet(A_SETTING_VIDEO_VSYNC);
 
     if(g_settings.tickRate < 1) {
         a_out__fatal("Invalid setting fps.tick=0");

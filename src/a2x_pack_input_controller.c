@@ -62,14 +62,14 @@ void a_input_controller__init(void)
         // Forward the left analog stick to the direction buttons
         if(x && y && u && d && l && r) {
             if(!a_platform__controllerIsMapped()) {
-                if(a_settings_getBool("input.switchAxes")) {
+                if(a_settings_boolGet(A_SETTING_INPUT_ANALOG_AXES_SWITCH)) {
                     APlatformAnalog* save = x;
 
                     x = y;
                     y = save;
                 }
 
-                if(a_settings_getBool("input.invertAxes")) {
+                if(a_settings_boolGet(A_SETTING_INPUT_ANALOG_AXES_INVERT)) {
                     APlatformButton* save;
 
                     save = u;

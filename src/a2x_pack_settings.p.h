@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2017 Alex Margarit
+    Copyright 2010, 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -21,16 +21,74 @@
 
 #include "a2x_system_includes.h"
 
+typedef enum {
+    A_SETTING_INVALID = -1,
+
+    A_SETTING_APP_TITLE,
+    A_SETTING_APP_VERSION,
+    A_SETTING_APP_AUTHOR,
+    A_SETTING_APP_BUILDTIME,
+
+    A_SETTING_OUTPUT_ON,
+    A_SETTING_OUTPUT_VERBOSE,
+    A_SETTING_OUTPUT_CONSOLE,
+
+    A_SETTING_FPS_TICK,
+    A_SETTING_FPS_DRAW,
+
+    A_SETTING_VIDEO_WIDTH,
+    A_SETTING_VIDEO_HEIGHT,
+    A_SETTING_VIDEO_VSYNC,
+    A_SETTING_VIDEO_DOUBLEBUFFER,
+    A_SETTING_VIDEO_FULLSCREEN,
+
+    A_SETTING_COLOR_SCREEN_BORDER,
+    A_SETTING_COLOR_VOLBAR_BACKGROUND,
+    A_SETTING_COLOR_VOLBAR_BORDER,
+    A_SETTING_COLOR_VOLBAR_FILL,
+    A_SETTING_COLOR_KEY,
+    A_SETTING_COLOR_LIMIT,
+    A_SETTING_COLOR_END,
+
+    A_SETTING_SOUND_SAMPLE_CHANNELS_TOTAL,
+    A_SETTING_SOUND_SAMPLE_CHANNELS_RESERVED,
+    A_SETTING_SOUND_VOLUME_SCALE_MUSIC,
+    A_SETTING_SOUND_VOLUME_SCALE_SAMPLE,
+
+    A_SETTING_INPUT_MOUSE_HIDECURSOR,
+    A_SETTING_INPUT_MOUSE_TRACK,
+    A_SETTING_INPUT_ANALOG_AXES_SWITCH,
+    A_SETTING_INPUT_ANALOG_AXES_INVERT,
+
+    A_SETTING_FILE_CONFIG,
+    A_SETTING_FILE_SCREENSHOTS,
+    A_SETTING_FILE_GAMEPADMAP,
+
+    A_SETTING_SYSTEM_GP2X_MENU,
+    A_SETTING_SYSTEM_GP2X_MHZ,
+    A_SETTING_SYSTEM_WIZ_FIXTEARING,
+
+    A_SETTING_NUM
+} ASettingId;
+
 #include "a2x_pack_pixel.p.h"
 
 #define A_SETUP void a_settings__application(void)
 extern A_SETUP;
 
-extern void a_settings_set(const char* Key, const char* Value);
-extern bool a_settings_flip(const char* Key);
+extern bool a_settings_isDefault(ASettingId Setting);
 
-extern const char* a_settings_getString(const char* Key);
-extern bool a_settings_getBool(const char* Key);
-extern int a_settings_getInt(const char* Key);
-extern unsigned a_settings_getUnsigned(const char* Key);
-extern APixel a_settings_getPixel(const char* Key);
+extern bool a_settings_boolGet(ASettingId Setting);
+extern void a_settings_boolSet(ASettingId Setting, bool Value);
+
+extern int a_settings_intGet(ASettingId Setting);
+extern void a_settings_intSet(ASettingId Setting, int Value);
+
+extern unsigned a_settings_intuGet(ASettingId Setting);
+extern void a_settings_intuSet(ASettingId Setting, unsigned Value);
+
+extern const char* a_settings_stringGet(ASettingId Setting);
+extern void a_settings_stringSet(ASettingId Setting, const char* Value);
+
+extern APixel a_settings_pixelGet(ASettingId Setting);
+extern void a_settings_pixelSet(ASettingId Setting, APixel Value);

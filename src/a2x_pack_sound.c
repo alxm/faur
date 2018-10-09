@@ -53,8 +53,10 @@ static int g_volumeMax;
 static void adjustSoundVolume(int Volume)
 {
     g_volume = a_math_clamp(Volume, 0, g_volumeMax);
-    g_musicVolume = a_settings_getInt("sound.music.scale") * g_volume / 100;
-    g_samplesVolume = a_settings_getInt("sound.sample.scale") * g_volume / 100;
+    g_musicVolume = a_settings_intGet(A_SETTING_SOUND_VOLUME_SCALE_MUSIC)
+                        * g_volume / 100;
+    g_samplesVolume = a_settings_intGet(A_SETTING_SOUND_VOLUME_SCALE_SAMPLE)
+                        * g_volume / 100;
 
     a_platform__sampleVolumeSetAll(g_samplesVolume);
     a_platform__musicVolumeSet(g_musicVolume);
@@ -87,13 +89,13 @@ void a_sound__init(void)
     #if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ
         const char* color;
 
-        color = a_settings_getString("sound.volbar.background");
+        color = a_settings_stringGet(A_SETTING_COLOR_VOLBAR_BACKGROUND);
         g_volbarBackground = a_pixel_fromHex((uint32_t)strtol(color, NULL, 16));
 
-        color = a_settings_getString("sound.volbar.border");
+        color = a_settings_stringGet(A_SETTING_COLOR_VOLBAR_BORDER);
         g_volbarBorder = a_pixel_fromHex((uint32_t)strtol(color, NULL, 16));
 
-        color = a_settings_getString("sound.volbar.fill");
+        color = a_settings_stringGet(A_SETTING_COLOR_VOLBAR_FILL);
         g_volbarFill = a_pixel_fromHex((uint32_t)strtol(color, NULL, 16));
     #endif
 }

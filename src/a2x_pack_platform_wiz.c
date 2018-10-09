@@ -154,7 +154,7 @@ void a_platform__msWait(uint32_t Ms)
 void a_platform_wiz__portraitModeSet(void)
 {
     // Set Wiz screen to portrait mode to avoid diagonal tearing
-    if(!a_settings_getBool("video.fixWizTearing")) {
+    if(!a_settings_boolGet(A_SETTING_SYSTEM_WIZ_FIXTEARING)) {
         return;
     }
 

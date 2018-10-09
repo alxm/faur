@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016 Alex Margarit
+    Copyright 2010, 2016, 2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -26,7 +26,7 @@
 
 void a_conf__init(void)
 {
-    const char* conf_name = a_settings_getString("app.conf");
+    const char* conf_name = a_settings_stringGet(A_SETTING_FILE_CONFIG);
 
     if(!a_file_exists(conf_name)) {
         return;
@@ -57,7 +57,42 @@ void a_conf__init(void)
             char* key_trim = a_str_trim(key);
             char* val_trim = a_str_trim(value);
 
-            a_settings_set(key_trim, val_trim);
+            ASettingId id = a_settings__stringToId(key_trim);
+
+            if(id == A_SETTING_INVALID) {
+                a_out__error("Unknown setting %s", key_trim);
+            } else {
+                switch(a_settings__typeGet(id)) {
+                    case A__SETTING_TYPE_INT: {
+                        a_settings_intSet(id, atoi(val_trim));
+                    } break;
+
+                    case A__SETTING_TYPE_INTU: {
+                        a_settings_intuSet(id, (unsigned)atoi(val_trim));
+                    } break;
+
+                    case A__SETTING_TYPE_BOOL: {
+                        a_settings_boolSet(id,
+                                           a_str_equal(val_trim, "1")
+                                        || a_str_equal(val_trim, "yes")
+                                        || a_str_equal(val_trim, "y")
+                                        || a_str_equal(val_trim, "true")
+                                        || a_str_equal(val_trim, "t")
+                                        || a_str_equal(val_trim, "on"));
+                    } break;
+
+                    case A__SETTING_TYPE_STR: {
+                        a_settings_stringSet(id, val_trim);
+                    } break;
+
+                    case A__SETTING_TYPE_PIXEL: {
+                        long hex = strtol(val_trim, NULL, 16);
+                        a_settings_pixelSet(id, a_pixel_fromHex((uint32_t)hex));
+                    } break;
+
+                    default: break;
+                }
+            }
 
             free(key_trim);
             free(val_trim);

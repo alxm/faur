@@ -56,7 +56,7 @@ void a_platform_sdl_video__init(void)
 void a_platform_sdl_video__uninit(void)
 {
     #if A_BUILD_LIB_SDL == 1
-        if(!a_settings_getBool("video.doubleBuffer")) {
+        if(!a_settings_boolGet(A_SETTING_VIDEO_DOUBLEBUFFER)) {
             if(SDL_MUSTLOCK(g_sdlScreen)) {
                 SDL_UnlockSurface(g_sdlScreen);
             }
@@ -99,7 +99,7 @@ void a_platform__screenInit(int Width, int Height, bool FullScreen)
 
         SDL_SetClipRect(g_sdlScreen, NULL);
 
-        if(!a_settings_getBool("video.doubleBuffer")) {
+        if(!a_settings_boolGet(A_SETTING_VIDEO_DOUBLEBUFFER)) {
             if(SDL_MUSTLOCK(g_sdlScreen)) {
                 if(SDL_LockSurface(g_sdlScreen) < 0) {
                     a_out__fatal("SDL_LockSurface: %s", SDL_GetError());
@@ -129,7 +129,7 @@ void a_platform__screenInit(int Width, int Height, bool FullScreen)
         uint32_t rendererFlags = SDL_RENDERER_ACCELERATED
                                | SDL_RENDERER_TARGETTEXTURE;
 
-        if(a_settings_getBool("video.vsync")) {
+        if(a_settings_boolGet(A_SETTING_VIDEO_VSYNC)) {
             rendererFlags |= SDL_RENDERER_PRESENTVSYNC;
         }
 
@@ -143,9 +143,9 @@ void a_platform__screenInit(int Width, int Height, bool FullScreen)
             SDL_RendererInfo info;
             SDL_GetRendererInfo(a__sdlRenderer, &info);
 
-            if(!(info.flags & SDL_RENDERER_PRESENTVSYNC))  {
+            if(!(info.flags & SDL_RENDERER_PRESENTVSYNC)) {
                 a_out__warning("Cannot use vsync");
-                a_settings__set("video.vsync", "0");
+                a_settings_boolSet(A_SETTING_VIDEO_VSYNC, false);
             }
         }
 
@@ -169,7 +169,7 @@ void a_platform__screenInit(int Width, int Height, bool FullScreen)
         SDL_SetHintWithPriority(
             SDL_HINT_RENDER_SCALE_QUALITY, "nearest", SDL_HINT_OVERRIDE);
 
-        a_pixel_toRgb(a_settings_getPixel("video.color.border"),
+        a_pixel_toRgb(a_settings_pixelGet(A_SETTING_COLOR_SCREEN_BORDER),
                       &g_clearR,
                       &g_clearG,
                       &g_clearB);
@@ -180,8 +180,8 @@ void a_platform__screenInit(int Width, int Height, bool FullScreen)
         snprintf(caption,
                  sizeof(caption),
                  "%s %s",
-                 a_settings_getString("app.title"),
-                 a_settings_getString("app.version"));
+                 a_settings_stringGet(A_SETTING_APP_TITLE),
+                 a_settings_stringGet(A_SETTING_APP_VERSION));
 
         #if A_BUILD_LIB_SDL == 1
             SDL_WM_SetCaption(caption, NULL);
@@ -195,7 +195,7 @@ void a_platform__screenShow(void)
 {
     #if A_BUILD_LIB_SDL == 1
         #if A_BUILD_SYSTEM_WIZ
-            if(a_settings_getBool("video.fixWizTearing")) {
+            if(a_settings_boolGet(A_SETTING_SYSTEM_WIZ_FIXTEARING)) {
                 // The Wiz screen has diagonal tearing in landscape mode. As a
                 // slow but simple workaround, the screen is set to portrait
                 // mode where top-right is 0,0 and bottom-left is 240,320, and
@@ -231,7 +231,7 @@ void a_platform__screenShow(void)
             }
         #endif
 
-        if(a_settings_getBool("video.doubleBuffer")) {
+        if(a_settings_boolGet(A_SETTING_VIDEO_DOUBLEBUFFER)) {
             if(SDL_MUSTLOCK(g_sdlScreen)) {
                 if(SDL_LockSurface(g_sdlScreen) < 0) {
                     a_out__fatal("SDL_LockSurface: %s", SDL_GetError());
@@ -323,9 +323,10 @@ void a_platform__screenSetFullscreen(bool FullScreen)
         }
     #endif
 
-    int toggle = FullScreen || a_settings_getBool("input.hideCursor")
-                    ? SDL_DISABLE
-                    : SDL_ENABLE;
+    int toggle =
+        FullScreen || a_settings_boolGet(A_SETTING_INPUT_MOUSE_HIDECURSOR)
+            ? SDL_DISABLE
+            : SDL_ENABLE;
 
     if(SDL_ShowCursor(toggle) < 0) {
         a_out__error("SDL_ShowCursor: %s", SDL_GetError());

@@ -118,7 +118,7 @@ void a_console__init2(void)
         a_button_bind(g_toggle, "gamepad.b.y");
     a_button_bindComboEnd(g_toggle);
 
-    g_state = a_settings_getBool("console.on")
+    g_state = a_settings_boolGet(A_SETTING_OUTPUT_CONSOLE)
                 ? A_CONSOLE__STATE_VISIBLE
                 : A_CONSOLE__STATE_FULL;
 }
@@ -180,12 +180,12 @@ void a_console__draw(void)
 
         a_font__fontSet(A_FONT__ID_WHITE);
         a_font_printf("%s %s",
-                      a_settings_getString("app.title"),
-                      a_settings_getString("app.version"));
+                      a_settings_stringGet(A_SETTING_APP_TITLE),
+                      a_settings_stringGet(A_SETTING_APP_VERSION));
         a_font__fontSet(A_FONT__ID_LIGHT_GRAY);
         a_font_printf(" by %s (%s)",
-                      a_settings_getString("app.author"),
-                      a_settings_getString("app.buildtime"));
+                      a_settings_stringGet(A_SETTING_APP_AUTHOR),
+                      a_settings_stringGet(A_SETTING_APP_BUILDTIME));
         a_font_newLine();
     }
 
@@ -219,8 +219,8 @@ void a_console__draw(void)
         a_font_newLine();
 
         a_font__fontSet(A_FONT__ID_BLUE);
-        a_font_printf(
-            "Vsync is %s", a_settings_getBool("video.vsync") ? "on" : "off");
+        a_font_printf("Vsync is %s",
+                      a_settings_boolGet(A_SETTING_VIDEO_VSYNC) ? "on" : "off");
         a_font_newLine();
     }
 

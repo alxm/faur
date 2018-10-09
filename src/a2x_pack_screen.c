@@ -70,8 +70,8 @@ static void freeScreen(AScreen* Screen)
 
 void a_screen__init(void)
 {
-    int width = a_settings_getInt("video.width");
-    int height = a_settings_getInt("video.height");
+    int width = a_settings_intGet(A_SETTING_VIDEO_WIDTH);
+    int height = a_settings_intGet(A_SETTING_VIDEO_HEIGHT);
 
     if(width < 0 || height < 0) {
         int w = width;
@@ -97,7 +97,7 @@ void a_screen__init(void)
     }
 
     #if A_BUILD_RENDER_SOFTWARE
-        if(a_settings_getBool("video.doubleBuffer")) {
+        if(a_settings_boolGet(A_SETTING_VIDEO_DOUBLEBUFFER)) {
             // Allocate pixel buffer
             initScreen(&a__screen, width, height, true);
         } else {
@@ -106,7 +106,7 @@ void a_screen__init(void)
         }
     #endif
 
-    g_fullScreenState = a_settings_getBool("video.fullscreen");
+    g_fullScreenState = a_settings_boolGet(A_SETTING_VIDEO_FULLSCREEN);
     a_platform__screenInit(width, height, g_fullScreenState);
     a_platform__screenSetFullscreen(g_fullScreenState);
 

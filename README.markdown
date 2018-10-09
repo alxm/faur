@@ -39,10 +39,10 @@ The starter project draws a square on the screen, which you can move around with
 
 A_SETUP
 {
-    a_settings_set("app.title", "hello");
-    a_settings_set("app.version", "1.0");
-    a_settings_set("app.author", "<your username>");
-    a_settings_set("app.output.on", "yes");
+    a_settings_stringSet(A_SETTING_APP_TITLE, "hello");
+    a_settings_stringSet(A_SETTING_APP_VERSION, "0.1.0");
+    a_settings_stringSet(A_SETTING_APP_AUTHOR, "<your username>");
+    a_settings_boolSet(A_SETTING_OUTPUT_ON, true);
 }
 
 A_STATE(drawBox)

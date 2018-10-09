@@ -76,11 +76,11 @@ static void outPrintHeader(AOutSource Source, AOutType Type, FILE* Stream)
 
 static void outWorker(AOutSource Source, AOutType Type, bool Verbose, bool Overwrite, FILE* Stream, const char* Format, va_list Args)
 {
-    if(!a_settings_getBool("app.output.on")) {
+    if(!a_settings_boolGet(A_SETTING_OUTPUT_ON)) {
         return;
     }
 
-    if(Verbose && !a_settings_getBool("app.output.verbose")) {
+    if(Verbose && !a_settings_boolGet(A_SETTING_OUTPUT_VERBOSE)) {
         return;
     }
 
@@ -212,8 +212,8 @@ void a_out__errorv(const char* Format, ...)
 
 void a_out__fatal(const char* Format, ...)
 {
-    if(!a_settings_getBool("app.output.on")) {
-        a_settings_set("app.output.on", "y");
+    if(!a_settings_boolGet(A_SETTING_OUTPUT_ON)) {
+        a_settings_boolSet(A_SETTING_OUTPUT_ON, true);
     }
 
     va_list args;
@@ -282,7 +282,7 @@ void a_out__overwrite(AOutType Type, FILE* Stream, const char* Format, ...)
 
 void a_out_print(const char* Text)
 {
-    if(a_settings_getBool("app.output.on")) {
+    if(a_settings_boolGet(A_SETTING_OUTPUT_ON)) {
         outPrintHeader(A_OUT__SOURCE_APP, A_OUT__TYPE_MESSAGE, stdout);
         puts(Text);
     }
@@ -349,8 +349,8 @@ void a_out_error(const char* Format, ...)
 
 void a_out_fatal(const char* Format, ...)
 {
-    if(!a_settings_getBool("app.output.on")) {
-        a_settings_set("app.output.on", "y");
+    if(!a_settings_boolGet(A_SETTING_OUTPUT_ON)) {
+        a_settings_boolSet(A_SETTING_OUTPUT_ON, true);
     }
 
     va_list args;
