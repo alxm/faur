@@ -27,11 +27,8 @@
 #define A__AVERAGE_WINDOW_SEC 2
 
 static struct {
-    unsigned tickRate;
-    unsigned drawRate;
     unsigned tickFrameMs;
     unsigned drawFrameMs;
-    bool vsyncOn;
 } g_settings;
 
 static struct {
@@ -53,22 +50,22 @@ static struct {
 
 void a_fps__init(void)
 {
-    g_settings.tickRate = a_settings_intuGet(A_SETTING_FPS_TICK);
-    g_settings.drawRate = a_settings_intuGet(A_SETTING_FPS_DRAW);
-    g_settings.drawFrameMs = 1000 / g_settings.drawRate;
-    g_settings.tickFrameMs = 1000 / g_settings.tickRate;
-    g_settings.vsyncOn = a_settings_boolGet(A_SETTING_VIDEO_VSYNC);
+    g_settings.tickFrameMs = 1000 / a_settings_intuGet(A_SETTING_FPS_TICK);
+    g_settings.drawFrameMs = 1000 / a_settings_intuGet(A_SETTING_FPS_DRAW);
 
-    if(g_settings.tickRate < 1) {
-        a_out__fatal("Invalid setting fps.tick=0");
+    if(a_settings_intuGet(A_SETTING_FPS_TICK) < 1) {
+        a_out__fatal(
+            "Invalid %s setting", a_settings__idToString(A_SETTING_FPS_TICK));
     }
 
-    if(g_settings.drawRate < 1) {
-        a_out__fatal("Invalid setting fps.draw=0");
+    if(a_settings_intuGet(A_SETTING_FPS_DRAW) < 1) {
+        a_out__fatal(
+            "Invalid %s setting", a_settings__idToString(A_SETTING_FPS_DRAW));
     }
 
     g_history.head = 0;
-    g_history.len = g_settings.drawRate * A__AVERAGE_WINDOW_SEC;
+    g_history.len =
+        a_settings_intuGet(A_SETTING_FPS_DRAW) * A__AVERAGE_WINDOW_SEC;
     g_history.drawFrameMs = a_mem_malloc(g_history.len * sizeof(unsigned));
     g_history.drawFrameMsMin = a_mem_malloc(g_history.len * sizeof(unsigned));
 
@@ -85,15 +82,16 @@ void a_fps__uninit(void)
 
 void a_fps__reset(void)
 {
-    g_run.drawFps = g_settings.drawRate;
-    g_run.drawFpsMax = g_settings.drawRate;
+    g_run.drawFps = a_settings_intuGet(A_SETTING_FPS_DRAW);
+    g_run.drawFpsMax = g_run.drawFps;
 
     for(unsigned i = g_history.len; i--; ) {
         g_history.drawFrameMs[i] = g_settings.drawFrameMs;
         g_history.drawFrameMsMin[i] = g_settings.drawFrameMs;
     }
 
-    g_history.drawFrameMsSum = g_history.len * 1000 / g_settings.drawRate;
+    g_history.drawFrameMsSum =
+        g_history.len * 1000 / a_settings_intuGet(A_SETTING_FPS_DRAW);
     g_history.drawFrameMsMinSum = g_history.drawFrameMsSum;
 
     g_run.lastFrameMs = a_time_msGet();
@@ -124,7 +122,7 @@ void a_fps__frame(void)
         g_run.drawFpsMax = g_history.len * 1000 / g_history.drawFrameMsMinSum;
     }
 
-    if(!g_settings.vsyncOn) {
+    if(!a_settings_boolGet(A_SETTING_VIDEO_VSYNC)) {
         while(elapsedMs < g_settings.drawFrameMs) {
             a_time_msWait(g_settings.drawFrameMs - elapsedMs);
 
@@ -148,7 +146,7 @@ void a_fps__frame(void)
 
 unsigned a_fps_tickRateGet(void)
 {
-    return g_settings.tickRate;
+    return a_settings_intuGet(A_SETTING_FPS_TICK);
 }
 
 unsigned a_fps_drawRateGet(void)

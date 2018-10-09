@@ -31,7 +31,6 @@
 AScreen a__screen;
 static AList* g_stack; // list of AScreen
 
-static bool g_fullScreenState;
 static AButton* g_fullScreenButton;
 
 static void initScreen(AScreen* Screen, int Width, int Height, bool AllocBuffer)
@@ -106,9 +105,11 @@ void a_screen__init(void)
         }
     #endif
 
-    g_fullScreenState = a_settings_boolGet(A_SETTING_VIDEO_FULLSCREEN);
-    a_platform__screenInit(width, height, g_fullScreenState);
-    a_platform__screenSetFullscreen(g_fullScreenState);
+    a_platform__screenInit(
+        width, height, a_settings_boolGet(A_SETTING_VIDEO_FULLSCREEN));
+
+    a_platform__screenSetFullscreen(
+        a_settings_boolGet(A_SETTING_VIDEO_FULLSCREEN));
 
     #if A_BUILD_SYSTEM_WIZ
         a_platform_wiz__portraitModeSet();
@@ -142,8 +143,8 @@ void a_screen__tick(void)
 {
     #if A_BUILD_SYSTEM_DESKTOP
         if(a_button_pressGetOnce(g_fullScreenButton)) {
-            g_fullScreenState = !g_fullScreenState;
-            a_platform__screenSetFullscreen(g_fullScreenState);
+            a_platform__screenSetFullscreen(
+                a_settings_boolFlip(A_SETTING_VIDEO_FULLSCREEN));
         }
     #endif
 }

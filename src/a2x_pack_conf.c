@@ -26,19 +26,18 @@
 
 void a_conf__init(void)
 {
-    const char* conf_name = a_settings_stringGet(A_SETTING_FILE_CONFIG);
-
-    if(!a_file_exists(conf_name)) {
+    if(!a_file_exists(a_settings_stringGet(A_SETTING_FILE_CONFIG))) {
         return;
     }
 
-    AFile* f = a_file_new(conf_name, "r");
+    AFile* f = a_file_new(a_settings_stringGet(A_SETTING_FILE_CONFIG), "r");
 
     if(f == NULL) {
         return;
     }
 
-    a_out__message("a_conf__init: Edit config file '%s'", conf_name);
+    a_out__message("a_conf__init: Edit config file '%s'",
+                   a_settings_stringGet(A_SETTING_FILE_CONFIG));
 
     while(a_file_lineRead(f)) {
         char* key = NULL;
