@@ -45,6 +45,18 @@ typedef struct {
     } value;
 } ASetting;
 
+#ifndef A_BUILD_SCREEN_WIDTH
+    #define A_BUILD_SCREEN_WIDTH 320
+#endif
+
+#ifndef A_BUILD_SCREEN_HEIGHT
+    #define A_BUILD_SCREEN_HEIGHT 240
+#endif
+
+#ifndef A_BUILD_SCREEN_FULLSCREEN
+    #define A_BUILD_SCREEN_FULLSCREEN false
+#endif
+
 #define A__SETTING(Id, Type, Flags, UnionMember, Value) \
     [Id] = {#Id, Type, Flags, .value.UnionMember = Value}
 
@@ -61,11 +73,11 @@ static ASetting g_settings[A_SETTING_NUM] = {
     A__SETTING(A_SETTING_FPS_TICK, A__SETTING_TYPE_INTU, A__SETTING_FLAG_SET_ONCE, integeru, 30),
     A__SETTING(A_SETTING_FPS_DRAW, A__SETTING_TYPE_INTU, A__SETTING_FLAG_SET_ONCE, integeru, 30),
 
-    A__SETTING(A_SETTING_VIDEO_WIDTH, A__SETTING_TYPE_INT, A__SETTING_FLAG_SET_ONCE, integer, 320),
-    A__SETTING(A_SETTING_VIDEO_HEIGHT, A__SETTING_TYPE_INT, A__SETTING_FLAG_SET_ONCE, integer, 240),
+    A__SETTING(A_SETTING_VIDEO_WIDTH, A__SETTING_TYPE_INT, A__SETTING_FLAG_SET_ONCE, integer, A_BUILD_SCREEN_WIDTH),
+    A__SETTING(A_SETTING_VIDEO_HEIGHT, A__SETTING_TYPE_INT, A__SETTING_FLAG_SET_ONCE, integer, A_BUILD_SCREEN_HEIGHT),
     A__SETTING(A_SETTING_VIDEO_VSYNC, A__SETTING_TYPE_BOOL, A__SETTING_FLAG_SET_ONCE, boolean, false),
     A__SETTING(A_SETTING_VIDEO_DOUBLEBUFFER, A__SETTING_TYPE_BOOL, A__SETTING_FLAG_SET_ONCE, boolean, false),
-    A__SETTING(A_SETTING_VIDEO_FULLSCREEN, A__SETTING_TYPE_BOOL, A__SETTING_FLAG_NONE, boolean, false),
+    A__SETTING(A_SETTING_VIDEO_FULLSCREEN, A__SETTING_TYPE_BOOL, A__SETTING_FLAG_NONE, boolean, A_BUILD_SCREEN_FULLSCREEN),
 
     A__SETTING(A_SETTING_COLOR_SCREEN_BORDER, A__SETTING_TYPE_PIXEL, A__SETTING_FLAG_SET_ONCE, string, "0x1f0f0f"),
     A__SETTING(A_SETTING_COLOR_VOLBAR_BACKGROUND, A__SETTING_TYPE_PIXEL, A__SETTING_FLAG_SET_ONCE, string, "0x1f0f0f"),
@@ -115,14 +127,10 @@ void a_settings__init(void)
         }
     #endif
 
-    #if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ || A_BUILD_SYSTEM_CAANOO || A_BUILD_SYSTEM_PANDORA
-        a_settings_boolSet(A_SETTING_VIDEO_FULLSCREEN, true);
-
-        #if A_BUILD_SYSTEM_WIZ
-            if(a_settings_boolGet(A_SETTING_SYSTEM_WIZ_FIXTEARING)) {
-                a_settings_boolSet(A_SETTING_VIDEO_DOUBLEBUFFER, true);
-            }
-        #endif
+    #if A_BUILD_SYSTEM_WIZ
+        if(a_settings_boolGet(A_SETTING_SYSTEM_WIZ_FIXTEARING)) {
+            a_settings_boolSet(A_SETTING_VIDEO_DOUBLEBUFFER, true);
+        }
     #endif
 
     for(ASettingId s = 0; s < A_SETTING_NUM; s++) {
