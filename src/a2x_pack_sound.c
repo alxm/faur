@@ -47,7 +47,7 @@ static int g_volumeMax;
 #endif
 
 #if A_BUILD_DEVICE_KEYBOARD
-    static AButton* g_musicOnOffButton;
+    static AButton* g_muteButton;
 #endif
 
 static void adjustSoundVolume(int Volume)
@@ -82,8 +82,8 @@ void a_sound__init(void)
     #endif
 
     #if A_BUILD_DEVICE_KEYBOARD
-        g_musicOnOffButton = a_button_new();
-        a_button_bind(g_musicOnOffButton, "key.m");
+        g_muteButton = a_button_new();
+        a_button_bind(g_muteButton, "key.m");
     #endif
 
     #if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ
@@ -107,7 +107,7 @@ void a_sound__uninit(void)
     #endif
 
     #if A_BUILD_DEVICE_KEYBOARD
-        a_button_free(g_musicOnOffButton);
+        a_button_free(g_muteButton);
     #endif
 
     a_music_stop();
@@ -131,8 +131,8 @@ void a_sound__tick(void)
     #endif
 
     #if A_BUILD_DEVICE_KEYBOARD
-        if(a_button_pressGetOnce(g_musicOnOffButton)) {
-            a_platform__musicToggle();
+        if(a_button_pressGetOnce(g_muteButton)) {
+            a_platform__musicToggle(a_settings_boolFlip(A_SETTING_SOUND_MUTE));
         }
     #endif
 }
@@ -173,6 +173,10 @@ void a_music_free(AMusic* Music)
 
 void a_music_play(AMusic* Music)
 {
+    if(a_settings_boolGet(A_SETTING_SOUND_MUTE)) {
+        return;
+    }
+
     a_platform__musicPlay(Music);
 }
 
@@ -213,6 +217,10 @@ int a_channel_new(void)
 
 void a_channel_play(int Channel, ASample* Sample, AChannelFlags Flags)
 {
+    if(a_settings_boolGet(A_SETTING_SOUND_MUTE)) {
+        return;
+    }
+
     if(Flags & A_CHANNEL_RESTART) {
         a_platform__sampleStop(Channel);
     } else if((Flags & A_CHANNEL_YIELD)

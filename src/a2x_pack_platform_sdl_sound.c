@@ -136,16 +136,16 @@ void a_platform__musicStop(void)
     Mix_HaltMusic();
 }
 
-void a_platform__musicToggle(void)
+void a_platform__musicToggle(bool Mute)
 {
     if(!g_enabled) {
         return;
     }
 
-    if(Mix_PausedMusic()) {
-        Mix_ResumeMusic();
-    } else {
+    if(Mute) {
         Mix_PauseMusic();
+    } else if(Mix_PausedMusic()) {
+        Mix_ResumeMusic();
     }
 }
 
