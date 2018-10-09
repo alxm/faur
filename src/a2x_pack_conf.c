@@ -40,17 +40,15 @@ void a_conf__init(void)
                    a_settings_stringGet(A_SETTING_FILE_CONFIG));
 
     while(a_file_lineRead(f)) {
-        char* key = NULL;
-        char* value = NULL;
         char* line = a_str_trim(a_file_lineBufferGet(f));
 
-        if(strlen(line) >= 2 && line[0] == '/' && line[1] == '/') {
+        if(line[0] == '#') {
             free(line);
             continue;
         }
 
-        key = a_str_prefixGetToFirst(line, '=');
-        value = a_str_suffixGetFromFirst(line, '=');
+        char* key = a_str_prefixGetToFirst(line, '=');
+        char* value = a_str_suffixGetFromFirst(line, '=');
 
         if(key && value) {
             char* key_trim = a_str_trim(key);
