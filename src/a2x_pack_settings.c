@@ -205,6 +205,20 @@ void a_settings_boolSet(ASettingId Setting, bool Value)
     s->value.boolean = Value;
 }
 
+bool a_settings_boolFlip(ASettingId Setting)
+{
+    ASetting* s = validate(Setting, A__SETTING_TYPE_BOOL, true);
+
+    if(s == NULL) {
+        return false;
+    }
+
+    s->flags |= A__SETTING_FLAG_CHANGED;
+    s->value.boolean = !s->value.boolean;
+
+    return s->value.boolean;
+}
+
 int a_settings_intGet(ASettingId Setting)
 {
     ASetting* s = validate(Setting, A__SETTING_TYPE_INT, false);

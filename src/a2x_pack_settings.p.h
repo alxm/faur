@@ -80,6 +80,7 @@ extern bool a_settings_isDefault(ASettingId Setting);
 
 extern bool a_settings_boolGet(ASettingId Setting);
 extern void a_settings_boolSet(ASettingId Setting, bool Value);
+extern bool a_settings_boolFlip(ASettingId Setting);
 
 extern int a_settings_intGet(ASettingId Setting);
 extern void a_settings_intSet(ASettingId Setting, int Value);
