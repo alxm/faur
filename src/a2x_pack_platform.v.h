@@ -89,7 +89,7 @@ extern int a_platform__sampleChannelGet(void);
 
 extern void a_platform__inputsPoll(void);
 
-extern APlatformButton* a_platform__buttonGet(const char* Id);
+extern APlatformButton* a_platform__buttonGet(int Id);
 extern bool a_platform__buttonPressGet(const APlatformButton* Button);
 extern const char* a_platform__buttonNameGet(const APlatformButton* Button);
 extern void a_platform__buttonForward(APlatformButton* Source, APlatformButton* Destination);

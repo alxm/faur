@@ -116,7 +116,7 @@ void a_screen__init(void)
     #endif
 
     g_fullScreenButton = a_button_new();
-    a_button_bind(g_fullScreenButton, "key.f4");
+    a_button_bind(g_fullScreenButton, A_KEY_F4);
 
     #if !A_BUILD_RENDER_SOFTWARE
         initScreen(&a__screen, width, height, true);

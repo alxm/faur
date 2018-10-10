@@ -107,15 +107,15 @@ void a_console__init2(void)
     }
 
     g_toggle = a_button_new();
-    a_button_bind(g_toggle, "key.f11");
+    a_button_bind(g_toggle, A_KEY_F11);
 
     a_button_bindComboStart(g_toggle);
-        a_button_bind(g_toggle, "gamepad.b.l");
-        a_button_bind(g_toggle, "gamepad.b.r");
-        a_button_bind(g_toggle, "gamepad.b.a");
-        a_button_bind(g_toggle, "gamepad.b.b");
-        a_button_bind(g_toggle, "gamepad.b.x");
-        a_button_bind(g_toggle, "gamepad.b.y");
+        a_button_bind(g_toggle, A_BUTTON_A);
+        a_button_bind(g_toggle, A_BUTTON_B);
+        a_button_bind(g_toggle, A_BUTTON_X);
+        a_button_bind(g_toggle, A_BUTTON_Y);
+        a_button_bind(g_toggle, A_BUTTON_L);
+        a_button_bind(g_toggle, A_BUTTON_R);
     a_button_bindComboEnd(g_toggle);
 
     g_state = a_settings_boolGet(A_SETTING_OUTPUT_CONSOLE)

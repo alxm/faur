@@ -19,6 +19,7 @@
 
 #include "a2x_pack_input_controller.v.h"
 
+#include "a2x_pack_input_button.v.h"
 #include "a2x_pack_out.v.h"
 #include "a2x_pack_platform.v.h"
 #include "a2x_pack_settings.v.h"
@@ -32,16 +33,16 @@ void a_input_controller__init(void)
         APlatformAnalog* y = a_platform__analogGet("gamepad.a.leftY");
         APlatformAnalog* lt = a_platform__analogGet("gamepad.a.leftTrigger");
         APlatformAnalog* rt = a_platform__analogGet("gamepad.a.rightTrigger");
-        APlatformButton* u = a_platform__buttonGet("gamepad.b.up");
-        APlatformButton* d = a_platform__buttonGet("gamepad.b.down");
-        APlatformButton* l = a_platform__buttonGet("gamepad.b.left");
-        APlatformButton* r = a_platform__buttonGet("gamepad.b.right");
-        APlatformButton* ul = a_platform__buttonGet("gamepad.b.upLeft");
-        APlatformButton* ur = a_platform__buttonGet("gamepad.b.upRight");
-        APlatformButton* dl = a_platform__buttonGet("gamepad.b.downLeft");
-        APlatformButton* dr = a_platform__buttonGet("gamepad.b.downRight");
-        APlatformButton* lb = a_platform__buttonGet("gamepad.b.l");
-        APlatformButton* rb = a_platform__buttonGet("gamepad.b.r");
+        APlatformButton* u = a_platform__buttonGet(A_BUTTON_UP);
+        APlatformButton* d = a_platform__buttonGet(A_BUTTON_DOWN);
+        APlatformButton* l = a_platform__buttonGet(A_BUTTON_LEFT);
+        APlatformButton* r = a_platform__buttonGet(A_BUTTON_RIGHT);
+        APlatformButton* ul = a_platform__buttonGet(A_BUTTON_UPLEFT);
+        APlatformButton* ur = a_platform__buttonGet(A_BUTTON_UPRIGHT);
+        APlatformButton* dl = a_platform__buttonGet(A_BUTTON_DOWNLEFT);
+        APlatformButton* dr = a_platform__buttonGet(A_BUTTON_DOWNRIGHT);
+        APlatformButton* lb = a_platform__buttonGet(A_BUTTON_L);
+        APlatformButton* rb = a_platform__buttonGet(A_BUTTON_R);
 
         // GP2X and Wiz dpad diagonals are dedicated buttons, split them into
         // their cardinal directions.

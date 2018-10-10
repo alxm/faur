@@ -98,7 +98,7 @@ void a_button_free(AButton* Button)
     free(Button);
 }
 
-void a_button_bind(AButton* Button, const char* Id)
+void a_button_bind(AButton* Button, int Id)
 {
     APlatformButton* pb = a_platform__buttonGet(Id);
 
