@@ -954,10 +954,12 @@ void a_platform__inputsPoll(void)
 
 APlatformButton* a_platform__buttonGet(int Id)
 {
-    if(Id & A__KEY_FLAG) {
-        return g_keys[A__KEY_ID(Id)];
-    } else if(g_setController) {
-        return g_setController->buttons[Id];
+    if(Id != A_BUTTON_INVALID) {
+        if(Id & A__KEY_FLAG) {
+            return g_keys[A__KEY_ID(Id)];
+        } else if(g_setController) {
+            return g_setController->buttons[Id];
+        }
     }
 
     return NULL;
@@ -973,27 +975,36 @@ bool a_platform__buttonPressGet(const APlatformButton* Button)
     return Button->pressed;
 }
 
-void a_platform__buttonForward(APlatformButton* Source, APlatformButton* Destination)
+void a_platform__buttonForward(AButtonId Source, AButtonId Destination)
 {
-    if(Source->forwardButtons == NULL) {
-        Source->forwardButtons = a_list_new();
+    APlatformButton* bSrc = a_platform__buttonGet(Source);
+    APlatformButton* bDst = a_platform__buttonGet(Destination);
+
+    if(bSrc == NULL || bDst == NULL) {
+        return;
     }
 
-    a_list_addLast(Source->forwardButtons, Destination);
+    if(bSrc->forwardButtons == NULL) {
+        bSrc->forwardButtons = a_list_new();
+    }
+
+    a_list_addLast(bSrc->forwardButtons, bDst);
 }
 
 APlatformAnalog* a_platform__analogGet(int Id)
 {
-    const APlatformController* c = g_setController;
+    if(Id != A_AXIS_INVALID) {
+        const APlatformController* c = g_setController;
 
-    while(c) {
-        APlatformAnalog* a = c->axes[Id];
+        while(c) {
+            APlatformAnalog* a = c->axes[Id];
 
-        if(a != NULL) {
-            return a;
+            if(a != NULL) {
+                return a;
+            }
+
+            c = c->next;
         }
-
-        c = c->next;
     }
 
     return NULL;
@@ -1009,20 +1020,26 @@ int a_platform__analogValueGet(const APlatformAnalog* Analog)
     return Analog->value;
 }
 
-void a_platform__analogForward(APlatformAnalog* Source, APlatformButton* Negative, APlatformButton* Positive)
+void a_platform__analogForward(AAxisId Source, AButtonId Negative, AButtonId Positive)
 {
+    APlatformAnalog* aSrc = a_platform__analogGet(Source);
+
+    if(aSrc == NULL) {
+        return;
+    }
+
     APlatformButtonPair* f = a_mem_malloc(sizeof(APlatformButtonPair));
 
-    f->negative = Negative;
-    f->positive = Positive;
+    f->negative = a_platform__buttonGet(Negative);
+    f->positive = a_platform__buttonGet(Positive);
     f->lastPressedNegative = false;
     f->lastPressedPositive = false;
 
-    if(Source->forwardButtons == NULL) {
-        Source->forwardButtons = a_list_new();
+    if(aSrc->forwardButtons == NULL) {
+        aSrc->forwardButtons = a_list_new();
     }
 
-    a_list_addLast(Source->forwardButtons, f);
+    a_list_addLast(aSrc->forwardButtons, f);
 }
 
 APlatformTouch* a_platform__touchGet(void)

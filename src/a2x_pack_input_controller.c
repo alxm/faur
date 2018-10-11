@@ -30,69 +30,50 @@ void a_input_controller__init(void)
     for(unsigned i = a_platform__controllerNumGet(); i--; ) {
         a_platform__controllerSet(i);
 
-        APlatformAnalog* x = a_platform__analogGet(A_AXIS_LEFTX);
-        APlatformAnalog* y = a_platform__analogGet(A_AXIS_LEFTY);
-        APlatformAnalog* lt = a_platform__analogGet(A_AXIS_LEFTTRIGGER);
-        APlatformAnalog* rt = a_platform__analogGet(A_AXIS_RIGHTTRIGGER);
-        APlatformButton* u = a_platform__buttonGet(A_BUTTON_UP);
-        APlatformButton* d = a_platform__buttonGet(A_BUTTON_DOWN);
-        APlatformButton* l = a_platform__buttonGet(A_BUTTON_LEFT);
-        APlatformButton* r = a_platform__buttonGet(A_BUTTON_RIGHT);
-        APlatformButton* ul = a_platform__buttonGet(A_BUTTON_UPLEFT);
-        APlatformButton* ur = a_platform__buttonGet(A_BUTTON_UPRIGHT);
-        APlatformButton* dl = a_platform__buttonGet(A_BUTTON_DOWNLEFT);
-        APlatformButton* dr = a_platform__buttonGet(A_BUTTON_DOWNRIGHT);
-        APlatformButton* lb = a_platform__buttonGet(A_BUTTON_L);
-        APlatformButton* rb = a_platform__buttonGet(A_BUTTON_R);
-
         // GP2X and Wiz dpad diagonals are dedicated buttons, split them into
         // their cardinal directions.
-        if(u && d && l && r && ul && ur && dl && dr) {
-            a_platform__buttonForward(ul, u);
-            a_platform__buttonForward(ul, l);
+        a_platform__buttonForward(A_BUTTON_UPLEFT, A_BUTTON_UP);
+        a_platform__buttonForward(A_BUTTON_UPLEFT, A_BUTTON_LEFT);
 
-            a_platform__buttonForward(ur, u);
-            a_platform__buttonForward(ur, r);
+        a_platform__buttonForward(A_BUTTON_UPRIGHT, A_BUTTON_UP);
+        a_platform__buttonForward(A_BUTTON_UPRIGHT, A_BUTTON_RIGHT);
 
-            a_platform__buttonForward(dl, d);
-            a_platform__buttonForward(dl, l);
+        a_platform__buttonForward(A_BUTTON_DOWNLEFT, A_BUTTON_DOWN);
+        a_platform__buttonForward(A_BUTTON_DOWNLEFT, A_BUTTON_LEFT);
 
-            a_platform__buttonForward(dr, d);
-            a_platform__buttonForward(dr, r);
-        }
+        a_platform__buttonForward(A_BUTTON_DOWNRIGHT, A_BUTTON_DOWN);
+        a_platform__buttonForward(A_BUTTON_DOWNRIGHT, A_BUTTON_RIGHT);
+
+        AAxisId axisX = A_AXIS_LEFTX;
+        AAxisId axisY = A_AXIS_LEFTY;
+        AButtonId buttonUp = A_BUTTON_UP;
+        AButtonId buttonDown = A_BUTTON_DOWN;
+        AButtonId buttonLeft = A_BUTTON_LEFT;
+        AButtonId buttonRight = A_BUTTON_RIGHT;
 
         // Forward the left analog stick to the direction buttons
-        if(x && y && u && d && l && r) {
-            if(!a_platform__controllerIsMapped()) {
-                if(a_settings_boolGet(A_SETTING_INPUT_ANALOG_AXES_SWITCH)) {
-                    APlatformAnalog* save = x;
-
-                    x = y;
-                    y = save;
-                }
-
-                if(a_settings_boolGet(A_SETTING_INPUT_ANALOG_AXES_INVERT)) {
-                    APlatformButton* save;
-
-                    save = u;
-                    u = d;
-                    d = save;
-
-                    save = l;
-                    l = r;
-                    r = save;
-                }
+        if(!a_platform__controllerIsMapped()) {
+            if(a_settings_boolGet(A_SETTING_INPUT_ANALOG_AXES_SWITCH)) {
+                axisX = A_AXIS_LEFTY;
+                axisY = A_AXIS_LEFTX;
             }
 
-            a_platform__analogForward(x, l, r);
-            a_platform__analogForward(y, u, d);
+            if(a_settings_boolGet(A_SETTING_INPUT_ANALOG_AXES_INVERT)) {
+                buttonUp = A_BUTTON_DOWN;
+                buttonDown = A_BUTTON_UP;
+                buttonLeft = A_BUTTON_RIGHT;
+                buttonRight = A_BUTTON_LEFT;
+            }
         }
 
+        a_platform__analogForward(axisX, buttonLeft, buttonRight);
+        a_platform__analogForward(axisY, buttonUp, buttonDown);
+
         // Forward analog shoulder triggers to the shoulder buttons
-        if(lt && rt && lb && rb) {
-            a_platform__analogForward(lt, NULL, lb);
-            a_platform__analogForward(rt, NULL, rb);
-        }
+        a_platform__analogForward(
+            A_AXIS_LEFTTRIGGER, A_BUTTON_INVALID, A_BUTTON_L);
+        a_platform__analogForward(
+            A_AXIS_RIGHTTRIGGER, A_BUTTON_INVALID, A_BUTTON_R);
     }
 }
 
