@@ -121,9 +121,9 @@ static void keyAdd(AKeyId Id, int Code)
     g_keys[A__KEY_ID(Id)] = k;
 }
 
-static void buttonAdd(APlatformButton** ButtonsCollection, const char* Name, AButtonId Id, int Code)
+static void buttonAdd(APlatformController* Controller, AButtonId Id, const char* Name, int Code)
 {
-    if(ButtonsCollection[Id] != NULL) {
+    if(Controller->buttons[Id] != NULL) {
         return;
     }
 
@@ -136,7 +136,7 @@ static void buttonAdd(APlatformButton** ButtonsCollection, const char* Name, ABu
     b->lastHatEventPressed = false;
     b->pressed = false;
 
-    ButtonsCollection[Id] = b;
+    Controller->buttons[Id] = b;
 }
 
 static void buttonFree(APlatformButton* Button)
@@ -163,9 +163,9 @@ static void buttonPress(APlatformButton* Button, bool Pressed)
     }
 }
 
-static void analogAdd(APlatformAnalog** AxesCollection, AAxisId Id, const char* Name, int AxisIndex)
+static void analogAdd(APlatformController* Controller, AAxisId Id, const char* Name, int AxisIndex)
 {
-    if(AxesCollection[Id] != NULL) {
+    if(Controller->axes[Id] != NULL) {
         return;
     }
 
@@ -176,7 +176,7 @@ static void analogAdd(APlatformAnalog** AxesCollection, AAxisId Id, const char* 
     a->axisIndex = AxisIndex;
     a->value = 0;
 
-    AxesCollection[Id] = a;
+    Controller->axes[Id] = a;
 }
 
 static void analogFree(APlatformAnalog* Analog)
@@ -385,46 +385,46 @@ void a_platform_sdl_input__init(void)
             if(i == 0) {
                 // Joystick 0 is the built-in controls on these platforms
                 #if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ
-                    buttonAdd(c->buttons, "Up", A_BUTTON_UP, 0);
-                    buttonAdd(c->buttons, "Down", A_BUTTON_DOWN, 4);
-                    buttonAdd(c->buttons, "Left", A_BUTTON_LEFT, 2);
-                    buttonAdd(c->buttons, "Right", A_BUTTON_RIGHT, 6);
-                    buttonAdd(c->buttons, "Up-Left", A_BUTTON_UPLEFT, 1);
-                    buttonAdd(c->buttons, "Up-Right", A_BUTTON_UPRIGHT, 7);
-                    buttonAdd(c->buttons, "Down-Left", A_BUTTON_DOWNLEFT, 3);
-                    buttonAdd(c->buttons, "Down-Right", A_BUTTON_DOWNRIGHT, 5);
-                    buttonAdd(c->buttons, "L", A_BUTTON_L, 10);
-                    buttonAdd(c->buttons, "R", A_BUTTON_R, 11);
-                    buttonAdd(c->buttons, "A", A_BUTTON_X, 12);
-                    buttonAdd(c->buttons, "B", A_BUTTON_B, 13);
-                    buttonAdd(c->buttons, "X", A_BUTTON_A, 14);
-                    buttonAdd(c->buttons, "Y", A_BUTTON_Y, 15);
-                    buttonAdd(c->buttons, "Select", A_BUTTON_SELECT, 9);
-                    buttonAdd(c->buttons, "Vol-Up", A_BUTTON_VOLUP, 16);
-                    buttonAdd(c->buttons, "Vol-Down", A_BUTTON_VOLDOWN, 17);
+                    buttonAdd(c, A_BUTTON_UP, "Up", 0);
+                    buttonAdd(c, A_BUTTON_DOWN, "Down", 4);
+                    buttonAdd(c, A_BUTTON_LEFT, "Left", 2);
+                    buttonAdd(c, A_BUTTON_RIGHT, "Right", 6);
+                    buttonAdd(c, A_BUTTON_UPLEFT, "Up-Left", 1);
+                    buttonAdd(c, A_BUTTON_UPRIGHT, "Up-Right", 7);
+                    buttonAdd(c, A_BUTTON_DOWNLEFT, "Down-Left", 3);
+                    buttonAdd(c, A_BUTTON_DOWNRIGHT, "Down-Right", 5);
+                    buttonAdd(c, A_BUTTON_L, "L", 10);
+                    buttonAdd(c, A_BUTTON_R, "R", 11);
+                    buttonAdd(c, A_BUTTON_X, "A", 12);
+                    buttonAdd(c, A_BUTTON_B, "B", 13);
+                    buttonAdd(c, A_BUTTON_A, "X", 14);
+                    buttonAdd(c, A_BUTTON_Y, "Y", 15);
+                    buttonAdd(c, A_BUTTON_SELECT, "Select", 9);
+                    buttonAdd(c, A_BUTTON_VOLUP, "Vol-Up", 16);
+                    buttonAdd(c, A_BUTTON_VOLDOWN, "Vol-Down", 17);
                     #if A_BUILD_SYSTEM_GP2X
-                        buttonAdd(c->buttons, "Start", A_BUTTON_START, 8);
-                        buttonAdd(c->buttons, "Stick-Click", A_BUTTON_STICKCLICK, 18);
+                        buttonAdd(c, A_BUTTON_START, "Start", 8);
+                        buttonAdd(c, A_BUTTON_STICKCLICK, "Stick-Click", 18);
                     #elif A_BUILD_SYSTEM_WIZ
-                        buttonAdd(c->buttons, "Menu", A_BUTTON_START, 8);
+                        buttonAdd(c, A_BUTTON_START, "Menu", 8);
                     #endif
                 #elif A_BUILD_SYSTEM_CAANOO
-                    buttonAdd(c->buttons, "Up", A_BUTTON_UP, -1);
-                    buttonAdd(c->buttons, "Down", A_BUTTON_DOWN, -1);
-                    buttonAdd(c->buttons, "Left", A_BUTTON_LEFT, -1);
-                    buttonAdd(c->buttons, "Right", A_BUTTON_RIGHT, -1);
-                    buttonAdd(c->buttons, "L", A_BUTTON_L, 4);
-                    buttonAdd(c->buttons, "R", A_BUTTON_R, 5);
-                    buttonAdd(c->buttons, "A", A_BUTTON_X, 0);
-                    buttonAdd(c->buttons, "B", A_BUTTON_B, 2);
-                    buttonAdd(c->buttons, "X", A_BUTTON_A, 1);
-                    buttonAdd(c->buttons, "Y", A_BUTTON_Y, 3);
-                    buttonAdd(c->buttons, "Home", A_BUTTON_GUIDE, 6);
-                    buttonAdd(c->buttons, "Hold", A_BUTTON_HOLD, 7);
-                    buttonAdd(c->buttons, "I", A_BUTTON_START, 8);
-                    buttonAdd(c->buttons, "II", A_BUTTON_SELECT, 9);
-                    analogAdd(c->axes, A_AXIS_LEFTX, "Stick", 0);
-                    analogAdd(c->axes, A_AXIS_LEFTY, "Stick", 1);
+                    buttonAdd(c, A_BUTTON_UP, "Up", -1);
+                    buttonAdd(c, A_BUTTON_DOWN, "Down", -1);
+                    buttonAdd(c, A_BUTTON_LEFT, "Left", -1);
+                    buttonAdd(c, A_BUTTON_RIGHT, "Right", -1);
+                    buttonAdd(c, A_BUTTON_L, "L", 4);
+                    buttonAdd(c, A_BUTTON_R, "R", 5);
+                    buttonAdd(c, A_BUTTON_X, "A", 0);
+                    buttonAdd(c, A_BUTTON_B, "B", 2);
+                    buttonAdd(c, A_BUTTON_A, "X", 1);
+                    buttonAdd(c, A_BUTTON_Y, "Y", 3);
+                    buttonAdd(c, A_BUTTON_GUIDE, "Home", 6);
+                    buttonAdd(c, A_BUTTON_HOLD, "Hold", 7);
+                    buttonAdd(c, A_BUTTON_START, "I", 8);
+                    buttonAdd(c, A_BUTTON_SELECT, "II", 9);
+                    analogAdd(c, A_AXIS_LEFTX, "Stick", 0);
+                    analogAdd(c, A_AXIS_LEFTY, "Stick", 1);
                 #endif
                 continue;
             }
@@ -433,12 +433,12 @@ void a_platform_sdl_input__init(void)
 
             // Check if this is one of the built-in nubs
             if(a_str_equal(name, "nub0")) {
-                analogAdd(c->axes, A_AXIS_LEFTX, "Left Stick", 0);
-                analogAdd(c->axes, A_AXIS_LEFTY, "Left Stick", 1);
+                analogAdd(c, A_AXIS_LEFTX, "Left Stick", 0);
+                analogAdd(c, A_AXIS_LEFTY, "Left Stick", 1);
                 continue;
             } else if(a_str_equal(name, "nub1")) {
-                analogAdd(c->axes, A_AXIS_RIGHTX, "Right Stick",  0);
-                analogAdd(c->axes, A_AXIS_RIGHTY, "Right Stick", 1);
+                analogAdd(c, A_AXIS_RIGHTX, "Right Stick",  0);
+                analogAdd(c, A_AXIS_RIGHTY, "Right Stick", 1);
 
                 // Attach to nub0 to compose a single dual-analog controller
                 A_LIST_ITERATE(g_controllers, APlatformController*, nub0) {
@@ -493,7 +493,7 @@ void a_platform_sdl_input__init(void)
                     SDL_GameControllerGetBindForButton(c->controller, b);
 
                 if(bind.bindType != SDL_CONTROLLER_BINDTYPE_NONE) {
-                    buttonAdd(c->buttons, buttons[b].name, buttons[b].id, b);
+                    buttonAdd(c, buttons[b].id, buttons[b].name, b);
                 }
             }
 
@@ -521,7 +521,7 @@ void a_platform_sdl_input__init(void)
                     SDL_GameControllerGetBindForAxis(c->controller, a);
 
                 if(bind.bindType != SDL_CONTROLLER_BINDTYPE_NONE) {
-                    analogAdd(c->axes, axes[a].id, axes[a].name, a);
+                    analogAdd(c, axes[a].id, axes[a].name, a);
                 }
             }
         } else {
@@ -548,7 +548,7 @@ void a_platform_sdl_input__init(void)
             };
 
             for(int j = a_math_min(c->numButtons, A_ARRAY_LEN(buttons)); j--; ) {
-                buttonAdd(c->buttons, buttons[j].name, buttons[j].id, j);
+                buttonAdd(c, buttons[j].id, buttons[j].name, j);
             }
 
             static const char* axes[A_AXIS_NUM] = {
@@ -561,7 +561,7 @@ void a_platform_sdl_input__init(void)
             };
 
             for(int id = a_math_min(c->numAxes, A_AXIS_NUM); id--; ) {
-                analogAdd(c->axes, id, axes[id], id);
+                analogAdd(c, id, axes[id], id);
             }
 #if A_BUILD_LIB_SDL == 2
         }
@@ -569,12 +569,12 @@ void a_platform_sdl_input__init(void)
 
         if(c->numHats > 0 || c->numAxes >= 2) {
             // These buttons will be controlled by hats and analog axes
-            buttonAdd(c->buttons, "Up", A_BUTTON_UP, -1);
-            buttonAdd(c->buttons, "Down", A_BUTTON_DOWN, -1);
-            buttonAdd(c->buttons, "Left", A_BUTTON_LEFT, -1);
-            buttonAdd(c->buttons, "Right", A_BUTTON_RIGHT, -1);
-            buttonAdd(c->buttons, "L", A_BUTTON_L, -1);
-            buttonAdd(c->buttons, "R", A_BUTTON_R, -1);
+            buttonAdd(c, A_BUTTON_UP, "Up", -1);
+            buttonAdd(c, A_BUTTON_DOWN, "Down", -1);
+            buttonAdd(c, A_BUTTON_LEFT, "Left", -1);
+            buttonAdd(c, A_BUTTON_RIGHT, "Right", -1);
+            buttonAdd(c, A_BUTTON_L, "L", -1);
+            buttonAdd(c, A_BUTTON_R, "R", -1);
         }
     }
 
