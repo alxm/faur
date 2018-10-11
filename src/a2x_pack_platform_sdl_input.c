@@ -95,12 +95,14 @@ typedef struct {
     bool lastPressedPositive;
 } APlatformButtonPair;
 
-static APlatformButton* g_keys[A__KEY_ID(A_KEY_NUM)];
 static APlatformTouch g_mouse;
 static AList* g_controllers;
 static APlatformController* g_setController;
 static AList* g_forwardButtonsQueue[2]; // list of APlatformButton
 static uint32_t g_sdlFlags;
+
+#if A_BUILD_DEVICE_KEYBOARD
+static APlatformButton* g_keys[A__KEY_ID(A_KEY_NUM)];
 
 static void keyAdd(AKeyId Id, int Code)
 {
@@ -118,6 +120,7 @@ static void keyAdd(AKeyId Id, int Code)
 
     g_keys[A__KEY_ID(Id)] = k;
 }
+#endif
 
 static void buttonAdd(APlatformController* Controller, AButtonId Id, const char* Name, int Code)
 {
@@ -594,50 +597,54 @@ void a_platform_sdl_input__init(void)
         #define keyAdd(Id, Scancode, Keycode) keyAdd(Id, Scancode)
     #endif
 
-    keyAdd(A_KEY_UP, SDL_SCANCODE_UP, SDLK_UP);
-    keyAdd(A_KEY_DOWN, SDL_SCANCODE_DOWN, SDLK_DOWN);
-    keyAdd(A_KEY_LEFT, SDL_SCANCODE_LEFT, SDLK_LEFT);
-    keyAdd(A_KEY_RIGHT, SDL_SCANCODE_RIGHT, SDLK_RIGHT);
-    keyAdd(A_KEY_Z, SDL_SCANCODE_Z, SDLK_z);
-    keyAdd(A_KEY_X, SDL_SCANCODE_X, SDLK_x);
-    keyAdd(A_KEY_C, SDL_SCANCODE_C, SDLK_c);
-    keyAdd(A_KEY_V, SDL_SCANCODE_V, SDLK_v);
-    keyAdd(A_KEY_M, SDL_SCANCODE_M, SDLK_m);
-    keyAdd(A_KEY_ENTER, SDL_SCANCODE_RETURN, SDLK_RETURN);
-    keyAdd(A_KEY_SPACE, SDL_SCANCODE_SPACE, SDLK_SPACE);
-    keyAdd(A_KEY_HOME, SDL_SCANCODE_HOME, SDLK_HOME);
-    keyAdd(A_KEY_END, SDL_SCANCODE_END, SDLK_END);
-    keyAdd(A_KEY_PAGEUP, SDL_SCANCODE_PAGEUP, SDLK_PAGEUP);
-    keyAdd(A_KEY_PAGEDOWN, SDL_SCANCODE_PAGEDOWN, SDLK_PAGEDOWN);
-    keyAdd(A_KEY_LALT, SDL_SCANCODE_LALT, SDLK_LALT);
-    keyAdd(A_KEY_LCTRL, SDL_SCANCODE_LCTRL, SDLK_LCTRL);
-    keyAdd(A_KEY_LSHIFT, SDL_SCANCODE_LSHIFT, SDLK_LSHIFT);
-    keyAdd(A_KEY_RALT, SDL_SCANCODE_RALT, SDLK_RALT);
-    keyAdd(A_KEY_RCTRL, SDL_SCANCODE_RCTRL, SDLK_RCTRL);
-    keyAdd(A_KEY_RSHIFT, SDL_SCANCODE_RSHIFT, SDLK_RSHIFT);
-    keyAdd(A_KEY_F1, SDL_SCANCODE_F1, SDLK_F1);
-    keyAdd(A_KEY_F2, SDL_SCANCODE_F2, SDLK_F2);
-    keyAdd(A_KEY_F3, SDL_SCANCODE_F3, SDLK_F3);
-    keyAdd(A_KEY_F4, SDL_SCANCODE_F4, SDLK_F4);
-    keyAdd(A_KEY_F5, SDL_SCANCODE_F5, SDLK_F5);
-    keyAdd(A_KEY_F6, SDL_SCANCODE_F6, SDLK_F6);
-    keyAdd(A_KEY_F7, SDL_SCANCODE_F7, SDLK_F7);
-    keyAdd(A_KEY_F8, SDL_SCANCODE_F8, SDLK_F8);
-    keyAdd(A_KEY_F9, SDL_SCANCODE_F9, SDLK_F9);
-    keyAdd(A_KEY_F10, SDL_SCANCODE_F10, SDLK_F10);
-    keyAdd(A_KEY_F11, SDL_SCANCODE_F11, SDLK_F11);
-    keyAdd(A_KEY_F12, SDL_SCANCODE_F12, SDLK_F12);
+    #if A_BUILD_DEVICE_KEYBOARD
+        keyAdd(A_KEY_UP, SDL_SCANCODE_UP, SDLK_UP);
+        keyAdd(A_KEY_DOWN, SDL_SCANCODE_DOWN, SDLK_DOWN);
+        keyAdd(A_KEY_LEFT, SDL_SCANCODE_LEFT, SDLK_LEFT);
+        keyAdd(A_KEY_RIGHT, SDL_SCANCODE_RIGHT, SDLK_RIGHT);
+        keyAdd(A_KEY_Z, SDL_SCANCODE_Z, SDLK_z);
+        keyAdd(A_KEY_X, SDL_SCANCODE_X, SDLK_x);
+        keyAdd(A_KEY_C, SDL_SCANCODE_C, SDLK_c);
+        keyAdd(A_KEY_V, SDL_SCANCODE_V, SDLK_v);
+        keyAdd(A_KEY_M, SDL_SCANCODE_M, SDLK_m);
+        keyAdd(A_KEY_ENTER, SDL_SCANCODE_RETURN, SDLK_RETURN);
+        keyAdd(A_KEY_SPACE, SDL_SCANCODE_SPACE, SDLK_SPACE);
+        keyAdd(A_KEY_HOME, SDL_SCANCODE_HOME, SDLK_HOME);
+        keyAdd(A_KEY_END, SDL_SCANCODE_END, SDLK_END);
+        keyAdd(A_KEY_PAGEUP, SDL_SCANCODE_PAGEUP, SDLK_PAGEUP);
+        keyAdd(A_KEY_PAGEDOWN, SDL_SCANCODE_PAGEDOWN, SDLK_PAGEDOWN);
+        keyAdd(A_KEY_LALT, SDL_SCANCODE_LALT, SDLK_LALT);
+        keyAdd(A_KEY_LCTRL, SDL_SCANCODE_LCTRL, SDLK_LCTRL);
+        keyAdd(A_KEY_LSHIFT, SDL_SCANCODE_LSHIFT, SDLK_LSHIFT);
+        keyAdd(A_KEY_RALT, SDL_SCANCODE_RALT, SDLK_RALT);
+        keyAdd(A_KEY_RCTRL, SDL_SCANCODE_RCTRL, SDLK_RCTRL);
+        keyAdd(A_KEY_RSHIFT, SDL_SCANCODE_RSHIFT, SDLK_RSHIFT);
+        keyAdd(A_KEY_F1, SDL_SCANCODE_F1, SDLK_F1);
+        keyAdd(A_KEY_F2, SDL_SCANCODE_F2, SDLK_F2);
+        keyAdd(A_KEY_F3, SDL_SCANCODE_F3, SDLK_F3);
+        keyAdd(A_KEY_F4, SDL_SCANCODE_F4, SDLK_F4);
+        keyAdd(A_KEY_F5, SDL_SCANCODE_F5, SDLK_F5);
+        keyAdd(A_KEY_F6, SDL_SCANCODE_F6, SDLK_F6);
+        keyAdd(A_KEY_F7, SDL_SCANCODE_F7, SDLK_F7);
+        keyAdd(A_KEY_F8, SDL_SCANCODE_F8, SDLK_F8);
+        keyAdd(A_KEY_F9, SDL_SCANCODE_F9, SDLK_F9);
+        keyAdd(A_KEY_F10, SDL_SCANCODE_F10, SDLK_F10);
+        keyAdd(A_KEY_F11, SDL_SCANCODE_F11, SDLK_F11);
+        keyAdd(A_KEY_F12, SDL_SCANCODE_F12, SDLK_F12);
+    #endif
 
     touchAdd(&g_mouse);
 }
 
 void a_platform_sdl_input__uninit(void)
 {
-    for(AKeyId id = 0; id < A__KEY_ID(A_KEY_NUM); id++) {
-        if(g_keys[id]) {
-            buttonFree(g_keys[id]);
+    #if A_BUILD_DEVICE_KEYBOARD
+        for(AKeyId id = 0; id < A__KEY_ID(A_KEY_NUM); id++) {
+            if(g_keys[id]) {
+                buttonFree(g_keys[id]);
+            }
         }
-    }
+    #endif
 
     touchFree(&g_mouse);
 
@@ -659,6 +666,7 @@ void a_platform__inputsPoll(void)
                 a_state_exit();
             } break;
 
+#if A_BUILD_DEVICE_KEYBOARD
             case SDL_KEYUP:
             case SDL_KEYDOWN: {
                 #if !A_BUILD_SYSTEM_EMSCRIPTEN
@@ -679,6 +687,7 @@ void a_platform__inputsPoll(void)
                     }
                 }
             } break;
+#endif
 
             case SDL_JOYBUTTONUP:
             case SDL_JOYBUTTONDOWN: {
@@ -919,7 +928,9 @@ APlatformButton* a_platform__buttonGet(int Id)
 {
     if(Id != A_BUTTON_INVALID) {
         if(Id & A__KEY_FLAG) {
-            return g_keys[A__KEY_ID(Id)];
+            #if A_BUILD_DEVICE_KEYBOARD
+                return g_keys[A__KEY_ID(Id)];
+            #endif
         } else if(g_setController) {
             return g_setController->buttons[Id];
         }
