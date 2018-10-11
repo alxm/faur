@@ -23,7 +23,7 @@
 
 typedef struct ATouch ATouch;
 
-extern ATouch* a_touch_new(const char* Ids);
+extern ATouch* a_touch_new(void);
 extern void a_touch_free(ATouch* Touch);
 
 extern bool a_touch_isWorking(const ATouch* Touch);

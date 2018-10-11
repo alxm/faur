@@ -25,6 +25,7 @@
 #include <SDL.h>
 
 #include "a2x_pack_fps.v.h"
+#include "a2x_pack_listit.v.h"
 #include "a2x_pack_math.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
@@ -32,7 +33,6 @@
 #include "a2x_pack_settings.v.h"
 #include "a2x_pack_state.v.h"
 #include "a2x_pack_str.v.h"
-#include "a2x_pack_strhash.v.h"
 
 #if A_BUILD_LIB_SDL == 1
     typedef uint8_t ASdlJoystickId;
@@ -43,7 +43,7 @@
 #endif
 
 struct APlatformButton {
-    char* name;
+    const char* name;
     AList* forwardButtons; // list of APlatformButton or NULL
     union {
         ASdlKeyCode keyCode;
@@ -56,18 +56,18 @@ struct APlatformButton {
 };
 
 struct APlatformAnalog {
-    char* name;
-    AList* forwardButtons; // list of APlatformAnalog2Buttons or NULL
+    const char* name;
+    AList* forwardButtons; // list of APlatformButtonPair or NULL
     int axisIndex;
     int value;
 };
 
 struct APlatformTouch {
-    char* name;
+    const char* name;
     int x, y;
     int dx, dy;
     bool tap;
-    AList* motion; // list of APlatformTouchPoint captured by motion events
+    AList* motion; // list of ATouchPoint captured by motion events
 };
 
 struct APlatformController {
@@ -80,69 +80,70 @@ struct APlatformController {
     int numButtons;
     int numHats;
     int numAxes;
-    AStrHash* buttons;
-    AStrHash* axes;
+    APlatformButton* buttons[A_BUTTON_NUM];
+    APlatformAnalog* axes[A_AXIS_NUM];
 };
 
 typedef struct {
     int x, y;
-} APlatformTouchPoint;
+} ATouchPoint;
 
 typedef struct {
     APlatformButton* negative;
     APlatformButton* positive;
     bool lastPressedNegative;
     bool lastPressedPositive;
-} APlatformAnalog2Buttons;
+} APlatformButtonPair;
 
-static AStrHash* g_keys;
-static AStrHash* g_touchScreens;
+static APlatformTouch g_mouse;
 static AList* g_controllers;
 static APlatformController* g_setController;
 static AList* g_forwardButtonsQueue[2]; // list of APlatformButton
 static uint32_t g_sdlFlags;
 
-static void keyAdd(const char* Name, const char* Id, int Code)
+#if A_BUILD_DEVICE_KEYBOARD
+static APlatformButton* g_keys[A__KEY_ID(A_KEY_NUM)];
+
+static void keyAdd(AKeyId Id, int Code)
 {
-    if(a_strhash_contains(g_keys, Id)) {
-        a_out__error("Key '%s' already defined", Id);
+    if(g_keys[A__KEY_ID(Id)] != NULL) {
         return;
     }
 
     APlatformButton* k = a_mem_malloc(sizeof(APlatformButton));
 
-    k->name = a_str_merge("[", Name, "]", NULL);
+    k->name = a__keyNames[A__KEY_ID(Id)];
     k->forwardButtons = NULL;
     k->code.code = Code;
     k->lastEventTick = a_fps_ticksGet() - 1;
     k->pressed = false;
 
-    a_strhash_add(g_keys, Id, k);
+    g_keys[A__KEY_ID(Id)] = k;
 }
+#endif
 
-static void buttonAdd(AStrHash* ButtonsCollection, const char* Name, const char* Id, int Code)
+static void buttonAdd(APlatformController* Controller, AButtonId Id, const char* Name, int Code)
 {
-    if(a_strhash_contains(ButtonsCollection, Id)) {
+    if(Controller->buttons[Id] != NULL) {
         return;
     }
 
     APlatformButton* b = a_mem_malloc(sizeof(APlatformButton));
 
-    b->name = a_str_merge("(", Name, ")", NULL);
+    b->name = Name;
     b->forwardButtons = NULL;
     b->code.code = Code;
     b->lastEventTick = a_fps_ticksGet() - 1;
     b->lastHatEventPressed = false;
     b->pressed = false;
 
-    a_strhash_add(ButtonsCollection, Id, b);
+    Controller->buttons[Id] = b;
 }
 
 static void buttonFree(APlatformButton* Button)
 {
     a_list_free(Button->forwardButtons);
 
-    free(Button->name);
     free(Button);
 }
 
@@ -162,28 +163,26 @@ static void buttonPress(APlatformButton* Button, bool Pressed)
     }
 }
 
-static void analogAdd(AStrHash* AxesCollection, const char* Id, int AxisIndex)
+static void analogAdd(APlatformController* Controller, AAxisId Id, const char* Name, int AxisIndex)
 {
-    if(a_strhash_contains(AxesCollection, Id)) {
-        a_out__error("Analog '%s' is already defined", Id);
+    if(Controller->axes[Id] != NULL) {
         return;
     }
 
     APlatformAnalog* a = a_mem_malloc(sizeof(APlatformAnalog));
 
-    a->name = a_str_dup(Id);
+    a->name = Name;
     a->forwardButtons = NULL;
     a->axisIndex = AxisIndex;
     a->value = 0;
 
-    a_strhash_add(AxesCollection, Id, a);
+    Controller->axes[Id] = a;
 }
 
 static void analogFree(APlatformAnalog* Analog)
 {
     a_list_freeEx(Analog->forwardButtons, free);
 
-    free(Analog->name);
     free(Analog);
 }
 
@@ -200,7 +199,7 @@ static void analogSet(APlatformAnalog* Analog, int Value)
     bool pressedNegative = Value < -A__PRESS_THRESHOLD;
     bool pressedPositive = Value > A__PRESS_THRESHOLD;
 
-    A_LIST_ITERATE(Analog->forwardButtons, APlatformAnalog2Buttons*, b) {
+    A_LIST_ITERATE(Analog->forwardButtons, APlatformButtonPair*, b) {
         if(b->negative && pressedNegative != b->lastPressedNegative) {
             buttonPress(b->negative, pressedNegative);
             b->lastPressedNegative = pressedNegative;
@@ -213,32 +212,20 @@ static void analogSet(APlatformAnalog* Analog, int Value)
     }
 }
 
-static void touchAdd(const char* Id)
+static void touchAdd(APlatformTouch* Touch)
 {
-    if(a_strhash_contains(g_touchScreens, Id)) {
-        a_out__error("Touchscreen '%s' is already defined", Id);
-        return;
-    }
-
-    APlatformTouch* t = a_mem_malloc(sizeof(APlatformTouch));
-
-    t->name = a_str_dup(Id);
-    t->x = 0;
-    t->y = 0;
-    t->dx = 0;
-    t->dy = 0;
-    t->tap = false;
-    t->motion = a_list_new();
-
-    a_strhash_add(g_touchScreens, Id, t);
+    Touch->name = "Mouse";
+    Touch->x = 0;
+    Touch->y = 0;
+    Touch->dx = 0;
+    Touch->dy = 0;
+    Touch->tap = false;
+    Touch->motion = a_list_new();
 }
 
 static void touchFree(APlatformTouch* Touch)
 {
     a_list_freeEx(Touch->motion, free);
-
-    free(Touch->name);
-    free(Touch);
 }
 
 static APlatformController* controllerAdd(int Index)
@@ -296,7 +283,7 @@ static APlatformController* controllerAdd(int Index)
         }
     #endif
 
-    APlatformController* c = a_mem_malloc(sizeof(APlatformController));
+    APlatformController* c = a_mem_zalloc(sizeof(APlatformController));
 
     c->next = NULL;
     c->joystick = joystick;
@@ -307,20 +294,22 @@ static APlatformController* controllerAdd(int Index)
     c->numButtons = SDL_JoystickNumButtons(c->joystick);
     c->numHats = SDL_JoystickNumHats(c->joystick);
     c->numAxes = SDL_JoystickNumAxes(c->joystick);
-    c->buttons = a_strhash_new();
-    c->axes = a_strhash_new();
 
     return c;
 }
 
 static void controllerFree(APlatformController* Controller)
 {
-    A_STRHASH_ITERATE(Controller->buttons, APlatformButton*, b) {
-        buttonFree(b);
+    for(AButtonId id = 0; id < A_BUTTON_NUM; id++) {
+        if(Controller->buttons[id]) {
+            buttonFree(Controller->buttons[id]);
+        }
     }
 
-    A_STRHASH_ITERATE(Controller->axes, APlatformAnalog*, a) {
-        analogFree(a);
+    for(AAxisId id = 0; id < A_AXIS_NUM; id++) {
+        if(Controller->axes[id]) {
+            analogFree(Controller->axes[id]);
+        }
     }
 
     #if A_BUILD_LIB_SDL == 1
@@ -334,9 +323,6 @@ static void controllerFree(APlatformController* Controller)
             SDL_JoystickClose(Controller->joystick);
         }
     #endif
-
-    a_strhash_free(Controller->buttons);
-    a_strhash_free(Controller->axes);
 
     free(Controller);
 }
@@ -362,8 +348,6 @@ void a_platform_sdl_input__init(void)
         a_out__fatal("SDL_InitSubSystem: %s", SDL_GetError());
     }
 
-    g_keys = a_strhash_new();
-    g_touchScreens = a_strhash_new();
     g_controllers = a_list_new();
     g_setController = NULL;
     g_forwardButtonsQueue[0] = a_list_new();
@@ -400,46 +384,46 @@ void a_platform_sdl_input__init(void)
             if(i == 0) {
                 // Joystick 0 is the built-in controls on these platforms
                 #if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ
-                    buttonAdd(c->buttons, "Up", "gamepad.b.up", 0);
-                    buttonAdd(c->buttons, "Down", "gamepad.b.down", 4);
-                    buttonAdd(c->buttons, "Left", "gamepad.b.left", 2);
-                    buttonAdd(c->buttons, "Right", "gamepad.b.right", 6);
-                    buttonAdd(c->buttons, "Up-Left", "gamepad.b.upLeft", 1);
-                    buttonAdd(c->buttons, "Up-Right", "gamepad.b.upRight", 7);
-                    buttonAdd(c->buttons, "Down-Left", "gamepad.b.downLeft", 3);
-                    buttonAdd(c->buttons, "Down-Right", "gamepad.b.downRight", 5);
-                    buttonAdd(c->buttons, "L", "gamepad.b.l", 10);
-                    buttonAdd(c->buttons, "R", "gamepad.b.r", 11);
-                    buttonAdd(c->buttons, "A", "gamepad.b.x", 12);
-                    buttonAdd(c->buttons, "B", "gamepad.b.b", 13);
-                    buttonAdd(c->buttons, "X", "gamepad.b.a", 14);
-                    buttonAdd(c->buttons, "Y", "gamepad.b.y", 15);
-                    buttonAdd(c->buttons, "Select", "gamepad.b.select", 9);
-                    buttonAdd(c->buttons, "Vol-Up", "gamepad.b.volUp", 16);
-                    buttonAdd(c->buttons, "Vol-Down", "gamepad.b.volDown", 17);
+                    buttonAdd(c, A_BUTTON_UP, "Up", 0);
+                    buttonAdd(c, A_BUTTON_DOWN, "Down", 4);
+                    buttonAdd(c, A_BUTTON_LEFT, "Left", 2);
+                    buttonAdd(c, A_BUTTON_RIGHT, "Right", 6);
+                    buttonAdd(c, A_BUTTON_UPLEFT, "Up-Left", 1);
+                    buttonAdd(c, A_BUTTON_UPRIGHT, "Up-Right", 7);
+                    buttonAdd(c, A_BUTTON_DOWNLEFT, "Down-Left", 3);
+                    buttonAdd(c, A_BUTTON_DOWNRIGHT, "Down-Right", 5);
+                    buttonAdd(c, A_BUTTON_L, "L", 10);
+                    buttonAdd(c, A_BUTTON_R, "R", 11);
+                    buttonAdd(c, A_BUTTON_X, "A", 12);
+                    buttonAdd(c, A_BUTTON_B, "B", 13);
+                    buttonAdd(c, A_BUTTON_A, "X", 14);
+                    buttonAdd(c, A_BUTTON_Y, "Y", 15);
+                    buttonAdd(c, A_BUTTON_SELECT, "Select", 9);
+                    buttonAdd(c, A_BUTTON_VOLUP, "Vol-Up", 16);
+                    buttonAdd(c, A_BUTTON_VOLDOWN, "Vol-Down", 17);
                     #if A_BUILD_SYSTEM_GP2X
-                        buttonAdd(c->buttons, "Start", "gamepad.b.start", 8);
-                        buttonAdd(c->buttons, "Stick-Click", "gamepad.b.stickClick", 18);
+                        buttonAdd(c, A_BUTTON_START, "Start", 8);
+                        buttonAdd(c, A_BUTTON_STICKCLICK, "Stick-Click", 18);
                     #elif A_BUILD_SYSTEM_WIZ
-                        buttonAdd(c->buttons, "Menu", "gamepad.b.start", 8);
+                        buttonAdd(c, A_BUTTON_START, "Menu", 8);
                     #endif
                 #elif A_BUILD_SYSTEM_CAANOO
-                    buttonAdd(c->buttons, "Up", "gamepad.b.up", -1);
-                    buttonAdd(c->buttons, "Down", "gamepad.b.down", -1);
-                    buttonAdd(c->buttons, "Left", "gamepad.b.left", -1);
-                    buttonAdd(c->buttons, "Right", "gamepad.b.right", -1);
-                    buttonAdd(c->buttons, "L", "gamepad.b.l", 4);
-                    buttonAdd(c->buttons, "R", "gamepad.b.r", 5);
-                    buttonAdd(c->buttons, "A", "gamepad.b.x", 0);
-                    buttonAdd(c->buttons, "B", "gamepad.b.b", 2);
-                    buttonAdd(c->buttons, "X", "gamepad.b.a", 1);
-                    buttonAdd(c->buttons, "Y", "gamepad.b.y", 3);
-                    buttonAdd(c->buttons, "Home", "gamepad.b.guide", 6);
-                    buttonAdd(c->buttons, "Hold", "gamepad.b.hold", 7);
-                    buttonAdd(c->buttons, "I", "gamepad.b.start", 8);
-                    buttonAdd(c->buttons, "II", "gamepad.b.select", 9);
-                    analogAdd(c->axes, "gamepad.a.leftX", 0);
-                    analogAdd(c->axes, "gamepad.a.leftY", 1);
+                    buttonAdd(c, A_BUTTON_UP, "Up", -1);
+                    buttonAdd(c, A_BUTTON_DOWN, "Down", -1);
+                    buttonAdd(c, A_BUTTON_LEFT, "Left", -1);
+                    buttonAdd(c, A_BUTTON_RIGHT, "Right", -1);
+                    buttonAdd(c, A_BUTTON_L, "L", 4);
+                    buttonAdd(c, A_BUTTON_R, "R", 5);
+                    buttonAdd(c, A_BUTTON_X, "A", 0);
+                    buttonAdd(c, A_BUTTON_B, "B", 2);
+                    buttonAdd(c, A_BUTTON_A, "X", 1);
+                    buttonAdd(c, A_BUTTON_Y, "Y", 3);
+                    buttonAdd(c, A_BUTTON_GUIDE, "Home", 6);
+                    buttonAdd(c, A_BUTTON_HOLD, "Hold", 7);
+                    buttonAdd(c, A_BUTTON_START, "I", 8);
+                    buttonAdd(c, A_BUTTON_SELECT, "II", 9);
+                    analogAdd(c, A_AXIS_LEFTX, "Stick", 0);
+                    analogAdd(c, A_AXIS_LEFTY, "Stick", 1);
                 #endif
                 continue;
             }
@@ -448,12 +432,26 @@ void a_platform_sdl_input__init(void)
 
             // Check if this is one of the built-in nubs
             if(a_str_equal(name, "nub0")) {
-                analogAdd(c->axes, "gamepad.a.leftX", 0);
-                analogAdd(c->axes, "gamepad.a.leftY", 1);
+                analogAdd(c, A_AXIS_LEFTX, "Left Stick", 0);
+                analogAdd(c, A_AXIS_LEFTY, "Left Stick", 1);
+
+                buttonAdd(c, A_BUTTON_UP, "Up", -1);
+                buttonAdd(c, A_BUTTON_DOWN, "Down", -1);
+                buttonAdd(c, A_BUTTON_LEFT, "Left", -1);
+                buttonAdd(c, A_BUTTON_RIGHT, "Right", -1);
+                buttonAdd(c, A_BUTTON_L, "L", -1);
+                buttonAdd(c, A_BUTTON_R, "R", -1);
+                buttonAdd(c, A_BUTTON_A, "A", -1);
+                buttonAdd(c, A_BUTTON_B, "B", -1);
+                buttonAdd(c, A_BUTTON_X, "X", -1);
+                buttonAdd(c, A_BUTTON_Y, "Y", -1);
+                buttonAdd(c, A_BUTTON_START, "Start", -1);
+                buttonAdd(c, A_BUTTON_SELECT, "Select", -1);
+
                 continue;
             } else if(a_str_equal(name, "nub1")) {
-                analogAdd(c->axes, "gamepad.a.rightX", 0);
-                analogAdd(c->axes, "gamepad.a.rightY", 1);
+                analogAdd(c, A_AXIS_RIGHTX, "Right Stick",  0);
+                analogAdd(c, A_AXIS_RIGHTY, "Right Stick", 1);
 
                 // Attach to nub0 to compose a single dual-analog controller
                 A_LIST_ITERATE(g_controllers, APlatformController*, nub0) {
@@ -475,60 +473,69 @@ void a_platform_sdl_input__init(void)
                            c->numAxes,
                            c->numHats);
 
-            static const char* buttonNames[SDL_CONTROLLER_BUTTON_MAX][2] = {
-                {"A", "gamepad.b.a"},
-                {"B", "gamepad.b.b"},
-                {"X", "gamepad.b.x"},
-                {"Y", "gamepad.b.y"},
-                {"Select", "gamepad.b.select"},
-                {"Guide", "gamepad.b.guide"},
-                {"Start", "gamepad.b.start"},
-                {"Left Stick", "gamepad.b.lStick"},
-                {"Right Stick", "gamepad.b.rStick"},
-                {"L", "gamepad.b.l"},
-                {"R", "gamepad.b.r"},
-                {"Up", "gamepad.b.up"},
-                {"Down", "gamepad.b.down"},
-                {"Left", "gamepad.b.left"},
-                {"Right", "gamepad.b.right"}
-            };
-
-            static const char* axisNames[SDL_CONTROLLER_AXIS_MAX] = {
-                "gamepad.a.leftX",
-                "gamepad.a.leftY",
-                "gamepad.a.rightX",
-                "gamepad.a.rightY",
-                "gamepad.a.leftTrigger",
-                "gamepad.a.rightTrigger"
+            static const struct {
+                AButtonId id;
+                const char* name;
+            } buttons[SDL_CONTROLLER_BUTTON_MAX] = {
+                [SDL_CONTROLLER_BUTTON_A] = {A_BUTTON_A, "A"},
+                [SDL_CONTROLLER_BUTTON_B] = {A_BUTTON_B, "B"},
+                [SDL_CONTROLLER_BUTTON_X] = {A_BUTTON_X, "X"},
+                [SDL_CONTROLLER_BUTTON_Y] = {A_BUTTON_Y, "Y"},
+                [SDL_CONTROLLER_BUTTON_BACK] = {A_BUTTON_SELECT, "Select"},
+                [SDL_CONTROLLER_BUTTON_GUIDE] = {A_BUTTON_GUIDE, "Guide"},
+                [SDL_CONTROLLER_BUTTON_START] = {A_BUTTON_START, "Start"},
+                [SDL_CONTROLLER_BUTTON_LEFTSTICK] = {A_BUTTON_STICKCLICK, "Left Stick Click"},
+                [SDL_CONTROLLER_BUTTON_RIGHTSTICK] = {A_BUTTON_INVALID, "Right Stick Click"},
+                [SDL_CONTROLLER_BUTTON_LEFTSHOULDER] = {A_BUTTON_L, "L"},
+                [SDL_CONTROLLER_BUTTON_RIGHTSHOULDER] = {A_BUTTON_R, "R"},
+                [SDL_CONTROLLER_BUTTON_DPAD_UP] = {A_BUTTON_UP, "Up"},
+                [SDL_CONTROLLER_BUTTON_DPAD_DOWN] = {A_BUTTON_DOWN, "Down"},
+                [SDL_CONTROLLER_BUTTON_DPAD_LEFT] = {A_BUTTON_LEFT, "Left"},
+                [SDL_CONTROLLER_BUTTON_DPAD_RIGHT] = {A_BUTTON_RIGHT, "Right"},
             };
 
             for(SDL_GameControllerButton b = SDL_CONTROLLER_BUTTON_A;
                 b < SDL_CONTROLLER_BUTTON_MAX;
                 b++) {
 
-                SDL_GameControllerButtonBind bind =
-                    SDL_GameControllerGetBindForButton(c->controller, b);
-
-                if(bind.bindType == SDL_CONTROLLER_BINDTYPE_NONE) {
+                if(buttons[b].name == NULL) {
                     continue;
                 }
 
-                buttonAdd(
-                    c->buttons, buttonNames[b][0], buttonNames[b][1], b);
+                SDL_GameControllerButtonBind bind =
+                    SDL_GameControllerGetBindForButton(c->controller, b);
+
+                if(bind.bindType != SDL_CONTROLLER_BINDTYPE_NONE) {
+                    buttonAdd(c, buttons[b].id, buttons[b].name, b);
+                }
             }
+
+            static const struct {
+                AAxisId id;
+                const char* name;
+            } axes[SDL_CONTROLLER_AXIS_MAX] = {
+                [SDL_CONTROLLER_AXIS_LEFTX] = {A_AXIS_LEFTX, "Left Stick"},
+                [SDL_CONTROLLER_AXIS_LEFTY] = {A_AXIS_LEFTY, "Left Stick"},
+                [SDL_CONTROLLER_AXIS_RIGHTX] = {A_AXIS_RIGHTX, "Right Stick"},
+                [SDL_CONTROLLER_AXIS_RIGHTY] = {A_AXIS_RIGHTY, "Right Stick"},
+                [SDL_CONTROLLER_AXIS_TRIGGERLEFT] = {A_AXIS_LEFTTRIGGER, "Left Trigger"},
+                [SDL_CONTROLLER_AXIS_TRIGGERRIGHT] = {A_AXIS_RIGHTTRIGGER, "Right Trigger"},
+            };
 
             for(SDL_GameControllerAxis a = SDL_CONTROLLER_AXIS_LEFTX;
                 a < SDL_CONTROLLER_AXIS_MAX;
                 a++) {
 
-                SDL_GameControllerButtonBind bind =
-                    SDL_GameControllerGetBindForAxis(c->controller, a);
-
-                if(bind.bindType == SDL_CONTROLLER_BINDTYPE_NONE) {
+                if(axes[a].name == NULL) {
                     continue;
                 }
 
-                analogAdd(c->axes, axisNames[a], a);
+                SDL_GameControllerButtonBind bind =
+                    SDL_GameControllerGetBindForAxis(c->controller, a);
+
+                if(bind.bindType != SDL_CONTROLLER_BINDTYPE_NONE) {
+                    analogAdd(c, axes[a].id, axes[a].name, a);
+                }
             }
         } else {
 #endif
@@ -538,33 +545,36 @@ void a_platform_sdl_input__init(void)
                            c->numAxes,
                            c->numHats);
 
-            static const char* buttons[][2] = {
-                {"A", "gamepad.b.a"},
-                {"B", "gamepad.b.b"},
-                {"X", "gamepad.b.x"},
-                {"Y", "gamepad.b.y"},
-                {"L", "gamepad.b.l"},
-                {"R", "gamepad.b.r"},
-                {"Select", "gamepad.b.select"},
-                {"Start", "gamepad.b.start"},
-                {"Guide", "gamepad.b.guide"}
-            };
-
-            static const char* axes[] = {
-                "gamepad.a.leftX",
-                "gamepad.a.leftY",
-                "gamepad.a.rightX",
-                "gamepad.a.rightY",
-                "gamepad.a.leftTrigger",
-                "gamepad.a.rightTrigger"
+            static struct {
+                AButtonId id;
+                const char* name;
+            } buttons[] = {
+                {A_BUTTON_A, "A"},
+                {A_BUTTON_B, "B"},
+                {A_BUTTON_X, "X"},
+                {A_BUTTON_Y, "Y"},
+                {A_BUTTON_L, "L"},
+                {A_BUTTON_R, "R"},
+                {A_BUTTON_SELECT, "Select"},
+                {A_BUTTON_START, "Start"},
+                {A_BUTTON_GUIDE, "Guide"},
             };
 
             for(int j = a_math_min(c->numButtons, A_ARRAY_LEN(buttons)); j--; ) {
-                buttonAdd(c->buttons, buttons[j][0], buttons[j][1], j);
+                buttonAdd(c, buttons[j].id, buttons[j].name, j);
             }
 
-            for(int j = a_math_min(c->numAxes, A_ARRAY_LEN(axes)); j--; ) {
-                analogAdd(c->axes, axes[j], j);
+            static const char* axes[A_AXIS_NUM] = {
+                [A_AXIS_LEFTX] = "Left Stick",
+                [A_AXIS_LEFTY] = "Left Stick",
+                [A_AXIS_RIGHTX] = "Right Stick",
+                [A_AXIS_RIGHTY] = "Right Stick",
+                [A_AXIS_LEFTTRIGGER] = "Left Trigger",
+                [A_AXIS_RIGHTTRIGGER] = "Right Trigger",
+            };
+
+            for(int id = a_math_min(c->numAxes, A_AXIS_NUM); id--; ) {
+                analogAdd(c, id, axes[id], id);
             }
 #if A_BUILD_LIB_SDL == 2
         }
@@ -572,89 +582,72 @@ void a_platform_sdl_input__init(void)
 
         if(c->numHats > 0 || c->numAxes >= 2) {
             // These buttons will be controlled by hats and analog axes
-            buttonAdd(c->buttons, "Up", "gamepad.b.up", -1);
-            buttonAdd(c->buttons, "Down", "gamepad.b.down", -1);
-            buttonAdd(c->buttons, "Left", "gamepad.b.left", -1);
-            buttonAdd(c->buttons, "Right", "gamepad.b.right", -1);
-            buttonAdd(c->buttons, "L", "gamepad.b.l", -1);
-            buttonAdd(c->buttons, "R", "gamepad.b.r", -1);
+            buttonAdd(c, A_BUTTON_UP, "Up", -1);
+            buttonAdd(c, A_BUTTON_DOWN, "Down", -1);
+            buttonAdd(c, A_BUTTON_LEFT, "Left", -1);
+            buttonAdd(c, A_BUTTON_RIGHT, "Right", -1);
+            buttonAdd(c, A_BUTTON_L, "L", -1);
+            buttonAdd(c, A_BUTTON_R, "R", -1);
         }
     }
 
-    #if A_BUILD_SYSTEM_PANDORA
-        // Because these are defined before the generic keys, they
-        // will take precedence in the a_platform__inputsPoll event loop.
-        keyAdd("Up", "gamepad.b.up", SDLK_UP);
-        keyAdd("Down", "gamepad.b.down", SDLK_DOWN);
-        keyAdd("Left", "gamepad.b.left", SDLK_LEFT);
-        keyAdd("Right", "gamepad.b.right", SDLK_RIGHT);
-        keyAdd("L", "gamepad.b.l", SDLK_RSHIFT);
-        keyAdd("R", "gamepad.b.r", SDLK_RCTRL);
-        keyAdd("A", "gamepad.b.x", SDLK_HOME);
-        keyAdd("B", "gamepad.b.b", SDLK_END);
-        keyAdd("X", "gamepad.b.a", SDLK_PAGEDOWN);
-        keyAdd("Y", "gamepad.b.y", SDLK_PAGEUP);
-        keyAdd("Start", "gamepad.b.start", SDLK_LALT);
-        keyAdd("Select", "gamepad.b.select", SDLK_LCTRL);
-    #endif
-
     #if A_BUILD_LIB_SDL == 1
-        keyAdd("Up", "key.up", SDLK_UP);
-        keyAdd("Down", "key.down", SDLK_DOWN);
-        keyAdd("Left", "key.left", SDLK_LEFT);
-        keyAdd("Right", "key.right", SDLK_RIGHT);
-        keyAdd("z", "key.z", SDLK_z);
-        keyAdd("x", "key.x", SDLK_x);
-        keyAdd("c", "key.c", SDLK_c);
-        keyAdd("v", "key.v", SDLK_v);
-        keyAdd("m", "key.m", SDLK_m);
-        keyAdd("Enter", "key.enter", SDLK_RETURN);
-        keyAdd("Space", "key.space", SDLK_SPACE);
-        keyAdd("F1", "key.f1", SDLK_F1);
-        keyAdd("F2", "key.f2", SDLK_F2);
-        keyAdd("F3", "key.f3", SDLK_F3);
-        keyAdd("F4", "key.f4", SDLK_F4);
-        keyAdd("F5", "key.f5", SDLK_F5);
-        keyAdd("F6", "key.f6", SDLK_F6);
-        keyAdd("F7", "key.f7", SDLK_F7);
-        keyAdd("F8", "key.f8", SDLK_F8);
-        keyAdd("F9", "key.f9", SDLK_F9);
-        keyAdd("F10", "key.f10", SDLK_F10);
-        keyAdd("F11", "key.f11", SDLK_F11);
-        keyAdd("F12", "key.f12", SDLK_F12);
+        #define keyAdd(Id, Scancode, Keycode) keyAdd(Id, Keycode)
     #elif A_BUILD_LIB_SDL == 2
-        keyAdd("Up", "key.up", SDL_SCANCODE_UP);
-        keyAdd("Down", "key.down", SDL_SCANCODE_DOWN);
-        keyAdd("Left", "key.left", SDL_SCANCODE_LEFT);
-        keyAdd("Right", "key.right", SDL_SCANCODE_RIGHT);
-        keyAdd("z", "key.z", SDL_SCANCODE_Z);
-        keyAdd("x", "key.x", SDL_SCANCODE_X);
-        keyAdd("c", "key.c", SDL_SCANCODE_C);
-        keyAdd("v", "key.v", SDL_SCANCODE_V);
-        keyAdd("m", "key.m", SDL_SCANCODE_M);
-        keyAdd("Enter", "key.enter", SDL_SCANCODE_RETURN);
-        keyAdd("Space", "key.space", SDL_SCANCODE_SPACE);
-        keyAdd("F1", "key.f1", SDL_SCANCODE_F1);
-        keyAdd("F2", "key.f2", SDL_SCANCODE_F2);
-        keyAdd("F3", "key.f3", SDL_SCANCODE_F3);
-        keyAdd("F4", "key.f4", SDL_SCANCODE_F4);
-        keyAdd("F5", "key.f5", SDL_SCANCODE_F5);
-        keyAdd("F6", "key.f6", SDL_SCANCODE_F6);
-        keyAdd("F7", "key.f7", SDL_SCANCODE_F7);
-        keyAdd("F8", "key.f8", SDL_SCANCODE_F8);
-        keyAdd("F9", "key.f9", SDL_SCANCODE_F9);
-        keyAdd("F10", "key.f10", SDL_SCANCODE_F10);
-        keyAdd("F11", "key.f11", SDL_SCANCODE_F11);
-        keyAdd("F12", "key.f12", SDL_SCANCODE_F12);
+        #define keyAdd(Id, Scancode, Keycode) keyAdd(Id, Scancode)
     #endif
 
-    touchAdd("touchScreen");
+    #if A_BUILD_DEVICE_KEYBOARD
+        keyAdd(A_KEY_UP, SDL_SCANCODE_UP, SDLK_UP);
+        keyAdd(A_KEY_DOWN, SDL_SCANCODE_DOWN, SDLK_DOWN);
+        keyAdd(A_KEY_LEFT, SDL_SCANCODE_LEFT, SDLK_LEFT);
+        keyAdd(A_KEY_RIGHT, SDL_SCANCODE_RIGHT, SDLK_RIGHT);
+        keyAdd(A_KEY_Z, SDL_SCANCODE_Z, SDLK_z);
+        keyAdd(A_KEY_X, SDL_SCANCODE_X, SDLK_x);
+        keyAdd(A_KEY_C, SDL_SCANCODE_C, SDLK_c);
+        keyAdd(A_KEY_V, SDL_SCANCODE_V, SDLK_v);
+        keyAdd(A_KEY_M, SDL_SCANCODE_M, SDLK_m);
+        keyAdd(A_KEY_ENTER, SDL_SCANCODE_RETURN, SDLK_RETURN);
+        keyAdd(A_KEY_SPACE, SDL_SCANCODE_SPACE, SDLK_SPACE);
+        keyAdd(A_KEY_HOME, SDL_SCANCODE_HOME, SDLK_HOME);
+        keyAdd(A_KEY_END, SDL_SCANCODE_END, SDLK_END);
+        keyAdd(A_KEY_PAGEUP, SDL_SCANCODE_PAGEUP, SDLK_PAGEUP);
+        keyAdd(A_KEY_PAGEDOWN, SDL_SCANCODE_PAGEDOWN, SDLK_PAGEDOWN);
+        keyAdd(A_KEY_LALT, SDL_SCANCODE_LALT, SDLK_LALT);
+        keyAdd(A_KEY_LCTRL, SDL_SCANCODE_LCTRL, SDLK_LCTRL);
+        keyAdd(A_KEY_LSHIFT, SDL_SCANCODE_LSHIFT, SDLK_LSHIFT);
+        keyAdd(A_KEY_RALT, SDL_SCANCODE_RALT, SDLK_RALT);
+        keyAdd(A_KEY_RCTRL, SDL_SCANCODE_RCTRL, SDLK_RCTRL);
+        keyAdd(A_KEY_RSHIFT, SDL_SCANCODE_RSHIFT, SDLK_RSHIFT);
+        keyAdd(A_KEY_F1, SDL_SCANCODE_F1, SDLK_F1);
+        keyAdd(A_KEY_F2, SDL_SCANCODE_F2, SDLK_F2);
+        keyAdd(A_KEY_F3, SDL_SCANCODE_F3, SDLK_F3);
+        keyAdd(A_KEY_F4, SDL_SCANCODE_F4, SDLK_F4);
+        keyAdd(A_KEY_F5, SDL_SCANCODE_F5, SDLK_F5);
+        keyAdd(A_KEY_F6, SDL_SCANCODE_F6, SDLK_F6);
+        keyAdd(A_KEY_F7, SDL_SCANCODE_F7, SDLK_F7);
+        keyAdd(A_KEY_F8, SDL_SCANCODE_F8, SDLK_F8);
+        keyAdd(A_KEY_F9, SDL_SCANCODE_F9, SDLK_F9);
+        keyAdd(A_KEY_F10, SDL_SCANCODE_F10, SDLK_F10);
+        keyAdd(A_KEY_F11, SDL_SCANCODE_F11, SDLK_F11);
+        keyAdd(A_KEY_F12, SDL_SCANCODE_F12, SDLK_F12);
+    #endif
+
+    touchAdd(&g_mouse);
 }
 
 void a_platform_sdl_input__uninit(void)
 {
-    a_strhash_freeEx(g_keys, (AFree*)buttonFree);
-    a_strhash_freeEx(g_touchScreens, (AFree*)touchFree);
+    #if A_BUILD_DEVICE_KEYBOARD
+        for(AKeyId id = 0; id < A__KEY_ID(A_KEY_NUM); id++) {
+            if(g_keys[id]) {
+                buttonFree(g_keys[id]);
+            }
+        }
+    #endif
+
+    touchFree(&g_mouse);
+
     a_list_freeEx(g_controllers, (AFree*)controllerFree);
     a_list_free(g_forwardButtonsQueue[0]);
     a_list_free(g_forwardButtonsQueue[1]);
@@ -664,10 +657,8 @@ void a_platform_sdl_input__uninit(void)
 
 void a_platform__inputsPoll(void)
 {
-    A_STRHASH_ITERATE(g_touchScreens, APlatformTouch*, t) {
-        t->tap = false;
-        a_list_clearEx(t->motion, free);
-    }
+    g_mouse.tap = false;
+    a_list_clearEx(g_mouse.motion, free);
 
     for(SDL_Event event; SDL_PollEvent(&event); ) {
         switch(event.type) {
@@ -675,6 +666,7 @@ void a_platform__inputsPoll(void)
                 a_state_exit();
             } break;
 
+#if A_BUILD_DEVICE_KEYBOARD
             case SDL_KEYUP:
             case SDL_KEYDOWN: {
                 #if !A_BUILD_SYSTEM_EMSCRIPTEN
@@ -684,17 +676,18 @@ void a_platform__inputsPoll(void)
                     }
                 #endif
 
-                A_STRHASH_ITERATE(g_keys, APlatformButton*, k) {
+                for(AKeyId id = 0; id < A__KEY_ID(A_KEY_NUM); id++) {
 #if A_BUILD_LIB_SDL == 1
-                    if(k->code.keyCode == event.key.keysym.sym) {
+                    if(g_keys[id]->code.keyCode == event.key.keysym.sym) {
 #elif A_BUILD_LIB_SDL == 2
-                    if(k->code.keyCode == event.key.keysym.scancode) {
+                    if(g_keys[id]->code.keyCode == event.key.keysym.scancode) {
 #endif
-                        buttonPress(k, event.key.state == SDL_PRESSED);
+                        buttonPress(g_keys[id], event.key.state == SDL_PRESSED);
                         break;
                     }
                 }
             } break;
+#endif
 
             case SDL_JOYBUTTONUP:
             case SDL_JOYBUTTONDOWN: {
@@ -709,8 +702,10 @@ void a_platform__inputsPoll(void)
                         continue;
                     }
 
-                    A_STRHASH_ITERATE(c->buttons, APlatformButton*, b) {
-                        if(b->code.buttonIndex == event.jbutton.button) {
+                    for(AButtonId id = 0; id < A_BUTTON_NUM; id++) {
+                        APlatformButton* b = c->buttons[id];
+
+                        if(b && b->code.buttonIndex == event.jbutton.button) {
                             buttonPress(b, event.jbutton.state == SDL_PRESSED);
                             break;
                         }
@@ -773,10 +768,10 @@ void a_platform__inputsPoll(void)
                     }
 
                     APlatformButton* buttons[4] = {
-                        a_strhash_get(c->buttons, "gamepad.b.up"),
-                        a_strhash_get(c->buttons, "gamepad.b.down"),
-                        a_strhash_get(c->buttons, "gamepad.b.left"),
-                        a_strhash_get(c->buttons, "gamepad.b.right")
+                        c->buttons[A_BUTTON_UP],
+                        c->buttons[A_BUTTON_DOWN],
+                        c->buttons[A_BUTTON_LEFT],
+                        c->buttons[A_BUTTON_RIGHT]
                     };
 
                     for(int i = 0; i < 4; i++, state >>= 1) {
@@ -811,8 +806,10 @@ void a_platform__inputsPoll(void)
                         continue;
                     }
 
-                    A_STRHASH_ITERATE(c->axes, APlatformAnalog*, a) {
-                        if(event.jaxis.axis == a->axisIndex) {
+                    for(AAxisId id = 0; id < A_AXIS_NUM; id++) {
+                        APlatformAnalog* a = c->axes[id];
+
+                        if(a && a->axisIndex == event.jaxis.axis) {
                             analogSet(a, event.jaxis.value);
                             break;
                         }
@@ -830,8 +827,10 @@ void a_platform__inputsPoll(void)
                         continue;
                     }
 
-                    A_STRHASH_ITERATE(c->buttons, APlatformButton*, b) {
-                        if(b->code.buttonIndex == event.cbutton.button) {
+                    for(AButtonId id = 0; id < A_BUTTON_NUM; id++) {
+                        APlatformButton* b = c->buttons[id];
+
+                        if(b && b->code.buttonIndex == event.cbutton.button) {
                             buttonPress(b, event.cbutton.state == SDL_PRESSED);
                             break;
                         }
@@ -847,8 +846,10 @@ void a_platform__inputsPoll(void)
                         continue;
                     }
 
-                    A_STRHASH_ITERATE(c->axes, APlatformAnalog*, a) {
-                        if(event.caxis.axis == a->axisIndex) {
+                    for(AAxisId id = 0; id < A_AXIS_NUM; id++) {
+                        APlatformAnalog* a = c->axes[id];
+
+                        if(a && a->axisIndex == event.caxis.axis) {
                             analogSet(a, event.caxis.value);
                             break;
                         }
@@ -860,33 +861,25 @@ void a_platform__inputsPoll(void)
 #endif
 
             case SDL_MOUSEMOTION: {
-                const bool track =
-                    a_settings_boolGet(A_SETTING_INPUT_MOUSE_TRACK);
+                g_mouse.x = event.button.x;
+                g_mouse.y = event.button.y;
 
-                A_STRHASH_ITERATE(g_touchScreens, APlatformTouch*, t) {
-                    t->x = event.button.x;
-                    t->y = event.button.y;
+                if(a_settings_boolGet(A_SETTING_INPUT_MOUSE_TRACK)) {
+                    ATouchPoint* p = a_mem_malloc(sizeof(ATouchPoint));
 
-                    if(track) {
-                        APlatformTouchPoint* p =
-                            a_mem_malloc(sizeof(APlatformTouchPoint));
+                    p->x = g_mouse.x;
+                    p->y = g_mouse.y;
 
-                        p->x = t->x;
-                        p->y = t->y;
-
-                        a_list_addLast(t->motion, p);
-                    }
+                    a_list_addLast(g_mouse.motion, p);
                 }
             } break;
 
             case SDL_MOUSEBUTTONDOWN: {
                 switch(event.button.button) {
                     case SDL_BUTTON_LEFT: {
-                        A_STRHASH_ITERATE(g_touchScreens, APlatformTouch*, t) {
-                            t->x = event.button.x;
-                            t->y = event.button.y;
-                            t->tap = true;
-                        }
+                        g_mouse.x = event.button.x;
+                        g_mouse.y = event.button.y;
+                        g_mouse.tap = true;
                     } break;
                 }
             } break;
@@ -894,11 +887,9 @@ void a_platform__inputsPoll(void)
             case SDL_MOUSEBUTTONUP: {
                 switch(event.button.button) {
                     case SDL_BUTTON_LEFT: {
-                        A_STRHASH_ITERATE(g_touchScreens, APlatformTouch*, t) {
-                            t->x = event.button.x;
-                            t->y = event.button.y;
-                            t->tap = false;
-                        }
+                        g_mouse.x = event.button.x;
+                        g_mouse.y = event.button.y;
+                        g_mouse.tap = false;
                     } break;
                 }
             } break;
@@ -928,35 +919,24 @@ void a_platform__inputsPoll(void)
         int mouseDx = 0, mouseDy = 0;
         SDL_GetRelativeMouseState(&mouseDx, &mouseDy);
 
-        A_STRHASH_ITERATE(g_touchScreens, APlatformTouch*, t) {
-            t->dx = mouseDx;
-            t->dy = mouseDy;
-        }
+        g_mouse.dx = mouseDx;
+        g_mouse.dy = mouseDy;
     #endif
 }
 
-APlatformButton* a_platform__buttonGet(const char* Id)
+APlatformButton* a_platform__buttonGet(int Id)
 {
-    APlatformButton* b = a_strhash_get(g_keys, Id);
-
-    if(b != NULL) {
-        return b;
-    }
-
-    if(g_setController) {
-        b = a_strhash_get(g_setController->buttons, Id);
-
-        if(b != NULL) {
-            return b;
+    if(Id != A_BUTTON_INVALID) {
+        if(Id & A__KEY_FLAG) {
+            #if A_BUILD_DEVICE_KEYBOARD
+                return g_keys[A__KEY_ID(Id)];
+            #endif
+        } else if(g_setController) {
+            return g_setController->buttons[Id];
         }
     }
 
     return NULL;
-}
-
-bool a_platform__buttonPressGet(const APlatformButton* Button)
-{
-    return Button->pressed;
 }
 
 const char* a_platform__buttonNameGet(const APlatformButton* Button)
@@ -964,30 +944,49 @@ const char* a_platform__buttonNameGet(const APlatformButton* Button)
     return Button->name;
 }
 
-void a_platform__buttonForward(APlatformButton* Source, APlatformButton* Destination)
+bool a_platform__buttonPressGet(const APlatformButton* Button)
 {
-    if(Source->forwardButtons == NULL) {
-        Source->forwardButtons = a_list_new();
-    }
-
-    a_list_addLast(Source->forwardButtons, Destination);
+    return Button->pressed;
 }
 
-APlatformAnalog* a_platform__analogGet(const char* Id)
+void a_platform__buttonForward(int Source, int Destination)
 {
-    const APlatformController* c = g_setController;
+    APlatformButton* bSrc = a_platform__buttonGet(Source);
+    APlatformButton* bDst = a_platform__buttonGet(Destination);
 
-    while(c) {
-        APlatformAnalog* a = a_strhash_get(c->axes, Id);
+    if(bSrc == NULL || bDst == NULL) {
+        return;
+    }
 
-        if(a != NULL) {
-            return a;
+    if(bSrc->forwardButtons == NULL) {
+        bSrc->forwardButtons = a_list_new();
+    }
+
+    a_list_addLast(bSrc->forwardButtons, bDst);
+}
+
+APlatformAnalog* a_platform__analogGet(int Id)
+{
+    if(Id != A_AXIS_INVALID) {
+        const APlatformController* c = g_setController;
+
+        while(c) {
+            APlatformAnalog* a = c->axes[Id];
+
+            if(a != NULL) {
+                return a;
+            }
+
+            c = c->next;
         }
-
-        c = c->next;
     }
 
     return NULL;
+}
+
+const char* a_platform__analogNameGet(const APlatformAnalog* Analog)
+{
+    return Analog->name;
 }
 
 int a_platform__analogValueGet(const APlatformAnalog* Analog)
@@ -995,25 +994,31 @@ int a_platform__analogValueGet(const APlatformAnalog* Analog)
     return Analog->value;
 }
 
-void a_platform__analogForward(APlatformAnalog* Source, APlatformButton* Negative, APlatformButton* Positive)
+void a_platform__analogForward(AAxisId Source, AButtonId Negative, AButtonId Positive)
 {
-    APlatformAnalog2Buttons* f = a_mem_malloc(sizeof(APlatformAnalog2Buttons));
+    APlatformAnalog* aSrc = a_platform__analogGet(Source);
 
-    f->negative = Negative;
-    f->positive = Positive;
+    if(aSrc == NULL) {
+        return;
+    }
+
+    APlatformButtonPair* f = a_mem_malloc(sizeof(APlatformButtonPair));
+
+    f->negative = a_platform__buttonGet(Negative);
+    f->positive = a_platform__buttonGet(Positive);
     f->lastPressedNegative = false;
     f->lastPressedPositive = false;
 
-    if(Source->forwardButtons == NULL) {
-        Source->forwardButtons = a_list_new();
+    if(aSrc->forwardButtons == NULL) {
+        aSrc->forwardButtons = a_list_new();
     }
 
-    a_list_addLast(Source->forwardButtons, f);
+    a_list_addLast(aSrc->forwardButtons, f);
 }
 
-APlatformTouch* a_platform__touchGet(const char* Id)
+APlatformTouch* a_platform__touchGet(void)
 {
-    return a_strhash_get(g_touchScreens, Id);
+    return &g_mouse;
 }
 
 void a_platform__touchCoordsGet(const APlatformTouch* Touch, int* X, int* Y)

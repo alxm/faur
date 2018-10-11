@@ -24,7 +24,6 @@
 
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_pixel.v.h"
-#include "a2x_pack_platform.v.h"
 #include "a2x_pack_screen.v.h"
 
 struct APlatformTexture {

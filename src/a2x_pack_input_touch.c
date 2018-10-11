@@ -21,36 +21,24 @@
 
 #include "a2x_pack_collide.v.h"
 #include "a2x_pack_input.v.h"
+#include "a2x_pack_listit.v.h"
 #include "a2x_pack_mem.v.h"
-#include "a2x_pack_out.v.h"
 #include "a2x_pack_platform.v.h"
-#include "a2x_pack_settings.v.h"
-#include "a2x_pack_str.v.h"
 
 struct ATouch {
     AInputUserHeader header;
 };
 
-ATouch* a_touch_new(const char* Ids)
+ATouch* a_touch_new(void)
 {
     ATouch* t = a_mem_malloc(sizeof(ATouch));
 
     a_input__userHeaderInit(&t->header);
 
-    AList* tok = a_str_split(Ids, ", ");
+    APlatformTouch* pt = a_platform__touchGet();
 
-    A_LIST_ITERATE(tok, char*, id) {
-        APlatformTouch* pt = a_platform__touchGet(id);
-
-        if(pt) {
-            a_list_addLast(t->header.platformInputs, pt);
-        }
-    }
-
-    a_list_freeEx(tok, free);
-
-    if(a_list_isEmpty(t->header.platformInputs)) {
-        a_out__error("a_touch_new: No touch screen found for '%s'", Ids);
+    if(pt) {
+        a_list_addLast(t->header.platformInputs, pt);
     }
 
     return t;

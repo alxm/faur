@@ -22,7 +22,6 @@
 #include "a2x_pack_draw.v.h"
 #include "a2x_pack_embed.v.h"
 #include "a2x_pack_file.v.h"
-#include "a2x_pack_input_button.v.h"
 #include "a2x_pack_math.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_platform.v.h"
@@ -75,15 +74,15 @@ void a_sound__init(void)
 
     #if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ
         g_volumeUpButton = a_button_new();
-        a_button_bind(g_volumeUpButton, "gamepad.b.volUp");
+        a_button_bind(g_volumeUpButton, A_BUTTON_VOLUP);
 
         g_volumeDownButton = a_button_new();
-        a_button_bind(g_volumeDownButton, "gamepad.b.volDown");
+        a_button_bind(g_volumeDownButton, A_BUTTON_VOLDOWN);
     #endif
 
     #if A_BUILD_DEVICE_KEYBOARD
         g_muteButton = a_button_new();
-        a_button_bind(g_muteButton, "key.m");
+        a_button_bind(g_muteButton, A_KEY_M);
     #endif
 
     #if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ

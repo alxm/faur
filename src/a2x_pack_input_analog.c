@@ -20,6 +20,7 @@
 #include "a2x_pack_input_analog.v.h"
 
 #include "a2x_pack_input.v.h"
+#include "a2x_pack_listit.v.h"
 #include "a2x_pack_math.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
@@ -30,27 +31,11 @@ struct AAnalog {
     AInputUserHeader header;
 };
 
-AAnalog* a_analog_new(const char* Ids)
+AAnalog* a_analog_new(void)
 {
     AAnalog* a = a_mem_malloc(sizeof(AAnalog));
 
     a_input__userHeaderInit(&a->header);
-
-    AList* tok = a_str_split(Ids, ", ");
-
-    A_LIST_ITERATE(tok, char*, id) {
-        APlatformAnalog* pa = a_platform__analogGet(id);
-
-        if(pa) {
-            a_list_addLast(a->header.platformInputs, pa);
-        }
-    }
-
-    a_list_freeEx(tok, free);
-
-    if(a_list_isEmpty(a->header.platformInputs)) {
-        a_out__error("a_analog_new: No analog axes found for '%s'", Ids);
-    }
 
     return a;
 }
@@ -66,9 +51,29 @@ void a_analog_free(AAnalog* Analog)
     free(Analog);
 }
 
+void a_analog_bind(AAnalog* Analog, AAxisId Id)
+{
+    APlatformAnalog* pa = a_platform__analogGet(Id);
+
+    if(pa == NULL) {
+        return;
+    }
+
+    if(Analog->header.name == a__inputNameDefault) {
+        Analog->header.name = a_platform__analogNameGet(pa);
+    }
+
+    a_list_addLast(Analog->header.platformInputs, pa);
+}
+
 bool a_analog_isWorking(const AAnalog* Analog)
 {
     return !a_list_isEmpty(Analog->header.platformInputs);
+}
+
+const char* a_analog_nameGet(const AAnalog* Analog)
+{
+    return Analog->header.name;
 }
 
 AFix a_analog_valueGet(const AAnalog* Analog)

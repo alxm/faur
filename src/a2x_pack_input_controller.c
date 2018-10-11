@@ -28,70 +28,66 @@ void a_input_controller__init(void)
     for(unsigned i = a_platform__controllerNumGet(); i--; ) {
         a_platform__controllerSet(i);
 
-        APlatformAnalog* x = a_platform__analogGet("gamepad.a.leftX");
-        APlatformAnalog* y = a_platform__analogGet("gamepad.a.leftY");
-        APlatformAnalog* lt = a_platform__analogGet("gamepad.a.leftTrigger");
-        APlatformAnalog* rt = a_platform__analogGet("gamepad.a.rightTrigger");
-        APlatformButton* u = a_platform__buttonGet("gamepad.b.up");
-        APlatformButton* d = a_platform__buttonGet("gamepad.b.down");
-        APlatformButton* l = a_platform__buttonGet("gamepad.b.left");
-        APlatformButton* r = a_platform__buttonGet("gamepad.b.right");
-        APlatformButton* ul = a_platform__buttonGet("gamepad.b.upLeft");
-        APlatformButton* ur = a_platform__buttonGet("gamepad.b.upRight");
-        APlatformButton* dl = a_platform__buttonGet("gamepad.b.downLeft");
-        APlatformButton* dr = a_platform__buttonGet("gamepad.b.downRight");
-        APlatformButton* lb = a_platform__buttonGet("gamepad.b.l");
-        APlatformButton* rb = a_platform__buttonGet("gamepad.b.r");
+        // Split diagonals into individual cardinal directions (for GP2X/Wiz)
+        a_platform__buttonForward(A_BUTTON_UPLEFT, A_BUTTON_UP);
+        a_platform__buttonForward(A_BUTTON_UPLEFT, A_BUTTON_LEFT);
 
-        // GP2X and Wiz dpad diagonals are dedicated buttons, split them into
-        // their cardinal directions.
-        if(u && d && l && r && ul && ur && dl && dr) {
-            a_platform__buttonForward(ul, u);
-            a_platform__buttonForward(ul, l);
+        a_platform__buttonForward(A_BUTTON_UPRIGHT, A_BUTTON_UP);
+        a_platform__buttonForward(A_BUTTON_UPRIGHT, A_BUTTON_RIGHT);
 
-            a_platform__buttonForward(ur, u);
-            a_platform__buttonForward(ur, r);
+        a_platform__buttonForward(A_BUTTON_DOWNLEFT, A_BUTTON_DOWN);
+        a_platform__buttonForward(A_BUTTON_DOWNLEFT, A_BUTTON_LEFT);
 
-            a_platform__buttonForward(dl, d);
-            a_platform__buttonForward(dl, l);
+        a_platform__buttonForward(A_BUTTON_DOWNRIGHT, A_BUTTON_DOWN);
+        a_platform__buttonForward(A_BUTTON_DOWNRIGHT, A_BUTTON_RIGHT);
 
-            a_platform__buttonForward(dr, d);
-            a_platform__buttonForward(dr, r);
+        AAxisId axisX = A_AXIS_LEFTX;
+        AAxisId axisY = A_AXIS_LEFTY;
+        AButtonId buttonUp = A_BUTTON_UP;
+        AButtonId buttonDown = A_BUTTON_DOWN;
+        AButtonId buttonLeft = A_BUTTON_LEFT;
+        AButtonId buttonRight = A_BUTTON_RIGHT;
+
+        if(!a_platform__controllerIsMapped()) {
+            if(a_settings_boolGet(A_SETTING_INPUT_ANALOG_AXES_SWITCH)) {
+                axisX = A_AXIS_LEFTY;
+                axisY = A_AXIS_LEFTX;
+            }
+
+            if(a_settings_boolGet(A_SETTING_INPUT_ANALOG_AXES_INVERT)) {
+                buttonUp = A_BUTTON_DOWN;
+                buttonDown = A_BUTTON_UP;
+                buttonLeft = A_BUTTON_RIGHT;
+                buttonRight = A_BUTTON_LEFT;
+            }
         }
 
         // Forward the left analog stick to the direction buttons
-        if(x && y && u && d && l && r) {
-            if(!a_platform__controllerIsMapped()) {
-                if(a_settings_boolGet(A_SETTING_INPUT_ANALOG_AXES_SWITCH)) {
-                    APlatformAnalog* save = x;
-
-                    x = y;
-                    y = save;
-                }
-
-                if(a_settings_boolGet(A_SETTING_INPUT_ANALOG_AXES_INVERT)) {
-                    APlatformButton* save;
-
-                    save = u;
-                    u = d;
-                    d = save;
-
-                    save = l;
-                    l = r;
-                    r = save;
-                }
-            }
-
-            a_platform__analogForward(x, l, r);
-            a_platform__analogForward(y, u, d);
-        }
+        a_platform__analogForward(axisX, buttonLeft, buttonRight);
+        a_platform__analogForward(axisY, buttonUp, buttonDown);
 
         // Forward analog shoulder triggers to the shoulder buttons
-        if(lt && rt && lb && rb) {
-            a_platform__analogForward(lt, NULL, lb);
-            a_platform__analogForward(rt, NULL, rb);
-        }
+        a_platform__analogForward(
+            A_AXIS_LEFTTRIGGER, A_BUTTON_INVALID, A_BUTTON_L);
+        a_platform__analogForward(
+            A_AXIS_RIGHTTRIGGER, A_BUTTON_INVALID, A_BUTTON_R);
     }
+
+    #if A_BUILD_SYSTEM_PANDORA
+        // Pandora's game buttons are actually keyboard keys
+        a_platform__buttonForward(A_KEY_UP, A_BUTTON_UP);
+        a_platform__buttonForward(A_KEY_DOWN, A_BUTTON_DOWN);
+        a_platform__buttonForward(A_KEY_LEFT, A_BUTTON_LEFT);
+        a_platform__buttonForward(A_KEY_RIGHT, A_BUTTON_RIGHT);
+        a_platform__buttonForward(A_KEY_RSHIFT, A_BUTTON_L);
+        a_platform__buttonForward(A_KEY_RCTRL, A_BUTTON_R);
+        a_platform__buttonForward(A_KEY_HOME, A_BUTTON_X);
+        a_platform__buttonForward(A_KEY_END, A_BUTTON_B);
+        a_platform__buttonForward(A_KEY_PAGEDOWN, A_BUTTON_A);
+        a_platform__buttonForward(A_KEY_PAGEUP, A_BUTTON_Y);
+        a_platform__buttonForward(A_KEY_LALT, A_BUTTON_START);
+        a_platform__buttonForward(A_KEY_LCTRL, A_BUTTON_SELECT);
+    #endif
 }
 
 unsigned a_input_controllerNumGet(void)

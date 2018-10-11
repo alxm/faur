@@ -21,6 +21,8 @@
 
 #include "a2x_pack_input_button.p.h"
 
+extern const char* a__keyNames[A__KEY_ID(A_KEY_NUM)];
+
 extern void a_input_button__init(void);
 extern void a_input_button__uninit(void);
 

@@ -31,6 +31,8 @@ typedef struct APlatformTexture APlatformTexture;
 typedef void APlatformSample;
 typedef void APlatformMusic;
 
+#include "a2x_pack_input_analog.v.h"
+#include "a2x_pack_input_button.v.h"
 #include "a2x_pack_sprite.v.h"
 
 extern void a_platform__init(void);
@@ -89,16 +91,17 @@ extern int a_platform__sampleChannelGet(void);
 
 extern void a_platform__inputsPoll(void);
 
-extern APlatformButton* a_platform__buttonGet(const char* Id);
-extern bool a_platform__buttonPressGet(const APlatformButton* Button);
+extern APlatformButton* a_platform__buttonGet(int Id);
 extern const char* a_platform__buttonNameGet(const APlatformButton* Button);
-extern void a_platform__buttonForward(APlatformButton* Source, APlatformButton* Destination);
+extern bool a_platform__buttonPressGet(const APlatformButton* Button);
+extern void a_platform__buttonForward(int Source, int Destination);
 
-extern APlatformAnalog* a_platform__analogGet(const char* Id);
+extern APlatformAnalog* a_platform__analogGet(int Id);
+extern const char* a_platform__analogNameGet(const APlatformAnalog* Analog);
 extern int a_platform__analogValueGet(const APlatformAnalog* Analog);
-extern void a_platform__analogForward(APlatformAnalog* Source, APlatformButton* Negative, APlatformButton* Positive);
+extern void a_platform__analogForward(AAxisId Source, AButtonId Negative, AButtonId Positive);
 
-extern APlatformTouch* a_platform__touchGet(const char* Id);
+extern APlatformTouch* a_platform__touchGet(void);
 extern void a_platform__touchCoordsGet(const APlatformTouch* Touch, int* X, int* Y);
 extern void a_platform__touchDeltaGet(const APlatformTouch* Touch, int* Dx, int* Dy);
 extern bool a_platform__touchTapGet(const APlatformTouch* Touch);
