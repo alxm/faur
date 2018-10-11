@@ -38,6 +38,42 @@ struct AButton {
     bool pressed;
 };
 
+const char* a__keyNames[A__KEY_ID(A_KEY_NUM)] = {
+    [A__KEY_ID(A_KEY_UP)] = "Up",
+    [A__KEY_ID(A_KEY_DOWN)] = "Down",
+    [A__KEY_ID(A_KEY_LEFT)] = "Left",
+    [A__KEY_ID(A_KEY_RIGHT)] = "Right",
+    [A__KEY_ID(A_KEY_Z)] = "Z",
+    [A__KEY_ID(A_KEY_X)] = "X",
+    [A__KEY_ID(A_KEY_C)] = "C",
+    [A__KEY_ID(A_KEY_V)] = "V",
+    [A__KEY_ID(A_KEY_M)] = "M",
+    [A__KEY_ID(A_KEY_ENTER)] = "Enter",
+    [A__KEY_ID(A_KEY_SPACE)] = "Space",
+    [A__KEY_ID(A_KEY_HOME)] = "Home",
+    [A__KEY_ID(A_KEY_END)] = "End",
+    [A__KEY_ID(A_KEY_PAGEUP)] = "PageUp",
+    [A__KEY_ID(A_KEY_PAGEDOWN)] = "PageDown",
+    [A__KEY_ID(A_KEY_LALT)] = "L-Alt",
+    [A__KEY_ID(A_KEY_LCTRL)] = "L-Ctrl",
+    [A__KEY_ID(A_KEY_LSHIFT)] = "L-Shift",
+    [A__KEY_ID(A_KEY_RALT)] = "R-Alt",
+    [A__KEY_ID(A_KEY_RCTRL)] = "R-Ctrl",
+    [A__KEY_ID(A_KEY_RSHIFT)] = "R-Shift",
+    [A__KEY_ID(A_KEY_F1)] = "F1",
+    [A__KEY_ID(A_KEY_F2)] = "F2",
+    [A__KEY_ID(A_KEY_F3)] = "F3",
+    [A__KEY_ID(A_KEY_F4)] = "F4",
+    [A__KEY_ID(A_KEY_F5)] = "F5",
+    [A__KEY_ID(A_KEY_F6)] = "F6",
+    [A__KEY_ID(A_KEY_F7)] = "F7",
+    [A__KEY_ID(A_KEY_F8)] = "F8",
+    [A__KEY_ID(A_KEY_F9)] = "F9",
+    [A__KEY_ID(A_KEY_F10)] = "F10",
+    [A__KEY_ID(A_KEY_F11)] = "F11",
+    [A__KEY_ID(A_KEY_F12)] = "F12",
+};
+
 static AList* g_buttons; // list of AButton
 
 void a_input_button__init(void)
