@@ -59,7 +59,7 @@ struct APlatformButton {
 
 struct APlatformAnalog {
     char* name;
-    AList* forwardButtons; // list of APlatformAnalog2Buttons or NULL
+    AList* forwardButtons; // list of APlatformButtonPair or NULL
     int axisIndex;
     int value;
 };
@@ -69,7 +69,7 @@ struct APlatformTouch {
     int x, y;
     int dx, dy;
     bool tap;
-    AList* motion; // list of APlatformTouchPoint captured by motion events
+    AList* motion; // list of ATouchPoint captured by motion events
 };
 
 struct APlatformController {
@@ -88,14 +88,14 @@ struct APlatformController {
 
 typedef struct {
     int x, y;
-} APlatformTouchPoint;
+} ATouchPoint;
 
 typedef struct {
     APlatformButton* negative;
     APlatformButton* positive;
     bool lastPressedNegative;
     bool lastPressedPositive;
-} APlatformAnalog2Buttons;
+} APlatformButtonPair;
 
 static APlatformButton* g_keys[A_KEY_NUM - A__KEY_FLAG];
 static APlatformTouch g_mouse;
@@ -200,7 +200,7 @@ static void analogSet(APlatformAnalog* Analog, int Value)
     bool pressedNegative = Value < -A__PRESS_THRESHOLD;
     bool pressedPositive = Value > A__PRESS_THRESHOLD;
 
-    A_LIST_ITERATE(Analog->forwardButtons, APlatformAnalog2Buttons*, b) {
+    A_LIST_ITERATE(Analog->forwardButtons, APlatformButtonPair*, b) {
         if(b->negative && pressedNegative != b->lastPressedNegative) {
             buttonPress(b->negative, pressedNegative);
             b->lastPressedNegative = pressedNegative;
@@ -893,8 +893,7 @@ void a_platform__inputsPoll(void)
                 g_mouse.y = event.button.y;
 
                 if(a_settings_boolGet(A_SETTING_INPUT_MOUSE_TRACK)) {
-                    APlatformTouchPoint* p =
-                        a_mem_malloc(sizeof(APlatformTouchPoint));
+                    ATouchPoint* p = a_mem_malloc(sizeof(ATouchPoint));
 
                     p->x = g_mouse.x;
                     p->y = g_mouse.y;
@@ -1012,7 +1011,7 @@ int a_platform__analogValueGet(const APlatformAnalog* Analog)
 
 void a_platform__analogForward(APlatformAnalog* Source, APlatformButton* Negative, APlatformButton* Positive)
 {
-    APlatformAnalog2Buttons* f = a_mem_malloc(sizeof(APlatformAnalog2Buttons));
+    APlatformButtonPair* f = a_mem_malloc(sizeof(APlatformButtonPair));
 
     f->negative = Negative;
     f->positive = Positive;
