@@ -98,7 +98,7 @@ typedef struct {
 } APlatformAnalog2Buttons;
 
 static APlatformButton* g_keys[A_KEY_NUM - A__KEY_FLAG];
-static AStrHash* g_touchScreens;
+static APlatformTouch g_mouse;
 static AList* g_controllers;
 static APlatformController* g_setController;
 static AList* g_forwardButtonsQueue[2]; // list of APlatformButton
@@ -213,32 +213,20 @@ static void analogSet(APlatformAnalog* Analog, int Value)
     }
 }
 
-static void touchAdd(const char* Id)
+static void touchAdd(APlatformTouch* Touch)
 {
-    if(a_strhash_contains(g_touchScreens, Id)) {
-        a_out__error("Touchscreen '%s' is already defined", Id);
-        return;
-    }
-
-    APlatformTouch* t = a_mem_malloc(sizeof(APlatformTouch));
-
-    t->name = a_str_dup(Id);
-    t->x = 0;
-    t->y = 0;
-    t->dx = 0;
-    t->dy = 0;
-    t->tap = false;
-    t->motion = a_list_new();
-
-    a_strhash_add(g_touchScreens, Id, t);
+    Touch->name = "Mouse";
+    Touch->x = 0;
+    Touch->y = 0;
+    Touch->dx = 0;
+    Touch->dy = 0;
+    Touch->tap = false;
+    Touch->motion = a_list_new();
 }
 
 static void touchFree(APlatformTouch* Touch)
 {
     a_list_freeEx(Touch->motion, free);
-
-    free(Touch->name);
-    free(Touch);
 }
 
 static APlatformController* controllerAdd(int Index)
@@ -361,7 +349,6 @@ void a_platform_sdl_input__init(void)
         a_out__fatal("SDL_InitSubSystem: %s", SDL_GetError());
     }
 
-    g_touchScreens = a_strhash_new();
     g_controllers = a_list_new();
     g_setController = NULL;
     g_forwardButtonsQueue[0] = a_list_new();
@@ -678,7 +665,7 @@ void a_platform_sdl_input__init(void)
         keyAdd("F12", A_KEY_F12, SDL_SCANCODE_F12);
     #endif
 
-    touchAdd("touchScreen");
+    touchAdd(&g_mouse);
 }
 
 void a_platform_sdl_input__uninit(void)
@@ -689,7 +676,8 @@ void a_platform_sdl_input__uninit(void)
         }
     }
 
-    a_strhash_freeEx(g_touchScreens, (AFree*)touchFree);
+    touchFree(&g_mouse);
+
     a_list_freeEx(g_controllers, (AFree*)controllerFree);
     a_list_free(g_forwardButtonsQueue[0]);
     a_list_free(g_forwardButtonsQueue[1]);
@@ -699,10 +687,8 @@ void a_platform_sdl_input__uninit(void)
 
 void a_platform__inputsPoll(void)
 {
-    A_STRHASH_ITERATE(g_touchScreens, APlatformTouch*, t) {
-        t->tap = false;
-        a_list_clearEx(t->motion, free);
-    }
+    g_mouse.tap = false;
+    a_list_clearEx(g_mouse.motion, free);
 
     for(SDL_Event event; SDL_PollEvent(&event); ) {
         switch(event.type) {
@@ -903,33 +889,26 @@ void a_platform__inputsPoll(void)
 #endif
 
             case SDL_MOUSEMOTION: {
-                const bool track =
-                    a_settings_boolGet(A_SETTING_INPUT_MOUSE_TRACK);
+                g_mouse.x = event.button.x;
+                g_mouse.y = event.button.y;
 
-                A_STRHASH_ITERATE(g_touchScreens, APlatformTouch*, t) {
-                    t->x = event.button.x;
-                    t->y = event.button.y;
+                if(a_settings_boolGet(A_SETTING_INPUT_MOUSE_TRACK)) {
+                    APlatformTouchPoint* p =
+                        a_mem_malloc(sizeof(APlatformTouchPoint));
 
-                    if(track) {
-                        APlatformTouchPoint* p =
-                            a_mem_malloc(sizeof(APlatformTouchPoint));
+                    p->x = g_mouse.x;
+                    p->y = g_mouse.y;
 
-                        p->x = t->x;
-                        p->y = t->y;
-
-                        a_list_addLast(t->motion, p);
-                    }
+                    a_list_addLast(g_mouse.motion, p);
                 }
             } break;
 
             case SDL_MOUSEBUTTONDOWN: {
                 switch(event.button.button) {
                     case SDL_BUTTON_LEFT: {
-                        A_STRHASH_ITERATE(g_touchScreens, APlatformTouch*, t) {
-                            t->x = event.button.x;
-                            t->y = event.button.y;
-                            t->tap = true;
-                        }
+                        g_mouse.x = event.button.x;
+                        g_mouse.y = event.button.y;
+                        g_mouse.tap = true;
                     } break;
                 }
             } break;
@@ -937,11 +916,9 @@ void a_platform__inputsPoll(void)
             case SDL_MOUSEBUTTONUP: {
                 switch(event.button.button) {
                     case SDL_BUTTON_LEFT: {
-                        A_STRHASH_ITERATE(g_touchScreens, APlatformTouch*, t) {
-                            t->x = event.button.x;
-                            t->y = event.button.y;
-                            t->tap = false;
-                        }
+                        g_mouse.x = event.button.x;
+                        g_mouse.y = event.button.y;
+                        g_mouse.tap = false;
                     } break;
                 }
             } break;
@@ -971,10 +948,8 @@ void a_platform__inputsPoll(void)
         int mouseDx = 0, mouseDy = 0;
         SDL_GetRelativeMouseState(&mouseDx, &mouseDy);
 
-        A_STRHASH_ITERATE(g_touchScreens, APlatformTouch*, t) {
-            t->dx = mouseDx;
-            t->dy = mouseDy;
-        }
+        g_mouse.dx = mouseDx;
+        g_mouse.dy = mouseDy;
     #endif
 }
 
@@ -1051,9 +1026,9 @@ void a_platform__analogForward(APlatformAnalog* Source, APlatformButton* Negativ
     a_list_addLast(Source->forwardButtons, f);
 }
 
-APlatformTouch* a_platform__touchGet(const char* Id)
+APlatformTouch* a_platform__touchGet(void)
 {
-    return a_strhash_get(g_touchScreens, Id);
+    return &g_mouse;
 }
 
 void a_platform__touchCoordsGet(const APlatformTouch* Touch, int* X, int* Y)
