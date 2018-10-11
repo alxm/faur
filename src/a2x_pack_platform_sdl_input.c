@@ -25,6 +25,7 @@
 #include <SDL.h>
 
 #include "a2x_pack_fps.v.h"
+#include "a2x_pack_input_analog.v.h"
 #include "a2x_pack_input_button.v.h"
 #include "a2x_pack_math.v.h"
 #include "a2x_pack_mem.v.h"
@@ -82,7 +83,7 @@ struct APlatformController {
     int numHats;
     int numAxes;
     APlatformButton* buttons[A_BUTTON_NUM];
-    AStrHash* axes;
+    APlatformAnalog* axes[A_AXIS_NUM];
 };
 
 typedef struct {
@@ -162,21 +163,20 @@ static void buttonPress(APlatformButton* Button, bool Pressed)
     }
 }
 
-static void analogAdd(AStrHash* AxesCollection, const char* Id, int AxisIndex)
+static void analogAdd(APlatformAnalog** AxesCollection, AAxisId Id, const char* Name, int AxisIndex)
 {
-    if(a_strhash_contains(AxesCollection, Id)) {
-        a_out__error("Analog '%s' is already defined", Id);
+    if(AxesCollection[Id] != NULL) {
         return;
     }
 
     APlatformAnalog* a = a_mem_malloc(sizeof(APlatformAnalog));
 
-    a->name = a_str_dup(Id);
+    a->name = a_str_dup(Name);
     a->forwardButtons = NULL;
     a->axisIndex = AxisIndex;
     a->value = 0;
 
-    a_strhash_add(AxesCollection, Id, a);
+    AxesCollection[Id] = a;
 }
 
 static void analogFree(APlatformAnalog* Analog)
@@ -307,7 +307,6 @@ static APlatformController* controllerAdd(int Index)
     c->numButtons = SDL_JoystickNumButtons(c->joystick);
     c->numHats = SDL_JoystickNumHats(c->joystick);
     c->numAxes = SDL_JoystickNumAxes(c->joystick);
-    c->axes = a_strhash_new();
 
     return c;
 }
@@ -320,8 +319,10 @@ static void controllerFree(APlatformController* Controller)
         }
     }
 
-    A_STRHASH_ITERATE(Controller->axes, APlatformAnalog*, a) {
-        analogFree(a);
+    for(AAxisId id = 0; id < A_AXIS_NUM; id++) {
+        if(Controller->axes[id]) {
+            analogFree(Controller->axes[id]);
+        }
     }
 
     #if A_BUILD_LIB_SDL == 1
@@ -335,8 +336,6 @@ static void controllerFree(APlatformController* Controller)
             SDL_JoystickClose(Controller->joystick);
         }
     #endif
-
-    a_strhash_free(Controller->axes);
 
     free(Controller);
 }
@@ -437,8 +436,8 @@ void a_platform_sdl_input__init(void)
                     buttonAdd(c->buttons, "Hold", A_BUTTON_HOLD, 7);
                     buttonAdd(c->buttons, "I", A_BUTTON_START, 8);
                     buttonAdd(c->buttons, "II", A_BUTTON_SELECT, 9);
-                    analogAdd(c->axes, "gamepad.a.leftX", 0);
-                    analogAdd(c->axes, "gamepad.a.leftY", 1);
+                    analogAdd(c->axes, A_AXIS_LEFTX, "Stick", 0);
+                    analogAdd(c->axes, A_AXIS_LEFTY, "Stick", 1);
                 #endif
                 continue;
             }
@@ -447,12 +446,12 @@ void a_platform_sdl_input__init(void)
 
             // Check if this is one of the built-in nubs
             if(a_str_equal(name, "nub0")) {
-                analogAdd(c->axes, "gamepad.a.leftX", 0);
-                analogAdd(c->axes, "gamepad.a.leftY", 1);
+                analogAdd(c->axes, A_AXIS_LEFTX, "Left Stick", 0);
+                analogAdd(c->axes, A_AXIS_LEFTY, "Left Stick", 1);
                 continue;
             } else if(a_str_equal(name, "nub1")) {
-                analogAdd(c->axes, "gamepad.a.rightX", 0);
-                analogAdd(c->axes, "gamepad.a.rightY", 1);
+                analogAdd(c->axes, A_AXIS_RIGHTX, "Right Stick",  0);
+                analogAdd(c->axes, A_AXIS_RIGHTY, "Right Stick", 1);
 
                 // Attach to nub0 to compose a single dual-analog controller
                 A_LIST_ITERATE(g_controllers, APlatformController*, nub0) {
@@ -474,62 +473,69 @@ void a_platform_sdl_input__init(void)
                            c->numAxes,
                            c->numHats);
 
-            static struct {
-                const char* name;
+            static const struct {
                 AButtonId id;
+                const char* name;
             } buttons[SDL_CONTROLLER_BUTTON_MAX] = {
-                {"A", A_BUTTON_A},
-                {"B", A_BUTTON_B},
-                {"X", A_BUTTON_X},
-                {"Y", A_BUTTON_Y},
-                {"Select", A_BUTTON_SELECT},
-                {"Guide", A_BUTTON_GUIDE},
-                {"Start", A_BUTTON_START},
-                {"Left Stick", A_BUTTON_INVALID},
-                {"Right Stick", A_BUTTON_INVALID},
-                {"L", A_BUTTON_L},
-                {"R", A_BUTTON_R},
-                {"Up", A_BUTTON_UP},
-                {"Down", A_BUTTON_DOWN},
-                {"Left", A_BUTTON_LEFT},
-                {"Right", A_BUTTON_RIGHT},
-            };
-
-            static const char* axisNames[SDL_CONTROLLER_AXIS_MAX] = {
-                "gamepad.a.leftX",
-                "gamepad.a.leftY",
-                "gamepad.a.rightX",
-                "gamepad.a.rightY",
-                "gamepad.a.leftTrigger",
-                "gamepad.a.rightTrigger"
+                [SDL_CONTROLLER_BUTTON_A] = {A_BUTTON_A, "A"},
+                [SDL_CONTROLLER_BUTTON_B] = {A_BUTTON_B, "B"},
+                [SDL_CONTROLLER_BUTTON_X] = {A_BUTTON_X, "X"},
+                [SDL_CONTROLLER_BUTTON_Y] = {A_BUTTON_Y, "Y"},
+                [SDL_CONTROLLER_BUTTON_BACK] = {A_BUTTON_SELECT, "Select"},
+                [SDL_CONTROLLER_BUTTON_GUIDE] = {A_BUTTON_GUIDE, "Guide"},
+                [SDL_CONTROLLER_BUTTON_START] = {A_BUTTON_START, "Start"},
+                [SDL_CONTROLLER_BUTTON_LEFTSTICK] = {A_BUTTON_INVALID, "Left Stick"},
+                [SDL_CONTROLLER_BUTTON_RIGHTSTICK] = {A_BUTTON_INVALID, "Right Stick"},
+                [SDL_CONTROLLER_BUTTON_LEFTSHOULDER] = {A_BUTTON_L, "L"},
+                [SDL_CONTROLLER_BUTTON_RIGHTSHOULDER] = {A_BUTTON_R, "R"},
+                [SDL_CONTROLLER_BUTTON_DPAD_UP] = {A_BUTTON_UP, "Up"},
+                [SDL_CONTROLLER_BUTTON_DPAD_DOWN] = {A_BUTTON_DOWN, "Down"},
+                [SDL_CONTROLLER_BUTTON_DPAD_LEFT] = {A_BUTTON_LEFT, "Left"},
+                [SDL_CONTROLLER_BUTTON_DPAD_RIGHT] = {A_BUTTON_RIGHT, "Right"},
             };
 
             for(SDL_GameControllerButton b = SDL_CONTROLLER_BUTTON_A;
                 b < SDL_CONTROLLER_BUTTON_MAX;
                 b++) {
 
-                SDL_GameControllerButtonBind bind =
-                    SDL_GameControllerGetBindForButton(c->controller, b);
-
-                if(bind.bindType == SDL_CONTROLLER_BINDTYPE_NONE) {
+                if(buttons[b].name == NULL) {
                     continue;
                 }
 
-                buttonAdd(c->buttons, buttons[b].name, buttons[b].id, b);
+                SDL_GameControllerButtonBind bind =
+                    SDL_GameControllerGetBindForButton(c->controller, b);
+
+                if(bind.bindType != SDL_CONTROLLER_BINDTYPE_NONE) {
+                    buttonAdd(c->buttons, buttons[b].name, buttons[b].id, b);
+                }
             }
+
+            static const struct {
+                AAxisId id;
+                const char* name;
+            } axes[SDL_CONTROLLER_AXIS_MAX] = {
+                [SDL_CONTROLLER_AXIS_LEFTX] = {A_AXIS_LEFTX, "Left Stick"},
+                [SDL_CONTROLLER_AXIS_LEFTY] = {A_AXIS_LEFTY, "Left Stick"},
+                [SDL_CONTROLLER_AXIS_RIGHTX] = {A_AXIS_RIGHTX, "Right Stick"},
+                [SDL_CONTROLLER_AXIS_RIGHTY] = {A_AXIS_RIGHTY, "Right Stick"},
+                [SDL_CONTROLLER_AXIS_TRIGGERLEFT] = {A_AXIS_LEFTTRIGGER, "Left Trigger"},
+                [SDL_CONTROLLER_AXIS_TRIGGERRIGHT] = {A_AXIS_RIGHTTRIGGER, "Right Trigger"},
+            };
 
             for(SDL_GameControllerAxis a = SDL_CONTROLLER_AXIS_LEFTX;
                 a < SDL_CONTROLLER_AXIS_MAX;
                 a++) {
 
-                SDL_GameControllerButtonBind bind =
-                    SDL_GameControllerGetBindForAxis(c->controller, a);
-
-                if(bind.bindType == SDL_CONTROLLER_BINDTYPE_NONE) {
+                if(axes[a].name == NULL) {
                     continue;
                 }
 
-                analogAdd(c->axes, axisNames[a], a);
+                SDL_GameControllerButtonBind bind =
+                    SDL_GameControllerGetBindForAxis(c->controller, a);
+
+                if(bind.bindType != SDL_CONTROLLER_BINDTYPE_NONE) {
+                    analogAdd(c->axes, axes[a].id, axes[a].name, a);
+                }
             }
         } else {
 #endif
@@ -540,35 +546,35 @@ void a_platform_sdl_input__init(void)
                            c->numHats);
 
             static struct {
-                const char* name;
                 AButtonId id;
+                const char* name;
             } buttons[] = {
-                {"A", A_BUTTON_A},
-                {"B", A_BUTTON_B},
-                {"X", A_BUTTON_X},
-                {"Y", A_BUTTON_Y},
-                {"L", A_BUTTON_L},
-                {"R", A_BUTTON_R},
-                {"Select", A_BUTTON_SELECT},
-                {"Start", A_BUTTON_START},
-                {"Guide", A_BUTTON_GUIDE}
-            };
-
-            static const char* axes[] = {
-                "gamepad.a.leftX",
-                "gamepad.a.leftY",
-                "gamepad.a.rightX",
-                "gamepad.a.rightY",
-                "gamepad.a.leftTrigger",
-                "gamepad.a.rightTrigger"
+                {A_BUTTON_A, "A"},
+                {A_BUTTON_B, "B"},
+                {A_BUTTON_X, "X"},
+                {A_BUTTON_Y, "Y"},
+                {A_BUTTON_L, "L"},
+                {A_BUTTON_R, "R"},
+                {A_BUTTON_SELECT, "Select"},
+                {A_BUTTON_START, "Start"},
+                {A_BUTTON_GUIDE, "Guide"},
             };
 
             for(int j = a_math_min(c->numButtons, A_ARRAY_LEN(buttons)); j--; ) {
                 buttonAdd(c->buttons, buttons[j].name, buttons[j].id, j);
             }
 
-            for(int j = a_math_min(c->numAxes, A_ARRAY_LEN(axes)); j--; ) {
-                analogAdd(c->axes, axes[j], j);
+            static const char* axes[A_AXIS_NUM] = {
+                [A_AXIS_LEFTX] = "Left Stick",
+                [A_AXIS_LEFTY] = "Left Stick",
+                [A_AXIS_RIGHTX] = "Right Stick",
+                [A_AXIS_RIGHTY] = "Right Stick",
+                [A_AXIS_LEFTTRIGGER] = "Left Trigger",
+                [A_AXIS_RIGHTTRIGGER] = "Right Trigger",
+            };
+
+            for(int id = a_math_min(c->numAxes, A_AXIS_NUM); id--; ) {
+                analogAdd(c->axes, id, axes[id], id);
             }
 #if A_BUILD_LIB_SDL == 2
         }
@@ -842,8 +848,10 @@ void a_platform__inputsPoll(void)
                         continue;
                     }
 
-                    A_STRHASH_ITERATE(c->axes, APlatformAnalog*, a) {
-                        if(event.jaxis.axis == a->axisIndex) {
+                    for(AAxisId id = 0; id < A_AXIS_NUM; id++) {
+                        APlatformAnalog* a = c->axes[id];
+
+                        if(a && a->axisIndex == event.jaxis.axis) {
                             analogSet(a, event.jaxis.value);
                             break;
                         }
@@ -880,8 +888,10 @@ void a_platform__inputsPoll(void)
                         continue;
                     }
 
-                    A_STRHASH_ITERATE(c->axes, APlatformAnalog*, a) {
-                        if(event.caxis.axis == a->axisIndex) {
+                    for(AAxisId id = 0; id < A_AXIS_NUM; id++) {
+                        APlatformAnalog* a = c->axes[id];
+
+                        if(a && a->axisIndex == event.caxis.axis) {
                             analogSet(a, event.caxis.value);
                             break;
                         }
@@ -979,14 +989,14 @@ APlatformButton* a_platform__buttonGet(int Id)
     return NULL;
 }
 
-bool a_platform__buttonPressGet(const APlatformButton* Button)
-{
-    return Button->pressed;
-}
-
 const char* a_platform__buttonNameGet(const APlatformButton* Button)
 {
     return Button->name;
+}
+
+bool a_platform__buttonPressGet(const APlatformButton* Button)
+{
+    return Button->pressed;
 }
 
 void a_platform__buttonForward(APlatformButton* Source, APlatformButton* Destination)
@@ -998,12 +1008,12 @@ void a_platform__buttonForward(APlatformButton* Source, APlatformButton* Destina
     a_list_addLast(Source->forwardButtons, Destination);
 }
 
-APlatformAnalog* a_platform__analogGet(const char* Id)
+APlatformAnalog* a_platform__analogGet(int Id)
 {
     const APlatformController* c = g_setController;
 
     while(c) {
-        APlatformAnalog* a = a_strhash_get(c->axes, Id);
+        APlatformAnalog* a = c->axes[Id];
 
         if(a != NULL) {
             return a;
@@ -1013,6 +1023,11 @@ APlatformAnalog* a_platform__analogGet(const char* Id)
     }
 
     return NULL;
+}
+
+const char* a_platform__analogNameGet(const APlatformAnalog* Analog)
+{
+    return Analog->name;
 }
 
 int a_platform__analogValueGet(const APlatformAnalog* Analog)

@@ -90,11 +90,12 @@ extern int a_platform__sampleChannelGet(void);
 extern void a_platform__inputsPoll(void);
 
 extern APlatformButton* a_platform__buttonGet(int Id);
-extern bool a_platform__buttonPressGet(const APlatformButton* Button);
 extern const char* a_platform__buttonNameGet(const APlatformButton* Button);
+extern bool a_platform__buttonPressGet(const APlatformButton* Button);
 extern void a_platform__buttonForward(APlatformButton* Source, APlatformButton* Destination);
 
-extern APlatformAnalog* a_platform__analogGet(const char* Id);
+extern APlatformAnalog* a_platform__analogGet(int Id);
+extern const char* a_platform__analogNameGet(const APlatformAnalog* Analog);
 extern int a_platform__analogValueGet(const APlatformAnalog* Analog);
 extern void a_platform__analogForward(APlatformAnalog* Source, APlatformButton* Negative, APlatformButton* Positive);
 

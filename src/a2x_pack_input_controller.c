@@ -19,6 +19,7 @@
 
 #include "a2x_pack_input_controller.v.h"
 
+#include "a2x_pack_input_analog.v.h"
 #include "a2x_pack_input_button.v.h"
 #include "a2x_pack_out.v.h"
 #include "a2x_pack_platform.v.h"
@@ -29,10 +30,10 @@ void a_input_controller__init(void)
     for(unsigned i = a_platform__controllerNumGet(); i--; ) {
         a_platform__controllerSet(i);
 
-        APlatformAnalog* x = a_platform__analogGet("gamepad.a.leftX");
-        APlatformAnalog* y = a_platform__analogGet("gamepad.a.leftY");
-        APlatformAnalog* lt = a_platform__analogGet("gamepad.a.leftTrigger");
-        APlatformAnalog* rt = a_platform__analogGet("gamepad.a.rightTrigger");
+        APlatformAnalog* x = a_platform__analogGet(A_AXIS_LEFTX);
+        APlatformAnalog* y = a_platform__analogGet(A_AXIS_LEFTY);
+        APlatformAnalog* lt = a_platform__analogGet(A_AXIS_LEFTTRIGGER);
+        APlatformAnalog* rt = a_platform__analogGet(A_AXIS_RIGHTTRIGGER);
         APlatformButton* u = a_platform__buttonGet(A_BUTTON_UP);
         APlatformButton* d = a_platform__buttonGet(A_BUTTON_DOWN);
         APlatformButton* l = a_platform__buttonGet(A_BUTTON_LEFT);
