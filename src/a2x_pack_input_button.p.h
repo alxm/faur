@@ -50,6 +50,7 @@ typedef enum {
 } AButtonId;
 
 #define A__KEY_FLAG 0x80
+#define A__KEY_ID(Id) ((Id) - A__KEY_FLAG)
 
 typedef enum {
     A_KEY_INVALID = -1,

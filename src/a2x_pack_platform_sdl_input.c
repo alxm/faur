@@ -97,7 +97,7 @@ typedef struct {
     bool lastPressedPositive;
 } APlatformButtonPair;
 
-static APlatformButton* g_keys[A_KEY_NUM - A__KEY_FLAG];
+static APlatformButton* g_keys[A__KEY_ID(A_KEY_NUM)];
 static APlatformTouch g_mouse;
 static AList* g_controllers;
 static APlatformController* g_setController;
@@ -106,7 +106,7 @@ static uint32_t g_sdlFlags;
 
 static void keyAdd(const char* Name, AKeyId Id, int Code)
 {
-    if(g_keys[Id - A__KEY_FLAG] != NULL) {
+    if(g_keys[A__KEY_ID(Id)] != NULL) {
         return;
     }
 
@@ -118,7 +118,7 @@ static void keyAdd(const char* Name, AKeyId Id, int Code)
     k->lastEventTick = a_fps_ticksGet() - 1;
     k->pressed = false;
 
-    g_keys[Id - A__KEY_FLAG] = k;
+    g_keys[A__KEY_ID(Id)] = k;
 }
 
 static void buttonAdd(APlatformButton** ButtonsCollection, const char* Name, AButtonId Id, int Code)
@@ -670,7 +670,7 @@ void a_platform_sdl_input__init(void)
 
 void a_platform_sdl_input__uninit(void)
 {
-    for(AKeyId id = 0; id < A_KEY_NUM - A__KEY_FLAG; id++) {
+    for(AKeyId id = 0; id < A__KEY_ID(A_KEY_NUM); id++) {
         if(g_keys[id]) {
             buttonFree(g_keys[id]);
         }
@@ -705,7 +705,7 @@ void a_platform__inputsPoll(void)
                     }
                 #endif
 
-                for(AKeyId id = 0; id < A_KEY_NUM - A__KEY_FLAG; id++) {
+                for(AKeyId id = 0; id < A__KEY_ID(A_KEY_NUM); id++) {
 #if A_BUILD_LIB_SDL == 1
                     if(g_keys[id]->code.keyCode == event.key.keysym.sym) {
 #elif A_BUILD_LIB_SDL == 2
@@ -955,7 +955,7 @@ void a_platform__inputsPoll(void)
 APlatformButton* a_platform__buttonGet(int Id)
 {
     if(Id & A__KEY_FLAG) {
-        return g_keys[Id - A__KEY_FLAG];
+        return g_keys[A__KEY_ID(Id)];
     } else if(g_setController) {
         return g_setController->buttons[Id];
     }
