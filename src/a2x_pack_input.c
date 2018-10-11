@@ -20,8 +20,9 @@
 #include "a2x_pack_input.v.h"
 
 #include "a2x_pack_input_controller.v.h"
-#include "a2x_pack_mem.v.h"
 #include "a2x_pack_platform.v.h"
+
+const char* a__inputNameDefault = "Unknown";
 
 void a_input__init(void)
 {
@@ -36,13 +37,12 @@ void a_input__uninit(void)
 
 void a_input__userHeaderInit(AInputUserHeader* Header)
 {
-    Header->name = NULL;
+    Header->name = a__inputNameDefault;
     Header->platformInputs = a_list_new();
 }
 
 void a_input__userHeaderFree(AInputUserHeader* Header)
 {
-    free(Header->name);
     a_list_free(Header->platformInputs);
 }
 

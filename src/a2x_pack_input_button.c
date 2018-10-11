@@ -143,8 +143,8 @@ void a_button_bind(AButton* Button, int Id)
         return;
     }
 
-    if(Button->header.name == NULL) {
-        Button->header.name = a_str_dup(a_platform__buttonNameGet(pb));
+    if(Button->header.name == a__inputNameDefault) {
+        Button->header.name = a_platform__buttonNameGet(pb);
     }
 
     if(Button->currentCombo) {

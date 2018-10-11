@@ -59,8 +59,8 @@ void a_analog_bind(AAnalog* Analog, AAxisId Id)
         return;
     }
 
-    if(Analog->header.name == NULL) {
-        Analog->header.name = a_str_dup(a_platform__analogNameGet(pa));
+    if(Analog->header.name == a__inputNameDefault) {
+        Analog->header.name = a_platform__analogNameGet(pa);
     }
 
     a_list_addLast(Analog->header.platformInputs, pa);

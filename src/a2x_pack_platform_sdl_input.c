@@ -25,6 +25,7 @@
 #include <SDL.h>
 
 #include "a2x_pack_fps.v.h"
+#include "a2x_pack_listit.v.h"
 #include "a2x_pack_math.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
@@ -32,7 +33,6 @@
 #include "a2x_pack_settings.v.h"
 #include "a2x_pack_state.v.h"
 #include "a2x_pack_str.v.h"
-#include "a2x_pack_strhash.v.h"
 
 #if A_BUILD_LIB_SDL == 1
     typedef uint8_t ASdlJoystickId;
@@ -43,7 +43,7 @@
 #endif
 
 struct APlatformButton {
-    char* name;
+    const char* name;
     AList* forwardButtons; // list of APlatformButton or NULL
     union {
         ASdlKeyCode keyCode;
@@ -56,14 +56,14 @@ struct APlatformButton {
 };
 
 struct APlatformAnalog {
-    char* name;
+    const char* name;
     AList* forwardButtons; // list of APlatformButtonPair or NULL
     int axisIndex;
     int value;
 };
 
 struct APlatformTouch {
-    char* name;
+    const char* name;
     int x, y;
     int dx, dy;
     bool tap;
@@ -110,7 +110,7 @@ static void keyAdd(AKeyId Id, int Code)
 
     APlatformButton* k = a_mem_malloc(sizeof(APlatformButton));
 
-    k->name = a_str_merge("[", a__keyNames[A__KEY_ID(Id)], "]", NULL);
+    k->name = a__keyNames[A__KEY_ID(Id)];
     k->forwardButtons = NULL;
     k->code.code = Code;
     k->lastEventTick = a_fps_ticksGet() - 1;
@@ -127,7 +127,7 @@ static void buttonAdd(APlatformController* Controller, AButtonId Id, const char*
 
     APlatformButton* b = a_mem_malloc(sizeof(APlatformButton));
 
-    b->name = a_str_merge("(", Name, ")", NULL);
+    b->name = Name;
     b->forwardButtons = NULL;
     b->code.code = Code;
     b->lastEventTick = a_fps_ticksGet() - 1;
@@ -141,7 +141,6 @@ static void buttonFree(APlatformButton* Button)
 {
     a_list_free(Button->forwardButtons);
 
-    free(Button->name);
     free(Button);
 }
 
@@ -169,7 +168,7 @@ static void analogAdd(APlatformController* Controller, AAxisId Id, const char* N
 
     APlatformAnalog* a = a_mem_malloc(sizeof(APlatformAnalog));
 
-    a->name = a_str_dup(Name);
+    a->name = Name;
     a->forwardButtons = NULL;
     a->axisIndex = AxisIndex;
     a->value = 0;
@@ -181,7 +180,6 @@ static void analogFree(APlatformAnalog* Analog)
 {
     a_list_freeEx(Analog->forwardButtons, free);
 
-    free(Analog->name);
     free(Analog);
 }
 
