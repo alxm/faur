@@ -28,8 +28,7 @@ void a_input_controller__init(void)
     for(unsigned i = a_platform__controllerNumGet(); i--; ) {
         a_platform__controllerSet(i);
 
-        // GP2X and Wiz dpad diagonals are dedicated buttons, split them into
-        // their cardinal directions.
+        // Split diagonals into individual cardinal directions (for GP2X/Wiz)
         a_platform__buttonForward(A_BUTTON_UPLEFT, A_BUTTON_UP);
         a_platform__buttonForward(A_BUTTON_UPLEFT, A_BUTTON_LEFT);
 
@@ -49,7 +48,6 @@ void a_input_controller__init(void)
         AButtonId buttonLeft = A_BUTTON_LEFT;
         AButtonId buttonRight = A_BUTTON_RIGHT;
 
-        // Forward the left analog stick to the direction buttons
         if(!a_platform__controllerIsMapped()) {
             if(a_settings_boolGet(A_SETTING_INPUT_ANALOG_AXES_SWITCH)) {
                 axisX = A_AXIS_LEFTY;
@@ -64,6 +62,7 @@ void a_input_controller__init(void)
             }
         }
 
+        // Forward the left analog stick to the direction buttons
         a_platform__analogForward(axisX, buttonLeft, buttonRight);
         a_platform__analogForward(axisY, buttonUp, buttonDown);
 
@@ -73,6 +72,22 @@ void a_input_controller__init(void)
         a_platform__analogForward(
             A_AXIS_RIGHTTRIGGER, A_BUTTON_INVALID, A_BUTTON_R);
     }
+
+    #if A_BUILD_SYSTEM_PANDORA
+        // Pandora's game buttons are actually keyboard keys
+        a_platform__buttonForward(A_KEY_UP, A_BUTTON_UP);
+        a_platform__buttonForward(A_KEY_DOWN, A_BUTTON_DOWN);
+        a_platform__buttonForward(A_KEY_LEFT, A_BUTTON_LEFT);
+        a_platform__buttonForward(A_KEY_RIGHT, A_BUTTON_RIGHT);
+        a_platform__buttonForward(A_KEY_RSHIFT, A_BUTTON_L);
+        a_platform__buttonForward(A_KEY_RCTRL, A_BUTTON_R);
+        a_platform__buttonForward(A_KEY_HOME, A_BUTTON_X);
+        a_platform__buttonForward(A_KEY_END, A_BUTTON_B);
+        a_platform__buttonForward(A_KEY_PAGEDOWN, A_BUTTON_A);
+        a_platform__buttonForward(A_KEY_PAGEUP, A_BUTTON_Y);
+        a_platform__buttonForward(A_KEY_LALT, A_BUTTON_START);
+        a_platform__buttonForward(A_KEY_LCTRL, A_BUTTON_SELECT);
+    #endif
 }
 
 unsigned a_input_controllerNumGet(void)

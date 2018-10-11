@@ -433,6 +433,20 @@ void a_platform_sdl_input__init(void)
             if(a_str_equal(name, "nub0")) {
                 analogAdd(c, A_AXIS_LEFTX, "Left Stick", 0);
                 analogAdd(c, A_AXIS_LEFTY, "Left Stick", 1);
+
+                buttonAdd(c, A_BUTTON_UP, "Up", -1);
+                buttonAdd(c, A_BUTTON_DOWN, "Down", -1);
+                buttonAdd(c, A_BUTTON_LEFT, "Left", -1);
+                buttonAdd(c, A_BUTTON_RIGHT, "Right", -1);
+                buttonAdd(c, A_BUTTON_L, "L", -1);
+                buttonAdd(c, A_BUTTON_R, "R", -1);
+                buttonAdd(c, A_BUTTON_A, "A", -1);
+                buttonAdd(c, A_BUTTON_B, "B", -1);
+                buttonAdd(c, A_BUTTON_X, "X", -1);
+                buttonAdd(c, A_BUTTON_Y, "Y", -1);
+                buttonAdd(c, A_BUTTON_START, "Start", -1);
+                buttonAdd(c, A_BUTTON_SELECT, "Select", -1);
+
                 continue;
             } else if(a_str_equal(name, "nub1")) {
                 analogAdd(c, A_AXIS_RIGHTX, "Right Stick",  0);
@@ -575,23 +589,6 @@ void a_platform_sdl_input__init(void)
             buttonAdd(c, A_BUTTON_R, "R", -1);
         }
     }
-
-    #if A_BUILD_SYSTEM_PANDORA
-        // Because these are defined before the generic keys, they
-        // will take precedence in the a_platform__inputsPoll event loop.
-        keyAdd(A_BUTTON_UP, SDLK_UP);
-        keyAdd(A_BUTTON_DOWN, SDLK_DOWN);
-        keyAdd(A_BUTTON_LEFT, SDLK_LEFT);
-        keyAdd(A_BUTTON_RIGHT, SDLK_RIGHT);
-        keyAdd(A_BUTTON_L, SDLK_RSHIFT);
-        keyAdd(A_BUTTON_R, SDLK_RCTRL);
-        keyAdd(A_BUTTON_X, SDLK_HOME);
-        keyAdd(A_BUTTON_B, SDLK_END);
-        keyAdd(A_BUTTON_A, SDLK_PAGEDOWN);
-        keyAdd(A_BUTTON_Y, SDLK_PAGEUP);
-        keyAdd(A_BUTTON_START, SDLK_LALT);
-        keyAdd(A_BUTTON_SELECT, SDLK_LCTRL);
-    #endif
 
     #if A_BUILD_LIB_SDL == 1
         keyAdd(A_KEY_UP, SDLK_UP);
@@ -973,7 +970,7 @@ bool a_platform__buttonPressGet(const APlatformButton* Button)
     return Button->pressed;
 }
 
-void a_platform__buttonForward(AButtonId Source, AButtonId Destination)
+void a_platform__buttonForward(int Source, int Destination)
 {
     APlatformButton* bSrc = a_platform__buttonGet(Source);
     APlatformButton* bDst = a_platform__buttonGet(Destination);
