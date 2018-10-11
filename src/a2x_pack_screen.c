@@ -20,7 +20,6 @@
 #include "a2x_pack_screen.v.h"
 
 #include "a2x_pack_collide.v.h"
-#include "a2x_pack_input_button.v.h"
 #include "a2x_pack_listit.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"

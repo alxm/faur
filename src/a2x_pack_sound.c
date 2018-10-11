@@ -22,7 +22,6 @@
 #include "a2x_pack_draw.v.h"
 #include "a2x_pack_embed.v.h"
 #include "a2x_pack_file.v.h"
-#include "a2x_pack_input_button.v.h"
 #include "a2x_pack_math.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_platform.v.h"

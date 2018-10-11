@@ -21,6 +21,7 @@
 
 #include "a2x_pack_collide.v.h"
 #include "a2x_pack_input.v.h"
+#include "a2x_pack_listit.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_platform.v.h"
 

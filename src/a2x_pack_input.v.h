@@ -23,7 +23,7 @@
 
 typedef struct AInputUserHeader AInputUserHeader;
 
-#include "a2x_pack_strhash.v.h"
+#include "a2x_pack_list.v.h"
 
 struct AInputUserHeader {
     char* name;

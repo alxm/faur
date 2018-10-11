@@ -25,8 +25,6 @@
 #include <SDL.h>
 
 #include "a2x_pack_fps.v.h"
-#include "a2x_pack_input_analog.v.h"
-#include "a2x_pack_input_button.v.h"
 #include "a2x_pack_math.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"

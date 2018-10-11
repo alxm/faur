@@ -19,8 +19,6 @@
 
 #include "a2x_pack_input_controller.v.h"
 
-#include "a2x_pack_input_analog.v.h"
-#include "a2x_pack_input_button.v.h"
 #include "a2x_pack_out.v.h"
 #include "a2x_pack_platform.v.h"
 #include "a2x_pack_settings.v.h"
