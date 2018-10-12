@@ -61,22 +61,11 @@ static AList* g_stack; // list of AState
 static AList* g_pending; // list of AStatePendingAction
 static bool g_exiting;
 
-static const char* stageName(AStateStage Stage)
-{
-    switch(Stage) {
-        case A_STATE__STAGE_INIT:
-            return "Init";
-
-        case A_STATE__STAGE_LOOP:
-            return "Loop";
-
-        case A_STATE__STAGE_FREE:
-            return "Free";
-
-        default:
-            return "Invalid";
-    }
-}
+static const char* g_stageNames[A_STATE__STAGE_NUM] = {
+    [A_STATE__STAGE_INIT] = "Init",
+    [A_STATE__STAGE_LOOP] = "Loop",
+    [A_STATE__STAGE_FREE] = "Free",
+};
 
 static void pending_new(AStateAction Action, const char* Name)
 {
@@ -117,8 +106,8 @@ static void pending_handle(void)
         if(current && current->stage == A_STATE__STAGE_INIT) {
             a_out__statev("  '%s' going from %s to %s",
                           current->name,
-                          stageName(A_STATE__STAGE_INIT),
-                          stageName(A_STATE__STAGE_LOOP));
+                          g_stageNames[A_STATE__STAGE_INIT],
+                          g_stageNames[A_STATE__STAGE_LOOP]);
 
             current->stage = A_STATE__STAGE_LOOP;
             a_fps__reset();
@@ -159,8 +148,8 @@ static void pending_handle(void)
             a_out__statev("Pop '%s'", current->name);
             a_out__statev("  '%s' going from %s to %s",
                           current->name,
-                          stageName(current->stage),
-                          stageName(A_STATE__STAGE_FREE));
+                          g_stageNames[current->stage],
+                          g_stageNames[A_STATE__STAGE_FREE]);
 
             current->stage = A_STATE__STAGE_FREE;
         } break;
@@ -309,11 +298,11 @@ static bool iteration(void)
             a_screen__tick();
             a_screenshot__tick();
             a_console__tick();
-            s->function(A_STATE__STAGE_LOOP | A_STATE__STAGE_TICK);
+            s->function(A_STATE__STAGE_LOOP, true);
             a_ecs__tick();
         }
 
-        s->function(A_STATE__STAGE_LOOP | A_STATE__STAGE_DRAW);
+        s->function(A_STATE__STAGE_LOOP, false);
         a_ecs__draw();
         a_sound__draw();
         a_console__draw();
@@ -321,8 +310,8 @@ static bool iteration(void)
 
         a_fps__frame();
     } else {
-        a_out__statev("  '%s' running %s", s->name, stageName(s->stage));
-        s->function(s->stage);
+        a_out__statev("  '%s' running %s", s->name, g_stageNames[s->stage]);
+        s->function(s->stage, false);
     }
 
     return true;

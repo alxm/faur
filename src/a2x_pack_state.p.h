@@ -22,17 +22,17 @@
 #include "a2x_system_includes.h"
 
 typedef enum {
-    A_STATE__STAGE_INIT = A_FLAG_BIT(0),
-    A_STATE__STAGE_LOOP = A_FLAG_BIT(1),
-    A_STATE__STAGE_TICK = A_FLAG_BIT(2),
-    A_STATE__STAGE_DRAW = A_FLAG_BIT(3),
-    A_STATE__STAGE_FREE = A_FLAG_BIT(4),
+    A_STATE__STAGE_INVALID = -1,
+    A_STATE__STAGE_INIT,
+    A_STATE__STAGE_LOOP,
+    A_STATE__STAGE_FREE,
+    A_STATE__STAGE_NUM
 } AStateStage;
 
-typedef void (*AStateFunction)(AStateStage A__stage);
-#define A_STATE(Name) void A_STATE__NAME(Name)(AStateStage A__stage)
-
 #define A_STATE__NAME(Name) a_state__function_##Name
+
+typedef void (*AStateFunction)(AStateStage A__Stage, bool Tick);
+#define A_STATE(Name) void A_STATE__NAME(Name)(AStateStage A__Stage, bool A__Tick)
 
 extern void a_state__new(const char* Name, AStateFunction Function);
 #define a_state_new(Name, Function) a_state__new(Name, A_STATE__NAME(Function))
@@ -43,7 +43,7 @@ extern void a_state_popUntil(const char* Name);
 extern void a_state_replace(const char* Name);
 extern void a_state_exit(void);
 
-#define A_STATE_INIT if(A__stage & A_STATE__STAGE_INIT)
-#define A_STATE_TICK if(A__stage & A_STATE__STAGE_TICK)
-#define A_STATE_DRAW if(A__stage & A_STATE__STAGE_DRAW)
-#define A_STATE_FREE if(A__stage & A_STATE__STAGE_FREE)
+#define A_STATE_INIT if(A__Stage == A_STATE__STAGE_INIT)
+#define A_STATE_TICK if(A__Stage == A_STATE__STAGE_LOOP && A__Tick)
+#define A_STATE_DRAW if(A__Stage == A_STATE__STAGE_LOOP && !A__Tick)
+#define A_STATE_FREE if(A__Stage == A_STATE__STAGE_FREE)
