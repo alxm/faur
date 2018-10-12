@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2017 Alex Margarit
+    Copyright 2010, 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -151,7 +151,6 @@ static A_STATE(a_fade__toColor)
         alpha += alpha_inc;
 
         if(alpha > a_fix_fromInt(A_PIXEL_ALPHA_MAX)) {
-            alpha = a_fix_fromInt(A_PIXEL_ALPHA_MAX);
             a_state_pop();
         }
     }
@@ -193,7 +192,6 @@ static A_STATE(a_fade__fromColor)
         alpha -= alpha_inc;
 
         if(alpha < 0) {
-            alpha = 0;
             a_state_pop();
         }
     }
@@ -234,7 +232,6 @@ static A_STATE(a_fade__screens)
         alpha -= alpha_inc;
 
         if(alpha < 0) {
-            alpha = 0;
             a_state_pop();
         }
     }

@@ -291,7 +291,7 @@ static bool iteration(void)
     }
 
     if(s->stage == A_STATE__STAGE_LOOP) {
-        while(a_fps__tick() && a_list_isEmpty(g_pending)) {
+        while(a_fps__tick()) {
             a_timer__tick();
             a_input__tick();
             a_sound__tick();
@@ -300,6 +300,10 @@ static bool iteration(void)
             a_console__tick();
             s->function(A_STATE__STAGE_LOOP, true);
             a_ecs__tick();
+
+            if(!a_list_isEmpty(g_pending)) {
+                return true;
+            }
         }
 
         s->function(A_STATE__STAGE_LOOP, false);
