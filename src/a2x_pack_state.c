@@ -51,14 +51,9 @@ typedef enum {
     A_STATE__ACTION_POP,
 } AStateAction;
 
-typedef struct {
-    AStateAction action;
-    char* name;
-} AStatePendingAction;
-
 static AStrHash* g_states; // table of AState
 static AList* g_stack; // list of AState
-static AList* g_pending; // list of AStatePendingAction
+static AList* g_pending; // list of AState
 static bool g_exiting;
 
 static const char* g_stageNames[A_STATE__STAGE_NUM] = {
@@ -67,23 +62,20 @@ static const char* g_stageNames[A_STATE__STAGE_NUM] = {
     [A_STATE__STAGE_FREE] = "Free",
 };
 
-static void pending_new(AStateAction Action, const char* Name)
+static void pending_push(const char* Name)
 {
-    AStatePendingAction* a = a_mem_malloc(sizeof(AStatePendingAction));
+    AState* s = a_strhash_get(g_states, Name);
 
-    a->action = Action;
-    a->name = a_str_dup(Name);
-
-    a_list_addLast(g_pending, a);
-}
-
-static void pending_free(AStatePendingAction* Pending)
-{
-    if(Pending->name) {
-        free(Pending->name);
+    if(s == NULL) {
+        a_out__fatal("Push state: '%s' does not exist", Name);
     }
 
-    free(Pending);
+    a_list_addLast(g_pending, s);
+}
+
+static void pending_pop(void)
+{
+    a_list_addLast(g_pending, NULL);
 }
 
 static void pending_handle(void)
@@ -101,7 +93,8 @@ static void pending_handle(void)
         a_fps__reset();
     }
 
-    // If there are no pending state changes, do any automatic transitions
+    // If there are no pending state changes,
+    // check if the current state should transition from Init to Loop
     if(a_list_isEmpty(g_pending)) {
         if(current && current->stage == A_STATE__STAGE_INIT) {
             a_out__statev("  '%s' going from %s to %s",
@@ -116,50 +109,39 @@ static void pending_handle(void)
         return;
     }
 
-    AStatePendingAction* pending = a_list_pop(g_pending);
+    AState* pendingState = a_list_pop(g_pending);
 
-    switch(pending->action) {
-        case A_STATE__ACTION_PUSH: {
-            a_out__statev("Push '%s'", pending->name);
-            AState* state = a_strhash_get(g_states, pending->name);
-
-            if(state == NULL) {
-                a_out__fatal("State '%s' does not exist", pending->name);
-            }
-
-            A_LIST_ITERATE(g_stack, AState*, s) {
-                if(state == s) {
-                    a_out__fatal("State '%s' already in stack", pending->name);
-                }
-            }
-
-            a_out__state("New '%s' instance", pending->name);
-
-            state->stage = A_STATE__STAGE_INIT;
-            a_ecs__collectionPush();
-            a_list_push(g_stack, state);
-        } break;
-
-        case A_STATE__ACTION_POP: {
-            if(current == NULL) {
-                a_out__fatal("Pop state: stack is empty");
-            }
-
-            a_out__statev("Pop '%s'", current->name);
-            a_out__statev("  '%s' going from %s to %s",
-                          current->name,
-                          g_stageNames[current->stage],
-                          g_stageNames[A_STATE__STAGE_FREE]);
-
-            current->stage = A_STATE__STAGE_FREE;
-        } break;
-
-        default: {
-            a_out__fatal("Invalid state action");
+    if(pendingState == NULL) {
+        if(current == NULL) {
+            a_out__fatal("Pop state: stack is empty");
         }
-    }
 
-    pending_free(pending);
+        a_out__statev("Pop '%s'", current->name);
+        a_out__statev("  '%s' going from %s to %s",
+                      current->name,
+                      g_stageNames[current->stage],
+                      g_stageNames[A_STATE__STAGE_FREE]);
+
+        current->stage = A_STATE__STAGE_FREE;
+    } else {
+        a_out__statev("Push '%s'", pendingState->name);
+
+        if(pendingState == NULL) {
+            a_out__fatal("State '%s' does not exist", pendingState->name);
+        }
+
+        A_LIST_ITERATE(g_stack, AState*, s) {
+            if(pendingState == s) {
+                a_out__fatal("State '%s' already in stack", pendingState->name);
+            }
+        }
+
+        a_out__state("New '%s' instance", pendingState->name);
+
+        pendingState->stage = A_STATE__STAGE_INIT;
+        a_ecs__collectionPush();
+        a_list_push(g_stack, pendingState);
+    }
 }
 
 void a_state__init(void)
@@ -202,7 +184,7 @@ void a_state_push(const char* Name)
         return;
     }
 
-    pending_new(A_STATE__ACTION_PUSH, Name);
+    pending_push(Name);
 }
 
 void a_state_pop(void)
@@ -214,7 +196,7 @@ void a_state_pop(void)
         return;
     }
 
-    pending_new(A_STATE__ACTION_POP, NULL);
+    pending_pop();
 }
 
 void a_state_popUntil(const char* Name)
@@ -243,7 +225,7 @@ void a_state_popUntil(const char* Name)
     }
 
     while(pops--) {
-        pending_new(A_STATE__ACTION_POP, NULL);
+        pending_pop();
     }
 }
 
@@ -256,8 +238,8 @@ void a_state_replace(const char* Name)
         return;
     }
 
-    pending_new(A_STATE__ACTION_POP, NULL);
-    pending_new(A_STATE__ACTION_PUSH, Name);
+    pending_pop();
+    pending_push(Name);
 }
 
 void a_state_exit(void)
@@ -272,11 +254,11 @@ void a_state_exit(void)
     g_exiting = true;
 
     // Clear the pending actions queue
-    a_list_clearEx(g_pending, (AFree*)pending_free);
+    a_list_clear(g_pending);
 
     // Queue a pop for every state in the stack
     for(unsigned i = a_list_sizeGet(g_stack); i--; ) {
-        pending_new(A_STATE__ACTION_POP, NULL);
+        pending_pop();
     }
 }
 
