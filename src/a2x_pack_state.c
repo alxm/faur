@@ -86,11 +86,16 @@ static void pending_handle(void)
     if(current && current->stage == A_STATE__STAGE_FREE) {
         a_out__statev("Destroying '%s' instance", current->name);
 
+        a_ecs__collectionPop();
         a_list_pop(g_stack);
+
         current = a_list_peek(g_stack);
 
-        a_ecs__collectionPop();
-        a_fps__reset();
+        if(a_list_isEmpty(g_pending)
+            && current && current->stage == A_STATE__STAGE_LOOP) {
+
+            a_fps__reset();
+        }
     }
 
     // If there are no pending state changes,
@@ -103,6 +108,7 @@ static void pending_handle(void)
                           g_stageNames[A_STATE__STAGE_LOOP]);
 
             current->stage = A_STATE__STAGE_LOOP;
+
             a_fps__reset();
         }
 
@@ -139,8 +145,9 @@ static void pending_handle(void)
         a_out__state("New '%s' instance", pendingState->name);
 
         pendingState->stage = A_STATE__STAGE_INIT;
-        a_ecs__collectionPush();
+
         a_list_push(g_stack, pendingState);
+        a_ecs__collectionPush();
     }
 }
 
