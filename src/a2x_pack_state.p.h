@@ -31,13 +31,11 @@ typedef enum {
 
 typedef struct AState AState;
 
-#define A_STATE__NAME(Name) a_state__function_##Name
+typedef void AStateFunction(AStateStage A__Stage, bool Tick);
 
-typedef void (*AStateFunction)(AStateStage A__Stage, bool Tick);
-#define A_STATE(Name) void A_STATE__NAME(Name)(AStateStage A__Stage, bool A__Tick)
+#define A_STATE(Name) void Name(AStateStage A__Stage, bool A__Tick)
 
-extern AState* a_state__new(const char* Name, AStateFunction Function);
-#define a_state_new(Name, Function) a_state__new(Name, A_STATE__NAME(Function))
+extern AState* a_state_new(const char* Name, AStateFunction* Function);
 
 extern void a_state_push(AState* State);
 extern void a_state_pop(void);

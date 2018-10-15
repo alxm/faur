@@ -38,7 +38,7 @@
 
 struct AState {
     char* name;
-    AStateFunction function;
+    AStateFunction* function;
     AStateStage stage;
 };
 
@@ -136,7 +136,7 @@ static void pending_handle(void)
     }
 }
 
-AState* a_state__new(const char* Name, AStateFunction Function)
+AState* a_state_new(const char* Name, AStateFunction* Function)
 {
     AState* state = a_mem_malloc(sizeof(AState));
 
