@@ -31,6 +31,15 @@ static APixel g_savedColor;
 static AScreen* g_capturedScreen;
 static AScreen* g_oldCapturedScreen;
 
+enum {
+    A__FADE_TOCOLOR,
+    A__FADE_FROMCOLOR,
+    A__FADE_SCREENS,
+    A__FADE_NUM
+};
+
+static AState* g_states[A__FADE_NUM];
+
 static A_STATE(a_fade__toColor);
 static A_STATE(a_fade__fromColor);
 static A_STATE(a_fade__screens);
@@ -76,9 +85,14 @@ void a_fade__init(void)
     g_capturedScreen = NULL;
     g_oldCapturedScreen = NULL;
 
-    a_state_new("a__fadeToColor", a_fade__toColor);
-    a_state_new("a__fadeFromColor", a_fade__fromColor);
-    a_state_new("a__fadeScreens", a_fade__screens);
+    g_states[A__FADE_TOCOLOR] =
+        a_state_new("Fade to Color", a_fade__toColor);
+
+    g_states[A__FADE_FROMCOLOR] =
+        a_state_new("Fade from Color", a_fade__fromColor);
+
+    g_states[A__FADE_SCREENS] =
+        a_state_new("Fade Between Screens", a_fade__screens);
 }
 
 void a_fade__uninit(void)
@@ -98,7 +112,7 @@ void a_fade_toColor(unsigned FramesDuration)
     g_savedColor = a_pixel__state.pixel;
     allocateScreenBuffers(false);
 
-    a_state_push("a__fadeToColor");
+    a_state_push(g_states[A__FADE_TOCOLOR]);
     g_fadePending = true;
 }
 
@@ -113,7 +127,7 @@ void a_fade_fromColor(unsigned FramesDuration)
     g_savedColor = a_pixel__state.pixel;
     allocateScreenBuffers(false);
 
-    a_state_push("a__fadeFromColor");
+    a_state_push(g_states[A__FADE_FROMCOLOR]);
     g_fadePending = true;
 }
 
@@ -127,7 +141,7 @@ void a_fade_screens(unsigned FramesDuration)
     g_frames = FramesDuration;
     allocateScreenBuffers(true);
 
-    a_state_push("a__fadeScreens");
+    a_state_push(g_states[A__FADE_SCREENS]);
     g_fadePending = true;
 }
 

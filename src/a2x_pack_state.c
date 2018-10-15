@@ -25,10 +25,8 @@
 
 #include "a2x_pack_console.v.h"
 #include "a2x_pack_ecs.v.h"
-#include "a2x_pack_ecs_system.v.h"
 #include "a2x_pack_fps.v.h"
 #include "a2x_pack_input.v.h"
-#include "a2x_pack_list.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
 #include "a2x_pack_screen.v.h"
@@ -36,22 +34,15 @@
 #include "a2x_pack_settings.v.h"
 #include "a2x_pack_sound.v.h"
 #include "a2x_pack_str.v.h"
-#include "a2x_pack_strhash.v.h"
 #include "a2x_pack_timer.v.h"
 
-typedef struct {
+struct AState {
     char* name;
     AStateFunction function;
     AStateStage stage;
-} AState;
+};
 
-typedef enum {
-    A_STATE__ACTION_INVALID = -1,
-    A_STATE__ACTION_PUSH,
-    A_STATE__ACTION_POP,
-} AStateAction;
-
-static AStrHash* g_states; // table of AState
+static AList* g_states; // list of AState
 static AList* g_stack; // list of AState
 static AList* g_pending; // list of AState
 static bool g_exiting;
@@ -62,15 +53,9 @@ static const char* g_stageNames[A_STATE__STAGE_NUM] = {
     [A_STATE__STAGE_FREE] = "Free",
 };
 
-static void pending_push(const char* Name)
+static void pending_push(AState* State)
 {
-    AState* s = a_strhash_get(g_states, Name);
-
-    if(s == NULL) {
-        a_out__fatal("Push state: '%s' does not exist", Name);
-    }
-
-    a_list_addLast(g_pending, s);
+    a_list_addLast(g_pending, State);
 }
 
 static void pending_pop(void)
@@ -151,27 +136,7 @@ static void pending_handle(void)
     }
 }
 
-void a_state__init(void)
-{
-    g_states = a_strhash_new();
-    g_stack = a_list_new();
-    g_pending = a_list_new();
-    g_exiting = false;
-}
-
-void a_state__uninit(void)
-{
-    A_STRHASH_ITERATE(g_states, AState*, s) {
-        free(s->name);
-        free(s);
-    }
-
-    a_strhash_free(g_states);
-    a_list_free(g_stack);
-    a_list_free(g_pending);
-}
-
-void a_state__new(const char* Name, AStateFunction Function)
+AState* a_state__new(const char* Name, AStateFunction Function)
 {
     AState* state = a_mem_malloc(sizeof(AState));
 
@@ -179,19 +144,42 @@ void a_state__new(const char* Name, AStateFunction Function)
     state->function = Function;
     state->stage = A_STATE__STAGE_INIT;
 
-    a_strhash_add(g_states, Name, state);
+    a_list_addLast(g_states, state);
+
+    return state;
 }
 
-void a_state_push(const char* Name)
+static void a_state__free(AState* State)
 {
-    a_out__statev("a_state_push('%s')", Name);
+    free(State->name);
+    free(State);
+}
+
+void a_state__init(void)
+{
+    g_states = a_list_new();
+    g_stack = a_list_new();
+    g_pending = a_list_new();
+    g_exiting = false;
+}
+
+void a_state__uninit(void)
+{
+    a_list_freeEx(g_states, (AFree*)a_state__free);
+    a_list_free(g_stack);
+    a_list_free(g_pending);
+}
+
+void a_state_push(AState* State)
+{
+    a_out__statev("a_state_push('%s')", State->name);
 
     if(g_exiting) {
         a_out__statev("a_state_push: Already exiting");
         return;
     }
 
-    pending_push(Name);
+    pending_push(State);
 }
 
 void a_state_pop(void)
@@ -206,9 +194,9 @@ void a_state_pop(void)
     pending_pop();
 }
 
-void a_state_popUntil(const char* Name)
+void a_state_popUntil(AState* State)
 {
-    a_out__statev("a_state_popUntil('%s')", Name);
+    a_out__statev("a_state_popUntil('%s')", State->name);
 
     if(g_exiting) {
         a_out__statev("a_state_popUntil: Already exiting");
@@ -219,7 +207,7 @@ void a_state_popUntil(const char* Name)
     bool found = false;
 
     A_LIST_ITERATE(g_stack, AState*, s) {
-        if(a_str_equal(s->name, Name)) {
+        if(State == s) {
             found = true;
             break;
         }
@@ -228,7 +216,7 @@ void a_state_popUntil(const char* Name)
     }
 
     if(!found) {
-        a_out__fatal("a_state_popUntil: State '%s' not in stack", Name);
+        a_out__fatal("a_state_popUntil: State '%s' not in stack", State->name);
     }
 
     while(pops--) {
@@ -236,9 +224,9 @@ void a_state_popUntil(const char* Name)
     }
 }
 
-void a_state_replace(const char* Name)
+void a_state_replace(AState* State)
 {
-    a_out__statev("a_state_replace('%s')", Name);
+    a_out__statev("a_state_replace('%s')", State->name);
 
     if(g_exiting) {
         a_out__statev("a_state_replace: Already exiting");
@@ -246,7 +234,7 @@ void a_state_replace(const char* Name)
     }
 
     pending_pop();
-    pending_push(Name);
+    pending_push(State);
 }
 
 void a_state_exit(void)

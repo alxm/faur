@@ -29,18 +29,20 @@ typedef enum {
     A_STATE__STAGE_NUM
 } AStateStage;
 
+typedef struct AState AState;
+
 #define A_STATE__NAME(Name) a_state__function_##Name
 
 typedef void (*AStateFunction)(AStateStage A__Stage, bool Tick);
 #define A_STATE(Name) void A_STATE__NAME(Name)(AStateStage A__Stage, bool A__Tick)
 
-extern void a_state__new(const char* Name, AStateFunction Function);
+extern AState* a_state__new(const char* Name, AStateFunction Function);
 #define a_state_new(Name, Function) a_state__new(Name, A_STATE__NAME(Function))
 
-extern void a_state_push(const char* Name);
+extern void a_state_push(AState* State);
 extern void a_state_pop(void);
-extern void a_state_popUntil(const char* Name);
-extern void a_state_replace(const char* Name);
+extern void a_state_popUntil(AState* State);
+extern void a_state_replace(AState* State);
 extern void a_state_exit(void);
 
 #define A_STATE_INIT if(A__Stage == A_STATE__STAGE_INIT)
