@@ -47,10 +47,10 @@ static AList* g_stack; // list of AState
 static AList* g_pending; // list of AState
 static bool g_exiting;
 
-static const char* g_stageNames[A_STATE__STAGE_NUM] = {
-    [A_STATE__STAGE_INIT] = "Init",
-    [A_STATE__STAGE_LOOP] = "Loop",
-    [A_STATE__STAGE_FREE] = "Free",
+static const char* g_stageNames[A__STATE_STAGE_NUM] = {
+    [A__STATE_STAGE_INIT] = "Init",
+    [A__STATE_STAGE_LOOP] = "Loop",
+    [A__STATE_STAGE_FREE] = "Free",
 };
 
 static void pending_push(AState* State)
@@ -68,7 +68,7 @@ static void pending_handle(void)
     AState* current = a_list_peek(g_stack);
 
     // Check if the current state just ran its Free stage
-    if(current && current->stage == A_STATE__STAGE_FREE) {
+    if(current && current->stage == A__STATE_STAGE_FREE) {
         a_out__statev("Destroying '%s' instance", current->name);
 
         a_ecs__collectionPop();
@@ -77,7 +77,7 @@ static void pending_handle(void)
         current = a_list_peek(g_stack);
 
         if(a_list_isEmpty(g_pending)
-            && current && current->stage == A_STATE__STAGE_LOOP) {
+            && current && current->stage == A__STATE_STAGE_LOOP) {
 
             a_fps__reset();
         }
@@ -86,13 +86,13 @@ static void pending_handle(void)
     // If there are no pending state changes,
     // check if the current state should transition from Init to Loop
     if(a_list_isEmpty(g_pending)) {
-        if(current && current->stage == A_STATE__STAGE_INIT) {
+        if(current && current->stage == A__STATE_STAGE_INIT) {
             a_out__statev("  '%s' going from %s to %s",
                           current->name,
-                          g_stageNames[A_STATE__STAGE_INIT],
-                          g_stageNames[A_STATE__STAGE_LOOP]);
+                          g_stageNames[A__STATE_STAGE_INIT],
+                          g_stageNames[A__STATE_STAGE_LOOP]);
 
-            current->stage = A_STATE__STAGE_LOOP;
+            current->stage = A__STATE_STAGE_LOOP;
 
             a_fps__reset();
         }
@@ -111,9 +111,9 @@ static void pending_handle(void)
         a_out__statev("  '%s' going from %s to %s",
                       current->name,
                       g_stageNames[current->stage],
-                      g_stageNames[A_STATE__STAGE_FREE]);
+                      g_stageNames[A__STATE_STAGE_FREE]);
 
-        current->stage = A_STATE__STAGE_FREE;
+        current->stage = A__STATE_STAGE_FREE;
     } else {
         a_out__statev("Push '%s'", pendingState->name);
 
@@ -129,7 +129,7 @@ static void pending_handle(void)
 
         a_out__state("New '%s' instance", pendingState->name);
 
-        pendingState->stage = A_STATE__STAGE_INIT;
+        pendingState->stage = A__STATE_STAGE_INIT;
 
         a_list_push(g_stack, pendingState);
         a_ecs__collectionPush();
@@ -142,7 +142,7 @@ AState* a_state_new(const char* Name, AStateFunction* Function)
 
     state->name = a_str_dup(Name);
     state->function = Function;
-    state->stage = A_STATE__STAGE_INIT;
+    state->stage = A__STATE_STAGE_INIT;
 
     a_list_addLast(g_states, state);
 
@@ -267,7 +267,7 @@ static bool iteration(void)
         return false;
     }
 
-    if(s->stage == A_STATE__STAGE_LOOP) {
+    if(s->stage == A__STATE_STAGE_LOOP) {
         while(a_fps__tick()) {
             a_timer__tick();
             a_input__tick();
@@ -275,7 +275,7 @@ static bool iteration(void)
             a_screen__tick();
             a_screenshot__tick();
             a_console__tick();
-            s->function(A_STATE__STAGE_LOOP, true);
+            s->function(A__STATE_STAGE_LOOP, true);
             a_ecs__tick();
 
             if(!a_list_isEmpty(g_pending)) {
@@ -283,7 +283,7 @@ static bool iteration(void)
             }
         }
 
-        s->function(A_STATE__STAGE_LOOP, false);
+        s->function(A__STATE_STAGE_LOOP, false);
         a_ecs__draw();
         a_sound__draw();
         a_console__draw();

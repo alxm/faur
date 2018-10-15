@@ -22,11 +22,11 @@
 #include "a2x_system_includes.h"
 
 typedef enum {
-    A_STATE__STAGE_INVALID = -1,
-    A_STATE__STAGE_INIT,
-    A_STATE__STAGE_LOOP,
-    A_STATE__STAGE_FREE,
-    A_STATE__STAGE_NUM
+    A__STATE_STAGE_INVALID = -1,
+    A__STATE_STAGE_INIT,
+    A__STATE_STAGE_LOOP,
+    A__STATE_STAGE_FREE,
+    A__STATE_STAGE_NUM
 } AStateStage;
 
 typedef struct AState AState;
@@ -43,7 +43,7 @@ extern void a_state_popUntil(AState* State);
 extern void a_state_replace(AState* State);
 extern void a_state_exit(void);
 
-#define A_STATE_INIT if(A__Stage == A_STATE__STAGE_INIT)
-#define A_STATE_TICK if(A__Stage == A_STATE__STAGE_LOOP && A__Tick)
-#define A_STATE_DRAW if(A__Stage == A_STATE__STAGE_LOOP && !A__Tick)
-#define A_STATE_FREE if(A__Stage == A_STATE__STAGE_FREE)
+#define A_STATE_INIT if(A__Stage == A__STATE_STAGE_INIT)
+#define A_STATE_TICK if(A__Stage == A__STATE_STAGE_LOOP && A__Tick)
+#define A_STATE_DRAW if(A__Stage == A__STATE_STAGE_LOOP && !A__Tick)
+#define A_STATE_FREE if(A__Stage == A__STATE_STAGE_FREE)
