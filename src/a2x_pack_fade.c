@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2017 Alex Margarit
+    Copyright 2010, 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -31,9 +31,31 @@ static APixel g_savedColor;
 static AScreen* g_capturedScreen;
 static AScreen* g_oldCapturedScreen;
 
-static A_STATE(a_fade__toColor);
-static A_STATE(a_fade__fromColor);
-static A_STATE(a_fade__screens);
+typedef enum {
+    A__FADE_TOCOLOR,
+    A__FADE_FROMCOLOR,
+    A__FADE_SCREENS,
+    A__FADE_NUM
+} AFadeStateId;
+
+static AState a__fade_toColor;
+static AState a__fade_fromColor;
+static AState a__fade_screens;
+
+static const struct {
+    AState* function;
+    const char* name;
+} g_states[A__FADE_NUM] = {
+    [A__FADE_TOCOLOR] = {a__fade_toColor, "Fade to Color"},
+    [A__FADE_FROMCOLOR] = {a__fade_fromColor, "Fade from Color"},
+    [A__FADE_SCREENS] = {a__fade_screens, "Fade Between Screens"},
+};
+
+static void pushFadeState(AFadeStateId State)
+{
+    a_state_push(g_states[State].function, g_states[State].name);
+    g_fadePending = true;
+}
 
 static void allocateScreenBuffers(bool CaptureCurrentScreen)
 {
@@ -75,10 +97,6 @@ void a_fade__init(void)
     g_savedColor = 0;
     g_capturedScreen = NULL;
     g_oldCapturedScreen = NULL;
-
-    a_state_new("a__fadeToColor", a_fade__toColor);
-    a_state_new("a__fadeFromColor", a_fade__fromColor);
-    a_state_new("a__fadeScreens", a_fade__screens);
 }
 
 void a_fade__uninit(void)
@@ -98,8 +116,7 @@ void a_fade_toColor(unsigned FramesDuration)
     g_savedColor = a_pixel__state.pixel;
     allocateScreenBuffers(false);
 
-    a_state_push("a__fadeToColor");
-    g_fadePending = true;
+    pushFadeState(A__FADE_TOCOLOR);
 }
 
 void a_fade_fromColor(unsigned FramesDuration)
@@ -113,8 +130,7 @@ void a_fade_fromColor(unsigned FramesDuration)
     g_savedColor = a_pixel__state.pixel;
     allocateScreenBuffers(false);
 
-    a_state_push("a__fadeFromColor");
-    g_fadePending = true;
+    pushFadeState(A__FADE_FROMCOLOR);
 }
 
 void a_fade_screens(unsigned FramesDuration)
@@ -127,11 +143,10 @@ void a_fade_screens(unsigned FramesDuration)
     g_frames = FramesDuration;
     allocateScreenBuffers(true);
 
-    a_state_push("a__fadeScreens");
-    g_fadePending = true;
+    pushFadeState(A__FADE_SCREENS);
 }
 
-static A_STATE(a_fade__toColor)
+static void a__fade_toColor(void)
 {
     static AFix alpha, alpha_inc;
 
@@ -151,7 +166,6 @@ static A_STATE(a_fade__toColor)
         alpha += alpha_inc;
 
         if(alpha > a_fix_fromInt(A_PIXEL_ALPHA_MAX)) {
-            alpha = a_fix_fromInt(A_PIXEL_ALPHA_MAX);
             a_state_pop();
         }
     }
@@ -173,7 +187,7 @@ static A_STATE(a_fade__toColor)
     }
 }
 
-static A_STATE(a_fade__fromColor)
+static void a__fade_fromColor(void)
 {
     static AFix alpha, alpha_inc;
 
@@ -193,7 +207,6 @@ static A_STATE(a_fade__fromColor)
         alpha -= alpha_inc;
 
         if(alpha < 0) {
-            alpha = 0;
             a_state_pop();
         }
     }
@@ -215,7 +228,7 @@ static A_STATE(a_fade__fromColor)
     }
 }
 
-static A_STATE(a_fade__screens)
+static void a__fade_screens(void)
 {
     static AFix alpha, alpha_inc;
 
@@ -234,7 +247,6 @@ static A_STATE(a_fade__screens)
         alpha -= alpha_inc;
 
         if(alpha < 0) {
-            alpha = 0;
             a_state_pop();
         }
     }

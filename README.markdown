@@ -45,7 +45,7 @@ A_SETUP
     a_settings_boolSet(A_SETTING_OUTPUT_ON, true);
 }
 
-A_STATE(drawBox)
+void drawBox(void)
 {
     static struct {
         int x, y;
@@ -112,8 +112,7 @@ A_STATE(drawBox)
 
 A_MAIN
 {
-    a_state_new("drawBox", drawBox);
-    a_state_push("drawBox");
+    a_state_push(drawBox, "Draw Box");
 }
 ```
 
