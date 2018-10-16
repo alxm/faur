@@ -33,29 +33,34 @@
 #include "a2x_pack_screenshot.v.h"
 #include "a2x_pack_settings.v.h"
 #include "a2x_pack_sound.v.h"
-#include "a2x_pack_str.v.h"
 #include "a2x_pack_timer.v.h"
 
-struct AState {
-    char* name;
-    AStateFunction* function;
+typedef struct {
+    AState* function;
+    const char* name;
     AStateStage stage;
-};
+} AStateEntry;
 
-static AList* g_states; // list of AState
-static AList* g_stack; // list of AState
-static AList* g_pending; // list of AState
+static AList* g_stack; // list of AStateEntry
+static AList* g_pending; // list of AStateEntry/NULL
 static bool g_exiting;
 
 static const char* g_stageNames[A__STATE_STAGE_NUM] = {
     [A__STATE_STAGE_INIT] = "Init",
-    [A__STATE_STAGE_LOOP] = "Loop",
+    [A__STATE_STAGE_TICK] = "Loop",
+    [A__STATE_STAGE_DRAW] = "Loop",
     [A__STATE_STAGE_FREE] = "Free",
 };
 
-static void pending_push(AState* State)
+static void pending_push(AState* Function, const char* Name)
 {
-    a_list_addLast(g_pending, State);
+    AStateEntry* e = a_mem_malloc(sizeof(AStateEntry));
+
+    e->function = Function;
+    e->name = Name == NULL ? "" : Name;
+    e->stage = A__STATE_STAGE_INVALID;
+
+    a_list_addLast(g_pending, e);
 }
 
 static void pending_pop(void)
@@ -65,7 +70,7 @@ static void pending_pop(void)
 
 static void pending_handle(void)
 {
-    AState* current = a_list_peek(g_stack);
+    AStateEntry* current = a_list_peek(g_stack);
 
     // Check if the current state just ran its Free stage
     if(current && current->stage == A__STATE_STAGE_FREE) {
@@ -74,10 +79,11 @@ static void pending_handle(void)
         a_ecs__collectionPop();
         a_list_pop(g_stack);
 
+        free(current);
         current = a_list_peek(g_stack);
 
         if(a_list_isEmpty(g_pending)
-            && current && current->stage == A__STATE_STAGE_LOOP) {
+            && current && current->stage == A__STATE_STAGE_TICK) {
 
             a_fps__reset();
         }
@@ -90,9 +96,9 @@ static void pending_handle(void)
             a_out__statev("  '%s' going from %s to %s",
                           current->name,
                           g_stageNames[A__STATE_STAGE_INIT],
-                          g_stageNames[A__STATE_STAGE_LOOP]);
+                          g_stageNames[A__STATE_STAGE_TICK]);
 
-            current->stage = A__STATE_STAGE_LOOP;
+            current->stage = A__STATE_STAGE_TICK;
 
             a_fps__reset();
         }
@@ -100,7 +106,7 @@ static void pending_handle(void)
         return;
     }
 
-    AState* pendingState = a_list_pop(g_pending);
+    AStateEntry* pendingState = a_list_pop(g_pending);
 
     if(pendingState == NULL) {
         if(current == NULL) {
@@ -117,13 +123,11 @@ static void pending_handle(void)
     } else {
         a_out__statev("Push '%s'", pendingState->name);
 
-        if(pendingState == NULL) {
-            a_out__fatal("State '%s' does not exist", pendingState->name);
-        }
-
-        A_LIST_ITERATE(g_stack, AState*, s) {
-            if(pendingState == s) {
-                a_out__fatal("State '%s' already in stack", pendingState->name);
+        A_LIST_ITERATE(g_stack, const AStateEntry*, e) {
+            if(pendingState->function == e->function) {
+                a_out__fatal("State '%s' already in stack as '%s'",
+                             pendingState->name,
+                             e->name);
             }
         }
 
@@ -136,50 +140,28 @@ static void pending_handle(void)
     }
 }
 
-AState* a_state_new(const char* Name, AStateFunction* Function)
-{
-    AState* state = a_mem_malloc(sizeof(AState));
-
-    state->name = a_str_dup(Name);
-    state->function = Function;
-    state->stage = A__STATE_STAGE_INIT;
-
-    a_list_addLast(g_states, state);
-
-    return state;
-}
-
-static void a_state__free(AState* State)
-{
-    free(State->name);
-    free(State);
-}
-
 void a_state__init(void)
 {
-    g_states = a_list_new();
     g_stack = a_list_new();
     g_pending = a_list_new();
-    g_exiting = false;
 }
 
 void a_state__uninit(void)
 {
-    a_list_freeEx(g_states, (AFree*)a_state__free);
     a_list_free(g_stack);
     a_list_free(g_pending);
 }
 
-void a_state_push(AState* State)
+void a_state_push(AState* State, const char* Name)
 {
-    a_out__statev("a_state_push('%s')", State->name);
+    a_out__statev("a_state_push('%s')", Name);
 
     if(g_exiting) {
         a_out__statev("a_state_push: Already exiting");
         return;
     }
 
-    pending_push(State);
+    pending_push(State, Name);
 }
 
 void a_state_pop(void)
@@ -194,9 +176,9 @@ void a_state_pop(void)
     pending_pop();
 }
 
-void a_state_popUntil(AState* State)
+void a_state_popUntil(AState* State, const char* Name)
 {
-    a_out__statev("a_state_popUntil('%s')", State->name);
+    a_out__statev("a_state_popUntil('%s')", Name);
 
     if(g_exiting) {
         a_out__statev("a_state_popUntil: Already exiting");
@@ -206,8 +188,8 @@ void a_state_popUntil(AState* State)
     int pops = 0;
     bool found = false;
 
-    A_LIST_ITERATE(g_stack, AState*, s) {
-        if(State == s) {
+    A_LIST_ITERATE(g_stack, const AStateEntry*, e) {
+        if(State == e->function) {
             found = true;
             break;
         }
@@ -216,7 +198,7 @@ void a_state_popUntil(AState* State)
     }
 
     if(!found) {
-        a_out__fatal("a_state_popUntil: State '%s' not in stack", State->name);
+        a_out__fatal("a_state_popUntil: State '%s' not in stack", Name);
     }
 
     while(pops--) {
@@ -224,9 +206,9 @@ void a_state_popUntil(AState* State)
     }
 }
 
-void a_state_replace(AState* State)
+void a_state_replace(AState* State, const char* Name)
 {
-    a_out__statev("a_state_replace('%s')", State->name);
+    a_out__statev("a_state_replace('%s')", Name);
 
     if(g_exiting) {
         a_out__statev("a_state_replace: Already exiting");
@@ -234,7 +216,7 @@ void a_state_replace(AState* State)
     }
 
     pending_pop();
-    pending_push(State);
+    pending_push(State, Name);
 }
 
 void a_state_exit(void)
@@ -249,7 +231,7 @@ void a_state_exit(void)
     g_exiting = true;
 
     // Clear the pending actions queue
-    a_list_clear(g_pending);
+    a_list_clearEx(g_pending, free);
 
     // Queue a pop for every state in the stack
     for(unsigned i = a_list_sizeGet(g_stack); i--; ) {
@@ -261,13 +243,13 @@ static bool iteration(void)
 {
     pending_handle();
 
-    AState* s = a_list_peek(g_stack);
+    AStateEntry* s = a_list_peek(g_stack);
 
     if(s == NULL) {
         return false;
     }
 
-    if(s->stage == A__STATE_STAGE_LOOP) {
+    if(s->stage == A__STATE_STAGE_TICK) {
         while(a_fps__tick()) {
             a_timer__tick();
             a_input__tick();
@@ -275,7 +257,7 @@ static bool iteration(void)
             a_screen__tick();
             a_screenshot__tick();
             a_console__tick();
-            s->function(A__STATE_STAGE_LOOP, true);
+            s->function();
             a_ecs__tick();
 
             if(!a_list_isEmpty(g_pending)) {
@@ -283,7 +265,10 @@ static bool iteration(void)
             }
         }
 
-        s->function(A__STATE_STAGE_LOOP, false);
+        s->stage = A__STATE_STAGE_DRAW;
+        s->function();
+        s->stage = A__STATE_STAGE_TICK;
+
         a_ecs__draw();
         a_sound__draw();
         a_console__draw();
@@ -292,7 +277,7 @@ static bool iteration(void)
         a_fps__frame();
     } else {
         a_out__statev("  '%s' running %s", s->name, g_stageNames[s->stage]);
-        s->function(s->stage, false);
+        s->function();
     }
 
     return true;
@@ -326,4 +311,15 @@ void a_state__run(void)
 
         a_out__message("Finished running states");
     #endif
+}
+
+bool a__state_stageCheck(AStateStage Stage)
+{
+    const AStateEntry* e = a_list_peek(g_stack);
+
+    if(e == NULL) {
+        a_out__fatal("%s: state stack is empty", g_stageNames[Stage]);
+    }
+
+    return e->stage == Stage;
 }

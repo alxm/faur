@@ -21,29 +21,26 @@
 
 #include "a2x_system_includes.h"
 
+typedef void AState(void);
+
+extern void a_state_push(AState* State, const char* Name);
+extern void a_state_pop(void);
+extern void a_state_popUntil(AState* State, const char* Name);
+extern void a_state_replace(AState* State, const char* Name);
+extern void a_state_exit(void);
+
 typedef enum {
     A__STATE_STAGE_INVALID = -1,
     A__STATE_STAGE_INIT,
-    A__STATE_STAGE_LOOP,
+    A__STATE_STAGE_TICK,
+    A__STATE_STAGE_DRAW,
     A__STATE_STAGE_FREE,
     A__STATE_STAGE_NUM
 } AStateStage;
 
-typedef struct AState AState;
+extern bool a__state_stageCheck(AStateStage Stage);
 
-typedef void AStateFunction(AStateStage A__Stage, bool Tick);
-
-#define A_STATE(Name) void Name(AStateStage A__Stage, bool A__Tick)
-
-extern AState* a_state_new(const char* Name, AStateFunction* Function);
-
-extern void a_state_push(AState* State);
-extern void a_state_pop(void);
-extern void a_state_popUntil(AState* State);
-extern void a_state_replace(AState* State);
-extern void a_state_exit(void);
-
-#define A_STATE_INIT if(A__Stage == A__STATE_STAGE_INIT)
-#define A_STATE_TICK if(A__Stage == A__STATE_STAGE_LOOP && A__Tick)
-#define A_STATE_DRAW if(A__Stage == A__STATE_STAGE_LOOP && !A__Tick)
-#define A_STATE_FREE if(A__Stage == A__STATE_STAGE_FREE)
+#define A_STATE_INIT if(a__state_stageCheck(A__STATE_STAGE_INIT))
+#define A_STATE_TICK if(a__state_stageCheck(A__STATE_STAGE_TICK))
+#define A_STATE_DRAW if(a__state_stageCheck(A__STATE_STAGE_DRAW))
+#define A_STATE_FREE if(a__state_stageCheck(A__STATE_STAGE_FREE))

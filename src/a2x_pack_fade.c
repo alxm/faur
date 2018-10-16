@@ -31,18 +31,31 @@ static APixel g_savedColor;
 static AScreen* g_capturedScreen;
 static AScreen* g_oldCapturedScreen;
 
-enum {
+typedef enum {
     A__FADE_TOCOLOR,
     A__FADE_FROMCOLOR,
     A__FADE_SCREENS,
     A__FADE_NUM
+} AFadeStateId;
+
+static AState a__fade_toColor;
+static AState a__fade_fromColor;
+static AState a__fade_screens;
+
+static const struct {
+    AState* function;
+    const char* name;
+} g_states[A__FADE_NUM] = {
+    [A__FADE_TOCOLOR] = {a__fade_toColor, "Fade to Color"},
+    [A__FADE_FROMCOLOR] = {a__fade_fromColor, "Fade from Color"},
+    [A__FADE_SCREENS] = {a__fade_screens, "Fade Between Screens"},
 };
 
-static AState* g_states[A__FADE_NUM];
-
-static A_STATE(a_fade__toColor);
-static A_STATE(a_fade__fromColor);
-static A_STATE(a_fade__screens);
+static void pushFadeState(AFadeStateId State)
+{
+    a_state_push(g_states[State].function, g_states[State].name);
+    g_fadePending = true;
+}
 
 static void allocateScreenBuffers(bool CaptureCurrentScreen)
 {
@@ -84,15 +97,6 @@ void a_fade__init(void)
     g_savedColor = 0;
     g_capturedScreen = NULL;
     g_oldCapturedScreen = NULL;
-
-    g_states[A__FADE_TOCOLOR] =
-        a_state_new("Fade to Color", a_fade__toColor);
-
-    g_states[A__FADE_FROMCOLOR] =
-        a_state_new("Fade from Color", a_fade__fromColor);
-
-    g_states[A__FADE_SCREENS] =
-        a_state_new("Fade Between Screens", a_fade__screens);
 }
 
 void a_fade__uninit(void)
@@ -112,8 +116,7 @@ void a_fade_toColor(unsigned FramesDuration)
     g_savedColor = a_pixel__state.pixel;
     allocateScreenBuffers(false);
 
-    a_state_push(g_states[A__FADE_TOCOLOR]);
-    g_fadePending = true;
+    pushFadeState(A__FADE_TOCOLOR);
 }
 
 void a_fade_fromColor(unsigned FramesDuration)
@@ -127,8 +130,7 @@ void a_fade_fromColor(unsigned FramesDuration)
     g_savedColor = a_pixel__state.pixel;
     allocateScreenBuffers(false);
 
-    a_state_push(g_states[A__FADE_FROMCOLOR]);
-    g_fadePending = true;
+    pushFadeState(A__FADE_FROMCOLOR);
 }
 
 void a_fade_screens(unsigned FramesDuration)
@@ -141,11 +143,10 @@ void a_fade_screens(unsigned FramesDuration)
     g_frames = FramesDuration;
     allocateScreenBuffers(true);
 
-    a_state_push(g_states[A__FADE_SCREENS]);
-    g_fadePending = true;
+    pushFadeState(A__FADE_SCREENS);
 }
 
-static A_STATE(a_fade__toColor)
+static void a__fade_toColor(void)
 {
     static AFix alpha, alpha_inc;
 
@@ -186,7 +187,7 @@ static A_STATE(a_fade__toColor)
     }
 }
 
-static A_STATE(a_fade__fromColor)
+static void a__fade_fromColor(void)
 {
     static AFix alpha, alpha_inc;
 
@@ -227,7 +228,7 @@ static A_STATE(a_fade__fromColor)
     }
 }
 
-static A_STATE(a_fade__screens)
+static void a__fade_screens(void)
 {
     static AFix alpha, alpha_inc;
 
