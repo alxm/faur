@@ -82,7 +82,7 @@ static void pending_handle(void)
         free(current);
         current = a_list_peek(g_stack);
 
-        if(a_list_isEmpty(g_pending)
+        if(!g_exiting && a_list_isEmpty(g_pending)
             && current && current->stage == A__STATE_STAGE_TICK) {
 
             a_fps__reset();
