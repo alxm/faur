@@ -3,6 +3,7 @@ A_PLATFORM := linux
 A_BUILD_LIBS := \
     -lpng \
     -lm \
+    -rdynamic \
 
 A_BUILD_CFLAGS := \
     -DA_BUILD_LIB_SDL_GETFULLRES=1 \
