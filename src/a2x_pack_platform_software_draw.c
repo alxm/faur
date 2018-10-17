@@ -156,7 +156,7 @@ static void findMidpoint(int Radius, int* MidX, int* MidY)
                           YOffScreen, XOffScreen,                           \
                           PrimaryOnScreen, SecondaryOnScreen)               \
 do {                                                                        \
-    if(!a_screen_isBoxOnClip(BoundX, BoundY, BoundW, BoundH)) {             \
+    if(!a_screen_boxOnClip(BoundX, BoundY, BoundW, BoundH)) {               \
         break;                                                              \
     }                                                                       \
                                                                             \
@@ -329,7 +329,7 @@ void a_platform_software_draw__updateRoutines(void)
 
 void a_platform__drawPixel(int X, int Y)
 {
-    if(a_screen_isBoxInsideClip(X, Y, 1, 1)) {
+    if(a_screen_boxInsideClip(X, Y, 1, 1)) {
         g_draw_pixel(X, Y);
     }
 }
@@ -341,7 +341,7 @@ void a_platform__drawLine(int X1, int Y1, int X2, int Y2)
     int w = a_math_abs(X2 - X1) + 1;
     int h = a_math_abs(Y2 - Y1) + 1;
 
-    if(!a_screen_isBoxOnClip(x, y, w, h)
+    if(!a_screen_boxOnClip(x, y, w, h)
         || !cohen_sutherland_clip(&X1, &Y1, &X2, &Y2)) {
 
         return;
@@ -352,7 +352,7 @@ void a_platform__drawLine(int X1, int Y1, int X2, int Y2)
 
 void a_platform__drawHLine(int X1, int X2, int Y)
 {
-    if(!a_screen_isBoxOnClip(X1, Y, X2 - X1 + 1, 1)) {
+    if(!a_screen_boxOnClip(X1, Y, X2 - X1 + 1, 1)) {
         return;
     }
 
@@ -364,7 +364,7 @@ void a_platform__drawHLine(int X1, int X2, int Y)
 
 void a_platform__drawVLine(int X, int Y1, int Y2)
 {
-    if(!a_screen_isBoxOnClip(X, Y1, 1, Y2 - Y1 + 1)) {
+    if(!a_screen_boxOnClip(X, Y1, 1, Y2 - Y1 + 1)) {
         return;
     }
 
@@ -376,12 +376,12 @@ void a_platform__drawVLine(int X, int Y1, int Y2)
 
 static void drawRectangle(int X, int Y, int Width, int Height)
 {
-    if(a_screen_isBoxInsideClip(X, Y, Width, Height)) {
+    if(a_screen_boxInsideClip(X, Y, Width, Height)) {
         g_draw_rectangle(X, Y, Width, Height);
         return;
     }
 
-    if(!a_screen_isBoxOnClip(X, Y, Width, Height)) {
+    if(!a_screen_boxOnClip(X, Y, Width, Height)) {
         return;
     }
 
@@ -412,12 +412,12 @@ static void drawCircle(int X, int Y, int Radius)
     int boxY = Y - Radius;
     int boxDim = 2 * Radius;
 
-    if(a_screen_isBoxInsideClip(boxX, boxY, boxDim, boxDim)) {
+    if(a_screen_boxInsideClip(boxX, boxY, boxDim, boxDim)) {
         g_draw_circle_noclip(X, Y, Radius);
         return;
     }
 
-    if(a_screen_isBoxOnClip(boxX, boxY, boxDim, boxDim)) {
+    if(a_screen_boxOnClip(boxX, boxY, boxDim, boxDim)) {
         g_draw_circle_clip(X, Y, Radius);
     }
 }

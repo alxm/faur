@@ -45,7 +45,7 @@ A_SETUP
     a_settings_boolSet(A_SETTING_OUTPUT_ON, true);
 }
 
-void drawBox(void)
+A_STATE(drawBox)
 {
     static struct {
         int x, y;

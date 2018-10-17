@@ -21,7 +21,8 @@
 
 #include "a2x_system_includes.h"
 
-typedef void AState(void);
+#define A_STATE(Name) void Name(void)
+typedef A_STATE(AState);
 
 extern void a_state_push(AState* State, const char* Name);
 extern void a_state_pop(void);

@@ -19,6 +19,11 @@
 
 #include "a2x_pack_out.v.h"
 
+#ifdef __GLIBC__
+    #define A__BACKTRACE 1
+    #include <execinfo.h>
+#endif
+
 #if A_BUILD_SYSTEM_EMSCRIPTEN
     #include <emscripten.h>
 #endif
@@ -99,6 +104,18 @@ static void outWorker(AOutSource Source, AOutType Type, bool Verbose, bool Overw
 
 __attribute__((noreturn)) static void handleFatal(void)
 {
+    #if A__BACKTRACE
+        void* addresses[16];
+        int numAddresses = backtrace(addresses, A_ARRAY_LEN(addresses));
+        char** functionNames = backtrace_symbols(addresses, numAddresses);
+
+        for(int i = 0; i < numAddresses; i++) {
+            a_out__error(functionNames[i]);
+        }
+
+        free(functionNames);
+    #endif
+
     a_console__showSet(true);
     a_screen__draw();
 
@@ -117,6 +134,7 @@ __attribute__((noreturn)) static void handleFatal(void)
                         A_OUT__TYPE_MESSAGE, stdout, "Exiting in %ds", s);
                 }
 
+                a_console__draw();
                 a_screen__draw();
                 a_time_secWait(1);
             }
