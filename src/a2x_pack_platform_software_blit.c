@@ -340,13 +340,13 @@ void a_platform__textureBlit(APlatformTexture* Texture, int X, int Y, bool FillF
 {
     A_UNUSED(FillFlat);
 
-    if(a_screen_isBoxInsideClip(X, Y, Texture->spr->w, Texture->spr->h)) {
+    if(a_screen_boxInsideClip(X, Y, Texture->spr->w, Texture->spr->h)) {
         if(Texture->colorKeyed) {
             g_blitter_keyed_noclip(Texture, X, Y);
         } else {
             g_blitter_block_noclip(Texture, X, Y);
         }
-    } else if(a_screen_isBoxOnClip(X, Y, Texture->spr->w , Texture->spr->h)) {
+    } else if(a_screen_boxOnClip(X, Y, Texture->spr->w , Texture->spr->h)) {
         if(Texture->colorKeyed) {
             g_blitter_keyed_doclip(Texture, X, Y);
         } else {

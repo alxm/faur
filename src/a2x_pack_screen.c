@@ -252,7 +252,7 @@ void a_screen_blit(const AScreen* Screen)
     }
 
     #if A_BUILD_RENDER_SOFTWARE
-        bool noClipping = a_screen_isBoxInsideClip(
+        bool noClipping = a_screen_boxInsideClip(
                             0, 0, a__screen.width, a__screen.height);
         APixel* dst = a__screen.pixels;
         APixel* src = Screen->pixels;
@@ -417,7 +417,7 @@ void a_screen_targetPop(void)
 
 void a_screen_clipSet(int X, int Y, int Width, int Height)
 {
-    if(!a_screen_isBoxInsideScreen(X, Y, Width, Height)) {
+    if(!a_screen_boxInsideScreen(X, Y, Width, Height)) {
         a_out__error(
             "a_screen_clipSet: Invalid area %dx%d @ %d,%d on %dx%d screen",
             Width,
@@ -446,26 +446,26 @@ void a_screen_clipReset(void)
     a_screen_clipSet(0, 0, a__screen.width, a__screen.height);
 }
 
-bool a_screen_isBoxOnScreen(int X, int Y, int W, int H)
+bool a_screen_boxOnScreen(int X, int Y, int W, int H)
 {
     return a_collide_boxAndBox(X, Y, W, H,
                                0, 0, a__screen.width, a__screen.height);
 }
 
-bool a_screen_isBoxInsideScreen(int X, int Y, int W, int H)
+bool a_screen_boxInsideScreen(int X, int Y, int W, int H)
 {
     return X >= 0 && Y >= 0
         && X + W <= a__screen.width && Y + H <= a__screen.height;
 }
 
-bool a_screen_isBoxOnClip(int X, int Y, int W, int H)
+bool a_screen_boxOnClip(int X, int Y, int W, int H)
 {
     return a_collide_boxAndBox(X, Y, W, H,
                                a__screen.clipX, a__screen.clipY,
                                a__screen.clipWidth, a__screen.clipHeight);
 }
 
-bool a_screen_isBoxInsideClip(int X, int Y, int W, int H)
+bool a_screen_boxInsideClip(int X, int Y, int W, int H)
 {
     return X >= a__screen.clipX && Y >= a__screen.clipY
         && X + W <= a__screen.clipX2 && Y + H <= a__screen.clipY2;
