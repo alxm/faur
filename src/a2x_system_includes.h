@@ -44,3 +44,7 @@ typedef void AInit(void* Self);
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+
+#if CHAR_BIT != 8
+    #error Code needs CHAR_BIT == 8
+#endif
