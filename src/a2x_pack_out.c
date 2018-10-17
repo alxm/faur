@@ -117,6 +117,7 @@ __attribute__((noreturn)) static void handleFatal(void)
                         A_OUT__TYPE_MESSAGE, stdout, "Exiting in %ds", s);
                 }
 
+                a_console__draw();
                 a_screen__draw();
                 a_time_secWait(1);
             }
