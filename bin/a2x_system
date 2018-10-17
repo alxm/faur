@@ -36,7 +36,6 @@ class SystemTool(Tool):
 
         self.writefile(sys_c,
 """\
-#include <a2x.h>
 #include "system_{name}.h"
 
 static void s_{name}(AEntity* Entity)
@@ -54,6 +53,8 @@ void s_{name}_register(void)
         self.writefile(sys_h,
 """\
 #pragma once
+
+#include <a2x.h>
 
 extern void s_{name}_register(void);
 """.format(name=sys_name.lower()))

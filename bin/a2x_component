@@ -38,7 +38,6 @@ class ComponentTool(Tool):
 
         self.writefile(comp_c,
 """\
-#include <a2x.h>
 #include "component_{name}.h"
 
 struct {ctype} {{
@@ -81,6 +80,8 @@ void c_{name}_valueSet({ctype}* {paramVar}, int Value)
         self.writefile(comp_h,
 """\
 #pragma once
+
+#include <a2x.h>
 
 typedef struct {ctype} {ctype};
 
