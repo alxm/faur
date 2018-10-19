@@ -22,7 +22,7 @@
 #include "a2x_pack_ecs_entity.p.h"
 
 #include "a2x_pack_bitfield.v.h"
-#include "a2x_pack_ecs_system.v.h"
+#include "a2x_pack_ecs_component.v.h"
 #include "a2x_pack_list.v.h"
 #include "a2x_pack_strhash.v.h"
 
@@ -35,7 +35,6 @@ struct AEntity {
     AList* matchingSystemsEither; // list of ASystem
     AList* systemNodesActive; // list of nodes in active-only ASystem lists
     AList* systemNodesEither; // list of nodes in normal ASystem.entities lists
-    AStrHash* components; // table of AComponentHeader
     ABitfield* componentBits; // each component's bit is set
     AStrHash* handlers; // table of AMessageHandlerContainer
     unsigned lastActive; // frame when a_entity_activeSet was last called
@@ -43,6 +42,7 @@ struct AEntity {
     bool removedFromActive; // set when an active-only system kicks entity out
     bool permanentActive; // if set then entity always reports as active
     bool debug; // whether to print debug messages for this entity
+    AComponentHeader* componentsTable[];
 };
 
 typedef struct {

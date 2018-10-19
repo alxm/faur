@@ -20,7 +20,7 @@
 #include "a2x_pack_ecs_entity.v.h"
 
 #include "a2x_pack_ecs.v.h"
-#include "a2x_pack_ecs_component.v.h"
+#include "a2x_pack_ecs_system.v.h"
 #include "a2x_pack_fps.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
@@ -28,24 +28,18 @@
 
 AEntity* a_entity_new(const char* Id, void* Context)
 {
-    AEntity* e = a_mem_malloc(sizeof(AEntity));
+    AEntity* e = a_mem_zalloc(
+        sizeof(AEntity) + a_component__tableLen * sizeof(AComponentHeader*));
 
     e->id = a_str_dup(Id);
     e->context = Context;
-    e->parent = NULL;
-    e->node = NULL;
     e->matchingSystemsActive = a_list_new();
     e->matchingSystemsEither = a_list_new();
     e->systemNodesActive = a_list_new();
     e->systemNodesEither = a_list_new();
-    e->components = a_strhash_new();
-    e->componentBits = a_bitfield_new(a_component__num());
+    e->componentBits = a_bitfield_new(a_component__tableLen);
     e->handlers = a_strhash_new();
     e->lastActive = a_fps_ticksGet() - 1;
-    e->references = 0;
-    e->removedFromActive = false;
-    e->permanentActive = false;
-    e->debug = false;
 
     a_ecs__entityAddToList(e, A_ECS__NEW);
 
@@ -67,7 +61,13 @@ void a_entity__free(AEntity* Entity)
     a_list_freeEx(Entity->systemNodesActive, (AFree*)a_list_removeNode);
     a_list_freeEx(Entity->systemNodesEither, (AFree*)a_list_removeNode);
 
-    A_STRHASH_ITERATE(Entity->components, AComponentHeader*, header) {
+    for(unsigned c = 0; c < a_component__tableLen; c++) {
+        AComponentHeader* header = Entity->componentsTable[c];
+
+        if(header == NULL) {
+            continue;
+        }
+
         if(header->component->free) {
             header->component->free(a_component__headerGetData(header));
         }
@@ -79,7 +79,6 @@ void a_entity__free(AEntity* Entity)
         a_entity_refDec(Entity->parent);
     }
 
-    a_strhash_free(Entity->components);
     a_strhash_freeEx(Entity->handlers, free);
     a_bitfield_free(Entity->componentBits);
 
@@ -225,31 +224,25 @@ void a_entity_activeSetPermanent(AEntity* Entity)
     Entity->permanentActive = true;
 }
 
-void* a_entity_componentAdd(AEntity* Entity, const char* Component)
+void* a_entity_componentAdd(AEntity* Entity, int Component)
 {
+    const AComponent* c = a_component__tableGet(Component, __func__);
+
     if(Entity->debug) {
         a_out__message("a_entity_componentAdd('%s', '%s')",
                        a_entity_idGet(Entity),
-                       Component);
+                       c->name);
     }
 
     if(!a_ecs__entityIsInList(Entity, A_ECS__NEW)) {
         a_out__fatal("a_entity_componentAdd: Too late to add '%s' to '%s'",
-                     Component,
+                     c->name,
                      a_entity_idGet(Entity));
     }
 
-    const AComponent* c = a_component__get(Component);
-
-    if(c == NULL) {
-        a_out__fatal("a_entity_componentAdd: Unknown component '%s' for '%s'",
-                     Component,
-                     a_entity_idGet(Entity));
-    }
-
-    if(a_bitfield_test(Entity->componentBits, c->bit)) {
+    if(Entity->componentsTable[Component] != NULL) {
         a_out__fatal("a_entity_componentAdd: '%s' was already added to '%s'",
-                     Component,
+                     c->name,
                      a_entity_idGet(Entity));
     }
 
@@ -258,7 +251,7 @@ void* a_entity_componentAdd(AEntity* Entity, const char* Component)
     header->component = c;
     header->entity = Entity;
 
-    a_strhash_add(Entity->components, Component, header);
+    Entity->componentsTable[Component] = header;
     a_bitfield_set(Entity->componentBits, c->bit);
 
     if(c->init) {
@@ -268,52 +261,30 @@ void* a_entity_componentAdd(AEntity* Entity, const char* Component)
     return a_component__headerGetData(header);
 }
 
-bool a_entity_componentHas(const AEntity* Entity, const char* Component)
+bool a_entity_componentHas(const AEntity* Entity, int Component)
 {
-    bool has = a_strhash_contains(Entity->components, Component);
+    a_component__tableGet(Component, __func__);
 
-    if(!has && a_component__get(Component) == NULL) {
-        a_out__fatal("a_entity_componentHas: Unknown component '%s' for '%s'",
-                     Component,
-                     a_entity_idGet(Entity));
-    }
-
-    return has;
+    return Entity->componentsTable[Component] != NULL;
 }
 
-void* a_entity_componentGet(const AEntity* Entity, const char* Component)
+void* a_entity_componentGet(const AEntity* Entity, int Component)
 {
-    AComponentHeader* header = a_strhash_get(Entity->components, Component);
+    a_component__tableGet(Component, __func__);
+    AComponentHeader* header = Entity->componentsTable[Component];
 
-    if(header == NULL) {
-        if(a_component__get(Component) == NULL) {
-            a_out__fatal(
-                "a_entity_componentGet: Unknown component '%s' for '%s'",
-                Component,
-                a_entity_idGet(Entity));
-        }
-
-        return NULL;
-    }
-
-    return a_component__headerGetData(header);
+    return header ? a_component__headerGetData(header) : NULL;
 }
 
-void* a_entity_componentReq(const AEntity* Entity, const char* Component)
+void* a_entity_componentReq(const AEntity* Entity, int Component)
 {
-    AComponentHeader* header = a_strhash_get(Entity->components, Component);
+    const AComponent* c = a_component__tableGet(Component, __func__);
+    AComponentHeader* header = Entity->componentsTable[Component];
 
     if(header == NULL) {
-        if(a_component__get(Component) == NULL) {
-            a_out__fatal(
-                "a_entity_componentReq: Unknown component '%s' for '%s'",
-                Component,
-                a_entity_idGet(Entity));
-        }
-
         a_out__fatal(
             "a_entity_componentReq: Missing required component '%s' in '%s'",
-            Component,
+            c->name,
             a_entity_idGet(Entity));
     }
 

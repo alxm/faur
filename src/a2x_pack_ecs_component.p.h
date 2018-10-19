@@ -23,6 +23,8 @@
 
 #include "a2x_pack_ecs_entity.p.h"
 
-extern void a_component_new(const char* Name, size_t Size, AInit* Init, AFree* Free);
+extern void a_component_new(int Index, const char* Name, size_t Size, AInit* Init, AFree* Free);
 
 extern AEntity* a_component_entityGet(const void* Component);
+
+extern int a_component_stringToIndex(const char* StringId);

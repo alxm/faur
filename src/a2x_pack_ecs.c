@@ -57,6 +57,13 @@ void a_ecs__uninit(void)
     a_component__uninit();
 }
 
+void a_ecs_init(unsigned NumComponents, unsigned NumSystems)
+{
+    A_UNUSED(NumSystems);
+
+    a_component__tableInit(NumComponents);
+}
+
 bool a_ecs__isDeleting(void)
 {
     return g_ecs->deleting;

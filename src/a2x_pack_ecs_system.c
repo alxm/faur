@@ -20,7 +20,6 @@
 #include "a2x_pack_ecs_system.v.h"
 
 #include "a2x_pack_ecs.v.h"
-#include "a2x_pack_ecs_component.v.h"
 #include "a2x_pack_ecs_entity.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
@@ -65,7 +64,7 @@ void a_system_new(const char* System, ASystemHandler* Handler, ASystemSort* Comp
     s->handler = Handler;
     s->compare = Compare;
     s->entities = a_list_new();
-    s->componentBits = a_bitfield_new(a_component__num());
+    s->componentBits = a_bitfield_new(a_component__tableLen);
     s->onlyActiveEntities = OnlyActiveEntities;
     s->muted = false;
     s->runsInCurrentState = false;
@@ -73,7 +72,7 @@ void a_system_new(const char* System, ASystemHandler* Handler, ASystemSort* Comp
     a_strhash_add(g_systems, System, s);
 }
 
-void a_system_add(const char* System, const char* Component)
+void a_system_add(const char* System, int Component)
 {
     ASystem* s = a_strhash_get(g_systems, System);
 
@@ -81,11 +80,7 @@ void a_system_add(const char* System, const char* Component)
         a_out__fatal("a_system_add: Unknown system '%s'", System);
     }
 
-    AComponent* c = a_component__get(Component);
-
-    if(c == NULL) {
-        a_out__fatal("a_system_add: Unknown component '%s'", Component);
-    }
+    const AComponent* c = a_component__tableGet(Component, __func__);
 
     a_bitfield_set(s->componentBits, c->bit);
 }
