@@ -364,7 +364,8 @@ void a_entity_messageHandlerSet(AEntity* Entity, const char* Message, AMessageHa
                      a_entity_idGet(Entity));
     }
 
-    AMessageHandlerContainer* h = a_mem_malloc(sizeof(AMessageHandlerContainer));
+    AMessageHandlerContainer* h = a_mem_malloc(
+                                    sizeof(AMessageHandlerContainer));
 
     h->handler = Handler;
 

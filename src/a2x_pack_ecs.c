@@ -59,9 +59,8 @@ void a_ecs__uninit(void)
 
 void a_ecs_init(unsigned NumComponents, unsigned NumSystems)
 {
-    A_UNUSED(NumSystems);
-
     a_component__tableInit(NumComponents);
+    a_system__tableInit(NumSystems);
 }
 
 bool a_ecs__isDeleting(void)
@@ -211,9 +210,9 @@ void a_ecs__flushEntitiesFromSystems(void)
     a_list_clear(g_ecs->lists[A_ECS__REMOVED_QUEUE]);
 }
 
-void a_ecs_tickSet(const char* System)
+void a_ecs_tickSet(int System)
 {
-    ASystem* system = a_system__get(System);
+    ASystem* system = a_system__tableGet(System, __func__);
 
     if(system == NULL) {
         a_out__fatal("a_ecs_tickSet: Unknown system '%s'", System);
@@ -225,9 +224,9 @@ void a_ecs_tickSet(const char* System)
     a_list_addLast(g_ecs->tickSystems, system);
 }
 
-void a_ecs_drawSet(const char* System)
+void a_ecs_drawSet(int System)
 {
-    ASystem* system = a_system__get(System);
+    ASystem* system = a_system__tableGet(System, __func__);
 
     if(system == NULL) {
         a_out__fatal("a_ecs_drawSet: Unknown system '%s'", System);

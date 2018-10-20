@@ -23,5 +23,5 @@
 
 extern void a_ecs_init(unsigned NumComponents, unsigned NumSystems);
 
-extern void a_ecs_tickSet(const char* System);
-extern void a_ecs_drawSet(const char* System);
+extern void a_ecs_tickSet(int System);
+extern void a_ecs_drawSet(int System);

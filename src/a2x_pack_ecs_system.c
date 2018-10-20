@@ -26,41 +26,65 @@
 #include "a2x_pack_str.v.h"
 #include "a2x_pack_strhash.v.h"
 
-static AStrHash* g_systems; // table of declared ASystem
+unsigned a_system__tableLen;
+static ASystem* g_systemsTable;
+
 static AList* g_inactive; // list of AEntity detected as inactive
 
 void a_system__init(void)
 {
-    g_systems = a_strhash_new();
     g_inactive = a_list_new();
 }
 
 void a_system__uninit(void)
 {
-    A_STRHASH_ITERATE(g_systems, ASystem*, system) {
-        a_list_free(system->entities);
-        a_bitfield_free(system->componentBits);
-
-        free(system);
+    for(unsigned s = a_system__tableLen; s--; ) {
+        a_list_free(g_systemsTable[s].entities);
+        a_bitfield_free(g_systemsTable[s].componentBits);
     }
 
-    a_strhash_free(g_systems);
+    free(g_systemsTable);
+
     a_list_free(g_inactive);
 }
 
-ASystem* a_system__get(const char* System)
+void a_system__tableInit(unsigned NumSystems)
 {
-    return a_strhash_get(g_systems, System);
+    a_system__tableLen = NumSystems;
+    g_systemsTable = a_mem_malloc(NumSystems * sizeof(ASystem));
+
+    while(NumSystems--) {
+        g_systemsTable[NumSystems].name = "???";
+        g_systemsTable[NumSystems].entities = NULL;
+    }
 }
 
-void a_system_new(const char* System, ASystemHandler* Handler, ASystemSort* Compare, bool OnlyActiveEntities)
+ASystem* a_system__tableGet(int System, const char* CallerFunction)
 {
-    if(a_strhash_contains(g_systems, System)) {
-        a_out__fatal("a_system_new: '%s' already declared", System);
+    if(System < 0 || System >= (int)a_system__tableLen) {
+        a_out__fatal("%s: Unknown system %d", CallerFunction, System);
     }
 
-    ASystem* s = a_mem_malloc(sizeof(ASystem));
+    if(g_systemsTable[System].entities == NULL) {
+        a_out__fatal("%s: Uninitialized system %d", CallerFunction, System);
+    }
 
+    return &g_systemsTable[System];
+}
+
+void a_system_new(int Index, const char* Name, ASystemHandler* Handler, ASystemSort* Compare, bool OnlyActiveEntities)
+{
+    if(g_systemsTable == NULL) {
+        a_out__fatal("Call a_ecs_init before a_system_new");
+    }
+
+    if(g_systemsTable[Index].entities != NULL) {
+        a_out__fatal("a_system_new: '%s' (%d) already declared", Name, Index);
+    }
+
+    ASystem* s = &g_systemsTable[Index];
+
+    s->name = Name;
     s->handler = Handler;
     s->compare = Compare;
     s->entities = a_list_new();
@@ -68,18 +92,11 @@ void a_system_new(const char* System, ASystemHandler* Handler, ASystemSort* Comp
     s->onlyActiveEntities = OnlyActiveEntities;
     s->muted = false;
     s->runsInCurrentState = false;
-
-    a_strhash_add(g_systems, System, s);
 }
 
-void a_system_add(const char* System, int Component)
+void a_system_add(int System, int Component)
 {
-    ASystem* s = a_strhash_get(g_systems, System);
-
-    if(s == NULL) {
-        a_out__fatal("a_system_add: Unknown system '%s'", System);
-    }
-
+    ASystem* s = a_system__tableGet(System, __func__);
     const AComponent* c = a_component__tableGet(Component, __func__);
 
     a_bitfield_set(s->componentBits, c->bit);
@@ -114,13 +131,9 @@ void a_system__run(ASystem* System)
     a_ecs__flushEntitiesFromSystems();
 }
 
-void a_system_run(const char* System)
+void a_system_run(int System)
 {
-    ASystem* system = a_strhash_get(g_systems, System);
-
-    if(system == NULL) {
-        a_out__fatal("a_system_run: Unknown system '%s'", System);
-    }
+    ASystem* system = a_system__tableGet(System, __func__);
 
     if(!system->runsInCurrentState) {
         a_out__fatal("a_system_run: '%s' is not set to run", System);
@@ -129,13 +142,9 @@ void a_system_run(const char* System)
     a_system__run(system);
 }
 
-void a_system_muteSet(const char* System, bool DoMute)
+void a_system_muteSet(int System, bool DoMute)
 {
-    ASystem* system = a_strhash_get(g_systems, System);
-
-    if(system == NULL) {
-        a_out__fatal("a_system_muteSet: Unknown system '%s'", System);
-    }
+    ASystem* system = a_system__tableGet(System, __func__);
 
     if(!system->runsInCurrentState) {
         a_out__fatal("a_system_muteSet: '%s' is not set to run", System);

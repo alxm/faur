@@ -27,6 +27,7 @@ typedef struct ASystem ASystem;
 #include "a2x_pack_list.v.h"
 
 struct ASystem {
+    const char* name;
     ASystemHandler* handler;
     ASystemSort* compare;
     ABitfield* componentBits; // IDs of components that this system works on
@@ -36,8 +37,12 @@ struct ASystem {
     bool runsInCurrentState; // whether this system runs in the current state
 };
 
+extern unsigned a_system__tableLen;
+
 extern void a_system__init(void);
 extern void a_system__uninit(void);
 
-extern ASystem* a_system__get(const char* System);
+extern void a_system__tableInit(unsigned NumSystems);
+extern ASystem* a_system__tableGet(int System, const char* CallerFunction);
+
 extern void a_system__run(ASystem* System);
