@@ -34,8 +34,6 @@ typedef struct {
     AEntity* entity; // entity this component belongs to
 } AComponentHeader;
 
-#include "a2x_pack_strhash.v.h"
-
 extern unsigned a_component__tableLen;
 
 extern void a_component__init(void);

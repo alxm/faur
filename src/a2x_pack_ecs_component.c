@@ -21,6 +21,7 @@
 
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
+#include "a2x_pack_strhash.v.h"
 
 unsigned a_component__tableLen;
 static AComponent* g_componentsTable;

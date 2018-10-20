@@ -21,10 +21,9 @@
 
 #include "a2x_pack_ecs.v.h"
 #include "a2x_pack_ecs_entity.v.h"
+#include "a2x_pack_listit.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
-#include "a2x_pack_str.v.h"
-#include "a2x_pack_strhash.v.h"
 
 unsigned a_system__tableLen;
 static ASystem* g_systemsTable;

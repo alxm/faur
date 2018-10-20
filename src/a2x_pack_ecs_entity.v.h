@@ -24,7 +24,6 @@
 #include "a2x_pack_bitfield.v.h"
 #include "a2x_pack_ecs_component.v.h"
 #include "a2x_pack_list.v.h"
-#include "a2x_pack_strhash.v.h"
 
 struct AEntity {
     char* id; // specified name for debugging
