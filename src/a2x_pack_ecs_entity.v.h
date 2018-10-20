@@ -36,7 +36,7 @@ struct AEntity {
     AList* systemNodesActive; // list of nodes in active-only ASystem lists
     AList* systemNodesEither; // list of nodes in normal ASystem.entities lists
     ABitfield* componentBits; // each component's bit is set
-    AStrHash* handlers; // table of AMessageHandlerContainer
+    AMessageHandler** messageHandlers; // AMessageHandler*[a_entity__msgLen]
     unsigned lastActive; // frame when a_entity_activeSet was last called
     int references; // if >0, then the entity lingers in the removed limbo list
     bool removedFromActive; // set when an active-only system kicks entity out
@@ -45,9 +45,7 @@ struct AEntity {
     AComponentHeader* componentsTable[];
 };
 
-typedef struct {
-    AMessageHandler* handler;
-} AMessageHandlerContainer;
+extern unsigned a_entity__msgLen;
 
 extern void a_entity__free(AEntity* Entity);
 

@@ -26,6 +26,8 @@
 #include "a2x_pack_out.v.h"
 #include "a2x_pack_str.v.h"
 
+unsigned a_entity__msgLen;
+
 AEntity* a_entity_new(const char* Id, void* Context)
 {
     AEntity* e = a_mem_zalloc(
@@ -38,7 +40,6 @@ AEntity* a_entity_new(const char* Id, void* Context)
     e->systemNodesActive = a_list_new();
     e->systemNodesEither = a_list_new();
     e->componentBits = a_bitfield_new(a_component__tableLen);
-    e->handlers = a_strhash_new();
     e->lastActive = a_fps_ticksGet() - 1;
 
     a_ecs__entityAddToList(e, A_ECS__NEW);
@@ -79,9 +80,9 @@ void a_entity__free(AEntity* Entity)
         a_entity_refDec(Entity->parent);
     }
 
-    a_strhash_freeEx(Entity->handlers, free);
     a_bitfield_free(Entity->componentBits);
 
+    free(Entity->messageHandlers);
     free(Entity->id);
     free(Entity);
 }
@@ -356,34 +357,38 @@ bool a_entity__isMatchedToSystems(const AEntity* Entity)
         || !a_list_isEmpty(Entity->matchingSystemsEither);
 }
 
-void a_entity_messageHandlerSet(AEntity* Entity, const char* Message, AMessageHandler* Handler)
+void a_entity_messageSet(AEntity* Entity, int Message, AMessageHandler* Handler)
 {
-    if(a_strhash_contains(Entity->handlers, Message)) {
-        a_out__fatal("a_entity_messageHandlerSet: '%s' already set for '%s'",
+    if(Message < 0 || Message >= (int)a_entity__msgLen) {
+        a_out__fatal("a_entity_messageSet: Unknown id %d", Message);
+    }
+
+    if(Entity->messageHandlers == NULL) {
+        Entity->messageHandlers =
+            a_mem_zalloc(a_entity__msgLen * sizeof(AMessageHandler*));
+    } else if(Entity->messageHandlers[Message] != NULL) {
+        a_out__fatal("a_entity_messageSet: %d already set for '%s'",
                      Message,
                      a_entity_idGet(Entity));
     }
 
-    AMessageHandlerContainer* h = a_mem_malloc(
-                                    sizeof(AMessageHandlerContainer));
-
-    h->handler = Handler;
-
-    a_strhash_add(Entity->handlers, Message, h);
+    Entity->messageHandlers[Message] = Handler;
 }
 
-void a_entity_messageSend(AEntity* To, AEntity* From, const char* Message)
+void a_entity_messageSend(AEntity* To, AEntity* From, int Message)
 {
     if(To->debug || From->debug) {
-        a_out__message("a_entity_messageSend('%s', '%s', '%s')",
+        a_out__message("a_entity_messageSend('%s', '%s', %d)",
                        a_entity_idGet(To),
                        a_entity_idGet(From),
                        Message);
     }
 
-    AMessageHandlerContainer* h = a_strhash_get(To->handlers, Message);
+    if(Message < 0 || Message >= (int)a_entity__msgLen) {
+        a_out__fatal("a_entity_messageSend: Unknown id %d", Message);
+    }
 
-    if(h == NULL) {
+    if(To->messageHandlers == NULL || To->messageHandlers[Message] == NULL) {
         // Entity does not handle this Message
         return;
     }
@@ -396,5 +401,5 @@ void a_entity_messageSend(AEntity* To, AEntity* From, const char* Message)
         return;
     }
 
-    h->handler(To, From);
+    To->messageHandlers[Message](To, From);
 }

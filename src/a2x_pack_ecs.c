@@ -57,10 +57,12 @@ void a_ecs__uninit(void)
     a_component__uninit();
 }
 
-void a_ecs_init(unsigned NumComponents, unsigned NumSystems)
+void a_ecs_init(unsigned NumComponents, unsigned NumSystems, unsigned NumMessages)
 {
     a_component__tableInit(NumComponents);
     a_system__tableInit(NumSystems);
+
+    a_entity__msgLen = NumMessages;
 }
 
 bool a_ecs__isDeleting(void)
