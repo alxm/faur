@@ -56,6 +56,10 @@ void a_component__tableInit(unsigned NumComponents)
 
 const AComponent* a_component__tableGet(int Component, const char* CallerFunction)
 {
+    if(g_componentsTable == NULL) {
+        a_out__fatal("%s: Call a_ecs_init first", CallerFunction);
+    }
+
     if(Component < 0 || Component >= (int)a_component__tableLen) {
         a_out__fatal("%s: Unknown component %d", CallerFunction, Component);
     }
@@ -71,7 +75,7 @@ const AComponent* a_component__tableGet(int Component, const char* CallerFunctio
 void a_component_new(int Index, const char* Name, size_t Size, AInit* Init, AFree* Free)
 {
     if(g_componentsTable == NULL) {
-        a_out__fatal("Call a_ecs_init before a_component_new");
+        a_out__fatal("a_component_new: Call a_ecs_init first");
     }
 
     if(g_componentsTable[Index].bit != UINT_MAX
@@ -102,7 +106,7 @@ int a_component_stringToIndex(const char* StringId)
     const AComponent* c = a_strhash_get(g_components, StringId);
 
     if(c == NULL) {
-        a_out__fatal("Unknown component '%s'", StringId);
+        a_out__fatal("a_component_stringToIndex: Unknown id '%s'", StringId);
     }
 
     return (int)c->bit;

@@ -61,6 +61,10 @@ void a_system__tableInit(unsigned NumSystems)
 
 ASystem* a_system__tableGet(int System, const char* CallerFunction)
 {
+    if(g_systemsTable == NULL) {
+        a_out__fatal("%s: Call a_ecs_init first", CallerFunction);
+    }
+
     if(System < 0 || System >= (int)a_system__tableLen) {
         a_out__fatal("%s: Unknown system %d", CallerFunction, System);
     }
@@ -75,7 +79,7 @@ ASystem* a_system__tableGet(int System, const char* CallerFunction)
 void a_system_new(int Index, const char* Name, ASystemHandler* Handler, ASystemSort* Compare, bool OnlyActiveEntities)
 {
     if(g_systemsTable == NULL) {
-        a_out__fatal("Call a_ecs_init before a_system_new");
+        a_out__fatal("a_system_new: Call a_ecs_init first");
     }
 
     if(g_systemsTable[Index].entities != NULL) {
