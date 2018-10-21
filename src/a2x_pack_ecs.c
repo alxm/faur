@@ -106,7 +106,6 @@ void a_ecs__collectionPop(void)
 void a_ecs__tick(void)
 {
     a_ecs__flushEntitiesFromSystems();
-    a_list_clearEx(g_ecs->lists[A_ECS__REMOVED_FREE], (AFree*)a_entity__free);
 
     // Check what systems the new entities match
     A_LIST_ITERATE(g_ecs->lists[A_ECS__NEW], AEntity*, e) {
@@ -125,8 +124,6 @@ void a_ecs__tick(void)
         a_ecs__entityAddToList(e, A_ECS__RESTORE);
     }
 
-    a_list_clear(g_ecs->lists[A_ECS__NEW]);
-
     // Add entities to the systems they match
     A_LIST_ITERATE(g_ecs->lists[A_ECS__RESTORE], AEntity*, e) {
         if(!e->removedFromActive) {
@@ -144,7 +141,9 @@ void a_ecs__tick(void)
         a_ecs__entityAddToList(e, A_ECS__RUNNING);
     }
 
+    a_list_clear(g_ecs->lists[A_ECS__NEW]);
     a_list_clear(g_ecs->lists[A_ECS__RESTORE]);
+    a_list_clearEx(g_ecs->lists[A_ECS__REMOVED_FREE], (AFree*)a_entity__free);
 }
 
 bool a_ecs__entityIsInList(const AEntity* Entity, AEcsListId List)
@@ -171,6 +170,7 @@ void a_ecs__flushEntitiesFromSystems(void)
 {
     A_LIST_ITERATE(g_ecs->lists[A_ECS__MUTED_QUEUE], AEntity*, e) {
         a_entity__removeFromAllSystems(e);
+
         a_ecs__entityAddToList(e, A_ECS__MUTED_LIMBO);
     }
 

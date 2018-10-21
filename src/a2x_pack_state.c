@@ -258,8 +258,9 @@ static bool iteration(void)
             a_screen__tick();
             a_screenshot__tick();
             a_console__tick();
-            s->function();
             a_ecs__tick();
+
+            s->function();
 
             if(!a_list_isEmpty(g_pending)) {
                 return true;
