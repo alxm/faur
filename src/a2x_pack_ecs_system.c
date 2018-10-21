@@ -139,7 +139,7 @@ void a_system_run(int System)
     ASystem* system = a_system__tableGet(System, __func__);
 
     if(!system->runsInCurrentState) {
-        a_out__fatal("a_system_run: '%s' is not set to run", System);
+        a_out__fatal("a_system_run: '%d' is not set to run", System);
     }
 
     a_system__run(system);
@@ -150,7 +150,7 @@ void a_system_muteSet(int System, bool DoMute)
     ASystem* system = a_system__tableGet(System, __func__);
 
     if(!system->runsInCurrentState) {
-        a_out__fatal("a_system_muteSet: '%s' is not set to run", System);
+        a_out__fatal("a_system_muteSet: '%d' is not set to run", System);
     }
 
     system->muted = DoMute;
