@@ -43,9 +43,9 @@ static void s_{name}(AEntity* Entity)
     A_UNUSED(Entity);
 }}
 
-void s_{name}_register(void)
+void s_{name}_register(int Index)
 {{
-    a_system_new("{idkey}", s_{name}, NULL, false);
+    a_system_new(Index, "{idkey}", s_{name}, NULL, false);
 }}
 """.format(name=sys_name.lower(),
            idkey=sys_name[0].lower() + sys_name[1 :]))
@@ -56,7 +56,7 @@ void s_{name}_register(void)
 
 #include <a2x.h>
 
-extern void s_{name}_register(void);
+extern void s_{name}_register(int Index);
 """.format(name=sys_name.lower()))
 
 if __name__ == '__main__':

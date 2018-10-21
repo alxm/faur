@@ -58,9 +58,9 @@ static void c_{name}_free(void* Self)
     A_UNUSED({localVar});
 }}
 
-void c_{name}_register(void)
+void c_{name}_register(int Index)
 {{
-    a_component_new("{localVar}", sizeof({ctype}), c_{name}_init, c_{name}_free);
+    a_component_new(Index, "{localVar}", sizeof({ctype}), c_{name}_init, c_{name}_free);
 }}
 
 int c_{name}_valueGet(const {ctype}* {paramVar})
@@ -85,7 +85,7 @@ void c_{name}_valueSet({ctype}* {paramVar}, int Value)
 
 typedef struct {ctype} {ctype};
 
-extern void c_{name}_register(void);
+extern void c_{name}_register(int Index);
 
 extern int c_{name}_valueGet(const {ctype}* {paramVar});
 extern void c_{name}_valueSet({ctype}* {paramVar}, int Value);
