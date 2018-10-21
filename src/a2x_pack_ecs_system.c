@@ -94,7 +94,6 @@ void a_system_new(int Index, const char* Name, ASystemHandler* Handler, ASystemS
     s->componentBits = a_bitfield_new(a_component__tableLen);
     s->onlyActiveEntities = OnlyActiveEntities;
     s->muted = false;
-    s->runsInCurrentState = false;
 }
 
 void a_system_add(int System, int Component)
@@ -138,20 +137,12 @@ void a_system_run(int System)
 {
     ASystem* system = a_system__tableGet(System, __func__);
 
-    if(!system->runsInCurrentState) {
-        a_out__fatal("a_system_run: '%d' is not set to run", System);
-    }
-
     a_system__run(system);
 }
 
 void a_system_muteSet(int System, bool DoMute)
 {
     ASystem* system = a_system__tableGet(System, __func__);
-
-    if(!system->runsInCurrentState) {
-        a_out__fatal("a_system_muteSet: '%d' is not set to run", System);
-    }
 
     system->muted = DoMute;
 }

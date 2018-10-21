@@ -28,9 +28,6 @@
 
 typedef struct {
     AList* lists[A_ECS__NUM]; // each entity is in exactly one list
-    AList* allSystems; // all tick & draw systems
-    AList* tickSystems; // tick systems in the specified order
-    AList* drawSystems; // draw systems in the specified order
     bool deleting; // set when this collection is popped off the stack
 } AEcs;
 
@@ -79,9 +76,6 @@ void a_ecs__collectionPush(void)
         c->lists[i] = a_list_new();
     }
 
-    c->allSystems = a_list_new();
-    c->tickSystems = a_list_new();
-    c->drawSystems = a_list_new();
     c->deleting = false;
 
     if(g_ecs) {
@@ -95,27 +89,18 @@ void a_ecs__collectionPop(void)
 {
     g_ecs->deleting = true;
 
-    A_LIST_ITERATE(g_ecs->allSystems, ASystem*, system) {
+    for(unsigned id = a_system__tableLen; id--; ) {
+        ASystem* system = a_system__tableGet((int)id, __func__);
+
         system->muted = false;
-        system->runsInCurrentState = false;
     }
 
     for(int i = A_ECS__NUM; i--; ) {
         a_list_freeEx(g_ecs->lists[i], (AFree*)a_entity__free);
     }
 
-    a_list_free(g_ecs->allSystems);
-    a_list_free(g_ecs->tickSystems);
-    a_list_free(g_ecs->drawSystems);
-
     free(g_ecs);
     g_ecs = a_list_pop(g_stack);
-
-    if(g_ecs) {
-        A_LIST_ITERATE(g_ecs->allSystems, ASystem*, system) {
-            system->runsInCurrentState = true;
-        }
-    }
 }
 
 void a_ecs__tick(void)
@@ -125,7 +110,9 @@ void a_ecs__tick(void)
 
     // Check what systems the new entities match
     A_LIST_ITERATE(g_ecs->lists[A_ECS__NEW], AEntity*, e) {
-        A_LIST_ITERATE(g_ecs->allSystems, ASystem*, s) {
+        for(unsigned id = a_system__tableLen; id--; ) {
+            ASystem* s = a_system__tableGet((int)id, __func__);
+
             if(a_bitfield_testMask(e->componentBits, s->componentBits)) {
                 if(s->onlyActiveEntities) {
                     a_list_addLast(e->matchingSystemsActive, s);
@@ -158,18 +145,6 @@ void a_ecs__tick(void)
     }
 
     a_list_clear(g_ecs->lists[A_ECS__RESTORE]);
-
-    // Run tick systems
-    A_LIST_ITERATE(g_ecs->tickSystems, ASystem*, system) {
-        a_system__run(system);
-    }
-}
-
-void a_ecs__draw(void)
-{
-    A_LIST_ITERATE(g_ecs->drawSystems, ASystem*, system) {
-        a_system__run(system);
-    }
 }
 
 bool a_ecs__entityIsInList(const AEntity* Entity, AEcsListId List)
@@ -211,32 +186,4 @@ void a_ecs__flushEntitiesFromSystems(void)
 
     a_list_clear(g_ecs->lists[A_ECS__MUTED_QUEUE]);
     a_list_clear(g_ecs->lists[A_ECS__REMOVED_QUEUE]);
-}
-
-void a_ecs_tickSet(int System)
-{
-    ASystem* system = a_system__tableGet(System, __func__);
-
-    if(system == NULL) {
-        a_out__fatal("a_ecs_tickSet: Unknown system '%s'", System);
-    }
-
-    system->runsInCurrentState = true;
-
-    a_list_addLast(g_ecs->allSystems, system);
-    a_list_addLast(g_ecs->tickSystems, system);
-}
-
-void a_ecs_drawSet(int System)
-{
-    ASystem* system = a_system__tableGet(System, __func__);
-
-    if(system == NULL) {
-        a_out__fatal("a_ecs_drawSet: Unknown system '%s'", System);
-    }
-
-    system->runsInCurrentState = true;
-
-    a_list_addLast(g_ecs->allSystems, system);
-    a_list_addLast(g_ecs->drawSystems, system);
 }

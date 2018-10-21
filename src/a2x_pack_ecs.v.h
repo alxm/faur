@@ -43,7 +43,6 @@ extern void a_ecs__uninit(void);
 extern bool a_ecs__isDeleting(void);
 
 extern void a_ecs__tick(void);
-extern void a_ecs__draw(void);
 
 extern void a_ecs__collectionPush(void);
 extern void a_ecs__collectionPop(void);

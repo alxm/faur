@@ -270,7 +270,6 @@ static bool iteration(void)
         s->function();
         s->stage = A__STATE_STAGE_TICK;
 
-        a_ecs__draw();
         a_sound__draw();
         a_console__draw();
         a_screen__draw();

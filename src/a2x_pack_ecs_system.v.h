@@ -34,7 +34,6 @@ struct ASystem {
     AList* entities; // entities currently picked up by this system
     bool onlyActiveEntities; // skip entities that are not active
     bool muted; // a_system__run skips muted systems
-    bool runsInCurrentState; // whether this system runs in the current state
 };
 
 extern unsigned a_system__tableLen;
