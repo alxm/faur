@@ -104,20 +104,22 @@ void a_system_add(int System, int Component)
     a_bitfield_set(s->componentBits, c->bit);
 }
 
-void a_system__run(ASystem* System)
+void a_system_run(int System)
 {
-    if(System->muted) {
+    ASystem* system = a_system__tableGet(System, __func__);
+
+    if(system->muted) {
         return;
     }
 
-    if(System->compare) {
-        a_list_sort(System->entities, (AListCompare*)System->compare);
+    if(system->compare) {
+        a_list_sort(system->entities, (AListCompare*)system->compare);
     }
 
-    if(System->onlyActiveEntities) {
-        A_LIST_ITERATE(System->entities, AEntity*, entity) {
+    if(system->onlyActiveEntities) {
+        A_LIST_ITERATE(system->entities, AEntity*, entity) {
             if(a_entity_activeGet(entity)) {
-                System->handler(entity);
+                system->handler(entity);
             } else {
                 a_list_addLast(g_inactive, entity);
             }
@@ -125,19 +127,12 @@ void a_system__run(ASystem* System)
 
         a_list_clearEx(g_inactive, (AFree*)a_entity__removeFromActiveSystems);
     } else {
-        A_LIST_ITERATE(System->entities, AEntity*, entity) {
-            System->handler(entity);
+        A_LIST_ITERATE(system->entities, AEntity*, entity) {
+            system->handler(entity);
         }
     }
 
     a_ecs__flushEntitiesFromSystems();
-}
-
-void a_system_run(int System)
-{
-    ASystem* system = a_system__tableGet(System, __func__);
-
-    a_system__run(system);
 }
 
 void a_system_muteSet(int System, bool DoMute)

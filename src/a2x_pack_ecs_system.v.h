@@ -33,7 +33,7 @@ struct ASystem {
     ABitfield* componentBits; // IDs of components that this system works on
     AList* entities; // entities currently picked up by this system
     bool onlyActiveEntities; // skip entities that are not active
-    bool muted; // a_system__run skips muted systems
+    bool muted; // a_system_run skips muted systems
 };
 
 extern unsigned a_system__tableLen;
@@ -43,5 +43,3 @@ extern void a_system__uninit(void);
 
 extern void a_system__tableInit(unsigned NumSystems);
 extern ASystem* a_system__tableGet(int System, const char* CallerFunction);
-
-extern void a_system__run(ASystem* System);
