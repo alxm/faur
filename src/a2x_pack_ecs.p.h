@@ -21,5 +21,7 @@
 
 #include "a2x_system_includes.h"
 
-extern void a_ecs_tickSet(const char* System);
-extern void a_ecs_drawSet(const char* System);
+extern void a_ecs_init(unsigned NumComponents, unsigned NumSystems, unsigned NumMessages);
+
+extern void a_ecs_tickSet(int System);
+extern void a_ecs_drawSet(int System);

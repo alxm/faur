@@ -22,9 +22,8 @@
 #include "a2x_pack_ecs_entity.p.h"
 
 #include "a2x_pack_bitfield.v.h"
-#include "a2x_pack_ecs_system.v.h"
+#include "a2x_pack_ecs_component.v.h"
 #include "a2x_pack_list.v.h"
-#include "a2x_pack_strhash.v.h"
 
 struct AEntity {
     char* id; // specified name for debugging
@@ -35,19 +34,17 @@ struct AEntity {
     AList* matchingSystemsEither; // list of ASystem
     AList* systemNodesActive; // list of nodes in active-only ASystem lists
     AList* systemNodesEither; // list of nodes in normal ASystem.entities lists
-    AStrHash* components; // table of AComponentHeader
     ABitfield* componentBits; // each component's bit is set
-    AStrHash* handlers; // table of AMessageHandlerContainer
+    AMessageHandler** messageHandlers; // AMessageHandler*[a_entity__msgLen]
     unsigned lastActive; // frame when a_entity_activeSet was last called
     int references; // if >0, then the entity lingers in the removed limbo list
     bool removedFromActive; // set when an active-only system kicks entity out
     bool permanentActive; // if set then entity always reports as active
     bool debug; // whether to print debug messages for this entity
+    AComponentHeader* componentsTable[];
 };
 
-typedef struct {
-    AMessageHandler* handler;
-} AMessageHandlerContainer;
+extern unsigned a_entity__msgLen;
 
 extern void a_entity__free(AEntity* Entity);
 

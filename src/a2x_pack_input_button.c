@@ -24,8 +24,6 @@
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
 #include "a2x_pack_platform.v.h"
-#include "a2x_pack_str.v.h"
-#include "a2x_pack_strbuilder.v.h"
 #include "a2x_pack_timer.v.h"
 
 struct AButton {

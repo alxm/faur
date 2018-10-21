@@ -21,6 +21,10 @@
 
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
+#include "a2x_pack_strhash.v.h"
+
+unsigned a_component__tableLen;
+static AComponent* g_componentsTable;
 
 static AStrHash* g_components; // table of AComponent
 
@@ -36,31 +40,59 @@ void a_component__init(void)
 
 void a_component__uninit(void)
 {
-    a_strhash_freeEx(g_components, free);
+    a_strhash_free(g_components);
+    free(g_componentsTable);
 }
 
-AComponent* a_component__get(const char* Component)
+void a_component__tableInit(unsigned NumComponents)
 {
-    return a_strhash_get(g_components, Component);
+    a_component__tableLen = NumComponents;
+    g_componentsTable = a_mem_malloc(NumComponents * sizeof(AComponent));
+
+    while(NumComponents--) {
+        g_componentsTable[NumComponents].name = "???";
+        g_componentsTable[NumComponents].bit = UINT_MAX;
+    }
 }
 
-unsigned a_component__num(void)
+const AComponent* a_component__tableGet(int Component, const char* CallerFunction)
 {
-    return a_strhash_sizeGet(g_components);
-}
-
-void a_component_new(const char* Name, size_t Size, AInit* Init, AFree* Free)
-{
-    if(a_strhash_contains(g_components, Name)) {
-        a_out__fatal("a_component_new: '%s' already declared", Name);
+    if(g_componentsTable == NULL) {
+        a_out__fatal("%s: Call a_ecs_init first", CallerFunction);
     }
 
-    AComponent* c = a_mem_malloc(sizeof(AComponent));
+    if(Component < 0 || Component >= (int)a_component__tableLen) {
+        a_out__fatal("%s: Unknown component %d", CallerFunction, Component);
+    }
+
+    if(g_componentsTable[Component].bit == UINT_MAX) {
+        a_out__fatal(
+            "%s: Uninitialized component %d", CallerFunction, Component);
+    }
+
+    return &g_componentsTable[Component];
+}
+
+void a_component_new(int Index, const char* Name, size_t Size, AInit* Init, AFree* Free)
+{
+    if(g_componentsTable == NULL) {
+        a_out__fatal("a_component_new: Call a_ecs_init first");
+    }
+
+    if(g_componentsTable[Index].bit != UINT_MAX
+        || a_strhash_contains(g_components, Name)) {
+
+        a_out__fatal(
+            "a_component_new: '%s' (%d) already declared", Name, Index);
+    }
+
+    AComponent* c = &g_componentsTable[Index];
 
     c->size = sizeof(AComponentHeader) + Size;
     c->init = Init;
     c->free = Free;
-    c->bit = a_strhash_sizeGet(g_components);
+    c->name = Name;
+    c->bit = (unsigned)Index;
 
     a_strhash_add(g_components, Name, c);
 }
@@ -68,4 +100,15 @@ void a_component_new(const char* Name, size_t Size, AInit* Init, AFree* Free)
 AEntity* a_component_entityGet(const void* Component)
 {
     return getHeader(Component)->entity;
+}
+
+int a_component_stringToIndex(const char* StringId)
+{
+    const AComponent* c = a_strhash_get(g_components, StringId);
+
+    if(c == NULL) {
+        a_out__fatal("a_component_stringToIndex: Unknown id '%s'", StringId);
+    }
+
+    return (int)c->bit;
 }

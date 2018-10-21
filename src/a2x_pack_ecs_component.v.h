@@ -25,6 +25,7 @@ typedef struct {
     size_t size; // total size of AComponentHeader + user data that follows
     AInit* init; // sets default values
     AFree* free; // does not free the actual pointer
+    const char* name; // string ID
     unsigned bit; // component's unique bit ID
 } AComponent;
 
@@ -33,13 +34,13 @@ typedef struct {
     AEntity* entity; // entity this component belongs to
 } AComponentHeader;
 
-#include "a2x_pack_strhash.v.h"
+extern unsigned a_component__tableLen;
 
 extern void a_component__init(void);
 extern void a_component__uninit(void);
 
-extern AComponent* a_component__get(const char* Component);
-extern unsigned a_component__num(void);
+extern void a_component__tableInit(unsigned NumComponents);
+extern const AComponent* a_component__tableGet(int Component, const char* CallerFunction);
 
 static inline void* a_component__headerGetData(const AComponentHeader* Header)
 {

@@ -38,7 +38,6 @@ class ComponentTool(Tool):
 
         self.writefile(comp_c,
 """\
-#include <a2x.h>
 #include "component_{name}.h"
 
 struct {ctype} {{
@@ -59,9 +58,9 @@ static void c_{name}_free(void* Self)
     A_UNUSED({localVar});
 }}
 
-void c_{name}_register(void)
+void c_{name}_register(int Index)
 {{
-    a_component_new("{localVar}", sizeof({ctype}), c_{name}_init, c_{name}_free);
+    a_component_new(Index, "{localVar}", sizeof({ctype}), c_{name}_init, c_{name}_free);
 }}
 
 int c_{name}_valueGet(const {ctype}* {paramVar})
@@ -82,9 +81,11 @@ void c_{name}_valueSet({ctype}* {paramVar}, int Value)
 """\
 #pragma once
 
+#include <a2x.h>
+
 typedef struct {ctype} {ctype};
 
-extern void c_{name}_register(void);
+extern void c_{name}_register(int Index);
 
 extern int c_{name}_valueGet(const {ctype}* {paramVar});
 extern void c_{name}_valueSet({ctype}* {paramVar}, int Value);

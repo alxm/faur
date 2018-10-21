@@ -44,13 +44,13 @@ extern bool a_entity_activeGet(const AEntity* Entity);
 extern void a_entity_activeSet(AEntity* Entity);
 extern void a_entity_activeSetPermanent(AEntity* Entity);
 
-extern void* a_entity_componentAdd(AEntity* Entity, const char* Component);
-extern bool a_entity_componentHas(const AEntity* Entity, const char* Component);
-extern void* a_entity_componentGet(const AEntity* Entity, const char* Component);
-extern void* a_entity_componentReq(const AEntity* Entity, const char* Component);
+extern void* a_entity_componentAdd(AEntity* Entity, int Component);
+extern bool a_entity_componentHas(const AEntity* Entity, int Component);
+extern void* a_entity_componentGet(const AEntity* Entity, int Component);
+extern void* a_entity_componentReq(const AEntity* Entity, int Component);
 
 extern bool a_entity_muteGet(const AEntity* Entity);
 extern void a_entity_muteSet(AEntity* Entity, bool DoMute);
 
-extern void a_entity_messageHandlerSet(AEntity* Entity, const char* Message, AMessageHandler* Handler);
-extern void a_entity_messageSend(AEntity* To, AEntity* From, const char* Message);
+extern void a_entity_messageSet(AEntity* Entity, int Message, AMessageHandler* Handler);
+extern void a_entity_messageSend(AEntity* To, AEntity* From, int Message);
