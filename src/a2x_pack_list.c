@@ -50,15 +50,13 @@ void a_list_freeEx(AList* List, AFree* Free)
         return;
     }
 
-    AListNode* n = List->sentinel.next;
-
-    while(n != &List->sentinel) {
-        // Free callback runs before advancing the node, so it can add items to
-        // the end of the list without losing them. Same for a_list_clearEx.
-        if(Free) {
+    if(Free) {
+        A__ITERATE(List, n) {
             Free(n->content);
         }
+    }
 
+    for(AListNode* n = List->sentinel.next; n != &List->sentinel; ) {
         AListNode* t = n;
 
         n = n->next;
@@ -244,13 +242,13 @@ void a_list_clear(AList* List)
 
 void a_list_clearEx(AList* List, AFree* Free)
 {
-    AListNode* n = List->sentinel.next;
-
-    while(n != &List->sentinel) {
-        if(Free) {
+    if(Free) {
+        A__ITERATE(List, n) {
             Free(n->content);
         }
+    }
 
+    for(AListNode* n = List->sentinel.next; n != &List->sentinel; ) {
         AListNode* t = n;
 
         n = n->next;
