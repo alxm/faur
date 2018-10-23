@@ -50,6 +50,8 @@ void a_list_freeEx(AList* List, AFree* Free)
     AListNode* n = List->sentinel.next;
 
     while(n != &List->sentinel) {
+        // Free callback runs before advancing the node, so it can add items to
+        // the end of the list without losing them. Same for a_list_clearEx.
         if(Free) {
             Free(n->content);
         }
@@ -131,9 +133,10 @@ void a_list_appendMove(AList* Dst, AList* Src)
 
 void a_list_appendCopy(AList* Dst, AList* Src)
 {
-    AListNode* lastSrcEntry = Src->sentinel.prev;
+    // Capture the address of Src's last node, in case Src == Dst
+    AListNode* lastSrcNode = Src->sentinel.prev;
 
-    for(AListNode* n = &Src->sentinel; n != lastSrcEntry; n = n->next) {
+    for(AListNode* n = &Src->sentinel; n != lastSrcNode; n = n->next) {
         a_list_addLast(Dst, n->next->content);
     }
 }
