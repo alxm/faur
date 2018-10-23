@@ -26,7 +26,7 @@ typedef struct AListIt AListIt;
 #include "a2x_pack_list.p.h"
 
 struct AListIt {
-    AList* list;
+    AListNode* sentinelNode;
     AListNode* currentNode;
     void* currentItem;
     bool reversed;
