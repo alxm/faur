@@ -26,21 +26,12 @@
 AList* a_list_new(void)
 {
     AList* list = a_mem_malloc(sizeof(AList));
-    AListNode* first = a_mem_malloc(sizeof(AListNode));
-    AListNode* last = a_mem_malloc(sizeof(AListNode));
 
-    first->content = NULL;
-    first->list = list;
-    first->next = last;
-    first->prev = NULL;
+    list->sentinel.content = NULL;
+    list->sentinel.list = list;
+    list->sentinel.next = &list->sentinel;
+    list->sentinel.prev = &list->sentinel;
 
-    last->content = NULL;
-    last->list = list;
-    last->next = NULL;
-    last->prev = first;
-
-    list->first = first;
-    list->last = last;
     list->items = 0;
 
     return list;
@@ -57,20 +48,19 @@ void a_list_freeEx(AList* List, AFree* Free)
         return;
     }
 
-    AListNode* n = List->first->next;
+    AListNode* n = List->sentinel.next;
 
-    while(n != List->last) {
+    while(n != &List->sentinel) {
         if(Free) {
             Free(n->content);
         }
 
         AListNode* t = n;
+
         n = n->next;
         free(t);
     }
 
-    free(List->first);
-    free(List->last);
     free(List);
 }
 
@@ -80,8 +70,8 @@ AListNode* a_list_addFirst(AList* List, void* Content)
 
     n->content = Content;
     n->list = List;
-    n->next = List->first->next;
-    n->prev = List->first;
+    n->next = List->sentinel.next;
+    n->prev = &List->sentinel;
 
     n->prev->next = n;
     n->next->prev = n;
@@ -97,8 +87,8 @@ AListNode* a_list_addLast(AList* List, void* Content)
 
     n->content = Content;
     n->list = List;
-    n->next = List->last;
-    n->prev = List->last->prev;
+    n->next = &List->sentinel;
+    n->prev = List->sentinel.prev;
 
     n->prev->next = n;
     n->next->prev = n;
@@ -116,33 +106,35 @@ void a_list_appendMove(AList* Dst, AList* Src)
 
     if(Dst->items == 0) {
         AList save = *Dst;
+
         *Dst = *Src;
         *Src = save;
+
         return;
     }
 
-    for(AListNode* n = Src->first->next; n != Src->last; n = n->next) {
+    for(AListNode* n = Src->sentinel.next; n != &Src->sentinel; n = n->next) {
         n->list = Dst;
     }
 
-    Dst->last->prev->next = Src->first->next;
-    Src->first->next->prev = Dst->last->prev;
-    Dst->last->prev = Src->last->prev;
-    Src->last->prev->next = Dst->last;
+    Dst->sentinel.prev->next = Src->sentinel.next;
+    Src->sentinel.next->prev = Dst->sentinel.prev;
+    Dst->sentinel.prev = Src->sentinel.prev;
+    Src->sentinel.prev->next = &Dst->sentinel;
 
     Dst->items += Src->items;
 
-    Src->first->next = Src->last;
-    Src->last->prev = Src->first;
+    Src->sentinel.next = &Src->sentinel;
+    Src->sentinel.prev = &Src->sentinel;
 
     Src->items = 0;
 }
 
 void a_list_appendCopy(AList* Dst, AList* Src)
 {
-    AListNode* lastSrcEntry = Src->last->prev;
+    AListNode* lastSrcEntry = Src->sentinel.prev;
 
-    for(AListNode* n = Src->first; n != lastSrcEntry; n = n->next) {
+    for(AListNode* n = &Src->sentinel; n != lastSrcEntry; n = n->next) {
         a_list_addLast(Dst, n->next->content);
     }
 }
@@ -151,7 +143,7 @@ void* a_list_getByIndex(const AList* List, unsigned Index)
 {
     AListNode* n;
 
-    for(n = List->first->next; n != List->last; n = n->next) {
+    for(n = List->sentinel.next; n != &List->sentinel; n = n->next) {
         if(Index-- == 0) {
             break;
         }
@@ -162,12 +154,12 @@ void* a_list_getByIndex(const AList* List, unsigned Index)
 
 void* a_list_getFirst(const AList* List)
 {
-    return List->first->next->content;
+    return List->sentinel.next->content;
 }
 
 void* a_list_getLast(const AList* List)
 {
-    return List->last->prev->content;
+    return List->sentinel.prev->content;
 }
 
 void* a_list_getRandom(const AList* List)
@@ -192,12 +184,13 @@ void a_list_removeItem(AList* List, const void* Item)
 
 void* a_list_removeFirst(AList* List)
 {
-    AListNode* n = List->first->next;
+    AListNode* n = List->sentinel.next;
     void* v = n->content;
 
-    if(n != List->last) {
+    if(n != &List->sentinel) {
         n->prev->next = n->next;
         n->next->prev = n->prev;
+
         List->items--;
 
         free(n);
@@ -208,12 +201,13 @@ void* a_list_removeFirst(AList* List)
 
 void* a_list_removeLast(AList* List)
 {
-    AListNode* n = List->last->prev;
+    AListNode* n = List->sentinel.prev;
     void* v = n->content;
 
-    if(n != List->first) {
+    if(n != &List->sentinel) {
         n->prev->next = n->next;
         n->next->prev = n->prev;
+
         List->items--;
 
         free(n);
@@ -226,6 +220,7 @@ void a_list_removeNode(AListNode* Node)
 {
     Node->prev->next = Node->next;
     Node->next->prev = Node->prev;
+
     Node->list->items--;
 
     free(Node);
@@ -238,20 +233,21 @@ void a_list_clear(AList* List)
 
 void a_list_clearEx(AList* List, AFree* Free)
 {
-    AListNode* n = List->first->next;
+    AListNode* n = List->sentinel.next;
 
-    while(n != List->last) {
+    while(n != &List->sentinel) {
         if(Free) {
             Free(n->content);
         }
 
         AListNode* t = n;
+
         n = n->next;
         free(t);
     }
 
-    List->first->next = List->last;
-    List->last->prev = List->first;
+    List->sentinel.next = &List->sentinel;
+    List->sentinel.prev = &List->sentinel;
 
     List->items = 0;
 }
@@ -260,7 +256,7 @@ AList* a_list_dup(const AList* List)
 {
     AList* l = a_list_new();
 
-    for(AListNode* n = List->first->next; n != List->last; n = n->next) {
+    for(AListNode* n = List->sentinel.next; n != &List->sentinel; n = n->next) {
         a_list_addLast(l, n->content);
     }
 
@@ -280,17 +276,17 @@ void** a_list_toArray(AList* List)
 
 void a_list_reverse(AList* List)
 {
-    AListNode* save;
+    for(AListNode* n = List->sentinel.prev; n != &List->sentinel; n = n->next) {
+        AListNode* save = n->next;
 
-    for(AListNode* n = List->last; n; n = n->next) {
-        save = n->next;
         n->next = n->prev;
         n->prev = save;
     }
 
-    save = List->first;
-    List->first = List->last;
-    List->last = save;
+    AListNode* save = List->sentinel.next;
+
+    List->sentinel.next = List->sentinel.prev;
+    List->sentinel.prev = save;
 }
 
 static inline AListNode* getNode(AListNode* Start, unsigned Index)
@@ -371,20 +367,20 @@ void a_list_sort(AList* List, AListCompare* Compare)
         return;
     }
 
-    List->first->next->prev = NULL;
-    List->last->prev->next = NULL;
+    List->sentinel.next->prev = NULL;
+    List->sentinel.prev->next = NULL;
 
-    AListNode* sorted = sort(List->first->next, List->items, Compare);
+    AListNode* sorted = sort(List->sentinel.next, List->items, Compare);
 
-    List->first->next = sorted;
-    sorted->prev = List->first;
+    List->sentinel.next = sorted;
+    sorted->prev = &List->sentinel;
 
     while(sorted->next != NULL) {
         sorted = sorted->next;
     }
 
-    sorted->next = List->last;
-    List->last->prev = sorted;
+    sorted->next = &List->sentinel;
+    List->sentinel.prev = sorted;
 }
 
 unsigned a_list_sizeGet(const AList* List)
@@ -394,5 +390,5 @@ unsigned a_list_sizeGet(const AList* List)
 
 bool a_list_isEmpty(const AList* List)
 {
-    return List->first->next == List->last;
+    return List->items == 0;
 }

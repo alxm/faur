@@ -26,7 +26,7 @@ AListIt a__listit_new(AList* List, bool Reversed)
     AListIt it;
 
     it.list = List;
-    it.currentNode = Reversed ? List->last : List->first;
+    it.currentNode = &List->sentinel;
     it.currentItem = NULL;
     it.reversed = Reversed;
 
@@ -36,13 +36,13 @@ AListIt a__listit_new(AList* List, bool Reversed)
 bool a__listit_getNext(AListIt* Iterator)
 {
     if(Iterator->reversed) {
-        if(Iterator->currentNode->prev == Iterator->list->first) {
+        if(Iterator->currentNode->prev == &Iterator->list->sentinel) {
             return false;
         }
 
         Iterator->currentNode = Iterator->currentNode->prev;
     } else {
-        if(Iterator->currentNode->next == Iterator->list->last) {
+        if(Iterator->currentNode->next == &Iterator->list->sentinel) {
             return false;
         }
 
@@ -50,6 +50,7 @@ bool a__listit_getNext(AListIt* Iterator)
     }
 
     Iterator->currentItem = Iterator->currentNode->content;
+
     return true;
 }
 
@@ -75,17 +76,17 @@ void a__listit_remove(AListIt* Iterator)
 bool a__listit_isFirst(AListIt* Iterator)
 {
     if(Iterator->reversed) {
-        return Iterator->currentNode->next == Iterator->list->last;
+        return Iterator->currentNode->next == &Iterator->list->sentinel;
     } else {
-        return Iterator->currentNode->prev == Iterator->list->first;
+        return Iterator->currentNode->prev == &Iterator->list->sentinel;
     }
 }
 
 bool a__listit_isLast(AListIt* Iterator)
 {
     if(Iterator->reversed) {
-        return Iterator->currentNode->prev == Iterator->list->first;
+        return Iterator->currentNode->prev == &Iterator->list->sentinel;
     } else {
-        return Iterator->currentNode->next == Iterator->list->last;
+        return Iterator->currentNode->next == &Iterator->list->sentinel;
     }
 }
