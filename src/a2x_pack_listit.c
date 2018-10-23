@@ -1,5 +1,5 @@
 /*
-    Copyright 2011, 2016 Alex Margarit
+    Copyright 2011, 2016, 2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -21,7 +21,7 @@
 
 #include "a2x_pack_list.v.h"
 
-AListIt a_listit__new(AList* List, bool Reversed)
+AListIt a__listit_new(AList* List, bool Reversed)
 {
     AListIt it;
 
@@ -33,7 +33,7 @@ AListIt a_listit__new(AList* List, bool Reversed)
     return it;
 }
 
-bool a_listit__getNext(AListIt* Iterator)
+bool a__listit_getNext(AListIt* Iterator)
 {
     if(Iterator->reversed) {
         if(Iterator->currentNode->prev == Iterator->list->first) {
@@ -53,7 +53,7 @@ bool a_listit__getNext(AListIt* Iterator)
     return true;
 }
 
-void a_listit__remove(AListIt* Iterator)
+void a__listit_remove(AListIt* Iterator)
 {
     AList* list = Iterator->list;
     AListNode* n = Iterator->currentNode;
@@ -72,7 +72,7 @@ void a_listit__remove(AListIt* Iterator)
     free(n);
 }
 
-bool a_listit__isFirst(AListIt* Iterator)
+bool a__listit_isFirst(AListIt* Iterator)
 {
     if(Iterator->reversed) {
         return Iterator->currentNode->next == Iterator->list->last;
@@ -81,7 +81,7 @@ bool a_listit__isFirst(AListIt* Iterator)
     }
 }
 
-bool a_listit__isLast(AListIt* Iterator)
+bool a__listit_isLast(AListIt* Iterator)
 {
     if(Iterator->reversed) {
         return Iterator->currentNode->prev == Iterator->list->first;
