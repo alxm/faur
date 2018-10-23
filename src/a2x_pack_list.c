@@ -19,7 +19,6 @@
 
 #include "a2x_pack_list.v.h"
 
-#include "a2x_pack_listit.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_random.v.h"
 
@@ -174,10 +173,16 @@ void* a_list_getNodeContent(const AListNode* Node)
 
 void a_list_removeItem(AList* List, const void* Item)
 {
-    A_LIST_ITERATE(List, void*, item) {
-        if(item == Item) {
-            A_LIST_REMOVE_CURRENT();
-            break;
+    for(AListNode* n = List->sentinel.next; n != &List->sentinel; n = n->next) {
+        if(n->content == Item) {
+            n->prev->next = n->next;
+            n->next->prev = n->prev;
+
+            List->items--;
+
+            free(n);
+
+            return;
         }
     }
 }
@@ -265,10 +270,11 @@ AList* a_list_dup(const AList* List)
 
 void** a_list_toArray(AList* List)
 {
+    int i = 0;
     void** array = a_mem_malloc(List->items * sizeof(void*));
 
-    A_LIST_ITERATE(List, void*, item) {
-        array[A_LIST_INDEX()] = item;
+    for(AListNode* n = List->sentinel.next; n != &List->sentinel; n = n->next) {
+        array[i++] = n->content;
     }
 
     return array;
