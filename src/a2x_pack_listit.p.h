@@ -27,7 +27,7 @@ typedef struct AListIt AListIt;
 
 struct AListIt {
     AListNode* sentinelNode;
-    AListNode* currentNode;
+    AListNode* nextNode;
     void* currentItem;
     bool reversed;
 };

@@ -26,7 +26,7 @@ AListIt a__listit_new(AList* List, bool Reversed)
     AListIt it;
 
     it.sentinelNode = &List->sentinel;
-    it.currentNode = &List->sentinel;
+    it.nextNode = Reversed ? List->sentinel.prev : List->sentinel.next;
     it.currentItem = NULL;
     it.reversed = Reversed;
 
@@ -35,52 +35,38 @@ AListIt a__listit_new(AList* List, bool Reversed)
 
 bool a__listit_getNext(AListIt* Iterator)
 {
-    if(Iterator->reversed) {
-        if(Iterator->currentNode->prev == Iterator->sentinelNode) {
-            return false;
-        }
-
-        Iterator->currentNode = Iterator->currentNode->prev;
-    } else {
-        if(Iterator->currentNode->next == Iterator->sentinelNode) {
-            return false;
-        }
-
-        Iterator->currentNode = Iterator->currentNode->next;
+    if(Iterator->nextNode == Iterator->sentinelNode) {
+        return false;
     }
 
-    Iterator->currentItem = Iterator->currentNode->content;
+    Iterator->currentItem = Iterator->nextNode->content;
+
+    if(Iterator->reversed) {
+        Iterator->nextNode = Iterator->nextNode->prev;
+    } else {
+        Iterator->nextNode = Iterator->nextNode->next;
+    }
 
     return true;
 }
 
 void a__listit_remove(AListIt* Iterator)
 {
-    AListNode* n = Iterator->currentNode;
-
-    if(Iterator->reversed) {
-        Iterator->currentNode = n->next;
-    } else {
-        Iterator->currentNode = n->prev;
-    }
-
-    a_list_removeNode(n);
+    a_list_removeNode(Iterator->reversed
+                        ? Iterator->nextNode->next
+                        : Iterator->nextNode->prev);
 }
 
 bool a__listit_isFirst(AListIt* Iterator)
 {
     if(Iterator->reversed) {
-        return Iterator->currentNode->next == Iterator->sentinelNode;
+        return Iterator->nextNode->next->next == Iterator->sentinelNode;
     } else {
-        return Iterator->currentNode->prev == Iterator->sentinelNode;
+        return Iterator->nextNode->prev->prev == Iterator->sentinelNode;
     }
 }
 
 bool a__listit_isLast(AListIt* Iterator)
 {
-    if(Iterator->reversed) {
-        return Iterator->currentNode->prev == Iterator->sentinelNode;
-    } else {
-        return Iterator->currentNode->next == Iterator->sentinelNode;
-    }
+    return Iterator->nextNode == Iterator->sentinelNode;
 }
