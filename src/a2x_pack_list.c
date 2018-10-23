@@ -22,6 +22,9 @@
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_random.v.h"
 
+#define A__ITERATE(List, N) \
+    for(AListNode* N = List->sentinel.next; N != &List->sentinel; N = N->next)
+
 AList* a_list_new(void)
 {
     AList* list = a_mem_malloc(sizeof(AList));
@@ -114,7 +117,7 @@ void a_list_appendMove(AList* Dst, AList* Src)
         return;
     }
 
-    for(AListNode* n = Src->sentinel.next; n != &Src->sentinel; n = n->next) {
+    A__ITERATE(Src, n) {
         n->list = Dst;
     }
 
@@ -176,7 +179,7 @@ void* a_list_getNodeContent(const AListNode* Node)
 
 void a_list_removeItem(AList* List, const void* Item)
 {
-    for(AListNode* n = List->sentinel.next; n != &List->sentinel; n = n->next) {
+    A__ITERATE(List, n) {
         if(n->content == Item) {
             n->prev->next = n->next;
             n->next->prev = n->prev;
@@ -264,7 +267,7 @@ AList* a_list_dup(const AList* List)
 {
     AList* l = a_list_new();
 
-    for(AListNode* n = List->sentinel.next; n != &List->sentinel; n = n->next) {
+    A__ITERATE(List, n) {
         a_list_addLast(l, n->content);
     }
 
@@ -276,7 +279,7 @@ void** a_list_toArray(AList* List)
     int i = 0;
     void** array = a_mem_malloc(List->items * sizeof(void*));
 
-    for(AListNode* n = List->sentinel.next; n != &List->sentinel; n = n->next) {
+    A__ITERATE(List, n) {
         array[i++] = n->content;
     }
 
