@@ -147,7 +147,7 @@ void a_list_appendCopy(AList* Dst, AList* Src)
     }
 }
 
-void* a_list_getIndex(const AList* List, unsigned Index)
+void* a_list_getByIndex(const AList* List, unsigned Index)
 {
     AListNode* n;
 
@@ -172,7 +172,7 @@ void* a_list_getLast(const AList* List)
 
 void* a_list_getRandom(const AList* List)
 {
-    return a_list_getIndex(List, a_random_intu(List->items));
+    return a_list_getByIndex(List, a_random_intu(List->items));
 }
 
 void* a_list_getNodeContent(const AListNode* Node)

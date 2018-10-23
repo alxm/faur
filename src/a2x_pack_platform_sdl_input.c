@@ -1051,7 +1051,7 @@ void a_platform__controllerSet(unsigned Index)
                      a_list_sizeGet(g_controllers));
     }
 
-    g_setController = a_list_getIndex(g_controllers, Index);
+    g_setController = a_list_getByIndex(g_controllers, Index);
 }
 
 bool a_platform__controllerIsMapped(void)

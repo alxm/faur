@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2017 Alex Margarit
+    Copyright 2010, 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -35,7 +35,7 @@ extern AListNode* a_list_addLast(AList* List, void* Content);
 extern void a_list_appendMove(AList* Dst, AList* Src);
 extern void a_list_appendCopy(AList* Dst, AList* Src);
 
-extern void* a_list_getIndex(const AList* List, unsigned Index);
+extern void* a_list_getByIndex(const AList* List, unsigned Index);
 extern void* a_list_getFirst(const AList* List);
 extern void* a_list_getLast(const AList* List);
 extern void* a_list_getRandom(const AList* List);
