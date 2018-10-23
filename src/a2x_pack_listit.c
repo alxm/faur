@@ -56,7 +56,6 @@ bool a__listit_getNext(AListIt* Iterator)
 
 void a__listit_remove(AListIt* Iterator)
 {
-    AList* list = Iterator->list;
     AListNode* n = Iterator->currentNode;
 
     if(Iterator->reversed) {
@@ -65,12 +64,7 @@ void a__listit_remove(AListIt* Iterator)
         Iterator->currentNode = n->prev;
     }
 
-    n->prev->next = n->next;
-    n->next->prev = n->prev;
-
-    list->items--;
-
-    free(n);
+    a_list_removeNode(n);
 }
 
 bool a__listit_isFirst(AListIt* Iterator)
