@@ -28,31 +28,30 @@ typedef struct AListIt AListIt;
 struct AListIt {
     AListNode* sentinelNode;
     AListNode* nextNode;
-    void* currentItem;
     bool reversed;
 };
 
 extern AListIt a__listit_new(AList* List, bool Reversed);
 
-extern bool a__listit_getNext(AListIt* Iterator);
+extern bool a__listit_getNext(AListIt* Iterator, void* UserPtrAddress);
 extern void a__listit_remove(AListIt* Iterator);
 extern bool a__listit_isFirst(AListIt* Iterator);
 extern bool a__listit_isLast(AListIt* Iterator);
 
-#define A_LIST_ITERATE(List, PtrType, Name)                                    \
-    for(unsigned a__it_i = 0; a__it_i != UINT_MAX; a__it_i = UINT_MAX)         \
-        for(PtrType Name = (PtrType)1; Name; Name = NULL)                      \
-            for(AListIt a__it = a__listit_new(List, false);                    \
-                a__listit_getNext(&a__it) && (Name = a__it.currentItem, true); \
+#define A_LIST_ITERATE(List, PtrType, Name)                            \
+    for(unsigned a__it_i = 0; a__it_i != UINT_MAX; a__it_i = UINT_MAX) \
+        for(PtrType Name = (PtrType)1; Name; Name = NULL)              \
+            for(AListIt a__it = a__listit_new(List, false);            \
+                a__listit_getNext(&a__it, (void*)&Name);               \
                 a__it_i++)
 
-#define A_LIST_ITERATE_BACKWARDS(List, PtrType, Name)                          \
-    for(unsigned a__it_i = a_list_sizeGet(List) - 1;                           \
-        a__it_i != UINT_MAX;                                                   \
-        a__it_i = UINT_MAX)                                                    \
-        for(PtrType Name = (PtrType)1; Name; Name = NULL)                      \
-            for(AListIt a__it = a__listit_new(List, true);                     \
-                a__listit_getNext(&a__it) && (Name = a__it.currentItem, true); \
+#define A_LIST_ITERATE_BACKWARDS(List, PtrType, Name)      \
+    for(unsigned a__it_i = a_list_sizeGet(List) - 1;       \
+        a__it_i != UINT_MAX;                               \
+        a__it_i = UINT_MAX)                                \
+        for(PtrType Name = (PtrType)1; Name; Name = NULL)  \
+            for(AListIt a__it = a__listit_new(List, true); \
+                a__listit_getNext(&a__it, (void*)&Name);   \
                 a__it_i--)
 
 #define A_LIST_FILTER(List, PtrType, Name, Filter) \

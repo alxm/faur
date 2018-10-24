@@ -27,19 +27,18 @@ AListIt a__listit_new(AList* List, bool Reversed)
 
     it.sentinelNode = &List->sentinel;
     it.nextNode = Reversed ? List->sentinel.prev : List->sentinel.next;
-    it.currentItem = NULL;
     it.reversed = Reversed;
 
     return it;
 }
 
-bool a__listit_getNext(AListIt* Iterator)
+bool a__listit_getNext(AListIt* Iterator, void* UserPtrAddress)
 {
     if(Iterator->nextNode == Iterator->sentinelNode) {
         return false;
     }
 
-    Iterator->currentItem = Iterator->nextNode->content;
+    *(void**)UserPtrAddress = Iterator->nextNode->content;
 
     if(Iterator->reversed) {
         Iterator->nextNode = Iterator->nextNode->prev;
