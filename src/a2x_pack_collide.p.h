@@ -37,16 +37,13 @@ extern void a_colobject_coordsSet(AColObject* Object, int X, int Y);
 extern void* a_colobject__contextGet(const AColObject* Object);
 extern AList* a_colobject__nearbyListGet(const AColObject* Object);
 
-#define A_COL_ITERATE(ColObject, ContextPtrType, ContextVarName)         \
-    for(const AColObject* a__co = ColObject; a__co; a__co = NULL)        \
-        for(ContextPtrType ContextVarName = (ContextPtrType)1;           \
-            ContextVarName;                                              \
-            ContextVarName = NULL)                                       \
-            A_LIST_FILTER(                                               \
-                a_colobject__nearbyListGet(a__co),                       \
-                const AColObject*, a__o,                                 \
-                a__o != a__co                                            \
-                    && (ContextVarName = a_colobject__contextGet(a__o)))
+#define A_COL_ITERATE(ColObject, ContextPtrType, ContextVarName)           \
+    for(const AColObject* a__co = ColObject; a__co; a__co = NULL)          \
+        A_LIST_FILTER(a_colobject__nearbyListGet(a__co),                   \
+                      const AColObject*, a__o,                             \
+                      a__o != a__co)                                       \
+        for(ContextPtrType ContextVarName = a_colobject__contextGet(a__o); \
+            a__o != NULL; a__o = NULL)
 
 extern bool a_collide_boxAndBox(int X1, int Y1, int W1, int H1, int X2, int Y2, int W2, int H2);
 extern bool a_collide_circleAndCircle(int X1, int Y1, int R1, int X2, int Y2, int R2);

@@ -1,5 +1,5 @@
 /*
-    Copyright 2011, 2016, 2017 Alex Margarit
+    Copyright 2011, 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -26,34 +26,30 @@ typedef struct AListIt AListIt;
 #include "a2x_pack_list.p.h"
 
 struct AListIt {
-    AList* list;
-    AListNode* currentNode;
-    void* currentItem;
+    const AListNode* sentinelNode;
+    const AListNode* nextNode;
+    unsigned index;
     bool reversed;
 };
 
-extern AListIt a_listit__new(AList* List, bool Reversed);
+extern AListIt a__listit_new(const AList* List, bool Reversed);
 
-extern bool a_listit__getNext(AListIt* Iterator);
-extern void a_listit__remove(AListIt* Iterator);
-extern bool a_listit__isFirst(AListIt* Iterator);
-extern bool a_listit__isLast(AListIt* Iterator);
+extern bool a__listit_getNext(AListIt* Iterator, void* UserPtrAddress);
+extern void a__listit_remove(const AListIt* Iterator);
+extern bool a__listit_isFirst(const AListIt* Iterator);
+extern bool a__listit_isLast(const AListIt* Iterator);
 
-#define A_LIST_ITERATE(List, PtrType, Name)                                    \
-    for(unsigned a__it_i = 0; a__it_i != UINT_MAX; a__it_i = UINT_MAX)         \
-        for(PtrType Name = (PtrType)1; Name; Name = NULL)                      \
-            for(AListIt a__it = a_listit__new(List, false);                    \
-                a_listit__getNext(&a__it) && (Name = a__it.currentItem, true); \
-                a__it_i++)
+#define A_LIST_ITERATE(List, PtrType, Name)                          \
+    for(AListIt a__it = a__listit_new(List, false);                  \
+        a__it.sentinelNode != NULL;                                  \
+        a__it.sentinelNode = NULL)                                   \
+        for(PtrType Name; a__listit_getNext(&a__it, (void*)&Name); )
 
-#define A_LIST_ITERATE_BACKWARDS(List, PtrType, Name)                          \
-    for(unsigned a__it_i = a_list_sizeGet(List) - 1;                           \
-        a__it_i != UINT_MAX;                                                   \
-        a__it_i = UINT_MAX)                                                    \
-        for(PtrType Name = (PtrType)1; Name; Name = NULL)                      \
-            for(AListIt a__it = a_listit__new(List, true);                     \
-                a_listit__getNext(&a__it) && (Name = a__it.currentItem, true); \
-                a__it_i--)
+#define A_LIST_ITERATE_BACKWARDS(List, PtrType, Name)                \
+    for(AListIt a__it = a__listit_new(List, true);                   \
+        a__it.sentinelNode != NULL;                                  \
+        a__it.sentinelNode = NULL)                                   \
+        for(PtrType Name; a__listit_getNext(&a__it, (void*)&Name); )
 
 #define A_LIST_FILTER(List, PtrType, Name, Filter) \
     A_LIST_ITERATE(List, PtrType, Name)            \
@@ -65,7 +61,7 @@ extern bool a_listit__isLast(AListIt* Iterator);
         if(!(Filter)) continue;                              \
         else
 
-#define A_LIST_INDEX() a__it_i
-#define A_LIST_REMOVE_CURRENT() a_listit__remove(&a__it)
-#define A_LIST_IS_FIRST() a_listit__isFirst(&a__it)
-#define A_LIST_IS_LAST() a_listit__isLast(&a__it)
+#define A_LIST_INDEX() a__it.index
+#define A_LIST_REMOVE_CURRENT() a__listit_remove(&a__it)
+#define A_LIST_IS_FIRST() a__listit_isFirst(&a__it)
+#define A_LIST_IS_LAST() a__listit_isLast(&a__it)

@@ -80,7 +80,7 @@ void a_timer__tick(void)
     A_LIST_ITERATE(g_runningTimers, ATimer*, t) {
         if(!(t->flags & A_TIMER__RUNNING)) {
             // Kick out timer that was marked as not running last frame
-            A_LIST_REMOVE_CURRENT();
+            a_list_removeNode(t->runningListNode);
             t->runningListNode = NULL;
 
             A_FLAG_CLEAR(t->flags, A_TIMER__EXPIRED);

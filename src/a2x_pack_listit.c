@@ -1,5 +1,5 @@
 /*
-    Copyright 2011, 2016 Alex Margarit
+    Copyright 2011, 2016, 2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -21,71 +21,61 @@
 
 #include "a2x_pack_list.v.h"
 
-AListIt a_listit__new(AList* List, bool Reversed)
+AListIt a__listit_new(const AList* List, bool Reversed)
 {
     AListIt it;
 
-    it.list = List;
-    it.currentNode = Reversed ? List->last : List->first;
-    it.currentItem = NULL;
+    it.sentinelNode = &List->sentinel;
+
+    if(Reversed) {
+        it.nextNode = List->sentinel.prev;
+        it.index = a_list_sizeGet(List);
+    } else {
+        it.nextNode = List->sentinel.next;
+        it.index = UINT_MAX;
+    }
+
     it.reversed = Reversed;
 
     return it;
 }
 
-bool a_listit__getNext(AListIt* Iterator)
+bool a__listit_getNext(AListIt* Iterator, void* UserPtrAddress)
 {
-    if(Iterator->reversed) {
-        if(Iterator->currentNode->prev == Iterator->list->first) {
-            return false;
-        }
-
-        Iterator->currentNode = Iterator->currentNode->prev;
-    } else {
-        if(Iterator->currentNode->next == Iterator->list->last) {
-            return false;
-        }
-
-        Iterator->currentNode = Iterator->currentNode->next;
+    if(Iterator->nextNode == Iterator->sentinelNode) {
+        return false;
     }
 
-    Iterator->currentItem = Iterator->currentNode->content;
+    *(void**)UserPtrAddress = Iterator->nextNode->content;
+
+    if(Iterator->reversed) {
+        Iterator->nextNode = Iterator->nextNode->prev;
+        Iterator->index--;
+    } else {
+        Iterator->nextNode = Iterator->nextNode->next;
+        Iterator->index++;
+    }
+
     return true;
 }
 
-void a_listit__remove(AListIt* Iterator)
+void a__listit_remove(const AListIt* Iterator)
 {
-    AList* list = Iterator->list;
-    AListNode* n = Iterator->currentNode;
-
-    if(Iterator->reversed) {
-        Iterator->currentNode = n->next;
-    } else {
-        Iterator->currentNode = n->prev;
-    }
-
-    n->prev->next = n->next;
-    n->next->prev = n->prev;
-
-    list->items--;
-
-    free(n);
+    a_list_removeNode(Iterator->reversed
+                        ? Iterator->nextNode->next
+                        : Iterator->nextNode->prev);
 }
 
-bool a_listit__isFirst(AListIt* Iterator)
+bool a__listit_isFirst(const AListIt* Iterator)
 {
     if(Iterator->reversed) {
-        return Iterator->currentNode->next == Iterator->list->last;
+        return Iterator->nextNode->next->next == Iterator->sentinelNode;
     } else {
-        return Iterator->currentNode->prev == Iterator->list->first;
+        return Iterator->nextNode->prev->prev == Iterator->sentinelNode;
     }
 }
 
-bool a_listit__isLast(AListIt* Iterator)
+bool a__listit_isLast(const AListIt* Iterator)
 {
-    if(Iterator->reversed) {
-        return Iterator->currentNode->prev == Iterator->list->first;
-    } else {
-        return Iterator->currentNode->next == Iterator->list->last;
-    }
+    return Iterator->nextNode == Iterator->sentinelNode;
 }

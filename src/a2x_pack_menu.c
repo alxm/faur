@@ -115,7 +115,8 @@ void a_menu_tick(AMenu* Menu)
     }
 
     if(browsed) {
-        Menu->selectedItem = a_list_getIndex(Menu->items, Menu->selectedIndex);
+        Menu->selectedItem = a_list_getByIndex(
+                                Menu->items, Menu->selectedIndex);
 
         if(Menu->soundBrowse) {
             a_channel_play(A_CHANNEL_ANY, Menu->soundBrowse, A_CHANNEL_NORMAL);
