@@ -39,15 +39,17 @@ extern void a__listit_remove(const AListIt* Iterator);
 extern bool a__listit_isFirst(const AListIt* Iterator);
 extern bool a__listit_isLast(const AListIt* Iterator);
 
-#define A_LIST_ITERATE(List, PtrType, Name)             \
-    for(PtrType Name = (PtrType)1; Name; Name = NULL)   \
-        for(AListIt a__it = a__listit_new(List, false); \
-            a__listit_getNext(&a__it, (void*)&Name); )
+#define A_LIST_ITERATE(List, PtrType, Name)                          \
+    for(AListIt a__it = a__listit_new(List, false);                  \
+        a__it.sentinelNode != NULL;                                  \
+        a__it.sentinelNode = NULL)                                   \
+        for(PtrType Name; a__listit_getNext(&a__it, (void*)&Name); )
 
-#define A_LIST_ITERATE_BACKWARDS(List, PtrType, Name)  \
-    for(PtrType Name = (PtrType)1; Name; Name = NULL)  \
-        for(AListIt a__it = a__listit_new(List, true); \
-            a__listit_getNext(&a__it, (void*)&Name); )
+#define A_LIST_ITERATE_BACKWARDS(List, PtrType, Name)                \
+    for(AListIt a__it = a__listit_new(List, true);                   \
+        a__it.sentinelNode != NULL;                                  \
+        a__it.sentinelNode = NULL)                                   \
+        for(PtrType Name; a__listit_getNext(&a__it, (void*)&Name); )
 
 #define A_LIST_FILTER(List, PtrType, Name, Filter) \
     A_LIST_ITERATE(List, PtrType, Name)            \
