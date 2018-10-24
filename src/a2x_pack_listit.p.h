@@ -28,6 +28,7 @@ typedef struct AListIt AListIt;
 struct AListIt {
     AListNode* sentinelNode;
     AListNode* nextNode;
+    unsigned index;
     bool reversed;
 };
 
@@ -38,21 +39,15 @@ extern void a__listit_remove(AListIt* Iterator);
 extern bool a__listit_isFirst(AListIt* Iterator);
 extern bool a__listit_isLast(AListIt* Iterator);
 
-#define A_LIST_ITERATE(List, PtrType, Name)                            \
-    for(unsigned a__it_i = 0; a__it_i != UINT_MAX; a__it_i = UINT_MAX) \
-        for(PtrType Name = (PtrType)1; Name; Name = NULL)              \
-            for(AListIt a__it = a__listit_new(List, false);            \
-                a__listit_getNext(&a__it, (void*)&Name);               \
-                a__it_i++)
+#define A_LIST_ITERATE(List, PtrType, Name)             \
+    for(PtrType Name = (PtrType)1; Name; Name = NULL)   \
+        for(AListIt a__it = a__listit_new(List, false); \
+            a__listit_getNext(&a__it, (void*)&Name); )
 
-#define A_LIST_ITERATE_BACKWARDS(List, PtrType, Name)      \
-    for(unsigned a__it_i = a_list_sizeGet(List) - 1;       \
-        a__it_i != UINT_MAX;                               \
-        a__it_i = UINT_MAX)                                \
-        for(PtrType Name = (PtrType)1; Name; Name = NULL)  \
-            for(AListIt a__it = a__listit_new(List, true); \
-                a__listit_getNext(&a__it, (void*)&Name);   \
-                a__it_i--)
+#define A_LIST_ITERATE_BACKWARDS(List, PtrType, Name)  \
+    for(PtrType Name = (PtrType)1; Name; Name = NULL)  \
+        for(AListIt a__it = a__listit_new(List, true); \
+            a__listit_getNext(&a__it, (void*)&Name); )
 
 #define A_LIST_FILTER(List, PtrType, Name, Filter) \
     A_LIST_ITERATE(List, PtrType, Name)            \
@@ -64,7 +59,7 @@ extern bool a__listit_isLast(AListIt* Iterator);
         if(!(Filter)) continue;                              \
         else
 
-#define A_LIST_INDEX() a__it_i
+#define A_LIST_INDEX() a__it.index
 #define A_LIST_REMOVE_CURRENT() a__listit_remove(&a__it)
 #define A_LIST_IS_FIRST() a__listit_isFirst(&a__it)
 #define A_LIST_IS_LAST() a__listit_isLast(&a__it)

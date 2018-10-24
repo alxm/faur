@@ -26,7 +26,15 @@ AListIt a__listit_new(AList* List, bool Reversed)
     AListIt it;
 
     it.sentinelNode = &List->sentinel;
-    it.nextNode = Reversed ? List->sentinel.prev : List->sentinel.next;
+
+    if(Reversed) {
+        it.nextNode = List->sentinel.prev;
+        it.index = a_list_sizeGet(List);
+    } else {
+        it.nextNode = List->sentinel.next;
+        it.index = UINT_MAX;
+    }
+
     it.reversed = Reversed;
 
     return it;
@@ -42,8 +50,10 @@ bool a__listit_getNext(AListIt* Iterator, void* UserPtrAddress)
 
     if(Iterator->reversed) {
         Iterator->nextNode = Iterator->nextNode->prev;
+        Iterator->index--;
     } else {
         Iterator->nextNode = Iterator->nextNode->next;
+        Iterator->index++;
     }
 
     return true;
