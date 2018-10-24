@@ -21,7 +21,7 @@
 
 #include "a2x_pack_list.v.h"
 
-AListIt a__listit_new(AList* List, bool Reversed)
+AListIt a__listit_new(const AList* List, bool Reversed)
 {
     AListIt it;
 
@@ -59,14 +59,14 @@ bool a__listit_getNext(AListIt* Iterator, void* UserPtrAddress)
     return true;
 }
 
-void a__listit_remove(AListIt* Iterator)
+void a__listit_remove(const AListIt* Iterator)
 {
     a_list_removeNode(Iterator->reversed
                         ? Iterator->nextNode->next
                         : Iterator->nextNode->prev);
 }
 
-bool a__listit_isFirst(AListIt* Iterator)
+bool a__listit_isFirst(const AListIt* Iterator)
 {
     if(Iterator->reversed) {
         return Iterator->nextNode->next->next == Iterator->sentinelNode;
@@ -75,7 +75,7 @@ bool a__listit_isFirst(AListIt* Iterator)
     }
 }
 
-bool a__listit_isLast(AListIt* Iterator)
+bool a__listit_isLast(const AListIt* Iterator)
 {
     return Iterator->nextNode == Iterator->sentinelNode;
 }

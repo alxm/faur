@@ -26,18 +26,18 @@ typedef struct AListIt AListIt;
 #include "a2x_pack_list.p.h"
 
 struct AListIt {
-    AListNode* sentinelNode;
-    AListNode* nextNode;
+    const AListNode* sentinelNode;
+    const AListNode* nextNode;
     unsigned index;
     bool reversed;
 };
 
-extern AListIt a__listit_new(AList* List, bool Reversed);
+extern AListIt a__listit_new(const AList* List, bool Reversed);
 
 extern bool a__listit_getNext(AListIt* Iterator, void* UserPtrAddress);
-extern void a__listit_remove(AListIt* Iterator);
-extern bool a__listit_isFirst(AListIt* Iterator);
-extern bool a__listit_isLast(AListIt* Iterator);
+extern void a__listit_remove(const AListIt* Iterator);
+extern bool a__listit_isFirst(const AListIt* Iterator);
+extern bool a__listit_isLast(const AListIt* Iterator);
 
 #define A_LIST_ITERATE(List, PtrType, Name)             \
     for(PtrType Name = (PtrType)1; Name; Name = NULL)   \
