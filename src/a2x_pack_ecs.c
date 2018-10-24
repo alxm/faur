@@ -126,7 +126,7 @@ void a_ecs__tick(void)
 
     // Add entities to the systems they match
     A_LIST_ITERATE(g_ecs->lists[A_ECS__RESTORE], AEntity*, e) {
-        if(!e->removedFromActive) {
+        if(!(e->flags & A_ENTITY__ACTIVE_REMOVED)) {
             A_LIST_ITERATE(e->matchingSystemsActive, ASystem*, system) {
                 a_list_addLast(
                     e->systemNodesActive, a_list_addLast(system->entities, e));

@@ -54,7 +54,7 @@ void a_entity__free(AEntity* Entity)
         return;
     }
 
-    if(Entity->debug) {
+    if(Entity->flags & A_ENTITY__DEBUG) {
         a_out__message("a_entity__free('%s')", a_entity_idGet(Entity));
     }
 
@@ -90,7 +90,11 @@ void a_entity__free(AEntity* Entity)
 
 void a_entity_debugSet(AEntity* Entity, bool DebugOn)
 {
-    Entity->debug = DebugOn;
+    if(DebugOn) {
+        A_FLAG_SET(Entity->flags, A_ENTITY__DEBUG);
+    } else {
+        A_FLAG_CLEAR(Entity->flags, A_ENTITY__DEBUG);
+    }
 }
 
 const char* a_entity_idGet(const AEntity* Entity)
@@ -110,7 +114,7 @@ AEntity* a_entity_parentGet(const AEntity* Entity)
 
 void a_entity_parentSet(AEntity* Entity, AEntity* Parent)
 {
-    if(Entity->debug) {
+    if(Entity->flags & A_ENTITY__DEBUG) {
         a_out__message("a_entity_parentSet('%s', '%s')",
                        a_entity_idGet(Entity),
                        a_entity_idGet(Parent));
@@ -129,7 +133,7 @@ void a_entity_parentSet(AEntity* Entity, AEntity* Parent)
 
 void a_entity_refInc(AEntity* Entity)
 {
-    if(Entity->debug) {
+    if(Entity->flags & A_ENTITY__DEBUG) {
         a_out__message("a_entity_refInc('%s')", a_entity_idGet(Entity));
     }
 
@@ -149,7 +153,7 @@ void a_entity_refDec(AEntity* Entity)
         return;
     }
 
-    if(Entity->debug) {
+    if(Entity->flags & A_ENTITY__DEBUG) {
         a_out__message("a_entity_refDec('%s')", a_entity_idGet(Entity));
     }
 
@@ -174,7 +178,7 @@ bool a_entity_removeGet(const AEntity* Entity)
 
 void a_entity_removeSet(AEntity* Entity)
 {
-    if(Entity->debug) {
+    if(Entity->flags & A_ENTITY__DEBUG) {
         a_out__message("a_entity_removeSet('%s')", a_entity_idGet(Entity));
     }
 
@@ -189,12 +193,13 @@ void a_entity_removeSet(AEntity* Entity)
 
 bool a_entity_activeGet(const AEntity* Entity)
 {
-    return Entity->permanentActive || Entity->lastActive == a_fps_ticksGet();
+    return Entity->flags & A_ENTITY__ACTIVE_PERMANENT
+        || Entity->lastActive == a_fps_ticksGet();
 }
 
 void a_entity_activeSet(AEntity* Entity)
 {
-    if(Entity->debug) {
+    if(Entity->flags & A_ENTITY__DEBUG) {
         a_out__message("a_entity_activeSet('%s')", a_entity_idGet(Entity));
     }
 
@@ -205,8 +210,8 @@ void a_entity_activeSet(AEntity* Entity)
 
     Entity->lastActive = a_fps_ticksGet();
 
-    if(Entity->removedFromActive) {
-        Entity->removedFromActive = false;
+    if(Entity->flags & A_ENTITY__ACTIVE_REMOVED) {
+        A_FLAG_CLEAR(Entity->flags, A_ENTITY__ACTIVE_REMOVED);
 
         // Add entity back to active-only systems
         A_LIST_ITERATE(Entity->matchingSystemsActive, ASystem*, system) {
@@ -218,19 +223,19 @@ void a_entity_activeSet(AEntity* Entity)
 
 void a_entity_activeSetPermanent(AEntity* Entity)
 {
-    if(Entity->debug) {
+    if(Entity->flags & A_ENTITY__DEBUG) {
         a_out__message(
             "a_entity_activeSetPermanent('%s')", a_entity_idGet(Entity));
     }
 
-    Entity->permanentActive = true;
+    A_FLAG_SET(Entity->flags, A_ENTITY__ACTIVE_PERMANENT);
 }
 
 void* a_entity_componentAdd(AEntity* Entity, int Component)
 {
     const AComponent* c = a_component__tableGet(Component, __func__);
 
-    if(Entity->debug) {
+    if(Entity->flags & A_ENTITY__DEBUG) {
         a_out__message("a_entity_componentAdd('%s', '%s')",
                        a_entity_idGet(Entity),
                        c->name);
@@ -301,7 +306,7 @@ bool a_entity_muteGet(const AEntity* Entity)
 
 void a_entity_muteSet(AEntity* Entity, bool DoMute)
 {
-    if(Entity->debug) {
+    if(Entity->flags & A_ENTITY__DEBUG) {
         a_out__message(
             "a_entity_muteSet('%s', %d)", a_entity_idGet(Entity), DoMute);
     }
@@ -348,7 +353,7 @@ void a_entity__removeFromAllSystems(AEntity* Entity)
 
 void a_entity__removeFromActiveSystems(AEntity* Entity)
 {
-    Entity->removedFromActive = true;
+    A_FLAG_SET(Entity->flags, A_ENTITY__ACTIVE_REMOVED);
     a_list_clearEx(Entity->systemNodesActive, (AFree*)a_list_removeNode);
 }
 
@@ -378,7 +383,7 @@ void a_entity_messageSet(AEntity* Entity, int Message, AMessageHandler* Handler)
 
 void a_entity_messageSend(AEntity* To, AEntity* From, int Message)
 {
-    if(To->debug || From->debug) {
+    if(To->flags & A_ENTITY__DEBUG || From->flags & A_ENTITY__DEBUG) {
         a_out__message("a_entity_messageSend('%s', '%s', %d)",
                        a_entity_idGet(To),
                        a_entity_idGet(From),

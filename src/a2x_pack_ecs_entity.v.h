@@ -25,6 +25,12 @@
 #include "a2x_pack_ecs_component.v.h"
 #include "a2x_pack_list.v.h"
 
+typedef enum {
+    A_ENTITY__ACTIVE_REMOVED = A_FLAG_BIT(0), // kicked out by active system
+    A_ENTITY__ACTIVE_PERMANENT = A_FLAG_BIT(1), // entity always reports active
+    A_ENTITY__DEBUG = A_FLAG_BIT(2), // print debug messages for this entity
+} AEntityFlags;
+
 struct AEntity {
     char* id; // specified name for debugging
     void* context; // global context
@@ -38,9 +44,7 @@ struct AEntity {
     AMessageHandler** messageHandlers; // AMessageHandler*[a_entity__msgLen]
     unsigned lastActive; // frame when a_entity_activeSet was last called
     int references; // if >0, then the entity lingers in the removed limbo list
-    bool removedFromActive; // set when an active-only system kicks entity out
-    bool permanentActive; // if set then entity always reports as active
-    bool debug; // whether to print debug messages for this entity
+    AEntityFlags flags; // various properties
     AComponentHeader* componentsTable[];
 };
 
