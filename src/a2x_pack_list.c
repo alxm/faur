@@ -132,19 +132,19 @@ void a_list_appendMove(AList* Dst, AList* Src)
     Src->items = 0;
 }
 
-void a_list_appendCopy(AList* Dst, AList* Src)
+void a_list_appendCopy(AList* Dst, const AList* Src)
 {
     // Capture the address of Src's last node, in case Src == Dst
     AListNode* lastSrcNode = Src->sentinel.prev;
 
-    for(AListNode* n = &Src->sentinel; n != lastSrcNode; n = n->next) {
+    for(const AListNode* n = &Src->sentinel; n != lastSrcNode; n = n->next) {
         a_list_addLast(Dst, n->next->content);
     }
 }
 
 void* a_list_getByIndex(const AList* List, unsigned Index)
 {
-    AListNode* n;
+    const AListNode* n;
 
     for(n = List->sentinel.next; n != &List->sentinel; n = n->next) {
         if(Index-- == 0) {
@@ -272,7 +272,7 @@ AList* a_list_dup(const AList* List)
     return l;
 }
 
-void** a_list_toArray(AList* List)
+void** a_list_toArray(const AList* List)
 {
     int i = 0;
     void** array = a_mem_malloc(List->items * sizeof(void*));
