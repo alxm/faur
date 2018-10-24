@@ -168,12 +168,12 @@ void a_colobject_coordsSet(AColObject* Object, int X, int Y)
     }
 }
 
-void* a_colobject__contextGet(const AColObject* Object)
+void* a__colobject_contextGet(const AColObject* Object)
 {
     return Object->context;
 }
 
-AList* a_colobject__nearbyListGet(const AColObject* Object)
+AList* a__colobject_nearbyListGet(const AColObject* Object)
 {
     const AColMap* map = Object->colmap;
 

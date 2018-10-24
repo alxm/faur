@@ -22,67 +22,67 @@
 #include "a2x_system_includes.h"
 
 #if A_BUILD_SYSTEM_DESKTOP || A_BUILD_SYSTEM_EMSCRIPTEN
-    #define A_PIXEL__BPP 32
+    #define A__PIXEL_BPP 32
     typedef uint32_t APixel;
 #else
-    #define A_PIXEL__BPP 16
+    #define A__PIXEL_BPP 16
     typedef uint16_t APixel;
 #endif
 
 #if A_BUILD_SYSTEM_EMSCRIPTEN
-    #define A_PIXEL__ORDER_ABGR 1
+    #define A__PIXEL_ORDER_ABGR 1
 #else
-    #define A_PIXEL__ORDER_RGBA 1
+    #define A__PIXEL_ORDER_RGBA 1
 #endif
 
-#if A_PIXEL__BPP == 16
+#if A__PIXEL_BPP == 16
     #if A_BUILD_RENDER_SOFTWARE
         // RGB565
-        #define A_PIXEL__BITS_RED   5
-        #define A_PIXEL__BITS_GREEN 6
-        #define A_PIXEL__BITS_BLUE  5
-        #define A_PIXEL__BITS_ALPHA 0
+        #define A__PIXEL_BITS_RED   5
+        #define A__PIXEL_BITS_GREEN 6
+        #define A__PIXEL_BITS_BLUE  5
+        #define A__PIXEL_BITS_ALPHA 0
     #elif A_BUILD_RENDER_SDL
         // RGBA5551
-        #define A_PIXEL__BITS_RED   5
-        #define A_PIXEL__BITS_GREEN 5
-        #define A_PIXEL__BITS_BLUE  5
-        #define A_PIXEL__BITS_ALPHA 1
+        #define A__PIXEL_BITS_RED   5
+        #define A__PIXEL_BITS_GREEN 5
+        #define A__PIXEL_BITS_BLUE  5
+        #define A__PIXEL_BITS_ALPHA 1
     #endif
-#elif A_PIXEL__BPP == 32
-    #define A_PIXEL__BITS_RED   8
-    #define A_PIXEL__BITS_GREEN 8
-    #define A_PIXEL__BITS_BLUE  8
+#elif A__PIXEL_BPP == 32
+    #define A__PIXEL_BITS_RED   8
+    #define A__PIXEL_BITS_GREEN 8
+    #define A__PIXEL_BITS_BLUE  8
 
     #if A_BUILD_LIB_SDL == 1
         // XRGB8888
-        #define A_PIXEL__BITS_ALPHA 0
+        #define A__PIXEL_BITS_ALPHA 0
     #elif A_BUILD_LIB_SDL == 2
         // RGBX8888 / RGBA8888
-        #define A_PIXEL__BITS_ALPHA 8
+        #define A__PIXEL_BITS_ALPHA 8
     #endif
 #endif
 
-#if A_PIXEL__ORDER_RGBA
-    #define A_PIXEL__SHIFT_ALPHA (0)
-    #define A_PIXEL__SHIFT_BLUE  (A_PIXEL__BITS_ALPHA)
-    #define A_PIXEL__SHIFT_GREEN (A_PIXEL__BITS_ALPHA + A_PIXEL__BITS_BLUE)
-    #define A_PIXEL__SHIFT_RED   (A_PIXEL__BITS_ALPHA + A_PIXEL__BITS_BLUE + A_PIXEL__BITS_GREEN)
-#elif A_PIXEL__ORDER_ABGR
-    #define A_PIXEL__SHIFT_RED   (0)
-    #define A_PIXEL__SHIFT_GREEN (A_PIXEL__BITS_RED)
-    #define A_PIXEL__SHIFT_BLUE  (A_PIXEL__BITS_RED + A_PIXEL__BITS_GREEN)
-    #define A_PIXEL__SHIFT_ALPHA (A_PIXEL__BITS_RED + A_PIXEL__BITS_GREEN + A_PIXEL__BITS_BLUE)
+#if A__PIXEL_ORDER_RGBA
+    #define A__PIXEL_SHIFT_ALPHA (0)
+    #define A__PIXEL_SHIFT_BLUE  (A__PIXEL_BITS_ALPHA)
+    #define A__PIXEL_SHIFT_GREEN (A__PIXEL_BITS_ALPHA + A__PIXEL_BITS_BLUE)
+    #define A__PIXEL_SHIFT_RED   (A__PIXEL_BITS_ALPHA + A__PIXEL_BITS_BLUE + A__PIXEL_BITS_GREEN)
+#elif A__PIXEL_ORDER_ABGR
+    #define A__PIXEL_SHIFT_RED   (0)
+    #define A__PIXEL_SHIFT_GREEN (A__PIXEL_BITS_RED)
+    #define A__PIXEL_SHIFT_BLUE  (A__PIXEL_BITS_RED + A__PIXEL_BITS_GREEN)
+    #define A__PIXEL_SHIFT_ALPHA (A__PIXEL_BITS_RED + A__PIXEL_BITS_GREEN + A__PIXEL_BITS_BLUE)
 #endif
 
-#define A_PIXEL__MASK_RED   ((1 << A_PIXEL__BITS_RED) - 1)
-#define A_PIXEL__MASK_GREEN ((1 << A_PIXEL__BITS_GREEN) - 1)
-#define A_PIXEL__MASK_BLUE  ((1 << A_PIXEL__BITS_BLUE) - 1)
-#define A_PIXEL__MASK_ALPHA ((1 << A_PIXEL__BITS_ALPHA) - 1)
+#define A__PIXEL_MASK_RED   ((1 << A__PIXEL_BITS_RED) - 1)
+#define A__PIXEL_MASK_GREEN ((1 << A__PIXEL_BITS_GREEN) - 1)
+#define A__PIXEL_MASK_BLUE  ((1 << A__PIXEL_BITS_BLUE) - 1)
+#define A__PIXEL_MASK_ALPHA ((1 << A__PIXEL_BITS_ALPHA) - 1)
 
-#define A_PIXEL__PACK_RED   (8 - A_PIXEL__BITS_RED)
-#define A_PIXEL__PACK_GREEN (8 - A_PIXEL__BITS_GREEN)
-#define A_PIXEL__PACK_BLUE  (8 - A_PIXEL__BITS_BLUE)
+#define A__PIXEL_PACK_RED   (8 - A__PIXEL_BITS_RED)
+#define A__PIXEL_PACK_GREEN (8 - A__PIXEL_BITS_GREEN)
+#define A__PIXEL_PACK_BLUE  (8 - A__PIXEL_BITS_BLUE)
 
 #if A_BUILD_RENDER_SOFTWARE
     #define A_PIXEL_ALPHA_MAX 256
@@ -93,35 +93,35 @@
 static inline APixel a_pixel_fromRgb(int Red, int Green, int Blue)
 {
     return (APixel)
-        (((((unsigned)Red   & 0xff) >> A_PIXEL__PACK_RED)   << A_PIXEL__SHIFT_RED)   |
-         ((((unsigned)Green & 0xff) >> A_PIXEL__PACK_GREEN) << A_PIXEL__SHIFT_GREEN) |
-         ((((unsigned)Blue  & 0xff) >> A_PIXEL__PACK_BLUE)  << A_PIXEL__SHIFT_BLUE));
+        (((((unsigned)Red   & 0xff) >> A__PIXEL_PACK_RED)   << A__PIXEL_SHIFT_RED)   |
+         ((((unsigned)Green & 0xff) >> A__PIXEL_PACK_GREEN) << A__PIXEL_SHIFT_GREEN) |
+         ((((unsigned)Blue  & 0xff) >> A__PIXEL_PACK_BLUE)  << A__PIXEL_SHIFT_BLUE));
 }
 
 static inline APixel a_pixel_fromHex(uint32_t Hexcode)
 {
-    #if A_PIXEL__BPP == 16 || A_PIXEL__ORDER_ABGR
+    #if A__PIXEL_BPP == 16 || A__PIXEL_ORDER_ABGR
         return (APixel)
-            (((((Hexcode >> 16) & 0xff) >> A_PIXEL__PACK_RED)   << A_PIXEL__SHIFT_RED)   |
-             ((((Hexcode >> 8)  & 0xff) >> A_PIXEL__PACK_GREEN) << A_PIXEL__SHIFT_GREEN) |
-             ((((Hexcode)       & 0xff) >> A_PIXEL__PACK_BLUE)  << A_PIXEL__SHIFT_BLUE));
-    #elif A_PIXEL__BPP == 32 && A_PIXEL__ORDER_RGBA
-        return (APixel)((Hexcode & 0xffffff) << A_PIXEL__BITS_ALPHA);
+            (((((Hexcode >> 16) & 0xff) >> A__PIXEL_PACK_RED)   << A__PIXEL_SHIFT_RED)   |
+             ((((Hexcode >> 8)  & 0xff) >> A__PIXEL_PACK_GREEN) << A__PIXEL_SHIFT_GREEN) |
+             ((((Hexcode)       & 0xff) >> A__PIXEL_PACK_BLUE)  << A__PIXEL_SHIFT_BLUE));
+    #elif A__PIXEL_BPP == 32 && A__PIXEL_ORDER_RGBA
+        return (APixel)((Hexcode & 0xffffff) << A__PIXEL_BITS_ALPHA);
     #endif
 }
 
 static inline void a_pixel_toRgb(APixel Pixel, int* Red, int* Green, int* Blue)
 {
     if(Red) {
-        *Red = (int)((Pixel >> A_PIXEL__SHIFT_RED) & A_PIXEL__MASK_RED) << A_PIXEL__PACK_RED;
+        *Red = (int)((Pixel >> A__PIXEL_SHIFT_RED) & A__PIXEL_MASK_RED) << A__PIXEL_PACK_RED;
     }
 
     if(Green) {
-        *Green = (int)((Pixel >> A_PIXEL__SHIFT_GREEN) & A_PIXEL__MASK_GREEN) << A_PIXEL__PACK_GREEN;
+        *Green = (int)((Pixel >> A__PIXEL_SHIFT_GREEN) & A__PIXEL_MASK_GREEN) << A__PIXEL_PACK_GREEN;
     }
 
     if(Blue) {
-        *Blue = (int)((Pixel >> A_PIXEL__SHIFT_BLUE) & A_PIXEL__MASK_BLUE) << A_PIXEL__PACK_BLUE;
+        *Blue = (int)((Pixel >> A__PIXEL_SHIFT_BLUE) & A__PIXEL_MASK_BLUE) << A__PIXEL_PACK_BLUE;
     }
 }
 

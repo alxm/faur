@@ -81,16 +81,16 @@ void a_platform__screenInit(int Width, int Height, bool FullScreen)
             videoFlags |= SDL_FULLSCREEN;
         }
 
-        bpp = SDL_VideoModeOK(Width, Height, A_PIXEL__BPP, videoFlags);
+        bpp = SDL_VideoModeOK(Width, Height, A__PIXEL_BPP, videoFlags);
 
         if(bpp == 0) {
             a_out__fatal("SDL_VideoModeOK: %dx%d:%d video not available",
                          Width,
                          Height,
-                         A_PIXEL__BPP);
+                         A__PIXEL_BPP);
         }
 
-        g_sdlScreen = SDL_SetVideoMode(Width, Height, A_PIXEL__BPP, videoFlags);
+        g_sdlScreen = SDL_SetVideoMode(Width, Height, A__PIXEL_BPP, videoFlags);
 
         if(g_sdlScreen == NULL) {
             a_out__fatal("SDL_SetVideoMode: %s", SDL_GetError());

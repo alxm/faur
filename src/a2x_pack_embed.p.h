@@ -21,5 +21,5 @@
 
 #include "a2x_system_includes.h"
 
-extern void a_embed__application(void);
-extern void a_embed__add(const char* Key, const uint8_t* Buffer, size_t Size);
+extern void a__embed_application(void);
+extern void a__embed_add(const char* Key, const uint8_t* Buffer, size_t Size);

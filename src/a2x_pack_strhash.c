@@ -142,22 +142,22 @@ unsigned a_strhash_sizeGet(const AStrHash* Hash)
     return a_list_sizeGet(Hash->entriesList);
 }
 
-AList* a_strhash__entries(const AStrHash* Hash)
+AList* a__strhash_entries(const AStrHash* Hash)
 {
     return Hash->entriesList;
 }
 
-void* a_strhash__entryValue(const AStrHashEntry* Entry)
+void* a__strhash_entryValue(const AStrHashEntry* Entry)
 {
     return Entry->content;
 }
 
-const char* a_strhash__entryKey(const AStrHashEntry* Entry)
+const char* a__strhash_entryKey(const AStrHashEntry* Entry)
 {
     return Entry->key;
 }
 
-void a_strhash__printStats(const AStrHash* Hash, const char* Message)
+void a__strhash_printStats(const AStrHash* Hash, const char* Message)
 {
     unsigned maxInSlot = 0, maxInSlotNum = 0;
     unsigned occupiedSlots = 0;

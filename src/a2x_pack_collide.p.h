@@ -34,15 +34,15 @@ extern void a_colobject_free(AColObject* Object);
 
 extern void a_colobject_coordsSet(AColObject* Object, int X, int Y);
 
-extern void* a_colobject__contextGet(const AColObject* Object);
-extern AList* a_colobject__nearbyListGet(const AColObject* Object);
+extern void* a__colobject_contextGet(const AColObject* Object);
+extern AList* a__colobject_nearbyListGet(const AColObject* Object);
 
 #define A_COL_ITERATE(ColObject, ContextPtrType, ContextVarName)           \
     for(const AColObject* a__co = ColObject; a__co; a__co = NULL)          \
-        A_LIST_FILTER(a_colobject__nearbyListGet(a__co),                   \
+        A_LIST_FILTER(a__colobject_nearbyListGet(a__co),                   \
                       const AColObject*, a__o,                             \
                       a__o != a__co)                                       \
-        for(ContextPtrType ContextVarName = a_colobject__contextGet(a__o); \
+        for(ContextPtrType ContextVarName = a__colobject_contextGet(a__o); \
             a__o != NULL; a__o = NULL)
 
 extern bool a_collide_boxAndBox(int X1, int Y1, int W1, int H1, int X2, int Y2, int W2, int H2);

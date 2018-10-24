@@ -39,15 +39,15 @@ void a_embed__init(void)
     A_UNUSED(a__gfx_console_png_path);
     A_UNUSED(a__gfx_font_png_path);
 
-    a_embed__add("/a2x/consoleTitles",
+    a__embed_add("/a2x/consoleTitles",
                  a__gfx_console_png_data,
                  a__gfx_console_png_size);
 
-    a_embed__add("/a2x/defaultFont",
+    a__embed_add("/a2x/defaultFont",
                  a__gfx_font_png_data,
                  a__gfx_font_png_size);
 
-    a_embed__application();
+    a__embed_application();
 }
 
 void a_embed__uninit(void)
@@ -55,7 +55,7 @@ void a_embed__uninit(void)
     a_strhash_freeEx(g_data, free);
 }
 
-void a_embed__add(const char* Key, const uint8_t* Buffer, size_t Size)
+void a__embed_add(const char* Key, const uint8_t* Buffer, size_t Size)
 {
     AEmbeddedData* data = a_mem_malloc(sizeof(AEmbeddedData));
 

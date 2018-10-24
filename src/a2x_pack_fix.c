@@ -21,8 +21,8 @@
 
 #include "a2x_pack_math.v.h"
 
-AFix a_fix__sin[A_FIX_ANGLES_NUM];
-AFix a_fix__csc[A_FIX_ANGLES_NUM];
+AFix a__fix_sin[A_FIX_ANGLES_NUM];
+AFix a__fix_csc[A_FIX_ANGLES_NUM];
 static unsigned g_atan_angles[A_FIX_ONE];
 
 static void initSin(void)
@@ -31,12 +31,12 @@ static void initSin(void)
         double rad = M_PI * (double)a / (A_FIX_ANGLES_NUM / 2);
         AFix sine = a_fix_fromDouble(sin(rad));
 
-        a_fix__sin[a] = sine;
+        a__fix_sin[a] = sine;
 
         if(sine == 0) {
-            a_fix__csc[a] = A_FIX_MAX_INT * A_FIX_ONE;
+            a__fix_csc[a] = A_FIX_MAX_INT * A_FIX_ONE;
         } else {
-            a_fix__csc[a] = a_fix_div(A_FIX_ONE, sine);
+            a__fix_csc[a] = a_fix_div(A_FIX_ONE, sine);
         }
     }
 }

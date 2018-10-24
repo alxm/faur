@@ -37,20 +37,20 @@ extern void* a_strhash_get(const AStrHash* Hash, const char* Key);
 extern bool a_strhash_contains(const AStrHash* Hash, const char* Key);
 extern unsigned a_strhash_sizeGet(const AStrHash* Hash);
 
-extern AList* a_strhash__entries(const AStrHash* Hash);
-extern void* a_strhash__entryValue(const AStrHashEntry* Entry);
-extern const char* a_strhash__entryKey(const AStrHashEntry* Entry);
+extern AList* a__strhash_entries(const AStrHash* Hash);
+extern void* a__strhash_entryValue(const AStrHashEntry* Entry);
+extern const char* a__strhash_entryKey(const AStrHashEntry* Entry);
 
 #define A_STRHASH_ITERATE(StrHash, PtrType, Name)                           \
-    A_LIST_ITERATE(a_strhash__entries(StrHash), const AStrHashEntry*, a__e) \
-        for(PtrType Name = a_strhash__entryValue(a__e);                     \
+    A_LIST_ITERATE(a__strhash_entries(StrHash), const AStrHashEntry*, a__e) \
+        for(PtrType Name = a__strhash_entryValue(a__e);                     \
             a__e != NULL; a__e = NULL)
 
 #define A_STRHASH_KEYS(StrHash, Name)                                       \
-    A_LIST_ITERATE(a_strhash__entries(StrHash), const AStrHashEntry*, a__e) \
-        for(const char* Name = a_strhash__entryKey(a__e);                   \
+    A_LIST_ITERATE(a__strhash_entries(StrHash), const AStrHashEntry*, a__e) \
+        for(const char* Name = a__strhash_entryKey(a__e);                   \
             a__e != NULL; a__e = NULL)
 
-#define A_STRHASH_KEY() a_strhash__entryKey(a__e)
+#define A_STRHASH_KEY() a__strhash_entryKey(a__e)
 
-extern void a_strhash__printStats(const AStrHash* Hash, const char* Message);
+extern void a__strhash_printStats(const AStrHash* Hash, const char* Message);

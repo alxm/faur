@@ -113,7 +113,7 @@ void a_settings__init(void)
 {
     g_settingsIndex = a_strhash_new();
 
-    a_settings__application();
+    a__settings_application();
 
     extern const char* a_app__buildtime;
     g_settings[A_SETTING_APP_BUILDTIME].value.string = (char*)a_app__buildtime;
