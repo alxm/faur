@@ -171,9 +171,7 @@ void a_entity_refDec(AEntity* Entity)
 
 bool a_entity_removeGet(const AEntity* Entity)
 {
-    return a_ecs__entityIsInList(Entity, A_ECS__REMOVED_QUEUE)
-        || a_ecs__entityIsInList(Entity, A_ECS__REMOVED_LIMBO)
-        || a_ecs__entityIsInList(Entity, A_ECS__REMOVED_FREE);
+    return Entity->flags & A_ENTITY__REMOVED;
 }
 
 void a_entity_removeSet(AEntity* Entity)
@@ -188,6 +186,7 @@ void a_entity_removeSet(AEntity* Entity)
         return;
     }
 
+    A_FLAG_SET(Entity->flags, A_ENTITY__REMOVED);
     a_ecs__entityMoveToList(Entity, A_ECS__REMOVED_QUEUE);
 }
 
