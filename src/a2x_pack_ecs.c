@@ -158,10 +158,6 @@ void a_ecs__entityAddToList(AEntity* Entity, AEcsListId List)
 
 void a_ecs__entityMoveToList(AEntity* Entity, AEcsListId List)
 {
-    if(a_list__nodeGetList(Entity->node) == g_ecs->lists[List]) {
-        return;
-    }
-
     a_list_removeNode(Entity->node);
     Entity->node = a_list_addLast(g_ecs->lists[List], Entity);
 }
