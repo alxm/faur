@@ -26,18 +26,14 @@
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
 
-typedef struct {
-    AList* lists[A_ECS__NUM]; // each entity is in exactly one list
-    bool deleting; // set when this collection is popped off the stack
-} AEcs;
-
-static AEcs* g_ecs;
-static AList* g_stack; // list of AEcs (one for each state)
+static AList* g_lists[A_ECS__NUM]; // Each entity is in exactly one of these
+static bool g_deleting; // Set at uninit time to prevent using freed entities
 
 void a_ecs__init(void)
 {
-    g_ecs = NULL;
-    g_stack = a_list_new();
+    for(int i = A_ECS__NUM; i--; ) {
+        g_lists[i] = a_list_new();
+    }
 
     a_component__init();
     a_system__init();
@@ -45,11 +41,11 @@ void a_ecs__init(void)
 
 void a_ecs__uninit(void)
 {
-    while(g_ecs != NULL) {
-        a_ecs__collectionPop();
-    }
+    g_deleting = true;
 
-    a_list_free(g_stack);
+    for(int i = A_ECS__NUM; i--; ) {
+        a_list_freeEx(g_lists[i], (AFree*)a_entity__free);
+    }
 
     a_system__uninit();
     a_component__uninit();
@@ -65,42 +61,7 @@ void a_ecs_init(unsigned NumComponents, unsigned NumSystems, unsigned NumMessage
 
 bool a_ecs__isDeleting(void)
 {
-    return g_ecs->deleting;
-}
-
-void a_ecs__collectionPush(void)
-{
-    AEcs* c = a_mem_malloc(sizeof(AEcs));
-
-    for(int i = A_ECS__NUM; i--; ) {
-        c->lists[i] = a_list_new();
-    }
-
-    c->deleting = false;
-
-    if(g_ecs) {
-        a_list_push(g_stack, g_ecs);
-    }
-
-    g_ecs = c;
-}
-
-void a_ecs__collectionPop(void)
-{
-    g_ecs->deleting = true;
-
-    for(unsigned id = a_system__tableLen; id--; ) {
-        ASystem* system = a_system__tableGet((int)id, __func__);
-
-        system->muted = false;
-    }
-
-    for(int i = A_ECS__NUM; i--; ) {
-        a_list_freeEx(g_ecs->lists[i], (AFree*)a_entity__free);
-    }
-
-    free(g_ecs);
-    g_ecs = a_list_pop(g_stack);
+    return g_deleting;
 }
 
 void a_ecs__tick(void)
@@ -108,7 +69,7 @@ void a_ecs__tick(void)
     a_ecs__flushEntitiesFromSystems();
 
     // Check what systems the new entities match
-    A_LIST_ITERATE(g_ecs->lists[A_ECS__NEW], AEntity*, e) {
+    A_LIST_ITERATE(g_lists[A_ECS__NEW], AEntity*, e) {
         for(unsigned id = a_system__tableLen; id--; ) {
             ASystem* s = a_system__tableGet((int)id, __func__);
 
@@ -125,7 +86,7 @@ void a_ecs__tick(void)
     }
 
     // Add entities to the systems they match
-    A_LIST_ITERATE(g_ecs->lists[A_ECS__RESTORE], AEntity*, e) {
+    A_LIST_ITERATE(g_lists[A_ECS__RESTORE], AEntity*, e) {
         if(!(e->flags & A_ENTITY__ACTIVE_REMOVED)) {
             A_LIST_ITERATE(e->matchingSystemsActive, ASystem*, system) {
                 a_list_addLast(
@@ -141,36 +102,36 @@ void a_ecs__tick(void)
         a_ecs__entityAddToList(e, A_ECS__RUNNING);
     }
 
-    a_list_clear(g_ecs->lists[A_ECS__NEW]);
-    a_list_clear(g_ecs->lists[A_ECS__RESTORE]);
-    a_list_clearEx(g_ecs->lists[A_ECS__REMOVED_FREE], (AFree*)a_entity__free);
+    a_list_clear(g_lists[A_ECS__NEW]);
+    a_list_clear(g_lists[A_ECS__RESTORE]);
+    a_list_clearEx(g_lists[A_ECS__REMOVED_FREE], (AFree*)a_entity__free);
 }
 
 bool a_ecs__entityIsInList(const AEntity* Entity, AEcsListId List)
 {
-    return a_list__nodeGetList(Entity->node) == g_ecs->lists[List];
+    return a_list__nodeGetList(Entity->node) == g_lists[List];
 }
 
 void a_ecs__entityAddToList(AEntity* Entity, AEcsListId List)
 {
-    Entity->node = a_list_addLast(g_ecs->lists[List], Entity);
+    Entity->node = a_list_addLast(g_lists[List], Entity);
 }
 
 void a_ecs__entityMoveToList(AEntity* Entity, AEcsListId List)
 {
     a_list_removeNode(Entity->node);
-    Entity->node = a_list_addLast(g_ecs->lists[List], Entity);
+    Entity->node = a_list_addLast(g_lists[List], Entity);
 }
 
 void a_ecs__flushEntitiesFromSystems(void)
 {
-    A_LIST_ITERATE(g_ecs->lists[A_ECS__MUTED_QUEUE], AEntity*, e) {
+    A_LIST_ITERATE(g_lists[A_ECS__MUTED_QUEUE], AEntity*, e) {
         a_entity__removeFromAllSystems(e);
 
         a_ecs__entityAddToList(e, A_ECS__MUTED_LIMBO);
     }
 
-    A_LIST_ITERATE(g_ecs->lists[A_ECS__REMOVED_QUEUE], AEntity*, e) {
+    A_LIST_ITERATE(g_lists[A_ECS__REMOVED_QUEUE], AEntity*, e) {
         a_entity__removeFromAllSystems(e);
 
         if(e->references == 0) {
@@ -180,6 +141,6 @@ void a_ecs__flushEntitiesFromSystems(void)
         }
     }
 
-    a_list_clear(g_ecs->lists[A_ECS__MUTED_QUEUE]);
-    a_list_clear(g_ecs->lists[A_ECS__REMOVED_QUEUE]);
+    a_list_clear(g_lists[A_ECS__MUTED_QUEUE]);
+    a_list_clear(g_lists[A_ECS__REMOVED_QUEUE]);
 }

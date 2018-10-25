@@ -44,9 +44,6 @@ extern bool a_ecs__isDeleting(void);
 
 extern void a_ecs__tick(void);
 
-extern void a_ecs__collectionPush(void);
-extern void a_ecs__collectionPop(void);
-
 extern bool a_ecs__entityIsInList(const AEntity* Entity, AEcsListId List);
 extern void a_ecs__entityAddToList(AEntity* Entity, AEcsListId List);
 extern void a_ecs__entityMoveToList(AEntity* Entity, AEcsListId List);
