@@ -44,6 +44,7 @@ struct AEntity {
     AMessageHandler** messageHandlers; // AMessageHandler*[a_entity__msgLen]
     unsigned lastActive; // frame when a_entity_activeSet was last called
     int references; // if >0, then the entity lingers in the removed limbo list
+    int muteCount; // if >0, then the entity isn't picked up by any systems
     AEntityFlags flags; // various properties
     AComponentHeader* componentsTable[];
 };

@@ -50,7 +50,8 @@ extern void* a_entity_componentGet(const AEntity* Entity, int Component);
 extern void* a_entity_componentReq(const AEntity* Entity, int Component);
 
 extern bool a_entity_muteGet(const AEntity* Entity);
-extern void a_entity_muteSet(AEntity* Entity, bool DoMute);
+extern void a_entity_muteInc(AEntity* Entity);
+extern void a_entity_muteDec(AEntity* Entity);
 
 extern void a_entity_messageSet(AEntity* Entity, int Message, AMessageHandler* Handler);
 extern void a_entity_messageSend(AEntity* To, AEntity* From, int Message);

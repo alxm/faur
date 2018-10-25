@@ -300,36 +300,49 @@ void* a_entity_componentReq(const AEntity* Entity, int Component)
 
 bool a_entity_muteGet(const AEntity* Entity)
 {
-    return a_ecs__entityIsInList(Entity, A_ECS__MUTED_QUEUE)
-        || a_ecs__entityIsInList(Entity, A_ECS__MUTED_LIMBO);
+    return Entity->muteCount > 0;
 }
 
-void a_entity_muteSet(AEntity* Entity, bool DoMute)
+void a_entity_muteInc(AEntity* Entity)
 {
     if(Entity->flags & A_ENTITY__DEBUG) {
-        a_out__message(
-            "a_entity_muteSet('%s', %d)", a_entity_idGet(Entity), DoMute);
+        a_out__message("a_entity_muteInc('%s')", a_entity_idGet(Entity));
     }
 
     if(a_entity_removeGet(Entity)) {
-        a_out__warningv("a_entity_muteSet: Entity '%s' is removed, cannot mute",
-                        a_entity_idGet(Entity));
-        return;
-    } else if(a_entity_muteGet(Entity) == DoMute) {
-        if(DoMute) {
-            a_out__warningv("a_entity_muteSet: '%s' is already muted",
-                            a_entity_idGet(Entity));
-        } else {
-            a_out__warningv("a_entity_muteSet: '%s' is not muted",
-                            a_entity_idGet(Entity));
-        }
-
+        a_out__warningv(
+            "a_entity_muteInc: Entity '%s' is removed", a_entity_idGet(Entity));
         return;
     }
 
-    if(DoMute) {
+    if(Entity->muteCount == INT_MAX) {
+        a_out__fatal("a_entity_muteInc: Entity '%s' mute count too high",
+                     a_entity_idGet(Entity));
+    }
+
+    if(Entity->muteCount++ == 0) {
         a_ecs__entityMoveToList(Entity, A_ECS__MUTED_QUEUE);
-    } else {
+    }
+}
+
+void a_entity_muteDec(AEntity* Entity)
+{
+    if(Entity->flags & A_ENTITY__DEBUG) {
+        a_out__message("a_entity_muteDec('%s')", a_entity_idGet(Entity));
+    }
+
+    if(a_entity_removeGet(Entity)) {
+        a_out__warningv(
+            "a_entity_muteDec: Entity '%s' is removed", a_entity_idGet(Entity));
+        return;
+    }
+
+    if(Entity->muteCount == 0) {
+        a_out__fatal("a_entity_muteDec: Entity '%s' mute count too low",
+                     a_entity_idGet(Entity));
+    }
+
+    if(--Entity->muteCount == 0) {
         if(a_entity__isMatchedToSystems(Entity)) {
             if(a_ecs__entityIsInList(Entity, A_ECS__MUTED_QUEUE)) {
                 // Entity was muted and unmuted before it left systems
