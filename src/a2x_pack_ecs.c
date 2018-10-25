@@ -19,8 +19,8 @@
 
 #include "a2x_pack_ecs.v.h"
 
+#include "a2x_pack_ecs_collection.v.h"
 #include "a2x_pack_ecs_component.v.h"
-#include "a2x_pack_ecs_entity.v.h"
 #include "a2x_pack_ecs_system.v.h"
 #include "a2x_pack_listit.v.h"
 #include "a2x_pack_mem.v.h"
@@ -28,6 +28,7 @@
 
 static AList* g_lists[A_ECS__NUM]; // Each entity is in exactly one of these
 static bool g_deleting; // Set at uninit time to prevent using freed entities
+static ACollection* g_collection; // New entities are added to this collection
 
 void a_ecs__init(void)
 {
@@ -53,6 +54,16 @@ void a_ecs_init(unsigned NumComponents, unsigned NumSystems, unsigned NumMessage
     a_component__init(NumComponents);
     a_system__init(NumSystems);
     a_entity__init(NumMessages);
+}
+
+ACollection* a_ecs_collectionGet(void)
+{
+    return g_collection;
+}
+
+void a_ecs_collectionSet(ACollection* Collection)
+{
+    g_collection = Collection;
 }
 
 bool a_ecs__isDeleting(void)

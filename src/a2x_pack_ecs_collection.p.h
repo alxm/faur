@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 Alex Margarit
+    Copyright 2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -21,9 +21,12 @@
 
 #include "a2x_system_includes.h"
 
-#include "a2x_pack_ecs_collection.p.h"
+typedef struct ACollection ACollection;
 
-extern void a_ecs_init(unsigned NumComponents, unsigned NumSystems, unsigned NumMessages);
+extern ACollection* a_collection_new(void);
+extern void a_collection_free(ACollection* Collection);
 
-extern ACollection* a_ecs_collectionGet(void);
-extern void a_ecs_collectionSet(ACollection* Collection);
+extern void a_collection_clear(ACollection* Collection);
+
+extern void a_collection_muteInc(ACollection* Collection);
+extern void a_collection_muteDec(ACollection* Collection);

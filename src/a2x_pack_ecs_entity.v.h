@@ -37,6 +37,7 @@ struct AEntity {
     void* context; // global context
     AEntity* parent; // manually associated parent entity
     AListNode* node; // list node in one of AEcsListId
+    AListNode* collectionNode; // ACollection list nod
     AList* matchingSystemsActive; // list of ASystem
     AList* matchingSystemsEither; // list of ASystem
     AList* systemNodesActive; // list of nodes in active-only ASystem lists

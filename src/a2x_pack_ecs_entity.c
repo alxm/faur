@@ -20,6 +20,7 @@
 #include "a2x_pack_ecs_entity.v.h"
 
 #include "a2x_pack_ecs.v.h"
+#include "a2x_pack_ecs_collection.v.h"
 #include "a2x_pack_ecs_system.v.h"
 #include "a2x_pack_fps.v.h"
 #include "a2x_pack_listit.v.h"
@@ -50,6 +51,12 @@ AEntity* a_entity_new(const char* Id, void* Context)
 
     a_ecs__entityAddToList(e, A_ECS__NEW);
 
+    ACollection* collection = a_ecs_collectionGet();
+
+    if(collection) {
+        a_collection__add(collection, e);
+    }
+
     return e;
 }
 
@@ -61,6 +68,10 @@ void a_entity__free(AEntity* Entity)
 
     if(Entity->flags & A_ENTITY__DEBUG) {
         a_out__message("a_entity__free('%s')", a_entity_idGet(Entity));
+    }
+
+    if(Entity->collectionNode) {
+        a_list_removeNode(Entity->collectionNode);
     }
 
     a_list_free(Entity->matchingSystemsActive);
@@ -200,6 +211,11 @@ void a_entity_removeSet(AEntity* Entity)
 
     A_FLAG_SET(Entity->flags, A_ENTITY__REMOVED);
     a_ecs__entityMoveToList(Entity, A_ECS__REMOVED_QUEUE);
+
+    if(Entity->collectionNode) {
+        a_list_removeNode(Entity->collectionNode);
+        Entity->collectionNode = NULL;
+    }
 }
 
 bool a_entity_activeGet(const AEntity* Entity)
