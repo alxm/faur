@@ -28,11 +28,8 @@
 unsigned a_system__tableLen;
 static ASystem* g_systemsTable;
 
-static AList* g_inactive; // list of AEntity detected as inactive
-
 void a_system__init(void)
 {
-    g_inactive = a_list_new();
 }
 
 void a_system__uninit(void)
@@ -43,8 +40,6 @@ void a_system__uninit(void)
     }
 
     free(g_systemsTable);
-
-    a_list_free(g_inactive);
 }
 
 void a_system__tableInit(unsigned NumSystems)
@@ -121,11 +116,9 @@ void a_system_run(int System)
             if(a_entity_activeGet(entity)) {
                 system->handler(entity);
             } else {
-                a_list_addLast(g_inactive, entity);
+                a_entity__removeFromActiveSystems(entity);
             }
         }
-
-        a_list_clearEx(g_inactive, (AFree*)a_entity__removeFromActiveSystems);
     } else {
         A_LIST_ITERATE(system->entities, AEntity*, entity) {
             system->handler(entity);
