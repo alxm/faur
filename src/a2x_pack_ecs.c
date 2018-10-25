@@ -34,9 +34,6 @@ void a_ecs__init(void)
     for(int i = A_ECS__NUM; i--; ) {
         g_lists[i] = a_list_new();
     }
-
-    a_component__init();
-    a_system__init();
 }
 
 void a_ecs__uninit(void)
@@ -53,10 +50,9 @@ void a_ecs__uninit(void)
 
 void a_ecs_init(unsigned NumComponents, unsigned NumSystems, unsigned NumMessages)
 {
-    a_component__tableInit(NumComponents);
-    a_system__tableInit(NumSystems);
-
-    a_entity__msgLen = NumMessages;
+    a_component__init(NumComponents);
+    a_system__init(NumSystems);
+    a_entity__init(NumMessages);
 }
 
 bool a_ecs__isDeleting(void)
@@ -71,7 +67,7 @@ void a_ecs__tick(void)
     // Check what systems the new entities match
     A_LIST_ITERATE(g_lists[A_ECS__NEW], AEntity*, e) {
         for(unsigned id = a_system__tableLen; id--; ) {
-            ASystem* s = a_system__tableGet((int)id, __func__);
+            ASystem* s = a_system__get((int)id, __func__);
 
             if(a_bitfield_testMask(e->componentBits, s->componentBits)) {
                 if(s->onlyActiveEntities) {

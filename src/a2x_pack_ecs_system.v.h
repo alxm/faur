@@ -38,8 +38,7 @@ struct ASystem {
 
 extern unsigned a_system__tableLen;
 
-extern void a_system__init(void);
+extern void a_system__init(unsigned NumSystems);
 extern void a_system__uninit(void);
 
-extern void a_system__tableInit(unsigned NumSystems);
-extern ASystem* a_system__tableGet(int System, const char* CallerFunction);
+extern ASystem* a_system__get(int System, const char* CallerFunction);

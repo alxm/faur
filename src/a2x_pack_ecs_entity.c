@@ -27,7 +27,12 @@
 #include "a2x_pack_out.v.h"
 #include "a2x_pack_str.v.h"
 
-unsigned a_entity__msgLen;
+static unsigned g_numMessages;
+
+void a_entity__init(unsigned NumMessages)
+{
+    g_numMessages = NumMessages;
+}
 
 AEntity* a_entity_new(const char* Id, void* Context)
 {
@@ -239,7 +244,7 @@ void a_entity_activeSetPermanent(AEntity* Entity)
 
 void* a_entity_componentAdd(AEntity* Entity, int Component)
 {
-    const AComponent* c = a_component__tableGet(Component, __func__);
+    const AComponent* c = a_component__get(Component, __func__);
 
     if(Entity->flags & A_ENTITY__DEBUG) {
         a_out__message("a_entity_componentAdd('%s', '%s')",
@@ -276,14 +281,14 @@ void* a_entity_componentAdd(AEntity* Entity, int Component)
 
 bool a_entity_componentHas(const AEntity* Entity, int Component)
 {
-    a_component__tableGet(Component, __func__);
+    a_component__get(Component, __func__);
 
     return Entity->componentsTable[Component] != NULL;
 }
 
 void* a_entity_componentGet(const AEntity* Entity, int Component)
 {
-    a_component__tableGet(Component, __func__);
+    a_component__get(Component, __func__);
     AComponentHeader* header = Entity->componentsTable[Component];
 
     return header ? a_component__headerGetData(header) : NULL;
@@ -291,7 +296,7 @@ void* a_entity_componentGet(const AEntity* Entity, int Component)
 
 void* a_entity_componentReq(const AEntity* Entity, int Component)
 {
-    const AComponent* c = a_component__tableGet(Component, __func__);
+    const AComponent* c = a_component__get(Component, __func__);
     AComponentHeader* header = Entity->componentsTable[Component];
 
     if(header == NULL) {
@@ -384,13 +389,13 @@ bool a_entity__isMatchedToSystems(const AEntity* Entity)
 
 void a_entity_messageSet(AEntity* Entity, int Message, AMessageHandler* Handler)
 {
-    if(Message < 0 || Message >= (int)a_entity__msgLen) {
+    if(Message < 0 || Message >= (int)g_numMessages) {
         a_out__fatal("a_entity_messageSet: Unknown id %d", Message);
     }
 
     if(Entity->messageHandlers == NULL) {
-        Entity->messageHandlers =
-            a_mem_zalloc(a_entity__msgLen * sizeof(AMessageHandler*));
+        Entity->messageHandlers = a_mem_zalloc(
+                                    g_numMessages * sizeof(AMessageHandler*));
     } else if(Entity->messageHandlers[Message] != NULL) {
         a_out__fatal("a_entity_messageSet: %d already set for '%s'",
                      Message,
@@ -409,7 +414,7 @@ void a_entity_messageSend(AEntity* To, AEntity* From, int Message)
                        Message);
     }
 
-    if(Message < 0 || Message >= (int)a_entity__msgLen) {
+    if(Message < 0 || Message >= (int)g_numMessages) {
         a_out__fatal("a_entity_messageSend: Unknown id %d", Message);
     }
 

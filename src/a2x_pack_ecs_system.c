@@ -28,8 +28,15 @@
 unsigned a_system__tableLen;
 static ASystem* g_systemsTable;
 
-void a_system__init(void)
+void a_system__init(unsigned NumSystems)
 {
+    a_system__tableLen = NumSystems;
+    g_systemsTable = a_mem_malloc(NumSystems * sizeof(ASystem));
+
+    while(NumSystems--) {
+        g_systemsTable[NumSystems].name = "???";
+        g_systemsTable[NumSystems].entities = NULL;
+    }
 }
 
 void a_system__uninit(void)
@@ -42,18 +49,7 @@ void a_system__uninit(void)
     free(g_systemsTable);
 }
 
-void a_system__tableInit(unsigned NumSystems)
-{
-    a_system__tableLen = NumSystems;
-    g_systemsTable = a_mem_malloc(NumSystems * sizeof(ASystem));
-
-    while(NumSystems--) {
-        g_systemsTable[NumSystems].name = "???";
-        g_systemsTable[NumSystems].entities = NULL;
-    }
-}
-
-ASystem* a_system__tableGet(int System, const char* CallerFunction)
+ASystem* a_system__get(int System, const char* CallerFunction)
 {
     if(g_systemsTable == NULL) {
         a_out__fatal("%s: Call a_ecs_init first", CallerFunction);
@@ -93,15 +89,15 @@ void a_system_new(int Index, const char* Name, ASystemHandler* Handler, ASystemS
 
 void a_system_add(int System, int Component)
 {
-    ASystem* s = a_system__tableGet(System, __func__);
-    const AComponent* c = a_component__tableGet(Component, __func__);
+    ASystem* s = a_system__get(System, __func__);
+    const AComponent* c = a_component__get(Component, __func__);
 
     a_bitfield_set(s->componentBits, c->bit);
 }
 
 void a_system_run(int System)
 {
-    ASystem* system = a_system__tableGet(System, __func__);
+    ASystem* system = a_system__get(System, __func__);
 
     if(system->muted) {
         return;
@@ -130,7 +126,7 @@ void a_system_run(int System)
 
 void a_system_muteSet(int System, bool DoMute)
 {
-    ASystem* system = a_system__tableGet(System, __func__);
+    ASystem* system = a_system__get(System, __func__);
 
     system->muted = DoMute;
 }
