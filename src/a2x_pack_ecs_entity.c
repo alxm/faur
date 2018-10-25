@@ -142,6 +142,11 @@ void a_entity_refInc(AEntity* Entity)
             "a_entity_refInc: '%s' is removed", a_entity_idGet(Entity));
     }
 
+    if(Entity->references == INT_MAX) {
+        a_out__fatal(
+            "a_entity_refInc: '%s' ref count too high", a_entity_idGet(Entity));
+    }
+
     Entity->references++;
 }
 
@@ -157,12 +162,14 @@ void a_entity_refDec(AEntity* Entity)
         a_out__message("a_entity_refDec('%s')", a_entity_idGet(Entity));
     }
 
+    if(Entity->references == 0) {
+        a_out__fatal(
+            "a_entity_refDec: '%s' ref count too low", a_entity_idGet(Entity));
+    }
+
     Entity->references--;
 
-    if(Entity->references < 0) {
-        a_out__fatal("a_entity_refDec: Mismatched ref count for '%s'",
-                     a_entity_idGet(Entity));
-    } else if(Entity->references == 0
+    if(Entity->references == 0
         && a_ecs__entityIsInList(Entity, A_ECS__REMOVED_LIMBO)) {
 
         a_ecs__entityMoveToList(Entity, A_ECS__REMOVED_QUEUE);
@@ -310,12 +317,12 @@ void a_entity_muteInc(AEntity* Entity)
 
     if(a_entity_removeGet(Entity)) {
         a_out__warningv(
-            "a_entity_muteInc: Entity '%s' is removed", a_entity_idGet(Entity));
+            "a_entity_muteInc: '%s' is removed", a_entity_idGet(Entity));
         return;
     }
 
     if(Entity->muteCount == INT_MAX) {
-        a_out__fatal("a_entity_muteInc: Entity '%s' mute count too high",
+        a_out__fatal("a_entity_muteInc: '%s' mute count too high",
                      a_entity_idGet(Entity));
     }
 
@@ -337,7 +344,7 @@ void a_entity_muteDec(AEntity* Entity)
     }
 
     if(Entity->muteCount == 0) {
-        a_out__fatal("a_entity_muteDec: Entity '%s' mute count too low",
+        a_out__fatal("a_entity_muteDec: '%s' mute count too low",
                      a_entity_idGet(Entity));
     }
 
