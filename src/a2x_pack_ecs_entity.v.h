@@ -25,26 +25,33 @@
 #include "a2x_pack_ecs_component.v.h"
 #include "a2x_pack_list.v.h"
 
+typedef enum {
+    A_ENTITY__ACTIVE_REMOVED = A_FLAG_BIT(0), // kicked out by active system
+    A_ENTITY__ACTIVE_PERMANENT = A_FLAG_BIT(1), // entity always reports active
+    A_ENTITY__DEBUG = A_FLAG_BIT(2), // print debug messages for this entity
+    A_ENTITY__REMOVED = A_FLAG_BIT(3), // marked for removal, may have refs
+} AEntityFlags;
+
 struct AEntity {
     char* id; // specified name for debugging
     void* context; // global context
     AEntity* parent; // manually associated parent entity
     AListNode* node; // list node in one of AEcsListId
+    AListNode* collectionNode; // ACollection list nod
     AList* matchingSystemsActive; // list of ASystem
     AList* matchingSystemsEither; // list of ASystem
     AList* systemNodesActive; // list of nodes in active-only ASystem lists
     AList* systemNodesEither; // list of nodes in normal ASystem.entities lists
     ABitfield* componentBits; // each component's bit is set
-    AMessageHandler** messageHandlers; // AMessageHandler*[a_entity__msgLen]
+    AMessageHandler** messageHandlers; // AMessageHandler*[g_numMessages]
     unsigned lastActive; // frame when a_entity_activeSet was last called
     int references; // if >0, then the entity lingers in the removed limbo list
-    bool removedFromActive; // set when an active-only system kicks entity out
-    bool permanentActive; // if set then entity always reports as active
-    bool debug; // whether to print debug messages for this entity
+    int muteCount; // if >0, then the entity isn't picked up by any systems
+    AEntityFlags flags; // various properties
     AComponentHeader* componentsTable[];
 };
 
-extern unsigned a_entity__msgLen;
+extern void a_entity__init(unsigned NumMessages);
 
 extern void a_entity__free(AEntity* Entity);
 

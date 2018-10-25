@@ -36,11 +36,10 @@ typedef struct {
 
 extern unsigned a_component__tableLen;
 
-extern void a_component__init(void);
+extern void a_component__init(unsigned NumComponents);
 extern void a_component__uninit(void);
 
-extern void a_component__tableInit(unsigned NumComponents);
-extern const AComponent* a_component__tableGet(int Component, const char* CallerFunction);
+extern const AComponent* a_component__get(int Component, const char* CallerFunction);
 
 static inline void* a_component__headerGetData(const AComponentHeader* Header)
 {

@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 Alex Margarit
+    Copyright 2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -19,11 +19,8 @@
 
 #pragma once
 
-#include "a2x_system_includes.h"
-
 #include "a2x_pack_ecs_collection.p.h"
 
-extern void a_ecs_init(unsigned NumComponents, unsigned NumSystems, unsigned NumMessages);
+#include "a2x_pack_ecs_entity.v.h"
 
-extern ACollection* a_ecs_collectionGet(void);
-extern void a_ecs_collectionSet(ACollection* Collection);
+extern void a_collection__add(ACollection* Collection, AEntity* Entity);

@@ -28,26 +28,7 @@
 unsigned a_system__tableLen;
 static ASystem* g_systemsTable;
 
-static AList* g_inactive; // list of AEntity detected as inactive
-
-void a_system__init(void)
-{
-    g_inactive = a_list_new();
-}
-
-void a_system__uninit(void)
-{
-    for(unsigned s = a_system__tableLen; s--; ) {
-        a_list_free(g_systemsTable[s].entities);
-        a_bitfield_free(g_systemsTable[s].componentBits);
-    }
-
-    free(g_systemsTable);
-
-    a_list_free(g_inactive);
-}
-
-void a_system__tableInit(unsigned NumSystems)
+void a_system__init(unsigned NumSystems)
 {
     a_system__tableLen = NumSystems;
     g_systemsTable = a_mem_malloc(NumSystems * sizeof(ASystem));
@@ -58,7 +39,17 @@ void a_system__tableInit(unsigned NumSystems)
     }
 }
 
-ASystem* a_system__tableGet(int System, const char* CallerFunction)
+void a_system__uninit(void)
+{
+    for(unsigned s = a_system__tableLen; s--; ) {
+        a_list_free(g_systemsTable[s].entities);
+        a_bitfield_free(g_systemsTable[s].componentBits);
+    }
+
+    free(g_systemsTable);
+}
+
+ASystem* a_system__get(int System, const char* CallerFunction)
 {
     if(g_systemsTable == NULL) {
         a_out__fatal("%s: Call a_ecs_init first", CallerFunction);
@@ -94,64 +85,48 @@ void a_system_new(int Index, const char* Name, ASystemHandler* Handler, ASystemS
     s->componentBits = a_bitfield_new(a_component__tableLen);
     s->onlyActiveEntities = OnlyActiveEntities;
     s->muted = false;
-    s->runsInCurrentState = false;
 }
 
 void a_system_add(int System, int Component)
 {
-    ASystem* s = a_system__tableGet(System, __func__);
-    const AComponent* c = a_component__tableGet(Component, __func__);
+    ASystem* s = a_system__get(System, __func__);
+    const AComponent* c = a_component__get(Component, __func__);
 
     a_bitfield_set(s->componentBits, c->bit);
 }
 
-void a_system__run(ASystem* System)
+void a_system_run(int System)
 {
-    if(System->muted) {
+    ASystem* system = a_system__get(System, __func__);
+
+    if(system->muted) {
         return;
     }
 
-    if(System->compare) {
-        a_list_sort(System->entities, (AListCompare*)System->compare);
+    if(system->compare) {
+        a_list_sort(system->entities, (AListCompare*)system->compare);
     }
 
-    if(System->onlyActiveEntities) {
-        A_LIST_ITERATE(System->entities, AEntity*, entity) {
+    if(system->onlyActiveEntities) {
+        A_LIST_ITERATE(system->entities, AEntity*, entity) {
             if(a_entity_activeGet(entity)) {
-                System->handler(entity);
+                system->handler(entity);
             } else {
-                a_list_addLast(g_inactive, entity);
+                a_entity__removeFromActiveSystems(entity);
             }
         }
-
-        a_list_clearEx(g_inactive, (AFree*)a_entity__removeFromActiveSystems);
     } else {
-        A_LIST_ITERATE(System->entities, AEntity*, entity) {
-            System->handler(entity);
+        A_LIST_ITERATE(system->entities, AEntity*, entity) {
+            system->handler(entity);
         }
     }
 
     a_ecs__flushEntitiesFromSystems();
 }
 
-void a_system_run(int System)
-{
-    ASystem* system = a_system__tableGet(System, __func__);
-
-    if(!system->runsInCurrentState) {
-        a_out__fatal("a_system_run: '%s' is not set to run", System);
-    }
-
-    a_system__run(system);
-}
-
 void a_system_muteSet(int System, bool DoMute)
 {
-    ASystem* system = a_system__tableGet(System, __func__);
-
-    if(!system->runsInCurrentState) {
-        a_out__fatal("a_system_muteSet: '%s' is not set to run", System);
-    }
+    ASystem* system = a_system__get(System, __func__);
 
     system->muted = DoMute;
 }

@@ -25,6 +25,11 @@
 #define A__ITERATE(List, N) \
     for(AListNode* N = List->sentinel.next; N != &List->sentinel; N = N->next)
 
+#define A__ITERATE_SAFE(List, Current, Next)                             \
+    for(AListNode *Current = List->sentinel.next, *Next = Current->next; \
+        Current != &List->sentinel;                                      \
+        Current = Next, Next = Next->next)
+
 AList* a_list_new(void)
 {
     AList* list = a_mem_malloc(sizeof(AList));
@@ -50,18 +55,7 @@ void a_list_freeEx(AList* List, AFree* Free)
         return;
     }
 
-    if(Free) {
-        A__ITERATE(List, n) {
-            Free(n->content);
-        }
-    }
-
-    for(AListNode* n = List->sentinel.next; n != &List->sentinel; ) {
-        AListNode* t = n;
-
-        n = n->next;
-        free(t);
-    }
+    a_list_clearEx(List, Free);
 
     free(List);
 }
@@ -243,16 +237,18 @@ void a_list_clear(AList* List)
 void a_list_clearEx(AList* List, AFree* Free)
 {
     if(Free) {
-        A__ITERATE(List, n) {
-            Free(n->content);
+        A__ITERATE_SAFE(List, current, next) {
+            Free(current->content);
+
+            // Check if the Free callback already self-removed from the list
+            if(next->prev == current) {
+                free(current);
+            }
         }
-    }
-
-    for(AListNode* n = List->sentinel.next; n != &List->sentinel; ) {
-        AListNode* t = n;
-
-        n = n->next;
-        free(t);
+    } else {
+        A__ITERATE_SAFE(List, current, next) {
+            free(current);
+        }
     }
 
     List->sentinel.next = &List->sentinel;

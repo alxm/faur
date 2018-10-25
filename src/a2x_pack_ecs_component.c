@@ -33,19 +33,10 @@ static inline AComponentHeader* getHeader(const void* Component)
     return (AComponentHeader*)Component - 1;
 }
 
-void a_component__init(void)
+void a_component__init(unsigned NumComponents)
 {
     g_components = a_strhash_new();
-}
 
-void a_component__uninit(void)
-{
-    a_strhash_free(g_components);
-    free(g_componentsTable);
-}
-
-void a_component__tableInit(unsigned NumComponents)
-{
     a_component__tableLen = NumComponents;
     g_componentsTable = a_mem_malloc(NumComponents * sizeof(AComponent));
 
@@ -55,7 +46,13 @@ void a_component__tableInit(unsigned NumComponents)
     }
 }
 
-const AComponent* a_component__tableGet(int Component, const char* CallerFunction)
+void a_component__uninit(void)
+{
+    a_strhash_free(g_components);
+    free(g_componentsTable);
+}
+
+const AComponent* a_component__get(int Component, const char* CallerFunction)
 {
     if(g_componentsTable == NULL) {
         a_out__fatal("%s: Call a_ecs_init first", CallerFunction);
