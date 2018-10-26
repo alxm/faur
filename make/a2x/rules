@@ -62,14 +62,12 @@ $(A_FILE_EDITOR_TAGS) : $(A_FILE_PUBLIC_A2X_HEADER) $(A_DIR_BIN)/a2x_tags
 	@ $(A_DIR_BIN)/a2x_tags $<
 
 $(A_FILE_PUBLIC_A2X_LIB) : $(A_FILES_OBJ)
-	@ echo "Building $(notdir $(A_FILE_PUBLIC_A2X_LIB))"
 	@ mkdir -p $(@D)
-	@ $(AR) rs $@ $(A_FILES_OBJ)
+	$(AR) rs $@ $(A_FILES_OBJ)
 
 $(A_DIR_OBJ_PLATFORM)/%.c.o : $(A_DIR_SRC)/%.c
-	@ echo "Compiling $(notdir $<)"
 	@ mkdir -p $(@D)
-	@ $(CC) -c -o $@ $< $(A_GENERIC_CFLAGS)
+	$(CC) -c -o $@ $< $(A_GENERIC_CFLAGS)
 
 $(A_DIR_OBJ_PLATFORM)/a2x_pack_embed.c.o : $(A_FILES_MEDIA_PNG_H)
 
@@ -78,5 +76,4 @@ $(A_DIR_OBJ_PLATFORM_MEDIA)/a__gfx_%_png.h : $(A_DIR_MEDIA)/%.png $(A_DIR_BIN)/a
 	@ $(A_DIR_BIN)/a2x_bin $< $@
 
 clean :
-	@ echo "Removing $(A_FILE_PUBLIC_A2X_HEADER) $(A_FILE_PUBLIC_A2X_LIB) $(A_DIR_OBJ_PLATFORM)"
-	@ rm -rf $(A_FILE_PUBLIC_A2X_HEADER) $(A_FILE_PUBLIC_A2X_LIB) $(A_DIR_OBJ_PLATFORM)
+	rm -rf $(A_FILE_PUBLIC_A2X_HEADER) $(A_FILE_PUBLIC_A2X_LIB) $(A_DIR_OBJ_PLATFORM)
