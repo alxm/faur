@@ -1,26 +1,29 @@
 #
-# User variables:
+# User makefile config variables:
 #
-# A_APP_NAME
+# A_CONFIG_APP_NAME
 #   Target binary file name
 #
-# A_EXTRA_CFLAGS
+# A_CONFIG_BUILD_CFLAGS
 #   Passed to compiler
 #
-# A_EMBED_MEDIA
+# A_CONFIG_BUILD_LIBS
+#   Passed to linker
+#
+# A_CONFIG_EMBED_MEDIA
 #   true or false
 #
-# A_EMBED_PATHS
+# A_CONFIG_EMBED_PATHS
 #   Space-separated file or dir paths
 #
-# A_PND_DIR
+# A_CONFIG_PND_DIR
 #   Path to dir that PND is packaged from
 #
-# A_PND_NAME
+# A_CONFIG_PND_NAME
 #   Target PND file name
 #
-# A_RULES_CLEAN
-#   Rules to run before the default clean
+# A_CONFIG_MAKE_CLEAN
+#   Targets to run before the default clean
 #
 
 # Relative path to project root from make subdir
@@ -49,7 +52,7 @@ A_DIR_GEN := $(A_DIR_OBJ_PLATFORM)/a2x_gen
 #
 # The final bin that gets built
 #
-A_FILE_TARGET_BIN := $(A_ROOT)/$(A_DIR_BIN)/$(A_APP_NAME)
+A_FILE_TARGET_BIN := $(A_ROOT)/$(A_DIR_BIN)/$(A_CONFIG_APP_NAME)
 
 #
 # Project build time
@@ -79,7 +82,7 @@ A_FILES_OBJ := $(addprefix $(A_DIR_OBJ_PLATFORM)/, $(A_FILES_SRC_C:=.o)) $(A_FIL
 #
 # Check if project wants to embed images and sound effects with a2x_bin
 #
-ifeq ($(A_EMBED_MEDIA), true)
+ifeq ($(A_CONFIG_EMBED_MEDIA), true)
     #
     # PNG and WAV files we can convert to C code
     #
@@ -123,7 +126,7 @@ A_GENERIC_CFLAGS := \
     -D_XOPEN_SOURCE \
     -I$(A2X_PATH)/inc/$(A_PLATFORM) \
     $(A_BUILD_CFLAGS) \
-    $(A_EXTRA_CFLAGS) \
+    $(A_CONFIG_BUILD_CFLAGS) \
 
 all : $(A_FILE_TARGET_BIN)
 
@@ -131,7 +134,7 @@ $(A_FILE_TARGET_BIN) : $(A_FILES_OBJ) $(A_FILE_OBJ_GEN_BUILDTIME)
 	@ mkdir -p $(@D)
 	$(CC) -o $@ $^ \
 	$(A_BUILD_CFLAGS) \
-	$(A_EXTRA_LIBS) \
+	$(A_CONFIG_BUILD_LIBS) \
 	$(A2X_PATH)/lib/$(A_PLATFORM)/a2x.a \
 	$(A_BUILD_LIBS)
 
@@ -159,11 +162,11 @@ $(A_DIR_GEN)/%.c.o : $(A_DIR_GEN)/%.c
 	@ mkdir -p $(@D)
 	$(CC) -c -o $@ $< $(A_GENERIC_CFLAGS)
 
-clean : $(A_RULES_CLEAN)
+clean : $(A_CONFIG_MAKE_CLEAN)
 	rm -rf $(A_FILE_TARGET_BIN) $(A_DIR_OBJ_PLATFORM)
 
 cleanbin :
 	rm -f $(A_FILE_TARGET_BIN)
 
 run : all
-	cd $(A_ROOT)/$(A_DIR_BIN) ; ./$(A_APP_NAME)
+	cd $(A_ROOT)/$(A_DIR_BIN) ; ./$(A_CONFIG_APP_NAME)

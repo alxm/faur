@@ -71,7 +71,7 @@ class NewTool(Tool):
 
         dir_make.write_file('Makefile',
 """\
-A_APP_NAME := {0}
+A_CONFIG_APP_NAME := {0}
 
 include $(A2X_PATH)/make/project/Makefile
 """.format(project_name))
