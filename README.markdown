@@ -2,27 +2,30 @@
 
 a2x is a C framework I wrote for my video games. It runs natively on Linux and FreeBSD, and can be cross-compiled for Windows, GP2X, Wiz, Caanoo, Open Pandora, and HTML5.
 
-## Install
+## Dependencies
 
-### Download & Dependencies
+```sh
+$ apt install git build-essential python3 libpng-dev libsdl2-dev libsdl2-mixer-dev
+```
+
+## Download
 
 ```sh
 $ cd ~
-$ apt install git build-essential python3 libpng-dev libsdl2-dev libsdl2-mixer-dev
 $ git clone git://github.com/alxm/a2x.git
 ```
 
-Add `~/a2x/bin` to the `$PATH` variable, or prepend it to all calls to `a2x_*` scripts below.
-
-### Build
+## Build & Install
 
 ```sh
+$ export A2X_PATH="$HOME/a2x"
+$ export PATH="$PATH:$A2X_PATH/bin"
 $ a2x_install
 ```
 
-### Hello World Project
+## *Hello, World!* Project
 
-`a2x_new` generates a small starter project:
+`a2x_new` generates a small one-file project that draws a square which you can move with the arrow keys or a gamepad.
 
 ```sh
 $ a2x_new hello
@@ -32,7 +35,7 @@ $ make run
 
 ![Starter Project Screenshot](https://github.com/alxm/a2x/raw/master/media/hello.gif "Starter Project Screenshot")
 
-The starter project draws a square on the screen, which you can move around with the arrow keys or with a gamepad. The code is in `hello/src/main.c`:
+All the code is in `hello/src/main.c`:
 
 ```C
 #include <a2x.h>
@@ -40,19 +43,14 @@ The starter project draws a square on the screen, which you can move around with
 A_SETUP
 {
     a_settings_stringSet(A_SETTING_APP_TITLE, "hello");
-    a_settings_stringSet(A_SETTING_APP_VERSION, "0.1.0");
-    a_settings_stringSet(A_SETTING_APP_AUTHOR, "<your username>");
-    a_settings_boolSet(A_SETTING_OUTPUT_ON, true);
+    a_settings_stringSet(A_SETTING_APP_VERSION, "1.0");
 }
 
 A_STATE(drawBox)
 {
     static struct {
         int x, y;
-        AButton* up;
-        AButton* down;
-        AButton* left;
-        AButton* right;
+        AButton *up, *down, *left, *right;
     } context;
 
     A_STATE_INIT
@@ -100,14 +98,6 @@ A_STATE(drawBox)
         a_pixel_colorSetHex(0xffaa44);
         a_draw_rectangle(context.x - 40, context.y - 40, 80, 80);
     }
-
-    A_STATE_FREE
-    {
-        a_button_free(context.up);
-        a_button_free(context.down);
-        a_button_free(context.left);
-        a_button_free(context.right);
-    }
 }
 
 A_MAIN
@@ -116,9 +106,9 @@ A_MAIN
 }
 ```
 
-### Cross-Compile for Other Platforms
+## Cross-Compile for Other Platforms
 
-I originally wrote a2x for my GP2X games. The following targets are also supported:
+I originally wrote a2x to make games for the Linux-based [GP2X handheld](https://www.alxm.org/games/gamepark.html). The following targets are also supported:
 
 * Emscripten (HTML5)
 * GPH SDK (Caanoo)
@@ -130,7 +120,7 @@ Edit `~/.config/a2x/sdk.config` with your SDK paths:
 
 ```sh
 $ a2x_install                    # Create initial sdk.config
-$ nano ~/.config/a2x/sdk.config  # Edit with your own paths
+$ nano ~/.config/a2x/sdk.config  # Edit with your own SDK paths
 $ a2x_install                    # Process changes
 $ cd a2x/make/a2x                #
 $ make -f Makefile.gp2x          # Cross-compile for GP2X, etc.
