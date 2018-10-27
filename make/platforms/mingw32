@@ -1,6 +1,8 @@
+include $(A_FILE_SDKCONFIG_MK)
+
 A_PLATFORM := mingw32
 
-MINGW_BIN := $(MINGW32_ROOT)/$(MINGW32_ARCH)/bin
+MINGW_BIN := $(A_SDK_MINGW32_ROOT)/$(A_SDK_MINGW32_ARCH)/bin
 
 A_BUILD_LIBS := \
     -u _SDL_main \
@@ -20,7 +22,7 @@ A_BUILD_CFLAGS := \
     -O3 \
     $(shell $(MINGW_BIN)/sdl2-config --cflags) \
 
-PREFIX := $(MINGW32_ARCH)-
+PREFIX := $(A_SDK_MINGW32_ARCH)-
 
 export CC      := $(PREFIX)gcc
 export CXX     := $(PREFIX)g++

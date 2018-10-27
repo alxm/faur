@@ -30,6 +30,7 @@ do_emmake ()
     record_result "$1" $?
 }
 
+make config
 source /opt/emsdk-portable/emsdk_env.sh
 
 do_make "Linux native" Makefile
