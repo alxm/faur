@@ -40,9 +40,6 @@ static int g_volumeMax;
     static ATimer* g_volTimer;
     static AButton* g_volumeUpButton;
     static AButton* g_volumeDownButton;
-    static APixel g_volbarBackground;
-    static APixel g_volbarBorder;
-    static APixel g_volbarFill;
 #endif
 
 #if A_BUILD_DEVICE_KEYBOARD
@@ -83,19 +80,6 @@ void a_sound__init(void)
     #if A_BUILD_DEVICE_KEYBOARD
         g_muteButton = a_button_new();
         a_button_bind(g_muteButton, A_KEY_M);
-    #endif
-
-    #if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ
-        const char* color;
-
-        color = a_settings_stringGet(A_SETTING_COLOR_VOLBAR_BACKGROUND);
-        g_volbarBackground = a_pixel_fromHex((uint32_t)strtol(color, NULL, 16));
-
-        color = a_settings_stringGet(A_SETTING_COLOR_VOLBAR_BORDER);
-        g_volbarBorder = a_pixel_fromHex((uint32_t)strtol(color, NULL, 16));
-
-        color = a_settings_stringGet(A_SETTING_COLOR_VOLBAR_FILL);
-        g_volbarFill = a_pixel_fromHex((uint32_t)strtol(color, NULL, 16));
     #endif
 }
 
@@ -145,15 +129,21 @@ void a_sound__draw(void)
 
         a_pixel_blendSet(A_PIXEL_BLEND_PLAIN);
 
-        a_pixel_colorSetPixel(g_volbarBackground);
+        a_pixel_colorSetPixel(
+            a_settings_pixelGet(A_SETTING_COLOR_VOLBAR_BACKGROUND));
+
         a_draw_rectangle(0, 181, g_volumeMax / A__VOLUME_STEP + 5, 16);
 
-        a_pixel_colorSetPixel(g_volbarBorder);
+        a_pixel_colorSetPixel(
+            a_settings_pixelGet(A_SETTING_COLOR_VOLBAR_BORDER));
+
         a_draw_hline(0, g_volumeMax / A__VOLUME_STEP + 4, 180);
         a_draw_hline(0, g_volumeMax / A__VOLUME_STEP + 4, 183 + 14);
         a_draw_vline(g_volumeMax / A__VOLUME_STEP + 4 + 1, 181, 183 + 13);
 
-        a_pixel_colorSetPixel(g_volbarFill);
+        a_pixel_colorSetPixel(
+            a_settings_pixelGet(A_SETTING_COLOR_VOLBAR_FILL));
+
         a_draw_rectangle(0, 186, g_volume / A__VOLUME_STEP, 6);
     #endif
 }
