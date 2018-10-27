@@ -56,13 +56,10 @@ class Sdk:
 class SdkConfigTool(Tool):
     def main(self):
         config_read = self.get_arg('UserConfig')
-        config_write = self.get_arg('GeneratedConfig')
+        config_write = self.get_arg('[GeneratedConfig]')
 
         if not os.path.exists(config_read):
-            self.output.note('{} does not exist'.format(config_read))
             self.writefile(config_read, """\
-# Comment out SDKs you don't have installed
-
 sdk.mingw32.root = /usr
 sdk.mingw32.arch = i686-w64-mingw32
 
@@ -81,6 +78,9 @@ sdk.pandora.utils = sdk_utils
 """)
         elif not os.path.isfile(config_read):
             self.output.error('{} is not a file'.format(config_read))
+
+        if config_write == '':
+            return
 
         sdks = {}
 
@@ -115,6 +115,9 @@ sdk.pandora.utils = sdk_utils
             assignment = re_assignment.match(line)
 
             if not assignment:
+                if len(line.strip()) > 0:
+                    self.output.note('Ignoring line: "{}"'.format(line))
+
                 continue
 
             sdk_name = assignment.group(1)
@@ -143,4 +146,4 @@ sdk.pandora.utils = sdk_utils
         self.writefile(config_write, out)
 
 if __name__ == '__main__':
-    SdkConfigTool('UserConfig GeneratedConfig').run()
+    SdkConfigTool('UserConfig [GeneratedConfig]').run()

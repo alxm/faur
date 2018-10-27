@@ -128,6 +128,8 @@ A_GENERIC_CFLAGS := \
     $(A_BUILD_CFLAGS) \
     $(A_CONFIG_BUILD_CFLAGS) \
 
+.PHONY : all clean cleanbin run
+
 all : $(A_FILE_TARGET_BIN)
 
 $(A_FILE_TARGET_BIN) : $(A_FILES_OBJ) $(A_FILE_OBJ_GEN_BUILDTIME)

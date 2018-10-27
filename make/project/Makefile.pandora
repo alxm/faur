@@ -1,6 +1,8 @@
-include $(HOME)/.config/a2x/sdk.config.make
+include $(A2X_PATH)/make/global/defs
 include $(A2X_PATH)/make/platforms/pandora
 include $(A2X_PATH)/make/project/rules
+
+.PHONY : pnd
 
 pnd:
 	cp $(A_ROOT)/$(A_DIR_BIN)/$(A_CONFIG_APP_NAME) $(A_ROOT)/$(A_CONFIG_PND_DIR)/

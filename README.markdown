@@ -2,25 +2,20 @@
 
 a2x is a C framework I wrote for my video games. It runs natively on Linux and FreeBSD, and can be cross-compiled for Windows, GP2X, Wiz, Caanoo, Open Pandora, and HTML5.
 
-## Dependencies
+## Build
 
 ```sh
-$ apt install git build-essential python3 libpng-dev libsdl2-dev libsdl2-mixer-dev
-```
-
-## Download
-
-```sh
+$ sudo apt install git build-essential python3
+$ sudo apt install libpng-dev libsdl2-dev libsdl2-mixer-dev
+$
 $ cd ~
 $ git clone git://github.com/alxm/a2x.git
-```
-
-## Build & Install
-
-```sh
+$
 $ export A2X_PATH="$HOME/a2x"
 $ export PATH="$PATH:$A2X_PATH/bin"
-$ a2x_install
+$
+$ cd a2x/make/a2x
+$ make
 ```
 
 ## *Hello, World!* Project
@@ -119,10 +114,10 @@ I originally wrote a2x to make games for the Linux-based [GP2X handheld](https:/
 Edit `~/.config/a2x/sdk.config` with your SDK paths:
 
 ```sh
-$ a2x_install                    # Create initial sdk.config
+$ cd a2x/make/a2x
+$ make config                    # Create default sdk.config file
 $ nano ~/.config/a2x/sdk.config  # Edit with your own SDK paths
-$ a2x_install                    # Process changes
-$ cd a2x/make/a2x                #
+$ make config                    # Process changes
 $ make -f Makefile.gp2x          # Cross-compile for GP2X, etc.
 ```
 
