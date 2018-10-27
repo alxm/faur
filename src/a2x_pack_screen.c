@@ -30,7 +30,9 @@
 AScreen a__screen;
 static AList* g_stack; // list of AScreen
 
-static AButton* g_fullScreenButton;
+#if A_BUILD_SYSTEM_DESKTOP
+    static AButton* g_fullScreenButton;
+#endif
 
 static void initScreen(AScreen* Screen, int Width, int Height, bool AllocBuffer)
 {
@@ -114,8 +116,10 @@ void a_screen__init(void)
         a_platform_wiz__portraitModeSet();
     #endif
 
-    g_fullScreenButton = a_button_new();
-    a_button_bind(g_fullScreenButton, A_KEY_F4);
+    #if A_BUILD_SYSTEM_DESKTOP
+        g_fullScreenButton = a_button_new();
+        a_button_bind(g_fullScreenButton, A_KEY_F4);
+    #endif
 
     #if !A_BUILD_RENDER_SOFTWARE
         initScreen(&a__screen, width, height, true);
@@ -135,7 +139,9 @@ void a_screen__uninit(void)
 
     a_list_freeEx(g_stack, (AFree*)a_screen_free);
 
-    a_button_free(g_fullScreenButton);
+    #if A_BUILD_SYSTEM_DESKTOP
+        a_button_free(g_fullScreenButton);
+    #endif
 }
 
 void a_screen__tick(void)
