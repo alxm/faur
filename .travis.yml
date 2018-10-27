@@ -14,4 +14,4 @@ addons:
             - libsdl2-mixer-dev
 
 script:
-    - ./bin/a2x_install
+    - make --directory=make/a2x --jobs
