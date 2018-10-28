@@ -20,6 +20,7 @@
 #include "a2x_pack_platform.v.h"
 
 #include "a2x_pack_platform_gp2x.v.h"
+#include "a2x_pack_platform_linux.v.h"
 #include "a2x_pack_platform_pandora.v.h"
 #include "a2x_pack_platform_sdl.v.h"
 #include "a2x_pack_platform_software_blit.v.h"
@@ -28,6 +29,10 @@
 
 void a_platform__init(void)
 {
+    #if A_BUILD_SYSTEM_LINUX
+        a_platform_linux__init();
+    #endif
+
     #if A_BUILD_SYSTEM_PANDORA
         a_platform_pandora__init();
     #endif

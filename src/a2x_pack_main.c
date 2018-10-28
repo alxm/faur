@@ -82,11 +82,12 @@ int main(int Argc, char* Argv[])
     a_out__message(
         "a2x %s, %s", A_BUILD__CURRENT_GIT_BRANCH, A_BUILD__COMPILE_TIME);
 
-    a_out__message("%s %s by %s, %s",
+    a_out__message("%s %s by %s, %s - PID %d",
                    a_settings_stringGet(A_SETTING_APP_TITLE),
                    a_settings_stringGet(A_SETTING_APP_VERSION),
                    a_settings_stringGet(A_SETTING_APP_AUTHOR),
-                   a_settings_stringGet(A_SETTING_APP_BUILDTIME));
+                   a_settings_stringGet(A_SETTING_APP_BUILDTIME),
+                   getpid());
 
     a_conf__init();
     a_platform__init();

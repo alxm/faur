@@ -17,11 +17,9 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a2x_system_includes.h"
-
-#if A_BUILD_LIB_SDL
 #include "a2x_pack_platform_sdl_input.v.h"
 
+#if A_BUILD_LIB_SDL
 #include <SDL.h>
 
 #include "a2x_pack_fps.v.h"

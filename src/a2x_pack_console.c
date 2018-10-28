@@ -218,10 +218,12 @@ void a_console__draw(void)
         a_font_printf("%u draw max", a_fps_drawRateGetMax());
         a_font_newLine();
 
-        a_font__fontSet(A_FONT__ID_BLUE);
         a_font_printf("Vsync is %s",
                       a_settings_boolGet(A_SETTING_VIDEO_VSYNC) ? "on" : "off");
         a_font_newLine();
+
+        a_font__fontSet(A_FONT__ID_BLUE);
+        a_font_printf("PID %d", getpid());
     }
 
     a_pixel_pop();

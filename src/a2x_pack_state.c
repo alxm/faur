@@ -145,8 +145,8 @@ void a_state__init(void)
 
 void a_state__uninit(void)
 {
-    a_list_free(g_stack);
-    a_list_free(g_pending);
+    a_list_freeEx(g_stack, free);
+    a_list_freeEx(g_pending, free);
 }
 
 void a_state_push(AState* State, const char* Name)
