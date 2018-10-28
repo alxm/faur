@@ -16,9 +16,6 @@
 # A_CONFIG_EMBED_PATHS
 #   Space-separated file or dir paths
 #
-# A_CONFIG_PND_DIR
-#   Path to dir that PND is packaged from
-#
 # A_CONFIG_PND_NAME
 #   Target PND file name
 #
@@ -38,6 +35,7 @@ A_DIR_SRC ?= src
 A_DIR_ASSETS ?= assets
 A_DIR_GFX ?= $(A_DIR_ASSETS)/gfx
 A_DIR_SFX ?= $(A_DIR_ASSETS)/sfx
+A_DIR_PND ?= pnd
 
 #
 # Object files dir for current platform
