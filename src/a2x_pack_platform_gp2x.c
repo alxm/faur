@@ -21,11 +21,9 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a2x_system_includes.h"
-
-#if A_BUILD_SYSTEM_GP2X
 #include "a2x_pack_platform_gp2x.v.h"
 
+#if A_BUILD_SYSTEM_GP2X
 #include <fcntl.h>
 #include <sys/mman.h>
 

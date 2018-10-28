@@ -20,11 +20,9 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a2x_system_includes.h"
-
-#if A_BUILD_SYSTEM_WIZ || A_BUILD_SYSTEM_CAANOO
 #include "a2x_pack_platform_wiz.v.h"
 
+#if A_BUILD_SYSTEM_WIZ || A_BUILD_SYSTEM_CAANOO
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>

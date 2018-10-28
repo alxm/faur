@@ -17,11 +17,9 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a2x_system_includes.h"
-
-#if A_BUILD_SYSTEM_PANDORA
 #include "a2x_pack_platform_pandora.v.h"
 
+#if A_BUILD_SYSTEM_PANDORA
 #include "a2x_pack_file.v.h"
 #include "a2x_pack_out.v.h"
 #include "a2x_pack_str.v.h"
