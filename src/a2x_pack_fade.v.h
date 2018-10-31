@@ -23,3 +23,6 @@
 
 extern void a_fade__init(void);
 extern void a_fade__uninit(void);
+
+extern void a_fade__tick(void);
+extern void a_fade__draw(void);

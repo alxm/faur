@@ -25,6 +25,7 @@
 
 #include "a2x_pack_console.v.h"
 #include "a2x_pack_ecs.v.h"
+#include "a2x_pack_fade.v.h"
 #include "a2x_pack_fps.v.h"
 #include "a2x_pack_input.v.h"
 #include "a2x_pack_listit.v.h"
@@ -45,6 +46,8 @@ typedef struct {
 static AList* g_stack; // list of AStateEntry
 static AList* g_pending; // list of AStateEntry/NULL
 static bool g_exiting;
+
+static AEvent* g_blockEvent;
 
 static const char* g_stageNames[A__STATE_STAGE_NUM] = {
     [A__STATE_STAGE_INIT] = "Init",
@@ -236,9 +239,22 @@ void a_state_exit(void)
     }
 }
 
+bool a_state_blockGet(void)
+{
+    return g_blockEvent && *g_blockEvent != 0;
+}
+
+void a_state_blockSet(AEvent* Event)
+{
+    g_blockEvent = Event;
+}
+
 static bool iteration(void)
 {
-    pending_handle();
+    if(!a_state_blockGet()) {
+        g_blockEvent = NULL;
+        pending_handle();
+    }
 
     AStateEntry* s = a_list_peek(g_stack);
 
@@ -255,10 +271,17 @@ static bool iteration(void)
             a_screenshot__tick();
             a_console__tick();
             a_ecs__tick();
+            a_fade__tick();
+
+            if(!a_list_isEmpty(g_pending) && !a_state_blockGet()) {
+                g_blockEvent = NULL;
+                return true;
+            }
 
             s->function();
 
-            if(!a_list_isEmpty(g_pending)) {
+            if(!a_list_isEmpty(g_pending) && !a_state_blockGet()) {
+                g_blockEvent = NULL;
                 return true;
             }
         }
@@ -267,6 +290,7 @@ static bool iteration(void)
         s->function();
         s->stage = A__STATE_STAGE_TICK;
 
+        a_fade__draw();
         a_sound__draw();
         a_console__draw();
         a_screen__draw();

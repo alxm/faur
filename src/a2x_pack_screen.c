@@ -239,9 +239,9 @@ void a_screen_copy(AScreen* Dst, const AScreen* Src)
 
         a_platform__renderTargetSet(a__screen.texture);
         a_platform__renderTargetClipSet(a__screen.clipX,
-                                  a__screen.clipY,
-                                  a__screen.clipWidth,
-                                  a__screen.clipHeight);
+                                        a__screen.clipY,
+                                        a__screen.clipWidth,
+                                        a__screen.clipHeight);
 
         a_pixel_pop();
     #endif
