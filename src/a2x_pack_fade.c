@@ -22,6 +22,7 @@
 #include "a2x_pack_draw.v.h"
 #include "a2x_pack_pixel.v.h"
 #include "a2x_pack_screen.v.h"
+#include "a2x_pack_time.v.h"
 
 typedef enum {
     A__FADE_INVALID = -1,
@@ -34,9 +35,8 @@ typedef enum {
 static struct {
     AEvent event;
     AFadeOpId op;
-    unsigned frames;
-    APixel color;
     AFix alpha, alphaInc;
+    APixel color;
     AScreen* capturedScreen;
 } g_fade = {
     .op = A__FADE_INVALID,
@@ -57,33 +57,33 @@ AEvent* a_fade_eventGet(void)
     return &g_fade.event;
 }
 
-void a_fade_toColor(unsigned FramesDuration)
+void a_fade_toColor(unsigned DurationMs)
 {
     g_fade.event = 1;
     g_fade.op = A__FADE_TOCOLOR;
-    g_fade.frames = FramesDuration;
-    g_fade.color = a_pixel__state.pixel;
     g_fade.alpha = 0;
-    g_fade.alphaInc = a_fix_fromInt(A_PIXEL_ALPHA_MAX) / (int)g_fade.frames;
+    g_fade.alphaInc = a_fix_fromInt(A_PIXEL_ALPHA_MAX)
+                        / (int)a_time_msToTicks(DurationMs);
+    g_fade.color = a_pixel__state.pixel;
 }
 
-void a_fade_fromColor(unsigned FramesDuration)
+void a_fade_fromColor(unsigned DurationMs)
 {
     g_fade.event = 1;
     g_fade.op = A__FADE_FROMCOLOR;
-    g_fade.frames = FramesDuration;
-    g_fade.color = a_pixel__state.pixel;
     g_fade.alpha = a_fix_fromInt(A_PIXEL_ALPHA_MAX);
-    g_fade.alphaInc = a_fix_fromInt(A_PIXEL_ALPHA_MAX) / (int)g_fade.frames;
+    g_fade.alphaInc = a_fix_fromInt(A_PIXEL_ALPHA_MAX)
+                        / (int)a_time_msToTicks(DurationMs);
+    g_fade.color = a_pixel__state.pixel;
 }
 
-void a_fade_screens(unsigned FramesDuration)
+void a_fade_screens(unsigned DurationMs)
 {
     g_fade.event = 1;
     g_fade.op = A__FADE_SCREENS;
-    g_fade.frames = FramesDuration;
     g_fade.alpha = a_fix_fromInt(A_PIXEL_ALPHA_MAX);
-    g_fade.alphaInc = a_fix_fromInt(A_PIXEL_ALPHA_MAX) / (int)g_fade.frames;
+    g_fade.alphaInc = a_fix_fromInt(A_PIXEL_ALPHA_MAX)
+                        / (int)a_time_msToTicks(DurationMs);
 
     // Capture the screen as it is now
     a_screen_copy(g_fade.capturedScreen, &a__screen);

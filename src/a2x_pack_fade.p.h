@@ -23,6 +23,6 @@
 
 extern AEvent* a_fade_eventGet(void);
 
-extern void a_fade_toColor(unsigned FramesDuration);
-extern void a_fade_fromColor(unsigned FramesDuration);
-extern void a_fade_screens(unsigned FramesDuration);
+extern void a_fade_toColor(unsigned DurationMs);
+extern void a_fade_fromColor(unsigned DurationMs);
+extern void a_fade_screens(unsigned DurationMs);
