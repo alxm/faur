@@ -311,7 +311,7 @@ void a_screen_blit(const AScreen* Screen)
             } break;
 
             case A_PIXEL_BLEND_RGBA: {
-                LOOP(rgba, {}, (dst, r, g, b, alpha));
+                LOOP(rgba, {a_pixel_toRgb(*src, &r, &g, &b);}, (dst, r, g, b, alpha));
             } break;
 
             case A_PIXEL_BLEND_RGB25: {
