@@ -79,6 +79,21 @@ ADir* a_dir_new(const char* Path)
     DIR* dir = opendir(Path);
 
     if(dir == NULL) {
+        #if A_BUILD_SYSTEM_LINUX
+            int result = mkdir(Path, S_IRWXU);
+        #else
+            int result = mkdir(Path);
+        #endif
+
+        if(result == -1) {
+            a_out__error("a_dir_new: mkdir(%s) failed", Path);
+            return NULL;
+        }
+
+        dir = opendir(Path);
+    }
+
+    if(dir == NULL) {
         a_out__error("a_dir_new: opendir(%s) failed", Path);
         return NULL;
     }
@@ -177,20 +192,4 @@ bool a_dir_exists(const char* Path)
     }
 
     return S_ISDIR(info.st_mode);
-}
-
-bool a_dir_make(const char* Path)
-{
-    #if A_BUILD_SYSTEM_LINUX
-        int result = mkdir(Path, S_IRWXU);
-    #else
-        int result = mkdir(Path);
-    #endif
-
-    if(result == -1) {
-        a_out__error("a_dir_make: mkdir(%s) failed", Path);
-        return false;
-    }
-
-    return true;
 }

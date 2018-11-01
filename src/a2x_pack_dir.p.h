@@ -40,4 +40,3 @@ extern const char* a_dir_pathGet(const ADir* Dir);
 extern const char* a_dir_nameGet(const ADir* Dir);
 
 extern bool a_dir_exists(const char* Path);
-extern bool a_dir_make(const char* Path);

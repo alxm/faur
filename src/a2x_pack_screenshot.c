@@ -38,15 +38,13 @@ static AButton* g_button;
 
 static bool lazy_init(void)
 {
-    const char* screensDir = a_settings_stringGet(A_SETTING_FILE_SCREENSHOTS);
+    ADir* dir = a_dir_new(a_settings_stringGet(A_SETTING_FILE_SCREENSHOTS));
 
-    if(a_dir_exists(screensDir)) {
-        ADir* dir = a_dir_new(screensDir);
-
+    if(dir != NULL) {
         // Only interested in the last file, to get the number from its name
         ADirEntry* entry = a_list_getLast(a_dir_entriesListGet(dir));
 
-        if(entry == NULL) {
+        if(entry == NULL || a_dir_entryNameGet(entry)[0] == '.') {
             g_isInit = true;
         } else {
             const char* file = a_dir_entryNameGet(entry);
@@ -73,20 +71,15 @@ static bool lazy_init(void)
         }
 
         a_dir_free(dir);
-    } else {
-        a_out__message("Making screenshots dir: %s", screensDir);
-
-        if(a_dir_make(screensDir)) {
-            g_isInit = true;
-        }
     }
 
     if(g_isInit) {
-        g_filePrefix = a_str_merge(screensDir,
-                                   "/",
-                                   a_settings_stringGet(A_SETTING_APP_TITLE),
-                                   "-",
-                                   NULL);
+        g_filePrefix = a_str_merge(
+                        a_settings_stringGet(A_SETTING_FILE_SCREENSHOTS),
+                        "/",
+                        a_settings_stringGet(A_SETTING_APP_TITLE),
+                        "-",
+                        NULL);
 
         // No spaces in file name
         for(char* s = g_filePrefix; *s != '\0'; s++) {
