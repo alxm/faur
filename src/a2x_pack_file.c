@@ -297,27 +297,22 @@ bool a_file_exists(const char* Path)
     return access(Path, F_OK) == 0;
 }
 
-size_t a_file_sizeGet(const char* Path)
+uint8_t* a_file_toBuffer(const char* Path)
 {
     struct stat info;
 
     if(stat(Path, &info) != 0) {
-        a_out__error("a_file_sizeGet: stat(%s) failed", Path);
-        return 0;
+        a_out__error("a_file_toBuffer: stat(%s) failed", Path);
+        return NULL;
     }
 
-    return (size_t)info.st_size;
-}
-
-uint8_t* a_file_toBuffer(const char* Path)
-{
     AFile* f = a_file_new(Path, A_FILE_READ | A_FILE_BINARY);
 
     if(f == NULL) {
         return NULL;
     }
 
-    size_t size = a_file_sizeGet(Path);
+    size_t size = (size_t)info.st_size;
     uint8_t* buffer = a_mem_malloc(size);
 
     if(!a_file_read(f, buffer, size)) {
