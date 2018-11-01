@@ -22,5 +22,3 @@
 #include "a2x_pack_platform_software_blit.p.h"
 
 extern void a_platform_software_blit__init(void);
-
-extern void a_platform_software_blit__updateRoutines(void);

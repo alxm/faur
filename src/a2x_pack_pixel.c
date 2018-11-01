@@ -100,7 +100,6 @@ static void optimizeAlphaBlending(bool UpdateRoutines)
 
             if(UpdateRoutines) {
                 a_platform_software_draw__updateRoutines();
-                a_platform_software_blit__updateRoutines();
             }
         }
     }
@@ -120,7 +119,6 @@ void a_pixel_blendSet(APixelBlend Blend)
     #if A_BUILD_RENDER_SOFTWARE
         optimizeAlphaBlending(false);
         a_platform_software_draw__updateRoutines();
-        a_platform_software_blit__updateRoutines();
     #else
         if(Blend == A_PIXEL_BLEND_RGB25) {
             a_pixel_alphaSet(A_PIXEL_ALPHA_MAX / 4);
@@ -206,10 +204,6 @@ void a_pixel_colorSetPixel(APixel Pixel)
 void a_pixel_fillBlitSet(bool Fill)
 {
     a_pixel__state.fillBlit = Fill;
-
-    #if A_BUILD_RENDER_SOFTWARE
-        a_platform_software_blit__updateRoutines();
-    #endif
 }
 
 void a_pixel_fillDrawSet(bool Fill)

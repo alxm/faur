@@ -28,7 +28,11 @@ extern void a_state_push(AState* State, const char* Name);
 extern void a_state_pop(void);
 extern void a_state_popUntil(AState* State, const char* Name);
 extern void a_state_replace(AState* State, const char* Name);
+
 extern void a_state_exit(void);
+
+extern bool a_state_blockGet(void);
+extern void a_state_blockSet(AEvent* Event);
 
 typedef enum {
     A__STATE_STAGE_INVALID = -1,

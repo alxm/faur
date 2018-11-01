@@ -32,6 +32,8 @@
 typedef void AFree(void* Self);
 typedef void AInit(void* Self);
 
+typedef volatile int AEvent;
+
 #include <ctype.h>
 #include <float.h>
 #include <limits.h>

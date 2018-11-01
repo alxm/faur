@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016 Alex Margarit
+    Copyright 2010, 2016, 2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -21,6 +21,8 @@
 
 #include "a2x_system_includes.h"
 
-extern void a_fade_toColor(unsigned FramesDuration);
-extern void a_fade_fromColor(unsigned FramesDuration);
-extern void a_fade_screens(unsigned FramesDuration);
+extern AEvent* a_fade_eventGet(void);
+
+extern void a_fade_toColor(unsigned DurationMs);
+extern void a_fade_fromColor(unsigned DurationMs);
+extern void a_fade_screens(unsigned DurationMs);

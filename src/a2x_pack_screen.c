@@ -239,9 +239,9 @@ void a_screen_copy(AScreen* Dst, const AScreen* Src)
 
         a_platform__renderTargetSet(a__screen.texture);
         a_platform__renderTargetClipSet(a__screen.clipX,
-                                  a__screen.clipY,
-                                  a__screen.clipWidth,
-                                  a__screen.clipHeight);
+                                        a__screen.clipY,
+                                        a__screen.clipWidth,
+                                        a__screen.clipHeight);
 
         a_pixel_pop();
     #endif
@@ -311,7 +311,7 @@ void a_screen_blit(const AScreen* Screen)
             } break;
 
             case A_PIXEL_BLEND_RGBA: {
-                LOOP(rgba, {}, (dst, r, g, b, alpha));
+                LOOP(rgba, {a_pixel_toRgb(*src, &r, &g, &b);}, (dst, r, g, b, alpha));
             } break;
 
             case A_PIXEL_BLEND_RGB25: {

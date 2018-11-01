@@ -36,11 +36,6 @@ typedef void (*ABlitter)(const APlatformTexture* Sprite, int X, int Y);
 // [Blend][Fill][ColorKey][Clip]
 static ABlitter g_blitters[A_PIXEL_BLEND_NUM][2][2][2];
 
-static ABlitter g_blitter_block_noclip;
-static ABlitter g_blitter_block_doclip;
-static ABlitter g_blitter_keyed_noclip;
-static ABlitter g_blitter_keyed_doclip;
-
 #define A__FUNC_NAME_EXPAND2(Blend, Fill, ColorKey, Clip) a_blit__##Blend##_##Fill##_##ColorKey##_##Clip
 #define A__FUNC_NAME_EXPAND(Blend, Fill, ColorKey, Clip) A__FUNC_NAME_EXPAND2(Blend, Fill, ColorKey, Clip)
 #define A__FUNC_NAME(ColorKey, Clip) A__FUNC_NAME_EXPAND(A__BLEND, A__FILL, ColorKey, Clip)
@@ -209,19 +204,6 @@ void a_platform_software_blit__init(void)
     initRoutines(A_PIXEL_BLEND_INVERSE, inverse);
     initRoutines(A_PIXEL_BLEND_MOD, mod);
     initRoutines(A_PIXEL_BLEND_ADD, add);
-
-    a_platform_software_blit__updateRoutines();
-}
-
-void a_platform_software_blit__updateRoutines(void)
-{
-    APixelBlend blend = a_pixel__state.blend;
-    bool fill = a_pixel__state.fillBlit;
-
-    g_blitter_block_noclip = g_blitters[blend][fill][0][0];
-    g_blitter_block_doclip = g_blitters[blend][fill][0][1];
-    g_blitter_keyed_noclip = g_blitters[blend][fill][1][0];
-    g_blitter_keyed_doclip = g_blitters[blend][fill][1][1];
 }
 
 size_t spanBytesNeeded(const APixel* Pixels, int Width, int Height)
@@ -338,19 +320,16 @@ void a_platform__textureBlit(APlatformTexture* Texture, int X, int Y, bool FillF
 {
     A_UNUSED(FillFlat);
 
-    if(a_screen_boxInsideClip(X, Y, Texture->spr->w, Texture->spr->h)) {
-        if(Texture->colorKeyed) {
-            g_blitter_keyed_noclip(Texture, X, Y);
-        } else {
-            g_blitter_block_noclip(Texture, X, Y);
-        }
-    } else if(a_screen_boxOnClip(X, Y, Texture->spr->w , Texture->spr->h)) {
-        if(Texture->colorKeyed) {
-            g_blitter_keyed_doclip(Texture, X, Y);
-        } else {
-            g_blitter_block_doclip(Texture, X, Y);
-        }
+    if(!a_screen_boxOnClip(X, Y, Texture->spr->w , Texture->spr->h)) {
+        return;
     }
+
+    g_blitters
+        [a_pixel__state.blend]
+        [a_pixel__state.fillBlit]
+        [Texture->colorKeyed]
+        [!a_screen_boxInsideClip(X, Y, Texture->spr->w, Texture->spr->h)]
+            (Texture, X, Y);
 }
 
 void a_platform__textureBlitEx(APlatformTexture* Texture, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY, bool FillFlat)
