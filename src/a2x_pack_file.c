@@ -36,12 +36,27 @@ struct AFile {
     bool eof;
 };
 
-AFile* a_file_new(const char* Path, const char* Modes)
+AFile* a_file_new(const char* Path, AFileMode Mode)
 {
-    FILE* handle = fopen(Path, Modes);
+    int index = 0;
+    char mode[4];
+
+    if(Mode & A_FILE_READ) {
+        mode[index++] = 'r';
+    } else if(Mode & A_FILE_WRITE) {
+        mode[index++] = 'w';
+    }
+
+    if(Mode & A_FILE_BINARY) {
+        mode[index++] = 'b';
+    }
+
+    mode[index] = '\0';
+
+    FILE* handle = fopen(Path, mode);
 
     if(handle == NULL) {
-        a_out__error("a_file_new: Can't open %s for '%s'", Path, Modes);
+        a_out__error("a_file_new: Can't open %s for '%s'", Path, mode);
         return NULL;
     }
 
@@ -296,7 +311,7 @@ size_t a_file_sizeGet(const char* Path)
 
 uint8_t* a_file_toBuffer(const char* Path)
 {
-    AFile* f = a_file_new(Path, "rb");
+    AFile* f = a_file_new(Path, A_FILE_READ | A_FILE_BINARY);
 
     if(f == NULL) {
         return NULL;

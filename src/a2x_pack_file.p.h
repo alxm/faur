@@ -23,7 +23,13 @@
 
 typedef struct AFile AFile;
 
-extern AFile* a_file_new(const char* Path, const char* Modes);
+typedef enum {
+    A_FILE_READ = A_FLAG_BIT(0),
+    A_FILE_WRITE = A_FLAG_BIT(1),
+    A_FILE_BINARY = A_FLAG_BIT(2),
+} AFileMode;
+
+extern AFile* a_file_new(const char* Path, AFileMode Mode);
 extern void a_file_free(AFile* File);
 
 extern bool a_file_prefixCheck(AFile* File, const char* Prefix);
