@@ -35,7 +35,7 @@ typedef enum {
 static struct {
     AEvent event;
     AFadeOpId op;
-    AFix alpha, alphaInc;
+    AFixu angle, angleInc;
     APixel color;
     AScreen* capturedScreen;
 } g_fade = {
@@ -57,35 +57,32 @@ AEvent* a_fade_eventGet(void)
     return &g_fade.event;
 }
 
-void a_fade_toColor(unsigned DurationMs)
+static void newFade(AFadeOpId Op, unsigned DurationMs)
 {
     g_fade.event = 1;
-    g_fade.op = A__FADE_TOCOLOR;
-    g_fade.alpha = 0;
-    g_fade.alphaInc = a_fix_fromInt(A_PIXEL_ALPHA_MAX)
-                        / (int)a_time_msToTicks(DurationMs);
+    g_fade.op = Op;
+    g_fade.angle = 0;
+    g_fade.angleInc = A_FIX_DEG_090 / a_time_msToTicks(DurationMs);
+}
+
+void a_fade_toColor(unsigned DurationMs)
+{
+    newFade(A__FADE_TOCOLOR, DurationMs);
+
     g_fade.color = a_pixel__state.pixel;
 }
 
 void a_fade_fromColor(unsigned DurationMs)
 {
-    g_fade.event = 1;
-    g_fade.op = A__FADE_FROMCOLOR;
-    g_fade.alpha = a_fix_fromInt(A_PIXEL_ALPHA_MAX);
-    g_fade.alphaInc = a_fix_fromInt(A_PIXEL_ALPHA_MAX)
-                        / (int)a_time_msToTicks(DurationMs);
+    newFade(A__FADE_FROMCOLOR, DurationMs);
+
     g_fade.color = a_pixel__state.pixel;
 }
 
 void a_fade_screens(unsigned DurationMs)
 {
-    g_fade.event = 1;
-    g_fade.op = A__FADE_SCREENS;
-    g_fade.alpha = a_fix_fromInt(A_PIXEL_ALPHA_MAX);
-    g_fade.alphaInc = a_fix_fromInt(A_PIXEL_ALPHA_MAX)
-                        / (int)a_time_msToTicks(DurationMs);
+    newFade(A__FADE_SCREENS, DurationMs);
 
-    // Capture the screen as it is now
     a_screen_copy(g_fade.capturedScreen, &a__screen);
 }
 
@@ -95,27 +92,11 @@ void a_fade__tick(void)
         return;
     }
 
-    switch(g_fade.op) {
-        case A__FADE_TOCOLOR: {
-            g_fade.alpha += g_fade.alphaInc;
+    g_fade.angle += g_fade.angleInc;
 
-            if(g_fade.alpha > a_fix_fromInt(A_PIXEL_ALPHA_MAX)) {
-                g_fade.event = 0;
-                g_fade.op = A__FADE_INVALID;
-            }
-        } break;
-
-        case A__FADE_FROMCOLOR:
-        case A__FADE_SCREENS: {
-            g_fade.alpha -= g_fade.alphaInc;
-
-            if(g_fade.alpha < 0) {
-                g_fade.event = 0;
-                g_fade.op = A__FADE_INVALID;
-            }
-        } break;
-
-        default: break;
+    if(g_fade.angle >= A_FIX_DEG_090) {
+        g_fade.event = 0;
+        g_fade.op = A__FADE_INVALID;
     }
 }
 
@@ -126,18 +107,31 @@ void a_fade__draw(void)
     }
 
     a_pixel_push();
-
     a_pixel_blendSet(A_PIXEL_BLEND_RGBA);
-    a_pixel_alphaSet(a_fix_toInt(g_fade.alpha));
 
     switch(g_fade.op) {
-        case A__FADE_TOCOLOR:
+        case A__FADE_TOCOLOR: {
+            a_pixel_alphaSet(
+                a_fix_toInt(a_fix_sinf(g_fade.angle) * A_PIXEL_ALPHA_MAX));
+
+            a_pixel_colorSetPixel(g_fade.color);
+            a_draw_fill();
+        } break;
+
         case A__FADE_FROMCOLOR: {
+            a_pixel_alphaSet(
+                a_fix_toInt(a_fix_sinf(A_FIX_DEG_090 - g_fade.angle)
+                                * A_PIXEL_ALPHA_MAX));
+
             a_pixel_colorSetPixel(g_fade.color);
             a_draw_fill();
         } break;
 
         case A__FADE_SCREENS: {
+            a_pixel_alphaSet(
+                a_fix_toInt(a_fix_sinf(A_FIX_DEG_090 - g_fade.angle)
+                                * A_PIXEL_ALPHA_MAX));
+
             a_screen_blit(g_fade.capturedScreen);
         } break;
 
