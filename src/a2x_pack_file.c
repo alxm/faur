@@ -28,8 +28,7 @@
 
 struct AFile {
     FILE* handle;
-    char* path;
-    char* name;
+    APath* path;
     char* lineBuffer;
     unsigned lineBufferSize;
     unsigned lineNumber;
@@ -63,20 +62,11 @@ AFile* a_file_new(const char* Path, AFileMode Mode)
     AFile* f = a_mem_malloc(sizeof(AFile));
 
     f->handle = handle;
-    f->path = a_str_prefixGetToLast(Path, '/');
-    f->name = a_str_suffixGetFromLast(Path, '/');
+    f->path = a_path_new(Path);
     f->lineBuffer = NULL;
     f->lineBufferSize = 0;
     f->lineNumber = 0;
     f->eof = false;
-
-    if(f->name == NULL) {
-        f->name = a_str_dup(Path);
-    }
-
-    if(f->path == NULL) {
-        f->path = a_str_dup(".");
-    }
 
     return f;
 }
@@ -87,15 +77,24 @@ void a_file_free(AFile* File)
         return;
     }
 
-    free(File->path);
-    free(File->name);
-    free(File->lineBuffer);
+    a_path_free(File->path);
 
     if(File->handle) {
         fclose(File->handle);
     }
 
+    free(File->lineBuffer);
     free(File);
+}
+
+const APath* a_file_pathGet(const AFile* File)
+{
+    return File->path;
+}
+
+FILE* a_file_handleGet(const AFile* File)
+{
+    return File->handle;
 }
 
 uint8_t* a_file_toBuffer(const char* Path)
@@ -154,8 +153,10 @@ bool a_file_read(AFile* File, void* Buffer, size_t Size)
     readCount = fread(Buffer, Size, 1, File->handle);
 
     if(readCount != 1) {
-        a_out__warning(
-            "a_file_read: Could not read %u bytes from %s", Size, File->name);
+        a_out__warning("a_file_read: Could not read %u bytes from %s",
+                       Size,
+                       a_path_getFull(File->path));
+
         return false;
     }
 
@@ -169,8 +170,10 @@ bool a_file_write(AFile* File, const void* Buffer, size_t Size)
     writeCount = fwrite(Buffer, Size, 1, File->handle);
 
     if(writeCount != 1) {
-        a_out__error(
-            "a_file_write: Could not write %u bytes to %s", Size, File->name);
+        a_out__error("a_file_write: Could not write %u bytes to %s",
+                     Size,
+                     a_path_getFull(File->path));
+
         return false;
     }
 
@@ -188,7 +191,9 @@ bool a_file_writef(AFile* File, char* Format, ...)
     va_end(args);
 
     if(ret < 0) {
-        a_out__error("a_file_writef: Could not write to %s", File->name);
+        a_out__error("a_file_writef: Could not write to %s",
+                     a_path_getFull(File->path));
+
         return false;
     }
 
@@ -282,7 +287,7 @@ void a_file_seekStart(const AFile* File, long int Offset)
 {
     if(fseek(File->handle, Offset, SEEK_SET) != 0) {
         a_out__error("a_file_seekStart(%s): fseek(%ld) failed",
-                     File->name,
+                     a_path_getFull(File->path),
                      Offset);
     }
 }
@@ -291,7 +296,7 @@ void a_file_seekEnd(const AFile* File, long int Offset)
 {
     if(fseek(File->handle, Offset, SEEK_END) != 0) {
         a_out__error("a_file_seekEnd(%s): fseek(%ld) failed",
-                     File->name,
+                     a_path_getFull(File->path),
                      Offset);
     }
 }
@@ -300,22 +305,7 @@ void a_file_seekCurrent(const AFile* File, long int Offset)
 {
     if(fseek(File->handle, Offset, SEEK_CUR) != 0) {
         a_out__error("a_file_seekCurrent(%s): fseek(%ld) failed",
-                     File->name,
+                     a_path_getFull(File->path),
                      Offset);
     }
-}
-
-const char* a_file_pathGet(const AFile* File)
-{
-    return File->path;
-}
-
-const char* a_file_nameGet(const AFile* File)
-{
-    return File->name;
-}
-
-FILE* a_file_handleGet(const AFile* File)
-{
-    return File->handle;
 }

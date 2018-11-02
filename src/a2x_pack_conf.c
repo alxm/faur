@@ -21,7 +21,6 @@
 
 #include "a2x_pack_file.v.h"
 #include "a2x_pack_out.v.h"
-#include "a2x_pack_path.v.h"
 #include "a2x_pack_settings.v.h"
 #include "a2x_pack_str.v.h"
 
