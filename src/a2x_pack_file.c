@@ -98,6 +98,34 @@ void a_file_free(AFile* File)
     free(File);
 }
 
+uint8_t* a_file_toBuffer(const char* Path)
+{
+    struct stat info;
+
+    if(stat(Path, &info) != 0) {
+        a_out__error("a_file_toBuffer: stat(%s) failed", Path);
+        return NULL;
+    }
+
+    AFile* f = a_file_new(Path, A_FILE_READ | A_FILE_BINARY);
+
+    if(f == NULL) {
+        return NULL;
+    }
+
+    size_t size = (size_t)info.st_size;
+    uint8_t* buffer = a_mem_malloc(size);
+
+    if(!a_file_read(f, buffer, size)) {
+        free(buffer);
+        buffer = NULL;
+    }
+
+    a_file_free(f);
+
+    return buffer;
+}
+
 bool a_file_prefixCheck(AFile* File, const char* Prefix)
 {
     size_t size = strlen(Prefix) + 1;
@@ -290,32 +318,4 @@ const char* a_file_nameGet(const AFile* File)
 FILE* a_file_handleGet(const AFile* File)
 {
     return File->handle;
-}
-
-uint8_t* a_file_toBuffer(const char* Path)
-{
-    struct stat info;
-
-    if(stat(Path, &info) != 0) {
-        a_out__error("a_file_toBuffer: stat(%s) failed", Path);
-        return NULL;
-    }
-
-    AFile* f = a_file_new(Path, A_FILE_READ | A_FILE_BINARY);
-
-    if(f == NULL) {
-        return NULL;
-    }
-
-    size_t size = (size_t)info.st_size;
-    uint8_t* buffer = a_mem_malloc(size);
-
-    if(!a_file_read(f, buffer, size)) {
-        free(buffer);
-        buffer = NULL;
-    }
-
-    a_file_free(f);
-
-    return buffer;
 }

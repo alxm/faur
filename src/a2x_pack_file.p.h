@@ -32,6 +32,8 @@ typedef enum {
 extern AFile* a_file_new(const char* Path, AFileMode Mode);
 extern void a_file_free(AFile* File);
 
+extern uint8_t* a_file_toBuffer(const char* Path);
+
 extern bool a_file_prefixCheck(AFile* File, const char* Prefix);
 extern void a_file_prefixWrite(AFile* File, const char* Prefix);
 
@@ -51,5 +53,3 @@ extern void a_file_seekCurrent(const AFile* File, long int Offset);
 extern const char* a_file_pathGet(const AFile* File);
 extern const char* a_file_nameGet(const AFile* File);
 extern FILE* a_file_handleGet(const AFile* File);
-
-extern uint8_t* a_file_toBuffer(const char* Path);
