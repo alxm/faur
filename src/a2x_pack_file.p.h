@@ -52,6 +52,4 @@ extern const char* a_file_pathGet(const AFile* File);
 extern const char* a_file_nameGet(const AFile* File);
 extern FILE* a_file_handleGet(const AFile* File);
 
-extern bool a_file_exists(const char* Path);
-
 extern uint8_t* a_file_toBuffer(const char* Path);

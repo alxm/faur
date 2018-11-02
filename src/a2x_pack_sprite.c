@@ -23,6 +23,7 @@
 #include "a2x_pack_file.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
+#include "a2x_pack_path.v.h"
 #include "a2x_pack_pixel.v.h"
 #include "a2x_pack_png.v.h"
 #include "a2x_pack_screen.v.h"
@@ -70,7 +71,7 @@ ASprite* a_sprite_newFromFile(const char* Path)
     int h = 0;
     APixel* pixels = NULL;
 
-    if(a_file_exists(Path)) {
+    if(a_path_exists(Path, A_PATH_TYPE_FILE)) {
         a_png_readFile(Path, &pixels, &w, &h);
     } else {
         const uint8_t* data = NULL;

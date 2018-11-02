@@ -24,6 +24,7 @@
 #include "a2x_pack_file.v.h"
 #include "a2x_pack_math.v.h"
 #include "a2x_pack_mem.v.h"
+#include "a2x_pack_path.v.h"
 #include "a2x_pack_platform.v.h"
 #include "a2x_pack_screen.v.h"
 #include "a2x_pack_settings.v.h"
@@ -178,7 +179,7 @@ ASample* a_sample_new(const char* Path)
 {
     APlatformSample* s = NULL;
 
-    if(a_file_exists(Path)) {
+    if(a_path_exists(Path, A_PATH_TYPE_FILE)) {
         s = a_platform__sampleNewFromFile(Path);
     } else {
         const uint8_t* data;

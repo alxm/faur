@@ -292,11 +292,6 @@ FILE* a_file_handleGet(const AFile* File)
     return File->handle;
 }
 
-bool a_file_exists(const char* Path)
-{
-    return access(Path, F_OK) == 0;
-}
-
 uint8_t* a_file_toBuffer(const char* Path)
 {
     struct stat info;
