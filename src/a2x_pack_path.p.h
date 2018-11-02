@@ -1,5 +1,5 @@
 /*
-    Copyright 2011, 2016, 2018 Alex Margarit
+    Copyright 2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -21,15 +21,23 @@
 
 #include "a2x_system_includes.h"
 
-typedef struct ADir ADir;
+typedef struct APath APath;
 
-#include "a2x_pack_list.p.h"
-#include "a2x_pack_path.p.h"
+typedef enum {
+    A_PATH_TYPE_INVALID = -1,
+    A_PATH_TYPE_ANY,
+    A_PATH_TYPE_FILE,
+    A_PATH_TYPE_DIR,
+    A_PATH_TYPE_NUM
+} APathType;
 
-extern ADir* a_dir_new(const char* Path);
-extern void a_dir_free(ADir* Dir);
+extern APath* a_path_new(const char* Path);
+extern APath* a_path_newf(const char* Format, ...);
+extern void a_path_free(APath* Path);
 
-extern const APath* a_dir_pathGet(const ADir* Dir);
+extern bool a_path_exists(const char* Path, APathType Type);
+extern bool a_path_test(const APath* Path, APathType Type);
 
-extern AList* a_dir_entriesListGet(const ADir* Dir);
-extern unsigned a_dir_entriesNumGet(const ADir* Dir);
+extern const char* a_path_getFull(const APath* Path);
+extern const char* a_path_getDirs(const APath* Path);
+extern const char* a_path_getName(const APath* Path);

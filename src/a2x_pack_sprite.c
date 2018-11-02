@@ -70,7 +70,7 @@ ASprite* a_sprite_newFromFile(const char* Path)
     int h = 0;
     APixel* pixels = NULL;
 
-    if(a_file_exists(Path)) {
+    if(a_path_exists(Path, A_PATH_TYPE_FILE)) {
         a_png_readFile(Path, &pixels, &w, &h);
     } else {
         const uint8_t* data = NULL;

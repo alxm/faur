@@ -63,7 +63,7 @@ static void pngToPixels(png_structp Png, png_infop Info, APixel** Pixels, int* W
 
 void a_png_readFile(const char* Path, APixel** Pixels, int* Width, int* Height)
 {
-    AFile* f = a_file_new(Path, "rb");
+    AFile* f = a_file_new(Path, A_FILE_READ | A_FILE_BINARY);
 
     png_structp png = NULL;
     png_infop info = NULL;
@@ -177,7 +177,7 @@ cleanUp:
 
 void a_png_write(const char* Path, const APixel* Data, int Width, int Height, char* Title, char* Description)
 {
-    AFile* f = a_file_new(Path, "wb");
+    AFile* f = a_file_new(Path, A_FILE_WRITE | A_FILE_BINARY);
 
     png_structp png = NULL;
     png_infop info = NULL;

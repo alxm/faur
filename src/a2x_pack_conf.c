@@ -26,11 +26,14 @@
 
 void a_conf__init(void)
 {
-    if(!a_file_exists(a_settings_stringGet(A_SETTING_FILE_CONFIG))) {
+    if(!a_path_exists(
+            a_settings_stringGet(A_SETTING_FILE_CONFIG), A_PATH_TYPE_FILE)) {
+
         return;
     }
 
-    AFile* f = a_file_new(a_settings_stringGet(A_SETTING_FILE_CONFIG), "r");
+    AFile* f = a_file_new(
+                a_settings_stringGet(A_SETTING_FILE_CONFIG), A_FILE_READ);
 
     if(f == NULL) {
         return;

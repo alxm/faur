@@ -100,7 +100,7 @@ static void setRamTimings(unsigned tRC, unsigned tRAS, unsigned tWR, unsigned tM
 
 void a_platform_gp2x__init(void)
 {
-    if(a_file_exists("./mmuhack.o")) {
+    if(a_path_exists("./mmuhack.o", A_PATH_TYPE_FILE)) {
         system("/sbin/rmmod mmuhack");
         system("/sbin/insmod mmuhack.o");
 

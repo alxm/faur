@@ -23,8 +23,21 @@
 
 typedef struct AFile AFile;
 
-extern AFile* a_file_new(const char* Path, const char* Modes);
+typedef enum {
+    A_FILE_READ = A_FLAG_BIT(0),
+    A_FILE_WRITE = A_FLAG_BIT(1),
+    A_FILE_BINARY = A_FLAG_BIT(2),
+} AFileMode;
+
+#include "a2x_pack_path.p.h"
+
+extern AFile* a_file_new(const char* Path, AFileMode Mode);
 extern void a_file_free(AFile* File);
+
+extern const APath* a_file_pathGet(const AFile* File);
+extern FILE* a_file_handleGet(const AFile* File);
+
+extern uint8_t* a_file_toBuffer(const char* Path);
 
 extern bool a_file_prefixCheck(AFile* File, const char* Prefix);
 extern void a_file_prefixWrite(AFile* File, const char* Prefix);
@@ -41,12 +54,3 @@ extern void a_file_rewind(AFile* File);
 extern void a_file_seekStart(const AFile* File, long int Offset);
 extern void a_file_seekEnd(const AFile* File, long int Offset);
 extern void a_file_seekCurrent(const AFile* File, long int Offset);
-
-extern const char* a_file_pathGet(const AFile* File);
-extern const char* a_file_nameGet(const AFile* File);
-extern FILE* a_file_handleGet(const AFile* File);
-
-extern bool a_file_exists(const char* Path);
-extern size_t a_file_sizeGet(const char* Path);
-
-extern uint8_t* a_file_toBuffer(const char* Path);

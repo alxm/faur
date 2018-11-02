@@ -99,7 +99,7 @@ static void timer_init(void)
 void a_platform_wiz__init(void)
 {
     #if A_BUILD_SYSTEM_WIZ
-        if(a_file_exists("./mmuhack.ko")) {
+        if(a_path_exists("./mmuhack.ko", A_PATH_TYPE_FILE)) {
             system("/sbin/rmmod mmuhack");
             system("/sbin/insmod mmuhack.ko");
 

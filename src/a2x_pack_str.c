@@ -195,41 +195,6 @@ char* a_str_suffixGetFromLast(const char* String, char Marker)
     return a_str_subGetRange(String, index + 1, (int)strlen(String));
 }
 
-char* a_str_extractPath(const char* String)
-{
-    char* path = a_str_prefixGetToLast(String, '/');
-
-    if(path) {
-        return path;
-    } else {
-        return a_str_dup(".");
-    }
-}
-
-char* a_str_extractFile(const char* String)
-{
-    char* c = a_str_suffixGetFromLast(String, '/');
-
-    if(c) {
-        return c;
-    } else {
-        return a_str_dup(String);
-    }
-}
-
-char* a_str_extractName(const char* String)
-{
-    char* file = a_str_extractFile(String);
-    char* name = a_str_prefixGetToLast(file, '.');
-
-    if(name) {
-        free(file);
-        return name;
-    } else {
-        return file;
-    }
-}
-
 AList* a_str_split(const char* String, const char* Delimiters)
 {
     AList* strings = a_list_new();

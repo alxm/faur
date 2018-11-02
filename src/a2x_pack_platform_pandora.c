@@ -75,7 +75,7 @@ void a_platform_pandora__init(void)
         char path[32];
         snprintf(path, sizeof(path), "/proc/pandora/nub%d/mode", i);
 
-        AFile* nub = a_file_new(path, "r");
+        AFile* nub = a_file_new(path, A_FILE_READ);
 
         if(nub && a_file_lineRead(nub)) {
             g_nubModes[i] = a_str_dup(a_file_lineBufferGet(nub));
