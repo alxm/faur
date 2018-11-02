@@ -42,10 +42,6 @@ extern char* a_str_prefixGetToLast(const char* String, char Marker);
 extern char* a_str_suffixGetFromFirst(const char* String, char Marker);
 extern char* a_str_suffixGetFromLast(const char* String, char Marker);
 
-extern char* a_str_extractPath(const char* String);
-extern char* a_str_extractFile(const char* String);
-extern char* a_str_extractName(const char* String);
-
 extern AList* a_str_split(const char* String, const char* Delimiters);
 
 static inline bool a_str_equal(const char* String1, const char* String2)

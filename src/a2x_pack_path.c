@@ -26,6 +26,7 @@
 
 struct APath {
     char* full;
+    char* dirsPart;
     char* namePart;
 };
 
@@ -34,7 +35,12 @@ APath* a_path_new(const char* Path)
     APath* p = a_mem_malloc(sizeof(APath));
 
     p->full = a_str_dup(Path);
+    p->dirsPart = a_str_prefixGetToLast(Path, '/');
     p->namePart = a_str_suffixGetFromLast(Path, '/');
+
+    if(p->dirsPart == NULL) {
+        p->dirsPart = a_str_dup(".");
+    }
 
     if(p->namePart == NULL) {
         p->namePart = a_str_dup(Path);
@@ -72,6 +78,7 @@ APath* a_path_newf(const char* Format, ...)
 void a_path_free(APath* Path)
 {
     free(Path->full);
+    free(Path->dirsPart);
     free(Path->namePart);
     free(Path);
 }
@@ -103,6 +110,11 @@ bool a_path_test(const APath* Path, APathType Type)
 const char* a_path_getFull(const APath* Path)
 {
     return Path->full;
+}
+
+const char* a_path_getDirs(const APath* Path)
+{
+    return Path->dirsPart;
 }
 
 const char* a_path_getName(const APath* Path)

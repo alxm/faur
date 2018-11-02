@@ -39,4 +39,5 @@ extern bool a_path_exists(const char* Path, APathType Type);
 extern bool a_path_test(const APath* Path, APathType Type);
 
 extern const char* a_path_getFull(const APath* Path);
+extern const char* a_path_getDirs(const APath* Path);
 extern const char* a_path_getName(const APath* Path);
