@@ -54,25 +54,26 @@ APath* a_path_newf(const char* Format, ...)
     va_list args;
     va_start(args, Format);
 
+    APath* p = NULL;
     int bytesNeeded = vsnprintf(NULL, 0, Format, args) + 1;
 
-    if(bytesNeeded <= 0) {
-        return NULL;
-    }
-
-    va_end(args);
-    va_start(args, Format);
-
-    char* buffer = a_mem_malloc((size_t)bytesNeeded);
-    bytesNeeded = vsnprintf(buffer, (size_t)bytesNeeded, Format, args);
-
     va_end(args);
 
-    if(bytesNeeded <= 0) {
-        return NULL;
+    if(bytesNeeded > 0) {
+        char* buffer = a_mem_malloc((size_t)bytesNeeded);
+
+        va_start(args, Format);
+
+        if(vsnprintf(buffer, (size_t)bytesNeeded, Format, args) > 0) {
+            p = a_path_new(buffer);
+        }
+
+        va_end(args);
+
+        free(buffer);
     }
 
-    return a_path_new(buffer);
+    return p;
 }
 
 void a_path_free(APath* Path)
