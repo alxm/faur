@@ -76,6 +76,30 @@ void a_path_free(APath* Path)
     free(Path);
 }
 
+bool a_path_exists(const char* Path, APathType Type)
+{
+    struct stat info;
+
+    switch(Type) {
+        case A_PATH_TYPE_ANY:
+            return access(Path, F_OK) == 0;
+
+        case A_PATH_TYPE_FILE:
+            return stat(Path, &info) == 0 && S_ISREG(info.st_mode);
+
+        case A_PATH_TYPE_DIR:
+            return stat(Path, &info) == 0 && S_ISDIR(info.st_mode);
+
+        default:
+            return false;
+    }
+}
+
+bool a_path_test(const APath* Path, APathType Type)
+{
+    return a_path_exists(Path->full, Type);
+}
+
 const char* a_path_getFull(const APath* Path)
 {
     return Path->full;
@@ -84,23 +108,4 @@ const char* a_path_getFull(const APath* Path)
 const char* a_path_getName(const APath* Path)
 {
     return Path->namePart;
-}
-
-bool a_path_exists(const APath* Path, APathType Type)
-{
-    struct stat info;
-
-    switch(Type) {
-        case A_PATH_TYPE_ANY:
-            return access(Path->full, F_OK) == 0;
-
-        case A_PATH_TYPE_FILE:
-            return stat(Path->full, &info) == 0 && S_ISREG(info.st_mode);
-
-        case A_PATH_TYPE_DIR:
-            return stat(Path->full, &info) == 0 && S_ISDIR(info.st_mode);
-
-        default:
-            return false;
-    }
 }

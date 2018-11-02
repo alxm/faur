@@ -35,7 +35,8 @@ extern APath* a_path_new(const char* Path);
 extern APath* a_path_newf(const char* Format, ...);
 extern void a_path_free(APath* Path);
 
+extern bool a_path_exists(const char* Path, APathType Type);
+extern bool a_path_test(const APath* Path, APathType Type);
+
 extern const char* a_path_getFull(const APath* Path);
 extern const char* a_path_getName(const APath* Path);
-
-extern bool a_path_exists(const APath* Path, APathType Type);
