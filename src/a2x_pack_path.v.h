@@ -1,5 +1,5 @@
 /*
-    Copyright 2011, 2016, 2018 Alex Margarit
+    Copyright 2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -19,17 +19,4 @@
 
 #pragma once
 
-#include "a2x_system_includes.h"
-
-typedef struct ADir ADir;
-
-#include "a2x_pack_list.p.h"
 #include "a2x_pack_path.p.h"
-
-extern ADir* a_dir_new(const char* Path);
-extern void a_dir_free(ADir* Dir);
-
-extern const APath* a_dir_pathGet(const ADir* Dir);
-
-extern AList* a_dir_entriesListGet(const ADir* Dir);
-extern unsigned a_dir_entriesNumGet(const ADir* Dir);
