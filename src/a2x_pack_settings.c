@@ -137,13 +137,18 @@ void a_settings__init(void)
     for(ASettingId s = 0; s < A_SETTING_NUM; s++) {
         a_strhash_add(g_settingsIndex, g_settings[s].id, (void*)s);
 
-        if(g_settings[s].flags & A__SETTING_FLAG_SET_ONCE) {
-            g_settings[s].flags |= A__SETTING_FLAG_FROZEN;
-        }
-
         if(g_settings[s].type == A__SETTING_TYPE_PIXEL) {
             long hexcode = strtol(g_settings[s].value.string, NULL, 16);
             g_settings[s].value.pixel = a_pixel_fromHex((uint32_t)hexcode);
+        }
+    }
+}
+
+void a_settings__init2(void)
+{
+    for(ASettingId s = 0; s < A_SETTING_NUM; s++) {
+        if(g_settings[s].flags & A__SETTING_FLAG_SET_ONCE) {
+            g_settings[s].flags |= A__SETTING_FLAG_FROZEN;
         }
     }
 }

@@ -32,6 +32,7 @@ typedef enum {
 } ASettingType;
 
 extern void a_settings__init(void);
+extern void a_settings__init2(void);
 extern void a_settings__uninit(void);
 
 extern ASettingId a_settings__stringToId(const char* Key);

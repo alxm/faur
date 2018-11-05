@@ -108,6 +108,7 @@ int main(int Argc, char* Argv[])
     a_embed__init();
     a_font__init();
     a_console__init2();
+    a_settings__init2();
 
     if(atexit(a__atexit)) {
         a_out__error("Cannot register atexit callback");
