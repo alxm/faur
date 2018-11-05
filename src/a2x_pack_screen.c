@@ -96,6 +96,22 @@ void a_screen__init(void)
         a_out__message("Screen resolution %dx%d", width, height);
     }
 
+    #if A_BUILD_SYSTEM_WIZ
+        if(a_settings_boolGet(A_SETTING_SYSTEM_WIZ_FIXTEARING)) {
+            a_settings_boolSet(A_SETTING_VIDEO_DOUBLEBUFFER, true);
+        }
+    #endif
+
+    #if A_BUILD_LIB_SDL == 2
+        a_settings_boolSet(A_SETTING_VIDEO_DOUBLEBUFFER, true);
+    #endif
+
+    #if A_BUILD_LIB_SDL == 2 || A_BUILD_SYSTEM_EMSCRIPTEN
+        if(a_settings_isDefault(A_SETTING_VIDEO_VSYNC)) {
+            a_settings_boolSet(A_SETTING_VIDEO_VSYNC, true);
+        }
+    #endif
+
     #if A_BUILD_RENDER_SOFTWARE
         if(a_settings_boolGet(A_SETTING_VIDEO_DOUBLEBUFFER)) {
             // Allocate pixel buffer

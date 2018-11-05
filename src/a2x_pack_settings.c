@@ -118,22 +118,6 @@ void a_settings__init(void)
     extern const char* a_app__buildtime;
     g_settings[A_SETTING_APP_BUILDTIME].value.string = (char*)a_app__buildtime;
 
-    #if A_BUILD_LIB_SDL == 2
-        a_settings_boolSet(A_SETTING_VIDEO_DOUBLEBUFFER, true);
-    #endif
-
-    #if A_BUILD_SYSTEM_EMSCRIPTEN || A_BUILD_LIB_SDL == 2
-        if(a_settings_isDefault(A_SETTING_VIDEO_VSYNC)) {
-            a_settings_boolSet(A_SETTING_VIDEO_VSYNC, true);
-        }
-    #endif
-
-    #if A_BUILD_SYSTEM_WIZ
-        if(a_settings_boolGet(A_SETTING_SYSTEM_WIZ_FIXTEARING)) {
-            a_settings_boolSet(A_SETTING_VIDEO_DOUBLEBUFFER, true);
-        }
-    #endif
-
     for(ASettingId s = 0; s < A_SETTING_NUM; s++) {
         a_strhash_add(g_settingsIndex, g_settings[s].id, (void*)s);
 
