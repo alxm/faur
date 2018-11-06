@@ -69,10 +69,12 @@ static void settingFullscreen(ASettingId Setting)
         }
     #endif
 
-    int toggle =
-        fullScreen || a_settings_boolGet(A_SETTING_INPUT_MOUSE_HIDECURSOR)
-            ? SDL_DISABLE
-            : SDL_ENABLE;
+    a_settings_boolSet(A_SETTING_INPUT_MOUSE_CURSOR, !fullScreen);
+}
+
+static void settingMouseCursor(ASettingId Setting)
+{
+    int toggle = a_settings_boolGet(Setting) ? SDL_ENABLE : SDL_DISABLE;
 
     if(SDL_ShowCursor(toggle) < 0) {
         a_out__error("SDL_ShowCursor: %s", SDL_GetError());
@@ -214,6 +216,7 @@ void a_platform__screenInit(int Width, int Height, bool FullScreen)
         #endif
     #endif
 
+    a_settings__callbackSet(A_SETTING_INPUT_MOUSE_CURSOR, settingMouseCursor);
     a_settings__callbackSet(A_SETTING_VIDEO_FULLSCREEN, settingFullscreen);
 
     #if A_BUILD_SYSTEM_WIZ
