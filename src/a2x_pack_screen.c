@@ -74,9 +74,7 @@ void a_screen__init(void)
     int height = a_settings_intGet(A_SETTING_VIDEO_HEIGHT);
 
     if(width < 0 || height < 0) {
-        int w = width;
-        int h = height;
-
+        int w = 0, h = 0;
         a_platform__screenResolutionGetNative(&w, &h);
 
         if(w > 0 && h > 0) {

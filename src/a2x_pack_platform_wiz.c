@@ -168,10 +168,4 @@ void a_platform_wiz__portraitModeSet(void)
     close(fb_fd);
 }
 #endif
-
-void a_platform__screenResolutionGetNative(int* Width, int* Height)
-{
-    *Width = 320;
-    *Height = 240;
-}
 #endif // A_BUILD_SYSTEM_WIZ || A_BUILD_SYSTEM_CAANOO

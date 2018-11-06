@@ -337,7 +337,15 @@ void a_platform__renderClear(void)
         a_out__error("SDL_RenderClear: %s", SDL_GetError());
     }
 }
+#endif
 
+#if A_BUILD_SCREEN_WIDTH > 0 && A_BUILD_SCREEN_HEIGHT > 0
+void a_platform__screenResolutionGetNative(int* Width, int* Height)
+{
+    *Width = A_BUILD_SCREEN_WIDTH;
+    *Height = A_BUILD_SCREEN_HEIGHT;
+}
+#elif A_BUILD_LIB_SDL == 2
 void a_platform__screenResolutionGetNative(int* Width, int* Height)
 {
     SDL_DisplayMode mode;
@@ -352,26 +360,16 @@ void a_platform__screenResolutionGetNative(int* Width, int* Height)
                    mode.h,
                    SDL_BITSPERPIXEL(mode.format));
 
-    if(*Width < 0) {
-        *Width = mode.w;
-    }
-
-    if(*Height < 0) {
-        *Height = mode.h;
-    }
+    *Width = mode.w;
+    *Height = mode.h;
 }
-#elif A_BUILD_LIB_SDL_GETFULLRES
+#elif A_BUILD_LIB_SDL == 1
 void a_platform__screenResolutionGetNative(int* Width, int* Height)
 {
     const SDL_VideoInfo* info = SDL_GetVideoInfo();
 
-    if(*Width < 0) {
-        *Width = info->current_w;
-    }
-
-    if(*Height < 0) {
-        *Height = info->current_h;
-    }
+    *Width = info->current_w;
+    *Height = info->current_h;
 }
 #endif
 #endif // A_BUILD_LIB_SDL
