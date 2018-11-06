@@ -36,6 +36,7 @@ typedef struct {
     const char* id;
     ASettingType type;
     ASettingFlag flags;
+    ASettingCallback* callback;
     union {
         int integer;
         unsigned integeru;
@@ -66,7 +67,7 @@ static const char* g_typeNames[A__SETTING_TYPE_NUM] = {
 #endif
 
 #define A__SETTING(Id, Type, Flags, UnionMember, Value) \
-    [Id] = {#Id, Type, Flags, .value.UnionMember = Value}
+    [Id] = {#Id, Type, Flags, NULL, .value.UnionMember = Value}
 
 static ASetting g_settings[A_SETTING_NUM] = {
     A__SETTING(A_SETTING_APP_TITLE, A__SETTING_TYPE_STR, A__SETTING_FLAG_SET_ONCE, string, "Untitled"),
@@ -177,6 +178,15 @@ ASettingType a_settings__typeGet(ASettingId Setting)
     return g_settings[Setting].type;
 }
 
+void a_settings__callbackSet(ASettingId Setting, ASettingCallback* Callback)
+{
+    g_settings[Setting].callback = Callback;
+
+    if(Callback) {
+        Callback(Setting);
+    }
+}
+
 bool a_settings_isDefault(ASettingId Setting)
 {
     return !(g_settings[Setting].flags & A__SETTING_FLAG_CHANGED);
@@ -220,6 +230,10 @@ void a_settings_boolSet(ASettingId Setting, bool Value)
 
     s->flags |= A__SETTING_FLAG_CHANGED;
     s->value.boolean = Value;
+
+    if(s->callback) {
+        s->callback(Setting);
+    }
 }
 
 bool a_settings_boolFlip(ASettingId Setting)
@@ -232,6 +246,10 @@ bool a_settings_boolFlip(ASettingId Setting)
 
     s->flags |= A__SETTING_FLAG_CHANGED;
     s->value.boolean = !s->value.boolean;
+
+    if(s->callback) {
+        s->callback(Setting);
+    }
 
     return s->value.boolean;
 }
@@ -257,6 +275,10 @@ void a_settings_intSet(ASettingId Setting, int Value)
 
     s->flags |= A__SETTING_FLAG_CHANGED;
     s->value.integer = Value;
+
+    if(s->callback) {
+        s->callback(Setting);
+    }
 }
 
 unsigned a_settings_intuGet(ASettingId Setting)
@@ -280,6 +302,10 @@ void a_settings_intuSet(ASettingId Setting, unsigned Value)
 
     s->flags |= A__SETTING_FLAG_CHANGED;
     s->value.integeru = Value;
+
+    if(s->callback) {
+        s->callback(Setting);
+    }
 }
 
 const char* a_settings_stringGet(ASettingId Setting)
@@ -307,6 +333,10 @@ void a_settings_stringSet(ASettingId Setting, const char* Value)
 
     s->flags |= A__SETTING_FLAG_CHANGED | A__SETTING_FLAG_FREE_STRING;
     s->value.string = a_str_dup(Value);
+
+    if(s->callback) {
+        s->callback(Setting);
+    }
 }
 
 APixel a_settings_colorGet(ASettingId Setting)
@@ -330,4 +360,8 @@ void a_settings_colorSet(ASettingId Setting, uint32_t Hexcode)
 
     s->flags |= A__SETTING_FLAG_CHANGED;
     s->value.pixel = a_pixel_fromHex(Hexcode);
+
+    if(s->callback) {
+        s->callback(Setting);
+    }
 }

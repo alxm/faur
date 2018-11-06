@@ -31,6 +31,8 @@ typedef enum {
     A__SETTING_TYPE_NUM
 } ASettingType;
 
+typedef void ASettingCallback(ASettingId Setting);
+
 extern void a_settings__init(void);
 extern void a_settings__init2(void);
 extern void a_settings__uninit(void);
@@ -38,3 +40,5 @@ extern void a_settings__uninit(void);
 extern ASettingId a_settings__stringToId(const char* Key);
 extern const char* a_settings__idToString(ASettingId Setting);
 extern ASettingType a_settings__typeGet(ASettingId Setting);
+
+extern void a_settings__callbackSet(ASettingId Setting, ASettingCallback* Callback);
