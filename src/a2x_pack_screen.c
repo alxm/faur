@@ -24,7 +24,6 @@
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
 #include "a2x_pack_pixel.v.h"
-#include "a2x_pack_platform_wiz.v.h"
 #include "a2x_pack_settings.v.h"
 
 AScreen a__screen;
@@ -124,13 +123,6 @@ void a_screen__init(void)
 
     a_platform__screenInit(
         width, height, a_settings_boolGet(A_SETTING_VIDEO_FULLSCREEN));
-
-    a_platform__screenSetFullscreen(
-        a_settings_boolGet(A_SETTING_VIDEO_FULLSCREEN));
-
-    #if A_BUILD_SYSTEM_WIZ
-        a_platform_wiz__portraitModeSet();
-    #endif
 
     #if A_BUILD_SYSTEM_DESKTOP
         g_fullScreenButton = a_button_new();

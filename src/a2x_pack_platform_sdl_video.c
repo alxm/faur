@@ -23,6 +23,7 @@
 #include <SDL.h>
 
 #include "a2x_pack_out.v.h"
+#include "a2x_pack_platform_wiz.v.h"
 #include "a2x_pack_screen.v.h"
 #include "a2x_pack_settings.v.h"
 
@@ -185,6 +186,14 @@ void a_platform__screenInit(int Width, int Height, bool FullScreen)
         #elif A_BUILD_LIB_SDL == 2
             SDL_SetWindowTitle(g_sdlWindow, caption);
         #endif
+    #endif
+
+    a_platform__screenSetFullscreen(FullScreen);
+
+    #if A_BUILD_SYSTEM_WIZ
+        if(a_settings_boolGet(A_SETTING_SYSTEM_WIZ_FIXTEARING)) {
+            a_platform_wiz__portraitModeSet();
+        }
     #endif
 }
 
