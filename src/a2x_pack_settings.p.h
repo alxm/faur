@@ -93,4 +93,4 @@ extern const char* a_settings_stringGet(ASettingId Setting);
 extern void a_settings_stringSet(ASettingId Setting, const char* Value);
 
 extern APixel a_settings_pixelGet(ASettingId Setting);
-extern void a_settings_pixelSet(ASettingId Setting, APixel Value);
+extern void a_settings_pixelSet(ASettingId Setting, uint32_t Hexcode);

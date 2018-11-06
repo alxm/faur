@@ -87,13 +87,13 @@ static ASetting g_settings[A_SETTING_NUM] = {
     A__SETTING(A_SETTING_VIDEO_DOUBLEBUFFER, A__SETTING_TYPE_BOOL, A__SETTING_FLAG_SET_ONCE, boolean, false),
     A__SETTING(A_SETTING_VIDEO_FULLSCREEN, A__SETTING_TYPE_BOOL, A__SETTING_FLAG_NONE, boolean, A_BUILD_SCREEN_FULLSCREEN),
 
-    A__SETTING(A_SETTING_COLOR_SCREEN_BORDER, A__SETTING_TYPE_PIXEL, A__SETTING_FLAG_SET_ONCE, string, "0x1f0f0f"),
-    A__SETTING(A_SETTING_COLOR_VOLBAR_BACKGROUND, A__SETTING_TYPE_PIXEL, A__SETTING_FLAG_SET_ONCE, string, "0x1f0f0f"),
-    A__SETTING(A_SETTING_COLOR_VOLBAR_BORDER, A__SETTING_TYPE_PIXEL, A__SETTING_FLAG_SET_ONCE, string, "0x3f8fdf"),
-    A__SETTING(A_SETTING_COLOR_VOLBAR_FILL, A__SETTING_TYPE_PIXEL, A__SETTING_FLAG_SET_ONCE, string, "0x9fcf3f"),
-    A__SETTING(A_SETTING_COLOR_KEY, A__SETTING_TYPE_PIXEL, A__SETTING_FLAG_SET_ONCE, string, "0xFF00FF"),
-    A__SETTING(A_SETTING_COLOR_LIMIT, A__SETTING_TYPE_PIXEL, A__SETTING_FLAG_SET_ONCE, string, "0x00FF00"),
-    A__SETTING(A_SETTING_COLOR_END, A__SETTING_TYPE_PIXEL, A__SETTING_FLAG_SET_ONCE, string, "0x00FFFF"),
+    A__SETTING(A_SETTING_COLOR_SCREEN_BORDER, A__SETTING_TYPE_PIXEL, A__SETTING_FLAG_SET_ONCE, integeru, 0x1f0f0f),
+    A__SETTING(A_SETTING_COLOR_VOLBAR_BACKGROUND, A__SETTING_TYPE_PIXEL, A__SETTING_FLAG_SET_ONCE, integeru, 0x1f0f0f),
+    A__SETTING(A_SETTING_COLOR_VOLBAR_BORDER, A__SETTING_TYPE_PIXEL, A__SETTING_FLAG_SET_ONCE, integeru, 0x3f8fdf),
+    A__SETTING(A_SETTING_COLOR_VOLBAR_FILL, A__SETTING_TYPE_PIXEL, A__SETTING_FLAG_SET_ONCE, integeru, 0x9fcf3f),
+    A__SETTING(A_SETTING_COLOR_KEY, A__SETTING_TYPE_PIXEL, A__SETTING_FLAG_SET_ONCE, integeru, 0xFF00FF),
+    A__SETTING(A_SETTING_COLOR_LIMIT, A__SETTING_TYPE_PIXEL, A__SETTING_FLAG_SET_ONCE, integeru, 0x00FF00),
+    A__SETTING(A_SETTING_COLOR_END, A__SETTING_TYPE_PIXEL, A__SETTING_FLAG_SET_ONCE, integeru, 0x00FFFF),
 
     A__SETTING(A_SETTING_SOUND_MUTE, A__SETTING_TYPE_BOOL, A__SETTING_FLAG_NONE, boolean, false),
     A__SETTING(A_SETTING_SOUND_SAMPLE_CHANNELS_TOTAL, A__SETTING_TYPE_INT, A__SETTING_FLAG_SET_ONCE, integer, 64),
@@ -129,9 +129,11 @@ void a_settings__init(void)
     for(ASettingId s = 0; s < A_SETTING_NUM; s++) {
         a_strhash_add(g_settingsIndex, g_settings[s].id, (void*)s);
 
-        if(g_settings[s].type == A__SETTING_TYPE_PIXEL) {
-            long hexcode = strtol(g_settings[s].value.string, NULL, 16);
-            g_settings[s].value.pixel = a_pixel_fromHex((uint32_t)hexcode);
+        if(g_settings[s].type == A__SETTING_TYPE_PIXEL
+            && !(g_settings[s].flags & A__SETTING_FLAG_CHANGED)) {
+
+            g_settings[s].value.pixel = a_pixel_fromHex(
+                                            g_settings[s].value.integeru);
         }
     }
 }
@@ -307,7 +309,7 @@ void a_settings_stringSet(ASettingId Setting, const char* Value)
     s->value.string = a_str_dup(Value);
 }
 
-extern APixel a_settings_pixelGet(ASettingId Setting)
+APixel a_settings_pixelGet(ASettingId Setting)
 {
     ASetting* s = validate(Setting, A__SETTING_TYPE_PIXEL, false);
 
@@ -318,7 +320,7 @@ extern APixel a_settings_pixelGet(ASettingId Setting)
     return s->value.pixel;
 }
 
-extern void a_settings_pixelSet(ASettingId Setting, APixel Value)
+void a_settings_pixelSet(ASettingId Setting, uint32_t Hexcode)
 {
     ASetting* s = validate(Setting, A__SETTING_TYPE_PIXEL, true);
 
@@ -327,5 +329,5 @@ extern void a_settings_pixelSet(ASettingId Setting, APixel Value)
     }
 
     s->flags |= A__SETTING_FLAG_CHANGED;
-    s->value.pixel = Value;
+    s->value.pixel = a_pixel_fromHex(Hexcode);
 }
