@@ -156,8 +156,7 @@ void a_screen__tick(void)
 {
     #if A_BUILD_SYSTEM_DESKTOP
         if(a_button_pressGetOnce(g_fullScreenButton)) {
-            a_platform__screenSetFullscreen(
-                a_settings_boolFlip(A_SETTING_VIDEO_FULLSCREEN));
+            a_settings_boolFlip(A_SETTING_VIDEO_FULLSCREEN);
         }
     #endif
 }

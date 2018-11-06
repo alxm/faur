@@ -57,6 +57,28 @@ void a_platform_sdl_video__init(void)
     }
 }
 
+static void settingFullscreen(ASettingId Setting)
+{
+    bool fullScreen = a_settings_boolGet(Setting);
+
+    #if A_BUILD_LIB_SDL == 2
+        if(SDL_SetWindowFullscreen(
+            g_sdlWindow, fullScreen? SDL_WINDOW_FULLSCREEN : 0) < 0) {
+
+            a_out__error("SDL_SetWindowFullscreen: %s", SDL_GetError());
+        }
+    #endif
+
+    int toggle =
+        fullScreen || a_settings_boolGet(A_SETTING_INPUT_MOUSE_HIDECURSOR)
+            ? SDL_DISABLE
+            : SDL_ENABLE;
+
+    if(SDL_ShowCursor(toggle) < 0) {
+        a_out__error("SDL_ShowCursor: %s", SDL_GetError());
+    }
+}
+
 void a_platform_sdl_video__uninit(void)
 {
     #if A_BUILD_LIB_SDL == 1
@@ -192,7 +214,7 @@ void a_platform__screenInit(int Width, int Height, bool FullScreen)
         #endif
     #endif
 
-    a_platform__screenSetFullscreen(FullScreen);
+    a_settings__callbackSet(A_SETTING_VIDEO_FULLSCREEN, settingFullscreen);
 
     #if A_BUILD_SYSTEM_WIZ
         if(a_settings_boolGet(A_SETTING_SYSTEM_WIZ_FIXTEARING)) {
@@ -321,26 +343,6 @@ void a_platform__screenShow(void)
 
         SDL_RenderPresent(a__sdlRenderer);
     #endif
-}
-
-void a_platform__screenSetFullscreen(bool FullScreen)
-{
-    #if A_BUILD_LIB_SDL == 2
-        if(SDL_SetWindowFullscreen(
-            g_sdlWindow, FullScreen? SDL_WINDOW_FULLSCREEN : 0) < 0) {
-
-            a_out__error("SDL_SetWindowFullscreen: %s", SDL_GetError());
-        }
-    #endif
-
-    int toggle =
-        FullScreen || a_settings_boolGet(A_SETTING_INPUT_MOUSE_HIDECURSOR)
-            ? SDL_DISABLE
-            : SDL_ENABLE;
-
-    if(SDL_ShowCursor(toggle) < 0) {
-        a_out__error("SDL_ShowCursor: %s", SDL_GetError());
-    }
 }
 
 #if A_BUILD_LIB_SDL == 2
