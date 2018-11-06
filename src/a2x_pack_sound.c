@@ -115,7 +115,7 @@ void a_sound__tick(void)
 
     #if A_BUILD_DEVICE_KEYBOARD
         if(a_button_pressGetOnce(g_muteButton)) {
-            a_platform__musicToggle(a_settings_boolFlip(A_SETTING_SOUND_MUTE));
+            a_settings_boolFlip(A_SETTING_SOUND_MUTE);
         }
     #endif
 }

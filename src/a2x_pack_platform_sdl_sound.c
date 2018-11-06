@@ -33,6 +33,21 @@ static int g_numSampleChannels;
 static int g_numSampleChannelsReserved;
 static int g_currentSampleChannel;
 
+#if A_BUILD_DEVICE_KEYBOARD
+    static void settingMute(ASettingId Setting)
+    {
+        if(!g_enabled) {
+            return;
+        }
+
+        if(a_settings_boolGet(Setting)) {
+            Mix_PauseMusic();
+        } else if(Mix_PausedMusic()) {
+            Mix_ResumeMusic();
+        }
+    }
+#endif
+
 void a_platform_sdl_sound__init(void)
 {
     if(SDL_InitSubSystem(SDL_INIT_AUDIO) != 0) {
@@ -65,6 +80,10 @@ void a_platform_sdl_sound__init(void)
     a_out__message("Allocated %d sample channels, reserved %d",
                    g_numSampleChannels,
                    g_numSampleChannelsReserved);
+
+    #if A_BUILD_DEVICE_KEYBOARD
+        a_settings__callbackSet(A_SETTING_SOUND_MUTE, settingMute);
+    #endif
 }
 
 void a_platform_sdl_sound__uninit(void)
@@ -132,19 +151,6 @@ void a_platform__musicStop(void)
     }
 
     Mix_HaltMusic();
-}
-
-void a_platform__musicToggle(bool Mute)
-{
-    if(!g_enabled) {
-        return;
-    }
-
-    if(Mute) {
-        Mix_PauseMusic();
-    } else if(Mix_PausedMusic()) {
-        Mix_ResumeMusic();
-    }
 }
 
 APlatformSample* a_platform__sampleNewFromFile(const char* Path)
