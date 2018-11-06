@@ -45,6 +45,14 @@ typedef struct {
     } value;
 } ASetting;
 
+static const char* g_typeNames[A__SETTING_TYPE_NUM] = {
+    [A__SETTING_TYPE_INT] = "int",
+    [A__SETTING_TYPE_INTU] = "intu",
+    [A__SETTING_TYPE_BOOL] = "bool",
+    [A__SETTING_TYPE_STR] = "str",
+    [A__SETTING_TYPE_PIXEL] = "pixel",
+};
+
 #ifndef A_BUILD_SCREEN_WIDTH
     #define A_BUILD_SCREEN_WIDTH 320
 #endif
@@ -174,6 +182,10 @@ bool a_settings_isDefault(ASettingId Setting)
 
 static ASetting* validate(ASettingId Setting, ASettingType Type, bool Write) {
     if(g_settings[Setting].type != Type) {
+        a_out__error("Setting %s is type %s, not %s",
+                     g_settings[Setting].id,
+                     g_typeNames[g_settings[Setting].type],
+                     g_typeNames[Type]);
         return NULL;
     }
 
