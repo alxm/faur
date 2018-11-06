@@ -116,7 +116,7 @@ __attribute__((noreturn)) static void handleFatal(void)
         free(functionNames);
     #endif
 
-    a_console__showSet(true);
+    a_settings_boolSet(A_SETTING_OUTPUT_CONSOLE, true);
     a_screen__draw();
 
     #if A_BUILD_DEBUG
