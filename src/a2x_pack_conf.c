@@ -85,9 +85,9 @@ void a_conf__init(void)
                         a_settings_stringSet(id, val_trim);
                     } break;
 
-                    case A__SETTING_TYPE_PIXEL: {
+                    case A__SETTING_TYPE_COLOR: {
                         long hex = strtol(val_trim, NULL, 16);
-                        a_settings_pixelSet(id, (uint32_t)hex);
+                        a_settings_colorSet(id, (uint32_t)hex);
                     } break;
 
                     default: break;

@@ -27,7 +27,7 @@ typedef enum {
     A__SETTING_TYPE_INTU,
     A__SETTING_TYPE_BOOL,
     A__SETTING_TYPE_STR,
-    A__SETTING_TYPE_PIXEL,
+    A__SETTING_TYPE_COLOR,
     A__SETTING_TYPE_NUM
 } ASettingType;
 

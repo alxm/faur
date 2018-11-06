@@ -167,7 +167,7 @@ void a_platform__screenInit(int Width, int Height, bool FullScreen)
         SDL_SetHintWithPriority(
             SDL_HINT_RENDER_SCALE_QUALITY, "nearest", SDL_HINT_OVERRIDE);
 
-        a_pixel_toRgb(a_settings_pixelGet(A_SETTING_COLOR_SCREEN_BORDER),
+        a_pixel_toRgb(a_settings_colorGet(A_SETTING_COLOR_SCREEN_BORDER),
                       &g_clearR,
                       &g_clearG,
                       &g_clearB);

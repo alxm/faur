@@ -130,19 +130,19 @@ void a_sound__draw(void)
         a_pixel_blendSet(A_PIXEL_BLEND_PLAIN);
 
         a_pixel_colorSetPixel(
-            a_settings_pixelGet(A_SETTING_COLOR_VOLBAR_BACKGROUND));
+            a_settings_colorGet(A_SETTING_COLOR_VOLBAR_BACKGROUND));
 
         a_draw_rectangle(0, 181, g_volumeMax / A__VOLUME_STEP + 5, 16);
 
         a_pixel_colorSetPixel(
-            a_settings_pixelGet(A_SETTING_COLOR_VOLBAR_BORDER));
+            a_settings_colorGet(A_SETTING_COLOR_VOLBAR_BORDER));
 
         a_draw_hline(0, g_volumeMax / A__VOLUME_STEP + 4, 180);
         a_draw_hline(0, g_volumeMax / A__VOLUME_STEP + 4, 183 + 14);
         a_draw_vline(g_volumeMax / A__VOLUME_STEP + 4 + 1, 181, 183 + 13);
 
         a_pixel_colorSetPixel(
-            a_settings_pixelGet(A_SETTING_COLOR_VOLBAR_FILL));
+            a_settings_colorGet(A_SETTING_COLOR_VOLBAR_FILL));
 
         a_draw_rectangle(0, 186, g_volume / A__VOLUME_STEP, 6);
     #endif

@@ -35,9 +35,9 @@ APixel a_sprite__colorEnd;
 
 void a_sprite__init(void)
 {
-    a_sprite__colorKey = a_settings_pixelGet(A_SETTING_COLOR_KEY);
-    a_sprite__colorLimit = a_settings_pixelGet(A_SETTING_COLOR_LIMIT);
-    a_sprite__colorEnd = a_settings_pixelGet(A_SETTING_COLOR_END);
+    a_sprite__colorKey = a_settings_colorGet(A_SETTING_COLOR_KEY);
+    a_sprite__colorLimit = a_settings_colorGet(A_SETTING_COLOR_LIMIT);
+    a_sprite__colorEnd = a_settings_colorGet(A_SETTING_COLOR_END);
 }
 
 static ASprite* makeEmptySprite(int Width, int Height)
