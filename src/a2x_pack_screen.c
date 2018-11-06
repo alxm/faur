@@ -82,10 +82,12 @@ void a_screen__init(void)
         if(w > 0 && h > 0) {
             if(width < 0) {
                 width = w / -width;
+                a_settings_intSet(A_SETTING_VIDEO_WIDTH, width);
             }
 
             if(height < 0) {
                 height = h / -height;
+                a_settings_intSet(A_SETTING_VIDEO_HEIGHT, height);
             }
         }
     }
