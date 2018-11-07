@@ -154,11 +154,6 @@ void a_fps__frame(void)
     g_run.lastFrameMs = nowMs;
 }
 
-unsigned a_fps_tickRateGet(void)
-{
-    return a_settings_intuGet(A_SETTING_FPS_TICK);
-}
-
 unsigned a_fps_drawRateGet(void)
 {
     return g_run.drawFps;
