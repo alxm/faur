@@ -147,6 +147,17 @@ void a_entity_parentSet(AEntity* Entity, AEntity* Parent)
     }
 }
 
+bool a_entity_parentHas(const AEntity* Child, const AEntity* PotentialParent)
+{
+    for(AEntity* p = Child->parent; p != NULL; p = p->parent) {
+        if(p == PotentialParent) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 void a_entity_refInc(AEntity* Entity)
 {
     if(Entity->flags & A_ENTITY__DEBUG) {
