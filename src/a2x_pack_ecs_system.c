@@ -51,17 +51,21 @@ void a_system__uninit(void)
 
 ASystem* a_system__get(int System, const char* CallerFunction)
 {
-    if(g_systemsTable == NULL) {
-        a_out__fatal("%s: Call a_ecs_init first", CallerFunction);
-    }
+    #if A_BUILD_DEBUG
+        if(g_systemsTable == NULL) {
+            a_out__fatal("%s: Call a_ecs_init first", CallerFunction);
+        }
 
-    if(System < 0 || System >= (int)a_system__tableLen) {
-        a_out__fatal("%s: Unknown system %d", CallerFunction, System);
-    }
+        if(System < 0 || System >= (int)a_system__tableLen) {
+            a_out__fatal("%s: Unknown system %d", CallerFunction, System);
+        }
 
-    if(g_systemsTable[System].entities == NULL) {
-        a_out__fatal("%s: Uninitialized system %d", CallerFunction, System);
-    }
+        if(g_systemsTable[System].entities == NULL) {
+            a_out__fatal("%s: Uninitialized system %d", CallerFunction, System);
+        }
+    #else
+        A_UNUSED(CallerFunction);
+    #endif
 
     return &g_systemsTable[System];
 }
