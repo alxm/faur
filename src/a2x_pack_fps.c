@@ -19,6 +19,7 @@
 
 #include "a2x_pack_fps.v.h"
 
+#include "a2x_pack_math.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
 #include "a2x_pack_settings.v.h"
@@ -44,8 +45,8 @@ static struct {
     unsigned drawFps;
     unsigned drawFpsMax;
     unsigned frameCounter;
-    unsigned tickCreditMs;
     uint32_t lastFrameMs;
+    unsigned tickCreditMs;
 } g_run;
 
 void a_fps__init(void)
@@ -150,8 +151,8 @@ void a_fps__frame(void)
 
     g_history.head = (g_history.head + 1) % g_history.len;
 
-    g_run.tickCreditMs += elapsedMs;
     g_run.lastFrameMs = nowMs;
+    g_run.tickCreditMs += a_math_minu(elapsedMs, g_settings.drawFrameMs * 2);
 }
 
 unsigned a_fps_drawRateGet(void)
