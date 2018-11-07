@@ -5,17 +5,17 @@ a2x is a C framework I wrote for my video games. It runs natively on Linux and F
 ## Build
 
 ```sh
-$ sudo apt install git build-essential python3
-$ sudo apt install libpng-dev libsdl2-dev libsdl2-mixer-dev
-$
-$ cd ~
-$ git clone git://github.com/alxm/a2x.git
-$
-$ export A2X_PATH="$HOME/a2x"
-$ export PATH="$PATH:$A2X_PATH/bin"
-$
-$ cd a2x/make/a2x
-$ make
+sudo apt install git build-essential python3
+sudo apt install libpng-dev libsdl2-dev libsdl2-mixer-dev
+
+cd ~
+git clone git://github.com/alxm/a2x.git
+
+export A2X_PATH="$HOME/a2x"
+export PATH="$PATH:$A2X_PATH/bin"
+
+cd a2x/make/a2x
+make -j
 ```
 
 ## *Hello, World!* Project
@@ -23,9 +23,9 @@ $ make
 `a2x_new` generates a small one-file project that draws a square which you can move with the arrow keys or a gamepad.
 
 ```sh
-$ a2x_new hello
-$ cd hello/make/
-$ make run
+a2x_new hello
+cd hello/make/
+make run
 ```
 
 ![Starter Project Screenshot](https://github.com/alxm/a2x/raw/master/media/hello.gif "Starter Project Screenshot")
@@ -114,11 +114,11 @@ I originally wrote a2x to make games for the Linux-based [GP2X handheld](https:/
 Edit `~/.config/a2x/sdk.config` with your SDK paths:
 
 ```sh
-$ cd a2x/make/a2x
-$ make config                    # Create default sdk.config file
-$ nano ~/.config/a2x/sdk.config  # Edit with your own SDK paths
-$ make config                    # Process changes
-$ make -f Makefile.gp2x          # Cross-compile for GP2X, etc.
+cd a2x/make/a2x
+make config                    # Create default sdk.config file
+nano ~/.config/a2x/sdk.config  # Edit with your own SDK paths
+make config                    # Process changes
+make -j -f Makefile.gp2x       # Cross-compile for GP2X or other
 ```
 
 ## License
