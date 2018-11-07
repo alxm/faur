@@ -21,7 +21,13 @@
 
 #include "a2x_system_includes.h"
 
-extern unsigned a_fps_tickRateGet(void);
+#include "a2x_pack_settings.p.h"
+
+static inline unsigned a_fps_tickRateGet(void)
+{
+    return a_settings_intuGet(A_SETTING_FPS_TICK);
+}
+
 extern unsigned a_fps_drawRateGet(void);
 extern unsigned a_fps_drawRateGetMax(void);
 
