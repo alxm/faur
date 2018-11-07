@@ -84,7 +84,6 @@ void a_system_new(int Index, const char* Name, ASystemHandler* Handler, ASystemS
     s->entities = a_list_new();
     s->componentBits = a_bitfield_new(a_component__tableLen);
     s->onlyActiveEntities = OnlyActiveEntities;
-    s->muted = false;
 }
 
 void a_system_add(int System, int Component)
@@ -98,10 +97,6 @@ void a_system_add(int System, int Component)
 void a_system_run(int System)
 {
     ASystem* system = a_system__get(System, __func__);
-
-    if(system->muted) {
-        return;
-    }
 
     if(system->compare) {
         a_list_sort(system->entities, (AListCompare*)system->compare);
@@ -122,11 +117,4 @@ void a_system_run(int System)
     }
 
     a_ecs__flushEntitiesFromSystems();
-}
-
-void a_system_muteSet(int System, bool DoMute)
-{
-    ASystem* system = a_system__get(System, __func__);
-
-    system->muted = DoMute;
 }

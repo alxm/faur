@@ -30,4 +30,3 @@ extern void a_system_new(int Index, const char* Name, ASystemHandler* Handler, A
 extern void a_system_add(int System, int Component);
 
 extern void a_system_run(int System);
-extern void a_system_muteSet(int System, bool DoMute);
