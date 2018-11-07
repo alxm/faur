@@ -42,10 +42,9 @@ typedef enum {
     A_CONSOLE__STATE_INVALID = -1,
     A_CONSOLE__STATE_BASIC,
     A_CONSOLE__STATE_FULL,
-    A_CONSOLE__STATE_VISIBLE,
 } AConsoleState;
 
-AConsoleState g_state;
+static AConsoleState g_state = A_CONSOLE__STATE_INVALID;
 static AList* g_lines;
 static unsigned g_linesPerScreen;
 static ASprite* g_sources[A_OUT__SOURCE_NUM];
@@ -81,6 +80,7 @@ void a_console__init(void)
 {
     g_lines = a_list_new();
     g_linesPerScreen = UINT_MAX;
+
     g_state = A_CONSOLE__STATE_BASIC;
 }
 
@@ -118,14 +118,13 @@ void a_console__init2(void)
         a_button_bind(g_toggle, A_BUTTON_R);
     a_button_bindComboEnd(g_toggle);
 
-    g_state = a_settings_boolGet(A_SETTING_OUTPUT_CONSOLE)
-                ? A_CONSOLE__STATE_VISIBLE
-                : A_CONSOLE__STATE_FULL;
+    g_state = A_CONSOLE__STATE_FULL;
 }
 
 void a_console__uninit(void)
 {
     g_state = A_CONSOLE__STATE_INVALID;
+
     a_list_freeEx(g_lines, (AFree*)line_free);
 
     for(AOutSource s = 0; s < A_OUT__SOURCE_NUM; s++) {
@@ -142,13 +141,15 @@ void a_console__uninit(void)
 void a_console__tick(void)
 {
     if(a_button_pressGetOnce(g_toggle)) {
-        a_console__showSet(g_state == A_CONSOLE__STATE_FULL);
+        a_settings_boolFlip(A_SETTING_OUTPUT_CONSOLE);
     }
 }
 
 void a_console__draw(void)
 {
-    if(g_state != A_CONSOLE__STATE_VISIBLE) {
+    if(g_state != A_CONSOLE__STATE_FULL
+        || !a_settings_boolGet(A_SETTING_OUTPUT_CONSOLE)) {
+
         return;
     }
 
@@ -232,16 +233,7 @@ void a_console__draw(void)
 
 bool a_console__isInitialized(void)
 {
-    return g_state >= A_CONSOLE__STATE_FULL;
-}
-
-void a_console__showSet(bool DoShow)
-{
-    if(g_state < A_CONSOLE__STATE_FULL) {
-        return;
-    }
-
-    g_state = A_CONSOLE__STATE_FULL + DoShow;
+    return g_state == A_CONSOLE__STATE_FULL;
 }
 
 void a_console__write(AOutSource Source, AOutType Type, const char* Text, bool Overwrite)

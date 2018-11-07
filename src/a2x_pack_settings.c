@@ -36,6 +36,7 @@ typedef struct {
     const char* id;
     ASettingType type;
     ASettingFlag flags;
+    ASettingCallback* callback;
     union {
         int integer;
         unsigned integeru;
@@ -44,6 +45,14 @@ typedef struct {
         APixel pixel;
     } value;
 } ASetting;
+
+static const char* g_typeNames[A__SETTING_TYPE_NUM] = {
+    [A__SETTING_TYPE_INT] = "int",
+    [A__SETTING_TYPE_INTU] = "intu",
+    [A__SETTING_TYPE_BOOL] = "bool",
+    [A__SETTING_TYPE_STR] = "str",
+    [A__SETTING_TYPE_COLOR] = "color",
+};
 
 #ifndef A_BUILD_SCREEN_WIDTH
     #define A_BUILD_SCREEN_WIDTH 320
@@ -58,7 +67,7 @@ typedef struct {
 #endif
 
 #define A__SETTING(Id, Type, Flags, UnionMember, Value) \
-    [Id] = {#Id, Type, Flags, .value.UnionMember = Value}
+    [Id] = {#Id, Type, Flags, NULL, .value.UnionMember = Value}
 
 static ASetting g_settings[A_SETTING_NUM] = {
     A__SETTING(A_SETTING_APP_TITLE, A__SETTING_TYPE_STR, A__SETTING_FLAG_SET_ONCE, string, "Untitled"),
@@ -79,13 +88,13 @@ static ASetting g_settings[A_SETTING_NUM] = {
     A__SETTING(A_SETTING_VIDEO_DOUBLEBUFFER, A__SETTING_TYPE_BOOL, A__SETTING_FLAG_SET_ONCE, boolean, false),
     A__SETTING(A_SETTING_VIDEO_FULLSCREEN, A__SETTING_TYPE_BOOL, A__SETTING_FLAG_NONE, boolean, A_BUILD_SCREEN_FULLSCREEN),
 
-    A__SETTING(A_SETTING_COLOR_SCREEN_BORDER, A__SETTING_TYPE_PIXEL, A__SETTING_FLAG_SET_ONCE, string, "0x1f0f0f"),
-    A__SETTING(A_SETTING_COLOR_VOLBAR_BACKGROUND, A__SETTING_TYPE_PIXEL, A__SETTING_FLAG_SET_ONCE, string, "0x1f0f0f"),
-    A__SETTING(A_SETTING_COLOR_VOLBAR_BORDER, A__SETTING_TYPE_PIXEL, A__SETTING_FLAG_SET_ONCE, string, "0x3f8fdf"),
-    A__SETTING(A_SETTING_COLOR_VOLBAR_FILL, A__SETTING_TYPE_PIXEL, A__SETTING_FLAG_SET_ONCE, string, "0x9fcf3f"),
-    A__SETTING(A_SETTING_COLOR_KEY, A__SETTING_TYPE_PIXEL, A__SETTING_FLAG_SET_ONCE, string, "0xFF00FF"),
-    A__SETTING(A_SETTING_COLOR_LIMIT, A__SETTING_TYPE_PIXEL, A__SETTING_FLAG_SET_ONCE, string, "0x00FF00"),
-    A__SETTING(A_SETTING_COLOR_END, A__SETTING_TYPE_PIXEL, A__SETTING_FLAG_SET_ONCE, string, "0x00FFFF"),
+    A__SETTING(A_SETTING_COLOR_SCREEN_BORDER, A__SETTING_TYPE_COLOR, A__SETTING_FLAG_NONE, integeru, 0x1f0f0f),
+    A__SETTING(A_SETTING_COLOR_VOLBAR_BACKGROUND, A__SETTING_TYPE_COLOR, A__SETTING_FLAG_SET_ONCE, integeru, 0x1f0f0f),
+    A__SETTING(A_SETTING_COLOR_VOLBAR_BORDER, A__SETTING_TYPE_COLOR, A__SETTING_FLAG_SET_ONCE, integeru, 0x3f8fdf),
+    A__SETTING(A_SETTING_COLOR_VOLBAR_FILL, A__SETTING_TYPE_COLOR, A__SETTING_FLAG_SET_ONCE, integeru, 0x9fcf3f),
+    A__SETTING(A_SETTING_COLOR_KEY, A__SETTING_TYPE_COLOR, A__SETTING_FLAG_SET_ONCE, integeru, 0xFF00FF),
+    A__SETTING(A_SETTING_COLOR_LIMIT, A__SETTING_TYPE_COLOR, A__SETTING_FLAG_SET_ONCE, integeru, 0x00FF00),
+    A__SETTING(A_SETTING_COLOR_END, A__SETTING_TYPE_COLOR, A__SETTING_FLAG_SET_ONCE, integeru, 0x00FFFF),
 
     A__SETTING(A_SETTING_SOUND_MUTE, A__SETTING_TYPE_BOOL, A__SETTING_FLAG_NONE, boolean, false),
     A__SETTING(A_SETTING_SOUND_SAMPLE_CHANNELS_TOTAL, A__SETTING_TYPE_INT, A__SETTING_FLAG_SET_ONCE, integer, 64),
@@ -93,7 +102,7 @@ static ASetting g_settings[A_SETTING_NUM] = {
     A__SETTING(A_SETTING_SOUND_VOLUME_SCALE_MUSIC, A__SETTING_TYPE_INT, A__SETTING_FLAG_SET_ONCE, integer, 100),
     A__SETTING(A_SETTING_SOUND_VOLUME_SCALE_SAMPLE, A__SETTING_TYPE_INT, A__SETTING_FLAG_SET_ONCE, integer, 100),
 
-    A__SETTING(A_SETTING_INPUT_MOUSE_HIDECURSOR, A__SETTING_TYPE_BOOL, A__SETTING_FLAG_SET_ONCE, boolean, false),
+    A__SETTING(A_SETTING_INPUT_MOUSE_CURSOR, A__SETTING_TYPE_BOOL, A__SETTING_FLAG_NONE, boolean, true),
     A__SETTING(A_SETTING_INPUT_MOUSE_TRACK, A__SETTING_TYPE_BOOL, A__SETTING_FLAG_SET_ONCE, boolean, false),
     A__SETTING(A_SETTING_INPUT_ANALOG_AXES_SWITCH, A__SETTING_TYPE_BOOL, A__SETTING_FLAG_SET_ONCE, boolean, false),
     A__SETTING(A_SETTING_INPUT_ANALOG_AXES_INVERT, A__SETTING_TYPE_BOOL, A__SETTING_FLAG_SET_ONCE, boolean, false),
@@ -118,32 +127,23 @@ void a_settings__init(void)
     extern const char* a_app__buildtime;
     g_settings[A_SETTING_APP_BUILDTIME].value.string = (char*)a_app__buildtime;
 
-    #if A_BUILD_LIB_SDL == 2
-        a_settings_boolSet(A_SETTING_VIDEO_DOUBLEBUFFER, true);
-    #endif
-
-    #if A_BUILD_SYSTEM_EMSCRIPTEN || A_BUILD_LIB_SDL == 2
-        if(a_settings_isDefault(A_SETTING_VIDEO_VSYNC)) {
-            a_settings_boolSet(A_SETTING_VIDEO_VSYNC, true);
-        }
-    #endif
-
-    #if A_BUILD_SYSTEM_WIZ
-        if(a_settings_boolGet(A_SETTING_SYSTEM_WIZ_FIXTEARING)) {
-            a_settings_boolSet(A_SETTING_VIDEO_DOUBLEBUFFER, true);
-        }
-    #endif
-
     for(ASettingId s = 0; s < A_SETTING_NUM; s++) {
         a_strhash_add(g_settingsIndex, g_settings[s].id, (void*)s);
 
+        if(g_settings[s].type == A__SETTING_TYPE_COLOR
+            && !(g_settings[s].flags & A__SETTING_FLAG_CHANGED)) {
+
+            g_settings[s].value.pixel = a_pixel_fromHex(
+                                            g_settings[s].value.integeru);
+        }
+    }
+}
+
+void a_settings__init2(void)
+{
+    for(ASettingId s = 0; s < A_SETTING_NUM; s++) {
         if(g_settings[s].flags & A__SETTING_FLAG_SET_ONCE) {
             g_settings[s].flags |= A__SETTING_FLAG_FROZEN;
-        }
-
-        if(g_settings[s].type == A__SETTING_TYPE_PIXEL) {
-            long hexcode = strtol(g_settings[s].value.string, NULL, 16);
-            g_settings[s].value.pixel = a_pixel_fromHex((uint32_t)hexcode);
         }
     }
 }
@@ -178,6 +178,15 @@ ASettingType a_settings__typeGet(ASettingId Setting)
     return g_settings[Setting].type;
 }
 
+void a_settings__callbackSet(ASettingId Setting, ASettingCallback* Callback)
+{
+    g_settings[Setting].callback = Callback;
+
+    if(Callback) {
+        Callback(Setting);
+    }
+}
+
 bool a_settings_isDefault(ASettingId Setting)
 {
     return !(g_settings[Setting].flags & A__SETTING_FLAG_CHANGED);
@@ -185,6 +194,10 @@ bool a_settings_isDefault(ASettingId Setting)
 
 static ASetting* validate(ASettingId Setting, ASettingType Type, bool Write) {
     if(g_settings[Setting].type != Type) {
+        a_out__error("Setting %s is type %s, not %s",
+                     g_settings[Setting].id,
+                     g_typeNames[g_settings[Setting].type],
+                     g_typeNames[Type]);
         return NULL;
     }
 
@@ -217,6 +230,10 @@ void a_settings_boolSet(ASettingId Setting, bool Value)
 
     s->flags |= A__SETTING_FLAG_CHANGED;
     s->value.boolean = Value;
+
+    if(s->callback) {
+        s->callback(Setting);
+    }
 }
 
 bool a_settings_boolFlip(ASettingId Setting)
@@ -229,6 +246,10 @@ bool a_settings_boolFlip(ASettingId Setting)
 
     s->flags |= A__SETTING_FLAG_CHANGED;
     s->value.boolean = !s->value.boolean;
+
+    if(s->callback) {
+        s->callback(Setting);
+    }
 
     return s->value.boolean;
 }
@@ -254,6 +275,10 @@ void a_settings_intSet(ASettingId Setting, int Value)
 
     s->flags |= A__SETTING_FLAG_CHANGED;
     s->value.integer = Value;
+
+    if(s->callback) {
+        s->callback(Setting);
+    }
 }
 
 unsigned a_settings_intuGet(ASettingId Setting)
@@ -277,6 +302,10 @@ void a_settings_intuSet(ASettingId Setting, unsigned Value)
 
     s->flags |= A__SETTING_FLAG_CHANGED;
     s->value.integeru = Value;
+
+    if(s->callback) {
+        s->callback(Setting);
+    }
 }
 
 const char* a_settings_stringGet(ASettingId Setting)
@@ -304,11 +333,15 @@ void a_settings_stringSet(ASettingId Setting, const char* Value)
 
     s->flags |= A__SETTING_FLAG_CHANGED | A__SETTING_FLAG_FREE_STRING;
     s->value.string = a_str_dup(Value);
+
+    if(s->callback) {
+        s->callback(Setting);
+    }
 }
 
-extern APixel a_settings_pixelGet(ASettingId Setting)
+APixel a_settings_colorGet(ASettingId Setting)
 {
-    ASetting* s = validate(Setting, A__SETTING_TYPE_PIXEL, false);
+    ASetting* s = validate(Setting, A__SETTING_TYPE_COLOR, false);
 
     if(s == NULL) {
         return 0;
@@ -317,14 +350,18 @@ extern APixel a_settings_pixelGet(ASettingId Setting)
     return s->value.pixel;
 }
 
-extern void a_settings_pixelSet(ASettingId Setting, APixel Value)
+void a_settings_colorSet(ASettingId Setting, uint32_t Hexcode)
 {
-    ASetting* s = validate(Setting, A__SETTING_TYPE_PIXEL, true);
+    ASetting* s = validate(Setting, A__SETTING_TYPE_COLOR, true);
 
     if(s == NULL) {
         return;
     }
 
     s->flags |= A__SETTING_FLAG_CHANGED;
-    s->value.pixel = Value;
+    s->value.pixel = a_pixel_fromHex(Hexcode);
+
+    if(s->callback) {
+        s->callback(Setting);
+    }
 }

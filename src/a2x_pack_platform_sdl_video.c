@@ -23,6 +23,7 @@
 #include <SDL.h>
 
 #include "a2x_pack_out.v.h"
+#include "a2x_pack_platform_wiz.v.h"
 #include "a2x_pack_screen.v.h"
 #include "a2x_pack_settings.v.h"
 
@@ -36,6 +37,12 @@
     #if A_BUILD_RENDER_SOFTWARE
         static SDL_Texture* g_sdlTexture = NULL;
     #endif
+
+    static void settingBorderColor(ASettingId Setting)
+    {
+        a_pixel_toRgb(
+            a_settings_colorGet(Setting), &g_clearR, &g_clearG, &g_clearB);
+    }
 #endif
 
 void a_platform_sdl_video__init(void)
@@ -47,6 +54,30 @@ void a_platform_sdl_video__init(void)
 
     if(SDL_InitSubSystem(SDL_INIT_VIDEO) != 0) {
         a_out__fatal("SDL_InitSubSystem: %s", SDL_GetError());
+    }
+}
+
+static void settingFullscreen(ASettingId Setting)
+{
+    bool fullScreen = a_settings_boolGet(Setting);
+
+    #if A_BUILD_LIB_SDL == 2
+        if(SDL_SetWindowFullscreen(
+            g_sdlWindow, fullScreen? SDL_WINDOW_FULLSCREEN : 0) < 0) {
+
+            a_out__error("SDL_SetWindowFullscreen: %s", SDL_GetError());
+        }
+    #endif
+
+    a_settings_boolSet(A_SETTING_INPUT_MOUSE_CURSOR, !fullScreen);
+}
+
+static void settingMouseCursor(ASettingId Setting)
+{
+    int toggle = a_settings_boolGet(Setting) ? SDL_ENABLE : SDL_DISABLE;
+
+    if(SDL_ShowCursor(toggle) < 0) {
+        a_out__error("SDL_ShowCursor: %s", SDL_GetError());
     }
 }
 
@@ -166,10 +197,8 @@ void a_platform__screenInit(int Width, int Height, bool FullScreen)
         SDL_SetHintWithPriority(
             SDL_HINT_RENDER_SCALE_QUALITY, "nearest", SDL_HINT_OVERRIDE);
 
-        a_pixel_toRgb(a_settings_pixelGet(A_SETTING_COLOR_SCREEN_BORDER),
-                      &g_clearR,
-                      &g_clearG,
-                      &g_clearB);
+        a_settings__callbackSet(
+            A_SETTING_COLOR_SCREEN_BORDER, settingBorderColor);
     #endif
 
     #if A_BUILD_SYSTEM_DESKTOP
@@ -185,6 +214,15 @@ void a_platform__screenInit(int Width, int Height, bool FullScreen)
         #elif A_BUILD_LIB_SDL == 2
             SDL_SetWindowTitle(g_sdlWindow, caption);
         #endif
+    #endif
+
+    a_settings__callbackSet(A_SETTING_INPUT_MOUSE_CURSOR, settingMouseCursor);
+    a_settings__callbackSet(A_SETTING_VIDEO_FULLSCREEN, settingFullscreen);
+
+    #if A_BUILD_SYSTEM_WIZ
+        if(a_settings_boolGet(A_SETTING_SYSTEM_WIZ_FIXTEARING)) {
+            a_platform_wiz__portraitModeSet();
+        }
     #endif
 }
 
@@ -310,26 +348,6 @@ void a_platform__screenShow(void)
     #endif
 }
 
-void a_platform__screenSetFullscreen(bool FullScreen)
-{
-    #if A_BUILD_LIB_SDL == 2
-        if(SDL_SetWindowFullscreen(
-            g_sdlWindow, FullScreen? SDL_WINDOW_FULLSCREEN : 0) < 0) {
-
-            a_out__error("SDL_SetWindowFullscreen: %s", SDL_GetError());
-        }
-    #endif
-
-    int toggle =
-        FullScreen || a_settings_boolGet(A_SETTING_INPUT_MOUSE_HIDECURSOR)
-            ? SDL_DISABLE
-            : SDL_ENABLE;
-
-    if(SDL_ShowCursor(toggle) < 0) {
-        a_out__error("SDL_ShowCursor: %s", SDL_GetError());
-    }
-}
-
 #if A_BUILD_LIB_SDL == 2
 void a_platform__renderClear(void)
 {
@@ -337,7 +355,15 @@ void a_platform__renderClear(void)
         a_out__error("SDL_RenderClear: %s", SDL_GetError());
     }
 }
+#endif
 
+#if A_BUILD_SCREEN_WIDTH > 0 && A_BUILD_SCREEN_HEIGHT > 0
+void a_platform__screenResolutionGetNative(int* Width, int* Height)
+{
+    *Width = A_BUILD_SCREEN_WIDTH;
+    *Height = A_BUILD_SCREEN_HEIGHT;
+}
+#elif A_BUILD_LIB_SDL == 2
 void a_platform__screenResolutionGetNative(int* Width, int* Height)
 {
     SDL_DisplayMode mode;
@@ -352,26 +378,16 @@ void a_platform__screenResolutionGetNative(int* Width, int* Height)
                    mode.h,
                    SDL_BITSPERPIXEL(mode.format));
 
-    if(*Width < 0) {
-        *Width = mode.w;
-    }
-
-    if(*Height < 0) {
-        *Height = mode.h;
-    }
+    *Width = mode.w;
+    *Height = mode.h;
 }
-#elif A_BUILD_LIB_SDL_GETFULLRES
+#elif A_BUILD_LIB_SDL == 1
 void a_platform__screenResolutionGetNative(int* Width, int* Height)
 {
     const SDL_VideoInfo* info = SDL_GetVideoInfo();
 
-    if(*Width < 0) {
-        *Width = info->current_w;
-    }
-
-    if(*Height < 0) {
-        *Height = info->current_h;
-    }
+    *Width = info->current_w;
+    *Height = info->current_h;
 }
 #endif
 #endif // A_BUILD_LIB_SDL

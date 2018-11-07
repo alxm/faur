@@ -29,7 +29,6 @@
 
 #include "a2x_pack_file.v.h"
 #include "a2x_pack_out.v.h"
-#include "a2x_pack_settings.v.h"
 #include "a2x_pack_time.v.h"
 
 #if A_BUILD_SYSTEM_WIZ
@@ -152,10 +151,6 @@ void a_platform__msWait(uint32_t Ms)
 void a_platform_wiz__portraitModeSet(void)
 {
     // Set Wiz screen to portrait mode to avoid diagonal tearing
-    if(!a_settings_boolGet(A_SETTING_SYSTEM_WIZ_FIXTEARING)) {
-        return;
-    }
-
     #define FBIO_MAGIC 'D'
     #define FBIO_LCD_CHANGE_CONTROL _IOW(FBIO_MAGIC, 90, unsigned[2])
     #define LCD_DIRECTION_ON_CMD 5 // 320x240
@@ -168,10 +163,4 @@ void a_platform_wiz__portraitModeSet(void)
     close(fb_fd);
 }
 #endif
-
-void a_platform__screenResolutionGetNative(int* Width, int* Height)
-{
-    *Width = 320;
-    *Height = 240;
-}
 #endif // A_BUILD_SYSTEM_WIZ || A_BUILD_SYSTEM_CAANOO

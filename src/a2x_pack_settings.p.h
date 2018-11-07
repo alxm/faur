@@ -56,7 +56,7 @@ typedef enum {
     A_SETTING_SOUND_VOLUME_SCALE_MUSIC,
     A_SETTING_SOUND_VOLUME_SCALE_SAMPLE,
 
-    A_SETTING_INPUT_MOUSE_HIDECURSOR,
+    A_SETTING_INPUT_MOUSE_CURSOR,
     A_SETTING_INPUT_MOUSE_TRACK,
     A_SETTING_INPUT_ANALOG_AXES_SWITCH,
     A_SETTING_INPUT_ANALOG_AXES_INVERT,
@@ -92,5 +92,5 @@ extern void a_settings_intuSet(ASettingId Setting, unsigned Value);
 extern const char* a_settings_stringGet(ASettingId Setting);
 extern void a_settings_stringSet(ASettingId Setting, const char* Value);
 
-extern APixel a_settings_pixelGet(ASettingId Setting);
-extern void a_settings_pixelSet(ASettingId Setting, APixel Value);
+extern APixel a_settings_colorGet(ASettingId Setting);
+extern void a_settings_colorSet(ASettingId Setting, uint32_t Hexcode);

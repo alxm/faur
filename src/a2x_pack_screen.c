@@ -24,7 +24,6 @@
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
 #include "a2x_pack_pixel.v.h"
-#include "a2x_pack_platform_wiz.v.h"
 #include "a2x_pack_settings.v.h"
 
 AScreen a__screen;
@@ -74,18 +73,18 @@ void a_screen__init(void)
     int height = a_settings_intGet(A_SETTING_VIDEO_HEIGHT);
 
     if(width < 0 || height < 0) {
-        int w = width;
-        int h = height;
-
+        int w = 0, h = 0;
         a_platform__screenResolutionGetNative(&w, &h);
 
         if(w > 0 && h > 0) {
             if(width < 0) {
                 width = w / -width;
+                a_settings_intSet(A_SETTING_VIDEO_WIDTH, width);
             }
 
             if(height < 0) {
                 height = h / -height;
+                a_settings_intSet(A_SETTING_VIDEO_HEIGHT, height);
             }
         }
     }
@@ -95,6 +94,22 @@ void a_screen__init(void)
     } else {
         a_out__message("Screen resolution %dx%d", width, height);
     }
+
+    #if A_BUILD_SYSTEM_WIZ
+        if(a_settings_boolGet(A_SETTING_SYSTEM_WIZ_FIXTEARING)) {
+            a_settings_boolSet(A_SETTING_VIDEO_DOUBLEBUFFER, true);
+        }
+    #endif
+
+    #if A_BUILD_LIB_SDL == 2
+        a_settings_boolSet(A_SETTING_VIDEO_DOUBLEBUFFER, true);
+    #endif
+
+    #if A_BUILD_LIB_SDL == 2 || A_BUILD_SYSTEM_EMSCRIPTEN
+        if(a_settings_isDefault(A_SETTING_VIDEO_VSYNC)) {
+            a_settings_boolSet(A_SETTING_VIDEO_VSYNC, true);
+        }
+    #endif
 
     #if A_BUILD_RENDER_SOFTWARE
         if(a_settings_boolGet(A_SETTING_VIDEO_DOUBLEBUFFER)) {
@@ -108,13 +123,6 @@ void a_screen__init(void)
 
     a_platform__screenInit(
         width, height, a_settings_boolGet(A_SETTING_VIDEO_FULLSCREEN));
-
-    a_platform__screenSetFullscreen(
-        a_settings_boolGet(A_SETTING_VIDEO_FULLSCREEN));
-
-    #if A_BUILD_SYSTEM_WIZ
-        a_platform_wiz__portraitModeSet();
-    #endif
 
     #if A_BUILD_SYSTEM_DESKTOP
         g_fullScreenButton = a_button_new();
@@ -148,8 +156,7 @@ void a_screen__tick(void)
 {
     #if A_BUILD_SYSTEM_DESKTOP
         if(a_button_pressGetOnce(g_fullScreenButton)) {
-            a_platform__screenSetFullscreen(
-                a_settings_boolFlip(A_SETTING_VIDEO_FULLSCREEN));
+            a_settings_boolFlip(A_SETTING_VIDEO_FULLSCREEN);
         }
     #endif
 }
