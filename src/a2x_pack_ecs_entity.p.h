@@ -33,6 +33,7 @@ extern void* a_entity_contextGet(const AEntity* Entity);
 
 extern AEntity* a_entity_parentGet(const AEntity* Entity);
 extern void a_entity_parentSet(AEntity* Entity, AEntity* Parent);
+extern bool a_entity_parentHas(const AEntity* Child, const AEntity* PotentialParent);
 
 extern void a_entity_refInc(AEntity* Entity);
 extern void a_entity_refDec(AEntity* Entity);

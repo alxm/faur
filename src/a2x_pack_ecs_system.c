@@ -51,17 +51,21 @@ void a_system__uninit(void)
 
 ASystem* a_system__get(int System, const char* CallerFunction)
 {
-    if(g_systemsTable == NULL) {
-        a_out__fatal("%s: Call a_ecs_init first", CallerFunction);
-    }
+    #if A_BUILD_DEBUG
+        if(g_systemsTable == NULL) {
+            a_out__fatal("%s: Call a_ecs_init first", CallerFunction);
+        }
 
-    if(System < 0 || System >= (int)a_system__tableLen) {
-        a_out__fatal("%s: Unknown system %d", CallerFunction, System);
-    }
+        if(System < 0 || System >= (int)a_system__tableLen) {
+            a_out__fatal("%s: Unknown system %d", CallerFunction, System);
+        }
 
-    if(g_systemsTable[System].entities == NULL) {
-        a_out__fatal("%s: Uninitialized system %d", CallerFunction, System);
-    }
+        if(g_systemsTable[System].entities == NULL) {
+            a_out__fatal("%s: Uninitialized system %d", CallerFunction, System);
+        }
+    #else
+        A_UNUSED(CallerFunction);
+    #endif
 
     return &g_systemsTable[System];
 }
@@ -84,7 +88,6 @@ void a_system_new(int Index, const char* Name, ASystemHandler* Handler, ASystemS
     s->entities = a_list_new();
     s->componentBits = a_bitfield_new(a_component__tableLen);
     s->onlyActiveEntities = OnlyActiveEntities;
-    s->muted = false;
 }
 
 void a_system_add(int System, int Component)
@@ -98,10 +101,6 @@ void a_system_add(int System, int Component)
 void a_system_run(int System)
 {
     ASystem* system = a_system__get(System, __func__);
-
-    if(system->muted) {
-        return;
-    }
 
     if(system->compare) {
         a_list_sort(system->entities, (AListCompare*)system->compare);
@@ -122,11 +121,4 @@ void a_system_run(int System)
     }
 
     a_ecs__flushEntitiesFromSystems();
-}
-
-void a_system_muteSet(int System, bool DoMute)
-{
-    ASystem* system = a_system__get(System, __func__);
-
-    system->muted = DoMute;
 }

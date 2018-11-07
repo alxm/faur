@@ -54,18 +54,22 @@ void a_component__uninit(void)
 
 const AComponent* a_component__get(int Component, const char* CallerFunction)
 {
-    if(g_componentsTable == NULL) {
-        a_out__fatal("%s: Call a_ecs_init first", CallerFunction);
-    }
+    #if A_BUILD_DEBUG
+        if(g_componentsTable == NULL) {
+            a_out__fatal("%s: Call a_ecs_init first", CallerFunction);
+        }
 
-    if(Component < 0 || Component >= (int)a_component__tableLen) {
-        a_out__fatal("%s: Unknown component %d", CallerFunction, Component);
-    }
+        if(Component < 0 || Component >= (int)a_component__tableLen) {
+            a_out__fatal("%s: Unknown component %d", CallerFunction, Component);
+        }
 
-    if(g_componentsTable[Component].bit == UINT_MAX) {
-        a_out__fatal(
-            "%s: Uninitialized component %d", CallerFunction, Component);
-    }
+        if(g_componentsTable[Component].bit == UINT_MAX) {
+            a_out__fatal(
+                "%s: Uninitialized component %d", CallerFunction, Component);
+        }
+    #else
+        A_UNUSED(CallerFunction);
+    #endif
 
     return &g_componentsTable[Component];
 }

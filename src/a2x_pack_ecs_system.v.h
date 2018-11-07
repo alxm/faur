@@ -33,7 +33,6 @@ struct ASystem {
     ABitfield* componentBits; // IDs of components that this system works on
     AList* entities; // entities currently picked up by this system
     bool onlyActiveEntities; // skip entities that are not active
-    bool muted; // a_system_run skips muted systems
 };
 
 extern unsigned a_system__tableLen;
