@@ -50,22 +50,32 @@ static struct {
 
 void a_fps__init(void)
 {
-    g_settings.tickFrameMs = 1000 / a_settings_intuGet(A_SETTING_FPS_TICK);
-    g_settings.drawFrameMs = 1000 / a_settings_intuGet(A_SETTING_FPS_DRAW);
+    unsigned fpsTick = a_settings_intuGet(A_SETTING_FPS_TICK);
+    unsigned fpsDraw = a_settings_intuGet(A_SETTING_FPS_DRAW);
 
-    if(a_settings_intuGet(A_SETTING_FPS_TICK) < 1) {
-        a_out__fatal(
-            "Invalid %s setting", a_settings__idToString(A_SETTING_FPS_TICK));
+    if(fpsTick < 1) {
+        a_out__fatal("%s < 1", a_settings__idToString(A_SETTING_FPS_TICK));
     }
 
-    if(a_settings_intuGet(A_SETTING_FPS_DRAW) < 1) {
-        a_out__fatal(
-            "Invalid %s setting", a_settings__idToString(A_SETTING_FPS_DRAW));
+    if(fpsDraw < 1) {
+        a_out__fatal("%s < 1", a_settings__idToString(A_SETTING_FPS_DRAW));
     }
+
+    if(fpsTick < fpsDraw) {
+        a_out__warning("Changing %s from %u to %u",
+                       a_settings__idToString(A_SETTING_FPS_DRAW),
+                       fpsDraw,
+                       fpsTick);
+
+        fpsDraw = fpsTick;
+        a_settings_intuSet(A_SETTING_FPS_DRAW, fpsDraw);
+    }
+
+    g_settings.tickFrameMs = 1000 / fpsTick;
+    g_settings.drawFrameMs = 1000 / fpsDraw;
 
     g_history.head = 0;
-    g_history.len =
-        a_settings_intuGet(A_SETTING_FPS_DRAW) * A__AVERAGE_WINDOW_SEC;
+    g_history.len = fpsDraw * A__AVERAGE_WINDOW_SEC;
     g_history.drawFrameMs = a_mem_malloc(g_history.len * sizeof(unsigned));
     g_history.drawFrameMsMin = a_mem_malloc(g_history.len * sizeof(unsigned));
 
