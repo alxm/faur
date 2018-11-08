@@ -223,54 +223,54 @@ static inline AFixu a_fixu_fraction(AFixu X)
     return X & A_FIX_FRACTION_MASK;
 }
 
-static inline unsigned a_fix_wrapAngleInt(unsigned Angle)
+static inline unsigned a_fix_angleWrap(unsigned Angle)
 {
     return Angle & (A_FIX_ANGLES_NUM - 1);
 }
 
-static inline AFixu a_fix_wrapAngleFix(AFixu Angle)
+static inline AFixu a_fix_angleWrapf(AFixu Angle)
 {
     return Angle & (A_FIX_ANGLES_NUM * A_FIX_ONE - 1);
 }
 
 static inline AFix a_fix_sin(unsigned Angle)
 {
-    return a__fix_sin[a_fix_wrapAngleInt(Angle)];
+    return a__fix_sin[a_fix_angleWrap(Angle)];
 }
 
 static inline AFix a_fix_cos(unsigned Angle)
 {
-    return a__fix_sin[a_fix_wrapAngleInt(Angle + A_INT_DEG_090)];
+    return a__fix_sin[a_fix_angleWrap(Angle + A_INT_DEG_090)];
 }
 
 static inline AFix a_fix_csc(unsigned Angle)
 {
-    return a__fix_csc[a_fix_wrapAngleInt(Angle)];
+    return a__fix_csc[a_fix_angleWrap(Angle)];
 }
 
 static inline AFix a_fix_sec(unsigned Angle)
 {
-    return a__fix_csc[a_fix_wrapAngleInt(Angle + A_INT_DEG_090)];
+    return a__fix_csc[a_fix_angleWrap(Angle + A_INT_DEG_090)];
 }
 
 static inline AFix a_fix_sinf(AFixu Angle)
 {
-    return a__fix_sin[a_fix_wrapAngleInt(a_fixu_toInt(Angle))];
+    return a__fix_sin[a_fix_angleWrap(a_fixu_toInt(Angle))];
 }
 
 static inline AFix a_fix_cosf(AFixu Angle)
 {
-    return a__fix_sin[a_fix_wrapAngleInt(a_fixu_toInt(Angle + A_FIX_DEG_090))];
+    return a__fix_sin[a_fix_angleWrap(a_fixu_toInt(Angle + A_FIX_DEG_090))];
 }
 
 static inline AFix a_fix_cscf(AFixu Angle)
 {
-    return a__fix_csc[a_fix_wrapAngleInt(a_fixu_toInt(Angle))];
+    return a__fix_csc[a_fix_angleWrap(a_fixu_toInt(Angle))];
 }
 
 static inline AFix a_fix_secf(AFixu Angle)
 {
-    return a__fix_csc[a_fix_wrapAngleInt(a_fixu_toInt(Angle + A_FIX_DEG_090))];
+    return a__fix_csc[a_fix_angleWrap(a_fixu_toInt(Angle + A_FIX_DEG_090))];
 }
 
 extern unsigned a_fix_atan(AFix X1, AFix Y1, AFix X2, AFix Y2);
