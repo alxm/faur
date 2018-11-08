@@ -113,7 +113,7 @@ unsigned a_fix_atan(AFix X1, AFix Y1, AFix X2, AFix Y2)
             if(Y2 <= Y1) {
                 return cachedAngle;
             } else {
-                return a_fix_wrapAngleInt(-cachedAngle);
+                return a_fix_angleWrap(-cachedAngle);
             }
         } else {
             if(Y2 <= Y1) {
