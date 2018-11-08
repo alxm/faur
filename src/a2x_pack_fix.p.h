@@ -233,6 +233,16 @@ static inline AFixu a_fix_angleWrapf(AFixu Angle)
     return Angle & (A_FIX_ANGLES_NUM * A_FIX_ONE - 1);
 }
 
+static inline unsigned a_fix_angleFromDeg(unsigned Degrees)
+{
+    return A_FIX_ANGLES_NUM * Degrees / 360;
+}
+
+static inline AFixu a_fix_angleFromDegf(unsigned Degrees)
+{
+    return (AFixu)((uint64_t)(A_FIX_ONE * A_FIX_ANGLES_NUM) * Degrees / 360);
+}
+
 static inline AFix a_fix_sin(unsigned Angle)
 {
     return a__fix_sin[a_fix_angleWrap(Angle)];
