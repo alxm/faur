@@ -30,7 +30,12 @@ class BinTool(Tool):
         h_file = self.get_arg('File.h')
         original_path = self.get_arg('[OriginalPath]')
 
-        c_var = self.sanitizeFileNameForCVar(h_file)
+        if original_path != '':
+            c_var = original_path
+        else:
+            c_var = os.path.splitext(os.path.basename(h_file))[0]
+
+        c_var = self.sanitizeFileNameForCVar(c_var)
 
         bin_data = ''
         bin_bytes = self.readbytes(bin_file)
