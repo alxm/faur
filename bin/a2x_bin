@@ -28,14 +28,8 @@ class BinTool(Tool):
     def main(self):
         bin_file = self.get_arg('File.bin')
         h_file = self.get_arg('File.h')
-        original_path = self.get_arg('[OriginalPath]')
-
-        if original_path != '':
-            c_var = original_path
-        else:
-            c_var = os.path.splitext(os.path.basename(h_file))[0]
-
-        c_var = self.sanitizeFileNameForCVar(c_var)
+        original_path = self.get_arg('OriginalPath')
+        cvar_prefix = self.get_arg('CVarPrefix')
 
         bin_data = ''
         bin_bytes = self.readbytes(bin_file)
@@ -51,16 +45,17 @@ class BinTool(Tool):
 #include <stddef.h>
 #include <stdint.h>
 
-static const char* {var}_path = "{file_path}";
+static const char* {prefix}{var}_path = "{file_path}";
 
-static const size_t {var}_size = {size};
+static const size_t {prefix}{var}_size = {size};
 
-static const uint8_t {var}_data[] = {{{data}
+static const uint8_t {prefix}{var}_data[] = {{{data}
 }};
-""".format(var = c_var,
+""".format(prefix = cvar_prefix,
+           var = self.sanitizeFileNameForCVar(original_path),
            file_path = original_path,
            size = bin_size,
            data = bin_data))
 
 if __name__ == '__main__':
-    BinTool('File.bin File.h [OriginalPath]').run()
+    BinTool('File.bin File.h OriginalPath CVarPrefix').run()

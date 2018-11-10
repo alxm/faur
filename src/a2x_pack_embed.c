@@ -1,5 +1,5 @@
 /*
-    Copyright 2017 Alex Margarit
+    Copyright 2017, 2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -22,8 +22,8 @@
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_strhash.v.h"
 
-#include "a__gfx_console_png.h"
-#include "a__gfx_font_png.h"
+#include "media/console.png.h"
+#include "media/font.png.h"
 
 typedef struct {
     const uint8_t* buffer;
@@ -36,16 +36,16 @@ void a_embed__init(void)
 {
     g_data = a_strhash_new();
 
-    A_UNUSED(a__gfx_console_png_path);
-    A_UNUSED(a__gfx_font_png_path);
+    A_UNUSED(a__bin__media_console_png_path);
+    A_UNUSED(a__bin__media_font_png_path);
 
     a__embed_add("/a2x/consoleTitles",
-                 a__gfx_console_png_data,
-                 a__gfx_console_png_size);
+                 a__bin__media_console_png_data,
+                 a__bin__media_console_png_size);
 
     a__embed_add("/a2x/defaultFont",
-                 a__gfx_font_png_data,
-                 a__gfx_font_png_size);
+                 a__bin__media_font_png_data,
+                 a__bin__media_font_png_size);
 
     a__embed_application();
 }

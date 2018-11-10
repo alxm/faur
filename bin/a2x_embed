@@ -27,6 +27,7 @@ class EmbedTool(Tool):
     def main(self):
         c_file = self.get_arg('file.c')
         gen_dir = self.get_arg('GenDir')
+        cvar_prefix = self.get_arg('CVarPrefix')
         h_files = self.get_arg_tail()
 
         includes = ''
@@ -34,8 +35,10 @@ class EmbedTool(Tool):
 
         for h in h_files:
             includes += '#include "{}"\n'.format(h)
-            embed_calls += '    a__embed_add({0}_path, {0}_data, {0}_size);\n' \
-                    .format(self.sanitizeFileNameForCVar(h[: -2]))
+            embed_calls += """\
+    a__embed_add({prefix}{var}_path, {prefix}{var}_data, {prefix}{var}_size);
+""".format(prefix = cvar_prefix,
+           var = self.sanitizeFileNameForCVar(h[: -2]))
 
         self.writefile(c_file,
 """\
@@ -47,4 +50,4 @@ void a__embed_application(void)
 """.format(includes, embed_calls))
 
 if __name__ == '__main__':
-    EmbedTool('file.c GenDir').run()
+    EmbedTool('file.c GenDir CVarPrefix').run()

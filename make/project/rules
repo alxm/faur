@@ -61,8 +61,8 @@ A_FILES_SRC_GEN_H := $(addprefix $(A_DIR_GEN)/, $(A_FILES_EMBED_BIN:=.h))
 #
 # .c source files
 #
-A_FILES_SRC_C_INC := $(shell a2x_srcfiles -q $(A_ROOT)/$(A_DIR_SRC) .inc.c)
-A_FILES_SRC_C_ALL := $(shell a2x_srcfiles -q $(A_ROOT)/$(A_DIR_SRC) .c)
+A_FILES_SRC_C_INC := $(shell $(A2X_PATH)/bin/a2x_srcfiles -q $(A_ROOT)/$(A_DIR_SRC) .inc.c)
+A_FILES_SRC_C_ALL := $(shell $(A2X_PATH)/bin/a2x_srcfiles -q $(A_ROOT)/$(A_DIR_SRC) .c)
 A_FILES_SRC_C := $(filter-out $(A_FILES_SRC_C_INC), $(A_FILES_SRC_C_ALL))
 
 #
@@ -111,11 +111,11 @@ $(A_FILE_SRC_GEN_BUILDTIME) : $(A_FILES_OBJ) $(A2X_PATH)/bin/a2x_buildtime
 
 $(A_DIR_GEN)/%.h : $(A_ROOT)/% $(A2X_PATH)/bin/a2x_bin
 	@ mkdir -p $(@D)
-	@ $(A2X_PATH)/bin/a2x_bin $< $@ $(<:$(A_ROOT)/%=%)
+	@ $(A2X_PATH)/bin/a2x_bin $< $@ $(<:$(A_ROOT)/%=%) a__bin_
 
 $(A_FILE_SRC_GEN_EMBED) : $(A_FILES_SRC_GEN_H) $(A_FILES_SRC_GEN_GFX) $(A_FILES_SRC_GEN_SFX) $(A2X_PATH)/bin/a2x_embed
 	@ mkdir -p $(@D)
-	@ $(A2X_PATH)/bin/a2x_embed $@ $(A_DIR_GEN) $(A_FILES_SRC_GEN_H:$(A_DIR_GEN)/%=%)
+	@ $(A2X_PATH)/bin/a2x_embed $@ $(A_DIR_GEN) a__bin_ $(A_FILES_SRC_GEN_H:$(A_DIR_GEN)/%=%)
 
 $(A_DIR_OBJ_PLATFORM)/%.c.o : $(A_ROOT)/$(A_DIR_SRC)/%.c
 	@ mkdir -p $(@D)
