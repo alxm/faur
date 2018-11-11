@@ -25,34 +25,35 @@
 #include "a2x_pack_str.v.h"
 
 struct APath {
-    APathType type;
+    APathFlags flags;
     char* full;
     char* dirsPart;
     char* namePart;
 };
 
-static APathType getPathType(const char* Path)
+static APathFlags getPathFlags(const char* Path)
 {
     struct stat info;
+    APathFlags flags = 0;
 
     if(stat(Path, &info) == 0) {
         if(S_ISREG(info.st_mode)) {
-            return A_PATH_TYPE_FILE;
+            flags |= A_PATH_FILE;
         } else if(S_ISDIR(info.st_mode)) {
-            return A_PATH_TYPE_DIR;
+            flags |= A_PATH_DIR;
         } else {
-            return A_PATH_TYPE_OTHER;
+            flags |= A_PATH_OTHER;
         }
     }
 
-    return A_PATH_TYPE_INVALID;
+    return flags;
 }
 
 APath* a_path_new(const char* Path)
 {
     APath* p = a_mem_malloc(sizeof(APath));
 
-    p->type = getPathType(Path);
+    p->flags = getPathFlags(Path);
     p->full = a_str_dup(Path);
     p->dirsPart = a_str_prefixGetToLast(Path, '/');
     p->namePart = a_str_suffixGetFromLast(Path, '/');
@@ -103,14 +104,14 @@ void a_path_free(APath* Path)
     free(Path);
 }
 
-bool a_path_exists(const char* Path, APathType Type)
+bool a_path_exists(const char* Path, APathFlags Flags)
 {
-    return getPathType(Path) == Type;
+    return (getPathFlags(Path) & Flags) == Flags;
 }
 
-bool a_path_test(const APath* Path, APathType Type)
+bool a_path_test(const APath* Path, APathFlags Flags)
 {
-    return Path->type == Type;
+    return (Path->flags & Flags) == Flags;
 }
 
 const char* a_path_getFull(const APath* Path)

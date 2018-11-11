@@ -24,19 +24,17 @@
 typedef struct APath APath;
 
 typedef enum {
-    A_PATH_TYPE_INVALID = -1,
-    A_PATH_TYPE_FILE,
-    A_PATH_TYPE_DIR,
-    A_PATH_TYPE_OTHER,
-    A_PATH_TYPE_NUM
-} APathType;
+    A_PATH_FILE = A_FLAG_BIT(0),
+    A_PATH_DIR = A_FLAG_BIT(1),
+    A_PATH_OTHER = A_FLAG_BIT(2),
+} APathFlags;
 
 extern APath* a_path_new(const char* Path);
 extern APath* a_path_newf(const char* Format, ...);
 extern void a_path_free(APath* Path);
 
-extern bool a_path_exists(const char* Path, APathType Type);
-extern bool a_path_test(const APath* Path, APathType Type);
+extern bool a_path_exists(const char* Path, APathFlags Flags);
+extern bool a_path_test(const APath* Path, APathFlags Flags);
 
 extern const char* a_path_getFull(const APath* Path);
 extern const char* a_path_getDirs(const APath* Path);
