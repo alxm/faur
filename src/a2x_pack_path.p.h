@@ -25,9 +25,9 @@ typedef struct APath APath;
 
 typedef enum {
     A_PATH_TYPE_INVALID = -1,
-    A_PATH_TYPE_ANY,
     A_PATH_TYPE_FILE,
     A_PATH_TYPE_DIR,
+    A_PATH_TYPE_OTHER,
     A_PATH_TYPE_NUM
 } APathType;
 
