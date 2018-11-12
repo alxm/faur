@@ -75,7 +75,7 @@ ASprite* a_sprite_newFromFile(const char* Path)
     } else {
         const uint8_t* data = NULL;
 
-        if(a_embed__get(Path, &data, NULL)) {
+        if(a_embed__getFile(Path, &data, NULL)) {
             a_png_readMemory(data, &pixels, &w, &h);
         }
     }

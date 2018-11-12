@@ -36,7 +36,7 @@ class EmbedTool(Tool):
         for h in h_files:
             includes += '#include "{}"\n'.format(h)
             embed_calls += """\
-    a__embed_add({prefix}{var}_path, {prefix}{var}_data, {prefix}{var}_size);
+    a__embed_addFile({prefix}{var}_path, {prefix}{var}_data, {prefix}{var}_size);
 """.format(prefix = cvar_prefix,
            var = self.sanitizeFileNameForCVar(h[: -2]))
 

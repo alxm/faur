@@ -184,7 +184,7 @@ ASample* a_sample_new(const char* Path)
         const uint8_t* data;
         size_t size;
 
-        if(a_embed__get(Path, &data, &size)) {
+        if(a_embed__getFile(Path, &data, &size)) {
             s = a_platform__sampleNewFromData(data, (int)size);
         }
     }

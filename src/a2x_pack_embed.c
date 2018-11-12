@@ -30,44 +30,44 @@ typedef struct {
     size_t size;
 } AEmbeddedData;
 
-static AStrHash* g_data; // table of AEmbeddedData
+static AStrHash* g_files; // table of AEmbeddedData
 
 void a_embed__init(void)
 {
-    g_data = a_strhash_new();
+    g_files = a_strhash_new();
 
     A_UNUSED(a__bin__media_console_png_path);
     A_UNUSED(a__bin__media_font_png_path);
 
-    a__embed_add("/a2x/consoleTitles",
-                 a__bin__media_console_png_data,
-                 a__bin__media_console_png_size);
+    a__embed_addFile("/a2x/consoleTitles",
+                     a__bin__media_console_png_data,
+                     a__bin__media_console_png_size);
 
-    a__embed_add("/a2x/defaultFont",
-                 a__bin__media_font_png_data,
-                 a__bin__media_font_png_size);
+    a__embed_addFile("/a2x/defaultFont",
+                     a__bin__media_font_png_data,
+                     a__bin__media_font_png_size);
 
     a__embed_application();
 }
 
 void a_embed__uninit(void)
 {
-    a_strhash_freeEx(g_data, free);
+    a_strhash_freeEx(g_files, free);
 }
 
-void a__embed_add(const char* Key, const uint8_t* Buffer, size_t Size)
+void a__embed_addFile(const char* Path, const uint8_t* Buffer, size_t Size)
 {
     AEmbeddedData* data = a_mem_malloc(sizeof(AEmbeddedData));
 
     data->buffer = Buffer;
     data->size = Size;
 
-    a_strhash_add(g_data, Key, data);
+    a_strhash_add(g_files, Path, data);
 }
 
-bool a_embed__get(const char* Key, const uint8_t** Buffer, size_t* Size)
+bool a_embed__getFile(const char* Path, const uint8_t** Buffer, size_t* Size)
 {
-    AEmbeddedData* data = a_strhash_get(g_data, Key);
+    AEmbeddedData* data = a_strhash_get(g_files, Path);
 
     if(data) {
         if(Buffer) {
