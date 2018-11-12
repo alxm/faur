@@ -27,6 +27,8 @@ typedef enum {
     A_PATH_FILE = A_FLAG_BIT(0),
     A_PATH_DIR = A_FLAG_BIT(1),
     A_PATH_OTHER = A_FLAG_BIT(2),
+    A_PATH_EMBEDDED = A_FLAG_BIT(3),
+    A_PATH_REAL = A_FLAG_BIT(4),
 } APathFlags;
 
 extern APath* a_path_new(const char* Path);

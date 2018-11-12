@@ -178,7 +178,7 @@ ASample* a_sample_new(const char* Path)
 {
     APlatformSample* s = NULL;
 
-    if(a_path_exists(Path, A_PATH_FILE)) {
+    if(a_path_exists(Path, A_PATH_FILE | A_PATH_REAL)) {
         s = a_platform__sampleNewFromFile(Path);
     } else {
         const uint8_t* data;

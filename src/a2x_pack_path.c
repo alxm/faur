@@ -21,6 +21,7 @@
 
 #include <sys/stat.h>
 
+#include "a2x_pack_embed.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_str.v.h"
 
@@ -37,6 +38,8 @@ static APathFlags getPathFlags(const char* Path)
     APathFlags flags = 0;
 
     if(stat(Path, &info) == 0) {
+        flags |= A_PATH_REAL;
+
         if(S_ISREG(info.st_mode)) {
             flags |= A_PATH_FILE;
         } else if(S_ISDIR(info.st_mode)) {
@@ -44,6 +47,9 @@ static APathFlags getPathFlags(const char* Path)
         } else {
             flags |= A_PATH_OTHER;
         }
+    } else if(a_embed__getFile(Path, NULL, NULL)) {
+        flags |= A_PATH_EMBEDDED;
+        flags |= A_PATH_FILE;
     }
 
     return flags;
