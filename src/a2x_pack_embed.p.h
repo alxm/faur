@@ -1,5 +1,5 @@
 /*
-    Copyright 2017 Alex Margarit
+    Copyright 2017, 2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -22,4 +22,4 @@
 #include "a2x_system_includes.h"
 
 extern void a__embed_application(void);
-extern void a__embed_addFile(const char* Path, const uint8_t* Buffer, size_t Size);
+extern void a__embed_addFile(const void* Data);

@@ -19,55 +19,47 @@
 
 #include "a2x_pack_embed.v.h"
 
-#include "a2x_pack_mem.v.h"
 #include "a2x_pack_strhash.v.h"
 
 #include "media/console.png.h"
 #include "media/font.png.h"
 
 typedef struct {
-    const uint8_t* buffer;
+    const char* path;
     size_t size;
-} AEmbeddedData;
+    uint8_t buffer[];
+} AEmbeddedFile;
 
-static AStrHash* g_files; // table of AEmbeddedData
+static AStrHash* g_files; // table of AEmbeddedFile
+
+static inline void addFile(const char* Path, const void* Data)
+{
+    a_strhash_add(g_files, Path, (void*)Data);
+}
 
 void a_embed__init(void)
 {
     g_files = a_strhash_new();
 
-    A_UNUSED(a__bin__media_console_png_path);
-    A_UNUSED(a__bin__media_font_png_path);
-
-    a__embed_addFile("/a2x/consoleTitles",
-                     a__bin__media_console_png_data,
-                     a__bin__media_console_png_size);
-
-    a__embed_addFile("/a2x/defaultFont",
-                     a__bin__media_font_png_data,
-                     a__bin__media_font_png_size);
+    addFile("/a2x/consoleTitles", &a__bin__media_console_png);
+    addFile("/a2x/defaultFont", &a__bin__media_font_png);
 
     a__embed_application();
 }
 
 void a_embed__uninit(void)
 {
-    a_strhash_freeEx(g_files, free);
+    a_strhash_free(g_files);
 }
 
-void a__embed_addFile(const char* Path, const uint8_t* Buffer, size_t Size)
+void a__embed_addFile(const void* Data)
 {
-    AEmbeddedData* data = a_mem_malloc(sizeof(AEmbeddedData));
-
-    data->buffer = Buffer;
-    data->size = Size;
-
-    a_strhash_add(g_files, Path, data);
+    addFile(((const AEmbeddedFile*)Data)->path, (void*)Data);
 }
 
 bool a_embed__getFile(const char* Path, const uint8_t** Buffer, size_t* Size)
 {
-    AEmbeddedData* data = a_strhash_get(g_files, Path);
+    const AEmbeddedFile* data = a_strhash_get(g_files, Path);
 
     if(data) {
         if(Buffer) {
