@@ -1,5 +1,5 @@
 /*
-    Copyright 2017 Alex Margarit
+    Copyright 2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -19,16 +19,4 @@
 
 #pragma once
 
-#include "a2x_pack_embed.p.h"
-
-typedef struct {
-    const char* path;
-    size_t size;
-    uint8_t buffer[];
-} AEmbeddedFile;
-
-extern void a_embed__init(void);
-extern void a_embed__uninit(void);
-
-extern bool a_embed__getFile(const char* Path, const uint8_t** Buffer, size_t* Size);
-extern const AEmbeddedFile* a_embed__getFileData(const char* Path);
+#include "a2x_system_includes.h"

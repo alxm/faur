@@ -19,54 +19,27 @@
 
 #include "a2x_pack_file.v.h"
 
-#include <sys/stat.h>
-
+#include "a2x_pack_file_embedded.v.h"
+#include "a2x_pack_file_real.v.h"
 #include "a2x_pack_math.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
 #include "a2x_pack_str.v.h"
 
-struct AFile {
-    FILE* handle;
-    APath* path;
-    char* lineBuffer;
-    unsigned lineBufferSize;
-    unsigned lineNumber;
-    bool eof;
-};
-
 AFile* a_file_new(const char* Path, AFileMode Mode)
 {
-    int index = 0;
-    char mode[4];
+    AFile* f = NULL;
+    APath* path = a_path_new(Path);
 
-    if(Mode & A_FILE_READ) {
-        mode[index++] = 'r';
-    } else if(Mode & A_FILE_WRITE) {
-        mode[index++] = 'w';
+    if(a_path_test(path, A_PATH_FILE | A_PATH_REAL)) {
+        f = a_file_real__new(path, Mode);
+    } else if(a_path_test(path, A_PATH_FILE | A_PATH_EMBEDDED)) {
+        f = a_file_embedded__new(path, Mode);
     }
 
-    if(Mode & A_FILE_BINARY) {
-        mode[index++] = 'b';
+    if(f == NULL) {
+        a_path_free(path);
     }
-
-    mode[index] = '\0';
-
-    FILE* handle = fopen(Path, mode);
-
-    if(handle == NULL) {
-        a_out__error("a_file_new: Can't open %s for '%s'", Path, mode);
-        return NULL;
-    }
-
-    AFile* f = a_mem_malloc(sizeof(AFile));
-
-    f->handle = handle;
-    f->path = a_path_new(Path);
-    f->lineBuffer = NULL;
-    f->lineBufferSize = 0;
-    f->lineNumber = 0;
-    f->eof = false;
 
     return f;
 }
@@ -77,11 +50,11 @@ void a_file_free(AFile* File)
         return;
     }
 
-    a_path_free(File->path);
-
-    if(File->handle) {
-        fclose(File->handle);
+    if(a_path_test(File->path, A_PATH_REAL)) {
+        fclose(File->u.handle);
     }
+
+    a_path_free(File->path);
 
     free(File->lineBuffer);
     free(File);
@@ -94,35 +67,22 @@ const APath* a_file_pathGet(const AFile* File)
 
 FILE* a_file_handleGet(const AFile* File)
 {
-    return File->handle;
+    if(a_path_test(File->path, A_PATH_REAL)) {
+        return File->u.handle;
+    } else {
+        return NULL;
+    }
 }
 
 uint8_t* a_file_toBuffer(const char* Path)
 {
-    struct stat info;
-
-    if(stat(Path, &info) != 0) {
-        a_out__error("a_file_toBuffer: stat(%s) failed", Path);
-        return NULL;
+    if(a_path_exists(Path, A_PATH_FILE | A_PATH_REAL)) {
+        return a_file_real__toBuffer(Path);
+    } else if(a_path_exists(Path, A_PATH_FILE | A_PATH_EMBEDDED)) {
+        return a_file_embedded__toBuffer(Path);
     }
 
-    AFile* f = a_file_new(Path, A_FILE_READ | A_FILE_BINARY);
-
-    if(f == NULL) {
-        return NULL;
-    }
-
-    size_t size = (size_t)info.st_size;
-    uint8_t* buffer = a_mem_malloc(size);
-
-    if(!a_file_read(f, buffer, size)) {
-        free(buffer);
-        buffer = NULL;
-    }
-
-    a_file_free(f);
-
-    return buffer;
+    return NULL;
 }
 
 bool a_file_prefixCheck(AFile* File, const char* Prefix)
@@ -130,7 +90,7 @@ bool a_file_prefixCheck(AFile* File, const char* Prefix)
     size_t size = strlen(Prefix) + 1;
     char buffer[size];
 
-    fseek(File->handle, 0, SEEK_SET);
+    a_file_seekStart(File, 0);
 
     if(!a_file_read(File, buffer, size)) {
         return false;
@@ -148,69 +108,58 @@ void a_file_prefixWrite(AFile* File, const char* Prefix)
 
 bool a_file_read(AFile* File, void* Buffer, size_t Size)
 {
-    size_t readCount;
+    bool ret = File->interface->read(File, Buffer, Size);
 
-    readCount = fread(Buffer, Size, 1, File->handle);
-
-    if(readCount != 1) {
+    if(!ret) {
         a_out__warning("a_file_read: Could not read %u bytes from %s",
                        Size,
                        a_path_getFull(File->path));
-
-        return false;
     }
 
-    return true;
+    return ret;
 }
 
 bool a_file_write(AFile* File, const void* Buffer, size_t Size)
 {
-    size_t writeCount;
+    bool ret = File->interface->write(File, Buffer, Size);
 
-    writeCount = fwrite(Buffer, Size, 1, File->handle);
-
-    if(writeCount != 1) {
+    if(!ret) {
         a_out__error("a_file_write: Could not write %u bytes to %s",
                      Size,
                      a_path_getFull(File->path));
-
-        return false;
     }
 
-    return true;
+    return ret;
 }
 
-bool a_file_writef(AFile* File, char* Format, ...)
+bool a_file_writef(AFile* File, const char* Format, ...)
 {
-    int ret;
     va_list args;
     va_start(args, Format);
 
-    ret = vfprintf(File->handle, Format, args);
+    bool ret = File->interface->writef(File, Format, args);
 
     va_end(args);
 
-    if(ret < 0) {
+    if(!ret) {
         a_out__error("a_file_writef: Could not write to %s",
                      a_path_getFull(File->path));
-
-        return false;
     }
 
-    return true;
+    return ret;
 }
 
 static int readChar(AFile* File)
 {
-    int ch = fgetc(File->handle);
+    int ch = File->interface->getchar(File);
 
     if(ch == '\r') {
         // Check if \r is followed by \n for CRLF line endings
-        ch = fgetc(File->handle);
+        ch = File->interface->getchar(File);
 
         if(ch != '\n') {
             // \r not followed by \n, assume CR line endings and put char back
-            ch = ungetc(ch, File->handle);
+            ch = File->interface->ungetchar(File, ch);
 
             if(ch != EOF) {
                 File->lineNumber++;
@@ -277,35 +226,54 @@ unsigned a_file_lineNumberGet(const AFile* File)
     return File->lineNumber;
 }
 
-void a_file_rewind(AFile* File)
+bool a_file_rewind(AFile* File)
 {
-    rewind(File->handle);
-    File->lineNumber = 0;
+    bool ret = File->interface->seek(File, 0, A_FILE__OFFSET_START);
+
+    if(ret) {
+        File->lineNumber = 0;
+    } else {
+        a_out__error("a_file_rewind(%s) failed", a_path_getFull(File->path));
+    }
+
+    return ret;
 }
 
-void a_file_seekStart(const AFile* File, long int Offset)
+bool a_file_seekStart(AFile* File, int Offset)
 {
-    if(fseek(File->handle, Offset, SEEK_SET) != 0) {
-        a_out__error("a_file_seekStart(%s): fseek(%ld) failed",
+    bool ret = File->interface->seek(File, Offset, A_FILE__OFFSET_START);
+
+    if(!ret) {
+        a_out__error("a_file_seekStart(%s, %d) failed",
                      a_path_getFull(File->path),
                      Offset);
     }
+
+    return ret;
 }
 
-void a_file_seekEnd(const AFile* File, long int Offset)
+bool a_file_seekEnd(AFile* File, int Offset)
 {
-    if(fseek(File->handle, Offset, SEEK_END) != 0) {
-        a_out__error("a_file_seekEnd(%s): fseek(%ld) failed",
+    bool ret = File->interface->seek(File, Offset, A_FILE__OFFSET_END);
+
+    if(!ret) {
+        a_out__error("a_file_seekEnd(%s, %d) failed",
                      a_path_getFull(File->path),
                      Offset);
     }
+
+    return ret;
 }
 
-void a_file_seekCurrent(const AFile* File, long int Offset)
+bool a_file_seekCurrent(AFile* File, int Offset)
 {
-    if(fseek(File->handle, Offset, SEEK_CUR) != 0) {
-        a_out__error("a_file_seekCurrent(%s): fseek(%ld) failed",
+    bool ret = File->interface->seek(File, Offset, A_FILE__OFFSET_CURRENT);
+
+    if(!ret) {
+        a_out__error("a_file_seekCurrent(%s, %d) failed",
                      a_path_getFull(File->path),
                      Offset);
     }
+
+    return ret;
 }

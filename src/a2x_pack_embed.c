@@ -24,12 +24,6 @@
 #include "media/console.png.h"
 #include "media/font.png.h"
 
-typedef struct {
-    const char* path;
-    size_t size;
-    uint8_t buffer[];
-} AEmbeddedFile;
-
 static AStrHash* g_files; // table of AEmbeddedFile
 
 static inline void addFile(const char* Path, const void* Data)
@@ -72,4 +66,9 @@ bool a_embed__getFile(const char* Path, const uint8_t** Buffer, size_t* Size)
     }
 
     return data != NULL;
+}
+
+const AEmbeddedFile* a_embed__getFileData(const char* Path)
+{
+    return a_strhash_get(g_files, Path);
 }

@@ -1,5 +1,5 @@
 /*
-    Copyright 2017 Alex Margarit
+    Copyright 2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -17,18 +17,31 @@
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#include "a2x_pack_file_embedded.v.h"
 
-#include "a2x_pack_embed.p.h"
+#include "a2x_pack_mem.v.h"
+#include "a2x_pack_out.v.h"
 
-typedef struct {
-    const char* path;
-    size_t size;
-    uint8_t buffer[];
-} AEmbeddedFile;
+AFile* a_file_embedded__new(APath* Path, AFileMode Mode)
+{
+    if(Mode & A_FILE_WRITE) {
+        a_out__error("a_file_new: Can't write to embedded file %s",
+                     a_path_getFull(Path));
+        return NULL;
+    }
 
-extern void a_embed__init(void);
-extern void a_embed__uninit(void);
+    AFile* f = a_mem_zalloc(sizeof(AFile));
 
-extern bool a_embed__getFile(const char* Path, const uint8_t** Buffer, size_t* Size);
-extern const AEmbeddedFile* a_embed__getFileData(const char* Path);
+    f->path = Path;
+    f->interface = NULL;
+    f->u.data = a_embed__getFileData(a_path_getFull(Path));
+
+    return f;
+}
+
+uint8_t* a_file_embedded__toBuffer(const char* Path)
+{
+    const AEmbeddedFile* data = a_embed__getFileData(Path);
+
+    return a_mem_dup(data->buffer, data->size);
+}

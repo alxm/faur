@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016 Alex Margarit
+    Copyright 2010, 2016, 2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -20,3 +20,35 @@
 #pragma once
 
 #include "a2x_pack_file.p.h"
+
+typedef enum {
+    A_FILE__OFFSET_INVALID = -1,
+    A_FILE__OFFSET_START,
+    A_FILE__OFFSET_CURRENT,
+    A_FILE__OFFSET_END,
+    A_FILE__OFFSET_NUM
+} AFileOffset;
+
+typedef struct {
+    bool (*seek)(AFile* File, int Offset, AFileOffset Origin);
+    bool (*read)(AFile* File, void* Buffer, size_t Size);
+    bool (*write)(AFile* File, const void* Buffer, size_t Size);
+    bool (*writef)(AFile* File, const char* Format, va_list Args);
+    int (*getchar)(AFile* File);
+    int (*ungetchar)(AFile* File, int Char);
+} AFileInterface;
+
+#include "a2x_pack_embed.v.h"
+
+struct AFile {
+    APath* path;
+    const AFileInterface* interface;
+    union {
+        FILE* handle;
+        const AEmbeddedFile* data;
+    } u;
+    char* lineBuffer;
+    unsigned lineBufferSize;
+    unsigned lineNumber;
+    bool eof;
+};
