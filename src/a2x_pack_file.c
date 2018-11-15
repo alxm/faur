@@ -232,6 +232,7 @@ bool a_file_rewind(AFile* File)
 
     if(ret) {
         File->lineNumber = 0;
+        File->eof = false;
     } else {
         a_out__error("a_file_rewind(%s) failed", a_path_getFull(File->path));
     }
