@@ -21,21 +21,18 @@
 
 import os
 
-from utils.output import Output
 from utils.tool import Tool
 
 class EmbedFilesTool(Tool):
     def scan_file(self, Root, File):
         filePath = os.path.join(Root, File)
+        scanned = [os.path.relpath(filePath, start = self.root)]
 
-        if os.path.isfile(filePath):
-            return [os.path.relpath(filePath, start = self.root)]
-        elif os.path.isdir(filePath):
-            return [scannedFile
-                        for f in os.listdir(filePath)
-                            for scannedFile in self.scan_file(filePath, f)]
-        else:
-            self.output.error('{} is not a file'.format(filePath))
+        if os.path.isdir(filePath):
+            for f in os.listdir(filePath):
+                scanned += self.scan_file(filePath, f)
+
+        return scanned
 
     def main(self):
         files = []

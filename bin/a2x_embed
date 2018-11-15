@@ -35,10 +35,16 @@ class EmbedTool(Tool):
 
         for h in h_files:
             includes += '#include "{}"\n'.format(h)
-            embed_calls += """\
+            no_h = h[: -2]
+
+            if os.path.isdir(os.path.join(gen_dir, no_h)):
+                embed_calls += """\
+    a__embed_addDir(&{prefix}{var});
+""".format(prefix = cvar_prefix, var = self.sanitizeFileNameForCVar(no_h))
+            else:
+                embed_calls += """\
     a__embed_addFile(&{prefix}{var});
-""".format(prefix = cvar_prefix,
-           var = self.sanitizeFileNameForCVar(h[: -2]))
+""".format(prefix = cvar_prefix, var = self.sanitizeFileNameForCVar(no_h))
 
         self.writefile(c_file,
 """\

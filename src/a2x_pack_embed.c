@@ -24,7 +24,13 @@
 #include "media/console.png.h"
 #include "media/font.png.h"
 
+static AStrHash* g_dirs; // table of AEmbeddedDir
 static AStrHash* g_files; // table of AEmbeddedFile
+
+static inline void addDir(const char* Path, const void* Data)
+{
+    a_strhash_add(g_dirs, Path, (void*)Data);
+}
 
 static inline void addFile(const char* Path, const void* Data)
 {
@@ -33,6 +39,7 @@ static inline void addFile(const char* Path, const void* Data)
 
 void a_embed__init(void)
 {
+    g_dirs = a_strhash_new();
     g_files = a_strhash_new();
 
     addFile("/a2x/consoleTitles", &a__bin__media_console_png);
@@ -43,12 +50,23 @@ void a_embed__init(void)
 
 void a_embed__uninit(void)
 {
+    a_strhash_free(g_dirs);
     a_strhash_free(g_files);
+}
+
+void a__embed_addDir(const void* Data)
+{
+    addDir(((const AEmbeddedDir*)Data)->path, Data);
 }
 
 void a__embed_addFile(const void* Data)
 {
-    addFile(((const AEmbeddedFile*)Data)->path, (void*)Data);
+    addFile(((const AEmbeddedFile*)Data)->path, Data);
+}
+
+const AEmbeddedDir* a_embed__getDir(const char* Path)
+{
+    return a_strhash_get(g_dirs, Path);
 }
 
 const AEmbeddedFile* a_embed__getFile(const char* Path)

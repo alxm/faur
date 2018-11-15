@@ -31,17 +31,38 @@ class BinTool(Tool):
         original_path = self.get_arg('OriginalPath')
         cvar_prefix = self.get_arg('CVarPrefix')
 
-        bin_data = ''
-        bin_bytes = self.readbytes(bin_file)
-        bin_size = len(bin_bytes)
+        if os.path.isdir(bin_file):
+            entries = os.listdir(bin_file)
+            bin_data = ''
+            bin_size = len(entries)
 
-        for index, byte in enumerate(bin_bytes):
-            if index % 8 == 0:
-                bin_data += '\n        '
+            for f in entries:
+                bin_data += '\n        "{}",'.format(f)
 
-            bin_data += '0x{:0>2x},'.format(byte)
+            fmt_content = """\
+static const struct {{
+    const char* path;
+    size_t size;
+    const char* entries[{size}];
+}} {prefix}{var} = {{
+    "{path}",
+    {size},
+    {{{data}
+    }}
+}};
+"""
+        else:
+            bin_bytes = self.readbytes(bin_file)
+            bin_data = ''
+            bin_size = len(bin_bytes)
 
-        self.writefile(h_file, """\
+            for index, byte in enumerate(bin_bytes):
+                if index % 8 == 0:
+                    bin_data += '\n        '
+
+                bin_data += '0x{:0>2x},'.format(byte)
+
+            fmt_content = """\
 static const struct {{
     const char* path;
     size_t size;
@@ -52,11 +73,14 @@ static const struct {{
     {{{data}
     }}
 }};
-""".format(prefix = cvar_prefix,
-           var = self.sanitizeFileNameForCVar(original_path),
-           path = original_path,
-           size = bin_size,
-           data = bin_data))
+"""
+
+        self.writefile(h_file, fmt_content.format(
+            prefix = cvar_prefix,
+            var = self.sanitizeFileNameForCVar(original_path),
+            path = original_path,
+            size = bin_size,
+            data = bin_data))
 
 if __name__ == '__main__':
     BinTool('File.bin File.h OriginalPath CVarPrefix').run()

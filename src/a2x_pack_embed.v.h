@@ -24,10 +24,17 @@
 typedef struct {
     const char* path;
     size_t size;
+    const char* entries[];
+} AEmbeddedDir;
+
+typedef struct {
+    const char* path;
+    size_t size;
     uint8_t buffer[];
 } AEmbeddedFile;
 
 extern void a_embed__init(void);
 extern void a_embed__uninit(void);
 
+extern const AEmbeddedDir* a_embed__getDir(const char* Path);
 extern const AEmbeddedFile* a_embed__getFile(const char* Path);

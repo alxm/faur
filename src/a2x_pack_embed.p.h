@@ -22,4 +22,5 @@
 #include "a2x_system_includes.h"
 
 extern void a__embed_application(void);
+extern void a__embed_addDir(const void* Data);
 extern void a__embed_addFile(const void* Data);
