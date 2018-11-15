@@ -47,7 +47,6 @@ static void a__atexit(void)
 
     a_console__uninit();
     a_font__uninit();
-    a_embed__uninit();
     a_fade__uninit();
     a_ecs__uninit();
     a_state__uninit();
@@ -59,6 +58,7 @@ static void a__atexit(void)
     a_input__uninit();
     a_timer__uninit();
     a_platform__uninit();
+    a_embed__uninit();
 
     #if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ || A_BUILD_SYSTEM_CAANOO
         if(a_settings_boolGet(A_SETTING_SYSTEM_GP2X_MENU)) {
@@ -89,6 +89,7 @@ int main(int Argc, char* Argv[])
                    a_settings_stringGet(A_SETTING_APP_BUILDTIME),
                    getpid());
 
+    a_embed__init();
     a_conf__init();
     a_platform__init();
     a_timer__init();
@@ -105,7 +106,6 @@ int main(int Argc, char* Argv[])
     a_state__init();
     a_ecs__init();
     a_fade__init();
-    a_embed__init();
     a_font__init();
     a_console__init2();
     a_settings__init2();
