@@ -45,7 +45,10 @@ struct AFile {
     const AFileInterface* interface;
     union {
         FILE* handle;
-        const AEmbeddedFile* data;
+        struct {
+            const AEmbeddedFile* data;
+            size_t index;
+        } e;
     } u;
     char* lineBuffer;
     unsigned lineBufferSize;
