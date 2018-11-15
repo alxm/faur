@@ -30,5 +30,4 @@ typedef struct {
 extern void a_embed__init(void);
 extern void a_embed__uninit(void);
 
-extern bool a_embed__getFile(const char* Path, const uint8_t** Buffer, size_t* Size);
-extern const AEmbeddedFile* a_embed__getFileData(const char* Path);
+extern const AEmbeddedFile* a_embed__getFile(const char* Path);

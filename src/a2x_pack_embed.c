@@ -51,24 +51,7 @@ void a__embed_addFile(const void* Data)
     addFile(((const AEmbeddedFile*)Data)->path, (void*)Data);
 }
 
-bool a_embed__getFile(const char* Path, const uint8_t** Buffer, size_t* Size)
-{
-    const AEmbeddedFile* data = a_strhash_get(g_files, Path);
-
-    if(data) {
-        if(Buffer) {
-            *Buffer = data->buffer;
-        }
-
-        if(Size) {
-            *Size = data->size;
-        }
-    }
-
-    return data != NULL;
-}
-
-const AEmbeddedFile* a_embed__getFileData(const char* Path)
+const AEmbeddedFile* a_embed__getFile(const char* Path)
 {
     return a_strhash_get(g_files, Path);
 }

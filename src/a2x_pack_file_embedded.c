@@ -131,7 +131,7 @@ AFile* a_file_embedded__new(APath* Path, AFileMode Mode)
 
     f->path = Path;
     f->interface = &g_interface;
-    f->u.e.data = a_embed__getFileData(a_path_getFull(Path));
+    f->u.e.data = a_embed__getFile(a_path_getFull(Path));
     f->u.e.index = 0;
 
     return f;
@@ -139,7 +139,7 @@ AFile* a_file_embedded__new(APath* Path, AFileMode Mode)
 
 uint8_t* a_file_embedded__toBuffer(const char* Path)
 {
-    const AEmbeddedFile* data = a_embed__getFileData(Path);
+    const AEmbeddedFile* data = a_embed__getFile(Path);
 
     return a_mem_dup(data->buffer, data->size);
 }

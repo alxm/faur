@@ -55,3 +55,5 @@ struct AFile {
     unsigned lineNumber;
     bool eof;
 };
+
+extern const AEmbeddedFile* a_file__dataGet(AFile* File);

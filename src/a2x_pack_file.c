@@ -74,6 +74,15 @@ FILE* a_file_handleGet(const AFile* File)
     }
 }
 
+const AEmbeddedFile* a_file__dataGet(AFile* File)
+{
+    if(a_path_test(File->path, A_PATH_EMBEDDED)) {
+        return File->u.e.data;
+    } else {
+        return NULL;
+    }
+}
+
 uint8_t* a_file_toBuffer(const char* Path)
 {
     if(a_path_exists(Path, A_PATH_FILE | A_PATH_REAL)) {
