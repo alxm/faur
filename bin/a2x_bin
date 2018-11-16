@@ -32,7 +32,7 @@ class BinTool(Tool):
         cvar_prefix = self.get_arg('CVarPrefix')
 
         if os.path.isdir(bin_file):
-            entries = os.listdir(bin_file)
+            entries = self.listdir(bin_file)
             bin_data = ''
             bin_size = len(entries)
 

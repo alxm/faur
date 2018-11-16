@@ -125,6 +125,12 @@ class Tool:
         with open(name, 'rU') as f:
             return f.read()
 
+    def listdir(self, path):
+        if not os.path.isdir(path):
+            self.output.error('{} is not a dir'.format(path))
+
+        return sorted(os.listdir(path))
+
     def shell(self, cmd):
         self.output.shell(cmd)
         status, output = subprocess.getstatusoutput(cmd)

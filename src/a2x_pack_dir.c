@@ -100,6 +100,8 @@ static AList* dirReal(APath* Path)
         a_list_addLast(files, a_path_newf("%s/%s", path, ent->d_name));
     }
 
+    a_list_sort(files, (AListCompare*)a_dir__sort);
+
     closedir(dir);
 
     return files;
@@ -139,8 +141,6 @@ ADir* a_dir_new(const char* Path)
 
         return NULL;
     }
-
-    a_list_sort(files, (AListCompare*)a_dir__sort);
 
     ADir* d = a_mem_malloc(sizeof(ADir));
 

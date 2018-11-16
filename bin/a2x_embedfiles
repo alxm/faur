@@ -29,7 +29,7 @@ class EmbedFilesTool(Tool):
         scanned = [os.path.relpath(filePath, start = self.root)]
 
         if os.path.isdir(filePath):
-            for f in os.listdir(filePath):
+            for f in self.listdir(filePath):
                 scanned += self.scan_file(filePath, f)
 
         return scanned
