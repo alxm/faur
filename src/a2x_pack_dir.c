@@ -22,6 +22,7 @@
 #include <dirent.h>
 #include <sys/stat.h>
 
+#include "a2x_pack_embed.v.h"
 #include "a2x_pack_listit.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
@@ -67,27 +68,28 @@ static int a_dir__sort(const APath* A, const APath* B)
     }
 }
 
-ADir* a_dir_new(const char* Path)
+static AList* dirReal(APath* Path)
 {
-    DIR* dir = opendir(Path);
+    const char* path = a_path_getFull(Path);
+    DIR* dir = opendir(path);
 
     if(dir == NULL) {
         #if A_BUILD_SYSTEM_LINUX
-            int result = mkdir(Path, S_IRWXU);
+            int result = mkdir(path, S_IRWXU);
         #else
-            int result = mkdir(Path);
+            int result = mkdir(path);
         #endif
 
         if(result == -1) {
-            a_out__error("a_dir_new: mkdir(%s) failed", Path);
+            a_out__error("a_dir_new: mkdir(%s) failed", path);
             return NULL;
         }
 
-        dir = opendir(Path);
+        dir = opendir(path);
     }
 
     if(dir == NULL) {
-        a_out__error("a_dir_new: opendir(%s) failed", Path);
+        a_out__error("a_dir_new: opendir(%s) failed", path);
         return NULL;
     }
 
@@ -95,17 +97,55 @@ ADir* a_dir_new(const char* Path)
     AList* files = a_list_new();
 
     while((ent = readdir(dir)) != NULL) {
-        a_list_addLast(files, a_path_newf("%s/%s", Path, ent->d_name));
+        a_list_addLast(files, a_path_newf("%s/%s", path, ent->d_name));
     }
 
     closedir(dir);
 
-    ADir* d = a_mem_malloc(sizeof(ADir));
+    return files;
+}
 
-    d->path = a_path_new(Path);;
-    d->files = files;
+static AList* dirEmbedded(APath* Path)
+{
+    const char* path = a_path_getFull(Path);
+    const AEmbeddedDir* data = a_embed__getDir(path);
+
+    if(data == NULL) {
+        return NULL;
+    }
+
+    AList* files = a_list_new();
+
+    for(size_t e = data->size; e--; ) {
+        a_list_addLast(files, a_path_newf("%s/%s", path, data->entries[e]));
+    }
+
+    return files;
+}
+
+ADir* a_dir_new(const char* Path)
+{
+    AList* files = NULL;
+    APath* path = a_path_new(Path);
+
+    if(a_path_test(path, A_PATH_DIR | A_PATH_REAL)) {
+        files = dirReal(path);
+    } else if(a_path_test(path, A_PATH_DIR | A_PATH_EMBEDDED)) {
+        files = dirEmbedded(path);
+    }
+
+    if(files == NULL) {
+        a_path_free(path);
+
+        return NULL;
+    }
 
     a_list_sort(files, (AListCompare*)a_dir__sort);
+
+    ADir* d = a_mem_malloc(sizeof(ADir));
+
+    d->path = path;
+    d->files = files;
 
     return d;
 }

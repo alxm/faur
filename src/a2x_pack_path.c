@@ -49,6 +49,8 @@ static APathFlags getPathFlags(const char* Path)
         }
     } else if(a_embed__getFile(Path) != NULL) {
         flags |= A_PATH_EMBEDDED | A_PATH_FILE;
+    } else if(a_embed__getDir(Path) != NULL) {
+        flags |= A_PATH_EMBEDDED | A_PATH_DIR;
     }
 
     return flags;
