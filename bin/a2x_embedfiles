@@ -1,4 +1,6 @@
-/*
+#!/usr/bin/env python3
+
+"""
     Copyright 2018 Alex Margarit
 
     This file is part of a2x-framework.
@@ -15,29 +17,31 @@
 
     You should have received a copy of the GNU Lesser General Public License
     along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
-*/
+"""
 
-#pragma once
+import os
 
-#include "a2x_system_includes.h"
+from utils.tool import Tool
 
-typedef struct APath APath;
+class EmbedFilesTool(Tool):
+    def scan_file(self, Root, File):
+        filePath = os.path.join(Root, File)
+        scanned = [os.path.relpath(filePath, start = self.root)]
 
-typedef enum {
-    A_PATH_FILE = A_FLAG_BIT(0),
-    A_PATH_DIR = A_FLAG_BIT(1),
-    A_PATH_OTHER = A_FLAG_BIT(2),
-    A_PATH_EMBEDDED = A_FLAG_BIT(3),
-    A_PATH_REAL = A_FLAG_BIT(4),
-} APathFlags;
+        if os.path.isdir(filePath):
+            for f in self.listdir(filePath):
+                scanned += self.scan_file(filePath, f)
 
-extern APath* a_path_new(const char* Path);
-extern APath* a_path_newf(const char* Format, ...);
-extern void a_path_free(APath* Path);
+        return scanned
 
-extern bool a_path_exists(const char* Path, APathFlags Flags);
-extern bool a_path_test(const APath* Path, APathFlags Flags);
+    def main(self):
+        files = []
+        self.root = os.path.abspath(self.get_arg('RootDir'))
 
-extern const char* a_path_getFull(const APath* Path);
-extern const char* a_path_getDirs(const APath* Path);
-extern const char* a_path_getName(const APath* Path);
+        for f in self.get_arg_tail():
+            files += self.scan_file(self.root, f)
+
+        print(' '.join(files))
+
+if __name__ == '__main__':
+    EmbedFilesTool('RootDir').run()

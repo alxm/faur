@@ -28,7 +28,7 @@ class SrcFilesTool(Tool):
     def scan_files(self, CurrentDir):
         files = []
 
-        for f in os.listdir(CurrentDir):
+        for f in self.listdir(CurrentDir):
             path = os.path.join(CurrentDir, f)
 
             if os.path.isdir(path):

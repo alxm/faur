@@ -73,18 +73,11 @@ class Tool:
             self.output.error('{} is not a dir'.format(self.dir_cfg))
 
     def title(self):
-        arguments = ' '.join(self.arg_values) \
-                    + ' ' if len(self.arg_values) > 0 else ''
-        whole_text = ' {} {}'.format(self.name, arguments)
-        border = '-' * len(whole_text)
-
-        self.output.coloredln(border, Color.DarkGray)
-        self.output.colored(' a', Color.LightBlue)
+        self.output.colored('a', Color.LightBlue)
         self.output.colored('2', Color.LightGreen)
         self.output.colored('x', Color.Yellow)
         self.output.colored('{} '.format(self.name[3 : ]), Color.White)
-        self.output.coloredln(arguments, Color.LightGray)
-        self.output.coloredln(border, Color.DarkGray)
+        self.output.coloredln(' '.join(self.arg_values), Color.LightGray)
 
     def done(self):
         self.output.coloredln('[ Done ]', Color.LightGreen)
@@ -132,6 +125,12 @@ class Tool:
         with open(name, 'rU') as f:
             return f.read()
 
+    def listdir(self, path):
+        if not os.path.isdir(path):
+            self.output.error('{} is not a dir'.format(path))
+
+        return sorted(os.listdir(path))
+
     def shell(self, cmd):
         self.output.shell(cmd)
         status, output = subprocess.getstatusoutput(cmd)
@@ -144,5 +143,4 @@ class Tool:
             sys.exit(status)
 
     def sanitizeFileNameForCVar(self, FileName):
-        return os.path.splitext(os.path.basename(FileName))[0] \
-            .replace('.', '_').replace('-', '_')
+        return FileName.replace('.', '_').replace('-', '_').replace('/', '_')

@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016 Alex Margarit
+    Copyright 2010, 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -63,12 +63,17 @@ static void pngToPixels(png_structp Png, png_infop Info, APixel** Pixels, int* W
 
 void a_png_readFile(const char* Path, APixel** Pixels, int* Width, int* Height)
 {
-    AFile* f = a_file_new(Path, A_FILE_READ | A_FILE_BINARY);
-
     png_structp png = NULL;
     png_infop info = NULL;
 
+    AFile* f = a_file_new(Path, A_FILE_READ | A_FILE_BINARY);
+
     if(f == NULL) {
+        goto cleanUp;
+    }
+
+    if(a_path_test(a_file_pathGet(f), A_PATH_EMBEDDED)) {
+        a_png_readMemory(a_file__dataGet(f)->buffer, Pixels, Width, Height);
         goto cleanUp;
     }
 

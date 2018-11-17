@@ -27,7 +27,7 @@
 void a_conf__init(void)
 {
     if(!a_path_exists(
-            a_settings_stringGet(A_SETTING_FILE_CONFIG), A_PATH_TYPE_FILE)) {
+            a_settings_stringGet(A_SETTING_FILE_CONFIG), A_PATH_FILE)) {
 
         return;
     }

@@ -1,5 +1,5 @@
 /*
-    Copyright 2010 Alex Margarit
+    Copyright 2010, 2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -31,6 +31,11 @@ static inline unsigned a_math_minu(unsigned X, unsigned Y)
     return X < Y ? X : Y;
 }
 
+static inline size_t a_math_minz(size_t X, size_t Y)
+{
+    return X < Y ? X : Y;
+}
+
 static inline int a_math_max(int X, int Y)
 {
     return X > Y ? X : Y;
@@ -41,12 +46,22 @@ static inline unsigned a_math_maxu(unsigned X, unsigned Y)
     return X > Y ? X : Y;
 }
 
+static inline size_t a_math_maxz(size_t X, size_t Y)
+{
+    return X > Y ? X : Y;
+}
+
 static inline int a_math_clamp(int X, int Min, int Max)
 {
     return X < Min ? Min : (X > Max ? Max : X);
 }
 
 static inline unsigned a_math_clampu(unsigned X, unsigned Min, unsigned Max)
+{
+    return X < Min ? Min : (X > Max ? Max : X);
+}
+
+static inline size_t a_math_clampz(size_t X, size_t Min, size_t Max)
 {
     return X < Min ? Min : (X > Max ? Max : X);
 }

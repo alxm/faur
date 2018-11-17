@@ -8,10 +8,10 @@ config : $(A_FILE_SDKCONFIG_MK)
 
 A_FILE_SDKCONFIG_SRC := $(A_DIR_CONFIG)/sdk.config
 
-$(A_FILE_SDKCONFIG_MK) : $(A_FILE_SDKCONFIG_SRC)
+$(A_FILE_SDKCONFIG_MK) : $(A_FILE_SDKCONFIG_SRC) $(A2X_PATH)/bin/a2x_sdkconfig
 	@ mkdir -p $(@D)
 	@ $(A2X_PATH)/bin/a2x_sdkconfig $< $@
 
-$(A_FILE_SDKCONFIG_SRC) : $(A2X_PATH)/bin/a2x_sdkconfig
+$(A_FILE_SDKCONFIG_SRC) :
 	@ mkdir -p $(@D)
 	@ $(A2X_PATH)/bin/a2x_sdkconfig $@

@@ -1,5 +1,5 @@
 /*
-    Copyright 2017 Alex Margarit
+    Copyright 2017, 2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -19,65 +19,57 @@
 
 #include "a2x_pack_embed.v.h"
 
-#include "a2x_pack_mem.v.h"
 #include "a2x_pack_strhash.v.h"
 
-#include "a__gfx_console_png.h"
-#include "a__gfx_font_png.h"
+#include "media/console.png.h"
+#include "media/font.png.h"
 
-typedef struct {
-    const uint8_t* buffer;
-    size_t size;
-} AEmbeddedData;
+static AStrHash* g_dirs; // table of AEmbeddedDir
+static AStrHash* g_files; // table of AEmbeddedFile
 
-static AStrHash* g_data; // table of AEmbeddedData
+static inline void addDir(const char* Path, const void* Data)
+{
+    a_strhash_add(g_dirs, Path, (void*)Data);
+}
+
+static inline void addFile(const char* Path, const void* Data)
+{
+    a_strhash_add(g_files, Path, (void*)Data);
+}
 
 void a_embed__init(void)
 {
-    g_data = a_strhash_new();
+    g_dirs = a_strhash_new();
+    g_files = a_strhash_new();
 
-    A_UNUSED(a__gfx_console_png_path);
-    A_UNUSED(a__gfx_font_png_path);
-
-    a__embed_add("/a2x/consoleTitles",
-                 a__gfx_console_png_data,
-                 a__gfx_console_png_size);
-
-    a__embed_add("/a2x/defaultFont",
-                 a__gfx_font_png_data,
-                 a__gfx_font_png_size);
+    addFile("/a2x/consoleTitles", &a__bin__media_console_png);
+    addFile("/a2x/defaultFont", &a__bin__media_font_png);
 
     a__embed_application();
 }
 
 void a_embed__uninit(void)
 {
-    a_strhash_freeEx(g_data, free);
+    a_strhash_free(g_dirs);
+    a_strhash_free(g_files);
 }
 
-void a__embed_add(const char* Key, const uint8_t* Buffer, size_t Size)
+void a__embed_addDir(const void* Data)
 {
-    AEmbeddedData* data = a_mem_malloc(sizeof(AEmbeddedData));
-
-    data->buffer = Buffer;
-    data->size = Size;
-
-    a_strhash_add(g_data, Key, data);
+    addDir(((const AEmbeddedDir*)Data)->path, Data);
 }
 
-bool a_embed__get(const char* Key, const uint8_t** Buffer, size_t* Size)
+void a__embed_addFile(const void* Data)
 {
-    AEmbeddedData* data = a_strhash_get(g_data, Key);
+    addFile(((const AEmbeddedFile*)Data)->path, Data);
+}
 
-    if(data) {
-        if(Buffer) {
-            *Buffer = data->buffer;
-        }
+const AEmbeddedDir* a_embed__getDir(const char* Path)
+{
+    return a_strhash_get(g_dirs, Path);
+}
 
-        if(Size) {
-            *Size = data->size;
-        }
-    }
-
-    return data != NULL;
+const AEmbeddedFile* a_embed__getFile(const char* Path)
+{
+    return a_strhash_get(g_files, Path);
 }

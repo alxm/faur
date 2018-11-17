@@ -21,19 +21,46 @@
 
 #include <sys/stat.h>
 
+#include "a2x_pack_embed.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_str.v.h"
 
 struct APath {
+    APathFlags flags;
     char* full;
     char* dirsPart;
     char* namePart;
 };
 
+static APathFlags getPathFlags(const char* Path)
+{
+    struct stat info;
+    APathFlags flags = 0;
+
+    if(stat(Path, &info) == 0) {
+        flags |= A_PATH_REAL;
+
+        if(S_ISREG(info.st_mode)) {
+            flags |= A_PATH_FILE;
+        } else if(S_ISDIR(info.st_mode)) {
+            flags |= A_PATH_DIR;
+        } else {
+            flags |= A_PATH_OTHER;
+        }
+    } else if(a_embed__getFile(Path) != NULL) {
+        flags |= A_PATH_EMBEDDED | A_PATH_FILE;
+    } else if(a_embed__getDir(Path) != NULL) {
+        flags |= A_PATH_EMBEDDED | A_PATH_DIR;
+    }
+
+    return flags;
+}
+
 APath* a_path_new(const char* Path)
 {
     APath* p = a_mem_malloc(sizeof(APath));
 
+    p->flags = getPathFlags(Path);
     p->full = a_str_dup(Path);
     p->dirsPart = a_str_prefixGetToLast(Path, '/');
     p->namePart = a_str_suffixGetFromLast(Path, '/');
@@ -84,28 +111,14 @@ void a_path_free(APath* Path)
     free(Path);
 }
 
-bool a_path_exists(const char* Path, APathType Type)
+bool a_path_exists(const char* Path, APathFlags Flags)
 {
-    struct stat info;
-
-    switch(Type) {
-        case A_PATH_TYPE_ANY:
-            return access(Path, F_OK) == 0;
-
-        case A_PATH_TYPE_FILE:
-            return stat(Path, &info) == 0 && S_ISREG(info.st_mode);
-
-        case A_PATH_TYPE_DIR:
-            return stat(Path, &info) == 0 && S_ISDIR(info.st_mode);
-
-        default:
-            return false;
-    }
+    return (getPathFlags(Path) & Flags) == Flags;
 }
 
-bool a_path_test(const APath* Path, APathType Type)
+bool a_path_test(const APath* Path, APathFlags Flags)
 {
-    return a_path_exists(Path->full, Type);
+    return (Path->flags & Flags) == Flags;
 }
 
 const char* a_path_getFull(const APath* Path)

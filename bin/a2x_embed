@@ -27,24 +27,24 @@ class EmbedTool(Tool):
     def main(self):
         c_file = self.get_arg('file.c')
         gen_dir = self.get_arg('GenDir')
-        sub_dirs = self.get_arg_tail()
+        cvar_prefix = self.get_arg('CVarPrefix')
+        h_files = self.get_arg_tail()
 
         includes = ''
         embed_calls = ''
 
-        for d in sub_dirs:
-            subdir = os.path.join(gen_dir, d)
+        for h in h_files:
+            includes += '#include "{}"\n'.format(h)
+            no_h = h[: -2]
 
-            if not os.path.exists(subdir):
-                continue
-            elif not os.path.isdir(subdir):
-                self.output.error('{} is not a dir'.format(subdir))
-
-            for header in [f for f in os.listdir(subdir) if f.endswith('.h')]:
-                includes += '#include "{}/{}"\n'.format(d, header)
-                embed_calls += \
-                    '    a__embed_add({0}_path, {0}_data, {0}_size);\n' \
-                        .format(self.sanitizeFileNameForCVar(header))
+            if os.path.isdir(os.path.join(gen_dir, no_h)):
+                embed_calls += """\
+    a__embed_addDir(&{prefix}{var});
+""".format(prefix = cvar_prefix, var = self.sanitizeFileNameForCVar(no_h))
+            else:
+                embed_calls += """\
+    a__embed_addFile(&{prefix}{var});
+""".format(prefix = cvar_prefix, var = self.sanitizeFileNameForCVar(no_h))
 
         self.writefile(c_file,
 """\
@@ -56,4 +56,4 @@ void a__embed_application(void)
 """.format(includes, embed_calls))
 
 if __name__ == '__main__':
-    EmbedTool('file.c GenDir').run()
+    EmbedTool('file.c GenDir CVarPrefix').run()

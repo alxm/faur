@@ -8,10 +8,14 @@ A_DIR_SRC := $(A_DIR_ROOT)/src
 A_DIR_MEDIA := $(A_DIR_ROOT)/media
 A_DIR_OBJ := ./obj
 A_DIR_OBJ_PLATFORM := $(A_DIR_OBJ)/$(A_PLATFORM)
-A_DIR_OBJ_PLATFORM_MEDIA := $(A_DIR_OBJ_PLATFORM)/media
+A_DIR_GEN := $(A_DIR_OBJ_PLATFORM)/a2x_gen
 
-A_FILES_MEDIA_PNG := $(notdir $(wildcard $(A_DIR_MEDIA)/*.png))
-A_FILES_MEDIA_PNG_H := $(addprefix $(A_DIR_OBJ_PLATFORM_MEDIA)/a__gfx_, $(A_FILES_MEDIA_PNG:.png=_png.h))
+A_CONFIG_EMBED_PATHS := \
+    media/console.png \
+    media/font.png \
+
+A_FILES_EMBED_BIN := $(shell $(A2X_PATH)/bin/a2x_embedfiles -q $(A_DIR_ROOT) $(A_CONFIG_EMBED_PATHS))
+A_FILES_SRC_GEN_H := $(addprefix $(A_DIR_GEN)/, $(A_FILES_EMBED_BIN:=.h))
 
 A_FILE_PUBLIC_A2X_HEADER := $(A_DIR_INC)/$(A_PLATFORM)/a2x.h
 A_FILE_SYSTEM_INCLUDES := $(A_DIR_SRC)/$(A_PREFIX)system_includes.h
@@ -49,7 +53,7 @@ A_GENERIC_CFLAGS := \
     -DA_BUILD__CURRENT_GIT_BRANCH=\"$(A_INFO_CURRENT_BRANCH)\" \
     -DA_BUILD__PLATFORM_NAME=\"$(A_PLATFORM)\" \
     -D_XOPEN_SOURCE \
-    -I$(A_DIR_OBJ_PLATFORM_MEDIA) \
+    -I$(A_DIR_GEN) \
     $(A_BUILD_CFLAGS) \
 
 .PHONY : all clean
@@ -71,11 +75,11 @@ $(A_DIR_OBJ_PLATFORM)/%.c.o : $(A_DIR_SRC)/%.c
 	@ mkdir -p $(@D)
 	$(CC) -c -o $@ $< $(A_GENERIC_CFLAGS)
 
-$(A_DIR_OBJ_PLATFORM)/a2x_pack_embed.c.o : $(A_FILES_MEDIA_PNG_H)
+$(A_DIR_OBJ_PLATFORM)/a2x_pack_embed.c.o : $(A_FILES_SRC_GEN_H)
 
-$(A_DIR_OBJ_PLATFORM_MEDIA)/a__gfx_%_png.h : $(A_DIR_MEDIA)/%.png $(A_DIR_BIN)/a2x_bin
+$(A_DIR_GEN)/%.h : $(A_DIR_ROOT)/% $(A_DIR_BIN)/a2x_bin
 	@ mkdir -p $(@D)
-	@ $(A_DIR_BIN)/a2x_bin $< $@
+	@ $(A_DIR_BIN)/a2x_bin $< $@ $(<:$(A_DIR_ROOT)/%=%) a__bin__
 
 clean :
 	rm -rf $(A_FILE_PUBLIC_A2X_HEADER) $(A_FILE_PUBLIC_A2X_LIB) $(A_DIR_OBJ_PLATFORM)

@@ -52,8 +52,6 @@ class NewTool(Tool):
 
         dir_root = Dir(self, project_path)
         dir_assets = dir_root.add_subdir('assets')
-        dir_assets_gfx = dir_assets.add_subdir('gfx')
-        dir_assets_sfx = dir_assets.add_subdir('sfx')
         dir_bin = dir_root.add_subdir('bin')
         dir_make = dir_root.add_subdir('make')
         dir_obj = dir_root.add_subdir('obj')

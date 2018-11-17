@@ -21,7 +21,20 @@
 
 #include "a2x_pack_embed.p.h"
 
+typedef struct {
+    const char* path;
+    size_t size;
+    const char* entries[];
+} AEmbeddedDir;
+
+typedef struct {
+    const char* path;
+    size_t size;
+    uint8_t buffer[];
+} AEmbeddedFile;
+
 extern void a_embed__init(void);
 extern void a_embed__uninit(void);
 
-extern bool a_embed__get(const char* Key, const uint8_t** Buffer, size_t* Size);
+extern const AEmbeddedDir* a_embed__getDir(const char* Path);
+extern const AEmbeddedFile* a_embed__getFile(const char* Path);
