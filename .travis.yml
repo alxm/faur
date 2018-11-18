@@ -13,5 +13,8 @@ addons:
             - libsdl2-dev
             - libsdl2-mixer-dev
 
+git:
+    depth: 1
+
 script:
-    - make --directory=make/a2x --jobs
+    - make A2X_PATH=../.. --directory=make/a2x --jobs
