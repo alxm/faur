@@ -114,16 +114,16 @@ class Tool:
             f.write(contents)
 
     def readbytes(self, name):
-        self.output.info('Reading bytes from {}'.format(name))
-
         with open(name, 'rb') as f:
             return f.read()
 
     def readtext(self, name):
-        self.output.info('Reading text from {}'.format(name))
-
         with open(name, 'rU') as f:
             return f.read()
+
+    def readtextlines(self, name):
+        with open(name, 'rU') as f:
+            return f.readlines()
 
     def listdir(self, path):
         if not os.path.isdir(path):
