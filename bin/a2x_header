@@ -43,8 +43,13 @@ class HeaderTool(Tool):
             include = self.re_include.match(line)
 
             if include:
+                header = include.group(1)
+
+                if header.endswith('.v.h'):
+                    self.output.error('{} is a private header'.format(header))
+
                 out += '// {}'.format(line)
-                out += self.process_header(include.group(1), Depth + 1)
+                out += self.process_header(header, Depth + 1)
             elif line == '#pragma once\n':
                 out += '// {}'.format(line)
             else:
