@@ -103,7 +103,7 @@ static bool lazy_init(void)
                             ", built on ",
                             a_settings_stringGet(A_SETTING_APP_BUILDTIME),
                             ". Running on a2x ",
-                            A_BUILD__CURRENT_GIT_BRANCH,
+                            A_BUILD__GIT_HASH,
                             ", built on ",
                             A_BUILD__COMPILE_TIME,
                             ".",
