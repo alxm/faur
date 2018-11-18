@@ -1,5 +1,5 @@
 include ../global/defs
-include ../platforms/linux
+include ../platforms/dev
 include rules
 
 .PHONY : config

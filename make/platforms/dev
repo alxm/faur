@@ -1,4 +1,4 @@
-A_PLATFORM := linux
+A_PLATFORM := dev
 
 A_BUILD_LIBS := \
     -lpng \
