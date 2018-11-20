@@ -23,6 +23,6 @@
 
 #include "a2x_pack_file.v.h"
 
-extern AFile* a_file_embedded__new(APath* Path, AFileMode Mode);
+extern AFile* a_file_embedded__new(APath* Path);
 
 extern uint8_t* a_file_embedded__toBuffer(const char* Path);

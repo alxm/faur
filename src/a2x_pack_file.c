@@ -31,10 +31,10 @@ AFile* a_file_new(const char* Path, AFileMode Mode)
     AFile* f = NULL;
     APath* path = a_path_new(Path);
 
-    if(a_path_test(path, A_PATH_FILE | A_PATH_REAL)) {
+    if(a_path_test(path, A_PATH_FILE | A_PATH_REAL) || (Mode & A_FILE_WRITE)) {
         f = a_file_real__new(path, Mode);
     } else if(a_path_test(path, A_PATH_FILE | A_PATH_EMBEDDED)) {
-        f = a_file_embedded__new(path, Mode);
+        f = a_file_embedded__new(path);
     }
 
     if(f == NULL) {

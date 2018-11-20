@@ -121,6 +121,11 @@ bool a_path_test(const APath* Path, APathFlags Flags)
     return (Path->flags & Flags) == Flags;
 }
 
+void a_path__flagsSet(APath* Path, APathFlags Flags)
+{
+    Path->flags |= Flags;
+}
+
 const char* a_path_getFull(const APath* Path)
 {
     return Path->full;
