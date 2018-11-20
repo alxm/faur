@@ -102,10 +102,12 @@ static bool lazy_init(void)
                             a_settings_stringGet(A_SETTING_APP_AUTHOR),
                             ", built on ",
                             a_settings_stringGet(A_SETTING_APP_BUILDTIME),
-                            ". Running on a2x ",
-                            A_BUILD__GIT_HASH,
-                            ", built on ",
-                            A_BUILD__COMPILE_TIME,
+                            ". Running on a2x "
+                            A_BUILD__PLATFORM_NAME
+                            " "
+                            A_BUILD__GIT_HASH
+                            ", built on "
+                            A_BUILD__COMPILE_TIME
                             ".",
                             NULL);
     }
