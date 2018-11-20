@@ -20,3 +20,5 @@
 #pragma once
 
 #include "a2x_pack_path.p.h"
+
+extern void a_path__flagsSet(APath* Path, APathFlags Flags);

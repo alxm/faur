@@ -21,7 +21,6 @@
 
 #include "a2x_pack_math.v.h"
 #include "a2x_pack_mem.v.h"
-#include "a2x_pack_out.v.h"
 
 static bool fileSeek(AFile* File, int Offset, AFileOffset Origin)
 {
@@ -119,14 +118,8 @@ static const AFileInterface g_interface = {
     .ungetchar = fileUnGetChar,
 };
 
-AFile* a_file_embedded__new(APath* Path, AFileMode Mode)
+AFile* a_file_embedded__new(APath* Path)
 {
-    if(Mode & A_FILE_WRITE) {
-        a_out__error("a_file_new: Cannot write to embedded file %s",
-                     a_path_getFull(Path));
-        return NULL;
-    }
-
     AFile* f = a_mem_zalloc(sizeof(AFile));
 
     f->path = Path;

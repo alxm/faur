@@ -10,8 +10,8 @@
 # A_CONFIG_BUILD_LIBS
 #   Passed to linker
 #
-# A_CONFIG_EMBED_PATHS
-#   Space-separated file or dir paths
+# A_CONFIG_EMBED_PATHS, A_CONFIG_EMBED_PATHS_EMSCRIPTEN
+#   Space-separated file and dir paths relative to project root
 #
 # A_CONFIG_PND_NAME
 #   Target PND file name

@@ -26,6 +26,7 @@
 #include "a2x_pack_listit.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
+#include "a2x_pack_path.v.h"
 #include "a2x_pack_str.v.h"
 
 struct ADir {
@@ -86,6 +87,10 @@ static AList* dirReal(APath* Path)
         }
 
         dir = opendir(path);
+
+        if(dir != NULL) {
+            a_path__flagsSet(Path, A_PATH_DIR | A_PATH_REAL);
+        }
     }
 
     if(dir == NULL) {
@@ -134,6 +139,8 @@ ADir* a_dir_new(const char* Path)
         files = dirReal(path);
     } else if(a_path_test(path, A_PATH_DIR | A_PATH_EMBEDDED)) {
         files = dirEmbedded(path);
+    } else {
+        files = dirReal(path);
     }
 
     if(files == NULL) {

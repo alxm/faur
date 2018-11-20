@@ -23,6 +23,7 @@
 
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
+#include "a2x_pack_path.v.h"
 
 static bool fileSeek(AFile* File, int Offset, AFileOffset Origin)
 {
@@ -93,6 +94,10 @@ AFile* a_file_real__new(APath* Path, AFileMode Mode)
                      a_path_getFull(Path),
                      mode);
         return NULL;
+    }
+
+    if(Mode & A_FILE_WRITE) {
+        a_path__flagsSet(Path, A_PATH_FILE | A_PATH_REAL);
     }
 
     AFile* f = a_mem_zalloc(sizeof(AFile));

@@ -172,19 +172,17 @@ void a_console__draw(void)
         a_font__fontSet(A_FONT__ID_GREEN); a_font_print("2");
         a_font__fontSet(A_FONT__ID_YELLOW); a_font_print("x");
 
-        a_font__fontSet(A_FONT__ID_WHITE);
-        a_font_printf(" %s", A_BUILD__PLATFORM_NAME);
         a_font__fontSet(A_FONT__ID_LIGHT_GRAY);
-        a_font_printf(
-            " %s (%s)", A_BUILD__CURRENT_GIT_BRANCH, A_BUILD__COMPILE_TIME);
+        a_font_printf(" %s (%s) %s",
+                      A_BUILD__PLATFORM_NAME,
+                      A_BUILD__COMPILE_TIME,
+                      A_BUILD__GIT_HASH);
         a_font_newLine();
 
         a_font__fontSet(A_FONT__ID_WHITE);
-        a_font_printf("%s %s",
+        a_font_printf("%s %s by %s (%s)",
                       a_settings_stringGet(A_SETTING_APP_TITLE),
-                      a_settings_stringGet(A_SETTING_APP_VERSION));
-        a_font__fontSet(A_FONT__ID_LIGHT_GRAY);
-        a_font_printf(" by %s (%s)",
+                      a_settings_stringGet(A_SETTING_APP_VERSION),
                       a_settings_stringGet(A_SETTING_APP_AUTHOR),
                       a_settings_stringGet(A_SETTING_APP_BUILDTIME));
         a_font_newLine();

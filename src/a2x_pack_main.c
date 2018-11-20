@@ -80,7 +80,7 @@ int main(int Argc, char* Argv[])
     a_settings__init();
 
     a_out__message(
-        "a2x %s, %s", A_BUILD__CURRENT_GIT_BRANCH, A_BUILD__COMPILE_TIME);
+        "a2x %s, %s", A_BUILD__GIT_HASH, A_BUILD__COMPILE_TIME);
 
     a_out__message("%s %s by %s, %s - PID %d",
                    a_settings_stringGet(A_SETTING_APP_TITLE),
