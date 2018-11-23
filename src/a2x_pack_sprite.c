@@ -172,6 +172,25 @@ doneEdges:
     return sprite;
 }
 
+ASprite* a_sprite_newFromSpriteEx(const ASprite* Sheet, int X, int Y, int W, int H)
+{
+    ASprite* sprite = makeEmptySprite(W, H);
+    APixel* pixels = a_mem_malloc(sprite->pixelsSize);
+
+    const APixel* src = Sheet->pixels + Y * Sheet->w + X;
+    APixel* dst = pixels;
+
+    for(int i = H; i--; ) {
+        memcpy(dst, src, (unsigned)W * sizeof(APixel));
+        src += Sheet->w;
+        dst += W;
+    }
+
+    assignPixels(sprite, pixels);
+
+    return sprite;
+}
+
 ASprite* a_sprite_newBlank(int Width, int Height, bool ColorKeyed)
 {
     ASprite* s = makeEmptySprite(Width, Height);
