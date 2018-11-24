@@ -28,6 +28,7 @@ typedef struct ASprite ASprite;
 
 extern ASprite* a_sprite_newFromFile(const char* Path);
 extern ASprite* a_sprite_newFromSprite(const ASprite* Sheet, int X, int Y);
+extern ASprite* a_sprite_newFromSpriteEx(const ASprite* Sheet, int X, int Y, int W, int H);
 extern ASprite* a_sprite_newBlank(int Width, int Height, bool ColorKeyed);
 extern ASprite* a_sprite_dup(const ASprite* Sprite);
 extern void a_sprite_free(ASprite* Sprite);

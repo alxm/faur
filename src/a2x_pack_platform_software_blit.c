@@ -206,7 +206,7 @@ void a_platform_software_blit__init(void)
     initRoutines(A_PIXEL_BLEND_ADD, add);
 }
 
-size_t spanBytesNeeded(const APixel* Pixels, int Width, int Height)
+static size_t spanBytesNeeded(const APixel* Pixels, int Width, int Height)
 {
     // Spans format for each graphic line:
     // [NumSpans << 1 | 1 (draw) / 0 (transparent)][[len]...]
@@ -232,7 +232,7 @@ size_t spanBytesNeeded(const APixel* Pixels, int Width, int Height)
     return bytesNeeded;
 }
 
-bool hasTransparency(const APixel* Pixels, int Width, int Height)
+static bool hasTransparency(const APixel* Pixels, int Width, int Height)
 {
     for(int i = Width * Height; i--; ) {
         if(*Pixels++ == a_sprite__colorKey) {

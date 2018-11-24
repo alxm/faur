@@ -62,48 +62,26 @@ static void assignPixels(ASprite* Sprite, APixel* Pixels)
     a_platform__textureSpriteCommit(Sprite);
 }
 
-ASprite* a_sprite_newFromFile(const char* Path)
+void a_sprite__boundsFind(const ASprite* Sheet, int X, int Y, int* Width, int* Height)
 {
-    int w = 0;
-    int h = 0;
-    APixel* pixels = NULL;
-
-    a_png_readFile(Path, &pixels, &w, &h);
-
-    if(pixels == NULL) {
-        return NULL;
-    }
-
-    ASprite* s = makeEmptySprite(w, h);
-
-    assignPixels(s, pixels);
-    s->nameId = a_str_dup(Path);
-
-    return s;
-}
-
-ASprite* a_sprite_newFromSprite(const ASprite* Sheet, int X, int Y)
-{
-    int spriteWidth = 0;
-    int spriteHeight = 0;
-    const int sheetWidth = Sheet->w;
-    const int sheetHeight = Sheet->h;
-
     if(X < 0 || X >= Sheet->w || Y < 0 || Y >= Sheet->h) {
-        a_out__fatal("a_sprite_newFromSprite: %s invalid coords %d, %d",
+        a_out__fatal("a_sprite__boundsFind: %s invalid coords %d, %d",
                      A_SPRITE__NAME(Sheet),
                      X,
                      Y);
     }
 
-    for(int endX = X; endX < sheetWidth; endX++) {
+    int spriteWidth = 0;
+    int spriteHeight = 0;
+
+    for(int endX = X; endX < Sheet->w; endX++) {
         APixel p = a_sprite__pixelsGetPixel(Sheet, endX, Y);
 
         if(p != a_sprite__colorLimit && p != a_sprite__colorEnd) {
             continue;
         }
 
-        for(int endY = Y; endY < sheetHeight; endY++) {
+        for(int endY = Y; endY < Sheet->h; endY++) {
             p = a_sprite__pixelsGetPixel(Sheet, X, endY);
 
             if(p != a_sprite__colorLimit) {
@@ -145,26 +123,73 @@ doneEdges:
     if(spriteWidth == 0 || spriteHeight == 0) {
         if(X == 0 && Y == 0) {
             // no boundary borders for full-image sprites
-            spriteWidth = sheetWidth;
-            spriteHeight = sheetHeight;
+            spriteWidth = Sheet->w;
+            spriteHeight = Sheet->h;
         } else {
-            a_out__fatal("a_sprite_newFromSprite: %s invalid coords %d, %d",
+            a_out__fatal("a_sprite__boundsFind: %s invalid coords %d, %d",
                          A_SPRITE__NAME(Sheet),
                          X,
                          Y);
         }
     }
 
-    ASprite* sprite = makeEmptySprite(spriteWidth, spriteHeight);
+    *Width = spriteWidth;
+    *Height = spriteHeight;
+}
+
+ASprite* a_sprite_newFromFile(const char* Path)
+{
+    int w, h;
+    APixel* pixels = NULL;
+
+    a_png_readFile(Path, &pixels, &w, &h);
+
+    if(pixels == NULL) {
+        return NULL;
+    }
+
+    ASprite* s = makeEmptySprite(w, h);
+
+    assignPixels(s, pixels);
+    s->nameId = a_str_dup(Path);
+
+    return s;
+}
+
+ASprite* a_sprite_newFromSprite(const ASprite* Sheet, int X, int Y)
+{
+    int w, h;
+    a_sprite__boundsFind(Sheet, X, Y, &w, &h);
+
+    ASprite* sprite = makeEmptySprite(w, h);
     APixel* pixels = a_mem_malloc(sprite->pixelsSize);
 
-    const APixel* src = Sheet->pixels + Y * sheetWidth + X;
+    const APixel* src = Sheet->pixels + Y * Sheet->w + X;
     APixel* dst = pixels;
 
-    for(int i = spriteHeight; i--; ) {
-        memcpy(dst, src, (unsigned)spriteWidth * sizeof(APixel));
-        src += sheetWidth;
-        dst += spriteWidth;
+    for(int i = h; i--; ) {
+        memcpy(dst, src, (unsigned)w * sizeof(APixel));
+        src += Sheet->w;
+        dst += w;
+    }
+
+    assignPixels(sprite, pixels);
+
+    return sprite;
+}
+
+ASprite* a_sprite_newFromSpriteEx(const ASprite* Sheet, int X, int Y, int W, int H)
+{
+    ASprite* sprite = makeEmptySprite(W, H);
+    APixel* pixels = a_mem_malloc(sprite->pixelsSize);
+
+    const APixel* src = Sheet->pixels + Y * Sheet->w + X;
+    APixel* dst = pixels;
+
+    for(int i = H; i--; ) {
+        memcpy(dst, src, (unsigned)W * sizeof(APixel));
+        src += Sheet->w;
+        dst += W;
     }
 
     assignPixels(sprite, pixels);
