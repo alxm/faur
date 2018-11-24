@@ -45,6 +45,17 @@ ASpriteFrames* a_spriteframes_newFromFile(const char* Path, unsigned FrameMs)
     return f;
 }
 
+ASpriteFrames* a_spriteframes_newFromFileGrid(const char* Path, int CellWidth, int CellHeight, unsigned FrameMs)
+{
+    ASprite* s = a_sprite_newFromFile(Path);
+    ASpriteFrames* f = a_spriteframes_newFromSpriteGrid(
+                        s, 0, 0, CellWidth, CellHeight, FrameMs);
+
+    a_sprite_free(s);
+
+    return f;
+}
+
 ASpriteFrames* a_spriteframes_newFromSprite(const ASprite* Sheet, int X, int Y, unsigned FrameMs)
 {
     ASpriteFrames* f = a_spriteframes_newBlank(FrameMs);
@@ -80,6 +91,31 @@ ASpriteFrames* a_spriteframes_newFromSprite(const ASprite* Sheet, int X, int Y, 
         }
 
         X += 1;
+    }
+
+    f->spriteArray = (ASprite**)a_list_toArray(f->sprites);
+    f->num = a_list_sizeGet(f->sprites);
+
+    return f;
+}
+
+ASpriteFrames* a_spriteframes_newFromSpriteGrid(const ASprite* Sheet, int X, int Y, int CellWidth, int CellHeight, unsigned FrameMs)
+{
+    ASpriteFrames* f = a_spriteframes_newBlank(FrameMs);
+
+    int gridW, gridH;
+    a_sprite__boundsFind(Sheet, X, Y, &gridW, &gridH);
+
+    int endX = X + gridW - (gridW % CellWidth);
+    int endY = Y + gridH - (gridH % CellHeight);
+
+    for(int y = Y; y < endY; y += CellHeight) {
+        for(int x = X; x < endX; x += CellWidth) {
+            ASprite* s = a_sprite_newFromSpriteEx(
+                            Sheet, x, y, CellWidth, CellHeight);
+
+            a_list_addLast(f->sprites, s);
+        }
     }
 
     f->spriteArray = (ASprite**)a_list_toArray(f->sprites);
