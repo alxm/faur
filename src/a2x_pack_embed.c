@@ -22,7 +22,8 @@
 #include "a2x_pack_strhash.v.h"
 
 #include "media/console.png.h"
-#include "media/font.png.h"
+#include "media/fontgrid.png.h"
+#include "media/fontgrid_keyed.png.h"
 
 static AStrHash* g_dirs; // table of AEmbeddedDir
 static AStrHash* g_files; // table of AEmbeddedFile
@@ -43,7 +44,8 @@ void a_embed__init(void)
     g_files = a_strhash_new();
 
     addFile("/a2x/consoleTitles", &a__bin__media_console_png);
-    addFile("/a2x/defaultFont", &a__bin__media_font_png);
+    addFile("/a2x/font", &a__bin__media_fontgrid_png);
+    addFile("/a2x/fontKeyed", &a__bin__media_fontgrid_keyed_png);
 
     a__embed_application();
 }

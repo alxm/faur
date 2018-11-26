@@ -12,7 +12,8 @@ A_DIR_GEN := $(A_DIR_OBJ_PLATFORM)/a2x_gen
 
 A_CONFIG_EMBED_PATHS := \
     media/console.png \
-    media/font.png \
+    media/fontgrid.png \
+    media/fontgrid_keyed.png \
 
 A_FILES_EMBED_BIN := $(shell $(A2X_PATH)/bin/a2x_embedfiles -q $(A_DIR_ROOT) $(A_CONFIG_EMBED_PATHS))
 A_FILES_SRC_GEN_H := $(addprefix $(A_DIR_GEN)/, $(A_FILES_EMBED_BIN:=.h))
