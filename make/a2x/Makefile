@@ -1,4 +1,7 @@
 include ../global/defs
+
+A_MAKE_TARGETS += $(A_FILE_EDITOR_TAGS)
+
 include ../platforms/dev
 include rules
 

@@ -33,11 +33,7 @@ A_FILES_OBJ := $(addprefix $(A_DIR_OBJ_PLATFORM)/, $(A_FILES_SRC_C:=.o))
 A_INFO_COMPILE_TIME := $(shell date "+%Y-%m-%d\ %H:%M:%S")
 A_INFO_GIT_HASH := $(shell git rev-parse --verify HEAD)
 
-ALL_TARGETS := $(A_FILE_PUBLIC_A2X_HEADER) $(A_FILE_PUBLIC_A2X_LIB)
-
-ifeq ($(A_PLATFORM), linux)
-    ALL_TARGETS += $(A_FILE_EDITOR_TAGS)
-endif
+ALL_TARGETS := $(A_MAKE_TARGETS) $(A_FILE_PUBLIC_A2X_HEADER) $(A_FILE_PUBLIC_A2X_LIB)
 
 A_GENERIC_CFLAGS := \
     -std=c99 \
