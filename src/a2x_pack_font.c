@@ -232,13 +232,10 @@ void a_font_lineWrapSet(int Width)
 static int getWidth(const char* Text, ptrdiff_t Length)
 {
     int width = 0;
-    AFont* font = g_state.font;
+    const ASpriteFrames* f = g_state.font->frames;
 
     for( ; Length--; Text++) {
-        const ASprite* charSprite = a_spriteframes_getByIndex(
-                                        font->frames, A__CHAR_INDEX(*Text));
-
-        width += charSprite->w;
+        width += a_spriteframes_getByIndex(f, A__CHAR_INDEX(*Text))->w;
     }
 
     return width;
@@ -246,7 +243,7 @@ static int getWidth(const char* Text, ptrdiff_t Length)
 
 static void drawString(const char* Text, ptrdiff_t Length)
 {
-    AFont* font = g_state.font;
+    const ASpriteFrames* f = g_state.font->frames;
 
     if(g_state.align == A_FONT_ALIGN_MIDDLE) {
         g_state.x -= getWidth(Text, Length) / 2;
@@ -255,11 +252,10 @@ static void drawString(const char* Text, ptrdiff_t Length)
     }
 
     for( ; Length--; Text++) {
-        const ASprite* charSprite = a_spriteframes_getByIndex(
-                                        font->frames, A__CHAR_INDEX(*Text));
+        const ASprite* s = a_spriteframes_getByIndex(f, A__CHAR_INDEX(*Text));
 
-        a_sprite_blit(charSprite, g_state.x, g_state.y);
-        g_state.x += charSprite->w;
+        a_sprite_blit(s, g_state.x, g_state.y);
+        g_state.x += s->w;
     }
 }
 
