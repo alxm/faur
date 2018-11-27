@@ -265,64 +265,64 @@ static void drawString(const char* Text, ptrdiff_t Length)
 
 static void wrapString(const char* Text)
 {
-    AFont* font = g_state.font;
+    const ASpriteFrames* f = g_state.font->frames;
+
     const char* lineStart = Text;
+    const char* wordStart = NULL;
 
-    while(*Text != '\0') {
-        int tally = 0;
+    for(char ch = *Text; ch != '\0'; ch = *Text) {
+        int add = 0;
 
-        if(g_state.currentLineWidth > 0) {
-            if(*Text == ' ') {
-                const int w = a_spriteframes_getByIndex(
-                                font->frames, A__CHAR_INDEX(' '))->w;
-
-                do {
-                    tally += w;
-                } while(*++Text == ' ');
+        if(ch > A__CHAR_START) {
+            if(wordStart == NULL) {
+                wordStart = Text;
             }
+
+            add = a_spriteframes_getByIndex(f, A__CHAR_INDEX(ch))->w;
         } else {
-            // Do not start a line with spaces
-            for( ; *Text == ' '; Text++) {
-                lineStart++;
-            }
-        }
+            wordStart = NULL;
 
-        const char* wordStart = Text;
-
-        if(g_state.currentLineWidth + tally <= g_state.wrapWidth) {
-            for( ; *Text != ' ' && *Text != '\0'; Text++) {
-                const ASprite* charSprite = a_spriteframes_getByIndex(
-                                                font->frames,
-                                                A__CHAR_INDEX(*Text));
-
-                tally += charSprite->w;
-            }
-        }
-
-        if(g_state.currentLineWidth + tally > g_state.wrapWidth) {
-            if(g_state.currentLineWidth == 0) {
-                // Print lone word regardless of overflow
+            if(ch == ' ') {
+                if(g_state.currentLineWidth == 0) {
+                    // Do not start a line with spaces
+                    lineStart++;
+                } else {
+                    add = a_spriteframes_getByIndex(f, A__CHAR_INDEX(' '))->w;
+                }
+            } else if(ch == '\n') {
+                // Print what we have and start a new line
                 drawString(lineStart, Text - lineStart);
-            } else {
-                // Print line up to overflowing word, and go back to word
+
+                lineStart = Text + 1;
+                a_font_newLine();
+            }
+        }
+
+        Text++;
+
+        if(g_state.currentLineWidth + add > g_state.wrapWidth) {
+            if(wordStart == NULL) {
+                // Overflowed with whitespace, print what we have
+                drawString(lineStart, Text - lineStart);
+
+                lineStart = Text;
+                a_font_newLine();
+            } else if(lineStart < wordStart) {
+                // Print line up to overflowing word, and go back to the word
                 drawString(lineStart, wordStart - lineStart);
+
                 Text = wordStart;
+                lineStart = wordStart;
+                a_font_newLine();
             }
-
-            lineStart = Text;
-            g_state.currentLineWidth = 0;
-            a_font_newLine();
         } else {
-            if(*Text == '\0') {
-                // Print last line
-                drawString(lineStart, Text - lineStart);
-            }
-
-            if(tally > 0) {
-                g_state.currentLineWidth += tally;
-            }
+            // Keep going
+            g_state.currentLineWidth += add;
         }
     }
+
+    // Print last line
+    drawString(lineStart, Text - lineStart);
 }
 
 void a_font_print(const char* Text)
