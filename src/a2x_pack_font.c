@@ -267,14 +267,13 @@ static void wrapString(const char* Text)
     const char* wordStart = NULL;
 
     for(char ch = *Text; ch != '\0'; ch = *Text) {
-        int add = 0;
-
         if(ch > A__CHAR_START) {
             if(wordStart == NULL) {
                 wordStart = Text;
             }
 
-            add = a_spriteframes_getByIndex(f, A__CHAR_INDEX(ch))->w;
+            g_state.currentLineWidth +=
+                a_spriteframes_getByIndex(f, A__CHAR_INDEX(ch))->w;
         } else {
             wordStart = NULL;
 
@@ -283,7 +282,8 @@ static void wrapString(const char* Text)
                     // Do not start a line with spaces
                     lineStart++;
                 } else {
-                    add = a_spriteframes_getByIndex(f, A__CHAR_INDEX(' '))->w;
+                    g_state.currentLineWidth +=
+                        a_spriteframes_getByIndex(f, A__CHAR_INDEX(' '))->w;
                 }
             } else if(ch == '\n') {
                 // Print what we have and start a new line
@@ -296,7 +296,7 @@ static void wrapString(const char* Text)
 
         Text++;
 
-        if(g_state.currentLineWidth + add > g_state.wrapWidth) {
+        if(g_state.currentLineWidth > g_state.wrapWidth) {
             if(wordStart == NULL) {
                 // Overflowed with whitespace, print what we have
                 drawString(lineStart, Text - lineStart);
@@ -311,9 +311,6 @@ static void wrapString(const char* Text)
                 lineStart = wordStart;
                 a_font_newLine();
             }
-        } else {
-            // Keep going
-            g_state.currentLineWidth += add;
         }
     }
 
