@@ -21,27 +21,27 @@
 
 #include "a2x_system_includes.h"
 
-typedef struct AColMap AColMap;
-typedef struct AColObject AColObject;
+typedef struct AGrid AGrid;
+typedef struct AGridItem AGridItem;
 
 #include "a2x_pack_fix.p.h"
 #include "a2x_pack_list.p.h"
 
-extern AColMap* a_colmap_new(int Width, int Height, int MaxObjectDim);
-extern void a_colmap_free(AColMap* Map);
+extern AGrid* a_grid_new(int Width, int Height, int MaxObjectDim);
+extern void a_grid_free(AGrid* Grid);
 
-extern AColObject* a_colobject_new(const AColMap* Map, void* Context);
-extern void a_colobject_free(AColObject* Object);
+extern AGridItem* a_griditem_new(const AGrid* Grid, void* Context);
+extern void a_griditem_free(AGridItem* Item);
 
-extern void a_colobject_coordsSet(AColObject* Object, int X, int Y);
+extern void a_griditem_coordsSet(AGridItem* Item, int X, int Y);
 
-extern void* a__colobject_contextGet(const AColObject* Object);
-extern AList* a__colobject_nearbyListGet(const AColObject* Object);
+extern void* a__griditem_contextGet(const AGridItem* Item);
+extern AList* a__griditem_nearbyListGet(const AGridItem* Item);
 
-#define A_COL_ITERATE(ColObject, ContextPtrType, ContextVarName)           \
-    for(const AColObject* a__co = ColObject; a__co; a__co = NULL)          \
-        A_LIST_FILTER(a__colobject_nearbyListGet(a__co),                   \
-                      const AColObject*, a__o,                             \
-                      a__o != a__co)                                       \
-        for(ContextPtrType ContextVarName = a__colobject_contextGet(a__o); \
-            a__o != NULL; a__o = NULL)
+#define A_GRID_ITERATE(GridItem, ContextPtrType, ContextVarName)              \
+    for(const AGridItem* a__gi = GridItem; a__gi; a__gi = NULL)               \
+        A_LIST_FILTER(a__griditem_nearbyListGet(a__gi),                       \
+                      const AGridItem*, a__i,                                 \
+                      a__i != a__gi)                                          \
+            for(ContextPtrType ContextVarName = a__griditem_contextGet(a__i); \
+                a__i != NULL; a__i = NULL)
