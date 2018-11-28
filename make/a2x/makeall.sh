@@ -33,7 +33,7 @@ do_emmake ()
 make config
 source /opt/emsdk-portable/emsdk_env.sh
 
-do_make "Linux native" Makefile
+do_make "Dev" Makefile
 do_make "Linux 32bit" Makefile.linux32
 do_make "Linux 64bit" Makefile.linux64
 do_make "Mingw 32bit" Makefile.mingw32

@@ -23,25 +23,17 @@
 
 typedef struct AFont AFont;
 
-typedef enum  {
-    A_FONT_LOAD_ALL = A_FLAG_BIT(0),
-    A_FONT_LOAD_ALPHANUMERIC = A_FLAG_BIT(1),
-    A_FONT_LOAD_ALPHA = A_FLAG_BIT(2),
-    A_FONT_LOAD_NUMERIC = A_FLAG_BIT(3),
-    A_FONT_LOAD_CAPS = A_FLAG_BIT(4),
-} AFontLoad;
-
 typedef enum {
-    A_FONT_ALIGN_LEFT = A_FLAG_BIT(0),
-    A_FONT_ALIGN_MIDDLE = A_FLAG_BIT(1),
-    A_FONT_ALIGN_RIGHT = A_FLAG_BIT(2),
-    A_FONT_ALIGN_MONOSPACED = A_FLAG_BIT(3),
+    A_FONT_ALIGN_INVALID = -1,
+    A_FONT_ALIGN_LEFT,
+    A_FONT_ALIGN_MIDDLE,
+    A_FONT_ALIGN_RIGHT,
 } AFontAlign;
 
 #include "a2x_pack_sprite.p.h"
 
-extern AFont* a_font_newFromFile(const char* Path, AFontLoad Loader);
-extern AFont* a_font_newFromSprite(const ASprite* Sheet, int X, int Y, AFontLoad Loader);
+extern AFont* a_font_newFromFile(const char* Path);
+extern AFont* a_font_newFromSprite(const ASprite* Sheet, int X, int Y);
 extern AFont* a_font_dup(const AFont* Font, APixel Color);
 extern void a_font_free(AFont* Font);
 
