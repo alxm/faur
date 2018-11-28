@@ -173,19 +173,17 @@ void a_console__draw(void)
         a_font__fontSet(A_FONT__ID_YELLOW); a_font_print("x");
 
         a_font__fontSet(A_FONT__ID_LIGHT_GRAY);
-        a_font_printf(" %s (%s) %s",
+        a_font_printf(" %s (%s) %s\n",
                       A_BUILD__PLATFORM_NAME,
                       A_BUILD__COMPILE_TIME,
                       A_BUILD__GIT_HASH);
-        a_font_newLine();
 
         a_font__fontSet(A_FONT__ID_WHITE);
-        a_font_printf("%s %s by %s (%s)",
+        a_font_printf("%s %s by %s (%s)\n",
                       a_settings_stringGet(A_SETTING_APP_TITLE),
                       a_settings_stringGet(A_SETTING_APP_VERSION),
                       a_settings_stringGet(A_SETTING_APP_AUTHOR),
                       a_settings_stringGet(A_SETTING_APP_BUILDTIME));
-        a_font_newLine();
     }
 
     {
@@ -208,18 +206,14 @@ void a_console__draw(void)
         a_font_coordsSet(a__screen.width - 1, 2);
 
         a_font__fontSet(A_FONT__ID_YELLOW);
-        a_font_printf("%u tick fps", a_fps_tickRateGet());
-        a_font_newLine();
-        a_font_printf("%u draw fps", a_fps_drawRateGet());
-        a_font_newLine();
+        a_font_printf("%u tick fps\n", a_fps_tickRateGet());
+        a_font_printf("%u draw fps\n", a_fps_drawRateGet());
 
         a_font__fontSet(A_FONT__ID_GREEN);
-        a_font_printf("%u draw max", a_fps_drawRateGetMax());
-        a_font_newLine();
+        a_font_printf("%u draw max\n", a_fps_drawRateGetMax());
 
-        a_font_printf("Vsync is %s",
+        a_font_printf("Vsync is %s\n",
                       a_settings_boolGet(A_SETTING_VIDEO_VSYNC) ? "on" : "off");
-        a_font_newLine();
 
         a_font__fontSet(A_FONT__ID_BLUE);
         a_font_printf("PID %d", getpid());
