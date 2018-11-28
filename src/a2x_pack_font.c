@@ -285,12 +285,15 @@ static void wrapString(const char* Text)
                     g_state.currentLineWidth +=
                         a_spriteframes_getByIndex(f, A__CHAR_INDEX(' '))->w;
                 }
-            } else if(ch == '\n') {
-                // Print what we have and start a new line
+            } else {
+                // Print what we have and skip non-printable character
                 drawString(lineStart, Text - lineStart);
 
+                if(ch == '\n') {
+                    a_font_newLine();
+                }
+
                 lineStart = Text + 1;
-                a_font_newLine();
             }
         }
 
@@ -300,16 +303,16 @@ static void wrapString(const char* Text)
             if(wordStart == NULL) {
                 // Overflowed with whitespace, print what we have
                 drawString(lineStart, Text - lineStart);
+                a_font_newLine();
 
                 lineStart = Text;
-                a_font_newLine();
             } else if(lineStart < wordStart) {
                 // Print line up to overflowing word, and go back to the word
                 drawString(lineStart, wordStart - lineStart);
+                a_font_newLine();
 
                 Text = wordStart;
                 lineStart = wordStart;
-                a_font_newLine();
             }
         }
     }
@@ -322,9 +325,24 @@ void a_font_print(const char* Text)
 {
     if(g_state.wrapWidth > 0) {
         wrapString(Text);
-    } else {
-        drawString(Text, (ptrdiff_t)strlen(Text));
+        return;
     }
+
+    const char* lineStart = Text;
+
+    for(char ch = *Text; ch != '\0'; ch = *++Text) {
+        if(ch < A__CHAR_START) {
+            drawString(lineStart, Text - lineStart);
+
+            if(ch == '\n') {
+                a_font_newLine();
+            }
+
+            lineStart = Text + 1;
+        }
+    }
+
+    drawString(lineStart, Text - lineStart);
 }
 
 void a_font_printf(const char* Format, ...)
@@ -348,7 +366,14 @@ void a_font_printv(const char* Format, va_list Args)
 
 int a_font_widthGet(const char* Text)
 {
-    return getWidth(Text, (ptrdiff_t)strlen(Text));
+    int width = 0;
+    const ASpriteFrames* f = g_state.font->frames;
+
+    for(char ch = *Text; ch >= A__CHAR_START; ch = *++Text) {
+        width += a_spriteframes_getByIndex(f, A__CHAR_INDEX(ch))->w;
+    }
+
+    return width;
 }
 
 int a_font_widthGetf(const char* Format, ...)
