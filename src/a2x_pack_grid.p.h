@@ -27,13 +27,13 @@ typedef struct AGridItem AGridItem;
 #include "a2x_pack_fix.p.h"
 #include "a2x_pack_list.p.h"
 
-extern AGrid* a_grid_new(int Width, int Height, int MaxObjectDim);
+extern AGrid* a_grid_new(AFix Width, AFix Height, AFix MaxObjectDim);
 extern void a_grid_free(AGrid* Grid);
 
 extern AGridItem* a_griditem_new(const AGrid* Grid, void* Context);
 extern void a_griditem_free(AGridItem* Item);
 
-extern void a_griditem_coordsSet(AGridItem* Item, int X, int Y);
+extern void a_griditem_coordsSet(AGridItem* Item, AFix X, AFix Y);
 
 extern void* a__griditem_contextGet(const AGridItem* Item);
 extern AList* a__griditem_nearbyListGet(const AGridItem* Item);

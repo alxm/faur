@@ -24,37 +24,33 @@
 #include "a2x_pack_mem.v.h"
 
 struct AGrid {
-    int w, h; // width and height of grid in cells
     int coordsShift; // right-shift item coords to get cell index
+    int w, h; // width and height of grid in cells
     AList*** cells; // AList*[h][w] of AGridItem
     AList** cellsData; // AList*[h * w] of AGridItem
 };
 
 struct AGridItem {
     const AGrid* grid;
-    int x, y; // coords on the grid
-    AList* nodes; // list of AListNode from cells this item is in
     void* context; // the game item that owns this AGridItem
+    AList* nodes; // list of AListNode from cells this item is in
+    AFix x, y; // coords on the grid
 };
 
-static inline int nextpow(int X)
-{
-    int power = 0;
-
-    while((1 << power) < X) {
-        power++;
-    }
-
-    return power;
-}
-
-AGrid* a_grid_new(int Width, int Height, int MaxObjectDim)
+AGrid* a_grid_new(AFix Width, AFix Height, AFix MaxObjectDim)
 {
     AGrid* g = a_mem_malloc(sizeof(AGrid));
 
-    g->coordsShift = nextpow(MaxObjectDim);
-    g->w = 1 << a_math_max(0, nextpow(Width) - g->coordsShift);
-    g->h = 1 << a_math_max(0, nextpow(Height) - g->coordsShift);
+    g->coordsShift = 0;
+
+    while((A_FIX_ONE << g->coordsShift) < MaxObjectDim) {
+        g->coordsShift++;
+    }
+
+    AFix cellDim = A_FIX_ONE << g->coordsShift;
+
+    g->w = a_fix_toInt((Width + cellDim - 1) >> g->coordsShift);
+    g->h = a_fix_toInt((Height + cellDim - 1) >> g->coordsShift);
 
     g->cells = a_mem_malloc((unsigned)g->h * sizeof(AList**));
     g->cellsData = a_mem_malloc(
@@ -98,8 +94,10 @@ AGridItem* a_griditem_new(const AGrid* Grid, void* Context)
     AGridItem* i = a_mem_malloc(sizeof(AGridItem));
 
     i->grid = Grid;
-    i->nodes = a_list_new();
     i->context = Context;
+    i->nodes = a_list_new();
+    i->x = 0;
+    i->y = 0;
 
     return i;
 }
@@ -116,7 +114,7 @@ void a_griditem_free(AGridItem* Item)
     free(Item);
 }
 
-void a_griditem_coordsSet(AGridItem* Item, int X, int Y)
+void a_griditem_coordsSet(AGridItem* Item, AFix X, AFix Y)
 {
     const AGrid* grid = Item->grid;
     AList* cellNodes = Item->nodes;
@@ -129,12 +127,13 @@ void a_griditem_coordsSet(AGridItem* Item, int X, int Y)
     a_list_clearEx(cellNodes, (AFree*)a_list_removeNode);
 
     // center cell coords
-    const int cellX = Item->x >> grid->coordsShift;
-    const int cellY = Item->y >> grid->coordsShift;
+    int cellX = a_fix_toInt(Item->x >> grid->coordsShift);
+    int cellY = a_fix_toInt(Item->y >> grid->coordsShift);
 
-    const int cellDim = 1 << grid->coordsShift;
-    int cellOffsetX = Item->x & (cellDim - 1);
-    int cellOffsetY = Item->y & (cellDim - 1);
+    AFix cellDim = A_FIX_ONE << grid->coordsShift;
+
+    AFix cellOffsetX = Item->x & (cellDim - 1);
+    AFix cellOffsetY = Item->y & (cellDim - 1);
 
     int cellStartX, cellStartY;
     int cellEndX, cellEndY;
@@ -172,8 +171,10 @@ AList* a__griditem_nearbyListGet(const AGridItem* Item)
 {
     const AGrid* grid = Item->grid;
 
-    int cellX = a_math_clamp(Item->x >> grid->coordsShift, 0, grid->w - 1);
-    int cellY = a_math_clamp(Item->y >> grid->coordsShift, 0, grid->h - 1);
+    int cellX = a_math_clamp(
+                    a_fix_toInt(Item->x >> grid->coordsShift), 0, grid->w - 1);
+    int cellY = a_math_clamp(
+                    a_fix_toInt(Item->y >> grid->coordsShift), 0, grid->h - 1);
 
     return grid->cells[cellY][cellX];
 }
