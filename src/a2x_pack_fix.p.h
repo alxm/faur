@@ -287,3 +287,31 @@ extern unsigned a_fix_atan(AFix X1, AFix Y1, AFix X2, AFix Y2);
 
 extern void a_fix_rotateCounter(AFix X, AFix Y, unsigned Angle, AFix* NewX, AFix* NewY);
 extern void a_fix_rotateClockwise(AFix X, AFix Y, unsigned Angle, AFix* NewX, AFix* NewY);
+
+typedef struct {
+    AFix x, y;
+} AVectorFix;
+
+typedef struct {
+    int x, y;
+} AVectorInt;
+
+static inline AVectorInt a_vectorfix_toInt(const AVectorFix Fix)
+{
+    return (AVectorInt){a_fix_toInt(Fix.x), a_fix_toInt(Fix.y)};
+}
+
+static inline AVectorFix a_vectorint_toFix(const AVectorInt Int)
+{
+    return (AVectorFix){a_fix_fromInt(Int.x), a_fix_fromInt(Int.y)};
+}
+
+static inline bool a_vectorfix_equal(AVectorFix A, AVectorFix B)
+{
+    return A.x == B.x && A.y == B.y;
+}
+
+static inline bool a_vectorint_equal(AVectorInt A, AVectorInt B)
+{
+    return A.x == B.x && A.y == B.y;
+}
