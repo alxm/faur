@@ -25,7 +25,7 @@ typedef struct {
     size_t size; // total size of AComponentHeader + user data that follows
     AInit* init; // sets default values
     AFree* free; // does not free the actual pointer
-    const char* name; // string ID
+    const char* stringId; // string ID
     unsigned bit; // component's unique bit ID
 } AComponent;
 

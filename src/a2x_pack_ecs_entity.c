@@ -276,18 +276,18 @@ void* a_entity_componentAdd(AEntity* Entity, int Component)
     if(Entity->flags & A_ENTITY__DEBUG) {
         a_out__message("a_entity_componentAdd('%s', '%s')",
                        a_entity_idGet(Entity),
-                       c->name);
+                       c->stringId);
     }
 
     if(!a_ecs__entityIsInList(Entity, A_ECS__NEW)) {
         a_out__fatal("a_entity_componentAdd: Too late to add '%s' to '%s'",
-                     c->name,
+                     c->stringId,
                      a_entity_idGet(Entity));
     }
 
     if(Entity->componentsTable[Component] != NULL) {
         a_out__fatal("a_entity_componentAdd: '%s' was already added to '%s'",
-                     c->name,
+                     c->stringId,
                      a_entity_idGet(Entity));
     }
 
@@ -329,7 +329,7 @@ void* a_entity_componentReq(const AEntity* Entity, int Component)
     if(header == NULL) {
         a_out__fatal(
             "a_entity_componentReq: Missing required component '%s' in '%s'",
-            c->name,
+            c->stringId,
             a_entity_idGet(Entity));
     }
 

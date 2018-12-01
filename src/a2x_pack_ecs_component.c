@@ -41,7 +41,7 @@ void a_component__init(unsigned NumComponents)
     g_componentsTable = a_mem_malloc(NumComponents * sizeof(AComponent));
 
     while(NumComponents--) {
-        g_componentsTable[NumComponents].name = "???";
+        g_componentsTable[NumComponents].stringId = "???";
         g_componentsTable[NumComponents].bit = UINT_MAX;
     }
 }
@@ -74,17 +74,17 @@ const AComponent* a_component__get(int Component, const char* CallerFunction)
     return &g_componentsTable[Component];
 }
 
-void a_component_new(int Index, const char* Name, size_t Size, AInit* Init, AFree* Free)
+void a_component_new(int Index, const char* StringId, size_t Size, AInit* Init, AFree* Free)
 {
     if(g_componentsTable == NULL) {
         a_out__fatal("a_component_new: Call a_ecs_init first");
     }
 
     if(g_componentsTable[Index].bit != UINT_MAX
-        || a_strhash_contains(g_components, Name)) {
+        || a_strhash_contains(g_components, StringId)) {
 
         a_out__fatal(
-            "a_component_new: '%s' (%d) already declared", Name, Index);
+            "a_component_new: '%s' (%d) already declared", StringId, Index);
     }
 
     AComponent* c = &g_componentsTable[Index];
@@ -92,10 +92,10 @@ void a_component_new(int Index, const char* Name, size_t Size, AInit* Init, AFre
     c->size = sizeof(AComponentHeader) + Size;
     c->init = Init;
     c->free = Free;
-    c->name = Name;
+    c->stringId = StringId;
     c->bit = (unsigned)Index;
 
-    a_strhash_add(g_components, Name, c);
+    a_strhash_add(g_components, StringId, c);
 }
 
 AEntity* a_component_entityGet(const void* Component)
