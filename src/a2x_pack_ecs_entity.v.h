@@ -50,7 +50,7 @@ struct AEntity {
     int references; // if >0, then the entity lingers in the removed limbo list
     int muteCount; // if >0, then the entity isn't picked up by any systems
     AEntityFlags flags; // various properties
-    AComponentHeader* componentsTable[];
+    AComponentInstance* componentsTable[];
 };
 
 extern void a_entity__init(unsigned NumMessages);

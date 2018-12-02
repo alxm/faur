@@ -43,7 +43,7 @@ static void* componentAdd(AEntity* Entity, int Index, const AComponent* Componen
                        Component->stringId);
     }
 
-    AComponentHeader* header = a_mem_zalloc(Component->size);
+    AComponentInstance* header = a_mem_zalloc(Component->size);
 
     header->component = Component;
     header->entity = Entity;
@@ -63,7 +63,7 @@ static void* componentAdd(AEntity* Entity, int Index, const AComponent* Componen
 AEntity* a_entity_new(const char* Id, void* Context)
 {
     AEntity* e = a_mem_zalloc(
-        sizeof(AEntity) + a_component__tableLen * sizeof(AComponentHeader*));
+        sizeof(AEntity) + a_component__tableLen * sizeof(AComponentInstance*));
 
     e->id = a_str_dup(Id);
     e->context = Context;
@@ -132,7 +132,7 @@ void a_entity__free(AEntity* Entity)
     a_list_freeEx(Entity->systemNodesEither, (AFree*)a_list_removeNode);
 
     for(unsigned c = 0; c < a_component__tableLen; c++) {
-        AComponentHeader* header = Entity->componentsTable[c];
+        AComponentInstance* header = Entity->componentsTable[c];
 
         if(header == NULL) {
             continue;
@@ -356,7 +356,7 @@ bool a_entity_componentHas(const AEntity* Entity, int Component)
 void* a_entity_componentGet(const AEntity* Entity, int Component)
 {
     a_component__get(Component, __func__);
-    AComponentHeader* header = Entity->componentsTable[Component];
+    AComponentInstance* header = Entity->componentsTable[Component];
 
     return header ? a_component__headerGetData(header) : NULL;
 }
@@ -364,7 +364,7 @@ void* a_entity_componentGet(const AEntity* Entity, int Component)
 void* a_entity_componentReq(const AEntity* Entity, int Component)
 {
     const AComponent* c = a_component__get(Component, __func__);
-    AComponentHeader* header = Entity->componentsTable[Component];
+    AComponentInstance* header = Entity->componentsTable[Component];
 
     if(header == NULL) {
         a_out__fatal(

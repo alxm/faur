@@ -22,7 +22,7 @@
 #include "a2x_pack_ecs_component.p.h"
 
 typedef struct {
-    size_t size; // total size of AComponentHeader + user data that follows
+    size_t size; // total size of AComponentInstance + user data that follows
     AInit* init; // sets component buffer default values
     AFree* free; // does not free the actual component buffer
     size_t dataSize; // size of template data buffer
@@ -36,7 +36,7 @@ typedef struct {
 typedef struct {
     const AComponent* component; // shared data for all components of same type
     AEntity* entity; // entity this component belongs to
-} AComponentHeader;
+} AComponentInstance;
 
 extern unsigned a_component__tableLen;
 
@@ -45,7 +45,7 @@ extern void a_component__uninit(void);
 
 extern const AComponent* a_component__get(int Component, const char* CallerFunction);
 
-static inline void* a_component__headerGetData(const AComponentHeader* Header)
+static inline void* a_component__headerGetData(const AComponentInstance* Header)
 {
     return (void*)(Header + 1);
 }

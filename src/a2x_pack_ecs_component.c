@@ -29,9 +29,9 @@ static AComponent* g_componentsTable;
 
 static AStrHash* g_components; // table of AComponent
 
-static inline AComponentHeader* getHeader(const void* Component)
+static inline AComponentInstance* getHeader(const void* Component)
 {
-    return (AComponentHeader*)Component - 1;
+    return (AComponentInstance*)Component - 1;
 }
 
 void a_component__init(unsigned NumComponents)
@@ -88,7 +88,7 @@ void a_component_new(int Index, const char* StringId, size_t Size, AInit* Init, 
             "a_component_new: '%s' (%d) already declared", StringId, Index);
     }
 
-    c->size = sizeof(AComponentHeader) + Size;
+    c->size = sizeof(AComponentInstance) + Size;
     c->init = Init;
     c->free = Free;
     c->stringId = StringId;
@@ -99,7 +99,7 @@ void a_component_new(int Index, const char* StringId, size_t Size, AInit* Init, 
 
 const void* a_component_dataGet(const void* Component)
 {
-    AComponentHeader* h = getHeader(Component);
+    AComponentInstance* h = getHeader(Component);
 
     return a_template__dataGet(
             h->entity->template, (int)(h->component - g_componentsTable));
