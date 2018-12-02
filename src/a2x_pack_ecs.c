@@ -45,6 +45,7 @@ void a_ecs__uninit(void)
         a_list_freeEx(g_lists[i], (AFree*)a_entity__free);
     }
 
+    a_template__uninit();
     a_system__uninit();
     a_component__uninit();
 }
@@ -54,6 +55,7 @@ void a_ecs_init(unsigned NumComponents, unsigned NumSystems, unsigned NumMessage
     a_component__init(NumComponents);
     a_system__init(NumSystems);
     a_entity__init(NumMessages);
+    a_template__init();
 }
 
 ACollection* a_ecs_collectionGet(void)

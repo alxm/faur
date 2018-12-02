@@ -19,6 +19,7 @@
 
 #include "a2x_pack_ecs_component.v.h"
 
+#include "a2x_pack_ecs_entity.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
 #include "a2x_pack_strhash.v.h"
@@ -38,7 +39,7 @@ void a_component__init(unsigned NumComponents)
     g_components = a_strhash_new();
 
     a_component__tableLen = NumComponents;
-    g_componentsTable = a_mem_malloc(NumComponents * sizeof(AComponent));
+    g_componentsTable = a_mem_zalloc(NumComponents * sizeof(AComponent));
 
     while(NumComponents--) {
         g_componentsTable[NumComponents].stringId = "???";
@@ -80,14 +81,12 @@ void a_component_new(int Index, const char* StringId, size_t Size, AInit* Init, 
         a_out__fatal("a_component_new: Call a_ecs_init first");
     }
 
-    if(g_componentsTable[Index].bit != UINT_MAX
-        || a_strhash_contains(g_components, StringId)) {
+    AComponent* c = &g_componentsTable[Index];
 
+    if(c->bit != UINT_MAX || a_strhash_contains(g_components, StringId)) {
         a_out__fatal(
             "a_component_new: '%s' (%d) already declared", StringId, Index);
     }
-
-    AComponent* c = &g_componentsTable[Index];
 
     c->size = sizeof(AComponentHeader) + Size;
     c->init = Init;
@@ -96,6 +95,32 @@ void a_component_new(int Index, const char* StringId, size_t Size, AInit* Init, 
     c->bit = (unsigned)Index;
 
     a_strhash_add(g_components, StringId, c);
+}
+
+const void* a_component_dataGet(const void* Component)
+{
+    AComponentHeader* h = getHeader(Component);
+
+    return a_template__dataGet(
+            h->entity->template, (int)(h->component - g_componentsTable));
+}
+
+void a_component_dataSet(int Index, size_t Size, AComponentDataInit* Init, AFree* Free, AInitWithData* InitWithData)
+{
+    if(g_componentsTable == NULL) {
+        a_out__fatal("a_component_dataSet: Call a_ecs_init first");
+    }
+
+    AComponent* c = &g_componentsTable[Index];
+
+    if(c->bit == UINT_MAX) {
+        a_out__fatal("a_component_dataSet: Call a_component_new first");
+    }
+
+    c->dataSize = Size;
+    c->dataInit = Init;
+    c->dataFree = Free;
+    c->initWithData = InitWithData;
 }
 
 AEntity* a_component_entityGet(const void* Component)

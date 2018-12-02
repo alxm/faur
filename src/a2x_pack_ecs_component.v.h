@@ -23,8 +23,12 @@
 
 typedef struct {
     size_t size; // total size of AComponentHeader + user data that follows
-    AInit* init; // sets default values
-    AFree* free; // does not free the actual pointer
+    AInit* init; // sets component buffer default values
+    AFree* free; // does not free the actual component buffer
+    size_t dataSize; // size of template data buffer
+    AComponentDataInit* dataInit; // init template buffer with info from ABlock
+    AFree* dataFree; // does not free the actual template buffer
+    AInitWithData* initWithData; // init component buffer with template data
     const char* stringId; // string ID
     unsigned bit; // component's unique bit ID
 } AComponent;

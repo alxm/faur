@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 Alex Margarit
+    Copyright 2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -19,19 +19,14 @@
 
 #pragma once
 
-#include "a2x_system_includes.h"
+#include "a2x_pack_ecs_template.p.h"
 
-#include "a2x_pack_block.p.h"
-#include "a2x_pack_ecs_entity.p.h"
+typedef struct ATemplate ATemplate;
 
-typedef void AComponentDataInit(void* Data, const ABlock* Block, const void* Context);
-typedef void AInitWithData(void* Self, const void* Data, const void* Context);
+extern void a_template__init(void);
+extern void a_template__uninit(void);
 
-extern void a_component_new(int Index, const char* StringId, size_t Size, AInit* Init, AFree* Free);
+extern const ATemplate* a_template__get(const char* TemplateId, const char* CallerFunction);
 
-extern const void* a_component_dataGet(const void* Component);
-extern void a_component_dataSet(int Index, size_t Size, AComponentDataInit* Init, AFree* Free, AInitWithData* InitWithData);
-
-extern AEntity* a_component_entityGet(const void* Component);
-
-extern int a_component_stringToIndex(const char* StringId);
+extern unsigned a_template__instanceGet(const ATemplate* Template);
+extern const void* a_template__dataGet(const ATemplate* Template, int Component);
