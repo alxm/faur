@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 Alex Margarit
+    Copyright 2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -21,12 +21,4 @@
 
 #include "a2x_system_includes.h"
 
-#include "a2x_pack_ecs_entity.p.h"
-
-typedef void ASystemHandler(AEntity* Entity);
-typedef int ASystemSort(AEntity* A, AEntity* B);
-
-extern void a_system_new(int Index, ASystemHandler* Handler, ASystemSort* Compare, bool OnlyActiveEntities);
-extern void a_system_add(int System, int Component);
-
-extern void a_system_run(int System);
+extern void a_template_new(const char* FilePath, const void* DataInitContext);

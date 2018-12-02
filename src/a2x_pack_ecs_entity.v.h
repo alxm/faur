@@ -23,6 +23,7 @@
 
 #include "a2x_pack_bitfield.v.h"
 #include "a2x_pack_ecs_component.v.h"
+#include "a2x_pack_ecs_template.v.h"
 #include "a2x_pack_list.v.h"
 
 typedef enum {
@@ -35,6 +36,7 @@ typedef enum {
 struct AEntity {
     char* id; // specified name for debugging
     void* context; // global context
+    const ATemplate* template; // template used to init this entity's components
     AEntity* parent; // manually associated parent entity
     AListNode* node; // list node in one of AEcsListId
     AListNode* collectionNode; // ACollection list nod
@@ -48,7 +50,7 @@ struct AEntity {
     int references; // if >0, then the entity lingers in the removed limbo list
     int muteCount; // if >0, then the entity isn't picked up by any systems
     AEntityFlags flags; // various properties
-    AComponentHeader* componentsTable[];
+    AComponentInstance* componentsTable[];
 };
 
 extern void a_entity__init(unsigned NumMessages);

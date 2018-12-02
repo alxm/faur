@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 Alex Margarit
+    Copyright 2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -19,14 +19,14 @@
 
 #pragma once
 
-#include "a2x_system_includes.h"
+#include "a2x_pack_ecs_template.p.h"
 
-#include "a2x_pack_ecs_entity.p.h"
+typedef struct ATemplate ATemplate;
 
-typedef void ASystemHandler(AEntity* Entity);
-typedef int ASystemSort(AEntity* A, AEntity* B);
+extern void a_template__init(void);
+extern void a_template__uninit(void);
 
-extern void a_system_new(int Index, ASystemHandler* Handler, ASystemSort* Compare, bool OnlyActiveEntities);
-extern void a_system_add(int System, int Component);
+extern const ATemplate* a_template__get(const char* TemplateId, const char* CallerFunction);
 
-extern void a_system_run(int System);
+extern unsigned a_template__instanceGet(const ATemplate* Template);
+extern const void* a_template__dataGet(const ATemplate* Template, int Component);

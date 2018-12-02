@@ -25,6 +25,7 @@ typedef struct AEntity AEntity;
 typedef void AMessageHandler(AEntity* To, AEntity* From);
 
 extern AEntity* a_entity_new(const char* Id, void* Context);
+extern AEntity* a_entity_newEx(const char* Template, const void* ComponentInitContext, void* Context);
 
 extern void a_entity_debugSet(AEntity* Entity, bool DebugOn);
 

@@ -19,6 +19,7 @@
 
 #include "a2x_pack_main.v.h"
 
+#include "a2x_pack_block.v.h"
 #include "a2x_pack_conf.v.h"
 #include "a2x_pack_console.v.h"
 #include "a2x_pack_ecs.v.h"
@@ -58,6 +59,7 @@ static void a__atexit(void)
     a_input__uninit();
     a_timer__uninit();
     a_platform__uninit();
+    a_block__uninit();
     a_embed__uninit();
 
     #if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ || A_BUILD_SYSTEM_CAANOO
@@ -90,6 +92,7 @@ int main(int Argc, char* Argv[])
                    getpid());
 
     a_embed__init();
+    a_block__init();
     a_conf__init();
     a_platform__init();
     a_timer__init();

@@ -35,10 +35,35 @@ void a_entity__init(unsigned NumMessages)
     g_numMessages = NumMessages;
 }
 
+static void* componentAdd(AEntity* Entity, int Index, const AComponent* Component)
+{
+    if(Entity->flags & A_ENTITY__DEBUG) {
+        a_out__message("a_entity_componentAdd('%s', '%s')",
+                       a_entity_idGet(Entity),
+                       Component->stringId);
+    }
+
+    AComponentInstance* header = a_mem_zalloc(Component->size);
+
+    header->component = Component;
+    header->entity = Entity;
+
+    Entity->componentsTable[Index] = header;
+    a_bitfield_set(Entity->componentBits, Component->bit);
+
+    void* self = a_component__headerGetData(header);
+
+    if(Component->init) {
+        Component->init(self);
+    }
+
+    return a_component__headerGetData(header);
+}
+
 AEntity* a_entity_new(const char* Id, void* Context)
 {
     AEntity* e = a_mem_zalloc(
-        sizeof(AEntity) + a_component__tableLen * sizeof(AComponentHeader*));
+        sizeof(AEntity) + a_component__tableLen * sizeof(AComponentInstance*));
 
     e->id = a_str_dup(Id);
     e->context = Context;
@@ -55,6 +80,33 @@ AEntity* a_entity_new(const char* Id, void* Context)
 
     if(collection) {
         a_collection__add(collection, e);
+    }
+
+    return e;
+}
+
+AEntity* a_entity_newEx(const char* Template, const void* ComponentInitContext, void* Context)
+{
+    const ATemplate* t = a_template__get(Template, __func__);
+
+    char id[64];
+    snprintf(id, sizeof(id), "%s#%u", Template, a_template__instanceGet(t));
+
+    AEntity* e = a_entity_new(id, Context);
+
+    e->template = t;
+
+    for(int c = (int)a_component__tableLen; c--; ) {
+        const void* data = a_template__dataGet(t, c);
+
+        if(data) {
+            const AComponent* component = a_component__get(c, __func__);
+            void* self = componentAdd(e, c, component);
+
+            if(component->initWithData) {
+                component->initWithData(self, data, ComponentInitContext);
+            }
+        }
     }
 
     return e;
@@ -80,7 +132,7 @@ void a_entity__free(AEntity* Entity)
     a_list_freeEx(Entity->systemNodesEither, (AFree*)a_list_removeNode);
 
     for(unsigned c = 0; c < a_component__tableLen; c++) {
-        AComponentHeader* header = Entity->componentsTable[c];
+        AComponentInstance* header = Entity->componentsTable[c];
 
         if(header == NULL) {
             continue;
@@ -276,34 +328,22 @@ void* a_entity_componentAdd(AEntity* Entity, int Component)
     if(Entity->flags & A_ENTITY__DEBUG) {
         a_out__message("a_entity_componentAdd('%s', '%s')",
                        a_entity_idGet(Entity),
-                       c->name);
+                       c->stringId);
     }
 
     if(!a_ecs__entityIsInList(Entity, A_ECS__NEW)) {
         a_out__fatal("a_entity_componentAdd: Too late to add '%s' to '%s'",
-                     c->name,
+                     c->stringId,
                      a_entity_idGet(Entity));
     }
 
     if(Entity->componentsTable[Component] != NULL) {
         a_out__fatal("a_entity_componentAdd: '%s' was already added to '%s'",
-                     c->name,
+                     c->stringId,
                      a_entity_idGet(Entity));
     }
 
-    AComponentHeader* header = a_mem_zalloc(c->size);
-
-    header->component = c;
-    header->entity = Entity;
-
-    Entity->componentsTable[Component] = header;
-    a_bitfield_set(Entity->componentBits, c->bit);
-
-    if(c->init) {
-        c->init(a_component__headerGetData(header));
-    }
-
-    return a_component__headerGetData(header);
+    return componentAdd(Entity, Component, c);
 }
 
 bool a_entity_componentHas(const AEntity* Entity, int Component)
@@ -316,7 +356,7 @@ bool a_entity_componentHas(const AEntity* Entity, int Component)
 void* a_entity_componentGet(const AEntity* Entity, int Component)
 {
     a_component__get(Component, __func__);
-    AComponentHeader* header = Entity->componentsTable[Component];
+    AComponentInstance* header = Entity->componentsTable[Component];
 
     return header ? a_component__headerGetData(header) : NULL;
 }
@@ -324,12 +364,12 @@ void* a_entity_componentGet(const AEntity* Entity, int Component)
 void* a_entity_componentReq(const AEntity* Entity, int Component)
 {
     const AComponent* c = a_component__get(Component, __func__);
-    AComponentHeader* header = Entity->componentsTable[Component];
+    AComponentInstance* header = Entity->componentsTable[Component];
 
     if(header == NULL) {
         a_out__fatal(
             "a_entity_componentReq: Missing required component '%s' in '%s'",
-            c->name,
+            c->stringId,
             a_entity_idGet(Entity));
     }
 

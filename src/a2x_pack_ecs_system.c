@@ -34,7 +34,6 @@ void a_system__init(unsigned NumSystems)
     g_systemsTable = a_mem_malloc(NumSystems * sizeof(ASystem));
 
     while(NumSystems--) {
-        g_systemsTable[NumSystems].name = "???";
         g_systemsTable[NumSystems].entities = NULL;
     }
 }
@@ -70,19 +69,18 @@ ASystem* a_system__get(int System, const char* CallerFunction)
     return &g_systemsTable[System];
 }
 
-void a_system_new(int Index, const char* Name, ASystemHandler* Handler, ASystemSort* Compare, bool OnlyActiveEntities)
+void a_system_new(int Index, ASystemHandler* Handler, ASystemSort* Compare, bool OnlyActiveEntities)
 {
     if(g_systemsTable == NULL) {
         a_out__fatal("a_system_new: Call a_ecs_init first");
     }
 
     if(g_systemsTable[Index].entities != NULL) {
-        a_out__fatal("a_system_new: '%s' (%d) already declared", Name, Index);
+        a_out__fatal("a_system_new: %d already declared", Index);
     }
 
     ASystem* s = &g_systemsTable[Index];
 
-    s->name = Name;
     s->handler = Handler;
     s->compare = Compare;
     s->entities = a_list_new();
