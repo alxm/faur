@@ -33,5 +33,3 @@ extern const void* a_component_dataGet(const void* Component);
 extern void a_component_dataSet(int Index, size_t Size, AComponentDataInit* Init, AFree* Free, AInitWithData* InitWithData);
 
 extern AEntity* a_component_entityGet(const void* Component);
-
-extern int a_component_stringToIndex(const char* StringId);

@@ -40,7 +40,7 @@ static ATemplate* templateNew(const ABlock* Block, const void* DataInitContext)
 
     A_LIST_ITERATE(a_block_getAll(Block), const ABlock*, b) {
         const char* id = a_block_readString(b, 0);
-        int index = a_component_stringToIndex(id);
+        int index = a_component__stringToIndex(id);
         const AComponent* component = a_component__get(index, __func__);
 
         if(component->dataSize > 0) {

@@ -53,6 +53,17 @@ void a_component__uninit(void)
     free(g_componentsTable);
 }
 
+int a_component__stringToIndex(const char* StringId)
+{
+    const AComponent* c = a_strhash_get(g_components, StringId);
+
+    if(c == NULL) {
+        a_out__fatal("a_component__stringToIndex: Unknown id '%s'", StringId);
+    }
+
+    return (int)c->bit;
+}
+
 const AComponent* a_component__get(int Component, const char* CallerFunction)
 {
     #if A_BUILD_DEBUG
@@ -126,15 +137,4 @@ void a_component_dataSet(int Index, size_t Size, AComponentDataInit* Init, AFree
 AEntity* a_component_entityGet(const void* Component)
 {
     return getHeader(Component)->entity;
-}
-
-int a_component_stringToIndex(const char* StringId)
-{
-    const AComponent* c = a_strhash_get(g_components, StringId);
-
-    if(c == NULL) {
-        a_out__fatal("a_component_stringToIndex: Unknown id '%s'", StringId);
-    }
-
-    return (int)c->bit;
 }

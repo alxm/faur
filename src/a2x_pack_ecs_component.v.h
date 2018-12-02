@@ -43,6 +43,7 @@ extern unsigned a_component__tableLen;
 extern void a_component__init(unsigned NumComponents);
 extern void a_component__uninit(void);
 
+extern int a_component__stringToIndex(const char* StringId);
 extern const AComponent* a_component__get(int Component, const char* CallerFunction);
 
 static inline void* a_component__headerGetData(const AComponentInstance* Header)
