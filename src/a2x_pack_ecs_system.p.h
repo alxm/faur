@@ -26,7 +26,7 @@
 typedef void ASystemHandler(AEntity* Entity);
 typedef int ASystemSort(AEntity* A, AEntity* B);
 
-extern void a_system_new(int Index, const char* Name, ASystemHandler* Handler, ASystemSort* Compare, bool OnlyActiveEntities);
+extern void a_system_new(int Index, ASystemHandler* Handler, ASystemSort* Compare, bool OnlyActiveEntities);
 extern void a_system_add(int System, int Component);
 
 extern void a_system_run(int System);

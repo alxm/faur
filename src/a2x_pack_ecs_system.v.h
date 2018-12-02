@@ -27,7 +27,6 @@ typedef struct ASystem ASystem;
 #include "a2x_pack_list.v.h"
 
 struct ASystem {
-    const char* name;
     ASystemHandler* handler;
     ASystemSort* compare;
     ABitfield* componentBits; // IDs of components that this system works on

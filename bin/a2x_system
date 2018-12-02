@@ -45,10 +45,9 @@ static void s_{name}(AEntity* Entity)
 
 void s_{name}_register(int Index)
 {{
-    a_system_new(Index, "{idkey}", s_{name}, NULL, false);
+    a_system_new(Index, s_{name}, NULL, false);
 }}
-""".format(name=sys_name.lower(),
-           idkey=sys_name[0].lower() + sys_name[1 :]))
+""".format(name=sys_name.lower())
 
         self.writefile(sys_h,
 """\
