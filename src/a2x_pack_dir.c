@@ -98,11 +98,12 @@ static AList* dirReal(APath* Path)
         return NULL;
     }
 
-    struct dirent* ent;
     AList* files = a_list_new();
 
-    while((ent = readdir(dir)) != NULL) {
-        a_list_addLast(files, a_path_newf("%s/%s", path, ent->d_name));
+    for(struct dirent* ent = readdir(dir); ent; ent = readdir(dir)) {
+        if(ent->d_name[0] != '.') {
+            a_list_addLast(files, a_path_newf("%s/%s", path, ent->d_name));
+        }
     }
 
     a_list_sort(files, (AListCompare*)a_dir__sort);
