@@ -34,7 +34,7 @@ struct AFont {
 };
 
 typedef struct {
-    AFont* font;
+    const AFont* font;
     AFontAlign align;
     int x, startX, y;
     int lineHeight;
@@ -166,7 +166,7 @@ void a_font_reset(void)
     a_font_lineWrapSet(0);
 }
 
-void a_font_fontSet(AFont* Font)
+void a_font_fontSet(const AFont* Font)
 {
     if(Font == NULL) {
         Font = g_defaultFonts[A_FONT__ID_DEFAULT];

@@ -42,7 +42,7 @@ extern void a_font_pop(void);
 
 extern void a_font_reset(void);
 
-extern void a_font_fontSet(AFont* Font);
+extern void a_font_fontSet(const AFont* Font);
 extern void a_font_alignSet(AFontAlign Align);
 
 extern void a_font_coordsSet(int X, int Y);
