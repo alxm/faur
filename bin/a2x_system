@@ -47,7 +47,7 @@ void s_{name}_register(int Index)
 {{
     a_system_new(Index, s_{name}, NULL, false);
 }}
-""".format(name=sys_name.lower())
+""".format(name=sys_name.lower()))
 
         self.writefile(sys_h,
 """\
