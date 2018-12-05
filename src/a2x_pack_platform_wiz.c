@@ -81,7 +81,7 @@ static void timer_init(void)
     }
 
     if(div < 1 || div > 256 || div2 >= 4) {
-        a_out__fatal("Could not set up timer");
+        a_out__fatal("Could not set up Pollux timer");
     }
 
     if(TIMER_REG(0x08) & 8) { // Timer in use

@@ -34,7 +34,7 @@ struct ABitfield {
 ABitfield* a_bitfield_new(unsigned NumBits)
 {
     if(NumBits < 1) {
-        a_out__fatal("a_bitfield_new: Invalid size 0");
+        a_out__fatal("a_bitfield_new(0): Invalid size");
     }
 
     unsigned numChunks = (NumBits + A__BITS_PER_CHUNK - 1) / A__BITS_PER_CHUNK;

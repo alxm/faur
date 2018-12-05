@@ -72,11 +72,11 @@ ASystem* a_system__get(int System, const char* CallerFunction)
 void a_system_new(int Index, ASystemHandler* Handler, ASystemSort* Compare, bool OnlyActiveEntities)
 {
     if(g_systemsTable == NULL) {
-        a_out__fatal("a_system_new: Call a_ecs_init first");
+        a_out__fatal("a_system_new(%d): Call a_ecs_init first", Index);
     }
 
     if(g_systemsTable[Index].entities != NULL) {
-        a_out__fatal("a_system_new: %d already declared", Index);
+        a_out__fatal("a_system_new(%d): Already declared", Index);
     }
 
     ASystem* s = &g_systemsTable[Index];

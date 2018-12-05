@@ -83,7 +83,7 @@ void a_png_readFile(const char* Path, APixel** Pixels, int* Width, int* Height)
     a_file_read(f, sig, PNG_SIG);
 
     if(png_sig_cmp(sig, 0, PNG_SIG) != 0) {
-        a_out__error("a_png_readFile: File '%s' not a PNG", Path);
+        a_out__error("a_png_readFile(%s): Not a PNG", Path);
         goto cleanUp;
     }
 
@@ -110,7 +110,7 @@ void a_png_readFile(const char* Path, APixel** Pixels, int* Width, int* Height)
     int type = png_get_color_type(png, info);
 
     if(type != PNG_COLOR_TYPE_RGB && type != PNG_COLOR_TYPE_RGBA) {
-        a_out__error("a_png_readFile: File '%s' not an RGB or RGBA PNG", Path);
+        a_out__error("a_png_readFile(%s): Not an RGB or RGBA PNG", Path);
         goto cleanUp;
     }
 

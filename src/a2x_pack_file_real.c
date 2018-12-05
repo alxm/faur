@@ -90,9 +90,10 @@ AFile* a_file_real__new(APath* Path, AFileMode Mode)
     FILE* handle = fopen(a_path_getFull(Path), mode);
 
     if(handle == NULL) {
-        a_out__error("a_file_new: Can't open %s for '%s'",
+        a_out__error("a_file_new(%s): Cannot open for '%s'",
                      a_path_getFull(Path),
                      mode);
+
         return NULL;
     }
 

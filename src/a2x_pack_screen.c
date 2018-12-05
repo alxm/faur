@@ -226,7 +226,7 @@ void a_screen_free(AScreen* Screen)
 void a_screen_copy(AScreen* Dst, const AScreen* Src)
 {
     if(!a_screen__sameSize(Dst, Src)) {
-        a_out__fatal("a_screen_copy: Different screen sizes %d,%d and %d,%d",
+        a_out__fatal("a_screen_copy(%dx%d, %dx%d): Different sizes",
                      Dst->width,
                      Dst->height,
                      Src->width,
@@ -257,11 +257,11 @@ void a_screen_copy(AScreen* Dst, const AScreen* Src)
 void a_screen_blit(const AScreen* Screen)
 {
     if(!a_screen__sameSize(&a__screen, Screen)) {
-        a_out__fatal("a_screen_blit: Different screen sizes %d,%d and %d,%d",
-                     a__screen.width,
-                     a__screen.height,
+        a_out__fatal("a_screen_blit(%dx%d): Current screen is %dx%d",
                      Screen->width,
-                     Screen->height);
+                     Screen->height,
+                     a__screen.width,
+                     a__screen.height);
     }
 
     #if A_BUILD_RENDER_SOFTWARE
@@ -432,13 +432,14 @@ void a_screen_clipSet(int X, int Y, int Width, int Height)
 {
     if(!a_screen_boxInsideScreen(X, Y, Width, Height)) {
         a_out__error(
-            "a_screen_clipSet: Invalid area %dx%d @ %d,%d on %dx%d screen",
-            Width,
-            Height,
+            "a_screen_clipSet(%d, %d, %d, %d): Invalid area on %dx%d screen",
             X,
             Y,
+            Width,
+            Height,
             a__screen.width,
             a__screen.height);
+
         return;
     }
 

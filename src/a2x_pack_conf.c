@@ -39,8 +39,8 @@ void a_conf__init(void)
         return;
     }
 
-    a_out__message("a_conf__init: Edit config file '%s'",
-                   a_settings_stringGet(A_SETTING_FILE_CONFIG));
+    a_out__message(
+        "Edit config file '%s'", a_settings_stringGet(A_SETTING_FILE_CONFIG));
 
     while(a_file_lineRead(f)) {
         char* line = a_str_trim(a_file_lineBufferGet(f));

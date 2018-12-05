@@ -40,7 +40,7 @@ static void pandora_setNubModes(const char* Nub0, const char* Nub1)
         return;
     }
 
-    a_out__message("Set nub modes to %s, %s", Nub0, Nub1);
+    a_out__message("Set nub modes to '%s', '%s'", Nub0, Nub1);
 
     if(system(cmd) < 0) {
         a_out__error("op_nubchange.sh failed");
@@ -61,7 +61,7 @@ static void pandora_setScreenFilter(const char* Value)
         return;
     }
 
-    a_out__message("Set screen filter to %s", Value);
+    a_out__message("Set screen filter to '%s'", Value);
 
     if(system(cmd) < 0) {
         a_out__error("op_videofir.sh failed");

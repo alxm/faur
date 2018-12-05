@@ -161,6 +161,10 @@ void* a_list_getLast(const AList* List)
 
 void* a_list_getRandom(const AList* List)
 {
+    if(List->items == 0) {
+        return NULL;
+    }
+
     return a_list_getByIndex(List, a_random_intu(List->items));
 }
 

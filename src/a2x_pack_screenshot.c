@@ -65,7 +65,7 @@ static bool lazy_init(void)
             }
 
             if(!g_isInit) {
-                a_out__error("Invalid file name %s", a_path_getFull(entry));
+                a_out__error("Invalid file name '%s'", a_path_getFull(entry));
             }
         }
 

@@ -110,8 +110,6 @@ void* a_strhash_update(AStrHash* Hash, const char* Key, void* NewContent)
         }
     }
 
-    a_out__error("a_strhash_update: Key '%s' not found", Key);
-
     return NULL;
 }
 
