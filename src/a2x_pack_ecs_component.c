@@ -85,14 +85,15 @@ const AComponent* a_component__get(int Component, const char* CallerFunction)
 void a_component_new(int Index, const char* StringId, size_t Size, AInit* Init, AFree* Free)
 {
     if(g_componentsTable == NULL) {
-        a_out__fatal("a_component_new: Call a_ecs_init first");
+        a_out__fatal(
+            "a_component_new(%d, %s): Call a_ecs_init first", Index, StringId);
     }
 
     AComponent* c = &g_componentsTable[Index];
 
     if(c->bit != UINT_MAX || a_strhash_contains(g_components, StringId)) {
         a_out__fatal(
-            "a_component_new: '%s' (%d) already declared", StringId, Index);
+            "a_component_new(%d, %s): Already declared", Index, StringId);
     }
 
     c->size = sizeof(AComponentInstance) + Size;
@@ -115,13 +116,14 @@ const void* a_component_dataGet(const void* Component)
 void a_component_dataSet(int Index, size_t Size, AComponentDataInit* Init, AFree* Free, AInitWithData* InitWithData)
 {
     if(g_componentsTable == NULL) {
-        a_out__fatal("a_component_dataSet: Call a_ecs_init first");
+        a_out__fatal("a_component_dataSet(%d): Call a_ecs_init first", Index);
     }
 
     AComponent* c = &g_componentsTable[Index];
 
     if(c->bit == UINT_MAX) {
-        a_out__fatal("a_component_dataSet: Call a_component_new first");
+        a_out__fatal(
+            "a_component_dataSet(%d): Call a_component_new first", Index);
     }
 
     c->dataSize = Size;

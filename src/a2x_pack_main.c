@@ -81,9 +81,7 @@ int main(int Argc, char* Argv[])
     a_console__init();
     a_settings__init();
 
-    a_out__message(
-        "a2x %s, %s", A_BUILD__GIT_HASH, A_BUILD__COMPILE_TIME);
-
+    a_out__message("a2x %s, %s", A_BUILD__GIT_HASH, A_BUILD__COMPILE_TIME);
     a_out__message("%s %s by %s, %s - PID %d",
                    a_settings_stringGet(A_SETTING_APP_TITLE),
                    a_settings_stringGet(A_SETTING_APP_VERSION),
@@ -117,9 +115,9 @@ int main(int Argc, char* Argv[])
         a_out__error("Cannot register atexit callback");
     }
 
-    a_out__message("Calling A_MAIN");
+    a_out__message("A_MAIN start");
     a_main();
-    a_out__message("A_MAIN returned");
+    a_out__message("A_MAIN end");
 
     a_state__run();
 
@@ -134,7 +132,9 @@ int a_main_argsGetNum(void)
 const char* a_main_argsGet(int ArgNum)
 {
     if(ArgNum >= g_argsNum) {
-        a_out__error("a_main_argsGet: Invalid arg %u", ArgNum);
+        a_out__error(
+            "a_main_argsGet(%d): Invalid arg, %d total", ArgNum, g_argsNum);
+
         return NULL;
     }
 

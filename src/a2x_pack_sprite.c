@@ -65,7 +65,7 @@ static void assignPixels(ASprite* Sprite, APixel* Pixels)
 void a_sprite__boundsFind(const ASprite* Sheet, int X, int Y, int* Width, int* Height)
 {
     if(X < 0 || X >= Sheet->w || Y < 0 || Y >= Sheet->h) {
-        a_out__fatal("a_sprite__boundsFind: %s invalid coords %d, %d",
+        a_out__fatal("a_sprite__boundsFind(%s): Invalid coords %d, %d",
                      A_SPRITE__NAME(Sheet),
                      X,
                      Y);
@@ -126,7 +126,7 @@ doneEdges:
             spriteWidth = Sheet->w;
             spriteHeight = Sheet->h;
         } else {
-            a_out__fatal("a_sprite__boundsFind: %s invalid coords %d, %d",
+            a_out__fatal("a_sprite__boundsFind(%s): Invalid coords %d, %d",
                          A_SPRITE__NAME(Sheet),
                          X,
                          Y);

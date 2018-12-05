@@ -120,9 +120,9 @@ bool a_file_read(AFile* File, void* Buffer, size_t Size)
     bool ret = File->interface->read(File, Buffer, Size);
 
     if(!ret) {
-        a_out__warning("a_file_read: Could not read %u bytes from %s",
-                       Size,
-                       a_path_getFull(File->path));
+        a_out__warning("a_file_read(%s): Could not read %u bytes",
+                       a_path_getFull(File->path),
+                       Size);
     }
 
     return ret;
@@ -133,9 +133,9 @@ bool a_file_write(AFile* File, const void* Buffer, size_t Size)
     bool ret = File->interface->write(File, Buffer, Size);
 
     if(!ret) {
-        a_out__error("a_file_write: Could not write %u bytes to %s",
-                     Size,
-                     a_path_getFull(File->path));
+        a_out__error("a_file_write(%s): Could not write %u bytes",
+                     a_path_getFull(File->path),
+                     Size);
     }
 
     return ret;
@@ -151,8 +151,8 @@ bool a_file_writef(AFile* File, const char* Format, ...)
     va_end(args);
 
     if(!ret) {
-        a_out__error("a_file_writef: Could not write to %s",
-                     a_path_getFull(File->path));
+        a_out__error(
+            "a_file_writef(%s): Could not write", a_path_getFull(File->path));
     }
 
     return ret;

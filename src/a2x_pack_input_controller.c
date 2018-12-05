@@ -98,7 +98,7 @@ unsigned a_input_controllerNumGet(void)
 void a_input_controllerSet(unsigned Index)
 {
     if(Index >= a_platform__controllerNumGet()) {
-        a_out__fatal("a_input_controllerSet: Cannot set %d, only %d total",
+        a_out__fatal("a_input_controllerSet(%d): Invalid arg, %d total",
                      Index,
                      a_platform__controllerNumGet());
         return;

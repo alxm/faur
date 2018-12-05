@@ -154,11 +154,11 @@ void a_state__uninit(void)
 
 void a_state_push(AState* State, const char* Name)
 {
-    a_out__statev("a_state_push('%s')", Name);
-
     if(g_exiting) {
-        a_out__statev("a_state_push: Already exiting");
+        a_out__statev("a_state_push(%s): Already exiting", Name);
         return;
+    } else {
+        a_out__statev("a_state_push(%s)", Name);
     }
 
     pending_push(State, Name);
@@ -166,11 +166,11 @@ void a_state_push(AState* State, const char* Name)
 
 void a_state_pop(void)
 {
-    a_out__statev("a_state_pop()");
-
     if(g_exiting) {
         a_out__statev("a_state_pop: Already exiting");
         return;
+    } else {
+        a_out__statev("a_state_pop()");
     }
 
     pending_pop();
@@ -178,11 +178,11 @@ void a_state_pop(void)
 
 void a_state_popUntil(AState* State, const char* Name)
 {
-    a_out__statev("a_state_popUntil('%s')", Name);
-
     if(g_exiting) {
-        a_out__statev("a_state_popUntil: Already exiting");
+        a_out__statev("a_state_popUntil(%s): Already exiting", Name);
         return;
+    } else {
+        a_out__statev("a_state_popUntil(%s)", Name);
     }
 
     int pops = 0;
@@ -198,7 +198,7 @@ void a_state_popUntil(AState* State, const char* Name)
     }
 
     if(!found) {
-        a_out__fatal("a_state_popUntil: State '%s' not in stack", Name);
+        a_out__fatal("a_state_popUntil(%s): State not in stack", Name);
     }
 
     while(pops--) {
@@ -208,11 +208,11 @@ void a_state_popUntil(AState* State, const char* Name)
 
 void a_state_replace(AState* State, const char* Name)
 {
-    a_out__statev("a_state_replace('%s')", Name);
-
     if(g_exiting) {
-        a_out__statev("a_state_replace: Already exiting");
+        a_out__statev("a_state_replace(%s): Already exiting", Name);
         return;
+    } else {
+        a_out__statev("a_state_replace(%s)", Name);
     }
 
     pending_pop();
@@ -308,7 +308,7 @@ static bool iteration(void)
 static void loop(void)
 {
     if(!iteration()) {
-        a_out__message("Finished running states");
+        a_out__state("Finished running states");
         emscripten_cancel_main_loop();
     }
 }
@@ -316,7 +316,7 @@ static void loop(void)
 
 void a_state__run(void)
 {
-    a_out__message("Running states");
+    a_out__state("Running states");
 
     #if A_BUILD_SYSTEM_EMSCRIPTEN
         emscripten_set_main_loop(loop,
@@ -330,7 +330,7 @@ void a_state__run(void)
             continue;
         }
 
-        a_out__message("Finished running states");
+        a_out__state("Finished running states");
     #endif
 }
 
