@@ -33,7 +33,7 @@ struct ATemplate {
 
 static AStrHash* g_templates; // table of ATemplate
 
-static ATemplate* templateNew(const ABlock* Block, const void* DataInitContext)
+static ATemplate* templateNew(const char* TemplateId, const ABlock* Block, const void* DataInitContext)
 {
     ATemplate* t = a_mem_zalloc(
                     sizeof(ATemplate) + a_component__tableLen * sizeof(void*));
@@ -41,6 +41,14 @@ static ATemplate* templateNew(const ABlock* Block, const void* DataInitContext)
     A_LIST_ITERATE(a_block_getAll(Block), const ABlock*, b) {
         const char* id = a_block_readString(b, 0);
         int index = a_component__stringToIndex(id);
+
+        if(index < 0) {
+            a_out__error(
+                "a_template_new(%s): Unknown component '%s'", TemplateId, id);
+
+            continue;
+        }
+
         const AComponent* component = a_component__get(index, __func__);
 
         if(component->dataSize > 0) {
@@ -94,7 +102,7 @@ void a_template_new(const char* FilePath, const void* DataInitContext)
                 "a_template_new(%s): '%s' already declared", FilePath, id);
         }
 
-        a_strhash_add(g_templates, id, templateNew(b, DataInitContext));
+        a_strhash_add(g_templates, id, templateNew(id, b, DataInitContext));
     }
 
     a_block_free(root);

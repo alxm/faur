@@ -57,11 +57,7 @@ int a_component__stringToIndex(const char* StringId)
 {
     const AComponent* c = a_strhash_get(g_components, StringId);
 
-    if(c == NULL) {
-        a_out__fatal("a_component__stringToIndex: Unknown id '%s'", StringId);
-    }
-
-    return (int)c->bit;
+    return c ? (int)c->bit : -1;
 }
 
 const AComponent* a_component__get(int Component, const char* CallerFunction)
