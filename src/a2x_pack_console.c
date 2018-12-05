@@ -208,15 +208,16 @@ void a_console__draw(void)
         a_font__fontSet(A_FONT__ID_YELLOW);
         a_font_printf("%u tick fps\n", a_fps_tickRateGet());
         a_font_printf("%u draw fps\n", a_fps_drawRateGet());
-
-        a_font__fontSet(A_FONT__ID_GREEN);
         a_font_printf("%u draw max\n", a_fps_drawRateGetMax());
 
-        a_font_printf("Vsync is %s\n",
+        a_font__fontSet(A_FONT__ID_GREEN);
+        a_font_printf("%dx%d\n", a_screen_widthGet(), a_screen_heightGet());
+        a_font_printf("Vsync %s\n",
                       a_settings_boolGet(A_SETTING_VIDEO_VSYNC) ? "on" : "off");
 
         a_font__fontSet(A_FONT__ID_BLUE);
-        a_font_printf("PID %d", getpid());
+        a_font_printf("PID %d\n", getpid());
+        a_font_printf("%u", a_fps_ticksGet());
     }
 
     a_pixel_pop();
