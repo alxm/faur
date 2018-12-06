@@ -105,31 +105,24 @@ void a_component_new(int Index, const char* StringId, size_t Size, AInit* Init, 
     a_strhash_add(g_components, StringId, c);
 }
 
+void a_component_newEx(int Index, const char* StringId, size_t DataSize, AComponentDataInit* DataInit, AFree* DataFree, size_t ComponentSize, AInitWithData* ComponentInitWithData, AFree* ComponentFree)
+{
+    a_component_new(Index, StringId, ComponentSize, NULL, ComponentFree);
+
+    AComponent* c = &g_componentsTable[Index];
+
+    c->dataSize = DataSize;
+    c->dataInit = DataInit;
+    c->dataFree = DataFree;
+    c->initWithData = ComponentInitWithData;
+}
+
 const void* a_component_dataGet(const void* Component)
 {
     AComponentInstance* h = getHeader(Component);
 
     return a_template__dataGet(
             h->entity->template, (int)(h->component - g_componentsTable));
-}
-
-void a_component_dataSet(int Index, size_t Size, AComponentDataInit* Init, AFree* Free, AInitWithData* InitWithData)
-{
-    if(g_componentsTable == NULL) {
-        a_out__fatal("a_component_dataSet(%d): Call a_ecs_init first", Index);
-    }
-
-    AComponent* c = &g_componentsTable[Index];
-
-    if(c->bit == UINT_MAX) {
-        a_out__fatal(
-            "a_component_dataSet(%d): Call a_component_new first", Index);
-    }
-
-    c->dataSize = Size;
-    c->dataInit = Init;
-    c->dataFree = Free;
-    c->initWithData = InitWithData;
 }
 
 AEntity* a_component_entityGet(const void* Component)
