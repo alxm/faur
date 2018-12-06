@@ -60,7 +60,12 @@ static void c_{name}_free(void* Self)
 
 void c_{name}_register(int Index)
 {{
-    a_component_new(Index, "{localVar}", sizeof({ctype}), c_{name}_init, c_{name}_free);
+    a_component_new(
+        Index,
+        "{localVar}",
+        sizeof({ctype}),
+        c_{name}_init,
+        c_{name}_free);
 }}
 
 int c_{name}_valueGet(const {ctype}* {paramVar})
