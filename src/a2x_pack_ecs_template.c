@@ -19,6 +19,7 @@
 
 #include "a2x_pack_ecs_template.v.h"
 
+#include "a2x_pack_bitfield.v.h"
 #include "a2x_pack_block.v.h"
 #include "a2x_pack_ecs_component.v.h"
 #include "a2x_pack_listit.v.h"
@@ -28,6 +29,7 @@
 
 struct ATemplate {
     unsigned instanceNumber; // Incremented by each a_entity_newEx call
+    ABitfield* componentBits; // Set if template has corresponding component
     void* data[]; // Parsed component config data, or NULL
 };
 
@@ -37,6 +39,8 @@ static ATemplate* templateNew(const char* TemplateId, const ABlock* Block, const
 {
     ATemplate* t = a_mem_zalloc(
                     sizeof(ATemplate) + a_component__tableLen * sizeof(void*));
+
+    t->componentBits = a_bitfield_new(a_component__tableLen);
 
     A_LIST_ITERATE(a_block_getAll(Block), const ABlock*, b) {
         const char* id = a_block_readString(b, 0);
@@ -58,6 +62,8 @@ static ATemplate* templateNew(const char* TemplateId, const ABlock* Block, const
                 component->dataInit(t->data[index], b, DataInitContext);
             }
         }
+
+        a_bitfield_set(t->componentBits, component->bit);
     }
 
     return t;
@@ -65,6 +71,8 @@ static ATemplate* templateNew(const char* TemplateId, const ABlock* Block, const
 
 static void templateFree(ATemplate* Template)
 {
+    a_bitfield_free(Template->componentBits);
+
     for(unsigned c = a_component__tableLen; c--; ) {
         if(Template->data[c]) {
             const AComponent* component = a_component__get((int)c, __func__);
@@ -130,6 +138,13 @@ const ATemplate* a_template__get(const char* TemplateId, const char* CallerFunct
 unsigned a_template__instanceGet(const ATemplate* Template)
 {
     return Template->instanceNumber;
+}
+
+bool a_template__componentHas(const ATemplate* Template, int Component)
+{
+    const AComponent* c = a_component__get(Component, __func__);
+
+    return a_bitfield_test(Template->componentBits, c->bit);
 }
 
 const void* a_template__dataGet(const ATemplate* Template, int Component)

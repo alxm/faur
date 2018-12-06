@@ -97,14 +97,13 @@ AEntity* a_entity_newEx(const char* Template, const void* ComponentInitContext, 
     e->template = t;
 
     for(int c = (int)a_component__tableLen; c--; ) {
-        const void* data = a_template__dataGet(t, c);
-
-        if(data) {
+        if(a_template__componentHas(t, c)) {
             const AComponent* component = a_component__get(c, __func__);
             void* self = componentAdd(e, c, component);
 
             if(component->initWithData) {
-                component->initWithData(self, data, ComponentInitContext);
+                component->initWithData(
+                    self, a_template__dataGet(t, c), ComponentInitContext);
             }
         }
     }
