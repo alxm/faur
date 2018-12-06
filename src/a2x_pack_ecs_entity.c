@@ -368,7 +368,7 @@ void* a_entity_componentReq(const AEntity* Entity, int Component)
     AComponentInstance* header = Entity->componentsTable[Component];
 
     if(header == NULL) {
-        a_out__fatal("a_entity_componentReq(%s, %d): Missing component",
+        a_out__fatal("a_entity_componentReq(%s, %s): Missing component",
                      a_entity_idGet(Entity),
                      c->stringId);
     }
