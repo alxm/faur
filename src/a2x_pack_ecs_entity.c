@@ -425,7 +425,7 @@ void a_entity_muteDec(AEntity* Entity)
         if(a_entity__isMatchedToSystems(Entity)) {
             if(a_ecs__entityIsInList(Entity, A_ECS__MUTED_QUEUE)) {
                 // Entity was muted and unmuted before it left systems
-                a_ecs__entityMoveToList(Entity, A_ECS__RUNNING);
+                a_ecs__entityMoveToList(Entity, A_ECS__DEFAULT);
             } else {
                 // To be added back to matched systems
                 a_ecs__entityMoveToList(Entity, A_ECS__RESTORE);

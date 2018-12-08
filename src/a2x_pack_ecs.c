@@ -108,7 +108,7 @@ void a_ecs__tick(void)
                 e->systemNodesEither, a_list_addLast(system->entities, e));
         }
 
-        a_ecs__entityAddToList(e, A_ECS__RUNNING);
+        a_ecs__entityAddToList(e, A_ECS__DEFAULT);
     }
 
     a_list_clear(g_lists[A_ECS__NEW]);
@@ -137,7 +137,7 @@ void a_ecs__flushEntitiesFromSystems(void)
     A_LIST_ITERATE(g_lists[A_ECS__MUTED_QUEUE], AEntity*, e) {
         a_entity__removeFromAllSystems(e);
 
-        a_ecs__entityAddToList(e, A_ECS__MUTED_LIMBO);
+        a_ecs__entityAddToList(e, A_ECS__DEFAULT);
     }
 
     A_LIST_ITERATE(g_lists[A_ECS__REMOVED_QUEUE], AEntity*, e) {
