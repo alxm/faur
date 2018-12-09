@@ -37,12 +37,6 @@ void a_entity__init(unsigned NumMessages)
 
 static void* componentAdd(AEntity* Entity, int Index, const AComponent* Component)
 {
-    if(Entity->flags & A_ENTITY__DEBUG) {
-        a_out__message("a_entity_componentAdd(%s, %s)",
-                       a_entity_idGet(Entity),
-                       Component->stringId);
-    }
-
     AComponentInstance* header = a_mem_zalloc(Component->size);
 
     header->component = Component;
@@ -97,14 +91,13 @@ AEntity* a_entity_newEx(const char* Template, const void* ComponentInitContext, 
     e->template = t;
 
     for(int c = (int)a_component__tableLen; c--; ) {
-        const void* data = a_template__dataGet(t, c);
-
-        if(data) {
+        if(a_template__componentHas(t, c)) {
             const AComponent* component = a_component__get(c, __func__);
             void* self = componentAdd(e, c, component);
 
             if(component->initWithData) {
-                component->initWithData(self, data, ComponentInitContext);
+                component->initWithData(
+                    self, a_template__dataGet(t, c), ComponentInitContext);
             }
         }
     }
@@ -185,7 +178,7 @@ void a_entity_parentSet(AEntity* Entity, AEntity* Parent)
     if(Entity->flags & A_ENTITY__DEBUG) {
         a_out__message("a_entity_parentSet(%s, %s)",
                        a_entity_idGet(Entity),
-                       a_entity_idGet(Parent));
+                       Parent ? a_entity_idGet(Parent) : "NULL");
     }
 
     if(Entity->parent) {
@@ -212,10 +205,6 @@ bool a_entity_parentHas(const AEntity* Child, const AEntity* PotentialParent)
 
 void a_entity_refInc(AEntity* Entity)
 {
-    if(Entity->flags & A_ENTITY__DEBUG) {
-        a_out__message("a_entity_refInc(%s)", a_entity_idGet(Entity));
-    }
-
     if(a_entity_removeGet(Entity)) {
         a_out__fatal(
             "a_entity_refInc(%s): Entity is removed", a_entity_idGet(Entity));
@@ -224,6 +213,13 @@ void a_entity_refInc(AEntity* Entity)
     if(Entity->references == INT_MAX) {
         a_out__fatal(
             "a_entity_refInc(%s): Count too high", a_entity_idGet(Entity));
+    }
+
+    if(Entity->flags & A_ENTITY__DEBUG) {
+        a_out__message("a_entity_refInc(%s) %d->%d",
+                       a_entity_idGet(Entity),
+                       Entity->references,
+                       Entity->references + 1);
     }
 
     Entity->references++;
@@ -237,13 +233,16 @@ void a_entity_refDec(AEntity* Entity)
         return;
     }
 
-    if(Entity->flags & A_ENTITY__DEBUG) {
-        a_out__message("a_entity_refDec(%s)", a_entity_idGet(Entity));
-    }
-
     if(Entity->references == 0) {
         a_out__fatal(
             "a_entity_refDec(%s): Count too low", a_entity_idGet(Entity));
+    }
+
+    if(Entity->flags & A_ENTITY__DEBUG) {
+        a_out__message("a_entity_refDec(%s) %d->%d",
+                       a_entity_idGet(Entity),
+                       Entity->references,
+                       Entity->references - 1);
     }
 
     Entity->references--;
@@ -262,15 +261,15 @@ bool a_entity_removeGet(const AEntity* Entity)
 
 void a_entity_removeSet(AEntity* Entity)
 {
-    if(Entity->flags & A_ENTITY__DEBUG) {
-        a_out__message("a_entity_removeSet(%s)", a_entity_idGet(Entity));
-    }
-
     if(a_entity_removeGet(Entity)) {
         a_out__fatal(
             "a_entity_removeSet(%s): Already removed", a_entity_idGet(Entity));
 
         return;
+    }
+
+    if(Entity->flags & A_ENTITY__DEBUG) {
+        a_out__message("a_entity_removeSet(%s)", a_entity_idGet(Entity));
     }
 
     A_FLAG_SET(Entity->flags, A_ENTITY__REMOVED);
@@ -294,8 +293,7 @@ void a_entity_activeSet(AEntity* Entity)
         a_out__message("a_entity_activeSet(%s)", a_entity_idGet(Entity));
     }
 
-    if(a_entity_removeGet(Entity)) {
-        // Ignore if entity is removed
+    if(a_entity_muteGet(Entity) || a_entity_removeGet(Entity)) {
         return;
     }
 
@@ -326,12 +324,6 @@ void* a_entity_componentAdd(AEntity* Entity, int Component)
 {
     const AComponent* c = a_component__get(Component, __func__);
 
-    if(Entity->flags & A_ENTITY__DEBUG) {
-        a_out__message("a_entity_componentAdd(%s, %s)",
-                       a_entity_idGet(Entity),
-                       c->stringId);
-    }
-
     if(!a_ecs__entityIsInList(Entity, A_ECS__NEW)) {
         a_out__fatal("a_entity_componentAdd(%s, %s): Too late",
                      a_entity_idGet(Entity),
@@ -342,6 +334,12 @@ void* a_entity_componentAdd(AEntity* Entity, int Component)
         a_out__fatal("a_entity_componentAdd(%s, %s): Already added",
                      a_entity_idGet(Entity),
                      c->stringId);
+    }
+
+    if(Entity->flags & A_ENTITY__DEBUG) {
+        a_out__message("a_entity_componentAdd(%s, %s)",
+                       a_entity_idGet(Entity),
+                       c->stringId);
     }
 
     return componentAdd(Entity, Component, c);
@@ -368,7 +366,7 @@ void* a_entity_componentReq(const AEntity* Entity, int Component)
     AComponentInstance* header = Entity->componentsTable[Component];
 
     if(header == NULL) {
-        a_out__fatal("a_entity_componentReq(%s, %d): Missing component",
+        a_out__fatal("a_entity_componentReq(%s, %s): Missing component",
                      a_entity_idGet(Entity),
                      c->stringId);
     }
@@ -383,10 +381,6 @@ bool a_entity_muteGet(const AEntity* Entity)
 
 void a_entity_muteInc(AEntity* Entity)
 {
-    if(Entity->flags & A_ENTITY__DEBUG) {
-        a_out__message("a_entity_muteInc(%s)", a_entity_idGet(Entity));
-    }
-
     if(a_entity_removeGet(Entity)) {
         a_out__warningv(
             "a_entity_muteInc(%s): Entity is removed", a_entity_idGet(Entity));
@@ -399,6 +393,13 @@ void a_entity_muteInc(AEntity* Entity)
             "a_entity_muteInc(%s): Count too high", a_entity_idGet(Entity));
     }
 
+    if(Entity->flags & A_ENTITY__DEBUG) {
+        a_out__message("a_entity_muteInc(%s) %d->%d",
+                       a_entity_idGet(Entity),
+                       Entity->muteCount,
+                       Entity->muteCount + 1);
+    }
+
     if(Entity->muteCount++ == 0) {
         a_ecs__entityMoveToList(Entity, A_ECS__MUTED_QUEUE);
     }
@@ -406,10 +407,6 @@ void a_entity_muteInc(AEntity* Entity)
 
 void a_entity_muteDec(AEntity* Entity)
 {
-    if(Entity->flags & A_ENTITY__DEBUG) {
-        a_out__message("a_entity_muteDec(%s)", a_entity_idGet(Entity));
-    }
-
     if(a_entity_removeGet(Entity)) {
         a_out__warningv(
             "a_entity_muteDec(%s): Entity is removed", a_entity_idGet(Entity));
@@ -422,11 +419,18 @@ void a_entity_muteDec(AEntity* Entity)
             "a_entity_muteDec(%s): Count too low", a_entity_idGet(Entity));
     }
 
+    if(Entity->flags & A_ENTITY__DEBUG) {
+        a_out__message("a_entity_muteDec(%s) %d->%d",
+                       a_entity_idGet(Entity),
+                       Entity->muteCount,
+                       Entity->muteCount - 1);
+    }
+
     if(--Entity->muteCount == 0) {
         if(a_entity__isMatchedToSystems(Entity)) {
             if(a_ecs__entityIsInList(Entity, A_ECS__MUTED_QUEUE)) {
                 // Entity was muted and unmuted before it left systems
-                a_ecs__entityMoveToList(Entity, A_ECS__RUNNING);
+                a_ecs__entityMoveToList(Entity, A_ECS__DEFAULT);
             } else {
                 // To be added back to matched systems
                 a_ecs__entityMoveToList(Entity, A_ECS__RESTORE);

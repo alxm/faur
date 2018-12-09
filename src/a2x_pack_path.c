@@ -81,24 +81,23 @@ APath* a_path_newf(const char* Format, ...)
     va_list args;
     va_start(args, Format);
 
-    APath* p = NULL;
     int bytesNeeded = vsnprintf(NULL, 0, Format, args) + 1;
 
     va_end(args);
 
-    if(bytesNeeded > 0) {
-        char* buffer = a_mem_malloc((size_t)bytesNeeded);
-
-        va_start(args, Format);
-
-        if(vsnprintf(buffer, (size_t)bytesNeeded, Format, args) > 0) {
-            p = a_path_new(buffer);
-        }
-
-        va_end(args);
-
-        free(buffer);
+    if(bytesNeeded <= 1) {
+        return NULL;
     }
+
+    char* buffer = a_mem_malloc((size_t)bytesNeeded);
+
+    va_start(args, Format);
+    vsnprintf(buffer, (size_t)bytesNeeded, Format, args);
+    va_end(args);
+
+    APath* p = a_path_new(buffer);
+
+    free(buffer);
 
     return p;
 }

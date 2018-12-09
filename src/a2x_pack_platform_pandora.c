@@ -36,35 +36,37 @@ static void pandora_setNubModes(const char* Nub0, const char* Nub1)
                      Nub1);
 
     if(r < 0 || r >= (int)sizeof(cmd)) {
-        a_out__error("pandora_setNubModes: snprintf failed");
+        a_out__error(
+            "pandora_setNubModes(%s, %s): snprintf failed", Nub0, Nub1);
+
         return;
     }
 
     a_out__message("Set nub modes to '%s', '%s'", Nub0, Nub1);
 
     if(system(cmd) < 0) {
-        a_out__error("op_nubchange.sh failed");
+        a_out__error("%s: failed", cmd);
         return;
     }
 }
 
 static void pandora_setScreenFilter(const char* Value)
 {
-    char cmd[128];
+    char cmd[64];
     int r = snprintf(cmd,
                      sizeof(cmd),
                      "sudo -n /usr/pandora/scripts/op_videofir.sh %s",
                      Value);
 
     if(r < 0 || r >= (int)sizeof(cmd)) {
-        a_out__error("pandora_setScreenFilter: snprintf failed");
+        a_out__error("pandora_setScreenFilter(%s): snprintf failed", Value);
         return;
     }
 
     a_out__message("Set screen filter to '%s'", Value);
 
     if(system(cmd) < 0) {
-        a_out__error("op_videofir.sh failed");
+        a_out__error("%s: failed", cmd);
         return;
     }
 }

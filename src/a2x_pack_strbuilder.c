@@ -88,7 +88,7 @@ bool a_strbuilder_addf(AStrBuilder* Builder, const char* Format, ...)
 
     va_end(args);
 
-    if(bytesNeeded <= 0) {
+    if(bytesNeeded < 1) {
         return false;
     }
 
@@ -99,15 +99,9 @@ bool a_strbuilder_addf(AStrBuilder* Builder, const char* Format, ...)
         Builder->fmtBuffer = a_mem_malloc(Builder->fmtSize);
     }
 
-    bool ret = false;
-
     va_start(args, Format);
-
-    if(vsnprintf(Builder->fmtBuffer, Builder->fmtSize, Format, args) >= 0) {
-        ret = a_strbuilder_add(Builder, Builder->fmtBuffer);
-    }
-
+    vsnprintf(Builder->fmtBuffer, Builder->fmtSize, Format, args);
     va_end(args);
 
-    return ret;
+    return a_strbuilder_add(Builder, Builder->fmtBuffer);
 }
