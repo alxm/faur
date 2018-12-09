@@ -293,8 +293,7 @@ void a_entity_activeSet(AEntity* Entity)
         a_out__message("a_entity_activeSet(%s)", a_entity_idGet(Entity));
     }
 
-    if(a_entity_removeGet(Entity)) {
-        // Ignore if entity is removed
+    if(a_entity_muteGet(Entity) || a_entity_removeGet(Entity)) {
         return;
     }
 
