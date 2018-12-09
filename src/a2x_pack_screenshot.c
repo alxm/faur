@@ -73,43 +73,37 @@ static bool lazy_init(void)
     }
 
     if(g_isInit) {
-        g_filePrefix = a_str_merge(
-                        a_settings_stringGet(A_SETTING_FILE_SCREENSHOTS),
-                        "/",
-                        a_settings_stringGet(A_SETTING_APP_TITLE),
-                        "-",
-                        NULL);
+        g_filePrefix = a_str_dup(a_str__fmt(
+            "%s/%s-",
+            a_settings_stringGet(A_SETTING_FILE_SCREENSHOTS),
+            a_settings_stringGet(A_SETTING_APP_TITLE)));
 
-        // No spaces in file name
-        for(char* s = g_filePrefix; *s != '\0'; s++) {
-            if(*s == ' ') {
-                *s = '-';
+        g_title = a_str_dup(a_str__fmt(
+            "%s %s by %s",
+            a_settings_stringGet(A_SETTING_APP_TITLE),
+            a_settings_stringGet(A_SETTING_APP_VERSION),
+            a_settings_stringGet(A_SETTING_APP_AUTHOR)));
+
+        g_description = a_str_dup(a_str__fmt(
+            "%s %s by %s, built on %s. Running a2x %s %s, built on %s.",
+            a_settings_stringGet(A_SETTING_APP_TITLE),
+            a_settings_stringGet(A_SETTING_APP_VERSION),
+            a_settings_stringGet(A_SETTING_APP_AUTHOR),
+            a_settings_stringGet(A_SETTING_APP_BUILDTIME),
+            A_BUILD__PLATFORM_NAME,
+            A_BUILD__GIT_HASH,
+            A_BUILD__COMPILE_TIME));
+
+        if(g_filePrefix && g_title && g_description) {
+            // No spaces in file name
+            for(char* s = g_filePrefix; *s != '\0'; s++) {
+                if(*s <= ' ') {
+                    *s = '-';
+                }
             }
+        } else {
+            g_isInit = false;
         }
-
-        g_title = a_str_merge(a_settings_stringGet(A_SETTING_APP_TITLE),
-                              " ",
-                              a_settings_stringGet(A_SETTING_APP_VERSION),
-                              " by ",
-                              a_settings_stringGet(A_SETTING_APP_AUTHOR),
-                              NULL);
-
-        g_description = a_str_merge(
-                            a_settings_stringGet(A_SETTING_APP_TITLE),
-                            " ",
-                            a_settings_stringGet(A_SETTING_APP_VERSION),
-                            " by ",
-                            a_settings_stringGet(A_SETTING_APP_AUTHOR),
-                            ", built on ",
-                            a_settings_stringGet(A_SETTING_APP_BUILDTIME),
-                            ". Running on a2x "
-                            A_BUILD__PLATFORM_NAME
-                            " "
-                            A_BUILD__GIT_HASH
-                            ", built on "
-                            A_BUILD__COMPILE_TIME
-                            ".",
-                            NULL);
     }
 
     return g_isInit;
@@ -140,12 +134,6 @@ static void takeScreenshot(void)
 
 void a_screenshot__init(void)
 {
-    g_isInit = false;
-    g_filePrefix = NULL;
-    g_title = NULL;
-    g_description = NULL;
-    g_screenshotNumber = 0;
-
     g_button = a_button_new();
     a_button_bind(g_button, A_KEY_F12);
 }
