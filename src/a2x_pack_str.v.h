@@ -1,5 +1,5 @@
 /*
-    Copyright 2010 Alex Margarit
+    Copyright 2010, 2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -20,3 +20,5 @@
 #pragma once
 
 #include "a2x_pack_str.p.h"
+
+extern const char* a_str__fmt(const char* Format, ...);

@@ -126,7 +126,8 @@ static void takeScreenshot(void)
         return;
     }
 
-    const char* name = a_str_fmt("%s%05d.png", g_filePrefix, g_screenshotNumber);
+    const char* name = a_str__fmt(
+                        "%s%05d.png", g_filePrefix, g_screenshotNumber);
 
     a_out__message("Saving screenshot '%s'", name);
     a_png_write(name,

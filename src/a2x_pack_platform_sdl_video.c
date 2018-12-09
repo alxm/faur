@@ -203,7 +203,7 @@ void a_platform__screenInit(int Width, int Height, bool FullScreen)
     #endif
 
     #if A_BUILD_SYSTEM_DESKTOP
-        const char* caption = a_str_fmt(
+        const char* caption = a_str__fmt(
                                 "%s %s",
                                 a_settings_stringGet(A_SETTING_APP_TITLE),
                                 a_settings_stringGet(A_SETTING_APP_VERSION));
