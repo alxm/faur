@@ -22,3 +22,4 @@
 #include "a2x_pack_str.p.h"
 
 extern const char* a_str__fmt(const char* Format, ...);
+extern const char* a_str__fmtEx(char* Buffer, size_t Size, const char* Format, va_list Args, bool OverflowOk);
