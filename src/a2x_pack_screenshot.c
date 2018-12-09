@@ -126,9 +126,7 @@ static void takeScreenshot(void)
         return;
     }
 
-    char num[6];
-    snprintf(num, sizeof(num), "%05d", g_screenshotNumber);
-    char* name = a_str_merge(g_filePrefix, num, ".png", NULL);
+    const char* name = a_str_fmt("%s%05d.png", g_filePrefix, g_screenshotNumber);
 
     a_out__message("Saving screenshot '%s'", name);
     a_png_write(name,
@@ -137,8 +135,6 @@ static void takeScreenshot(void)
                 a__screen.height,
                 g_title,
                 g_description);
-
-    free(name);
 }
 
 void a_screenshot__init(void)

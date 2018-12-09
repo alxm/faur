@@ -82,10 +82,7 @@ AEntity* a_entity_new(const char* Id, void* Context)
 AEntity* a_entity_newEx(const char* Template, const void* ComponentInitContext, void* Context)
 {
     const ATemplate* t = a_template__get(Template, __func__);
-
-    char id[64];
-    snprintf(id, sizeof(id), "%s#%u", Template, a_template__instanceGet(t));
-
+    const char* id = a_str_fmt("%s#%u", Template, a_template__instanceGet(t));
     AEntity* e = a_entity_new(id, Context);
 
     e->template = t;

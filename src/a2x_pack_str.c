@@ -20,6 +20,25 @@
 #include "a2x_pack_str.v.h"
 
 #include "a2x_pack_mem.v.h"
+#include "a2x_pack_out.v.h"
+
+const char* a_str_fmt(const char* Format, ...)
+{
+    va_list args;
+    va_start(args, Format);
+
+    static char buffer[512];
+    int r = vsnprintf(buffer, sizeof(buffer), Format, args);
+
+    va_end(args);
+
+    if(r < 0 || r >= (int)sizeof(buffer)) {
+        a_out_error("a_str_fmt(%s): vsnprintf failed", Format);
+        return NULL;
+    }
+
+    return buffer;
+}
 
 char* a_str_merge(const char* String1, ...)
 {
