@@ -73,18 +73,18 @@ static bool lazy_init(void)
     }
 
     if(g_isInit) {
-        g_filePrefix = a_str_dup(a_str__fmt(
+        g_filePrefix = a_str_dup(a_str__fmt512(
             "%s/%s-",
             a_settings_stringGet(A_SETTING_FILE_SCREENSHOTS),
             a_settings_stringGet(A_SETTING_APP_TITLE)));
 
-        g_title = a_str_dup(a_str__fmt(
+        g_title = a_str_dup(a_str__fmt512(
             "%s %s by %s",
             a_settings_stringGet(A_SETTING_APP_TITLE),
             a_settings_stringGet(A_SETTING_APP_VERSION),
             a_settings_stringGet(A_SETTING_APP_AUTHOR)));
 
-        g_description = a_str_dup(a_str__fmt(
+        g_description = a_str_dup(a_str__fmt512(
             "%s %s by %s, built on %s. Running a2x %s %s, built on %s.",
             a_settings_stringGet(A_SETTING_APP_TITLE),
             a_settings_stringGet(A_SETTING_APP_VERSION),
@@ -120,7 +120,7 @@ static void takeScreenshot(void)
         return;
     }
 
-    const char* name = a_str__fmt(
+    const char* name = a_str__fmt512(
                         "%s%05d.png", g_filePrefix, g_screenshotNumber);
 
     a_out__message("Saving screenshot '%s'", name);

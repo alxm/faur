@@ -28,7 +28,7 @@ static char* g_nubModes[2];
 
 static void pandora_setNubModes(const char* Nub0, const char* Nub1)
 {
-    const char* cmd = a_str__fmt(
+    const char* cmd = a_str__fmt512(
                         "/usr/pandora/scripts/op_nubchange.sh %s %s",
                         Nub0,
                         Nub1);
@@ -47,7 +47,7 @@ static void pandora_setNubModes(const char* Nub0, const char* Nub1)
 
 static void pandora_setScreenFilter(const char* Value)
 {
-    const char* cmd = a_str__fmt(
+    const char* cmd = a_str__fmt512(
                         "sudo -n /usr/pandora/scripts/op_videofir.sh %s",
                         Value);
 
@@ -66,7 +66,7 @@ static void pandora_setScreenFilter(const char* Value)
 void a_platform_pandora__init(void)
 {
     for(int i = 0; i < 2; i++) {
-        const char* path = a_str__fmt("/proc/pandora/nub%d/mode", i);
+        const char* path = a_str__fmt512("/proc/pandora/nub%d/mode", i);
         AFile* nub = a_file_new(path, A_FILE_READ);
 
         if(nub && a_file_lineRead(nub)) {

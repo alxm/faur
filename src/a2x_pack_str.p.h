@@ -23,7 +23,7 @@
 
 #include "a2x_pack_list.p.h"
 
-extern const char* a_str_fmt(const char* Format, ...);
+extern const char* a_str_fmt512(const char* Format, ...);
 
 extern char* a_str_merge(const char* String1, ...);
 extern char* a_str_dup(const char* String);

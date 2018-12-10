@@ -28,7 +28,7 @@ static inline const char* strFmtv(char* Buffer, size_t Size, const char* Format,
     return (r >= 0 && (r < (int)Size || OverflowOk)) ? Buffer : NULL;
 }
 
-const char* a_str_fmt(const char* Format, ...)
+const char* a_str_fmt512(const char* Format, ...)
 {
     va_list args;
     va_start(args, Format);
@@ -41,7 +41,7 @@ const char* a_str_fmt(const char* Format, ...)
     return ret;
 }
 
-const char* a_str__fmt(const char* Format, ...)
+const char* a_str__fmt512(const char* Format, ...)
 {
     va_list args;
     va_start(args, Format);
