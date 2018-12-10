@@ -26,6 +26,7 @@
 #include "a2x_pack_platform_wiz.v.h"
 #include "a2x_pack_screen.v.h"
 #include "a2x_pack_settings.v.h"
+#include "a2x_pack_str.v.h"
 
 #if A_BUILD_LIB_SDL == 1
     static SDL_Surface* g_sdlScreen = NULL;
@@ -202,12 +203,10 @@ void a_platform__screenInit(int Width, int Height, bool FullScreen)
     #endif
 
     #if A_BUILD_SYSTEM_DESKTOP
-        char caption[64];
-        snprintf(caption,
-                 sizeof(caption),
-                 "%s %s",
-                 a_settings_stringGet(A_SETTING_APP_TITLE),
-                 a_settings_stringGet(A_SETTING_APP_VERSION));
+        const char* caption = a_str__fmt512(
+                                "%s %s",
+                                a_settings_stringGet(A_SETTING_APP_TITLE),
+                                a_settings_stringGet(A_SETTING_APP_VERSION));
 
         #if A_BUILD_LIB_SDL == 1
             SDL_WM_SetCaption(caption, NULL);

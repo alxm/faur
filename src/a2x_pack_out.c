@@ -31,6 +31,7 @@
 #include "a2x_pack_console.v.h"
 #include "a2x_pack_screen.v.h"
 #include "a2x_pack_settings.v.h"
+#include "a2x_pack_str.v.h"
 #include "a2x_pack_time.v.h"
 
 typedef enum {
@@ -81,17 +82,15 @@ static void outPrintHeader(AOutSource Source, AOutType Type, FILE* Stream)
 
 static void outWorker(AOutSource Source, AOutType Type, bool Verbose, bool Overwrite, FILE* Stream, const char* Format, va_list Args)
 {
-    if(!a_settings_boolGet(A_SETTING_OUTPUT_ON)) {
+    static char buffer[512];
+
+    if(!a_settings_boolGet(A_SETTING_OUTPUT_ON)
+        || (Verbose && !a_settings_boolGet(A_SETTING_OUTPUT_VERBOSE))) {
+
         return;
     }
 
-    if(Verbose && !a_settings_boolGet(A_SETTING_OUTPUT_VERBOSE)) {
-        return;
-    }
-
-    char buffer[256];
-
-    if(vsnprintf(buffer, sizeof(buffer), Format, Args) <= 0) {
+    if(!a_str__fmtEx(buffer, sizeof(buffer), Format, Args, true)) {
         return;
     }
 

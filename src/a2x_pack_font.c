@@ -24,6 +24,7 @@
 #include "a2x_pack_out.v.h"
 #include "a2x_pack_screen.v.h"
 #include "a2x_pack_spriteframes.v.h"
+#include "a2x_pack_str.v.h"
 
 #define A__CHAR_START 32
 #define A__CHAR_INDEX(Char) ((unsigned)Char - A__CHAR_START)
@@ -44,6 +45,7 @@ typedef struct {
 AFont* g_defaultFonts[A_FONT__ID_NUM];
 static AFontState g_state;
 static AList* g_stateStack;
+static char g_buffer[512];
 
 void a_font__init(void)
 {
@@ -357,10 +359,8 @@ void a_font_printf(const char* Format, ...)
 
 void a_font_printv(const char* Format, va_list Args)
 {
-    char buffer[256];
-
-    if(vsnprintf(buffer, sizeof(buffer), Format, Args) > 0) {
-        a_font_print(buffer);
+    if(a_str__fmtEx(g_buffer, sizeof(g_buffer), Format, Args, true)) {
+        a_font_print(g_buffer);
     }
 }
 
@@ -390,10 +390,8 @@ int a_font_widthGetf(const char* Format, ...)
 
 int a_font_widthGetv(const char* Format, va_list Args)
 {
-    char buffer[256];
-
-    if(vsnprintf(buffer, sizeof(buffer), Format, Args) > 0) {
-        return a_font_widthGet(buffer);
+    if(a_str__fmtEx(g_buffer, sizeof(g_buffer), Format, Args, true)) {
+        return a_font_widthGet(g_buffer);
     }
 
     return 0;

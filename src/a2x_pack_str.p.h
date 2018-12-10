@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2017 Alex Margarit
+    Copyright 2010, 2016-2018 Alex Margarit
 
     This file is part of a2x-framework.
 
@@ -22,6 +22,8 @@
 #include "a2x_system_includes.h"
 
 #include "a2x_pack_list.p.h"
+
+extern const char* a_str_fmt512(const char* Format, ...);
 
 extern char* a_str_merge(const char* String1, ...);
 extern char* a_str_dup(const char* String);
