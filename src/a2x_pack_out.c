@@ -82,7 +82,7 @@ static void outPrintHeader(AOutSource Source, AOutType Type, FILE* Stream)
 
 static void outWorker(AOutSource Source, AOutType Type, bool Verbose, bool Overwrite, FILE* Stream, const char* Format, va_list Args)
 {
-    static char buffer[256];
+    static char buffer[512];
 
     if(!a_settings_boolGet(A_SETTING_OUTPUT_ON)
         || (Verbose && !a_settings_boolGet(A_SETTING_OUTPUT_VERBOSE))) {

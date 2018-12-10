@@ -45,7 +45,7 @@ typedef struct {
 AFont* g_defaultFonts[A_FONT__ID_NUM];
 static AFontState g_state;
 static AList* g_stateStack;
-static char g_buffer[256];
+static char g_buffer[512];
 
 void a_font__init(void)
 {
