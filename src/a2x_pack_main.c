@@ -132,10 +132,8 @@ int a_main_argsGetNum(void)
 const char* a_main_argsGet(int ArgNum)
 {
     if(ArgNum >= g_argsNum) {
-        a_out__error(
+        a_out__fatal(
             "a_main_argsGet(%d): Invalid arg, %d total", ArgNum, g_argsNum);
-
-        return NULL;
     }
 
     return g_args[ArgNum];

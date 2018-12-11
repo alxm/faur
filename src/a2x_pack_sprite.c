@@ -145,7 +145,7 @@ ASprite* a_sprite_newFromPng(const char* Path)
     a_png_readFile(Path, &pixels, &w, &h);
 
     if(pixels == NULL) {
-        return NULL;
+        a_out__fatal("a_sprite_newFromPng(%s): Cannot read file", Path);
     }
 
     ASprite* s = makeEmptySprite(w, h);
