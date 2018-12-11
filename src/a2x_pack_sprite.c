@@ -301,7 +301,7 @@ void a_sprite_swapColor(ASprite* Sprite, APixel OldColor, APixel NewColor)
     Sprite->texture = a_platform__textureSpriteNew(Sprite);
 }
 
-void a_sprite_swapColors(ASprite* Sprite, APixel* OldColors, APixel* NewColors, unsigned NumColors)
+void a_sprite_swapColors(ASprite* Sprite, const APixel* OldColors, const APixel* NewColors, unsigned NumColors)
 {
     for(size_t i = Sprite->pixelsSize / sizeof(APixel); i--; ) {
         const APixel pixel = Sprite->pixels[i];

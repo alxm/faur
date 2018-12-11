@@ -40,7 +40,7 @@ extern void a_sprite_blitCenterY(const ASprite* Sprite, int X);
 extern void a_sprite_blitEx(const ASprite* Sprite, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY);
 
 extern void a_sprite_swapColor(ASprite* Sprite, APixel OldColor, APixel NewColor);
-extern void a_sprite_swapColors(ASprite* Sprite, APixel* OldColors, APixel* NewColors, unsigned NumColors);
+extern void a_sprite_swapColors(ASprite* Sprite, const APixel* OldColors, const APixel* NewColors, unsigned NumColors);
 
 extern int a_sprite_widthGet(const ASprite* Sprite);
 extern int a_sprite_widthGetLog2(const ASprite* Sprite);
