@@ -137,7 +137,7 @@ doneEdges:
     *Height = spriteHeight;
 }
 
-ASprite* a_sprite_newFromFile(const char* Path)
+ASprite* a_sprite_newFromPng(const char* Path)
 {
     int w, h;
     APixel* pixels = NULL;

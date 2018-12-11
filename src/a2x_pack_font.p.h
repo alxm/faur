@@ -32,7 +32,7 @@ typedef enum {
 
 #include "a2x_pack_sprite.p.h"
 
-extern AFont* a_font_newFromFile(const char* Path);
+extern AFont* a_font_newFromPng(const char* Path);
 extern AFont* a_font_newFromSprite(const ASprite* Sheet, int X, int Y);
 extern AFont* a_font_dup(const AFont* Font, APixel Color);
 extern void a_font_free(AFont* Font);

@@ -86,7 +86,7 @@ void a_console__init(void)
 
 void a_console__init2(void)
 {
-    ASpriteFrames* frames = a_spriteframes_newFromFile("/a2x/consoleTitles", 0);
+    ASpriteFrames* frames = a_spriteframes_newFromPng("/a2x/consoleTitles", 0);
 
     for(AOutSource s = 0; s < A_OUT__SOURCE_NUM; s++) {
         g_sources[s] = a_spriteframes_getNext(frames);

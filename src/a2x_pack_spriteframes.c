@@ -35,9 +35,9 @@ struct ASpriteFrames {
     bool forward;
 };
 
-ASpriteFrames* a_spriteframes_newFromFile(const char* Path, unsigned FrameMs)
+ASpriteFrames* a_spriteframes_newFromPng(const char* Path, unsigned FrameMs)
 {
-    ASprite* s = a_sprite_newFromFile(Path);
+    ASprite* s = a_sprite_newFromPng(Path);
     ASpriteFrames* f = a_spriteframes_newFromSprite(s, 0, 0, FrameMs);
 
     a_sprite_free(s);
@@ -45,9 +45,9 @@ ASpriteFrames* a_spriteframes_newFromFile(const char* Path, unsigned FrameMs)
     return f;
 }
 
-ASpriteFrames* a_spriteframes_newFromFileGrid(const char* Path, int CellWidth, int CellHeight, unsigned FrameMs)
+ASpriteFrames* a_spriteframes_newFromPngGrid(const char* Path, int CellWidth, int CellHeight, unsigned FrameMs)
 {
-    ASprite* s = a_sprite_newFromFile(Path);
+    ASprite* s = a_sprite_newFromPng(Path);
     ASpriteFrames* f = a_spriteframes_newFromSpriteGrid(
                         s, 0, 0, CellWidth, CellHeight, FrameMs);
 

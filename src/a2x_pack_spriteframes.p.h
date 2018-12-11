@@ -26,8 +26,8 @@ typedef struct ASpriteFrames ASpriteFrames;
 #include "a2x_pack_list.p.h"
 #include "a2x_pack_sprite.p.h"
 
-extern ASpriteFrames* a_spriteframes_newFromFile(const char* Path, unsigned FrameMs);
-extern ASpriteFrames* a_spriteframes_newFromFileGrid(const char* Path, int CellWidth, int CellHeight, unsigned FrameMs);
+extern ASpriteFrames* a_spriteframes_newFromPng(const char* Path, unsigned FrameMs);
+extern ASpriteFrames* a_spriteframes_newFromPngGrid(const char* Path, int CellWidth, int CellHeight, unsigned FrameMs);
 extern ASpriteFrames* a_spriteframes_newFromSprite(const ASprite* Sheet, int X, int Y, unsigned FrameMs);
 extern ASpriteFrames* a_spriteframes_newFromSpriteGrid(const ASprite* Sheet, int X, int Y, int CellWidth, int CellHeight, unsigned FrameMs);
 extern ASpriteFrames* a_spriteframes_newBlank(unsigned FrameMs);
