@@ -62,8 +62,8 @@ extern void a_platform__drawCircleFilled(int X, int Y, int Radius);
 extern APlatformTexture* a_platform__textureScreenNew(int Width, int Height);
 extern void a_platform__textureSpriteCommit(ASprite* Sprite);
 extern void a_platform__textureFree(APlatformTexture* Texture);
-extern void a_platform__textureBlit(APlatformTexture* Texture, int X, int Y, bool FillFlat);
-extern void a_platform__textureBlitEx(APlatformTexture* Texture, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY, bool FillFlat);
+extern void a_platform__textureBlit(const APlatformTexture* Texture, int X, int Y, bool FillFlat);
+extern void a_platform__textureBlitEx(const APlatformTexture* Texture, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY, bool FillFlat);
 
 extern void a_platform__renderTargetSet(APlatformTexture* Texture);
 extern void a_platform__renderTargetPixelsGet(APixel* Pixels, int Width);

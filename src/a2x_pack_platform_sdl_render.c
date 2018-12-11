@@ -426,7 +426,7 @@ void a_platform__textureFree(APlatformTexture* Texture)
     free(Texture);
 }
 
-void a_platform__textureBlit(APlatformTexture* Texture, int X, int Y, bool FillFlat)
+void a_platform__textureBlit(const APlatformTexture* Texture, int X, int Y, bool FillFlat)
 {
     a_platform__textureBlitEx(Texture,
                               X + Texture->w / 2,
@@ -438,7 +438,7 @@ void a_platform__textureBlit(APlatformTexture* Texture, int X, int Y, bool FillF
                               FillFlat);
 }
 
-void a_platform__textureBlitEx(APlatformTexture* Texture, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY, bool FillFlat)
+void a_platform__textureBlitEx(const APlatformTexture* Texture, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY, bool FillFlat)
 {
     SDL_Texture* t = Texture->texture[FillFlat];
 

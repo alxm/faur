@@ -381,7 +381,7 @@ int a_sprite_heightGet(const ASprite* Sprite)
     return Sprite->h;
 }
 
-APixel* a_sprite_pixelsGetBuffer(ASprite* Sprite)
+const APixel* a_sprite_pixelsGetBuffer(const ASprite* Sprite)
 {
     return Sprite->pixels;
 }

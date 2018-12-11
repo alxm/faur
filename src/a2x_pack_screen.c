@@ -382,7 +382,7 @@ static void pushTarget(APixel* Pixels, size_t PixelsSize, int Width, int Height,
     a_screen_clipReset();
 }
 
-void a_screen_targetPushScreen(AScreen* Screen)
+void a_screen_targetPushScreen(const AScreen* Screen)
 {
     pushTarget(Screen->pixels,
                Screen->pixelsSize,

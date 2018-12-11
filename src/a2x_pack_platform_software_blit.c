@@ -316,7 +316,7 @@ void a_platform__textureFree(APlatformTexture* Texture)
     free(Texture);
 }
 
-void a_platform__textureBlit(APlatformTexture* Texture, int X, int Y, bool FillFlat)
+void a_platform__textureBlit(const APlatformTexture* Texture, int X, int Y, bool FillFlat)
 {
     A_UNUSED(FillFlat);
 
@@ -332,7 +332,7 @@ void a_platform__textureBlit(APlatformTexture* Texture, int X, int Y, bool FillF
             (Texture, X, Y);
 }
 
-void a_platform__textureBlitEx(APlatformTexture* Texture, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY, bool FillFlat)
+void a_platform__textureBlitEx(const APlatformTexture* Texture, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY, bool FillFlat)
 {
     A_UNUSED(Scale);
     A_UNUSED(Angle);

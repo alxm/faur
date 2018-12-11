@@ -49,7 +49,7 @@ extern void a_sprite_widthSetPowerOf2(ASprite* Sprite);
 
 extern int a_sprite_heightGet(const ASprite* Sprite);
 
-extern APixel* a_sprite_pixelsGetBuffer(ASprite* Sprite);
+extern const APixel* a_sprite_pixelsGetBuffer(const ASprite* Sprite);
 extern APixel a_sprite_pixelsGetPixel(const ASprite* Sprite, int X, int Y);
 
 extern APixel a_sprite_colorKeyGet(void);
