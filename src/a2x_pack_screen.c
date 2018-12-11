@@ -406,7 +406,8 @@ void a_screen_targetPop(void)
 {
     #if A_BUILD_RENDER_SOFTWARE
         if(a__screen.sprite) {
-            a_platform__textureSpriteCommit(a__screen.sprite);
+            a__screen.sprite->texture = a_platform__textureSpriteNew(
+                                            a__screen.sprite);
         }
     #endif
 

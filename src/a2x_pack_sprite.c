@@ -59,7 +59,7 @@ static void assignPixels(ASprite* Sprite, APixel* Pixels)
     free(Sprite->pixels);
     Sprite->pixels = Pixels;
 
-    a_platform__textureSpriteCommit(Sprite);
+    Sprite->texture = a_platform__textureSpriteNew(Sprite);
 }
 
 void a_sprite__boundsFind(const ASprite* Sheet, int X, int Y, int* Width, int* Height)
@@ -298,7 +298,7 @@ void a_sprite_swapColor(ASprite* Sprite, APixel OldColor, APixel NewColor)
         }
     }
 
-    a_platform__textureSpriteCommit(Sprite);
+    Sprite->texture = a_platform__textureSpriteNew(Sprite);
 }
 
 void a_sprite_swapColors(ASprite* Sprite, APixel* OldColors, APixel* NewColors, unsigned NumColors)
@@ -314,7 +314,7 @@ void a_sprite_swapColors(ASprite* Sprite, APixel* OldColors, APixel* NewColors, 
         }
     }
 
-    a_platform__textureSpriteCommit(Sprite);
+    Sprite->texture = a_platform__textureSpriteNew(Sprite);
 }
 
 int a_sprite_widthGet(const ASprite* Sprite)

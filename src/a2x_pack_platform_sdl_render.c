@@ -345,7 +345,7 @@ APlatformTexture* a_platform__textureScreenNew(int Width, int Height)
     return screen;
 }
 
-void a_platform__textureSpriteCommit(ASprite* Sprite)
+APlatformTexture* a_platform__textureSpriteNew(const ASprite* Sprite)
 {
     APlatformTexture* texture = Sprite->texture;
     int width = Sprite->w;
@@ -353,7 +353,6 @@ void a_platform__textureSpriteCommit(ASprite* Sprite)
 
     if(texture == NULL) {
         texture = a_mem_zalloc(sizeof(APlatformTexture));
-        Sprite->texture = texture;
     }
 
     if(Sprite->pixelsSize > texture->pixelsSize) {
@@ -410,6 +409,8 @@ void a_platform__textureSpriteCommit(ASprite* Sprite)
 
         texture->texture[i] = t;
     }
+
+    return texture;
 }
 
 void a_platform__textureFree(APlatformTexture* Texture)
