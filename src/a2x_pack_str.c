@@ -21,11 +21,28 @@
 
 #include "a2x_pack_mem.v.h"
 
-static inline const char* strFmtv(char* Buffer, size_t Size, const char* Format, va_list Args, bool OverflowOk)
+static inline const char* strFmtv(char* Buffer, size_t Size, bool OverflowOk, const char* Format, va_list Args)
 {
     int r = vsnprintf(Buffer, Size, Format, Args);
 
     return (r >= 0 && (r < (int)Size || OverflowOk)) ? Buffer : NULL;
+}
+
+const char* a_str_fmt(char* Buffer, size_t Size, bool OverflowOk, const char* Format, ...)
+{
+    va_list args;
+    va_start(args, Format);
+
+    const char* ret = strFmtv(Buffer, Size, OverflowOk, Format, args);
+
+    va_end(args);
+
+    return ret;
+}
+
+const char* a_str_fmtv(char* Buffer, size_t Size, bool OverflowOk, const char* Format, va_list Args)
+{
+    return strFmtv(Buffer, Size, OverflowOk, Format, Args);
 }
 
 const char* a_str_fmt512(const char* Format, ...)
@@ -34,7 +51,7 @@ const char* a_str_fmt512(const char* Format, ...)
     va_start(args, Format);
 
     static char buffer[512];
-    const char* ret = strFmtv(buffer, sizeof(buffer), Format, args, false);
+    const char* ret = strFmtv(buffer, sizeof(buffer), false, Format, args);
 
     va_end(args);
 
@@ -47,16 +64,11 @@ const char* a_str__fmt512(const char* Format, ...)
     va_start(args, Format);
 
     static char buffer[512];
-    const char* ret = strFmtv(buffer, sizeof(buffer), Format, args, false);
+    const char* ret = strFmtv(buffer, sizeof(buffer), false, Format, args);
 
     va_end(args);
 
     return ret;
-}
-
-const char* a_str__fmtEx(char* Buffer, size_t Size, const char* Format, va_list Args, bool OverflowOk)
-{
-    return strFmtv(Buffer, Size, Format, Args, OverflowOk);
 }
 
 char* a_str_merge(const char* String1, ...)

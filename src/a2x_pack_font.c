@@ -359,7 +359,7 @@ void a_font_printf(const char* Format, ...)
 
 void a_font_printv(const char* Format, va_list Args)
 {
-    if(a_str__fmtEx(g_buffer, sizeof(g_buffer), Format, Args, true)) {
+    if(a_str_fmtv(g_buffer, sizeof(g_buffer), true, Format, Args)) {
         a_font_print(g_buffer);
     }
 }
@@ -390,7 +390,7 @@ int a_font_widthGetf(const char* Format, ...)
 
 int a_font_widthGetv(const char* Format, va_list Args)
 {
-    if(a_str__fmtEx(g_buffer, sizeof(g_buffer), Format, Args, true)) {
+    if(a_str_fmtv(g_buffer, sizeof(g_buffer), true, Format, Args)) {
         return a_font_widthGet(g_buffer);
     }
 
