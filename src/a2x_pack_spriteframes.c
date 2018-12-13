@@ -139,7 +139,6 @@ ASpriteFrames* a_spriteframes_dup(const ASpriteFrames* Frames, bool DupSprites)
 
     if(Frames->timer) {
         f->timer = a_timer_dup(Frames->timer);
-        a_timer_start(f->timer);
     } else {
         f->timer = NULL;
     }
@@ -158,6 +157,8 @@ ASpriteFrames* a_spriteframes_dup(const ASpriteFrames* Frames, bool DupSprites)
     f->num = Frames->num;
     f->index = 0;
     f->forward = true;
+
+    a_spriteframes_start(f);
 
     return f;
 }
@@ -193,15 +194,13 @@ void a_spriteframes_clear(ASpriteFrames* Frames, bool FreeSprites)
 
 void a_spriteframes_reset(ASpriteFrames* Frames)
 {
-    if(Frames->timer) {
-        a_timer_start(Frames->timer);
-    }
-
     if(Frames->forward) {
         Frames->index = 0;
     } else {
         Frames->index = Frames->num - 1;
     }
+
+    a_spriteframes_start(Frames);
 }
 
 void a_spriteframes_randomize(ASpriteFrames* Frames)
@@ -320,9 +319,7 @@ void a_spriteframes_indexSet(ASpriteFrames* Frames, unsigned Index)
 {
     Frames->index = Index;
 
-    if(Frames->timer) {
-        a_timer_start(Frames->timer);
-    }
+    a_spriteframes_start(Frames);
 }
 
 void a_spriteframes_directionSet(ASpriteFrames* Frames, bool Forward)
@@ -346,6 +343,14 @@ void a_spriteframes_speedSet(ASpriteFrames* Frames, ATimerType Units, unsigned T
         a_timer_periodSet(Frames->timer, TimePerFrame);
     } else {
         Frames->timer = a_timer_new(Units, TimePerFrame, true);
+    }
+
+    a_spriteframes_start(Frames);
+}
+
+void a_spriteframes_start(ASpriteFrames* Frames)
+{
+    if(Frames->timer) {
         a_timer_start(Frames->timer);
     }
 }
@@ -354,12 +359,5 @@ void a_spriteframes_pause(ASpriteFrames* Frames)
 {
     if(Frames->timer) {
         a_timer_stop(Frames->timer);
-    }
-}
-
-void a_spriteframes_resume(ASpriteFrames* Frames)
-{
-    if(Frames->timer) {
-        a_timer_start(Frames->timer);
     }
 }

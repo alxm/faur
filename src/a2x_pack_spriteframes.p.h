@@ -61,5 +61,5 @@ extern void a_spriteframes_directionFlip(ASpriteFrames* Frames);
 extern unsigned a_spriteframes_speedGet(const ASpriteFrames* Frames);
 extern void a_spriteframes_speedSet(ASpriteFrames* Frames, ATimerType Units, unsigned TimePerFrame);
 
+extern void a_spriteframes_start(ASpriteFrames* Frames);
 extern void a_spriteframes_pause(ASpriteFrames* Frames);
-extern void a_spriteframes_resume(ASpriteFrames* Frames);
