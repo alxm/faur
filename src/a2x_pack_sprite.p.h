@@ -34,9 +34,6 @@ extern ASprite* a_sprite_dup(const ASprite* Sprite);
 extern void a_sprite_free(ASprite* Sprite);
 
 extern void a_sprite_blit(const ASprite* Sprite, int X, int Y);
-extern void a_sprite_blitCenter(const ASprite* Sprite);
-extern void a_sprite_blitCenterX(const ASprite* Sprite, int Y);
-extern void a_sprite_blitCenterY(const ASprite* Sprite, int X);
 extern void a_sprite_blitEx(const ASprite* Sprite, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY);
 
 extern void a_sprite_swapColor(ASprite* Sprite, APixel OldColor, APixel NewColor);

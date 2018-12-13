@@ -257,27 +257,6 @@ void a_sprite_blit(const ASprite* Sprite, int X, int Y)
     a_platform__textureBlit(Sprite->texture, X, Y, a_pixel__state.fillBlit);
 }
 
-void a_sprite_blitCenter(const ASprite* Sprite)
-{
-    a_sprite_blit(Sprite,
-                  (a__screen.width - Sprite->w) / 2,
-                  (a__screen.height - Sprite->h) / 2);
-}
-
-void a_sprite_blitCenterX(const ASprite* Sprite, int Y)
-{
-    a_sprite_blit(Sprite,
-                  (a__screen.width - Sprite->w) / 2,
-                  Y);
-}
-
-void a_sprite_blitCenterY(const ASprite* Sprite, int X)
-{
-    a_sprite_blit(Sprite,
-                  X,
-                  (a__screen.height - Sprite->h) / 2);
-}
-
 void a_sprite_blitEx(const ASprite* Sprite, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY)
 {
     a_platform__textureBlitEx(Sprite->texture,
