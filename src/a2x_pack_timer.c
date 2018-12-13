@@ -111,18 +111,14 @@ void a_timer__tick(void)
 
 ATimer* a_timer_new(ATimerType Type, unsigned Period, bool Repeat)
 {
-    ATimer* t = a_mem_malloc(sizeof(ATimer));
+    ATimer* t = a_mem_zalloc(sizeof(ATimer));
 
     if(Type == A_TIMER_SEC) {
         Period *= 1000;
     }
 
     t->type = Type;
-    t->flags = 0;
     t->period = Period;
-    t->start = 0;
-    t->diff = 0;
-    t->runningListNode = NULL;
 
     if(Repeat) {
         A_FLAG_SET(t->flags, A_TIMER__REPEAT);
