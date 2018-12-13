@@ -334,9 +334,10 @@ void a_platform__textureBlitEx(const APlatformTexture* Texture, int X, int Y, AF
 {
     A_UNUSED(Scale);
     A_UNUSED(Angle);
-    A_UNUSED(CenterX);
-    A_UNUSED(CenterY);
 
-    a_platform__textureBlit(Texture, X, Y, FillFlat);
+    a_platform__textureBlit(Texture,
+                            X - Texture->spr->w / 2 - CenterX,
+                            Y - Texture->spr->h / 2 - CenterY,
+                            FillFlat);
 }
 #endif // A_BUILD_RENDER_SOFTWARE
