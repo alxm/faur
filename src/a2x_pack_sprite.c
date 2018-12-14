@@ -71,13 +71,17 @@ static int findNextVerticalEdge(const ASprite* Sheet, int StartX, int StartY, in
             *EdgeX = x - StartX;
 
             int len = 1;
+            APixel* buffer = Sheet->pixels + (StartY + 1) * Sheet->w + x;
 
-            for(int y = StartY + 1; y < Sheet->h; y++, len++) {
-                p = a_sprite__pixelsGetPixel(Sheet, x, y);
+            for(int y = Sheet->h - (StartY + 1); y--; ) {
+                if(*buffer != a_sprite__colorLimit
+                    && *buffer != a_sprite__colorEnd) {
 
-                if(p != a_sprite__colorLimit && p != a_sprite__colorEnd) {
                     break;
                 }
+
+                buffer += Sheet->w;
+                len++;
             }
 
             return len;
@@ -96,13 +100,15 @@ static int findNextHorizontalEdge(const ASprite* Sheet, int StartX, int StartY, 
             *EdgeY = y - StartY;
 
             int len = 1;
+            APixel* buffer = Sheet->pixels + y * Sheet->w + (StartX + 1);
 
-            for(int x = StartX + 1; x < Sheet->w; x++, len++) {
-                p = a_sprite__pixelsGetPixel(Sheet, x, y);
-
-                if(p != a_sprite__colorLimit) {
+            for(int x = Sheet->w - (StartX + 1); x--; ) {
+                if(*buffer != a_sprite__colorLimit) {
                     break;
                 }
+
+                buffer++;
+                len++;
             }
 
             return len;
