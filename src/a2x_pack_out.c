@@ -90,7 +90,7 @@ static void outWorker(AOutSource Source, AOutType Type, bool Verbose, bool Overw
         return;
     }
 
-    if(!a_str__fmtEx(buffer, sizeof(buffer), Format, Args, true)) {
+    if(!a_str_fmtv(buffer, sizeof(buffer), true, Format, Args)) {
         return;
     }
 

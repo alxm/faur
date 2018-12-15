@@ -23,6 +23,7 @@
 
 #include "a2x_pack_embed.v.h"
 #include "a2x_pack_mem.v.h"
+#include "a2x_pack_out.v.h"
 #include "a2x_pack_str.v.h"
 
 struct APath {
@@ -86,7 +87,7 @@ APath* a_path_newf(const char* Format, ...)
     va_end(args);
 
     if(bytesNeeded <= 1) {
-        return NULL;
+        a_out__fatal("a_path_newf(%s): vsnprintf failed", Format);
     }
 
     char* buffer = a_mem_malloc((size_t)bytesNeeded);

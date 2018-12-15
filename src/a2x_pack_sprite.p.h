@@ -26,7 +26,7 @@ typedef struct ASprite ASprite;
 #include "a2x_pack_fix.p.h"
 #include "a2x_pack_pixel.p.h"
 
-extern ASprite* a_sprite_newFromFile(const char* Path);
+extern ASprite* a_sprite_newFromPng(const char* Path);
 extern ASprite* a_sprite_newFromSprite(const ASprite* Sheet, int X, int Y);
 extern ASprite* a_sprite_newFromSpriteEx(const ASprite* Sheet, int X, int Y, int W, int H);
 extern ASprite* a_sprite_newBlank(int Width, int Height, bool ColorKeyed);
@@ -34,13 +34,10 @@ extern ASprite* a_sprite_dup(const ASprite* Sprite);
 extern void a_sprite_free(ASprite* Sprite);
 
 extern void a_sprite_blit(const ASprite* Sprite, int X, int Y);
-extern void a_sprite_blitCenter(const ASprite* Sprite);
-extern void a_sprite_blitCenterX(const ASprite* Sprite, int Y);
-extern void a_sprite_blitCenterY(const ASprite* Sprite, int X);
 extern void a_sprite_blitEx(const ASprite* Sprite, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY);
 
 extern void a_sprite_swapColor(ASprite* Sprite, APixel OldColor, APixel NewColor);
-extern void a_sprite_swapColors(ASprite* Sprite, APixel* OldColors, APixel* NewColors, unsigned NumColors);
+extern void a_sprite_swapColors(ASprite* Sprite, const APixel* OldColors, const APixel* NewColors, unsigned NumColors);
 
 extern int a_sprite_widthGet(const ASprite* Sprite);
 extern int a_sprite_widthGetLog2(const ASprite* Sprite);
@@ -49,7 +46,7 @@ extern void a_sprite_widthSetPowerOf2(ASprite* Sprite);
 
 extern int a_sprite_heightGet(const ASprite* Sprite);
 
-extern APixel* a_sprite_pixelsGetBuffer(ASprite* Sprite);
+extern const APixel* a_sprite_pixelsGetBuffer(const ASprite* Sprite);
 extern APixel a_sprite_pixelsGetPixel(const ASprite* Sprite, int X, int Y);
 
 extern APixel a_sprite_colorKeyGet(void);

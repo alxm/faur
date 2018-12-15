@@ -23,6 +23,8 @@
 
 #include "a2x_pack_list.p.h"
 
+extern const char* a_str_fmt(char* Buffer, size_t Size, bool OverflowOk, const char* Format, ...);
+extern const char* a_str_fmtv(char* Buffer, size_t Size, bool OverflowOk, const char* Format, va_list Args);
 extern const char* a_str_fmt512(const char* Format, ...);
 
 extern char* a_str_merge(const char* String1, ...);

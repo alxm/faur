@@ -24,41 +24,50 @@
 #include "a2x_pack_out.v.h"
 #include "a2x_pack_random.v.h"
 #include "a2x_pack_sprite.v.h"
-#include "a2x_pack_timer.v.h"
 
 struct ASpriteFrames {
+    ATimer* timer;
     AList* sprites;
     ASprite** spriteArray;
-    ATimer* timer;
     unsigned num;
     unsigned index;
     bool forward;
 };
 
-ASpriteFrames* a_spriteframes_newFromFile(const char* Path, unsigned FrameMs)
+ASpriteFrames* a_spriteframes_newBlank(void)
 {
-    ASprite* s = a_sprite_newFromFile(Path);
-    ASpriteFrames* f = a_spriteframes_newFromSprite(s, 0, 0, FrameMs);
+    ASpriteFrames* f = a_mem_zalloc(sizeof(ASpriteFrames));
+
+    f->sprites = a_list_new();
+    f->forward = true;
+
+    return f;
+}
+
+ASpriteFrames* a_spriteframes_newFromPng(const char* Path)
+{
+    ASprite* s = a_sprite_newFromPng(Path);
+    ASpriteFrames* f = a_spriteframes_newFromSprite(s, 0, 0);
 
     a_sprite_free(s);
 
     return f;
 }
 
-ASpriteFrames* a_spriteframes_newFromFileGrid(const char* Path, int CellWidth, int CellHeight, unsigned FrameMs)
+ASpriteFrames* a_spriteframes_newFromPngGrid(const char* Path, int CellWidth, int CellHeight)
 {
-    ASprite* s = a_sprite_newFromFile(Path);
+    ASprite* s = a_sprite_newFromPng(Path);
     ASpriteFrames* f = a_spriteframes_newFromSpriteGrid(
-                        s, 0, 0, CellWidth, CellHeight, FrameMs);
+                        s, 0, 0, CellWidth, CellHeight);
 
     a_sprite_free(s);
 
     return f;
 }
 
-ASpriteFrames* a_spriteframes_newFromSprite(const ASprite* Sheet, int X, int Y, unsigned FrameMs)
+ASpriteFrames* a_spriteframes_newFromSprite(const ASprite* Sheet, int X, int Y)
 {
-    ASpriteFrames* f = a_spriteframes_newBlank(FrameMs);
+    ASpriteFrames* f = a_spriteframes_newBlank();
 
     if(X < 0 || X >= Sheet->w || Y < 0 || Y >= Sheet->h) {
         a_out__fatal("a_spriteframes_newFromSprite(%s): Invalid coords %d, %d",
@@ -99,9 +108,9 @@ ASpriteFrames* a_spriteframes_newFromSprite(const ASprite* Sheet, int X, int Y, 
     return f;
 }
 
-ASpriteFrames* a_spriteframes_newFromSpriteGrid(const ASprite* Sheet, int X, int Y, int CellWidth, int CellHeight, unsigned FrameMs)
+ASpriteFrames* a_spriteframes_newFromSpriteGrid(const ASprite* Sheet, int X, int Y, int CellWidth, int CellHeight)
 {
-    ASpriteFrames* f = a_spriteframes_newBlank(FrameMs);
+    ASpriteFrames* f = a_spriteframes_newBlank();
 
     int gridW, gridH;
     a_sprite__boundsFind(Sheet, X, Y, &gridW, &gridH);
@@ -124,25 +133,15 @@ ASpriteFrames* a_spriteframes_newFromSpriteGrid(const ASprite* Sheet, int X, int
     return f;
 }
 
-ASpriteFrames* a_spriteframes_newBlank(unsigned FrameMs)
-{
-    ASpriteFrames* f = a_mem_malloc(sizeof(ASpriteFrames));
-
-    f->sprites = a_list_new();
-    f->spriteArray = NULL;
-    f->timer = a_timer_new(A_TIMER_MS, FrameMs, true);
-    f->num = 0;
-    f->index = 0;
-    f->forward = true;
-
-    a_timer_start(f->timer);
-
-    return f;
-}
-
 ASpriteFrames* a_spriteframes_dup(const ASpriteFrames* Frames, bool DupSprites)
 {
     ASpriteFrames* f = a_mem_malloc(sizeof(ASpriteFrames));
+
+    if(Frames->timer) {
+        f->timer = a_timer_dup(Frames->timer);
+    } else {
+        f->timer = NULL;
+    }
 
     if(DupSprites) {
         f->sprites = a_list_new();
@@ -155,12 +154,11 @@ ASpriteFrames* a_spriteframes_dup(const ASpriteFrames* Frames, bool DupSprites)
     }
 
     f->spriteArray = (ASprite**)a_list_toArray(f->sprites);
-    f->timer = a_timer_dup(Frames->timer);
     f->num = Frames->num;
     f->index = 0;
     f->forward = true;
 
-    a_timer_start(f->timer);
+    a_spriteframes_start(f);
 
     return f;
 }
@@ -196,13 +194,13 @@ void a_spriteframes_clear(ASpriteFrames* Frames, bool FreeSprites)
 
 void a_spriteframes_reset(ASpriteFrames* Frames)
 {
-    a_timer_start(Frames->timer);
-
     if(Frames->forward) {
         Frames->index = 0;
     } else {
         Frames->index = Frames->num - 1;
     }
+
+    a_spriteframes_start(Frames);
 }
 
 void a_spriteframes_randomize(ASpriteFrames* Frames)
@@ -265,10 +263,18 @@ ASprite* a_spriteframes_removeLast(ASpriteFrames* Frames)
 ASprite* a_spriteframes_getNext(ASpriteFrames* Frames)
 {
     const unsigned oldindex = Frames->index;
+    bool advance = false;
 
-    if(a_timer_expiredGet(Frames->timer)) {
-        a_timer_expiredClear(Frames->timer);
+    if(Frames->timer) {
+        if(a_timer_expiredGet(Frames->timer)) {
+            a_timer_expiredClear(Frames->timer);
+            advance = true;
+        }
+    } else {
+        advance = true;
+    }
 
+    if(advance) {
         if(Frames->forward && ++Frames->index == Frames->num) {
             Frames->index = 0;
         } else if(!Frames->forward && Frames->index-- == 0) {
@@ -313,7 +319,7 @@ void a_spriteframes_indexSet(ASpriteFrames* Frames, unsigned Index)
 {
     Frames->index = Index;
 
-    a_timer_start(Frames->timer);
+    a_spriteframes_start(Frames);
 }
 
 void a_spriteframes_directionSet(ASpriteFrames* Frames, bool Forward)
@@ -328,20 +334,30 @@ void a_spriteframes_directionFlip(ASpriteFrames* Frames)
 
 unsigned a_spriteframes_speedGet(const ASpriteFrames* Frames)
 {
-    return a_timer_periodGet(Frames->timer);
+    return Frames->timer ? a_timer_periodGet(Frames->timer) : 0;
 }
 
-void a_spriteframes_speedSet(ASpriteFrames* Frames, unsigned FrameMs)
+void a_spriteframes_speedSet(ASpriteFrames* Frames, ATimerType Units, unsigned TimePerFrame)
 {
-    a_timer_periodSet(Frames->timer, FrameMs);
+    if(Frames->timer) {
+        a_timer_periodSet(Frames->timer, TimePerFrame);
+    } else {
+        Frames->timer = a_timer_new(Units, TimePerFrame, true);
+    }
+
+    a_spriteframes_start(Frames);
+}
+
+void a_spriteframes_start(ASpriteFrames* Frames)
+{
+    if(Frames->timer) {
+        a_timer_start(Frames->timer);
+    }
 }
 
 void a_spriteframes_pause(ASpriteFrames* Frames)
 {
-    a_timer_stop(Frames->timer);
-}
-
-void a_spriteframes_resume(ASpriteFrames* Frames)
-{
-    a_timer_start(Frames->timer);
+    if(Frames->timer) {
+        a_timer_stop(Frames->timer);
+    }
 }

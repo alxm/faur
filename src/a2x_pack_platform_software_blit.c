@@ -25,7 +25,7 @@
 #include "a2x_pack_screen.v.h"
 
 struct APlatformTexture {
-    ASprite* spr;
+    const ASprite* spr;
     bool colorKeyed;
     size_t spansSize;
     unsigned spans[];
@@ -251,7 +251,7 @@ APlatformTexture* a_platform__textureScreenNew(int Width, int Height)
     return NULL;
 }
 
-void a_platform__textureSpriteCommit(ASprite* Sprite)
+APlatformTexture* a_platform__textureSpriteNew(const ASprite* Sprite)
 {
     APlatformTexture* texture = Sprite->texture;
     const APixel* pixels = Sprite->pixels;
@@ -267,44 +267,42 @@ void a_platform__textureSpriteCommit(ASprite* Sprite)
         a_platform__textureFree(texture);
         texture = a_mem_malloc(sizeof(APlatformTexture) + bytesNeeded);
 
-        Sprite->texture = texture;
-
         texture->spr = Sprite;
         texture->spansSize = bytesNeeded;
     }
 
     texture->colorKeyed = colorKeyed;
 
-    if(texture->spansSize == 0) {
-        return;
-    }
+    if(texture->spansSize > 0) {
+        unsigned* spans = texture->spans;
 
-    unsigned* spans = texture->spans;
+        for(int y = height; y--; ) {
+            unsigned* lineStart = spans;
+            unsigned numSpans = 1; // line has at least 1 span
+            unsigned spanLength = 0;
 
-    for(int y = height; y--; ) {
-        unsigned* lineStart = spans;
-        unsigned numSpans = 1; // line has at least 1 span
-        unsigned spanLength = 0;
+            bool lastState = *pixels != a_sprite__colorKey; // initial state
+            *spans++ = lastState;
 
-        bool lastState = *pixels != a_sprite__colorKey; // initial draw state
-        *spans++ = lastState;
+            for(int x = width; x--; ) {
+                bool newState = *pixels++ != a_sprite__colorKey;
 
-        for(int x = width; x--; ) {
-            bool newState = *pixels++ != a_sprite__colorKey;
-
-            if(newState == lastState) {
-                spanLength++; // keep growing current span
-            } else {
-                *spans++ = spanLength; // record the just-ended span length
-                numSpans++;
-                spanLength = 1; // start a new span from this pixel
-                lastState = newState;
+                if(newState == lastState) {
+                    spanLength++; // keep growing current span
+                } else {
+                    *spans++ = spanLength; // record the just-ended span length
+                    numSpans++;
+                    spanLength = 1; // start a new span from this pixel
+                    lastState = newState;
+                }
             }
-        }
 
-        *spans++ = spanLength; // record the last span's length
-        *lineStart |= numSpans << 1; // record line's number of spans
+            *spans++ = spanLength; // record the last span's length
+            *lineStart |= numSpans << 1; // record line's number of spans
+        }
     }
+
+    return texture;
 }
 
 void a_platform__textureFree(APlatformTexture* Texture)
@@ -316,7 +314,7 @@ void a_platform__textureFree(APlatformTexture* Texture)
     free(Texture);
 }
 
-void a_platform__textureBlit(APlatformTexture* Texture, int X, int Y, bool FillFlat)
+void a_platform__textureBlit(const APlatformTexture* Texture, int X, int Y, bool FillFlat)
 {
     A_UNUSED(FillFlat);
 
@@ -332,13 +330,14 @@ void a_platform__textureBlit(APlatformTexture* Texture, int X, int Y, bool FillF
             (Texture, X, Y);
 }
 
-void a_platform__textureBlitEx(APlatformTexture* Texture, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY, bool FillFlat)
+void a_platform__textureBlitEx(const APlatformTexture* Texture, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY, bool FillFlat)
 {
     A_UNUSED(Scale);
     A_UNUSED(Angle);
-    A_UNUSED(CenterX);
-    A_UNUSED(CenterY);
 
-    a_platform__textureBlit(Texture, X, Y, FillFlat);
+    a_platform__textureBlit(Texture,
+                            X - Texture->spr->w / 2 - CenterX,
+                            Y - Texture->spr->h / 2 - CenterY,
+                            FillFlat);
 }
 #endif // A_BUILD_RENDER_SOFTWARE

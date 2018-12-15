@@ -59,8 +59,8 @@ void a_font__init(void)
         [A_FONT__ID_BLUE] = a_pixel_fromHex(0x4f8fdf),
     };
 
-    g_defaultFonts[A_FONT__ID_DEFAULT] = a_font_newFromFile("/a2x/font");
-    g_defaultFonts[A_FONT__ID_WHITE] = a_font_newFromFile("/a2x/fontKeyed");
+    g_defaultFonts[A_FONT__ID_DEFAULT] = a_font_newFromPng("/a2x/font");
+    g_defaultFonts[A_FONT__ID_WHITE] = a_font_newFromPng("/a2x/fontKeyed");
 
     for(AFontId f = A_FONT__ID_WHITE + 1; f < A_FONT__ID_NUM; f++) {
         g_defaultFonts[f] = a_font_dup(
@@ -88,9 +88,9 @@ static AFont* a_font__new(ASpriteFrames* Frames)
     return f;
 }
 
-AFont* a_font_newFromFile(const char* Path)
+AFont* a_font_newFromPng(const char* Path)
 {
-    ASprite* s = a_sprite_newFromFile(Path);
+    ASprite* s = a_sprite_newFromPng(Path);
     AFont* f = a_font_newFromSprite(s, 0, 0);
 
     a_sprite_free(s);
@@ -100,13 +100,14 @@ AFont* a_font_newFromFile(const char* Path)
 
 AFont* a_font_newFromSprite(const ASprite* Sheet, int X, int Y)
 {
-    ASpriteFrames* frames = a_spriteframes_newFromSpriteGrid(
-                                Sheet,
-                                X,
-                                Y,
-                                Sheet->w / 16,
-                                Sheet->h / 6,
-                                0);
+    ASprite* gridSprite = a_sprite_newFromSprite(Sheet, X, Y);
+    ASpriteFrames* frames = a_spriteframes_newFromSpriteGrid(gridSprite,
+                                                             0,
+                                                             0,
+                                                             gridSprite->w / 16,
+                                                             gridSprite->h / 6);
+
+    a_sprite_free(gridSprite);
 
     return a_font__new(frames);
 }
@@ -359,7 +360,7 @@ void a_font_printf(const char* Format, ...)
 
 void a_font_printv(const char* Format, va_list Args)
 {
-    if(a_str__fmtEx(g_buffer, sizeof(g_buffer), Format, Args, true)) {
+    if(a_str_fmtv(g_buffer, sizeof(g_buffer), true, Format, Args)) {
         a_font_print(g_buffer);
     }
 }
@@ -390,7 +391,7 @@ int a_font_widthGetf(const char* Format, ...)
 
 int a_font_widthGetv(const char* Format, va_list Args)
 {
-    if(a_str__fmtEx(g_buffer, sizeof(g_buffer), Format, Args, true)) {
+    if(a_str_fmtv(g_buffer, sizeof(g_buffer), true, Format, Args)) {
         return a_font_widthGet(g_buffer);
     }
 

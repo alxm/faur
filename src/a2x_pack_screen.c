@@ -382,7 +382,7 @@ static void pushTarget(APixel* Pixels, size_t PixelsSize, int Width, int Height,
     a_screen_clipReset();
 }
 
-void a_screen_targetPushScreen(AScreen* Screen)
+void a_screen_targetPushScreen(const AScreen* Screen)
 {
     pushTarget(Screen->pixels,
                Screen->pixelsSize,
@@ -406,7 +406,8 @@ void a_screen_targetPop(void)
 {
     #if A_BUILD_RENDER_SOFTWARE
         if(a__screen.sprite) {
-            a_platform__textureSpriteCommit(a__screen.sprite);
+            a__screen.sprite->texture = a_platform__textureSpriteNew(
+                                            a__screen.sprite);
         }
     #endif
 

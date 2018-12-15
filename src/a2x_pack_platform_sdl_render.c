@@ -345,7 +345,7 @@ APlatformTexture* a_platform__textureScreenNew(int Width, int Height)
     return screen;
 }
 
-void a_platform__textureSpriteCommit(ASprite* Sprite)
+APlatformTexture* a_platform__textureSpriteNew(const ASprite* Sprite)
 {
     APlatformTexture* texture = Sprite->texture;
     int width = Sprite->w;
@@ -353,7 +353,6 @@ void a_platform__textureSpriteCommit(ASprite* Sprite)
 
     if(texture == NULL) {
         texture = a_mem_zalloc(sizeof(APlatformTexture));
-        Sprite->texture = texture;
     }
 
     if(Sprite->pixelsSize > texture->pixelsSize) {
@@ -410,6 +409,8 @@ void a_platform__textureSpriteCommit(ASprite* Sprite)
 
         texture->texture[i] = t;
     }
+
+    return texture;
 }
 
 void a_platform__textureFree(APlatformTexture* Texture)
@@ -426,7 +427,7 @@ void a_platform__textureFree(APlatformTexture* Texture)
     free(Texture);
 }
 
-void a_platform__textureBlit(APlatformTexture* Texture, int X, int Y, bool FillFlat)
+void a_platform__textureBlit(const APlatformTexture* Texture, int X, int Y, bool FillFlat)
 {
     a_platform__textureBlitEx(Texture,
                               X + Texture->w / 2,
@@ -438,7 +439,7 @@ void a_platform__textureBlit(APlatformTexture* Texture, int X, int Y, bool FillF
                               FillFlat);
 }
 
-void a_platform__textureBlitEx(APlatformTexture* Texture, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY, bool FillFlat)
+void a_platform__textureBlitEx(const APlatformTexture* Texture, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY, bool FillFlat)
 {
     SDL_Texture* t = Texture->texture[FillFlat];
 
