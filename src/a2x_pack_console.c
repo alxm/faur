@@ -215,6 +215,23 @@ void a_console__draw(void)
         a_font_printf("Vsync %s\n",
                       a_settings_boolGet(A_SETTING_VIDEO_VSYNC) ? "on" : "off");
 
+        const char* libName = "?";
+        const char* renderMode = "?";
+
+        #if A_BUILD_LIB_SDL == 1
+            libName = "SDL 1.2";
+        #elif A_BUILD_LIB_SDL == 2
+            libName = "SDL 2.0";
+        #endif
+
+        #if A_BUILD_RENDER_SOFTWARE
+            renderMode = "S/W";
+        #elif A_BUILD_RENDER_SDL
+            renderMode = "SDL";
+        #endif
+
+        a_font_printf("%s - %s\n", libName, renderMode);
+
         a_font__fontSet(A_FONT__ID_BLUE);
         a_font_printf("PID %d\n", getpid());
         a_font_printf("%u", a_fps_ticksGet());
