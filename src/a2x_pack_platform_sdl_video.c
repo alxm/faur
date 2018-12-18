@@ -29,14 +29,14 @@
 #include "a2x_pack_str.v.h"
 
 #if A_BUILD_LIB_SDL == 1
-    static SDL_Surface* g_sdlScreen = NULL;
+    static SDL_Surface* g_sdlScreen;
 #elif A_BUILD_LIB_SDL == 2
-    SDL_Renderer* a__sdlRenderer = NULL;
-    static SDL_Window* g_sdlWindow = NULL;
+    SDL_Renderer* a__sdlRenderer;
+    static SDL_Window* g_sdlWindow;
     static int g_clearR, g_clearG, g_clearB;
 
     #if A_BUILD_RENDER_SOFTWARE
-        static SDL_Texture* g_sdlTexture = NULL;
+        static SDL_Texture* g_sdlTexture;
     #endif
 
     static void settingBorderColor(ASettingId Setting)
