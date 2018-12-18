@@ -55,10 +55,16 @@ static inline uint8_t pixelAlphaToSdlAlpha(void)
 {
     switch(a_pixel__state.blend) {
         case A_PIXEL_BLEND_RGBA:
-        case A_PIXEL_BLEND_RGB25:
-        case A_PIXEL_BLEND_RGB50:
-        case A_PIXEL_BLEND_RGB75:
             return (uint8_t)a_pixel__state.alpha;
+
+        case A_PIXEL_BLEND_RGB25:
+            return SDL_ALPHA_OPAQUE / 4;
+
+        case A_PIXEL_BLEND_RGB50:
+            return SDL_ALPHA_OPAQUE / 2;
+
+        case A_PIXEL_BLEND_RGB75:
+            return SDL_ALPHA_OPAQUE * 3 / 4;
 
         default:
             return SDL_ALPHA_OPAQUE;
