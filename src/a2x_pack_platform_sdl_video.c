@@ -134,9 +134,9 @@ void a_platform__screenInit(int Width, int Height, bool FullScreen)
                     a_out__fatal("SDL_LockSurface: %s", SDL_GetError());
                 }
             }
-        }
 
-        a__screen.pixels = g_sdlScreen->pixels;
+            a__screen.pixels = g_sdlScreen->pixels;
+        }
     #elif A_BUILD_LIB_SDL == 2
         int ret;
         uint32_t windowFlags = SDL_WINDOW_MAXIMIZED | SDL_WINDOW_RESIZABLE;
