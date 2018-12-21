@@ -179,6 +179,11 @@ bool a_screen__sameSize(const AScreen* Screen1, const AScreen* Screen2)
 APixel* a_screen_pixelsGetBuffer(void)
 {
     #if !A_BUILD_RENDER_SOFTWARE
+        if(a__screen.pixels == NULL) {
+            a__screen.pixels = a_mem_malloc(a__screen.pixelsSize);
+            a__screen.ownsBuffer = true;
+        }
+
         a_platform__renderTargetPixelsGet(a__screen.pixels, a__screen.width);
     #endif
 
@@ -199,7 +204,11 @@ AScreen* a_screen_new(int Width, int Height)
 {
     AScreen* s = a_mem_malloc(sizeof(AScreen));
 
-    initScreen(s, Width, Height, true);
+    #if A_BUILD_RENDER_SOFTWARE
+        initScreen(s, Width, Height, true);
+    #else
+        initScreen(s, Width, Height, false);
+    #endif
 
     return s;
 }

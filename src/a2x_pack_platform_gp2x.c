@@ -30,8 +30,6 @@
 #include "a2x_pack_file.v.h"
 #include "a2x_pack_settings.v.h"
 
-static int g_mmuHackOn = 0;
-
 static void setCpuSpeed(unsigned MHz)
 {
     unsigned mhz = MHz * 1000000;
@@ -103,13 +101,6 @@ void a_platform_gp2x__init(void)
     if(a_path_exists("./mmuhack.o", A_PATH_FILE)) {
         system("/sbin/rmmod mmuhack");
         system("/sbin/insmod mmuhack.o");
-
-        int mmufd = open("/dev/mmuhack", O_RDWR);
-
-        if(mmufd >= 0) {
-            close(mmufd);
-            g_mmuHackOn = 1;
-        }
     }
 
     if(a_settings_intuGet(A_SETTING_SYSTEM_GP2X_MHZ) > 0) {
@@ -121,7 +112,10 @@ void a_platform_gp2x__init(void)
 
 void a_platform_gp2x__uninit(void)
 {
-    if(g_mmuHackOn) {
+    int mmufd = open("/dev/mmuhack", O_RDWR);
+
+    if(mmufd >= 0) {
+        close(mmufd);
         system("/sbin/rmmod mmuhack");
     }
 

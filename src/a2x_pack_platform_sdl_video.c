@@ -29,21 +29,15 @@
 #include "a2x_pack_str.v.h"
 
 #if A_BUILD_LIB_SDL == 1
-    static SDL_Surface* g_sdlScreen = NULL;
+    static SDL_Surface* g_sdlScreen;
 #elif A_BUILD_LIB_SDL == 2
-    SDL_Renderer* a__sdlRenderer = NULL;
-    static SDL_Window* g_sdlWindow = NULL;
+    SDL_Renderer* a__sdlRenderer;
+    static SDL_Window* g_sdlWindow;
     static int g_clearR, g_clearG, g_clearB;
 
     #if A_BUILD_RENDER_SOFTWARE
-        static SDL_Texture* g_sdlTexture = NULL;
+        static SDL_Texture* g_sdlTexture;
     #endif
-
-    static void settingBorderColor(ASettingId Setting)
-    {
-        a_pixel_toRgb(
-            a_settings_colorGet(Setting), &g_clearR, &g_clearG, &g_clearB);
-    }
 #endif
 
 void a_platform_sdl_video__init(void)
@@ -55,30 +49,6 @@ void a_platform_sdl_video__init(void)
 
     if(SDL_InitSubSystem(SDL_INIT_VIDEO) != 0) {
         a_out__fatal("SDL_InitSubSystem: %s", SDL_GetError());
-    }
-}
-
-static void settingFullscreen(ASettingId Setting)
-{
-    bool fullScreen = a_settings_boolGet(Setting);
-
-    #if A_BUILD_LIB_SDL == 2
-        if(SDL_SetWindowFullscreen(
-            g_sdlWindow, fullScreen? SDL_WINDOW_FULLSCREEN : 0) < 0) {
-
-            a_out__error("SDL_SetWindowFullscreen: %s", SDL_GetError());
-        }
-    #endif
-
-    a_settings_boolSet(A_SETTING_INPUT_MOUSE_CURSOR, !fullScreen);
-}
-
-static void settingMouseCursor(ASettingId Setting)
-{
-    int toggle = a_settings_boolGet(Setting) ? SDL_ENABLE : SDL_DISABLE;
-
-    if(SDL_ShowCursor(toggle) < 0) {
-        a_out__error("SDL_ShowCursor: %s", SDL_GetError());
     }
 }
 
@@ -99,6 +69,58 @@ void a_platform_sdl_video__uninit(void)
     #endif
 
     SDL_QuitSubSystem(SDL_INIT_VIDEO);
+}
+
+#if A_BUILD_LIB_SDL == 2
+static void settingBorderColor(ASettingId Setting)
+{
+    a_pixel_toRgb(
+        a_settings_colorGet(Setting), &g_clearR, &g_clearG, &g_clearB);
+}
+#endif
+
+static void settingFullscreen(ASettingId Setting)
+{
+    bool fullScreen = a_settings_boolGet(Setting);
+
+    #if A_BUILD_LIB_SDL == 1
+        if(a_settings_boolGet(A_SETTING_VIDEO_DOUBLEBUFFER)) {
+            uint32_t videoFlags = SDL_SWSURFACE;
+
+            if(fullScreen) {
+                videoFlags |= SDL_FULLSCREEN;
+            }
+
+            g_sdlScreen = SDL_SetVideoMode(0, 0, 0, videoFlags);
+
+            if(g_sdlScreen == NULL) {
+                a_out__fatal("SDL_SetVideoMode: %s", SDL_GetError());
+            }
+
+            SDL_SetClipRect(g_sdlScreen, NULL);
+        } else {
+            a_out__warning(
+                "SDL 1.2 fullscreen needs %s=true",
+                a_settings__idToString(A_SETTING_VIDEO_DOUBLEBUFFER));
+        }
+    #elif A_BUILD_LIB_SDL == 2
+        if(SDL_SetWindowFullscreen(
+            g_sdlWindow, fullScreen? SDL_WINDOW_FULLSCREEN : 0) < 0) {
+
+            a_out__error("SDL_SetWindowFullscreen: %s", SDL_GetError());
+        }
+    #endif
+
+    a_settings_boolSet(A_SETTING_INPUT_MOUSE_CURSOR, !fullScreen);
+}
+
+static void settingMouseCursor(ASettingId Setting)
+{
+    int toggle = a_settings_boolGet(Setting) ? SDL_ENABLE : SDL_DISABLE;
+
+    if(SDL_ShowCursor(toggle) < 0) {
+        a_out__error("SDL_ShowCursor: %s", SDL_GetError());
+    }
 }
 
 void a_platform__screenInit(int Width, int Height, bool FullScreen)
@@ -134,9 +156,9 @@ void a_platform__screenInit(int Width, int Height, bool FullScreen)
                     a_out__fatal("SDL_LockSurface: %s", SDL_GetError());
                 }
             }
-        }
 
-        a__screen.pixels = g_sdlScreen->pixels;
+            a__screen.pixels = g_sdlScreen->pixels;
+        }
     #elif A_BUILD_LIB_SDL == 2
         int ret;
         uint32_t windowFlags = SDL_WINDOW_MAXIMIZED | SDL_WINDOW_RESIZABLE;
@@ -199,7 +221,7 @@ void a_platform__screenInit(int Width, int Height, bool FullScreen)
             SDL_HINT_RENDER_SCALE_QUALITY, "nearest", SDL_HINT_OVERRIDE);
 
         a_settings__callbackSet(
-            A_SETTING_COLOR_SCREEN_BORDER, settingBorderColor);
+            A_SETTING_COLOR_SCREEN_BORDER, settingBorderColor, true);
     #endif
 
     #if A_BUILD_SYSTEM_DESKTOP
@@ -215,8 +237,16 @@ void a_platform__screenInit(int Width, int Height, bool FullScreen)
         #endif
     #endif
 
-    a_settings__callbackSet(A_SETTING_INPUT_MOUSE_CURSOR, settingMouseCursor);
-    a_settings__callbackSet(A_SETTING_VIDEO_FULLSCREEN, settingFullscreen);
+    a_settings__callbackSet(
+        A_SETTING_INPUT_MOUSE_CURSOR, settingMouseCursor, true);
+
+    #if A_BUILD_LIB_SDL == 1
+        a_settings__callbackSet(
+            A_SETTING_VIDEO_FULLSCREEN, settingFullscreen, false);
+    #elif A_BUILD_LIB_SDL == 2
+        a_settings__callbackSet(
+            A_SETTING_VIDEO_FULLSCREEN, settingFullscreen, true);
+    #endif
 
     #if A_BUILD_SYSTEM_WIZ
         if(a_settings_boolGet(A_SETTING_SYSTEM_WIZ_FIXTEARING)) {

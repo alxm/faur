@@ -215,6 +215,26 @@ void a_console__draw(void)
         a_font_printf("Vsync %s\n",
                       a_settings_boolGet(A_SETTING_VIDEO_VSYNC) ? "on" : "off");
 
+        #if A_BUILD_LIB_SDL == 1
+            a_font_print("SDL 1.2\n");
+        #elif A_BUILD_LIB_SDL == 2
+            a_font_print("SDL 2.0\n");
+        #endif
+
+        #if A_BUILD_RENDER_SOFTWARE
+            #if A_BUILD_LIB_SDL == 1
+                if(a_settings_boolGet(A_SETTING_VIDEO_DOUBLEBUFFER)) {
+                    a_font_print("S/W (Buffer)\n");
+                } else {
+                    a_font_print("S/W (Raw)\n");
+                }
+            #elif A_BUILD_LIB_SDL == 2
+                a_font_print("S/W (Buffer)\n");
+            #endif
+        #elif A_BUILD_RENDER_SDL
+            a_font_print("SDL2 Renderer\n");
+        #endif
+
         a_font__fontSet(A_FONT__ID_BLUE);
         a_font_printf("PID %d\n", getpid());
         a_font_printf("%u", a_fps_ticksGet());
