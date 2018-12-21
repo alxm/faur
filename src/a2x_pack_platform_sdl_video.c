@@ -83,7 +83,27 @@ static void settingFullscreen(ASettingId Setting)
 {
     bool fullScreen = a_settings_boolGet(Setting);
 
-    #if A_BUILD_LIB_SDL == 2
+    #if A_BUILD_LIB_SDL == 1
+        if(a_settings_boolGet(A_SETTING_VIDEO_DOUBLEBUFFER)) {
+            uint32_t videoFlags = SDL_SWSURFACE;
+
+            if(fullScreen) {
+                videoFlags |= SDL_FULLSCREEN;
+            }
+
+            g_sdlScreen = SDL_SetVideoMode(0, 0, 0, videoFlags);
+
+            if(g_sdlScreen == NULL) {
+                a_out__fatal("SDL_SetVideoMode: %s", SDL_GetError());
+            }
+
+            SDL_SetClipRect(g_sdlScreen, NULL);
+        } else {
+            a_out__warning(
+                "SDL 1.2 fullscreen needs %s=true",
+                a_settings__idToString(A_SETTING_VIDEO_DOUBLEBUFFER));
+        }
+    #elif A_BUILD_LIB_SDL == 2
         if(SDL_SetWindowFullscreen(
             g_sdlWindow, fullScreen? SDL_WINDOW_FULLSCREEN : 0) < 0) {
 
