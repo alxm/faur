@@ -82,7 +82,7 @@ void a_platform_sdl_sound__init(void)
                    g_numSampleChannelsReserved);
 
     #if A_BUILD_DEVICE_KEYBOARD
-        a_settings__callbackSet(A_SETTING_SOUND_MUTE, settingMute);
+        a_settings__callbackSet(A_SETTING_SOUND_MUTE, settingMute, true);
     #endif
 }
 

@@ -41,4 +41,4 @@ extern ASettingId a_settings__stringToId(const char* Key);
 extern const char* a_settings__idToString(ASettingId Setting);
 extern ASettingType a_settings__typeGet(ASettingId Setting);
 
-extern void a_settings__callbackSet(ASettingId Setting, ASettingCallback* Callback);
+extern void a_settings__callbackSet(ASettingId Setting, ASettingCallback* Callback, bool RunNow);

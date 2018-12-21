@@ -178,11 +178,11 @@ ASettingType a_settings__typeGet(ASettingId Setting)
     return g_settings[Setting].type;
 }
 
-void a_settings__callbackSet(ASettingId Setting, ASettingCallback* Callback)
+void a_settings__callbackSet(ASettingId Setting, ASettingCallback* Callback, bool RunNow)
 {
     g_settings[Setting].callback = Callback;
 
-    if(Callback) {
+    if(Callback && RunNow) {
         Callback(Setting);
     }
 }

@@ -201,7 +201,7 @@ void a_platform__screenInit(int Width, int Height, bool FullScreen)
             SDL_HINT_RENDER_SCALE_QUALITY, "nearest", SDL_HINT_OVERRIDE);
 
         a_settings__callbackSet(
-            A_SETTING_COLOR_SCREEN_BORDER, settingBorderColor);
+            A_SETTING_COLOR_SCREEN_BORDER, settingBorderColor, true);
     #endif
 
     #if A_BUILD_SYSTEM_DESKTOP
@@ -217,8 +217,16 @@ void a_platform__screenInit(int Width, int Height, bool FullScreen)
         #endif
     #endif
 
-    a_settings__callbackSet(A_SETTING_INPUT_MOUSE_CURSOR, settingMouseCursor);
-    a_settings__callbackSet(A_SETTING_VIDEO_FULLSCREEN, settingFullscreen);
+    a_settings__callbackSet(
+        A_SETTING_INPUT_MOUSE_CURSOR, settingMouseCursor, true);
+
+    #if A_BUILD_LIB_SDL == 1
+        a_settings__callbackSet(
+            A_SETTING_VIDEO_FULLSCREEN, settingFullscreen, false);
+    #elif A_BUILD_LIB_SDL == 2
+        a_settings__callbackSet(
+            A_SETTING_VIDEO_FULLSCREEN, settingFullscreen, true);
+    #endif
 
     #if A_BUILD_SYSTEM_WIZ
         if(a_settings_boolGet(A_SETTING_SYSTEM_WIZ_FIXTEARING)) {
