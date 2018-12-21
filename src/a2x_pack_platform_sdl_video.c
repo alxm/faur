@@ -38,12 +38,6 @@
     #if A_BUILD_RENDER_SOFTWARE
         static SDL_Texture* g_sdlTexture;
     #endif
-
-    static void settingBorderColor(ASettingId Setting)
-    {
-        a_pixel_toRgb(
-            a_settings_colorGet(Setting), &g_clearR, &g_clearG, &g_clearB);
-    }
 #endif
 
 void a_platform_sdl_video__init(void)
@@ -57,6 +51,33 @@ void a_platform_sdl_video__init(void)
         a_out__fatal("SDL_InitSubSystem: %s", SDL_GetError());
     }
 }
+
+void a_platform_sdl_video__uninit(void)
+{
+    #if A_BUILD_LIB_SDL == 1
+        if(!a_settings_boolGet(A_SETTING_VIDEO_DOUBLEBUFFER)) {
+            if(SDL_MUSTLOCK(g_sdlScreen)) {
+                SDL_UnlockSurface(g_sdlScreen);
+            }
+        }
+    #elif A_BUILD_LIB_SDL == 2
+        #if A_BUILD_RENDER_SOFTWARE
+            SDL_DestroyTexture(g_sdlTexture);
+        #endif
+        SDL_DestroyRenderer(a__sdlRenderer);
+        SDL_DestroyWindow(g_sdlWindow);
+    #endif
+
+    SDL_QuitSubSystem(SDL_INIT_VIDEO);
+}
+
+#if A_BUILD_LIB_SDL == 2
+static void settingBorderColor(ASettingId Setting)
+{
+    a_pixel_toRgb(
+        a_settings_colorGet(Setting), &g_clearR, &g_clearG, &g_clearB);
+}
+#endif
 
 static void settingFullscreen(ASettingId Setting)
 {
@@ -80,25 +101,6 @@ static void settingMouseCursor(ASettingId Setting)
     if(SDL_ShowCursor(toggle) < 0) {
         a_out__error("SDL_ShowCursor: %s", SDL_GetError());
     }
-}
-
-void a_platform_sdl_video__uninit(void)
-{
-    #if A_BUILD_LIB_SDL == 1
-        if(!a_settings_boolGet(A_SETTING_VIDEO_DOUBLEBUFFER)) {
-            if(SDL_MUSTLOCK(g_sdlScreen)) {
-                SDL_UnlockSurface(g_sdlScreen);
-            }
-        }
-    #elif A_BUILD_LIB_SDL == 2
-        #if A_BUILD_RENDER_SOFTWARE
-            SDL_DestroyTexture(g_sdlTexture);
-        #endif
-        SDL_DestroyRenderer(a__sdlRenderer);
-        SDL_DestroyWindow(g_sdlWindow);
-    #endif
-
-    SDL_QuitSubSystem(SDL_INIT_VIDEO);
 }
 
 void a_platform__screenInit(int Width, int Height, bool FullScreen)
