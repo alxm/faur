@@ -120,7 +120,7 @@ static inline const ABlock* blockGet(const ABlock* Block, unsigned LineNumber)
         return Block;
     }
 
-    if(Block->blocks) {
+    if(Block && Block->blocks) {
         return a_list_getByIndex(Block->blocks, LineNumber - 1);
     }
 
