@@ -35,10 +35,10 @@ extern AList* a_block_getAllFilter(const ABlock* Block, const char* Key);
 extern const ABlock* a_block_get(const ABlock* Block, const char* Key);
 extern bool a_block_has(const ABlock* Block, const char* Key);
 
-extern int a_block_readInt(const ABlock* Block, unsigned LineNumber);
-extern unsigned a_block_readIntu(const ABlock* Block, unsigned LineNumber);
-extern AFix a_block_readFix(const ABlock* Block, unsigned LineNumber);
-extern AFixu a_block_readAngle(const ABlock* Block, unsigned LineNumber);
-extern APixel a_block_readPixel(const ABlock* Block, unsigned LineNumber);
-extern const char* a_block_readString(const ABlock* Block, unsigned LineNumber);
-extern AVectorInt a_block_readCoords(const ABlock* Block, unsigned LineNumber);
+extern int a_block_lineGetInt(const ABlock* Block, unsigned LineNumber);
+extern unsigned a_block_lineGetIntu(const ABlock* Block, unsigned LineNumber);
+extern AFix a_block_lineGetFix(const ABlock* Block, unsigned LineNumber);
+extern AFixu a_block_lineGetAngle(const ABlock* Block, unsigned LineNumber);
+extern APixel a_block_lineGetPixel(const ABlock* Block, unsigned LineNumber);
+extern const char* a_block_lineGetString(const ABlock* Block, unsigned LineNumber);
+extern AVectorInt a_block_lineGetCoords(const ABlock* Block, unsigned LineNumber);

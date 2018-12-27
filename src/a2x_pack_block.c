@@ -221,28 +221,28 @@ bool a_block_has(const ABlock* Block, const char* Key)
     return Block->index && a_strhash_contains(Block->index, Key);
 }
 
-int a_block_readInt(const ABlock* Block, unsigned LineNumber)
+int a_block_lineGetInt(const ABlock* Block, unsigned LineNumber)
 {
     const ABlock* line = blockGet(Block, LineNumber);
 
     return line ? atoi(line->text) : 0;
 }
 
-unsigned a_block_readIntu(const ABlock* Block, unsigned LineNumber)
+unsigned a_block_lineGetIntu(const ABlock* Block, unsigned LineNumber)
 {
     const ABlock* line = blockGet(Block, LineNumber);
 
     return line ? (unsigned)atoi(line->text) : 0;
 }
 
-AFix a_block_readFix(const ABlock* Block, unsigned LineNumber)
+AFix a_block_lineGetFix(const ABlock* Block, unsigned LineNumber)
 {
     const ABlock* line = blockGet(Block, LineNumber);
 
     return line ? a_fix_fromDouble(atof(line->text)) : 0;
 }
 
-AFixu a_block_readAngle(const ABlock* Block, unsigned LineNumber)
+AFixu a_block_lineGetAngle(const ABlock* Block, unsigned LineNumber)
 {
     const ABlock* line = blockGet(Block, LineNumber);
 
@@ -253,21 +253,21 @@ AFixu a_block_readAngle(const ABlock* Block, unsigned LineNumber)
     }
 }
 
-APixel a_block_readPixel(const ABlock* Block, unsigned LineNumber)
+APixel a_block_lineGetPixel(const ABlock* Block, unsigned LineNumber)
 {
     const ABlock* line = blockGet(Block, LineNumber);
 
     return line ? a_pixel_fromHex((uint32_t)strtol(line->text, NULL, 16)) : 0;
 }
 
-const char* a_block_readString(const ABlock* Block, unsigned LineNumber)
+const char* a_block_lineGetString(const ABlock* Block, unsigned LineNumber)
 {
     const ABlock* line = blockGet(Block, LineNumber);
 
     return line ? line->text : "";
 }
 
-AVectorInt a_block_readCoords(const ABlock* Block, unsigned LineNumber)
+AVectorInt a_block_lineGetCoords(const ABlock* Block, unsigned LineNumber)
 {
     const ABlock* line = blockGet(Block, LineNumber);
     AVectorInt v = {0, 0};
