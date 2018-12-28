@@ -42,7 +42,7 @@ static ATemplate* templateNew(const char* TemplateId, const ABlock* Block, const
 
     t->componentBits = a_bitfield_new(a_component__tableLen);
 
-    A_LIST_ITERATE(a_block_getAll(Block), const ABlock*, b) {
+    A_LIST_ITERATE(a_block_blocksGet(Block), const ABlock*, b) {
         const char* id = a_block_lineGetString(b, 0);
         int index = a_component__stringToIndex(id);
 
@@ -102,7 +102,7 @@ void a_template_new(const char* FilePath, const void* DataInitContext)
 {
     ABlock* root = a_block_new(FilePath);
 
-    A_LIST_ITERATE(a_block_getAll(root), const ABlock*, b) {
+    A_LIST_ITERATE(a_block_blocksGet(root), const ABlock*, b) {
         const char* id = a_block_lineGetString(b, 0);
 
         if(a_strhash_contains(g_templates, id)) {

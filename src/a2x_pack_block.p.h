@@ -30,10 +30,11 @@ typedef struct ABlock ABlock;
 extern ABlock* a_block_new(const char* File);
 extern void a_block_free(ABlock* Block);
 
-extern AList* a_block_getAll(const ABlock* Block);
-extern AList* a_block_getAllFilter(const ABlock* Block, const char* Key);
-extern const ABlock* a_block_get(const ABlock* Block, const char* Key);
-extern bool a_block_has(const ABlock* Block, const char* Key);
+extern AList* a_block_blocksGet(const ABlock* Block);
+
+extern const ABlock* a_block_keyGetBlock(const ABlock* Block, const char* Key);
+extern AList* a_block_keyGetBlocks(const ABlock* Block, const char* Key);
+extern bool a_block_keyExists(const ABlock* Block, const char* Key);
 
 extern int a_block_lineGetInt(const ABlock* Block, unsigned LineNumber);
 extern unsigned a_block_lineGetIntu(const ABlock* Block, unsigned LineNumber);
@@ -45,35 +46,35 @@ extern AVectorInt a_block_lineGetCoords(const ABlock* Block, unsigned LineNumber
 
 static inline int a_block_keyGetInt(const ABlock* Block, const char* Key)
 {
-    return a_block_lineGetInt(a_block_get(Block, Key), 1);
+    return a_block_lineGetInt(a_block_keyGetBlock(Block, Key), 1);
 }
 
 static inline unsigned a_block_keyGetIntu(const ABlock* Block, const char* Key)
 {
-    return a_block_lineGetIntu(a_block_get(Block, Key), 1);
+    return a_block_lineGetIntu(a_block_keyGetBlock(Block, Key), 1);
 }
 
 static inline AFix a_block_keyGetFix(const ABlock* Block, const char* Key)
 {
-    return a_block_lineGetFix(a_block_get(Block, Key), 1);
+    return a_block_lineGetFix(a_block_keyGetBlock(Block, Key), 1);
 }
 
 static inline AFixu a_block_keyGetAngle(const ABlock* Block, const char* Key)
 {
-    return a_block_lineGetAngle(a_block_get(Block, Key), 1);
+    return a_block_lineGetAngle(a_block_keyGetBlock(Block, Key), 1);
 }
 
 static inline APixel a_block_keyGetPixel(const ABlock* Block, const char* Key)
 {
-    return a_block_lineGetPixel(a_block_get(Block, Key), 1);
+    return a_block_lineGetPixel(a_block_keyGetBlock(Block, Key), 1);
 }
 
 static inline const char* a_block_keyGetString(const ABlock* Block, const char* Key)
 {
-    return a_block_lineGetString(a_block_get(Block, Key), 1);
+    return a_block_lineGetString(a_block_keyGetBlock(Block, Key), 1);
 }
 
 static inline AVectorInt a_block_keyGetCoords(const ABlock* Block, const char* Key)
 {
-    return a_block_lineGetCoords(a_block_get(Block, Key), 1);
+    return a_block_lineGetCoords(a_block_keyGetBlock(Block, Key), 1);
 }

@@ -73,7 +73,7 @@ static ABlock* blockNew(const char* Content, ABlock* Root)
         char* baseId = a_str_prefixGetToLast(Content, '.');
 
         while(baseId != NULL) {
-            const ABlock* baseBlock = a_block_get(Root, baseId);
+            const ABlock* baseBlock = a_block_keyGetBlock(Root, baseId);
 
             if(baseBlock == NULL) {
                 char* nextBaseId = a_str_prefixGetToLast(baseId, '.');
@@ -185,25 +185,12 @@ void a_block_free(ABlock* Block)
     blockFree(Block);
 }
 
-AList* a_block_getAll(const ABlock* Block)
+AList* a_block_blocksGet(const ABlock* Block)
 {
     return Block->blocks ? Block->blocks : g_emptyList;
 }
 
-AList* a_block_getAllFilter(const ABlock* Block, const char* Key)
-{
-    if(Block->index) {
-        AList* list = a_strhash_get(Block->index, Key);
-
-        if(list) {
-            return list;
-        }
-    }
-
-    return g_emptyList;
-}
-
-const ABlock* a_block_get(const ABlock* Block, const char* Key)
+const ABlock* a_block_keyGetBlock(const ABlock* Block, const char* Key)
 {
     if(Block->index) {
         AList* list = a_strhash_get(Block->index, Key);
@@ -216,7 +203,20 @@ const ABlock* a_block_get(const ABlock* Block, const char* Key)
     return NULL;
 }
 
-bool a_block_has(const ABlock* Block, const char* Key)
+AList* a_block_keyGetBlocks(const ABlock* Block, const char* Key)
+{
+    if(Block->index) {
+        AList* list = a_strhash_get(Block->index, Key);
+
+        if(list) {
+            return list;
+        }
+    }
+
+    return g_emptyList;
+}
+
+bool a_block_keyExists(const ABlock* Block, const char* Key)
 {
     return Block->index && a_strhash_contains(Block->index, Key);
 }
