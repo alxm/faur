@@ -20,16 +20,23 @@
 #   Targets to run before the default clean
 #
 
-# Relative path to project root from make subdir
-A_ROOT := ..
-
 #
 # Project dirs created by a2x_new or overridden by user makefile
 #
-A_DIR_BIN ?= bin
-A_DIR_OBJ ?= obj
-A_DIR_SRC ?= src
-A_DIR_PND ?= pnd
+A_CONFIG_ROOT    ?= ..
+A_CONFIG_DIR_BIN ?= bin
+A_CONFIG_DIR_OBJ ?= obj
+A_CONFIG_DIR_PND ?= pnd
+A_CONFIG_DIR_SRC ?= src
+
+#
+# Commit config vars
+#
+A_ROOT    := $(A_CONFIG_ROOT)
+A_DIR_BIN := $(A_CONFIG_DIR_BIN)
+A_DIR_OBJ := $(A_CONFIG_DIR_OBJ)
+A_DIR_PND := $(A_CONFIG_DIR_PND)
+A_DIR_SRC := $(A_CONFIG_DIR_SRC)
 
 #
 # Object files dir for current platform

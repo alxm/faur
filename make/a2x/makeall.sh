@@ -20,13 +20,13 @@ record_result ()
 
 do_make ()
 {
-    make -j -f $2 $make_arg
+    make -k -j -f $2 $make_arg
     record_result "$1" $?
 }
 
 do_emmake ()
 {
-    emmake make -j -f $2 $make_arg
+    emmake make -k -j -f $2 $make_arg
     record_result "$1" $?
 }
 
