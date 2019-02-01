@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2018 Alex Margarit
+    Copyright 2010, 2016-2019 Alex Margarit
     This file is part of a2x, a C video game framework.
 
     a2x-framework is free software: you can redistribute it and/or modify
@@ -61,7 +61,7 @@ void a_font__init(void)
     g_defaultFonts[A_FONT__ID_DEFAULT] = a_font_newFromPng("/a2x/font");
     g_defaultFonts[A_FONT__ID_WHITE] = a_font_newFromPng("/a2x/fontKeyed");
 
-    for(AFontId f = A_FONT__ID_WHITE + 1; f < A_FONT__ID_NUM; f++) {
+    for(int f = A_FONT__ID_WHITE + 1; f < A_FONT__ID_NUM; f++) {
         g_defaultFonts[f] = a_font_dup(
                                 g_defaultFonts[A_FONT__ID_WHITE], colors[f]);
     }
@@ -71,7 +71,7 @@ void a_font__init(void)
 
 void a_font__uninit(void)
 {
-    for(AFontId f = 0; f < A_FONT__ID_NUM; f++) {
+    for(int f = 0; f < A_FONT__ID_NUM; f++) {
         a_font_free(g_defaultFonts[f]);
     }
 

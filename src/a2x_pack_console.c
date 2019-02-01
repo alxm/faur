@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 Alex Margarit
+    Copyright 2016-2019 Alex Margarit
     This file is part of a2x, a C video game framework.
 
     a2x-framework is free software: you can redistribute it and/or modify
@@ -87,11 +87,11 @@ void a_console__init2(void)
 {
     ASpriteFrames* frames = a_spriteframes_newFromPng("/a2x/consoleTitles");
 
-    for(AOutSource s = 0; s < A_OUT__SOURCE_NUM; s++) {
+    for(int s = 0; s < A_OUT__SOURCE_NUM; s++) {
         g_sources[s] = a_spriteframes_getNext(frames);
     }
 
-    for(AOutType t = 0; t < A_OUT__TYPE_NUM; t++) {
+    for(int t = 0; t < A_OUT__TYPE_NUM; t++) {
         g_titles[t] = a_spriteframes_getNext(frames);
     }
 
@@ -126,11 +126,11 @@ void a_console__uninit(void)
 
     a_list_freeEx(g_lines, (AFree*)line_free);
 
-    for(AOutSource s = 0; s < A_OUT__SOURCE_NUM; s++) {
+    for(int s = 0; s < A_OUT__SOURCE_NUM; s++) {
         a_sprite_free(g_sources[s]);
     }
 
-    for(AOutType t = 0; t < A_OUT__TYPE_NUM; t++) {
+    for(int t = 0; t < A_OUT__TYPE_NUM; t++) {
         a_sprite_free(g_titles[t]);
     }
 

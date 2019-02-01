@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2018 Alex Margarit
+    Copyright 2010, 2016-2019 Alex Margarit
     This file is part of a2x, a C video game framework.
 
     a2x-framework is free software: you can redistribute it and/or modify
@@ -297,13 +297,13 @@ static APlatformController* controllerAdd(int Index)
 
 static void controllerFree(APlatformController* Controller)
 {
-    for(AButtonId id = 0; id < A_BUTTON_NUM; id++) {
+    for(int id = 0; id < A_BUTTON_NUM; id++) {
         if(Controller->buttons[id]) {
             buttonFree(Controller->buttons[id]);
         }
     }
 
-    for(AAxisId id = 0; id < A_AXIS_NUM; id++) {
+    for(int id = 0; id < A_AXIS_NUM; id++) {
         if(Controller->axes[id]) {
             analogFree(Controller->axes[id]);
         }
@@ -636,7 +636,7 @@ void a_platform_sdl_input__init(void)
 void a_platform_sdl_input__uninit(void)
 {
     #if A_BUILD_DEVICE_KEYBOARD
-        for(AKeyId id = 0; id < A__KEY_ID(A_KEY_NUM); id++) {
+        for(int id = 0; id < A__KEY_ID(A_KEY_NUM); id++) {
             if(g_keys[id]) {
                 buttonFree(g_keys[id]);
             }
@@ -673,7 +673,7 @@ void a_platform__inputsPoll(void)
                     }
                 #endif
 
-                for(AKeyId id = 0; id < A__KEY_ID(A_KEY_NUM); id++) {
+                for(int id = 0; id < A__KEY_ID(A_KEY_NUM); id++) {
 #if A_BUILD_LIB_SDL == 1
                     if(g_keys[id]->code.keyCode == event.key.keysym.sym) {
 #elif A_BUILD_LIB_SDL == 2
@@ -699,7 +699,7 @@ void a_platform__inputsPoll(void)
                         continue;
                     }
 
-                    for(AButtonId id = 0; id < A_BUTTON_NUM; id++) {
+                    for(int id = 0; id < A_BUTTON_NUM; id++) {
                         APlatformButton* b = c->buttons[id];
 
                         if(b && b->code.buttonIndex == event.jbutton.button) {
@@ -803,7 +803,7 @@ void a_platform__inputsPoll(void)
                         continue;
                     }
 
-                    for(AAxisId id = 0; id < A_AXIS_NUM; id++) {
+                    for(int id = 0; id < A_AXIS_NUM; id++) {
                         APlatformAnalog* a = c->axes[id];
 
                         if(a && a->axisIndex == event.jaxis.axis) {
@@ -824,7 +824,7 @@ void a_platform__inputsPoll(void)
                         continue;
                     }
 
-                    for(AButtonId id = 0; id < A_BUTTON_NUM; id++) {
+                    for(int id = 0; id < A_BUTTON_NUM; id++) {
                         APlatformButton* b = c->buttons[id];
 
                         if(b && b->code.buttonIndex == event.cbutton.button) {
@@ -843,7 +843,7 @@ void a_platform__inputsPoll(void)
                         continue;
                     }
 
-                    for(AAxisId id = 0; id < A_AXIS_NUM; id++) {
+                    for(int id = 0; id < A_AXIS_NUM; id++) {
                         APlatformAnalog* a = c->axes[id];
 
                         if(a && a->axisIndex == event.caxis.axis) {

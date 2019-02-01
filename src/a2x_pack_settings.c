@@ -126,8 +126,8 @@ void a_settings__init(void)
     extern const char* a_app__buildtime;
     g_settings[A_SETTING_APP_BUILDTIME].value.string = (char*)a_app__buildtime;
 
-    for(ASettingId s = 0; s < A_SETTING_NUM; s++) {
-        a_strhash_add(g_settingsIndex, g_settings[s].id, (void*)s);
+    for(int s = 0; s < A_SETTING_NUM; s++) {
+        a_strhash_add(g_settingsIndex, g_settings[s].id, (void*)(ptrdiff_t)s);
 
         if(g_settings[s].type == A__SETTING_TYPE_COLOR
             && !A_FLAG_TEST_ANY(g_settings[s].flags, A__SETTING_FLAG_CHANGED)) {
@@ -140,7 +140,7 @@ void a_settings__init(void)
 
 void a_settings__init2(void)
 {
-    for(ASettingId s = 0; s < A_SETTING_NUM; s++) {
+    for(int s = 0; s < A_SETTING_NUM; s++) {
         if(A_FLAG_TEST_ANY(g_settings[s].flags, A__SETTING_FLAG_SET_ONCE)) {
             A_FLAG_SET(g_settings[s].flags, A__SETTING_FLAG_FROZEN);
         }
@@ -149,7 +149,7 @@ void a_settings__init2(void)
 
 void a_settings__uninit(void)
 {
-    for(ASettingId s = 0; s < A_SETTING_NUM; s++) {
+    for(int s = 0; s < A_SETTING_NUM; s++) {
         if(A_FLAG_TEST_ANY(g_settings[s].flags, A__SETTING_FLAG_FREE_STRING)) {
             free(g_settings[s].value.string);
         }
