@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2018 Alex Margarit
+    Copyright 2010, 2016-2019 Alex Margarit
     This file is part of a2x, a C video game framework.
 
     a2x-framework is free software: you can redistribute it and/or modify
@@ -74,13 +74,13 @@ AFile* a_file_real__new(APath* Path, AFileMode Mode)
     int index = 0;
     char mode[4];
 
-    if(Mode & A_FILE_READ) {
+    if(A_FLAG_TEST_ANY(Mode, A_FILE_READ)) {
         mode[index++] = 'r';
-    } else if(Mode & A_FILE_WRITE) {
+    } else if(A_FLAG_TEST_ANY(Mode, A_FILE_WRITE)) {
         mode[index++] = 'w';
     }
 
-    if(Mode & A_FILE_BINARY) {
+    if(A_FLAG_TEST_ANY(Mode, A_FILE_BINARY)) {
         mode[index++] = 'b';
     }
 
@@ -96,7 +96,7 @@ AFile* a_file_real__new(APath* Path, AFileMode Mode)
         return NULL;
     }
 
-    if(Mode & A_FILE_WRITE) {
+    if(A_FLAG_TEST_ANY(Mode, A_FILE_WRITE)) {
         a_path__flagsSet(Path, A_PATH_FILE | A_PATH_REAL);
     }
 

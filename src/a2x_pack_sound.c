@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2018 Alex Margarit
+    Copyright 2010, 2016-2019 Alex Margarit
     This file is part of a2x, a C video game framework.
 
     a2x-framework is free software: you can redistribute it and/or modify
@@ -207,15 +207,16 @@ void a_channel_play(int Channel, ASample* Sample, AChannelFlags Flags)
         return;
     }
 
-    if(Flags & A_CHANNEL_RESTART) {
+    if(A_FLAG_TEST_ANY(Flags, A_CHANNEL_RESTART)) {
         a_platform__sampleStop(Channel);
-    } else if((Flags & A_CHANNEL_YIELD)
+    } else if(A_FLAG_TEST_ANY(Flags, A_CHANNEL_YIELD)
         && a_platform__sampleIsPlaying(Channel)) {
 
         return;
     }
 
-    a_platform__samplePlay(Sample, Channel, Flags & A_CHANNEL_LOOP);
+    a_platform__samplePlay(
+        Sample, Channel, A_FLAG_TEST_ANY(Flags, A_CHANNEL_LOOP));
 }
 
 void a_channel_stop(int Channel)

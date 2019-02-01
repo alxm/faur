@@ -1,5 +1,5 @@
 /*
-    Copyright 2011, 2016-2018 Alex Margarit
+    Copyright 2011, 2016-2019 Alex Margarit
     This file is part of a2x, a C video game framework.
 
     a2x-framework is free software: you can redistribute it and/or modify
@@ -24,6 +24,8 @@
 #define A_FLAG_BIT(N) (1 << (N))
 #define A_FLAG_SET(Value, Mask) ((Value) |= (Mask))
 #define A_FLAG_CLEAR(Value, Mask) ((Value) &= ~(unsigned)(Mask))
+#define A_FLAG_TEST_ANY(Value, Mask) !!((Value) & (Mask))
+#define A_FLAG_TEST_ALL(Value, Mask) (((Value) & (Mask)) == (Mask))
 
 #define A__STRINGIFY_DO_NOT_CALL(X) #X
 #define A_STRINGIFY(X) A__STRINGIFY_DO_NOT_CALL(X)

@@ -1,5 +1,5 @@
 /*
-    Copyright 2018 Alex Margarit
+    Copyright 2018-2019 Alex Margarit
     This file is part of a2x, a C video game framework.
 
     a2x-framework is free software: you can redistribute it and/or modify
@@ -38,19 +38,19 @@ static APathFlags getPathFlags(const char* Path)
     APathFlags flags = 0;
 
     if(stat(Path, &info) == 0) {
-        flags |= A_PATH_REAL;
+        A_FLAG_SET(flags, A_PATH_REAL);
 
         if(S_ISREG(info.st_mode)) {
-            flags |= A_PATH_FILE;
+            A_FLAG_SET(flags, A_PATH_FILE);
         } else if(S_ISDIR(info.st_mode)) {
-            flags |= A_PATH_DIR;
+            A_FLAG_SET(flags, A_PATH_DIR);
         } else {
-            flags |= A_PATH_OTHER;
+            A_FLAG_SET(flags, A_PATH_OTHER);
         }
     } else if(a_embed__getFile(Path) != NULL) {
-        flags |= A_PATH_EMBEDDED | A_PATH_FILE;
+        A_FLAG_SET(flags, A_PATH_EMBEDDED | A_PATH_FILE);
     } else if(a_embed__getDir(Path) != NULL) {
-        flags |= A_PATH_EMBEDDED | A_PATH_DIR;
+        A_FLAG_SET(flags, A_PATH_EMBEDDED | A_PATH_DIR);
     }
 
     return flags;
@@ -112,17 +112,17 @@ void a_path_free(APath* Path)
 
 bool a_path_exists(const char* Path, APathFlags Flags)
 {
-    return (getPathFlags(Path) & Flags) == Flags;
+    return A_FLAG_TEST_ALL(getPathFlags(Path), Flags);
 }
 
 bool a_path_test(const APath* Path, APathFlags Flags)
 {
-    return (Path->flags & Flags) == Flags;
+    return A_FLAG_TEST_ALL(Path->flags, Flags);
 }
 
 void a_path__flagsSet(APath* Path, APathFlags Flags)
 {
-    Path->flags |= Flags;
+    A_FLAG_SET(Path->flags, Flags);
 }
 
 const char* a_path_getFull(const APath* Path)

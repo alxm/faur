@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 Alex Margarit
+    Copyright 2016-2019 Alex Margarit
     This file is part of a2x, a C video game framework.
 
     a2x-framework is free software: you can redistribute it and/or modify
@@ -95,7 +95,7 @@ void a_ecs__tick(void)
 
     // Add entities to the systems they match
     A_LIST_ITERATE(g_lists[A_ECS__RESTORE], AEntity*, e) {
-        if(!(e->flags & A_ENTITY__ACTIVE_REMOVED)) {
+        if(!A_FLAG_TEST_ANY(e->flags, A_ENTITY__ACTIVE_REMOVED)) {
             A_LIST_ITERATE(e->matchingSystemsActive, ASystem*, system) {
                 a_list_addLast(
                     e->systemNodesActive, a_list_addLast(system->entities, e));

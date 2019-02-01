@@ -1,5 +1,5 @@
 /*
-    Copyright 2011, 2016-2018 Alex Margarit
+    Copyright 2011, 2016-2019 Alex Margarit
     This file is part of a2x, a C video game framework.
 
     a2x-framework is free software: you can redistribute it and/or modify
@@ -77,7 +77,7 @@ void a_timer__tick(void)
     g_now.ticks = a_fps_ticksGet();
 
     A_LIST_ITERATE(g_runningTimers, ATimer*, t) {
-        if(!(t->flags & A_TIMER__RUNNING)) {
+        if(!A_FLAG_TEST_ANY(t->flags, A_TIMER__RUNNING)) {
             // Kick out timer that was marked as not running last frame
             a_list_removeNode(t->runningListNode);
             t->runningListNode = NULL;
@@ -92,7 +92,7 @@ void a_timer__tick(void)
         if(t->diff >= t->period) {
             A_FLAG_SET(t->flags, A_TIMER__EXPIRED);
 
-            if(t->flags & A_TIMER__REPEAT) {
+            if(A_FLAG_TEST_ANY(t->flags, A_TIMER__REPEAT)) {
                 if(t->period > 0) {
                     t->start += (t->diff / t->period) * t->period;
                 }
@@ -173,7 +173,7 @@ void a_timer_periodSet(ATimer* Timer, unsigned Period)
 
     Timer->period = Period;
 
-    if(Period == 0 && Timer->flags & A_TIMER__RUNNING) {
+    if(Period == 0 && A_FLAG_TEST_ANY(Timer->flags, A_TIMER__RUNNING)) {
         A_FLAG_SET(Timer->flags, A_TIMER__EXPIRED);
     }
 }
@@ -210,12 +210,12 @@ void a_timer_stop(ATimer* Timer)
 
 bool a_timer_isRunning(const ATimer* Timer)
 {
-    return Timer->flags & A_TIMER__RUNNING;
+    return A_FLAG_TEST_ANY(Timer->flags, A_TIMER__RUNNING);
 }
 
 bool a_timer_expiredGet(const ATimer* Timer)
 {
-    return Timer->flags & A_TIMER__EXPIRED;
+    return A_FLAG_TEST_ANY(Timer->flags, A_TIMER__EXPIRED);
 }
 
 void a_timer_expiredClear(ATimer* Timer)
