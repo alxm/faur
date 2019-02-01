@@ -61,8 +61,7 @@ bool a__listit_getNext(AListIt* Iterator, void* UserPtrAddress)
 void a__listit_remove(const AListIt* Iterator)
 {
     a_list_removeNode(Iterator->reversed
-                        ? Iterator->nextNode->next
-                        : Iterator->nextNode->prev);
+                        ? Iterator->nextNode->next : Iterator->nextNode->prev);
 }
 
 bool a__listit_isFirst(const AListIt* Iterator)

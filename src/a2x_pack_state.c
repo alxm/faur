@@ -318,12 +318,11 @@ void a_state__run(void)
     a_out__state("Running states");
 
     #if A_BUILD_SYSTEM_EMSCRIPTEN
-        emscripten_set_main_loop(loop,
-                                 a_settings_boolGet(A_SETTING_VIDEO_VSYNC)
-                                     ? 0
-                                     : (int)
-                                        a_settings_intuGet(A_SETTING_FPS_DRAW),
-                                 true);
+        emscripten_set_main_loop(
+            loop,
+            a_settings_boolGet(A_SETTING_VIDEO_VSYNC)
+                ? 0 : (int)a_settings_intuGet(A_SETTING_FPS_DRAW),
+            true);
     #else
         while(iteration()) {
             continue;

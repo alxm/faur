@@ -259,8 +259,7 @@ APlatformTexture* a_platform__textureSpriteNew(const ASprite* Sprite)
 
     bool colorKeyed = hasTransparency(pixels, width, height);
     size_t bytesNeeded = colorKeyed
-                            ? spanBytesNeeded(pixels, width, height)
-                            : 0;
+                            ? spanBytesNeeded(pixels, width, height) : 0;
 
     if(texture == NULL || bytesNeeded > texture->spansSize) {
         a_platform__textureFree(texture);
