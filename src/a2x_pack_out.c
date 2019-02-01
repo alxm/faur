@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 Alex Margarit
+    Copyright 2016-2019 Alex Margarit
     This file is part of a2x, a C video game framework.
 
     a2x-framework is free software: you can redistribute it and/or modify
@@ -65,17 +65,17 @@ static void outPrintHeader(AOutSource Source, AOutType Type, FILE* Stream)
 {
     #if A_BUILD_SYSTEM_LINUX && A_BUILD_SYSTEM_DESKTOP
         fprintf(Stream,
-                "\033[1;%dm[%s][%s][%u]\033[0m ",
+                "\033[1;%dm[%s][%s][%08x]\033[0m ",
                 g_types[Type].color,
                 g_sources[Source],
                 g_types[Type].name,
-                a_fps_ticksGet());
+                (uint32_t)a_fps_ticksGet());
     #else
         fprintf(Stream,
-                "[%s][%s][%u] ",
+                "[%s][%s][%08x] ",
                 g_sources[Source],
                 g_types[Type].name,
-                a_fps_ticksGet());
+                (uint32_t)a_fps_ticksGet());
     #endif
 }
 
