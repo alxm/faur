@@ -79,28 +79,28 @@ unsigned a_fix_atan(AFix X1, AFix Y1, AFix X2, AFix Y2)
     if(dx == dy) {
         if(X2 >= X1) {
             if(Y2 <= Y1) {
-                return A_INT_DEG_045;
+                return A_DEG_045_INT;
             } else {
-                return A_INT_DEG_315;
+                return A_DEG_315_INT;
             }
         } else {
             if(Y2 <= Y1) {
-                return A_INT_DEG_135;
+                return A_DEG_135_INT;
             } else {
-                return A_INT_DEG_225;
+                return A_DEG_225_INT;
             }
         }
     } else if(dx == 0) {
         if(Y2 <= Y1) {
-            return A_INT_DEG_090;
+            return A_DEG_090_INT;
         } else {
-            return A_INT_DEG_270;
+            return A_DEG_270_INT;
         }
     } else if(dy == 0) {
         if(X2 >= X1) {
             return 0;
         } else {
-            return A_INT_DEG_180;
+            return A_DEG_180_INT;
         }
     }
 
@@ -116,23 +116,23 @@ unsigned a_fix_atan(AFix X1, AFix Y1, AFix X2, AFix Y2)
             }
         } else {
             if(Y2 <= Y1) {
-                return A_INT_DEG_180 - cachedAngle;
+                return A_DEG_180_INT - cachedAngle;
             } else {
-                return A_INT_DEG_180 + cachedAngle;
+                return A_DEG_180_INT + cachedAngle;
             }
         }
     } else {
         if(X2 >= X1) {
             if(Y2 <= Y1) {
-                return A_INT_DEG_090 - cachedAngle;
+                return A_DEG_090_INT - cachedAngle;
             } else {
-                return A_INT_DEG_270 + cachedAngle;
+                return A_DEG_270_INT + cachedAngle;
             }
         } else {
             if(Y2 <= Y1) {
-                return A_INT_DEG_090 + cachedAngle;
+                return A_DEG_090_INT + cachedAngle;
             } else {
-                return A_INT_DEG_270 - cachedAngle;
+                return A_DEG_270_INT - cachedAngle;
             }
         }
     }

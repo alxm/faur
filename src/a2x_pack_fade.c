@@ -61,7 +61,7 @@ static void newFade(AFadeOpId Op, unsigned DurationMs)
     g_fade.event = 1;
     g_fade.op = Op;
     g_fade.angle = 0;
-    g_fade.angleInc = A_FIX_DEG_090 / a_time_msToTicks(DurationMs);
+    g_fade.angleInc = A_DEG_090_FIX / a_time_msToTicks(DurationMs);
 }
 
 void a_fade_toColor(unsigned DurationMs)
@@ -93,7 +93,7 @@ void a_fade__tick(void)
 
     g_fade.angle += g_fade.angleInc;
 
-    if(g_fade.angle >= A_FIX_DEG_090) {
+    if(g_fade.angle >= A_DEG_090_FIX) {
         g_fade.event = 0;
         g_fade.op = A__FADE_INVALID;
     }
@@ -119,7 +119,7 @@ void a_fade__draw(void)
 
         case A__FADE_FROMCOLOR: {
             a_pixel_alphaSet(
-                a_fix_toInt(a_fix_sinf(A_FIX_DEG_090 - g_fade.angle)
+                a_fix_toInt(a_fix_sinf(A_DEG_090_FIX - g_fade.angle)
                                 * A_PIXEL_ALPHA_MAX));
 
             a_pixel_colorSetPixel(g_fade.color);
@@ -128,7 +128,7 @@ void a_fade__draw(void)
 
         case A__FADE_SCREENS: {
             a_pixel_alphaSet(
-                a_fix_toInt(a_fix_sinf(A_FIX_DEG_090 - g_fade.angle)
+                a_fix_toInt(a_fix_sinf(A_DEG_090_FIX - g_fade.angle)
                                 * A_PIXEL_ALPHA_MAX));
 
             a_screen_blit(g_fade.capturedScreen);
