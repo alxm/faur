@@ -4,7 +4,7 @@
     - Wiz framebuffer direction set code by Orkie
     - Wiz/Caanoo timer code by notaz (https://github.com/notaz/libpicofe)
 
-    This file is part of a2x-framework.
+    This file is part of a2x, a C video game framework.
 
     a2x-framework is free software: you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as published by

@@ -1,7 +1,6 @@
 /*
-    Copyright 2016-2018 Alex Margarit
-
-    This file is part of a2x-framework.
+    Copyright 2016-2019 Alex Margarit
+    This file is part of a2x, a C video game framework.
 
     a2x-framework is free software: you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as published by
@@ -109,7 +108,7 @@ void a_entity__free(AEntity* Entity)
         return;
     }
 
-    if(Entity->flags & A_ENTITY__DEBUG) {
+    if(A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__DEBUG)) {
         a_out__message("a_entity__free(%s)", a_entity_idGet(Entity));
     }
 
@@ -173,7 +172,7 @@ AEntity* a_entity_parentGet(const AEntity* Entity)
 
 void a_entity_parentSet(AEntity* Entity, AEntity* Parent)
 {
-    if(Entity->flags & A_ENTITY__DEBUG) {
+    if(A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__DEBUG)) {
         a_out__message("a_entity_parentSet(%s, %s)",
                        a_entity_idGet(Entity),
                        Parent ? a_entity_idGet(Parent) : "NULL");
@@ -213,7 +212,7 @@ void a_entity_refInc(AEntity* Entity)
             "a_entity_refInc(%s): Count too high", a_entity_idGet(Entity));
     }
 
-    if(Entity->flags & A_ENTITY__DEBUG) {
+    if(A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__DEBUG)) {
         a_out__message("a_entity_refInc(%s) %d->%d",
                        a_entity_idGet(Entity),
                        Entity->references,
@@ -236,7 +235,7 @@ void a_entity_refDec(AEntity* Entity)
             "a_entity_refDec(%s): Count too low", a_entity_idGet(Entity));
     }
 
-    if(Entity->flags & A_ENTITY__DEBUG) {
+    if(A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__DEBUG)) {
         a_out__message("a_entity_refDec(%s) %d->%d",
                        a_entity_idGet(Entity),
                        Entity->references,
@@ -254,7 +253,7 @@ void a_entity_refDec(AEntity* Entity)
 
 bool a_entity_removeGet(const AEntity* Entity)
 {
-    return Entity->flags & A_ENTITY__REMOVED;
+    return A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__REMOVED);
 }
 
 void a_entity_removeSet(AEntity* Entity)
@@ -266,7 +265,7 @@ void a_entity_removeSet(AEntity* Entity)
         return;
     }
 
-    if(Entity->flags & A_ENTITY__DEBUG) {
+    if(A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__DEBUG)) {
         a_out__message("a_entity_removeSet(%s)", a_entity_idGet(Entity));
     }
 
@@ -281,13 +280,13 @@ void a_entity_removeSet(AEntity* Entity)
 
 bool a_entity_activeGet(const AEntity* Entity)
 {
-    return Entity->flags & A_ENTITY__ACTIVE_PERMANENT
+    return A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__ACTIVE_PERMANENT)
         || Entity->lastActive == a_fps_ticksGet();
 }
 
 void a_entity_activeSet(AEntity* Entity)
 {
-    if(Entity->flags & A_ENTITY__DEBUG) {
+    if(A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__DEBUG)) {
         a_out__message("a_entity_activeSet(%s)", a_entity_idGet(Entity));
     }
 
@@ -297,7 +296,7 @@ void a_entity_activeSet(AEntity* Entity)
 
     Entity->lastActive = a_fps_ticksGet();
 
-    if(Entity->flags & A_ENTITY__ACTIVE_REMOVED) {
+    if(A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__ACTIVE_REMOVED)) {
         A_FLAG_CLEAR(Entity->flags, A_ENTITY__ACTIVE_REMOVED);
 
         // Add entity back to active-only systems
@@ -310,7 +309,7 @@ void a_entity_activeSet(AEntity* Entity)
 
 void a_entity_activeSetPermanent(AEntity* Entity)
 {
-    if(Entity->flags & A_ENTITY__DEBUG) {
+    if(A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__DEBUG)) {
         a_out__message(
             "a_entity_activeSetPermanent(%s)", a_entity_idGet(Entity));
     }
@@ -334,7 +333,7 @@ void* a_entity_componentAdd(AEntity* Entity, int Component)
                      c->stringId);
     }
 
-    if(Entity->flags & A_ENTITY__DEBUG) {
+    if(A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__DEBUG)) {
         a_out__message("a_entity_componentAdd(%s, %s)",
                        a_entity_idGet(Entity),
                        c->stringId);
@@ -391,7 +390,7 @@ void a_entity_muteInc(AEntity* Entity)
             "a_entity_muteInc(%s): Count too high", a_entity_idGet(Entity));
     }
 
-    if(Entity->flags & A_ENTITY__DEBUG) {
+    if(A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__DEBUG)) {
         a_out__message("a_entity_muteInc(%s) %d->%d",
                        a_entity_idGet(Entity),
                        Entity->muteCount,
@@ -417,7 +416,7 @@ void a_entity_muteDec(AEntity* Entity)
             "a_entity_muteDec(%s): Count too low", a_entity_idGet(Entity));
     }
 
-    if(Entity->flags & A_ENTITY__DEBUG) {
+    if(A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__DEBUG)) {
         a_out__message("a_entity_muteDec(%s) %d->%d",
                        a_entity_idGet(Entity),
                        Entity->muteCount,
@@ -491,7 +490,9 @@ void a_entity_messageSend(AEntity* To, AEntity* From, int Message)
         }
     #endif
 
-    if(To->flags & A_ENTITY__DEBUG || From->flags & A_ENTITY__DEBUG) {
+    if(A_FLAG_TEST_ANY(To->flags, A_ENTITY__DEBUG)
+        || A_FLAG_TEST_ANY(From->flags, A_ENTITY__DEBUG)) {
+
         a_out__message("a_entity_messageSend(%s, %s, %d)",
                        a_entity_idGet(To),
                        a_entity_idGet(From),

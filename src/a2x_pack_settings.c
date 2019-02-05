@@ -1,7 +1,6 @@
 /*
-    Copyright 2010, 2016-2018 Alex Margarit
-
-    This file is part of a2x-framework.
+    Copyright 2010, 2016-2019 Alex Margarit
+    This file is part of a2x, a C video game framework.
 
     a2x-framework is free software: you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as published by
@@ -127,11 +126,11 @@ void a_settings__init(void)
     extern const char* a_app__buildtime;
     g_settings[A_SETTING_APP_BUILDTIME].value.string = (char*)a_app__buildtime;
 
-    for(ASettingId s = 0; s < A_SETTING_NUM; s++) {
-        a_strhash_add(g_settingsIndex, g_settings[s].id, (void*)s);
+    for(int s = 0; s < A_SETTING_NUM; s++) {
+        a_strhash_add(g_settingsIndex, g_settings[s].id, (void*)(ptrdiff_t)s);
 
         if(g_settings[s].type == A__SETTING_TYPE_COLOR
-            && !(g_settings[s].flags & A__SETTING_FLAG_CHANGED)) {
+            && !A_FLAG_TEST_ANY(g_settings[s].flags, A__SETTING_FLAG_CHANGED)) {
 
             g_settings[s].value.pixel = a_pixel_fromHex(
                                             g_settings[s].value.integeru);
@@ -141,17 +140,17 @@ void a_settings__init(void)
 
 void a_settings__init2(void)
 {
-    for(ASettingId s = 0; s < A_SETTING_NUM; s++) {
-        if(g_settings[s].flags & A__SETTING_FLAG_SET_ONCE) {
-            g_settings[s].flags |= A__SETTING_FLAG_FROZEN;
+    for(int s = 0; s < A_SETTING_NUM; s++) {
+        if(A_FLAG_TEST_ANY(g_settings[s].flags, A__SETTING_FLAG_SET_ONCE)) {
+            A_FLAG_SET(g_settings[s].flags, A__SETTING_FLAG_FROZEN);
         }
     }
 }
 
 void a_settings__uninit(void)
 {
-    for(ASettingId s = 0; s < A_SETTING_NUM; s++) {
-        if(g_settings[s].flags & A__SETTING_FLAG_FREE_STRING) {
+    for(int s = 0; s < A_SETTING_NUM; s++) {
+        if(A_FLAG_TEST_ANY(g_settings[s].flags, A__SETTING_FLAG_FREE_STRING)) {
             free(g_settings[s].value.string);
         }
     }
@@ -189,7 +188,7 @@ void a_settings__callbackSet(ASettingId Setting, ASettingCallback* Callback, boo
 
 bool a_settings_isDefault(ASettingId Setting)
 {
-    return !(g_settings[Setting].flags & A__SETTING_FLAG_CHANGED);
+    return !A_FLAG_TEST_ANY(g_settings[Setting].flags, A__SETTING_FLAG_CHANGED);
 }
 
 static ASetting* validate(ASettingId Setting, ASettingType Type, bool Write) {
@@ -201,7 +200,9 @@ static ASetting* validate(ASettingId Setting, ASettingType Type, bool Write) {
         return NULL;
     }
 
-    if(Write && (g_settings[Setting].flags & A__SETTING_FLAG_FROZEN)) {
+    if(Write
+        && A_FLAG_TEST_ANY(g_settings[Setting].flags, A__SETTING_FLAG_FROZEN)) {
+
         a_out__error("Setting %s is frozen", g_settings[Setting].id);
         return NULL;
     }
@@ -228,7 +229,7 @@ void a_settings_boolSet(ASettingId Setting, bool Value)
         return;
     }
 
-    s->flags |= A__SETTING_FLAG_CHANGED;
+    A_FLAG_SET(s->flags, A__SETTING_FLAG_CHANGED);
     s->value.boolean = Value;
 
     if(s->callback) {
@@ -244,7 +245,7 @@ bool a_settings_boolFlip(ASettingId Setting)
         return false;
     }
 
-    s->flags |= A__SETTING_FLAG_CHANGED;
+    A_FLAG_SET(s->flags, A__SETTING_FLAG_CHANGED);
     s->value.boolean = !s->value.boolean;
 
     if(s->callback) {
@@ -273,7 +274,7 @@ void a_settings_intSet(ASettingId Setting, int Value)
         return;
     }
 
-    s->flags |= A__SETTING_FLAG_CHANGED;
+    A_FLAG_SET(s->flags, A__SETTING_FLAG_CHANGED);
     s->value.integer = Value;
 
     if(s->callback) {
@@ -300,7 +301,7 @@ void a_settings_intuSet(ASettingId Setting, unsigned Value)
         return;
     }
 
-    s->flags |= A__SETTING_FLAG_CHANGED;
+    A_FLAG_SET(s->flags, A__SETTING_FLAG_CHANGED);
     s->value.integeru = Value;
 
     if(s->callback) {
@@ -327,11 +328,11 @@ void a_settings_stringSet(ASettingId Setting, const char* Value)
         return;
     }
 
-    if(s->flags & A__SETTING_FLAG_FREE_STRING) {
+    if(A_FLAG_TEST_ANY(s->flags, A__SETTING_FLAG_FREE_STRING)) {
         free(s->value.string);
     }
 
-    s->flags |= A__SETTING_FLAG_CHANGED | A__SETTING_FLAG_FREE_STRING;
+    A_FLAG_SET(s->flags, A__SETTING_FLAG_CHANGED | A__SETTING_FLAG_FREE_STRING);
     s->value.string = a_str_dup(Value);
 
     if(s->callback) {
@@ -358,7 +359,7 @@ void a_settings_colorSet(ASettingId Setting, uint32_t Hexcode)
         return;
     }
 
-    s->flags |= A__SETTING_FLAG_CHANGED;
+    A_FLAG_SET(s->flags, A__SETTING_FLAG_CHANGED);
     s->value.pixel = a_pixel_fromHex(Hexcode);
 
     if(s->callback) {

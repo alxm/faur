@@ -1,7 +1,6 @@
 /*
     Copyright 2011, 2016, 2018 Alex Margarit
-
-    This file is part of a2x-framework.
+    This file is part of a2x, a C video game framework.
 
     a2x-framework is free software: you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as published by
@@ -62,8 +61,7 @@ bool a__listit_getNext(AListIt* Iterator, void* UserPtrAddress)
 void a__listit_remove(const AListIt* Iterator)
 {
     a_list_removeNode(Iterator->reversed
-                        ? Iterator->nextNode->next
-                        : Iterator->nextNode->prev);
+                        ? Iterator->nextNode->next : Iterator->nextNode->prev);
 }
 
 bool a__listit_isFirst(const AListIt* Iterator)

@@ -1,7 +1,6 @@
 /*
-    Copyright 2010, 2016-2018 Alex Margarit
-
-    This file is part of a2x-framework.
+    Copyright 2010, 2016-2019 Alex Margarit
+    This file is part of a2x, a C video game framework.
 
     a2x-framework is free software: you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as published by
@@ -31,7 +30,9 @@ AFile* a_file_new(const char* Path, AFileMode Mode)
     AFile* f = NULL;
     APath* path = a_path_new(Path);
 
-    if(a_path_test(path, A_PATH_FILE | A_PATH_REAL) || (Mode & A_FILE_WRITE)) {
+    if(A_FLAG_TEST_ANY(Mode, A_FILE_WRITE)
+        || a_path_test(path, A_PATH_FILE | A_PATH_REAL)) {
+
         f = a_file_real__new(path, Mode);
     } else if(a_path_test(path, A_PATH_FILE | A_PATH_EMBEDDED)) {
         f = a_file_embedded__new(path);

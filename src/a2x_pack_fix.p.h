@@ -1,7 +1,6 @@
 /*
     Copyright 2010, 2014, 2016-2018 Alex Margarit
-
-    This file is part of a2x-framework.
+    This file is part of a2x, a C video game framework.
 
     a2x-framework is free software: you can redistribute it and/or modify
     it under the terms of the GNU Lesser General Public License as published by
@@ -34,43 +33,44 @@ typedef uint32_t AFixu;
 #define A_FIX_ANGLES_NUM 4096u
 
 typedef enum {
-    A_INT_DEG_022 = (A_FIX_ANGLES_NUM / 16),
-    A_INT_DEG_045 = (A_FIX_ANGLES_NUM / 8),
-    A_INT_DEG_067 = (A_INT_DEG_045 + A_INT_DEG_022),
-    A_INT_DEG_090 = (2 * A_INT_DEG_045),
-    A_INT_DEG_112 = (A_INT_DEG_090 + A_INT_DEG_022),
-    A_INT_DEG_135 = (3 * A_INT_DEG_045),
-    A_INT_DEG_157 = (A_INT_DEG_135 + A_INT_DEG_022),
-    A_INT_DEG_180 = (4 * A_INT_DEG_045),
-    A_INT_DEG_202 = (A_INT_DEG_180 + A_INT_DEG_022),
-    A_INT_DEG_225 = (5 * A_INT_DEG_045),
-    A_INT_DEG_247 = (A_INT_DEG_225 + A_INT_DEG_022),
-    A_INT_DEG_270 = (6 * A_INT_DEG_045),
-    A_INT_DEG_292 = (A_INT_DEG_270 + A_INT_DEG_022),
-    A_INT_DEG_315 = (7 * A_INT_DEG_045),
-    A_INT_DEG_337 = (A_INT_DEG_315 + A_INT_DEG_022),
-    A_INT_DEG_360 = (8 * A_INT_DEG_045),
-} AIntDeg;
+    A_DEG_001_INT = (A_FIX_ANGLES_NUM / 360),
+    A_DEG_022_INT = (A_FIX_ANGLES_NUM / 16),
+    A_DEG_045_INT = (A_FIX_ANGLES_NUM / 8),
+    A_DEG_067_INT = (A_DEG_045_INT + A_DEG_022_INT),
+    A_DEG_090_INT = (2 * A_DEG_045_INT),
+    A_DEG_112_INT = (A_DEG_090_INT + A_DEG_022_INT),
+    A_DEG_135_INT = (3 * A_DEG_045_INT),
+    A_DEG_157_INT = (A_DEG_135_INT + A_DEG_022_INT),
+    A_DEG_180_INT = (4 * A_DEG_045_INT),
+    A_DEG_202_INT = (A_DEG_180_INT + A_DEG_022_INT),
+    A_DEG_225_INT = (5 * A_DEG_045_INT),
+    A_DEG_247_INT = (A_DEG_225_INT + A_DEG_022_INT),
+    A_DEG_270_INT = (6 * A_DEG_045_INT),
+    A_DEG_292_INT = (A_DEG_270_INT + A_DEG_022_INT),
+    A_DEG_315_INT = (7 * A_DEG_045_INT),
+    A_DEG_337_INT = (A_DEG_315_INT + A_DEG_022_INT),
+    A_DEG_360_INT = (8 * A_DEG_045_INT),
+} ADegInt;
 
 typedef enum {
-    A_FIX_DEG_022 = (A_INT_DEG_022 * A_FIX_ONE),
-    A_FIX_DEG_045 = (A_INT_DEG_045 * A_FIX_ONE),
-    A_FIX_DEG_067 = (A_INT_DEG_067 * A_FIX_ONE),
-    A_FIX_DEG_090 = (A_INT_DEG_090 * A_FIX_ONE),
-    A_FIX_DEG_112 = (A_INT_DEG_112 * A_FIX_ONE),
-    A_FIX_DEG_135 = (A_INT_DEG_135 * A_FIX_ONE),
-    A_FIX_DEG_157 = (A_INT_DEG_157 * A_FIX_ONE),
-    A_FIX_DEG_180 = (A_INT_DEG_180 * A_FIX_ONE),
-    A_FIX_DEG_202 = (A_INT_DEG_202 * A_FIX_ONE),
-    A_FIX_DEG_225 = (A_INT_DEG_225 * A_FIX_ONE),
-    A_FIX_DEG_247 = (A_INT_DEG_247 * A_FIX_ONE),
-    A_FIX_DEG_270 = (A_INT_DEG_270 * A_FIX_ONE),
-    A_FIX_DEG_292 = (A_INT_DEG_292 * A_FIX_ONE),
-    A_FIX_DEG_315 = (A_INT_DEG_315 * A_FIX_ONE),
-    A_FIX_DEG_337 = (A_INT_DEG_337 * A_FIX_ONE),
-    A_FIX_DEG_360 = (A_INT_DEG_360 * A_FIX_ONE),
-    A_FIX_DEG_001 = (A_FIX_DEG_360 / 360),
-} AFixDeg;
+    A_DEG_001_FIX = (A_FIX_ANGLES_NUM * A_FIX_ONE / 360),
+    A_DEG_022_FIX = (A_DEG_022_INT * A_FIX_ONE),
+    A_DEG_045_FIX = (A_DEG_045_INT * A_FIX_ONE),
+    A_DEG_067_FIX = (A_DEG_067_INT * A_FIX_ONE),
+    A_DEG_090_FIX = (A_DEG_090_INT * A_FIX_ONE),
+    A_DEG_112_FIX = (A_DEG_112_INT * A_FIX_ONE),
+    A_DEG_135_FIX = (A_DEG_135_INT * A_FIX_ONE),
+    A_DEG_157_FIX = (A_DEG_157_INT * A_FIX_ONE),
+    A_DEG_180_FIX = (A_DEG_180_INT * A_FIX_ONE),
+    A_DEG_202_FIX = (A_DEG_202_INT * A_FIX_ONE),
+    A_DEG_225_FIX = (A_DEG_225_INT * A_FIX_ONE),
+    A_DEG_247_FIX = (A_DEG_247_INT * A_FIX_ONE),
+    A_DEG_270_FIX = (A_DEG_270_INT * A_FIX_ONE),
+    A_DEG_292_FIX = (A_DEG_292_INT * A_FIX_ONE),
+    A_DEG_315_FIX = (A_DEG_315_INT * A_FIX_ONE),
+    A_DEG_337_FIX = (A_DEG_337_INT * A_FIX_ONE),
+    A_DEG_360_FIX = (A_DEG_360_INT * A_FIX_ONE),
+} ADegFix;
 
 extern AFix a__fix_sin[A_FIX_ANGLES_NUM];
 extern AFix a__fix_csc[A_FIX_ANGLES_NUM];
@@ -250,7 +250,7 @@ static inline AFix a_fix_sin(unsigned Angle)
 
 static inline AFix a_fix_cos(unsigned Angle)
 {
-    return a__fix_sin[a_fix_angleWrap(Angle + A_INT_DEG_090)];
+    return a__fix_sin[a_fix_angleWrap(Angle + A_DEG_090_INT)];
 }
 
 static inline AFix a_fix_csc(unsigned Angle)
@@ -260,7 +260,7 @@ static inline AFix a_fix_csc(unsigned Angle)
 
 static inline AFix a_fix_sec(unsigned Angle)
 {
-    return a__fix_csc[a_fix_angleWrap(Angle + A_INT_DEG_090)];
+    return a__fix_csc[a_fix_angleWrap(Angle + A_DEG_090_INT)];
 }
 
 static inline AFix a_fix_sinf(AFixu Angle)
@@ -270,7 +270,7 @@ static inline AFix a_fix_sinf(AFixu Angle)
 
 static inline AFix a_fix_cosf(AFixu Angle)
 {
-    return a__fix_sin[a_fix_angleWrap(a_fixu_toInt(Angle + A_FIX_DEG_090))];
+    return a__fix_sin[a_fix_angleWrap(a_fixu_toInt(Angle + A_DEG_090_FIX))];
 }
 
 static inline AFix a_fix_cscf(AFixu Angle)
@@ -280,7 +280,7 @@ static inline AFix a_fix_cscf(AFixu Angle)
 
 static inline AFix a_fix_secf(AFixu Angle)
 {
-    return a__fix_csc[a_fix_angleWrap(a_fixu_toInt(Angle + A_FIX_DEG_090))];
+    return a__fix_csc[a_fix_angleWrap(a_fixu_toInt(Angle + A_DEG_090_FIX))];
 }
 
 extern unsigned a_fix_atan(AFix X1, AFix Y1, AFix X2, AFix Y2);
