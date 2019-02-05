@@ -26,5 +26,8 @@ extern A_SETUP;
 #define A_MAIN void a_main(void)
 extern A_MAIN;
 
+#define A_EXIT void a_exit(void)
+extern A_EXIT;
+
 extern int a_main_argsGetNum(void);
 extern const char* a_main_argsGet(int ArgNum);

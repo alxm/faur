@@ -35,10 +35,22 @@ All the code is in `hello/src/main.c`:
 ```C
 #include <a2x.h>
 
+static A_STATE(drawBox);
+
 A_SETUP
 {
     a_settings_stringSet(A_SETTING_APP_TITLE, "hello");
     a_settings_stringSet(A_SETTING_APP_VERSION, "1.0");
+}
+
+A_MAIN
+{
+    a_state_push(drawBox, "Draw Box");
+}
+
+A_EXIT
+{
+    //
 }
 
 A_STATE(drawBox)
@@ -94,11 +106,6 @@ A_STATE(drawBox)
         a_draw_rectangle(context.x - 40, context.y - 40, 80, 80);
     }
 }
-
-A_MAIN
-{
-    a_state_push(drawBox, "Draw Box");
-}
 ```
 
 ## Cross-Compile for Other Platforms
@@ -123,7 +130,7 @@ make -j -f Makefile.gp2x       # Cross-compile for GP2X or other
 
 ## License
 
-Copyright 2010-2018 Alex Margarit (alex@alxm.org)
+Copyright 2010-2019 Alex Margarit (alex@alxm.org)
 
 * Code licensed under [GNU LGPL3](https://www.gnu.org/licenses/lgpl.html) (see `COPYING` and `COPYING.LESSER`)
 * Graphics licensed under [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/) (see `media/CC-BY-NC-ND`)

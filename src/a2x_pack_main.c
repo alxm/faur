@@ -43,7 +43,11 @@ static const char** g_args;
 
 static void a__atexit(void)
 {
-    a_out__message("Running atexit callback");
+    a_out__message("Running atexit");
+
+    a_out__message("A_EXIT start");
+    a_exit();
+    a_out__message("A_EXIT end");
 
     a_console__uninit();
     a_font__uninit();
