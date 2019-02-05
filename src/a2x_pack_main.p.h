@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2018 Alex Margarit
+    Copyright 2010, 2016, 2018-2019 Alex Margarit
     This file is part of a2x, a C video game framework.
 
     a2x-framework is free software: you can redistribute it and/or modify
@@ -19,6 +19,9 @@
 #pragma once
 
 #include "a2x_system_includes.h"
+
+#define A_SETUP void a_setup(void)
+extern A_SETUP;
 
 #define A_MAIN void a_main(void)
 extern A_MAIN;

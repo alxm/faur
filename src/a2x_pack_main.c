@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2018 Alex Margarit
+    Copyright 2010, 2016-2019 Alex Margarit
     This file is part of a2x, a C video game framework.
 
     a2x-framework is free software: you can redistribute it and/or modify
@@ -80,6 +80,12 @@ int main(int Argc, char* Argv[])
     a_console__init();
     a_settings__init();
 
+    a_out__message("A_SETUP start");
+    a_setup();
+    a_out__message("A_SETUP end");
+
+    a_settings__init2();
+
     a_out__message("a2x %s, %s", A_BUILD__GIT_HASH, A_BUILD__COMPILE_TIME);
     a_out__message("%s %s by %s, %s - PID %d",
                    a_settings_stringGet(A_SETTING_APP_TITLE),
@@ -108,7 +114,6 @@ int main(int Argc, char* Argv[])
     a_fade__init();
     a_font__init();
     a_console__init2();
-    a_settings__init2();
 
     if(atexit(a__atexit)) {
         a_out__error("Cannot register atexit callback");
