@@ -160,7 +160,7 @@ void a_platform__screenInit(int Width, int Height, bool FullScreen)
         }
     #elif A_BUILD_LIB_SDL == 2
         int ret;
-        uint32_t windowFlags = 0;//SDL_WINDOW_MAXIMIZED | SDL_WINDOW_RESIZABLE;
+        uint32_t windowFlags = SDL_WINDOW_MAXIMIZED | SDL_WINDOW_RESIZABLE;
 
         if(FullScreen) {
             windowFlags |= SDL_WINDOW_FULLSCREEN;
@@ -169,8 +169,8 @@ void a_platform__screenInit(int Width, int Height, bool FullScreen)
         g_sdlWindow = SDL_CreateWindow("",
                                        SDL_WINDOWPOS_CENTERED,
                                        SDL_WINDOWPOS_CENTERED,
-                                       Width*4,
-                                       Height*4,
+                                       Width,
+                                       Height,
                                        windowFlags);
         if(g_sdlWindow == NULL) {
             a_out__fatal("SDL_CreateWindow: %s", SDL_GetError());
