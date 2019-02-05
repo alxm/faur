@@ -1,5 +1,5 @@
 /*
-    Copyright 2018 Alex Margarit
+    Copyright 2018-2019 Alex Margarit
     This file is part of a2x, a C video game framework.
 
     a2x-framework is free software: you can redistribute it and/or modify
@@ -148,10 +148,10 @@ ABlock* a_block_new(const char* File)
         int currentIndent = (int)(textStart - lineStart) / 4;
 
         if((textStart - lineStart) % 4 || currentIndent > lastIndent + 1) {
-            a_out_fatal("a_block_new: Bad indent in %s:%d <%s>",
-                        File,
-                        a_file_lineNumberGet(f),
-                        textStart);
+            a_out__fatal("a_block_new: Bad indent in %s:%d <%s>",
+                         File,
+                         a_file_lineNumberGet(f),
+                         textStart);
         }
 
         // Each subsequent entry has -1 indentation, pop until reach parent
@@ -178,7 +178,7 @@ ABlock* a_block_new(const char* File)
 void a_block_free(ABlock* Block)
 {
     if(!a_str_equal(Block->text, "")) {
-        a_out_fatal("a_block_free: Must call on root block");
+        a_out__fatal("a_block_free: Must call on root block");
     }
 
     blockFree(Block);
