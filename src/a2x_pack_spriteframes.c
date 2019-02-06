@@ -19,8 +19,8 @@
 #include "a2x_pack_spriteframes.v.h"
 
 #include "a2x_pack_listit.v.h"
+#include "a2x_pack_main.v.h"
 #include "a2x_pack_mem.v.h"
-#include "a2x_pack_out.v.h"
 #include "a2x_pack_random.v.h"
 #include "a2x_pack_sprite.v.h"
 
@@ -69,10 +69,10 @@ ASpriteFrames* a_spriteframes_newFromSprite(const ASprite* Sheet, int X, int Y)
     ASpriteFrames* f = a_spriteframes_newBlank();
 
     if(X < 0 || X >= Sheet->w || Y < 0 || Y >= Sheet->h) {
-        a_out__fatal("a_spriteframes_newFromSprite(%s): Invalid coords %d, %d",
-                     A_SPRITE__NAME(Sheet),
-                     X,
-                     Y);
+        A__FATAL("a_spriteframes_newFromSprite(%s): Invalid coords %d, %d",
+                 A_SPRITE__NAME(Sheet),
+                 X,
+                 Y);
     }
 
     while(X < Sheet->w) {

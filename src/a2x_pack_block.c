@@ -19,8 +19,8 @@
 #include "a2x_pack_block.v.h"
 
 #include "a2x_pack_file.v.h"
+#include "a2x_pack_main.v.h"
 #include "a2x_pack_mem.v.h"
-#include "a2x_pack_out.v.h"
 #include "a2x_pack_str.v.h"
 #include "a2x_pack_strhash.v.h"
 
@@ -148,10 +148,10 @@ ABlock* a_block_new(const char* File)
         int currentIndent = (int)(textStart - lineStart) / 4;
 
         if((textStart - lineStart) % 4 || currentIndent > lastIndent + 1) {
-            a_out__fatal("a_block_new: Bad indent in %s:%d <%s>",
-                         File,
-                         a_file_lineNumberGet(f),
-                         textStart);
+            A__FATAL("a_block_new: Bad indent in %s:%d <%s>",
+                     File,
+                     a_file_lineNumberGet(f),
+                     textStart);
         }
 
         // Each subsequent entry has -1 indentation, pop until reach parent
@@ -178,7 +178,7 @@ ABlock* a_block_new(const char* File)
 void a_block_free(ABlock* Block)
 {
     if(!a_str_equal(Block->text, "")) {
-        a_out__fatal("a_block_free: Must call on root block");
+        A__FATAL("a_block_free: Must call on root block");
     }
 
     blockFree(Block);

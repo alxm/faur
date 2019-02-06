@@ -28,7 +28,7 @@
 #include <sys/mman.h>
 
 #include "a2x_pack_file.v.h"
-#include "a2x_pack_out.v.h"
+#include "a2x_pack_main.v.h"
 #include "a2x_pack_time.v.h"
 
 #if A_BUILD_SYSTEM_WIZ
@@ -81,7 +81,7 @@ static void timer_init(void)
     }
 
     if(div < 1 || div > 256 || div2 >= 4) {
-        a_out__fatal("Could not set up Pollux timer");
+        A__FATAL("Could not set up Pollux timer");
     }
 
     if(TIMER_REG(0x08) & 8) { // Timer in use

@@ -18,8 +18,8 @@
 
 #include "a2x_pack_strbuilder.v.h"
 
+#include "a2x_pack_main.v.h"
 #include "a2x_pack_mem.v.h"
-#include "a2x_pack_out.v.h"
 
 struct AStrBuilder {
     char* fmtBuffer;
@@ -32,7 +32,7 @@ struct AStrBuilder {
 AStrBuilder* a_strbuilder_new(size_t Bytes)
 {
     if(Bytes == 0) {
-        a_out__fatal("a_strbuilder_new: Invalid size 0");
+        A__FATAL("a_strbuilder_new: Invalid size 0");
     }
 
     AStrBuilder* b = a_mem_malloc(sizeof(AStrBuilder) + Bytes);

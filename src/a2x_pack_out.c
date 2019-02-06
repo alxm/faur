@@ -18,20 +18,12 @@
 
 #include "a2x_pack_out.v.h"
 
-#ifdef __GLIBC__
-    #define A__BACKTRACE 1
-    #include <execinfo.h>
-#endif
-
-#if A_BUILD_SYSTEM_EMSCRIPTEN
-    #include <emscripten.h>
-#endif
-
 #include "a2x_pack_console.v.h"
+#include "a2x_pack_fps.v.h"
 #include "a2x_pack_screen.v.h"
 #include "a2x_pack_settings.v.h"
 #include "a2x_pack_str.v.h"
-#include "a2x_pack_time.v.h"
+
 
 typedef enum {
     A_COLOR__INVALID = -1,
@@ -98,52 +90,6 @@ static void outWorker(AOutSource Source, AOutType Type, bool Verbose, bool Overw
     fputs("\n", Stream);
 
     a_console__write(Source, Type, buffer, Overwrite);
-}
-
-__attribute__((noreturn)) static void handleFatal(void)
-{
-    #if A__BACKTRACE
-        void* addresses[16];
-        int numAddresses = backtrace(addresses, A_ARRAY_LEN(addresses));
-        char** functionNames = backtrace_symbols(addresses, numAddresses);
-
-        for(int i = 0; i < numAddresses; i++) {
-            a_out__error(functionNames[i]);
-        }
-
-        free(functionNames);
-    #endif
-
-    a_settings_boolSet(A_SETTING_OUTPUT_CONSOLE, true);
-    a_screen__draw();
-
-    #if A_BUILD_DEBUG
-        while(true) {
-            printf("Waiting to attach debugger: PID %d\n", getpid());
-            a_time_secSpin(1);
-        }
-    #else
-        if(a_console__isInitialized()) {
-            for(int s = 10; s > 0; s--) {
-                if(s == 10) {
-                    a_out__message("Exiting in %ds", s);
-                } else {
-                    a_out__overwrite(
-                        A_OUT__TYPE_MESSAGE, stdout, "Exiting in %ds", s);
-                }
-
-                a_console__draw();
-                a_screen__draw();
-                a_time_secWait(1);
-            }
-        }
-    #endif
-
-    #if A_BUILD_SYSTEM_EMSCRIPTEN
-        emscripten_force_exit(1);
-    #endif
-
-    exit(1);
 }
 
 void a_out__message(const char* Format, ...)
@@ -226,26 +172,19 @@ void a_out__errorv(const char* Format, ...)
     va_end(args);
 }
 
-void a_out__fatal(const char* Format, ...)
+void a_out__fatal(const char* Format, va_list Args, bool Application)
 {
     if(!a_settings_boolGet(A_SETTING_OUTPUT_ON)) {
         a_settings_boolSet(A_SETTING_OUTPUT_ON, true);
     }
 
-    va_list args;
-    va_start(args, Format);
-
-    outWorker(A_OUT__SOURCE_A2X,
+    outWorker(A_OUT__SOURCE_A2X + Application,
               A_OUT__TYPE_FATAL,
               false,
               false,
               stderr,
               Format,
-              args);
-
-    va_end(args);
-
-    handleFatal();
+              Args);
 }
 
 void a_out__state(const char* Format, ...)
@@ -361,26 +300,4 @@ void a_out_error(const char* Format, ...)
               args);
 
     va_end(args);
-}
-
-void a_out_fatal(const char* Format, ...)
-{
-    if(!a_settings_boolGet(A_SETTING_OUTPUT_ON)) {
-        a_settings_boolSet(A_SETTING_OUTPUT_ON, true);
-    }
-
-    va_list args;
-    va_start(args, Format);
-
-    outWorker(A_OUT__SOURCE_APP,
-              A_OUT__TYPE_FATAL,
-              false,
-              false,
-              stderr,
-              Format,
-              args);
-
-    va_end(args);
-
-    handleFatal();
 }

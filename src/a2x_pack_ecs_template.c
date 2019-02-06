@@ -22,6 +22,7 @@
 #include "a2x_pack_block.v.h"
 #include "a2x_pack_ecs_component.v.h"
 #include "a2x_pack_listit.v.h"
+#include "a2x_pack_main.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
 #include "a2x_pack_strhash.v.h"
@@ -105,8 +106,7 @@ void a_template_new(const char* FilePath, const void* DataInitContext)
         const char* id = a_block_lineGetString(b, 0);
 
         if(a_strhash_contains(g_templates, id)) {
-            a_out__fatal(
-                "a_template_new(%s): '%s' already declared", FilePath, id);
+            A__FATAL("a_template_new(%s): '%s' already declared", FilePath, id);
         }
 
         a_strhash_add(g_templates, id, templateNew(id, b, DataInitContext));
@@ -119,14 +119,14 @@ const ATemplate* a_template__get(const char* TemplateId, const char* CallerFunct
 {
     #if A_BUILD_DEBUG
         if(g_templates == NULL) {
-            a_out__fatal("%s: Call a_ecs_init first", CallerFunction);
+            A__FATAL("%s: Call a_ecs_init first", CallerFunction);
         }
     #endif
 
     ATemplate* t = a_strhash_get(g_templates, TemplateId);
 
     if(t == NULL) {
-        a_out__fatal("%s: Unknown template '%s'", CallerFunction, TemplateId);
+        A__FATAL("%s: Unknown template '%s'", CallerFunction, TemplateId);
     }
 
     t->instanceNumber++;

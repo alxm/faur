@@ -22,6 +22,7 @@
 #include <SDL.h>
 #include <SDL_mixer.h>
 
+#include "a2x_pack_main.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
 #include "a2x_pack_platform.v.h"
@@ -50,7 +51,7 @@ static int g_currentSampleChannel;
 void a_platform_sdl_sound__init(void)
 {
     if(SDL_InitSubSystem(SDL_INIT_AUDIO) != 0) {
-        a_out__fatal("SDL_InitSubSystem: %s", SDL_GetError());
+        A__FATAL("SDL_InitSubSystem: %s", SDL_GetError());
     }
 
     if(Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 256) != 0) {

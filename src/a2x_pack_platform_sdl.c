@@ -21,7 +21,7 @@
 #if A_BUILD_LIB_SDL
 #include <SDL.h>
 
-#include "a2x_pack_out.v.h"
+#include "a2x_pack_main.v.h"
 #include "a2x_pack_platform_sdl_input.v.h"
 #include "a2x_pack_platform_sdl_sound.v.h"
 #include "a2x_pack_platform_sdl_video.v.h"
@@ -39,7 +39,7 @@ void a_platform_sdl__init(void)
     #endif
 
     if(SDL_Init(g_sdlFlags) != 0) {
-        a_out__fatal("SDL_Init: %s", SDL_GetError());
+        A__FATAL("SDL_Init: %s", SDL_GetError());
     }
 
     a_platform_sdl_input__init();

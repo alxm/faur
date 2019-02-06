@@ -18,8 +18,8 @@
 
 #include "a2x_pack_sprite.v.h"
 
+#include "a2x_pack_main.v.h"
 #include "a2x_pack_mem.v.h"
-#include "a2x_pack_out.v.h"
 #include "a2x_pack_pixel.v.h"
 #include "a2x_pack_png.v.h"
 #include "a2x_pack_screen.v.h"
@@ -120,10 +120,10 @@ static int findNextHorizontalEdge(const ASprite* Sheet, int StartX, int StartY, 
 void a_sprite__boundsFind(const ASprite* Sheet, int X, int Y, int* Width, int* Height)
 {
     if(X < 0 || X >= Sheet->w || Y < 0 || Y >= Sheet->h) {
-        a_out__fatal("a_sprite__boundsFind(%s, %d, %d): Invalid coords",
-                     A_SPRITE__NAME(Sheet),
-                     X,
-                     Y);
+        A__FATAL("a_sprite__boundsFind(%s, %d, %d): Invalid coords",
+                 A_SPRITE__NAME(Sheet),
+                 X,
+                 Y);
     }
 
     int vEdgeX = 0;
@@ -158,7 +158,7 @@ ASprite* a_sprite_newFromPng(const char* Path)
     a_png_readFile(Path, &pixels, &w, &h);
 
     if(pixels == NULL) {
-        a_out__fatal("a_sprite_newFromPng(%s): Cannot read file", Path);
+        A__FATAL("a_sprite_newFromPng(%s): Cannot read file", Path);
     }
 
     ASprite* s = makeEmptySprite(w, h);

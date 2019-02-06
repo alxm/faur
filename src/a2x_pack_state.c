@@ -28,8 +28,8 @@
 #include "a2x_pack_fps.v.h"
 #include "a2x_pack_input.v.h"
 #include "a2x_pack_listit.v.h"
+#include "a2x_pack_main.v.h"
 #include "a2x_pack_mem.v.h"
-#include "a2x_pack_out.v.h"
 #include "a2x_pack_screen.v.h"
 #include "a2x_pack_screenshot.v.h"
 #include "a2x_pack_settings.v.h"
@@ -110,7 +110,7 @@ static void pending_handle(void)
 
     if(pendingState == NULL) {
         if(current == NULL) {
-            a_out__fatal("Pop state: stack is empty");
+            A__FATAL("Pop state: stack is empty");
         }
 
         a_out__statev("Pop '%s'", current->name);
@@ -125,7 +125,7 @@ static void pending_handle(void)
 
         A_LIST_ITERATE(g_stack, const AStateEntry*, e) {
             if(pendingState->function == e->function) {
-                a_out__fatal("State '%s' already in stack as '%s'",
+                A__FATAL("State '%s' already in stack as '%s'",
                              pendingState->name,
                              e->name);
             }
@@ -197,7 +197,7 @@ void a_state_popUntil(AState* State, const char* Name)
     }
 
     if(!found) {
-        a_out__fatal("a_state_popUntil(%s): State not in stack", Name);
+        A__FATAL("a_state_popUntil(%s): State not in stack", Name);
     }
 
     while(pops--) {
@@ -337,7 +337,7 @@ bool a__state_stageCheck(AStateStage Stage)
     const AStateEntry* e = a_list_peek(g_stack);
 
     if(e == NULL) {
-        a_out__fatal("%s: state stack is empty", g_stageNames[Stage]);
+        A__FATAL("%s: state stack is empty", g_stageNames[Stage]);
     }
 
     return e->stage == Stage;

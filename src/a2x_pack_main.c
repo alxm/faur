@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2018 Alex Margarit
+    Copyright 2010, 2016-2019 Alex Margarit
     This file is part of a2x, a C video game framework.
 
     a2x-framework is free software: you can redistribute it and/or modify
@@ -17,6 +17,15 @@
 */
 
 #include "a2x_pack_main.v.h"
+
+#ifdef __GLIBC__
+    #define A__BACKTRACE 1
+    #include <execinfo.h>
+#endif
+
+#if A_BUILD_SYSTEM_EMSCRIPTEN
+    #include <emscripten.h>
+#endif
 
 #include "a2x_pack_block.v.h"
 #include "a2x_pack_conf.v.h"
@@ -36,6 +45,7 @@
 #include "a2x_pack_settings.v.h"
 #include "a2x_pack_sound.v.h"
 #include "a2x_pack_state.v.h"
+#include "a2x_pack_time.v.h"
 #include "a2x_pack_timer.v.h"
 
 static int g_argsNum;
@@ -43,7 +53,11 @@ static const char** g_args;
 
 static void a__atexit(void)
 {
-    a_out__message("Running atexit callback");
+    a_out__message("Running atexit");
+
+    a_out__message("A_EXIT start");
+    a_exit();
+    a_out__message("A_EXIT end");
 
     a_console__uninit();
     a_font__uninit();
@@ -80,6 +94,12 @@ int main(int Argc, char* Argv[])
     a_console__init();
     a_settings__init();
 
+    a_out__message("A_SETUP start");
+    a_setup();
+    a_out__message("A_SETUP end");
+
+    a_settings__init2();
+
     a_out__message("a2x %s, %s", A_BUILD__GIT_HASH, A_BUILD__COMPILE_TIME);
     a_out__message("%s %s by %s, %s - PID %d",
                    a_settings_stringGet(A_SETTING_APP_TITLE),
@@ -108,7 +128,6 @@ int main(int Argc, char* Argv[])
     a_fade__init();
     a_font__init();
     a_console__init2();
-    a_settings__init2();
 
     if(atexit(a__atexit)) {
         a_out__error("Cannot register atexit callback");
@@ -131,9 +150,78 @@ int a_main_argsGetNum(void)
 const char* a_main_argsGet(int ArgNum)
 {
     if(ArgNum >= g_argsNum) {
-        a_out__fatal(
-            "a_main_argsGet(%d): Invalid arg, %d total", ArgNum, g_argsNum);
+        A__FATAL("a_main_argsGet(%d): Only %d args total", ArgNum, g_argsNum);
     }
 
     return g_args[ArgNum];
+}
+
+__attribute__((noreturn)) static void handleFatal(void)
+{
+    #if A__BACKTRACE
+        void* addresses[16];
+        int numAddresses = backtrace(addresses, A_ARRAY_LEN(addresses));
+        char** functionNames = backtrace_symbols(addresses, numAddresses);
+
+        for(int i = 0; i < numAddresses; i++) {
+            a_out__error(functionNames[i]);
+        }
+
+        free(functionNames);
+    #endif
+
+    a_settings_boolSet(A_SETTING_OUTPUT_CONSOLE, true);
+    a_screen__draw();
+
+    #if A_BUILD_DEBUG
+        while(true) {
+            printf("Waiting to attach debugger: PID %d\n", getpid());
+            a_time_secSpin(1);
+        }
+    #else
+        if(a_console__isInitialized()) {
+            for(int s = 10; s > 0; s--) {
+                if(s == 10) {
+                    a_out__message("Exiting in %ds", s);
+                } else {
+                    a_out__overwrite(
+                        A_OUT__TYPE_MESSAGE, stdout, "Exiting in %ds", s);
+                }
+
+                a_console__draw();
+                a_screen__draw();
+                a_time_secWait(1);
+            }
+        }
+    #endif
+
+    #if A_BUILD_SYSTEM_EMSCRIPTEN
+        emscripten_force_exit(1);
+    #endif
+
+    exit(1);
+}
+
+void A__FATAL(const char* Format, ...)
+{
+    va_list args;
+    va_start(args, Format);
+
+    a_out__fatal(Format, args, false);
+
+    va_end(args);
+
+    handleFatal();
+}
+
+void A_FATAL(const char* Format, ...)
+{
+    va_list args;
+    va_start(args, Format);
+
+    a_out__fatal(Format, args, true);
+
+    va_end(args);
+
+    handleFatal();
 }

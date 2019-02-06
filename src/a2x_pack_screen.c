@@ -20,6 +20,7 @@
 
 #include "a2x_pack_collide.v.h"
 #include "a2x_pack_listit.v.h"
+#include "a2x_pack_main.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
 #include "a2x_pack_pixel.v.h"
@@ -89,7 +90,7 @@ void a_screen__init(void)
     }
 
     if(width <= 0 || height <= 0) {
-        a_out__fatal("Invalid screen resolution %dx%d", width, height);
+        A__FATAL("Invalid screen resolution %dx%d", width, height);
     } else {
         a_out__message("Screen resolution %dx%d", width, height);
     }
@@ -163,7 +164,7 @@ void a_screen__tick(void)
 void a_screen__draw(void)
 {
     if(!a_list_isEmpty(g_stack)) {
-        a_out__fatal("Screen target stack is not empty");
+        A__FATAL("Screen target stack is not empty");
     }
 
     a_platform__screenShow();
@@ -234,11 +235,11 @@ void a_screen_free(AScreen* Screen)
 void a_screen_copy(AScreen* Dst, const AScreen* Src)
 {
     if(!a_screen__sameSize(Dst, Src)) {
-        a_out__fatal("a_screen_copy(%dx%d, %dx%d): Different sizes",
-                     Dst->width,
-                     Dst->height,
-                     Src->width,
-                     Src->height);
+        A__FATAL("a_screen_copy(%dx%d, %dx%d): Different sizes",
+                 Dst->width,
+                 Dst->height,
+                 Src->width,
+                 Src->height);
     }
 
     #if A_BUILD_RENDER_SOFTWARE
@@ -265,11 +266,11 @@ void a_screen_copy(AScreen* Dst, const AScreen* Src)
 void a_screen_blit(const AScreen* Screen)
 {
     if(!a_screen__sameSize(&a__screen, Screen)) {
-        a_out__fatal("a_screen_blit(%dx%d): Current screen is %dx%d",
-                     Screen->width,
-                     Screen->height,
-                     a__screen.width,
-                     a__screen.height);
+        A__FATAL("a_screen_blit(%dx%d): Current screen is %dx%d",
+                 Screen->width,
+                 Screen->height,
+                 a__screen.width,
+                 a__screen.height);
     }
 
     #if A_BUILD_RENDER_SOFTWARE
@@ -422,7 +423,7 @@ void a_screen_targetPop(void)
     AScreen* screen = a_list_pop(g_stack);
 
     if(screen == NULL) {
-        a_out__fatal("a_screen_targetPop: Stack is empty");
+        A__FATAL("a_screen_targetPop: Stack is empty");
     }
 
     a__screen = *screen;

@@ -73,9 +73,6 @@ typedef enum {
 
 #include "a2x_pack_pixel.p.h"
 
-#define A_SETUP void a__settings_application(void)
-extern A_SETUP;
-
 extern bool a_settings_isDefault(ASettingId Setting);
 
 extern bool a_settings_boolGet(ASettingId Setting);
