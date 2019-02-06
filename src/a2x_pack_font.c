@@ -18,9 +18,9 @@
 
 #include "a2x_pack_font.v.h"
 
+#include "a2x_pack_main.v.h"
 #include "a2x_pack_math.v.h"
 #include "a2x_pack_mem.v.h"
-#include "a2x_pack_out.v.h"
 #include "a2x_pack_screen.v.h"
 #include "a2x_pack_spriteframes.v.h"
 #include "a2x_pack_str.v.h"
@@ -153,7 +153,7 @@ void a_font_pop(void)
     AFontState* state = a_list_pop(g_stateStack);
 
     if(state == NULL) {
-        a_out__fatal("a_font_pop: Stack is empty");
+        A__FATAL("a_font_pop: Stack is empty");
     }
 
     g_state = *state;

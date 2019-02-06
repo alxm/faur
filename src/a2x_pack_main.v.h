@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016 Alex Margarit
+    Copyright 2010, 2016, 2019 Alex Margarit
     This file is part of a2x, a C video game framework.
 
     a2x-framework is free software: you can redistribute it and/or modify
@@ -19,3 +19,5 @@
 #pragma once
 
 #include "a2x_pack_main.p.h"
+
+extern void A__FATAL(const char* Format, ...) __attribute__((noreturn));

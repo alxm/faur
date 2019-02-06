@@ -18,6 +18,7 @@
 
 #include "a2x_pack_fps.v.h"
 
+#include "a2x_pack_main.v.h"
 #include "a2x_pack_math.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
@@ -54,11 +55,11 @@ void a_fps__init(void)
     unsigned fpsDraw = a_settings_intuGet(A_SETTING_FPS_DRAW);
 
     if(fpsTick < 1) {
-        a_out__fatal("%s < 1", a_settings__idToString(A_SETTING_FPS_TICK));
+        A__FATAL("%s < 1", a_settings__idToString(A_SETTING_FPS_TICK));
     }
 
     if(fpsDraw < 1) {
-        a_out__fatal("%s < 1", a_settings__idToString(A_SETTING_FPS_DRAW));
+        A__FATAL("%s < 1", a_settings__idToString(A_SETTING_FPS_DRAW));
     }
 
     if(fpsTick < fpsDraw) {

@@ -19,8 +19,8 @@
 #include "a2x_pack_ecs_component.v.h"
 
 #include "a2x_pack_ecs_entity.v.h"
+#include "a2x_pack_main.v.h"
 #include "a2x_pack_mem.v.h"
-#include "a2x_pack_out.v.h"
 #include "a2x_pack_strhash.v.h"
 
 unsigned a_component__tableLen;
@@ -63,15 +63,15 @@ const AComponent* a_component__get(int Component, const char* CallerFunction)
 {
     #if A_BUILD_DEBUG
         if(g_componentsTable == NULL) {
-            a_out__fatal("%s: Call a_ecs_init first", CallerFunction);
+            A__FATAL("%s: Call a_ecs_init first", CallerFunction);
         }
 
         if(Component < 0 || Component >= (int)a_component__tableLen) {
-            a_out__fatal("%s: Unknown component %d", CallerFunction, Component);
+            A__FATAL("%s: Unknown component %d", CallerFunction, Component);
         }
 
         if(g_componentsTable[Component].bit == UINT_MAX) {
-            a_out__fatal(
+            A__FATAL(
                 "%s: Uninitialized component %d", CallerFunction, Component);
         }
     #else
@@ -84,15 +84,14 @@ const AComponent* a_component__get(int Component, const char* CallerFunction)
 void a_component_new(int Index, const char* StringId, size_t Size, AInit* Init, AFree* Free)
 {
     if(g_componentsTable == NULL) {
-        a_out__fatal(
+        A__FATAL(
             "a_component_new(%d, %s): Call a_ecs_init first", Index, StringId);
     }
 
     AComponent* c = &g_componentsTable[Index];
 
     if(c->bit != UINT_MAX || a_strhash_contains(g_components, StringId)) {
-        a_out__fatal(
-            "a_component_new(%d, %s): Already declared", Index, StringId);
+        A__FATAL("a_component_new(%d, %s): Already declared", Index, StringId);
     }
 
     c->size = sizeof(AComponentInstance) + Size;

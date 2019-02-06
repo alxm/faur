@@ -19,8 +19,8 @@
 #include "a2x_pack_pixel.v.h"
 
 #include "a2x_pack_list.v.h"
+#include "a2x_pack_main.v.h"
 #include "a2x_pack_mem.v.h"
-#include "a2x_pack_out.v.h"
 #include "a2x_pack_platform.v.h"
 #include "a2x_pack_platform_software_blit.v.h"
 #include "a2x_pack_platform_software_draw.v.h"
@@ -49,7 +49,7 @@ void a_pixel_pop(void)
     APixelState* state = a_list_pop(g_stateStack);
 
     if(state == NULL) {
-        a_out__fatal("a_pixel_pop: Stack is empty");
+        A__FATAL("a_pixel_pop: Stack is empty");
     }
 
     a_pixel__state = *state;

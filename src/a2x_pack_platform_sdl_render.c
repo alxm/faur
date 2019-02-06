@@ -21,6 +21,7 @@
 #if A_BUILD_RENDER_SDL
 #include <SDL.h>
 
+#include "a2x_pack_main.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
 #include "a2x_pack_pixel.v.h"
@@ -338,7 +339,7 @@ APlatformTexture* a_platform__textureScreenNew(int Width, int Height)
                                          Height);
 
     if(tex == NULL) {
-        a_out__fatal("SDL_CreateTexture: %s", SDL_GetError());
+        A__FATAL("SDL_CreateTexture: %s", SDL_GetError());
     }
 
     if(SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND) < 0) {
@@ -424,13 +425,13 @@ APlatformTexture* a_platform__textureSpriteNew(const ASprite* Sprite)
                                              width,
                                              height);
         if(tex == NULL) {
-            a_out__fatal("SDL_CreateTexture: %s", SDL_GetError());
+            A__FATAL("SDL_CreateTexture: %s", SDL_GetError());
         }
 
         if(SDL_UpdateTexture(
             tex, NULL, texture->pixels, width * (int)sizeof(APixel)) < 0) {
 
-            a_out__fatal("SDL_UpdateTexture: %s", SDL_GetError());
+            A__FATAL("SDL_UpdateTexture: %s", SDL_GetError());
         }
 
         if(SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND) < 0) {
@@ -533,7 +534,7 @@ void a_platform__renderTargetSet(APlatformTexture* Texture)
     if(SDL_SetRenderTarget(
         a__sdlRenderer, Texture->texture[A_TEXTURE__NORMAL]) < 0) {
 
-        a_out__fatal("SDL_SetRenderTarget: %s", SDL_GetError());
+        A__FATAL("SDL_SetRenderTarget: %s", SDL_GetError());
     }
 }
 
@@ -546,7 +547,7 @@ void a_platform__renderTargetPixelsGet(APixel* Pixels, int Width)
                             Pixels,
                             Width * (int)sizeof(APixel)) < 0) {
 
-        a_out__fatal("SDL_RenderReadPixels: %s", SDL_GetError());
+        A__FATAL("SDL_RenderReadPixels: %s", SDL_GetError());
     }
 }
 

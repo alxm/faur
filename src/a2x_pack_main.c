@@ -18,6 +18,15 @@
 
 #include "a2x_pack_main.v.h"
 
+#ifdef __GLIBC__
+    #define A__BACKTRACE 1
+    #include <execinfo.h>
+#endif
+
+#if A_BUILD_SYSTEM_EMSCRIPTEN
+    #include <emscripten.h>
+#endif
+
 #include "a2x_pack_block.v.h"
 #include "a2x_pack_conf.v.h"
 #include "a2x_pack_console.v.h"
@@ -36,6 +45,7 @@
 #include "a2x_pack_settings.v.h"
 #include "a2x_pack_sound.v.h"
 #include "a2x_pack_state.v.h"
+#include "a2x_pack_time.v.h"
 #include "a2x_pack_timer.v.h"
 
 static int g_argsNum;
@@ -140,9 +150,78 @@ int a_main_argsGetNum(void)
 const char* a_main_argsGet(int ArgNum)
 {
     if(ArgNum >= g_argsNum) {
-        a_out__fatal(
-            "a_main_argsGet(%d): Invalid arg, %d total", ArgNum, g_argsNum);
+        A__FATAL("a_main_argsGet(%d): Only %d args total", ArgNum, g_argsNum);
     }
 
     return g_args[ArgNum];
+}
+
+__attribute__((noreturn)) static void handleFatal(void)
+{
+    #if A__BACKTRACE
+        void* addresses[16];
+        int numAddresses = backtrace(addresses, A_ARRAY_LEN(addresses));
+        char** functionNames = backtrace_symbols(addresses, numAddresses);
+
+        for(int i = 0; i < numAddresses; i++) {
+            a_out__error(functionNames[i]);
+        }
+
+        free(functionNames);
+    #endif
+
+    a_settings_boolSet(A_SETTING_OUTPUT_CONSOLE, true);
+    a_screen__draw();
+
+    #if A_BUILD_DEBUG
+        while(true) {
+            printf("Waiting to attach debugger: PID %d\n", getpid());
+            a_time_secSpin(1);
+        }
+    #else
+        if(a_console__isInitialized()) {
+            for(int s = 10; s > 0; s--) {
+                if(s == 10) {
+                    a_out__message("Exiting in %ds", s);
+                } else {
+                    a_out__overwrite(
+                        A_OUT__TYPE_MESSAGE, stdout, "Exiting in %ds", s);
+                }
+
+                a_console__draw();
+                a_screen__draw();
+                a_time_secWait(1);
+            }
+        }
+    #endif
+
+    #if A_BUILD_SYSTEM_EMSCRIPTEN
+        emscripten_force_exit(1);
+    #endif
+
+    exit(1);
+}
+
+void A__FATAL(const char* Format, ...)
+{
+    va_list args;
+    va_start(args, Format);
+
+    a_out__fatal(Format, args, false);
+
+    va_end(args);
+
+    handleFatal();
+}
+
+void A_FATAL(const char* Format, ...)
+{
+    va_list args;
+    va_start(args, Format);
+
+    a_out__fatal(Format, args, true);
+
+    va_end(args);
+
+    handleFatal();
 }

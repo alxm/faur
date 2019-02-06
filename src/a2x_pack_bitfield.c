@@ -18,8 +18,8 @@
 
 #include "a2x_pack_bitfield.v.h"
 
+#include "a2x_pack_main.v.h"
 #include "a2x_pack_mem.v.h"
-#include "a2x_pack_out.v.h"
 
 typedef unsigned long AChunk;
 #define A__BITS_PER_CHUNK (unsigned)(sizeof(AChunk) * 8)
@@ -33,7 +33,7 @@ struct ABitfield {
 ABitfield* a_bitfield_new(unsigned NumBits)
 {
     if(NumBits < 1) {
-        a_out__fatal("a_bitfield_new(0): Invalid size");
+        A__FATAL("a_bitfield_new(0): Invalid size");
     }
 
     unsigned numChunks = (NumBits + A__BITS_PER_CHUNK - 1) / A__BITS_PER_CHUNK;

@@ -18,14 +18,14 @@
 
 #include "a2x_pack_mem.v.h"
 
-#include "a2x_pack_out.v.h"
+#include "a2x_pack_main.v.h"
 
 void* a_mem_malloc(size_t Size)
 {
     void* ptr = malloc(Size);
 
     if(ptr == NULL) {
-        a_out__fatal("malloc(%u) failed", Size);
+        A__FATAL("malloc(%u) failed", Size);
     }
 
     return ptr;
@@ -36,7 +36,7 @@ void* a_mem_zalloc(size_t Size)
     void* ptr = calloc(1, Size);
 
     if(ptr == NULL) {
-        a_out__fatal("calloc(1, %u) failed", Size);
+        A__FATAL("calloc(1, %u) failed", Size);
     }
 
     return ptr;
@@ -47,7 +47,7 @@ void* a_mem_dup(const void* Buffer, size_t Size)
     void* copy = malloc(Size);
 
     if(copy == NULL) {
-        a_out__fatal("malloc(%u) failed", Size);
+        A__FATAL("malloc(%u) failed", Size);
     }
 
     memcpy(copy, Buffer, Size);

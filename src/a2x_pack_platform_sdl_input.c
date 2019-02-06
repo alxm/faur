@@ -23,6 +23,7 @@
 
 #include "a2x_pack_fps.v.h"
 #include "a2x_pack_listit.v.h"
+#include "a2x_pack_main.v.h"
 #include "a2x_pack_math.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
@@ -342,7 +343,7 @@ void a_platform_sdl_input__init(void)
     #endif
 
     if(SDL_InitSubSystem(g_sdlFlags) != 0) {
-        a_out__fatal("SDL_InitSubSystem: %s", SDL_GetError());
+        A__FATAL("SDL_InitSubSystem: %s", SDL_GetError());
     }
 
     g_controllers = a_list_new();
@@ -1043,9 +1044,9 @@ unsigned a_platform__controllerNumGet(void)
 void a_platform__controllerSet(unsigned Index)
 {
     if(Index >= a_list_sizeGet(g_controllers)) {
-        a_out__fatal("Cannot set controller %d, %d total",
-                     Index,
-                     a_list_sizeGet(g_controllers));
+        A__FATAL("Cannot set controller %d, %d total",
+                 Index,
+                 a_list_sizeGet(g_controllers));
     }
 
     g_setController = a_list_getByIndex(g_controllers, Index);
