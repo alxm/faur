@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2018 Alex Margarit
+    Copyright 2010, 2016-2019 Alex Margarit
     This file is part of a2x, a C video game framework.
 
     a2x-framework is free software: you can redistribute it and/or modify
@@ -161,6 +161,7 @@ void a_platform__screenInit(int Width, int Height, bool FullScreen)
         }
     #elif A_BUILD_LIB_SDL == 2
         int ret;
+        int zoom = a_settings_intGet(A_SETTING_VIDEO_ZOOM);
         uint32_t windowFlags = SDL_WINDOW_MAXIMIZED | SDL_WINDOW_RESIZABLE;
 
         if(FullScreen) {
@@ -170,8 +171,8 @@ void a_platform__screenInit(int Width, int Height, bool FullScreen)
         g_sdlWindow = SDL_CreateWindow("",
                                        SDL_WINDOWPOS_CENTERED,
                                        SDL_WINDOWPOS_CENTERED,
-                                       Width,
-                                       Height,
+                                       Width * zoom,
+                                       Height * zoom,
                                        windowFlags);
         if(g_sdlWindow == NULL) {
             A__FATAL("SDL_CreateWindow: %s", SDL_GetError());
