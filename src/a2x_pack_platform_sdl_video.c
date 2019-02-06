@@ -162,7 +162,11 @@ void a_platform__screenInit(int Width, int Height, bool FullScreen)
     #elif A_BUILD_LIB_SDL == 2
         int ret;
         int zoom = a_settings_intGet(A_SETTING_VIDEO_ZOOM);
-        uint32_t windowFlags = SDL_WINDOW_MAXIMIZED | SDL_WINDOW_RESIZABLE;
+        uint32_t windowFlags = SDL_WINDOW_RESIZABLE;
+
+        if(a_settings_boolGet(A_SETTING_VIDEO_MAX_WINDOW)) {
+            windowFlags |= SDL_WINDOW_MAXIMIZED;
+        }
 
         if(FullScreen) {
             windowFlags |= SDL_WINDOW_FULLSCREEN;
