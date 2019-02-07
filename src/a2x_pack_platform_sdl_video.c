@@ -114,6 +114,21 @@ static void settingFullscreen(ASettingId Setting)
     a_settings_boolSet(A_SETTING_INPUT_MOUSE_CURSOR, !fullScreen);
 }
 
+static void settingVideoZoom(ASettingId Setting)
+{
+    int zoom = a_settings_intGet(Setting);
+    int w = a_settings_intGet(A_SETTING_VIDEO_WIDTH);
+    int h = a_settings_intGet(A_SETTING_VIDEO_HEIGHT);
+
+    #if A_BUILD_LIB_SDL == 2
+        SDL_SetWindowSize(g_sdlWindow, w * zoom, h * zoom);
+    #else
+        A_UNUSED(zoom);
+        A_UNUSED(w);
+        A_UNUSED(h);
+    #endif
+}
+
 static void settingMouseCursor(ASettingId Setting)
 {
     int toggle = a_settings_boolGet(Setting) ? SDL_ENABLE : SDL_DISABLE;
@@ -252,6 +267,8 @@ void a_platform__screenInit(int Width, int Height, bool FullScreen)
         a_settings__callbackSet(
             A_SETTING_VIDEO_FULLSCREEN, settingFullscreen, true);
     #endif
+
+    a_settings__callbackSet(A_SETTING_VIDEO_ZOOM, settingVideoZoom, false);
 
     #if A_BUILD_SYSTEM_WIZ
         if(a_settings_boolGet(A_SETTING_SYSTEM_WIZ_FIXTEARING)) {
