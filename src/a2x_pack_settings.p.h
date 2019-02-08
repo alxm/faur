@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2018 Alex Margarit
+    Copyright 2010, 2016-2019 Alex Margarit
     This file is part of a2x, a C video game framework.
 
     a2x-framework is free software: you can redistribute it and/or modify
@@ -37,6 +37,8 @@ typedef enum {
 
     A_SETTING_VIDEO_WIDTH,
     A_SETTING_VIDEO_HEIGHT,
+    A_SETTING_VIDEO_ZOOM,
+    A_SETTING_VIDEO_MAX_WINDOW,
     A_SETTING_VIDEO_VSYNC,
     A_SETTING_VIDEO_DOUBLEBUFFER,
     A_SETTING_VIDEO_FULLSCREEN,

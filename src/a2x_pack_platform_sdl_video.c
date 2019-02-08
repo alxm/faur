@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2018 Alex Margarit
+    Copyright 2010, 2016-2019 Alex Margarit
     This file is part of a2x, a C video game framework.
 
     a2x-framework is free software: you can redistribute it and/or modify
@@ -85,10 +85,12 @@ static void settingFullscreen(ASettingId Setting)
 
     #if A_BUILD_LIB_SDL == 1
         if(a_settings_boolGet(A_SETTING_VIDEO_DOUBLEBUFFER)) {
-            uint32_t videoFlags = SDL_SWSURFACE;
+            uint32_t videoFlags = g_sdlScreen->flags;
 
             if(fullScreen) {
                 videoFlags |= SDL_FULLSCREEN;
+            } else {
+                videoFlags &= ~(uint32_t)SDL_FULLSCREEN;
             }
 
             g_sdlScreen = SDL_SetVideoMode(0, 0, 0, videoFlags);
@@ -114,6 +116,32 @@ static void settingFullscreen(ASettingId Setting)
     a_settings_boolSet(A_SETTING_INPUT_MOUSE_CURSOR, !fullScreen);
 }
 
+static void settingVideoZoom(ASettingId Setting)
+{
+    int zoom = a_settings_intGet(Setting);
+    int w = a_settings_intGet(A_SETTING_VIDEO_WIDTH);
+    int h = a_settings_intGet(A_SETTING_VIDEO_HEIGHT);
+
+    #if A_BUILD_LIB_SDL == 1
+        if(a_settings_boolGet(A_SETTING_VIDEO_DOUBLEBUFFER)) {
+            g_sdlScreen = SDL_SetVideoMode(
+                            w * zoom, h * zoom, 0, g_sdlScreen->flags);
+
+            if(g_sdlScreen == NULL) {
+                A__FATAL("SDL_SetVideoMode: %s", SDL_GetError());
+            }
+
+            SDL_SetClipRect(g_sdlScreen, NULL);
+        } else {
+            a_out__warning(
+                "SDL 1.2 zoom needs %s=true",
+                a_settings__idToString(A_SETTING_VIDEO_DOUBLEBUFFER));
+        }
+    #elif A_BUILD_LIB_SDL == 2
+        SDL_SetWindowSize(g_sdlWindow, w * zoom, h * zoom);
+    #endif
+}
+
 static void settingMouseCursor(ASettingId Setting)
 {
     int toggle = a_settings_boolGet(Setting) ? SDL_ENABLE : SDL_DISABLE;
@@ -123,26 +151,32 @@ static void settingMouseCursor(ASettingId Setting)
     }
 }
 
-void a_platform__screenInit(int Width, int Height, bool FullScreen)
+void a_platform__screenInit(void)
 {
+    int width = a_settings_intGet(A_SETTING_VIDEO_WIDTH);
+    int height = a_settings_intGet(A_SETTING_VIDEO_HEIGHT);
+    int zoom = a_settings_intGet(A_SETTING_VIDEO_ZOOM);
+    bool fullscreen = a_settings_boolGet(A_SETTING_VIDEO_FULLSCREEN);
+
     #if A_BUILD_LIB_SDL == 1
         int bpp = 0;
         uint32_t videoFlags = SDL_SWSURFACE;
 
-        if(FullScreen) {
+        if(fullscreen) {
             videoFlags |= SDL_FULLSCREEN;
         }
 
-        bpp = SDL_VideoModeOK(Width, Height, A__PIXEL_BPP, videoFlags);
+        bpp = SDL_VideoModeOK(width, height, A__PIXEL_BPP, videoFlags);
 
         if(bpp == 0) {
             A__FATAL("SDL_VideoModeOK: %dx%d:%d video not available",
-                     Width,
-                     Height,
+                     width,
+                     height,
                      A__PIXEL_BPP);
         }
 
-        g_sdlScreen = SDL_SetVideoMode(Width, Height, A__PIXEL_BPP, videoFlags);
+        g_sdlScreen = SDL_SetVideoMode(
+                        width * zoom, height * zoom, A__PIXEL_BPP, videoFlags);
 
         if(g_sdlScreen == NULL) {
             A__FATAL("SDL_SetVideoMode: %s", SDL_GetError());
@@ -161,17 +195,21 @@ void a_platform__screenInit(int Width, int Height, bool FullScreen)
         }
     #elif A_BUILD_LIB_SDL == 2
         int ret;
-        uint32_t windowFlags = SDL_WINDOW_MAXIMIZED | SDL_WINDOW_RESIZABLE;
+        uint32_t windowFlags = SDL_WINDOW_RESIZABLE;
 
-        if(FullScreen) {
+        if(a_settings_boolGet(A_SETTING_VIDEO_MAX_WINDOW)) {
+            windowFlags |= SDL_WINDOW_MAXIMIZED;
+        }
+
+        if(fullscreen) {
             windowFlags |= SDL_WINDOW_FULLSCREEN;
         }
 
         g_sdlWindow = SDL_CreateWindow("",
                                        SDL_WINDOWPOS_CENTERED,
                                        SDL_WINDOWPOS_CENTERED,
-                                       Width,
-                                       Height,
+                                       width * zoom,
+                                       height * zoom,
                                        windowFlags);
         if(g_sdlWindow == NULL) {
             A__FATAL("SDL_CreateWindow: %s", SDL_GetError());
@@ -200,7 +238,7 @@ void a_platform__screenInit(int Width, int Height, bool FullScreen)
             }
         }
 
-        ret = SDL_RenderSetLogicalSize(a__sdlRenderer, Width, Height);
+        ret = SDL_RenderSetLogicalSize(a__sdlRenderer, width, height);
 
         if(ret < 0) {
             A__FATAL("SDL_RenderSetLogicalSize: %s", SDL_GetError());
@@ -210,8 +248,8 @@ void a_platform__screenInit(int Width, int Height, bool FullScreen)
             g_sdlTexture = SDL_CreateTexture(a__sdlRenderer,
                                              A_SDL__PIXEL_FORMAT,
                                              SDL_TEXTUREACCESS_STREAMING,
-                                             Width,
-                                             Height);
+                                             width,
+                                             height);
             if(g_sdlTexture == NULL) {
                 A__FATAL("SDL_CreateTexture: %s", SDL_GetError());
             }
@@ -248,6 +286,8 @@ void a_platform__screenInit(int Width, int Height, bool FullScreen)
             A_SETTING_VIDEO_FULLSCREEN, settingFullscreen, true);
     #endif
 
+    a_settings__callbackSet(A_SETTING_VIDEO_ZOOM, settingVideoZoom, false);
+
     #if A_BUILD_SYSTEM_WIZ
         if(a_settings_boolGet(A_SETTING_SYSTEM_WIZ_FIXTEARING)) {
             a_platform_wiz__portraitModeSet();
@@ -262,7 +302,7 @@ void a_platform__screenShow(void)
             if(a_settings_boolGet(A_SETTING_SYSTEM_WIZ_FIXTEARING)) {
                 // The Wiz screen has diagonal tearing in landscape mode. As a
                 // slow but simple workaround, the screen is set to portrait
-                // mode where top-right is 0,0 and bottom-left is 240,320, and
+                // mode where 320,0 is top-left and 0,240 is bottom-right, and
                 // the game's landscape pixel buffer is rotated to this format
                 // every frame.
 
@@ -291,6 +331,7 @@ void a_platform__screenShow(void)
                 }
 
                 SDL_Flip(g_sdlScreen);
+
                 return;
             }
         #endif
@@ -302,7 +343,42 @@ void a_platform__screenShow(void)
                 }
             }
 
-            memcpy(g_sdlScreen->pixels, a__screen.pixels, a__screen.pixelsSize);
+            int zoom = a_settings_intGet(A_SETTING_VIDEO_ZOOM);
+
+            if(zoom <= 1) {
+                memcpy(g_sdlScreen->pixels,
+                       a__screen.pixels,
+                       a__screen.pixelsSize);
+            } else {
+                int realH = g_sdlScreen->h / zoom;
+                int realW = g_sdlScreen->w / zoom;
+
+                APixel* dst = (APixel*)g_sdlScreen->pixels;
+                const APixel* srcStart = a__screen.pixels;
+
+                ptrdiff_t dstRemainderInc =
+                    (int)g_sdlScreen->pitch / (int)sizeof(APixel)
+                        - g_sdlScreen->w;
+                ptrdiff_t srcStartInc = g_sdlScreen->w / zoom;
+
+                for(int y = realH; y--; ) {
+                    for(int z = zoom; z--; ) {
+                        const APixel* src = srcStart;
+
+                        for(int x = realW; x--; ) {
+                            for(int z = zoom; z--; ) {
+                                *dst++ = *src;
+                            }
+
+                            src++;
+                        }
+
+                        dst += dstRemainderInc;
+                    }
+
+                    srcStart += srcStartInc;
+                }
+            }
 
             if(SDL_MUSTLOCK(g_sdlScreen)) {
                 SDL_UnlockSurface(g_sdlScreen);

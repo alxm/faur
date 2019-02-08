@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2018 Alex Margarit
+    Copyright 2010, 2016, 2018-2019 Alex Margarit
     This file is part of a2x, a C video game framework.
 
     a2x-framework is free software: you can redistribute it and/or modify
@@ -34,6 +34,7 @@ typedef void ASettingCallback(ASettingId Setting);
 
 extern void a_settings__init(void);
 extern void a_settings__init2(void);
+extern void a_settings__init3(void);
 extern void a_settings__uninit(void);
 
 extern ASettingId a_settings__stringToId(const char* Key);

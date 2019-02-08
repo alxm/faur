@@ -128,6 +128,7 @@ int main(int Argc, char* Argv[])
     a_fade__init();
     a_font__init();
     a_console__init2();
+    a_settings__init3();
 
     if(atexit(a__atexit)) {
         a_out__error("Cannot register atexit callback");

@@ -83,6 +83,8 @@ static ASetting g_settings[A_SETTING_NUM] = {
 
     A__SETTING(A_SETTING_VIDEO_WIDTH, A__SETTING_TYPE_INT, A__SETTING_FLAG_SET_ONCE, integer, A_BUILD_SCREEN_WIDTH),
     A__SETTING(A_SETTING_VIDEO_HEIGHT, A__SETTING_TYPE_INT, A__SETTING_FLAG_SET_ONCE, integer, A_BUILD_SCREEN_HEIGHT),
+    A__SETTING(A_SETTING_VIDEO_ZOOM, A__SETTING_TYPE_INT, A__SETTING_FLAG_NONE, integer, 1),
+    A__SETTING(A_SETTING_VIDEO_MAX_WINDOW, A__SETTING_TYPE_BOOL, A__SETTING_FLAG_SET_ONCE, boolean, true),
     A__SETTING(A_SETTING_VIDEO_VSYNC, A__SETTING_TYPE_BOOL, A__SETTING_FLAG_SET_ONCE, boolean, false),
     A__SETTING(A_SETTING_VIDEO_DOUBLEBUFFER, A__SETTING_TYPE_BOOL, A__SETTING_FLAG_SET_ONCE, boolean, false),
     A__SETTING(A_SETTING_VIDEO_FULLSCREEN, A__SETTING_TYPE_BOOL, A__SETTING_FLAG_NONE, boolean, A_BUILD_SCREEN_FULLSCREEN),
@@ -138,7 +140,12 @@ void a_settings__init2(void)
             g_settings[s].value.pixel = a_pixel_fromHex(
                                             g_settings[s].value.integeru);
         }
+    }
+}
 
+void a_settings__init3(void)
+{
+    for(int s = 0; s < A_SETTING_NUM; s++) {
         if(A_FLAG_TEST_ANY(g_settings[s].flags, A__SETTING_FLAG_SET_ONCE)) {
             A_FLAG_SET(g_settings[s].flags, A__SETTING_FLAG_FROZEN);
         }

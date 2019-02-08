@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2018 Alex Margarit
+    Copyright 2010, 2016-2019 Alex Margarit
     This file is part of a2x, a C video game framework.
 
     a2x-framework is free software: you can redistribute it and/or modify
@@ -31,6 +31,9 @@ static AList* g_stack; // list of AScreen
 
 #if A_BUILD_SYSTEM_DESKTOP
     static AButton* g_fullScreenButton;
+
+    #define A__ZOOM_LEVELS 3
+    static AButton* g_zoomButtons[A__ZOOM_LEVELS];
 #endif
 
 static void initScreen(AScreen* Screen, int Width, int Height, bool AllocBuffer)
@@ -105,6 +108,10 @@ void a_screen__init(void)
         a_settings_boolSet(A_SETTING_VIDEO_DOUBLEBUFFER, true);
     #endif
 
+    if(a_settings_intGet(A_SETTING_VIDEO_ZOOM) > 1) {
+        a_settings_boolSet(A_SETTING_VIDEO_DOUBLEBUFFER, true);
+    }
+
     #if A_BUILD_LIB_SDL == 2 || A_BUILD_SYSTEM_EMSCRIPTEN
         if(a_settings_isDefault(A_SETTING_VIDEO_VSYNC)) {
             a_settings_boolSet(A_SETTING_VIDEO_VSYNC, true);
@@ -121,12 +128,16 @@ void a_screen__init(void)
         }
     #endif
 
-    a_platform__screenInit(
-        width, height, a_settings_boolGet(A_SETTING_VIDEO_FULLSCREEN));
+    a_platform__screenInit();
 
     #if A_BUILD_SYSTEM_DESKTOP
         g_fullScreenButton = a_button_new();
         a_button_bind(g_fullScreenButton, A_KEY_F4);
+
+        for(int z = 0; z < A__ZOOM_LEVELS; z++) {
+            g_zoomButtons[z] = a_button_new();
+            a_button_bind(g_zoomButtons[z], A_KEY_F1 + z);
+        }
     #endif
 
     #if !A_BUILD_RENDER_SOFTWARE
@@ -149,6 +160,10 @@ void a_screen__uninit(void)
 
     #if A_BUILD_SYSTEM_DESKTOP
         a_button_free(g_fullScreenButton);
+
+        for(int z = 0; z < A__ZOOM_LEVELS; z++) {
+            a_button_free(g_zoomButtons[z]);
+        }
     #endif
 }
 
@@ -157,6 +172,13 @@ void a_screen__tick(void)
     #if A_BUILD_SYSTEM_DESKTOP
         if(a_button_pressGetOnce(g_fullScreenButton)) {
             a_settings_boolFlip(A_SETTING_VIDEO_FULLSCREEN);
+        }
+
+        for(int z = 0; z < A__ZOOM_LEVELS; z++) {
+            if(a_button_pressGetOnce(g_zoomButtons[z])) {
+                a_settings_intSet(A_SETTING_VIDEO_ZOOM, z + 1);
+                break;
+            }
         }
     #endif
 }
