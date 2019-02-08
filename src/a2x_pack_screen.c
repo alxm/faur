@@ -128,8 +128,7 @@ void a_screen__init(void)
         }
     #endif
 
-    a_platform__screenInit(
-        width, height, a_settings_boolGet(A_SETTING_VIDEO_FULLSCREEN));
+    a_platform__screenInit();
 
     #if A_BUILD_SYSTEM_DESKTOP
         g_fullScreenButton = a_button_new();

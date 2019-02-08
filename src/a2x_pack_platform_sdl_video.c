@@ -151,29 +151,32 @@ static void settingMouseCursor(ASettingId Setting)
     }
 }
 
-void a_platform__screenInit(int Width, int Height, bool FullScreen)
+void a_platform__screenInit(void)
 {
+    int width = a_settings_intGet(A_SETTING_VIDEO_WIDTH);
+    int height = a_settings_intGet(A_SETTING_VIDEO_HEIGHT);
     int zoom = a_settings_intGet(A_SETTING_VIDEO_ZOOM);
+    bool fullscreen = a_settings_boolGet(A_SETTING_VIDEO_FULLSCREEN);
 
     #if A_BUILD_LIB_SDL == 1
         int bpp = 0;
         uint32_t videoFlags = SDL_SWSURFACE;
 
-        if(FullScreen) {
+        if(fullscreen) {
             videoFlags |= SDL_FULLSCREEN;
         }
 
-        bpp = SDL_VideoModeOK(Width, Height, A__PIXEL_BPP, videoFlags);
+        bpp = SDL_VideoModeOK(width, height, A__PIXEL_BPP, videoFlags);
 
         if(bpp == 0) {
             A__FATAL("SDL_VideoModeOK: %dx%d:%d video not available",
-                     Width,
-                     Height,
+                     width,
+                     height,
                      A__PIXEL_BPP);
         }
 
         g_sdlScreen = SDL_SetVideoMode(
-                        Width * zoom, Height * zoom, A__PIXEL_BPP, videoFlags);
+                        width * zoom, height * zoom, A__PIXEL_BPP, videoFlags);
 
         if(g_sdlScreen == NULL) {
             A__FATAL("SDL_SetVideoMode: %s", SDL_GetError());
@@ -198,15 +201,15 @@ void a_platform__screenInit(int Width, int Height, bool FullScreen)
             windowFlags |= SDL_WINDOW_MAXIMIZED;
         }
 
-        if(FullScreen) {
+        if(fullscreen) {
             windowFlags |= SDL_WINDOW_FULLSCREEN;
         }
 
         g_sdlWindow = SDL_CreateWindow("",
                                        SDL_WINDOWPOS_CENTERED,
                                        SDL_WINDOWPOS_CENTERED,
-                                       Width * zoom,
-                                       Height * zoom,
+                                       width * zoom,
+                                       height * zoom,
                                        windowFlags);
         if(g_sdlWindow == NULL) {
             A__FATAL("SDL_CreateWindow: %s", SDL_GetError());
@@ -235,7 +238,7 @@ void a_platform__screenInit(int Width, int Height, bool FullScreen)
             }
         }
 
-        ret = SDL_RenderSetLogicalSize(a__sdlRenderer, Width, Height);
+        ret = SDL_RenderSetLogicalSize(a__sdlRenderer, width, height);
 
         if(ret < 0) {
             A__FATAL("SDL_RenderSetLogicalSize: %s", SDL_GetError());
@@ -245,8 +248,8 @@ void a_platform__screenInit(int Width, int Height, bool FullScreen)
             g_sdlTexture = SDL_CreateTexture(a__sdlRenderer,
                                              A_SDL__PIXEL_FORMAT,
                                              SDL_TEXTUREACCESS_STREAMING,
-                                             Width,
-                                             Height);
+                                             width,
+                                             height);
             if(g_sdlTexture == NULL) {
                 A__FATAL("SDL_CreateTexture: %s", SDL_GetError());
             }
