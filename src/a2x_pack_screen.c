@@ -108,6 +108,10 @@ void a_screen__init(void)
         a_settings_boolSet(A_SETTING_VIDEO_DOUBLEBUFFER, true);
     #endif
 
+    if(a_settings_intGet(A_SETTING_VIDEO_ZOOM) > 1) {
+        a_settings_boolSet(A_SETTING_VIDEO_DOUBLEBUFFER, true);
+    }
+
     #if A_BUILD_LIB_SDL == 2 || A_BUILD_SYSTEM_EMSCRIPTEN
         if(a_settings_isDefault(A_SETTING_VIDEO_VSYNC)) {
             a_settings_boolSet(A_SETTING_VIDEO_VSYNC, true);

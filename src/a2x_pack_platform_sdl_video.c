@@ -85,10 +85,12 @@ static void settingFullscreen(ASettingId Setting)
 
     #if A_BUILD_LIB_SDL == 1
         if(a_settings_boolGet(A_SETTING_VIDEO_DOUBLEBUFFER)) {
-            uint32_t videoFlags = SDL_SWSURFACE;
+            uint32_t videoFlags = g_sdlScreen->flags;
 
             if(fullScreen) {
                 videoFlags |= SDL_FULLSCREEN;
+            } else {
+                videoFlags &= ~(uint32_t)SDL_FULLSCREEN;
             }
 
             g_sdlScreen = SDL_SetVideoMode(0, 0, 0, videoFlags);
@@ -120,12 +122,23 @@ static void settingVideoZoom(ASettingId Setting)
     int w = a_settings_intGet(A_SETTING_VIDEO_WIDTH);
     int h = a_settings_intGet(A_SETTING_VIDEO_HEIGHT);
 
-    #if A_BUILD_LIB_SDL == 2
+    #if A_BUILD_LIB_SDL == 1
+        if(a_settings_boolGet(A_SETTING_VIDEO_DOUBLEBUFFER)) {
+            g_sdlScreen = SDL_SetVideoMode(
+                            w * zoom, h * zoom, 0, g_sdlScreen->flags);
+
+            if(g_sdlScreen == NULL) {
+                A__FATAL("SDL_SetVideoMode: %s", SDL_GetError());
+            }
+
+            SDL_SetClipRect(g_sdlScreen, NULL);
+        } else {
+            a_out__warning(
+                "SDL 1.2 zoom needs %s=true",
+                a_settings__idToString(A_SETTING_VIDEO_DOUBLEBUFFER));
+        }
+    #elif A_BUILD_LIB_SDL == 2
         SDL_SetWindowSize(g_sdlWindow, w * zoom, h * zoom);
-    #else
-        A_UNUSED(zoom);
-        A_UNUSED(w);
-        A_UNUSED(h);
     #endif
 }
 
@@ -140,6 +153,8 @@ static void settingMouseCursor(ASettingId Setting)
 
 void a_platform__screenInit(int Width, int Height, bool FullScreen)
 {
+    int zoom = a_settings_intGet(A_SETTING_VIDEO_ZOOM);
+
     #if A_BUILD_LIB_SDL == 1
         int bpp = 0;
         uint32_t videoFlags = SDL_SWSURFACE;
@@ -157,7 +172,8 @@ void a_platform__screenInit(int Width, int Height, bool FullScreen)
                      A__PIXEL_BPP);
         }
 
-        g_sdlScreen = SDL_SetVideoMode(Width, Height, A__PIXEL_BPP, videoFlags);
+        g_sdlScreen = SDL_SetVideoMode(
+                        Width * zoom, Height * zoom, A__PIXEL_BPP, videoFlags);
 
         if(g_sdlScreen == NULL) {
             A__FATAL("SDL_SetVideoMode: %s", SDL_GetError());
@@ -176,7 +192,6 @@ void a_platform__screenInit(int Width, int Height, bool FullScreen)
         }
     #elif A_BUILD_LIB_SDL == 2
         int ret;
-        int zoom = a_settings_intGet(A_SETTING_VIDEO_ZOOM);
         uint32_t windowFlags = SDL_WINDOW_RESIZABLE;
 
         if(a_settings_boolGet(A_SETTING_VIDEO_MAX_WINDOW)) {
@@ -284,7 +299,7 @@ void a_platform__screenShow(void)
             if(a_settings_boolGet(A_SETTING_SYSTEM_WIZ_FIXTEARING)) {
                 // The Wiz screen has diagonal tearing in landscape mode. As a
                 // slow but simple workaround, the screen is set to portrait
-                // mode where top-right is 0,0 and bottom-left is 240,320, and
+                // mode where 320,0 is top-left and 0,240 is bottom-right, and
                 // the game's landscape pixel buffer is rotated to this format
                 // every frame.
 
@@ -313,6 +328,7 @@ void a_platform__screenShow(void)
                 }
 
                 SDL_Flip(g_sdlScreen);
+
                 return;
             }
         #endif
@@ -324,7 +340,42 @@ void a_platform__screenShow(void)
                 }
             }
 
-            memcpy(g_sdlScreen->pixels, a__screen.pixels, a__screen.pixelsSize);
+            int zoom = a_settings_intGet(A_SETTING_VIDEO_ZOOM);
+
+            if(zoom <= 1) {
+                memcpy(g_sdlScreen->pixels,
+                       a__screen.pixels,
+                       a__screen.pixelsSize);
+            } else {
+                int realH = g_sdlScreen->h / zoom;
+                int realW = g_sdlScreen->w / zoom;
+
+                APixel* dst = (APixel*)g_sdlScreen->pixels;
+                const APixel* srcStart = a__screen.pixels;
+
+                ptrdiff_t dstRemainderInc =
+                    (int)g_sdlScreen->pitch / (int)sizeof(APixel)
+                        - g_sdlScreen->w;
+                ptrdiff_t srcStartInc = g_sdlScreen->w / zoom;
+
+                for(int y = realH; y--; ) {
+                    for(int z = zoom; z--; ) {
+                        const APixel* src = srcStart;
+
+                        for(int x = realW; x--; ) {
+                            for(int z = zoom; z--; ) {
+                                *dst++ = *src;
+                            }
+
+                            src++;
+                        }
+
+                        dst += dstRemainderInc;
+                    }
+
+                    srcStart += srcStartInc;
+                }
+            }
 
             if(SDL_MUSTLOCK(g_sdlScreen)) {
                 SDL_UnlockSurface(g_sdlScreen);
