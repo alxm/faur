@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2018 Alex Margarit
+    Copyright 2010, 2016, 2018-2019 Alex Margarit
     This file is part of a2x, a C video game framework.
 
     a2x-framework is free software: you can redistribute it and/or modify
@@ -25,8 +25,10 @@ typedef struct AScreen AScreen;
 #include "a2x_pack_sprite.p.h"
 
 extern APixel* a_screen_pixelsGetBuffer(void);
-extern int a_screen_widthGet(void);
-extern int a_screen_heightGet(void);
+
+extern AVectorInt a_screen_sizeGet(void);
+extern int a_screen_sizeGetWidth(void);
+extern int a_screen_sizeGetHeight(void);
 
 extern AScreen* a_screen_new(int Width, int Height);
 extern AScreen* a_screen_dup(void);

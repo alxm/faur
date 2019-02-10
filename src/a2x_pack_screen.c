@@ -212,12 +212,17 @@ APixel* a_screen_pixelsGetBuffer(void)
     return a__screen.pixels;
 }
 
-int a_screen_widthGet(void)
+AVectorInt a_screen_sizeGet(void)
+{
+    return (AVectorInt){a__screen.width, a__screen.height};
+}
+
+int a_screen_sizeGetWidth(void)
 {
     return a__screen.width;
 }
 
-int a_screen_heightGet(void)
+int a_screen_sizeGetHeight(void)
 {
     return a__screen.height;
 }

@@ -62,8 +62,8 @@ A_STATE(drawBox)
 
     A_STATE_INIT
     {
-        context.x = a_screen_widthGet() / 2;
-        context.y = a_screen_heightGet() / 2;
+        context.x = a_screen_sizeGetWidth() / 2;
+        context.y = a_screen_sizeGetHeight() / 2;
 
         context.up = a_button_new();
         a_button_bind(context.up, A_KEY_UP);

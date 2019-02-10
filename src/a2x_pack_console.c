@@ -98,7 +98,7 @@ void a_console__init2(void)
     a_spriteframes_free(frames, false);
 
     g_linesPerScreen =
-        (unsigned)(a_screen_heightGet() / a_font_lineHeightGet() - 2);
+        (unsigned)(a_screen_sizeGetHeight() / a_font_lineHeightGet() - 2);
 
     // In case messages were logged between init and init2
     while(a_list_sizeGet(g_lines) > g_linesPerScreen) {
@@ -211,8 +211,8 @@ void a_console__draw(void)
 
         a_font__fontSet(A_FONT__ID_GREEN);
         a_font_printf("%dx%d:%dx%d\n",
-                      a_screen_widthGet(),
-                      a_screen_heightGet(),
+                      a_screen_sizeGetWidth(),
+                      a_screen_sizeGetHeight(),
                       A__PIXEL_BPP,
                       a_settings_intGet(A_SETTING_VIDEO_ZOOM));
         a_font_printf("Vsync %s\n",
