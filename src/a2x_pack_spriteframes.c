@@ -336,6 +336,17 @@ unsigned a_spriteframes_speedGet(const ASpriteFrames* Frames)
     return Frames->timer ? a_timer_periodGet(Frames->timer) : 0;
 }
 
+unsigned a_spriteframes_speedGetUnitsPerCycle(const ASpriteFrames* Frames)
+{
+    unsigned frameUnits = a_spriteframes_speedGet(Frames);
+
+    if(frameUnits == 0) {
+        return Frames->num;
+    }
+
+    return Frames->num * frameUnits;
+}
+
 void a_spriteframes_speedSet(ASpriteFrames* Frames, ATimerType Units, unsigned TimePerFrame)
 {
     if(Frames->timer) {
