@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2018 Alex Margarit
+    Copyright 2010, 2016-2019 Alex Margarit
     This file is part of a2x, a C video game framework.
 
     a2x-framework is free software: you can redistribute it and/or modify
@@ -299,12 +299,12 @@ ASprite* a_spriteframes_getRandom(const ASpriteFrames* Frames)
     return Frames->spriteArray[a_random_intu(Frames->num)];
 }
 
-AList* a_spriteframes_listGet(const ASpriteFrames* Frames)
+AList* a_spriteframes_framesGet(const ASpriteFrames* Frames)
 {
     return Frames->sprites;
 }
 
-unsigned a_spriteframes_numGet(const ASpriteFrames* Frames)
+unsigned a_spriteframes_framesGetNum(const ASpriteFrames* Frames)
 {
     return Frames->num;
 }
