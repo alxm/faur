@@ -23,6 +23,7 @@
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_random.v.h"
 #include "a2x_pack_sprite.v.h"
+#include "a2x_pack_str.v.h"
 
 struct ASpriteFrames {
     ATimer* timer;
@@ -56,6 +57,25 @@ ASpriteFrames* a_spriteframes_newFromPng(const char* Path)
 ASpriteFrames* a_spriteframes_newFromPngGrid(const char* Path, int CellWidth, int CellHeight)
 {
     ASprite* s = a_sprite_newFromPng(Path);
+
+    if(CellWidth < 1 || CellHeight < 1) {
+        char* suffix = a_str_suffixGetFromLast(Path, '_');
+
+        if(suffix) {
+            if(sscanf(suffix, "grid%dx%d.png", &CellWidth, &CellHeight) != 2) {
+                CellWidth = 0;
+                CellHeight = 0;
+            }
+
+            free(suffix);
+        }
+
+        if(CellWidth < 1 || CellHeight < 1) {
+            CellWidth = s->w;
+            CellHeight = s->h;
+        }
+    }
+
     ASpriteFrames* f = a_spriteframes_newFromSpriteGrid(
                         s, 0, 0, CellWidth, CellHeight);
 
