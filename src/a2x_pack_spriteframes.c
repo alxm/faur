@@ -69,11 +69,6 @@ ASpriteFrames* a_spriteframes_newFromPngGrid(const char* Path, int CellWidth, in
 
             free(suffix);
         }
-
-        if(CellWidth < 1 || CellHeight < 1) {
-            CellWidth = s->w;
-            CellHeight = s->h;
-        }
     }
 
     ASpriteFrames* f = a_spriteframes_newFromSpriteGrid(
@@ -133,6 +128,11 @@ ASpriteFrames* a_spriteframes_newFromSpriteGrid(const ASprite* Sheet, int X, int
 
     int gridW, gridH;
     a_sprite__boundsFind(Sheet, X, Y, &gridW, &gridH);
+
+    if(CellWidth < 1 || CellHeight < 1) {
+        CellWidth = gridW;
+        CellHeight = gridH;
+    }
 
     int endX = X + gridW - (gridW % CellWidth);
     int endY = Y + gridH - (gridH % CellHeight);
