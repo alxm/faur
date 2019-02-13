@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2018 Alex Margarit
+    Copyright 2010, 2016-2019 Alex Margarit
     This file is part of a2x, a C video game framework.
 
     a2x-framework is free software: you can redistribute it and/or modify
@@ -46,7 +46,7 @@ static AList* g_stack; // list of AStateEntry
 static AList* g_pending; // list of AStateEntry/NULL
 static bool g_exiting;
 
-static AEvent* g_blockEvent;
+static const AEvent* g_blockEvent;
 
 static const char* g_stageNames[A__STATE_STAGE_NUM] = {
     [A__STATE_STAGE_INIT] = "Init",
@@ -243,7 +243,7 @@ bool a_state_blockGet(void)
     return g_blockEvent && *g_blockEvent != 0;
 }
 
-void a_state_blockSet(AEvent* Event)
+void a_state_blockSet(const AEvent* Event)
 {
     g_blockEvent = Event;
 }

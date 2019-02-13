@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2018 Alex Margarit
+    Copyright 2010, 2016, 2018-2019 Alex Margarit
     This file is part of a2x, a C video game framework.
 
     a2x-framework is free software: you can redistribute it and/or modify
@@ -20,8 +20,8 @@
 
 #include "a2x_system_includes.h"
 
-extern AEvent* a_fade_eventGet(void);
+extern const AEvent* a_fade_eventGet(void);
 
-extern void a_fade_toColor(unsigned DurationMs);
-extern void a_fade_fromColor(unsigned DurationMs);
-extern void a_fade_screens(unsigned DurationMs);
+extern void a_fade_startColorTo(unsigned DurationMs);
+extern void a_fade_startColorFrom(unsigned DurationMs);
+extern void a_fade_startScreens(unsigned DurationMs);

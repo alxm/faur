@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2018 Alex Margarit
+    Copyright 2010, 2016-2019 Alex Margarit
     This file is part of a2x, a C video game framework.
 
     a2x-framework is free software: you can redistribute it and/or modify
@@ -31,7 +31,7 @@ extern void a_state_replace(AState* State, const char* Name);
 extern void a_state_exit(void);
 
 extern bool a_state_blockGet(void);
-extern void a_state_blockSet(AEvent* Event);
+extern void a_state_blockSet(const AEvent* Event);
 
 typedef enum {
     A__STATE_STAGE_INVALID = -1,
