@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2018 Alex Margarit
+    Copyright 2010, 2016-2019 Alex Margarit
     This file is part of a2x, a C video game framework.
 
     a2x-framework is free software: you can redistribute it and/or modify
@@ -61,7 +61,8 @@ static void newFade(AFadeOpId Op, unsigned DurationMs)
     g_fade.event = 1;
     g_fade.op = Op;
     g_fade.angle = 0;
-    g_fade.angleInc = A_DEG_090_FIX / a_time_msToTicks(DurationMs);
+    g_fade.angleInc = A_DEG_090_FIX
+                        / a_math_maxu(a_time_msToTicks(DurationMs), 1);
 }
 
 void a_fade_toColor(unsigned DurationMs)
@@ -93,7 +94,7 @@ void a_fade__tick(void)
 
     g_fade.angle += g_fade.angleInc;
 
-    if(g_fade.angle >= A_DEG_090_FIX) {
+    if(g_fade.angle > A_DEG_090_FIX) {
         g_fade.event = 0;
         g_fade.op = A__FADE_INVALID;
     }
