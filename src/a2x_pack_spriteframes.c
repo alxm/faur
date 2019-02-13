@@ -44,17 +44,7 @@ ASpriteFrames* a_spriteframes_newBlank(void)
     return f;
 }
 
-ASpriteFrames* a_spriteframes_newFromPng(const char* Path)
-{
-    ASprite* s = a_sprite_newFromPng(Path);
-    ASpriteFrames* f = a_spriteframes_newFromSprite(s, 0, 0);
-
-    a_sprite_free(s);
-
-    return f;
-}
-
-ASpriteFrames* a_spriteframes_newFromPngGrid(const char* Path, int CellWidth, int CellHeight)
+ASpriteFrames* a_spriteframes_newFromPng(const char* Path, int CellWidth, int CellHeight)
 {
     ASprite* s = a_sprite_newFromPng(Path);
 
@@ -71,7 +61,7 @@ ASpriteFrames* a_spriteframes_newFromPngGrid(const char* Path, int CellWidth, in
         }
     }
 
-    ASpriteFrames* f = a_spriteframes_newFromSpriteGrid(
+    ASpriteFrames* f = a_spriteframes_newFromSprite(
                         s, 0, 0, CellWidth, CellHeight);
 
     a_sprite_free(s);
@@ -79,50 +69,7 @@ ASpriteFrames* a_spriteframes_newFromPngGrid(const char* Path, int CellWidth, in
     return f;
 }
 
-ASpriteFrames* a_spriteframes_newFromSprite(const ASprite* Sheet, int X, int Y)
-{
-    ASpriteFrames* f = a_spriteframes_newBlank();
-
-    if(X < 0 || X >= Sheet->w || Y < 0 || Y >= Sheet->h) {
-        A__FATAL("a_spriteframes_newFromSprite(%s): Invalid coords %d, %d",
-                 A_SPRITE__NAME(Sheet),
-                 X,
-                 Y);
-    }
-
-    while(X < Sheet->w) {
-        ASprite* s = a_sprite_newFromSprite(Sheet, X, Y);
-
-        a_list_addLast(f->sprites, s);
-        X += s->w;
-
-        if(X < Sheet->w) {
-            bool end = true;
-
-            for(int y = Y + s->h; y-- > Y; ) {
-                if(a_sprite__pixelsGetPixel(Sheet, X, y)
-                    != a_sprite__colorEnd) {
-
-                    end = false;
-                    break;
-                }
-            }
-
-            if(end) {
-                break;
-            }
-        }
-
-        X += 1;
-    }
-
-    f->spriteArray = (ASprite**)a_list_toArray(f->sprites);
-    f->num = a_list_sizeGet(f->sprites);
-
-    return f;
-}
-
-ASpriteFrames* a_spriteframes_newFromSpriteGrid(const ASprite* Sheet, int X, int Y, int CellWidth, int CellHeight)
+ASpriteFrames* a_spriteframes_newFromSprite(const ASprite* Sheet, int X, int Y, int CellWidth, int CellHeight)
 {
     ASpriteFrames* f = a_spriteframes_newBlank();
 

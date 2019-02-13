@@ -100,11 +100,11 @@ AFont* a_font_newFromPng(const char* Path)
 AFont* a_font_newFromSprite(const ASprite* Sheet, int X, int Y)
 {
     ASprite* gridSprite = a_sprite_newFromSprite(Sheet, X, Y);
-    ASpriteFrames* frames = a_spriteframes_newFromSpriteGrid(gridSprite,
-                                                             0,
-                                                             0,
-                                                             gridSprite->w / 16,
-                                                             gridSprite->h / 6);
+    ASpriteFrames* frames = a_spriteframes_newFromSprite(gridSprite,
+                                                         0,
+                                                         0,
+                                                         gridSprite->w / 16,
+                                                         gridSprite->h / 6);
 
     a_sprite_free(gridSprite);
 
