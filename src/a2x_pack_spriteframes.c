@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2018 Alex Margarit
+    Copyright 2010, 2016-2019 Alex Margarit
     This file is part of a2x, a C video game framework.
 
     a2x-framework is free software: you can redistribute it and/or modify
@@ -23,6 +23,7 @@
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_random.v.h"
 #include "a2x_pack_sprite.v.h"
+#include "a2x_pack_str.v.h"
 
 struct ASpriteFrames {
     ATimer* timer;
@@ -43,20 +44,24 @@ ASpriteFrames* a_spriteframes_newBlank(void)
     return f;
 }
 
-ASpriteFrames* a_spriteframes_newFromPng(const char* Path)
+ASpriteFrames* a_spriteframes_newFromPng(const char* Path, int CellWidth, int CellHeight)
 {
     ASprite* s = a_sprite_newFromPng(Path);
-    ASpriteFrames* f = a_spriteframes_newFromSprite(s, 0, 0);
 
-    a_sprite_free(s);
+    if(CellWidth < 1 || CellHeight < 1) {
+        char* suffix = a_str_suffixGetFromLast(Path, '_');
 
-    return f;
-}
+        if(suffix) {
+            if(sscanf(suffix, "grid%dx%d.png", &CellWidth, &CellHeight) != 2) {
+                CellWidth = 0;
+                CellHeight = 0;
+            }
 
-ASpriteFrames* a_spriteframes_newFromPngGrid(const char* Path, int CellWidth, int CellHeight)
-{
-    ASprite* s = a_sprite_newFromPng(Path);
-    ASpriteFrames* f = a_spriteframes_newFromSpriteGrid(
+            free(suffix);
+        }
+    }
+
+    ASpriteFrames* f = a_spriteframes_newFromSprite(
                         s, 0, 0, CellWidth, CellHeight);
 
     a_sprite_free(s);
@@ -64,55 +69,17 @@ ASpriteFrames* a_spriteframes_newFromPngGrid(const char* Path, int CellWidth, in
     return f;
 }
 
-ASpriteFrames* a_spriteframes_newFromSprite(const ASprite* Sheet, int X, int Y)
-{
-    ASpriteFrames* f = a_spriteframes_newBlank();
-
-    if(X < 0 || X >= Sheet->w || Y < 0 || Y >= Sheet->h) {
-        A__FATAL("a_spriteframes_newFromSprite(%s): Invalid coords %d, %d",
-                 A_SPRITE__NAME(Sheet),
-                 X,
-                 Y);
-    }
-
-    while(X < Sheet->w) {
-        ASprite* s = a_sprite_newFromSprite(Sheet, X, Y);
-
-        a_list_addLast(f->sprites, s);
-        X += s->w;
-
-        if(X < Sheet->w) {
-            bool end = true;
-
-            for(int y = Y + s->h; y-- > Y; ) {
-                if(a_sprite__pixelsGetPixel(Sheet, X, y)
-                    != a_sprite__colorEnd) {
-
-                    end = false;
-                    break;
-                }
-            }
-
-            if(end) {
-                break;
-            }
-        }
-
-        X += 1;
-    }
-
-    f->spriteArray = (ASprite**)a_list_toArray(f->sprites);
-    f->num = a_list_sizeGet(f->sprites);
-
-    return f;
-}
-
-ASpriteFrames* a_spriteframes_newFromSpriteGrid(const ASprite* Sheet, int X, int Y, int CellWidth, int CellHeight)
+ASpriteFrames* a_spriteframes_newFromSprite(const ASprite* Sheet, int X, int Y, int CellWidth, int CellHeight)
 {
     ASpriteFrames* f = a_spriteframes_newBlank();
 
     int gridW, gridH;
     a_sprite__boundsFind(Sheet, X, Y, &gridW, &gridH);
+
+    if(CellWidth < 1 || CellHeight < 1) {
+        CellWidth = gridW;
+        CellHeight = gridH;
+    }
 
     int endX = X + gridW - (gridW % CellWidth);
     int endY = Y + gridH - (gridH % CellHeight);
@@ -299,12 +266,12 @@ ASprite* a_spriteframes_getRandom(const ASpriteFrames* Frames)
     return Frames->spriteArray[a_random_intu(Frames->num)];
 }
 
-AList* a_spriteframes_listGet(const ASpriteFrames* Frames)
+AList* a_spriteframes_framesGet(const ASpriteFrames* Frames)
 {
     return Frames->sprites;
 }
 
-unsigned a_spriteframes_numGet(const ASpriteFrames* Frames)
+unsigned a_spriteframes_framesGetNum(const ASpriteFrames* Frames)
 {
     return Frames->num;
 }
@@ -334,6 +301,17 @@ void a_spriteframes_directionFlip(ASpriteFrames* Frames)
 unsigned a_spriteframes_speedGet(const ASpriteFrames* Frames)
 {
     return Frames->timer ? a_timer_periodGet(Frames->timer) : 0;
+}
+
+unsigned a_spriteframes_speedGetUnitsPerCycle(const ASpriteFrames* Frames)
+{
+    unsigned frameUnits = a_spriteframes_speedGet(Frames);
+
+    if(frameUnits == 0) {
+        return Frames->num;
+    }
+
+    return Frames->num * frameUnits;
 }
 
 void a_spriteframes_speedSet(ASpriteFrames* Frames, ATimerType Units, unsigned TimePerFrame)

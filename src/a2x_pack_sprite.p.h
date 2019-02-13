@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2018 Alex Margarit
+    Copyright 2010, 2016-2019 Alex Margarit
     This file is part of a2x, a C video game framework.
 
     a2x-framework is free software: you can redistribute it and/or modify
@@ -38,12 +38,12 @@ extern void a_sprite_blitEx(const ASprite* Sprite, int X, int Y, AFix Scale, uns
 extern void a_sprite_swapColor(ASprite* Sprite, APixel OldColor, APixel NewColor);
 extern void a_sprite_swapColors(ASprite* Sprite, const APixel* OldColors, const APixel* NewColors, unsigned NumColors);
 
-extern int a_sprite_widthGet(const ASprite* Sprite);
-extern int a_sprite_widthGetLog2(const ASprite* Sprite);
-extern int a_sprite_widthGetOriginal(const ASprite* Sprite);
-extern void a_sprite_widthSetPowerOf2(ASprite* Sprite);
-
-extern int a_sprite_heightGet(const ASprite* Sprite);
+extern AVectorInt a_sprite_sizeGet(const ASprite* Sprite);
+extern int a_sprite_sizeGetWidth(const ASprite* Sprite);
+extern int a_sprite_sizeGetWidthOriginal(const ASprite* Sprite);
+extern int a_sprite_sizeGetWidthLog2(const ASprite* Sprite);
+extern int a_sprite_sizeGetHeight(const ASprite* Sprite);
+extern void a_sprite_sizeSetWidthPow2(ASprite* Sprite);
 
 extern const APixel* a_sprite_pixelsGetBuffer(const ASprite* Sprite);
 extern APixel a_sprite_pixelsGetPixel(const ASprite* Sprite, int X, int Y);

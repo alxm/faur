@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2018 Alex Margarit
+    Copyright 2010, 2016-2019 Alex Margarit
     This file is part of a2x, a C video game framework.
 
     a2x-framework is free software: you can redistribute it and/or modify
@@ -309,22 +309,32 @@ void a_sprite_swapColors(ASprite* Sprite, const APixel* OldColors, const APixel*
     Sprite->texture = a_platform__textureSpriteNew(Sprite);
 }
 
-int a_sprite_widthGet(const ASprite* Sprite)
+AVectorInt a_sprite_sizeGet(const ASprite* Sprite)
+{
+    return (AVectorInt){Sprite->w, Sprite->h};
+}
+
+int a_sprite_sizeGetWidth(const ASprite* Sprite)
 {
     return Sprite->w;
 }
 
-int a_sprite_widthGetLog2(const ASprite* Sprite)
+int a_sprite_sizeGetWidthLog2(const ASprite* Sprite)
 {
     return Sprite->wLog2;
 }
 
-int a_sprite_widthGetOriginal(const ASprite* Sprite)
+int a_sprite_sizeGetWidthOriginal(const ASprite* Sprite)
 {
     return Sprite->wOriginal;
 }
 
-void a_sprite_widthSetPowerOf2(ASprite* Sprite)
+int a_sprite_sizeGetHeight(const ASprite* Sprite)
+{
+    return Sprite->h;
+}
+
+void a_sprite_sizeSetWidthPow2(ASprite* Sprite)
 {
     if((Sprite->w & (Sprite->w - 1)) == 0) {
         return;
@@ -366,11 +376,6 @@ void a_sprite_widthSetPowerOf2(ASprite* Sprite)
     Sprite->pixelsSize = newSize;
 
     assignPixels(Sprite, newPixels - newSize / sizeof(APixel));
-}
-
-int a_sprite_heightGet(const ASprite* Sprite)
-{
-    return Sprite->h;
 }
 
 const APixel* a_sprite_pixelsGetBuffer(const ASprite* Sprite)
