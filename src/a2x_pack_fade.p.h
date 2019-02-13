@@ -20,7 +20,7 @@
 
 #include "a2x_system_includes.h"
 
-extern AEvent* a_fade_eventGet(void);
+extern const AEvent* a_fade_eventGet(void);
 
 extern void a_fade_startColorTo(unsigned DurationMs);
 extern void a_fade_startColorFrom(unsigned DurationMs);

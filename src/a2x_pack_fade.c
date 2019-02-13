@@ -51,7 +51,7 @@ void a_fade__uninit(void)
     a_screen_free(g_fade.capturedScreen);
 }
 
-AEvent* a_fade_eventGet(void)
+const AEvent* a_fade_eventGet(void)
 {
     return &g_fade.event;
 }
