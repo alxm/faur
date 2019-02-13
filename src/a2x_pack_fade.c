@@ -65,21 +65,21 @@ static void newFade(AFadeOpId Op, unsigned DurationMs)
                         / a_math_maxu(a_time_msToTicks(DurationMs), 1);
 }
 
-void a_fade_toColor(unsigned DurationMs)
+void a_fade_startColorTo(unsigned DurationMs)
 {
     newFade(A__FADE_TOCOLOR, DurationMs);
 
     g_fade.color = a_pixel__state.pixel;
 }
 
-void a_fade_fromColor(unsigned DurationMs)
+void a_fade_startColorFrom(unsigned DurationMs)
 {
     newFade(A__FADE_FROMCOLOR, DurationMs);
 
     g_fade.color = a_pixel__state.pixel;
 }
 
-void a_fade_screens(unsigned DurationMs)
+void a_fade_startScreens(unsigned DurationMs)
 {
     newFade(A__FADE_SCREENS, DurationMs);
 
