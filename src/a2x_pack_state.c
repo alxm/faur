@@ -37,13 +37,13 @@
 #include "a2x_pack_timer.v.h"
 
 typedef struct {
-    AState* function;
+    AStateHandler* function;
     const char* name;
     AStateStage stage;
-} AStateEntry;
+} AStateStackEntry;
 
-static AList* g_stack; // list of AStateEntry
-static AList* g_pending; // list of AStateEntry/NULL
+static AList* g_stack; // list of AStateStackEntry
+static AList* g_pending; // list of AStateStackEntry/NULL
 static bool g_exiting;
 
 static const AEvent* g_blockEvent;
@@ -55,9 +55,9 @@ static const char* g_stageNames[A__STATE_STAGE_NUM] = {
     [A__STATE_STAGE_FREE] = "Free",
 };
 
-static void pending_push(AState* Function, const char* Name)
+static void pending_push(AStateHandler* Function, const char* Name)
 {
-    AStateEntry* e = a_mem_malloc(sizeof(AStateEntry));
+    AStateStackEntry* e = a_mem_malloc(sizeof(AStateStackEntry));
 
     e->function = Function;
     e->name = Name == NULL ? "" : Name;
@@ -73,7 +73,7 @@ static void pending_pop(void)
 
 static void pending_handle(void)
 {
-    AStateEntry* current = a_list_peek(g_stack);
+    AStateStackEntry* current = a_list_peek(g_stack);
 
     // Check if the current state just ran its Free stage
     if(current && current->stage == A__STATE_STAGE_FREE) {
@@ -106,7 +106,7 @@ static void pending_handle(void)
         return;
     }
 
-    AStateEntry* pendingState = a_list_pop(g_pending);
+    AStateStackEntry* pendingState = a_list_pop(g_pending);
 
     if(pendingState == NULL) {
         if(current == NULL) {
@@ -123,7 +123,7 @@ static void pending_handle(void)
     } else {
         a_out__statev("Push '%s'", pendingState->name);
 
-        A_LIST_ITERATE(g_stack, const AStateEntry*, e) {
+        A_LIST_ITERATE(g_stack, const AStateStackEntry*, e) {
             if(pendingState->function == e->function) {
                 A__FATAL("State '%s' already in stack as '%s'",
                              pendingState->name,
@@ -151,7 +151,7 @@ void a_state__uninit(void)
     a_list_freeEx(g_pending, free);
 }
 
-void a_state_push(AState* State, const char* Name)
+void a_state_push(AStateHandler* State, const char* Name)
 {
     if(g_exiting) {
         a_out__statev("a_state_push(%s): Already exiting", Name);
@@ -175,7 +175,7 @@ void a_state_pop(void)
     pending_pop();
 }
 
-void a_state_popUntil(AState* State, const char* Name)
+void a_state_popUntil(AStateHandler* State, const char* Name)
 {
     if(g_exiting) {
         a_out__statev("a_state_popUntil(%s): Already exiting", Name);
@@ -187,7 +187,7 @@ void a_state_popUntil(AState* State, const char* Name)
     int pops = 0;
     bool found = false;
 
-    A_LIST_ITERATE(g_stack, const AStateEntry*, e) {
+    A_LIST_ITERATE(g_stack, const AStateStackEntry*, e) {
         if(State == e->function) {
             found = true;
             break;
@@ -205,7 +205,7 @@ void a_state_popUntil(AState* State, const char* Name)
     }
 }
 
-void a_state_replace(AState* State, const char* Name)
+void a_state_replace(AStateHandler* State, const char* Name)
 {
     if(g_exiting) {
         a_out__statev("a_state_replace(%s): Already exiting", Name);
@@ -255,7 +255,7 @@ static bool iteration(void)
         pending_handle();
     }
 
-    AStateEntry* s = a_list_peek(g_stack);
+    AStateStackEntry* s = a_list_peek(g_stack);
 
     if(s == NULL) {
         return false;
@@ -334,7 +334,7 @@ void a_state__run(void)
 
 bool a__state_stageCheck(AStateStage Stage)
 {
-    const AStateEntry* e = a_list_peek(g_stack);
+    const AStateStackEntry* e = a_list_peek(g_stack);
 
     if(e == NULL) {
         A__FATAL("%s: state stack is empty", g_stageNames[Stage]);
