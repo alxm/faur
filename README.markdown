@@ -35,6 +35,11 @@ All the code is in `hello/src/main.c`:
 ```C
 #include <a2x.h>
 
+enum {
+    STATE_DRAWBOX,
+    STATE_NUM
+};
+
 static A_STATE(drawBox);
 
 A_SETUP
@@ -45,7 +50,10 @@ A_SETUP
 
 A_MAIN
 {
-    a_state_push(drawBox, "Draw Box");
+    a_state_init(STATE_NUM);
+
+    a_state_new(STATE_DRAWBOX, drawBox, "Draw Box");
+    a_state_push(STATE_DRAWBOX);
 }
 
 A_EXIT
