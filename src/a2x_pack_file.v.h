@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2018 Alex Margarit
+    Copyright 2010, 2016, 2018-2019 Alex Margarit
     This file is part of a2x, a C video game framework.
 
     a2x-framework is free software: you can redistribute it and/or modify
@@ -33,6 +33,7 @@ typedef struct {
     bool (*read)(AFile* File, void* Buffer, size_t Size);
     bool (*write)(AFile* File, const void* Buffer, size_t Size);
     bool (*writef)(AFile* File, const char* Format, va_list Args);
+    bool (*flush)(AFile* File);
     int (*getchar)(AFile* File);
     int (*ungetchar)(AFile* File, int Char);
 } AFileInterface;

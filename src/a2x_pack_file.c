@@ -159,6 +159,11 @@ bool a_file_writef(AFile* File, const char* Format, ...)
     return ret;
 }
 
+bool a_file_flush(AFile* File)
+{
+    return File->interface->flush(File);
+}
+
 static int readChar(AFile* File)
 {
     int ch = File->interface->getchar(File);
