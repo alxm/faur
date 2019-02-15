@@ -50,7 +50,7 @@ static AList* g_stack; // list of AStateStackEntry
 static AList* g_pending; // list of AStateStackEntry/NULL
 static bool g_exiting;
 static const AEvent* g_blockEvent;
-unsigned g_tableLen;
+static unsigned g_tableLen;
 static AStateTableEntry* g_table;
 
 static const char* g_stageNames[A__STATE_STAGE_NUM] = {
@@ -65,7 +65,7 @@ static void pending_push(const AStateTableEntry* State)
     AStateStackEntry* e = a_mem_malloc(sizeof(AStateStackEntry));
 
     e->state = State;
-    e->stage = A__STATE_STAGE_INVALID;
+    e->stage = A__STATE_STAGE_INIT;
 
     a_list_addLast(g_pending, e);
 }
@@ -134,9 +134,6 @@ static void pending_handle(void)
         }
 
         a_out__state("New '%s' instance", pendingState->state->name);
-
-        pendingState->stage = A__STATE_STAGE_INIT;
-
         a_list_push(g_stack, pendingState);
     }
 }
