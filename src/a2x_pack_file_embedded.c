@@ -1,5 +1,5 @@
 /*
-    Copyright 2018 Alex Margarit
+    Copyright 2018-2019 Alex Margarit
     This file is part of a2x, a C video game framework.
 
     a2x-framework is free software: you can redistribute it and/or modify
@@ -84,6 +84,13 @@ static bool fileWritef(AFile* File, const char* Format, va_list Args)
     return false;
 }
 
+static bool fileFlush(AFile* File)
+{
+    A_UNUSED(File);
+
+    return false;
+}
+
 static int fileGetChar(AFile* File)
 {
     int c = EOF;
@@ -113,6 +120,7 @@ static const AFileInterface g_interface = {
     .read = fileRead,
     .write = fileWrite,
     .writef = fileWritef,
+    .flush = fileFlush,
     .getchar = fileGetChar,
     .ungetchar = fileUnGetChar,
 };

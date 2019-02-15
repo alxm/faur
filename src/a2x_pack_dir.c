@@ -1,5 +1,5 @@
 /*
-    Copyright 2011, 2016-2018 Alex Margarit
+    Copyright 2011, 2016-2019 Alex Margarit
     This file is part of a2x, a C video game framework.
 
     a2x-framework is free software: you can redistribute it and/or modify
@@ -33,27 +33,25 @@ struct ADir {
     AList* files; // list of APath
 };
 
-static int a_dir__sort(const APath* A, const APath* B)
+static int dirSort(const APath* A, const APath* B)
 {
     const char* nameA = a_path_getName(A);
     const char* nameB = a_path_getName(B);
     int a = *nameA;
     int b = *nameB;
-    int lowerCaseComp = 0;
+    int lowerCaseUpperCaseCmp = 0;
 
     while(a != '\0' && b != '\0') {
         if(a != b) {
-            int lower_a = tolower(a);
-            int lower_b = tolower(b);
+            int lowerA = tolower(a);
+            int lowerB = tolower(b);
 
-            if(lower_a == lower_b) {
-                if(lowerCaseComp == 0) {
-                    lowerCaseComp = b - a;
+            if(lowerA == lowerB) {
+                if(lowerCaseUpperCaseCmp == 0) {
+                    lowerCaseUpperCaseCmp = b - a;
                 }
             } else {
-                a = lower_a;
-                b = lower_b;
-                break;
+                return lowerA - lowerB;
             }
         }
 
@@ -61,11 +59,11 @@ static int a_dir__sort(const APath* A, const APath* B)
         b = *++nameB;
     }
 
-    if(a == '\0' && b == '\0' && lowerCaseComp != 0) {
-        return lowerCaseComp;
-    } else {
-        return a - b;
+    if(a == b) {
+        return lowerCaseUpperCaseCmp;
     }
+
+    return a - b;
 }
 
 static AList* dirReal(APath* Path)
@@ -105,7 +103,7 @@ static AList* dirReal(APath* Path)
         }
     }
 
-    a_list_sort(files, (AListCompare*)a_dir__sort);
+    a_list_sort(files, (AListCompare*)dirSort);
 
     closedir(dir);
 

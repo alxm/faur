@@ -50,6 +50,11 @@ static bool fileWritef(AFile* File, const char* Format, va_list Args)
     return vfprintf(File->u.handle, Format, Args) >= 0;
 }
 
+static bool fileFlush(AFile* File)
+{
+    return fflush(File->u.handle) == 0;
+}
+
 static int fileGetChar(AFile* File)
 {
     return fgetc(File->u.handle);
@@ -65,6 +70,7 @@ static const AFileInterface g_interface = {
     .read = fileRead,
     .write = fileWrite,
     .writef = fileWritef,
+    .flush = fileFlush,
     .getchar = fileGetChar,
     .ungetchar = fileUnGetChar,
 };

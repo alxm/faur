@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2018 Alex Margarit
+    Copyright 2010, 2016, 2018-2019 Alex Margarit
     This file is part of a2x, a C video game framework.
 
     a2x-framework is free software: you can redistribute it and/or modify
@@ -44,6 +44,7 @@ extern void a_file_prefixWrite(AFile* File, const char* Prefix);
 extern bool a_file_read(AFile* File, void* Buffer, size_t Size);
 extern bool a_file_write(AFile* File, const void* Buffer, size_t Size);
 extern bool a_file_writef(AFile* File, const char* Format, ...);
+extern bool a_file_flush(AFile* File);
 
 extern bool a_file_lineRead(AFile* File);
 extern const char* a_file_lineBufferGet(const AFile* File);
