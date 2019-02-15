@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-    Copyright 2017-2018 Alex Margarit
+    Copyright 2017-2019 Alex Margarit
     This file is part of a2x, a C video game framework.
 
     a2x-framework is free software: you can redistribute it and/or modify
@@ -43,28 +43,20 @@ struct {ctype} {{
     int value;
 }};
 
-static void c_{name}_init(void* Self)
+const size_t c_{name}_size = sizeof({ctype});
+
+void c_{name}_init(void* Self)
 {{
     {ctype}* {localVar} = Self;
 
     {localVar}->value = 1;
 }}
 
-static void c_{name}_free(void* Self)
+void c_{name}_free(void* Self)
 {{
     {ctype}* {localVar} = Self;
 
     A_UNUSED({localVar});
-}}
-
-void c_{name}_register(int Index)
-{{
-    a_component_new(
-        Index,
-        "{localVar}",
-        sizeof({ctype}),
-        c_{name}_init,
-        c_{name}_free);
 }}
 
 int c_{name}_valueGet(const {ctype}* {paramVar})
@@ -89,7 +81,9 @@ void c_{name}_valueSet({ctype}* {paramVar}, int Value)
 
 typedef struct {ctype} {ctype};
 
-extern void c_{name}_register(int Index);
+extern const size_t c_{name}_size;
+extern AInit c_{name}_init;
+extern AFree c_{name}_free;
 
 extern int c_{name}_valueGet(const {ctype}* {paramVar});
 extern void c_{name}_valueSet({ctype}* {paramVar}, int Value);
