@@ -225,8 +225,9 @@ void a_entity_refInc(AEntity* Entity)
 void a_entity_refDec(AEntity* Entity)
 {
     if(a_ecs__isDeleting()) {
-        // Entity could have already been freed. This is the only ECS function
-        // that may be called from AFree callbacks.
+        // The entity could have already been freed despite any outstanding
+        // references. This is the only AEntity API that may be called by
+        // components' AFree callbacks.
         return;
     }
 
@@ -258,8 +259,8 @@ bool a_entity_removeGet(const AEntity* Entity)
 void a_entity_removeSet(AEntity* Entity)
 {
     if(a_entity_removeGet(Entity)) {
-        A__FATAL(
-            "a_entity_removeSet(%s): Already removed", a_entity_idGet(Entity));
+        a_out__warningv("a_entity_removeSet(%s): Entity is removed",
+                        a_entity_idGet(Entity));
 
         return;
     }
@@ -285,12 +286,12 @@ bool a_entity_activeGet(const AEntity* Entity)
 
 void a_entity_activeSet(AEntity* Entity)
 {
-    if(A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__DEBUG)) {
-        a_out__message("a_entity_activeSet(%s)", a_entity_idGet(Entity));
-    }
-
     if(a_entity_muteGet(Entity) || a_entity_removeGet(Entity)) {
         return;
+    }
+
+    if(A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__DEBUG)) {
+        a_out__message("a_entity_activeSet(%s)", a_entity_idGet(Entity));
     }
 
     Entity->lastActive = a_fps_ticksGet();
