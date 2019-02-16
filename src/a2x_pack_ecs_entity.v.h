@@ -40,7 +40,7 @@ struct AEntity {
     AListNode* node; // list node in one of AEcsListId
     AListNode* collectionNode; // ACollection list nod
     AList* matchingSystemsActive; // list of ASystem
-    AList* matchingSystemsEither; // list of ASystem
+    AList* matchingSystemsRest; // list of ASystem
     AList* systemNodesActive; // list of nodes in active-only ASystem lists
     AList* systemNodesEither; // list of nodes in normal ASystem.entities lists
     ABitfield* componentBits; // each component's bit is set

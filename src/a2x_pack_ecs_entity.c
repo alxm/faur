@@ -62,7 +62,7 @@ AEntity* a_entity_new(const char* Id, void* Context)
     e->id = a_str_dup(Id);
     e->context = Context;
     e->matchingSystemsActive = a_list_new();
-    e->matchingSystemsEither = a_list_new();
+    e->matchingSystemsRest = a_list_new();
     e->systemNodesActive = a_list_new();
     e->systemNodesEither = a_list_new();
     e->componentBits = a_bitfield_new(a_component__tableLen);
@@ -118,7 +118,7 @@ void a_entity__free(AEntity* Entity)
     }
 
     a_list_free(Entity->matchingSystemsActive);
-    a_list_free(Entity->matchingSystemsEither);
+    a_list_free(Entity->matchingSystemsRest);
     a_list_freeEx(Entity->systemNodesActive, (AFree*)a_list_removeNode);
     a_list_freeEx(Entity->systemNodesEither, (AFree*)a_list_removeNode);
 
@@ -452,7 +452,7 @@ void a_entity__removeFromActiveSystems(AEntity* Entity)
 bool a_entity__isMatchedToSystems(const AEntity* Entity)
 {
     return !a_list_isEmpty(Entity->matchingSystemsActive)
-        || !a_list_isEmpty(Entity->matchingSystemsEither);
+        || !a_list_isEmpty(Entity->matchingSystemsRest);
 }
 
 void a_entity_messageSet(AEntity* Entity, int Message, AMessageHandler* Handler)

@@ -85,7 +85,7 @@ void a_ecs__tick(void)
                 if(s->onlyActiveEntities) {
                     a_list_addLast(e->matchingSystemsActive, s);
                 } else {
-                    a_list_addLast(e->matchingSystemsEither, s);
+                    a_list_addLast(e->matchingSystemsRest, s);
                 }
             }
         }
@@ -102,7 +102,7 @@ void a_ecs__tick(void)
             }
         }
 
-        A_LIST_ITERATE(e->matchingSystemsEither, ASystem*, system) {
+        A_LIST_ITERATE(e->matchingSystemsRest, ASystem*, system) {
             a_list_addLast(
                 e->systemNodesEither, a_list_addLast(system->entities, e));
         }
