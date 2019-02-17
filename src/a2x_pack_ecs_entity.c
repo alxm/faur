@@ -28,13 +28,6 @@
 #include "a2x_pack_out.v.h"
 #include "a2x_pack_str.v.h"
 
-static unsigned g_numMessages;
-
-void a_entity__init(unsigned NumMessages)
-{
-    g_numMessages = NumMessages;
-}
-
 static void* componentAdd(AEntity* Entity, int Index, const AComponent* Component)
 {
     AComponentInstance* header = a_mem_zalloc(Component->size);
@@ -142,7 +135,6 @@ void a_entity__free(AEntity* Entity)
 
     a_bitfield_free(Entity->componentBits);
 
-    free(Entity->messageHandlers);
     free(Entity->id);
     free(Entity);
 }
@@ -454,62 +446,4 @@ bool a_entity__isMatchedToSystems(const AEntity* Entity)
 {
     return !a_list_isEmpty(Entity->matchingSystemsActive)
         || !a_list_isEmpty(Entity->matchingSystemsRest);
-}
-
-void a_entity_messageSet(AEntity* Entity, int Message, AMessageHandler* Handler)
-{
-    #if A_BUILD_DEBUG
-        if(Message < 0 || Message >= (int)g_numMessages) {
-            A__FATAL("a_entity_messageSet(%s, %d): Unknown message",
-                     a_entity_idGet(Entity),
-                     Message);
-        }
-    #endif
-
-    if(Entity->messageHandlers == NULL) {
-        Entity->messageHandlers = a_mem_zalloc(
-                                    g_numMessages * sizeof(AMessageHandler*));
-    } else if(Entity->messageHandlers[Message] != NULL) {
-        A__FATAL("a_entity_messageSet(%s, %d): Already set",
-                 a_entity_idGet(Entity),
-                 Message);
-    }
-
-    Entity->messageHandlers[Message] = Handler;
-}
-
-void a_entity_messageSend(AEntity* To, AEntity* From, int Message)
-{
-    #if A_BUILD_DEBUG
-        if(Message < 0 || Message >= (int)g_numMessages) {
-            A__FATAL("a_entity_messageSend(%s, %s, %d): Unknown message",
-                     a_entity_idGet(To),
-                     a_entity_idGet(From),
-                     Message);
-        }
-    #endif
-
-    if(A_FLAG_TEST_ANY(To->flags, A_ENTITY__DEBUG)
-        || A_FLAG_TEST_ANY(From->flags, A_ENTITY__DEBUG)) {
-
-        a_out__message("a_entity_messageSend(%s, %s, %d)",
-                       a_entity_idGet(To),
-                       a_entity_idGet(From),
-                       Message);
-    }
-
-    if(To->messageHandlers == NULL || To->messageHandlers[Message] == NULL) {
-        // Entity does not handle this Message
-        return;
-    }
-
-    if(a_entity_removeGet(To) || a_entity_removeGet(From)
-        || a_entity_muteGet(To)) {
-
-        // Ignore message if one of the entities was already removed,
-        // or if the destination entity is muted
-        return;
-    }
-
-    To->messageHandlers[Message](To, From);
 }

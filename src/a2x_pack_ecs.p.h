@@ -22,7 +22,7 @@
 
 #include "a2x_pack_ecs_collection.p.h"
 
-extern void a_ecs_init(unsigned NumComponents, unsigned NumSystems, unsigned NumMessages);
+extern void a_ecs_init(unsigned NumComponents, unsigned NumSystems);
 
 extern ACollection* a_ecs_collectionGet(void);
 extern void a_ecs_collectionSet(ACollection* Collection);

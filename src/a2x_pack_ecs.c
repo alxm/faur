@@ -49,11 +49,10 @@ void a_ecs__uninit(void)
     a_component__uninit();
 }
 
-void a_ecs_init(unsigned NumComponents, unsigned NumSystems, unsigned NumMessages)
+void a_ecs_init(unsigned NumComponents, unsigned NumSystems)
 {
     a_component__init(NumComponents);
     a_system__init(NumSystems);
-    a_entity__init(NumMessages);
     a_template__init();
 }
 
