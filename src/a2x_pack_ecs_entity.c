@@ -28,13 +28,6 @@
 #include "a2x_pack_out.v.h"
 #include "a2x_pack_str.v.h"
 
-static unsigned g_numMessages;
-
-void a_entity__init(unsigned NumMessages)
-{
-    g_numMessages = NumMessages;
-}
-
 static void* componentAdd(AEntity* Entity, int Index, const AComponent* Component)
 {
     AComponentInstance* header = a_mem_zalloc(Component->size);
@@ -62,7 +55,7 @@ AEntity* a_entity_new(const char* Id, void* Context)
     e->id = a_str_dup(Id);
     e->context = Context;
     e->matchingSystemsActive = a_list_new();
-    e->matchingSystemsEither = a_list_new();
+    e->matchingSystemsRest = a_list_new();
     e->systemNodesActive = a_list_new();
     e->systemNodesEither = a_list_new();
     e->componentBits = a_bitfield_new(a_component__tableLen);
@@ -118,7 +111,7 @@ void a_entity__free(AEntity* Entity)
     }
 
     a_list_free(Entity->matchingSystemsActive);
-    a_list_free(Entity->matchingSystemsEither);
+    a_list_free(Entity->matchingSystemsRest);
     a_list_freeEx(Entity->systemNodesActive, (AFree*)a_list_removeNode);
     a_list_freeEx(Entity->systemNodesEither, (AFree*)a_list_removeNode);
 
@@ -142,7 +135,6 @@ void a_entity__free(AEntity* Entity)
 
     a_bitfield_free(Entity->componentBits);
 
-    free(Entity->messageHandlers);
     free(Entity->id);
     free(Entity);
 }
@@ -225,8 +217,9 @@ void a_entity_refInc(AEntity* Entity)
 void a_entity_refDec(AEntity* Entity)
 {
     if(a_ecs__isDeleting()) {
-        // Entity could have already been freed. This is the only ECS function
-        // that may be called from AFree callbacks.
+        // The entity could have already been freed despite any outstanding
+        // references. This is the only AEntity API that may be called by
+        // components' AFree callbacks.
         return;
     }
 
@@ -258,8 +251,8 @@ bool a_entity_removeGet(const AEntity* Entity)
 void a_entity_removeSet(AEntity* Entity)
 {
     if(a_entity_removeGet(Entity)) {
-        A__FATAL(
-            "a_entity_removeSet(%s): Already removed", a_entity_idGet(Entity));
+        a_out__warningv("a_entity_removeSet(%s): Entity is removed",
+                        a_entity_idGet(Entity));
 
         return;
     }
@@ -285,12 +278,12 @@ bool a_entity_activeGet(const AEntity* Entity)
 
 void a_entity_activeSet(AEntity* Entity)
 {
-    if(A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__DEBUG)) {
-        a_out__message("a_entity_activeSet(%s)", a_entity_idGet(Entity));
-    }
-
     if(a_entity_muteGet(Entity) || a_entity_removeGet(Entity)) {
         return;
+    }
+
+    if(A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__DEBUG)) {
+        a_out__message("a_entity_activeSet(%s)", a_entity_idGet(Entity));
     }
 
     Entity->lastActive = a_fps_ticksGet();
@@ -452,63 +445,5 @@ void a_entity__removeFromActiveSystems(AEntity* Entity)
 bool a_entity__isMatchedToSystems(const AEntity* Entity)
 {
     return !a_list_isEmpty(Entity->matchingSystemsActive)
-        || !a_list_isEmpty(Entity->matchingSystemsEither);
-}
-
-void a_entity_messageSet(AEntity* Entity, int Message, AMessageHandler* Handler)
-{
-    #if A_BUILD_DEBUG
-        if(Message < 0 || Message >= (int)g_numMessages) {
-            A__FATAL("a_entity_messageSet(%s, %d): Unknown message",
-                     a_entity_idGet(Entity),
-                     Message);
-        }
-    #endif
-
-    if(Entity->messageHandlers == NULL) {
-        Entity->messageHandlers = a_mem_zalloc(
-                                    g_numMessages * sizeof(AMessageHandler*));
-    } else if(Entity->messageHandlers[Message] != NULL) {
-        A__FATAL("a_entity_messageSet(%s, %d): Already set",
-                 a_entity_idGet(Entity),
-                 Message);
-    }
-
-    Entity->messageHandlers[Message] = Handler;
-}
-
-void a_entity_messageSend(AEntity* To, AEntity* From, int Message)
-{
-    #if A_BUILD_DEBUG
-        if(Message < 0 || Message >= (int)g_numMessages) {
-            A__FATAL("a_entity_messageSend(%s, %s, %d): Unknown message",
-                     a_entity_idGet(To),
-                     a_entity_idGet(From),
-                     Message);
-        }
-    #endif
-
-    if(A_FLAG_TEST_ANY(To->flags, A_ENTITY__DEBUG)
-        || A_FLAG_TEST_ANY(From->flags, A_ENTITY__DEBUG)) {
-
-        a_out__message("a_entity_messageSend(%s, %s, %d)",
-                       a_entity_idGet(To),
-                       a_entity_idGet(From),
-                       Message);
-    }
-
-    if(To->messageHandlers == NULL || To->messageHandlers[Message] == NULL) {
-        // Entity does not handle this Message
-        return;
-    }
-
-    if(a_entity_removeGet(To) || a_entity_removeGet(From)
-        || a_entity_muteGet(To)) {
-
-        // Ignore message if one of the entities was already removed,
-        // or if the destination entity is muted
-        return;
-    }
-
-    To->messageHandlers[Message](To, From);
+        || !a_list_isEmpty(Entity->matchingSystemsRest);
 }

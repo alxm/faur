@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-    Copyright 2017-2018 Alex Margarit
+    Copyright 2017-2019 Alex Margarit
     This file is part of a2x, a C video game framework.
 
     a2x-framework is free software: you can redistribute it and/or modify
@@ -37,14 +37,9 @@ class SystemTool(Tool):
 """\
 #include "system_{name}.h"
 
-static void s_{name}(AEntity* Entity)
+void s_{name}(AEntity* Entity)
 {{
     A_UNUSED(Entity);
-}}
-
-void s_{name}_register(int Index)
-{{
-    a_system_new(Index, s_{name}, NULL, false);
 }}
 """.format(name=sys_name.lower()))
 
@@ -54,7 +49,7 @@ void s_{name}_register(int Index)
 
 #include <a2x.h>
 
-extern void s_{name}_register(int Index);
+extern ASystemHandler s_{name};
 """.format(name=sys_name.lower()))
 
 if __name__ == '__main__':

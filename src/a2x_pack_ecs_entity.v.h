@@ -40,19 +40,16 @@ struct AEntity {
     AListNode* node; // list node in one of AEcsListId
     AListNode* collectionNode; // ACollection list nod
     AList* matchingSystemsActive; // list of ASystem
-    AList* matchingSystemsEither; // list of ASystem
+    AList* matchingSystemsRest; // list of ASystem
     AList* systemNodesActive; // list of nodes in active-only ASystem lists
     AList* systemNodesEither; // list of nodes in normal ASystem.entities lists
     ABitfield* componentBits; // each component's bit is set
-    AMessageHandler** messageHandlers; // AMessageHandler*[g_numMessages]
     unsigned lastActive; // frame when a_entity_activeSet was last called
     int references; // if >0, then the entity lingers in the removed limbo list
     int muteCount; // if >0, then the entity isn't picked up by any systems
     AEntityFlags flags; // various properties
     AComponentInstance* componentsTable[];
 };
-
-extern void a_entity__init(unsigned NumMessages);
 
 extern void a_entity__free(AEntity* Entity);
 

@@ -21,7 +21,6 @@
 #include "a2x_system_includes.h"
 
 typedef struct AEntity AEntity;
-typedef void AMessageHandler(AEntity* To, AEntity* From);
 
 extern AEntity* a_entity_new(const char* Id, void* Context);
 extern AEntity* a_entity_newEx(const char* Template, const void* ComponentInitContext, void* Context);
@@ -53,6 +52,3 @@ extern void* a_entity_componentReq(const AEntity* Entity, int Component);
 extern bool a_entity_muteGet(const AEntity* Entity);
 extern void a_entity_muteInc(AEntity* Entity);
 extern void a_entity_muteDec(AEntity* Entity);
-
-extern void a_entity_messageSet(AEntity* Entity, int Message, AMessageHandler* Handler);
-extern void a_entity_messageSend(AEntity* To, AEntity* From, int Message);

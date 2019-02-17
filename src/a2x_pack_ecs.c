@@ -49,11 +49,10 @@ void a_ecs__uninit(void)
     a_component__uninit();
 }
 
-void a_ecs_init(unsigned NumComponents, unsigned NumSystems, unsigned NumMessages)
+void a_ecs_init(unsigned NumComponents, unsigned NumSystems)
 {
     a_component__init(NumComponents);
     a_system__init(NumSystems);
-    a_entity__init(NumMessages);
     a_template__init();
 }
 
@@ -85,7 +84,7 @@ void a_ecs__tick(void)
                 if(s->onlyActiveEntities) {
                     a_list_addLast(e->matchingSystemsActive, s);
                 } else {
-                    a_list_addLast(e->matchingSystemsEither, s);
+                    a_list_addLast(e->matchingSystemsRest, s);
                 }
             }
         }
@@ -102,7 +101,7 @@ void a_ecs__tick(void)
             }
         }
 
-        A_LIST_ITERATE(e->matchingSystemsEither, ASystem*, system) {
+        A_LIST_ITERATE(e->matchingSystemsRest, ASystem*, system) {
             a_list_addLast(
                 e->systemNodesEither, a_list_addLast(system->entities, e));
         }
