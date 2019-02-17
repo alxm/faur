@@ -1,41 +1,35 @@
-A_PREFIX := a2x_
+A2X_PREFIX := a2x_
 
-A_DIR_ROOT := ../..
-A_DIR_BIN := $(A_DIR_ROOT)/bin
-A_DIR_INC := $(A_DIR_ROOT)/inc
-A_DIR_LIB := $(A_DIR_ROOT)/lib
-A_DIR_SRC := $(A_DIR_ROOT)/src
-A_DIR_MEDIA := $(A_DIR_ROOT)/media
-A_DIR_OBJ := ./obj
-A_DIR_OBJ_PLATFORM := $(A_DIR_OBJ)/$(A_PLATFORM)
-A_DIR_GEN := $(A_DIR_OBJ_PLATFORM)/a2x_gen
+A2X_DIR_ROOT := $(A2X_PATH)
+A2X_DIR_BIN := $(A2X_DIR_ROOT)/bin
+A2X_DIR_SRC := $(A2X_DIR_ROOT)/src
+A2X_DIR_OBJ := $(A_DIR_OBJ_A2X)
+A2X_DIR_GEN := $(A2X_DIR_OBJ)/a2x_gen
 
-A_CONFIG_EMBED_PATHS := \
+A2X_EMBED_PATHS := \
     media/console.png \
     media/fontgrid.png \
     media/fontgrid_keyed.png \
 
-A_FILES_EMBED_BIN := $(shell $(A2X_PATH)/bin/a2x_embedfiles -q $(A_DIR_ROOT) $(A_CONFIG_EMBED_PATHS))
-A_FILES_SRC_GEN_H := $(addprefix $(A_DIR_GEN)/, $(A_FILES_EMBED_BIN:=.h))
+A2X_FILES_EMBED_BIN := $(shell $(A2X_PATH)/bin/a2x_embedfiles -q $(A2X_DIR_ROOT) $(A2X_EMBED_PATHS))
+A2X_FILES_SRC_GEN_H := $(addprefix $(A2X_DIR_GEN)/, $(A2X_FILES_EMBED_BIN:=.h))
 
-A_FILE_PUBLIC_A2X_HEADER := $(A_DIR_INC)/$(A_PLATFORM)/a2x.h
-A_FILE_SYSTEM_INCLUDES := $(A_DIR_SRC)/$(A_PREFIX)system_includes.h
-A_FILES_PUBLIC_A2X_HEADERS := $(wildcard $(A_DIR_SRC)/$(A_PREFIX)*.p.h)
-A_FILE_PUBLIC_A2X_LIB := $(A_DIR_LIB)/$(A_PLATFORM)/a2x.a
-A_FILE_EDITOR_TAGS := $(shell $(A_DIR_BIN)/a2x_tags -q)
+A2X_FILE_PUBLIC_A2X_HEADER := $(A2X_DIR_OBJ)/a2x.h
+A2X_FILE_SYSTEM_INCLUDES := $(A2X_DIR_SRC)/$(A2X_PREFIX)system_includes.h
+A2X_FILES_PUBLIC_A2X_HEADERS := $(wildcard $(A2X_DIR_SRC)/$(A2X_PREFIX)*.p.h)
+A2X_FILE_PUBLIC_A2X_LIB := $(A2X_DIR_OBJ)/a2x.a
+A2X_FILE_EDITOR_TAGS := $(shell $(A2X_DIR_BIN)/a2x_tags -q)
 
-A_FILES_SRC_C_INC := $(notdir $(wildcard $(A_DIR_SRC)/$(A_PREFIX)*.inc.c))
-A_FILES_SRC_C_ALL := $(notdir $(wildcard $(A_DIR_SRC)/$(A_PREFIX)*.c))
-A_FILES_SRC_C := $(filter-out $(A_FILES_SRC_C_INC), $(A_FILES_SRC_C_ALL))
+A2X_FILES_SRC_C_INC := $(notdir $(wildcard $(A2X_DIR_SRC)/$(A2X_PREFIX)*.inc.c))
+A2X_FILES_SRC_C_ALL := $(notdir $(wildcard $(A2X_DIR_SRC)/$(A2X_PREFIX)*.c))
+A2X_FILES_SRC_C := $(filter-out $(A2X_FILES_SRC_C_INC), $(A2X_FILES_SRC_C_ALL))
 
-A_FILES_OBJ := $(addprefix $(A_DIR_OBJ_PLATFORM)/, $(A_FILES_SRC_C:=.o))
+A2X_FILES_OBJ := $(addprefix $(A2X_DIR_OBJ)/, $(A2X_FILES_SRC_C:=.o))
 
-A_INFO_COMPILE_TIME := $(shell date "+%Y-%m-%d\ %H:%M:%S")
-A_INFO_GIT_HASH := $(shell git rev-parse --verify HEAD)
+A2X_INFO_COMPILE_TIME := $(shell date "+%Y-%m-%d\ %H:%M:%S")
+A2X_INFO_GIT_HASH := $(shell cd $(A2X_PATH) && git rev-parse --verify HEAD)
 
-ALL_TARGETS := $(A_MAKE_TARGETS) $(A_FILE_PUBLIC_A2X_HEADER) $(A_FILE_PUBLIC_A2X_LIB)
-
-A_GENERIC_CFLAGS := \
+A2X_GENERIC_CFLAGS := \
     -std=c99 \
     -Wall \
     -Wextra \
@@ -46,37 +40,30 @@ A_GENERIC_CFLAGS := \
     -pedantic \
     -pedantic-errors \
     -fstrict-aliasing \
-    -DA_BUILD__COMPILE_TIME=\"$(A_INFO_COMPILE_TIME)\" \
-    -DA_BUILD__GIT_HASH=\"$(A_INFO_GIT_HASH)\" \
+    -DA_BUILD__COMPILE_TIME=\"$(A2X_INFO_COMPILE_TIME)\" \
+    -DA_BUILD__GIT_HASH=\"$(A2X_INFO_GIT_HASH)\" \
     -DA_BUILD__PLATFORM_NAME=\"$(A_PLATFORM)\" \
     -D_XOPEN_SOURCE \
-    -I$(A_DIR_GEN) \
+    -I$(A2X_DIR_GEN) \
     $(A_BUILD_CFLAGS) \
 
-.PHONY : all clean
-
-all : $(ALL_TARGETS)
-
-$(A_FILE_PUBLIC_A2X_HEADER) : $(A_FILES_PUBLIC_A2X_HEADERS) $(A_FILE_SYSTEM_INCLUDES) $(A_DIR_BIN)/a2x_header
+$(A2X_FILE_PUBLIC_A2X_HEADER) : $(A2X_FILES_PUBLIC_A2X_HEADERS) $(A2X_FILE_SYSTEM_INCLUDES) $(A2X_DIR_BIN)/a2x_header
 	@ mkdir -p $(@D)
-	@ $(A_DIR_BIN)/a2x_header $(A_DIR_SRC) .p.h $@
+	@ $(A2X_DIR_BIN)/a2x_header $(A2X_DIR_SRC) .p.h $@
 
-$(A_FILE_EDITOR_TAGS) : $(A_FILE_PUBLIC_A2X_HEADER) $(A_DIR_BIN)/a2x_tags
-	@ $(A_DIR_BIN)/a2x_tags $<
+$(A2X_FILE_EDITOR_TAGS) : $(A2X_FILE_PUBLIC_A2X_HEADER) $(A2X_DIR_BIN)/a2x_tags
+	@ $(A2X_DIR_BIN)/a2x_tags $<
 
-$(A_FILE_PUBLIC_A2X_LIB) : $(A_FILES_OBJ)
+$(A2X_FILE_PUBLIC_A2X_LIB) : $(A2X_FILES_OBJ)
 	@ mkdir -p $(@D)
-	$(AR) rs $@ $(A_FILES_OBJ)
+	$(AR) rs $@ $(A2X_FILES_OBJ)
 
-$(A_DIR_OBJ_PLATFORM)/%.c.o : $(A_DIR_SRC)/%.c
+$(A2X_DIR_OBJ)/%.c.o : $(A2X_DIR_SRC)/%.c
 	@ mkdir -p $(@D)
-	$(CC) -c -o $@ $< $(A_GENERIC_CFLAGS)
+	$(CC) -c -o $@ $< $(A2X_GENERIC_CFLAGS)
 
-$(A_DIR_OBJ_PLATFORM)/a2x_pack_embed.c.o : $(A_FILES_SRC_GEN_H)
+$(A2X_DIR_OBJ)/a2x_pack_embed.c.o : $(A2X_FILES_SRC_GEN_H)
 
-$(A_DIR_GEN)/%.h : $(A_DIR_ROOT)/% $(A_DIR_BIN)/a2x_bin
+$(A2X_DIR_GEN)/%.h : $(A2X_DIR_ROOT)/% $(A2X_DIR_BIN)/a2x_bin
 	@ mkdir -p $(@D)
-	@ $(A_DIR_BIN)/a2x_bin $< $@ $(<:$(A_DIR_ROOT)/%=%) a__bin__
-
-clean :
-	rm -rf $(A_FILE_PUBLIC_A2X_HEADER) $(A_FILE_PUBLIC_A2X_LIB) $(A_DIR_OBJ_PLATFORM)
+	@ $(A2X_DIR_BIN)/a2x_bin $< $@ $(<:$(A2X_DIR_ROOT)/%=%) a__bin__

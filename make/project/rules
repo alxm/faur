@@ -1,6 +1,9 @@
 #
 # User makefile config variables:
 #
+# A_CONFIG_BUILD_ID
+#   Unique name for this build flavor
+#
 # A_CONFIG_APP_NAME
 #   Target binary file name
 #
@@ -21,6 +24,11 @@
 #
 
 #
+# Build dir is obj/<platform>_<build_id>/
+#
+A_CONFIG_BUILD_ID ?= default
+
+#
 # Project dirs created by a2x_new or overridden by user makefile
 #
 A_CONFIG_ROOT    ?= ..
@@ -34,19 +42,20 @@ A_CONFIG_DIR_SRC ?= src
 #
 A_ROOT    := $(A_CONFIG_ROOT)
 A_DIR_BIN := $(A_CONFIG_DIR_BIN)
-A_DIR_OBJ := $(A_CONFIG_DIR_OBJ)
+A_DIR_OBJ := $(A_ROOT)/$(A_CONFIG_DIR_OBJ)/$(A_PLATFORM)_$(A_CONFIG_BUILD_ID)
 A_DIR_PND := $(A_CONFIG_DIR_PND)
 A_DIR_SRC := $(A_CONFIG_DIR_SRC)
 
 #
 # Object files dir for current platform
 #
-A_DIR_OBJ_PLATFORM := $(A_ROOT)/$(A_DIR_OBJ)/$(A_PLATFORM)
+A_DIR_OBJ_APP := $(A_DIR_OBJ)/app
+A_DIR_OBJ_A2X := $(A_DIR_OBJ)/a2x
 
 #
 # Subdir for generated code and its object files
 #
-A_DIR_GEN := $(A_DIR_OBJ_PLATFORM)/a2x_gen
+A_DIR_GEN := $(A_DIR_OBJ_APP)/a2x_gen
 
 #
 # The final bin that gets built
@@ -78,7 +87,7 @@ A_FILES_SRC_C := $(filter-out $(A_FILES_SRC_C_INC), $(A_FILES_SRC_C_ALL))
 #
 A_FILE_OBJ_GEN_BUILDTIME := $(A_FILE_SRC_GEN_BUILDTIME:=.o)
 A_FILE_OBJ_GEN_EMBED := $(A_FILE_SRC_GEN_EMBED:=.o)
-A_FILES_OBJ := $(addprefix $(A_DIR_OBJ_PLATFORM)/, $(A_FILES_SRC_C:=.o)) $(A_FILE_OBJ_GEN_EMBED)
+A_FILES_OBJ := $(addprefix $(A_DIR_OBJ_APP)/, $(A_FILES_SRC_C:=.o)) $(A_FILE_OBJ_GEN_EMBED)
 
 #
 # Compiler flags for all targets
@@ -96,7 +105,7 @@ A_GENERIC_CFLAGS := \
     -pedantic-errors \
     -fstrict-aliasing \
     -D_XOPEN_SOURCE \
-    -I$(A2X_PATH)/inc/$(A_PLATFORM) \
+    -I$(A_DIR_OBJ_A2X) \
     $(A_BUILD_CFLAGS) \
     $(A_CONFIG_BUILD_CFLAGS) \
 
@@ -104,12 +113,19 @@ A_GENERIC_CFLAGS := \
 
 all : $(A_FILE_TARGET_BIN)
 
-$(A_FILE_TARGET_BIN) : $(A_FILES_OBJ) $(A_FILE_OBJ_GEN_BUILDTIME)
+#
+# a2x header and lib build rules
+#
+include $(A2X_PATH)/make/a2x/rules
+
+$(A_FILES_OBJ) : $(A2X_FILE_PUBLIC_A2X_HEADER)
+
+$(A_FILE_TARGET_BIN) : $(A_FILES_OBJ) $(A_FILE_OBJ_GEN_BUILDTIME) $(A2X_FILE_PUBLIC_A2X_LIB)
 	@ mkdir -p $(@D)
 	$(CC) -o $@ $^ \
 	$(A_BUILD_CFLAGS) \
 	$(A_CONFIG_BUILD_LIBS) \
-	$(A2X_PATH)/lib/$(A_PLATFORM)/a2x.a \
+	$(A_DIR_OBJ_A2X)/a2x.a \
 	$(A_BUILD_LIBS)
 
 $(A_FILE_SRC_GEN_BUILDTIME) : $(A_FILES_OBJ) $(A2X_PATH)/bin/a2x_buildtime
@@ -124,7 +140,7 @@ $(A_FILE_SRC_GEN_EMBED) : $(A_FILES_SRC_GEN_H) $(A2X_PATH)/bin/a2x_embed
 	@ mkdir -p $(@D)
 	@ $(A2X_PATH)/bin/a2x_embed $@ $(A_DIR_GEN) a__bin_ $(A_FILES_SRC_GEN_H:$(A_DIR_GEN)/%=%)
 
-$(A_DIR_OBJ_PLATFORM)/%.c.o : $(A_ROOT)/$(A_DIR_SRC)/%.c
+$(A_DIR_OBJ_APP)/%.c.o : $(A_ROOT)/$(A_DIR_SRC)/%.c
 	@ mkdir -p $(@D)
 	$(CC) -c -o $@ $< $(A_GENERIC_CFLAGS)
 
@@ -133,7 +149,7 @@ $(A_DIR_GEN)/%.c.o : $(A_DIR_GEN)/%.c
 	$(CC) -c -o $@ $< $(A_GENERIC_CFLAGS)
 
 clean : $(A_CONFIG_MAKE_CLEAN)
-	rm -rf $(A_FILE_TARGET_BIN) $(A_DIR_OBJ_PLATFORM)
+	rm -rf $(A_FILE_TARGET_BIN) $(A_DIR_OBJ)
 
 cleanbin :
 	rm -f $(A_FILE_TARGET_BIN)
