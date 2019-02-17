@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 Alex Margarit
+    Copyright 2016-2019 Alex Margarit
     This file is part of a2x, a C video game framework.
 
     a2x-framework is free software: you can redistribute it and/or modify
@@ -103,16 +103,16 @@ void a_component_new(int Index, const char* StringId, size_t Size, AInit* Init, 
     a_strhash_add(g_components, StringId, c);
 }
 
-void a_component_newEx(int Index, const char* StringId, size_t DataSize, AComponentDataInit* DataInit, AFree* DataFree, size_t ComponentSize, AInitWithData* ComponentInitWithData, AFree* ComponentFree)
+void a_component_newEx(int Index, const char* StringId, size_t Size, AInitWithData* InitWithData, AFree* Free, size_t DataSize, AComponentDataInit* DataInit, AFree* DataFree)
 {
-    a_component_new(Index, StringId, ComponentSize, NULL, ComponentFree);
+    a_component_new(Index, StringId, Size, NULL, Free);
 
     AComponent* c = &g_componentsTable[Index];
 
+    c->initWithData = InitWithData;
     c->dataSize = DataSize;
     c->dataInit = DataInit;
     c->dataFree = DataFree;
-    c->initWithData = ComponentInitWithData;
 }
 
 const void* a_component_dataGet(const void* Component)

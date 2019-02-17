@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 Alex Margarit
+    Copyright 2016-2019 Alex Margarit
     This file is part of a2x, a C video game framework.
 
     a2x-framework is free software: you can redistribute it and/or modify
@@ -23,11 +23,11 @@
 typedef struct {
     size_t size; // total size of AComponentInstance + user data that follows
     AInit* init; // sets component buffer default values
+    AInitWithData* initWithData; // init component buffer with template data
     AFree* free; // does not free the actual component buffer
     size_t dataSize; // size of template data buffer
     AComponentDataInit* dataInit; // init template buffer with info from ABlock
     AFree* dataFree; // does not free the actual template buffer
-    AInitWithData* initWithData; // init component buffer with template data
     const char* stringId; // string ID
     unsigned bit; // component's unique bit ID
 } AComponent;

@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 Alex Margarit
+    Copyright 2016-2019 Alex Margarit
     This file is part of a2x, a C video game framework.
 
     a2x-framework is free software: you can redistribute it and/or modify
@@ -27,7 +27,7 @@ typedef void AComponentDataInit(void* Data, const ABlock* Block, const void* Con
 typedef void AInitWithData(void* Self, const void* Data, const void* Context);
 
 extern void a_component_new(int Index, const char* StringId, size_t Size, AInit* Init, AFree* Free);
-extern void a_component_newEx(int Index, const char* StringId, size_t DataSize, AComponentDataInit* DataInit, AFree* DataFree, size_t ComponentSize, AInitWithData* ComponentInitWithData, AFree* ComponentFree);
+extern void a_component_newEx(int Index, const char* StringId, size_t Size, AInitWithData* InitWithData, AFree* Free, size_t DataSize, AComponentDataInit* DataInit, AFree* DataFree);
 
 extern const void* a_component_dataGet(const void* Component);
 extern AEntity* a_component_entityGet(const void* Component);
