@@ -20,4 +20,4 @@
 
 #include "a2x_system_includes.h"
 
-extern void a_template_new(const char* FilePath, const void* DataInitContext);
+extern void a_template_new(const char* FilePath);

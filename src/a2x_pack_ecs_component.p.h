@@ -23,7 +23,7 @@
 #include "a2x_pack_block.p.h"
 #include "a2x_pack_ecs_entity.p.h"
 
-typedef void AComponentDataInit(void* Data, const ABlock* Block, const void* Context);
+typedef void AComponentDataInit(void* Data, const ABlock* Block);
 typedef void AInitWithData(void* Self, const void* Data, const void* Context);
 
 extern void a_component_new(int Index, const char* StringId, size_t Size, AInit* Init, AFree* Free);

@@ -35,7 +35,7 @@ struct ATemplate {
 
 static AStrHash* g_templates; // table of ATemplate
 
-static ATemplate* templateNew(const char* TemplateId, const ABlock* Block, const void* DataInitContext)
+static ATemplate* templateNew(const char* TemplateId, const ABlock* Block)
 {
     ATemplate* t = a_mem_zalloc(
                     sizeof(ATemplate) + a_component__tableLen * sizeof(void*));
@@ -59,7 +59,7 @@ static ATemplate* templateNew(const char* TemplateId, const ABlock* Block, const
             t->data[index] = a_mem_zalloc(component->dataSize);
 
             if(component->dataInit) {
-                component->dataInit(t->data[index], b, DataInitContext);
+                component->dataInit(t->data[index], b);
             }
         }
 
@@ -98,7 +98,7 @@ void a_template__uninit(void)
     a_strhash_freeEx(g_templates, (AFree*)templateFree);
 }
 
-void a_template_new(const char* FilePath, const void* DataInitContext)
+void a_template_new(const char* FilePath)
 {
     ABlock* root = a_block_new(FilePath);
 
@@ -109,7 +109,7 @@ void a_template_new(const char* FilePath, const void* DataInitContext)
             A__FATAL("a_template_new(%s): '%s' already declared", FilePath, id);
         }
 
-        a_strhash_add(g_templates, id, templateNew(id, b, DataInitContext));
+        a_strhash_add(g_templates, id, templateNew(id, b));
     }
 
     a_block_free(root);
