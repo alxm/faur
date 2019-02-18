@@ -1,6 +1,9 @@
-A_PLATFORM := linux64
+include $(A2X_PATH)/make/global/defs
+
+A_PLATFORM := linux32
 
 A_BUILD_LIBS := \
+    -L/usr/lib/i386-linux-gnu \
     -lpng \
     -lm \
 
@@ -9,15 +12,18 @@ A_BUILD_CFLAGS := \
     -DA_BUILD_SYSTEM_DESKTOP=1 \
     -DA_BUILD_SYSTEM_LINUX=1 \
     -DA_BUILD_DEVICE_KEYBOARD=1 \
+    -m32 \
     -O3 \
 
 # Uncomment to compile with SDL 1.2 instead of SDL 2
-#USE_LIB_SDL1 := 1
+#USE_LIB_SDL1=1
 
 ifdef USE_LIB_SDL1
-    A_BUILD_LIBS := $(shell sdl-config --libs) -lSDL_mixer $(A_BUILD_LIBS)
+    A_BUILD_LIBS := -lSDL -lSDL_mixer $(A_BUILD_LIBS)
     A_BUILD_CFLAGS += $(shell sdl-config --cflags) -DA_BUILD_LIB_SDL=1 -DA_BUILD_RENDER_SOFTWARE=1
 else
-    A_BUILD_LIBS := $(shell sdl2-config --libs) -lSDL2_mixer $(A_BUILD_LIBS)
+    A_BUILD_LIBS := -lSDL2 -lSDL2_mixer $(A_BUILD_LIBS)
     A_BUILD_CFLAGS += $(shell sdl2-config --cflags) -DA_BUILD_LIB_SDL=2 -DA_BUILD_RENDER_SDL=1
 endif
+
+include $(A2X_PATH)/make/project/rules

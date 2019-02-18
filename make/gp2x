@@ -1,3 +1,4 @@
+include $(A2X_PATH)/make/global/defs
 include $(A_FILE_SDKCONFIG_MK)
 
 A_PLATFORM := gp2x
@@ -52,3 +53,5 @@ export AR      := $(PREFIX)ar
 export OBJCOPY := $(PREFIX)objcopy
 export READELF := $(PREFIX)readelf
 export STRIP   := $(PREFIX)strip
+
+include $(A2X_PATH)/make/project/rules

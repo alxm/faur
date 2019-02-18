@@ -70,7 +70,7 @@ class NewTool(Tool):
 """\
 A_CONFIG_APP_NAME := {0}
 
-include $(A2X_PATH)/make/project/Makefile
+include $(A2X_PATH)/make/dev
 """.format(project_name))
 
         dir_src.write_file('main.c',

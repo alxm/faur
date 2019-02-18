@@ -1,33 +1,27 @@
-A_PLATFORM := dev
+include $(A2X_PATH)/make/global/defs
+
+A_PLATFORM := linux64
 
 A_BUILD_LIBS := \
     -lpng \
     -lm \
-    -rdynamic \
 
 A_BUILD_CFLAGS := \
     -DA_BUILD_LIB_SDL_TIME=1 \
     -DA_BUILD_SYSTEM_DESKTOP=1 \
     -DA_BUILD_SYSTEM_LINUX=1 \
     -DA_BUILD_DEVICE_KEYBOARD=1 \
-    -O0 \
-    -g \
+    -O3 \
 
 # Uncomment to compile with SDL 1.2 instead of SDL 2
 #USE_LIB_SDL1 := 1
-
-# Uncomment to force software rendering
-#USE_SOFTWARE_RENDERING := 1
 
 ifdef USE_LIB_SDL1
     A_BUILD_LIBS := $(shell sdl-config --libs) -lSDL_mixer $(A_BUILD_LIBS)
     A_BUILD_CFLAGS += $(shell sdl-config --cflags) -DA_BUILD_LIB_SDL=1 -DA_BUILD_RENDER_SOFTWARE=1
 else
     A_BUILD_LIBS := $(shell sdl2-config --libs) -lSDL2_mixer $(A_BUILD_LIBS)
-
-    ifdef USE_SOFTWARE_RENDERING
-        A_BUILD_CFLAGS += $(shell sdl2-config --cflags) -DA_BUILD_LIB_SDL=2 -DA_BUILD_RENDER_SOFTWARE=1
-    else
-        A_BUILD_CFLAGS += $(shell sdl2-config --cflags) -DA_BUILD_LIB_SDL=2 -DA_BUILD_RENDER_SDL=1
-    endif
+    A_BUILD_CFLAGS += $(shell sdl2-config --cflags) -DA_BUILD_LIB_SDL=2 -DA_BUILD_RENDER_SDL=1
 endif
+
+include $(A2X_PATH)/make/project/rules

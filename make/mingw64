@@ -1,11 +1,12 @@
+include $(A2X_PATH)/make/global/defs
 include $(A_FILE_SDKCONFIG_MK)
 
-A_PLATFORM := mingw32
+A_PLATFORM := mingw64
 
-MINGW_BIN := $(A_SDK_MINGW32_ROOT)/$(A_SDK_MINGW32_ARCH)/bin
+MINGW_BIN := $(A_SDK_MINGW64_ROOT)/$(A_SDK_MINGW64_ARCH)/bin
 
 A_BUILD_LIBS := \
-    -u _SDL_main \
+    -u SDL_main \
     $(shell $(MINGW_BIN)/sdl2-config --libs) \
     -lSDL2_mixer \
     -lpng \
@@ -21,7 +22,7 @@ A_BUILD_CFLAGS := \
     -O3 \
     $(shell $(MINGW_BIN)/sdl2-config --cflags) \
 
-PREFIX := $(A_SDK_MINGW32_ARCH)-
+PREFIX := $(A_SDK_MINGW64_ARCH)-
 
 export CC      := $(PREFIX)gcc
 export CXX     := $(PREFIX)g++
@@ -30,3 +31,5 @@ export AR      := $(PREFIX)ar
 export OBJCOPY := $(PREFIX)objcopy
 export READELF := $(PREFIX)readelf
 export STRIP   := $(PREFIX)strip
+
+include $(A2X_PATH)/make/project/rules

@@ -1,12 +1,15 @@
+include $(A2X_PATH)/make/global/defs
 include $(A_FILE_SDKCONFIG_MK)
 
-A_PLATFORM := wiz
+A_PLATFORM := caanoo
 
-OPEN2X := $(A_SDK_OPEN2X_ROOT)/$(A_SDK_OPEN2X_TOOLCHAIN)
+CAANOO_SDK := $(A_SDK_CAANOO_ROOT)/$(A_SDK_CAANOO_TOOLCHAIN)
 
 A_BUILD_LIBS := \
-    -L$(OPEN2X)/lib \
-    -L$(OPEN2X)/arm-open2x-linux/lib \
+    -L$(A_SDK_CAANOO_ROOT)/lib/target \
+    -L$(A_SDK_CAANOO_ROOT)/DGE/lib/target \
+    -L$(CAANOO_SDK)/lib \
+    -L$(CAANOO_SDK)/arm-gph-linux-gnueabi/lib \
     -lpng12 \
     -lz \
     -lSDL_mixer \
@@ -22,8 +25,8 @@ A_BUILD_CFLAGS := \
     -DA_BUILD_SCREEN_WIDTH=320 \
     -DA_BUILD_SCREEN_HEIGHT=240 \
     -DA_BUILD_SCREEN_FULLSCREEN=1 \
+    -DA_BUILD_SYSTEM_CAANOO=1 \
     -DA_BUILD_SYSTEM_LINUX=1 \
-    -DA_BUILD_SYSTEM_WIZ=1 \
     -O3 \
     -s \
     -march=armv5te \
@@ -31,14 +34,16 @@ A_BUILD_CFLAGS := \
     -msoft-float \
     -ffast-math \
     -fomit-frame-pointer \
-    `$(OPEN2X)/bin/sdl-config --cflags` \
-    -isystem$(OPEN2X)/include \
-    -isystem$(OPEN2X)/arm-open2x-linux/include \
+    -isystem$(A_SDK_CAANOO_ROOT)/include \
+    -isystem$(A_SDK_CAANOO_ROOT)/DGE/include \
+    -isystem$(A_SDK_CAANOO_ROOT)/DGE/include/SDL \
+    -isystem$(CAANOO_SDK)/include \
+    -isystem$(CAANOO_SDK)/arm-gph-linux-gnueabi/include \
     -Wno-conversion \
 
-PREFIX := arm-open2x-linux-
+PREFIX := arm-gph-linux-gnueabi-
 
-export PATH    := $(OPEN2X)/bin:$(PATH)
+export PATH    := $(CAANOO_SDK)/bin:$(PATH)
 export CC      := $(PREFIX)gcc
 export CXX     := $(PREFIX)g++
 export AS      := $(PREFIX)as
@@ -46,3 +51,5 @@ export AR      := $(PREFIX)ar
 export OBJCOPY := $(PREFIX)objcopy
 export READELF := $(PREFIX)readelf
 export STRIP   := $(PREFIX)strip
+
+include $(A2X_PATH)/make/project/rules

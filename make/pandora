@@ -1,3 +1,4 @@
+include $(A2X_PATH)/make/global/defs
 include $(A_FILE_SDKCONFIG_MK)
 
 A_PLATFORM := pandora
@@ -56,3 +57,17 @@ export OBJCOPY := $(PREFIX)objcopy
 export READELF := $(PREFIX)readelf
 export STRIP   := $(PREFIX)strip
 export LD      := $(PREFIX)ld
+
+include $(A2X_PATH)/make/project/rules
+
+.PHONY : pnd
+
+pnd:
+	@ mkdir -p $(A_ROOT)/$(A_DIR_PND)
+	cp $(A_ROOT)/$(A_DIR_BIN)/$(A_CONFIG_APP_NAME) $(A_ROOT)/$(A_DIR_PND)/
+	rsync --archive --delete --progress --human-readable $(A_ROOT)/$(A_DIR_AST) $(A_ROOT)/$(A_DIR_PND)/
+	$(PANDORA_UTILS)/pnd_make.sh -c \
+		-d $(PWD)/$(A_ROOT)/$(A_DIR_PND) \
+		-p $(PWD)/$(A_ROOT)/$(A_DIR_BIN)/$(A_CONFIG_PND_NAME) \
+		-x $(PWD)/$(A_ROOT)/$(A_DIR_PND)/doc/PXML.xml \
+		-i $(PWD)/$(A_ROOT)/$(A_DIR_PND)/img/icon.png
