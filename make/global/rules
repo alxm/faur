@@ -118,7 +118,7 @@ all : $(A_FILE_TARGET_BIN)
 #
 # a2x header and lib build rules
 #
-include $(A2X_PATH)/make/a2x/rules
+include $(A2X_PATH)/make/global/a2x
 
 $(A_FILES_OBJ) : $(A2X_FILE_PUBLIC_A2X_HEADER)
 

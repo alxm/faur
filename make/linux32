@@ -26,4 +26,4 @@ else
     A_BUILD_CFLAGS += $(shell sdl2-config --cflags) -DA_BUILD_LIB_SDL=2 -DA_BUILD_RENDER_SDL=1
 endif
 
-include $(A2X_PATH)/make/project/rules
+include $(A2X_PATH)/make/global/rules

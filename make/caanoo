@@ -52,4 +52,4 @@ export OBJCOPY := $(PREFIX)objcopy
 export READELF := $(PREFIX)readelf
 export STRIP   := $(PREFIX)strip
 
-include $(A2X_PATH)/make/project/rules
+include $(A2X_PATH)/make/global/rules

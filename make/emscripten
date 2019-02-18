@@ -20,4 +20,4 @@ A_BUILD_CFLAGS := \
     --use-preload-plugins \
     $(addprefix --preload-file ../, $(join $(addsuffix @, $(A_CONFIG_EMBED_PATHS_EMSCRIPTEN)), $(A_CONFIG_EMBED_PATHS_EMSCRIPTEN))) \
 
-include $(A2X_PATH)/make/project/rules
+include $(A2X_PATH)/make/global/rules

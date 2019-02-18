@@ -58,7 +58,7 @@ export READELF := $(PREFIX)readelf
 export STRIP   := $(PREFIX)strip
 export LD      := $(PREFIX)ld
 
-include $(A2X_PATH)/make/project/rules
+include $(A2X_PATH)/make/global/rules
 
 .PHONY : pnd
 
