@@ -50,14 +50,14 @@ class NewTool(Tool):
                 self.tool.writefile(os.path.join(self.path, Name), Content)
 
         dir_root = Dir(self, project_path)
-        dir_assets = dir_root.add_subdir('assets')
+        dir_ast = dir_root.add_subdir('assets')
         dir_bin = dir_root.add_subdir('bin')
-        dir_make = dir_root.add_subdir('make')
+        dir_mke = dir_root.add_subdir('make')
         dir_obj = dir_root.add_subdir('obj')
         dir_src = dir_root.add_subdir('src')
 
-        os.symlink(os.path.join('..', dir_assets.name),
-                   os.path.join(dir_bin.path, dir_assets.name))
+        os.symlink(os.path.join('..', dir_ast.name),
+                   os.path.join(dir_bin.path, dir_ast.name))
 
         author = '<your username>'
 
@@ -66,7 +66,7 @@ class NewTool(Tool):
                 author = os.environ[key]
                 break
 
-        dir_make.write_file('Makefile',
+        dir_mke.write_file('Makefile',
 """\
 A_CONFIG_APP_NAME := {0}
 
@@ -183,7 +183,7 @@ static A_STATE(drawBox)
             .format(dir_root.path))
 
         self.output.note('To build and run:')
-        self.output.note('cd {} && make run'.format(dir_make.path))
+        self.output.note('cd {} && make run'.format(dir_mke.path))
 
 if __name__ == '__main__':
     NewTool('ProjectName').run()

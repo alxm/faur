@@ -32,6 +32,7 @@ A_CONFIG_BUILD_ID ?= default
 # Project dirs created by a2x_new or overridden by user makefile
 #
 A_CONFIG_ROOT    ?= ..
+A_CONFIG_DIR_AST ?= assets
 A_CONFIG_DIR_BIN ?= bin
 A_CONFIG_DIR_OBJ ?= obj
 A_CONFIG_DIR_PND ?= pnd
@@ -41,6 +42,7 @@ A_CONFIG_DIR_SRC ?= src
 # Commit config vars
 #
 A_ROOT    := $(A_CONFIG_ROOT)
+A_DIR_AST := $(A_CONFIG_DIR_AST)
 A_DIR_BIN := $(A_CONFIG_DIR_BIN)
 A_DIR_OBJ := $(A_ROOT)/$(A_CONFIG_DIR_OBJ)/$(A_PLATFORM)_$(A_CONFIG_BUILD_ID)
 A_DIR_PND := $(A_CONFIG_DIR_PND)
