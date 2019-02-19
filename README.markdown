@@ -2,35 +2,31 @@
 
 a2x is a C framework I wrote for my video games. It runs natively on Linux and FreeBSD, and can be cross-compiled for Windows, GP2X, Wiz, Caanoo, Open Pandora, and HTML5.
 
-## Build
+## Dependencies & Path Setup
 
 ```sh
 sudo apt install git build-essential python3
-sudo apt install libpng-dev libsdl2-dev libsdl2-mixer-dev
+                 libpng-dev libsdl2-dev libsdl2-mixer-dev
+                 libsdl1.2-dev libsdl-mixer1.2-dev
 
 cd ~
 git clone git://github.com/alxm/a2x.git
 
 export A2X_PATH="$HOME/a2x"
 export PATH="$PATH:$A2X_PATH/bin"
-
-cd a2x/make/a2x
-make -j
 ```
 
-## *Hello, World!* Project
-
-`a2x_new` generates a small one-file project that draws a square which you can move with the arrow keys or a gamepad.
+## *Hello, World* Project
 
 ```sh
 a2x_new hello
 cd hello/make/
-make run
+make -j run
 ```
 
 ![Starter Project Screenshot](https://github.com/alxm/a2x/raw/master/media/hello.gif "Starter Project Screenshot")
 
-All the code is in `hello/src/main.c`:
+Move the square with the arrow keys or gamepad. The code is in `hello/src/main.c`:
 
 ```C
 #include <a2x.h>
@@ -126,15 +122,7 @@ I originally wrote a2x to make games for the Linux-based [GP2X handheld](https:/
 * Open2x SDK (GP2X, Wiz)
 * Pandora SDK (Open Pandora)
 
-Edit `~/.config/a2x/sdk.config` with your SDK paths:
-
-```sh
-cd a2x/make/a2x
-make config                    # Create default sdk.config file
-nano ~/.config/a2x/sdk.config  # Edit with your own SDK paths
-make config                    # Process changes
-make -j -f Makefile.gp2x       # Cross-compile for GP2X or other
-```
+Edit `~/.config/a2x/sdk.config` with your SDK paths, then build a default project to sync your changes.
 
 ## License
 
@@ -143,4 +131,4 @@ Copyright 2010-2019 Alex Margarit (alex@alxm.org)
 * Code licensed under [GNU LGPL3](https://www.gnu.org/licenses/lgpl.html) (see `COPYING` and `COPYING.LESSER`)
 * Graphics licensed under [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/) (see `media/CC-BY-NC-ND`)
 
-a2x is a small project that supports my other personal projects. In the interest of focus and simplicity, it is a solo endeavor.
+I'm writing a2x to support my other software. To keep it focused and manageable, it is a solo endeavor.

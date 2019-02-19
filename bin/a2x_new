@@ -183,7 +183,7 @@ static A_STATE(drawBox)
             .format(dir_root.path))
 
         self.output.note('To build and run:')
-        self.output.note('cd {} && make run'.format(dir_mke.path))
+        self.output.note('cd {} && make -j run'.format(dir_mke.path))
 
 if __name__ == '__main__':
     NewTool('ProjectName').run()
