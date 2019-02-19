@@ -88,7 +88,7 @@ static bool lazy_init(void)
             a_settings_stringGet(A_SETTING_APP_TITLE),
             a_settings_stringGet(A_SETTING_APP_VERSION),
             a_settings_stringGet(A_SETTING_APP_AUTHOR),
-            a_settings_stringGet(A_SETTING_APP_BUILDTIME),
+            A_BUILD__COMPILE_TIME,
             A_BUILD__PLATFORM_NAME,
             A_BUILD__GIT_HASH,
             A_BUILD__COMPILE_TIME));

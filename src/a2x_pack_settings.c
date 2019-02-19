@@ -72,7 +72,6 @@ static ASetting g_settings[A_SETTING_NUM] = {
     A__SETTING(A_SETTING_APP_TITLE, A__SETTING_TYPE_STR, A__SETTING_FLAG_SET_ONCE, string, "Untitled"),
     A__SETTING(A_SETTING_APP_VERSION, A__SETTING_TYPE_STR, A__SETTING_FLAG_SET_ONCE, string, "0.1.0"),
     A__SETTING(A_SETTING_APP_AUTHOR, A__SETTING_TYPE_STR, A__SETTING_FLAG_SET_ONCE, string, "(unknown),"),
-    A__SETTING(A_SETTING_APP_BUILDTIME, A__SETTING_TYPE_STR, A__SETTING_FLAG_FROZEN, string, "(unknown),"),
 
     A__SETTING(A_SETTING_OUTPUT_ON, A__SETTING_TYPE_BOOL, A__SETTING_FLAG_NONE, boolean, true),
     A__SETTING(A_SETTING_OUTPUT_VERBOSE, A__SETTING_TYPE_BOOL, A__SETTING_FLAG_NONE, boolean, false),
@@ -121,9 +120,6 @@ static AStrHash* g_settingsIndex; // table of ASetting
 
 void a_settings__init(void)
 {
-    extern const char* a_app__buildtime;
-    g_settings[A_SETTING_APP_BUILDTIME].value.string = (char*)a_app__buildtime;
-
     g_settingsIndex = a_strhash_new();
 
     for(int s = 0; s < A_SETTING_NUM; s++) {

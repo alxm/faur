@@ -100,13 +100,13 @@ int main(int Argc, char* Argv[])
 
     a_settings__init2();
 
-    a_out__message("a2x %s, %s", A_BUILD__GIT_HASH, A_BUILD__COMPILE_TIME);
-    a_out__message("%s %s by %s, %s - PID %d",
+    a_out__message("a2x: %s %s", A_BUILD__PLATFORM_NAME, A_BUILD__GIT_HASH);
+    a_out__message("App: %s %s by %s",
                    a_settings_stringGet(A_SETTING_APP_TITLE),
                    a_settings_stringGet(A_SETTING_APP_VERSION),
-                   a_settings_stringGet(A_SETTING_APP_AUTHOR),
-                   a_settings_stringGet(A_SETTING_APP_BUILDTIME),
-                   getpid());
+                   a_settings_stringGet(A_SETTING_APP_AUTHOR));
+    a_out__message("Build timestamp %s", A_BUILD__COMPILE_TIME);
+    a_out__message("PID %d", getpid());
 
     a_embed__init();
     a_block__init();
