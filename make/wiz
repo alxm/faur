@@ -5,6 +5,8 @@ A_PLATFORM := wiz
 
 OPEN2X := $(A_SDK_OPEN2X_ROOT)/$(A_SDK_OPEN2X_TOOLCHAIN)
 
+A_CONFIG_BUILD_LIB_SDL := 1
+
 A_BUILD_LIBS := \
     -L$(OPEN2X)/lib \
     -L$(OPEN2X)/arm-open2x-linux/lib \
@@ -18,8 +20,6 @@ A_BUILD_LIBS := \
     -ldl \
 
 A_BUILD_CFLAGS := \
-    -DA_BUILD_LIB_SDL=1 \
-    -DA_BUILD_RENDER_SOFTWARE=1 \
     -DA_BUILD_SCREEN_WIDTH=320 \
     -DA_BUILD_SCREEN_HEIGHT=240 \
     -DA_BUILD_SCREEN_FULLSCREEN=1 \
@@ -32,8 +32,8 @@ A_BUILD_CFLAGS := \
     -msoft-float \
     -ffast-math \
     -fomit-frame-pointer \
-    `$(OPEN2X)/bin/sdl-config --cflags` \
     -isystem$(OPEN2X)/include \
+    -isystem$(OPEN2X)/include/SDL \
     -isystem$(OPEN2X)/arm-open2x-linux/include \
     -Wno-conversion \
 

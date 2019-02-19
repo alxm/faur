@@ -1,51 +1,7 @@
 #
-# Variables that the user makefile may set before including this file:
+# Process and reconcile build settings
 #
-# Paths:
-#
-    A_CONFIG_ROOT ?= ..
-#       Relative path from make dir to project root
-#
-    A_CONFIG_DIR_AST ?= assets
-#       Root-relative path to the project's media assets dir
-#
-    A_CONFIG_DIR_BIN ?= bin
-#       Root-relative path to where final executable files are written
-#
-    A_CONFIG_DIR_OBJ ?= obj
-#       Root-relative path to where object files are written
-#
-    A_CONFIG_DIR_PND ?= pnd
-#       Root-relative path to the project's PND staging dir
-#
-    A_CONFIG_DIR_SRC ?= src
-#       Root-relative path to the project's source tree
-#
-# Files:
-#
-    A_CONFIG_APP_NAME ?= a.out
-#       Target binary file name
-#
-#   A_CONFIG_EMBED_PATHS, A_CONFIG_EMBED_PATHS_EMSCRIPTEN
-#       Space-separated file and dir paths relative to project root
-#
-    A_CONFIG_PND_NAME ?= $(A_CONFIG_APP_NAME).pnd
-#       Target PND file name
-#
-# Build:
-#
-    A_CONFIG_BUILD_ID ?= default
-#       Unique name for this build flavor
-#
-#   A_CONFIG_BUILD_CFLAGS
-#       Passed to compiler
-#
-#   A_CONFIG_BUILD_LIBS
-#       Passed to linker
-#
-#   A_CONFIG_MAKE_CLEAN
-#       Targets to run before the default clean target
-#
+include $(A2X_PATH)/make/global/config
 
 #
 # Commit config vars
