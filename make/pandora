@@ -60,14 +60,16 @@ export LD      := $(PREFIX)ld
 
 include $(A2X_PATH)/make/global/rules
 
-.PHONY : pnd
+A_FILE_TARGET_PND := $(PWD)/$(A_ROOT)/$(A_DIR_BIN)/$(A_CONFIG_PND_NAME)
 
-pnd:
+all : $(A_FILE_TARGET_PND)
+
+$(A_FILE_TARGET_PND) : $(A_FILE_TARGET_BIN)
 	@ mkdir -p $(A_ROOT)/$(A_DIR_PND)
-	cp $(A_ROOT)/$(A_DIR_BIN)/$(A_CONFIG_APP_NAME) $(A_ROOT)/$(A_DIR_PND)/
+	cp $(A_FILE_TARGET_BIN) $(A_ROOT)/$(A_DIR_PND)/
 	rsync --archive --delete --progress --human-readable $(A_ROOT)/$(A_DIR_AST) $(A_ROOT)/$(A_DIR_PND)/
 	$(PANDORA_UTILS)/pnd_make.sh -c \
 		-d $(PWD)/$(A_ROOT)/$(A_DIR_PND) \
-		-p $(PWD)/$(A_ROOT)/$(A_DIR_BIN)/$(A_CONFIG_PND_NAME) \
+		-p $(A_FILE_TARGET_PND) \
 		-x $(PWD)/$(A_ROOT)/$(A_DIR_PND)/doc/PXML.xml \
 		-i $(PWD)/$(A_ROOT)/$(A_DIR_PND)/img/icon.png
