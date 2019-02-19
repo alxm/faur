@@ -84,14 +84,13 @@ static bool lazy_init(void)
             a_settings_stringGet(A_SETTING_APP_AUTHOR)));
 
         g_description = a_str_dup(a_str__fmt512(
-            "%s %s by %s, built on %s. Running a2x %s %s, built on %s.",
+            "%s %s by %s, built %s. Running a2x %s %s.",
             a_settings_stringGet(A_SETTING_APP_TITLE),
             a_settings_stringGet(A_SETTING_APP_VERSION),
             a_settings_stringGet(A_SETTING_APP_AUTHOR),
             A_BUILD__COMPILE_TIME,
             A_BUILD__PLATFORM_NAME,
-            A_BUILD__GIT_HASH,
-            A_BUILD__COMPILE_TIME));
+            A_BUILD__GIT_HASH));
 
         if(g_filePrefix && g_title && g_description) {
             // No spaces in file name
