@@ -1,3 +1,0 @@
-include ../global/defs
-include ../platforms/linux32
-include rules

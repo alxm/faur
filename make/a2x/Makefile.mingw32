@@ -1,3 +1,0 @@
-include ../global/defs
-include ../platforms/mingw32
-include rules

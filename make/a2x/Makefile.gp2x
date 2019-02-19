@@ -1,3 +1,0 @@
-include ../global/defs
-include ../platforms/gp2x
-include rules
