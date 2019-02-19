@@ -49,6 +49,9 @@
 #   A_CONFIG_BUILD_RENDER
 #       Possible values: SOFTWARE, SDL
 #
+#   A_CONFIG_BUILD_LIB_SDL_TIME
+#       Whether to use the SDL timer
+#
 
 A_CONFIG_ROOT ?= ..
 A_CONFIG_DIR_AST ?= assets
@@ -91,4 +94,8 @@ endif
 
 ifeq ($(A_CONFIG_BUILD_RENDER), SOFTWARE)
     A_BUILD_CFLAGS += -DA_BUILD_RENDER_SOFTWARE=1
+endif
+
+ifdef A_CONFIG_BUILD_LIB_SDL_TIME
+    A_BUILD_CFLAGS += -DA_BUILD_LIB_SDL_TIME=1
 endif
