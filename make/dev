@@ -35,3 +35,5 @@ else
 endif
 
 include $(A2X_PATH)/make/global/rules
+
+all : $(A2X_FILE_EDITOR_TAGS)
