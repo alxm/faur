@@ -168,7 +168,7 @@ void a_state_new(int Index, AStateHandler* Handler, const char* Name)
 
 static const AStateTableEntry* getState(int State, const char* CallerFunction)
 {
-    #if A_BUILD_DEBUG
+    #if A_CONFIG_BUILD_DEBUG
         if(g_table == NULL) {
             A__FATAL("%s(%d): Call a_state_init first", CallerFunction, State);
         }

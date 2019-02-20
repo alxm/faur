@@ -117,7 +117,7 @@ void a_template_new(const char* FilePath)
 
 const ATemplate* a_template__get(const char* TemplateId, const char* CallerFunction)
 {
-    #if A_BUILD_DEBUG
+    #if A_CONFIG_BUILD_DEBUG
         if(g_templates == NULL) {
             A__FATAL("%s: Call a_ecs_init first", CallerFunction);
         }

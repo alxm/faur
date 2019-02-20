@@ -49,7 +49,7 @@ void a_system__uninit(void)
 
 ASystem* a_system__get(int System, const char* CallerFunction)
 {
-    #if A_BUILD_DEBUG
+    #if A_CONFIG_BUILD_DEBUG
         if(g_systemsTable == NULL) {
             A__FATAL("%s: Call a_ecs_init first", CallerFunction);
         }
