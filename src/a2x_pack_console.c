@@ -180,9 +180,9 @@ void a_console__draw(void)
 
         a_font__fontSet(A_FONT__ID_WHITE);
         a_font_printf("%s %s by %s\n",
-                      a_settings_stringGet(A_SETTING_APP_TITLE),
-                      a_settings_stringGet(A_SETTING_APP_VERSION),
-                      a_settings_stringGet(A_SETTING_APP_AUTHOR));
+                      A_CONFIG_APP_NAME,
+                      A_CONFIG_APP_VERSION,
+                      A_CONFIG_APP_AUTHOR);
     }
 
     {

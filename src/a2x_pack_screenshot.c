@@ -75,19 +75,19 @@ static bool lazy_init(void)
         g_filePrefix = a_str_dup(a_str__fmt512(
             "%s/%s-",
             a_settings_stringGet(A_SETTING_FILE_SCREENSHOTS),
-            a_settings_stringGet(A_SETTING_APP_TITLE)));
+            A_CONFIG_APP_NAME));
 
         g_title = a_str_dup(a_str__fmt512(
             "%s %s by %s",
-            a_settings_stringGet(A_SETTING_APP_TITLE),
-            a_settings_stringGet(A_SETTING_APP_VERSION),
-            a_settings_stringGet(A_SETTING_APP_AUTHOR)));
+            A_CONFIG_APP_NAME,
+            A_CONFIG_APP_VERSION,
+            A_CONFIG_APP_AUTHOR));
 
         g_description = a_str_dup(a_str__fmt512(
             "%s %s by %s, built %s. Running a2x %s %s.",
-            a_settings_stringGet(A_SETTING_APP_TITLE),
-            a_settings_stringGet(A_SETTING_APP_VERSION),
-            a_settings_stringGet(A_SETTING_APP_AUTHOR),
+            A_CONFIG_APP_NAME,
+            A_CONFIG_APP_VERSION,
+            A_CONFIG_APP_AUTHOR,
             A_BUILD__COMPILE_TIME,
             A_BUILD__PLATFORM_NAME,
             A_BUILD__GIT_HASH));

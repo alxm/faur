@@ -40,8 +40,7 @@ static A_STATE(drawBox);
 
 A_SETUP
 {
-    a_settings_stringSet(A_SETTING_APP_TITLE, "hello");
-    a_settings_stringSet(A_SETTING_APP_VERSION, "1.0");
+    //
 }
 
 A_MAIN

@@ -265,8 +265,8 @@ void a_platform__screenInit(void)
     #if A_CONFIG_TRAIT_DESKTOP
         const char* caption = a_str__fmt512(
                                 "%s %s",
-                                a_settings_stringGet(A_SETTING_APP_TITLE),
-                                a_settings_stringGet(A_SETTING_APP_VERSION));
+                                A_CONFIG_APP_NAME,
+                                A_CONFIG_APP_VERSION);
 
         #if A_CONFIG_LIB_SDL == 1
             SDL_WM_SetCaption(caption, NULL);
