@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2018 Alex Margarit
+    Copyright 2010, 2016-2019 Alex Margarit
     This file is part of a2x, a C video game framework.
 
     a2x-framework is free software: you can redistribute it and/or modify
@@ -147,12 +147,12 @@ void a_fps__frame(void)
     g_run.tickCreditMs += a_math_minu(elapsedMs, g_settings.drawFrameMs * 2);
 }
 
-unsigned a_fps_drawRateGet(void)
+unsigned a_fps_rateDrawGet(void)
 {
     return g_run.drawFps;
 }
 
-unsigned a_fps_drawRateGetMax(void)
+unsigned a_fps_rateDrawGetMax(void)
 {
     return g_run.drawFpsMax;
 }

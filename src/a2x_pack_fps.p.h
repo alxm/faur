@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2017-2018 Alex Margarit
+    Copyright 2010, 2017-2019 Alex Margarit
     This file is part of a2x, a C video game framework.
 
     a2x-framework is free software: you can redistribute it and/or modify
@@ -22,13 +22,13 @@
 
 #include "a2x_pack_settings.p.h"
 
-static inline unsigned a_fps_tickRateGet(void)
+static inline unsigned a_fps_rateTickGet(void)
 {
     return A_CONFIG_FPS_TICK;
 }
 
-extern unsigned a_fps_drawRateGet(void);
-extern unsigned a_fps_drawRateGetMax(void);
+extern unsigned a_fps_rateDrawGet(void);
+extern unsigned a_fps_rateDrawGetMax(void);
 
 extern unsigned a_fps_ticksGet(void);
 extern bool a_fps_ticksNth(unsigned N);

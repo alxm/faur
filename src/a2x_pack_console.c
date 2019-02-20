@@ -205,9 +205,9 @@ void a_console__draw(void)
         a_font_coordsSet(a__screen.width - 1, 2);
 
         a_font__fontSet(A_FONT__ID_YELLOW);
-        a_font_printf("%u tick fps\n", a_fps_tickRateGet());
-        a_font_printf("%u draw fps\n", a_fps_drawRateGet());
-        a_font_printf("%u draw max\n", a_fps_drawRateGetMax());
+        a_font_printf("%u tick fps\n", a_fps_rateTickGet());
+        a_font_printf("%u draw fps\n", a_fps_rateDrawGet());
+        a_font_printf("%u draw max\n", a_fps_rateDrawGetMax());
 
         a_font__fontSet(A_FONT__ID_GREEN);
         a_font_printf("%dx%d:%dx%d\n",
