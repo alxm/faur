@@ -10,8 +10,12 @@
 #   A_CONFIG_BUILD_LIBS
 #       Passed to linker
 #
+#   A_CONFIG_BUILD_OPT
+#       -O0 -g, -O3 -s, -Os, etc.
+#
 
 A_CONFIG_BUILD_ID ?= default
+A_BUILD_CFLAGS += $(A_CONFIG_BUILD_OPT)
 
 #
 # Dirs
