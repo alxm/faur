@@ -96,34 +96,9 @@ void a_screen__init(void)
         a_out__message("Screen resolution %dx%d", width, height);
     }
 
-    #if A_CONFIG_SYSTEM_WIZ
-        if(a_settings_boolGet(A_SETTING_SYSTEM_WIZ_FIXTEARING)) {
-            a_settings_boolSet(A_SETTING_VIDEO_DOUBLEBUFFER, true);
-        }
-    #endif
-
-    #if A_CONFIG_LIB_SDL == 2
-        a_settings_boolSet(A_SETTING_VIDEO_DOUBLEBUFFER, true);
-    #endif
-
-    if(a_settings_intGet(A_SETTING_VIDEO_ZOOM) > 1) {
-        a_settings_boolSet(A_SETTING_VIDEO_DOUBLEBUFFER, true);
-    }
-
-    #if A_CONFIG_LIB_SDL == 2 || A_CONFIG_SYSTEM_EMSCRIPTEN
-        if(a_settings_isDefault(A_SETTING_VIDEO_VSYNC)) {
-            a_settings_boolSet(A_SETTING_VIDEO_VSYNC, true);
-        }
-    #endif
-
     #if A_CONFIG_LIB_RENDER_SOFTWARE
-        if(a_settings_boolGet(A_SETTING_VIDEO_DOUBLEBUFFER)) {
-            // Allocate pixel buffer
-            initScreen(&a__screen, width, height, true);
-        } else {
-            // Will use SDL's pixel buffer directly
-            initScreen(&a__screen, width, height, false);
-        }
+        // Allocate a pixel buffer, or use SDL's pixel buffer directly
+        initScreen(&a__screen, width, height, A_CONFIG_SCREEN_ALLOCATE);
     #endif
 
     a_platform__screenInit(width, height);

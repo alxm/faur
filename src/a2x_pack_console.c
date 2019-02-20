@@ -226,11 +226,11 @@ void a_console__draw(void)
 
         #if A_CONFIG_LIB_RENDER_SOFTWARE
             #if A_CONFIG_LIB_SDL == 1
-                if(a_settings_boolGet(A_SETTING_VIDEO_DOUBLEBUFFER)) {
+                #if A_CONFIG_SCREEN_ALLOCATE
                     a_font_print("S/W (Buffer)\n");
-                } else {
+                #else
                     a_font_print("S/W (Raw)\n");
-                }
+                #endif
             #elif A_CONFIG_LIB_SDL == 2
                 a_font_print("S/W (Buffer)\n");
             #endif
