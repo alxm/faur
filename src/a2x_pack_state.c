@@ -363,8 +363,7 @@ void a_state__run(void)
     #if A_CONFIG_SYSTEM_EMSCRIPTEN
         emscripten_set_main_loop(
             loop,
-            a_settings_boolGet(A_SETTING_VIDEO_VSYNC)
-                ? 0 : (int)a_settings_intuGet(A_SETTING_FPS_DRAW),
+            a_settings_boolGet(A_SETTING_VIDEO_VSYNC) ? 0 : A_CONFIG_FPS_DRAW,
             true);
     #else
         while(iteration()) {

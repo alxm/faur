@@ -51,32 +51,25 @@ static struct {
 
 void a_fps__init(void)
 {
-    unsigned fpsTick = a_settings_intuGet(A_SETTING_FPS_TICK);
-    unsigned fpsDraw = a_settings_intuGet(A_SETTING_FPS_DRAW);
-
-    if(fpsTick < 1) {
-        A__FATAL("%s < 1", a_settings__idToString(A_SETTING_FPS_TICK));
+    if(A_CONFIG_FPS_TICK < 1) {
+        A__FATAL("A_CONFIG_FPS_TICK < 1");
     }
 
-    if(fpsDraw < 1) {
-        A__FATAL("%s < 1", a_settings__idToString(A_SETTING_FPS_DRAW));
+    if(A_CONFIG_FPS_DRAW < 1) {
+        A__FATAL("A_CONFIG_FPS_DRAW < 1");
     }
 
-    if(fpsTick < fpsDraw) {
-        a_out__warning("Changing %s from %u to %u",
-                       a_settings__idToString(A_SETTING_FPS_DRAW),
-                       fpsDraw,
-                       fpsTick);
-
-        fpsDraw = fpsTick;
-        a_settings_intuSet(A_SETTING_FPS_DRAW, fpsDraw);
+    if(A_CONFIG_FPS_TICK < A_CONFIG_FPS_DRAW) {
+        A__FATAL("A_CONFIG_FPS_TICK (%u) < A_CONFIG_FPS_DRAW (%u)",
+                 A_CONFIG_FPS_TICK,
+                 A_CONFIG_FPS_DRAW);
     }
 
-    g_settings.tickFrameMs = 1000 / fpsTick;
-    g_settings.drawFrameMs = 1000 / fpsDraw;
+    g_settings.tickFrameMs = 1000 / A_CONFIG_FPS_TICK;
+    g_settings.drawFrameMs = 1000 / A_CONFIG_FPS_DRAW;
 
     g_history.head = 0;
-    g_history.len = fpsDraw * A__AVERAGE_WINDOW_SEC;
+    g_history.len = A_CONFIG_FPS_DRAW * A__AVERAGE_WINDOW_SEC;
     g_history.drawFrameMs = a_mem_malloc(g_history.len * sizeof(unsigned));
     g_history.drawFrameMsMin = a_mem_malloc(g_history.len * sizeof(unsigned));
 
@@ -93,7 +86,7 @@ void a_fps__uninit(void)
 
 void a_fps__reset(void)
 {
-    g_run.drawFps = a_settings_intuGet(A_SETTING_FPS_DRAW);
+    g_run.drawFps = A_CONFIG_FPS_DRAW;
     g_run.drawFpsMax = g_run.drawFps;
 
     for(unsigned i = g_history.len; i--; ) {
@@ -101,8 +94,7 @@ void a_fps__reset(void)
         g_history.drawFrameMsMin[i] = g_settings.drawFrameMs;
     }
 
-    g_history.drawFrameMsSum =
-        g_history.len * 1000 / a_settings_intuGet(A_SETTING_FPS_DRAW);
+    g_history.drawFrameMsSum = g_history.len * 1000 / A_CONFIG_FPS_DRAW;
     g_history.drawFrameMsMinSum = g_history.drawFrameMsSum;
 
     g_run.lastFrameMs = a_time_msGet();
