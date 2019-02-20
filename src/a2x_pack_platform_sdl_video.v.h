@@ -20,7 +20,7 @@
 
 #include "a2x_pack_platform_sdl_video.p.h"
 
-#if A_BUILD_LIB_SDL == 2
+#if A_CONFIG_LIB_SDL == 2
     #include <SDL.h>
 
     #include "a2x_pack_pixel.v.h"
@@ -28,15 +28,15 @@
     extern SDL_Renderer* a__sdlRenderer;
 
     #if A__PIXEL_BPP == 16
-        #if A_BUILD_RENDER_SOFTWARE
+        #if A_CONFIG_LIB_RENDER_SOFTWARE
             #define A_SDL__PIXEL_FORMAT SDL_PIXELFORMAT_RGB565
-        #elif A_BUILD_RENDER_SDL
+        #elif A_CONFIG_LIB_RENDER_SDL
             #define A_SDL__PIXEL_FORMAT SDL_PIXELFORMAT_RGBA5551
         #endif
     #elif A__PIXEL_BPP == 32
-        #if A_BUILD_RENDER_SOFTWARE
+        #if A_CONFIG_LIB_RENDER_SOFTWARE
             #define A_SDL__PIXEL_FORMAT SDL_PIXELFORMAT_RGBX8888
-        #elif A_BUILD_RENDER_SDL
+        #elif A_CONFIG_LIB_RENDER_SDL
             #define A_SDL__PIXEL_FORMAT SDL_PIXELFORMAT_RGBA8888
         #endif
     #endif

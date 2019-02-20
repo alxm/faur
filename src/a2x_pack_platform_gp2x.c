@@ -23,7 +23,7 @@
 
 #include "a2x_pack_platform_gp2x.v.h"
 
-#if A_BUILD_SYSTEM_GP2X
+#if A_CONFIG_SYSTEM_GP2X
 #include <fcntl.h>
 #include <sys/mman.h>
 
@@ -121,4 +121,4 @@ void a_platform_gp2x__uninit(void)
 
     setRamTimings(8, 16, 3, 8, 8, 8, 8);
 }
-#endif // A_BUILD_SYSTEM_GP2X
+#endif // A_CONFIG_SYSTEM_GP2X

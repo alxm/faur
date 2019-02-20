@@ -18,7 +18,7 @@
 
 #include "a2x_pack_platform_sdl_video.v.h"
 
-#if A_BUILD_LIB_SDL
+#if A_CONFIG_LIB_SDL
 #include <SDL.h>
 
 #include "a2x_pack_main.v.h"
@@ -28,21 +28,21 @@
 #include "a2x_pack_settings.v.h"
 #include "a2x_pack_str.v.h"
 
-#if A_BUILD_LIB_SDL == 1
+#if A_CONFIG_LIB_SDL == 1
     static SDL_Surface* g_sdlScreen;
-#elif A_BUILD_LIB_SDL == 2
+#elif A_CONFIG_LIB_SDL == 2
     SDL_Renderer* a__sdlRenderer;
     static SDL_Window* g_sdlWindow;
     static int g_clearR, g_clearG, g_clearB;
 
-    #if A_BUILD_RENDER_SOFTWARE
+    #if A_CONFIG_LIB_RENDER_SOFTWARE
         static SDL_Texture* g_sdlTexture;
     #endif
 #endif
 
 void a_platform_sdl_video__init(void)
 {
-    #if A_BUILD_SYSTEM_PANDORA
+    #if A_CONFIG_SYSTEM_PANDORA
         putenv("SDL_VIDEODRIVER=omapdss");
         putenv("SDL_OMAP_LAYER_SIZE=pixelperfect");
     #endif
@@ -54,14 +54,14 @@ void a_platform_sdl_video__init(void)
 
 void a_platform_sdl_video__uninit(void)
 {
-    #if A_BUILD_LIB_SDL == 1
+    #if A_CONFIG_LIB_SDL == 1
         if(!a_settings_boolGet(A_SETTING_VIDEO_DOUBLEBUFFER)) {
             if(SDL_MUSTLOCK(g_sdlScreen)) {
                 SDL_UnlockSurface(g_sdlScreen);
             }
         }
-    #elif A_BUILD_LIB_SDL == 2
-        #if A_BUILD_RENDER_SOFTWARE
+    #elif A_CONFIG_LIB_SDL == 2
+        #if A_CONFIG_LIB_RENDER_SOFTWARE
             SDL_DestroyTexture(g_sdlTexture);
         #endif
         SDL_DestroyRenderer(a__sdlRenderer);
@@ -71,7 +71,7 @@ void a_platform_sdl_video__uninit(void)
     SDL_QuitSubSystem(SDL_INIT_VIDEO);
 }
 
-#if A_BUILD_LIB_SDL == 2
+#if A_CONFIG_LIB_SDL == 2
 static void settingBorderColor(ASettingId Setting)
 {
     a_pixel_toRgb(
@@ -83,7 +83,7 @@ static void settingFullscreen(ASettingId Setting)
 {
     bool fullScreen = a_settings_boolGet(Setting);
 
-    #if A_BUILD_LIB_SDL == 1
+    #if A_CONFIG_LIB_SDL == 1
         if(a_settings_boolGet(A_SETTING_VIDEO_DOUBLEBUFFER)) {
             uint32_t videoFlags = g_sdlScreen->flags;
 
@@ -105,7 +105,7 @@ static void settingFullscreen(ASettingId Setting)
                 "SDL 1.2 fullscreen needs %s=true",
                 a_settings__idToString(A_SETTING_VIDEO_DOUBLEBUFFER));
         }
-    #elif A_BUILD_LIB_SDL == 2
+    #elif A_CONFIG_LIB_SDL == 2
         if(SDL_SetWindowFullscreen(
             g_sdlWindow, fullScreen? SDL_WINDOW_FULLSCREEN : 0) < 0) {
 
@@ -122,7 +122,7 @@ static void settingVideoZoom(ASettingId Setting)
     int w = a_settings_intGet(A_SETTING_VIDEO_WIDTH);
     int h = a_settings_intGet(A_SETTING_VIDEO_HEIGHT);
 
-    #if A_BUILD_LIB_SDL == 1
+    #if A_CONFIG_LIB_SDL == 1
         if(a_settings_boolGet(A_SETTING_VIDEO_DOUBLEBUFFER)) {
             g_sdlScreen = SDL_SetVideoMode(
                             w * zoom, h * zoom, 0, g_sdlScreen->flags);
@@ -137,7 +137,7 @@ static void settingVideoZoom(ASettingId Setting)
                 "SDL 1.2 zoom needs %s=true",
                 a_settings__idToString(A_SETTING_VIDEO_DOUBLEBUFFER));
         }
-    #elif A_BUILD_LIB_SDL == 2
+    #elif A_CONFIG_LIB_SDL == 2
         SDL_SetWindowSize(g_sdlWindow, w * zoom, h * zoom);
     #endif
 }
@@ -158,7 +158,7 @@ void a_platform__screenInit(void)
     int zoom = a_settings_intGet(A_SETTING_VIDEO_ZOOM);
     bool fullscreen = a_settings_boolGet(A_SETTING_VIDEO_FULLSCREEN);
 
-    #if A_BUILD_LIB_SDL == 1
+    #if A_CONFIG_LIB_SDL == 1
         int bpp = 0;
         uint32_t videoFlags = SDL_SWSURFACE;
 
@@ -193,7 +193,7 @@ void a_platform__screenInit(void)
 
             a__screen.pixels = g_sdlScreen->pixels;
         }
-    #elif A_BUILD_LIB_SDL == 2
+    #elif A_CONFIG_LIB_SDL == 2
         int ret;
         uint32_t windowFlags = SDL_WINDOW_RESIZABLE;
 
@@ -244,7 +244,7 @@ void a_platform__screenInit(void)
             A__FATAL("SDL_RenderSetLogicalSize: %s", SDL_GetError());
         }
 
-        #if A_BUILD_RENDER_SOFTWARE
+        #if A_CONFIG_LIB_RENDER_SOFTWARE
             g_sdlTexture = SDL_CreateTexture(a__sdlRenderer,
                                              A_SDL__PIXEL_FORMAT,
                                              SDL_TEXTUREACCESS_STREAMING,
@@ -262,15 +262,15 @@ void a_platform__screenInit(void)
             A_SETTING_COLOR_SCREEN_BORDER, settingBorderColor, true);
     #endif
 
-    #if A_BUILD_SYSTEM_DESKTOP
+    #if A_CONFIG_TRAIT_DESKTOP
         const char* caption = a_str__fmt512(
                                 "%s %s",
                                 a_settings_stringGet(A_SETTING_APP_TITLE),
                                 a_settings_stringGet(A_SETTING_APP_VERSION));
 
-        #if A_BUILD_LIB_SDL == 1
+        #if A_CONFIG_LIB_SDL == 1
             SDL_WM_SetCaption(caption, NULL);
-        #elif A_BUILD_LIB_SDL == 2
+        #elif A_CONFIG_LIB_SDL == 2
             SDL_SetWindowTitle(g_sdlWindow, caption);
         #endif
     #endif
@@ -278,17 +278,17 @@ void a_platform__screenInit(void)
     a_settings__callbackSet(
         A_SETTING_INPUT_MOUSE_CURSOR, settingMouseCursor, true);
 
-    #if A_BUILD_LIB_SDL == 1
+    #if A_CONFIG_LIB_SDL == 1
         a_settings__callbackSet(
             A_SETTING_VIDEO_FULLSCREEN, settingFullscreen, false);
-    #elif A_BUILD_LIB_SDL == 2
+    #elif A_CONFIG_LIB_SDL == 2
         a_settings__callbackSet(
             A_SETTING_VIDEO_FULLSCREEN, settingFullscreen, true);
     #endif
 
     a_settings__callbackSet(A_SETTING_VIDEO_ZOOM, settingVideoZoom, false);
 
-    #if A_BUILD_SYSTEM_WIZ
+    #if A_CONFIG_SYSTEM_WIZ
         if(a_settings_boolGet(A_SETTING_SYSTEM_WIZ_FIXTEARING)) {
             a_platform_wiz__portraitModeSet();
         }
@@ -297,8 +297,8 @@ void a_platform__screenInit(void)
 
 void a_platform__screenShow(void)
 {
-    #if A_BUILD_LIB_SDL == 1
-        #if A_BUILD_SYSTEM_WIZ
+    #if A_CONFIG_LIB_SDL == 1
+        #if A_CONFIG_SYSTEM_WIZ
             if(a_settings_boolGet(A_SETTING_SYSTEM_WIZ_FIXTEARING)) {
                 // The Wiz screen has diagonal tearing in landscape mode. As a
                 // slow but simple workaround, the screen is set to portrait
@@ -400,8 +400,8 @@ void a_platform__screenShow(void)
 
             a__screen.pixels = g_sdlScreen->pixels;
         }
-    #elif A_BUILD_LIB_SDL == 2
-        #if A_BUILD_RENDER_SDL
+    #elif A_CONFIG_LIB_SDL == 2
+        #if A_CONFIG_LIB_RENDER_SDL
             if(SDL_SetRenderTarget(a__sdlRenderer, NULL) < 0) {
                 A__FATAL("SDL_SetRenderTarget: %s", SDL_GetError());
             }
@@ -422,7 +422,7 @@ void a_platform__screenShow(void)
 
         a_platform__renderClear();
 
-        #if A_BUILD_RENDER_SOFTWARE
+        #if A_CONFIG_LIB_RENDER_SOFTWARE
             if(SDL_UpdateTexture(g_sdlTexture,
                                  NULL,
                                  a__screen.pixels,
@@ -453,7 +453,7 @@ void a_platform__screenShow(void)
     #endif
 }
 
-#if A_BUILD_LIB_SDL == 2
+#if A_CONFIG_LIB_SDL == 2
 void a_platform__renderClear(void)
 {
     if(SDL_RenderClear(a__sdlRenderer) < 0) {
@@ -462,13 +462,13 @@ void a_platform__renderClear(void)
 }
 #endif
 
-#if A_BUILD_SCREEN_WIDTH > 0 && A_BUILD_SCREEN_HEIGHT > 0
+#if A_CONFIG_SCREEN_WIDTH > 0 && A_CONFIG_SCREEN_HEIGHT > 0
 void a_platform__screenResolutionGetNative(int* Width, int* Height)
 {
-    *Width = A_BUILD_SCREEN_WIDTH;
-    *Height = A_BUILD_SCREEN_HEIGHT;
+    *Width = A_CONFIG_SCREEN_WIDTH;
+    *Height = A_CONFIG_SCREEN_HEIGHT;
 }
-#elif A_BUILD_LIB_SDL == 2
+#elif A_CONFIG_LIB_SDL == 2
 void a_platform__screenResolutionGetNative(int* Width, int* Height)
 {
     SDL_DisplayMode mode;
@@ -486,7 +486,7 @@ void a_platform__screenResolutionGetNative(int* Width, int* Height)
     *Width = mode.w;
     *Height = mode.h;
 }
-#elif A_BUILD_LIB_SDL == 1
+#elif A_CONFIG_LIB_SDL == 1
 void a_platform__screenResolutionGetNative(int* Width, int* Height)
 {
     const SDL_VideoInfo* info = SDL_GetVideoInfo();
@@ -495,4 +495,4 @@ void a_platform__screenResolutionGetNative(int* Width, int* Height)
     *Height = info->current_h;
 }
 #endif
-#endif // A_BUILD_LIB_SDL
+#endif // A_CONFIG_LIB_SDL

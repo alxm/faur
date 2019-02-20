@@ -18,7 +18,7 @@
 
 #include "a2x_pack_platform_software_blit.v.h"
 
-#if A_BUILD_RENDER_SOFTWARE
+#if A_CONFIG_LIB_RENDER_SOFTWARE
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_pixel.v.h"
 #include "a2x_pack_screen.v.h"
@@ -338,4 +338,4 @@ void a_platform__textureBlitEx(const APlatformTexture* Texture, int X, int Y, AF
                             Y - Texture->spr->h / 2 - CenterY,
                             FillFlat);
 }
-#endif // A_BUILD_RENDER_SOFTWARE
+#endif // A_CONFIG_LIB_RENDER_SOFTWARE

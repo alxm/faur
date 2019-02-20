@@ -1,10 +1,20 @@
 #
-# Variables that the user makefile may set before including the global rules:
+# Build
 #
-# Paths:
+#   A_CONFIG_BUILD_CFLAGS
+#       Passed to compiler
 #
-#   A_CONFIG_ROOT
-#       Relative path from make dir to project root
+#   A_CONFIG_BUILD_ID
+#       Unique name for this build flavor
+#
+#   A_CONFIG_BUILD_LIBS
+#       Passed to linker
+#
+
+A_CONFIG_BUILD_ID ?= default
+
+#
+# Dirs
 #
 #   A_CONFIG_DIR_AST
 #       Root-relative path to the project's media assets dir
@@ -18,153 +28,165 @@
 #   A_CONFIG_DIR_PND
 #       Root-relative path to the project's PND staging dir
 #
+#   A_CONFIG_DIR_ROOT
+#       Relative path from make dir to project root
+#
 #   A_CONFIG_DIR_SRC
 #       Root-relative path to the project's source tree
 #
-# Files:
-#
-#   A_CONFIG_APP_NAME
-#       Target binary file name
-#
-#   A_CONFIG_EMBED_PATHS, A_CONFIG_EMBED_PATHS_EMSCRIPTEN
-#       Space-separated file and dir paths relative to project root
-#
-#   A_CONFIG_PND_NAME
-#       Target PND file name
-#
-# Build:
-#
-#   A_CONFIG_BUILD_ID
-#       Unique name for this build flavor
-#
-#   A_CONFIG_BUILD_CFLAGS
-#       Passed to compiler
-#
-#   A_CONFIG_BUILD_LIBS
-#       Passed to linker
-#
-#   A_CONFIG_MAKE_CLEAN
-#       Targets to run before the default clean target
-#
-#   A_CONFIG_BUILD_RENDER
-#       Possible values: SOFTWARE, SDL
-#
-#   A_CONFIG_BUILD_LIB_SDL_TIME
-#       Whether to use the SDL timer
-#
-# Systems and platforms:
-#
-#   A_CONFIG_BUILD_SYSTEM_CAANOO
-#   A_CONFIG_BUILD_SYSTEM_GP2X
-#   A_CONFIG_BUILD_SYSTEM_EMSCRIPTEN
-#   A_CONFIG_BUILD_SYSTEM_LINUX
-#   A_CONFIG_BUILD_SYSTEM_MINGW
-#   A_CONFIG_BUILD_SYSTEM_PANDORA
-#   A_CONFIG_BUILD_SYSTEM_WIZ
-#
-# Traits:
-#
-#   A_CONFIG_BUILD_SYSTEM_DESKTOP
-#   A_CONFIG_BUILD_DEVICE_KEYBOARD
-#
-# Screen:
-#
-#   A_CONFIG_BUILD_SCREEN_FULLSCREEN
-#   A_CONFIG_BUILD_SCREEN_HEIGHT
-#   A_CONFIG_BUILD_SCREEN_WIDTH
-#
 
-A_CONFIG_ROOT ?= ..
 A_CONFIG_DIR_AST ?= assets
 A_CONFIG_DIR_BIN ?= bin
 A_CONFIG_DIR_OBJ ?= obj
 A_CONFIG_DIR_PND ?= pnd
+A_CONFIG_DIR_ROOT ?= ..
 A_CONFIG_DIR_SRC ?= src
 
-A_CONFIG_APP_NAME ?= a.out
-A_CONFIG_PND_NAME ?= $(A_CONFIG_APP_NAME).pnd
+#
+# Files
+#
+#   A_CONFIG_FILE_APP
+#       Target binary file name
+#
+#   A_CONFIG_FILE_EMBED, A_CONFIG_FILE_EMBED_EMSCRIPTEN
+#       Space-separated file and dir paths relative to project root
+#
+#   A_CONFIG_FILE_PND
+#       Target PND file name
+#
 
-A_CONFIG_BUILD_ID ?= default
+A_CONFIG_FILE_APP ?= a.out
+A_CONFIG_FILE_PND ?= $(A_CONFIG_FILE_APP).pnd
 
-ifeq ($(A_CONFIG_BUILD_SYSTEM_CAANOO), 1)
-    A_BUILD_CFLAGS += -DA_BUILD_SYSTEM_CAANOO
+#
+# Libs
+#
+#   A_CONFIG_LIB_RENDER
+#       Possible values: SOFTWARE, SDL
+#
+#   A_CONFIG_LIB_SDL
+#       1 or 2
+#
+#   A_CONFIG_LIB_SDL_CONFIG
+#       Path to sdl-config host binary
+#
+#   A_CONFIG_LIB_SDL_TIME
+#       Whether to use the SDL timer
+#
+
+ifeq ($(A_CONFIG_LIB_SDL), 1)
+    A_CONFIG_LIB_RENDER ?= SOFTWARE
+    A_BUILD_CFLAGS += -DA_CONFIG_LIB_SDL=1
+else ifeq ($(A_CONFIG_LIB_SDL), 2)
+    A_CONFIG_LIB_RENDER ?= SDL
+    A_BUILD_CFLAGS += -DA_CONFIG_LIB_SDL=2
 endif
 
-ifeq ($(A_CONFIG_BUILD_SYSTEM_EMSCRIPTEN), 1)
-    A_BUILD_CFLAGS += -DA_BUILD_SYSTEM_EMSCRIPTEN
-endif
-
-ifeq ($(A_CONFIG_BUILD_SYSTEM_GP2X), 1)
-    A_BUILD_CFLAGS += -DA_BUILD_SYSTEM_GP2X
-endif
-
-ifeq ($(A_CONFIG_BUILD_SYSTEM_LINUX), 1)
-    A_BUILD_CFLAGS += -DA_BUILD_SYSTEM_LINUX
-endif
-
-ifeq ($(A_CONFIG_BUILD_SYSTEM_MINGW), 1)
-    A_BUILD_CFLAGS += -DA_BUILD_SYSTEM_MINGW
-endif
-
-ifeq ($(A_CONFIG_BUILD_SYSTEM_PANDORA), 1)
-    A_BUILD_CFLAGS += -DA_BUILD_SYSTEM_PANDORA
-endif
-
-ifeq ($(A_CONFIG_BUILD_SYSTEM_WIZ), 1)
-    A_BUILD_CFLAGS += -DA_BUILD_SYSTEM_WIZ
-endif
-
-ifeq ($(A_CONFIG_BUILD_SYSTEM_DESKTOP), 1)
-    A_BUILD_CFLAGS += -DA_BUILD_SYSTEM_DESKTOP
-endif
-
-ifeq ($(A_CONFIG_BUILD_DEVICE_KEYBOARD), 1)
-    A_BUILD_CFLAGS += -DA_BUILD_DEVICE_KEYBOARD
-endif
-
-ifeq ($(A_CONFIG_BUILD_LIB_SDL), 1)
-    A_CONFIG_BUILD_RENDER ?= SOFTWARE
-    A_BUILD_CFLAGS += -DA_BUILD_LIB_SDL=1
-else ifeq ($(A_CONFIG_BUILD_LIB_SDL), 2)
-    A_CONFIG_BUILD_RENDER ?= SDL
-    A_BUILD_CFLAGS += -DA_BUILD_LIB_SDL=2
-endif
-
-ifdef A_CONFIG_BUILD_LIB_SDL_CONFIG
-    A_SDL_CFLAGS := $(shell $(A_CONFIG_BUILD_LIB_SDL_CONFIG) --cflags)
-    A_SDL_LIBS := $(shell $(A_CONFIG_BUILD_LIB_SDL_CONFIG) --libs)
+ifdef A_CONFIG_LIB_SDL_CONFIG
+    A_SDL_CFLAGS := $(shell $(A_CONFIG_LIB_SDL_CONFIG) --cflags)
+    A_SDL_LIBS := $(shell $(A_CONFIG_LIB_SDL_CONFIG) --libs)
 
     A_BUILD_CFLAGS += $(A_SDL_CFLAGS)
 
-    ifeq ($(A_CONFIG_BUILD_LIB_SDL), 1)
+    ifeq ($(A_CONFIG_LIB_SDL), 1)
         A_BUILD_LIBS := $(A_SDL_LIBS) -lSDL_mixer $(A_BUILD_LIBS)
-    else ifeq ($(A_CONFIG_BUILD_LIB_SDL), 2)
+    else ifeq ($(A_CONFIG_LIB_SDL), 2)
         A_BUILD_LIBS := $(A_SDL_LIBS) -lSDL2_mixer $(A_BUILD_LIBS)
     endif
 endif
 
-A_CONFIG_BUILD_RENDER ?= SOFTWARE
-
-ifeq ($(A_CONFIG_BUILD_RENDER), SDL)
-    A_BUILD_CFLAGS += -DA_BUILD_RENDER_SDL=1
+ifeq ($(A_CONFIG_LIB_SDL_TIME), 1)
+    A_BUILD_CFLAGS += -DA_CONFIG_LIB_SDL_TIME
 endif
 
-ifeq ($(A_CONFIG_BUILD_RENDER), SOFTWARE)
-    A_BUILD_CFLAGS += -DA_BUILD_RENDER_SOFTWARE=1
+A_CONFIG_LIB_RENDER ?= SOFTWARE
+
+ifeq ($(A_CONFIG_LIB_RENDER), SDL)
+    A_BUILD_CFLAGS += -DA_CONFIG_LIB_RENDER_SDL=1
 endif
 
-ifeq ($(A_CONFIG_BUILD_LIB_SDL_TIME), 1)
-    A_BUILD_CFLAGS += -DA_BUILD_LIB_SDL_TIME
+ifeq ($(A_CONFIG_LIB_RENDER), SOFTWARE)
+    A_BUILD_CFLAGS += -DA_CONFIG_LIB_RENDER_SOFTWARE=1
 endif
 
-ifeq ($(A_CONFIG_BUILD_SCREEN_FULLSCREEN), 1)
-    A_BUILD_CFLAGS += -DA_BUILD_SCREEN_FULLSCREEN
+#
+# Make
+#
+#   A_CONFIG_MAKE_CLEAN
+#       Targets to run before the default clean target
+#
+
+#
+# Screen
+#
+#   A_CONFIG_SCREEN_FULLSCREEN
+#   A_CONFIG_SCREEN_HEIGHT
+#   A_CONFIG_SCREEN_WIDTH
+#
+
+ifeq ($(A_CONFIG_SCREEN_FULLSCREEN), 1)
+    A_BUILD_CFLAGS += -DA_CONFIG_SCREEN_FULLSCREEN
 endif
 
-ifdef A_CONFIG_BUILD_SCREEN_HEIGHT
-    A_BUILD_CFLAGS += -DA_BUILD_SCREEN_HEIGHT=$(A_CONFIG_BUILD_SCREEN_HEIGHT)
+ifdef A_CONFIG_SCREEN_HEIGHT
+    A_BUILD_CFLAGS += -DA_CONFIG_SCREEN_HEIGHT=$(A_CONFIG_SCREEN_HEIGHT)
 endif
 
-ifdef A_CONFIG_BUILD_SCREEN_WIDTH
-    A_BUILD_CFLAGS += -DA_BUILD_SCREEN_WIDTH=$(A_CONFIG_BUILD_SCREEN_WIDTH)
+ifdef A_CONFIG_SCREEN_WIDTH
+    A_BUILD_CFLAGS += -DA_CONFIG_SCREEN_WIDTH=$(A_CONFIG_SCREEN_WIDTH)
+endif
+
+#
+# Systems and platforms
+#
+#   A_CONFIG_SYSTEM_CAANOO
+#   A_CONFIG_SYSTEM_GP2X
+#   A_CONFIG_SYSTEM_EMSCRIPTEN
+#   A_CONFIG_SYSTEM_LINUX
+#   A_CONFIG_SYSTEM_MINGW
+#   A_CONFIG_SYSTEM_PANDORA
+#   A_CONFIG_SYSTEM_WIZ
+#
+
+ifeq ($(A_CONFIG_SYSTEM_CAANOO), 1)
+    A_BUILD_CFLAGS += -DA_CONFIG_SYSTEM_CAANOO
+endif
+
+ifeq ($(A_CONFIG_SYSTEM_EMSCRIPTEN), 1)
+    A_BUILD_CFLAGS += -DA_CONFIG_SYSTEM_EMSCRIPTEN
+endif
+
+ifeq ($(A_CONFIG_SYSTEM_GP2X), 1)
+    A_BUILD_CFLAGS += -DA_CONFIG_SYSTEM_GP2X
+endif
+
+ifeq ($(A_CONFIG_SYSTEM_LINUX), 1)
+    A_BUILD_CFLAGS += -DA_CONFIG_SYSTEM_LINUX
+endif
+
+ifeq ($(A_CONFIG_SYSTEM_MINGW), 1)
+    A_BUILD_CFLAGS += -DA_CONFIG_SYSTEM_MINGW
+endif
+
+ifeq ($(A_CONFIG_SYSTEM_PANDORA), 1)
+    A_BUILD_CFLAGS += -DA_CONFIG_SYSTEM_PANDORA
+endif
+
+ifeq ($(A_CONFIG_SYSTEM_WIZ), 1)
+    A_BUILD_CFLAGS += -DA_CONFIG_SYSTEM_WIZ
+endif
+
+#
+# Traits
+#
+#   A_CONFIG_TRAIT_DESKTOP
+#   A_CONFIG_TRAIT_KEYBOARD
+#
+
+ifeq ($(A_CONFIG_TRAIT_DESKTOP), 1)
+    A_BUILD_CFLAGS += -DA_CONFIG_TRAIT_DESKTOP
+endif
+
+ifeq ($(A_CONFIG_TRAIT_KEYBOARD), 1)
+    A_BUILD_CFLAGS += -DA_CONFIG_TRAIT_KEYBOARD
 endif

@@ -72,7 +72,7 @@ void a_input_controller__init(void)
             A_AXIS_RIGHTTRIGGER, A_BUTTON_INVALID, A_BUTTON_R);
     }
 
-    #if A_BUILD_SYSTEM_PANDORA
+    #if A_CONFIG_SYSTEM_PANDORA
         // Pandora's game buttons are actually keyboard keys
         a_platform__buttonForward(A_KEY_UP, A_BUTTON_UP);
         a_platform__buttonForward(A_KEY_DOWN, A_BUTTON_DOWN);

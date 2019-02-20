@@ -18,7 +18,7 @@
 
 #include "a2x_pack_platform_linux.v.h"
 
-#if A_BUILD_SYSTEM_LINUX
+#if A_CONFIG_SYSTEM_LINUX
 #include <signal.h>
 
 #include "a2x_pack_out.v.h"
@@ -43,4 +43,4 @@ void a_platform_linux__init(void)
         a_out__error("sigaction(SIGTERM) failed");
     }
 }
-#endif // A_BUILD_SYSTEM_LINUX
+#endif // A_CONFIG_SYSTEM_LINUX

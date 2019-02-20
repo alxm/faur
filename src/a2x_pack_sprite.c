@@ -238,7 +238,7 @@ ASprite* a_sprite_dup(const ASprite* Sprite)
 
     assignPixels(clone, pixels);
 
-    #if !A_BUILD_RENDER_SOFTWARE
+    #if !A_CONFIG_LIB_RENDER_SOFTWARE
         a_pixel_push();
         a_screen_targetPushSprite(clone);
 

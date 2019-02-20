@@ -18,7 +18,7 @@
 
 #include "a2x_pack_platform_sdl.v.h"
 
-#if A_BUILD_LIB_SDL
+#if A_CONFIG_LIB_SDL
 #include <SDL.h>
 
 #include "a2x_pack_main.v.h"
@@ -34,7 +34,7 @@ void a_platform_sdl__init(void)
 {
     g_sdlFlags = 0;
 
-    #if A_BUILD_LIB_SDL_TIME
+    #if A_CONFIG_LIB_SDL_TIME
         g_sdlFlags |= SDL_INIT_TIMER;
     #endif
 
@@ -57,7 +57,7 @@ void a_platform_sdl__uninit(void)
     SDL_Quit();
 }
 
-#if A_BUILD_LIB_SDL_TIME
+#if A_CONFIG_LIB_SDL_TIME
 uint32_t a_platform__msGet(void)
 {
     return SDL_GetTicks();
@@ -65,11 +65,11 @@ uint32_t a_platform__msGet(void)
 
 void a_platform__msWait(uint32_t Ms)
 {
-    #if A_BUILD_SYSTEM_EMSCRIPTEN
+    #if A_CONFIG_SYSTEM_EMSCRIPTEN
         return;
     #endif
 
-    #if A_BUILD_SYSTEM_GP2X // too inaccurate
+    #if A_CONFIG_SYSTEM_GP2X // too inaccurate
         if(Ms < 10) {
             a_time_msSpin(Ms);
             return;
@@ -79,4 +79,4 @@ void a_platform__msWait(uint32_t Ms)
     SDL_Delay(Ms);
 }
 #endif
-#endif // A_BUILD_LIB_SDL
+#endif // A_CONFIG_LIB_SDL

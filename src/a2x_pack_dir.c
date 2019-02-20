@@ -72,7 +72,7 @@ static AList* dirReal(APath* Path)
     DIR* dir = opendir(path);
 
     if(dir == NULL) {
-        #if A_BUILD_SYSTEM_LINUX
+        #if A_CONFIG_SYSTEM_LINUX
             int result = mkdir(path, S_IRWXU);
         #else
             int result = mkdir(path);

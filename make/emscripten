@@ -2,11 +2,11 @@ include $(A2X_PATH)/make/global/defs
 
 A_PLATFORM := emscripten
 
-A_CONFIG_BUILD_DEVICE_KEYBOARD := 1
-A_CONFIG_BUILD_LIB_SDL := 1
-A_CONFIG_BUILD_LIB_SDL_TIME := 1
-A_CONFIG_BUILD_SYSTEM_EMSCRIPTEN := 1
-A_CONFIG_BUILD_SYSTEM_LINUX := 1
+A_CONFIG_LIB_SDL := 1
+A_CONFIG_LIB_SDL_TIME := 1
+A_CONFIG_SYSTEM_EMSCRIPTEN := 1
+A_CONFIG_SYSTEM_LINUX := 1
+A_CONFIG_TRAIT_KEYBOARD := 1
 
 A_BUILD_LIBS_EMSCRIPTEN := \
     -s USE_SDL=1 \
@@ -20,6 +20,6 @@ A_BUILD_CFLAGS := \
     -s TOTAL_MEMORY=67108864 \
     $(A_BUILD_LIBS_EMSCRIPTEN) \
     --use-preload-plugins \
-    $(addprefix --preload-file ../, $(join $(addsuffix @, $(A_CONFIG_EMBED_PATHS_EMSCRIPTEN)), $(A_CONFIG_EMBED_PATHS_EMSCRIPTEN))) \
+    $(addprefix --preload-file ../, $(join $(addsuffix @, $(A_CONFIG_FILE_EMBED_EMSCRIPTEN)), $(A_CONFIG_FILE_EMBED_EMSCRIPTEN))) \
 
 include $(A2X_PATH)/make/global/rules

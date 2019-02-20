@@ -22,7 +22,7 @@
 
 #include "a2x_pack_platform_wiz.v.h"
 
-#if A_BUILD_SYSTEM_WIZ || A_BUILD_SYSTEM_CAANOO
+#if A_CONFIG_SYSTEM_WIZ || A_CONFIG_SYSTEM_CAANOO
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
@@ -31,7 +31,7 @@
 #include "a2x_pack_main.v.h"
 #include "a2x_pack_time.v.h"
 
-#if A_BUILD_SYSTEM_WIZ
+#if A_CONFIG_SYSTEM_WIZ
     static bool g_mmuHackOn = false;
 #endif
 
@@ -97,7 +97,7 @@ static void timer_init(void)
 
 void a_platform_wiz__init(void)
 {
-    #if A_BUILD_SYSTEM_WIZ
+    #if A_CONFIG_SYSTEM_WIZ
         if(a_path_exists("./mmuhack.ko", A_PATH_FILE)) {
             system("/sbin/rmmod mmuhack");
             system("/sbin/insmod mmuhack.ko");
@@ -127,7 +127,7 @@ void a_platform_wiz__uninit(void)
     timer_clean();
     close(g_memfd);
 
-    #if A_BUILD_SYSTEM_WIZ
+    #if A_CONFIG_SYSTEM_WIZ
         if(g_mmuHackOn) {
             system("/sbin/rmmod mmuhack");
         }
@@ -147,7 +147,7 @@ void a_platform__msWait(uint32_t Ms)
     a_time_msSpin(Ms);
 }
 
-#if A_BUILD_SYSTEM_WIZ
+#if A_CONFIG_SYSTEM_WIZ
 void a_platform_wiz__portraitModeSet(void)
 {
     // Set Wiz screen to portrait mode to avoid diagonal tearing
@@ -163,4 +163,4 @@ void a_platform_wiz__portraitModeSet(void)
     close(fb_fd);
 }
 #endif
-#endif // A_BUILD_SYSTEM_WIZ || A_BUILD_SYSTEM_CAANOO
+#endif // A_CONFIG_SYSTEM_WIZ || A_CONFIG_SYSTEM_CAANOO

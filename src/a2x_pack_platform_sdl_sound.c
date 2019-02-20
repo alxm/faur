@@ -18,7 +18,7 @@
 
 #include "a2x_pack_platform_sdl_sound.v.h"
 
-#if A_BUILD_LIB_SDL
+#if A_CONFIG_LIB_SDL
 #include <SDL.h>
 #include <SDL_mixer.h>
 
@@ -33,7 +33,7 @@ static int g_numSampleChannels;
 static int g_numSampleChannelsReserved;
 static int g_currentSampleChannel;
 
-#if A_BUILD_DEVICE_KEYBOARD
+#if A_CONFIG_TRAIT_KEYBOARD
     static void settingMute(ASettingId Setting)
     {
         if(!g_enabled) {
@@ -81,7 +81,7 @@ void a_platform_sdl_sound__init(void)
                    g_numSampleChannels,
                    g_numSampleChannelsReserved);
 
-    #if A_BUILD_DEVICE_KEYBOARD
+    #if A_CONFIG_TRAIT_KEYBOARD
         a_settings__callbackSet(A_SETTING_SOUND_MUTE, settingMute, true);
     #endif
 }
@@ -126,7 +126,7 @@ void a_platform__musicVolumeSet(int Volume)
         return;
     }
 
-    #if A_BUILD_SYSTEM_EMSCRIPTEN
+    #if A_CONFIG_SYSTEM_EMSCRIPTEN
         A_UNUSED(Volume);
     #else
         Mix_VolumeMusic(Volume);
@@ -203,7 +203,7 @@ void a_platform__sampleVolumeSet(APlatformSample* Sample, int Volume)
         return;
     }
 
-    #if A_BUILD_SYSTEM_EMSCRIPTEN
+    #if A_CONFIG_SYSTEM_EMSCRIPTEN
         A_UNUSED(Sample);
         A_UNUSED(Volume);
     #else
@@ -217,7 +217,7 @@ void a_platform__sampleVolumeSetAll(int Volume)
         return;
     }
 
-    #if A_BUILD_SYSTEM_EMSCRIPTEN
+    #if A_CONFIG_SYSTEM_EMSCRIPTEN
         A_UNUSED(Volume);
     #else
         Mix_Volume(-1, Volume);
@@ -261,4 +261,4 @@ int a_platform__sampleChannelGet(void)
 
     return g_currentSampleChannel++ % g_numSampleChannelsReserved;
 }
-#endif // A_BUILD_LIB_SDL
+#endif // A_CONFIG_LIB_SDL

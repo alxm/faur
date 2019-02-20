@@ -23,7 +23,7 @@
     #include <execinfo.h>
 #endif
 
-#if A_BUILD_SYSTEM_EMSCRIPTEN
+#if A_CONFIG_SYSTEM_EMSCRIPTEN
     #include <emscripten.h>
 #endif
 
@@ -75,7 +75,7 @@ static void a__atexit(void)
     a_block__uninit();
     a_embed__uninit();
 
-    #if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ || A_BUILD_SYSTEM_CAANOO
+    #if A_CONFIG_SYSTEM_GP2X || A_CONFIG_SYSTEM_WIZ || A_CONFIG_SYSTEM_CAANOO
         if(a_settings_boolGet(A_SETTING_SYSTEM_GP2X_MENU)) {
             a_settings__uninit();
             chdir("/usr/gp2x");
@@ -196,7 +196,7 @@ __attribute__((noreturn)) static void handleFatal(void)
         }
     #endif
 
-    #if A_BUILD_SYSTEM_EMSCRIPTEN
+    #if A_CONFIG_SYSTEM_EMSCRIPTEN
         emscripten_force_exit(1);
     #endif
 

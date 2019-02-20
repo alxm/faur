@@ -18,7 +18,7 @@
 
 #include "a2x_pack_platform_sdl_input.v.h"
 
-#if A_BUILD_LIB_SDL
+#if A_CONFIG_LIB_SDL
 #include <SDL.h>
 
 #include "a2x_pack_fps.v.h"
@@ -32,10 +32,10 @@
 #include "a2x_pack_state.v.h"
 #include "a2x_pack_str.v.h"
 
-#if A_BUILD_LIB_SDL == 1
+#if A_CONFIG_LIB_SDL == 1
     typedef uint8_t ASdlJoystickId;
     typedef SDLKey ASdlKeyCode;
-#elif A_BUILD_LIB_SDL == 2
+#elif A_CONFIG_LIB_SDL == 2
     typedef SDL_JoystickID ASdlJoystickId;
     typedef SDL_Scancode ASdlKeyCode;
 #endif
@@ -71,7 +71,7 @@ struct APlatformTouch {
 struct APlatformController {
     APlatformController* next;
     SDL_Joystick* joystick;
-    #if A_BUILD_LIB_SDL == 2
+    #if A_CONFIG_LIB_SDL == 2
         SDL_GameController* controller;
     #endif
     ASdlJoystickId id;
@@ -99,7 +99,7 @@ static APlatformController* g_setController;
 static AList* g_forwardButtonsQueue[2]; // list of APlatformButton
 static uint32_t g_sdlFlags;
 
-#if A_BUILD_DEVICE_KEYBOARD
+#if A_CONFIG_TRAIT_KEYBOARD
 static APlatformButton* g_keys[A__KEY_ID(A_KEY_NUM)];
 
 static void keyAdd(AKeyId Id, int Code)
@@ -230,7 +230,7 @@ static APlatformController* controllerAdd(int Index)
 {
     SDL_Joystick* joystick = NULL;
 
-    #if A_BUILD_LIB_SDL == 2
+    #if A_CONFIG_LIB_SDL == 2
         SDL_GameController* controller = NULL;
 
         if(SDL_IsGameController(Index)) {
@@ -263,9 +263,9 @@ static APlatformController* controllerAdd(int Index)
         }
     }
 
-    #if A_BUILD_LIB_SDL == 1
+    #if A_CONFIG_LIB_SDL == 1
         ASdlJoystickId id = (uint8_t)Index;
-    #elif A_BUILD_LIB_SDL == 2
+    #elif A_CONFIG_LIB_SDL == 2
         ASdlJoystickId id = SDL_JoystickInstanceID(joystick);
 
         if(id < 0) {
@@ -285,7 +285,7 @@ static APlatformController* controllerAdd(int Index)
 
     c->next = NULL;
     c->joystick = joystick;
-    #if A_BUILD_LIB_SDL == 2
+    #if A_CONFIG_LIB_SDL == 2
         c->controller = controller;
     #endif
     c->id = id;
@@ -310,11 +310,11 @@ static void controllerFree(APlatformController* Controller)
         }
     }
 
-    #if A_BUILD_LIB_SDL == 1
+    #if A_CONFIG_LIB_SDL == 1
         if(SDL_JoystickOpened(Controller->id)) {
             SDL_JoystickClose(Controller->joystick);
         }
-    #elif A_BUILD_LIB_SDL == 2
+    #elif A_CONFIG_LIB_SDL == 2
         if(Controller->controller) {
             SDL_GameControllerClose(Controller->controller);
         } else if(SDL_JoystickGetAttached(Controller->joystick)) {
@@ -327,18 +327,18 @@ static void controllerFree(APlatformController* Controller)
 
 static const char* joystickName(APlatformController* Controller)
 {
-    #if A_BUILD_LIB_SDL == 1
+    #if A_CONFIG_LIB_SDL == 1
         return SDL_JoystickName(Controller->id);
-    #elif A_BUILD_LIB_SDL == 2
+    #elif A_CONFIG_LIB_SDL == 2
         return SDL_JoystickName(Controller->joystick);
     #endif
 }
 
 void a_platform_sdl_input__init(void)
 {
-    #if A_BUILD_LIB_SDL == 1
+    #if A_CONFIG_LIB_SDL == 1
         g_sdlFlags = SDL_INIT_JOYSTICK;
-    #elif A_BUILD_LIB_SDL == 2
+    #elif A_CONFIG_LIB_SDL == 2
         g_sdlFlags = SDL_INIT_GAMECONTROLLER;
     #endif
 
@@ -354,7 +354,7 @@ void a_platform_sdl_input__init(void)
     const int joysticksNum = SDL_NumJoysticks();
     a_out__message("Found %d controllers", joysticksNum);
 
-    #if A_BUILD_LIB_SDL == 2
+    #if A_CONFIG_LIB_SDL == 2
         if(joysticksNum > 0) {
             const char* mFile = a_settings_stringGet(A_SETTING_FILE_GAMEPADMAP);
             int mNum = SDL_GameControllerAddMappingsFromFile(mFile);
@@ -378,10 +378,10 @@ void a_platform_sdl_input__init(void)
 
         a_list_addLast(g_controllers, c);
 
-        #if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ || A_BUILD_SYSTEM_CAANOO
+        #if A_CONFIG_SYSTEM_GP2X || A_CONFIG_SYSTEM_WIZ || A_CONFIG_SYSTEM_CAANOO
             if(i == 0) {
                 // Joystick 0 is the built-in controls on these platforms
-                #if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ
+                #if A_CONFIG_SYSTEM_GP2X || A_CONFIG_SYSTEM_WIZ
                     buttonAdd(c, A_BUTTON_UP, "Up", 0);
                     buttonAdd(c, A_BUTTON_DOWN, "Down", 4);
                     buttonAdd(c, A_BUTTON_LEFT, "Left", 2);
@@ -399,13 +399,13 @@ void a_platform_sdl_input__init(void)
                     buttonAdd(c, A_BUTTON_SELECT, "Select", 9);
                     buttonAdd(c, A_BUTTON_VOLUP, "Vol-Up", 16);
                     buttonAdd(c, A_BUTTON_VOLDOWN, "Vol-Down", 17);
-                    #if A_BUILD_SYSTEM_GP2X
+                    #if A_CONFIG_SYSTEM_GP2X
                         buttonAdd(c, A_BUTTON_START, "Start", 8);
                         buttonAdd(c, A_BUTTON_STICKCLICK, "Stick-Click", 18);
-                    #elif A_BUILD_SYSTEM_WIZ
+                    #elif A_CONFIG_SYSTEM_WIZ
                         buttonAdd(c, A_BUTTON_START, "Menu", 8);
                     #endif
-                #elif A_BUILD_SYSTEM_CAANOO
+                #elif A_CONFIG_SYSTEM_CAANOO
                     buttonAdd(c, A_BUTTON_UP, "Up", -1);
                     buttonAdd(c, A_BUTTON_DOWN, "Down", -1);
                     buttonAdd(c, A_BUTTON_LEFT, "Left", -1);
@@ -425,7 +425,7 @@ void a_platform_sdl_input__init(void)
                 #endif
                 continue;
             }
-        #elif A_BUILD_SYSTEM_PANDORA
+        #elif A_CONFIG_SYSTEM_PANDORA
             const char* name = joystickName(c);
 
             // Check if this is one of the built-in nubs
@@ -463,7 +463,7 @@ void a_platform_sdl_input__init(void)
             }
         #endif
 
-#if A_BUILD_LIB_SDL == 2
+#if A_CONFIG_LIB_SDL == 2
         if(c->controller) {
             a_out__message("Mapped %s: %d buttons, %d axes, %d hats",
                            SDL_GameControllerName(c->controller),
@@ -574,7 +574,7 @@ void a_platform_sdl_input__init(void)
             for(int id = a_math_min(c->numAxes, A_AXIS_NUM); id--; ) {
                 analogAdd(c, id, axes[id], id);
             }
-#if A_BUILD_LIB_SDL == 2
+#if A_CONFIG_LIB_SDL == 2
         }
 #endif
 
@@ -589,13 +589,13 @@ void a_platform_sdl_input__init(void)
         }
     }
 
-    #if A_BUILD_LIB_SDL == 1
+    #if A_CONFIG_LIB_SDL == 1
         #define keyAdd(Id, Scancode, Keycode) keyAdd(Id, Keycode)
-    #elif A_BUILD_LIB_SDL == 2
+    #elif A_CONFIG_LIB_SDL == 2
         #define keyAdd(Id, Scancode, Keycode) keyAdd(Id, Scancode)
     #endif
 
-    #if A_BUILD_DEVICE_KEYBOARD
+    #if A_CONFIG_TRAIT_KEYBOARD
         keyAdd(A_KEY_UP, SDL_SCANCODE_UP, SDLK_UP);
         keyAdd(A_KEY_DOWN, SDL_SCANCODE_DOWN, SDLK_DOWN);
         keyAdd(A_KEY_LEFT, SDL_SCANCODE_LEFT, SDLK_LEFT);
@@ -636,7 +636,7 @@ void a_platform_sdl_input__init(void)
 
 void a_platform_sdl_input__uninit(void)
 {
-    #if A_BUILD_DEVICE_KEYBOARD
+    #if A_CONFIG_TRAIT_KEYBOARD
         for(int id = 0; id < A__KEY_ID(A_KEY_NUM); id++) {
             if(g_keys[id]) {
                 buttonFree(g_keys[id]);
@@ -664,10 +664,10 @@ void a_platform__inputsPoll(void)
                 a_state_exit();
             } break;
 
-#if A_BUILD_DEVICE_KEYBOARD
+#if A_CONFIG_TRAIT_KEYBOARD
             case SDL_KEYUP:
             case SDL_KEYDOWN: {
-                #if !A_BUILD_SYSTEM_EMSCRIPTEN
+                #if !A_CONFIG_SYSTEM_EMSCRIPTEN
                     if(event.key.keysym.sym == SDLK_ESCAPE) {
                         a_state_exit();
                         break;
@@ -675,9 +675,9 @@ void a_platform__inputsPoll(void)
                 #endif
 
                 for(int id = 0; id < A__KEY_ID(A_KEY_NUM); id++) {
-#if A_BUILD_LIB_SDL == 1
+#if A_CONFIG_LIB_SDL == 1
                     if(g_keys[id]->code.keyCode == event.key.keysym.sym) {
-#elif A_BUILD_LIB_SDL == 2
+#elif A_CONFIG_LIB_SDL == 2
                     if(g_keys[id]->code.keyCode == event.key.keysym.scancode) {
 #endif
                         buttonPress(g_keys[id], event.key.state == SDL_PRESSED);
@@ -690,7 +690,7 @@ void a_platform__inputsPoll(void)
             case SDL_JOYBUTTONUP:
             case SDL_JOYBUTTONDOWN: {
                 A_LIST_ITERATE(g_controllers, APlatformController*, c) {
-                    #if A_BUILD_LIB_SDL == 2
+                    #if A_CONFIG_LIB_SDL == 2
                         if(c->controller) {
                             continue;
                         }
@@ -755,7 +755,7 @@ void a_platform__inputsPoll(void)
                 }
 
                 A_LIST_ITERATE(g_controllers, APlatformController*, c) {
-                    #if A_BUILD_LIB_SDL == 2
+                    #if A_CONFIG_LIB_SDL == 2
                         if(c->controller) {
                             continue;
                         }
@@ -794,7 +794,7 @@ void a_platform__inputsPoll(void)
 
             case SDL_JOYAXISMOTION: {
                 A_LIST_ITERATE(g_controllers, APlatformController*, c) {
-                    #if A_BUILD_LIB_SDL == 2
+                    #if A_CONFIG_LIB_SDL == 2
                         if(c->controller) {
                             continue;
                         }
@@ -817,7 +817,7 @@ void a_platform__inputsPoll(void)
                 }
             } break;
 
-#if A_BUILD_LIB_SDL == 2
+#if A_CONFIG_LIB_SDL == 2
             case SDL_CONTROLLERBUTTONUP:
             case SDL_CONTROLLERBUTTONDOWN: {
                 A_LIST_ITERATE(g_controllers, APlatformController*, c) {
@@ -913,7 +913,7 @@ void a_platform__inputsPoll(void)
     a_list_clear(g_forwardButtonsQueue[0]);
     a_list_clear(g_forwardButtonsQueue[1]);
 
-    #if !A_BUILD_SYSTEM_EMSCRIPTEN
+    #if !A_CONFIG_SYSTEM_EMSCRIPTEN
         int mouseDx = 0, mouseDy = 0;
         SDL_GetRelativeMouseState(&mouseDx, &mouseDy);
 
@@ -926,7 +926,7 @@ APlatformButton* a_platform__buttonGet(int Id)
 {
     if(Id != A_BUTTON_INVALID) {
         if(Id & A__KEY_FLAG) {
-            #if A_BUILD_DEVICE_KEYBOARD
+            #if A_CONFIG_TRAIT_KEYBOARD
                 return g_keys[A__KEY_ID(Id)];
             #endif
         } else if(g_setController) {
@@ -1054,10 +1054,10 @@ void a_platform__controllerSet(unsigned Index)
 
 bool a_platform__controllerIsMapped(void)
 {
-    #if A_BUILD_LIB_SDL == 2
+    #if A_CONFIG_LIB_SDL == 2
         return g_setController && g_setController->controller != NULL;
     #else
         return false;
     #endif
 }
-#endif // A_BUILD_LIB_SDL
+#endif // A_CONFIG_LIB_SDL

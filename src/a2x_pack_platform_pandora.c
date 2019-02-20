@@ -18,7 +18,7 @@
 
 #include "a2x_pack_platform_pandora.v.h"
 
-#if A_BUILD_SYSTEM_PANDORA
+#if A_CONFIG_SYSTEM_PANDORA
 #include "a2x_pack_file.v.h"
 #include "a2x_pack_out.v.h"
 #include "a2x_pack_str.v.h"
@@ -95,4 +95,4 @@ void a_platform_pandora__uninit(void)
         free(g_nubModes[i]);
     }
 }
-#endif // A_BUILD_SYSTEM_PANDORA
+#endif // A_CONFIG_SYSTEM_PANDORA

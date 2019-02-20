@@ -55,7 +55,7 @@ static const struct {
 
 static void outPrintHeader(AOutSource Source, AOutType Type, FILE* Stream)
 {
-    #if A_BUILD_SYSTEM_LINUX && A_BUILD_SYSTEM_DESKTOP
+    #if A_CONFIG_SYSTEM_LINUX && A_CONFIG_TRAIT_DESKTOP
         fprintf(Stream,
                 "\033[1;%dm[%s][%s][%08x]\033[0m ",
                 g_types[Type].color,

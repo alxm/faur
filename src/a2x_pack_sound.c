@@ -32,7 +32,7 @@ static int g_musicVolume;
 static int g_samplesVolume;
 static int g_volumeMax;
 
-#if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ
+#if A_CONFIG_SYSTEM_GP2X || A_CONFIG_SYSTEM_WIZ
     #define A__VOLUME_STEP 1
     #define A__VOLBAR_SHOW_MS 500
     static ATimer* g_volTimer;
@@ -40,7 +40,7 @@ static int g_volumeMax;
     static AButton* g_volumeDownButton;
 #endif
 
-#if A_BUILD_DEVICE_KEYBOARD
+#if A_CONFIG_TRAIT_KEYBOARD
     static AButton* g_muteButton;
 #endif
 
@@ -60,14 +60,14 @@ void a_sound__init(void)
 {
     g_volumeMax = a_platform__volumeGetMax();
 
-    #if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ
+    #if A_CONFIG_SYSTEM_GP2X || A_CONFIG_SYSTEM_WIZ
         adjustSoundVolume(g_volumeMax / 16);
         g_volTimer = a_timer_new(A_TIMER_MS, A__VOLBAR_SHOW_MS, false);
     #else
         adjustSoundVolume(g_volumeMax);
     #endif
 
-    #if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ
+    #if A_CONFIG_SYSTEM_GP2X || A_CONFIG_SYSTEM_WIZ
         g_volumeUpButton = a_button_new();
         a_button_bind(g_volumeUpButton, A_BUTTON_VOLUP);
 
@@ -75,7 +75,7 @@ void a_sound__init(void)
         a_button_bind(g_volumeDownButton, A_BUTTON_VOLDOWN);
     #endif
 
-    #if A_BUILD_DEVICE_KEYBOARD
+    #if A_CONFIG_TRAIT_KEYBOARD
         g_muteButton = a_button_new();
         a_button_bind(g_muteButton, A_KEY_M);
     #endif
@@ -83,11 +83,11 @@ void a_sound__init(void)
 
 void a_sound__uninit(void)
 {
-    #if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ
+    #if A_CONFIG_SYSTEM_GP2X || A_CONFIG_SYSTEM_WIZ
         a_timer_free(g_volTimer);
     #endif
 
-    #if A_BUILD_DEVICE_KEYBOARD
+    #if A_CONFIG_TRAIT_KEYBOARD
         a_button_free(g_muteButton);
     #endif
 
@@ -96,7 +96,7 @@ void a_sound__uninit(void)
 
 void a_sound__tick(void)
 {
-    #if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ
+    #if A_CONFIG_SYSTEM_GP2X || A_CONFIG_SYSTEM_WIZ
         int adjust = 0;
 
         if(a_button_pressGet(g_volumeUpButton)) {
@@ -111,7 +111,7 @@ void a_sound__tick(void)
         }
     #endif
 
-    #if A_BUILD_DEVICE_KEYBOARD
+    #if A_CONFIG_TRAIT_KEYBOARD
         if(a_button_pressGetOnce(g_muteButton)) {
             a_settings_boolFlip(A_SETTING_SOUND_MUTE);
         }
@@ -120,7 +120,7 @@ void a_sound__tick(void)
 
 void a_sound__draw(void)
 {
-    #if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ
+    #if A_CONFIG_SYSTEM_GP2X || A_CONFIG_SYSTEM_WIZ
         if(!a_timer_isRunning(g_volTimer) || a_timer_expiredGet(g_volTimer)) {
             return;
         }

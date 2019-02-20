@@ -68,7 +68,7 @@ class NewTool(Tool):
 
         dir_mke.write_file('Makefile',
 """\
-A_CONFIG_APP_NAME := {0}
+A_CONFIG_FILE_APP := {0}
 
 include $(A2X_PATH)/make/dev
 """.format(project_name))
