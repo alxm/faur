@@ -30,22 +30,8 @@ A2X_INFO_COMPILE_TIME := $(shell date "+%Y-%m-%d\ %H:%M:%S")
 A2X_INFO_GIT_HASH := $(shell cd $(A2X_PATH) && git rev-parse --verify HEAD)
 
 A2X_GENERIC_CFLAGS := \
-    -std=c99 \
-    -Wall \
-    -Wextra \
-    -Wconversion \
-    -Wcast-align \
-    -Wformat-security \
-    -Werror \
-    -pedantic \
-    -pedantic-errors \
-    -fstrict-aliasing \
-    -DA_BUILD__COMPILE_TIME=\"$(A2X_INFO_COMPILE_TIME)\" \
-    -DA_BUILD__GIT_HASH=\"$(A2X_INFO_GIT_HASH)\" \
-    -DA_BUILD__PLATFORM_NAME=\"$(A_PLATFORM)\" \
-    -D_XOPEN_SOURCE \
+    $(A_GENERIC_CFLAGS) \
     -I$(A2X_DIR_GEN) \
-    $(A_BUILD_CFLAGS) \
 
 $(A2X_FILE_PUBLIC_A2X_HEADER) : $(A2X_FILES_PUBLIC_A2X_HEADERS) $(A2X_FILE_SYSTEM_INCLUDES) $(A2X_DIR_BIN)/a2x_header
 	@ mkdir -p $(@D)
