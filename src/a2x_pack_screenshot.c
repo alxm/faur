@@ -88,9 +88,9 @@ static bool lazy_init(void)
             A_CONFIG_APP_NAME,
             A_CONFIG_APP_VERSION,
             A_CONFIG_APP_AUTHOR,
-            A_BUILD__COMPILE_TIME,
-            A_BUILD__PLATFORM_NAME,
-            A_BUILD__GIT_HASH));
+            A_CONFIG_BUILD_TIMESTAMP,
+            A_CONFIG_BUILD_PLATFORM,
+            A_CONFIG_BUILD_GIT_HASH));
 
         if(g_filePrefix && g_title && g_description) {
             // No spaces in file name

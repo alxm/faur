@@ -61,9 +61,6 @@ A_GENERIC_CFLAGS := \
     -pedantic \
     -pedantic-errors \
     -fstrict-aliasing \
-    -DA_BUILD__COMPILE_TIME=\"$(A2X_INFO_COMPILE_TIME)\" \
-    -DA_BUILD__GIT_HASH=\"$(A2X_INFO_GIT_HASH)\" \
-    -DA_BUILD__PLATFORM_NAME=\"$(A_PLATFORM)\" \
     -D_XOPEN_SOURCE \
     -I$(A_DIR_OBJ_A2X) \
     $(A_BUILD_CFLAGS) \

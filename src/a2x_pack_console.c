@@ -174,9 +174,9 @@ void a_console__draw(void)
 
         a_font__fontSet(A_FONT__ID_LIGHT_GRAY);
         a_font_printf(" %s %.8s %s\n",
-                      A_BUILD__PLATFORM_NAME,
-                      A_BUILD__GIT_HASH,
-                      A_BUILD__COMPILE_TIME);
+                      A_CONFIG_BUILD_PLATFORM,
+                      A_CONFIG_BUILD_GIT_HASH,
+                      A_CONFIG_BUILD_TIMESTAMP);
 
         a_font__fontSet(A_FONT__ID_WHITE);
         a_font_printf("%s %s by %s\n",
