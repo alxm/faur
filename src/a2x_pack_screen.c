@@ -72,8 +72,8 @@ static void freeScreen(AScreen* Screen)
 
 void a_screen__init(void)
 {
-    int width = a_settings_intGet(A_SETTING_VIDEO_WIDTH);
-    int height = a_settings_intGet(A_SETTING_VIDEO_HEIGHT);
+    int width = A_CONFIG_SCREEN_WIDTH;
+    int height = A_CONFIG_SCREEN_HEIGHT;
 
     if(width < 0 || height < 0) {
         int w = 0, h = 0;
@@ -82,12 +82,10 @@ void a_screen__init(void)
         if(w > 0 && h > 0) {
             if(width < 0) {
                 width = w / -width;
-                a_settings_intSet(A_SETTING_VIDEO_WIDTH, width);
             }
 
             if(height < 0) {
                 height = h / -height;
-                a_settings_intSet(A_SETTING_VIDEO_HEIGHT, height);
             }
         }
     }
@@ -128,7 +126,12 @@ void a_screen__init(void)
         }
     #endif
 
-    a_platform__screenInit();
+    a_platform__screenInit(width, height);
+
+    #if !A_CONFIG_LIB_RENDER_SOFTWARE
+        initScreen(&a__screen, width, height, true);
+        a_platform__renderTargetSet(a__screen.texture);
+    #endif
 
     #if A_CONFIG_TRAIT_DESKTOP
         g_fullScreenButton = a_button_new();
@@ -138,11 +141,6 @@ void a_screen__init(void)
             g_zoomButtons[z] = a_button_new();
             a_button_bind(g_zoomButtons[z], A_KEY_F1 + z);
         }
-    #endif
-
-    #if !A_CONFIG_LIB_RENDER_SOFTWARE
-        initScreen(&a__screen, width, height, true);
-        a_platform__renderTargetSet(a__screen.texture);
     #endif
 
     g_stack = a_list_new();

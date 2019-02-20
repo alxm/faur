@@ -99,7 +99,7 @@ void a_console__init2(void)
     a_spriteframes_free(frames, false);
 
     g_linesPerScreen =
-        (unsigned)(a_screen_sizeGetHeight() / a_font_lineHeightGet() - 2);
+        (unsigned)((a_screen_sizeGetHeight() - 2) / a_font_lineHeightGet() - 2);
 
     // In case messages were logged between init and init2
     while(a_list_sizeGet(g_lines) > g_linesPerScreen) {

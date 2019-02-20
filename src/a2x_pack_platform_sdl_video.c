@@ -118,9 +118,9 @@ static void settingFullscreen(ASettingId Setting)
 
 static void settingVideoZoom(ASettingId Setting)
 {
+    int w = a__screen.width;
+    int h = a__screen.height;
     int zoom = a_settings_intGet(Setting);
-    int w = a_settings_intGet(A_SETTING_VIDEO_WIDTH);
-    int h = a_settings_intGet(A_SETTING_VIDEO_HEIGHT);
 
     #if A_CONFIG_LIB_SDL == 1
         if(a_settings_boolGet(A_SETTING_VIDEO_DOUBLEBUFFER)) {
@@ -151,10 +151,8 @@ static void settingMouseCursor(ASettingId Setting)
     }
 }
 
-void a_platform__screenInit(void)
+void a_platform__screenInit(int Width, int Height)
 {
-    int width = a_settings_intGet(A_SETTING_VIDEO_WIDTH);
-    int height = a_settings_intGet(A_SETTING_VIDEO_HEIGHT);
     int zoom = a_settings_intGet(A_SETTING_VIDEO_ZOOM);
     bool fullscreen = a_settings_boolGet(A_SETTING_VIDEO_FULLSCREEN);
 
@@ -166,17 +164,17 @@ void a_platform__screenInit(void)
             videoFlags |= SDL_FULLSCREEN;
         }
 
-        bpp = SDL_VideoModeOK(width, height, A__PIXEL_BPP, videoFlags);
+        bpp = SDL_VideoModeOK(Width, Height, A__PIXEL_BPP, videoFlags);
 
         if(bpp == 0) {
             A__FATAL("SDL_VideoModeOK: %dx%d:%d video not available",
-                     width,
-                     height,
+                     Width,
+                     Height,
                      A__PIXEL_BPP);
         }
 
         g_sdlScreen = SDL_SetVideoMode(
-                        width * zoom, height * zoom, A__PIXEL_BPP, videoFlags);
+                        Width * zoom, Height * zoom, A__PIXEL_BPP, videoFlags);
 
         if(g_sdlScreen == NULL) {
             A__FATAL("SDL_SetVideoMode: %s", SDL_GetError());
@@ -208,8 +206,8 @@ void a_platform__screenInit(void)
         g_sdlWindow = SDL_CreateWindow("",
                                        SDL_WINDOWPOS_CENTERED,
                                        SDL_WINDOWPOS_CENTERED,
-                                       width * zoom,
-                                       height * zoom,
+                                       Width * zoom,
+                                       Height * zoom,
                                        windowFlags);
         if(g_sdlWindow == NULL) {
             A__FATAL("SDL_CreateWindow: %s", SDL_GetError());
@@ -238,7 +236,7 @@ void a_platform__screenInit(void)
             }
         }
 
-        ret = SDL_RenderSetLogicalSize(a__sdlRenderer, width, height);
+        ret = SDL_RenderSetLogicalSize(a__sdlRenderer, Width, Height);
 
         if(ret < 0) {
             A__FATAL("SDL_RenderSetLogicalSize: %s", SDL_GetError());
@@ -248,8 +246,8 @@ void a_platform__screenInit(void)
             g_sdlTexture = SDL_CreateTexture(a__sdlRenderer,
                                              A_SDL__PIXEL_FORMAT,
                                              SDL_TEXTUREACCESS_STREAMING,
-                                             width,
-                                             height);
+                                             Width,
+                                             Height);
             if(g_sdlTexture == NULL) {
                 A__FATAL("SDL_CreateTexture: %s", SDL_GetError());
             }
@@ -462,11 +460,11 @@ void a_platform__renderClear(void)
 }
 #endif
 
-#if A_CONFIG_SCREEN_WIDTH > 0 && A_CONFIG_SCREEN_HEIGHT > 0
+#if A_CONFIG_SCREEN_HARDWARE_WIDTH > 0 && A_CONFIG_SCREEN_HARDWARE_HEIGHT > 0
 void a_platform__screenResolutionGetNative(int* Width, int* Height)
 {
-    *Width = A_CONFIG_SCREEN_WIDTH;
-    *Height = A_CONFIG_SCREEN_HEIGHT;
+    *Width = A_CONFIG_SCREEN_HARDWARE_WIDTH;
+    *Height = A_CONFIG_SCREEN_HARDWARE_HEIGHT;
 }
 #elif A_CONFIG_LIB_SDL == 2
 void a_platform__screenResolutionGetNative(int* Width, int* Height)
