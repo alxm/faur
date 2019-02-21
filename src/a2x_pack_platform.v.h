@@ -44,6 +44,7 @@ extern void a_platform__msWait(uint32_t Ms);
 extern void a_platform__screenInit(int Width, int Height);
 extern void a_platform__screenShow(void);
 extern void a_platform__screenResolutionGetNative(int* Width, int* Height);
+extern bool a_platform__screenVsyncGet(void);
 extern void a_platform__screenZoomSet(int Zoom);
 extern void a_platform__screenFullscreenSet(bool Fullscreen);
 

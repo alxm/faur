@@ -22,6 +22,7 @@
 #include "a2x_pack_math.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
+#include "a2x_pack_platform.v.h"
 #include "a2x_pack_settings.v.h"
 #include "a2x_pack_time.v.h"
 
@@ -125,7 +126,7 @@ void a_fps__frame(void)
         g_run.drawFpsMax = g_history.len * 1000 / g_history.drawFrameMsMinSum;
     }
 
-    if(!a_settings_boolGet(A_SETTING_VIDEO_VSYNC)) {
+    if(!a_platform__screenVsyncGet()) {
         while(elapsedMs < g_settings.drawFrameMs) {
             a_time_msWait(g_settings.drawFrameMs - elapsedMs);
 

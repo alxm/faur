@@ -216,7 +216,7 @@ void a_console__draw(void)
                       A__PIXEL_BPP,
                       a_screen__zoomGet());
         a_font_printf("Vsync %s\n",
-                      a_settings_boolGet(A_SETTING_VIDEO_VSYNC) ? "on" : "off");
+                      a_platform__screenVsyncGet() ? "on" : "off");
 
         #if A_CONFIG_LIB_SDL == 1
             a_font_print("SDL 1.2\n");

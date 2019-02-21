@@ -30,10 +30,12 @@
 
 #if A_CONFIG_LIB_SDL == 1
     static SDL_Surface* g_sdlScreen;
+    static const bool g_vsync = false;
 #elif A_CONFIG_LIB_SDL == 2
     SDL_Renderer* a__sdlRenderer;
     static SDL_Window* g_sdlWindow;
     static int g_clearR, g_clearG, g_clearB;
+    static bool g_vsync = A_CONFIG_SCREEN_VSYNC;
 
     #if A_CONFIG_LIB_RENDER_SOFTWARE
         static SDL_Texture* g_sdlTexture;
@@ -161,9 +163,9 @@ void a_platform__screenInit(int Width, int Height)
         uint32_t rendererFlags = SDL_RENDERER_ACCELERATED
                                | SDL_RENDERER_TARGETTEXTURE;
 
-        if(a_settings_boolGet(A_SETTING_VIDEO_VSYNC)) {
+        #if A_CONFIG_SCREEN_VSYNC
             rendererFlags |= SDL_RENDERER_PRESENTVSYNC;
-        }
+        #endif
 
         a__sdlRenderer = SDL_CreateRenderer(g_sdlWindow, -1, rendererFlags);
 
@@ -177,7 +179,7 @@ void a_platform__screenInit(int Width, int Height)
 
             if(!(info.flags & SDL_RENDERER_PRESENTVSYNC)) {
                 a_out__warning("Cannot use vsync");
-                a_settings_boolSet(A_SETTING_VIDEO_VSYNC, false);
+                g_vsync = false;
             }
         }
 
@@ -425,6 +427,11 @@ void a_platform__screenResolutionGetNative(int* Width, int* Height)
     *Height = info->current_h;
 }
 #endif
+
+bool a_platform__screenVsyncGet(void)
+{
+    return g_vsync;
+}
 
 void a_platform__screenZoomSet(int Zoom)
 {
