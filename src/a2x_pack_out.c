@@ -24,7 +24,6 @@
 #include "a2x_pack_settings.v.h"
 #include "a2x_pack_str.v.h"
 
-
 typedef enum {
     A_COLOR__INVALID = -1,
     A_COLOR__BLACK = 30,
@@ -53,6 +52,8 @@ static const struct {
     [A_OUT__TYPE_FATAL] = {"Ftl", A_COLOR__RED},
 };
 
+static bool g_on = A_CONFIG_OUTPUT_ON;
+
 static void outPrintHeader(AOutSource Source, AOutType Type, FILE* Stream)
 {
     #if A_CONFIG_SYSTEM_LINUX && A_CONFIG_TRAIT_DESKTOP
@@ -75,9 +76,7 @@ static void outWorker(AOutSource Source, AOutType Type, bool Verbose, bool Overw
 {
     static char buffer[512];
 
-    if(!a_settings_boolGet(A_SETTING_OUTPUT_ON)
-        || (Verbose && !a_settings_boolGet(A_SETTING_OUTPUT_VERBOSE))) {
-
+    if(!g_on || (Verbose && !A_CONFIG_OUTPUT_VERBOSE)) {
         return;
     }
 
@@ -174,9 +173,7 @@ void a_out__errorv(const char* Format, ...)
 
 void a_out__fatal(const char* Format, va_list Args, bool Application)
 {
-    if(!a_settings_boolGet(A_SETTING_OUTPUT_ON)) {
-        a_settings_boolSet(A_SETTING_OUTPUT_ON, true);
-    }
+    g_on = true;
 
     outWorker(A_OUT__SOURCE_A2X + Application,
               A_OUT__TYPE_FATAL,
@@ -237,7 +234,7 @@ void a_out__overwrite(AOutType Type, FILE* Stream, const char* Format, ...)
 
 void a_out_print(const char* Text)
 {
-    if(a_settings_boolGet(A_SETTING_OUTPUT_ON)) {
+    if(g_on) {
         outPrintHeader(A_OUT__SOURCE_APP, A_OUT__TYPE_MESSAGE, stdout);
         puts(Text);
     }

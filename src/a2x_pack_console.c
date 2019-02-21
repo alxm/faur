@@ -49,6 +49,7 @@ static unsigned g_linesPerScreen;
 static ASprite* g_sources[A_OUT__SOURCE_NUM];
 static ASprite* g_titles[A_OUT__TYPE_NUM];
 static AButton* g_toggle;
+static bool g_show = A_CONFIG_OUTPUT_CONSOLE_SHOW;
 
 static void line_set(ALine* Line, AOutSource Source, AOutType Type, const char* Text)
 {
@@ -141,15 +142,13 @@ void a_console__uninit(void)
 void a_console__tick(void)
 {
     if(a_button_pressGetOnce(g_toggle)) {
-        a_settings_boolFlip(A_SETTING_OUTPUT_CONSOLE);
+        g_show = !g_show;
     }
 }
 
 void a_console__draw(void)
 {
-    if(g_state != A_CONSOLE__STATE_FULL
-        || !a_settings_boolGet(A_SETTING_OUTPUT_CONSOLE)) {
-
+    if(!g_show || g_state != A_CONSOLE__STATE_FULL) {
         return;
     }
 
@@ -245,6 +244,11 @@ void a_console__draw(void)
 
     a_pixel_pop();
     a_font_pop();
+}
+
+void a_console_showSet(bool Show)
+{
+    g_show = Show;
 }
 
 bool a_console__isInitialized(void)

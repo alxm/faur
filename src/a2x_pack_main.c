@@ -174,7 +174,8 @@ __attribute__((noreturn)) static void handleFatal(void)
         free(functionNames);
     #endif
 
-    a_settings_boolSet(A_SETTING_OUTPUT_CONSOLE, true);
+    a_console_showSet(true);
+    a_console__draw();
     a_screen__draw();
 
     #if A_CONFIG_BUILD_DEBUG
