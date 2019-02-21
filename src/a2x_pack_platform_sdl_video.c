@@ -101,18 +101,18 @@ void a_platform__screenInit(int Width, int Height)
             videoFlags |= SDL_FULLSCREEN;
         #endif
 
-        bpp = SDL_VideoModeOK(Width, Height, A__PIXEL_BPP, videoFlags);
+        bpp = SDL_VideoModeOK(Width, Height, A_CONFIG_SCREEN_BPP, videoFlags);
 
         if(bpp == 0) {
             A__FATAL("SDL_VideoModeOK: %dx%d:%d video not available",
                      Width,
                      Height,
-                     A__PIXEL_BPP);
+                     A_CONFIG_SCREEN_BPP);
         }
 
         g_sdlScreen = SDL_SetVideoMode(Width * A_CONFIG_SCREEN_ZOOM,
                                        Height * A_CONFIG_SCREEN_ZOOM,
-                                       A__PIXEL_BPP,
+                                       A_CONFIG_SCREEN_BPP,
                                        videoFlags);
 
         if(g_sdlScreen == NULL) {
