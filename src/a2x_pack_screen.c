@@ -28,12 +28,15 @@
 
 AScreen a__screen;
 static AList* g_stack; // list of AScreen
+static int g_zoom = A_CONFIG_SCREEN_ZOOM;
+static bool g_fullscreen = A_CONFIG_SCREEN_FULLSCREEN;
 
 #if A_CONFIG_TRAIT_DESKTOP
     static AButton* g_fullScreenButton;
 
     #define A__ZOOM_LEVELS 3
     static AButton* g_zoomButtons[A__ZOOM_LEVELS];
+
 #endif
 
 static void initScreen(AScreen* Screen, int Width, int Height, bool AllocBuffer)
@@ -144,12 +147,12 @@ void a_screen__tick(void)
 {
     #if A_CONFIG_TRAIT_DESKTOP
         if(a_button_pressGetOnce(g_fullScreenButton)) {
-            a_settings_boolFlip(A_SETTING_VIDEO_FULLSCREEN);
+            a_screen_fullscreenFlip();
         }
 
         for(int z = 0; z < A__ZOOM_LEVELS; z++) {
             if(a_button_pressGetOnce(g_zoomButtons[z])) {
-                a_settings_intSet(A_SETTING_VIDEO_ZOOM, z + 1);
+                a_screen__zoomSet(z + 1);
                 break;
             }
         }
@@ -163,6 +166,25 @@ void a_screen__draw(void)
     }
 
     a_platform__screenShow();
+}
+
+int a_screen__zoomGet(void)
+{
+    return g_zoom;
+}
+
+void a_screen__zoomSet(int Zoom)
+{
+    g_zoom = Zoom;
+
+    a_platform__screenZoomSet(Zoom);
+}
+
+void a_screen_fullscreenFlip(void)
+{
+    g_fullscreen = !g_fullscreen;
+
+    a_platform__screenFullscreenSet(g_fullscreen);
 }
 
 bool a_screen__sameSize(const AScreen* Screen1, const AScreen* Screen2)

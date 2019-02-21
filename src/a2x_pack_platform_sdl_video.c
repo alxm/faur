@@ -80,69 +80,6 @@ static void settingBorderColor(ASettingId Setting)
 }
 #endif
 
-static void settingFullscreen(ASettingId Setting)
-{
-    bool fullScreen = a_settings_boolGet(Setting);
-
-    #if A_CONFIG_LIB_SDL == 1
-        #if A_CONFIG_SCREEN_ALLOCATE
-            uint32_t videoFlags = g_sdlScreen->flags;
-
-            if(fullScreen) {
-                videoFlags |= SDL_FULLSCREEN;
-            } else {
-                videoFlags &= ~(uint32_t)SDL_FULLSCREEN;
-            }
-
-            g_sdlScreen = SDL_SetVideoMode(0, 0, 0, videoFlags);
-
-            if(g_sdlScreen == NULL) {
-                A__FATAL("SDL_SetVideoMode: %s", SDL_GetError());
-            }
-
-            SDL_SetClipRect(g_sdlScreen, NULL);
-        #else
-            a_out__warning(
-                "SDL 1.2 fullscreen needs A_CONFIG_SCREEN_ALLOCATE=1");
-        #endif
-    #elif A_CONFIG_LIB_SDL == 2
-        if(SDL_SetWindowFullscreen(
-            g_sdlWindow, fullScreen? SDL_WINDOW_FULLSCREEN : 0) < 0) {
-
-            a_out__error("SDL_SetWindowFullscreen: %s", SDL_GetError());
-        }
-    #endif
-
-    a_settings_boolSet(A_SETTING_INPUT_MOUSE_CURSOR, !fullScreen);
-}
-
-static void settingVideoZoom(ASettingId Setting)
-{
-    int zoom = a_settings_intGet(Setting);
-
-    #if A_CONFIG_LIB_SDL == 1
-        #if A_CONFIG_SCREEN_ALLOCATE
-            g_sdlScreen = SDL_SetVideoMode(a__screen.width * zoom,
-                                           a__screen.height * zoom,
-                                           0,
-                                           g_sdlScreen->flags);
-
-            if(g_sdlScreen == NULL) {
-                A__FATAL("SDL_SetVideoMode: %s", SDL_GetError());
-            }
-
-            SDL_SetClipRect(g_sdlScreen, NULL);
-        #else
-            A_UNUSED(zoom);
-            a_out__warning(
-                "SDL 1.2 zoom needs A_CONFIG_SCREEN_ALLOCATE=1");
-        #endif
-    #elif A_CONFIG_LIB_SDL == 2
-        SDL_SetWindowSize(
-            g_sdlWindow, a__screen.width * zoom, a__screen.height * zoom);
-    #endif
-}
-
 static void settingMouseCursor(ASettingId Setting)
 {
     int toggle = a_settings_boolGet(Setting) ? SDL_ENABLE : SDL_DISABLE;
@@ -154,16 +91,13 @@ static void settingMouseCursor(ASettingId Setting)
 
 void a_platform__screenInit(int Width, int Height)
 {
-    int zoom = a_settings_intGet(A_SETTING_VIDEO_ZOOM);
-    bool fullscreen = a_settings_boolGet(A_SETTING_VIDEO_FULLSCREEN);
-
     #if A_CONFIG_LIB_SDL == 1
         int bpp = 0;
         uint32_t videoFlags = SDL_SWSURFACE;
 
-        if(fullscreen) {
+        #if A_CONFIG_SCREEN_FULLSCREEN
             videoFlags |= SDL_FULLSCREEN;
-        }
+        #endif
 
         bpp = SDL_VideoModeOK(Width, Height, A__PIXEL_BPP, videoFlags);
 
@@ -174,8 +108,10 @@ void a_platform__screenInit(int Width, int Height)
                      A__PIXEL_BPP);
         }
 
-        g_sdlScreen = SDL_SetVideoMode(
-                        Width * zoom, Height * zoom, A__PIXEL_BPP, videoFlags);
+        g_sdlScreen = SDL_SetVideoMode(Width * A_CONFIG_SCREEN_ZOOM,
+                                       Height * A_CONFIG_SCREEN_ZOOM,
+                                       A__PIXEL_BPP,
+                                       videoFlags);
 
         if(g_sdlScreen == NULL) {
             A__FATAL("SDL_SetVideoMode: %s", SDL_GetError());
@@ -200,19 +136,27 @@ void a_platform__screenInit(int Width, int Height)
             windowFlags |= SDL_WINDOW_MAXIMIZED;
         #endif
 
-        if(fullscreen) {
+        #if A_CONFIG_SCREEN_FULLSCREEN
             windowFlags |= SDL_WINDOW_FULLSCREEN;
-        }
+        #endif
 
         g_sdlWindow = SDL_CreateWindow("",
                                        SDL_WINDOWPOS_CENTERED,
                                        SDL_WINDOWPOS_CENTERED,
-                                       Width * zoom,
-                                       Height * zoom,
+                                       Width * A_CONFIG_SCREEN_ZOOM,
+                                       Height * A_CONFIG_SCREEN_ZOOM,
                                        windowFlags);
         if(g_sdlWindow == NULL) {
             A__FATAL("SDL_CreateWindow: %s", SDL_GetError());
         }
+
+        #if A_CONFIG_SCREEN_FULLSCREEN
+            if(SDL_SetWindowFullscreen(
+                g_sdlWindow, SDL_WINDOW_FULLSCREEN) < 0) {
+
+                a_out__error("SDL_SetWindowFullscreen: %s", SDL_GetError());
+            }
+        #endif
 
         uint32_t rendererFlags = SDL_RENDERER_ACCELERATED
                                | SDL_RENDERER_TARGETTEXTURE;
@@ -277,16 +221,6 @@ void a_platform__screenInit(int Width, int Height)
     a_settings__callbackSet(
         A_SETTING_INPUT_MOUSE_CURSOR, settingMouseCursor, true);
 
-    #if A_CONFIG_LIB_SDL == 1
-        a_settings__callbackSet(
-            A_SETTING_VIDEO_FULLSCREEN, settingFullscreen, false);
-    #elif A_CONFIG_LIB_SDL == 2
-        a_settings__callbackSet(
-            A_SETTING_VIDEO_FULLSCREEN, settingFullscreen, true);
-    #endif
-
-    a_settings__callbackSet(A_SETTING_VIDEO_ZOOM, settingVideoZoom, false);
-
     #if A_CONFIG_SCREEN_WIZ_FIX
         a_platform_wiz__portraitModeSet();
     #endif
@@ -339,7 +273,7 @@ void a_platform__screenShow(void)
                 }
             }
 
-            int zoom = a_settings_intGet(A_SETTING_VIDEO_ZOOM);
+            int zoom = a_screen__zoomGet();
 
             if(zoom <= 1) {
                 memcpy(g_sdlScreen->pixels,
@@ -491,4 +425,64 @@ void a_platform__screenResolutionGetNative(int* Width, int* Height)
     *Height = info->current_h;
 }
 #endif
+
+void a_platform__screenZoomSet(int Zoom)
+{
+    #if A_CONFIG_LIB_SDL == 1
+        #if A_CONFIG_SCREEN_ALLOCATE
+            g_sdlScreen = SDL_SetVideoMode(a__screen.width * Zoom,
+                                           a__screen.height * Zoom,
+                                           0,
+                                           g_sdlScreen->flags);
+
+            if(g_sdlScreen == NULL) {
+                A__FATAL("SDL_SetVideoMode: %s", SDL_GetError());
+            }
+
+            SDL_SetClipRect(g_sdlScreen, NULL);
+        #else
+            A_UNUSED(Zoom);
+
+            a_out__warning(
+                "SDL 1.2 Zoom needs A_CONFIG_SCREEN_ALLOCATE=1");
+        #endif
+    #elif A_CONFIG_LIB_SDL == 2
+        SDL_SetWindowSize(
+            g_sdlWindow, a__screen.width * Zoom, a__screen.height * Zoom);
+    #endif
+}
+
+void a_platform__screenFullscreenSet(bool Fullscreen)
+{
+    #if A_CONFIG_LIB_SDL == 1
+        #if A_CONFIG_SCREEN_ALLOCATE
+            uint32_t videoFlags = g_sdlScreen->flags;
+
+            if(Fullscreen) {
+                videoFlags |= SDL_FULLSCREEN;
+            } else {
+                videoFlags &= ~(uint32_t)SDL_FULLSCREEN;
+            }
+
+            g_sdlScreen = SDL_SetVideoMode(0, 0, 0, videoFlags);
+
+            if(g_sdlScreen == NULL) {
+                A__FATAL("SDL_SetVideoMode: %s", SDL_GetError());
+            }
+
+            SDL_SetClipRect(g_sdlScreen, NULL);
+        #else
+            a_out__warning(
+                "SDL 1.2 fullscreen needs A_CONFIG_SCREEN_ALLOCATE=1");
+        #endif
+    #elif A_CONFIG_LIB_SDL == 2
+        if(SDL_SetWindowFullscreen(
+            g_sdlWindow, Fullscreen ? SDL_WINDOW_FULLSCREEN : 0) < 0) {
+
+            a_out__error("SDL_SetWindowFullscreen: %s", SDL_GetError());
+        }
+    #endif
+
+    a_settings_boolSet(A_SETTING_INPUT_MOUSE_CURSOR, !Fullscreen);
+}
 #endif // A_CONFIG_LIB_SDL

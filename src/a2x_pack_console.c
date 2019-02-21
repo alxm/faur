@@ -210,11 +210,11 @@ void a_console__draw(void)
         a_font_printf("%u draw max\n", a_fps_rateDrawGetMax());
 
         a_font__fontSet(A_FONT__ID_GREEN);
-        a_font_printf("%dx%d:%dx%d\n",
+        a_font_printf("%dx%d:%d x%d\n",
                       a_screen_sizeGetWidth(),
                       a_screen_sizeGetHeight(),
                       A__PIXEL_BPP,
-                      a_settings_intGet(A_SETTING_VIDEO_ZOOM));
+                      a_screen__zoomGet());
         a_font_printf("Vsync %s\n",
                       a_settings_boolGet(A_SETTING_VIDEO_VSYNC) ? "on" : "off");
 
