@@ -12,17 +12,23 @@ A_CONFIG_SYSTEM_EMSCRIPTEN := 1
 A_CONFIG_SYSTEM_LINUX := 1
 A_CONFIG_TRAIT_KEYBOARD := 1
 
-A_BUILD_LIBS_EMSCRIPTEN := \
+A_BUILD_EMSCRIPTEN_LIBS := \
     -s USE_SDL=1 \
     -s USE_ZLIB=1 \
     -s USE_LIBPNG=1 \
-
-A_PLATFORM_LIBS := $(A_CONFIG_BUILD_OPT) $(A_BUILD_LIBS_EMSCRIPTEN)
-
-A_PLATFORM_CFLAGS := \
     -s TOTAL_MEMORY=67108864 \
-    $(A_BUILD_LIBS_EMSCRIPTEN) \
+
+A_BUILD_EMSCRIPTEN_EMBED := \
     --use-preload-plugins \
-    $(addprefix --preload-file ../, $(join $(addsuffix @, $(A_CONFIG_FILE_EMBED_EMSCRIPTEN)), $(A_CONFIG_FILE_EMBED_EMSCRIPTEN))) \
+    $(addprefix --preload-file ../, \
+        $(join $(A_CONFIG_FILE_EMBED_EMSCRIPTEN), \
+               $(addprefix @, $(A_CONFIG_FILE_EMBED_EMSCRIPTEN)))) \
+
+A_PLATFORM_LIBS := \
+    $(A_CONFIG_BUILD_OPT) \
+    $(A_BUILD_EMSCRIPTEN_LIBS) \
+    $(A_BUILD_EMSCRIPTEN_EMBED) \
+
+A_PLATFORM_CFLAGS := $(A_BUILD_EMSCRIPTEN_LIBS)
 
 include $(A2X_PATH)/make/global/rules
