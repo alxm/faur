@@ -65,7 +65,9 @@ struct APlatformTouch {
     int x, y;
     int dx, dy;
     bool tap;
-    AList* motion; // list of ATouchPoint captured by motion events
+    #if A_CONFIG_INPUT_MOUSE_TRACK
+        AList* motion; // list of ATouchPoint captured by motion events
+    #endif
 };
 
 struct APlatformController {
@@ -218,13 +220,18 @@ static void touchAdd(APlatformTouch* Touch)
     Touch->dx = 0;
     Touch->dy = 0;
     Touch->tap = false;
-    Touch->motion = a_list_new();
+
+    #if A_CONFIG_INPUT_MOUSE_TRACK
+        Touch->motion = a_list_new();
+    #endif
 }
 
+#if A_CONFIG_INPUT_MOUSE_TRACK
 static void touchFree(APlatformTouch* Touch)
 {
     a_list_freeEx(Touch->motion, free);
 }
+#endif
 
 static APlatformController* controllerAdd(int Index)
 {
@@ -644,7 +651,9 @@ void a_platform_sdl_input__uninit(void)
         }
     #endif
 
-    touchFree(&g_mouse);
+    #if A_CONFIG_INPUT_MOUSE_TRACK
+        touchFree(&g_mouse);
+    #endif
 
     a_list_freeEx(g_controllers, (AFree*)controllerFree);
     a_list_free(g_forwardButtonsQueue[0]);
@@ -656,7 +665,10 @@ void a_platform_sdl_input__uninit(void)
 void a_platform__inputsPoll(void)
 {
     g_mouse.tap = false;
-    a_list_clearEx(g_mouse.motion, free);
+
+    #if A_CONFIG_INPUT_MOUSE_TRACK
+        a_list_clearEx(g_mouse.motion, free);
+    #endif
 
     for(SDL_Event event; SDL_PollEvent(&event); ) {
         switch(event.type) {
@@ -862,14 +874,14 @@ void a_platform__inputsPoll(void)
                 g_mouse.x = event.button.x;
                 g_mouse.y = event.button.y;
 
-                if(a_settings_boolGet(A_SETTING_INPUT_MOUSE_TRACK)) {
+                #if A_CONFIG_INPUT_MOUSE_TRACK
                     ATouchPoint* p = a_mem_malloc(sizeof(ATouchPoint));
 
                     p->x = g_mouse.x;
                     p->y = g_mouse.y;
 
                     a_list_addLast(g_mouse.motion, p);
-                }
+                #endif
             } break;
 
             case SDL_MOUSEBUTTONDOWN: {

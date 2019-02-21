@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 Alex Margarit
+    Copyright 2016-2019 Alex Margarit
     This file is part of a2x, a C video game framework.
 
     a2x-framework is free software: you can redistribute it and/or modify
@@ -48,17 +48,17 @@ void a_input_controller__init(void)
         AButtonId buttonRight = A_BUTTON_RIGHT;
 
         if(!a_platform__controllerIsMapped()) {
-            if(a_settings_boolGet(A_SETTING_INPUT_ANALOG_AXES_SWITCH)) {
+            #if A_CONFIG_INPUT_ANALOG_AXES_SWITCH
                 axisX = A_AXIS_LEFTY;
                 axisY = A_AXIS_LEFTX;
-            }
+            #endif
 
-            if(a_settings_boolGet(A_SETTING_INPUT_ANALOG_AXES_INVERT)) {
+            #if A_CONFIG_INPUT_ANALOG_AXES_INVERT
                 buttonUp = A_BUTTON_DOWN;
                 buttonDown = A_BUTTON_UP;
                 buttonLeft = A_BUTTON_RIGHT;
                 buttonRight = A_BUTTON_LEFT;
-            }
+            #endif
         }
 
         // Forward the left analog stick to the direction buttons

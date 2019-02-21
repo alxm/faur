@@ -82,15 +82,6 @@ static void settingBorderColor(ASettingId Setting)
 }
 #endif
 
-static void settingMouseCursor(ASettingId Setting)
-{
-    int toggle = a_settings_boolGet(Setting) ? SDL_ENABLE : SDL_DISABLE;
-
-    if(SDL_ShowCursor(toggle) < 0) {
-        a_out__error("SDL_ShowCursor: %s", SDL_GetError());
-    }
-}
-
 void a_platform__screenInit(int Width, int Height)
 {
     #if A_CONFIG_LIB_SDL == 1
@@ -220,8 +211,7 @@ void a_platform__screenInit(int Width, int Height)
         #endif
     #endif
 
-    a_settings__callbackSet(
-        A_SETTING_INPUT_MOUSE_CURSOR, settingMouseCursor, true);
+    a_platform__screenMouseCursorSet(A_CONFIG_INPUT_MOUSE_CURSOR);
 
     #if A_CONFIG_SCREEN_WIZ_FIX
         a_platform_wiz__portraitModeSet();
@@ -490,6 +480,20 @@ void a_platform__screenFullscreenSet(bool Fullscreen)
         }
     #endif
 
-    a_settings_boolSet(A_SETTING_INPUT_MOUSE_CURSOR, !Fullscreen);
+    a_platform__screenMouseCursorSet(!Fullscreen);
+}
+
+void a_platform__screenMouseCursorSet(bool Show)
+{
+    #if A_CONFIG_INPUT_MOUSE_CURSOR
+        int setting = Show ? SDL_ENABLE : SDL_DISABLE;
+    #else
+        A_UNUSED(Show);
+        int setting = SDL_DISABLE;
+    #endif
+
+    if(SDL_ShowCursor(setting) < 0) {
+        a_out__error("SDL_ShowCursor: %s", SDL_GetError());
+    }
 }
 #endif // A_CONFIG_LIB_SDL
