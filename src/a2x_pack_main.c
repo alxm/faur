@@ -55,9 +55,9 @@ static void a__atexit(void)
 {
     a_out__message("Running atexit");
 
-    a_out__message("A_EXIT start");
+    a_out__message("A_EXIT start >>");
     a_exit();
-    a_out__message("A_EXIT end");
+    a_out__message("<< A_EXIT end");
 
     a_console__uninit();
     a_font__uninit();
@@ -88,18 +88,6 @@ static void a__atexit(void)
 
 int main(int Argc, char* Argv[])
 {
-    g_argsNum = Argc;
-    g_args = (const char**)Argv;
-
-    a_console__init();
-    a_settings__init();
-
-    a_out__message("A_SETUP start");
-    a_setup();
-    a_out__message("A_SETUP end");
-
-    a_settings__init2();
-
     a_out__message("a2x: %s %s",
                    A_CONFIG_BUILD_PLATFORM,
                    A_CONFIG_BUILD_GIT_HASH);
@@ -107,6 +95,19 @@ int main(int Argc, char* Argv[])
                    A_CONFIG_APP_NAME,
                    A_CONFIG_APP_VERSION,
                    A_CONFIG_APP_AUTHOR);
+
+    g_argsNum = Argc;
+    g_args = (const char**)Argv;
+
+    a_console__init();
+    a_settings__init();
+
+    a_out__message("A_SETUP start >>");
+    a_setup();
+    a_out__message("<< A_SETUP end");
+
+    a_settings__init2();
+
     a_out__message("Build timestamp %s", A_CONFIG_BUILD_TIMESTAMP);
     a_out__message("PID %d", getpid());
 
@@ -136,9 +137,9 @@ int main(int Argc, char* Argv[])
         a_out__error("Cannot register atexit callback");
     }
 
-    a_out__message("A_MAIN start");
+    a_out__message("A_MAIN start >>");
     a_main();
-    a_out__message("A_MAIN end");
+    a_out__message("<< A_MAIN end");
 
     a_state__run();
 
