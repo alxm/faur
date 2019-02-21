@@ -74,16 +74,14 @@ static void a__atexit(void)
     a_platform__uninit();
     a_block__uninit();
     a_embed__uninit();
+    a_settings__uninit();
 
     #if A_CONFIG_SYSTEM_GP2X || A_CONFIG_SYSTEM_WIZ || A_CONFIG_SYSTEM_CAANOO
-        if(a_settings_boolGet(A_SETTING_SYSTEM_GP2X_MENU)) {
-            a_settings__uninit();
+        #if A_CONFIG_SYSTEM_GP2X_MENU
             chdir("/usr/gp2x");
             execl("gp2xmenu", "gp2xmenu", NULL);
-        }
+        #endif
     #endif
-
-    a_settings__uninit();
 }
 
 int main(int Argc, char* Argv[])

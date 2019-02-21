@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2018 Alex Margarit and:
+    Copyright 2010, 2016-2019 Alex Margarit and:
 
     - GP2X clock speed from the GP2X Wiki
     - GP2X mmuhack by Squidge and NK
@@ -30,6 +30,7 @@
 #include "a2x_pack_file.v.h"
 #include "a2x_pack_settings.v.h"
 
+#if A_CONFIG_SYSTEM_GP2X_MHZ > 0
 static void setCpuSpeed(unsigned MHz)
 {
     unsigned mhz = MHz * 1000000;
@@ -65,6 +66,7 @@ static void setCpuSpeed(unsigned MHz)
 
     close(memfd);
 }
+#endif
 
 static void setRamTimings(unsigned tRC, unsigned tRAS, unsigned tWR, unsigned tMRD, unsigned tRFC, unsigned tRP, unsigned tRCD)
 {
@@ -103,9 +105,9 @@ void a_platform_gp2x__init(void)
         system("/sbin/insmod mmuhack.o");
     }
 
-    if(a_settings_intuGet(A_SETTING_SYSTEM_GP2X_MHZ) > 0) {
-        setCpuSpeed(a_settings_intuGet(A_SETTING_SYSTEM_GP2X_MHZ));
-    }
+    #if A_CONFIG_SYSTEM_GP2X_MHZ > 0
+        setCpuSpeed(A_CONFIG_SYSTEM_GP2X_MHZ);
+    #endif
 
     setRamTimings(6, 4, 1, 1, 1, 2, 2);
 }
