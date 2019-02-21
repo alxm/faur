@@ -89,7 +89,7 @@ static bool lazy_init(void)
             A_CONFIG_APP_VERSION,
             A_CONFIG_APP_AUTHOR,
             A_CONFIG_BUILD_TIMESTAMP,
-            A_CONFIG_BUILD_PLATFORM,
+            A_CONFIG_BUILD_ID,
             A_CONFIG_BUILD_GIT_HASH));
 
         if(g_filePrefix && g_title && g_description) {
