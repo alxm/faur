@@ -28,7 +28,6 @@
 #endif
 
 #include "a2x_pack_block.v.h"
-#include "a2x_pack_conf.v.h"
 #include "a2x_pack_console.v.h"
 #include "a2x_pack_ecs.v.h"
 #include "a2x_pack_embed.v.h"
@@ -111,7 +110,6 @@ int main(int Argc, char* Argv[])
 
     a_embed__init();
     a_block__init();
-    a_conf__init();
     a_platform__init();
     a_timer__init();
     a_input__init();
