@@ -15,12 +15,12 @@ else ifeq ($(A_CONFIG_LIB_SDL), 2)
     A_CONFIG_LIB_SDL_CONFIG := sdl2-config
 endif
 
-A_BUILD_LIBS := \
+A_PLATFORM_LIBS := \
     -lpng \
     -lm \
     -rdynamic \
 
-A_BUILD_CFLAGS := \
+A_PLATFORM_CFLAGS := \
 
 include $(A2X_PATH)/make/global/rules
 

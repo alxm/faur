@@ -14,7 +14,7 @@ A_CONFIG_SYSTEM_LINUX := 1
 
 OPEN2X := $(A_SDK_OPEN2X_ROOT)/$(A_SDK_OPEN2X_TOOLCHAIN)
 
-A_BUILD_LIBS := \
+A_PLATFORM_LIBS := \
     -static \
     -L$(OPEN2X)/lib \
     -L$(OPEN2X)/arm-open2x-linux/lib \
@@ -31,7 +31,7 @@ A_BUILD_LIBS := \
     -lstdc++ \
     -ldl \
 
-A_BUILD_CFLAGS := \
+A_PLATFORM_CFLAGS := \
     -mcpu=arm920t \
     -mtune=arm920t \
     -msoft-float \

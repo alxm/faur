@@ -63,7 +63,7 @@ A_GENERIC_CFLAGS := \
     -fstrict-aliasing \
     -D_XOPEN_SOURCE \
     -I$(A_DIR_OBJ_A2X) \
-    $(A_BUILD_CFLAGS) \
+    $(A_PLATFORM_CFLAGS) \
     $(A_CONFIG_BUILD_CFLAGS) \
 
 .PHONY : all clean cleanbin run
@@ -79,7 +79,7 @@ $(A_FILES_OBJ) : $(A2X_FILE_PUBLIC_A2X_HEADER)
 
 $(A_FILE_TARGET_BIN) : $(A_FILES_OBJ) $(A2X_FILE_PUBLIC_A2X_LIB)
 	@ mkdir -p $(@D)
-	$(CC) -o $@ $^ $(A_BUILD_CFLAGS) $(A_CONFIG_BUILD_LIBS) $(A_BUILD_LIBS)
+	$(CC) -o $@ $^ $(A_CONFIG_BUILD_LIBS) $(A_PLATFORM_LIBS)
 
 $(A_DIR_GEN)/%.h : $(A_ROOT)/% $(A2X_PATH)/bin/a2x_bin
 	@ mkdir -p $(@D)

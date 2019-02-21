@@ -16,7 +16,7 @@ A_CONFIG_TRAIT_KEYBOARD := 1
 PANDORA_SDK := $(A_SDK_PANDORA_ROOT)/$(A_SDK_PANDORA_TOOLCHAIN)
 PANDORA_UTILS := $(A_SDK_PANDORA_ROOT)/$(A_SDK_PANDORA_UTILS)
 
-A_BUILD_LIBS := \
+A_PLATFORM_LIBS := \
     -L$(PANDORA_SDK)/lib \
     -L$(PANDORA_SDK)/usr/lib \
     -L$(PANDORA_SDK)/arm-none-linux-gnueabi/lib \
@@ -30,7 +30,7 @@ A_BUILD_LIBS := \
     -lm \
     -ldl \
 
-A_BUILD_CFLAGS := \
+A_PLATFORM_CFLAGS := \
     -march=armv7-a \
     -mcpu=cortex-a8 \
     -mtune=cortex-a8 \
