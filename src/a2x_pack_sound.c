@@ -47,10 +47,8 @@ static int g_volumeMax;
 static void adjustSoundVolume(int Volume)
 {
     g_volume = a_math_clamp(Volume, 0, g_volumeMax);
-    g_musicVolume = a_settings_intGet(A_SETTING_SOUND_VOLUME_SCALE_MUSIC)
-                        * g_volume / 100;
-    g_samplesVolume = a_settings_intGet(A_SETTING_SOUND_VOLUME_SCALE_SAMPLE)
-                        * g_volume / 100;
+    g_musicVolume = g_volume * A_CONFIG_SOUND_VOLUME_SCALE_MUSIC / 100;
+    g_samplesVolume = g_volume * A_CONFIG_SOUND_VOLUME_SCALE_SAMPLE / 100;
 
     a_platform__sampleVolumeSetAll(g_samplesVolume);
     a_platform__musicVolumeSet(g_musicVolume);
@@ -113,7 +111,7 @@ void a_sound__tick(void)
 
     #if A_CONFIG_TRAIT_KEYBOARD
         if(a_button_pressGetOnce(g_muteButton)) {
-            a_settings_boolFlip(A_SETTING_SOUND_MUTE);
+            a_platform__soundMuteFlip();
         }
     #endif
 }
@@ -160,7 +158,7 @@ void a_music_free(AMusic* Music)
 
 void a_music_play(AMusic* Music)
 {
-    if(a_settings_boolGet(A_SETTING_SOUND_MUTE)) {
+    if(a_platform__soundMuteGet()) {
         return;
     }
 
@@ -203,7 +201,7 @@ int a_channel_new(void)
 
 void a_channel_play(int Channel, ASample* Sample, AChannelFlags Flags)
 {
-    if(a_settings_boolGet(A_SETTING_SOUND_MUTE)) {
+    if(a_platform__soundMuteGet()) {
         return;
     }
 

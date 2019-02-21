@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2018 Alex Margarit
+    Copyright 2010, 2016-2019 Alex Margarit
     This file is part of a2x, a C video game framework.
 
     a2x-framework is free software: you can redistribute it and/or modify
@@ -29,24 +29,10 @@
 #include "a2x_pack_settings.v.h"
 
 static bool g_enabled;
+static bool g_mute = A_CONFIG_SOUND_MUTE;
 static int g_numSampleChannels;
 static int g_numSampleChannelsReserved;
 static int g_currentSampleChannel;
-
-#if A_CONFIG_TRAIT_KEYBOARD
-    static void settingMute(ASettingId Setting)
-    {
-        if(!g_enabled) {
-            return;
-        }
-
-        if(a_settings_boolGet(Setting)) {
-            Mix_PauseMusic();
-        } else if(Mix_PausedMusic()) {
-            Mix_ResumeMusic();
-        }
-    }
-#endif
 
 void a_platform_sdl_sound__init(void)
 {
@@ -62,16 +48,14 @@ void a_platform_sdl_sound__init(void)
     g_enabled = true;
 
     g_numSampleChannels =
-        Mix_AllocateChannels(
-            a_settings_intGet(A_SETTING_SOUND_SAMPLE_CHANNELS_TOTAL));
+        Mix_AllocateChannels(A_CONFIG_SOUND_SAMPLE_CHANNELS_TOTAL);
 
     if(g_numSampleChannels <= 0) {
         a_out__error("Mix_AllocateChannels: %s", Mix_GetError());
     }
 
     g_numSampleChannelsReserved =
-        Mix_ReserveChannels(
-            a_settings_intGet(A_SETTING_SOUND_SAMPLE_CHANNELS_RESERVED));
+        Mix_ReserveChannels(A_CONFIG_SOUND_SAMPLE_CHANNELS_RESERVED);
 
     if(g_numSampleChannelsReserved <= 0) {
         a_out__error("Mix_ReserveChannels: %s", Mix_GetError());
@@ -80,10 +64,6 @@ void a_platform_sdl_sound__init(void)
     a_out__message("Allocated %d sample channels, reserved %d",
                    g_numSampleChannels,
                    g_numSampleChannelsReserved);
-
-    #if A_CONFIG_TRAIT_KEYBOARD
-        a_settings__callbackSet(A_SETTING_SOUND_MUTE, settingMute, true);
-    #endif
 }
 
 void a_platform_sdl_sound__uninit(void)
@@ -93,6 +73,26 @@ void a_platform_sdl_sound__uninit(void)
     }
 
     SDL_QuitSubSystem(SDL_INIT_AUDIO);
+}
+
+bool a_platform__soundMuteGet(void)
+{
+    return g_enabled ? g_mute : true;
+}
+
+void a_platform__soundMuteFlip(void)
+{
+    if(!g_enabled) {
+        return;
+    }
+
+    g_mute = !g_mute;
+
+    if(g_mute) {
+        Mix_PauseMusic();
+    } else if(Mix_PausedMusic()) {
+        Mix_ResumeMusic();
+    }
 }
 
 int a_platform__volumeGetMax(void)

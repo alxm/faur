@@ -72,6 +72,8 @@ extern void a_platform__renderTargetSet(APlatformTexture* Texture);
 extern void a_platform__renderTargetPixelsGet(APixel* Pixels, int Width);
 extern void a_platform__renderTargetClipSet(int X, int Y, int Width, int Height);
 
+extern bool a_platform__soundMuteGet(void);
+extern void a_platform__soundMuteFlip(void);
 extern int a_platform__volumeGetMax(void);
 
 extern APlatformMusic* a_platform__musicNew(const char* Path);
