@@ -37,7 +37,7 @@ static AButton* g_button;
 
 static bool lazy_init(void)
 {
-    ADir* dir = a_dir_new(a_settings_stringGet(A_SETTING_FILE_SCREENSHOTS));
+    ADir* dir = a_dir_new(A_CONFIG_DIR_SCREENSHOTS);
 
     if(dir != NULL) {
         // Only interested in the last file, to get the number from its name
@@ -73,9 +73,7 @@ static bool lazy_init(void)
 
     if(g_isInit) {
         g_filePrefix = a_str_dup(a_str__fmt512(
-            "%s/%s-",
-            a_settings_stringGet(A_SETTING_FILE_SCREENSHOTS),
-            A_CONFIG_APP_NAME));
+                        "%s/%s-", A_CONFIG_DIR_SCREENSHOTS, A_CONFIG_APP_NAME));
 
         g_title = a_str_dup(a_str__fmt512(
             "%s %s by %s",

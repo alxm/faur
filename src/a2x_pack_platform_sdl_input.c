@@ -363,7 +363,7 @@ void a_platform_sdl_input__init(void)
 
     #if A_CONFIG_LIB_SDL == 2
         if(joysticksNum > 0) {
-            const char* mFile = a_settings_stringGet(A_SETTING_FILE_GAMEPADMAP);
+            const char* mFile = A_CONFIG_LIB_SDL_GAMEPADMAP;
             int mNum = SDL_GameControllerAddMappingsFromFile(mFile);
 
             if(mNum < 0) {
