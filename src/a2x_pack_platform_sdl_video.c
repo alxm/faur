@@ -25,7 +25,6 @@
 #include "a2x_pack_out.v.h"
 #include "a2x_pack_platform_wiz.v.h"
 #include "a2x_pack_screen.v.h"
-#include "a2x_pack_settings.v.h"
 #include "a2x_pack_str.v.h"
 
 #if A_CONFIG_LIB_SDL == 1

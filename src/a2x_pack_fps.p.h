@@ -20,8 +20,6 @@
 
 #include "a2x_system_includes.h"
 
-#include "a2x_pack_settings.p.h"
-
 static inline unsigned a_fps_rateTickGet(void)
 {
     return A_CONFIG_FPS_TICK;

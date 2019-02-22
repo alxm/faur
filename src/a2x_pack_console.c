@@ -26,7 +26,6 @@
 #include "a2x_pack_listit.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_screen.v.h"
-#include "a2x_pack_settings.v.h"
 #include "a2x_pack_sprite.v.h"
 #include "a2x_pack_spriteframes.v.h"
 #include "a2x_pack_str.v.h"

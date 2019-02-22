@@ -24,7 +24,6 @@
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_platform.v.h"
 #include "a2x_pack_screen.v.h"
-#include "a2x_pack_settings.v.h"
 #include "a2x_pack_timer.v.h"
 
 static int g_volume;

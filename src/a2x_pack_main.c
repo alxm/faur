@@ -41,7 +41,6 @@
 #include "a2x_pack_random.v.h"
 #include "a2x_pack_screen.v.h"
 #include "a2x_pack_screenshot.v.h"
-#include "a2x_pack_settings.v.h"
 #include "a2x_pack_sound.v.h"
 #include "a2x_pack_state.v.h"
 #include "a2x_pack_time.v.h"
@@ -73,7 +72,6 @@ static void a__atexit(void)
     a_platform__uninit();
     a_block__uninit();
     a_embed__uninit();
-    a_settings__uninit();
 
     #if A_CONFIG_SYSTEM_GP2X || A_CONFIG_SYSTEM_WIZ || A_CONFIG_SYSTEM_CAANOO
         #if A_CONFIG_SYSTEM_GP2X_MENU
@@ -85,28 +83,22 @@ static void a__atexit(void)
 
 int main(int Argc, char* Argv[])
 {
-    a_out__message("a2x: %s %s",
-                   A_CONFIG_BUILD_ID,
-                   A_CONFIG_BUILD_GIT_HASH);
+    a_out__message("a2x: %s %s", A_CONFIG_BUILD_ID, A_CONFIG_BUILD_GIT_HASH);
     a_out__message("App: %s %s by %s",
                    A_CONFIG_APP_NAME,
                    A_CONFIG_APP_VERSION,
                    A_CONFIG_APP_AUTHOR);
+    a_out__message("Build timestamp %s", A_CONFIG_BUILD_TIMESTAMP);
+    a_out__message("PID %d", getpid());
 
     g_argsNum = Argc;
     g_args = (const char**)Argv;
 
     a_console__init();
-    a_settings__init();
 
     a_out__message("A_SETUP start >>");
     a_setup();
     a_out__message("<< A_SETUP end");
-
-    a_settings__init2();
-
-    a_out__message("Build timestamp %s", A_CONFIG_BUILD_TIMESTAMP);
-    a_out__message("PID %d", getpid());
 
     a_embed__init();
     a_block__init();
@@ -127,7 +119,6 @@ int main(int Argc, char* Argv[])
     a_fade__init();
     a_font__init();
     a_console__init2();
-    a_settings__init3();
 
     if(atexit(a__atexit)) {
         a_out__error("Cannot register atexit callback");

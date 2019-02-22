@@ -21,7 +21,6 @@
 #include "a2x_pack_console.v.h"
 #include "a2x_pack_fps.v.h"
 #include "a2x_pack_screen.v.h"
-#include "a2x_pack_settings.v.h"
 #include "a2x_pack_str.v.h"
 
 typedef enum {

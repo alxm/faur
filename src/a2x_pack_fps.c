@@ -23,7 +23,6 @@
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
 #include "a2x_pack_platform.v.h"
-#include "a2x_pack_settings.v.h"
 #include "a2x_pack_time.v.h"
 
 #define A__AVERAGE_WINDOW_SEC 2

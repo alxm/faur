@@ -28,7 +28,6 @@
 #include <sys/mman.h>
 
 #include "a2x_pack_file.v.h"
-#include "a2x_pack_settings.v.h"
 
 #if A_CONFIG_SYSTEM_GP2X_MHZ > 0
 static void setCpuSpeed(unsigned MHz)

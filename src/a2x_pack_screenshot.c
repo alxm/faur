@@ -23,7 +23,6 @@
 #include "a2x_pack_out.v.h"
 #include "a2x_pack_png.v.h"
 #include "a2x_pack_screen.v.h"
-#include "a2x_pack_settings.v.h"
 #include "a2x_pack_str.v.h"
 
 #define A__SCREENSHOTS_LIMIT 99999

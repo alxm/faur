@@ -25,7 +25,6 @@
 #include "a2x_pack_platform_sdl_input.v.h"
 #include "a2x_pack_platform_sdl_sound.v.h"
 #include "a2x_pack_platform_sdl_video.v.h"
-#include "a2x_pack_settings.v.h"
 #include "a2x_pack_time.v.h"
 
 static uint32_t g_sdlFlags;

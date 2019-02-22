@@ -26,7 +26,6 @@
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
 #include "a2x_pack_platform.v.h"
-#include "a2x_pack_settings.v.h"
 
 static bool g_enabled;
 static bool g_mute = A_CONFIG_SOUND_MUTE;

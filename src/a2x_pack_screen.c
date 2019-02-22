@@ -24,7 +24,6 @@
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
 #include "a2x_pack_pixel.v.h"
-#include "a2x_pack_settings.v.h"
 
 AScreen a__screen;
 static AList* g_stack; // list of AScreen
