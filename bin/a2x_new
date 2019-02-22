@@ -89,34 +89,21 @@ enum {{
     STATE_NUM
 }};
 
-static A_STATE(drawBox);
-
-A_SETUP
-{{
-    //
-}}
+A_STATE(drawBox);
 
 A_MAIN
 {{
     a_state_init(STATE_NUM);
-
     a_state_new(STATE_DRAWBOX, drawBox, "Draw Box");
+
     a_state_push(STATE_DRAWBOX);
 }}
 
-A_EXIT
-{{
-    //
-}}
-
-static A_STATE(drawBox)
+A_STATE(drawBox)
 {{
     static struct {{
         int x, y;
-        AButton* up;
-        AButton* down;
-        AButton* left;
-        AButton* right;
+        AButton *up, *down, *left, *right;
     }} context;
 
     A_STATE_INIT

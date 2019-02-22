@@ -36,24 +36,14 @@ enum {
     STATE_NUM
 };
 
-static A_STATE(drawBox);
-
-A_SETUP
-{
-    //
-}
+A_STATE(drawBox);
 
 A_MAIN
 {
     a_state_init(STATE_NUM);
-
     a_state_new(STATE_DRAWBOX, drawBox, "Draw Box");
-    a_state_push(STATE_DRAWBOX);
-}
 
-A_EXIT
-{
-    //
+    a_state_push(STATE_DRAWBOX);
 }
 
 A_STATE(drawBox)
@@ -107,6 +97,14 @@ A_STATE(drawBox)
 
         a_pixel_colorSetHex(0xffaa44);
         a_draw_rectangle(context.x - 40, context.y - 40, 80, 80);
+    }
+
+    A_STATE_FREE
+    {
+        a_button_free(context.up);
+        a_button_free(context.down);
+        a_button_free(context.left);
+        a_button_free(context.right);
     }
 }
 ```

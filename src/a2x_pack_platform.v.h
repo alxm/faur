@@ -35,7 +35,6 @@ typedef struct APlatformTexture APlatformTexture;
 #include "a2x_pack_sprite.v.h"
 
 extern void a_platform__init(void);
-extern void a_platform__init2(void);
 extern void a_platform__uninit(void);
 
 extern uint32_t a_platform__timeMsGet(void);

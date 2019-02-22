@@ -53,10 +53,6 @@ static void a__atexit(void)
 {
     a_out__message("Running atexit");
 
-    a_out__message("A_EXIT start >>");
-    a_exit();
-    a_out__message("<< A_EXIT end");
-
     a_console__uninit();
     a_font__uninit();
     a_fade__uninit();
@@ -95,11 +91,6 @@ int main(int Argc, char* Argv[])
     g_args = (const char**)Argv;
 
     a_console__init();
-
-    a_out__message("A_SETUP start >>");
-    a_setup();
-    a_out__message("<< A_SETUP end");
-
     a_embed__init();
     a_block__init();
     a_platform__init();
@@ -107,7 +98,6 @@ int main(int Argc, char* Argv[])
     a_input__init();
     a_screen__init();
     a_pixel__init();
-    a_platform__init2();
     a_sprite__init();
     a_fps__init();
     a_screenshot__init();
@@ -124,9 +114,9 @@ int main(int Argc, char* Argv[])
         a_out__error("Cannot register atexit callback");
     }
 
-    a_out__message("A_MAIN start >>");
+    a_out__message("A_MAIN start");
     a_main();
-    a_out__message("<< A_MAIN end");
+    a_out__message("A_MAIN end");
 
     a_state__run();
 

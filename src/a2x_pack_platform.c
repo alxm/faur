@@ -1,5 +1,5 @@
 /*
-    Copyright 2017 Alex Margarit
+    Copyright 2017, 2019 Alex Margarit
     This file is part of a2x, a C video game framework.
 
     a2x-framework is free software: you can redistribute it and/or modify
@@ -45,10 +45,7 @@ void a_platform__init(void)
     #elif A_CONFIG_SYSTEM_WIZ || A_CONFIG_SYSTEM_CAANOO
         a_platform_wiz__init();
     #endif
-}
 
-void a_platform__init2(void)
-{
     #if A_CONFIG_LIB_RENDER_SOFTWARE
         a_platform_software_blit__init();
         a_platform_software_draw__init();
