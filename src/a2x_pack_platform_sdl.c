@@ -57,12 +57,12 @@ void a_platform_sdl__uninit(void)
 }
 
 #if A_CONFIG_LIB_SDL_TIME
-uint32_t a_platform__msGet(void)
+uint32_t a_platform__timeMsGet(void)
 {
     return SDL_GetTicks();
 }
 
-void a_platform__msWait(uint32_t Ms)
+void a_platform__timeMsWait(uint32_t Ms)
 {
     #if A_CONFIG_SYSTEM_EMSCRIPTEN
         return;

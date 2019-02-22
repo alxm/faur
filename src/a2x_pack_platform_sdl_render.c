@@ -330,7 +330,7 @@ void a_platform__drawCircleFilled(int X, int Y, int Radius)
     }
 }
 
-APlatformTexture* a_platform__textureScreenNew(int Width, int Height)
+APlatformTexture* a_platform__textureNewScreen(int Width, int Height)
 {
     SDL_Texture* tex = SDL_CreateTexture(a__sdlRenderer,
                                          A_SDL__PIXEL_FORMAT,
@@ -362,7 +362,7 @@ APlatformTexture* a_platform__textureScreenNew(int Width, int Height)
     return screen;
 }
 
-APlatformTexture* a_platform__textureSpriteNew(const ASprite* Sprite)
+APlatformTexture* a_platform__textureNewSprite(const ASprite* Sprite)
 {
     APlatformTexture* texture = Sprite->texture;
     int width = Sprite->w;

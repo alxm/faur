@@ -47,6 +47,6 @@ void a_input__userHeaderFree(AInputUserHeader* Header)
 
 void a_input__tick(void)
 {
-    a_platform__inputsPoll();
+    a_platform__inputPoll();
     a_input_button__tick();
 }

@@ -134,7 +134,7 @@ void a_platform_wiz__uninit(void)
     #endif
 }
 
-uint32_t a_platform__msGet(void)
+uint32_t a_platform__timeMsGet(void)
 {
     unsigned div = TIMER_REG(0x08) & 3;
     TIMER_REG(0x08) = 0x48 | div; // Run timer, latch value
@@ -142,7 +142,7 @@ uint32_t a_platform__msGet(void)
     return TIMER_REG(0) / 1000;
 }
 
-void a_platform__msWait(uint32_t Ms)
+void a_platform__timeMsWait(uint32_t Ms)
 {
     a_time_msSpin(Ms);
 }

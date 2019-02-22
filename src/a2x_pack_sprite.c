@@ -57,7 +57,7 @@ static void assignPixels(ASprite* Sprite, APixel* Pixels)
     free(Sprite->pixels);
     Sprite->pixels = Pixels;
 
-    Sprite->texture = a_platform__textureSpriteNew(Sprite);
+    Sprite->texture = a_platform__textureNewSprite(Sprite);
 }
 
 static int findNextVerticalEdge(const ASprite* Sheet, int StartX, int StartY, int* EdgeX)
@@ -289,7 +289,7 @@ void a_sprite_swapColor(ASprite* Sprite, APixel OldColor, APixel NewColor)
         }
     }
 
-    Sprite->texture = a_platform__textureSpriteNew(Sprite);
+    Sprite->texture = a_platform__textureNewSprite(Sprite);
 }
 
 void a_sprite_swapColors(ASprite* Sprite, const APixel* OldColors, const APixel* NewColors, unsigned NumColors)
@@ -305,7 +305,7 @@ void a_sprite_swapColors(ASprite* Sprite, const APixel* OldColors, const APixel*
         }
     }
 
-    Sprite->texture = a_platform__textureSpriteNew(Sprite);
+    Sprite->texture = a_platform__textureNewSprite(Sprite);
 }
 
 AVectorInt a_sprite_sizeGet(const ASprite* Sprite)

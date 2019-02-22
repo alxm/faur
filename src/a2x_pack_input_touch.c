@@ -34,7 +34,7 @@ ATouch* a_touch_new(void)
 
     a_input__userHeaderInit(&t->header);
 
-    APlatformTouch* pt = a_platform__touchGet();
+    APlatformInputTouch* pt = a_platform__inputTouchGet();
 
     if(pt) {
         a_list_addLast(t->header.platformInputs, pt);
@@ -61,15 +61,15 @@ bool a_touch_isWorking(const ATouch* Touch)
 
 void a_touch_deltaGet(const ATouch* Touch, int* Dx, int* Dy)
 {
-    APlatformTouch* pt = a_list_getFirst(Touch->header.platformInputs);
+    APlatformInputTouch* pt = a_list_getFirst(Touch->header.platformInputs);
 
-    a_platform__touchDeltaGet(pt, Dx, Dy);
+    a_platform__inputTouchDeltaGet(pt, Dx, Dy);
 }
 
 bool a_touch_tapGet(const ATouch* Touch)
 {
-    A_LIST_ITERATE(Touch->header.platformInputs, APlatformTouch*, pt) {
-        if(a_platform__touchTapGet(pt)) {
+    A_LIST_ITERATE(Touch->header.platformInputs, APlatformInputTouch*, pt) {
+        if(a_platform__inputTouchTapGet(pt)) {
             return true;
         }
     }
@@ -84,11 +84,11 @@ bool a_touch_pointGet(const ATouch* Touch, int X, int Y)
 
 bool a_touch_boxGet(const ATouch* Touch, int X, int Y, int W, int H)
 {
-    A_LIST_ITERATE(Touch->header.platformInputs, APlatformTouch*, pt) {
+    A_LIST_ITERATE(Touch->header.platformInputs, APlatformInputTouch*, pt) {
         int x, y;
-        a_platform__touchCoordsGet(pt, &x, &y);
+        a_platform__inputTouchCoordsGet(pt, &x, &y);
 
-        if(a_platform__touchTapGet(pt)
+        if(a_platform__inputTouchTapGet(pt)
             && a_collide_pointInBox(x, y, X, Y, W, H)) {
 
             return true;

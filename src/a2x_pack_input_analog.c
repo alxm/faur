@@ -51,14 +51,14 @@ void a_analog_free(AAnalog* Analog)
 
 void a_analog_bind(AAnalog* Analog, AAxisId Id)
 {
-    APlatformAnalog* pa = a_platform__analogGet(Id);
+    APlatformInputAnalog* pa = a_platform__inputAnalogGet(Id);
 
     if(pa == NULL) {
         return;
     }
 
     if(Analog->header.name == a__inputNameDefault) {
-        Analog->header.name = a_platform__analogNameGet(pa);
+        Analog->header.name = a_platform__inputAnalogNameGet(pa);
     }
 
     a_list_addLast(Analog->header.platformInputs, pa);
@@ -82,8 +82,8 @@ AFix a_analog_valueGet(const AAnalog* Analog)
     #define A__ANALOG_MAX_DISTANCE (1 << A__ANALOG_BITS)
     #define A__ANALOG_ERROR_MARGIN (A__ANALOG_MAX_DISTANCE / 20)
 
-    A_LIST_ITERATE(Analog->header.platformInputs, APlatformAnalog*, a) {
-        value = a_platform__analogValueGet(a);
+    A_LIST_ITERATE(Analog->header.platformInputs, APlatformInputAnalog*, a) {
+        value = a_platform__inputAnalogValueGet(a);
 
         if(a_math_abs(value) > A__ANALOG_ERROR_MARGIN) {
             break;

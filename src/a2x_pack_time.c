@@ -22,24 +22,24 @@
 
 uint32_t a_time_msGet(void)
 {
-    return a_platform__msGet();
+    return a_platform__timeMsGet();
 }
 
 void a_time_msWait(uint32_t Ms)
 {
-    a_platform__msWait(Ms);
+    a_platform__timeMsWait(Ms);
 }
 
 void a_time_secWait(uint32_t Sec)
 {
-    a_platform__msWait(Sec * 1000);
+    a_platform__timeMsWait(Sec * 1000);
 }
 
 void a_time_msSpin(uint32_t Ms)
 {
-    const uint32_t start = a_platform__msGet();
+    const uint32_t start = a_platform__timeMsGet();
 
-    while(a_platform__msGet() - start < Ms) {
+    while(a_platform__timeMsGet() - start < Ms) {
         continue;
     }
 }

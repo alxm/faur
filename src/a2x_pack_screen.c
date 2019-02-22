@@ -49,7 +49,7 @@ static void initScreen(AScreen* Screen, int Width, int Height, bool AllocBuffer)
     }
 
     Screen->sprite = NULL;
-    Screen->texture = a_platform__textureScreenNew(Width, Height);
+    Screen->texture = a_platform__textureNewScreen(Width, Height);
     Screen->width = Width;
     Screen->height = Height;
     Screen->clipX = 0;
@@ -436,7 +436,7 @@ void a_screen_targetPop(void)
 {
     #if A_CONFIG_LIB_RENDER_SOFTWARE
         if(a__screen.sprite) {
-            a__screen.sprite->texture = a_platform__textureSpriteNew(
+            a__screen.sprite->texture = a_platform__textureNewSprite(
                                             a__screen.sprite);
         }
     #endif

@@ -242,7 +242,7 @@ static bool hasTransparency(const APixel* Pixels, int Width, int Height)
     return false;
 }
 
-APlatformTexture* a_platform__textureScreenNew(int Width, int Height)
+APlatformTexture* a_platform__textureNewScreen(int Width, int Height)
 {
     A_UNUSED(Width);
     A_UNUSED(Height);
@@ -250,7 +250,7 @@ APlatformTexture* a_platform__textureScreenNew(int Width, int Height)
     return NULL;
 }
 
-APlatformTexture* a_platform__textureSpriteNew(const ASprite* Sprite)
+APlatformTexture* a_platform__textureNewSprite(const ASprite* Sprite)
 {
     APlatformTexture* texture = Sprite->texture;
     const APixel* pixels = Sprite->pixels;
