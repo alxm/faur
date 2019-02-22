@@ -74,14 +74,6 @@ void a_platform_sdl_video__uninit(void)
     SDL_QuitSubSystem(SDL_INIT_VIDEO);
 }
 
-#if A_CONFIG_LIB_SDL == 2
-static void settingBorderColor(ASettingId Setting)
-{
-    a_pixel_toRgb(
-        a_settings_colorGet(Setting), &g_clearR, &g_clearG, &g_clearB);
-}
-#endif
-
 void a_platform__screenInit(int Width, int Height)
 {
     #if A_CONFIG_LIB_SDL == 1
@@ -194,8 +186,10 @@ void a_platform__screenInit(int Width, int Height)
         SDL_SetHintWithPriority(
             SDL_HINT_RENDER_SCALE_QUALITY, "nearest", SDL_HINT_OVERRIDE);
 
-        a_settings__callbackSet(
-            A_SETTING_COLOR_SCREEN_BORDER, settingBorderColor, true);
+        a_pixel_toRgb(a_pixel_fromHex(A_CONFIG_COLOR_SCREEN_BORDER),
+                      &g_clearR,
+                      &g_clearG,
+                      &g_clearB);
     #endif
 
     #if A_CONFIG_TRAIT_DESKTOP
