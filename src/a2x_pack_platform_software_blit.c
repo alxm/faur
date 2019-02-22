@@ -18,7 +18,7 @@
 
 #include "a2x_pack_platform_software_blit.v.h"
 
-#if A_BUILD_RENDER_SOFTWARE
+#if A_CONFIG_LIB_RENDER_SOFTWARE
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_pixel.v.h"
 #include "a2x_pack_screen.v.h"
@@ -242,7 +242,7 @@ static bool hasTransparency(const APixel* Pixels, int Width, int Height)
     return false;
 }
 
-APlatformTexture* a_platform__textureScreenNew(int Width, int Height)
+APlatformTexture* a_platform__textureNewScreen(int Width, int Height)
 {
     A_UNUSED(Width);
     A_UNUSED(Height);
@@ -250,7 +250,7 @@ APlatformTexture* a_platform__textureScreenNew(int Width, int Height)
     return NULL;
 }
 
-APlatformTexture* a_platform__textureSpriteNew(const ASprite* Sprite)
+APlatformTexture* a_platform__textureNewSprite(const ASprite* Sprite)
 {
     APlatformTexture* texture = Sprite->texture;
     const APixel* pixels = Sprite->pixels;
@@ -338,4 +338,4 @@ void a_platform__textureBlitEx(const APlatformTexture* Texture, int X, int Y, AF
                             Y - Texture->spr->h / 2 - CenterY,
                             FillFlat);
 }
-#endif // A_BUILD_RENDER_SOFTWARE
+#endif // A_CONFIG_LIB_RENDER_SOFTWARE

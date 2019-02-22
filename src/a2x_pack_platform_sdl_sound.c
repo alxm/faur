@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2018 Alex Margarit
+    Copyright 2010, 2016-2019 Alex Margarit
     This file is part of a2x, a C video game framework.
 
     a2x-framework is free software: you can redistribute it and/or modify
@@ -18,7 +18,7 @@
 
 #include "a2x_pack_platform_sdl_sound.v.h"
 
-#if A_BUILD_LIB_SDL
+#if A_CONFIG_LIB_SDL
 #include <SDL.h>
 #include <SDL_mixer.h>
 
@@ -26,27 +26,12 @@
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
 #include "a2x_pack_platform.v.h"
-#include "a2x_pack_settings.v.h"
 
 static bool g_enabled;
+static bool g_mute = A_CONFIG_SOUND_MUTE;
 static int g_numSampleChannels;
 static int g_numSampleChannelsReserved;
 static int g_currentSampleChannel;
-
-#if A_BUILD_DEVICE_KEYBOARD
-    static void settingMute(ASettingId Setting)
-    {
-        if(!g_enabled) {
-            return;
-        }
-
-        if(a_settings_boolGet(Setting)) {
-            Mix_PauseMusic();
-        } else if(Mix_PausedMusic()) {
-            Mix_ResumeMusic();
-        }
-    }
-#endif
 
 void a_platform_sdl_sound__init(void)
 {
@@ -62,16 +47,14 @@ void a_platform_sdl_sound__init(void)
     g_enabled = true;
 
     g_numSampleChannels =
-        Mix_AllocateChannels(
-            a_settings_intGet(A_SETTING_SOUND_SAMPLE_CHANNELS_TOTAL));
+        Mix_AllocateChannels(A_CONFIG_SOUND_SAMPLE_CHANNELS_TOTAL);
 
     if(g_numSampleChannels <= 0) {
         a_out__error("Mix_AllocateChannels: %s", Mix_GetError());
     }
 
     g_numSampleChannelsReserved =
-        Mix_ReserveChannels(
-            a_settings_intGet(A_SETTING_SOUND_SAMPLE_CHANNELS_RESERVED));
+        Mix_ReserveChannels(A_CONFIG_SOUND_SAMPLE_CHANNELS_RESERVED);
 
     if(g_numSampleChannelsReserved <= 0) {
         a_out__error("Mix_ReserveChannels: %s", Mix_GetError());
@@ -80,10 +63,6 @@ void a_platform_sdl_sound__init(void)
     a_out__message("Allocated %d sample channels, reserved %d",
                    g_numSampleChannels,
                    g_numSampleChannelsReserved);
-
-    #if A_BUILD_DEVICE_KEYBOARD
-        a_settings__callbackSet(A_SETTING_SOUND_MUTE, settingMute, true);
-    #endif
 }
 
 void a_platform_sdl_sound__uninit(void)
@@ -95,12 +74,32 @@ void a_platform_sdl_sound__uninit(void)
     SDL_QuitSubSystem(SDL_INIT_AUDIO);
 }
 
-int a_platform__volumeGetMax(void)
+bool a_platform__soundMuteGet(void)
+{
+    return g_enabled ? g_mute : true;
+}
+
+void a_platform__soundMuteFlip(void)
+{
+    if(!g_enabled) {
+        return;
+    }
+
+    g_mute = !g_mute;
+
+    if(g_mute) {
+        Mix_PauseMusic();
+    } else if(Mix_PausedMusic()) {
+        Mix_ResumeMusic();
+    }
+}
+
+int a_platform__soundVolumeGetMax(void)
 {
     return MIX_MAX_VOLUME;
 }
 
-APlatformMusic* a_platform__musicNew(const char* Path)
+APlatformSoundMusic* a_platform__soundMusicNew(const char* Path)
 {
     if(!g_enabled) {
         return NULL;
@@ -115,25 +114,25 @@ APlatformMusic* a_platform__musicNew(const char* Path)
     return m;
 }
 
-void a_platform__musicFree(APlatformMusic* Music)
+void a_platform__soundMusicFree(APlatformSoundMusic* Music)
 {
     Mix_FreeMusic(Music);
 }
 
-void a_platform__musicVolumeSet(int Volume)
+void a_platform__soundMusicVolumeSet(int Volume)
 {
     if(!g_enabled) {
         return;
     }
 
-    #if A_BUILD_SYSTEM_EMSCRIPTEN
+    #if A_CONFIG_SYSTEM_EMSCRIPTEN
         A_UNUSED(Volume);
     #else
         Mix_VolumeMusic(Volume);
     #endif
 }
 
-void a_platform__musicPlay(APlatformMusic* Music)
+void a_platform__soundMusicPlay(APlatformSoundMusic* Music)
 {
     if(Music == NULL) {
         return;
@@ -144,7 +143,7 @@ void a_platform__musicPlay(APlatformMusic* Music)
     }
 }
 
-void a_platform__musicStop(void)
+void a_platform__soundMusicStop(void)
 {
     if(!g_enabled) {
         return;
@@ -153,7 +152,7 @@ void a_platform__musicStop(void)
     Mix_HaltMusic();
 }
 
-APlatformSample* a_platform__sampleNewFromFile(const char* Path)
+APlatformSoundSample* a_platform__soundSampleNewFromFile(const char* Path)
 {
     if(!g_enabled) {
         return NULL;
@@ -168,7 +167,7 @@ APlatformSample* a_platform__sampleNewFromFile(const char* Path)
     return chunk;
 }
 
-APlatformSample* a_platform__sampleNewFromData(const uint8_t* Data, int Size)
+APlatformSoundSample* a_platform__soundSampleNewFromData(const uint8_t* Data, int Size)
 {
     if(!g_enabled) {
         return NULL;
@@ -192,18 +191,18 @@ APlatformSample* a_platform__sampleNewFromData(const uint8_t* Data, int Size)
     return chunk;
 }
 
-void a_platform__sampleFree(APlatformSample* Sample)
+void a_platform__soundSampleFree(APlatformSoundSample* Sample)
 {
     Mix_FreeChunk(Sample);
 }
 
-void a_platform__sampleVolumeSet(APlatformSample* Sample, int Volume)
+void a_platform__soundSampleVolumeSet(APlatformSoundSample* Sample, int Volume)
 {
     if(Sample == NULL) {
         return;
     }
 
-    #if A_BUILD_SYSTEM_EMSCRIPTEN
+    #if A_CONFIG_SYSTEM_EMSCRIPTEN
         A_UNUSED(Sample);
         A_UNUSED(Volume);
     #else
@@ -211,20 +210,20 @@ void a_platform__sampleVolumeSet(APlatformSample* Sample, int Volume)
     #endif
 }
 
-void a_platform__sampleVolumeSetAll(int Volume)
+void a_platform__soundSampleVolumeSetAll(int Volume)
 {
     if(!g_enabled) {
         return;
     }
 
-    #if A_BUILD_SYSTEM_EMSCRIPTEN
+    #if A_CONFIG_SYSTEM_EMSCRIPTEN
         A_UNUSED(Volume);
     #else
         Mix_Volume(-1, Volume);
     #endif
 }
 
-void a_platform__samplePlay(APlatformSample* Sample, int Channel, bool Loop)
+void a_platform__soundSamplePlay(APlatformSoundSample* Sample, int Channel, bool Loop)
 {
     if(Sample == NULL) {
         return;
@@ -235,7 +234,7 @@ void a_platform__samplePlay(APlatformSample* Sample, int Channel, bool Loop)
     }
 }
 
-void a_platform__sampleStop(int Channel)
+void a_platform__soundSampleStop(int Channel)
 {
     if(!g_enabled) {
         return;
@@ -244,7 +243,7 @@ void a_platform__sampleStop(int Channel)
     Mix_HaltChannel(Channel);
 }
 
-bool a_platform__sampleIsPlaying(int Channel)
+bool a_platform__soundSampleIsPlaying(int Channel)
 {
     if(!g_enabled) {
         return false;
@@ -253,7 +252,7 @@ bool a_platform__sampleIsPlaying(int Channel)
     return Mix_Playing(Channel);
 }
 
-int a_platform__sampleChannelGet(void)
+int a_platform__soundSampleChannelGet(void)
 {
     if(!g_enabled) {
         return -1;
@@ -261,4 +260,4 @@ int a_platform__sampleChannelGet(void)
 
     return g_currentSampleChannel++ % g_numSampleChannelsReserved;
 }
-#endif // A_BUILD_LIB_SDL
+#endif // A_CONFIG_LIB_SDL

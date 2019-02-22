@@ -50,14 +50,14 @@ class NewTool(Tool):
                 self.tool.writefile(os.path.join(self.path, Name), Content)
 
         dir_root = Dir(self, project_path)
-        dir_assets = dir_root.add_subdir('assets')
+        dir_ast = dir_root.add_subdir('assets')
         dir_bin = dir_root.add_subdir('bin')
-        dir_make = dir_root.add_subdir('make')
+        dir_mke = dir_root.add_subdir('make')
         dir_obj = dir_root.add_subdir('obj')
         dir_src = dir_root.add_subdir('src')
 
-        os.symlink(os.path.join('..', dir_assets.name),
-                   os.path.join(dir_bin.path, dir_assets.name))
+        os.symlink(os.path.join('..', dir_ast.name),
+                   os.path.join(dir_bin.path, dir_ast.name))
 
         author = '<your username>'
 
@@ -66,12 +66,19 @@ class NewTool(Tool):
                 author = os.environ[key]
                 break
 
-        dir_make.write_file('Makefile',
+        dir_mke.write_file('Makefile',
 """\
-A_CONFIG_APP_NAME := {0}
+A_CONFIG_APP_AUTHOR := {author}
+A_CONFIG_APP_NAME := {name}
 
-include $(A2X_PATH)/make/project/Makefile
-""".format(project_name))
+A_CONFIG_APP_VERSION_MAJOR := 1
+A_CONFIG_APP_VERSION_MINOR := 0
+A_CONFIG_APP_VERSION_MICRO := 0
+
+A_CONFIG_FILE_APP := {name}.bin
+
+include $(A2X_PATH)/make/dev
+""".format(author = author, name = project_name))
 
         dir_src.write_file('main.c',
 """\
@@ -82,37 +89,21 @@ enum {{
     STATE_NUM
 }};
 
-static A_STATE(drawBox);
-
-A_SETUP
-{{
-    a_settings_stringSet(A_SETTING_APP_TITLE, "{0}");
-    a_settings_stringSet(A_SETTING_APP_VERSION, "0.1.0");
-    a_settings_stringSet(A_SETTING_APP_AUTHOR, "{1}");
-    a_settings_boolSet(A_SETTING_OUTPUT_ON, true);
-}}
+A_STATE(drawBox);
 
 A_MAIN
 {{
     a_state_init(STATE_NUM);
-
     a_state_new(STATE_DRAWBOX, drawBox, "Draw Box");
+
     a_state_push(STATE_DRAWBOX);
 }}
 
-A_EXIT
-{{
-    //
-}}
-
-static A_STATE(drawBox)
+A_STATE(drawBox)
 {{
     static struct {{
         int x, y;
-        AButton* up;
-        AButton* down;
-        AButton* left;
-        AButton* right;
+        AButton *up, *down, *left, *right;
     }} context;
 
     A_STATE_INIT
@@ -183,7 +174,7 @@ static A_STATE(drawBox)
             .format(dir_root.path))
 
         self.output.note('To build and run:')
-        self.output.note('cd {} && make run'.format(dir_make.path))
+        self.output.note('cd {} && make -j run'.format(dir_mke.path))
 
 if __name__ == '__main__':
     NewTool('ProjectName').run()

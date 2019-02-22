@@ -24,16 +24,18 @@
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
 #include "a2x_pack_pixel.v.h"
-#include "a2x_pack_settings.v.h"
 
 AScreen a__screen;
 static AList* g_stack; // list of AScreen
+static int g_zoom = A_CONFIG_SCREEN_ZOOM;
+static bool g_fullscreen = A_CONFIG_SCREEN_FULLSCREEN;
 
-#if A_BUILD_SYSTEM_DESKTOP
+#if A_CONFIG_TRAIT_DESKTOP
     static AButton* g_fullScreenButton;
 
     #define A__ZOOM_LEVELS 3
     static AButton* g_zoomButtons[A__ZOOM_LEVELS];
+
 #endif
 
 static void initScreen(AScreen* Screen, int Width, int Height, bool AllocBuffer)
@@ -47,7 +49,7 @@ static void initScreen(AScreen* Screen, int Width, int Height, bool AllocBuffer)
     }
 
     Screen->sprite = NULL;
-    Screen->texture = a_platform__textureScreenNew(Width, Height);
+    Screen->texture = a_platform__textureNewScreen(Width, Height);
     Screen->width = Width;
     Screen->height = Height;
     Screen->clipX = 0;
@@ -65,15 +67,15 @@ static void freeScreen(AScreen* Screen)
         free(Screen->pixels);
     }
 
-    #if !A_BUILD_RENDER_SOFTWARE
+    #if !A_CONFIG_LIB_RENDER_SOFTWARE
         a_platform__textureFree(Screen->texture);
     #endif
 }
 
 void a_screen__init(void)
 {
-    int width = a_settings_intGet(A_SETTING_VIDEO_WIDTH);
-    int height = a_settings_intGet(A_SETTING_VIDEO_HEIGHT);
+    int width = A_CONFIG_SCREEN_WIDTH;
+    int height = A_CONFIG_SCREEN_HEIGHT;
 
     if(width < 0 || height < 0) {
         int w = 0, h = 0;
@@ -82,12 +84,10 @@ void a_screen__init(void)
         if(w > 0 && h > 0) {
             if(width < 0) {
                 width = w / -width;
-                a_settings_intSet(A_SETTING_VIDEO_WIDTH, width);
             }
 
             if(height < 0) {
                 height = h / -height;
-                a_settings_intSet(A_SETTING_VIDEO_HEIGHT, height);
             }
         }
     }
@@ -98,39 +98,19 @@ void a_screen__init(void)
         a_out__message("Screen resolution %dx%d", width, height);
     }
 
-    #if A_BUILD_SYSTEM_WIZ
-        if(a_settings_boolGet(A_SETTING_SYSTEM_WIZ_FIXTEARING)) {
-            a_settings_boolSet(A_SETTING_VIDEO_DOUBLEBUFFER, true);
-        }
+    #if A_CONFIG_LIB_RENDER_SOFTWARE
+        // Allocate a pixel buffer, or use SDL's pixel buffer directly
+        initScreen(&a__screen, width, height, A_CONFIG_SCREEN_ALLOCATE);
     #endif
 
-    #if A_BUILD_LIB_SDL == 2
-        a_settings_boolSet(A_SETTING_VIDEO_DOUBLEBUFFER, true);
+    a_platform__screenInit(width, height);
+
+    #if !A_CONFIG_LIB_RENDER_SOFTWARE
+        initScreen(&a__screen, width, height, true);
+        a_platform__renderTargetSet(a__screen.texture);
     #endif
 
-    if(a_settings_intGet(A_SETTING_VIDEO_ZOOM) > 1) {
-        a_settings_boolSet(A_SETTING_VIDEO_DOUBLEBUFFER, true);
-    }
-
-    #if A_BUILD_LIB_SDL == 2 || A_BUILD_SYSTEM_EMSCRIPTEN
-        if(a_settings_isDefault(A_SETTING_VIDEO_VSYNC)) {
-            a_settings_boolSet(A_SETTING_VIDEO_VSYNC, true);
-        }
-    #endif
-
-    #if A_BUILD_RENDER_SOFTWARE
-        if(a_settings_boolGet(A_SETTING_VIDEO_DOUBLEBUFFER)) {
-            // Allocate pixel buffer
-            initScreen(&a__screen, width, height, true);
-        } else {
-            // Will use SDL's pixel buffer directly
-            initScreen(&a__screen, width, height, false);
-        }
-    #endif
-
-    a_platform__screenInit();
-
-    #if A_BUILD_SYSTEM_DESKTOP
+    #if A_CONFIG_TRAIT_DESKTOP
         g_fullScreenButton = a_button_new();
         a_button_bind(g_fullScreenButton, A_KEY_F4);
 
@@ -138,11 +118,6 @@ void a_screen__init(void)
             g_zoomButtons[z] = a_button_new();
             a_button_bind(g_zoomButtons[z], A_KEY_F1 + z);
         }
-    #endif
-
-    #if !A_BUILD_RENDER_SOFTWARE
-        initScreen(&a__screen, width, height, true);
-        a_platform__renderTargetSet(a__screen.texture);
     #endif
 
     g_stack = a_list_new();
@@ -158,7 +133,7 @@ void a_screen__uninit(void)
 
     a_list_freeEx(g_stack, (AFree*)a_screen_free);
 
-    #if A_BUILD_SYSTEM_DESKTOP
+    #if A_CONFIG_TRAIT_DESKTOP
         a_button_free(g_fullScreenButton);
 
         for(int z = 0; z < A__ZOOM_LEVELS; z++) {
@@ -169,14 +144,14 @@ void a_screen__uninit(void)
 
 void a_screen__tick(void)
 {
-    #if A_BUILD_SYSTEM_DESKTOP
+    #if A_CONFIG_TRAIT_DESKTOP
         if(a_button_pressGetOnce(g_fullScreenButton)) {
-            a_settings_boolFlip(A_SETTING_VIDEO_FULLSCREEN);
+            a_screen_fullscreenFlip();
         }
 
         for(int z = 0; z < A__ZOOM_LEVELS; z++) {
             if(a_button_pressGetOnce(g_zoomButtons[z])) {
-                a_settings_intSet(A_SETTING_VIDEO_ZOOM, z + 1);
+                a_screen__zoomSet(z + 1);
                 break;
             }
         }
@@ -192,6 +167,25 @@ void a_screen__draw(void)
     a_platform__screenShow();
 }
 
+int a_screen__zoomGet(void)
+{
+    return g_zoom;
+}
+
+void a_screen__zoomSet(int Zoom)
+{
+    g_zoom = Zoom;
+
+    a_platform__screenZoomSet(Zoom);
+}
+
+void a_screen_fullscreenFlip(void)
+{
+    g_fullscreen = !g_fullscreen;
+
+    a_platform__screenFullscreenSet(g_fullscreen);
+}
+
 bool a_screen__sameSize(const AScreen* Screen1, const AScreen* Screen2)
 {
     return Screen1->width == Screen2->width
@@ -200,7 +194,7 @@ bool a_screen__sameSize(const AScreen* Screen1, const AScreen* Screen2)
 
 APixel* a_screen_pixelsGetBuffer(void)
 {
-    #if !A_BUILD_RENDER_SOFTWARE
+    #if !A_CONFIG_LIB_RENDER_SOFTWARE
         if(a__screen.pixels == NULL) {
             a__screen.pixels = a_mem_malloc(a__screen.pixelsSize);
             a__screen.ownsBuffer = true;
@@ -231,7 +225,7 @@ AScreen* a_screen_new(int Width, int Height)
 {
     AScreen* s = a_mem_malloc(sizeof(AScreen));
 
-    #if A_BUILD_RENDER_SOFTWARE
+    #if A_CONFIG_LIB_RENDER_SOFTWARE
         initScreen(s, Width, Height, true);
     #else
         initScreen(s, Width, Height, false);
@@ -269,7 +263,7 @@ void a_screen_copy(AScreen* Dst, const AScreen* Src)
                  Src->height);
     }
 
-    #if A_BUILD_RENDER_SOFTWARE
+    #if A_CONFIG_LIB_RENDER_SOFTWARE
         memcpy(Dst->pixels, Src->pixels, Src->pixelsSize);
     #else
         a_pixel_push();
@@ -300,7 +294,7 @@ void a_screen_blit(const AScreen* Screen)
                  a__screen.height);
     }
 
-    #if A_BUILD_RENDER_SOFTWARE
+    #if A_CONFIG_LIB_RENDER_SOFTWARE
         bool noClipping = a_screen_boxInsideClip(
                             0, 0, a__screen.width, a__screen.height);
         APixel* dst = a__screen.pixels;
@@ -386,7 +380,7 @@ void a_screen_blit(const AScreen* Screen)
 
 void a_screen_clear(void)
 {
-    #if A_BUILD_RENDER_SOFTWARE
+    #if A_CONFIG_LIB_RENDER_SOFTWARE
         memset(a__screen.pixels, 0, a__screen.pixelsSize);
     #else
         a_pixel_push();
@@ -411,7 +405,7 @@ static void pushTarget(APixel* Pixels, size_t PixelsSize, int Width, int Height,
     a__screen.height = Height;
     a__screen.ownsBuffer = false;
 
-    #if !A_BUILD_RENDER_SOFTWARE
+    #if !A_CONFIG_LIB_RENDER_SOFTWARE
         a_platform__renderTargetSet(Texture);
     #endif
 
@@ -440,9 +434,9 @@ void a_screen_targetPushSprite(ASprite* Sprite)
 
 void a_screen_targetPop(void)
 {
-    #if A_BUILD_RENDER_SOFTWARE
+    #if A_CONFIG_LIB_RENDER_SOFTWARE
         if(a__screen.sprite) {
-            a__screen.sprite->texture = a_platform__textureSpriteNew(
+            a__screen.sprite->texture = a_platform__textureNewSprite(
                                             a__screen.sprite);
         }
     #endif
@@ -456,7 +450,7 @@ void a_screen_targetPop(void)
     a__screen = *screen;
     free(screen);
 
-    #if !A_BUILD_RENDER_SOFTWARE
+    #if !A_CONFIG_LIB_RENDER_SOFTWARE
         a_platform__renderTargetSet(a__screen.texture);
         a_platform__renderTargetClipSet(a__screen.clipX,
                                         a__screen.clipY,
@@ -487,7 +481,7 @@ void a_screen_clipSet(int X, int Y, int Width, int Height)
     a__screen.clipWidth = Width;
     a__screen.clipHeight = Height;
 
-    #if !A_BUILD_RENDER_SOFTWARE
+    #if !A_CONFIG_LIB_RENDER_SOFTWARE
         a_platform__renderTargetClipSet(X, Y, Width, Height);
     #endif
 }

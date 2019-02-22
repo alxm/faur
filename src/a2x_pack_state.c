@@ -18,7 +18,7 @@
 
 #include "a2x_pack_state.v.h"
 
-#if A_BUILD_SYSTEM_EMSCRIPTEN
+#if A_CONFIG_SYSTEM_EMSCRIPTEN
     #include <emscripten.h>
 #endif
 
@@ -32,7 +32,6 @@
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_screen.v.h"
 #include "a2x_pack_screenshot.v.h"
-#include "a2x_pack_settings.v.h"
 #include "a2x_pack_sound.v.h"
 #include "a2x_pack_timer.v.h"
 
@@ -168,7 +167,7 @@ void a_state_new(int Index, AStateHandler* Handler, const char* Name)
 
 static const AStateTableEntry* getState(int State, const char* CallerFunction)
 {
-    #if A_BUILD_DEBUG
+    #if A_CONFIG_BUILD_DEBUG
         if(g_table == NULL) {
             A__FATAL("%s(%d): Call a_state_init first", CallerFunction, State);
         }
@@ -346,7 +345,7 @@ static bool iteration(void)
     return true;
 }
 
-#if A_BUILD_SYSTEM_EMSCRIPTEN
+#if A_CONFIG_SYSTEM_EMSCRIPTEN
 static void loop(void)
 {
     if(!iteration()) {
@@ -360,11 +359,10 @@ void a_state__run(void)
 {
     a_out__state("Running states");
 
-    #if A_BUILD_SYSTEM_EMSCRIPTEN
+    #if A_CONFIG_SYSTEM_EMSCRIPTEN
         emscripten_set_main_loop(
             loop,
-            a_settings_boolGet(A_SETTING_VIDEO_VSYNC)
-                ? 0 : (int)a_settings_intuGet(A_SETTING_FPS_DRAW),
+            a_platform__screenVsyncGet() ? 0 : A_CONFIG_FPS_DRAW,
             true);
     #else
         while(iteration()) {

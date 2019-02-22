@@ -23,12 +23,11 @@
     #include <execinfo.h>
 #endif
 
-#if A_BUILD_SYSTEM_EMSCRIPTEN
+#if A_CONFIG_SYSTEM_EMSCRIPTEN
     #include <emscripten.h>
 #endif
 
 #include "a2x_pack_block.v.h"
-#include "a2x_pack_conf.v.h"
 #include "a2x_pack_console.v.h"
 #include "a2x_pack_ecs.v.h"
 #include "a2x_pack_embed.v.h"
@@ -42,7 +41,6 @@
 #include "a2x_pack_random.v.h"
 #include "a2x_pack_screen.v.h"
 #include "a2x_pack_screenshot.v.h"
-#include "a2x_pack_settings.v.h"
 #include "a2x_pack_sound.v.h"
 #include "a2x_pack_state.v.h"
 #include "a2x_pack_time.v.h"
@@ -54,10 +52,6 @@ static const char** g_args;
 static void a__atexit(void)
 {
     a_out__message("Running atexit");
-
-    a_out__message("A_EXIT start");
-    a_exit();
-    a_out__message("A_EXIT end");
 
     a_console__uninit();
     a_font__uninit();
@@ -75,48 +69,35 @@ static void a__atexit(void)
     a_block__uninit();
     a_embed__uninit();
 
-    #if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ || A_BUILD_SYSTEM_CAANOO
-        if(a_settings_boolGet(A_SETTING_SYSTEM_GP2X_MENU)) {
-            a_settings__uninit();
+    #if A_CONFIG_SYSTEM_GP2X || A_CONFIG_SYSTEM_WIZ || A_CONFIG_SYSTEM_CAANOO
+        #if A_CONFIG_SYSTEM_GP2X_MENU
             chdir("/usr/gp2x");
             execl("gp2xmenu", "gp2xmenu", NULL);
-        }
+        #endif
     #endif
-
-    a_settings__uninit();
 }
 
 int main(int Argc, char* Argv[])
 {
+    a_out__message("a2x: %s %s", A_CONFIG_BUILD_ID, A_CONFIG_BUILD_GIT_HASH);
+    a_out__message("App: %s %s by %s",
+                   A_CONFIG_APP_NAME,
+                   A_CONFIG_APP_VERSION,
+                   A_CONFIG_APP_AUTHOR);
+    a_out__message("Build timestamp %s", A_CONFIG_BUILD_TIMESTAMP);
+    a_out__message("PID %d", getpid());
+
     g_argsNum = Argc;
     g_args = (const char**)Argv;
 
     a_console__init();
-    a_settings__init();
-
-    a_out__message("A_SETUP start");
-    a_setup();
-    a_out__message("A_SETUP end");
-
-    a_settings__init2();
-
-    a_out__message("a2x %s, %s", A_BUILD__GIT_HASH, A_BUILD__COMPILE_TIME);
-    a_out__message("%s %s by %s, %s - PID %d",
-                   a_settings_stringGet(A_SETTING_APP_TITLE),
-                   a_settings_stringGet(A_SETTING_APP_VERSION),
-                   a_settings_stringGet(A_SETTING_APP_AUTHOR),
-                   a_settings_stringGet(A_SETTING_APP_BUILDTIME),
-                   getpid());
-
     a_embed__init();
     a_block__init();
-    a_conf__init();
     a_platform__init();
     a_timer__init();
     a_input__init();
     a_screen__init();
     a_pixel__init();
-    a_platform__init2();
     a_sprite__init();
     a_fps__init();
     a_screenshot__init();
@@ -128,7 +109,6 @@ int main(int Argc, char* Argv[])
     a_fade__init();
     a_font__init();
     a_console__init2();
-    a_settings__init3();
 
     if(atexit(a__atexit)) {
         a_out__error("Cannot register atexit callback");
@@ -171,10 +151,11 @@ __attribute__((noreturn)) static void handleFatal(void)
         free(functionNames);
     #endif
 
-    a_settings_boolSet(A_SETTING_OUTPUT_CONSOLE, true);
+    a_console_showSet(true);
+    a_console__draw();
     a_screen__draw();
 
-    #if A_BUILD_DEBUG
+    #if A_CONFIG_BUILD_DEBUG
         while(true) {
             printf("Waiting to attach debugger: PID %d\n", getpid());
             a_time_secSpin(1);
@@ -196,7 +177,7 @@ __attribute__((noreturn)) static void handleFatal(void)
         }
     #endif
 
-    #if A_BUILD_SYSTEM_EMSCRIPTEN
+    #if A_CONFIG_SYSTEM_EMSCRIPTEN
         emscripten_force_exit(1);
     #endif
 

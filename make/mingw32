@@ -1,25 +1,24 @@
+include $(A2X_PATH)/make/global/defs
 include $(A_FILE_SDKCONFIG_MK)
 
 A_PLATFORM := mingw32
 
 MINGW_BIN := $(A_SDK_MINGW32_ROOT)/$(A_SDK_MINGW32_ARCH)/bin
 
-A_BUILD_LIBS := \
+A_CONFIG_BUILD_OPT := -O3 -s
+A_CONFIG_LIB_SDL := 2
+A_CONFIG_LIB_SDL_CONFIG := $(MINGW_BIN)/sdl2-config
+A_CONFIG_LIB_SDL_TIME := 1
+A_CONFIG_SYSTEM_MINGW := 1
+A_CONFIG_TRAIT_DESKTOP := 1
+A_CONFIG_TRAIT_KEYBOARD := 1
+
+A_PLATFORM_LIBS := \
     -u _SDL_main \
-    $(shell $(MINGW_BIN)/sdl2-config --libs) \
-    -lSDL2_mixer \
     -lpng \
     -lm \
 
-A_BUILD_CFLAGS := \
-    -DA_BUILD_LIB_SDL=2 \
-    -DA_BUILD_LIB_SDL_TIME=1 \
-    -DA_BUILD_RENDER_SDL=1 \
-    -DA_BUILD_SYSTEM_DESKTOP=1 \
-    -DA_BUILD_SYSTEM_MINGW=1 \
-    -DA_BUILD_DEVICE_KEYBOARD=1 \
-    -O3 \
-    $(shell $(MINGW_BIN)/sdl2-config --cflags) \
+A_PLATFORM_CFLAGS := \
 
 PREFIX := $(A_SDK_MINGW32_ARCH)-
 
@@ -30,3 +29,5 @@ export AR      := $(PREFIX)ar
 export OBJCOPY := $(PREFIX)objcopy
 export READELF := $(PREFIX)readelf
 export STRIP   := $(PREFIX)strip
+
+include $(A2X_PATH)/make/global/rules

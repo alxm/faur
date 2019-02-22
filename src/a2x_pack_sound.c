@@ -24,7 +24,6 @@
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_platform.v.h"
 #include "a2x_pack_screen.v.h"
-#include "a2x_pack_settings.v.h"
 #include "a2x_pack_timer.v.h"
 
 static int g_volume;
@@ -32,7 +31,7 @@ static int g_musicVolume;
 static int g_samplesVolume;
 static int g_volumeMax;
 
-#if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ
+#if A_CONFIG_SYSTEM_GP2X || A_CONFIG_SYSTEM_WIZ
     #define A__VOLUME_STEP 1
     #define A__VOLBAR_SHOW_MS 500
     static ATimer* g_volTimer;
@@ -40,34 +39,32 @@ static int g_volumeMax;
     static AButton* g_volumeDownButton;
 #endif
 
-#if A_BUILD_DEVICE_KEYBOARD
+#if A_CONFIG_TRAIT_KEYBOARD
     static AButton* g_muteButton;
 #endif
 
 static void adjustSoundVolume(int Volume)
 {
     g_volume = a_math_clamp(Volume, 0, g_volumeMax);
-    g_musicVolume = a_settings_intGet(A_SETTING_SOUND_VOLUME_SCALE_MUSIC)
-                        * g_volume / 100;
-    g_samplesVolume = a_settings_intGet(A_SETTING_SOUND_VOLUME_SCALE_SAMPLE)
-                        * g_volume / 100;
+    g_musicVolume = g_volume * A_CONFIG_SOUND_VOLUME_SCALE_MUSIC / 100;
+    g_samplesVolume = g_volume * A_CONFIG_SOUND_VOLUME_SCALE_SAMPLE / 100;
 
-    a_platform__sampleVolumeSetAll(g_samplesVolume);
-    a_platform__musicVolumeSet(g_musicVolume);
+    a_platform__soundSampleVolumeSetAll(g_samplesVolume);
+    a_platform__soundMusicVolumeSet(g_musicVolume);
 }
 
 void a_sound__init(void)
 {
-    g_volumeMax = a_platform__volumeGetMax();
+    g_volumeMax = a_platform__soundVolumeGetMax();
 
-    #if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ
+    #if A_CONFIG_SYSTEM_GP2X || A_CONFIG_SYSTEM_WIZ
         adjustSoundVolume(g_volumeMax / 16);
         g_volTimer = a_timer_new(A_TIMER_MS, A__VOLBAR_SHOW_MS, false);
     #else
         adjustSoundVolume(g_volumeMax);
     #endif
 
-    #if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ
+    #if A_CONFIG_SYSTEM_GP2X || A_CONFIG_SYSTEM_WIZ
         g_volumeUpButton = a_button_new();
         a_button_bind(g_volumeUpButton, A_BUTTON_VOLUP);
 
@@ -75,7 +72,7 @@ void a_sound__init(void)
         a_button_bind(g_volumeDownButton, A_BUTTON_VOLDOWN);
     #endif
 
-    #if A_BUILD_DEVICE_KEYBOARD
+    #if A_CONFIG_TRAIT_KEYBOARD
         g_muteButton = a_button_new();
         a_button_bind(g_muteButton, A_KEY_M);
     #endif
@@ -83,11 +80,11 @@ void a_sound__init(void)
 
 void a_sound__uninit(void)
 {
-    #if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ
+    #if A_CONFIG_SYSTEM_GP2X || A_CONFIG_SYSTEM_WIZ
         a_timer_free(g_volTimer);
     #endif
 
-    #if A_BUILD_DEVICE_KEYBOARD
+    #if A_CONFIG_TRAIT_KEYBOARD
         a_button_free(g_muteButton);
     #endif
 
@@ -96,7 +93,7 @@ void a_sound__uninit(void)
 
 void a_sound__tick(void)
 {
-    #if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ
+    #if A_CONFIG_SYSTEM_GP2X || A_CONFIG_SYSTEM_WIZ
         int adjust = 0;
 
         if(a_button_pressGet(g_volumeUpButton)) {
@@ -111,78 +108,72 @@ void a_sound__tick(void)
         }
     #endif
 
-    #if A_BUILD_DEVICE_KEYBOARD
+    #if A_CONFIG_TRAIT_KEYBOARD
         if(a_button_pressGetOnce(g_muteButton)) {
-            a_settings_boolFlip(A_SETTING_SOUND_MUTE);
+            a_platform__soundMuteFlip();
         }
     #endif
 }
 
 void a_sound__draw(void)
 {
-    #if A_BUILD_SYSTEM_GP2X || A_BUILD_SYSTEM_WIZ
+    #if A_CONFIG_SYSTEM_GP2X || A_CONFIG_SYSTEM_WIZ
         if(!a_timer_isRunning(g_volTimer) || a_timer_expiredGet(g_volTimer)) {
             return;
         }
 
         a_pixel_blendSet(A_PIXEL_BLEND_PLAIN);
 
-        a_pixel_colorSetPixel(
-            a_settings_colorGet(A_SETTING_COLOR_VOLBAR_BACKGROUND));
-
+        a_pixel_colorSetHex(A_CONFIG_COLOR_VOLBAR_BACKGROUND);
         a_draw_rectangle(0, 181, g_volumeMax / A__VOLUME_STEP + 5, 16);
 
-        a_pixel_colorSetPixel(
-            a_settings_colorGet(A_SETTING_COLOR_VOLBAR_BORDER));
-
+        a_pixel_colorSetHex(A_CONFIG_COLOR_VOLBAR_BORDER);
         a_draw_hline(0, g_volumeMax / A__VOLUME_STEP + 4, 180);
         a_draw_hline(0, g_volumeMax / A__VOLUME_STEP + 4, 183 + 14);
         a_draw_vline(g_volumeMax / A__VOLUME_STEP + 4 + 1, 181, 183 + 13);
 
-        a_pixel_colorSetPixel(
-            a_settings_colorGet(A_SETTING_COLOR_VOLBAR_FILL));
-
+        a_pixel_colorSetHex(A_CONFIG_COLOR_VOLBAR_FILL);
         a_draw_rectangle(0, 186, g_volume / A__VOLUME_STEP, 6);
     #endif
 }
 
 AMusic* a_music_new(const char* Path)
 {
-    return a_platform__musicNew(Path);
+    return a_platform__soundMusicNew(Path);
 }
 
 void a_music_free(AMusic* Music)
 {
     if(Music) {
-        a_platform__musicFree(Music);
+        a_platform__soundMusicFree(Music);
     }
 }
 
 void a_music_play(AMusic* Music)
 {
-    if(a_settings_boolGet(A_SETTING_SOUND_MUTE)) {
+    if(a_platform__soundMuteGet()) {
         return;
     }
 
-    a_platform__musicPlay(Music);
+    a_platform__soundMusicPlay(Music);
 }
 
 void a_music_stop(void)
 {
-    a_platform__musicStop();
+    a_platform__soundMusicStop();
 }
 
 ASample* a_sample_new(const char* Path)
 {
-    APlatformSample* s = NULL;
+    APlatformSoundSample* s = NULL;
 
     if(a_path_exists(Path, A_PATH_FILE | A_PATH_REAL)) {
-        s = a_platform__sampleNewFromFile(Path);
+        s = a_platform__soundSampleNewFromFile(Path);
     } else {
         const AEmbeddedFile* e = a_embed__getFile(Path);
 
         if(e) {
-            s = a_platform__sampleNewFromData(e->buffer, (int)e->size);
+            s = a_platform__soundSampleNewFromData(e->buffer, (int)e->size);
         }
     }
 
@@ -192,39 +183,39 @@ ASample* a_sample_new(const char* Path)
 void a_sample_free(ASample* Sample)
 {
     if(Sample) {
-        a_platform__sampleFree(Sample);
+        a_platform__soundSampleFree(Sample);
     }
 }
 
 int a_channel_new(void)
 {
-    return a_platform__sampleChannelGet();
+    return a_platform__soundSampleChannelGet();
 }
 
 void a_channel_play(int Channel, ASample* Sample, AChannelFlags Flags)
 {
-    if(a_settings_boolGet(A_SETTING_SOUND_MUTE)) {
+    if(a_platform__soundMuteGet()) {
         return;
     }
 
     if(A_FLAG_TEST_ANY(Flags, A_CHANNEL_RESTART)) {
-        a_platform__sampleStop(Channel);
+        a_platform__soundSampleStop(Channel);
     } else if(A_FLAG_TEST_ANY(Flags, A_CHANNEL_YIELD)
-        && a_platform__sampleIsPlaying(Channel)) {
+        && a_platform__soundSampleIsPlaying(Channel)) {
 
         return;
     }
 
-    a_platform__samplePlay(
+    a_platform__soundSamplePlay(
         Sample, Channel, A_FLAG_TEST_ANY(Flags, A_CHANNEL_LOOP));
 }
 
 void a_channel_stop(int Channel)
 {
-    a_platform__sampleStop(Channel);
+    a_platform__soundSampleStop(Channel);
 }
 
 bool a_channel_isPlaying(int Channel)
 {
-    return a_platform__sampleIsPlaying(Channel);
+    return a_platform__soundSampleIsPlaying(Channel);
 }

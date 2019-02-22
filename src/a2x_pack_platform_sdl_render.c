@@ -18,7 +18,7 @@
 
 #include "a2x_pack_platform_sdl_render.v.h"
 
-#if A_BUILD_RENDER_SDL
+#if A_CONFIG_LIB_RENDER_SDL
 #include <SDL.h>
 
 #include "a2x_pack_main.v.h"
@@ -330,7 +330,7 @@ void a_platform__drawCircleFilled(int X, int Y, int Radius)
     }
 }
 
-APlatformTexture* a_platform__textureScreenNew(int Width, int Height)
+APlatformTexture* a_platform__textureNewScreen(int Width, int Height)
 {
     SDL_Texture* tex = SDL_CreateTexture(a__sdlRenderer,
                                          A_SDL__PIXEL_FORMAT,
@@ -362,7 +362,7 @@ APlatformTexture* a_platform__textureScreenNew(int Width, int Height)
     return screen;
 }
 
-APlatformTexture* a_platform__textureSpriteNew(const ASprite* Sprite)
+APlatformTexture* a_platform__textureNewSprite(const ASprite* Sprite)
 {
     APlatformTexture* texture = Sprite->texture;
     int width = Sprite->w;
@@ -559,4 +559,4 @@ void a_platform__renderTargetClipSet(int X, int Y, int Width, int Height)
         a_out__error("SDL_RenderSetClipRect: %s", SDL_GetError());
     }
 }
-#endif // A_BUILD_RENDER_SDL
+#endif // A_CONFIG_LIB_RENDER_SDL

@@ -23,7 +23,6 @@
 #include "a2x_pack_out.v.h"
 #include "a2x_pack_png.v.h"
 #include "a2x_pack_screen.v.h"
-#include "a2x_pack_settings.v.h"
 #include "a2x_pack_str.v.h"
 
 #define A__SCREENSHOTS_LIMIT 99999
@@ -37,7 +36,7 @@ static AButton* g_button;
 
 static bool lazy_init(void)
 {
-    ADir* dir = a_dir_new(a_settings_stringGet(A_SETTING_FILE_SCREENSHOTS));
+    ADir* dir = a_dir_new(A_CONFIG_DIR_SCREENSHOTS);
 
     if(dir != NULL) {
         // Only interested in the last file, to get the number from its name
@@ -73,25 +72,22 @@ static bool lazy_init(void)
 
     if(g_isInit) {
         g_filePrefix = a_str_dup(a_str__fmt512(
-            "%s/%s-",
-            a_settings_stringGet(A_SETTING_FILE_SCREENSHOTS),
-            a_settings_stringGet(A_SETTING_APP_TITLE)));
+                        "%s/%s-", A_CONFIG_DIR_SCREENSHOTS, A_CONFIG_APP_NAME));
 
         g_title = a_str_dup(a_str__fmt512(
             "%s %s by %s",
-            a_settings_stringGet(A_SETTING_APP_TITLE),
-            a_settings_stringGet(A_SETTING_APP_VERSION),
-            a_settings_stringGet(A_SETTING_APP_AUTHOR)));
+            A_CONFIG_APP_NAME,
+            A_CONFIG_APP_VERSION,
+            A_CONFIG_APP_AUTHOR));
 
         g_description = a_str_dup(a_str__fmt512(
-            "%s %s by %s, built on %s. Running a2x %s %s, built on %s.",
-            a_settings_stringGet(A_SETTING_APP_TITLE),
-            a_settings_stringGet(A_SETTING_APP_VERSION),
-            a_settings_stringGet(A_SETTING_APP_AUTHOR),
-            a_settings_stringGet(A_SETTING_APP_BUILDTIME),
-            A_BUILD__PLATFORM_NAME,
-            A_BUILD__GIT_HASH,
-            A_BUILD__COMPILE_TIME));
+            "%s %s by %s, built %s. Running a2x %s %s.",
+            A_CONFIG_APP_NAME,
+            A_CONFIG_APP_VERSION,
+            A_CONFIG_APP_AUTHOR,
+            A_CONFIG_BUILD_TIMESTAMP,
+            A_CONFIG_BUILD_ID,
+            A_CONFIG_BUILD_GIT_HASH));
 
         if(g_filePrefix && g_title && g_description) {
             // No spaces in file name

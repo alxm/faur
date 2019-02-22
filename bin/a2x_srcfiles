@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-    Copyright 2018 Alex Margarit
+    Copyright 2018-2019 Alex Margarit
     This file is part of a2x, a C video game framework.
 
     a2x-framework is free software: you can redistribute it and/or modify
@@ -24,22 +24,33 @@ from utils.output import Output
 from utils.tool import Tool
 
 class SrcFilesTool(Tool):
+    def check_extension(self, Name, Extensions):
+        for e in Extensions:
+            if Name.endswith(e):
+                return True
+
+        return False
+
     def scan_files(self, CurrentDir):
         files = []
 
         for f in self.listdir(CurrentDir):
+            if self.check_extension(f, self.ext_bad):
+                continue
+
             path = os.path.join(CurrentDir, f)
 
             if os.path.isdir(path):
                 files += self.scan_files(path)
-            elif f.endswith(self.file_ext):
+            elif self.check_extension(f, self.ext_good):
                 files.append(os.path.relpath(path, start = self.source_dir))
 
         return files
 
     def main(self):
         self.source_dir = os.path.abspath(self.get_arg('RootSourceDir'))
-        self.file_ext = self.get_arg('FileExt')
+        self.ext_good = self.get_arg('GoodExts').split(',')
+        self.ext_bad = self.get_arg('BadExts').split(',')
 
         if not os.path.isdir(self.source_dir):
             self.output.error('{} is not a dir'.format(self.source_dir))
@@ -47,4 +58,4 @@ class SrcFilesTool(Tool):
         print(' '.join(self.scan_files(self.source_dir)))
 
 if __name__ == '__main__':
-    SrcFilesTool('RootSourceDir FileExt').run()
+    SrcFilesTool('RootSourceDir GoodExts BadExts').run()

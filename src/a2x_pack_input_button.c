@@ -28,7 +28,7 @@
 struct AButton {
     AInputUserHeader header;
     AListNode* listNode;
-    AList* combos; // List of lists of APlatformButton, each a buttons combo
+    AList* combos; // List of lists of APlatformInputButton, each a button combo
     AList* currentCombo;
     ATimer* autoRepeat;
     bool isClone;
@@ -134,14 +134,14 @@ void a_button_free(AButton* Button)
 
 void a_button_bind(AButton* Button, int Id)
 {
-    APlatformButton* pb = a_platform__buttonGet(Id);
+    APlatformInputButton* pb = a_platform__inputButtonGet(Id);
 
     if(pb == NULL) {
         return;
     }
 
     if(Button->header.name == a__inputNameDefault) {
-        Button->header.name = a_platform__buttonNameGet(pb);
+        Button->header.name = a_platform__inputButtonNameGet(pb);
     }
 
     if(Button->currentCombo) {
@@ -211,16 +211,16 @@ void a_input_button__tick(void)
     A_LIST_ITERATE(g_buttons, AButton*, b) {
         bool pressed = false;
 
-        A_LIST_ITERATE(b->header.platformInputs, APlatformButton*, pb) {
-            if(a_platform__buttonPressGet(pb)) {
+        A_LIST_ITERATE(b->header.platformInputs, APlatformInputButton*, pb) {
+            if(a_platform__inputButtonPressGet(pb)) {
                 pressed = true;
                 goto done;
             }
         }
 
         A_LIST_ITERATE(b->combos, AList*, andList) {
-            A_LIST_ITERATE(andList, APlatformButton*, pb) {
-                if(!a_platform__buttonPressGet(pb)) {
+            A_LIST_ITERATE(andList, APlatformInputButton*, pb) {
+                if(!a_platform__inputButtonPressGet(pb)) {
                     break;
                 } else if(A_LIST_IS_LAST()) {
                     pressed = true;

@@ -61,7 +61,7 @@ int a_component__stringToIndex(const char* StringId)
 
 const AComponent* a_component__get(int Component, const char* CallerFunction)
 {
-    #if A_BUILD_DEBUG
+    #if A_CONFIG_BUILD_DEBUG
         if(g_componentsTable == NULL) {
             A__FATAL("%s: Call a_ecs_init first", CallerFunction);
         }

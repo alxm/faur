@@ -1,3 +1,0 @@
-include $(A2X_PATH)/make/global/defs
-include $(A2X_PATH)/make/platforms/linux64
-include $(A2X_PATH)/make/project/rules

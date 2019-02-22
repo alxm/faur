@@ -1,5 +1,5 @@
 /*
-    Copyright 2017 Alex Margarit
+    Copyright 2017, 2019 Alex Margarit
     This file is part of a2x, a C video game framework.
 
     a2x-framework is free software: you can redistribute it and/or modify
@@ -28,28 +28,25 @@
 
 void a_platform__init(void)
 {
-    #if A_BUILD_SYSTEM_LINUX
+    #if A_CONFIG_SYSTEM_LINUX
         a_platform_linux__init();
     #endif
 
-    #if A_BUILD_SYSTEM_PANDORA
+    #if A_CONFIG_SYSTEM_PANDORA
         a_platform_pandora__init();
     #endif
 
-    #if A_BUILD_LIB_SDL
+    #if A_CONFIG_LIB_SDL
         a_platform_sdl__init();
     #endif
 
-    #if A_BUILD_SYSTEM_GP2X
+    #if A_CONFIG_SYSTEM_GP2X
         a_platform_gp2x__init();
-    #elif A_BUILD_SYSTEM_WIZ || A_BUILD_SYSTEM_CAANOO
+    #elif A_CONFIG_SYSTEM_WIZ || A_CONFIG_SYSTEM_CAANOO
         a_platform_wiz__init();
     #endif
-}
 
-void a_platform__init2(void)
-{
-    #if A_BUILD_RENDER_SOFTWARE
+    #if A_CONFIG_LIB_RENDER_SOFTWARE
         a_platform_software_blit__init();
         a_platform_software_draw__init();
     #endif
@@ -57,11 +54,11 @@ void a_platform__init2(void)
 
 void a_platform__uninit(void)
 {
-    #if A_BUILD_SYSTEM_GP2X
+    #if A_CONFIG_SYSTEM_GP2X
         a_platform_gp2x__uninit();
-    #elif A_BUILD_SYSTEM_PANDORA
+    #elif A_CONFIG_SYSTEM_PANDORA
         a_platform_pandora__uninit();
-    #elif A_BUILD_SYSTEM_WIZ || A_BUILD_SYSTEM_CAANOO
+    #elif A_CONFIG_SYSTEM_WIZ || A_CONFIG_SYSTEM_CAANOO
         a_platform_wiz__uninit();
     #endif
 

@@ -26,7 +26,6 @@
 #include "a2x_pack_listit.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_screen.v.h"
-#include "a2x_pack_settings.v.h"
 #include "a2x_pack_sprite.v.h"
 #include "a2x_pack_spriteframes.v.h"
 #include "a2x_pack_str.v.h"
@@ -49,6 +48,7 @@ static unsigned g_linesPerScreen;
 static ASprite* g_sources[A_OUT__SOURCE_NUM];
 static ASprite* g_titles[A_OUT__TYPE_NUM];
 static AButton* g_toggle;
+static bool g_show = A_CONFIG_OUTPUT_CONSOLE_SHOW;
 
 static void line_set(ALine* Line, AOutSource Source, AOutType Type, const char* Text)
 {
@@ -99,7 +99,7 @@ void a_console__init2(void)
     a_spriteframes_free(frames, false);
 
     g_linesPerScreen =
-        (unsigned)(a_screen_sizeGetHeight() / a_font_lineHeightGet() - 2);
+        (unsigned)((a_screen_sizeGetHeight() - 2) / a_font_lineHeightGet() - 2);
 
     // In case messages were logged between init and init2
     while(a_list_sizeGet(g_lines) > g_linesPerScreen) {
@@ -141,15 +141,13 @@ void a_console__uninit(void)
 void a_console__tick(void)
 {
     if(a_button_pressGetOnce(g_toggle)) {
-        a_settings_boolFlip(A_SETTING_OUTPUT_CONSOLE);
+        g_show = !g_show;
     }
 }
 
 void a_console__draw(void)
 {
-    if(g_state != A_CONSOLE__STATE_FULL
-        || !a_settings_boolGet(A_SETTING_OUTPUT_CONSOLE)) {
-
+    if(!g_show || g_state != A_CONSOLE__STATE_FULL) {
         return;
     }
 
@@ -173,17 +171,16 @@ void a_console__draw(void)
         a_font__fontSet(A_FONT__ID_YELLOW); a_font_print("x");
 
         a_font__fontSet(A_FONT__ID_LIGHT_GRAY);
-        a_font_printf(" %s (%s) %s\n",
-                      A_BUILD__PLATFORM_NAME,
-                      A_BUILD__COMPILE_TIME,
-                      A_BUILD__GIT_HASH);
+        a_font_printf(" %s %.8s %s\n",
+                      A_CONFIG_BUILD_ID,
+                      A_CONFIG_BUILD_GIT_HASH,
+                      A_CONFIG_BUILD_TIMESTAMP);
 
         a_font__fontSet(A_FONT__ID_WHITE);
-        a_font_printf("%s %s by %s (%s)\n",
-                      a_settings_stringGet(A_SETTING_APP_TITLE),
-                      a_settings_stringGet(A_SETTING_APP_VERSION),
-                      a_settings_stringGet(A_SETTING_APP_AUTHOR),
-                      a_settings_stringGet(A_SETTING_APP_BUILDTIME));
+        a_font_printf("%s %s by %s\n",
+                      A_CONFIG_APP_NAME,
+                      A_CONFIG_APP_VERSION,
+                      A_CONFIG_APP_AUTHOR);
     }
 
     {
@@ -206,36 +203,36 @@ void a_console__draw(void)
         a_font_coordsSet(a__screen.width - 1, 2);
 
         a_font__fontSet(A_FONT__ID_YELLOW);
-        a_font_printf("%u tick fps\n", a_fps_tickRateGet());
-        a_font_printf("%u draw fps\n", a_fps_drawRateGet());
-        a_font_printf("%u draw max\n", a_fps_drawRateGetMax());
+        a_font_printf("%u tick fps\n", a_fps_rateTickGet());
+        a_font_printf("%u draw fps\n", a_fps_rateDrawGet());
+        a_font_printf("%u draw max\n", a_fps_rateDrawGetMax());
 
         a_font__fontSet(A_FONT__ID_GREEN);
-        a_font_printf("%dx%d:%dx%d\n",
+        a_font_printf("%dx%d:%d x%d\n",
                       a_screen_sizeGetWidth(),
                       a_screen_sizeGetHeight(),
-                      A__PIXEL_BPP,
-                      a_settings_intGet(A_SETTING_VIDEO_ZOOM));
+                      A_CONFIG_SCREEN_BPP,
+                      a_screen__zoomGet());
         a_font_printf("Vsync %s\n",
-                      a_settings_boolGet(A_SETTING_VIDEO_VSYNC) ? "on" : "off");
+                      a_platform__screenVsyncGet() ? "on" : "off");
 
-        #if A_BUILD_LIB_SDL == 1
+        #if A_CONFIG_LIB_SDL == 1
             a_font_print("SDL 1.2\n");
-        #elif A_BUILD_LIB_SDL == 2
+        #elif A_CONFIG_LIB_SDL == 2
             a_font_print("SDL 2.0\n");
         #endif
 
-        #if A_BUILD_RENDER_SOFTWARE
-            #if A_BUILD_LIB_SDL == 1
-                if(a_settings_boolGet(A_SETTING_VIDEO_DOUBLEBUFFER)) {
+        #if A_CONFIG_LIB_RENDER_SOFTWARE
+            #if A_CONFIG_LIB_SDL == 1
+                #if A_CONFIG_SCREEN_ALLOCATE
                     a_font_print("S/W (Buffer)\n");
-                } else {
+                #else
                     a_font_print("S/W (Raw)\n");
-                }
-            #elif A_BUILD_LIB_SDL == 2
+                #endif
+            #elif A_CONFIG_LIB_SDL == 2
                 a_font_print("S/W (Buffer)\n");
             #endif
-        #elif A_BUILD_RENDER_SDL
+        #elif A_CONFIG_LIB_RENDER_SDL
             a_font_print("SDL2 Renderer\n");
         #endif
 
@@ -246,6 +243,11 @@ void a_console__draw(void)
 
     a_pixel_pop();
     a_font_pop();
+}
+
+void a_console_showSet(bool Show)
+{
+    g_show = Show;
 }
 
 bool a_console__isInitialized(void)

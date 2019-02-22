@@ -20,54 +20,46 @@
 
 #include "a2x_system_includes.h"
 
-#if A_BUILD_SYSTEM_DESKTOP || A_BUILD_SYSTEM_EMSCRIPTEN
-    #define A__PIXEL_BPP 32
-    typedef uint32_t APixel;
-#else
-    #define A__PIXEL_BPP 16
+#if A_CONFIG_SCREEN_BPP == 16
     typedef uint16_t APixel;
+#elif A_CONFIG_SCREEN_BPP == 32
+    typedef uint32_t APixel;
 #endif
 
-#if A_BUILD_SYSTEM_EMSCRIPTEN
-    #define A__PIXEL_ORDER_ABGR 1
-#else
-    #define A__PIXEL_ORDER_RGBA 1
-#endif
-
-#if A__PIXEL_BPP == 16
-    #if A_BUILD_RENDER_SOFTWARE
+#if A_CONFIG_SCREEN_BPP == 16
+    #if A_CONFIG_LIB_RENDER_SOFTWARE
         // RGB565
         #define A__PIXEL_BITS_RED   5
         #define A__PIXEL_BITS_GREEN 6
         #define A__PIXEL_BITS_BLUE  5
         #define A__PIXEL_BITS_ALPHA 0
-    #elif A_BUILD_RENDER_SDL
+    #elif A_CONFIG_LIB_RENDER_SDL
         // RGBA5551
         #define A__PIXEL_BITS_RED   5
         #define A__PIXEL_BITS_GREEN 5
         #define A__PIXEL_BITS_BLUE  5
         #define A__PIXEL_BITS_ALPHA 1
     #endif
-#elif A__PIXEL_BPP == 32
+#elif A_CONFIG_SCREEN_BPP == 32
     #define A__PIXEL_BITS_RED   8
     #define A__PIXEL_BITS_GREEN 8
     #define A__PIXEL_BITS_BLUE  8
 
-    #if A_BUILD_LIB_SDL == 1
+    #if A_CONFIG_LIB_SDL == 1
         // XRGB8888
         #define A__PIXEL_BITS_ALPHA 0
-    #elif A_BUILD_LIB_SDL == 2
+    #elif A_CONFIG_LIB_SDL == 2
         // RGBX8888 / RGBA8888
         #define A__PIXEL_BITS_ALPHA 8
     #endif
 #endif
 
-#if A__PIXEL_ORDER_RGBA
+#if A_CONFIG_SCREEN_FORMAT_RGBA
     #define A__PIXEL_SHIFT_ALPHA (0)
     #define A__PIXEL_SHIFT_BLUE  (A__PIXEL_BITS_ALPHA)
     #define A__PIXEL_SHIFT_GREEN (A__PIXEL_BITS_ALPHA + A__PIXEL_BITS_BLUE)
     #define A__PIXEL_SHIFT_RED   (A__PIXEL_BITS_ALPHA + A__PIXEL_BITS_BLUE + A__PIXEL_BITS_GREEN)
-#elif A__PIXEL_ORDER_ABGR
+#elif A_CONFIG_SCREEN_FORMAT_ABGR
     #define A__PIXEL_SHIFT_RED   (0)
     #define A__PIXEL_SHIFT_GREEN (A__PIXEL_BITS_RED)
     #define A__PIXEL_SHIFT_BLUE  (A__PIXEL_BITS_RED + A__PIXEL_BITS_GREEN)
@@ -83,7 +75,7 @@
 #define A__PIXEL_PACK_GREEN (8 - A__PIXEL_BITS_GREEN)
 #define A__PIXEL_PACK_BLUE  (8 - A__PIXEL_BITS_BLUE)
 
-#if A_BUILD_RENDER_SOFTWARE
+#if A_CONFIG_LIB_RENDER_SOFTWARE
     #define A_PIXEL_ALPHA_MAX 256
 #else
     #define A_PIXEL_ALPHA_MAX 255
@@ -99,12 +91,12 @@ static inline APixel a_pixel_fromRgb(int Red, int Green, int Blue)
 
 static inline APixel a_pixel_fromHex(uint32_t Hexcode)
 {
-    #if A__PIXEL_BPP == 16 || A__PIXEL_ORDER_ABGR
+    #if A_CONFIG_SCREEN_BPP == 16 || A_CONFIG_SCREEN_FORMAT_ABGR
         return (APixel)
             (((((Hexcode >> 16) & 0xff) >> A__PIXEL_PACK_RED)   << A__PIXEL_SHIFT_RED)   |
              ((((Hexcode >> 8)  & 0xff) >> A__PIXEL_PACK_GREEN) << A__PIXEL_SHIFT_GREEN) |
              ((((Hexcode)       & 0xff) >> A__PIXEL_PACK_BLUE)  << A__PIXEL_SHIFT_BLUE));
-    #elif A__PIXEL_BPP == 32 && A__PIXEL_ORDER_RGBA
+    #elif A_CONFIG_SCREEN_BPP == 32 && A_CONFIG_SCREEN_FORMAT_RGBA
         return (APixel)((Hexcode & 0xffffff) << A__PIXEL_BITS_ALPHA);
     #endif
 }

@@ -17,4 +17,5 @@ git:
     depth: 1
 
 script:
-    - make A2X_PATH=../.. --directory=make/a2x --jobs
+    - bin/a2x_new test
+    - make A2X_PATH=../.. --directory=test/make --jobs

@@ -23,7 +23,6 @@
 #include "a2x_pack_pixel.v.h"
 #include "a2x_pack_png.v.h"
 #include "a2x_pack_screen.v.h"
-#include "a2x_pack_settings.v.h"
 #include "a2x_pack_str.v.h"
 
 APixel a_sprite__colorKey;
@@ -32,9 +31,9 @@ APixel a_sprite__colorEnd;
 
 void a_sprite__init(void)
 {
-    a_sprite__colorKey = a_settings_colorGet(A_SETTING_COLOR_KEY);
-    a_sprite__colorLimit = a_settings_colorGet(A_SETTING_COLOR_LIMIT);
-    a_sprite__colorEnd = a_settings_colorGet(A_SETTING_COLOR_END);
+    a_sprite__colorKey = a_pixel_fromHex(A_CONFIG_COLOR_KEY);
+    a_sprite__colorLimit = a_pixel_fromHex(A_CONFIG_COLOR_LIMIT);
+    a_sprite__colorEnd = a_pixel_fromHex(A_CONFIG_COLOR_END);
 }
 
 static ASprite* makeEmptySprite(int Width, int Height)
@@ -58,7 +57,7 @@ static void assignPixels(ASprite* Sprite, APixel* Pixels)
     free(Sprite->pixels);
     Sprite->pixels = Pixels;
 
-    Sprite->texture = a_platform__textureSpriteNew(Sprite);
+    Sprite->texture = a_platform__textureNewSprite(Sprite);
 }
 
 static int findNextVerticalEdge(const ASprite* Sheet, int StartX, int StartY, int* EdgeX)
@@ -238,7 +237,7 @@ ASprite* a_sprite_dup(const ASprite* Sprite)
 
     assignPixels(clone, pixels);
 
-    #if !A_BUILD_RENDER_SOFTWARE
+    #if !A_CONFIG_LIB_RENDER_SOFTWARE
         a_pixel_push();
         a_screen_targetPushSprite(clone);
 
@@ -290,7 +289,7 @@ void a_sprite_swapColor(ASprite* Sprite, APixel OldColor, APixel NewColor)
         }
     }
 
-    Sprite->texture = a_platform__textureSpriteNew(Sprite);
+    Sprite->texture = a_platform__textureNewSprite(Sprite);
 }
 
 void a_sprite_swapColors(ASprite* Sprite, const APixel* OldColors, const APixel* NewColors, unsigned NumColors)
@@ -306,7 +305,7 @@ void a_sprite_swapColors(ASprite* Sprite, const APixel* OldColors, const APixel*
         }
     }
 
-    Sprite->texture = a_platform__textureSpriteNew(Sprite);
+    Sprite->texture = a_platform__textureNewSprite(Sprite);
 }
 
 AVectorInt a_sprite_sizeGet(const ASprite* Sprite)
