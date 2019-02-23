@@ -1,7 +1,7 @@
 include $(A2X_PATH)/make/global/defs
 include $(A_FILE_SDKCONFIG_MK)
 
-A_PLATFORM := pandora
+A_CONFIG_BUILD_PLATFORM := pandora
 
 A_CONFIG_BUILD_OPT := -O3 -s
 A_CONFIG_LIB_SDL := 1

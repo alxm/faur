@@ -172,7 +172,7 @@ void a_console__draw(void)
 
         a_font__fontSet(A_FONT__ID_LIGHT_GRAY);
         a_font_printf(" %s %.8s %s\n",
-                      A_CONFIG_BUILD_ID,
+                      A_CONFIG_BUILD_UID,
                       A_CONFIG_BUILD_GIT_HASH,
                       A_CONFIG_BUILD_TIMESTAMP);
 

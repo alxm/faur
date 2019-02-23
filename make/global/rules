@@ -9,7 +9,7 @@ include $(A2X_PATH)/make/global/config
 A_ROOT    := $(A_CONFIG_DIR_ROOT)
 A_DIR_AST := $(A_CONFIG_DIR_AST)
 A_DIR_BIN := $(A_CONFIG_DIR_BIN)
-A_DIR_OBJ := $(A_ROOT)/$(A_CONFIG_DIR_OBJ)/$(A_CONFIG_BUILD_ID)
+A_DIR_OBJ := $(A_ROOT)/$(A_CONFIG_DIR_OBJ)/$(A_CONFIG_BUILD_UID)
 A_DIR_PND := $(A_CONFIG_DIR_PND)
 A_DIR_SRC := $(A_CONFIG_DIR_SRC)
 
@@ -65,6 +65,7 @@ A_GENERIC_CFLAGS := \
     -I$(A_DIR_OBJ_A2X) \
     $(A_PLATFORM_CFLAGS) \
     $(A_CONFIG_BUILD_CFLAGS) \
+    $(A_CONFIG_BUILD_OPT) \
 
 .PHONY : all clean cleanbin run
 

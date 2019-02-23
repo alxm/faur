@@ -1,6 +1,6 @@
 include $(A2X_PATH)/make/global/defs
 
-A_PLATFORM := linux32
+A_CONFIG_BUILD_PLATFORM := linux32
 
 A_CONFIG_BUILD_OPT := -O3 -s
 A_CONFIG_LIB_SDL := 2
