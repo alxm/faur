@@ -4,18 +4,9 @@
 include $(A2X_PATH)/make/global/config
 
 #
-# Commit config vars
-#
-A_ROOT    := $(A_CONFIG_DIR_ROOT)
-A_DIR_AST := $(A_CONFIG_DIR_AST)
-A_DIR_BIN := $(A_CONFIG_DIR_BIN)
-A_DIR_OBJ := $(A_ROOT)/$(A_CONFIG_DIR_OBJ)/$(A_CONFIG_BUILD_ID)
-A_DIR_PND := $(A_CONFIG_DIR_PND)
-A_DIR_SRC := $(A_CONFIG_DIR_SRC)
-
-#
 # Object files dir for current platform
 #
+A_DIR_OBJ := $(A_CONFIG_DIR_ROOT)/$(A_CONFIG_DIR_OBJ)/$(A_CONFIG_BUILD_UID)
 A_DIR_OBJ_APP := $(A_DIR_OBJ)/app
 A_DIR_OBJ_A2X := $(A_DIR_OBJ)/a2x
 
@@ -27,19 +18,19 @@ A_DIR_GEN := $(A_DIR_OBJ_APP)/a2x_gen
 #
 # The final bin that gets built
 #
-A_FILE_TARGET_BIN := $(A_ROOT)/$(A_DIR_BIN)/$(A_CONFIG_FILE_APP)
+A_FILE_TARGET_BIN := $(A_CONFIG_DIR_ROOT)/$(A_CONFIG_DIR_BIN)/$(A_CONFIG_APP_BIN)
 
 #
 # Implements the a__embed_application function
 #
 A_FILE_SRC_GEN_EMBED := $(A_DIR_GEN)/embed.c
-A_FILES_EMBED_BIN := $(shell $(A2X_PATH)/bin/a2x_embedfiles -q $(A_ROOT) $(A_CONFIG_FILE_EMBED))
+A_FILES_EMBED_BIN := $(shell $(A2X_PATH)/bin/a2x_embedfiles -q $(A_CONFIG_DIR_ROOT) $(A_CONFIG_EMBED_PATHS))
 A_FILES_SRC_GEN_H := $(addprefix $(A_DIR_GEN)/, $(A_FILES_EMBED_BIN:=.h))
 
 #
 # C source files
 #
-A_FILES_SRC_C := $(shell $(A2X_PATH)/bin/a2x_srcfiles -q $(A_ROOT)/$(A_DIR_SRC) .c .inc.c)
+A_FILES_SRC_C := $(shell $(A2X_PATH)/bin/a2x_srcfiles -q $(A_CONFIG_DIR_ROOT)/$(A_CONFIG_DIR_SRC) .c .inc.c)
 
 #
 # All the object files
@@ -65,6 +56,7 @@ A_GENERIC_CFLAGS := \
     -I$(A_DIR_OBJ_A2X) \
     $(A_PLATFORM_CFLAGS) \
     $(A_CONFIG_BUILD_CFLAGS) \
+    $(A_CONFIG_BUILD_OPT) \
 
 .PHONY : all clean cleanbin run
 
@@ -81,15 +73,15 @@ $(A_FILE_TARGET_BIN) : $(A_FILES_OBJ) $(A2X_FILE_PUBLIC_A2X_LIB)
 	@ mkdir -p $(@D)
 	$(CC) -o $@ $^ $(A_CONFIG_BUILD_LIBS) $(A_PLATFORM_LIBS)
 
-$(A_DIR_GEN)/%.h : $(A_ROOT)/% $(A2X_PATH)/bin/a2x_bin
+$(A_DIR_GEN)/%.h : $(A_CONFIG_DIR_ROOT)/% $(A2X_PATH)/bin/a2x_bin
 	@ mkdir -p $(@D)
-	@ $(A2X_PATH)/bin/a2x_bin $< $@ $(<:$(A_ROOT)/%=%) a__bin_
+	@ $(A2X_PATH)/bin/a2x_bin $< $@ $(<:$(A_CONFIG_DIR_ROOT)/%=%) a__bin_
 
 $(A_FILE_SRC_GEN_EMBED) : $(A_FILES_SRC_GEN_H) $(A2X_PATH)/bin/a2x_embed
 	@ mkdir -p $(@D)
 	@ $(A2X_PATH)/bin/a2x_embed $@ $(A_DIR_GEN) a__bin_ $(A_FILES_SRC_GEN_H:$(A_DIR_GEN)/%=%)
 
-$(A_DIR_OBJ_APP)/%.c.o : $(A_ROOT)/$(A_DIR_SRC)/%.c
+$(A_DIR_OBJ_APP)/%.c.o : $(A_CONFIG_DIR_ROOT)/$(A_CONFIG_DIR_SRC)/%.c
 	@ mkdir -p $(@D)
 	$(CC) -c -o $@ $< $(A_GENERIC_CFLAGS)
 
@@ -104,4 +96,4 @@ cleanbin :
 	rm -f $(A_FILE_TARGET_BIN)
 
 run : all
-	cd $(A_ROOT)/$(A_DIR_BIN) ; ./$(A_CONFIG_FILE_APP)
+	cd $(A_CONFIG_DIR_ROOT)/$(A_CONFIG_DIR_BIN) && ./$(A_CONFIG_APP_BIN)
