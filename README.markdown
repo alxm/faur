@@ -26,7 +26,9 @@ make -j run
 
 ![Starter Project Screenshot](https://github.com/alxm/a2x/raw/master/media/hello.gif "Starter Project Screenshot")
 
-Move the square with the arrow keys or gamepad. The code is in `hello/src/main.c`:
+Move the square with the arrow keys or gamepad. Here are the generated `main.c` and `Makefile`:
+
+#### main.c
 
 ```C
 #include <a2x.h>
@@ -107,6 +109,20 @@ A_STATE(drawBox)
         a_button_free(context.right);
     }
 }
+```
+
+#### Makefile
+
+```make
+A_CONFIG_APP_AUTHOR := you
+A_CONFIG_APP_BIN := hello.bin
+A_CONFIG_APP_TITLE := hello
+
+A_CONFIG_APP_VERSION_MAJOR := 1
+A_CONFIG_APP_VERSION_MINOR := 0
+A_CONFIG_APP_VERSION_MICRO := 0
+
+include $(A2X_PATH)/make/dev
 ```
 
 ## Cross-Compile for Other Platforms

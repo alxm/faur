@@ -197,7 +197,7 @@ void a_platform__screenInit(int Width, int Height)
 
     #if A_CONFIG_TRAIT_DESKTOP
         const char* caption = a_str__fmt512("%s %s",
-                                            A_CONFIG_APP_NAME,
+                                            A_CONFIG_APP_TITLE,
                                             A_CONFIG_APP_VERSION_STRING);
 
         #if A_CONFIG_LIB_SDL == 1
