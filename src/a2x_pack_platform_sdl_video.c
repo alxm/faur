@@ -29,16 +29,20 @@
 
 #if A_CONFIG_LIB_SDL == 1
     static SDL_Surface* g_sdlScreen;
-    static const bool g_vsync = false;
 #elif A_CONFIG_LIB_SDL == 2
     SDL_Renderer* a__sdlRenderer;
     static SDL_Window* g_sdlWindow;
     static int g_clearR, g_clearG, g_clearB;
-    static bool g_vsync = A_CONFIG_SCREEN_VSYNC;
 
     #if A_CONFIG_LIB_RENDER_SOFTWARE
         static SDL_Texture* g_sdlTexture;
     #endif
+#endif
+
+#if A_CONFIG_LIB_SDL == 2 || A_CONFIG_SYSTEM_EMSCRIPTEN
+    static bool g_vsync = A_CONFIG_SCREEN_VSYNC;
+#else
+    static const bool g_vsync = false;
 #endif
 
 void a_platform_sdl_video__init(void)
