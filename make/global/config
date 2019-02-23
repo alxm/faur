@@ -41,14 +41,14 @@ A_CONFIG_DIR_SCREENSHOTS ?= screenshots
 #
 # Project files
 #
+#   A_CONFIG_EMBED_PATHS - Space-separated file and dir paths relative to root
+#   A_CONFIG_EMBED_PATHS_EMSCRIPTEN - Same as above, but using Emscripten
 #   A_CONFIG_FILE_APP - Target binary file name
-#   A_CONFIG_FILE_EMBED - Space-separated file and dir paths relative to root
-#   A_CONFIG_FILE_EMBED_EMSCRIPTEN - Same as above, but using Emscripten
 #   A_CONFIG_FILE_PND - Target PND file name
 #
+A_CONFIG_EMBED_PATHS ?=
+A_CONFIG_EMBED_PATHS_EMSCRIPTEN ?=
 A_CONFIG_FILE_APP ?= a.out
-A_CONFIG_FILE_EMBED ?=
-A_CONFIG_FILE_EMBED_EMSCRIPTEN ?=
 A_CONFIG_FILE_PND ?= $(A_CONFIG_FILE_APP).pnd
 
 #

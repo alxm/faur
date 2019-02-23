@@ -21,8 +21,8 @@ A_BUILD_EMSCRIPTEN_LIBS := \
 A_BUILD_EMSCRIPTEN_EMBED := \
     --use-preload-plugins \
     $(addprefix --preload-file ../, \
-        $(join $(A_CONFIG_FILE_EMBED_EMSCRIPTEN), \
-               $(addprefix @, $(A_CONFIG_FILE_EMBED_EMSCRIPTEN)))) \
+        $(join $(A_CONFIG_EMBED_PATHS_EMSCRIPTEN), \
+               $(addprefix @, $(A_CONFIG_EMBED_PATHS_EMSCRIPTEN)))) \
 
 A_PLATFORM_LIBS := \
     $(A_CONFIG_BUILD_OPT) \
