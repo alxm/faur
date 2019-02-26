@@ -49,14 +49,14 @@ void a_platform_sdl_sound__init(void)
     g_numSampleChannels =
         Mix_AllocateChannels(A_CONFIG_SOUND_SAMPLE_CHANNELS_TOTAL);
 
-    if(g_numSampleChannels <= 0) {
+    if(g_numSampleChannels < 1) {
         a_out__error("Mix_AllocateChannels: %s", Mix_GetError());
     }
 
     g_numSampleChannelsReserved =
         Mix_ReserveChannels(A_CONFIG_SOUND_SAMPLE_CHANNELS_RESERVED);
 
-    if(g_numSampleChannelsReserved <= 0) {
+    if(g_numSampleChannelsReserved < 1) {
         a_out__error("Mix_ReserveChannels: %s", Mix_GetError());
     }
 
@@ -254,7 +254,7 @@ bool a_platform__soundSampleIsPlaying(int Channel)
 
 int a_platform__soundSampleChannelGet(void)
 {
-    if(!g_enabled) {
+    if(!g_enabled || g_numSampleChannelsReserved < 1) {
         return -1;
     }
 
