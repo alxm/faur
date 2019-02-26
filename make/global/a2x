@@ -42,7 +42,7 @@ $(A2X_FILE_EDITOR_TAGS) : $(A2X_FILE_PUBLIC_A2X_HEADER) $(A2X_DIR_BIN)/a2x_tags
 
 $(A2X_FILE_PUBLIC_A2X_LIB) : $(A2X_FILES_OBJ)
 	@ mkdir -p $(@D)
-	$(AR) rs $@ $(A2X_FILES_OBJ)
+	$(AR) rs$(A_CONFIG_BUILD_AR_FLAGS) $@ $(A2X_FILES_OBJ)
 
 $(A2X_DIR_OBJ)/%.c.o : $(A2X_DIR_SRC)/%.c
 	@ mkdir -p $(@D)

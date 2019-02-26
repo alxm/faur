@@ -2,6 +2,7 @@ include $(A2X_PATH)/make/global/defs
 
 A_CONFIG_BUILD_PLATFORM := linux64
 
+A_CONFIG_BUILD_AR_FLAGS := T
 A_CONFIG_BUILD_OPT := -O3 -s
 A_CONFIG_LIB_SDL := 2
 A_CONFIG_LIB_SDL_CONFIG := sdl2-config
