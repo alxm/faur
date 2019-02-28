@@ -5,13 +5,20 @@ a2x is a C framework I wrote for my video games. It runs natively on Linux and F
 ## Dependencies & Path Setup
 
 ```sh
-sudo apt install git build-essential python3
-                 libpng-dev libsdl2-dev libsdl2-mixer-dev
-                 libsdl1.2-dev libsdl-mixer1.2-dev
+# Basics
+sudo apt install build-essential python3 git
 
+# Core libraries
+sudo apt install libpng-dev libsdl2-dev libsdl2-mixer-dev
+
+# Optional extras
+sudo apt install libsdl1.2-dev libsdl-mixer1.2-dev mingw-w64
+
+# Clone repo to ~/a2x
 cd ~
 git clone git://github.com/alxm/a2x.git
 
+# Set environment vars
 export A2X_PATH="$HOME/a2x"
 export PATH="$PATH:$A2X_PATH/bin"
 ```
