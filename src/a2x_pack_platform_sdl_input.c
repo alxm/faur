@@ -265,6 +265,7 @@ static APlatformInputController* controllerAdd(int Index)
 
         if(joystick == NULL) {
             a_out__error("SDL_JoystickOpen(%d): %s", Index, SDL_GetError());
+
             return NULL;
         }
     }
@@ -363,15 +364,17 @@ void a_platform_sdl_input__init(void)
 
     #if A_CONFIG_LIB_SDL == 2
         if(joysticksNum > 0) {
-            const char* mFile = A_CONFIG_LIB_SDL_GAMEPADMAP;
-            int mNum = SDL_GameControllerAddMappingsFromFile(mFile);
+            int mNum = SDL_GameControllerAddMappingsFromFile(
+                        A_CONFIG_LIB_SDL_GAMEPADMAP);
 
             if(mNum < 0) {
                 a_out__error("SDL_GameControllerAddMappingsFromFile(%s): %s",
-                             mFile,
+                             A_CONFIG_LIB_SDL_GAMEPADMAP,
                              SDL_GetError());
             } else {
-                a_out__message("Loaded %d mappings from %s", mNum, mFile);
+                a_out__message("%s: Loaded %d gamepad mappings",
+                               A_CONFIG_LIB_SDL_GAMEPADMAP,
+                               mNum);
             }
         }
     #endif
@@ -472,7 +475,7 @@ void a_platform_sdl_input__init(void)
 
 #if A_CONFIG_LIB_SDL == 2
         if(c->controller) {
-            a_out__message("Mapped %s: %d buttons, %d axes, %d hats",
+            a_out__message("Controller '%s': %d buttons, %d axes, %d hats",
                            SDL_GameControllerName(c->controller),
                            c->numButtons,
                            c->numAxes,
@@ -544,13 +547,13 @@ void a_platform_sdl_input__init(void)
             }
         } else {
 #endif
-            a_out__message("Found %s: %d buttons, %d axes, %d hats",
+            a_out__message("Default '%s': %d buttons, %d axes, %d hats",
                            joystickName(c),
                            c->numButtons,
                            c->numAxes,
                            c->numHats);
 
-            static struct {
+            static const struct {
                 AButtonId id;
                 const char* name;
             } buttons[] = {
@@ -571,7 +574,7 @@ void a_platform_sdl_input__init(void)
                 buttonAdd(c, buttons[j].id, buttons[j].name, j);
             }
 
-            static const char* axes[A_AXIS_NUM] = {
+            static const char* axes[] = {
                 [A_AXIS_LEFTX] = "Left Stick",
                 [A_AXIS_LEFTY] = "Left Stick",
                 [A_AXIS_RIGHTX] = "Right Stick",
@@ -580,11 +583,17 @@ void a_platform_sdl_input__init(void)
                 [A_AXIS_RIGHTTRIGGER] = "Right Trigger",
             };
 
-            for(int id = a_math_min(c->numAxes, A_AXIS_NUM); id--; ) {
+            for(int id = a_math_min(c->numAxes, A_ARRAY_LEN(axes)); id--; ) {
                 analogAdd(c, id, axes[id], id);
             }
 #if A_CONFIG_LIB_SDL == 2
         }
+
+        char guidStrBuffer[64];
+        SDL_JoystickGetGUIDString(SDL_JoystickGetGUID(c->joystick),
+                                  guidStrBuffer,
+                                  sizeof(guidStrBuffer) - 1);
+        a_out__message("^ GUID %s", guidStrBuffer);
 #endif
 
         if(c->numHats > 0 || c->numAxes >= 2) {
