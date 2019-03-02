@@ -148,7 +148,7 @@ Edit `~/.config/a2x/sdk.config` with your SDK paths, then build a default projec
 
 Copyright 2010-2019 Alex Margarit (alex@alxm.org)
 
-* Code licensed under [GNU LGPL3](https://www.gnu.org/licenses/lgpl.html) (see `COPYING` and `COPYING.LESSER`)
+* Code licensed under [GNU GPLv3](https://www.gnu.org/licenses/gpl.html) (see `COPYING`)
 * Graphics licensed under [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/) (see `media/CC-BY-NC-ND`)
 
 I'm writing a2x to support my other software. To keep it focused and manageable, it is a solo endeavor.
