@@ -51,25 +51,19 @@ static struct {
 
 void a_fps__init(void)
 {
-    if(A_CONFIG_FPS_TICK < 1) {
-        A__FATAL("A_CONFIG_FPS_TICK < 1");
-    }
+    #if A_CONFIG_FPS_RATE_TICK < 1
+        #error A_CONFIG_FPS_RATE_TICK < 1
+    #elif A_CONFIG_FPS_RATE_DRAW < 1
+        #error A_CONFIG_FPS_RATE_DRAW < 1
+    #elif A_CONFIG_FPS_RATE_TICK < A_CONFIG_FPS_RATE_DRAW
+        #error A_CONFIG_FPS_RATE_TICK < A_CONFIG_FPS_RATE_DRAW
+    #endif
 
-    if(A_CONFIG_FPS_DRAW < 1) {
-        A__FATAL("A_CONFIG_FPS_DRAW < 1");
-    }
-
-    if(A_CONFIG_FPS_TICK < A_CONFIG_FPS_DRAW) {
-        A__FATAL("A_CONFIG_FPS_TICK (%u) < A_CONFIG_FPS_DRAW (%u)",
-                 A_CONFIG_FPS_TICK,
-                 A_CONFIG_FPS_DRAW);
-    }
-
-    g_settings.tickFrameMs = 1000 / A_CONFIG_FPS_TICK;
-    g_settings.drawFrameMs = 1000 / A_CONFIG_FPS_DRAW;
+    g_settings.tickFrameMs = 1000 / A_CONFIG_FPS_RATE_TICK;
+    g_settings.drawFrameMs = 1000 / A_CONFIG_FPS_RATE_DRAW;
 
     g_history.head = 0;
-    g_history.len = A_CONFIG_FPS_DRAW * A__AVERAGE_WINDOW_SEC;
+    g_history.len = A_CONFIG_FPS_RATE_DRAW * A__AVERAGE_WINDOW_SEC;
     g_history.drawFrameMs = a_mem_malloc(g_history.len * sizeof(unsigned));
     g_history.drawFrameMsMin = a_mem_malloc(g_history.len * sizeof(unsigned));
 
@@ -86,7 +80,7 @@ void a_fps__uninit(void)
 
 void a_fps__reset(void)
 {
-    g_run.drawFps = A_CONFIG_FPS_DRAW;
+    g_run.drawFps = A_CONFIG_FPS_RATE_DRAW;
     g_run.drawFpsMax = g_run.drawFps;
 
     for(unsigned i = g_history.len; i--; ) {
@@ -94,7 +88,7 @@ void a_fps__reset(void)
         g_history.drawFrameMsMin[i] = g_settings.drawFrameMs;
     }
 
-    g_history.drawFrameMsSum = g_history.len * 1000 / A_CONFIG_FPS_DRAW;
+    g_history.drawFrameMsSum = g_history.len * 1000 / A_CONFIG_FPS_RATE_DRAW;
     g_history.drawFrameMsMinSum = g_history.drawFrameMsSum;
 
     g_run.lastFrameMs = a_time_msGet();
@@ -144,6 +138,7 @@ void a_fps__frame(void)
     g_history.head = (g_history.head + 1) % g_history.len;
 
     g_run.lastFrameMs = nowMs;
+
     g_run.tickCreditMs += a_math_minu(elapsedMs, g_settings.drawFrameMs * 2);
 }
 

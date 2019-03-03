@@ -22,7 +22,7 @@
 
 static inline unsigned a_fps_rateTickGet(void)
 {
-    return A_CONFIG_FPS_TICK;
+    return A_CONFIG_FPS_RATE_TICK;
 }
 
 extern unsigned a_fps_rateDrawGet(void);

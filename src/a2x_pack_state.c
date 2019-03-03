@@ -362,7 +362,7 @@ void a_state__run(void)
     #if A_CONFIG_SYSTEM_EMSCRIPTEN
         emscripten_set_main_loop(
             loop,
-            a_platform__screenVsyncGet() ? 0 : A_CONFIG_FPS_DRAW,
+            a_platform__screenVsyncGet() ? 0 : A_CONFIG_FPS_RATE_DRAW,
             true);
     #else
         while(iteration()) {
