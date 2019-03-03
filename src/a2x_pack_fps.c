@@ -139,7 +139,12 @@ void a_fps__frame(void)
 
     g_run.lastFrameMs = nowMs;
 
-    g_run.tickCreditMs += a_math_minu(elapsedMs, g_settings.drawFrameMs * 2);
+    #if A_CONFIG_FPS_CAP_LAG
+        g_run.tickCreditMs += a_math_minu(
+                                elapsedMs, g_settings.drawFrameMs * 2);
+    #else
+        g_run.tickCreditMs += elapsedMs;
+    #endif
 }
 
 unsigned a_fps_rateDrawGet(void)
