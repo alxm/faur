@@ -213,7 +213,7 @@ void a_console__draw(void)
                       a_screen_sizeGetHeight(),
                       A_CONFIG_SCREEN_BPP,
                       a_screen__zoomGet());
-        a_font_printf("Vsync %s\n",
+        a_font_printf("V-sync %s\n",
                       a_platform__screenVsyncGet() ? "on" : "off");
 
         #if A_CONFIG_LIB_SDL == 1
@@ -223,17 +223,13 @@ void a_console__draw(void)
         #endif
 
         #if A_CONFIG_LIB_RENDER_SOFTWARE
-            #if A_CONFIG_LIB_SDL == 1
-                #if A_CONFIG_SCREEN_ALLOCATE
-                    a_font_print("S/W (Buffer)\n");
-                #else
-                    a_font_print("S/W (Raw)\n");
-                #endif
-            #elif A_CONFIG_LIB_SDL == 2
+            #if A_CONFIG_SCREEN_ALLOCATE
                 a_font_print("S/W (Buffer)\n");
+            #else
+                a_font_print("S/W (Raw)\n");
             #endif
         #elif A_CONFIG_LIB_RENDER_SDL
-            a_font_print("SDL2 Renderer\n");
+            a_font_print("SDL2 rend\n");
         #endif
 
         a_font__fontSet(A_FONT__ID_BLUE);

@@ -159,15 +159,21 @@ void a_platform__screenInit(int Width, int Height)
             A__FATAL("SDL_CreateRenderer: %s", SDL_GetError());
         }
 
-        if(rendererFlags & SDL_RENDERER_PRESENTVSYNC) {
-            SDL_RendererInfo info;
-            SDL_GetRendererInfo(a__sdlRenderer, &info);
+        SDL_RendererInfo info;
+        SDL_GetRendererInfo(a__sdlRenderer, &info);
 
-            if(!(info.flags & SDL_RENDERER_PRESENTVSYNC)) {
-                a_out__warning("Cannot use vsync");
-                g_vsync = false;
-            }
+        if(!(info.flags & SDL_RENDERER_TARGETTEXTURE)) {
+            A__FATAL("SDL_CreateRenderer: "
+                     "System does not support SDL_RENDERER_TARGETTEXTURE");
         }
+
+        if(info.flags & SDL_RENDERER_ACCELERATED) {
+            a_out__message("Using SDL2 accelerated renderer");
+        } else {
+            a_out__message("Using SDL2 software renderer");
+        }
+
+        g_vsync = info.flags & SDL_RENDERER_PRESENTVSYNC;
 
         ret = SDL_RenderSetLogicalSize(a__sdlRenderer, Width, Height);
 
@@ -194,6 +200,8 @@ void a_platform__screenInit(int Width, int Height)
                       &g_clearG,
                       &g_clearB);
     #endif
+
+    a_out__message("V-sync is %s", g_vsync ? "on" : "off");
 
     #if A_CONFIG_TRAIT_DESKTOP
         const char* caption = a_str__fmt512("%s %s",
