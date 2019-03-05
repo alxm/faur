@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2018 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -137,15 +137,13 @@ void a_list_appendCopy(AList* Dst, const AList* Src)
 
 void* a_list_getByIndex(const AList* List, unsigned Index)
 {
-    const AListNode* n;
-
-    for(n = List->sentinel.next; n != &List->sentinel; n = n->next) {
+    A__ITERATE(List, n) {
         if(Index-- == 0) {
-            break;
+            return n->content;
         }
     }
 
-    return n->content;
+    return NULL;
 }
 
 void* a_list_getFirst(const AList* List)
@@ -172,64 +170,56 @@ void* a_list_getNodeContent(const AListNode* Node)
     return Node->content;
 }
 
-void a_list_removeItem(AList* List, const void* Item)
+static inline void* removeNode(AListNode* Node)
 {
-    A__ITERATE(List, n) {
-        if(n->content == Item) {
-            n->prev->next = n->next;
-            n->next->prev = n->prev;
+    void* v = Node->content;
 
-            List->items--;
-
-            free(n);
-
-            return;
-        }
-    }
-}
-
-void* a_list_removeFirst(AList* List)
-{
-    AListNode* n = List->sentinel.next;
-    void* v = n->content;
-
-    if(n != &List->sentinel) {
-        n->prev->next = n->next;
-        n->next->prev = n->prev;
-
-        List->items--;
-
-        free(n);
-    }
-
-    return v;
-}
-
-void* a_list_removeLast(AList* List)
-{
-    AListNode* n = List->sentinel.prev;
-    void* v = n->content;
-
-    if(n != &List->sentinel) {
-        n->prev->next = n->next;
-        n->next->prev = n->prev;
-
-        List->items--;
-
-        free(n);
-    }
-
-    return v;
-}
-
-void a_list_removeNode(AListNode* Node)
-{
     Node->prev->next = Node->next;
     Node->next->prev = Node->prev;
 
     Node->list->items--;
 
     free(Node);
+
+    return v;
+}
+
+void* a_list_removeItem(AList* List, const void* Item)
+{
+    A__ITERATE(List, n) {
+        if(n->content == Item) {
+            return removeNode(n);
+        }
+    }
+
+    return NULL;
+}
+
+void* a_list_removeFirst(AList* List)
+{
+    AListNode* n = List->sentinel.next;
+
+    if(n != &List->sentinel) {
+        return removeNode(n);
+    }
+
+    return NULL;
+}
+
+void* a_list_removeLast(AList* List)
+{
+    AListNode* n = List->sentinel.prev;
+
+    if(n != &List->sentinel) {
+        return removeNode(n);
+    }
+
+    return NULL;
+}
+
+void* a_list_removeNode(AListNode* Node)
+{
+    return removeNode(Node);
 }
 
 void a_list_clear(AList* List)

@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2018 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -40,10 +40,10 @@ extern void* a_list_getLast(const AList* List);
 extern void* a_list_getRandom(const AList* List);
 extern void* a_list_getNodeContent(const AListNode* Node);
 
-extern void a_list_removeItem(AList* List, const void* Item);
+extern void* a_list_removeItem(AList* List, const void* Item);
 extern void* a_list_removeFirst(AList* List);
 extern void* a_list_removeLast(AList* List);
-extern void a_list_removeNode(AListNode* Node);
+extern void* a_list_removeNode(AListNode* Node);
 
 extern void a_list_clear(AList* List);
 extern void a_list_clearEx(AList* List, AFree* Free);
