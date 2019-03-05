@@ -145,6 +145,8 @@ void a_state__init(void)
 
 void a_state__uninit(void)
 {
+    free(g_table);
+
     a_list_freeEx(g_stack, free);
     a_list_freeEx(g_pending, free);
 }
