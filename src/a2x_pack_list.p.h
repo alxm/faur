@@ -43,6 +43,8 @@ extern void* a_list_getNodeContent(const AListNode* Node);
 extern void* a_list_removeItem(AList* List, const void* Item);
 extern void* a_list_removeFirst(AList* List);
 extern void* a_list_removeLast(AList* List);
+extern void* a_list_removeByIndex(AList* List, unsigned Index);
+extern void* a_list_removeRandom(AList* List);
 extern void* a_list_removeNode(AListNode* Node);
 
 extern void a_list_clear(AList* List);

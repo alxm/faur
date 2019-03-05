@@ -217,6 +217,32 @@ void* a_list_removeLast(AList* List)
     return NULL;
 }
 
+void* a_list_removeByIndex(AList* List, unsigned Index)
+{
+    A__ITERATE(List, n) {
+        if(Index-- == 0) {
+            return removeNode(n);
+        }
+    }
+
+    return NULL;
+}
+
+void* a_list_removeRandom(AList* List)
+{
+    if(List->items > 0) {
+        unsigned index = a_random_intu(List->items);
+
+        A__ITERATE(List, n) {
+            if(index-- == 0) {
+                return removeNode(n);
+            }
+        }
+    }
+
+    return NULL;
+}
+
 void* a_list_removeNode(AListNode* Node)
 {
     return removeNode(Node);
