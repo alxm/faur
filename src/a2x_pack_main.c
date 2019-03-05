@@ -155,7 +155,7 @@ __attribute__((noreturn)) static void handleFatal(void)
     a_console__draw();
     a_screen__draw();
 
-    #if A_CONFIG_BUILD_DEBUG
+    #if A_CONFIG_BUILD_DEBUG_WAIT
         while(true) {
             printf("Waiting to attach debugger: PID %d\n", getpid());
             a_time_secSpin(1);
