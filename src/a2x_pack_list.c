@@ -24,6 +24,9 @@
 #define A__ITERATE(List, N) \
     for(AListNode* N = List->sentinel.next; N != &List->sentinel; N = N->next)
 
+#define A__ITERATE_REV(List, N) \
+    for(AListNode* N = List->sentinel.prev; N != &List->sentinel; N = N->prev)
+
 #define A__ITERATE_SAFE(List, Current, Next)                             \
     for(AListNode *Current = List->sentinel.next, *Next = Current->next; \
         Current != &List->sentinel;                                      \
@@ -137,9 +140,19 @@ void a_list_appendCopy(AList* Dst, const AList* Src)
 
 void* a_list_getByIndex(const AList* List, unsigned Index)
 {
-    A__ITERATE(List, n) {
-        if(Index-- == 0) {
-            return n->content;
+    if(Index < List->items >> 1) {
+        A__ITERATE(List, n) {
+            if(Index-- == 0) {
+                return n->content;
+            }
+        }
+    } else {
+        Index = List->items - 1 - Index;
+
+        A__ITERATE_REV(List, n) {
+            if(Index-- == 0) {
+                return n->content;
+            }
         }
     }
 
@@ -219,9 +232,19 @@ void* a_list_removeLast(AList* List)
 
 void* a_list_removeByIndex(AList* List, unsigned Index)
 {
-    A__ITERATE(List, n) {
-        if(Index-- == 0) {
-            return removeNode(n);
+    if(Index < List->items >> 1) {
+        A__ITERATE(List, n) {
+            if(Index-- == 0) {
+                return removeNode(n);
+            }
+        }
+    } else {
+        Index = List->items - 1 - Index;
+
+        A__ITERATE_REV(List, n) {
+            if(Index-- == 0) {
+                return removeNode(n);
+            }
         }
     }
 
@@ -231,13 +254,7 @@ void* a_list_removeByIndex(AList* List, unsigned Index)
 void* a_list_removeRandom(AList* List)
 {
     if(List->items > 0) {
-        unsigned index = a_random_intu(List->items);
-
-        A__ITERATE(List, n) {
-            if(index-- == 0) {
-                return removeNode(n);
-            }
-        }
+        return a_list_removeByIndex(List, a_random_intu(List->items));
     }
 
     return NULL;
