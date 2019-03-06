@@ -80,7 +80,7 @@ static void pending_handle(void)
 
     // Check if the current state just ran its Free stage
     if(current && current->stage == A__STATE_STAGE_FREE) {
-        a_out__statev("Destroying '%s' instance", current->state->name);
+        a_out__stateV("Destroying '%s' instance", current->state->name);
 
         free(a_list_pop(g_stack));
         current = a_list_peek(g_stack);
@@ -96,7 +96,7 @@ static void pending_handle(void)
     // check if the current state should transition from Init to Loop
     if(a_list_isEmpty(g_pending)) {
         if(current && current->stage == A__STATE_STAGE_INIT) {
-            a_out__statev("  '%s' going from %s to %s",
+            a_out__stateV("  '%s' going from %s to %s",
                           current->state->name,
                           g_stageNames[A__STATE_STAGE_INIT],
                           g_stageNames[A__STATE_STAGE_TICK]);
@@ -116,15 +116,15 @@ static void pending_handle(void)
             A__FATAL("Pop state: stack is empty");
         }
 
-        a_out__statev("Pop '%s'", current->state->name);
-        a_out__statev("  '%s' going from %s to %s",
+        a_out__stateV("Pop '%s'", current->state->name);
+        a_out__stateV("  '%s' going from %s to %s",
                       current->state->name,
                       g_stageNames[current->stage],
                       g_stageNames[A__STATE_STAGE_FREE]);
 
         current->stage = A__STATE_STAGE_FREE;
     } else {
-        a_out__statev("Push '%s'", pendingState->state->name);
+        a_out__stateV("Push '%s'", pendingState->state->name);
 
         A_LIST_ITERATE(g_stack, const AStateStackEntry*, e) {
             if(pendingState->state == e->state) {
@@ -193,10 +193,10 @@ void a_state_push(int State)
     const AStateTableEntry* state = getState(State, __func__);
 
     if(g_exiting) {
-        a_out__statev("a_state_push(%s): Already exiting", state->name);
+        a_out__stateV("a_state_push(%s): Already exiting", state->name);
         return;
     } else {
-        a_out__statev("a_state_push(%s)", state->name);
+        a_out__stateV("a_state_push(%s)", state->name);
     }
 
     pending_push(state);
@@ -205,10 +205,10 @@ void a_state_push(int State)
 void a_state_pop(void)
 {
     if(g_exiting) {
-        a_out__statev("a_state_pop: Already exiting");
+        a_out__stateV("a_state_pop: Already exiting");
         return;
     } else {
-        a_out__statev("a_state_pop()");
+        a_out__stateV("a_state_pop()");
     }
 
     pending_pop();
@@ -219,10 +219,10 @@ void a_state_popUntil(int State)
     const AStateTableEntry* state = getState(State, __func__);
 
     if(g_exiting) {
-        a_out__statev("a_state_popUntil(%s): Already exiting", state->name);
+        a_out__stateV("a_state_popUntil(%s): Already exiting", state->name);
         return;
     } else {
-        a_out__statev("a_state_popUntil(%s)", state->name);
+        a_out__stateV("a_state_popUntil(%s)", state->name);
     }
 
     int pops = 0;
@@ -251,10 +251,10 @@ void a_state_replace(int State)
     const AStateTableEntry* state = getState(State, __func__);
 
     if(g_exiting) {
-        a_out__statev("a_state_replace(%s): Already exiting", state->name);
+        a_out__stateV("a_state_replace(%s): Already exiting", state->name);
         return;
     } else {
-        a_out__statev("a_state_replace(%s)", state->name);
+        a_out__stateV("a_state_replace(%s)", state->name);
     }
 
     pending_pop();
@@ -264,7 +264,7 @@ void a_state_replace(int State)
 void a_state_exit(void)
 {
     if(g_exiting) {
-        a_out__statev("a_state_exit: Already exiting");
+        a_out__stateV("a_state_exit: Already exiting");
         return;
     }
 
@@ -339,7 +339,7 @@ static bool iteration(void)
 
         a_fps__frame();
     } else {
-        a_out__statev(
+        a_out__stateV(
             "  '%s' running %s", s->state->name, g_stageNames[s->stage]);
         s->state->function();
     }

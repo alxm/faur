@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 Alex Margarit <alex@alxm.org>
+    Copyright 2016-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -39,10 +39,10 @@ typedef enum {
 
 extern void a_out__message(const char* Format, ...);
 extern void a_out__warning(const char* Format, ...);
-extern void a_out__warningv(const char* Format, ...);
+extern void a_out__warningV(const char* Format, ...);
 extern void a_out__error(const char* Format, ...);
-extern void a_out__errorv(const char* Format, ...);
-extern void a_out__fatal(const char* Format, va_list Args, bool Application);
+extern void a_out__errorV(const char* Format, ...);
+extern void a_out__errorv(const char* Format, va_list Args);
 extern void a_out__state(const char* Format, ...);
-extern void a_out__statev(const char* Format, ...);
+extern void a_out__stateV(const char* Format, ...);
 extern void a_out__overwrite(AOutType Type, FILE* Stream, const char* Format, ...);

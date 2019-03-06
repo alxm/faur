@@ -24,6 +24,11 @@
 #include "a2x_pack_str.v.h"
 
 typedef enum {
+    A_OUT__FLAG_VERBOSE = A_FLAG_BIT(0),
+    A_OUT__FLAG_OVERWRITE = A_FLAG_BIT(1),
+} AOutFlags;
+
+typedef enum {
     A_COLOR__INVALID = -1,
     A_COLOR__BLACK = 30,
     A_COLOR__RED = 31,
@@ -71,23 +76,29 @@ static void outPrintHeader(AOutSource Source, AOutType Type, FILE* Stream)
     #endif
 }
 
-static void outWorker(AOutSource Source, AOutType Type, bool Verbose, bool Overwrite, FILE* Stream, const char* Format, va_list Args)
+static void outWorkerPrint(AOutSource Source, AOutType Type, FILE* Stream, const char* Text, AOutFlags Flags)
 {
-    static char buffer[512];
-
-    if(!g_on || (Verbose && !A_CONFIG_OUTPUT_VERBOSE)) {
-        return;
-    }
-
-    if(!a_str_fmtv(buffer, sizeof(buffer), true, Format, Args)) {
-        return;
-    }
-
     outPrintHeader(Source, Type, Stream);
-    fputs(buffer, Stream);
+    fputs(Text, Stream);
     fputs("\n", Stream);
 
-    a_console__write(Source, Type, buffer, Overwrite);
+    a_console__write(
+        Source, Type, Text, A_FLAG_TEST_ANY(Flags, A_OUT__FLAG_OVERWRITE));
+}
+
+static void outWorker(AOutSource Source, AOutType Type, FILE* Stream, const char* Format, va_list Args, AOutFlags Flags)
+{
+    if(!g_on || (A_FLAG_TEST_ANY(Flags, A_OUT__FLAG_VERBOSE)
+                    && !A_CONFIG_OUTPUT_VERBOSE)) {
+
+        return;
+    }
+
+    static char buffer[512];
+
+    if(a_str_fmtv(buffer, sizeof(buffer), true, Format, Args)) {
+        outWorkerPrint(Source, Type, Stream, buffer, Flags);
+    }
 }
 
 void a_out__message(const char* Format, ...)
@@ -97,11 +108,10 @@ void a_out__message(const char* Format, ...)
 
     outWorker(A_OUT__SOURCE_A2X,
               A_OUT__TYPE_MESSAGE,
-              false,
-              false,
               stdout,
               Format,
-              args);
+              args,
+              0);
 
     va_end(args);
 }
@@ -113,27 +123,25 @@ void a_out__warning(const char* Format, ...)
 
     outWorker(A_OUT__SOURCE_A2X,
               A_OUT__TYPE_WARNING,
-              false,
-              false,
               stderr,
               Format,
-              args);
+              args,
+              0);
 
     va_end(args);
 }
 
-void a_out__warningv(const char* Format, ...)
+void a_out__warningV(const char* Format, ...)
 {
     va_list args;
     va_start(args, Format);
 
     outWorker(A_OUT__SOURCE_A2X,
               A_OUT__TYPE_WARNING,
-              true,
-              false,
               stderr,
               Format,
-              args);
+              args,
+              A_OUT__FLAG_VERBOSE);
 
     va_end(args);
 }
@@ -145,42 +153,37 @@ void a_out__error(const char* Format, ...)
 
     outWorker(A_OUT__SOURCE_A2X,
               A_OUT__TYPE_ERROR,
-              false,
-              false,
               stderr,
               Format,
-              args);
+              args,
+              0);
 
     va_end(args);
 }
 
-void a_out__errorv(const char* Format, ...)
+void a_out__errorV(const char* Format, ...)
 {
     va_list args;
     va_start(args, Format);
 
     outWorker(A_OUT__SOURCE_A2X,
               A_OUT__TYPE_ERROR,
-              true,
-              false,
               stderr,
               Format,
-              args);
+              args,
+              A_OUT__FLAG_VERBOSE);
 
     va_end(args);
 }
 
-void a_out__fatal(const char* Format, va_list Args, bool Application)
+void a_out__errorv(const char* Format, va_list Args)
 {
-    g_on = true;
-
-    outWorker(A_OUT__SOURCE_A2X + Application,
-              A_OUT__TYPE_FATAL,
-              false,
-              false,
+    outWorker(A_OUT__SOURCE_A2X,
+              A_OUT__TYPE_ERROR,
               stderr,
               Format,
-              Args);
+              Args,
+              0);
 }
 
 void a_out__state(const char* Format, ...)
@@ -190,27 +193,25 @@ void a_out__state(const char* Format, ...)
 
     outWorker(A_OUT__SOURCE_A2X,
               A_OUT__TYPE_STATE,
-              false,
-              false,
               stdout,
               Format,
-              args);
+              args,
+              0);
 
     va_end(args);
 }
 
-void a_out__statev(const char* Format, ...)
+void a_out__stateV(const char* Format, ...)
 {
     va_list args;
     va_start(args, Format);
 
     outWorker(A_OUT__SOURCE_A2X,
               A_OUT__TYPE_STATE,
-              true,
-              false,
               stdout,
               Format,
-              args);
+              args,
+              A_OUT__FLAG_VERBOSE);
 
     va_end(args);
 }
@@ -222,11 +223,10 @@ void a_out__overwrite(AOutType Type, FILE* Stream, const char* Format, ...)
 
     outWorker(A_OUT__SOURCE_A2X,
               Type,
-              false,
-              true,
               Stream,
               Format,
-              args);
+              args,
+              A_OUT__FLAG_OVERWRITE);
 
     va_end(args);
 }
@@ -234,8 +234,7 @@ void a_out__overwrite(AOutType Type, FILE* Stream, const char* Format, ...)
 void a_out_print(const char* Text)
 {
     if(g_on) {
-        outPrintHeader(A_OUT__SOURCE_APP, A_OUT__TYPE_MESSAGE, stdout);
-        puts(Text);
+        outWorkerPrint(A_OUT__SOURCE_APP, A_OUT__TYPE_MESSAGE, stdout, Text, 0);
     }
 }
 
@@ -246,11 +245,10 @@ void a_out_printf(const char* Format, ...)
 
     outWorker(A_OUT__SOURCE_APP,
               A_OUT__TYPE_MESSAGE,
-              false,
-              false,
               stdout,
               Format,
-              args);
+              args,
+              0);
 
     va_end(args);
 }
@@ -259,11 +257,10 @@ void a_out_printv(const char* Format, va_list Args)
 {
     outWorker(A_OUT__SOURCE_APP,
               A_OUT__TYPE_MESSAGE,
-              false,
-              false,
               stdout,
               Format,
-              Args);
+              Args,
+              0);
 }
 
 void a_out_warning(const char* Format, ...)
@@ -273,11 +270,10 @@ void a_out_warning(const char* Format, ...)
 
     outWorker(A_OUT__SOURCE_APP,
               A_OUT__TYPE_WARNING,
-              false,
-              false,
               stderr,
               Format,
-              args);
+              args,
+              0);
 
     va_end(args);
 }
@@ -289,11 +285,10 @@ void a_out_error(const char* Format, ...)
 
     outWorker(A_OUT__SOURCE_APP,
               A_OUT__TYPE_ERROR,
-              false,
-              false,
               stderr,
               Format,
-              args);
+              args,
+              0);
 
     va_end(args);
 }

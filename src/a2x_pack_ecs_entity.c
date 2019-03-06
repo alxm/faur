@@ -251,7 +251,7 @@ bool a_entity_removeGet(const AEntity* Entity)
 void a_entity_removeSet(AEntity* Entity)
 {
     if(a_entity_removeGet(Entity)) {
-        a_out__warningv("a_entity_removeSet(%s): Entity is removed",
+        a_out__warningV("a_entity_removeSet(%s): Entity is removed",
                         a_entity_idGet(Entity));
 
         return;
@@ -371,7 +371,7 @@ bool a_entity_muteGet(const AEntity* Entity)
 void a_entity_muteInc(AEntity* Entity)
 {
     if(a_entity_removeGet(Entity)) {
-        a_out__warningv(
+        a_out__warningV(
             "a_entity_muteInc(%s): Entity is removed", a_entity_idGet(Entity));
 
         return;
@@ -397,7 +397,7 @@ void a_entity_muteInc(AEntity* Entity)
 void a_entity_muteDec(AEntity* Entity)
 {
     if(a_entity_removeGet(Entity)) {
-        a_out__warningv(
+        a_out__warningV(
             "a_entity_muteDec(%s): Entity is removed", a_entity_idGet(Entity));
 
         return;

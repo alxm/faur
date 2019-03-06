@@ -189,7 +189,7 @@ void A__FATAL(const char* Format, ...)
     va_list args;
     va_start(args, Format);
 
-    a_out__fatal(Format, args, false);
+    a_out__errorv(Format, args);
 
     va_end(args);
 
@@ -201,7 +201,7 @@ void A_FATAL(const char* Format, ...)
     va_list args;
     va_start(args, Format);
 
-    a_out__fatal(Format, args, true);
+    a_out__errorv(Format, args);
 
     va_end(args);
 

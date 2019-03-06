@@ -230,7 +230,7 @@ void a_platform__soundSamplePlay(APlatformSoundSample* Sample, int Channel, bool
     }
 
     if(Mix_PlayChannel(Channel, Sample, Loop ? -1 : 0) == -1) {
-        a_out__errorv("Mix_PlayChannel(%d): %s", Channel, Mix_GetError());
+        a_out__errorV("Mix_PlayChannel(%d): %s", Channel, Mix_GetError());
     }
 }
 
