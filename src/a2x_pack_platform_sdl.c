@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2018 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -64,7 +64,7 @@ uint32_t a_platform__timeMsGet(void)
 
 void a_platform__timeMsWait(uint32_t Ms)
 {
-    #if A_CONFIG_SYSTEM_EMSCRIPTEN
+    #if A_CONFIG_TRAIT_NOSLEEP
         return;
     #endif
 
