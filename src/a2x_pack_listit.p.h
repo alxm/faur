@@ -1,5 +1,5 @@
 /*
-    Copyright 2011, 2016-2018 Alex Margarit <alex@alxm.org>
+    Copyright 2011, 2016-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -44,7 +44,7 @@ extern bool a__listit_isLast(const AListIt* Iterator);
         a__it.sentinelNode = NULL)                                   \
         for(PtrType Name; a__listit_getNext(&a__it, (void*)&Name); )
 
-#define A_LIST_ITERATE_BACKWARDS(List, PtrType, Name)                \
+#define A_LIST_ITERATE_REV(List, PtrType, Name)                      \
     for(AListIt a__it = a__listit_new(List, true);                   \
         a__it.sentinelNode != NULL;                                  \
         a__it.sentinelNode = NULL)                                   \
@@ -55,9 +55,9 @@ extern bool a__listit_isLast(const AListIt* Iterator);
         if(!(Filter)) continue;                    \
         else
 
-#define A_LIST_FILTER_BACKWARDS(List, PtrType, Name, Filter) \
-    A_LIST_ITERATE_BACKWARDS(List, PtrType, Name)            \
-        if(!(Filter)) continue;                              \
+#define A_LIST_FILTER_REV(List, PtrType, Name, Filter) \
+    A_LIST_ITERATE_REV(List, PtrType, Name)            \
+        if(!(Filter)) continue;                        \
         else
 
 #define A_LIST_INDEX() a__it.index
