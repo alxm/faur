@@ -95,7 +95,10 @@ void a_screen__init(void)
     if(width <= 0 || height <= 0) {
         A__FATAL("Invalid screen resolution %dx%d", width, height);
     } else {
-        a_out__message("Screen resolution %dx%d", width, height);
+        a_out__message("Screen resolution %dx%d, zoom x%d",
+                       width,
+                       height,
+                       A_CONFIG_SCREEN_ZOOM);
     }
 
     #if A_CONFIG_LIB_RENDER_SOFTWARE
