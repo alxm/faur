@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2018 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016, 2018-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -137,6 +137,18 @@ bool a_strhash_contains(const AStrHash* Hash, const char* Key)
 unsigned a_strhash_sizeGet(const AStrHash* Hash)
 {
     return a_list_sizeGet(Hash->entriesList);
+}
+
+void** a_strhash_toArray(const AStrHash* Hash)
+{
+    void** array = a_mem_malloc(
+                    a_list_sizeGet(Hash->entriesList) * sizeof(void*));
+
+    A_LIST_ITERATE(Hash->entriesList, const AStrHashEntry*, e) {
+        array[A_LIST_INDEX()] = e->content;
+    }
+
+    return array;
 }
 
 AList* a__strhash_entries(const AStrHash* Hash)
