@@ -27,13 +27,11 @@
 
 APixel a_sprite__colorKey;
 APixel a_sprite__colorLimit;
-APixel a_sprite__colorEnd;
 
 void a_sprite__init(void)
 {
-    a_sprite__colorKey = a_pixel_fromHex(A_CONFIG_COLOR_KEY);
-    a_sprite__colorLimit = a_pixel_fromHex(A_CONFIG_COLOR_LIMIT);
-    a_sprite__colorEnd = a_pixel_fromHex(A_CONFIG_COLOR_END);
+    a_sprite__colorKey = a_pixel_fromHex(A_CONFIG_COLOR_SPRITE_KEY);
+    a_sprite__colorLimit = a_pixel_fromHex(A_CONFIG_COLOR_SPRITE_BORDER);
 }
 
 static ASprite* makeEmptySprite(int Width, int Height)
@@ -65,16 +63,14 @@ static int findNextVerticalEdge(const ASprite* Sheet, int StartX, int StartY, in
     for(int x = StartX + *EdgeX + 1; x < Sheet->w; x++) {
         APixel p = a_sprite__pixelsGetPixel(Sheet, x, StartY);
 
-        if(p == a_sprite__colorLimit || p == a_sprite__colorEnd) {
+        if(p == a_sprite__colorLimit) {
             *EdgeX = x - StartX;
 
             int len = 1;
             APixel* buffer = Sheet->pixels + (StartY + 1) * Sheet->w + x;
 
             for(int y = Sheet->h - (StartY + 1); y--; ) {
-                if(*buffer != a_sprite__colorLimit
-                    && *buffer != a_sprite__colorEnd) {
-
+                if(*buffer != a_sprite__colorLimit) {
                     break;
                 }
 
