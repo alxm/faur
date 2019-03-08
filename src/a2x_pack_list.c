@@ -102,15 +102,6 @@ void a_list_appendMove(AList* Dst, AList* Src)
         return;
     }
 
-    if(Dst->items == 0) {
-        AList save = *Dst;
-
-        *Dst = *Src;
-        *Src = save;
-
-        return;
-    }
-
     A__ITERATE(Src, n) {
         n->list = Dst;
     }
