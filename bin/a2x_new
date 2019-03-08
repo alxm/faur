@@ -131,13 +131,17 @@ A_STATE(drawBox)
     {{
         if(a_button_pressGet(context.up)) {{
             context.y--;
-        }} else if(a_button_pressGet(context.down)) {{
+        }}
+
+        if(a_button_pressGet(context.down)) {{
             context.y++;
         }}
 
         if(a_button_pressGet(context.left)) {{
             context.x--;
-        }} else if(a_button_pressGet(context.right)) {{
+        }}
+
+        if(a_button_pressGet(context.right)) {{
             context.x++;
         }}
     }}
