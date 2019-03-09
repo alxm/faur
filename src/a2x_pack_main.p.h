@@ -23,7 +23,7 @@
 #define A_MAIN void a_main(void)
 extern A_MAIN;
 
-extern int a_main_argsGetNum(void);
+extern int a_main_argsNumGet(void);
 extern const char* a_main_argsGet(int ArgNum);
 
 extern void A_FATAL(const char* Format, ...) __attribute__((noreturn));

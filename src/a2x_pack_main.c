@@ -123,7 +123,7 @@ int main(int Argc, char* Argv[])
     return 0;
 }
 
-int a_main_argsGetNum(void)
+int a_main_argsNumGet(void)
 {
     return g_argsNum;
 }
