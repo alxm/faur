@@ -29,6 +29,7 @@ typedef struct ASpriteFrames ASpriteFrames;
 extern ASpriteFrames* a_spriteframes_newBlank(void);
 extern ASpriteFrames* a_spriteframes_newFromPng(const char* Path, int CellWidth, int CellHeight);
 extern ASpriteFrames* a_spriteframes_newFromSprite(const ASprite* Sheet, int X, int Y, int CellWidth, int CellHeight);
+extern ASpriteFrames* a_spriteframes_newFromSpriteEx(const ASprite* Sheet, int X, int Y, int CellWidth, int CellHeight, int GridWidth, int GridHeight);
 extern ASpriteFrames* a_spriteframes_dup(const ASpriteFrames* Frames, bool DupSprites);
 extern void a_spriteframes_free(ASpriteFrames* Frames, bool FreeSprites);
 

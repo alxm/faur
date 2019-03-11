@@ -169,21 +169,7 @@ ASprite* a_sprite_newFromSprite(const ASprite* Sheet, int X, int Y)
     int w, h;
     a_sprite__boundsFind(Sheet, X, Y, &w, &h);
 
-    ASprite* sprite = makeEmptySprite(w, h);
-    APixel* pixels = a_mem_malloc(sprite->pixelsSize);
-
-    const APixel* src = Sheet->pixels + Y * Sheet->w + X;
-    APixel* dst = pixels;
-
-    for(int i = h; i--; ) {
-        memcpy(dst, src, (unsigned)w * sizeof(APixel));
-        src += Sheet->w;
-        dst += w;
-    }
-
-    assignPixels(sprite, pixels);
-
-    return sprite;
+    return a_sprite_newFromSpriteEx(Sheet, X, Y, w, h);
 }
 
 ASprite* a_sprite_newFromSpriteEx(const ASprite* Sheet, int X, int Y, int W, int H)
