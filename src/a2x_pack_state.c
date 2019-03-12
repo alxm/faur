@@ -1,19 +1,19 @@
 /*
-    Copyright 2010, 2016-2019 Alex Margarit
+    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
-    a2x-framework is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as published by
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    a2x-framework is distributed in the hope that it will be useful,
+    This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Lesser General Public License for more details.
+    GNU General Public License for more details.
 
-    You should have received a copy of the GNU Lesser General Public License
-    along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "a2x_pack_state.v.h"
@@ -80,7 +80,7 @@ static void pending_handle(void)
 
     // Check if the current state just ran its Free stage
     if(current && current->stage == A__STATE_STAGE_FREE) {
-        a_out__statev("Destroying '%s' instance", current->state->name);
+        a_out__stateV("Destroying '%s' instance", current->state->name);
 
         free(a_list_pop(g_stack));
         current = a_list_peek(g_stack);
@@ -96,7 +96,7 @@ static void pending_handle(void)
     // check if the current state should transition from Init to Loop
     if(a_list_isEmpty(g_pending)) {
         if(current && current->stage == A__STATE_STAGE_INIT) {
-            a_out__statev("  '%s' going from %s to %s",
+            a_out__stateV("  '%s' going from %s to %s",
                           current->state->name,
                           g_stageNames[A__STATE_STAGE_INIT],
                           g_stageNames[A__STATE_STAGE_TICK]);
@@ -116,15 +116,15 @@ static void pending_handle(void)
             A__FATAL("Pop state: stack is empty");
         }
 
-        a_out__statev("Pop '%s'", current->state->name);
-        a_out__statev("  '%s' going from %s to %s",
+        a_out__stateV("Pop '%s'", current->state->name);
+        a_out__stateV("  '%s' going from %s to %s",
                       current->state->name,
                       g_stageNames[current->stage],
                       g_stageNames[A__STATE_STAGE_FREE]);
 
         current->stage = A__STATE_STAGE_FREE;
     } else {
-        a_out__statev("Push '%s'", pendingState->state->name);
+        a_out__stateV("Push '%s'", pendingState->state->name);
 
         A_LIST_ITERATE(g_stack, const AStateStackEntry*, e) {
             if(pendingState->state == e->state) {
@@ -145,6 +145,8 @@ void a_state__init(void)
 
 void a_state__uninit(void)
 {
+    free(g_table);
+
     a_list_freeEx(g_stack, free);
     a_list_freeEx(g_pending, free);
 }
@@ -191,10 +193,10 @@ void a_state_push(int State)
     const AStateTableEntry* state = getState(State, __func__);
 
     if(g_exiting) {
-        a_out__statev("a_state_push(%s): Already exiting", state->name);
+        a_out__stateV("a_state_push(%s): Already exiting", state->name);
         return;
     } else {
-        a_out__statev("a_state_push(%s)", state->name);
+        a_out__stateV("a_state_push(%s)", state->name);
     }
 
     pending_push(state);
@@ -203,10 +205,10 @@ void a_state_push(int State)
 void a_state_pop(void)
 {
     if(g_exiting) {
-        a_out__statev("a_state_pop: Already exiting");
+        a_out__stateV("a_state_pop: Already exiting");
         return;
     } else {
-        a_out__statev("a_state_pop()");
+        a_out__stateV("a_state_pop()");
     }
 
     pending_pop();
@@ -217,10 +219,10 @@ void a_state_popUntil(int State)
     const AStateTableEntry* state = getState(State, __func__);
 
     if(g_exiting) {
-        a_out__statev("a_state_popUntil(%s): Already exiting", state->name);
+        a_out__stateV("a_state_popUntil(%s): Already exiting", state->name);
         return;
     } else {
-        a_out__statev("a_state_popUntil(%s)", state->name);
+        a_out__stateV("a_state_popUntil(%s)", state->name);
     }
 
     int pops = 0;
@@ -249,10 +251,10 @@ void a_state_replace(int State)
     const AStateTableEntry* state = getState(State, __func__);
 
     if(g_exiting) {
-        a_out__statev("a_state_replace(%s): Already exiting", state->name);
+        a_out__stateV("a_state_replace(%s): Already exiting", state->name);
         return;
     } else {
-        a_out__statev("a_state_replace(%s)", state->name);
+        a_out__stateV("a_state_replace(%s)", state->name);
     }
 
     pending_pop();
@@ -262,7 +264,7 @@ void a_state_replace(int State)
 void a_state_exit(void)
 {
     if(g_exiting) {
-        a_out__statev("a_state_exit: Already exiting");
+        a_out__stateV("a_state_exit: Already exiting");
         return;
     }
 
@@ -337,7 +339,7 @@ static bool iteration(void)
 
         a_fps__frame();
     } else {
-        a_out__statev(
+        a_out__stateV(
             "  '%s' running %s", s->state->name, g_stageNames[s->stage]);
         s->state->function();
     }
@@ -362,7 +364,7 @@ void a_state__run(void)
     #if A_CONFIG_SYSTEM_EMSCRIPTEN
         emscripten_set_main_loop(
             loop,
-            a_platform__screenVsyncGet() ? 0 : A_CONFIG_FPS_DRAW,
+            a_platform__screenVsyncGet() ? 0 : A_CONFIG_FPS_RATE_DRAW,
             true);
     #else
         while(iteration()) {

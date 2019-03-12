@@ -1,19 +1,19 @@
 /*
-    Copyright 2010, 2016-2019 Alex Margarit
+    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
-    a2x-framework is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as published by
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    a2x-framework is distributed in the hope that it will be useful,
+    This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Lesser General Public License for more details.
+    GNU General Public License for more details.
 
-    You should have received a copy of the GNU Lesser General Public License
-    along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "a2x_pack_font.v.h"
@@ -119,7 +119,7 @@ AFont* a_font_dup(const AFont* Font, APixel Color)
 
     ASpriteFrames* frames = a_spriteframes_dup(Font->frames, true);
 
-    for(unsigned i = a_spriteframes_framesGetNum(frames); i--; ) {
+    for(unsigned i = a_spriteframes_framesNumGet(frames); i--; ) {
         ASprite* sprite = a_spriteframes_getNext(frames);
 
         a_screen_targetPushSprite(sprite);

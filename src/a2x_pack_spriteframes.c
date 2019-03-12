@@ -1,19 +1,19 @@
 /*
-    Copyright 2010, 2016-2019 Alex Margarit
+    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
-    a2x-framework is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as published by
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    a2x-framework is distributed in the hope that it will be useful,
+    This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Lesser General Public License for more details.
+    GNU General Public License for more details.
 
-    You should have received a copy of the GNU Lesser General Public License
-    along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "a2x_pack_spriteframes.v.h"
@@ -71,18 +71,24 @@ ASpriteFrames* a_spriteframes_newFromPng(const char* Path, int CellWidth, int Ce
 
 ASpriteFrames* a_spriteframes_newFromSprite(const ASprite* Sheet, int X, int Y, int CellWidth, int CellHeight)
 {
-    ASpriteFrames* f = a_spriteframes_newBlank();
-
     int gridW, gridH;
     a_sprite__boundsFind(Sheet, X, Y, &gridW, &gridH);
 
+    return a_spriteframes_newFromSpriteEx(
+            Sheet, X, Y, CellWidth, CellHeight, gridW, gridH);
+}
+
+ASpriteFrames* a_spriteframes_newFromSpriteEx(const ASprite* Sheet, int X, int Y, int CellWidth, int CellHeight, int GridWidth, int GridHeight)
+{
+    ASpriteFrames* f = a_spriteframes_newBlank();
+
     if(CellWidth < 1 || CellHeight < 1) {
-        CellWidth = gridW;
-        CellHeight = gridH;
+        CellWidth = GridWidth;
+        CellHeight = GridHeight;
     }
 
-    int endX = X + gridW - (gridW % CellWidth);
-    int endY = Y + gridH - (gridH % CellHeight);
+    int endX = X + GridWidth - (GridWidth % CellWidth);
+    int endY = Y + GridHeight - (GridHeight % CellHeight);
 
     for(int y = Y; y < endY; y += CellHeight) {
         for(int x = X; x < endX; x += CellWidth) {
@@ -266,12 +272,12 @@ ASprite* a_spriteframes_getRandom(const ASpriteFrames* Frames)
     return Frames->spriteArray[a_random_intu(Frames->num)];
 }
 
-AList* a_spriteframes_framesGet(const ASpriteFrames* Frames)
+AList* a_spriteframes_framesListGet(const ASpriteFrames* Frames)
 {
     return Frames->sprites;
 }
 
-unsigned a_spriteframes_framesGetNum(const ASpriteFrames* Frames)
+unsigned a_spriteframes_framesNumGet(const ASpriteFrames* Frames)
 {
     return Frames->num;
 }

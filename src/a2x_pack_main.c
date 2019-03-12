@@ -1,19 +1,19 @@
 /*
-    Copyright 2010, 2016-2019 Alex Margarit
+    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
-    a2x-framework is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as published by
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    a2x-framework is distributed in the hope that it will be useful,
+    This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Lesser General Public License for more details.
+    GNU General Public License for more details.
 
-    You should have received a copy of the GNU Lesser General Public License
-    along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "a2x_pack_main.v.h"
@@ -79,13 +79,13 @@ static void a__atexit(void)
 
 int main(int Argc, char* Argv[])
 {
+    a_out__message("PID: %d", getpid());
     a_out__message("a2x: %s %s", A_CONFIG_BUILD_UID, A_CONFIG_BUILD_GIT_HASH);
     a_out__message("App: %s %s by %s",
                    A_CONFIG_APP_TITLE,
                    A_CONFIG_APP_VERSION_STRING,
                    A_CONFIG_APP_AUTHOR);
-    a_out__message("Build timestamp %s", A_CONFIG_BUILD_TIMESTAMP);
-    a_out__message("PID %d", getpid());
+    a_out__message("Build timestamp: %s", A_CONFIG_BUILD_TIMESTAMP);
 
     g_argsNum = Argc;
     g_args = (const char**)Argv;
@@ -123,7 +123,7 @@ int main(int Argc, char* Argv[])
     return 0;
 }
 
-int a_main_argsGetNum(void)
+int a_main_argsNumGet(void)
 {
     return g_argsNum;
 }
@@ -155,7 +155,7 @@ __attribute__((noreturn)) static void handleFatal(void)
     a_console__draw();
     a_screen__draw();
 
-    #if A_CONFIG_BUILD_DEBUG
+    #if A_CONFIG_BUILD_DEBUG_WAIT
         while(true) {
             printf("Waiting to attach debugger: PID %d\n", getpid());
             a_time_secSpin(1);
@@ -189,7 +189,7 @@ void A__FATAL(const char* Format, ...)
     va_list args;
     va_start(args, Format);
 
-    a_out__fatal(Format, args, false);
+    a_out__errorv(Format, args);
 
     va_end(args);
 
@@ -201,7 +201,7 @@ void A_FATAL(const char* Format, ...)
     va_list args;
     va_start(args, Format);
 
-    a_out__fatal(Format, args, true);
+    a_out__errorv(Format, args);
 
     va_end(args);
 

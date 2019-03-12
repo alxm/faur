@@ -1,19 +1,19 @@
 /*
-    Copyright 2016-2019 Alex Margarit
+    Copyright 2016-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
-    a2x-framework is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as published by
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    a2x-framework is distributed in the hope that it will be useful,
+    This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Lesser General Public License for more details.
+    GNU General Public License for more details.
 
-    You should have received a copy of the GNU Lesser General Public License
-    along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "a2x_pack_ecs_entity.v.h"
@@ -251,7 +251,7 @@ bool a_entity_removeGet(const AEntity* Entity)
 void a_entity_removeSet(AEntity* Entity)
 {
     if(a_entity_removeGet(Entity)) {
-        a_out__warningv("a_entity_removeSet(%s): Entity is removed",
+        a_out__warningV("a_entity_removeSet(%s): Entity is removed",
                         a_entity_idGet(Entity));
 
         return;
@@ -371,7 +371,7 @@ bool a_entity_muteGet(const AEntity* Entity)
 void a_entity_muteInc(AEntity* Entity)
 {
     if(a_entity_removeGet(Entity)) {
-        a_out__warningv(
+        a_out__warningV(
             "a_entity_muteInc(%s): Entity is removed", a_entity_idGet(Entity));
 
         return;
@@ -397,7 +397,7 @@ void a_entity_muteInc(AEntity* Entity)
 void a_entity_muteDec(AEntity* Entity)
 {
     if(a_entity_removeGet(Entity)) {
-        a_out__warningv(
+        a_out__warningV(
             "a_entity_muteDec(%s): Entity is removed", a_entity_idGet(Entity));
 
         return;

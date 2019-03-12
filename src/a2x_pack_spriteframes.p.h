@@ -1,19 +1,19 @@
 /*
-    Copyright 2010, 2016-2019 Alex Margarit
+    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
-    a2x-framework is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as published by
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    a2x-framework is distributed in the hope that it will be useful,
+    This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Lesser General Public License for more details.
+    GNU General Public License for more details.
 
-    You should have received a copy of the GNU Lesser General Public License
-    along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #pragma once
@@ -29,6 +29,7 @@ typedef struct ASpriteFrames ASpriteFrames;
 extern ASpriteFrames* a_spriteframes_newBlank(void);
 extern ASpriteFrames* a_spriteframes_newFromPng(const char* Path, int CellWidth, int CellHeight);
 extern ASpriteFrames* a_spriteframes_newFromSprite(const ASprite* Sheet, int X, int Y, int CellWidth, int CellHeight);
+extern ASpriteFrames* a_spriteframes_newFromSpriteEx(const ASprite* Sheet, int X, int Y, int CellWidth, int CellHeight, int GridWidth, int GridHeight);
 extern ASpriteFrames* a_spriteframes_dup(const ASpriteFrames* Frames, bool DupSprites);
 extern void a_spriteframes_free(ASpriteFrames* Frames, bool FreeSprites);
 
@@ -46,8 +47,8 @@ extern ASprite* a_spriteframes_getCurrent(const ASpriteFrames* Frames);
 extern ASprite* a_spriteframes_getByIndex(const ASpriteFrames* Frames, unsigned Index);
 extern ASprite* a_spriteframes_getRandom(const ASpriteFrames* Frames);
 
-extern AList* a_spriteframes_framesGet(const ASpriteFrames* Frames);
-extern unsigned a_spriteframes_framesGetNum(const ASpriteFrames* Frames);
+extern AList* a_spriteframes_framesListGet(const ASpriteFrames* Frames);
+extern unsigned a_spriteframes_framesNumGet(const ASpriteFrames* Frames);
 
 extern unsigned a_spriteframes_indexGet(const ASpriteFrames* Frames);
 extern void a_spriteframes_indexSet(ASpriteFrames* Frames, unsigned Index);

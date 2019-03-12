@@ -1,19 +1,19 @@
 /*
-    Copyright 2011, 2016-2018 Alex Margarit
+    Copyright 2011, 2016-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
-    a2x-framework is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as published by
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    a2x-framework is distributed in the hope that it will be useful,
+    This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Lesser General Public License for more details.
+    GNU General Public License for more details.
 
-    You should have received a copy of the GNU Lesser General Public License
-    along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #pragma once
@@ -44,7 +44,7 @@ extern bool a__listit_isLast(const AListIt* Iterator);
         a__it.sentinelNode = NULL)                                   \
         for(PtrType Name; a__listit_getNext(&a__it, (void*)&Name); )
 
-#define A_LIST_ITERATE_BACKWARDS(List, PtrType, Name)                \
+#define A_LIST_ITERATE_REV(List, PtrType, Name)                      \
     for(AListIt a__it = a__listit_new(List, true);                   \
         a__it.sentinelNode != NULL;                                  \
         a__it.sentinelNode = NULL)                                   \
@@ -55,9 +55,9 @@ extern bool a__listit_isLast(const AListIt* Iterator);
         if(!(Filter)) continue;                    \
         else
 
-#define A_LIST_FILTER_BACKWARDS(List, PtrType, Name, Filter) \
-    A_LIST_ITERATE_BACKWARDS(List, PtrType, Name)            \
-        if(!(Filter)) continue;                              \
+#define A_LIST_FILTER_REV(List, PtrType, Name, Filter) \
+    A_LIST_ITERATE_REV(List, PtrType, Name)            \
+        if(!(Filter)) continue;                        \
         else
 
 #define A_LIST_INDEX() a__it.index

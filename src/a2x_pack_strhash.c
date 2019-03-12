@@ -1,19 +1,19 @@
 /*
-    Copyright 2010, 2016, 2018 Alex Margarit
+    Copyright 2010, 2016, 2018-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
-    a2x-framework is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as published by
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    a2x-framework is distributed in the hope that it will be useful,
+    This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Lesser General Public License for more details.
+    GNU General Public License for more details.
 
-    You should have received a copy of the GNU Lesser General Public License
-    along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "a2x_pack_strhash.v.h"
@@ -137,6 +137,18 @@ bool a_strhash_contains(const AStrHash* Hash, const char* Key)
 unsigned a_strhash_sizeGet(const AStrHash* Hash)
 {
     return a_list_sizeGet(Hash->entriesList);
+}
+
+void** a_strhash_toArray(const AStrHash* Hash)
+{
+    void** array = a_mem_malloc(
+                    a_list_sizeGet(Hash->entriesList) * sizeof(void*));
+
+    A_LIST_ITERATE(Hash->entriesList, const AStrHashEntry*, e) {
+        array[A_LIST_INDEX()] = e->content;
+    }
+
+    return array;
 }
 
 AList* a__strhash_entries(const AStrHash* Hash)

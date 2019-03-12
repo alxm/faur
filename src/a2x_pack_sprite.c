@@ -1,19 +1,19 @@
 /*
-    Copyright 2010, 2016-2019 Alex Margarit
+    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
-    a2x-framework is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as published by
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    a2x-framework is distributed in the hope that it will be useful,
+    This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Lesser General Public License for more details.
+    GNU General Public License for more details.
 
-    You should have received a copy of the GNU Lesser General Public License
-    along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "a2x_pack_sprite.v.h"
@@ -27,13 +27,11 @@
 
 APixel a_sprite__colorKey;
 APixel a_sprite__colorLimit;
-APixel a_sprite__colorEnd;
 
 void a_sprite__init(void)
 {
-    a_sprite__colorKey = a_pixel_fromHex(A_CONFIG_COLOR_KEY);
-    a_sprite__colorLimit = a_pixel_fromHex(A_CONFIG_COLOR_LIMIT);
-    a_sprite__colorEnd = a_pixel_fromHex(A_CONFIG_COLOR_END);
+    a_sprite__colorKey = a_pixel_fromHex(A_CONFIG_COLOR_SPRITE_KEY);
+    a_sprite__colorLimit = a_pixel_fromHex(A_CONFIG_COLOR_SPRITE_BORDER);
 }
 
 static ASprite* makeEmptySprite(int Width, int Height)
@@ -65,16 +63,14 @@ static int findNextVerticalEdge(const ASprite* Sheet, int StartX, int StartY, in
     for(int x = StartX + *EdgeX + 1; x < Sheet->w; x++) {
         APixel p = a_sprite__pixelsGetPixel(Sheet, x, StartY);
 
-        if(p == a_sprite__colorLimit || p == a_sprite__colorEnd) {
+        if(p == a_sprite__colorLimit) {
             *EdgeX = x - StartX;
 
             int len = 1;
             APixel* buffer = Sheet->pixels + (StartY + 1) * Sheet->w + x;
 
             for(int y = Sheet->h - (StartY + 1); y--; ) {
-                if(*buffer != a_sprite__colorLimit
-                    && *buffer != a_sprite__colorEnd) {
-
+                if(*buffer != a_sprite__colorLimit) {
                     break;
                 }
 
@@ -173,21 +169,7 @@ ASprite* a_sprite_newFromSprite(const ASprite* Sheet, int X, int Y)
     int w, h;
     a_sprite__boundsFind(Sheet, X, Y, &w, &h);
 
-    ASprite* sprite = makeEmptySprite(w, h);
-    APixel* pixels = a_mem_malloc(sprite->pixelsSize);
-
-    const APixel* src = Sheet->pixels + Y * Sheet->w + X;
-    APixel* dst = pixels;
-
-    for(int i = h; i--; ) {
-        memcpy(dst, src, (unsigned)w * sizeof(APixel));
-        src += Sheet->w;
-        dst += w;
-    }
-
-    assignPixels(sprite, pixels);
-
-    return sprite;
+    return a_sprite_newFromSpriteEx(Sheet, X, Y, w, h);
 }
 
 ASprite* a_sprite_newFromSpriteEx(const ASprite* Sheet, int X, int Y, int W, int H)

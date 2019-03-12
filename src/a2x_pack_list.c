@@ -1,19 +1,19 @@
 /*
-    Copyright 2010, 2016-2018 Alex Margarit
+    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
-    a2x-framework is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as published by
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    a2x-framework is distributed in the hope that it will be useful,
+    This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Lesser General Public License for more details.
+    GNU General Public License for more details.
 
-    You should have received a copy of the GNU Lesser General Public License
-    along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "a2x_pack_list.v.h"
@@ -23,6 +23,9 @@
 
 #define A__ITERATE(List, N) \
     for(AListNode* N = List->sentinel.next; N != &List->sentinel; N = N->next)
+
+#define A__ITERATE_REV(List, N) \
+    for(AListNode* N = List->sentinel.prev; N != &List->sentinel; N = N->prev)
 
 #define A__ITERATE_SAFE(List, Current, Next)                             \
     for(AListNode *Current = List->sentinel.next, *Next = Current->next; \
@@ -99,15 +102,6 @@ void a_list_appendMove(AList* Dst, AList* Src)
         return;
     }
 
-    if(Dst->items == 0) {
-        AList save = *Dst;
-
-        *Dst = *Src;
-        *Src = save;
-
-        return;
-    }
-
     A__ITERATE(Src, n) {
         n->list = Dst;
     }
@@ -137,15 +131,23 @@ void a_list_appendCopy(AList* Dst, const AList* Src)
 
 void* a_list_getByIndex(const AList* List, unsigned Index)
 {
-    const AListNode* n;
+    if(Index < List->items >> 1) {
+        A__ITERATE(List, n) {
+            if(Index-- == 0) {
+                return n->content;
+            }
+        }
+    } else {
+        Index = List->items - 1 - Index;
 
-    for(n = List->sentinel.next; n != &List->sentinel; n = n->next) {
-        if(Index-- == 0) {
-            break;
+        A__ITERATE_REV(List, n) {
+            if(Index-- == 0) {
+                return n->content;
+            }
         }
     }
 
-    return n->content;
+    return NULL;
 }
 
 void* a_list_getFirst(const AList* List)
@@ -172,64 +174,86 @@ void* a_list_getNodeContent(const AListNode* Node)
     return Node->content;
 }
 
-void a_list_removeItem(AList* List, const void* Item)
+static inline void* removeNode(AListNode* Node)
 {
-    A__ITERATE(List, n) {
-        if(n->content == Item) {
-            n->prev->next = n->next;
-            n->next->prev = n->prev;
+    void* v = Node->content;
 
-            List->items--;
-
-            free(n);
-
-            return;
-        }
-    }
-}
-
-void* a_list_removeFirst(AList* List)
-{
-    AListNode* n = List->sentinel.next;
-    void* v = n->content;
-
-    if(n != &List->sentinel) {
-        n->prev->next = n->next;
-        n->next->prev = n->prev;
-
-        List->items--;
-
-        free(n);
-    }
-
-    return v;
-}
-
-void* a_list_removeLast(AList* List)
-{
-    AListNode* n = List->sentinel.prev;
-    void* v = n->content;
-
-    if(n != &List->sentinel) {
-        n->prev->next = n->next;
-        n->next->prev = n->prev;
-
-        List->items--;
-
-        free(n);
-    }
-
-    return v;
-}
-
-void a_list_removeNode(AListNode* Node)
-{
     Node->prev->next = Node->next;
     Node->next->prev = Node->prev;
 
     Node->list->items--;
 
     free(Node);
+
+    return v;
+}
+
+void* a_list_removeItem(AList* List, const void* Item)
+{
+    A__ITERATE(List, n) {
+        if(n->content == Item) {
+            return removeNode(n);
+        }
+    }
+
+    return NULL;
+}
+
+void* a_list_removeFirst(AList* List)
+{
+    AListNode* n = List->sentinel.next;
+
+    if(n != &List->sentinel) {
+        return removeNode(n);
+    }
+
+    return NULL;
+}
+
+void* a_list_removeLast(AList* List)
+{
+    AListNode* n = List->sentinel.prev;
+
+    if(n != &List->sentinel) {
+        return removeNode(n);
+    }
+
+    return NULL;
+}
+
+void* a_list_removeByIndex(AList* List, unsigned Index)
+{
+    if(Index < List->items >> 1) {
+        A__ITERATE(List, n) {
+            if(Index-- == 0) {
+                return removeNode(n);
+            }
+        }
+    } else {
+        Index = List->items - 1 - Index;
+
+        A__ITERATE_REV(List, n) {
+            if(Index-- == 0) {
+                return removeNode(n);
+            }
+        }
+    }
+
+    return NULL;
+}
+
+void* a_list_removeRandom(AList* List)
+{
+    if(List->items > 0) {
+        return a_list_removeByIndex(List, a_random_intu(List->items));
+    }
+
+    return NULL;
+}
+
+void* a_list_removeNode(AListNode* Node)
+{
+    return removeNode(Node);
 }
 
 void a_list_clear(AList* List)

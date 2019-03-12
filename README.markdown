@@ -5,13 +5,20 @@ a2x is a C framework I wrote for my video games. It runs natively on Linux and F
 ## Dependencies & Path Setup
 
 ```sh
-sudo apt install git build-essential python3
-                 libpng-dev libsdl2-dev libsdl2-mixer-dev
-                 libsdl1.2-dev libsdl-mixer1.2-dev
+# Basics
+sudo apt install build-essential python3 git
 
+# Core libraries
+sudo apt install libpng-dev libsdl2-dev libsdl2-mixer-dev
+
+# Optional extras
+sudo apt install libsdl1.2-dev libsdl-mixer1.2-dev mingw-w64
+
+# Clone repo to ~/a2x
 cd ~
 git clone git://github.com/alxm/a2x.git
 
+# Set environment vars
 export A2X_PATH="$HOME/a2x"
 export PATH="$PATH:$A2X_PATH/bin"
 ```
@@ -81,13 +88,17 @@ A_STATE(drawBox)
     {
         if(a_button_pressGet(context.up)) {
             context.y--;
-        } else if(a_button_pressGet(context.down)) {
+        }
+
+        if(a_button_pressGet(context.down)) {
             context.y++;
         }
 
         if(a_button_pressGet(context.left)) {
             context.x--;
-        } else if(a_button_pressGet(context.right)) {
+        }
+
+        if(a_button_pressGet(context.right)) {
             context.x++;
         }
     }
@@ -141,7 +152,7 @@ Edit `~/.config/a2x/sdk.config` with your SDK paths, then build a default projec
 
 Copyright 2010-2019 Alex Margarit (alex@alxm.org)
 
-* Code licensed under [GNU LGPL3](https://www.gnu.org/licenses/lgpl.html) (see `COPYING` and `COPYING.LESSER`)
+* Code licensed under [GNU GPLv3](https://www.gnu.org/licenses/gpl.html) (see `COPYING`)
 * Graphics licensed under [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/) (see `media/CC-BY-NC-ND`)
 
 I'm writing a2x to support my other software. To keep it focused and manageable, it is a solo endeavor.

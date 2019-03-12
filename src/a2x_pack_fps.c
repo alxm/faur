@@ -1,19 +1,19 @@
 /*
-    Copyright 2010, 2016-2019 Alex Margarit
+    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
-    a2x-framework is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as published by
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    a2x-framework is distributed in the hope that it will be useful,
+    This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Lesser General Public License for more details.
+    GNU General Public License for more details.
 
-    You should have received a copy of the GNU Lesser General Public License
-    along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "a2x_pack_fps.v.h"
@@ -51,25 +51,19 @@ static struct {
 
 void a_fps__init(void)
 {
-    if(A_CONFIG_FPS_TICK < 1) {
-        A__FATAL("A_CONFIG_FPS_TICK < 1");
-    }
+    #if A_CONFIG_FPS_RATE_TICK < 1
+        #error A_CONFIG_FPS_RATE_TICK < 1
+    #elif A_CONFIG_FPS_RATE_DRAW < 1
+        #error A_CONFIG_FPS_RATE_DRAW < 1
+    #elif A_CONFIG_FPS_RATE_TICK < A_CONFIG_FPS_RATE_DRAW
+        #error A_CONFIG_FPS_RATE_TICK < A_CONFIG_FPS_RATE_DRAW
+    #endif
 
-    if(A_CONFIG_FPS_DRAW < 1) {
-        A__FATAL("A_CONFIG_FPS_DRAW < 1");
-    }
-
-    if(A_CONFIG_FPS_TICK < A_CONFIG_FPS_DRAW) {
-        A__FATAL("A_CONFIG_FPS_TICK (%u) < A_CONFIG_FPS_DRAW (%u)",
-                 A_CONFIG_FPS_TICK,
-                 A_CONFIG_FPS_DRAW);
-    }
-
-    g_settings.tickFrameMs = 1000 / A_CONFIG_FPS_TICK;
-    g_settings.drawFrameMs = 1000 / A_CONFIG_FPS_DRAW;
+    g_settings.tickFrameMs = 1000 / A_CONFIG_FPS_RATE_TICK;
+    g_settings.drawFrameMs = 1000 / A_CONFIG_FPS_RATE_DRAW;
 
     g_history.head = 0;
-    g_history.len = A_CONFIG_FPS_DRAW * A__AVERAGE_WINDOW_SEC;
+    g_history.len = A_CONFIG_FPS_RATE_DRAW * A__AVERAGE_WINDOW_SEC;
     g_history.drawFrameMs = a_mem_malloc(g_history.len * sizeof(unsigned));
     g_history.drawFrameMsMin = a_mem_malloc(g_history.len * sizeof(unsigned));
 
@@ -86,7 +80,7 @@ void a_fps__uninit(void)
 
 void a_fps__reset(void)
 {
-    g_run.drawFps = A_CONFIG_FPS_DRAW;
+    g_run.drawFps = A_CONFIG_FPS_RATE_DRAW;
     g_run.drawFpsMax = g_run.drawFps;
 
     for(unsigned i = g_history.len; i--; ) {
@@ -94,7 +88,7 @@ void a_fps__reset(void)
         g_history.drawFrameMsMin[i] = g_settings.drawFrameMs;
     }
 
-    g_history.drawFrameMsSum = g_history.len * 1000 / A_CONFIG_FPS_DRAW;
+    g_history.drawFrameMsSum = g_history.len * 1000 / A_CONFIG_FPS_RATE_DRAW;
     g_history.drawFrameMsMinSum = g_history.drawFrameMsSum;
 
     g_run.lastFrameMs = a_time_msGet();
@@ -144,7 +138,13 @@ void a_fps__frame(void)
     g_history.head = (g_history.head + 1) % g_history.len;
 
     g_run.lastFrameMs = nowMs;
-    g_run.tickCreditMs += a_math_minu(elapsedMs, g_settings.drawFrameMs * 2);
+
+    #if A_CONFIG_FPS_CAP_LAG
+        g_run.tickCreditMs += a_math_minu(
+                                elapsedMs, g_settings.drawFrameMs * 2);
+    #else
+        g_run.tickCreditMs += elapsedMs;
+    #endif
 }
 
 unsigned a_fps_rateDrawGet(void)

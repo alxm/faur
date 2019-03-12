@@ -1,19 +1,19 @@
 /*
-    Copyright 2010, 2016-2019 Alex Margarit
+    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
-    a2x-framework is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as published by
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    a2x-framework is distributed in the hope that it will be useful,
+    This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Lesser General Public License for more details.
+    GNU General Public License for more details.
 
-    You should have received a copy of the GNU Lesser General Public License
-    along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "a2x_pack_platform_sdl_video.v.h"
@@ -159,15 +159,21 @@ void a_platform__screenInit(int Width, int Height)
             A__FATAL("SDL_CreateRenderer: %s", SDL_GetError());
         }
 
-        if(rendererFlags & SDL_RENDERER_PRESENTVSYNC) {
-            SDL_RendererInfo info;
-            SDL_GetRendererInfo(a__sdlRenderer, &info);
+        SDL_RendererInfo info;
+        SDL_GetRendererInfo(a__sdlRenderer, &info);
 
-            if(!(info.flags & SDL_RENDERER_PRESENTVSYNC)) {
-                a_out__warning("Cannot use vsync");
-                g_vsync = false;
-            }
+        if(!(info.flags & SDL_RENDERER_TARGETTEXTURE)) {
+            A__FATAL("SDL_CreateRenderer: "
+                     "System does not support SDL_RENDERER_TARGETTEXTURE");
         }
+
+        if(info.flags & SDL_RENDERER_ACCELERATED) {
+            a_out__message("Using SDL2 accelerated renderer");
+        } else {
+            a_out__message("Using SDL2 software renderer");
+        }
+
+        g_vsync = info.flags & SDL_RENDERER_PRESENTVSYNC;
 
         ret = SDL_RenderSetLogicalSize(a__sdlRenderer, Width, Height);
 
@@ -194,6 +200,8 @@ void a_platform__screenInit(int Width, int Height)
                       &g_clearG,
                       &g_clearB);
     #endif
+
+    a_out__message("V-sync is %s", g_vsync ? "on" : "off");
 
     #if A_CONFIG_TRAIT_DESKTOP
         const char* caption = a_str__fmt512("%s %s",

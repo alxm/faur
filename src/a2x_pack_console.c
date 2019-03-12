@@ -1,20 +1,20 @@
 /*
-    Copyright 2016-2019 Alex Margarit
+    Copyright 2016-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
-    a2x-framework is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Lesser General Public License as published by
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    a2x-framework is distributed in the hope that it will be useful,
-    a2x-framework is distributed in the hope that it will be useful,
+    This program is distributed in the hope that it will be useful,
+    This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Lesser General Public License for more details.
+    GNU General Public License for more details.
 
-    You should have received a copy of the GNU Lesser General Public License
-    along with a2x-framework.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "a2x_pack_console.v.h"
@@ -213,7 +213,7 @@ void a_console__draw(void)
                       a_screen_sizeGetHeight(),
                       A_CONFIG_SCREEN_BPP,
                       a_screen__zoomGet());
-        a_font_printf("Vsync %s\n",
+        a_font_printf("V-sync %s\n",
                       a_platform__screenVsyncGet() ? "on" : "off");
 
         #if A_CONFIG_LIB_SDL == 1
@@ -223,17 +223,13 @@ void a_console__draw(void)
         #endif
 
         #if A_CONFIG_LIB_RENDER_SOFTWARE
-            #if A_CONFIG_LIB_SDL == 1
-                #if A_CONFIG_SCREEN_ALLOCATE
-                    a_font_print("S/W (Buffer)\n");
-                #else
-                    a_font_print("S/W (Raw)\n");
-                #endif
-            #elif A_CONFIG_LIB_SDL == 2
+            #if A_CONFIG_SCREEN_ALLOCATE
                 a_font_print("S/W (Buffer)\n");
+            #else
+                a_font_print("S/W (Raw)\n");
             #endif
         #elif A_CONFIG_LIB_RENDER_SDL
-            a_font_print("SDL2 Renderer\n");
+            a_font_print("SDL2 rend\n");
         #endif
 
         a_font__fontSet(A_FONT__ID_BLUE);
