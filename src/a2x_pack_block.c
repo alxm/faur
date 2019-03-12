@@ -43,55 +43,11 @@ void a_block__uninit(void)
     a_list_free(g_emptyList);
 }
 
-static void blockAdd(ABlock* Parent, ABlock* Child)
-{
-    if(Parent->blocks == NULL) {
-        Parent->blocks = a_list_new();
-        Parent->index = a_strhash_new();
-    }
-
-    AList* indexList = a_strhash_get(Parent->index, Child->text);
-
-    if(indexList == NULL) {
-        indexList = a_list_new();
-        a_strhash_add(Parent->index, Child->text, indexList);
-    }
-
-    a_list_addLast(Parent->blocks, Child);
-    a_list_addLast(indexList, Child);
-}
-
-static ABlock* blockNew(const char* Content, ABlock* Root)
+static ABlock* blockNew(const char* Content)
 {
     ABlock* block = a_mem_zalloc(sizeof(ABlock));
 
     block->text = a_str_dup(Content);
-
-    if(Root) {
-        // This is a root-level block, check if it inherits from another
-        char* baseId = a_str_prefixGetToLast(Content, '.');
-
-        while(baseId != NULL) {
-            const ABlock* baseBlock = a_block_keyGetBlock(Root, baseId);
-
-            if(baseBlock == NULL) {
-                char* nextBaseId = a_str_prefixGetToLast(baseId, '.');
-
-                free(baseId);
-                baseId = nextBaseId;
-            } else {
-                if(baseBlock->blocks) {
-                    A_LIST_ITERATE(baseBlock->blocks, ABlock*, b) {
-                        blockAdd(block, b);
-                        b->refs++;
-                    }
-                }
-
-                free(baseId);
-                baseId = NULL;
-            }
-        }
-    }
 
     return block;
 }
@@ -113,6 +69,24 @@ static void blockFree(ABlock* Block)
     free(Block);
 }
 
+static void blockAdd(ABlock* Parent, ABlock* Child)
+{
+    if(Parent->blocks == NULL) {
+        Parent->blocks = a_list_new();
+        Parent->index = a_strhash_new();
+    }
+
+    AList* indexList = a_strhash_get(Parent->index, Child->text);
+
+    if(indexList == NULL) {
+        indexList = a_list_new();
+        a_strhash_add(Parent->index, Child->text, indexList);
+    }
+
+    a_list_addLast(Parent->blocks, Child);
+    a_list_addLast(indexList, Child);
+}
+
 static inline const ABlock* blockGet(const ABlock* Block, unsigned LineNumber)
 {
     if(LineNumber == 0) {
@@ -128,7 +102,7 @@ static inline const ABlock* blockGet(const ABlock* Block, unsigned LineNumber)
 
 ABlock* a_block_new(const char* File)
 {
-    ABlock* root = blockNew("", NULL);
+    ABlock* root = blockNew("");
 
     AList* stack = a_list_new();
     int lastIndent = -1;
@@ -163,7 +137,31 @@ ABlock* a_block_new(const char* File)
         lastIndent = currentIndent;
 
         ABlock* parent = a_list_peek(stack);
-        ABlock* block = blockNew(textStart, currentIndent == 0 ? root : NULL);
+        ABlock* block = blockNew(textStart);
+
+        if(currentIndent == 0) {
+            // This is a root-level block, check if it inherits from another
+            for(char* base = a_str_prefixGetToLast(textStart, '.'); base; ) {
+                const ABlock* baseBlock = a_block_keyGetBlock(root, base);
+
+                if(baseBlock == NULL) {
+                    char* nextBaseId = a_str_prefixGetToLast(base, '.');
+
+                    free(base);
+                    base = nextBaseId;
+                } else {
+                    if(baseBlock->blocks) {
+                        A_LIST_ITERATE(baseBlock->blocks, ABlock*, b) {
+                            blockAdd(block, b);
+                            b->refs++;
+                        }
+                    }
+
+                    free(base);
+                    base = NULL;
+                }
+            }
+        }
 
         blockAdd(parent, block);
         a_list_push(stack, block);
