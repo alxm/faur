@@ -277,3 +277,39 @@ AVectorInt a_block_lineGetCoords(const ABlock* Block, unsigned LineNumber)
 
     return v;
 }
+
+int a_block_lineGetFmt(const ABlock* Block, unsigned LineNumber, const char* Format, ...)
+{
+    va_list args;
+    va_start(args, Format);
+
+    int ret = a_block_lineGetFmtv(Block, LineNumber, Format, args);
+
+    va_end(args);
+
+    return ret;
+}
+
+int a_block_lineGetFmtv(const ABlock* Block, unsigned LineNumber, const char* Format, va_list Args)
+{
+    const ABlock* line = blockGet(Block, LineNumber);
+
+    if(line) {
+        return vsscanf(line->text, Format, Args);
+    }
+
+    return -1;
+}
+
+int a_block_keyGetFmt(const ABlock* Block, const char* Key, const char* Format, ...)
+{
+    va_list args;
+    va_start(args, Format);
+
+    int ret = a_block_lineGetFmtv(
+                a_block_keyGetBlock(Block, Key), 1, Format, args);
+
+    va_end(args);
+
+    return ret;
+}
