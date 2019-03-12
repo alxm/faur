@@ -29,7 +29,9 @@ static AList* g_emptyList;
 struct ABlock {
     char* text; // own content
     AList* blocks; // list of ABlock indented under this block
-    AStrHash* index; // table of lists of ABlock, the above indexed by name
+    AStrHash* index; // table of AList of ABlock, the blocks indexed by name
+    const ABlock** array; // the blocks indexed by line # relative to parent
+    unsigned arrayLen; // number of blocks under parent
     unsigned refs; // take a ref when inheriting
 };
 
@@ -64,6 +66,7 @@ static void blockFree(ABlock* Block)
     if(Block->blocks) {
         a_list_freeEx(Block->blocks, (AFree*)blockFree);
         a_strhash_freeEx(Block->index, (AFree*)a_list_free);
+        free(Block->array);
     }
 
     free(Block);
@@ -87,14 +90,22 @@ static void blockAdd(ABlock* Parent, ABlock* Child)
     a_list_addLast(indexList, Child);
 }
 
+static void blockCacheLines(ABlock* Block)
+{
+    if(Block->blocks != NULL) {
+        Block->array = (const ABlock**)a_list_toArray(Block->blocks);
+        Block->arrayLen = a_list_sizeGet(Block->blocks);
+    }
+}
+
 static inline const ABlock* blockGet(const ABlock* Block, unsigned LineNumber)
 {
     if(LineNumber == 0) {
         return Block;
     }
 
-    if(Block && Block->blocks) {
-        return a_list_getByIndex(Block->blocks, LineNumber - 1);
+    if(Block && LineNumber <= Block->arrayLen) {
+        return Block->array[LineNumber - 1];
     }
 
     return NULL;
@@ -103,11 +114,9 @@ static inline const ABlock* blockGet(const ABlock* Block, unsigned LineNumber)
 ABlock* a_block_new(const char* File)
 {
     ABlock* root = blockNew("");
-
+    AFile* f = a_file_new(File, A_FILE_READ);
     AList* stack = a_list_new();
     int lastIndent = -1;
-
-    AFile* f = a_file_new(File, A_FILE_READ);
 
     a_list_push(stack, root);
 
@@ -130,7 +139,7 @@ ABlock* a_block_new(const char* File)
 
         // Each subsequent entry has -1 indentation, pop until reach parent
         while(currentIndent <= lastIndent) {
-            a_list_pop(stack);
+            blockCacheLines(a_list_pop(stack));
             lastIndent--;
         }
 
@@ -165,6 +174,10 @@ ABlock* a_block_new(const char* File)
 
         blockAdd(parent, block);
         a_list_push(stack, block);
+    }
+
+    while(!a_list_isEmpty(stack)) {
+        blockCacheLines(a_list_pop(stack));
     }
 
     a_file_free(f);
