@@ -58,7 +58,7 @@ static const struct {
 
 static bool g_on = A_CONFIG_OUTPUT_ON;
 
-static void outPrintHeader(AOutSource Source, AOutType Type, FILE* Stream)
+static void outWorkerPrint(AOutSource Source, AOutType Type, FILE* Stream, const char* Text, AOutFlags Flags)
 {
     #if A_CONFIG_SYSTEM_LINUX && A_CONFIG_TRAIT_DESKTOP
         fprintf(Stream,
@@ -74,11 +74,7 @@ static void outPrintHeader(AOutSource Source, AOutType Type, FILE* Stream)
                 g_types[Type].name,
                 (uint32_t)a_fps_ticksGet());
     #endif
-}
 
-static void outWorkerPrint(AOutSource Source, AOutType Type, FILE* Stream, const char* Text, AOutFlags Flags)
-{
-    outPrintHeader(Source, Type, Stream);
     fputs(Text, Stream);
     fputs("\n", Stream);
 
@@ -108,7 +104,7 @@ void a_out__message(const char* Format, ...)
 
     outWorker(A_OUT__SOURCE_A2X,
               A_OUT__TYPE_MESSAGE,
-              stdout,
+              A_OUT__STREAM_STDOUT,
               Format,
               args,
               0);
@@ -123,7 +119,7 @@ void a_out__warning(const char* Format, ...)
 
     outWorker(A_OUT__SOURCE_A2X,
               A_OUT__TYPE_WARNING,
-              stderr,
+              A_OUT__STREAM_STDERR,
               Format,
               args,
               0);
@@ -138,7 +134,7 @@ void a_out__warningV(const char* Format, ...)
 
     outWorker(A_OUT__SOURCE_A2X,
               A_OUT__TYPE_WARNING,
-              stderr,
+              A_OUT__STREAM_STDERR,
               Format,
               args,
               A_OUT__FLAG_VERBOSE);
@@ -153,7 +149,7 @@ void a_out__error(const char* Format, ...)
 
     outWorker(A_OUT__SOURCE_A2X,
               A_OUT__TYPE_ERROR,
-              stderr,
+              A_OUT__STREAM_STDERR,
               Format,
               args,
               0);
@@ -168,7 +164,7 @@ void a_out__errorV(const char* Format, ...)
 
     outWorker(A_OUT__SOURCE_A2X,
               A_OUT__TYPE_ERROR,
-              stderr,
+              A_OUT__STREAM_STDERR,
               Format,
               args,
               A_OUT__FLAG_VERBOSE);
@@ -180,7 +176,7 @@ void a_out__errorv(const char* Format, va_list Args)
 {
     outWorker(A_OUT__SOURCE_A2X,
               A_OUT__TYPE_ERROR,
-              stderr,
+              A_OUT__STREAM_STDERR,
               Format,
               Args,
               0);
@@ -193,7 +189,7 @@ void a_out__state(const char* Format, ...)
 
     outWorker(A_OUT__SOURCE_A2X,
               A_OUT__TYPE_STATE,
-              stdout,
+              A_OUT__STREAM_STDOUT,
               Format,
               args,
               0);
@@ -208,7 +204,7 @@ void a_out__stateV(const char* Format, ...)
 
     outWorker(A_OUT__SOURCE_A2X,
               A_OUT__TYPE_STATE,
-              stdout,
+              A_OUT__STREAM_STDOUT,
               Format,
               args,
               A_OUT__FLAG_VERBOSE);
@@ -234,7 +230,11 @@ void a_out__overwrite(AOutType Type, FILE* Stream, const char* Format, ...)
 void a_out_print(const char* Text)
 {
     if(g_on) {
-        outWorkerPrint(A_OUT__SOURCE_APP, A_OUT__TYPE_MESSAGE, stdout, Text, 0);
+        outWorkerPrint(A_OUT__SOURCE_APP,
+                       A_OUT__TYPE_MESSAGE,
+                       A_OUT__STREAM_STDOUT,
+                       Text,
+                       0);
     }
 }
 
@@ -245,7 +245,7 @@ void a_out_printf(const char* Format, ...)
 
     outWorker(A_OUT__SOURCE_APP,
               A_OUT__TYPE_MESSAGE,
-              stdout,
+              A_OUT__STREAM_STDOUT,
               Format,
               args,
               0);
@@ -257,7 +257,7 @@ void a_out_printv(const char* Format, va_list Args)
 {
     outWorker(A_OUT__SOURCE_APP,
               A_OUT__TYPE_MESSAGE,
-              stdout,
+              A_OUT__STREAM_STDOUT,
               Format,
               Args,
               0);
@@ -270,7 +270,7 @@ void a_out_warning(const char* Format, ...)
 
     outWorker(A_OUT__SOURCE_APP,
               A_OUT__TYPE_WARNING,
-              stderr,
+              A_OUT__STREAM_STDERR,
               Format,
               args,
               0);
@@ -285,7 +285,7 @@ void a_out_error(const char* Format, ...)
 
     outWorker(A_OUT__SOURCE_APP,
               A_OUT__TYPE_ERROR,
-              stderr,
+              A_OUT__STREAM_STDERR,
               Format,
               args,
               0);

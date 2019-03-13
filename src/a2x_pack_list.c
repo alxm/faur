@@ -251,9 +251,9 @@ void* a_list_removeRandom(AList* List)
     return NULL;
 }
 
-void* a_list_removeNode(AListNode* Node)
+void a_list_removeNode(AListNode* Node)
 {
-    return removeNode(Node);
+    removeNode(Node);
 }
 
 void a_list_clear(AList* List)

@@ -29,7 +29,9 @@ static AList* g_emptyList;
 struct ABlock {
     char* text; // own content
     AList* blocks; // list of ABlock indented under this block
-    AStrHash* index; // table of lists of ABlock, the above indexed by name
+    AStrHash* index; // table of AList of ABlock, the blocks indexed by name
+    const ABlock** array; // the blocks indexed by line # relative to parent
+    unsigned arrayLen; // number of blocks under parent
     unsigned refs; // take a ref when inheriting
 };
 
@@ -41,6 +43,33 @@ void a_block__init(void)
 void a_block__uninit(void)
 {
     a_list_free(g_emptyList);
+}
+
+static ABlock* blockNew(const char* Content)
+{
+    ABlock* block = a_mem_zalloc(sizeof(ABlock));
+
+    block->text = a_str_dup(Content);
+
+    return block;
+}
+
+static void blockFree(ABlock* Block)
+{
+    if(Block->refs-- > 0) {
+        // This block will be freed later as part of freeing another block
+        return;
+    }
+
+    free(Block->text);
+
+    if(Block->blocks) {
+        a_list_freeEx(Block->blocks, (AFree*)blockFree);
+        a_strhash_freeEx(Block->index, (AFree*)a_list_free);
+        free(Block->array);
+    }
+
+    free(Block);
 }
 
 static void blockAdd(ABlock* Parent, ABlock* Child)
@@ -61,56 +90,12 @@ static void blockAdd(ABlock* Parent, ABlock* Child)
     a_list_addLast(indexList, Child);
 }
 
-static ABlock* blockNew(const char* Content, ABlock* Root)
+static void blockCacheLines(ABlock* Block)
 {
-    ABlock* block = a_mem_zalloc(sizeof(ABlock));
-
-    block->text = a_str_dup(Content);
-
-    if(Root) {
-        // This is a root-level block, check if it inherits from another
-        char* baseId = a_str_prefixGetToLast(Content, '.');
-
-        while(baseId != NULL) {
-            const ABlock* baseBlock = a_block_keyGetBlock(Root, baseId);
-
-            if(baseBlock == NULL) {
-                char* nextBaseId = a_str_prefixGetToLast(baseId, '.');
-
-                free(baseId);
-                baseId = nextBaseId;
-            } else {
-                if(baseBlock->blocks) {
-                    A_LIST_ITERATE(baseBlock->blocks, ABlock*, b) {
-                        blockAdd(block, b);
-                        b->refs++;
-                    }
-                }
-
-                free(baseId);
-                baseId = NULL;
-            }
-        }
+    if(Block->blocks != NULL) {
+        Block->array = (const ABlock**)a_list_toArray(Block->blocks);
+        Block->arrayLen = a_list_sizeGet(Block->blocks);
     }
-
-    return block;
-}
-
-static void blockFree(ABlock* Block)
-{
-    if(Block->refs-- > 0) {
-        // This block will be freed later as part of freeing another block
-        return;
-    }
-
-    free(Block->text);
-
-    if(Block->blocks) {
-        a_list_freeEx(Block->blocks, (AFree*)blockFree);
-        a_strhash_freeEx(Block->index, (AFree*)a_list_free);
-    }
-
-    free(Block);
 }
 
 static inline const ABlock* blockGet(const ABlock* Block, unsigned LineNumber)
@@ -119,8 +104,8 @@ static inline const ABlock* blockGet(const ABlock* Block, unsigned LineNumber)
         return Block;
     }
 
-    if(Block && Block->blocks) {
-        return a_list_getByIndex(Block->blocks, LineNumber - 1);
+    if(Block && LineNumber <= Block->arrayLen) {
+        return Block->array[LineNumber - 1];
     }
 
     return NULL;
@@ -128,12 +113,10 @@ static inline const ABlock* blockGet(const ABlock* Block, unsigned LineNumber)
 
 ABlock* a_block_new(const char* File)
 {
-    ABlock* root = blockNew("", NULL);
-
+    ABlock* root = blockNew("");
+    AFile* f = a_file_new(File, A_FILE_READ);
     AList* stack = a_list_new();
     int lastIndent = -1;
-
-    AFile* f = a_file_new(File, A_FILE_READ);
 
     a_list_push(stack, root);
 
@@ -156,17 +139,45 @@ ABlock* a_block_new(const char* File)
 
         // Each subsequent entry has -1 indentation, pop until reach parent
         while(currentIndent <= lastIndent) {
-            a_list_pop(stack);
+            blockCacheLines(a_list_pop(stack));
             lastIndent--;
         }
 
         lastIndent = currentIndent;
 
         ABlock* parent = a_list_peek(stack);
-        ABlock* block = blockNew(textStart, currentIndent == 0 ? root : NULL);
+        ABlock* block = blockNew(textStart);
+
+        if(currentIndent == 0) {
+            // This is a root-level block, check if it inherits from another
+            for(char* base = a_str_prefixGetToLast(textStart, '.'); base; ) {
+                const ABlock* baseBlock = a_block_keyGetBlock(root, base);
+
+                if(baseBlock == NULL) {
+                    char* nextBaseId = a_str_prefixGetToLast(base, '.');
+
+                    free(base);
+                    base = nextBaseId;
+                } else {
+                    if(baseBlock->blocks) {
+                        A_LIST_ITERATE(baseBlock->blocks, ABlock*, b) {
+                            blockAdd(block, b);
+                            b->refs++;
+                        }
+                    }
+
+                    free(base);
+                    base = NULL;
+                }
+            }
+        }
 
         blockAdd(parent, block);
         a_list_push(stack, block);
+    }
+
+    while(!a_list_isEmpty(stack)) {
+        blockCacheLines(a_list_pop(stack));
     }
 
     a_file_free(f);
@@ -276,4 +287,40 @@ AVectorInt a_block_lineGetCoords(const ABlock* Block, unsigned LineNumber)
     }
 
     return v;
+}
+
+int a_block_lineGetFmt(const ABlock* Block, unsigned LineNumber, const char* Format, ...)
+{
+    va_list args;
+    va_start(args, Format);
+
+    int ret = a_block_lineGetFmtv(Block, LineNumber, Format, args);
+
+    va_end(args);
+
+    return ret;
+}
+
+int a_block_lineGetFmtv(const ABlock* Block, unsigned LineNumber, const char* Format, va_list Args)
+{
+    const ABlock* line = blockGet(Block, LineNumber);
+
+    if(line) {
+        return vsscanf(line->text, Format, Args);
+    }
+
+    return -1;
+}
+
+int a_block_keyGetFmt(const ABlock* Block, const char* Key, const char* Format, ...)
+{
+    va_list args;
+    va_start(args, Format);
+
+    int ret = a_block_lineGetFmtv(
+                a_block_keyGetBlock(Block, Key), 1, Format, args);
+
+    va_end(args);
+
+    return ret;
 }

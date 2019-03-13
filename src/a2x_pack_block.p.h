@@ -1,5 +1,5 @@
 /*
-    Copyright 2018 Alex Margarit <alex@alxm.org>
+    Copyright 2018-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -42,6 +42,8 @@ extern AFixu a_block_lineGetAngle(const ABlock* Block, unsigned LineNumber);
 extern APixel a_block_lineGetPixel(const ABlock* Block, unsigned LineNumber);
 extern const char* a_block_lineGetString(const ABlock* Block, unsigned LineNumber);
 extern AVectorInt a_block_lineGetCoords(const ABlock* Block, unsigned LineNumber);
+extern int a_block_lineGetFmt(const ABlock* Block, unsigned LineNumber, const char* Format, ...);
+extern int a_block_lineGetFmtv(const ABlock* Block, unsigned LineNumber, const char* Format, va_list Args);
 
 static inline int a_block_keyGetInt(const ABlock* Block, const char* Key)
 {
@@ -76,4 +78,11 @@ static inline const char* a_block_keyGetString(const ABlock* Block, const char* 
 static inline AVectorInt a_block_keyGetCoords(const ABlock* Block, const char* Key)
 {
     return a_block_lineGetCoords(a_block_keyGetBlock(Block, Key), 1);
+}
+
+extern int a_block_keyGetFmt(const ABlock* Block, const char* Key, const char* Format, ...);
+
+static inline int a_block_keyGetFmtv(const ABlock* Block, const char* Key, const char* Format, va_list Args)
+{
+    return a_block_lineGetFmtv(a_block_keyGetBlock(Block, Key), 1, Format, Args);
 }

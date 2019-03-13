@@ -166,8 +166,10 @@ __attribute__((noreturn)) static void handleFatal(void)
                 if(s == 10) {
                     a_out__message("Exiting in %ds", s);
                 } else {
-                    a_out__overwrite(
-                        A_OUT__TYPE_MESSAGE, stdout, "Exiting in %ds", s);
+                    a_out__overwrite(A_OUT__TYPE_MESSAGE,
+                                     A_OUT__STREAM_STDOUT,
+                                     "Exiting in %ds",
+                                     s);
                 }
 
                 a_console__draw();

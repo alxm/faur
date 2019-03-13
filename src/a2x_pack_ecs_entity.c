@@ -195,7 +195,7 @@ bool a_entity_parentHas(const AEntity* Child, const AEntity* PotentialParent)
 
 void a_entity_refInc(AEntity* Entity)
 {
-    if(a_entity_removeGet(Entity)) {
+    if(A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__REMOVED)) {
         A__FATAL(
             "a_entity_refInc(%s): Entity is removed", a_entity_idGet(Entity));
     }
@@ -250,7 +250,7 @@ bool a_entity_removeGet(const AEntity* Entity)
 
 void a_entity_removeSet(AEntity* Entity)
 {
-    if(a_entity_removeGet(Entity)) {
+    if(A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__REMOVED)) {
         a_out__warningV("a_entity_removeSet(%s): Entity is removed",
                         a_entity_idGet(Entity));
 
@@ -278,7 +278,9 @@ bool a_entity_activeGet(const AEntity* Entity)
 
 void a_entity_activeSet(AEntity* Entity)
 {
-    if(a_entity_muteGet(Entity) || a_entity_removeGet(Entity)) {
+    if(Entity->muteCount > 0
+        || A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__REMOVED)) {
+
         return;
     }
 
@@ -370,7 +372,7 @@ bool a_entity_muteGet(const AEntity* Entity)
 
 void a_entity_muteInc(AEntity* Entity)
 {
-    if(a_entity_removeGet(Entity)) {
+    if(A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__REMOVED)) {
         a_out__warningV(
             "a_entity_muteInc(%s): Entity is removed", a_entity_idGet(Entity));
 
@@ -396,7 +398,7 @@ void a_entity_muteInc(AEntity* Entity)
 
 void a_entity_muteDec(AEntity* Entity)
 {
-    if(a_entity_removeGet(Entity)) {
+    if(A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__REMOVED)) {
         a_out__warningV(
             "a_entity_muteDec(%s): Entity is removed", a_entity_idGet(Entity));
 

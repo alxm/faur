@@ -20,6 +20,14 @@
 
 #include "a2x_pack_out.p.h"
 
+#define A_OUT__STREAM_STDOUT stdout
+
+#if A_CONFIG_SYSTEM_EMSCRIPTEN
+    #define A_OUT__STREAM_STDERR stdout
+#else
+    #define A_OUT__STREAM_STDERR stderr
+#endif
+
 typedef enum {
     A_OUT__SOURCE_INVALID = -1,
     A_OUT__SOURCE_A2X,
