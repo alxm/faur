@@ -19,8 +19,13 @@
 #include "a2x_pack_platform_sdl_sound.v.h"
 
 #if A_CONFIG_LIB_SDL
-#include <SDL.h>
-#include <SDL_mixer.h>
+#if A_CONFIG_LIB_SDL == 1
+    #include <SDL/SDL.h>
+    #include <SDL/SDL_mixer.h>
+#elif A_CONFIG_LIB_SDL == 2
+    #include <SDL2/SDL.h>
+    #include <SDL2/SDL_mixer.h>
+#endif
 
 #include "a2x_pack_main.v.h"
 #include "a2x_pack_mem.v.h"

@@ -19,7 +19,7 @@
 #include "a2x_pack_platform_sdl_render.v.h"
 
 #if A_CONFIG_LIB_RENDER_SDL
-#include <SDL.h>
+#include <SDL2/SDL.h>
 
 #include "a2x_pack_main.v.h"
 #include "a2x_pack_mem.v.h"
@@ -42,6 +42,8 @@ struct APlatformTexture {
     int w, h;
     SDL_Texture* texture[A_TEXTURE__NUM];
 };
+
+extern SDL_Renderer* a__sdlRenderer;
 
 static inline SDL_BlendMode pixelBlendToSdlBlend(void)
 {
