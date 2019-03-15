@@ -112,6 +112,7 @@ void a_sound__tick(void)
     #if A_CONFIG_TRAIT_KEYBOARD
         if(a_button_pressGetOnce(g_muteButton)) {
             a_platform__soundMuteFlip();
+
             a_out__message(
                 "Sound is now %s", a_platform__soundMuteGet() ? "off" : "on");
         }

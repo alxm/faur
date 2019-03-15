@@ -27,8 +27,6 @@
 
 AScreen a__screen;
 static AList* g_stack; // list of AScreen
-static int g_zoom = A_CONFIG_SCREEN_ZOOM;
-static bool g_fullscreen = A_CONFIG_SCREEN_FULLSCREEN;
 
 #if A_CONFIG_TRAIT_DESKTOP
     static AButton* g_fullScreenButton;
@@ -149,12 +147,20 @@ void a_screen__tick(void)
 {
     #if A_CONFIG_TRAIT_DESKTOP
         if(a_button_pressGetOnce(g_fullScreenButton)) {
-            a_screen_fullscreenFlip();
+            a_platform__screenFullscreenFlip();
+
+            a_out__message("Screen is now %s",
+                           a_platform__screenFullscreenGet()
+                            ? "fullscreen" : "windowed");
         }
 
         for(int z = 0; z < A__ZOOM_LEVELS; z++) {
             if(a_button_pressGetOnce(g_zoomButtons[z])) {
-                a_screen__zoomSet(z + 1);
+                a_platform__screenZoomSet(z + 1);
+
+                a_out__message(
+                    "Screen zoom is now %d", a_platform__screenZoomGet());
+
                 break;
             }
         }
@@ -168,25 +174,6 @@ void a_screen__draw(void)
     }
 
     a_platform__screenShow();
-}
-
-int a_screen__zoomGet(void)
-{
-    return g_zoom;
-}
-
-void a_screen__zoomSet(int Zoom)
-{
-    g_zoom = Zoom;
-
-    a_platform__screenZoomSet(Zoom);
-}
-
-void a_screen_fullscreenFlip(void)
-{
-    g_fullscreen = !g_fullscreen;
-
-    a_platform__screenFullscreenSet(g_fullscreen);
 }
 
 bool a_screen__sameSize(const AScreen* Screen1, const AScreen* Screen2)

@@ -49,6 +49,9 @@
     static const bool g_vsync = false;
 #endif
 
+static bool g_fullscreen = A_CONFIG_SCREEN_FULLSCREEN;
+static int g_zoom = A_CONFIG_SCREEN_ZOOM;
+
 void a_platform_sdl_video__init(void)
 {
     #if A_CONFIG_SYSTEM_PANDORA
@@ -273,15 +276,13 @@ void a_platform__screenShow(void)
                 }
             }
 
-            int zoom = a_screen__zoomGet();
-
-            if(zoom <= 1) {
+            if(g_zoom <= 1) {
                 memcpy(g_sdlScreen->pixels,
                        a__screen.pixels,
                        a__screen.pixelsSize);
             } else {
-                int realH = g_sdlScreen->h / zoom;
-                int realW = g_sdlScreen->w / zoom;
+                int realH = g_sdlScreen->h / g_zoom;
+                int realW = g_sdlScreen->w / g_zoom;
 
                 APixel* dst = (APixel*)g_sdlScreen->pixels;
                 const APixel* srcStart = a__screen.pixels;
@@ -289,14 +290,14 @@ void a_platform__screenShow(void)
                 ptrdiff_t dstRemainderInc =
                     (int)g_sdlScreen->pitch / (int)sizeof(APixel)
                         - g_sdlScreen->w;
-                ptrdiff_t srcStartInc = g_sdlScreen->w / zoom;
+                ptrdiff_t srcStartInc = g_sdlScreen->w / g_zoom;
 
                 for(int y = realH; y--; ) {
-                    for(int z = zoom; z--; ) {
+                    for(int z = g_zoom; z--; ) {
                         const APixel* src = srcStart;
 
                         for(int x = realW; x--; ) {
-                            for(int z = zoom; z--; ) {
+                            for(int z = g_zoom; z--; ) {
                                 *dst++ = *src;
                             }
 
@@ -431,6 +432,11 @@ bool a_platform__screenVsyncGet(void)
     return g_vsync;
 }
 
+int a_platform__screenZoomGet(void)
+{
+    return g_zoom;
+}
+
 void a_platform__screenZoomSet(int Zoom)
 {
     #if A_CONFIG_LIB_SDL == 1
@@ -445,25 +451,35 @@ void a_platform__screenZoomSet(int Zoom)
             }
 
             SDL_SetClipRect(g_sdlScreen, NULL);
+
+            g_zoom = Zoom;
         #else
             A_UNUSED(Zoom);
 
-            a_out__warning(
-                "SDL 1.2 Zoom needs A_CONFIG_SCREEN_ALLOCATE=1");
+            a_out__warning("SDL 1.2 Zoom needs A_CONFIG_SCREEN_ALLOCATE=1");
         #endif
     #elif A_CONFIG_LIB_SDL == 2
         SDL_SetWindowSize(
             g_sdlWindow, a__screen.width * Zoom, a__screen.height * Zoom);
+
+        g_zoom = Zoom;
     #endif
 }
 
-void a_platform__screenFullscreenSet(bool Fullscreen)
+bool a_platform__screenFullscreenGet(void)
 {
+    return g_fullscreen;
+}
+
+void a_platform__screenFullscreenFlip(void)
+{
+    g_fullscreen = !g_fullscreen;
+
     #if A_CONFIG_LIB_SDL == 1
         #if A_CONFIG_SCREEN_ALLOCATE
             uint32_t videoFlags = g_sdlScreen->flags;
 
-            if(Fullscreen) {
+            if(g_fullscreen) {
                 videoFlags |= SDL_FULLSCREEN;
             } else {
                 videoFlags &= ~(uint32_t)SDL_FULLSCREEN;
@@ -482,13 +498,13 @@ void a_platform__screenFullscreenSet(bool Fullscreen)
         #endif
     #elif A_CONFIG_LIB_SDL == 2
         if(SDL_SetWindowFullscreen(
-            g_sdlWindow, Fullscreen ? SDL_WINDOW_FULLSCREEN : 0) < 0) {
+            g_sdlWindow, g_fullscreen ? SDL_WINDOW_FULLSCREEN : 0) < 0) {
 
             a_out__error("SDL_SetWindowFullscreen: %s", SDL_GetError());
         }
     #endif
 
-    a_platform__screenMouseCursorSet(!Fullscreen);
+    a_platform__screenMouseCursorSet(!g_fullscreen);
 }
 
 void a_platform__screenMouseCursorSet(bool Show)

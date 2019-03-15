@@ -212,7 +212,7 @@ void a_console__draw(void)
                       a_screen_sizeGetWidth(),
                       a_screen_sizeGetHeight(),
                       A_CONFIG_SCREEN_BPP,
-                      a_screen__zoomGet());
+                      a_platform__screenZoomGet());
         a_font_printf("V-sync %s\n",
                       a_platform__screenVsyncGet() ? "on" : "off");
 

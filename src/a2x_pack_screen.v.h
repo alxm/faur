@@ -46,9 +46,4 @@ extern void a_screen__uninit(void);
 extern void a_screen__tick(void);
 extern void a_screen__draw(void);
 
-extern int a_screen__zoomGet(void);
-extern void a_screen__zoomSet(int Zoom);
-
-extern void a_screen_fullscreenFlip(void);
-
 extern bool a_screen__sameSize(const AScreen* Screen1, const AScreen* Screen2);

@@ -44,8 +44,10 @@ extern void a_platform__screenInit(int Width, int Height);
 extern void a_platform__screenShow(void);
 extern void a_platform__screenResolutionGetNative(int* Width, int* Height);
 extern bool a_platform__screenVsyncGet(void);
+extern int a_platform__screenZoomGet(void);
 extern void a_platform__screenZoomSet(int Zoom);
-extern void a_platform__screenFullscreenSet(bool Fullscreen);
+extern bool a_platform__screenFullscreenGet(void);
+extern void a_platform__screenFullscreenFlip(void);
 extern void a_platform__screenMouseCursorSet(bool Show);
 
 extern void a_platform__renderClear(void);
