@@ -60,15 +60,15 @@ void a_platform__init(void)
 
     #if A_CONFIG_LIB_RENDER_SOFTWARE
         #if A_CONFIG_SCREEN_ALLOCATE
-            a_out__message("Software rendering (virtual buffer)");
+            a_out__message("Software graphics (virtual buffer)");
         #else
-            a_out__message("Software rendering (raw buffer)");
+            a_out__message("Software graphics (raw buffer)");
         #endif
 
         a_platform_software_blit__init();
         a_platform_software_draw__init();
     #elif A_CONFIG_LIB_RENDER_SDL
-        a_out__message("SDL2 rendering");
+        a_out__message("SDL graphics");
     #endif
 }
 

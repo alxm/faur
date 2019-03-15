@@ -22,6 +22,7 @@
 #include "a2x_pack_file.v.h"
 #include "a2x_pack_math.v.h"
 #include "a2x_pack_mem.v.h"
+#include "a2x_pack_out.v.h"
 #include "a2x_pack_platform.v.h"
 #include "a2x_pack_screen.v.h"
 #include "a2x_pack_timer.v.h"
@@ -111,6 +112,8 @@ void a_sound__tick(void)
     #if A_CONFIG_TRAIT_KEYBOARD
         if(a_button_pressGetOnce(g_muteButton)) {
             a_platform__soundMuteFlip();
+            a_out__message(
+                "Sound is now %s", a_platform__soundMuteGet() ? "off" : "on");
         }
     #endif
 }
