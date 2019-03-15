@@ -19,6 +19,7 @@
 #include "a2x_pack_platform.v.h"
 
 #include "a2x_pack_out.v.h"
+#include "a2x_pack_platform_emscripten.v.h"
 #include "a2x_pack_platform_gp2x.v.h"
 #include "a2x_pack_platform_linux.v.h"
 #include "a2x_pack_platform_pandora.v.h"
@@ -29,6 +30,10 @@
 
 void a_platform__init(void)
 {
+    #if A_CONFIG_SYSTEM_EMSCRIPTEN
+        a_platform_emscripten__init();
+    #endif
+
     #if A_CONFIG_SYSTEM_LINUX
         a_platform_linux__init();
     #endif
