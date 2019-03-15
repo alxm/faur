@@ -20,6 +20,10 @@
 
 #include <sys/stat.h>
 
+#if A_CONFIG_SYSTEM_EMSCRIPTEN
+    #include <emscripten.h>
+#endif
+
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
 #include "a2x_pack_path.v.h"
@@ -42,7 +46,18 @@ static bool fileRead(AFile* File, void* Buffer, size_t Size)
 
 static bool fileWrite(AFile* File, const void* Buffer, size_t Size)
 {
-    return fwrite(Buffer, Size, 1, File->u.handle) == 1;
+    bool ret = fwrite(Buffer, Size, 1, File->u.handle) == 1;
+
+    #if A_CONFIG_SYSTEM_EMSCRIPTEN
+        EM_ASM(
+            {
+                FS.syncfs(false, function(Error) {});
+            },
+            0
+        );
+    #endif
+
+    return ret;
 }
 
 static bool fileWritef(AFile* File, const char* Format, va_list Args)

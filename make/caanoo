@@ -36,7 +36,6 @@ A_PLATFORM_CFLAGS := \
     -fomit-frame-pointer \
     -isystem$(A_SDK_CAANOO_ROOT)/include \
     -isystem$(A_SDK_CAANOO_ROOT)/DGE/include \
-    -isystem$(A_SDK_CAANOO_ROOT)/DGE/include/SDL \
     -isystem$(CAANOO_SDK)/include \
     -isystem$(CAANOO_SDK)/arm-gph-linux-gnueabi/include \
     -Wno-conversion \

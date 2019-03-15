@@ -293,6 +293,12 @@ void a_state_blockSet(const AEvent* Event)
 
 static bool iteration(void)
 {
+    #if A_CONFIG_SYSTEM_EMSCRIPTEN
+        if(!EM_ASM_INT({ return Module.a2x_fsIsReady; }, 0)) {
+            return true;
+        }
+    #endif
+
     if(!a_state_blockGet()) {
         g_blockEvent = NULL;
         pending_handle();

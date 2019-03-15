@@ -19,7 +19,11 @@
 #include "a2x_pack_platform_sdl_video.v.h"
 
 #if A_CONFIG_LIB_SDL
-#include <SDL.h>
+#if A_CONFIG_LIB_SDL == 1
+    #include <SDL/SDL.h>
+#elif A_CONFIG_LIB_SDL == 2
+    #include <SDL2/SDL.h>
+#endif
 
 #include "a2x_pack_main.v.h"
 #include "a2x_pack_out.v.h"

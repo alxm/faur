@@ -21,12 +21,6 @@
 #include "a2x_pack_platform_sdl_video.p.h"
 
 #if A_CONFIG_LIB_SDL == 2
-    #include <SDL.h>
-
-    #include "a2x_pack_pixel.v.h"
-
-    extern SDL_Renderer* a__sdlRenderer;
-
     #if A_CONFIG_SCREEN_BPP == 16
         #if A_CONFIG_LIB_RENDER_SOFTWARE
             #define A_SDL__PIXEL_FORMAT SDL_PIXELFORMAT_RGB565

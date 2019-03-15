@@ -38,7 +38,6 @@ A_PLATFORM_CFLAGS := \
     -ffast-math \
     -fomit-frame-pointer \
     -isystem$(OPEN2X)/include \
-    -isystem$(OPEN2X)/include/SDL \
     -isystem$(OPEN2X)/arm-open2x-linux/include \
     -Wno-conversion \
 

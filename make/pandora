@@ -43,7 +43,6 @@ A_PLATFORM_CFLAGS := \
     -fomit-frame-pointer \
     -isystem$(PANDORA_SDK)/include \
     -isystem$(PANDORA_SDK)/usr/include \
-    -isystem$(PANDORA_SDK)/usr/include/SDL \
     -isystem$(PANDORA_SDK)/arm-none-linux-gnueabi/include \
 
 PREFIX := arm-none-linux-gnueabi-
