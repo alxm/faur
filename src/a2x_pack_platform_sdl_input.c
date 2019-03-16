@@ -65,8 +65,8 @@ struct APlatformInputAnalog {
 
 struct APlatformInputTouch {
     const char* name;
-    int x, y;
-    int dx, dy;
+    AVectorInt coords;
+    AVectorInt delta;
     bool tap;
     #if A_CONFIG_INPUT_MOUSE_TRACK
         AList* motion; // list of ATouchPoint captured by motion events
@@ -218,10 +218,8 @@ static void analogSet(APlatformInputAnalog* Analog, int Value)
 static void touchAdd(APlatformInputTouch* Touch)
 {
     Touch->name = "Mouse";
-    Touch->x = 0;
-    Touch->y = 0;
-    Touch->dx = 0;
-    Touch->dy = 0;
+    Touch->coords = (AVectorInt){0, 0};
+    Touch->delta = (AVectorInt){0, 0};
     Touch->tap = false;
 
     #if A_CONFIG_INPUT_MOUSE_TRACK
@@ -886,14 +884,13 @@ void a_platform_api__inputPoll(void)
 #endif
 
             case SDL_MOUSEMOTION: {
-                g_mouse.x = event.button.x;
-                g_mouse.y = event.button.y;
+                g_mouse.coords.x = event.button.x;
+                g_mouse.coords.y = event.button.y;
 
                 #if A_CONFIG_INPUT_MOUSE_TRACK
                     ATouchPoint* p = a_mem_malloc(sizeof(ATouchPoint));
 
-                    p->x = g_mouse.x;
-                    p->y = g_mouse.y;
+                    p->coords = g_mouse.coords;
 
                     a_list_addLast(g_mouse.motion, p);
                 #endif
@@ -902,8 +899,8 @@ void a_platform_api__inputPoll(void)
             case SDL_MOUSEBUTTONDOWN: {
                 switch(event.button.button) {
                     case SDL_BUTTON_LEFT: {
-                        g_mouse.x = event.button.x;
-                        g_mouse.y = event.button.y;
+                        g_mouse.coords.x = event.button.x;
+                        g_mouse.coords.y = event.button.y;
                         g_mouse.tap = true;
                     } break;
                 }
@@ -912,8 +909,8 @@ void a_platform_api__inputPoll(void)
             case SDL_MOUSEBUTTONUP: {
                 switch(event.button.button) {
                     case SDL_BUTTON_LEFT: {
-                        g_mouse.x = event.button.x;
-                        g_mouse.y = event.button.y;
+                        g_mouse.coords.x = event.button.x;
+                        g_mouse.coords.y = event.button.y;
                         g_mouse.tap = false;
                     } break;
                 }
@@ -941,11 +938,10 @@ void a_platform_api__inputPoll(void)
     a_list_clear(g_forwardButtonsQueue[1]);
 
     #if !A_CONFIG_SYSTEM_EMSCRIPTEN
-        int mouseDx = 0, mouseDy = 0;
-        SDL_GetRelativeMouseState(&mouseDx, &mouseDy);
+        AVectorInt mouseDelta = {0, 0};
+        SDL_GetRelativeMouseState(&mouseDelta.x, &mouseDelta.y);
 
-        g_mouse.dx = mouseDx;
-        g_mouse.dy = mouseDy;
+        g_mouse.delta = mouseDelta;
     #endif
 }
 
@@ -1046,16 +1042,14 @@ APlatformInputTouch* a_platform_api__inputTouchGet(void)
     return &g_mouse;
 }
 
-void a_platform_api__inputTouchCoordsGet(const APlatformInputTouch* Touch, int* X, int* Y)
+AVectorInt a_platform_api__inputTouchCoordsGet(const APlatformInputTouch* Touch)
 {
-    *X = Touch->x;
-    *Y = Touch->y;
+    return Touch->coords;
 }
 
-void a_platform_api__inputTouchDeltaGet(const APlatformInputTouch* Touch, int* Dx, int* Dy)
+AVectorInt a_platform_api__inputTouchDeltaGet(const APlatformInputTouch* Touch)
 {
-    *Dx = Touch->dx;
-    *Dy = Touch->dy;
+    return Touch->delta;
 }
 
 bool a_platform_api__inputTouchTapGet(const APlatformInputTouch* Touch)

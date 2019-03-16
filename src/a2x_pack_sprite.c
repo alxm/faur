@@ -112,8 +112,10 @@ static int findNextHorizontalEdge(const ASprite* Sheet, int StartX, int StartY, 
     return -1;
 }
 
-void a_sprite__boundsFind(const ASprite* Sheet, int X, int Y, int* Width, int* Height)
+AVectorInt a_sprite__boundsFind(const ASprite* Sheet, int X, int Y)
 {
+    AVectorInt bounds;
+
     if(X < 0 || X >= Sheet->w || Y < 0 || Y >= Sheet->h) {
         A__FATAL("a_sprite__boundsFind(%s, %d, %d): Invalid coords",
                  A_SPRITE__NAME(Sheet),
@@ -137,12 +139,14 @@ void a_sprite__boundsFind(const ASprite* Sheet, int X, int Y, int* Width, int* H
     }
 
     if(vEdgeLen == -1 || hEdgeLen == -1) {
-        *Width = Sheet->w - X;
-        *Height = Sheet->h - Y;
+        bounds.x = Sheet->w - X;
+        bounds.y = Sheet->h - Y;
     } else {
-        *Width = vEdgeX;
-        *Height = hEdgeY;
+        bounds.x = vEdgeX;
+        bounds.y = hEdgeY;
     }
+
+    return bounds;
 }
 
 ASprite* a_sprite_newFromPng(const char* Path)
@@ -166,10 +170,9 @@ ASprite* a_sprite_newFromPng(const char* Path)
 
 ASprite* a_sprite_newFromSprite(const ASprite* Sheet, int X, int Y)
 {
-    int w, h;
-    a_sprite__boundsFind(Sheet, X, Y, &w, &h);
+    AVectorInt dim = a_sprite__boundsFind(Sheet, X, Y);
 
-    return a_sprite_newFromSpriteEx(Sheet, X, Y, w, h);
+    return a_sprite_newFromSpriteEx(Sheet, X, Y, dim.x, dim.y);
 }
 
 ASprite* a_sprite_newFromSpriteEx(const ASprite* Sheet, int X, int Y, int W, int H)

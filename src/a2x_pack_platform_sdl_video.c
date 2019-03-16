@@ -394,19 +394,20 @@ void a_platform_api__renderClear(void)
 #endif
 
 #if A_CONFIG_SCREEN_HARDWARE_WIDTH > 0 && A_CONFIG_SCREEN_HARDWARE_HEIGHT > 0
-void a_platform_api__screenResolutionGetNative(int* Width, int* Height)
+AVectorInt a_platform_api__screenResolutionGetNative(void)
 {
-    *Width = A_CONFIG_SCREEN_HARDWARE_WIDTH;
-    *Height = A_CONFIG_SCREEN_HARDWARE_HEIGHT;
+    return (AVectorInt){A_CONFIG_SCREEN_HARDWARE_WIDTH,
+                        A_CONFIG_SCREEN_HARDWARE_HEIGHT};
 }
 #elif A_CONFIG_LIB_SDL == 2
-void a_platform_api__screenResolutionGetNative(int* Width, int* Height)
+AVectorInt a_platform_api__screenResolutionGetNative(void)
 {
     SDL_DisplayMode mode;
 
     if(SDL_GetCurrentDisplayMode(0, &mode) < 0) {
         a_out__error("SDL_GetCurrentDisplayMode: %s", SDL_GetError());
-        return;
+
+        return (AVectorInt){0, 0};
     }
 
     a_out__message("Display info: %dx%d %dbpp",
@@ -414,16 +415,14 @@ void a_platform_api__screenResolutionGetNative(int* Width, int* Height)
                    mode.h,
                    SDL_BITSPERPIXEL(mode.format));
 
-    *Width = mode.w;
-    *Height = mode.h;
+    return (AVectorInt){mode.w, mode.h};
 }
 #elif A_CONFIG_LIB_SDL == 1
-void a_platform_api__screenResolutionGetNative(int* Width, int* Height)
+AVectorInt a_platform_api__screenResolutionGetNative(void)
 {
     const SDL_VideoInfo* info = SDL_GetVideoInfo();
 
-    *Width = info->current_w;
-    *Height = info->current_h;
+    return (AVectorInt){info->current_w, info->current_h};
 }
 #endif
 

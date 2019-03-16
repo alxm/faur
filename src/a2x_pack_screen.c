@@ -76,16 +76,15 @@ void a_screen__init(void)
     int height = A_CONFIG_SCREEN_HEIGHT;
 
     if(width < 0 || height < 0) {
-        int w = 0, h = 0;
-        a_platform_api__screenResolutionGetNative(&w, &h);
+        AVectorInt res = a_platform_api__screenResolutionGetNative();
 
-        if(w > 0 && h > 0) {
+        if(res.x > 0 && res.y > 0) {
             if(width < 0) {
-                width = w / -width;
+                width = res.x / -width;
             }
 
             if(height < 0) {
-                height = h / -height;
+                height = res.y / -height;
             }
         }
     }

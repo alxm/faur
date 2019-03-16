@@ -42,7 +42,7 @@ extern void a_platform_api__timeMsWait(uint32_t Ms);
 
 extern void a_platform_api__screenInit(int Width, int Height);
 extern void a_platform_api__screenShow(void);
-extern void a_platform_api__screenResolutionGetNative(int* Width, int* Height);
+extern AVectorInt a_platform_api__screenResolutionGetNative(void);
 extern bool a_platform_api__screenVsyncGet(void);
 extern int a_platform_api__screenZoomGet(void);
 extern void a_platform_api__screenZoomSet(int Zoom);
@@ -105,8 +105,8 @@ extern int a_platform_api__inputAnalogValueGet(const APlatformInputAnalog* Analo
 extern void a_platform_api__inputAnalogForward(AAxisId Source, AButtonId Negative, AButtonId Positive);
 
 extern APlatformInputTouch* a_platform_api__inputTouchGet(void);
-extern void a_platform_api__inputTouchCoordsGet(const APlatformInputTouch* Touch, int* X, int* Y);
-extern void a_platform_api__inputTouchDeltaGet(const APlatformInputTouch* Touch, int* Dx, int* Dy);
+extern AVectorInt a_platform_api__inputTouchCoordsGet(const APlatformInputTouch* Touch);
+extern AVectorInt a_platform_api__inputTouchDeltaGet(const APlatformInputTouch* Touch);
 extern bool a_platform_api__inputTouchTapGet(const APlatformInputTouch* Touch);
 
 extern unsigned a_platform_api__inputControllerNumGet(void);
