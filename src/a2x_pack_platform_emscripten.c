@@ -25,7 +25,8 @@ void a_platform_emscripten__init(void)
 {
     EM_ASM(
         {
-            var prefix = UTF8ToString($0);
+            // Strip trailing slash
+            var prefix = UTF8ToString($0).slice(0, -1);
 
             Module.a2x_fsIsReady = 0;
 
