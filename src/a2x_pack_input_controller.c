@@ -88,15 +88,15 @@ void a_input_controller__init(void)
     #endif
 }
 
-unsigned a_input_controllerNumGet(void)
+unsigned a_controller_numGet(void)
 {
     return a_platform__inputControllerNumGet();
 }
 
-void a_input_controllerSet(unsigned Index)
+void a_controller_set(unsigned Index)
 {
     if(Index >= a_platform__inputControllerNumGet()) {
-        A__FATAL("a_input_controllerSet(%d): Invalid arg, %d total",
+        A__FATAL("a_controller_set(%d): Invalid arg, %d total",
                  Index,
                  a_platform__inputControllerNumGet());
         return;
