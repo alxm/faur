@@ -55,7 +55,7 @@ static void assignPixels(ASprite* Sprite, APixel* Pixels)
     free(Sprite->pixels);
     Sprite->pixels = Pixels;
 
-    Sprite->texture = a_platform__textureNewSprite(Sprite);
+    Sprite->texture = a_platform_api__textureNewSprite(Sprite);
 }
 
 static int findNextVerticalEdge(const ASprite* Sheet, int StartX, int StartY, int* EdgeX)
@@ -239,7 +239,7 @@ void a_sprite_free(ASprite* Sprite)
         return;
     }
 
-    a_platform__textureFree(Sprite->texture);
+    a_platform_api__textureFree(Sprite->texture);
 
     free(Sprite->nameId);
     free(Sprite->pixels);
@@ -248,19 +248,19 @@ void a_sprite_free(ASprite* Sprite)
 
 void a_sprite_blit(const ASprite* Sprite, int X, int Y)
 {
-    a_platform__textureBlit(Sprite->texture, X, Y, a_pixel__state.fillBlit);
+    a_platform_api__textureBlit(Sprite->texture, X, Y, a_pixel__state.fillBlit);
 }
 
 void a_sprite_blitEx(const ASprite* Sprite, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY)
 {
-    a_platform__textureBlitEx(Sprite->texture,
-                              X,
-                              Y,
-                              Scale,
-                              a_fix_angleWrap(Angle),
-                              CenterX,
-                              CenterY,
-                              a_pixel__state.fillBlit);
+    a_platform_api__textureBlitEx(Sprite->texture,
+                                  X,
+                                  Y,
+                                  Scale,
+                                  a_fix_angleWrap(Angle),
+                                  CenterX,
+                                  CenterY,
+                                  a_pixel__state.fillBlit);
 }
 
 void a_sprite_swapColor(ASprite* Sprite, APixel OldColor, APixel NewColor)
@@ -271,7 +271,7 @@ void a_sprite_swapColor(ASprite* Sprite, APixel OldColor, APixel NewColor)
         }
     }
 
-    Sprite->texture = a_platform__textureNewSprite(Sprite);
+    Sprite->texture = a_platform_api__textureNewSprite(Sprite);
 }
 
 void a_sprite_swapColors(ASprite* Sprite, const APixel* OldColors, const APixel* NewColors, unsigned NumColors)
@@ -287,7 +287,7 @@ void a_sprite_swapColors(ASprite* Sprite, const APixel* OldColors, const APixel*
         }
     }
 
-    Sprite->texture = a_platform__textureNewSprite(Sprite);
+    Sprite->texture = a_platform_api__textureNewSprite(Sprite);
 }
 
 AVectorInt a_sprite_sizeGet(const ASprite* Sprite)

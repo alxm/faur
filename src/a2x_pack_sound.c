@@ -50,13 +50,13 @@ static void adjustSoundVolume(int Volume)
     g_musicVolume = g_volume * A_CONFIG_SOUND_VOLUME_SCALE_MUSIC / 100;
     g_samplesVolume = g_volume * A_CONFIG_SOUND_VOLUME_SCALE_SAMPLE / 100;
 
-    a_platform__soundSampleVolumeSetAll(g_samplesVolume);
-    a_platform__soundMusicVolumeSet(g_musicVolume);
+    a_platform_api__soundSampleVolumeSetAll(g_samplesVolume);
+    a_platform_api__soundMusicVolumeSet(g_musicVolume);
 }
 
 void a_sound__init(void)
 {
-    g_volumeMax = a_platform__soundVolumeGetMax();
+    g_volumeMax = a_platform_api__soundVolumeGetMax();
 
     #if A_CONFIG_SYSTEM_GP2X || A_CONFIG_SYSTEM_WIZ
         adjustSoundVolume(g_volumeMax / 16);
@@ -111,10 +111,10 @@ void a_sound__tick(void)
 
     #if A_CONFIG_TRAIT_KEYBOARD
         if(a_button_pressGetOnce(g_muteButton)) {
-            a_platform__soundMuteFlip();
+            a_platform_api__soundMuteFlip();
 
-            a_out__message(
-                "Sound is now %s", a_platform__soundMuteGet() ? "off" : "on");
+            a_out__message("Sound is now %s",
+                           a_platform_api__soundMuteGet() ? "off" : "on");
         }
     #endif
 }
@@ -143,28 +143,28 @@ void a_sound__draw(void)
 
 AMusic* a_music_new(const char* Path)
 {
-    return a_platform__soundMusicNew(Path);
+    return a_platform_api__soundMusicNew(Path);
 }
 
 void a_music_free(AMusic* Music)
 {
     if(Music) {
-        a_platform__soundMusicFree(Music);
+        a_platform_api__soundMusicFree(Music);
     }
 }
 
 void a_music_play(AMusic* Music)
 {
-    if(a_platform__soundMuteGet()) {
+    if(a_platform_api__soundMuteGet()) {
         return;
     }
 
-    a_platform__soundMusicPlay(Music);
+    a_platform_api__soundMusicPlay(Music);
 }
 
 void a_music_stop(void)
 {
-    a_platform__soundMusicStop();
+    a_platform_api__soundMusicStop();
 }
 
 ASample* a_sample_new(const char* Path)
@@ -172,12 +172,12 @@ ASample* a_sample_new(const char* Path)
     APlatformSoundSample* s = NULL;
 
     if(a_path_exists(Path, A_PATH_FILE | A_PATH_REAL)) {
-        s = a_platform__soundSampleNewFromFile(Path);
+        s = a_platform_api__soundSampleNewFromFile(Path);
     } else {
         const AEmbeddedFile* e = a_embed__getFile(Path);
 
         if(e) {
-            s = a_platform__soundSampleNewFromData(e->buffer, (int)e->size);
+            s = a_platform_api__soundSampleNewFromData(e->buffer, (int)e->size);
         }
     }
 
@@ -187,39 +187,39 @@ ASample* a_sample_new(const char* Path)
 void a_sample_free(ASample* Sample)
 {
     if(Sample) {
-        a_platform__soundSampleFree(Sample);
+        a_platform_api__soundSampleFree(Sample);
     }
 }
 
 int a_channel_new(void)
 {
-    return a_platform__soundSampleChannelGet();
+    return a_platform_api__soundSampleChannelGet();
 }
 
 void a_channel_play(int Channel, ASample* Sample, AChannelFlags Flags)
 {
-    if(a_platform__soundMuteGet()) {
+    if(a_platform_api__soundMuteGet()) {
         return;
     }
 
     if(A_FLAG_TEST_ANY(Flags, A_CHANNEL_RESTART)) {
-        a_platform__soundSampleStop(Channel);
+        a_platform_api__soundSampleStop(Channel);
     } else if(A_FLAG_TEST_ANY(Flags, A_CHANNEL_YIELD)
-        && a_platform__soundSampleIsPlaying(Channel)) {
+        && a_platform_api__soundSampleIsPlaying(Channel)) {
 
         return;
     }
 
-    a_platform__soundSamplePlay(
+    a_platform_api__soundSamplePlay(
         Sample, Channel, A_FLAG_TEST_ANY(Flags, A_CHANNEL_LOOP));
 }
 
 void a_channel_stop(int Channel)
 {
-    a_platform__soundSampleStop(Channel);
+    a_platform_api__soundSampleStop(Channel);
 }
 
 bool a_channel_isPlaying(int Channel)
 {
-    return a_platform__soundSampleIsPlaying(Channel);
+    return a_platform_api__soundSampleIsPlaying(Channel);
 }

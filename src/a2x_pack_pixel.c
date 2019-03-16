@@ -127,7 +127,7 @@ void a_pixel_blendSet(APixelBlend Blend)
             a_pixel_alphaSet(A_PIXEL_ALPHA_MAX * 3 / 4);
         }
 
-        a_platform__renderSetBlendMode();
+        a_platform_api__renderSetBlendMode();
     #endif
 }
 
@@ -143,7 +143,7 @@ void a_pixel_alphaSet(int Alpha)
     #if A_CONFIG_LIB_RENDER_SOFTWARE
         optimizeAlphaBlending(true);
     #else
-        a_platform__renderSetDrawColor();
+        a_platform_api__renderSetDrawColor();
     #endif
 }
 
@@ -155,7 +155,7 @@ void a_pixel_colorSetRgb(int Red, int Green, int Blue)
     a_pixel__state.pixel = a_pixel_fromRgb(Red, Green, Blue);
 
     #if !A_CONFIG_LIB_RENDER_SOFTWARE
-        a_platform__renderSetDrawColor();
+        a_platform_api__renderSetDrawColor();
     #endif
 }
 
@@ -170,7 +170,7 @@ void a_pixel_colorSetRgba(int Red, int Green, int Blue, int Alpha)
     #if A_CONFIG_LIB_RENDER_SOFTWARE
         optimizeAlphaBlending(true);
     #else
-        a_platform__renderSetDrawColor();
+        a_platform_api__renderSetDrawColor();
     #endif
 }
 
@@ -182,7 +182,7 @@ void a_pixel_colorSetHex(uint32_t Hexcode)
     a_pixel__state.pixel = a_pixel_fromHex(Hexcode);
 
     #if !A_CONFIG_LIB_RENDER_SOFTWARE
-        a_platform__renderSetDrawColor();
+        a_platform_api__renderSetDrawColor();
     #endif
 }
 
@@ -196,7 +196,7 @@ void a_pixel_colorSetPixel(APixel Pixel)
     a_pixel__state.pixel = Pixel;
 
     #if !A_CONFIG_LIB_RENDER_SOFTWARE
-        a_platform__renderSetDrawColor();
+        a_platform_api__renderSetDrawColor();
     #endif
 }
 

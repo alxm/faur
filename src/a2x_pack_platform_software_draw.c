@@ -324,14 +324,14 @@ void a_platform_software_draw__updateRoutines(void)
     g_draw_circle_clip = g_circle[blend][1][fill];
 }
 
-void a_platform__drawPixel(int X, int Y)
+void a_platform_api__drawPixel(int X, int Y)
 {
     if(a_screen_boxInsideClip(X, Y, 1, 1)) {
         g_draw_pixel(X, Y);
     }
 }
 
-void a_platform__drawLine(int X1, int Y1, int X2, int Y2)
+void a_platform_api__drawLine(int X1, int Y1, int X2, int Y2)
 {
     int x = a_math_min(X1, X2);
     int y = a_math_min(Y1, Y2);
@@ -347,7 +347,7 @@ void a_platform__drawLine(int X1, int Y1, int X2, int Y2)
     g_draw_line(X1, Y1, X2, Y2);
 }
 
-void a_platform__drawHLine(int X1, int X2, int Y)
+void a_platform_api__drawHLine(int X1, int X2, int Y)
 {
     if(!a_screen_boxOnClip(X1, Y, X2 - X1 + 1, 1)) {
         return;
@@ -359,7 +359,7 @@ void a_platform__drawHLine(int X1, int X2, int Y)
     g_draw_hline(X1, X2, Y);
 }
 
-void a_platform__drawVLine(int X, int Y1, int Y2)
+void a_platform_api__drawVLine(int X, int Y1, int Y2)
 {
     if(!a_screen_boxOnClip(X, Y1, 1, Y2 - Y1 + 1)) {
         return;
@@ -393,12 +393,12 @@ static void drawRectangle(int X, int Y, int Width, int Height)
     g_draw_rectangle(X, Y, Width, Height);
 }
 
-void a_platform__drawRectangleFilled(int X, int Y, int Width, int Height)
+void a_platform_api__drawRectangleFilled(int X, int Y, int Width, int Height)
 {
     drawRectangle(X, Y, Width, Height);
 }
 
-void a_platform__drawRectangleOutline(int X, int Y, int Width, int Height)
+void a_platform_api__drawRectangleOutline(int X, int Y, int Width, int Height)
 {
     drawRectangle(X, Y, Width, Height);
 }
@@ -419,12 +419,12 @@ static void drawCircle(int X, int Y, int Radius)
     }
 }
 
-void a_platform__drawCircleOutline(int X, int Y, int Radius)
+void a_platform_api__drawCircleOutline(int X, int Y, int Radius)
 {
     drawCircle(X, Y, Radius);
 }
 
-void a_platform__drawCircleFilled(int X, int Y, int Radius)
+void a_platform_api__drawCircleFilled(int X, int Y, int Radius)
 {
     drawCircle(X, Y, Radius);
 }

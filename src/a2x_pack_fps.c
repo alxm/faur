@@ -119,7 +119,7 @@ void a_fps__frame(void)
         g_run.drawFpsMax = g_history.len * 1000 / g_history.drawFrameMsMinSum;
     }
 
-    if(!a_platform__screenVsyncGet()) {
+    if(!a_platform_api__screenVsyncGet()) {
         while(elapsedMs < g_settings.drawFrameMs) {
             a_time_msWait(g_settings.drawFrameMs - elapsedMs);
 

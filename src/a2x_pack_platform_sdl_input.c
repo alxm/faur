@@ -677,7 +677,7 @@ void a_platform_sdl_input__uninit(void)
     SDL_QuitSubSystem(g_sdlFlags);
 }
 
-void a_platform__inputPoll(void)
+void a_platform_api__inputPoll(void)
 {
     g_mouse.tap = false;
 
@@ -949,7 +949,7 @@ void a_platform__inputPoll(void)
     #endif
 }
 
-APlatformInputButton* a_platform__inputButtonGet(int Id)
+APlatformInputButton* a_platform_api__inputButtonGet(int Id)
 {
     if(Id != A_BUTTON_INVALID) {
         if(Id & A__KEY_FLAG) {
@@ -964,20 +964,20 @@ APlatformInputButton* a_platform__inputButtonGet(int Id)
     return NULL;
 }
 
-const char* a_platform__inputButtonNameGet(const APlatformInputButton* Button)
+const char* a_platform_api__inputButtonNameGet(const APlatformInputButton* Button)
 {
     return Button->name;
 }
 
-bool a_platform__inputButtonPressGet(const APlatformInputButton* Button)
+bool a_platform_api__inputButtonPressGet(const APlatformInputButton* Button)
 {
     return Button->pressed;
 }
 
-void a_platform__inputButtonForward(int Source, int Destination)
+void a_platform_api__inputButtonForward(int Source, int Destination)
 {
-    APlatformInputButton* bSrc = a_platform__inputButtonGet(Source);
-    APlatformInputButton* bDst = a_platform__inputButtonGet(Destination);
+    APlatformInputButton* bSrc = a_platform_api__inputButtonGet(Source);
+    APlatformInputButton* bDst = a_platform_api__inputButtonGet(Destination);
 
     if(bSrc == NULL || bDst == NULL) {
         return;
@@ -990,7 +990,7 @@ void a_platform__inputButtonForward(int Source, int Destination)
     a_list_addLast(bSrc->forwardButtons, bDst);
 }
 
-APlatformInputAnalog* a_platform__inputAnalogGet(int Id)
+APlatformInputAnalog* a_platform_api__inputAnalogGet(int Id)
 {
     if(Id != A_AXIS_INVALID) {
         const APlatformInputController* c = g_setController;
@@ -1009,19 +1009,19 @@ APlatformInputAnalog* a_platform__inputAnalogGet(int Id)
     return NULL;
 }
 
-const char* a_platform__inputAnalogNameGet(const APlatformInputAnalog* Analog)
+const char* a_platform_api__inputAnalogNameGet(const APlatformInputAnalog* Analog)
 {
     return Analog->name;
 }
 
-int a_platform__inputAnalogValueGet(const APlatformInputAnalog* Analog)
+int a_platform_api__inputAnalogValueGet(const APlatformInputAnalog* Analog)
 {
     return Analog->value;
 }
 
-void a_platform__inputAnalogForward(AAxisId Source, AButtonId Negative, AButtonId Positive)
+void a_platform_api__inputAnalogForward(AAxisId Source, AButtonId Negative, AButtonId Positive)
 {
-    APlatformInputAnalog* aSrc = a_platform__inputAnalogGet(Source);
+    APlatformInputAnalog* aSrc = a_platform_api__inputAnalogGet(Source);
 
     if(aSrc == NULL) {
         return;
@@ -1029,8 +1029,8 @@ void a_platform__inputAnalogForward(AAxisId Source, AButtonId Negative, AButtonI
 
     APlatformButtonPair* f = a_mem_malloc(sizeof(APlatformButtonPair));
 
-    f->negative = a_platform__inputButtonGet(Negative);
-    f->positive = a_platform__inputButtonGet(Positive);
+    f->negative = a_platform_api__inputButtonGet(Negative);
+    f->positive = a_platform_api__inputButtonGet(Positive);
     f->lastPressedNegative = false;
     f->lastPressedPositive = false;
 
@@ -1041,34 +1041,34 @@ void a_platform__inputAnalogForward(AAxisId Source, AButtonId Negative, AButtonI
     a_list_addLast(aSrc->forwardButtons, f);
 }
 
-APlatformInputTouch* a_platform__inputTouchGet(void)
+APlatformInputTouch* a_platform_api__inputTouchGet(void)
 {
     return &g_mouse;
 }
 
-void a_platform__inputTouchCoordsGet(const APlatformInputTouch* Touch, int* X, int* Y)
+void a_platform_api__inputTouchCoordsGet(const APlatformInputTouch* Touch, int* X, int* Y)
 {
     *X = Touch->x;
     *Y = Touch->y;
 }
 
-void a_platform__inputTouchDeltaGet(const APlatformInputTouch* Touch, int* Dx, int* Dy)
+void a_platform_api__inputTouchDeltaGet(const APlatformInputTouch* Touch, int* Dx, int* Dy)
 {
     *Dx = Touch->dx;
     *Dy = Touch->dy;
 }
 
-bool a_platform__inputTouchTapGet(const APlatformInputTouch* Touch)
+bool a_platform_api__inputTouchTapGet(const APlatformInputTouch* Touch)
 {
     return Touch->tap;
 }
 
-unsigned a_platform__inputControllerNumGet(void)
+unsigned a_platform_api__inputControllerNumGet(void)
 {
     return a_list_sizeGet(g_controllers);
 }
 
-void a_platform__inputControllerSet(unsigned Index)
+void a_platform_api__inputControllerSet(unsigned Index)
 {
     if(Index >= a_list_sizeGet(g_controllers)) {
         A__FATAL("Cannot set controller %d, %d total",
@@ -1079,7 +1079,7 @@ void a_platform__inputControllerSet(unsigned Index)
     g_setController = a_list_getByIndex(g_controllers, Index);
 }
 
-bool a_platform__inputControllerIsMapped(void)
+bool a_platform_api__inputControllerIsMapped(void)
 {
     #if A_CONFIG_LIB_SDL == 2
         return g_setController && g_setController->controller != NULL;

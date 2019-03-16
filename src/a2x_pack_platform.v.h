@@ -34,81 +34,81 @@ typedef struct APlatformTexture APlatformTexture;
 #include "a2x_pack_input_button.v.h"
 #include "a2x_pack_sprite.v.h"
 
-extern void a_platform__init(void);
-extern void a_platform__uninit(void);
+extern void a_platform_api__init(void);
+extern void a_platform_api__uninit(void);
 
-extern uint32_t a_platform__timeMsGet(void);
-extern void a_platform__timeMsWait(uint32_t Ms);
+extern uint32_t a_platform_api__timeMsGet(void);
+extern void a_platform_api__timeMsWait(uint32_t Ms);
 
-extern void a_platform__screenInit(int Width, int Height);
-extern void a_platform__screenShow(void);
-extern void a_platform__screenResolutionGetNative(int* Width, int* Height);
-extern bool a_platform__screenVsyncGet(void);
-extern int a_platform__screenZoomGet(void);
-extern void a_platform__screenZoomSet(int Zoom);
-extern bool a_platform__screenFullscreenGet(void);
-extern void a_platform__screenFullscreenFlip(void);
-extern void a_platform__screenMouseCursorSet(bool Show);
+extern void a_platform_api__screenInit(int Width, int Height);
+extern void a_platform_api__screenShow(void);
+extern void a_platform_api__screenResolutionGetNative(int* Width, int* Height);
+extern bool a_platform_api__screenVsyncGet(void);
+extern int a_platform_api__screenZoomGet(void);
+extern void a_platform_api__screenZoomSet(int Zoom);
+extern bool a_platform_api__screenFullscreenGet(void);
+extern void a_platform_api__screenFullscreenFlip(void);
+extern void a_platform_api__screenMouseCursorSet(bool Show);
 
-extern void a_platform__renderClear(void);
-extern void a_platform__renderSetDrawColor(void);
-extern void a_platform__renderSetBlendMode(void);
-extern void a_platform__renderTargetSet(APlatformTexture* Texture);
-extern void a_platform__renderTargetPixelsGet(APixel* Pixels, int Width);
-extern void a_platform__renderTargetClipSet(int X, int Y, int Width, int Height);
+extern void a_platform_api__renderClear(void);
+extern void a_platform_api__renderSetDrawColor(void);
+extern void a_platform_api__renderSetBlendMode(void);
+extern void a_platform_api__renderTargetSet(APlatformTexture* Texture);
+extern void a_platform_api__renderTargetPixelsGet(APixel* Pixels, int Width);
+extern void a_platform_api__renderTargetClipSet(int X, int Y, int Width, int Height);
 
-extern void a_platform__drawPixel(int X, int Y);
-extern void a_platform__drawLine(int X1, int Y1, int X2, int Y2);
-extern void a_platform__drawHLine(int X1, int X2, int Y);
-extern void a_platform__drawVLine(int X, int Y1, int Y2);
-extern void a_platform__drawRectangleFilled(int X, int Y, int Width, int Height);
-extern void a_platform__drawRectangleOutline(int X, int Y, int Width, int Height);
-extern void a_platform__drawCircleOutline(int X, int Y, int Radius);
-extern void a_platform__drawCircleFilled(int X, int Y, int Radius);
+extern void a_platform_api__drawPixel(int X, int Y);
+extern void a_platform_api__drawLine(int X1, int Y1, int X2, int Y2);
+extern void a_platform_api__drawHLine(int X1, int X2, int Y);
+extern void a_platform_api__drawVLine(int X, int Y1, int Y2);
+extern void a_platform_api__drawRectangleFilled(int X, int Y, int Width, int Height);
+extern void a_platform_api__drawRectangleOutline(int X, int Y, int Width, int Height);
+extern void a_platform_api__drawCircleOutline(int X, int Y, int Radius);
+extern void a_platform_api__drawCircleFilled(int X, int Y, int Radius);
 
-extern APlatformTexture* a_platform__textureNewScreen(int Width, int Height);
-extern APlatformTexture* a_platform__textureNewSprite(const ASprite* Sprite);
-extern void a_platform__textureFree(APlatformTexture* Texture);
-extern void a_platform__textureBlit(const APlatformTexture* Texture, int X, int Y, bool FillFlat);
-extern void a_platform__textureBlitEx(const APlatformTexture* Texture, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY, bool FillFlat);
+extern APlatformTexture* a_platform_api__textureNewScreen(int Width, int Height);
+extern APlatformTexture* a_platform_api__textureNewSprite(const ASprite* Sprite);
+extern void a_platform_api__textureFree(APlatformTexture* Texture);
+extern void a_platform_api__textureBlit(const APlatformTexture* Texture, int X, int Y, bool FillFlat);
+extern void a_platform_api__textureBlitEx(const APlatformTexture* Texture, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY, bool FillFlat);
 
-extern bool a_platform__soundMuteGet(void);
-extern void a_platform__soundMuteFlip(void);
-extern int a_platform__soundVolumeGetMax(void);
+extern bool a_platform_api__soundMuteGet(void);
+extern void a_platform_api__soundMuteFlip(void);
+extern int a_platform_api__soundVolumeGetMax(void);
 
-extern APlatformSoundMusic* a_platform__soundMusicNew(const char* Path);
-extern void a_platform__soundMusicFree(APlatformSoundMusic* Music);
-extern void a_platform__soundMusicVolumeSet(int Volume);
-extern void a_platform__soundMusicPlay(APlatformSoundMusic* Music);
-extern void a_platform__soundMusicStop(void);
+extern APlatformSoundMusic* a_platform_api__soundMusicNew(const char* Path);
+extern void a_platform_api__soundMusicFree(APlatformSoundMusic* Music);
+extern void a_platform_api__soundMusicVolumeSet(int Volume);
+extern void a_platform_api__soundMusicPlay(APlatformSoundMusic* Music);
+extern void a_platform_api__soundMusicStop(void);
 
-extern APlatformSoundSample* a_platform__soundSampleNewFromFile(const char* Path);
-extern APlatformSoundSample* a_platform__soundSampleNewFromData(const uint8_t* Data, int Size);
-extern void a_platform__soundSampleFree(APlatformSoundSample* Sample);
-extern void a_platform__soundSampleVolumeSet(APlatformSoundSample* Sample, int Volume);
-extern void a_platform__soundSampleVolumeSetAll(int Volume);
-extern void a_platform__soundSamplePlay(APlatformSoundSample* Sample, int Channel, bool Loop);
-extern void a_platform__soundSampleStop(int Channel);
-extern bool a_platform__soundSampleIsPlaying(int Channel);
-extern int a_platform__soundSampleChannelGet(void);
+extern APlatformSoundSample* a_platform_api__soundSampleNewFromFile(const char* Path);
+extern APlatformSoundSample* a_platform_api__soundSampleNewFromData(const uint8_t* Data, int Size);
+extern void a_platform_api__soundSampleFree(APlatformSoundSample* Sample);
+extern void a_platform_api__soundSampleVolumeSet(APlatformSoundSample* Sample, int Volume);
+extern void a_platform_api__soundSampleVolumeSetAll(int Volume);
+extern void a_platform_api__soundSamplePlay(APlatformSoundSample* Sample, int Channel, bool Loop);
+extern void a_platform_api__soundSampleStop(int Channel);
+extern bool a_platform_api__soundSampleIsPlaying(int Channel);
+extern int a_platform_api__soundSampleChannelGet(void);
 
-extern void a_platform__inputPoll(void);
+extern void a_platform_api__inputPoll(void);
 
-extern APlatformInputButton* a_platform__inputButtonGet(int Id);
-extern const char* a_platform__inputButtonNameGet(const APlatformInputButton* Button);
-extern bool a_platform__inputButtonPressGet(const APlatformInputButton* Button);
-extern void a_platform__inputButtonForward(int Source, int Destination);
+extern APlatformInputButton* a_platform_api__inputButtonGet(int Id);
+extern const char* a_platform_api__inputButtonNameGet(const APlatformInputButton* Button);
+extern bool a_platform_api__inputButtonPressGet(const APlatformInputButton* Button);
+extern void a_platform_api__inputButtonForward(int Source, int Destination);
 
-extern APlatformInputAnalog* a_platform__inputAnalogGet(int Id);
-extern const char* a_platform__inputAnalogNameGet(const APlatformInputAnalog* Analog);
-extern int a_platform__inputAnalogValueGet(const APlatformInputAnalog* Analog);
-extern void a_platform__inputAnalogForward(AAxisId Source, AButtonId Negative, AButtonId Positive);
+extern APlatformInputAnalog* a_platform_api__inputAnalogGet(int Id);
+extern const char* a_platform_api__inputAnalogNameGet(const APlatformInputAnalog* Analog);
+extern int a_platform_api__inputAnalogValueGet(const APlatformInputAnalog* Analog);
+extern void a_platform_api__inputAnalogForward(AAxisId Source, AButtonId Negative, AButtonId Positive);
 
-extern APlatformInputTouch* a_platform__inputTouchGet(void);
-extern void a_platform__inputTouchCoordsGet(const APlatformInputTouch* Touch, int* X, int* Y);
-extern void a_platform__inputTouchDeltaGet(const APlatformInputTouch* Touch, int* Dx, int* Dy);
-extern bool a_platform__inputTouchTapGet(const APlatformInputTouch* Touch);
+extern APlatformInputTouch* a_platform_api__inputTouchGet(void);
+extern void a_platform_api__inputTouchCoordsGet(const APlatformInputTouch* Touch, int* X, int* Y);
+extern void a_platform_api__inputTouchDeltaGet(const APlatformInputTouch* Touch, int* Dx, int* Dy);
+extern bool a_platform_api__inputTouchTapGet(const APlatformInputTouch* Touch);
 
-extern unsigned a_platform__inputControllerNumGet(void);
-extern void a_platform__inputControllerSet(unsigned Index);
-extern bool a_platform__inputControllerIsMapped(void);
+extern unsigned a_platform_api__inputControllerNumGet(void);
+extern void a_platform_api__inputControllerSet(unsigned Index);
+extern bool a_platform_api__inputControllerIsMapped(void);

@@ -242,7 +242,7 @@ static bool hasTransparency(const APixel* Pixels, int Width, int Height)
     return false;
 }
 
-APlatformTexture* a_platform__textureNewScreen(int Width, int Height)
+APlatformTexture* a_platform_api__textureNewScreen(int Width, int Height)
 {
     A_UNUSED(Width);
     A_UNUSED(Height);
@@ -250,7 +250,7 @@ APlatformTexture* a_platform__textureNewScreen(int Width, int Height)
     return NULL;
 }
 
-APlatformTexture* a_platform__textureNewSprite(const ASprite* Sprite)
+APlatformTexture* a_platform_api__textureNewSprite(const ASprite* Sprite)
 {
     APlatformTexture* texture = Sprite->texture;
     const APixel* pixels = Sprite->pixels;
@@ -262,7 +262,7 @@ APlatformTexture* a_platform__textureNewSprite(const ASprite* Sprite)
                             ? spanBytesNeeded(pixels, width, height) : 0;
 
     if(texture == NULL || bytesNeeded > texture->spansSize) {
-        a_platform__textureFree(texture);
+        a_platform_api__textureFree(texture);
         texture = a_mem_malloc(sizeof(APlatformTexture) + bytesNeeded);
 
         texture->spr = Sprite;
@@ -303,7 +303,7 @@ APlatformTexture* a_platform__textureNewSprite(const ASprite* Sprite)
     return texture;
 }
 
-void a_platform__textureFree(APlatformTexture* Texture)
+void a_platform_api__textureFree(APlatformTexture* Texture)
 {
     if(Texture == NULL) {
         return;
@@ -312,7 +312,7 @@ void a_platform__textureFree(APlatformTexture* Texture)
     free(Texture);
 }
 
-void a_platform__textureBlit(const APlatformTexture* Texture, int X, int Y, bool FillFlat)
+void a_platform_api__textureBlit(const APlatformTexture* Texture, int X, int Y, bool FillFlat)
 {
     A_UNUSED(FillFlat);
 
@@ -328,14 +328,14 @@ void a_platform__textureBlit(const APlatformTexture* Texture, int X, int Y, bool
             (Texture, X, Y);
 }
 
-void a_platform__textureBlitEx(const APlatformTexture* Texture, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY, bool FillFlat)
+void a_platform_api__textureBlitEx(const APlatformTexture* Texture, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY, bool FillFlat)
 {
     A_UNUSED(Scale);
     A_UNUSED(Angle);
 
-    a_platform__textureBlit(Texture,
-                            X - Texture->spr->w / 2 - CenterX,
-                            Y - Texture->spr->h / 2 - CenterY,
-                            FillFlat);
+    a_platform_api__textureBlit(Texture,
+                                X - Texture->spr->w / 2 - CenterX,
+                                Y - Texture->spr->h / 2 - CenterY,
+                                FillFlat);
 }
 #endif // A_CONFIG_LIB_RENDER_SOFTWARE

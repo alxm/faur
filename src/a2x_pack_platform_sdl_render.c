@@ -79,7 +79,7 @@ static inline uint8_t pixelAlphaToSdlAlpha(void)
     }
 }
 
-void a_platform__renderSetDrawColor(void)
+void a_platform_api__renderSetDrawColor(void)
 {
     if(SDL_SetRenderDrawColor(a__sdlRenderer,
                               (uint8_t)a_pixel__state.red,
@@ -91,38 +91,38 @@ void a_platform__renderSetDrawColor(void)
     }
 }
 
-void a_platform__renderSetBlendMode(void)
+void a_platform_api__renderSetBlendMode(void)
 {
     if(SDL_SetRenderDrawBlendMode(a__sdlRenderer, pixelBlendToSdlBlend()) < 0) {
         a_out__error("SDL_SetRenderDrawBlendMode: %s", SDL_GetError());
     }
 }
 
-void a_platform__drawPixel(int X, int Y)
+void a_platform_api__drawPixel(int X, int Y)
 {
     if(SDL_RenderDrawPoint(a__sdlRenderer, X, Y) < 0) {
         a_out__error("SDL_RenderDrawPoint: %s", SDL_GetError());
     }
 }
 
-void a_platform__drawLine(int X1, int Y1, int X2, int Y2)
+void a_platform_api__drawLine(int X1, int Y1, int X2, int Y2)
 {
     if(SDL_RenderDrawLine(a__sdlRenderer, X1, Y1, X2, Y2) < 0) {
         a_out__error("SDL_RenderDrawLine: %s", SDL_GetError());
     }
 }
 
-void a_platform__drawHLine(int X1, int X2, int Y)
+void a_platform_api__drawHLine(int X1, int X2, int Y)
 {
-    a_platform__drawRectangleFilled(X1, Y, X2 - X1 + 1, 1);
+    a_platform_api__drawRectangleFilled(X1, Y, X2 - X1 + 1, 1);
 }
 
-void a_platform__drawVLine(int X, int Y1, int Y2)
+void a_platform_api__drawVLine(int X, int Y1, int Y2)
 {
-    a_platform__drawRectangleFilled(X, Y1, 1, Y2 - Y1 + 1);
+    a_platform_api__drawRectangleFilled(X, Y1, 1, Y2 - Y1 + 1);
 }
 
-void a_platform__drawRectangleFilled(int X, int Y, int Width, int Height)
+void a_platform_api__drawRectangleFilled(int X, int Y, int Width, int Height)
 {
     SDL_Rect area = {X, Y, Width, Height};
 
@@ -131,30 +131,30 @@ void a_platform__drawRectangleFilled(int X, int Y, int Width, int Height)
     }
 }
 
-void a_platform__drawRectangleOutline(int X, int Y, int Width, int Height)
+void a_platform_api__drawRectangleOutline(int X, int Y, int Width, int Height)
 {
-    a_platform__drawRectangleFilled(X, Y, Width, 1);
+    a_platform_api__drawRectangleFilled(X, Y, Width, 1);
 
     if(Height <= 1) {
         return;
     }
 
-    a_platform__drawRectangleFilled(X, Y + Height - 1, Width, 1);
+    a_platform_api__drawRectangleFilled(X, Y + Height - 1, Width, 1);
 
     if(Width <= 1 || Height <= 2) {
         return;
     }
 
-    a_platform__drawRectangleFilled(X, Y + 1, 1, Height - 2);
-    a_platform__drawRectangleFilled(X + Width - 1, Y + 1, 1, Height - 2);
+    a_platform_api__drawRectangleFilled(X, Y + 1, 1, Height - 2);
+    a_platform_api__drawRectangleFilled(X + Width - 1, Y + 1, 1, Height - 2);
 }
 
-void a_platform__drawCircleOutline(int X, int Y, int Radius)
+void a_platform_api__drawCircleOutline(int X, int Y, int Radius)
 {
     // Using inclusive coords
     if(--Radius <= 0) {
         if(Radius == 0) {
-            a_platform__drawRectangleFilled(X - 1, Y - 1, 2, 2);
+            a_platform_api__drawRectangleFilled(X - 1, Y - 1, 2, 2);
         }
 
         return;
@@ -256,12 +256,12 @@ void a_platform__drawCircleOutline(int X, int Y, int Radius)
     }
 }
 
-void a_platform__drawCircleFilled(int X, int Y, int Radius)
+void a_platform_api__drawCircleFilled(int X, int Y, int Radius)
 {
     // Using inclusive coords
     if(--Radius <= 0) {
         if(Radius == 0) {
-            a_platform__drawRectangleFilled(X - 1, Y - 1, 2, 2);
+            a_platform_api__drawRectangleFilled(X - 1, Y - 1, 2, 2);
         }
 
         return;
@@ -332,7 +332,7 @@ void a_platform__drawCircleFilled(int X, int Y, int Radius)
     }
 }
 
-APlatformTexture* a_platform__textureNewScreen(int Width, int Height)
+APlatformTexture* a_platform_api__textureNewScreen(int Width, int Height)
 {
     SDL_Texture* tex = SDL_CreateTexture(a__sdlRenderer,
                                          A_SDL__PIXEL_FORMAT,
@@ -364,7 +364,7 @@ APlatformTexture* a_platform__textureNewScreen(int Width, int Height)
     return screen;
 }
 
-APlatformTexture* a_platform__textureNewSprite(const ASprite* Sprite)
+APlatformTexture* a_platform_api__textureNewSprite(const ASprite* Sprite)
 {
     APlatformTexture* texture = Sprite->texture;
     int width = Sprite->w;
@@ -446,7 +446,7 @@ APlatformTexture* a_platform__textureNewSprite(const ASprite* Sprite)
     return texture;
 }
 
-void a_platform__textureFree(APlatformTexture* Texture)
+void a_platform_api__textureFree(APlatformTexture* Texture)
 {
     if(Texture == NULL) {
         return;
@@ -462,19 +462,19 @@ void a_platform__textureFree(APlatformTexture* Texture)
     free(Texture);
 }
 
-void a_platform__textureBlit(const APlatformTexture* Texture, int X, int Y, bool FillFlat)
+void a_platform_api__textureBlit(const APlatformTexture* Texture, int X, int Y, bool FillFlat)
 {
-    a_platform__textureBlitEx(Texture,
-                              X + Texture->w / 2,
-                              Y + Texture->h / 2,
-                              A_FIX_ONE,
-                              0,
-                              0,
-                              0,
-                              FillFlat);
+    a_platform_api__textureBlitEx(Texture,
+                                  X + Texture->w / 2,
+                                  Y + Texture->h / 2,
+                                  A_FIX_ONE,
+                                  0,
+                                  0,
+                                  0,
+                                  FillFlat);
 }
 
-void a_platform__textureBlitEx(const APlatformTexture* Texture, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY, bool FillFlat)
+void a_platform_api__textureBlitEx(const APlatformTexture* Texture, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY, bool FillFlat)
 {
     SDL_Texture* tex;
     SDL_BlendMode blend = pixelBlendToSdlBlend();
@@ -531,7 +531,7 @@ void a_platform__textureBlitEx(const APlatformTexture* Texture, int X, int Y, AF
     }
 }
 
-void a_platform__renderTargetSet(APlatformTexture* Texture)
+void a_platform_api__renderTargetSet(APlatformTexture* Texture)
 {
     if(SDL_SetRenderTarget(
         a__sdlRenderer, Texture->texture[A_TEXTURE__NORMAL]) < 0) {
@@ -540,7 +540,7 @@ void a_platform__renderTargetSet(APlatformTexture* Texture)
     }
 }
 
-void a_platform__renderTargetPixelsGet(APixel* Pixels, int Width)
+void a_platform_api__renderTargetPixelsGet(APixel* Pixels, int Width)
 {
     // Unreliable on texture targets
     if(SDL_RenderReadPixels(a__sdlRenderer,
@@ -553,7 +553,7 @@ void a_platform__renderTargetPixelsGet(APixel* Pixels, int Width)
     }
 }
 
-void a_platform__renderTargetClipSet(int X, int Y, int Width, int Height)
+void a_platform_api__renderTargetClipSet(int X, int Y, int Width, int Height)
 {
     SDL_Rect area = {X, Y, Width, Height};
 
