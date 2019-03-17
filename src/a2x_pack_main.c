@@ -65,8 +65,8 @@ static void a__atexit(void)
     a_screen__uninit();
     a_input__uninit();
     a_timer__uninit();
-    a_platform_api__uninit();
     a_block__uninit();
+    a_platform__uninit();
     a_embed__uninit();
 
     #if A_CONFIG_SYSTEM_GP2X || A_CONFIG_SYSTEM_WIZ || A_CONFIG_SYSTEM_CAANOO
@@ -92,8 +92,8 @@ int main(int Argc, char* Argv[])
 
     a_console__init();
     a_embed__init();
+    a_platform__init();
     a_block__init();
-    a_platform_api__init();
     a_timer__init();
     a_input__init();
     a_screen__init();

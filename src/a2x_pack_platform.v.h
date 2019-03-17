@@ -34,8 +34,8 @@ typedef struct APlatformTexture APlatformTexture;
 #include "a2x_pack_input_button.v.h"
 #include "a2x_pack_sprite.v.h"
 
-extern void a_platform_api__init(void);
-extern void a_platform_api__uninit(void);
+extern void a_platform__init(void);
+extern void a_platform__uninit(void);
 
 extern uint32_t a_platform_api__timeMsGet(void);
 extern void a_platform_api__timeMsWait(uint32_t Ms);

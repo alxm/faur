@@ -28,7 +28,7 @@
 #include "a2x_pack_platform_software_draw.v.h"
 #include "a2x_pack_platform_wiz.v.h"
 
-void a_platform_api__init(void)
+void a_platform__init(void)
 {
     #if A_CONFIG_SYSTEM_EMSCRIPTEN
         a_platform_emscripten__init();
@@ -72,7 +72,7 @@ void a_platform_api__init(void)
     #endif
 }
 
-void a_platform_api__uninit(void)
+void a_platform__uninit(void)
 {
     #if A_CONFIG_SYSTEM_GP2X
         a_platform_gp2x__uninit();
