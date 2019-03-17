@@ -397,7 +397,7 @@ APlatformTexture* a_platform_api__textureNewSprite(const ASprite* Sprite)
                     if(Sprite->pixels[i] != a_sprite__colorKey) {
                         // Set full alpha for non-transparent pixel
                         texture->pixels[i] |=
-                            (APixel)A__PIXEL_MASK_ALPHA << A__PIXEL_SHIFT_ALPHA;
+                            (APixel)A__PX_MASK_A << A__PX_SHIFT_A;
                     }
                 }
             } break;
