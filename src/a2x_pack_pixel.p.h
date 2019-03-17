@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2018 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -25,6 +25,10 @@
 #elif A_CONFIG_SCREEN_BPP == 32
     typedef uint32_t APixel;
 #endif
+
+typedef struct {
+    int r, g, b;
+} ARgb;
 
 #if A_CONFIG_SCREEN_BPP == 16
     #if A_CONFIG_LIB_RENDER_SOFTWARE
@@ -101,19 +105,12 @@ static inline APixel a_pixel_fromHex(uint32_t Hexcode)
     #endif
 }
 
-static inline void a_pixel_toRgb(APixel Pixel, int* Red, int* Green, int* Blue)
+static inline ARgb a_pixel_toRgb(APixel Pixel)
 {
-    if(Red) {
-        *Red = (int)((Pixel >> A__PIXEL_SHIFT_RED) & A__PIXEL_MASK_RED) << A__PIXEL_PACK_RED;
-    }
-
-    if(Green) {
-        *Green = (int)((Pixel >> A__PIXEL_SHIFT_GREEN) & A__PIXEL_MASK_GREEN) << A__PIXEL_PACK_GREEN;
-    }
-
-    if(Blue) {
-        *Blue = (int)((Pixel >> A__PIXEL_SHIFT_BLUE) & A__PIXEL_MASK_BLUE) << A__PIXEL_PACK_BLUE;
-    }
+    return (ARgb){
+        (int)((Pixel >> A__PIXEL_SHIFT_RED) & A__PIXEL_MASK_RED) << A__PIXEL_PACK_RED,
+        (int)((Pixel >> A__PIXEL_SHIFT_GREEN) & A__PIXEL_MASK_GREEN) << A__PIXEL_PACK_GREEN,
+        (int)((Pixel >> A__PIXEL_SHIFT_BLUE) & A__PIXEL_MASK_BLUE) << A__PIXEL_PACK_BLUE};
 }
 
 typedef enum {

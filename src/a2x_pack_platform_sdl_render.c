@@ -82,9 +82,9 @@ static inline uint8_t pixelAlphaToSdlAlpha(void)
 void a_platform_api__renderSetDrawColor(void)
 {
     if(SDL_SetRenderDrawColor(a__sdlRenderer,
-                              (uint8_t)a_pixel__state.red,
-                              (uint8_t)a_pixel__state.green,
-                              (uint8_t)a_pixel__state.blue,
+                              (uint8_t)a_pixel__state.rgb.r,
+                              (uint8_t)a_pixel__state.rgb.g,
+                              (uint8_t)a_pixel__state.rgb.b,
                               pixelAlphaToSdlAlpha()) < 0) {
 
         a_out__error("SDL_SetRenderDrawColor: %s", SDL_GetError());
@@ -497,9 +497,9 @@ void a_platform_api__textureBlitEx(const APlatformTexture* Texture, int X, int Y
 
     if(FillFlat) {
         if(SDL_SetTextureColorMod(tex,
-                                  (uint8_t)a_pixel__state.red,
-                                  (uint8_t)a_pixel__state.green,
-                                  (uint8_t)a_pixel__state.blue) < 0) {
+                                  (uint8_t)a_pixel__state.rgb.r,
+                                  (uint8_t)a_pixel__state.rgb.g,
+                                  (uint8_t)a_pixel__state.rgb.b) < 0) {
 
             a_out__error("SDL_SetTextureColorMod: %s", SDL_GetError());
         }

@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2018 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -56,9 +56,9 @@ void a_pixel_pop(void)
     free(state);
 
     a_pixel_blendSet(a_pixel__state.blend);
-    a_pixel_colorSetRgba(a_pixel__state.red,
-                         a_pixel__state.green,
-                         a_pixel__state.blue,
+    a_pixel_colorSetRgba(a_pixel__state.rgb.r,
+                         a_pixel__state.rgb.g,
+                         a_pixel__state.rgb.b,
                          a_pixel__state.alpha);
 }
 
@@ -147,12 +147,18 @@ void a_pixel_alphaSet(int Alpha)
     #endif
 }
 
+static void setRgb(int Red, int Green, int Blue)
+{
+    a_pixel__state.rgb.r = (unsigned)Red & 0xff;
+    a_pixel__state.rgb.g = (unsigned)Green & 0xff;
+    a_pixel__state.rgb.b = (unsigned)Blue & 0xff;
+
+    a_pixel__state.pixel = a_pixel_fromRgb(Red, Green, Blue);
+}
+
 void a_pixel_colorSetRgb(int Red, int Green, int Blue)
 {
-    a_pixel__state.red = (unsigned)Red & 0xff;
-    a_pixel__state.green = (unsigned)Green & 0xff;
-    a_pixel__state.blue = (unsigned)Blue & 0xff;
-    a_pixel__state.pixel = a_pixel_fromRgb(Red, Green, Blue);
+    setRgb(Red, Green, Blue);
 
     #if !A_CONFIG_LIB_RENDER_SOFTWARE
         a_platform_api__renderSetDrawColor();
@@ -161,11 +167,8 @@ void a_pixel_colorSetRgb(int Red, int Green, int Blue)
 
 void a_pixel_colorSetRgba(int Red, int Green, int Blue, int Alpha)
 {
-    a_pixel__state.red = (unsigned)Red & 0xff;
-    a_pixel__state.green = (unsigned)Green & 0xff;
-    a_pixel__state.blue = (unsigned)Blue & 0xff;
+    setRgb(Red, Green, Blue);
     a_pixel__state.alpha = a_math_clamp(Alpha, 0, A_PIXEL_ALPHA_MAX);
-    a_pixel__state.pixel = a_pixel_fromRgb(Red, Green, Blue);
 
     #if A_CONFIG_LIB_RENDER_SOFTWARE
         optimizeAlphaBlending(true);
@@ -176,9 +179,9 @@ void a_pixel_colorSetRgba(int Red, int Green, int Blue, int Alpha)
 
 void a_pixel_colorSetHex(uint32_t Hexcode)
 {
-    a_pixel__state.red = (Hexcode >> 16) & 0xff;
-    a_pixel__state.green = (Hexcode >> 8) & 0xff;
-    a_pixel__state.blue = Hexcode & 0xff;
+    a_pixel__state.rgb.r = (Hexcode >> 16) & 0xff;
+    a_pixel__state.rgb.g = (Hexcode >> 8)  & 0xff;
+    a_pixel__state.rgb.b = (Hexcode)       & 0xff;
     a_pixel__state.pixel = a_pixel_fromHex(Hexcode);
 
     #if !A_CONFIG_LIB_RENDER_SOFTWARE
@@ -188,11 +191,7 @@ void a_pixel_colorSetHex(uint32_t Hexcode)
 
 void a_pixel_colorSetPixel(APixel Pixel)
 {
-    a_pixel_toRgb(Pixel,
-                  &a_pixel__state.red,
-                  &a_pixel__state.green,
-                  &a_pixel__state.blue);
-
+    a_pixel__state.rgb = a_pixel_toRgb(Pixel);
     a_pixel__state.pixel = Pixel;
 
     #if !A_CONFIG_LIB_RENDER_SOFTWARE

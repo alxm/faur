@@ -289,7 +289,7 @@ void a_screen_blit(const AScreen* Screen)
                             0, 0, a__screen.width, a__screen.height);
         APixel* dst = a__screen.pixels;
         APixel* src = Screen->pixels;
-        int r = 0, g = 0, b = 0;
+        ARgb rgb = {0, 0, 0};
         int alpha = a_pixel__state.alpha;
 
         #define LOOP(Blend, Setup, Params)                                  \
@@ -338,19 +338,19 @@ void a_screen_blit(const AScreen* Screen)
             } break;
 
             case A_PIXEL_BLEND_RGBA: {
-                LOOP(rgba, {a_pixel_toRgb(*src, &r, &g, &b);}, (dst, r, g, b, alpha));
+                LOOP(rgba, {rgb = a_pixel_toRgb(*src);}, (dst, &rgb, alpha));
             } break;
 
             case A_PIXEL_BLEND_RGB25: {
-                LOOP(rgb25, {a_pixel_toRgb(*src, &r, &g, &b);}, (dst, r, g, b));
+                LOOP(rgb25, {rgb = a_pixel_toRgb(*src);}, (dst, &rgb));
             } break;
 
             case A_PIXEL_BLEND_RGB50: {
-                LOOP(rgb50, {a_pixel_toRgb(*src, &r, &g, &b);}, (dst, r, g, b));
+                LOOP(rgb50, {rgb = a_pixel_toRgb(*src);}, (dst, &rgb));
             } break;
 
             case A_PIXEL_BLEND_RGB75: {
-                LOOP(rgb75, {a_pixel_toRgb(*src, &r, &g, &b);}, (dst, r, g, b));
+                LOOP(rgb75, {rgb = a_pixel_toRgb(*src);}, (dst, &rgb));
             } break;
 
             case A_PIXEL_BLEND_INVERSE: {
@@ -358,7 +358,7 @@ void a_screen_blit(const AScreen* Screen)
             } break;
 
             case A_PIXEL_BLEND_MOD: {
-                LOOP(mod, {a_pixel_toRgb(*src, &r, &g, &b);}, (dst, r, g, b));
+                LOOP(mod, {rgb = a_pixel_toRgb(*src);}, (dst, &rgb));
             } break;
 
             default: break;

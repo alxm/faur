@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2018 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -222,45 +222,33 @@ do {                                                                        \
 #define A__PIXEL_DRAW(Dst) A__PIXEL_DRAW_EXPAND(A__BLEND, Dst A__PIXEL_PARAMS)
 
 #define A__BLEND plain
-#define A__BLEND_SETUP \
-    const APixel color = a_pixel__state.pixel;
+#define A__BLEND_SETUP const APixel color = a_pixel__state.pixel;
 #define A__PIXEL_PARAMS , color
 #include "a2x_pack_platform_software_draw.inc.c"
 
 #define A__BLEND rgba
-#define A__BLEND_SETUP                      \
-    const int red = a_pixel__state.red;     \
-    const int green = a_pixel__state.green; \
-    const int blue = a_pixel__state.blue;   \
+#define A__BLEND_SETUP \
+    const ARgb rgb = a_pixel__state.rgb; \
     const int alpha = a_pixel__state.alpha; \
-    if(alpha == 0) {                        \
-        return;                             \
+    if(alpha == 0) { \
+        return; \
     }
-#define A__PIXEL_PARAMS , red, green, blue, alpha
+#define A__PIXEL_PARAMS , &rgb, alpha
 #include "a2x_pack_platform_software_draw.inc.c"
 
 #define A__BLEND rgb25
-#define A__BLEND_SETUP                      \
-    const int red = a_pixel__state.red;     \
-    const int green = a_pixel__state.green; \
-    const int blue = a_pixel__state.blue;
-#define A__PIXEL_PARAMS , red, green, blue
+#define A__BLEND_SETUP const ARgb rgb = a_pixel__state.rgb;
+#define A__PIXEL_PARAMS , &rgb
 #include "a2x_pack_platform_software_draw.inc.c"
 
 #define A__BLEND rgb50
-#define A__BLEND_SETUP                      \
-    const int red = a_pixel__state.red;     \
-    const int green = a_pixel__state.green; \
-    const int blue = a_pixel__state.blue;
-#define A__PIXEL_PARAMS , red, green, blue
+#define A__BLEND_SETUP const ARgb rgb = a_pixel__state.rgb;
+#define A__PIXEL_PARAMS , &rgb
 #include "a2x_pack_platform_software_draw.inc.c"
 
 #define A__BLEND rgb75
-#define A__BLEND_SETUP                      \
-    const int red = a_pixel__state.red;     \
-    const int green = a_pixel__state.green; \
-    const int blue = a_pixel__state.blue;
-#define A__PIXEL_PARAMS , red, green, blue
+#define A__BLEND_SETUP const ARgb rgb = a_pixel__state.rgb;
+#define A__PIXEL_PARAMS , &rgb
 #include "a2x_pack_platform_software_draw.inc.c"
 
 #define A__BLEND inverse
@@ -269,19 +257,13 @@ do {                                                                        \
 #include "a2x_pack_platform_software_draw.inc.c"
 
 #define A__BLEND mod
-#define A__BLEND_SETUP                      \
-    const int red = a_pixel__state.red;     \
-    const int green = a_pixel__state.green; \
-    const int blue = a_pixel__state.blue;
-#define A__PIXEL_PARAMS , red, green, blue
+#define A__BLEND_SETUP const ARgb rgb = a_pixel__state.rgb;
+#define A__PIXEL_PARAMS , &rgb
 #include "a2x_pack_platform_software_draw.inc.c"
 
 #define A__BLEND add
-#define A__BLEND_SETUP                      \
-    const int red = a_pixel__state.red;     \
-    const int green = a_pixel__state.green; \
-    const int blue = a_pixel__state.blue;
-#define A__PIXEL_PARAMS , red, green, blue
+#define A__BLEND_SETUP const ARgb rgb = a_pixel__state.rgb;
+#define A__PIXEL_PARAMS , &rgb
 #include "a2x_pack_platform_software_draw.inc.c"
 
 void a_platform_software_draw__init(void)

@@ -36,7 +36,7 @@
 #elif A_CONFIG_LIB_SDL == 2
     SDL_Renderer* a__sdlRenderer;
     static SDL_Window* g_sdlWindow;
-    static int g_clearR, g_clearG, g_clearB;
+    static ARgb g_clearRgb;
 
     #if A_CONFIG_LIB_RENDER_SOFTWARE
         static SDL_Texture* g_sdlTexture;
@@ -202,10 +202,8 @@ void a_platform_api__screenInit(int Width, int Height)
         SDL_SetHintWithPriority(
             SDL_HINT_RENDER_SCALE_QUALITY, "nearest", SDL_HINT_OVERRIDE);
 
-        a_pixel_toRgb(a_pixel_fromHex(A_CONFIG_COLOR_SCREEN_BORDER),
-                      &g_clearR,
-                      &g_clearG,
-                      &g_clearB);
+        g_clearRgb = a_pixel_toRgb(
+                        a_pixel_fromHex(A_CONFIG_COLOR_SCREEN_BORDER));
     #endif
 
     a_out__message("V-sync is %s", g_vsync ? "on" : "off");
@@ -343,9 +341,9 @@ void a_platform_api__screenShow(void)
         #endif
 
         if(SDL_SetRenderDrawColor(a__sdlRenderer,
-                                  (uint8_t)g_clearR,
-                                  (uint8_t)g_clearG,
-                                  (uint8_t)g_clearB,
+                                  (uint8_t)g_clearRgb.r,
+                                  (uint8_t)g_clearRgb.g,
+                                  (uint8_t)g_clearRgb.b,
                                   SDL_ALPHA_OPAQUE) < 0) {
 
             a_out__error("SDL_SetRenderDrawColor: %s", SDL_GetError());
