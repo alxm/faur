@@ -274,7 +274,9 @@ void a_platform_api__screenShow(void)
                 }
             }
 
-            if(g_zoom <= 1) {
+            if(g_zoom <= 1
+                && g_sdlScreen->pitch == g_sdlScreen->w * (int)sizeof(APixel)) {
+
                 memcpy(g_sdlScreen->pixels,
                        a__screen.pixels,
                        a__screen.pixelsSize);
@@ -440,7 +442,7 @@ void a_platform_api__screenZoomSet(int Zoom)
         #if A_CONFIG_SCREEN_ALLOCATE
             g_sdlScreen = SDL_SetVideoMode(a__screen.width * Zoom,
                                            a__screen.height * Zoom,
-                                           0,
+                                           A_CONFIG_SCREEN_BPP,
                                            g_sdlScreen->flags);
 
             if(g_sdlScreen == NULL) {
@@ -482,7 +484,8 @@ void a_platform_api__screenFullscreenFlip(void)
                 videoFlags &= ~(uint32_t)SDL_FULLSCREEN;
             }
 
-            g_sdlScreen = SDL_SetVideoMode(0, 0, 0, videoFlags);
+            g_sdlScreen = SDL_SetVideoMode(
+                            0, 0, A_CONFIG_SCREEN_BPP, videoFlags);
 
             if(g_sdlScreen == NULL) {
                 A__FATAL("SDL_SetVideoMode: %s", SDL_GetError());
