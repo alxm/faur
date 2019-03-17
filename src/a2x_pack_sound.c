@@ -113,8 +113,8 @@ void a_sound__tick(void)
         if(a_button_pressGetOnce(g_muteButton)) {
             a_platform_api__soundMuteFlip();
 
-            a_out__message("Sound is now %s",
-                           a_platform_api__soundMuteGet() ? "off" : "on");
+            a_out__info("Sound is now %s",
+                        a_platform_api__soundMuteGet() ? "off" : "on");
         }
     #endif
 }

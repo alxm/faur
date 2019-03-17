@@ -49,7 +49,7 @@ static const struct {
     const char* name;
     AColorCode color;
 } g_types[A_OUT__TYPE_NUM] = {
-    [A_OUT__TYPE_MESSAGE] = {"Msg", A_COLOR__GREEN},
+    [A_OUT__TYPE_INFO] = {"Inf", A_COLOR__GREEN},
     [A_OUT__TYPE_WARNING] = {"Wrn", A_COLOR__YELLOW},
     [A_OUT__TYPE_ERROR] = {"Err", A_COLOR__RED},
     [A_OUT__TYPE_STATE] = {"Stt", A_COLOR__BLUE},
@@ -97,13 +97,13 @@ static void outWorker(AOutSource Source, AOutType Type, FILE* Stream, const char
     }
 }
 
-void a_out__message(const char* Format, ...)
+void a_out__info(const char* Format, ...)
 {
     va_list args;
     va_start(args, Format);
 
     outWorker(A_OUT__SOURCE_A2X,
-              A_OUT__TYPE_MESSAGE,
+              A_OUT__TYPE_INFO,
               A_OUT__STREAM_STDOUT,
               Format,
               args,
@@ -227,24 +227,24 @@ void a_out__overwrite(AOutType Type, FILE* Stream, const char* Format, ...)
     va_end(args);
 }
 
-void a_out_print(const char* Text)
+void a_out_text(const char* Text)
 {
     if(g_on) {
         outWorkerPrint(A_OUT__SOURCE_APP,
-                       A_OUT__TYPE_MESSAGE,
+                       A_OUT__TYPE_INFO,
                        A_OUT__STREAM_STDOUT,
                        Text,
                        0);
     }
 }
 
-void a_out_printf(const char* Format, ...)
+void a_out_info(const char* Format, ...)
 {
     va_list args;
     va_start(args, Format);
 
     outWorker(A_OUT__SOURCE_APP,
-              A_OUT__TYPE_MESSAGE,
+              A_OUT__TYPE_INFO,
               A_OUT__STREAM_STDOUT,
               Format,
               args,
@@ -253,10 +253,10 @@ void a_out_printf(const char* Format, ...)
     va_end(args);
 }
 
-void a_out_printv(const char* Format, va_list Args)
+void a_out_infov(const char* Format, va_list Args)
 {
     outWorker(A_OUT__SOURCE_APP,
-              A_OUT__TYPE_MESSAGE,
+              A_OUT__TYPE_INFO,
               A_OUT__STREAM_STDOUT,
               Format,
               Args,

@@ -37,7 +37,7 @@ typedef enum {
 
 typedef enum {
     A_OUT__TYPE_INVALID = -1,
-    A_OUT__TYPE_MESSAGE,
+    A_OUT__TYPE_INFO,
     A_OUT__TYPE_WARNING,
     A_OUT__TYPE_ERROR,
     A_OUT__TYPE_STATE,
@@ -45,7 +45,7 @@ typedef enum {
     A_OUT__TYPE_NUM
 } AOutType;
 
-extern void a_out__message(const char* Format, ...);
+extern void a_out__info(const char* Format, ...);
 extern void a_out__warning(const char* Format, ...);
 extern void a_out__warningV(const char* Format, ...);
 extern void a_out__error(const char* Format, ...);

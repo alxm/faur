@@ -175,9 +175,9 @@ void a_platform_api__screenInit(int Width, int Height)
         }
 
         if(info.flags & SDL_RENDERER_ACCELERATED) {
-            a_out__message("Using SDL2 accelerated renderer");
+            a_out__info("Using SDL2 accelerated renderer");
         } else {
-            a_out__message("Using SDL2 software renderer");
+            a_out__info("Using SDL2 software renderer");
         }
 
         g_vsync = info.flags & SDL_RENDERER_PRESENTVSYNC;
@@ -206,7 +206,7 @@ void a_platform_api__screenInit(int Width, int Height)
                         a_pixel_fromHex(A_CONFIG_COLOR_SCREEN_BORDER));
     #endif
 
-    a_out__message("V-sync is %s", g_vsync ? "on" : "off");
+    a_out__info("V-sync is %s", g_vsync ? "on" : "off");
 
     #if A_CONFIG_TRAIT_DESKTOP
         const char* caption = a_str__fmt512("%s %s",
@@ -408,10 +408,10 @@ AVectorInt a_platform_api__screenResolutionGetNative(void)
         return (AVectorInt){0, 0};
     }
 
-    a_out__message("Display info: %dx%d %dbpp",
-                   mode.w,
-                   mode.h,
-                   SDL_BITSPERPIXEL(mode.format));
+    a_out__info("Display info: %dx%d %dbpp",
+                mode.w,
+                mode.h,
+                SDL_BITSPERPIXEL(mode.format));
 
     return (AVectorInt){mode.w, mode.h};
 }

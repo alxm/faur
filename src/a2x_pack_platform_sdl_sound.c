@@ -65,9 +65,9 @@ void a_platform_sdl_sound__init(void)
         a_out__error("Mix_ReserveChannels: %s", Mix_GetError());
     }
 
-    a_out__message("Allocated %d sample channels, reserved %d",
-                   g_numSampleChannels,
-                   g_numSampleChannelsReserved);
+    a_out__info("Allocated %d sample channels, reserved %d",
+                g_numSampleChannels,
+                g_numSampleChannelsReserved);
 }
 
 void a_platform_sdl_sound__uninit(void)

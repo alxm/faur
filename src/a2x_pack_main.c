@@ -51,7 +51,7 @@ static const char** g_args;
 
 static void a__atexit(void)
 {
-    a_out__message("Running atexit");
+    a_out__info("Running atexit");
 
     a_console__uninit();
     a_font__uninit();
@@ -79,13 +79,13 @@ static void a__atexit(void)
 
 int main(int Argc, char* Argv[])
 {
-    a_out__message("PID: %d", getpid());
-    a_out__message("a2x: %s %s", A_CONFIG_BUILD_UID, A_CONFIG_BUILD_GIT_HASH);
-    a_out__message("App: %s %s by %s",
-                   A_CONFIG_APP_TITLE,
-                   A_CONFIG_APP_VERSION_STRING,
-                   A_CONFIG_APP_AUTHOR);
-    a_out__message("Build timestamp: %s", A_CONFIG_BUILD_TIMESTAMP);
+    a_out__info("PID: %d", getpid());
+    a_out__info("a2x: %s %s", A_CONFIG_BUILD_UID, A_CONFIG_BUILD_GIT_HASH);
+    a_out__info("App: %s %s by %s",
+                A_CONFIG_APP_TITLE,
+                A_CONFIG_APP_VERSION_STRING,
+                A_CONFIG_APP_AUTHOR);
+    a_out__info("Build timestamp: %s", A_CONFIG_BUILD_TIMESTAMP);
 
     g_argsNum = Argc;
     g_args = (const char**)Argv;
@@ -114,9 +114,9 @@ int main(int Argc, char* Argv[])
         a_out__error("Cannot register atexit callback");
     }
 
-    a_out__message("A_MAIN start");
+    a_out__info("A_MAIN start");
     a_main();
-    a_out__message("A_MAIN end");
+    a_out__info("A_MAIN end");
 
     a_state__run();
 
@@ -164,9 +164,9 @@ __attribute__((noreturn)) static void handleFatal(void)
         if(a_console__isInitialized()) {
             for(int s = 10; s > 0; s--) {
                 if(s == 10) {
-                    a_out__message("Exiting in %ds", s);
+                    a_out__info("Exiting in %ds", s);
                 } else {
-                    a_out__overwrite(A_OUT__TYPE_MESSAGE,
+                    a_out__overwrite(A_OUT__TYPE_INFO,
                                      A_OUT__STREAM_STDOUT,
                                      "Exiting in %ds",
                                      s);

@@ -92,10 +92,10 @@ void a_screen__init(void)
     if(width <= 0 || height <= 0) {
         A__FATAL("Invalid screen resolution %dx%d", width, height);
     } else {
-        a_out__message("Screen resolution %dx%d, zoom x%d",
-                       width,
-                       height,
-                       A_CONFIG_SCREEN_ZOOM);
+        a_out__info("Screen resolution %dx%d, zoom x%d",
+                    width,
+                    height,
+                    A_CONFIG_SCREEN_ZOOM);
     }
 
     #if A_CONFIG_LIB_RENDER_SOFTWARE
@@ -148,8 +148,8 @@ void a_screen__tick(void)
         if(a_button_pressGetOnce(g_fullScreenButton)) {
             a_platform_api__screenFullscreenFlip();
 
-            a_out__message("Screen is now %s",
-                           a_platform_api__screenFullscreenGet()
+            a_out__info("Screen is now %s",
+                        a_platform_api__screenFullscreenGet()
                             ? "fullscreen" : "windowed");
         }
 
@@ -157,7 +157,7 @@ void a_screen__tick(void)
             if(a_button_pressGetOnce(g_zoomButtons[z])) {
                 a_platform_api__screenZoomSet(z + 1);
 
-                a_out__message(
+                a_out__info(
                     "Screen zoom is now %d", a_platform_api__screenZoomGet());
 
                 break;

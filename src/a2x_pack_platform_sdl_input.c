@@ -362,7 +362,7 @@ void a_platform_sdl_input__init(void)
     g_forwardButtonsQueue[1] = a_list_new();
 
     const int joysticksNum = SDL_NumJoysticks();
-    a_out__message("Found %d controllers", joysticksNum);
+    a_out__info("Found %d controllers", joysticksNum);
 
     #if A_CONFIG_LIB_SDL == 2
         if(joysticksNum > 0) {
@@ -374,9 +374,9 @@ void a_platform_sdl_input__init(void)
                              A_CONFIG_LIB_SDL_GAMEPADMAP,
                              SDL_GetError());
             } else {
-                a_out__message("%s: Loaded %d gamepad mappings",
-                               A_CONFIG_LIB_SDL_GAMEPADMAP,
-                               mNum);
+                a_out__info("%s: Loaded %d gamepad mappings",
+                            A_CONFIG_LIB_SDL_GAMEPADMAP,
+                            mNum);
             }
         }
     #endif
@@ -477,11 +477,11 @@ void a_platform_sdl_input__init(void)
 
 #if A_CONFIG_LIB_SDL == 2
         if(c->controller) {
-            a_out__message("Controller '%s': %d buttons, %d axes, %d hats",
-                           SDL_GameControllerName(c->controller),
-                           c->numButtons,
-                           c->numAxes,
-                           c->numHats);
+            a_out__info("Controller '%s': %d buttons, %d axes, %d hats",
+                        SDL_GameControllerName(c->controller),
+                        c->numButtons,
+                        c->numAxes,
+                        c->numHats);
 
             static const struct {
                 AButtonId id;
@@ -549,11 +549,11 @@ void a_platform_sdl_input__init(void)
             }
         } else {
 #endif
-            a_out__message("Default '%s': %d buttons, %d axes, %d hats",
-                           joystickName(c),
-                           c->numButtons,
-                           c->numAxes,
-                           c->numHats);
+            a_out__info("Default '%s': %d buttons, %d axes, %d hats",
+                        joystickName(c),
+                        c->numButtons,
+                        c->numAxes,
+                        c->numHats);
 
             static const struct {
                 AButtonId id;
@@ -595,7 +595,7 @@ void a_platform_sdl_input__init(void)
         SDL_JoystickGetGUIDString(SDL_JoystickGetGUID(c->joystick),
                                   guidStrBuffer,
                                   sizeof(guidStrBuffer) - 1);
-        a_out__message("^ GUID %s", guidStrBuffer);
+        a_out__info("^ GUID %s", guidStrBuffer);
 #endif
 
         if(c->numHats > 0 || c->numAxes >= 2) {

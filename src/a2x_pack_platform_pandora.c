@@ -36,7 +36,7 @@ static void pandora_setNubModes(const char* Nub0, const char* Nub1)
         return;
     }
 
-    a_out__message("Set nub modes to '%s', '%s'", Nub0, Nub1);
+    a_out__info("Set nub modes to '%s', '%s'", Nub0, Nub1);
 
     if(system(cmd) < 0) {
         a_out__error("%s: failed", cmd);
@@ -54,7 +54,7 @@ static void pandora_setScreenFilter(const char* Value)
         return;
     }
 
-    a_out__message("Set screen filter to '%s'", Value);
+    a_out__info("Set screen filter to '%s'", Value);
 
     if(system(cmd) < 0) {
         a_out__error("%s: failed", cmd);
@@ -70,7 +70,7 @@ void a_platform_pandora__init(void)
 
         if(nub && a_file_lineRead(nub)) {
             g_nubModes[i] = a_str_dup(a_file_lineBufferGet(nub));
-            a_out__message("Current nub%d mode is '%s'", i, g_nubModes[i]);
+            a_out__info("Current nub%d mode is '%s'", i, g_nubModes[i]);
         }
 
         a_file_free(nub);
