@@ -27,8 +27,6 @@
 
 AScreen a__screen;
 static AList* g_stack; // list of AScreen
-static int g_zoom = A_CONFIG_SCREEN_ZOOM;
-static bool g_fullscreen = A_CONFIG_SCREEN_FULLSCREEN;
 
 #if A_CONFIG_TRAIT_DESKTOP
     static AButton* g_fullScreenButton;
@@ -49,7 +47,7 @@ static void initScreen(AScreen* Screen, int Width, int Height, bool AllocBuffer)
     }
 
     Screen->sprite = NULL;
-    Screen->texture = a_platform__textureNewScreen(Width, Height);
+    Screen->texture = a_platform_api__textureNewScreen(Width, Height);
     Screen->width = Width;
     Screen->height = Height;
     Screen->clipX = 0;
@@ -68,7 +66,7 @@ static void freeScreen(AScreen* Screen)
     }
 
     #if !A_CONFIG_LIB_RENDER_SOFTWARE
-        a_platform__textureFree(Screen->texture);
+        a_platform_api__textureFree(Screen->texture);
     #endif
 }
 
@@ -78,16 +76,15 @@ void a_screen__init(void)
     int height = A_CONFIG_SCREEN_HEIGHT;
 
     if(width < 0 || height < 0) {
-        int w = 0, h = 0;
-        a_platform__screenResolutionGetNative(&w, &h);
+        AVectorInt res = a_platform_api__screenResolutionGetNative();
 
-        if(w > 0 && h > 0) {
+        if(res.x > 0 && res.y > 0) {
             if(width < 0) {
-                width = w / -width;
+                width = res.x / -width;
             }
 
             if(height < 0) {
-                height = h / -height;
+                height = res.y / -height;
             }
         }
     }
@@ -95,10 +92,10 @@ void a_screen__init(void)
     if(width <= 0 || height <= 0) {
         A__FATAL("Invalid screen resolution %dx%d", width, height);
     } else {
-        a_out__message("Screen resolution %dx%d, zoom x%d",
-                       width,
-                       height,
-                       A_CONFIG_SCREEN_ZOOM);
+        a_out__info("Screen resolution %dx%d, zoom x%d",
+                    width,
+                    height,
+                    A_CONFIG_SCREEN_ZOOM);
     }
 
     #if A_CONFIG_LIB_RENDER_SOFTWARE
@@ -106,11 +103,11 @@ void a_screen__init(void)
         initScreen(&a__screen, width, height, A_CONFIG_SCREEN_ALLOCATE);
     #endif
 
-    a_platform__screenInit(width, height);
+    a_platform_api__screenInit(width, height);
 
     #if !A_CONFIG_LIB_RENDER_SOFTWARE
         initScreen(&a__screen, width, height, true);
-        a_platform__renderTargetSet(a__screen.texture);
+        a_platform_api__renderTargetSet(a__screen.texture);
     #endif
 
     #if A_CONFIG_TRAIT_DESKTOP
@@ -149,12 +146,20 @@ void a_screen__tick(void)
 {
     #if A_CONFIG_TRAIT_DESKTOP
         if(a_button_pressGetOnce(g_fullScreenButton)) {
-            a_screen_fullscreenFlip();
+            a_platform_api__screenFullscreenFlip();
+
+            a_out__info("Screen is now %s",
+                        a_platform_api__screenFullscreenGet()
+                            ? "fullscreen" : "windowed");
         }
 
         for(int z = 0; z < A__ZOOM_LEVELS; z++) {
             if(a_button_pressGetOnce(g_zoomButtons[z])) {
-                a_screen__zoomSet(z + 1);
+                a_platform_api__screenZoomSet(z + 1);
+
+                a_out__info(
+                    "Screen zoom is now %d", a_platform_api__screenZoomGet());
+
                 break;
             }
         }
@@ -167,26 +172,7 @@ void a_screen__draw(void)
         A__FATAL("Screen target stack is not empty");
     }
 
-    a_platform__screenShow();
-}
-
-int a_screen__zoomGet(void)
-{
-    return g_zoom;
-}
-
-void a_screen__zoomSet(int Zoom)
-{
-    g_zoom = Zoom;
-
-    a_platform__screenZoomSet(Zoom);
-}
-
-void a_screen_fullscreenFlip(void)
-{
-    g_fullscreen = !g_fullscreen;
-
-    a_platform__screenFullscreenSet(g_fullscreen);
+    a_platform_api__screenShow();
 }
 
 bool a_screen__sameSize(const AScreen* Screen1, const AScreen* Screen2)
@@ -203,7 +189,8 @@ APixel* a_screen_pixelsGetBuffer(void)
             a__screen.ownsBuffer = true;
         }
 
-        a_platform__renderTargetPixelsGet(a__screen.pixels, a__screen.width);
+        a_platform_api__renderTargetPixelsGet(
+            a__screen.pixels, a__screen.width);
     #endif
 
     return a__screen.pixels;
@@ -272,16 +259,16 @@ void a_screen_copy(AScreen* Dst, const AScreen* Src)
         a_pixel_push();
         a_pixel_blendSet(A_PIXEL_BLEND_PLAIN);
 
-        a_platform__renderTargetSet(Dst->texture);
-        a_platform__renderTargetClipSet(0, 0, Dst->width, Dst->height);
+        a_platform_api__renderTargetSet(Dst->texture);
+        a_platform_api__renderTargetClipSet(0, 0, Dst->width, Dst->height);
 
-        a_platform__textureBlit(Src->texture, 0, 0, false);
+        a_platform_api__textureBlit(Src->texture, 0, 0, false);
 
-        a_platform__renderTargetSet(a__screen.texture);
-        a_platform__renderTargetClipSet(a__screen.clipX,
-                                        a__screen.clipY,
-                                        a__screen.clipWidth,
-                                        a__screen.clipHeight);
+        a_platform_api__renderTargetSet(a__screen.texture);
+        a_platform_api__renderTargetClipSet(a__screen.clipX,
+                                            a__screen.clipY,
+                                            a__screen.clipWidth,
+                                            a__screen.clipHeight);
 
         a_pixel_pop();
     #endif
@@ -302,7 +289,7 @@ void a_screen_blit(const AScreen* Screen)
                             0, 0, a__screen.width, a__screen.height);
         APixel* dst = a__screen.pixels;
         APixel* src = Screen->pixels;
-        int r = 0, g = 0, b = 0;
+        ARgb rgb = {0, 0, 0};
         int alpha = a_pixel__state.alpha;
 
         #define LOOP(Blend, Setup, Params)                                  \
@@ -351,19 +338,19 @@ void a_screen_blit(const AScreen* Screen)
             } break;
 
             case A_PIXEL_BLEND_RGBA: {
-                LOOP(rgba, {a_pixel_toRgb(*src, &r, &g, &b);}, (dst, r, g, b, alpha));
+                LOOP(rgba, {rgb = a_pixel_toRgb(*src);}, (dst, &rgb, alpha));
             } break;
 
             case A_PIXEL_BLEND_RGB25: {
-                LOOP(rgb25, {a_pixel_toRgb(*src, &r, &g, &b);}, (dst, r, g, b));
+                LOOP(rgb25, {rgb = a_pixel_toRgb(*src);}, (dst, &rgb));
             } break;
 
             case A_PIXEL_BLEND_RGB50: {
-                LOOP(rgb50, {a_pixel_toRgb(*src, &r, &g, &b);}, (dst, r, g, b));
+                LOOP(rgb50, {rgb = a_pixel_toRgb(*src);}, (dst, &rgb));
             } break;
 
             case A_PIXEL_BLEND_RGB75: {
-                LOOP(rgb75, {a_pixel_toRgb(*src, &r, &g, &b);}, (dst, r, g, b));
+                LOOP(rgb75, {rgb = a_pixel_toRgb(*src);}, (dst, &rgb));
             } break;
 
             case A_PIXEL_BLEND_INVERSE: {
@@ -371,13 +358,13 @@ void a_screen_blit(const AScreen* Screen)
             } break;
 
             case A_PIXEL_BLEND_MOD: {
-                LOOP(mod, {a_pixel_toRgb(*src, &r, &g, &b);}, (dst, r, g, b));
+                LOOP(mod, {rgb = a_pixel_toRgb(*src);}, (dst, &rgb));
             } break;
 
             default: break;
         }
     #else
-        a_platform__textureBlit(Screen->texture, 0, 0, false);
+        a_platform_api__textureBlit(Screen->texture, 0, 0, false);
     #endif
 }
 
@@ -390,7 +377,7 @@ void a_screen_clear(void)
 
         a_pixel_blendSet(A_PIXEL_BLEND_PLAIN);
         a_pixel_colorSetPixel(0);
-        a_platform__renderClear();
+        a_platform_api__renderClear();
 
         a_pixel_pop();
     #endif
@@ -409,7 +396,7 @@ static void pushTarget(APixel* Pixels, size_t PixelsSize, int Width, int Height,
     a__screen.ownsBuffer = false;
 
     #if !A_CONFIG_LIB_RENDER_SOFTWARE
-        a_platform__renderTargetSet(Texture);
+        a_platform_api__renderTargetSet(Texture);
     #endif
 
     a_screen_clipReset();
@@ -439,7 +426,7 @@ void a_screen_targetPop(void)
 {
     #if A_CONFIG_LIB_RENDER_SOFTWARE
         if(a__screen.sprite) {
-            a__screen.sprite->texture = a_platform__textureNewSprite(
+            a__screen.sprite->texture = a_platform_api__textureNewSprite(
                                             a__screen.sprite);
         }
     #endif
@@ -454,11 +441,11 @@ void a_screen_targetPop(void)
     free(screen);
 
     #if !A_CONFIG_LIB_RENDER_SOFTWARE
-        a_platform__renderTargetSet(a__screen.texture);
-        a_platform__renderTargetClipSet(a__screen.clipX,
-                                        a__screen.clipY,
-                                        a__screen.clipWidth,
-                                        a__screen.clipHeight);
+        a_platform_api__renderTargetSet(a__screen.texture);
+        a_platform_api__renderTargetClipSet(a__screen.clipX,
+                                            a__screen.clipY,
+                                            a__screen.clipWidth,
+                                            a__screen.clipHeight);
     #endif
 }
 
@@ -485,7 +472,7 @@ void a_screen_clipSet(int X, int Y, int Width, int Height)
     a__screen.clipHeight = Height;
 
     #if !A_CONFIG_LIB_RENDER_SOFTWARE
-        a_platform__renderTargetClipSet(X, Y, Width, Height);
+        a_platform_api__renderTargetClipSet(X, Y, Width, Height);
     #endif
 }
 

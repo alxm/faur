@@ -103,7 +103,7 @@ void a_entity__free(AEntity* Entity)
     }
 
     if(A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__DEBUG)) {
-        a_out__message("a_entity__free(%s)", a_entity_idGet(Entity));
+        a_out__info("a_entity__free(%s)", a_entity_idGet(Entity));
     }
 
     if(Entity->collectionNode) {
@@ -166,9 +166,9 @@ AEntity* a_entity_parentGet(const AEntity* Entity)
 void a_entity_parentSet(AEntity* Entity, AEntity* Parent)
 {
     if(A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__DEBUG)) {
-        a_out__message("a_entity_parentSet(%s, %s)",
-                       a_entity_idGet(Entity),
-                       Parent ? a_entity_idGet(Parent) : "NULL");
+        a_out__info("a_entity_parentSet(%s, %s)",
+                    a_entity_idGet(Entity),
+                    Parent ? a_entity_idGet(Parent) : "NULL");
     }
 
     if(Entity->parent) {
@@ -205,10 +205,10 @@ void a_entity_refInc(AEntity* Entity)
     }
 
     if(A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__DEBUG)) {
-        a_out__message("a_entity_refInc(%s) %d->%d",
-                       a_entity_idGet(Entity),
-                       Entity->references,
-                       Entity->references + 1);
+        a_out__info("a_entity_refInc(%s) %d->%d",
+                    a_entity_idGet(Entity),
+                    Entity->references,
+                    Entity->references + 1);
     }
 
     Entity->references++;
@@ -228,10 +228,10 @@ void a_entity_refDec(AEntity* Entity)
     }
 
     if(A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__DEBUG)) {
-        a_out__message("a_entity_refDec(%s) %d->%d",
-                       a_entity_idGet(Entity),
-                       Entity->references,
-                       Entity->references - 1);
+        a_out__info("a_entity_refDec(%s) %d->%d",
+                    a_entity_idGet(Entity),
+                    Entity->references,
+                    Entity->references - 1);
     }
 
     Entity->references--;
@@ -258,7 +258,7 @@ void a_entity_removeSet(AEntity* Entity)
     }
 
     if(A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__DEBUG)) {
-        a_out__message("a_entity_removeSet(%s)", a_entity_idGet(Entity));
+        a_out__info("a_entity_removeSet(%s)", a_entity_idGet(Entity));
     }
 
     A_FLAG_SET(Entity->flags, A_ENTITY__REMOVED);
@@ -285,7 +285,7 @@ void a_entity_activeSet(AEntity* Entity)
     }
 
     if(A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__DEBUG)) {
-        a_out__message("a_entity_activeSet(%s)", a_entity_idGet(Entity));
+        a_out__info("a_entity_activeSet(%s)", a_entity_idGet(Entity));
     }
 
     Entity->lastActive = a_fps_ticksGet();
@@ -304,8 +304,7 @@ void a_entity_activeSet(AEntity* Entity)
 void a_entity_activeSetPermanent(AEntity* Entity)
 {
     if(A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__DEBUG)) {
-        a_out__message(
-            "a_entity_activeSetPermanent(%s)", a_entity_idGet(Entity));
+        a_out__info("a_entity_activeSetPermanent(%s)", a_entity_idGet(Entity));
     }
 
     A_FLAG_SET(Entity->flags, A_ENTITY__ACTIVE_PERMANENT);
@@ -328,9 +327,9 @@ void* a_entity_componentAdd(AEntity* Entity, int Component)
     }
 
     if(A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__DEBUG)) {
-        a_out__message("a_entity_componentAdd(%s, %s)",
-                       a_entity_idGet(Entity),
-                       c->stringId);
+        a_out__info("a_entity_componentAdd(%s, %s)",
+                    a_entity_idGet(Entity),
+                    c->stringId);
     }
 
     return componentAdd(Entity, Component, c);
@@ -385,10 +384,10 @@ void a_entity_muteInc(AEntity* Entity)
     }
 
     if(A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__DEBUG)) {
-        a_out__message("a_entity_muteInc(%s) %d->%d",
-                       a_entity_idGet(Entity),
-                       Entity->muteCount,
-                       Entity->muteCount + 1);
+        a_out__info("a_entity_muteInc(%s) %d->%d",
+                    a_entity_idGet(Entity),
+                    Entity->muteCount,
+                    Entity->muteCount + 1);
     }
 
     if(Entity->muteCount++ == 0) {
@@ -410,10 +409,10 @@ void a_entity_muteDec(AEntity* Entity)
     }
 
     if(A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__DEBUG)) {
-        a_out__message("a_entity_muteDec(%s) %d->%d",
-                       a_entity_idGet(Entity),
-                       Entity->muteCount,
-                       Entity->muteCount - 1);
+        a_out__info("a_entity_muteDec(%s) %d->%d",
+                    a_entity_idGet(Entity),
+                    Entity->muteCount,
+                    Entity->muteCount - 1);
     }
 
     if(--Entity->muteCount == 0) {

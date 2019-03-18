@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2014, 2018 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2014, 2018-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -138,20 +138,20 @@ unsigned a_fix_atan(AFix X1, AFix Y1, AFix X2, AFix Y2)
     }
 }
 
-void a_fix_rotateCounter(AFix X, AFix Y, unsigned Angle, AFix* NewX, AFix* NewY)
+AVectorFix a_fix_rotateCounter(AFix X, AFix Y, unsigned Angle)
 {
     const AFix sin = a_fix_sin(Angle);
     const AFix cos = a_fix_cos(Angle);
 
-    *NewX = a_fix_mul(X,  cos) + a_fix_mul(Y, sin);
-    *NewY = a_fix_mul(X, -sin) + a_fix_mul(Y, cos);
+    return (AVectorFix){a_fix_mul(X,  cos) + a_fix_mul(Y, sin),
+                        a_fix_mul(X, -sin) + a_fix_mul(Y, cos)};
 }
 
-void a_fix_rotateClockwise(AFix X, AFix Y, unsigned Angle, AFix* NewX, AFix* NewY)
+AVectorFix a_fix_rotateClockwise(AFix X, AFix Y, unsigned Angle)
 {
     const AFix sin = a_fix_sin(Angle);
     const AFix cos = a_fix_cos(Angle);
 
-    *NewX = a_fix_mul(X, cos) + a_fix_mul(Y, -sin);
-    *NewY = a_fix_mul(X, sin) + a_fix_mul(Y,  cos);
+    return (AVectorFix){a_fix_mul(X, cos) + a_fix_mul(Y, -sin),
+                        a_fix_mul(X, sin) + a_fix_mul(Y,  cos)};
 }

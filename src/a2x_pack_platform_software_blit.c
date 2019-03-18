@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2018 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -52,87 +52,74 @@ static ABlitter g_blitters[A_PIXEL_BLEND_NUM][2][2][2];
 
 #define A__BLEND plain
 #define A__FILL flat
-#define A__BLEND_SETUP                         \
-    const APixel color = a_pixel__state.pixel;
+#define A__BLEND_SETUP const APixel color = a_pixel__state.pixel;
 #define A__PIXEL_SETUP
 #define A__PIXEL_PARAMS , color
 #include "a2x_pack_platform_software_blit.inc.c"
 
 #define A__BLEND rgba
 #define A__FILL data
-#define A__BLEND_SETUP                      \
-    int r, g, b;                            \
+#define A__BLEND_SETUP \
     const int alpha = a_pixel__state.alpha; \
-    if(alpha == 0) {                        \
-        return;                             \
+    if(alpha == 0) { \
+        return; \
     }
-#define A__PIXEL_SETUP a_pixel_toRgb(*src, &r, &g, &b);
-#define A__PIXEL_PARAMS , r, g, b, alpha
+#define A__PIXEL_SETUP const ARgb rgb = a_pixel_toRgb(*src);
+#define A__PIXEL_PARAMS , &rgb, alpha
 #include "a2x_pack_platform_software_blit.inc.c"
 
 #define A__BLEND rgba
 #define A__FILL flat
-#define A__BLEND_SETUP                      \
-    const int red = a_pixel__state.red;     \
-    const int green = a_pixel__state.green; \
-    const int blue = a_pixel__state.blue;   \
+#define A__BLEND_SETUP \
+    const ARgb rgb = a_pixel__state.rgb; \
     const int alpha = a_pixel__state.alpha; \
-    if(alpha == 0) {                        \
-        return;                             \
+    if(alpha == 0) { \
+        return; \
     }
 #define A__PIXEL_SETUP
-#define A__PIXEL_PARAMS , red, green, blue, alpha
+#define A__PIXEL_PARAMS , &rgb, alpha
 #include "a2x_pack_platform_software_blit.inc.c"
 
 #define A__BLEND rgb25
 #define A__FILL data
-#define A__BLEND_SETUP int r, g, b;
-#define A__PIXEL_SETUP a_pixel_toRgb(*src, &r, &g, &b);
-#define A__PIXEL_PARAMS , r, g, b
+#define A__BLEND_SETUP
+#define A__PIXEL_SETUP const ARgb rgb = a_pixel_toRgb(*src);
+#define A__PIXEL_PARAMS , &rgb
 #include "a2x_pack_platform_software_blit.inc.c"
 
 #define A__BLEND rgb25
 #define A__FILL flat
-#define A__BLEND_SETUP                      \
-    const int red = a_pixel__state.red;     \
-    const int green = a_pixel__state.green; \
-    const int blue = a_pixel__state.blue;
+#define A__BLEND_SETUP const ARgb rgb = a_pixel__state.rgb;
 #define A__PIXEL_SETUP
-#define A__PIXEL_PARAMS , red, green, blue
+#define A__PIXEL_PARAMS , &rgb
 #include "a2x_pack_platform_software_blit.inc.c"
 
 #define A__BLEND rgb50
 #define A__FILL data
-#define A__BLEND_SETUP int r, g, b;
-#define A__PIXEL_SETUP a_pixel_toRgb(*src, &r, &g, &b);
-#define A__PIXEL_PARAMS , r, g, b
+#define A__BLEND_SETUP
+#define A__PIXEL_SETUP const ARgb rgb = a_pixel_toRgb(*src);
+#define A__PIXEL_PARAMS , &rgb
 #include "a2x_pack_platform_software_blit.inc.c"
 
 #define A__BLEND rgb50
 #define A__FILL flat
-#define A__BLEND_SETUP                      \
-    const int red = a_pixel__state.red;     \
-    const int green = a_pixel__state.green; \
-    const int blue = a_pixel__state.blue;
+#define A__BLEND_SETUP const ARgb rgb = a_pixel__state.rgb;
 #define A__PIXEL_SETUP
-#define A__PIXEL_PARAMS , red, green, blue
+#define A__PIXEL_PARAMS , &rgb
 #include "a2x_pack_platform_software_blit.inc.c"
 
 #define A__BLEND rgb75
 #define A__FILL data
-#define A__BLEND_SETUP int r, g, b;
-#define A__PIXEL_SETUP a_pixel_toRgb(*src, &r, &g, &b);
-#define A__PIXEL_PARAMS , r, g, b
+#define A__BLEND_SETUP
+#define A__PIXEL_SETUP const ARgb rgb = a_pixel_toRgb(*src);
+#define A__PIXEL_PARAMS , &rgb
 #include "a2x_pack_platform_software_blit.inc.c"
 
 #define A__BLEND rgb75
 #define A__FILL flat
-#define A__BLEND_SETUP                      \
-    const int red = a_pixel__state.red;     \
-    const int green = a_pixel__state.green; \
-    const int blue = a_pixel__state.blue;
+#define A__BLEND_SETUP const ARgb rgb = a_pixel__state.rgb;
 #define A__PIXEL_SETUP
-#define A__PIXEL_PARAMS , red, green, blue
+#define A__PIXEL_PARAMS , &rgb
 #include "a2x_pack_platform_software_blit.inc.c"
 
 #define A__BLEND inverse
@@ -151,36 +138,30 @@ static ABlitter g_blitters[A_PIXEL_BLEND_NUM][2][2][2];
 
 #define A__BLEND mod
 #define A__FILL data
-#define A__BLEND_SETUP int r, g, b;
-#define A__PIXEL_SETUP a_pixel_toRgb(*src, &r, &g, &b);
-#define A__PIXEL_PARAMS , r, g, b
+#define A__BLEND_SETUP
+#define A__PIXEL_SETUP const ARgb rgb = a_pixel_toRgb(*src);
+#define A__PIXEL_PARAMS , &rgb
 #include "a2x_pack_platform_software_blit.inc.c"
 
 #define A__BLEND mod
 #define A__FILL flat
-#define A__BLEND_SETUP                      \
-    const int red = a_pixel__state.red;     \
-    const int green = a_pixel__state.green; \
-    const int blue = a_pixel__state.blue;
+#define A__BLEND_SETUP const ARgb rgb = a_pixel__state.rgb;
 #define A__PIXEL_SETUP
-#define A__PIXEL_PARAMS , red, green, blue
+#define A__PIXEL_PARAMS , &rgb
 #include "a2x_pack_platform_software_blit.inc.c"
 
 #define A__BLEND add
 #define A__FILL data
-#define A__BLEND_SETUP int r, g, b;
-#define A__PIXEL_SETUP a_pixel_toRgb(*src, &r, &g, &b);
-#define A__PIXEL_PARAMS , r, g, b
+#define A__BLEND_SETUP
+#define A__PIXEL_SETUP const ARgb rgb = a_pixel_toRgb(*src);
+#define A__PIXEL_PARAMS , &rgb
 #include "a2x_pack_platform_software_blit.inc.c"
 
 #define A__BLEND add
 #define A__FILL flat
-#define A__BLEND_SETUP                      \
-    const int red = a_pixel__state.red;     \
-    const int green = a_pixel__state.green; \
-    const int blue = a_pixel__state.blue;
+#define A__BLEND_SETUP const ARgb rgb = a_pixel__state.rgb;
 #define A__PIXEL_SETUP
-#define A__PIXEL_PARAMS , red, green, blue
+#define A__PIXEL_PARAMS , &rgb
 #include "a2x_pack_platform_software_blit.inc.c"
 
 void a_platform_software_blit__init(void)
@@ -242,7 +223,7 @@ static bool hasTransparency(const APixel* Pixels, int Width, int Height)
     return false;
 }
 
-APlatformTexture* a_platform__textureNewScreen(int Width, int Height)
+APlatformTexture* a_platform_api__textureNewScreen(int Width, int Height)
 {
     A_UNUSED(Width);
     A_UNUSED(Height);
@@ -250,7 +231,7 @@ APlatformTexture* a_platform__textureNewScreen(int Width, int Height)
     return NULL;
 }
 
-APlatformTexture* a_platform__textureNewSprite(const ASprite* Sprite)
+APlatformTexture* a_platform_api__textureNewSprite(const ASprite* Sprite)
 {
     APlatformTexture* texture = Sprite->texture;
     const APixel* pixels = Sprite->pixels;
@@ -262,7 +243,7 @@ APlatformTexture* a_platform__textureNewSprite(const ASprite* Sprite)
                             ? spanBytesNeeded(pixels, width, height) : 0;
 
     if(texture == NULL || bytesNeeded > texture->spansSize) {
-        a_platform__textureFree(texture);
+        a_platform_api__textureFree(texture);
         texture = a_mem_malloc(sizeof(APlatformTexture) + bytesNeeded);
 
         texture->spr = Sprite;
@@ -303,7 +284,7 @@ APlatformTexture* a_platform__textureNewSprite(const ASprite* Sprite)
     return texture;
 }
 
-void a_platform__textureFree(APlatformTexture* Texture)
+void a_platform_api__textureFree(APlatformTexture* Texture)
 {
     if(Texture == NULL) {
         return;
@@ -312,7 +293,7 @@ void a_platform__textureFree(APlatformTexture* Texture)
     free(Texture);
 }
 
-void a_platform__textureBlit(const APlatformTexture* Texture, int X, int Y, bool FillFlat)
+void a_platform_api__textureBlit(const APlatformTexture* Texture, int X, int Y, bool FillFlat)
 {
     A_UNUSED(FillFlat);
 
@@ -328,14 +309,14 @@ void a_platform__textureBlit(const APlatformTexture* Texture, int X, int Y, bool
             (Texture, X, Y);
 }
 
-void a_platform__textureBlitEx(const APlatformTexture* Texture, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY, bool FillFlat)
+void a_platform_api__textureBlitEx(const APlatformTexture* Texture, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY, bool FillFlat)
 {
     A_UNUSED(Scale);
     A_UNUSED(Angle);
 
-    a_platform__textureBlit(Texture,
-                            X - Texture->spr->w / 2 - CenterX,
-                            Y - Texture->spr->h / 2 - CenterY,
-                            FillFlat);
+    a_platform_api__textureBlit(Texture,
+                                X - Texture->spr->w / 2 - CenterX,
+                                Y - Texture->spr->h / 2 - CenterY,
+                                FillFlat);
 }
 #endif // A_CONFIG_LIB_RENDER_SOFTWARE

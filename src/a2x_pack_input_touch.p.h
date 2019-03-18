@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2017-2018 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2017-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -22,12 +22,14 @@
 
 typedef struct ATouch ATouch;
 
+#include "a2x_pack_fix.p.h"
+
 extern ATouch* a_touch_new(void);
 extern void a_touch_free(ATouch* Touch);
 
 extern bool a_touch_isWorking(const ATouch* Touch);
 
-extern void a_touch_deltaGet(const ATouch* Touch, int* Dx, int* Dy);
+extern AVectorInt a_touch_deltaGet(const ATouch* Touch);
 extern bool a_touch_tapGet(const ATouch* Touch);
 extern bool a_touch_pointGet(const ATouch* Touch, int X, int Y);
 extern bool a_touch_boxGet(const ATouch* Touch, int X, int Y, int W, int H);

@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2018 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -34,7 +34,7 @@ ATouch* a_touch_new(void)
 
     a_input__userHeaderInit(&t->header);
 
-    APlatformInputTouch* pt = a_platform__inputTouchGet();
+    APlatformInputTouch* pt = a_platform_api__inputTouchGet();
 
     if(pt) {
         a_list_addLast(t->header.platformInputs, pt);
@@ -59,17 +59,17 @@ bool a_touch_isWorking(const ATouch* Touch)
     return !a_list_isEmpty(Touch->header.platformInputs);
 }
 
-void a_touch_deltaGet(const ATouch* Touch, int* Dx, int* Dy)
+AVectorInt a_touch_deltaGet(const ATouch* Touch)
 {
     APlatformInputTouch* pt = a_list_getFirst(Touch->header.platformInputs);
 
-    a_platform__inputTouchDeltaGet(pt, Dx, Dy);
+    return a_platform_api__inputTouchDeltaGet(pt);
 }
 
 bool a_touch_tapGet(const ATouch* Touch)
 {
     A_LIST_ITERATE(Touch->header.platformInputs, APlatformInputTouch*, pt) {
-        if(a_platform__inputTouchTapGet(pt)) {
+        if(a_platform_api__inputTouchTapGet(pt)) {
             return true;
         }
     }
@@ -85,13 +85,12 @@ bool a_touch_pointGet(const ATouch* Touch, int X, int Y)
 bool a_touch_boxGet(const ATouch* Touch, int X, int Y, int W, int H)
 {
     A_LIST_ITERATE(Touch->header.platformInputs, APlatformInputTouch*, pt) {
-        int x, y;
-        a_platform__inputTouchCoordsGet(pt, &x, &y);
+        if(a_platform_api__inputTouchTapGet(pt)) {
+            AVectorInt coords = a_platform_api__inputTouchCoordsGet(pt);
 
-        if(a_platform__inputTouchTapGet(pt)
-            && a_collide_pointInBox(x, y, X, Y, W, H)) {
-
-            return true;
+            if(a_collide_pointInBox(coords.x, coords.y, X, Y, W, H)) {
+                return true;
+            }
         }
     }
 

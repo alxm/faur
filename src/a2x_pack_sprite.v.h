@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2018 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -36,7 +36,7 @@ extern APixel a_sprite__colorEnd;
 
 extern void a_sprite__init(void);
 
-extern void a_sprite__boundsFind(const ASprite* Sheet, int X, int Y, int* Width, int* Height);
+extern AVectorInt a_sprite__boundsFind(const ASprite* Sheet, int X, int Y);
 
 #define A_SPRITE__NAME(Sprite) (Sprite->nameId ? Sprite->nameId : "Sprite")
 #define a_sprite__pixelsGetPixel(s, x, y) (*((s)->pixels + (y) * (s)->w + (x)))

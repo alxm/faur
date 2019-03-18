@@ -212,9 +212,9 @@ void a_console__draw(void)
                       a_screen_sizeGetWidth(),
                       a_screen_sizeGetHeight(),
                       A_CONFIG_SCREEN_BPP,
-                      a_screen__zoomGet());
-        a_font_printf("V-sync %s\n",
-                      a_platform__screenVsyncGet() ? "on" : "off");
+                      a_platform_api__screenZoomGet());
+        a_font_printf(
+            "V-sync %s\n", a_platform_api__screenVsyncGet() ? "on" : "off");
 
         #if A_CONFIG_LIB_SDL == 1
             a_font_print("SDL 1.2\n");
@@ -224,13 +224,16 @@ void a_console__draw(void)
 
         #if A_CONFIG_LIB_RENDER_SOFTWARE
             #if A_CONFIG_SCREEN_ALLOCATE
-                a_font_print("S/W (Buffer)\n");
+                a_font_print("S/W Gfx (buffer)\n");
             #else
-                a_font_print("S/W (Raw)\n");
+                a_font_print("S/W Gfx (raw)\n");
             #endif
         #elif A_CONFIG_LIB_RENDER_SDL
-            a_font_print("SDL2 rend\n");
+            a_font_print("SDL Gfx\n");
         #endif
+
+        a_font_printf(
+            "Sound %s\n", a_platform_api__soundMuteGet() ? "off" : "on");
 
         a_font__fontSet(A_FONT__ID_BLUE);
         a_font_printf("PID %d\n", getpid());

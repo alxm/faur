@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2018 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -231,12 +231,11 @@ void a_png_write(const char* Path, const APixel* Data, int Width, int Height, ch
         rows[i] = rowsData + i * Width * COLOR_CHANNELS;
 
         for(int j = 0; j < Width; j++) {
-            int r, g, b;
-            a_pixel_toRgb(*(Data + i * Width + j), &r, &g, &b);
+            ARgb rgb = a_pixel_toRgb(*(Data + i * Width + j));
 
-            rows[i][j * COLOR_CHANNELS + 0] = (png_byte)r;
-            rows[i][j * COLOR_CHANNELS + 1] = (png_byte)g;
-            rows[i][j * COLOR_CHANNELS + 2] = (png_byte)b;
+            rows[i][j * COLOR_CHANNELS + 0] = (png_byte)rgb.r;
+            rows[i][j * COLOR_CHANNELS + 1] = (png_byte)rgb.g;
+            rows[i][j * COLOR_CHANNELS + 2] = (png_byte)rgb.b;
         }
     }
 

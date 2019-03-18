@@ -36,7 +36,7 @@
 #elif A_CONFIG_LIB_SDL == 2
     SDL_Renderer* a__sdlRenderer;
     static SDL_Window* g_sdlWindow;
-    static int g_clearR, g_clearG, g_clearB;
+    static ARgb g_clearRgb;
 
     #if A_CONFIG_LIB_RENDER_SOFTWARE
         static SDL_Texture* g_sdlTexture;
@@ -48,6 +48,9 @@
 #else
     static const bool g_vsync = false;
 #endif
+
+static bool g_fullscreen = A_CONFIG_SCREEN_FULLSCREEN;
+static int g_zoom = A_CONFIG_SCREEN_ZOOM;
 
 void a_platform_sdl_video__init(void)
 {
@@ -81,7 +84,7 @@ void a_platform_sdl_video__uninit(void)
     SDL_QuitSubSystem(SDL_INIT_VIDEO);
 }
 
-void a_platform__screenInit(int Width, int Height)
+void a_platform_api__screenInit(int Width, int Height)
 {
     #if A_CONFIG_LIB_SDL == 1
         int bpp = 0;
@@ -172,9 +175,9 @@ void a_platform__screenInit(int Width, int Height)
         }
 
         if(info.flags & SDL_RENDERER_ACCELERATED) {
-            a_out__message("Using SDL2 accelerated renderer");
+            a_out__info("Using SDL2 accelerated renderer");
         } else {
-            a_out__message("Using SDL2 software renderer");
+            a_out__info("Using SDL2 software renderer");
         }
 
         g_vsync = info.flags & SDL_RENDERER_PRESENTVSYNC;
@@ -199,13 +202,11 @@ void a_platform__screenInit(int Width, int Height)
         SDL_SetHintWithPriority(
             SDL_HINT_RENDER_SCALE_QUALITY, "nearest", SDL_HINT_OVERRIDE);
 
-        a_pixel_toRgb(a_pixel_fromHex(A_CONFIG_COLOR_SCREEN_BORDER),
-                      &g_clearR,
-                      &g_clearG,
-                      &g_clearB);
+        g_clearRgb = a_pixel_toRgb(
+                        a_pixel_fromHex(A_CONFIG_COLOR_SCREEN_BORDER));
     #endif
 
-    a_out__message("V-sync is %s", g_vsync ? "on" : "off");
+    a_out__info("V-sync is %s", g_vsync ? "on" : "off");
 
     #if A_CONFIG_TRAIT_DESKTOP
         const char* caption = a_str__fmt512("%s %s",
@@ -219,14 +220,14 @@ void a_platform__screenInit(int Width, int Height)
         #endif
     #endif
 
-    a_platform__screenMouseCursorSet(A_CONFIG_INPUT_MOUSE_CURSOR);
+    a_platform_api__screenMouseCursorSet(A_CONFIG_INPUT_MOUSE_CURSOR);
 
     #if A_CONFIG_SCREEN_WIZ_FIX
         a_platform_wiz__portraitModeSet();
     #endif
 }
 
-void a_platform__screenShow(void)
+void a_platform_api__screenShow(void)
 {
     #if A_CONFIG_LIB_SDL == 1
         #if A_CONFIG_SCREEN_WIZ_FIX
@@ -273,15 +274,13 @@ void a_platform__screenShow(void)
                 }
             }
 
-            int zoom = a_screen__zoomGet();
-
-            if(zoom <= 1) {
+            if(g_zoom <= 1) {
                 memcpy(g_sdlScreen->pixels,
                        a__screen.pixels,
                        a__screen.pixelsSize);
             } else {
-                int realH = g_sdlScreen->h / zoom;
-                int realW = g_sdlScreen->w / zoom;
+                int realH = g_sdlScreen->h / g_zoom;
+                int realW = g_sdlScreen->w / g_zoom;
 
                 APixel* dst = (APixel*)g_sdlScreen->pixels;
                 const APixel* srcStart = a__screen.pixels;
@@ -289,14 +288,14 @@ void a_platform__screenShow(void)
                 ptrdiff_t dstRemainderInc =
                     (int)g_sdlScreen->pitch / (int)sizeof(APixel)
                         - g_sdlScreen->w;
-                ptrdiff_t srcStartInc = g_sdlScreen->w / zoom;
+                ptrdiff_t srcStartInc = g_sdlScreen->w / g_zoom;
 
                 for(int y = realH; y--; ) {
-                    for(int z = zoom; z--; ) {
+                    for(int z = g_zoom; z--; ) {
                         const APixel* src = srcStart;
 
                         for(int x = realW; x--; ) {
-                            for(int z = zoom; z--; ) {
+                            for(int z = g_zoom; z--; ) {
                                 *dst++ = *src;
                             }
 
@@ -342,15 +341,15 @@ void a_platform__screenShow(void)
         #endif
 
         if(SDL_SetRenderDrawColor(a__sdlRenderer,
-                                  (uint8_t)g_clearR,
-                                  (uint8_t)g_clearG,
-                                  (uint8_t)g_clearB,
+                                  (uint8_t)g_clearRgb.r,
+                                  (uint8_t)g_clearRgb.g,
+                                  (uint8_t)g_clearRgb.b,
                                   SDL_ALPHA_OPAQUE) < 0) {
 
             a_out__error("SDL_SetRenderDrawColor: %s", SDL_GetError());
         }
 
-        a_platform__renderClear();
+        a_platform_api__renderClear();
 
         #if A_CONFIG_LIB_RENDER_SOFTWARE
             if(SDL_UpdateTexture(g_sdlTexture,
@@ -368,13 +367,13 @@ void a_platform__screenShow(void)
             a_pixel_push();
             a_pixel_blendSet(A_PIXEL_BLEND_PLAIN);
 
-            a_platform__textureBlit(a__screen.texture, 0, 0, false);
+            a_platform_api__textureBlit(a__screen.texture, 0, 0, false);
 
-            a_platform__renderTargetSet(a__screen.texture);
-            a_platform__renderTargetClipSet(a__screen.clipX,
-                                      a__screen.clipY,
-                                      a__screen.clipWidth,
-                                      a__screen.clipHeight);
+            a_platform_api__renderTargetSet(a__screen.texture);
+            a_platform_api__renderTargetClipSet(a__screen.clipX,
+                                                a__screen.clipY,
+                                                a__screen.clipWidth,
+                                                a__screen.clipHeight);
 
             a_pixel_pop();
         #endif
@@ -384,7 +383,7 @@ void a_platform__screenShow(void)
 }
 
 #if A_CONFIG_LIB_SDL == 2
-void a_platform__renderClear(void)
+void a_platform_api__renderClear(void)
 {
     if(SDL_RenderClear(a__sdlRenderer) < 0) {
         a_out__error("SDL_RenderClear: %s", SDL_GetError());
@@ -393,45 +392,49 @@ void a_platform__renderClear(void)
 #endif
 
 #if A_CONFIG_SCREEN_HARDWARE_WIDTH > 0 && A_CONFIG_SCREEN_HARDWARE_HEIGHT > 0
-void a_platform__screenResolutionGetNative(int* Width, int* Height)
+AVectorInt a_platform_api__screenResolutionGetNative(void)
 {
-    *Width = A_CONFIG_SCREEN_HARDWARE_WIDTH;
-    *Height = A_CONFIG_SCREEN_HARDWARE_HEIGHT;
+    return (AVectorInt){A_CONFIG_SCREEN_HARDWARE_WIDTH,
+                        A_CONFIG_SCREEN_HARDWARE_HEIGHT};
 }
 #elif A_CONFIG_LIB_SDL == 2
-void a_platform__screenResolutionGetNative(int* Width, int* Height)
+AVectorInt a_platform_api__screenResolutionGetNative(void)
 {
     SDL_DisplayMode mode;
 
     if(SDL_GetCurrentDisplayMode(0, &mode) < 0) {
         a_out__error("SDL_GetCurrentDisplayMode: %s", SDL_GetError());
-        return;
+
+        return (AVectorInt){0, 0};
     }
 
-    a_out__message("Display info: %dx%d %dbpp",
-                   mode.w,
-                   mode.h,
-                   SDL_BITSPERPIXEL(mode.format));
+    a_out__info("Display info: %dx%d %dbpp",
+                mode.w,
+                mode.h,
+                SDL_BITSPERPIXEL(mode.format));
 
-    *Width = mode.w;
-    *Height = mode.h;
+    return (AVectorInt){mode.w, mode.h};
 }
 #elif A_CONFIG_LIB_SDL == 1
-void a_platform__screenResolutionGetNative(int* Width, int* Height)
+AVectorInt a_platform_api__screenResolutionGetNative(void)
 {
     const SDL_VideoInfo* info = SDL_GetVideoInfo();
 
-    *Width = info->current_w;
-    *Height = info->current_h;
+    return (AVectorInt){info->current_w, info->current_h};
 }
 #endif
 
-bool a_platform__screenVsyncGet(void)
+bool a_platform_api__screenVsyncGet(void)
 {
     return g_vsync;
 }
 
-void a_platform__screenZoomSet(int Zoom)
+int a_platform_api__screenZoomGet(void)
+{
+    return g_zoom;
+}
+
+void a_platform_api__screenZoomSet(int Zoom)
 {
     #if A_CONFIG_LIB_SDL == 1
         #if A_CONFIG_SCREEN_ALLOCATE
@@ -445,25 +448,35 @@ void a_platform__screenZoomSet(int Zoom)
             }
 
             SDL_SetClipRect(g_sdlScreen, NULL);
+
+            g_zoom = Zoom;
         #else
             A_UNUSED(Zoom);
 
-            a_out__warning(
-                "SDL 1.2 Zoom needs A_CONFIG_SCREEN_ALLOCATE=1");
+            a_out__warning("SDL 1.2 Zoom needs A_CONFIG_SCREEN_ALLOCATE=1");
         #endif
     #elif A_CONFIG_LIB_SDL == 2
         SDL_SetWindowSize(
             g_sdlWindow, a__screen.width * Zoom, a__screen.height * Zoom);
+
+        g_zoom = Zoom;
     #endif
 }
 
-void a_platform__screenFullscreenSet(bool Fullscreen)
+bool a_platform_api__screenFullscreenGet(void)
 {
+    return g_fullscreen;
+}
+
+void a_platform_api__screenFullscreenFlip(void)
+{
+    g_fullscreen = !g_fullscreen;
+
     #if A_CONFIG_LIB_SDL == 1
         #if A_CONFIG_SCREEN_ALLOCATE
             uint32_t videoFlags = g_sdlScreen->flags;
 
-            if(Fullscreen) {
+            if(g_fullscreen) {
                 videoFlags |= SDL_FULLSCREEN;
             } else {
                 videoFlags &= ~(uint32_t)SDL_FULLSCREEN;
@@ -482,16 +495,16 @@ void a_platform__screenFullscreenSet(bool Fullscreen)
         #endif
     #elif A_CONFIG_LIB_SDL == 2
         if(SDL_SetWindowFullscreen(
-            g_sdlWindow, Fullscreen ? SDL_WINDOW_FULLSCREEN : 0) < 0) {
+            g_sdlWindow, g_fullscreen ? SDL_WINDOW_FULLSCREEN : 0) < 0) {
 
             a_out__error("SDL_SetWindowFullscreen: %s", SDL_GetError());
         }
     #endif
 
-    a_platform__screenMouseCursorSet(!Fullscreen);
+    a_platform_api__screenMouseCursorSet(!g_fullscreen);
 }
 
-void a_platform__screenMouseCursorSet(bool Show)
+void a_platform_api__screenMouseCursorSet(bool Show)
 {
     #if A_CONFIG_INPUT_MOUSE_CURSOR
         int setting = Show ? SDL_ENABLE : SDL_DISABLE;

@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2014, 2016-2018 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2014, 2016-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -22,6 +22,14 @@
 
 typedef int32_t AFix;
 typedef uint32_t AFixu;
+
+typedef struct {
+    AFix x, y;
+} AVectorFix;
+
+typedef struct {
+    int x, y;
+} AVectorInt;
 
 #define A_FIX_BIT_PRECISION (16)
 #define A_FIX_ONE           (1 << A_FIX_BIT_PRECISION)
@@ -285,16 +293,8 @@ static inline AFix a_fix_secf(AFixu Angle)
 
 extern unsigned a_fix_atan(AFix X1, AFix Y1, AFix X2, AFix Y2);
 
-extern void a_fix_rotateCounter(AFix X, AFix Y, unsigned Angle, AFix* NewX, AFix* NewY);
-extern void a_fix_rotateClockwise(AFix X, AFix Y, unsigned Angle, AFix* NewX, AFix* NewY);
-
-typedef struct {
-    AFix x, y;
-} AVectorFix;
-
-typedef struct {
-    int x, y;
-} AVectorInt;
+extern AVectorFix a_fix_rotateCounter(AFix X, AFix Y, unsigned Angle);
+extern AVectorFix a_fix_rotateClockwise(AFix X, AFix Y, unsigned Angle);
 
 static inline AVectorInt a_vectorfix_toInt(const AVectorFix Fix)
 {

@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2018 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -26,54 +26,58 @@
     typedef uint32_t APixel;
 #endif
 
+typedef struct {
+    int r, g, b;
+} ARgb;
+
 #if A_CONFIG_SCREEN_BPP == 16
     #if A_CONFIG_LIB_RENDER_SOFTWARE
         // RGB565
-        #define A__PIXEL_BITS_RED   5
-        #define A__PIXEL_BITS_GREEN 6
-        #define A__PIXEL_BITS_BLUE  5
-        #define A__PIXEL_BITS_ALPHA 0
+        #define A__PX_BITS_R 5
+        #define A__PX_BITS_G 6
+        #define A__PX_BITS_B 5
+        #define A__PX_BITS_A 0
     #elif A_CONFIG_LIB_RENDER_SDL
         // RGBA5551
-        #define A__PIXEL_BITS_RED   5
-        #define A__PIXEL_BITS_GREEN 5
-        #define A__PIXEL_BITS_BLUE  5
-        #define A__PIXEL_BITS_ALPHA 1
+        #define A__PX_BITS_R 5
+        #define A__PX_BITS_G 5
+        #define A__PX_BITS_B 5
+        #define A__PX_BITS_A 1
     #endif
 #elif A_CONFIG_SCREEN_BPP == 32
-    #define A__PIXEL_BITS_RED   8
-    #define A__PIXEL_BITS_GREEN 8
-    #define A__PIXEL_BITS_BLUE  8
+    #define A__PX_BITS_R 8
+    #define A__PX_BITS_G 8
+    #define A__PX_BITS_B 8
 
     #if A_CONFIG_LIB_SDL == 1
         // XRGB8888
-        #define A__PIXEL_BITS_ALPHA 0
+        #define A__PX_BITS_A 0
     #elif A_CONFIG_LIB_SDL == 2
         // RGBX8888 / RGBA8888
-        #define A__PIXEL_BITS_ALPHA 8
+        #define A__PX_BITS_A 8
     #endif
 #endif
 
 #if A_CONFIG_SCREEN_FORMAT_RGBA
-    #define A__PIXEL_SHIFT_ALPHA (0)
-    #define A__PIXEL_SHIFT_BLUE  (A__PIXEL_BITS_ALPHA)
-    #define A__PIXEL_SHIFT_GREEN (A__PIXEL_BITS_ALPHA + A__PIXEL_BITS_BLUE)
-    #define A__PIXEL_SHIFT_RED   (A__PIXEL_BITS_ALPHA + A__PIXEL_BITS_BLUE + A__PIXEL_BITS_GREEN)
+    #define A__PX_SHIFT_A (0)
+    #define A__PX_SHIFT_B (A__PX_BITS_A)
+    #define A__PX_SHIFT_G (A__PX_BITS_A + A__PX_BITS_B)
+    #define A__PX_SHIFT_R (A__PX_BITS_A + A__PX_BITS_B + A__PX_BITS_G)
 #elif A_CONFIG_SCREEN_FORMAT_ABGR
-    #define A__PIXEL_SHIFT_RED   (0)
-    #define A__PIXEL_SHIFT_GREEN (A__PIXEL_BITS_RED)
-    #define A__PIXEL_SHIFT_BLUE  (A__PIXEL_BITS_RED + A__PIXEL_BITS_GREEN)
-    #define A__PIXEL_SHIFT_ALPHA (A__PIXEL_BITS_RED + A__PIXEL_BITS_GREEN + A__PIXEL_BITS_BLUE)
+    #define A__PX_SHIFT_R (0)
+    #define A__PX_SHIFT_G (A__PX_BITS_R)
+    #define A__PX_SHIFT_B (A__PX_BITS_R + A__PX_BITS_G)
+    #define A__PX_SHIFT_A (A__PX_BITS_R + A__PX_BITS_G + A__PX_BITS_B)
 #endif
 
-#define A__PIXEL_MASK_RED   ((1 << A__PIXEL_BITS_RED) - 1)
-#define A__PIXEL_MASK_GREEN ((1 << A__PIXEL_BITS_GREEN) - 1)
-#define A__PIXEL_MASK_BLUE  ((1 << A__PIXEL_BITS_BLUE) - 1)
-#define A__PIXEL_MASK_ALPHA ((1 << A__PIXEL_BITS_ALPHA) - 1)
+#define A__PX_MASK_R ((1 << A__PX_BITS_R) - 1)
+#define A__PX_MASK_G ((1 << A__PX_BITS_G) - 1)
+#define A__PX_MASK_B ((1 << A__PX_BITS_B) - 1)
+#define A__PX_MASK_A ((1 << A__PX_BITS_A) - 1)
 
-#define A__PIXEL_PACK_RED   (8 - A__PIXEL_BITS_RED)
-#define A__PIXEL_PACK_GREEN (8 - A__PIXEL_BITS_GREEN)
-#define A__PIXEL_PACK_BLUE  (8 - A__PIXEL_BITS_BLUE)
+#define A__PX_PACK_R (8 - A__PX_BITS_R)
+#define A__PX_PACK_G (8 - A__PX_BITS_G)
+#define A__PX_PACK_B (8 - A__PX_BITS_B)
 
 #if A_CONFIG_LIB_RENDER_SOFTWARE
     #define A_PIXEL_ALPHA_MAX 256
@@ -84,36 +88,29 @@
 static inline APixel a_pixel_fromRgb(int Red, int Green, int Blue)
 {
     return (APixel)
-        (((((unsigned)Red   & 0xff) >> A__PIXEL_PACK_RED)   << A__PIXEL_SHIFT_RED)   |
-         ((((unsigned)Green & 0xff) >> A__PIXEL_PACK_GREEN) << A__PIXEL_SHIFT_GREEN) |
-         ((((unsigned)Blue  & 0xff) >> A__PIXEL_PACK_BLUE)  << A__PIXEL_SHIFT_BLUE));
+        (((((unsigned)Red   & 0xff) >> A__PX_PACK_R) << A__PX_SHIFT_R) |
+         ((((unsigned)Green & 0xff) >> A__PX_PACK_G) << A__PX_SHIFT_G) |
+         ((((unsigned)Blue  & 0xff) >> A__PX_PACK_B) << A__PX_SHIFT_B));
 }
 
 static inline APixel a_pixel_fromHex(uint32_t Hexcode)
 {
     #if A_CONFIG_SCREEN_BPP == 16 || A_CONFIG_SCREEN_FORMAT_ABGR
         return (APixel)
-            (((((Hexcode >> 16) & 0xff) >> A__PIXEL_PACK_RED)   << A__PIXEL_SHIFT_RED)   |
-             ((((Hexcode >> 8)  & 0xff) >> A__PIXEL_PACK_GREEN) << A__PIXEL_SHIFT_GREEN) |
-             ((((Hexcode)       & 0xff) >> A__PIXEL_PACK_BLUE)  << A__PIXEL_SHIFT_BLUE));
+            (((((Hexcode >> 16) & 0xff) >> A__PX_PACK_R) << A__PX_SHIFT_R) |
+             ((((Hexcode >> 8)  & 0xff) >> A__PX_PACK_G) << A__PX_SHIFT_G) |
+             ((((Hexcode)       & 0xff) >> A__PX_PACK_B) << A__PX_SHIFT_B));
     #elif A_CONFIG_SCREEN_BPP == 32 && A_CONFIG_SCREEN_FORMAT_RGBA
-        return (APixel)((Hexcode & 0xffffff) << A__PIXEL_BITS_ALPHA);
+        return (APixel)((Hexcode & 0xffffff) << A__PX_BITS_A);
     #endif
 }
 
-static inline void a_pixel_toRgb(APixel Pixel, int* Red, int* Green, int* Blue)
+static inline ARgb a_pixel_toRgb(APixel Pixel)
 {
-    if(Red) {
-        *Red = (int)((Pixel >> A__PIXEL_SHIFT_RED) & A__PIXEL_MASK_RED) << A__PIXEL_PACK_RED;
-    }
-
-    if(Green) {
-        *Green = (int)((Pixel >> A__PIXEL_SHIFT_GREEN) & A__PIXEL_MASK_GREEN) << A__PIXEL_PACK_GREEN;
-    }
-
-    if(Blue) {
-        *Blue = (int)((Pixel >> A__PIXEL_SHIFT_BLUE) & A__PIXEL_MASK_BLUE) << A__PIXEL_PACK_BLUE;
-    }
+    return (ARgb){
+        (int)((Pixel >> A__PX_SHIFT_R) & A__PX_MASK_R) << A__PX_PACK_R,
+        (int)((Pixel >> A__PX_SHIFT_G) & A__PX_MASK_G) << A__PX_PACK_G,
+        (int)((Pixel >> A__PX_SHIFT_B) & A__PX_MASK_B) << A__PX_PACK_B};
 }
 
 typedef enum {

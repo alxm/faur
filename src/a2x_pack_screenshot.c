@@ -119,7 +119,7 @@ static void takeScreenshot(void)
     const char* name = a_str__fmt512(
                         "%s%05d.png", g_filePrefix, g_screenshotNumber);
 
-    a_out__message("Saving screenshot '%s'", name);
+    a_out__info("Saving screenshot '%s'", name);
     a_png_write(name,
                 a_screen_pixelsGetBuffer(),
                 a__screen.width,

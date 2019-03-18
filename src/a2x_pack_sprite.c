@@ -55,7 +55,7 @@ static void assignPixels(ASprite* Sprite, APixel* Pixels)
     free(Sprite->pixels);
     Sprite->pixels = Pixels;
 
-    Sprite->texture = a_platform__textureNewSprite(Sprite);
+    Sprite->texture = a_platform_api__textureNewSprite(Sprite);
 }
 
 static int findNextVerticalEdge(const ASprite* Sheet, int StartX, int StartY, int* EdgeX)
@@ -112,8 +112,10 @@ static int findNextHorizontalEdge(const ASprite* Sheet, int StartX, int StartY, 
     return -1;
 }
 
-void a_sprite__boundsFind(const ASprite* Sheet, int X, int Y, int* Width, int* Height)
+AVectorInt a_sprite__boundsFind(const ASprite* Sheet, int X, int Y)
 {
+    AVectorInt bounds;
+
     if(X < 0 || X >= Sheet->w || Y < 0 || Y >= Sheet->h) {
         A__FATAL("a_sprite__boundsFind(%s, %d, %d): Invalid coords",
                  A_SPRITE__NAME(Sheet),
@@ -137,12 +139,14 @@ void a_sprite__boundsFind(const ASprite* Sheet, int X, int Y, int* Width, int* H
     }
 
     if(vEdgeLen == -1 || hEdgeLen == -1) {
-        *Width = Sheet->w - X;
-        *Height = Sheet->h - Y;
+        bounds.x = Sheet->w - X;
+        bounds.y = Sheet->h - Y;
     } else {
-        *Width = vEdgeX;
-        *Height = hEdgeY;
+        bounds.x = vEdgeX;
+        bounds.y = hEdgeY;
     }
+
+    return bounds;
 }
 
 ASprite* a_sprite_newFromPng(const char* Path)
@@ -166,10 +170,9 @@ ASprite* a_sprite_newFromPng(const char* Path)
 
 ASprite* a_sprite_newFromSprite(const ASprite* Sheet, int X, int Y)
 {
-    int w, h;
-    a_sprite__boundsFind(Sheet, X, Y, &w, &h);
+    AVectorInt dim = a_sprite__boundsFind(Sheet, X, Y);
 
-    return a_sprite_newFromSpriteEx(Sheet, X, Y, w, h);
+    return a_sprite_newFromSpriteEx(Sheet, X, Y, dim.x, dim.y);
 }
 
 ASprite* a_sprite_newFromSpriteEx(const ASprite* Sheet, int X, int Y, int W, int H)
@@ -239,7 +242,7 @@ void a_sprite_free(ASprite* Sprite)
         return;
     }
 
-    a_platform__textureFree(Sprite->texture);
+    a_platform_api__textureFree(Sprite->texture);
 
     free(Sprite->nameId);
     free(Sprite->pixels);
@@ -248,19 +251,19 @@ void a_sprite_free(ASprite* Sprite)
 
 void a_sprite_blit(const ASprite* Sprite, int X, int Y)
 {
-    a_platform__textureBlit(Sprite->texture, X, Y, a_pixel__state.fillBlit);
+    a_platform_api__textureBlit(Sprite->texture, X, Y, a_pixel__state.fillBlit);
 }
 
 void a_sprite_blitEx(const ASprite* Sprite, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY)
 {
-    a_platform__textureBlitEx(Sprite->texture,
-                              X,
-                              Y,
-                              Scale,
-                              a_fix_angleWrap(Angle),
-                              CenterX,
-                              CenterY,
-                              a_pixel__state.fillBlit);
+    a_platform_api__textureBlitEx(Sprite->texture,
+                                  X,
+                                  Y,
+                                  Scale,
+                                  a_fix_angleWrap(Angle),
+                                  CenterX,
+                                  CenterY,
+                                  a_pixel__state.fillBlit);
 }
 
 void a_sprite_swapColor(ASprite* Sprite, APixel OldColor, APixel NewColor)
@@ -271,7 +274,7 @@ void a_sprite_swapColor(ASprite* Sprite, APixel OldColor, APixel NewColor)
         }
     }
 
-    Sprite->texture = a_platform__textureNewSprite(Sprite);
+    Sprite->texture = a_platform_api__textureNewSprite(Sprite);
 }
 
 void a_sprite_swapColors(ASprite* Sprite, const APixel* OldColors, const APixel* NewColors, unsigned NumColors)
@@ -287,7 +290,7 @@ void a_sprite_swapColors(ASprite* Sprite, const APixel* OldColors, const APixel*
         }
     }
 
-    Sprite->texture = a_platform__textureNewSprite(Sprite);
+    Sprite->texture = a_platform_api__textureNewSprite(Sprite);
 }
 
 AVectorInt a_sprite_sizeGet(const ASprite* Sprite)

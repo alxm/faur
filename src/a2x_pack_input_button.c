@@ -134,14 +134,14 @@ void a_button_free(AButton* Button)
 
 void a_button_bind(AButton* Button, int Id)
 {
-    APlatformInputButton* pb = a_platform__inputButtonGet(Id);
+    APlatformInputButton* pb = a_platform_api__inputButtonGet(Id);
 
     if(pb == NULL) {
         return;
     }
 
     if(Button->header.name == a__inputNameDefault) {
-        Button->header.name = a_platform__inputButtonNameGet(pb);
+        Button->header.name = a_platform_api__inputButtonNameGet(pb);
     }
 
     if(Button->currentCombo) {
@@ -212,7 +212,7 @@ void a_input_button__tick(void)
         bool pressed = false;
 
         A_LIST_ITERATE(b->header.platformInputs, APlatformInputButton*, pb) {
-            if(a_platform__inputButtonPressGet(pb)) {
+            if(a_platform_api__inputButtonPressGet(pb)) {
                 pressed = true;
                 goto done;
             }
@@ -220,7 +220,7 @@ void a_input_button__tick(void)
 
         A_LIST_ITERATE(b->combos, AList*, andList) {
             A_LIST_ITERATE(andList, APlatformInputButton*, pb) {
-                if(!a_platform__inputButtonPressGet(pb)) {
+                if(!a_platform_api__inputButtonPressGet(pb)) {
                     break;
                 } else if(A_LIST_IS_LAST()) {
                     pressed = true;

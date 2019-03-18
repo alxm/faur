@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2018 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -22,8 +22,9 @@
 
 typedef struct {
     APixelBlend blend, canonicalBlend;
-    int red, green, blue, alpha;
+    ARgb rgb;
     APixel pixel;
+    int alpha;
     bool fillBlit;
     bool fillDraw;
 } APixelState;
@@ -37,44 +38,40 @@ static inline void a_pixel__plain(APixel* Dst, APixel Pixel)
     *Dst = Pixel;
 }
 
-static inline void a_pixel__rgba(APixel* Dst, int Red, int Green, int Blue, int Alpha)
+static inline void a_pixel__rgba(APixel* Dst, const ARgb* Rgb, int Alpha)
 {
-    int r, g, b;
-    a_pixel_toRgb(*Dst, &r, &g, &b);
+    ARgb rgb = a_pixel_toRgb(*Dst);
 
-    *Dst = a_pixel_fromRgb(r + (((Red   - r) * Alpha) >> 8),
-                           g + (((Green - g) * Alpha) >> 8),
-                           b + (((Blue  - b) * Alpha) >> 8));
+    *Dst = a_pixel_fromRgb(rgb.r + (((Rgb->r - rgb.r) * Alpha) >> 8),
+                           rgb.g + (((Rgb->g - rgb.g) * Alpha) >> 8),
+                           rgb.b + (((Rgb->b - rgb.b) * Alpha) >> 8));
 }
 
-static inline void a_pixel__rgb25(APixel* Dst, int Red, int Green, int Blue)
+static inline void a_pixel__rgb25(APixel* Dst, const ARgb* Rgb)
 {
-    int r, g, b;
-    a_pixel_toRgb(*Dst, &r, &g, &b);
+    ARgb rgb = a_pixel_toRgb(*Dst);
 
-    *Dst = a_pixel_fromRgb(r - (r >> 2) + (Red   >> 2),
-                           g - (g >> 2) + (Green >> 2),
-                           b - (b >> 2) + (Blue  >> 2));
+    *Dst = a_pixel_fromRgb(rgb.r - (rgb.r >> 2) + (Rgb->r >> 2),
+                           rgb.g - (rgb.g >> 2) + (Rgb->g >> 2),
+                           rgb.b - (rgb.b >> 2) + (Rgb->b >> 2));
 }
 
-static inline void a_pixel__rgb50(APixel* Dst, int Red, int Green, int Blue)
+static inline void a_pixel__rgb50(APixel* Dst, const ARgb* Rgb)
 {
-    int r, g, b;
-    a_pixel_toRgb(*Dst, &r, &g, &b);
+    ARgb rgb = a_pixel_toRgb(*Dst);
 
-    *Dst = a_pixel_fromRgb((r + Red)   >> 1,
-                           (g + Green) >> 1,
-                           (b + Blue)  >> 1);
+    *Dst = a_pixel_fromRgb((rgb.r + Rgb->r) >> 1,
+                           (rgb.g + Rgb->g) >> 1,
+                           (rgb.b + Rgb->b) >> 1);
 }
 
-static inline void a_pixel__rgb75(APixel* Dst, int Red, int Green, int Blue)
+static inline void a_pixel__rgb75(APixel* Dst, const ARgb* Rgb)
 {
-    int r, g, b;
-    a_pixel_toRgb(*Dst, &r, &g, &b);
+    ARgb rgb = a_pixel_toRgb(*Dst);
 
-    *Dst = a_pixel_fromRgb((r >> 2) + Red   - (Red   >> 2),
-                           (g >> 2) + Green - (Green >> 2),
-                           (b >> 2) + Blue  - (Blue  >> 2));
+    *Dst = a_pixel_fromRgb((rgb.r >> 2) + Rgb->r - (Rgb->r >> 2),
+                           (rgb.g >> 2) + Rgb->g - (Rgb->g >> 2),
+                           (rgb.b >> 2) + Rgb->b - (Rgb->b >> 2));
 }
 
 static inline void a_pixel__inverse(APixel* Dst)
@@ -82,22 +79,22 @@ static inline void a_pixel__inverse(APixel* Dst)
     *Dst = (APixel)~*Dst;
 }
 
-static inline void a_pixel__mod(APixel* Dst, int Red, int Green, int Blue)
+static inline void a_pixel__mod(APixel* Dst, const ARgb* Rgb)
 {
-    int r, g, b;
-    a_pixel_toRgb(*Dst, &r, &g, &b);
+    ARgb rgb = a_pixel_toRgb(*Dst);
 
-    *Dst = a_pixel_fromRgb((r * Red) >> 8, (g * Green) >> 8, (b * Blue) >> 8);
+    *Dst = a_pixel_fromRgb((rgb.r * Rgb->r) >> 8,
+                           (rgb.g * Rgb->g) >> 8,
+                           (rgb.b * Rgb->b) >> 8);
 }
 
-static inline void a_pixel__add(APixel* Dst, int Red, int Green, int Blue)
+static inline void a_pixel__add(APixel* Dst, const ARgb* Rgb)
 {
-    int r, g, b;
-    a_pixel_toRgb(*Dst, &r, &g, &b);
+    ARgb rgb = a_pixel_toRgb(*Dst);
 
-    *Dst = a_pixel_fromRgb(a_math_min(r + Red, 255),
-                           a_math_min(g + Green, 255),
-                           a_math_min(b + Blue, 255));
+    *Dst = a_pixel_fromRgb(a_math_min(rgb.r + Rgb->r, 255),
+                           a_math_min(rgb.g + Rgb->g, 255),
+                           a_math_min(rgb.b + Rgb->b, 255));
 }
 
 extern void a_pixel__init(void);

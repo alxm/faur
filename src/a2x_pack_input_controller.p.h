@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 Alex Margarit <alex@alxm.org>
+    Copyright 2016-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -20,5 +20,5 @@
 
 #include "a2x_system_includes.h"
 
-extern unsigned a_input_controllerNumGet(void);
-extern void a_input_controllerSet(unsigned Index);
+extern unsigned a_controller_numGet(void);
+extern void a_controller_set(unsigned Index);

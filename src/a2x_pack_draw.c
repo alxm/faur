@@ -36,38 +36,38 @@ void a_draw_fill(void)
 
 void a_draw_pixel(int X, int Y)
 {
-    a_platform__drawPixel(X, Y);
+    a_platform_api__drawPixel(X, Y);
 }
 
 void a_draw_line(int X1, int Y1, int X2, int Y2)
 {
-    a_platform__drawLine(X1, Y1, X2, Y2);
+    a_platform_api__drawLine(X1, Y1, X2, Y2);
 }
 
 void a_draw_hline(int X1, int X2, int Y)
 {
-    a_platform__drawHLine(a_math_min(X1, X2), a_math_max(X1, X2), Y);
+    a_platform_api__drawHLine(a_math_min(X1, X2), a_math_max(X1, X2), Y);
 }
 
 void a_draw_vline(int X, int Y1, int Y2)
 {
-    a_platform__drawVLine(X, a_math_min(Y1, Y2), a_math_max(Y1, Y2));
+    a_platform_api__drawVLine(X, a_math_min(Y1, Y2), a_math_max(Y1, Y2));
 }
 
 void a_draw_rectangle(int X, int Y, int Width, int Height)
 {
     if(a_pixel__state.fillDraw) {
-        a_platform__drawRectangleFilled(X, Y, Width, Height);
+        a_platform_api__drawRectangleFilled(X, Y, Width, Height);
     } else {
-        a_platform__drawRectangleOutline(X, Y, Width, Height);
+        a_platform_api__drawRectangleOutline(X, Y, Width, Height);
     }
 }
 
 void a_draw_circle(int X, int Y, int Radius)
 {
     if(a_pixel__state.fillDraw) {
-        a_platform__drawCircleFilled(X, Y, Radius);
+        a_platform_api__drawCircleFilled(X, Y, Radius);
     } else {
-        a_platform__drawCircleOutline(X, Y, Radius);
+        a_platform_api__drawCircleOutline(X, Y, Radius);
     }
 }

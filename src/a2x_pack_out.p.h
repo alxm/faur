@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 Alex Margarit <alex@alxm.org>
+    Copyright 2016-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -20,8 +20,8 @@
 
 #include "a2x_system_includes.h"
 
-extern void a_out_print(const char* Text);
-extern void a_out_printf(const char* Format, ...);
-extern void a_out_printv(const char* Format, va_list Args);
+extern void a_out_text(const char* Text);
+extern void a_out_info(const char* Format, ...);
+extern void a_out_infov(const char* Format, va_list Args);
 extern void a_out_warning(const char* Format, ...);
 extern void a_out_error(const char* Format, ...);
