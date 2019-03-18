@@ -263,51 +263,55 @@ void a_platform_api__screenShow(void)
             }
 
             SDL_Flip(g_sdlScreen);
-
-            return;
-        #endif
-
-        #if A_CONFIG_SCREEN_ALLOCATE
+        #elif A_CONFIG_SCREEN_ALLOCATE
             if(SDL_MUSTLOCK(g_sdlScreen)) {
                 if(SDL_LockSurface(g_sdlScreen) < 0) {
                     A__FATAL("SDL_LockSurface: %s", SDL_GetError());
                 }
             }
 
-            if(g_zoom <= 1
-                && g_sdlScreen->pitch == g_sdlScreen->w * (int)sizeof(APixel)) {
+            if(g_zoom <= 1) {
+                if(g_sdlScreen->pitch == g_sdlScreen->w * (int)sizeof(APixel)) {
+                    memcpy(g_sdlScreen->pixels,
+                           a__screen.pixels,
+                           a__screen.pixelsSize);
+                } else {
+                    uint8_t* dst = g_sdlScreen->pixels;
+                    const APixel* src = a__screen.pixels;
+                    size_t rowSize = (size_t)g_sdlScreen->w * sizeof(APixel);
 
-                memcpy(g_sdlScreen->pixels,
-                       a__screen.pixels,
-                       a__screen.pixelsSize);
+                    for(int y = g_sdlScreen->h; y--; ) {
+                        memcpy(dst, src, rowSize);
+
+                        dst += g_sdlScreen->pitch;
+                        src += g_sdlScreen->w;
+                    }
+                }
             } else {
+                APixel* dst = g_sdlScreen->pixels;
+                const APixel* src = a__screen.pixels;
                 int realH = g_sdlScreen->h / g_zoom;
                 int realW = g_sdlScreen->w / g_zoom;
-
-                APixel* dst = (APixel*)g_sdlScreen->pixels;
-                const APixel* srcStart = a__screen.pixels;
-
-                ptrdiff_t dstRemainderInc =
-                    (int)g_sdlScreen->pitch / (int)sizeof(APixel)
-                        - g_sdlScreen->w;
-                ptrdiff_t srcStartInc = g_sdlScreen->w / g_zoom;
+                size_t rowLen = g_sdlScreen->pitch / sizeof(APixel);
+                ptrdiff_t rowRemainder = (int)rowLen - g_sdlScreen->w;
 
                 for(int y = realH; y--; ) {
-                    for(int z = g_zoom; z--; ) {
-                        const APixel* src = srcStart;
+                    const APixel* firstLine = dst;
 
-                        for(int x = realW; x--; ) {
-                            for(int z = g_zoom; z--; ) {
-                                *dst++ = *src;
-                            }
-
-                            src++;
+                    for(int x = realW; x--; ) {
+                        for(int z = g_zoom; z--; ) {
+                            *dst++ = *src;
                         }
 
-                        dst += dstRemainderInc;
+                        src++;
                     }
 
-                    srcStart += srcStartInc;
+                    dst += rowRemainder;
+
+                    for(int z = g_zoom - 1; z--; ) {
+                        memcpy(dst, firstLine, g_sdlScreen->pitch);
+                        dst += rowLen;
+                    }
                 }
             }
 
@@ -316,7 +320,7 @@ void a_platform_api__screenShow(void)
             }
 
             SDL_Flip(g_sdlScreen);
-        #else // !A_CONFIG_SCREEN_ALLOCATE
+        #else
             if(SDL_MUSTLOCK(g_sdlScreen)) {
                 SDL_UnlockSurface(g_sdlScreen);
             }
