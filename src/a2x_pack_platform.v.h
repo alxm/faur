@@ -41,6 +41,7 @@ extern uint32_t a_platform_api__timeMsGet(void);
 extern void a_platform_api__timeMsWait(uint32_t Ms);
 
 extern void a_platform_api__screenInit(int Width, int Height);
+extern void a_platform_api__screenClear(void);
 extern void a_platform_api__screenShow(void);
 extern AVectorInt a_platform_api__screenResolutionGetNative(void);
 extern bool a_platform_api__screenVsyncGet(void);
@@ -50,7 +51,6 @@ extern bool a_platform_api__screenFullscreenGet(void);
 extern void a_platform_api__screenFullscreenFlip(void);
 extern void a_platform_api__screenMouseCursorSet(bool Show);
 
-extern void a_platform_api__renderClear(void);
 extern void a_platform_api__renderSetDrawColor(void);
 extern void a_platform_api__renderSetBlendMode(void);
 extern void a_platform_api__renderTargetSet(APlatformTexture* Texture);

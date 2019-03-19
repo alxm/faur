@@ -241,6 +241,15 @@ void a_platform_api__screenInit(int Width, int Height)
     #endif
 }
 
+#if A_CONFIG_LIB_SDL == 2
+void a_platform_api__screenClear(void)
+{
+    if(SDL_RenderClear(a__sdlRenderer) < 0) {
+        a_out__error("SDL_RenderClear: %s", SDL_GetError());
+    }
+}
+#endif
+
 void a_platform_api__screenShow(void)
 {
     #if A_CONFIG_LIB_SDL == 1
@@ -369,7 +378,7 @@ void a_platform_api__screenShow(void)
             a_out__error("SDL_SetRenderDrawColor: %s", SDL_GetError());
         }
 
-        a_platform_api__renderClear();
+        a_platform_api__screenClear();
 
         #if A_CONFIG_LIB_RENDER_SOFTWARE
             if(SDL_UpdateTexture(g_sdlTexture,
@@ -401,15 +410,6 @@ void a_platform_api__screenShow(void)
         SDL_RenderPresent(a__sdlRenderer);
     #endif
 }
-
-#if A_CONFIG_LIB_SDL == 2
-void a_platform_api__renderClear(void)
-{
-    if(SDL_RenderClear(a__sdlRenderer) < 0) {
-        a_out__error("SDL_RenderClear: %s", SDL_GetError());
-    }
-}
-#endif
 
 #if A_CONFIG_SCREEN_HARDWARE_WIDTH > 0 && A_CONFIG_SCREEN_HARDWARE_HEIGHT > 0
 AVectorInt a_platform_api__screenResolutionGetNative(void)

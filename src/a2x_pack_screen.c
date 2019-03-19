@@ -381,7 +381,7 @@ void a_screen_clear(void)
 
         a_pixel_blendSet(A_PIXEL_BLEND_PLAIN);
         a_pixel_colorSetPixel(0);
-        a_platform_api__renderClear();
+        a_platform_api__screenClear();
 
         a_pixel_pop();
     #endif
