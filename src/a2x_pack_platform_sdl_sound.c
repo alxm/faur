@@ -130,7 +130,7 @@ void a_platform_api__soundMusicVolumeSet(int Volume)
         return;
     }
 
-    #if A_CONFIG_SYSTEM_EMSCRIPTEN
+    #if A_CONFIG_SYSTEM_EMSCRIPTEN && A_CONFIG_LIB_SDL == 1
         A_UNUSED(Volume);
     #else
         Mix_VolumeMusic(Volume);
@@ -207,7 +207,7 @@ void a_platform_api__soundSampleVolumeSet(APlatformSoundSample* Sample, int Volu
         return;
     }
 
-    #if A_CONFIG_SYSTEM_EMSCRIPTEN
+    #if A_CONFIG_SYSTEM_EMSCRIPTEN && A_CONFIG_LIB_SDL == 1
         A_UNUSED(Sample);
         A_UNUSED(Volume);
     #else
@@ -221,7 +221,7 @@ void a_platform_api__soundSampleVolumeSetAll(int Volume)
         return;
     }
 
-    #if A_CONFIG_SYSTEM_EMSCRIPTEN
+    #if A_CONFIG_SYSTEM_EMSCRIPTEN && A_CONFIG_LIB_SDL == 1
         A_UNUSED(Volume);
     #else
         Mix_Volume(-1, Volume);
