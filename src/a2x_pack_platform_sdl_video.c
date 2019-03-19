@@ -84,35 +84,49 @@ void a_platform_sdl_video__uninit(void)
     SDL_QuitSubSystem(SDL_INIT_VIDEO);
 }
 
+#if A_CONFIG_LIB_SDL == 1
+static bool sdl1ScreenSet(int Width, int Height, uint32_t Flags)
+{
+    if(SDL_VideoModeOK(Width, Height, A_CONFIG_SCREEN_BPP, Flags) == 0) {
+        a_out__error("SDL_VideoModeOK(%d, %d, %d): Mode not available",
+                     Width,
+                     Height,
+                     A_CONFIG_SCREEN_BPP);
+
+        return false;
+    }
+
+    g_sdlScreen = SDL_SetVideoMode(Width, Height, A_CONFIG_SCREEN_BPP, Flags);
+
+    if(g_sdlScreen == NULL) {
+        A__FATAL("SDL_SetVideoMode(%d, %d, %d): %s",
+                 Width,
+                 Height,
+                 A_CONFIG_SCREEN_BPP,
+                 SDL_GetError());
+    }
+
+    SDL_SetClipRect(g_sdlScreen, NULL);
+
+    return true;
+}
+#endif
+
 void a_platform_api__screenInit(int Width, int Height)
 {
     #if A_CONFIG_LIB_SDL == 1
-        int bpp = 0;
         uint32_t videoFlags = SDL_SWSURFACE;
 
         #if A_CONFIG_SCREEN_FULLSCREEN
             videoFlags |= SDL_FULLSCREEN;
         #endif
 
-        bpp = SDL_VideoModeOK(Width, Height, A_CONFIG_SCREEN_BPP, videoFlags);
+        if(!sdl1ScreenSet(Width * A_CONFIG_SCREEN_ZOOM,
+                          Height * A_CONFIG_SCREEN_ZOOM,
+                          videoFlags)) {
 
-        if(bpp == 0) {
-            A__FATAL("SDL_VideoModeOK: %dx%d:%d video not available",
-                     Width,
-                     Height,
-                     A_CONFIG_SCREEN_BPP);
+            A__FATAL("Could not create SDL screen surface");
         }
-
-        g_sdlScreen = SDL_SetVideoMode(Width * A_CONFIG_SCREEN_ZOOM,
-                                       Height * A_CONFIG_SCREEN_ZOOM,
-                                       A_CONFIG_SCREEN_BPP,
-                                       videoFlags);
-
-        if(g_sdlScreen == NULL) {
-            A__FATAL("SDL_SetVideoMode: %s", SDL_GetError());
-        }
-
-        SDL_SetClipRect(g_sdlScreen, NULL);
 
         #if !A_CONFIG_SCREEN_ALLOCATE
             if(SDL_MUSTLOCK(g_sdlScreen)) {
@@ -227,6 +241,15 @@ void a_platform_api__screenInit(int Width, int Height)
     #endif
 }
 
+#if A_CONFIG_LIB_SDL == 2
+void a_platform_api__screenClear(void)
+{
+    if(SDL_RenderClear(a__sdlRenderer) < 0) {
+        a_out__error("SDL_RenderClear: %s", SDL_GetError());
+    }
+}
+#endif
+
 void a_platform_api__screenShow(void)
 {
     #if A_CONFIG_LIB_SDL == 1
@@ -263,11 +286,7 @@ void a_platform_api__screenShow(void)
             }
 
             SDL_Flip(g_sdlScreen);
-
-            return;
-        #endif
-
-        #if A_CONFIG_SCREEN_ALLOCATE
+        #elif A_CONFIG_SCREEN_ALLOCATE
             if(SDL_MUSTLOCK(g_sdlScreen)) {
                 if(SDL_LockSurface(g_sdlScreen) < 0) {
                     A__FATAL("SDL_LockSurface: %s", SDL_GetError());
@@ -275,37 +294,47 @@ void a_platform_api__screenShow(void)
             }
 
             if(g_zoom <= 1) {
-                memcpy(g_sdlScreen->pixels,
-                       a__screen.pixels,
-                       a__screen.pixelsSize);
+                if(g_sdlScreen->pitch == g_sdlScreen->w * (int)sizeof(APixel)) {
+                    memcpy(g_sdlScreen->pixels,
+                           a__screen.pixels,
+                           a__screen.pixelsSize);
+                } else {
+                    uint8_t* dst = g_sdlScreen->pixels;
+                    const APixel* src = a__screen.pixels;
+                    size_t rowSize = (size_t)g_sdlScreen->w * sizeof(APixel);
+
+                    for(int y = g_sdlScreen->h; y--; ) {
+                        memcpy(dst, src, rowSize);
+
+                        dst += g_sdlScreen->pitch;
+                        src += g_sdlScreen->w;
+                    }
+                }
             } else {
+                APixel* dst = g_sdlScreen->pixels;
+                const APixel* src = a__screen.pixels;
                 int realH = g_sdlScreen->h / g_zoom;
                 int realW = g_sdlScreen->w / g_zoom;
-
-                APixel* dst = (APixel*)g_sdlScreen->pixels;
-                const APixel* srcStart = a__screen.pixels;
-
-                ptrdiff_t dstRemainderInc =
-                    (int)g_sdlScreen->pitch / (int)sizeof(APixel)
-                        - g_sdlScreen->w;
-                ptrdiff_t srcStartInc = g_sdlScreen->w / g_zoom;
+                size_t rowLen = g_sdlScreen->pitch / sizeof(APixel);
+                ptrdiff_t rowRemainder = (int)rowLen - g_sdlScreen->w;
 
                 for(int y = realH; y--; ) {
-                    for(int z = g_zoom; z--; ) {
-                        const APixel* src = srcStart;
+                    const APixel* firstLine = dst;
 
-                        for(int x = realW; x--; ) {
-                            for(int z = g_zoom; z--; ) {
-                                *dst++ = *src;
-                            }
-
-                            src++;
+                    for(int x = realW; x--; ) {
+                        for(int z = g_zoom; z--; ) {
+                            *dst++ = *src;
                         }
 
-                        dst += dstRemainderInc;
+                        src++;
                     }
 
-                    srcStart += srcStartInc;
+                    dst += rowRemainder;
+
+                    for(int z = g_zoom - 1; z--; ) {
+                        memcpy(dst, firstLine, g_sdlScreen->pitch);
+                        dst += rowLen;
+                    }
                 }
             }
 
@@ -314,7 +343,7 @@ void a_platform_api__screenShow(void)
             }
 
             SDL_Flip(g_sdlScreen);
-        #else // !A_CONFIG_SCREEN_ALLOCATE
+        #else
             if(SDL_MUSTLOCK(g_sdlScreen)) {
                 SDL_UnlockSurface(g_sdlScreen);
             }
@@ -349,7 +378,7 @@ void a_platform_api__screenShow(void)
             a_out__error("SDL_SetRenderDrawColor: %s", SDL_GetError());
         }
 
-        a_platform_api__renderClear();
+        a_platform_api__screenClear();
 
         #if A_CONFIG_LIB_RENDER_SOFTWARE
             if(SDL_UpdateTexture(g_sdlTexture,
@@ -381,15 +410,6 @@ void a_platform_api__screenShow(void)
         SDL_RenderPresent(a__sdlRenderer);
     #endif
 }
-
-#if A_CONFIG_LIB_SDL == 2
-void a_platform_api__renderClear(void)
-{
-    if(SDL_RenderClear(a__sdlRenderer) < 0) {
-        a_out__error("SDL_RenderClear: %s", SDL_GetError());
-    }
-}
-#endif
 
 #if A_CONFIG_SCREEN_HARDWARE_WIDTH > 0 && A_CONFIG_SCREEN_HARDWARE_HEIGHT > 0
 AVectorInt a_platform_api__screenResolutionGetNative(void)
@@ -438,22 +458,17 @@ void a_platform_api__screenZoomSet(int Zoom)
 {
     #if A_CONFIG_LIB_SDL == 1
         #if A_CONFIG_SCREEN_ALLOCATE
-            g_sdlScreen = SDL_SetVideoMode(a__screen.width * Zoom,
-                                           a__screen.height * Zoom,
-                                           0,
-                                           g_sdlScreen->flags);
+            int newWidth = a__screen.width * Zoom;
+            int newHeight = a__screen.height * Zoom;
 
-            if(g_sdlScreen == NULL) {
-                A__FATAL("SDL_SetVideoMode: %s", SDL_GetError());
+            if(sdl1ScreenSet(newWidth, newHeight, g_sdlScreen->flags)) {
+                g_zoom = Zoom;
             }
-
-            SDL_SetClipRect(g_sdlScreen, NULL);
-
-            g_zoom = Zoom;
         #else
             A_UNUSED(Zoom);
 
-            a_out__warning("SDL 1.2 Zoom needs A_CONFIG_SCREEN_ALLOCATE=1");
+            a_out__warning(
+                "SDL 1.2 screen zoom needs A_CONFIG_SCREEN_ALLOCATE=1");
         #endif
     #elif A_CONFIG_LIB_SDL == 2
         SDL_SetWindowSize(
@@ -482,13 +497,7 @@ void a_platform_api__screenFullscreenFlip(void)
                 videoFlags &= ~(uint32_t)SDL_FULLSCREEN;
             }
 
-            g_sdlScreen = SDL_SetVideoMode(0, 0, 0, videoFlags);
-
-            if(g_sdlScreen == NULL) {
-                A__FATAL("SDL_SetVideoMode: %s", SDL_GetError());
-            }
-
-            SDL_SetClipRect(g_sdlScreen, NULL);
+            sdl1ScreenSet(g_sdlScreen->w, g_sdlScreen->h, videoFlags);
         #else
             a_out__warning(
                 "SDL 1.2 fullscreen needs A_CONFIG_SCREEN_ALLOCATE=1");

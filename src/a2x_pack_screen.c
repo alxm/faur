@@ -155,10 +155,14 @@ void a_screen__tick(void)
 
         for(int z = 0; z < A__ZOOM_LEVELS; z++) {
             if(a_button_pressGetOnce(g_zoomButtons[z])) {
-                a_platform_api__screenZoomSet(z + 1);
+                int zoom = z + 1;
 
-                a_out__info(
-                    "Screen zoom is now %d", a_platform_api__screenZoomGet());
+                if(a_platform_api__screenZoomGet() != zoom) {
+                    a_platform_api__screenZoomSet(zoom);
+
+                    a_out__info(
+                        "Screen zoom %d", a_platform_api__screenZoomGet());
+                }
 
                 break;
             }
@@ -377,7 +381,7 @@ void a_screen_clear(void)
 
         a_pixel_blendSet(A_PIXEL_BLEND_PLAIN);
         a_pixel_colorSetPixel(0);
-        a_platform_api__renderClear();
+        a_platform_api__screenClear();
 
         a_pixel_pop();
     #endif
