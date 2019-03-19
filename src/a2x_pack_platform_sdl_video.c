@@ -153,7 +153,7 @@ void a_platform_api__screenInit(int Width, int Height)
             windowFlags |= SDL_WINDOW_FULLSCREEN;
         #endif
 
-        g_sdlWindow = SDL_CreateWindow("",
+        g_sdlWindow = SDL_CreateWindow(NULL,
                                        SDL_WINDOWPOS_CENTERED,
                                        SDL_WINDOWPOS_CENTERED,
                                        Width * A_CONFIG_SCREEN_ZOOM,
