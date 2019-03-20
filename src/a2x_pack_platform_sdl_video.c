@@ -139,7 +139,11 @@ void a_platform_api__screenInit(int Width, int Height)
         #endif
     #elif A_CONFIG_LIB_SDL == 2
         int ret;
-        uint32_t windowFlags = SDL_WINDOW_RESIZABLE;
+        uint32_t windowFlags = 0;
+
+        #if !A_CONFIG_SYSTEM_EMSCRIPTEN
+            windowFlags |= SDL_WINDOW_RESIZABLE;
+        #endif
 
         #if A_CONFIG_SCREEN_MAXIMIZED
             windowFlags |= SDL_WINDOW_MAXIMIZED;
@@ -149,7 +153,7 @@ void a_platform_api__screenInit(int Width, int Height)
             windowFlags |= SDL_WINDOW_FULLSCREEN;
         #endif
 
-        g_sdlWindow = SDL_CreateWindow("",
+        g_sdlWindow = SDL_CreateWindow(NULL,
                                        SDL_WINDOWPOS_CENTERED,
                                        SDL_WINDOWPOS_CENTERED,
                                        Width * A_CONFIG_SCREEN_ZOOM,
