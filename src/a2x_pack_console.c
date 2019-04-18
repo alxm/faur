@@ -151,15 +151,15 @@ void a_console__draw(void)
         return;
     }
 
-    a_pixel_push();
+    a_color_push();
     a_font_push();
     a_screen_clipReset();
 
-    a_pixel_blendSet(A_PIXEL_BLEND_RGB75);
-    a_pixel_colorSetHex(0x1f0f0f);
+    a_color_blendSet(A_COLOR_BLEND_RGB75);
+    a_color_baseSetHex(0x1f0f0f);
     a_draw_fill();
 
-    a_pixel_reset();
+    a_color_reset();
     a_font_reset();
 
     {
@@ -240,7 +240,7 @@ void a_console__draw(void)
         a_font_printf("%u", a_fps_ticksGet());
     }
 
-    a_pixel_pop();
+    a_color_pop();
     a_font_pop();
 }
 

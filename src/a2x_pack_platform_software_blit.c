@@ -19,8 +19,8 @@
 #include "a2x_pack_platform_software_blit.v.h"
 
 #if A_CONFIG_LIB_RENDER_SOFTWARE
+#include "a2x_pack_color.v.h"
 #include "a2x_pack_mem.v.h"
-#include "a2x_pack_pixel.v.h"
 #include "a2x_pack_screen.v.h"
 
 struct APlatformTexture {
@@ -33,13 +33,13 @@ struct APlatformTexture {
 typedef void (*ABlitter)(const APlatformTexture* Sprite, int X, int Y);
 
 // [Blend][Fill][ColorKey][Clip]
-static ABlitter g_blitters[A_PIXEL_BLEND_NUM][2][2][2];
+static ABlitter g_blitters[A_COLOR_BLEND_NUM][2][2][2];
 
 #define A__FUNC_NAME_EXPAND2(Blend, Fill, ColorKey, Clip) a_blit__##Blend##_##Fill##_##ColorKey##_##Clip
 #define A__FUNC_NAME_EXPAND(Blend, Fill, ColorKey, Clip) A__FUNC_NAME_EXPAND2(Blend, Fill, ColorKey, Clip)
 #define A__FUNC_NAME(ColorKey, Clip) A__FUNC_NAME_EXPAND(A__BLEND, A__FILL, ColorKey, Clip)
 
-#define A__PIXEL_DRAW_EXPAND2(Blend) a_pixel__##Blend
+#define A__PIXEL_DRAW_EXPAND2(Blend) a_color__draw_##Blend
 #define A__PIXEL_DRAW_EXPAND(Blend, Params) A__PIXEL_DRAW_EXPAND2(Blend)(Params)
 #define A__PIXEL_DRAW(Dst) A__PIXEL_DRAW_EXPAND(A__BLEND, Dst A__PIXEL_PARAMS)
 
@@ -52,7 +52,7 @@ static ABlitter g_blitters[A_PIXEL_BLEND_NUM][2][2][2];
 
 #define A__BLEND plain
 #define A__FILL flat
-#define A__BLEND_SETUP const APixel color = a_pixel__state.pixel;
+#define A__BLEND_SETUP const APixel color = a__color.pixel;
 #define A__PIXEL_SETUP
 #define A__PIXEL_PARAMS , color
 #include "a2x_pack_platform_software_blit.inc.c"
@@ -60,7 +60,7 @@ static ABlitter g_blitters[A_PIXEL_BLEND_NUM][2][2][2];
 #define A__BLEND rgba
 #define A__FILL data
 #define A__BLEND_SETUP \
-    const int alpha = a_pixel__state.alpha; \
+    const int alpha = a__color.alpha; \
     if(alpha == 0) { \
         return; \
     }
@@ -71,8 +71,8 @@ static ABlitter g_blitters[A_PIXEL_BLEND_NUM][2][2][2];
 #define A__BLEND rgba
 #define A__FILL flat
 #define A__BLEND_SETUP \
-    const ARgb rgb = a_pixel__state.rgb; \
-    const int alpha = a_pixel__state.alpha; \
+    const ARgb rgb = a__color.rgb; \
+    const int alpha = a__color.alpha; \
     if(alpha == 0) { \
         return; \
     }
@@ -89,7 +89,7 @@ static ABlitter g_blitters[A_PIXEL_BLEND_NUM][2][2][2];
 
 #define A__BLEND rgb25
 #define A__FILL flat
-#define A__BLEND_SETUP const ARgb rgb = a_pixel__state.rgb;
+#define A__BLEND_SETUP const ARgb rgb = a__color.rgb;
 #define A__PIXEL_SETUP
 #define A__PIXEL_PARAMS , &rgb
 #include "a2x_pack_platform_software_blit.inc.c"
@@ -103,7 +103,7 @@ static ABlitter g_blitters[A_PIXEL_BLEND_NUM][2][2][2];
 
 #define A__BLEND rgb50
 #define A__FILL flat
-#define A__BLEND_SETUP const ARgb rgb = a_pixel__state.rgb;
+#define A__BLEND_SETUP const ARgb rgb = a__color.rgb;
 #define A__PIXEL_SETUP
 #define A__PIXEL_PARAMS , &rgb
 #include "a2x_pack_platform_software_blit.inc.c"
@@ -117,7 +117,7 @@ static ABlitter g_blitters[A_PIXEL_BLEND_NUM][2][2][2];
 
 #define A__BLEND rgb75
 #define A__FILL flat
-#define A__BLEND_SETUP const ARgb rgb = a_pixel__state.rgb;
+#define A__BLEND_SETUP const ARgb rgb = a__color.rgb;
 #define A__PIXEL_SETUP
 #define A__PIXEL_PARAMS , &rgb
 #include "a2x_pack_platform_software_blit.inc.c"
@@ -145,7 +145,7 @@ static ABlitter g_blitters[A_PIXEL_BLEND_NUM][2][2][2];
 
 #define A__BLEND mod
 #define A__FILL flat
-#define A__BLEND_SETUP const ARgb rgb = a_pixel__state.rgb;
+#define A__BLEND_SETUP const ARgb rgb = a__color.rgb;
 #define A__PIXEL_SETUP
 #define A__PIXEL_PARAMS , &rgb
 #include "a2x_pack_platform_software_blit.inc.c"
@@ -159,7 +159,7 @@ static ABlitter g_blitters[A_PIXEL_BLEND_NUM][2][2][2];
 
 #define A__BLEND add
 #define A__FILL flat
-#define A__BLEND_SETUP const ARgb rgb = a_pixel__state.rgb;
+#define A__BLEND_SETUP const ARgb rgb = a__color.rgb;
 #define A__PIXEL_SETUP
 #define A__PIXEL_PARAMS , &rgb
 #include "a2x_pack_platform_software_blit.inc.c"
@@ -176,14 +176,14 @@ void a_platform_software_blit__init(void)
         g_blitters[Index][1][1][0] = a_blit__##Blend##_flat_keyed_noclip; \
         g_blitters[Index][1][1][1] = a_blit__##Blend##_flat_keyed_doclip;
 
-    initRoutines(A_PIXEL_BLEND_PLAIN, plain);
-    initRoutines(A_PIXEL_BLEND_RGBA, rgba);
-    initRoutines(A_PIXEL_BLEND_RGB25, rgb25);
-    initRoutines(A_PIXEL_BLEND_RGB50, rgb50);
-    initRoutines(A_PIXEL_BLEND_RGB75, rgb75);
-    initRoutines(A_PIXEL_BLEND_INVERSE, inverse);
-    initRoutines(A_PIXEL_BLEND_MOD, mod);
-    initRoutines(A_PIXEL_BLEND_ADD, add);
+    initRoutines(A_COLOR_BLEND_PLAIN, plain);
+    initRoutines(A_COLOR_BLEND_RGBA, rgba);
+    initRoutines(A_COLOR_BLEND_RGB25, rgb25);
+    initRoutines(A_COLOR_BLEND_RGB50, rgb50);
+    initRoutines(A_COLOR_BLEND_RGB75, rgb75);
+    initRoutines(A_COLOR_BLEND_INVERSE, inverse);
+    initRoutines(A_COLOR_BLEND_MOD, mod);
+    initRoutines(A_COLOR_BLEND_ADD, add);
 }
 
 static size_t spanBytesNeeded(const APixel* Pixels, int Width, int Height)
@@ -302,8 +302,8 @@ void a_platform_api__textureBlit(const APlatformTexture* Texture, int X, int Y, 
     }
 
     g_blitters
-        [a_pixel__state.blend]
-        [a_pixel__state.fillBlit]
+        [a__color.blend]
+        [a__color.fillBlit]
         [Texture->colorKeyed]
         [!a_screen_boxInsideClip(X, Y, Texture->spr->w, Texture->spr->h)]
             (Texture, X, Y);

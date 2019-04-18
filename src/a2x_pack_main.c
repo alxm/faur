@@ -28,6 +28,7 @@
 #endif
 
 #include "a2x_pack_block.v.h"
+#include "a2x_pack_color.v.h"
 #include "a2x_pack_console.v.h"
 #include "a2x_pack_ecs.v.h"
 #include "a2x_pack_embed.v.h"
@@ -37,7 +38,6 @@
 #include "a2x_pack_fps.v.h"
 #include "a2x_pack_input.v.h"
 #include "a2x_pack_out.v.h"
-#include "a2x_pack_pixel.v.h"
 #include "a2x_pack_random.v.h"
 #include "a2x_pack_screen.v.h"
 #include "a2x_pack_screenshot.v.h"
@@ -61,7 +61,7 @@ static void a__atexit(void)
     a_sound__uninit();
     a_screenshot__uninit();
     a_fps__uninit();
-    a_pixel__uninit();
+    a_color__uninit();
     a_screen__uninit();
     a_input__uninit();
     a_timer__uninit();
@@ -97,7 +97,7 @@ int main(int Argc, char* Argv[])
     a_timer__init();
     a_input__init();
     a_screen__init();
-    a_pixel__init();
+    a_color__init();
     a_sprite__init();
     a_fps__init();
     a_screenshot__init();

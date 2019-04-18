@@ -18,8 +18,8 @@
 
 #include "a2x_pack_fade.v.h"
 
+#include "a2x_pack_color.v.h"
 #include "a2x_pack_draw.v.h"
-#include "a2x_pack_pixel.v.h"
 #include "a2x_pack_screen.v.h"
 #include "a2x_pack_time.v.h"
 
@@ -69,14 +69,14 @@ void a_fade_startColorTo(unsigned DurationMs)
 {
     newFade(A__FADE_TOCOLOR, DurationMs);
 
-    g_fade.color = a_pixel__state.pixel;
+    g_fade.color = a__color.pixel;
 }
 
 void a_fade_startColorFrom(unsigned DurationMs)
 {
     newFade(A__FADE_FROMCOLOR, DurationMs);
 
-    g_fade.color = a_pixel__state.pixel;
+    g_fade.color = a__color.pixel;
 }
 
 void a_fade_startScreens(unsigned DurationMs)
@@ -106,31 +106,31 @@ void a_fade__draw(void)
         return;
     }
 
-    a_pixel_push();
-    a_pixel_blendSet(A_PIXEL_BLEND_RGBA);
+    a_color_push();
+    a_color_blendSet(A_COLOR_BLEND_RGBA);
 
     switch(g_fade.op) {
         case A__FADE_TOCOLOR: {
-            a_pixel_alphaSet(
-                a_fix_toInt(a_fix_sinf(g_fade.angle) * A_PIXEL_ALPHA_MAX));
+            a_color_alphaSet(
+                a_fix_toInt(a_fix_sinf(g_fade.angle) * A_COLOR_ALPHA_MAX));
 
-            a_pixel_colorSetPixel(g_fade.color);
+            a_color_baseSetPixel(g_fade.color);
             a_draw_fill();
         } break;
 
         case A__FADE_FROMCOLOR: {
-            a_pixel_alphaSet(
+            a_color_alphaSet(
                 a_fix_toInt(a_fix_sinf(A_DEG_090_FIX - g_fade.angle)
-                                * A_PIXEL_ALPHA_MAX));
+                                * A_COLOR_ALPHA_MAX));
 
-            a_pixel_colorSetPixel(g_fade.color);
+            a_color_baseSetPixel(g_fade.color);
             a_draw_fill();
         } break;
 
         case A__FADE_SCREENS: {
-            a_pixel_alphaSet(
+            a_color_alphaSet(
                 a_fix_toInt(a_fix_sinf(A_DEG_090_FIX - g_fade.angle)
-                                * A_PIXEL_ALPHA_MAX));
+                                * A_COLOR_ALPHA_MAX));
 
             a_screen_blit(g_fade.capturedScreen);
         } break;
@@ -138,5 +138,5 @@ void a_fade__draw(void)
         default: break;
     }
 
-    a_pixel_pop();
+    a_color_pop();
 }

@@ -18,20 +18,20 @@
 
 #include "a2x_pack_draw.v.h"
 
-#include "a2x_pack_pixel.v.h"
+#include "a2x_pack_color.v.h"
 #include "a2x_pack_screen.v.h"
 
 void a_draw_fill(void)
 {
-    a_pixel_push();
-    a_pixel_fillDrawSet(true);
+    a_color_push();
+    a_color_fillDrawSet(true);
 
     a_draw_rectangle(a__screen.clipX,
                      a__screen.clipY,
                      a__screen.clipWidth,
                      a__screen.clipHeight);
 
-    a_pixel_pop();
+    a_color_pop();
 }
 
 void a_draw_pixel(int X, int Y)
@@ -56,7 +56,7 @@ void a_draw_vline(int X, int Y1, int Y2)
 
 void a_draw_rectangle(int X, int Y, int Width, int Height)
 {
-    if(a_pixel__state.fillDraw) {
+    if(a__color.fillDraw) {
         a_platform_api__drawRectangleFilled(X, Y, Width, Height);
     } else {
         a_platform_api__drawRectangleOutline(X, Y, Width, Height);
@@ -65,7 +65,7 @@ void a_draw_rectangle(int X, int Y, int Width, int Height)
 
 void a_draw_circle(int X, int Y, int Radius)
 {
-    if(a_pixel__state.fillDraw) {
+    if(a__color.fillDraw) {
         a_platform_api__drawCircleFilled(X, Y, Radius);
     } else {
         a_platform_api__drawCircleOutline(X, Y, Radius);

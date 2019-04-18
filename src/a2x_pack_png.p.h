@@ -20,7 +20,7 @@
 
 #include "a2x_system_includes.h"
 
-#include "a2x_pack_pixel.p.h"
+#include "a2x_pack_color.p.h"
 
 extern void a_png_readFile(const char* Path, APixel** Pixels, int* Width, int* Height);
 extern void a_png_readMemory(const uint8_t* Data, APixel** Pixels, int* Width, int* Height);
