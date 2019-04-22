@@ -19,8 +19,8 @@
 #include "a2x_pack_platform_software_draw.v.h"
 
 #if A_CONFIG_LIB_RENDER_SOFTWARE
+#include "a2x_pack_color.v.h"
 #include "a2x_pack_draw.v.h"
-#include "a2x_pack_pixel.v.h"
 #include "a2x_pack_screen.v.h"
 
 typedef void (*ADrawPixel)(int X, int Y);
@@ -31,23 +31,23 @@ typedef void (*ADrawVLine)(int X, int Y1, int Y2);
 typedef void (*ADrawCircle)(int X, int Y, int Radius);
 
 static ADrawPixel g_draw_pixel;
-static ADrawPixel g_pixel[A_PIXEL_BLEND_NUM];
+static ADrawPixel g_pixel[A_COLOR_BLEND_NUM];
 
 static ADrawRectangle g_draw_rectangle;
-static ADrawRectangle g_rectangle[A_PIXEL_BLEND_NUM][2]; // [Blend][Fill]
+static ADrawRectangle g_rectangle[A_COLOR_BLEND_NUM][2]; // [Blend][Fill]
 
 static ADrawLine g_draw_line;
-static ADrawLine g_line[A_PIXEL_BLEND_NUM];
+static ADrawLine g_line[A_COLOR_BLEND_NUM];
 
 static ADrawHLine g_draw_hline;
-static ADrawHLine g_hline[A_PIXEL_BLEND_NUM];
+static ADrawHLine g_hline[A_COLOR_BLEND_NUM];
 
 static ADrawVLine g_draw_vline;
-static ADrawHLine g_vline[A_PIXEL_BLEND_NUM];
+static ADrawHLine g_vline[A_COLOR_BLEND_NUM];
 
 static ADrawCircle g_draw_circle_noclip;
 static ADrawCircle g_draw_circle_clip;
-static ADrawCircle g_circle[A_PIXEL_BLEND_NUM][2][2]; // [Blend][Clip][Fill]
+static ADrawCircle g_circle[A_COLOR_BLEND_NUM][2][2]; // [Blend][Clip][Fill]
 
 static bool cohen_sutherland_clip(int* X1, int* Y1, int* X2, int* Y2)
 {
@@ -217,19 +217,19 @@ do {                                                                        \
 #define A__FUNC_NAME_EXPAND(Name, Blend) A__FUNC_NAME_EXPAND2(Name, Blend)
 #define A__FUNC_NAME(Name) A__FUNC_NAME_EXPAND(Name, A__BLEND)
 
-#define A__PIXEL_DRAW_EXPAND2(Blend) a_pixel__##Blend
+#define A__PIXEL_DRAW_EXPAND2(Blend) a_color__draw_##Blend
 #define A__PIXEL_DRAW_EXPAND(Blend, Params) A__PIXEL_DRAW_EXPAND2(Blend)(Params)
 #define A__PIXEL_DRAW(Dst) A__PIXEL_DRAW_EXPAND(A__BLEND, Dst A__PIXEL_PARAMS)
 
 #define A__BLEND plain
-#define A__BLEND_SETUP const APixel color = a_pixel__state.pixel;
+#define A__BLEND_SETUP const APixel color = a__color.pixel;
 #define A__PIXEL_PARAMS , color
 #include "a2x_pack_platform_software_draw.inc.c"
 
 #define A__BLEND rgba
 #define A__BLEND_SETUP \
-    const ARgb rgb = a_pixel__state.rgb; \
-    const int alpha = a_pixel__state.alpha; \
+    const ARgb rgb = a__color.rgb; \
+    const int alpha = a__color.alpha; \
     if(alpha == 0) { \
         return; \
     }
@@ -237,17 +237,17 @@ do {                                                                        \
 #include "a2x_pack_platform_software_draw.inc.c"
 
 #define A__BLEND rgb25
-#define A__BLEND_SETUP const ARgb rgb = a_pixel__state.rgb;
+#define A__BLEND_SETUP const ARgb rgb = a__color.rgb;
 #define A__PIXEL_PARAMS , &rgb
 #include "a2x_pack_platform_software_draw.inc.c"
 
 #define A__BLEND rgb50
-#define A__BLEND_SETUP const ARgb rgb = a_pixel__state.rgb;
+#define A__BLEND_SETUP const ARgb rgb = a__color.rgb;
 #define A__PIXEL_PARAMS , &rgb
 #include "a2x_pack_platform_software_draw.inc.c"
 
 #define A__BLEND rgb75
-#define A__BLEND_SETUP const ARgb rgb = a_pixel__state.rgb;
+#define A__BLEND_SETUP const ARgb rgb = a__color.rgb;
 #define A__PIXEL_PARAMS , &rgb
 #include "a2x_pack_platform_software_draw.inc.c"
 
@@ -257,12 +257,12 @@ do {                                                                        \
 #include "a2x_pack_platform_software_draw.inc.c"
 
 #define A__BLEND mod
-#define A__BLEND_SETUP const ARgb rgb = a_pixel__state.rgb;
+#define A__BLEND_SETUP const ARgb rgb = a__color.rgb;
 #define A__PIXEL_PARAMS , &rgb
 #include "a2x_pack_platform_software_draw.inc.c"
 
 #define A__BLEND add
-#define A__BLEND_SETUP const ARgb rgb = a_pixel__state.rgb;
+#define A__BLEND_SETUP const ARgb rgb = a__color.rgb;
 #define A__PIXEL_PARAMS , &rgb
 #include "a2x_pack_platform_software_draw.inc.c"
 
@@ -280,22 +280,22 @@ void a_platform_software_draw__init(void)
         g_circle[Index][1][0] = a_draw__circle_clip_nofill_##Blend;   \
         g_circle[Index][1][1] = a_draw__circle_clip_fill_##Blend;
 
-    initRoutines(A_PIXEL_BLEND_PLAIN, plain);
-    initRoutines(A_PIXEL_BLEND_RGBA, rgba);
-    initRoutines(A_PIXEL_BLEND_RGB25, rgb25);
-    initRoutines(A_PIXEL_BLEND_RGB50, rgb50);
-    initRoutines(A_PIXEL_BLEND_RGB75, rgb75);
-    initRoutines(A_PIXEL_BLEND_INVERSE, inverse);
-    initRoutines(A_PIXEL_BLEND_MOD, mod);
-    initRoutines(A_PIXEL_BLEND_ADD, add);
+    initRoutines(A_COLOR_BLEND_PLAIN, plain);
+    initRoutines(A_COLOR_BLEND_RGBA, rgba);
+    initRoutines(A_COLOR_BLEND_RGB25, rgb25);
+    initRoutines(A_COLOR_BLEND_RGB50, rgb50);
+    initRoutines(A_COLOR_BLEND_RGB75, rgb75);
+    initRoutines(A_COLOR_BLEND_INVERSE, inverse);
+    initRoutines(A_COLOR_BLEND_MOD, mod);
+    initRoutines(A_COLOR_BLEND_ADD, add);
 
     a_platform_software_draw__updateRoutines();
 }
 
 void a_platform_software_draw__updateRoutines(void)
 {
-    APixelBlend blend = a_pixel__state.blend;
-    bool fill = a_pixel__state.fillDraw;
+    AColorBlend blend = a__color.blend;
+    bool fill = a__color.fillDraw;
 
     g_draw_pixel = g_pixel[blend];
     g_draw_rectangle = g_rectangle[blend][fill];

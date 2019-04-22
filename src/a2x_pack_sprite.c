@@ -18,9 +18,9 @@
 
 #include "a2x_pack_sprite.v.h"
 
+#include "a2x_pack_color.v.h"
 #include "a2x_pack_main.v.h"
 #include "a2x_pack_mem.v.h"
-#include "a2x_pack_pixel.v.h"
 #include "a2x_pack_png.v.h"
 #include "a2x_pack_screen.v.h"
 #include "a2x_pack_str.v.h"
@@ -223,14 +223,14 @@ ASprite* a_sprite_dup(const ASprite* Sprite)
     assignPixels(clone, pixels);
 
     #if !A_CONFIG_LIB_RENDER_SOFTWARE
-        a_pixel_push();
+        a_color_push();
         a_screen_targetPushSprite(clone);
 
-        a_pixel_reset();
+        a_color_reset();
         a_sprite_blit(Sprite, 0, 0);
 
         a_screen_targetPop();
-        a_pixel_pop();
+        a_color_pop();
     #endif
 
     return clone;
@@ -251,7 +251,7 @@ void a_sprite_free(ASprite* Sprite)
 
 void a_sprite_blit(const ASprite* Sprite, int X, int Y)
 {
-    a_platform_api__textureBlit(Sprite->texture, X, Y, a_pixel__state.fillBlit);
+    a_platform_api__textureBlit(Sprite->texture, X, Y, a__color.fillBlit);
 }
 
 void a_sprite_blitEx(const ASprite* Sprite, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY)
@@ -263,7 +263,7 @@ void a_sprite_blitEx(const ASprite* Sprite, int X, int Y, AFix Scale, unsigned A
                                   a_fix_angleWrap(Angle),
                                   CenterX,
                                   CenterY,
-                                  a_pixel__state.fillBlit);
+                                  a__color.fillBlit);
 }
 
 void a_sprite_swapColor(ASprite* Sprite, APixel OldColor, APixel NewColor)

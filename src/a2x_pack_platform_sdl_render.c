@@ -21,10 +21,10 @@
 #if A_CONFIG_LIB_RENDER_SDL
 #include <SDL2/SDL.h>
 
+#include "a2x_pack_color.v.h"
 #include "a2x_pack_main.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
-#include "a2x_pack_pixel.v.h"
 #include "a2x_pack_platform.v.h"
 #include "a2x_pack_platform_sdl_video.v.h"
 
@@ -47,11 +47,11 @@ extern SDL_Renderer* a__sdlRenderer;
 
 static inline SDL_BlendMode pixelBlendToSdlBlend(void)
 {
-    switch(a_pixel__state.blend) {
-        case A_PIXEL_BLEND_MOD:
+    switch(a__color.blend) {
+        case A_COLOR_BLEND_MOD:
             return SDL_BLENDMODE_MOD;
 
-        case A_PIXEL_BLEND_ADD:
+        case A_COLOR_BLEND_ADD:
             return SDL_BLENDMODE_ADD;
 
         default:
@@ -61,17 +61,17 @@ static inline SDL_BlendMode pixelBlendToSdlBlend(void)
 
 static inline uint8_t pixelAlphaToSdlAlpha(void)
 {
-    switch(a_pixel__state.blend) {
-        case A_PIXEL_BLEND_RGBA:
-            return (uint8_t)a_pixel__state.alpha;
+    switch(a__color.blend) {
+        case A_COLOR_BLEND_RGBA:
+            return (uint8_t)a__color.alpha;
 
-        case A_PIXEL_BLEND_RGB25:
+        case A_COLOR_BLEND_RGB25:
             return SDL_ALPHA_OPAQUE / 4;
 
-        case A_PIXEL_BLEND_RGB50:
+        case A_COLOR_BLEND_RGB50:
             return SDL_ALPHA_OPAQUE / 2;
 
-        case A_PIXEL_BLEND_RGB75:
+        case A_COLOR_BLEND_RGB75:
             return SDL_ALPHA_OPAQUE * 3 / 4;
 
         default:
@@ -82,9 +82,9 @@ static inline uint8_t pixelAlphaToSdlAlpha(void)
 void a_platform_api__renderSetDrawColor(void)
 {
     if(SDL_SetRenderDrawColor(a__sdlRenderer,
-                              (uint8_t)a_pixel__state.rgb.r,
-                              (uint8_t)a_pixel__state.rgb.g,
-                              (uint8_t)a_pixel__state.rgb.b,
+                              (uint8_t)a__color.rgb.r,
+                              (uint8_t)a__color.rgb.g,
+                              (uint8_t)a__color.rgb.b,
                               pixelAlphaToSdlAlpha()) < 0) {
 
         a_out__error("SDL_SetRenderDrawColor: %s", SDL_GetError());
@@ -497,9 +497,9 @@ void a_platform_api__textureBlitEx(const APlatformTexture* Texture, int X, int Y
 
     if(FillFlat) {
         if(SDL_SetTextureColorMod(tex,
-                                  (uint8_t)a_pixel__state.rgb.r,
-                                  (uint8_t)a_pixel__state.rgb.g,
-                                  (uint8_t)a_pixel__state.rgb.b) < 0) {
+                                  (uint8_t)a__color.rgb.r,
+                                  (uint8_t)a__color.rgb.g,
+                                  (uint8_t)a__color.rgb.b) < 0) {
 
             a_out__error("SDL_SetTextureColorMod: %s", SDL_GetError());
         }

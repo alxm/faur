@@ -80,9 +80,9 @@ typedef struct {
 #define A__PX_PACK_B (8 - A__PX_BITS_B)
 
 #if A_CONFIG_LIB_RENDER_SOFTWARE
-    #define A_PIXEL_ALPHA_MAX 256
+    #define A_COLOR_ALPHA_MAX 256
 #else
-    #define A_PIXEL_ALPHA_MAX 255
+    #define A_COLOR_ALPHA_MAX 255
 #endif
 
 static inline APixel a_pixel_fromRgb(int Red, int Green, int Blue)
@@ -114,33 +114,32 @@ static inline ARgb a_pixel_toRgb(APixel Pixel)
 }
 
 typedef enum {
-    A_PIXEL_BLEND_INVALID = -1,
-    A_PIXEL_BLEND_PLAIN,
-    A_PIXEL_BLEND_RGBA,
-    A_PIXEL_BLEND_RGB25,
-    A_PIXEL_BLEND_RGB50,
-    A_PIXEL_BLEND_RGB75,
-    A_PIXEL_BLEND_INVERSE,
-    A_PIXEL_BLEND_MOD,
-    A_PIXEL_BLEND_ADD,
-    A_PIXEL_BLEND_NUM
-} APixelBlend;
+    A_COLOR_BLEND_INVALID = -1,
+    A_COLOR_BLEND_PLAIN,
+    A_COLOR_BLEND_RGBA,
+    A_COLOR_BLEND_RGB25,
+    A_COLOR_BLEND_RGB50,
+    A_COLOR_BLEND_RGB75,
+    A_COLOR_BLEND_INVERSE,
+    A_COLOR_BLEND_MOD,
+    A_COLOR_BLEND_ADD,
+    A_COLOR_BLEND_NUM
+} AColorBlend;
 
-extern void a_pixel_push(void);
-extern void a_pixel_pop(void);
+extern void a_color_push(void);
+extern void a_color_pop(void);
+extern void a_color_reset(void);
 
-extern void a_pixel_reset(void);
+extern AColorBlend a_color_blendGet(void);
+extern void a_color_blendSet(AColorBlend Blend);
 
-extern APixelBlend a_pixel_blendGet(void);
-extern void a_pixel_blendSet(APixelBlend Blend);
+extern int a_color_alphaGet(void);
+extern void a_color_alphaSet(int Alpha);
 
-extern int a_pixel_alphaGet(void);
-extern void a_pixel_alphaSet(int Alpha);
+extern void a_color_baseSetRgb(int Red, int Green, int Blue);
+extern void a_color_baseSetRgba(int Red, int Green, int Blue, int Alpha);
+extern void a_color_baseSetHex(uint32_t Hexcode);
+extern void a_color_baseSetPixel(APixel Pixel);
 
-extern void a_pixel_colorSetRgb(int Red, int Green, int Blue);
-extern void a_pixel_colorSetRgba(int Red, int Green, int Blue, int Alpha);
-extern void a_pixel_colorSetHex(uint32_t Hexcode);
-extern void a_pixel_colorSetPixel(APixel Pixel);
-
-extern void a_pixel_fillBlitSet(bool Fill);
-extern void a_pixel_fillDrawSet(bool Fill);
+extern void a_color_fillBlitSet(bool Fill);
+extern void a_color_fillDrawSet(bool Fill);

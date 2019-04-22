@@ -18,10 +18,10 @@
 
 #pragma once
 
-#include "a2x_pack_pixel.p.h"
+#include "a2x_pack_color.p.h"
 
 typedef struct {
-    APixelBlend blend, canonicalBlend;
+    AColorBlend blend, canonicalBlend;
     ARgb rgb;
     APixel pixel;
     int alpha;
@@ -31,14 +31,14 @@ typedef struct {
 
 #include "a2x_pack_math.v.h"
 
-extern APixelState a_pixel__state;
+extern APixelState a__color;
 
-static inline void a_pixel__plain(APixel* Dst, APixel Pixel)
+static inline void a_color__draw_plain(APixel* Dst, APixel Pixel)
 {
     *Dst = Pixel;
 }
 
-static inline void a_pixel__rgba(APixel* Dst, const ARgb* Rgb, int Alpha)
+static inline void a_color__draw_rgba(APixel* Dst, const ARgb* Rgb, int Alpha)
 {
     ARgb rgb = a_pixel_toRgb(*Dst);
 
@@ -47,7 +47,7 @@ static inline void a_pixel__rgba(APixel* Dst, const ARgb* Rgb, int Alpha)
                            rgb.b + (((Rgb->b - rgb.b) * Alpha) >> 8));
 }
 
-static inline void a_pixel__rgb25(APixel* Dst, const ARgb* Rgb)
+static inline void a_color__draw_rgb25(APixel* Dst, const ARgb* Rgb)
 {
     ARgb rgb = a_pixel_toRgb(*Dst);
 
@@ -56,7 +56,7 @@ static inline void a_pixel__rgb25(APixel* Dst, const ARgb* Rgb)
                            rgb.b - (rgb.b >> 2) + (Rgb->b >> 2));
 }
 
-static inline void a_pixel__rgb50(APixel* Dst, const ARgb* Rgb)
+static inline void a_color__draw_rgb50(APixel* Dst, const ARgb* Rgb)
 {
     ARgb rgb = a_pixel_toRgb(*Dst);
 
@@ -65,7 +65,7 @@ static inline void a_pixel__rgb50(APixel* Dst, const ARgb* Rgb)
                            (rgb.b + Rgb->b) >> 1);
 }
 
-static inline void a_pixel__rgb75(APixel* Dst, const ARgb* Rgb)
+static inline void a_color__draw_rgb75(APixel* Dst, const ARgb* Rgb)
 {
     ARgb rgb = a_pixel_toRgb(*Dst);
 
@@ -74,12 +74,12 @@ static inline void a_pixel__rgb75(APixel* Dst, const ARgb* Rgb)
                            (rgb.b >> 2) + Rgb->b - (Rgb->b >> 2));
 }
 
-static inline void a_pixel__inverse(APixel* Dst)
+static inline void a_color__draw_inverse(APixel* Dst)
 {
     *Dst = (APixel)~*Dst;
 }
 
-static inline void a_pixel__mod(APixel* Dst, const ARgb* Rgb)
+static inline void a_color__draw_mod(APixel* Dst, const ARgb* Rgb)
 {
     ARgb rgb = a_pixel_toRgb(*Dst);
 
@@ -88,7 +88,7 @@ static inline void a_pixel__mod(APixel* Dst, const ARgb* Rgb)
                            (rgb.b * Rgb->b) >> 8);
 }
 
-static inline void a_pixel__add(APixel* Dst, const ARgb* Rgb)
+static inline void a_color__draw_add(APixel* Dst, const ARgb* Rgb)
 {
     ARgb rgb = a_pixel_toRgb(*Dst);
 
@@ -97,5 +97,5 @@ static inline void a_pixel__add(APixel* Dst, const ARgb* Rgb)
                            a_math_min(rgb.b + Rgb->b, 255));
 }
 
-extern void a_pixel__init(void);
-extern void a_pixel__uninit(void);
+extern void a_color__init(void);
+extern void a_color__uninit(void);

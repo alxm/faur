@@ -113,9 +113,9 @@ AFont* a_font_newFromSprite(const ASprite* Sheet, int X, int Y)
 
 AFont* a_font_dup(const AFont* Font, APixel Color)
 {
-    a_pixel_push();
-    a_pixel_colorSetPixel(Color);
-    a_pixel_fillBlitSet(true);
+    a_color_push();
+    a_color_baseSetPixel(Color);
+    a_color_fillBlitSet(true);
 
     ASpriteFrames* frames = a_spriteframes_dup(Font->frames, true);
 
@@ -127,7 +127,7 @@ AFont* a_font_dup(const AFont* Font, APixel Color)
         a_screen_targetPop();
     }
 
-    a_pixel_pop();
+    a_color_pop();
 
     return a_font__new(frames);
 }

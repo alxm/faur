@@ -19,11 +19,11 @@
 #include "a2x_pack_screen.v.h"
 
 #include "a2x_pack_collide.v.h"
+#include "a2x_pack_color.v.h"
 #include "a2x_pack_listit.v.h"
 #include "a2x_pack_main.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
-#include "a2x_pack_pixel.v.h"
 
 AScreen a__screen;
 static AList* g_stack; // list of AScreen
@@ -260,8 +260,8 @@ void a_screen_copy(AScreen* Dst, const AScreen* Src)
     #if A_CONFIG_LIB_RENDER_SOFTWARE
         memcpy(Dst->pixels, Src->pixels, Src->pixelsSize);
     #else
-        a_pixel_push();
-        a_pixel_blendSet(A_PIXEL_BLEND_PLAIN);
+        a_color_push();
+        a_color_blendSet(A_COLOR_BLEND_PLAIN);
 
         a_platform_api__renderTargetSet(Dst->texture);
         a_platform_api__renderTargetClipSet(0, 0, Dst->width, Dst->height);
@@ -274,7 +274,7 @@ void a_screen_copy(AScreen* Dst, const AScreen* Src)
                                             a__screen.clipWidth,
                                             a__screen.clipHeight);
 
-        a_pixel_pop();
+        a_color_pop();
     #endif
 }
 
@@ -294,13 +294,13 @@ void a_screen_blit(const AScreen* Screen)
         APixel* dst = a__screen.pixels;
         APixel* src = Screen->pixels;
         ARgb rgb = {0, 0, 0};
-        int alpha = a_pixel__state.alpha;
+        int alpha = a__color.alpha;
 
         #define LOOP(Blend, Setup, Params)                                  \
             if(noClipping) {                                                \
                 for(int i = Screen->width * Screen->height; i--; ) {        \
                     Setup;                                                  \
-                    a_pixel__##Blend Params;                                \
+                    a_color__draw_##Blend Params;                           \
                     dst++;                                                  \
                     src++;                                                  \
                 }                                                           \
@@ -313,7 +313,7 @@ void a_screen_blit(const AScreen* Screen)
                 for(int i = a__screen.clipHeight; i--; ) {                  \
                     for(int j = a__screen.clipWidth; j--; ) {               \
                         Setup;                                              \
-                        a_pixel__##Blend Params;                            \
+                        a_color__draw_##Blend Params;                       \
                         dst++;                                              \
                         src++;                                              \
                     }                                                       \
@@ -323,8 +323,8 @@ void a_screen_blit(const AScreen* Screen)
                 }                                                           \
             }
 
-        switch(a_pixel__state.blend) {
-            case A_PIXEL_BLEND_PLAIN: {
+        switch(a__color.blend) {
+            case A_COLOR_BLEND_PLAIN: {
                 if(noClipping) {
                     memcpy(dst, src, Screen->pixelsSize);
                 } else {
@@ -341,27 +341,27 @@ void a_screen_blit(const AScreen* Screen)
                 }
             } break;
 
-            case A_PIXEL_BLEND_RGBA: {
+            case A_COLOR_BLEND_RGBA: {
                 LOOP(rgba, {rgb = a_pixel_toRgb(*src);}, (dst, &rgb, alpha));
             } break;
 
-            case A_PIXEL_BLEND_RGB25: {
+            case A_COLOR_BLEND_RGB25: {
                 LOOP(rgb25, {rgb = a_pixel_toRgb(*src);}, (dst, &rgb));
             } break;
 
-            case A_PIXEL_BLEND_RGB50: {
+            case A_COLOR_BLEND_RGB50: {
                 LOOP(rgb50, {rgb = a_pixel_toRgb(*src);}, (dst, &rgb));
             } break;
 
-            case A_PIXEL_BLEND_RGB75: {
+            case A_COLOR_BLEND_RGB75: {
                 LOOP(rgb75, {rgb = a_pixel_toRgb(*src);}, (dst, &rgb));
             } break;
 
-            case A_PIXEL_BLEND_INVERSE: {
+            case A_COLOR_BLEND_INVERSE: {
                 LOOP(inverse, {}, (dst));
             } break;
 
-            case A_PIXEL_BLEND_MOD: {
+            case A_COLOR_BLEND_MOD: {
                 LOOP(mod, {rgb = a_pixel_toRgb(*src);}, (dst, &rgb));
             } break;
 
@@ -377,13 +377,13 @@ void a_screen_clear(void)
     #if A_CONFIG_LIB_RENDER_SOFTWARE
         memset(a__screen.pixels, 0, a__screen.pixelsSize);
     #else
-        a_pixel_push();
+        a_color_push();
 
-        a_pixel_blendSet(A_PIXEL_BLEND_PLAIN);
-        a_pixel_colorSetPixel(0);
+        a_color_blendSet(A_COLOR_BLEND_PLAIN);
+        a_color_baseSetPixel(0);
         a_platform_api__screenClear();
 
-        a_pixel_pop();
+        a_color_pop();
     #endif
 }
 

@@ -23,11 +23,11 @@
 
 typedef struct {
     ASprite* sprite;
-    APixelBlend blend;
+    AColorBlend blend;
     int r, g, b, a;
 } ALayer;
 
-static ALayer* layer_new(ASprite* Sprite, APixelBlend Blend, int Red, int Green, int Blue, int Alpha)
+static ALayer* layer_new(ASprite* Sprite, AColorBlend Blend, int Red, int Green, int Blue, int Alpha)
 {
     ALayer* l = a_mem_malloc(sizeof(ALayer));
 
@@ -80,21 +80,21 @@ void a_spritelayers_clear(ASpriteLayers* Layers, bool FreeSprites)
     }
 }
 
-void a_spritelayers_add(ASpriteLayers* Layers, ASprite* Sprite, APixelBlend Blend, int Red, int Green, int Blue, int Alpha)
+void a_spritelayers_add(ASpriteLayers* Layers, ASprite* Sprite, AColorBlend Blend, int Red, int Green, int Blue, int Alpha)
 {
     a_list_addLast(Layers, layer_new(Sprite, Blend, Red, Green, Blue, Alpha));
 }
 
 void a_spritelayers_blit(ASpriteLayers* Layers, int X, int Y)
 {
-    a_pixel_push();
+    a_color_push();
 
     A_LIST_ITERATE(Layers, ALayer*, l) {
-        a_pixel_blendSet(l->blend);
-        a_pixel_colorSetRgba(l->r, l->g, l->b, l->a);
+        a_color_blendSet(l->blend);
+        a_color_baseSetRgba(l->r, l->g, l->b, l->a);
 
         a_sprite_blit(l->sprite, X, Y);
     }
 
-    a_pixel_pop();
+    a_color_pop();
 }

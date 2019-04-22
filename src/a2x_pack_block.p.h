@@ -22,9 +22,9 @@
 
 typedef struct ABlock ABlock;
 
+#include "a2x_pack_color.p.h"
 #include "a2x_pack_fix.p.h"
 #include "a2x_pack_list.p.h"
-#include "a2x_pack_pixel.p.h"
 
 extern ABlock* a_block_new(const char* File);
 extern void a_block_free(ABlock* Block);

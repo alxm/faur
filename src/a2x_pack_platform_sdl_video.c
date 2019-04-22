@@ -397,8 +397,8 @@ void a_platform_api__screenShow(void)
                 A__FATAL("SDL_RenderCopy: %s", SDL_GetError());
             }
         #else
-            a_pixel_push();
-            a_pixel_blendSet(A_PIXEL_BLEND_PLAIN);
+            a_color_push();
+            a_color_blendSet(A_COLOR_BLEND_PLAIN);
 
             a_platform_api__textureBlit(a__screen.texture, 0, 0, false);
 
@@ -408,7 +408,7 @@ void a_platform_api__screenShow(void)
                                                 a__screen.clipWidth,
                                                 a__screen.clipHeight);
 
-            a_pixel_pop();
+            a_color_pop();
         #endif
 
         SDL_RenderPresent(a__sdlRenderer);
