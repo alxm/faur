@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 Alex Margarit <alex@alxm.org>
+    Copyright 2016-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -21,6 +21,7 @@
 #include <time.h>
 
 #include "a2x_pack_main.v.h"
+#include "a2x_pack_out.v.h"
 
 static ARandomPrng* g_rand;
 static ARandomPrngSeed* g_srand;
@@ -62,6 +63,8 @@ void a_random_seedSet(unsigned Seed)
     if(g_srand != NULL) {
         g_srand(Seed);
     }
+
+    a_out_info("a_random_seedSet(%u)", Seed);
 }
 
 int a_random_int(int Max)
