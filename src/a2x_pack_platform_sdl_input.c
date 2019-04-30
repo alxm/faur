@@ -31,6 +31,7 @@
 #include "a2x_pack_math.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
+#include "a2x_pack_path.v.h"
 #include "a2x_pack_platform.v.h"
 #include "a2x_pack_state.v.h"
 #include "a2x_pack_str.v.h"
@@ -365,7 +366,9 @@ void a_platform_sdl_input__init(void)
     a_out__info("Found %d controllers", joysticksNum);
 
     #if A_CONFIG_LIB_SDL == 2
-        if(joysticksNum > 0) {
+        if(joysticksNum > 0
+            && a_path_exists(A_CONFIG_LIB_SDL_GAMEPADMAP, A_PATH_FILE)) {
+
             int mNum = SDL_GameControllerAddMappingsFromFile(
                         A_CONFIG_LIB_SDL_GAMEPADMAP);
 
