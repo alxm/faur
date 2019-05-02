@@ -24,6 +24,7 @@
 #include "a2x_pack_file.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
+#include "a2x_pack_pixels.v.h"
 
 typedef struct {
     const uint8_t* data;
@@ -38,30 +39,31 @@ static void readFunction(png_structp Png, png_bytep Data, png_size_t Length)
     stream->offset += Length;
 }
 
-static void pngToPixels(png_structp Png, png_infop Info, APixel** Pixels, int* Width, int* Height)
+static APixels* pngToPixels(png_structp Png, png_infop Info)
 {
     png_uint_32 w = png_get_image_width(Png, Info);
     png_uint_32 h = png_get_image_height(Png, Info);
     unsigned numChannels = png_get_channels(Png, Info);
-
-    APixel* pixels = a_mem_malloc(w * h * sizeof(APixel));
     png_bytepp rows = png_get_rows(Png, Info);
 
-    *Width = (int)w;
-    *Height = (int)h;
-    *Pixels = pixels;
+    APixels* pixels = a_pixels_new((int)w, (int)h);
+    APixel* buffer = pixels->buffer;
 
     for(png_uint_32 y = h; y--; rows++) {
         for(png_uint_32 x = w, chOffset = 0; x--; chOffset += numChannels) {
-            *pixels++ = a_pixel_fromRgb(rows[0][chOffset + 0],
+            *buffer++ = a_pixel_fromRgb(rows[0][chOffset + 0],
                                         rows[0][chOffset + 1],
                                         rows[0][chOffset + 2]);
         }
     }
+
+    return pixels;
 }
 
-void a_png_readFile(const char* Path, APixel** Pixels, int* Width, int* Height)
+APixels* a_png_readFile(const char* Path)
 {
+    APixels* pixels = NULL;
+
     png_structp png = NULL;
     png_infop info = NULL;
 
@@ -72,7 +74,7 @@ void a_png_readFile(const char* Path, APixel** Pixels, int* Width, int* Height)
     }
 
     if(a_path_test(a_file_pathGet(f), A_PATH_EMBEDDED)) {
-        a_png_readMemory(a_file__dataGet(f)->buffer, Pixels, Width, Height);
+        pixels = a_png_readMemory(a_file__dataGet(f)->buffer);
         goto cleanUp;
     }
 
@@ -113,7 +115,7 @@ void a_png_readFile(const char* Path, APixel** Pixels, int* Width, int* Height)
         goto cleanUp;
     }
 
-    pngToPixels(png, info, Pixels, Width, Height);
+    pixels = pngToPixels(png, info);
 
 cleanUp:
     if(png) {
@@ -121,10 +123,14 @@ cleanUp:
     }
 
     a_file_free(f);
+
+    return pixels;
 }
 
-void a_png_readMemory(const uint8_t* Data, APixel** Pixels, int* Width, int* Height)
+APixels* a_png_readMemory(const uint8_t* Data)
 {
+    APixels* pixels = NULL;
+
     AByteStream* stream = a_mem_malloc(sizeof(AByteStream));
 
     stream->data = Data;
@@ -169,7 +175,7 @@ void a_png_readMemory(const uint8_t* Data, APixel** Pixels, int* Width, int* Hei
         goto cleanUp;
     }
 
-    pngToPixels(png, info, Pixels, Width, Height);
+    pixels = pngToPixels(png, info);
 
 cleanUp:
     if(png) {
@@ -177,6 +183,8 @@ cleanUp:
     }
 
     free(stream);
+
+    return pixels;
 }
 
 void a_png_write(const char* Path, const APixel* Data, int Width, int Height, char* Title, char* Description)

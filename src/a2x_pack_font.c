@@ -100,11 +100,12 @@ AFont* a_font_newFromPng(const char* Path)
 AFont* a_font_newFromSprite(const ASprite* Sheet, int X, int Y)
 {
     ASprite* gridSprite = a_sprite_newFromSprite(Sheet, X, Y);
-    ASpriteFrames* frames = a_spriteframes_newFromSprite(gridSprite,
-                                                         0,
-                                                         0,
-                                                         gridSprite->w / 16,
-                                                         gridSprite->h / 6);
+    ASpriteFrames* frames = a_spriteframes_newFromSprite(
+                                gridSprite,
+                                0,
+                                0,
+                                gridSprite->pixels->w / 16,
+                                gridSprite->pixels->h / 6);
 
     a_sprite_free(gridSprite);
 
@@ -174,10 +175,10 @@ void a_font_fontSet(const AFont* Font)
         Font = g_defaultFonts[A_FONT__ID_DEFAULT];
     }
 
+    ASprite* ch = a_spriteframes_getByIndex(Font->frames, A__CHAR_INDEX(' '));
+
     g_state.font = Font;
-    g_state.lineHeight =
-        a_spriteframes_getByIndex(Font->frames, A__CHAR_INDEX(' '))->h
-            + A__LINE_SPACING;
+    g_state.lineHeight = ch->pixels->h + A__LINE_SPACING;
 }
 
 void a_font__fontSet(AFontId Font)
@@ -237,7 +238,7 @@ static int getWidth(const char* Text, ptrdiff_t Length)
     const ASpriteFrames* f = g_state.font->frames;
 
     for( ; Length--; Text++) {
-        width += a_spriteframes_getByIndex(f, A__CHAR_INDEX(*Text))->w;
+        width += a_spriteframes_getByIndex(f, A__CHAR_INDEX(*Text))->pixels->w;
     }
 
     return width;
@@ -257,7 +258,7 @@ static void drawString(const char* Text, ptrdiff_t Length)
         const ASprite* s = a_spriteframes_getByIndex(f, A__CHAR_INDEX(*Text));
 
         a_sprite_blit(s, g_state.x, g_state.y);
-        g_state.x += s->w;
+        g_state.x += s->pixels->w;
     }
 }
 
@@ -275,7 +276,7 @@ static void wrapString(const char* Text)
             }
 
             g_state.currentLineWidth +=
-                a_spriteframes_getByIndex(f, A__CHAR_INDEX(ch))->w;
+                a_spriteframes_getByIndex(f, A__CHAR_INDEX(ch))->pixels->w;
         } else {
             wordStart = NULL;
 
@@ -285,7 +286,8 @@ static void wrapString(const char* Text)
                     lineStart++;
                 } else {
                     g_state.currentLineWidth +=
-                        a_spriteframes_getByIndex(f, A__CHAR_INDEX(' '))->w;
+                        a_spriteframes_getByIndex(
+                            f, A__CHAR_INDEX(' '))->pixels->w;
                 }
             } else {
                 // Print what we have and skip non-printable character
@@ -370,7 +372,7 @@ int a_font_widthGet(const char* Text)
     const ASpriteFrames* f = g_state.font->frames;
 
     for(char ch = *Text; ch >= A__CHAR_START; ch = *++Text) {
-        width += a_spriteframes_getByIndex(f, A__CHAR_INDEX(ch))->w;
+        width += a_spriteframes_getByIndex(f, A__CHAR_INDEX(ch))->pixels->w;
     }
 
     return width;

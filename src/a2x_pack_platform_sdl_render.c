@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 Alex Margarit <alex@alxm.org>
+    Copyright 2016-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -37,8 +37,7 @@ typedef enum {
 } APlatformTextureVersion;
 
 struct APlatformTexture {
-    APixel* pixels;
-    size_t pixelsSize;
+    APixels* pixels;
     int w, h;
     SDL_Texture* texture[A_TEXTURE__NUM];
 };
@@ -351,7 +350,6 @@ APlatformTexture* a_platform_api__textureNewScreen(int Width, int Height)
     APlatformTexture* screen = a_mem_malloc(sizeof(APlatformTexture));
 
     screen->pixels = NULL;
-    screen->pixelsSize = 0;
     screen->w = Width;
     screen->h = Height;
 
@@ -367,24 +365,21 @@ APlatformTexture* a_platform_api__textureNewScreen(int Width, int Height)
 APlatformTexture* a_platform_api__textureNewSprite(const ASprite* Sprite)
 {
     APlatformTexture* texture = Sprite->texture;
-    int width = Sprite->w;
-    int height = Sprite->h;
+    int width = Sprite->pixels->w;
+    int height = Sprite->pixels->h;
 
     if(texture == NULL) {
         texture = a_mem_zalloc(sizeof(APlatformTexture));
+        texture->pixels = a_pixels_dup(Sprite->pixels);
     }
 
-    if(Sprite->pixelsSize > texture->pixelsSize) {
-        free(texture->pixels);
-
-        texture->pixels = a_mem_malloc(Sprite->pixelsSize);
-        texture->pixelsSize = Sprite->pixelsSize;
+    if(texture->pixels->bufferSize < Sprite->pixels->bufferSize) {
+        a_pixels_free(texture->pixels);
+        texture->pixels = a_pixels_dup(Sprite->pixels);
     }
 
-    memcpy(texture->pixels, Sprite->pixels, Sprite->pixelsSize);
-
-    texture->w = Sprite->w;
-    texture->h = Sprite->h;
+    texture->w = Sprite->pixels->w;
+    texture->h = Sprite->pixels->h;
 
     for(int t = 0; t < A_TEXTURE__NUM; t++) {
         if(texture->texture[t]) {
@@ -394,9 +389,9 @@ APlatformTexture* a_platform_api__textureNewSprite(const ASprite* Sprite)
         switch(t) {
             case A_TEXTURE__NORMAL: {
                 for(int i = width * height; i--; ) {
-                    if(Sprite->pixels[i] != a_sprite__colorKey) {
+                    if(Sprite->pixels->buffer[i] != a_sprite__colorKey) {
                         // Set full alpha for non-transparent pixel
-                        texture->pixels[i] |=
+                        texture->pixels->buffer[i] |=
                             (APixel)A__PX_MASK_A << A__PX_SHIFT_A;
                     }
                 }
@@ -404,18 +399,18 @@ APlatformTexture* a_platform_api__textureNewSprite(const ASprite* Sprite)
 
             case A_TEXTURE__COLORMOD_BITMAP: {
                 for(int i = width * height; i--; ) {
-                    if(Sprite->pixels[i] == a_sprite__colorKey) {
+                    if(Sprite->pixels->buffer[i] == a_sprite__colorKey) {
                         // Set full color for transparent pixel
-                        texture->pixels[i] |= a_pixel_fromHex(0xffffff);
+                        texture->pixels->buffer[i] |= a_pixel_fromHex(0xffffff);
                     }
                 }
             } break;
 
             case A_TEXTURE__COLORMOD_FLAT: {
                 for(int i = width * height; i--;) {
-                    if(Sprite->pixels[i] != a_sprite__colorKey) {
+                    if(Sprite->pixels->buffer[i] != a_sprite__colorKey) {
                         // Set full color for non-transparent pixel
-                        texture->pixels[i] |= a_pixel_fromHex(0xffffff);
+                        texture->pixels->buffer[i] |= a_pixel_fromHex(0xffffff);
                     }
                 }
             } break;
@@ -430,8 +425,10 @@ APlatformTexture* a_platform_api__textureNewSprite(const ASprite* Sprite)
             A__FATAL("SDL_CreateTexture: %s", SDL_GetError());
         }
 
-        if(SDL_UpdateTexture(
-            tex, NULL, texture->pixels, width * (int)sizeof(APixel)) < 0) {
+        if(SDL_UpdateTexture(tex,
+                             NULL,
+                             texture->pixels->buffer,
+                             width * (int)sizeof(APixel)) < 0) {
 
             A__FATAL("SDL_UpdateTexture: %s", SDL_GetError());
         }
@@ -458,7 +455,8 @@ void a_platform_api__textureFree(APlatformTexture* Texture)
         }
     }
 
-    free(Texture->pixels);
+    a_pixels_free(Texture->pixels);
+
     free(Texture);
 }
 

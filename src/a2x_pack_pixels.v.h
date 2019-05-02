@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2019 Alex Margarit <alex@alxm.org>
+    Copyright 2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -18,11 +18,22 @@
 
 #pragma once
 
-#include "a2x_system_includes.h"
-
-#include "a2x_pack_color.p.h"
 #include "a2x_pack_pixels.p.h"
 
-extern APixels* a_png_readFile(const char* Path);
-extern APixels* a_png_readMemory(const uint8_t* Data);
-extern void a_png_write(const char* Path, const APixel* Data, int Width, int Height, char* Title, char* Description);
+#include "a2x_pack_color.v.h"
+
+struct APixels {
+    int w, h;
+    size_t bufferSize;
+    APixel buffer[];
+};
+
+static inline APixel* a_pixels__getFrom(APixels* Pixels, int X, int Y)
+{
+    return Pixels->buffer + Y * Pixels->w + X;
+}
+
+static inline APixel a_pixels__getAt(const APixels* Pixels, int X, int Y)
+{
+    return *(Pixels->buffer + Y * Pixels->w + X);
+}

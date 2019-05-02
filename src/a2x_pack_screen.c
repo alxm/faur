@@ -418,10 +418,10 @@ void a_screen_targetPushScreen(const AScreen* Screen)
 
 void a_screen_targetPushSprite(ASprite* Sprite)
 {
-    pushTarget(Sprite->pixels,
-               Sprite->pixelsSize,
-               Sprite->w,
-               Sprite->h,
+    pushTarget(Sprite->pixels->buffer,
+               Sprite->pixels->bufferSize,
+               Sprite->pixels->w,
+               Sprite->pixels->h,
                Sprite->texture,
                Sprite);
 }
@@ -430,8 +430,7 @@ void a_screen_targetPop(void)
 {
     #if A_CONFIG_LIB_RENDER_SOFTWARE
         if(a__screen.sprite) {
-            a__screen.sprite->texture = a_platform_api__textureNewSprite(
-                                            a__screen.sprite);
+            a_sprite__commitTexture(a__screen.sprite);
         }
     #endif
 

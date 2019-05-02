@@ -184,7 +184,7 @@ void a_console__draw(void)
     }
 
     {
-        int tagWidth = g_sources[A_OUT__SOURCE_A2X]->w;
+        int tagWidth = g_sources[A_OUT__SOURCE_A2X]->pixels->w;
 
         a_font_coordsSet(1 + tagWidth + 1 + tagWidth + 2, a_font_coordsGetY());
         a_font__fontSet(A_FONT__ID_LIGHT_GRAY);
