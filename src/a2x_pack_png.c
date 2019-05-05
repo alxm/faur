@@ -62,7 +62,7 @@ static APixels* pngToPixels(png_structp Png, png_infop Info)
 
 APixels* a_png_readFile(const char* Path)
 {
-    APixels* pixels = NULL;
+    APixels* volatile pixels = NULL;
 
     png_structp png = NULL;
     png_infop info = NULL;
@@ -129,7 +129,7 @@ cleanUp:
 
 APixels* a_png_readMemory(const uint8_t* Data)
 {
-    APixels* pixels = NULL;
+    APixels* volatile pixels = NULL;
 
     AByteStream* stream = a_mem_malloc(sizeof(AByteStream));
 
