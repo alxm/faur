@@ -54,7 +54,7 @@ extern void a_platform_api__screenMouseCursorSet(bool Show);
 extern void a_platform_api__renderSetDrawColor(void);
 extern void a_platform_api__renderSetBlendMode(void);
 extern void a_platform_api__renderTargetSet(APlatformTexture* Texture);
-extern void a_platform_api__renderTargetPixelsGet(APixel* Pixels, int Width);
+extern void a_platform_api__renderTargetPixelsCapture(APixel* Pixels, int Width);
 extern void a_platform_api__renderTargetClipSet(int X, int Y, int Width, int Height);
 
 extern void a_platform_api__drawPixel(int X, int Y);

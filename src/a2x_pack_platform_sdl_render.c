@@ -538,7 +538,7 @@ void a_platform_api__renderTargetSet(APlatformTexture* Texture)
     }
 }
 
-void a_platform_api__renderTargetPixelsGet(APixel* Pixels, int Width)
+void a_platform_api__renderTargetPixelsCapture(APixel* Pixels, int Width)
 {
     // Unreliable on texture targets
     if(SDL_RenderReadPixels(a__sdlRenderer,

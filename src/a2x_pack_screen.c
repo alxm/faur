@@ -170,7 +170,7 @@ void a_screen__draw(void)
 APixel* a_screen_pixelsGetBuffer(void)
 {
     #if !A_CONFIG_LIB_RENDER_SOFTWARE
-        a_platform_api__renderTargetPixelsGet(
+        a_platform_api__renderTargetPixelsCapture(
             a__screen.pixels->buffer, a__screen.pixels->w);
     #endif
 
