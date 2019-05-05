@@ -200,7 +200,7 @@ void a_console__draw(void)
 
     {
         a_font_alignSet(A_FONT_ALIGN_RIGHT);
-        a_font_coordsSet(a__screen.px->w - 1, 2);
+        a_font_coordsSet(a__screen.pixels->w - 1, 2);
 
         a_font__fontSet(A_FONT__ID_YELLOW);
         a_font_printf("%u tick fps\n", a_fps_rateTickGet());

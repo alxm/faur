@@ -23,7 +23,7 @@
 #include "a2x_pack_platform.v.h"
 
 struct AScreen {
-    APixels* px;
+    APixels* pixels;
     ASprite* sprite;
     APlatformTexture* texture;
     int clipX, clipY;

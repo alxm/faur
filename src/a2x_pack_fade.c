@@ -43,7 +43,8 @@ static struct {
 
 void a_fade__init(void)
 {
-    g_fade.capturedScreen = a_screen_new(a__screen.px->w, a__screen.px->h);
+    g_fade.capturedScreen = a_screen_new(
+                                a__screen.pixels->w, a__screen.pixels->h);
 }
 
 void a_fade__uninit(void)
