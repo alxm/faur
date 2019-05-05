@@ -28,13 +28,3 @@ struct APixels {
     size_t bufferSize;
     APixel bufferData[];
 };
-
-static inline APixel* a_pixels__getFrom(APixels* Pixels, int X, int Y)
-{
-    return Pixels->buffer + Y * Pixels->w + X;
-}
-
-static inline APixel a_pixels__getAt(const APixels* Pixels, int X, int Y)
-{
-    return *(Pixels->buffer + Y * Pixels->w + X);
-}

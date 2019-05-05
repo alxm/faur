@@ -64,6 +64,21 @@ int a_pixels_sizeGetHeight(const APixels* Pixels)
     return Pixels->h;
 }
 
+APixel* a_pixels_bufferGet(const APixels* Pixels)
+{
+    return Pixels->buffer;
+}
+
+APixel* a_pixels_bufferGetFrom(const APixels* Pixels, int X, int Y)
+{
+    return Pixels->buffer + Y * Pixels->w + X;
+}
+
+APixel a_pixels_bufferGetAt(const APixels* Pixels, int X, int Y)
+{
+    return *(Pixels->buffer + Y * Pixels->w + X);
+}
+
 void a_pixels_bufferSet(APixels* Pixels, APixel* Buffer, int W, int H)
 {
     Pixels->w = W;
@@ -73,12 +88,12 @@ void a_pixels_bufferSet(APixels* Pixels, APixel* Buffer, int W, int H)
     Pixels->bufferSize = (size_t)(W * H * (int)sizeof(APixel));
 }
 
-void a_pixels_clear(APixels* Pixels)
+void a_pixels_clear(const APixels* Pixels)
 {
     memset(Pixels->buffer, 0, Pixels->bufferSize);
 }
 
-void a_pixels_fill(APixels* Pixels, APixel Value)
+void a_pixels_fill(const APixels* Pixels, APixel Value)
 {
     APixel* buffer = Pixels->buffer;
 
@@ -87,7 +102,7 @@ void a_pixels_fill(APixels* Pixels, APixel Value)
     }
 }
 
-void a_pixels_copyToPixels(APixels* Pixels, APixels* Destination)
+void a_pixels_copyToPixels(const APixels* Pixels, const APixels* Destination)
 {
     #if A_CONFIG_BUILD_DEBUG
         if(Pixels->w != Destination->w || Pixels->h != Destination->h
@@ -107,7 +122,7 @@ void a_pixels_copyToPixels(APixels* Pixels, APixels* Destination)
     memcpy(Destination->buffer, Pixels->buffer, Pixels->bufferSize);
 }
 
-void a_pixels_copyToBuffer(APixels* Pixels, APixel* Buffer)
+void a_pixels_copyToBuffer(const APixels* Pixels, APixel* Buffer)
 {
     memcpy(Buffer, Pixels->buffer, Pixels->bufferSize);
 }

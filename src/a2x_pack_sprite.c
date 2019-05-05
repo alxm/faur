@@ -53,13 +53,14 @@ static int findNextVerticalEdge(const ASprite* Sheet, int StartX, int StartY, in
     int h = Sheet->pixels->h;
 
     for(int x = StartX + *EdgeX + 1; x < w; x++) {
-        APixel p = a_pixels__getAt(Sheet->pixels, x, StartY);
+        APixel p = a_pixels_bufferGetAt(Sheet->pixels, x, StartY);
 
         if(p == a_sprite__colorLimit) {
             *EdgeX = x - StartX;
 
             int len = 1;
-            APixel* buffer = a_pixels__getFrom(Sheet->pixels, x, StartY + 1);
+            APixel* buffer = a_pixels_bufferGetFrom(
+                                Sheet->pixels, x, StartY + 1);
 
             for(int y = h - (StartY + 1); y--; ) {
                 if(*buffer != a_sprite__colorLimit) {
@@ -80,13 +81,14 @@ static int findNextVerticalEdge(const ASprite* Sheet, int StartX, int StartY, in
 static int findNextHorizontalEdge(const ASprite* Sheet, int StartX, int StartY, int* EdgeY)
 {
     for(int y = StartY + *EdgeY + 1; y < Sheet->pixels->h; y++) {
-        APixel p = a_pixels__getAt(Sheet->pixels, StartX, y);
+        APixel p = a_pixels_bufferGetAt(Sheet->pixels, StartX, y);
 
         if(p == a_sprite__colorLimit) {
             *EdgeY = y - StartY;
 
             int len = 1;
-            APixel* buffer = a_pixels__getFrom(Sheet->pixels, StartX + 1, y);
+            APixel* buffer = a_pixels_bufferGetFrom(
+                                Sheet->pixels, StartX + 1, y);
 
             for(int x = Sheet->pixels->w - (StartX + 1); x--; ) {
                 if(*buffer != a_sprite__colorLimit) {
@@ -174,7 +176,7 @@ ASprite* a_sprite_newFromSpriteEx(const ASprite* Sheet, int X, int Y, int W, int
 {
     ASprite* s = spriteNew(a_pixels_new(W, H));
 
-    const APixel* src = a_pixels__getFrom(Sheet->pixels, X, Y);
+    const APixel* src = a_pixels_bufferGetFrom(Sheet->pixels, X, Y);
     APixel* dst = s->pixels->buffer;
 
     for(int i = H; i--; ) {
@@ -361,7 +363,7 @@ const APixel* a_sprite_pixelsGetBuffer(const ASprite* Sprite)
 
 APixel a_sprite_pixelsGetPixel(const ASprite* Sprite, int X, int Y)
 {
-    return a_pixels__getAt(Sprite->pixels, X, Y);
+    return a_pixels_bufferGetAt(Sprite->pixels, X, Y);
 }
 
 APixel a_sprite_colorKeyGet(void)
