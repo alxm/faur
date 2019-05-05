@@ -29,6 +29,7 @@ APixels* a_pixels_new(int W, int H)
 
     p->w = W;
     p->h = H;
+    p->buffer = p->bufferData;
     p->bufferSize = bufferSize;
 
     return p;
@@ -36,7 +37,11 @@ APixels* a_pixels_new(int W, int H)
 
 APixels* a_pixels_dup(const APixels* Pixels)
 {
-    return a_mem_dup(Pixels, sizeof(APixels) + Pixels->bufferSize);
+    APixels* p = a_mem_dup(Pixels, sizeof(APixels) + Pixels->bufferSize);
+
+    p->buffer = p->bufferData;
+
+    return p;
 }
 
 void a_pixels_free(APixels* Pixels)
@@ -59,6 +64,20 @@ int a_pixels_sizeGetHeight(const APixels* Pixels)
     return Pixels->h;
 }
 
+void a_pixels_bufferSet(APixels* Pixels, APixel* Buffer, int W, int H)
+{
+    Pixels->w = W;
+    Pixels->h = H;
+
+    Pixels->buffer = Buffer;
+    Pixels->bufferSize = (size_t)(W * H * (int)sizeof(APixel));
+}
+
+void a_pixels_clear(APixels* Pixels)
+{
+    memset(Pixels->buffer, 0, Pixels->bufferSize);
+}
+
 void a_pixels_fill(APixels* Pixels, APixel Value)
 {
     APixel* buffer = Pixels->buffer;
@@ -66,4 +85,29 @@ void a_pixels_fill(APixels* Pixels, APixel Value)
     for(int i = Pixels->w * Pixels->h; i--; ) {
         *buffer++ = Value;
     }
+}
+
+void a_pixels_copyToPixels(APixels* Pixels, APixels* Destination)
+{
+    #if A_CONFIG_BUILD_DEBUG
+        if(Pixels->w != Destination->w || Pixels->h != Destination->h
+            || Pixels->bufferSize > Destination->bufferSize) {
+
+            A__FATAL("a_pixels_copyToPixels: "
+                     "Cannot copy %dx%d (%lu) to %dx%d (%lu)",
+                     Pixels->w,
+                     Pixels->h,
+                     Pixels->bufferSize,
+                     Destination->w,
+                     Destination->h,
+                     Destination->bufferSize);
+        }
+    #endif
+
+    memcpy(Destination->buffer, Pixels->buffer, Pixels->bufferSize);
+}
+
+void a_pixels_copyToBuffer(APixels* Pixels, APixel* Buffer)
+{
+    memcpy(Buffer, Pixels->buffer, Pixels->bufferSize);
 }

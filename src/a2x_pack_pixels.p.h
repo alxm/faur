@@ -33,4 +33,10 @@ extern AVectorInt a_pixels_sizeGet(const APixels* Pixels);
 extern int a_pixels_sizeGetWidth(const APixels* Pixels);
 extern int a_pixels_sizeGetHeight(const APixels* Pixels);
 
+extern void a_pixels_bufferSet(APixels* Pixels, APixel* Buffer, int W, int H);
+
+extern void a_pixels_clear(APixels* Pixels);
 extern void a_pixels_fill(APixels* Pixels, APixel Value);
+
+extern void a_pixels_copyToPixels(APixels* Pixels, APixels* Destination);
+extern void a_pixels_copyToBuffer(APixels* Pixels, APixel* Buffer);

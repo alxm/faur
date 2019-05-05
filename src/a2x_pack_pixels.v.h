@@ -24,8 +24,9 @@
 
 struct APixels {
     int w, h;
+    APixel* buffer;
     size_t bufferSize;
-    APixel buffer[];
+    APixel bufferData[];
 };
 
 static inline APixel* a_pixels__getFrom(APixels* Pixels, int X, int Y)
