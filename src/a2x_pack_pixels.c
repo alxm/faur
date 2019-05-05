@@ -23,7 +23,13 @@
 
 APixels* a_pixels_new(int W, int H)
 {
-    size_t bufferSize = (unsigned)W * (unsigned)H * sizeof(APixel);
+    return a_pixels__new(W, H, true);
+}
+
+APixels* a_pixels__new(int W, int H, bool AllocBuffer)
+{
+    size_t bufferSize = AllocBuffer
+                            ? (unsigned)W * (unsigned)H * sizeof(APixel) : 0;
 
     APixels* p = a_mem_zalloc(sizeof(APixels) + bufferSize);
 
@@ -79,7 +85,7 @@ APixel a_pixels_bufferGetAt(const APixels* Pixels, int X, int Y)
     return *(Pixels->buffer + Y * Pixels->w + X);
 }
 
-void a_pixels_bufferSet(APixels* Pixels, APixel* Buffer, int W, int H)
+void a_pixels__bufferSet(APixels* Pixels, APixel* Buffer, int W, int H)
 {
     Pixels->w = W;
     Pixels->h = H;
@@ -102,24 +108,21 @@ void a_pixels_fill(const APixels* Pixels, APixel Value)
     }
 }
 
-void a_pixels_copyToPixels(const APixels* Pixels, const APixels* Destination)
+void a_pixels_copy(const APixels* Dst, const APixels* Src)
 {
     #if A_CONFIG_BUILD_DEBUG
-        if(Pixels->w != Destination->w || Pixels->h != Destination->h
-            || Pixels->bufferSize > Destination->bufferSize) {
+        if(Src->w != Dst->w || Src->h != Dst->h
+            || Src->bufferSize > Dst->bufferSize) {
 
-            A__FATAL("a_pixels_copyToPixels: "
-                     "Cannot copy %dx%d (%lu) to %dx%d (%lu)",
-                     Pixels->w,
-                     Pixels->h,
-                     Pixels->bufferSize,
-                     Destination->w,
-                     Destination->h,
-                     Destination->bufferSize);
+            A__FATAL("a_pixels_copy(%dx%d, %dx%d): Different sizes",
+                     Dst->w,
+                     Dst->h,
+                     Src->w,
+                     Src->h);
         }
     #endif
 
-    memcpy(Destination->buffer, Pixels->buffer, Pixels->bufferSize);
+    memcpy(Dst->buffer, Src->buffer, Src->bufferSize);
 }
 
 void a_pixels_copyToBuffer(const APixels* Pixels, APixel* Buffer)

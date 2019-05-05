@@ -28,3 +28,7 @@ struct APixels {
     size_t bufferSize;
     APixel bufferData[];
 };
+
+extern APixels* a_pixels__new(int W, int H, bool AllocBuffer);
+
+extern void a_pixels__bufferSet(APixels* Pixels, APixel* Buffer, int W, int H);

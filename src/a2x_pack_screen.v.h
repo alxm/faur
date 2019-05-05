@@ -23,19 +23,12 @@
 #include "a2x_pack_platform.v.h"
 
 struct AScreen {
-    APixel* pixels;
-    size_t pixelsSize;
+    APixels* px;
     ASprite* sprite;
     APlatformTexture* texture;
-    int width;
-    int height;
-    int clipX;
-    int clipY;
-    int clipX2;
-    int clipY2;
-    int clipWidth;
-    int clipHeight;
-    bool ownsBuffer;
+    int clipX, clipY;
+    int clipX2, clipY2;
+    int clipWidth, clipHeight;
 };
 
 extern AScreen a__screen;
@@ -45,5 +38,3 @@ extern void a_screen__uninit(void);
 
 extern void a_screen__tick(void);
 extern void a_screen__draw(void);
-
-extern bool a_screen__sameSize(const AScreen* Screen1, const AScreen* Screen2);

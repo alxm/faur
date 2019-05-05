@@ -36,10 +36,9 @@ extern int a_pixels_sizeGetHeight(const APixels* Pixels);
 extern APixel* a_pixels_bufferGet(const APixels* Pixels);
 extern APixel* a_pixels_bufferGetFrom(const APixels* Pixels, int X, int Y);
 extern APixel a_pixels_bufferGetAt(const APixels* Pixels, int X, int Y);
-extern void a_pixels_bufferSet(APixels* Pixels, APixel* Buffer, int W, int H);
 
 extern void a_pixels_clear(const APixels* Pixels);
 extern void a_pixels_fill(const APixels* Pixels, APixel Value);
 
-extern void a_pixels_copyToPixels(const APixels* Pixels, const APixels* Destination);
+extern void a_pixels_copy(const APixels* Dst, const APixels* Src);
 extern void a_pixels_copyToBuffer(const APixels* Pixels, APixel* Buffer);
