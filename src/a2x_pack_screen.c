@@ -205,15 +205,6 @@ AScreen* a_screen_new(int Width, int Height)
     return s;
 }
 
-AScreen* a_screen_dup(void)
-{
-    AScreen* s = a_screen_new(a__screen.pixels->w, a__screen.pixels->h);
-
-    a_screen_copy(s, &a__screen);
-
-    return s;
-}
-
 void a_screen_free(AScreen* Screen)
 {
     if(Screen == NULL) {
@@ -375,29 +366,19 @@ void a_screen_clear(void)
     #endif
 }
 
-static void pushTarget(APixels* Pixels, APlatformTexture* Texture, ASprite* Sprite)
+void a_screen_targetPush(ASprite* Sprite)
 {
     a_list_push(g_stack, a_mem_dup(&a__screen, sizeof(AScreen)));
 
-    a__screen.pixels = Pixels;
+    a__screen.pixels = Sprite->pixels;
     a__screen.sprite = Sprite;
-    a__screen.texture = Texture;
+    a__screen.texture = Sprite->texture;
 
     #if !A_CONFIG_LIB_RENDER_SOFTWARE
-        a_platform_api__renderTargetSet(Texture);
+        a_platform_api__renderTargetSet(Sprite->texture);
     #endif
 
     a_screen_clipReset();
-}
-
-void a_screen_targetPushScreen(const AScreen* Screen)
-{
-    pushTarget(Screen->pixels, Screen->texture, NULL);
-}
-
-void a_screen_targetPushSprite(ASprite* Sprite)
-{
-    pushTarget(Sprite->pixels, Sprite->texture, Sprite);
 }
 
 void a_screen_targetPop(void)

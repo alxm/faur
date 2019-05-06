@@ -22,14 +22,14 @@
 
 #include "a2x_pack_platform.v.h"
 
-struct AScreen {
+typedef struct {
     APixels* pixels;
     ASprite* sprite;
     APlatformTexture* texture;
     int clipX, clipY;
     int clipX2, clipY2;
     int clipWidth, clipHeight;
-};
+} AScreen;
 
 extern AScreen a__screen;
 
@@ -38,3 +38,9 @@ extern void a_screen__uninit(void);
 
 extern void a_screen__tick(void);
 extern void a_screen__draw(void);
+
+extern AScreen* a_screen_new(int Width, int Height);
+extern void a_screen_free(AScreen* Screen);
+
+extern void a_screen_copy(AScreen* Dst, const AScreen* Src);
+extern void a_screen_blit(const AScreen* Screen);

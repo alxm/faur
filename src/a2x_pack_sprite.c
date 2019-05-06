@@ -212,7 +212,7 @@ ASprite* a_sprite_dup(const ASprite* Sprite)
 
     #if !A_CONFIG_LIB_RENDER_SOFTWARE
         a_color_push();
-        a_screen_targetPushSprite(clone);
+        a_screen_targetPush(clone);
 
         a_color_reset();
         a_sprite_blit(Sprite, 0, 0);
