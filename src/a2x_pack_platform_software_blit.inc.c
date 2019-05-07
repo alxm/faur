@@ -24,10 +24,10 @@ static void A__FUNC_NAME(keyed, noclip)(const APlatformTexture* Texture, int X, 
 
     const int screenW = a__screen.pixels->w;
     APixel* startDst = a_pixels__bufferGetFrom(a__screen.pixels, X, Y);
-    const APixel* src = Texture->spr->pixels->buffer;
+    const APixel* src = Texture->pixels->buffer;
     const unsigned* spans = Texture->spans;
 
-    for(int i = Texture->spr->pixels->h; i--; startDst += screenW) {
+    for(int i = Texture->pixels->h; i--; startDst += screenW) {
         bool draw = *spans & 1;
         unsigned numSpans = *spans++ >> 1;
         APixel* dst = startDst;
@@ -57,8 +57,8 @@ static void A__FUNC_NAME(keyed, doclip)(const APlatformTexture* Texture, int X, 
     A__BLEND_SETUP;
 
     const int screenW = a__screen.pixels->w;
-    const int spriteW = Texture->spr->pixels->w;
-    const int spriteH = Texture->spr->pixels->h;
+    const int spriteW = Texture->pixels->w;
+    const int spriteH = Texture->pixels->h;
 
     const int yClipUp = a_math_max(0, a__screen.clipY - Y);
     const int yClipDown = a_math_max(0, Y + spriteH - a__screen.clipY2);
@@ -71,7 +71,7 @@ static void A__FUNC_NAME(keyed, doclip)(const APlatformTexture* Texture, int X, 
     APixel* startDst = a_pixels__bufferGetFrom(
                         a__screen.pixels, X + xClipLeft, Y + yClipUp);
     const APixel* startSrc = a_pixels__bufferGetFrom(
-                                Texture->spr->pixels, xClipLeft, yClipUp);
+                                Texture->pixels, xClipLeft, yClipUp);
 
     const unsigned* spans = Texture->spans;
 
@@ -145,12 +145,12 @@ static void A__FUNC_NAME(block, noclip)(const APlatformTexture* Texture, int X, 
 
     const int screenW = a__screen.pixels->w;
     APixel* startDst = a_pixels__bufferGetFrom(a__screen.pixels, X, Y);
-    const APixel* src = Texture->spr->pixels->buffer;
+    const APixel* src = Texture->pixels->buffer;
 
-    for(int i = Texture->spr->pixels->h; i--; startDst += screenW) {
+    for(int i = Texture->pixels->h; i--; startDst += screenW) {
         APixel* dst = startDst;
 
-        for(int j = Texture->spr->pixels->w; j--; ) {
+        for(int j = Texture->pixels->w; j--; ) {
             A__PIXEL_SETUP;
             A__PIXEL_DRAW(dst);
             dst++;
@@ -164,8 +164,8 @@ static void A__FUNC_NAME(block, doclip)(const APlatformTexture* Texture, int X, 
     A__BLEND_SETUP;
 
     const int screenW = a__screen.pixels->w;
-    const int spriteW = Texture->spr->pixels->w;
-    const int spriteH = Texture->spr->pixels->h;
+    const int spriteW = Texture->pixels->w;
+    const int spriteH = Texture->pixels->h;
 
     const int yClipUp = a_math_max(0, a__screen.clipY - Y);
     const int yClipDown = a_math_max(0, Y + spriteH - a__screen.clipY2);
@@ -178,7 +178,7 @@ static void A__FUNC_NAME(block, doclip)(const APlatformTexture* Texture, int X, 
     APixel* startDst = a_pixels__bufferGetFrom(
                         a__screen.pixels, X + xClipLeft, Y + yClipUp);
     const APixel* startSrc = a_pixels__bufferGetFrom(
-                                Texture->spr->pixels, xClipLeft, yClipUp);
+                                Texture->pixels, xClipLeft, yClipUp);
 
     for(int i = rows; i--; startDst += screenW, startSrc += spriteW) {
         APixel* dst = startDst;

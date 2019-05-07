@@ -38,8 +38,8 @@ static AList* g_stack; // list of AScreen
 static void initScreen(AScreen* Screen, int Width, int Height, bool AllocBuffer)
 {
     Screen->pixels = a_pixels__newEx(Width, Height, AllocBuffer);
+    Screen->pixels->texture = a_platform_api__textureNewScreen(Screen->pixels);
     Screen->sprite = NULL;
-    Screen->texture = a_platform_api__textureNewScreen(Width, Height);
     Screen->clipX = 0;
     Screen->clipY = 0;
     Screen->clipX2 = Width;
@@ -51,10 +51,6 @@ static void initScreen(AScreen* Screen, int Width, int Height, bool AllocBuffer)
 static void freeScreen(AScreen* Screen)
 {
     a_pixels__free(Screen->pixels);
-
-    #if !A_CONFIG_LIB_RENDER_SOFTWARE
-        a_platform_api__textureFree(Screen->texture);
-    #endif
 }
 
 void a_screen__init(void)
@@ -94,7 +90,7 @@ void a_screen__init(void)
 
     #if !A_CONFIG_LIB_RENDER_SOFTWARE
         initScreen(&a__screen, width, height, true);
-        a_platform_api__renderTargetSet(a__screen.texture);
+        a_platform_api__renderTargetSet(a__screen.pixels->texture);
     #endif
 
     #if A_CONFIG_TRAIT_DESKTOP
@@ -236,13 +232,13 @@ void a_screen_copy(AScreen* Dst, const AScreen* Src)
         a_color_push();
         a_color_blendSet(A_COLOR_BLEND_PLAIN);
 
-        a_platform_api__renderTargetSet(Dst->texture);
+        a_platform_api__renderTargetSet(Dst->pixels->texture);
         a_platform_api__renderTargetClipSet(
             0, 0, Dst->pixels->w, Dst->pixels->h);
 
-        a_platform_api__textureBlit(Src->texture, 0, 0, false);
+        a_platform_api__textureBlit(Src->pixels->texture, 0, 0, false);
 
-        a_platform_api__renderTargetSet(a__screen.texture);
+        a_platform_api__renderTargetSet(a__screen.pixels->texture);
         a_platform_api__renderTargetClipSet(a__screen.clipX,
                                             a__screen.clipY,
                                             a__screen.clipWidth,
@@ -346,7 +342,7 @@ void a_screen_blit(const AScreen* Screen)
             default: break;
         }
     #else
-        a_platform_api__textureBlit(Screen->texture, 0, 0, false);
+        a_platform_api__textureBlit(Screen->pixels->texture, 0, 0, false);
     #endif
 }
 
@@ -371,10 +367,9 @@ void a_screen_targetPush(ASprite* Sprite)
 
     a__screen.pixels = Sprite->pixels;
     a__screen.sprite = Sprite;
-    a__screen.texture = Sprite->texture;
 
     #if !A_CONFIG_LIB_RENDER_SOFTWARE
-        a_platform_api__renderTargetSet(Sprite->texture);
+        a_platform_api__renderTargetSet(a__screen.pixels->texture);
     #endif
 
     a_screen_clipReset();
@@ -382,23 +377,23 @@ void a_screen_targetPush(ASprite* Sprite)
 
 void a_screen_targetPop(void)
 {
-    #if A_CONFIG_LIB_RENDER_SOFTWARE
-        if(a__screen.sprite) {
-            a_sprite__commitTexture(a__screen.sprite);
-        }
-    #endif
-
     AScreen* screen = a_list_pop(g_stack);
 
     if(screen == NULL) {
         A__FATAL("a_screen_targetPop: Stack is empty");
     }
 
+    #if A_CONFIG_LIB_RENDER_SOFTWARE
+        if(a__screen.sprite) {
+            a_pixels__commit(a__screen.sprite->pixels);
+        }
+    #endif
+
     a__screen = *screen;
     free(screen);
 
     #if !A_CONFIG_LIB_RENDER_SOFTWARE
-        a_platform_api__renderTargetSet(a__screen.texture);
+        a_platform_api__renderTargetSet(a__screen.pixels->texture);
         a_platform_api__renderTargetClipSet(a__screen.clipX,
                                             a__screen.clipY,
                                             a__screen.clipWidth,

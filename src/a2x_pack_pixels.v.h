@@ -25,11 +25,13 @@ typedef struct APixels APixels;
 #include "a2x_pack_color.v.h"
 #include "a2x_pack_fix.v.h"
 #include "a2x_pack_main.v.h"
+#include "a2x_pack_platform.v.h"
 
 struct APixels {
     int w, h;
     APixel* buffer;
     size_t bufferSize;
+    APlatformTexture* texture;
     APixel bufferData[];
 };
 
@@ -40,6 +42,7 @@ extern APixels* a_pixels__dup(const APixels* Pixels);
 extern void a_pixels__free(APixels* Pixels);
 
 extern void a_pixels__bufferSet(APixels* Pixels, APixel* Buffer, int W, int H);
+extern void a_pixels__commit(APixels* Pixels);
 
 static inline APixel* a_pixels__bufferGetFrom(const APixels* Pixels, int X, int Y)
 {

@@ -45,12 +45,15 @@ APixels* a_pixels__dup(const APixels* Pixels)
     APixels* p = a_mem_dup(Pixels, sizeof(APixels) + Pixels->bufferSize);
 
     p->buffer = p->bufferData;
+    p->texture = NULL;
 
     return p;
 }
 
 void a_pixels__free(APixels* Pixels)
 {
+    a_platform_api__textureFree(Pixels->texture);
+
     free(Pixels);
 }
 
@@ -61,4 +64,10 @@ void a_pixels__bufferSet(APixels* Pixels, APixel* Buffer, int W, int H)
 
     Pixels->buffer = Buffer;
     Pixels->bufferSize = (size_t)(W * H * (int)sizeof(APixel));
+}
+
+void a_pixels__commit(APixels* Pixels)
+{
+    // Function is responsible for freeing the old Pixels->texture
+    Pixels->texture = a_platform_api__textureNewSprite(Pixels);
 }

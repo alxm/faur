@@ -20,12 +20,11 @@
 
 #include "a2x_pack_screen.p.h"
 
-#include "a2x_pack_platform.v.h"
+#include "a2x_pack_sprite.v.h"
 
 typedef struct {
     APixels* pixels;
     ASprite* sprite;
-    APlatformTexture* texture;
     int clipX, clipY;
     int clipX2, clipY2;
     int clipWidth, clipHeight;
