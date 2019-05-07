@@ -167,7 +167,7 @@ ASprite* a_sprite_newFromSprite(const ASprite* Sheet, int X, int Y)
 
 ASprite* a_sprite_newFromSpriteEx(const ASprite* Sheet, int X, int Y, int W, int H)
 {
-    ASprite* s = spriteNew(a_pixels__new(W, H));
+    ASprite* s = spriteNew(a_pixels__new(W, H, true, true));
 
     const APixel* src = a_pixels__bufferGetFrom(Sheet->pixels, X, Y);
     APixel* dst = s->pixels->buffer;
@@ -186,7 +186,7 @@ ASprite* a_sprite_newFromSpriteEx(const ASprite* Sheet, int X, int Y, int W, int
 
 ASprite* a_sprite_newBlank(int Width, int Height, bool ColorKeyed)
 {
-    ASprite* s = spriteNew(a_pixels__new(Width, Height));
+    ASprite* s = spriteNew(a_pixels__new(Width, Height, true, true));
 
     if(ColorKeyed) {
         a_pixels__fill(s->pixels, a_sprite__colorKey);
@@ -318,7 +318,7 @@ void a_sprite_sizeSetWidthPow2(ASprite* Sprite)
     }
 
     int newWidth = 1 << power;
-    APixels* newPixels = a_pixels__new(newWidth, Sprite->pixels->h);
+    APixels* newPixels = a_pixels__new(newWidth, Sprite->pixels->h, true, true);
     APixel* newBuffer = newPixels->buffer;
 
     int oldWidth = Sprite->pixels->w;

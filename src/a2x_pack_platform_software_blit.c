@@ -222,15 +222,12 @@ static bool hasTransparency(const APixel* Pixels, int Width, int Height)
     return false;
 }
 
-APlatformTexture* a_platform_api__textureNewScreen(const APixels* Pixels)
+APlatformTexture* a_platform_api__textureNew(const APixels* Pixels)
 {
-    A_UNUSED(Pixels);
+    if(!Pixels->isSprite) {
+        return NULL;
+    }
 
-    return NULL;
-}
-
-APlatformTexture* a_platform_api__textureNewSprite(const APixels* Pixels)
-{
     APlatformTexture* texture = Pixels->texture;
     const APixel* pixels = Pixels->buffer;
     int width = Pixels->w;

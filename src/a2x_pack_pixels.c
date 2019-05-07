@@ -20,22 +20,16 @@
 
 #include "a2x_pack_mem.v.h"
 
-APixels* a_pixels__new(int W, int H)
+APixels* a_pixels__new(int W, int H, bool IsSprite, bool AllocBuffer)
 {
-    return a_pixels__newEx(W, H, true);
-}
-
-APixels* a_pixels__newEx(int W, int H, bool AllocBuffer)
-{
-    size_t bufferSize = AllocBuffer
-                            ? (unsigned)W * (unsigned)H * sizeof(APixel) : 0;
-
+    size_t bufferSize = (size_t)(AllocBuffer * W * H * (int)sizeof(APixel));
     APixels* p = a_mem_zalloc(sizeof(APixels) + bufferSize);
 
     p->w = W;
     p->h = H;
     p->buffer = p->bufferData;
     p->bufferSize = bufferSize;
+    p->isSprite = IsSprite;
 
     return p;
 }
@@ -69,5 +63,5 @@ void a_pixels__bufferSet(APixels* Pixels, APixel* Buffer, int W, int H)
 void a_pixels__commit(APixels* Pixels)
 {
     // Function is responsible for freeing the old Pixels->texture
-    Pixels->texture = a_platform_api__textureNewSprite(Pixels);
+    Pixels->texture = a_platform_api__textureNew(Pixels);
 }

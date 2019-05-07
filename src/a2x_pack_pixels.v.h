@@ -32,12 +32,11 @@ struct APixels {
     APixel* buffer;
     size_t bufferSize;
     APlatformTexture* texture;
+    bool isSprite;
     APixel bufferData[];
 };
 
-extern APixels* a_pixels__newEx(int W, int H, bool AllocBuffer);
-
-extern APixels* a_pixels__new(int W, int H);
+extern APixels* a_pixels__new(int W, int H, bool IsSprite, bool AllocBuffer);
 extern APixels* a_pixels__dup(const APixels* Pixels);
 extern void a_pixels__free(APixels* Pixels);
 

@@ -37,8 +37,7 @@ static AList* g_stack; // list of AScreen
 
 static void initScreen(AScreen* Screen, int Width, int Height, bool AllocBuffer)
 {
-    Screen->pixels = a_pixels__newEx(Width, Height, AllocBuffer);
-    Screen->pixels->texture = a_platform_api__textureNewScreen(Screen->pixels);
+    Screen->pixels = a_pixels__new(Width, Height, false, AllocBuffer);
     Screen->sprite = NULL;
     Screen->clipX = 0;
     Screen->clipY = 0;
@@ -46,6 +45,8 @@ static void initScreen(AScreen* Screen, int Width, int Height, bool AllocBuffer)
     Screen->clipY2 = Height;
     Screen->clipWidth = Width;
     Screen->clipHeight = Height;
+
+    a_pixels__commit(Screen->pixels);
 }
 
 static void freeScreen(AScreen* Screen)

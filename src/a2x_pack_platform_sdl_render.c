@@ -330,96 +330,90 @@ void a_platform_api__drawCircleFilled(int X, int Y, int Radius)
     }
 }
 
-APlatformTexture* a_platform_api__textureNewScreen(const APixels* Pixels)
+APlatformTexture* a_platform_api__textureNew(const APixels* Pixels)
 {
-    APlatformTexture* screen = a_mem_malloc(sizeof(APlatformTexture));
-
-    screen->pixels = Pixels;
-    screen->buffer = NULL;
-    screen->texture[A_TEXTURE__NORMAL] = SDL_CreateTexture(
-                                            a__sdlRenderer,
-                                            A_SDL__PIXEL_FORMAT,
-                                            SDL_TEXTUREACCESS_TARGET,
-                                            Pixels->w,
-                                            Pixels->h);
-
-    if(screen->texture[A_TEXTURE__NORMAL] == NULL) {
-        A__FATAL("SDL_CreateTexture: %s", SDL_GetError());
+    if(!Pixels->isSprite && Pixels->texture) {
+        return Pixels->texture;
     }
 
-    if(SDL_SetTextureBlendMode(
-        screen->texture[A_TEXTURE__NORMAL], SDL_BLENDMODE_BLEND) < 0) {
-
-        a_out__error("SDL_SetTextureBlendMode: %s", SDL_GetError());
-    }
-
-    for(int t = 1; t < A_TEXTURE__NUM; t++) {
-        screen->texture[t] = NULL;
-    }
-
-    return screen;
-}
-
-APlatformTexture* a_platform_api__textureNewSprite(const APixels* Pixels)
-{
     APlatformTexture* texture = a_mem_zalloc(sizeof(APlatformTexture));
 
     texture->pixels = Pixels;
-    texture->buffer = a_mem_dup(Pixels->buffer, Pixels->bufferSize);
 
-    for(int t = 0; t < A_TEXTURE__NUM; t++) {
-        switch(t) {
-            case A_TEXTURE__NORMAL: {
-                for(int i = Pixels->w * Pixels->h; i--; ) {
-                    if(Pixels->buffer[i] != a_sprite__colorKey) {
-                        // Set full alpha for non-transparent pixel
-                        texture->buffer[i] |=
-                            (APixel)A__PX_MASK_A << A__PX_SHIFT_A;
-                    }
-                }
-            } break;
+    if(Pixels->isSprite) {
+        texture->buffer = a_mem_dup(Pixels->buffer, Pixels->bufferSize);
 
-            case A_TEXTURE__COLORMOD_BITMAP: {
-                for(int i = Pixels->w * Pixels->h; i--; ) {
-                    if(Pixels->buffer[i] == a_sprite__colorKey) {
-                        // Set full color for transparent pixel
-                        texture->buffer[i] |= a_pixel_fromHex(0xffffff);
+        for(int t = 0; t < A_TEXTURE__NUM; t++) {
+            switch(t) {
+                case A_TEXTURE__NORMAL: {
+                    for(int i = Pixels->w * Pixels->h; i--; ) {
+                        if(Pixels->buffer[i] != a_sprite__colorKey) {
+                            // Set full alpha for non-transparent pixel
+                            texture->buffer[i] |=
+                                (APixel)A__PX_MASK_A << A__PX_SHIFT_A;
+                        }
                     }
-                }
-            } break;
+                } break;
 
-            case A_TEXTURE__COLORMOD_FLAT: {
-                for(int i = Pixels->w * Pixels->h; i--;) {
-                    if(Pixels->buffer[i] != a_sprite__colorKey) {
-                        // Set full color for non-transparent pixel
-                        texture->buffer[i] |= a_pixel_fromHex(0xffffff);
+                case A_TEXTURE__COLORMOD_BITMAP: {
+                    for(int i = Pixels->w * Pixels->h; i--; ) {
+                        if(Pixels->buffer[i] == a_sprite__colorKey) {
+                            // Set full color for transparent pixel
+                            texture->buffer[i] |= a_pixel_fromHex(0xffffff);
+                        }
                     }
-                }
-            } break;
+                } break;
+
+                case A_TEXTURE__COLORMOD_FLAT: {
+                    for(int i = Pixels->w * Pixels->h; i--;) {
+                        if(Pixels->buffer[i] != a_sprite__colorKey) {
+                            // Set full color for non-transparent pixel
+                            texture->buffer[i] |= a_pixel_fromHex(0xffffff);
+                        }
+                    }
+                } break;
+            }
+
+            SDL_Texture* tex = SDL_CreateTexture(a__sdlRenderer,
+                                                 A_SDL__PIXEL_FORMAT,
+                                                 SDL_TEXTUREACCESS_TARGET,
+                                                 Pixels->w,
+                                                 Pixels->h);
+            if(tex == NULL) {
+                A__FATAL("SDL_CreateTexture: %s", SDL_GetError());
+            }
+
+            if(SDL_UpdateTexture(tex,
+                                 NULL,
+                                 texture->buffer,
+                                 Pixels->w * (int)sizeof(APixel)) < 0) {
+
+                A__FATAL("SDL_UpdateTexture: %s", SDL_GetError());
+            }
+
+            if(SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND) < 0) {
+                a_out__error("SDL_SetTextureBlendMode: %s", SDL_GetError());
+            }
+
+            texture->texture[t] = tex;
         }
+    } else {
+        texture->texture[A_TEXTURE__NORMAL] = SDL_CreateTexture(
+                                                a__sdlRenderer,
+                                                A_SDL__PIXEL_FORMAT,
+                                                SDL_TEXTUREACCESS_TARGET,
+                                                Pixels->w,
+                                                Pixels->h);
 
-        SDL_Texture* tex = SDL_CreateTexture(a__sdlRenderer,
-                                             A_SDL__PIXEL_FORMAT,
-                                             SDL_TEXTUREACCESS_TARGET,
-                                             Pixels->w,
-                                             Pixels->h);
-        if(tex == NULL) {
+        if(texture->texture[A_TEXTURE__NORMAL] == NULL) {
             A__FATAL("SDL_CreateTexture: %s", SDL_GetError());
         }
 
-        if(SDL_UpdateTexture(tex,
-                             NULL,
-                             texture->buffer,
-                             Pixels->w * (int)sizeof(APixel)) < 0) {
+        if(SDL_SetTextureBlendMode(
+            texture->texture[A_TEXTURE__NORMAL], SDL_BLENDMODE_BLEND) < 0) {
 
-            A__FATAL("SDL_UpdateTexture: %s", SDL_GetError());
-        }
-
-        if(SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND) < 0) {
             a_out__error("SDL_SetTextureBlendMode: %s", SDL_GetError());
         }
-
-        texture->texture[t] = tex;
     }
 
     if(Pixels->texture) {
