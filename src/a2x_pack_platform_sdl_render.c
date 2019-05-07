@@ -37,7 +37,6 @@ typedef enum {
 
 struct APlatformTexture {
     const APixels* pixels;
-    APixel* buffer;
     SDL_Texture* texture[A_TEXTURE__NUM];
 };
 
@@ -341,7 +340,7 @@ APlatformTexture* a_platform_api__textureNew(const APixels* Pixels)
     texture->pixels = Pixels;
 
     if(Pixels->isSprite) {
-        texture->buffer = a_mem_dup(Pixels->buffer, Pixels->bufferSize);
+        APixel* buffer = a_mem_dup(Pixels->buffer, Pixels->bufferSize);
 
         for(int t = 0; t < A_TEXTURE__NUM; t++) {
             switch(t) {
@@ -349,8 +348,7 @@ APlatformTexture* a_platform_api__textureNew(const APixels* Pixels)
                     for(int i = Pixels->w * Pixels->h; i--; ) {
                         if(Pixels->buffer[i] != a_sprite__colorKey) {
                             // Set full alpha for non-transparent pixel
-                            texture->buffer[i] |=
-                                (APixel)A__PX_MASK_A << A__PX_SHIFT_A;
+                            buffer[i] |= (APixel)A__PX_MASK_A << A__PX_SHIFT_A;
                         }
                     }
                 } break;
@@ -359,7 +357,7 @@ APlatformTexture* a_platform_api__textureNew(const APixels* Pixels)
                     for(int i = Pixels->w * Pixels->h; i--; ) {
                         if(Pixels->buffer[i] == a_sprite__colorKey) {
                             // Set full color for transparent pixel
-                            texture->buffer[i] |= a_pixel_fromHex(0xffffff);
+                            buffer[i] |= a_pixel_fromHex(0xffffff);
                         }
                     }
                 } break;
@@ -368,7 +366,7 @@ APlatformTexture* a_platform_api__textureNew(const APixels* Pixels)
                     for(int i = Pixels->w * Pixels->h; i--;) {
                         if(Pixels->buffer[i] != a_sprite__colorKey) {
                             // Set full color for non-transparent pixel
-                            texture->buffer[i] |= a_pixel_fromHex(0xffffff);
+                            buffer[i] |= a_pixel_fromHex(0xffffff);
                         }
                     }
                 } break;
@@ -383,10 +381,8 @@ APlatformTexture* a_platform_api__textureNew(const APixels* Pixels)
                 A__FATAL("SDL_CreateTexture: %s", SDL_GetError());
             }
 
-            if(SDL_UpdateTexture(tex,
-                                 NULL,
-                                 texture->buffer,
-                                 Pixels->w * (int)sizeof(APixel)) < 0) {
+            if(SDL_UpdateTexture(
+                tex, NULL, buffer, Pixels->w * (int)sizeof(APixel)) < 0) {
 
                 A__FATAL("SDL_UpdateTexture: %s", SDL_GetError());
             }
@@ -397,6 +393,8 @@ APlatformTexture* a_platform_api__textureNew(const APixels* Pixels)
 
             texture->texture[t] = tex;
         }
+
+        free(buffer);
     } else {
         texture->texture[A_TEXTURE__NORMAL] = SDL_CreateTexture(
                                                 a__sdlRenderer,
@@ -435,7 +433,6 @@ void a_platform_api__textureFree(APlatformTexture* Texture)
         }
     }
 
-    free(Texture->buffer);
     free(Texture);
 }
 
