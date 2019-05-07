@@ -18,7 +18,6 @@
 
 #include "a2x_pack_pixels.v.h"
 
-#include "a2x_pack_main.v.h"
 #include "a2x_pack_mem.v.h"
 
 APixels* a_pixels__new(int W, int H)
@@ -55,36 +54,6 @@ void a_pixels__free(APixels* Pixels)
     free(Pixels);
 }
 
-AVectorInt a_pixels__sizeGet(const APixels* Pixels)
-{
-    return (AVectorInt){Pixels->w, Pixels->h};
-}
-
-int a_pixels__sizeGetWidth(const APixels* Pixels)
-{
-    return Pixels->w;
-}
-
-int a_pixels__sizeGetHeight(const APixels* Pixels)
-{
-    return Pixels->h;
-}
-
-APixel* a_pixels__bufferGet(const APixels* Pixels)
-{
-    return Pixels->buffer;
-}
-
-APixel* a_pixels__bufferGetFrom(const APixels* Pixels, int X, int Y)
-{
-    return Pixels->buffer + Y * Pixels->w + X;
-}
-
-APixel a_pixels__bufferGetAt(const APixels* Pixels, int X, int Y)
-{
-    return *(Pixels->buffer + Y * Pixels->w + X);
-}
-
 void a_pixels__bufferSet(APixels* Pixels, APixel* Buffer, int W, int H)
 {
     Pixels->w = W;
@@ -92,40 +61,4 @@ void a_pixels__bufferSet(APixels* Pixels, APixel* Buffer, int W, int H)
 
     Pixels->buffer = Buffer;
     Pixels->bufferSize = (size_t)(W * H * (int)sizeof(APixel));
-}
-
-void a_pixels__clear(const APixels* Pixels)
-{
-    memset(Pixels->buffer, 0, Pixels->bufferSize);
-}
-
-void a_pixels__fill(const APixels* Pixels, APixel Value)
-{
-    APixel* buffer = Pixels->buffer;
-
-    for(int i = Pixels->w * Pixels->h; i--; ) {
-        *buffer++ = Value;
-    }
-}
-
-void a_pixels__copy(const APixels* Dst, const APixels* Src)
-{
-    #if A_CONFIG_BUILD_DEBUG
-        if(Src->w != Dst->w || Src->h != Dst->h
-            || Src->bufferSize > Dst->bufferSize) {
-
-            A__FATAL("a_pixels__copy(%dx%d, %dx%d): Different sizes",
-                     Dst->w,
-                     Dst->h,
-                     Src->w,
-                     Src->h);
-        }
-    #endif
-
-    memcpy(Dst->buffer, Src->buffer, Src->bufferSize);
-}
-
-void a_pixels__copyToBuffer(const APixels* Pixels, APixel* Buffer)
-{
-    memcpy(Buffer, Pixels->buffer, Pixels->bufferSize);
 }

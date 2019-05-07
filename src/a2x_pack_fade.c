@@ -18,7 +18,6 @@
 
 #include "a2x_pack_fade.v.h"
 
-#include "a2x_pack_color.v.h"
 #include "a2x_pack_draw.v.h"
 #include "a2x_pack_screen.v.h"
 #include "a2x_pack_time.v.h"

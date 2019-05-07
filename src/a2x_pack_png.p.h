@@ -19,10 +19,3 @@
 #pragma once
 
 #include "a2x_system_includes.h"
-
-#include "a2x_pack_color.p.h"
-#include "a2x_pack_pixels.p.h"
-
-extern APixels* a_png_readFile(const char* Path);
-extern APixels* a_png_readMemory(const uint8_t* Data);
-extern void a_png_write(const char* Path, const APixel* Data, int Width, int Height, char* Title, char* Description);

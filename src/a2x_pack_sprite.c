@@ -18,7 +18,6 @@
 
 #include "a2x_pack_sprite.v.h"
 
-#include "a2x_pack_color.v.h"
 #include "a2x_pack_main.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_png.v.h"
@@ -150,7 +149,7 @@ void a_sprite__commitTexture(ASprite* Sprite)
 
 ASprite* a_sprite_newFromPng(const char* Path)
 {
-    APixels* pixels = a_png_readFile(Path);
+    APixels* pixels = a_png__readFile(Path);
 
     if(pixels == NULL) {
         A__FATAL("a_sprite_newFromPng(%s): Cannot read file", Path);
@@ -287,12 +286,12 @@ void a_sprite_swapColors(ASprite* Sprite, const APixel* OldColors, const APixel*
 
 AVectorInt a_sprite_sizeGet(const ASprite* Sprite)
 {
-    return a_pixels__sizeGet(Sprite->pixels);
+    return (AVectorInt){Sprite->pixels->w, Sprite->pixels->h};
 }
 
 int a_sprite_sizeGetWidth(const ASprite* Sprite)
 {
-    return a_pixels__sizeGetWidth(Sprite->pixels);
+    return Sprite->pixels->w;
 }
 
 int a_sprite_sizeGetWidthLog2(const ASprite* Sprite)
@@ -307,7 +306,7 @@ int a_sprite_sizeGetWidthOriginal(const ASprite* Sprite)
 
 int a_sprite_sizeGetHeight(const ASprite* Sprite)
 {
-    return a_pixels__sizeGetHeight(Sprite->pixels);
+    return Sprite->pixels->h;
 }
 
 void a_sprite_sizeSetWidthPow2(ASprite* Sprite)

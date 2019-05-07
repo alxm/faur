@@ -24,6 +24,7 @@ typedef struct APixels APixels;
 
 #include "a2x_pack_color.v.h"
 #include "a2x_pack_fix.v.h"
+#include "a2x_pack_main.v.h"
 
 struct APixels {
     int w, h;
@@ -38,17 +39,50 @@ extern APixels* a_pixels__new(int W, int H);
 extern APixels* a_pixels__dup(const APixels* Pixels);
 extern void a_pixels__free(APixels* Pixels);
 
-extern AVectorInt a_pixels__sizeGet(const APixels* Pixels);
-extern int a_pixels__sizeGetWidth(const APixels* Pixels);
-extern int a_pixels__sizeGetHeight(const APixels* Pixels);
-
-extern APixel* a_pixels__bufferGet(const APixels* Pixels);
-extern APixel* a_pixels__bufferGetFrom(const APixels* Pixels, int X, int Y);
-extern APixel a_pixels__bufferGetAt(const APixels* Pixels, int X, int Y);
 extern void a_pixels__bufferSet(APixels* Pixels, APixel* Buffer, int W, int H);
 
-extern void a_pixels__clear(const APixels* Pixels);
-extern void a_pixels__fill(const APixels* Pixels, APixel Value);
+static inline APixel* a_pixels__bufferGetFrom(const APixels* Pixels, int X, int Y)
+{
+    return Pixels->buffer + Y * Pixels->w + X;
+}
 
-extern void a_pixels__copy(const APixels* Dst, const APixels* Src);
-extern void a_pixels__copyToBuffer(const APixels* Pixels, APixel* Buffer);
+static inline APixel a_pixels__bufferGetAt(const APixels* Pixels, int X, int Y)
+{
+    return *(Pixels->buffer + Y * Pixels->w + X);
+}
+
+static inline void a_pixels__clear(const APixels* Pixels)
+{
+    memset(Pixels->buffer, 0, Pixels->bufferSize);
+}
+
+static inline void a_pixels__fill(const APixels* Pixels, APixel Value)
+{
+    APixel* buffer = Pixels->buffer;
+
+    for(int i = Pixels->w * Pixels->h; i--; ) {
+        *buffer++ = Value;
+    }
+}
+
+static inline void a_pixels__copy(const APixels* Dst, const APixels* Src)
+{
+    #if A_CONFIG_BUILD_DEBUG
+        if(Src->w != Dst->w || Src->h != Dst->h
+            || Src->bufferSize > Dst->bufferSize) {
+
+            A__FATAL("a_pixels__copy(%dx%d, %dx%d): Different sizes",
+                     Dst->w,
+                     Dst->h,
+                     Src->w,
+                     Src->h);
+        }
+    #endif
+
+    memcpy(Dst->buffer, Src->buffer, Src->bufferSize);
+}
+
+static inline void a_pixels__copyToBuffer(const APixels* Pixels, APixel* Buffer)
+{
+    memcpy(Buffer, Pixels->buffer, Pixels->bufferSize);
+}

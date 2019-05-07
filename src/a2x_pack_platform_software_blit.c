@@ -19,7 +19,6 @@
 #include "a2x_pack_platform_software_blit.v.h"
 
 #if A_CONFIG_LIB_RENDER_SOFTWARE
-#include "a2x_pack_color.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_screen.v.h"
 
@@ -297,9 +296,9 @@ void a_platform_api__textureBlit(const APlatformTexture* Texture, int X, int Y, 
 {
     A_UNUSED(FillFlat);
 
-    AVectorInt size = a_pixels__sizeGet(Texture->spr->pixels);
+    const APixels* pixels = Texture->spr->pixels;
 
-    if(!a_screen_boxOnClip(X, Y, size.x, size.y)) {
+    if(!a_screen_boxOnClip(X, Y, pixels->w, pixels->h)) {
         return;
     }
 
@@ -307,7 +306,7 @@ void a_platform_api__textureBlit(const APlatformTexture* Texture, int X, int Y, 
         [a__color.blend]
         [a__color.fillBlit]
         [Texture->colorKeyed]
-        [!a_screen_boxInsideClip(X, Y, size.x, size.y)]
+        [!a_screen_boxInsideClip(X, Y, pixels->w, pixels->h)]
             (Texture, X, Y);
 }
 

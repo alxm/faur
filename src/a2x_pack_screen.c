@@ -19,7 +19,6 @@
 #include "a2x_pack_screen.v.h"
 
 #include "a2x_pack_collide.v.h"
-#include "a2x_pack_color.v.h"
 #include "a2x_pack_listit.v.h"
 #include "a2x_pack_main.v.h"
 #include "a2x_pack_mem.v.h"

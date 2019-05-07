@@ -60,7 +60,7 @@ static APixels* pngToPixels(png_structp Png, png_infop Info)
     return pixels;
 }
 
-APixels* a_png_readFile(const char* Path)
+APixels* a_png__readFile(const char* Path)
 {
     APixels* volatile pixels = NULL;
 
@@ -74,7 +74,7 @@ APixels* a_png_readFile(const char* Path)
     }
 
     if(a_path_test(a_file_pathGet(f), A_PATH_EMBEDDED)) {
-        pixels = a_png_readMemory(a_file__dataGet(f)->buffer);
+        pixels = a_png__readMemory(a_file__dataGet(f)->buffer);
         goto cleanUp;
     }
 
@@ -84,7 +84,7 @@ APixels* a_png_readFile(const char* Path)
     a_file_read(f, sig, PNG_SIG);
 
     if(png_sig_cmp(sig, 0, PNG_SIG) != 0) {
-        a_out__error("a_png_readFile(%s): Not a PNG", Path);
+        a_out__error("a_png__readFile(%s): Not a PNG", Path);
         goto cleanUp;
     }
 
@@ -111,7 +111,7 @@ APixels* a_png_readFile(const char* Path)
     int type = png_get_color_type(png, info);
 
     if(type != PNG_COLOR_TYPE_RGB && type != PNG_COLOR_TYPE_RGBA) {
-        a_out__error("a_png_readFile(%s): Not an RGB or RGBA PNG", Path);
+        a_out__error("a_png__readFile(%s): Not an RGB or RGBA PNG", Path);
         goto cleanUp;
     }
 
@@ -127,7 +127,7 @@ cleanUp:
     return pixels;
 }
 
-APixels* a_png_readMemory(const uint8_t* Data)
+APixels* a_png__readMemory(const uint8_t* Data)
 {
     APixels* volatile pixels = NULL;
 
@@ -145,7 +145,7 @@ APixels* a_png_readMemory(const uint8_t* Data)
     memcpy(sig, Data, PNG_SIG);
 
     if(png_sig_cmp(sig, 0, PNG_SIG) != 0) {
-        a_out__error("a_png_readMemory: Data not a PNG");
+        a_out__error("a_png__readMemory: Data not a PNG");
         goto cleanUp;
     }
 
@@ -171,7 +171,7 @@ APixels* a_png_readMemory(const uint8_t* Data)
     const int type = png_get_color_type(png, info);
 
     if(type != PNG_COLOR_TYPE_RGB && type != PNG_COLOR_TYPE_RGBA) {
-        a_out__error("a_png_readMemory: Data not an RGB or RGBA PNG");
+        a_out__error("a_png__readMemory: Data not an RGB or RGBA PNG");
         goto cleanUp;
     }
 
@@ -187,7 +187,7 @@ cleanUp:
     return pixels;
 }
 
-void a_png_write(const char* Path, const APixel* Data, int Width, int Height, char* Title, char* Description)
+void a_png__write(const char* Path, const APixel* Data, int Width, int Height, char* Title, char* Description)
 {
     AFile* f = a_file_new(Path, A_FILE_WRITE | A_FILE_BINARY);
 

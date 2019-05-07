@@ -21,7 +21,6 @@
 #if A_CONFIG_LIB_RENDER_SDL
 #include <SDL2/SDL.h>
 
-#include "a2x_pack_color.v.h"
 #include "a2x_pack_main.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
