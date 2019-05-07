@@ -38,7 +38,7 @@ static AList* g_stack; // list of AScreen
 
 static void initScreen(AScreen* Screen, int Width, int Height, bool AllocBuffer)
 {
-    Screen->pixels = a_pixels__new(Width, Height, AllocBuffer);
+    Screen->pixels = a_pixels__newEx(Width, Height, AllocBuffer);
     Screen->sprite = NULL;
     Screen->texture = a_platform_api__textureNewScreen(Width, Height);
     Screen->clipX = 0;
@@ -51,7 +51,7 @@ static void initScreen(AScreen* Screen, int Width, int Height, bool AllocBuffer)
 
 static void freeScreen(AScreen* Screen)
 {
-    a_pixels_free(Screen->pixels);
+    a_pixels__free(Screen->pixels);
 
     #if !A_CONFIG_LIB_RENDER_SOFTWARE
         a_platform_api__textureFree(Screen->texture);
@@ -232,7 +232,7 @@ void a_screen_copy(AScreen* Dst, const AScreen* Src)
     }
 
     #if A_CONFIG_LIB_RENDER_SOFTWARE
-        a_pixels_copy(Dst->pixels, Src->pixels);
+        a_pixels__copy(Dst->pixels, Src->pixels);
     #else
         a_color_push();
         a_color_blendSet(A_COLOR_BLEND_PLAIN);
@@ -303,7 +303,7 @@ void a_screen_blit(const AScreen* Screen)
         switch(a__color.blend) {
             case A_COLOR_BLEND_PLAIN: {
                 if(noClipping) {
-                    a_pixels_copy(a__screen.pixels, Screen->pixels);
+                    a_pixels__copy(a__screen.pixels, Screen->pixels);
                 } else {
                     dst +=
                         a__screen.pixels->w * a__screen.clipY + a__screen.clipX;
@@ -354,7 +354,7 @@ void a_screen_blit(const AScreen* Screen)
 void a_screen_clear(void)
 {
     #if A_CONFIG_LIB_RENDER_SOFTWARE
-        a_pixels_clear(a__screen.pixels);
+        a_pixels__clear(a__screen.pixels);
     #else
         a_color_push();
 

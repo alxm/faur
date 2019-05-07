@@ -20,7 +20,10 @@
 
 #include "a2x_pack_pixels.p.h"
 
+typedef struct APixels APixels;
+
 #include "a2x_pack_color.v.h"
+#include "a2x_pack_fix.v.h"
 
 struct APixels {
     int w, h;
@@ -29,6 +32,23 @@ struct APixels {
     APixel bufferData[];
 };
 
-extern APixels* a_pixels__new(int W, int H, bool AllocBuffer);
+extern APixels* a_pixels__newEx(int W, int H, bool AllocBuffer);
 
+extern APixels* a_pixels__new(int W, int H);
+extern APixels* a_pixels__dup(const APixels* Pixels);
+extern void a_pixels__free(APixels* Pixels);
+
+extern AVectorInt a_pixels__sizeGet(const APixels* Pixels);
+extern int a_pixels__sizeGetWidth(const APixels* Pixels);
+extern int a_pixels__sizeGetHeight(const APixels* Pixels);
+
+extern APixel* a_pixels__bufferGet(const APixels* Pixels);
+extern APixel* a_pixels__bufferGetFrom(const APixels* Pixels, int X, int Y);
+extern APixel a_pixels__bufferGetAt(const APixels* Pixels, int X, int Y);
 extern void a_pixels__bufferSet(APixels* Pixels, APixel* Buffer, int W, int H);
+
+extern void a_pixels__clear(const APixels* Pixels);
+extern void a_pixels__fill(const APixels* Pixels, APixel Value);
+
+extern void a_pixels__copy(const APixels* Dst, const APixels* Src);
+extern void a_pixels__copyToBuffer(const APixels* Pixels, APixel* Buffer);

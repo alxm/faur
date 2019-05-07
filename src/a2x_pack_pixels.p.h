@@ -19,26 +19,3 @@
 #pragma once
 
 #include "a2x_system_includes.h"
-
-typedef struct APixels APixels;
-
-#include "a2x_pack_color.p.h"
-#include "a2x_pack_fix.p.h"
-
-extern APixels* a_pixels_new(int W, int H);
-extern APixels* a_pixels_dup(const APixels* Pixels);
-extern void a_pixels_free(APixels* Pixels);
-
-extern AVectorInt a_pixels_sizeGet(const APixels* Pixels);
-extern int a_pixels_sizeGetWidth(const APixels* Pixels);
-extern int a_pixels_sizeGetHeight(const APixels* Pixels);
-
-extern APixel* a_pixels_bufferGet(const APixels* Pixels);
-extern APixel* a_pixels_bufferGetFrom(const APixels* Pixels, int X, int Y);
-extern APixel a_pixels_bufferGetAt(const APixels* Pixels, int X, int Y);
-
-extern void a_pixels_clear(const APixels* Pixels);
-extern void a_pixels_fill(const APixels* Pixels, APixel Value);
-
-extern void a_pixels_copy(const APixels* Dst, const APixels* Src);
-extern void a_pixels_copyToBuffer(const APixels* Pixels, APixel* Buffer);

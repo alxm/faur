@@ -53,13 +53,13 @@ static int findNextVerticalEdge(const ASprite* Sheet, int StartX, int StartY, in
     int h = Sheet->pixels->h;
 
     for(int x = StartX + *EdgeX + 1; x < w; x++) {
-        APixel p = a_pixels_bufferGetAt(Sheet->pixels, x, StartY);
+        APixel p = a_pixels__bufferGetAt(Sheet->pixels, x, StartY);
 
         if(p == a_sprite__colorLimit) {
             *EdgeX = x - StartX;
 
             int len = 1;
-            APixel* buffer = a_pixels_bufferGetFrom(
+            APixel* buffer = a_pixels__bufferGetFrom(
                                 Sheet->pixels, x, StartY + 1);
 
             for(int y = h - (StartY + 1); y--; ) {
@@ -81,13 +81,13 @@ static int findNextVerticalEdge(const ASprite* Sheet, int StartX, int StartY, in
 static int findNextHorizontalEdge(const ASprite* Sheet, int StartX, int StartY, int* EdgeY)
 {
     for(int y = StartY + *EdgeY + 1; y < Sheet->pixels->h; y++) {
-        APixel p = a_pixels_bufferGetAt(Sheet->pixels, StartX, y);
+        APixel p = a_pixels__bufferGetAt(Sheet->pixels, StartX, y);
 
         if(p == a_sprite__colorLimit) {
             *EdgeY = y - StartY;
 
             int len = 1;
-            APixel* buffer = a_pixels_bufferGetFrom(
+            APixel* buffer = a_pixels__bufferGetFrom(
                                 Sheet->pixels, StartX + 1, y);
 
             for(int x = Sheet->pixels->w - (StartX + 1); x--; ) {
@@ -174,9 +174,9 @@ ASprite* a_sprite_newFromSprite(const ASprite* Sheet, int X, int Y)
 
 ASprite* a_sprite_newFromSpriteEx(const ASprite* Sheet, int X, int Y, int W, int H)
 {
-    ASprite* s = spriteNew(a_pixels_new(W, H));
+    ASprite* s = spriteNew(a_pixels__new(W, H));
 
-    const APixel* src = a_pixels_bufferGetFrom(Sheet->pixels, X, Y);
+    const APixel* src = a_pixels__bufferGetFrom(Sheet->pixels, X, Y);
     APixel* dst = s->pixels->buffer;
 
     for(int i = H; i--; ) {
@@ -193,10 +193,10 @@ ASprite* a_sprite_newFromSpriteEx(const ASprite* Sheet, int X, int Y, int W, int
 
 ASprite* a_sprite_newBlank(int Width, int Height, bool ColorKeyed)
 {
-    ASprite* s = spriteNew(a_pixels_new(Width, Height));
+    ASprite* s = spriteNew(a_pixels__new(Width, Height));
 
     if(ColorKeyed) {
-        a_pixels_fill(s->pixels, a_sprite__colorKey);
+        a_pixels__fill(s->pixels, a_sprite__colorKey);
     }
 
     a_sprite__commitTexture(s);
@@ -206,7 +206,7 @@ ASprite* a_sprite_newBlank(int Width, int Height, bool ColorKeyed)
 
 ASprite* a_sprite_dup(const ASprite* Sprite)
 {
-    ASprite* clone = spriteNew(a_pixels_dup(Sprite->pixels));
+    ASprite* clone = spriteNew(a_pixels__dup(Sprite->pixels));
 
     a_sprite__commitTexture(clone);
 
@@ -231,7 +231,7 @@ void a_sprite_free(ASprite* Sprite)
     }
 
     a_platform_api__textureFree(Sprite->texture);
-    a_pixels_free(Sprite->pixels);
+    a_pixels__free(Sprite->pixels);
 
     free(Sprite->nameId);
     free(Sprite);
@@ -287,12 +287,12 @@ void a_sprite_swapColors(ASprite* Sprite, const APixel* OldColors, const APixel*
 
 AVectorInt a_sprite_sizeGet(const ASprite* Sprite)
 {
-    return a_pixels_sizeGet(Sprite->pixels);
+    return a_pixels__sizeGet(Sprite->pixels);
 }
 
 int a_sprite_sizeGetWidth(const ASprite* Sprite)
 {
-    return a_pixels_sizeGetWidth(Sprite->pixels);
+    return a_pixels__sizeGetWidth(Sprite->pixels);
 }
 
 int a_sprite_sizeGetWidthLog2(const ASprite* Sprite)
@@ -307,7 +307,7 @@ int a_sprite_sizeGetWidthOriginal(const ASprite* Sprite)
 
 int a_sprite_sizeGetHeight(const ASprite* Sprite)
 {
-    return a_pixels_sizeGetHeight(Sprite->pixels);
+    return a_pixels__sizeGetHeight(Sprite->pixels);
 }
 
 void a_sprite_sizeSetWidthPow2(ASprite* Sprite)
@@ -323,7 +323,7 @@ void a_sprite_sizeSetWidthPow2(ASprite* Sprite)
     }
 
     int newWidth = 1 << power;
-    APixels* newPixels = a_pixels_new(newWidth, Sprite->pixels->h);
+    APixels* newPixels = a_pixels__new(newWidth, Sprite->pixels->h);
     APixel* newBuffer = newPixels->buffer;
 
     int oldWidth = Sprite->pixels->w;
@@ -350,7 +350,7 @@ void a_sprite_sizeSetWidthPow2(ASprite* Sprite)
 
     Sprite->wLog2 = power;
 
-    a_pixels_free(Sprite->pixels);
+    a_pixels__free(Sprite->pixels);
     Sprite->pixels = newPixels;
 
     a_sprite__commitTexture(Sprite);
@@ -363,7 +363,7 @@ const APixel* a_sprite_pixelsGetBuffer(const ASprite* Sprite)
 
 APixel a_sprite_pixelsGetPixel(const ASprite* Sprite, int X, int Y)
 {
-    return a_pixels_bufferGetAt(Sprite->pixels, X, Y);
+    return a_pixels__bufferGetAt(Sprite->pixels, X, Y);
 }
 
 APixel a_sprite_colorKeyGet(void)

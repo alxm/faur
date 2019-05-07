@@ -302,7 +302,7 @@ void a_platform_api__screenShow(void)
 
             if(g_zoom <= 1) {
                 if(g_sdlScreen->pitch == g_sdlScreen->w * (int)sizeof(APixel)) {
-                    a_pixels_copyToBuffer(
+                    a_pixels__copyToBuffer(
                         a__screen.pixels, g_sdlScreen->pixels);
                 } else {
                     uint8_t* dst = g_sdlScreen->pixels;

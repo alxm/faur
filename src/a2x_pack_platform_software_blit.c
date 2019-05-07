@@ -297,7 +297,7 @@ void a_platform_api__textureBlit(const APlatformTexture* Texture, int X, int Y, 
 {
     A_UNUSED(FillFlat);
 
-    AVectorInt size = a_pixels_sizeGet(Texture->spr->pixels);
+    AVectorInt size = a_pixels__sizeGet(Texture->spr->pixels);
 
     if(!a_screen_boxOnClip(X, Y, size.x, size.y)) {
         return;

@@ -370,12 +370,12 @@ APlatformTexture* a_platform_api__textureNewSprite(const ASprite* Sprite)
 
     if(texture == NULL) {
         texture = a_mem_zalloc(sizeof(APlatformTexture));
-        texture->pixels = a_pixels_dup(Sprite->pixels);
+        texture->pixels = a_pixels__dup(Sprite->pixels);
     }
 
     if(texture->pixels->bufferSize < Sprite->pixels->bufferSize) {
-        a_pixels_free(texture->pixels);
-        texture->pixels = a_pixels_dup(Sprite->pixels);
+        a_pixels__free(texture->pixels);
+        texture->pixels = a_pixels__dup(Sprite->pixels);
     }
 
     texture->w = Sprite->pixels->w;
@@ -455,7 +455,7 @@ void a_platform_api__textureFree(APlatformTexture* Texture)
         }
     }
 
-    a_pixels_free(Texture->pixels);
+    a_pixels__free(Texture->pixels);
 
     free(Texture);
 }

@@ -23,7 +23,7 @@ static void A__FUNC_NAME(keyed, noclip)(const APlatformTexture* Texture, int X, 
     A__BLEND_SETUP;
 
     const int screenW = a__screen.pixels->w;
-    APixel* startDst = a_pixels_bufferGetFrom(a__screen.pixels, X, Y);
+    APixel* startDst = a_pixels__bufferGetFrom(a__screen.pixels, X, Y);
     const APixel* src = Texture->spr->pixels->buffer;
     const unsigned* spans = Texture->spans;
 
@@ -68,9 +68,9 @@ static void A__FUNC_NAME(keyed, doclip)(const APlatformTexture* Texture, int X, 
     const int rows = spriteH - yClipUp - yClipDown;
     const int columns = spriteW - xClipLeft - xClipRight;
 
-    APixel* startDst = a_pixels_bufferGetFrom(
+    APixel* startDst = a_pixels__bufferGetFrom(
                         a__screen.pixels, X + xClipLeft, Y + yClipUp);
-    const APixel* startSrc = a_pixels_bufferGetFrom(
+    const APixel* startSrc = a_pixels__bufferGetFrom(
                                 Texture->spr->pixels, xClipLeft, yClipUp);
 
     const unsigned* spans = Texture->spans;
@@ -144,7 +144,7 @@ static void A__FUNC_NAME(block, noclip)(const APlatformTexture* Texture, int X, 
     A__BLEND_SETUP;
 
     const int screenW = a__screen.pixels->w;
-    APixel* startDst = a_pixels_bufferGetFrom(a__screen.pixels, X, Y);
+    APixel* startDst = a_pixels__bufferGetFrom(a__screen.pixels, X, Y);
     const APixel* src = Texture->spr->pixels->buffer;
 
     for(int i = Texture->spr->pixels->h; i--; startDst += screenW) {
@@ -175,9 +175,9 @@ static void A__FUNC_NAME(block, doclip)(const APlatformTexture* Texture, int X, 
     const int rows = spriteH - yClipUp - yClipDown;
     const int columns = spriteW - xClipLeft - xClipRight;
 
-    APixel* startDst = a_pixels_bufferGetFrom(
+    APixel* startDst = a_pixels__bufferGetFrom(
                         a__screen.pixels, X + xClipLeft, Y + yClipUp);
-    const APixel* startSrc = a_pixels_bufferGetFrom(
+    const APixel* startSrc = a_pixels__bufferGetFrom(
                                 Texture->spr->pixels, xClipLeft, yClipUp);
 
     for(int i = rows; i--; startDst += screenW, startSrc += spriteW) {

@@ -21,12 +21,12 @@
 #include "a2x_pack_main.v.h"
 #include "a2x_pack_mem.v.h"
 
-APixels* a_pixels_new(int W, int H)
+APixels* a_pixels__new(int W, int H)
 {
-    return a_pixels__new(W, H, true);
+    return a_pixels__newEx(W, H, true);
 }
 
-APixels* a_pixels__new(int W, int H, bool AllocBuffer)
+APixels* a_pixels__newEx(int W, int H, bool AllocBuffer)
 {
     size_t bufferSize = AllocBuffer
                             ? (unsigned)W * (unsigned)H * sizeof(APixel) : 0;
@@ -41,7 +41,7 @@ APixels* a_pixels__new(int W, int H, bool AllocBuffer)
     return p;
 }
 
-APixels* a_pixels_dup(const APixels* Pixels)
+APixels* a_pixels__dup(const APixels* Pixels)
 {
     APixels* p = a_mem_dup(Pixels, sizeof(APixels) + Pixels->bufferSize);
 
@@ -50,37 +50,37 @@ APixels* a_pixels_dup(const APixels* Pixels)
     return p;
 }
 
-void a_pixels_free(APixels* Pixels)
+void a_pixels__free(APixels* Pixels)
 {
     free(Pixels);
 }
 
-AVectorInt a_pixels_sizeGet(const APixels* Pixels)
+AVectorInt a_pixels__sizeGet(const APixels* Pixels)
 {
     return (AVectorInt){Pixels->w, Pixels->h};
 }
 
-int a_pixels_sizeGetWidth(const APixels* Pixels)
+int a_pixels__sizeGetWidth(const APixels* Pixels)
 {
     return Pixels->w;
 }
 
-int a_pixels_sizeGetHeight(const APixels* Pixels)
+int a_pixels__sizeGetHeight(const APixels* Pixels)
 {
     return Pixels->h;
 }
 
-APixel* a_pixels_bufferGet(const APixels* Pixels)
+APixel* a_pixels__bufferGet(const APixels* Pixels)
 {
     return Pixels->buffer;
 }
 
-APixel* a_pixels_bufferGetFrom(const APixels* Pixels, int X, int Y)
+APixel* a_pixels__bufferGetFrom(const APixels* Pixels, int X, int Y)
 {
     return Pixels->buffer + Y * Pixels->w + X;
 }
 
-APixel a_pixels_bufferGetAt(const APixels* Pixels, int X, int Y)
+APixel a_pixels__bufferGetAt(const APixels* Pixels, int X, int Y)
 {
     return *(Pixels->buffer + Y * Pixels->w + X);
 }
@@ -94,12 +94,12 @@ void a_pixels__bufferSet(APixels* Pixels, APixel* Buffer, int W, int H)
     Pixels->bufferSize = (size_t)(W * H * (int)sizeof(APixel));
 }
 
-void a_pixels_clear(const APixels* Pixels)
+void a_pixels__clear(const APixels* Pixels)
 {
     memset(Pixels->buffer, 0, Pixels->bufferSize);
 }
 
-void a_pixels_fill(const APixels* Pixels, APixel Value)
+void a_pixels__fill(const APixels* Pixels, APixel Value)
 {
     APixel* buffer = Pixels->buffer;
 
@@ -108,13 +108,13 @@ void a_pixels_fill(const APixels* Pixels, APixel Value)
     }
 }
 
-void a_pixels_copy(const APixels* Dst, const APixels* Src)
+void a_pixels__copy(const APixels* Dst, const APixels* Src)
 {
     #if A_CONFIG_BUILD_DEBUG
         if(Src->w != Dst->w || Src->h != Dst->h
             || Src->bufferSize > Dst->bufferSize) {
 
-            A__FATAL("a_pixels_copy(%dx%d, %dx%d): Different sizes",
+            A__FATAL("a_pixels__copy(%dx%d, %dx%d): Different sizes",
                      Dst->w,
                      Dst->h,
                      Src->w,
@@ -125,7 +125,7 @@ void a_pixels_copy(const APixels* Dst, const APixels* Src)
     memcpy(Dst->buffer, Src->buffer, Src->bufferSize);
 }
 
-void a_pixels_copyToBuffer(const APixels* Pixels, APixel* Buffer)
+void a_pixels__copyToBuffer(const APixels* Pixels, APixel* Buffer)
 {
     memcpy(Buffer, Pixels->buffer, Pixels->bufferSize);
 }
