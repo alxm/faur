@@ -123,9 +123,9 @@ AFont* a_font_dup(const AFont* Font, APixel Color)
     for(unsigned i = a_spriteframes_framesNumGet(frames); i--; ) {
         ASprite* sprite = a_spriteframes_getNext(frames);
 
-        a_screen_targetPush(sprite);
+        a_screen_push(sprite);
         a_sprite_blit(sprite, 0, 0);
-        a_screen_targetPop();
+        a_screen_pop();
     }
 
     a_color_pop();

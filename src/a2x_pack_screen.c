@@ -362,7 +362,7 @@ void a_screen_clear(void)
     #endif
 }
 
-void a_screen_targetPush(ASprite* Sprite)
+void a_screen_push(ASprite* Sprite)
 {
     a_list_push(g_stack, a_mem_dup(&a__screen, sizeof(AScreen)));
 
@@ -376,12 +376,12 @@ void a_screen_targetPush(ASprite* Sprite)
     a_screen_clipReset();
 }
 
-void a_screen_targetPop(void)
+void a_screen_pop(void)
 {
     AScreen* screen = a_list_pop(g_stack);
 
     if(screen == NULL) {
-        A__FATAL("a_screen_targetPop: Stack is empty");
+        A__FATAL("a_screen_pop: Stack is empty");
     }
 
     #if A_CONFIG_LIB_RENDER_SOFTWARE

@@ -30,8 +30,8 @@ extern int a_screen_sizeGetHeight(void);
 
 extern void a_screen_clear(void);
 
-extern void a_screen_targetPush(ASprite* Sprite);
-extern void a_screen_targetPop(void);
+extern void a_screen_push(ASprite* Sprite);
+extern void a_screen_pop(void);
 
 extern void a_screen_clipSet(int X, int Y, int Width, int Height);
 extern void a_screen_clipReset(void);
