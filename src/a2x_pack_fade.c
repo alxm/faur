@@ -18,7 +18,6 @@
 
 #include "a2x_pack_fade.v.h"
 
-#include "a2x_pack_color.v.h"
 #include "a2x_pack_draw.v.h"
 #include "a2x_pack_screen.v.h"
 #include "a2x_pack_time.v.h"
@@ -43,7 +42,8 @@ static struct {
 
 void a_fade__init(void)
 {
-    g_fade.capturedScreen = a_screen_new(a__screen.width, a__screen.height);
+    g_fade.capturedScreen = a_screen_new(
+                                a__screen.pixels->w, a__screen.pixels->h);
 }
 
 void a_fade__uninit(void)

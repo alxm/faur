@@ -24,6 +24,7 @@
 #include "a2x_pack_file.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
+#include "a2x_pack_pixels.v.h"
 
 typedef struct {
     const uint8_t* data;
@@ -38,30 +39,31 @@ static void readFunction(png_structp Png, png_bytep Data, png_size_t Length)
     stream->offset += Length;
 }
 
-static void pngToPixels(png_structp Png, png_infop Info, APixel** Pixels, int* Width, int* Height)
+static APixels* pngToPixels(png_structp Png, png_infop Info)
 {
     png_uint_32 w = png_get_image_width(Png, Info);
     png_uint_32 h = png_get_image_height(Png, Info);
     unsigned numChannels = png_get_channels(Png, Info);
-
-    APixel* pixels = a_mem_malloc(w * h * sizeof(APixel));
     png_bytepp rows = png_get_rows(Png, Info);
 
-    *Width = (int)w;
-    *Height = (int)h;
-    *Pixels = pixels;
+    APixels* pixels = a_pixels__new((int)w, (int)h, true, true);
+    APixel* buffer = pixels->buffer;
 
     for(png_uint_32 y = h; y--; rows++) {
         for(png_uint_32 x = w, chOffset = 0; x--; chOffset += numChannels) {
-            *pixels++ = a_pixel_fromRgb(rows[0][chOffset + 0],
+            *buffer++ = a_pixel_fromRgb(rows[0][chOffset + 0],
                                         rows[0][chOffset + 1],
                                         rows[0][chOffset + 2]);
         }
     }
+
+    return pixels;
 }
 
-void a_png_readFile(const char* Path, APixel** Pixels, int* Width, int* Height)
+APixels* a_png__readFile(const char* Path)
 {
+    APixels* volatile pixels = NULL;
+
     png_structp png = NULL;
     png_infop info = NULL;
 
@@ -72,7 +74,7 @@ void a_png_readFile(const char* Path, APixel** Pixels, int* Width, int* Height)
     }
 
     if(a_path_test(a_file_pathGet(f), A_PATH_EMBEDDED)) {
-        a_png_readMemory(a_file__dataGet(f)->buffer, Pixels, Width, Height);
+        pixels = a_png__readMemory(a_file__dataGet(f)->buffer);
         goto cleanUp;
     }
 
@@ -82,7 +84,7 @@ void a_png_readFile(const char* Path, APixel** Pixels, int* Width, int* Height)
     a_file_read(f, sig, PNG_SIG);
 
     if(png_sig_cmp(sig, 0, PNG_SIG) != 0) {
-        a_out__error("a_png_readFile(%s): Not a PNG", Path);
+        a_out__error("a_png__readFile(%s): Not a PNG", Path);
         goto cleanUp;
     }
 
@@ -109,11 +111,11 @@ void a_png_readFile(const char* Path, APixel** Pixels, int* Width, int* Height)
     int type = png_get_color_type(png, info);
 
     if(type != PNG_COLOR_TYPE_RGB && type != PNG_COLOR_TYPE_RGBA) {
-        a_out__error("a_png_readFile(%s): Not an RGB or RGBA PNG", Path);
+        a_out__error("a_png__readFile(%s): Not an RGB or RGBA PNG", Path);
         goto cleanUp;
     }
 
-    pngToPixels(png, info, Pixels, Width, Height);
+    pixels = pngToPixels(png, info);
 
 cleanUp:
     if(png) {
@@ -121,10 +123,14 @@ cleanUp:
     }
 
     a_file_free(f);
+
+    return pixels;
 }
 
-void a_png_readMemory(const uint8_t* Data, APixel** Pixels, int* Width, int* Height)
+APixels* a_png__readMemory(const uint8_t* Data)
 {
+    APixels* volatile pixels = NULL;
+
     AByteStream* stream = a_mem_malloc(sizeof(AByteStream));
 
     stream->data = Data;
@@ -139,7 +145,7 @@ void a_png_readMemory(const uint8_t* Data, APixel** Pixels, int* Width, int* Hei
     memcpy(sig, Data, PNG_SIG);
 
     if(png_sig_cmp(sig, 0, PNG_SIG) != 0) {
-        a_out__error("a_png_readMemory: Data not a PNG");
+        a_out__error("a_png__readMemory: Data not a PNG");
         goto cleanUp;
     }
 
@@ -165,11 +171,11 @@ void a_png_readMemory(const uint8_t* Data, APixel** Pixels, int* Width, int* Hei
     const int type = png_get_color_type(png, info);
 
     if(type != PNG_COLOR_TYPE_RGB && type != PNG_COLOR_TYPE_RGBA) {
-        a_out__error("a_png_readMemory: Data not an RGB or RGBA PNG");
+        a_out__error("a_png__readMemory: Data not an RGB or RGBA PNG");
         goto cleanUp;
     }
 
-    pngToPixels(png, info, Pixels, Width, Height);
+    pixels = pngToPixels(png, info);
 
 cleanUp:
     if(png) {
@@ -177,9 +183,11 @@ cleanUp:
     }
 
     free(stream);
+
+    return pixels;
 }
 
-void a_png_write(const char* Path, const APixel* Data, int Width, int Height, char* Title, char* Description)
+void a_png__write(const char* Path, const APixel* Data, int Width, int Height, char* Title, char* Description)
 {
     AFile* f = a_file_new(Path, A_FILE_WRITE | A_FILE_BINARY);
 

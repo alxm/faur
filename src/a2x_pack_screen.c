@@ -19,7 +19,6 @@
 #include "a2x_pack_screen.v.h"
 
 #include "a2x_pack_collide.v.h"
-#include "a2x_pack_color.v.h"
 #include "a2x_pack_listit.v.h"
 #include "a2x_pack_main.v.h"
 #include "a2x_pack_mem.v.h"
@@ -38,36 +37,21 @@ static AList* g_stack; // list of AScreen
 
 static void initScreen(AScreen* Screen, int Width, int Height, bool AllocBuffer)
 {
-    Screen->pixelsSize = (unsigned)Width * (unsigned)Height * sizeof(APixel);
-
-    if(AllocBuffer) {
-        Screen->pixels = a_mem_zalloc(Screen->pixelsSize);
-    } else {
-        Screen->pixels = NULL;
-    }
-
+    Screen->pixels = a_pixels__new(Width, Height, false, AllocBuffer);
     Screen->sprite = NULL;
-    Screen->texture = a_platform_api__textureNewScreen(Width, Height);
-    Screen->width = Width;
-    Screen->height = Height;
     Screen->clipX = 0;
     Screen->clipY = 0;
     Screen->clipX2 = Width;
     Screen->clipY2 = Height;
     Screen->clipWidth = Width;
     Screen->clipHeight = Height;
-    Screen->ownsBuffer = AllocBuffer;
+
+    a_pixels__commit(Screen->pixels);
 }
 
 static void freeScreen(AScreen* Screen)
 {
-    if(Screen->ownsBuffer) {
-        free(Screen->pixels);
-    }
-
-    #if !A_CONFIG_LIB_RENDER_SOFTWARE
-        a_platform_api__textureFree(Screen->texture);
-    #endif
+    a_pixels__free(Screen->pixels);
 }
 
 void a_screen__init(void)
@@ -107,7 +91,7 @@ void a_screen__init(void)
 
     #if !A_CONFIG_LIB_RENDER_SOFTWARE
         initScreen(&a__screen, width, height, true);
-        a_platform_api__renderTargetSet(a__screen.texture);
+        a_platform_api__renderTargetSet(a__screen.pixels->texture);
     #endif
 
     #if A_CONFIG_TRAIT_DESKTOP
@@ -179,40 +163,29 @@ void a_screen__draw(void)
     a_platform_api__screenShow();
 }
 
-bool a_screen__sameSize(const AScreen* Screen1, const AScreen* Screen2)
-{
-    return Screen1->width == Screen2->width
-        && Screen1->height == Screen2->height;
-}
-
 APixel* a_screen_pixelsGetBuffer(void)
 {
     #if !A_CONFIG_LIB_RENDER_SOFTWARE
-        if(a__screen.pixels == NULL) {
-            a__screen.pixels = a_mem_malloc(a__screen.pixelsSize);
-            a__screen.ownsBuffer = true;
-        }
-
-        a_platform_api__renderTargetPixelsGet(
-            a__screen.pixels, a__screen.width);
+        a_platform_api__renderTargetPixelsCapture(
+            a__screen.pixels->buffer, a__screen.pixels->w);
     #endif
 
-    return a__screen.pixels;
+    return a__screen.pixels->buffer;
 }
 
 AVectorInt a_screen_sizeGet(void)
 {
-    return (AVectorInt){a__screen.width, a__screen.height};
+    return (AVectorInt){a__screen.pixels->w, a__screen.pixels->h};
 }
 
 int a_screen_sizeGetWidth(void)
 {
-    return a__screen.width;
+    return a__screen.pixels->w;
 }
 
 int a_screen_sizeGetHeight(void)
 {
-    return a__screen.height;
+    return a__screen.pixels->h;
 }
 
 AScreen* a_screen_new(int Width, int Height)
@@ -228,15 +201,6 @@ AScreen* a_screen_new(int Width, int Height)
     return s;
 }
 
-AScreen* a_screen_dup(void)
-{
-    AScreen* s = a_screen_new(a__screen.width, a__screen.height);
-
-    a_screen_copy(s, &a__screen);
-
-    return s;
-}
-
 void a_screen_free(AScreen* Screen)
 {
     if(Screen == NULL) {
@@ -247,28 +211,35 @@ void a_screen_free(AScreen* Screen)
     free(Screen);
 }
 
+static inline bool sameSize(const AScreen* Screen1, const AScreen* Screen2)
+{
+    return Screen1->pixels->w == Screen2->pixels->w
+        && Screen1->pixels->h == Screen2->pixels->h;
+}
+
 void a_screen_copy(AScreen* Dst, const AScreen* Src)
 {
-    if(!a_screen__sameSize(Dst, Src)) {
+    if(!sameSize(Dst, Src)) {
         A__FATAL("a_screen_copy(%dx%d, %dx%d): Different sizes",
-                 Dst->width,
-                 Dst->height,
-                 Src->width,
-                 Src->height);
+                 Dst->pixels->w,
+                 Dst->pixels->h,
+                 Src->pixels->w,
+                 Src->pixels->h);
     }
 
     #if A_CONFIG_LIB_RENDER_SOFTWARE
-        memcpy(Dst->pixels, Src->pixels, Src->pixelsSize);
+        a_pixels__copy(Dst->pixels, Src->pixels);
     #else
         a_color_push();
         a_color_blendSet(A_COLOR_BLEND_PLAIN);
 
-        a_platform_api__renderTargetSet(Dst->texture);
-        a_platform_api__renderTargetClipSet(0, 0, Dst->width, Dst->height);
+        a_platform_api__renderTargetSet(Dst->pixels->texture);
+        a_platform_api__renderTargetClipSet(
+            0, 0, Dst->pixels->w, Dst->pixels->h);
 
-        a_platform_api__textureBlit(Src->texture, 0, 0, false);
+        a_platform_api__textureBlit(Src->pixels->texture, 0, 0, false);
 
-        a_platform_api__renderTargetSet(a__screen.texture);
+        a_platform_api__renderTargetSet(a__screen.pixels->texture);
         a_platform_api__renderTargetClipSet(a__screen.clipX,
                                             a__screen.clipY,
                                             a__screen.clipWidth,
@@ -280,63 +251,67 @@ void a_screen_copy(AScreen* Dst, const AScreen* Src)
 
 void a_screen_blit(const AScreen* Screen)
 {
-    if(!a_screen__sameSize(&a__screen, Screen)) {
+    if(!sameSize(&a__screen, Screen)) {
         A__FATAL("a_screen_blit(%dx%d): Current screen is %dx%d",
-                 Screen->width,
-                 Screen->height,
-                 a__screen.width,
-                 a__screen.height);
+                 Screen->pixels->w,
+                 Screen->pixels->h,
+                 a__screen.pixels->w,
+                 a__screen.pixels->h);
     }
 
     #if A_CONFIG_LIB_RENDER_SOFTWARE
         bool noClipping = a_screen_boxInsideClip(
-                            0, 0, a__screen.width, a__screen.height);
-        APixel* dst = a__screen.pixels;
-        APixel* src = Screen->pixels;
+                            0, 0, a__screen.pixels->w, a__screen.pixels->h);
+        APixel* dst = a__screen.pixels->buffer;
+        APixel* src = Screen->pixels->buffer;
         ARgb rgb = {0, 0, 0};
         int alpha = a__color.alpha;
 
-        #define LOOP(Blend, Setup, Params)                                  \
-            if(noClipping) {                                                \
-                for(int i = Screen->width * Screen->height; i--; ) {        \
-                    Setup;                                                  \
-                    a_color__draw_##Blend Params;                           \
-                    dst++;                                                  \
-                    src++;                                                  \
-                }                                                           \
-            } else {                                                        \
-                ptrdiff_t offset = a__screen.width - a__screen.clipWidth;   \
-                                                                            \
-                dst += a__screen.width * a__screen.clipY + a__screen.clipX; \
-                src += a__screen.width * a__screen.clipY + a__screen.clipX; \
-                                                                            \
-                for(int i = a__screen.clipHeight; i--; ) {                  \
-                    for(int j = a__screen.clipWidth; j--; ) {               \
-                        Setup;                                              \
-                        a_color__draw_##Blend Params;                       \
-                        dst++;                                              \
-                        src++;                                              \
-                    }                                                       \
-                                                                            \
-                    dst += offset;                                          \
-                    src += offset;                                          \
-                }                                                           \
+        #define LOOP(Blend, Setup, Params)                                    \
+            if(noClipping) {                                                  \
+                for(int i = Screen->pixels->w * Screen->pixels->h; i--; ) {   \
+                    Setup;                                                    \
+                    a_color__draw_##Blend Params;                             \
+                    dst++;                                                    \
+                    src++;                                                    \
+                }                                                             \
+            } else {                                                          \
+                ptrdiff_t offset = a__screen.pixels->w - a__screen.clipWidth; \
+                                                                              \
+                dst +=                                                        \
+                    a__screen.pixels->w * a__screen.clipY + a__screen.clipX;  \
+                src +=                                                        \
+                    a__screen.pixels->w * a__screen.clipY + a__screen.clipX;  \
+                                                                              \
+                for(int i = a__screen.clipHeight; i--; ) {                    \
+                    for(int j = a__screen.clipWidth; j--; ) {                 \
+                        Setup;                                                \
+                        a_color__draw_##Blend Params;                         \
+                        dst++;                                                \
+                        src++;                                                \
+                    }                                                         \
+                                                                              \
+                    dst += offset;                                            \
+                    src += offset;                                            \
+                }                                                             \
             }
 
         switch(a__color.blend) {
             case A_COLOR_BLEND_PLAIN: {
                 if(noClipping) {
-                    memcpy(dst, src, Screen->pixelsSize);
+                    a_pixels__copy(a__screen.pixels, Screen->pixels);
                 } else {
-                    dst += a__screen.width * a__screen.clipY + a__screen.clipX;
-                    src += a__screen.width * a__screen.clipY + a__screen.clipX;
+                    dst +=
+                        a__screen.pixels->w * a__screen.clipY + a__screen.clipX;
+                    src +=
+                        a__screen.pixels->w * a__screen.clipY + a__screen.clipX;
 
                     for(int i = a__screen.clipHeight; i--; ) {
                         memcpy(dst,
                                src,
                                (unsigned)a__screen.clipWidth * sizeof(APixel));
-                        dst += a__screen.width;
-                        src += a__screen.width;
+                        dst += a__screen.pixels->w;
+                        src += a__screen.pixels->w;
                     }
                 }
             } break;
@@ -368,14 +343,14 @@ void a_screen_blit(const AScreen* Screen)
             default: break;
         }
     #else
-        a_platform_api__textureBlit(Screen->texture, 0, 0, false);
+        a_platform_api__textureBlit(Screen->pixels->texture, 0, 0, false);
     #endif
 }
 
 void a_screen_clear(void)
 {
     #if A_CONFIG_LIB_RENDER_SOFTWARE
-        memset(a__screen.pixels, 0, a__screen.pixelsSize);
+        a_pixels__clear(a__screen.pixels);
     #else
         a_color_push();
 
@@ -387,65 +362,39 @@ void a_screen_clear(void)
     #endif
 }
 
-static void pushTarget(APixel* Pixels, size_t PixelsSize, int Width, int Height, APlatformTexture* Texture, ASprite* Sprite)
+void a_screen_push(ASprite* Sprite)
 {
     a_list_push(g_stack, a_mem_dup(&a__screen, sizeof(AScreen)));
 
-    a__screen.pixels = Pixels;
-    a__screen.pixelsSize = PixelsSize;
+    a__screen.pixels = Sprite->pixels;
     a__screen.sprite = Sprite;
-    a__screen.texture = Texture;
-    a__screen.width = Width;
-    a__screen.height = Height;
-    a__screen.ownsBuffer = false;
 
     #if !A_CONFIG_LIB_RENDER_SOFTWARE
-        a_platform_api__renderTargetSet(Texture);
+        a_platform_api__renderTargetSet(a__screen.pixels->texture);
     #endif
 
     a_screen_clipReset();
 }
 
-void a_screen_targetPushScreen(const AScreen* Screen)
+void a_screen_pop(void)
 {
-    pushTarget(Screen->pixels,
-               Screen->pixelsSize,
-               Screen->width,
-               Screen->height,
-               Screen->texture,
-               NULL);
-}
-
-void a_screen_targetPushSprite(ASprite* Sprite)
-{
-    pushTarget(Sprite->pixels,
-               Sprite->pixelsSize,
-               Sprite->w,
-               Sprite->h,
-               Sprite->texture,
-               Sprite);
-}
-
-void a_screen_targetPop(void)
-{
-    #if A_CONFIG_LIB_RENDER_SOFTWARE
-        if(a__screen.sprite) {
-            a__screen.sprite->texture = a_platform_api__textureNewSprite(
-                                            a__screen.sprite);
-        }
-    #endif
-
     AScreen* screen = a_list_pop(g_stack);
 
     if(screen == NULL) {
-        A__FATAL("a_screen_targetPop: Stack is empty");
+        A__FATAL("a_screen_pop: Stack is empty");
     }
+
+    #if A_CONFIG_LIB_RENDER_SOFTWARE
+        if(a__screen.sprite) {
+            a_pixels__commit(a__screen.sprite->pixels);
+        }
+    #endif
 
     a__screen = *screen;
     free(screen);
 
     #if !A_CONFIG_LIB_RENDER_SOFTWARE
-        a_platform_api__renderTargetSet(a__screen.texture);
+        a_platform_api__renderTargetSet(a__screen.pixels->texture);
         a_platform_api__renderTargetClipSet(a__screen.clipX,
                                             a__screen.clipY,
                                             a__screen.clipWidth,
@@ -462,8 +411,8 @@ void a_screen_clipSet(int X, int Y, int Width, int Height)
             Y,
             Width,
             Height,
-            a__screen.width,
-            a__screen.height);
+            a__screen.pixels->w,
+            a__screen.pixels->h);
 
         return;
     }
@@ -482,19 +431,19 @@ void a_screen_clipSet(int X, int Y, int Width, int Height)
 
 void a_screen_clipReset(void)
 {
-    a_screen_clipSet(0, 0, a__screen.width, a__screen.height);
+    a_screen_clipSet(0, 0, a__screen.pixels->w, a__screen.pixels->h);
 }
 
 bool a_screen_boxOnScreen(int X, int Y, int W, int H)
 {
     return a_collide_boxAndBox(X, Y, W, H,
-                               0, 0, a__screen.width, a__screen.height);
+                               0, 0, a__screen.pixels->w, a__screen.pixels->h);
 }
 
 bool a_screen_boxInsideScreen(int X, int Y, int W, int H)
 {
     return X >= 0 && Y >= 0
-        && X + W <= a__screen.width && Y + H <= a__screen.height;
+        && X + W <= a__screen.pixels->w && Y + H <= a__screen.pixels->h;
 }
 
 bool a_screen_boxOnClip(int X, int Y, int W, int H)

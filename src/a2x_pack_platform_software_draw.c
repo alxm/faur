@@ -19,7 +19,6 @@
 #include "a2x_pack_platform_software_draw.v.h"
 
 #if A_CONFIG_LIB_RENDER_SOFTWARE
-#include "a2x_pack_color.v.h"
 #include "a2x_pack_draw.v.h"
 #include "a2x_pack_screen.v.h"
 

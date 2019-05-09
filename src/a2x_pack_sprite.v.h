@@ -20,14 +20,12 @@
 
 #include "a2x_pack_sprite.p.h"
 
-#include "a2x_pack_platform.v.h"
+#include "a2x_pack_pixels.v.h"
 
 struct ASprite {
-    APixel* pixels;
-    size_t pixelsSize;
     char* nameId;
-    int w, wOriginal, wLog2, h;
-    APlatformTexture* texture;
+    int wOriginal, wLog2;
+    APixels* pixels;
 };
 
 extern APixel a_sprite__colorKey;
@@ -39,4 +37,3 @@ extern void a_sprite__init(void);
 extern AVectorInt a_sprite__boundsFind(const ASprite* Sheet, int X, int Y);
 
 #define A_SPRITE__NAME(Sprite) (Sprite->nameId ? Sprite->nameId : "Sprite")
-#define a_sprite__pixelsGetPixel(s, x, y) (*((s)->pixels + (y) * (s)->w + (x)))

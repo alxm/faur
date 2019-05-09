@@ -54,7 +54,7 @@ extern void a_platform_api__screenMouseCursorSet(bool Show);
 extern void a_platform_api__renderSetDrawColor(void);
 extern void a_platform_api__renderSetBlendMode(void);
 extern void a_platform_api__renderTargetSet(APlatformTexture* Texture);
-extern void a_platform_api__renderTargetPixelsGet(APixel* Pixels, int Width);
+extern void a_platform_api__renderTargetPixelsCapture(APixel* Pixels, int Width);
 extern void a_platform_api__renderTargetClipSet(int X, int Y, int Width, int Height);
 
 extern void a_platform_api__drawPixel(int X, int Y);
@@ -66,8 +66,7 @@ extern void a_platform_api__drawRectangleOutline(int X, int Y, int Width, int He
 extern void a_platform_api__drawCircleOutline(int X, int Y, int Radius);
 extern void a_platform_api__drawCircleFilled(int X, int Y, int Radius);
 
-extern APlatformTexture* a_platform_api__textureNewScreen(int Width, int Height);
-extern APlatformTexture* a_platform_api__textureNewSprite(const ASprite* Sprite);
+extern APlatformTexture* a_platform_api__textureNew(const APixels* Pixels);
 extern void a_platform_api__textureFree(APlatformTexture* Texture);
 extern void a_platform_api__textureBlit(const APlatformTexture* Texture, int X, int Y, bool FillFlat);
 extern void a_platform_api__textureBlitEx(const APlatformTexture* Texture, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY, bool FillFlat);

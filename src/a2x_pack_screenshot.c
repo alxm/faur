@@ -120,10 +120,10 @@ static void takeScreenshot(void)
                         "%s%05d.png", g_filePrefix, g_screenshotNumber);
 
     a_out__info("Saving screenshot '%s'", name);
-    a_png_write(name,
+    a_png__write(name,
                 a_screen_pixelsGetBuffer(),
-                a__screen.width,
-                a__screen.height,
+                a__screen.pixels->w,
+                a__screen.pixels->h,
                 g_title,
                 g_description);
 }

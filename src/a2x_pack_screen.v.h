@@ -20,23 +20,15 @@
 
 #include "a2x_pack_screen.p.h"
 
-#include "a2x_pack_platform.v.h"
+#include "a2x_pack_sprite.v.h"
 
-struct AScreen {
-    APixel* pixels;
-    size_t pixelsSize;
+typedef struct {
+    APixels* pixels;
     ASprite* sprite;
-    APlatformTexture* texture;
-    int width;
-    int height;
-    int clipX;
-    int clipY;
-    int clipX2;
-    int clipY2;
-    int clipWidth;
-    int clipHeight;
-    bool ownsBuffer;
-};
+    int clipX, clipY;
+    int clipX2, clipY2;
+    int clipWidth, clipHeight;
+} AScreen;
 
 extern AScreen a__screen;
 
@@ -46,4 +38,8 @@ extern void a_screen__uninit(void);
 extern void a_screen__tick(void);
 extern void a_screen__draw(void);
 
-extern bool a_screen__sameSize(const AScreen* Screen1, const AScreen* Screen2);
+extern AScreen* a_screen_new(int Width, int Height);
+extern void a_screen_free(AScreen* Screen);
+
+extern void a_screen_copy(AScreen* Dst, const AScreen* Src);
+extern void a_screen_blit(const AScreen* Screen);

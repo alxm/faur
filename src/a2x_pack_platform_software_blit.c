@@ -19,12 +19,11 @@
 #include "a2x_pack_platform_software_blit.v.h"
 
 #if A_CONFIG_LIB_RENDER_SOFTWARE
-#include "a2x_pack_color.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_screen.v.h"
 
 struct APlatformTexture {
-    const ASprite* spr;
+    const APixels* pixels;
     bool colorKeyed;
     size_t spansSize;
     unsigned spans[];
@@ -223,20 +222,16 @@ static bool hasTransparency(const APixel* Pixels, int Width, int Height)
     return false;
 }
 
-APlatformTexture* a_platform_api__textureNewScreen(int Width, int Height)
+APlatformTexture* a_platform_api__textureNew(const APixels* Pixels)
 {
-    A_UNUSED(Width);
-    A_UNUSED(Height);
+    if(!Pixels->isSprite) {
+        return NULL;
+    }
 
-    return NULL;
-}
-
-APlatformTexture* a_platform_api__textureNewSprite(const ASprite* Sprite)
-{
-    APlatformTexture* texture = Sprite->texture;
-    const APixel* pixels = Sprite->pixels;
-    int width = Sprite->w;
-    int height = Sprite->h;
+    APlatformTexture* texture = Pixels->texture;
+    const APixel* pixels = Pixels->buffer;
+    int width = Pixels->w;
+    int height = Pixels->h;
 
     bool colorKeyed = hasTransparency(pixels, width, height);
     size_t bytesNeeded = colorKeyed
@@ -246,10 +241,10 @@ APlatformTexture* a_platform_api__textureNewSprite(const ASprite* Sprite)
         a_platform_api__textureFree(texture);
         texture = a_mem_malloc(sizeof(APlatformTexture) + bytesNeeded);
 
-        texture->spr = Sprite;
         texture->spansSize = bytesNeeded;
     }
 
+    texture->pixels = Pixels;
     texture->colorKeyed = colorKeyed;
 
     if(texture->spansSize > 0) {
@@ -297,7 +292,9 @@ void a_platform_api__textureBlit(const APlatformTexture* Texture, int X, int Y, 
 {
     A_UNUSED(FillFlat);
 
-    if(!a_screen_boxOnClip(X, Y, Texture->spr->w , Texture->spr->h)) {
+    const APixels* pixels = Texture->pixels;
+
+    if(!a_screen_boxOnClip(X, Y, pixels->w, pixels->h)) {
         return;
     }
 
@@ -305,7 +302,7 @@ void a_platform_api__textureBlit(const APlatformTexture* Texture, int X, int Y, 
         [a__color.blend]
         [a__color.fillBlit]
         [Texture->colorKeyed]
-        [!a_screen_boxInsideClip(X, Y, Texture->spr->w, Texture->spr->h)]
+        [!a_screen_boxInsideClip(X, Y, pixels->w, pixels->h)]
             (Texture, X, Y);
 }
 
@@ -315,8 +312,8 @@ void a_platform_api__textureBlitEx(const APlatformTexture* Texture, int X, int Y
     A_UNUSED(Angle);
 
     a_platform_api__textureBlit(Texture,
-                                X - Texture->spr->w / 2 - CenterX,
-                                Y - Texture->spr->h / 2 - CenterY,
+                                X - Texture->pixels->w / 2 - CenterX,
+                                Y - Texture->pixels->h / 2 - CenterY,
                                 FillFlat);
 }
 #endif // A_CONFIG_LIB_RENDER_SOFTWARE

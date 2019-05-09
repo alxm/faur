@@ -184,7 +184,7 @@ void a_console__draw(void)
     }
 
     {
-        int tagWidth = g_sources[A_OUT__SOURCE_A2X]->w;
+        int tagWidth = g_sources[A_OUT__SOURCE_A2X]->pixels->w;
 
         a_font_coordsSet(1 + tagWidth + 1 + tagWidth + 2, a_font_coordsGetY());
         a_font__fontSet(A_FONT__ID_LIGHT_GRAY);
@@ -200,7 +200,7 @@ void a_console__draw(void)
 
     {
         a_font_alignSet(A_FONT_ALIGN_RIGHT);
-        a_font_coordsSet(a__screen.width - 1, 2);
+        a_font_coordsSet(a__screen.pixels->w - 1, 2);
 
         a_font__fontSet(A_FONT__ID_YELLOW);
         a_font_printf("%u tick fps\n", a_fps_rateTickGet());
@@ -208,11 +208,12 @@ void a_console__draw(void)
         a_font_printf("%u draw max\n", a_fps_rateDrawGetMax());
 
         a_font__fontSet(A_FONT__ID_GREEN);
-        a_font_printf("%dx%d:%d x%d\n",
+        a_font_printf("%dx%d:%d x%d %c\n",
                       a_screen_sizeGetWidth(),
                       a_screen_sizeGetHeight(),
                       A_CONFIG_SCREEN_BPP,
-                      a_platform_api__screenZoomGet());
+                      a_platform_api__screenZoomGet(),
+                      a_platform_api__screenFullscreenGet() ? 'F' : 'W');
         a_font_printf(
             "V-sync %s\n", a_platform_api__screenVsyncGet() ? "on" : "off");
 
