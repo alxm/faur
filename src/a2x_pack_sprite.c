@@ -204,6 +204,7 @@ ASprite* a_sprite_dup(const ASprite* Sprite)
     a_pixels__commit(clone->pixels);
 
     #if !A_CONFIG_LIB_RENDER_SOFTWARE
+        // Sprite's pixel buffer may be stale, blit the real texture
         a_color_push();
         a_screen_push(clone);
 

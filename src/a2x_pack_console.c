@@ -208,11 +208,12 @@ void a_console__draw(void)
         a_font_printf("%u draw max\n", a_fps_rateDrawGetMax());
 
         a_font__fontSet(A_FONT__ID_GREEN);
-        a_font_printf("%dx%d:%d x%d\n",
+        a_font_printf("%dx%d:%d x%d %c\n",
                       a_screen_sizeGetWidth(),
                       a_screen_sizeGetHeight(),
                       A_CONFIG_SCREEN_BPP,
-                      a_platform_api__screenZoomGet());
+                      a_platform_api__screenZoomGet(),
+                      a_platform_api__screenFullscreenGet() ? 'F' : 'W');
         a_font_printf(
             "V-sync %s\n", a_platform_api__screenVsyncGet() ? "on" : "off");
 
