@@ -40,7 +40,6 @@ static ASprite* spriteNew(APixels* Pixels)
     s->pixels = Pixels;
     s->nameId = NULL;
     s->wOriginal = Pixels->w;
-    s->wLog2 = (int)log2f((float)Pixels->w);
 
     return s;
 }
@@ -291,11 +290,6 @@ int a_sprite_sizeGetWidth(const ASprite* Sprite)
     return Sprite->pixels->w;
 }
 
-int a_sprite_sizeGetWidthLog2(const ASprite* Sprite)
-{
-    return Sprite->wLog2;
-}
-
 int a_sprite_sizeGetWidthOriginal(const ASprite* Sprite)
 {
     return Sprite->wOriginal;
@@ -343,8 +337,6 @@ void a_sprite_sizeSetWidthPow2(ASprite* Sprite)
             *newBuffer++ = a_sprite__colorKey;
         }
     }
-
-    Sprite->wLog2 = power;
 
     a_pixels__free(Sprite->pixels);
     Sprite->pixels = newPixels;

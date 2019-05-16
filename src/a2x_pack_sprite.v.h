@@ -24,7 +24,7 @@
 
 struct ASprite {
     char* nameId;
-    int wOriginal, wLog2;
+    int wOriginal;
     APixels* pixels;
 };
 
