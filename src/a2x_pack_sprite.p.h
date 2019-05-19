@@ -40,9 +40,7 @@ extern void a_sprite_swapColors(ASprite* Sprite, const APixel* OldColors, const 
 
 extern AVectorInt a_sprite_sizeGet(const ASprite* Sprite);
 extern int a_sprite_sizeGetWidth(const ASprite* Sprite);
-extern int a_sprite_sizeGetWidthOriginal(const ASprite* Sprite);
 extern int a_sprite_sizeGetHeight(const ASprite* Sprite);
-extern void a_sprite_sizeSetWidthPow2(ASprite* Sprite);
 
 extern const APixel* a_sprite_pixelsGetBuffer(const ASprite* Sprite);
 extern APixel a_sprite_pixelsGetPixel(const ASprite* Sprite, int X, int Y);

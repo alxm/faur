@@ -37,9 +37,8 @@ static ASprite* spriteNew(APixels* Pixels)
 {
     ASprite* s = a_mem_malloc(sizeof(ASprite));
 
-    s->pixels = Pixels;
     s->nameId = NULL;
-    s->wOriginal = Pixels->w;
+    s->pixels = Pixels;
 
     return s;
 }
@@ -290,58 +289,9 @@ int a_sprite_sizeGetWidth(const ASprite* Sprite)
     return Sprite->pixels->w;
 }
 
-int a_sprite_sizeGetWidthOriginal(const ASprite* Sprite)
-{
-    return Sprite->wOriginal;
-}
-
 int a_sprite_sizeGetHeight(const ASprite* Sprite)
 {
     return Sprite->pixels->h;
-}
-
-void a_sprite_sizeSetWidthPow2(ASprite* Sprite)
-{
-    if((Sprite->pixels->w & (Sprite->pixels->w - 1)) == 0) {
-        return;
-    }
-
-    int power = 1;
-
-    while((1 << power) < Sprite->pixels->w) {
-        power++;
-    }
-
-    int newWidth = 1 << power;
-    APixels* newPixels = a_pixels__new(newWidth, Sprite->pixels->h, true, true);
-    APixel* newBuffer = newPixels->buffer;
-
-    int oldWidth = Sprite->pixels->w;
-    size_t oldLineSize = (unsigned)oldWidth * sizeof(APixel);
-    APixel* oldBuffer = Sprite->pixels->buffer;
-
-    int leftPadding = (newWidth - oldWidth) / 2;
-    int rightPadding = newWidth - oldWidth - leftPadding;
-
-    for(int i = Sprite->pixels->h; i--; ) {
-        for(int j = leftPadding; j--; ) {
-            *newBuffer++ = a_sprite__colorKey;
-        }
-
-        memcpy(newBuffer, oldBuffer, oldLineSize);
-
-        newBuffer += oldWidth;
-        oldBuffer += oldWidth;
-
-        for(int j = rightPadding; j--; ) {
-            *newBuffer++ = a_sprite__colorKey;
-        }
-    }
-
-    a_pixels__free(Sprite->pixels);
-    Sprite->pixels = newPixels;
-
-    a_pixels__commit(Sprite->pixels);
 }
 
 const APixel* a_sprite_pixelsGetBuffer(const ASprite* Sprite)
