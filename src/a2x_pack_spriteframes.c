@@ -71,7 +71,7 @@ ASpriteFrames* a_spriteframes_newFromPng(const char* Path, int CellWidth, int Ce
 
 ASpriteFrames* a_spriteframes_newFromSprite(const ASprite* Sheet, int X, int Y, int CellWidth, int CellHeight)
 {
-    AVectorInt gridDim = a_sprite__boundsFind(Sheet, X, Y);
+    AVectorInt gridDim = a_pixels__boundsFind(Sheet->pixels, X, Y);
 
     return a_spriteframes_newFromSpriteEx(
             Sheet, X, Y, CellWidth, CellHeight, gridDim.x, gridDim.y);

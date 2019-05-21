@@ -43,102 +43,6 @@ static ASprite* spriteNew(APixels* Pixels)
     return s;
 }
 
-static int findNextVerticalEdge(const ASprite* Sheet, int StartX, int StartY, int* EdgeX)
-{
-    int w = Sheet->pixels->w;
-    int h = Sheet->pixels->h;
-
-    for(int x = StartX + *EdgeX + 1; x < w; x++) {
-        APixel p = a_pixels__bufferGetAt(Sheet->pixels, x, StartY);
-
-        if(p == a_sprite__colorLimit) {
-            *EdgeX = x - StartX;
-
-            int len = 1;
-            APixel* buffer = a_pixels__bufferGetFrom(
-                                Sheet->pixels, x, StartY + 1);
-
-            for(int y = h - (StartY + 1); y--; ) {
-                if(*buffer != a_sprite__colorLimit) {
-                    break;
-                }
-
-                buffer += w;
-                len++;
-            }
-
-            return len;
-        }
-    }
-
-    return -1;
-}
-
-static int findNextHorizontalEdge(const ASprite* Sheet, int StartX, int StartY, int* EdgeY)
-{
-    for(int y = StartY + *EdgeY + 1; y < Sheet->pixels->h; y++) {
-        APixel p = a_pixels__bufferGetAt(Sheet->pixels, StartX, y);
-
-        if(p == a_sprite__colorLimit) {
-            *EdgeY = y - StartY;
-
-            int len = 1;
-            APixel* buffer = a_pixels__bufferGetFrom(
-                                Sheet->pixels, StartX + 1, y);
-
-            for(int x = Sheet->pixels->w - (StartX + 1); x--; ) {
-                if(*buffer != a_sprite__colorLimit) {
-                    break;
-                }
-
-                buffer++;
-                len++;
-            }
-
-            return len;
-        }
-    }
-
-    return -1;
-}
-
-AVectorInt a_sprite__boundsFind(const ASprite* Sheet, int X, int Y)
-{
-    AVectorInt bounds;
-
-    if(X < 0 || X >= Sheet->pixels->w || Y < 0 || Y >= Sheet->pixels->h) {
-        A__FATAL("a_sprite__boundsFind(%s, %d, %d): Invalid coords",
-                 A_SPRITE__NAME(Sheet),
-                 X,
-                 Y);
-    }
-
-    int vEdgeX = 0;
-    int vEdgeLen = findNextVerticalEdge(Sheet, X, Y, &vEdgeX);
-    int hEdgeY = 0;
-    int hEdgeLen = findNextHorizontalEdge(Sheet, X, Y, &hEdgeY);
-
-    while(vEdgeLen != -1 && hEdgeLen != -1) {
-        if(vEdgeLen < hEdgeY) {
-            vEdgeLen = findNextVerticalEdge(Sheet, X, Y, &vEdgeX);
-        } else if(hEdgeLen < vEdgeX) {
-            hEdgeLen = findNextHorizontalEdge(Sheet, X, Y, &hEdgeY);
-        } else {
-            break;
-        }
-    }
-
-    if(vEdgeLen == -1 || hEdgeLen == -1) {
-        bounds.x = Sheet->pixels->w - X;
-        bounds.y = Sheet->pixels->h - Y;
-    } else {
-        bounds.x = vEdgeX;
-        bounds.y = hEdgeY;
-    }
-
-    return bounds;
-}
-
 ASprite* a_sprite_newFromPng(const char* Path)
 {
     APixels* pixels = a_png__readFile(Path);
@@ -158,7 +62,7 @@ ASprite* a_sprite_newFromPng(const char* Path)
 
 ASprite* a_sprite_newFromSprite(const ASprite* Sheet, int X, int Y)
 {
-    AVectorInt dim = a_sprite__boundsFind(Sheet, X, Y);
+    AVectorInt dim = a_pixels__boundsFind(Sheet->pixels, X, Y);
 
     return a_sprite_newFromSpriteEx(Sheet, X, Y, dim.x, dim.y);
 }

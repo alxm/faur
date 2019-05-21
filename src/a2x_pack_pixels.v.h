@@ -43,6 +43,8 @@ extern void a_pixels__free(APixels* Pixels);
 extern void a_pixels__bufferSet(APixels* Pixels, APixel* Buffer, int W, int H);
 extern void a_pixels__commit(APixels* Pixels);
 
+extern AVectorInt a_pixels__boundsFind(const APixels* Pixels, int X, int Y);
+
 static inline APixel* a_pixels__bufferGetFrom(const APixels* Pixels, int X, int Y)
 {
     return Pixels->buffer + Y * Pixels->w + X;

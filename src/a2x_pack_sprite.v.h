@@ -29,10 +29,7 @@ struct ASprite {
 
 extern APixel a_sprite__colorKey;
 extern APixel a_sprite__colorLimit;
-extern APixel a_sprite__colorEnd;
 
 extern void a_sprite__init(void);
-
-extern AVectorInt a_sprite__boundsFind(const ASprite* Sheet, int X, int Y);
 
 #define A_SPRITE__NAME(Sprite) (Sprite->nameId ? Sprite->nameId : "Sprite")
