@@ -37,6 +37,7 @@ struct APixels {
 };
 
 extern APixels* a_pixels__new(int W, int H, bool IsSprite, bool AllocBuffer);
+extern APixels* a_pixels__sub(APixels* Source, int X, int Y, int Width, int Height);
 extern APixels* a_pixels__dup(const APixels* Pixels);
 extern void a_pixels__free(APixels* Pixels);
 

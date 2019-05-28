@@ -35,6 +35,23 @@ APixels* a_pixels__new(int W, int H, bool IsSprite, bool AllocBuffer)
     return p;
 }
 
+APixels* a_pixels__sub(APixels* Source, int X, int Y, int Width, int Height)
+{
+    APixels* p = a_pixels__new(Width, Height, true, true);
+
+    const APixel* src = a_pixels__bufferGetFrom(Source, X, Y);
+    APixel* dst = p->buffer;
+
+    for(int i = Height; i--; ) {
+        memcpy(dst, src, (unsigned)Width * sizeof(APixel));
+
+        src += Source->w;
+        dst += Width;
+    }
+
+    return p;
+}
+
 APixels* a_pixels__dup(const APixels* Pixels)
 {
     APixels* p = a_mem_dup(Pixels, sizeof(APixels) + Pixels->bufferSize);
@@ -126,7 +143,11 @@ AVectorInt a_pixels__boundsFind(const APixels* Pixels, int X, int Y)
     AVectorInt bounds;
 
     if(X < 0 || X >= Pixels->w || Y < 0 || Y >= Pixels->h) {
-        A__FATAL("a_pixels__boundsFind(%d, %d): Invalid coords", X, Y);
+        A__FATAL("a_pixels__boundsFind(%d, %d): Invalid coords on %dx%d area",
+                 X,
+                 Y,
+                 Pixels->w,
+                 Pixels->h);
     }
 
     int vEdgeX = 0;
