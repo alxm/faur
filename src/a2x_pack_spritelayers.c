@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2018 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016, 2018-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -85,7 +85,7 @@ void a_spritelayers_add(ASpriteLayers* Layers, ASprite* Sprite, AColorBlend Blen
     a_list_addLast(Layers, layer_new(Sprite, Blend, Red, Green, Blue, Alpha));
 }
 
-void a_spritelayers_blit(ASpriteLayers* Layers, int X, int Y)
+void a_spritelayers_blit(ASpriteLayers* Layers, unsigned Frame, int X, int Y)
 {
     a_color_push();
 
@@ -93,7 +93,7 @@ void a_spritelayers_blit(ASpriteLayers* Layers, int X, int Y)
         a_color_blendSet(l->blend);
         a_color_baseSetRgba(l->r, l->g, l->b, l->a);
 
-        a_sprite_blit(l->sprite, X, Y);
+        a_sprite_blit(l->sprite, Frame, X, Y);
     }
 
     a_color_pop();

@@ -24,7 +24,8 @@
 
 struct ASprite {
     char* nameId;
-    APixels* pixels;
+    unsigned framesNum;
+    APixels* pixels[]; // [framesNum]
 };
 
 extern APixel a_sprite__colorKey;

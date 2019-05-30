@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2018 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016, 2018-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -31,4 +31,4 @@ extern void a_spritelayers_free(ASpriteLayers* Layers, bool FreeSprites);
 extern void a_spritelayers_clear(ASpriteLayers* Layers, bool FreeSprites);
 extern void a_spritelayers_add(ASpriteLayers* Layers, ASprite* Sprite, AColorBlend Blend, int Red, int Green, int Blue, int Alpha);
 
-extern void a_spritelayers_blit(ASpriteLayers* Layers, int X, int Y);
+extern void a_spritelayers_blit(ASpriteLayers* Layers, unsigned Frame, int X, int Y);

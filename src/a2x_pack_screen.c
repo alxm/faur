@@ -362,11 +362,11 @@ void a_screen_clear(void)
     #endif
 }
 
-void a_screen_push(ASprite* Sprite)
+void a_screen_push(ASprite* Sprite, unsigned Frame)
 {
     a_list_push(g_stack, a_mem_dup(&a__screen, sizeof(AScreen)));
 
-    a__screen.pixels = Sprite->pixels;
+    a__screen.pixels = Sprite->pixels[Frame];
     a__screen.sprite = Sprite;
 
     #if !A_CONFIG_LIB_RENDER_SOFTWARE
@@ -386,7 +386,7 @@ void a_screen_pop(void)
 
     #if A_CONFIG_LIB_RENDER_SOFTWARE
         if(a__screen.sprite) {
-            a_pixels__commit(a__screen.sprite->pixels);
+            a_pixels__commit(a__screen.pixels);
         }
     #endif
 
