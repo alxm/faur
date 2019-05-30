@@ -98,7 +98,6 @@ int main(int Argc, char* Argv[])
     a_input__init();
     a_screen__init();
     a_color__init();
-    a_sprite__init();
     a_fps__init();
     a_screenshot__init();
     a_sound__init();

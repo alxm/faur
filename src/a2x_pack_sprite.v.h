@@ -28,9 +28,4 @@ struct ASprite {
     APixels* pixels[]; // [framesNum]
 };
 
-extern APixel a_sprite__colorKey;
-extern APixel a_sprite__colorLimit;
-
-extern void a_sprite__init(void);
-
 #define A_SPRITE__NAME(Sprite) (Sprite->nameId ? Sprite->nameId : "Sprite")

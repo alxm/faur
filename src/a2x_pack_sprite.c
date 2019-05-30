@@ -24,15 +24,6 @@
 #include "a2x_pack_screen.v.h"
 #include "a2x_pack_str.v.h"
 
-APixel a_sprite__colorKey;
-APixel a_sprite__colorLimit;
-
-void a_sprite__init(void)
-{
-    a_sprite__colorKey = a_pixel_fromHex(A_CONFIG_COLOR_SPRITE_KEY);
-    a_sprite__colorLimit = a_pixel_fromHex(A_CONFIG_COLOR_SPRITE_BORDER);
-}
-
 static ASprite* spriteNew(APixels* Pixels, int X, int Y, int FrameWidth, int FrameHeight)
 {
     AVectorInt gridDim;
@@ -127,7 +118,7 @@ ASprite* a_sprite_newBlank(int Width, int Height, unsigned Frames, bool ColorKey
         s->pixels[f] = a_pixels__new(Width, Height, true, true);
 
         if(ColorKeyed) {
-            a_pixels__fill(s->pixels[f], a_sprite__colorKey);
+            a_pixels__fill(s->pixels[f], a_color__key);
         }
 
         a_pixels__commit(s->pixels[f]);
@@ -266,5 +257,5 @@ APixel a_sprite_pixelsGetPixel(const ASprite* Sprite, unsigned Frame, int X, int
 
 APixel a_sprite_colorKeyGet(void)
 {
-    return a_sprite__colorKey;
+    return a_color__key;
 }

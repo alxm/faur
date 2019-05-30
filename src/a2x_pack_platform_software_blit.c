@@ -194,10 +194,10 @@ static size_t spanBytesNeeded(const APixel* Pixels, int Width, int Height)
 
     for(int y = Height; y--; ) {
         bytesNeeded += sizeof(unsigned); // total size and initial state
-        bool lastState = *Pixels != a_sprite__colorKey; // initial state
+        bool lastState = *Pixels != a_color__key; // initial state
 
         for(int x = Width; x--; ) {
-            bool newState = *Pixels++ != a_sprite__colorKey;
+            bool newState = *Pixels++ != a_color__key;
 
             if(newState != lastState) {
                 bytesNeeded += sizeof(unsigned); // length of new span
@@ -214,7 +214,7 @@ static size_t spanBytesNeeded(const APixel* Pixels, int Width, int Height)
 static bool hasTransparency(const APixel* Pixels, int Width, int Height)
 {
     for(int i = Width * Height; i--; ) {
-        if(*Pixels++ == a_sprite__colorKey) {
+        if(*Pixels++ == a_color__key) {
             return true;
         }
     }
@@ -255,11 +255,11 @@ APlatformTexture* a_platform_api__textureNew(const APixels* Pixels)
             unsigned numSpans = 1; // line has at least 1 span
             unsigned spanLength = 0;
 
-            bool lastState = *pixels != a_sprite__colorKey; // initial state
+            bool lastState = *pixels != a_color__key; // initial state
             *spans++ = lastState;
 
             for(int x = width; x--; ) {
-                bool newState = *pixels++ != a_sprite__colorKey;
+                bool newState = *pixels++ != a_color__key;
 
                 if(newState == lastState) {
                     spanLength++; // keep growing current span

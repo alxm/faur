@@ -28,10 +28,16 @@
 APixelState a__color;
 static AList* g_stateStack;
 
+APixel a_color__key;
+APixel a_color__limit;
+
 void a_color__init(void)
 {
     g_stateStack = a_list_new();
     a_color_reset();
+
+    a_color__key = a_pixel_fromHex(A_CONFIG_COLOR_SPRITE_KEY);
+    a_color__limit = a_pixel_fromHex(A_CONFIG_COLOR_SPRITE_BORDER);
 }
 
 void a_color__uninit(void)

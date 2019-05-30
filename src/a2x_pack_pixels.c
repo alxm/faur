@@ -89,14 +89,14 @@ static int findNextVerticalEdge(const APixels* Pixels, int StartX, int StartY, i
     for(int x = StartX + *EdgeX + 1; x < Pixels->w; x++) {
         APixel p = a_pixels__bufferGetAt(Pixels, x, StartY);
 
-        if(p == a_sprite__colorLimit) {
+        if(p == a_color__limit) {
             *EdgeX = x - StartX;
 
             int len = 1;
             APixel* buffer = a_pixels__bufferGetFrom(Pixels, x, StartY + 1);
 
             for(int y = Pixels->h - (StartY + 1); y--; ) {
-                if(*buffer != a_sprite__colorLimit) {
+                if(*buffer != a_color__limit) {
                     break;
                 }
 
@@ -116,14 +116,14 @@ static int findNextHorizontalEdge(const APixels* Pixels, int StartX, int StartY,
     for(int y = StartY + *EdgeY + 1; y < Pixels->h; y++) {
         APixel p = a_pixels__bufferGetAt(Pixels, StartX, y);
 
-        if(p == a_sprite__colorLimit) {
+        if(p == a_color__limit) {
             *EdgeY = y - StartY;
 
             int len = 1;
             APixel* buffer = a_pixels__bufferGetFrom(Pixels, StartX + 1, y);
 
             for(int x = Pixels->w - (StartX + 1); x--; ) {
-                if(*buffer != a_sprite__colorLimit) {
+                if(*buffer != a_color__limit) {
                     break;
                 }
 
