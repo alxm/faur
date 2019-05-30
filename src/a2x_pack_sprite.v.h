@@ -22,10 +22,4 @@
 
 #include "a2x_pack_pixels.v.h"
 
-struct ASprite {
-    char* nameId;
-    unsigned framesNum;
-    APixels* pixels[]; // [framesNum]
-};
-
-#define A_SPRITE__NAME(Sprite) (Sprite->nameId ? Sprite->nameId : "Sprite")
+extern APixels* a_sprite__pixelsGet(const ASprite* Sprite, unsigned Frame);

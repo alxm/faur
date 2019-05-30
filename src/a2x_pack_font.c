@@ -107,7 +107,7 @@ AFont* a_font_dup(const AFont* Font, APixel Color)
     a_color_baseSetPixel(Color);
     a_color_fillBlitSet(true);
 
-    for(unsigned i = f->chars->framesNum; i--; ) {
+    for(unsigned i = a_sprite_framesNumGet(f->chars); i--; ) {
         a_screen_push(f->chars, i);
         a_sprite_blit(f->chars, i, 0, 0);
         a_screen_pop();

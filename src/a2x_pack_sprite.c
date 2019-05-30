@@ -24,6 +24,11 @@
 #include "a2x_pack_screen.v.h"
 #include "a2x_pack_str.v.h"
 
+struct ASprite {
+    unsigned framesNum;
+    APixels* pixels[]; // [framesNum]
+};
+
 static ASprite* spriteNew(APixels* Pixels, int X, int Y, int FrameWidth, int FrameHeight)
 {
     AVectorInt gridDim;
@@ -47,7 +52,6 @@ static ASprite* spriteNew(APixels* Pixels, int X, int Y, int FrameWidth, int Fra
 
     ASprite* s = a_mem_malloc(sizeof(ASprite) + sizeof(APixels*) * framesNum);
 
-    s->nameId = NULL;
     s->framesNum = framesNum;
 
     unsigned frame = 0;
@@ -91,8 +95,6 @@ ASprite* a_sprite_newFromPng(const char* Path, int X, int Y, int FrameWidth, int
 
     ASprite* s = spriteNew(pixels, X, Y, FrameWidth, FrameHeight);
 
-    s->nameId = a_str_dup(Path);
-
     a_pixels__free(pixels);
 
     return s;
@@ -111,7 +113,6 @@ ASprite* a_sprite_newBlank(int Width, int Height, unsigned Frames, bool ColorKey
 
     ASprite* s = a_mem_malloc(sizeof(ASprite) + sizeof(APixels*) * Frames);
 
-    s->nameId = NULL;
     s->framesNum = Frames;
 
     for(unsigned f = Frames; f--; ) {
@@ -132,7 +133,6 @@ ASprite* a_sprite_dup(const ASprite* Sprite)
     ASprite* s = a_mem_malloc(
                     sizeof(ASprite) + sizeof(APixels*) * Sprite->framesNum);
 
-    s->nameId = a_str_dup(Sprite->nameId);
     s->framesNum = Sprite->framesNum;
 
     for(unsigned f = Sprite->framesNum; f--; ) {
@@ -166,7 +166,6 @@ void a_sprite_free(ASprite* Sprite)
         a_pixels__free(Sprite->pixels[f]);
     }
 
-    free(Sprite->nameId);
     free(Sprite);
 }
 
@@ -243,6 +242,11 @@ int a_sprite_sizeGetHeight(const ASprite* Sprite)
 unsigned a_sprite_framesNumGet(const ASprite* Sprite)
 {
     return Sprite->framesNum;
+}
+
+APixels* a_sprite__pixelsGet(const ASprite* Sprite, unsigned Frame)
+{
+    return Sprite->pixels[Frame];
 }
 
 const APixel* a_sprite_pixelsGetBuffer(const ASprite* Sprite, unsigned Frame)

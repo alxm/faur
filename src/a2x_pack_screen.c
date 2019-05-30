@@ -366,7 +366,7 @@ void a_screen_push(ASprite* Sprite, unsigned Frame)
 {
     a_list_push(g_stack, a_mem_dup(&a__screen, sizeof(AScreen)));
 
-    a__screen.pixels = Sprite->pixels[Frame];
+    a__screen.pixels = a_sprite__pixelsGet(Sprite, Frame);
     a__screen.sprite = Sprite;
 
     #if !A_CONFIG_LIB_RENDER_SOFTWARE
