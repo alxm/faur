@@ -38,8 +38,4 @@ extern void a_screen__uninit(void);
 extern void a_screen__tick(void);
 extern void a_screen__draw(void);
 
-extern AScreen* a_screen_new(int Width, int Height);
-extern void a_screen_free(AScreen* Screen);
-
-extern void a_screen_copy(AScreen* Dst, const AScreen* Src);
-extern void a_screen_blit(const AScreen* Screen);
+extern void a_screen__toSprite(ASprite* Sprite);
