@@ -64,6 +64,10 @@ APixels* a_pixels__dup(const APixels* Pixels)
 
 void a_pixels__free(APixels* Pixels)
 {
+    if(Pixels == NULL) {
+        return;
+    }
+
     a_platform_api__textureFree(Pixels->texture);
 
     free(Pixels);
