@@ -32,69 +32,19 @@ static AList* g_stack; // list of AScreen
 
     #define A__ZOOM_LEVELS 3
     static AButton* g_zoomButtons[A__ZOOM_LEVELS];
-
 #endif
-
-static void screenInit(AScreen* Screen, int Width, int Height, bool AllocBuffer)
-{
-    Screen->pixels = a_pixels__new(Width, Height, false, AllocBuffer);
-    Screen->sprite = NULL;
-    Screen->clipX = 0;
-    Screen->clipY = 0;
-    Screen->clipX2 = Width;
-    Screen->clipY2 = Height;
-    Screen->clipWidth = Width;
-    Screen->clipHeight = Height;
-
-    a_pixels__commit(Screen->pixels);
-}
-
-static void screenFree(AScreen* Screen)
-{
-    a_pixels__free(Screen->pixels);
-
-    free(Screen);
-}
 
 void a_screen__init(void)
 {
-    int width = A_CONFIG_SCREEN_WIDTH;
-    int height = A_CONFIG_SCREEN_HEIGHT;
+    AVectorInt size = a_platform_api__screenSizeGet();
 
-    if(width < 0 || height < 0) {
-        AVectorInt res = a_platform_api__screenResolutionGetNative();
-
-        if(res.x > 0 && res.y > 0) {
-            if(width < 0) {
-                width = res.x / -width;
-            }
-
-            if(height < 0) {
-                height = res.y / -height;
-            }
-        }
-    }
-
-    if(width <= 0 || height <= 0) {
-        A__FATAL("Invalid screen resolution %dx%d", width, height);
-    } else {
-        a_out__info("Screen resolution %dx%d, zoom x%d",
-                    width,
-                    height,
-                    A_CONFIG_SCREEN_ZOOM);
-    }
-
-    #if A_CONFIG_LIB_RENDER_SOFTWARE
-        // Allocate a pixel buffer, or use SDL's pixel buffer directly
-        screenInit(&a__screen, width, height, A_CONFIG_SCREEN_ALLOCATE);
-    #endif
-
-    a_platform_api__screenInit(width, height);
-
-    #if !A_CONFIG_LIB_RENDER_SOFTWARE
-        screenInit(&a__screen, width, height, true);
-        a_platform_api__renderTargetSet(a__screen.pixels->texture);
-    #endif
+    a__screen.pixels = a_platform_api__screenPixelsGet();
+    a__screen.clipX = 0;
+    a__screen.clipY = 0;
+    a__screen.clipX2 = size.x;
+    a__screen.clipY2 = size.y;
+    a__screen.clipWidth = size.x;
+    a__screen.clipHeight = size.y;
 
     #if A_CONFIG_TRAIT_DESKTOP
         g_fullScreenButton = a_button_new();
@@ -111,8 +61,7 @@ void a_screen__init(void)
 
 void a_screen__uninit(void)
 {
-    a_pixels__free(a__screen.pixels);
-    a_list_freeEx(g_stack, (AFree*)screenFree);
+    a_list_freeEx(g_stack, free);
 
     #if A_CONFIG_TRAIT_DESKTOP
         a_button_free(g_fullScreenButton);
@@ -205,7 +154,6 @@ void a_screen_push(ASprite* Sprite, unsigned Frame)
     a_list_push(g_stack, a_mem_dup(&a__screen, sizeof(AScreen)));
 
     a__screen.pixels = a_sprite__pixelsGet(Sprite, Frame);
-    a__screen.sprite = Sprite;
 
     #if !A_CONFIG_LIB_RENDER_SOFTWARE
         a_platform_api__renderTargetSet(a__screen.pixels->texture);
@@ -223,9 +171,7 @@ void a_screen_pop(void)
     }
 
     #if A_CONFIG_LIB_RENDER_SOFTWARE
-        if(a__screen.sprite) {
-            a_pixels__commit(a__screen.pixels);
-        }
+        a_pixels__commit(a__screen.pixels);
     #endif
 
     a__screen = *screen;

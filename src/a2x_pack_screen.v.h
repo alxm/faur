@@ -24,7 +24,6 @@
 
 typedef struct {
     APixels* pixels;
-    ASprite* sprite;
     int clipX, clipY;
     int clipX2, clipY2;
     int clipWidth, clipHeight;

@@ -58,6 +58,8 @@ void a_platform__init(void)
         a_platform_wiz__init();
     #endif
 
+    a_platform_api__screenInit();
+
     #if A_CONFIG_LIB_RENDER_SOFTWARE
         #if A_CONFIG_SCREEN_ALLOCATE
             a_out__info("Software graphics (virtual buffer)");
@@ -74,6 +76,8 @@ void a_platform__init(void)
 
 void a_platform__uninit(void)
 {
+    a_platform_api__screenUninit();
+
     #if A_CONFIG_SYSTEM_GP2X
         a_platform_gp2x__uninit();
     #elif A_CONFIG_SYSTEM_PANDORA
