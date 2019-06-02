@@ -24,15 +24,13 @@
 
 struct APlatformTexture {
     const APixels* pixels;
-    bool colorKeyed;
-    size_t spansSize;
+    unsigned spansSize;
     unsigned spans[];
 };
 
 typedef void (*ABlitter)(const APlatformTexture* Sprite, int X, int Y);
 
-// [Blend][Fill][ColorKey][Clip]
-static ABlitter g_blitters[A_COLOR_BLEND_NUM][2][2][2];
+static ABlitter g_blitters[A_COLOR_BLEND_NUM][2][2][2]; // [Blend][Fill][ColorKey][Clip]
 
 #define A__FUNC_NAME_EXPAND2(Blend, Fill, ColorKey, Clip) a_blit__##Blend##_##Fill##_##ColorKey##_##Clip
 #define A__FUNC_NAME_EXPAND(Blend, Fill, ColorKey, Clip) A__FUNC_NAME_EXPAND2(Blend, Fill, ColorKey, Clip)
@@ -185,19 +183,33 @@ void a_platform_software_blit__init(void)
     initRoutines(A_COLOR_BLEND_ADD, add);
 }
 
-static size_t spanBytesNeeded(const APixel* Pixels, int Width, int Height)
+static bool hasTransparency(const APixels* Pixels)
 {
-    // Spans format for each graphic line:
-    // [NumSpans << 1 | 1 (draw) / 0 (transparent)][[len]...]
+    const APixel* buffer = Pixels->buffer;
+
+    for(int i = Pixels->w * Pixels->h; i--; ) {
+        if(*buffer++ == a_color__key) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+static size_t spansBytesNeeded(const APixels* Pixels)
+{
+    // Spans format for each scanline:
+    // [NumSpans << 1 | 1 (draw) / 0 (transparent)][len0][len1]...
 
     size_t bytesNeeded = 0;
+    const APixel* buffer = Pixels->buffer;
 
-    for(int y = Height; y--; ) {
+    for(int y = Pixels->h; y--; ) {
         bytesNeeded += sizeof(unsigned); // total size and initial state
-        bool lastState = *Pixels != a_color__key; // initial state
+        bool lastState = *buffer != a_color__key; // initial state
 
-        for(int x = Width; x--; ) {
-            bool newState = *Pixels++ != a_color__key;
+        for(int x = Pixels->w; x--; ) {
+            bool newState = *buffer++ != a_color__key;
 
             if(newState != lastState) {
                 bytesNeeded += sizeof(unsigned); // length of new span
@@ -211,15 +223,35 @@ static size_t spanBytesNeeded(const APixel* Pixels, int Width, int Height)
     return bytesNeeded;
 }
 
-static bool hasTransparency(const APixel* Pixels, int Width, int Height)
+static void spansUpdate(const APixels* Pixels, APlatformTexture* Texture)
 {
-    for(int i = Width * Height; i--; ) {
-        if(*Pixels++ == a_color__key) {
-            return true;
-        }
-    }
+    unsigned* spans = Texture->spans;
+    const APixel* buffer = Pixels->buffer;
 
-    return false;
+    for(int y = Pixels->h; y--; ) {
+        unsigned* lineStart = spans;
+        unsigned numSpans = 1; // line has at least 1 span
+        unsigned spanLength = 0;
+
+        bool lastState = *buffer != a_color__key; // initial state
+        *spans++ = lastState;
+
+        for(int x = Pixels->w; x--; ) {
+            bool newState = *buffer++ != a_color__key;
+
+            if(newState == lastState) {
+                spanLength++; // keep growing current span
+            } else {
+                *spans++ = spanLength; // record the just-ended span length
+                numSpans++;
+                spanLength = 1; // start a new span from this pixel
+                lastState = newState;
+            }
+        }
+
+        *spans++ = spanLength; // record the last span's length
+        *lineStart |= numSpans << 1; // record line's number of spans
+    }
 }
 
 APlatformTexture* a_platform_api__textureNew(const APixels* Pixels)
@@ -229,51 +261,21 @@ APlatformTexture* a_platform_api__textureNew(const APixels* Pixels)
     }
 
     APlatformTexture* texture = Pixels->texture;
-    const APixel* pixels = Pixels->buffer;
-    int width = Pixels->w;
-    int height = Pixels->h;
+    size_t bytesNeeded = hasTransparency(Pixels) ? spansBytesNeeded(Pixels) : 0;
 
-    bool colorKeyed = hasTransparency(pixels, width, height);
-    size_t bytesNeeded = colorKeyed
-                            ? spanBytesNeeded(pixels, width, height) : 0;
-
-    if(texture == NULL || bytesNeeded > texture->spansSize) {
+    if(texture == NULL || bytesNeeded > (texture->spansSize >> 1)) {
         a_platform_api__textureFree(texture);
         texture = a_mem_malloc(sizeof(APlatformTexture) + bytesNeeded);
 
-        texture->spansSize = bytesNeeded;
+        texture->pixels = Pixels;
+        texture->spansSize = (unsigned)bytesNeeded << 1;
     }
 
-    texture->pixels = Pixels;
-    texture->colorKeyed = colorKeyed;
-
-    if(texture->spansSize > 0) {
-        unsigned* spans = texture->spans;
-
-        for(int y = height; y--; ) {
-            unsigned* lineStart = spans;
-            unsigned numSpans = 1; // line has at least 1 span
-            unsigned spanLength = 0;
-
-            bool lastState = *pixels != a_color__key; // initial state
-            *spans++ = lastState;
-
-            for(int x = width; x--; ) {
-                bool newState = *pixels++ != a_color__key;
-
-                if(newState == lastState) {
-                    spanLength++; // keep growing current span
-                } else {
-                    *spans++ = spanLength; // record the just-ended span length
-                    numSpans++;
-                    spanLength = 1; // start a new span from this pixel
-                    lastState = newState;
-                }
-            }
-
-            *spans++ = spanLength; // record the last span's length
-            *lineStart |= numSpans << 1; // record line's number of spans
-        }
+    if(bytesNeeded > 0) {
+        texture->spansSize |= 1;
+        spansUpdate(Pixels, texture);
+    } else {
+        texture->spansSize &= ~1u;
     }
 
     return texture;
@@ -301,7 +303,7 @@ void a_platform_api__textureBlit(const APlatformTexture* Texture, int X, int Y, 
     g_blitters
         [a__color.blend]
         [a__color.fillBlit]
-        [Texture->colorKeyed]
+        [Texture->spansSize & 1]
         [!a_screen_boxInsideClip(X, Y, pixels->w, pixels->h)]
             (Texture, X, Y);
 }
