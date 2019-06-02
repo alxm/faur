@@ -274,6 +274,7 @@ void a_platform_api__screenInit(void)
                                              SDL_TEXTUREACCESS_STREAMING,
                                              g_size.x,
                                              g_size.y);
+
             if(g_sdlTexture == NULL) {
                 A__FATAL("SDL_CreateTexture: %s", SDL_GetError());
             }
@@ -285,8 +286,10 @@ void a_platform_api__screenInit(void)
         g_clearRgb = a_pixel_toRgb(
                         a_pixel_fromHex(A_CONFIG_COLOR_SCREEN_BORDER));
 
-        a_pixels__commit(g_pixels);
-        a_platform_api__renderTargetSet(g_pixels->texture);
+        #if A_CONFIG_LIB_RENDER_SDL
+            a_pixels__commit(g_pixels);
+            a_platform_api__renderTargetSet(g_pixels->texture);
+        #endif
     #endif
 
     a_out__info("V-sync is %s", g_vsync ? "on" : "off");
