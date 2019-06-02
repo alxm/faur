@@ -22,19 +22,81 @@
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_screen.v.h"
 
+enum {LEFT, RIGHT};
+
+typedef struct {
+    int screenX[2]; // screen horizontal span to draw to
+    AVectorFix sprite[2]; // sprite line to interpolate and fill the span with
+} AScanline;
+
 struct APlatformTexture {
     const APixels* pixels;
     unsigned spansSize;
     unsigned spans[];
 };
 
-typedef void (*ABlitter)(const APlatformTexture* Sprite, int X, int Y);
+typedef void (*ABlitter)(const APlatformTexture* Texture, int X, int Y);
+typedef void (*ABlitterEx)(const APlatformTexture* Texture, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY);
 
 static ABlitter g_blitters[A_COLOR_BLEND_NUM][2][2][2]; // [Blend][Fill][ColorKey][Clip]
+static ABlitterEx g_blittersEx[A_COLOR_BLEND_NUM][2][2]; // [Blend][Fill][ColorKey]
+
+static AScanline* g_scanlines;
+
+// Interpolate sprite side (SprP1, SprP2) along screen line (ScrP1, ScrP2).
+// ScrP1.y <= ScrP2.y and at least part of this range is on screen.
+void scan_line(int Index, AVectorInt ScrP1, AVectorInt ScrP2, AVectorFix SprP1, AVectorFix SprP2)
+{
+    // Happens when sprite angle is a multiple of 90deg,
+    // and 2 of the sprite's opposite sides are 0-height in screen space.
+    if(ScrP1.y == ScrP2.y || ScrP1.y >= a__screen.pixels->h || ScrP2.y < 0) {
+        return;
+    }
+
+    const int scrDY = ScrP2.y - ScrP1.y + 1;
+    AFix scrX = a_fix_fromInt(ScrP1.x);
+    const AFix scrXInc = a_fix_fromInt(ScrP2.x - ScrP1.x + 1) / scrDY;
+
+    AFix sprX = SprP1.x;
+    AFix sprY = SprP1.y;
+    const AFix sprDX = SprP2.x - SprP1.x
+                        + (SprP2.x > SprP1.x) - (SprP2.x < SprP1.x);
+    const AFix sprDY = SprP2.y - SprP1.y
+                        + (SprP2.y > SprP1.y) - (SprP2.y < SprP1.y);
+    const AFix sprXInc = sprDX / scrDY;
+    const AFix sprYInc = sprDY / scrDY;
+
+    if(ScrP1.y < 0) {
+        scrX += scrXInc * -ScrP1.y;
+
+        sprX += sprXInc * -ScrP1.y;
+        sprY += sprYInc * -ScrP1.y;
+
+        ScrP1.y = 0;
+    }
+
+    if(ScrP2.y >= a__screen.pixels->h) {
+        ScrP2.y = a__screen.pixels->h - 1;
+    }
+
+    for(int scrY = ScrP1.y; scrY <= ScrP2.y; scrY++, scrX += scrXInc) {
+        g_scanlines[scrY].screenX[Index] = a_fix_toInt(scrX);
+
+        g_scanlines[scrY].sprite[Index].x = sprX;
+        g_scanlines[scrY].sprite[Index].y = sprY;
+
+        sprX += sprXInc;
+        sprY += sprYInc;
+    }
+}
 
 #define A__FUNC_NAME_EXPAND2(Blend, Fill, ColorKey, Clip) a_blit__##Blend##_##Fill##_##ColorKey##_##Clip
 #define A__FUNC_NAME_EXPAND(Blend, Fill, ColorKey, Clip) A__FUNC_NAME_EXPAND2(Blend, Fill, ColorKey, Clip)
 #define A__FUNC_NAME(ColorKey, Clip) A__FUNC_NAME_EXPAND(A__BLEND, A__FILL, ColorKey, Clip)
+
+#define A__FUNC_NAME_EX_EXPAND2(Blend, Fill, ColorKey) a_blitEx__##Blend##_##Fill##_##ColorKey
+#define A__FUNC_NAME_EX_EXPAND(Blend, Fill, ColorKey) A__FUNC_NAME_EX_EXPAND2(Blend, Fill, ColorKey)
+#define A__FUNC_NAME_EX A__FUNC_NAME_EX_EXPAND(A__BLEND, A__FILL, A__COLORKEY)
 
 #define A__PIXEL_DRAW_EXPAND2(Blend) a_color__draw_##Blend
 #define A__PIXEL_DRAW_EXPAND(Blend, Params) A__PIXEL_DRAW_EXPAND2(Blend)(Params)
@@ -171,7 +233,11 @@ void a_platform_software_blit__init(void)
         g_blitters[Index][1][0][0] = a_blit__##Blend##_flat_block_noclip; \
         g_blitters[Index][1][0][1] = a_blit__##Blend##_flat_block_doclip; \
         g_blitters[Index][1][1][0] = a_blit__##Blend##_flat_keyed_noclip; \
-        g_blitters[Index][1][1][1] = a_blit__##Blend##_flat_keyed_doclip;
+        g_blitters[Index][1][1][1] = a_blit__##Blend##_flat_keyed_doclip; \
+        g_blittersEx[Index][0][0] = a_blitEx__##Blend##_data_block;       \
+        g_blittersEx[Index][0][1] = a_blitEx__##Blend##_data_keyed;       \
+        g_blittersEx[Index][1][0] = a_blitEx__##Blend##_flat_block;       \
+        g_blittersEx[Index][1][1] = a_blitEx__##Blend##_flat_keyed;       \
 
     initRoutines(A_COLOR_BLEND_PLAIN, plain);
     initRoutines(A_COLOR_BLEND_RGBA, rgba);
@@ -181,6 +247,14 @@ void a_platform_software_blit__init(void)
     initRoutines(A_COLOR_BLEND_INVERSE, inverse);
     initRoutines(A_COLOR_BLEND_MOD, mod);
     initRoutines(A_COLOR_BLEND_ADD, add);
+
+    g_scanlines = a_mem_malloc((unsigned)
+                    a_platform_api__screenSizeGet().y * sizeof(AScanline));
+}
+
+void a_platform_software_blit__uninit(void)
+{
+    free(g_scanlines);
 }
 
 static bool hasTransparency(const APixels* Pixels)
@@ -292,8 +366,6 @@ void a_platform_api__textureFree(APlatformTexture* Texture)
 
 void a_platform_api__textureBlit(const APlatformTexture* Texture, int X, int Y, bool FillFlat)
 {
-    A_UNUSED(FillFlat);
-
     const APixels* pixels = Texture->pixels;
 
     if(!a_screen_boxOnClip(X, Y, pixels->w, pixels->h)) {
@@ -302,7 +374,7 @@ void a_platform_api__textureBlit(const APlatformTexture* Texture, int X, int Y, 
 
     g_blitters
         [a__color.blend]
-        [a__color.fillBlit]
+        [FillFlat]
         [Texture->spansSize & 1]
         [!a_screen_boxInsideClip(X, Y, pixels->w, pixels->h)]
             (Texture, X, Y);
@@ -310,12 +382,10 @@ void a_platform_api__textureBlit(const APlatformTexture* Texture, int X, int Y, 
 
 void a_platform_api__textureBlitEx(const APlatformTexture* Texture, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY, bool FillFlat)
 {
-    A_UNUSED(Scale);
-    A_UNUSED(Angle);
-
-    a_platform_api__textureBlit(Texture,
-                                X - Texture->pixels->w / 2 - CenterX,
-                                Y - Texture->pixels->h / 2 - CenterY,
-                                FillFlat);
+    g_blittersEx
+        [a__color.blend]
+        [FillFlat]
+        [Texture->spansSize & 1]
+            (Texture, X, Y, Scale, Angle, CenterX, CenterY);
 }
 #endif // A_CONFIG_LIB_RENDER_SOFTWARE

@@ -76,6 +76,10 @@ void a_platform__init(void)
 
 void a_platform__uninit(void)
 {
+    #if A_CONFIG_LIB_RENDER_SOFTWARE
+        a_platform_software_blit__uninit();
+    #endif
+
     a_platform_api__screenUninit();
 
     #if A_CONFIG_SYSTEM_GP2X
