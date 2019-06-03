@@ -109,11 +109,6 @@ static void optimizeAlphaBlending(bool UpdateRoutines)
 }
 #endif
 
-AColorBlend a_color_blendGet(void)
-{
-    return a__color.blend;
-}
-
 void a_color_blendSet(AColorBlend Blend)
 {
     a__color.blend = Blend;
@@ -133,11 +128,6 @@ void a_color_blendSet(AColorBlend Blend)
 
         a_platform_api__renderSetBlendMode();
     #endif
-}
-
-int a_color_alphaGet(void)
-{
-    return a__color.alpha;
 }
 
 void a_color_alphaSet(int Alpha)

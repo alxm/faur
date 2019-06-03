@@ -45,5 +45,3 @@ extern unsigned a_sprite_framesNumGet(const ASprite* Sprite);
 
 extern const APixel* a_sprite_pixelsGetBuffer(const ASprite* Sprite, unsigned Frame);
 extern APixel a_sprite_pixelsGetPixel(const ASprite* Sprite, unsigned Frame, int X, int Y);
-
-extern APixel a_sprite_colorKeyGet(void);

@@ -258,8 +258,3 @@ APixel a_sprite_pixelsGetPixel(const ASprite* Sprite, unsigned Frame, int X, int
 {
     return a_pixels__bufferGetAt(Sprite->pixels[Frame], X, Y);
 }
-
-APixel a_sprite_colorKeyGet(void)
-{
-    return a_color__key;
-}
