@@ -49,8 +49,10 @@
     static const bool g_vsync = false;
 #endif
 
+static AVectorInt g_size = {A_CONFIG_SCREEN_WIDTH, A_CONFIG_SCREEN_HEIGHT};
 static bool g_fullscreen = A_CONFIG_SCREEN_FULLSCREEN;
 static int g_zoom = A_CONFIG_SCREEN_ZOOM;
+static APixels* g_pixels;
 
 void a_platform_sdl_video__init(void)
 {
@@ -112,8 +114,67 @@ static bool sdl1ScreenSet(int Width, int Height, uint32_t Flags)
 }
 #endif
 
-void a_platform_api__screenInit(int Width, int Height)
+#if A_CONFIG_SCREEN_HARDWARE_WIDTH > 0 && A_CONFIG_SCREEN_HARDWARE_HEIGHT > 0
+static AVectorInt sdlScreenSizeGetNative(void)
 {
+    return (AVectorInt){A_CONFIG_SCREEN_HARDWARE_WIDTH,
+                        A_CONFIG_SCREEN_HARDWARE_HEIGHT};
+}
+#elif A_CONFIG_LIB_SDL == 1
+static AVectorInt sdlScreenSizeGetNative(void)
+{
+    const SDL_VideoInfo* info = SDL_GetVideoInfo();
+
+    return (AVectorInt){info->current_w, info->current_h};
+}
+#elif A_CONFIG_LIB_SDL == 2
+static AVectorInt sdlScreenSizeGetNative(void)
+{
+    SDL_DisplayMode mode;
+
+    if(SDL_GetCurrentDisplayMode(0, &mode) < 0) {
+        a_out__error("SDL_GetCurrentDisplayMode: %s", SDL_GetError());
+
+        return (AVectorInt){0, 0};
+    }
+
+    a_out__info("Display info: %dx%d %dbpp",
+                mode.w,
+                mode.h,
+                SDL_BITSPERPIXEL(mode.format));
+
+    return (AVectorInt){mode.w, mode.h};
+}
+#endif
+
+void a_platform_api__screenInit(void)
+{
+    if(g_size.x < 0 || g_size.y < 0) {
+        AVectorInt res = sdlScreenSizeGetNative();
+
+        if(res.x > 0 && res.y > 0) {
+            if(g_size.x < 0) {
+                g_size.x = res.x / -g_size.x;
+            }
+
+            if(g_size.y < 0) {
+                g_size.y = res.y / -g_size.y;
+            }
+        }
+    }
+
+    if(g_size.x <= 0 || g_size.y <= 0) {
+        A__FATAL("Invalid screen resolution %dx%d", g_size.x, g_size.y);
+    } else {
+        a_out__info("Screen resolution %dx%d, zoom x%d",
+                    g_size.x,
+                    g_size.y,
+                    A_CONFIG_SCREEN_ZOOM);
+    }
+
+    g_pixels = a_pixels__new(
+                g_size.x, g_size.y, false, A_CONFIG_SCREEN_ALLOCATE);
+
     #if A_CONFIG_LIB_SDL == 1
         uint32_t videoFlags = SDL_SWSURFACE;
 
@@ -121,8 +182,8 @@ void a_platform_api__screenInit(int Width, int Height)
             videoFlags |= SDL_FULLSCREEN;
         #endif
 
-        if(!sdl1ScreenSet(Width * A_CONFIG_SCREEN_ZOOM,
-                          Height * A_CONFIG_SCREEN_ZOOM,
+        if(!sdl1ScreenSet(g_size.x * A_CONFIG_SCREEN_ZOOM,
+                          g_size.y * A_CONFIG_SCREEN_ZOOM,
                           videoFlags)) {
 
             A__FATAL("Could not create SDL screen surface");
@@ -135,10 +196,8 @@ void a_platform_api__screenInit(int Width, int Height)
                 }
             }
 
-            a_pixels__bufferSet(a__screen.pixels,
-                                g_sdlScreen->pixels,
-                                g_sdlScreen->pitch / sizeof(APixel),
-                                g_sdlScreen->h);
+            a_pixels__bufferSet(
+                g_pixels, g_sdlScreen->pixels, g_size.x, g_size.y);
         #endif
     #elif A_CONFIG_LIB_SDL == 2
         int ret;
@@ -159,8 +218,8 @@ void a_platform_api__screenInit(int Width, int Height)
         g_sdlWindow = SDL_CreateWindow(NULL,
                                        SDL_WINDOWPOS_CENTERED,
                                        SDL_WINDOWPOS_CENTERED,
-                                       Width * A_CONFIG_SCREEN_ZOOM,
-                                       Height * A_CONFIG_SCREEN_ZOOM,
+                                       g_size.x * A_CONFIG_SCREEN_ZOOM,
+                                       g_size.y * A_CONFIG_SCREEN_ZOOM,
                                        windowFlags);
         if(g_sdlWindow == NULL) {
             A__FATAL("SDL_CreateWindow: %s", SDL_GetError());
@@ -203,7 +262,7 @@ void a_platform_api__screenInit(int Width, int Height)
 
         g_vsync = info.flags & SDL_RENDERER_PRESENTVSYNC;
 
-        ret = SDL_RenderSetLogicalSize(a__sdlRenderer, Width, Height);
+        ret = SDL_RenderSetLogicalSize(a__sdlRenderer, g_size.x, g_size.y);
 
         if(ret < 0) {
             A__FATAL("SDL_RenderSetLogicalSize: %s", SDL_GetError());
@@ -213,8 +272,9 @@ void a_platform_api__screenInit(int Width, int Height)
             g_sdlTexture = SDL_CreateTexture(a__sdlRenderer,
                                              A_SDL__PIXEL_FORMAT,
                                              SDL_TEXTUREACCESS_STREAMING,
-                                             Width,
-                                             Height);
+                                             g_size.x,
+                                             g_size.y);
+
             if(g_sdlTexture == NULL) {
                 A__FATAL("SDL_CreateTexture: %s", SDL_GetError());
             }
@@ -225,6 +285,11 @@ void a_platform_api__screenInit(int Width, int Height)
 
         g_clearRgb = a_pixel_toRgb(
                         a_pixel_fromHex(A_CONFIG_COLOR_SCREEN_BORDER));
+
+        #if A_CONFIG_LIB_RENDER_SDL
+            a_pixels__commit(g_pixels);
+            a_platform_api__renderTargetSet(g_pixels->texture);
+        #endif
     #endif
 
     a_out__info("V-sync is %s", g_vsync ? "on" : "off");
@@ -246,6 +311,11 @@ void a_platform_api__screenInit(int Width, int Height)
     #if A_CONFIG_SCREEN_WIZ_FIX
         a_platform_wiz__portraitModeSet();
     #endif
+}
+
+void a_platform_api__screenUninit(void)
+{
+    a_pixels__free(g_pixels);
 }
 
 #if A_CONFIG_LIB_SDL == 2
@@ -276,7 +346,7 @@ void a_platform_api__screenShow(void)
                                         * A_CONFIG_SCREEN_HARDWARE_HEIGHT)
 
             APixel* dst = (APixel*)g_sdlScreen->pixels + A__SCREEN_TOTAL;
-            const APixel* src = a__screen.pixels->buffer;
+            const APixel* src = g_pixels->buffer;
 
             for(int i = A_CONFIG_SCREEN_HARDWARE_HEIGHT;
                 i--;
@@ -302,11 +372,10 @@ void a_platform_api__screenShow(void)
 
             if(g_zoom <= 1) {
                 if(g_sdlScreen->pitch == g_sdlScreen->w * (int)sizeof(APixel)) {
-                    a_pixels__copyToBuffer(
-                        a__screen.pixels, g_sdlScreen->pixels);
+                    a_pixels__copyToBuffer(g_pixels, g_sdlScreen->pixels);
                 } else {
                     uint8_t* dst = g_sdlScreen->pixels;
-                    const APixel* src = a__screen.pixels->buffer;
+                    const APixel* src = g_pixels->buffer;
                     size_t rowSize = (size_t)g_sdlScreen->w * sizeof(APixel);
 
                     for(int y = g_sdlScreen->h; y--; ) {
@@ -318,7 +387,7 @@ void a_platform_api__screenShow(void)
                 }
             } else {
                 APixel* dst = g_sdlScreen->pixels;
-                const APixel* src = a__screen.pixels->buffer;
+                const APixel* src = g_pixels->buffer;
                 int realH = g_sdlScreen->h / g_zoom;
                 int realW = g_sdlScreen->w / g_zoom;
                 size_t rowLen = g_sdlScreen->pitch / sizeof(APixel);
@@ -362,7 +431,7 @@ void a_platform_api__screenShow(void)
                 }
             }
 
-            a_pixels__bufferSet(a__screen.pixels,
+            a_pixels__bufferSet(g_pixels,
                                 g_sdlScreen->pixels,
                                 g_sdlScreen->pitch / sizeof(APixel),
                                 g_sdlScreen->h);
@@ -392,8 +461,8 @@ void a_platform_api__screenShow(void)
         #if A_CONFIG_LIB_RENDER_SOFTWARE
             if(SDL_UpdateTexture(g_sdlTexture,
                                  NULL,
-                                 a__screen.pixels->buffer,
-                                 a__screen.pixels->w * (int)sizeof(APixel)) < 0) {
+                                 g_pixels->buffer,
+                                 g_pixels->w * (int)sizeof(APixel)) < 0) {
 
                 A__FATAL("SDL_UpdateTexture: %s", SDL_GetError());
             }
@@ -405,9 +474,9 @@ void a_platform_api__screenShow(void)
             a_color_push();
             a_color_blendSet(A_COLOR_BLEND_PLAIN);
 
-            a_platform_api__textureBlit(a__screen.pixels->texture, 0, 0, false);
+            a_platform_api__textureBlit(g_pixels->texture, 0, 0, false);
 
-            a_platform_api__renderTargetSet(a__screen.pixels->texture);
+            a_platform_api__renderTargetSet(g_pixels->texture);
             a_platform_api__renderTargetClipSet(a__screen.clipX,
                                                 a__screen.clipY,
                                                 a__screen.clipWidth,
@@ -420,38 +489,15 @@ void a_platform_api__screenShow(void)
     #endif
 }
 
-#if A_CONFIG_SCREEN_HARDWARE_WIDTH > 0 && A_CONFIG_SCREEN_HARDWARE_HEIGHT > 0
-AVectorInt a_platform_api__screenResolutionGetNative(void)
+APixels* a_platform_api__screenPixelsGet(void)
 {
-    return (AVectorInt){A_CONFIG_SCREEN_HARDWARE_WIDTH,
-                        A_CONFIG_SCREEN_HARDWARE_HEIGHT};
+    return g_pixels;
 }
-#elif A_CONFIG_LIB_SDL == 2
-AVectorInt a_platform_api__screenResolutionGetNative(void)
+
+AVectorInt a_platform_api__screenSizeGet(void)
 {
-    SDL_DisplayMode mode;
-
-    if(SDL_GetCurrentDisplayMode(0, &mode) < 0) {
-        a_out__error("SDL_GetCurrentDisplayMode: %s", SDL_GetError());
-
-        return (AVectorInt){0, 0};
-    }
-
-    a_out__info("Display info: %dx%d %dbpp",
-                mode.w,
-                mode.h,
-                SDL_BITSPERPIXEL(mode.format));
-
-    return (AVectorInt){mode.w, mode.h};
+    return g_size;
 }
-#elif A_CONFIG_LIB_SDL == 1
-AVectorInt a_platform_api__screenResolutionGetNative(void)
-{
-    const SDL_VideoInfo* info = SDL_GetVideoInfo();
-
-    return (AVectorInt){info->current_w, info->current_h};
-}
-#endif
 
 bool a_platform_api__screenVsyncGet(void)
 {
@@ -467,8 +513,8 @@ void a_platform_api__screenZoomSet(int Zoom)
 {
     #if A_CONFIG_LIB_SDL == 1
         #if A_CONFIG_SCREEN_ALLOCATE
-            int newWidth = a__screen.pixels->w * Zoom;
-            int newHeight = a__screen.pixels->h * Zoom;
+            int newWidth = g_pixels->w * Zoom;
+            int newHeight = g_pixels->h * Zoom;
 
             if(sdl1ScreenSet(newWidth, newHeight, g_sdlScreen->flags)) {
                 g_zoom = Zoom;
@@ -480,9 +526,7 @@ void a_platform_api__screenZoomSet(int Zoom)
                 "SDL 1.2 screen zoom needs A_CONFIG_SCREEN_ALLOCATE=1");
         #endif
     #elif A_CONFIG_LIB_SDL == 2
-        SDL_SetWindowSize(g_sdlWindow,
-                          a__screen.pixels->w * Zoom,
-                          a__screen.pixels->h * Zoom);
+        SDL_SetWindowSize(g_sdlWindow, g_pixels->w * Zoom, g_pixels->h * Zoom);
 
         g_zoom = Zoom;
     #endif

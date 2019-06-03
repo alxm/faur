@@ -346,7 +346,7 @@ APlatformTexture* a_platform_api__textureNew(const APixels* Pixels)
             switch(t) {
                 case A_TEXTURE__NORMAL: {
                     for(int i = Pixels->w * Pixels->h; i--; ) {
-                        if(Pixels->buffer[i] != a_sprite__colorKey) {
+                        if(Pixels->buffer[i] != a_color__key) {
                             // Set full alpha for non-transparent pixel
                             buffer[i] |= (APixel)A__PX_MASK_A << A__PX_SHIFT_A;
                         }
@@ -355,7 +355,7 @@ APlatformTexture* a_platform_api__textureNew(const APixels* Pixels)
 
                 case A_TEXTURE__COLORMOD_BITMAP: {
                     for(int i = Pixels->w * Pixels->h; i--; ) {
-                        if(Pixels->buffer[i] == a_sprite__colorKey) {
+                        if(Pixels->buffer[i] == a_color__key) {
                             // Set full color for transparent pixel
                             buffer[i] |= a_pixel_fromHex(0xffffff);
                         }
@@ -364,7 +364,7 @@ APlatformTexture* a_platform_api__textureNew(const APixels* Pixels)
 
                 case A_TEXTURE__COLORMOD_FLAT: {
                     for(int i = Pixels->w * Pixels->h; i--;) {
-                        if(Pixels->buffer[i] != a_sprite__colorKey) {
+                        if(Pixels->buffer[i] != a_color__key) {
                             // Set full color for non-transparent pixel
                             buffer[i] |= a_pixel_fromHex(0xffffff);
                         }

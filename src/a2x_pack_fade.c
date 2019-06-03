@@ -35,20 +35,20 @@ static struct {
     AFadeOpId op;
     AFixu angle, angleInc;
     APixel color;
-    AScreen* capturedScreen;
+    ASprite* oldScreen;
 } g_fade = {
     .op = A__FADE_INVALID,
 };
 
 void a_fade__init(void)
 {
-    g_fade.capturedScreen = a_screen_new(
-                                a__screen.pixels->w, a__screen.pixels->h);
+    g_fade.oldScreen = a_sprite_newBlank(
+                        a__screen.pixels->w, a__screen.pixels->h, 1, false);
 }
 
 void a_fade__uninit(void)
 {
-    a_screen_free(g_fade.capturedScreen);
+    a_sprite_free(g_fade.oldScreen);
 }
 
 const AEvent* a_fade_eventGet(void)
@@ -83,7 +83,7 @@ void a_fade_startScreens(unsigned DurationMs)
 {
     newFade(A__FADE_SCREENS, DurationMs);
 
-    a_screen_copy(g_fade.capturedScreen, &a__screen);
+    a_screen__toSprite(g_fade.oldScreen);
 }
 
 void a_fade__tick(void)
@@ -132,7 +132,7 @@ void a_fade__draw(void)
                 a_fix_toInt(a_fix_sinf(A_DEG_090_FIX - g_fade.angle)
                                 * A_COLOR_ALPHA_MAX));
 
-            a_screen_blit(g_fade.capturedScreen);
+            a_sprite_blit(g_fade.oldScreen, 0, 0, 0);
         } break;
 
         default: break;

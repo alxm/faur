@@ -26,8 +26,6 @@
 #include "a2x_pack_listit.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_screen.v.h"
-#include "a2x_pack_sprite.v.h"
-#include "a2x_pack_spriteframes.v.h"
 #include "a2x_pack_str.v.h"
 
 typedef struct {
@@ -45,8 +43,7 @@ typedef enum {
 static AConsoleState g_state = A_CONSOLE__STATE_INVALID;
 static AList* g_lines;
 static unsigned g_linesPerScreen;
-static ASprite* g_sources[A_OUT__SOURCE_NUM];
-static ASprite* g_titles[A_OUT__TYPE_NUM];
+static ASprite* g_tags;
 static AButton* g_toggle;
 static bool g_show = A_CONFIG_OUTPUT_CONSOLE_SHOW;
 
@@ -85,19 +82,6 @@ void a_console__init(void)
 
 void a_console__init2(void)
 {
-    ASpriteFrames* frames = a_spriteframes_newFromPng(
-                                "/a2x/consoleTitles", 19, 7);
-
-    for(int s = 0; s < A_OUT__SOURCE_NUM; s++) {
-        g_sources[s] = a_spriteframes_getNext(frames);
-    }
-
-    for(int t = 0; t < A_OUT__TYPE_NUM; t++) {
-        g_titles[t] = a_spriteframes_getNext(frames);
-    }
-
-    a_spriteframes_free(frames, false);
-
     g_linesPerScreen =
         (unsigned)((a_screen_sizeGetHeight() - 2) / a_font_lineHeightGet() - 2);
 
@@ -106,6 +90,7 @@ void a_console__init2(void)
         line_free(a_list_pop(g_lines));
     }
 
+    g_tags = a_sprite_newFromPng("/a2x/consoleTitles", 0, 0, 19, 7);
     g_toggle = a_button_new();
     a_button_bind(g_toggle, A_KEY_F11);
 
@@ -126,15 +111,7 @@ void a_console__uninit(void)
     g_state = A_CONSOLE__STATE_INVALID;
 
     a_list_freeEx(g_lines, (AFree*)line_free);
-
-    for(int s = 0; s < A_OUT__SOURCE_NUM; s++) {
-        a_sprite_free(g_sources[s]);
-    }
-
-    for(int t = 0; t < A_OUT__TYPE_NUM; t++) {
-        a_sprite_free(g_titles[t]);
-    }
-
+    a_sprite_free(g_tags);
     a_button_free(g_toggle);
 }
 
@@ -184,15 +161,17 @@ void a_console__draw(void)
     }
 
     {
-        int tagWidth = g_sources[A_OUT__SOURCE_A2X]->pixels->w;
+        int tagWidth = a_sprite_sizeGetWidth(g_tags);
 
         a_font_coordsSet(1 + tagWidth + 1 + tagWidth + 2, a_font_coordsGetY());
         a_font__fontSet(A_FONT__ID_LIGHT_GRAY);
 
         A_LIST_ITERATE(g_lines, ALine*, l) {
-            a_sprite_blit(g_sources[l->source], 1, a_font_coordsGetY());
-            a_sprite_blit(
-                g_titles[l->type], 1 + tagWidth + 1, a_font_coordsGetY());
+            a_sprite_blit(g_tags, (unsigned)l->source, 1, a_font_coordsGetY());
+            a_sprite_blit(g_tags,
+                          (unsigned)(A_OUT__SOURCE_NUM + l->type),
+                          1 + tagWidth + 1,
+                          a_font_coordsGetY());
             a_font_print(l->text);
             a_font_newLine();
         }

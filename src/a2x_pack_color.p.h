@@ -130,10 +130,7 @@ extern void a_color_push(void);
 extern void a_color_pop(void);
 extern void a_color_reset(void);
 
-extern AColorBlend a_color_blendGet(void);
 extern void a_color_blendSet(AColorBlend Blend);
-
-extern int a_color_alphaGet(void);
 extern void a_color_alphaSet(int Alpha);
 
 extern void a_color_baseSetRgb(int Red, int Green, int Blue);

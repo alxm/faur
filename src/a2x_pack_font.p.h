@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2018 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016, 2018-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -31,8 +31,8 @@ typedef enum {
 
 #include "a2x_pack_sprite.p.h"
 
-extern AFont* a_font_newFromPng(const char* Path);
-extern AFont* a_font_newFromSprite(const ASprite* Sheet, int X, int Y);
+extern AFont* a_font_newFromPng(const char* Path, int X, int Y, int CharWidth, int CharHeight);
+extern AFont* a_font_newFromSprite(const ASprite* Sheet, int X, int Y, int CharWidth, int CharHeight);
 extern AFont* a_font_dup(const AFont* Font, APixel Color);
 extern void a_font_free(AFont* Font);
 

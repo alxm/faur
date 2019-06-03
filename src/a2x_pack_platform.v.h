@@ -40,10 +40,12 @@ extern void a_platform__uninit(void);
 extern uint32_t a_platform_api__timeMsGet(void);
 extern void a_platform_api__timeMsWait(uint32_t Ms);
 
-extern void a_platform_api__screenInit(int Width, int Height);
+extern void a_platform_api__screenInit(void);
+extern void a_platform_api__screenUninit(void);
 extern void a_platform_api__screenClear(void);
 extern void a_platform_api__screenShow(void);
-extern AVectorInt a_platform_api__screenResolutionGetNative(void);
+extern APixels* a_platform_api__screenPixelsGet(void);
+extern AVectorInt a_platform_api__screenSizeGet(void);
 extern bool a_platform_api__screenVsyncGet(void);
 extern int a_platform_api__screenZoomGet(void);
 extern void a_platform_api__screenZoomSet(int Zoom);

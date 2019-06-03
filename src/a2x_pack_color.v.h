@@ -33,6 +33,9 @@ typedef struct {
 
 extern APixelState a__color;
 
+extern APixel a_color__key;
+extern APixel a_color__limit;
+
 static inline void a_color__draw_plain(APixel* Dst, APixel Pixel)
 {
     *Dst = Pixel;

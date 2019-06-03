@@ -24,124 +24,53 @@
 #include "a2x_pack_screen.v.h"
 #include "a2x_pack_str.v.h"
 
-APixel a_sprite__colorKey;
-APixel a_sprite__colorLimit;
+struct ASprite {
+    unsigned framesNum;
+    APixels* pixels[]; // [framesNum]
+};
 
-void a_sprite__init(void)
+static ASprite* spriteNew(APixels* Pixels, int X, int Y, int FrameWidth, int FrameHeight)
 {
-    a_sprite__colorKey = a_pixel_fromHex(A_CONFIG_COLOR_SPRITE_KEY);
-    a_sprite__colorLimit = a_pixel_fromHex(A_CONFIG_COLOR_SPRITE_BORDER);
-}
+    AVectorInt gridDim;
 
-static ASprite* spriteNew(APixels* Pixels)
-{
-    ASprite* s = a_mem_malloc(sizeof(ASprite));
+    if(X == 0 && Y == 0 && FrameWidth < 1 && FrameHeight < 1) {
+        gridDim = (AVectorInt){Pixels->w, Pixels->h};
+    } else {
+        gridDim = a_pixels__boundsFind(Pixels, X, Y);
+    }
 
-    s->pixels = Pixels;
-    s->nameId = NULL;
-    s->wOriginal = Pixels->w;
-    s->wLog2 = (int)log2f((float)Pixels->w);
+    if(FrameWidth < 1 || FrameHeight < 1) {
+        FrameWidth = gridDim.x;
+        FrameHeight = gridDim.y;
+    }
+
+    unsigned framesNum =
+        (unsigned)((gridDim.x / FrameWidth) * (gridDim.y / FrameHeight));
+
+    int endX = X + gridDim.x - (gridDim.x % FrameWidth);
+    int endY = Y + gridDim.y - (gridDim.y % FrameHeight);
+
+    ASprite* s = a_mem_malloc(sizeof(ASprite) + sizeof(APixels*) * framesNum);
+
+    s->framesNum = framesNum;
+
+    unsigned frame = 0;
+
+    for(int y = Y; y < endY; y += FrameHeight) {
+        for(int x = X; x < endX; x += FrameWidth) {
+            s->pixels[frame] =
+                a_pixels__sub(Pixels, x, y, FrameWidth, FrameHeight);
+
+            a_pixels__commit(s->pixels[frame]);
+
+            frame++;
+        }
+    }
 
     return s;
 }
 
-static int findNextVerticalEdge(const ASprite* Sheet, int StartX, int StartY, int* EdgeX)
-{
-    int w = Sheet->pixels->w;
-    int h = Sheet->pixels->h;
-
-    for(int x = StartX + *EdgeX + 1; x < w; x++) {
-        APixel p = a_pixels__bufferGetAt(Sheet->pixels, x, StartY);
-
-        if(p == a_sprite__colorLimit) {
-            *EdgeX = x - StartX;
-
-            int len = 1;
-            APixel* buffer = a_pixels__bufferGetFrom(
-                                Sheet->pixels, x, StartY + 1);
-
-            for(int y = h - (StartY + 1); y--; ) {
-                if(*buffer != a_sprite__colorLimit) {
-                    break;
-                }
-
-                buffer += w;
-                len++;
-            }
-
-            return len;
-        }
-    }
-
-    return -1;
-}
-
-static int findNextHorizontalEdge(const ASprite* Sheet, int StartX, int StartY, int* EdgeY)
-{
-    for(int y = StartY + *EdgeY + 1; y < Sheet->pixels->h; y++) {
-        APixel p = a_pixels__bufferGetAt(Sheet->pixels, StartX, y);
-
-        if(p == a_sprite__colorLimit) {
-            *EdgeY = y - StartY;
-
-            int len = 1;
-            APixel* buffer = a_pixels__bufferGetFrom(
-                                Sheet->pixels, StartX + 1, y);
-
-            for(int x = Sheet->pixels->w - (StartX + 1); x--; ) {
-                if(*buffer != a_sprite__colorLimit) {
-                    break;
-                }
-
-                buffer++;
-                len++;
-            }
-
-            return len;
-        }
-    }
-
-    return -1;
-}
-
-AVectorInt a_sprite__boundsFind(const ASprite* Sheet, int X, int Y)
-{
-    AVectorInt bounds;
-
-    if(X < 0 || X >= Sheet->pixels->w || Y < 0 || Y >= Sheet->pixels->h) {
-        A__FATAL("a_sprite__boundsFind(%s, %d, %d): Invalid coords",
-                 A_SPRITE__NAME(Sheet),
-                 X,
-                 Y);
-    }
-
-    int vEdgeX = 0;
-    int vEdgeLen = findNextVerticalEdge(Sheet, X, Y, &vEdgeX);
-    int hEdgeY = 0;
-    int hEdgeLen = findNextHorizontalEdge(Sheet, X, Y, &hEdgeY);
-
-    while(vEdgeLen != -1 && hEdgeLen != -1) {
-        if(vEdgeLen < hEdgeY) {
-            vEdgeLen = findNextVerticalEdge(Sheet, X, Y, &vEdgeX);
-        } else if(hEdgeLen < vEdgeX) {
-            hEdgeLen = findNextHorizontalEdge(Sheet, X, Y, &hEdgeY);
-        } else {
-            break;
-        }
-    }
-
-    if(vEdgeLen == -1 || hEdgeLen == -1) {
-        bounds.x = Sheet->pixels->w - X;
-        bounds.y = Sheet->pixels->h - Y;
-    } else {
-        bounds.x = vEdgeX;
-        bounds.y = hEdgeY;
-    }
-
-    return bounds;
-}
-
-ASprite* a_sprite_newFromPng(const char* Path)
+ASprite* a_sprite_newFromPng(const char* Path, int X, int Y, int FrameWidth, int FrameHeight)
 {
     APixels* pixels = a_png__readFile(Path);
 
@@ -149,73 +78,82 @@ ASprite* a_sprite_newFromPng(const char* Path)
         A__FATAL("a_sprite_newFromPng(%s): Cannot read file", Path);
     }
 
-    ASprite* s = spriteNew(pixels);
+    if(FrameWidth < 1 || FrameHeight < 1) {
+        char* suffix = a_str_suffixGetFromLast(Path, '_');
 
-    s->nameId = a_str_dup(Path);
+        if(suffix) {
+            int n = sscanf(suffix, "grid%dx%d.png", &FrameWidth, &FrameHeight);
 
-    a_pixels__commit(s->pixels);
+            if(n != 2) {
+                FrameWidth = 0;
+                FrameHeight = 0;
+            }
+
+            free(suffix);
+        }
+    }
+
+    ASprite* s = spriteNew(pixels, X, Y, FrameWidth, FrameHeight);
+
+    a_pixels__free(pixels);
 
     return s;
 }
 
-ASprite* a_sprite_newFromSprite(const ASprite* Sheet, int X, int Y)
+ASprite* a_sprite_newFromSprite(const ASprite* Sheet, int X, int Y, int FrameWidth, int FrameHeight)
 {
-    AVectorInt dim = a_sprite__boundsFind(Sheet, X, Y);
-
-    return a_sprite_newFromSpriteEx(Sheet, X, Y, dim.x, dim.y);
+    return spriteNew(Sheet->pixels[0], X, Y, FrameWidth, FrameHeight);
 }
 
-ASprite* a_sprite_newFromSpriteEx(const ASprite* Sheet, int X, int Y, int W, int H)
+ASprite* a_sprite_newBlank(int Width, int Height, unsigned Frames, bool ColorKeyed)
 {
-    ASprite* s = spriteNew(a_pixels__new(W, H, true, true));
-
-    const APixel* src = a_pixels__bufferGetFrom(Sheet->pixels, X, Y);
-    APixel* dst = s->pixels->buffer;
-
-    for(int i = H; i--; ) {
-        memcpy(dst, src, (unsigned)W * sizeof(APixel));
-
-        src += Sheet->pixels->w;
-        dst += W;
+    if(Frames == 0) {
+        A__FATAL("a_sprite_newBlank: Frames == 0");
     }
 
-    a_pixels__commit(s->pixels);
+    ASprite* s = a_mem_malloc(sizeof(ASprite) + sizeof(APixels*) * Frames);
 
-    return s;
-}
+    s->framesNum = Frames;
 
-ASprite* a_sprite_newBlank(int Width, int Height, bool ColorKeyed)
-{
-    ASprite* s = spriteNew(a_pixels__new(Width, Height, true, true));
+    for(unsigned f = Frames; f--; ) {
+        s->pixels[f] = a_pixels__new(Width, Height, true, true);
 
-    if(ColorKeyed) {
-        a_pixels__fill(s->pixels, a_sprite__colorKey);
+        if(ColorKeyed) {
+            a_pixels__fill(s->pixels[f], a_color__key);
+        }
+
+        a_pixels__commit(s->pixels[f]);
     }
-
-    a_pixels__commit(s->pixels);
 
     return s;
 }
 
 ASprite* a_sprite_dup(const ASprite* Sprite)
 {
-    ASprite* clone = spriteNew(a_pixels__dup(Sprite->pixels));
+    ASprite* s = a_mem_malloc(
+                    sizeof(ASprite) + sizeof(APixels*) * Sprite->framesNum);
 
-    a_pixels__commit(clone->pixels);
+    s->framesNum = Sprite->framesNum;
 
-    #if !A_CONFIG_LIB_RENDER_SOFTWARE
-        // Sprite's pixel buffer may be stale, blit the real texture
-        a_color_push();
-        a_screen_push(clone);
+    for(unsigned f = Sprite->framesNum; f--; ) {
+        s->pixels[f] = a_pixels__dup(Sprite->pixels[f]);
 
-        a_color_reset();
-        a_sprite_blit(Sprite, 0, 0);
+        a_pixels__commit(s->pixels[f]);
 
-        a_screen_pop();
-        a_color_pop();
-    #endif
+        #if !A_CONFIG_LIB_RENDER_SOFTWARE
+            // Sprite's pixel buffer may be stale, blit the real texture
+            a_color_push();
+            a_screen_push((ASprite*)s, f);
 
-    return clone;
+            a_color_reset();
+            a_sprite_blit(Sprite, f, 0, 0);
+
+            a_screen_pop();
+            a_color_pop();
+        #endif
+    }
+
+    return s;
 }
 
 void a_sprite_free(ASprite* Sprite)
@@ -224,23 +162,24 @@ void a_sprite_free(ASprite* Sprite)
         return;
     }
 
-    a_pixels__free(Sprite->pixels);
+    for(unsigned f = Sprite->framesNum; f--; ) {
+        a_pixels__free(Sprite->pixels[f]);
+    }
 
-    free(Sprite->nameId);
     free(Sprite);
 }
 
-void a_sprite_blit(const ASprite* Sprite, int X, int Y)
+void a_sprite_blit(const ASprite* Sprite, unsigned Frame, int X, int Y)
 {
-    a_platform_api__textureBlit(Sprite->pixels->texture,
+    a_platform_api__textureBlit(Sprite->pixels[Frame]->texture,
                                 X,
                                 Y,
                                 a__color.fillBlit);
 }
 
-void a_sprite_blitEx(const ASprite* Sprite, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY)
+void a_sprite_blitEx(const ASprite* Sprite, unsigned Frame, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY)
 {
-    a_platform_api__textureBlitEx(Sprite->pixels->texture,
+    a_platform_api__textureBlitEx(Sprite->pixels[Frame]->texture,
                                   X,
                                   Y,
                                   Scale,
@@ -252,117 +191,70 @@ void a_sprite_blitEx(const ASprite* Sprite, int X, int Y, AFix Scale, unsigned A
 
 void a_sprite_swapColor(ASprite* Sprite, APixel OldColor, APixel NewColor)
 {
-    APixel* buffer = Sprite->pixels->buffer;
+    for(unsigned f = Sprite->framesNum; f--; ) {
+        APixel* buffer = Sprite->pixels[f]->buffer;
 
-    for(size_t i = Sprite->pixels->bufferSize / sizeof(APixel); i--; ) {
-        if(buffer[i] == OldColor) {
-            buffer[i] = NewColor;
+        for(size_t i = Sprite->pixels[f]->bufferSize / sizeof(APixel); i--; ) {
+            if(buffer[i] == OldColor) {
+                buffer[i] = NewColor;
+            }
         }
-    }
 
-    a_pixels__commit(Sprite->pixels);
+        a_pixels__commit(Sprite->pixels[f]);
+    }
 }
 
 void a_sprite_swapColors(ASprite* Sprite, const APixel* OldColors, const APixel* NewColors, unsigned NumColors)
 {
-    APixel* buffer = Sprite->pixels->buffer;
+    for(unsigned f = Sprite->framesNum; f--; ) {
+        APixel* buffer = Sprite->pixels[f]->buffer;
 
-    for(size_t i = Sprite->pixels->bufferSize / sizeof(APixel); i--; ) {
-        const APixel pixel = buffer[i];
+        for(size_t i = Sprite->pixels[f]->bufferSize / sizeof(APixel); i--; ) {
+            const APixel pixel = buffer[i];
 
-        for(unsigned c = NumColors; c--; ) {
-            if(pixel == OldColors[c]) {
-                buffer[i] = NewColors[c];
-                break;
+            for(unsigned c = NumColors; c--; ) {
+                if(pixel == OldColors[c]) {
+                    buffer[i] = NewColors[c];
+                    break;
+                }
             }
         }
-    }
 
-    a_pixels__commit(Sprite->pixels);
+        a_pixels__commit(Sprite->pixels[f]);
+    }
 }
 
 AVectorInt a_sprite_sizeGet(const ASprite* Sprite)
 {
-    return (AVectorInt){Sprite->pixels->w, Sprite->pixels->h};
+    return (AVectorInt){Sprite->pixels[0]->w, Sprite->pixels[0]->h};
 }
 
 int a_sprite_sizeGetWidth(const ASprite* Sprite)
 {
-    return Sprite->pixels->w;
-}
-
-int a_sprite_sizeGetWidthLog2(const ASprite* Sprite)
-{
-    return Sprite->wLog2;
-}
-
-int a_sprite_sizeGetWidthOriginal(const ASprite* Sprite)
-{
-    return Sprite->wOriginal;
+    return Sprite->pixels[0]->w;
 }
 
 int a_sprite_sizeGetHeight(const ASprite* Sprite)
 {
-    return Sprite->pixels->h;
+    return Sprite->pixels[0]->h;
 }
 
-void a_sprite_sizeSetWidthPow2(ASprite* Sprite)
+unsigned a_sprite_framesNumGet(const ASprite* Sprite)
 {
-    if((Sprite->pixels->w & (Sprite->pixels->w - 1)) == 0) {
-        return;
-    }
-
-    int power = 1;
-
-    while((1 << power) < Sprite->pixels->w) {
-        power++;
-    }
-
-    int newWidth = 1 << power;
-    APixels* newPixels = a_pixels__new(newWidth, Sprite->pixels->h, true, true);
-    APixel* newBuffer = newPixels->buffer;
-
-    int oldWidth = Sprite->pixels->w;
-    size_t oldLineSize = (unsigned)oldWidth * sizeof(APixel);
-    APixel* oldBuffer = Sprite->pixels->buffer;
-
-    int leftPadding = (newWidth - oldWidth) / 2;
-    int rightPadding = newWidth - oldWidth - leftPadding;
-
-    for(int i = Sprite->pixels->h; i--; ) {
-        for(int j = leftPadding; j--; ) {
-            *newBuffer++ = a_sprite__colorKey;
-        }
-
-        memcpy(newBuffer, oldBuffer, oldLineSize);
-
-        newBuffer += oldWidth;
-        oldBuffer += oldWidth;
-
-        for(int j = rightPadding; j--; ) {
-            *newBuffer++ = a_sprite__colorKey;
-        }
-    }
-
-    Sprite->wLog2 = power;
-
-    a_pixels__free(Sprite->pixels);
-    Sprite->pixels = newPixels;
-
-    a_pixels__commit(Sprite->pixels);
+    return Sprite->framesNum;
 }
 
-const APixel* a_sprite_pixelsGetBuffer(const ASprite* Sprite)
+APixels* a_sprite__pixelsGet(const ASprite* Sprite, unsigned Frame)
 {
-    return Sprite->pixels->buffer;
+    return Sprite->pixels[Frame];
 }
 
-APixel a_sprite_pixelsGetPixel(const ASprite* Sprite, int X, int Y)
+const APixel* a_sprite_pixelsGetBuffer(const ASprite* Sprite, unsigned Frame)
 {
-    return a_pixels__bufferGetAt(Sprite->pixels, X, Y);
+    return Sprite->pixels[Frame]->buffer;
 }
 
-APixel a_sprite_colorKeyGet(void)
+APixel a_sprite_pixelsGetPixel(const ASprite* Sprite, unsigned Frame, int X, int Y)
 {
-    return a_sprite__colorKey;
+    return a_pixels__bufferGetAt(Sprite->pixels[Frame], X, Y);
 }

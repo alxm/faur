@@ -22,7 +22,6 @@
 #include "a2x_pack_math.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_screen.v.h"
-#include "a2x_pack_spriteframes.v.h"
 #include "a2x_pack_str.v.h"
 
 #define A__CHAR_START 32
@@ -30,7 +29,7 @@
 #define A__LINE_SPACING 1
 
 struct AFont {
-    ASpriteFrames* frames;
+    ASprite* chars;
 };
 
 typedef struct {
@@ -58,8 +57,10 @@ void a_font__init(void)
         [A_FONT__ID_BLUE] = a_pixel_fromHex(0x4f8fdf),
     };
 
-    g_defaultFonts[A_FONT__ID_DEFAULT] = a_font_newFromPng("/a2x/font");
-    g_defaultFonts[A_FONT__ID_WHITE] = a_font_newFromPng("/a2x/fontKeyed");
+    g_defaultFonts[A_FONT__ID_DEFAULT] = a_font_newFromPng(
+                                            "/a2x/font", 0, 0, 6, 8);
+    g_defaultFonts[A_FONT__ID_WHITE] = a_font_newFromPng(
+                                        "/a2x/fontKeyed", 0, 0, 6, 8);
 
     for(int f = A_FONT__ID_WHITE + 1; f < A_FONT__ID_NUM; f++) {
         g_defaultFonts[f] = a_font_dup(
@@ -78,59 +79,43 @@ void a_font__uninit(void)
     a_list_freeEx(g_stateStack, free);
 }
 
-static AFont* a_font__new(ASpriteFrames* Frames)
+AFont* a_font_newFromPng(const char* Path, int X, int Y, int CharWidth, int CharHeight)
 {
     AFont* f = a_mem_malloc(sizeof(AFont));
 
-    f->frames = Frames;
+    f->chars = a_sprite_newFromPng(Path, X, Y, CharWidth, CharHeight);
 
     return f;
 }
 
-AFont* a_font_newFromPng(const char* Path)
+AFont* a_font_newFromSprite(const ASprite* Sheet, int X, int Y, int CharWidth, int CharHeight)
 {
-    ASprite* s = a_sprite_newFromPng(Path);
-    AFont* f = a_font_newFromSprite(s, 0, 0);
+    AFont* f = a_mem_malloc(sizeof(AFont));
 
-    a_sprite_free(s);
+    f->chars = a_sprite_newFromSprite(Sheet, X, Y, CharWidth, CharHeight);
 
     return f;
-}
-
-AFont* a_font_newFromSprite(const ASprite* Sheet, int X, int Y)
-{
-    ASprite* gridSprite = a_sprite_newFromSprite(Sheet, X, Y);
-    ASpriteFrames* frames = a_spriteframes_newFromSprite(
-                                gridSprite,
-                                0,
-                                0,
-                                gridSprite->pixels->w / 16,
-                                gridSprite->pixels->h / 6);
-
-    a_sprite_free(gridSprite);
-
-    return a_font__new(frames);
 }
 
 AFont* a_font_dup(const AFont* Font, APixel Color)
 {
+    AFont* f = a_mem_malloc(sizeof(AFont));
+
+    f->chars = a_sprite_dup(Font->chars);
+
     a_color_push();
     a_color_baseSetPixel(Color);
     a_color_fillBlitSet(true);
 
-    ASpriteFrames* frames = a_spriteframes_dup(Font->frames, true);
-
-    for(unsigned i = a_spriteframes_framesNumGet(frames); i--; ) {
-        ASprite* sprite = a_spriteframes_getNext(frames);
-
-        a_screen_push(sprite);
-        a_sprite_blit(sprite, 0, 0);
+    for(unsigned i = a_sprite_framesNumGet(f->chars); i--; ) {
+        a_screen_push(f->chars, i);
+        a_sprite_blit(f->chars, i, 0, 0);
         a_screen_pop();
     }
 
     a_color_pop();
 
-    return a_font__new(frames);
+    return f;
 }
 
 void a_font_free(AFont* Font)
@@ -139,7 +124,7 @@ void a_font_free(AFont* Font)
         return;
     }
 
-    a_spriteframes_free(Font->frames, true);
+    a_sprite_free(Font->chars);
 
     free(Font);
 }
@@ -175,10 +160,8 @@ void a_font_fontSet(const AFont* Font)
         Font = g_defaultFonts[A_FONT__ID_DEFAULT];
     }
 
-    ASprite* ch = a_spriteframes_getByIndex(Font->frames, A__CHAR_INDEX(' '));
-
     g_state.font = Font;
-    g_state.lineHeight = ch->pixels->h + A__LINE_SPACING;
+    g_state.lineHeight = a_sprite_sizeGetHeight(Font->chars) + A__LINE_SPACING;
 }
 
 void a_font__fontSet(AFontId Font)
@@ -232,39 +215,26 @@ void a_font_lineWrapSet(int Width)
     g_state.currentLineWidth = 0;
 }
 
-static int getWidth(const char* Text, ptrdiff_t Length)
-{
-    int width = 0;
-    const ASpriteFrames* f = g_state.font->frames;
-
-    for( ; Length--; Text++) {
-        width += a_spriteframes_getByIndex(f, A__CHAR_INDEX(*Text))->pixels->w;
-    }
-
-    return width;
-}
-
 static void drawString(const char* Text, ptrdiff_t Length)
 {
-    const ASpriteFrames* f = g_state.font->frames;
+    const ASprite* chars = g_state.font->chars;
+    int charWidth = a_sprite_sizeGetWidth(chars);
 
     if(g_state.align == A_FONT_ALIGN_MIDDLE) {
-        g_state.x -= getWidth(Text, Length) / 2;
+        g_state.x -= (int)Length * charWidth / 2;
     } else if(g_state.align == A_FONT_ALIGN_RIGHT) {
-        g_state.x -= getWidth(Text, Length);
+        g_state.x -= (int)Length * charWidth;
     }
 
     for( ; Length--; Text++) {
-        const ASprite* s = a_spriteframes_getByIndex(f, A__CHAR_INDEX(*Text));
-
-        a_sprite_blit(s, g_state.x, g_state.y);
-        g_state.x += s->pixels->w;
+        a_sprite_blit(chars, A__CHAR_INDEX(*Text), g_state.x, g_state.y);
+        g_state.x += charWidth;
     }
 }
 
 static void wrapString(const char* Text)
 {
-    const ASpriteFrames* f = g_state.font->frames;
+    int charWidth = a_sprite_sizeGetWidth(g_state.font->chars);
 
     const char* lineStart = Text;
     const char* wordStart = NULL;
@@ -275,8 +245,7 @@ static void wrapString(const char* Text)
                 wordStart = Text;
             }
 
-            g_state.currentLineWidth +=
-                a_spriteframes_getByIndex(f, A__CHAR_INDEX(ch))->pixels->w;
+            g_state.currentLineWidth += charWidth;
         } else {
             wordStart = NULL;
 
@@ -285,9 +254,7 @@ static void wrapString(const char* Text)
                     // Do not start a line with spaces
                     lineStart++;
                 } else {
-                    g_state.currentLineWidth +=
-                        a_spriteframes_getByIndex(
-                            f, A__CHAR_INDEX(' '))->pixels->w;
+                    g_state.currentLineWidth += charWidth;
                 }
             } else {
                 // Print what we have and skip non-printable character
@@ -329,6 +296,7 @@ void a_font_print(const char* Text)
 {
     if(g_state.wrapWidth > 0) {
         wrapString(Text);
+
         return;
     }
 
@@ -369,10 +337,10 @@ void a_font_printv(const char* Format, va_list Args)
 int a_font_widthGet(const char* Text)
 {
     int width = 0;
-    const ASpriteFrames* f = g_state.font->frames;
+    int charWidth = a_sprite_sizeGetWidth(g_state.font->chars);
 
     for(char ch = *Text; ch >= A__CHAR_START; ch = *++Text) {
-        width += a_spriteframes_getByIndex(f, A__CHAR_INDEX(ch))->pixels->w;
+        width += charWidth;
     }
 
     return width;
