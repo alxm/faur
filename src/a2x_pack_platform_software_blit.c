@@ -41,7 +41,15 @@ typedef void (*ABlitterEx)(const APlatformTexture* Texture, int X, int Y, AFix S
 static ABlitter g_blitters[A_COLOR_BLEND_NUM][2][2][2]; // [Blend][Fill][ColorKey][Clip]
 static ABlitterEx g_blittersEx[A_COLOR_BLEND_NUM][2][2]; // [Blend][Fill][ColorKey]
 
-static AScanline* g_scanlines;
+#if A_CONFIG_SCREEN_HEIGHT < 0
+    #define A__SCANLINES_MALLOC 1
+#endif
+
+#if A__SCANLINES_MALLOC
+    static AScanline* g_scanlines;
+#else
+    static AScanline g_scanlines[A_CONFIG_SCREEN_HEIGHT];
+#endif
 
 // Interpolate sprite side (SprP1, SprP2) along screen line (ScrP1, ScrP2).
 // ScrP1.y <= ScrP2.y and at least part of this range is on screen.
@@ -248,13 +256,17 @@ void a_platform_software_blit__init(void)
     initRoutines(A_COLOR_BLEND_MOD, mod);
     initRoutines(A_COLOR_BLEND_ADD, add);
 
-    g_scanlines = a_mem_malloc((unsigned)
-                    a_platform_api__screenSizeGet().y * sizeof(AScanline));
+    #if A__SCANLINES_MALLOC
+        g_scanlines = a_mem_malloc((unsigned)
+                        a_platform_api__screenSizeGet().y * sizeof(AScanline));
+    #endif
 }
 
 void a_platform_software_blit__uninit(void)
 {
-    free(g_scanlines);
+    #if A__SCANLINES_MALLOC
+        free(g_scanlines);
+    #endif
 }
 
 static bool hasTransparency(const APixels* Pixels)

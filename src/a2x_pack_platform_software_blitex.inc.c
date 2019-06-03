@@ -22,7 +22,7 @@
     #define A__COLORKEY block
 #endif
 
-void A__FUNC_NAME_EX(const APlatformTexture* Texture, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY)
+static void A__FUNC_NAME_EX(const APlatformTexture* Texture, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY)
 {
     A__BLEND_SETUP;
 
