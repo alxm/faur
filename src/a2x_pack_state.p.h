@@ -23,7 +23,6 @@
 #define A_STATE(Name) void Name(void)
 typedef A_STATE(AStateHandler);
 
-extern void a_state_init(unsigned NumStates);
 extern void a_state_new(int Index, AStateHandler* Handler, const char* Name);
 
 extern void a_state_push(int State);

@@ -76,6 +76,8 @@ A_CONFIG_APP_VERSION_MAJOR := 1
 A_CONFIG_APP_VERSION_MINOR := 0
 A_CONFIG_APP_VERSION_MICRO := 0
 
+A_CONFIG_STATE_ENUM := main.c STATE_NUM
+
 include $(A2X_PATH)/make/dev
 """.format(author = author, name = project_name))
 
@@ -92,7 +94,6 @@ A_STATE(drawBox);
 
 A_MAIN
 {{
-    a_state_init(STATE_NUM);
     a_state_new(STATE_DRAWBOX, drawBox, "Draw Box");
 
     a_state_push(STATE_DRAWBOX);
