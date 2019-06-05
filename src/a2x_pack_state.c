@@ -49,8 +49,7 @@ static AList* g_stack; // list of AStateStackEntry
 static AList* g_pending; // list of AStateStackEntry/NULL
 static bool g_exiting;
 static const AEvent* g_blockEvent;
-static unsigned g_tableLen;
-static AStateTableEntry* g_table;
+static AStateTableEntry g_table[A_CONFIG_STATE_NUM];
 
 static const char* g_stageNames[A__STATE_STAGE_NUM] = {
     [A__STATE_STAGE_INIT] = "Init",
@@ -139,26 +138,18 @@ static void pending_handle(void)
 
 void a_state__init(void)
 {
+    for(int i = A_CONFIG_STATE_NUM; i--; ) {
+        g_table[i].name = "";
+    }
+
     g_stack = a_list_new();
     g_pending = a_list_new();
 }
 
 void a_state__uninit(void)
 {
-    free(g_table);
-
     a_list_freeEx(g_stack, free);
     a_list_freeEx(g_pending, free);
-}
-
-void a_state_init(unsigned NumStates)
-{
-    g_tableLen = NumStates;
-    g_table = a_mem_malloc(NumStates * sizeof(AStateTableEntry));
-
-    while(NumStates--) {
-        g_table[NumStates].name = "";
-    }
 }
 
 void a_state_new(int Index, AStateHandler* Handler, const char* Name)
@@ -170,11 +161,7 @@ void a_state_new(int Index, AStateHandler* Handler, const char* Name)
 static const AStateTableEntry* getState(int State, const char* CallerFunction)
 {
     #if A_CONFIG_BUILD_DEBUG
-        if(g_table == NULL) {
-            A__FATAL("%s(%d): Call a_state_init first", CallerFunction, State);
-        }
-
-        if(State < 0 || State >= (int)g_tableLen) {
+        if(State < 0 || State >= A_CONFIG_STATE_NUM) {
             A__FATAL("%s(%d): Unknown state", CallerFunction, State);
         }
 
@@ -281,9 +268,33 @@ void a_state_exit(void)
     }
 }
 
+int a_state_currentGet(void)
+{
+    AStateStackEntry* current = a_list_peek(g_stack);
+
+    if(current == NULL) {
+        return -1;
+    }
+
+    return (int)(current->state - g_table);
+}
+
+bool a_state_currentChanged(void)
+{
+    return !a_list_isEmpty(g_pending);
+}
+
 bool a_state_blockGet(void)
 {
-    return g_blockEvent && *g_blockEvent != 0;
+    if(g_blockEvent) {
+        if(*g_blockEvent != 0) {
+            return true;
+        }
+
+        g_blockEvent = NULL;
+    }
+
+    return false;
 }
 
 void a_state_blockSet(const AEvent* Event)
@@ -300,7 +311,6 @@ static bool iteration(void)
     #endif
 
     if(!a_state_blockGet()) {
-        g_blockEvent = NULL;
         pending_handle();
     }
 
@@ -322,14 +332,12 @@ static bool iteration(void)
             a_fade__tick();
 
             if(!a_list_isEmpty(g_pending) && !a_state_blockGet()) {
-                g_blockEvent = NULL;
                 return true;
             }
 
             s->state->function();
 
             if(!a_list_isEmpty(g_pending) && !a_state_blockGet()) {
-                g_blockEvent = NULL;
                 return true;
             }
         }
