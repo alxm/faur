@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 Alex Margarit <alex@alxm.org>
+    Copyright 2016-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -22,13 +22,12 @@
 
 typedef struct AEntity AEntity;
 
-extern AEntity* a_entity_new(const char* Id, void* Context);
-extern AEntity* a_entity_newEx(const char* Template, const void* ComponentInitContext, void* Context);
+extern AEntity* a_entity_new(const char* Id);
+extern AEntity* a_entity_newEx(const char* Template);
 
 extern void a_entity_debugSet(AEntity* Entity, bool DebugOn);
 
 extern const char* a_entity_idGet(const AEntity* Entity);
-extern void* a_entity_contextGet(const AEntity* Entity);
 
 extern AEntity* a_entity_parentGet(const AEntity* Entity);
 extern void a_entity_parentSet(AEntity* Entity, AEntity* Parent);

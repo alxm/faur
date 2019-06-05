@@ -34,7 +34,6 @@ typedef enum {
 
 struct AEntity {
     char* id; // specified name for debugging
-    void* context; // global context
     const ATemplate* template; // template used to init this entity's components
     AEntity* parent; // manually associated parent entity
     AListNode* node; // list node in one of AEcsListId

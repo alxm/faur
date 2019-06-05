@@ -47,13 +47,12 @@ static void* componentAdd(AEntity* Entity, int Index, const AComponent* Componen
     return a_component__headerGetData(header);
 }
 
-AEntity* a_entity_new(const char* Id, void* Context)
+AEntity* a_entity_new(const char* Id)
 {
     AEntity* e = a_mem_zalloc(
         sizeof(AEntity) + A_CONFIG_ECS_COM_NUM * sizeof(AComponentInstance*));
 
     e->id = a_str_dup(Id);
-    e->context = Context;
     e->matchingSystemsActive = a_list_new();
     e->matchingSystemsRest = a_list_new();
     e->systemNodesActive = a_list_new();
@@ -72,12 +71,13 @@ AEntity* a_entity_new(const char* Id, void* Context)
     return e;
 }
 
-AEntity* a_entity_newEx(const char* Template, const void* ComponentInitContext, void* Context)
+AEntity* a_entity_newEx(const char* Template)
 {
     const ATemplate* t = a_template__get(Template, __func__);
     const char* id = a_str__fmt512(
                         "%s#%u", Template, a_template__instanceGet(t));
-    AEntity* e = a_entity_new(id, Context);
+
+    AEntity* e = a_entity_new(id);
 
     e->template = t;
 
@@ -87,8 +87,7 @@ AEntity* a_entity_newEx(const char* Template, const void* ComponentInitContext, 
             void* self = componentAdd(e, c, component);
 
             if(component->initWithData) {
-                component->initWithData(
-                    self, a_template__dataGet(t, c), ComponentInitContext);
+                component->initWithData(self, a_template__dataGet(t, c));
             }
         }
     }
@@ -151,11 +150,6 @@ void a_entity_debugSet(AEntity* Entity, bool DebugOn)
 const char* a_entity_idGet(const AEntity* Entity)
 {
     return Entity->id ? Entity->id : "AEntity";
-}
-
-void* a_entity_contextGet(const AEntity* Entity)
-{
-    return Entity->context;
 }
 
 AEntity* a_entity_parentGet(const AEntity* Entity)
