@@ -268,6 +268,22 @@ void a_state_exit(void)
     }
 }
 
+int a_state_currentGet(void)
+{
+    AStateStackEntry* current = a_list_peek(g_stack);
+
+    if(current == NULL) {
+        return -1;
+    }
+
+    return (int)(current->state - g_table);
+}
+
+bool a_state_currentChanged(void)
+{
+    return !a_list_isEmpty(g_pending);
+}
+
 bool a_state_blockGet(void)
 {
     return g_blockEvent && *g_blockEvent != 0;

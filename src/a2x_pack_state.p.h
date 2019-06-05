@@ -32,6 +32,9 @@ extern void a_state_replace(int State);
 
 extern void a_state_exit(void);
 
+extern int a_state_currentGet(void);
+extern bool a_state_currentChanged(void);
+
 extern bool a_state_blockGet(void);
 extern void a_state_blockSet(const AEvent* Event);
 
