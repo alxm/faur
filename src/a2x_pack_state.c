@@ -286,7 +286,15 @@ bool a_state_currentChanged(void)
 
 bool a_state_blockGet(void)
 {
-    return g_blockEvent && *g_blockEvent != 0;
+    if(g_blockEvent) {
+        if(*g_blockEvent != 0) {
+            return true;
+        }
+
+        g_blockEvent = NULL;
+    }
+
+    return false;
 }
 
 void a_state_blockSet(const AEvent* Event)
@@ -303,7 +311,6 @@ static bool iteration(void)
     #endif
 
     if(!a_state_blockGet()) {
-        g_blockEvent = NULL;
         pending_handle();
     }
 
@@ -325,14 +332,12 @@ static bool iteration(void)
             a_fade__tick();
 
             if(!a_list_isEmpty(g_pending) && !a_state_blockGet()) {
-                g_blockEvent = NULL;
                 return true;
             }
 
             s->state->function();
 
             if(!a_list_isEmpty(g_pending) && !a_state_blockGet()) {
-                g_blockEvent = NULL;
                 return true;
             }
         }
