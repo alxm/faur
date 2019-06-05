@@ -23,9 +23,7 @@
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_strhash.v.h"
 
-unsigned a_component__tableLen;
-static AComponent* g_componentsTable;
-
+static AComponent g_componentsTable[A_CONFIG_ECS_COM_NUM];
 static AStrHash* g_components; // table of AComponent
 
 static inline AComponentInstance* getHeader(const void* Component)
@@ -33,23 +31,19 @@ static inline AComponentInstance* getHeader(const void* Component)
     return (AComponentInstance*)Component - 1;
 }
 
-void a_component__init(unsigned NumComponents)
+void a_component__init(void)
 {
     g_components = a_strhash_new();
 
-    a_component__tableLen = NumComponents;
-    g_componentsTable = a_mem_zalloc(NumComponents * sizeof(AComponent));
-
-    while(NumComponents--) {
-        g_componentsTable[NumComponents].stringId = "???";
-        g_componentsTable[NumComponents].bit = UINT_MAX;
+    for(int c = A_CONFIG_ECS_COM_NUM; c--; ) {
+        g_componentsTable[c].stringId = "???";
+        g_componentsTable[c].bit = UINT_MAX;
     }
 }
 
 void a_component__uninit(void)
 {
     a_strhash_free(g_components);
-    free(g_componentsTable);
 }
 
 int a_component__stringToIndex(const char* StringId)
@@ -62,11 +56,7 @@ int a_component__stringToIndex(const char* StringId)
 const AComponent* a_component__get(int Component, const char* CallerFunction)
 {
     #if A_CONFIG_BUILD_DEBUG
-        if(g_componentsTable == NULL) {
-            A__FATAL("%s: Call a_ecs_init first", CallerFunction);
-        }
-
-        if(Component < 0 || Component >= (int)a_component__tableLen) {
+        if(Component < 0 || Component >= A_CONFIG_ECS_COM_NUM) {
             A__FATAL("%s: Unknown component %d", CallerFunction, Component);
         }
 
@@ -83,11 +73,6 @@ const AComponent* a_component__get(int Component, const char* CallerFunction)
 
 void a_component_new(int Index, const char* StringId, size_t Size, AInit* Init, AFree* Free)
 {
-    if(g_componentsTable == NULL) {
-        A__FATAL(
-            "a_component_new(%d, %s): Call a_ecs_init first", Index, StringId);
-    }
-
     AComponent* c = &g_componentsTable[Index];
 
     if(c->bit != UINT_MAX || a_strhash_contains(g_components, StringId)) {

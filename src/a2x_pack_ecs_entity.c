@@ -50,7 +50,7 @@ static void* componentAdd(AEntity* Entity, int Index, const AComponent* Componen
 AEntity* a_entity_new(const char* Id, void* Context)
 {
     AEntity* e = a_mem_zalloc(
-        sizeof(AEntity) + a_component__tableLen * sizeof(AComponentInstance*));
+        sizeof(AEntity) + A_CONFIG_ECS_COM_NUM * sizeof(AComponentInstance*));
 
     e->id = a_str_dup(Id);
     e->context = Context;
@@ -58,7 +58,7 @@ AEntity* a_entity_new(const char* Id, void* Context)
     e->matchingSystemsRest = a_list_new();
     e->systemNodesActive = a_list_new();
     e->systemNodesEither = a_list_new();
-    e->componentBits = a_bitfield_new(a_component__tableLen);
+    e->componentBits = a_bitfield_new(A_CONFIG_ECS_COM_NUM);
     e->lastActive = a_fps_ticksGet() - 1;
 
     a_ecs__entityAddToList(e, A_ECS__NEW);
@@ -81,7 +81,7 @@ AEntity* a_entity_newEx(const char* Template, const void* ComponentInitContext, 
 
     e->template = t;
 
-    for(int c = (int)a_component__tableLen; c--; ) {
+    for(int c = A_CONFIG_ECS_COM_NUM; c--; ) {
         if(a_template__componentHas(t, c)) {
             const AComponent* component = a_component__get(c, __func__);
             void* self = componentAdd(e, c, component);
@@ -115,7 +115,7 @@ void a_entity__free(AEntity* Entity)
     a_list_freeEx(Entity->systemNodesActive, (AFree*)a_list_removeNode);
     a_list_freeEx(Entity->systemNodesEither, (AFree*)a_list_removeNode);
 
-    for(unsigned c = 0; c < a_component__tableLen; c++) {
+    for(int c = A_CONFIG_ECS_COM_NUM; c--; ) {
         AComponentInstance* header = Entity->componentsTable[c];
 
         if(header == NULL) {

@@ -33,9 +33,6 @@ struct ASystem {
     bool onlyActiveEntities; // skip entities that are not active
 };
 
-extern unsigned a_system__tableLen;
-
-extern void a_system__init(unsigned NumSystems);
 extern void a_system__uninit(void);
 
 extern ASystem* a_system__get(int System, const char* CallerFunction);

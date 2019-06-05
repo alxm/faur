@@ -1,5 +1,5 @@
 /*
-    Copyright 2018 Alex Margarit <alex@alxm.org>
+    Copyright 2018-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -38,9 +38,9 @@ static AStrHash* g_templates; // table of ATemplate
 static ATemplate* templateNew(const char* TemplateId, const ABlock* Block)
 {
     ATemplate* t = a_mem_zalloc(
-                    sizeof(ATemplate) + a_component__tableLen * sizeof(void*));
+                    sizeof(ATemplate) + A_CONFIG_ECS_COM_NUM * sizeof(void*));
 
-    t->componentBits = a_bitfield_new(a_component__tableLen);
+    t->componentBits = a_bitfield_new(A_CONFIG_ECS_COM_NUM);
 
     A_LIST_ITERATE(a_block_blocksGet(Block), const ABlock*, b) {
         const char* id = a_block_lineGetString(b, 0);
@@ -73,9 +73,9 @@ static void templateFree(ATemplate* Template)
 {
     a_bitfield_free(Template->componentBits);
 
-    for(unsigned c = a_component__tableLen; c--; ) {
+    for(int c = A_CONFIG_ECS_COM_NUM; c--; ) {
         if(Template->data[c]) {
-            const AComponent* component = a_component__get((int)c, __func__);
+            const AComponent* component = a_component__get(c, __func__);
 
             if(component->dataFree) {
                 component->dataFree(Template->data[c]);
@@ -117,12 +117,6 @@ void a_template_new(const char* FilePath)
 
 const ATemplate* a_template__get(const char* TemplateId, const char* CallerFunction)
 {
-    #if A_CONFIG_BUILD_DEBUG
-        if(g_templates == NULL) {
-            A__FATAL("%s: Call a_ecs_init first", CallerFunction);
-        }
-    #endif
-
     ATemplate* t = a_strhash_get(g_templates, TemplateId);
 
     if(t == NULL) {

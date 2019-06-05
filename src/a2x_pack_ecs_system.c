@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 Alex Margarit <alex@alxm.org>
+    Copyright 2016-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -24,37 +24,20 @@
 #include "a2x_pack_main.v.h"
 #include "a2x_pack_mem.v.h"
 
-unsigned a_system__tableLen;
-static ASystem* g_systemsTable;
-
-void a_system__init(unsigned NumSystems)
-{
-    a_system__tableLen = NumSystems;
-    g_systemsTable = a_mem_malloc(NumSystems * sizeof(ASystem));
-
-    while(NumSystems--) {
-        g_systemsTable[NumSystems].entities = NULL;
-    }
-}
+static ASystem g_systemsTable[A_CONFIG_ECS_SYS_NUM];
 
 void a_system__uninit(void)
 {
-    for(unsigned s = a_system__tableLen; s--; ) {
+    for(unsigned s = A_CONFIG_ECS_SYS_NUM; s--; ) {
         a_list_free(g_systemsTable[s].entities);
         a_bitfield_free(g_systemsTable[s].componentBits);
     }
-
-    free(g_systemsTable);
 }
 
 ASystem* a_system__get(int System, const char* CallerFunction)
 {
     #if A_CONFIG_BUILD_DEBUG
-        if(g_systemsTable == NULL) {
-            A__FATAL("%s: Call a_ecs_init first", CallerFunction);
-        }
-
-        if(System < 0 || System >= (int)a_system__tableLen) {
+        if(System < 0 || System >= A_CONFIG_ECS_SYS_NUM) {
             A__FATAL("%s: Unknown system %d", CallerFunction, System);
         }
 
@@ -70,10 +53,6 @@ ASystem* a_system__get(int System, const char* CallerFunction)
 
 void a_system_new(int Index, ASystemHandler* Handler, ASystemSort* Compare, bool OnlyActiveEntities)
 {
-    if(g_systemsTable == NULL) {
-        A__FATAL("a_system_new(%d): Call a_ecs_init first", Index);
-    }
-
     if(g_systemsTable[Index].entities != NULL) {
         A__FATAL("a_system_new(%d): Already declared", Index);
     }
@@ -83,7 +62,7 @@ void a_system_new(int Index, ASystemHandler* Handler, ASystemSort* Compare, bool
     s->handler = Handler;
     s->compare = Compare;
     s->entities = a_list_new();
-    s->componentBits = a_bitfield_new(a_component__tableLen);
+    s->componentBits = a_bitfield_new(A_CONFIG_ECS_COM_NUM);
     s->onlyActiveEntities = OnlyActiveEntities;
 }
 

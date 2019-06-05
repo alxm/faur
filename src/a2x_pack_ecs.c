@@ -34,6 +34,9 @@ void a_ecs__init(void)
     for(int i = A_ECS__NUM; i--; ) {
         g_lists[i] = a_list_new();
     }
+
+    a_component__init();
+    a_template__init();
 }
 
 void a_ecs__uninit(void)
@@ -47,13 +50,6 @@ void a_ecs__uninit(void)
     a_template__uninit();
     a_system__uninit();
     a_component__uninit();
-}
-
-void a_ecs_init(unsigned NumComponents, unsigned NumSystems)
-{
-    a_component__init(NumComponents);
-    a_system__init(NumSystems);
-    a_template__init();
 }
 
 ACollection* a_ecs_collectionGet(void)
@@ -77,8 +73,8 @@ void a_ecs__tick(void)
 
     // Check what systems the new entities match
     A_LIST_ITERATE(g_lists[A_ECS__NEW], AEntity*, e) {
-        for(unsigned id = a_system__tableLen; id--; ) {
-            ASystem* s = a_system__get((int)id, __func__);
+        for(int id = A_CONFIG_ECS_SYS_NUM; id--; ) {
+            ASystem* s = a_system__get(id, __func__);
 
             if(a_bitfield_testMask(e->componentBits, s->componentBits)) {
                 if(s->onlyActiveEntities) {

@@ -37,9 +37,7 @@ typedef struct {
     AEntity* entity; // entity this component belongs to
 } AComponentInstance;
 
-extern unsigned a_component__tableLen;
-
-extern void a_component__init(unsigned NumComponents);
+extern void a_component__init(void);
 extern void a_component__uninit(void);
 
 extern int a_component__stringToIndex(const char* StringId);
