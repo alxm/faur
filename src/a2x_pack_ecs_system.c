@@ -97,7 +97,7 @@ void a_system_run(int SystemIndex)
             if(a_entity_activeGet(entity)) {
                 system->handler(entity);
             } else {
-                a_entity__removeFromActiveSystems(entity);
+                a_entity__systemsRemoveFromActive(entity);
             }
         }
     } else {

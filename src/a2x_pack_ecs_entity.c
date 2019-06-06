@@ -20,13 +20,30 @@
 
 #include "a2x_pack_ecs.v.h"
 #include "a2x_pack_ecs_collection.v.h"
-#include "a2x_pack_ecs_system.v.h"
 #include "a2x_pack_fps.v.h"
 #include "a2x_pack_listit.v.h"
 #include "a2x_pack_main.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
 #include "a2x_pack_str.v.h"
+
+struct AEntity {
+    char* id; // specified name for debugging
+    const ATemplate* template; // template used to init this entity's components
+    AEntity* parent; // manually associated parent entity
+    AListNode* node; // list node in one of AEcsListId
+    AListNode* collectionNode; // ACollection list nod
+    AList* matchingSystemsActive; // list of ASystem
+    AList* matchingSystemsRest; // list of ASystem
+    AList* systemNodesActive; // list of nodes in active-only ASystem lists
+    AList* systemNodesEither; // list of nodes in normal ASystem.entities lists
+    ABitfield* componentBits; // each component's bit is set
+    unsigned lastActive; // frame when a_entity_activeSet was last called
+    int references; // if >0, then the entity lingers in the removed limbo list
+    int muteCount; // if >0, then the entity isn't picked up by any systems
+    AEntityFlags flags; // various properties
+    AComponentInstance* componentsTable[A_CONFIG_ECS_COM_NUM]; // Comp, or NULL
+};
 
 static AComponentInstance* componentAdd(AEntity* Entity, int ComponentIndex, const AComponent* Component, const void* TemplateData)
 {
@@ -388,7 +405,7 @@ void a_entity_muteDec(AEntity* Entity)
     }
 
     if(--Entity->muteCount == 0) {
-        if(a_entity__isMatchedToSystems(Entity)) {
+        if(a_entity__systemsIsMatchedTo(Entity)) {
             if(a_ecs__entityIsInList(Entity, A_ECS__MUTED_QUEUE)) {
                 // Entity was muted and unmuted before it left systems
                 a_ecs__entityMoveToList(Entity, A_ECS__DEFAULT);
@@ -403,20 +420,80 @@ void a_entity_muteDec(AEntity* Entity)
     }
 }
 
-void a_entity__removeFromAllSystems(AEntity* Entity)
+const ATemplate* a_entity__templateGet(const AEntity* Entity)
+{
+    return Entity->template;
+}
+
+int a_entity__refGet(const AEntity* Entity)
+{
+    return Entity->references;
+}
+
+const AList* a_entity__ecsListGet(const AEntity* Entity)
+{
+    return a_list__nodeGetList(Entity->node);
+}
+
+void a_entity__ecsListAdd(AEntity* Entity, AList* List)
+{
+    Entity->node = a_list_addLast(List, Entity);
+}
+
+void a_entity__ecsListMove(AEntity* Entity, AList* List)
+{
+    a_list_removeNode(Entity->node);
+
+    Entity->node = a_list_addLast(List, Entity);
+}
+
+void a_entity__collectionListAdd(AEntity* Entity, AList* List)
+{
+    Entity->collectionNode = a_list_addLast(List, Entity);
+}
+
+void a_entity__systemMatch(AEntity* Entity, ASystem* System)
+{
+    if(a_bitfield_testMask(
+        Entity->componentBits, a_system__componentBitsGet(System))) {
+
+        if(a_system__isActiveOnly(System)) {
+            a_list_addLast(Entity->matchingSystemsActive, System);
+        } else {
+            a_list_addLast(Entity->matchingSystemsRest, System);
+        }
+    }
+}
+
+bool a_entity__systemsIsMatchedTo(const AEntity* Entity)
+{
+    return !a_list_isEmpty(Entity->matchingSystemsActive)
+        || !a_list_isEmpty(Entity->matchingSystemsRest);
+}
+
+void a_entity__systemsAddTo(AEntity* Entity)
+{
+    if(!A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__ACTIVE_REMOVED)) {
+        A_LIST_ITERATE(Entity->matchingSystemsActive, ASystem*, system) {
+            a_list_addLast(
+                Entity->systemNodesActive, a_system__entityAdd(system, Entity));
+        }
+    }
+
+    A_LIST_ITERATE(Entity->matchingSystemsRest, ASystem*, system) {
+        a_list_addLast(
+            Entity->systemNodesEither, a_system__entityAdd(system, Entity));
+    }
+}
+
+void a_entity__systemsRemoveFromAll(AEntity* Entity)
 {
     a_list_clearEx(Entity->systemNodesActive, (AFree*)a_list_removeNode);
     a_list_clearEx(Entity->systemNodesEither, (AFree*)a_list_removeNode);
 }
 
-void a_entity__removeFromActiveSystems(AEntity* Entity)
+void a_entity__systemsRemoveFromActive(AEntity* Entity)
 {
     A_FLAG_SET(Entity->flags, A_ENTITY__ACTIVE_REMOVED);
     a_list_clearEx(Entity->systemNodesActive, (AFree*)a_list_removeNode);
-}
-
-bool a_entity__isMatchedToSystems(const AEntity* Entity)
-{
-    return !a_list_isEmpty(Entity->matchingSystemsActive)
-        || !a_list_isEmpty(Entity->matchingSystemsRest);
 }

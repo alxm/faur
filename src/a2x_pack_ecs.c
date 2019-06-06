@@ -20,7 +20,6 @@
 
 #include "a2x_pack_ecs_collection.v.h"
 #include "a2x_pack_ecs_component.v.h"
-#include "a2x_pack_ecs_system.v.h"
 #include "a2x_pack_listit.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
@@ -73,18 +72,8 @@ void a_ecs__tick(void)
 
     // Check what systems the new entities match
     A_LIST_ITERATE(g_lists[A_ECS__NEW], AEntity*, e) {
-        for(int id = A_CONFIG_ECS_SYS_NUM; id--; ) {
-            ASystem* s = a_system__get(id, __func__);
-
-            if(a_bitfield_testMask(
-                e->componentBits, a_system__componentBitsGet(s))) {
-
-                if(a_system__isActiveOnly(s)) {
-                    a_list_addLast(e->matchingSystemsActive, s);
-                } else {
-                    a_list_addLast(e->matchingSystemsRest, s);
-                }
-            }
+        for(int s = A_CONFIG_ECS_SYS_NUM; s--; ) {
+            a_entity__systemMatch(e, a_system__get(s, __func__));
         }
 
         a_ecs__entityAddToList(e, A_ECS__RESTORE);
@@ -92,18 +81,7 @@ void a_ecs__tick(void)
 
     // Add entities to the systems they match
     A_LIST_ITERATE(g_lists[A_ECS__RESTORE], AEntity*, e) {
-        if(!A_FLAG_TEST_ANY(e->flags, A_ENTITY__ACTIVE_REMOVED)) {
-            A_LIST_ITERATE(e->matchingSystemsActive, ASystem*, system) {
-                a_list_addLast(
-                    e->systemNodesActive, a_system__entityAdd(system, e));
-            }
-        }
-
-        A_LIST_ITERATE(e->matchingSystemsRest, ASystem*, system) {
-            a_list_addLast(
-                e->systemNodesEither, a_system__entityAdd(system, e));
-        }
-
+        a_entity__systemsAddTo(e);
         a_ecs__entityAddToList(e, A_ECS__DEFAULT);
     }
 
@@ -114,32 +92,31 @@ void a_ecs__tick(void)
 
 bool a_ecs__entityIsInList(const AEntity* Entity, AEcsListId List)
 {
-    return a_list__nodeGetList(Entity->node) == g_lists[List];
+    return a_entity__ecsListGet(Entity) == g_lists[List];
 }
 
 void a_ecs__entityAddToList(AEntity* Entity, AEcsListId List)
 {
-    Entity->node = a_list_addLast(g_lists[List], Entity);
+    a_entity__ecsListAdd(Entity, g_lists[List]);
 }
 
 void a_ecs__entityMoveToList(AEntity* Entity, AEcsListId List)
 {
-    a_list_removeNode(Entity->node);
-    Entity->node = a_list_addLast(g_lists[List], Entity);
+    a_entity__ecsListMove(Entity, g_lists[List]);
 }
 
 void a_ecs__flushEntitiesFromSystems(void)
 {
     A_LIST_ITERATE(g_lists[A_ECS__MUTED_QUEUE], AEntity*, e) {
-        a_entity__removeFromAllSystems(e);
+        a_entity__systemsRemoveFromAll(e);
 
         a_ecs__entityAddToList(e, A_ECS__DEFAULT);
     }
 
     A_LIST_ITERATE(g_lists[A_ECS__REMOVED_QUEUE], AEntity*, e) {
-        a_entity__removeFromAllSystems(e);
+        a_entity__systemsRemoveFromAll(e);
 
-        if(e->references == 0) {
+        if(a_entity__refGet(e) == 0) {
             a_ecs__entityAddToList(e, A_ECS__REMOVED_FREE);
         } else {
             a_ecs__entityAddToList(e, A_ECS__REMOVED_LIMBO);

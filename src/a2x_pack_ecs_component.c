@@ -116,7 +116,7 @@ const void* a_component_dataGet(const void* Component)
 {
     const AComponentInstance* instance = bufferGetInstance(Component);
 
-    return a_template__dataGet(instance->entity->template,
+    return a_template__dataGet(a_entity__templateGet(instance->entity),
                                (int)(instance->component - g_componentsTable));
 }
 

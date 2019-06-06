@@ -43,7 +43,7 @@ void a_collection_free(ACollection* Collection)
 
 void a_collection__add(ACollection* Collection, AEntity* Entity)
 {
-    Entity->collectionNode = a_list_addLast(Collection->entities, Entity);
+    a_entity__collectionListAdd(Entity, Collection->entities);
 }
 
 void a_collection_clear(ACollection* Collection)
