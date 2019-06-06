@@ -47,7 +47,7 @@ struct AEntity {
     int references; // if >0, then the entity lingers in the removed limbo list
     int muteCount; // if >0, then the entity isn't picked up by any systems
     AEntityFlags flags; // various properties
-    AComponentInstance* componentsTable[];
+    AComponentInstance* componentsTable[A_CONFIG_ECS_COM_NUM]; // Comp, or NULL
 };
 
 extern void a_entity__free(AEntity* Entity);

@@ -30,15 +30,14 @@
 struct ATemplate {
     unsigned instanceNumber; // Incremented by each a_entity_newEx call
     ABitfield* componentBits; // Set if template has corresponding component
-    void* data[]; // Parsed component config data, or NULL
+    void* data[A_CONFIG_ECS_COM_NUM]; // Parsed component config data, or NULL
 };
 
 static AStrHash* g_templates; // table of ATemplate
 
 static ATemplate* templateNew(const char* TemplateId, const ABlock* Block)
 {
-    ATemplate* t = a_mem_zalloc(
-                    sizeof(ATemplate) + A_CONFIG_ECS_COM_NUM * sizeof(void*));
+    ATemplate* t = a_mem_zalloc(sizeof(ATemplate));
 
     t->componentBits = a_bitfield_new(A_CONFIG_ECS_COM_NUM);
 

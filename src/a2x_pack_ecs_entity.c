@@ -49,8 +49,7 @@ static void* componentAdd(AEntity* Entity, int Index, const AComponent* Componen
 
 AEntity* a_entity_new(const char* Id)
 {
-    AEntity* e = a_mem_zalloc(
-        sizeof(AEntity) + A_CONFIG_ECS_COM_NUM * sizeof(AComponentInstance*));
+    AEntity* e = a_mem_zalloc(sizeof(AEntity));
 
     e->id = a_str_dup(Id);
     e->matchingSystemsActive = a_list_new();
