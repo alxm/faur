@@ -26,8 +26,8 @@
 typedef void AComponentDataInit(void* Data, const ABlock* Block);
 typedef void AInitWithData(void* Self, const void* Data);
 
-extern void a_component_new(int Index, const char* StringId, size_t Size, AInit* Init, AFree* Free);
-extern void a_component_newEx(int Index, const char* StringId, size_t Size, AInitWithData* InitWithData, AFree* Free, size_t DataSize, AComponentDataInit* DataInit, AFree* DataFree);
+extern void a_component_new(int ComponentIndex, const char* StringId, size_t Size, AInit* Init, AFree* Free);
+extern void a_component_newEx(int ComponentIndex, const char* StringId, size_t Size, AInitWithData* InitWithData, AFree* Free, size_t DataSize, AComponentDataInit* DataInit, AFree* DataFree);
 
 extern const void* a_component_dataGet(const void* Component);
 extern AEntity* a_component_entityGet(const void* Component);

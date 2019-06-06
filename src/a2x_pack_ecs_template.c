@@ -121,12 +121,12 @@ unsigned a_template__instanceGet(const ATemplate* Template)
     return Template->instanceNumber;
 }
 
-bool a_template__componentHas(const ATemplate* Template, int Component)
+bool a_template__componentHas(const ATemplate* Template, int ComponentIndex)
 {
-    return a_bitfield_test(Template->componentBits, (unsigned)Component);
+    return a_bitfield_test(Template->componentBits, (unsigned)ComponentIndex);
 }
 
-const void* a_template__dataGet(const ATemplate* Template, int Component)
+const void* a_template__dataGet(const ATemplate* Template, int ComponentIndex)
 {
-    return Template->data[Component];
+    return Template->data[ComponentIndex];
 }

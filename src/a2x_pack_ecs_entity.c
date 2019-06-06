@@ -28,13 +28,13 @@
 #include "a2x_pack_out.v.h"
 #include "a2x_pack_str.v.h"
 
-static AComponentInstance* componentAdd(AEntity* Entity, int Index, const AComponent* Component, const void* TemplateData)
+static AComponentInstance* componentAdd(AEntity* Entity, int ComponentIndex, const AComponent* Component, const void* TemplateData)
 {
     AComponentInstance* c = a_component__instanceNew(
                                 Component, Entity, TemplateData);
 
-    Entity->componentsTable[Index] = c;
-    a_bitfield_set(Entity->componentBits, (unsigned)Index);
+    Entity->componentsTable[ComponentIndex] = c;
+    a_bitfield_set(Entity->componentBits, (unsigned)ComponentIndex);
 
     return c;
 }
@@ -281,58 +281,59 @@ void a_entity_activeSetPermanent(AEntity* Entity)
     A_FLAG_SET(Entity->flags, A_ENTITY__ACTIVE_PERMANENT);
 }
 
-void* a_entity_componentAdd(AEntity* Entity, int Component)
+void* a_entity_componentAdd(AEntity* Entity, int ComponentIndex)
 {
-    const AComponent* c = a_component__get(Component, __func__);
+    const AComponent* component = a_component__get(ComponentIndex, __func__);
 
     if(!a_ecs__entityIsInList(Entity, A_ECS__NEW)) {
         A__FATAL("a_entity_componentAdd(%s, %s): Too late",
                  a_entity_idGet(Entity),
-                 a_component__stringGet(c));
+                 a_component__stringGet(component));
     }
 
-    if(Entity->componentsTable[Component] != NULL) {
+    if(Entity->componentsTable[ComponentIndex] != NULL) {
         A__FATAL("a_entity_componentAdd(%s, %s): Already added",
                  a_entity_idGet(Entity),
-                 a_component__stringGet(c));
+                 a_component__stringGet(component));
     }
 
     if(A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__DEBUG)) {
         a_out__info("a_entity_componentAdd(%s, %s)",
                     a_entity_idGet(Entity),
-                    a_component__stringGet(c));
+                    a_component__stringGet(component));
     }
 
-    return a_component__headerGetData(componentAdd(Entity, Component, c, NULL));
+    return a_component__instanceGetBuffer(
+            componentAdd(Entity, ComponentIndex, component, NULL));
 }
 
-bool a_entity_componentHas(const AEntity* Entity, int Component)
+bool a_entity_componentHas(const AEntity* Entity, int ComponentIndex)
 {
-    a_component__get(Component, __func__);
-
-    return Entity->componentsTable[Component] != NULL;
+    return Entity->componentsTable[ComponentIndex] != NULL;
 }
 
-void* a_entity_componentGet(const AEntity* Entity, int Component)
+void* a_entity_componentGet(const AEntity* Entity, int ComponentIndex)
 {
-    a_component__get(Component, __func__);
-    AComponentInstance* header = Entity->componentsTable[Component];
+    a_component__get(ComponentIndex, __func__);
+    AComponentInstance* instance = Entity->componentsTable[ComponentIndex];
 
-    return header ? a_component__headerGetData(header) : NULL;
+    return instance ? a_component__instanceGetBuffer(instance) : NULL;
 }
 
-void* a_entity_componentReq(const AEntity* Entity, int Component)
+void* a_entity_componentReq(const AEntity* Entity, int ComponentIndex)
 {
-    const AComponent* c = a_component__get(Component, __func__);
-    AComponentInstance* header = Entity->componentsTable[Component];
+    AComponentInstance* instance = Entity->componentsTable[ComponentIndex];
 
-    if(header == NULL) {
+    if(instance == NULL) {
+        const AComponent* component = a_component__get(
+                                        ComponentIndex, __func__);
+
         A__FATAL("a_entity_componentReq(%s, %s): Missing component",
                  a_entity_idGet(Entity),
-                 a_component__stringGet(c));
+                 a_component__stringGet(component));
     }
 
-    return a_component__headerGetData(header);
+    return a_component__instanceGetBuffer(instance);
 }
 
 bool a_entity_muteGet(const AEntity* Entity)

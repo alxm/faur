@@ -42,32 +42,33 @@ void a_system__uninit(void)
     }
 }
 
-ASystem* a_system__get(int System, const char* CallerFunction)
+ASystem* a_system__get(int SystemIndex, const char* CallerFunction)
 {
     #if A_CONFIG_BUILD_DEBUG
-        if(System < 0 || System >= A_CONFIG_ECS_SYS_NUM) {
-            A__FATAL("%s: Unknown system %d", CallerFunction, System);
+        if(SystemIndex < 0 || SystemIndex >= A_CONFIG_ECS_SYS_NUM) {
+            A__FATAL("%s: Unknown system %d", CallerFunction, SystemIndex);
         }
 
-        if(g_systemsTable[System].entities == NULL) {
-            A__FATAL("%s: Uninitialized system %d", CallerFunction, System);
+        if(g_systemsTable[SystemIndex].entities == NULL) {
+            A__FATAL(
+                "%s: Uninitialized system %d", CallerFunction, SystemIndex);
         }
     #else
         A_UNUSED(CallerFunction);
     #endif
 
-    return &g_systemsTable[System];
+    return &g_systemsTable[SystemIndex];
 }
 
-void a_system_new(int Index, ASystemHandler* Handler, ASystemSort* Compare, bool OnlyActiveEntities)
+void a_system_new(int SystemIndex, ASystemHandler* Handler, ASystemSort* Compare, bool OnlyActiveEntities)
 {
     #if A_CONFIG_BUILD_DEBUG
-        if(g_systemsTable[Index].entities != NULL) {
-            A__FATAL("a_system_new(%d): Already declared", Index);
+        if(g_systemsTable[SystemIndex].entities != NULL) {
+            A__FATAL("a_system_new(%d): Already declared", SystemIndex);
         }
     #endif
 
-    ASystem* s = &g_systemsTable[Index];
+    ASystem* s = &g_systemsTable[SystemIndex];
 
     s->handler = Handler;
     s->compare = Compare;
@@ -76,16 +77,16 @@ void a_system_new(int Index, ASystemHandler* Handler, ASystemSort* Compare, bool
     s->onlyActiveEntities = OnlyActiveEntities;
 }
 
-void a_system_add(int System, int Component)
+void a_system_add(int SystemIndex, int ComponentIndex)
 {
-    ASystem* s = a_system__get(System, __func__);
+    ASystem* s = a_system__get(SystemIndex, __func__);
 
-    a_bitfield_set(s->componentBits, (unsigned)Component);
+    a_bitfield_set(s->componentBits, (unsigned)ComponentIndex);
 }
 
-void a_system_run(int System)
+void a_system_run(int SystemIndex)
 {
-    ASystem* system = a_system__get(System, __func__);
+    ASystem* system = a_system__get(SystemIndex, __func__);
 
     if(system->compare) {
         a_list_sort(system->entities, (AListCompare*)system->compare);

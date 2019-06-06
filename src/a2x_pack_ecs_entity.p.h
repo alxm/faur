@@ -43,10 +43,10 @@ extern bool a_entity_activeGet(const AEntity* Entity);
 extern void a_entity_activeSet(AEntity* Entity);
 extern void a_entity_activeSetPermanent(AEntity* Entity);
 
-extern void* a_entity_componentAdd(AEntity* Entity, int Component);
-extern bool a_entity_componentHas(const AEntity* Entity, int Component);
-extern void* a_entity_componentGet(const AEntity* Entity, int Component);
-extern void* a_entity_componentReq(const AEntity* Entity, int Component);
+extern void* a_entity_componentAdd(AEntity* Entity, int ComponentIndex);
+extern bool a_entity_componentHas(const AEntity* Entity, int ComponentIndex);
+extern void* a_entity_componentGet(const AEntity* Entity, int ComponentIndex);
+extern void* a_entity_componentReq(const AEntity* Entity, int ComponentIndex);
 
 extern bool a_entity_muteGet(const AEntity* Entity);
 extern void a_entity_muteInc(AEntity* Entity);
