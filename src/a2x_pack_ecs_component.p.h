@@ -23,11 +23,13 @@
 #include "a2x_pack_block.p.h"
 #include "a2x_pack_ecs_entity.p.h"
 
-typedef void AComponentDataInit(void* Data, const ABlock* Block);
-typedef void AInitWithData(void* Self, const void* Data);
+typedef void AComponentInit(void* Self);
+typedef void AComponentInitWithTemplate(void* Self, const void* Data);
 
-extern void a_component_new(int ComponentIndex, size_t Size, AInit* Init, AFree* Free);
-extern void a_component_template(int ComponentIndex, const char* StringId, size_t DataSize, AComponentDataInit* DataInit, AFree* DataFree, AInitWithData* InitWithData);
+typedef void AComponentTemplateInit(void* Data, const ABlock* Block);
+
+extern void a_component_new(int ComponentIndex, size_t Size, AComponentInit* Init, AFree* Free);
+extern void a_component_template(int ComponentIndex, const char* StringId, size_t TemplateSize, AComponentTemplateInit* TemplateInit, AFree* TemplateFree, AComponentInitWithTemplate* InitWithTemplate);
 
 extern const void* a_component_dataGet(const void* Component);
 extern AEntity* a_component_entityGet(const void* Component);

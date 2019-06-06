@@ -35,8 +35,8 @@ extern const AComponent* a_component__get(int Index, const char* CallerFunction)
 
 extern const char* a_component__stringGet(const AComponent* Component);
 
-extern void* a_component__dataInit(const AComponent* Component, const ABlock* Block);
-extern void a_component__dataFree(const AComponent* Component, void* Buffer);
+extern void* a_component__templateInit(const AComponent* Component, const ABlock* Block);
+extern void a_component__templateFree(const AComponent* Component, void* Buffer);
 
 extern AComponentInstance* a_component__instanceNew(const AComponent* Component, AEntity* Entity, const void* TemplateData);
 extern void a_component__instanceFree(AComponentInstance* Instance);

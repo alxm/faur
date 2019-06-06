@@ -25,12 +25,12 @@
 
 struct AComponent {
     size_t size; // total size of AComponentInstance + user data that follows
-    AInit* init; // sets component buffer default values
-    AInitWithData* initWithData; // init component buffer with template data
+    AComponentInit* init; // sets component buffer default values
+    AComponentInitWithTemplate* initWithTemplate; // init with template data
     AFree* free; // does not free the actual component buffer
-    size_t dataSize; // size of template data buffer
-    AComponentDataInit* dataInit; // init template buffer with info from ABlock
-    AFree* dataFree; // does not free the actual template buffer
+    size_t templateSize; // size of template data buffer
+    AComponentTemplateInit* templateInit; // init template buffer with ABlock
+    AFree* templateFree; // does not free the actual template buffer
     const char* stringId; // string ID
 };
 
@@ -80,7 +80,7 @@ const AComponent* a_component__get(int ComponentIndex, const char* CallerFunctio
     return &g_componentsTable[ComponentIndex];
 }
 
-void a_component_new(int ComponentIndex, size_t Size, AInit* Init, AFree* Free)
+void a_component_new(int ComponentIndex, size_t Size, AComponentInit* Init, AFree* Free)
 {
     AComponent* component = &g_componentsTable[ComponentIndex];
 
@@ -96,7 +96,7 @@ void a_component_new(int ComponentIndex, size_t Size, AInit* Init, AFree* Free)
     component->stringId = g_defaultId;
 }
 
-void a_component_template(int ComponentIndex, const char* StringId, size_t DataSize, AComponentDataInit* DataInit, AFree* DataFree, AInitWithData* InitWithData)
+void a_component_template(int ComponentIndex, const char* StringId, size_t TemplateSize, AComponentTemplateInit* TemplateInit, AFree* TemplateFree, AComponentInitWithTemplate* InitWithTemplate)
 {
     AComponent* component = &g_componentsTable[ComponentIndex];
 
@@ -120,10 +120,10 @@ void a_component_template(int ComponentIndex, const char* StringId, size_t DataS
         }
     #endif
 
-    component->initWithData = InitWithData;
-    component->dataSize = DataSize;
-    component->dataInit = DataInit;
-    component->dataFree = DataFree;
+    component->initWithTemplate = InitWithTemplate;
+    component->templateSize = TemplateSize;
+    component->templateInit = TemplateInit;
+    component->templateFree = TemplateFree;
     component->stringId = StringId;
 
     a_strhash_add(g_components, StringId, component);
@@ -147,13 +147,13 @@ const char* a_component__stringGet(const AComponent* Component)
     return Component->stringId;
 }
 
-void* a_component__dataInit(const AComponent* Component, const ABlock* Block)
+void* a_component__templateInit(const AComponent* Component, const ABlock* Block)
 {
-    if(Component->dataSize > 0) {
-        void* buffer = a_mem_zalloc(Component->dataSize);
+    if(Component->templateSize > 0) {
+        void* buffer = a_mem_zalloc(Component->templateSize);
 
-        if(Component->dataInit) {
-            Component->dataInit(buffer, Block);
+        if(Component->templateInit) {
+            Component->templateInit(buffer, Block);
         }
 
         return buffer;
@@ -162,10 +162,10 @@ void* a_component__dataInit(const AComponent* Component, const ABlock* Block)
     return NULL;
 }
 
-void a_component__dataFree(const AComponent* Component, void* Buffer)
+void a_component__templateFree(const AComponent* Component, void* Buffer)
 {
-    if(Component->dataFree) {
-        Component->dataFree(Buffer);
+    if(Component->templateFree) {
+        Component->templateFree(Buffer);
     }
 
     free(Buffer);
@@ -184,8 +184,8 @@ AComponentInstance* a_component__instanceNew(const AComponent* Component, AEntit
         Component->init(self);
     }
 
-    if(Component->initWithData && TemplateData) {
-        Component->initWithData(self, TemplateData);
+    if(Component->initWithTemplate && TemplateData) {
+        Component->initWithTemplate(self, TemplateData);
     }
 
     return c;

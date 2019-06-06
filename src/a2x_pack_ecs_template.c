@@ -54,7 +54,7 @@ static ATemplate* templateNew(const char* TemplateId, const ABlock* Block)
 
         const AComponent* component = a_component__get(index, __func__);
 
-        t->data[index] = a_component__dataInit(component, b);
+        t->data[index] = a_component__templateInit(component, b);
 
         a_bitfield_set(t->componentBits, (unsigned)index);
     }
@@ -68,7 +68,7 @@ static void templateFree(ATemplate* Template)
 
     for(int c = A_CONFIG_ECS_COM_NUM; c--; ) {
         if(Template->data[c]) {
-            a_component__dataFree(
+            a_component__templateFree(
                 a_component__get(c, __func__), Template->data[c]);
         }
     }
