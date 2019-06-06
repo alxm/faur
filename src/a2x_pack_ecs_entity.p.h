@@ -22,8 +22,7 @@
 
 typedef struct AEntity AEntity;
 
-extern AEntity* a_entity_new(const char* Id);
-extern AEntity* a_entity_newEx(const char* Template);
+extern AEntity* a_entity_new(const char* Template);
 
 extern void a_entity_debugSet(AEntity* Entity, bool DebugOn);
 

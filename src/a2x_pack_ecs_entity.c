@@ -56,11 +56,10 @@ static AComponentInstance* componentAdd(AEntity* Entity, int ComponentIndex, con
     return c;
 }
 
-AEntity* a_entity_new(const char* Id)
+AEntity* a_entity_new(const char* Template)
 {
     AEntity* e = a_mem_zalloc(sizeof(AEntity));
 
-    e->id = a_str_dup(Id);
     e->matchingSystemsActive = a_list_new();
     e->matchingSystemsRest = a_list_new();
     e->systemNodesActive = a_list_new();
@@ -68,33 +67,32 @@ AEntity* a_entity_new(const char* Id)
     e->componentBits = a_bitfield_new(A_CONFIG_ECS_COM_NUM);
     e->lastActive = a_fps_ticksGet() - 1;
 
-    a_ecs__entityAddToList(e, A_ECS__NEW);
-
     ACollection* collection = a_ecs_collectionGet();
 
     if(collection) {
         a_collection__add(collection, e);
     }
 
-    return e;
-}
+    if(Template != NULL) {
+        const ATemplate* template = a_template__get(Template, __func__);
+        const char* id = a_str__fmt512("%s#%u",
+                                       Template,
+                                       a_template__instanceGet(template));
 
-AEntity* a_entity_newEx(const char* Template)
-{
-    const ATemplate* t = a_template__get(Template, __func__);
-    const char* id = a_str__fmt512(
-                        "%s#%u", Template, a_template__instanceGet(t));
+        e->id = a_str_dup(id);
+        e->template = template;
 
-    AEntity* e = a_entity_new(id);
-
-    e->template = t;
-
-    for(int c = A_CONFIG_ECS_COM_NUM; c--; ) {
-        if(a_template__componentHas(t, c)) {
-            componentAdd(
-                e, c, a_component__get(c, __func__), a_template__dataGet(t, c));
+        for(int c = A_CONFIG_ECS_COM_NUM; c--; ) {
+            if(a_template__componentHas(template, c)) {
+                componentAdd(e,
+                             c,
+                             a_component__get(c, __func__),
+                             a_template__dataGet(template, c));
+            }
         }
     }
+
+    a_ecs__entityAddToList(e, A_ECS__NEW);
 
     return e;
 }

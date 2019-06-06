@@ -28,7 +28,7 @@
 #include "a2x_pack_strhash.v.h"
 
 struct ATemplate {
-    unsigned instanceNumber; // Incremented by each a_entity_newEx call
+    unsigned instanceNumber; // Incremented by each new entity
     ABitfield* componentBits; // Set if template has corresponding component
     void* data[A_CONFIG_ECS_COM_NUM]; // Parsed component config data, or NULL
 };
