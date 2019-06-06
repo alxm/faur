@@ -56,7 +56,7 @@ static ATemplate* templateNew(const char* TemplateId, const ABlock* Block)
 
         t->data[index] = a_component__dataInit(component, b);
 
-        a_bitfield_set(t->componentBits, a_component__bitGet(component));
+        a_bitfield_set(t->componentBits, (unsigned)index);
     }
 
     return t;
@@ -123,9 +123,7 @@ unsigned a_template__instanceGet(const ATemplate* Template)
 
 bool a_template__componentHas(const ATemplate* Template, int Component)
 {
-    const AComponent* c = a_component__get(Component, __func__);
-
-    return a_bitfield_test(Template->componentBits, a_component__bitGet(c));
+    return a_bitfield_test(Template->componentBits, (unsigned)Component);
 }
 
 const void* a_template__dataGet(const ATemplate* Template, int Component)

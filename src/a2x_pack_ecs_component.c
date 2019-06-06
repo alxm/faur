@@ -32,7 +32,6 @@ struct AComponent {
     AComponentDataInit* dataInit; // init template buffer with info from ABlock
     AFree* dataFree; // does not free the actual template buffer
     const char* stringId; // string ID
-    unsigned bit; // component's unique bit ID
 };
 
 static AComponent g_componentsTable[A_CONFIG_ECS_COM_NUM];
@@ -49,7 +48,6 @@ void a_component__init(void)
 
     for(int c = A_CONFIG_ECS_COM_NUM; c--; ) {
         g_componentsTable[c].stringId = "???";
-        g_componentsTable[c].bit = UINT_MAX;
     }
 }
 
@@ -62,7 +60,7 @@ int a_component__stringToIndex(const char* StringId)
 {
     const AComponent* c = a_strhash_get(g_components, StringId);
 
-    return c ? (int)c->bit : -1;
+    return c ? (int)(c - g_componentsTable) : -1;
 }
 
 const AComponent* a_component__get(int Component, const char* CallerFunction)
@@ -70,11 +68,6 @@ const AComponent* a_component__get(int Component, const char* CallerFunction)
     #if A_CONFIG_BUILD_DEBUG
         if(Component < 0 || Component >= A_CONFIG_ECS_COM_NUM) {
             A__FATAL("%s: Unknown component %d", CallerFunction, Component);
-        }
-
-        if(g_componentsTable[Component].bit == UINT_MAX) {
-            A__FATAL(
-                "%s: Uninitialized component %d", CallerFunction, Component);
         }
     #else
         A_UNUSED(CallerFunction);
@@ -87,15 +80,17 @@ void a_component_new(int Index, const char* StringId, size_t Size, AInit* Init, 
 {
     AComponent* c = &g_componentsTable[Index];
 
-    if(c->bit != UINT_MAX || a_strhash_contains(g_components, StringId)) {
-        A__FATAL("a_component_new(%d, %s): Already declared", Index, StringId);
-    }
+    #if A_CONFIG_BUILD_DEBUG
+        if(a_strhash_contains(g_components, StringId)) {
+            A__FATAL(
+                "a_component_new(%d, %s): Already declared", Index, StringId);
+        }
+    #endif
 
     c->size = sizeof(AComponentInstance) + Size;
     c->init = Init;
     c->free = Free;
     c->stringId = StringId;
-    c->bit = (unsigned)Index;
 
     a_strhash_add(g_components, StringId, c);
 }
@@ -128,11 +123,6 @@ AEntity* a_component_entityGet(const void* Component)
 const char* a_component__stringGet(const AComponent* Component)
 {
     return Component->stringId;
-}
-
-unsigned a_component__bitGet(const AComponent* Component)
-{
-    return Component->bit;
 }
 
 void* a_component__dataInit(const AComponent* Component, const ABlock* Block)

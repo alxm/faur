@@ -34,7 +34,6 @@ extern int a_component__stringToIndex(const char* StringId);
 extern const AComponent* a_component__get(int Component, const char* CallerFunction);
 
 extern const char* a_component__stringGet(const AComponent* Component);
-extern unsigned a_component__bitGet(const AComponent* Component);
 
 extern void* a_component__dataInit(const AComponent* Component, const ABlock* Block);
 extern void a_component__dataFree(const AComponent* Component, void* Buffer);

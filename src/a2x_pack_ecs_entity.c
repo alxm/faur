@@ -34,7 +34,7 @@ static AComponentInstance* componentAdd(AEntity* Entity, int Index, const ACompo
                                 Component, Entity, TemplateData);
 
     Entity->componentsTable[Index] = c;
-    a_bitfield_set(Entity->componentBits, a_component__bitGet(Component));
+    a_bitfield_set(Entity->componentBits, (unsigned)Index);
 
     return c;
 }

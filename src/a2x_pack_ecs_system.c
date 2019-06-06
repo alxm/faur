@@ -61,9 +61,11 @@ ASystem* a_system__get(int System, const char* CallerFunction)
 
 void a_system_new(int Index, ASystemHandler* Handler, ASystemSort* Compare, bool OnlyActiveEntities)
 {
-    if(g_systemsTable[Index].entities != NULL) {
-        A__FATAL("a_system_new(%d): Already declared", Index);
-    }
+    #if A_CONFIG_BUILD_DEBUG
+        if(g_systemsTable[Index].entities != NULL) {
+            A__FATAL("a_system_new(%d): Already declared", Index);
+        }
+    #endif
 
     ASystem* s = &g_systemsTable[Index];
 
@@ -77,9 +79,8 @@ void a_system_new(int Index, ASystemHandler* Handler, ASystemSort* Compare, bool
 void a_system_add(int System, int Component)
 {
     ASystem* s = a_system__get(System, __func__);
-    const AComponent* c = a_component__get(Component, __func__);
 
-    a_bitfield_set(s->componentBits, a_component__bitGet(c));
+    a_bitfield_set(s->componentBits, (unsigned)Component);
 }
 
 void a_system_run(int System)
