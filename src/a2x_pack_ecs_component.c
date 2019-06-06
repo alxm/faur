@@ -36,6 +36,7 @@ struct AComponent {
 
 static AComponent g_componentsTable[A_CONFIG_ECS_COM_NUM];
 static AStrHash* g_components; // table of AComponent
+static const char* g_defaultId = "Unknown";
 
 static inline const AComponentInstance* bufferGetInstance(const void* ComponentBuffer)
 {
@@ -72,7 +73,6 @@ const AComponent* a_component__get(int ComponentIndex, const char* CallerFunctio
                      CallerFunction,
                      ComponentIndex);
         }
-
     #else
         A_UNUSED(CallerFunction);
     #endif
@@ -80,36 +80,53 @@ const AComponent* a_component__get(int ComponentIndex, const char* CallerFunctio
     return &g_componentsTable[ComponentIndex];
 }
 
-void a_component_new(int ComponentIndex, const char* StringId, size_t Size, AInit* Init, AFree* Free)
+void a_component_new(int ComponentIndex, size_t Size, AInit* Init, AFree* Free)
 {
     AComponent* component = &g_componentsTable[ComponentIndex];
 
     #if A_CONFIG_BUILD_DEBUG
-        if(a_strhash_contains(g_components, StringId)) {
-            A__FATAL("a_component_new(%d, %s): Already declared",
-                     ComponentIndex,
-                     StringId);
+        if(component->stringId != NULL) {
+            A__FATAL("a_component_new(%d): Already declared", ComponentIndex);
         }
     #endif
 
     component->size = sizeof(AComponentInstance) + Size;
     component->init = Init;
     component->free = Free;
-    component->stringId = StringId;
-
-    a_strhash_add(g_components, StringId, component);
+    component->stringId = g_defaultId;
 }
 
-void a_component_newEx(int ComponentIndex, const char* StringId, size_t Size, AInitWithData* InitWithData, AFree* Free, size_t DataSize, AComponentDataInit* DataInit, AFree* DataFree)
+void a_component_template(int ComponentIndex, const char* StringId, size_t DataSize, AComponentDataInit* DataInit, AFree* DataFree, AInitWithData* InitWithData)
 {
-    a_component_new(ComponentIndex, StringId, Size, NULL, Free);
-
     AComponent* component = &g_componentsTable[ComponentIndex];
+
+    #if A_CONFIG_BUILD_DEBUG
+        if(ComponentIndex < 0 || ComponentIndex >= A_CONFIG_ECS_COM_NUM) {
+            A__FATAL("a_component_template(%d, %s): Unknown component",
+                     ComponentIndex,
+                     StringId);
+        }
+
+        if(g_componentsTable[ComponentIndex].stringId == NULL) {
+            A__FATAL("a_component_template(%d, %s): Uninitialized component",
+                     ComponentIndex,
+                     StringId);
+        }
+
+        if(a_strhash_contains(g_components, StringId)) {
+            A__FATAL("a_component_template(%d, %s): Already declared",
+                     ComponentIndex,
+                     StringId);
+        }
+    #endif
 
     component->initWithData = InitWithData;
     component->dataSize = DataSize;
     component->dataInit = DataInit;
     component->dataFree = DataFree;
+    component->stringId = StringId;
+
+    a_strhash_add(g_components, StringId, component);
 }
 
 const void* a_component_dataGet(const void* Component)
