@@ -32,13 +32,13 @@ struct ASystem {
     bool onlyActiveEntities; // skip entities that are not active
 };
 
-static ASystem g_systemsTable[A_CONFIG_ECS_SYS_NUM];
+static ASystem g_systems[A_CONFIG_ECS_SYS_NUM];
 
 void a_system__uninit(void)
 {
     for(unsigned s = A_CONFIG_ECS_SYS_NUM; s--; ) {
-        a_list_free(g_systemsTable[s].entities);
-        a_bitfield_free(g_systemsTable[s].componentBits);
+        a_list_free(g_systems[s].entities);
+        a_bitfield_free(g_systems[s].componentBits);
     }
 }
 
@@ -49,7 +49,7 @@ ASystem* a_system__get(int SystemIndex, const char* CallerFunction)
             A__FATAL("%s: Unknown system %d", CallerFunction, SystemIndex);
         }
 
-        if(g_systemsTable[SystemIndex].entities == NULL) {
+        if(g_systems[SystemIndex].entities == NULL) {
             A__FATAL(
                 "%s: Uninitialized system %d", CallerFunction, SystemIndex);
         }
@@ -57,31 +57,31 @@ ASystem* a_system__get(int SystemIndex, const char* CallerFunction)
         A_UNUSED(CallerFunction);
     #endif
 
-    return &g_systemsTable[SystemIndex];
+    return &g_systems[SystemIndex];
 }
 
 void a_system_new(int SystemIndex, ASystemHandler* Handler, ASystemSort* Compare, bool OnlyActiveEntities)
 {
     #if A_CONFIG_BUILD_DEBUG
-        if(g_systemsTable[SystemIndex].entities != NULL) {
+        if(g_systems[SystemIndex].entities != NULL) {
             A__FATAL("a_system_new(%d): Already declared", SystemIndex);
         }
     #endif
 
-    ASystem* s = &g_systemsTable[SystemIndex];
+    ASystem* system = &g_systems[SystemIndex];
 
-    s->handler = Handler;
-    s->compare = Compare;
-    s->entities = a_list_new();
-    s->componentBits = a_bitfield_new(A_CONFIG_ECS_COM_NUM);
-    s->onlyActiveEntities = OnlyActiveEntities;
+    system->handler = Handler;
+    system->compare = Compare;
+    system->entities = a_list_new();
+    system->componentBits = a_bitfield_new(A_CONFIG_ECS_COM_NUM);
+    system->onlyActiveEntities = OnlyActiveEntities;
 }
 
 void a_system_add(int SystemIndex, int ComponentIndex)
 {
-    ASystem* s = a_system__get(SystemIndex, __func__);
+    ASystem* system = a_system__get(SystemIndex, __func__);
 
-    a_bitfield_set(s->componentBits, (unsigned)ComponentIndex);
+    a_bitfield_set(system->componentBits, (unsigned)ComponentIndex);
 }
 
 void a_system_run(int SystemIndex)

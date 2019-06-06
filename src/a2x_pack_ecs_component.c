@@ -34,8 +34,8 @@ struct AComponent {
     const char* stringId; // string ID
 };
 
-static AComponent g_componentsTable[A_CONFIG_ECS_COM_NUM];
-static AStrHash* g_components; // table of AComponent
+static AComponent g_components[A_CONFIG_ECS_COM_NUM];
+static AStrHash* g_componentsIndex; // table of AComponent
 static const char* g_defaultId = "Unknown";
 
 static inline const AComponentInstance* bufferGetInstance(const void* ComponentBuffer)
@@ -45,19 +45,19 @@ static inline const AComponentInstance* bufferGetInstance(const void* ComponentB
 
 void a_component__init(void)
 {
-    g_components = a_strhash_new();
+    g_componentsIndex = a_strhash_new();
 }
 
 void a_component__uninit(void)
 {
-    a_strhash_free(g_components);
+    a_strhash_free(g_componentsIndex);
 }
 
 int a_component__stringToIndex(const char* StringId)
 {
-    const AComponent* component = a_strhash_get(g_components, StringId);
+    const AComponent* component = a_strhash_get(g_componentsIndex, StringId);
 
-    return component ? (int)(component - g_componentsTable) : -1;
+    return component ? (int)(component - g_components) : -1;
 }
 
 const AComponent* a_component__get(int ComponentIndex, const char* CallerFunction)
@@ -68,7 +68,7 @@ const AComponent* a_component__get(int ComponentIndex, const char* CallerFunctio
                 "%s: Unknown component %d", CallerFunction, ComponentIndex);
         }
 
-        if(g_componentsTable[ComponentIndex].stringId == NULL) {
+        if(g_components[ComponentIndex].stringId == NULL) {
             A__FATAL("%s: Uninitialized component %d",
                      CallerFunction,
                      ComponentIndex);
@@ -77,12 +77,12 @@ const AComponent* a_component__get(int ComponentIndex, const char* CallerFunctio
         A_UNUSED(CallerFunction);
     #endif
 
-    return &g_componentsTable[ComponentIndex];
+    return &g_components[ComponentIndex];
 }
 
 void a_component_new(int ComponentIndex, size_t Size, AComponentInit* Init, AFree* Free)
 {
-    AComponent* component = &g_componentsTable[ComponentIndex];
+    AComponent* component = &g_components[ComponentIndex];
 
     #if A_CONFIG_BUILD_DEBUG
         if(component->stringId != NULL) {
@@ -98,7 +98,7 @@ void a_component_new(int ComponentIndex, size_t Size, AComponentInit* Init, AFre
 
 void a_component_template(int ComponentIndex, const char* StringId, size_t TemplateSize, AComponentTemplateInit* TemplateInit, AFree* TemplateFree, AComponentInitWithTemplate* InitWithTemplate)
 {
-    AComponent* component = &g_componentsTable[ComponentIndex];
+    AComponent* component = &g_components[ComponentIndex];
 
     #if A_CONFIG_BUILD_DEBUG
         if(ComponentIndex < 0 || ComponentIndex >= A_CONFIG_ECS_COM_NUM) {
@@ -107,13 +107,13 @@ void a_component_template(int ComponentIndex, const char* StringId, size_t Templ
                      StringId);
         }
 
-        if(g_componentsTable[ComponentIndex].stringId == NULL) {
+        if(g_components[ComponentIndex].stringId == NULL) {
             A__FATAL("a_component_template(%d, %s): Uninitialized component",
                      ComponentIndex,
                      StringId);
         }
 
-        if(a_strhash_contains(g_components, StringId)) {
+        if(a_strhash_contains(g_componentsIndex, StringId)) {
             A__FATAL("a_component_template(%d, %s): Already declared",
                      ComponentIndex,
                      StringId);
@@ -126,7 +126,7 @@ void a_component_template(int ComponentIndex, const char* StringId, size_t Templ
     component->templateFree = TemplateFree;
     component->stringId = StringId;
 
-    a_strhash_add(g_components, StringId, component);
+    a_strhash_add(g_componentsIndex, StringId, component);
 }
 
 const void* a_component_dataGet(const void* Component)
@@ -134,7 +134,7 @@ const void* a_component_dataGet(const void* Component)
     const AComponentInstance* instance = bufferGetInstance(Component);
 
     return a_template__dataGet(a_entity__templateGet(instance->entity),
-                               (int)(instance->component - g_componentsTable));
+                               (int)(instance->component - g_components));
 }
 
 AEntity* a_component_entityGet(const void* Component)
