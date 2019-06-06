@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 Alex Margarit <alex@alxm.org>
+    Copyright 2016-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -25,14 +25,10 @@ typedef struct ASystem ASystem;
 #include "a2x_pack_bitfield.v.h"
 #include "a2x_pack_list.v.h"
 
-struct ASystem {
-    ASystemHandler* handler;
-    ASystemSort* compare;
-    ABitfield* componentBits; // IDs of components that this system works on
-    AList* entities; // entities currently picked up by this system
-    bool onlyActiveEntities; // skip entities that are not active
-};
-
 extern void a_system__uninit(void);
 
 extern ASystem* a_system__get(int System, const char* CallerFunction);
+
+extern AListNode* a_system__entityAdd(const ASystem* System, AEntity* Entity);
+extern const ABitfield* a_system__componentBitsGet(const ASystem* System);
+extern bool a_system__isActiveOnly(const ASystem* System);

@@ -24,6 +24,14 @@
 #include "a2x_pack_main.v.h"
 #include "a2x_pack_mem.v.h"
 
+struct ASystem {
+    ASystemHandler* handler;
+    ASystemSort* compare;
+    ABitfield* componentBits; // IDs of components that this system works on
+    AList* entities; // entities currently picked up by this system
+    bool onlyActiveEntities; // skip entities that are not active
+};
+
 static ASystem g_systemsTable[A_CONFIG_ECS_SYS_NUM];
 
 void a_system__uninit(void)
@@ -97,4 +105,19 @@ void a_system_run(int System)
     }
 
     a_ecs__flushEntitiesFromSystems();
+}
+
+AListNode* a_system__entityAdd(const ASystem* System, AEntity* Entity)
+{
+    return a_list_addLast(System->entities, Entity);
+}
+
+const ABitfield* a_system__componentBitsGet(const ASystem* System)
+{
+    return System->componentBits;
+}
+
+bool a_system__isActiveOnly(const ASystem* System)
+{
+    return System->onlyActiveEntities;
 }

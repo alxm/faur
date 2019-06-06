@@ -76,8 +76,10 @@ void a_ecs__tick(void)
         for(int id = A_CONFIG_ECS_SYS_NUM; id--; ) {
             ASystem* s = a_system__get(id, __func__);
 
-            if(a_bitfield_testMask(e->componentBits, s->componentBits)) {
-                if(s->onlyActiveEntities) {
+            if(a_bitfield_testMask(
+                e->componentBits, a_system__componentBitsGet(s))) {
+
+                if(a_system__isActiveOnly(s)) {
                     a_list_addLast(e->matchingSystemsActive, s);
                 } else {
                     a_list_addLast(e->matchingSystemsRest, s);
@@ -93,13 +95,13 @@ void a_ecs__tick(void)
         if(!A_FLAG_TEST_ANY(e->flags, A_ENTITY__ACTIVE_REMOVED)) {
             A_LIST_ITERATE(e->matchingSystemsActive, ASystem*, system) {
                 a_list_addLast(
-                    e->systemNodesActive, a_list_addLast(system->entities, e));
+                    e->systemNodesActive, a_system__entityAdd(system, e));
             }
         }
 
         A_LIST_ITERATE(e->matchingSystemsRest, ASystem*, system) {
             a_list_addLast(
-                e->systemNodesEither, a_list_addLast(system->entities, e));
+                e->systemNodesEither, a_system__entityAdd(system, e));
         }
 
         a_ecs__entityAddToList(e, A_ECS__DEFAULT);

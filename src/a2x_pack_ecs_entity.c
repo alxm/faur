@@ -289,8 +289,8 @@ void a_entity_activeSet(AEntity* Entity)
 
         // Add entity back to active-only systems
         A_LIST_ITERATE(Entity->matchingSystemsActive, ASystem*, system) {
-            a_list_addLast(Entity->systemNodesActive,
-                           a_list_addLast(system->entities, Entity));
+            a_list_addLast(
+                Entity->systemNodesActive, a_system__entityAdd(system, Entity));
         }
     }
 }
