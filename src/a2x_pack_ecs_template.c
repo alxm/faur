@@ -54,15 +54,9 @@ static ATemplate* templateNew(const char* TemplateId, const ABlock* Block)
 
         const AComponent* component = a_component__get(index, __func__);
 
-        if(component->dataSize > 0) {
-            t->data[index] = a_mem_zalloc(component->dataSize);
+        t->data[index] = a_component__dataInit(component, b);
 
-            if(component->dataInit) {
-                component->dataInit(t->data[index], b);
-            }
-        }
-
-        a_bitfield_set(t->componentBits, component->bit);
+        a_bitfield_set(t->componentBits, a_component__bitGet(component));
     }
 
     return t;
@@ -74,13 +68,8 @@ static void templateFree(ATemplate* Template)
 
     for(int c = A_CONFIG_ECS_COM_NUM; c--; ) {
         if(Template->data[c]) {
-            const AComponent* component = a_component__get(c, __func__);
-
-            if(component->dataFree) {
-                component->dataFree(Template->data[c]);
-            }
-
-            free(Template->data[c]);
+            a_component__dataFree(
+                a_component__get(c, __func__), Template->data[c]);
         }
     }
 
@@ -136,7 +125,7 @@ bool a_template__componentHas(const ATemplate* Template, int Component)
 {
     const AComponent* c = a_component__get(Component, __func__);
 
-    return a_bitfield_test(Template->componentBits, c->bit);
+    return a_bitfield_test(Template->componentBits, a_component__bitGet(c));
 }
 
 const void* a_template__dataGet(const ATemplate* Template, int Component)

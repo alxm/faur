@@ -20,17 +20,7 @@
 
 #include "a2x_pack_ecs_component.p.h"
 
-typedef struct {
-    size_t size; // total size of AComponentInstance + user data that follows
-    AInit* init; // sets component buffer default values
-    AInitWithData* initWithData; // init component buffer with template data
-    AFree* free; // does not free the actual component buffer
-    size_t dataSize; // size of template data buffer
-    AComponentDataInit* dataInit; // init template buffer with info from ABlock
-    AFree* dataFree; // does not free the actual template buffer
-    const char* stringId; // string ID
-    unsigned bit; // component's unique bit ID
-} AComponent;
+typedef struct AComponent AComponent;
 
 typedef struct {
     const AComponent* component; // shared data for all components of same type
@@ -42,6 +32,15 @@ extern void a_component__uninit(void);
 
 extern int a_component__stringToIndex(const char* StringId);
 extern const AComponent* a_component__get(int Component, const char* CallerFunction);
+
+extern const char* a_component__stringGet(const AComponent* Component);
+extern unsigned a_component__bitGet(const AComponent* Component);
+
+extern void* a_component__dataInit(const AComponent* Component, const ABlock* Block);
+extern void a_component__dataFree(const AComponent* Component, void* Buffer);
+
+extern AComponentInstance* a_component__instanceNew(const AComponent* Component, AEntity* Entity, const void* TemplateData);
+extern void a_component__instanceFree(AComponentInstance* Instance);
 
 static inline void* a_component__headerGetData(const AComponentInstance* Header)
 {

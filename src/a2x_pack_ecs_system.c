@@ -79,7 +79,7 @@ void a_system_add(int System, int Component)
     ASystem* s = a_system__get(System, __func__);
     const AComponent* c = a_component__get(Component, __func__);
 
-    a_bitfield_set(s->componentBits, c->bit);
+    a_bitfield_set(s->componentBits, a_component__bitGet(c));
 }
 
 void a_system_run(int System)

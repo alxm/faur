@@ -23,6 +23,18 @@
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_strhash.v.h"
 
+struct AComponent {
+    size_t size; // total size of AComponentInstance + user data that follows
+    AInit* init; // sets component buffer default values
+    AInitWithData* initWithData; // init component buffer with template data
+    AFree* free; // does not free the actual component buffer
+    size_t dataSize; // size of template data buffer
+    AComponentDataInit* dataInit; // init template buffer with info from ABlock
+    AFree* dataFree; // does not free the actual template buffer
+    const char* stringId; // string ID
+    unsigned bit; // component's unique bit ID
+};
+
 static AComponent g_componentsTable[A_CONFIG_ECS_COM_NUM];
 static AStrHash* g_components; // table of AComponent
 
@@ -111,4 +123,71 @@ const void* a_component_dataGet(const void* Component)
 AEntity* a_component_entityGet(const void* Component)
 {
     return getHeader(Component)->entity;
+}
+
+const char* a_component__stringGet(const AComponent* Component)
+{
+    return Component->stringId;
+}
+
+unsigned a_component__bitGet(const AComponent* Component)
+{
+    return Component->bit;
+}
+
+void* a_component__dataInit(const AComponent* Component, const ABlock* Block)
+{
+    if(Component->dataSize > 0) {
+        void* buffer = a_mem_zalloc(Component->dataSize);
+
+        if(Component->dataInit) {
+            Component->dataInit(buffer, Block);
+        }
+
+        return buffer;
+    }
+
+    return NULL;
+}
+
+void a_component__dataFree(const AComponent* Component, void* Buffer)
+{
+    if(Component->dataFree) {
+        Component->dataFree(Buffer);
+    }
+
+    free(Buffer);
+}
+
+AComponentInstance* a_component__instanceNew(const AComponent* Component, AEntity* Entity, const void* TemplateData)
+{
+    AComponentInstance* c = a_mem_zalloc(Component->size);
+
+    c->component = Component;
+    c->entity = Entity;
+
+    void* self = a_component__headerGetData(c);
+
+    if(Component->init) {
+        Component->init(self);
+    }
+
+    if(Component->initWithData && TemplateData) {
+        Component->initWithData(self, TemplateData);
+    }
+
+    return c;
+}
+
+void a_component__instanceFree(AComponentInstance* Instance)
+{
+    if(Instance == NULL) {
+        return;
+    }
+
+    if(Instance->component->free) {
+        Instance->component->free(a_component__headerGetData(Instance));
+    }
+
+    free(Instance);
 }

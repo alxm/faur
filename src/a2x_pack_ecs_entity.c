@@ -28,23 +28,15 @@
 #include "a2x_pack_out.v.h"
 #include "a2x_pack_str.v.h"
 
-static void* componentAdd(AEntity* Entity, int Index, const AComponent* Component)
+static AComponentInstance* componentAdd(AEntity* Entity, int Index, const AComponent* Component, const void* TemplateData)
 {
-    AComponentInstance* header = a_mem_zalloc(Component->size);
+    AComponentInstance* c = a_component__instanceNew(
+                                Component, Entity, TemplateData);
 
-    header->component = Component;
-    header->entity = Entity;
+    Entity->componentsTable[Index] = c;
+    a_bitfield_set(Entity->componentBits, a_component__bitGet(Component));
 
-    Entity->componentsTable[Index] = header;
-    a_bitfield_set(Entity->componentBits, Component->bit);
-
-    void* self = a_component__headerGetData(header);
-
-    if(Component->init) {
-        Component->init(self);
-    }
-
-    return a_component__headerGetData(header);
+    return c;
 }
 
 AEntity* a_entity_new(const char* Id)
@@ -82,12 +74,8 @@ AEntity* a_entity_newEx(const char* Template)
 
     for(int c = A_CONFIG_ECS_COM_NUM; c--; ) {
         if(a_template__componentHas(t, c)) {
-            const AComponent* component = a_component__get(c, __func__);
-            void* self = componentAdd(e, c, component);
-
-            if(component->initWithData) {
-                component->initWithData(self, a_template__dataGet(t, c));
-            }
+            componentAdd(
+                e, c, a_component__get(c, __func__), a_template__dataGet(t, c));
         }
     }
 
@@ -114,17 +102,7 @@ void a_entity__free(AEntity* Entity)
     a_list_freeEx(Entity->systemNodesEither, (AFree*)a_list_removeNode);
 
     for(int c = A_CONFIG_ECS_COM_NUM; c--; ) {
-        AComponentInstance* header = Entity->componentsTable[c];
-
-        if(header == NULL) {
-            continue;
-        }
-
-        if(header->component->free) {
-            header->component->free(a_component__headerGetData(header));
-        }
-
-        free(header);
+        a_component__instanceFree(Entity->componentsTable[c]);
     }
 
     if(Entity->parent) {
@@ -310,22 +288,22 @@ void* a_entity_componentAdd(AEntity* Entity, int Component)
     if(!a_ecs__entityIsInList(Entity, A_ECS__NEW)) {
         A__FATAL("a_entity_componentAdd(%s, %s): Too late",
                  a_entity_idGet(Entity),
-                 c->stringId);
+                 a_component__stringGet(c));
     }
 
     if(Entity->componentsTable[Component] != NULL) {
         A__FATAL("a_entity_componentAdd(%s, %s): Already added",
                  a_entity_idGet(Entity),
-                 c->stringId);
+                 a_component__stringGet(c));
     }
 
     if(A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__DEBUG)) {
         a_out__info("a_entity_componentAdd(%s, %s)",
                     a_entity_idGet(Entity),
-                    c->stringId);
+                    a_component__stringGet(c));
     }
 
-    return componentAdd(Entity, Component, c);
+    return a_component__headerGetData(componentAdd(Entity, Component, c, NULL));
 }
 
 bool a_entity_componentHas(const AEntity* Entity, int Component)
@@ -351,7 +329,7 @@ void* a_entity_componentReq(const AEntity* Entity, int Component)
     if(header == NULL) {
         A__FATAL("a_entity_componentReq(%s, %s): Missing component",
                  a_entity_idGet(Entity),
-                 c->stringId);
+                 a_component__stringGet(c));
     }
 
     return a_component__headerGetData(header);
