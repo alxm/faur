@@ -46,6 +46,12 @@ static struct {
 
 static AList* g_runningTimers; // list of ATimer
 
+static inline void setNow(void)
+{
+    g_now.ms = a_time_msGet();
+    g_now.ticks = a_fps_ticksGet();
+}
+
 static inline unsigned getNow(const ATimer* Timer)
 {
     switch(Timer->type) {
@@ -63,6 +69,8 @@ static inline unsigned getNow(const ATimer* Timer)
 
 void a_timer__init(void)
 {
+    setNow();
+
     g_runningTimers = a_list_new();
 }
 
@@ -73,8 +81,7 @@ void a_timer__uninit(void)
 
 void a_timer__tick(void)
 {
-    g_now.ms = a_time_msGet();
-    g_now.ticks = a_fps_ticksGet();
+    setNow();
 
     A_LIST_ITERATE(g_runningTimers, ATimer*, t) {
         if(!A_FLAG_TEST_ANY(t->flags, A_TIMER__RUNNING)) {
