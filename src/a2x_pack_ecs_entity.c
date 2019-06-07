@@ -20,7 +20,6 @@
 
 #include "a2x_pack_ecs.v.h"
 #include "a2x_pack_ecs_collection.v.h"
-#include "a2x_pack_ecs_system.v.h"
 #include "a2x_pack_fps.v.h"
 #include "a2x_pack_listit.v.h"
 #include "a2x_pack_main.v.h"
@@ -28,40 +27,45 @@
 #include "a2x_pack_out.v.h"
 #include "a2x_pack_str.v.h"
 
-static void* componentAdd(AEntity* Entity, int Index, const AComponent* Component)
+struct AEntity {
+    char* id; // specified name for debugging
+    const ATemplate* template; // template used to init this entity's components
+    AEntity* parent; // manually associated parent entity
+    AListNode* node; // list node in one of AEcsListId
+    AListNode* collectionNode; // ACollection list nod
+    AList* matchingSystemsActive; // list of ASystem
+    AList* matchingSystemsRest; // list of ASystem
+    AList* systemNodesActive; // list of nodes in active-only ASystem lists
+    AList* systemNodesEither; // list of nodes in normal ASystem.entities lists
+    ABitfield* componentBits; // each component's bit is set
+    unsigned lastActive; // frame when a_entity_activeSet was last called
+    int references; // if >0, then the entity lingers in the removed limbo list
+    int muteCount; // if >0, then the entity isn't picked up by any systems
+    AEntityFlags flags; // various properties
+    AComponentInstance* componentsTable[A_CONFIG_ECS_COM_NUM]; // Comp, or NULL
+};
+
+static AComponentInstance* componentAdd(AEntity* Entity, int ComponentIndex, const AComponent* Component, const void* TemplateData)
 {
-    AComponentInstance* header = a_mem_zalloc(Component->size);
+    AComponentInstance* c = a_component__instanceNew(
+                                Component, Entity, TemplateData);
 
-    header->component = Component;
-    header->entity = Entity;
+    Entity->componentsTable[ComponentIndex] = c;
+    a_bitfield_set(Entity->componentBits, (unsigned)ComponentIndex);
 
-    Entity->componentsTable[Index] = header;
-    a_bitfield_set(Entity->componentBits, Component->bit);
-
-    void* self = a_component__headerGetData(header);
-
-    if(Component->init) {
-        Component->init(self);
-    }
-
-    return a_component__headerGetData(header);
+    return c;
 }
 
-AEntity* a_entity_new(const char* Id, void* Context)
+AEntity* a_entity_new(const char* Template)
 {
-    AEntity* e = a_mem_zalloc(
-        sizeof(AEntity) + a_component__tableLen * sizeof(AComponentInstance*));
+    AEntity* e = a_mem_zalloc(sizeof(AEntity));
 
-    e->id = a_str_dup(Id);
-    e->context = Context;
     e->matchingSystemsActive = a_list_new();
     e->matchingSystemsRest = a_list_new();
     e->systemNodesActive = a_list_new();
     e->systemNodesEither = a_list_new();
-    e->componentBits = a_bitfield_new(a_component__tableLen);
+    e->componentBits = a_bitfield_new(A_CONFIG_ECS_COM_NUM);
     e->lastActive = a_fps_ticksGet() - 1;
-
-    a_ecs__entityAddToList(e, A_ECS__NEW);
 
     ACollection* collection = a_ecs_collectionGet();
 
@@ -69,29 +73,26 @@ AEntity* a_entity_new(const char* Id, void* Context)
         a_collection__add(collection, e);
     }
 
-    return e;
-}
+    if(Template != NULL) {
+        const ATemplate* template = a_template__get(Template, __func__);
+        const char* id = a_str__fmt512("%s#%u",
+                                       Template,
+                                       a_template__instanceGet(template));
 
-AEntity* a_entity_newEx(const char* Template, const void* ComponentInitContext, void* Context)
-{
-    const ATemplate* t = a_template__get(Template, __func__);
-    const char* id = a_str__fmt512(
-                        "%s#%u", Template, a_template__instanceGet(t));
-    AEntity* e = a_entity_new(id, Context);
+        e->id = a_str_dup(id);
+        e->template = template;
 
-    e->template = t;
-
-    for(int c = (int)a_component__tableLen; c--; ) {
-        if(a_template__componentHas(t, c)) {
-            const AComponent* component = a_component__get(c, __func__);
-            void* self = componentAdd(e, c, component);
-
-            if(component->initWithData) {
-                component->initWithData(
-                    self, a_template__dataGet(t, c), ComponentInitContext);
+        for(int c = A_CONFIG_ECS_COM_NUM; c--; ) {
+            if(a_template__componentHas(template, c)) {
+                componentAdd(e,
+                             c,
+                             a_component__get(c, __func__),
+                             a_template__dataGet(template, c));
             }
         }
     }
+
+    a_ecs__entityAddToList(e, A_ECS__NEW);
 
     return e;
 }
@@ -115,18 +116,8 @@ void a_entity__free(AEntity* Entity)
     a_list_freeEx(Entity->systemNodesActive, (AFree*)a_list_removeNode);
     a_list_freeEx(Entity->systemNodesEither, (AFree*)a_list_removeNode);
 
-    for(unsigned c = 0; c < a_component__tableLen; c++) {
-        AComponentInstance* header = Entity->componentsTable[c];
-
-        if(header == NULL) {
-            continue;
-        }
-
-        if(header->component->free) {
-            header->component->free(a_component__headerGetData(header));
-        }
-
-        free(header);
+    for(int c = A_CONFIG_ECS_COM_NUM; c--; ) {
+        a_component__instanceFree(Entity->componentsTable[c]);
     }
 
     if(Entity->parent) {
@@ -151,11 +142,6 @@ void a_entity_debugSet(AEntity* Entity, bool DebugOn)
 const char* a_entity_idGet(const AEntity* Entity)
 {
     return Entity->id ? Entity->id : "AEntity";
-}
-
-void* a_entity_contextGet(const AEntity* Entity)
-{
-    return Entity->context;
 }
 
 AEntity* a_entity_parentGet(const AEntity* Entity)
@@ -295,8 +281,8 @@ void a_entity_activeSet(AEntity* Entity)
 
         // Add entity back to active-only systems
         A_LIST_ITERATE(Entity->matchingSystemsActive, ASystem*, system) {
-            a_list_addLast(Entity->systemNodesActive,
-                           a_list_addLast(system->entities, Entity));
+            a_list_addLast(
+                Entity->systemNodesActive, a_system__entityAdd(system, Entity));
         }
     }
 }
@@ -310,58 +296,59 @@ void a_entity_activeSetPermanent(AEntity* Entity)
     A_FLAG_SET(Entity->flags, A_ENTITY__ACTIVE_PERMANENT);
 }
 
-void* a_entity_componentAdd(AEntity* Entity, int Component)
+void* a_entity_componentAdd(AEntity* Entity, int ComponentIndex)
 {
-    const AComponent* c = a_component__get(Component, __func__);
+    const AComponent* component = a_component__get(ComponentIndex, __func__);
 
     if(!a_ecs__entityIsInList(Entity, A_ECS__NEW)) {
         A__FATAL("a_entity_componentAdd(%s, %s): Too late",
                  a_entity_idGet(Entity),
-                 c->stringId);
+                 a_component__stringGet(component));
     }
 
-    if(Entity->componentsTable[Component] != NULL) {
+    if(Entity->componentsTable[ComponentIndex] != NULL) {
         A__FATAL("a_entity_componentAdd(%s, %s): Already added",
                  a_entity_idGet(Entity),
-                 c->stringId);
+                 a_component__stringGet(component));
     }
 
     if(A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__DEBUG)) {
         a_out__info("a_entity_componentAdd(%s, %s)",
                     a_entity_idGet(Entity),
-                    c->stringId);
+                    a_component__stringGet(component));
     }
 
-    return componentAdd(Entity, Component, c);
+    return a_component__instanceGetBuffer(
+            componentAdd(Entity, ComponentIndex, component, NULL));
 }
 
-bool a_entity_componentHas(const AEntity* Entity, int Component)
+bool a_entity_componentHas(const AEntity* Entity, int ComponentIndex)
 {
-    a_component__get(Component, __func__);
-
-    return Entity->componentsTable[Component] != NULL;
+    return Entity->componentsTable[ComponentIndex] != NULL;
 }
 
-void* a_entity_componentGet(const AEntity* Entity, int Component)
+void* a_entity_componentGet(const AEntity* Entity, int ComponentIndex)
 {
-    a_component__get(Component, __func__);
-    AComponentInstance* header = Entity->componentsTable[Component];
+    a_component__get(ComponentIndex, __func__);
+    AComponentInstance* instance = Entity->componentsTable[ComponentIndex];
 
-    return header ? a_component__headerGetData(header) : NULL;
+    return instance ? a_component__instanceGetBuffer(instance) : NULL;
 }
 
-void* a_entity_componentReq(const AEntity* Entity, int Component)
+void* a_entity_componentReq(const AEntity* Entity, int ComponentIndex)
 {
-    const AComponent* c = a_component__get(Component, __func__);
-    AComponentInstance* header = Entity->componentsTable[Component];
+    AComponentInstance* instance = Entity->componentsTable[ComponentIndex];
 
-    if(header == NULL) {
+    if(instance == NULL) {
+        const AComponent* component = a_component__get(
+                                        ComponentIndex, __func__);
+
         A__FATAL("a_entity_componentReq(%s, %s): Missing component",
                  a_entity_idGet(Entity),
-                 c->stringId);
+                 a_component__stringGet(component));
     }
 
-    return a_component__headerGetData(header);
+    return a_component__instanceGetBuffer(instance);
 }
 
 bool a_entity_muteGet(const AEntity* Entity)
@@ -416,7 +403,7 @@ void a_entity_muteDec(AEntity* Entity)
     }
 
     if(--Entity->muteCount == 0) {
-        if(a_entity__isMatchedToSystems(Entity)) {
+        if(a_entity__systemsIsMatchedTo(Entity)) {
             if(a_ecs__entityIsInList(Entity, A_ECS__MUTED_QUEUE)) {
                 // Entity was muted and unmuted before it left systems
                 a_ecs__entityMoveToList(Entity, A_ECS__DEFAULT);
@@ -431,20 +418,80 @@ void a_entity_muteDec(AEntity* Entity)
     }
 }
 
-void a_entity__removeFromAllSystems(AEntity* Entity)
+const ATemplate* a_entity__templateGet(const AEntity* Entity)
+{
+    return Entity->template;
+}
+
+int a_entity__refGet(const AEntity* Entity)
+{
+    return Entity->references;
+}
+
+const AList* a_entity__ecsListGet(const AEntity* Entity)
+{
+    return a_list__nodeGetList(Entity->node);
+}
+
+void a_entity__ecsListAdd(AEntity* Entity, AList* List)
+{
+    Entity->node = a_list_addLast(List, Entity);
+}
+
+void a_entity__ecsListMove(AEntity* Entity, AList* List)
+{
+    a_list_removeNode(Entity->node);
+
+    Entity->node = a_list_addLast(List, Entity);
+}
+
+void a_entity__collectionListAdd(AEntity* Entity, AList* List)
+{
+    Entity->collectionNode = a_list_addLast(List, Entity);
+}
+
+void a_entity__systemMatch(AEntity* Entity, ASystem* System)
+{
+    if(a_bitfield_testMask(
+        Entity->componentBits, a_system__componentBitsGet(System))) {
+
+        if(a_system__isActiveOnly(System)) {
+            a_list_addLast(Entity->matchingSystemsActive, System);
+        } else {
+            a_list_addLast(Entity->matchingSystemsRest, System);
+        }
+    }
+}
+
+bool a_entity__systemsIsMatchedTo(const AEntity* Entity)
+{
+    return !a_list_isEmpty(Entity->matchingSystemsActive)
+        || !a_list_isEmpty(Entity->matchingSystemsRest);
+}
+
+void a_entity__systemsAddTo(AEntity* Entity)
+{
+    if(!A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__ACTIVE_REMOVED)) {
+        A_LIST_ITERATE(Entity->matchingSystemsActive, ASystem*, system) {
+            a_list_addLast(
+                Entity->systemNodesActive, a_system__entityAdd(system, Entity));
+        }
+    }
+
+    A_LIST_ITERATE(Entity->matchingSystemsRest, ASystem*, system) {
+        a_list_addLast(
+            Entity->systemNodesEither, a_system__entityAdd(system, Entity));
+    }
+}
+
+void a_entity__systemsRemoveFromAll(AEntity* Entity)
 {
     a_list_clearEx(Entity->systemNodesActive, (AFree*)a_list_removeNode);
     a_list_clearEx(Entity->systemNodesEither, (AFree*)a_list_removeNode);
 }
 
-void a_entity__removeFromActiveSystems(AEntity* Entity)
+void a_entity__systemsRemoveFromActive(AEntity* Entity)
 {
     A_FLAG_SET(Entity->flags, A_ENTITY__ACTIVE_REMOVED);
     a_list_clearEx(Entity->systemNodesActive, (AFree*)a_list_removeNode);
-}
-
-bool a_entity__isMatchedToSystems(const AEntity* Entity)
-{
-    return !a_list_isEmpty(Entity->matchingSystemsActive)
-        || !a_list_isEmpty(Entity->matchingSystemsRest);
 }

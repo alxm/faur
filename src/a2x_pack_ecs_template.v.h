@@ -1,5 +1,5 @@
 /*
-    Copyright 2018 Alex Margarit <alex@alxm.org>
+    Copyright 2018-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -28,5 +28,5 @@ extern void a_template__uninit(void);
 extern const ATemplate* a_template__get(const char* TemplateId, const char* CallerFunction);
 
 extern unsigned a_template__instanceGet(const ATemplate* Template);
-extern bool a_template__componentHas(const ATemplate* Template, int Component);
-extern const void* a_template__dataGet(const ATemplate* Template, int Component);
+extern bool a_template__componentHas(const ATemplate* Template, int ComponentIndex);
+extern const void* a_template__dataGet(const ATemplate* Template, int ComponentIndex);

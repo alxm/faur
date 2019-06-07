@@ -32,12 +32,12 @@ class EnumTool(Tool):
         enums = re.findall(
                     'enum\s*\{\s*(.*?)\s*\}\s*\w*\s*;', contents, re.DOTALL)
 
-        re_assignment = re.compile('^(\w+)\s*=\s*(.*)\s*$', re.DOTALL)
+        re_assignment = re.compile('^(\w+)\s*=\s*(.*)\s*$')
         re_noexplicit = re.compile('^(\w+)$')
 
         for e in enums:
             value = 0
-            values = re.split('\s*,\s*', e, re.DOTALL)
+            values = re.split('\s*,\s*', e)
 
             for v in values:
                 m = re_assignment.match(v)

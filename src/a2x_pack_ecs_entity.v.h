@@ -1,5 +1,5 @@
 /*
-    Copyright 2016, 2018 Alex Margarit <alex@alxm.org>
+    Copyright 2016, 2018-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -22,6 +22,7 @@
 
 #include "a2x_pack_bitfield.v.h"
 #include "a2x_pack_ecs_component.v.h"
+#include "a2x_pack_ecs_system.v.h"
 #include "a2x_pack_ecs_template.v.h"
 #include "a2x_pack_list.v.h"
 
@@ -32,28 +33,21 @@ typedef enum {
     A_ENTITY__REMOVED = A_FLAG_BIT(3), // marked for removal, may have refs
 } AEntityFlags;
 
-struct AEntity {
-    char* id; // specified name for debugging
-    void* context; // global context
-    const ATemplate* template; // template used to init this entity's components
-    AEntity* parent; // manually associated parent entity
-    AListNode* node; // list node in one of AEcsListId
-    AListNode* collectionNode; // ACollection list nod
-    AList* matchingSystemsActive; // list of ASystem
-    AList* matchingSystemsRest; // list of ASystem
-    AList* systemNodesActive; // list of nodes in active-only ASystem lists
-    AList* systemNodesEither; // list of nodes in normal ASystem.entities lists
-    ABitfield* componentBits; // each component's bit is set
-    unsigned lastActive; // frame when a_entity_activeSet was last called
-    int references; // if >0, then the entity lingers in the removed limbo list
-    int muteCount; // if >0, then the entity isn't picked up by any systems
-    AEntityFlags flags; // various properties
-    AComponentInstance* componentsTable[];
-};
-
 extern void a_entity__free(AEntity* Entity);
 
-extern void a_entity__removeFromAllSystems(AEntity* Entity);
-extern void a_entity__removeFromActiveSystems(AEntity* Entity);
+extern const ATemplate* a_entity__templateGet(const AEntity* Entity);
+extern int a_entity__refGet(const AEntity* Entity);
 
-extern bool a_entity__isMatchedToSystems(const AEntity* Entity);
+extern const AList* a_entity__ecsListGet(const AEntity* Entity);
+extern void a_entity__ecsListAdd(AEntity* Entity, AList* List);
+extern void a_entity__ecsListMove(AEntity* Entity, AList* List);
+
+extern void a_entity__collectionListAdd(AEntity* Entity, AList* List);
+
+extern void a_entity__systemMatch(AEntity* Entity, ASystem* System);
+extern bool a_entity__systemsIsMatchedTo(const AEntity* Entity);
+
+extern void a_entity__systemsAddTo(AEntity* Entity);
+
+extern void a_entity__systemsRemoveFromAll(AEntity* Entity);
+extern void a_entity__systemsRemoveFromActive(AEntity* Entity);

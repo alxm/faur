@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 Alex Margarit <alex@alxm.org>
+    Copyright 2016-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -22,13 +22,11 @@
 
 typedef struct AEntity AEntity;
 
-extern AEntity* a_entity_new(const char* Id, void* Context);
-extern AEntity* a_entity_newEx(const char* Template, const void* ComponentInitContext, void* Context);
+extern AEntity* a_entity_new(const char* Template);
 
 extern void a_entity_debugSet(AEntity* Entity, bool DebugOn);
 
 extern const char* a_entity_idGet(const AEntity* Entity);
-extern void* a_entity_contextGet(const AEntity* Entity);
 
 extern AEntity* a_entity_parentGet(const AEntity* Entity);
 extern void a_entity_parentSet(AEntity* Entity, AEntity* Parent);
@@ -44,10 +42,10 @@ extern bool a_entity_activeGet(const AEntity* Entity);
 extern void a_entity_activeSet(AEntity* Entity);
 extern void a_entity_activeSetPermanent(AEntity* Entity);
 
-extern void* a_entity_componentAdd(AEntity* Entity, int Component);
-extern bool a_entity_componentHas(const AEntity* Entity, int Component);
-extern void* a_entity_componentGet(const AEntity* Entity, int Component);
-extern void* a_entity_componentReq(const AEntity* Entity, int Component);
+extern void* a_entity_componentAdd(AEntity* Entity, int ComponentIndex);
+extern bool a_entity_componentHas(const AEntity* Entity, int ComponentIndex);
+extern void* a_entity_componentGet(const AEntity* Entity, int ComponentIndex);
+extern void* a_entity_componentReq(const AEntity* Entity, int ComponentIndex);
 
 extern bool a_entity_muteGet(const AEntity* Entity);
 extern void a_entity_muteInc(AEntity* Entity);

@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 Alex Margarit <alex@alxm.org>
+    Copyright 2016-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -24,80 +24,69 @@
 #include "a2x_pack_main.v.h"
 #include "a2x_pack_mem.v.h"
 
-unsigned a_system__tableLen;
-static ASystem* g_systemsTable;
+struct ASystem {
+    ASystemHandler* handler;
+    ASystemSort* compare;
+    ABitfield* componentBits; // IDs of components that this system works on
+    AList* entities; // entities currently picked up by this system
+    bool onlyActiveEntities; // skip entities that are not active
+};
 
-void a_system__init(unsigned NumSystems)
-{
-    a_system__tableLen = NumSystems;
-    g_systemsTable = a_mem_malloc(NumSystems * sizeof(ASystem));
-
-    while(NumSystems--) {
-        g_systemsTable[NumSystems].entities = NULL;
-    }
-}
+static ASystem g_systems[A_CONFIG_ECS_SYS_NUM];
 
 void a_system__uninit(void)
 {
-    for(unsigned s = a_system__tableLen; s--; ) {
-        a_list_free(g_systemsTable[s].entities);
-        a_bitfield_free(g_systemsTable[s].componentBits);
+    for(unsigned s = A_CONFIG_ECS_SYS_NUM; s--; ) {
+        a_list_free(g_systems[s].entities);
+        a_bitfield_free(g_systems[s].componentBits);
     }
-
-    free(g_systemsTable);
 }
 
-ASystem* a_system__get(int System, const char* CallerFunction)
+ASystem* a_system__get(int SystemIndex, const char* CallerFunction)
 {
     #if A_CONFIG_BUILD_DEBUG
-        if(g_systemsTable == NULL) {
-            A__FATAL("%s: Call a_ecs_init first", CallerFunction);
+        if(SystemIndex < 0 || SystemIndex >= A_CONFIG_ECS_SYS_NUM) {
+            A__FATAL("%s: Unknown system %d", CallerFunction, SystemIndex);
         }
 
-        if(System < 0 || System >= (int)a_system__tableLen) {
-            A__FATAL("%s: Unknown system %d", CallerFunction, System);
-        }
-
-        if(g_systemsTable[System].entities == NULL) {
-            A__FATAL("%s: Uninitialized system %d", CallerFunction, System);
+        if(g_systems[SystemIndex].entities == NULL) {
+            A__FATAL(
+                "%s: Uninitialized system %d", CallerFunction, SystemIndex);
         }
     #else
         A_UNUSED(CallerFunction);
     #endif
 
-    return &g_systemsTable[System];
+    return &g_systems[SystemIndex];
 }
 
-void a_system_new(int Index, ASystemHandler* Handler, ASystemSort* Compare, bool OnlyActiveEntities)
+void a_system_new(int SystemIndex, ASystemHandler* Handler, ASystemSort* Compare, bool OnlyActiveEntities)
 {
-    if(g_systemsTable == NULL) {
-        A__FATAL("a_system_new(%d): Call a_ecs_init first", Index);
-    }
+    #if A_CONFIG_BUILD_DEBUG
+        if(g_systems[SystemIndex].entities != NULL) {
+            A__FATAL("a_system_new(%d): Already declared", SystemIndex);
+        }
+    #endif
 
-    if(g_systemsTable[Index].entities != NULL) {
-        A__FATAL("a_system_new(%d): Already declared", Index);
-    }
+    ASystem* system = &g_systems[SystemIndex];
 
-    ASystem* s = &g_systemsTable[Index];
-
-    s->handler = Handler;
-    s->compare = Compare;
-    s->entities = a_list_new();
-    s->componentBits = a_bitfield_new(a_component__tableLen);
-    s->onlyActiveEntities = OnlyActiveEntities;
+    system->handler = Handler;
+    system->compare = Compare;
+    system->entities = a_list_new();
+    system->componentBits = a_bitfield_new(A_CONFIG_ECS_COM_NUM);
+    system->onlyActiveEntities = OnlyActiveEntities;
 }
 
-void a_system_add(int System, int Component)
+void a_system_add(int SystemIndex, int ComponentIndex)
 {
-    ASystem* s = a_system__get(System, __func__);
-    const AComponent* c = a_component__get(Component, __func__);
+    ASystem* system = a_system__get(SystemIndex, __func__);
 
-    a_bitfield_set(s->componentBits, c->bit);
+    a_bitfield_set(system->componentBits, (unsigned)ComponentIndex);
 }
 
-void a_system_run(int System)
+void a_system_run(int SystemIndex)
 {
-    ASystem* system = a_system__get(System, __func__);
+    ASystem* system = a_system__get(SystemIndex, __func__);
 
     if(system->compare) {
         a_list_sort(system->entities, (AListCompare*)system->compare);
@@ -108,7 +97,7 @@ void a_system_run(int System)
             if(a_entity_activeGet(entity)) {
                 system->handler(entity);
             } else {
-                a_entity__removeFromActiveSystems(entity);
+                a_entity__systemsRemoveFromActive(entity);
             }
         }
     } else {
@@ -118,4 +107,19 @@ void a_system_run(int System)
     }
 
     a_ecs__flushEntitiesFromSystems();
+}
+
+AListNode* a_system__entityAdd(const ASystem* System, AEntity* Entity)
+{
+    return a_list_addLast(System->entities, Entity);
+}
+
+const ABitfield* a_system__componentBitsGet(const ASystem* System)
+{
+    return System->componentBits;
+}
+
+bool a_system__isActiveOnly(const ASystem* System)
+{
+    return System->onlyActiveEntities;
 }

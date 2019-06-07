@@ -31,7 +31,6 @@
 #define A_STRINGIFY(X) A__STRINGIFY_DO_NOT_CALL(X)
 
 typedef void AFree(void* Self);
-typedef void AInit(void* Self);
 
 typedef volatile int AEvent;
 

@@ -82,7 +82,7 @@ void c_{name}_valueSet({ctype}* {paramVar}, int Value)
 typedef struct {ctype} {ctype};
 
 extern const size_t c_{name}_size;
-extern AInit c_{name}_init;
+extern AComponentInit c_{name}_init;
 extern AFree c_{name}_free;
 
 extern int c_{name}_valueGet(const {ctype}* {paramVar});
