@@ -36,6 +36,7 @@ struct ATimer {
     unsigned period;
     unsigned start;
     unsigned diff;
+    unsigned expiredCount;
     AListNode* runningListNode;
 };
 
@@ -98,6 +99,7 @@ void a_timer__tick(void)
 
         if(t->diff >= t->period) {
             A_FLAG_SET(t->flags, A_TIMER__EXPIRED);
+            t->expiredCount++;
 
             if(A_FLAG_TEST_ANY(t->flags, A_TIMER__REPEAT)) {
                 if(t->period > 0) {
@@ -179,9 +181,11 @@ void a_timer_periodSet(ATimer* Timer, unsigned Period)
     }
 
     Timer->period = Period;
+    Timer->expiredCount = 0;
 
     if(Period == 0 && A_FLAG_TEST_ANY(Timer->flags, A_TIMER__RUNNING)) {
         A_FLAG_SET(Timer->flags, A_TIMER__EXPIRED);
+        Timer->expiredCount++;
     }
 }
 
@@ -189,11 +193,13 @@ void a_timer_start(ATimer* Timer)
 {
     Timer->start = getNow(Timer);
     Timer->diff = 0;
+    Timer->expiredCount = 0;
 
     A_FLAG_SET(Timer->flags, A_TIMER__RUNNING);
 
     if(Timer->period == 0) {
         A_FLAG_SET(Timer->flags, A_TIMER__EXPIRED);
+        Timer->expiredCount++;
     } else {
         A_FLAG_CLEAR(Timer->flags, A_TIMER__EXPIRED);
     }
@@ -223,6 +229,11 @@ bool a_timer_isRunning(const ATimer* Timer)
 bool a_timer_expiredGet(const ATimer* Timer)
 {
     return A_FLAG_TEST_ANY(Timer->flags, A_TIMER__EXPIRED);
+}
+
+unsigned a_timer_expiredGetCount(const ATimer* Timer)
+{
+    return Timer->expiredCount;
 }
 
 void a_timer_expiredClear(ATimer* Timer)
