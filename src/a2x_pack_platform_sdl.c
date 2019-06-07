@@ -74,7 +74,7 @@ void a_platform_api__timeMsWait(uint32_t Ms)
 
     #if A_CONFIG_SYSTEM_GP2X // too inaccurate
         if(Ms < 10) {
-            a_time_msSpin(Ms);
+            a_time_spinMs(Ms);
             return;
         }
     #endif

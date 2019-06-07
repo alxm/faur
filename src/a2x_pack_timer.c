@@ -49,7 +49,7 @@ static AList* g_runningTimers; // list of ATimer
 
 static inline void setNow(void)
 {
-    g_now.ms = a_time_msGet();
+    g_now.ms = a_time_getMs();
     g_now.ticks = a_fps_ticksGet();
 }
 

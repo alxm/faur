@@ -91,7 +91,7 @@ void a_fps__reset(void)
     g_history.drawFrameMsSum = g_history.len * 1000 / A_CONFIG_FPS_RATE_DRAW;
     g_history.drawFrameMsMinSum = g_history.drawFrameMsSum;
 
-    g_run.lastFrameMs = a_time_msGet();
+    g_run.lastFrameMs = a_time_getMs();
     g_run.tickCreditMs = g_settings.tickFrameMs;
 }
 
@@ -109,7 +109,7 @@ bool a_fps__tick(void)
 
 void a_fps__frame(void)
 {
-    uint32_t nowMs = a_time_msGet();
+    uint32_t nowMs = a_time_getMs();
     uint32_t elapsedMs = nowMs - g_run.lastFrameMs;
 
     if(elapsedMs > 0) {
@@ -121,9 +121,9 @@ void a_fps__frame(void)
 
     if(!a_platform_api__screenVsyncGet()) {
         while(elapsedMs < g_settings.drawFrameMs) {
-            a_time_msWait(g_settings.drawFrameMs - elapsedMs);
+            a_time_waitMs(g_settings.drawFrameMs - elapsedMs);
 
-            nowMs = a_time_msGet();
+            nowMs = a_time_getMs();
             elapsedMs = nowMs - g_run.lastFrameMs;
         }
     }
