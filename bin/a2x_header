@@ -90,4 +90,4 @@ class HeaderTool(Tool):
         self.writefile(umbrella_header, out)
 
 if __name__ == '__main__':
-    HeaderTool('SourceDir Extension UmbrellaHeader').run()
+    HeaderTool('SourceDir Extension UmbrellaHeader').main()

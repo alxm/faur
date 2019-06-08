@@ -145,4 +145,4 @@ sdk.pandora.utils = sdk_utils
         self.writefile(config_write, out)
 
 if __name__ == '__main__':
-    SdkConfigTool('UserConfig [GeneratedConfig]').run()
+    SdkConfigTool('UserConfig [GeneratedConfig]').main()

@@ -1,5 +1,5 @@
 """
-    Copyright 2016-2017 Alex Margarit <alex@alxm.org>
+    Copyright 2016-2017, 2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -37,39 +37,42 @@ class Color:
     White = '1;37'
 
 class Output:
-    def __init__(self, quiet):
+    def __init__(self, name, quiet):
+        self.name = name
         self.quiet = quiet
 
-    def __colored(self, text, color, newline = False):
-        print('\033[{}m{}\033[0m'.format(color, text),
-              end = '\n' if newline else '')
+    def __colored(self, text, color):
+        print('\033[{}m{}\033[0m'.format(color, text), end = '')
 
-    def colored(self, text, color):
-        if not self.quiet:
-            self.__colored(text, color)
-
-    def coloredln(self, text, color):
-        if not self.quiet:
-            self.__colored(text, color, True)
+    def __title(self):
+        self.__colored('[', Color.White)
+        self.__colored('a', Color.LightBlue)
+        self.__colored('2', Color.LightGreen)
+        self.__colored('x', Color.Yellow)
+        self.__colored('{}]'.format(self.name[3 : ]), Color.White)
 
     def note(self, text):
         if not self.quiet:
-            self.__colored('[ Note ] ', Color.LightGreen)
+            self.__title()
+            self.__colored('[Note] ', Color.LightGreen)
             print(text)
 
     def info(self, text):
         if not self.quiet:
-            self.__colored('[ Info ] ', Color.LightBlue)
+            self.__title()
+            self.__colored('[Info] ', Color.LightBlue)
             print(text)
 
     def error(self, text):
         if not self.quiet:
-            self.__colored('[ Error ] ', Color.LightRed)
+            self.__title()
+            self.__colored('[Error] ', Color.LightRed)
             print(text)
 
         sys.exit(1)
 
     def shell(self, text):
         if not self.quiet:
-            self.__colored('[ Shell ] ', Color.LightPurple)
+            self.__title()
+            self.__colored('[Shell] ', Color.LightPurple)
             print(text)

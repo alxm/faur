@@ -45,4 +45,4 @@ class TagsTool(Tool):
         self.geany_tags(cflags, header_file)
 
 if __name__ == '__main__':
-    TagsTool('[CFLAGS] [HeaderFile]').run()
+    TagsTool('[CFLAGS] [HeaderFile]').main()

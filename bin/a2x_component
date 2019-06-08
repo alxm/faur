@@ -92,4 +92,4 @@ extern void c_{name}_valueSet({ctype}* {paramVar}, int Value);
            paramVar=comp_name))
 
 if __name__ == '__main__':
-    ComponentTool('ComponentName').run()
+    ComponentTool('ComponentName').main()

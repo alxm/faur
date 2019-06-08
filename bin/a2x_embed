@@ -55,4 +55,4 @@ void a__embed_application(void)
 """.format(includes, embed_calls))
 
 if __name__ == '__main__':
-    EmbedTool('file.c GenDir CVarPrefix').run()
+    EmbedTool('file.c GenDir CVarPrefix').main()

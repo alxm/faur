@@ -43,4 +43,4 @@ class EmbedFilesTool(Tool):
         print(' '.join(files))
 
 if __name__ == '__main__':
-    EmbedFilesTool('RootDir').run()
+    EmbedFilesTool('RootDir').main()

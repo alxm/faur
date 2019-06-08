@@ -181,4 +181,4 @@ A_STATE(drawBox)
         self.output.note('cd {} && make -j run'.format(dir_mke.path))
 
 if __name__ == '__main__':
-    NewTool('ProjectName').run()
+    NewTool('ProjectName').main()

@@ -1,5 +1,5 @@
 """
-    Copyright 2016-2018 Alex Margarit <alex@alxm.org>
+    Copyright 2016-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -34,7 +34,7 @@ class Tool:
             args = args[1 : ]
 
         self.name = os.path.basename(sys.argv[0])
-        self.output = Output(quiet)
+        self.output = Output(self.name, quiet)
         self.arg_names = arg_names.split()
         self.arg_values = args
         self.arg_db = {}
@@ -71,16 +71,6 @@ class Tool:
         elif not os.path.isdir(self.dir_cfg):
             self.output.error('{} is not a dir'.format(self.dir_cfg))
 
-    def title(self):
-        self.output.colored('a', Color.LightBlue)
-        self.output.colored('2', Color.LightGreen)
-        self.output.colored('x', Color.Yellow)
-        self.output.colored('{} '.format(self.name[3 : ]), Color.White)
-        self.output.coloredln(' '.join(self.arg_values), Color.LightGray)
-
-    def done(self):
-        self.output.coloredln('[ Done ]', Color.LightGreen)
-
     def usage(self):
         message = 'Usage: {}'.format(self.name)
 
@@ -100,11 +90,6 @@ class Tool:
 
     def main(self):
         self.output.error('{} does not implement main'.format(self.name))
-
-    def run(self):
-        self.title()
-        self.main()
-        self.done()
 
     def writefile(self, name, contents):
         self.output.info('Writing file {}'.format(name))

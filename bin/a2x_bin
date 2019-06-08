@@ -82,4 +82,4 @@ static const struct {{
             data = bin_data))
 
 if __name__ == '__main__':
-    BinTool('File.bin File.h OriginalPath CVarPrefix').run()
+    BinTool('File.bin File.h OriginalPath CVarPrefix').main()

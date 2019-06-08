@@ -59,4 +59,4 @@ class EnumTool(Tool):
         print(-1)
 
 if __name__ == '__main__':
-    EnumTool('File.h EnumValue').run()
+    EnumTool('File.h EnumValue').main()

@@ -58,4 +58,4 @@ class SrcFilesTool(Tool):
         print(' '.join(self.scan_files(self.source_dir)))
 
 if __name__ == '__main__':
-    SrcFilesTool('RootSourceDir GoodExts BadExts').run()
+    SrcFilesTool('RootSourceDir GoodExts BadExts').main()

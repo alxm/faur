@@ -126,4 +126,4 @@ extern void a_{1}__uninit(void);
 """.format(license_header, pack_name))
 
 if __name__ == '__main__':
-    PackTool('PackName').run()
+    PackTool('PackName').main()
