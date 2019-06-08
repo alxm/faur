@@ -42,19 +42,14 @@ A_CONFIG_DIR_SCREENSHOTS ?= screenshots
 A_CONFIG_DIR_SRC ?= src
 
 #
-# Embedded file paths
-#
-#   A_CONFIG_EMBED_PATHS - Root-relative space-separated file and dir paths
-#   A_CONFIG_EMBED_PATHS_EMSCRIPTEN - Same as above, but using Emscripten
-#
-A_CONFIG_EMBED_PATHS ?=
-A_CONFIG_EMBED_PATHS_EMSCRIPTEN ?=
-
-#
 # File paths
 #
+#   A_CONFIG_PATH_EMBED - Root-relative space-separated file and dir paths
+#   A_CONFIG_PATH_EMBED_EMSCRIPTEN - Same as above, but using Emscripten
 #   A_CONFIG_PATH_STORAGE_PREFIX - IDBFS mount point on Emscripten targets
 #
+A_CONFIG_PATH_EMBED ?=
+A_CONFIG_PATH_EMBED_EMSCRIPTEN ?=
 A_CONFIG_PATH_STORAGE_PREFIX ?= ./
 
 #
