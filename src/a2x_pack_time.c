@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2018 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016, 2018-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -20,22 +20,22 @@
 
 #include "a2x_pack_platform.v.h"
 
-uint32_t a_time_msGet(void)
+uint32_t a_time_getMs(void)
 {
     return a_platform_api__timeMsGet();
 }
 
-void a_time_msWait(uint32_t Ms)
+void a_time_waitMs(uint32_t Ms)
 {
     a_platform_api__timeMsWait(Ms);
 }
 
-void a_time_secWait(uint32_t Sec)
+void a_time_waitSec(uint32_t Sec)
 {
     a_platform_api__timeMsWait(Sec * 1000);
 }
 
-void a_time_msSpin(uint32_t Ms)
+void a_time_spinMs(uint32_t Ms)
 {
     const uint32_t start = a_platform_api__timeMsGet();
 
@@ -44,7 +44,7 @@ void a_time_msSpin(uint32_t Ms)
     }
 }
 
-void a_time_secSpin(uint32_t Sec)
+void a_time_spinSec(uint32_t Sec)
 {
-    a_time_msSpin(Sec * 1000);
+    a_time_spinMs(Sec * 1000);
 }

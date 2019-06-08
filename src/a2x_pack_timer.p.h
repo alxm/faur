@@ -1,5 +1,5 @@
 /*
-    Copyright 2011, 2016-2018 Alex Margarit <alex@alxm.org>
+    Copyright 2011, 2016-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -45,4 +45,5 @@ extern void a_timer_stop(ATimer* Timer);
 extern bool a_timer_isRunning(const ATimer* Timer);
 
 extern bool a_timer_expiredGet(const ATimer* Timer);
+extern unsigned a_timer_expiredGetCount(const ATimer* Timer);
 extern void a_timer_expiredClear(ATimer* Timer);

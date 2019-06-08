@@ -62,7 +62,7 @@ static void newFade(AFadeOpId Op, unsigned DurationMs)
     g_fade.op = Op;
     g_fade.angle = 0;
     g_fade.angleInc = A_DEG_090_FIX
-                        / a_math_maxu(a_time_msToTicks(DurationMs), 1);
+                        / a_math_maxu(a_time_ticksFromMs(DurationMs), 1);
 }
 
 void a_fade_startColorTo(unsigned DurationMs)
