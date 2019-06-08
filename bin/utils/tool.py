@@ -121,7 +121,7 @@ class Tool:
 
         if not self.output.quiet:
             for line in output.splitlines():
-                print('    {}'.format(line))
+                self.output.shell('    {}'.format(line))
 
         if status != 0:
             sys.exit(status)
