@@ -18,7 +18,7 @@
 
 #include "a2x_pack_platform_sdl_sound.v.h"
 
-#if A_CONFIG_LIB_SDL
+#if A_CONFIG_SOUND_ENABLED && A_CONFIG_LIB_SDL
 #if A_CONFIG_LIB_SDL == 1
     #include <SDL/SDL.h>
     #include <SDL/SDL_mixer.h>
@@ -265,4 +265,4 @@ int a_platform_api__soundSampleChannelGet(void)
 
     return g_currentSampleChannel++ % g_numSampleChannelsReserved;
 }
-#endif // A_CONFIG_LIB_SDL
+#endif // A_CONFIG_SOUND_ENABLED && A_CONFIG_LIB_SDL

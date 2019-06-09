@@ -84,35 +84,6 @@ A_CONFIG_INPUT_MOUSE_CURSOR ?= 1
 A_CONFIG_INPUT_MOUSE_TRACK ?= 0
 
 #
-# Libraries
-#
-#   A_CONFIG_LIB_RENDER - Possible values: SOFTWARE, SDL
-#   A_CONFIG_LIB_SDL - 1 or 2 if using SDL
-#   A_CONFIG_LIB_SDL_CONFIG - Path to sdl-config host binary
-#   A_CONFIG_LIB_SDL_GAMEPADMAP - Bin-relative path to SDL2 gamepad mappings
-#   A_CONFIG_LIB_SDL_TIME - Whether to use the SDL timer
-#
-A_CONFIG_LIB_SDL ?= 0
-A_CONFIG_LIB_SDL_GAMEPADMAP ?= gamecontrollerdb.txt
-A_CONFIG_LIB_SDL_TIME ?= 0
-
-ifeq ($(A_CONFIG_LIB_SDL), 2)
-    A_CONFIG_LIB_RENDER ?= SDL
-else
-    A_CONFIG_LIB_RENDER ?= SOFTWARE
-endif
-
-ifdef A_CONFIG_LIB_SDL_CONFIG
-    A_CONFIG_BUILD_CFLAGS += $(shell $(A_CONFIG_LIB_SDL_CONFIG) --cflags)
-
-    ifeq ($(A_CONFIG_LIB_SDL), 1)
-        A_CONFIG_BUILD_LIBS += $(shell $(A_CONFIG_LIB_SDL_CONFIG) --libs) -lSDL_mixer
-    else ifeq ($(A_CONFIG_LIB_SDL), 2)
-        A_CONFIG_BUILD_LIBS += $(shell $(A_CONFIG_LIB_SDL_CONFIG) --libs) -lSDL2_mixer
-    endif
-endif
-
-#
 # Make
 #
 #   A_CONFIG_MAKE_CLEAN - Targets to run before the default clean target
@@ -199,6 +170,7 @@ A_CONFIG_SCREEN_ZOOM ?= 1
 #
 # Sound
 #
+A_CONFIG_SOUND_ENABLED ?= 1
 A_CONFIG_SOUND_MUTE ?= 0
 A_CONFIG_SOUND_SAMPLE_CHANNELS_TOTAL ?= 64
 A_CONFIG_SOUND_SAMPLE_CHANNELS_RESERVED ?= 32
@@ -236,6 +208,43 @@ A_CONFIG_SYSTEM_GP2X_MHZ ?= 0
 A_CONFIG_TRAIT_DESKTOP ?= 0
 A_CONFIG_TRAIT_KEYBOARD ?= 0
 A_CONFIG_TRAIT_NOSLEEP ?= 0
+
+#
+# Libraries
+#
+#   A_CONFIG_LIB_RENDER - Possible values: SOFTWARE, SDL
+#   A_CONFIG_LIB_SDL - 1 or 2 if using SDL
+#   A_CONFIG_LIB_SDL_CONFIG - Path to sdl-config host binary
+#   A_CONFIG_LIB_SDL_GAMEPADMAP - Bin-relative path to SDL2 gamepad mappings
+#   A_CONFIG_LIB_SDL_TIME - Whether to use the SDL timer
+#
+A_CONFIG_LIB_SDL ?= 0
+A_CONFIG_LIB_SDL_GAMEPADMAP ?= gamecontrollerdb.txt
+A_CONFIG_LIB_SDL_TIME ?= 0
+
+ifeq ($(A_CONFIG_LIB_SDL), 2)
+    A_CONFIG_LIB_RENDER ?= SDL
+else
+    A_CONFIG_LIB_RENDER ?= SOFTWARE
+endif
+
+ifdef A_CONFIG_LIB_SDL_CONFIG
+    A_CONFIG_BUILD_CFLAGS += $(shell $(A_CONFIG_LIB_SDL_CONFIG) --cflags)
+
+    ifeq ($(A_CONFIG_LIB_SDL), 1)
+        A_CONFIG_BUILD_LIBS += $(shell $(A_CONFIG_LIB_SDL_CONFIG) --libs)
+
+        ifeq ($(A_CONFIG_SOUND_ENABLED), 1)
+            A_CONFIG_BUILD_LIBS += -lSDL_mixer
+        endif
+    else ifeq ($(A_CONFIG_LIB_SDL), 2)
+        A_CONFIG_BUILD_LIBS += $(shell $(A_CONFIG_LIB_SDL_CONFIG) --libs)
+
+        ifeq ($(A_CONFIG_SOUND_ENABLED), 1)
+            A_CONFIG_BUILD_LIBS += -lSDL2_mixer
+        endif
+    endif
+endif
 
 #
 # C defines
@@ -286,6 +295,7 @@ A_CONFIG_BUILD_CFLAGS += \
     -DA_CONFIG_SCREEN_WIDTH=$(A_CONFIG_SCREEN_WIDTH) \
     -DA_CONFIG_SCREEN_WIZ_FIX=$(A_CONFIG_SCREEN_WIZ_FIX) \
     -DA_CONFIG_SCREEN_ZOOM=$(A_CONFIG_SCREEN_ZOOM) \
+    -DA_CONFIG_SOUND_ENABLED=$(A_CONFIG_SOUND_ENABLED) \
     -DA_CONFIG_SOUND_MUTE=$(A_CONFIG_SOUND_MUTE) \
     -DA_CONFIG_SOUND_SAMPLE_CHANNELS_RESERVED=$(A_CONFIG_SOUND_SAMPLE_CHANNELS_RESERVED) \
     -DA_CONFIG_SOUND_SAMPLE_CHANNELS_TOTAL=$(A_CONFIG_SOUND_SAMPLE_CHANNELS_TOTAL) \
