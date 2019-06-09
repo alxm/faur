@@ -10,7 +10,7 @@ A2X_EMBED_PATHS := \
     media/fontgrid_keyed.png \
 
 A2X_FILES_EMBED_BIN := $(shell $(A2X_PATH)/bin/a2x_embedfiles -q $(A2X_DIR_ROOT) $(A2X_EMBED_PATHS))
-A2X_FILES_SRC_GEN_H := $(addprefix $(A2X_DIR_GEN)/, $(A2X_FILES_EMBED_BIN:=.h))
+A2X_FILES_SRC_GEN_H := $(A2X_FILES_EMBED_BIN:%=$(A2X_DIR_GEN)/%.h)
 
 A2X_FILE_PUBLIC_A2X_HEADER := $(A2X_DIR_OBJ)/a2x.h
 A2X_FILE_SYSTEM_INCLUDES := $(A2X_DIR_SRC)/a2x_system_includes.h
@@ -22,7 +22,7 @@ A2X_FILES_SRC_C_INC := $(notdir $(wildcard $(A2X_DIR_SRC)/a2x_*.inc.c))
 A2X_FILES_SRC_C_ALL := $(notdir $(wildcard $(A2X_DIR_SRC)/a2x_*.c))
 A2X_FILES_SRC_C := $(filter-out $(A2X_FILES_SRC_C_INC), $(A2X_FILES_SRC_C_ALL))
 
-A2X_FILES_OBJ := $(addprefix $(A2X_DIR_OBJ)/, $(A2X_FILES_SRC_C:=.o))
+A2X_FILES_OBJ := $(A2X_FILES_SRC_C:%=$(A2X_DIR_OBJ)/%.o)
 
 A2X_INFO_COMPILE_TIME := $(shell date "+%Y-%m-%d\ %H:%M:%S")
 A2X_INFO_GIT_HASH := $(shell cd $(A2X_PATH) && git rev-parse --verify HEAD)
