@@ -20,8 +20,7 @@
 
 #include "a2x_system_includes.h"
 
-#define A_MAIN void a_main(void)
-extern A_MAIN;
+extern void a_main(void);
 
 extern int a_main_argsNumGet(void);
 extern const char* a_main_argsGet(int ArgNum);

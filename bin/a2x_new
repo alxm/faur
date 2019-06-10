@@ -90,16 +90,16 @@ enum {{
     STATE_NUM
 }};
 
-A_STATE(drawBox);
+AStateHandler s_drawBox;
 
-A_MAIN
+void a_main(void)
 {{
-    a_state_new(STATE_DRAWBOX, drawBox, "Draw Box");
+    a_state_new(STATE_DRAWBOX, s_drawBox, "Draw Box");
 
     a_state_push(STATE_DRAWBOX);
 }}
 
-A_STATE(drawBox)
+void s_drawBox(void)
 {{
     static struct {{
         int x, y;
