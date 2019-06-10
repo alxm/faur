@@ -45,16 +45,16 @@ enum {
     STATE_NUM
 };
 
-A_STATE(drawBox);
+AStateHandler s_drawBox;
 
-A_MAIN
+void a_main(void)
 {
-    a_state_new(STATE_DRAWBOX, drawBox, "Draw Box");
+    a_state_new(STATE_DRAWBOX, s_drawBox, "Draw Box");
 
     a_state_push(STATE_DRAWBOX);
 }
 
-A_STATE(drawBox)
+void s_drawBox(void)
 {
     static struct {
         int x, y;
@@ -132,7 +132,7 @@ A_CONFIG_APP_VERSION_MAJOR := 1
 A_CONFIG_APP_VERSION_MINOR := 0
 A_CONFIG_APP_VERSION_MICRO := 0
 
-A_CONFIG_STATE_ENUM := main.c STATE_NUM
+A_CONFIG_STATE_NUM := main.c STATE_NUM
 
 include $(A2X_PATH)/make/dev
 ```

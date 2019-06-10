@@ -51,14 +51,6 @@ static struct {
 
 void a_fps__init(void)
 {
-    #if A_CONFIG_FPS_RATE_TICK < 1
-        #error A_CONFIG_FPS_RATE_TICK < 1
-    #elif A_CONFIG_FPS_RATE_DRAW < 1
-        #error A_CONFIG_FPS_RATE_DRAW < 1
-    #elif A_CONFIG_FPS_RATE_TICK < A_CONFIG_FPS_RATE_DRAW
-        #error A_CONFIG_FPS_RATE_TICK < A_CONFIG_FPS_RATE_DRAW
-    #endif
-
     g_settings.tickFrameMs = 1000 / A_CONFIG_FPS_RATE_TICK;
     g_settings.drawFrameMs = 1000 / A_CONFIG_FPS_RATE_DRAW;
 

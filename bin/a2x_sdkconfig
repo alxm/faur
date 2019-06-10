@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-    Copyright 2016-2018 Alex Margarit <alex@alxm.org>
+    Copyright 2016-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -21,7 +21,6 @@
 import os
 import re
 
-from utils.output import Output
 from utils.tool import Tool
 
 class Sdk:
@@ -50,15 +49,16 @@ class Sdk:
     def __str__(self):
         return '\n'.join([
             '{} = {}'.format(self.variables[name][0], self.variables[name][1])
-            for name in self.variables])
+                for name in self.variables])
 
-class SdkConfigTool(Tool):
-    def main(self):
-        config_read = self.get_arg('UserConfig')
-        config_write = self.get_arg('[GeneratedConfig]')
+if __name__ == '__main__':
+    tool = Tool('UserConfig [GeneratedConfig]')
 
-        if not os.path.exists(config_read):
-            self.writefile(config_read, """\
+    config_read = tool.get_arg('UserConfig')
+    config_write = tool.get_arg('[GeneratedConfig]')
+
+    if not os.path.exists(config_read):
+        tool.writefile(config_read, """\
 sdk.mingw32.root = /usr
 sdk.mingw32.arch = i686-w64-mingw32
 
@@ -75,74 +75,72 @@ sdk.pandora.root = /opt/pandora
 sdk.pandora.toolchain = arm-2013.11
 sdk.pandora.utils = sdk_utils
 """)
-        elif not os.path.isfile(config_read):
-            self.output.error('{} is not a file'.format(config_read))
+    elif not os.path.isfile(config_read):
+        tool.output.error('{} is not a file'.format(config_read))
 
-        if config_write == '':
-            return
+    if config_write == '':
+        tool.exit()
 
-        sdks = {}
+    sdks = {}
 
-        def addSdk(Id, Title):
-            sdks[Id] = Sdk(Id, Title)
-            return sdks[Id]
+    def addSdk(Id, Title):
+        sdks[Id] = Sdk(Id, Title)
+        return sdks[Id]
 
-        mingw32 = addSdk('mingw32', 'Mingw32 (Windows 32bit)')
-        mingw32.add_var('root')
-        mingw32.add_var('arch')
+    mingw32 = addSdk('mingw32', 'Mingw32 (Windows 32bit)')
+    mingw32.add_var('root')
+    mingw32.add_var('arch')
 
-        mingw64 = addSdk('mingw64', 'Mingw64 (Windows 64bit)')
-        mingw64.add_var('root')
-        mingw64.add_var('arch')
+    mingw64 = addSdk('mingw64', 'Mingw64 (Windows 64bit)')
+    mingw64.add_var('root')
+    mingw64.add_var('arch')
 
-        caanoo = addSdk('caanoo', 'GPH SDK (Caanoo)')
-        caanoo.add_var('root')
-        caanoo.add_var('toolchain')
+    caanoo = addSdk('caanoo', 'GPH SDK (Caanoo)')
+    caanoo.add_var('root')
+    caanoo.add_var('toolchain')
 
-        open2x = addSdk('open2x', 'Open2x SDK (GP2X, Wiz)')
-        open2x.add_var('root')
-        open2x.add_var('toolchain')
+    open2x = addSdk('open2x', 'Open2x SDK (GP2X, Wiz)')
+    open2x.add_var('root')
+    open2x.add_var('toolchain')
 
-        pandora = addSdk('pandora', 'Pandora SDK (Open Pandora)')
-        pandora.add_var('root')
-        pandora.add_var('toolchain')
-        pandora.add_var('utils')
+    pandora = addSdk('pandora', 'Pandora SDK (Open Pandora)')
+    pandora.add_var('root')
+    pandora.add_var('toolchain')
+    pandora.add_var('utils')
 
-        re_assignment = re.compile('^\s*sdk\.(.*?)\.(.*?)\s*=\s*(.*?)\s*$')
+    re_assignment = re.compile('^\s*sdk\.(.*?)\.(.*?)\s*=\s*(.*?)\s*$')
 
-        for line in self.readtext(config_read).splitlines():
-            assignment = re_assignment.match(line)
+    for line in tool.readtext(config_read).splitlines():
+        assignment = re_assignment.match(line)
 
-            if not assignment:
-                if len(line.strip()) > 0:
-                    self.output.note('Ignoring line: "{}"'.format(line))
+        if not assignment:
+            if len(line.strip()) > 0:
+                tool.output.note('Ignoring line: "{}"'.format(line))
 
-                continue
+            continue
 
-            sdk_name = assignment.group(1)
-            variable = assignment.group(2)
-            value = assignment.group(3)
+        sdk_name = assignment.group(1)
+        variable = assignment.group(2)
+        value = assignment.group(3)
 
-            if sdk_name not in sdks:
-                self.output.note('You can comment out config lines with #')
-                self.output.error('Unknown SDK {} - only aware of {}'
-                    .format(sdk_name, ', '.join(sorted([s for s in sdks]))))
+        if sdk_name not in sdks:
+            tool.output.note('You can comment out config lines with #')
+            tool.output.error('Unknown SDK {} - only aware of {}'
+                .format(sdk_name, ', '.join(sorted([s for s in sdks]))))
 
-            sdk = sdks[sdk_name]
+        sdk = sdks[sdk_name]
 
-            if not sdk.has_var(variable):
-                self.output.note('You can comment out config lines with #')
-                self.output.error('Unknown variable {}.{} - only aware of {}'
-                    .format(sdk_name, variable,
-                    ', '.join(sorted([v for v in sdk.variables]))))
+        if not sdk.has_var(variable):
+            tool.output.note('You can comment out config lines with #')
+            tool.output.error('Unknown variable {}.{} - only aware of {}'
+                .format(sdk_name,
+                        variable,
+                        ', '.join(sorted([v for v in sdk.variables]))))
 
-            sdk.set_var(variable, value)
+        sdk.set_var(variable, value)
 
-            if sdk.is_complete():
-                self.output.note('Processed config for {}'.format(sdk.title))
+        if sdk.is_complete():
+            tool.output.note('Processed config for {}'.format(sdk.title))
 
-        out = '\n'.join([str(sdks[sdk]) for sdk in sdks]) + '\n'
-        self.writefile(config_write, out)
-
-if __name__ == '__main__':
-    SdkConfigTool('UserConfig [GeneratedConfig]').run()
+    out = '\n'.join([str(sdks[sdk]) for sdk in sdks]) + '\n'
+    tool.writefile(config_write, out)

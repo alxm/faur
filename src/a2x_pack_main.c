@@ -113,9 +113,9 @@ int main(int Argc, char* Argv[])
         a_out__error("Cannot register atexit callback");
     }
 
-    a_out__info("A_MAIN start");
+    a_out__info("a_main start");
     a_main();
-    a_out__info("A_MAIN end");
+    a_out__info("a_main end");
 
     a_state__run();
 

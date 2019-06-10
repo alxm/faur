@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-    Copyright 2017-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -23,32 +23,50 @@ import os
 from utils.tool import Tool
 
 if __name__ == '__main__':
-    tool = Tool('SystemName')
+    tool = Tool('StateName')
 
-    sys_name = tool.get_arg('SystemName').lower()
+    state_name = tool.get_arg('StateName').lower()
 
-    sys_c = os.path.join('.', 'system_{}.c'.format(sys_name))
-    sys_h = os.path.join('.', 'system_{}.h'.format(sys_name))
+    state_c = os.path.join('.', 'state_{}.c'.format(state_name))
+    state_h = os.path.join('.', 'state_{}.h'.format(state_name))
 
-    for f in [sys_c, sys_h]:
+    for f in [state_c, state_h]:
         if os.path.exists(f):
             tool.output.error('{} already exists'.format(f))
 
-    tool.writefile(sys_c,
+    tool.writefile(state_c,
 """\
-#include "system_{name}.h"
+#include "state_{name}.h"
 
-void y_{name}(AEntity* Entity)
+void s_{name}(void)
 {{
-    A_UNUSED(Entity);
-}}
-""".format(name = sys_name))
+    A_STATE_INIT
+    {{
+        //
+    }}
 
-    tool.writefile(sys_h,
+    A_STATE_TICK
+    {{
+        //
+    }}
+
+    A_STATE_DRAW
+    {{
+        //
+    }}
+
+    A_STATE_FREE
+    {{
+        //
+    }}
+}}
+""".format(name = state_name))
+
+    tool.writefile(state_h,
 """\
 #pragma once
 
 #include <a2x.h>
 
-extern ASystemHandler y_{name};
-""".format(name = sys_name))
+extern AStateHandler s_{name};
+""".format(name = state_name))

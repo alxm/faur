@@ -1,7 +1,5 @@
-#!/usr/bin/env python3
-
-"""
-    Copyright 2018-2019 Alex Margarit <alex@alxm.org>
+/*
+    Copyright 2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -16,29 +14,8 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-"""
+*/
 
-import os
+#pragma once
 
-from utils.tool import Tool
-
-if __name__ == '__main__':
-    tool = Tool('RootDir')
-
-    files = []
-    startRoot = os.path.abspath(tool.get_arg('RootDir'))
-
-    def scan_file(Root, File):
-        filePath = os.path.join(Root, File)
-        scanned = [os.path.relpath(filePath, start = startRoot)]
-
-        if os.path.isdir(filePath):
-            for f in tool.listdir(filePath):
-                scanned += scan_file(filePath, f)
-
-        return scanned
-
-    for f in tool.get_arg_tail():
-        files += scan_file(startRoot, f)
-
-    print(' '.join(files))
+#include "a2x_pack_platform_no_sound.p.h"

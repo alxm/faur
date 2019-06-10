@@ -20,8 +20,7 @@
 
 #include "a2x_system_includes.h"
 
-#define A_STATE(Name) void Name(void)
-typedef A_STATE(AStateHandler);
+typedef void AStateHandler(void);
 
 extern void a_state_new(int Index, AStateHandler* Handler, const char* Name);
 
