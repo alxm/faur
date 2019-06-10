@@ -75,6 +75,18 @@ A_CONFIG_FPS_CAP_LAG ?= 0
 A_CONFIG_FPS_RATE_TICK ?= 30
 A_CONFIG_FPS_RATE_DRAW ?= $(A_CONFIG_FPS_RATE_TICK)
 
+ifeq ($(shell expr $(A_CONFIG_FPS_RATE_TICK) \< 1), 1)
+    $(error A_CONFIG_FPS_RATE_TICK ($(A_CONFIG_FPS_RATE_TICK)) < 1)
+endif
+
+ifeq ($(shell expr $(A_CONFIG_FPS_RATE_DRAW) \< 1), 1)
+    $(error A_CONFIG_FPS_RATE_DRAW ($(A_CONFIG_FPS_RATE_DRAW)) < 1)
+endif
+
+ifeq ($(shell expr $(A_CONFIG_FPS_RATE_TICK) \< $(A_CONFIG_FPS_RATE_DRAW)), 1)
+    $(error A_CONFIG_FPS_RATE_TICK ($(A_CONFIG_FPS_RATE_TICK)) < A_CONFIG_FPS_RATE_DRAW ($(A_CONFIG_FPS_RATE_DRAW)))
+endif
+
 #
 # Inputs
 #
