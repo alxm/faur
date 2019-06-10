@@ -20,37 +20,35 @@
 
 import os
 
-from utils.output import Output
 from utils.tool import Tool
 
-class SystemTool(Tool):
-    def main(self):
-        sys_name = self.get_arg('SystemName')
-        sys_c = os.path.join('.', 'system_{}.c'.format(sys_name.lower()))
-        sys_h = os.path.join('.', 'system_{}.h'.format(sys_name.lower()))
+if __name__ == '__main__':
+    tool = Tool('SystemName')
 
-        for f in [sys_c, sys_h]:
-            if os.path.exists(f):
-                self.output.error('{} already exists'.format(f))
+    sys_name = tool.get_arg('SystemName').lower()
 
-        self.writefile(sys_c,
+    sys_c = os.path.join('.', 'system_{}.c'.format(sys_name))
+    sys_h = os.path.join('.', 'system_{}.h'.format(sys_name))
+
+    for f in [sys_c, sys_h]:
+        if os.path.exists(f):
+            tool.output.error('{} already exists'.format(f))
+
+    tool.writefile(sys_c,
 """\
 #include "system_{name}.h"
 
-void s_{name}(AEntity* Entity)
+void y_{name}(AEntity* Entity)
 {{
     A_UNUSED(Entity);
 }}
-""".format(name=sys_name.lower()))
+""".format(name = sys_name))
 
-        self.writefile(sys_h,
+    tool.writefile(sys_h,
 """\
 #pragma once
 
 #include <a2x.h>
 
-extern ASystemHandler s_{name};
-""".format(name=sys_name.lower()))
-
-if __name__ == '__main__':
-    SystemTool('SystemName').main()
+extern ASystemHandler y_{name};
+""".format(name = sys_name))

@@ -20,22 +20,23 @@
 
 import os
 
-from utils.output import Output
 from utils.tool import Tool
 
-class ComponentTool(Tool):
-    def main(self):
-        comp_name = self.get_arg('ComponentName')
-        comp_c = os.path.join('.', 'component_{}.c'.format(comp_name.lower()))
-        comp_h = os.path.join('.', 'component_{}.h'.format(comp_name.lower()))
+if __name__ == '__main__':
+    tool = Tool('ComponentName')
 
-        for f in [comp_c, comp_h]:
-            if os.path.exists(f):
-                self.output.error('{} already exists'.format(f))
+    comp_name = tool.get_arg('ComponentName')
 
-        struct_name = 'C{}'.format(comp_name)
+    comp_c = os.path.join('.', 'component_{}.c'.format(comp_name.lower()))
+    comp_h = os.path.join('.', 'component_{}.h'.format(comp_name.lower()))
 
-        self.writefile(comp_c,
+    for f in [comp_c, comp_h]:
+        if os.path.exists(f):
+            tool.output.error('{} already exists'.format(f))
+
+    struct_name = 'C{}'.format(comp_name)
+
+    tool.writefile(comp_c,
 """\
 #include "component_{name}.h"
 
@@ -69,11 +70,11 @@ void c_{name}_valueSet({ctype}* {paramVar}, int Value)
     {paramVar}->value = Value;
 }}
 """.format(ctype=struct_name,
-           name=comp_name.lower(),
-           paramVar=comp_name,
-           localVar=comp_name[0].lower() + comp_name[1 :]))
+       name = comp_name.lower(),
+       paramVar = comp_name,
+       localVar = comp_name[0].lower() + comp_name[1 :]))
 
-        self.writefile(comp_h,
+    tool.writefile(comp_h,
 """\
 #pragma once
 
@@ -87,9 +88,6 @@ extern AFree c_{name}_free;
 
 extern int c_{name}_valueGet(const {ctype}* {paramVar});
 extern void c_{name}_valueSet({ctype}* {paramVar}, int Value);
-""".format(ctype=struct_name,
-           name=comp_name.lower(),
-           paramVar=comp_name))
-
-if __name__ == '__main__':
-    ComponentTool('ComponentName').main()
+""".format(ctype = struct_name,
+           name = comp_name.lower(),
+           paramVar = comp_name))

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-    Copyright 2018 Alex Margarit <alex@alxm.org>
+    Copyright 2018-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -22,25 +22,23 @@ import os
 
 from utils.tool import Tool
 
-class EmbedFilesTool(Tool):
-    def scan_file(self, Root, File):
+if __name__ == '__main__':
+    tool = Tool('RootDir')
+
+    files = []
+    startRoot = os.path.abspath(tool.get_arg('RootDir'))
+
+    def scan_file(Root, File):
         filePath = os.path.join(Root, File)
-        scanned = [os.path.relpath(filePath, start = self.root)]
+        scanned = [os.path.relpath(filePath, start = startRoot)]
 
         if os.path.isdir(filePath):
-            for f in self.listdir(filePath):
-                scanned += self.scan_file(filePath, f)
+            for f in tool.listdir(filePath):
+                scanned += scan_file(filePath, f)
 
         return scanned
 
-    def main(self):
-        files = []
-        self.root = os.path.abspath(self.get_arg('RootDir'))
+    for f in tool.get_arg_tail():
+        files += scan_file(startRoot, f)
 
-        for f in self.get_arg_tail():
-            files += self.scan_file(self.root, f)
-
-        print(' '.join(files))
-
-if __name__ == '__main__':
-    EmbedFilesTool('RootDir').main()
+    print(' '.join(files))

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-    Copyright 2017-2018 Alex Margarit <alex@alxm.org>
+    Copyright 2017-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -22,30 +22,31 @@ import os
 
 from utils.tool import Tool
 
-class EmbedTool(Tool):
-    def main(self):
-        c_file = self.get_arg('file.c')
-        gen_dir = self.get_arg('GenDir')
-        cvar_prefix = self.get_arg('CVarPrefix')
-        h_files = self.get_arg_tail()
+if __name__ == '__main__':
+    tool = Tool('file.c GenDir CVarPrefix')
 
-        includes = ''
-        embed_calls = ''
+    c_file = tool.get_arg('file.c')
+    gen_dir = tool.get_arg('GenDir')
+    cvar_prefix = tool.get_arg('CVarPrefix')
+    h_files = tool.get_arg_tail()
 
-        for h in h_files:
-            includes += '#include "{}"\n'.format(h)
-            no_h = h[: -2]
+    includes = ''
+    embed_calls = ''
 
-            if os.path.isdir(os.path.join(gen_dir, no_h)):
-                embed_calls += """\
+    for h in h_files:
+        includes += '#include "{}"\n'.format(h)
+        no_h = h[: -2]
+
+        if os.path.isdir(os.path.join(gen_dir, no_h)):
+            embed_calls += """\
     a__embed_addDir(&{prefix}{var});
-""".format(prefix = cvar_prefix, var = self.sanitizeFileNameForCVar(no_h))
-            else:
-                embed_calls += """\
+""".format(prefix = cvar_prefix, var = tool.sanitizeFileNameForCVar(no_h))
+        else:
+            embed_calls += """\
     a__embed_addFile(&{prefix}{var});
-""".format(prefix = cvar_prefix, var = self.sanitizeFileNameForCVar(no_h))
+""".format(prefix = cvar_prefix, var = tool.sanitizeFileNameForCVar(no_h))
 
-        self.writefile(c_file,
+    tool.writefile(c_file,
 """\
 #include <a2x.h>
 {}
@@ -53,6 +54,3 @@ void a__embed_application(void)
 {{
 {}}}
 """.format(includes, embed_calls))
-
-if __name__ == '__main__':
-    EmbedTool('file.c GenDir CVarPrefix').main()

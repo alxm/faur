@@ -20,53 +20,53 @@
 
 import os
 
-from utils.output import Output
 from utils.tool import Tool
 
-class NewTool(Tool):
-    def main(self):
-        project_name = self.get_arg('ProjectName').replace(' ', '-')
+class Dir:
+    def __init__(self, Tool, Path):
+        self.tool = Tool
+        self.path = Path
+        self.name = os.path.basename(Path)
 
-        if project_name != os.path.basename(project_name):
-            self.output.error('Project name cannot be a path'.format(project_name))
+        os.mkdir(Path)
 
-        project_path = os.path.abspath(project_name)
+    def add_subdir(self, Name):
+        return Dir(self.tool, os.path.join(self.path, Name))
 
-        if os.path.exists(project_path):
-            self.output.error('{} already exists'.format(project_path))
+    def write_file(self, Name, Content):
+        self.tool.writefile(os.path.join(self.path, Name), Content)
 
-        class Dir:
-            def __init__(self, Tool, Path):
-                self.tool = Tool
-                self.path = Path
-                self.name = os.path.basename(Path)
+if __name__ == '__main__':
+    tool = Tool('ProjectName')
 
-                os.mkdir(Path)
+    project_name = tool.get_arg('ProjectName').replace(' ', '-')
 
-            def add_subdir(self, Name):
-                return Dir(self.tool, os.path.join(self.path, Name))
+    if project_name != os.path.basename(project_name):
+        tool.output.error('Project name cannot be a path'.format(project_name))
 
-            def write_file(self, Name, Content):
-                self.tool.writefile(os.path.join(self.path, Name), Content)
+    project_path = os.path.abspath(project_name)
 
-        dir_root = Dir(self, project_path)
-        dir_ast = dir_root.add_subdir('assets')
-        dir_bin = dir_root.add_subdir('bin')
-        dir_mke = dir_root.add_subdir('make')
-        dir_obj = dir_root.add_subdir('obj')
-        dir_src = dir_root.add_subdir('src')
+    if os.path.exists(project_path):
+        tool.output.error('{} already exists'.format(project_path))
 
-        os.symlink(os.path.join('..', dir_ast.name),
-                   os.path.join(dir_bin.path, dir_ast.name))
+    dir_root = Dir(tool, project_path)
+    dir_ast = dir_root.add_subdir('assets')
+    dir_bin = dir_root.add_subdir('bin')
+    dir_mke = dir_root.add_subdir('make')
+    dir_obj = dir_root.add_subdir('obj')
+    dir_src = dir_root.add_subdir('src')
 
-        author = '<your username>'
+    os.symlink(os.path.join('..', dir_ast.name),
+               os.path.join(dir_bin.path, dir_ast.name))
 
-        for key in ['USER', 'USERNAME', 'LOGNAME']:
-            if key in os.environ:
-                author = os.environ[key]
-                break
+    author = '<your username>'
 
-        dir_mke.write_file('Makefile',
+    for key in ['USER', 'USERNAME', 'LOGNAME']:
+        if key in os.environ:
+            author = os.environ[key]
+            break
+
+    dir_mke.write_file('Makefile',
 """\
 A_CONFIG_APP_AUTHOR := {author}
 A_CONFIG_APP_BIN := {name}.bin
@@ -81,7 +81,7 @@ A_CONFIG_STATE_NUM := main.c STATE_NUM
 include $(A2X_PATH)/make/dev
 """.format(author = author, name = project_name))
 
-        dir_src.write_file('main.c',
+    dir_src.write_file('main.c',
 """\
 #include <a2x.h>
 
@@ -166,19 +166,16 @@ A_STATE(drawBox)
 }}
 """.format())
 
-        dir_root.write_file('.gitignore',
+    dir_root.write_file('.gitignore',
 """\
 /bin/
 /obj/
 """)
 
-        self.shell('cd {} && ' \
-                   'git init && ' \
-                   'git add .gitignore make/Makefile src/main.c'
-            .format(dir_root.path))
+    tool.shell('cd {} && ' \
+               'git init && ' \
+               'git add .gitignore make/Makefile src/main.c'
+        .format(dir_root.path))
 
-        self.output.note('To build and run:')
-        self.output.note('cd {} && make -j run'.format(dir_mke.path))
-
-if __name__ == '__main__':
-    NewTool('ProjectName').main()
+    tool.output.note('To build and run:')
+    tool.output.note('cd {} && make -j run'.format(dir_mke.path))

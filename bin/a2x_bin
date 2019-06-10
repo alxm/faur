@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-    Copyright 2016-2018 Alex Margarit <alex@alxm.org>
+    Copyright 2016-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -20,25 +20,25 @@
 
 import os
 
-from utils.output import Output
 from utils.tool import Tool
 
-class BinTool(Tool):
-    def main(self):
-        bin_file = self.get_arg('File.bin')
-        h_file = self.get_arg('File.h')
-        original_path = self.get_arg('OriginalPath')
-        cvar_prefix = self.get_arg('CVarPrefix')
+if __name__ == '__main__':
+    tool = Tool('File.bin File.h OriginalPath CVarPrefix')
 
-        if os.path.isdir(bin_file):
-            entries = self.listdir(bin_file)
-            bin_data = ''
-            bin_size = len(entries)
+    bin_file = tool.get_arg('File.bin')
+    h_file = tool.get_arg('File.h')
+    original_path = tool.get_arg('OriginalPath')
+    cvar_prefix = tool.get_arg('CVarPrefix')
 
-            for f in entries:
-                bin_data += '\n        "{}",'.format(f)
+    if os.path.isdir(bin_file):
+        entries = tool.listdir(bin_file)
+        bin_data = ''
+        bin_size = len(entries)
 
-            fmt_content = """\
+        for f in entries:
+            bin_data += '\n        "{}",'.format(f)
+
+        fmt_content = """\
 static const struct {{
     const char* path;
     size_t size;
@@ -50,18 +50,18 @@ static const struct {{
     }}
 }};
 """
-        else:
-            bin_bytes = self.readbytes(bin_file)
-            bin_data = ''
-            bin_size = len(bin_bytes)
+    else:
+        bin_bytes = tool.readbytes(bin_file)
+        bin_data = ''
+        bin_size = len(bin_bytes)
 
-            for index, byte in enumerate(bin_bytes):
-                if index % 8 == 0:
-                    bin_data += '\n        '
+        for index, byte in enumerate(bin_bytes):
+            if index % 8 == 0:
+                bin_data += '\n        '
 
-                bin_data += '0x{:0>2x},'.format(byte)
+            bin_data += '0x{:0>2x},'.format(byte)
 
-            fmt_content = """\
+        fmt_content = """\
 static const struct {{
     const char* path;
     size_t size;
@@ -74,12 +74,9 @@ static const struct {{
 }};
 """
 
-        self.writefile(h_file, fmt_content.format(
-            prefix = cvar_prefix,
-            var = self.sanitizeFileNameForCVar(original_path),
-            path = original_path,
-            size = bin_size,
-            data = bin_data))
-
-if __name__ == '__main__':
-    BinTool('File.bin File.h OriginalPath CVarPrefix').main()
+    tool.writefile(h_file, fmt_content.format(
+        prefix = cvar_prefix,
+        var = tool.sanitizeFileNameForCVar(original_path),
+        path = original_path,
+        size = bin_size,
+        data = bin_data))

@@ -20,43 +20,39 @@
 
 import re
 
-from utils.output import Output
 from utils.tool import Tool
 
-class EnumTool(Tool):
-    def main(self):
-        h_file = self.get_arg('File.h')
-        enum_value = self.get_arg('EnumValue')
-
-        contents = self.readtext(h_file)
-        enums = re.findall(
-                    'enum\s*\{\s*(.*?)\s*\}\s*\w*\s*;', contents, re.DOTALL)
-
-        re_assignment = re.compile('^(\w+)\s*=\s*(.*)\s*$')
-        re_noexplicit = re.compile('^(\w+)$')
-
-        for e in enums:
-            value = 0
-            values = re.split('\s*,\s*', e)
-
-            for v in values:
-                m = re_assignment.match(v)
-
-                if m:
-                    value = int(m.group(2))
-                else:
-                    m = re_noexplicit.match(v)
-
-                if m:
-                    name = m.group(1)
-
-                    if name == enum_value:
-                        print(value)
-                        return
-
-                value += 1
-
-        print(-1)
-
 if __name__ == '__main__':
-    EnumTool('File.h EnumValue').main()
+    tool = Tool('File.h EnumValue')
+
+    h_file = tool.get_arg('File.h')
+    enum_value = tool.get_arg('EnumValue')
+
+    contents = tool.readtext(h_file)
+    enums = re.findall('enum\s*\{\s*(.*?)\s*\}\s*\w*\s*;', contents, re.DOTALL)
+
+    re_assignment = re.compile('^(\w+)\s*=\s*(.*)\s*$')
+    re_noexplicit = re.compile('^(\w+)$')
+
+    for e in enums:
+        value = 0
+        values = re.split('\s*,\s*', e)
+
+        for v in values:
+            m = re_assignment.match(v)
+
+            if m:
+                value = int(m.group(2))
+            else:
+                m = re_noexplicit.match(v)
+
+            if m:
+                name = m.group(1)
+
+                if name == enum_value:
+                    print(value)
+                    tool.exit()
+
+            value += 1
+
+    print(-1)

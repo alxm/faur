@@ -20,7 +20,7 @@ import os
 import subprocess
 import sys
 
-from utils.output import Output, Color
+from utils.output import Output
 
 class Tool:
     def __init__(self, arg_names):
@@ -71,6 +71,9 @@ class Tool:
         elif not os.path.isdir(self.dir_cfg):
             self.output.error('{} is not a dir'.format(self.dir_cfg))
 
+    def exit(self):
+        sys.exit(0)
+
     def usage(self):
         message = 'Usage: {}'.format(self.name)
 
@@ -87,9 +90,6 @@ class Tool:
 
     def get_arg_tail(self):
         return self.args_tail
-
-    def main(self):
-        self.output.error('{} does not implement main'.format(self.name))
 
     def writefile(self, name, contents):
         self.output.info('Writing file {}'.format(name))

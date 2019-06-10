@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-    Copyright 2016-2018 Alex Margarit <alex@alxm.org>
+    Copyright 2016-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -21,7 +21,6 @@
 import os
 import time
 
-from utils.output import Output
 from utils.tool import Tool
 
 """
@@ -50,44 +49,45 @@ a2x_pack_sample.c
     <implementations>
 """
 
-class PackTool(Tool):
-    def main(self):
-        pack_name = self.get_arg('PackName').lower().replace(' ', '_')
-        pack_c = os.path.join(self.dir_src, 'a2x_pack_{}.c'.format(pack_name))
-        pack_ph = os.path.join(self.dir_src, 'a2x_pack_{}.p.h'.format(pack_name))
-        pack_vh = os.path.join(self.dir_src, 'a2x_pack_{}.v.h'.format(pack_name))
+if __name__ == '__main__':
+    tool = Tool('PackName')
 
-        for f in [pack_c, pack_ph, pack_vh]:
-            if os.path.exists(f):
-                self.output.error('{} already exists'.format(f))
+    pack_name = tool.get_arg('PackName').lower().replace(' ', '_')
+    pack_c = os.path.join(tool.dir_src, 'a2x_pack_{}.c'.format(pack_name))
+    pack_ph = os.path.join(tool.dir_src, 'a2x_pack_{}.p.h'.format(pack_name))
+    pack_vh = os.path.join(tool.dir_src, 'a2x_pack_{}.v.h'.format(pack_name))
 
-        author = '<your username>'
+    for f in [pack_c, pack_ph, pack_vh]:
+        if os.path.exists(f):
+            tool.output.error('{} already exists'.format(f))
 
-        for key in ['USER', 'USERNAME', 'LOGNAME']:
-            if key in os.environ:
-                author = os.environ[key]
-                break
+    author = '<your username>'
 
-        license_header = """\
+    for key in ['USER', 'USERNAME', 'LOGNAME']:
+        if key in os.environ:
+            author = os.environ[key]
+            break
+
+    license_header = """\
 /*
-    Copyright {0} {1}
-    This file is part of a2x, a C video game framework.
+Copyright {0} {1}
+This file is part of a2x, a C video game framework.
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */""".format(time.strftime('%Y'), author)
 
-        self.writefile(pack_c,
+    tool.writefile(pack_c,
 """\
 {0}
 
@@ -104,7 +104,7 @@ void a_{1}__uninit(void)
 }}
 """.format(license_header, pack_name))
 
-        self.writefile(pack_ph,
+    tool.writefile(pack_ph,
 """\
 {0}
 
@@ -113,7 +113,7 @@ void a_{1}__uninit(void)
 #include "a2x_system_includes.h"
 """.format(license_header))
 
-        self.writefile(pack_vh,
+    tool.writefile(pack_vh,
 """\
 {0}
 
@@ -124,6 +124,3 @@ void a_{1}__uninit(void)
 extern void a_{1}__init(void);
 extern void a_{1}__uninit(void);
 """.format(license_header, pack_name))
-
-if __name__ == '__main__':
-    PackTool('PackName').main()
