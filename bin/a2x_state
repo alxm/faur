@@ -1,0 +1,72 @@
+#!/usr/bin/env python3
+
+"""
+    Copyright 2019 Alex Margarit <alex@alxm.org>
+    This file is part of a2x, a C video game framework.
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
+import os
+
+from utils.tool import Tool
+
+if __name__ == '__main__':
+    tool = Tool('StateName')
+
+    state_name = tool.get_arg('StateName').lower()
+
+    state_c = os.path.join('.', 'state_{}.c'.format(state_name))
+    state_h = os.path.join('.', 'state_{}.h'.format(state_name))
+
+    for f in [state_c, state_h]:
+        if os.path.exists(f):
+            tool.output.error('{} already exists'.format(f))
+
+    tool.writefile(state_c,
+"""\
+#include "state_{name}.h"
+
+void s_{name}(void)
+{{
+    A_STATE_INIT
+    {{
+        //
+    }}
+
+    A_STATE_TICK
+    {{
+        //
+    }}
+
+    A_STATE_DRAW
+    {{
+        //
+    }}
+
+    A_STATE_FREE
+    {{
+        //
+    }}
+}}
+""".format(name = state_name))
+
+    tool.writefile(state_h,
+"""\
+#pragma once
+
+#include <a2x.h>
+
+extern AStateHandler s_{name};
+""".format(name = state_name))
