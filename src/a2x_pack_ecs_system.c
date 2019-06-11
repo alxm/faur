@@ -21,7 +21,6 @@
 #include "a2x_pack_ecs.v.h"
 #include "a2x_pack_ecs_entity.v.h"
 #include "a2x_pack_listit.v.h"
-#include "a2x_pack_main.v.h"
 #include "a2x_pack_mem.v.h"
 
 struct ASystem {

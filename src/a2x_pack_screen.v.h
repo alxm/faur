@@ -20,19 +20,21 @@
 
 #include "a2x_pack_screen.p.h"
 
+typedef struct AScreen AScreen;
+
+#include "a2x_pack_main.v.h"
 #include "a2x_pack_sprite.v.h"
 
-typedef struct {
+struct AScreen {
     APixels* pixels;
     int clipX, clipY;
     int clipX2, clipY2;
     int clipWidth, clipHeight;
-} AScreen;
+};
+
+extern const APack a_pack__screen;
 
 extern AScreen a__screen;
-
-extern void a_screen__init(void);
-extern void a_screen__uninit(void);
 
 extern void a_screen__tick(void);
 extern void a_screen__draw(void);

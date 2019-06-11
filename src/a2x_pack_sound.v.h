@@ -20,8 +20,9 @@
 
 #include "a2x_pack_sound.p.h"
 
-extern void a_sound__init(void);
-extern void a_sound__uninit(void);
+#include "a2x_pack_main.v.h"
+
+extern const APack a_pack__sound;
 
 extern void a_sound__tick(void);
 extern void a_sound__draw(void);

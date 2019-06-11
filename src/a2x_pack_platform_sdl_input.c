@@ -27,7 +27,6 @@
 
 #include "a2x_pack_fps.v.h"
 #include "a2x_pack_listit.v.h"
-#include "a2x_pack_main.v.h"
 #include "a2x_pack_math.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"

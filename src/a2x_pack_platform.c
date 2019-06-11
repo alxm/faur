@@ -28,7 +28,7 @@
 #include "a2x_pack_platform_software_draw.v.h"
 #include "a2x_pack_platform_wiz.v.h"
 
-void a_platform__init(void)
+static void a_platform__init(void)
 {
     #if A_CONFIG_SYSTEM_EMSCRIPTEN
         a_platform_emscripten__init();
@@ -74,7 +74,7 @@ void a_platform__init(void)
     #endif
 }
 
-void a_platform__uninit(void)
+static void a_platform__uninit(void)
 {
     #if A_CONFIG_LIB_RENDER_SOFTWARE
         a_platform_software_blit__uninit();
@@ -92,3 +92,13 @@ void a_platform__uninit(void)
 
     a_platform_sdl__uninit();
 }
+
+const APack a_pack__platform = {
+    "Platform",
+    {
+        [0] = a_platform__init,
+    },
+    {
+        [0] = a_platform__uninit,
+    },
+};

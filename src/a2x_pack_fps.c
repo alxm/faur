@@ -18,7 +18,6 @@
 
 #include "a2x_pack_fps.v.h"
 
-#include "a2x_pack_main.v.h"
 #include "a2x_pack_math.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
@@ -49,7 +48,7 @@ static struct {
     unsigned tickCreditMs;
 } g_run;
 
-void a_fps__init(void)
+static void a_fps__init(void)
 {
     g_settings.tickFrameMs = 1000 / A_CONFIG_FPS_RATE_TICK;
     g_settings.drawFrameMs = 1000 / A_CONFIG_FPS_RATE_DRAW;
@@ -64,11 +63,21 @@ void a_fps__init(void)
     a_fps__reset();
 }
 
-void a_fps__uninit(void)
+static void a_fps__uninit(void)
 {
     free(g_history.drawFrameMs);
     free(g_history.drawFrameMsMin);
 }
+
+const APack a_pack__fps = {
+    "FPS",
+    {
+        [0] = a_fps__init,
+    },
+    {
+        [0] = a_fps__uninit,
+    },
+};
 
 void a_fps__reset(void)
 {

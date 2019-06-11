@@ -49,25 +49,38 @@
 static int g_argsNum;
 static const char** g_args;
 
+static const APack* g_packs[] = {
+    &a_pack__console,
+    &a_pack__embed,
+    &a_pack__platform,
+    &a_pack__block,
+    &a_pack__timer,
+    &a_pack__input,
+    &a_pack__screen,
+    &a_pack__color,
+    &a_pack__fps,
+    &a_pack__screenshot,
+    &a_pack__sound,
+    &a_pack__random,
+    &a_pack__fix,
+    &a_pack__state,
+    &a_pack__ecs,
+    &a_pack__fade,
+    &a_pack__font,
+};
+
 static void a__atexit(void)
 {
     a_out__info("Running atexit");
 
-    a_console__uninit();
-    a_font__uninit();
-    a_fade__uninit();
-    a_ecs__uninit();
-    a_state__uninit();
-    a_sound__uninit();
-    a_screenshot__uninit();
-    a_fps__uninit();
-    a_color__uninit();
-    a_screen__uninit();
-    a_input__uninit();
-    a_timer__uninit();
-    a_block__uninit();
-    a_platform__uninit();
-    a_embed__uninit();
+    for(unsigned pass = A_PACK__PASSES_NUM; pass--; ) {
+        for(unsigned pack = A_ARRAY_LEN(g_packs); pack--; ) {
+            if(g_packs[pack]->uninit[pass]) {
+                a_out__info("[%s] Uninit pass %d", g_packs[pack]->name, pass);
+                g_packs[pack]->uninit[pass]();
+            }
+        }
+    }
 
     #if A_CONFIG_SYSTEM_GP2X || A_CONFIG_SYSTEM_WIZ || A_CONFIG_SYSTEM_CAANOO
         #if A_CONFIG_SYSTEM_GP2X_MENU
@@ -90,27 +103,17 @@ int main(int Argc, char* Argv[])
     g_argsNum = Argc;
     g_args = (const char**)Argv;
 
-    a_console__init();
-    a_embed__init();
-    a_platform__init();
-    a_block__init();
-    a_timer__init();
-    a_input__init();
-    a_screen__init();
-    a_color__init();
-    a_fps__init();
-    a_screenshot__init();
-    a_sound__init();
-    a_random__init();
-    a_fix__init();
-    a_state__init();
-    a_ecs__init();
-    a_fade__init();
-    a_font__init();
-    a_console__init2();
-
     if(atexit(a__atexit)) {
         a_out__error("Cannot register atexit callback");
+    }
+
+    for(unsigned pass = 0; pass < A_PACK__PASSES_NUM; pass++) {
+        for(unsigned pack = 0; pack < A_ARRAY_LEN(g_packs); pack++) {
+            if(g_packs[pack]->init[pass]) {
+                a_out__info("[%s] Init pass %d", g_packs[pack]->name, pass);
+                g_packs[pack]->init[pass]();
+            }
+        }
     }
 
     a_out__info("a_main start");

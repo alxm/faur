@@ -18,7 +18,6 @@
 
 #include "a2x_pack_input_controller.v.h"
 
-#include "a2x_pack_main.v.h"
 #include "a2x_pack_platform.v.h"
 
 void a_input_controller__init(void)

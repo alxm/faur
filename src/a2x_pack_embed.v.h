@@ -32,8 +32,9 @@ typedef struct {
     uint8_t buffer[];
 } AEmbeddedFile;
 
-extern void a_embed__init(void);
-extern void a_embed__uninit(void);
+#include "a2x_pack_main.v.h"
+
+extern const APack a_pack__embed;
 
 extern const AEmbeddedDir* a_embed__getDir(const char* Path);
 extern const AEmbeddedFile* a_embed__getFile(const char* Path);

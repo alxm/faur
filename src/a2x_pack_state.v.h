@@ -20,7 +20,8 @@
 
 #include "a2x_pack_state.p.h"
 
-extern void a_state__init(void);
-extern void a_state__uninit(void);
+#include "a2x_pack_main.v.h"
+
+extern const APack a_pack__state;
 
 extern void a_state__run(void);

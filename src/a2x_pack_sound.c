@@ -54,7 +54,7 @@ static void adjustSoundVolume(int Volume)
     a_platform_api__soundMusicVolumeSet(g_musicVolume);
 }
 
-void a_sound__init(void)
+static void a_sound__init(void)
 {
     g_volumeMax = a_platform_api__soundVolumeGetMax();
 
@@ -79,7 +79,7 @@ void a_sound__init(void)
     #endif
 }
 
-void a_sound__uninit(void)
+static void a_sound__uninit(void)
 {
     #if A_CONFIG_SYSTEM_GP2X || A_CONFIG_SYSTEM_WIZ
         a_timer_free(g_volTimer);
@@ -91,6 +91,16 @@ void a_sound__uninit(void)
 
     a_music_stop();
 }
+
+const APack a_pack__sound = {
+    "Sound",
+    {
+        [0] = a_sound__init,
+    },
+    {
+        [0] = a_sound__uninit,
+    },
+};
 
 void a_sound__tick(void)
 {

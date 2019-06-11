@@ -68,17 +68,27 @@ static inline unsigned getNow(const ATimer* Timer)
     }
 }
 
-void a_timer__init(void)
+static void a_timer__init(void)
 {
     setNow();
 
     g_runningTimers = a_list_new();
 }
 
-void a_timer__uninit(void)
+static void a_timer__uninit(void)
 {
     a_list_free(g_runningTimers);
 }
+
+const APack a_pack__timer = {
+    "Timer",
+    {
+        [0] = a_timer__init,
+    },
+    {
+        [0] = a_timer__uninit,
+    },
+};
 
 void a_timer__tick(void)
 {

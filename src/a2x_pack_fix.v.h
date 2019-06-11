@@ -20,4 +20,6 @@
 
 #include "a2x_pack_fix.p.h"
 
-extern void a_fix__init(void);
+#include "a2x_pack_main.v.h"
+
+extern const APack a_pack__fix;

@@ -19,7 +19,6 @@
 #include "a2x_pack_color.v.h"
 
 #include "a2x_pack_list.v.h"
-#include "a2x_pack_main.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_platform.v.h"
 #include "a2x_pack_platform_software_blit.v.h"
@@ -31,7 +30,7 @@ static AList* g_stateStack;
 APixel a_color__key;
 APixel a_color__limit;
 
-void a_color__init(void)
+static void a_color__init(void)
 {
     g_stateStack = a_list_new();
     a_color_reset();
@@ -40,10 +39,20 @@ void a_color__init(void)
     a_color__limit = a_pixel_fromHex(A_CONFIG_COLOR_SPRITE_BORDER);
 }
 
-void a_color__uninit(void)
+static void a_color__uninit(void)
 {
     a_list_freeEx(g_stateStack, free);
 }
+
+const APack a_pack__color = {
+    "Color",
+    {
+        [0] = a_color__init,
+    },
+    {
+        [0] = a_color__uninit,
+    },
+};
 
 void a_color_push(void)
 {

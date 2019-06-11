@@ -1,5 +1,5 @@
 /*
-    Copyright 2011, 2016, 2018 Alex Margarit <alex@alxm.org>
+    Copyright 2011, 2016, 2018-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -142,6 +142,16 @@ void a_screenshot__uninit(void)
 
     a_button_free(g_button);
 }
+
+const APack a_pack__screenshot = {
+    "Screenshot",
+    {
+        [0] = a_screenshot__init,
+    },
+    {
+        [0] = a_screenshot__uninit,
+    },
+};
 
 void a_screenshot__tick(void)
 {

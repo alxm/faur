@@ -65,11 +65,21 @@ static void initAtan(void)
     }
 }
 
-void a_fix__init(void)
+static void a_fix__init(void)
 {
     initSin();
     initAtan();
 }
+
+const APack a_pack__fix = {
+    "Fix",
+    {
+        [0] = a_fix__init,
+    },
+    {
+        NULL,
+    },
+};
 
 unsigned a_fix_atan(AFix X1, AFix Y1, AFix X2, AFix Y2)
 {

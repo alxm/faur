@@ -20,7 +20,8 @@
 
 #include "a2x_pack_screenshot.p.h"
 
-extern void a_screenshot__init(void);
-extern void a_screenshot__uninit(void);
+#include "a2x_pack_main.v.h"
+
+extern const APack a_pack__screenshot;
 
 extern void a_screenshot__tick(void);

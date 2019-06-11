@@ -40,16 +40,26 @@ static struct {
     .op = A__FADE_INVALID,
 };
 
-void a_fade__init(void)
+static void a_fade__init(void)
 {
     g_fade.oldScreen = a_sprite_newBlank(
                         a__screen.pixels->w, a__screen.pixels->h, 1, false);
 }
 
-void a_fade__uninit(void)
+static void a_fade__uninit(void)
 {
     a_sprite_free(g_fade.oldScreen);
 }
+
+const APack a_pack__fade = {
+    "Fade",
+    {
+        [0] = a_fade__init,
+    },
+    {
+        [0] = a_fade__uninit,
+    },
+};
 
 const AEvent* a_fade_eventGet(void)
 {

@@ -20,11 +20,10 @@
 
 #include "a2x_pack_console.p.h"
 
+#include "a2x_pack_main.v.h"
 #include "a2x_pack_out.v.h"
 
-extern void a_console__init(void);
-extern void a_console__init2(void);
-extern void a_console__uninit(void);
+extern const APack a_pack__console;
 
 extern void a_console__tick(void);
 extern void a_console__draw(void);

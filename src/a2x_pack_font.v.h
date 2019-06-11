@@ -32,7 +32,8 @@ typedef enum {
     A_FONT__ID_NUM
 } AFontId;
 
-extern void a_font__init(void);
-extern void a_font__uninit(void);
+#include "a2x_pack_main.v.h"
+
+extern const APack a_pack__font;
 
 extern void a_font__fontSet(AFontId Font);

@@ -18,7 +18,6 @@
 
 #include "a2x_pack_font.v.h"
 
-#include "a2x_pack_main.v.h"
 #include "a2x_pack_math.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_screen.v.h"
@@ -45,7 +44,7 @@ static AFontState g_state;
 static AList* g_stateStack;
 static char g_buffer[512];
 
-void a_font__init(void)
+static void a_font__init(void)
 {
     g_stateStack = a_list_new();
 
@@ -70,7 +69,7 @@ void a_font__init(void)
     a_font_reset();
 }
 
-void a_font__uninit(void)
+static void a_font__uninit(void)
 {
     for(int f = 0; f < A_FONT__ID_NUM; f++) {
         a_font_free(g_defaultFonts[f]);
@@ -78,6 +77,16 @@ void a_font__uninit(void)
 
     a_list_freeEx(g_stateStack, free);
 }
+
+const APack a_pack__font = {
+    "Font",
+    {
+        [0] = a_font__init,
+    },
+    {
+        [0] = a_font__uninit,
+    },
+};
 
 AFont* a_font_newFromPng(const char* Path, int X, int Y, int CharWidth, int CharHeight)
 {

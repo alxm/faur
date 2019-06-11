@@ -29,7 +29,10 @@ typedef struct {
     bool fillDraw;
 } APixelState;
 
+#include "a2x_pack_main.v.h"
 #include "a2x_pack_math.v.h"
+
+extern const APack a_pack__color;
 
 extern APixelState a__color;
 
@@ -99,6 +102,3 @@ static inline void a_color__draw_add(APixel* Dst, const ARgb* Rgb)
                            a_math_min(rgb.g + Rgb->g, 255),
                            a_math_min(rgb.b + Rgb->b, 255));
 }
-
-extern void a_color__init(void);
-extern void a_color__uninit(void);

@@ -20,8 +20,9 @@
 
 #include "a2x_pack_fade.p.h"
 
-extern void a_fade__init(void);
-extern void a_fade__uninit(void);
+#include "a2x_pack_main.v.h"
+
+extern const APack a_pack__fade;
 
 extern void a_fade__tick(void);
 extern void a_fade__draw(void);

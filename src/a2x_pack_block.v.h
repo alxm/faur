@@ -20,5 +20,6 @@
 
 #include "a2x_pack_block.p.h"
 
-extern void a_block__init(void);
-extern void a_block__uninit(void);
+#include "a2x_pack_main.v.h"
+
+extern const APack a_pack__block;

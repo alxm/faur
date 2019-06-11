@@ -20,17 +20,26 @@
 
 #include <time.h>
 
-#include "a2x_pack_main.v.h"
 #include "a2x_pack_out.v.h"
 
 static ARandomPrng* g_rand;
 static ARandomPrngSeed* g_srand;
 static unsigned g_seed;
 
-void a_random__init(void)
+static void a_random__init(void)
 {
     a_random_generatorReset();
 }
+
+const APack a_pack__random = {
+    "Random",
+    {
+        [0] = a_random__init,
+    },
+    {
+        NULL,
+    },
+};
 
 void a_random_generatorSet(ARandomPrng* Rand, ARandomPrngSeed* Srand)
 {

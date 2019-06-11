@@ -20,4 +20,6 @@
 
 #include "a2x_pack_random.p.h"
 
-extern void a_random__init(void);
+#include "a2x_pack_main.v.h"
+
+extern const APack a_pack__random;

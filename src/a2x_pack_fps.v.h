@@ -20,8 +20,9 @@
 
 #include "a2x_pack_fps.p.h"
 
-extern void a_fps__init(void);
-extern void a_fps__uninit(void);
+#include "a2x_pack_main.v.h"
+
+extern const APack a_pack__fps;
 
 extern void a_fps__reset(void);
 extern bool a_fps__tick(void);

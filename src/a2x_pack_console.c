@@ -72,7 +72,7 @@ static void line_free(ALine* Line)
     free(Line);
 }
 
-void a_console__init(void)
+static void a_console__init0(void)
 {
     g_lines = a_list_new();
     g_linesPerScreen = UINT_MAX;
@@ -80,7 +80,7 @@ void a_console__init(void)
     g_state = A_CONSOLE__STATE_BASIC;
 }
 
-void a_console__init2(void)
+static void a_console__init1(void)
 {
     g_linesPerScreen =
         (unsigned)((a_screen_sizeGetHeight() - 2) / a_font_lineHeightGet() - 2);
@@ -106,7 +106,7 @@ void a_console__init2(void)
     g_state = A_CONSOLE__STATE_FULL;
 }
 
-void a_console__uninit(void)
+static void a_console__uninit1(void)
 {
     g_state = A_CONSOLE__STATE_INVALID;
 
@@ -114,6 +114,17 @@ void a_console__uninit(void)
     a_sprite_free(g_tags);
     a_button_free(g_toggle);
 }
+
+const APack a_pack__console = {
+    "Console",
+    {
+        [0] = a_console__init0,
+        [1] = a_console__init1,
+    },
+    {
+        [1] = a_console__uninit1,
+    },
+};
 
 void a_console__tick(void)
 {

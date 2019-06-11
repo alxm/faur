@@ -28,7 +28,6 @@
 #include "a2x_pack_fps.v.h"
 #include "a2x_pack_input.v.h"
 #include "a2x_pack_listit.v.h"
-#include "a2x_pack_main.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_screen.v.h"
 #include "a2x_pack_screenshot.v.h"
@@ -136,7 +135,7 @@ static void pending_handle(void)
     }
 }
 
-void a_state__init(void)
+static void a_state__init(void)
 {
     for(int i = A_CONFIG_STATE_NUM; i--; ) {
         g_table[i].name = "";
@@ -146,11 +145,21 @@ void a_state__init(void)
     g_pending = a_list_new();
 }
 
-void a_state__uninit(void)
+static void a_state__uninit(void)
 {
     a_list_freeEx(g_stack, free);
     a_list_freeEx(g_pending, free);
 }
+
+const APack a_pack__state = {
+    "State",
+    {
+        [0] = a_state__init,
+    },
+    {
+        [0] = a_state__uninit,
+    },
+};
 
 void a_state_new(int Index, AStateHandler* Handler, const char* Name)
 {

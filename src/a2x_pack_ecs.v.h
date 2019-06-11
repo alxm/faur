@@ -34,9 +34,9 @@ typedef enum {
 
 #include "a2x_pack_ecs_entity.v.h"
 #include "a2x_pack_list.v.h"
+#include "a2x_pack_main.v.h"
 
-extern void a_ecs__init(void);
-extern void a_ecs__uninit(void);
+extern const APack a_pack__ecs;
 
 extern bool a_ecs__isDeleting(void);
 

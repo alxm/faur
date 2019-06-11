@@ -20,7 +20,6 @@
 
 #include "a2x_pack_collide.v.h"
 #include "a2x_pack_listit.v.h"
-#include "a2x_pack_main.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
 
@@ -34,7 +33,7 @@ static AList* g_stack; // list of AScreen
     static AButton* g_zoomButtons[A__ZOOM_LEVELS];
 #endif
 
-void a_screen__init(void)
+static void a_screen__init(void)
 {
     AVectorInt size = a_platform_api__screenSizeGet();
 
@@ -59,7 +58,7 @@ void a_screen__init(void)
     g_stack = a_list_new();
 }
 
-void a_screen__uninit(void)
+static void a_screen__uninit(void)
 {
     a_list_freeEx(g_stack, free);
 
@@ -71,6 +70,16 @@ void a_screen__uninit(void)
         }
     #endif
 }
+
+const APack a_pack__screen = {
+    "Screen",
+    {
+        [0] = a_screen__init,
+    },
+    {
+        [0] = a_screen__uninit,
+    },
+};
 
 void a_screen__tick(void)
 {

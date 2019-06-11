@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2018 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -23,16 +23,26 @@
 
 const char* a__inputNameDefault = "Unknown";
 
-void a_input__init(void)
+static void a_input__init(void)
 {
     a_input_button__init();
     a_input_controller__init();
 }
 
-void a_input__uninit(void)
+static void a_input__uninit(void)
 {
     a_input_button__uninit();
 }
+
+const APack a_pack__input = {
+    "Input",
+    {
+        [0] = a_input__init,
+    },
+    {
+        [0] = a_input__uninit,
+    },
+};
 
 void a_input__userHeaderInit(AInputUserHeader* Header)
 {

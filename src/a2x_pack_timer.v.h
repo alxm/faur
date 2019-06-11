@@ -20,7 +20,8 @@
 
 #include "a2x_pack_timer.p.h"
 
-extern void a_timer__init(void);
-extern void a_timer__uninit(void);
+#include "a2x_pack_main.v.h"
+
+extern const APack a_pack__timer;
 
 extern void a_timer__tick(void);

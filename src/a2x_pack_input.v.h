@@ -23,16 +23,16 @@
 typedef struct AInputUserHeader AInputUserHeader;
 
 #include "a2x_pack_list.v.h"
+#include "a2x_pack_main.v.h"
 
 struct AInputUserHeader {
     const char* name;
     AList* platformInputs; // List of APlatformInputButton/Analog/Touch
 };
 
-extern const char* a__inputNameDefault;
+extern const APack a_pack__input;
 
-extern void a_input__init(void);
-extern void a_input__uninit(void);
+extern const char* a__inputNameDefault;
 
 extern void a_input__userHeaderInit(AInputUserHeader* Header);
 extern void a_input__userHeaderFree(AInputUserHeader* Header);

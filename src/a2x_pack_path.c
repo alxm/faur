@@ -21,7 +21,6 @@
 #include <sys/stat.h>
 
 #include "a2x_pack_embed.v.h"
-#include "a2x_pack_main.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_str.v.h"
 

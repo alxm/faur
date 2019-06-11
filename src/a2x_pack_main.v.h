@@ -20,4 +20,15 @@
 
 #include "a2x_pack_main.p.h"
 
+#define A_PACK__PASSES_NUM 2
+
+typedef void APackInit(void);
+typedef void APackUninit(void);
+
+typedef struct {
+    const char* name;
+    APackInit* init[A_PACK__PASSES_NUM];
+    APackUninit* uninit[A_PACK__PASSES_NUM];
+} APack;
+
 extern void A__FATAL(const char* Format, ...) __attribute__((noreturn));

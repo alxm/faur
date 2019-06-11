@@ -28,7 +28,7 @@ static AList* g_lists[A_ECS__NUM]; // Each entity is in exactly one of these
 static bool g_deleting; // Set at uninit time to prevent using freed entities
 static ACollection* g_collection; // New entities are added to this collection
 
-void a_ecs__init(void)
+static void a_ecs__init(void)
 {
     for(int i = A_ECS__NUM; i--; ) {
         g_lists[i] = a_list_new();
@@ -38,7 +38,7 @@ void a_ecs__init(void)
     a_template__init();
 }
 
-void a_ecs__uninit(void)
+static void a_ecs__uninit(void)
 {
     g_deleting = true;
 
@@ -50,6 +50,16 @@ void a_ecs__uninit(void)
     a_system__uninit();
     a_component__uninit();
 }
+
+const APack a_pack__ecs = {
+    "ECS",
+    {
+        [0] = a_ecs__init,
+    },
+    {
+        [0] = a_ecs__uninit,
+    },
+};
 
 ACollection* a_ecs_collectionGet(void)
 {

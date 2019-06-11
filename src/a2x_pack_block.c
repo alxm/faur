@@ -19,7 +19,6 @@
 #include "a2x_pack_block.v.h"
 
 #include "a2x_pack_file.v.h"
-#include "a2x_pack_main.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_str.v.h"
 #include "a2x_pack_strhash.v.h"
@@ -35,15 +34,25 @@ struct ABlock {
     unsigned refs; // take a ref when inheriting
 };
 
-void a_block__init(void)
+static void a_block__init(void)
 {
     g_emptyList = a_list_new();
 }
 
-void a_block__uninit(void)
+static void a_block__uninit(void)
 {
     a_list_free(g_emptyList);
 }
+
+const APack a_pack__block = {
+    "Block",
+    {
+        [0] = a_block__init,
+    },
+    {
+        [0] = a_block__uninit,
+    },
+};
 
 static ABlock* blockNew(const char* Content)
 {

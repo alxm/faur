@@ -1,5 +1,5 @@
 /*
-    Copyright 2017-2018 Alex Margarit <alex@alxm.org>
+    Copyright 2017-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -37,7 +37,7 @@ static inline void addFile(const char* Path, const void* Data)
     a_strhash_add(g_files, Path, (void*)Data);
 }
 
-void a_embed__init(void)
+static void a_embed__init(void)
 {
     g_dirs = a_strhash_new();
     g_files = a_strhash_new();
@@ -49,11 +49,21 @@ void a_embed__init(void)
     a__embed_application();
 }
 
-void a_embed__uninit(void)
+static void a_embed__uninit(void)
 {
     a_strhash_free(g_dirs);
     a_strhash_free(g_files);
 }
+
+const APack a_pack__embed = {
+    "Embed",
+    {
+        [0] = a_embed__init,
+    },
+    {
+        [0] = a_embed__uninit,
+    },
+};
 
 void a__embed_addDir(const void* Data)
 {

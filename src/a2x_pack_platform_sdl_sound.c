@@ -27,7 +27,6 @@
     #include <SDL2/SDL_mixer.h>
 #endif
 
-#include "a2x_pack_main.v.h"
 #include "a2x_pack_mem.v.h"
 #include "a2x_pack_out.v.h"
 #include "a2x_pack_platform.v.h"
