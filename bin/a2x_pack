@@ -110,7 +110,7 @@ void a_{1}__uninit(void)
 
 #pragma once
 
-#include "a2x_system_includes.h"
+#include "general/a_system_includes.h"
 """.format(license_header))
 
     tool.writefile(pack_vh,

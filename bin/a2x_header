@@ -24,20 +24,16 @@ import re
 from utils.tool import Tool
 
 if __name__ == '__main__':
-    tool = Tool('SourceDir Extension UmbrellaHeader')
+    tool = Tool('UmbrellaHeader SourceDir')
 
-    h_dir = os.path.abspath(tool.get_arg('SourceDir'))
-    ext = tool.get_arg('Extension')
     umbrella_header = os.path.abspath(tool.get_arg('UmbrellaHeader'))
+    src_dir = os.path.abspath(tool.get_arg('SourceDir'))
 
-    if not os.path.isdir(h_dir):
-        tool.output.error('{} is not a dir'.format(h_dir))
-
-    headers = [f for f in tool.listdir(h_dir) if f.endswith(ext)]
+    headers = tool.get_arg_tail()
     headers.sort(key = lambda h: h)
 
     included = {}
-    re_include = re.compile('^#include "(a2x_.*?\.h)"$')
+    re_include = re.compile('^#include "(\w+/a_[\w_\.]+\.h)"$')
 
     def process_header(FileName, Depth):
         if FileName in included:
@@ -51,8 +47,7 @@ if __name__ == '__main__':
 //
 """.format(FileName, Depth)
 
-        for line in tool.readtextlines(os.path.join(h_dir, FileName)):
-            comment_line = False
+        for line in tool.readtextlines(FileName):
             include = re_include.match(line)
 
             if include:
@@ -62,7 +57,7 @@ if __name__ == '__main__':
                     tool.output.error('{} is a private header'.format(header))
 
                 out += '// {}'.format(line)
-                out += process_header(header, Depth + 1)
+                out += process_header(os.path.join(src_dir, header), Depth + 1)
             elif line == '#pragma once\n':
                 out += '// {}'.format(line)
             else:
