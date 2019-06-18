@@ -1,4 +1,4 @@
-A2X_DIR_ROOT := $(A2X_PATH)
+A2X_DIR_ROOT := $(realpath $(A2X_PATH))
 A2X_DIR_BIN := $(A2X_DIR_ROOT)/bin
 A2X_DIR_SRC := $(A2X_DIR_ROOT)/src
 A2X_DIR_OBJ := $(A_DIR_OBJ_A2X)
@@ -37,7 +37,7 @@ A2X_GENERIC_CFLAGS := \
 
 $(A2X_FILE_PUBLIC_A2X_HEADER) : $(A2X_FILES_PUBLIC_A2X_HEADERS) $(A2X_FILE_SYSTEM_INCLUDES) $(A2X_DIR_BIN)/a2x_header
 	@ mkdir -p $(@D)
-	@ $(A2X_DIR_BIN)/a2x_header $@ $(A2X_DIR_SRC) $(shell find $(A2X_DIR_SRC) -type f -name "*.p.h")
+	@ $(A2X_DIR_BIN)/a2x_header $@ $(shell find $(A2X_DIR_SRC) -type f -name "*.p.h")
 
 $(A2X_FILE_EDITOR_TAGS) : $(A2X_FILE_PUBLIC_A2X_HEADER) $(A2X_DIR_BIN)/a2x_tags
 	@ $(A2X_DIR_BIN)/a2x_tags "$(A_CONFIG_BUILD_CFLAGS)" $<

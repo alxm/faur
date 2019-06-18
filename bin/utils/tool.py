@@ -59,8 +59,14 @@ class Tool:
         for name, value in zip(self.arg_names, self.arg_values):
             self.arg_db[name] = value
 
-        current_dir = os.path.dirname(__file__)
-        self.dir_a2x = os.path.abspath(os.path.join(current_dir, '..', '..'))
+        if 'A2X_PATH' in os.environ:
+            a2x_path = os.environ['A2X_PATH']
+        else:
+            a2x_path = os.path.join(os.path.dirname(__file__), '..', '..')
+
+        self.dir_a2x = os.path.realpath(
+                        os.path.expandvars(os.path.expanduser(a2x_path)))
+
         self.dir_bin = os.path.join(self.dir_a2x, 'bin')
         self.dir_cfg = os.path.join(os.environ['HOME'], '.config', 'a2x')
         self.dir_make = os.path.join(self.dir_a2x, 'make')

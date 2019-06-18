@@ -24,10 +24,9 @@ import re
 from utils.tool import Tool
 
 if __name__ == '__main__':
-    tool = Tool('UmbrellaHeader SourceDir')
+    tool = Tool('UmbrellaHeader')
 
     umbrella_header = os.path.abspath(tool.get_arg('UmbrellaHeader'))
-    src_dir = os.path.abspath(tool.get_arg('SourceDir'))
 
     headers = tool.get_arg_tail()
     headers.sort(key = lambda h: h)
@@ -57,7 +56,8 @@ if __name__ == '__main__':
                     tool.output.error('{} is a private header'.format(header))
 
                 out += '// {}'.format(line)
-                out += process_header(os.path.join(src_dir, header), Depth + 1)
+                out += process_header(
+                        os.path.join(tool.dir_src, header), Depth + 1)
             elif line == '#pragma once\n':
                 out += '// {}'.format(line)
             else:
