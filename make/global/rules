@@ -76,11 +76,11 @@ $(A_FILE_TARGET_BIN) : $(A_FILES_OBJ) $(A2X_FILE_PUBLIC_A2X_LIB)
 
 $(A_DIR_GEN)/%.h : $(A_CONFIG_DIR_ROOT)/% $(A2X_PATH)/bin/a2x_bin
 	@ mkdir -p $(@D)
-	@ $(A2X_PATH)/bin/a2x_bin $< $@ $(<:$(A_CONFIG_DIR_ROOT)/%=%) a__bin_
+	$(A2X_PATH)/bin/a2x_bin $< $@ $(<:$(A_CONFIG_DIR_ROOT)/%=%) a__bin_
 
 $(A_FILE_SRC_GEN_EMBED) : $(A_FILES_SRC_GEN_H) $(A2X_PATH)/bin/a2x_embed
 	@ mkdir -p $(@D)
-	@ $(A2X_PATH)/bin/a2x_embed $@ $(A_DIR_GEN) a__bin_ $(A_FILES_SRC_GEN_H:$(A_DIR_GEN)/%=%)
+	$(A2X_PATH)/bin/a2x_embed $@ $(A_DIR_GEN) a__bin_ $(A_FILES_SRC_GEN_H:$(A_DIR_GEN)/%=%)
 
 $(A_DIR_OBJ_APP)/%.c.o : $(A_CONFIG_DIR_ROOT)/$(A_CONFIG_DIR_SRC)/%.c
 	@ mkdir -p $(@D)
