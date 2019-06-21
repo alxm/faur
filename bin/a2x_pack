@@ -24,38 +24,47 @@ import time
 from utils.tool import Tool
 
 """
-a2x_pack_sample.p.h
-    <a2x_system_includes.h>
-    <a2x_pack_*.p.h>
+category/a_sample.p.h
+    <general/a_system_includes.h>
+    <foo/a_bar.p.h>
     <public typedefs>
-    <a2x_pack_*.p.h>
+    <foo/a_bar.p.h>
     <public typedef implementations>
     <public api prototypes>
     <static inline functions>
 
-a2x_pack_sample.v.h
-    <a2x_pack_sample.p.h>
+category/a_sample.v.h
+    <category/a_sample.p.h>
     <private typedefs>
-    <a2x_pack_*.v.h>
+    <foo/a_bar.v.h>
     <private typedef implementations>
     <private api prototypes>
     <static inline functions>
 
-a2x_pack_sample.c
-    <a2x_pack_sample.v.h>
+category/a_sample.c
+    <category/a_sample.v.h>
     <system headers>
-    <a2x_pack_*.v.h>
+    <foo/a_bar.v.h>
     <private types>
     <implementations>
 """
 
 if __name__ == '__main__':
-    tool = Tool('PackName')
+    tool = Tool('Folder Name')
 
-    pack_name = tool.get_arg('PackName').lower().replace(' ', '_')
-    pack_c = os.path.join(tool.dir_src, 'a2x_pack_{}.c'.format(pack_name))
-    pack_ph = os.path.join(tool.dir_src, 'a2x_pack_{}.p.h'.format(pack_name))
-    pack_vh = os.path.join(tool.dir_src, 'a2x_pack_{}.v.h'.format(pack_name))
+    pack_folder = tool.get_arg('Folder').lower().replace(' ', '_')
+    pack_name = tool.get_arg('Name').lower().replace(' ', '_')
+
+    pack_path = os.path.join(tool.dir_src, pack_folder)
+
+    if not os.path.exists(pack_path):
+        os.makedirs(pack_path)
+    elif not os.path.isdir(pack_path):
+        self.output.error('{} is not a dir'.format(pack_path))
+
+    pack_c = os.path.join(pack_path, 'a_{}.c'.format(pack_name))
+    pack_ph = os.path.join(pack_path, 'a_{}.p.h'.format(pack_name))
+    pack_vh = os.path.join(pack_path, 'a_{}.v.h'.format(pack_name))
 
     for f in [pack_c, pack_ph, pack_vh]:
         if os.path.exists(f):
@@ -91,18 +100,28 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """\
 {0}
 
-#include "a2x_pack_{1}.v.h"
+#include "{1}/a_{2}.v.h"
 
-void a_{1}__init(void)
+static void a_{2}__init(void)
 {{
     //
 }}
 
-void a_{1}__uninit(void)
+static void a_{2}__uninit(void)
 {{
     //
 }}
-""".format(license_header, pack_name))
+
+const APack a_pack__{2} = {{
+    "{2}",
+    {{
+        [0] = a_{2}__init,
+    }},
+    {{
+        [0] = a_{2}__uninit,
+    }},
+}};
+""".format(license_header, pack_folder, pack_name))
 
     tool.writefile(pack_ph,
 """\
@@ -119,8 +138,9 @@ void a_{1}__uninit(void)
 
 #pragma once
 
-#include "a2x_pack_{1}.p.h"
+#include "{1}/a_{2}.p.h"
 
-extern void a_{1}__init(void);
-extern void a_{1}__uninit(void);
-""".format(license_header, pack_name))
+#include "general/a_main.v.h"
+
+extern const APack a_pack__{2};
+""".format(license_header, pack_folder, pack_name))
