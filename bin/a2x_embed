@@ -23,12 +23,12 @@ import os
 from utils.tool import Tool
 
 if __name__ == '__main__':
-    tool = Tool('file.c GenDir CVarPrefix')
+    tool = Tool('file.c GenDir CVarPrefix ...')
 
     c_file = tool.get_arg('file.c')
     gen_dir = tool.get_arg('GenDir')
     cvar_prefix = tool.get_arg('CVarPrefix')
-    h_files = tool.get_arg_tail()
+    h_files = tool.get_arg('...')
 
     includes = ''
     embed_calls = ''

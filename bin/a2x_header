@@ -24,11 +24,11 @@ import re
 from utils.tool import Tool
 
 if __name__ == '__main__':
-    tool = Tool('UmbrellaHeader')
+    tool = Tool('UmbrellaHeader ...')
 
     umbrella_header = os.path.abspath(tool.get_arg('UmbrellaHeader'))
 
-    headers = tool.get_arg_tail()
+    headers = tool.get_arg('...')
     headers.sort(key = lambda h: h)
 
     included = {}

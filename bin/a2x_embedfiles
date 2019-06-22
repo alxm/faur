@@ -23,7 +23,7 @@ import os
 from utils.tool import Tool
 
 if __name__ == '__main__':
-    tool = Tool('RootDir')
+    tool = Tool('RootDir ...')
 
     files = []
     startRoot = os.path.abspath(tool.get_arg('RootDir'))
@@ -38,7 +38,7 @@ if __name__ == '__main__':
 
         return scanned
 
-    for f in tool.get_arg_tail():
+    for f in tool.get_arg('...'):
         files += scan_file(startRoot, f)
 
     print(' '.join(files))
