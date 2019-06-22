@@ -33,34 +33,53 @@ class Tool:
             quiet = True
             args = args[1 : ]
 
-        self.name = os.path.basename(sys.argv[0])
-        self.output = Output(self.name, quiet)
-        self.arg_names = arg_names.split()
-        self.arg_values = args
-        self.arg_db = {}
-        self.args_tail = self.arg_values[len(self.arg_names) :]
-
+        arg_names = arg_names.split()
         required_num = 0
         optional_num = 0
+        has_tail = False
 
-        for name in self.arg_names:
-            if name[0] == '[' and name[-1] == ']':
+        self.name = os.path.basename(sys.argv[0])
+        self.output = Output(self.name, quiet)
+        self.arg_db = {}
+
+        for name in arg_names:
+            if has_tail:
+                self.output.error('... must be the last argument')
+            elif name == '...':
+                if optional_num > 0:
+                    self.output.error('Cannot have both optional args and ...')
+
+                has_tail = True
+            elif name[0] == '[' and name[-1] == ']':
                 optional_num += 1
+            elif optional_num > 0:
+                self.output.error('Cannot have normal args after optional args')
             else:
                 required_num += 1
 
-                # Optional args are only allowed after all required args
-                if optional_num > 0:
-                    self.usage()
+        if len(args) < required_num:
+            message = 'Usage: {}'.format(self.name)
 
-        if len(self.arg_values) < required_num:
-            self.usage()
+            for arg in arg_names:
+                message += ' {}'.format(arg)
 
-        for name, value in zip(self.arg_names, self.arg_values):
+            self.output.error(message)
+
+        if has_tail:
+            arg_names = arg_names[ : -1]
+            self.arg_db['...'] = args[required_num : ]
+
+        for name, value in zip(arg_names, args):
             self.arg_db[name] = value
 
-        current_dir = os.path.dirname(__file__)
-        self.dir_a2x = os.path.abspath(os.path.join(current_dir, '..', '..'))
+        if 'A2X_PATH' in os.environ:
+            a2x_path = os.environ['A2X_PATH']
+        else:
+            a2x_path = os.path.join(os.path.dirname(__file__), '..', '..')
+
+        self.dir_a2x = os.path.realpath(
+                        os.path.expandvars(os.path.expanduser(a2x_path)))
+
         self.dir_bin = os.path.join(self.dir_a2x, 'bin')
         self.dir_cfg = os.path.join(os.environ['HOME'], '.config', 'a2x')
         self.dir_make = os.path.join(self.dir_a2x, 'make')
@@ -74,22 +93,11 @@ class Tool:
     def exit(self):
         sys.exit(0)
 
-    def usage(self):
-        message = 'Usage: {}'.format(self.name)
-
-        for arg in self.arg_names:
-            message += ' {}'.format(arg)
-
-        self.output.error(message)
-
     def get_arg(self, name):
         if name in self.arg_db:
             return self.arg_db[name]
         else:
             return ''
-
-    def get_arg_tail(self):
-        return self.args_tail
 
     def writefile(self, name, contents):
         self.output.info('Writing file {}'.format(name))
