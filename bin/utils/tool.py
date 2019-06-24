@@ -26,20 +26,21 @@ class Tool:
     def __init__(self, arg_names):
         quiet = False
 
-        args = [a.strip() for a in sys.argv[1 : ]]
-        args = [a for a in args if len(a) > 0]
+        arg_values = [a.strip() for a in sys.argv[1 : ]]
+        arg_values = [a for a in arg_values if len(a) > 0]
 
-        if len(args) > 0 and args[0] == '-q':
+        if len(arg_values) > 0 and arg_values[0] == '-q':
             quiet = True
-            args = args[1 : ]
+            arg_values = arg_values[1 : ]
 
-        arg_names = arg_names.split()
         required_num = 0
         optional_num = 0
         has_tail = False
+        arg_names = arg_names.split()
 
         self.name = os.path.basename(sys.argv[0])
         self.output = Output(self.name, quiet)
+        self.arg_names = arg_names
         self.arg_db = {}
 
         for name in arg_names:
@@ -57,19 +58,14 @@ class Tool:
             else:
                 required_num += 1
 
-        if len(args) < required_num:
-            message = 'Usage: {}'.format(self.name)
-
-            for arg in arg_names:
-                message += ' {}'.format(arg)
-
-            self.output.error(message)
+        if len(arg_values) < required_num:
+            self.usage()
 
         if has_tail:
             arg_names = arg_names[ : -1]
-            self.arg_db['...'] = args[required_num : ]
+            self.arg_db['...'] = arg_values[required_num : ]
 
-        for name, value in zip(arg_names, args):
+        for name, value in zip(arg_names, arg_values):
             self.arg_db[name] = value
 
         if 'A2X_PATH' in os.environ:
@@ -92,6 +88,14 @@ class Tool:
 
     def exit(self):
         sys.exit(0)
+
+    def usage(self):
+        message = 'Usage: {}'.format(self.name)
+
+        for arg in self.arg_names:
+            message += ' {}'.format(arg)
+
+        self.output.error(message)
 
     def get_arg(self, name):
         if name in self.arg_db:

@@ -24,7 +24,7 @@ A_FILE_TARGET_BIN := $(A_CONFIG_DIR_ROOT)/$(A_CONFIG_DIR_BIN)/$(A_CONFIG_APP_BIN
 #
 # Project root-relative file and dir paths
 #
-A_FILES_EMBED_BIN := $(shell $(A2X_PATH)/bin/a2x_embedfiles -q $(A_CONFIG_DIR_ROOT) $(A_CONFIG_PATH_EMBED))
+A_FILES_EMBED_BIN := $(shell $(A2X_PATH)/bin/a2x_gather -q $(A_CONFIG_DIR_ROOT) $(A_CONFIG_PATH_EMBED))
 A_FILES_SRC_GEN_H := $(A_FILES_EMBED_BIN:%=$(A_DIR_GEN_EMBED)/%.h)
 
 #

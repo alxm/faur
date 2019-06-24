@@ -28,6 +28,9 @@ if __name__ == '__main__':
     files = []
     startRoot = os.path.abspath(tool.get_arg('RootDir'))
 
+    if not os.path.isdir(startRoot):
+        tool.usage()
+
     def scan_file(Root, File):
         filePath = os.path.join(Root, File)
         scanned = [os.path.relpath(filePath, start = startRoot)]
