@@ -23,7 +23,7 @@ import os
 from utils.tool import Tool
 
 if __name__ == '__main__':
-    tool = Tool('RootDir ...')
+    tool = Tool('RootDir ...', '--no-dirs')
 
     files = []
     startRoot = os.path.abspath(tool.get_arg('RootDir'))
@@ -33,9 +33,14 @@ if __name__ == '__main__':
 
     def scan_file(Root, File):
         filePath = os.path.join(Root, File)
-        scanned = [os.path.relpath(filePath, start = startRoot)]
+        isDir = os.path.isdir(filePath)
 
-        if os.path.isdir(filePath):
+        if isDir and tool.get_flag('--no-dirs'):
+            scanned = []
+        else:
+            scanned = [os.path.relpath(filePath, start = startRoot)]
+
+        if isDir:
             for f in tool.listdir(filePath):
                 scanned += scan_file(filePath, f)
 

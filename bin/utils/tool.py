@@ -23,25 +23,29 @@ import sys
 from utils.output import Output
 
 class Tool:
-    def __init__(self, arg_names):
-        quiet = False
-
-        arg_values = [a.strip() for a in sys.argv[1 : ]]
-        arg_values = [a for a in arg_values if len(a) > 0]
-
-        if len(arg_values) > 0 and arg_values[0] == '-q':
-            quiet = True
-            arg_values = arg_values[1 : ]
-
+    def __init__(self, arg_names, flag_names = ''):
         required_num = 0
         optional_num = 0
         has_tail = False
         arg_names = arg_names.split()
+        flag_names = ['-q'] + flag_names.split()
 
         self.name = os.path.basename(sys.argv[0])
-        self.output = Output(self.name, quiet)
+        self.output = Output(self)
         self.arg_names = arg_names
         self.arg_db = {}
+        self.flag_names = flag_names
+        self.flag_db = {}
+
+        arg_values = [a.strip() for a in sys.argv[1 : ]]
+        arg_values = [a for a in arg_values if len(a) > 0]
+
+        for value in arg_values:
+            if value in flag_names:
+                self.flag_db[value] = True
+                arg_values = arg_values[1 : ]
+            else:
+                break
 
         for name in arg_names:
             if has_tail:
@@ -92,6 +96,9 @@ class Tool:
     def usage(self):
         message = 'Usage: {}'.format(self.name)
 
+        for flag in self.flag_names:
+            message += ' [{}]'.format(flag)
+
         for arg in self.arg_names:
             message += ' {}'.format(arg)
 
@@ -102,6 +109,9 @@ class Tool:
             return self.arg_db[name]
         else:
             return ''
+
+    def get_flag(self, flag):
+        return flag in self.flag_db
 
     def writefile(self, name, contents):
         self.output.info('Writing file {}'.format(name))
@@ -131,7 +141,7 @@ class Tool:
         self.output.shell(cmd)
         status, output = subprocess.getstatusoutput(cmd)
 
-        if not self.output.quiet:
+        if not self.get_flag('-q'):
             for line in output.splitlines():
                 self.output.shell('    {}'.format(line))
 
