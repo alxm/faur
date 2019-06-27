@@ -27,16 +27,20 @@ typedef struct APixels APixels;
 #include "math/a_fix.v.h"
 #include "platform/a_platform.v.h"
 
+typedef enum {
+    A_PIXELS__ALLOC = A_FLAG_BIT(0),
+    A_PIXELS__SCREEN = A_FLAG_BIT(1),
+} APixelsFlags;
+
 struct APixels {
-    int w, h;
     APixel* buffer;
-    size_t bufferSize;
     APlatformTexture* texture;
-    bool isSprite;
-    APixel bufferData[];
+    int w, h;
+    unsigned bufferSize;
+    APixelsFlags flags;
 };
 
-extern APixels* a_pixels__new(int W, int H, bool IsSprite, bool AllocBuffer);
+extern APixels* a_pixels__new(int W, int H, APixelsFlags Flags);
 extern APixels* a_pixels__sub(APixels* Source, int X, int Y, int Width, int Height);
 extern APixels* a_pixels__dup(const APixels* Pixels);
 extern void a_pixels__free(APixels* Pixels);

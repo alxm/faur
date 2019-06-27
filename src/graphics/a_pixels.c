@@ -18,23 +18,25 @@
 
 #include <a2x.v.h>
 
-APixels* a_pixels__new(int W, int H, bool IsSprite, bool AllocBuffer)
+APixels* a_pixels__new(int W, int H, APixelsFlags Flags)
 {
-    size_t bufferSize = (size_t)(AllocBuffer * W * H * (int)sizeof(APixel));
-    APixels* p = a_mem_zalloc(sizeof(APixels) + bufferSize);
+    APixels* p = a_mem_zalloc(sizeof(APixels));
 
     p->w = W;
     p->h = H;
-    p->buffer = p->bufferData;
-    p->bufferSize = bufferSize;
-    p->isSprite = IsSprite;
+    p->flags = Flags;
+
+    if(A_FLAG_TEST_ANY(Flags, A_PIXELS__ALLOC)) {
+        p->bufferSize = (unsigned)(W * H * (int)sizeof(APixel));
+        p->buffer = a_mem_malloc(p->bufferSize);
+    }
 
     return p;
 }
 
 APixels* a_pixels__sub(APixels* Source, int X, int Y, int Width, int Height)
 {
-    APixels* p = a_pixels__new(Width, Height, true, true);
+    APixels* p = a_pixels__new(Width, Height, A_PIXELS__ALLOC);
 
     const APixel* src = a_pixels__bufferGetFrom(Source, X, Y);
     APixel* dst = p->buffer;
@@ -51,10 +53,11 @@ APixels* a_pixels__sub(APixels* Source, int X, int Y, int Width, int Height)
 
 APixels* a_pixels__dup(const APixels* Pixels)
 {
-    APixels* p = a_mem_dup(Pixels, sizeof(APixels) + Pixels->bufferSize);
+    APixels* p = a_pixels__new(Pixels->w, Pixels->h, Pixels->flags);
 
-    p->buffer = p->bufferData;
-    p->texture = NULL;
+    if(A_FLAG_TEST_ANY(Pixels->flags, A_PIXELS__ALLOC)) {
+        memcpy(p->buffer, Pixels->buffer, p->bufferSize);
+    }
 
     return p;
 }
@@ -67,16 +70,26 @@ void a_pixels__free(APixels* Pixels)
 
     a_platform_api__textureFree(Pixels->texture);
 
+    if(A_FLAG_TEST_ANY(Pixels->flags, A_PIXELS__ALLOC)) {
+        free(Pixels->buffer);
+    }
+
     free(Pixels);
 }
 
 void a_pixels__bufferSet(APixels* Pixels, APixel* Buffer, int W, int H)
 {
+    #if A_CONFIG_BUILD_DEBUG
+        if(A_FLAG_TEST_ANY(Pixels->flags, A_PIXELS__ALLOC)) {
+            A__FATAL("a_pixels__bufferSet: Already allocated buffer");
+        }
+    #endif
+
     Pixels->w = W;
     Pixels->h = H;
 
     Pixels->buffer = Buffer;
-    Pixels->bufferSize = (size_t)(W * H * (int)sizeof(APixel));
+    Pixels->bufferSize = (unsigned)(W * H * (int)sizeof(APixel));
 }
 
 void a_pixels__commit(APixels* Pixels)

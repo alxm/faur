@@ -325,7 +325,7 @@ void a_platform_api__drawCircleFilled(int X, int Y, int Radius)
 
 APlatformTexture* a_platform_api__textureNew(const APixels* Pixels)
 {
-    if(!Pixels->isSprite && Pixels->texture) {
+    if(A_FLAG_TEST_ANY(Pixels->flags, A_PIXELS__SCREEN) && Pixels->texture) {
         return Pixels->texture;
     }
 
@@ -333,7 +333,24 @@ APlatformTexture* a_platform_api__textureNew(const APixels* Pixels)
 
     texture->pixels = Pixels;
 
-    if(Pixels->isSprite) {
+    if(A_FLAG_TEST_ANY(Pixels->flags, A_PIXELS__SCREEN)) {
+        texture->texture[A_TEXTURE__NORMAL] = SDL_CreateTexture(
+                                                a__sdlRenderer,
+                                                A_SDL__PIXEL_FORMAT,
+                                                SDL_TEXTUREACCESS_TARGET,
+                                                Pixels->w,
+                                                Pixels->h);
+
+        if(texture->texture[A_TEXTURE__NORMAL] == NULL) {
+            A__FATAL("SDL_CreateTexture: %s", SDL_GetError());
+        }
+
+        if(SDL_SetTextureBlendMode(
+            texture->texture[A_TEXTURE__NORMAL], SDL_BLENDMODE_BLEND) < 0) {
+
+            a_out__error("SDL_SetTextureBlendMode: %s", SDL_GetError());
+        }
+    } else {
         APixel* buffer = a_mem_dup(Pixels->buffer, Pixels->bufferSize);
 
         for(int t = 0; t < A_TEXTURE__NUM; t++) {
@@ -389,23 +406,6 @@ APlatformTexture* a_platform_api__textureNew(const APixels* Pixels)
         }
 
         free(buffer);
-    } else {
-        texture->texture[A_TEXTURE__NORMAL] = SDL_CreateTexture(
-                                                a__sdlRenderer,
-                                                A_SDL__PIXEL_FORMAT,
-                                                SDL_TEXTUREACCESS_TARGET,
-                                                Pixels->w,
-                                                Pixels->h);
-
-        if(texture->texture[A_TEXTURE__NORMAL] == NULL) {
-            A__FATAL("SDL_CreateTexture: %s", SDL_GetError());
-        }
-
-        if(SDL_SetTextureBlendMode(
-            texture->texture[A_TEXTURE__NORMAL], SDL_BLENDMODE_BLEND) < 0) {
-
-            a_out__error("SDL_SetTextureBlendMode: %s", SDL_GetError());
-        }
     }
 
     if(Pixels->texture) {

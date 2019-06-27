@@ -339,7 +339,7 @@ static void spansUpdate(const APixels* Pixels, APlatformTexture* Texture)
 
 APlatformTexture* a_platform_api__textureNew(const APixels* Pixels)
 {
-    if(!Pixels->isSprite) {
+    if(A_FLAG_TEST_ANY(Pixels->flags, A_PIXELS__SCREEN)) {
         return NULL;
     }
 

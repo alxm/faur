@@ -110,7 +110,7 @@ ASprite* a_sprite_newBlank(int Width, int Height, unsigned Frames, bool ColorKey
     s->framesNum = Frames;
 
     for(unsigned f = Frames; f--; ) {
-        s->pixels[f] = a_pixels__new(Width, Height, true, true);
+        s->pixels[f] = a_pixels__new(Width, Height, A_PIXELS__ALLOC);
 
         if(ColorKeyed) {
             a_pixels__fill(s->pixels[f], a_color__key);

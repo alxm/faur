@@ -40,7 +40,7 @@ static APixels* pngToPixels(png_structp Png, png_infop Info)
     unsigned numChannels = png_get_channels(Png, Info);
     png_bytepp rows = png_get_rows(Png, Info);
 
-    APixels* pixels = a_pixels__new((int)w, (int)h, true, true);
+    APixels* pixels = a_pixels__new((int)w, (int)h, A_PIXELS__ALLOC);
     APixel* buffer = pixels->buffer;
 
     for(png_uint_32 y = h; y--; rows++) {

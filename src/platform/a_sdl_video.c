@@ -166,8 +166,13 @@ void a_platform_api__screenInit(void)
                     A_CONFIG_SCREEN_ZOOM);
     }
 
-    g_pixels = a_pixels__new(
-                g_size.x, g_size.y, false, A_CONFIG_SCREEN_ALLOCATE);
+    APixelsFlags pFlags = A_PIXELS__SCREEN;
+
+    #if A_CONFIG_SCREEN_ALLOCATE
+        pFlags |= A_PIXELS__ALLOC;
+    #endif
+
+    g_pixels = a_pixels__new(g_size.x, g_size.y, pFlags);
 
     #if A_CONFIG_LIB_SDL == 1
         uint32_t videoFlags = SDL_SWSURFACE;
@@ -190,8 +195,10 @@ void a_platform_api__screenInit(void)
                 }
             }
 
-            a_pixels__bufferSet(
-                g_pixels, g_sdlScreen->pixels, g_size.x, g_size.y);
+            a_pixels__bufferSet(g_pixels,
+                                g_sdlScreen->pixels,
+                                g_sdlScreen->pitch / sizeof(APixel),
+                                g_sdlScreen->h);
         #endif
     #elif A_CONFIG_LIB_SDL == 2
         int ret;
