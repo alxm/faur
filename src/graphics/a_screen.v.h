@@ -39,4 +39,4 @@ extern AScreen a__screen;
 extern void a_screen__tick(void);
 extern void a_screen__draw(void);
 
-extern void a_screen__toSprite(ASprite* Sprite);
+extern void a_screen__toSprite(ASprite* Sprite, unsigned Frame);

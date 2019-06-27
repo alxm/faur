@@ -247,7 +247,7 @@ bool a_screen_boxInsideClip(int X, int Y, int W, int H)
         && X + W <= a__screen.clipX2 && Y + H <= a__screen.clipY2;
 }
 
-void a_screen__toSprite(ASprite* Sprite)
+void a_screen__toSprite(ASprite* Sprite, unsigned Frame)
 {
     AVectorInt spriteSize = a_sprite_sizeGet(Sprite);
 
@@ -262,14 +262,14 @@ void a_screen__toSprite(ASprite* Sprite)
     }
 
     #if A_CONFIG_LIB_RENDER_SOFTWARE
-        a_pixels__copy(a_sprite__pixelsGet(Sprite, 0), a__screen.pixels);
+        a_pixels__copy(a_sprite__pixelsGet(Sprite, Frame), a__screen.pixels);
     #else
         a_color_push();
         a_color_blendSet(A_COLOR_BLEND_PLAIN);
         a_color_fillBlitSet(false);
 
         a_platform_api__renderTargetSet(
-            a_sprite__pixelsGet(Sprite, 0)->texture);
+            a_sprite__pixelsGet(Sprite, Frame)->texture);
         a_platform_api__renderTargetClipSet(0, 0, spriteSize.x, spriteSize.y);
 
         a_platform_api__textureBlit(a__screen.pixels->texture, 0, 0);
