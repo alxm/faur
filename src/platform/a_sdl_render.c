@@ -325,10 +325,6 @@ void a_platform_api__drawCircleFilled(int X, int Y, int Radius)
 
 APlatformTexture* a_platform_api__textureNew(const APixels* Pixels)
 {
-    if(A_FLAG_TEST_ANY(Pixels->flags, A_PIXELS__SCREEN) && Pixels->texture) {
-        return Pixels->texture;
-    }
-
     APlatformTexture* texture = a_mem_zalloc(sizeof(APlatformTexture));
 
     texture->pixels = Pixels;
@@ -406,10 +402,6 @@ APlatformTexture* a_platform_api__textureNew(const APixels* Pixels)
         }
 
         free(buffer);
-    }
-
-    if(Pixels->texture) {
-        a_platform_api__textureFree(Pixels->texture);
     }
 
     return texture;

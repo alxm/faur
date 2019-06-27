@@ -339,26 +339,20 @@ static void spansUpdate(const APixels* Pixels, APlatformTexture* Texture)
 
 APlatformTexture* a_platform_api__textureNew(const APixels* Pixels)
 {
-    if(A_FLAG_TEST_ANY(Pixels->flags, A_PIXELS__SCREEN)) {
-        return NULL;
+    size_t bytesNeeded = 0;
+
+    if(hasTransparency(Pixels)) {
+        bytesNeeded = spansBytesNeeded(Pixels);
     }
 
-    APlatformTexture* texture = Pixels->texture;
-    size_t bytesNeeded = hasTransparency(Pixels) ? spansBytesNeeded(Pixels) : 0;
+    APlatformTexture* texture = a_mem_malloc(
+                                    sizeof(APlatformTexture) + bytesNeeded);
 
-    if(texture == NULL || bytesNeeded > (texture->spansSize >> 1)) {
-        a_platform_api__textureFree(texture);
-        texture = a_mem_malloc(sizeof(APlatformTexture) + bytesNeeded);
-
-        texture->pixels = Pixels;
-        texture->spansSize = (unsigned)bytesNeeded << 1;
-    }
+    texture->pixels = Pixels;
+    texture->spansSize = (unsigned)bytesNeeded;
 
     if(bytesNeeded > 0) {
-        texture->spansSize |= 1;
         spansUpdate(Pixels, texture);
-    } else {
-        texture->spansSize &= ~1u;
     }
 
     return texture;
@@ -384,7 +378,7 @@ void a_platform_api__textureBlit(const APlatformTexture* Texture, int X, int Y)
     g_blitters
         [a__color.blend]
         [a__color.fillBlit]
-        [Texture->spansSize & 1]
+        [Texture->spansSize > 0]
         [!a_screen_boxInsideClip(X, Y, pixels->w, pixels->h)]
             (Texture, X, Y);
 }
@@ -394,7 +388,7 @@ void a_platform_api__textureBlitEx(const APlatformTexture* Texture, int X, int Y
     g_blittersEx
         [a__color.blend]
         [a__color.fillBlit]
-        [Texture->spansSize & 1]
+        [Texture->spansSize > 0]
             (Texture, X, Y, Scale, Angle, CenterX, CenterY);
 }
 #endif // A_CONFIG_LIB_RENDER_SOFTWARE

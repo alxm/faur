@@ -94,7 +94,18 @@ void a_pixels__bufferSet(APixels* Pixels, APixel* Buffer, int W, int H)
 
 void a_pixels__commit(APixels* Pixels)
 {
-    // Function is responsible for freeing the old Pixels->texture
+    #if A_CONFIG_LIB_RENDER_SOFTWARE
+        if(A_FLAG_TEST_ANY(Pixels->flags, A_PIXELS__SCREEN)) {
+            return;
+        }
+
+        a_platform_api__textureFree(Pixels->texture);
+    #else
+        if(Pixels->texture != NULL) {
+            return;
+        }
+    #endif
+
     Pixels->texture = a_platform_api__textureNew(Pixels);
 }
 
