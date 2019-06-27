@@ -266,12 +266,13 @@ void a_screen__toSprite(ASprite* Sprite)
     #else
         a_color_push();
         a_color_blendSet(A_COLOR_BLEND_PLAIN);
+        a_color_fillBlitSet(false);
 
         a_platform_api__renderTargetSet(
             a_sprite__pixelsGet(Sprite, 0)->texture);
         a_platform_api__renderTargetClipSet(0, 0, spriteSize.x, spriteSize.y);
 
-        a_platform_api__textureBlit(a__screen.pixels->texture, 0, 0, false);
+        a_platform_api__textureBlit(a__screen.pixels->texture, 0, 0);
 
         a_platform_api__renderTargetSet(a__screen.pixels->texture);
         a_platform_api__renderTargetClipSet(a__screen.clipX,

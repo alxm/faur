@@ -474,8 +474,9 @@ void a_platform_api__screenShow(void)
         #else
             a_color_push();
             a_color_blendSet(A_COLOR_BLEND_PLAIN);
+            a_color_fillBlitSet(false);
 
-            a_platform_api__textureBlit(g_pixels->texture, 0, 0, false);
+            a_platform_api__textureBlit(g_pixels->texture, 0, 0);
 
             a_platform_api__renderTargetSet(g_pixels->texture);
             a_platform_api__renderTargetClipSet(a__screen.clipX,

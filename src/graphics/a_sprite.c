@@ -165,10 +165,7 @@ void a_sprite_free(ASprite* Sprite)
 
 void a_sprite_blit(const ASprite* Sprite, unsigned Frame, int X, int Y)
 {
-    a_platform_api__textureBlit(Sprite->pixels[Frame]->texture,
-                                X,
-                                Y,
-                                a__color.fillBlit);
+    a_platform_api__textureBlit(Sprite->pixels[Frame]->texture, X, Y);
 }
 
 void a_sprite_blitEx(const ASprite* Sprite, unsigned Frame, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY)
@@ -179,8 +176,7 @@ void a_sprite_blitEx(const ASprite* Sprite, unsigned Frame, int X, int Y, AFix S
                                   Scale,
                                   a_fix_angleWrap(Angle),
                                   CenterX,
-                                  CenterY,
-                                  a__color.fillBlit);
+                                  CenterY);
 }
 
 void a_sprite_swapColor(ASprite* Sprite, APixel OldColor, APixel NewColor)

@@ -430,7 +430,7 @@ void a_platform_api__textureFree(APlatformTexture* Texture)
     free(Texture);
 }
 
-void a_platform_api__textureBlit(const APlatformTexture* Texture, int X, int Y, bool FillFlat)
+void a_platform_api__textureBlit(const APlatformTexture* Texture, int X, int Y)
 {
     a_platform_api__textureBlitEx(Texture,
                                   X + Texture->pixels->w / 2,
@@ -438,16 +438,15 @@ void a_platform_api__textureBlit(const APlatformTexture* Texture, int X, int Y, 
                                   A_FIX_ONE,
                                   0,
                                   0,
-                                  0,
-                                  FillFlat);
+                                  0);
 }
 
-void a_platform_api__textureBlitEx(const APlatformTexture* Texture, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY, bool FillFlat)
+void a_platform_api__textureBlitEx(const APlatformTexture* Texture, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY)
 {
     SDL_Texture* tex;
     SDL_BlendMode blend = pixelBlendToSdlBlend();
 
-    if(FillFlat) {
+    if(a__color.fillBlit) {
         tex = Texture->texture[A_TEXTURE__COLORMOD_FLAT];
     } else if(blend == SDL_BLENDMODE_MOD) {
         tex = Texture->texture[A_TEXTURE__COLORMOD_BITMAP];
@@ -463,7 +462,7 @@ void a_platform_api__textureBlitEx(const APlatformTexture* Texture, int X, int Y
         a_out__error("SDL_SetTextureAlphaMod: %s", SDL_GetError());
     }
 
-    if(FillFlat) {
+    if(a__color.fillBlit) {
         if(SDL_SetTextureColorMod(tex,
                                   (uint8_t)a__color.rgb.r,
                                   (uint8_t)a__color.rgb.g,
@@ -494,7 +493,7 @@ void a_platform_api__textureBlitEx(const APlatformTexture* Texture, int X, int Y
         a_out__error("SDL_RenderCopyEx: %s", SDL_GetError());
     }
 
-    if(FillFlat) {
+    if(a__color.fillBlit) {
         if(SDL_SetTextureColorMod(tex, 0xff, 0xff, 0xff) < 0) {
             a_out__error("SDL_SetTextureColorMod: %s", SDL_GetError());
         }

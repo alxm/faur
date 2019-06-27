@@ -373,7 +373,7 @@ void a_platform_api__textureFree(APlatformTexture* Texture)
     free(Texture);
 }
 
-void a_platform_api__textureBlit(const APlatformTexture* Texture, int X, int Y, bool FillFlat)
+void a_platform_api__textureBlit(const APlatformTexture* Texture, int X, int Y)
 {
     const APixels* pixels = Texture->pixels;
 
@@ -383,17 +383,17 @@ void a_platform_api__textureBlit(const APlatformTexture* Texture, int X, int Y, 
 
     g_blitters
         [a__color.blend]
-        [FillFlat]
+        [a__color.fillBlit]
         [Texture->spansSize & 1]
         [!a_screen_boxInsideClip(X, Y, pixels->w, pixels->h)]
             (Texture, X, Y);
 }
 
-void a_platform_api__textureBlitEx(const APlatformTexture* Texture, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY, bool FillFlat)
+void a_platform_api__textureBlitEx(const APlatformTexture* Texture, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY)
 {
     g_blittersEx
         [a__color.blend]
-        [FillFlat]
+        [a__color.fillBlit]
         [Texture->spansSize & 1]
             (Texture, X, Y, Scale, Angle, CenterX, CenterY);
 }
