@@ -30,7 +30,6 @@ typedef enum {
 } APlatformTextureVersion;
 
 struct APlatformTexture {
-    const APixels* pixels;
     SDL_Texture* texture[A_TEXTURE__NUM];
 };
 
@@ -327,8 +326,6 @@ APlatformTexture* a_platform_api__textureNew(const APixels* Pixels)
 {
     APlatformTexture* texture = a_mem_zalloc(sizeof(APlatformTexture));
 
-    texture->pixels = Pixels;
-
     if(A_FLAG_TEST_ANY(Pixels->flags, A_PIXELS__SCREEN)) {
         texture->texture[A_TEXTURE__NORMAL] = SDL_CreateTexture(
                                                 a__sdlRenderer,
@@ -422,28 +419,23 @@ void a_platform_api__textureFree(APlatformTexture* Texture)
     free(Texture);
 }
 
-void a_platform_api__textureBlit(const APlatformTexture* Texture, int X, int Y)
+void a_platform_api__textureBlit(const APixels* Pixels, int X, int Y)
 {
-    a_platform_api__textureBlitEx(Texture,
-                                  X + Texture->pixels->w / 2,
-                                  Y + Texture->pixels->h / 2,
-                                  A_FIX_ONE,
-                                  0,
-                                  0,
-                                  0);
+    a_platform_api__textureBlitEx(
+        Pixels, X + Pixels->w / 2, Y + Pixels->h / 2, A_FIX_ONE, 0, 0, 0);
 }
 
-void a_platform_api__textureBlitEx(const APlatformTexture* Texture, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY)
+void a_platform_api__textureBlitEx(const APixels* Pixels, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY)
 {
     SDL_Texture* tex;
     SDL_BlendMode blend = pixelBlendToSdlBlend();
 
     if(a__color.fillBlit) {
-        tex = Texture->texture[A_TEXTURE__COLORMOD_FLAT];
+        tex = Pixels->texture->texture[A_TEXTURE__COLORMOD_FLAT];
     } else if(blend == SDL_BLENDMODE_MOD) {
-        tex = Texture->texture[A_TEXTURE__COLORMOD_BITMAP];
+        tex = Pixels->texture->texture[A_TEXTURE__COLORMOD_BITMAP];
     } else {
-        tex = Texture->texture[A_TEXTURE__NORMAL];
+        tex = Pixels->texture->texture[A_TEXTURE__NORMAL];
     }
 
     if(SDL_SetTextureBlendMode(tex, blend) < 0) {
@@ -465,14 +457,14 @@ void a_platform_api__textureBlitEx(const APlatformTexture* Texture, int X, int Y
     }
 
     SDL_Point center = {
-        a_fix_toInt((Texture->pixels->w / 2 + CenterX) * Scale),
-        a_fix_toInt((Texture->pixels->h / 2 + CenterY) * Scale)
+        a_fix_toInt((Pixels->w / 2 + CenterX) * Scale),
+        a_fix_toInt((Pixels->h / 2 + CenterY) * Scale)
     };
 
     SDL_Rect dest = {X - center.x,
                      Y - center.y,
-                     a_fix_toInt(Texture->pixels->w * Scale),
-                     a_fix_toInt(Texture->pixels->h * Scale)};
+                     a_fix_toInt(Pixels->w * Scale),
+                     a_fix_toInt(Pixels->h * Scale)};
 
     if(SDL_RenderCopyEx(a__sdlRenderer,
                         tex,

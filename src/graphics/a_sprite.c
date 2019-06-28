@@ -165,12 +165,12 @@ void a_sprite_free(ASprite* Sprite)
 
 void a_sprite_blit(const ASprite* Sprite, unsigned Frame, int X, int Y)
 {
-    a_platform_api__textureBlit(Sprite->pixels[Frame]->texture, X, Y);
+    a_platform_api__textureBlit(Sprite->pixels[Frame], X, Y);
 }
 
 void a_sprite_blitEx(const ASprite* Sprite, unsigned Frame, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY)
 {
-    a_platform_api__textureBlitEx(Sprite->pixels[Frame]->texture,
+    a_platform_api__textureBlitEx(Sprite->pixels[Frame],
                                   X,
                                   Y,
                                   Scale,

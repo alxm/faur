@@ -22,12 +22,12 @@
     #define A__COLORKEY block
 #endif
 
-static void A__FUNC_NAME_EX(const APlatformTexture* Texture, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY)
+static void A__FUNC_NAME_EX(const APixels* Pixels, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY)
 {
     A__BLEND_SETUP;
 
-    const AVectorInt spriteSize = {Texture->pixels->w, Texture->pixels->h};
-    const APixel* const spritePixels = Texture->pixels->buffer;
+    const AVectorInt spriteSize = {Pixels->w, Pixels->h};
+    const APixel* const spritePixels = Pixels->buffer;
 
     const AVectorInt screenSize = a_screen_sizeGet();
     APixel* const screenPixels = a__screen.pixels->buffer;

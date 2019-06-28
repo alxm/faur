@@ -27,13 +27,11 @@ typedef struct {
 } AScanline;
 
 struct APlatformTexture {
-    const APixels* pixels;
-    unsigned spansSize;
-    unsigned spans[];
+    unsigned spans[1];
 };
 
-typedef void (*ABlitter)(const APlatformTexture* Texture, int X, int Y);
-typedef void (*ABlitterEx)(const APlatformTexture* Texture, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY);
+typedef void (*ABlitter)(const APixels* Pixels, int X, int Y);
+typedef void (*ABlitterEx)(const APixels* Pixels, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY);
 
 static ABlitter g_blitters[A_COLOR_BLEND_NUM][2][2][2]; // [Blend][Fill][ColorKey][Clip]
 static ABlitterEx g_blittersEx[A_COLOR_BLEND_NUM][2][2]; // [Blend][Fill][ColorKey]
@@ -339,19 +337,10 @@ static void spansUpdate(const APixels* Pixels, APlatformTexture* Texture)
 
 APlatformTexture* a_platform_api__textureNew(const APixels* Pixels)
 {
-    size_t bytesNeeded = 0;
+    APlatformTexture* texture = NULL;
 
     if(hasTransparency(Pixels)) {
-        bytesNeeded = spansBytesNeeded(Pixels);
-    }
-
-    APlatformTexture* texture = a_mem_malloc(
-                                    sizeof(APlatformTexture) + bytesNeeded);
-
-    texture->pixels = Pixels;
-    texture->spansSize = (unsigned)bytesNeeded;
-
-    if(bytesNeeded > 0) {
+        texture = a_mem_malloc(spansBytesNeeded(Pixels));
         spansUpdate(Pixels, texture);
     }
 
@@ -367,28 +356,26 @@ void a_platform_api__textureFree(APlatformTexture* Texture)
     free(Texture);
 }
 
-void a_platform_api__textureBlit(const APlatformTexture* Texture, int X, int Y)
+void a_platform_api__textureBlit(const APixels* Pixels, int X, int Y)
 {
-    const APixels* pixels = Texture->pixels;
-
-    if(!a_screen_boxOnClip(X, Y, pixels->w, pixels->h)) {
+    if(!a_screen_boxOnClip(X, Y, Pixels->w, Pixels->h)) {
         return;
     }
 
     g_blitters
         [a__color.blend]
         [a__color.fillBlit]
-        [Texture->spansSize > 0]
-        [!a_screen_boxInsideClip(X, Y, pixels->w, pixels->h)]
-            (Texture, X, Y);
+        [Pixels->texture != NULL]
+        [!a_screen_boxInsideClip(X, Y, Pixels->w, Pixels->h)]
+            (Pixels, X, Y);
 }
 
-void a_platform_api__textureBlitEx(const APlatformTexture* Texture, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY)
+void a_platform_api__textureBlitEx(const APixels* Pixels, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY)
 {
     g_blittersEx
         [a__color.blend]
         [a__color.fillBlit]
-        [Texture->spansSize > 0]
-            (Texture, X, Y, Scale, Angle, CenterX, CenterY);
+        [Pixels->texture != NULL]
+            (Pixels, X, Y, Scale, Angle, CenterX, CenterY);
 }
 #endif // A_CONFIG_LIB_RENDER_SOFTWARE
