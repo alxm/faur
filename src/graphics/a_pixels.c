@@ -28,7 +28,7 @@ APixels* a_pixels__new(int W, int H, APixelsFlags Flags)
 
     if(A_FLAG_TEST_ANY(Flags, A_PIXELS__ALLOC)) {
         p->bufferSize = (unsigned)(W * H * (int)sizeof(APixel));
-        p->buffer = a_mem_malloc(p->bufferSize);
+        p->buffer = a_mem_zalloc(p->bufferSize);
     }
 
     return p;

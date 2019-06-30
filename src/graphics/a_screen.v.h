@@ -27,6 +27,9 @@ typedef struct AScreen AScreen;
 
 struct AScreen {
     APixels* pixels;
+    #if !A_CONFIG_LIB_RENDER_SOFTWARE
+        APlatformTexture* texture;
+    #endif
     int clipX, clipY;
     int clipX2, clipY2;
     int clipWidth, clipHeight;

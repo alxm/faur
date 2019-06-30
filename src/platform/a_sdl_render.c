@@ -483,35 +483,4 @@ void a_platform_api__textureBlitEx(const APixels* Pixels, int X, int Y, AFix Sca
         }
     }
 }
-
-void a_platform_api__renderTargetSet(APlatformTexture* Texture)
-{
-    if(SDL_SetRenderTarget(
-        a__sdlRenderer, Texture->texture[A_TEXTURE__NORMAL]) < 0) {
-
-        A__FATAL("SDL_SetRenderTarget: %s", SDL_GetError());
-    }
-}
-
-void a_platform_api__renderTargetPixelsCapture(APixel* Pixels, int Width)
-{
-    // Unreliable on texture targets
-    if(SDL_RenderReadPixels(a__sdlRenderer,
-                            NULL,
-                            A_SDL__PIXEL_FORMAT,
-                            Pixels,
-                            Width * (int)sizeof(APixel)) < 0) {
-
-        A__FATAL("SDL_RenderReadPixels: %s", SDL_GetError());
-    }
-}
-
-void a_platform_api__renderTargetClipSet(int X, int Y, int Width, int Height)
-{
-    SDL_Rect area = {X, Y, Width, Height};
-
-    if(SDL_RenderSetClipRect(a__sdlRenderer, &area) < 0) {
-        a_out__error("SDL_RenderSetClipRect: %s", SDL_GetError());
-    }
-}
 #endif // A_CONFIG_LIB_RENDER_SDL

@@ -33,6 +33,11 @@ static void a_screen__init(void)
     AVectorInt size = a_platform_api__screenSizeGet();
 
     a__screen.pixels = a_platform_api__screenPixelsGet();
+
+    #if !A_CONFIG_LIB_RENDER_SOFTWARE
+        a__screen.texture = a_platform_api__screenTextureGet();
+    #endif
+
     a__screen.clipX = 0;
     a__screen.clipY = 0;
     a__screen.clipX2 = size.x;
@@ -116,8 +121,7 @@ void a_screen__draw(void)
 APixel* a_screen_pixelsGetBuffer(void)
 {
     #if !A_CONFIG_LIB_RENDER_SOFTWARE
-        a_platform_api__renderTargetPixelsCapture(
-            a__screen.pixels->buffer, a__screen.pixels->w);
+        a_platform_api__screenTextureRead(a__screen.pixels);
     #endif
 
     return a__screen.pixels->buffer;
@@ -160,7 +164,8 @@ void a_screen_push(ASprite* Sprite, unsigned Frame)
     a__screen.pixels = a_sprite__pixelsGet(Sprite, Frame);
 
     #if !A_CONFIG_LIB_RENDER_SOFTWARE
-        a_platform_api__renderTargetSet(a__screen.pixels->texture);
+        a__screen.texture = a_sprite__pixelsGet(Sprite, Frame)->texture;
+        a_platform_api__screenTextureSet(a__screen.texture);
     #endif
 
     a_screen_clipReset();
@@ -182,11 +187,11 @@ void a_screen_pop(void)
     free(screen);
 
     #if !A_CONFIG_LIB_RENDER_SOFTWARE
-        a_platform_api__renderTargetSet(a__screen.pixels->texture);
-        a_platform_api__renderTargetClipSet(a__screen.clipX,
-                                            a__screen.clipY,
-                                            a__screen.clipWidth,
-                                            a__screen.clipHeight);
+        a_platform_api__screenTextureSet(a__screen.texture);
+        a_platform_api__screenClipSet(a__screen.clipX,
+                                      a__screen.clipY,
+                                      a__screen.clipWidth,
+                                      a__screen.clipHeight);
     #endif
 }
 
@@ -213,7 +218,7 @@ void a_screen_clipSet(int X, int Y, int Width, int Height)
     a__screen.clipHeight = Height;
 
     #if !A_CONFIG_LIB_RENDER_SOFTWARE
-        a_platform_api__renderTargetClipSet(X, Y, Width, Height);
+        a_platform_api__screenClipSet(X, Y, Width, Height);
     #endif
 }
 
@@ -268,17 +273,17 @@ void a_screen__toSprite(ASprite* Sprite, unsigned Frame)
         a_color_blendSet(A_COLOR_BLEND_PLAIN);
         a_color_fillBlitSet(false);
 
-        a_platform_api__renderTargetSet(
+        a_platform_api__screenTextureSet(
             a_sprite__pixelsGet(Sprite, Frame)->texture);
-        a_platform_api__renderTargetClipSet(0, 0, spriteSize.x, spriteSize.y);
+        a_platform_api__screenClipSet(0, 0, spriteSize.x, spriteSize.y);
 
-        a_platform_api__textureBlit(a__screen.pixels, 0, 0);
+        a_platform_api__screenDraw();
 
-        a_platform_api__renderTargetSet(a__screen.pixels->texture);
-        a_platform_api__renderTargetClipSet(a__screen.clipX,
-                                            a__screen.clipY,
-                                            a__screen.clipWidth,
-                                            a__screen.clipHeight);
+        a_platform_api__screenTextureSet(a__screen.texture);
+        a_platform_api__screenClipSet(a__screen.clipX,
+                                      a__screen.clipY,
+                                      a__screen.clipWidth,
+                                      a__screen.clipHeight);
 
         a_color_pop();
     #endif

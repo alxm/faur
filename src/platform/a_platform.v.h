@@ -43,6 +43,11 @@ extern void a_platform_api__timeMsWait(uint32_t Ms);
 extern void a_platform_api__screenInit(void);
 extern void a_platform_api__screenUninit(void);
 extern void a_platform_api__screenClear(void);
+extern APlatformTexture* a_platform_api__screenTextureGet(void);
+extern void a_platform_api__screenTextureSet(APlatformTexture* Texture);
+extern void a_platform_api__screenTextureRead(APixels* Pixels);
+extern void a_platform_api__screenClipSet(int X, int Y, int Width, int Height);
+extern void a_platform_api__screenDraw(void);
 extern void a_platform_api__screenShow(void);
 extern APixels* a_platform_api__screenPixelsGet(void);
 extern AVectorInt a_platform_api__screenSizeGet(void);
@@ -55,9 +60,6 @@ extern void a_platform_api__screenMouseCursorSet(bool Show);
 
 extern void a_platform_api__renderSetDrawColor(void);
 extern void a_platform_api__renderSetBlendMode(void);
-extern void a_platform_api__renderTargetSet(APlatformTexture* Texture);
-extern void a_platform_api__renderTargetPixelsCapture(APixel* Pixels, int Width);
-extern void a_platform_api__renderTargetClipSet(int X, int Y, int Width, int Height);
 
 extern void a_platform_api__drawPixel(int X, int Y);
 extern void a_platform_api__drawLine(int X1, int Y1, int X2, int Y2);
