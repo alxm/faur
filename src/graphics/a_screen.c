@@ -168,6 +168,8 @@ void a_screen_push(ASprite* Sprite, unsigned Frame)
     #if !A_CONFIG_LIB_RENDER_SOFTWARE
         a__screen.texture = a_sprite__textureGet(Sprite, Frame);
         a_platform_api__screenTextureSet(a__screen.texture);
+
+        A_FLAG_SET(a_sprite__pixelsGet(Sprite)->flags, A_PIXELS__DIRTY);
     #endif
 
     a_screen_clipReset();

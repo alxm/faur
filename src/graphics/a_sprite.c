@@ -134,15 +134,18 @@ ASprite* a_sprite_dup(const ASprite* Sprite)
         s->textures[f] = a_platform_api__textureNew(s->pixels, f);
 
         #if !A_CONFIG_LIB_RENDER_SOFTWARE
-            // Sprite's pixel buffer may be stale, blit the real texture
-            a_color_push();
-            a_screen_push(s, f);
+            if(A_FLAG_TEST_ANY(Sprite->pixels->flags, A_PIXELS__DIRTY)) {
+                // The sprite's pixel buffer may be stale if the texture
+                // was already set as render target and drawn to
+                a_color_push();
+                a_screen_push(s, f);
 
-            a_color_reset();
-            a_sprite_blit(Sprite, f, 0, 0);
+                a_color_reset();
+                a_sprite_blit(Sprite, f, 0, 0);
 
-            a_screen_pop();
-            a_color_pop();
+                a_screen_pop();
+                a_color_pop();
+            }
         #endif
     }
 

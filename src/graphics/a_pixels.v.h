@@ -29,6 +29,7 @@ typedef struct APixels APixels;
 
 typedef enum {
     A_PIXELS__ALLOC = A_FLAG_BIT(0),
+    A_PIXELS__DIRTY = A_FLAG_BIT(1),
 } APixelsFlags;
 
 struct APixels {
