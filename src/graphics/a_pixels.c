@@ -20,31 +20,29 @@
 
 APixels* a_pixels__new(int W, int H, unsigned Frames, APixelsFlags Flags)
 {
-    APixels* p = a_mem_zalloc(sizeof(APixels));
+    APixels* p = a_mem_malloc(sizeof(APixels));
 
-    p->w = W;
-    p->h = H;
-    p->flags = Flags;
-    p->framesNum = Frames;
-
-    if(A_FLAG_TEST_ANY(Flags, A_PIXELS__ALLOC)) {
-        p->bufferLen = (unsigned)(W * H);
-        p->bufferSize = p->bufferLen * (unsigned)sizeof(APixel);
-        p->buffer = a_mem_zalloc(p->bufferSize * Frames);
-    }
+    a_pixels__init(p, W, H, Frames, Flags | A_PIXELS__DYNAMIC);
 
     return p;
 }
 
-APixels* a_pixels__dup(const APixels* Pixels)
+void a_pixels__init(APixels* Pixels, int W, int H, unsigned Frames, APixelsFlags Flags)
 {
-    APixels* p = a_mem_dup(Pixels, sizeof(APixels));
+    Pixels->w = W;
+    Pixels->h = H;
+    Pixels->framesNum = Frames;
+    Pixels->flags = Flags;
 
-    if(A_FLAG_TEST_ANY(p->flags, A_PIXELS__ALLOC)) {
-        p->buffer = a_mem_dup(p->buffer, p->bufferSize * p->framesNum);
+    if(A_FLAG_TEST_ANY(Flags, A_PIXELS__ALLOC)) {
+        Pixels->bufferLen = (unsigned)(W * H);
+        Pixels->bufferSize = Pixels->bufferLen * (unsigned)sizeof(APixel);
+        Pixels->buffer = a_mem_zalloc(Pixels->bufferSize * Frames);
+    } else {
+        Pixels->bufferLen = 0;
+        Pixels->bufferSize = 0;
+        Pixels->buffer = NULL;
     }
-
-    return p;
 }
 
 void a_pixels__free(APixels* Pixels)
@@ -57,17 +55,28 @@ void a_pixels__free(APixels* Pixels)
         free(Pixels->buffer);
     }
 
-    free(Pixels);
+    if(A_FLAG_TEST_ANY(Pixels->flags, A_PIXELS__DYNAMIC)) {
+        free(Pixels);
+    }
 }
 
-void a_pixels__copy(const APixels* Dst, unsigned DstFrame, const APixels* Src, unsigned SrcFrame)
+void a_pixels__copy(APixels* Dst, const APixels* Src)
+{
+    memcpy(Dst, Src, sizeof(APixels));
+
+    if(A_FLAG_TEST_ANY(Dst->flags, A_PIXELS__ALLOC)) {
+        Dst->buffer = a_mem_dup(Dst->buffer, Dst->bufferSize * Dst->framesNum);
+    }
+}
+
+void a_pixels__copyFrame(const APixels* Dst, unsigned DstFrame, const APixels* Src, unsigned SrcFrame)
 {
     memcpy(a_pixels__bufferGetFrom(Dst, DstFrame, 0, 0),
            a_pixels__bufferGetFrom(Src, SrcFrame, 0, 0),
            Src->bufferSize);
 }
 
-void a_pixels__copyEx(const APixels* Dst, unsigned DstFrame, const APixels* SrcPixels, unsigned SrcFrame, int SrcX, int SrcY)
+void a_pixels__copyFrameEx(const APixels* Dst, unsigned DstFrame, const APixels* SrcPixels, unsigned SrcFrame, int SrcX, int SrcY)
 {
     APixel* dst = a_pixels__bufferGetStart(Dst, DstFrame);
     const APixel* src = a_pixels__bufferGetFrom(

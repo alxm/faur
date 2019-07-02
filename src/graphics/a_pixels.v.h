@@ -30,23 +30,25 @@ typedef struct APixels APixels;
 typedef enum {
     A_PIXELS__ALLOC = A_FLAG_BIT(0),
     A_PIXELS__DIRTY = A_FLAG_BIT(1),
+    A_PIXELS__DYNAMIC = A_FLAG_BIT(2),
 } APixelsFlags;
 
 struct APixels {
-    APixel* buffer; // [w * h * framesNum]
     int w, h;
+    unsigned framesNum;
     unsigned bufferLen;
     unsigned bufferSize;
-    unsigned framesNum;
     APixelsFlags flags;
+    APixel* buffer; // [w * h * framesNum]
 };
 
 extern APixels* a_pixels__new(int W, int H, unsigned Frames, APixelsFlags Flags);
-extern APixels* a_pixels__dup(const APixels* Pixels);
+extern void a_pixels__init(APixels* Pixels, int W, int H, unsigned Frames, APixelsFlags Flags);
 extern void a_pixels__free(APixels* Pixels);
 
-extern void a_pixels__copy(const APixels* Dst, unsigned DstFrame, const APixels* Src, unsigned SrcFrame);
-extern void a_pixels__copyEx(const APixels* Dst, unsigned DstFrame, const APixels* SrcPixels, unsigned SrcFrame, int SrcX, int SrcY);
+extern void a_pixels__copy(APixels* Dst, const APixels* Src);
+extern void a_pixels__copyFrame(const APixels* Dst, unsigned DstFrame, const APixels* Src, unsigned SrcFrame);
+extern void a_pixels__copyFrameEx(const APixels* Dst, unsigned DstFrame, const APixels* SrcPixels, unsigned SrcFrame, int SrcX, int SrcY);
 extern void a_pixels__copyToBuffer(const APixels* Src, APixel* Dst);
 
 extern void a_pixels__bufferSet(APixels* Pixels, APixel* Buffer, int W, int H);

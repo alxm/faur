@@ -184,7 +184,7 @@ void a_screen_pop(void)
     }
 
     #if A_CONFIG_LIB_RENDER_SOFTWARE
-        a_sprite__commit(a__screen.sprite, a__screen.frame);
+        a_sprite__textureCommit(a__screen.sprite, a__screen.frame);
     #endif
 
     a__screen = *screen;
@@ -271,7 +271,8 @@ void a_screen__toSprite(ASprite* Sprite, unsigned Frame)
     }
 
     #if A_CONFIG_LIB_RENDER_SOFTWARE
-        a_pixels__copy(a_sprite__pixelsGet(Sprite), Frame, a__screen.pixels, 0);
+        a_pixels__copyFrame(
+            a_sprite__pixelsGet(Sprite), Frame, a__screen.pixels, 0);
     #else
         a_color_push();
         a_color_blendSet(A_COLOR_BLEND_PLAIN);
