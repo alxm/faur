@@ -28,7 +28,8 @@ APixels* a_pixels__new(int W, int H, unsigned Frames, APixelsFlags Flags)
     p->framesNum = Frames;
 
     if(A_FLAG_TEST_ANY(Flags, A_PIXELS__ALLOC)) {
-        p->bufferSize = (unsigned)(W * H * (int)sizeof(APixel));
+        p->bufferLen = (unsigned)(W * H);
+        p->bufferSize = p->bufferLen * (unsigned)sizeof(APixel);
         p->buffer = a_mem_zalloc(p->bufferSize * Frames);
     }
 
@@ -68,7 +69,7 @@ void a_pixels__copy(const APixels* Dst, unsigned DstFrame, const APixels* Src, u
 
 void a_pixels__copyEx(const APixels* Dst, unsigned DstFrame, const APixels* SrcPixels, unsigned SrcFrame, int SrcX, int SrcY)
 {
-    APixel* dst = a_pixels__bufferGetFrom(Dst, DstFrame, 0, 0);
+    APixel* dst = a_pixels__bufferGetStart(Dst, DstFrame);
     const APixel* src = a_pixels__bufferGetFrom(
                             SrcPixels, SrcFrame, SrcX, SrcY);
 
@@ -90,7 +91,8 @@ void a_pixels__bufferSet(APixels* Pixels, APixel* Buffer, int W, int H)
     Pixels->w = W;
     Pixels->h = H;
     Pixels->buffer = Buffer;
-    Pixels->bufferSize = (unsigned)(W * H * (int)sizeof(APixel));
+    Pixels->bufferLen = (unsigned)(W * H);
+    Pixels->bufferSize = Pixels->bufferLen * (unsigned)sizeof(APixel);
     Pixels->framesNum = 1;
 }
 
@@ -101,7 +103,7 @@ void a_pixels__clear(const APixels* Pixels, unsigned Frame)
 
 void a_pixels__fill(const APixels* Pixels, unsigned Frame, APixel Value)
 {
-    APixel* buffer = a_pixels__bufferGetFrom(Pixels, Frame, 0, 0);
+    APixel* buffer = a_pixels__bufferGetStart(Pixels, Frame);
 
     for(int i = Pixels->w * Pixels->h; i--; ) {
         *buffer++ = Value;
@@ -111,7 +113,7 @@ void a_pixels__fill(const APixels* Pixels, unsigned Frame, APixel Value)
 static int findNextVerticalEdge(const APixels* Pixels, unsigned Frame, int StartX, int StartY, int* EdgeX)
 {
     for(int x = StartX + *EdgeX + 1; x < Pixels->w; x++) {
-        APixel p = a_pixels__bufferGetAt(Pixels, Frame, x, StartY);
+        APixel p = a_pixels__bufferGetValue(Pixels, Frame, x, StartY);
 
         if(p == a_color__limit) {
             *EdgeX = x - StartX;
@@ -139,7 +141,7 @@ static int findNextVerticalEdge(const APixels* Pixels, unsigned Frame, int Start
 static int findNextHorizontalEdge(const APixels* Pixels, unsigned Frame, int StartX, int StartY, int* EdgeY)
 {
     for(int y = StartY + *EdgeY + 1; y < Pixels->h; y++) {
-        APixel p = a_pixels__bufferGetAt(Pixels, Frame, StartX, y);
+        APixel p = a_pixels__bufferGetValue(Pixels, Frame, StartX, y);
 
         if(p == a_color__limit) {
             *EdgeY = y - StartY;

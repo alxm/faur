@@ -325,7 +325,7 @@ void a_platform_api__drawCircleFilled(int X, int Y, int Radius)
 APlatformTexture* a_platform_api__textureNew(const APixels* Pixels, unsigned Frame)
 {
     APlatformTexture* texture = a_mem_zalloc(sizeof(APlatformTexture));
-    const APixel* original = a_pixels__bufferGetFrom(Pixels, Frame, 0, 0);
+    const APixel* original = a_pixels__bufferGetStart(Pixels, Frame);
     APixel* buffer = a_mem_dup(original, Pixels->bufferSize);
 
     for(int t = 0; t < A_TEXTURE__NUM; t++) {

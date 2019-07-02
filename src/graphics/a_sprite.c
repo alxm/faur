@@ -186,9 +186,9 @@ void a_sprite_blitEx(const ASprite* Sprite, unsigned Frame, int X, int Y, AFix S
 void a_sprite_swapColor(ASprite* Sprite, APixel OldColor, APixel NewColor)
 {
     for(unsigned f = Sprite->pixels->framesNum; f--; ) {
-        APixel* buffer = a_pixels__bufferGetFrom(Sprite->pixels, f, 0, 0);
+        APixel* buffer = a_pixels__bufferGetStart(Sprite->pixels, f);
 
-        for(int i = Sprite->pixels->w * Sprite->pixels->h; i--; ) {
+        for(unsigned i = Sprite->pixels->bufferLen; i--; ) {
             if(buffer[i] == OldColor) {
                 buffer[i] = NewColor;
             }
@@ -207,9 +207,9 @@ void a_sprite_swapColor(ASprite* Sprite, APixel OldColor, APixel NewColor)
 void a_sprite_swapColors(ASprite* Sprite, const APixel* OldColors, const APixel* NewColors, unsigned NumColors)
 {
     for(unsigned f = Sprite->pixels->framesNum; f--; ) {
-        APixel* buffer = a_pixels__bufferGetFrom(Sprite->pixels, f, 0, 0);
+        APixel* buffer = a_pixels__bufferGetStart(Sprite->pixels, f);
 
-        for(int i = Sprite->pixels->w * Sprite->pixels->h; i--; ) {
+        for(unsigned i = Sprite->pixels->bufferLen; i--; ) {
             const APixel pixel = buffer[i];
 
             for(unsigned c = NumColors; c--; ) {
@@ -271,10 +271,10 @@ void a_sprite__commit(ASprite* Sprite, unsigned Frame)
 
 const APixel* a_sprite_pixelsGetBuffer(const ASprite* Sprite, unsigned Frame)
 {
-    return a_pixels__bufferGetFrom(Sprite->pixels, Frame, 0, 0);
+    return a_pixels__bufferGetStart(Sprite->pixels, Frame);
 }
 
-APixel a_sprite_pixelsGetPixel(const ASprite* Sprite, unsigned Frame, int X, int Y)
+APixel a_sprite_pixelsGetValue(const ASprite* Sprite, unsigned Frame, int X, int Y)
 {
-    return a_pixels__bufferGetAt(Sprite->pixels, Frame, X, Y);
+    return a_pixels__bufferGetValue(Sprite->pixels, Frame, X, Y);
 }

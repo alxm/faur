@@ -34,6 +34,7 @@ typedef enum {
 struct APixels {
     APixel* buffer; // [w * h * framesNum]
     int w, h;
+    unsigned bufferLen;
     unsigned bufferSize;
     unsigned framesNum;
     APixelsFlags flags;
@@ -54,13 +55,17 @@ extern void a_pixels__fill(const APixels* Pixels, unsigned Frame, APixel Value);
 
 extern AVectorInt a_pixels__boundsFind(const APixels* Pixels, unsigned Frame, int X, int Y);
 
-static inline APixel* a_pixels__bufferGetFrom(const APixels* Pixels, unsigned Frame, int X, int Y)
+static inline APixel* a_pixels__bufferGetStart(const APixels* Pixels, unsigned Frame)
 {
-    return Pixels->buffer
-            + Frame * Pixels->bufferSize / sizeof(APixel) + Y * Pixels->w + X;
+    return Pixels->buffer + Frame * Pixels->bufferLen;
 }
 
-static inline APixel a_pixels__bufferGetAt(const APixels* Pixels, unsigned Frame, int X, int Y)
+static inline APixel* a_pixels__bufferGetFrom(const APixels* Pixels, unsigned Frame, int X, int Y)
+{
+    return a_pixels__bufferGetStart(Pixels, Frame) + Y * Pixels->w + X;
+}
+
+static inline APixel a_pixels__bufferGetValue(const APixels* Pixels, unsigned Frame, int X, int Y)
 {
     return *a_pixels__bufferGetFrom(Pixels, Frame, X, Y);
 }

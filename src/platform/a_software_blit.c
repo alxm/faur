@@ -266,7 +266,7 @@ void a_platform_software_blit__uninit(void)
 
 static bool hasTransparency(const APixels* Pixels, unsigned Frame)
 {
-    const APixel* buffer = a_pixels__bufferGetFrom(Pixels, Frame, 0, 0);
+    const APixel* buffer = a_pixels__bufferGetStart(Pixels, Frame);
 
     for(int i = Pixels->w * Pixels->h; i--; ) {
         if(*buffer++ == a_color__key) {
@@ -283,7 +283,7 @@ static size_t spansBytesNeeded(const APixels* Pixels, unsigned Frame)
     // [NumSpans << 1 | 1 (draw) / 0 (transparent)][len0][len1]...
 
     size_t bytesNeeded = 0;
-    const APixel* buffer = a_pixels__bufferGetFrom(Pixels, Frame, 0, 0);
+    const APixel* buffer = a_pixels__bufferGetStart(Pixels, Frame);
 
     for(int y = Pixels->h; y--; ) {
         bytesNeeded += sizeof(unsigned); // total size and initial state
@@ -307,7 +307,7 @@ static size_t spansBytesNeeded(const APixels* Pixels, unsigned Frame)
 static void spansUpdate(const APixels* Pixels, unsigned Frame, APlatformTexture* Texture)
 {
     unsigned* spans = Texture->spans;
-    const APixel* buffer = a_pixels__bufferGetFrom(Pixels, Frame, 0, 0);
+    const APixel* buffer = a_pixels__bufferGetStart(Pixels, Frame);
 
     for(int y = Pixels->h; y--; ) {
         unsigned* lineStart = spans;

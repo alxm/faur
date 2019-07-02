@@ -24,7 +24,7 @@ static void A__FUNC_NAME(keyed, noclip)(const APlatformTexture* Texture, const A
 
     const int screenW = a__screen.pixels->w;
     APixel* startDst = a_screen__bufferGetFrom(X, Y);
-    const APixel* src = a_pixels__bufferGetFrom(Pixels, Frame, 0, 0);
+    const APixel* src = a_pixels__bufferGetStart(Pixels, Frame);
     const unsigned* spans = Texture->spans;
 
     for(int i = Pixels->h; i--; startDst += screenW) {
@@ -146,7 +146,7 @@ static void A__FUNC_NAME(block, noclip)(const APlatformTexture* Texture, const A
 
     const int screenW = a__screen.pixels->w;
     APixel* startDst = a_screen__bufferGetFrom(X, Y);
-    const APixel* src = a_pixels__bufferGetFrom(Pixels, Frame, 0, 0);
+    const APixel* src = a_pixels__bufferGetStart(Pixels, Frame);
 
     for(int i = Pixels->h; i--; startDst += screenW) {
         APixel* dst = startDst;
