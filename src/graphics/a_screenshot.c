@@ -113,12 +113,13 @@ static void takeScreenshot(void)
                         "%s%05d.png", g_filePrefix, g_screenshotNumber);
 
     a_out__info("Saving screenshot '%s'", name);
-    a_png__write(name,
-                 a_screen_pixelsGetBuffer(),
-                 a__screen.pixels->w,
-                 a__screen.pixels->h,
-                 g_title,
-                 g_description);
+
+    #if !A_CONFIG_LIB_RENDER_SOFTWARE
+        a_platform_api__screenTextureRead(a__screen.pixels, a__screen.frame);
+    #endif
+
+    a_png__write(
+        name, a__screen.pixels, a__screen.frame, g_title, g_description);
 }
 
 void a_screenshot__init(void)
