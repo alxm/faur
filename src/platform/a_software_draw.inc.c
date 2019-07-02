@@ -20,7 +20,7 @@ static void A__FUNC_NAME(pixel)(int X, int Y)
 {
     A__BLEND_SETUP;
 
-    A__PIXEL_DRAW(a_pixels__bufferGetFrom(a__screen.pixels, X, Y));
+    A__PIXEL_DRAW(a_screen__bufferGetFrom(X, Y));
 }
 
 static void A__FUNC_NAME(rectangle_nofill)(int X, int Y, int Width, int Height)
@@ -44,7 +44,7 @@ static void A__FUNC_NAME(rectangle_fill)(int X, int Y, int Width, int Height)
 {
     A__BLEND_SETUP;
 
-    APixel* pixels = a_pixels__bufferGetFrom(a__screen.pixels, X, Y);
+    APixel* pixels = a_screen__bufferGetFrom(X, Y);
     const int screenw = a__screen.pixels->w;
 
     for(int i = Height; i--; pixels += screenw) {
@@ -87,8 +87,8 @@ static void A__FUNC_NAME(line)(int X1, int Y1, int X2, int Y2)
         const int yinc2 = (denominator == deltax) ? yinct : 0;
 
         const int screenw = a__screen.pixels->w;
-        APixel* dst1 = a_pixels__bufferGetFrom(a__screen.pixels, X1, Y1);
-        APixel* dst2 = a_pixels__bufferGetFrom(a__screen.pixels, X2, Y2);
+        APixel* dst1 = a_screen__bufferGetFrom(X1, Y1);
+        APixel* dst2 = a_screen__bufferGetFrom(X2, Y2);
 
         for(int i = (denominator + 1) / 2; i--; ) {
             A__PIXEL_DRAW(dst1);
@@ -123,7 +123,7 @@ static void A__FUNC_NAME(hline)(int X1, int X2, int Y)
 {
     A__BLEND_SETUP;
 
-    APixel* dst = a_pixels__bufferGetFrom(a__screen.pixels, X1, Y);
+    APixel* dst = a_screen__bufferGetFrom(X1, Y);
 
     for(int i = X2 - X1 + 1; i--; dst++) {
         A__PIXEL_DRAW(dst);
@@ -135,7 +135,7 @@ static void A__FUNC_NAME(vline)(int X, int Y1, int Y2)
     A__BLEND_SETUP;
 
     const int screenw = a__screen.pixels->w;
-    APixel* dst = a_pixels__bufferGetFrom(a__screen.pixels, X, Y1);
+    APixel* dst = a_screen__bufferGetFrom(X, Y1);
 
     for(int i = Y2 - Y1 + 1; i--; dst += screenw) {
         A__PIXEL_DRAW(dst);
@@ -169,7 +169,7 @@ static void A__FUNC_NAME(circle_noclip_nofill)(int X, int Y, int Radius)
     const int q4X = X,     q4Y = Y;
 
     const int width = a__screen.pixels->w;
-    APixel* const pixels = a__screen.pixels->buffer;
+    APixel* const pixels = a_screen__bufferGetFrom(0, 0);
 
     APixel* oct1 = pixels + q1Y * width + q1X + Radius;
     APixel* oct2 = pixels + (q1Y - Radius) * width + q1X;
@@ -305,7 +305,7 @@ static void A__FUNC_NAME(circle_clip_nofill)(int X, int Y, int Radius)
     const int q4X = X,     q4Y = Y;
 
     const int width = a__screen.pixels->w;
-    APixel* const pixels = a__screen.pixels->buffer;
+    APixel* const pixels = a_screen__bufferGetFrom(0, 0);
 
     const int clipX1 = a__screen.clipX;
     const int clipX2 = a__screen.clipX2;

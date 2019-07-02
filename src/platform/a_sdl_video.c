@@ -160,13 +160,13 @@ void a_platform_api__screenInit(void)
                     A_CONFIG_SCREEN_ZOOM);
     }
 
-    APixelsFlags pFlags = A_PIXELS__SCREEN;
+    APixelsFlags pFlags = 0;
 
     #if A_CONFIG_SCREEN_ALLOCATE
         pFlags |= A_PIXELS__ALLOC;
     #endif
 
-    g_pixels = a_pixels__new(g_size.x, g_size.y, pFlags);
+    g_pixels = a_pixels__new(g_size.x, g_size.y, 1, pFlags);
 
     #if A_CONFIG_LIB_SDL == 1
         uint32_t videoFlags = SDL_SWSURFACE;
@@ -339,13 +339,13 @@ void a_platform_api__screenTextureSet(APlatformTexture* Texture)
     }
 }
 
-void a_platform_api__screenTextureRead(APixels* Pixels)
+void a_platform_api__screenTextureRead(APixels* Pixels, unsigned Frame)
 {
     // Unreliable on texture targets
     if(SDL_RenderReadPixels(a__sdlRenderer,
                             NULL,
                             A_SDL__PIXEL_FORMAT,
-                            Pixels->buffer,
+                            a_pixels__bufferGetFrom(Pixels, Frame, 0, 0),
                             Pixels->w * (int)sizeof(APixel)) < 0) {
 
         A__FATAL("SDL_RenderReadPixels: %s", SDL_GetError());

@@ -22,4 +22,6 @@
 
 #include "graphics/a_pixels.v.h"
 
-extern APixels* a_sprite__pixelsGet(const ASprite* Sprite, unsigned Frame);
+extern APixels* a_sprite__pixelsGet(const ASprite* Sprite);
+extern APlatformTexture* a_sprite__textureGet(const ASprite* Sprite, unsigned Frame);
+extern void a_sprite__commit(ASprite* Sprite, unsigned Frame);

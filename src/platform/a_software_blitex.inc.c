@@ -22,15 +22,16 @@
     #define A__COLORKEY block
 #endif
 
-static void A__FUNC_NAME_EX(const APixels* Pixels, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY)
+static void A__FUNC_NAME_EX(const APixels* Pixels, unsigned Frame, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY)
 {
     A__BLEND_SETUP;
 
     const AVectorInt spriteSize = {Pixels->w, Pixels->h};
-    const APixel* const spritePixels = Pixels->buffer;
+    const APixel* const spritePixels = a_pixels__bufferGetFrom(
+                                        Pixels, Frame, 0, 0);
 
     const AVectorInt screenSize = a_screen_sizeGet();
-    APixel* const screenPixels = a__screen.pixels->buffer;
+    APixel* const screenPixels = a_screen__bufferGetFrom(0, 0);
 
     /*
          Counter-clockwise rotations:

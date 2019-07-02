@@ -114,11 +114,11 @@ static void takeScreenshot(void)
 
     a_out__info("Saving screenshot '%s'", name);
     a_png__write(name,
-                a_screen_pixelsGetBuffer(),
-                a__screen.pixels->w,
-                a__screen.pixels->h,
-                g_title,
-                g_description);
+                 a_screen_pixelsGetBuffer(),
+                 a__screen.pixels->w,
+                 a__screen.pixels->h,
+                 g_title,
+                 g_description);
 }
 
 void a_screenshot__init(void)

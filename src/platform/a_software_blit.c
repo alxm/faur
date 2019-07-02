@@ -30,8 +30,8 @@ struct APlatformTexture {
     unsigned spans[1];
 };
 
-typedef void (*ABlitter)(const APixels* Pixels, int X, int Y);
-typedef void (*ABlitterEx)(const APixels* Pixels, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY);
+typedef void (*ABlitter)(const APlatformTexture* Texture, const APixels* Pixels, unsigned Frame, int X, int Y);
+typedef void (*ABlitterEx)(const APixels* Pixels, unsigned Frame, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY);
 
 static ABlitter g_blitters[A_COLOR_BLEND_NUM][2][2][2]; // [Blend][Fill][ColorKey][Clip]
 static ABlitterEx g_blittersEx[A_COLOR_BLEND_NUM][2][2]; // [Blend][Fill][ColorKey]
@@ -264,9 +264,9 @@ void a_platform_software_blit__uninit(void)
     #endif
 }
 
-static bool hasTransparency(const APixels* Pixels)
+static bool hasTransparency(const APixels* Pixels, unsigned Frame)
 {
-    const APixel* buffer = Pixels->buffer;
+    const APixel* buffer = a_pixels__bufferGetFrom(Pixels, Frame, 0, 0);
 
     for(int i = Pixels->w * Pixels->h; i--; ) {
         if(*buffer++ == a_color__key) {
@@ -277,13 +277,13 @@ static bool hasTransparency(const APixels* Pixels)
     return false;
 }
 
-static size_t spansBytesNeeded(const APixels* Pixels)
+static size_t spansBytesNeeded(const APixels* Pixels, unsigned Frame)
 {
     // Spans format for each scanline:
     // [NumSpans << 1 | 1 (draw) / 0 (transparent)][len0][len1]...
 
     size_t bytesNeeded = 0;
-    const APixel* buffer = Pixels->buffer;
+    const APixel* buffer = a_pixels__bufferGetFrom(Pixels, Frame, 0, 0);
 
     for(int y = Pixels->h; y--; ) {
         bytesNeeded += sizeof(unsigned); // total size and initial state
@@ -304,10 +304,10 @@ static size_t spansBytesNeeded(const APixels* Pixels)
     return bytesNeeded;
 }
 
-static void spansUpdate(const APixels* Pixels, APlatformTexture* Texture)
+static void spansUpdate(const APixels* Pixels, unsigned Frame, APlatformTexture* Texture)
 {
     unsigned* spans = Texture->spans;
-    const APixel* buffer = Pixels->buffer;
+    const APixel* buffer = a_pixels__bufferGetFrom(Pixels, Frame, 0, 0);
 
     for(int y = Pixels->h; y--; ) {
         unsigned* lineStart = spans;
@@ -335,13 +335,13 @@ static void spansUpdate(const APixels* Pixels, APlatformTexture* Texture)
     }
 }
 
-APlatformTexture* a_platform_api__textureNew(const APixels* Pixels)
+APlatformTexture* a_platform_api__textureNew(const APixels* Pixels, unsigned Frame)
 {
     APlatformTexture* texture = NULL;
 
-    if(hasTransparency(Pixels)) {
-        texture = a_mem_malloc(spansBytesNeeded(Pixels));
-        spansUpdate(Pixels, texture);
+    if(hasTransparency(Pixels, Frame)) {
+        texture = a_mem_malloc(spansBytesNeeded(Pixels, Frame));
+        spansUpdate(Pixels, Frame, texture);
     }
 
     return texture;
@@ -356,7 +356,7 @@ void a_platform_api__textureFree(APlatformTexture* Texture)
     free(Texture);
 }
 
-void a_platform_api__textureBlit(const APixels* Pixels, int X, int Y)
+void a_platform_api__textureBlit(const APlatformTexture* Texture, const APixels* Pixels, unsigned Frame, int X, int Y)
 {
     if(!a_screen_boxOnClip(X, Y, Pixels->w, Pixels->h)) {
         return;
@@ -365,17 +365,17 @@ void a_platform_api__textureBlit(const APixels* Pixels, int X, int Y)
     g_blitters
         [a__color.blend]
         [a__color.fillBlit]
-        [Pixels->texture != NULL]
+        [Texture != NULL]
         [!a_screen_boxInsideClip(X, Y, Pixels->w, Pixels->h)]
-            (Pixels, X, Y);
+            (Texture, Pixels, Frame, X, Y);
 }
 
-void a_platform_api__textureBlitEx(const APixels* Pixels, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY)
+void a_platform_api__textureBlitEx(const APlatformTexture* Texture, const APixels* Pixels, unsigned Frame, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY)
 {
     g_blittersEx
         [a__color.blend]
         [a__color.fillBlit]
-        [Pixels->texture != NULL]
-            (Pixels, X, Y, Scale, Angle, CenterX, CenterY);
+        [Texture != NULL]
+            (Pixels, Frame, X, Y, Scale, Angle, CenterX, CenterY);
 }
 #endif // A_CONFIG_LIB_RENDER_SOFTWARE

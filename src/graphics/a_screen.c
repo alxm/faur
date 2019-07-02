@@ -121,10 +121,10 @@ void a_screen__draw(void)
 APixel* a_screen_pixelsGetBuffer(void)
 {
     #if !A_CONFIG_LIB_RENDER_SOFTWARE
-        a_platform_api__screenTextureRead(a__screen.pixels);
+        a_platform_api__screenTextureRead(a__screen.pixels, a__screen.frame);
     #endif
 
-    return a__screen.pixels->buffer;
+    return a_screen__bufferGetFrom(0, 0);
 }
 
 AVectorInt a_screen_sizeGet(void)
@@ -145,7 +145,7 @@ int a_screen_sizeGetHeight(void)
 void a_screen_clear(void)
 {
     #if A_CONFIG_LIB_RENDER_SOFTWARE
-        a_pixels__clear(a__screen.pixels);
+        a_pixels__clear(a__screen.pixels, a__screen.frame);
     #else
         a_color_push();
 
@@ -161,10 +161,12 @@ void a_screen_push(ASprite* Sprite, unsigned Frame)
 {
     a_list_push(g_stack, a_mem_dup(&a__screen, sizeof(AScreen)));
 
-    a__screen.pixels = a_sprite__pixelsGet(Sprite, Frame);
+    a__screen.pixels = a_sprite__pixelsGet(Sprite);
+    a__screen.sprite = Sprite;
+    a__screen.frame = Frame;
 
     #if !A_CONFIG_LIB_RENDER_SOFTWARE
-        a__screen.texture = a_sprite__pixelsGet(Sprite, Frame)->texture;
+        a__screen.texture = a_sprite__textureGet(Sprite, Frame);
         a_platform_api__screenTextureSet(a__screen.texture);
     #endif
 
@@ -180,7 +182,7 @@ void a_screen_pop(void)
     }
 
     #if A_CONFIG_LIB_RENDER_SOFTWARE
-        a_pixels__commit(a__screen.pixels);
+        a_sprite__commit(a__screen.sprite, a__screen.frame);
     #endif
 
     a__screen = *screen;
@@ -267,14 +269,13 @@ void a_screen__toSprite(ASprite* Sprite, unsigned Frame)
     }
 
     #if A_CONFIG_LIB_RENDER_SOFTWARE
-        a_pixels__copy(a_sprite__pixelsGet(Sprite, Frame), a__screen.pixels);
+        a_pixels__copy(a_sprite__pixelsGet(Sprite), Frame, a__screen.pixels, 0);
     #else
         a_color_push();
         a_color_blendSet(A_COLOR_BLEND_PLAIN);
         a_color_fillBlitSet(false);
 
-        a_platform_api__screenTextureSet(
-            a_sprite__pixelsGet(Sprite, Frame)->texture);
+        a_platform_api__screenTextureSet(a_sprite__textureGet(Sprite, Frame));
         a_platform_api__screenClipSet(0, 0, spriteSize.x, spriteSize.y);
 
         a_platform_api__screenDraw();

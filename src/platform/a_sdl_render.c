@@ -322,84 +322,65 @@ void a_platform_api__drawCircleFilled(int X, int Y, int Radius)
     }
 }
 
-APlatformTexture* a_platform_api__textureNew(const APixels* Pixels)
+APlatformTexture* a_platform_api__textureNew(const APixels* Pixels, unsigned Frame)
 {
     APlatformTexture* texture = a_mem_zalloc(sizeof(APlatformTexture));
+    const APixel* original = a_pixels__bufferGetFrom(Pixels, Frame, 0, 0);
+    APixel* buffer = a_mem_dup(original, Pixels->bufferSize);
 
-    if(A_FLAG_TEST_ANY(Pixels->flags, A_PIXELS__SCREEN)) {
-        texture->texture[A_TEXTURE__NORMAL] = SDL_CreateTexture(
-                                                a__sdlRenderer,
-                                                A_SDL__PIXEL_FORMAT,
-                                                SDL_TEXTUREACCESS_TARGET,
-                                                Pixels->w,
-                                                Pixels->h);
+    for(int t = 0; t < A_TEXTURE__NUM; t++) {
+        switch(t) {
+            case A_TEXTURE__NORMAL: {
+                for(int i = Pixels->w * Pixels->h; i--; ) {
+                    if(original[i] != a_color__key) {
+                        // Set full alpha for non-transparent pixel
+                        buffer[i] |= (APixel)A__PX_MASK_A << A__PX_SHIFT_A;
+                    }
+                }
+            } break;
 
-        if(texture->texture[A_TEXTURE__NORMAL] == NULL) {
+            case A_TEXTURE__COLORMOD_BITMAP: {
+                for(int i = Pixels->w * Pixels->h; i--; ) {
+                    if(original[i] == a_color__key) {
+                        // Set full color for transparent pixel
+                        buffer[i] |= a_pixel_fromHex(0xffffff);
+                    }
+                }
+            } break;
+
+            case A_TEXTURE__COLORMOD_FLAT: {
+                for(int i = Pixels->w * Pixels->h; i--;) {
+                    if(original[i] != a_color__key) {
+                        // Set full color for non-transparent pixel
+                        buffer[i] |= a_pixel_fromHex(0xffffff);
+                    }
+                }
+            } break;
+        }
+
+        SDL_Texture* tex = SDL_CreateTexture(a__sdlRenderer,
+                                             A_SDL__PIXEL_FORMAT,
+                                             SDL_TEXTUREACCESS_TARGET,
+                                             Pixels->w,
+                                             Pixels->h);
+        if(tex == NULL) {
             A__FATAL("SDL_CreateTexture: %s", SDL_GetError());
         }
 
-        if(SDL_SetTextureBlendMode(
-            texture->texture[A_TEXTURE__NORMAL], SDL_BLENDMODE_BLEND) < 0) {
+        if(SDL_UpdateTexture(
+            tex, NULL, buffer, Pixels->w * (int)sizeof(APixel)) < 0) {
 
+            A__FATAL("SDL_UpdateTexture: %s", SDL_GetError());
+        }
+
+        if(SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND) < 0) {
             a_out__error("SDL_SetTextureBlendMode: %s", SDL_GetError());
         }
-    } else {
-        APixel* buffer = a_mem_dup(Pixels->buffer, Pixels->bufferSize);
 
-        for(int t = 0; t < A_TEXTURE__NUM; t++) {
-            switch(t) {
-                case A_TEXTURE__NORMAL: {
-                    for(int i = Pixels->w * Pixels->h; i--; ) {
-                        if(Pixels->buffer[i] != a_color__key) {
-                            // Set full alpha for non-transparent pixel
-                            buffer[i] |= (APixel)A__PX_MASK_A << A__PX_SHIFT_A;
-                        }
-                    }
-                } break;
-
-                case A_TEXTURE__COLORMOD_BITMAP: {
-                    for(int i = Pixels->w * Pixels->h; i--; ) {
-                        if(Pixels->buffer[i] == a_color__key) {
-                            // Set full color for transparent pixel
-                            buffer[i] |= a_pixel_fromHex(0xffffff);
-                        }
-                    }
-                } break;
-
-                case A_TEXTURE__COLORMOD_FLAT: {
-                    for(int i = Pixels->w * Pixels->h; i--;) {
-                        if(Pixels->buffer[i] != a_color__key) {
-                            // Set full color for non-transparent pixel
-                            buffer[i] |= a_pixel_fromHex(0xffffff);
-                        }
-                    }
-                } break;
-            }
-
-            SDL_Texture* tex = SDL_CreateTexture(a__sdlRenderer,
-                                                 A_SDL__PIXEL_FORMAT,
-                                                 SDL_TEXTUREACCESS_TARGET,
-                                                 Pixels->w,
-                                                 Pixels->h);
-            if(tex == NULL) {
-                A__FATAL("SDL_CreateTexture: %s", SDL_GetError());
-            }
-
-            if(SDL_UpdateTexture(
-                tex, NULL, buffer, Pixels->w * (int)sizeof(APixel)) < 0) {
-
-                A__FATAL("SDL_UpdateTexture: %s", SDL_GetError());
-            }
-
-            if(SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND) < 0) {
-                a_out__error("SDL_SetTextureBlendMode: %s", SDL_GetError());
-            }
-
-            texture->texture[t] = tex;
-        }
-
-        free(buffer);
+        texture->texture[t] = tex;
     }
+
+    free(buffer);
 
     return texture;
 }
@@ -419,23 +400,32 @@ void a_platform_api__textureFree(APlatformTexture* Texture)
     free(Texture);
 }
 
-void a_platform_api__textureBlit(const APixels* Pixels, int X, int Y)
+void a_platform_api__textureBlit(const APlatformTexture* Texture, const APixels* Pixels, unsigned Frame, int X, int Y)
 {
-    a_platform_api__textureBlitEx(
-        Pixels, X + Pixels->w / 2, Y + Pixels->h / 2, A_FIX_ONE, 0, 0, 0);
+    a_platform_api__textureBlitEx(Texture,
+                                  Pixels,
+                                  Frame,
+                                  X + Pixels->w / 2,
+                                  Y + Pixels->h / 2,
+                                  A_FIX_ONE,
+                                  0,
+                                  0,
+                                  0);
 }
 
-void a_platform_api__textureBlitEx(const APixels* Pixels, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY)
+void a_platform_api__textureBlitEx(const APlatformTexture* Texture, const APixels* Pixels, unsigned Frame, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY)
 {
+    A_UNUSED(Frame);
+
     SDL_Texture* tex;
     SDL_BlendMode blend = pixelBlendToSdlBlend();
 
     if(a__color.fillBlit) {
-        tex = Pixels->texture->texture[A_TEXTURE__COLORMOD_FLAT];
+        tex = Texture->texture[A_TEXTURE__COLORMOD_FLAT];
     } else if(blend == SDL_BLENDMODE_MOD) {
-        tex = Pixels->texture->texture[A_TEXTURE__COLORMOD_BITMAP];
+        tex = Texture->texture[A_TEXTURE__COLORMOD_BITMAP];
     } else {
-        tex = Pixels->texture->texture[A_TEXTURE__NORMAL];
+        tex = Texture->texture[A_TEXTURE__NORMAL];
     }
 
     if(SDL_SetTextureBlendMode(tex, blend) < 0) {
