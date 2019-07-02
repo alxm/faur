@@ -90,11 +90,6 @@ void a_pixels__copyFrameEx(const APixels* Dst, unsigned DstFrame, const APixels*
     }
 }
 
-void a_pixels__copyToBuffer(const APixels* Src, APixel* Dst)
-{
-    memcpy(Dst, Src->buffer, Src->bufferSize);
-}
-
 void a_pixels__bufferSet(APixels* Pixels, APixel* Buffer, int W, int H)
 {
     Pixels->w = W;

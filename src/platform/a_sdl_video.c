@@ -43,7 +43,7 @@
 static AVectorInt g_size = {A_CONFIG_SCREEN_WIDTH, A_CONFIG_SCREEN_HEIGHT};
 static bool g_fullscreen = A_CONFIG_SCREEN_FULLSCREEN;
 static int g_zoom = A_CONFIG_SCREEN_ZOOM;
-static APixels* g_pixels;
+static APixels g_pixels;
 
 void a_platform_sdl_video__init(void)
 {
@@ -166,7 +166,7 @@ void a_platform_api__screenInit(void)
         pFlags |= A_PIXELS__ALLOC;
     #endif
 
-    g_pixels = a_pixels__new(g_size.x, g_size.y, 1, pFlags);
+    a_pixels__init(&g_pixels, g_size.x, g_size.y, 1, pFlags);
 
     #if A_CONFIG_LIB_SDL == 1
         uint32_t videoFlags = SDL_SWSURFACE;
@@ -189,7 +189,7 @@ void a_platform_api__screenInit(void)
                 }
             }
 
-            a_pixels__bufferSet(g_pixels,
+            a_pixels__bufferSet(&g_pixels,
                                 g_sdlScreen->pixels,
                                 g_sdlScreen->pitch / sizeof(APixel),
                                 g_sdlScreen->h);
@@ -314,7 +314,7 @@ void a_platform_api__screenInit(void)
 
 void a_platform_api__screenUninit(void)
 {
-    a_pixels__free(g_pixels);
+    a_pixels__free(&g_pixels);
 }
 
 #if A_CONFIG_LIB_SDL == 2
@@ -388,7 +388,7 @@ void a_platform_api__screenShow(void)
                                         * A_CONFIG_SCREEN_HARDWARE_HEIGHT)
 
             APixel* dst = (APixel*)g_sdlScreen->pixels + A__SCREEN_TOTAL;
-            const APixel* src = g_pixels->buffer;
+            const APixel* src = g_pixels.buffer;
 
             for(int i = A_CONFIG_SCREEN_HARDWARE_HEIGHT;
                 i--;
@@ -413,11 +413,13 @@ void a_platform_api__screenShow(void)
             }
 
             if(g_zoom <= 1) {
-                if(g_sdlScreen->pitch == g_sdlScreen->w * (int)sizeof(APixel)) {
-                    a_pixels__copyToBuffer(g_pixels, g_sdlScreen->pixels);
+                if(g_pixels.w * sizeof(APixel) == g_sdlScreen->pitch) {
+                    memcpy(g_sdlScreen->pixels,
+                           g_pixels.buffer,
+                           g_pixels.bufferSize);
                 } else {
                     uint8_t* dst = g_sdlScreen->pixels;
-                    const APixel* src = g_pixels->buffer;
+                    const APixel* src = g_pixels.buffer;
                     size_t rowSize = (size_t)g_sdlScreen->w * sizeof(APixel);
 
                     for(int y = g_sdlScreen->h; y--; ) {
@@ -429,7 +431,7 @@ void a_platform_api__screenShow(void)
                 }
             } else {
                 APixel* dst = g_sdlScreen->pixels;
-                const APixel* src = g_pixels->buffer;
+                const APixel* src = g_pixels.buffer;
                 int realH = g_sdlScreen->h / g_zoom;
                 int realW = g_sdlScreen->w / g_zoom;
                 size_t rowLen = g_sdlScreen->pitch / sizeof(APixel);
@@ -473,7 +475,7 @@ void a_platform_api__screenShow(void)
                 }
             }
 
-            a_pixels__bufferSet(g_pixels,
+            a_pixels__bufferSet(&g_pixels,
                                 g_sdlScreen->pixels,
                                 g_sdlScreen->pitch / sizeof(APixel),
                                 g_sdlScreen->h);
@@ -498,8 +500,8 @@ void a_platform_api__screenShow(void)
         #if A_CONFIG_LIB_RENDER_SOFTWARE
             if(SDL_UpdateTexture(g_sdlTexture,
                                  NULL,
-                                 g_pixels->buffer,
-                                 g_pixels->w * (int)sizeof(APixel)) < 0) {
+                                 g_pixels.buffer,
+                                 g_pixels.w * (int)sizeof(APixel)) < 0) {
 
                 A__FATAL("SDL_UpdateTexture: %s", SDL_GetError());
             }
@@ -528,7 +530,7 @@ void a_platform_api__screenShow(void)
 
 APixels* a_platform_api__screenPixelsGet(void)
 {
-    return g_pixels;
+    return &g_pixels;
 }
 
 AVectorInt a_platform_api__screenSizeGet(void)
@@ -550,8 +552,8 @@ void a_platform_api__screenZoomSet(int Zoom)
 {
     #if A_CONFIG_LIB_SDL == 1
         #if A_CONFIG_SCREEN_ALLOCATE
-            int newWidth = g_pixels->w * Zoom;
-            int newHeight = g_pixels->h * Zoom;
+            int newWidth = g_pixels.w * Zoom;
+            int newHeight = g_pixels.h * Zoom;
 
             if(sdl1ScreenSet(newWidth, newHeight, g_sdlScreen->flags)) {
                 g_zoom = Zoom;
@@ -563,7 +565,7 @@ void a_platform_api__screenZoomSet(int Zoom)
                 "SDL 1.2 screen zoom needs A_CONFIG_SCREEN_ALLOCATE=1");
         #endif
     #elif A_CONFIG_LIB_SDL == 2
-        SDL_SetWindowSize(g_sdlWindow, g_pixels->w * Zoom, g_pixels->h * Zoom);
+        SDL_SetWindowSize(g_sdlWindow, g_pixels.w * Zoom, g_pixels.h * Zoom);
 
         g_zoom = Zoom;
     #endif

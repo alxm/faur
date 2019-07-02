@@ -49,7 +49,6 @@ extern void a_pixels__free(APixels* Pixels);
 extern void a_pixels__copy(APixels* Dst, const APixels* Src);
 extern void a_pixels__copyFrame(const APixels* Dst, unsigned DstFrame, const APixels* Src, unsigned SrcFrame);
 extern void a_pixels__copyFrameEx(const APixels* Dst, unsigned DstFrame, const APixels* SrcPixels, unsigned SrcFrame, int SrcX, int SrcY);
-extern void a_pixels__copyToBuffer(const APixels* Src, APixel* Dst);
 
 extern void a_pixels__bufferSet(APixels* Pixels, APixel* Buffer, int W, int H);
 
