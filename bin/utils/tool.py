@@ -63,7 +63,7 @@ class Tool:
                 required_num += 1
 
         if len(arg_values) < required_num:
-            self.usage()
+            self.usage('All required arguments must be present')
 
         if has_tail:
             arg_names = arg_names[ : -1]
@@ -93,8 +93,13 @@ class Tool:
     def exit(self):
         sys.exit(0)
 
-    def usage(self):
-        message = 'Usage: {}'.format(self.name)
+    def usage(self, error_message = None):
+        message = ''
+
+        if error_message:
+            message += error_message + '\n'
+
+        message += 'Usage: {}'.format(self.name)
 
         for flag in self.flag_names:
             message += ' [{}]'.format(flag)
@@ -141,9 +146,8 @@ class Tool:
         self.output.shell(cmd)
         status, output = subprocess.getstatusoutput(cmd)
 
-        if not self.get_flag('-q'):
-            for line in output.splitlines():
-                self.output.shell('    {}'.format(line))
+        for line in output.splitlines():
+            self.output.shell('    {}'.format(line))
 
         if status != 0:
             sys.exit(status)

@@ -50,28 +50,23 @@ class Output:
         self.__colored('x', Color.Yellow)
         self.__colored('{}]'.format(self.tool.name[3 : ]), Color.White)
 
-    def note(self, text):
+    def __worker(self, tag, color, text):
         if not self.tool.get_flag('-q'):
-            self.__title()
-            self.__colored('[Note] ', Color.LightGreen)
-            print(text)
+            for line in text.splitlines():
+                self.__title()
+                self.__colored('{} '.format(tag), color)
+
+                print(line)
+
+    def note(self, text):
+        self.__worker('[Note]', Color.LightGreen, text)
 
     def info(self, text):
-        if not self.tool.get_flag('-q'):
-            self.__title()
-            self.__colored('[Info] ', Color.LightBlue)
-            print(text)
+        self.__worker('[Info]', Color.LightBlue, text)
 
     def error(self, text):
-        if not self.tool.get_flag('-q'):
-            self.__title()
-            self.__colored('[Error] ', Color.LightRed)
-            print(text)
-
+        self.__worker('[Error]', Color.LightRed, text)
         sys.exit(1)
 
     def shell(self, text):
-        if not self.tool.get_flag('-q'):
-            self.__title()
-            self.__colored('[Shell] ', Color.LightPurple)
-            print(text)
+        self.__worker('[Shell]', Color.LightPurple, text)

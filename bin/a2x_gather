@@ -29,7 +29,7 @@ if __name__ == '__main__':
     startRoot = os.path.abspath(tool.get_arg('RootDir'))
 
     if not os.path.isdir(startRoot):
-        tool.usage()
+        tool.usage('{} is not a dir'.format(startRoot))
 
     def scan_file(Root, File):
         filePath = os.path.join(Root, File)
