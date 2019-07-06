@@ -280,21 +280,19 @@ static bool hasTransparency(const APixels* Pixels, unsigned Frame)
 static size_t spansBytesNeeded(const APixels* Pixels, unsigned Frame)
 {
     // Spans format for each scanline:
-    // [NumSpans << 1 | 1 (draw) / 0 (transparent)][len0][len1]...
+    // (NumSpans << 1 | start draw/transparent), len0, len1, ...
 
     size_t bytesNeeded = 0;
     const APixel* buffer = a_pixels__bufferGetStart(Pixels, Frame);
 
     for(int y = Pixels->h; y--; ) {
         bytesNeeded += sizeof(unsigned); // total size and initial state
-        bool lastState = *buffer != a_color__key; // initial state
+        bool doDraw = *buffer != a_color__key; // initial state
 
         for(int x = Pixels->w; x--; ) {
-            bool newState = *buffer++ != a_color__key;
-
-            if(newState != lastState) {
+            if((*buffer++ != a_color__key) != doDraw) {
                 bytesNeeded += sizeof(unsigned); // length of new span
-                lastState = newState;
+                doDraw = !doDraw;
             }
         }
 
@@ -311,27 +309,23 @@ static void spansUpdate(const APixels* Pixels, unsigned Frame, APlatformTexture*
 
     for(int y = Pixels->h; y--; ) {
         unsigned* lineStart = spans;
-        unsigned numSpans = 1; // line has at least 1 span
         unsigned spanLength = 0;
 
-        bool lastState = *buffer != a_color__key; // initial state
-        *spans++ = lastState;
+        bool doDraw = *buffer != a_color__key; // initial state
+        *spans++ = doDraw;
 
         for(int x = Pixels->w; x--; ) {
-            bool newState = *buffer++ != a_color__key;
-
-            if(newState == lastState) {
+            if((*buffer++ != a_color__key) == doDraw) {
                 spanLength++; // keep growing current span
             } else {
                 *spans++ = spanLength; // record the just-ended span length
-                numSpans++;
                 spanLength = 1; // start a new span from this pixel
-                lastState = newState;
+                doDraw = !doDraw;
             }
         }
 
+        *lineStart |= (unsigned)(spans - lineStart) << 1; // line's # of spans
         *spans++ = spanLength; // record the last span's length
-        *lineStart |= numSpans << 1; // record line's number of spans
     }
 }
 
