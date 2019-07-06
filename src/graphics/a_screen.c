@@ -159,6 +159,14 @@ void a_screen_clear(void)
 
 void a_screen_push(ASprite* Sprite, unsigned Frame)
 {
+    #if A_CONFIG_BUILD_DEBUG
+        if(A_FLAG_TEST_ANY(a_sprite__pixelsGet(Sprite)->flags,
+                           A_PIXELS__CONST)) {
+
+            A__FATAL("a_screen_push: Const sprite");
+        }
+    #endif
+
     a_list_push(g_stack, a_mem_dup(&a__screen, sizeof(AScreen)));
 
     a__screen.pixels = a_sprite__pixelsGet(Sprite);

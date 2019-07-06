@@ -31,6 +31,7 @@ typedef enum {
     A_PIXELS__ALLOC = A_FLAG_BIT(0),
     A_PIXELS__DIRTY = A_FLAG_BIT(1),
     A_PIXELS__DYNAMIC = A_FLAG_BIT(2),
+    A_PIXELS__CONST = A_FLAG_BIT(3),
 } APixelsFlags;
 
 struct APixels {
