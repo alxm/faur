@@ -51,7 +51,7 @@ sdk.pandora.utils = sdk_utils
         g_tool.out.error('{} is not a file'.format(config_read))
 
     if config_write == '':
-        g_tool.exit()
+        return
 
     sdks = {}
 

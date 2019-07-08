@@ -51,7 +51,7 @@ def main():
 
                 if name == enum_value:
                     print(value)
-                    g_tool.exit()
+                    return
 
             value += 1
 

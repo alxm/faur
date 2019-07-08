@@ -90,9 +90,6 @@ class Tool:
         elif not os.path.isdir(self.dir_cfg):
             self.out.error('{} is not a dir'.format(self.dir_cfg))
 
-    def exit(self):
-        sys.exit(0)
-
     def usage(self, error_message = None):
         message = ''
 
