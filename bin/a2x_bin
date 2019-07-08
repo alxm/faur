@@ -22,16 +22,16 @@ import os
 
 from utils.tool import Tool
 
-if __name__ == '__main__':
-    tool = Tool('File.bin File.h OriginalPath CVarPrefix')
+g_tool = Tool('File.bin File.h OriginalPath CVarPrefix')
 
-    bin_file = tool.get_arg('File.bin')
-    h_file = tool.get_arg('File.h')
-    original_path = tool.get_arg('OriginalPath')
-    cvar_prefix = tool.get_arg('CVarPrefix')
+def main():
+    bin_file = g_tool.get_arg('File.bin')
+    h_file = g_tool.get_arg('File.h')
+    original_path = g_tool.get_arg('OriginalPath')
+    cvar_prefix = g_tool.get_arg('CVarPrefix')
 
     if os.path.isdir(bin_file):
-        entries = tool.listdir(bin_file)
+        entries = g_tool.list_dir(bin_file)
         bin_data = ''
         bin_size = len(entries)
 
@@ -51,7 +51,7 @@ static const struct {{
 }};
 """
     else:
-        bin_bytes = tool.readbytes(bin_file)
+        bin_bytes = g_tool.read_bytes(bin_file)
         bin_data = ''
         bin_size = len(bin_bytes)
 
@@ -74,9 +74,12 @@ static const struct {{
 }};
 """
 
-    tool.writefile(h_file, fmt_content.format(
+    g_tool.write_text(h_file, fmt_content.format(
         prefix = cvar_prefix,
-        var = tool.sanitizeFileNameForCVar(original_path),
+        var = g_tool.sanitize_c_var(original_path),
         path = original_path,
         size = bin_size,
         data = bin_data))
+
+if __name__ == '__main__':
+    main()

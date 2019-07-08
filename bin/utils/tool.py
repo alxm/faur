@@ -31,7 +31,7 @@ class Tool:
         flag_names = ['-q'] + flag_names.split()
 
         self.name = os.path.basename(sys.argv[0])
-        self.output = Output(self)
+        self.out = Output(self)
         self.arg_names = arg_names
         self.arg_db = {}
         self.flag_names = flag_names
@@ -49,16 +49,16 @@ class Tool:
 
         for name in arg_names:
             if has_tail:
-                self.output.error('... must be the last argument')
+                self.out.error('... must be the last argument')
             elif name == '...':
                 if optional_num > 0:
-                    self.output.error('Cannot have both optional args and ...')
+                    self.out.error('Cannot have both optional args and ...')
 
                 has_tail = True
             elif name[0] == '[' and name[-1] == ']':
                 optional_num += 1
             elif optional_num > 0:
-                self.output.error('Cannot have normal args after optional args')
+                self.out.error('Cannot have normal args after optional args')
             else:
                 required_num += 1
 
@@ -88,7 +88,7 @@ class Tool:
         if not os.path.exists(self.dir_cfg):
             os.makedirs(self.dir_cfg)
         elif not os.path.isdir(self.dir_cfg):
-            self.output.error('{} is not a dir'.format(self.dir_cfg))
+            self.out.error('{} is not a dir'.format(self.dir_cfg))
 
     def exit(self):
         sys.exit(0)
@@ -107,7 +107,7 @@ class Tool:
         for arg in self.arg_names:
             message += ' {}'.format(arg)
 
-        self.output.error(message)
+        self.out.error(message)
 
     def get_arg(self, name):
         if name in self.arg_db:
@@ -118,39 +118,39 @@ class Tool:
     def get_flag(self, flag):
         return flag in self.flag_db
 
-    def writefile(self, name, contents):
-        self.output.info('Writing file {}'.format(name))
+    def write_text(self, name, contents):
+        self.out.info('Writing file {}'.format(name))
 
         with open(name, 'w') as f:
             f.write(contents)
 
-    def readbytes(self, name):
+    def read_bytes(self, name):
         with open(name, 'rb') as f:
             return f.read()
 
-    def readtext(self, name):
+    def read_text(self, name):
         with open(name, 'rU') as f:
             return f.read()
 
-    def readtextlines(self, name):
+    def read_text_lines(self, name):
         with open(name, 'rU') as f:
             return f.readlines()
 
-    def listdir(self, path):
+    def list_dir(self, path):
         if not os.path.isdir(path):
-            self.output.error('{} is not a dir'.format(path))
+            self.out.error('{} is not a dir'.format(path))
 
         return sorted(os.listdir(path))
 
     def shell(self, cmd):
-        self.output.shell(cmd)
+        self.out.shell(cmd)
         status, output = subprocess.getstatusoutput(cmd)
 
         for line in output.splitlines():
-            self.output.shell('    {}'.format(line))
+            self.out.shell('    {}'.format(line))
 
         if status != 0:
             sys.exit(status)
 
-    def sanitizeFileNameForCVar(self, FileName):
-        return FileName.replace('.', '_').replace('-', '_').replace('/', '_')
+    def sanitize_c_var(self, name):
+        return name.replace('.', '_').replace('-', '_').replace('/', '_')

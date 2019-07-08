@@ -22,13 +22,13 @@ import re
 
 from utils.tool import Tool
 
-if __name__ == '__main__':
-    tool = Tool('File.h EnumValue')
+g_tool = Tool('File.h EnumValue')
 
-    h_file = tool.get_arg('File.h')
-    enum_value = tool.get_arg('EnumValue')
+def main():
+    h_file = g_tool.get_arg('File.h')
+    enum_value = g_tool.get_arg('EnumValue')
 
-    contents = tool.readtext(h_file)
+    contents = g_tool.read_text(h_file)
     enums = re.findall('enum\s*\{\s*(.*?)\s*\}\s*\w*\s*;', contents, re.DOTALL)
 
     re_assignment = re.compile('^(\w+)\s*=\s*(.*)\s*$')
@@ -51,8 +51,11 @@ if __name__ == '__main__':
 
                 if name == enum_value:
                     print(value)
-                    tool.exit()
+                    g_tool.exit()
 
             value += 1
 
     print(-1)
+
+if __name__ == '__main__':
+    main()

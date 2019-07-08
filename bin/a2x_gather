@@ -22,31 +22,34 @@ import os
 
 from utils.tool import Tool
 
-if __name__ == '__main__':
-    tool = Tool('RootDir ...', '--no-dirs')
+g_tool = Tool('RootDir ...', '--no-dirs')
 
+def main():
     files = []
-    startRoot = os.path.abspath(tool.get_arg('RootDir'))
+    startRoot = os.path.abspath(g_tool.get_arg('RootDir'))
 
     if not os.path.isdir(startRoot):
-        tool.usage('{} is not a dir'.format(startRoot))
+        g_tool.usage('{} is not a dir'.format(startRoot))
 
     def scan_file(Root, File):
         filePath = os.path.join(Root, File)
         isDir = os.path.isdir(filePath)
 
-        if isDir and tool.get_flag('--no-dirs'):
+        if isDir and g_tool.get_flag('--no-dirs'):
             scanned = []
         else:
             scanned = [os.path.relpath(filePath, start = startRoot)]
 
         if isDir:
-            for f in tool.listdir(filePath):
+            for f in g_tool.list_dir(filePath):
                 scanned += scan_file(filePath, f)
 
         return scanned
 
-    for f in tool.get_arg('...'):
+    for f in g_tool.get_arg('...'):
         files += scan_file(startRoot, f)
 
     print(' '.join(files))
+
+if __name__ == '__main__':
+    main()

@@ -22,7 +22,15 @@ import os
 
 from utils.tool import Tool
 
-def geany_tags(tool, cflags, header_file):
+g_tool = Tool('[CFLAGS] [HeaderFile]')
+
+def main():
+    cflags = g_tool.get_arg('[CFLAGS]').replace('"', '\\"')
+    header_file = g_tool.get_arg('[HeaderFile]')
+
+    geany_tags(cflags, header_file)
+
+def geany_tags(cflags, header_file):
     path = os.path.expanduser(os.path.join('~', '.config', 'geany', 'tags'))
     tags_file = os.path.join(path, 'a2x.c.tags')
 
@@ -30,17 +38,12 @@ def geany_tags(tool, cflags, header_file):
         print(tags_file)
         return
 
-    tool.output.info('Looking for Geany tags in: {}'.format(path))
+    g_tool.out.info('Looking for Geany tags in: {}'.format(path))
 
     if os.path.isdir(path):
         header_file = os.path.abspath(header_file)
-        tool.shell('CFLAGS="{}" geany -g {} {}'
-            .format(cflags, tags_file, header_file))
+        g_tool.shell('CFLAGS="{}" geany -g {} {}'.format(
+            cflags, tags_file, header_file))
 
 if __name__ == '__main__':
-    tool = Tool('[CFLAGS] [HeaderFile]')
-
-    cflags = tool.get_arg('[CFLAGS]').replace('"', '\\"')
-    header_file = tool.get_arg('[HeaderFile]')
-
-    geany_tags(tool, cflags, header_file)
+    main()

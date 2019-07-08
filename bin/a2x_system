@@ -22,19 +22,19 @@ import os
 
 from utils.tool import Tool
 
-if __name__ == '__main__':
-    tool = Tool('SystemName')
+g_tool = Tool('SystemName')
 
-    sys_name = tool.get_arg('SystemName').lower()
+def main():
+    sys_name = g_tool.get_arg('SystemName').lower()
 
     sys_c = os.path.join('.', 'system_{}.c'.format(sys_name))
     sys_h = os.path.join('.', 'system_{}.h'.format(sys_name))
 
     for f in [sys_c, sys_h]:
         if os.path.exists(f):
-            tool.output.error('{} already exists'.format(f))
+            g_tool.out.error('{} already exists'.format(f))
 
-    tool.writefile(sys_c,
+    g_tool.write_text(sys_c,
 """\
 #include "system_{name}.h"
 
@@ -44,7 +44,7 @@ void y_{name}(AEntity* Entity)
 }}
 """.format(name = sys_name))
 
-    tool.writefile(sys_h,
+    g_tool.write_text(sys_h,
 """\
 #pragma once
 
@@ -52,3 +52,6 @@ void y_{name}(AEntity* Entity)
 
 extern ASystemHandler y_{name};
 """.format(name = sys_name))
+
+if __name__ == '__main__':
+    main()

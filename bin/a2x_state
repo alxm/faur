@@ -22,19 +22,19 @@ import os
 
 from utils.tool import Tool
 
-if __name__ == '__main__':
-    tool = Tool('StateName')
+g_tool = Tool('StateName')
 
-    state_name = tool.get_arg('StateName').lower()
+def main():
+    state_name = g_tool.get_arg('StateName').lower()
 
     state_c = os.path.join('.', 'state_{}.c'.format(state_name))
     state_h = os.path.join('.', 'state_{}.h'.format(state_name))
 
     for f in [state_c, state_h]:
         if os.path.exists(f):
-            tool.output.error('{} already exists'.format(f))
+            g_tool.out.error('{} already exists'.format(f))
 
-    tool.writefile(state_c,
+    g_tool.write_text(state_c,
 """\
 #include "state_{name}.h"
 
@@ -62,7 +62,7 @@ void s_{name}(void)
 }}
 """.format(name = state_name))
 
-    tool.writefile(state_h,
+    g_tool.write_text(state_h,
 """\
 #pragma once
 
@@ -70,3 +70,6 @@ void s_{name}(void)
 
 extern AStateHandler s_{name};
 """.format(name = state_name))
+
+if __name__ == '__main__':
+    main()

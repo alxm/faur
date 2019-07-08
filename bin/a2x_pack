@@ -49,18 +49,18 @@ category/a_sample.c
     <implementations>
 """
 
-if __name__ == '__main__':
-    tool = Tool('Folder Name')
+g_tool = Tool('Folder Name')
 
-    pack_folder = tool.get_arg('Folder').lower().replace(' ', '_')
-    pack_name = tool.get_arg('Name').lower().replace(' ', '_')
+def main():
+    pack_folder = g_tool.get_arg('Folder').lower().replace(' ', '_')
+    pack_name = g_tool.get_arg('Name').lower().replace(' ', '_')
 
-    pack_path = os.path.join(tool.dir_src, pack_folder)
+    pack_path = os.path.join(g_tool.dir_src, pack_folder)
 
     if not os.path.exists(pack_path):
         os.makedirs(pack_path)
     elif not os.path.isdir(pack_path):
-        self.output.error('{} is not a dir'.format(pack_path))
+        g_tool.out.error('{} is not a dir'.format(pack_path))
 
     pack_c = os.path.join(pack_path, 'a_{}.c'.format(pack_name))
     pack_ph = os.path.join(pack_path, 'a_{}.p.h'.format(pack_name))
@@ -68,7 +68,7 @@ if __name__ == '__main__':
 
     for f in [pack_c, pack_ph, pack_vh]:
         if os.path.exists(f):
-            tool.output.error('{} already exists'.format(f))
+            g_tool.out.error('{} already exists'.format(f))
 
     author = '<your username>'
 
@@ -96,7 +96,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */""".format(time.strftime('%Y'), author)
 
-    tool.writefile(pack_c,
+    g_tool.write_text(pack_c,
 """\
 {0}
 
@@ -123,7 +123,7 @@ const APack a_pack__{2} = {{
 }};
 """.format(license_header, pack_folder, pack_name))
 
-    tool.writefile(pack_ph,
+    g_tool.write_text(pack_ph,
 """\
 {0}
 
@@ -132,7 +132,7 @@ const APack a_pack__{2} = {{
 #include "general/a_system_includes.h"
 """.format(license_header))
 
-    tool.writefile(pack_vh,
+    g_tool.write_text(pack_vh,
 """\
 {0}
 
@@ -144,3 +144,6 @@ const APack a_pack__{2} = {{
 
 extern const APack a_pack__{2};
 """.format(license_header, pack_folder, pack_name))
+
+if __name__ == '__main__':
+    main()

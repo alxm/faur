@@ -22,21 +22,21 @@ import os
 
 from utils.tool import Tool
 
-if __name__ == '__main__':
-    tool = Tool('ComponentName')
+g_tool = Tool('ComponentName')
 
-    comp_name = tool.get_arg('ComponentName')
+def main():
+    comp_name = g_tool.get_arg('ComponentName')
 
     comp_c = os.path.join('.', 'component_{}.c'.format(comp_name.lower()))
     comp_h = os.path.join('.', 'component_{}.h'.format(comp_name.lower()))
 
     for f in [comp_c, comp_h]:
         if os.path.exists(f):
-            tool.output.error('{} already exists'.format(f))
+            g_tool.out.error('{} already exists'.format(f))
 
     struct_name = 'C{}'.format(comp_name)
 
-    tool.writefile(comp_c,
+    g_tool.write_text(comp_c,
 """\
 #include "component_{name}.h"
 
@@ -70,11 +70,11 @@ void c_{name}_valueSet({ctype}* {paramVar}, int Value)
     {paramVar}->value = Value;
 }}
 """.format(ctype=struct_name,
-       name = comp_name.lower(),
-       paramVar = comp_name,
-       localVar = comp_name[0].lower() + comp_name[1 : ]))
+           name = comp_name.lower(),
+           paramVar = comp_name,
+           localVar = comp_name[0].lower() + comp_name[1 : ]))
 
-    tool.writefile(comp_h,
+    g_tool.write_text(comp_h,
 """\
 #pragma once
 
@@ -91,3 +91,6 @@ extern void c_{name}_valueSet({ctype}* {paramVar}, int Value);
 """.format(ctype = struct_name,
            name = comp_name.lower(),
            paramVar = comp_name))
+
+if __name__ == '__main__':
+    main()

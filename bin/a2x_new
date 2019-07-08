@@ -22,34 +22,20 @@ import os
 
 from utils.tool import Tool
 
-class Dir:
-    def __init__(self, Tool, Path):
-        self.tool = Tool
-        self.path = Path
-        self.name = os.path.basename(Path)
+g_tool = Tool('ProjectName')
 
-        os.mkdir(Path)
-
-    def add_subdir(self, Name):
-        return Dir(self.tool, os.path.join(self.path, Name))
-
-    def write_file(self, Name, Content):
-        self.tool.writefile(os.path.join(self.path, Name), Content)
-
-if __name__ == '__main__':
-    tool = Tool('ProjectName')
-
-    project_name = tool.get_arg('ProjectName').replace(' ', '-')
+def main():
+    project_name = g_tool.get_arg('ProjectName').replace(' ', '-')
 
     if project_name != os.path.basename(project_name):
-        tool.output.error('Project name cannot be a path'.format(project_name))
+        g_tool.out.error('Project name cannot be a path'.format(project_name))
 
     project_path = os.path.abspath(project_name)
 
     if os.path.exists(project_path):
-        tool.output.error('{} already exists'.format(project_path))
+        g_tool.out.error('{} already exists'.format(project_path))
 
-    dir_root = Dir(tool, project_path)
+    dir_root = Dir(project_path)
     dir_ast = dir_root.add_subdir('assets')
     dir_bin = dir_root.add_subdir('bin')
     dir_mke = dir_root.add_subdir('make')
@@ -172,10 +158,26 @@ void s_drawBox(void)
 /obj/
 """)
 
-    tool.shell('cd {} && ' \
-               'git init && ' \
-               'git add .gitignore make/Makefile src/main.c'
-        .format(dir_root.path))
+    g_tool.shell(
+        'cd {} && ' \
+        'git init && ' \
+        'git add .gitignore make/Makefile src/main.c'.format(dir_root.path))
 
-    tool.output.note('To build and run:')
-    tool.output.note('cd {} && make -j run'.format(dir_mke.path))
+    g_tool.out.note('To build and run:')
+    g_tool.out.note('cd {} && make -j run'.format(dir_mke.path))
+
+class Dir:
+    def __init__(self, Path):
+        self.path = Path
+        self.name = os.path.basename(Path)
+
+        os.mkdir(Path)
+
+    def add_subdir(self, Name):
+        return Dir(os.path.join(self.path, Name))
+
+    def write_file(self, Name, Content):
+        g_tool.write_text(os.path.join(self.path, Name), Content)
+
+if __name__ == '__main__':
+    main()
