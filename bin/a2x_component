@@ -30,9 +30,7 @@ def main():
     comp_c = os.path.join('.', 'component_{}.c'.format(comp_name.lower()))
     comp_h = os.path.join('.', 'component_{}.h'.format(comp_name.lower()))
 
-    for f in [comp_c, comp_h]:
-        if os.path.exists(f):
-            g_tool.out.error('{} already exists'.format(f))
+    g_tool.check_files_not_exist(comp_c, comp_h)
 
     struct_name = 'C{}'.format(comp_name)
 

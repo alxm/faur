@@ -32,8 +32,7 @@ def main():
     cflags = g_tool.get_arg('[CFLAGS]').replace('"', '\\"')
     header_file = g_tool.get_arg('[HeaderFile]')
 
-    if not g_tool.get_flag('--find-tags') and not os.path.exists(header_file):
-        g_tool.out.error('{} does not exist'.format(header_file))
+    g_tool.check_files_exist(header_file)
 
     geany_tags(cflags, header_file)
 

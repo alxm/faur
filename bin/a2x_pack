@@ -66,9 +66,7 @@ def main():
     pack_ph = os.path.join(pack_path, 'a_{}.p.h'.format(pack_name))
     pack_vh = os.path.join(pack_path, 'a_{}.v.h'.format(pack_name))
 
-    for f in [pack_c, pack_ph, pack_vh]:
-        if os.path.exists(f):
-            g_tool.out.error('{} already exists'.format(f))
+    g_tool.check_files_not_exist(pack_c, pack_ph, pack_vh)
 
     author = '<your username>'
 

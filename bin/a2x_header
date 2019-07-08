@@ -31,6 +31,8 @@ def main():
     headers = g_tool.get_arg('...')
     headers.sort(key = lambda h: h)
 
+    g_tool.check_files_exist(*headers)
+
     included = {}
     re_include = re.compile('^#include "(\w+/a_[\w_\.]+\.h)"$')
 

@@ -139,6 +139,16 @@ class Tool:
 
         return sorted(os.listdir(path))
 
+    def check_files_exist(self, *paths):
+        for f in paths:
+            if not os.path.exists(f):
+                self.out.error('{} does not exist'.format(f))
+
+    def check_files_not_exist(self, *paths):
+        for f in paths:
+            if os.path.exists(f):
+                self.out.error('{} already exists'.format(f))
+
     def shell(self, cmd):
         self.out.shell(cmd)
         status, output = subprocess.getstatusoutput(cmd)

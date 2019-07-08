@@ -30,6 +30,8 @@ def main():
     cvar_prefix = g_tool.get_arg('CVarPrefix')
     h_files = g_tool.get_arg('...')
 
+    g_tool.check_files_exist(gen_dir)
+
     includes = ''
     embed_calls = ''
 

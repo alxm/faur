@@ -32,8 +32,7 @@ def main():
 
     project_path = os.path.abspath(project_name)
 
-    if os.path.exists(project_path):
-        g_tool.out.error('{} already exists'.format(project_path))
+    g_tool.check_files_not_exist(project_path)
 
     dir_root = Dir(project_path)
     dir_ast = dir_root.add_subdir('assets')

@@ -28,6 +28,8 @@ def main():
     h_file = g_tool.get_arg('File.h')
     enum_value = g_tool.get_arg('EnumValue')
 
+    g_tool.check_files_exist(h_file)
+
     contents = g_tool.read_text(h_file)
     enums = re.findall('enum\s*\{\s*(.*?)\s*\}\s*\w*\s*;', contents, re.DOTALL)
 
