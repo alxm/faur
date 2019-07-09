@@ -24,6 +24,8 @@ import re
 from utils.tool import Tool
 
 g_tool = Tool('UmbrellaHeader ...')
+g_re_include = re.compile('^#include "(\w+/a_[\w_\.]+\.h)"$')
+g_included_files = {}
 
 def main():
     umbrella_header = os.path.abspath(g_tool.get_arg('UmbrellaHeader'))
@@ -32,46 +34,6 @@ def main():
     headers.sort(key = lambda h: h)
 
     g_tool.check_files_exist(*headers)
-
-    included = {}
-    re_include = re.compile('^#include "(\w+/a_[\w_\.]+\.h)"$')
-
-    def process_header(FileName, Depth):
-        if FileName in included:
-            return ''
-
-        included[FileName] = True
-
-        out = """\
-//
-// {} START ({})
-//
-""".format(FileName, Depth)
-
-        for line in g_tool.read_text_lines(FileName):
-            include = re_include.match(line)
-
-            if include:
-                header = include.group(1)
-
-                if header.endswith('.v.h'):
-                    g_tool.out.error('{} is a private header'.format(header))
-
-                out += '// {}'.format(line)
-                out += process_header(
-                        os.path.join(g_tool.dir_src, header), Depth + 1)
-            elif line == '#pragma once\n':
-                out += '// {}'.format(line)
-            else:
-                out += line
-
-        out += """\
-//
-// {} END ({})
-//
-""".format(FileName, Depth)
-
-        return out
 
     out = """\
 #pragma once
@@ -85,6 +47,39 @@ def main():
     out += ''.join([process_header(h, 0) for h in headers])
 
     g_tool.write_text(umbrella_header, out)
+
+def process_header(file_name, depth):
+    if file_name in g_included_files:
+        return ''
+
+    g_included_files[file_name] = True
+
+    out = """\
+//
+// {} START ({})
+//
+""".format(file_name, depth)
+
+    for line in g_tool.read_text_lines(file_name):
+        include = g_re_include.match(line)
+
+        if include:
+            header = os.path.join(g_tool.dir_src, include.group(1))
+
+            out += '// {}'.format(line)
+            out += process_header(header, depth + 1)
+        elif line == '#pragma once\n':
+            out += '// {}'.format(line)
+        else:
+            out += line
+
+    out += """\
+//
+// {} END ({})
+//
+""".format(file_name, depth)
+
+    return out
 
 if __name__ == '__main__':
     main()

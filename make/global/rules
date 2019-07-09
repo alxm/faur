@@ -41,7 +41,10 @@ A_FILES_SRC_C := $(A_FILES_SRC_C:$(A_CONFIG_DIR_ROOT)/$(A_CONFIG_DIR_SRC)/%=%)
 #
 # All the object files
 #
-A_FILES_OBJ := $(A_FILES_SRC_C:%=$(A_DIR_OBJ_APP)/%.o) $(A_FILES_SRC_GEN_EMBED_DOT_C:=.o)
+A_FILES_OBJ_APP := $(A_FILES_SRC_C:%=$(A_DIR_OBJ_APP)/%.o)
+A_FILES_OBJ_EMBED := $(A_FILES_SRC_GEN_EMBED_DOT_C:=.o)
+A_FILES_OBJ_GEN := $(A_FILES_OBJ_EMBED)
+A_FILES_OBJ := $(A_FILES_OBJ_APP) $(A_FILES_OBJ_GEN)
 
 #
 # Compiler flags for all targets
@@ -74,6 +77,8 @@ all : $(A_FILE_TARGET_BIN)
 include $(A2X_PATH)/make/global/a2x
 
 $(A_FILES_OBJ) : $(A2X_FILE_PUBLIC_A2X_HEADER)
+
+$(A_FILES_OBJ_GEN) : $(A2X_FILE_PRIVATE_A2X_HEADER)
 
 $(A_FILE_TARGET_BIN) : $(A_FILES_OBJ) $(A2X_FILE_PUBLIC_A2X_LIB)
 	@ mkdir -p $(@D)
