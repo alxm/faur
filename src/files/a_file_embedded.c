@@ -16,10 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "files/a_file_embedded.v.h"
-
-#include "math/a_math.v.h"
-#include "memory/a_mem.v.h"
+#include <a2x.v.h>
 
 static bool fileSeek(AFile* File, int Offset, AFileOffset Origin)
 {

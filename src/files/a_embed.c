@@ -16,9 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "files/a_embed.v.h"
-
-#include "data/a_strhash.v.h"
+#include <a2x.v.h>
 
 #include "media/console.png.h"
 #include "media/fontgrid.png.h"

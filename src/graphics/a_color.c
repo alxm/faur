@@ -16,13 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "graphics/a_color.v.h"
-
-#include "data/a_list.v.h"
-#include "memory/a_mem.v.h"
-#include "platform/a_platform.v.h"
-#include "platform/a_software_blit.v.h"
-#include "platform/a_software_draw.v.h"
+#include <a2x.v.h>
 
 APixelState a__color;
 static AList* g_stateStack;

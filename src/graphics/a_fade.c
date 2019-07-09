@@ -16,11 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "graphics/a_fade.v.h"
-
-#include "graphics/a_draw.v.h"
-#include "graphics/a_screen.v.h"
-#include "time/a_time.v.h"
+#include <a2x.v.h>
 
 typedef enum {
     A__FADE_INVALID = -1,

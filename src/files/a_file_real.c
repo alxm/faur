@@ -16,17 +16,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "files/a_file_real.v.h"
-
+#include <a2x.v.h>
 #include <sys/stat.h>
 
 #if A_CONFIG_SYSTEM_EMSCRIPTEN
     #include <emscripten.h>
 #endif
-
-#include "files/a_path.v.h"
-#include "general/a_out.v.h"
-#include "memory/a_mem.v.h"
 
 static bool fileSeek(AFile* File, int Offset, AFileOffset Origin)
 {

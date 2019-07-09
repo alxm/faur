@@ -16,12 +16,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "platform/a_software_blit.v.h"
+#include <a2x.v.h>
 
 #if A_CONFIG_LIB_RENDER_SOFTWARE
-#include "graphics/a_screen.v.h"
-#include "memory/a_mem.v.h"
-
 enum {LEFT, RIGHT};
 
 typedef struct {

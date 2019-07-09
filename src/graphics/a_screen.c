@@ -16,12 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "graphics/a_screen.v.h"
-
-#include "collision/a_collide.v.h"
-#include "data/a_listit.v.h"
-#include "general/a_out.v.h"
-#include "memory/a_mem.v.h"
+#include <a2x.v.h>
 
 AScreen a__screen;
 static AList* g_stack; // list of AScreen

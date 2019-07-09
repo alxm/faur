@@ -16,10 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "graphics/a_pixels.v.h"
-
-#include "graphics/a_sprite.v.h"
-#include "memory/a_mem.v.h"
+#include <a2x.v.h>
 
 APixels* a_pixels__new(int W, int H, bool IsSprite, bool AllocBuffer)
 {

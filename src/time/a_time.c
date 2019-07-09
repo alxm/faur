@@ -16,9 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "time/a_time.v.h"
-
-#include "platform/a_platform.v.h"
+#include <a2x.v.h>
 
 uint32_t a_time_getMs(void)
 {

@@ -16,13 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ecs/a_ecs.v.h"
-
-#include "data/a_listit.v.h"
-#include "ecs/a_collection.v.h"
-#include "ecs/a_component.v.h"
-#include "general/a_out.v.h"
-#include "memory/a_mem.v.h"
+#include <a2x.v.h>
 
 static AList* g_lists[A_ECS__NUM]; // Each entity is in exactly one of these
 static bool g_deleting; // Set at uninit time to prevent using freed entities

@@ -16,10 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ecs/a_collection.v.h"
-
-#include "data/a_listit.v.h"
-#include "memory/a_mem.v.h"
+#include <a2x.v.h>
 
 struct ACollection {
     AList* entities; // list of AEntity

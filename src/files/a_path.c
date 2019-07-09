@@ -16,13 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "files/a_path.v.h"
-
+#include <a2x.v.h>
 #include <sys/stat.h>
-
-#include "files/a_embed.v.h"
-#include "memory/a_mem.v.h"
-#include "strings/a_str.v.h"
 
 struct APath {
     APathFlags flags;

@@ -16,9 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "strings/a_str.v.h"
-
-#include "memory/a_mem.v.h"
+#include <a2x.v.h>
 
 static inline const char* strFmtv(char* Buffer, size_t Size, bool OverflowOk, const char* Format, va_list Args)
 {

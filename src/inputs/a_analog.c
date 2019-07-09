@@ -16,14 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "inputs/a_analog.v.h"
-
-#include "data/a_listit.v.h"
-#include "general/a_out.v.h"
-#include "inputs/a_input.v.h"
-#include "math/a_math.v.h"
-#include "memory/a_mem.v.h"
-#include "platform/a_platform.v.h"
+#include <a2x.v.h>
 
 struct AAnalog {
     AInputUserHeader header;

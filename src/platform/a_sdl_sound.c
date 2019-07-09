@@ -16,7 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "platform/a_sdl_sound.v.h"
+#include <a2x.v.h>
 
 #if A_CONFIG_SOUND_ENABLED && A_CONFIG_LIB_SDL
 #if A_CONFIG_LIB_SDL == 1
@@ -26,10 +26,6 @@
     #include <SDL2/SDL.h>
     #include <SDL2/SDL_mixer.h>
 #endif
-
-#include "general/a_out.v.h"
-#include "memory/a_mem.v.h"
-#include "platform/a_platform.v.h"
 
 static bool g_enabled;
 static bool g_mute = A_CONFIG_SOUND_MUTE;

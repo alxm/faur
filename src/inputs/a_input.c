@@ -16,10 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "inputs/a_input.v.h"
-
-#include "inputs/a_controller.v.h"
-#include "platform/a_platform.v.h"
+#include <a2x.v.h>
 
 const char* a__inputNameDefault = "Unknown";
 

@@ -16,16 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ecs/a_template.v.h"
-
-#include "data/a_bitfield.v.h"
-#include "data/a_listit.v.h"
-#include "data/a_strhash.v.h"
-#include "ecs/a_component.v.h"
-#include "general/a_block.v.h"
-#include "general/a_main.v.h"
-#include "general/a_out.v.h"
-#include "memory/a_mem.v.h"
+#include <a2x.v.h>
 
 struct ATemplate {
     unsigned instanceNumber; // Incremented by each new entity

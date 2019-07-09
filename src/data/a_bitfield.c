@@ -16,10 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "data/a_bitfield.v.h"
-
-#include "general/a_main.v.h"
-#include "memory/a_mem.v.h"
+#include <a2x.v.h>
 
 typedef unsigned long AChunk;
 #define A__BITS_PER_CHUNK (unsigned)(sizeof(AChunk) * 8)

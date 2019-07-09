@@ -25,26 +25,25 @@ from utils.tool import Tool
 
 """
 category/a_sample.p.h
-    <general/a_system_includes.h>
-    <foo/a_bar.p.h>
+    #include "general/a_system_includes.h"
+    #include "foo1/a_bar1.p.h"
     <public typedefs>
-    <foo/a_bar.p.h>
+    #include "foo2/a_bar2.p.h"
     <public typedef implementations>
     <public api prototypes>
     <static inline functions>
 
 category/a_sample.v.h
-    <category/a_sample.p.h>
+    #include "category/a_sample.p.h"
     <private typedefs>
-    <foo/a_bar.v.h>
+    #include "foo1/a_bar1.v.h"
     <private typedef implementations>
     <private api prototypes>
     <static inline functions>
 
 category/a_sample.c
-    <category/a_sample.v.h>
-    <system headers>
-    <foo/a_bar.v.h>
+    #include <a2x.v.h>
+    #include <system headers>
     <private types>
     <implementations>
 """
@@ -77,7 +76,7 @@ def main():
 
     license_header = """\
 /*
-Copyright {0} {1}
+Copyright {date} {author}
 This file is part of a2x, a C video game framework.
 
 This program is free software: you can redistribute it and/or modify
@@ -92,56 +91,58 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/""".format(time.strftime('%Y'), author)
+*/""".format(date = time.strftime('%Y'), author = author)
 
     g_tool.write_text(pack_c,
 """\
-{0}
+{header_comment}
 
-#include "{1}/a_{2}.v.h"
+#include <a2x.v.h>
 
-static void a_{2}__init(void)
+static void a_{name}__init(void)
 {{
     //
 }}
 
-static void a_{2}__uninit(void)
+static void a_{name}__uninit(void)
 {{
     //
 }}
 
-const APack a_pack__{2} = {{
-    "{2}",
+const APack a_pack__{name} = {{
+    "{name}",
     {{
-        [0] = a_{2}__init,
+        [0] = a_{name}__init,
     }},
     {{
-        [0] = a_{2}__uninit,
+        [0] = a_{name}__uninit,
     }},
 }};
-""".format(license_header, pack_folder, pack_name))
+""".format(header_comment = license_header, name = pack_name))
 
     g_tool.write_text(pack_ph,
 """\
-{0}
+{header_comment}
 
 #pragma once
 
 #include "general/a_system_includes.h"
-""".format(license_header))
+""".format(header_comment = license_header))
 
     g_tool.write_text(pack_vh,
 """\
-{0}
+{header_comment}
 
 #pragma once
 
-#include "{1}/a_{2}.p.h"
+#include "{folder}/a_{name}.p.h"
 
 #include "general/a_main.v.h"
 
-extern const APack a_pack__{2};
-""".format(license_header, pack_folder, pack_name))
+extern const APack a_pack__{name};
+""".format(header_comment = license_header,
+           folder = pack_folder,
+           name = pack_name))
 
 if __name__ == '__main__':
     main()

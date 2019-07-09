@@ -16,11 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "data/a_strhash.v.h"
-
-#include "general/a_out.v.h"
-#include "memory/a_mem.v.h"
-#include "strings/a_str.v.h"
+#include <a2x.v.h>
 
 #define A_STRHASH__SLOTS 128
 #define A_STRHASH__SLOTS_MASK (A_STRHASH__SLOTS - 1)

@@ -16,17 +16,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "files/a_dir.v.h"
-
+#include <a2x.v.h>
 #include <dirent.h>
 #include <sys/stat.h>
-
-#include "data/a_listit.v.h"
-#include "files/a_embed.v.h"
-#include "files/a_path.v.h"
-#include "general/a_out.v.h"
-#include "memory/a_mem.v.h"
-#include "strings/a_str.v.h"
 
 struct ADir {
     APath* path;

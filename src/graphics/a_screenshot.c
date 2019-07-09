@@ -16,14 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "graphics/a_screenshot.v.h"
-
-#include "files/a_dir.v.h"
-#include "general/a_out.v.h"
-#include "graphics/a_png.v.h"
-#include "graphics/a_screen.v.h"
-#include "inputs/a_button.v.h"
-#include "strings/a_str.v.h"
+#include <a2x.v.h>
 
 #define A__SCREENSHOTS_LIMIT 99999
 

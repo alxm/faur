@@ -16,17 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "platform/a_platform.v.h"
-
-#include "platform/a_emscripten.v.h"
-#include "platform/a_gp2x.v.h"
-#include "platform/a_linux.v.h"
-#include "platform/a_pandora.v.h"
-#include "platform/a_sdl.v.h"
-#include "platform/a_software_blit.v.h"
-#include "platform/a_software_draw.v.h"
-#include "platform/a_wiz.v.h"
-#include "general/a_out.v.h"
+#include <a2x.v.h>
 
 static void a_platform__init(void)
 {

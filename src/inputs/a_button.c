@@ -16,14 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "inputs/a_button.v.h"
-
-#include "data/a_listit.v.h"
-#include "general/a_out.v.h"
-#include "inputs/a_input.v.h"
-#include "memory/a_mem.v.h"
-#include "platform/a_platform.v.h"
-#include "time/a_timer.v.h"
+#include <a2x.v.h>
 
 struct AButton {
     AInputUserHeader header;
