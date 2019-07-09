@@ -46,7 +46,7 @@ static void a_embed__init(void)
     addFile("/a2x/font", &a__bin__media_fontgrid_png);
     addFile("/a2x/fontKeyed", &a__bin__media_fontgrid_keyed_png);
 
-    a__embed_application();
+    a_embed__populate();
 }
 
 static void a_embed__uninit(void)
@@ -65,22 +65,22 @@ const APack a_pack__embed = {
     },
 };
 
-void a__embed_addDir(const void* Data)
+void a_embed__dirAdd(const void* Data)
 {
     addDir(((const AEmbeddedDir*)Data)->path, Data);
 }
 
-void a__embed_addFile(const void* Data)
-{
-    addFile(((const AEmbeddedFile*)Data)->path, Data);
-}
-
-const AEmbeddedDir* a_embed__getDir(const char* Path)
+const AEmbeddedDir* a_embed__dirGet(const char* Path)
 {
     return a_strhash_get(g_dirs, Path);
 }
 
-const AEmbeddedFile* a_embed__getFile(const char* Path)
+void a_embed__fileAdd(const void* Data)
+{
+    addFile(((const AEmbeddedFile*)Data)->path, Data);
+}
+
+const AEmbeddedFile* a_embed__fileGet(const char* Path)
 {
     return a_strhash_get(g_files, Path);
 }

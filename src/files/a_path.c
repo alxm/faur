@@ -46,9 +46,9 @@ static APathFlags getPathFlags(const char* Path)
         } else {
             A_FLAG_SET(flags, A_PATH_OTHER);
         }
-    } else if(a_embed__getFile(Path) != NULL) {
+    } else if(a_embed__fileGet(Path) != NULL) {
         A_FLAG_SET(flags, A_PATH_EMBEDDED | A_PATH_FILE);
-    } else if(a_embed__getDir(Path) != NULL) {
+    } else if(a_embed__dirGet(Path) != NULL) {
         A_FLAG_SET(flags, A_PATH_EMBEDDED | A_PATH_DIR);
     }
 

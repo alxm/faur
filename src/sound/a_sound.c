@@ -184,7 +184,7 @@ ASample* a_sample_new(const char* Path)
     if(a_path_exists(Path, A_PATH_FILE | A_PATH_REAL)) {
         s = a_platform_api__soundSampleNewFromFile(Path);
     } else {
-        const AEmbeddedFile* e = a_embed__getFile(Path);
+        const AEmbeddedFile* e = a_embed__fileGet(Path);
 
         if(e) {
             s = a_platform_api__soundSampleNewFromData(e->buffer, (int)e->size);

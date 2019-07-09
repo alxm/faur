@@ -1,5 +1,5 @@
 /*
-    Copyright 2017 Alex Margarit <alex@alxm.org>
+    Copyright 2017, 2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -36,5 +36,10 @@ typedef struct {
 
 extern const APack a_pack__embed;
 
-extern const AEmbeddedDir* a_embed__getDir(const char* Path);
-extern const AEmbeddedFile* a_embed__getFile(const char* Path);
+extern void a_embed__populate(void);
+
+extern void a_embed__dirAdd(const void* Data);
+extern const AEmbeddedDir* a_embed__dirGet(const char* Path);
+
+extern void a_embed__fileAdd(const void* Data);
+extern const AEmbeddedFile* a_embed__fileGet(const char* Path);

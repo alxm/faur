@@ -113,7 +113,7 @@ static AList* dirReal(APath* Path)
 static AList* dirEmbedded(APath* Path)
 {
     const char* path = a_path_getFull(Path);
-    const AEmbeddedDir* data = a_embed__getDir(path);
+    const AEmbeddedDir* data = a_embed__dirGet(path);
 
     if(data == NULL) {
         return NULL;
