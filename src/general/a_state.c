@@ -16,23 +16,11 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "general/a_state.v.h"
+#include <a2x.v.h>
 
 #if A_CONFIG_SYSTEM_EMSCRIPTEN
     #include <emscripten.h>
 #endif
-
-#include "data/a_listit.v.h"
-#include "ecs/a_ecs.v.h"
-#include "general/a_console.v.h"
-#include "general/a_fps.v.h"
-#include "graphics/a_fade.v.h"
-#include "graphics/a_screen.v.h"
-#include "graphics/a_screenshot.v.h"
-#include "inputs/a_input.v.h"
-#include "memory/a_mem.v.h"
-#include "sound/a_sound.v.h"
-#include "time/a_timer.v.h"
 
 typedef struct {
     AStateHandler* function;

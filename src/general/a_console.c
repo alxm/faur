@@ -17,16 +17,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "general/a_console.v.h"
-
-#include "data/a_listit.v.h"
-#include "general/a_fps.v.h"
-#include "graphics/a_draw.v.h"
-#include "graphics/a_font.v.h"
-#include "graphics/a_screen.v.h"
-#include "inputs/a_button.v.h"
-#include "memory/a_mem.v.h"
-#include "strings/a_str.v.h"
+#include <a2x.v.h>
 
 typedef struct {
     AOutSource source;

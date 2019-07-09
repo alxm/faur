@@ -37,9 +37,8 @@ class Color:
     White = '1;37'
 
 class Output:
-    def __init__(self, name, quiet):
-        self.name = name
-        self.quiet = quiet
+    def __init__(self, tool):
+        self.tool = tool
 
     def __colored(self, text, color):
         print('\033[{}m{}\033[0m'.format(color, text), end = '')
@@ -49,30 +48,25 @@ class Output:
         self.__colored('a', Color.LightBlue)
         self.__colored('2', Color.LightGreen)
         self.__colored('x', Color.Yellow)
-        self.__colored('{}]'.format(self.name[3 : ]), Color.White)
+        self.__colored('{}]'.format(self.tool.name[3 : ]), Color.White)
+
+    def __worker(self, tag, color, text):
+        if not self.tool.get_flag('-q'):
+            for line in text.splitlines():
+                self.__title()
+                self.__colored('{} '.format(tag), color)
+
+                print(line)
 
     def note(self, text):
-        if not self.quiet:
-            self.__title()
-            self.__colored('[Note] ', Color.LightGreen)
-            print(text)
+        self.__worker('[Note]', Color.LightGreen, text)
 
     def info(self, text):
-        if not self.quiet:
-            self.__title()
-            self.__colored('[Info] ', Color.LightBlue)
-            print(text)
+        self.__worker('[Info]', Color.LightBlue, text)
 
     def error(self, text):
-        if not self.quiet:
-            self.__title()
-            self.__colored('[Error] ', Color.LightRed)
-            print(text)
-
+        self.__worker('[Error]', Color.LightRed, text)
         sys.exit(1)
 
     def shell(self, text):
-        if not self.quiet:
-            self.__title()
-            self.__colored('[Shell] ', Color.LightPurple)
-            print(text)
+        self.__worker('[Shell]', Color.LightPurple, text)

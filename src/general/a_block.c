@@ -16,12 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "general/a_block.v.h"
-
-#include "data/a_strhash.v.h"
-#include "files/a_file.v.h"
-#include "memory/a_mem.v.h"
-#include "strings/a_str.v.h"
+#include <a2x.v.h>
 
 static AList* g_emptyList;
 

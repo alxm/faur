@@ -16,13 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "files/a_path.v.h"
-
+#include <a2x.v.h>
 #include <sys/stat.h>
-
-#include "files/a_embed.v.h"
-#include "memory/a_mem.v.h"
-#include "strings/a_str.v.h"
 
 struct APath {
     APathFlags flags;
@@ -46,9 +41,9 @@ static APathFlags getPathFlags(const char* Path)
         } else {
             A_FLAG_SET(flags, A_PATH_OTHER);
         }
-    } else if(a_embed__getFile(Path) != NULL) {
+    } else if(a_embed__fileGet(Path) != NULL) {
         A_FLAG_SET(flags, A_PATH_EMBEDDED | A_PATH_FILE);
-    } else if(a_embed__getDir(Path) != NULL) {
+    } else if(a_embed__dirGet(Path) != NULL) {
         A_FLAG_SET(flags, A_PATH_EMBEDDED | A_PATH_DIR);
     }
 

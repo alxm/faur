@@ -16,12 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "graphics/a_font.v.h"
-
-#include "graphics/a_screen.v.h"
-#include "math/a_math.v.h"
-#include "memory/a_mem.v.h"
-#include "strings/a_str.v.h"
+#include <a2x.v.h>
 
 #define A__CHAR_START 32
 #define A__CHAR_INDEX(Char) ((unsigned)Char - A__CHAR_START)

@@ -22,25 +22,33 @@ import os
 
 from utils.tool import Tool
 
-def geany_tags(tool, cflags, header_file):
-    path = os.path.expanduser(os.path.join('~', '.config', 'geany', 'tags'))
-    tags_file = os.path.join(path, 'a2x.c.tags')
+g_tool = Tool('[CFLAGS] [HeaderFile]', '--find-tags')
 
-    if header_file == '':
-        print(tags_file)
+def main():
+    if g_tool.get_flag('--find-tags'):
+        print(geany_find())
         return
 
-    tool.output.info('Looking for Geany tags in: {}'.format(path))
+    cflags = g_tool.get_arg('[CFLAGS]').replace('"', '\\"')
+    header_file = g_tool.get_arg('[HeaderFile]')
 
-    if os.path.isdir(path):
-        header_file = os.path.abspath(header_file)
-        tool.shell('CFLAGS="{}" geany -g {} {}'
-            .format(cflags, tags_file, header_file))
+    g_tool.check_files_exist(header_file)
+
+    geany_tags(cflags, header_file)
+
+def geany_find():
+    return os.path.expanduser(os.path.join(
+            '~', '.config', 'geany', 'tags', 'a2x.c.tags'))
+
+def geany_tags(cflags, header_file):
+    path_file = geany_find()
+    path_dir = os.path.dirname(path_file)
+
+    g_tool.out.info('Looking for Geany tags in: {}'.format(path_dir))
+
+    if os.path.isdir(path_dir):
+        g_tool.shell('CFLAGS="{}" geany -g {} {}'.format(
+            cflags, path_file, os.path.abspath(header_file)))
 
 if __name__ == '__main__':
-    tool = Tool('[CFLAGS] [HeaderFile]')
-
-    cflags = tool.get_arg('[CFLAGS]').replace('"', '\\"')
-    header_file = tool.get_arg('[HeaderFile]')
-
-    geany_tags(tool, cflags, header_file)
+    main()

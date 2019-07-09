@@ -16,7 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "general/a_main.v.h"
+#include <a2x.v.h>
 
 #ifdef __GLIBC__
     #define A__BACKTRACE 1
@@ -26,25 +26,6 @@
 #if A_CONFIG_SYSTEM_EMSCRIPTEN
     #include <emscripten.h>
 #endif
-
-#include "ecs/a_ecs.v.h"
-#include "files/a_embed.v.h"
-#include "general/a_console.v.h"
-#include "general/a_block.v.h"
-#include "general/a_fps.v.h"
-#include "general/a_out.v.h"
-#include "general/a_state.v.h"
-#include "graphics/a_color.v.h"
-#include "graphics/a_fade.v.h"
-#include "graphics/a_font.v.h"
-#include "graphics/a_screen.v.h"
-#include "graphics/a_screenshot.v.h"
-#include "inputs/a_input.v.h"
-#include "math/a_fix.v.h"
-#include "math/a_random.v.h"
-#include "sound/a_sound.v.h"
-#include "time/a_time.v.h"
-#include "time/a_timer.v.h"
 
 static int g_argsNum;
 static const char** g_args;

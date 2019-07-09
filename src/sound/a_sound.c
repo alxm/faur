@@ -16,16 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "sound/a_sound.v.h"
-
-#include "files/a_file.v.h"
-#include "general/a_out.v.h"
-#include "graphics/a_draw.v.h"
-#include "graphics/a_screen.v.h"
-#include "math/a_math.v.h"
-#include "memory/a_mem.v.h"
-#include "platform/a_platform.v.h"
-#include "time/a_timer.v.h"
+#include <a2x.v.h>
 
 static int g_volume;
 static int g_musicVolume;
@@ -184,7 +175,7 @@ ASample* a_sample_new(const char* Path)
     if(a_path_exists(Path, A_PATH_FILE | A_PATH_REAL)) {
         s = a_platform_api__soundSampleNewFromFile(Path);
     } else {
-        const AEmbeddedFile* e = a_embed__getFile(Path);
+        const AEmbeddedFile* e = a_embed__fileGet(Path);
 
         if(e) {
             s = a_platform_api__soundSampleNewFromData(e->buffer, (int)e->size);

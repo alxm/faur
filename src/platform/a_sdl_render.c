@@ -16,15 +16,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "platform/a_sdl_render.v.h"
+#include <a2x.v.h>
 
 #if A_CONFIG_LIB_RENDER_SDL
 #include <SDL2/SDL.h>
-
-#include "general/a_out.v.h"
-#include "memory/a_mem.v.h"
-#include "platform/a_platform.v.h"
-#include "platform/a_sdl_video.v.h"
 
 typedef enum {
     A_TEXTURE__INVALID = -1,

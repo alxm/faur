@@ -23,42 +23,14 @@ import re
 
 from utils.tool import Tool
 
-class Sdk:
-    def __init__(self, id, title):
-        self.prefix = 'A_SDK_' + id.upper() + '_'
-        self.title = title
-        self.variables = {}
+g_tool = Tool('UserConfig [GeneratedConfig]')
 
-    def add_var(self, config_name):
-        makefile_var = self.prefix + config_name.replace('.', '_').upper()
-        self.variables[config_name] = [makefile_var, None]
-
-    def set_var(self, name, value):
-        self.variables[name][1] = value
-
-    def has_var(self, name):
-        return name in self.variables
-
-    def is_complete(self):
-        for name in self.variables:
-            if self.variables[name][1] is None:
-                return False
-
-        return True
-
-    def __str__(self):
-        return '\n'.join([
-            '{} = {}'.format(self.variables[name][0], self.variables[name][1])
-                for name in self.variables])
-
-if __name__ == '__main__':
-    tool = Tool('UserConfig [GeneratedConfig]')
-
-    config_read = tool.get_arg('UserConfig')
-    config_write = tool.get_arg('[GeneratedConfig]')
+def main():
+    config_read = g_tool.get_arg('UserConfig')
+    config_write = g_tool.get_arg('[GeneratedConfig]')
 
     if not os.path.exists(config_read):
-        tool.writefile(config_read, """\
+        g_tool.write_text(config_read, """\
 sdk.mingw32.root = /usr
 sdk.mingw32.arch = i686-w64-mingw32
 
@@ -76,10 +48,10 @@ sdk.pandora.toolchain = arm-2013.11
 sdk.pandora.utils = sdk_utils
 """)
     elif not os.path.isfile(config_read):
-        tool.output.error('{} is not a file'.format(config_read))
+        g_tool.out.error('{} is not a file'.format(config_read))
 
     if config_write == '':
-        tool.exit()
+        return
 
     sdks = {}
 
@@ -110,12 +82,12 @@ sdk.pandora.utils = sdk_utils
 
     re_assignment = re.compile('^\s*sdk\.(.*?)\.(.*?)\s*=\s*(.*?)\s*$')
 
-    for line in tool.readtext(config_read).splitlines():
+    for line in g_tool.read_text(config_read).splitlines():
         assignment = re_assignment.match(line)
 
         if not assignment:
             if len(line.strip()) > 0:
-                tool.output.note('Ignoring line: "{}"'.format(line))
+                g_tool.out.note('Ignoring line: "{}"'.format(line))
 
             continue
 
@@ -124,23 +96,55 @@ sdk.pandora.utils = sdk_utils
         value = assignment.group(3)
 
         if sdk_name not in sdks:
-            tool.output.note('You can comment out config lines with #')
-            tool.output.error('Unknown SDK {} - only aware of {}'
-                .format(sdk_name, ', '.join(sorted([s for s in sdks]))))
+            g_tool.out.note('You can comment out config lines with #')
+            g_tool.out.error('Unknown SDK {} - only aware of {}'.format(
+                sdk_name,
+                ', '.join(sorted([s for s in sdks]))))
 
         sdk = sdks[sdk_name]
 
         if not sdk.has_var(variable):
-            tool.output.note('You can comment out config lines with #')
-            tool.output.error('Unknown variable {}.{} - only aware of {}'
-                .format(sdk_name,
-                        variable,
-                        ', '.join(sorted([v for v in sdk.variables]))))
+            g_tool.out.note('You can comment out config lines with #')
+            g_tool.out.error('Unknown variable {}.{} - only aware of {}'.format(
+                sdk_name,
+                variable,
+                ', '.join(sorted([v for v in sdk.variables]))))
 
         sdk.set_var(variable, value)
 
         if sdk.is_complete():
-            tool.output.note('Processed config for {}'.format(sdk.title))
+            g_tool.out.note('Processed config for {}'.format(sdk.title))
 
     out = '\n'.join([str(sdks[sdk]) for sdk in sdks]) + '\n'
-    tool.writefile(config_write, out)
+    g_tool.write_text(config_write, out)
+
+class Sdk:
+    def __init__(self, id, title):
+        self.prefix = 'A_SDK_' + id.upper() + '_'
+        self.title = title
+        self.variables = {}
+
+    def add_var(self, config_name):
+        makefile_var = self.prefix + config_name.replace('.', '_').upper()
+        self.variables[config_name] = [makefile_var, None]
+
+    def set_var(self, name, value):
+        self.variables[name][1] = value
+
+    def has_var(self, name):
+        return name in self.variables
+
+    def is_complete(self):
+        for name in self.variables:
+            if self.variables[name][1] is None:
+                return False
+
+        return True
+
+    def __str__(self):
+        return '\n'.join([
+            '{} = {}'.format(self.variables[name][0], self.variables[name][1])
+                for name in self.variables])
+
+if __name__ == '__main__':
+    main()

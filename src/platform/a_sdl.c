@@ -16,7 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "platform/a_sdl.v.h"
+#include <a2x.v.h>
 
 #if A_CONFIG_LIB_SDL
 #if A_CONFIG_LIB_SDL == 1
@@ -24,12 +24,6 @@
 #elif A_CONFIG_LIB_SDL == 2
     #include <SDL2/SDL.h>
 #endif
-
-#include "general/a_main.v.h"
-#include "platform/a_sdl_input.v.h"
-#include "platform/a_sdl_sound.v.h"
-#include "platform/a_sdl_video.v.h"
-#include "time/a_time.v.h"
 
 static uint32_t g_sdlFlags;
 

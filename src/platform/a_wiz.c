@@ -20,16 +20,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "platform/a_wiz.v.h"
+#include <a2x.v.h>
 
 #if A_CONFIG_SYSTEM_WIZ || A_CONFIG_SYSTEM_CAANOO
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
-
-#include "files/a_file.v.h"
-#include "general/a_main.v.h"
-#include "time/a_time.v.h"
 
 #if A_CONFIG_SYSTEM_WIZ
     static bool g_mmuHackOn = false;

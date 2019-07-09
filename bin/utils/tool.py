@@ -23,53 +23,53 @@ import sys
 from utils.output import Output
 
 class Tool:
-    def __init__(self, arg_names):
-        quiet = False
-
-        args = [a.strip() for a in sys.argv[1 : ]]
-        args = [a for a in args if len(a) > 0]
-
-        if len(args) > 0 and args[0] == '-q':
-            quiet = True
-            args = args[1 : ]
-
-        arg_names = arg_names.split()
+    def __init__(self, arg_names, flag_names = ''):
         required_num = 0
         optional_num = 0
         has_tail = False
+        arg_names = arg_names.split()
+        flag_names = ['-q'] + flag_names.split()
 
         self.name = os.path.basename(sys.argv[0])
-        self.output = Output(self.name, quiet)
+        self.out = Output(self)
+        self.arg_names = arg_names
         self.arg_db = {}
+        self.flag_names = flag_names
+        self.flag_db = {}
+
+        arg_values = [a.strip() for a in sys.argv[1 : ]]
+        arg_values = [a for a in arg_values if len(a) > 0]
+
+        for value in arg_values:
+            if value in flag_names:
+                self.flag_db[value] = True
+                arg_values = arg_values[1 : ]
+            else:
+                break
 
         for name in arg_names:
             if has_tail:
-                self.output.error('... must be the last argument')
+                self.out.error('... must be the last argument')
             elif name == '...':
                 if optional_num > 0:
-                    self.output.error('Cannot have both optional args and ...')
+                    self.out.error('Cannot have both optional args and ...')
 
                 has_tail = True
             elif name[0] == '[' and name[-1] == ']':
                 optional_num += 1
             elif optional_num > 0:
-                self.output.error('Cannot have normal args after optional args')
+                self.out.error('Cannot have normal args after optional args')
             else:
                 required_num += 1
 
-        if len(args) < required_num:
-            message = 'Usage: {}'.format(self.name)
-
-            for arg in arg_names:
-                message += ' {}'.format(arg)
-
-            self.output.error(message)
+        if len(arg_values) < required_num:
+            self.usage('All required arguments must be present')
 
         if has_tail:
             arg_names = arg_names[ : -1]
-            self.arg_db['...'] = args[required_num : ]
+            self.arg_db['...'] = arg_values[required_num : ]
 
-        for name, value in zip(arg_names, args):
+        for name, value in zip(arg_names, arg_values):
             self.arg_db[name] = value
 
         if 'A2X_PATH' in os.environ:
@@ -88,10 +88,23 @@ class Tool:
         if not os.path.exists(self.dir_cfg):
             os.makedirs(self.dir_cfg)
         elif not os.path.isdir(self.dir_cfg):
-            self.output.error('{} is not a dir'.format(self.dir_cfg))
+            self.out.error('{} is not a dir'.format(self.dir_cfg))
 
-    def exit(self):
-        sys.exit(0)
+    def usage(self, error_message = None):
+        message = ''
+
+        if error_message:
+            message += error_message + '\n'
+
+        message += 'Usage: {}'.format(self.name)
+
+        for flag in self.flag_names:
+            message += ' [{}]'.format(flag)
+
+        for arg in self.arg_names:
+            message += ' {}'.format(arg)
+
+        self.out.error(message)
 
     def get_arg(self, name):
         if name in self.arg_db:
@@ -99,40 +112,52 @@ class Tool:
         else:
             return ''
 
-    def writefile(self, name, contents):
-        self.output.info('Writing file {}'.format(name))
+    def get_flag(self, flag):
+        return flag in self.flag_db
+
+    def write_text(self, name, contents):
+        self.out.info('Writing file {}'.format(name))
 
         with open(name, 'w') as f:
             f.write(contents)
 
-    def readbytes(self, name):
+    def read_bytes(self, name):
         with open(name, 'rb') as f:
             return f.read()
 
-    def readtext(self, name):
+    def read_text(self, name):
         with open(name, 'rU') as f:
             return f.read()
 
-    def readtextlines(self, name):
+    def read_text_lines(self, name):
         with open(name, 'rU') as f:
             return f.readlines()
 
-    def listdir(self, path):
+    def list_dir(self, path):
         if not os.path.isdir(path):
-            self.output.error('{} is not a dir'.format(path))
+            self.out.error('{} is not a dir'.format(path))
 
         return sorted(os.listdir(path))
 
+    def check_files_exist(self, *paths):
+        for f in paths:
+            if not os.path.exists(f):
+                self.out.error('{} does not exist'.format(f))
+
+    def check_files_not_exist(self, *paths):
+        for f in paths:
+            if os.path.exists(f):
+                self.out.error('{} already exists'.format(f))
+
     def shell(self, cmd):
-        self.output.shell(cmd)
+        self.out.shell(cmd)
         status, output = subprocess.getstatusoutput(cmd)
 
-        if not self.output.quiet:
-            for line in output.splitlines():
-                self.output.shell('    {}'.format(line))
+        for line in output.splitlines():
+            self.out.shell('    {}'.format(line))
 
         if status != 0:
             sys.exit(status)
 
-    def sanitizeFileNameForCVar(self, FileName):
-        return FileName.replace('.', '_').replace('-', '_').replace('/', '_')
+    def sanitize_c_var(self, name):
+        return name.replace('.', '_').replace('-', '_').replace('/', '_')

@@ -16,11 +16,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "platform/a_no_sound.v.h"
+#include <a2x.v.h>
 
 #if !A_CONFIG_SOUND_ENABLED
-#include "platform/a_platform.v.h"
-
 bool a_platform_api__soundMuteGet(void)
 {
     return true;

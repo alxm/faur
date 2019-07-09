@@ -16,13 +16,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "platform/a_pandora.v.h"
+#include <a2x.v.h>
 
 #if A_CONFIG_SYSTEM_PANDORA
-#include "files/a_file.v.h"
-#include "general/a_out.v.h"
-#include "strings/a_str.v.h"
-
 static char* g_nubModes[2];
 
 static void pandora_setNubModes(const char* Nub0, const char* Nub1)

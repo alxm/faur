@@ -16,7 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "platform/a_emscripten.v.h"
+#include <a2x.v.h>
 
 #if A_CONFIG_SYSTEM_EMSCRIPTEN
 #include <emscripten.h>

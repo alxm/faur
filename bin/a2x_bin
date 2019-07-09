@@ -22,23 +22,32 @@ import os
 
 from utils.tool import Tool
 
-if __name__ == '__main__':
-    tool = Tool('File.bin File.h OriginalPath CVarPrefix')
+g_tool = Tool('File.bin File.h OriginalPath CVarPrefix')
 
-    bin_file = tool.get_arg('File.bin')
-    h_file = tool.get_arg('File.h')
-    original_path = tool.get_arg('OriginalPath')
-    cvar_prefix = tool.get_arg('CVarPrefix')
+def main():
+    bin_file = g_tool.get_arg('File.bin')
+    h_file = g_tool.get_arg('File.h')
+    original_path = g_tool.get_arg('OriginalPath')
+    cvar_prefix = g_tool.get_arg('CVarPrefix')
 
     if os.path.isdir(bin_file):
-        entries = tool.listdir(bin_file)
-        bin_data = ''
-        bin_size = len(entries)
+        content = process_dir(bin_file, cvar_prefix, original_path)
+    elif os.path.isfile(bin_file):
+        content = process_file(bin_file, cvar_prefix, original_path)
+    else:
+        g_tool.out.error('{} is an invalid file'.format(bin_file))
 
-        for f in entries:
-            bin_data += '\n        "{}",'.format(f)
+    g_tool.write_text(h_file, content)
 
-        fmt_content = """\
+def process_dir(bin_file, cvar_prefix, original_path):
+    entries = g_tool.list_dir(bin_file)
+    bin_data = ''
+    bin_size = len(entries)
+
+    for f in entries:
+        bin_data += '\n        "{}",'.format(f)
+
+    content = """\
 static const struct {{
     const char* path;
     size_t size;
@@ -49,19 +58,26 @@ static const struct {{
     {{{data}
     }}
 }};
-"""
-    else:
-        bin_bytes = tool.readbytes(bin_file)
-        bin_data = ''
-        bin_size = len(bin_bytes)
+""".format(prefix = cvar_prefix,
+           var = g_tool.sanitize_c_var(original_path),
+           path = original_path,
+           size = bin_size,
+           data = bin_data)
 
-        for index, byte in enumerate(bin_bytes):
-            if index % 8 == 0:
-                bin_data += '\n        '
+    return content
 
-            bin_data += '0x{:0>2x},'.format(byte)
+def process_file(bin_file, cvar_prefix, original_path):
+    bin_bytes = g_tool.read_bytes(bin_file)
+    bin_data = ''
+    bin_size = len(bin_bytes)
 
-        fmt_content = """\
+    for index, byte in enumerate(bin_bytes):
+        if index % 8 == 0:
+            bin_data += '\n        '
+
+        bin_data += '0x{:0>2x},'.format(byte)
+
+    content = """\
 static const struct {{
     const char* path;
     size_t size;
@@ -72,11 +88,13 @@ static const struct {{
     {{{data}
     }}
 }};
-"""
+""".format(prefix = cvar_prefix,
+           var = g_tool.sanitize_c_var(original_path),
+           path = original_path,
+           size = bin_size,
+           data = bin_data)
 
-    tool.writefile(h_file, fmt_content.format(
-        prefix = cvar_prefix,
-        var = tool.sanitizeFileNameForCVar(original_path),
-        path = original_path,
-        size = bin_size,
-        data = bin_data))
+    return content
+
+if __name__ == '__main__':
+    main()

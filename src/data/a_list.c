@@ -16,10 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "data/a_list.v.h"
-
-#include "math/a_random.v.h"
-#include "memory/a_mem.v.h"
+#include <a2x.v.h>
 
 #define A__ITERATE(List, N) \
     for(AListNode* N = List->sentinel.next; N != &List->sentinel; N = N->next)

@@ -16,14 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "files/a_file.v.h"
-
-#include "files/a_file_embedded.v.h"
-#include "files/a_file_real.v.h"
-#include "general/a_out.v.h"
-#include "math/a_math.v.h"
-#include "memory/a_mem.v.h"
-#include "strings/a_str.v.h"
+#include <a2x.v.h>
 
 AFile* a_file_new(const char* Path, AFileMode Mode)
 {

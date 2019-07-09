@@ -16,13 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "general/a_fps.v.h"
-
-#include "general/a_out.v.h"
-#include "math/a_math.v.h"
-#include "memory/a_mem.v.h"
-#include "platform/a_platform.v.h"
-#include "time/a_time.v.h"
+#include <a2x.v.h>
 
 #define A__AVERAGE_WINDOW_SEC 2
 

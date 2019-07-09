@@ -16,7 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "platform/a_sdl_input.v.h"
+#include <a2x.v.h>
 
 #if A_CONFIG_LIB_SDL
 #if A_CONFIG_LIB_SDL == 1
@@ -24,16 +24,6 @@
 #elif A_CONFIG_LIB_SDL == 2
     #include <SDL2/SDL.h>
 #endif
-
-#include "data/a_listit.v.h"
-#include "files/a_path.v.h"
-#include "general/a_fps.v.h"
-#include "general/a_out.v.h"
-#include "general/a_state.v.h"
-#include "math/a_math.v.h"
-#include "memory/a_mem.v.h"
-#include "platform/a_platform.v.h"
-#include "strings/a_str.v.h"
 
 #if A_CONFIG_LIB_SDL == 1
     typedef uint8_t ASdlJoystickId;

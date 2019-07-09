@@ -16,9 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "inputs/a_controller.v.h"
-
-#include "platform/a_platform.v.h"
+#include <a2x.v.h>
 
 void a_input_controller__init(void)
 {

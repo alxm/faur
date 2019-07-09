@@ -16,12 +16,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "platform/a_software_draw.v.h"
+#include <a2x.v.h>
 
 #if A_CONFIG_LIB_RENDER_SOFTWARE
-#include "graphics/a_draw.v.h"
-#include "graphics/a_screen.v.h"
-
 typedef void (*ADrawPixel)(int X, int Y);
 typedef void (*ADrawRectangle)(int X, int Y, int Width, int Height);
 typedef void (*ADrawLine)(int X1, int Y1, int X2, int Y2);

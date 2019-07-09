@@ -16,11 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "collision/a_grid.v.h"
-
-#include "data/a_listit.v.h"
-#include "math/a_math.v.h"
-#include "memory/a_mem.v.h"
+#include <a2x.v.h>
 
 struct AGrid {
     int coordsShift; // right-shift item coords to get cell index

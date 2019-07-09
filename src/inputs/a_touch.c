@@ -16,13 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "inputs/a_touch.v.h"
-
-#include "collision/a_collide.v.h"
-#include "data/a_listit.v.h"
-#include "inputs/a_input.v.h"
-#include "memory/a_mem.v.h"
-#include "platform/a_platform.v.h"
+#include <a2x.v.h>
 
 struct ATouch {
     AInputUserHeader header;

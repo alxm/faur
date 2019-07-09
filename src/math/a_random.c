@@ -16,11 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "math/a_random.v.h"
-
+#include <a2x.v.h>
 #include <time.h>
-
-#include "general/a_out.v.h"
 
 static ARandomPrng* g_rand;
 static ARandomPrngSeed* g_srand;

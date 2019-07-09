@@ -21,13 +21,11 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "platform/a_gp2x.v.h"
+#include <a2x.v.h>
 
 #if A_CONFIG_SYSTEM_GP2X
 #include <fcntl.h>
 #include <sys/mman.h>
-
-#include "files/a_file.v.h"
 
 #if A_CONFIG_SYSTEM_GP2X_MHZ > 0
 static void setCpuSpeed(unsigned MHz)

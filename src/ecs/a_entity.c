@@ -16,15 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ecs/a_entity.v.h"
-
-#include "data/a_listit.v.h"
-#include "ecs/a_collection.v.h"
-#include "ecs/a_ecs.v.h"
-#include "general/a_fps.v.h"
-#include "general/a_out.v.h"
-#include "memory/a_mem.v.h"
-#include "strings/a_str.v.h"
+#include <a2x.v.h>
 
 struct AEntity {
     char* id; // specified name for debugging

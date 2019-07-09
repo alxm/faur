@@ -16,15 +16,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "graphics/a_png.v.h"
-
+#include <a2x.v.h>
 #include <zlib.h>
 #include <png.h>
-
-#include "files/a_file.v.h"
-#include "general/a_out.v.h"
-#include "graphics/a_pixels.v.h"
-#include "memory/a_mem.v.h"
 
 typedef struct {
     const uint8_t* data;

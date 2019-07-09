@@ -16,10 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "files/a_file_embedded.v.h"
-
-#include "math/a_math.v.h"
-#include "memory/a_mem.v.h"
+#include <a2x.v.h>
 
 static bool fileSeek(AFile* File, int Offset, AFileOffset Origin)
 {
@@ -131,7 +128,7 @@ AFile* a_file_embedded__new(APath* Path)
 
     f->path = Path;
     f->interface = &g_interface;
-    f->u.e.data = a_embed__getFile(a_path_getFull(Path));
+    f->u.e.data = a_embed__fileGet(a_path_getFull(Path));
     f->u.e.index = 0;
 
     return f;
@@ -139,7 +136,7 @@ AFile* a_file_embedded__new(APath* Path)
 
 uint8_t* a_file_embedded__toBuffer(const char* Path)
 {
-    const AEmbeddedFile* data = a_embed__getFile(Path);
+    const AEmbeddedFile* data = a_embed__fileGet(Path);
 
     return a_mem_dup(data->buffer, data->size);
 }

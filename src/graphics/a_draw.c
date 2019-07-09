@@ -16,9 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "graphics/a_draw.v.h"
-
-#include "graphics/a_screen.v.h"
+#include <a2x.v.h>
 
 void a_draw_fill(void)
 {

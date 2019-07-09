@@ -16,12 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "ecs/a_component.v.h"
-
-#include "data/a_strhash.v.h"
-#include "ecs/a_entity.v.h"
-#include "general/a_main.v.h"
-#include "memory/a_mem.v.h"
+#include <a2x.v.h>
 
 struct AComponent {
     size_t size; // total size of AComponentInstance + user data that follows

@@ -16,12 +16,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "platform/a_linux.v.h"
+#include <a2x.v.h>
 
 #if A_CONFIG_SYSTEM_LINUX
 #include <signal.h>
-
-#include "general/a_out.v.h"
 
 static void a__term(int Signal)
 {
