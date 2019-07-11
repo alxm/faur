@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include "platform/a_sdl.p.h"
+#include "platform/input/a_sdl_input.p.h"
 
-extern void a_platform_sdl__init(void);
-extern void a_platform_sdl__uninit(void);
+extern void a_platform_sdl_input__init(void);
+extern void a_platform_sdl_input__uninit(void);

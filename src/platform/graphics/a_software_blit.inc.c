@@ -196,10 +196,10 @@ static void A__FUNC_NAME(block, doclip)(const APlatformTexture* Texture, const A
 }
 
 #define A__PIXEL_TRANSPARENCY 0
-#include "platform/a_software_blitex.inc.c"
+#include "platform/graphics/a_software_blitex.inc.c"
 
 #define A__PIXEL_TRANSPARENCY 1
-#include "platform/a_software_blitex.inc.c"
+#include "platform/graphics/a_software_blitex.inc.c"
 
 #undef A__BLEND
 #undef A__FILL

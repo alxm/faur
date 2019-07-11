@@ -18,8 +18,7 @@
 
 #pragma once
 
-#include "platform/a_software_draw.p.h"
+#include "platform/graphics/a_software_blit.p.h"
 
-extern void a_platform_software_draw__init(void);
-
-extern void a_platform_software_draw__updateRoutines(void);
+extern void a_platform_software_blit__init(void);
+extern void a_platform_software_blit__uninit(void);

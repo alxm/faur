@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include "platform/a_sdl_sound.p.h"
+#include "platform/sound/a_sdl_sound.p.h"
 
 extern void a_platform_sdl_sound__init(void);
 extern void a_platform_sdl_sound__uninit(void);

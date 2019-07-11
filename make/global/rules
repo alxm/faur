@@ -77,7 +77,7 @@ A_GENERIC_CFLAGS := \
     $(A_CONFIG_BUILD_CFLAGS) \
     $(A_CONFIG_BUILD_OPT) \
 
-.PHONY : all clean cleanbin run
+.PHONY : all run clean cleanbin $(A_CONFIG_MAKE_CLEAN)
 
 .SECONDARY : $(A_FILES_GFX_C)
 
@@ -122,8 +122,8 @@ $(A_DIR_GEN)/%.c.o : $(A_DIR_GEN)/%.c
 	@ mkdir -p $(@D)
 	$(CC) -c -o $@ $< $(A_GENERIC_CFLAGS)
 
-clean : $(A_CONFIG_MAKE_CLEAN)
-	rm -rf $(A_FILE_TARGET_BIN) $(A_DIR_OBJ)
+clean : cleanbin $(A_CONFIG_MAKE_CLEAN)
+	rm -rf $(A_DIR_OBJ)
 
 cleanbin :
 	rm -f $(A_FILE_TARGET_BIN)

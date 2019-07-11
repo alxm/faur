@@ -1,5 +1,5 @@
 /*
-    Copyright 2017 Alex Margarit <alex@alxm.org>
+    Copyright 2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -18,7 +18,4 @@
 
 #pragma once
 
-#include "platform/a_gp2x.p.h"
-
-extern void a_platform_gp2x__init(void);
-extern void a_platform_gp2x__uninit(void);
+#include "general/a_system_includes.h"

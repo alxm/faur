@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2018 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -18,11 +18,6 @@
 
 #pragma once
 
-#include "graphics/a_sprite.p.h"
+#include "platform/system/a_linux.p.h"
 
-#include "graphics/a_pixels.v.h"
-#include "platform/a_platform.v.h"
-
-extern APixels* a_sprite__pixelsGet(ASprite* Sprite);
-extern APlatformTexture* a_sprite__textureGet(const ASprite* Sprite, unsigned Frame);
-extern void a_sprite__textureCommit(ASprite* Sprite, unsigned Frame);
+extern void a_platform_linux__init(void);

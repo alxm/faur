@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include "platform/a_sdl_video.p.h"
+#include "platform/graphics/a_sdl_video.p.h"
 
 #if A_CONFIG_LIB_SDL == 2
     #if A_CONFIG_SCREEN_BPP == 16
@@ -38,3 +38,6 @@
 
 extern void a_platform_sdl_video__init(void);
 extern void a_platform_sdl_video__uninit(void);
+
+extern int a_platform_sdl_video__pixelBlendToSdlBlend(void);
+extern uint8_t a_platform_sdl_video__pixelAlphaToSdlAlpha(void);
