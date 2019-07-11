@@ -38,3 +38,6 @@
 
 extern void a_platform_sdl_video__init(void);
 extern void a_platform_sdl_video__uninit(void);
+
+extern int a_platform_sdl_video__pixelBlendToSdlBlend(void);
+extern uint8_t a_platform_sdl_video__pixelAlphaToSdlAlpha(void);

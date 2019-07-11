@@ -619,4 +619,63 @@ void a_platform_api__screenMouseCursorSet(bool Show)
         a_out__error("SDL_ShowCursor: %s", SDL_GetError());
     }
 }
+
+#if A_CONFIG_LIB_RENDER_SDL
+int a_platform_sdl_video__pixelBlendToSdlBlend(void)
+{
+    switch(a__color.blend) {
+        case A_COLOR_BLEND_MOD:
+            return SDL_BLENDMODE_MOD;
+
+        case A_COLOR_BLEND_ADD:
+            return SDL_BLENDMODE_ADD;
+
+        default:
+            return SDL_BLENDMODE_BLEND;
+    }
+}
+
+uint8_t a_platform_sdl_video__pixelAlphaToSdlAlpha(void)
+{
+    switch(a__color.blend) {
+        case A_COLOR_BLEND_RGBA:
+            return (uint8_t)a__color.alpha;
+
+        case A_COLOR_BLEND_RGB25:
+            return SDL_ALPHA_OPAQUE / 4;
+
+        case A_COLOR_BLEND_RGB50:
+            return SDL_ALPHA_OPAQUE / 2;
+
+        case A_COLOR_BLEND_RGB75:
+            return SDL_ALPHA_OPAQUE * 3 / 4;
+
+        default:
+            return SDL_ALPHA_OPAQUE;
+    }
+}
+
+void a_platform_api__renderSetDrawColor(void)
+{
+    if(SDL_SetRenderDrawColor(
+        a__sdlRenderer,
+        (uint8_t)a__color.rgb.r,
+        (uint8_t)a__color.rgb.g,
+        (uint8_t)a__color.rgb.b,
+        a_platform_sdl_video__pixelAlphaToSdlAlpha()) < 0) {
+
+        a_out__error("SDL_SetRenderDrawColor: %s", SDL_GetError());
+    }
+}
+
+void a_platform_api__renderSetBlendMode(void)
+{
+    SDL_BlendMode blend =
+        (SDL_BlendMode)a_platform_sdl_video__pixelBlendToSdlBlend();
+
+    if(SDL_SetRenderDrawBlendMode(a__sdlRenderer, blend) < 0) {
+        a_out__error("SDL_SetRenderDrawBlendMode: %s", SDL_GetError());
+    }
+}
+#endif // A_CONFIG_LIB_RENDER_SDL
 #endif // A_CONFIG_LIB_SDL
