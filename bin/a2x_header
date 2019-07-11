@@ -24,7 +24,7 @@ import re
 from utils.tool import Tool
 
 g_tool = Tool('UmbrellaHeader ...')
-g_re_include = re.compile('^#include "(\w+/a_[\w_\.]+\.h)"$')
+g_re_include = re.compile('^#include "((\w+/)+a_[\w_\.]+\.h)"$')
 g_included_files = {}
 
 def main():

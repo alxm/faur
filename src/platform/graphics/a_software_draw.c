@@ -220,7 +220,7 @@ do {                                                                        \
 #define A__BLEND plain
 #define A__BLEND_SETUP const APixel color = a__color.pixel;
 #define A__PIXEL_PARAMS , color
-#include "platform/a_software_draw.inc.c"
+#include "platform/graphics/a_software_draw.inc.c"
 
 #define A__BLEND rgba
 #define A__BLEND_SETUP \
@@ -230,37 +230,37 @@ do {                                                                        \
         return; \
     }
 #define A__PIXEL_PARAMS , &rgb, alpha
-#include "platform/a_software_draw.inc.c"
+#include "platform/graphics/a_software_draw.inc.c"
 
 #define A__BLEND rgb25
 #define A__BLEND_SETUP const ARgb rgb = a__color.rgb;
 #define A__PIXEL_PARAMS , &rgb
-#include "platform/a_software_draw.inc.c"
+#include "platform/graphics/a_software_draw.inc.c"
 
 #define A__BLEND rgb50
 #define A__BLEND_SETUP const ARgb rgb = a__color.rgb;
 #define A__PIXEL_PARAMS , &rgb
-#include "platform/a_software_draw.inc.c"
+#include "platform/graphics/a_software_draw.inc.c"
 
 #define A__BLEND rgb75
 #define A__BLEND_SETUP const ARgb rgb = a__color.rgb;
 #define A__PIXEL_PARAMS , &rgb
-#include "platform/a_software_draw.inc.c"
+#include "platform/graphics/a_software_draw.inc.c"
 
 #define A__BLEND inverse
 #define A__BLEND_SETUP
 #define A__PIXEL_PARAMS
-#include "platform/a_software_draw.inc.c"
+#include "platform/graphics/a_software_draw.inc.c"
 
 #define A__BLEND mod
 #define A__BLEND_SETUP const ARgb rgb = a__color.rgb;
 #define A__PIXEL_PARAMS , &rgb
-#include "platform/a_software_draw.inc.c"
+#include "platform/graphics/a_software_draw.inc.c"
 
 #define A__BLEND add
 #define A__BLEND_SETUP const ARgb rgb = a__color.rgb;
 #define A__PIXEL_PARAMS , &rgb
-#include "platform/a_software_draw.inc.c"
+#include "platform/graphics/a_software_draw.inc.c"
 
 void a_platform_software_draw__init(void)
 {

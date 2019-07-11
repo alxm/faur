@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include "platform/a_wiz.p.h"
+#include "platform/system/a_wiz.p.h"
 
 extern void a_platform_wiz__init(void);
 extern void a_platform_wiz__uninit(void);

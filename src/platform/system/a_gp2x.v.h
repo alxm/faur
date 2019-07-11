@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2017 Alex Margarit <alex@alxm.org>
+    Copyright 2017 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include "platform/a_sdl_input.p.h"
+#include "platform/system/a_gp2x.p.h"
 
-extern void a_platform_sdl_input__init(void);
-extern void a_platform_sdl_input__uninit(void);
+extern void a_platform_gp2x__init(void);
+extern void a_platform_gp2x__uninit(void);

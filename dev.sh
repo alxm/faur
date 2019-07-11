@@ -17,6 +17,10 @@ geany -i \
     src/math/* \
     src/memory/* \
     src/platform/* \
+    src/platform/graphics/* \
+    src/platform/input/* \
+    src/platform/sound/* \
+    src/platform/system/* \
     src/sound/* \
     src/strings/* \
     src/time/* \

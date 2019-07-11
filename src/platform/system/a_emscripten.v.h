@@ -1,5 +1,5 @@
 /*
-    Copyright 2017 Alex Margarit <alex@alxm.org>
+    Copyright 2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -18,7 +18,6 @@
 
 #pragma once
 
-#include "platform/a_pandora.p.h"
+#include "platform/system/a_emscripten.p.h"
 
-extern void a_platform_pandora__init(void);
-extern void a_platform_pandora__uninit(void);
+extern void a_platform_emscripten__init(void);

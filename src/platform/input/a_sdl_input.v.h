@@ -18,23 +18,7 @@
 
 #pragma once
 
-#include "platform/a_sdl_video.p.h"
+#include "platform/input/a_sdl_input.p.h"
 
-#if A_CONFIG_LIB_SDL == 2
-    #if A_CONFIG_SCREEN_BPP == 16
-        #if A_CONFIG_LIB_RENDER_SOFTWARE
-            #define A_SDL__PIXEL_FORMAT SDL_PIXELFORMAT_RGB565
-        #elif A_CONFIG_LIB_RENDER_SDL
-            #define A_SDL__PIXEL_FORMAT SDL_PIXELFORMAT_RGBA5551
-        #endif
-    #elif A_CONFIG_SCREEN_BPP == 32
-        #if A_CONFIG_LIB_RENDER_SOFTWARE
-            #define A_SDL__PIXEL_FORMAT SDL_PIXELFORMAT_RGBX8888
-        #elif A_CONFIG_LIB_RENDER_SDL
-            #define A_SDL__PIXEL_FORMAT SDL_PIXELFORMAT_RGBA8888
-        #endif
-    #endif
-#endif
-
-extern void a_platform_sdl_video__init(void);
-extern void a_platform_sdl_video__uninit(void);
+extern void a_platform_sdl_input__init(void);
+extern void a_platform_sdl_input__uninit(void);
