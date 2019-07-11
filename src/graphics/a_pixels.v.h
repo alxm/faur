@@ -25,7 +25,6 @@ typedef struct APixels APixels;
 #include "general/a_main.v.h"
 #include "graphics/a_color.v.h"
 #include "math/a_fix.v.h"
-#include "platform/a_platform.v.h"
 
 typedef enum {
     A_PIXELS__ALLOC = A_FLAG_BIT(0),
