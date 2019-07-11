@@ -1,7 +1,7 @@
 A2X_DIR_ROOT := $(realpath $(A2X_PATH))
 A2X_DIR_SRC := $(A2X_DIR_ROOT)/src
 A2X_DIR_OBJ := $(A_DIR_OBJ_A2X)
-A2X_DIR_GEN := $(A2X_DIR_OBJ)/a2x_gen
+A2X_DIR_GEN := $(A2X_DIR_OBJ)/a2x__gen
 
 A2X_EMBED_PATHS := \
     media/console.png \

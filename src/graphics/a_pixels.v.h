@@ -27,67 +27,48 @@ typedef struct APixels APixels;
 #include "math/a_fix.v.h"
 #include "platform/a_platform.v.h"
 
+typedef enum {
+    A_PIXELS__ALLOC = A_FLAG_BIT(0),
+    A_PIXELS__DIRTY = A_FLAG_BIT(1),
+    A_PIXELS__DYNAMIC = A_FLAG_BIT(2),
+    A_PIXELS__CONST = A_FLAG_BIT(3),
+} APixelsFlags;
+
 struct APixels {
     int w, h;
-    APixel* buffer;
-    size_t bufferSize;
-    APlatformTexture* texture;
-    bool isSprite;
-    APixel bufferData[];
+    unsigned framesNum;
+    unsigned bufferLen;
+    unsigned bufferSize;
+    APixelsFlags flags;
+    APixel* buffer; // [w * h * framesNum]
 };
 
-extern APixels* a_pixels__new(int W, int H, bool IsSprite, bool AllocBuffer);
-extern APixels* a_pixels__sub(APixels* Source, int X, int Y, int Width, int Height);
-extern APixels* a_pixels__dup(const APixels* Pixels);
+extern APixels* a_pixels__new(int W, int H, unsigned Frames, APixelsFlags Flags);
+extern void a_pixels__init(APixels* Pixels, int W, int H, unsigned Frames, APixelsFlags Flags);
 extern void a_pixels__free(APixels* Pixels);
 
+extern void a_pixels__copy(APixels* Dst, const APixels* Src);
+extern void a_pixels__copyFrame(const APixels* Dst, unsigned DstFrame, const APixels* Src, unsigned SrcFrame);
+extern void a_pixels__copyFrameEx(const APixels* Dst, unsigned DstFrame, const APixels* SrcPixels, unsigned SrcFrame, int SrcX, int SrcY);
+
 extern void a_pixels__bufferSet(APixels* Pixels, APixel* Buffer, int W, int H);
-extern void a_pixels__commit(APixels* Pixels);
 
-extern AVectorInt a_pixels__boundsFind(const APixels* Pixels, int X, int Y);
+extern void a_pixels__clear(const APixels* Pixels, unsigned Frame);
+extern void a_pixels__fill(const APixels* Pixels, unsigned Frame, APixel Value);
 
-static inline APixel* a_pixels__bufferGetFrom(const APixels* Pixels, int X, int Y)
+extern AVectorInt a_pixels__boundsFind(const APixels* Pixels, unsigned Frame, int X, int Y);
+
+static inline APixel* a_pixels__bufferGetStart(const APixels* Pixels, unsigned Frame)
 {
-    return Pixels->buffer + Y * Pixels->w + X;
+    return Pixels->buffer + Frame * Pixels->bufferLen;
 }
 
-static inline APixel a_pixels__bufferGetAt(const APixels* Pixels, int X, int Y)
+static inline APixel* a_pixels__bufferGetFrom(const APixels* Pixels, unsigned Frame, int X, int Y)
 {
-    return *(Pixels->buffer + Y * Pixels->w + X);
+    return a_pixels__bufferGetStart(Pixels, Frame) + Y * Pixels->w + X;
 }
 
-static inline void a_pixels__clear(const APixels* Pixels)
+static inline APixel a_pixels__bufferGetValue(const APixels* Pixels, unsigned Frame, int X, int Y)
 {
-    memset(Pixels->buffer, 0, Pixels->bufferSize);
-}
-
-static inline void a_pixels__fill(const APixels* Pixels, APixel Value)
-{
-    APixel* buffer = Pixels->buffer;
-
-    for(int i = Pixels->w * Pixels->h; i--; ) {
-        *buffer++ = Value;
-    }
-}
-
-static inline void a_pixels__copy(const APixels* Dst, const APixels* Src)
-{
-    #if A_CONFIG_BUILD_DEBUG
-        if(Src->w != Dst->w || Src->h != Dst->h
-            || Src->bufferSize > Dst->bufferSize) {
-
-            A__FATAL("a_pixels__copy(%dx%d, %dx%d): Different sizes",
-                     Dst->w,
-                     Dst->h,
-                     Src->w,
-                     Src->h);
-        }
-    #endif
-
-    memcpy(Dst->buffer, Src->buffer, Src->bufferSize);
-}
-
-static inline void a_pixels__copyToBuffer(const APixels* Pixels, APixel* Buffer)
-{
-    memcpy(Buffer, Pixels->buffer, Pixels->bufferSize);
+    return *a_pixels__bufferGetFrom(Pixels, Frame, X, Y);
 }

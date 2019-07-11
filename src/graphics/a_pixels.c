@@ -18,45 +18,31 @@
 
 #include <a2x.v.h>
 
-APixels* a_pixels__new(int W, int H, bool IsSprite, bool AllocBuffer)
+APixels* a_pixels__new(int W, int H, unsigned Frames, APixelsFlags Flags)
 {
-    size_t bufferSize = (size_t)(AllocBuffer * W * H * (int)sizeof(APixel));
-    APixels* p = a_mem_zalloc(sizeof(APixels) + bufferSize);
+    APixels* p = a_mem_malloc(sizeof(APixels));
 
-    p->w = W;
-    p->h = H;
-    p->buffer = p->bufferData;
-    p->bufferSize = bufferSize;
-    p->isSprite = IsSprite;
+    a_pixels__init(p, W, H, Frames, Flags | A_PIXELS__DYNAMIC);
 
     return p;
 }
 
-APixels* a_pixels__sub(APixels* Source, int X, int Y, int Width, int Height)
+void a_pixels__init(APixels* Pixels, int W, int H, unsigned Frames, APixelsFlags Flags)
 {
-    APixels* p = a_pixels__new(Width, Height, true, true);
+    Pixels->w = W;
+    Pixels->h = H;
+    Pixels->framesNum = Frames;
+    Pixels->flags = Flags;
 
-    const APixel* src = a_pixels__bufferGetFrom(Source, X, Y);
-    APixel* dst = p->buffer;
-
-    for(int i = Height; i--; ) {
-        memcpy(dst, src, (unsigned)Width * sizeof(APixel));
-
-        src += Source->w;
-        dst += Width;
+    if(A_FLAG_TEST_ANY(Flags, A_PIXELS__ALLOC)) {
+        Pixels->bufferLen = (unsigned)(W * H);
+        Pixels->bufferSize = Pixels->bufferLen * (unsigned)sizeof(APixel);
+        Pixels->buffer = a_mem_zalloc(Pixels->bufferSize * Frames);
+    } else {
+        Pixels->bufferLen = 0;
+        Pixels->bufferSize = 0;
+        Pixels->buffer = NULL;
     }
-
-    return p;
-}
-
-APixels* a_pixels__dup(const APixels* Pixels)
-{
-    APixels* p = a_mem_dup(Pixels, sizeof(APixels) + Pixels->bufferSize);
-
-    p->buffer = p->bufferData;
-    p->texture = NULL;
-
-    return p;
 }
 
 void a_pixels__free(APixels* Pixels)
@@ -65,36 +51,80 @@ void a_pixels__free(APixels* Pixels)
         return;
     }
 
-    a_platform_api__textureFree(Pixels->texture);
+    if(A_FLAG_TEST_ANY(Pixels->flags, A_PIXELS__ALLOC)) {
+        free(Pixels->buffer);
+    }
 
-    free(Pixels);
+    if(A_FLAG_TEST_ANY(Pixels->flags, A_PIXELS__DYNAMIC)) {
+        free(Pixels);
+    }
+}
+
+void a_pixels__copy(APixels* Dst, const APixels* Src)
+{
+    memcpy(Dst, Src, sizeof(APixels));
+
+    if(A_FLAG_TEST_ANY(Dst->flags, A_PIXELS__ALLOC)) {
+        Dst->buffer = a_mem_dup(Dst->buffer, Dst->bufferSize * Dst->framesNum);
+    }
+}
+
+void a_pixels__copyFrame(const APixels* Dst, unsigned DstFrame, const APixels* Src, unsigned SrcFrame)
+{
+    memcpy(a_pixels__bufferGetFrom(Dst, DstFrame, 0, 0),
+           a_pixels__bufferGetFrom(Src, SrcFrame, 0, 0),
+           Src->bufferSize);
+}
+
+void a_pixels__copyFrameEx(const APixels* Dst, unsigned DstFrame, const APixels* SrcPixels, unsigned SrcFrame, int SrcX, int SrcY)
+{
+    APixel* dst = a_pixels__bufferGetStart(Dst, DstFrame);
+    const APixel* src = a_pixels__bufferGetFrom(
+                            SrcPixels, SrcFrame, SrcX, SrcY);
+
+    for(int i = Dst->h; i--; ) {
+        memcpy(dst, src, (unsigned)Dst->w * sizeof(APixel));
+
+        src += SrcPixels->w;
+        dst += Dst->w;
+    }
 }
 
 void a_pixels__bufferSet(APixels* Pixels, APixel* Buffer, int W, int H)
 {
     Pixels->w = W;
     Pixels->h = H;
-
     Pixels->buffer = Buffer;
-    Pixels->bufferSize = (size_t)(W * H * (int)sizeof(APixel));
+    Pixels->bufferLen = (unsigned)(W * H);
+    Pixels->bufferSize = Pixels->bufferLen * (unsigned)sizeof(APixel);
+    Pixels->framesNum = 1;
 }
 
-void a_pixels__commit(APixels* Pixels)
+void a_pixels__clear(const APixels* Pixels, unsigned Frame)
 {
-    // Function is responsible for freeing the old Pixels->texture
-    Pixels->texture = a_platform_api__textureNew(Pixels);
+    memset(a_pixels__bufferGetFrom(Pixels, Frame, 0, 0), 0, Pixels->bufferSize);
 }
 
-static int findNextVerticalEdge(const APixels* Pixels, int StartX, int StartY, int* EdgeX)
+void a_pixels__fill(const APixels* Pixels, unsigned Frame, APixel Value)
+{
+    APixel* buffer = a_pixels__bufferGetStart(Pixels, Frame);
+
+    for(int i = Pixels->w * Pixels->h; i--; ) {
+        *buffer++ = Value;
+    }
+}
+
+static int findNextVerticalEdge(const APixels* Pixels, unsigned Frame, int StartX, int StartY, int* EdgeX)
 {
     for(int x = StartX + *EdgeX + 1; x < Pixels->w; x++) {
-        APixel p = a_pixels__bufferGetAt(Pixels, x, StartY);
+        APixel p = a_pixels__bufferGetValue(Pixels, Frame, x, StartY);
 
         if(p == a_color__limit) {
             *EdgeX = x - StartX;
 
             int len = 1;
-            APixel* buffer = a_pixels__bufferGetFrom(Pixels, x, StartY + 1);
+            APixel* buffer = a_pixels__bufferGetFrom(
+                                Pixels, Frame, x, StartY + 1);
 
             for(int y = Pixels->h - (StartY + 1); y--; ) {
                 if(*buffer != a_color__limit) {
@@ -112,16 +142,17 @@ static int findNextVerticalEdge(const APixels* Pixels, int StartX, int StartY, i
     return -1;
 }
 
-static int findNextHorizontalEdge(const APixels* Pixels, int StartX, int StartY, int* EdgeY)
+static int findNextHorizontalEdge(const APixels* Pixels, unsigned Frame, int StartX, int StartY, int* EdgeY)
 {
     for(int y = StartY + *EdgeY + 1; y < Pixels->h; y++) {
-        APixel p = a_pixels__bufferGetAt(Pixels, StartX, y);
+        APixel p = a_pixels__bufferGetValue(Pixels, Frame, StartX, y);
 
         if(p == a_color__limit) {
             *EdgeY = y - StartY;
 
             int len = 1;
-            APixel* buffer = a_pixels__bufferGetFrom(Pixels, StartX + 1, y);
+            APixel* buffer = a_pixels__bufferGetFrom(
+                                Pixels, Frame, StartX + 1, y);
 
             for(int x = Pixels->w - (StartX + 1); x--; ) {
                 if(*buffer != a_color__limit) {
@@ -139,7 +170,7 @@ static int findNextHorizontalEdge(const APixels* Pixels, int StartX, int StartY,
     return -1;
 }
 
-AVectorInt a_pixels__boundsFind(const APixels* Pixels, int X, int Y)
+AVectorInt a_pixels__boundsFind(const APixels* Pixels, unsigned Frame, int X, int Y)
 {
     AVectorInt bounds;
 
@@ -152,15 +183,15 @@ AVectorInt a_pixels__boundsFind(const APixels* Pixels, int X, int Y)
     }
 
     int vEdgeX = 0;
-    int vEdgeLen = findNextVerticalEdge(Pixels, X, Y, &vEdgeX);
+    int vEdgeLen = findNextVerticalEdge(Pixels, Frame, X, Y, &vEdgeX);
     int hEdgeY = 0;
-    int hEdgeLen = findNextHorizontalEdge(Pixels, X, Y, &hEdgeY);
+    int hEdgeLen = findNextHorizontalEdge(Pixels, Frame, X, Y, &hEdgeY);
 
     while(vEdgeLen != -1 && hEdgeLen != -1) {
         if(vEdgeLen < hEdgeY) {
-            vEdgeLen = findNextVerticalEdge(Pixels, X, Y, &vEdgeX);
+            vEdgeLen = findNextVerticalEdge(Pixels, Frame, X, Y, &vEdgeX);
         } else if(hEdgeLen < vEdgeX) {
-            hEdgeLen = findNextHorizontalEdge(Pixels, X, Y, &hEdgeY);
+            hEdgeLen = findNextHorizontalEdge(Pixels, Frame, X, Y, &hEdgeY);
         } else {
             break;
         }

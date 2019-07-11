@@ -27,13 +27,11 @@ typedef struct {
 } AScanline;
 
 struct APlatformTexture {
-    const APixels* pixels;
-    unsigned spansSize;
-    unsigned spans[];
+    unsigned spans[1];
 };
 
-typedef void (*ABlitter)(const APlatformTexture* Texture, int X, int Y);
-typedef void (*ABlitterEx)(const APlatformTexture* Texture, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY);
+typedef void (*ABlitter)(const APlatformTexture* Texture, const APixels* Pixels, unsigned Frame, int X, int Y);
+typedef void (*ABlitterEx)(const APixels* Pixels, unsigned Frame, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY);
 
 static ABlitter g_blitters[A_COLOR_BLEND_NUM][2][2][2]; // [Blend][Fill][ColorKey][Clip]
 static ABlitterEx g_blittersEx[A_COLOR_BLEND_NUM][2][2]; // [Blend][Fill][ColorKey]
@@ -266,9 +264,9 @@ void a_platform_software_blit__uninit(void)
     #endif
 }
 
-static bool hasTransparency(const APixels* Pixels)
+static bool hasTransparency(const APixels* Pixels, unsigned Frame)
 {
-    const APixel* buffer = Pixels->buffer;
+    const APixel* buffer = a_pixels__bufferGetStart(Pixels, Frame);
 
     for(int i = Pixels->w * Pixels->h; i--; ) {
         if(*buffer++ == a_color__key) {
@@ -279,24 +277,22 @@ static bool hasTransparency(const APixels* Pixels)
     return false;
 }
 
-static size_t spansBytesNeeded(const APixels* Pixels)
+static size_t spansBytesNeeded(const APixels* Pixels, unsigned Frame)
 {
     // Spans format for each scanline:
-    // [NumSpans << 1 | 1 (draw) / 0 (transparent)][len0][len1]...
+    // (NumSpans << 1 | start draw/transparent), len0, len1, ...
 
     size_t bytesNeeded = 0;
-    const APixel* buffer = Pixels->buffer;
+    const APixel* buffer = a_pixels__bufferGetStart(Pixels, Frame);
 
     for(int y = Pixels->h; y--; ) {
         bytesNeeded += sizeof(unsigned); // total size and initial state
-        bool lastState = *buffer != a_color__key; // initial state
+        bool doDraw = *buffer != a_color__key; // initial state
 
         for(int x = Pixels->w; x--; ) {
-            bool newState = *buffer++ != a_color__key;
-
-            if(newState != lastState) {
+            if((*buffer++ != a_color__key) != doDraw) {
                 bytesNeeded += sizeof(unsigned); // length of new span
-                lastState = newState;
+                doDraw = !doDraw;
             }
         }
 
@@ -306,59 +302,40 @@ static size_t spansBytesNeeded(const APixels* Pixels)
     return bytesNeeded;
 }
 
-static void spansUpdate(const APixels* Pixels, APlatformTexture* Texture)
+static void spansUpdate(const APixels* Pixels, unsigned Frame, APlatformTexture* Texture)
 {
     unsigned* spans = Texture->spans;
-    const APixel* buffer = Pixels->buffer;
+    const APixel* buffer = a_pixels__bufferGetStart(Pixels, Frame);
 
     for(int y = Pixels->h; y--; ) {
         unsigned* lineStart = spans;
-        unsigned numSpans = 1; // line has at least 1 span
         unsigned spanLength = 0;
 
-        bool lastState = *buffer != a_color__key; // initial state
-        *spans++ = lastState;
+        bool doDraw = *buffer != a_color__key; // initial state
+        *spans++ = doDraw;
 
         for(int x = Pixels->w; x--; ) {
-            bool newState = *buffer++ != a_color__key;
-
-            if(newState == lastState) {
+            if((*buffer++ != a_color__key) == doDraw) {
                 spanLength++; // keep growing current span
             } else {
                 *spans++ = spanLength; // record the just-ended span length
-                numSpans++;
                 spanLength = 1; // start a new span from this pixel
-                lastState = newState;
+                doDraw = !doDraw;
             }
         }
 
+        *lineStart |= (unsigned)(spans - lineStart) << 1; // line's # of spans
         *spans++ = spanLength; // record the last span's length
-        *lineStart |= numSpans << 1; // record line's number of spans
     }
 }
 
-APlatformTexture* a_platform_api__textureNew(const APixels* Pixels)
+APlatformTexture* a_platform_api__textureNew(const APixels* Pixels, unsigned Frame)
 {
-    if(!Pixels->isSprite) {
-        return NULL;
-    }
+    APlatformTexture* texture = NULL;
 
-    APlatformTexture* texture = Pixels->texture;
-    size_t bytesNeeded = hasTransparency(Pixels) ? spansBytesNeeded(Pixels) : 0;
-
-    if(texture == NULL || bytesNeeded > (texture->spansSize >> 1)) {
-        a_platform_api__textureFree(texture);
-        texture = a_mem_malloc(sizeof(APlatformTexture) + bytesNeeded);
-
-        texture->pixels = Pixels;
-        texture->spansSize = (unsigned)bytesNeeded << 1;
-    }
-
-    if(bytesNeeded > 0) {
-        texture->spansSize |= 1;
-        spansUpdate(Pixels, texture);
-    } else {
-        texture->spansSize &= ~1u;
+    if(hasTransparency(Pixels, Frame)) {
+        texture = a_mem_malloc(spansBytesNeeded(Pixels, Frame));
+        spansUpdate(Pixels, Frame, texture);
     }
 
     return texture;
@@ -373,28 +350,26 @@ void a_platform_api__textureFree(APlatformTexture* Texture)
     free(Texture);
 }
 
-void a_platform_api__textureBlit(const APlatformTexture* Texture, int X, int Y, bool FillFlat)
+void a_platform_api__textureBlit(const APlatformTexture* Texture, const APixels* Pixels, unsigned Frame, int X, int Y)
 {
-    const APixels* pixels = Texture->pixels;
-
-    if(!a_screen_boxOnClip(X, Y, pixels->w, pixels->h)) {
+    if(!a_screen_boxOnClip(X, Y, Pixels->w, Pixels->h)) {
         return;
     }
 
     g_blitters
         [a__color.blend]
-        [FillFlat]
-        [Texture->spansSize & 1]
-        [!a_screen_boxInsideClip(X, Y, pixels->w, pixels->h)]
-            (Texture, X, Y);
+        [a__color.fillBlit]
+        [Texture != NULL]
+        [!a_screen_boxInsideClip(X, Y, Pixels->w, Pixels->h)]
+            (Texture, Pixels, Frame, X, Y);
 }
 
-void a_platform_api__textureBlitEx(const APlatformTexture* Texture, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY, bool FillFlat)
+void a_platform_api__textureBlitEx(const APlatformTexture* Texture, const APixels* Pixels, unsigned Frame, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY)
 {
     g_blittersEx
         [a__color.blend]
-        [FillFlat]
-        [Texture->spansSize & 1]
-            (Texture, X, Y, Scale, Angle, CenterX, CenterY);
+        [a__color.fillBlit]
+        [Texture != NULL]
+            (Pixels, Frame, X, Y, Scale, Angle, CenterX, CenterY);
 }
 #endif // A_CONFIG_LIB_RENDER_SOFTWARE

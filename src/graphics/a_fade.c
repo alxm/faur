@@ -89,7 +89,7 @@ void a_fade_startScreens(unsigned DurationMs)
 {
     newFade(A__FADE_SCREENS, DurationMs);
 
-    a_screen__toSprite(g_fade.oldScreen);
+    a_screen__toSprite(g_fade.oldScreen, 0);
 }
 
 void a_fade__tick(void)

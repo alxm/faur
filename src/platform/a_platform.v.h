@@ -43,6 +43,11 @@ extern void a_platform_api__timeMsWait(uint32_t Ms);
 extern void a_platform_api__screenInit(void);
 extern void a_platform_api__screenUninit(void);
 extern void a_platform_api__screenClear(void);
+extern APlatformTexture* a_platform_api__screenTextureGet(void);
+extern void a_platform_api__screenTextureSet(APlatformTexture* Texture);
+extern void a_platform_api__screenTextureRead(APixels* Pixels, unsigned Frame);
+extern void a_platform_api__screenClipSet(int X, int Y, int Width, int Height);
+extern void a_platform_api__screenDraw(void);
 extern void a_platform_api__screenShow(void);
 extern APixels* a_platform_api__screenPixelsGet(void);
 extern AVectorInt a_platform_api__screenSizeGet(void);
@@ -55,9 +60,6 @@ extern void a_platform_api__screenMouseCursorSet(bool Show);
 
 extern void a_platform_api__renderSetDrawColor(void);
 extern void a_platform_api__renderSetBlendMode(void);
-extern void a_platform_api__renderTargetSet(APlatformTexture* Texture);
-extern void a_platform_api__renderTargetPixelsCapture(APixel* Pixels, int Width);
-extern void a_platform_api__renderTargetClipSet(int X, int Y, int Width, int Height);
 
 extern void a_platform_api__drawPixel(int X, int Y);
 extern void a_platform_api__drawLine(int X1, int Y1, int X2, int Y2);
@@ -68,10 +70,10 @@ extern void a_platform_api__drawRectangleOutline(int X, int Y, int Width, int He
 extern void a_platform_api__drawCircleOutline(int X, int Y, int Radius);
 extern void a_platform_api__drawCircleFilled(int X, int Y, int Radius);
 
-extern APlatformTexture* a_platform_api__textureNew(const APixels* Pixels);
+extern APlatformTexture* a_platform_api__textureNew(const APixels* Pixels, unsigned Frame);
 extern void a_platform_api__textureFree(APlatformTexture* Texture);
-extern void a_platform_api__textureBlit(const APlatformTexture* Texture, int X, int Y, bool FillFlat);
-extern void a_platform_api__textureBlitEx(const APlatformTexture* Texture, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY, bool FillFlat);
+extern void a_platform_api__textureBlit(const APlatformTexture* Texture, const APixels* Pixels, unsigned Frame, int X, int Y);
+extern void a_platform_api__textureBlitEx(const APlatformTexture* Texture, const APixels* Pixels, unsigned Frame, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY);
 
 extern bool a_platform_api__soundMuteGet(void);
 extern void a_platform_api__soundMuteFlip(void);

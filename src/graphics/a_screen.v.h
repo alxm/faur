@@ -27,6 +27,11 @@ typedef struct AScreen AScreen;
 
 struct AScreen {
     APixels* pixels;
+    #if !A_CONFIG_LIB_RENDER_SOFTWARE
+        APlatformTexture* texture;
+    #endif
+    ASprite* sprite;
+    unsigned frame;
     int clipX, clipY;
     int clipX2, clipY2;
     int clipWidth, clipHeight;
@@ -39,4 +44,9 @@ extern AScreen a__screen;
 extern void a_screen__tick(void);
 extern void a_screen__draw(void);
 
-extern void a_screen__toSprite(ASprite* Sprite);
+extern void a_screen__toSprite(ASprite* Sprite, unsigned Frame);
+
+static inline APixel* a_screen__bufferGetFrom(int X, int Y)
+{
+    return a_pixels__bufferGetFrom(a__screen.pixels, a__screen.frame, X, Y);
+}

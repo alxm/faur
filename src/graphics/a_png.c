@@ -40,7 +40,7 @@ static APixels* pngToPixels(png_structp Png, png_infop Info)
     unsigned numChannels = png_get_channels(Png, Info);
     png_bytepp rows = png_get_rows(Png, Info);
 
-    APixels* pixels = a_pixels__new((int)w, (int)h, true, true);
+    APixels* pixels = a_pixels__new((int)w, (int)h, 1, A_PIXELS__ALLOC);
     APixel* buffer = pixels->buffer;
 
     for(png_uint_32 y = h; y--; rows++) {
@@ -181,7 +181,7 @@ cleanUp:
     return pixels;
 }
 
-void a_png__write(const char* Path, const APixel* Data, int Width, int Height, char* Title, char* Description)
+void a_png__write(const char* Path, const APixels* Pixels, unsigned Frame, char* Title, char* Description)
 {
     AFile* f = a_file_new(Path, A_FILE_WRITE | A_FILE_BINARY);
 
@@ -196,10 +196,12 @@ void a_png__write(const char* Path, const APixel* Data, int Width, int Height, c
         goto cleanUp;
     }
 
+    unsigned width = (unsigned)Pixels->w;
+    unsigned height = (unsigned)Pixels->h;
+
     #define COLOR_CHANNELS 3
-    rows = a_mem_malloc((unsigned)Height * sizeof(png_bytep));
-    rowsData = a_mem_malloc((unsigned)Height * (unsigned)Width * COLOR_CHANNELS
-                                * sizeof(png_byte));
+    rows = a_mem_malloc(height * sizeof(png_bytep));
+    rowsData = a_mem_malloc(width * height * COLOR_CHANNELS * sizeof(png_byte));
 
     png = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 
@@ -221,23 +223,25 @@ void a_png__write(const char* Path, const APixel* Data, int Width, int Height, c
 
     png_set_IHDR(png,
                  info,
-                 (unsigned)Width,
-                 (unsigned)Height,
+                 width,
+                 height,
                  8,
                  PNG_COLOR_TYPE_RGB,
                  PNG_INTERLACE_NONE,
                  PNG_COMPRESSION_TYPE_DEFAULT,
                  PNG_FILTER_TYPE_DEFAULT);
 
-    for(int i = 0; i < Height; i++) {
-        rows[i] = rowsData + i * Width * COLOR_CHANNELS;
+    const APixel* buffer = a_pixels__bufferGetStart(Pixels, Frame);
 
-        for(int j = 0; j < Width; j++) {
-            ARgb rgb = a_pixel_toRgb(*(Data + i * Width + j));
+    for(unsigned y = 0; y < height; y++) {
+        rows[y] = rowsData + y * width * COLOR_CHANNELS;
 
-            rows[i][j * COLOR_CHANNELS + 0] = (png_byte)rgb.r;
-            rows[i][j * COLOR_CHANNELS + 1] = (png_byte)rgb.g;
-            rows[i][j * COLOR_CHANNELS + 2] = (png_byte)rgb.b;
+        for(unsigned x = 0; x < width; x++) {
+            ARgb rgb = a_pixel_toRgb(*buffer++);
+
+            rows[y][x * COLOR_CHANNELS + 0] = (png_byte)rgb.r;
+            rows[y][x * COLOR_CHANNELS + 1] = (png_byte)rgb.g;
+            rows[y][x * COLOR_CHANNELS + 2] = (png_byte)rgb.b;
         }
     }
 
