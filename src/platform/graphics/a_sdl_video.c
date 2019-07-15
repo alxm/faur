@@ -413,7 +413,7 @@ void a_platform_api__screenShow(void)
             }
 
             if(g_zoom <= 1) {
-                if(g_pixels.w * sizeof(APixel) == g_sdlScreen->pitch) {
+                if(g_pixels.w * (int)sizeof(APixel) == g_sdlScreen->pitch) {
                     memcpy(g_sdlScreen->pixels,
                            g_pixels.buffer,
                            g_pixels.bufferSize);
