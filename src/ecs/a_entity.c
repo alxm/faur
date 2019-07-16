@@ -315,12 +315,19 @@ void* a_entity_componentAdd(AEntity* Entity, int ComponentIndex)
 
 bool a_entity_componentHas(const AEntity* Entity, int ComponentIndex)
 {
+    #if A_CONFIG_BUILD_DEBUG
+        a_component__get(ComponentIndex, __func__);
+    #endif
+
     return Entity->componentsTable[ComponentIndex] != NULL;
 }
 
 void* a_entity_componentGet(const AEntity* Entity, int ComponentIndex)
 {
-    a_component__get(ComponentIndex, __func__);
+    #if A_CONFIG_BUILD_DEBUG
+        a_component__get(ComponentIndex, __func__);
+    #endif
+
     AComponentInstance* instance = Entity->componentsTable[ComponentIndex];
 
     return instance ? a_component__instanceGetBuffer(instance) : NULL;
@@ -328,6 +335,10 @@ void* a_entity_componentGet(const AEntity* Entity, int ComponentIndex)
 
 void* a_entity_componentReq(const AEntity* Entity, int ComponentIndex)
 {
+    #if A_CONFIG_BUILD_DEBUG
+        a_component__get(ComponentIndex, __func__);
+    #endif
+
     AComponentInstance* instance = Entity->componentsTable[ComponentIndex];
 
     if(instance == NULL) {
