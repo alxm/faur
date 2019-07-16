@@ -1,7 +1,5 @@
 include $(A2X_PATH)/make/global/defs
 
-A_CONFIG_BUILD_PLATFORM := dev
-
 A_CONFIG_BUILD_AR_FLAGS := T
 A_CONFIG_BUILD_DEBUG ?= 1
 A_CONFIG_BUILD_OPT ?= -O0 -g

@@ -1,8 +1,6 @@
 include $(A2X_PATH)/make/global/defs
 include $(A_FILE_SDKCONFIG_MK)
 
-A_CONFIG_BUILD_PLATFORM := mingw32
-
 MINGW_BIN := $(A_SDK_MINGW32_ROOT)/$(A_SDK_MINGW32_ARCH)/bin
 
 A_CONFIG_BUILD_AR_FLAGS := T
