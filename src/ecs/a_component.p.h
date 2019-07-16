@@ -20,8 +20,8 @@
 
 #include "general/a_system_includes.h"
 
+#include "data/a_block.p.h"
 #include "ecs/a_entity.p.h"
-#include "general/a_block.p.h"
 
 typedef void AComponentInit(void* Self);
 typedef void AComponentInitWithTemplate(void* Self, const void* Data);

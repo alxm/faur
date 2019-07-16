@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include "general/a_block.p.h"
+#include "data/a_block.p.h"
 
 #include "general/a_main.v.h"
 
