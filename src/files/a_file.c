@@ -16,6 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "a_file.v.h"
 #include <a2x.v.h>
 
 AFile* a_file_new(const char* Path, AFileMode Mode)

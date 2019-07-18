@@ -16,6 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "a_dir.v.h"
 #include <a2x.v.h>
 #include <dirent.h>
 #include <sys/stat.h>

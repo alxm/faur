@@ -16,6 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "a_png.v.h"
 #include <a2x.v.h>
 #include <zlib.h>
 #include <png.h>

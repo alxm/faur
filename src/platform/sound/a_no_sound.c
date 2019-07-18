@@ -16,6 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "a_no_sound.v.h"
 #include <a2x.v.h>
 
 #if !A_CONFIG_SOUND_ENABLED

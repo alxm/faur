@@ -21,7 +21,6 @@
 
 #include "graphics/a_sprite.p.h"
 
-#include "graphics/a_pixels.v.h"
 #include "platform/a_platform.v.h"
 
 extern APixels* a_sprite__pixelsGet(ASprite* Sprite);

@@ -16,6 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "a_fade.v.h"
 #include <a2x.v.h>
 
 typedef enum {

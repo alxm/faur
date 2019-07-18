@@ -16,6 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "a_font.v.h"
 #include <a2x.v.h>
 
 #define A__CHAR_START 32

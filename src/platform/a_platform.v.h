@@ -32,6 +32,7 @@ typedef void APlatformSoundSample;
 typedef struct APlatformTexture APlatformTexture;
 
 #include "general/a_main.v.h"
+#include "graphics/a_pixels.v.h"
 #include "inputs/a_analog.v.h"
 #include "inputs/a_button.v.h"
 #include "math/a_fix.v.h"

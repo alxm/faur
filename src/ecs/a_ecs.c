@@ -16,6 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "a_ecs.v.h"
 #include <a2x.v.h>
 
 static AList* g_lists[A_ECS__NUM]; // Each entity is in exactly one of these
