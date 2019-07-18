@@ -20,6 +20,8 @@
 
 #include "general/a_system_includes.h"
 
+#include "math/a_fix.p.h"
+
 static inline unsigned a_fps_rateTickGet(void)
 {
     return A_CONFIG_FPS_RATE_TICK;
@@ -30,3 +32,4 @@ extern unsigned a_fps_rateDrawGetMax(void);
 
 extern unsigned a_fps_ticksGet(void);
 extern bool a_fps_ticksNth(unsigned N);
+extern AFix a_fps_ticksSin(uint8_t Mul, uint8_t Div, unsigned Offset);
