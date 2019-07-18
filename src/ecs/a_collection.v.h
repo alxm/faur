@@ -16,10 +16,13 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef A_INC_ECS_COLLECTION_V_H
+#define A_INC_ECS_COLLECTION_V_H
 
 #include "ecs/a_collection.p.h"
 
 #include "ecs/a_entity.v.h"
 
 extern void a_collection__add(ACollection* Collection, AEntity* Entity);
+
+#endif // A_INC_ECS_COLLECTION_V_H

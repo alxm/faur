@@ -16,7 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef A_INC_GRAPHICS_FONT_P_H
+#define A_INC_GRAPHICS_FONT_P_H
 
 #include "general/a_system_includes.h"
 
@@ -60,3 +61,5 @@ extern int a_font_widthGetv(const char* Format, va_list Args);
 extern void a_font_print(const char* Text);
 extern void a_font_printf(const char* Format, ...);
 extern void a_font_printv(const char* Format, va_list Args);
+
+#endif // A_INC_GRAPHICS_FONT_P_H

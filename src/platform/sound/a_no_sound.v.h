@@ -16,6 +16,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef A_INC_PLATFORM_SOUND_NO_SOUND_V_H
+#define A_INC_PLATFORM_SOUND_NO_SOUND_V_H
 
 #include "platform/sound/a_no_sound.p.h"
+
+#endif // A_INC_PLATFORM_SOUND_NO_SOUND_V_H

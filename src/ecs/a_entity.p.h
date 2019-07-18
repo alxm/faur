@@ -16,7 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef A_INC_ECS_ENTITY_P_H
+#define A_INC_ECS_ENTITY_P_H
 
 #include "general/a_system_includes.h"
 
@@ -50,3 +51,5 @@ extern void* a_entity_componentReq(const AEntity* Entity, int ComponentIndex);
 extern bool a_entity_muteGet(const AEntity* Entity);
 extern void a_entity_muteInc(AEntity* Entity);
 extern void a_entity_muteDec(AEntity* Entity);
+
+#endif // A_INC_ECS_ENTITY_P_H

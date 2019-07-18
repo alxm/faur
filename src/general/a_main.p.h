@@ -16,7 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef A_INC_GENERAL_MAIN_P_H
+#define A_INC_GENERAL_MAIN_P_H
 
 #include "general/a_system_includes.h"
 
@@ -26,3 +27,5 @@ extern int a_main_argsNumGet(void);
 extern const char* a_main_argsGet(int ArgNum);
 
 extern void A_FATAL(const char* Format, ...) __attribute__((noreturn));
+
+#endif // A_INC_GENERAL_MAIN_P_H

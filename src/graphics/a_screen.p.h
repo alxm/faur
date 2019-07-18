@@ -16,7 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef A_INC_GRAPHICS_SCREEN_P_H
+#define A_INC_GRAPHICS_SCREEN_P_H
 
 #include "general/a_system_includes.h"
 
@@ -40,3 +41,5 @@ extern bool a_screen_boxOnScreen(int X, int Y, int W, int H);
 extern bool a_screen_boxInsideScreen(int X, int Y, int W, int H);
 extern bool a_screen_boxOnClip(int X, int Y, int W, int H);
 extern bool a_screen_boxInsideClip(int X, int Y, int W, int H);
+
+#endif // A_INC_GRAPHICS_SCREEN_P_H

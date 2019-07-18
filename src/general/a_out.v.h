@@ -16,7 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef A_INC_GENERAL_OUT_V_H
+#define A_INC_GENERAL_OUT_V_H
 
 #include "general/a_out.p.h"
 
@@ -54,3 +55,5 @@ extern void a_out__errorv(const char* Format, va_list Args);
 extern void a_out__state(const char* Format, ...);
 extern void a_out__stateV(const char* Format, ...);
 extern void a_out__overwrite(AOutType Type, FILE* Stream, const char* Format, ...);
+
+#endif // A_INC_GENERAL_OUT_V_H

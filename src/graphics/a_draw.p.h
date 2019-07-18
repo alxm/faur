@@ -16,7 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef A_INC_GRAPHICS_DRAW_P_H
+#define A_INC_GRAPHICS_DRAW_P_H
 
 #include "general/a_system_includes.h"
 
@@ -27,3 +28,5 @@ extern void a_draw_hline(int X1, int X2, int Y);
 extern void a_draw_vline(int X, int Y1, int Y2);
 extern void a_draw_rectangle(int X, int Y, int Width, int Height);
 extern void a_draw_circle(int X, int Y, int Radius);
+
+#endif // A_INC_GRAPHICS_DRAW_P_H

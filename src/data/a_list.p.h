@@ -16,7 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef A_INC_DATA_LIST_P_H
+#define A_INC_DATA_LIST_P_H
 
 #include "general/a_system_includes.h"
 
@@ -73,3 +74,5 @@ static inline void* a_list_peek(const AList* List)
 {
     return a_list_getFirst(List);
 }
+
+#endif // A_INC_DATA_LIST_P_H

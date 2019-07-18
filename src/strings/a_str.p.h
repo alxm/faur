@@ -16,7 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef A_INC_STRINGS_STR_P_H
+#define A_INC_STRINGS_STR_P_H
 
 #include "general/a_system_includes.h"
 
@@ -51,3 +52,5 @@ static inline bool a_str_equal(const char* String1, const char* String2)
 {
     return strcmp(String1, String2) == 0;
 }
+
+#endif // A_INC_STRINGS_STR_P_H

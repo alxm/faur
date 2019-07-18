@@ -16,7 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef A_INC_ECS_SYSTEM_V_H
+#define A_INC_ECS_SYSTEM_V_H
 
 #include "ecs/a_system.p.h"
 
@@ -32,3 +33,5 @@ extern ASystem* a_system__get(int SystemIndex, const char* CallerFunction);
 extern AListNode* a_system__entityAdd(const ASystem* System, AEntity* Entity);
 extern const ABitfield* a_system__componentBitsGet(const ASystem* System);
 extern bool a_system__isActiveOnly(const ASystem* System);
+
+#endif // A_INC_ECS_SYSTEM_V_H

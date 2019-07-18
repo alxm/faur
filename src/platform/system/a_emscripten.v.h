@@ -16,8 +16,11 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef A_INC_PLATFORM_SYSTEM_EMSCRIPTEN_V_H
+#define A_INC_PLATFORM_SYSTEM_EMSCRIPTEN_V_H
 
 #include "platform/system/a_emscripten.p.h"
 
 extern void a_platform_emscripten__init(void);
+
+#endif // A_INC_PLATFORM_SYSTEM_EMSCRIPTEN_V_H

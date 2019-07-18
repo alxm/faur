@@ -16,7 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef A_INC_ECS_ECS_V_H
+#define A_INC_ECS_ECS_V_H
 
 #include "ecs/a_ecs.p.h"
 
@@ -47,3 +48,5 @@ extern void a_ecs__entityAddToList(AEntity* Entity, AEcsListId List);
 extern void a_ecs__entityMoveToList(AEntity* Entity, AEcsListId List);
 
 extern void a_ecs__flushEntitiesFromSystems(void);
+
+#endif // A_INC_ECS_ECS_V_H

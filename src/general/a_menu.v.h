@@ -16,6 +16,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef A_INC_GENERAL_MENU_V_H
+#define A_INC_GENERAL_MENU_V_H
 
 #include "general/a_menu.p.h"
+
+#endif // A_INC_GENERAL_MENU_V_H

@@ -16,7 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef A_INC_GENERAL_FPS_P_H
+#define A_INC_GENERAL_FPS_P_H
 
 #include "general/a_system_includes.h"
 
@@ -33,3 +34,5 @@ extern unsigned a_fps_rateDrawGetMax(void);
 extern unsigned a_fps_ticksGet(void);
 extern bool a_fps_ticksNth(unsigned N);
 extern AFix a_fps_ticksSin(uint8_t Mul, uint8_t Div, unsigned Offset);
+
+#endif // A_INC_GENERAL_FPS_P_H

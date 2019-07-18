@@ -16,7 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef A_INC_SOUND_SOUND_P_H
+#define A_INC_SOUND_SOUND_P_H
 
 #include "general/a_system_includes.h"
 
@@ -45,3 +46,5 @@ extern int a_channel_new(void);
 extern void a_channel_play(int Channel, ASample* Sample, AChannelFlags Flags);
 extern void a_channel_stop(int Channel);
 extern bool a_channel_isPlaying(int Channel);
+
+#endif // A_INC_SOUND_SOUND_P_H

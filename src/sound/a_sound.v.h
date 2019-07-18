@@ -16,7 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef A_INC_SOUND_SOUND_V_H
+#define A_INC_SOUND_SOUND_V_H
 
 #include "sound/a_sound.p.h"
 
@@ -26,3 +27,5 @@ extern const APack a_pack__sound;
 
 extern void a_sound__tick(void);
 extern void a_sound__draw(void);
+
+#endif // A_INC_SOUND_SOUND_V_H

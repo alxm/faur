@@ -16,7 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef A_INC_GENERAL_STATE_P_H
+#define A_INC_GENERAL_STATE_P_H
 
 #include "general/a_system_includes.h"
 
@@ -52,3 +53,5 @@ extern bool a__state_stageCheck(AStateStage Stage);
 #define A_STATE_TICK if(a__state_stageCheck(A__STATE_STAGE_TICK))
 #define A_STATE_DRAW if(a__state_stageCheck(A__STATE_STAGE_DRAW))
 #define A_STATE_FREE if(a__state_stageCheck(A__STATE_STAGE_FREE))
+
+#endif // A_INC_GENERAL_STATE_P_H

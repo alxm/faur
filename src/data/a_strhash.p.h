@@ -16,7 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef A_INC_DATA_STRHASH_P_H
+#define A_INC_DATA_STRHASH_P_H
 
 #include "general/a_system_includes.h"
 
@@ -54,3 +55,5 @@ extern const char* a__strhash_entryKey(const AStrHashEntry* Entry);
 #define A_STRHASH_KEY() a__strhash_entryKey(a__e)
 
 extern void a__strhash_printStats(const AStrHash* Hash, const char* Message);
+
+#endif // A_INC_DATA_STRHASH_P_H

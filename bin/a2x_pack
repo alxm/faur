@@ -74,6 +74,13 @@ def main():
             author = os.environ[key]
             break
 
+    header_guard = 'A_INC_{}_{}'.format(
+        g_tool.sanitize_c_var(pack_folder).upper(),
+        g_tool.sanitize_c_var(pack_name).upper())
+
+    header_guard_p = header_guard + '_P_H'
+    header_guard_v = header_guard + '_V_H'
+
     license_header = """\
 /*
     Copyright {date} {author}
@@ -124,23 +131,30 @@ const APack a_pack__{name} = {{
 """\
 {header_comment}
 
-#pragma once
+#ifndef {guard}
+#define {guard}
 
 #include "general/a_system_includes.h"
-""".format(header_comment = license_header))
+
+#endif // {guard}
+""".format(header_comment = license_header, guard = header_guard_p))
 
     g_tool.write_text(pack_vh,
 """\
 {header_comment}
 
-#pragma once
+#ifndef {guard}
+#define {guard}
 
 #include "{folder}/a_{name}.p.h"
 
 #include "general/a_main.v.h"
 
 extern const APack a_pack__{name};
+
+#endif // {guard}
 """.format(header_comment = license_header,
+           guard = header_guard_v,
            folder = pack_folder,
            name = pack_name))
 

@@ -16,7 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef A_INC_ECS_COMPONENT_P_H
+#define A_INC_ECS_COMPONENT_P_H
 
 #include "general/a_system_includes.h"
 
@@ -33,3 +34,5 @@ extern void a_component_template(int ComponentIndex, const char* StringId, size_
 
 extern const void* a_component_dataGet(const void* Component);
 extern AEntity* a_component_entityGet(const void* Component);
+
+#endif // A_INC_ECS_COMPONENT_P_H

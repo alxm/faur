@@ -16,7 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef A_INC_GRAPHICS_COLOR_P_H
+#define A_INC_GRAPHICS_COLOR_P_H
 
 #include "general/a_system_includes.h"
 
@@ -140,3 +141,5 @@ extern void a_color_baseSetPixel(APixel Pixel);
 
 extern void a_color_fillBlitSet(bool Fill);
 extern void a_color_fillDrawSet(bool Fill);
+
+#endif // A_INC_GRAPHICS_COLOR_P_H

@@ -16,7 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef A_INC_INPUTS_ANALOG_P_H
+#define A_INC_INPUTS_ANALOG_P_H
 
 #include "general/a_system_includes.h"
 
@@ -44,3 +45,5 @@ extern bool a_analog_isWorking(const AAnalog* Analog);
 extern const char* a_analog_nameGet(const AAnalog* Analog);
 
 extern AFix a_analog_valueGet(const AAnalog* Analog);
+
+#endif // A_INC_INPUTS_ANALOG_P_H

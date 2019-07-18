@@ -16,7 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef A_INC_TIME_TIME_P_H
+#define A_INC_TIME_TIME_P_H
 
 #include "general/a_system_includes.h"
 
@@ -39,3 +40,5 @@ static inline unsigned a_time_ticksFromSec(unsigned Sec)
 {
     return a_fps_rateTickGet() * Sec;
 }
+
+#endif // A_INC_TIME_TIME_P_H

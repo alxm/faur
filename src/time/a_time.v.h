@@ -16,6 +16,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef A_INC_TIME_TIME_V_H
+#define A_INC_TIME_TIME_V_H
 
 #include "time/a_time.p.h"
+
+#endif // A_INC_TIME_TIME_V_H

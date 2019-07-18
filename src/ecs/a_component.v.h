@@ -16,7 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef A_INC_ECS_COMPONENT_V_H
+#define A_INC_ECS_COMPONENT_V_H
 
 #include "ecs/a_component.p.h"
 
@@ -45,3 +46,5 @@ static inline void* a_component__instanceGetBuffer(const AComponentInstance* Ins
 {
     return (void*)(Instance + 1);
 }
+
+#endif // A_INC_ECS_COMPONENT_V_H

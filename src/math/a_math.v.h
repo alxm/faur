@@ -16,6 +16,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef A_INC_MATH_MATH_V_H
+#define A_INC_MATH_MATH_V_H
 
 #include "math/a_math.p.h"
+
+#endif // A_INC_MATH_MATH_V_H

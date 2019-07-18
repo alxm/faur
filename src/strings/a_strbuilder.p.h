@@ -16,7 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef A_INC_STRINGS_STRBUILDER_P_H
+#define A_INC_STRINGS_STRBUILDER_P_H
 
 #include "general/a_system_includes.h"
 
@@ -29,3 +30,5 @@ extern const char* a_strbuilder_get(AStrBuilder* Builder);
 
 extern bool a_strbuilder_add(AStrBuilder* Builder, const char* String);
 extern bool a_strbuilder_addf(AStrBuilder* Builder, const char* Format, ...);
+
+#endif // A_INC_STRINGS_STRBUILDER_P_H

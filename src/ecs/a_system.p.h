@@ -16,7 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef A_INC_ECS_SYSTEM_P_H
+#define A_INC_ECS_SYSTEM_P_H
 
 #include "general/a_system_includes.h"
 
@@ -29,3 +30,5 @@ extern void a_system_new(int SystemIndex, ASystemHandler* Handler, ASystemSort* 
 extern void a_system_add(int SystemIndex, int ComponentIndex);
 
 extern void a_system_run(int SystemIndex);
+
+#endif // A_INC_ECS_SYSTEM_P_H

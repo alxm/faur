@@ -16,7 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef A_INC_FILES_EMBED_V_H
+#define A_INC_FILES_EMBED_V_H
 
 #include "files/a_embed.p.h"
 
@@ -43,3 +44,5 @@ extern const AEmbeddedDir* a_embed__dirGet(const char* Path);
 
 extern void a_embed__fileAdd(const void* Data);
 extern const AEmbeddedFile* a_embed__fileGet(const char* Path);
+
+#endif // A_INC_FILES_EMBED_V_H
