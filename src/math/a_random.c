@@ -71,32 +71,38 @@ void a_random_seedSet(unsigned Seed)
         g_srand(Seed);
     }
 
-    a_out_info("a_random_seedSet(%u)", Seed);
+    a_out__info("a_random_seedSet(%u)", Seed);
 }
 
 int a_random_int(int Max)
 {
-    if(Max <= 0) {
-        A__FATAL("a_random_int(%d): Invalid arg", Max);
-    }
+    #if A_CONFIG_BUILD_DEBUG
+        if(Max <= 0) {
+            A__FATAL("a_random_int(%d): Invalid arg", Max);
+        }
+    #endif
 
     return g_rand() % Max;
 }
 
 unsigned a_random_intu(unsigned Max)
 {
-    if(Max == 0) {
-        A__FATAL("a_random_intu(0): Invalid arg");
-    }
+    #if A_CONFIG_BUILD_DEBUG
+        if(Max == 0) {
+            A__FATAL("a_random_intu(0): Invalid arg");
+        }
+    #endif
 
     return (unsigned)g_rand() % Max;
 }
 
 int a_random_range(int Min, int Max)
 {
-    if(Min >= Max) {
-        A__FATAL("a_random_range(%d, %d): Invalid args", Min, Max);
-    }
+    #if A_CONFIG_BUILD_DEBUG
+        if(Min >= Max) {
+            A__FATAL("a_random_range(%d, %d): Invalid args", Min, Max);
+        }
+    #endif
 
     return Min + (g_rand() % (Max - Min));
 }
@@ -108,18 +114,23 @@ unsigned a_random_rangeu(unsigned Min, unsigned Max)
 
 bool a_random_chance(int Something, int OutOf)
 {
-    if(Something > OutOf) {
-        A__FATAL("a_random_chance(%d, %d): Invalid args", Something, OutOf);
-    }
+    #if A_CONFIG_BUILD_DEBUG
+        if(Something > OutOf) {
+            A__FATAL("a_random_chance(%d, %d): Invalid args", Something, OutOf);
+        }
+    #endif
 
     return a_random_int(OutOf) < Something;
 }
 
 bool a_random_chanceu(unsigned Something, unsigned OutOf)
 {
-    if(Something > OutOf) {
-        A__FATAL("a_random_chanceu(%d, %d): Invalid args", Something, OutOf);
-    }
+    #if A_CONFIG_BUILD_DEBUG
+        if(Something > OutOf) {
+            A__FATAL(
+                "a_random_chanceu(%d, %d): Invalid args", Something, OutOf);
+        }
+    #endif
 
     return a_random_intu(OutOf) < Something;
 }

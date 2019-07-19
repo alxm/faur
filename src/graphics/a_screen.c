@@ -112,9 +112,11 @@ void a_screen__tick(void)
 
 void a_screen__draw(void)
 {
-    if(!a_list_isEmpty(g_stack)) {
-        A__FATAL("Screen target stack is not empty");
-    }
+    #if A_CONFIG_BUILD_DEBUG
+        if(!a_list_isEmpty(g_stack)) {
+            A__FATAL("Screen target stack is not empty");
+        }
+    #endif
 
     a_platform_api__screenShow();
 }
@@ -188,9 +190,11 @@ void a_screen_pop(void)
 {
     AScreen* screen = a_list_pop(g_stack);
 
-    if(screen == NULL) {
-        A__FATAL("a_screen_pop: Stack is empty");
-    }
+    #if A_CONFIG_BUILD_DEBUG
+        if(screen == NULL) {
+            A__FATAL("a_screen_pop: Stack is empty");
+        }
+    #endif
 
     #if A_CONFIG_LIB_RENDER_SOFTWARE
         a_sprite__textureCommit(a__screen.sprite, a__screen.frame);

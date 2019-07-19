@@ -56,21 +56,16 @@ int a_component__stringToIndex(const char* StringId)
     return component ? (int)(component - g_components) : -1;
 }
 
-const AComponent* a_component__get(int ComponentIndex, const char* CallerFunction)
+const AComponent* a_component__get(int ComponentIndex)
 {
     #if A_CONFIG_BUILD_DEBUG
         if(ComponentIndex < 0 || ComponentIndex >= A_CONFIG_ECS_COM_NUM) {
-            A__FATAL(
-                "%s: Unknown component %d", CallerFunction, ComponentIndex);
+            A__FATAL("Unknown component %d", ComponentIndex);
         }
 
         if(g_components[ComponentIndex].stringId == NULL) {
-            A__FATAL("%s: Uninitialized component %d",
-                     CallerFunction,
-                     ComponentIndex);
+            A__FATAL("Uninitialized component %d", ComponentIndex);
         }
-    #else
-        A_UNUSED(CallerFunction);
     #endif
 
     return &g_components[ComponentIndex];

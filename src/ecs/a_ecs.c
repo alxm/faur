@@ -78,7 +78,7 @@ void a_ecs__tick(void)
     // Check what systems the new entities match
     A_LIST_ITERATE(g_lists[A_ECS__NEW], AEntity*, e) {
         for(int s = A_CONFIG_ECS_SYS_NUM; s--; ) {
-            a_entity__systemMatch(e, a_system__get(s, __func__));
+            a_entity__systemMatch(e, a_system__get(s));
         }
 
         a_ecs__entityAddToList(e, A_ECS__RESTORE);

@@ -58,9 +58,11 @@ void a_color_pop(void)
 {
     APixelState* state = a_list_pop(g_stateStack);
 
-    if(state == NULL) {
-        A__FATAL("a_color_pop: Stack is empty");
-    }
+    #if A_CONFIG_BUILD_DEBUG
+        if(state == NULL) {
+            A__FATAL("a_color_pop: Stack is empty");
+        }
+    #endif
 
     a__color = *state;
     free(state);

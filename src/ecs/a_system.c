@@ -37,19 +37,16 @@ void a_system__uninit(void)
     }
 }
 
-ASystem* a_system__get(int SystemIndex, const char* CallerFunction)
+ASystem* a_system__get(int SystemIndex)
 {
     #if A_CONFIG_BUILD_DEBUG
         if(SystemIndex < 0 || SystemIndex >= A_CONFIG_ECS_SYS_NUM) {
-            A__FATAL("%s: Unknown system %d", CallerFunction, SystemIndex);
+            A__FATAL("Unknown system %d", SystemIndex);
         }
 
         if(g_systems[SystemIndex].entities == NULL) {
-            A__FATAL(
-                "%s: Uninitialized system %d", CallerFunction, SystemIndex);
+            A__FATAL("Uninitialized system %d", SystemIndex);
         }
-    #else
-        A_UNUSED(CallerFunction);
     #endif
 
     return &g_systems[SystemIndex];
@@ -74,14 +71,14 @@ void a_system_new(int SystemIndex, ASystemHandler* Handler, ASystemSort* Compare
 
 void a_system_add(int SystemIndex, int ComponentIndex)
 {
-    ASystem* system = a_system__get(SystemIndex, __func__);
+    ASystem* system = a_system__get(SystemIndex);
 
     a_bitfield_set(system->componentBits, (unsigned)ComponentIndex);
 }
 
 void a_system_run(int SystemIndex)
 {
-    ASystem* system = a_system__get(SystemIndex, __func__);
+    ASystem* system = a_system__get(SystemIndex);
 
     if(system->compare) {
         a_list_sort(system->entities, (AListCompare*)system->compare);

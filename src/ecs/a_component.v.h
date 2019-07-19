@@ -32,7 +32,7 @@ extern void a_component__init(void);
 extern void a_component__uninit(void);
 
 extern int a_component__stringToIndex(const char* StringId);
-extern const AComponent* a_component__get(int Index, const char* CallerFunction);
+extern const AComponent* a_component__get(int Index);
 
 extern const char* a_component__stringGet(const AComponent* Component);
 

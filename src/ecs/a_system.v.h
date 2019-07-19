@@ -28,7 +28,7 @@ typedef struct ASystem ASystem;
 
 extern void a_system__uninit(void);
 
-extern ASystem* a_system__get(int SystemIndex, const char* CallerFunction);
+extern ASystem* a_system__get(int SystemIndex);
 
 extern AListNode* a_system__entityAdd(const ASystem* System, AEntity* Entity);
 extern const ABitfield* a_system__componentBitsGet(const ASystem* System);

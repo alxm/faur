@@ -30,9 +30,11 @@ struct ABitfield {
 
 ABitfield* a_bitfield_new(unsigned NumBits)
 {
-    if(NumBits < 1) {
-        A__FATAL("a_bitfield_new(0): Invalid size");
-    }
+    #if A_CONFIG_BUILD_DEBUG
+        if(NumBits < 1) {
+            A__FATAL("a_bitfield_new(0): Invalid size");
+        }
+    #endif
 
     unsigned numChunks = (NumBits + A__BITS_PER_CHUNK - 1) / A__BITS_PER_CHUNK;
     ABitfield* b = a_mem_zalloc(sizeof(ABitfield) + numChunks * sizeof(AChunk));
