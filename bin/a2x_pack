@@ -26,9 +26,9 @@ from utils.tool import Tool
 """
 category/a_sample.p.h
     #include "general/a_system_includes.h"
-    #include "foo1/a_bar1.p.h"
+    #include "foo/a_bar.p.h"
     <public typedefs>
-    #include "foo2/a_bar2.p.h"
+    #include "foo/a_bar.p.h"
     <public typedef implementations>
     <public api prototypes>
     <static inline functions>
@@ -36,12 +36,13 @@ category/a_sample.p.h
 category/a_sample.v.h
     #include "category/a_sample.p.h"
     <private typedefs>
-    #include "foo1/a_bar1.v.h"
+    #include "foo/a_bar.v.h"
     <private typedef implementations>
     <private api prototypes>
     <static inline functions>
 
 category/a_sample.c
+    #include "a_sample.v.h"
     #include <a2x.v.h>
     #include <system headers>
     <private types>
@@ -74,6 +75,13 @@ def main():
             author = os.environ[key]
             break
 
+    header_guard = 'A_INC_{}_{}'.format(
+        g_tool.sanitize_c_var(pack_folder).upper(),
+        g_tool.sanitize_c_var(pack_name).upper())
+
+    header_guard_p = header_guard + '_P_H'
+    header_guard_v = header_guard + '_V_H'
+
     license_header = """\
 /*
     Copyright {date} {author}
@@ -97,6 +105,7 @@ def main():
 """\
 {header_comment}
 
+#include "a_{name}.v.h"
 #include <a2x.v.h>
 
 static void a_{name}__init(void)
@@ -124,23 +133,30 @@ const APack a_pack__{name} = {{
 """\
 {header_comment}
 
-#pragma once
+#ifndef {guard}
+#define {guard}
 
 #include "general/a_system_includes.h"
-""".format(header_comment = license_header))
+
+#endif // {guard}
+""".format(header_comment = license_header, guard = header_guard_p))
 
     g_tool.write_text(pack_vh,
 """\
 {header_comment}
 
-#pragma once
+#ifndef {guard}
+#define {guard}
 
 #include "{folder}/a_{name}.p.h"
 
 #include "general/a_main.v.h"
 
 extern const APack a_pack__{name};
+
+#endif // {guard}
 """.format(header_comment = license_header,
+           guard = header_guard_v,
            folder = pack_folder,
            name = pack_name))
 

@@ -16,7 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef A_INC_GRAPHICS_FADE_V_H
+#define A_INC_GRAPHICS_FADE_V_H
 
 #include "graphics/a_fade.p.h"
 
@@ -26,3 +27,5 @@ extern const APack a_pack__fade;
 
 extern void a_fade__tick(void);
 extern void a_fade__draw(void);
+
+#endif // A_INC_GRAPHICS_FADE_V_H

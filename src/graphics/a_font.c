@@ -16,6 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "a_font.v.h"
 #include <a2x.v.h>
 
 #define A__CHAR_START 32
@@ -142,9 +143,11 @@ void a_font_pop(void)
 {
     AFontState* state = a_list_pop(g_stateStack);
 
-    if(state == NULL) {
-        A__FATAL("a_font_pop: Stack is empty");
-    }
+    #if A_CONFIG_BUILD_DEBUG
+        if(state == NULL) {
+            A__FATAL("a_font_pop: Stack is empty");
+        }
+    #endif
 
     g_state = *state;
     free(state);

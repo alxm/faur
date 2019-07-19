@@ -16,6 +16,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef A_INC_GRAPHICS_PIXELS_P_H
+#define A_INC_GRAPHICS_PIXELS_P_H
 
 #include "general/a_system_includes.h"
+
+#endif // A_INC_GRAPHICS_PIXELS_P_H

@@ -16,6 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "a_state.v.h"
 #include <a2x.v.h>
 
 #if A_CONFIG_SYSTEM_EMSCRIPTEN
@@ -98,9 +99,11 @@ static void pending_handle(void)
     AStateStackEntry* pendingState = a_list_pop(g_pending);
 
     if(pendingState == NULL) {
-        if(current == NULL) {
-            A__FATAL("Pop state: stack is empty");
-        }
+        #if A_CONFIG_BUILD_DEBUG
+            if(current == NULL) {
+                A__FATAL("Pop state: stack is empty");
+            }
+        #endif
 
         a_out__stateV("Pop '%s'", current->state->name);
         a_out__stateV("  '%s' going from %s to %s",
@@ -112,11 +115,13 @@ static void pending_handle(void)
     } else {
         a_out__stateV("Push '%s'", pendingState->state->name);
 
-        A_LIST_ITERATE(g_stack, const AStateStackEntry*, e) {
-            if(pendingState->state == e->state) {
-                A__FATAL("State '%s' already in stack", e->state->name);
+        #if A_CONFIG_BUILD_DEBUG
+            A_LIST_ITERATE(g_stack, const AStateStackEntry*, e) {
+                if(pendingState->state == e->state) {
+                    A__FATAL("State '%s' already in stack", e->state->name);
+                }
             }
-        }
+        #endif
 
         a_out__state("New '%s' instance", pendingState->state->name);
         a_list_push(g_stack, pendingState);
@@ -155,18 +160,16 @@ void a_state_new(int Index, AStateHandler* Handler, const char* Name)
     g_table[Index].name = Name;
 }
 
-static const AStateTableEntry* getState(int State, const char* CallerFunction)
+static inline const AStateTableEntry* getState(int State)
 {
     #if A_CONFIG_BUILD_DEBUG
         if(State < 0 || State >= A_CONFIG_STATE_NUM) {
-            A__FATAL("%s(%d): Unknown state", CallerFunction, State);
+            A__FATAL("Unknown state %d", State);
         }
 
         if(g_table[State].function == NULL) {
-            A__FATAL("%s(%d): Uninitialized state", CallerFunction, State);
+            A__FATAL("Uninitialized state %d", State);
         }
-    #else
-        A_UNUSED(CallerFunction);
     #endif
 
     return &g_table[State];
@@ -174,7 +177,7 @@ static const AStateTableEntry* getState(int State, const char* CallerFunction)
 
 void a_state_push(int State)
 {
-    const AStateTableEntry* state = getState(State, __func__);
+    const AStateTableEntry* state = getState(State);
 
     if(g_exiting) {
         a_out__stateV("a_state_push(%s): Already exiting", state->name);
@@ -200,30 +203,37 @@ void a_state_pop(void)
 
 void a_state_popUntil(int State)
 {
-    const AStateTableEntry* state = getState(State, __func__);
+    const AStateTableEntry* state = getState(State);
 
     if(g_exiting) {
         a_out__stateV("a_state_popUntil(%s): Already exiting", state->name);
         return;
-    } else {
-        a_out__stateV("a_state_popUntil(%s)", state->name);
     }
 
+    a_out__stateV("a_state_popUntil(%s)", state->name);
+
     int pops = 0;
-    bool found = false;
+    #if A_CONFIG_BUILD_DEBUG
+        bool found = false;
+    #endif
 
     A_LIST_ITERATE(g_stack, const AStateStackEntry*, e) {
         if(e->state == state) {
-            found = true;
+            #if A_CONFIG_BUILD_DEBUG
+                found = true;
+            #endif
+
             break;
         }
 
         pops++;
     }
 
-    if(!found) {
-        A__FATAL("a_state_popUntil(%s): State not in stack", state->name);
-    }
+    #if A_CONFIG_BUILD_DEBUG
+        if(!found) {
+            A__FATAL("a_state_popUntil(%s): State not in stack", state->name);
+        }
+    #endif
 
     while(pops--) {
         pending_pop();
@@ -232,7 +242,7 @@ void a_state_popUntil(int State)
 
 void a_state_replace(int State)
 {
-    const AStateTableEntry* state = getState(State, __func__);
+    const AStateTableEntry* state = getState(State);
 
     if(g_exiting) {
         a_out__stateV("a_state_replace(%s): Already exiting", state->name);
@@ -390,9 +400,11 @@ bool a__state_stageCheck(AStateStage Stage)
 {
     const AStateStackEntry* e = a_list_peek(g_stack);
 
-    if(e == NULL) {
-        A__FATAL("%s: state stack is empty", g_stageNames[Stage]);
-    }
+    #if A_CONFIG_BUILD_DEBUG
+        if(e == NULL) {
+            A__FATAL("%s: state stack is empty", g_stageNames[Stage]);
+        }
+    #endif
 
     return e->stage == Stage;
 }

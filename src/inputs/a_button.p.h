@@ -16,7 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef A_INC_INPUTS_BUTTON_P_H
+#define A_INC_INPUTS_BUTTON_P_H
 
 #include "general/a_system_includes.h"
 
@@ -104,3 +105,5 @@ extern bool a_button_pressGet(const AButton* Button);
 extern bool a_button_pressGetOnce(AButton* Button);
 extern void a_button_pressSetRepeat(AButton* Button, unsigned RepeatMs);
 extern void a_button_pressClear(AButton* Button);
+
+#endif // A_INC_INPUTS_BUTTON_P_H

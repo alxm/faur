@@ -16,7 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef A_INC_GENERAL_CONSOLE_V_H
+#define A_INC_GENERAL_CONSOLE_V_H
 
 #include "general/a_console.p.h"
 
@@ -30,3 +31,5 @@ extern void a_console__draw(void);
 
 extern bool a_console__isInitialized(void);
 extern void a_console__write(AOutSource Source, AOutType Type, const char* Text, bool Overwrite);
+
+#endif // A_INC_GENERAL_CONSOLE_V_H

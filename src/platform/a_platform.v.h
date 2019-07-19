@@ -16,7 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef A_INC_PLATFORM_PLATFORM_V_H
+#define A_INC_PLATFORM_PLATFORM_V_H
 
 #include "platform/a_platform.p.h"
 
@@ -31,6 +32,7 @@ typedef void APlatformSoundSample;
 typedef struct APlatformTexture APlatformTexture;
 
 #include "general/a_main.v.h"
+#include "graphics/a_pixels.v.h"
 #include "inputs/a_analog.v.h"
 #include "inputs/a_button.v.h"
 #include "math/a_fix.v.h"
@@ -115,3 +117,5 @@ extern bool a_platform_api__inputTouchTapGet(const APlatformInputTouch* Touch);
 extern unsigned a_platform_api__inputControllerNumGet(void);
 extern void a_platform_api__inputControllerSet(unsigned Index);
 extern bool a_platform_api__inputControllerIsMapped(void);
+
+#endif // A_INC_PLATFORM_PLATFORM_V_H

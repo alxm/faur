@@ -16,7 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef A_INC_GENERAL_OUT_P_H
+#define A_INC_GENERAL_OUT_P_H
 
 #include "general/a_system_includes.h"
 
@@ -25,3 +26,5 @@ extern void a_out_info(const char* Format, ...);
 extern void a_out_infov(const char* Format, va_list Args);
 extern void a_out_warning(const char* Format, ...);
 extern void a_out_error(const char* Format, ...);
+
+#endif // A_INC_GENERAL_OUT_P_H

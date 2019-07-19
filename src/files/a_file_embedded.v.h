@@ -16,7 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef A_INC_FILES_FILE_EMBEDDED_V_H
+#define A_INC_FILES_FILE_EMBEDDED_V_H
 
 #include "files/a_file_embedded.p.h"
 
@@ -25,3 +26,5 @@
 extern AFile* a_file_embedded__new(APath* Path);
 
 extern uint8_t* a_file_embedded__toBuffer(const char* Path);
+
+#endif // A_INC_FILES_FILE_EMBEDDED_V_H

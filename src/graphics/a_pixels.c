@@ -16,6 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "a_pixels.v.h"
 #include <a2x.v.h>
 
 APixels* a_pixels__new(int W, int H, unsigned Frames, APixelsFlags Flags)

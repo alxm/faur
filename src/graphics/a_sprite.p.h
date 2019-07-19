@@ -16,7 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef A_INC_GRAPHICS_SPRITE_P_H
+#define A_INC_GRAPHICS_SPRITE_P_H
 
 #include "general/a_system_includes.h"
 
@@ -45,3 +46,5 @@ extern unsigned a_sprite_framesNumGet(const ASprite* Sprite);
 
 extern const APixel* a_sprite_pixelsGetBuffer(const ASprite* Sprite, unsigned Frame);
 extern APixel a_sprite_pixelsGetValue(const ASprite* Sprite, unsigned Frame, int X, int Y);
+
+#endif // A_INC_GRAPHICS_SPRITE_P_H

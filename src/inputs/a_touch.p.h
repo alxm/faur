@@ -16,7 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef A_INC_INPUTS_TOUCH_P_H
+#define A_INC_INPUTS_TOUCH_P_H
 
 #include "general/a_system_includes.h"
 
@@ -33,3 +34,5 @@ extern AVectorInt a_touch_deltaGet(const ATouch* Touch);
 extern bool a_touch_tapGet(const ATouch* Touch);
 extern bool a_touch_pointGet(const ATouch* Touch, int X, int Y);
 extern bool a_touch_boxGet(const ATouch* Touch, int X, int Y, int W, int H);
+
+#endif // A_INC_INPUTS_TOUCH_P_H

@@ -16,7 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef A_INC_GRAPHICS_SCREEN_V_H
+#define A_INC_GRAPHICS_SCREEN_V_H
 
 #include "graphics/a_screen.p.h"
 
@@ -50,3 +51,5 @@ static inline APixel* a_screen__bufferGetFrom(int X, int Y)
 {
     return a_pixels__bufferGetFrom(a__screen.pixels, a__screen.frame, X, Y);
 }
+
+#endif // A_INC_GRAPHICS_SCREEN_V_H

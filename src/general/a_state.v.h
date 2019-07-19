@@ -16,7 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef A_INC_GENERAL_STATE_V_H
+#define A_INC_GENERAL_STATE_V_H
 
 #include "general/a_state.p.h"
 
@@ -25,3 +26,5 @@
 extern const APack a_pack__state;
 
 extern void a_state__run(void);
+
+#endif // A_INC_GENERAL_STATE_V_H

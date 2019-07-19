@@ -16,13 +16,15 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef A_INC_GRAPHICS_SPRITE_V_H
+#define A_INC_GRAPHICS_SPRITE_V_H
 
 #include "graphics/a_sprite.p.h"
 
-#include "graphics/a_pixels.v.h"
 #include "platform/a_platform.v.h"
 
 extern APixels* a_sprite__pixelsGet(ASprite* Sprite);
 extern APlatformTexture* a_sprite__textureGet(const ASprite* Sprite, unsigned Frame);
 extern void a_sprite__textureCommit(ASprite* Sprite, unsigned Frame);
+
+#endif // A_INC_GRAPHICS_SPRITE_V_H

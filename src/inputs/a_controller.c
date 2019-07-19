@@ -16,6 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "a_controller.v.h"
 #include <a2x.v.h>
 
 void a_input_controller__init(void)
@@ -92,12 +93,13 @@ unsigned a_controller_numGet(void)
 
 void a_controller_set(unsigned Index)
 {
-    if(Index >= a_platform_api__inputControllerNumGet()) {
-        A__FATAL("a_controller_set(%d): Invalid arg, %d total",
-                 Index,
-                 a_platform_api__inputControllerNumGet());
-        return;
-    }
+    #if A_CONFIG_BUILD_DEBUG
+        if(Index >= a_platform_api__inputControllerNumGet()) {
+            A__FATAL("a_controller_set(%d): Invalid arg, %d total",
+                     Index,
+                     a_platform_api__inputControllerNumGet());
+        }
+    #endif
 
     a_platform_api__inputControllerSet(Index);
 }

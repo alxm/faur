@@ -16,7 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef A_INC_MATH_FIX_P_H
+#define A_INC_MATH_FIX_P_H
 
 #include "general/a_system_includes.h"
 
@@ -315,3 +316,5 @@ static inline bool a_vectorint_equal(AVectorInt A, AVectorInt B)
 {
     return A.x == B.x && A.y == B.y;
 }
+
+#endif // A_INC_MATH_FIX_P_H

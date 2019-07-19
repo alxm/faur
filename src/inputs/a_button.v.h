@@ -16,7 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef A_INC_INPUTS_BUTTON_V_H
+#define A_INC_INPUTS_BUTTON_V_H
 
 #include "inputs/a_button.p.h"
 
@@ -26,3 +27,5 @@ extern void a_input_button__init(void);
 extern void a_input_button__uninit(void);
 
 extern void a_input_button__tick(void);
+
+#endif // A_INC_INPUTS_BUTTON_V_H

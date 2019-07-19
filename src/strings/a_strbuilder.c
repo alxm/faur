@@ -16,6 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "a_strbuilder.v.h"
 #include <a2x.v.h>
 
 struct AStrBuilder {
@@ -28,9 +29,11 @@ struct AStrBuilder {
 
 AStrBuilder* a_strbuilder_new(size_t Bytes)
 {
-    if(Bytes == 0) {
-        A__FATAL("a_strbuilder_new: Invalid size 0");
-    }
+    #if A_CONFIG_BUILD_DEBUG
+        if(Bytes == 0) {
+            A__FATAL("a_strbuilder_new: Invalid size 0");
+        }
+    #endif
 
     AStrBuilder* b = a_mem_malloc(sizeof(AStrBuilder) + Bytes);
 

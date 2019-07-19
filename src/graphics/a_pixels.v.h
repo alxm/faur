@@ -16,7 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef A_INC_GRAPHICS_PIXELS_V_H
+#define A_INC_GRAPHICS_PIXELS_V_H
 
 #include "graphics/a_pixels.p.h"
 
@@ -71,3 +72,5 @@ static inline APixel a_pixels__bufferGetValue(const APixels* Pixels, unsigned Fr
 {
     return *a_pixels__bufferGetFrom(Pixels, Frame, X, Y);
 }
+
+#endif // A_INC_GRAPHICS_PIXELS_V_H

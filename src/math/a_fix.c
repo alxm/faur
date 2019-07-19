@@ -16,6 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "a_fix.v.h"
 #include <a2x.v.h>
 
 AFix a__fix_sin[A_FIX_ANGLES_NUM];

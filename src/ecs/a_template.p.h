@@ -16,8 +16,11 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef A_INC_ECS_TEMPLATE_P_H
+#define A_INC_ECS_TEMPLATE_P_H
 
 #include "general/a_system_includes.h"
 
 extern void a_template_new(const char* FilePath);
+
+#endif // A_INC_ECS_TEMPLATE_P_H

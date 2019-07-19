@@ -16,6 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "a_mem.v.h"
 #include <a2x.v.h>
 
 void* a_mem_malloc(size_t Size)

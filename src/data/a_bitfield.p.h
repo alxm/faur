@@ -16,7 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef A_INC_DATA_BITFIELD_P_H
+#define A_INC_DATA_BITFIELD_P_H
 
 #include "general/a_system_includes.h"
 
@@ -31,3 +32,5 @@ extern void a_bitfield_reset(ABitfield* Bitfield);
 
 extern bool a_bitfield_test(const ABitfield* Bitfield, unsigned Bit);
 extern bool a_bitfield_testMask(const ABitfield* Bitfield, const ABitfield* Mask);
+
+#endif // A_INC_DATA_BITFIELD_P_H

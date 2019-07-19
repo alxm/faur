@@ -16,6 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "a_platform.v.h"
 #include <a2x.v.h>
 
 static void a_platform__init(void)

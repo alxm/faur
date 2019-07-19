@@ -16,7 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef A_INC_FILES_FILE_REAL_V_H
+#define A_INC_FILES_FILE_REAL_V_H
 
 #include "files/a_file_real.p.h"
 
@@ -25,3 +26,5 @@
 extern AFile* a_file_real__new(APath* Path, AFileMode Mode);
 
 extern uint8_t* a_file_real__toBuffer(const char* Path);
+
+#endif // A_INC_FILES_FILE_REAL_V_H

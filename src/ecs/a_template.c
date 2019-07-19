@@ -16,6 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "a_template.v.h"
 #include <a2x.v.h>
 
 struct ATemplate {
@@ -43,7 +44,7 @@ static ATemplate* templateNew(const char* TemplateId, const ABlock* Block)
             continue;
         }
 
-        const AComponent* component = a_component__get(index, __func__);
+        const AComponent* component = a_component__get(index);
 
         t->data[index] = a_component__templateInit(component, b);
 
@@ -59,8 +60,7 @@ static void templateFree(ATemplate* Template)
 
     for(int c = A_CONFIG_ECS_COM_NUM; c--; ) {
         if(Template->data[c]) {
-            a_component__templateFree(
-                a_component__get(c, __func__), Template->data[c]);
+            a_component__templateFree(a_component__get(c), Template->data[c]);
         }
     }
 
@@ -84,9 +84,11 @@ void a_template_new(const char* FilePath)
     A_LIST_ITERATE(a_block_blocksGet(root), const ABlock*, b) {
         const char* id = a_block_lineGetString(b, 0);
 
-        if(a_strhash_contains(g_templates, id)) {
-            A__FATAL("a_template_new(%s): '%s' already declared", FilePath, id);
-        }
+        #if A_CONFIG_BUILD_DEBUG
+            if(a_strhash_contains(g_templates, id)) {
+                A__FATAL("a_template_new(%s): '%s' already declared", FilePath, id);
+            }
+        #endif
 
         a_strhash_add(g_templates, id, templateNew(id, b));
     }
@@ -94,13 +96,15 @@ void a_template_new(const char* FilePath)
     a_block_free(root);
 }
 
-const ATemplate* a_template__get(const char* TemplateId, const char* CallerFunction)
+const ATemplate* a_template__get(const char* TemplateId)
 {
     ATemplate* t = a_strhash_get(g_templates, TemplateId);
 
-    if(t == NULL) {
-        A__FATAL("%s: Unknown template '%s'", CallerFunction, TemplateId);
-    }
+    #if A_CONFIG_BUILD_DEBUG
+        if(t == NULL) {
+            A__FATAL("Unknown template '%s'", TemplateId);
+        }
+    #endif
 
     t->instanceNumber++;
 

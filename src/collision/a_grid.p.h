@@ -16,7 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef A_INC_COLLISION_GRID_P_H
+#define A_INC_COLLISION_GRID_P_H
 
 #include "general/a_system_includes.h"
 
@@ -44,3 +45,5 @@ extern AList* a__griditem_nearbyListGet(const AGridItem* Item);
                       a__i != a__gi)                                          \
             for(ContextPtrType ContextVarName = a__griditem_contextGet(a__i); \
                 a__i != NULL; a__i = NULL)
+
+#endif // A_INC_COLLISION_GRID_P_H

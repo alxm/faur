@@ -16,8 +16,11 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef A_INC_STRINGS_STR_V_H
+#define A_INC_STRINGS_STR_V_H
 
 #include "strings/a_str.p.h"
 
 extern const char* a_str__fmt512(const char* Format, ...);
+
+#endif // A_INC_STRINGS_STR_V_H

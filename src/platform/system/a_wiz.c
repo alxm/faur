@@ -20,6 +20,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "a_wiz.v.h"
 #include <a2x.v.h>
 
 #if A_CONFIG_SYSTEM_WIZ || A_CONFIG_SYSTEM_CAANOO

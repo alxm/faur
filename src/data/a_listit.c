@@ -16,6 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "a_listit.v.h"
 #include <a2x.v.h>
 
 AListIt a__listit_new(const AList* List, bool Reversed)

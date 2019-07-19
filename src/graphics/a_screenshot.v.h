@@ -16,7 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef A_INC_GRAPHICS_SCREENSHOT_V_H
+#define A_INC_GRAPHICS_SCREENSHOT_V_H
 
 #include "graphics/a_screenshot.p.h"
 
@@ -25,3 +26,5 @@
 extern const APack a_pack__screenshot;
 
 extern void a_screenshot__tick(void);
+
+#endif // A_INC_GRAPHICS_SCREENSHOT_V_H

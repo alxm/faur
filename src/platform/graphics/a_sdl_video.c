@@ -16,6 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "a_sdl_video.v.h"
 #include <a2x.v.h>
 
 #if A_CONFIG_LIB_SDL
@@ -413,7 +414,7 @@ void a_platform_api__screenShow(void)
             }
 
             if(g_zoom <= 1) {
-                if(g_pixels.w * sizeof(APixel) == g_sdlScreen->pitch) {
+                if(g_pixels.w * (int)sizeof(APixel) == g_sdlScreen->pitch) {
                     memcpy(g_sdlScreen->pixels,
                            g_pixels.buffer,
                            g_pixels.bufferSize);

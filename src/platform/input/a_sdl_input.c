@@ -16,6 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "a_sdl_input.v.h"
 #include <a2x.v.h>
 
 #if A_CONFIG_LIB_SDL
@@ -1056,11 +1057,13 @@ unsigned a_platform_api__inputControllerNumGet(void)
 
 void a_platform_api__inputControllerSet(unsigned Index)
 {
-    if(Index >= a_list_sizeGet(g_controllers)) {
-        A__FATAL("Cannot set controller %d, %d total",
-                 Index,
-                 a_list_sizeGet(g_controllers));
-    }
+    #if A_CONFIG_BUILD_DEBUG
+        if(Index >= a_list_sizeGet(g_controllers)) {
+            A__FATAL("Cannot set controller %d, %d total",
+                     Index,
+                     a_list_sizeGet(g_controllers));
+        }
+    #endif
 
     g_setController = a_list_getByIndex(g_controllers, Index);
 }

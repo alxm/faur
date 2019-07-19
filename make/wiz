@@ -1,8 +1,6 @@
 include $(A2X_PATH)/make/global/defs
 include $(A_FILE_SDKCONFIG_MK)
 
-A_CONFIG_BUILD_PLATFORM := wiz
-
 OPEN2X := $(A_SDK_OPEN2X_ROOT)/$(A_SDK_OPEN2X_TOOLCHAIN)
 
 A_CONFIG_BUILD_OPT := -O3 -s

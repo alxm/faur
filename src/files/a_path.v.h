@@ -16,8 +16,11 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef A_INC_FILES_PATH_V_H
+#define A_INC_FILES_PATH_V_H
 
 #include "files/a_path.p.h"
 
 extern void a_path__flagsSet(APath* Path, APathFlags Flags);
+
+#endif // A_INC_FILES_PATH_V_H

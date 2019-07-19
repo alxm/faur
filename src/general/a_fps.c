@@ -16,6 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "a_fps.v.h"
 #include <a2x.v.h>
 
 #define A__AVERAGE_WINDOW_SEC 2
@@ -160,4 +161,15 @@ unsigned a_fps_ticksGet(void)
 bool a_fps_ticksNth(unsigned N)
 {
     return (g_run.frameCounter % N) == 0;
+}
+
+AFix a_fps_ticksSin(uint8_t Mul, uint8_t Div, unsigned Offset)
+{
+    uint64_t param = (uint64_t)g_run.frameCounter * Mul * A_FIX_ANGLES_NUM;
+
+    if(Div > 1) {
+        param /= Div;
+    }
+
+    return a_fix_sin((unsigned)(param / A_CONFIG_FPS_RATE_TICK) + Offset);
 }

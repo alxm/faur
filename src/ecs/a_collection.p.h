@@ -16,7 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef A_INC_ECS_COLLECTION_P_H
+#define A_INC_ECS_COLLECTION_P_H
 
 #include "general/a_system_includes.h"
 
@@ -29,3 +30,5 @@ extern void a_collection_clear(ACollection* Collection);
 
 extern void a_collection_muteInc(ACollection* Collection);
 extern void a_collection_muteDec(ACollection* Collection);
+
+#endif // A_INC_ECS_COLLECTION_P_H

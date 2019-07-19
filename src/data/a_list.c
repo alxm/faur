@@ -16,6 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "a_list.v.h"
 #include <a2x.v.h>
 
 #define A__ITERATE(List, N) \

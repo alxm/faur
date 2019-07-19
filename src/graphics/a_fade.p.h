@@ -16,7 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef A_INC_GRAPHICS_FADE_P_H
+#define A_INC_GRAPHICS_FADE_P_H
 
 #include "general/a_system_includes.h"
 
@@ -25,3 +26,5 @@ extern const AEvent* a_fade_eventGet(void);
 extern void a_fade_startColorTo(unsigned DurationMs);
 extern void a_fade_startColorFrom(unsigned DurationMs);
 extern void a_fade_startScreens(unsigned DurationMs);
+
+#endif // A_INC_GRAPHICS_FADE_P_H

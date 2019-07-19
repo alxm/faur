@@ -16,10 +16,13 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef A_INC_MATH_RANDOM_V_H
+#define A_INC_MATH_RANDOM_V_H
 
 #include "math/a_random.p.h"
 
 #include "general/a_main.v.h"
 
 extern const APack a_pack__random;
+
+#endif // A_INC_MATH_RANDOM_V_H

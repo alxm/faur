@@ -16,7 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef A_INC_DATA_LISTIT_P_H
+#define A_INC_DATA_LISTIT_P_H
 
 #include "general/a_system_includes.h"
 
@@ -64,3 +65,5 @@ extern bool a__listit_isLast(const AListIt* Iterator);
 #define A_LIST_REMOVE_CURRENT() a__listit_remove(&a__it)
 #define A_LIST_IS_FIRST() a__listit_isFirst(&a__it)
 #define A_LIST_IS_LAST() a__listit_isLast(&a__it)
+
+#endif // A_INC_DATA_LISTIT_P_H

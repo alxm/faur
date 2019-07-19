@@ -68,8 +68,6 @@ def process_header(file_name, depth):
 
             out += '// {}'.format(line)
             out += process_header(header, depth + 1)
-        elif line == '#pragma once\n':
-            out += '// {}'.format(line)
         else:
             out += line
 

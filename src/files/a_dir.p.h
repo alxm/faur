@@ -16,7 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef A_INC_FILES_DIR_P_H
+#define A_INC_FILES_DIR_P_H
 
 #include "general/a_system_includes.h"
 
@@ -32,3 +33,5 @@ extern const APath* a_dir_pathGet(const ADir* Dir);
 
 extern AList* a_dir_entriesListGet(const ADir* Dir);
 extern unsigned a_dir_entriesNumGet(const ADir* Dir);
+
+#endif // A_INC_FILES_DIR_P_H

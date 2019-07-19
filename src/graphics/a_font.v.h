@@ -16,7 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef A_INC_GRAPHICS_FONT_V_H
+#define A_INC_GRAPHICS_FONT_V_H
 
 #include "graphics/a_font.p.h"
 
@@ -37,3 +38,5 @@ typedef enum {
 extern const APack a_pack__font;
 
 extern void a_font__fontSet(AFontId Font);
+
+#endif // A_INC_GRAPHICS_FONT_V_H

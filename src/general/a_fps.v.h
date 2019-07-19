@@ -16,7 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef A_INC_GENERAL_FPS_V_H
+#define A_INC_GENERAL_FPS_V_H
 
 #include "general/a_fps.p.h"
 
@@ -27,3 +28,5 @@ extern const APack a_pack__fps;
 extern void a_fps__reset(void);
 extern bool a_fps__tick(void);
 extern void a_fps__frame(void);
+
+#endif // A_INC_GENERAL_FPS_V_H

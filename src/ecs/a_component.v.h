@@ -16,7 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#ifndef A_INC_ECS_COMPONENT_V_H
+#define A_INC_ECS_COMPONENT_V_H
 
 #include "ecs/a_component.p.h"
 
@@ -31,7 +32,7 @@ extern void a_component__init(void);
 extern void a_component__uninit(void);
 
 extern int a_component__stringToIndex(const char* StringId);
-extern const AComponent* a_component__get(int Index, const char* CallerFunction);
+extern const AComponent* a_component__get(int Index);
 
 extern const char* a_component__stringGet(const AComponent* Component);
 
@@ -45,3 +46,5 @@ static inline void* a_component__instanceGetBuffer(const AComponentInstance* Ins
 {
     return (void*)(Instance + 1);
 }
+
+#endif // A_INC_ECS_COMPONENT_V_H

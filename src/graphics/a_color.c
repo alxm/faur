@@ -16,6 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "a_color.v.h"
 #include <a2x.v.h>
 
 APixelState a__color;
@@ -57,9 +58,11 @@ void a_color_pop(void)
 {
     APixelState* state = a_list_pop(g_stateStack);
 
-    if(state == NULL) {
-        A__FATAL("a_color_pop: Stack is empty");
-    }
+    #if A_CONFIG_BUILD_DEBUG
+        if(state == NULL) {
+            A__FATAL("a_color_pop: Stack is empty");
+        }
+    #endif
 
     a__color = *state;
     free(state);
