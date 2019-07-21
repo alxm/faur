@@ -148,7 +148,7 @@ void** a_strhash_toArray(const AStrHash* Hash)
     return array;
 }
 
-AList* a__strhash_entries(const AStrHash* Hash)
+const AList* a__strhash_entries(const AStrHash* Hash)
 {
     return Hash->entriesList;
 }

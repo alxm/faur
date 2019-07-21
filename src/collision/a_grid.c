@@ -163,7 +163,7 @@ void* a__griditem_contextGet(const AGridItem* Item)
     return Item->context;
 }
 
-AList* a__griditem_nearbyListGet(const AGridItem* Item)
+const AList* a__griditem_nearbyListGet(const AGridItem* Item)
 {
     const AGrid* grid = Item->grid;
 

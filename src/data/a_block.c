@@ -200,7 +200,7 @@ void a_block_free(ABlock* Block)
     blockFree(Block);
 }
 
-AList* a_block_blocksGet(const ABlock* Block)
+const AList* a_block_blocksGet(const ABlock* Block)
 {
     return Block->blocks ? Block->blocks : g_emptyList;
 }
@@ -218,7 +218,7 @@ const ABlock* a_block_keyGetBlock(const ABlock* Block, const char* Key)
     return NULL;
 }
 
-AList* a_block_keyGetBlocks(const ABlock* Block, const char* Key)
+const AList* a_block_keyGetBlocks(const ABlock* Block, const char* Key)
 {
     if(Block->index) {
         AList* list = a_strhash_get(Block->index, Key);

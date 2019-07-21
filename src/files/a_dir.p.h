@@ -31,7 +31,7 @@ extern void a_dir_free(ADir* Dir);
 
 extern const APath* a_dir_pathGet(const ADir* Dir);
 
-extern AList* a_dir_entriesListGet(const ADir* Dir);
+extern const AList* a_dir_entriesListGet(const ADir* Dir);
 extern unsigned a_dir_entriesNumGet(const ADir* Dir);
 
 #endif // A_INC_FILES_DIR_P_H

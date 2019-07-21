@@ -30,10 +30,10 @@ typedef struct ABlock ABlock;
 extern ABlock* a_block_new(const char* File);
 extern void a_block_free(ABlock* Block);
 
-extern AList* a_block_blocksGet(const ABlock* Block);
+extern const AList* a_block_blocksGet(const ABlock* Block);
 
 extern const ABlock* a_block_keyGetBlock(const ABlock* Block, const char* Key);
-extern AList* a_block_keyGetBlocks(const ABlock* Block, const char* Key);
+extern const AList* a_block_keyGetBlocks(const ABlock* Block, const char* Key);
 extern bool a_block_keyExists(const ABlock* Block, const char* Key);
 
 extern int a_block_lineGetInt(const ABlock* Block, unsigned LineNumber);

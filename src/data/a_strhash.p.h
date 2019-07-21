@@ -38,7 +38,7 @@ extern unsigned a_strhash_sizeGet(const AStrHash* Hash);
 
 extern void** a_strhash_toArray(const AStrHash* Hash);
 
-extern AList* a__strhash_entries(const AStrHash* Hash);
+extern const AList* a__strhash_entries(const AStrHash* Hash);
 extern void* a__strhash_entryValue(const AStrHashEntry* Entry);
 extern const char* a__strhash_entryKey(const AStrHashEntry* Entry);
 
