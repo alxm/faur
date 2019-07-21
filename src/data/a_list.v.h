@@ -33,6 +33,8 @@ struct AList {
     unsigned items;
 };
 
+extern const AList a__list_empty;
+
 static inline AList* a_list__nodeGetList(const AListNode* Node)
 {
     return Node->list;
