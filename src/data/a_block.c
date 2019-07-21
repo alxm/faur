@@ -19,8 +19,6 @@
 #include "a_block.v.h"
 #include <a2x.v.h>
 
-static AList* g_emptyList;
-
 struct ABlock {
     char* text; // own content
     AList* blocks; // list of ABlock indented under this block
@@ -28,26 +26,6 @@ struct ABlock {
     const ABlock** array; // the blocks indexed by line # relative to parent
     unsigned arrayLen; // number of blocks under parent
     unsigned refs; // take a ref when inheriting
-};
-
-static void a_block__init(void)
-{
-    g_emptyList = a_list_new();
-}
-
-static void a_block__uninit(void)
-{
-    a_list_free(g_emptyList);
-}
-
-const APack a_pack__block = {
-    "Block",
-    {
-        [0] = a_block__init,
-    },
-    {
-        [0] = a_block__uninit,
-    },
 };
 
 static ABlock* blockNew(const char* Content)
@@ -200,9 +178,9 @@ void a_block_free(ABlock* Block)
     blockFree(Block);
 }
 
-AList* a_block_blocksGet(const ABlock* Block)
+const AList* a_block_blocksGet(const ABlock* Block)
 {
-    return Block->blocks ? Block->blocks : g_emptyList;
+    return Block->blocks ? Block->blocks : &a__list_empty;
 }
 
 const ABlock* a_block_keyGetBlock(const ABlock* Block, const char* Key)
@@ -218,7 +196,7 @@ const ABlock* a_block_keyGetBlock(const ABlock* Block, const char* Key)
     return NULL;
 }
 
-AList* a_block_keyGetBlocks(const ABlock* Block, const char* Key)
+const AList* a_block_keyGetBlocks(const ABlock* Block, const char* Key)
 {
     if(Block->index) {
         AList* list = a_strhash_get(Block->index, Key);
@@ -228,7 +206,7 @@ AList* a_block_keyGetBlocks(const ABlock* Block, const char* Key)
         }
     }
 
-    return g_emptyList;
+    return &a__list_empty;
 }
 
 bool a_block_keyExists(const ABlock* Block, const char* Key)

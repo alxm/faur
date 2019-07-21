@@ -36,7 +36,7 @@ extern void a_griditem_free(AGridItem* Item);
 extern void a_griditem_coordsSet(AGridItem* Item, AFix X, AFix Y);
 
 extern void* a__griditem_contextGet(const AGridItem* Item);
-extern AList* a__griditem_nearbyListGet(const AGridItem* Item);
+extern const AList* a__griditem_nearbyListGet(const AGridItem* Item);
 
 #define A_GRID_ITERATE(GridItem, ContextPtrType, ContextVarName)              \
     for(const AGridItem* a__gi = GridItem; a__gi; a__gi = NULL)               \

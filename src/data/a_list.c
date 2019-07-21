@@ -30,6 +30,16 @@
         Current != &List->sentinel;                                      \
         Current = Next, Next = Next->next)
 
+const AList a__list_empty = {
+    {
+        NULL,
+        (AList*)&a__list_empty,
+        (AListNode*)&a__list_empty.sentinel,
+        (AListNode*)&a__list_empty.sentinel,
+    },
+    0,
+};
+
 AList* a_list_new(void)
 {
     AList* list = a_mem_malloc(sizeof(AList));

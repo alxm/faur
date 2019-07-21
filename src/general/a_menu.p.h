@@ -44,7 +44,7 @@ extern void a_menu_itemAdd(AMenu* Menu, void* Item);
 extern void a_menu_tick(AMenu* Menu);
 extern AMenuState a_menu_stateGet(const AMenu* Menu);
 
-extern AList* a_menu_itemsListGet(const AMenu* Menu);
+extern const AList* a_menu_itemsListGet(const AMenu* Menu);
 extern bool a_menu_itemIsSelected(const AMenu* Menu, const void* Item);
 extern unsigned a_menu_selectedIndexGet(const AMenu* Menu);
 extern void* a_menu_itemGetSelected(const AMenu* Menu);

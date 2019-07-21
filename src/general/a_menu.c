@@ -152,7 +152,7 @@ AMenuState a_menu_stateGet(const AMenu* Menu)
     return Menu->state;
 }
 
-AList* a_menu_itemsListGet(const AMenu* Menu)
+const AList* a_menu_itemsListGet(const AMenu* Menu)
 {
     return Menu->items;
 }

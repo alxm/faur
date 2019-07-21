@@ -165,7 +165,7 @@ const APath* a_dir_pathGet(const ADir* Dir)
     return Dir->path;
 }
 
-AList* a_dir_entriesListGet(const ADir* Dir)
+const AList* a_dir_entriesListGet(const ADir* Dir)
 {
     return Dir->files;
 }

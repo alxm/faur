@@ -35,7 +35,6 @@ static const APack* g_packs[] = {
     &a_pack__console,
     &a_pack__embed,
     &a_pack__platform,
-    &a_pack__block,
     &a_pack__timer,
     &a_pack__input,
     &a_pack__screen,

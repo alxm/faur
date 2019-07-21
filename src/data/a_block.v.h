@@ -21,8 +21,4 @@
 
 #include "data/a_block.p.h"
 
-#include "general/a_main.v.h"
-
-extern const APack a_pack__block;
-
 #endif // A_INC_DATA_BLOCK_V_H
