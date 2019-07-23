@@ -87,25 +87,33 @@ void a_component_new(int ComponentIndex, size_t Size, AComponentInit* Init, AFre
     component->stringId = g_defaultId;
 }
 
-void a_component_template(int ComponentIndex, const char* StringId, size_t TemplateSize, AComponentTemplateInit* TemplateInit, AFree* TemplateFree, AComponentInitWithTemplate* InitWithTemplate)
+const void* a_component_templateGet(const void* Component)
+{
+    const AComponentInstance* instance = bufferGetInstance(Component);
+
+    return a_template__dataGet(a_entity__templateGet(instance->entity),
+                               (int)(instance->component - g_components));
+}
+
+void a_component_templateSet(int ComponentIndex, const char* StringId, size_t TemplateSize, AComponentTemplateInit* TemplateInit, AFree* TemplateFree, AComponentInitWithTemplate* InitWithTemplate)
 {
     AComponent* component = &g_components[ComponentIndex];
 
     #if A_CONFIG_BUILD_DEBUG
         if(ComponentIndex < 0 || ComponentIndex >= A_CONFIG_ECS_COM_NUM) {
-            A__FATAL("a_component_template(%d, %s): Unknown component",
+            A__FATAL("a_component_templateSet(%d, %s): Unknown component",
                      ComponentIndex,
                      StringId);
         }
 
         if(g_components[ComponentIndex].stringId == NULL) {
-            A__FATAL("a_component_template(%d, %s): Uninitialized component",
+            A__FATAL("a_component_templateSet(%d, %s): Uninitialized component",
                      ComponentIndex,
                      StringId);
         }
 
         if(a_strhash_contains(g_componentsIndex, StringId)) {
-            A__FATAL("a_component_template(%d, %s): Already declared",
+            A__FATAL("a_component_templateSet(%d, %s): Already declared",
                      ComponentIndex,
                      StringId);
         }
@@ -118,14 +126,6 @@ void a_component_template(int ComponentIndex, const char* StringId, size_t Templ
     component->stringId = StringId;
 
     a_strhash_add(g_componentsIndex, StringId, component);
-}
-
-const void* a_component_dataGet(const void* Component)
-{
-    const AComponentInstance* instance = bufferGetInstance(Component);
-
-    return a_template__dataGet(a_entity__templateGet(instance->entity),
-                               (int)(instance->component - g_components));
 }
 
 AEntity* a_component_entityGet(const void* Component)
