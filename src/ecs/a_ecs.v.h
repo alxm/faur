@@ -27,7 +27,6 @@ typedef enum {
     A_ECS__NEW, // new entities that aren't in any systems yet
     A_ECS__RESTORE, // entities that will be added to systems
     A_ECS__REMOVED_QUEUE, // entities marked for removal, still in systems
-    A_ECS__REMOVED_LIMBO, // removed from systems, with outstanding references
     A_ECS__REMOVED_FREE, // entities to be freed at the end of current frame
     A_ECS__MUTED_QUEUE, // just-muted entities, still in systems
     A_ECS__NUM

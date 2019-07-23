@@ -222,10 +222,8 @@ void a_entity_refDec(AEntity* Entity)
         }
     #endif
 
-    Entity->references--;
-
-    if(Entity->references == 0
-        && a_ecs__entityIsInList(Entity, A_ECS__REMOVED_LIMBO)) {
+    if(--Entity->references == 0
+        && A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__REMOVED)) {
 
         a_ecs__entityMoveToList(Entity, A_ECS__REMOVED_QUEUE);
     }

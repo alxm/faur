@@ -114,7 +114,6 @@ void a_ecs__flushEntitiesFromSystems(void)
 {
     A_LIST_ITERATE(g_lists[A_ECS__MUTED_QUEUE], AEntity*, e) {
         a_entity__systemsRemoveFromAll(e);
-
         a_ecs__entityAddToList(e, A_ECS__DEFAULT);
     }
 
@@ -124,7 +123,7 @@ void a_ecs__flushEntitiesFromSystems(void)
         if(a_entity__refGet(e) == 0) {
             a_ecs__entityAddToList(e, A_ECS__REMOVED_FREE);
         } else {
-            a_ecs__entityAddToList(e, A_ECS__REMOVED_LIMBO);
+            a_ecs__entityAddToList(e, A_ECS__DEFAULT);
         }
     }
 
