@@ -46,11 +46,8 @@ extern void a_entity__ecsListMove(AEntity* Entity, AList* List);
 
 extern void a_entity__collectionListAdd(AEntity* Entity, AList* List);
 
-extern void a_entity__systemMatch(AEntity* Entity, ASystem* System);
-extern bool a_entity__systemsIsMatchedTo(const AEntity* Entity);
-
+extern void a_entity__systemsMatch(AEntity* Entity, ASystem* System);
 extern void a_entity__systemsAddTo(AEntity* Entity);
-
 extern void a_entity__systemsRemoveFromAll(AEntity* Entity);
 extern void a_entity__systemsRemoveFromActive(AEntity* Entity);
 

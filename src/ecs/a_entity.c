@@ -429,7 +429,9 @@ void a_entity_muteDec(AEntity* Entity)
     #endif
 
     if(--Entity->muteCount == 0) {
-        if(a_entity__systemsIsMatchedTo(Entity)) {
+        if(!a_list_isEmpty(Entity->matchingSystemsActive)
+            || !a_list_isEmpty(Entity->matchingSystemsRest)) {
+
             if(a_ecs__entityIsInList(Entity, A_ECS__FLUSH)) {
                 // Entity was muted and unmuted before it left systems
                 a_ecs__entityMoveToList(Entity, A_ECS__DEFAULT);
@@ -477,7 +479,7 @@ void a_entity__collectionListAdd(AEntity* Entity, AList* List)
     Entity->collectionNode = a_list_addLast(List, Entity);
 }
 
-void a_entity__systemMatch(AEntity* Entity, ASystem* System)
+void a_entity__systemsMatch(AEntity* Entity, ASystem* System)
 {
     if(a_bitfield_testMask(
         Entity->componentBits, a_system__componentBitsGet(System))) {
@@ -488,12 +490,6 @@ void a_entity__systemMatch(AEntity* Entity, ASystem* System)
             a_list_addLast(Entity->matchingSystemsRest, System);
         }
     }
-}
-
-bool a_entity__systemsIsMatchedTo(const AEntity* Entity)
-{
-    return !a_list_isEmpty(Entity->matchingSystemsActive)
-        || !a_list_isEmpty(Entity->matchingSystemsRest);
 }
 
 void a_entity__systemsAddTo(AEntity* Entity)
