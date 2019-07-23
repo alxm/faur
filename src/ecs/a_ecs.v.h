@@ -26,8 +26,7 @@ typedef enum {
     A_ECS__DEFAULT, // no pending changes
     A_ECS__NEW, // new entities that aren't in any systems yet
     A_ECS__RESTORE, // entities matched to systems, to be added to them
-    A_ECS__MUTE, // just-muted entities, still in systems
-    A_ECS__REMOVE, // entities marked for removal, still in systems
+    A_ECS__FLUSH, // muted or removed entities, to be flushed from systems
     A_ECS__FREE, // entities to be freed at the end of current frame
     A_ECS__NUM
 } AEcsListId;

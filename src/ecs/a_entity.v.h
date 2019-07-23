@@ -37,7 +37,8 @@ typedef enum {
 extern void a_entity__free(AEntity* Entity);
 
 extern const ATemplate* a_entity__templateGet(const AEntity* Entity);
-extern int a_entity__refGet(const AEntity* Entity);
+
+extern bool a_entity__ecsCanDelete(const AEntity* Entity);
 
 extern const AList* a_entity__ecsListGet(const AEntity* Entity);
 extern void a_entity__ecsListAdd(AEntity* Entity, AList* List);

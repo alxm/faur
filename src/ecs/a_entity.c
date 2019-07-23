@@ -225,7 +225,7 @@ void a_entity_refDec(AEntity* Entity)
     if(--Entity->references == 0
         && A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__REMOVED)) {
 
-        a_ecs__entityMoveToList(Entity, A_ECS__REMOVE);
+        a_ecs__entityMoveToList(Entity, A_ECS__FLUSH);
     }
 }
 
@@ -250,7 +250,7 @@ void a_entity_removeSet(AEntity* Entity)
     #endif
 
     A_FLAG_SET(Entity->flags, A_ENTITY__REMOVED);
-    a_ecs__entityMoveToList(Entity, A_ECS__REMOVE);
+    a_ecs__entityMoveToList(Entity, A_ECS__FLUSH);
 
     if(Entity->collectionNode) {
         a_list_removeNode(Entity->collectionNode);
@@ -401,7 +401,7 @@ void a_entity_muteInc(AEntity* Entity)
     #endif
 
     if(Entity->muteCount++ == 0) {
-        a_ecs__entityMoveToList(Entity, A_ECS__MUTE);
+        a_ecs__entityMoveToList(Entity, A_ECS__FLUSH);
     }
 }
 
@@ -430,7 +430,7 @@ void a_entity_muteDec(AEntity* Entity)
 
     if(--Entity->muteCount == 0) {
         if(a_entity__systemsIsMatchedTo(Entity)) {
-            if(a_ecs__entityIsInList(Entity, A_ECS__MUTE)) {
+            if(a_ecs__entityIsInList(Entity, A_ECS__FLUSH)) {
                 // Entity was muted and unmuted before it left systems
                 a_ecs__entityMoveToList(Entity, A_ECS__DEFAULT);
             } else {
@@ -449,9 +449,10 @@ const ATemplate* a_entity__templateGet(const AEntity* Entity)
     return Entity->template;
 }
 
-int a_entity__refGet(const AEntity* Entity)
+bool a_entity__ecsCanDelete(const AEntity* Entity)
 {
-    return Entity->references;
+    return Entity->references == 0
+            && A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__REMOVED);
 }
 
 const AList* a_entity__ecsListGet(const AEntity* Entity)

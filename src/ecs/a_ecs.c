@@ -112,21 +112,12 @@ void a_ecs__entityMoveToList(AEntity* Entity, AEcsListId List)
 
 void a_ecs__flushEntitiesFromSystems(void)
 {
-    A_LIST_ITERATE(g_lists[A_ECS__MUTE], AEntity*, e) {
-        a_entity__systemsRemoveFromAll(e);
-        a_ecs__entityAddToList(e, A_ECS__DEFAULT);
-    }
-
-    A_LIST_ITERATE(g_lists[A_ECS__REMOVE], AEntity*, e) {
+    A_LIST_ITERATE(g_lists[A_ECS__FLUSH], AEntity*, e) {
         a_entity__systemsRemoveFromAll(e);
 
-        if(a_entity__refGet(e) == 0) {
-            a_ecs__entityAddToList(e, A_ECS__FREE);
-        } else {
-            a_ecs__entityAddToList(e, A_ECS__DEFAULT);
-        }
+        a_ecs__entityAddToList(
+            e, a_entity__ecsCanDelete(e) ? A_ECS__FREE : A_ECS__DEFAULT);
     }
 
-    a_list_clear(g_lists[A_ECS__MUTE]);
-    a_list_clear(g_lists[A_ECS__REMOVE]);
+    a_list_clear(g_lists[A_ECS__FLUSH]);
 }
