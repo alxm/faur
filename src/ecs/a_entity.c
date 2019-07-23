@@ -237,8 +237,10 @@ bool a_entity_removeGet(const AEntity* Entity)
 void a_entity_removeSet(AEntity* Entity)
 {
     if(A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__REMOVED)) {
-        a_out__warningV("a_entity_removeSet(%s): Entity is removed",
-                        a_entity_idGet(Entity));
+        #if A_CONFIG_BUILD_DEBUG
+            a_out__warning("a_entity_removeSet(%s): Entity is removed",
+                           a_entity_idGet(Entity));
+        #endif
 
         return;
     }
@@ -380,8 +382,10 @@ bool a_entity_muteGet(const AEntity* Entity)
 void a_entity_muteInc(AEntity* Entity)
 {
     if(A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__REMOVED)) {
-        a_out__warningV(
-            "a_entity_muteInc(%s): Entity is removed", a_entity_idGet(Entity));
+        #if A_CONFIG_BUILD_DEBUG
+            a_out__warning("a_entity_muteInc(%s): Entity is removed",
+                           a_entity_idGet(Entity));
+        #endif
 
         return;
     }
@@ -408,8 +412,10 @@ void a_entity_muteInc(AEntity* Entity)
 void a_entity_muteDec(AEntity* Entity)
 {
     if(A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__REMOVED)) {
-        a_out__warningV(
-            "a_entity_muteDec(%s): Entity is removed", a_entity_idGet(Entity));
+        #if A_CONFIG_BUILD_DEBUG
+            a_out__warning("a_entity_muteDec(%s): Entity is removed",
+                           a_entity_idGet(Entity));
+        #endif
 
         return;
     }

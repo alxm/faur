@@ -39,12 +39,14 @@ static bool g_exiting;
 static const AEvent* g_blockEvent;
 static AStateTableEntry g_table[A_CONFIG_STATE_NUM];
 
+#if A_CONFIG_BUILD_DEBUG
 static const char* g_stageNames[A__STATE_STAGE_NUM] = {
     [A__STATE_STAGE_INIT] = "Init",
     [A__STATE_STAGE_TICK] = "Loop",
     [A__STATE_STAGE_DRAW] = "Loop",
     [A__STATE_STAGE_FREE] = "Free",
 };
+#endif
 
 static void pending_push(const AStateTableEntry* State)
 {
@@ -67,7 +69,9 @@ static void pending_handle(void)
 
     // Check if the current state just ran its Free stage
     if(current && current->stage == A__STATE_STAGE_FREE) {
-        a_out__stateV("Destroying '%s' instance", current->state->name);
+        #if A_CONFIG_BUILD_DEBUG
+            a_out__state("Destroying '%s' instance", current->state->name);
+        #endif
 
         free(a_list_pop(g_stack));
         current = a_list_peek(g_stack);
@@ -83,10 +87,12 @@ static void pending_handle(void)
     // check if the current state should transition from Init to Loop
     if(a_list_isEmpty(g_pending)) {
         if(current && current->stage == A__STATE_STAGE_INIT) {
-            a_out__stateV("  '%s' going from %s to %s",
-                          current->state->name,
-                          g_stageNames[A__STATE_STAGE_INIT],
-                          g_stageNames[A__STATE_STAGE_TICK]);
+            #if A_CONFIG_BUILD_DEBUG
+                a_out__state("  '%s' going from %s to %s",
+                             current->state->name,
+                             g_stageNames[A__STATE_STAGE_INIT],
+                             g_stageNames[A__STATE_STAGE_TICK]);
+            #endif
 
             current->stage = A__STATE_STAGE_TICK;
 
@@ -103,19 +109,20 @@ static void pending_handle(void)
             if(current == NULL) {
                 A__FATAL("Pop state: stack is empty");
             }
-        #endif
 
-        a_out__stateV("Pop '%s'", current->state->name);
-        a_out__stateV("  '%s' going from %s to %s",
-                      current->state->name,
-                      g_stageNames[current->stage],
-                      g_stageNames[A__STATE_STAGE_FREE]);
+            a_out__state("Pop '%s'", current->state->name);
+
+            a_out__state("  '%s' going from %s to %s",
+                         current->state->name,
+                         g_stageNames[current->stage],
+                         g_stageNames[A__STATE_STAGE_FREE]);
+        #endif
 
         current->stage = A__STATE_STAGE_FREE;
     } else {
-        a_out__stateV("Push '%s'", pendingState->state->name);
-
         #if A_CONFIG_BUILD_DEBUG
+            a_out__state("Push '%s'", pendingState->state->name);
+
             A_LIST_ITERATE(g_stack, const AStateStackEntry*, e) {
                 if(pendingState->state == e->state) {
                     A__FATAL("State '%s' already in stack", e->state->name);
@@ -180,11 +187,16 @@ void a_state_push(int State)
     const AStateTableEntry* state = getState(State);
 
     if(g_exiting) {
-        a_out__stateV("a_state_push(%s): Already exiting", state->name);
+        #if A_CONFIG_BUILD_DEBUG
+            a_out__state("a_state_push(%s): Already exiting", state->name);
+        #endif
+
         return;
-    } else {
-        a_out__stateV("a_state_push(%s)", state->name);
     }
+
+    #if A_CONFIG_BUILD_DEBUG
+        a_out__state("a_state_push(%s)", state->name);
+    #endif
 
     pending_push(state);
 }
@@ -192,11 +204,16 @@ void a_state_push(int State)
 void a_state_pop(void)
 {
     if(g_exiting) {
-        a_out__stateV("a_state_pop: Already exiting");
+        #if A_CONFIG_BUILD_DEBUG
+            a_out__state("a_state_pop: Already exiting");
+        #endif
+
         return;
-    } else {
-        a_out__stateV("a_state_pop()");
     }
+
+    #if A_CONFIG_BUILD_DEBUG
+        a_out__state("a_state_pop()");
+    #endif
 
     pending_pop();
 }
@@ -206,16 +223,19 @@ void a_state_popUntil(int State)
     const AStateTableEntry* state = getState(State);
 
     if(g_exiting) {
-        a_out__stateV("a_state_popUntil(%s): Already exiting", state->name);
+        #if A_CONFIG_BUILD_DEBUG
+            a_out__state("a_state_popUntil(%s): Already exiting", state->name);
+        #endif
+
         return;
     }
 
-    a_out__stateV("a_state_popUntil(%s)", state->name);
-
-    int pops = 0;
     #if A_CONFIG_BUILD_DEBUG
+        a_out__state("a_state_popUntil(%s)", state->name);
         bool found = false;
     #endif
+
+    int pops = 0;
 
     A_LIST_ITERATE(g_stack, const AStateStackEntry*, e) {
         if(e->state == state) {
@@ -245,11 +265,16 @@ void a_state_replace(int State)
     const AStateTableEntry* state = getState(State);
 
     if(g_exiting) {
-        a_out__stateV("a_state_replace(%s): Already exiting", state->name);
+        #if A_CONFIG_BUILD_DEBUG
+            a_out__state("a_state_replace(%s): Already exiting", state->name);
+        #endif
+
         return;
-    } else {
-        a_out__stateV("a_state_replace(%s)", state->name);
     }
+
+    #if A_CONFIG_BUILD_DEBUG
+        a_out__state("a_state_replace(%s)", state->name);
+    #endif
 
     pending_pop();
     pending_push(state);
@@ -258,7 +283,10 @@ void a_state_replace(int State)
 void a_state_exit(void)
 {
     if(g_exiting) {
-        a_out__stateV("a_state_exit: Already exiting");
+        #if A_CONFIG_BUILD_DEBUG
+            a_out__state("a_state_exit: Already exiting");
+        #endif
+
         return;
     }
 
@@ -360,8 +388,11 @@ static bool iteration(void)
 
         a_fps__frame();
     } else {
-        a_out__stateV(
-            "  '%s' running %s", s->state->name, g_stageNames[s->stage]);
+        #if A_CONFIG_BUILD_DEBUG
+            a_out__state(
+                "  '%s' running %s", s->state->name, g_stageNames[s->stage]);
+        #endif
+
         s->state->function();
     }
 
