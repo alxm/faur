@@ -1,5 +1,5 @@
 /*
-    Copyright 2018 Alex Margarit <alex@alxm.org>
+    Copyright 2018-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -21,8 +21,8 @@
 
 #include "ecs/a_collection.p.h"
 
-#include "ecs/a_entity.v.h"
+#include "data/a_list.v.h"
 
-extern void a_collection__add(ACollection* Collection, AEntity* Entity);
+extern AList* a_collection__listGet(const ACollection* Collection);
 
 #endif // A_INC_ECS_COLLECTION_V_H

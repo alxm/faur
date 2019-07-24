@@ -1,5 +1,5 @@
 /*
-    Copyright 2018 Alex Margarit <alex@alxm.org>
+    Copyright 2018-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -34,14 +34,14 @@ ACollection* a_collection_new(void)
 
 void a_collection_free(ACollection* Collection)
 {
-    a_list_freeEx(Collection->entities, (AFree*)a_entity_removeSet);
+    a_list_freeEx(Collection->entities, (AFree*)a_entity__freeEx);
 
     free(Collection);
 }
 
-void a_collection__add(ACollection* Collection, AEntity* Entity)
+AList* a_collection__listGet(const ACollection* Collection)
 {
-    a_entity__collectionListAdd(Entity, Collection->entities);
+    return Collection->entities;
 }
 
 void a_collection_clear(ACollection* Collection)

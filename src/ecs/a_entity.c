@@ -48,6 +48,23 @@ static AComponentInstance* componentAdd(AEntity* Entity, int ComponentIndex, con
     return c;
 }
 
+static inline bool listIsIn(const AEntity* Entity, AEcsListId List)
+{
+    return a_list__nodeGetList(Entity->node) == a_ecs__listGet(List);
+}
+
+static inline void listAddTo(AEntity* Entity, AEcsListId List)
+{
+    Entity->node = a_list_addLast(a_ecs__listGet(List), Entity);
+}
+
+static inline void listMoveTo(AEntity* Entity, AEcsListId List)
+{
+    a_list_removeNode(Entity->node);
+
+    listAddTo(Entity, List);
+}
+
 AEntity* a_entity_new(const char* Template)
 {
     AEntity* e = a_mem_zalloc(sizeof(AEntity));
@@ -62,7 +79,8 @@ AEntity* a_entity_new(const char* Template)
     ACollection* collection = a_ecs_collectionGet();
 
     if(collection) {
-        a_collection__add(collection, e);
+        e->collectionNode = a_list_addLast(
+                                a_collection__listGet(collection), e);
     }
 
     if(Template != NULL) {
@@ -84,7 +102,7 @@ AEntity* a_entity_new(const char* Template)
         }
     }
 
-    a_ecs__entityAddToList(e, A_ECS__NEW);
+    listAddTo(e, A_ECS__NEW);
 
     return e;
 }
@@ -122,6 +140,17 @@ void a_entity__free(AEntity* Entity)
 
     free(Entity->id);
     free(Entity);
+}
+
+void a_entity__freeEx(AEntity* Entity)
+{
+    if(Entity == NULL) {
+        return;
+    }
+
+    a_list_removeNode(Entity->node);
+
+    a_entity__free(Entity);
 }
 
 void a_entity_debugSet(AEntity* Entity, bool DebugOn)
@@ -225,7 +254,7 @@ void a_entity_refDec(AEntity* Entity)
     if(--Entity->references == 0
         && A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__REMOVED)) {
 
-        a_ecs__entityMoveToList(Entity, A_ECS__FLUSH);
+        listMoveTo(Entity, A_ECS__FLUSH);
     }
 }
 
@@ -252,7 +281,7 @@ void a_entity_removeSet(AEntity* Entity)
     #endif
 
     A_FLAG_SET(Entity->flags, A_ENTITY__REMOVED);
-    a_ecs__entityMoveToList(Entity, A_ECS__FLUSH);
+    listMoveTo(Entity, A_ECS__FLUSH);
 
     if(Entity->collectionNode) {
         a_list_removeNode(Entity->collectionNode);
@@ -310,7 +339,7 @@ void* a_entity_componentAdd(AEntity* Entity, int ComponentIndex)
     const AComponent* component = a_component__get(ComponentIndex);
 
     #if A_CONFIG_BUILD_DEBUG
-        if(!a_ecs__entityIsInList(Entity, A_ECS__NEW)) {
+        if(!listIsIn(Entity, A_ECS__NEW)) {
             A__FATAL("a_entity_componentAdd(%s, %s): Too late",
                      a_entity_idGet(Entity),
                      a_component__stringGet(component));
@@ -405,7 +434,7 @@ void a_entity_muteInc(AEntity* Entity)
     #endif
 
     if(Entity->muteCount++ == 0) {
-        a_ecs__entityMoveToList(Entity, A_ECS__FLUSH);
+        listMoveTo(Entity, A_ECS__FLUSH);
     }
 }
 
@@ -438,16 +467,16 @@ void a_entity_muteDec(AEntity* Entity)
         if(!a_list_isEmpty(Entity->matchingSystemsActive)
             || !a_list_isEmpty(Entity->matchingSystemsRest)) {
 
-            if(a_ecs__entityIsInList(Entity, A_ECS__FLUSH)) {
+            if(listIsIn(Entity, A_ECS__FLUSH)) {
                 // Entity was muted and unmuted before it left systems
-                a_ecs__entityMoveToList(Entity, A_ECS__DEFAULT);
+                listMoveTo(Entity, A_ECS__DEFAULT);
             } else {
                 // To be added back to matched systems
-                a_ecs__entityMoveToList(Entity, A_ECS__RESTORE);
+                listMoveTo(Entity, A_ECS__RESTORE);
             }
         } else {
             // Entity has not been matched to systems yet, treat it as new
-            a_ecs__entityMoveToList(Entity, A_ECS__NEW);
+            listMoveTo(Entity, A_ECS__NEW);
         }
     }
 }
@@ -463,26 +492,9 @@ bool a_entity__ecsCanDelete(const AEntity* Entity)
             && A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__REMOVED);
 }
 
-const AList* a_entity__ecsListGet(const AEntity* Entity)
-{
-    return a_list__nodeGetList(Entity->node);
-}
-
 void a_entity__ecsListAdd(AEntity* Entity, AList* List)
 {
     Entity->node = a_list_addLast(List, Entity);
-}
-
-void a_entity__ecsListMove(AEntity* Entity, AList* List)
-{
-    a_list_removeNode(Entity->node);
-
-    Entity->node = a_list_addLast(List, Entity);
-}
-
-void a_entity__collectionListAdd(AEntity* Entity, AList* List)
-{
-    Entity->collectionNode = a_list_addLast(List, Entity);
 }
 
 void a_entity__systemsMatch(AEntity* Entity, ASystem* System)
@@ -511,6 +523,8 @@ void a_entity__systemsAddTo(AEntity* Entity)
         a_list_addLast(
             Entity->systemNodesEither, a_system__entityAdd(system, Entity));
     }
+
+    listAddTo(Entity, A_ECS__DEFAULT);
 }
 
 void a_entity__systemsRemoveFromAll(AEntity* Entity)

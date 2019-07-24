@@ -32,18 +32,14 @@ typedef enum {
 } AEcsListId;
 
 #include "data/a_list.v.h"
-#include "ecs/a_entity.v.h"
 #include "general/a_main.v.h"
 
 extern const APack a_pack__ecs;
 
+extern AList* a_ecs__listGet(AEcsListId List);
 extern bool a_ecs__isDeleting(void);
 
 extern void a_ecs__tick(void);
-
-extern bool a_ecs__entityIsInList(const AEntity* Entity, AEcsListId List);
-extern void a_ecs__entityAddToList(AEntity* Entity, AEcsListId List);
-extern void a_ecs__entityMoveToList(AEntity* Entity, AEcsListId List);
 
 extern void a_ecs__flushEntitiesFromSystems(void);
 

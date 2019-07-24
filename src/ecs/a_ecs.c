@@ -66,6 +66,11 @@ void a_ecs_collectionSet(ACollection* Collection)
     g_collection = Collection;
 }
 
+AList* a_ecs__listGet(AEcsListId List)
+{
+    return g_lists[List];
+}
+
 bool a_ecs__isDeleting(void)
 {
     return g_deleting;
@@ -81,13 +86,12 @@ void a_ecs__tick(void)
             a_entity__systemsMatch(e, a_system__get(s));
         }
 
-        a_ecs__entityAddToList(e, A_ECS__RESTORE);
+        a_entity__ecsListAdd(e, g_lists[A_ECS__RESTORE]);
     }
 
     // Add entities to the systems they match
     A_LIST_ITERATE(g_lists[A_ECS__RESTORE], AEntity*, e) {
         a_entity__systemsAddTo(e);
-        a_ecs__entityAddToList(e, A_ECS__DEFAULT);
     }
 
     a_list_clear(g_lists[A_ECS__NEW]);
@@ -95,28 +99,14 @@ void a_ecs__tick(void)
     a_list_clearEx(g_lists[A_ECS__FREE], (AFree*)a_entity__free);
 }
 
-bool a_ecs__entityIsInList(const AEntity* Entity, AEcsListId List)
-{
-    return a_entity__ecsListGet(Entity) == g_lists[List];
-}
-
-void a_ecs__entityAddToList(AEntity* Entity, AEcsListId List)
-{
-    a_entity__ecsListAdd(Entity, g_lists[List]);
-}
-
-void a_ecs__entityMoveToList(AEntity* Entity, AEcsListId List)
-{
-    a_entity__ecsListMove(Entity, g_lists[List]);
-}
-
 void a_ecs__flushEntitiesFromSystems(void)
 {
     A_LIST_ITERATE(g_lists[A_ECS__FLUSH], AEntity*, e) {
         a_entity__systemsRemoveFromAll(e);
 
-        a_ecs__entityAddToList(
-            e, a_entity__ecsCanDelete(e) ? A_ECS__FREE : A_ECS__DEFAULT);
+        a_entity__ecsListAdd(
+            e,
+            g_lists[a_entity__ecsCanDelete(e) ? A_ECS__FREE : A_ECS__DEFAULT]);
     }
 
     a_list_clear(g_lists[A_ECS__FLUSH]);

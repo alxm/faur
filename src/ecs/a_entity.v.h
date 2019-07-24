@@ -21,9 +21,7 @@
 
 #include "ecs/a_entity.p.h"
 
-#include "data/a_bitfield.v.h"
 #include "data/a_list.v.h"
-#include "ecs/a_component.v.h"
 #include "ecs/a_system.v.h"
 #include "ecs/a_template.v.h"
 
@@ -35,16 +33,12 @@ typedef enum {
 } AEntityFlags;
 
 extern void a_entity__free(AEntity* Entity);
+extern void a_entity__freeEx(AEntity* Entity);
 
 extern const ATemplate* a_entity__templateGet(const AEntity* Entity);
 
 extern bool a_entity__ecsCanDelete(const AEntity* Entity);
-
-extern const AList* a_entity__ecsListGet(const AEntity* Entity);
 extern void a_entity__ecsListAdd(AEntity* Entity, AList* List);
-extern void a_entity__ecsListMove(AEntity* Entity, AList* List);
-
-extern void a_entity__collectionListAdd(AEntity* Entity, AList* List);
 
 extern void a_entity__systemsMatch(AEntity* Entity, ASystem* System);
 extern void a_entity__systemsAddTo(AEntity* Entity);
