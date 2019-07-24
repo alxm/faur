@@ -34,7 +34,9 @@ ACollection* a_collection_new(void)
 
 void a_collection_free(ACollection* Collection)
 {
+    a_ecs__refPause();
     a_list_freeEx(Collection->entities, (AFree*)a_entity__freeEx);
+    a_ecs__refResume();
 
     free(Collection);
 }

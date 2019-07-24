@@ -37,7 +37,10 @@ typedef enum {
 extern const APack a_pack__ecs;
 
 extern AList* a_ecs__listGet(AEcsListId List);
-extern bool a_ecs__isDeleting(void);
+
+extern bool a_ecs__refOff(void);
+extern void a_ecs__refPause(void);
+extern void a_ecs__refResume(void);
 
 extern void a_ecs__tick(void);
 

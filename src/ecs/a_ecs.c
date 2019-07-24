@@ -35,7 +35,7 @@ static void a_ecs__init(void)
 
 static void a_ecs__uninit(void)
 {
-    g_deleting = true;
+    a_ecs__refPause();
 
     for(int i = A_ECS__NUM; i--; ) {
         a_list_freeEx(g_lists[i], (AFree*)a_entity__free);
@@ -71,9 +71,19 @@ AList* a_ecs__listGet(AEcsListId List)
     return g_lists[List];
 }
 
-bool a_ecs__isDeleting(void)
+bool a_ecs__refOff(void)
 {
     return g_deleting;
+}
+
+void a_ecs__refPause(void)
+{
+    g_deleting = true;
+}
+
+void a_ecs__refResume(void)
+{
+    g_deleting = false;
 }
 
 void a_ecs__tick(void)
