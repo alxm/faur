@@ -186,6 +186,20 @@ void a_entity_parentSet(AEntity* Entity, AEntity* Parent)
         a_entity_refDec(Entity->parent);
     }
 
+    #if A_CONFIG_BUILD_DEBUG
+        if(Parent
+            && ((Parent->collectionNode
+                    && Entity->collectionNode
+                    && a_list__nodeGetList(Parent->collectionNode)
+                        != a_list__nodeGetList(Entity->collectionNode))
+                || (!!Parent->collectionNode ^ !!Entity->collectionNode))) {
+
+            A__FATAL("a_entity_parentSet(%s, %s): Different collections",
+                     a_entity_idGet(Entity),
+                     a_entity_idGet(Parent));
+        }
+    #endif
+
     Entity->parent = Parent;
 
     if(Parent) {
