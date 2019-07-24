@@ -526,6 +526,15 @@ void a_entity__systemsMatch(AEntity* Entity, ASystem* System)
 
 void a_entity__systemsAddTo(AEntity* Entity)
 {
+    #if A_CONFIG_BUILD_DEBUG
+        if(a_list_isEmpty(Entity->matchingSystemsActive)
+            && a_list_isEmpty(Entity->matchingSystemsRest)) {
+
+            a_out__warning("Entity %s was not matched to any systems",
+                           a_entity_idGet(Entity));
+        }
+    #endif
+
     if(!A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__ACTIVE_REMOVED)) {
         A_LIST_ITERATE(Entity->matchingSystemsActive, ASystem*, system) {
             a_list_addLast(
