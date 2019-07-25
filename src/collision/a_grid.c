@@ -98,42 +98,39 @@ void a_griditem_free(AGridItem* Item)
     free(Item);
 }
 
-void a_griditem_coordsSet(const AGrid* Grid, AGridItem* Item, void* Context, AFix X, AFix Y)
+void a_griditem_coordsSet(const AGrid* Grid, AGridItem* Item, void* Context, AVectorFix Coords)
 {
     // remove item from all the cells it was previously in
     a_list_clearEx(Item->nodes, (AFree*)a_list_removeNode);
 
     // center cell coords
-    int cellX = a_fix_toInt(X >> Grid->coordsShift);
-    int cellY = a_fix_toInt(Y >> Grid->coordsShift);
+    int cellX = a_fix_toInt(Coords.x >> Grid->coordsShift);
+    int cellY = a_fix_toInt(Coords.y >> Grid->coordsShift);
 
+    AVectorInt cellStart, cellEnd;
     AFix cellDim = A_FIX_ONE << Grid->coordsShift;
+    AVectorFix cellOffset = {Coords.x & (cellDim - 1),
+                             Coords.y & (cellDim - 1)};
 
-    AFix cellOffsetX = X & (cellDim - 1);
-    AFix cellOffsetY = Y & (cellDim - 1);
-
-    int cellStartX, cellStartY;
-    int cellEndX, cellEndY;
-
-    if(cellOffsetX < cellDim / 2) {
-        cellStartX = a_math_clamp(cellX - 1, 0, Grid->w - 1);
-        cellEndX = a_math_clamp(cellX, 0, Grid->w - 1);
+    if(cellOffset.x < cellDim / 2) {
+        cellStart.x = a_math_clamp(cellX - 1, 0, Grid->w - 1);
+        cellEnd.x = a_math_clamp(cellX, 0, Grid->w - 1);
     } else {
-        cellStartX = a_math_clamp(cellX, 0, Grid->w - 1);
-        cellEndX = a_math_clamp(cellX + 1, 0, Grid->w - 1);
+        cellStart.x = a_math_clamp(cellX, 0, Grid->w - 1);
+        cellEnd.x = a_math_clamp(cellX + 1, 0, Grid->w - 1);
     }
 
-    if(cellOffsetY < cellDim / 2) {
-        cellStartY = a_math_clamp(cellY - 1, 0, Grid->h - 1);
-        cellEndY = a_math_clamp(cellY, 0, Grid->h - 1);
+    if(cellOffset.y < cellDim / 2) {
+        cellStart.y = a_math_clamp(cellY - 1, 0, Grid->h - 1);
+        cellEnd.y = a_math_clamp(cellY, 0, Grid->h - 1);
     } else {
-        cellStartY = a_math_clamp(cellY, 0, Grid->h - 1);
-        cellEndY = a_math_clamp(cellY + 1, 0, Grid->h - 1);
+        cellStart.y = a_math_clamp(cellY, 0, Grid->h - 1);
+        cellEnd.y = a_math_clamp(cellY + 1, 0, Grid->h - 1);
     }
 
     // add item to every cell in its surrounding perimeter
-    for(int y = cellStartY; y <= cellEndY; y++) {
-        for(int x = cellStartX; x <= cellEndX; x++) {
+    for(int y = cellStart.y; y <= cellEnd.y; y++) {
+        for(int x = cellStart.x; x <= cellEnd.x; x++) {
             a_list_addFirst(
                 Item->nodes, a_list_addFirst(Grid->cells[y][x], Context));
         }

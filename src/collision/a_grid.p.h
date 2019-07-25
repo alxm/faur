@@ -33,7 +33,7 @@ extern void a_grid_free(AGrid* Grid);
 extern AGridItem* a_griditem_new(void);
 extern void a_griditem_free(AGridItem* Item);
 
-extern void a_griditem_coordsSet(const AGrid* Grid, AGridItem* Item, void* Context, AFix X, AFix Y);
+extern void a_griditem_coordsSet(const AGrid* Grid, AGridItem* Item, void* Context, AVectorFix Coords);
 
 extern const AList* a_grid_nearGet(const AGrid* Grid, AVectorFix Coords);
 
