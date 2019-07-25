@@ -1,5 +1,5 @@
 /*
-    Copyright 2010-2011, 2015-2018 Alex Margarit <alex@alxm.org>
+    Copyright 2010-2011, 2015-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -35,11 +35,11 @@ bool a_collide_circleAndCircle(int X1, int Y1, int R1, int X2, int Y2, int R2)
 
 bool a_collide_circleAndCirclef(AFix X1, AFix Y1, AFix R1, AFix X2, AFix Y2, AFix R2)
 {
-    const AFix x = X1 - X2;
-    const AFix y = Y1 - Y2;
-    const AFix r = R1 + R2;
+    const int64_t x = X1 - X2;
+    const int64_t y = Y1 - Y2;
+    const int64_t r = R1 + R2;
 
-    return a_fix_mul(x, x) + a_fix_mul(y, y) < a_fix_mul(r, r);
+    return x * x + y * y < r * r;
 }
 
 bool a_collide_pointInBox(int X, int Y, int BoxX, int BoxY, int BoxW, int BoxH)

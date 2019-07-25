@@ -1,5 +1,5 @@
 /*
-    Copyright 2010-2011, 2016-2018 Alex Margarit <alex@alxm.org>
+    Copyright 2010-2011, 2016-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -22,7 +22,7 @@
 #include "general/a_system_includes.h"
 
 typedef struct AGrid AGrid;
-typedef struct AGridItem AGridItem;
+typedef struct AList AGridItem;
 
 #include "data/a_list.p.h"
 #include "math/a_fix.p.h"
@@ -30,20 +30,11 @@ typedef struct AGridItem AGridItem;
 extern AGrid* a_grid_new(AFix Width, AFix Height, AFix MaxObjectDim);
 extern void a_grid_free(AGrid* Grid);
 
-extern AGridItem* a_griditem_new(const AGrid* Grid, void* Context);
+extern AGridItem* a_griditem_new(void);
 extern void a_griditem_free(AGridItem* Item);
 
-extern void a_griditem_coordsSet(AGridItem* Item, AFix X, AFix Y);
+extern void a_griditem_coordsSet(const AGrid* Grid, AGridItem* Item, void* Context, AVectorFix Coords);
 
-extern void* a__griditem_contextGet(const AGridItem* Item);
-extern const AList* a__griditem_nearbyListGet(const AGridItem* Item);
-
-#define A_GRID_ITERATE(GridItem, ContextPtrType, ContextVarName)              \
-    for(const AGridItem* a__gi = GridItem; a__gi; a__gi = NULL)               \
-        A_LIST_FILTER(a__griditem_nearbyListGet(a__gi),                       \
-                      const AGridItem*, a__i,                                 \
-                      a__i != a__gi)                                          \
-            for(ContextPtrType ContextVarName = a__griditem_contextGet(a__i); \
-                a__i != NULL; a__i = NULL)
+extern const AList* a_grid_nearGet(const AGrid* Grid, AVectorFix Coords);
 
 #endif // A_INC_COLLISION_GRID_P_H
