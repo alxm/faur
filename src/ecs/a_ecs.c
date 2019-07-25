@@ -20,7 +20,7 @@
 #include <a2x.v.h>
 
 static AList* g_lists[A_ECS__NUM]; // Each entity is in exactly one of these
-static bool g_deleting; // Set at uninit time to prevent using freed entities
+static bool g_ignoreRefDec; // Set to prevent using freed entities
 static ACollection* g_collection; // New entities are added to this collection
 
 static void a_ecs__init(void)
@@ -35,7 +35,7 @@ static void a_ecs__init(void)
 
 static void a_ecs__uninit(void)
 {
-    a_ecs__refPause();
+    a_ecs__refDecIgnoreSet(true);
 
     for(int i = A_ECS__NUM; i--; ) {
         a_list_freeEx(g_lists[i], (AFree*)a_entity__free);
@@ -71,19 +71,14 @@ AList* a_ecs__listGet(AEcsListId List)
     return g_lists[List];
 }
 
-bool a_ecs__refOff(void)
+bool a_ecs__refDecIgnoreGet(void)
 {
-    return g_deleting;
+    return g_ignoreRefDec;
 }
 
-void a_ecs__refPause(void)
+void a_ecs__refDecIgnoreSet(bool IgnoreRefDec)
 {
-    g_deleting = true;
-}
-
-void a_ecs__refResume(void)
-{
-    g_deleting = false;
+    g_ignoreRefDec = IgnoreRefDec;
 }
 
 void a_ecs__tick(void)

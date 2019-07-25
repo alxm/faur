@@ -38,9 +38,8 @@ extern const APack a_pack__ecs;
 
 extern AList* a_ecs__listGet(AEcsListId List);
 
-extern bool a_ecs__refOff(void);
-extern void a_ecs__refPause(void);
-extern void a_ecs__refResume(void);
+extern bool a_ecs__refDecIgnoreGet(void);
+extern void a_ecs__refDecIgnoreSet(bool IgnoreRefDec);
 
 extern void a_ecs__tick(void);
 
