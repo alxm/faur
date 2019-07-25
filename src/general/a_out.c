@@ -20,8 +20,7 @@
 #include <a2x.v.h>
 
 typedef enum {
-    A_OUT__FLAG_VERBOSE = A_FLAG_BIT(0),
-    A_OUT__FLAG_OVERWRITE = A_FLAG_BIT(1),
+    A_OUT__FLAG_OVERWRITE = A_FLAG_BIT(0),
 } AOutFlags;
 
 typedef enum {
@@ -52,8 +51,6 @@ static const struct {
     [A_OUT__TYPE_FATAL] = {"Ftl", A_COLOR__RED},
 };
 
-static bool g_on = A_CONFIG_OUTPUT_ON;
-
 static void outWorkerPrint(AOutSource Source, AOutType Type, FILE* Stream, const char* Text, AOutFlags Flags)
 {
     #if A_CONFIG_SYSTEM_LINUX && A_CONFIG_TRAIT_DESKTOP
@@ -80,11 +77,9 @@ static void outWorkerPrint(AOutSource Source, AOutType Type, FILE* Stream, const
 
 static void outWorker(AOutSource Source, AOutType Type, FILE* Stream, const char* Format, va_list Args, AOutFlags Flags)
 {
-    if(!g_on || (A_FLAG_TEST_ANY(Flags, A_OUT__FLAG_VERBOSE)
-                    && !A_CONFIG_OUTPUT_VERBOSE)) {
-
+    #if !A_CONFIG_OUTPUT_ON
         return;
-    }
+    #endif
 
     static char buffer[512];
 
@@ -123,21 +118,6 @@ void a_out__warning(const char* Format, ...)
     va_end(args);
 }
 
-void a_out__warningV(const char* Format, ...)
-{
-    va_list args;
-    va_start(args, Format);
-
-    outWorker(A_OUT__SOURCE_A2X,
-              A_OUT__TYPE_WARNING,
-              A_OUT__STREAM_STDERR,
-              Format,
-              args,
-              A_OUT__FLAG_VERBOSE);
-
-    va_end(args);
-}
-
 void a_out__error(const char* Format, ...)
 {
     va_list args;
@@ -149,21 +129,6 @@ void a_out__error(const char* Format, ...)
               Format,
               args,
               0);
-
-    va_end(args);
-}
-
-void a_out__errorV(const char* Format, ...)
-{
-    va_list args;
-    va_start(args, Format);
-
-    outWorker(A_OUT__SOURCE_A2X,
-              A_OUT__TYPE_ERROR,
-              A_OUT__STREAM_STDERR,
-              Format,
-              args,
-              A_OUT__FLAG_VERBOSE);
 
     va_end(args);
 }
@@ -193,21 +158,6 @@ void a_out__state(const char* Format, ...)
     va_end(args);
 }
 
-void a_out__stateV(const char* Format, ...)
-{
-    va_list args;
-    va_start(args, Format);
-
-    outWorker(A_OUT__SOURCE_A2X,
-              A_OUT__TYPE_STATE,
-              A_OUT__STREAM_STDOUT,
-              Format,
-              args,
-              A_OUT__FLAG_VERBOSE);
-
-    va_end(args);
-}
-
 void a_out__overwrite(AOutType Type, FILE* Stream, const char* Format, ...)
 {
     va_list args;
@@ -225,13 +175,15 @@ void a_out__overwrite(AOutType Type, FILE* Stream, const char* Format, ...)
 
 void a_out_text(const char* Text)
 {
-    if(g_on) {
-        outWorkerPrint(A_OUT__SOURCE_APP,
-                       A_OUT__TYPE_INFO,
-                       A_OUT__STREAM_STDOUT,
-                       Text,
-                       0);
-    }
+    #if !A_CONFIG_OUTPUT_ON
+        return;
+    #endif
+
+    outWorkerPrint(A_OUT__SOURCE_APP,
+                   A_OUT__TYPE_INFO,
+                   A_OUT__STREAM_STDOUT,
+                   Text,
+                   0);
 }
 
 void a_out_info(const char* Format, ...)
@@ -247,16 +199,6 @@ void a_out_info(const char* Format, ...)
               0);
 
     va_end(args);
-}
-
-void a_out_infov(const char* Format, va_list Args)
-{
-    outWorker(A_OUT__SOURCE_APP,
-              A_OUT__TYPE_INFO,
-              A_OUT__STREAM_STDOUT,
-              Format,
-              Args,
-              0);
 }
 
 void a_out_warning(const char* Format, ...)

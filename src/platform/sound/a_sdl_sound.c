@@ -231,7 +231,9 @@ void a_platform_api__soundSamplePlay(APlatformSoundSample* Sample, int Channel, 
     }
 
     if(Mix_PlayChannel(Channel, Sample, Loop ? -1 : 0) == -1) {
-        a_out__errorV("Mix_PlayChannel(%d): %s", Channel, Mix_GetError());
+        #if A_CONFIG_BUILD_DEBUG
+            a_out__error("Mix_PlayChannel(%d): %s", Channel, Mix_GetError());
+        #endif
     }
 }
 

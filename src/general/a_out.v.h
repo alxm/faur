@@ -48,12 +48,9 @@ typedef enum {
 
 extern void a_out__info(const char* Format, ...);
 extern void a_out__warning(const char* Format, ...);
-extern void a_out__warningV(const char* Format, ...);
 extern void a_out__error(const char* Format, ...);
-extern void a_out__errorV(const char* Format, ...);
 extern void a_out__errorv(const char* Format, va_list Args);
 extern void a_out__state(const char* Format, ...);
-extern void a_out__stateV(const char* Format, ...);
 extern void a_out__overwrite(AOutType Type, FILE* Stream, const char* Format, ...);
 
 #endif // A_INC_GENERAL_OUT_V_H
