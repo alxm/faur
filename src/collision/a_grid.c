@@ -26,10 +26,6 @@ struct AGrid {
     AList** cellsData; // AList*[h * w] of void*
 };
 
-struct AGridItem {
-    AList* nodes; // list of AListNode from cells this item is in
-};
-
 AGrid* a_grid_new(AFix Width, AFix Height, AFix MaxObjectDim)
 {
     AGrid* g = a_mem_malloc(sizeof(AGrid));
@@ -79,29 +75,19 @@ void a_grid_free(AGrid* Grid)
 
 AGridItem* a_griditem_new(void)
 {
-    AGridItem* i = a_mem_malloc(sizeof(AGridItem));
-
-    i->nodes = a_list_new();
-
-    return i;
+    return a_list_new();
 }
 
 void a_griditem_free(AGridItem* Item)
 {
-    if(Item == NULL) {
-        return;
-    }
-
     // Remove item from any lists it is in
-    a_list_freeEx(Item->nodes, (AFree*)a_list_removeNode);
-
-    free(Item);
+    a_list_freeEx(Item, (AFree*)a_list_removeNode);
 }
 
 void a_griditem_coordsSet(const AGrid* Grid, AGridItem* Item, void* Context, AVectorFix Coords)
 {
     // remove item from all the cells it was previously in
-    a_list_clearEx(Item->nodes, (AFree*)a_list_removeNode);
+    a_list_clearEx(Item, (AFree*)a_list_removeNode);
 
     // center cell coords
     int cellX = a_fix_toInt(Coords.x >> Grid->coordsShift);
@@ -131,8 +117,7 @@ void a_griditem_coordsSet(const AGrid* Grid, AGridItem* Item, void* Context, AVe
     // add item to every cell in its surrounding perimeter
     for(int y = cellStart.y; y <= cellEnd.y; y++) {
         for(int x = cellStart.x; x <= cellEnd.x; x++) {
-            a_list_addFirst(
-                Item->nodes, a_list_addFirst(Grid->cells[y][x], Context));
+            a_list_addFirst(Item, a_list_addFirst(Grid->cells[y][x], Context));
         }
     }
 }

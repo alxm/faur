@@ -22,7 +22,7 @@
 #include "general/a_system_includes.h"
 
 typedef struct AGrid AGrid;
-typedef struct AGridItem AGridItem;
+typedef struct AList AGridItem;
 
 #include "data/a_list.p.h"
 #include "math/a_fix.p.h"
