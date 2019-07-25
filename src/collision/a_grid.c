@@ -1,5 +1,5 @@
 /*
-    Copyright 2010-2011, 2015-2018 Alex Margarit <alex@alxm.org>
+    Copyright 2010-2011, 2015-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -22,15 +22,12 @@
 struct AGrid {
     int coordsShift; // right-shift item coords to get cell index
     int w, h; // width and height of grid in cells
-    AList*** cells; // AList*[h][w] of AGridItem
-    AList** cellsData; // AList*[h * w] of AGridItem
+    AList*** cells; // AList*[h][w] of void*
+    AList** cellsData; // AList*[h * w] of void*
 };
 
 struct AGridItem {
-    const AGrid* grid;
-    void* context; // the game item that owns this AGridItem
     AList* nodes; // list of AListNode from cells this item is in
-    AFix x, y; // coords on the grid
 };
 
 AGrid* a_grid_new(AFix Width, AFix Height, AFix MaxObjectDim)
@@ -71,11 +68,6 @@ void a_grid_free(AGrid* Grid)
 
     for(int i = Grid->h; i--; ) {
         for(int j = Grid->w; j--; ) {
-            A_LIST_ITERATE(Grid->cells[i][j], AGridItem*, i) {
-                a_list_free(i->nodes);
-                i->nodes = NULL; // In case grid is freed before the items
-            }
-
             a_list_free(Grid->cells[i][j]);
         }
     }
@@ -85,15 +77,11 @@ void a_grid_free(AGrid* Grid)
     free(Grid);
 }
 
-AGridItem* a_griditem_new(const AGrid* Grid, void* Context)
+AGridItem* a_griditem_new(void)
 {
     AGridItem* i = a_mem_malloc(sizeof(AGridItem));
 
-    i->grid = Grid;
-    i->context = Context;
     i->nodes = a_list_new();
-    i->x = 0;
-    i->y = 0;
 
     return i;
 }
@@ -110,67 +98,54 @@ void a_griditem_free(AGridItem* Item)
     free(Item);
 }
 
-void a_griditem_coordsSet(AGridItem* Item, AFix X, AFix Y)
+void a_griditem_coordsSet(const AGrid* Grid, AGridItem* Item, void* Context, AFix X, AFix Y)
 {
-    const AGrid* grid = Item->grid;
-    AList* cellNodes = Item->nodes;
-    AList*** cells = grid->cells;
-
-    Item->x = X;
-    Item->y = Y;
-
     // remove item from all the cells it was previously in
-    a_list_clearEx(cellNodes, (AFree*)a_list_removeNode);
+    a_list_clearEx(Item->nodes, (AFree*)a_list_removeNode);
 
     // center cell coords
-    int cellX = a_fix_toInt(Item->x >> grid->coordsShift);
-    int cellY = a_fix_toInt(Item->y >> grid->coordsShift);
+    int cellX = a_fix_toInt(X >> Grid->coordsShift);
+    int cellY = a_fix_toInt(Y >> Grid->coordsShift);
 
-    AFix cellDim = A_FIX_ONE << grid->coordsShift;
+    AFix cellDim = A_FIX_ONE << Grid->coordsShift;
 
-    AFix cellOffsetX = Item->x & (cellDim - 1);
-    AFix cellOffsetY = Item->y & (cellDim - 1);
+    AFix cellOffsetX = X & (cellDim - 1);
+    AFix cellOffsetY = Y & (cellDim - 1);
 
     int cellStartX, cellStartY;
     int cellEndX, cellEndY;
 
     if(cellOffsetX < cellDim / 2) {
-        cellStartX = a_math_clamp(cellX - 1, 0, grid->w - 1);
-        cellEndX = a_math_clamp(cellX, 0, grid->w - 1);
+        cellStartX = a_math_clamp(cellX - 1, 0, Grid->w - 1);
+        cellEndX = a_math_clamp(cellX, 0, Grid->w - 1);
     } else {
-        cellStartX = a_math_clamp(cellX, 0, grid->w - 1);
-        cellEndX = a_math_clamp(cellX + 1, 0, grid->w - 1);
+        cellStartX = a_math_clamp(cellX, 0, Grid->w - 1);
+        cellEndX = a_math_clamp(cellX + 1, 0, Grid->w - 1);
     }
 
     if(cellOffsetY < cellDim / 2) {
-        cellStartY = a_math_clamp(cellY - 1, 0, grid->h - 1);
-        cellEndY = a_math_clamp(cellY, 0, grid->h - 1);
+        cellStartY = a_math_clamp(cellY - 1, 0, Grid->h - 1);
+        cellEndY = a_math_clamp(cellY, 0, Grid->h - 1);
     } else {
-        cellStartY = a_math_clamp(cellY, 0, grid->h - 1);
-        cellEndY = a_math_clamp(cellY + 1, 0, grid->h - 1);
+        cellStartY = a_math_clamp(cellY, 0, Grid->h - 1);
+        cellEndY = a_math_clamp(cellY + 1, 0, Grid->h - 1);
     }
 
     // add item to every cell in its surrounding perimeter
     for(int y = cellStartY; y <= cellEndY; y++) {
         for(int x = cellStartX; x <= cellEndX; x++) {
-            a_list_addFirst(cellNodes, a_list_addFirst(cells[y][x], Item));
+            a_list_addFirst(
+                Item->nodes, a_list_addFirst(Grid->cells[y][x], Context));
         }
     }
 }
 
-void* a__griditem_contextGet(const AGridItem* Item)
+const AList* a_grid_nearGet(const AGrid* Grid, AVectorFix Coords)
 {
-    return Item->context;
-}
+    int x = a_math_clamp(
+                a_fix_toInt(Coords.x >> Grid->coordsShift), 0, Grid->w - 1);
+    int y = a_math_clamp(
+                a_fix_toInt(Coords.y >> Grid->coordsShift), 0, Grid->h - 1);
 
-const AList* a__griditem_nearbyListGet(const AGridItem* Item)
-{
-    const AGrid* grid = Item->grid;
-
-    int cellX = a_math_clamp(
-                    a_fix_toInt(Item->x >> grid->coordsShift), 0, grid->w - 1);
-    int cellY = a_math_clamp(
-                    a_fix_toInt(Item->y >> grid->coordsShift), 0, grid->h - 1);
-
-    return grid->cells[cellY][cellX];
+    return Grid->cells[y][x];
 }
