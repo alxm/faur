@@ -44,15 +44,15 @@ static void blockFree(ABlock* Block)
         return;
     }
 
-    free(Block->text);
+    a_mem_free(Block->text);
 
     if(Block->blocks) {
         a_list_freeEx(Block->blocks, (AFree*)blockFree);
         a_strhash_freeEx(Block->index, (AFree*)a_list_free);
-        free(Block->array);
+        a_mem_free(Block->array);
     }
 
-    free(Block);
+    a_mem_free(Block);
 }
 
 static void blockAdd(ABlock* Parent, ABlock* Child)
@@ -139,7 +139,7 @@ ABlock* a_block_new(const char* File)
                 if(baseBlock == NULL) {
                     char* nextBaseId = a_str_prefixGetToLast(base, '.');
 
-                    free(base);
+                    a_mem_free(base);
                     base = nextBaseId;
                 } else {
                     if(baseBlock->blocks) {
@@ -149,7 +149,7 @@ ABlock* a_block_new(const char* File)
                         }
                     }
 
-                    free(base);
+                    a_mem_free(base);
                     base = NULL;
                 }
             }

@@ -46,7 +46,7 @@ ABitfield* a_bitfield_new(unsigned NumBits)
 
 void a_bitfield_free(ABitfield* Bitfield)
 {
-    free(Bitfield);
+    a_mem_free(Bitfield);
 }
 
 void a_bitfield_set(ABitfield* Bitfield, unsigned Bit)

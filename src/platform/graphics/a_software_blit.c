@@ -261,7 +261,7 @@ void a_platform_software_blit__init(void)
 void a_platform_software_blit__uninit(void)
 {
     #if A__SCANLINES_MALLOC
-        free(g_scanlines);
+        a_mem_free(g_scanlines);
     #endif
 }
 
@@ -348,7 +348,7 @@ void a_platform_api__textureFree(APlatformTexture* Texture)
         return;
     }
 
-    free(Texture);
+    a_mem_free(Texture);
 }
 
 void a_platform_api__textureBlit(const APlatformTexture* Texture, const APixels* Pixels, unsigned Frame, int X, int Y)

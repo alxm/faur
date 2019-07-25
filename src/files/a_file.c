@@ -51,8 +51,8 @@ void a_file_free(AFile* File)
 
     a_path_free(File->path);
 
-    free(File->lineBuffer);
-    free(File);
+    a_mem_free(File->lineBuffer);
+    a_mem_free(File);
 }
 
 const APath* a_file_pathGet(const AFile* File)
@@ -210,7 +210,7 @@ bool a_file_lineRead(AFile* File)
                 memcpy(newBuffer, File->lineBuffer, File->lineBufferSize);
             }
 
-            free(File->lineBuffer);
+            a_mem_free(File->lineBuffer);
 
             File->lineBuffer = newBuffer;
             File->lineBufferSize = newSize;

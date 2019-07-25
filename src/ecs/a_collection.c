@@ -38,7 +38,7 @@ void a_collection_free(ACollection* Collection)
     a_list_freeEx(Collection->entities, (AFree*)a_entity__freeEx);
     a_ecs__refDecIgnoreSet(false);
 
-    free(Collection);
+    a_mem_free(Collection);
 }
 
 AList* a_collection__listGet(const ACollection* Collection)

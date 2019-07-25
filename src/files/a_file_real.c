@@ -145,7 +145,7 @@ uint8_t* a_file_real__toBuffer(const char* Path)
     uint8_t* buffer = a_mem_malloc(size);
 
     if(!a_file_read(f, buffer, size)) {
-        free(buffer);
+        a_mem_free(buffer);
         buffer = NULL;
     }
 

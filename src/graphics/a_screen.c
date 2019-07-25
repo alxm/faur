@@ -61,7 +61,7 @@ static void a_screen__init(void)
 
 static void a_screen__uninit(void)
 {
-    a_list_freeEx(g_stack, free);
+    a_list_freeEx(g_stack, a_mem_free);
 
     #if A_CONFIG_TRAIT_DESKTOP
         a_button_free(g_fullScreenButton);
@@ -201,7 +201,7 @@ void a_screen_pop(void)
     #endif
 
     a__screen = *screen;
-    free(screen);
+    a_mem_free(screen);
 
     #if !A_CONFIG_LIB_RENDER_SOFTWARE
         a_platform_api__screenTextureSet(a__screen.texture);

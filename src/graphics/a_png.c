@@ -177,7 +177,7 @@ cleanUp:
         png_destroy_read_struct(&png, info ? &info : NULL, NULL);
     }
 
-    free(stream);
+    a_mem_free(stream);
 
     return pixels;
 }
@@ -271,8 +271,8 @@ cleanUp:
         png_destroy_write_struct(&png, info ? &info : NULL);
     }
 
-    free(rows);
-    free(rowsData);
+    a_mem_free(rows);
+    a_mem_free(rowsData);
 
     a_file_free(f);
 }

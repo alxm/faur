@@ -85,7 +85,7 @@ ASprite* a_sprite_newFromPng(const char* Path, int X, int Y, int FrameWidth, int
                 FrameHeight = 0;
             }
 
-            free(suffix);
+            a_mem_free(suffix);
         }
     }
 
@@ -165,7 +165,7 @@ void a_sprite_free(ASprite* Sprite)
 
     a_pixels__free(&Sprite->pixels);
 
-    free(Sprite);
+    a_mem_free(Sprite);
 }
 
 void a_sprite_blit(const ASprite* Sprite, unsigned Frame, int X, int Y)

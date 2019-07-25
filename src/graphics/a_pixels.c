@@ -53,11 +53,11 @@ void a_pixels__free(APixels* Pixels)
     }
 
     if(A_FLAG_TEST_ANY(Pixels->flags, A_PIXELS__ALLOC)) {
-        free(Pixels->buffer);
+        a_mem_free(Pixels->buffer);
     }
 
     if(A_FLAG_TEST_ANY(Pixels->flags, A_PIXELS__DYNAMIC)) {
-        free(Pixels);
+        a_mem_free(Pixels);
     }
 }
 

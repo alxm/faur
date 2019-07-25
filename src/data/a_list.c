@@ -67,7 +67,7 @@ void a_list_freeEx(AList* List, AFree* Free)
 
     a_list_clearEx(List, Free);
 
-    free(List);
+    a_mem_free(List);
 }
 
 AListNode* a_list_addFirst(AList* List, void* Content)
@@ -191,7 +191,7 @@ static inline void* removeNode(AListNode* Node)
 
     Node->list->items--;
 
-    free(Node);
+    a_mem_free(Node);
 
     return v;
 }
@@ -277,12 +277,12 @@ void a_list_clearEx(AList* List, AFree* Free)
 
             // Check if the Free callback already self-removed from the list
             if(next->prev == current) {
-                free(current);
+                a_mem_free(current);
             }
         }
     } else {
         A__ITERATE_SAFE(List, current, next) {
-            free(current);
+            a_mem_free(current);
         }
     }
 

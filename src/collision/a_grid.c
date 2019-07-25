@@ -68,9 +68,9 @@ void a_grid_free(AGrid* Grid)
         }
     }
 
-    free(Grid->cells);
-    free(Grid->cellsData);
-    free(Grid);
+    a_mem_free(Grid->cells);
+    a_mem_free(Grid->cellsData);
+    a_mem_free(Grid);
 }
 
 AGridItem* a_griditem_new(void)

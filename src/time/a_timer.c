@@ -162,7 +162,7 @@ void a_timer_free(ATimer* Timer)
         a_list_removeNode(Timer->runningListNode);
     }
 
-    free(Timer);
+    a_mem_free(Timer);
 }
 
 unsigned a_timer_elapsedGet(const ATimer* Timer)

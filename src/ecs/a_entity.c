@@ -138,8 +138,8 @@ void a_entity__free(AEntity* Entity)
 
     a_bitfield_free(Entity->componentBits);
 
-    free(Entity->id);
-    free(Entity);
+    a_mem_free(Entity->id);
+    a_mem_free(Entity);
 }
 
 void a_entity__freeEx(AEntity* Entity)

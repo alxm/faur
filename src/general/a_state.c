@@ -73,7 +73,7 @@ static void pending_handle(void)
             a_out__state("Destroying '%s' instance", current->state->name);
         #endif
 
-        free(a_list_pop(g_stack));
+        a_mem_free(a_list_pop(g_stack));
         current = a_list_peek(g_stack);
 
         if(!g_exiting && a_list_isEmpty(g_pending)
@@ -147,8 +147,8 @@ static void a_state__init(void)
 
 static void a_state__uninit(void)
 {
-    a_list_freeEx(g_stack, free);
-    a_list_freeEx(g_pending, free);
+    a_list_freeEx(g_stack, a_mem_free);
+    a_list_freeEx(g_pending, a_mem_free);
 }
 
 const APack a_pack__state = {
@@ -295,7 +295,7 @@ void a_state_exit(void)
     g_exiting = true;
 
     // Clear the pending actions queue
-    a_list_clearEx(g_pending, free);
+    a_list_clearEx(g_pending, a_mem_free);
 
     // Queue a pop for every state in the stack
     for(unsigned i = a_list_sizeGet(g_stack); i--; ) {

@@ -52,8 +52,8 @@ void a_strbuilder_free(AStrBuilder* Builder)
         return;
     }
 
-    free(Builder->fmtBuffer);
-    free(Builder);
+    a_mem_free(Builder->fmtBuffer);
+    a_mem_free(Builder);
 }
 
 const char* a_strbuilder_get(AStrBuilder* Builder)
@@ -92,7 +92,7 @@ bool a_strbuilder_addf(AStrBuilder* Builder, const char* Format, ...)
     }
 
     if(Builder->fmtSize < (size_t)bytesNeeded) {
-        free(Builder->fmtBuffer);
+        a_mem_free(Builder->fmtBuffer);
 
         Builder->fmtSize = (size_t)bytesNeeded;
         Builder->fmtBuffer = a_mem_malloc(Builder->fmtSize);

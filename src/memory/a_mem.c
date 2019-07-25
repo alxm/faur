@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2017 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016-2017, 2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -19,37 +19,69 @@
 #include "a_mem.v.h"
 #include <a2x.v.h>
 
+typedef union {
+    intmax_t u_intmax;
+    long double u_longdouble;
+    size_t u_size;
+    void* u_voidp;
+    void (*u_funcp)(void);
+} AMaxMemAlignType;
+
+size_t g_tally;
+
 void* a_mem_malloc(size_t Size)
 {
-    void* ptr = malloc(Size);
+    size_t total = Size + sizeof(AMaxMemAlignType);
+    AMaxMemAlignType* ptr = malloc(total);
 
     if(ptr == NULL) {
-        A__FATAL("malloc(%u) failed", Size);
+        A__FATAL("malloc(%u) failed", total);
     }
 
-    return ptr;
+    ptr->u_size = total;
+    g_tally += total;
+
+    return ptr + 1;
 }
 
 void* a_mem_zalloc(size_t Size)
 {
-    void* ptr = calloc(1, Size);
+    size_t total = Size + sizeof(AMaxMemAlignType);
+    AMaxMemAlignType* ptr = calloc(1, total);
 
     if(ptr == NULL) {
-        A__FATAL("calloc(1, %u) failed", Size);
+        A__FATAL("calloc(1, %u) failed", total);
     }
 
-    return ptr;
+    ptr->u_size = total;
+    g_tally += total;
+
+    return ptr + 1;
 }
 
 void* a_mem_dup(const void* Buffer, size_t Size)
 {
-    void* copy = malloc(Size);
-
-    if(copy == NULL) {
-        A__FATAL("malloc(%u) failed", Size);
-    }
+    void* copy = a_mem_malloc(Size);
 
     memcpy(copy, Buffer, Size);
 
     return copy;
+}
+
+void a_mem_free(void* Buffer)
+{
+    if(Buffer == NULL) {
+        return;
+    }
+
+    AMaxMemAlignType* header = (AMaxMemAlignType*)Buffer - 1;
+
+    g_tally -= header->u_size;
+
+    free(header);
+}
+
+size_t a_mem__bytesGetUsed(void)
+{
+    return g_tally;
 }
