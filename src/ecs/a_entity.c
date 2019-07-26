@@ -296,11 +296,6 @@ void a_entity_removeSet(AEntity* Entity)
 
     A_FLAG_SET(Entity->flags, A_ENTITY__REMOVED);
     listMoveTo(Entity, A_ECS__FLUSH);
-
-    if(Entity->collectionNode) {
-        a_list_removeNode(Entity->collectionNode);
-        Entity->collectionNode = NULL;
-    }
 }
 
 bool a_entity_activeGet(const AEntity* Entity)
