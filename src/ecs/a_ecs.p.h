@@ -21,9 +21,4 @@
 
 #include "general/a_system_includes.h"
 
-#include "ecs/a_collection.p.h"
-
-extern ACollection* a_ecs_collectionGet(void);
-extern void a_ecs_collectionSet(ACollection* Collection);
-
 #endif // A_INC_ECS_ECS_P_H

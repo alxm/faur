@@ -23,6 +23,8 @@
 
 typedef struct AList ACollection;
 
+extern void a_collection_set(ACollection* Collection);
+
 extern ACollection* a_collection_new(void);
 extern void a_collection_free(ACollection* Collection);
 

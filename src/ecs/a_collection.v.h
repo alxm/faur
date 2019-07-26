@@ -21,4 +21,6 @@
 
 #include "ecs/a_collection.p.h"
 
+extern ACollection* a_collection__get(void);
+
 #endif // A_INC_ECS_COLLECTION_V_H

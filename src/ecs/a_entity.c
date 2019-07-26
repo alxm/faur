@@ -76,7 +76,7 @@ AEntity* a_entity_new(const char* Template)
     e->componentBits = a_bitfield_new(A_CONFIG_ECS_COM_NUM);
     e->lastActive = a_fps_ticksGet() - 1;
 
-    ACollection* collection = a_ecs_collectionGet();
+    ACollection* collection = a_collection__get();
 
     if(collection) {
         e->collectionNode = a_list_addLast(collection, e);

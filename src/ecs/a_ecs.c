@@ -21,7 +21,6 @@
 
 static AList* g_lists[A_ECS__NUM]; // Each entity is in exactly one of these
 static bool g_ignoreRefDec; // Set to prevent using freed entities
-static ACollection* g_collection; // New entities are added to this collection
 
 static void a_ecs__init(void)
 {
@@ -55,16 +54,6 @@ const APack a_pack__ecs = {
         [0] = a_ecs__uninit,
     },
 };
-
-ACollection* a_ecs_collectionGet(void)
-{
-    return g_collection;
-}
-
-void a_ecs_collectionSet(ACollection* Collection)
-{
-    g_collection = Collection;
-}
 
 AList* a_ecs__listGet(AEcsListId List)
 {

@@ -19,6 +19,18 @@
 #include "a_collection.v.h"
 #include <a2x.v.h>
 
+static ACollection* g_current; // New entities are added to this collection
+
+ACollection* a_collection__get(void)
+{
+    return g_current;
+}
+
+void a_collection_set(ACollection* Collection)
+{
+    g_current = Collection;
+}
+
 ACollection* a_collection_new(void)
 {
     return a_list_new();
