@@ -19,48 +19,33 @@
 #include "a_collection.v.h"
 #include <a2x.v.h>
 
-struct ACollection {
-    AList* entities; // list of AEntity
-};
-
 ACollection* a_collection_new(void)
 {
-    ACollection* c = a_mem_malloc(sizeof(ACollection));
-
-    c->entities = a_list_new();
-
-    return c;
+    return a_list_new();
 }
 
 void a_collection_free(ACollection* Collection)
 {
     a_ecs__refDecIgnoreSet(true);
-    a_list_freeEx(Collection->entities, (AFree*)a_entity__freeEx);
+    a_list_freeEx(Collection, (AFree*)a_entity__freeEx);
     a_ecs__refDecIgnoreSet(false);
-
-    a_mem_free(Collection);
-}
-
-AList* a_collection__listGet(const ACollection* Collection)
-{
-    return Collection->entities;
 }
 
 void a_collection_clear(ACollection* Collection)
 {
-    a_list_clearEx(Collection->entities, (AFree*)a_entity_removedSet);
+    a_list_clearEx(Collection, (AFree*)a_entity_removedSet);
 }
 
 void a_collection_muteInc(ACollection* Collection)
 {
-    A_LIST_ITERATE(Collection->entities, AEntity*, e) {
+    A_LIST_ITERATE(Collection, AEntity*, e) {
         a_entity_muteInc(e);
     }
 }
 
 void a_collection_muteDec(ACollection* Collection)
 {
-    A_LIST_ITERATE(Collection->entities, AEntity*, e) {
+    A_LIST_ITERATE(Collection, AEntity*, e) {
         a_entity_muteDec(e);
     }
 }

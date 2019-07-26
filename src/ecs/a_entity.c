@@ -79,8 +79,7 @@ AEntity* a_entity_new(const char* Template)
     ACollection* collection = a_ecs_collectionGet();
 
     if(collection) {
-        e->collectionNode = a_list_addLast(
-                                a_collection__listGet(collection), e);
+        e->collectionNode = a_list_addLast(collection, e);
     }
 
     if(Template != NULL) {

@@ -1,5 +1,5 @@
 /*
-    Copyright 2018 Alex Margarit <alex@alxm.org>
+    Copyright 2018-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -21,7 +21,7 @@
 
 #include "general/a_system_includes.h"
 
-typedef struct ACollection ACollection;
+typedef struct AList ACollection;
 
 extern ACollection* a_collection_new(void);
 extern void a_collection_free(ACollection* Collection);
