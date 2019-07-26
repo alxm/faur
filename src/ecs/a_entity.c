@@ -272,16 +272,16 @@ void a_entity_refDec(AEntity* Entity)
     }
 }
 
-bool a_entity_removeGet(const AEntity* Entity)
+bool a_entity_removedGet(const AEntity* Entity)
 {
     return A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__REMOVED);
 }
 
-void a_entity_removeSet(AEntity* Entity)
+void a_entity_removedSet(AEntity* Entity)
 {
     if(A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__REMOVED)) {
         #if A_CONFIG_BUILD_DEBUG
-            a_out__warning("a_entity_removeSet(%s): Entity is removed",
+            a_out__warning("a_entity_removedSet(%s): Entity is removed",
                            a_entity_idGet(Entity));
         #endif
 
@@ -290,7 +290,7 @@ void a_entity_removeSet(AEntity* Entity)
 
     #if A_CONFIG_BUILD_DEBUG
         if(A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__DEBUG)) {
-            a_out__info("a_entity_removeSet(%s)", a_entity_idGet(Entity));
+            a_out__info("a_entity_removedSet(%s)", a_entity_idGet(Entity));
         }
     #endif
 

@@ -48,7 +48,7 @@ AList* a_collection__listGet(const ACollection* Collection)
 
 void a_collection_clear(ACollection* Collection)
 {
-    a_list_clearEx(Collection->entities, (AFree*)a_entity_removeSet);
+    a_list_clearEx(Collection->entities, (AFree*)a_entity_removedSet);
 }
 
 void a_collection_muteInc(ACollection* Collection)
