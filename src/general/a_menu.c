@@ -70,7 +70,7 @@ void a_menu_freeEx(AMenu* Menu, AFree* ItemFree)
     a_button_free(Menu->next);
     a_button_free(Menu->back);
 
-    free(Menu);
+    a_mem_free(Menu);
 }
 
 void a_menu_soundSet(AMenu* Menu, ASample* Accept, ASample* Cancel, ASample* Browse)

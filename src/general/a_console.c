@@ -41,7 +41,7 @@ static bool g_show = A_CONFIG_OUTPUT_CONSOLE_SHOW;
 
 static void line_set(ALine* Line, AOutSource Source, AOutType Type, const char* Text)
 {
-    free(Line->text);
+    a_mem_free(Line->text);
 
     Line->source = Source;
     Line->type = Type;
@@ -60,8 +60,8 @@ static ALine* line_new(AOutSource Source, AOutType Type, const char* Text)
 
 static void line_free(ALine* Line)
 {
-    free(Line->text);
-    free(Line);
+    a_mem_free(Line->text);
+    a_mem_free(Line);
 }
 
 static void a_console__init0(void)
@@ -220,7 +220,24 @@ void a_console__draw(void)
 
         a_font__fontSet(A_FONT__ID_BLUE);
         a_font_printf("PID %d\n", getpid());
-        a_font_printf("%u", a_fps_ticksGet());
+        a_font_printf("%u ticks\n", a_fps_ticksGet());
+
+        float value;
+        const char* suffix;
+        size_t bytes = a_mem__bytesGetUsed();
+
+        if(bytes >= 1000 * 1000) {
+            value = (float)bytes / (1000 * 1000);
+            suffix = "MB";
+        } else if(bytes >= 1000) {
+            value = (float)bytes / (1000);
+            suffix = "KB";
+        } else {
+            value = (float)bytes;
+            suffix = "B";
+        }
+
+        a_font_printf("%.3f %s\n", value, suffix);
     }
 
     a_color_pop();

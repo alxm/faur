@@ -92,17 +92,17 @@ APath* a_path_newf(const char* Format, ...)
 
     APath* p = a_path_new(buffer);
 
-    free(buffer);
+    a_mem_free(buffer);
 
     return p;
 }
 
 void a_path_free(APath* Path)
 {
-    free(Path->full);
-    free(Path->dirsPart);
-    free(Path->namePart);
-    free(Path);
+    a_mem_free(Path->full);
+    a_mem_free(Path->dirsPart);
+    a_mem_free(Path->namePart);
+    a_mem_free(Path);
 }
 
 bool a_path_exists(const char* Path, APathFlags Flags)

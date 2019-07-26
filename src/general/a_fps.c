@@ -60,8 +60,8 @@ static void a_fps__init(void)
 
 static void a_fps__uninit(void)
 {
-    free(g_history.drawFrameMs);
-    free(g_history.drawFrameMsMin);
+    a_mem_free(g_history.drawFrameMs);
+    a_mem_free(g_history.drawFrameMsMin);
 }
 
 const APack a_pack__fps = {

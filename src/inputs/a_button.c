@@ -123,7 +123,7 @@ void a_button_free(AButton* Button)
 
     a_timer_free(Button->autoRepeat);
 
-    free(Button);
+    a_mem_free(Button);
 }
 
 void a_button_bind(AButton* Button, int Id)

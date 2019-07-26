@@ -46,7 +46,7 @@ void a_touch_free(ATouch* Touch)
 
     a_input__userHeaderFree(&Touch->header);
 
-    free(Touch);
+    a_mem_free(Touch);
 }
 
 bool a_touch_isWorking(const ATouch* Touch)

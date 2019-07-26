@@ -94,7 +94,7 @@ APlatformTexture* a_platform_api__textureNew(const APixels* Pixels, unsigned Fra
         texture->texture[t] = tex;
     }
 
-    free(buffer);
+    a_mem_free(buffer);
 
     return texture;
 }
@@ -111,7 +111,7 @@ void a_platform_api__textureFree(APlatformTexture* Texture)
         }
     }
 
-    free(Texture);
+    a_mem_free(Texture);
 }
 
 void a_platform_api__textureBlit(const APlatformTexture* Texture, const APixels* Pixels, unsigned Frame, int X, int Y)

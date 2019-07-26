@@ -138,7 +138,7 @@ static void buttonFree(APlatformInputButton* Button)
 {
     a_list_free(Button->forwardButtons);
 
-    free(Button);
+    a_mem_free(Button);
 }
 
 static void buttonPress(APlatformInputButton* Button, bool Pressed)
@@ -175,9 +175,9 @@ static void analogAdd(APlatformInputController* Controller, AAxisId Id, const ch
 
 static void analogFree(APlatformInputAnalog* Analog)
 {
-    a_list_freeEx(Analog->forwardButtons, free);
+    a_list_freeEx(Analog->forwardButtons, a_mem_free);
 
-    free(Analog);
+    a_mem_free(Analog);
 }
 
 static void analogSet(APlatformInputAnalog* Analog, int Value)
@@ -221,7 +221,7 @@ static void touchAdd(APlatformInputTouch* Touch)
 #if A_CONFIG_INPUT_MOUSE_TRACK
 static void touchFree(APlatformInputTouch* Touch)
 {
-    a_list_freeEx(Touch->motion, free);
+    a_list_freeEx(Touch->motion, a_mem_free);
 }
 #endif
 
@@ -323,7 +323,7 @@ static void controllerFree(APlatformInputController* Controller)
         }
     #endif
 
-    free(Controller);
+    a_mem_free(Controller);
 }
 
 static const char* joystickName(APlatformInputController* Controller)
@@ -673,7 +673,7 @@ void a_platform_api__inputPoll(void)
     g_mouse.tap = false;
 
     #if A_CONFIG_INPUT_MOUSE_TRACK
-        a_list_clearEx(g_mouse.motion, free);
+        a_list_clearEx(g_mouse.motion, a_mem_free);
     #endif
 
     for(SDL_Event event; SDL_PollEvent(&event); ) {

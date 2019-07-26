@@ -40,7 +40,7 @@ void a_analog_free(AAnalog* Analog)
 
     a_input__userHeaderFree(&Analog->header);
 
-    free(Analog);
+    a_mem_free(Analog);
 }
 
 void a_analog_bind(AAnalog* Analog, AAxisId Id)

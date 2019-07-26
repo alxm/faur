@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2017 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016-2017, 2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 
 extern void* a_mem_malloc(size_t Size);
 extern void* a_mem_zalloc(size_t Size);
-
 extern void* a_mem_dup(const void* Buffer, size_t Size);
+extern void a_mem_free(void* Buffer);
 
 #endif // A_INC_MEMORY_MEM_P_H

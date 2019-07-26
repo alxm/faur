@@ -159,7 +159,7 @@ void a_component__templateFree(const AComponent* Component, void* Buffer)
         Component->templateFree(Buffer);
     }
 
-    free(Buffer);
+    a_mem_free(Buffer);
 }
 
 AComponentInstance* a_component__instanceNew(const AComponent* Component, AEntity* Entity, const void* TemplateData)
@@ -192,5 +192,5 @@ void a_component__instanceFree(AComponentInstance* Instance)
         Instance->component->free(a_component__instanceGetBuffer(Instance));
     }
 
-    free(Instance);
+    a_mem_free(Instance);
 }

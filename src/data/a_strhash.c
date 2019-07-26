@@ -73,13 +73,13 @@ void a_strhash_freeEx(AStrHash* Hash, AFree* Free)
             Free(e->content);
         }
 
-        free(e->key);
-        free(e);
+        a_mem_free(e->key);
+        a_mem_free(e);
     }
 
     a_list_free(Hash->entriesList);
 
-    free(Hash);
+    a_mem_free(Hash);
 }
 
 void a_strhash_add(AStrHash* Hash, const char* Key, void* Content)

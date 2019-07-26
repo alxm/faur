@@ -89,7 +89,7 @@ void a_platform_pandora__uninit(void)
     }
 
     for(int i = 0; i < 2; i++) {
-        free(g_nubModes[i]);
+        a_mem_free(g_nubModes[i]);
     }
 }
 #endif // A_CONFIG_SYSTEM_PANDORA

@@ -157,7 +157,7 @@ void a_dir_free(ADir* Dir)
     a_list_freeEx(Dir->files, (AFree*)a_path_free);
     a_path_free(Dir->path);
 
-    free(Dir);
+    a_mem_free(Dir);
 }
 
 const APath* a_dir_pathGet(const ADir* Dir)

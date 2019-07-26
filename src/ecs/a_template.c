@@ -64,7 +64,7 @@ static void templateFree(ATemplate* Template)
         }
     }
 
-    free(Template);
+    a_mem_free(Template);
 }
 
 void a_template__init(void)

@@ -53,7 +53,7 @@ static bool lazy_init(void)
                     g_isInit = true;
                 }
 
-                free(numberStr);
+                a_mem_free(numberStr);
             }
 
             if(!g_isInit) {
@@ -131,9 +131,9 @@ void a_screenshot__init(void)
 
 void a_screenshot__uninit(void)
 {
-    free(g_filePrefix);
-    free(g_title);
-    free(g_description);
+    a_mem_free(g_filePrefix);
+    a_mem_free(g_title);
+    a_mem_free(g_description);
 
     a_button_free(g_button);
 }

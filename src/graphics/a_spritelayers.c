@@ -41,14 +41,14 @@ static ALayer* layer_new(ASprite* Sprite, AColorBlend Blend, int Red, int Green,
 
 static void layer_free(ALayer* Layer)
 {
-    free(Layer);
+    a_mem_free(Layer);
 }
 
 static void layer_freeEx(ALayer* Layer)
 {
     a_sprite_free(Layer->sprite);
 
-    free(Layer);
+    a_mem_free(Layer);
 }
 
 ASpriteLayers* a_spritelayers_new(void)

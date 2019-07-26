@@ -36,7 +36,7 @@ static void a_color__init(void)
 
 static void a_color__uninit(void)
 {
-    a_list_freeEx(g_stateStack, free);
+    a_list_freeEx(g_stateStack, a_mem_free);
 }
 
 const APack a_pack__color = {
@@ -65,7 +65,7 @@ void a_color_pop(void)
     #endif
 
     a__color = *state;
-    free(state);
+    a_mem_free(state);
 
     a_color_blendSet(a__color.blend);
     a_color_baseSetRgba(

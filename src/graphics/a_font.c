@@ -71,7 +71,7 @@ static void a_font__uninit(void)
         a_font_free(g_defaultFonts[f]);
     }
 
-    a_list_freeEx(g_stateStack, free);
+    a_list_freeEx(g_stateStack, a_mem_free);
 }
 
 const APack a_pack__font = {
@@ -131,7 +131,7 @@ void a_font_free(AFont* Font)
 
     a_sprite_free(Font->chars);
 
-    free(Font);
+    a_mem_free(Font);
 }
 
 void a_font_push(void)
@@ -150,7 +150,7 @@ void a_font_pop(void)
     #endif
 
     g_state = *state;
-    free(state);
+    a_mem_free(state);
 }
 
 void a_font_reset(void)
