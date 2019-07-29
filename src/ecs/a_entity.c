@@ -76,11 +76,10 @@ AEntity* a_entity_new(const char* Template)
     e->componentBits = a_bitfield_new(A_CONFIG_ECS_COM_NUM);
     e->lastActive = a_fps_ticksGet() - 1;
 
-    ACollection* collection = a_ecs_collectionGet();
+    ACollection* collection = a_collection__get();
 
     if(collection) {
-        e->collectionNode = a_list_addLast(
-                                a_collection__listGet(collection), e);
+        e->collectionNode = a_list_addLast(collection, e);
     }
 
     if(Template != NULL) {
@@ -272,16 +271,16 @@ void a_entity_refDec(AEntity* Entity)
     }
 }
 
-bool a_entity_removeGet(const AEntity* Entity)
+bool a_entity_removedGet(const AEntity* Entity)
 {
     return A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__REMOVED);
 }
 
-void a_entity_removeSet(AEntity* Entity)
+void a_entity_removedSet(AEntity* Entity)
 {
     if(A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__REMOVED)) {
         #if A_CONFIG_BUILD_DEBUG
-            a_out__warning("a_entity_removeSet(%s): Entity is removed",
+            a_out__warning("a_entity_removedSet(%s): Entity is removed",
                            a_entity_idGet(Entity));
         #endif
 
@@ -290,17 +289,12 @@ void a_entity_removeSet(AEntity* Entity)
 
     #if A_CONFIG_BUILD_DEBUG
         if(A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__DEBUG)) {
-            a_out__info("a_entity_removeSet(%s)", a_entity_idGet(Entity));
+            a_out__info("a_entity_removedSet(%s)", a_entity_idGet(Entity));
         }
     #endif
 
     A_FLAG_SET(Entity->flags, A_ENTITY__REMOVED);
     listMoveTo(Entity, A_ECS__FLUSH);
-
-    if(Entity->collectionNode) {
-        a_list_removeNode(Entity->collectionNode);
-        Entity->collectionNode = NULL;
-    }
 }
 
 bool a_entity_activeGet(const AEntity* Entity)

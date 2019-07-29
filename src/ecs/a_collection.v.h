@@ -21,8 +21,6 @@
 
 #include "ecs/a_collection.p.h"
 
-#include "data/a_list.v.h"
-
-extern AList* a_collection__listGet(const ACollection* Collection);
+extern ACollection* a_collection__get(void);
 
 #endif // A_INC_ECS_COLLECTION_V_H

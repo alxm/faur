@@ -36,8 +36,8 @@ extern bool a_entity_parentHas(const AEntity* Child, const AEntity* PotentialPar
 extern void a_entity_refInc(AEntity* Entity);
 extern void a_entity_refDec(AEntity* Entity);
 
-extern bool a_entity_removeGet(const AEntity* Entity);
-extern void a_entity_removeSet(AEntity* Entity);
+extern bool a_entity_removedGet(const AEntity* Entity);
+extern void a_entity_removedSet(AEntity* Entity);
 
 extern bool a_entity_activeGet(const AEntity* Entity);
 extern void a_entity_activeSet(AEntity* Entity);
