@@ -131,7 +131,7 @@ __attribute__((noreturn)) static void handleFatal(void)
             a_out__error(functionNames[i]);
         }
 
-        a_mem_free(functionNames);
+        free(functionNames);
     #endif
 
     a_console_showSet(true);
