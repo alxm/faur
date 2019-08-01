@@ -43,6 +43,7 @@ extern AFixu a_block_lineGetAngle(const ABlock* Block, unsigned LineNumber);
 extern APixel a_block_lineGetPixel(const ABlock* Block, unsigned LineNumber);
 extern const char* a_block_lineGetString(const ABlock* Block, unsigned LineNumber);
 extern AVectorInt a_block_lineGetCoords(const ABlock* Block, unsigned LineNumber);
+extern AVectorFix a_block_lineGetCoordsf(const ABlock* Block, unsigned LineNumber);
 extern int a_block_lineGetFmt(const ABlock* Block, unsigned LineNumber, const char* Format, ...);
 extern int a_block_lineGetFmtv(const ABlock* Block, unsigned LineNumber, const char* Format, va_list Args);
 
@@ -79,6 +80,11 @@ static inline const char* a_block_keyGetString(const ABlock* Block, const char* 
 static inline AVectorInt a_block_keyGetCoords(const ABlock* Block, const char* Key)
 {
     return a_block_lineGetCoords(a_block_keyGetBlock(Block, Key), 1);
+}
+
+static inline AVectorFix a_block_keyGetCoordsf(const ABlock* Block, const char* Key)
+{
+    return a_block_lineGetCoordsf(a_block_keyGetBlock(Block, Key), 1);
 }
 
 extern int a_block_keyGetFmt(const ABlock* Block, const char* Key, const char* Format, ...);

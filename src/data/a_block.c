@@ -272,6 +272,22 @@ AVectorInt a_block_lineGetCoords(const ABlock* Block, unsigned LineNumber)
     return v;
 }
 
+AVectorFix a_block_lineGetCoordsf(const ABlock* Block, unsigned LineNumber)
+{
+    const ABlock* line = blockGet(Block, LineNumber);
+    AVectorFix v = {0, 0};
+
+    if(line) {
+        double x = 0, y = 0;
+        sscanf(line->text, "%lf, %lf", &x, &y);
+
+        v.x = a_fix_fromDouble(x);
+        v.y = a_fix_fromDouble(y);
+    }
+
+    return v;
+}
+
 int a_block_lineGetFmt(const ABlock* Block, unsigned LineNumber, const char* Format, ...)
 {
     va_list args;
