@@ -1,4 +1,4 @@
-include $(A2X_PATH)/make/global/defs
+include $(A2X_PATH)/make/global/defs.mk
 
 A_CONFIG_BUILD_AR_FLAGS := T
 A_CONFIG_BUILD_OPT := -O3 -s
@@ -10,9 +10,11 @@ A_CONFIG_TRAIT_DESKTOP := 1
 A_CONFIG_TRAIT_KEYBOARD := 1
 
 A_PLATFORM_LIBS := \
+    -L/usr/lib/i386-linux-gnu \
     -lpng \
     -lm \
 
 A_PLATFORM_CFLAGS := \
+    -m32 \
 
-include $(A2X_PATH)/make/global/rules
+include $(A2X_PATH)/make/global/rules.mk

@@ -1,4 +1,4 @@
-include $(A2X_PATH)/make/global/defs
+include $(A2X_PATH)/make/global/defs.mk
 
 A_CONFIG_BUILD_AR_FLAGS := T
 A_CONFIG_BUILD_DEBUG ?= 1
@@ -22,7 +22,7 @@ A_PLATFORM_LIBS := \
 
 A_PLATFORM_CFLAGS := \
 
-include $(A2X_PATH)/make/global/rules
+include $(A2X_PATH)/make/global/rules.mk
 
 all : $(A2X_FILE_EDITOR_TAGS) $(A_FILE_SDKCONFIG_MK)
 

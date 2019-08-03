@@ -1,4 +1,4 @@
-include $(A2X_PATH)/make/global/defs
+include $(A2X_PATH)/make/global/defs.mk
 include $(A_FILE_SDKCONFIG_MK)
 
 MINGW_BIN := $(A_SDK_MINGW64_ROOT)/$(A_SDK_MINGW64_ARCH)/bin
@@ -29,4 +29,4 @@ export OBJCOPY := $(PREFIX)objcopy
 export READELF := $(PREFIX)readelf
 export STRIP   := $(PREFIX)strip
 
-include $(A2X_PATH)/make/global/rules
+include $(A2X_PATH)/make/global/rules.mk
