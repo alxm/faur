@@ -96,8 +96,15 @@ static inline const ABlock* blockGet(const ABlock* Block, unsigned LineNumber)
 
 ABlock* a_block_new(const char* File)
 {
-    ABlock* root = blockNew("");
     AFile* f = a_file_new(File, A_FILE_READ);
+
+    if(f == NULL) {
+        a_out_error("a_block_new(%s): Could not open file", File);
+
+        return NULL;
+    }
+
+    ABlock* root = blockNew("");
     AList* stack = a_list_new();
     int lastIndent = -1;
 
