@@ -83,7 +83,7 @@ void a_spritelayers_add(ASpriteLayers* Layers, ASprite* Sprite, AColorBlend Blen
     a_list_addLast(Layers, layer_new(Sprite, Blend, Red, Green, Blue, Alpha));
 }
 
-void a_spritelayers_blit(ASpriteLayers* Layers, unsigned Frame, int X, int Y)
+void a_spritelayers_blit(const ASpriteLayers* Layers, unsigned Frame, int X, int Y)
 {
     a_color_push();
 
