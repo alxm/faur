@@ -42,6 +42,16 @@ static ASprite* spriteNew(const APixels* Pixels, unsigned Frame, int X, int Y, i
     unsigned framesNum =
         (unsigned)((gridDim.x / FrameWidth) * (gridDim.y / FrameHeight));
 
+    if(framesNum == 0) {
+        A__FATAL("Cannot create a %dx%d sprite from %dx%d @ %d,%d",
+                 FrameWidth,
+                 FrameHeight,
+                 Pixels->w,
+                 Pixels->h,
+                 X,
+                 Y);
+    }
+
     int endX = X + gridDim.x - (gridDim.x % FrameWidth);
     int endY = Y + gridDim.y - (gridDim.y % FrameHeight);
 
