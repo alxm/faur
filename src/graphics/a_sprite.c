@@ -88,7 +88,7 @@ ASprite* a_sprite_newFromPng(const char* Path, int X, int Y, int FrameWidth, int
         char* suffix = a_str_suffixGetFromLast(Path, '_');
 
         if(suffix) {
-            int n = sscanf(suffix, "grid%dx%d.png", &FrameWidth, &FrameHeight);
+            int n = sscanf(suffix, "%dx%d", &FrameWidth, &FrameHeight);
 
             if(n != 2) {
                 FrameWidth = 0;
