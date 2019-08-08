@@ -32,7 +32,7 @@ static bool lazy_init(void)
 {
     // Only interested in the last file, to get the number from its name
     ADir* dir = a_dir_new(A_CONFIG_DIR_SCREENSHOTS);
-    APath* entry = a_list_getLast(a_dir_entriesListGet(dir));
+    APath* entry = a_list_getLast(a_dir_entriesGet(dir));
 
     if(entry == NULL) {
         g_isInit = true;

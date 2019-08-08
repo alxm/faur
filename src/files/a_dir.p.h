@@ -1,5 +1,5 @@
 /*
-    Copyright 2011, 2016, 2018 Alex Margarit <alex@alxm.org>
+    Copyright 2011, 2016, 2018-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -30,8 +30,6 @@ extern ADir* a_dir_new(const char* Path);
 extern void a_dir_free(ADir* Dir);
 
 extern const APath* a_dir_pathGet(const ADir* Dir);
-
-extern const AList* a_dir_entriesListGet(const ADir* Dir);
-extern unsigned a_dir_entriesNumGet(const ADir* Dir);
+extern const AList* a_dir_entriesGet(const ADir* Dir);
 
 #endif // A_INC_FILES_DIR_P_H

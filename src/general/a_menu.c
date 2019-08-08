@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2018 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016, 2018-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -152,7 +152,7 @@ AMenuState a_menu_stateGet(const AMenu* Menu)
     return Menu->state;
 }
 
-const AList* a_menu_itemsListGet(const AMenu* Menu)
+const AList* a_menu_itemsGet(const AMenu* Menu)
 {
     return Menu->items;
 }

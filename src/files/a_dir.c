@@ -161,12 +161,7 @@ const APath* a_dir_pathGet(const ADir* Dir)
     return Dir->path;
 }
 
-const AList* a_dir_entriesListGet(const ADir* Dir)
+const AList* a_dir_entriesGet(const ADir* Dir)
 {
     return Dir->files;
-}
-
-unsigned a_dir_entriesNumGet(const ADir* Dir)
-{
-    return a_list_sizeGet(Dir->files);
 }
