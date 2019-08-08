@@ -99,9 +99,7 @@ ABlock* a_block_new(const char* File)
     AFile* f = a_file_new(File, A_FILE_READ);
 
     if(f == NULL) {
-        a_out_error("a_block_new(%s): Could not open file", File);
-
-        return NULL;
+        A__FATAL("a_block_new(%s): Cannot open file", File);
     }
 
     ABlock* root = blockNew("");

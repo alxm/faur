@@ -145,7 +145,15 @@ void a_sound__draw(void)
 
 AMusic* a_music_new(const char* Path)
 {
-    return a_platform_api__soundMusicNew(Path);
+    APlatformSoundMusic* m = a_platform_api__soundMusicNew(Path);
+
+    #if A_CONFIG_SOUND_ENABLED
+        if(m == NULL) {
+            A__FATAL("a_music_new(%s): Cannot open file", Path);
+        }
+    #endif
+
+    return m;
 }
 
 void a_music_free(AMusic* Music)
@@ -175,13 +183,19 @@ ASample* a_sample_new(const char* Path)
 
     if(a_path_exists(Path, A_PATH_FILE | A_PATH_REAL)) {
         s = a_platform_api__soundSampleNewFromFile(Path);
-    } else {
+    } else if(a_path_exists(Path, A_PATH_FILE | A_PATH_EMBEDDED)) {
         const AEmbeddedFile* e = a_embed__fileGet(Path);
 
-        if(e) {
-            s = a_platform_api__soundSampleNewFromData(e->buffer, (int)e->size);
-        }
+        s = a_platform_api__soundSampleNewFromData(e->buffer, (int)e->size);
+    } else {
+        A__FATAL("a_sample_new(%s): File does not exist", Path);
     }
+
+    #if A_CONFIG_SOUND_ENABLED
+        if(s == NULL) {
+            A__FATAL("a_sample_new(%s): Cannot open file", Path);
+        }
+    #endif
 
     return s;
 }
