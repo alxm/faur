@@ -145,7 +145,7 @@ ASprite* a_sprite_dup(const ASprite* Sprite)
         s->textures[f] = a_platform_api__textureNew(&s->pixels, f);
 
         #if !A_CONFIG_LIB_RENDER_SOFTWARE
-            if(A_FLAG_TEST_ANY(Sprite->pixels.flags, A_PIXELS__DIRTY)) {
+            if(A_FLAGS_TEST_ANY(Sprite->pixels.flags, A_PIXELS__DIRTY)) {
                 // The sprite's pixel buffer may be stale if the texture
                 // was already set as render target and drawn to
                 a_color_push();

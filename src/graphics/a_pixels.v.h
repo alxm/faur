@@ -28,10 +28,10 @@ typedef struct APixels APixels;
 #include "math/a_fix.v.h"
 
 typedef enum {
-    A_PIXELS__ALLOC = A_FLAG_BIT(0),
-    A_PIXELS__DIRTY = A_FLAG_BIT(1),
-    A_PIXELS__DYNAMIC = A_FLAG_BIT(2),
-    A_PIXELS__CONST = A_FLAG_BIT(3),
+    A_PIXELS__ALLOC = A_FLAGS_BIT(0),
+    A_PIXELS__DIRTY = A_FLAGS_BIT(1),
+    A_PIXELS__DYNAMIC = A_FLAGS_BIT(2),
+    A_PIXELS__CONST = A_FLAGS_BIT(3),
 } APixelsFlags;
 
 struct APixels {

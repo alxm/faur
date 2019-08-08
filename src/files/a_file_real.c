@@ -91,13 +91,13 @@ AFile* a_file_real__new(APath* Path, AFileMode Mode)
     int index = 0;
     char mode[4];
 
-    if(A_FLAG_TEST_ANY(Mode, A_FILE_READ)) {
+    if(A_FLAGS_TEST_ANY(Mode, A_FILE_READ)) {
         mode[index++] = 'r';
-    } else if(A_FLAG_TEST_ANY(Mode, A_FILE_WRITE)) {
+    } else if(A_FLAGS_TEST_ANY(Mode, A_FILE_WRITE)) {
         mode[index++] = 'w';
     }
 
-    if(A_FLAG_TEST_ANY(Mode, A_FILE_BINARY)) {
+    if(A_FLAGS_TEST_ANY(Mode, A_FILE_BINARY)) {
         mode[index++] = 'b';
     }
 
@@ -113,7 +113,7 @@ AFile* a_file_real__new(APath* Path, AFileMode Mode)
         return NULL;
     }
 
-    if(A_FLAG_TEST_ANY(Mode, A_FILE_WRITE)) {
+    if(A_FLAGS_TEST_ANY(Mode, A_FILE_WRITE)) {
         a_path__flagsSet(Path, A_PATH_FILE | A_PATH_REAL);
     }
 

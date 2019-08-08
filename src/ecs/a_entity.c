@@ -113,7 +113,7 @@ void a_entity__free(AEntity* Entity)
     }
 
     #if A_CONFIG_BUILD_DEBUG
-        if(A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__DEBUG)) {
+        if(A_FLAGS_TEST_ANY(Entity->flags, A_ENTITY__DEBUG)) {
             a_out__info("a_entity__free(%s)", a_entity_idGet(Entity));
         }
     #endif
@@ -155,9 +155,9 @@ void a_entity__freeEx(AEntity* Entity)
 void a_entity_debugSet(AEntity* Entity, bool DebugOn)
 {
     if(DebugOn) {
-        A_FLAG_SET(Entity->flags, A_ENTITY__DEBUG);
+        A_FLAGS_SET(Entity->flags, A_ENTITY__DEBUG);
     } else {
-        A_FLAG_CLEAR(Entity->flags, A_ENTITY__DEBUG);
+        A_FLAGS_CLEAR(Entity->flags, A_ENTITY__DEBUG);
     }
 }
 
@@ -174,7 +174,7 @@ AEntity* a_entity_parentGet(const AEntity* Entity)
 void a_entity_parentSet(AEntity* Entity, AEntity* Parent)
 {
     #if A_CONFIG_BUILD_DEBUG
-        if(A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__DEBUG)) {
+        if(A_FLAGS_TEST_ANY(Entity->flags, A_ENTITY__DEBUG)) {
             a_out__info("a_entity_parentSet(%s, %s)",
                         a_entity_idGet(Entity),
                         Parent ? a_entity_idGet(Parent) : "NULL");
@@ -220,7 +220,7 @@ bool a_entity_parentHas(const AEntity* Child, const AEntity* PotentialParent)
 void a_entity_refInc(AEntity* Entity)
 {
     #if A_CONFIG_BUILD_DEBUG
-        if(A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__REMOVED)) {
+        if(A_FLAGS_TEST_ANY(Entity->flags, A_ENTITY__REMOVED)) {
             A__FATAL("a_entity_refInc(%s): Entity is removed",
                      a_entity_idGet(Entity));
         }
@@ -230,7 +230,7 @@ void a_entity_refInc(AEntity* Entity)
                      a_entity_idGet(Entity));
         }
 
-        if(A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__DEBUG)) {
+        if(A_FLAGS_TEST_ANY(Entity->flags, A_ENTITY__DEBUG)) {
             a_out__info("a_entity_refInc(%s) %d->%d",
                         a_entity_idGet(Entity),
                         Entity->references,
@@ -256,7 +256,7 @@ void a_entity_refDec(AEntity* Entity)
                 "a_entity_refDec(%s): Count too low", a_entity_idGet(Entity));
         }
 
-        if(A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__DEBUG)) {
+        if(A_FLAGS_TEST_ANY(Entity->flags, A_ENTITY__DEBUG)) {
             a_out__info("a_entity_refDec(%s) %d->%d",
                         a_entity_idGet(Entity),
                         Entity->references,
@@ -265,7 +265,7 @@ void a_entity_refDec(AEntity* Entity)
     #endif
 
     if(--Entity->references == 0
-        && A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__REMOVED)) {
+        && A_FLAGS_TEST_ANY(Entity->flags, A_ENTITY__REMOVED)) {
 
         listMoveTo(Entity, A_ECS__FLUSH);
     }
@@ -273,12 +273,12 @@ void a_entity_refDec(AEntity* Entity)
 
 bool a_entity_removedGet(const AEntity* Entity)
 {
-    return A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__REMOVED);
+    return A_FLAGS_TEST_ANY(Entity->flags, A_ENTITY__REMOVED);
 }
 
 void a_entity_removedSet(AEntity* Entity)
 {
-    if(A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__REMOVED)) {
+    if(A_FLAGS_TEST_ANY(Entity->flags, A_ENTITY__REMOVED)) {
         #if A_CONFIG_BUILD_DEBUG
             a_out__warning("a_entity_removedSet(%s): Entity is removed",
                            a_entity_idGet(Entity));
@@ -288,39 +288,39 @@ void a_entity_removedSet(AEntity* Entity)
     }
 
     #if A_CONFIG_BUILD_DEBUG
-        if(A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__DEBUG)) {
+        if(A_FLAGS_TEST_ANY(Entity->flags, A_ENTITY__DEBUG)) {
             a_out__info("a_entity_removedSet(%s)", a_entity_idGet(Entity));
         }
     #endif
 
-    A_FLAG_SET(Entity->flags, A_ENTITY__REMOVED);
+    A_FLAGS_SET(Entity->flags, A_ENTITY__REMOVED);
     listMoveTo(Entity, A_ECS__FLUSH);
 }
 
 bool a_entity_activeGet(const AEntity* Entity)
 {
-    return A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__ACTIVE_PERMANENT)
+    return A_FLAGS_TEST_ANY(Entity->flags, A_ENTITY__ACTIVE_PERMANENT)
         || Entity->lastActive == a_fps_ticksGet();
 }
 
 void a_entity_activeSet(AEntity* Entity)
 {
     if(Entity->muteCount > 0
-        || A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__REMOVED)) {
+        || A_FLAGS_TEST_ANY(Entity->flags, A_ENTITY__REMOVED)) {
 
         return;
     }
 
     #if A_CONFIG_BUILD_DEBUG
-        if(A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__DEBUG)) {
+        if(A_FLAGS_TEST_ANY(Entity->flags, A_ENTITY__DEBUG)) {
             a_out__info("a_entity_activeSet(%s)", a_entity_idGet(Entity));
         }
     #endif
 
     Entity->lastActive = a_fps_ticksGet();
 
-    if(A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__ACTIVE_REMOVED)) {
-        A_FLAG_CLEAR(Entity->flags, A_ENTITY__ACTIVE_REMOVED);
+    if(A_FLAGS_TEST_ANY(Entity->flags, A_ENTITY__ACTIVE_REMOVED)) {
+        A_FLAGS_CLEAR(Entity->flags, A_ENTITY__ACTIVE_REMOVED);
 
         // Add entity back to active-only systems
         A_LIST_ITERATE(Entity->matchingSystemsActive, ASystem*, system) {
@@ -333,13 +333,13 @@ void a_entity_activeSet(AEntity* Entity)
 void a_entity_activeSetPermanent(AEntity* Entity)
 {
     #if A_CONFIG_BUILD_DEBUG
-        if(A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__DEBUG)) {
+        if(A_FLAGS_TEST_ANY(Entity->flags, A_ENTITY__DEBUG)) {
             a_out__info(
                 "a_entity_activeSetPermanent(%s)", a_entity_idGet(Entity));
         }
     #endif
 
-    A_FLAG_SET(Entity->flags, A_ENTITY__ACTIVE_PERMANENT);
+    A_FLAGS_SET(Entity->flags, A_ENTITY__ACTIVE_PERMANENT);
 }
 
 void* a_entity_componentAdd(AEntity* Entity, int ComponentIndex)
@@ -359,7 +359,7 @@ void* a_entity_componentAdd(AEntity* Entity, int ComponentIndex)
                      a_component__stringGet(component));
         }
 
-        if(A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__DEBUG)) {
+        if(A_FLAGS_TEST_ANY(Entity->flags, A_ENTITY__DEBUG)) {
             a_out__info("a_entity_componentAdd(%s, %s)",
                         a_entity_idGet(Entity),
                         a_component__stringGet(component));
@@ -418,7 +418,7 @@ bool a_entity_muteGet(const AEntity* Entity)
 
 void a_entity_muteInc(AEntity* Entity)
 {
-    if(A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__REMOVED)) {
+    if(A_FLAGS_TEST_ANY(Entity->flags, A_ENTITY__REMOVED)) {
         #if A_CONFIG_BUILD_DEBUG
             a_out__warning("a_entity_muteInc(%s): Entity is removed",
                            a_entity_idGet(Entity));
@@ -433,7 +433,7 @@ void a_entity_muteInc(AEntity* Entity)
                 "a_entity_muteInc(%s): Count too high", a_entity_idGet(Entity));
         }
 
-        if(A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__DEBUG)) {
+        if(A_FLAGS_TEST_ANY(Entity->flags, A_ENTITY__DEBUG)) {
             a_out__info("a_entity_muteInc(%s) %d->%d",
                         a_entity_idGet(Entity),
                         Entity->muteCount,
@@ -448,7 +448,7 @@ void a_entity_muteInc(AEntity* Entity)
 
 void a_entity_muteDec(AEntity* Entity)
 {
-    if(A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__REMOVED)) {
+    if(A_FLAGS_TEST_ANY(Entity->flags, A_ENTITY__REMOVED)) {
         #if A_CONFIG_BUILD_DEBUG
             a_out__warning("a_entity_muteDec(%s): Entity is removed",
                            a_entity_idGet(Entity));
@@ -463,7 +463,7 @@ void a_entity_muteDec(AEntity* Entity)
                 "a_entity_muteDec(%s): Count too low", a_entity_idGet(Entity));
         }
 
-        if(A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__DEBUG)) {
+        if(A_FLAGS_TEST_ANY(Entity->flags, A_ENTITY__DEBUG)) {
             a_out__info("a_entity_muteDec(%s) %d->%d",
                         a_entity_idGet(Entity),
                         Entity->muteCount,
@@ -497,7 +497,7 @@ const ATemplate* a_entity__templateGet(const AEntity* Entity)
 bool a_entity__ecsCanDelete(const AEntity* Entity)
 {
     return Entity->references == 0
-            && A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__REMOVED);
+            && A_FLAGS_TEST_ANY(Entity->flags, A_ENTITY__REMOVED);
 }
 
 void a_entity__ecsListAdd(AEntity* Entity, AList* List)
@@ -529,7 +529,7 @@ void a_entity__systemsAddTo(AEntity* Entity)
         }
     #endif
 
-    if(!A_FLAG_TEST_ANY(Entity->flags, A_ENTITY__ACTIVE_REMOVED)) {
+    if(!A_FLAGS_TEST_ANY(Entity->flags, A_ENTITY__ACTIVE_REMOVED)) {
         A_LIST_ITERATE(Entity->matchingSystemsActive, ASystem*, system) {
             a_list_addLast(
                 Entity->systemNodesActive, a_system__entityAdd(system, Entity));
@@ -552,6 +552,6 @@ void a_entity__systemsRemoveFromAll(AEntity* Entity)
 
 void a_entity__systemsRemoveFromActive(AEntity* Entity)
 {
-    A_FLAG_SET(Entity->flags, A_ENTITY__ACTIVE_REMOVED);
+    A_FLAGS_SET(Entity->flags, A_ENTITY__ACTIVE_REMOVED);
     a_list_clearEx(Entity->systemNodesActive, (AFree*)a_list_removeNode);
 }

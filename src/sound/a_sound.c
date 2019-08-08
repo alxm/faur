@@ -204,16 +204,16 @@ void a_channel_play(int Channel, ASample* Sample, AChannelFlags Flags)
         return;
     }
 
-    if(A_FLAG_TEST_ANY(Flags, A_CHANNEL_RESTART)) {
+    if(A_FLAGS_TEST_ANY(Flags, A_CHANNEL_RESTART)) {
         a_platform_api__soundSampleStop(Channel);
-    } else if(A_FLAG_TEST_ANY(Flags, A_CHANNEL_YIELD)
+    } else if(A_FLAGS_TEST_ANY(Flags, A_CHANNEL_YIELD)
         && a_platform_api__soundSampleIsPlaying(Channel)) {
 
         return;
     }
 
     a_platform_api__soundSamplePlay(
-        Sample, Channel, A_FLAG_TEST_ANY(Flags, A_CHANNEL_LOOP));
+        Sample, Channel, A_FLAGS_TEST_ANY(Flags, A_CHANNEL_LOOP));
 }
 
 void a_channel_stop(int Channel)

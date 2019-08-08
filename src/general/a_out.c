@@ -20,7 +20,7 @@
 #include <a2x.v.h>
 
 typedef enum {
-    A_OUT__FLAG_OVERWRITE = A_FLAG_BIT(0),
+    A_OUT__FLAG_OVERWRITE = A_FLAGS_BIT(0),
 } AOutFlags;
 
 typedef enum {
@@ -72,7 +72,7 @@ static void outWorkerPrint(AOutSource Source, AOutType Type, FILE* Stream, const
     fputs("\n", Stream);
 
     a_console__write(
-        Source, Type, Text, A_FLAG_TEST_ANY(Flags, A_OUT__FLAG_OVERWRITE));
+        Source, Type, Text, A_FLAGS_TEST_ANY(Flags, A_OUT__FLAG_OVERWRITE));
 }
 
 static void outWorker(AOutSource Source, AOutType Type, FILE* Stream, const char* Format, va_list Args, AOutFlags Flags)
