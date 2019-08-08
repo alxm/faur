@@ -24,12 +24,14 @@ AFile* a_file_new(const char* Path, AFileMode Mode)
     AFile* f = NULL;
     APath* path = a_path_new(Path);
 
-    if(A_FLAG_TEST_ANY(Mode, A_FILE_WRITE)
+    if(A_FLAGS_TEST_ANY(Mode, A_FILE_WRITE)
         || a_path_test(path, A_PATH_FILE | A_PATH_REAL)) {
 
         f = a_file_real__new(path, Mode);
     } else if(a_path_test(path, A_PATH_FILE | A_PATH_EMBEDDED)) {
         f = a_file_embedded__new(path);
+    } else {
+        a_out__warning("a_file_new(%s): File does not exist", Path);
     }
 
     if(f == NULL) {

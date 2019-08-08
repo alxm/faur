@@ -86,7 +86,8 @@ void a_template_new(const char* FilePath)
 
         #if A_CONFIG_BUILD_DEBUG
             if(a_strhash_contains(g_templates, id)) {
-                A__FATAL("a_template_new(%s): '%s' already declared", FilePath, id);
+                A__FATAL(
+                    "a_template_new(%s): '%s' already declared", FilePath, id);
             }
         #endif
 

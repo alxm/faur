@@ -163,8 +163,8 @@ void a_screen_clear(void)
 void a_screen_push(ASprite* Sprite, unsigned Frame)
 {
     #if A_CONFIG_BUILD_DEBUG
-        if(A_FLAG_TEST_ANY(a_sprite__pixelsGet(Sprite)->flags,
-                           A_PIXELS__CONST)) {
+        if(A_FLAGS_TEST_ANY(
+            a_sprite__pixelsGet(Sprite)->flags, A_PIXELS__CONST)) {
 
             A__FATAL("a_screen_push: Const sprite");
         }
@@ -180,7 +180,7 @@ void a_screen_push(ASprite* Sprite, unsigned Frame)
         a__screen.texture = a_sprite__textureGet(Sprite, Frame);
         a_platform_api__screenTextureSet(a__screen.texture);
 
-        A_FLAG_SET(a_sprite__pixelsGet(Sprite)->flags, A_PIXELS__DIRTY);
+        A_FLAGS_SET(a_sprite__pixelsGet(Sprite)->flags, A_PIXELS__DIRTY);
     #endif
 
     a_screen_clipReset();

@@ -33,19 +33,19 @@ static APathFlags getPathFlags(const char* Path)
     APathFlags flags = 0;
 
     if(stat(Path, &info) == 0) {
-        A_FLAG_SET(flags, A_PATH_REAL);
+        A_FLAGS_SET(flags, A_PATH_REAL);
 
         if(S_ISREG(info.st_mode)) {
-            A_FLAG_SET(flags, A_PATH_FILE);
+            A_FLAGS_SET(flags, A_PATH_FILE);
         } else if(S_ISDIR(info.st_mode)) {
-            A_FLAG_SET(flags, A_PATH_DIR);
+            A_FLAGS_SET(flags, A_PATH_DIR);
         } else {
-            A_FLAG_SET(flags, A_PATH_OTHER);
+            A_FLAGS_SET(flags, A_PATH_OTHER);
         }
     } else if(a_embed__fileGet(Path) != NULL) {
-        A_FLAG_SET(flags, A_PATH_EMBEDDED | A_PATH_FILE);
+        A_FLAGS_SET(flags, A_PATH_EMBEDDED | A_PATH_FILE);
     } else if(a_embed__dirGet(Path) != NULL) {
-        A_FLAG_SET(flags, A_PATH_EMBEDDED | A_PATH_DIR);
+        A_FLAGS_SET(flags, A_PATH_EMBEDDED | A_PATH_DIR);
     }
 
     return flags;
@@ -107,17 +107,17 @@ void a_path_free(APath* Path)
 
 bool a_path_exists(const char* Path, APathFlags Flags)
 {
-    return A_FLAG_TEST_ALL(getPathFlags(Path), Flags);
+    return A_FLAGS_TEST_ALL(getPathFlags(Path), Flags);
 }
 
 bool a_path_test(const APath* Path, APathFlags Flags)
 {
-    return A_FLAG_TEST_ALL(Path->flags, Flags);
+    return A_FLAGS_TEST_ALL(Path->flags, Flags);
 }
 
 void a_path__flagsSet(APath* Path, APathFlags Flags)
 {
-    A_FLAG_SET(Path->flags, Flags);
+    A_FLAGS_SET(Path->flags, Flags);
 }
 
 const char* a_path_getFull(const APath* Path)

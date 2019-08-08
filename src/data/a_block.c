@@ -96,8 +96,13 @@ static inline const ABlock* blockGet(const ABlock* Block, unsigned LineNumber)
 
 ABlock* a_block_new(const char* File)
 {
-    ABlock* root = blockNew("");
     AFile* f = a_file_new(File, A_FILE_READ);
+
+    if(f == NULL) {
+        A__FATAL("a_block_new(%s): Cannot open file", File);
+    }
+
+    ABlock* root = blockNew("");
     AList* stack = a_list_new();
     int lastIndent = -1;
 
@@ -267,6 +272,22 @@ AVectorInt a_block_lineGetCoords(const ABlock* Block, unsigned LineNumber)
 
     if(line) {
         sscanf(line->text, "%d, %d", &v.x, &v.y);
+    }
+
+    return v;
+}
+
+AVectorFix a_block_lineGetCoordsf(const ABlock* Block, unsigned LineNumber)
+{
+    const ABlock* line = blockGet(Block, LineNumber);
+    AVectorFix v = {0, 0};
+
+    if(line) {
+        double x = 0, y = 0;
+        sscanf(line->text, "%lf, %lf", &x, &y);
+
+        v.x = a_fix_fromDouble(x);
+        v.y = a_fix_fromDouble(y);
     }
 
     return v;

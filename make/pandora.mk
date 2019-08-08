@@ -1,4 +1,4 @@
-include $(A2X_PATH)/make/global/defs
+include $(A2X_PATH)/make/global/defs.mk
 include $(A_FILE_SDKCONFIG_MK)
 
 A_CONFIG_BUILD_AR_FLAGS := T
@@ -56,7 +56,7 @@ export READELF := $(PREFIX)readelf
 export STRIP   := $(PREFIX)strip
 export LD      := $(PREFIX)ld
 
-include $(A2X_PATH)/make/global/rules
+include $(A2X_PATH)/make/global/rules.mk
 
 A_FILE_TARGET_PND := $(PWD)/$(A_CONFIG_DIR_ROOT)/$(A_CONFIG_DIR_BIN)/$(A_CONFIG_APP_PND)
 

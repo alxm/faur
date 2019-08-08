@@ -32,6 +32,6 @@ extern void a_spritelayers_free(ASpriteLayers* Layers, bool FreeSprites);
 extern void a_spritelayers_clear(ASpriteLayers* Layers, bool FreeSprites);
 extern void a_spritelayers_add(ASpriteLayers* Layers, ASprite* Sprite, AColorBlend Blend, int Red, int Green, int Blue, int Alpha);
 
-extern void a_spritelayers_blit(ASpriteLayers* Layers, unsigned Frame, int X, int Y);
+extern void a_spritelayers_blit(const ASpriteLayers* Layers, unsigned Frame, int X, int Y);
 
 #endif // A_INC_GRAPHICS_SPRITELAYERS_P_H

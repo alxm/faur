@@ -131,7 +131,7 @@ __attribute__((noreturn)) static void handleFatal(void)
             a_out__error(functionNames[i]);
         }
 
-        a_mem_free(functionNames);
+        free(functionNames);
     #endif
 
     a_console_showSet(true);
@@ -143,7 +143,7 @@ __attribute__((noreturn)) static void handleFatal(void)
             printf("Waiting to attach debugger: PID %d\n", getpid());
             a_time_spinSec(1);
         }
-    #else
+    #elif !A_CONFIG_TRAIT_DESKTOP
         if(a_console__isInitialized()) {
             for(int s = 10; s > 0; s--) {
                 if(s == 10) {

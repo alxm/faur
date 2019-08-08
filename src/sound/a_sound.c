@@ -145,7 +145,15 @@ void a_sound__draw(void)
 
 AMusic* a_music_new(const char* Path)
 {
-    return a_platform_api__soundMusicNew(Path);
+    APlatformSoundMusic* m = a_platform_api__soundMusicNew(Path);
+
+    #if A_CONFIG_SOUND_ENABLED
+        if(m == NULL) {
+            A__FATAL("a_music_new(%s): Cannot open file", Path);
+        }
+    #endif
+
+    return m;
 }
 
 void a_music_free(AMusic* Music)
@@ -175,13 +183,19 @@ ASample* a_sample_new(const char* Path)
 
     if(a_path_exists(Path, A_PATH_FILE | A_PATH_REAL)) {
         s = a_platform_api__soundSampleNewFromFile(Path);
-    } else {
+    } else if(a_path_exists(Path, A_PATH_FILE | A_PATH_EMBEDDED)) {
         const AEmbeddedFile* e = a_embed__fileGet(Path);
 
-        if(e) {
-            s = a_platform_api__soundSampleNewFromData(e->buffer, (int)e->size);
-        }
+        s = a_platform_api__soundSampleNewFromData(e->buffer, (int)e->size);
+    } else {
+        A__FATAL("a_sample_new(%s): File does not exist", Path);
     }
+
+    #if A_CONFIG_SOUND_ENABLED
+        if(s == NULL) {
+            A__FATAL("a_sample_new(%s): Cannot open file", Path);
+        }
+    #endif
 
     return s;
 }
@@ -204,16 +218,16 @@ void a_channel_play(int Channel, ASample* Sample, AChannelFlags Flags)
         return;
     }
 
-    if(A_FLAG_TEST_ANY(Flags, A_CHANNEL_RESTART)) {
+    if(A_FLAGS_TEST_ANY(Flags, A_CHANNEL_RESTART)) {
         a_platform_api__soundSampleStop(Channel);
-    } else if(A_FLAG_TEST_ANY(Flags, A_CHANNEL_YIELD)
+    } else if(A_FLAGS_TEST_ANY(Flags, A_CHANNEL_YIELD)
         && a_platform_api__soundSampleIsPlaying(Channel)) {
 
         return;
     }
 
     a_platform_api__soundSamplePlay(
-        Sample, Channel, A_FLAG_TEST_ANY(Flags, A_CHANNEL_LOOP));
+        Sample, Channel, A_FLAGS_TEST_ANY(Flags, A_CHANNEL_LOOP));
 }
 
 void a_channel_stop(int Channel)

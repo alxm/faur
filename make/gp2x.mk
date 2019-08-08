@@ -1,33 +1,38 @@
-include $(A2X_PATH)/make/global/defs
+include $(A2X_PATH)/make/global/defs.mk
 include $(A_FILE_SDKCONFIG_MK)
-
-OPEN2X := $(A_SDK_OPEN2X_ROOT)/$(A_SDK_OPEN2X_TOOLCHAIN)
 
 A_CONFIG_BUILD_OPT := -O3 -s
 A_CONFIG_INPUT_MOUSE_CURSOR := 0
 A_CONFIG_LIB_SDL := 1
+A_CONFIG_LIB_SDL_TIME := 1
 A_CONFIG_SCREEN_FULLSCREEN := 1
 A_CONFIG_SCREEN_HARDWARE_WIDTH := 320
 A_CONFIG_SCREEN_HARDWARE_HEIGHT := 240
-A_CONFIG_SCREEN_WIZ_FIX ?= 1
+A_CONFIG_SYSTEM_GP2X := 1
 A_CONFIG_SYSTEM_LINUX := 1
-A_CONFIG_SYSTEM_WIZ := 1
+
+OPEN2X := $(A_SDK_OPEN2X_ROOT)/$(A_SDK_OPEN2X_TOOLCHAIN)
 
 A_PLATFORM_LIBS := \
+    -static \
     -L$(OPEN2X)/lib \
     -L$(OPEN2X)/arm-open2x-linux/lib \
     -lpng12 \
     -lz \
     -lSDL_mixer \
     -lsmpeg \
+    -lmikmod \
+    -logg \
+    -lvorbisidec \
     -lSDL \
     -lpthread \
     -lm \
+    -lstdc++ \
     -ldl \
 
 A_PLATFORM_CFLAGS := \
-    -march=armv5te \
-    -mtune=arm9tdmi \
+    -mcpu=arm920t \
+    -mtune=arm920t \
     -msoft-float \
     -ffast-math \
     -fomit-frame-pointer \
@@ -46,4 +51,4 @@ export OBJCOPY := $(PREFIX)objcopy
 export READELF := $(PREFIX)readelf
 export STRIP   := $(PREFIX)strip
 
-include $(A2X_PATH)/make/global/rules
+include $(A2X_PATH)/make/global/rules.mk

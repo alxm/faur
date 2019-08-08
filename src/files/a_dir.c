@@ -73,6 +73,7 @@ static AList* dirReal(APath* Path)
 
         if(result == -1) {
             a_out__error("a_dir_new: mkdir(%s) failed", path);
+
             return NULL;
         }
 
@@ -85,6 +86,7 @@ static AList* dirReal(APath* Path)
 
     if(dir == NULL) {
         a_out__error("a_dir_new: opendir(%s) failed", path);
+
         return NULL;
     }
 
@@ -107,10 +109,6 @@ static AList* dirEmbedded(APath* Path)
 {
     const char* path = a_path_getFull(Path);
     const AEmbeddedDir* data = a_embed__dirGet(path);
-
-    if(data == NULL) {
-        return NULL;
-    }
 
     AList* files = a_list_new();
 
@@ -135,9 +133,7 @@ ADir* a_dir_new(const char* Path)
     }
 
     if(files == NULL) {
-        a_path_free(path);
-
-        return NULL;
+        A__FATAL("a_dir_new(%s): Cannot open dir", Path);
     }
 
     ADir* d = a_mem_malloc(sizeof(ADir));
@@ -165,12 +161,7 @@ const APath* a_dir_pathGet(const ADir* Dir)
     return Dir->path;
 }
 
-const AList* a_dir_entriesListGet(const ADir* Dir)
+const AList* a_dir_entriesGet(const ADir* Dir)
 {
     return Dir->files;
-}
-
-unsigned a_dir_entriesNumGet(const ADir* Dir)
-{
-    return a_list_sizeGet(Dir->files);
 }

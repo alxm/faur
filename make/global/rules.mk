@@ -1,7 +1,7 @@
 #
 # Process and reconcile build settings
 #
-include $(A2X_PATH)/make/global/config
+include $(A2X_PATH)/make/global/config.mk
 
 #
 # Object files dir for current platform
@@ -86,7 +86,7 @@ all : $(A_FILE_TARGET_BIN)
 #
 # a2x header and lib build rules
 #
-include $(A2X_PATH)/make/global/a2x
+include $(A2X_PATH)/make/global/a2x.mk
 
 $(A_FILES_OBJ) : $(A2X_FILE_PUBLIC_A2X_HEADER)
 

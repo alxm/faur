@@ -1,48 +1,47 @@
-include $(A2X_PATH)/make/global/defs
+include $(A2X_PATH)/make/global/defs.mk
 include $(A_FILE_SDKCONFIG_MK)
 
+A_CONFIG_BUILD_AR_FLAGS := T
 A_CONFIG_BUILD_OPT := -O3 -s
 A_CONFIG_INPUT_MOUSE_CURSOR := 0
 A_CONFIG_LIB_SDL := 1
-A_CONFIG_LIB_SDL_TIME := 1
 A_CONFIG_SCREEN_FULLSCREEN := 1
 A_CONFIG_SCREEN_HARDWARE_WIDTH := 320
 A_CONFIG_SCREEN_HARDWARE_HEIGHT := 240
-A_CONFIG_SYSTEM_GP2X := 1
+A_CONFIG_SYSTEM_CAANOO := 1
 A_CONFIG_SYSTEM_LINUX := 1
 
-OPEN2X := $(A_SDK_OPEN2X_ROOT)/$(A_SDK_OPEN2X_TOOLCHAIN)
+CAANOO_SDK := $(A_SDK_CAANOO_ROOT)/$(A_SDK_CAANOO_TOOLCHAIN)
 
 A_PLATFORM_LIBS := \
-    -static \
-    -L$(OPEN2X)/lib \
-    -L$(OPEN2X)/arm-open2x-linux/lib \
+    -L$(A_SDK_CAANOO_ROOT)/lib/target \
+    -L$(A_SDK_CAANOO_ROOT)/DGE/lib/target \
+    -L$(CAANOO_SDK)/lib \
+    -L$(CAANOO_SDK)/arm-gph-linux-gnueabi/lib \
     -lpng12 \
     -lz \
     -lSDL_mixer \
     -lsmpeg \
-    -lmikmod \
-    -logg \
-    -lvorbisidec \
     -lSDL \
     -lpthread \
     -lm \
-    -lstdc++ \
     -ldl \
 
 A_PLATFORM_CFLAGS := \
-    -mcpu=arm920t \
-    -mtune=arm920t \
+    -march=armv5te \
+    -mtune=arm9tdmi \
     -msoft-float \
     -ffast-math \
     -fomit-frame-pointer \
-    -isystem$(OPEN2X)/include \
-    -isystem$(OPEN2X)/arm-open2x-linux/include \
+    -isystem$(A_SDK_CAANOO_ROOT)/include \
+    -isystem$(A_SDK_CAANOO_ROOT)/DGE/include \
+    -isystem$(CAANOO_SDK)/include \
+    -isystem$(CAANOO_SDK)/arm-gph-linux-gnueabi/include \
     -Wno-conversion \
 
-PREFIX := arm-open2x-linux-
+PREFIX := arm-gph-linux-gnueabi-
 
-export PATH    := $(OPEN2X)/bin:$(PATH)
+export PATH    := $(CAANOO_SDK)/bin:$(PATH)
 export CC      := $(PREFIX)gcc
 export CXX     := $(PREFIX)g++
 export AS      := $(PREFIX)as
@@ -51,4 +50,4 @@ export OBJCOPY := $(PREFIX)objcopy
 export READELF := $(PREFIX)readelf
 export STRIP   := $(PREFIX)strip
 
-include $(A2X_PATH)/make/global/rules
+include $(A2X_PATH)/make/global/rules.mk

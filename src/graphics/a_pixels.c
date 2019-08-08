@@ -35,7 +35,7 @@ void a_pixels__init(APixels* Pixels, int W, int H, unsigned Frames, APixelsFlags
     Pixels->framesNum = Frames;
     Pixels->flags = Flags;
 
-    if(A_FLAG_TEST_ANY(Flags, A_PIXELS__ALLOC)) {
+    if(A_FLAGS_TEST_ANY(Flags, A_PIXELS__ALLOC)) {
         Pixels->bufferLen = (unsigned)(W * H);
         Pixels->bufferSize = Pixels->bufferLen * (unsigned)sizeof(APixel);
         Pixels->buffer = a_mem_zalloc(Pixels->bufferSize * Frames);
@@ -52,11 +52,11 @@ void a_pixels__free(APixels* Pixels)
         return;
     }
 
-    if(A_FLAG_TEST_ANY(Pixels->flags, A_PIXELS__ALLOC)) {
+    if(A_FLAGS_TEST_ANY(Pixels->flags, A_PIXELS__ALLOC)) {
         a_mem_free(Pixels->buffer);
     }
 
-    if(A_FLAG_TEST_ANY(Pixels->flags, A_PIXELS__DYNAMIC)) {
+    if(A_FLAGS_TEST_ANY(Pixels->flags, A_PIXELS__DYNAMIC)) {
         a_mem_free(Pixels);
     }
 }
@@ -65,7 +65,7 @@ void a_pixels__copy(APixels* Dst, const APixels* Src)
 {
     memcpy(Dst, Src, sizeof(APixels));
 
-    if(A_FLAG_TEST_ANY(Dst->flags, A_PIXELS__ALLOC)) {
+    if(A_FLAGS_TEST_ANY(Dst->flags, A_PIXELS__ALLOC)) {
         Dst->buffer = a_mem_dup(Dst->buffer, Dst->bufferSize * Dst->framesNum);
     }
 }

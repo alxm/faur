@@ -30,39 +30,36 @@ static AButton* g_button;
 
 static bool lazy_init(void)
 {
+    // Only interested in the last file, to get the number from its name
     ADir* dir = a_dir_new(A_CONFIG_DIR_SCREENSHOTS);
+    APath* entry = a_list_getLast(a_dir_entriesGet(dir));
 
-    if(dir != NULL) {
-        // Only interested in the last file, to get the number from its name
-        APath* entry = a_list_getLast(a_dir_entriesListGet(dir));
+    if(entry == NULL) {
+        g_isInit = true;
+    } else {
+        const char* file = a_path_getName(entry);
 
-        if(entry == NULL || a_path_getName(entry)[0] == '.') {
-            g_isInit = true;
-        } else {
-            const char* file = a_path_getName(entry);
+        int start = a_str_indexGetLast(file, '-');
+        int end = a_str_indexGetLast(file, '.');
 
-            int start = a_str_indexGetLast(file, '-');
-            int end = a_str_indexGetLast(file, '.');
+        if(start != -1 && end != -1 && end - start == 6) {
+            char* numberStr = a_str_subGetRange(file, start + 1, end);
+            int number = atoi(numberStr);
 
-            if(start != -1 && end != -1 && end - start == 6) {
-                char* numberStr = a_str_subGetRange(file, start + 1, end);
-                int number = atoi(numberStr);
-
-                if(number > 0) {
-                    g_screenshotNumber = (unsigned)number;
-                    g_isInit = true;
-                }
-
-                a_mem_free(numberStr);
+            if(number > 0) {
+                g_screenshotNumber = (unsigned)number;
+                g_isInit = true;
             }
 
-            if(!g_isInit) {
-                a_out__error("Invalid file name '%s'", a_path_getFull(entry));
-            }
+            a_mem_free(numberStr);
         }
 
-        a_dir_free(dir);
+        if(!g_isInit) {
+            a_out__error("Invalid file name '%s'", a_path_getFull(entry));
+        }
     }
+
+    a_dir_free(dir);
 
     if(g_isInit) {
         g_filePrefix = a_str_dup(a_str__fmt512("%s/%s-",

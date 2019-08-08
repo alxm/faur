@@ -42,7 +42,6 @@ extern void a_timer_periodSet(ATimer* Timer, unsigned Period);
 
 extern void a_timer_start(ATimer* Timer);
 extern void a_timer_stop(ATimer* Timer);
-
 extern bool a_timer_isRunning(const ATimer* Timer);
 
 extern bool a_timer_expiredGet(const ATimer* Timer);

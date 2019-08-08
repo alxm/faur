@@ -1,4 +1,4 @@
-include $(A2X_PATH)/make/global/defs
+include $(A2X_PATH)/make/global/defs.mk
 
 A_CONFIG_BUILD_OPT := -O3
 A_CONFIG_LIB_SDL ?= 2
@@ -39,4 +39,4 @@ A_PLATFORM_CFLAGS := \
     $(A_BUILD_EMSCRIPTEN_LIBS) \
     -Wno-dollar-in-identifier-extension \
 
-include $(A2X_PATH)/make/global/rules
+include $(A2X_PATH)/make/global/rules.mk

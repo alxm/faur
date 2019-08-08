@@ -24,9 +24,9 @@
 typedef struct AFile AFile;
 
 typedef enum {
-    A_FILE_READ = A_FLAG_BIT(0),
-    A_FILE_WRITE = A_FLAG_BIT(1),
-    A_FILE_BINARY = A_FLAG_BIT(2),
+    A_FILE_READ = A_FLAGS_BIT(0),
+    A_FILE_WRITE = A_FLAGS_BIT(1),
+    A_FILE_BINARY = A_FLAGS_BIT(2),
 } AFileMode;
 
 #include "files/a_path.p.h"
