@@ -21,11 +21,13 @@
 
 struct ATemplate {
     unsigned instanceNumber; // Incremented by each new entity
+    AEntityInit* init; // Optional callback, runs after the components init
     ABitfield* componentBits; // Set if template has corresponding component
     void* data[A_CONFIG_ECS_COM_NUM]; // Parsed component config data, or NULL
 };
 
 static AStrHash* g_templates; // table of ATemplate
+static AEntityInit* g_init; // Optional callback, runs before template-specific
 
 static ATemplate* templateNew(const char* TemplateId, const ABlock* Block)
 {
@@ -110,6 +112,30 @@ const ATemplate* a_template__get(const char* TemplateId)
     t->instanceNumber++;
 
     return t;
+}
+
+AEntityInit* a_template__initGet(const ATemplate* Template)
+{
+    return Template == NULL ? g_init : Template->init;
+}
+
+void a_template_initSet(const char* Id, AEntityInit* Init)
+{
+    if(Id == NULL) {
+        g_init = Init;
+
+        return;
+    }
+
+    ATemplate* t = a_strhash_get(g_templates, Id);
+
+    #if A_CONFIG_BUILD_DEBUG
+        if(t == NULL) {
+            A__FATAL("a_template_initSet(%s): Unknown template", Id);
+        }
+    #endif
+
+    t->init = Init;
 }
 
 unsigned a_template__instanceGet(const ATemplate* Template)

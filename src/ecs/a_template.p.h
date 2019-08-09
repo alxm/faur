@@ -1,5 +1,5 @@
 /*
-    Copyright 2018 Alex Margarit <alex@alxm.org>
+    Copyright 2018-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -21,6 +21,11 @@
 
 #include "general/a_system_includes.h"
 
+#include "ecs/a_entity.p.h"
+
+typedef void AEntityInit(AEntity* Entity, const void* Context);
+
 extern void a_template_new(const char* FilePath);
+extern void a_template_initSet(const char* Id, AEntityInit* Init);
 
 #endif // A_INC_ECS_TEMPLATE_P_H

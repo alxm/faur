@@ -65,9 +65,11 @@ static inline void listMoveTo(AEntity* Entity, AEcsListId List)
     listAddTo(Entity, List);
 }
 
-AEntity* a_entity_new(const char* Template)
+AEntity* a_entity_new(const char* Template, const void* Context)
 {
     AEntity* e = a_mem_zalloc(sizeof(AEntity));
+
+    listAddTo(e, A_ECS__NEW);
 
     e->matchingSystemsActive = a_list_new();
     e->matchingSystemsRest = a_list_new();
@@ -82,7 +84,7 @@ AEntity* a_entity_new(const char* Template)
         e->collectionNode = a_list_addLast(collection, e);
     }
 
-    if(Template != NULL) {
+    if(Template) {
         const ATemplate* template = a_template__get(Template);
         const char* id = a_str__fmt512("%s#%u",
                                        Template,
@@ -99,9 +101,19 @@ AEntity* a_entity_new(const char* Template)
                              a_template__dataGet(template, c));
             }
         }
-    }
 
-    listAddTo(e, A_ECS__NEW);
+        AEntityInit* init = a_template__initGet(NULL);
+
+        if(init) {
+            init(e, Context);
+        }
+
+        init = a_template__initGet(template);
+
+        if(init) {
+            init(e, Context);
+        }
+    }
 
     return e;
 }
