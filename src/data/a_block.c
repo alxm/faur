@@ -190,15 +190,7 @@ const AList* a_block_blocksGet(const ABlock* Block)
 
 const ABlock* a_block_keyGetBlock(const ABlock* Block, const char* Key)
 {
-    if(Block->index) {
-        AList* list = a_strhash_get(Block->index, Key);
-
-        if(list) {
-            return a_list_getFirst(list);
-        }
-    }
-
-    return NULL;
+    return a_list_getFirst(a_block_keyGetBlocks(Block, Key));
 }
 
 const AList* a_block_keyGetBlocks(const ABlock* Block, const char* Key)
