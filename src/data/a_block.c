@@ -25,7 +25,6 @@ struct ABlock {
     AStrHash* index; // table of AList of ABlock, the blocks indexed by name
     const ABlock** array; // the blocks indexed by line # relative to parent
     unsigned arrayLen; // number of blocks under parent
-    unsigned refs; // take a ref when inheriting
 };
 
 static ABlock* blockNew(const char* Content)
@@ -39,19 +38,13 @@ static ABlock* blockNew(const char* Content)
 
 static void blockFree(ABlock* Block)
 {
-    if(Block->refs-- > 0) {
-        // This block will be freed later as part of freeing another block
-        return;
-    }
-
-    a_mem_free(Block->text);
-
     if(Block->blocks) {
         a_list_freeEx(Block->blocks, (AFree*)blockFree);
         a_strhash_freeEx(Block->index, (AFree*)a_list_free);
         a_mem_free(Block->array);
     }
 
+    a_mem_free(Block->text);
     a_mem_free(Block);
 }
 
@@ -73,7 +66,7 @@ static void blockAdd(ABlock* Parent, ABlock* Child)
     a_list_addLast(indexList, Child);
 }
 
-static void blockCacheLines(ABlock* Block)
+static void blockCommitLines(ABlock* Block)
 {
     if(Block->blocks != NULL) {
         Block->array = (const ABlock**)a_list_toArray(Block->blocks);
@@ -116,9 +109,10 @@ ABlock* a_block_new(const char* File)
             textStart++;
         }
 
-        int currentIndent = (int)(textStart - lineStart) / 4;
+        int indentCharsNum = (int)(textStart - lineStart);
+        int currentIndent = indentCharsNum / 4;
 
-        if((textStart - lineStart) % 4 || currentIndent > lastIndent + 1) {
+        if((indentCharsNum % 4) != 0 || currentIndent > lastIndent + 1) {
             A__FATAL("a_block_new: Bad indent in %s:%d <%s>",
                      File,
                      a_file_lineNumberGet(f),
@@ -127,7 +121,7 @@ ABlock* a_block_new(const char* File)
 
         // Each subsequent entry has -1 indentation, pop until reach parent
         while(currentIndent <= lastIndent) {
-            blockCacheLines(a_list_pop(stack));
+            blockCommitLines(a_list_pop(stack));
             lastIndent--;
         }
 
@@ -136,36 +130,12 @@ ABlock* a_block_new(const char* File)
         ABlock* parent = a_list_peek(stack);
         ABlock* block = blockNew(textStart);
 
-        if(currentIndent == 0) {
-            // This is a root-level block, check if it inherits from another
-            for(char* base = a_str_prefixGetToLast(textStart, '.'); base; ) {
-                const ABlock* baseBlock = a_block_keyGetBlock(root, base);
-
-                if(baseBlock == NULL) {
-                    char* nextBaseId = a_str_prefixGetToLast(base, '.');
-
-                    a_mem_free(base);
-                    base = nextBaseId;
-                } else {
-                    if(baseBlock->blocks) {
-                        A_LIST_ITERATE(baseBlock->blocks, ABlock*, b) {
-                            blockAdd(block, b);
-                            b->refs++;
-                        }
-                    }
-
-                    a_mem_free(base);
-                    base = NULL;
-                }
-            }
-        }
-
         blockAdd(parent, block);
         a_list_push(stack, block);
     }
 
     while(!a_list_isEmpty(stack)) {
-        blockCacheLines(a_list_pop(stack));
+        blockCommitLines(a_list_pop(stack));
     }
 
     a_file_free(f);
