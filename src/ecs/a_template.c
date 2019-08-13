@@ -29,7 +29,7 @@ struct ATemplate {
 static AStrHash* g_templates; // table of ATemplate
 static AEntityInit* g_init; // Optional callback, runs before template-specific
 
-static ATemplate* templateNew(const char* TemplateId, const ABlock* Block)
+static ATemplate* templateNew(const ABlock* Block)
 {
     ATemplate* t = a_mem_zalloc(sizeof(ATemplate));
 
@@ -40,8 +40,9 @@ static ATemplate* templateNew(const char* TemplateId, const ABlock* Block)
         int index = a_component__stringToIndex(id);
 
         if(index < 0) {
-            a_out__error(
-                "a_template_new(%s): Unknown component '%s'", TemplateId, id);
+            a_out__error("a_template_new(%s): Unknown component '%s'",
+                         a_block_lineGetString(Block, 0),
+                         id);
 
             continue;
         }
@@ -49,7 +50,6 @@ static ATemplate* templateNew(const char* TemplateId, const ABlock* Block)
         const AComponent* component = a_component__get(index);
 
         t->data[index] = a_component__templateInit(component, b);
-
         a_bitfield_set(t->componentBits, (unsigned)index);
     }
 
@@ -93,7 +93,7 @@ void a_template_new(const char* FilePath)
             }
         #endif
 
-        a_strhash_add(g_templates, id, templateNew(id, b));
+        a_strhash_add(g_templates, id, templateNew(b));
     }
 
     a_block_free(root);

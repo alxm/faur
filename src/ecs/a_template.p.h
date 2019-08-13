@@ -23,7 +23,7 @@
 
 #include "ecs/a_entity.p.h"
 
-typedef void AEntityInit(AEntity* Entity, const void* Context);
+typedef void AEntityInit(AEntity* Entity, const void* CallerContext);
 
 extern void a_template_new(const char* FilePath);
 extern void a_template_initSet(const char* Id, AEntityInit* Init);

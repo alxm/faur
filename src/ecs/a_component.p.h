@@ -24,18 +24,18 @@
 #include "data/a_block.p.h"
 #include "ecs/a_entity.p.h"
 
-typedef void AComponentInit(void* Self);
-typedef void AComponentInitWithTemplate(void* Self, const void* Data);
-typedef void AComponentFree(void* Self);
+typedef void AComponentInstanceInit(void* Self);
+typedef void AComponentInstanceInitEx(void* Self, const void* Data);
+typedef void AComponentInstanceFree(void* Self);
 
-typedef void AComponentTemplateInit(void* Data, const ABlock* Block);
+typedef void AComponentTemplateInit(void* Data, const ABlock* Config);
 typedef void AComponentTemplateFree(void* Data);
 
-extern void a_component_new(int ComponentIndex, size_t Size, AComponentInit* Init, AFree* AComponentFree);
+extern void a_component_new(int ComponentIndex, size_t InstanceSize, AComponentInstanceInit* InstanceInit, AComponentInstanceFree* InstanceFree);
 
-extern const void* a_component_templateGet(const void* Component);
-extern void a_component_templateSet(int ComponentIndex, const char* StringId, size_t TemplateSize, AComponentTemplateInit* TemplateInit, AComponentTemplateFree* TemplateFree, AComponentInitWithTemplate* InitWithTemplate);
+extern const void* a_component_templateGet(const void* ComponentInstance);
+extern void a_component_templateSet(int ComponentIndex, const char* StringId, size_t TemplateSize, AComponentTemplateInit* TemplateInit, AComponentTemplateFree* TemplateFree, AComponentInstanceInitEx* InstanceInitEx);
 
-extern AEntity* a_component_entityGet(const void* Component);
+extern AEntity* a_component_entityGet(const void* ComponentInstance);
 
 #endif // A_INC_ECS_COMPONENT_P_H

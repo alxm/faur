@@ -21,9 +21,9 @@
 
 struct AComponent {
     size_t size; // total size of AComponentInstance + user data that follows
-    AComponentInit* init; // sets component buffer default values
-    AComponentInitWithTemplate* initWithTemplate; // init with template data
-    AComponentFree* free; // does not free the actual component buffer
+    AComponentInstanceInit* init; // sets component buffer default values
+    AComponentInstanceInitEx* initEx; // init with template data
+    AComponentInstanceFree* free; // does not free the actual component buffer
     size_t templateSize; // size of template data buffer
     AComponentTemplateInit* templateInit; // init template buffer with ABlock
     AComponentTemplateFree* templateFree; // does not free the template buffer
@@ -71,7 +71,7 @@ const AComponent* a_component__get(int ComponentIndex)
     return &g_components[ComponentIndex];
 }
 
-void a_component_new(int ComponentIndex, size_t Size, AComponentInit* Init, AComponentFree* Free)
+void a_component_new(int ComponentIndex, size_t InstanceSize, AComponentInstanceInit* InstanceInit, AComponentInstanceFree* InstanceFree)
 {
     AComponent* component = &g_components[ComponentIndex];
 
@@ -81,21 +81,21 @@ void a_component_new(int ComponentIndex, size_t Size, AComponentInit* Init, ACom
         }
     #endif
 
-    component->size = sizeof(AComponentInstance) + Size;
-    component->init = Init;
-    component->free = Free;
+    component->size = sizeof(AComponentInstance) + InstanceSize;
+    component->init = InstanceInit;
+    component->free = InstanceFree;
     component->stringId = g_defaultId;
 }
 
-const void* a_component_templateGet(const void* Component)
+const void* a_component_templateGet(const void* ComponentInstance)
 {
-    const AComponentInstance* instance = bufferGetInstance(Component);
+    const AComponentInstance* instance = bufferGetInstance(ComponentInstance);
 
     return a_template__dataGet(a_entity__templateGet(instance->entity),
                                (int)(instance->component - g_components));
 }
 
-void a_component_templateSet(int ComponentIndex, const char* StringId, size_t TemplateSize, AComponentTemplateInit* TemplateInit, AComponentTemplateFree* TemplateFree, AComponentInitWithTemplate* InitWithTemplate)
+void a_component_templateSet(int ComponentIndex, const char* StringId, size_t TemplateSize, AComponentTemplateInit* TemplateInit, AComponentTemplateFree* TemplateFree, AComponentInstanceInitEx* InstanceInitEx)
 {
     AComponent* component = &g_components[ComponentIndex];
 
@@ -119,7 +119,7 @@ void a_component_templateSet(int ComponentIndex, const char* StringId, size_t Te
         }
     #endif
 
-    component->initWithTemplate = InitWithTemplate;
+    component->initEx = InstanceInitEx;
     component->templateSize = TemplateSize;
     component->templateInit = TemplateInit;
     component->templateFree = TemplateFree;
@@ -128,9 +128,9 @@ void a_component_templateSet(int ComponentIndex, const char* StringId, size_t Te
     a_strhash_add(g_componentsIndex, StringId, component);
 }
 
-AEntity* a_component_entityGet(const void* Component)
+AEntity* a_component_entityGet(const void* ComponentInstance)
 {
-    return bufferGetInstance(Component)->entity;
+    return bufferGetInstance(ComponentInstance)->entity;
 }
 
 const char* a_component__stringGet(const AComponent* Component)
@@ -175,8 +175,8 @@ AComponentInstance* a_component__instanceNew(const AComponent* Component, AEntit
         Component->init(self);
     }
 
-    if(Component->initWithTemplate && TemplateData) {
-        Component->initWithTemplate(self, TemplateData);
+    if(Component->initEx && TemplateData) {
+        Component->initEx(self, TemplateData);
     }
 
     return c;

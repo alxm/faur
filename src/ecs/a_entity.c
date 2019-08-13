@@ -258,7 +258,7 @@ void a_entity_refDec(AEntity* Entity)
     if(a_ecs__refDecIgnoreGet()) {
         // The entity could have already been freed despite any outstanding
         // references. This is the only AEntity API that may be called by
-        // components' AComponentFree callbacks.
+        // components' AComponentInstanceFree callbacks.
         return;
     }
 
