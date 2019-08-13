@@ -38,20 +38,49 @@ def main():
 """\
 #include "component_{name}.h"
 
+typedef struct {{
+    int startValue;
+}} {ctype}Data;
+
 struct {ctype} {{
     int value;
 }};
 
-const size_t c_{name}_size = sizeof({ctype});
+const size_t c_{name}_templateSize = sizeof({ctype}Data);
+const size_t c_{name}_instanceSize = sizeof({ctype});
 
-void c_{name}_init(void* Self)
+void c_{name}_templateInit(void* Data, const ABlock* Config)
+{{
+    {ctype}Data* data = Data;
+
+    data->startValue = 2;
+
+    A_UNUSED(Config);
+}}
+
+void c_{name}_templateFree(void* Data)
+{{
+    {ctype}Data* data = Data;
+
+    A_UNUSED(data);
+}}
+
+void c_{name}_instanceInit(void* Self)
 {{
     {ctype}* {localVar} = Self;
 
     {localVar}->value = 1;
 }}
 
-void c_{name}_free(void* Self)
+void c_{name}_instanceInitEx(void* Self, const void* Data)
+{{
+    {ctype}* {localVar} = Self;
+    const {ctype}Data* data = Data;
+
+    {localVar}->value = data->startValue;
+}}
+
+void c_{name}_instanceFree(void* Self)
 {{
     {ctype}* {localVar} = Self;
 
@@ -67,7 +96,7 @@ void c_{name}_valueSet({ctype}* {paramVar}, int Value)
 {{
     {paramVar}->value = Value;
 }}
-""".format(ctype=struct_name,
+""".format(ctype = struct_name,
            name = comp_name.lower(),
            paramVar = comp_name,
            localVar = comp_name[0].lower() + comp_name[1 : ]))
@@ -80,9 +109,14 @@ void c_{name}_valueSet({ctype}* {paramVar}, int Value)
 
 typedef struct {ctype} {ctype};
 
-extern const size_t c_{name}_size;
-extern AComponentInit c_{name}_init;
-extern AFree c_{name}_free;
+extern const size_t c_{name}_templateSize;
+extern AComponentTemplateInit c_{name}_templateInit;
+extern AComponentTemplateFree c_{name}_templateFree;
+
+extern const size_t c_{name}_instanceSize;
+extern AComponentInstanceInit c_{name}_instanceInit;
+extern AComponentInstanceInitEx c_{name}_instanceInitEx;
+extern AComponentInstanceFree c_{name}_instanceFree;
 
 extern int c_{name}_valueGet(const {ctype}* {paramVar});
 extern void c_{name}_valueSet({ctype}* {paramVar}, int Value);
