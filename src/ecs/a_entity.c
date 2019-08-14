@@ -102,17 +102,7 @@ AEntity* a_entity_new(const char* Template, const void* Context)
             }
         }
 
-        AEntityInit* init = a_template__initGet(NULL);
-
-        if(init) {
-            init(e, Context);
-        }
-
-        init = a_template__initGet(template);
-
-        if(init) {
-            init(e, Context);
-        }
+        a_template__initRun(template, e, Context);
     }
 
     return e;
