@@ -142,13 +142,13 @@ void a_template__initRun(const ATemplate* Template, AEntity* Entity, const void*
     }
 }
 
-void a_template_initSet(const char* Id, AEntityInit* Init)
+void a_template_init(const char* Id, AEntityInit* Init)
 {
     ATemplate* t = a_strhash_get(g_templates, Id);
 
     #if A_CONFIG_BUILD_DEBUG
         if(t == NULL) {
-            A__FATAL("a_template_initSet(%s): Unknown template", Id);
+            A__FATAL("a_template_init(%s): Unknown template", Id);
         }
     #endif
 

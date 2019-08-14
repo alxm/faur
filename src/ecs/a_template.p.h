@@ -26,6 +26,6 @@
 typedef void AEntityInit(AEntity* Entity, const void* CallerContext);
 
 extern void a_template_new(const char* FilePath);
-extern void a_template_initSet(const char* Id, AEntityInit* Init);
+extern void a_template_init(const char* Id, AEntityInit* Init);
 
 #endif // A_INC_ECS_TEMPLATE_P_H
