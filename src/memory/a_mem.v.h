@@ -21,6 +21,14 @@
 
 #include "memory/a_mem.p.h"
 
+typedef union {
+    intmax_t u_intmax;
+    long double u_longdouble;
+    size_t u_size;
+    void* u_voidp;
+    void (*u_funcp)(void);
+} AMaxMemAlignType;
+
 extern size_t a_mem__bytesGetUsed(void);
 
 #endif // A_INC_MEMORY_MEM_V_H

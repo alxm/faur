@@ -19,14 +19,6 @@
 #include "a_mem.v.h"
 #include <a2x.v.h>
 
-typedef union {
-    intmax_t u_intmax;
-    long double u_longdouble;
-    size_t u_size;
-    void* u_voidp;
-    void (*u_funcp)(void);
-} AMaxMemAlignType;
-
 size_t g_tally;
 
 void* a_mem_malloc(size_t Size)

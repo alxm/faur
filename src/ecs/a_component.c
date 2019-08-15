@@ -36,7 +36,8 @@ static const char* g_defaultId = "Unknown";
 
 static inline const AComponentInstance* bufferGetInstance(const void* ComponentBuffer)
 {
-    return (AComponentInstance*)ComponentBuffer - 1;
+    return (void*)
+            ((uint8_t*)ComponentBuffer - offsetof(AComponentInstance, buffer));
 }
 
 void a_component__init(void)

@@ -23,9 +23,12 @@
 
 typedef struct AComponent AComponent;
 
+#include "memory/a_mem.v.h"
+
 typedef struct {
     const AComponent* component; // shared data for all components of same type
     AEntity* entity; // entity this component belongs to
+    AMaxMemAlignType buffer[];
 } AComponentInstance;
 
 extern void a_component__init(void);
@@ -42,9 +45,9 @@ extern void a_component__templateFree(const AComponent* Component, void* Buffer)
 extern AComponentInstance* a_component__instanceNew(const AComponent* Component, AEntity* Entity, const void* TemplateData);
 extern void a_component__instanceFree(AComponentInstance* Instance);
 
-static inline void* a_component__instanceGetBuffer(const AComponentInstance* Instance)
+static inline void* a_component__instanceGetBuffer(AComponentInstance* Instance)
 {
-    return (void*)(Instance + 1);
+    return Instance->buffer;
 }
 
 #endif // A_INC_ECS_COMPONENT_V_H
