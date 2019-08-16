@@ -88,35 +88,22 @@ void a_component_new(int ComponentIndex, size_t InstanceSize, AComponentInstance
     component->stringId = g_defaultId;
 }
 
-const void* a_component_templateGet(const void* ComponentInstance)
-{
-    const AComponentInstance* instance = bufferGetInstance(ComponentInstance);
-
-    return a_template__dataGet(a_entity__templateGet(instance->entity),
-                               (int)(instance->component - g_components));
-}
-
-void a_component_templateSet(int ComponentIndex, const char* StringId, size_t TemplateSize, AComponentTemplateInit* TemplateInit, AComponentTemplateFree* TemplateFree, AComponentInstanceInitEx* InstanceInitEx)
+void a_component_template(int ComponentIndex, const char* StringId, size_t TemplateSize, AComponentTemplateInit* TemplateInit, AComponentTemplateFree* TemplateFree, AComponentInstanceInitEx* InstanceInitEx)
 {
     AComponent* component = &g_components[ComponentIndex];
 
     #if A_CONFIG_BUILD_DEBUG
         if(ComponentIndex < 0 || ComponentIndex >= A_CONFIG_ECS_COM_NUM) {
-            A__FATAL("a_component_templateSet(%d, %s): Unknown component",
-                     ComponentIndex,
-                     StringId);
+            A__FATAL("a_component_template(%s): Unknown component", StringId);
         }
 
         if(g_components[ComponentIndex].stringId == NULL) {
-            A__FATAL("a_component_templateSet(%d, %s): Uninitialized component",
-                     ComponentIndex,
-                     StringId);
+            A__FATAL(
+                "a_component_template(%s): Uninitialized component", StringId);
         }
 
         if(a_strhash_contains(g_componentsIndex, StringId)) {
-            A__FATAL("a_component_templateSet(%d, %s): Already declared",
-                     ComponentIndex,
-                     StringId);
+            A__FATAL("a_component_template(%s): Already declared", StringId);
         }
     #endif
 
@@ -129,9 +116,18 @@ void a_component_templateSet(int ComponentIndex, const char* StringId, size_t Te
     a_strhash_add(g_componentsIndex, StringId, component);
 }
 
-AEntity* a_component_entityGet(const void* ComponentInstance)
+const void* a_component_dataGet(const void* ComponentBuffer)
 {
-    return bufferGetInstance(ComponentInstance)->entity;
+    const AComponentInstance* instance = bufferGetInstance(ComponentBuffer);
+
+    return a_template__dataGet(a_entity__templateGet(instance->entity),
+                               (int)(instance->component - g_components));
+}
+
+
+AEntity* a_component_entityGet(const void* ComponentBuffer)
+{
+    return bufferGetInstance(ComponentBuffer)->entity;
 }
 
 const char* a_component__stringGet(const AComponent* Component)
@@ -170,14 +166,12 @@ AComponentInstance* a_component__instanceNew(const AComponent* Component, AEntit
     c->component = Component;
     c->entity = Entity;
 
-    void* self = a_component__instanceGetBuffer(c);
-
     if(Component->init) {
-        Component->init(self);
+        Component->init(c->buffer);
     }
 
     if(Component->initEx && TemplateData) {
-        Component->initEx(self, TemplateData);
+        Component->initEx(c->buffer, TemplateData);
     }
 
     return c;
@@ -190,7 +184,7 @@ void a_component__instanceFree(AComponentInstance* Instance)
     }
 
     if(Instance->component->free) {
-        Instance->component->free(a_component__instanceGetBuffer(Instance));
+        Instance->component->free(Instance->buffer);
     }
 
     a_mem_free(Instance);

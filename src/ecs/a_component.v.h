@@ -45,9 +45,4 @@ extern void a_component__templateFree(const AComponent* Component, void* Buffer)
 extern AComponentInstance* a_component__instanceNew(const AComponent* Component, AEntity* Entity, const void* TemplateData);
 extern void a_component__instanceFree(AComponentInstance* Instance);
 
-static inline void* a_component__instanceGetBuffer(AComponentInstance* Instance)
-{
-    return Instance->buffer;
-}
-
 #endif // A_INC_ECS_COMPONENT_V_H

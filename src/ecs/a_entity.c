@@ -368,8 +368,7 @@ void* a_entity_componentAdd(AEntity* Entity, int ComponentIndex)
         }
     #endif
 
-    return a_component__instanceGetBuffer(
-            componentAdd(Entity, ComponentIndex, component, NULL));
+    return componentAdd(Entity, ComponentIndex, component, NULL)->buffer;
 }
 
 bool a_entity_componentHas(const AEntity* Entity, int ComponentIndex)
@@ -389,7 +388,7 @@ void* a_entity_componentGet(const AEntity* Entity, int ComponentIndex)
 
     AComponentInstance* instance = Entity->componentsTable[ComponentIndex];
 
-    return instance ? a_component__instanceGetBuffer(instance) : NULL;
+    return instance ? instance->buffer : NULL;
 }
 
 void* a_entity_componentReq(const AEntity* Entity, int ComponentIndex)
@@ -410,7 +409,7 @@ void* a_entity_componentReq(const AEntity* Entity, int ComponentIndex)
         }
     #endif
 
-    return a_component__instanceGetBuffer(instance);
+    return instance->buffer;
 }
 
 bool a_entity_muteGet(const AEntity* Entity)

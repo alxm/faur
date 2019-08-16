@@ -32,10 +32,9 @@ typedef void AComponentTemplateInit(void* Data, const ABlock* Config);
 typedef void AComponentTemplateFree(void* Data);
 
 extern void a_component_new(int ComponentIndex, size_t InstanceSize, AComponentInstanceInit* InstanceInit, AComponentInstanceFree* InstanceFree);
+extern void a_component_template(int ComponentIndex, const char* StringId, size_t TemplateSize, AComponentTemplateInit* TemplateInit, AComponentTemplateFree* TemplateFree, AComponentInstanceInitEx* InstanceInitEx);
 
-extern const void* a_component_templateGet(const void* ComponentInstance);
-extern void a_component_templateSet(int ComponentIndex, const char* StringId, size_t TemplateSize, AComponentTemplateInit* TemplateInit, AComponentTemplateFree* TemplateFree, AComponentInstanceInitEx* InstanceInitEx);
-
-extern AEntity* a_component_entityGet(const void* ComponentInstance);
+extern const void* a_component_dataGet(const void* ComponentBuffer);
+extern AEntity* a_component_entityGet(const void* ComponentBuffer);
 
 #endif // A_INC_ECS_COMPONENT_P_H
