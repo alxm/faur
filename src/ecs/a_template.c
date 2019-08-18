@@ -21,35 +21,35 @@
 
 struct ATemplate {
     unsigned instanceNumber; // Incremented by each new entity
+    AEntityInit* init; // Optional, runs after components init and parent init
     ABitfield* componentBits; // Set if template has corresponding component
     void* data[A_CONFIG_ECS_COM_NUM]; // Parsed component config data, or NULL
+    const ATemplate* parent; // template chain
 };
 
 static AStrHash* g_templates; // table of ATemplate
 
-static ATemplate* templateNew(const char* TemplateId, const ABlock* Block)
+static ATemplate* templateNew(const char* Id)
 {
     ATemplate* t = a_mem_zalloc(sizeof(ATemplate));
 
     t->componentBits = a_bitfield_new(A_CONFIG_ECS_COM_NUM);
 
-    A_LIST_ITERATE(a_block_blocksGet(Block), const ABlock*, b) {
-        const char* id = a_block_lineGetString(b, 0);
-        int index = a_component__stringToIndex(id);
+    char* parentId = a_str_prefixGetToLast(Id, '.');
 
-        if(index < 0) {
-            a_out__error(
-                "a_template_new(%s): Unknown component '%s'", TemplateId, id);
+    if(parentId) {
+        ATemplate* parentTemplate = a_strhash_get(g_templates, parentId);
 
-            continue;
+        if(parentTemplate == NULL) {
+            parentTemplate = templateNew(parentId);
         }
 
-        const AComponent* component = a_component__get(index);
+        t->parent = parentTemplate;
 
-        t->data[index] = a_component__templateInit(component, b);
-
-        a_bitfield_set(t->componentBits, (unsigned)index);
+        a_mem_free(parentId);
     }
+
+    a_strhash_add(g_templates, Id, t);
 
     return t;
 }
@@ -82,16 +82,35 @@ void a_template_new(const char* FilePath)
     ABlock* root = a_block_new(FilePath);
 
     A_LIST_ITERATE(a_block_blocksGet(root), const ABlock*, b) {
-        const char* id = a_block_lineGetString(b, 0);
+        const char* templateId = a_block_lineGetString(b, 0);
 
         #if A_CONFIG_BUILD_DEBUG
-            if(a_strhash_contains(g_templates, id)) {
-                A__FATAL(
-                    "a_template_new(%s): '%s' already declared", FilePath, id);
+            if(a_strhash_contains(g_templates, templateId)) {
+                A__FATAL("a_template_new(%s): '%s' already declared",
+                         FilePath,
+                         templateId);
             }
         #endif
 
-        a_strhash_add(g_templates, id, templateNew(id, b));
+        ATemplate* t = templateNew(templateId);
+
+        A_LIST_ITERATE(a_block_blocksGet(b), const ABlock*, b) {
+            const char* componentId = a_block_lineGetString(b, 0);
+            int componentIndex = a_component__stringToIndex(componentId);
+
+            if(componentIndex < 0) {
+                a_out__error("a_template_new(%s): Unknown component '%s'",
+                             templateId,
+                             componentId);
+
+                continue;
+            }
+
+            const AComponent* component = a_component__get(componentIndex);
+
+            t->data[componentIndex] = a_component__templateInit(component, b);
+            a_bitfield_set(t->componentBits, (unsigned)componentIndex);
+        }
     }
 
     a_block_free(root);
@@ -112,6 +131,30 @@ const ATemplate* a_template__get(const char* TemplateId)
     return t;
 }
 
+void a_template__initRun(const ATemplate* Template, AEntity* Entity, const void* Context)
+{
+    if(Template->parent) {
+        a_template__initRun(Template->parent, Entity, Context);
+    }
+
+    if(Template->init) {
+        Template->init(Entity, Context);
+    }
+}
+
+void a_template_init(const char* Id, AEntityInit* Init)
+{
+    ATemplate* t = a_strhash_get(g_templates, Id);
+
+    #if A_CONFIG_BUILD_DEBUG
+        if(t == NULL) {
+            A__FATAL("a_template_init(%s): Unknown template", Id);
+        }
+    #endif
+
+    t->init = Init;
+}
+
 unsigned a_template__instanceGet(const ATemplate* Template)
 {
     return Template->instanceNumber;
@@ -119,10 +162,22 @@ unsigned a_template__instanceGet(const ATemplate* Template)
 
 bool a_template__componentHas(const ATemplate* Template, int ComponentIndex)
 {
-    return a_bitfield_test(Template->componentBits, (unsigned)ComponentIndex);
+    for(const ATemplate* t = Template; t; t = t->parent) {
+        if(a_bitfield_test(t->componentBits, (unsigned)ComponentIndex)) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 const void* a_template__dataGet(const ATemplate* Template, int ComponentIndex)
 {
-    return Template->data[ComponentIndex];
+    for(const ATemplate* t = Template; t; t = t->parent) {
+        if(a_bitfield_test(t->componentBits, (unsigned)ComponentIndex)) {
+            return t->data[ComponentIndex];
+        }
+    }
+
+    return NULL;
 }

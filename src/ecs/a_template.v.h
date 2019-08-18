@@ -28,6 +28,7 @@ extern void a_template__uninit(void);
 
 extern const ATemplate* a_template__get(const char* TemplateId);
 
+extern void a_template__initRun(const ATemplate* Template, AEntity* Entity, const void* Context);
 extern unsigned a_template__instanceGet(const ATemplate* Template);
 extern bool a_template__componentHas(const ATemplate* Template, int ComponentIndex);
 extern const void* a_template__dataGet(const ATemplate* Template, int ComponentIndex);

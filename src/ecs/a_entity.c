@@ -65,9 +65,11 @@ static inline void listMoveTo(AEntity* Entity, AEcsListId List)
     listAddTo(Entity, List);
 }
 
-AEntity* a_entity_new(const char* Template)
+AEntity* a_entity_new(const char* Template, const void* Context)
 {
     AEntity* e = a_mem_zalloc(sizeof(AEntity));
+
+    listAddTo(e, A_ECS__NEW);
 
     e->matchingSystemsActive = a_list_new();
     e->matchingSystemsRest = a_list_new();
@@ -82,7 +84,7 @@ AEntity* a_entity_new(const char* Template)
         e->collectionNode = a_list_addLast(collection, e);
     }
 
-    if(Template != NULL) {
+    if(Template) {
         const ATemplate* template = a_template__get(Template);
         const char* id = a_str__fmt512("%s#%u",
                                        Template,
@@ -99,9 +101,9 @@ AEntity* a_entity_new(const char* Template)
                              a_template__dataGet(template, c));
             }
         }
-    }
 
-    listAddTo(e, A_ECS__NEW);
+        a_template__initRun(template, e, Context);
+    }
 
     return e;
 }
@@ -246,7 +248,7 @@ void a_entity_refDec(AEntity* Entity)
     if(a_ecs__refDecIgnoreGet()) {
         // The entity could have already been freed despite any outstanding
         // references. This is the only AEntity API that may be called by
-        // components' AComponentFree callbacks.
+        // components' AComponentInstanceFree callbacks.
         return;
     }
 
@@ -366,8 +368,7 @@ void* a_entity_componentAdd(AEntity* Entity, int ComponentIndex)
         }
     #endif
 
-    return a_component__instanceGetBuffer(
-            componentAdd(Entity, ComponentIndex, component, NULL));
+    return componentAdd(Entity, ComponentIndex, component, NULL)->buffer;
 }
 
 bool a_entity_componentHas(const AEntity* Entity, int ComponentIndex)
@@ -387,7 +388,7 @@ void* a_entity_componentGet(const AEntity* Entity, int ComponentIndex)
 
     AComponentInstance* instance = Entity->componentsTable[ComponentIndex];
 
-    return instance ? a_component__instanceGetBuffer(instance) : NULL;
+    return instance ? instance->buffer : NULL;
 }
 
 void* a_entity_componentReq(const AEntity* Entity, int ComponentIndex)
@@ -408,7 +409,7 @@ void* a_entity_componentReq(const AEntity* Entity, int ComponentIndex)
         }
     #endif
 
-    return a_component__instanceGetBuffer(instance);
+    return instance->buffer;
 }
 
 bool a_entity_muteGet(const AEntity* Entity)
