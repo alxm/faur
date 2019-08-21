@@ -40,21 +40,14 @@ Move the square with the arrow keys or gamepad. Here are the generated `main.c` 
 ```C
 #include <a2x.h>
 
-enum {
-    STATE_DRAWBOX,
-    STATE_NUM
-};
-
-AStateHandler s_drawBox;
+AStateHandler drawBox;
 
 void a_main(void)
 {
-    a_state_new(STATE_DRAWBOX, s_drawBox, "Draw Box");
-
-    a_state_push(STATE_DRAWBOX);
+    a_state_push(drawBox);
 }
 
-void s_drawBox(void)
+void drawBox(void)
 {
     static struct {
         int x, y;
@@ -131,8 +124,6 @@ A_CONFIG_APP_TITLE := hello
 A_CONFIG_APP_VERSION_MAJOR := 1
 A_CONFIG_APP_VERSION_MINOR := 0
 A_CONFIG_APP_VERSION_MICRO := 0
-
-A_CONFIG_STATE_NUM := main.c STATE_NUM
 
 include $(A2X_PATH)/make/dev.mk
 ```
