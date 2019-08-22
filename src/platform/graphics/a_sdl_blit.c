@@ -127,7 +127,7 @@ void a_platform_api__textureBlit(const APlatformTexture* Texture, const APixels*
                                   0);
 }
 
-void a_platform_api__textureBlitEx(const APlatformTexture* Texture, const APixels* Pixels, unsigned Frame, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY)
+void a_platform_api__textureBlitEx(const APlatformTexture* Texture, const APixels* Pixels, unsigned Frame, int X, int Y, AFix Scale, unsigned Angle, AFix CenterX, AFix CenterY)
 {
     A_UNUSED(Frame);
 
@@ -163,9 +163,13 @@ void a_platform_api__textureBlitEx(const APlatformTexture* Texture, const APixel
         }
     }
 
+    AVectorInt halfSize = {Pixels->w / 2, Pixels->h / 2};
+
     SDL_Point center = {
-        a_fix_toInt((Pixels->w / 2 + CenterX) * Scale),
-        a_fix_toInt((Pixels->h / 2 + CenterY) * Scale)
+        a_fix_toInt(
+            a_fix_mul(a_fix_fromInt(halfSize.x) + CenterX * halfSize.x, Scale)),
+        a_fix_toInt(
+            a_fix_mul(a_fix_fromInt(halfSize.y) + CenterY * halfSize.y, Scale))
     };
 
     SDL_Rect dest = {X - center.x,

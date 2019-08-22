@@ -75,7 +75,7 @@ extern void a_platform_api__drawCircleFilled(int X, int Y, int Radius);
 extern APlatformTexture* a_platform_api__textureNew(const APixels* Pixels, unsigned Frame);
 extern void a_platform_api__textureFree(APlatformTexture* Texture);
 extern void a_platform_api__textureBlit(const APlatformTexture* Texture, const APixels* Pixels, unsigned Frame, int X, int Y);
-extern void a_platform_api__textureBlitEx(const APlatformTexture* Texture, const APixels* Pixels, unsigned Frame, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY);
+extern void a_platform_api__textureBlitEx(const APlatformTexture* Texture, const APixels* Pixels, unsigned Frame, int X, int Y, AFix Scale, unsigned Angle, AFix CenterX, AFix CenterY);
 
 extern bool a_platform_api__soundMuteGet(void);
 extern void a_platform_api__soundMuteFlip(void);

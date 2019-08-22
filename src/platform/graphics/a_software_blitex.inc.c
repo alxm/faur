@@ -22,13 +22,14 @@
     #define A__COLORKEY block
 #endif
 
-static void A__FUNC_NAME_EX(const APixels* Pixels, unsigned Frame, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY)
+static void A__FUNC_NAME_EX(const APixels* Pixels, unsigned Frame, int X, int Y, AFix Scale, unsigned Angle, AFix CenterX, AFix CenterY)
 {
     A__BLEND_SETUP;
 
-    const AVectorInt spriteSize = {Pixels->w, Pixels->h};
-    const APixel* const spritePixels = a_pixels__bufferGetFrom(
-                                        Pixels, Frame, 0, 0);
+    const AVectorInt size = {Pixels->w, Pixels->h};
+    const AVectorFix sizeScaled = {size.x * Scale, size.y * Scale};
+    const AVectorFix sizeScaledHalf = {sizeScaled.x / 2, sizeScaled.y / 2};
+    const APixel* const pixels = a_pixels__bufferGetFrom(Pixels, Frame, 0, 0);
 
     const AVectorInt screenSize = a_screen_sizeGet();
     APixel* const screenPixels = a_screen__bufferGetFrom(0, 0);
@@ -48,15 +49,15 @@ static void A__FUNC_NAME_EX(const APixels* Pixels, unsigned Frame, int X, int Y,
     const AFix sin = a_fix_sin(Angle);
     const AFix cos = a_fix_cos(Angle);
 
-    const int wLeft = CenterX + spriteSize.x / 2;
-    const int wRight = spriteSize.x - wLeft;
-    const int hTop = CenterY + spriteSize.y / 2;
-    const int hDown = spriteSize.y - hTop;
+    const AFix wLeft = sizeScaledHalf.x + a_fix_mul(CenterX, sizeScaledHalf.x);
+    const AFix wRight = sizeScaled.x - wLeft;
+    const AFix hTop = sizeScaledHalf.y + a_fix_mul(CenterY, sizeScaledHalf.y);
+    const AFix hDown = sizeScaled.y - hTop;
 
-    const AFix xMns = -Scale * wLeft;
-    const AFix xPls = Scale * wRight - 1;
-    const AFix yMns = -Scale * hTop;
-    const AFix yPls = Scale * hDown - 1;
+    const AFix xMns = -wLeft;
+    const AFix xPls = wRight - 1;
+    const AFix yMns = -hTop;
+    const AFix yPls = hDown - 1;
 
     #define ROTATE_X(x, y) a_fix_toInt(a_fix_mul(x,  cos) + a_fix_mul(y, sin))
     #define ROTATE_Y(x, y) a_fix_toInt(a_fix_mul(x, -sin) + a_fix_mul(y, cos))
@@ -75,10 +76,9 @@ static void A__FUNC_NAME_EX(const APixels* Pixels, unsigned Frame, int X, int Y,
 
     const AVectorFix
         sprite0 = {0, 0},
-        sprite1 = {a_fix_fromInt(spriteSize.x) - 1, 0},
-        sprite2 = {a_fix_fromInt(spriteSize.x) - 1,
-                   a_fix_fromInt(spriteSize.y) - 1},
-        sprite3 = {0, a_fix_fromInt(spriteSize.y) - 1};
+        sprite1 = {a_fix_fromInt(size.x) - 1, 0},
+        sprite2 = {a_fix_fromInt(size.x) - 1, a_fix_fromInt(size.y) - 1},
+        sprite3 = {0, a_fix_fromInt(size.y) - 1};
 
     // Based on Angle ranges, determine the top and bottom y coords
     // of the rotated sprite and the sides to interpolate.
@@ -176,11 +176,9 @@ static void A__FUNC_NAME_EX(const APixels* Pixels, unsigned Frame, int X, int Y,
         APixel* dst = screenPixels + scrY * screenSize.x + screenX0;
 
         for(int x = screenX0; x <= screenX1; x++) {
-            const APixel* src = spritePixels
-                                    + a_fix_toInt(sprite.y) * spriteSize.x
+            const APixel* src = pixels
+                                    + a_fix_toInt(sprite.y) * size.x
                                     + a_fix_toInt(sprite.x);
-
-            A_UNUSED(src);
 
             #if A__PIXEL_TRANSPARENCY
                 if(*src != a_color__key) {
@@ -188,6 +186,8 @@ static void A__FUNC_NAME_EX(const APixels* Pixels, unsigned Frame, int X, int Y,
                     A__PIXEL_DRAW(dst);
                 }
             #else
+                A_UNUSED(src);
+
                 A__PIXEL_SETUP;
                 A__PIXEL_DRAW(dst);
             #endif
