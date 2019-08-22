@@ -29,6 +29,6 @@ typedef union {
     void (*u_funcp)(void);
 } AMaxMemAlignType;
 
-extern size_t a_mem__bytesGetUsed(void);
+extern size_t a_mem__tally, a_mem__top;
 
 #endif // A_INC_MEMORY_MEM_V_H
