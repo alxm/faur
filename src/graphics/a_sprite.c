@@ -184,8 +184,11 @@ void a_sprite_blit(const ASprite* Sprite, unsigned Frame, int X, int Y)
         Sprite->textures[Frame], &Sprite->pixels, Frame, X, Y);
 }
 
-void a_sprite_blitEx(const ASprite* Sprite, unsigned Frame, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY)
+void a_sprite_blitEx(const ASprite* Sprite, unsigned Frame, int X, int Y, AFix Scale, unsigned Angle, AFix CenterX, AFix CenterY)
 {
+    CenterX = a_math_clamp(CenterX, -A_FIX_ONE, A_FIX_ONE);
+    CenterY = a_math_clamp(CenterY, -A_FIX_ONE, A_FIX_ONE);
+
     a_platform_api__textureBlitEx(Sprite->textures[Frame],
                                   &Sprite->pixels,
                                   Frame,

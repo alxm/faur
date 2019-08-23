@@ -125,6 +125,25 @@ void a_console__tick(void)
     }
 }
 
+static void printBytes(size_t Bytes, const char* Tag)
+{
+    float value;
+    const char* suffix;
+
+    if(Bytes >= 1000 * 1000) {
+        value = (float)Bytes / (1000 * 1000);
+        suffix = "MB";
+    } else if(Bytes >= 1000) {
+        value = (float)Bytes / (1000);
+        suffix = "KB";
+    } else {
+        value = (float)Bytes;
+        suffix = "B";
+    }
+
+    a_font_printf("%.3f %s (%s)\n", value, suffix, Tag);
+}
+
 void a_console__draw(void)
 {
     if(!g_show || g_state != A_CONSOLE__STATE_FULL) {
@@ -222,22 +241,8 @@ void a_console__draw(void)
         a_font_printf("PID %d\n", getpid());
         a_font_printf("%u ticks\n", a_fps_ticksGet());
 
-        float value;
-        const char* suffix;
-        size_t bytes = a_mem__bytesGetUsed();
-
-        if(bytes >= 1000 * 1000) {
-            value = (float)bytes / (1000 * 1000);
-            suffix = "MB";
-        } else if(bytes >= 1000) {
-            value = (float)bytes / (1000);
-            suffix = "KB";
-        } else {
-            value = (float)bytes;
-            suffix = "B";
-        }
-
-        a_font_printf("%.3f %s\n", value, suffix);
+        printBytes(a_mem__tally, "now");
+        printBytes(a_mem__top, "top");
     }
 
     a_color_pop();

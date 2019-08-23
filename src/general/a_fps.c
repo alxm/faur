@@ -19,7 +19,7 @@
 #include "a_fps.v.h"
 #include <a2x.v.h>
 
-#define A__AVERAGE_WINDOW_SEC 2
+#define A__HISTORY_LEN (A_CONFIG_FPS_RATE_DRAW * 2)
 
 static struct {
     unsigned tickFrameMs;
@@ -28,10 +28,9 @@ static struct {
 
 static struct {
     unsigned head;
-    unsigned len;
-    unsigned* drawFrameMs;
+    unsigned drawFrameMs[A__HISTORY_LEN];
     unsigned drawFrameMsSum;
-    unsigned* drawFrameMsMin;
+    unsigned drawFrameMsMin[A__HISTORY_LEN];
     unsigned drawFrameMsMinSum;
 } g_history;
 
@@ -48,20 +47,7 @@ static void a_fps__init(void)
     g_settings.tickFrameMs = 1000 / A_CONFIG_FPS_RATE_TICK;
     g_settings.drawFrameMs = 1000 / A_CONFIG_FPS_RATE_DRAW;
 
-    g_history.head = 0;
-    g_history.len = A_CONFIG_FPS_RATE_DRAW * A__AVERAGE_WINDOW_SEC;
-    g_history.drawFrameMs = a_mem_malloc(g_history.len * sizeof(unsigned));
-    g_history.drawFrameMsMin = a_mem_malloc(g_history.len * sizeof(unsigned));
-
-    g_run.frameCounter = 0;
-
     a_fps__reset();
-}
-
-static void a_fps__uninit(void)
-{
-    a_mem_free(g_history.drawFrameMs);
-    a_mem_free(g_history.drawFrameMsMin);
 }
 
 const APack a_pack__fps = {
@@ -70,8 +56,8 @@ const APack a_pack__fps = {
         [0] = a_fps__init,
     },
     {
-        [0] = a_fps__uninit,
-    },
+        NULL,
+    }
 };
 
 void a_fps__reset(void)
@@ -79,12 +65,12 @@ void a_fps__reset(void)
     g_run.drawFps = A_CONFIG_FPS_RATE_DRAW;
     g_run.drawFpsMax = g_run.drawFps;
 
-    for(unsigned i = g_history.len; i--; ) {
+    for(int i = A__HISTORY_LEN; i--; ) {
         g_history.drawFrameMs[i] = g_settings.drawFrameMs;
         g_history.drawFrameMsMin[i] = g_settings.drawFrameMs;
     }
 
-    g_history.drawFrameMsSum = g_history.len * 1000 / A_CONFIG_FPS_RATE_DRAW;
+    g_history.drawFrameMsSum = A__HISTORY_LEN * 1000 / A_CONFIG_FPS_RATE_DRAW;
     g_history.drawFrameMsMinSum = g_history.drawFrameMsSum;
 
     g_run.lastFrameMs = a_time_getMs();
@@ -112,7 +98,7 @@ void a_fps__frame(void)
         g_history.drawFrameMsMinSum -= g_history.drawFrameMsMin[g_history.head];
         g_history.drawFrameMsMin[g_history.head] = elapsedMs;
         g_history.drawFrameMsMinSum += elapsedMs;
-        g_run.drawFpsMax = g_history.len * 1000 / g_history.drawFrameMsMinSum;
+        g_run.drawFpsMax = A__HISTORY_LEN * 1000 / g_history.drawFrameMsMinSum;
     }
 
     if(!a_platform_api__screenVsyncGet()) {
@@ -128,10 +114,10 @@ void a_fps__frame(void)
         g_history.drawFrameMsSum -= g_history.drawFrameMs[g_history.head];
         g_history.drawFrameMs[g_history.head] = elapsedMs;
         g_history.drawFrameMsSum += g_history.drawFrameMs[g_history.head];
-        g_run.drawFps = g_history.len * 1000 / g_history.drawFrameMsSum;
+        g_run.drawFps = A__HISTORY_LEN * 1000 / g_history.drawFrameMsSum;
     }
 
-    g_history.head = (g_history.head + 1) % g_history.len;
+    g_history.head = (g_history.head + 1) % A__HISTORY_LEN;
 
     g_run.lastFrameMs = nowMs;
 

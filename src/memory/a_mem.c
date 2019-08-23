@@ -19,7 +19,13 @@
 #include "a_mem.v.h"
 #include <a2x.v.h>
 
-size_t g_tally;
+size_t a_mem__tally, a_mem__top;
+
+static inline void tallyAdd(size_t Size)
+{
+    a_mem__tally += Size;
+    a_mem__top = a_math_maxz(a_mem__top, a_mem__tally);
+}
 
 void* a_mem_malloc(size_t Size)
 {
@@ -31,7 +37,8 @@ void* a_mem_malloc(size_t Size)
     }
 
     ptr->u_size = total;
-    g_tally += total;
+
+    tallyAdd(total);
 
     return ptr + 1;
 }
@@ -46,7 +53,8 @@ void* a_mem_zalloc(size_t Size)
     }
 
     ptr->u_size = total;
-    g_tally += total;
+
+    tallyAdd(total);
 
     return ptr + 1;
 }
@@ -68,12 +76,7 @@ void a_mem_free(void* Buffer)
 
     AMaxMemAlignType* header = (AMaxMemAlignType*)Buffer - 1;
 
-    g_tally -= header->u_size;
+    a_mem__tally -= header->u_size;
 
     free(header);
-}
-
-size_t a_mem__bytesGetUsed(void)
-{
-    return g_tally;
 }

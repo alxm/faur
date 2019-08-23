@@ -23,16 +23,20 @@
 
 typedef void AStateHandler(void);
 
-extern void a_state_new(int Index, AStateHandler* Handler, const char* Name);
-
-extern void a_state_push(int State);
+extern void a_state_push(AStateHandler* Handler, const char* Name);
 extern void a_state_pop(void);
-extern void a_state_popUntil(int State);
-extern void a_state_replace(int State);
+extern void a_state_popUntil(AStateHandler* Handler, const char* Name);
+extern void a_state_replace(AStateHandler* Handler, const char* Name);
+
+#ifndef A2X_IMPLEMENTATION
+    #define a_state_push(Handler) a_state_push(Handler, #Handler)
+    #define a_state_popUntil(Handler) a_state_popUntil(Handler, #Handler)
+    #define a_state_replace(Handler) a_state_replace(Handler, #Handler)
+#endif
 
 extern void a_state_exit(void);
 
-extern int a_state_currentGet(void);
+extern AStateHandler* a_state_currentGet(void);
 extern bool a_state_currentChanged(void);
 
 extern bool a_state_blockGet(void);

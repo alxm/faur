@@ -32,7 +32,7 @@ struct APlatformTexture {
 };
 
 typedef void (*ABlitter)(const APlatformTexture* Texture, const APixels* Pixels, unsigned Frame, int X, int Y);
-typedef void (*ABlitterEx)(const APixels* Pixels, unsigned Frame, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY);
+typedef void (*ABlitterEx)(const APixels* Pixels, unsigned Frame, int X, int Y, AFix Scale, unsigned Angle, AFix CenterX, AFix CenterY);
 
 static ABlitter g_blitters[A_COLOR_BLEND_NUM][2][2][2]; // [Blend][Fill][ColorKey][Clip]
 static ABlitterEx g_blittersEx[A_COLOR_BLEND_NUM][2][2]; // [Blend][Fill][ColorKey]
@@ -365,7 +365,7 @@ void a_platform_api__textureBlit(const APlatformTexture* Texture, const APixels*
             (Texture, Pixels, Frame, X, Y);
 }
 
-void a_platform_api__textureBlitEx(const APlatformTexture* Texture, const APixels* Pixels, unsigned Frame, int X, int Y, AFix Scale, unsigned Angle, int CenterX, int CenterY)
+void a_platform_api__textureBlitEx(const APlatformTexture* Texture, const APixels* Pixels, unsigned Frame, int X, int Y, AFix Scale, unsigned Angle, AFix CenterX, AFix CenterY)
 {
     g_blittersEx
         [a__color.blend]
