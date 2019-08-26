@@ -22,11 +22,11 @@
 #define A_UNUSED(X) (X = X)
 #define A_ARRAY_LEN(A) (sizeof(A) / sizeof(A[0]))
 
-#define A_FLAGS_BIT(N) (1 << (N))
-#define A_FLAGS_SET(Value, Mask) ((Value) |= (Mask))
+#define A_FLAGS_BIT(N) (1u << (unsigned)(N))
+#define A_FLAGS_SET(Value, Mask) ((Value) |= (unsigned)(Mask))
 #define A_FLAGS_CLEAR(Value, Mask) ((Value) &= ~(unsigned)(Mask))
-#define A_FLAGS_TEST_ANY(Value, Mask) !!((Value) & (Mask))
-#define A_FLAGS_TEST_ALL(Value, Mask) (((Value) & (Mask)) == (Mask))
+#define A_FLAGS_TEST_ANY(Value, Mask) !!((unsigned)(Value) & (unsigned)(Mask))
+#define A_FLAGS_TEST_ALL(Value, Mask) (((unsigned)(Value) & (unsigned)(Mask)) == (unsigned)(Mask))
 
 #define A__STRINGIFY_DO_NOT_CALL(X) #X
 #define A_STRINGIFY(X) A__STRINGIFY_DO_NOT_CALL(X)
