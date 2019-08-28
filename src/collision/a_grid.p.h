@@ -30,11 +30,11 @@ typedef struct AList AGridItem;
 extern AGrid* a_grid_new(AFix Width, AFix Height, AFix MaxObjectDim);
 extern void a_grid_free(AGrid* Grid);
 
-extern AGridItem* a_griditem_new(void);
-extern void a_griditem_free(AGridItem* Item);
-
-extern void a_griditem_coordsSet(const AGrid* Grid, AGridItem* Item, void* Context, AVectorFix Coords);
-
 extern const AList* a_grid_nearGet(const AGrid* Grid, AVectorFix Coords);
+
+extern AGridItem* a_grid_itemNew(void);
+extern void a_grid_itemFree(AGridItem* Item);
+
+extern void a_grid_itemCoordsSet(const AGrid* Grid, AGridItem* Item, void* Context, AVectorFix Coords);
 
 #endif // A_INC_COLLISION_GRID_P_H
