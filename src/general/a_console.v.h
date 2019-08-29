@@ -30,6 +30,6 @@ extern void a_console__tick(void);
 extern void a_console__draw(void);
 
 extern bool a_console__isInitialized(void);
-extern void a_console__write(AOutSource Source, AOutType Type, const char* Text, bool Overwrite);
+extern void a_console__write(AOutSource Source, AOutType Type, const char* Text);
 
 #endif // A_INC_GENERAL_CONSOLE_V_H

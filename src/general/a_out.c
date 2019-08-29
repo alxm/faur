@@ -51,7 +51,7 @@ static const struct {
     [A_OUT__TYPE_FATAL] = {"Ftl", A_COLOR__RED},
 };
 
-static void outWorkerPrint(AOutSource Source, AOutType Type, FILE* Stream, const char* Text, AOutFlags Flags)
+static void outWorkerPrint(AOutSource Source, AOutType Type, FILE* Stream, const char* Text)
 {
     #if A_CONFIG_SYSTEM_LINUX && A_CONFIG_TRAIT_DESKTOP
         fprintf(Stream,
@@ -71,11 +71,10 @@ static void outWorkerPrint(AOutSource Source, AOutType Type, FILE* Stream, const
     fputs(Text, Stream);
     fputs("\n", Stream);
 
-    a_console__write(
-        Source, Type, Text, A_FLAGS_TEST_ANY(Flags, A_OUT__FLAG_OVERWRITE));
+    a_console__write(Source, Type, Text);
 }
 
-static void outWorker(AOutSource Source, AOutType Type, FILE* Stream, const char* Format, va_list Args, AOutFlags Flags)
+static void outWorker(AOutSource Source, AOutType Type, FILE* Stream, const char* Format, va_list Args)
 {
     #if !A_CONFIG_OUTPUT_ON
         return;
@@ -84,7 +83,7 @@ static void outWorker(AOutSource Source, AOutType Type, FILE* Stream, const char
     static char buffer[512];
 
     if(a_str_fmtv(buffer, sizeof(buffer), true, Format, Args)) {
-        outWorkerPrint(Source, Type, Stream, buffer, Flags);
+        outWorkerPrint(Source, Type, Stream, buffer);
     }
 }
 
@@ -97,8 +96,7 @@ void a_out__info(const char* Format, ...)
               A_OUT__TYPE_INFO,
               A_OUT__STREAM_STDOUT,
               Format,
-              args,
-              0);
+              args);
 
     va_end(args);
 }
@@ -112,8 +110,7 @@ void a_out__warning(const char* Format, ...)
               A_OUT__TYPE_WARNING,
               A_OUT__STREAM_STDERR,
               Format,
-              args,
-              0);
+              args);
 
     va_end(args);
 }
@@ -127,8 +124,7 @@ void a_out__error(const char* Format, ...)
               A_OUT__TYPE_ERROR,
               A_OUT__STREAM_STDERR,
               Format,
-              args,
-              0);
+              args);
 
     va_end(args);
 }
@@ -139,8 +135,7 @@ void a_out__errorv(const char* Format, va_list Args)
               A_OUT__TYPE_ERROR,
               A_OUT__STREAM_STDERR,
               Format,
-              Args,
-              0);
+              Args);
 }
 
 void a_out__state(const char* Format, ...)
@@ -152,23 +147,7 @@ void a_out__state(const char* Format, ...)
               A_OUT__TYPE_STATE,
               A_OUT__STREAM_STDOUT,
               Format,
-              args,
-              0);
-
-    va_end(args);
-}
-
-void a_out__overwrite(AOutType Type, FILE* Stream, const char* Format, ...)
-{
-    va_list args;
-    va_start(args, Format);
-
-    outWorker(A_OUT__SOURCE_A2X,
-              Type,
-              Stream,
-              Format,
-              args,
-              A_OUT__FLAG_OVERWRITE);
+              args);
 
     va_end(args);
 }
@@ -182,8 +161,7 @@ void a_out_text(const char* Text)
     outWorkerPrint(A_OUT__SOURCE_APP,
                    A_OUT__TYPE_INFO,
                    A_OUT__STREAM_STDOUT,
-                   Text,
-                   0);
+                   Text);
 }
 
 void a_out_info(const char* Format, ...)
@@ -195,8 +173,7 @@ void a_out_info(const char* Format, ...)
               A_OUT__TYPE_INFO,
               A_OUT__STREAM_STDOUT,
               Format,
-              args,
-              0);
+              args);
 
     va_end(args);
 }
@@ -210,8 +187,7 @@ void a_out_warning(const char* Format, ...)
               A_OUT__TYPE_WARNING,
               A_OUT__STREAM_STDERR,
               Format,
-              args,
-              0);
+              args);
 
     va_end(args);
 }
@@ -225,8 +201,7 @@ void a_out_error(const char* Format, ...)
               A_OUT__TYPE_ERROR,
               A_OUT__STREAM_STDERR,
               Format,
-              args,
-              0);
+              args);
 
     va_end(args);
 }

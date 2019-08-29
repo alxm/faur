@@ -39,21 +39,13 @@ static ASprite* g_tags;
 static AButton* g_toggle;
 static bool g_show = A_CONFIG_OUTPUT_CONSOLE_SHOW;
 
-static void line_set(ALine* Line, AOutSource Source, AOutType Type, const char* Text)
-{
-    a_mem_free(Line->text);
-
-    Line->source = Source;
-    Line->type = Type;
-    Line->text = a_str_dup(Text);
-}
-
 static ALine* line_new(AOutSource Source, AOutType Type, const char* Text)
 {
     ALine* line = a_mem_malloc(sizeof(ALine));
 
-    line->text = NULL;
-    line_set(line, Source, Type, Text);
+    line->source = Source;
+    line->type = Type;
+    line->text = a_str_dup(Text);
 
     return line;
 }
@@ -259,23 +251,15 @@ bool a_console__isInitialized(void)
     return g_state == A_CONSOLE__STATE_FULL;
 }
 
-void a_console__write(AOutSource Source, AOutType Type, const char* Text, bool Overwrite)
+void a_console__write(AOutSource Source, AOutType Type, const char* Text)
 {
     if(g_state == A_CONSOLE__STATE_INVALID) {
         return;
     }
 
-    if(Overwrite) {
-        if(a_list_isEmpty(g_lines)) {
-            a_list_addLast(g_lines, line_new(Source, Type, Text));
-        } else {
-            line_set(a_list_getLast(g_lines), Source, Type, Text);
-        }
-    } else {
-        a_list_addLast(g_lines, line_new(Source, Type, Text));
+    a_list_addLast(g_lines, line_new(Source, Type, Text));
 
-        if(a_list_sizeGet(g_lines) > g_linesPerScreen) {
-            line_free(a_list_pop(g_lines));
-        }
+    if(a_list_sizeGet(g_lines) > g_linesPerScreen) {
+        line_free(a_list_pop(g_lines));
     }
 }
