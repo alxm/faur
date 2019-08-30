@@ -145,20 +145,10 @@ __attribute__((noreturn)) static void handleFatal(void)
         }
     #elif !A_CONFIG_TRAIT_DESKTOP
         if(a_console__isInitialized()) {
-            for(int s = 10; s > 0; s--) {
-                if(s == 10) {
-                    a_out__info("Exiting in %ds", s);
-                } else {
-                    a_out__overwrite(A_OUT__TYPE_INFO,
-                                     A_OUT__STREAM_STDOUT,
-                                     "Exiting in %ds",
-                                     s);
-                }
-
-                a_console__draw();
-                a_screen__draw();
-                a_time_waitSec(1);
-            }
+            a_out__info("Exiting in 10s");
+            a_console__draw();
+            a_screen__draw();
+            a_time_waitSec(10);
         }
     #endif
 
