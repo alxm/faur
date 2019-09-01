@@ -35,14 +35,10 @@ def main():
     g_tool.check_files_not_exist(project_path)
 
     dir_root = Dir(project_path)
-    dir_ast = dir_root.add_subdir('assets')
-    dir_bin = dir_root.add_subdir('bin')
-    dir_mke = dir_root.add_subdir('make')
-    dir_obj = dir_root.add_subdir('obj')
-    dir_src = dir_root.add_subdir('src')
-
-    os.symlink(os.path.join('..', dir_ast.name),
-               os.path.join(dir_bin.path, dir_ast.name))
+    dir_assets = dir_root.add_subdir('assets')
+    dir_build = dir_root.add_subdir('build')
+    dir_make = dir_build.add_subdir('make')
+    dir_source = dir_root.add_subdir('src')
 
     author = '<your username>'
 
@@ -51,7 +47,7 @@ def main():
             author = os.environ[key]
             break
 
-    dir_mke.write_file('Makefile',
+    dir_make.write_file('Makefile',
 """\
 A_CONFIG_APP_AUTHOR := {author}
 A_CONFIG_APP_BIN := {name}.bin
@@ -64,7 +60,7 @@ A_CONFIG_APP_VERSION_MICRO := 0
 include $(A2X_PATH)/make/dev.mk
 """.format(author = author, name = project_name))
 
-    dir_src.write_file('main.c',
+    dir_source.write_file('main.c',
 """\
 #include <a2x.h>
 
@@ -144,17 +140,13 @@ void drawBox(void)
 
     dir_root.write_file('.gitignore',
 """\
-/bin/
-/obj/
+/build/builds/
+/build/shared/
 """)
 
-    g_tool.shell(
-        'cd {} && ' \
-        'git init && ' \
-        'git add .gitignore make/Makefile src/main.c'.format(dir_root.path))
-
+    g_tool.shell('cd {} && git init && git add .'.format(dir_root.path))
     g_tool.out.note('To build and run:')
-    g_tool.out.note('cd {} && make -j run'.format(dir_mke.path))
+    g_tool.out.note('cd {} && make -j run'.format(dir_make.path))
 
 class Dir:
     def __init__(self, Path):
