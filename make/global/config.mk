@@ -107,11 +107,13 @@ A_CONFIG_OUTPUT_ON ?= 1
 #   A_CONFIG_PATH_EMBED - Root-relative space-separated file and dir paths
 #   A_CONFIG_PATH_EMBED_EMSCRIPTEN - Same as above, but using Emscripten
 #   A_CONFIG_PATH_GFX - Root-relative image and dir paths to convert to bin data
+#   A_CONFIG_PATH_STATIC_COPY - dirs in build/static to expand and copy to bin
 #   A_CONFIG_PATH_STORAGE_PREFIX - IDBFS mount point on Emscripten targets
 #
 A_CONFIG_PATH_EMBED ?=
 A_CONFIG_PATH_EMBED_EMSCRIPTEN ?=
 A_CONFIG_PATH_GFX ?=
+A_CONFIG_PATH_STATIC_COPY ?=
 A_CONFIG_PATH_STORAGE_PREFIX ?= ./
 
 #

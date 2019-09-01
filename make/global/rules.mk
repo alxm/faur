@@ -85,11 +85,17 @@ A_GENERIC_CFLAGS := \
     $(A_CONFIG_BUILD_CFLAGS) \
     $(A_CONFIG_BUILD_OPT) \
 
-.PHONY : all run clean cleanbin $(A_CONFIG_MAKE_CLEAN)
+A_MAKE_ALL := $(A_FILE_BIN_TARGET) $(A_FILE_BIN_LINKS)
+
+ifdef A_CONFIG_PATH_STATIC_COPY
+    A_MAKE_ALL += copystatic
+endif
+
+.PHONY : all run clean $(A_CONFIG_MAKE_CLEAN) copystatic
 
 .SECONDARY : $(A_FILES_GFX_C)
 
-all : $(A_FILE_BIN_TARGET) $(A_FILE_BIN_LINKS)
+all : $(A_MAKE_ALL)
 
 #
 # a2x header and lib build rules
@@ -144,3 +150,7 @@ clean : $(A_CONFIG_MAKE_CLEAN)
 
 run : all
 	cd $(A_DIR_BIN) && ./$(A_CONFIG_APP_BIN)
+
+copystatic :
+	@ mkdir -p $(A_DIR_BIN)
+	rsync --archive --progress --human-readable $(A_CONFIG_PATH_STATIC_COPY:%=$(A_DIR_BUILD_STATIC)/%/) $(A_DIR_BIN)
