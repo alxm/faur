@@ -27,6 +27,8 @@ A_DIR_GEN_GFX := $(A_DIR_GEN)/gfx
 A_DIR_BIN := $(A_DIR_BUILD_UID)/bin
 A_FILE_BIN_TARGET := $(A_DIR_BIN)/$(A_CONFIG_APP_BIN)
 A_FILE_BIN_LINK_ASSETS := $(A_DIR_BIN)/$(A_CONFIG_DIR_ASSETS)
+A_FILE_BIN_LINK_SCREENSHOTS := $(A_DIR_BIN)/$(A_CONFIG_DIR_SCREENSHOTS)
+A_FILE_BIN_LINKS := $(A_FILE_BIN_LINK_ASSETS) $(A_FILE_BIN_LINK_SCREENSHOTS)
 
 #
 # Project root-relative file and dir paths
@@ -87,7 +89,7 @@ A_GENERIC_CFLAGS := \
 
 .SECONDARY : $(A_FILES_GFX_C)
 
-all : $(A_FILE_BIN_TARGET) $(A_FILE_BIN_LINK_ASSETS)
+all : $(A_FILE_BIN_TARGET) $(A_FILE_BIN_LINKS)
 
 #
 # a2x header and lib build rules
@@ -130,7 +132,12 @@ $(A_DIR_GEN)/%.c.o : $(A_DIR_GEN)/%.c
 
 $(A_FILE_BIN_LINK_ASSETS) :
 	@ mkdir -p $(@D)
-	test ! -e $@ && ln -s $(A_DIR_ROOT_FROM_BIN)/$(A_CONFIG_DIR_ASSETS) $@
+	ln -s $(A_DIR_ROOT_FROM_BIN)/$(A_CONFIG_DIR_ASSETS) $@
+
+$(A_FILE_BIN_LINK_SCREENSHOTS) :
+	@ mkdir -p $(@D)
+	@ mkdir -p $(A_DIR_BUILD_SHARED)/$(A_CONFIG_DIR_SCREENSHOTS)
+	ln -s $(A_DIR_ROOT_FROM_BIN)/build/shared/$(A_CONFIG_DIR_SCREENSHOTS) $@
 
 clean : $(A_CONFIG_MAKE_CLEAN)
 	rm -rf $(A_DIR_BUILD_UID)
