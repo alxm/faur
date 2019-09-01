@@ -26,7 +26,7 @@ A_BUILD_EMSCRIPTEN_LIBS := \
 
 A_BUILD_EMSCRIPTEN_EMBED := \
     --use-preload-plugins \
-    $(addprefix --preload-file ../, \
+    $(addprefix --preload-file $(A_DIR_ROOT)/, \
         $(join $(A_CONFIG_PATH_EMBED_EMSCRIPTEN), \
                $(addprefix @, $(A_CONFIG_PATH_EMBED_EMSCRIPTEN)))) \
 
