@@ -58,17 +58,19 @@ export LD      := $(PREFIX)ld
 
 include $(A2X_PATH)/make/global/rules.mk
 
-A_DIR_PND := $(A_DIR_BUILD_STATIC)/pnd
+A_DIR_PND_BASE := $(A_DIR_BUILD_STATIC)/pnd
+A_DIR_PND_STAGING := $(A_DIR_BUILD_UID)/pnd
 A_FILE_PND_TARGET := $(PWD)/$(A_DIR_BIN)/$(A_CONFIG_APP_PND)
 
 all : $(A_FILE_PND_TARGET)
 
 $(A_FILE_PND_TARGET) : $(A_FILE_BIN_TARGET)
-	@ mkdir -p $(A_DIR_PND)
-	cp $(A_FILE_BIN_TARGET) $(A_DIR_PND)/
-	rsync --archive --delete --progress --human-readable $(A_DIR_ROOT)/$(A_CONFIG_DIR_ASSETS) $(A_DIR_PND)/
+	@ mkdir -p $(@D) $(A_DIR_PND_STAGING)
+	rsync --archive --delete --progress --human-readable $(A_DIR_PND_BASE)/ $(A_DIR_PND_STAGING)
+	rsync --archive --delete --progress --human-readable $(A_DIR_ROOT)/$(A_CONFIG_DIR_ASSETS) $(A_DIR_PND_STAGING)
+	cp $(A_FILE_BIN_TARGET) $(A_DIR_PND_STAGING)
 	$(PANDORA_UTILS)/pnd_make.sh -c \
-		-d $(PWD)/$(A_DIR_PND) \
+		-d $(PWD)/$(A_DIR_PND_STAGING) \
 		-p $(A_FILE_PND_TARGET) \
-		-x $(PWD)/$(A_DIR_PND)/doc/PXML.xml \
-		-i $(PWD)/$(A_DIR_PND)/img/icon.png
+		-x $(PWD)/$(A_DIR_PND_STAGING)/doc/PXML.xml \
+		-i $(PWD)/$(A_DIR_PND_STAGING)/img/icon.png
