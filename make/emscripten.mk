@@ -1,5 +1,15 @@
 include $(A2X_PATH)/make/global/defs.mk
 
+ifndef A_DO_BUILD
+
+all :
+	emmake $(MAKE) -f $(firstword $(MAKEFILE_LIST)) A_DO_BUILD=1
+
+% :
+	emmake $(MAKE) -f $(firstword $(MAKEFILE_LIST)) A_DO_BUILD=1 $@
+
+else
+
 A_CONFIG_BUILD_OPT := -O3
 A_CONFIG_LIB_SDL ?= 2
 A_CONFIG_LIB_SDL_TIME := 1
@@ -40,3 +50,5 @@ A_PLATFORM_CFLAGS := \
     -Wno-dollar-in-identifier-extension \
 
 include $(A2X_PATH)/make/global/rules.mk
+
+endif
