@@ -1,17 +1,20 @@
 include $(A2X_PATH)/make/global/defs.mk
+include $(A_FILE_SDKCONFIG_MK)
 
 ifndef A_DO_BUILD
 
-A_MAKE_CMD := emmake $(MAKE) -f $(firstword $(MAKEFILE_LIST)) -j A_DO_BUILD=1
+A_MAKE_CMD := \
+    source $(A_SDK_EMSCRIPTEN_ROOT)/emsdk_env.sh \
+    && emmake $(MAKE) -f $(firstword $(MAKEFILE_LIST)) -j A_DO_BUILD=1
 
 all :
-	$(A_MAKE_CMD)
+	bash -c "$(A_MAKE_CMD)"
 
 run :
-	$(A_MAKE_CMD) runweb
+	bash -c "$(A_MAKE_CMD) runweb"
 
 % :
-	$(A_MAKE_CMD) $@
+	bash -c "$(A_MAKE_CMD) $@"
 
 else
 

@@ -31,6 +31,8 @@ def main():
 
     if not os.path.exists(config_read):
         g_tool.write_text(config_read, """\
+sdk.emscripten.root = /opt/emsdk
+
 sdk.mingw32.root = /usr
 sdk.mingw32.arch = i686-w64-mingw32
 
@@ -58,6 +60,9 @@ sdk.pandora.utils = sdk_utils
     def addSdk(Id, Title):
         sdks[Id] = Sdk(Id, Title)
         return sdks[Id]
+
+    emscripten = addSdk('emscripten', 'Emscripten (Web)')
+    emscripten.add_var('root')
 
     mingw32 = addSdk('mingw32', 'Mingw32 (Windows 32bit)')
     mingw32.add_var('root')
