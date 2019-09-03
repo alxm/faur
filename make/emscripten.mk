@@ -2,11 +2,16 @@ include $(A2X_PATH)/make/global/defs.mk
 
 ifndef A_DO_BUILD
 
+A_MAKE_CMD := emmake $(MAKE) -f $(firstword $(MAKEFILE_LIST)) -j A_DO_BUILD=1
+
 all :
-	emmake $(MAKE) -f $(firstword $(MAKEFILE_LIST)) A_DO_BUILD=1
+	$(A_MAKE_CMD)
+
+run :
+	$(A_MAKE_CMD) runweb
 
 % :
-	emmake $(MAKE) -f $(firstword $(MAKEFILE_LIST)) A_DO_BUILD=1 $@
+	$(A_MAKE_CMD) $@
 
 else
 
@@ -50,5 +55,8 @@ A_PLATFORM_CFLAGS := \
     -Wno-dollar-in-identifier-extension \
 
 include $(A2X_PATH)/make/global/rules.mk
+
+runweb : all
+	cd $(A_DIR_BIN) && $(A2X_PATH)/bin/a2x_runweb $(A_CONFIG_APP_BIN)
 
 endif
