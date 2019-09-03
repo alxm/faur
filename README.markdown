@@ -118,8 +118,7 @@ void drawBox(void)
 
 ```make
 A_CONFIG_APP_AUTHOR := you
-A_CONFIG_APP_BIN := hello.bin
-A_CONFIG_APP_TITLE := hello
+A_CONFIG_APP_NAME := hello
 
 A_CONFIG_APP_VERSION_MAJOR := 1
 A_CONFIG_APP_VERSION_MINOR := 0

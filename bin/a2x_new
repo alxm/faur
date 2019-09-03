@@ -50,8 +50,7 @@ def main():
     dir_make.write_file('Makefile',
 """\
 A_CONFIG_APP_AUTHOR := {author}
-A_CONFIG_APP_BIN := {name}.bin
-A_CONFIG_APP_TITLE := {name}
+A_CONFIG_APP_NAME := {name}
 
 A_CONFIG_APP_VERSION_MAJOR := 1
 A_CONFIG_APP_VERSION_MINOR := 0

@@ -51,6 +51,8 @@ A_BUILD_EMSCRIPTEN_EMBED := \
         $(join $(A_CONFIG_PATH_EMBED_EMSCRIPTEN), \
                $(addprefix @, $(A_CONFIG_PATH_EMBED_EMSCRIPTEN)))) \
 
+A_PLATFORM_BIN_SUFFIX := .html
+
 A_PLATFORM_LIBS := \
     $(A_CONFIG_BUILD_OPT) \
     $(A_BUILD_EMSCRIPTEN_LIBS) \
@@ -63,6 +65,6 @@ A_PLATFORM_CFLAGS := \
 include $(A2X_PATH)/make/global/rules.mk
 
 runweb : all
-	cd $(A_DIR_BIN) && $(A2X_PATH)/bin/a2x_runweb $(A_CONFIG_APP_BIN)
+	cd $(A_DIR_BIN) && $(A2X_PATH)/bin/a2x_runweb $(A_FILE_BIN)
 
 endif

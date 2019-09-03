@@ -13,6 +13,8 @@ A_CONFIG_SCREEN_WIZ_FIX ?= 1
 A_CONFIG_SYSTEM_LINUX := 1
 A_CONFIG_SYSTEM_WIZ := 1
 
+A_PLATFORM_BIN_SUFFIX := .gpe
+
 A_PLATFORM_LIBS := \
     -L$(OPEN2X)/lib \
     -L$(OPEN2X)/arm-open2x-linux/lib \

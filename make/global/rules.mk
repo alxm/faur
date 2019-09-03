@@ -1,4 +1,11 @@
 #
+# To support app and author names with spaces
+#
+A_MAKE_SPACE := $(A_MAKE_SPACE) $(A_MAKE_SPACE)
+A_MAKE_SPACE_DASH = $(subst $(A_MAKE_SPACE),-,$1)
+A_MAKE_SPACE_ESCAPE = $(subst $(A_MAKE_SPACE),\$(A_MAKE_SPACE),$1)
+
+#
 # Process and reconcile build settings
 #
 include $(A2X_PATH)/make/global/config.mk
@@ -25,7 +32,8 @@ A_DIR_GEN_GFX := $(A_DIR_GEN)/gfx
 # The final bin that gets built
 #
 A_DIR_BIN := $(A_DIR_BUILD_UID)/bin
-A_FILE_BIN_TARGET := $(A_DIR_BIN)/$(A_CONFIG_APP_BIN)
+A_FILE_BIN := $(call A_MAKE_SPACE_DASH,$(A_CONFIG_APP_NAME))$(A_PLATFORM_BIN_SUFFIX)
+A_FILE_BIN_TARGET := $(A_DIR_BIN)/$(A_FILE_BIN)
 A_FILE_BIN_LINK_ASSETS := $(A_DIR_BIN)/$(A_CONFIG_DIR_ASSETS)
 A_FILE_BIN_LINK_SCREENSHOTS := $(A_DIR_BIN)/$(A_CONFIG_DIR_SCREENSHOTS)
 A_FILE_BIN_LINKS := $(A_FILE_BIN_LINK_ASSETS) $(A_FILE_BIN_LINK_SCREENSHOTS)
@@ -149,7 +157,7 @@ clean : $(A_CONFIG_MAKE_CLEAN)
 	rm -rf $(A_DIR_BUILD_UID)
 
 run : all
-	cd $(A_DIR_BIN) && ./$(A_CONFIG_APP_BIN)
+	cd $(A_DIR_BIN) && ./$(A_FILE_BIN)
 
 copystatic :
 	@ mkdir -p $(A_DIR_BIN)

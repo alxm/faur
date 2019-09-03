@@ -64,17 +64,17 @@ static bool lazy_init(void)
     if(g_isInit) {
         g_filePrefix = a_str_dup(a_str__fmt512("%s/%s-",
                                                A_CONFIG_DIR_SCREENSHOTS,
-                                               A_CONFIG_APP_TITLE));
+                                               A_CONFIG_APP_NAME));
 
         g_title = a_str_dup(a_str__fmt512(
             "%s %s by %s",
-            A_CONFIG_APP_TITLE,
+            A_CONFIG_APP_NAME,
             A_CONFIG_APP_VERSION_STRING,
             A_CONFIG_APP_AUTHOR));
 
         g_description = a_str_dup(a_str__fmt512(
             "%s %s by %s, built %s. Running a2x %s %s.",
-            A_CONFIG_APP_TITLE,
+            A_CONFIG_APP_NAME,
             A_CONFIG_APP_VERSION_STRING,
             A_CONFIG_APP_AUTHOR,
             A_CONFIG_BUILD_TIMESTAMP,
