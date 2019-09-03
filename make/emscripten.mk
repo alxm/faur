@@ -10,9 +10,6 @@ A_MAKE_CMD := \
 all :
 	bash -c "$(A_MAKE_CMD)"
 
-run :
-	bash -c "$(A_MAKE_CMD) runweb"
-
 % :
 	bash -c "$(A_MAKE_CMD) $@"
 
@@ -64,7 +61,7 @@ A_PLATFORM_CFLAGS := \
 
 include $(A2X_PATH)/make/global/rules.mk
 
-runweb : all
+run :
 	cd $(A_DIR_BIN) && $(A2X_PATH)/bin/a2x_runweb $(A_FILE_BIN)
 
 endif

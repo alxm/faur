@@ -32,3 +32,6 @@ export READELF := $(PREFIX)readelf
 export STRIP   := $(PREFIX)strip
 
 include $(A2X_PATH)/make/global/rules.mk
+
+run :
+	cd $(A_DIR_BIN) && wine ./$(A_FILE_BIN)
