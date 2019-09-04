@@ -2,9 +2,7 @@
 # App
 #
 A_CONFIG_APP_AUTHOR ?= Unknown
-A_CONFIG_APP_BIN ?= a.out
-A_CONFIG_APP_PND ?= $(A_CONFIG_APP_BIN).pnd
-A_CONFIG_APP_TITLE ?= Untitled
+A_CONFIG_APP_NAME ?= Untitled
 A_CONFIG_APP_VERSION_MAJOR ?= 1
 A_CONFIG_APP_VERSION_MINOR ?= 0
 A_CONFIG_APP_VERSION_MICRO ?= 0
@@ -35,19 +33,13 @@ A_CONFIG_COLOR_VOLBAR_FILL ?= 0x9fcf3f
 #
 # Project dirs
 #
-#   A_CONFIG_DIR_AST - Root-relative path to the project's media assets dir
-#   A_CONFIG_DIR_BIN - Root-relative path to executable files dir
-#   A_CONFIG_DIR_OBJ - Root-relative path to where object files are written
-#   A_CONFIG_DIR_PND - Root-relative path to the project's PND staging dir
-#   A_CONFIG_DIR_ROOT - Relative path from the make dir to the project root
-#   A_CONFIG_DIR_SCREENSHOTS - Bin-relative path to screenshots dir
-#   A_CONFIG_DIR_SRC - Root-relative path to the project's source tree
+#   A_CONFIG_DIR_ASSETS - Project's media assets
+#   A_CONFIG_DIR_BUILD - Root build dir
+#   A_CONFIG_DIR_SCREENSHOTS - Executable-relative path to screenshots dir
+#   A_CONFIG_DIR_SRC - Project's source tree
 #
-A_CONFIG_DIR_AST ?= assets
-A_CONFIG_DIR_BIN ?= bin
-A_CONFIG_DIR_OBJ ?= obj
-A_CONFIG_DIR_PND ?= pnd
-A_CONFIG_DIR_ROOT ?= ..
+A_CONFIG_DIR_ASSETS ?= assets
+A_CONFIG_DIR_BUILD ?= build
 A_CONFIG_DIR_SCREENSHOTS ?= screenshots
 A_CONFIG_DIR_SRC ?= src
 
@@ -58,11 +50,11 @@ A_CONFIG_DIR_SRC ?= src
 #   A_CONFIG_ECS_SYS_NUM - Source dir-relative file and enum value to read
 #
 ifdef A_CONFIG_ECS_COM_NUM
-    A_CONFIG_ECS_COM_NUM := $(shell $(A2X_PATH)/bin/a2x_enum -q $(A_CONFIG_DIR_ROOT)/$(A_CONFIG_DIR_SRC)/$(A_CONFIG_ECS_COM_NUM))
+    A_CONFIG_ECS_COM_NUM := $(shell $(A2X_PATH)/bin/a2x_enum -q $(A_DIR_ROOT)/$(A_CONFIG_DIR_SRC)/$(A_CONFIG_ECS_COM_NUM))
 endif
 
 ifdef A_CONFIG_ECS_SYS_NUM
-    A_CONFIG_ECS_SYS_NUM := $(shell $(A2X_PATH)/bin/a2x_enum -q $(A_CONFIG_DIR_ROOT)/$(A_CONFIG_DIR_SRC)/$(A_CONFIG_ECS_SYS_NUM))
+    A_CONFIG_ECS_SYS_NUM := $(shell $(A2X_PATH)/bin/a2x_enum -q $(A_DIR_ROOT)/$(A_CONFIG_DIR_SRC)/$(A_CONFIG_ECS_SYS_NUM))
 endif
 
 A_CONFIG_ECS_COM_NUM ?= 1
@@ -113,11 +105,13 @@ A_CONFIG_OUTPUT_ON ?= 1
 #   A_CONFIG_PATH_EMBED - Root-relative space-separated file and dir paths
 #   A_CONFIG_PATH_EMBED_EMSCRIPTEN - Same as above, but using Emscripten
 #   A_CONFIG_PATH_GFX - Root-relative image and dir paths to convert to bin data
+#   A_CONFIG_PATH_STATIC_COPY - dirs in build/static to expand and copy to bin
 #   A_CONFIG_PATH_STORAGE_PREFIX - IDBFS mount point on Emscripten targets
 #
 A_CONFIG_PATH_EMBED ?=
 A_CONFIG_PATH_EMBED_EMSCRIPTEN ?=
 A_CONFIG_PATH_GFX ?=
+A_CONFIG_PATH_STATIC_COPY ?=
 A_CONFIG_PATH_STORAGE_PREFIX ?= ./
 
 #
@@ -204,6 +198,8 @@ A_CONFIG_SYSTEM_WIZ ?= 0
 A_CONFIG_SYSTEM_GP2X_MENU ?= 1
 A_CONFIG_SYSTEM_GP2X_MHZ ?= 0
 
+A_CONFIG_SYSTEM_EMSCRIPTEN_TOTAL_MEMORY ?=
+
 #
 # System traits
 #
@@ -260,8 +256,8 @@ endif
 # C defines
 #
 A_CONFIG_BUILD_CFLAGS += \
-    -DA_CONFIG_APP_AUTHOR=\"$(A_CONFIG_APP_AUTHOR)\" \
-    -DA_CONFIG_APP_TITLE=\"$(A_CONFIG_APP_TITLE)\" \
+    -DA_CONFIG_APP_AUTHOR=\"$(call A_MAKE_SPACE_ESCAPE,$(A_CONFIG_APP_AUTHOR))\" \
+    -DA_CONFIG_APP_NAME=\"$(call A_MAKE_SPACE_ESCAPE,$(A_CONFIG_APP_NAME))\" \
     -DA_CONFIG_APP_VERSION_MAJOR=$(A_CONFIG_APP_VERSION_MAJOR) \
     -DA_CONFIG_APP_VERSION_MICRO=$(A_CONFIG_APP_VERSION_MICRO) \
     -DA_CONFIG_APP_VERSION_MINOR=$(A_CONFIG_APP_VERSION_MINOR) \

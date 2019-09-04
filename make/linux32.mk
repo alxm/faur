@@ -13,8 +13,10 @@ A_PLATFORM_LIBS := \
     -L/usr/lib/i386-linux-gnu \
     -lpng \
     -lm \
+    -pie \
 
 A_PLATFORM_CFLAGS := \
     -m32 \
+    -fpie \
 
 include $(A2X_PATH)/make/global/rules.mk

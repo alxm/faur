@@ -12,6 +12,8 @@ A_CONFIG_SYSTEM_MINGW := 1
 A_CONFIG_TRAIT_DESKTOP := 1
 A_CONFIG_TRAIT_KEYBOARD := 1
 
+A_PLATFORM_BIN_SUFFIX := .exe
+
 A_PLATFORM_LIBS := \
     -u _SDL_main \
     -lpng \
@@ -30,3 +32,6 @@ export READELF := $(PREFIX)readelf
 export STRIP   := $(PREFIX)strip
 
 include $(A2X_PATH)/make/global/rules.mk
+
+run :
+	cd $(A_DIR_BIN) && wine ./$(A_FILE_BIN)

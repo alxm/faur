@@ -19,8 +19,10 @@ A_PLATFORM_LIBS := \
     -lpng \
     -lm \
     -rdynamic \
+    -pie \
 
 A_PLATFORM_CFLAGS := \
+    -fpie \
 
 include $(A2X_PATH)/make/global/rules.mk
 
