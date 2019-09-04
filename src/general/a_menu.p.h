@@ -31,7 +31,7 @@ typedef enum {
 } AMenuState;
 
 #include "data/a_list.p.h"
-#include "inputs/a_button.p.h"
+#include "input/a_button.p.h"
 #include "sound/a_sound.p.h"
 
 extern AMenu* a_menu_new(AButton* Next, AButton* Back, AButton* Select, AButton* Cancel);
