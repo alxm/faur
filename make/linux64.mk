@@ -12,7 +12,9 @@ A_CONFIG_TRAIT_KEYBOARD := 1
 A_PLATFORM_LIBS := \
     -lpng \
     -lm \
+    -pie \
 
 A_PLATFORM_CFLAGS := \
+    -fpie \
 
 include $(A2X_PATH)/make/global/rules.mk
