@@ -60,6 +60,17 @@ AList* a_ecs__listGet(AEcsListId List)
     return g_lists[List];
 }
 
+unsigned a_ecs__listGetSum(void)
+{
+    unsigned sum = 0;
+
+    for(int i = A_ECS__NUM; i--; ) {
+        sum += a_list_sizeGet(g_lists[i]);
+    }
+
+    return sum;
+}
+
 bool a_ecs__refDecIgnoreGet(void)
 {
     return g_ignoreRefDec;

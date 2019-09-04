@@ -37,6 +37,7 @@ typedef enum {
 extern const APack a_pack__ecs;
 
 extern AList* a_ecs__listGet(AEcsListId List);
+extern unsigned a_ecs__listGetSum(void);
 
 extern bool a_ecs__refDecIgnoreGet(void);
 extern void a_ecs__refDecIgnoreSet(bool IgnoreRefDec);
