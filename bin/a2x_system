@@ -36,7 +36,7 @@ def main():
 """\
 #include "system_{name}.h"
 
-void y_{name}(AEntity* Entity)
+void s_{name}(AEntity* Entity)
 {{
     A_UNUSED(Entity);
 }}
@@ -48,7 +48,7 @@ void y_{name}(AEntity* Entity)
 
 #include <a2x.h>
 
-extern ASystemHandler y_{name};
+extern ASystemHandler s_{name};
 """.format(name = sys_name))
 
 if __name__ == '__main__':
