@@ -77,6 +77,7 @@ A_FILES_OBJ := $(A_FILES_OBJ_APP) $(A_FILES_OBJ_GEN)
 A_GENERIC_CFLAGS := \
     -DA2X=1 \
     -std=c99 \
+    -MMD \
     -Wall \
     -Wextra \
     -Wconversion \
@@ -109,6 +110,11 @@ all : $(A_MAKE_ALL)
 # a2x header and lib build rules
 #
 include $(A2X_PATH)/make/global/a2x.mk
+
+#
+# Object dependencies
+#
+-include $(A_FILES_OBJ:.o=.d) $(A2X_FILES_OBJ:.o=.d)
 
 $(A_FILES_OBJ) : $(A2X_FILE_PUBLIC_A2X_HEADER)
 
