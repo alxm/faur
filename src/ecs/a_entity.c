@@ -547,12 +547,26 @@ void a_entity__systemsAddTo(AEntity* Entity)
 
 void a_entity__systemsRemoveFromAll(AEntity* Entity)
 {
+    #if A_CONFIG_BUILD_DEBUG
+        if(A_FLAGS_TEST_ANY(Entity->flags, A_ENTITY__DEBUG)) {
+            a_out__info(
+                "%s removed from all systems", a_entity_idGet(Entity));
+        }
+    #endif
+
     a_list_clearEx(Entity->systemNodesActive, (AFree*)a_list_removeNode);
     a_list_clearEx(Entity->systemNodesEither, (AFree*)a_list_removeNode);
 }
 
 void a_entity__systemsRemoveFromActive(AEntity* Entity)
 {
+    #if A_CONFIG_BUILD_DEBUG
+        if(A_FLAGS_TEST_ANY(Entity->flags, A_ENTITY__DEBUG)) {
+            a_out__info(
+                "%s removed from active-only systems", a_entity_idGet(Entity));
+        }
+    #endif
+
     A_FLAGS_SET(Entity->flags, A_ENTITY__ACTIVE_REMOVED);
     a_list_clearEx(Entity->systemNodesActive, (AFree*)a_list_removeNode);
 }
