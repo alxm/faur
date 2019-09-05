@@ -60,6 +60,17 @@ AList* a_ecs__listGet(AEcsListId List)
     return g_lists[List];
 }
 
+unsigned a_ecs__listGetSum(void)
+{
+    unsigned sum = 0;
+
+    for(int i = A_ECS__NUM; i--; ) {
+        sum += a_list_sizeGet(g_lists[i]);
+    }
+
+    return sum;
+}
+
 bool a_ecs__refDecIgnoreGet(void)
 {
     return g_ignoreRefDec;
@@ -99,8 +110,7 @@ void a_ecs__flushEntitiesFromSystems(void)
         a_entity__systemsRemoveFromAll(e);
 
         a_entity__ecsListAdd(
-            e,
-            g_lists[a_entity__ecsCanDelete(e) ? A_ECS__FREE : A_ECS__DEFAULT]);
+            e, g_lists[a_entity__canDelete(e) ? A_ECS__FREE : A_ECS__DEFAULT]);
     }
 
     a_list_clear(g_lists[A_ECS__FLUSH]);

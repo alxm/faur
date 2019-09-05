@@ -266,9 +266,9 @@ void a_entity_refDec(AEntity* Entity)
         }
     #endif
 
-    if(--Entity->references == 0
-        && A_FLAGS_TEST_ANY(Entity->flags, A_ENTITY__REMOVED)) {
+    Entity->references--;
 
+    if(a_entity__canDelete(Entity)) {
         listMoveTo(Entity, A_ECS__FLUSH);
     }
 }
@@ -330,6 +330,18 @@ void a_entity_activeSet(AEntity* Entity)
                 Entity->systemNodesActive, a_system__entityAdd(system, Entity));
         }
     }
+}
+
+void a_entity_activeSetRemove(AEntity* Entity)
+{
+    #if A_CONFIG_BUILD_DEBUG
+        if(A_FLAGS_TEST_ANY(Entity->flags, A_ENTITY__DEBUG)) {
+            a_out__info(
+                "a_entity_activeSetRemove(%s)", a_entity_idGet(Entity));
+        }
+    #endif
+
+    A_FLAGS_SET(Entity->flags, A_ENTITY__REMOVE_INACTIVE);
 }
 
 void a_entity_activeSetPermanent(AEntity* Entity)
@@ -495,7 +507,7 @@ const ATemplate* a_entity__templateGet(const AEntity* Entity)
     return Entity->template;
 }
 
-bool a_entity__ecsCanDelete(const AEntity* Entity)
+bool a_entity__canDelete(const AEntity* Entity)
 {
     return Entity->references == 0
             && A_FLAGS_TEST_ANY(Entity->flags, A_ENTITY__REMOVED);
@@ -547,12 +559,30 @@ void a_entity__systemsAddTo(AEntity* Entity)
 
 void a_entity__systemsRemoveFromAll(AEntity* Entity)
 {
+    #if A_CONFIG_BUILD_DEBUG
+        if(A_FLAGS_TEST_ANY(Entity->flags, A_ENTITY__DEBUG)) {
+            a_out__info(
+                "%s removed from all systems", a_entity_idGet(Entity));
+        }
+    #endif
+
     a_list_clearEx(Entity->systemNodesActive, (AFree*)a_list_removeNode);
     a_list_clearEx(Entity->systemNodesEither, (AFree*)a_list_removeNode);
 }
 
 void a_entity__systemsRemoveFromActive(AEntity* Entity)
 {
+    #if A_CONFIG_BUILD_DEBUG
+        if(A_FLAGS_TEST_ANY(Entity->flags, A_ENTITY__DEBUG)) {
+            a_out__info(
+                "%s removed from active-only systems", a_entity_idGet(Entity));
+        }
+    #endif
+
     A_FLAGS_SET(Entity->flags, A_ENTITY__ACTIVE_REMOVED);
     a_list_clearEx(Entity->systemNodesActive, (AFree*)a_list_removeNode);
+
+    if(A_FLAGS_TEST_ANY(Entity->flags, A_ENTITY__REMOVE_INACTIVE)) {
+        a_entity_removedSet(Entity);
+    }
 }

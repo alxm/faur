@@ -26,10 +26,11 @@
 #include "ecs/a_template.v.h"
 
 typedef enum {
-    A_ENTITY__ACTIVE_REMOVED = A_FLAGS_BIT(0), // kicked out by active system
-    A_ENTITY__ACTIVE_PERMANENT = A_FLAGS_BIT(1), // entity always reports active
+    A_ENTITY__ACTIVE_REMOVED = A_FLAGS_BIT(0), // kicked by active-only system
+    A_ENTITY__ACTIVE_PERMANENT = A_FLAGS_BIT(1), // always report as active
     A_ENTITY__DEBUG = A_FLAGS_BIT(2), // print debug messages for this entity
     A_ENTITY__REMOVED = A_FLAGS_BIT(3), // marked for removal, may have refs
+    A_ENTITY__REMOVE_INACTIVE = A_FLAGS_BIT(4), // mark for removal if kicked
 } AEntityFlags;
 
 extern void a_entity__free(AEntity* Entity);
@@ -37,7 +38,7 @@ extern void a_entity__freeEx(AEntity* Entity);
 
 extern const ATemplate* a_entity__templateGet(const AEntity* Entity);
 
-extern bool a_entity__ecsCanDelete(const AEntity* Entity);
+extern bool a_entity__canDelete(const AEntity* Entity);
 extern void a_entity__ecsListAdd(AEntity* Entity, AList* List);
 
 extern void a_entity__systemsMatch(AEntity* Entity, ASystem* System);

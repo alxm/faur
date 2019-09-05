@@ -41,6 +41,7 @@ extern void a_entity_removedSet(AEntity* Entity);
 
 extern bool a_entity_activeGet(const AEntity* Entity);
 extern void a_entity_activeSet(AEntity* Entity);
+extern void a_entity_activeSetRemove(AEntity* Entity);
 extern void a_entity_activeSetPermanent(AEntity* Entity);
 
 extern void* a_entity_componentAdd(AEntity* Entity, int ComponentIndex);

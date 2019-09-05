@@ -235,6 +235,8 @@ void a_console__draw(void)
 
         printBytes(a_mem__tally, "now");
         printBytes(a_mem__top, "top");
+
+        a_font_printf("%u entities", a_ecs__listGetSum());
     }
 
     a_color_pop();
