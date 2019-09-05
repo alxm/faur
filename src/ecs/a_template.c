@@ -22,7 +22,8 @@
 struct ATemplate {
     unsigned instanceNumber; // Incremented by each new entity
     AEntityInit* init; // Optional, runs after components init and parent init
-    ABitfield* componentBits; // Set if template has corresponding component
+    ABitfield* componentBits; // Set if template or a parent has component
+    ABitfield* componentBitsOwn; // Set if template actually has the component
     void* data[A_CONFIG_ECS_COM_NUM]; // Parsed component config data, or NULL
     const ATemplate* parent; // template chain
 };
@@ -34,6 +35,7 @@ static ATemplate* templateNew(const char* Id)
     ATemplate* t = a_mem_zalloc(sizeof(ATemplate));
 
     t->componentBits = a_bitfield_new(A_CONFIG_ECS_COM_NUM);
+    t->componentBitsOwn = a_bitfield_new(A_CONFIG_ECS_COM_NUM);
 
     char* parentId = a_str_prefixGetToLast(Id, '.');
 
@@ -46,6 +48,13 @@ static ATemplate* templateNew(const char* Id)
 
         t->parent = parentTemplate;
 
+        for(unsigned c = A_CONFIG_ECS_COM_NUM; c--; ) {
+            if(a_bitfield_test(parentTemplate->componentBits, c)) {
+                a_bitfield_set(t->componentBits, c);
+                t->data[c] = parentTemplate->data[c];
+            }
+        }
+
         a_mem_free(parentId);
     }
 
@@ -56,13 +65,16 @@ static ATemplate* templateNew(const char* Id)
 
 static void templateFree(ATemplate* Template)
 {
-    a_bitfield_free(Template->componentBits);
-
     for(int c = A_CONFIG_ECS_COM_NUM; c--; ) {
-        if(Template->data[c]) {
+        if(a_bitfield_test(Template->componentBitsOwn, (unsigned)c)
+            && Template->data[c]) {
+
             a_component__templateFree(a_component__get(c), Template->data[c]);
         }
     }
+
+    a_bitfield_free(Template->componentBits);
+    a_bitfield_free(Template->componentBitsOwn);
 
     a_mem_free(Template);
 }
@@ -106,10 +118,10 @@ void a_template_new(const char* FilePath)
                 continue;
             }
 
-            const AComponent* component = a_component__get(componentIndex);
-
-            t->data[componentIndex] = a_component__templateInit(component, b);
             a_bitfield_set(t->componentBits, (unsigned)componentIndex);
+            a_bitfield_set(t->componentBitsOwn, (unsigned)componentIndex);
+            t->data[componentIndex] =
+                a_component__templateInit(a_component__get(componentIndex), b);
         }
     }
 
@@ -162,22 +174,10 @@ unsigned a_template__instanceGet(const ATemplate* Template)
 
 bool a_template__componentHas(const ATemplate* Template, int ComponentIndex)
 {
-    for(const ATemplate* t = Template; t; t = t->parent) {
-        if(a_bitfield_test(t->componentBits, (unsigned)ComponentIndex)) {
-            return true;
-        }
-    }
-
-    return false;
+    return a_bitfield_test(Template->componentBits, (unsigned)ComponentIndex);
 }
 
 const void* a_template__dataGet(const ATemplate* Template, int ComponentIndex)
 {
-    for(const ATemplate* t = Template; t; t = t->parent) {
-        if(a_bitfield_test(t->componentBits, (unsigned)ComponentIndex)) {
-            return t->data[ComponentIndex];
-        }
-    }
-
-    return NULL;
+    return Template->data[ComponentIndex];
 }
