@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2018 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -76,6 +76,13 @@ void a_input_button__init(void)
 void a_input_button__uninit(void)
 {
     a_list_free(g_buttons);
+}
+
+bool a_button_read(AButtonId Button)
+{
+    APlatformInputButton* b = a_platform_api__inputButtonGet(Button);
+
+    return b ? a_platform_api__inputButtonPressGet(b) : false;
 }
 
 AButton* a_button_new(void)

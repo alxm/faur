@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2017-2018 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2017-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -89,6 +89,8 @@ typedef enum {
     A_KEY_F12,
     A_KEY_NUM,
 } AKeyId;
+
+extern bool a_button_read(AButtonId Button);
 
 extern AButton* a_button_new(void);
 extern AButton* a_button_dup(const AButton* Button);

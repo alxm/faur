@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2017-2018 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2017-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -35,6 +35,8 @@ typedef enum {
 } AAxisId;
 
 #include "math/a_fix.p.h"
+
+extern AFix a_analog_read(AAxisId Axis);
 
 extern AAnalog* a_analog_new(void);
 extern void a_analog_free(AAnalog* Analog);

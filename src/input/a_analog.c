@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2018 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -22,6 +22,13 @@
 struct AAnalog {
     AInputUserHeader header;
 };
+
+AFix a_analog_read(AAxisId Axis)
+{
+    APlatformInputAnalog* a = a_platform_api__inputAnalogGet(Axis);
+
+    return a ? a_platform_api__inputAnalogValueGet(a) : 0;
+}
 
 AAnalog* a_analog_new(void)
 {
