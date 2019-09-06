@@ -24,7 +24,6 @@
 typedef struct APlatformInputAnalog APlatformInputAnalog;
 typedef struct APlatformInputButton APlatformInputButton;
 typedef struct APlatformInputController APlatformInputController;
-typedef struct APlatformInputTouch APlatformInputTouch;
 
 typedef void APlatformSoundMusic;
 typedef void APlatformSoundSample;
@@ -109,10 +108,9 @@ extern const char* a_platform_api__inputAnalogNameGet(const APlatformInputAnalog
 extern int a_platform_api__inputAnalogValueGet(const APlatformInputAnalog* Analog);
 extern void a_platform_api__inputAnalogForward(AAnalogId Source, AButtonId Negative, AButtonId Positive);
 
-extern APlatformInputTouch* a_platform_api__inputTouchGet(void);
-extern AVectorInt a_platform_api__inputTouchCoordsGet(const APlatformInputTouch* Touch);
-extern AVectorInt a_platform_api__inputTouchDeltaGet(const APlatformInputTouch* Touch);
-extern bool a_platform_api__inputTouchTapGet(const APlatformInputTouch* Touch);
+extern AVectorInt a_platform_api__inputTouchCoordsGet(void);
+extern AVectorInt a_platform_api__inputTouchDeltaGet(void);
+extern bool a_platform_api__inputTouchTapGet(void);
 
 extern unsigned a_platform_api__inputControllerNumGet(void);
 extern void a_platform_api__inputControllerSet(unsigned Index);

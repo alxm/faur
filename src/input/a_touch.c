@@ -19,73 +19,28 @@
 #include "a_touch.v.h"
 #include <a2x.v.h>
 
-struct ATouch {
-    AInputUserHeader header;
-};
-
-ATouch* a_touch_new(void)
+AVectorInt a_touch_deltaGet(void)
 {
-    ATouch* t = a_mem_malloc(sizeof(ATouch));
-
-    a_input__userHeaderInit(&t->header);
-
-    APlatformInputTouch* pt = a_platform_api__inputTouchGet();
-
-    if(pt) {
-        a_list_addLast(t->header.platformInputs, pt);
-    }
-
-    return t;
+    return a_platform_api__inputTouchDeltaGet();
 }
 
-void a_touch_free(ATouch* Touch)
+bool a_touch_tapGet(void)
 {
-    if(Touch == NULL) {
-        return;
-    }
-
-    a_input__userHeaderFree(&Touch->header);
-
-    a_mem_free(Touch);
+    return a_platform_api__inputTouchTapGet();
 }
 
-bool a_touch_isWorking(const ATouch* Touch)
+bool a_touch_pointGet(int X, int Y)
 {
-    return !a_list_isEmpty(Touch->header.platformInputs);
+    return a_touch_boxGet(X - 1, Y - 1, 3, 3);
 }
 
-AVectorInt a_touch_deltaGet(const ATouch* Touch)
+bool a_touch_boxGet(int X, int Y, int W, int H)
 {
-    APlatformInputTouch* pt = a_list_getFirst(Touch->header.platformInputs);
+    if(a_platform_api__inputTouchTapGet()) {
+        AVectorInt coords = a_platform_api__inputTouchCoordsGet();
 
-    return a_platform_api__inputTouchDeltaGet(pt);
-}
-
-bool a_touch_tapGet(const ATouch* Touch)
-{
-    A_LIST_ITERATE(Touch->header.platformInputs, APlatformInputTouch*, pt) {
-        if(a_platform_api__inputTouchTapGet(pt)) {
+        if(a_collide_pointInBox(coords.x, coords.y, X, Y, W, H)) {
             return true;
-        }
-    }
-
-    return false;
-}
-
-bool a_touch_pointGet(const ATouch* Touch, int X, int Y)
-{
-    return a_touch_boxGet (Touch, X - 1, Y - 1, 3, 3);
-}
-
-bool a_touch_boxGet(const ATouch* Touch, int X, int Y, int W, int H)
-{
-    A_LIST_ITERATE(Touch->header.platformInputs, APlatformInputTouch*, pt) {
-        if(a_platform_api__inputTouchTapGet(pt)) {
-            AVectorInt coords = a_platform_api__inputTouchCoordsGet(pt);
-
-            if(a_collide_pointInBox(coords.x, coords.y, X, Y, W, H)) {
-                return true;
-            }
         }
     }
 

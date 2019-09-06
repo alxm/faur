@@ -21,18 +21,11 @@
 
 #include "general/a_system_includes.h"
 
-typedef struct ATouch ATouch;
-
 #include "math/a_fix.p.h"
 
-extern ATouch* a_touch_new(void);
-extern void a_touch_free(ATouch* Touch);
-
-extern bool a_touch_isWorking(const ATouch* Touch);
-
-extern AVectorInt a_touch_deltaGet(const ATouch* Touch);
-extern bool a_touch_tapGet(const ATouch* Touch);
-extern bool a_touch_pointGet(const ATouch* Touch, int X, int Y);
-extern bool a_touch_boxGet(const ATouch* Touch, int X, int Y, int W, int H);
+extern AVectorInt a_touch_deltaGet(void);
+extern bool a_touch_tapGet(void);
+extern bool a_touch_pointGet(int X, int Y);
+extern bool a_touch_boxGet(int X, int Y, int W, int H);
 
 #endif // A_INC_INPUTS_TOUCH_P_H
