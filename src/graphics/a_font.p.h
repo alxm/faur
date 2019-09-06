@@ -48,11 +48,11 @@ extern void a_font_alignSet(AFontAlign Align);
 extern void a_font_coordsSet(int X, int Y);
 extern int a_font_coordsGetX(void);
 extern int a_font_coordsGetY(void);
-extern void a_font_newLine(void);
 
 extern int a_font_lineHeightGet(void);
 extern void a_font_lineHeightSet(int Height);
 extern void a_font_lineWrapSet(int Width);
+extern void a_font_lineNew(void);
 
 extern int a_font_widthGet(const char* Text);
 extern int a_font_widthGetf(const char* Format, ...);

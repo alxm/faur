@@ -178,14 +178,6 @@ int a_font_coordsGetY(void)
     return g_state.y;
 }
 
-void a_font_newLine(void)
-{
-    g_state.x = g_state.startX;
-    g_state.y += g_state.lineHeight;
-
-    g_state.currentLineWidth = 0;
-}
-
 int a_font_lineHeightGet(void)
 {
     return g_state.lineHeight;
@@ -199,6 +191,14 @@ void a_font_lineHeightSet(int Height)
 void a_font_lineWrapSet(int Width)
 {
     g_state.wrapWidth = Width;
+    g_state.currentLineWidth = 0;
+}
+
+void a_font_lineNew(void)
+{
+    g_state.x = g_state.startX;
+    g_state.y += g_state.lineHeight;
+
     g_state.currentLineWidth = 0;
 }
 
@@ -248,7 +248,7 @@ static void wrapString(const char* Text)
                 drawString(lineStart, Text - lineStart);
 
                 if(ch == '\n') {
-                    a_font_newLine();
+                    a_font_lineNew();
                 }
 
                 lineStart = Text + 1;
@@ -261,13 +261,13 @@ static void wrapString(const char* Text)
             if(wordStart == NULL) {
                 // Overflowed with whitespace, print what we have
                 drawString(lineStart, Text - lineStart);
-                a_font_newLine();
+                a_font_lineNew();
 
                 lineStart = Text;
             } else if(lineStart < wordStart) {
                 // Print line up to overflowing word, and go back to the word
                 drawString(lineStart, wordStart - lineStart);
-                a_font_newLine();
+                a_font_lineNew();
 
                 Text = wordStart;
                 lineStart = wordStart;
@@ -294,7 +294,7 @@ void a_font_print(const char* Text)
             drawString(lineStart, Text - lineStart);
 
             if(ch == '\n') {
-                a_font_newLine();
+                a_font_lineNew();
             }
 
             lineStart = Text + 1;

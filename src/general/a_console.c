@@ -187,7 +187,7 @@ void a_console__draw(void)
                           1 + tagWidth + 1,
                           a_font_coordsGetY());
             a_font_print(l->text);
-            a_font_newLine();
+            a_font_lineNew();
         }
     }
 
