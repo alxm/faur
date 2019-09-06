@@ -37,8 +37,8 @@ void a_input_controller__init(void)
         a_platform_api__inputButtonForward(A_BUTTON_DOWNRIGHT, A_BUTTON_DOWN);
         a_platform_api__inputButtonForward(A_BUTTON_DOWNRIGHT, A_BUTTON_RIGHT);
 
-        AAxisId axisX = A_AXIS_LEFTX;
-        AAxisId axisY = A_AXIS_LEFTY;
+        AAnalogId axisX = A_AXIS_LEFTX;
+        AAnalogId axisY = A_AXIS_LEFTY;
         AButtonId buttonUp = A_BUTTON_UP;
         AButtonId buttonDown = A_BUTTON_DOWN;
         AButtonId buttonLeft = A_BUTTON_LEFT;

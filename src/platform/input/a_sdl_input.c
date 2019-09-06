@@ -157,7 +157,7 @@ static void buttonPress(APlatformInputButton* Button, bool Pressed)
     }
 }
 
-static void analogAdd(APlatformInputController* Controller, AAxisId Id, const char* Name, int AxisIndex)
+static void analogAdd(APlatformInputController* Controller, AAnalogId Id, const char* Name, int AxisIndex)
 {
     if(Controller->axes[Id] != NULL) {
         return;
@@ -514,7 +514,7 @@ void a_platform_sdl_input__init(void)
             }
 
             static const struct {
-                AAxisId id;
+                AAnalogId id;
                 const char* name;
             } axes[SDL_CONTROLLER_AXIS_MAX] = {
                 [SDL_CONTROLLER_AXIS_LEFTX] = {A_AXIS_LEFTX, "Left Stick"},
@@ -979,7 +979,7 @@ void a_platform_api__inputButtonForward(int Source, int Destination)
     a_list_addLast(bSrc->forwardButtons, bDst);
 }
 
-APlatformInputAnalog* a_platform_api__inputAnalogGet(int Id)
+APlatformInputAnalog* a_platform_api__inputAnalogGet(AAnalogId Id)
 {
     if(Id != A_AXIS_INVALID) {
         const APlatformInputController* c = g_setController;
@@ -1008,7 +1008,7 @@ int a_platform_api__inputAnalogValueGet(const APlatformInputAnalog* Analog)
     return Analog->value;
 }
 
-void a_platform_api__inputAnalogForward(AAxisId Source, AButtonId Negative, AButtonId Positive)
+void a_platform_api__inputAnalogForward(AAnalogId Source, AButtonId Negative, AButtonId Positive)
 {
     APlatformInputAnalog* aSrc = a_platform_api__inputAnalogGet(Source);
 

@@ -32,16 +32,16 @@ typedef enum {
     A_AXIS_LEFTTRIGGER,
     A_AXIS_RIGHTTRIGGER,
     A_AXIS_NUM
-} AAxisId;
+} AAnalogId;
 
 #include "math/a_fix.p.h"
 
-extern AFix a_analog_read(AAxisId Axis);
+extern AFix a_analog_read(AAnalogId Axis);
 
 extern AAnalog* a_analog_new(void);
 extern void a_analog_free(AAnalog* Analog);
 
-extern void a_analog_bind(AAnalog* Analog, AAxisId Id);
+extern void a_analog_bind(AAnalog* Analog, AAnalogId Id);
 
 extern bool a_analog_isWorking(const AAnalog* Analog);
 extern const char* a_analog_nameGet(const AAnalog* Analog);

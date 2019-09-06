@@ -104,10 +104,10 @@ extern const char* a_platform_api__inputButtonNameGet(const APlatformInputButton
 extern bool a_platform_api__inputButtonPressGet(const APlatformInputButton* Button);
 extern void a_platform_api__inputButtonForward(int Source, int Destination);
 
-extern APlatformInputAnalog* a_platform_api__inputAnalogGet(int Id);
+extern APlatformInputAnalog* a_platform_api__inputAnalogGet(AAnalogId Id);
 extern const char* a_platform_api__inputAnalogNameGet(const APlatformInputAnalog* Analog);
 extern int a_platform_api__inputAnalogValueGet(const APlatformInputAnalog* Analog);
-extern void a_platform_api__inputAnalogForward(AAxisId Source, AButtonId Negative, AButtonId Positive);
+extern void a_platform_api__inputAnalogForward(AAnalogId Source, AButtonId Negative, AButtonId Positive);
 
 extern APlatformInputTouch* a_platform_api__inputTouchGet(void);
 extern AVectorInt a_platform_api__inputTouchCoordsGet(const APlatformInputTouch* Touch);

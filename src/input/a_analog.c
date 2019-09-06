@@ -23,7 +23,7 @@ struct AAnalog {
     AInputUserHeader header;
 };
 
-AFix a_analog_read(AAxisId Axis)
+AFix a_analog_read(AAnalogId Axis)
 {
     APlatformInputAnalog* a = a_platform_api__inputAnalogGet(Axis);
 
@@ -50,7 +50,7 @@ void a_analog_free(AAnalog* Analog)
     a_mem_free(Analog);
 }
 
-void a_analog_bind(AAnalog* Analog, AAxisId Id)
+void a_analog_bind(AAnalog* Analog, AAnalogId Id)
 {
     APlatformInputAnalog* pa = a_platform_api__inputAnalogGet(Id);
 
