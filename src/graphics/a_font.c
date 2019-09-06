@@ -23,10 +23,6 @@
 #define A__CHAR_INDEX(Char) ((unsigned)Char - A__CHAR_START)
 #define A__LINE_SPACING 1
 
-struct AFont {
-    ASprite* chars;
-};
-
 typedef struct {
     const AFont* font;
     AFontAlign align;
@@ -86,35 +82,25 @@ const APack a_pack__font = {
 
 AFont* a_font_newFromPng(const char* Path, int X, int Y, int CharWidth, int CharHeight)
 {
-    AFont* f = a_mem_malloc(sizeof(AFont));
-
-    f->chars = a_sprite_newFromPng(Path, X, Y, CharWidth, CharHeight);
-
-    return f;
+    return a_sprite_newFromPng(Path, X, Y, CharWidth, CharHeight);
 }
 
 AFont* a_font_newFromSprite(const ASprite* Sheet, int X, int Y, int CharWidth, int CharHeight)
 {
-    AFont* f = a_mem_malloc(sizeof(AFont));
-
-    f->chars = a_sprite_newFromSprite(Sheet, X, Y, CharWidth, CharHeight);
-
-    return f;
+    return a_sprite_newFromSprite(Sheet, X, Y, CharWidth, CharHeight);
 }
 
 AFont* a_font_dup(const AFont* Font, APixel Color)
 {
-    AFont* f = a_mem_malloc(sizeof(AFont));
-
-    f->chars = a_sprite_dup(Font->chars);
+    AFont* f = a_sprite_dup(Font);
 
     a_color_push();
     a_color_baseSetPixel(Color);
     a_color_fillBlitSet(true);
 
-    for(unsigned i = a_sprite_framesNumGet(f->chars); i--; ) {
-        a_screen_push(f->chars, i);
-        a_sprite_blit(f->chars, i, 0, 0);
+    for(unsigned i = a_sprite_framesNumGet(f); i--; ) {
+        a_screen_push(f, i);
+        a_sprite_blit(f, i, 0, 0);
         a_screen_pop();
     }
 
@@ -125,13 +111,7 @@ AFont* a_font_dup(const AFont* Font, APixel Color)
 
 void a_font_free(AFont* Font)
 {
-    if(Font == NULL) {
-        return;
-    }
-
-    a_sprite_free(Font->chars);
-
-    a_mem_free(Font);
+    a_sprite_free(Font);
 }
 
 void a_font_push(void)
@@ -168,7 +148,7 @@ void a_font_fontSet(const AFont* Font)
     }
 
     g_state.font = Font;
-    g_state.lineHeight = a_sprite_sizeGetHeight(Font->chars) + A__LINE_SPACING;
+    g_state.lineHeight = a_sprite_sizeGetHeight(Font) + A__LINE_SPACING;
 }
 
 void a_font__fontSet(AFontId Font)
@@ -198,14 +178,6 @@ int a_font_coordsGetY(void)
     return g_state.y;
 }
 
-void a_font_newLine(void)
-{
-    g_state.x = g_state.startX;
-    g_state.y += g_state.lineHeight;
-
-    g_state.currentLineWidth = 0;
-}
-
 int a_font_lineHeightGet(void)
 {
     return g_state.lineHeight;
@@ -222,9 +194,17 @@ void a_font_lineWrapSet(int Width)
     g_state.currentLineWidth = 0;
 }
 
+void a_font_lineNew(void)
+{
+    g_state.x = g_state.startX;
+    g_state.y += g_state.lineHeight;
+
+    g_state.currentLineWidth = 0;
+}
+
 static void drawString(const char* Text, ptrdiff_t Length)
 {
-    const ASprite* chars = g_state.font->chars;
+    const ASprite* chars = g_state.font;
     int charWidth = a_sprite_sizeGetWidth(chars);
 
     if(g_state.align == A_FONT_ALIGN_MIDDLE) {
@@ -241,7 +221,7 @@ static void drawString(const char* Text, ptrdiff_t Length)
 
 static void wrapString(const char* Text)
 {
-    int charWidth = a_sprite_sizeGetWidth(g_state.font->chars);
+    int charWidth = a_sprite_sizeGetWidth(g_state.font);
 
     const char* lineStart = Text;
     const char* wordStart = NULL;
@@ -268,7 +248,7 @@ static void wrapString(const char* Text)
                 drawString(lineStart, Text - lineStart);
 
                 if(ch == '\n') {
-                    a_font_newLine();
+                    a_font_lineNew();
                 }
 
                 lineStart = Text + 1;
@@ -281,13 +261,13 @@ static void wrapString(const char* Text)
             if(wordStart == NULL) {
                 // Overflowed with whitespace, print what we have
                 drawString(lineStart, Text - lineStart);
-                a_font_newLine();
+                a_font_lineNew();
 
                 lineStart = Text;
             } else if(lineStart < wordStart) {
                 // Print line up to overflowing word, and go back to the word
                 drawString(lineStart, wordStart - lineStart);
-                a_font_newLine();
+                a_font_lineNew();
 
                 Text = wordStart;
                 lineStart = wordStart;
@@ -314,7 +294,7 @@ void a_font_print(const char* Text)
             drawString(lineStart, Text - lineStart);
 
             if(ch == '\n') {
-                a_font_newLine();
+                a_font_lineNew();
             }
 
             lineStart = Text + 1;
@@ -344,7 +324,7 @@ void a_font_printv(const char* Format, va_list Args)
 int a_font_widthGet(const char* Text)
 {
     int width = 0;
-    int charWidth = a_sprite_sizeGetWidth(g_state.font->chars);
+    int charWidth = a_sprite_sizeGetWidth(g_state.font);
 
     for(char ch = *Text; ch >= A__CHAR_START; ch = *++Text) {
         width += charWidth;

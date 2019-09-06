@@ -58,10 +58,6 @@ ASpriteLayers* a_spritelayers_new(void)
 
 void a_spritelayers_free(ASpriteLayers* Layers, bool FreeSprites)
 {
-    if(Layers == NULL) {
-        return;
-    }
-
     if(FreeSprites) {
         a_list_freeEx(Layers, (AFree*)layer_freeEx);
     } else {
