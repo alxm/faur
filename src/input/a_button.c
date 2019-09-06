@@ -30,7 +30,7 @@ struct AButton {
     bool pressed;
 };
 
-const char* a__keyNames[A__KEY_ID(A_KEY_NUM)] = {
+static const char* g_keyNames[A__KEY_ID(A_KEY_NUM)] = {
     [A__KEY_ID(A_KEY_UP)] = "Up",
     [A__KEY_ID(A_KEY_DOWN)] = "Down",
     [A__KEY_ID(A_KEY_LEFT)] = "Left",
@@ -64,6 +64,45 @@ const char* a__keyNames[A__KEY_ID(A_KEY_NUM)] = {
     [A__KEY_ID(A_KEY_F10)] = "F10",
     [A__KEY_ID(A_KEY_F11)] = "F11",
     [A__KEY_ID(A_KEY_F12)] = "F12",
+};
+
+static const char* g_buttonNames[A_BUTTON_NUM] = {
+    [A_BUTTON_UP] = "Up",
+    [A_BUTTON_DOWN] = "Down",
+    [A_BUTTON_LEFT] = "Left",
+    [A_BUTTON_RIGHT] = "Right",
+    #if A_CONFIG_SYSTEM_GP2X || A_CONFIG_SYSTEM_WIZ || A_CONFIG_SYSTEM_CAANOO || A_CONFIG_SYSTEM_PANDORA
+        [A_BUTTON_A] = "X",
+        [A_BUTTON_B] = "B",
+        [A_BUTTON_X] = "A",
+        [A_BUTTON_Y] = "Y",
+    #else
+        [A_BUTTON_A] = "A",
+        [A_BUTTON_B] = "B",
+        [A_BUTTON_X] = "X",
+        [A_BUTTON_Y] = "Y",
+    #endif
+    [A_BUTTON_L] = "L",
+    [A_BUTTON_R] = "R",
+    #if A_CONFIG_SYSTEM_WIZ
+        [A_BUTTON_START] = "Menu",
+        [A_BUTTON_SELECT] = "Select",
+    #elif A_CONFIG_SYSTEM_CAANOO
+        [A_BUTTON_START] = "I",
+        [A_BUTTON_SELECT] = "II",
+    #else
+        [A_BUTTON_START] = "Start",
+        [A_BUTTON_SELECT] = "Select",
+    #endif
+    [A_BUTTON_STICKCLICK] = "Stick-Click",
+    [A_BUTTON_UPLEFT] = "Up-Left",
+    [A_BUTTON_UPRIGHT] = "Up-Right",
+    [A_BUTTON_DOWNLEFT] = "Down-Left",
+    [A_BUTTON_DOWNRIGHT] = "Down-Right",
+    [A_BUTTON_VOLUP] = "Volume-Up",
+    [A_BUTTON_VOLDOWN] = "Volume-Down",
+    [A_BUTTON_GUIDE] = "Guide",
+    [A_BUTTON_HOLD] = "Hold",
 };
 
 static AList* g_buttons; // list of AButton
@@ -142,7 +181,8 @@ void a_button_bind(AButton* Button, int Id)
     }
 
     if(Button->header.name == a__inputNameDefault) {
-        Button->header.name = a_platform_api__inputButtonNameGet(pb);
+        Button->header.name = (Id & A__KEY_FLAG)
+                                ? g_keyNames[A__KEY_ID(Id)] : g_buttonNames[Id];
     }
 
     if(Button->currentCombo) {

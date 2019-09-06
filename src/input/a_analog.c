@@ -23,6 +23,20 @@ struct AAnalog {
     AInputUserHeader header;
 };
 
+static const char* g_analogNames[A_AXIS_NUM] = {
+    #if A_CONFIG_SYSTEM_CAANOO
+        [A_AXIS_LEFTX] = "Stick",
+        [A_AXIS_LEFTY] = "Stick",
+    #else
+        [A_AXIS_LEFTX] = "Left-Stick",
+        [A_AXIS_LEFTY] = "Left-Stick",
+    #endif
+    [A_AXIS_RIGHTX] = "Right-Stick",
+    [A_AXIS_RIGHTY] = "Right-Stick",
+    [A_AXIS_LEFTTRIGGER] = "Left-Trigger",
+    [A_AXIS_RIGHTTRIGGER] = "Right-Trigger",
+};
+
 AFix a_analog_read(AAnalogId Axis)
 {
     APlatformInputAnalog* a = a_platform_api__inputAnalogGet(Axis);
@@ -59,7 +73,7 @@ void a_analog_bind(AAnalog* Analog, AAnalogId Id)
     }
 
     if(Analog->header.name == a__inputNameDefault) {
-        Analog->header.name = a_platform_api__inputAnalogNameGet(pa);
+        Analog->header.name = g_analogNames[Id];
     }
 
     a_list_addLast(Analog->header.platformInputs, pa);
