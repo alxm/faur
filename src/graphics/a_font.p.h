@@ -21,7 +21,7 @@
 
 #include "general/a_system_includes.h"
 
-typedef struct AFont AFont;
+typedef struct ASprite AFont;
 
 typedef enum {
     A_FONT_ALIGN_INVALID = -1,
