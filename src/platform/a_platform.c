@@ -75,10 +75,10 @@ static void a_platform__uninit(void)
 
     #if A_CONFIG_SYSTEM_GP2X
         a_platform_gp2x__uninit();
-    #elif A_CONFIG_SYSTEM_PANDORA
-        a_platform_pandora__uninit();
     #elif A_CONFIG_SYSTEM_WIZ || A_CONFIG_SYSTEM_CAANOO
         a_platform_wiz__uninit();
+    #elif A_CONFIG_SYSTEM_PANDORA
+        a_platform_pandora__uninit();
     #endif
 
     a_platform_sdl__uninit();

@@ -28,6 +28,10 @@
     #include <SDL2/SDL_mixer.h>
 #endif
 
+#if A_CONFIG_SYSTEM_EMSCRIPTEN && A_CONFIG_LIB_SDL == 1
+    #define A__SOUND_NO_VOLUME_ADJUSTMENT 1
+#endif
+
 static bool g_enabled;
 static bool g_mute = A_CONFIG_SOUND_MUTE;
 static int g_numSampleChannels;
@@ -126,7 +130,7 @@ void a_platform_api__soundMusicVolumeSet(int Volume)
         return;
     }
 
-    #if A_CONFIG_SYSTEM_EMSCRIPTEN && A_CONFIG_LIB_SDL == 1
+    #if A__SOUND_NO_VOLUME_ADJUSTMENT
         A_UNUSED(Volume);
     #else
         Mix_VolumeMusic(Volume);
@@ -203,7 +207,7 @@ void a_platform_api__soundSampleVolumeSet(APlatformSoundSample* Sample, int Volu
         return;
     }
 
-    #if A_CONFIG_SYSTEM_EMSCRIPTEN && A_CONFIG_LIB_SDL == 1
+    #if A__SOUND_NO_VOLUME_ADJUSTMENT
         A_UNUSED(Sample);
         A_UNUSED(Volume);
     #else
@@ -217,7 +221,7 @@ void a_platform_api__soundSampleVolumeSetAll(int Volume)
         return;
     }
 
-    #if A_CONFIG_SYSTEM_EMSCRIPTEN && A_CONFIG_LIB_SDL == 1
+    #if A__SOUND_NO_VOLUME_ADJUSTMENT
         A_UNUSED(Volume);
     #else
         Mix_Volume(-1, Volume);

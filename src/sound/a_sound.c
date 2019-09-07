@@ -25,6 +25,7 @@ static int g_samplesVolume;
 static int g_volumeMax;
 
 #if A_CONFIG_SYSTEM_GP2X || A_CONFIG_SYSTEM_WIZ
+    #define A__SOUND_VOLUME_BAR 1
     #define A__VOLUME_STEP 1
     #define A__VOLBAR_SHOW_MS 500
     static ATimer* g_volTimer;
@@ -50,14 +51,14 @@ static void a_sound__init(void)
 {
     g_volumeMax = a_platform_api__soundVolumeGetMax();
 
-    #if A_CONFIG_SYSTEM_GP2X || A_CONFIG_SYSTEM_WIZ
+    #if A__SOUND_VOLUME_BAR
         adjustSoundVolume(g_volumeMax / 16);
         g_volTimer = a_timer_new(A_TIMER_MS, A__VOLBAR_SHOW_MS, false);
     #else
         adjustSoundVolume(g_volumeMax);
     #endif
 
-    #if A_CONFIG_SYSTEM_GP2X || A_CONFIG_SYSTEM_WIZ
+    #if A__SOUND_VOLUME_BAR
         g_volumeUpButton = a_button_new();
         a_button_bind(g_volumeUpButton, A_BUTTON_VOLUP);
 
@@ -73,7 +74,7 @@ static void a_sound__init(void)
 
 static void a_sound__uninit(void)
 {
-    #if A_CONFIG_SYSTEM_GP2X || A_CONFIG_SYSTEM_WIZ
+    #if A__SOUND_VOLUME_BAR
         a_timer_free(g_volTimer);
     #endif
 
@@ -96,7 +97,7 @@ const APack a_pack__sound = {
 
 void a_sound__tick(void)
 {
-    #if A_CONFIG_SYSTEM_GP2X || A_CONFIG_SYSTEM_WIZ
+    #if A__SOUND_VOLUME_BAR
         int adjust = 0;
 
         if(a_button_pressGet(g_volumeUpButton)) {
@@ -123,7 +124,7 @@ void a_sound__tick(void)
 
 void a_sound__draw(void)
 {
-    #if A_CONFIG_SYSTEM_GP2X || A_CONFIG_SYSTEM_WIZ
+    #if A__SOUND_VOLUME_BAR
         if(!a_timer_isRunning(g_volTimer) || a_timer_expiredGet(g_volTimer)) {
             return;
         }
