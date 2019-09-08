@@ -26,18 +26,14 @@
     #include <SDL2/SDL.h>
 #endif
 
-#if A_CONFIG_LIB_SDL == 1
-    typedef uint8_t ASdlJoystickId;
-    typedef SDLKey ASdlKeyCode;
-#elif A_CONFIG_LIB_SDL == 2
-    typedef SDL_JoystickID ASdlJoystickId;
-    typedef SDL_Scancode ASdlKeyCode;
-#endif
-
 struct APlatformInputButton {
     AList* forwardButtons; // list of APlatformInputButton or NULL
     union {
-        ASdlKeyCode keyCode;
+        #if A_CONFIG_LIB_SDL == 1
+            SDLKey keyCode;
+        #elif A_CONFIG_LIB_SDL == 2
+            SDL_Scancode keyCode;
+        #endif
         uint8_t buttonIndex;
         int code;
     } code;
@@ -55,10 +51,12 @@ struct APlatformInputAnalog {
 struct APlatformInputController {
     APlatformInputController* next;
     SDL_Joystick* joystick;
-    #if A_CONFIG_LIB_SDL == 2
+    #if A_CONFIG_LIB_SDL == 1
+        uint8_t id;
+    #elif A_CONFIG_LIB_SDL == 2
+        SDL_JoystickID id;
         SDL_GameController* controller;
     #endif
-    ASdlJoystickId id;
     int numButtons;
     int numHats;
     int numAxes;
@@ -272,9 +270,9 @@ static APlatformInputController* controllerAdd(int Index)
     }
 
     #if A_CONFIG_LIB_SDL == 1
-        ASdlJoystickId id = (uint8_t)Index;
+        uint8_t id = (uint8_t)Index;
     #elif A_CONFIG_LIB_SDL == 2
-        ASdlJoystickId id = SDL_JoystickInstanceID(joystick);
+        SDL_JoystickID id = SDL_JoystickInstanceID(joystick);
 
         if(id < 0) {
             a_out__error("SDL_JoystickInstanceID: %s", SDL_GetError());
