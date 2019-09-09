@@ -28,7 +28,7 @@ typedef struct AInputUserHeader AInputUserHeader;
 
 struct AInputUserHeader {
     const char* name;
-    AList* platformInputs; // List of APlatformInputButton/Analog/Touch
+    AList* platformInputs; // List of APlatformButton or APlatformAnalog
 };
 
 extern const APack a_pack__input;

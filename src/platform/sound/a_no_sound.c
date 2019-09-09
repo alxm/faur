@@ -35,14 +35,14 @@ int a_platform_api__soundVolumeGetMax(void)
     return 0;
 }
 
-APlatformSoundMusic* a_platform_api__soundMusicNew(const char* Path)
+APlatformMusic* a_platform_api__soundMusicNew(const char* Path)
 {
     A_UNUSED(Path);
 
     return NULL;
 }
 
-void a_platform_api__soundMusicFree(APlatformSoundMusic* Music)
+void a_platform_api__soundMusicFree(APlatformMusic* Music)
 {
     A_UNUSED(Music);
 }
@@ -52,7 +52,7 @@ void a_platform_api__soundMusicVolumeSet(int Volume)
     A_UNUSED(Volume);
 }
 
-void a_platform_api__soundMusicPlay(APlatformSoundMusic* Music)
+void a_platform_api__soundMusicPlay(APlatformMusic* Music)
 {
     A_UNUSED(Music);
 }
@@ -62,14 +62,14 @@ void a_platform_api__soundMusicStop(void)
     return;
 }
 
-APlatformSoundSample* a_platform_api__soundSampleNewFromFile(const char* Path)
+APlatformSample* a_platform_api__soundSampleNewFromFile(const char* Path)
 {
     A_UNUSED(Path);
 
     return NULL;
 }
 
-APlatformSoundSample* a_platform_api__soundSampleNewFromData(const uint8_t* Data, int Size)
+APlatformSample* a_platform_api__soundSampleNewFromData(const uint8_t* Data, int Size)
 {
     A_UNUSED(Data);
     A_UNUSED(Size);
@@ -77,12 +77,12 @@ APlatformSoundSample* a_platform_api__soundSampleNewFromData(const uint8_t* Data
     return NULL;
 }
 
-void a_platform_api__soundSampleFree(APlatformSoundSample* Sample)
+void a_platform_api__soundSampleFree(APlatformSample* Sample)
 {
     A_UNUSED(Sample);
 }
 
-void a_platform_api__soundSampleVolumeSet(APlatformSoundSample* Sample, int Volume)
+void a_platform_api__soundSampleVolumeSet(APlatformSample* Sample, int Volume)
 {
     A_UNUSED(Sample);
     A_UNUSED(Volume);
@@ -93,7 +93,7 @@ void a_platform_api__soundSampleVolumeSetAll(int Volume)
     A_UNUSED(Volume);
 }
 
-void a_platform_api__soundSamplePlay(APlatformSoundSample* Sample, int Channel, bool Loop)
+void a_platform_api__soundSamplePlay(APlatformSample* Sample, int Channel, bool Loop)
 {
     A_UNUSED(Sample);
     A_UNUSED(Channel);

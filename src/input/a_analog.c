@@ -39,7 +39,7 @@ static const char* g_analogNames[A_AXIS_NUM] = {
 
 AFix a_analog_read(AAnalogId Axis)
 {
-    APlatformInputAnalog* a = a_platform_api__inputAnalogGet(Axis);
+    APlatformAnalog* a = a_platform_api__inputAnalogGet(Axis);
 
     return a ? a_platform_api__inputAnalogValueGet(a) : 0;
 }
@@ -66,7 +66,7 @@ void a_analog_free(AAnalog* Analog)
 
 void a_analog_bind(AAnalog* Analog, AAnalogId Id)
 {
-    APlatformInputAnalog* pa = a_platform_api__inputAnalogGet(Id);
+    APlatformAnalog* pa = a_platform_api__inputAnalogGet(Id);
 
     if(pa == NULL) {
         return;
@@ -97,7 +97,7 @@ AFix a_analog_valueGet(const AAnalog* Analog)
     #define A__ANALOG_MAX_DISTANCE (1 << A__ANALOG_BITS)
     #define A__ANALOG_ERROR_MARGIN (A__ANALOG_MAX_DISTANCE / 20)
 
-    A_LIST_ITERATE(Analog->header.platformInputs, APlatformInputAnalog*, a) {
+    A_LIST_ITERATE(Analog->header.platformInputs, APlatformAnalog*, a) {
         value = a_platform_api__inputAnalogValueGet(a);
 
         if(a_math_abs(value) > A__ANALOG_ERROR_MARGIN) {

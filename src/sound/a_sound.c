@@ -146,7 +146,7 @@ void a_sound__draw(void)
 
 AMusic* a_music_new(const char* Path)
 {
-    APlatformSoundMusic* m = a_platform_api__soundMusicNew(Path);
+    APlatformMusic* m = a_platform_api__soundMusicNew(Path);
 
     #if A_CONFIG_SOUND_ENABLED
         if(m == NULL) {
@@ -180,7 +180,7 @@ void a_music_stop(void)
 
 ASample* a_sample_new(const char* Path)
 {
-    APlatformSoundSample* s = NULL;
+    APlatformSample* s = NULL;
 
     if(a_path_exists(Path, A_PATH_FILE | A_PATH_REAL)) {
         s = a_platform_api__soundSampleNewFromFile(Path);

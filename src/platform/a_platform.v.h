@@ -21,12 +21,12 @@
 
 #include "platform/a_platform.p.h"
 
-typedef struct APlatformInputAnalog APlatformInputAnalog;
-typedef struct APlatformInputButton APlatformInputButton;
-typedef struct APlatformInputController APlatformInputController;
+typedef struct APlatformAnalog APlatformAnalog;
+typedef struct APlatformButton APlatformButton;
+typedef struct APlatformController APlatformController;
 
-typedef void APlatformSoundMusic;
-typedef void APlatformSoundSample;
+typedef void APlatformMusic;
+typedef void APlatformSample;
 
 typedef struct APlatformTexture APlatformTexture;
 
@@ -80,30 +80,30 @@ extern bool a_platform_api__soundMuteGet(void);
 extern void a_platform_api__soundMuteFlip(void);
 extern int a_platform_api__soundVolumeGetMax(void);
 
-extern APlatformSoundMusic* a_platform_api__soundMusicNew(const char* Path);
-extern void a_platform_api__soundMusicFree(APlatformSoundMusic* Music);
+extern APlatformMusic* a_platform_api__soundMusicNew(const char* Path);
+extern void a_platform_api__soundMusicFree(APlatformMusic* Music);
 extern void a_platform_api__soundMusicVolumeSet(int Volume);
-extern void a_platform_api__soundMusicPlay(APlatformSoundMusic* Music);
+extern void a_platform_api__soundMusicPlay(APlatformMusic* Music);
 extern void a_platform_api__soundMusicStop(void);
 
-extern APlatformSoundSample* a_platform_api__soundSampleNewFromFile(const char* Path);
-extern APlatformSoundSample* a_platform_api__soundSampleNewFromData(const uint8_t* Data, int Size);
-extern void a_platform_api__soundSampleFree(APlatformSoundSample* Sample);
-extern void a_platform_api__soundSampleVolumeSet(APlatformSoundSample* Sample, int Volume);
+extern APlatformSample* a_platform_api__soundSampleNewFromFile(const char* Path);
+extern APlatformSample* a_platform_api__soundSampleNewFromData(const uint8_t* Data, int Size);
+extern void a_platform_api__soundSampleFree(APlatformSample* Sample);
+extern void a_platform_api__soundSampleVolumeSet(APlatformSample* Sample, int Volume);
 extern void a_platform_api__soundSampleVolumeSetAll(int Volume);
-extern void a_platform_api__soundSamplePlay(APlatformSoundSample* Sample, int Channel, bool Loop);
+extern void a_platform_api__soundSamplePlay(APlatformSample* Sample, int Channel, bool Loop);
 extern void a_platform_api__soundSampleStop(int Channel);
 extern bool a_platform_api__soundSampleIsPlaying(int Channel);
 extern int a_platform_api__soundSampleChannelGet(void);
 
 extern void a_platform_api__inputPoll(void);
 
-extern APlatformInputButton* a_platform_api__inputButtonGet(int Id);
-extern bool a_platform_api__inputButtonPressGet(const APlatformInputButton* Button);
+extern APlatformButton* a_platform_api__inputButtonGet(int Id);
+extern bool a_platform_api__inputButtonPressGet(const APlatformButton* Button);
 extern void a_platform_api__inputButtonForward(int Source, int Destination);
 
-extern APlatformInputAnalog* a_platform_api__inputAnalogGet(AAnalogId Id);
-extern int a_platform_api__inputAnalogValueGet(const APlatformInputAnalog* Analog);
+extern APlatformAnalog* a_platform_api__inputAnalogGet(AAnalogId Id);
+extern int a_platform_api__inputAnalogValueGet(const APlatformAnalog* Analog);
 extern void a_platform_api__inputAnalogForward(AAnalogId Source, AButtonId Negative, AButtonId Positive);
 
 extern AVectorInt a_platform_api__inputTouchCoordsGet(void);

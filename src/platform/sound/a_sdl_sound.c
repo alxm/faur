@@ -104,7 +104,7 @@ int a_platform_api__soundVolumeGetMax(void)
     return MIX_MAX_VOLUME;
 }
 
-APlatformSoundMusic* a_platform_api__soundMusicNew(const char* Path)
+APlatformMusic* a_platform_api__soundMusicNew(const char* Path)
 {
     if(!g_enabled) {
         return NULL;
@@ -119,7 +119,7 @@ APlatformSoundMusic* a_platform_api__soundMusicNew(const char* Path)
     return m;
 }
 
-void a_platform_api__soundMusicFree(APlatformSoundMusic* Music)
+void a_platform_api__soundMusicFree(APlatformMusic* Music)
 {
     Mix_FreeMusic(Music);
 }
@@ -137,7 +137,7 @@ void a_platform_api__soundMusicVolumeSet(int Volume)
     #endif
 }
 
-void a_platform_api__soundMusicPlay(APlatformSoundMusic* Music)
+void a_platform_api__soundMusicPlay(APlatformMusic* Music)
 {
     if(Music == NULL) {
         return;
@@ -157,7 +157,7 @@ void a_platform_api__soundMusicStop(void)
     Mix_HaltMusic();
 }
 
-APlatformSoundSample* a_platform_api__soundSampleNewFromFile(const char* Path)
+APlatformSample* a_platform_api__soundSampleNewFromFile(const char* Path)
 {
     if(!g_enabled) {
         return NULL;
@@ -172,7 +172,7 @@ APlatformSoundSample* a_platform_api__soundSampleNewFromFile(const char* Path)
     return chunk;
 }
 
-APlatformSoundSample* a_platform_api__soundSampleNewFromData(const uint8_t* Data, int Size)
+APlatformSample* a_platform_api__soundSampleNewFromData(const uint8_t* Data, int Size)
 {
     if(!g_enabled) {
         return NULL;
@@ -196,12 +196,12 @@ APlatformSoundSample* a_platform_api__soundSampleNewFromData(const uint8_t* Data
     return chunk;
 }
 
-void a_platform_api__soundSampleFree(APlatformSoundSample* Sample)
+void a_platform_api__soundSampleFree(APlatformSample* Sample)
 {
     Mix_FreeChunk(Sample);
 }
 
-void a_platform_api__soundSampleVolumeSet(APlatformSoundSample* Sample, int Volume)
+void a_platform_api__soundSampleVolumeSet(APlatformSample* Sample, int Volume)
 {
     if(Sample == NULL) {
         return;
@@ -228,7 +228,7 @@ void a_platform_api__soundSampleVolumeSetAll(int Volume)
     #endif
 }
 
-void a_platform_api__soundSamplePlay(APlatformSoundSample* Sample, int Channel, bool Loop)
+void a_platform_api__soundSamplePlay(APlatformSample* Sample, int Channel, bool Loop)
 {
     if(Sample == NULL) {
         return;
