@@ -49,7 +49,9 @@ struct APlatformAnalog {
 };
 
 struct APlatformController {
-    APlatformController* next;
+    #if A_CONFIG_SYSTEM_PANDORA
+        APlatformController* next;
+    #endif
     SDL_Joystick* joystick;
     #if A_CONFIG_LIB_SDL == 1
         uint8_t id;
@@ -289,7 +291,6 @@ static APlatformController* controllerAdd(int Index)
 
     APlatformController* c = a_mem_zalloc(sizeof(APlatformController));
 
-    c->next = NULL;
     c->joystick = joystick;
     #if A_CONFIG_LIB_SDL == 2
         c->controller = controller;
@@ -899,18 +900,16 @@ void a_platform_api__inputButtonForward(int Source, int Destination)
 
 APlatformAnalog* a_platform_api__inputAnalogGet(AAnalogId Id)
 {
-    if(Id != A_AXIS_INVALID) {
-        const APlatformController* c = g_setController;
-
-        while(c) {
-            APlatformAnalog* a = c->axes[Id];
-
-            if(a != NULL) {
-                return a;
+    if(g_setController && Id != A_AXIS_INVALID) {
+        #if A_CONFIG_SYSTEM_PANDORA
+            for(APlatformController* c = g_setController; c; c = c->next) {
+                if(c->axes[Id]) {
+                    return c->axes[Id];
+                }
             }
-
-            c = c->next;
-        }
+        #else
+            return g_setController->axes[Id];
+        #endif
     }
 
     return NULL;
