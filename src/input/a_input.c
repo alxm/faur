@@ -19,8 +19,6 @@
 #include "a_input.v.h"
 #include <a2x.v.h>
 
-const char* a__inputNameDefault = "Unknown";
-
 static void a_input__init(void)
 {
     a_input_button__init();
@@ -41,17 +39,6 @@ const APack a_pack__input = {
         [0] = a_input__uninit,
     },
 };
-
-void a_input__userHeaderInit(AInputUserHeader* Header)
-{
-    Header->name = a__inputNameDefault;
-    Header->platformInputs = a_list_new();
-}
-
-void a_input__userHeaderFree(AInputUserHeader* Header)
-{
-    a_list_free(Header->platformInputs);
-}
 
 void a_input__tick(void)
 {

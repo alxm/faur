@@ -21,22 +21,9 @@
 
 #include "input/a_input.p.h"
 
-typedef struct AInputUserHeader AInputUserHeader;
-
-#include "data/a_list.v.h"
 #include "general/a_main.v.h"
 
-struct AInputUserHeader {
-    const char* name;
-    AList* platformInputs; // List of APlatformButton or APlatformAnalog
-};
-
 extern const APack a_pack__input;
-
-extern const char* a__inputNameDefault;
-
-extern void a_input__userHeaderInit(AInputUserHeader* Header);
-extern void a_input__userHeaderFree(AInputUserHeader* Header);
 
 extern void a_input__tick(void);
 

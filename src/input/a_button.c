@@ -20,7 +20,8 @@
 #include <a2x.v.h>
 
 struct AButton {
-    AInputUserHeader header;
+    const char* name; // friendly name
+    AList* platformInputs; // list of APlatformButton
     AListNode* listNode;
     AList* combos; // List of lists of APlatformButton, each a button combo
     AList* currentCombo;
@@ -105,6 +106,8 @@ static const char* g_buttonNames[A_BUTTON_NUM] = {
     [A_BUTTON_HOLD] = "Hold",
 };
 
+static const char* g_defaultName = "AButton";
+
 static AList* g_buttons; // list of AButton
 
 void a_input_button__init(void)
@@ -128,8 +131,8 @@ AButton* a_button_new(void)
 {
     AButton* b = a_mem_malloc(sizeof(AButton));
 
-    a_input__userHeaderInit(&b->header);
-
+    b->name = g_defaultName;
+    b->platformInputs = a_list_new();
     b->listNode = a_list_addLast(g_buttons, b);
     b->combos = a_list_new();
     b->currentCombo = NULL;
@@ -164,7 +167,7 @@ void a_button_free(AButton* Button)
 
     if(!Button->isClone) {
         a_list_freeEx(Button->combos, (AFree*)a_list_free);
-        a_input__userHeaderFree(&Button->header);
+        a_list_free(Button->platformInputs);
     }
 
     a_timer_free(Button->autoRepeat);
@@ -180,15 +183,15 @@ void a_button_bind(AButton* Button, int Id)
         return;
     }
 
-    if(Button->header.name == a__inputNameDefault) {
-        Button->header.name = (Id & A__KEY_FLAG)
-                                ? g_keyNames[A__KEY_ID(Id)] : g_buttonNames[Id];
+    if(Button->name == g_defaultName) {
+        Button->name = (Id & A__KEY_FLAG)
+                        ? g_keyNames[A__KEY_ID(Id)] : g_buttonNames[Id];
     }
 
     if(Button->currentCombo) {
         a_list_addLast(Button->currentCombo, pb);
     } else {
-        a_list_addLast(Button->header.platformInputs, pb);
+        a_list_addLast(Button->platformInputs, pb);
     }
 }
 
@@ -206,13 +209,13 @@ void a_button_bindComboEnd(AButton* Button)
 
 bool a_button_isWorking(const AButton* Button)
 {
-    return !a_list_isEmpty(Button->header.platformInputs)
+    return !a_list_isEmpty(Button->platformInputs)
         || !a_list_isEmpty(Button->combos);
 }
 
 const char* a_button_nameGet(const AButton* Button)
 {
-    return Button->header.name;
+    return Button->name;
 }
 
 bool a_button_pressGet(const AButton* Button)
@@ -252,7 +255,7 @@ void a_input_button__tick(void)
     A_LIST_ITERATE(g_buttons, AButton*, b) {
         bool pressed = false;
 
-        A_LIST_ITERATE(b->header.platformInputs, APlatformButton*, pb) {
+        A_LIST_ITERATE(b->platformInputs, APlatformButton*, pb) {
             if(a_platform_api__inputButtonPressGet(pb)) {
                 pressed = true;
                 goto done;
