@@ -22,7 +22,6 @@
 static void a_input__init(void)
 {
     a_input_button__init();
-    a_input_controller__init();
 }
 
 static void a_input__uninit(void)

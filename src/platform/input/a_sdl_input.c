@@ -164,6 +164,10 @@ static void buttonAdd(APlatformController* Controller, AButtonId Id, int Code)
 
 static void buttonFree(APlatformButton* Button)
 {
+    if(Button == NULL) {
+        return;
+    }
+
     a_list_free(Button->forwardButtons);
 
     a_mem_free(Button);
@@ -185,6 +189,24 @@ static void buttonPress(APlatformButton* Button, bool Pressed)
     }
 }
 
+#if A_CONFIG_SYSTEM_GP2X || A_CONFIG_SYSTEM_WIZ || A_CONFIG_SYSTEM_PANDORA
+static void buttonForward(int Source, int Destination)
+{
+    APlatformButton* bSrc = a_platform_api__inputButtonGet(Source);
+    APlatformButton* bDst = a_platform_api__inputButtonGet(Destination);
+
+    if(bSrc == NULL || bDst == NULL) {
+        return;
+    }
+
+    if(bSrc->forwardButtons == NULL) {
+        bSrc->forwardButtons = a_list_new();
+    }
+
+    a_list_addLast(bSrc->forwardButtons, bDst);
+}
+#endif
+
 static void analogAdd(APlatformController* Controller, AAnalogId Id, int AxisIndex)
 {
     if(Controller->axes[Id] != NULL) {
@@ -202,6 +224,10 @@ static void analogAdd(APlatformController* Controller, AAnalogId Id, int AxisInd
 
 static void analogFree(APlatformAnalog* Analog)
 {
+    if(Analog == NULL) {
+        return;
+    }
+
     a_list_freeEx(Analog->forwardButtons, a_mem_free);
 
     a_mem_free(Analog);
@@ -233,11 +259,48 @@ static void analogSet(APlatformAnalog* Analog, int Value)
     }
 }
 
+static void analogForward(AAnalogId Source, AButtonId Negative, AButtonId Positive)
+{
+    APlatformAnalog* aSrc = a_platform_api__inputAnalogGet(Source);
+
+    if(aSrc == NULL) {
+        return;
+    }
+
+    APlatformButtonPair* f = a_mem_malloc(sizeof(APlatformButtonPair));
+
+    f->negative = a_platform_api__inputButtonGet(Negative);
+    f->positive = a_platform_api__inputButtonGet(Positive);
+    f->lastPressedNegative = false;
+    f->lastPressedPositive = false;
+
+    if(aSrc->forwardButtons == NULL) {
+        aSrc->forwardButtons = a_list_new();
+    }
+
+    a_list_addLast(aSrc->forwardButtons, f);
+}
+
+static inline const char* joystickName(APlatformController* Controller)
+{
+    #if A_CONFIG_LIB_SDL == 1
+        return SDL_JoystickName(Controller->id);
+    #elif A_CONFIG_LIB_SDL == 2
+        return SDL_JoystickName(Controller->joystick);
+    #endif
+}
+
 static APlatformController* controllerAdd(int Index)
 {
     SDL_Joystick* joystick = NULL;
 
     #if A_CONFIG_LIB_SDL == 2
+        char guidStrBuffer[64];
+        SDL_JoystickGetGUIDString(SDL_JoystickGetDeviceGUID(Index),
+                                  guidStrBuffer,
+                                  sizeof(guidStrBuffer) - 1);
+        a_out__info("New controller %s", guidStrBuffer);
+
         SDL_GameController* controller = NULL;
 
         if(SDL_IsGameController(Index)) {
@@ -291,6 +354,8 @@ static APlatformController* controllerAdd(int Index)
 
     APlatformController* c = a_mem_zalloc(sizeof(APlatformController));
 
+    g_setController = c;
+
     c->joystick = joystick;
     #if A_CONFIG_LIB_SDL == 2
         c->controller = controller;
@@ -300,188 +365,130 @@ static APlatformController* controllerAdd(int Index)
     c->numHats = SDL_JoystickNumHats(c->joystick);
     c->numAxes = SDL_JoystickNumAxes(c->joystick);
 
-    return c;
-}
+    a_out__info("Controller '%s': %d buttons, %d axes, %d hats",
+                joystickName(c),
+                c->numButtons,
+                c->numAxes,
+                c->numHats);
 
-static void controllerFree(APlatformController* Controller)
-{
-    for(int id = 0; id < A_BUTTON_NUM; id++) {
-        if(Controller->buttons[id]) {
-            buttonFree(Controller->buttons[id]);
-        }
-    }
+    bool mappedBuiltIn = false;
 
-    for(int id = 0; id < A_AXIS_NUM; id++) {
-        if(Controller->axes[id]) {
-            analogFree(Controller->axes[id]);
-        }
-    }
+    #if A_CONFIG_SYSTEM_GP2X || A_CONFIG_SYSTEM_WIZ || A_CONFIG_SYSTEM_CAANOO
+        if(Index == 0) {
+            mappedBuiltIn = true;
 
-    #if A_CONFIG_LIB_SDL == 1
-        if(SDL_JoystickOpened(Controller->id)) {
-            SDL_JoystickClose(Controller->joystick);
-        }
-    #elif A_CONFIG_LIB_SDL == 2
-        if(Controller->controller) {
-            SDL_GameControllerClose(Controller->controller);
-        } else if(SDL_JoystickGetAttached(Controller->joystick)) {
-            SDL_JoystickClose(Controller->joystick);
-        }
-    #endif
-
-    a_mem_free(Controller);
-}
-
-static const char* joystickName(APlatformController* Controller)
-{
-    #if A_CONFIG_LIB_SDL == 1
-        return SDL_JoystickName(Controller->id);
-    #elif A_CONFIG_LIB_SDL == 2
-        return SDL_JoystickName(Controller->joystick);
-    #endif
-}
-
-void a_platform_sdl_input__init(void)
-{
-    #if A_CONFIG_LIB_SDL == 1
-        g_sdlFlags = SDL_INIT_JOYSTICK;
-    #elif A_CONFIG_LIB_SDL == 2
-        g_sdlFlags = SDL_INIT_GAMECONTROLLER;
-    #endif
-
-    if(SDL_InitSubSystem(g_sdlFlags) != 0) {
-        A__FATAL("SDL_InitSubSystem: %s", SDL_GetError());
-    }
-
-    g_controllers = a_list_new();
-    g_setController = NULL;
-    g_forwardButtonsQueue[0] = a_list_new();
-    g_forwardButtonsQueue[1] = a_list_new();
-
-    const int joysticksNum = SDL_NumJoysticks();
-    a_out__info("Found %d controllers", joysticksNum);
-
-    #if A_CONFIG_LIB_SDL == 2
-        if(joysticksNum > 0
-            && a_path_exists(A_CONFIG_LIB_SDL_GAMEPADMAP, A_PATH_FILE)) {
-
-            int mNum = SDL_GameControllerAddMappingsFromFile(
-                        A_CONFIG_LIB_SDL_GAMEPADMAP);
-
-            if(mNum < 0) {
-                a_out__error("SDL_GameControllerAddMappingsFromFile(%s): %s",
-                             A_CONFIG_LIB_SDL_GAMEPADMAP,
-                             SDL_GetError());
-            } else {
-                a_out__info("%s: Loaded %d gamepad mappings",
-                            A_CONFIG_LIB_SDL_GAMEPADMAP,
-                            mNum);
-            }
-        }
-    #endif
-
-    for(int j = 0; j < joysticksNum; j++) {
-        APlatformController* c = controllerAdd(j);
-
-        if(c == NULL) {
-            continue;
-        }
-
-        a_list_addLast(g_controllers, c);
-
-        #if A_CONFIG_SYSTEM_GP2X || A_CONFIG_SYSTEM_WIZ || A_CONFIG_SYSTEM_CAANOO
-            if(j == 0) {
-                // Joystick 0 is the built-in controls on these platforms
-                #if A_CONFIG_SYSTEM_GP2X || A_CONFIG_SYSTEM_WIZ
-                    buttonAdd(c, A_BUTTON_UP, 0);
-                    buttonAdd(c, A_BUTTON_DOWN, 4);
-                    buttonAdd(c, A_BUTTON_LEFT, 2);
-                    buttonAdd(c, A_BUTTON_RIGHT, 6);
-                    buttonAdd(c, A_BUTTON_UPLEFT, 1);
-                    buttonAdd(c, A_BUTTON_UPRIGHT, 7);
-                    buttonAdd(c, A_BUTTON_DOWNLEFT, 3);
-                    buttonAdd(c, A_BUTTON_DOWNRIGHT, 5);
-                    buttonAdd(c, A_BUTTON_L, 10);
-                    buttonAdd(c, A_BUTTON_R, 11);
-                    buttonAdd(c, A_BUTTON_X, 12);
-                    buttonAdd(c, A_BUTTON_B, 13);
-                    buttonAdd(c, A_BUTTON_A, 14);
-                    buttonAdd(c, A_BUTTON_Y, 15);
-                    buttonAdd(c, A_BUTTON_SELECT, 9);
-                    buttonAdd(c, A_BUTTON_VOLUP, 16);
-                    buttonAdd(c, A_BUTTON_VOLDOWN, 17);
+            // Joystick 0 is the built-in controls on these platforms
+            #if A_CONFIG_SYSTEM_GP2X || A_CONFIG_SYSTEM_WIZ
+                buttonAdd(c, A_BUTTON_UP, 0);
+                buttonAdd(c, A_BUTTON_DOWN, 4);
+                buttonAdd(c, A_BUTTON_LEFT, 2);
+                buttonAdd(c, A_BUTTON_RIGHT, 6);
+                buttonAdd(c, A_BUTTON_UPLEFT, 1);
+                buttonAdd(c, A_BUTTON_UPRIGHT, 7);
+                buttonAdd(c, A_BUTTON_DOWNLEFT, 3);
+                buttonAdd(c, A_BUTTON_DOWNRIGHT, 5);
+                buttonAdd(c, A_BUTTON_L, 10);
+                buttonAdd(c, A_BUTTON_R, 11);
+                buttonAdd(c, A_BUTTON_X, 12);
+                buttonAdd(c, A_BUTTON_B, 13);
+                buttonAdd(c, A_BUTTON_A, 14);
+                buttonAdd(c, A_BUTTON_Y, 15);
+                buttonAdd(c, A_BUTTON_SELECT, 9);
+                buttonAdd(c, A_BUTTON_VOLUP, 16);
+                buttonAdd(c, A_BUTTON_VOLDOWN, 17);
+                buttonAdd(c, A_BUTTON_START, 8);
+                #if A_CONFIG_SYSTEM_GP2X
+                    buttonAdd(c, A_BUTTON_STICKCLICK, 18);
+                #elif A_CONFIG_SYSTEM_WIZ
                     buttonAdd(c, A_BUTTON_START, 8);
-                    #if A_CONFIG_SYSTEM_GP2X
-                        buttonAdd(c, A_BUTTON_STICKCLICK, 18);
-                    #elif A_CONFIG_SYSTEM_WIZ
-                        buttonAdd(c, A_BUTTON_START, 8);
-                    #endif
-                #elif A_CONFIG_SYSTEM_CAANOO
-                    buttonAdd(c, A_BUTTON_UP, -1);
-                    buttonAdd(c, A_BUTTON_DOWN, -1);
-                    buttonAdd(c, A_BUTTON_LEFT, -1);
-                    buttonAdd(c, A_BUTTON_RIGHT, -1);
-                    buttonAdd(c, A_BUTTON_L, 4);
-                    buttonAdd(c, A_BUTTON_R, 5);
-                    buttonAdd(c, A_BUTTON_X, 0);
-                    buttonAdd(c, A_BUTTON_B, 2);
-                    buttonAdd(c, A_BUTTON_A, 1);
-                    buttonAdd(c, A_BUTTON_Y, 3);
-                    buttonAdd(c, A_BUTTON_GUIDE, 6);
-                    buttonAdd(c, A_BUTTON_HOLD, 7);
-                    buttonAdd(c, A_BUTTON_START, 8);
-                    buttonAdd(c, A_BUTTON_SELECT, 9);
-
-                    analogAdd(c, A_AXIS_LEFTX, 0);
-                    analogAdd(c, A_AXIS_LEFTY, 1);
                 #endif
-                continue;
-            }
-        #elif A_CONFIG_SYSTEM_PANDORA
-            const char* name = joystickName(c);
 
-            // Check if this is one of the built-in nubs
-            if(a_str_equal(name, "nub0")) {
-                analogAdd(c, A_AXIS_LEFTX, 0);
-                analogAdd(c, A_AXIS_LEFTY, 1);
-
+                // Split diagonals into individual cardinal directions
+                buttonForward(A_BUTTON_UPLEFT, A_BUTTON_UP);
+                buttonForward(A_BUTTON_UPLEFT, A_BUTTON_LEFT);
+                buttonForward(A_BUTTON_UPRIGHT, A_BUTTON_UP);
+                buttonForward(A_BUTTON_UPRIGHT, A_BUTTON_RIGHT);
+                buttonForward(A_BUTTON_DOWNLEFT, A_BUTTON_DOWN);
+                buttonForward(A_BUTTON_DOWNLEFT, A_BUTTON_LEFT);
+                buttonForward(A_BUTTON_DOWNRIGHT, A_BUTTON_DOWN);
+                buttonForward(A_BUTTON_DOWNRIGHT, A_BUTTON_RIGHT);
+            #elif A_CONFIG_SYSTEM_CAANOO
                 buttonAdd(c, A_BUTTON_UP, -1);
                 buttonAdd(c, A_BUTTON_DOWN, -1);
                 buttonAdd(c, A_BUTTON_LEFT, -1);
                 buttonAdd(c, A_BUTTON_RIGHT, -1);
-                buttonAdd(c, A_BUTTON_L, -1);
-                buttonAdd(c, A_BUTTON_R, -1);
-                buttonAdd(c, A_BUTTON_A, -1);
-                buttonAdd(c, A_BUTTON_B, -1);
-                buttonAdd(c, A_BUTTON_X, -1);
-                buttonAdd(c, A_BUTTON_Y, -1);
-                buttonAdd(c, A_BUTTON_START, -1);
-                buttonAdd(c, A_BUTTON_SELECT, -1);
+                buttonAdd(c, A_BUTTON_L, 4);
+                buttonAdd(c, A_BUTTON_R, 5);
+                buttonAdd(c, A_BUTTON_X, 0);
+                buttonAdd(c, A_BUTTON_B, 2);
+                buttonAdd(c, A_BUTTON_A, 1);
+                buttonAdd(c, A_BUTTON_Y, 3);
+                buttonAdd(c, A_BUTTON_GUIDE, 6);
+                buttonAdd(c, A_BUTTON_HOLD, 7);
+                buttonAdd(c, A_BUTTON_START, 8);
+                buttonAdd(c, A_BUTTON_SELECT, 9);
 
-                continue;
-            } else if(a_str_equal(name, "nub1")) {
-                analogAdd(c, A_AXIS_RIGHTX, 0);
-                analogAdd(c, A_AXIS_RIGHTY, 1);
+                analogAdd(c, A_AXIS_LEFTX, 0);
+                analogAdd(c, A_AXIS_LEFTY, 1);
+            #endif
+        }
+    #elif A_CONFIG_SYSTEM_PANDORA
+        const char* name = joystickName(c);
 
-                // Attach to nub0 to compose a single dual-analog controller
-                A_LIST_ITERATE(g_controllers, APlatformController*, nub0) {
-                    if(a_str_equal(joystickName(nub0), "nub0")) {
-                        nub0->next = c;
-                        break;
-                    }
+        // Check if this is one of the built-in nubs
+        if(a_str_equal(name, "nub0")) {
+            mappedBuiltIn = true;
+
+            analogAdd(c, A_AXIS_LEFTX, 0);
+            analogAdd(c, A_AXIS_LEFTY, 1);
+
+            buttonAdd(c, A_BUTTON_UP, -1);
+            buttonAdd(c, A_BUTTON_DOWN, -1);
+            buttonAdd(c, A_BUTTON_LEFT, -1);
+            buttonAdd(c, A_BUTTON_RIGHT, -1);
+            buttonAdd(c, A_BUTTON_L, -1);
+            buttonAdd(c, A_BUTTON_R, -1);
+            buttonAdd(c, A_BUTTON_A, -1);
+            buttonAdd(c, A_BUTTON_B, -1);
+            buttonAdd(c, A_BUTTON_X, -1);
+            buttonAdd(c, A_BUTTON_Y, -1);
+            buttonAdd(c, A_BUTTON_START, -1);
+            buttonAdd(c, A_BUTTON_SELECT, -1);
+
+            // Pandora's game buttons are actually keyboard keys
+            buttonForward(A_KEY_UP, A_BUTTON_UP);
+            buttonForward(A_KEY_DOWN, A_BUTTON_DOWN);
+            buttonForward(A_KEY_LEFT, A_BUTTON_LEFT);
+            buttonForward(A_KEY_RIGHT, A_BUTTON_RIGHT);
+            buttonForward(A_KEY_RSHIFT, A_BUTTON_L);
+            buttonForward(A_KEY_RCTRL, A_BUTTON_R);
+            buttonForward(A_KEY_PAGEDOWN, A_BUTTON_A);
+            buttonForward(A_KEY_END, A_BUTTON_B);
+            buttonForward(A_KEY_HOME, A_BUTTON_X);
+            buttonForward(A_KEY_PAGEUP, A_BUTTON_Y);
+            buttonForward(A_KEY_LALT, A_BUTTON_START);
+            buttonForward(A_KEY_LCTRL, A_BUTTON_SELECT);
+        } else if(a_str_equal(name, "nub1")) {
+            mappedBuiltIn = true;
+
+            analogAdd(c, A_AXIS_RIGHTX, 0);
+            analogAdd(c, A_AXIS_RIGHTY, 1);
+
+            // Attach to nub0 to compose a single dual-analog controller
+            A_LIST_ITERATE(g_controllers, APlatformController*, nub0) {
+                if(a_str_equal(joystickName(nub0), "nub0")) {
+                    nub0->next = c;
+                    break;
                 }
-
-                continue;
             }
-        #endif
+        }
+    #endif
 
+    if(!mappedBuiltIn) {
 #if A_CONFIG_LIB_SDL == 2
         if(c->controller) {
-            a_out__info("Controller '%s': %d buttons, %d axes, %d hats",
-                        SDL_GameControllerName(c->controller),
-                        c->numButtons,
-                        c->numAxes,
-                        c->numHats);
+            a_out__info(
+                "Mapped as '%s'", SDL_GameControllerName(c->controller));
 
             for(SDL_GameControllerButton b = SDL_CONTROLLER_BUTTON_A;
                 b < SDL_CONTROLLER_BUTTON_MAX;
@@ -508,12 +515,6 @@ void a_platform_sdl_input__init(void)
             }
         } else {
 #endif
-            a_out__info("Default '%s': %d buttons, %d axes, %d hats",
-                        joystickName(c),
-                        c->numButtons,
-                        c->numAxes,
-                        c->numHats);
-
             for(int b = a_math_min(c->numButtons, A_ARRAY_LEN(g_defaultOrder));
                 b--; ) {
 
@@ -523,26 +524,72 @@ void a_platform_sdl_input__init(void)
             for(int id = a_math_min(c->numAxes, A_AXIS_NUM); id--; ) {
                 analogAdd(c, id, id);
             }
+
+            if(c->numHats > 0 || c->numAxes >= 2) {
+                // These buttons will be controlled by hats and analog axes
+                buttonAdd(c, A_BUTTON_UP, -1);
+                buttonAdd(c, A_BUTTON_DOWN, -1);
+                buttonAdd(c, A_BUTTON_LEFT, -1);
+                buttonAdd(c, A_BUTTON_RIGHT, -1);
+                buttonAdd(c, A_BUTTON_L, -1);
+                buttonAdd(c, A_BUTTON_R, -1);
+            }
 #if A_CONFIG_LIB_SDL == 2
         }
-
-        char guidStrBuffer[64];
-        SDL_JoystickGetGUIDString(SDL_JoystickGetGUID(c->joystick),
-                                  guidStrBuffer,
-                                  sizeof(guidStrBuffer) - 1);
-        a_out__info("^ GUID %s", guidStrBuffer);
 #endif
-
-        if(c->numHats > 0 || c->numAxes >= 2) {
-            // These buttons will be controlled by hats and analog axes
-            buttonAdd(c, A_BUTTON_UP, -1);
-            buttonAdd(c, A_BUTTON_DOWN, -1);
-            buttonAdd(c, A_BUTTON_LEFT, -1);
-            buttonAdd(c, A_BUTTON_RIGHT, -1);
-            buttonAdd(c, A_BUTTON_L, -1);
-            buttonAdd(c, A_BUTTON_R, -1);
-        }
     }
+
+    // Forward the left analog stick to the direction buttons
+    analogForward(A_AXIS_LEFTX, A_BUTTON_LEFT, A_BUTTON_RIGHT);
+    analogForward(A_AXIS_LEFTY, A_BUTTON_UP, A_BUTTON_DOWN);
+
+    // Forward analog shoulder triggers to the shoulder buttons
+    analogForward(A_AXIS_LEFTTRIGGER, A_BUTTON_INVALID, A_BUTTON_L);
+    analogForward(A_AXIS_RIGHTTRIGGER, A_BUTTON_INVALID, A_BUTTON_R);
+
+    return c;
+}
+
+static void controllerFree(APlatformController* Controller)
+{
+    for(int id = 0; id < A_BUTTON_NUM; id++) {
+        buttonFree(Controller->buttons[id]);
+    }
+
+    for(int id = 0; id < A_AXIS_NUM; id++) {
+        analogFree(Controller->axes[id]);
+    }
+
+    #if A_CONFIG_LIB_SDL == 1
+        if(SDL_JoystickOpened(Controller->id)) {
+            SDL_JoystickClose(Controller->joystick);
+        }
+    #elif A_CONFIG_LIB_SDL == 2
+        if(Controller->controller) {
+            SDL_GameControllerClose(Controller->controller);
+        } else if(SDL_JoystickGetAttached(Controller->joystick)) {
+            SDL_JoystickClose(Controller->joystick);
+        }
+    #endif
+
+    a_mem_free(Controller);
+}
+
+void a_platform_sdl_input__init(void)
+{
+    #if A_CONFIG_LIB_SDL == 1
+        g_sdlFlags = SDL_INIT_JOYSTICK;
+    #elif A_CONFIG_LIB_SDL == 2
+        g_sdlFlags = SDL_INIT_GAMECONTROLLER;
+    #endif
+
+    if(SDL_InitSubSystem(g_sdlFlags) != 0) {
+        A__FATAL("SDL_InitSubSystem: %s", SDL_GetError());
+    }
+
+    g_controllers = a_list_new();
+    g_forwardButtonsQueue[0] = a_list_new();
+    g_forwardButtonsQueue[1] = a_list_new();
 
     #if A_CONFIG_LIB_SDL == 1
         #define keyAdd(Id, Scancode, Keycode) keyAdd(Id, Keycode)
@@ -585,15 +632,43 @@ void a_platform_sdl_input__init(void)
         keyAdd(A_KEY_F11, SDL_SCANCODE_F11, SDLK_F11);
         keyAdd(A_KEY_F12, SDL_SCANCODE_F12, SDLK_F12);
     #endif
+
+    const int joysticksNum = SDL_NumJoysticks();
+    a_out__info("Found %d controllers", joysticksNum);
+
+    #if A_CONFIG_LIB_SDL == 2
+        if(a_path_exists(A_CONFIG_LIB_SDL_GAMEPADMAP, A_PATH_FILE)) {
+            int mappingsNum = SDL_GameControllerAddMappingsFromFile(
+                                A_CONFIG_LIB_SDL_GAMEPADMAP);
+
+            if(mappingsNum < 0) {
+                a_out__error("SDL_GameControllerAddMappingsFromFile(%s): %s",
+                             A_CONFIG_LIB_SDL_GAMEPADMAP,
+                             SDL_GetError());
+            } else {
+                a_out__info("Loaded %d controller mappings from '%s'",
+                            mappingsNum,
+                            A_CONFIG_LIB_SDL_GAMEPADMAP);
+            }
+        }
+    #endif
+
+    for(int j = 0; j < joysticksNum; j++) {
+        APlatformController* c = controllerAdd(j);
+
+        if(c) {
+            a_list_addLast(g_controllers, c);
+        }
+    }
+
+    a_platform_api__inputControllerSet(0);
 }
 
 void a_platform_sdl_input__uninit(void)
 {
     #if A_CONFIG_TRAIT_KEYBOARD
         for(int id = 0; id < A__KEY_ID(A_KEY_NUM); id++) {
-            if(g_keys[id]) {
-                buttonFree(g_keys[id]);
-            }
+            buttonFree(g_keys[id]);
         }
     #endif
 
@@ -882,22 +957,6 @@ bool a_platform_api__inputButtonPressGet(const APlatformButton* Button)
     return Button->pressed;
 }
 
-void a_platform_api__inputButtonForward(int Source, int Destination)
-{
-    APlatformButton* bSrc = a_platform_api__inputButtonGet(Source);
-    APlatformButton* bDst = a_platform_api__inputButtonGet(Destination);
-
-    if(bSrc == NULL || bDst == NULL) {
-        return;
-    }
-
-    if(bSrc->forwardButtons == NULL) {
-        bSrc->forwardButtons = a_list_new();
-    }
-
-    a_list_addLast(bSrc->forwardButtons, bDst);
-}
-
 APlatformAnalog* a_platform_api__inputAnalogGet(AAnalogId Id)
 {
     if(g_setController && Id != A_AXIS_INVALID) {
@@ -918,28 +977,6 @@ APlatformAnalog* a_platform_api__inputAnalogGet(AAnalogId Id)
 int a_platform_api__inputAnalogValueGet(const APlatformAnalog* Analog)
 {
     return Analog->value;
-}
-
-void a_platform_api__inputAnalogForward(AAnalogId Source, AButtonId Negative, AButtonId Positive)
-{
-    APlatformAnalog* aSrc = a_platform_api__inputAnalogGet(Source);
-
-    if(aSrc == NULL) {
-        return;
-    }
-
-    APlatformButtonPair* f = a_mem_malloc(sizeof(APlatformButtonPair));
-
-    f->negative = a_platform_api__inputButtonGet(Negative);
-    f->positive = a_platform_api__inputButtonGet(Positive);
-    f->lastPressedNegative = false;
-    f->lastPressedPositive = false;
-
-    if(aSrc->forwardButtons == NULL) {
-        aSrc->forwardButtons = a_list_new();
-    }
-
-    a_list_addLast(aSrc->forwardButtons, f);
 }
 
 AVectorInt a_platform_api__inputTouchCoordsGet(void)
@@ -965,14 +1002,5 @@ unsigned a_platform_api__inputControllerNumGet(void)
 void a_platform_api__inputControllerSet(unsigned Index)
 {
     g_setController = a_list_getByIndex(g_controllers, Index);
-}
-
-bool a_platform_api__inputControllerIsMapped(void)
-{
-    #if A_CONFIG_LIB_SDL == 2
-        return g_setController && g_setController->controller != NULL;
-    #else
-        return false;
-    #endif
 }
 #endif // A_CONFIG_LIB_SDL

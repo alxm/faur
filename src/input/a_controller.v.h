@@ -21,6 +21,4 @@
 
 #include "input/a_controller.p.h"
 
-extern void a_input_controller__init(void);
-
 #endif // A_INC_INPUTS_CONTROLLER_V_H

@@ -100,11 +100,9 @@ extern void a_platform_api__inputPoll(void);
 
 extern APlatformButton* a_platform_api__inputButtonGet(int Id);
 extern bool a_platform_api__inputButtonPressGet(const APlatformButton* Button);
-extern void a_platform_api__inputButtonForward(int Source, int Destination);
 
 extern APlatformAnalog* a_platform_api__inputAnalogGet(AAnalogId Id);
 extern int a_platform_api__inputAnalogValueGet(const APlatformAnalog* Analog);
-extern void a_platform_api__inputAnalogForward(AAnalogId Source, AButtonId Negative, AButtonId Positive);
 
 extern AVectorInt a_platform_api__inputTouchCoordsGet(void);
 extern AVectorInt a_platform_api__inputTouchDeltaGet(void);
@@ -112,6 +110,5 @@ extern bool a_platform_api__inputTouchTapGet(void);
 
 extern unsigned a_platform_api__inputControllerNumGet(void);
 extern void a_platform_api__inputControllerSet(unsigned Index);
-extern bool a_platform_api__inputControllerIsMapped(void);
 
 #endif // A_INC_PLATFORM_PLATFORM_V_H
