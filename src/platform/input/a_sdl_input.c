@@ -126,11 +126,11 @@ static const AAnalogId g_axesMap[SDL_CONTROLLER_AXIS_MAX] = {
 #endif
 
 #if A_CONFIG_TRAIT_KEYBOARD
-static APlatformButton* g_keys[A__KEY_ID(A_KEY_NUM)];
+static APlatformButton* g_keys[A_KEY_NUM];
 
 static void keyAdd(AKeyId Id, int Code)
 {
-    if(g_keys[A__KEY_ID(Id)] != NULL) {
+    if(g_keys[Id] != NULL) {
         return;
     }
 
@@ -141,7 +141,7 @@ static void keyAdd(AKeyId Id, int Code)
     k->lastEventTick = a_fps_ticksGet() - 1;
     k->pressed = false;
 
-    g_keys[A__KEY_ID(Id)] = k;
+    g_keys[Id] = k;
 }
 #endif
 
@@ -189,10 +189,26 @@ static void buttonPress(APlatformButton* Button, bool Pressed)
     }
 }
 
-#if A_CONFIG_SYSTEM_GP2X || A_CONFIG_SYSTEM_WIZ || A_CONFIG_SYSTEM_PANDORA
-static void buttonForward(int Source, int Destination)
+#if A_CONFIG_SYSTEM_GP2X || A_CONFIG_SYSTEM_WIZ
+static void buttonForward(AButtonId Source, AButtonId Destination)
 {
     APlatformButton* bSrc = a_platform_api__inputButtonGet(Source);
+    APlatformButton* bDst = a_platform_api__inputButtonGet(Destination);
+
+    if(bSrc == NULL || bDst == NULL) {
+        return;
+    }
+
+    if(bSrc->forwardButtons == NULL) {
+        bSrc->forwardButtons = a_list_new();
+    }
+
+    a_list_addLast(bSrc->forwardButtons, bDst);
+}
+#elif A_CONFIG_SYSTEM_PANDORA
+static void keyForward(AKeyId Source, AButtonId Destination)
+{
+    APlatformButton* bSrc = a_platform_api__inputKeyGet(Source);
     APlatformButton* bDst = a_platform_api__inputButtonGet(Destination);
 
     if(bSrc == NULL || bDst == NULL) {
@@ -456,18 +472,18 @@ static APlatformController* controllerAdd(int Index)
             buttonAdd(c, A_BUTTON_SELECT, -1);
 
             // Pandora's game buttons are actually keyboard keys
-            buttonForward(A_KEY_UP, A_BUTTON_UP);
-            buttonForward(A_KEY_DOWN, A_BUTTON_DOWN);
-            buttonForward(A_KEY_LEFT, A_BUTTON_LEFT);
-            buttonForward(A_KEY_RIGHT, A_BUTTON_RIGHT);
-            buttonForward(A_KEY_RSHIFT, A_BUTTON_L);
-            buttonForward(A_KEY_RCTRL, A_BUTTON_R);
-            buttonForward(A_KEY_PAGEDOWN, A_BUTTON_A);
-            buttonForward(A_KEY_END, A_BUTTON_B);
-            buttonForward(A_KEY_HOME, A_BUTTON_X);
-            buttonForward(A_KEY_PAGEUP, A_BUTTON_Y);
-            buttonForward(A_KEY_LALT, A_BUTTON_START);
-            buttonForward(A_KEY_LCTRL, A_BUTTON_SELECT);
+            keyForward(A_KEY_UP, A_BUTTON_UP);
+            keyForward(A_KEY_DOWN, A_BUTTON_DOWN);
+            keyForward(A_KEY_LEFT, A_BUTTON_LEFT);
+            keyForward(A_KEY_RIGHT, A_BUTTON_RIGHT);
+            keyForward(A_KEY_RSHIFT, A_BUTTON_L);
+            keyForward(A_KEY_RCTRL, A_BUTTON_R);
+            keyForward(A_KEY_PAGEDOWN, A_BUTTON_A);
+            keyForward(A_KEY_END, A_BUTTON_B);
+            keyForward(A_KEY_HOME, A_BUTTON_X);
+            keyForward(A_KEY_PAGEUP, A_BUTTON_Y);
+            keyForward(A_KEY_LALT, A_BUTTON_START);
+            keyForward(A_KEY_LCTRL, A_BUTTON_SELECT);
         } else if(a_str_equal(name, "nub1")) {
             mappedBuiltIn = true;
 
@@ -667,7 +683,7 @@ void a_platform_sdl_input__init(void)
 void a_platform_sdl_input__uninit(void)
 {
     #if A_CONFIG_TRAIT_KEYBOARD
-        for(int id = 0; id < A__KEY_ID(A_KEY_NUM); id++) {
+        for(int id = 0; id < A_KEY_NUM; id++) {
             buttonFree(g_keys[id]);
         }
     #endif
@@ -699,7 +715,7 @@ void a_platform_api__inputPoll(void)
                     }
                 #endif
 
-                for(int id = 0; id < A__KEY_ID(A_KEY_NUM); id++) {
+                for(int id = 0; id < A_KEY_NUM; id++) {
 #if A_CONFIG_LIB_SDL == 1
                     if(g_keys[id]->code.keyCode == event.key.keysym.sym) {
 #elif A_CONFIG_LIB_SDL == 2
@@ -937,16 +953,23 @@ void a_platform_api__inputPoll(void)
     #endif
 }
 
-APlatformButton* a_platform_api__inputButtonGet(int Id)
+APlatformButton* a_platform_api__inputKeyGet(AKeyId Id)
 {
-    if(Id != A_BUTTON_INVALID) {
-        if(Id & A__KEY_FLAG) {
-            #if A_CONFIG_TRAIT_KEYBOARD
-                return g_keys[A__KEY_ID(Id)];
-            #endif
-        } else if(g_setController) {
-            return g_setController->buttons[Id];
+    #if A_CONFIG_TRAIT_KEYBOARD
+        if(Id != A_KEY_INVALID) {
+            return g_keys[Id];
         }
+    #else
+        A_UNUSED(Id);
+    #endif
+
+    return NULL;
+}
+
+APlatformButton* a_platform_api__inputButtonGet(AButtonId Id)
+{
+    if(g_setController && Id != A_BUTTON_INVALID) {
+        return g_setController->buttons[Id];
     }
 
     return NULL;

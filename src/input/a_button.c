@@ -31,40 +31,40 @@ struct AButton {
     bool pressed;
 };
 
-static const char* g_keyNames[A__KEY_ID(A_KEY_NUM)] = {
-    [A__KEY_ID(A_KEY_UP)] = "Up",
-    [A__KEY_ID(A_KEY_DOWN)] = "Down",
-    [A__KEY_ID(A_KEY_LEFT)] = "Left",
-    [A__KEY_ID(A_KEY_RIGHT)] = "Right",
-    [A__KEY_ID(A_KEY_Z)] = "Z",
-    [A__KEY_ID(A_KEY_X)] = "X",
-    [A__KEY_ID(A_KEY_C)] = "C",
-    [A__KEY_ID(A_KEY_V)] = "V",
-    [A__KEY_ID(A_KEY_M)] = "M",
-    [A__KEY_ID(A_KEY_ENTER)] = "Enter",
-    [A__KEY_ID(A_KEY_SPACE)] = "Space",
-    [A__KEY_ID(A_KEY_HOME)] = "Home",
-    [A__KEY_ID(A_KEY_END)] = "End",
-    [A__KEY_ID(A_KEY_PAGEUP)] = "PageUp",
-    [A__KEY_ID(A_KEY_PAGEDOWN)] = "PageDown",
-    [A__KEY_ID(A_KEY_LALT)] = "L-Alt",
-    [A__KEY_ID(A_KEY_LCTRL)] = "L-Ctrl",
-    [A__KEY_ID(A_KEY_LSHIFT)] = "L-Shift",
-    [A__KEY_ID(A_KEY_RALT)] = "R-Alt",
-    [A__KEY_ID(A_KEY_RCTRL)] = "R-Ctrl",
-    [A__KEY_ID(A_KEY_RSHIFT)] = "R-Shift",
-    [A__KEY_ID(A_KEY_F1)] = "F1",
-    [A__KEY_ID(A_KEY_F2)] = "F2",
-    [A__KEY_ID(A_KEY_F3)] = "F3",
-    [A__KEY_ID(A_KEY_F4)] = "F4",
-    [A__KEY_ID(A_KEY_F5)] = "F5",
-    [A__KEY_ID(A_KEY_F6)] = "F6",
-    [A__KEY_ID(A_KEY_F7)] = "F7",
-    [A__KEY_ID(A_KEY_F8)] = "F8",
-    [A__KEY_ID(A_KEY_F9)] = "F9",
-    [A__KEY_ID(A_KEY_F10)] = "F10",
-    [A__KEY_ID(A_KEY_F11)] = "F11",
-    [A__KEY_ID(A_KEY_F12)] = "F12",
+static const char* g_keyNames[A_KEY_NUM] = {
+    [A_KEY_UP] = "Up",
+    [A_KEY_DOWN] = "Down",
+    [A_KEY_LEFT] = "Left",
+    [A_KEY_RIGHT] = "Right",
+    [A_KEY_Z] = "Z",
+    [A_KEY_X] = "X",
+    [A_KEY_C] = "C",
+    [A_KEY_V] = "V",
+    [A_KEY_M] = "M",
+    [A_KEY_ENTER] = "Enter",
+    [A_KEY_SPACE] = "Space",
+    [A_KEY_HOME] = "Home",
+    [A_KEY_END] = "End",
+    [A_KEY_PAGEUP] = "PageUp",
+    [A_KEY_PAGEDOWN] = "PageDown",
+    [A_KEY_LALT] = "L-Alt",
+    [A_KEY_LCTRL] = "L-Ctrl",
+    [A_KEY_LSHIFT] = "L-Shift",
+    [A_KEY_RALT] = "R-Alt",
+    [A_KEY_RCTRL] = "R-Ctrl",
+    [A_KEY_RSHIFT] = "R-Shift",
+    [A_KEY_F1] = "F1",
+    [A_KEY_F2] = "F2",
+    [A_KEY_F3] = "F3",
+    [A_KEY_F4] = "F4",
+    [A_KEY_F5] = "F5",
+    [A_KEY_F6] = "F6",
+    [A_KEY_F7] = "F7",
+    [A_KEY_F8] = "F8",
+    [A_KEY_F9] = "F9",
+    [A_KEY_F10] = "F10",
+    [A_KEY_F11] = "F11",
+    [A_KEY_F12] = "F12",
 };
 
 static const char* g_buttonNames[A_BUTTON_NUM] = {
@@ -175,23 +175,41 @@ void a_button_free(AButton* Button)
     a_mem_free(Button);
 }
 
-void a_button_bind(AButton* Button, int Id)
+void a_button_bindKey(AButton* Button, AKeyId Id)
 {
-    APlatformButton* pb = a_platform_api__inputButtonGet(Id);
+    APlatformButton* k = a_platform_api__inputKeyGet(Id);
 
-    if(pb == NULL) {
+    if(k == NULL) {
         return;
     }
 
     if(Button->name == g_defaultName) {
-        Button->name = (Id & A__KEY_FLAG)
-                        ? g_keyNames[A__KEY_ID(Id)] : g_buttonNames[Id];
+        Button->name = g_keyNames[Id];
     }
 
     if(Button->currentCombo) {
-        a_list_addLast(Button->currentCombo, pb);
+        a_list_addLast(Button->currentCombo, k);
     } else {
-        a_list_addLast(Button->platformInputs, pb);
+        a_list_addLast(Button->platformInputs, k);
+    }
+}
+
+void a_button_bindButton(AButton* Button, AButtonId Id)
+{
+    APlatformButton* b = a_platform_api__inputButtonGet(Id);
+
+    if(b == NULL) {
+        return;
+    }
+
+    if(Button->name == g_defaultName) {
+        Button->name = g_buttonNames[Id];
+    }
+
+    if(Button->currentCombo) {
+        a_list_addLast(Button->currentCombo, b);
+    } else {
+        a_list_addLast(Button->platformInputs, b);
     }
 }
 

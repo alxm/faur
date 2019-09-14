@@ -49,12 +49,9 @@ typedef enum {
     A_BUTTON_NUM
 } AButtonId;
 
-#define A__KEY_FLAG 0x80
-#define A__KEY_ID(Id) ((Id) - A__KEY_FLAG)
-
 typedef enum {
     A_KEY_INVALID = -1,
-    A_KEY_UP = A__KEY_FLAG,
+    A_KEY_UP,
     A_KEY_DOWN,
     A_KEY_LEFT,
     A_KEY_RIGHT,
@@ -96,7 +93,8 @@ extern AButton* a_button_new(void);
 extern AButton* a_button_dup(const AButton* Button);
 extern void a_button_free(AButton* Button);
 
-extern void a_button_bind(AButton* Button, int Id);
+extern void a_button_bindKey(AButton* Button, AKeyId Id);
+extern void a_button_bindButton(AButton* Button, AButtonId Id);
 extern void a_button_bindComboStart(AButton* Button);
 extern void a_button_bindComboEnd(AButton* Button);
 

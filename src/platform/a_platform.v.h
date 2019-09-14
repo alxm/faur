@@ -98,7 +98,8 @@ extern int a_platform_api__soundSampleChannelGet(void);
 
 extern void a_platform_api__inputPoll(void);
 
-extern APlatformButton* a_platform_api__inputButtonGet(int Id);
+extern APlatformButton* a_platform_api__inputKeyGet(AKeyId Id);
+extern APlatformButton* a_platform_api__inputButtonGet(AButtonId Id);
 extern bool a_platform_api__inputButtonPressGet(const APlatformButton* Button);
 
 extern APlatformAnalog* a_platform_api__inputAnalogGet(AAnalogId Id);

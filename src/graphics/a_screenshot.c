@@ -123,7 +123,7 @@ static void takeScreenshot(void)
 void a_screenshot__init(void)
 {
     g_button = a_button_new();
-    a_button_bind(g_button, A_KEY_F12);
+    a_button_bindKey(g_button, A_KEY_F12);
 }
 
 void a_screenshot__uninit(void)
