@@ -58,7 +58,10 @@ struct APlatformController {
     #elif A_CONFIG_LIB_SDL == 2
         SDL_JoystickID id;
         SDL_GameController* controller;
+        SDL_JoystickGUID guid;
     #endif
+    bool claimed;
+    bool removed;
     int numButtons;
     int numHats;
     int numAxes;
@@ -79,8 +82,7 @@ static struct {
     bool tap;
 } g_mouse;
 
-static AList* g_controllers;
-static APlatformController* g_setController;
+static AList* g_controllers; // list of APlatformController
 static AList* g_forwardButtonsQueue[2]; // list of APlatformButton
 static uint32_t g_sdlFlags;
 
@@ -190,10 +192,10 @@ static void buttonPress(APlatformButton* Button, bool Pressed)
 }
 
 #if A_CONFIG_SYSTEM_GP2X || A_CONFIG_SYSTEM_WIZ
-static void buttonForward(AButtonId Source, AButtonId Destination)
+static void buttonForward(APlatformController* Controller, AButtonId Source, AButtonId Destination)
 {
-    APlatformButton* bSrc = a_platform_api__inputButtonGet(Source);
-    APlatformButton* bDst = a_platform_api__inputButtonGet(Destination);
+    APlatformButton* bSrc = Controller->buttons[Source];
+    APlatformButton* bDst = Controller->buttons[Destination];
 
     if(bSrc == NULL || bDst == NULL) {
         return;
@@ -206,10 +208,10 @@ static void buttonForward(AButtonId Source, AButtonId Destination)
     a_list_addLast(bSrc->forwardButtons, bDst);
 }
 #elif A_CONFIG_SYSTEM_PANDORA
-static void keyForward(AKeyId Source, AButtonId Destination)
+static void keyForward(AKeyId Source, APlatformController* Controller, AButtonId Destination)
 {
-    APlatformButton* bSrc = a_platform_api__inputKeyGet(Source);
-    APlatformButton* bDst = a_platform_api__inputButtonGet(Destination);
+    APlatformButton* bSrc = g_keys[Source];
+    APlatformButton* bDst = Controller->buttons[Destination];
 
     if(bSrc == NULL || bDst == NULL) {
         return;
@@ -275,9 +277,9 @@ static void analogSet(APlatformAnalog* Analog, int Value)
     }
 }
 
-static void analogForward(AAnalogId Source, AButtonId Negative, AButtonId Positive)
+static void analogForward(APlatformController* Controller, AAnalogId Source, AButtonId Negative, AButtonId Positive)
 {
-    APlatformAnalog* aSrc = a_platform_api__inputAnalogGet(Source);
+    APlatformAnalog* aSrc = Controller->axes[Source];
 
     if(aSrc == NULL) {
         return;
@@ -285,8 +287,8 @@ static void analogForward(AAnalogId Source, AButtonId Negative, AButtonId Positi
 
     APlatformButtonPair* f = a_mem_malloc(sizeof(APlatformButtonPair));
 
-    f->negative = a_platform_api__inputButtonGet(Negative);
-    f->positive = a_platform_api__inputButtonGet(Positive);
+    f->negative = Negative < 0 ? NULL : Controller->buttons[Negative];
+    f->positive = Positive < 0 ? NULL : Controller->buttons[Positive];
     f->lastPressedNegative = false;
     f->lastPressedPositive = false;
 
@@ -306,7 +308,7 @@ static inline const char* joystickName(APlatformController* Controller)
     #endif
 }
 
-static APlatformController* controllerAdd(int Index)
+static void controllerAdd(int Index)
 {
     SDL_Joystick* joystick = NULL;
 
@@ -315,6 +317,7 @@ static APlatformController* controllerAdd(int Index)
         SDL_JoystickGetGUIDString(SDL_JoystickGetDeviceGUID(Index),
                                   guidStrBuffer,
                                   sizeof(guidStrBuffer) - 1);
+
         a_out__info("New controller %s", guidStrBuffer);
 
         SDL_GameController* controller = NULL;
@@ -334,7 +337,7 @@ static APlatformController* controllerAdd(int Index)
 
                     SDL_GameControllerClose(controller);
 
-                    return NULL;
+                    return;
                 }
             }
         }
@@ -346,7 +349,7 @@ static APlatformController* controllerAdd(int Index)
         if(joystick == NULL) {
             a_out__error("SDL_JoystickOpen(%d): %s", Index, SDL_GetError());
 
-            return NULL;
+            return;
         }
     }
 
@@ -364,17 +367,16 @@ static APlatformController* controllerAdd(int Index)
                 SDL_JoystickClose(joystick);
             }
 
-            return NULL;
+            return;
         }
     #endif
 
     APlatformController* c = a_mem_zalloc(sizeof(APlatformController));
 
-    g_setController = c;
-
     c->joystick = joystick;
     #if A_CONFIG_LIB_SDL == 2
         c->controller = controller;
+        c->guid = SDL_JoystickGetGUID(joystick);
     #endif
     c->id = id;
     c->numButtons = SDL_JoystickNumButtons(c->joystick);
@@ -420,14 +422,14 @@ static APlatformController* controllerAdd(int Index)
                 #endif
 
                 // Split diagonals into individual cardinal directions
-                buttonForward(A_BUTTON_UPLEFT, A_BUTTON_UP);
-                buttonForward(A_BUTTON_UPLEFT, A_BUTTON_LEFT);
-                buttonForward(A_BUTTON_UPRIGHT, A_BUTTON_UP);
-                buttonForward(A_BUTTON_UPRIGHT, A_BUTTON_RIGHT);
-                buttonForward(A_BUTTON_DOWNLEFT, A_BUTTON_DOWN);
-                buttonForward(A_BUTTON_DOWNLEFT, A_BUTTON_LEFT);
-                buttonForward(A_BUTTON_DOWNRIGHT, A_BUTTON_DOWN);
-                buttonForward(A_BUTTON_DOWNRIGHT, A_BUTTON_RIGHT);
+                buttonForward(c, A_BUTTON_UPLEFT, A_BUTTON_UP);
+                buttonForward(c, A_BUTTON_UPLEFT, A_BUTTON_LEFT);
+                buttonForward(c, A_BUTTON_UPRIGHT, A_BUTTON_UP);
+                buttonForward(c, A_BUTTON_UPRIGHT, A_BUTTON_RIGHT);
+                buttonForward(c, A_BUTTON_DOWNLEFT, A_BUTTON_DOWN);
+                buttonForward(c, A_BUTTON_DOWNLEFT, A_BUTTON_LEFT);
+                buttonForward(c, A_BUTTON_DOWNRIGHT, A_BUTTON_DOWN);
+                buttonForward(c, A_BUTTON_DOWNRIGHT, A_BUTTON_RIGHT);
             #elif A_CONFIG_SYSTEM_CAANOO
                 buttonAdd(c, A_BUTTON_UP, -1);
                 buttonAdd(c, A_BUTTON_DOWN, -1);
@@ -472,20 +474,21 @@ static APlatformController* controllerAdd(int Index)
             buttonAdd(c, A_BUTTON_SELECT, -1);
 
             // Pandora's game buttons are actually keyboard keys
-            keyForward(A_KEY_UP, A_BUTTON_UP);
-            keyForward(A_KEY_DOWN, A_BUTTON_DOWN);
-            keyForward(A_KEY_LEFT, A_BUTTON_LEFT);
-            keyForward(A_KEY_RIGHT, A_BUTTON_RIGHT);
-            keyForward(A_KEY_RSHIFT, A_BUTTON_L);
-            keyForward(A_KEY_RCTRL, A_BUTTON_R);
-            keyForward(A_KEY_PAGEDOWN, A_BUTTON_A);
-            keyForward(A_KEY_END, A_BUTTON_B);
-            keyForward(A_KEY_HOME, A_BUTTON_X);
-            keyForward(A_KEY_PAGEUP, A_BUTTON_Y);
-            keyForward(A_KEY_LALT, A_BUTTON_START);
-            keyForward(A_KEY_LCTRL, A_BUTTON_SELECT);
+            keyForward(A_KEY_UP, c, A_BUTTON_UP);
+            keyForward(A_KEY_DOWN, c, A_BUTTON_DOWN);
+            keyForward(A_KEY_LEFT, c, A_BUTTON_LEFT);
+            keyForward(A_KEY_RIGHT, c, A_BUTTON_RIGHT);
+            keyForward(A_KEY_RSHIFT, c, A_BUTTON_L);
+            keyForward(A_KEY_RCTRL, c, A_BUTTON_R);
+            keyForward(A_KEY_PAGEDOWN, c, A_BUTTON_A);
+            keyForward(A_KEY_END, c, A_BUTTON_B);
+            keyForward(A_KEY_HOME, c, A_BUTTON_X);
+            keyForward(A_KEY_PAGEUP, c, A_BUTTON_Y);
+            keyForward(A_KEY_LALT, c, A_BUTTON_START);
+            keyForward(A_KEY_LCTRL, c, A_BUTTON_SELECT);
         } else if(a_str_equal(name, "nub1")) {
             mappedBuiltIn = true;
+            c->claimed = true;
 
             analogAdd(c, A_AXIS_RIGHTX, 0);
             analogAdd(c, A_AXIS_RIGHTY, 1);
@@ -540,30 +543,30 @@ static APlatformController* controllerAdd(int Index)
             for(int id = a_math_min(c->numAxes, A_AXIS_NUM); id--; ) {
                 analogAdd(c, id, id);
             }
-
-            if(c->numHats > 0 || c->numAxes >= 2) {
-                // These buttons will be controlled by hats and analog axes
-                buttonAdd(c, A_BUTTON_UP, -1);
-                buttonAdd(c, A_BUTTON_DOWN, -1);
-                buttonAdd(c, A_BUTTON_LEFT, -1);
-                buttonAdd(c, A_BUTTON_RIGHT, -1);
-                buttonAdd(c, A_BUTTON_L, -1);
-                buttonAdd(c, A_BUTTON_R, -1);
-            }
 #if A_CONFIG_LIB_SDL == 2
         }
 #endif
     }
 
-    // Forward the left analog stick to the direction buttons
-    analogForward(A_AXIS_LEFTX, A_BUTTON_LEFT, A_BUTTON_RIGHT);
-    analogForward(A_AXIS_LEFTY, A_BUTTON_UP, A_BUTTON_DOWN);
+    if(c->numHats > 0 || c->numAxes >= 2) {
+        // These buttons will be controlled by hats and analog axes
+        buttonAdd(c, A_BUTTON_UP, -1);
+        buttonAdd(c, A_BUTTON_DOWN, -1);
+        buttonAdd(c, A_BUTTON_LEFT, -1);
+        buttonAdd(c, A_BUTTON_RIGHT, -1);
+        buttonAdd(c, A_BUTTON_L, -1);
+        buttonAdd(c, A_BUTTON_R, -1);
 
-    // Forward analog shoulder triggers to the shoulder buttons
-    analogForward(A_AXIS_LEFTTRIGGER, A_BUTTON_INVALID, A_BUTTON_L);
-    analogForward(A_AXIS_RIGHTTRIGGER, A_BUTTON_INVALID, A_BUTTON_R);
+        // Forward the left analog stick to the direction buttons
+        analogForward(c, A_AXIS_LEFTX, A_BUTTON_LEFT, A_BUTTON_RIGHT);
+        analogForward(c, A_AXIS_LEFTY, A_BUTTON_UP, A_BUTTON_DOWN);
 
-    return c;
+        // Forward analog shoulder triggers to the shoulder buttons
+        analogForward(c, A_AXIS_LEFTTRIGGER, A_BUTTON_INVALID, A_BUTTON_L);
+        analogForward(c, A_AXIS_RIGHTTRIGGER, A_BUTTON_INVALID, A_BUTTON_R);
+    }
+
+    a_list_addLast(g_controllers, c);
 }
 
 static void controllerFree(APlatformController* Controller)
@@ -590,6 +593,100 @@ static void controllerFree(APlatformController* Controller)
 
     a_mem_free(Controller);
 }
+
+#if A_CONFIG_LIB_SDL == 2
+static void controllerRemove(APlatformController* Controller)
+{
+    char guidStrBuffer[64];
+    SDL_JoystickGetGUIDString(
+        Controller->guid, guidStrBuffer, sizeof(guidStrBuffer) - 1);
+
+    a_out__info("Removed controller %s", guidStrBuffer);
+
+    Controller->removed = true;
+
+    for(int id = 0; id < A_BUTTON_NUM; id++) {
+        if(Controller->buttons[id]) {
+            buttonPress(Controller->buttons[id], false);
+        }
+    }
+
+    for(int id = 0; id < A_AXIS_NUM; id++) {
+        if(Controller->axes[id]) {
+            analogSet(Controller->axes[id], 0);
+        }
+    }
+}
+
+static bool controllerRestore(APlatformController* Controller, int Index)
+{
+    char guidStrBuffer[64];
+    SDL_JoystickGetGUIDString(
+        Controller->guid, guidStrBuffer, sizeof(guidStrBuffer) - 1);
+
+    a_out__info("Restoring controller %s", guidStrBuffer);
+
+    a_out__info("Controller '%s': %d buttons, %d axes, %d hats",
+                joystickName(Controller),
+                Controller->numButtons,
+                Controller->numAxes,
+                Controller->numHats);
+
+    if(Controller->controller) {
+        SDL_GameControllerClose(Controller->controller);
+
+        Controller->controller = SDL_GameControllerOpen(Index);
+
+        if(Controller->controller == NULL) {
+            a_out__error(
+                "SDL_GameControllerOpen(%d): %s", Index, SDL_GetError());
+
+            return false;
+        }
+
+        Controller->joystick =
+            SDL_GameControllerGetJoystick(Controller->controller);
+
+        if(Controller->joystick == NULL) {
+            a_out__error(
+                "SDL_GameControllerGetJoystick: %s", SDL_GetError());
+
+            return false;
+        }
+
+        a_out__info(
+            "Mapped as '%s'", SDL_GameControllerName(Controller->controller));
+    } else {
+        SDL_JoystickClose(Controller->joystick);
+        Controller->joystick = SDL_JoystickOpen(Index);
+
+        if(Controller->joystick == NULL) {
+            a_out__error("SDL_JoystickOpen(%d): %s", Index, SDL_GetError());
+
+            return false;
+        }
+    }
+
+    SDL_JoystickID id = SDL_JoystickInstanceID(Controller->joystick);
+
+    if(id < 0) {
+        a_out__error("SDL_JoystickInstanceID: %s", SDL_GetError());
+
+        if(Controller->controller) {
+            SDL_GameControllerClose(Controller->controller);
+        } else {
+            SDL_JoystickClose(Controller->joystick);
+        }
+
+        return false;
+    }
+
+    Controller->id = id;
+    Controller->removed = false;
+
+    return true;
+}
+#endif
 
 void a_platform_sdl_input__init(void)
 {
@@ -650,9 +747,13 @@ void a_platform_sdl_input__init(void)
     #endif
 
     const int joysticksNum = SDL_NumJoysticks();
-    a_out__info("Found %d controllers", joysticksNum);
+    a_out__info("%d controllers at startup", joysticksNum);
 
-    #if A_CONFIG_LIB_SDL == 2
+    #if A_CONFIG_LIB_SDL == 1
+        for(int j = 0; j < joysticksNum; j++) {
+            controllerAdd(j);
+        }
+    #elif A_CONFIG_LIB_SDL == 2
         if(a_path_exists(A_CONFIG_LIB_SDL_GAMEPADMAP, A_PATH_FILE)) {
             int mappingsNum = SDL_GameControllerAddMappingsFromFile(
                                 A_CONFIG_LIB_SDL_GAMEPADMAP);
@@ -667,17 +768,9 @@ void a_platform_sdl_input__init(void)
                             A_CONFIG_LIB_SDL_GAMEPADMAP);
             }
         }
+
+        a_platform_api__inputPoll();
     #endif
-
-    for(int j = 0; j < joysticksNum; j++) {
-        APlatformController* c = controllerAdd(j);
-
-        if(c) {
-            a_list_addLast(g_controllers, c);
-        }
-    }
-
-    a_platform_api__inputControllerSet(0);
 }
 
 void a_platform_sdl_input__uninit(void)
@@ -688,9 +781,10 @@ void a_platform_sdl_input__uninit(void)
         }
     #endif
 
-    a_list_freeEx(g_controllers, (AFree*)controllerFree);
     a_list_free(g_forwardButtonsQueue[0]);
     a_list_free(g_forwardButtonsQueue[1]);
+
+    a_list_freeEx(g_controllers, (AFree*)controllerFree);
 
     SDL_QuitSubSystem(g_sdlFlags);
 }
@@ -704,6 +798,39 @@ void a_platform_api__inputPoll(void)
             case SDL_QUIT: {
                 a_state_exit();
             } break;
+
+#if A_CONFIG_LIB_SDL == 2
+            case SDL_JOYDEVICEADDED: {
+                bool found = false;
+                SDL_JoystickGUID guid = SDL_JoystickGetDeviceGUID(
+                                            event.jdevice.which);
+
+                A_LIST_ITERATE(g_controllers, APlatformController*, c) {
+                    if(memcmp(&guid, &c->guid, sizeof(SDL_JoystickGUID)) == 0) {
+                        if(!controllerRestore(c, event.jdevice.which)) {
+                            controllerFree(c);
+                            A_LIST_REMOVE_CURRENT();
+                        }
+
+                        found = true;
+                        break;
+                    }
+                }
+
+                if(!found) {
+                    controllerAdd(event.jdevice.which);
+                }
+            } break;
+
+            case SDL_JOYDEVICEREMOVED: {
+                A_LIST_ITERATE(g_controllers, APlatformController*, c) {
+                    if(c->id == event.jdevice.which) {
+                        controllerRemove(c);
+                        break;
+                    }
+                }
+            } break;
+#endif
 
 #if A_CONFIG_TRAIT_KEYBOARD
             case SDL_KEYUP:
@@ -966,10 +1093,10 @@ APlatformButton* a_platform_api__inputKeyGet(AKeyId Id)
     return NULL;
 }
 
-APlatformButton* a_platform_api__inputButtonGet(AButtonId Id)
+APlatformButton* a_platform_api__inputButtonGet(APlatformController* Controller, AButtonId Id)
 {
-    if(g_setController && Id != A_BUTTON_INVALID) {
-        return g_setController->buttons[Id];
+    if(Controller && Id != A_BUTTON_INVALID) {
+        return Controller->buttons[Id];
     }
 
     return NULL;
@@ -980,17 +1107,17 @@ bool a_platform_api__inputButtonPressGet(const APlatformButton* Button)
     return Button->pressed;
 }
 
-APlatformAnalog* a_platform_api__inputAnalogGet(AAnalogId Id)
+APlatformAnalog* a_platform_api__inputAnalogGet(APlatformController* Controller, AAnalogId Id)
 {
-    if(g_setController && Id != A_AXIS_INVALID) {
+    if(Controller && Id != A_AXIS_INVALID) {
         #if A_CONFIG_SYSTEM_PANDORA
-            for(APlatformController* c = g_setController; c; c = c->next) {
+            for(APlatformController* c = Controller; c; c = c->next) {
                 if(c->axes[Id]) {
                     return c->axes[Id];
                 }
             }
         #else
-            return g_setController->axes[Id];
+            return Controller->axes[Id];
         #endif
     }
 
@@ -1017,13 +1144,23 @@ bool a_platform_api__inputTouchTapGet(void)
     return g_mouse.tap;
 }
 
-unsigned a_platform_api__inputControllerNumGet(void)
+APlatformController* a_platform_api__inputControllerClaim(void)
 {
-    return a_list_sizeGet(g_controllers);
+    A_LIST_ITERATE(g_controllers, APlatformController*, c) {
+        if(!c->removed && !c->claimed) {
+            c->claimed = true;
+
+            return c;
+        }
+    }
+
+    return NULL;
 }
 
-void a_platform_api__inputControllerSet(unsigned Index)
+void a_platform_api__inputControllerRelease(APlatformController* Controller)
 {
-    g_setController = a_list_getByIndex(g_controllers, Index);
+    if(Controller) {
+        Controller->claimed = false;
+    }
 }
 #endif // A_CONFIG_LIB_SDL

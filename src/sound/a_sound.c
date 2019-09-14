@@ -60,10 +60,10 @@ static void a_sound__init(void)
 
     #if A__SOUND_VOLUME_BAR
         g_volumeUpButton = a_button_new();
-        a_button_bindButton(g_volumeUpButton, A_BUTTON_VOLUP);
+        a_button_bindButton(g_volumeUpButton, NULL, A_BUTTON_VOLUP);
 
         g_volumeDownButton = a_button_new();
-        a_button_bindButton(g_volumeDownButton, A_BUTTON_VOLDOWN);
+        a_button_bindButton(g_volumeDownButton, NULL, A_BUTTON_VOLDOWN);
     #endif
 
     #if A_CONFIG_TRAIT_KEYBOARD

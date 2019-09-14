@@ -42,7 +42,7 @@ static const char* g_defaultName = "AAnalog";
 
 AFix a_analog_read(AAnalogId Axis)
 {
-    APlatformAnalog* a = a_platform_api__inputAnalogGet(Axis);
+    APlatformAnalog* a = a_platform_api__inputAnalogGet(NULL, Axis);
 
     return a ? a_platform_api__inputAnalogValueGet(a) : 0;
 }
@@ -68,11 +68,11 @@ void a_analog_free(AAnalog* Analog)
     a_mem_free(Analog);
 }
 
-void a_analog_bind(AAnalog* Analog, AAnalogId Id)
+void a_analog_bind(AAnalog* Analog, AController* Controller, AAnalogId Id)
 {
-    APlatformAnalog* pa = a_platform_api__inputAnalogGet(Id);
+    APlatformAnalog* a = a_platform_api__inputAnalogGet(Controller, Id);
 
-    if(pa == NULL) {
+    if(a == NULL) {
         return;
     }
 
@@ -80,7 +80,7 @@ void a_analog_bind(AAnalog* Analog, AAnalogId Id)
         Analog->name = g_analogNames[Id];
     }
 
-    a_list_addLast(Analog->platformInputs, pa);
+    a_list_addLast(Analog->platformInputs, a);
 }
 
 bool a_analog_isWorking(const AAnalog* Analog)

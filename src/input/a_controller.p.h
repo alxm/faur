@@ -21,7 +21,9 @@
 
 #include "general/a_system_includes.h"
 
-extern unsigned a_controller_numGet(void);
-extern void a_controller_set(unsigned Index);
+typedef void AController;
+
+extern AController* a_controller_new(void);
+extern void a_controller_free(AController* Controller);
 
 #endif // A_INC_INPUTS_CONTROLLER_P_H

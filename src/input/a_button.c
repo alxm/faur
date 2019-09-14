@@ -122,7 +122,7 @@ void a_input_button__uninit(void)
 
 bool a_button_read(AButtonId Button)
 {
-    APlatformButton* b = a_platform_api__inputButtonGet(Button);
+    APlatformButton* b = a_platform_api__inputButtonGet(NULL, Button);
 
     return b ? a_platform_api__inputButtonPressGet(b) : false;
 }
@@ -194,9 +194,9 @@ void a_button_bindKey(AButton* Button, AKeyId Id)
     }
 }
 
-void a_button_bindButton(AButton* Button, AButtonId Id)
+void a_button_bindButton(AButton* Button, AController* Controller, AButtonId Id)
 {
-    APlatformButton* b = a_platform_api__inputButtonGet(Id);
+    APlatformButton* b = a_platform_api__inputButtonGet(Controller, Id);
 
     if(b == NULL) {
         return;

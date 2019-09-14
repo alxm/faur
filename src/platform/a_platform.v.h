@@ -99,17 +99,17 @@ extern int a_platform_api__soundSampleChannelGet(void);
 extern void a_platform_api__inputPoll(void);
 
 extern APlatformButton* a_platform_api__inputKeyGet(AKeyId Id);
-extern APlatformButton* a_platform_api__inputButtonGet(AButtonId Id);
+extern APlatformButton* a_platform_api__inputButtonGet(APlatformController* Controller, AButtonId Id);
 extern bool a_platform_api__inputButtonPressGet(const APlatformButton* Button);
 
-extern APlatformAnalog* a_platform_api__inputAnalogGet(AAnalogId Id);
+extern APlatformAnalog* a_platform_api__inputAnalogGet(APlatformController* Controller, AAnalogId Id);
 extern int a_platform_api__inputAnalogValueGet(const APlatformAnalog* Analog);
 
 extern AVectorInt a_platform_api__inputTouchCoordsGet(void);
 extern AVectorInt a_platform_api__inputTouchDeltaGet(void);
 extern bool a_platform_api__inputTouchTapGet(void);
 
-extern unsigned a_platform_api__inputControllerNumGet(void);
-extern void a_platform_api__inputControllerSet(unsigned Index);
+extern APlatformController* a_platform_api__inputControllerClaim(void);
+extern void a_platform_api__inputControllerRelease(APlatformController* Controller);
 
 #endif // A_INC_PLATFORM_PLATFORM_V_H

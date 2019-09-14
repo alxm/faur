@@ -79,12 +79,12 @@ static void a_console__init1(void)
     a_button_bindKey(g_toggle, A_KEY_F11);
 
     a_button_bindComboStart(g_toggle);
-        a_button_bindButton(g_toggle, A_BUTTON_A);
-        a_button_bindButton(g_toggle, A_BUTTON_B);
-        a_button_bindButton(g_toggle, A_BUTTON_X);
-        a_button_bindButton(g_toggle, A_BUTTON_Y);
-        a_button_bindButton(g_toggle, A_BUTTON_L);
-        a_button_bindButton(g_toggle, A_BUTTON_R);
+        a_button_bindButton(g_toggle, NULL, A_BUTTON_A);
+        a_button_bindButton(g_toggle, NULL, A_BUTTON_B);
+        a_button_bindButton(g_toggle, NULL, A_BUTTON_X);
+        a_button_bindButton(g_toggle, NULL, A_BUTTON_Y);
+        a_button_bindButton(g_toggle, NULL, A_BUTTON_L);
+        a_button_bindButton(g_toggle, NULL, A_BUTTON_R);
     a_button_bindComboEnd(g_toggle);
 
     g_state = A_CONSOLE__STATE_FULL;

@@ -19,20 +19,12 @@
 #include "a_controller.v.h"
 #include <a2x.v.h>
 
-unsigned a_controller_numGet(void)
+AController* a_controller_new(void)
 {
-    return a_platform_api__inputControllerNumGet();
+    return a_platform_api__inputControllerClaim();
 }
 
-void a_controller_set(unsigned Index)
+void a_controller_free(AController* Controller)
 {
-    #if A_CONFIG_BUILD_DEBUG
-        if(Index >= a_platform_api__inputControllerNumGet()) {
-            A__FATAL("a_controller_set(%d): %d controllers total",
-                     Index,
-                     a_platform_api__inputControllerNumGet());
-        }
-    #endif
-
-    a_platform_api__inputControllerSet(Index);
+    a_platform_api__inputControllerRelease(Controller);
 }

@@ -87,6 +87,8 @@ typedef enum {
     A_KEY_NUM,
 } AKeyId;
 
+#include "input/a_controller.v.h"
+
 extern bool a_button_read(AButtonId Button);
 
 extern AButton* a_button_new(void);
@@ -94,7 +96,7 @@ extern AButton* a_button_dup(const AButton* Button);
 extern void a_button_free(AButton* Button);
 
 extern void a_button_bindKey(AButton* Button, AKeyId Id);
-extern void a_button_bindButton(AButton* Button, AButtonId Id);
+extern void a_button_bindButton(AButton* Button, AController* Controller, AButtonId Id);
 extern void a_button_bindComboStart(AButton* Button);
 extern void a_button_bindComboEnd(AButton* Button);
 
