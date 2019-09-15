@@ -61,19 +61,19 @@ void drawBox(void)
 
     A_STATE_TICK
     {
-        if(a_button_read(A_KEY_UP) || a_button_read(A_BUTTON_UP)) {
+        if(a_input_readKey(A_KEY_UP) || a_input_readButton(A_BUTTON_UP)) {
             context.y--;
         }
 
-        if(a_button_read(A_KEY_DOWN) || a_button_read(A_BUTTON_DOWN)) {
+        if(a_input_readKey(A_KEY_DOWN) || a_input_readButton(A_BUTTON_DOWN)) {
             context.y++;
         }
 
-        if(a_button_read(A_KEY_LEFT) || a_button_read(A_BUTTON_LEFT)) {
+        if(a_input_readKey(A_KEY_LEFT) || a_input_readButton(A_BUTTON_LEFT)) {
             context.x--;
         }
 
-        if(a_button_read(A_KEY_RIGHT) || a_button_read(A_BUTTON_RIGHT)) {
+        if(a_input_readKey(A_KEY_RIGHT) || a_input_readButton(A_BUTTON_RIGHT)) {
             context.x++;
         }
     }

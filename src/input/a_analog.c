@@ -40,13 +40,6 @@ static const char* g_analogNames[A_AXIS_NUM] = {
 
 static const char* g_defaultName = "AAnalog";
 
-AFix a_analog_read(AAnalogId Axis)
-{
-    APlatformAnalog* a = a_platform_api__inputAnalogGet(NULL, Axis);
-
-    return a ? a_platform_api__inputAnalogValueGet(a) : 0;
-}
-
 AAnalog* a_analog_new(void)
 {
     AAnalog* a = a_mem_malloc(sizeof(AAnalog));

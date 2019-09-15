@@ -120,13 +120,6 @@ void a_input_button__uninit(void)
     a_list_free(g_buttons);
 }
 
-bool a_button_read(AButtonId Button)
-{
-    APlatformButton* b = a_platform_api__inputButtonGet(NULL, Button);
-
-    return b ? a_platform_api__inputButtonPressGet(b) : false;
-}
-
 AButton* a_button_new(void)
 {
     AButton* b = a_mem_malloc(sizeof(AButton));

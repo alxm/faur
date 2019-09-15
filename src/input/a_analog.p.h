@@ -37,8 +37,6 @@ typedef enum {
 #include "input/a_controller.v.h"
 #include "math/a_fix.p.h"
 
-extern AFix a_analog_read(AAnalogId Axis);
-
 extern AAnalog* a_analog_new(void);
 extern void a_analog_free(AAnalog* Analog);
 

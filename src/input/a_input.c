@@ -44,3 +44,24 @@ void a_input__tick(void)
     a_platform_api__inputPoll();
     a_input_button__tick();
 }
+
+bool a_input_readKey(AKeyId Key)
+{
+    APlatformButton* k = a_platform_api__inputKeyGet(Key);
+
+    return k ? a_platform_api__inputButtonPressGet(k) : false;
+}
+
+bool a_input_readButton(AButtonId Button)
+{
+    APlatformButton* b = a_platform_api__inputButtonGet(NULL, Button);
+
+    return b ? a_platform_api__inputButtonPressGet(b) : false;
+}
+
+AFix a_input_readAnalog(AAnalogId Axis)
+{
+    APlatformAnalog* a = a_platform_api__inputAnalogGet(NULL, Axis);
+
+    return a ? a_platform_api__inputAnalogValueGet(a) : 0;
+}
