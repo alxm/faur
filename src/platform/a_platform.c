@@ -34,12 +34,6 @@ static void a_platform__init(void)
     #endif
 
     #if A_CONFIG_LIB_SDL
-        #if A_CONFIG_LIB_SDL == 1
-            a_out__info("Using SDL 1.2");
-        #elif A_CONFIG_LIB_SDL == 2
-            a_out__info("Using SDL 2.0");
-        #endif
-
         a_platform_sdl__init();
     #endif
 

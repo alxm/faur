@@ -40,6 +40,18 @@ void a_platform_sdl__init(void)
         A__FATAL("SDL_Init: %s", SDL_GetError());
     }
 
+    SDL_version cv, rv;
+    SDL_VERSION(&cv);
+
+    #if A_CONFIG_LIB_SDL == 1
+        rv = *SDL_Linked_Version();
+    #elif A_CONFIG_LIB_SDL == 2
+        SDL_GetVersion(&rv);
+    #endif
+
+    a_out__info("Built with SDL %d.%d.%d", cv.major, cv.minor, cv.patch);
+    a_out__info("Running on SDL %d.%d.%d", rv.major, rv.minor, rv.patch);
+
     a_platform_sdl_input__init();
     a_platform_sdl_video__init();
 
