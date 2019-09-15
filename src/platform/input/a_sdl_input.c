@@ -82,6 +82,7 @@ static struct {
     bool tap;
 } g_mouse;
 
+static APlatformController* g_defaultController; // first to be attached
 static AList* g_controllers; // list of APlatformController
 static AList* g_forwardButtonsQueue[2]; // list of APlatformButton
 static uint32_t g_sdlFlags;
@@ -564,6 +565,10 @@ static void controllerAdd(int Index)
         // Forward analog shoulder triggers to the shoulder buttons
         analogForward(c, A_AXIS_LEFTTRIGGER, A_BUTTON_INVALID, A_BUTTON_L);
         analogForward(c, A_AXIS_RIGHTTRIGGER, A_BUTTON_INVALID, A_BUTTON_R);
+    }
+
+    if(a_list_isEmpty(g_controllers)) {
+        g_defaultController = c;
     }
 
     a_list_addLast(g_controllers, c);
@@ -1095,6 +1100,10 @@ APlatformButton* a_platform_api__inputKeyGet(AKeyId Id)
 
 APlatformButton* a_platform_api__inputButtonGet(APlatformController* Controller, AButtonId Id)
 {
+    if(Controller == NULL) {
+        Controller = g_defaultController;
+    }
+
     if(Controller && Id != A_BUTTON_INVALID) {
         return Controller->buttons[Id];
     }
@@ -1109,6 +1118,10 @@ bool a_platform_api__inputButtonPressGet(const APlatformButton* Button)
 
 APlatformAnalog* a_platform_api__inputAnalogGet(APlatformController* Controller, AAnalogId Id)
 {
+    if(Controller == NULL) {
+        Controller = g_defaultController;
+    }
+
     if(Controller && Id != A_AXIS_INVALID) {
         #if A_CONFIG_SYSTEM_PANDORA
             for(APlatformController* c = Controller; c; c = c->next) {
