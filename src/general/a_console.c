@@ -77,15 +77,11 @@ static void a_console__init1(void)
     g_tags = a_sprite_newFromPng("/a2x/consoleTitles", 0, 0, 19, 7);
     g_toggle = a_button_new();
     a_button_bindKey(g_toggle, A_KEY_F11);
-
-    a_button_bindComboStart(g_toggle);
-        a_button_bindButton(g_toggle, NULL, A_BUTTON_A);
-        a_button_bindButton(g_toggle, NULL, A_BUTTON_B);
-        a_button_bindButton(g_toggle, NULL, A_BUTTON_X);
-        a_button_bindButton(g_toggle, NULL, A_BUTTON_Y);
-        a_button_bindButton(g_toggle, NULL, A_BUTTON_L);
-        a_button_bindButton(g_toggle, NULL, A_BUTTON_R);
-    a_button_bindComboEnd(g_toggle);
+    a_button_bindCombo(g_toggle,
+                       NULL,
+                       A_BUTTON_A, A_BUTTON_B, A_BUTTON_X, A_BUTTON_Y,
+                       A_BUTTON_L, A_BUTTON_R,
+                       A_BUTTON_INVALID);
 
     g_state = A_CONSOLE__STATE_FULL;
 }

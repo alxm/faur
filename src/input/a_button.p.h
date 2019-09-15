@@ -95,8 +95,7 @@ extern void a_button_free(AButton* Button);
 
 extern void a_button_bindKey(AButton* Button, AKeyId Id);
 extern void a_button_bindButton(AButton* Button, AController* Controller, AButtonId Id);
-extern void a_button_bindComboStart(AButton* Button);
-extern void a_button_bindComboEnd(AButton* Button);
+extern void a_button_bindCombo(AButton* Button, AController* Controller, AButtonId Id, ...);
 
 extern bool a_button_isWorking(const AButton* Button);
 extern const char* a_button_nameGet(const AButton* Button);

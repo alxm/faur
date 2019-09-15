@@ -20,11 +20,10 @@
 #include <a2x.v.h>
 
 struct AButton {
+    AListNode* listNode;
     const char* name; // friendly name
     AList* platformInputs; // list of APlatformButton
-    AListNode* listNode;
     AList* combos; // List of lists of APlatformButton, each a button combo
-    AList* currentCombo;
     ATimer* autoRepeat;
     bool isClone;
     bool waitForRelease;
@@ -124,11 +123,10 @@ AButton* a_button_new(void)
 {
     AButton* b = a_mem_malloc(sizeof(AButton));
 
+    b->listNode = a_list_addLast(g_buttons, b);
     b->name = g_defaultName;
     b->platformInputs = a_list_new();
-    b->listNode = a_list_addLast(g_buttons, b);
-    b->combos = a_list_new();
-    b->currentCombo = NULL;
+    b->combos = NULL;
     b->autoRepeat = NULL;
     b->isClone = false;
     b->waitForRelease = false;
@@ -180,11 +178,7 @@ void a_button_bindKey(AButton* Button, AKeyId Id)
         Button->name = g_keyNames[Id];
     }
 
-    if(Button->currentCombo) {
-        a_list_addLast(Button->currentCombo, k);
-    } else {
-        a_list_addLast(Button->platformInputs, k);
-    }
+    a_list_addLast(Button->platformInputs, k);
 }
 
 void a_button_bindButton(AButton* Button, AController* Controller, AButtonId Id)
@@ -199,29 +193,41 @@ void a_button_bindButton(AButton* Button, AController* Controller, AButtonId Id)
         Button->name = g_buttonNames[Id];
     }
 
-    if(Button->currentCombo) {
-        a_list_addLast(Button->currentCombo, b);
-    } else {
-        a_list_addLast(Button->platformInputs, b);
+    a_list_addLast(Button->platformInputs, b);
+}
+
+void a_button_bindCombo(AButton* Button, AController* Controller, AButtonId Id, ...)
+{
+    va_list args;
+    va_start(args, Id);
+
+    AList* combo = a_list_new();
+
+    for(AButtonId i = Id; i != A_BUTTON_INVALID; i = va_arg(args, AButtonId)) {
+        APlatformButton* b = a_platform_api__inputButtonGet(Controller, i);
+
+        if(b) {
+            a_list_addLast(combo, b);
+        }
     }
-}
 
-void a_button_bindComboStart(AButton* Button)
-{
-    Button->currentCombo = a_list_new();
+    if(a_list_isEmpty(combo)) {
+        a_list_free(combo);
+    } else {
+        if(Button->combos == NULL) {
+            Button->combos = a_list_new();
+        }
 
-    a_list_push(Button->combos, Button->currentCombo);
-}
+        a_list_push(Button->combos, combo);
+    }
 
-void a_button_bindComboEnd(AButton* Button)
-{
-    Button->currentCombo = NULL;
+    va_end(args);
 }
 
 bool a_button_isWorking(const AButton* Button)
 {
     return !a_list_isEmpty(Button->platformInputs)
-        || !a_list_isEmpty(Button->combos);
+        || (Button->combos && !a_list_isEmpty(Button->combos));
 }
 
 const char* a_button_nameGet(const AButton* Button)
@@ -273,13 +279,15 @@ void a_input_button__tick(void)
             }
         }
 
-        A_LIST_ITERATE(b->combos, AList*, andList) {
-            A_LIST_ITERATE(andList, APlatformButton*, pb) {
-                if(!a_platform_api__inputButtonPressGet(pb)) {
-                    break;
-                } else if(A_LIST_IS_LAST()) {
-                    pressed = true;
-                    goto done;
+        if(b->combos) {
+            A_LIST_ITERATE(b->combos, AList*, andList) {
+                A_LIST_ITERATE(andList, APlatformButton*, pb) {
+                    if(!a_platform_api__inputButtonPressGet(pb)) {
+                        break;
+                    } else if(A_LIST_IS_LAST()) {
+                        pressed = true;
+                        goto done;
+                    }
                 }
             }
         }
