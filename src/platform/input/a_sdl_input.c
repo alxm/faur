@@ -193,7 +193,7 @@ static void buttonPress(APlatformButton* Button, bool Pressed)
 }
 
 #if A_CONFIG_SYSTEM_GP2X || A_CONFIG_SYSTEM_WIZ
-static void buttonForward(APlatformController* Controller, AButtonId Source, AButtonId Destination)
+static void buttonForward(const APlatformController* Controller, AButtonId Source, AButtonId Destination)
 {
     APlatformButton* bSrc = Controller->buttons[Source];
     APlatformButton* bDst = Controller->buttons[Destination];
@@ -209,7 +209,7 @@ static void buttonForward(APlatformController* Controller, AButtonId Source, ABu
     a_list_addLast(bSrc->forwardButtons, bDst);
 }
 #elif A_CONFIG_SYSTEM_PANDORA
-static void keyForward(AKeyId Source, APlatformController* Controller, AButtonId Destination)
+static void keyForward(AKeyId Source, const APlatformController* Controller, AButtonId Destination)
 {
     APlatformButton* bSrc = g_keys[Source];
     APlatformButton* bDst = Controller->buttons[Destination];
@@ -278,7 +278,7 @@ static void analogSet(APlatformAnalog* Analog, int Value)
     }
 }
 
-static void analogForward(APlatformController* Controller, AAnalogId Source, AButtonId Negative, AButtonId Positive)
+static void analogForward(const APlatformController* Controller, AAnalogId Source, AButtonId Negative, AButtonId Positive)
 {
     APlatformAnalog* aSrc = Controller->axes[Source];
 
@@ -300,7 +300,7 @@ static void analogForward(APlatformController* Controller, AAnalogId Source, ABu
     a_list_addLast(aSrc->forwardButtons, f);
 }
 
-static inline const char* joystickName(APlatformController* Controller)
+static inline const char* joystickName(const APlatformController* Controller)
 {
     #if A_CONFIG_LIB_SDL == 1
         return SDL_JoystickName(Controller->id);
@@ -1098,7 +1098,7 @@ APlatformButton* a_platform_api__inputKeyGet(AKeyId Id)
     return NULL;
 }
 
-APlatformButton* a_platform_api__inputButtonGet(APlatformController* Controller, AButtonId Id)
+APlatformButton* a_platform_api__inputButtonGet(const APlatformController* Controller, AButtonId Id)
 {
     if(Controller == NULL) {
         Controller = g_defaultController;
@@ -1116,7 +1116,7 @@ bool a_platform_api__inputButtonPressGet(const APlatformButton* Button)
     return Button->pressed;
 }
 
-APlatformAnalog* a_platform_api__inputAnalogGet(APlatformController* Controller, AAnalogId Id)
+APlatformAnalog* a_platform_api__inputAnalogGet(const APlatformController* Controller, AAnalogId Id)
 {
     if(Controller == NULL) {
         Controller = g_defaultController;
@@ -1124,7 +1124,7 @@ APlatformAnalog* a_platform_api__inputAnalogGet(APlatformController* Controller,
 
     if(Controller && Id != A_AXIS_INVALID) {
         #if A_CONFIG_SYSTEM_PANDORA
-            for(APlatformController* c = Controller; c; c = c->next) {
+            for(const APlatformController* c = Controller; c; c = c->next) {
                 if(c->axes[Id]) {
                     return c->axes[Id];
                 }
