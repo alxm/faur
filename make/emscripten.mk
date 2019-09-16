@@ -15,6 +15,7 @@ all :
 
 else
 
+A_CONFIG_BUILD_C_STANDARD := gnu11
 A_CONFIG_BUILD_OPT := -O3
 A_CONFIG_LIB_SDL ?= 2
 A_CONFIG_LIB_SDL_TIME := 1
@@ -58,6 +59,7 @@ A_PLATFORM_LIBS := \
 A_PLATFORM_CFLAGS := \
     $(A_BUILD_EMSCRIPTEN_LIBS) \
     -Wno-dollar-in-identifier-extension \
+    -Wno-gnu-zero-variadic-macro-arguments \
 
 include $(A2X_PATH)/make/global/rules.mk
 
