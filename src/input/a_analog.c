@@ -61,7 +61,7 @@ void a_analog_free(AAnalog* Analog)
     a_mem_free(Analog);
 }
 
-void a_analog_bind(AAnalog* Analog, AController* Controller, AAnalogId Id)
+void a_analog_bind(AAnalog* Analog, const AController* Controller, AAnalogId Id)
 {
     APlatformAnalog* a = a_platform_api__inputAnalogGet(Controller, Id);
 

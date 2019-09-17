@@ -181,7 +181,7 @@ void a_button_bindKey(AButton* Button, AKeyId Id)
     a_list_addLast(Button->platformInputs, k);
 }
 
-void a_button_bindButton(AButton* Button, AController* Controller, AButtonId Id)
+void a_button_bindButton(AButton* Button, const AController* Controller, AButtonId Id)
 {
     APlatformButton* b = a_platform_api__inputButtonGet(Controller, Id);
 
@@ -196,7 +196,7 @@ void a_button_bindButton(AButton* Button, AController* Controller, AButtonId Id)
     a_list_addLast(Button->platformInputs, b);
 }
 
-void a_button_bindCombo(AButton* Button, AController* Controller, AButtonId Id, ...)
+void a_button_bindCombo(AButton* Button, const AController* Controller, AButtonId Id, ...)
 {
     va_list args;
     va_start(args, Id);

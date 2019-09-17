@@ -40,7 +40,7 @@ typedef enum {
 extern AAnalog* a_analog_new(void);
 extern void a_analog_free(AAnalog* Analog);
 
-extern void a_analog_bind(AAnalog* Analog, AController* Controller, AAnalogId Id);
+extern void a_analog_bind(AAnalog* Analog, const AController* Controller, AAnalogId Id);
 
 extern bool a_analog_isWorking(const AAnalog* Analog);
 extern const char* a_analog_nameGet(const AAnalog* Analog);
