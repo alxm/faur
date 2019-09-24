@@ -109,7 +109,7 @@ extern AVectorInt a_platform_api__inputTouchCoordsGet(void);
 extern AVectorInt a_platform_api__inputTouchDeltaGet(void);
 extern bool a_platform_api__inputTouchTapGet(void);
 
-extern APlatformController* a_platform_api__inputControllerClaim(void);
+extern APlatformController* a_platform_api__inputControllerClaim(AControllerBind* Callback);
 extern void a_platform_api__inputControllerRelease(APlatformController* Controller);
 
 #endif // A_INC_PLATFORM_PLATFORM_V_H

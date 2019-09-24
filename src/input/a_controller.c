@@ -19,9 +19,9 @@
 #include "a_controller.v.h"
 #include <a2x.v.h>
 
-AController* a_controller_new(void)
+AController* a_controller_new(AControllerBind* Callback)
 {
-    return a_platform_api__inputControllerClaim();
+    return a_platform_api__inputControllerClaim(Callback);
 }
 
 void a_controller_free(AController* Controller)

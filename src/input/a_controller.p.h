@@ -22,8 +22,9 @@
 #include "general/a_system_includes.h"
 
 typedef void AController;
+typedef void AControllerBind(const AController* Controller);
 
-extern AController* a_controller_new(void);
+extern AController* a_controller_new(AControllerBind* Callback);
 extern void a_controller_free(AController* Controller);
 
 #endif // A_INC_INPUTS_CONTROLLER_P_H
