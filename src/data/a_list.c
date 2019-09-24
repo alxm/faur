@@ -433,3 +433,14 @@ bool a_list_isEmpty(const AList* List)
 {
     return List->items == 0;
 }
+
+bool a_list_contains(const AList* List, const void* Item)
+{
+    A__ITERATE(List, n) {
+        if(n->content == Item) {
+            return true;
+        }
+    }
+
+    return false;
+}
