@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2017-2018 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2017-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -32,14 +32,15 @@ typedef enum {
     A_AXIS_LEFTTRIGGER,
     A_AXIS_RIGHTTRIGGER,
     A_AXIS_NUM
-} AAxisId;
+} AAnalogId;
 
+#include "input/a_controller.v.h"
 #include "math/a_fix.p.h"
 
 extern AAnalog* a_analog_new(void);
 extern void a_analog_free(AAnalog* Analog);
 
-extern void a_analog_bind(AAnalog* Analog, AAxisId Id);
+extern void a_analog_bind(AAnalog* Analog, const AController* Controller, AAnalogId Id);
 
 extern bool a_analog_isWorking(const AAnalog* Analog);
 extern const char* a_analog_nameGet(const AAnalog* Analog);

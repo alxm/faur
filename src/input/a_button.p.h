@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2017-2018 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2017-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -49,12 +49,9 @@ typedef enum {
     A_BUTTON_NUM
 } AButtonId;
 
-#define A__KEY_FLAG 0x80
-#define A__KEY_ID(Id) ((Id) - A__KEY_FLAG)
-
 typedef enum {
     A_KEY_INVALID = -1,
-    A_KEY_UP = A__KEY_FLAG,
+    A_KEY_UP,
     A_KEY_DOWN,
     A_KEY_LEFT,
     A_KEY_RIGHT,
@@ -90,13 +87,15 @@ typedef enum {
     A_KEY_NUM,
 } AKeyId;
 
+#include "input/a_controller.v.h"
+
 extern AButton* a_button_new(void);
 extern AButton* a_button_dup(const AButton* Button);
 extern void a_button_free(AButton* Button);
 
-extern void a_button_bind(AButton* Button, int Id);
-extern void a_button_bindComboStart(AButton* Button);
-extern void a_button_bindComboEnd(AButton* Button);
+extern void a_button_bindKey(AButton* Button, AKeyId Id);
+extern void a_button_bindButton(AButton* Button, const AController* Controller, AButtonId Id);
+extern void a_button_bindCombo(AButton* Button, const AController* Controller, AButtonId Id, ...);
 
 extern bool a_button_isWorking(const AButton* Button);
 extern const char* a_button_nameGet(const AButton* Button);

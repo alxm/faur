@@ -84,7 +84,7 @@ static void pending_handle(void)
     if(a_list_isEmpty(g_pending)) {
         if(current && current->stage == A__STATE_STAGE_INIT) {
             #if A_CONFIG_BUILD_DEBUG
-                a_out__state("  '%s' going from %s to %s",
+                a_out__state("'%s' going from %s to %s",
                              current->name,
                              g_stageNames[A__STATE_STAGE_INIT],
                              g_stageNames[A__STATE_STAGE_TICK]);
@@ -108,7 +108,7 @@ static void pending_handle(void)
 
             a_out__state("Pop '%s'", current->name);
 
-            a_out__state("  '%s' going from %s to %s",
+            a_out__state("'%s' going from %s to %s",
                          current->name,
                          g_stageNames[current->stage],
                          g_stageNames[A__STATE_STAGE_FREE]);
@@ -349,7 +349,7 @@ static bool iteration(void)
         a_fps__frame();
     } else {
         #if A_CONFIG_BUILD_DEBUG
-            a_out__state("  '%s' running %s", s->name, g_stageNames[s->stage]);
+            a_out__state("'%s' running %s", s->name, g_stageNames[s->stage]);
         #endif
 
         s->handler();

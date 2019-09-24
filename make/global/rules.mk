@@ -76,7 +76,7 @@ A_FILES_OBJ := $(A_FILES_OBJ_APP) $(A_FILES_OBJ_GEN)
 #
 A_GENERIC_CFLAGS := \
     -DA2X=1 \
-    -std=c99 \
+    -std=$(A_CONFIG_BUILD_C_STANDARD) \
     -MMD \
     -Wall \
     -Wextra \

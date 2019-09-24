@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2018 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -20,14 +20,32 @@
 #include <a2x.v.h>
 
 struct AAnalog {
-    AInputUserHeader header;
+    const char* name; // friendly name
+    AList* platformInputs; // list of APlatformAnalog
 };
+
+static const char* g_analogNames[A_AXIS_NUM] = {
+    #if A_CONFIG_SYSTEM_CAANOO
+        [A_AXIS_LEFTX] = "Stick",
+        [A_AXIS_LEFTY] = "Stick",
+    #else
+        [A_AXIS_LEFTX] = "Left-Stick",
+        [A_AXIS_LEFTY] = "Left-Stick",
+    #endif
+    [A_AXIS_RIGHTX] = "Right-Stick",
+    [A_AXIS_RIGHTY] = "Right-Stick",
+    [A_AXIS_LEFTTRIGGER] = "Left-Trigger",
+    [A_AXIS_RIGHTTRIGGER] = "Right-Trigger",
+};
+
+static const char* g_defaultName = "AAnalog";
 
 AAnalog* a_analog_new(void)
 {
     AAnalog* a = a_mem_malloc(sizeof(AAnalog));
 
-    a_input__userHeaderInit(&a->header);
+    a->name = g_defaultName;
+    a->platformInputs = a_list_new();
 
     return a;
 }
@@ -38,34 +56,34 @@ void a_analog_free(AAnalog* Analog)
         return;
     }
 
-    a_input__userHeaderFree(&Analog->header);
+    a_list_free(Analog->platformInputs);
 
     a_mem_free(Analog);
 }
 
-void a_analog_bind(AAnalog* Analog, AAxisId Id)
+void a_analog_bind(AAnalog* Analog, const AController* Controller, AAnalogId Id)
 {
-    APlatformInputAnalog* pa = a_platform_api__inputAnalogGet(Id);
+    APlatformAnalog* a = a_platform_api__inputAnalogGet(Controller, Id);
 
-    if(pa == NULL) {
+    if(a == NULL) {
         return;
     }
 
-    if(Analog->header.name == a__inputNameDefault) {
-        Analog->header.name = a_platform_api__inputAnalogNameGet(pa);
+    if(Analog->name == g_defaultName) {
+        Analog->name = g_analogNames[Id];
     }
 
-    a_list_addLast(Analog->header.platformInputs, pa);
+    a_list_addLast(Analog->platformInputs, a);
 }
 
 bool a_analog_isWorking(const AAnalog* Analog)
 {
-    return !a_list_isEmpty(Analog->header.platformInputs);
+    return !a_list_isEmpty(Analog->platformInputs);
 }
 
 const char* a_analog_nameGet(const AAnalog* Analog)
 {
-    return Analog->header.name;
+    return Analog->name;
 }
 
 AFix a_analog_valueGet(const AAnalog* Analog)
@@ -76,7 +94,7 @@ AFix a_analog_valueGet(const AAnalog* Analog)
     #define A__ANALOG_MAX_DISTANCE (1 << A__ANALOG_BITS)
     #define A__ANALOG_ERROR_MARGIN (A__ANALOG_MAX_DISTANCE / 20)
 
-    A_LIST_ITERATE(Analog->header.platformInputs, APlatformInputAnalog*, a) {
+    A_LIST_ITERATE(Analog->platformInputs, APlatformAnalog*, a) {
         value = a_platform_api__inputAnalogValueGet(a);
 
         if(a_math_abs(value) > A__ANALOG_ERROR_MARGIN) {

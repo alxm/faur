@@ -48,11 +48,11 @@ static void a_screen__init(void)
 
     #if A_CONFIG_TRAIT_DESKTOP
         g_fullScreenButton = a_button_new();
-        a_button_bind(g_fullScreenButton, A_KEY_F4);
+        a_button_bindKey(g_fullScreenButton, A_KEY_F4);
 
         for(int z = 0; z < A__ZOOM_LEVELS; z++) {
             g_zoomButtons[z] = a_button_new();
-            a_button_bind(g_zoomButtons[z], A_KEY_F1 + z);
+            a_button_bindKey(g_zoomButtons[z], A_KEY_F1 + z);
         }
     #endif
 

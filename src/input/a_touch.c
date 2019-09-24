@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2018 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -16,28 +16,33 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_INPUTS_INPUT_V_H
-#define A_INC_INPUTS_INPUT_V_H
+#include "a_touch.v.h"
+#include <a2x.v.h>
 
-#include "inputs/a_input.p.h"
+AVectorInt a_touch_deltaGet(void)
+{
+    return a_platform_api__inputTouchDeltaGet();
+}
 
-typedef struct AInputUserHeader AInputUserHeader;
+bool a_touch_tapGet(void)
+{
+    return a_platform_api__inputTouchTapGet();
+}
 
-#include "data/a_list.v.h"
-#include "general/a_main.v.h"
+bool a_touch_pointGet(int X, int Y)
+{
+    return a_touch_boxGet(X - 1, Y - 1, 3, 3);
+}
 
-struct AInputUserHeader {
-    const char* name;
-    AList* platformInputs; // List of APlatformInputButton/Analog/Touch
-};
+bool a_touch_boxGet(int X, int Y, int W, int H)
+{
+    if(a_platform_api__inputTouchTapGet()) {
+        AVectorInt coords = a_platform_api__inputTouchCoordsGet();
 
-extern const APack a_pack__input;
+        if(a_collide_pointInBox(coords.x, coords.y, X, Y, W, H)) {
+            return true;
+        }
+    }
 
-extern const char* a__inputNameDefault;
-
-extern void a_input__userHeaderInit(AInputUserHeader* Header);
-extern void a_input__userHeaderFree(AInputUserHeader* Header);
-
-extern void a_input__tick(void);
-
-#endif // A_INC_INPUTS_INPUT_V_H
+    return false;
+}

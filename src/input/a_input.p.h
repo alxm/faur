@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2017-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2017, 2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -16,23 +16,17 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_INPUTS_TOUCH_P_H
-#define A_INC_INPUTS_TOUCH_P_H
+#ifndef A_INC_INPUTS_INPUT_P_H
+#define A_INC_INPUTS_INPUT_P_H
 
 #include "general/a_system_includes.h"
 
-typedef struct ATouch ATouch;
-
+#include "input/a_analog.p.h"
+#include "input/a_button.p.h"
 #include "math/a_fix.p.h"
 
-extern ATouch* a_touch_new(void);
-extern void a_touch_free(ATouch* Touch);
+extern bool a_input_readKey(AKeyId Key);
+extern bool a_input_readButton(AButtonId Button);
+extern AFix a_input_readAnalog(AAnalogId Axis);
 
-extern bool a_touch_isWorking(const ATouch* Touch);
-
-extern AVectorInt a_touch_deltaGet(const ATouch* Touch);
-extern bool a_touch_tapGet(const ATouch* Touch);
-extern bool a_touch_pointGet(const ATouch* Touch, int X, int Y);
-extern bool a_touch_boxGet(const ATouch* Touch, int X, int Y, int W, int H);
-
-#endif // A_INC_INPUTS_TOUCH_P_H
+#endif // A_INC_INPUTS_INPUT_P_H

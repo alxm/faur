@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2017 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016-2018 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -16,9 +16,14 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_INPUTS_INPUT_P_H
-#define A_INC_INPUTS_INPUT_P_H
+#ifndef A_INC_INPUTS_BUTTON_V_H
+#define A_INC_INPUTS_BUTTON_V_H
 
-#include "general/a_system_includes.h"
+#include "input/a_button.p.h"
 
-#endif // A_INC_INPUTS_INPUT_P_H
+extern void a_input_button__init(void);
+extern void a_input_button__uninit(void);
+
+extern void a_input_button__tick(void);
+
+#endif // A_INC_INPUTS_BUTTON_V_H

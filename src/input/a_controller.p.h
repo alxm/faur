@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2018 Alex Margarit <alex@alxm.org>
+    Copyright 2016-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -16,9 +16,15 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_INPUTS_ANALOG_V_H
-#define A_INC_INPUTS_ANALOG_V_H
+#ifndef A_INC_INPUTS_CONTROLLER_P_H
+#define A_INC_INPUTS_CONTROLLER_P_H
 
-#include "inputs/a_analog.p.h"
+#include "general/a_system_includes.h"
 
-#endif // A_INC_INPUTS_ANALOG_V_H
+typedef void AController;
+typedef void AControllerBind(const AController* Controller);
+
+extern AController* a_controller_new(AControllerBind* Callback);
+extern void a_controller_free(AController* Controller);
+
+#endif // A_INC_INPUTS_CONTROLLER_P_H

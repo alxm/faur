@@ -6,24 +6,8 @@ geany -i \
     bin/utils/* \
     make/* \
     make/global/* \
-    src/* \
-    src/collision/* \
-    src/data/* \
-    src/ecs/* \
-    src/files/* \
-    src/general/* \
-    src/graphics/* \
-    src/inputs/* \
-    src/math/* \
-    src/memory/* \
-    src/platform/* \
-    src/platform/graphics/* \
-    src/platform/input/* \
-    src/platform/sound/* \
-    src/platform/system/* \
-    src/sound/* \
-    src/strings/* \
-    src/time/* \
+    `find src -type f -name "*.c"` \
+    `find src -type f -name "*.h"` \
     .travis.yml \
     dev.sh \
     README.markdown \

@@ -19,12 +19,9 @@
 #include "a_input.v.h"
 #include <a2x.v.h>
 
-const char* a__inputNameDefault = "Unknown";
-
 static void a_input__init(void)
 {
     a_input_button__init();
-    a_input_controller__init();
 }
 
 static void a_input__uninit(void)
@@ -42,19 +39,29 @@ const APack a_pack__input = {
     },
 };
 
-void a_input__userHeaderInit(AInputUserHeader* Header)
-{
-    Header->name = a__inputNameDefault;
-    Header->platformInputs = a_list_new();
-}
-
-void a_input__userHeaderFree(AInputUserHeader* Header)
-{
-    a_list_free(Header->platformInputs);
-}
-
 void a_input__tick(void)
 {
     a_platform_api__inputPoll();
     a_input_button__tick();
+}
+
+bool a_input_readKey(AKeyId Key)
+{
+    APlatformButton* k = a_platform_api__inputKeyGet(Key);
+
+    return k ? a_platform_api__inputButtonPressGet(k) : false;
+}
+
+bool a_input_readButton(AButtonId Button)
+{
+    APlatformButton* b = a_platform_api__inputButtonGet(NULL, Button);
+
+    return b ? a_platform_api__inputButtonPressGet(b) : false;
+}
+
+AFix a_input_readAnalog(AAnalogId Axis)
+{
+    APlatformAnalog* a = a_platform_api__inputAnalogGet(NULL, Axis);
+
+    return a ? a_platform_api__inputAnalogValueGet(a) : 0;
 }

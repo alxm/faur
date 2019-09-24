@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 Alex Margarit <alex@alxm.org>
+    Copyright 2016-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -16,11 +16,15 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_INPUTS_CONTROLLER_V_H
-#define A_INC_INPUTS_CONTROLLER_V_H
+#include "a_controller.v.h"
+#include <a2x.v.h>
 
-#include "inputs/a_controller.p.h"
+AController* a_controller_new(AControllerBind* Callback)
+{
+    return a_platform_api__inputControllerClaim(Callback);
+}
 
-extern void a_input_controller__init(void);
-
-#endif // A_INC_INPUTS_CONTROLLER_V_H
+void a_controller_free(AController* Controller)
+{
+    a_platform_api__inputControllerRelease(Controller);
+}

@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2017-2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -16,12 +16,16 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_INPUTS_CONTROLLER_P_H
-#define A_INC_INPUTS_CONTROLLER_P_H
+#ifndef A_INC_INPUTS_TOUCH_P_H
+#define A_INC_INPUTS_TOUCH_P_H
 
 #include "general/a_system_includes.h"
 
-extern unsigned a_controller_numGet(void);
-extern void a_controller_set(unsigned Index);
+#include "math/a_fix.p.h"
 
-#endif // A_INC_INPUTS_CONTROLLER_P_H
+extern AVectorInt a_touch_deltaGet(void);
+extern bool a_touch_tapGet(void);
+extern bool a_touch_pointGet(int X, int Y);
+extern bool a_touch_boxGet(int X, int Y, int W, int H);
+
+#endif // A_INC_INPUTS_TOUCH_P_H
