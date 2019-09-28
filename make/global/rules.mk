@@ -26,6 +26,7 @@ A_DIR_OBJ_A2X := $(A_DIR_OBJ)/a2x
 #
 A_DIR_GEN := $(A_DIR_OBJ_APP)/a2x_gen
 A_DIR_GEN_EMBED := $(A_DIR_GEN)/embed
+A_DIR_GEN_EXTRA := $(A_DIR_GEN)/extra
 A_DIR_GEN_GFX := $(A_DIR_GEN)/gfx
 
 #
@@ -66,10 +67,14 @@ A_FILES_SRC_C := $(A_FILES_SRC_C:$(A_DIR_ROOT)/$(A_CONFIG_DIR_SRC)/%=%)
 # All the object files
 #
 A_FILES_OBJ_APP := $(A_FILES_SRC_C:%=$(A_DIR_OBJ_APP)/%.o)
+
 A_FILES_OBJ_GEN_EMBED := $(A_FILES_SRC_GEN_EMBED_DOT_C:=.o)
 A_FILES_OBJ_GEN_GFX := $(A_FILES_GFX_C:=.o)
 A_FILES_OBJ_GEN := $(A_FILES_OBJ_GEN_EMBED) $(A_FILES_OBJ_GEN_GFX)
-A_FILES_OBJ := $(A_FILES_OBJ_APP) $(A_FILES_OBJ_GEN)
+
+A_FILES_OBJ_EXTRA := $(A_CONFIG_BUILD_SRC_EXTRA:%=$(A_DIR_GEN_EXTRA)%.o)
+
+A_FILES_OBJ := $(A_FILES_OBJ_APP) $(A_FILES_OBJ_GEN) $(A_FILES_OBJ_EXTRA)
 
 #
 # Compiler flags for all targets
@@ -88,6 +93,7 @@ A_GENERIC_CFLAGS := \
     -pedantic-errors \
     -fstrict-aliasing \
     -D_XOPEN_SOURCE \
+    -I$(A_DIR_ROOT)/$(A_CONFIG_DIR_SRC)/config \
     -I$(A_DIR_OBJ_A2X) \
     -I$(A_DIR_OBJ_APP) \
     $(A_PLATFORM_CFLAGS) \
@@ -143,6 +149,10 @@ $(A_DIR_GEN_GFX)/%.h : $(A_DIR_ROOT)/% $(A2X_PATH)/bin/a2x_gfx
 	$(A2X_PATH)/bin/a2x_gfx $< $@ $(<:$(A_DIR_ROOT)/%=%) $(A_CONFIG_SCREEN_BPP) $(A_CONFIG_COLOR_SPRITE_KEY)
 
 $(A_DIR_OBJ_APP)/%.c.o : $(A_DIR_ROOT)/$(A_CONFIG_DIR_SRC)/%.c
+	@ mkdir -p $(@D)
+	$(CC) -c -o $@ $< $(A_GENERIC_CFLAGS)
+
+$(A_DIR_GEN_EXTRA)%.c.o : %.c
 	@ mkdir -p $(@D)
 	$(CC) -c -o $@ $< $(A_GENERIC_CFLAGS)
 
