@@ -13,9 +13,9 @@ A_CONFIG_SYSTEM_LINUX := 1
 
 CAANOO_SDK := $(A_SDK_CAANOO_ROOT)/$(A_SDK_CAANOO_TOOLCHAIN)
 
-A_PLATFORM_BIN_SUFFIX := .gpe
+A_CONFIG_APP_NAME_SUFFIX := .gpe
 
-A_PLATFORM_LIBS := \
+A_CONFIG_BUILD_LIBS += \
     -L$(A_SDK_CAANOO_ROOT)/lib/target \
     -L$(A_SDK_CAANOO_ROOT)/DGE/lib/target \
     -L$(CAANOO_SDK)/lib \
@@ -29,7 +29,7 @@ A_PLATFORM_LIBS := \
     -lm \
     -ldl \
 
-A_PLATFORM_CFLAGS := \
+A_CONFIG_BUILD_CFLAGS += \
     -march=armv5te \
     -mtune=arm9tdmi \
     -msoft-float \

@@ -13,3 +13,10 @@ A_FILE_SDKCONFIG_MK := $(A_FILE_SDKCONFIG_SRC).mk
 
 A_DIR_ROOT := ../..
 A_DIR_ROOT_FROM_BIN := ../../../..
+
+#
+# To support app and author names with spaces
+#
+A_MAKE_SPACE := $(A_MAKE_SPACE) $(A_MAKE_SPACE)
+A_MAKE_SPACE_DASH = $(subst $(A_MAKE_SPACE),-,$1)
+A_MAKE_SPACE_ESCAPE = $(subst $(A_MAKE_SPACE),\$(A_MAKE_SPACE),$1)

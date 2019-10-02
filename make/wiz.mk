@@ -13,9 +13,9 @@ A_CONFIG_SCREEN_WIZ_FIX ?= 1
 A_CONFIG_SYSTEM_LINUX := 1
 A_CONFIG_SYSTEM_WIZ := 1
 
-A_PLATFORM_BIN_SUFFIX := .gpe
+A_CONFIG_APP_NAME_SUFFIX := .gpe
 
-A_PLATFORM_LIBS := \
+A_CONFIG_BUILD_LIBS += \
     -L$(OPEN2X)/lib \
     -L$(OPEN2X)/arm-open2x-linux/lib \
     -lpng12 \
@@ -27,7 +27,7 @@ A_PLATFORM_LIBS := \
     -lm \
     -ldl \
 
-A_PLATFORM_CFLAGS := \
+A_CONFIG_BUILD_CFLAGS += \
     -march=armv5te \
     -mtune=arm9tdmi \
     -msoft-float \

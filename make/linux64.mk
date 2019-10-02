@@ -9,12 +9,12 @@ A_CONFIG_SYSTEM_LINUX := 1
 A_CONFIG_TRAIT_DESKTOP := 1
 A_CONFIG_TRAIT_KEYBOARD := 1
 
-A_PLATFORM_LIBS := \
+A_CONFIG_BUILD_LIBS += \
     -lpng \
     -lm \
     -pie \
 
-A_PLATFORM_CFLAGS := \
+A_CONFIG_BUILD_CFLAGS += \
     -fpie \
 
 include $(A2X_PATH)/make/global/rules.mk
