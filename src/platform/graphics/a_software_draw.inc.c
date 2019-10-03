@@ -15,6 +15,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <a2x.v.h>
+
+#if A__COMPILE_INC
 static void A__FUNC_NAME(pixel)(int X, int Y)
 {
     A__BLEND_SETUP;
@@ -529,3 +532,4 @@ static void A__FUNC_NAME(circle_clip_fill)(int X, int Y, int Radius)
 #undef A__BLEND
 #undef A__BLEND_SETUP
 #undef A__PIXEL_PARAMS
+#endif // A__COMPILE_INC

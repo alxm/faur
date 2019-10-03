@@ -19,6 +19,8 @@
 #include <a2x.v.h>
 
 #if A_CONFIG_LIB_RENDER_SOFTWARE
+#define A__COMPILE_INC 1
+
 enum {LEFT, RIGHT};
 
 typedef struct {

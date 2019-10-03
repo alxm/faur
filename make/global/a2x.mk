@@ -17,11 +17,7 @@ A2X_FILES_PUBLIC_A2X_HEADERS := $(shell find $(A2X_DIR_SRC) -type f -name "*.p.h
 A2X_FILES_PRIVATE_A2X_HEADERS := $(shell find $(A2X_DIR_SRC) -type f -name "*.v.h")
 A2X_FILE_PUBLIC_A2X_LIB := $(A2X_DIR_OBJ)/a2x.a
 A2X_FILE_EDITOR_TAGS := $(shell $(A2X_PATH)/bin/a2x_tags --find-tags)
-
-A2X_FILES_SRC_C_ALL := $(shell find $(A2X_DIR_SRC) -type f -name "*.c")
-A2X_FILES_SRC_C_INC := $(shell find $(A2X_DIR_SRC) -type f -name "*.inc.c")
-A2X_FILES_SRC_C := $(filter-out $(A2X_FILES_SRC_C_INC), $(A2X_FILES_SRC_C_ALL))
-
+A2X_FILES_SRC_C := $(shell find $(A2X_DIR_SRC) -type f -name "*.c")
 A2X_FILES_OBJ := $(A2X_FILES_SRC_C:$(A2X_DIR_SRC)/%=$(A2X_DIR_OBJ)/%.o)
 
 A2X_INFO_COMPILE_TIME := $(shell date "+%Y-%m-%d\ %H:%M:%S")

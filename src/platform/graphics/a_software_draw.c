@@ -19,6 +19,8 @@
 #include <a2x.v.h>
 
 #if A_CONFIG_LIB_RENDER_SOFTWARE
+#define A__COMPILE_INC 1
+
 typedef void (*ADrawPixel)(int X, int Y);
 typedef void (*ADrawRectangle)(int X, int Y, int Width, int Height);
 typedef void (*ADrawLine)(int X1, int Y1, int X2, int Y2);
