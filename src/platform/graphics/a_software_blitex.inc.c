@@ -19,9 +19,9 @@
 
 #if A__COMPILE_INC
 #if A__PIXEL_TRANSPARENCY
-    #define A__COLORKEY keyed
+    #define A__COLORKEY Keyed
 #else
-    #define A__COLORKEY block
+    #define A__COLORKEY Block
 #endif
 
 static void A__FUNC_NAME_EX(const APixels* Pixels, unsigned Frame, int X, int Y, AFix Scale, unsigned Angle, AFix CenterX, AFix CenterY)

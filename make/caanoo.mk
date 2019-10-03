@@ -39,6 +39,7 @@ A_CONFIG_BUILD_CFLAGS += \
     -isystem$(CAANOO_SDK)/include \
     -isystem$(CAANOO_SDK)/arm-gph-linux-gnueabi/include \
     -Wno-conversion \
+    -Wno-override-init \
 
 PREFIX := arm-gph-linux-gnueabi-
 

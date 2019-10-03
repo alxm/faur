@@ -80,7 +80,7 @@ void a_color_reset(void)
 }
 
 #if A_CONFIG_LIB_RENDER_SOFTWARE
-static void optimizeAlphaBlending(bool UpdateRoutines)
+static void optimizeAlphaBlending(void)
 {
     if(a__color.canonicalBlend == A_COLOR_BLEND_RGBA) {
         AColorBlend fastestBlend = A_COLOR_BLEND_RGBA;
@@ -105,10 +105,6 @@ static void optimizeAlphaBlending(bool UpdateRoutines)
 
         if(a__color.blend != fastestBlend) {
             a__color.blend = fastestBlend;
-
-            if(UpdateRoutines) {
-                a_platform_software_draw__updateRoutines();
-            }
         }
     }
 }
@@ -120,8 +116,7 @@ void a_color_blendSet(AColorBlend Blend)
     a__color.canonicalBlend = Blend;
 
     #if A_CONFIG_LIB_RENDER_SOFTWARE
-        optimizeAlphaBlending(false);
-        a_platform_software_draw__updateRoutines();
+        optimizeAlphaBlending();
     #else
         if(Blend == A_COLOR_BLEND_RGB25) {
             a_color_alphaSet(A_COLOR_ALPHA_MAX / 4);
@@ -140,7 +135,7 @@ void a_color_alphaSet(int Alpha)
     a__color.alpha = a_math_clamp(Alpha, 0, A_COLOR_ALPHA_MAX);
 
     #if A_CONFIG_LIB_RENDER_SOFTWARE
-        optimizeAlphaBlending(true);
+        optimizeAlphaBlending();
     #else
         a_platform_api__renderSetDrawColor();
     #endif
@@ -170,7 +165,7 @@ void a_color_baseSetRgba(int Red, int Green, int Blue, int Alpha)
     a__color.alpha = a_math_clamp(Alpha, 0, A_COLOR_ALPHA_MAX);
 
     #if A_CONFIG_LIB_RENDER_SOFTWARE
-        optimizeAlphaBlending(true);
+        optimizeAlphaBlending();
     #else
         a_platform_api__renderSetDrawColor();
     #endif
@@ -206,8 +201,4 @@ void a_color_fillBlitSet(bool Fill)
 void a_color_fillDrawSet(bool Fill)
 {
     a__color.fillDraw = Fill;
-
-    #if A_CONFIG_LIB_RENDER_SOFTWARE
-        a_platform_software_draw__updateRoutines();
-    #endif
 }

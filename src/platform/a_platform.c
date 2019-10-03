@@ -52,7 +52,6 @@ static void a_platform__init(void)
         #endif
 
         a_platform_software_blit__init();
-        a_platform_software_draw__init();
     #elif A_CONFIG_LIB_RENDER_SDL
         a_out__info("SDL graphics");
     #endif
@@ -74,7 +73,9 @@ static void a_platform__uninit(void)
         a_platform_pandora__uninit();
     #endif
 
-    a_platform_sdl__uninit();
+    #if A_CONFIG_LIB_SDL
+        a_platform_sdl__uninit();
+    #endif
 }
 
 const APack a_pack__platform = {
