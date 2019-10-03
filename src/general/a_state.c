@@ -15,6 +15,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#define A2X_IMPLEMENT 1
+
 #include "a_state.v.h"
 #include <a2x.v.h>
 

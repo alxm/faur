@@ -27,7 +27,7 @@ extern void a_state_pop(void);
 extern void a_state_popUntil(AStateHandler* Handler, const char* Name);
 extern void a_state_replace(AStateHandler* Handler, const char* Name);
 
-#ifndef A2X_IMPLEMENTATION
+#ifndef A2X_IMPLEMENT
     #define a_state_push(Handler) a_state_push(Handler, #Handler)
     #define a_state_popUntil(Handler) a_state_popUntil(Handler, #Handler)
     #define a_state_replace(Handler) a_state_replace(Handler, #Handler)
