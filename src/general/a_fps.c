@@ -18,8 +18,6 @@
 #include "a_fps.v.h"
 #include <a2x.v.h>
 
-#define A__HISTORY_LEN (A_CONFIG_FPS_RATE_DRAW * 2)
-
 static struct {
     unsigned tickFrameMs;
     unsigned drawFrameMs;
@@ -27,9 +25,9 @@ static struct {
 
 static struct {
     unsigned head;
-    unsigned drawFrameMs[A__HISTORY_LEN];
+    unsigned drawFrameMs[A_CONFIG_FPS_HISTORY];
     unsigned drawFrameMsSum;
-    unsigned drawFrameMsMin[A__HISTORY_LEN];
+    unsigned drawFrameMsMin[A_CONFIG_FPS_HISTORY];
     unsigned drawFrameMsMinSum;
 } g_history;
 
@@ -64,12 +62,13 @@ void a_fps__reset(void)
     g_run.drawFps = A_CONFIG_FPS_RATE_DRAW;
     g_run.drawFpsMax = g_run.drawFps;
 
-    for(int i = A__HISTORY_LEN; i--; ) {
+    for(int i = A_CONFIG_FPS_HISTORY; i--; ) {
         g_history.drawFrameMs[i] = g_settings.drawFrameMs;
         g_history.drawFrameMsMin[i] = g_settings.drawFrameMs;
     }
 
-    g_history.drawFrameMsSum = A__HISTORY_LEN * 1000 / A_CONFIG_FPS_RATE_DRAW;
+    g_history.drawFrameMsSum = A_CONFIG_FPS_HISTORY * 1000
+                                / A_CONFIG_FPS_RATE_DRAW;
     g_history.drawFrameMsMinSum = g_history.drawFrameMsSum;
 
     g_run.lastFrameMs = a_time_getMs();
@@ -97,7 +96,9 @@ void a_fps__frame(void)
         g_history.drawFrameMsMinSum -= g_history.drawFrameMsMin[g_history.head];
         g_history.drawFrameMsMin[g_history.head] = elapsedMs;
         g_history.drawFrameMsMinSum += elapsedMs;
-        g_run.drawFpsMax = A__HISTORY_LEN * 1000 / g_history.drawFrameMsMinSum;
+
+        g_run.drawFpsMax = A_CONFIG_FPS_HISTORY * 1000
+                            / g_history.drawFrameMsMinSum;
     }
 
     if(!a_platform_api__screenVsyncGet()) {
@@ -113,10 +114,10 @@ void a_fps__frame(void)
         g_history.drawFrameMsSum -= g_history.drawFrameMs[g_history.head];
         g_history.drawFrameMs[g_history.head] = elapsedMs;
         g_history.drawFrameMsSum += g_history.drawFrameMs[g_history.head];
-        g_run.drawFps = A__HISTORY_LEN * 1000 / g_history.drawFrameMsSum;
+        g_run.drawFps = A_CONFIG_FPS_HISTORY * 1000 / g_history.drawFrameMsSum;
     }
 
-    g_history.head = (g_history.head + 1) % A__HISTORY_LEN;
+    g_history.head = (g_history.head + 1) % A_CONFIG_FPS_HISTORY;
 
     g_run.lastFrameMs = nowMs;
 
