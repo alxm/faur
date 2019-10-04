@@ -112,6 +112,7 @@ void a_console__tick(void)
     }
 }
 
+#if A_CONFIG_BUILD_DEBUG_ALLOC
 static void printBytes(size_t Bytes, const char* Tag)
 {
     float value;
@@ -130,6 +131,7 @@ static void printBytes(size_t Bytes, const char* Tag)
 
     a_font_printf("%.3f %s (%s)\n", value, suffix, Tag);
 }
+#endif
 
 void a_console__draw(void)
 {
@@ -228,8 +230,10 @@ void a_console__draw(void)
         a_font_printf("PID %d\n", getpid());
         a_font_printf("%u ticks\n", a_fps_ticksGet());
 
-        printBytes(a_mem__tally, "now");
-        printBytes(a_mem__top, "top");
+        #if A_CONFIG_BUILD_DEBUG_ALLOC
+            printBytes(a_mem__tally, "now");
+            printBytes(a_mem__top, "top");
+        #endif
 
         a_font_printf("%u entities", a_ecs__listGetSum());
     }
