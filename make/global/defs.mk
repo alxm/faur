@@ -1,3 +1,6 @@
+A2X_DIR_ROOT := $(realpath $(A2X_PATH))
+A2X_DIR_SRC := $(A2X_DIR_ROOT)/src
+
 #
 # make/global/defs is included by every platform Makefile on line 1
 #
