@@ -1,5 +1,4 @@
 include $(A2X_PATH)/make/global/defs.mk
-include $(A_FILE_SDKCONFIG_MK)
 
 A_CONFIG_BUILD_AR_FLAGS := T
 A_CONFIG_BUILD_OPT := -O3 -s

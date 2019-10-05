@@ -239,21 +239,18 @@ else
 endif
 
 ifdef A_CONFIG_LIB_SDL_CONFIG
-    A_CONFIG_BUILD_CFLAGS += $(shell $(A_CONFIG_LIB_SDL_CONFIG) --cflags)
-
     ifeq ($(A_CONFIG_LIB_SDL), 1)
-        A_CONFIG_BUILD_LIBS += $(shell $(A_CONFIG_LIB_SDL_CONFIG) --libs)
-
         ifeq ($(A_CONFIG_SOUND_ENABLED), 1)
             A_CONFIG_BUILD_LIBS += -lSDL_mixer
         endif
     else ifeq ($(A_CONFIG_LIB_SDL), 2)
-        A_CONFIG_BUILD_LIBS += $(shell $(A_CONFIG_LIB_SDL_CONFIG) --libs)
-
         ifeq ($(A_CONFIG_SOUND_ENABLED), 1)
             A_CONFIG_BUILD_LIBS += -lSDL2_mixer
         endif
     endif
+
+    A_CONFIG_BUILD_CFLAGS += $(shell $(A_CONFIG_LIB_SDL_CONFIG) --cflags)
+    A_CONFIG_BUILD_LIBS += $(shell $(A_CONFIG_LIB_SDL_CONFIG) --libs)
 endif
 
 #

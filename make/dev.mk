@@ -26,12 +26,4 @@ A_CONFIG_BUILD_CFLAGS += \
 
 include $(A2X_PATH)/make/global/rules.mk
 
-all : $(A2X_FILE_EDITOR_TAGS) $(A_FILE_SDKCONFIG_MK)
-
-$(A_FILE_SDKCONFIG_MK) : $(A_FILE_SDKCONFIG_SRC) $(A2X_PATH)/bin/a2x_sdkconfig
-	@ mkdir -p $(@D)
-	$(A2X_PATH)/bin/a2x_sdkconfig $< $@
-
-$(A_FILE_SDKCONFIG_SRC) :
-	@ mkdir -p $(@D)
-	$(A2X_PATH)/bin/a2x_sdkconfig $@
+all : $(A2X_FILE_EDITOR_TAGS)

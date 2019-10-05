@@ -1,5 +1,4 @@
 include $(A2X_PATH)/make/global/defs.mk
-include $(A_FILE_SDKCONFIG_MK)
 
 OPEN2X := $(A_SDK_OPEN2X_ROOT)/$(A_SDK_OPEN2X_TOOLCHAIN)
 

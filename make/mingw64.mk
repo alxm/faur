@@ -1,5 +1,4 @@
 include $(A2X_PATH)/make/global/defs.mk
-include $(A_FILE_SDKCONFIG_MK)
 
 MINGW_BIN := $(A_SDK_MINGW64_ROOT)/$(A_SDK_MINGW64_ARCH)/bin
 
