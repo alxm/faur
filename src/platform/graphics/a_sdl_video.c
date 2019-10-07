@@ -40,7 +40,18 @@
     static const bool g_vsync = false;
 #endif
 
-static AVectorInt g_size = {A_CONFIG_SCREEN_WIDTH, A_CONFIG_SCREEN_HEIGHT};
+#if A_CONFIG_SCREEN_SIZE_WIDTH < 0 || A_CONFIG_SCREEN_SIZE_HEIGHT < 0
+    #define A__SIZE_DYNAMIC 1
+#endif
+
+#if A__SIZE_DYNAMIC
+static AVectorInt g_size = {
+#else
+static const AVectorInt g_size = {
+#endif
+    A_CONFIG_SCREEN_SIZE_WIDTH,
+    A_CONFIG_SCREEN_SIZE_HEIGHT
+};
 static bool g_fullscreen = A_CONFIG_SCREEN_FULLSCREEN;
 static int g_zoom = A_CONFIG_SCREEN_ZOOM;
 static APixels g_pixels;
@@ -102,6 +113,7 @@ static bool sdl1ScreenSet(int Width, int Height, uint32_t Flags)
 }
 #endif
 
+#if A__SIZE_DYNAMIC
 #if A_CONFIG_SCREEN_HARDWARE_WIDTH > 0 && A_CONFIG_SCREEN_HARDWARE_HEIGHT > 0
 static AVectorInt sdlScreenSizeGetNative(void)
 {
@@ -134,10 +146,11 @@ static AVectorInt sdlScreenSizeGetNative(void)
     return (AVectorInt){mode.w, mode.h};
 }
 #endif
+#endif // A__SIZE_DYNAMIC
 
 void a_platform_api__screenInit(void)
 {
-    if(g_size.x < 0 || g_size.y < 0) {
+    #if A__SIZE_DYNAMIC
         AVectorInt res = sdlScreenSizeGetNative();
 
         if(res.x > 0 && res.y > 0) {
@@ -149,7 +162,7 @@ void a_platform_api__screenInit(void)
                 g_size.y = res.y / -g_size.y;
             }
         }
-    }
+    #endif
 
     if(g_size.x <= 0 || g_size.y <= 0) {
         A__FATAL("Invalid screen resolution %dx%d", g_size.x, g_size.y);
