@@ -298,12 +298,16 @@ extern AVectorFix a_fix_rotateClockwise(AFix X, AFix Y, unsigned Angle);
 
 static inline AVectorInt a_vectorfix_toInt(const AVectorFix Fix)
 {
-    return (AVectorInt){a_fix_toInt(Fix.x), a_fix_toInt(Fix.y)};
+    AVectorInt v = {a_fix_toInt(Fix.x), a_fix_toInt(Fix.y)};
+
+    return v;
 }
 
 static inline AVectorFix a_vectorint_toFix(const AVectorInt Int)
 {
-    return (AVectorFix){a_fix_fromInt(Int.x), a_fix_fromInt(Int.y)};
+    AVectorFix v = {a_fix_fromInt(Int.x), a_fix_fromInt(Int.y)};
+
+    return v;
 }
 
 static inline bool a_vectorfix_equal(AVectorFix A, AVectorFix B)
