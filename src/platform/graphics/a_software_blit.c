@@ -3,9 +3,8 @@
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    it under the terms of the GNU General Public License version 3,
+    as published by the Free Software Foundation.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -37,14 +36,14 @@ typedef void (*ABlitterEx)(const APixels* Pixels, unsigned Frame, int X, int Y, 
 static ABlitter g_blitters[A_COLOR_BLEND_NUM][2][2][2]; // [Blend][Fill][ColorKey][Clip]
 static ABlitterEx g_blittersEx[A_COLOR_BLEND_NUM][2][2]; // [Blend][Fill][ColorKey]
 
-#if A_CONFIG_SCREEN_HEIGHT < 0
+#if A_CONFIG_SCREEN_SIZE_HEIGHT < 0
     #define A__SCANLINES_MALLOC 1
 #endif
 
 #if A__SCANLINES_MALLOC
     static AScanline* g_scanlines;
 #else
-    static AScanline g_scanlines[A_CONFIG_SCREEN_HEIGHT];
+    static AScanline g_scanlines[A_CONFIG_SCREEN_SIZE_HEIGHT];
 #endif
 
 // Interpolate sprite side (SprP1, SprP2) along screen line (ScrP1, ScrP2).

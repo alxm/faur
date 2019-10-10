@@ -1,5 +1,4 @@
 include $(A2X_PATH)/make/global/defs.mk
-include $(A_FILE_SDKCONFIG_MK)
 
 ifndef A_DO_BUILD
 
@@ -49,14 +48,14 @@ A_BUILD_EMSCRIPTEN_EMBED := \
         $(join $(A_CONFIG_PATH_EMBED_EMSCRIPTEN), \
                $(addprefix @, $(A_CONFIG_PATH_EMBED_EMSCRIPTEN)))) \
 
-A_PLATFORM_BIN_SUFFIX := .html
+A_CONFIG_APP_NAME_SUFFIX := .html
 
-A_PLATFORM_LIBS := \
+A_CONFIG_BUILD_LIBS += \
     $(A_CONFIG_BUILD_OPT) \
     $(A_BUILD_EMSCRIPTEN_LIBS) \
     $(A_BUILD_EMSCRIPTEN_EMBED) \
 
-A_PLATFORM_CFLAGS := \
+A_CONFIG_BUILD_CFLAGS += \
     $(A_BUILD_EMSCRIPTEN_LIBS) \
     -Wno-dollar-in-identifier-extension \
     -Wno-gnu-zero-variadic-macro-arguments \

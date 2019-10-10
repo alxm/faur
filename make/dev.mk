@@ -15,23 +15,15 @@ else ifeq ($(A_CONFIG_LIB_SDL), 2)
     A_CONFIG_LIB_SDL_CONFIG := sdl2-config
 endif
 
-A_PLATFORM_LIBS := \
+A_CONFIG_BUILD_LIBS += \
     -lpng \
     -lm \
     -rdynamic \
     -pie \
 
-A_PLATFORM_CFLAGS := \
+A_CONFIG_BUILD_CFLAGS += \
     -fpie \
 
 include $(A2X_PATH)/make/global/rules.mk
 
-all : $(A2X_FILE_EDITOR_TAGS) $(A_FILE_SDKCONFIG_MK)
-
-$(A_FILE_SDKCONFIG_MK) : $(A_FILE_SDKCONFIG_SRC) $(A2X_PATH)/bin/a2x_sdkconfig
-	@ mkdir -p $(@D)
-	$(A2X_PATH)/bin/a2x_sdkconfig $< $@
-
-$(A_FILE_SDKCONFIG_SRC) :
-	@ mkdir -p $(@D)
-	$(A2X_PATH)/bin/a2x_sdkconfig $@
+all : $(A2X_FILE_EDITOR_TAGS)

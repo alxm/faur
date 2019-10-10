@@ -1,5 +1,4 @@
 include $(A2X_PATH)/make/global/defs.mk
-include $(A_FILE_SDKCONFIG_MK)
 
 A_CONFIG_BUILD_AR_FLAGS := T
 A_CONFIG_BUILD_OPT := -O3 -s
@@ -16,7 +15,7 @@ A_CONFIG_TRAIT_KEYBOARD := 1
 PANDORA_SDK := $(A_SDK_PANDORA_ROOT)/$(A_SDK_PANDORA_TOOLCHAIN)
 PANDORA_UTILS := $(A_SDK_PANDORA_ROOT)/$(A_SDK_PANDORA_UTILS)
 
-A_PLATFORM_LIBS := \
+A_CONFIG_BUILD_LIBS += \
     -L$(PANDORA_SDK)/lib \
     -L$(PANDORA_SDK)/usr/lib \
     -L$(PANDORA_SDK)/arm-none-linux-gnueabi/lib \
@@ -30,7 +29,7 @@ A_PLATFORM_LIBS := \
     -lm \
     -ldl \
 
-A_PLATFORM_CFLAGS := \
+A_CONFIG_BUILD_CFLAGS += \
     -march=armv7-a \
     -mcpu=cortex-a8 \
     -mtune=cortex-a8 \

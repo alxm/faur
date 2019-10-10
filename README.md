@@ -27,7 +27,7 @@ export PATH="$PATH:$A2X_PATH/bin"
 
 ```sh
 a2x_new hello
-cd hello/make/
+cd hello/build/make/
 make -j run
 ```
 
@@ -123,7 +123,7 @@ Edit `~/.config/a2x/sdk.config` with your SDK paths, then build a default projec
 
 Copyright 2010-2019 Alex Margarit (alex@alxm.org)
 
-* Code licensed under [GNU GPLv3](https://www.gnu.org/licenses/gpl.html) (see `COPYING`)
-* Graphics licensed under [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/) (see `media/CC-BY-NC-ND`)
+* Source code licensed under [GNU GPL 3](https://www.gnu.org/licenses/gpl.html) (file `LICENSE`)
+* Other content licensed under [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/) (file `media/CC-BY-NC-ND`)
 
-I'm writing a2x to support my other software. To keep it focused and manageable, it is a solo endeavor.
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. I am writing a2x to support my other software; to keep it focused and manageable, it is a solo endeavor.

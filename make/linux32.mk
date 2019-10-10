@@ -9,13 +9,13 @@ A_CONFIG_SYSTEM_LINUX := 1
 A_CONFIG_TRAIT_DESKTOP := 1
 A_CONFIG_TRAIT_KEYBOARD := 1
 
-A_PLATFORM_LIBS := \
+A_CONFIG_BUILD_LIBS += \
     -L/usr/lib/i386-linux-gnu \
     -lpng \
     -lm \
     -pie \
 
-A_PLATFORM_CFLAGS := \
+A_CONFIG_BUILD_CFLAGS += \
     -m32 \
     -fpie \
 

@@ -1,11 +1,4 @@
 #
-# To support app and author names with spaces
-#
-A_MAKE_SPACE := $(A_MAKE_SPACE) $(A_MAKE_SPACE)
-A_MAKE_SPACE_DASH = $(subst $(A_MAKE_SPACE),-,$1)
-A_MAKE_SPACE_ESCAPE = $(subst $(A_MAKE_SPACE),\$(A_MAKE_SPACE),$1)
-
-#
 # Process and reconcile build settings
 #
 include $(A2X_PATH)/make/global/config.mk
@@ -26,13 +19,14 @@ A_DIR_OBJ_A2X := $(A_DIR_OBJ)/a2x
 #
 A_DIR_GEN := $(A_DIR_OBJ_APP)/a2x_gen
 A_DIR_GEN_EMBED := $(A_DIR_GEN)/embed
+A_DIR_GEN_EXTRA := $(A_DIR_GEN)/extra
 A_DIR_GEN_GFX := $(A_DIR_GEN)/gfx
 
 #
 # The final bin that gets built
 #
 A_DIR_BIN := $(A_DIR_BUILD_UID)/bin
-A_FILE_BIN := $(call A_MAKE_SPACE_DASH,$(A_CONFIG_APP_NAME))$(A_PLATFORM_BIN_SUFFIX)
+A_FILE_BIN := $(call A_MAKE_SPACE_DASH,$(A_CONFIG_APP_NAME))$(A_CONFIG_APP_NAME_SUFFIX)
 A_FILE_BIN_TARGET := $(A_DIR_BIN)/$(A_FILE_BIN)
 A_FILE_BIN_LINK_ASSETS := $(A_DIR_BIN)/$(A_CONFIG_DIR_ASSETS)
 A_FILE_BIN_LINK_SCREENSHOTS := $(A_DIR_BIN)/$(A_CONFIG_DIR_SCREENSHOTS)
@@ -66,10 +60,14 @@ A_FILES_SRC_C := $(A_FILES_SRC_C:$(A_DIR_ROOT)/$(A_CONFIG_DIR_SRC)/%=%)
 # All the object files
 #
 A_FILES_OBJ_APP := $(A_FILES_SRC_C:%=$(A_DIR_OBJ_APP)/%.o)
+
 A_FILES_OBJ_GEN_EMBED := $(A_FILES_SRC_GEN_EMBED_DOT_C:=.o)
 A_FILES_OBJ_GEN_GFX := $(A_FILES_GFX_C:=.o)
 A_FILES_OBJ_GEN := $(A_FILES_OBJ_GEN_EMBED) $(A_FILES_OBJ_GEN_GFX)
-A_FILES_OBJ := $(A_FILES_OBJ_APP) $(A_FILES_OBJ_GEN)
+
+A_FILES_OBJ_EXTRA := $(A_CONFIG_BUILD_SRC_EXTRA:%=$(A_DIR_GEN_EXTRA)%.o)
+
+A_FILES_OBJ := $(A_FILES_OBJ_APP) $(A_FILES_OBJ_GEN) $(A_FILES_OBJ_EXTRA)
 
 #
 # Compiler flags for all targets
@@ -88,9 +86,9 @@ A_GENERIC_CFLAGS := \
     -pedantic-errors \
     -fstrict-aliasing \
     -D_XOPEN_SOURCE \
+    -I$(A_DIR_ROOT)/$(A_CONFIG_DIR_SRC)/config \
     -I$(A_DIR_OBJ_A2X) \
     -I$(A_DIR_OBJ_APP) \
-    $(A_PLATFORM_CFLAGS) \
     $(A_CONFIG_BUILD_CFLAGS) \
     $(A_CONFIG_BUILD_OPT) \
 
@@ -124,7 +122,7 @@ $(A_FILES_OBJ_APP) : $(A_FILES_GFX_H)
 
 $(A_FILE_BIN_TARGET) : $(A_FILES_OBJ) $(A2X_FILE_PUBLIC_A2X_LIB)
 	@ mkdir -p $(@D)
-	$(CC) -o $@ $^ $(A_CONFIG_BUILD_LIBS) $(A_PLATFORM_LIBS)
+	$(CC) -o $@ $^ $(A_CONFIG_BUILD_LIBS)
 
 $(A_DIR_GEN_EMBED)/%.h : $(A_DIR_ROOT)/% $(A2X_PATH)/bin/a2x_bin
 	@ mkdir -p $(@D)
@@ -143,6 +141,10 @@ $(A_DIR_GEN_GFX)/%.h : $(A_DIR_ROOT)/% $(A2X_PATH)/bin/a2x_gfx
 	$(A2X_PATH)/bin/a2x_gfx $< $@ $(<:$(A_DIR_ROOT)/%=%) $(A_CONFIG_SCREEN_BPP) $(A_CONFIG_COLOR_SPRITE_KEY)
 
 $(A_DIR_OBJ_APP)/%.c.o : $(A_DIR_ROOT)/$(A_CONFIG_DIR_SRC)/%.c
+	@ mkdir -p $(@D)
+	$(CC) -c -o $@ $< $(A_GENERIC_CFLAGS)
+
+$(A_DIR_GEN_EXTRA)%.c.o : %.c
 	@ mkdir -p $(@D)
 	$(CC) -c -o $@ $< $(A_GENERIC_CFLAGS)
 

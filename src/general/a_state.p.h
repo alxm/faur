@@ -3,9 +3,8 @@
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    it under the terms of the GNU General Public License version 3,
+    as published by the Free Software Foundation.
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -28,7 +27,7 @@ extern void a_state_pop(void);
 extern void a_state_popUntil(AStateHandler* Handler, const char* Name);
 extern void a_state_replace(AStateHandler* Handler, const char* Name);
 
-#ifndef A2X_IMPLEMENTATION
+#ifndef A2X_IMPLEMENT
     #define a_state_push(Handler) a_state_push(Handler, #Handler)
     #define a_state_popUntil(Handler) a_state_popUntil(Handler, #Handler)
     #define a_state_replace(Handler) a_state_replace(Handler, #Handler)
