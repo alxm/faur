@@ -17,6 +17,8 @@
 */
 
 #include "a_console.v.h"
+
+#if A_CONFIG_OUTPUT_CONSOLE_ON
 #include <a2x.v.h>
 
 typedef struct {
@@ -264,3 +266,31 @@ void a_console__write(AOutSource Source, AOutType Type, const char* Text)
         line_free(a_list_pop(g_lines));
     }
 }
+#else // !A_CONFIG_OUTPUT_CONSOLE_ON
+const APack a_pack__console;
+
+void a_console_showSet(bool Show)
+{
+    A_UNUSED(Show);
+}
+
+void a_console__tick(void)
+{
+}
+
+void a_console__draw(void)
+{
+}
+
+bool a_console__isInitialized(void)
+{
+    return false;
+}
+
+void a_console__write(AOutSource Source, AOutType Type, const char* Text)
+{
+    A_UNUSED(Source);
+    A_UNUSED(Type);
+    A_UNUSED(Text);
+}
+#endif // !A_CONFIG_OUTPUT_CONSOLE_ON

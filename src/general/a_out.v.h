@@ -20,14 +20,6 @@
 
 #include "general/a_out.p.h"
 
-#define A_OUT__STREAM_STDOUT stdout
-
-#if A_CONFIG_SYSTEM_EMSCRIPTEN
-    #define A_OUT__STREAM_STDERR stdout
-#else
-    #define A_OUT__STREAM_STDERR stderr
-#endif
-
 typedef enum {
     A_OUT__SOURCE_INVALID = -1,
     A_OUT__SOURCE_A2X,
@@ -45,10 +37,18 @@ typedef enum {
     A_OUT__TYPE_NUM
 } AOutType;
 
-extern void a_out__info(const char* Format, ...);
-extern void a_out__warning(const char* Format, ...);
-extern void a_out__error(const char* Format, ...);
-extern void a_out__errorv(const char* Format, va_list Args);
-extern void a_out__state(const char* Format, ...);
+#if A_CONFIG_OUTPUT_ON
+    extern void a_out__info(const char* Format, ...);
+    extern void a_out__warning(const char* Format, ...);
+    extern void a_out__error(const char* Format, ...);
+    extern void a_out__errorv(const char* Format, va_list Args);
+    extern void a_out__state(const char* Format, ...);
+#else
+    #define a_out__info(...)
+    #define a_out__warning(...)
+    #define a_out__error(...)
+    #define a_out__errorv(Format, Args)
+    #define a_out__state(...)
+#endif
 
 #endif // A_INC_GENERAL_OUT_V_H

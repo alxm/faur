@@ -762,10 +762,10 @@ void a_platform_sdl_input__init(void)
         keyAdd(A_KEY_F12, SDL_SCANCODE_F12, SDLK_F12);
     #endif
 
-    const int joysticksNum = SDL_NumJoysticks();
-    a_out__info("%d controllers at startup", joysticksNum);
-
     #if A_CONFIG_LIB_SDL == 1
+        int joysticksNum = SDL_NumJoysticks();
+        a_out__info("%d controllers attached", joysticksNum);
+
         for(int j = 0; j < joysticksNum; j++) {
             APlatformController* c = a_mem_zalloc(sizeof(APlatformController));
 
