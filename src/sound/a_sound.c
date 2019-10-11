@@ -18,6 +18,7 @@
 #include "a_sound.v.h"
 #include <a2x.v.h>
 
+#if A_CONFIG_SOUND_ENABLED
 static int g_volume;
 static int g_musicVolume;
 static int g_samplesVolume;
@@ -147,11 +148,9 @@ AMusic* a_music_new(const char* Path)
 {
     APlatformMusic* m = a_platform_api__soundMusicNew(Path);
 
-    #if A_CONFIG_SOUND_ENABLED
-        if(m == NULL) {
-            A__FATAL("a_music_new(%s): Cannot open file", Path);
-        }
-    #endif
+    if(m == NULL) {
+        A__FATAL("a_music_new(%s): Cannot open file", Path);
+    }
 
     return m;
 }
@@ -191,11 +190,9 @@ ASample* a_sample_new(const char* Path)
         A__FATAL("a_sample_new(%s): File does not exist", Path);
     }
 
-    #if A_CONFIG_SOUND_ENABLED
-        if(s == NULL) {
-            A__FATAL("a_sample_new(%s): Cannot open file", Path);
-        }
-    #endif
+    if(s == NULL) {
+        A__FATAL("a_sample_new(%s): Cannot open file", Path);
+    }
 
     return s;
 }
@@ -239,3 +236,71 @@ bool a_channel_isPlaying(int Channel)
 {
     return a_platform_api__soundSampleIsPlaying(Channel);
 }
+#else // !A_CONFIG_SOUND_ENABLED
+const APack a_pack__sound;
+
+void a_sound__tick(void)
+{
+}
+
+void a_sound__draw(void)
+{
+}
+
+AMusic* a_music_new(const char* Path)
+{
+    A_UNUSED(Path);
+
+    return NULL;
+}
+
+void a_music_free(AMusic* Music)
+{
+    A_UNUSED(Music);
+}
+
+void a_music_play(AMusic* Music)
+{
+    A_UNUSED(Music);
+}
+
+void a_music_stop(void)
+{
+}
+
+ASample* a_sample_new(const char* Path)
+{
+    A_UNUSED(Path);
+
+    return NULL;
+}
+
+void a_sample_free(ASample* Sample)
+{
+    A_UNUSED(Sample);
+}
+
+int a_channel_new(void)
+{
+    return -1;
+}
+
+void a_channel_play(int Channel, ASample* Sample, AChannelFlags Flags)
+{
+    A_UNUSED(Channel);
+    A_UNUSED(Sample);
+    A_UNUSED(Flags);
+}
+
+void a_channel_stop(int Channel)
+{
+    A_UNUSED(Channel);
+}
+
+bool a_channel_isPlaying(int Channel)
+{
+    A_UNUSED(Channel);
+
+    return false;
+}
+#endif // !A_CONFIG_SOUND_ENABLED

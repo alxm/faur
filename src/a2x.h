@@ -69,7 +69,6 @@
 #include "platform/graphics/a_software_blit.p.h"
 #include "platform/graphics/a_software_draw.p.h"
 #include "platform/input/a_sdl_input.p.h"
-#include "platform/sound/a_no_sound.p.h"
 #include "platform/sound/a_sdl_sound.p.h"
 #include "platform/system/a_emscripten.p.h"
 #include "platform/system/a_gp2x.p.h"

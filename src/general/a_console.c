@@ -225,8 +225,10 @@ void a_console__draw(void)
             a_font_print("SDL Gfx\n");
         #endif
 
-        a_font_printf(
-            "Sound %s\n", a_platform_api__soundMuteGet() ? "off" : "on");
+        #if A_CONFIG_SOUND_ENABLED
+            a_font_printf(
+                "Sound %s\n", a_platform_api__soundMuteGet() ? "off" : "on");
+        #endif
 
         a_font__fontSet(A_FONT__ID_BLUE);
         a_font_printf("PID %d\n", getpid());
