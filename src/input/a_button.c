@@ -167,7 +167,7 @@ void a_button_free(AButton* Button)
 
 void a_button_bindKey(AButton* Button, AKeyId Id)
 {
-    APlatformButton* k = a_platform_api__inputKeyGet(Id);
+    const APlatformButton* k = a_platform_api__inputKeyGet(Id);
 
     if(k == NULL) {
         return;
@@ -177,12 +177,12 @@ void a_button_bindKey(AButton* Button, AKeyId Id)
         Button->name = g_keyNames[Id];
     }
 
-    a_list_addLast(Button->platformInputs, k);
+    a_list_addLast(Button->platformInputs, (APlatformButton*)k);
 }
 
 void a_button_bindButton(AButton* Button, const AController* Controller, AButtonId Id)
 {
-    APlatformButton* b = a_platform_api__inputButtonGet(Controller, Id);
+    const APlatformButton* b = a_platform_api__inputButtonGet(Controller, Id);
 
     if(b == NULL) {
         return;
@@ -192,7 +192,7 @@ void a_button_bindButton(AButton* Button, const AController* Controller, AButton
         Button->name = g_buttonNames[Id];
     }
 
-    a_list_addLast(Button->platformInputs, b);
+    a_list_addLast(Button->platformInputs, (APlatformButton*)b);
 }
 
 void a_button_bindCombo(AButton* Button, const AController* Controller, AButtonId Id, ...)
@@ -202,11 +202,12 @@ void a_button_bindCombo(AButton* Button, const AController* Controller, AButtonI
 
     AList* combo = a_list_new();
 
-    for(AButtonId i = Id; i != A_BUTTON_INVALID; i = va_arg(args, AButtonId)) {
-        APlatformButton* b = a_platform_api__inputButtonGet(Controller, i);
+    for(int i = Id; i != A_BUTTON_INVALID; i = va_arg(args, int)) {
+        const APlatformButton* b =
+            a_platform_api__inputButtonGet(Controller, i);
 
         if(b) {
-            a_list_addLast(combo, b);
+            a_list_addLast(combo, (APlatformButton*)b);
         }
     }
 
@@ -271,7 +272,7 @@ void a_input_button__tick(void)
     A_LIST_ITERATE(g_buttons, AButton*, b) {
         bool pressed = false;
 
-        A_LIST_ITERATE(b->platformInputs, APlatformButton*, pb) {
+        A_LIST_ITERATE(b->platformInputs, const APlatformButton*, pb) {
             if(a_platform_api__inputButtonPressGet(pb)) {
                 pressed = true;
                 goto done;
@@ -280,7 +281,7 @@ void a_input_button__tick(void)
 
         if(b->combos) {
             A_LIST_ITERATE(b->combos, AList*, andList) {
-                A_LIST_ITERATE(andList, APlatformButton*, pb) {
+                A_LIST_ITERATE(andList, const APlatformButton*, pb) {
                     if(!a_platform_api__inputButtonPressGet(pb)) {
                         break;
                     } else if(A_LIST_IS_LAST()) {

@@ -1120,7 +1120,7 @@ void a_platform_api__inputPoll(void)
     #endif
 }
 
-APlatformButton* a_platform_api__inputKeyGet(AKeyId Id)
+const APlatformButton* a_platform_api__inputKeyGet(AKeyId Id)
 {
     #if A_CONFIG_TRAIT_KEYBOARD
         if(Id != A_KEY_INVALID) {
@@ -1133,7 +1133,7 @@ APlatformButton* a_platform_api__inputKeyGet(AKeyId Id)
     return NULL;
 }
 
-APlatformButton* a_platform_api__inputButtonGet(const APlatformController* Controller, AButtonId Id)
+const APlatformButton* a_platform_api__inputButtonGet(const APlatformController* Controller, AButtonId Id)
 {
     if(Controller == NULL) {
         Controller = g_defaultController;
@@ -1151,7 +1151,7 @@ bool a_platform_api__inputButtonPressGet(const APlatformButton* Button)
     return Button->pressed;
 }
 
-APlatformAnalog* a_platform_api__inputAnalogGet(const APlatformController* Controller, AAnalogId Id)
+const APlatformAnalog* a_platform_api__inputAnalogGet(const APlatformController* Controller, AAnalogId Id)
 {
     if(Controller == NULL) {
         Controller = g_defaultController;
