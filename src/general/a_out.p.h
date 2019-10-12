@@ -20,7 +20,7 @@
 
 #include "general/a_system_includes.h"
 
-#if A_CONFIG_OUTPUT_ON
+#if A_CONFIG_OUTPUT_ENABLED
     extern void a_out_text(const char* Text);
     extern void a_out_info(const char* Format, ...);
     extern void a_out_warning(const char* Format, ...);

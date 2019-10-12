@@ -18,7 +18,7 @@
 #include "a_out.v.h"
 #include <a2x.v.h>
 
-#if A_CONFIG_OUTPUT_ON
+#if A_CONFIG_OUTPUT_ENABLED
 #define A_OUT__STREAM_STDOUT stdout
 
 #if A_CONFIG_SYSTEM_EMSCRIPTEN
@@ -205,4 +205,4 @@ void a_out_error(const char* Format, ...)
 
     va_end(args);
 }
-#endif // A_CONFIG_OUTPUT_ON
+#endif // A_CONFIG_OUTPUT_ENABLED

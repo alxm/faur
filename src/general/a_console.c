@@ -18,7 +18,7 @@
 
 #include "a_console.v.h"
 
-#if A_CONFIG_OUTPUT_CONSOLE_ON
+#if A_CONFIG_CONSOLE_ENABLED
 #include <a2x.v.h>
 
 typedef struct {
@@ -38,7 +38,7 @@ static AList* g_lines;
 static unsigned g_linesPerScreen;
 static ASprite* g_tags;
 static AButton* g_toggle;
-static bool g_show = A_CONFIG_OUTPUT_CONSOLE_SHOW;
+static bool g_show = A_CONFIG_CONSOLE_SHOW;
 
 static ALine* line_new(AOutSource Source, AOutType Type, const char* Text)
 {
@@ -268,7 +268,7 @@ void a_console__write(AOutSource Source, AOutType Type, const char* Text)
         line_free(a_list_pop(g_lines));
     }
 }
-#else // !A_CONFIG_OUTPUT_CONSOLE_ON
+#else // !A_CONFIG_CONSOLE_ENABLED
 const APack a_pack__console;
 
 void a_console_showSet(bool Show)
@@ -295,4 +295,4 @@ void a_console__write(AOutSource Source, AOutType Type, const char* Text)
     A_UNUSED(Type);
     A_UNUSED(Text);
 }
-#endif // !A_CONFIG_OUTPUT_CONSOLE_ON
+#endif // !A_CONFIG_CONSOLE_ENABLED

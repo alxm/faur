@@ -37,7 +37,7 @@ typedef enum {
     A_OUT__TYPE_NUM
 } AOutType;
 
-#if A_CONFIG_OUTPUT_ON
+#if A_CONFIG_OUTPUT_ENABLED
     extern void a_out__info(const char* Format, ...);
     extern void a_out__warning(const char* Format, ...);
     extern void a_out__error(const char* Format, ...);
