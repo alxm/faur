@@ -121,41 +121,45 @@ const char* a_main_argsGet(int ArgNum)
 
 __attribute__((noreturn)) static void handleFatal(void)
 {
-    #if A__BACKTRACE
-        void* addresses[16];
-        int numAddresses = backtrace(addresses, A_ARRAY_LEN(addresses));
-        char** functionNames = backtrace_symbols(addresses, numAddresses);
+    #if A_CONFIG_BUILD_DEBUG_FATAL_SPIN
+        while(true);
+    #else
+        #if A__BACKTRACE
+            void* addresses[16];
+            int numAddresses = backtrace(addresses, A_ARRAY_LEN(addresses));
+            char** functionNames = backtrace_symbols(addresses, numAddresses);
 
-        for(int i = 0; i < numAddresses; i++) {
-            a_out__error(functionNames[i]);
-        }
+            for(int i = 0; i < numAddresses; i++) {
+                a_out__error(functionNames[i]);
+            }
 
-        free(functionNames);
+            free(functionNames);
+        #endif
+
+        a_console_showSet(true);
+        a_console__draw();
+        a_screen__draw();
+
+        #if A_CONFIG_BUILD_DEBUG_WAIT
+            while(true) {
+                printf("Waiting to attach debugger: PID %d\n", getpid());
+                a_time_spinSec(1);
+            }
+        #elif !A_CONFIG_TRAIT_DESKTOP
+            if(a_console__isInitialized()) {
+                a_out__info("Exiting in 10s");
+                a_console__draw();
+                a_screen__draw();
+                a_time_waitSec(10);
+            }
+        #endif
+
+        #if A_CONFIG_SYSTEM_EMSCRIPTEN
+            emscripten_force_exit(1);
+        #endif
+
+        exit(1);
     #endif
-
-    a_console_showSet(true);
-    a_console__draw();
-    a_screen__draw();
-
-    #if A_CONFIG_BUILD_DEBUG_WAIT
-        while(true) {
-            printf("Waiting to attach debugger: PID %d\n", getpid());
-            a_time_spinSec(1);
-        }
-    #elif !A_CONFIG_TRAIT_DESKTOP
-        if(a_console__isInitialized()) {
-            a_out__info("Exiting in 10s");
-            a_console__draw();
-            a_screen__draw();
-            a_time_waitSec(10);
-        }
-    #endif
-
-    #if A_CONFIG_SYSTEM_EMSCRIPTEN
-        emscripten_force_exit(1);
-    #endif
-
-    exit(1);
 }
 
 void A__FATAL(const char* Format, ...)
