@@ -70,7 +70,21 @@ static void a__atexit(void)
     #endif
 }
 
+#if A_CONFIG_BUILD_MAIN
 int main(int Argc, char* Argv[])
+{
+    g_argsNum = Argc;
+    g_args = (const char**)Argv;
+
+    a__main();
+
+    a_state__run();
+
+    return 0;
+}
+#endif
+
+void a__main(void)
 {
     a_out__info("PID: %d", getpid());
     a_out__info("a2x: %s %s", A_CONFIG_BUILD_UID, A_CONFIG_BUILD_GIT_HASH);
@@ -79,9 +93,6 @@ int main(int Argc, char* Argv[])
                 A_CONFIG_APP_VERSION_STRING,
                 A_CONFIG_APP_AUTHOR);
     a_out__info("Build timestamp: %s", A_CONFIG_BUILD_TIMESTAMP);
-
-    g_argsNum = Argc;
-    g_args = (const char**)Argv;
 
     if(atexit(a__atexit)) {
         a_out__error("Cannot register atexit callback");
@@ -99,10 +110,6 @@ int main(int Argc, char* Argv[])
     a_out__info("a_main start");
     a_main();
     a_out__info("a_main end");
-
-    a_state__run();
-
-    return 0;
 }
 
 int a_main_argsNumGet(void)

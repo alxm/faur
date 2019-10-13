@@ -31,6 +31,8 @@ typedef struct {
     APackUninit* uninit[A_PACK__PASSES_NUM];
 } APack;
 
+extern void a__main(void);
+
 extern void A__FATAL(const char* Format, ...) __attribute__((noreturn));
 
 #endif // A_INC_GENERAL_MAIN_V_H
