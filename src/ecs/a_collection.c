@@ -18,6 +18,7 @@
 #include "a_collection.v.h"
 #include <a2x.v.h>
 
+#if A_CONFIG_ECS_ENABLED
 static ACollection* g_current; // New entities are added to this collection
 
 ACollection* a_collection__get(void)
@@ -60,3 +61,4 @@ void a_collection_muteDec(ACollection* Collection)
         a_entity_muteDec(e);
     }
 }
+#endif // A_CONFIG_ECS_ENABLED

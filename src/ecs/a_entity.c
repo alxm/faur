@@ -18,6 +18,7 @@
 #include "a_entity.v.h"
 #include <a2x.v.h>
 
+#if A_CONFIG_ECS_ENABLED
 struct AEntity {
     char* id; // specified name for debugging
     const ATemplate* template; // template used to init this entity's components
@@ -585,3 +586,4 @@ void a_entity__systemsRemoveFromActive(AEntity* Entity)
         a_entity_removedSet(Entity);
     }
 }
+#endif // A_CONFIG_ECS_ENABLED

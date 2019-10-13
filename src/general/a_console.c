@@ -17,10 +17,9 @@
 */
 
 #include "a_console.v.h"
-
-#if A_CONFIG_CONSOLE_ENABLED
 #include <a2x.v.h>
 
+#if A_CONFIG_CONSOLE_ENABLED
 typedef struct {
     AOutSource source;
     AOutType type;
@@ -242,7 +241,9 @@ void a_console__draw(void)
             printBytes(a_mem__top, "top");
         #endif
 
-        a_font_printf("%u entities", a_ecs__listGetSum());
+        #if A_CONFIG_ECS_ENABLED
+            a_font_printf("%u entities", a_ecs__listGetSum());
+        #endif
     }
 
     a_color_pop();

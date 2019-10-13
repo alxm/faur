@@ -63,19 +63,23 @@ A_CONFIG_DIR_SRC ?= src
 #
 # ECS
 #
+#   A_CONFIG_ECS_ENABLED - Whether to build with ECS
 #   A_CONFIG_ECS_COM_NUM - Source dir-relative file and enum value to read
 #   A_CONFIG_ECS_SYS_NUM - Source dir-relative file and enum value to read
 #
 ifdef A_CONFIG_ECS_COM_NUM
     A_CONFIG_ECS_COM_NUM := $(shell $(A2X_PATH)/bin/a2x_enum -q $(A_DIR_ROOT)/$(A_CONFIG_DIR_SRC)/$(A_CONFIG_ECS_COM_NUM))
+else
+    A_CONFIG_ECS_COM_NUM := 0
 endif
 
 ifdef A_CONFIG_ECS_SYS_NUM
     A_CONFIG_ECS_SYS_NUM := $(shell $(A2X_PATH)/bin/a2x_enum -q $(A_DIR_ROOT)/$(A_CONFIG_DIR_SRC)/$(A_CONFIG_ECS_SYS_NUM))
+else
+    A_CONFIG_ECS_SYS_NUM := 0
 endif
 
-A_CONFIG_ECS_COM_NUM ?= 1
-A_CONFIG_ECS_SYS_NUM ?= 1
+A_CONFIG_ECS_ENABLED := $(shell expr $(A_CONFIG_ECS_COM_NUM) \> 0 \& $(A_CONFIG_ECS_SYS_NUM) \> 0)
 
 #
 # FPS
@@ -300,6 +304,7 @@ A_CONFIG_BUILD_CFLAGS += \
     -DA_CONFIG_CONSOLE_SHOW=$(A_CONFIG_CONSOLE_SHOW) \
     -DA_CONFIG_DIR_SCREENSHOTS=\"$(A_CONFIG_DIR_SCREENSHOTS)\" \
     -DA_CONFIG_ECS_COM_NUM=$(A_CONFIG_ECS_COM_NUM) \
+    -DA_CONFIG_ECS_ENABLED=$(A_CONFIG_ECS_ENABLED) \
     -DA_CONFIG_ECS_SYS_NUM=$(A_CONFIG_ECS_SYS_NUM) \
     -DA_CONFIG_FPS_CAP_LAG=$(A_CONFIG_FPS_CAP_LAG) \
     -DA_CONFIG_FPS_HISTORY=$(A_CONFIG_FPS_HISTORY) \

@@ -18,6 +18,7 @@
 #include "a_system.v.h"
 #include <a2x.v.h>
 
+#if A_CONFIG_ECS_ENABLED
 struct ASystem {
     ASystemHandler* handler;
     ASystemSort* compare;
@@ -114,3 +115,4 @@ bool a_system__isActiveOnly(const ASystem* System)
 {
     return System->onlyActiveEntities;
 }
+#endif // A_CONFIG_ECS_ENABLED

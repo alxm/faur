@@ -18,6 +18,7 @@
 #include "a_component.v.h"
 #include <a2x.v.h>
 
+#if A_CONFIG_ECS_ENABLED
 struct AComponent {
     size_t size; // total size of AComponentInstance + user data that follows
     AComponentInstanceInit* init; // sets component buffer default values
@@ -188,3 +189,4 @@ void a_component__instanceFree(AComponentInstance* Instance)
 
     a_mem_free(Instance);
 }
+#endif // A_CONFIG_ECS_ENABLED
