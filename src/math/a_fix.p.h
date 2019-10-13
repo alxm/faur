@@ -36,7 +36,7 @@ typedef struct {
 #define A_FIX_FRACTION_MASK (A_FIX_ONE - 1)
 #define A_FIX_MIN_INT       (INT32_MIN >> A_FIX_BIT_PRECISION)
 #define A_FIX_MAX_INT       (INT32_MAX >> A_FIX_BIT_PRECISION)
-#define A_FIXU_MAX_INT      (UINT32_MAX >> A_FIX_BIT_PRECISION)
+#define A_FIX_MAX_INTU      (UINT32_MAX >> A_FIX_BIT_PRECISION)
 
 #define A_FIX_ANGLES_NUM 4096u
 
@@ -80,8 +80,13 @@ typedef enum {
     A_DEG_360_FIX = (A_DEG_360_INT * A_FIX_ONE),
 } ADegFix;
 
-extern AFix a__fix_sin[A_FIX_ANGLES_NUM];
-extern AFix a__fix_csc[A_FIX_ANGLES_NUM];
+#if A_CONFIG_BUILD_FIX_LUT
+    extern const AFix a__fix_sin[A_FIX_ANGLES_NUM];
+    extern const AFix a__fix_csc[A_FIX_ANGLES_NUM];
+#else
+    extern AFix a__fix_sin[A_FIX_ANGLES_NUM];
+    extern AFix a__fix_csc[A_FIX_ANGLES_NUM];
+#endif
 
 static inline AFix a_fix_fromInt(int X)
 {
