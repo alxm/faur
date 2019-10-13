@@ -4,7 +4,7 @@ ifndef A_DO_BUILD
 
 A_MAKE_CMD := \
     source $(A_SDK_EMSCRIPTEN_ROOT)/emsdk_env.sh \
-    && emmake $(MAKE) -f $(firstword $(MAKEFILE_LIST)) -j A_DO_BUILD=1
+    && emmake $(MAKE) -f $(firstword $(MAKEFILE_LIST)) -j8 A_DO_BUILD=1
 
 all :
 	bash -c "$(A_MAKE_CMD)"
@@ -16,6 +16,7 @@ else
 
 A_CONFIG_BUILD_C_STANDARD := gnu11
 A_CONFIG_BUILD_OPT := -O3
+A_CONFIG_LIB_PNG := 1
 A_CONFIG_LIB_SDL ?= 2
 A_CONFIG_LIB_SDL_TIME := 1
 A_CONFIG_PATH_STORAGE_PREFIX := /a2x-idbfs/

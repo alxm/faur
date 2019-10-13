@@ -30,7 +30,7 @@ typedef struct {
     int wrapWidth, currentLineWidth;
 } AFontState;
 
-AFont* g_defaultFonts[A_FONT__ID_NUM];
+static AFont* g_defaultFonts[A_FONT__ID_NUM];
 static AFontState g_state;
 static AList* g_stateStack;
 static char g_buffer[512];
@@ -39,25 +39,27 @@ static void a_font__init(void)
 {
     g_stateStack = a_list_new();
 
-    APixel colors[A_FONT__ID_NUM] = {
-        [A_FONT__ID_LIGHT_GRAY] = a_pixel_fromHex(0xaf9898),
-        [A_FONT__ID_GREEN] = a_pixel_fromHex(0x4fbf9f),
-        [A_FONT__ID_YELLOW] = a_pixel_fromHex(0xa8cf3f),
-        [A_FONT__ID_RED] = a_pixel_fromHex(0xcf2f4f),
-        [A_FONT__ID_BLUE] = a_pixel_fromHex(0x4f8fdf),
-    };
+    #if A_CONFIG_LIB_PNG
+        APixel colors[A_FONT__ID_NUM] = {
+            [A_FONT__ID_LIGHT_GRAY] = a_pixel_fromHex(0xaf9898),
+            [A_FONT__ID_GREEN] = a_pixel_fromHex(0x4fbf9f),
+            [A_FONT__ID_YELLOW] = a_pixel_fromHex(0xa8cf3f),
+            [A_FONT__ID_RED] = a_pixel_fromHex(0xcf2f4f),
+            [A_FONT__ID_BLUE] = a_pixel_fromHex(0x4f8fdf),
+        };
 
-    g_defaultFonts[A_FONT__ID_DEFAULT] = a_font_newFromPng(
-                                            "/a2x/font", 0, 0, 6, 8);
-    g_defaultFonts[A_FONT__ID_WHITE] = a_font_newFromPng(
-                                        "/a2x/fontKeyed", 0, 0, 6, 8);
+        g_defaultFonts[A_FONT__ID_DEFAULT] = a_font_newFromPng(
+                                                "/a2x/font", 0, 0, 6, 8);
+        g_defaultFonts[A_FONT__ID_WHITE] = a_font_newFromPng(
+                                            "/a2x/fontKeyed", 0, 0, 6, 8);
 
-    for(int f = A_FONT__ID_WHITE + 1; f < A_FONT__ID_NUM; f++) {
-        g_defaultFonts[f] = a_font_dup(
-                                g_defaultFonts[A_FONT__ID_WHITE], colors[f]);
-    }
+        for(int f = A_FONT__ID_WHITE + 1; f < A_FONT__ID_NUM; f++) {
+            g_defaultFonts[f] = a_font_dup(g_defaultFonts[A_FONT__ID_WHITE],
+                                           colors[f]);
+        }
 
-    a_font_reset();
+        a_font_reset();
+    #endif
 }
 
 static void a_font__uninit(void)
@@ -79,10 +81,12 @@ const APack a_pack__font = {
     },
 };
 
+#if A_CONFIG_LIB_PNG
 AFont* a_font_newFromPng(const char* Path, int X, int Y, int CharWidth, int CharHeight)
 {
     return a_sprite_newFromPng(Path, X, Y, CharWidth, CharHeight);
 }
+#endif
 
 AFont* a_font_newFromSprite(const ASprite* Sheet, int X, int Y, int CharWidth, int CharHeight)
 {

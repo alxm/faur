@@ -2,6 +2,7 @@ include $(A2X_PATH)/make/global/defs.mk
 
 A_CONFIG_BUILD_AR_FLAGS := T
 A_CONFIG_BUILD_OPT := -O3 -s
+A_CONFIG_LIB_PNG := 1
 A_CONFIG_LIB_SDL := 2
 A_CONFIG_LIB_SDL_CONFIG := sdl2-config
 A_CONFIG_LIB_SDL_TIME := 1

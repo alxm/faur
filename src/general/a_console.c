@@ -75,7 +75,10 @@ static void a_console__init1(void)
         line_free(a_list_pop(g_lines));
     }
 
-    g_tags = a_sprite_newFromPng("/a2x/consoleTitles", 0, 0, 19, 7);
+    #if A_CONFIG_LIB_PNG
+        g_tags = a_sprite_newFromPng("/a2x/consoleTitles", 0, 0, 19, 7);
+    #endif
+
     g_toggle = a_button_new();
     a_button_bindKey(g_toggle, A_KEY_F11);
     a_button_bindCombo(g_toggle,
