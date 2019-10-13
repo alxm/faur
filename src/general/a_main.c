@@ -78,7 +78,7 @@ int main(int Argc, char* Argv[])
 
     a__main();
 
-    a_state__run();
+    a_state__runLoop();
 
     return 0;
 }

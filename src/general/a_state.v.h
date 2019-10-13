@@ -1,5 +1,5 @@
 /*
-    Copyright 2010 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2019 Alex Margarit <alex@alxm.org>
     This file is part of a2x, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -24,6 +24,7 @@
 
 extern const APack a_pack__state;
 
-extern void a_state__run(void);
+extern void a_state__runLoop(void);
+extern bool a_state__runStep(void);
 
 #endif // A_INC_GENERAL_STATE_V_H
