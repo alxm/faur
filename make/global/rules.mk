@@ -88,8 +88,14 @@ A_GENERIC_CFLAGS := \
     -I$(A_DIR_OBJ_A2X) \
     -I$(A_DIR_OBJ_APP) \
     $(A_CONFIG_BUILD_CFLAGS) \
-    $(A_CONFIG_BUILD_OPT) \
+    -O$(A_CONFIG_BUILD_OPT) \
     -std=$(A_CONFIG_BUILD_C_STANDARD) \
+
+ifeq ($(A_CONFIG_BUILD_DEBUG), 1)
+    A_GENERIC_CFLAGS += -g
+else
+    A_GENERIC_CFLAGS += -s
+endif
 
 A_MAKE_ALL := $(A_FILE_BIN_TARGET) $(A_FILE_BIN_LINKS)
 
