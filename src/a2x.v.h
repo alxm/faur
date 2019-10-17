@@ -18,6 +18,9 @@
 #ifndef A_INC_A2X_V_H
 #define A_INC_A2X_V_H
 
+#include "a2x.h"
+
+A_EXTERN_C_START
 #include "collision/a_collide.v.h"
 #include "collision/a_grid.v.h"
 #include "data/a_bitfield.v.h"
@@ -81,5 +84,6 @@
 #include "strings/a_str.v.h"
 #include "time/a_timer.v.h"
 #include "time/a_time.v.h"
+A_EXTERN_C_END
 
 #endif // A_INC_A2X_V_H

@@ -57,4 +57,8 @@ typedef volatile int AEvent;
     #error Code needs CHAR_BIT == 8
 #endif
 
+#ifdef __SAMD21G18A__
+    #include "platform/system/a_gamebuino_config.h"
+#endif
+
 #endif // A_INC_GENERAL_SYSTEM_INCLUDES_H

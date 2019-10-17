@@ -38,8 +38,10 @@ static struct {
 
 static void a_fade__init(void)
 {
-    g_fade.oldScreen = a_sprite_newBlank(
-                        a__screen.pixels->w, a__screen.pixels->h, 1, false);
+    #if !A_CONFIG_SYSTEM_GAMEBUINO
+        g_fade.oldScreen = a_sprite_newBlank(
+                            a__screen.pixels->w, a__screen.pixels->h, 1, false);
+    #endif
 }
 
 static void a_fade__uninit(void)
@@ -85,12 +87,14 @@ void a_fade_startColorFrom(unsigned DurationMs)
     g_fade.color = a__color.pixel;
 }
 
+#if !A_CONFIG_SYSTEM_GAMEBUINO
 void a_fade_startScreens(unsigned DurationMs)
 {
     newFade(A__FADE_SCREENS, DurationMs);
 
     a_screen__toSprite(g_fade.oldScreen, 0);
 }
+#endif
 
 void a_fade__tick(void)
 {

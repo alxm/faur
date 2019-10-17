@@ -18,6 +18,15 @@
 #ifndef A_INC_A2X_H
 #define A_INC_A2X_H
 
+#ifdef __cplusplus
+#define A_EXTERN_C_START extern "C" {
+#define A_EXTERN_C_END }
+#else
+#define A_EXTERN_C_START
+#define A_EXTERN_C_END
+#endif
+
+A_EXTERN_C_START
 #include "collision/a_collide.p.h"
 #include "collision/a_grid.p.h"
 #include "data/a_bitfield.p.h"
@@ -81,5 +90,6 @@
 #include "strings/a_str.p.h"
 #include "time/a_time.p.h"
 #include "time/a_timer.p.h"
+A_EXTERN_C_END
 
 #endif // A_INC_A2X_H
