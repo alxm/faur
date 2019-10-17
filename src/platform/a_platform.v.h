@@ -97,11 +97,11 @@ extern int a_platform_api__soundSampleChannelGet(void);
 
 extern void a_platform_api__inputPoll(void);
 
-extern APlatformButton* a_platform_api__inputKeyGet(AKeyId Id);
-extern APlatformButton* a_platform_api__inputButtonGet(const APlatformController* Controller, AButtonId Id);
+extern const APlatformButton* a_platform_api__inputKeyGet(AKeyId Id);
+extern const APlatformButton* a_platform_api__inputButtonGet(const APlatformController* Controller, AButtonId Id);
 extern bool a_platform_api__inputButtonPressGet(const APlatformButton* Button);
 
-extern APlatformAnalog* a_platform_api__inputAnalogGet(const APlatformController* Controller, AAnalogId Id);
+extern const APlatformAnalog* a_platform_api__inputAnalogGet(const APlatformController* Controller, AAnalogId Id);
 extern int a_platform_api__inputAnalogValueGet(const APlatformAnalog* Analog);
 
 extern AVectorInt a_platform_api__inputTouchCoordsGet(void);

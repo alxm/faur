@@ -20,8 +20,4 @@
 
 #include "platform/graphics/a_software_draw.p.h"
 
-extern void a_platform_software_draw__init(void);
-
-extern void a_platform_software_draw__updateRoutines(void);
-
 #endif // A_INC_PLATFORM_GRAPHICS_SOFTWARE_DRAW_V_H

@@ -18,6 +18,7 @@
 #include "a_embed.v.h"
 #include <a2x.v.h>
 
+#if !A_CONFIG_SYSTEM_GAMEBUINO
 #include "media/console.png.h"
 #include "media/fontgrid.png.h"
 #include "media/fontgrid_keyed.png.h"
@@ -82,3 +83,6 @@ const AEmbeddedFile* a_embed__fileGet(const char* Path)
 {
     return a_strhash_get(g_files, Path);
 }
+#else // A_CONFIG_SYSTEM_GAMEBUINO
+const APack a_pack__embed;
+#endif // A_CONFIG_SYSTEM_GAMEBUINO

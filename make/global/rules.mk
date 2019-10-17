@@ -73,8 +73,6 @@ A_FILES_OBJ := $(A_FILES_OBJ_APP) $(A_FILES_OBJ_GEN) $(A_FILES_OBJ_EXTRA)
 # Compiler flags for all targets
 #
 A_GENERIC_CFLAGS := \
-    -DA2X=1 \
-    -std=$(A_CONFIG_BUILD_C_STANDARD) \
     -MMD \
     -Wall \
     -Wextra \
@@ -86,11 +84,18 @@ A_GENERIC_CFLAGS := \
     -pedantic-errors \
     -fstrict-aliasing \
     -D_XOPEN_SOURCE \
-    -I$(A_DIR_ROOT)/$(A_CONFIG_DIR_SRC)/config \
+    -I$(A2X_DIR_SRC) \
     -I$(A_DIR_OBJ_A2X) \
     -I$(A_DIR_OBJ_APP) \
     $(A_CONFIG_BUILD_CFLAGS) \
-    $(A_CONFIG_BUILD_OPT) \
+    -O$(A_CONFIG_BUILD_OPT) \
+    -std=$(A_CONFIG_BUILD_C_STANDARD) \
+
+ifeq ($(A_CONFIG_BUILD_DEBUG), 1)
+    A_GENERIC_CFLAGS += -g
+else
+    A_GENERIC_CFLAGS += -s
+endif
 
 A_MAKE_ALL := $(A_FILE_BIN_TARGET) $(A_FILE_BIN_LINKS)
 
@@ -113,10 +118,6 @@ include $(A2X_PATH)/make/global/a2x.mk
 # Object dependencies
 #
 -include $(A_FILES_OBJ:.o=.d) $(A2X_FILES_OBJ:.o=.d)
-
-$(A_FILES_OBJ) : $(A2X_FILE_PUBLIC_A2X_HEADER)
-
-$(A_FILES_OBJ_GEN) : $(A2X_FILE_PRIVATE_A2X_HEADER)
 
 $(A_FILES_OBJ_APP) : $(A_FILES_GFX_H)
 

@@ -15,9 +15,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <a2x.v.h>
+
+#if A__COMPILE_INC
 // Spans format for each graphic line:
 // [NumSpans << 1 | 1 (draw) / 0 (transparent)][[len]...]
-static void A__FUNC_NAME(keyed, noclip)(const APlatformTexture* Texture, const APixels* Pixels, unsigned Frame, int X, int Y)
+static void A__FUNC_NAME(Keyed, NoClip)(const APlatformTexture* Texture, const APixels* Pixels, unsigned Frame, int X, int Y)
 {
     A__BLEND_SETUP;
 
@@ -51,7 +54,7 @@ static void A__FUNC_NAME(keyed, noclip)(const APlatformTexture* Texture, const A
     }
 }
 
-static void A__FUNC_NAME(keyed, doclip)(const APlatformTexture* Texture, const APixels* Pixels, unsigned Frame, int X, int Y)
+static void A__FUNC_NAME(Keyed, DoClip)(const APlatformTexture* Texture, const APixels* Pixels, unsigned Frame, int X, int Y)
 {
     A__BLEND_SETUP;
 
@@ -137,7 +140,7 @@ static void A__FUNC_NAME(keyed, doclip)(const APlatformTexture* Texture, const A
     }
 }
 
-static void A__FUNC_NAME(block, noclip)(const APlatformTexture* Texture, const APixels* Pixels, unsigned Frame, int X, int Y)
+static void A__FUNC_NAME(Block, NoClip)(const APlatformTexture* Texture, const APixels* Pixels, unsigned Frame, int X, int Y)
 {
     A_UNUSED(Texture);
 
@@ -159,7 +162,7 @@ static void A__FUNC_NAME(block, noclip)(const APlatformTexture* Texture, const A
     }
 }
 
-static void A__FUNC_NAME(block, doclip)(const APlatformTexture* Texture, const APixels* Pixels, unsigned Frame, int X, int Y)
+static void A__FUNC_NAME(Block, DoClip)(const APlatformTexture* Texture, const APixels* Pixels, unsigned Frame, int X, int Y)
 {
     A_UNUSED(Texture);
 
@@ -205,3 +208,4 @@ static void A__FUNC_NAME(block, doclip)(const APlatformTexture* Texture, const A
 #undef A__BLEND_SETUP
 #undef A__PIXEL_SETUP
 #undef A__PIXEL_PARAMS
+#endif // A__COMPILE_INC

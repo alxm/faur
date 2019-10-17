@@ -18,6 +18,15 @@
 #include "a_out.v.h"
 #include <a2x.v.h>
 
+#if A_CONFIG_OUTPUT_ENABLED
+#define A_OUT__STREAM_STDOUT stdout
+
+#if A_CONFIG_SYSTEM_EMSCRIPTEN
+    #define A_OUT__STREAM_STDERR stdout
+#else
+    #define A_OUT__STREAM_STDERR stderr
+#endif
+
 typedef enum {
     A_OUT__FLAG_OVERWRITE = A_FLAGS_BIT(0),
 } AOutFlags;
@@ -58,13 +67,13 @@ static void outWorkerPrint(AOutSource Source, AOutType Type, FILE* Stream, const
                 g_types[Type].color,
                 g_sources[Source],
                 g_types[Type].name,
-                (uint32_t)a_fps_ticksGet());
+                (unsigned)a_fps_ticksGet());
     #else
         fprintf(Stream,
                 "[%s][%s][%08x] ",
                 g_sources[Source],
                 g_types[Type].name,
-                (uint32_t)a_fps_ticksGet());
+                (unsigned)a_fps_ticksGet());
     #endif
 
     fputs(Text, Stream);
@@ -75,10 +84,6 @@ static void outWorkerPrint(AOutSource Source, AOutType Type, FILE* Stream, const
 
 static void outWorker(AOutSource Source, AOutType Type, FILE* Stream, const char* Format, va_list Args)
 {
-    #if !A_CONFIG_OUTPUT_ON
-        return;
-    #endif
-
     static char buffer[512];
 
     if(a_str_fmtv(buffer, sizeof(buffer), true, Format, Args)) {
@@ -153,10 +158,6 @@ void a_out__state(const char* Format, ...)
 
 void a_out_text(const char* Text)
 {
-    #if !A_CONFIG_OUTPUT_ON
-        return;
-    #endif
-
     outWorkerPrint(A_OUT__SOURCE_APP,
                    A_OUT__TYPE_INFO,
                    A_OUT__STREAM_STDOUT,
@@ -204,3 +205,4 @@ void a_out_error(const char* Format, ...)
 
     va_end(args);
 }
+#endif // A_CONFIG_OUTPUT_ENABLED

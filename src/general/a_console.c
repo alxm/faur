@@ -19,6 +19,7 @@
 #include "a_console.v.h"
 #include <a2x.v.h>
 
+#if A_CONFIG_CONSOLE_ENABLED
 typedef struct {
     AOutSource source;
     AOutType type;
@@ -36,7 +37,7 @@ static AList* g_lines;
 static unsigned g_linesPerScreen;
 static ASprite* g_tags;
 static AButton* g_toggle;
-static bool g_show = A_CONFIG_OUTPUT_CONSOLE_SHOW;
+static bool g_show = A_CONFIG_CONSOLE_SHOW;
 
 static ALine* line_new(AOutSource Source, AOutType Type, const char* Text)
 {
@@ -73,7 +74,10 @@ static void a_console__init1(void)
         line_free(a_list_pop(g_lines));
     }
 
-    g_tags = a_sprite_newFromPng("/a2x/consoleTitles", 0, 0, 19, 7);
+    #if A_CONFIG_LIB_PNG
+        g_tags = a_sprite_newFromPng("/a2x/consoleTitles", 0, 0, 19, 7);
+    #endif
+
     g_toggle = a_button_new();
     a_button_bindKey(g_toggle, A_KEY_F11);
     a_button_bindCombo(g_toggle,
@@ -112,6 +116,7 @@ void a_console__tick(void)
     }
 }
 
+#if A_CONFIG_BUILD_DEBUG_ALLOC
 static void printBytes(size_t Bytes, const char* Tag)
 {
     float value;
@@ -130,6 +135,7 @@ static void printBytes(size_t Bytes, const char* Tag)
 
     a_font_printf("%.3f %s (%s)\n", value, suffix, Tag);
 }
+#endif
 
 void a_console__draw(void)
 {
@@ -221,17 +227,23 @@ void a_console__draw(void)
             a_font_print("SDL Gfx\n");
         #endif
 
-        a_font_printf(
-            "Sound %s\n", a_platform_api__soundMuteGet() ? "off" : "on");
+        #if A_CONFIG_SOUND_ENABLED
+            a_font_printf(
+                "Sound %s\n", a_platform_api__soundMuteGet() ? "off" : "on");
+        #endif
 
         a_font__fontSet(A_FONT__ID_BLUE);
         a_font_printf("PID %d\n", getpid());
         a_font_printf("%u ticks\n", a_fps_ticksGet());
 
-        printBytes(a_mem__tally, "now");
-        printBytes(a_mem__top, "top");
+        #if A_CONFIG_BUILD_DEBUG_ALLOC
+            printBytes(a_mem__tally, "now");
+            printBytes(a_mem__top, "top");
+        #endif
 
-        a_font_printf("%u entities", a_ecs__listGetSum());
+        #if A_CONFIG_ECS_ENABLED
+            a_font_printf("%u entities", a_ecs__listGetSum());
+        #endif
     }
 
     a_color_pop();
@@ -260,3 +272,31 @@ void a_console__write(AOutSource Source, AOutType Type, const char* Text)
         line_free(a_list_pop(g_lines));
     }
 }
+#else // !A_CONFIG_CONSOLE_ENABLED
+const APack a_pack__console;
+
+void a_console_showSet(bool Show)
+{
+    A_UNUSED(Show);
+}
+
+void a_console__tick(void)
+{
+}
+
+void a_console__draw(void)
+{
+}
+
+bool a_console__isInitialized(void)
+{
+    return false;
+}
+
+void a_console__write(AOutSource Source, AOutType Type, const char* Text)
+{
+    A_UNUSED(Source);
+    A_UNUSED(Type);
+    A_UNUSED(Text);
+}
+#endif // !A_CONFIG_CONSOLE_ENABLED

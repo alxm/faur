@@ -15,9 +15,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_PLATFORM_SOUND_NO_SOUND_V_H
-#define A_INC_PLATFORM_SOUND_NO_SOUND_V_H
+#ifndef A_INC_PLATFORM_VIDEO_GAMEBUINO_V_H
+#define A_INC_PLATFORM_VIDEO_GAMEBUINO_V_H
 
-#include "platform/sound/a_no_sound.p.h"
+#include "platform/system/a_gamebuino.p.h"
 
-#endif // A_INC_PLATFORM_SOUND_NO_SOUND_V_H
+#endif // A_INC_PLATFORM_VIDEO_GAMEBUINO_V_H

@@ -298,7 +298,7 @@ void a_state_blockSet(const AEvent* Event)
     g_blockEvent = Event;
 }
 
-static bool iteration(void)
+bool a_state__runStep(void)
 {
     #if A_CONFIG_SYSTEM_EMSCRIPTEN
         if(!EM_ASM_INT({ return Module.a2x_fsIsReady; }, 0)) {
@@ -362,14 +362,14 @@ static bool iteration(void)
 #if A_CONFIG_SYSTEM_EMSCRIPTEN
 static void loop(void)
 {
-    if(!iteration()) {
+    if(!a_state__runStep()) {
         a_out__state("Finished running states");
         emscripten_cancel_main_loop();
     }
 }
 #endif
 
-void a_state__run(void)
+void a_state__runLoop(void)
 {
     a_out__state("Running states");
 
@@ -379,7 +379,7 @@ void a_state__run(void)
             a_platform_api__screenVsyncGet() ? 0 : A_CONFIG_FPS_RATE_DRAW,
             true);
     #else
-        while(iteration()) {
+        while(a_state__runStep()) {
             continue;
         }
 

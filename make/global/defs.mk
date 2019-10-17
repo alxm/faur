@@ -1,3 +1,6 @@
+A2X_DIR_ROOT := $(realpath $(A2X_PATH))
+A2X_DIR_SRC := $(A2X_DIR_ROOT)/src
+
 #
 # make/global/defs is included by every platform Makefile on line 1
 #
@@ -22,6 +25,9 @@ A_MAKE_SPACE_ESCAPE = $(subst $(A_MAKE_SPACE),\$(A_MAKE_SPACE),$1)
 # Custom SDK paths
 #
 -include $(A_DIR_CONFIG)/sdk.mk
+
+A_SDK_ARDUINO_DIR ?= /opt/arduino
+A_SDK_ARDUINO_MAKEFILE ?= /opt/Arduino-Makefile
 
 A_SDK_CAANOO_ROOT ?= /opt/gph_sdk
 A_SDK_CAANOO_TOOLCHAIN ?= tools/gcc-4.2.4-glibc-2.7-eabi

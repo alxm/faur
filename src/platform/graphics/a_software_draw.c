@@ -19,31 +19,14 @@
 #include <a2x.v.h>
 
 #if A_CONFIG_LIB_RENDER_SOFTWARE
+#define A__COMPILE_INC 1
+
 typedef void (*ADrawPixel)(int X, int Y);
-typedef void (*ADrawRectangle)(int X, int Y, int Width, int Height);
-typedef void (*ADrawLine)(int X1, int Y1, int X2, int Y2);
 typedef void (*ADrawHLine)(int X1, int X2, int Y);
 typedef void (*ADrawVLine)(int X, int Y1, int Y2);
+typedef void (*ADrawLine)(int X1, int Y1, int X2, int Y2);
+typedef void (*ADrawRectangle)(int X, int Y, int Width, int Height);
 typedef void (*ADrawCircle)(int X, int Y, int Radius);
-
-static ADrawPixel g_draw_pixel;
-static ADrawPixel g_pixel[A_COLOR_BLEND_NUM];
-
-static ADrawRectangle g_draw_rectangle;
-static ADrawRectangle g_rectangle[A_COLOR_BLEND_NUM][2]; // [Blend][Fill]
-
-static ADrawLine g_draw_line;
-static ADrawLine g_line[A_COLOR_BLEND_NUM];
-
-static ADrawHLine g_draw_hline;
-static ADrawHLine g_hline[A_COLOR_BLEND_NUM];
-
-static ADrawVLine g_draw_vline;
-static ADrawHLine g_vline[A_COLOR_BLEND_NUM];
-
-static ADrawCircle g_draw_circle_noclip;
-static ADrawCircle g_draw_circle_clip;
-static ADrawCircle g_circle[A_COLOR_BLEND_NUM][2][2]; // [Blend][Clip][Fill]
 
 static bool cohen_sutherland_clip(int* X1, int* Y1, int* X2, int* Y2)
 {
@@ -209,13 +192,8 @@ do {                                                                        \
     }                                                                       \
 } while(0)
 
-#define A__FUNC_NAME_EXPAND2(Name, Blend) a_draw__##Name##_##Blend
-#define A__FUNC_NAME_EXPAND(Name, Blend) A__FUNC_NAME_EXPAND2(Name, Blend)
-#define A__FUNC_NAME(Name) A__FUNC_NAME_EXPAND(Name, A__BLEND)
-
-#define A__PIXEL_DRAW_EXPAND2(Blend) a_color__draw_##Blend
-#define A__PIXEL_DRAW_EXPAND(Blend, Params) A__PIXEL_DRAW_EXPAND2(Blend)(Params)
-#define A__PIXEL_DRAW(Dst) A__PIXEL_DRAW_EXPAND(A__BLEND, Dst A__PIXEL_PARAMS)
+#define A__FUNC_NAME(Name) A_GLUE4(a_draw__, Name, _, A__BLEND)
+#define A__PIXEL_DRAW(Dst) A_GLUE2(a_color__draw_, A__BLEND)(Dst A__PIXEL_PARAMS)
 
 #define A__BLEND plain
 #define A__BLEND_SETUP const APixel color = a__color.pixel;
@@ -262,50 +240,42 @@ do {                                                                        \
 #define A__PIXEL_PARAMS , &rgb
 #include "platform/graphics/a_software_draw.inc.c"
 
-void a_platform_software_draw__init(void)
-{
-    #define initRoutines(Index, Blend)                                \
-        g_pixel[Index] = a_draw__pixel_##Blend;                       \
-        g_rectangle[Index][0] = a_draw__rectangle_nofill_##Blend;     \
-        g_rectangle[Index][1] = a_draw__rectangle_fill_##Blend;       \
-        g_line[Index] = a_draw__line_##Blend;                         \
-        g_hline[Index] = a_draw__hline_##Blend;                       \
-        g_vline[Index] = a_draw__vline_##Blend;                       \
-        g_circle[Index][0][0] = a_draw__circle_noclip_nofill_##Blend; \
-        g_circle[Index][0][1] = a_draw__circle_noclip_fill_##Blend;   \
-        g_circle[Index][1][0] = a_draw__circle_clip_nofill_##Blend;   \
-        g_circle[Index][1][1] = a_draw__circle_clip_fill_##Blend;
+#define A__INIT_BLEND(Index, Name)                           \
+    [Index] = {                                              \
+        .pixel = a_draw__pixel_##Name,                       \
+        .hline = a_draw__hline_##Name,                       \
+        .vline = a_draw__vline_##Name,                       \
+        .line = a_draw__line_##Name,                         \
+        .rectangle[0] = a_draw__rectangle_nofill_##Name,     \
+        .rectangle[1] = a_draw__rectangle_fill_##Name,       \
+        .circle[0][0] = a_draw__circle_noclip_nofill_##Name, \
+        .circle[0][1] = a_draw__circle_noclip_fill_##Name,   \
+        .circle[1][0] = a_draw__circle_clip_nofill_##Name,   \
+        .circle[1][1] = a_draw__circle_clip_fill_##Name,     \
+    },
 
-    initRoutines(A_COLOR_BLEND_PLAIN, plain);
-    initRoutines(A_COLOR_BLEND_RGBA, rgba);
-    initRoutines(A_COLOR_BLEND_RGB25, rgb25);
-    initRoutines(A_COLOR_BLEND_RGB50, rgb50);
-    initRoutines(A_COLOR_BLEND_RGB75, rgb75);
-    initRoutines(A_COLOR_BLEND_INVERSE, inverse);
-    initRoutines(A_COLOR_BLEND_MOD, mod);
-    initRoutines(A_COLOR_BLEND_ADD, add);
-
-    a_platform_software_draw__updateRoutines();
-}
-
-void a_platform_software_draw__updateRoutines(void)
-{
-    AColorBlend blend = a__color.blend;
-    bool fill = a__color.fillDraw;
-
-    g_draw_pixel = g_pixel[blend];
-    g_draw_rectangle = g_rectangle[blend][fill];
-    g_draw_line = g_line[blend];
-    g_draw_hline = g_hline[blend];
-    g_draw_vline = g_vline[blend];
-    g_draw_circle_noclip = g_circle[blend][0][fill];
-    g_draw_circle_clip = g_circle[blend][1][fill];
-}
+static const struct {
+    ADrawPixel pixel;
+    ADrawHLine hline;
+    ADrawVLine vline;
+    ADrawLine line;
+    ADrawRectangle rectangle[2]; // [Fill]
+    ADrawCircle circle[2][2]; // [Clip][Fill]
+} g_draw[A_COLOR_BLEND_NUM] = {
+    A__INIT_BLEND(A_COLOR_BLEND_PLAIN, plain)
+    A__INIT_BLEND(A_COLOR_BLEND_RGBA, rgba)
+    A__INIT_BLEND(A_COLOR_BLEND_RGB25, rgb25)
+    A__INIT_BLEND(A_COLOR_BLEND_RGB50, rgb50)
+    A__INIT_BLEND(A_COLOR_BLEND_RGB75, rgb75)
+    A__INIT_BLEND(A_COLOR_BLEND_INVERSE, inverse)
+    A__INIT_BLEND(A_COLOR_BLEND_MOD, mod)
+    A__INIT_BLEND(A_COLOR_BLEND_ADD, add)
+};
 
 void a_platform_api__drawPixel(int X, int Y)
 {
     if(a_screen_boxInsideClip(X, Y, 1, 1)) {
-        g_draw_pixel(X, Y);
+        g_draw[a__color.blend].pixel(X, Y);
     }
 }
 
@@ -322,7 +292,7 @@ void a_platform_api__drawLine(int X1, int Y1, int X2, int Y2)
         return;
     }
 
-    g_draw_line(X1, Y1, X2, Y2);
+    g_draw[a__color.blend].line(X1, Y1, X2, Y2);
 }
 
 void a_platform_api__drawHLine(int X1, int X2, int Y)
@@ -334,7 +304,7 @@ void a_platform_api__drawHLine(int X1, int X2, int Y)
     X1 = a_math_max(X1, a__screen.clipX);
     X2 = a_math_min(X2, a__screen.clipX2 - 1);
 
-    g_draw_hline(X1, X2, Y);
+    g_draw[a__color.blend].hline(X1, X2, Y);
 }
 
 void a_platform_api__drawVLine(int X, int Y1, int Y2)
@@ -346,17 +316,19 @@ void a_platform_api__drawVLine(int X, int Y1, int Y2)
     Y1 = a_math_max(Y1, a__screen.clipY);
     Y2 = a_math_min(Y2, a__screen.clipY2 - 1);
 
-    g_draw_vline(X, Y1, Y2);
+    g_draw[a__color.blend].vline(X, Y1, Y2);
 }
 
 static void drawRectangle(int X, int Y, int Width, int Height)
 {
-    if(a_screen_boxInsideClip(X, Y, Width, Height)) {
-        g_draw_rectangle(X, Y, Width, Height);
+    if(!a_screen_boxOnClip(X, Y, Width, Height)) {
         return;
     }
 
-    if(!a_screen_boxOnClip(X, Y, Width, Height)) {
+    if(a_screen_boxInsideClip(X, Y, Width, Height)) {
+        g_draw[a__color.blend].rectangle[a__color.fillDraw]
+            (X, Y, Width, Height);
+
         return;
     }
 
@@ -368,7 +340,7 @@ static void drawRectangle(int X, int Y, int Width, int Height)
     Width = a_math_min(Width, x2 - X);
     Height = a_math_min(Height, y2 - Y);
 
-    g_draw_rectangle(X, Y, Width, Height);
+    g_draw[a__color.blend].rectangle[a__color.fillDraw](X, Y, Width, Height);
 }
 
 void a_platform_api__drawRectangleFilled(int X, int Y, int Width, int Height)
@@ -387,13 +359,11 @@ static void drawCircle(int X, int Y, int Radius)
     int boxY = Y - Radius;
     int boxDim = 2 * Radius;
 
-    if(a_screen_boxInsideClip(boxX, boxY, boxDim, boxDim)) {
-        g_draw_circle_noclip(X, Y, Radius);
-        return;
-    }
-
     if(a_screen_boxOnClip(boxX, boxY, boxDim, boxDim)) {
-        g_draw_circle_clip(X, Y, Radius);
+        g_draw[a__color.blend].circle
+            [!a_screen_boxInsideClip(boxX, boxY, boxDim, boxDim)]
+            [a__color.fillDraw]
+                (X, Y, Radius);
     }
 }
 

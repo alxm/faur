@@ -62,7 +62,7 @@ void a_analog_free(AAnalog* Analog)
 
 void a_analog_bind(AAnalog* Analog, const AController* Controller, AAnalogId Id)
 {
-    APlatformAnalog* a = a_platform_api__inputAnalogGet(Controller, Id);
+    const APlatformAnalog* a = a_platform_api__inputAnalogGet(Controller, Id);
 
     if(a == NULL) {
         return;
@@ -72,7 +72,7 @@ void a_analog_bind(AAnalog* Analog, const AController* Controller, AAnalogId Id)
         Analog->name = g_analogNames[Id];
     }
 
-    a_list_addLast(Analog->platformInputs, a);
+    a_list_addLast(Analog->platformInputs, (APlatformAnalog*)a);
 }
 
 bool a_analog_isWorking(const AAnalog* Analog)

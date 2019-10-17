@@ -70,7 +70,21 @@ static void a__atexit(void)
     #endif
 }
 
+#if A_CONFIG_BUILD_MAIN
 int main(int Argc, char* Argv[])
+{
+    g_argsNum = Argc;
+    g_args = (const char**)Argv;
+
+    a__main();
+
+    a_state__runLoop();
+
+    return 0;
+}
+#endif
+
+void a__main(void)
 {
     a_out__info("PID: %d", getpid());
     a_out__info("a2x: %s %s", A_CONFIG_BUILD_UID, A_CONFIG_BUILD_GIT_HASH);
@@ -79,9 +93,6 @@ int main(int Argc, char* Argv[])
                 A_CONFIG_APP_VERSION_STRING,
                 A_CONFIG_APP_AUTHOR);
     a_out__info("Build timestamp: %s", A_CONFIG_BUILD_TIMESTAMP);
-
-    g_argsNum = Argc;
-    g_args = (const char**)Argv;
 
     if(atexit(a__atexit)) {
         a_out__error("Cannot register atexit callback");
@@ -99,10 +110,6 @@ int main(int Argc, char* Argv[])
     a_out__info("a_main start");
     a_main();
     a_out__info("a_main end");
-
-    a_state__run();
-
-    return 0;
 }
 
 int a_main_argsNumGet(void)
@@ -121,41 +128,45 @@ const char* a_main_argsGet(int ArgNum)
 
 __attribute__((noreturn)) static void handleFatal(void)
 {
-    #if A__BACKTRACE
-        void* addresses[16];
-        int numAddresses = backtrace(addresses, A_ARRAY_LEN(addresses));
-        char** functionNames = backtrace_symbols(addresses, numAddresses);
+    #if A_CONFIG_BUILD_DEBUG_FATAL_SPIN
+        while(true);
+    #else
+        #if A__BACKTRACE
+            void* addresses[16];
+            int numAddresses = backtrace(addresses, A_ARRAY_LEN(addresses));
+            char** functionNames = backtrace_symbols(addresses, numAddresses);
 
-        for(int i = 0; i < numAddresses; i++) {
-            a_out__error(functionNames[i]);
-        }
+            for(int i = 0; i < numAddresses; i++) {
+                a_out__error(functionNames[i]);
+            }
 
-        free(functionNames);
+            free(functionNames);
+        #endif
+
+        a_console_showSet(true);
+        a_console__draw();
+        a_screen__draw();
+
+        #if A_CONFIG_BUILD_DEBUG_WAIT
+            while(true) {
+                printf("Waiting to attach debugger: PID %d\n", getpid());
+                a_time_spinSec(1);
+            }
+        #elif !A_CONFIG_TRAIT_DESKTOP
+            if(a_console__isInitialized()) {
+                a_out__info("Exiting in 10s");
+                a_console__draw();
+                a_screen__draw();
+                a_time_waitSec(10);
+            }
+        #endif
+
+        #if A_CONFIG_SYSTEM_EMSCRIPTEN
+            emscripten_force_exit(1);
+        #endif
+
+        exit(1);
     #endif
-
-    a_console_showSet(true);
-    a_console__draw();
-    a_screen__draw();
-
-    #if A_CONFIG_BUILD_DEBUG_WAIT
-        while(true) {
-            printf("Waiting to attach debugger: PID %d\n", getpid());
-            a_time_spinSec(1);
-        }
-    #elif !A_CONFIG_TRAIT_DESKTOP
-        if(a_console__isInitialized()) {
-            a_out__info("Exiting in 10s");
-            a_console__draw();
-            a_screen__draw();
-            a_time_waitSec(10);
-        }
-    #endif
-
-    #if A_CONFIG_SYSTEM_EMSCRIPTEN
-        emscripten_force_exit(1);
-    #endif
-
-    exit(1);
 }
 
 void A__FATAL(const char* Format, ...)

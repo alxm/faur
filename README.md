@@ -1,17 +1,13 @@
 # ![a2x](https://github.com/alxm/a2x/raw/master/media/a2x-logo.png "a2x") [![Build Status](https://travis-ci.org/alxm/a2x.svg?branch=master)](https://travis-ci.org/alxm/a2x)
 
-a2x is a C framework I wrote for my video games. It runs natively on Linux and FreeBSD, and can be cross-compiled for Windows, GP2X, Wiz, Caanoo, Open Pandora, and HTML5.
+a2x is a C framework I wrote for my video games. It runs natively on Linux and FreeBSD, and can be cross-compiled for Web, Windows, GP2X, Wiz, Caanoo, Open Pandora, and the Arduino-compatible Gamebuino META.
 
 ## Dependencies & Path Setup
 
 ```sh
-# Basics
+# Basic tools, required libs, and optional extras
 sudo apt install build-essential python3 git
-
-# Core libraries
 sudo apt install libpng-dev libsdl2-dev libsdl2-mixer-dev
-
-# Optional extras
 sudo apt install libsdl1.2-dev libsdl-mixer1.2-dev mingw-w64
 
 # Clone repo to ~/a2x
@@ -33,7 +29,7 @@ make -j run
 
 ![Starter Project Screenshot](https://github.com/alxm/a2x/raw/master/media/hello.gif "Starter Project Screenshot")
 
-Move the square with the arrow keys or gamepad. Here are the generated `main.c` and `Makefile`:
+Move the square with the arrow keys or a gamepad. Here are the generated `main.c` and `Makefile`:
 
 #### main.c
 
@@ -109,15 +105,15 @@ include $(A2X_PATH)/make/dev.mk
 
 ## Cross-Compile for Other Platforms
 
-I originally wrote a2x to make games for the Linux-based [GP2X handheld](https://www.alxm.org/games/gamepark.html). The following targets are also supported:
+I first wrote a2x to make games for the Linux-based [GP2X handheld](https://www.alxm.org/games/gamepark.html). These are the supported platforms now:
 
-* Emscripten (HTML5)
-* GPH SDK (Caanoo)
-* MinGW (Windows)
-* Open2x SDK (GP2X, Wiz)
-* Pandora SDK (Open Pandora)
+* Web *(Emscripten)*
+* Windows *(MinGW-w64)*
+* GP2X, Wiz, Caanoo *(Open2x SDK, GPH SDK)*
+* Open Pandora *(Pandora SDK)*
+* Gamebuino META *(Arduino SAMD)*
 
-Edit `~/.config/a2x/sdk.config` with your SDK paths, then build a default project to sync your changes.
+The default toolchain paths are in `a2x/make/global/defs.mk` and they can be overridden in `~/.config/a2x/sdk.mk`. To build for a different target, edit the application Makefile and replace `dev.mk` with another file from `a2x/make/`.
 
 ## License
 

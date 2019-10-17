@@ -75,6 +75,7 @@ static ASprite* spriteNew(const APixels* Pixels, unsigned Frame, int X, int Y, i
     return s;
 }
 
+#if A_CONFIG_LIB_PNG
 ASprite* a_sprite_newFromPng(const char* Path, int X, int Y, int FrameWidth, int FrameHeight)
 {
     APixels* pixels = a_png__readFile(Path);
@@ -104,6 +105,7 @@ ASprite* a_sprite_newFromPng(const char* Path, int X, int Y, int FrameWidth, int
 
     return s;
 }
+#endif
 
 ASprite* a_sprite_newFromSprite(const ASprite* Sheet, int X, int Y, int FrameWidth, int FrameHeight)
 {

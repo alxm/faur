@@ -30,6 +30,12 @@
 #define A__STRINGIFY_DO_NOT_CALL(X) #X
 #define A_STRINGIFY(X) A__STRINGIFY_DO_NOT_CALL(X)
 
+#define A__GLUE_DO_NOT_CALL(A, B) A##B
+#define A_GLUE2(A, B) A__GLUE_DO_NOT_CALL(A, B)
+#define A_GLUE3(A, B, C) A_GLUE2(A, A_GLUE2(B, C))
+#define A_GLUE4(A, B, C, D) A_GLUE2(A, A_GLUE3(B, C, D))
+#define A_GLUE5(A, B, C, D, E) A_GLUE2(A, A_GLUE4(B, C, D, E))
+
 typedef void AFree(void* Self);
 
 typedef volatile int AEvent;
@@ -49,6 +55,10 @@ typedef volatile int AEvent;
 
 #if CHAR_BIT != 8
     #error Code needs CHAR_BIT == 8
+#endif
+
+#ifdef __SAMD21G18A__
+    #include "platform/system/a_gamebuino_config.h"
 #endif
 
 #endif // A_INC_GENERAL_SYSTEM_INCLUDES_H

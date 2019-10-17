@@ -4,7 +4,7 @@ ifndef A_DO_BUILD
 
 A_MAKE_CMD := \
     source $(A_SDK_EMSCRIPTEN_ROOT)/emsdk_env.sh \
-    && emmake $(MAKE) -f $(firstword $(MAKEFILE_LIST)) -j A_DO_BUILD=1
+    && emmake $(MAKE) -f $(firstword $(MAKEFILE_LIST)) -j8 A_DO_BUILD=1
 
 all :
 	bash -c "$(A_MAKE_CMD)"
@@ -15,7 +15,8 @@ all :
 else
 
 A_CONFIG_BUILD_C_STANDARD := gnu11
-A_CONFIG_BUILD_OPT := -O3
+A_CONFIG_BUILD_OPT := 3
+A_CONFIG_LIB_PNG := 1
 A_CONFIG_LIB_SDL ?= 2
 A_CONFIG_LIB_SDL_TIME := 1
 A_CONFIG_PATH_STORAGE_PREFIX := /a2x-idbfs/
@@ -51,7 +52,7 @@ A_BUILD_EMSCRIPTEN_EMBED := \
 A_CONFIG_APP_NAME_SUFFIX := .html
 
 A_CONFIG_BUILD_LIBS += \
-    $(A_CONFIG_BUILD_OPT) \
+    -O$(A_CONFIG_BUILD_OPT) \
     $(A_BUILD_EMSCRIPTEN_LIBS) \
     $(A_BUILD_EMSCRIPTEN_EMBED) \
 

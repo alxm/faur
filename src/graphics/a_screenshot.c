@@ -18,6 +18,7 @@
 #include "a_screenshot.v.h"
 #include <a2x.v.h>
 
+#if A_CONFIG_LIB_PNG
 #define A__SCREENSHOTS_LIMIT 99999
 
 static bool g_isInit;
@@ -155,3 +156,10 @@ void a_screenshot_take(void)
 {
     takeScreenshot();
 }
+#else // !A_CONFIG_LIB_PNG
+const APack a_pack__screenshot;
+
+void a_screenshot__tick(void)
+{
+}
+#endif // !A_CONFIG_LIB_PNG

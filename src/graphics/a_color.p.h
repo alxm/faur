@@ -107,10 +107,13 @@ static inline APixel a_pixel_fromHex(uint32_t Hexcode)
 
 static inline ARgb a_pixel_toRgb(APixel Pixel)
 {
-    return (ARgb){
+    ARgb rgb = {
         (int)((Pixel >> A__PX_SHIFT_R) & A__PX_MASK_R) << A__PX_PACK_R,
         (int)((Pixel >> A__PX_SHIFT_G) & A__PX_MASK_G) << A__PX_PACK_G,
-        (int)((Pixel >> A__PX_SHIFT_B) & A__PX_MASK_B) << A__PX_PACK_B};
+        (int)((Pixel >> A__PX_SHIFT_B) & A__PX_MASK_B) << A__PX_PACK_B
+    };
+
+    return rgb;
 }
 
 typedef enum {

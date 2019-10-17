@@ -15,6 +15,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <a2x.v.h>
+
+#if A__COMPILE_INC
 static void A__FUNC_NAME(pixel)(int X, int Y)
 {
     A__BLEND_SETUP;
@@ -22,36 +25,26 @@ static void A__FUNC_NAME(pixel)(int X, int Y)
     A__PIXEL_DRAW(a_screen__bufferGetFrom(X, Y));
 }
 
-static void A__FUNC_NAME(rectangle_nofill)(int X, int Y, int Width, int Height)
-{
-    g_draw_hline(X, X + Width - 1, Y);
-
-    if(Height > 1) {
-        g_draw_hline(X, X + Width - 1, Y + Height - 1);
-
-        if(Height > 2) {
-            g_draw_vline(X, Y + 1, Y + Height - 2);
-
-            if(Width > 1) {
-                g_draw_vline(X + Width - 1, Y + 1, Y + Height - 2);
-            }
-        }
-    }
-}
-
-static void A__FUNC_NAME(rectangle_fill)(int X, int Y, int Width, int Height)
+static void A__FUNC_NAME(hline)(int X1, int X2, int Y)
 {
     A__BLEND_SETUP;
 
-    APixel* pixels = a_screen__bufferGetFrom(X, Y);
+    APixel* dst = a_screen__bufferGetFrom(X1, Y);
+
+    for(int i = X2 - X1 + 1; i--; dst++) {
+        A__PIXEL_DRAW(dst);
+    }
+}
+
+static void A__FUNC_NAME(vline)(int X, int Y1, int Y2)
+{
+    A__BLEND_SETUP;
+
     const int screenw = a__screen.pixels->w;
+    APixel* dst = a_screen__bufferGetFrom(X, Y1);
 
-    for(int i = Height; i--; pixels += screenw) {
-        APixel* dst = pixels;
-
-        for(int j = Width; j--; dst++) {
-            A__PIXEL_DRAW(dst);
-        }
+    for(int i = Y2 - Y1 + 1; i--; dst += screenw) {
+        A__PIXEL_DRAW(dst);
     }
 }
 
@@ -65,9 +58,9 @@ static void A__FUNC_NAME(line)(int X1, int Y1, int X2, int Y2)
     const int ymax = a_math_max(Y1, Y2);
 
     if(X1 == X2) {
-        g_draw_vline(X1, ymin, ymax);
+        A__FUNC_NAME(vline)(X1, ymin, ymax);
     } else if(Y1 == Y2) {
-        g_draw_hline(xmin, xmax, Y1);
+        A__FUNC_NAME(hline)(xmin, xmax, Y1);
     } else {
         const int deltax = xmax - xmin;
         const int deltay = ymax - ymin;
@@ -118,26 +111,36 @@ static void A__FUNC_NAME(line)(int X1, int Y1, int X2, int Y2)
     }
 }
 
-static void A__FUNC_NAME(hline)(int X1, int X2, int Y)
+static void A__FUNC_NAME(rectangle_nofill)(int X, int Y, int Width, int Height)
 {
-    A__BLEND_SETUP;
+    A__FUNC_NAME(hline)(X, X + Width - 1, Y);
 
-    APixel* dst = a_screen__bufferGetFrom(X1, Y);
+    if(Height > 1) {
+        A__FUNC_NAME(hline)(X, X + Width - 1, Y + Height - 1);
 
-    for(int i = X2 - X1 + 1; i--; dst++) {
-        A__PIXEL_DRAW(dst);
+        if(Height > 2) {
+            A__FUNC_NAME(vline)(X, Y + 1, Y + Height - 2);
+
+            if(Width > 1) {
+                A__FUNC_NAME(vline)(X + Width - 1, Y + 1, Y + Height - 2);
+            }
+        }
     }
 }
 
-static void A__FUNC_NAME(vline)(int X, int Y1, int Y2)
+static void A__FUNC_NAME(rectangle_fill)(int X, int Y, int Width, int Height)
 {
     A__BLEND_SETUP;
 
+    APixel* pixels = a_screen__bufferGetFrom(X, Y);
     const int screenw = a__screen.pixels->w;
-    APixel* dst = a_screen__bufferGetFrom(X, Y1);
 
-    for(int i = Y2 - Y1 + 1; i--; dst += screenw) {
-        A__PIXEL_DRAW(dst);
+    for(int i = Height; i--; pixels += screenw) {
+        APixel* dst = pixels;
+
+        for(int j = Width; j--; dst++) {
+            A__PIXEL_DRAW(dst);
+        }
     }
 }
 
@@ -228,10 +231,13 @@ static void A__FUNC_NAME(circle_noclip_nofill)(int X, int Y, int Radius)
 
 static void A__FUNC_NAME(circle_noclip_fill)(int X, int Y, int Radius)
 {
-    if(--Radius <= 0) {
-        if(Radius == 0) {
-            g_draw_rectangle(X - 1, Y - 1, 2, 2);
-        }
+    // Using inclusive coords
+    if(--Radius < 0) {
+        return;
+    }
+
+    if(Radius == 0) {
+        A__FUNC_NAME(rectangle_fill)(X - 1, Y - 1, 2, 2);
 
         return;
     }
@@ -250,8 +256,8 @@ static void A__FUNC_NAME(circle_noclip_fill)(int X, int Y, int Radius)
     int y4 = Y + x;
 
     while(x > y) {
-        g_draw_hline(x1, x2, y1);
-        g_draw_hline(x1, x2, y2);
+        A__FUNC_NAME(hline)(x1, x2, y1);
+        A__FUNC_NAME(hline)(x1, x2, y2);
 
         error += 2 * y + 1; // (y+1)^2 = y^2 + 2y + 1
         y++;
@@ -262,8 +268,8 @@ static void A__FUNC_NAME(circle_noclip_fill)(int X, int Y, int Radius)
         x4++;
 
         if(error > 0) { // check if x^2 + y^2 > r^2
-            g_draw_hline(x3, x4, y3);
-            g_draw_hline(x3, x4, y4);
+            A__FUNC_NAME(hline)(x3, x4, y3);
+            A__FUNC_NAME(hline)(x3, x4, y4);
 
             error += -2 * x + 1; // (x-1)^2 = x^2 - 2x + 1
             x--;
@@ -276,8 +282,8 @@ static void A__FUNC_NAME(circle_noclip_fill)(int X, int Y, int Radius)
     }
 
     if(x == y) {
-        g_draw_hline(x3, x4, y3);
-        g_draw_hline(x3, x4, y4);
+        A__FUNC_NAME(hline)(x3, x4, y3);
+        A__FUNC_NAME(hline)(x3, x4, y4);
     }
 }
 
@@ -529,3 +535,4 @@ static void A__FUNC_NAME(circle_clip_fill)(int X, int Y, int Radius)
 #undef A__BLEND
 #undef A__BLEND_SETUP
 #undef A__PIXEL_PARAMS
+#endif // A__COMPILE_INC

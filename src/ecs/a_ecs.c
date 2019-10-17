@@ -18,6 +18,7 @@
 #include "a_ecs.v.h"
 #include <a2x.v.h>
 
+#if A_CONFIG_ECS_ENABLED
 static AList* g_lists[A_ECS__NUM]; // Each entity is in exactly one of these
 static bool g_ignoreRefDec; // Set to prevent using freed entities
 
@@ -114,3 +115,10 @@ void a_ecs__flushEntitiesFromSystems(void)
 
     a_list_clear(g_lists[A_ECS__FLUSH]);
 }
+#else // !A_CONFIG_ECS_ENABLED
+const APack a_pack__ecs;
+
+void a_ecs__tick(void)
+{
+}
+#endif // !A_CONFIG_ECS_ENABLED

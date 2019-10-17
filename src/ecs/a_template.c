@@ -18,6 +18,7 @@
 #include "a_template.v.h"
 #include <a2x.v.h>
 
+#if A_CONFIG_ECS_ENABLED
 struct ATemplate {
     unsigned instanceNumber; // Incremented by each new entity
     AEntityInit* init; // Optional, runs after components init and parent init
@@ -180,3 +181,4 @@ const void* a_template__dataGet(const ATemplate* Template, int ComponentIndex)
 {
     return Template->data[ComponentIndex];
 }
+#endif // A_CONFIG_ECS_ENABLED

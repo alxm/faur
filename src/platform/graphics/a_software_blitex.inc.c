@@ -15,10 +15,13 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <a2x.v.h>
+
+#if A__COMPILE_INC
 #if A__PIXEL_TRANSPARENCY
-    #define A__COLORKEY keyed
+    #define A__COLORKEY Keyed
 #else
-    #define A__COLORKEY block
+    #define A__COLORKEY Block
 #endif
 
 static void A__FUNC_NAME_EX(const APixels* Pixels, unsigned Frame, int X, int Y, AFix Scale, unsigned Angle, AFix CenterX, AFix CenterY)
@@ -201,3 +204,4 @@ static void A__FUNC_NAME_EX(const APixels* Pixels, unsigned Frame, int X, int Y,
 
 #undef A__PIXEL_TRANSPARENCY
 #undef A__COLORKEY
+#endif // A__COMPILE_INC

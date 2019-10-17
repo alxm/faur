@@ -3,6 +3,7 @@
 
 geany -i \
     * \
+    .gitignore \
     bin/* \
     bin/utils/* \
     make/* \
