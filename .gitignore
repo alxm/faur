@@ -1,7 +1,4 @@
-/make/a2x/obj
-/inc
-/lib
+/a2x.geany
 /bin/utils/__pycache__
-/src/media/*/*.c
-/src/media/*/*.h
+/examples
 /todo
