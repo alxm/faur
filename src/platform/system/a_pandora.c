@@ -16,7 +16,7 @@
 */
 
 #include "a_pandora.v.h"
-#include <a2x.v.h>
+#include <faur.v.h>
 
 #if A_CONFIG_SYSTEM_PANDORA
 static char* g_nubModes[2];

@@ -16,7 +16,7 @@
 */
 
 #include "a_strhash.v.h"
-#include <a2x.v.h>
+#include <faur.v.h>
 
 #define A_STRHASH__SLOTS 128
 #define A_STRHASH__SLOTS_MASK (A_STRHASH__SLOTS - 1)

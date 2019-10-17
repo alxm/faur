@@ -16,7 +16,7 @@
 */
 
 #include "a_fps.v.h"
-#include <a2x.v.h>
+#include <faur.v.h>
 
 static struct {
     unsigned tickFrameMs;

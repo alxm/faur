@@ -16,7 +16,7 @@
 */
 
 #include "a_bitfield.v.h"
-#include <a2x.v.h>
+#include <faur.v.h>
 
 typedef unsigned long AChunk;
 #define A__BITS_PER_CHUNK (unsigned)(sizeof(AChunk) * 8)

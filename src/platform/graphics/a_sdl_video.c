@@ -16,7 +16,7 @@
 */
 
 #include "a_sdl_video.v.h"
-#include <a2x.v.h>
+#include <faur.v.h>
 
 #if A_CONFIG_LIB_SDL
 #if A_CONFIG_LIB_SDL == 1

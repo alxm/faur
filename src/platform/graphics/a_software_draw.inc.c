@@ -15,7 +15,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <a2x.v.h>
+#include <faur.v.h>
 
 #if A__COMPILE_INC
 static void A__FUNC_NAME(pixel)(int X, int Y)

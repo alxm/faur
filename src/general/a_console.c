@@ -17,7 +17,7 @@
 */
 
 #include "a_console.v.h"
-#include <a2x.v.h>
+#include <faur.v.h>
 
 #if A_CONFIG_CONSOLE_ENABLED
 typedef struct {

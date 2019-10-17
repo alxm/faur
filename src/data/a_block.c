@@ -16,7 +16,7 @@
 */
 
 #include "a_block.v.h"
-#include <a2x.v.h>
+#include <faur.v.h>
 
 struct ABlock {
     char* text; // own content

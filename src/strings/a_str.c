@@ -16,7 +16,7 @@
 */
 
 #include "a_str.v.h"
-#include <a2x.v.h>
+#include <faur.v.h>
 
 static inline const char* strFmtv(char* Buffer, size_t Size, bool OverflowOk, const char* Format, va_list Args)
 {

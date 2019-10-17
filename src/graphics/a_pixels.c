@@ -16,7 +16,7 @@
 */
 
 #include "a_pixels.v.h"
-#include <a2x.v.h>
+#include <faur.v.h>
 
 APixels* a_pixels__new(int W, int H, unsigned Frames, APixelsFlags Flags)
 {

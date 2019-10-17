@@ -16,7 +16,7 @@
 */
 
 #include "a_png.v.h"
-#include <a2x.v.h>
+#include <faur.v.h>
 
 #if A_CONFIG_LIB_PNG
 #include <zlib.h>

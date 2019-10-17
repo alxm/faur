@@ -37,7 +37,7 @@ ARDMK_DIR = $(A_SDK_ARDUINO_MAKEFILE)
 BOARD_TAG = gamebuino_meta_native
 ALTERNATE_CORE_PATH = $(wildcard $(HOME)/.arduino15/packages/gamebuino/hardware/samd/1.*)
 
-ARDUINO_LIBS = a2x Gamebuino_META SPI
+ARDUINO_LIBS = faur Gamebuino_META SPI
 
 OPTIMIZATION_LEVEL = $(A_CONFIG_BUILD_OPT)
 
@@ -58,7 +58,7 @@ CXXFLAGS += -fno-lto
 LDFLAGS += -fno-lto
 
 A_FILES_CONFIG := \
-    $(A_DIR_GEN)/sketch/config-a2x.h \
+    $(A_DIR_GEN)/sketch/config-faur.h \
     $(A_DIR_GEN)/sketch/config-gamebuino.h \
 
 $(USER_LIB_OBJS) $(LOCAL_OBJS) : $(A_FILES_CONFIG)

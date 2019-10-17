@@ -18,7 +18,7 @@
 #ifndef A_INC_PLATFORM_SYSTEM_GAMEBUINO_CONFIG_H
 #define A_INC_PLATFORM_SYSTEM_GAMEBUINO_CONFIG_H
 
-#include <sketch/config-a2x.h>
+#include <sketch/config-faur.h>
 
 #ifndef A_CONFIG_APP_AUTHOR
 #define A_CONFIG_APP_AUTHOR "you"

@@ -19,7 +19,7 @@ extern "C" {
     #include "a_gamebuino_input.v.h"
 }
 
-#include <a2x.v.h>
+#include <faur.v.h>
 
 #if A_CONFIG_SYSTEM_GAMEBUINO
 #include <Arduino.h>

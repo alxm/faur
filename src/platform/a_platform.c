@@ -16,7 +16,7 @@
 */
 
 #include "a_platform.v.h"
-#include <a2x.v.h>
+#include <faur.v.h>
 
 static void a_platform__init(void)
 {

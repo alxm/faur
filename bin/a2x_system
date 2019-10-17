@@ -45,7 +45,7 @@ void s_{name}(AEntity* Entity)
 """\
 #pragma once
 
-#include <a2x.h>
+#include <faur.h>
 
 extern ASystemHandler s_{name};
 """.format(name = sys_name))

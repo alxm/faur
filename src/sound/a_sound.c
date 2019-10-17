@@ -16,7 +16,7 @@
 */
 
 #include "a_sound.v.h"
-#include <a2x.v.h>
+#include <faur.v.h>
 
 #if A_CONFIG_SOUND_ENABLED
 static int g_volume;

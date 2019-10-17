@@ -16,7 +16,7 @@
 */
 
 #include "a_mem.v.h"
-#include <a2x.v.h>
+#include <faur.v.h>
 
 #if A_CONFIG_BUILD_DEBUG_ALLOC
 size_t a_mem__tally, a_mem__top;

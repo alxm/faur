@@ -16,7 +16,7 @@
 */
 
 #include "a_file_real.v.h"
-#include <a2x.v.h>
+#include <faur.v.h>
 #include <sys/stat.h>
 
 #if A_CONFIG_SYSTEM_EMSCRIPTEN

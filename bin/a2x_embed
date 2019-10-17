@@ -49,7 +49,7 @@ def main():
 
     g_tool.write_text(c_file,
 """\
-#include <a2x.v.h>
+#include <faur.v.h>
 {}
 void a_embed__populate(void)
 {{

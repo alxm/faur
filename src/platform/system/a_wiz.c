@@ -20,7 +20,7 @@
 */
 
 #include "a_wiz.v.h"
-#include <a2x.v.h>
+#include <faur.v.h>
 
 #if A_CONFIG_SYSTEM_WIZ || A_CONFIG_SYSTEM_CAANOO
 #include <fcntl.h>

@@ -16,7 +16,7 @@
 */
 
 #include "a_screenshot.v.h"
-#include <a2x.v.h>
+#include <faur.v.h>
 
 #if A_CONFIG_LIB_PNG
 #define A__SCREENSHOTS_LIMIT 99999

@@ -16,7 +16,7 @@
 */
 
 #include "a_input.v.h"
-#include <a2x.v.h>
+#include <faur.v.h>
 
 static void a_input__init(void)
 {

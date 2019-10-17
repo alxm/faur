@@ -63,7 +63,7 @@ void t_{name}(void)
 """\
 #pragma once
 
-#include <a2x.h>
+#include <faur.h>
 
 extern AStateHandler t_{name};
 """.format(name = state_name))

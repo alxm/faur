@@ -112,7 +112,7 @@ all : $(A_MAKE_ALL)
 #
 # a2x header and lib build rules
 #
-include $(A2X_PATH)/make/global/a2x.mk
+include $(A2X_PATH)/make/global/faur.mk
 
 #
 # Object dependencies

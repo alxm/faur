@@ -16,7 +16,7 @@
 */
 
 #include "a_time.v.h"
-#include <a2x.v.h>
+#include <faur.v.h>
 
 uint32_t a_time_getMs(void)
 {

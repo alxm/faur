@@ -61,7 +61,7 @@ def main():
 
 def process_h(var_name):
     content = """\
-#include <a2x.h>
+#include <faur.h>
 
 extern const ASprite* const a_gfx_{var};
 """.format(var = var_name)
@@ -110,7 +110,7 @@ def process_c(image_file, target_file, var_name, bpp, color_key):
             frames_num += 1
 
     content = """\
-#include <a2x.v.h>
+#include <faur.v.h>
 
 static const APixel a_gfx__buffer__{var}[{width} * {height} * {frames_num}] = {{{pixels}}};{spans}
 

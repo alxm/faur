@@ -16,7 +16,7 @@
 */
 
 #include "a_analog.v.h"
-#include <a2x.v.h>
+#include <faur.v.h>
 
 struct AAnalog {
     const char* name; // friendly name

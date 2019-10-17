@@ -16,7 +16,7 @@
 */
 
 #include "a_fade.v.h"
-#include <a2x.v.h>
+#include <faur.v.h>
 
 typedef enum {
     A__FADE_INVALID = -1,

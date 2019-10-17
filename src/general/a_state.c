@@ -18,7 +18,7 @@
 #define A2X_IMPLEMENT 1
 
 #include "a_state.v.h"
-#include <a2x.v.h>
+#include <faur.v.h>
 
 #if A_CONFIG_SYSTEM_EMSCRIPTEN
     #include <emscripten.h>

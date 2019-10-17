@@ -16,7 +16,7 @@
 */
 
 #include "a_software_blit.v.h"
-#include <a2x.v.h>
+#include <faur.v.h>
 
 #if A_CONFIG_LIB_RENDER_SOFTWARE
 #define A__COMPILE_INC 1

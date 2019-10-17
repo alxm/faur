@@ -16,7 +16,7 @@
 */
 
 #include "a_collection.v.h"
-#include <a2x.v.h>
+#include <faur.v.h>
 
 #if A_CONFIG_ECS_ENABLED
 static ACollection* g_current; // New entities are added to this collection

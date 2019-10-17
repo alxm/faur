@@ -16,7 +16,7 @@
 */
 
 #include "a_timer.v.h"
-#include <a2x.v.h>
+#include <faur.v.h>
 
 typedef enum {
     A_TIMER__REPEAT = A_FLAGS_BIT(0),

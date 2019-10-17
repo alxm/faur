@@ -16,7 +16,7 @@
 */
 
 #include "a_file_embedded.v.h"
-#include <a2x.v.h>
+#include <faur.v.h>
 
 static bool fileSeek(AFile* File, int Offset, AFileOffset Origin)
 {

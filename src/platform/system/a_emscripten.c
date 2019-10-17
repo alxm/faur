@@ -16,7 +16,7 @@
 */
 
 #include "a_emscripten.v.h"
-#include <a2x.v.h>
+#include <faur.v.h>
 
 #if A_CONFIG_SYSTEM_EMSCRIPTEN
 #include <emscripten.h>

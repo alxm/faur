@@ -16,7 +16,7 @@
 */
 
 #include "a_entity.v.h"
-#include <a2x.v.h>
+#include <faur.v.h>
 
 #if A_CONFIG_ECS_ENABLED
 struct AEntity {

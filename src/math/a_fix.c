@@ -16,7 +16,7 @@
 */
 
 #include "a_fix.v.h"
-#include <a2x.v.h>
+#include <faur.v.h>
 
 #define A_FIX__ATAN_SCALE 32
 

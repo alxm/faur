@@ -42,7 +42,7 @@ category/a_sample.v.h
 
 category/a_sample.c
     #include "a_sample.v.h"
-    #include <a2x.v.h>
+    #include <faur.v.h>
     #include <system headers>
     <private types>
     <implementations>
@@ -104,7 +104,7 @@ def main():
 {header_comment}
 
 #include "a_{name}.v.h"
-#include <a2x.v.h>
+#include <faur.v.h>
 
 static void a_{name}__init(void)
 {{

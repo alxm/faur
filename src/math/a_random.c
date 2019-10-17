@@ -16,7 +16,7 @@
 */
 
 #include "a_random.v.h"
-#include <a2x.v.h>
+#include <faur.v.h>
 #include <time.h>
 
 static ARandomPrng* g_rand;

@@ -12,8 +12,8 @@ A2X_FILES_PUBLIC_A2X_HEADERS := \
     $(A2X_DIR_SRC)/general/a_system_includes.h \
     $(shell find $(A2X_DIR_SRC) -type f -name "*.p.h")
 A2X_FILES_PRIVATE_A2X_HEADERS := $(shell find $(A2X_DIR_SRC) -type f -name "*.v.h")
-A2X_FILE_PUBLIC_A2X_LIB := $(A2X_DIR_OBJ)/a2x.a
-A2X_FILE_EDITOR_TAGS := $(HOME)/.config/geany/tags/a2x.c.tags
+A2X_FILE_PUBLIC_A2X_LIB := $(A2X_DIR_OBJ)/faur.a
+A2X_FILE_EDITOR_TAGS := $(HOME)/.config/geany/tags/faur.c.tags
 A2X_FILES_SRC_C := $(shell find $(A2X_DIR_SRC) -type f -name "*.c")
 A2X_FILES_OBJ := $(A2X_FILES_SRC_C:$(A2X_DIR_SRC)/%=$(A2X_DIR_OBJ)/%.o)
 

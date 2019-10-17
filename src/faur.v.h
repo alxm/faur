@@ -18,7 +18,7 @@
 #ifndef A_INC_A2X_V_H
 #define A_INC_A2X_V_H
 
-#include "a2x.h"
+#include "faur.h"
 
 A_EXTERN_C_START
 #include "collision/a_collide.v.h"

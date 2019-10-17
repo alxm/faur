@@ -60,7 +60,7 @@ include $(A2X_PATH)/make/dev.mk
 
     dir_source.write_file('main.c',
 """\
-#include <a2x.h>
+#include <faur.h>
 
 AStateHandler drawBox;
 

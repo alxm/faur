@@ -16,7 +16,7 @@
 */
 
 #include "a_out.v.h"
-#include <a2x.v.h>
+#include <faur.v.h>
 
 #if A_CONFIG_OUTPUT_ENABLED
 #define A_OUT__STREAM_STDOUT stdout

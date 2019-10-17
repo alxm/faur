@@ -104,7 +104,7 @@ void c_{name}_valueSet({ctype}* {paramVar}, int Value)
 """\
 #pragma once
 
-#include <a2x.h>
+#include <faur.h>
 
 typedef struct {ctype} {ctype};
 
