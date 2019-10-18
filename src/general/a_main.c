@@ -1,6 +1,6 @@
 /*
     Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
-    This file is part of a2x, a C video game framework.
+    This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License version 3,
@@ -87,7 +87,7 @@ int main(int Argc, char* Argv[])
 void a__main(void)
 {
     a_out__info("PID: %d", getpid());
-    a_out__info("a2x: %s %s", A_CONFIG_BUILD_UID, A_CONFIG_BUILD_GIT_HASH);
+    a_out__info("Faur: %s %s", A_CONFIG_BUILD_UID, A_CONFIG_BUILD_GIT_HASH);
     a_out__info("App: %s %s by %s",
                 A_CONFIG_APP_NAME,
                 A_CONFIG_APP_VERSION_STRING,

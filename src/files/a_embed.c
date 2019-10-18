@@ -1,6 +1,6 @@
 /*
     Copyright 2017-2019 Alex Margarit <alex@alxm.org>
-    This file is part of a2x, a C video game framework.
+    This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License version 3,
@@ -41,9 +41,9 @@ static void a_embed__init(void)
     g_dirs = a_strhash_new();
     g_files = a_strhash_new();
 
-    addFile("/a2x/consoleTitles", &a__bin__media_console_png);
-    addFile("/a2x/font", &a__bin__media_fontgrid_png);
-    addFile("/a2x/fontKeyed", &a__bin__media_fontgrid_keyed_png);
+    addFile("/faur/consoleTitles", &a__bin__media_console_png);
+    addFile("/faur/font", &a__bin__media_fontgrid_png);
+    addFile("/faur/fontKeyed", &a__bin__media_fontgrid_keyed_png);
 
     a_embed__populate();
 }

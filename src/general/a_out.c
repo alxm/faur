@@ -1,6 +1,6 @@
 /*
     Copyright 2016-2019 Alex Margarit <alex@alxm.org>
-    This file is part of a2x, a C video game framework.
+    This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License version 3,
@@ -44,8 +44,8 @@ typedef enum {
 } AColorCode;
 
 static const char* g_sources[A_OUT__SOURCE_NUM] = {
-    [A_OUT__SOURCE_A2X] = "a2x",
-    [A_OUT__SOURCE_APP] = "App",
+    [A_OUT__SOURCE_FAUR] = "Faur",
+    [A_OUT__SOURCE_APP] = "Game",
 };
 
 static const struct {
@@ -96,7 +96,7 @@ void a_out__info(const char* Format, ...)
     va_list args;
     va_start(args, Format);
 
-    outWorker(A_OUT__SOURCE_A2X,
+    outWorker(A_OUT__SOURCE_FAUR,
               A_OUT__TYPE_INFO,
               A_OUT__STREAM_STDOUT,
               Format,
@@ -110,7 +110,7 @@ void a_out__warning(const char* Format, ...)
     va_list args;
     va_start(args, Format);
 
-    outWorker(A_OUT__SOURCE_A2X,
+    outWorker(A_OUT__SOURCE_FAUR,
               A_OUT__TYPE_WARNING,
               A_OUT__STREAM_STDERR,
               Format,
@@ -124,7 +124,7 @@ void a_out__error(const char* Format, ...)
     va_list args;
     va_start(args, Format);
 
-    outWorker(A_OUT__SOURCE_A2X,
+    outWorker(A_OUT__SOURCE_FAUR,
               A_OUT__TYPE_ERROR,
               A_OUT__STREAM_STDERR,
               Format,
@@ -135,7 +135,7 @@ void a_out__error(const char* Format, ...)
 
 void a_out__errorv(const char* Format, va_list Args)
 {
-    outWorker(A_OUT__SOURCE_A2X,
+    outWorker(A_OUT__SOURCE_FAUR,
               A_OUT__TYPE_ERROR,
               A_OUT__STREAM_STDERR,
               Format,
@@ -147,7 +147,7 @@ void a_out__state(const char* Format, ...)
     va_list args;
     va_start(args, Format);
 
-    outWorker(A_OUT__SOURCE_A2X,
+    outWorker(A_OUT__SOURCE_FAUR,
               A_OUT__TYPE_STATE,
               A_OUT__STREAM_STDOUT,
               Format,

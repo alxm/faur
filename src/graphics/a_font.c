@@ -1,6 +1,6 @@
 /*
     Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
-    This file is part of a2x, a C video game framework.
+    This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License version 3,
@@ -49,9 +49,9 @@ static void a_font__init(void)
         };
 
         g_defaultFonts[A_FONT__ID_DEFAULT] = a_font_newFromPng(
-                                                "/a2x/font", 0, 0, 6, 8);
+                                                "/faur/font", 0, 0, 6, 8);
         g_defaultFonts[A_FONT__ID_WHITE] = a_font_newFromPng(
-                                            "/a2x/fontKeyed", 0, 0, 6, 8);
+                                            "/faur/fontKeyed", 0, 0, 6, 8);
 
         for(int f = A_FONT__ID_WHITE + 1; f < A_FONT__ID_NUM; f++) {
             g_defaultFonts[f] = a_font_dup(g_defaultFonts[A_FONT__ID_WHITE],

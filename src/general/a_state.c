@@ -1,6 +1,6 @@
 /*
     Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
-    This file is part of a2x, a C video game framework.
+    This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License version 3,
@@ -15,7 +15,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#define A2X_IMPLEMENT 1
+#define FAUR_IMPLEMENT 1
 
 #include "a_state.v.h"
 #include <faur.v.h>
@@ -301,7 +301,7 @@ void a_state_blockSet(const AEvent* Event)
 bool a_state__runStep(void)
 {
     #if A_CONFIG_SYSTEM_EMSCRIPTEN
-        if(!EM_ASM_INT({ return Module.a2x_fsIsReady; }, 0)) {
+        if(!EM_ASM_INT({ return Module.faur_fsIsReady; }, 0)) {
             return true;
         }
     #endif

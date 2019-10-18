@@ -1,6 +1,6 @@
 /*
     Copyright 2016-2019 Alex Margarit <alex@alxm.org>
-    This file is part of a2x, a C video game framework.
+    This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License version 3,
@@ -22,7 +22,7 @@
 
 typedef enum {
     A_OUT__SOURCE_INVALID = -1,
-    A_OUT__SOURCE_A2X,
+    A_OUT__SOURCE_FAUR,
     A_OUT__SOURCE_APP,
     A_OUT__SOURCE_NUM
 } AOutSource;

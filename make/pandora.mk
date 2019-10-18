@@ -1,4 +1,4 @@
-include $(A2X_PATH)/make/global/defs.mk
+include $(FAUR_PATH)/make/global/defs.mk
 
 A_CONFIG_BUILD_AR_FLAGS := T
 A_CONFIG_BUILD_OPT := 3
@@ -56,7 +56,7 @@ export READELF := $(PREFIX)readelf
 export STRIP   := $(PREFIX)strip
 export LD      := $(PREFIX)ld
 
-include $(A2X_PATH)/make/global/rules.mk
+include $(FAUR_PATH)/make/global/rules.mk
 
 A_DIR_PND_BASE := $(A_DIR_BUILD_STATIC)/pnd
 A_DIR_PND_STAGING := $(A_DIR_BUILD_UID)/pnd

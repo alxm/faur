@@ -1,6 +1,6 @@
 /*
     Copyright 2019 Alex Margarit <alex@alxm.org>
-    This file is part of a2x, a C video game framework.
+    This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License version 3,
@@ -28,11 +28,11 @@ void a_platform_emscripten__init(void)
             // Strip trailing slash
             var prefix = UTF8ToString($0).slice(0, -1);
 
-            Module.a2x_fsIsReady = 0;
+            Module.faur_fsIsReady = 0;
 
             FS.mkdir(prefix);
             FS.mount(IDBFS, {}, prefix);
-            FS.syncfs(true, function(Error) { Module.a2x_fsIsReady = 1; });
+            FS.syncfs(true, function(Error) { Module.faur_fsIsReady = 1; });
         },
         A_CONFIG_PATH_STORAGE_PREFIX
     );

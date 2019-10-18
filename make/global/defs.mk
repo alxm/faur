@@ -1,5 +1,5 @@
-A2X_DIR_ROOT := $(realpath $(A2X_PATH))
-A2X_DIR_SRC := $(A2X_DIR_ROOT)/src
+FAUR_DIR_ROOT := $(realpath $(FAUR_PATH))
+FAUR_DIR_SRC := $(FAUR_DIR_ROOT)/src
 
 #
 # make/global/defs is included by every platform Makefile on line 1
@@ -12,7 +12,7 @@ A_CONFIG_BUILD_PLATFORM := \
 
 A_DIR_ROOT := ../..
 A_DIR_ROOT_FROM_BIN := ../../../..
-A_DIR_CONFIG := $(HOME)/.config/a2x
+A_DIR_CONFIG := $(HOME)/.config/faur
 
 #
 # To support app and author names with spaces

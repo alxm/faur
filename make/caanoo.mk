@@ -1,4 +1,4 @@
-include $(A2X_PATH)/make/global/defs.mk
+include $(FAUR_PATH)/make/global/defs.mk
 
 A_CONFIG_BUILD_AR_FLAGS := T
 A_CONFIG_BUILD_OPT := 3
@@ -53,4 +53,4 @@ export OBJCOPY := $(PREFIX)objcopy
 export READELF := $(PREFIX)readelf
 export STRIP   := $(PREFIX)strip
 
-include $(A2X_PATH)/make/global/rules.mk
+include $(FAUR_PATH)/make/global/rules.mk

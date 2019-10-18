@@ -1,6 +1,6 @@
 /*
     Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
-    This file is part of a2x, a C video game framework.
+    This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License version 3,
@@ -27,7 +27,7 @@ extern void a_state_pop(void);
 extern void a_state_popUntil(AStateHandler* Handler, const char* Name);
 extern void a_state_replace(AStateHandler* Handler, const char* Name);
 
-#ifndef A2X_IMPLEMENT
+#ifndef FAUR_IMPLEMENT
     #define a_state_push(Handler) a_state_push(Handler, #Handler)
     #define a_state_popUntil(Handler) a_state_popUntil(Handler, #Handler)
     #define a_state_replace(Handler) a_state_replace(Handler, #Handler)

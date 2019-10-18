@@ -1,4 +1,4 @@
-include $(A2X_PATH)/make/global/defs.mk
+include $(FAUR_PATH)/make/global/defs.mk
 
 MINGW_BIN := $(A_SDK_MINGW32_ROOT)/$(A_SDK_MINGW32_ARCH)/bin
 
@@ -31,7 +31,7 @@ export OBJCOPY := $(PREFIX)objcopy
 export READELF := $(PREFIX)readelf
 export STRIP   := $(PREFIX)strip
 
-include $(A2X_PATH)/make/global/rules.mk
+include $(FAUR_PATH)/make/global/rules.mk
 
 run :
 	cd $(A_DIR_BIN) && wine ./$(A_FILE_BIN)

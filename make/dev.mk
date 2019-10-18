@@ -1,4 +1,4 @@
-include $(A2X_PATH)/make/global/defs.mk
+include $(FAUR_PATH)/make/global/defs.mk
 
 A_CONFIG_BUILD_AR_FLAGS := T
 A_CONFIG_BUILD_DEBUG ?= 1
@@ -26,6 +26,6 @@ A_CONFIG_BUILD_LIBS += \
 A_CONFIG_BUILD_CFLAGS += \
     -fpie \
 
-include $(A2X_PATH)/make/global/rules.mk
+include $(FAUR_PATH)/make/global/rules.mk
 
-all : $(A2X_FILE_EDITOR_TAGS)
+all : $(FAUR_FILE_EDITOR_TAGS)

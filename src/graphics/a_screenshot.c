@@ -1,6 +1,6 @@
 /*
     Copyright 2011, 2016, 2018-2019 Alex Margarit <alex@alxm.org>
-    This file is part of a2x, a C video game framework.
+    This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License version 3,
@@ -73,7 +73,7 @@ static bool lazy_init(void)
             A_CONFIG_APP_AUTHOR));
 
         g_description = a_str_dup(a_str__fmt512(
-            "%s %s by %s, built %s. Running a2x %s %s.",
+            "%s %s by %s, built %s. Using Faur %s %s.",
             A_CONFIG_APP_NAME,
             A_CONFIG_APP_VERSION_STRING,
             A_CONFIG_APP_AUTHOR,

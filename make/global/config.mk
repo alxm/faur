@@ -71,13 +71,13 @@ A_CONFIG_DIR_SRC ?= src
 #   A_CONFIG_ECS_SYS_NUM - Source dir-relative file and enum value to read
 #
 ifdef A_CONFIG_ECS_COM_NUM
-    A_CONFIG_ECS_COM_NUM := $(shell $(A2X_PATH)/bin/a2x_enum -q $(A_DIR_ROOT)/$(A_CONFIG_DIR_SRC)/$(A_CONFIG_ECS_COM_NUM))
+    A_CONFIG_ECS_COM_NUM := $(shell $(FAUR_PATH)/bin/faur-enum -q $(A_DIR_ROOT)/$(A_CONFIG_DIR_SRC)/$(A_CONFIG_ECS_COM_NUM))
 else
     A_CONFIG_ECS_COM_NUM := 0
 endif
 
 ifdef A_CONFIG_ECS_SYS_NUM
-    A_CONFIG_ECS_SYS_NUM := $(shell $(A2X_PATH)/bin/a2x_enum -q $(A_DIR_ROOT)/$(A_CONFIG_DIR_SRC)/$(A_CONFIG_ECS_SYS_NUM))
+    A_CONFIG_ECS_SYS_NUM := $(shell $(FAUR_PATH)/bin/faur-enum -q $(A_DIR_ROOT)/$(A_CONFIG_DIR_SRC)/$(A_CONFIG_ECS_SYS_NUM))
 else
     A_CONFIG_ECS_SYS_NUM := 0
 endif

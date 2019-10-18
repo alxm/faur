@@ -1,6 +1,6 @@
 /*
     Copyright 2016-2019 Alex Margarit <alex@alxm.org>
-    This file is part of a2x, a C video game framework.
+    This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License version 3,
@@ -75,7 +75,7 @@ static void a_console__init1(void)
     }
 
     #if A_CONFIG_LIB_PNG
-        g_tags = a_sprite_newFromPng("/a2x/consoleTitles", 0, 0, 19, 7);
+        g_tags = a_sprite_newFromPng("/faur/consoleTitles", 0, 0, 19, 7);
     #endif
 
     g_toggle = a_button_new();

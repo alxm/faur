@@ -1,6 +1,6 @@
 /*
     Copyright 2019 Alex Margarit <alex@alxm.org>
-    This file is part of a2x, a C video game framework.
+    This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License version 3,
@@ -15,8 +15,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_A2X_H
-#define A_INC_A2X_H
+#ifndef A_INC_FAUR_H
+#define A_INC_FAUR_H
 
 #ifdef __cplusplus
 #define A_EXTERN_C_START extern "C" {
@@ -92,4 +92,4 @@ A_EXTERN_C_START
 #include "time/a_timer.p.h"
 A_EXTERN_C_END
 
-#endif // A_INC_A2X_H
+#endif // A_INC_FAUR_H

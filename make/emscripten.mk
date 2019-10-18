@@ -1,4 +1,4 @@
-include $(A2X_PATH)/make/global/defs.mk
+include $(FAUR_PATH)/make/global/defs.mk
 
 ifndef A_DO_BUILD
 
@@ -19,7 +19,7 @@ A_CONFIG_BUILD_OPT := 3
 A_CONFIG_LIB_PNG := 1
 A_CONFIG_LIB_SDL ?= 2
 A_CONFIG_LIB_SDL_TIME := 1
-A_CONFIG_PATH_STORAGE_PREFIX := /a2x-idbfs/
+A_CONFIG_PATH_STORAGE_PREFIX := /faur-idbfs/
 A_CONFIG_SCREEN_BPP := 32
 A_CONFIG_SCREEN_VSYNC ?= 1
 A_CONFIG_SYSTEM_EMSCRIPTEN := 1
@@ -61,9 +61,9 @@ A_CONFIG_BUILD_CFLAGS += \
     -Wno-dollar-in-identifier-extension \
     -Wno-gnu-zero-variadic-macro-arguments \
 
-include $(A2X_PATH)/make/global/rules.mk
+include $(FAUR_PATH)/make/global/rules.mk
 
 run :
-	cd $(A_DIR_BIN) && $(A2X_PATH)/bin/a2x_runweb $(A_FILE_BIN)
+	cd $(A_DIR_BIN) && $(FAUR_PATH)/bin/faur-runweb $(A_FILE_BIN)
 
 endif

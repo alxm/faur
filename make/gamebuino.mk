@@ -1,4 +1,4 @@
-include $(A2X_PATH)/make/global/defs.mk
+include $(FAUR_PATH)/make/global/defs.mk
 
 A_CONFIG_BUILD_DEBUG_FATAL_SPIN := 1
 A_CONFIG_BUILD_MAIN := 0
@@ -11,7 +11,7 @@ A_CONFIG_SCREEN_HARDWARE_HEIGHT := 64
 A_CONFIG_SOUND_ENABLED := 0
 A_CONFIG_SYSTEM_GAMEBUINO := 1
 
-include $(A2X_PATH)/make/global/config.mk
+include $(FAUR_PATH)/make/global/config.mk
 
 ifndef A_DO_BUILD
 
@@ -43,7 +43,7 @@ OPTIMIZATION_LEVEL = $(A_CONFIG_BUILD_OPT)
 
 include $(ARDMK_DIR)/Sam.mk
 
-A_DIR_GEN := $(OBJDIR)/userlibs/a2x/a2x_gen
+A_DIR_GEN := $(OBJDIR)/userlibs/faur/faur_gen
 
 # Gamebuino_META needs __SKETCH_NAME__ (usually defined by Arduino IDE)
 A_CONFIG_BUILD_CFLAGS += \
