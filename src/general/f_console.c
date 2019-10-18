@@ -158,9 +158,10 @@ void f_console__draw(void)
         f_font_coordsSet(2, 2);
         f_font_alignSet(F_FONT_ALIGN_LEFT);
 
-        f_font__fontSet(F_FONT__ID_BLUE); f_font_print("a");
-        f_font__fontSet(F_FONT__ID_GREEN); f_font_print("2");
-        f_font__fontSet(F_FONT__ID_YELLOW); f_font_print("x");
+        f_font__fontSet(F_FONT__ID_WHITE); f_font_print("F");
+        f_font__fontSet(F_FONT__ID_BLUE); f_font_print("A");
+        f_font__fontSet(F_FONT__ID_GREEN); f_font_print("U");
+        f_font__fontSet(F_FONT__ID_YELLOW); f_font_print("R");
 
         f_font__fontSet(F_FONT__ID_LIGHT_GRAY);
         f_font_printf(" %s %.8s %s\n",
