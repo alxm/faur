@@ -19,8 +19,8 @@
 #include <faur.v.h>
 
 typedef unsigned long AChunk;
-#define A__BITS_PER_CHUNK (unsigned)(sizeof(AChunk) * 8)
-#define f__BITS_PER_CHUNK_MASK (A__BITS_PER_CHUNK - 1)
+#define F__BITS_PER_CHUNK (unsigned)(sizeof(AChunk) * 8)
+#define f__BITS_PER_CHUNK_MASK (F__BITS_PER_CHUNK - 1)
 
 struct ABitfield {
     unsigned numChunks;
@@ -29,13 +29,13 @@ struct ABitfield {
 
 ABitfield* f_bitfield_new(unsigned NumBits)
 {
-    #if A_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_BUILD_DEBUG
         if(NumBits < 1) {
-            A__FATAL("f_bitfield_new(0): Invalid size");
+            F__FATAL("f_bitfield_new(0): Invalid size");
         }
     #endif
 
-    unsigned numChunks = (NumBits + A__BITS_PER_CHUNK - 1) / A__BITS_PER_CHUNK;
+    unsigned numChunks = (NumBits + F__BITS_PER_CHUNK - 1) / F__BITS_PER_CHUNK;
     ABitfield* b = f_mem_zalloc(sizeof(ABitfield) + numChunks * sizeof(AChunk));
 
     b->numChunks = numChunks;
@@ -51,13 +51,13 @@ void f_bitfield_free(ABitfield* Bitfield)
 void f_bitfield_set(ABitfield* Bitfield, unsigned Bit)
 {
     AChunk bit = (AChunk)1 << (Bit & f__BITS_PER_CHUNK_MASK);
-    Bitfield->bits[Bit / A__BITS_PER_CHUNK] |= bit;
+    Bitfield->bits[Bit / F__BITS_PER_CHUNK] |= bit;
 }
 
 void f_bitfield_clear(ABitfield* Bitfield, unsigned Bit)
 {
     AChunk bit = (AChunk)1 << (Bit & f__BITS_PER_CHUNK_MASK);
-    Bitfield->bits[Bit / A__BITS_PER_CHUNK] &= ~bit;
+    Bitfield->bits[Bit / F__BITS_PER_CHUNK] &= ~bit;
 }
 
 void f_bitfield_reset(ABitfield* Bitfield)
@@ -67,7 +67,7 @@ void f_bitfield_reset(ABitfield* Bitfield)
 
 bool f_bitfield_test(const ABitfield* Bitfield, unsigned Bit)
 {
-    AChunk value = Bitfield->bits[Bit / A__BITS_PER_CHUNK];
+    AChunk value = Bitfield->bits[Bit / F__BITS_PER_CHUNK];
     AChunk bit = (AChunk)1 << (Bit & f__BITS_PER_CHUNK_MASK);
 
     return (value & bit) != 0;

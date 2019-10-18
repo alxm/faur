@@ -48,12 +48,12 @@ def main():
 
     dir_make.write_file('Makefile',
 """\
-A_CONFIG_APP_AUTHOR := {author}
-A_CONFIG_APP_NAME := {name}
+F_CONFIG_APP_AUTHOR := {author}
+F_CONFIG_APP_NAME := {name}
 
-A_CONFIG_APP_VERSION_MAJOR := 1
-A_CONFIG_APP_VERSION_MINOR := 0
-A_CONFIG_APP_VERSION_MICRO := 0
+F_CONFIG_APP_VERSION_MAJOR := 1
+F_CONFIG_APP_VERSION_MINOR := 0
+F_CONFIG_APP_VERSION_MICRO := 0
 
 include $(FAUR_PATH)/make/dev.mk
 """.format(author = author, name = project_name))
@@ -75,32 +75,32 @@ void drawBox(void)
         int x, y;
     }} context;
 
-    A_STATE_INIT
+    F_STATE_INIT
     {{
         context.x = f_screen_sizeGetWidth() / 2;
         context.y = f_screen_sizeGetHeight() / 2;
     }}
 
-    A_STATE_TICK
+    F_STATE_TICK
     {{
-        if(f_input_readKey(A_KEY_UP) || f_input_readButton(A_BUTTON_UP)) {{
+        if(f_input_readKey(F_KEY_UP) || f_input_readButton(F_BUTTON_UP)) {{
             context.y--;
         }}
 
-        if(f_input_readKey(A_KEY_DOWN) || f_input_readButton(A_BUTTON_DOWN)) {{
+        if(f_input_readKey(F_KEY_DOWN) || f_input_readButton(F_BUTTON_DOWN)) {{
             context.y++;
         }}
 
-        if(f_input_readKey(A_KEY_LEFT) || f_input_readButton(A_BUTTON_LEFT)) {{
+        if(f_input_readKey(F_KEY_LEFT) || f_input_readButton(F_BUTTON_LEFT)) {{
             context.x--;
         }}
 
-        if(f_input_readKey(A_KEY_RIGHT) || f_input_readButton(A_BUTTON_RIGHT)) {{
+        if(f_input_readKey(F_KEY_RIGHT) || f_input_readButton(F_BUTTON_RIGHT)) {{
             context.x++;
         }}
     }}
 
-    A_STATE_DRAW
+    F_STATE_DRAW
     {{
         f_color_baseSetHex(0xaaff88);
         f_draw_fill();
@@ -109,7 +109,7 @@ void drawBox(void)
         f_draw_rectangle(context.x - 40, context.y - 40, 80, 80);
     }}
 
-    A_STATE_FREE
+    F_STATE_FREE
     {{
         f_out_info("Bye!");
     }}

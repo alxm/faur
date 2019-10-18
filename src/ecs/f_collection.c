@@ -18,7 +18,7 @@
 #include "f_collection.v.h"
 #include <faur.v.h>
 
-#if A_CONFIG_ECS_ENABLED
+#if F_CONFIG_ECS_ENABLED
 static ACollection* g_current; // New entities are added to this collection
 
 ACollection* f_collection__get(void)
@@ -50,15 +50,15 @@ void f_collection_clear(ACollection* Collection)
 
 void f_collection_muteInc(ACollection* Collection)
 {
-    A_LIST_ITERATE(Collection, AEntity*, e) {
+    F_LIST_ITERATE(Collection, AEntity*, e) {
         f_entity_muteInc(e);
     }
 }
 
 void f_collection_muteDec(ACollection* Collection)
 {
-    A_LIST_ITERATE(Collection, AEntity*, e) {
+    F_LIST_ITERATE(Collection, AEntity*, e) {
         f_entity_muteDec(e);
     }
 }
-#endif // A_CONFIG_ECS_ENABLED
+#endif // F_CONFIG_ECS_ENABLED

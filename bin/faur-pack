@@ -74,7 +74,7 @@ def main():
             author = os.environ[key]
             break
 
-    header_guard = 'A_INC_{}_{}'.format(
+    header_guard = 'F_INC_{}_{}'.format(
         g_tool.sanitize_c_var(pack_folder).upper(),
         g_tool.sanitize_c_var(pack_name).upper())
 

@@ -29,79 +29,79 @@ struct AButton {
     bool pressed;
 };
 
-static const char* g_keyNames[A_KEY_NUM] = {
-    [A_KEY_UP] = "Up",
-    [A_KEY_DOWN] = "Down",
-    [A_KEY_LEFT] = "Left",
-    [A_KEY_RIGHT] = "Right",
-    [A_KEY_Z] = "Z",
-    [A_KEY_X] = "X",
-    [A_KEY_C] = "C",
-    [A_KEY_V] = "V",
-    [A_KEY_M] = "M",
-    [A_KEY_ENTER] = "Enter",
-    [A_KEY_SPACE] = "Space",
-    [A_KEY_HOME] = "Home",
-    [A_KEY_END] = "End",
-    [A_KEY_PAGEUP] = "PageUp",
-    [A_KEY_PAGEDOWN] = "PageDown",
-    [A_KEY_LALT] = "L-Alt",
-    [A_KEY_LCTRL] = "L-Ctrl",
-    [A_KEY_LSHIFT] = "L-Shift",
-    [A_KEY_RALT] = "R-Alt",
-    [A_KEY_RCTRL] = "R-Ctrl",
-    [A_KEY_RSHIFT] = "R-Shift",
-    [A_KEY_F1] = "F1",
-    [A_KEY_F2] = "F2",
-    [A_KEY_F3] = "F3",
-    [A_KEY_F4] = "F4",
-    [A_KEY_F5] = "F5",
-    [A_KEY_F6] = "F6",
-    [A_KEY_F7] = "F7",
-    [A_KEY_F8] = "F8",
-    [A_KEY_F9] = "F9",
-    [A_KEY_F10] = "F10",
-    [A_KEY_F11] = "F11",
-    [A_KEY_F12] = "F12",
+static const char* g_keyNames[F_KEY_NUM] = {
+    [F_KEY_UP] = "Up",
+    [F_KEY_DOWN] = "Down",
+    [F_KEY_LEFT] = "Left",
+    [F_KEY_RIGHT] = "Right",
+    [F_KEY_Z] = "Z",
+    [F_KEY_X] = "X",
+    [F_KEY_C] = "C",
+    [F_KEY_V] = "V",
+    [F_KEY_M] = "M",
+    [F_KEY_ENTER] = "Enter",
+    [F_KEY_SPACE] = "Space",
+    [F_KEY_HOME] = "Home",
+    [F_KEY_END] = "End",
+    [F_KEY_PAGEUP] = "PageUp",
+    [F_KEY_PAGEDOWN] = "PageDown",
+    [F_KEY_LALT] = "L-Alt",
+    [F_KEY_LCTRL] = "L-Ctrl",
+    [F_KEY_LSHIFT] = "L-Shift",
+    [F_KEY_RALT] = "R-Alt",
+    [F_KEY_RCTRL] = "R-Ctrl",
+    [F_KEY_RSHIFT] = "R-Shift",
+    [F_KEY_F1] = "F1",
+    [F_KEY_F2] = "F2",
+    [F_KEY_F3] = "F3",
+    [F_KEY_F4] = "F4",
+    [F_KEY_F5] = "F5",
+    [F_KEY_F6] = "F6",
+    [F_KEY_F7] = "F7",
+    [F_KEY_F8] = "F8",
+    [F_KEY_F9] = "F9",
+    [F_KEY_F10] = "F10",
+    [F_KEY_F11] = "F11",
+    [F_KEY_F12] = "F12",
 };
 
-static const char* g_buttonNames[A_BUTTON_NUM] = {
-    [A_BUTTON_UP] = "Up",
-    [A_BUTTON_DOWN] = "Down",
-    [A_BUTTON_LEFT] = "Left",
-    [A_BUTTON_RIGHT] = "Right",
-    #if A_CONFIG_SYSTEM_GP2X || A_CONFIG_SYSTEM_WIZ || A_CONFIG_SYSTEM_CAANOO || A_CONFIG_SYSTEM_PANDORA
-        [A_BUTTON_A] = "X",
-        [A_BUTTON_B] = "B",
-        [A_BUTTON_X] = "A",
-        [A_BUTTON_Y] = "Y",
+static const char* g_buttonNames[F_BUTTON_NUM] = {
+    [F_BUTTON_UP] = "Up",
+    [F_BUTTON_DOWN] = "Down",
+    [F_BUTTON_LEFT] = "Left",
+    [F_BUTTON_RIGHT] = "Right",
+    #if F_CONFIG_SYSTEM_GP2X || F_CONFIG_SYSTEM_WIZ || F_CONFIG_SYSTEM_CAANOO || F_CONFIG_SYSTEM_PANDORA
+        [F_BUTTON_A] = "X",
+        [F_BUTTON_B] = "B",
+        [F_BUTTON_X] = "A",
+        [F_BUTTON_Y] = "Y",
     #else
-        [A_BUTTON_A] = "A",
-        [A_BUTTON_B] = "B",
-        [A_BUTTON_X] = "X",
-        [A_BUTTON_Y] = "Y",
+        [F_BUTTON_A] = "A",
+        [F_BUTTON_B] = "B",
+        [F_BUTTON_X] = "X",
+        [F_BUTTON_Y] = "Y",
     #endif
-    [A_BUTTON_L] = "L",
-    [A_BUTTON_R] = "R",
-    #if A_CONFIG_SYSTEM_WIZ
-        [A_BUTTON_START] = "Menu",
-        [A_BUTTON_SELECT] = "Select",
-    #elif A_CONFIG_SYSTEM_CAANOO
-        [A_BUTTON_START] = "I",
-        [A_BUTTON_SELECT] = "II",
+    [F_BUTTON_L] = "L",
+    [F_BUTTON_R] = "R",
+    #if F_CONFIG_SYSTEM_WIZ
+        [F_BUTTON_START] = "Menu",
+        [F_BUTTON_SELECT] = "Select",
+    #elif F_CONFIG_SYSTEM_CAANOO
+        [F_BUTTON_START] = "I",
+        [F_BUTTON_SELECT] = "II",
     #else
-        [A_BUTTON_START] = "Start",
-        [A_BUTTON_SELECT] = "Select",
+        [F_BUTTON_START] = "Start",
+        [F_BUTTON_SELECT] = "Select",
     #endif
-    [A_BUTTON_STICKCLICK] = "Stick-Click",
-    [A_BUTTON_UPLEFT] = "Up-Left",
-    [A_BUTTON_UPRIGHT] = "Up-Right",
-    [A_BUTTON_DOWNLEFT] = "Down-Left",
-    [A_BUTTON_DOWNRIGHT] = "Down-Right",
-    [A_BUTTON_VOLUP] = "Volume-Up",
-    [A_BUTTON_VOLDOWN] = "Volume-Down",
-    [A_BUTTON_GUIDE] = "Guide",
-    [A_BUTTON_HOLD] = "Hold",
+    [F_BUTTON_STICKCLICK] = "Stick-Click",
+    [F_BUTTON_UPLEFT] = "Up-Left",
+    [F_BUTTON_UPRIGHT] = "Up-Right",
+    [F_BUTTON_DOWNLEFT] = "Down-Left",
+    [F_BUTTON_DOWNRIGHT] = "Down-Right",
+    [F_BUTTON_VOLUP] = "Volume-Up",
+    [F_BUTTON_VOLDOWN] = "Volume-Down",
+    [F_BUTTON_GUIDE] = "Guide",
+    [F_BUTTON_HOLD] = "Hold",
 };
 
 static const char* g_defaultName = "AButton";
@@ -202,7 +202,7 @@ void f_button_bindCombo(AButton* Button, const AController* Controller, AButtonI
 
     AList* combo = f_list_new();
 
-    for(int i = Id; i != A_BUTTON_INVALID; i = va_arg(args, int)) {
+    for(int i = Id; i != F_BUTTON_INVALID; i = va_arg(args, int)) {
         const APlatformButton* b =
             f_platform_api__inputButtonGet(Controller, i);
 
@@ -254,7 +254,7 @@ bool f_button_pressGetOnce(AButton* Button)
 void f_button_pressSetRepeat(AButton* Button, unsigned RepeatMs)
 {
     if(Button->autoRepeat == NULL) {
-        Button->autoRepeat = f_timer_new(A_TIMER_MS, RepeatMs, true);
+        Button->autoRepeat = f_timer_new(F_TIMER_MS, RepeatMs, true);
     } else {
         f_timer_stop(Button->autoRepeat);
         f_timer_periodSet(Button->autoRepeat, RepeatMs);
@@ -269,10 +269,10 @@ void f_button_pressClear(AButton* Button)
 
 void f_input_button__tick(void)
 {
-    A_LIST_ITERATE(g_buttons, AButton*, b) {
+    F_LIST_ITERATE(g_buttons, AButton*, b) {
         bool pressed = false;
 
-        A_LIST_ITERATE(b->platformInputs, const APlatformButton*, pb) {
+        F_LIST_ITERATE(b->platformInputs, const APlatformButton*, pb) {
             if(f_platform_api__inputButtonPressGet(pb)) {
                 pressed = true;
                 goto done;
@@ -280,11 +280,11 @@ void f_input_button__tick(void)
         }
 
         if(b->combos) {
-            A_LIST_ITERATE(b->combos, AList*, andList) {
-                A_LIST_ITERATE(andList, const APlatformButton*, pb) {
+            F_LIST_ITERATE(b->combos, AList*, andList) {
+                F_LIST_ITERATE(andList, const APlatformButton*, pb) {
                     if(!f_platform_api__inputButtonPressGet(pb)) {
                         break;
-                    } else if(A_LIST_IS_LAST()) {
+                    } else if(F_LIST_IS_LAST()) {
                         pressed = true;
                         goto done;
                     }

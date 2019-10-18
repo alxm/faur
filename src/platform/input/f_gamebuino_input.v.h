@@ -15,9 +15,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_PLATFORM_INPUT_GAMEBUINO_INPUT_V_H
-#define A_INC_PLATFORM_INPUT_GAMEBUINO_INPUT_V_H
+#ifndef F_INC_PLATFORM_INPUT_GAMEBUINO_INPUT_V_H
+#define F_INC_PLATFORM_INPUT_GAMEBUINO_INPUT_V_H
 
 #include "platform/input/f_gamebuino_input.p.h"
 
-#endif // A_INC_PLATFORM_INPUT_GAMEBUINO_INPUT_V_H
+#endif // F_INC_PLATFORM_INPUT_GAMEBUINO_INPUT_V_H

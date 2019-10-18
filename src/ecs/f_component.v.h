@@ -15,8 +15,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_ECS_COMPONENT_V_H
-#define A_INC_ECS_COMPONENT_V_H
+#ifndef F_INC_ECS_COMPONENT_V_H
+#define F_INC_ECS_COMPONENT_V_H
 
 #include "ecs/f_component.p.h"
 
@@ -44,4 +44,4 @@ extern void f_component__templateFree(const AComponent* Component, void* Buffer)
 extern AComponentInstance* f_component__instanceNew(const AComponent* Component, AEntity* Entity, const void* TemplateData);
 extern void f_component__instanceFree(AComponentInstance* Instance);
 
-#endif // A_INC_ECS_COMPONENT_V_H
+#endif // F_INC_ECS_COMPONENT_V_H

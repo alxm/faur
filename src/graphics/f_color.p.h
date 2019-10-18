@@ -15,14 +15,14 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_GRAPHICS_COLOR_P_H
-#define A_INC_GRAPHICS_COLOR_P_H
+#ifndef F_INC_GRAPHICS_COLOR_P_H
+#define F_INC_GRAPHICS_COLOR_P_H
 
 #include "general/f_system_includes.h"
 
-#if A_CONFIG_SCREEN_BPP == 16
+#if F_CONFIG_SCREEN_BPP == 16
     typedef uint16_t APixel;
-#elif A_CONFIG_SCREEN_BPP == 32
+#elif F_CONFIG_SCREEN_BPP == 32
     typedef uint32_t APixel;
 #endif
 
@@ -30,103 +30,103 @@ typedef struct {
     int r, g, b;
 } ARgb;
 
-#if A_CONFIG_SCREEN_BPP == 16
-    #if A_CONFIG_LIB_RENDER_SOFTWARE
+#if F_CONFIG_SCREEN_BPP == 16
+    #if F_CONFIG_LIB_RENDER_SOFTWARE
         // RGB565
-        #define A__PX_BITS_R 5
-        #define A__PX_BITS_G 6
-        #define A__PX_BITS_B 5
-        #define A__PX_BITS_A 0
-    #elif A_CONFIG_LIB_RENDER_SDL
+        #define F__PX_BITS_R 5
+        #define F__PX_BITS_G 6
+        #define F__PX_BITS_B 5
+        #define F__PX_BITS_A 0
+    #elif F_CONFIG_LIB_RENDER_SDL
         // RGBA5551
-        #define A__PX_BITS_R 5
-        #define A__PX_BITS_G 5
-        #define A__PX_BITS_B 5
-        #define A__PX_BITS_A 1
+        #define F__PX_BITS_R 5
+        #define F__PX_BITS_G 5
+        #define F__PX_BITS_B 5
+        #define F__PX_BITS_A 1
     #endif
-#elif A_CONFIG_SCREEN_BPP == 32
-    #define A__PX_BITS_R 8
-    #define A__PX_BITS_G 8
-    #define A__PX_BITS_B 8
+#elif F_CONFIG_SCREEN_BPP == 32
+    #define F__PX_BITS_R 8
+    #define F__PX_BITS_G 8
+    #define F__PX_BITS_B 8
 
-    #if A_CONFIG_LIB_SDL == 1
+    #if F_CONFIG_LIB_SDL == 1
         // XRGB8888
-        #define A__PX_BITS_A 0
-    #elif A_CONFIG_LIB_SDL == 2
+        #define F__PX_BITS_A 0
+    #elif F_CONFIG_LIB_SDL == 2
         // RGBX8888 / RGBA8888
-        #define A__PX_BITS_A 8
+        #define F__PX_BITS_A 8
     #endif
 #endif
 
-#if A_CONFIG_SCREEN_FORMAT_RGBA
-    #define A__PX_SHIFT_A (0)
-    #define A__PX_SHIFT_B (A__PX_BITS_A)
-    #define A__PX_SHIFT_G (A__PX_BITS_A + A__PX_BITS_B)
-    #define A__PX_SHIFT_R (A__PX_BITS_A + A__PX_BITS_B + A__PX_BITS_G)
-#elif A_CONFIG_SCREEN_FORMAT_ABGR
-    #define A__PX_SHIFT_R (0)
-    #define A__PX_SHIFT_G (A__PX_BITS_R)
-    #define A__PX_SHIFT_B (A__PX_BITS_R + A__PX_BITS_G)
-    #define A__PX_SHIFT_A (A__PX_BITS_R + A__PX_BITS_G + A__PX_BITS_B)
+#if F_CONFIG_SCREEN_FORMAT_RGBA
+    #define F__PX_SHIFT_A (0)
+    #define F__PX_SHIFT_B (F__PX_BITS_A)
+    #define F__PX_SHIFT_G (F__PX_BITS_A + F__PX_BITS_B)
+    #define F__PX_SHIFT_R (F__PX_BITS_A + F__PX_BITS_B + F__PX_BITS_G)
+#elif F_CONFIG_SCREEN_FORMAT_ABGR
+    #define F__PX_SHIFT_R (0)
+    #define F__PX_SHIFT_G (F__PX_BITS_R)
+    #define F__PX_SHIFT_B (F__PX_BITS_R + F__PX_BITS_G)
+    #define F__PX_SHIFT_A (F__PX_BITS_R + F__PX_BITS_G + F__PX_BITS_B)
 #endif
 
-#define A__PX_MASK_R ((1 << A__PX_BITS_R) - 1)
-#define A__PX_MASK_G ((1 << A__PX_BITS_G) - 1)
-#define A__PX_MASK_B ((1 << A__PX_BITS_B) - 1)
-#define A__PX_MASK_A ((1 << A__PX_BITS_A) - 1)
+#define F__PX_MASK_R ((1 << F__PX_BITS_R) - 1)
+#define F__PX_MASK_G ((1 << F__PX_BITS_G) - 1)
+#define F__PX_MASK_B ((1 << F__PX_BITS_B) - 1)
+#define F__PX_MASK_A ((1 << F__PX_BITS_A) - 1)
 
-#define A__PX_PACK_R (8 - A__PX_BITS_R)
-#define A__PX_PACK_G (8 - A__PX_BITS_G)
-#define A__PX_PACK_B (8 - A__PX_BITS_B)
+#define F__PX_PACK_R (8 - F__PX_BITS_R)
+#define F__PX_PACK_G (8 - F__PX_BITS_G)
+#define F__PX_PACK_B (8 - F__PX_BITS_B)
 
-#if A_CONFIG_LIB_RENDER_SOFTWARE
-    #define A_COLOR_ALPHA_MAX 256
+#if F_CONFIG_LIB_RENDER_SOFTWARE
+    #define F_COLOR_ALPHA_MAX 256
 #else
-    #define A_COLOR_ALPHA_MAX 255
+    #define F_COLOR_ALPHA_MAX 255
 #endif
 
 static inline APixel f_pixel_fromRgb(int Red, int Green, int Blue)
 {
     return (APixel)
-        (((((unsigned)Red   & 0xff) >> A__PX_PACK_R) << A__PX_SHIFT_R) |
-         ((((unsigned)Green & 0xff) >> A__PX_PACK_G) << A__PX_SHIFT_G) |
-         ((((unsigned)Blue  & 0xff) >> A__PX_PACK_B) << A__PX_SHIFT_B));
+        (((((unsigned)Red   & 0xff) >> F__PX_PACK_R) << F__PX_SHIFT_R) |
+         ((((unsigned)Green & 0xff) >> F__PX_PACK_G) << F__PX_SHIFT_G) |
+         ((((unsigned)Blue  & 0xff) >> F__PX_PACK_B) << F__PX_SHIFT_B));
 }
 
 static inline APixel f_pixel_fromHex(uint32_t Hexcode)
 {
-    #if A_CONFIG_SCREEN_BPP == 16 || A_CONFIG_SCREEN_FORMAT_ABGR
+    #if F_CONFIG_SCREEN_BPP == 16 || F_CONFIG_SCREEN_FORMAT_ABGR
         return (APixel)
-            (((((Hexcode >> 16) & 0xff) >> A__PX_PACK_R) << A__PX_SHIFT_R) |
-             ((((Hexcode >> 8)  & 0xff) >> A__PX_PACK_G) << A__PX_SHIFT_G) |
-             ((((Hexcode)       & 0xff) >> A__PX_PACK_B) << A__PX_SHIFT_B));
-    #elif A_CONFIG_SCREEN_BPP == 32 && A_CONFIG_SCREEN_FORMAT_RGBA
-        return (APixel)((Hexcode & 0xffffff) << A__PX_BITS_A);
+            (((((Hexcode >> 16) & 0xff) >> F__PX_PACK_R) << F__PX_SHIFT_R) |
+             ((((Hexcode >> 8)  & 0xff) >> F__PX_PACK_G) << F__PX_SHIFT_G) |
+             ((((Hexcode)       & 0xff) >> F__PX_PACK_B) << F__PX_SHIFT_B));
+    #elif F_CONFIG_SCREEN_BPP == 32 && F_CONFIG_SCREEN_FORMAT_RGBA
+        return (APixel)((Hexcode & 0xffffff) << F__PX_BITS_A);
     #endif
 }
 
 static inline ARgb f_pixel_toRgb(APixel Pixel)
 {
     ARgb rgb = {
-        (int)((Pixel >> A__PX_SHIFT_R) & A__PX_MASK_R) << A__PX_PACK_R,
-        (int)((Pixel >> A__PX_SHIFT_G) & A__PX_MASK_G) << A__PX_PACK_G,
-        (int)((Pixel >> A__PX_SHIFT_B) & A__PX_MASK_B) << A__PX_PACK_B
+        (int)((Pixel >> F__PX_SHIFT_R) & F__PX_MASK_R) << F__PX_PACK_R,
+        (int)((Pixel >> F__PX_SHIFT_G) & F__PX_MASK_G) << F__PX_PACK_G,
+        (int)((Pixel >> F__PX_SHIFT_B) & F__PX_MASK_B) << F__PX_PACK_B
     };
 
     return rgb;
 }
 
 typedef enum {
-    A_COLOR_BLEND_INVALID = -1,
-    A_COLOR_BLEND_PLAIN,
-    A_COLOR_BLEND_RGBA,
-    A_COLOR_BLEND_RGB25,
-    A_COLOR_BLEND_RGB50,
-    A_COLOR_BLEND_RGB75,
-    A_COLOR_BLEND_INVERSE,
-    A_COLOR_BLEND_MOD,
-    A_COLOR_BLEND_ADD,
-    A_COLOR_BLEND_NUM
+    F_COLOR_BLEND_INVALID = -1,
+    F_COLOR_BLEND_PLAIN,
+    F_COLOR_BLEND_RGBA,
+    F_COLOR_BLEND_RGB25,
+    F_COLOR_BLEND_RGB50,
+    F_COLOR_BLEND_RGB75,
+    F_COLOR_BLEND_INVERSE,
+    F_COLOR_BLEND_MOD,
+    F_COLOR_BLEND_ADD,
+    F_COLOR_BLEND_NUM
 } AColorBlend;
 
 extern void f_color_push(void);
@@ -144,4 +144,4 @@ extern void f_color_baseSetPixel(APixel Pixel);
 extern void f_color_fillBlitSet(bool Fill);
 extern void f_color_fillDrawSet(bool Fill);
 
-#endif // A_INC_GRAPHICS_COLOR_P_H
+#endif // F_INC_GRAPHICS_COLOR_P_H

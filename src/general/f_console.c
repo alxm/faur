@@ -19,7 +19,7 @@
 #include "f_console.v.h"
 #include <faur.v.h>
 
-#if A_CONFIG_CONSOLE_ENABLED
+#if F_CONFIG_CONSOLE_ENABLED
 typedef struct {
     AOutSource source;
     AOutType type;
@@ -27,17 +27,17 @@ typedef struct {
 } ALine;
 
 typedef enum {
-    A_CONSOLE__STATE_INVALID = -1,
-    A_CONSOLE__STATE_BASIC,
-    A_CONSOLE__STATE_FULL,
+    F_CONSOLE__STATE_INVALID = -1,
+    F_CONSOLE__STATE_BASIC,
+    F_CONSOLE__STATE_FULL,
 } AConsoleState;
 
-static AConsoleState g_state = A_CONSOLE__STATE_INVALID;
+static AConsoleState g_state = F_CONSOLE__STATE_INVALID;
 static AList* g_lines;
 static unsigned g_linesPerScreen;
 static ASprite* g_tags;
 static AButton* g_toggle;
-static bool g_show = A_CONFIG_CONSOLE_SHOW;
+static bool g_show = F_CONFIG_CONSOLE_SHOW;
 
 static ALine* line_new(AOutSource Source, AOutType Type, const char* Text)
 {
@@ -61,7 +61,7 @@ static void f_console__init0(void)
     g_lines = f_list_new();
     g_linesPerScreen = UINT_MAX;
 
-    g_state = A_CONSOLE__STATE_BASIC;
+    g_state = F_CONSOLE__STATE_BASIC;
 }
 
 static void f_console__init1(void)
@@ -74,24 +74,24 @@ static void f_console__init1(void)
         line_free(f_list_pop(g_lines));
     }
 
-    #if A_CONFIG_LIB_PNG
+    #if F_CONFIG_LIB_PNG
         g_tags = f_sprite_newFromPng("/faur/consoleTitles", 0, 0, 19, 7);
     #endif
 
     g_toggle = f_button_new();
-    f_button_bindKey(g_toggle, A_KEY_F11);
+    f_button_bindKey(g_toggle, F_KEY_F11);
     f_button_bindCombo(g_toggle,
                        NULL,
-                       A_BUTTON_A, A_BUTTON_B, A_BUTTON_X, A_BUTTON_Y,
-                       A_BUTTON_L, A_BUTTON_R,
-                       A_BUTTON_INVALID);
+                       F_BUTTON_A, F_BUTTON_B, F_BUTTON_X, F_BUTTON_Y,
+                       F_BUTTON_L, F_BUTTON_R,
+                       F_BUTTON_INVALID);
 
-    g_state = A_CONSOLE__STATE_FULL;
+    g_state = F_CONSOLE__STATE_FULL;
 }
 
 static void f_console__uninit1(void)
 {
-    g_state = A_CONSOLE__STATE_INVALID;
+    g_state = F_CONSOLE__STATE_INVALID;
 
     f_list_freeEx(g_lines, (AFree*)line_free);
     f_sprite_free(g_tags);
@@ -116,7 +116,7 @@ void f_console__tick(void)
     }
 }
 
-#if A_CONFIG_BUILD_DEBUG_ALLOC
+#if F_CONFIG_BUILD_DEBUG_ALLOC
 static void printBytes(size_t Bytes, const char* Tag)
 {
     float value;
@@ -139,7 +139,7 @@ static void printBytes(size_t Bytes, const char* Tag)
 
 void f_console__draw(void)
 {
-    if(!g_show || g_state != A_CONSOLE__STATE_FULL) {
+    if(!g_show || g_state != F_CONSOLE__STATE_FULL) {
         return;
     }
 
@@ -147,7 +147,7 @@ void f_console__draw(void)
     f_font_push();
     f_screen_clipReset();
 
-    f_color_blendSet(A_COLOR_BLEND_RGB75);
+    f_color_blendSet(F_COLOR_BLEND_RGB75);
     f_color_baseSetHex(0x1f0f0f);
     f_draw_fill();
 
@@ -156,35 +156,35 @@ void f_console__draw(void)
 
     {
         f_font_coordsSet(2, 2);
-        f_font_alignSet(A_FONT_ALIGN_LEFT);
+        f_font_alignSet(F_FONT_ALIGN_LEFT);
 
-        f_font__fontSet(A_FONT__ID_BLUE); f_font_print("a");
-        f_font__fontSet(A_FONT__ID_GREEN); f_font_print("2");
-        f_font__fontSet(A_FONT__ID_YELLOW); f_font_print("x");
+        f_font__fontSet(F_FONT__ID_BLUE); f_font_print("a");
+        f_font__fontSet(F_FONT__ID_GREEN); f_font_print("2");
+        f_font__fontSet(F_FONT__ID_YELLOW); f_font_print("x");
 
-        f_font__fontSet(A_FONT__ID_LIGHT_GRAY);
+        f_font__fontSet(F_FONT__ID_LIGHT_GRAY);
         f_font_printf(" %s %.8s %s\n",
-                      A_CONFIG_BUILD_UID,
-                      A_CONFIG_BUILD_GIT_HASH,
-                      A_CONFIG_BUILD_TIMESTAMP);
+                      F_CONFIG_BUILD_UID,
+                      F_CONFIG_BUILD_GIT_HASH,
+                      F_CONFIG_BUILD_TIMESTAMP);
 
-        f_font__fontSet(A_FONT__ID_WHITE);
+        f_font__fontSet(F_FONT__ID_WHITE);
         f_font_printf("%s %s by %s\n",
-                      A_CONFIG_APP_NAME,
-                      A_CONFIG_APP_VERSION_STRING,
-                      A_CONFIG_APP_AUTHOR);
+                      F_CONFIG_APP_NAME,
+                      F_CONFIG_APP_VERSION_STRING,
+                      F_CONFIG_APP_AUTHOR);
     }
 
     {
         int tagWidth = f_sprite_sizeGetWidth(g_tags);
 
         f_font_coordsSet(1 + tagWidth + 1 + tagWidth + 2, f_font_coordsGetY());
-        f_font__fontSet(A_FONT__ID_LIGHT_GRAY);
+        f_font__fontSet(F_FONT__ID_LIGHT_GRAY);
 
-        A_LIST_ITERATE(g_lines, ALine*, l) {
+        F_LIST_ITERATE(g_lines, ALine*, l) {
             f_sprite_blit(g_tags, (unsigned)l->source, 1, f_font_coordsGetY());
             f_sprite_blit(g_tags,
-                          (unsigned)(A_OUT__SOURCE_NUM + l->type),
+                          (unsigned)(F_OUT__SOURCE_NUM + l->type),
                           1 + tagWidth + 1,
                           f_font_coordsGetY());
             f_font_print(l->text);
@@ -193,55 +193,55 @@ void f_console__draw(void)
     }
 
     {
-        f_font_alignSet(A_FONT_ALIGN_RIGHT);
+        f_font_alignSet(F_FONT_ALIGN_RIGHT);
         f_font_coordsSet(f__screen.pixels->w - 1, 2);
 
-        f_font__fontSet(A_FONT__ID_YELLOW);
+        f_font__fontSet(F_FONT__ID_YELLOW);
         f_font_printf("%u tick fps\n", f_fps_rateTickGet());
         f_font_printf("%u draw fps\n", f_fps_rateDrawGet());
         f_font_printf("%u draw max\n", f_fps_rateDrawGetMax());
 
-        f_font__fontSet(A_FONT__ID_GREEN);
+        f_font__fontSet(F_FONT__ID_GREEN);
         f_font_printf("%dx%d:%d x%d %c\n",
                       f_screen_sizeGetWidth(),
                       f_screen_sizeGetHeight(),
-                      A_CONFIG_SCREEN_BPP,
+                      F_CONFIG_SCREEN_BPP,
                       f_platform_api__screenZoomGet(),
                       f_platform_api__screenFullscreenGet() ? 'F' : 'W');
         f_font_printf(
             "V-sync %s\n", f_platform_api__screenVsyncGet() ? "on" : "off");
 
-        #if A_CONFIG_LIB_SDL == 1
+        #if F_CONFIG_LIB_SDL == 1
             f_font_print("SDL 1.2\n");
-        #elif A_CONFIG_LIB_SDL == 2
+        #elif F_CONFIG_LIB_SDL == 2
             f_font_print("SDL 2.0\n");
         #endif
 
-        #if A_CONFIG_LIB_RENDER_SOFTWARE
-            #if A_CONFIG_SCREEN_ALLOCATE
+        #if F_CONFIG_LIB_RENDER_SOFTWARE
+            #if F_CONFIG_SCREEN_ALLOCATE
                 f_font_print("S/W Gfx (buffer)\n");
             #else
                 f_font_print("S/W Gfx (raw)\n");
             #endif
-        #elif A_CONFIG_LIB_RENDER_SDL
+        #elif F_CONFIG_LIB_RENDER_SDL
             f_font_print("SDL Gfx\n");
         #endif
 
-        #if A_CONFIG_SOUND_ENABLED
+        #if F_CONFIG_SOUND_ENABLED
             f_font_printf(
                 "Sound %s\n", f_platform_api__soundMuteGet() ? "off" : "on");
         #endif
 
-        f_font__fontSet(A_FONT__ID_BLUE);
+        f_font__fontSet(F_FONT__ID_BLUE);
         f_font_printf("PID %d\n", getpid());
         f_font_printf("%u ticks\n", f_fps_ticksGet());
 
-        #if A_CONFIG_BUILD_DEBUG_ALLOC
+        #if F_CONFIG_BUILD_DEBUG_ALLOC
             printBytes(f_mem__tally, "now");
             printBytes(f_mem__top, "top");
         #endif
 
-        #if A_CONFIG_ECS_ENABLED
+        #if F_CONFIG_ECS_ENABLED
             f_font_printf("%u entities", f_ecs__listGetSum());
         #endif
     }
@@ -257,12 +257,12 @@ void f_console_showSet(bool Show)
 
 bool f_console__isInitialized(void)
 {
-    return g_state == A_CONSOLE__STATE_FULL;
+    return g_state == F_CONSOLE__STATE_FULL;
 }
 
 void f_console__write(AOutSource Source, AOutType Type, const char* Text)
 {
-    if(g_state == A_CONSOLE__STATE_INVALID) {
+    if(g_state == F_CONSOLE__STATE_INVALID) {
         return;
     }
 
@@ -272,12 +272,12 @@ void f_console__write(AOutSource Source, AOutType Type, const char* Text)
         line_free(f_list_pop(g_lines));
     }
 }
-#else // !A_CONFIG_CONSOLE_ENABLED
+#else // !F_CONFIG_CONSOLE_ENABLED
 const APack f_pack__console;
 
 void f_console_showSet(bool Show)
 {
-    A_UNUSED(Show);
+    F_UNUSED(Show);
 }
 
 void f_console__tick(void)
@@ -295,8 +295,8 @@ bool f_console__isInitialized(void)
 
 void f_console__write(AOutSource Source, AOutType Type, const char* Text)
 {
-    A_UNUSED(Source);
-    A_UNUSED(Type);
-    A_UNUSED(Text);
+    F_UNUSED(Source);
+    F_UNUSED(Type);
+    F_UNUSED(Text);
 }
-#endif // !A_CONFIG_CONSOLE_ENABLED
+#endif // !F_CONFIG_CONSOLE_ENABLED

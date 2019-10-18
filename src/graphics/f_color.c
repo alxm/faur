@@ -29,8 +29,8 @@ static void f_color__init(void)
     g_stateStack = f_list_new();
     f_color_reset();
 
-    f_color__key = f_pixel_fromHex(A_CONFIG_COLOR_SPRITE_KEY);
-    f_color__limit = f_pixel_fromHex(A_CONFIG_COLOR_SPRITE_BORDER);
+    f_color__key = f_pixel_fromHex(F_CONFIG_COLOR_SPRITE_KEY);
+    f_color__limit = f_pixel_fromHex(F_CONFIG_COLOR_SPRITE_BORDER);
 }
 
 static void f_color__uninit(void)
@@ -57,9 +57,9 @@ void f_color_pop(void)
 {
     APixelState* state = f_list_pop(g_stateStack);
 
-    #if A_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_BUILD_DEBUG
         if(state == NULL) {
-            A__FATAL("f_color_pop: Stack is empty");
+            F__FATAL("f_color_pop: Stack is empty");
         }
     #endif
 
@@ -73,33 +73,33 @@ void f_color_pop(void)
 
 void f_color_reset(void)
 {
-    f_color_blendSet(A_COLOR_BLEND_PLAIN);
-    f_color_baseSetRgba(0, 0, 0, A_COLOR_ALPHA_MAX);
+    f_color_blendSet(F_COLOR_BLEND_PLAIN);
+    f_color_baseSetRgba(0, 0, 0, F_COLOR_ALPHA_MAX);
     f_color_fillBlitSet(false);
     f_color_fillDrawSet(true);
 }
 
-#if A_CONFIG_LIB_RENDER_SOFTWARE
+#if F_CONFIG_LIB_RENDER_SOFTWARE
 static void optimizeAlphaBlending(void)
 {
-    if(f__color.canonicalBlend == A_COLOR_BLEND_RGBA) {
-        AColorBlend fastestBlend = A_COLOR_BLEND_RGBA;
+    if(f__color.canonicalBlend == F_COLOR_BLEND_RGBA) {
+        AColorBlend fastestBlend = F_COLOR_BLEND_RGBA;
 
         switch(f__color.alpha) {
-            case A_COLOR_ALPHA_MAX / 4: {
-                fastestBlend = A_COLOR_BLEND_RGB25;
+            case F_COLOR_ALPHA_MAX / 4: {
+                fastestBlend = F_COLOR_BLEND_RGB25;
             } break;
 
-            case A_COLOR_ALPHA_MAX / 2: {
-                fastestBlend = A_COLOR_BLEND_RGB50;
+            case F_COLOR_ALPHA_MAX / 2: {
+                fastestBlend = F_COLOR_BLEND_RGB50;
             } break;
 
-            case A_COLOR_ALPHA_MAX * 3 / 4: {
-                fastestBlend = A_COLOR_BLEND_RGB75;
+            case F_COLOR_ALPHA_MAX * 3 / 4: {
+                fastestBlend = F_COLOR_BLEND_RGB75;
             } break;
 
-            case A_COLOR_ALPHA_MAX: {
-                fastestBlend = A_COLOR_BLEND_PLAIN;
+            case F_COLOR_ALPHA_MAX: {
+                fastestBlend = F_COLOR_BLEND_PLAIN;
             } break;
         }
 
@@ -115,15 +115,15 @@ void f_color_blendSet(AColorBlend Blend)
     f__color.blend = Blend;
     f__color.canonicalBlend = Blend;
 
-    #if A_CONFIG_LIB_RENDER_SOFTWARE
+    #if F_CONFIG_LIB_RENDER_SOFTWARE
         optimizeAlphaBlending();
     #else
-        if(Blend == A_COLOR_BLEND_RGB25) {
-            f_color_alphaSet(A_COLOR_ALPHA_MAX / 4);
-        } else if(Blend == A_COLOR_BLEND_RGB50) {
-            f_color_alphaSet(A_COLOR_ALPHA_MAX / 2);
-        } else if(Blend == A_COLOR_BLEND_RGB75) {
-            f_color_alphaSet(A_COLOR_ALPHA_MAX * 3 / 4);
+        if(Blend == F_COLOR_BLEND_RGB25) {
+            f_color_alphaSet(F_COLOR_ALPHA_MAX / 4);
+        } else if(Blend == F_COLOR_BLEND_RGB50) {
+            f_color_alphaSet(F_COLOR_ALPHA_MAX / 2);
+        } else if(Blend == F_COLOR_BLEND_RGB75) {
+            f_color_alphaSet(F_COLOR_ALPHA_MAX * 3 / 4);
         }
 
         f_platform_api__renderSetBlendMode();
@@ -132,9 +132,9 @@ void f_color_blendSet(AColorBlend Blend)
 
 void f_color_alphaSet(int Alpha)
 {
-    f__color.alpha = f_math_clamp(Alpha, 0, A_COLOR_ALPHA_MAX);
+    f__color.alpha = f_math_clamp(Alpha, 0, F_COLOR_ALPHA_MAX);
 
-    #if A_CONFIG_LIB_RENDER_SOFTWARE
+    #if F_CONFIG_LIB_RENDER_SOFTWARE
         optimizeAlphaBlending();
     #else
         f_platform_api__renderSetDrawColor();
@@ -154,7 +154,7 @@ void f_color_baseSetRgb(int Red, int Green, int Blue)
 {
     setRgb(Red, Green, Blue);
 
-    #if !A_CONFIG_LIB_RENDER_SOFTWARE
+    #if !F_CONFIG_LIB_RENDER_SOFTWARE
         f_platform_api__renderSetDrawColor();
     #endif
 }
@@ -162,9 +162,9 @@ void f_color_baseSetRgb(int Red, int Green, int Blue)
 void f_color_baseSetRgba(int Red, int Green, int Blue, int Alpha)
 {
     setRgb(Red, Green, Blue);
-    f__color.alpha = f_math_clamp(Alpha, 0, A_COLOR_ALPHA_MAX);
+    f__color.alpha = f_math_clamp(Alpha, 0, F_COLOR_ALPHA_MAX);
 
-    #if A_CONFIG_LIB_RENDER_SOFTWARE
+    #if F_CONFIG_LIB_RENDER_SOFTWARE
         optimizeAlphaBlending();
     #else
         f_platform_api__renderSetDrawColor();
@@ -178,7 +178,7 @@ void f_color_baseSetHex(uint32_t Hexcode)
     f__color.rgb.b = (Hexcode)       & 0xff;
     f__color.pixel = f_pixel_fromHex(Hexcode);
 
-    #if !A_CONFIG_LIB_RENDER_SOFTWARE
+    #if !F_CONFIG_LIB_RENDER_SOFTWARE
         f_platform_api__renderSetDrawColor();
     #endif
 }
@@ -188,7 +188,7 @@ void f_color_baseSetPixel(APixel Pixel)
     f__color.rgb = f_pixel_toRgb(Pixel);
     f__color.pixel = Pixel;
 
-    #if !A_CONFIG_LIB_RENDER_SOFTWARE
+    #if !F_CONFIG_LIB_RENDER_SOFTWARE
         f_platform_api__renderSetDrawColor();
     #endif
 }

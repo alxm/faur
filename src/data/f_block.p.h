@@ -15,8 +15,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_DATA_BLOCK_P_H
-#define A_INC_DATA_BLOCK_P_H
+#ifndef F_INC_DATA_BLOCK_P_H
+#define F_INC_DATA_BLOCK_P_H
 
 #include "general/f_system_includes.h"
 
@@ -93,4 +93,4 @@ static inline int f_block_keyGetFmtv(const ABlock* Block, const char* Key, const
     return f_block_lineGetFmtv(f_block_keyGetBlock(Block, Key), 1, Format, Args);
 }
 
-#endif // A_INC_DATA_BLOCK_P_H
+#endif // F_INC_DATA_BLOCK_P_H

@@ -15,11 +15,11 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_ECS_COLLECTION_V_H
-#define A_INC_ECS_COLLECTION_V_H
+#ifndef F_INC_ECS_COLLECTION_V_H
+#define F_INC_ECS_COLLECTION_V_H
 
 #include "ecs/f_collection.p.h"
 
 extern ACollection* f_collection__get(void);
 
-#endif // A_INC_ECS_COLLECTION_V_H
+#endif // F_INC_ECS_COLLECTION_V_H

@@ -15,8 +15,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_STRINGS_STRBUILDER_P_H
-#define A_INC_STRINGS_STRBUILDER_P_H
+#ifndef F_INC_STRINGS_STRBUILDER_P_H
+#define F_INC_STRINGS_STRBUILDER_P_H
 
 #include "general/f_system_includes.h"
 
@@ -30,4 +30,4 @@ extern const char* f_strbuilder_get(AStrBuilder* Builder);
 extern bool f_strbuilder_add(AStrBuilder* Builder, const char* String);
 extern bool f_strbuilder_addf(AStrBuilder* Builder, const char* Format, ...);
 
-#endif // A_INC_STRINGS_STRBUILDER_P_H
+#endif // F_INC_STRINGS_STRBUILDER_P_H

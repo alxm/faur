@@ -15,21 +15,21 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_GRAPHICS_FONT_V_H
-#define A_INC_GRAPHICS_FONT_V_H
+#ifndef F_INC_GRAPHICS_FONT_V_H
+#define F_INC_GRAPHICS_FONT_V_H
 
 #include "graphics/f_font.p.h"
 
 typedef enum {
-    A_FONT__ID_INVALID = -1,
-    A_FONT__ID_DEFAULT,
-    A_FONT__ID_WHITE,
-    A_FONT__ID_LIGHT_GRAY,
-    A_FONT__ID_GREEN,
-    A_FONT__ID_YELLOW,
-    A_FONT__ID_RED,
-    A_FONT__ID_BLUE,
-    A_FONT__ID_NUM
+    F_FONT__ID_INVALID = -1,
+    F_FONT__ID_DEFAULT,
+    F_FONT__ID_WHITE,
+    F_FONT__ID_LIGHT_GRAY,
+    F_FONT__ID_GREEN,
+    F_FONT__ID_YELLOW,
+    F_FONT__ID_RED,
+    F_FONT__ID_BLUE,
+    F_FONT__ID_NUM
 } AFontId;
 
 #include "general/f_main.v.h"
@@ -38,4 +38,4 @@ extern const APack f_pack__font;
 
 extern void f_font__fontSet(AFontId Font);
 
-#endif // A_INC_GRAPHICS_FONT_V_H
+#endif // F_INC_GRAPHICS_FONT_V_H

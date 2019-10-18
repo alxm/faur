@@ -15,8 +15,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_ECS_SYSTEM_V_H
-#define A_INC_ECS_SYSTEM_V_H
+#ifndef F_INC_ECS_SYSTEM_V_H
+#define F_INC_ECS_SYSTEM_V_H
 
 #include "ecs/f_system.p.h"
 
@@ -33,4 +33,4 @@ extern AListNode* f_system__entityAdd(const ASystem* System, AEntity* Entity);
 extern const ABitfield* f_system__componentBitsGet(const ASystem* System);
 extern bool f_system__isActiveOnly(const ASystem* System);
 
-#endif // A_INC_ECS_SYSTEM_V_H
+#endif // F_INC_ECS_SYSTEM_V_H

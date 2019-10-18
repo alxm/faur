@@ -15,12 +15,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_GENERAL_OUT_P_H
-#define A_INC_GENERAL_OUT_P_H
+#ifndef F_INC_GENERAL_OUT_P_H
+#define F_INC_GENERAL_OUT_P_H
 
 #include "general/f_system_includes.h"
 
-#if A_CONFIG_OUTPUT_ENABLED
+#if F_CONFIG_OUTPUT_ENABLED
     extern void f_out_text(const char* Text);
     extern void f_out_info(const char* Format, ...);
     extern void f_out_warning(const char* Format, ...);
@@ -32,4 +32,4 @@
     #define f_out_error(...)
 #endif
 
-#endif // A_INC_GENERAL_OUT_P_H
+#endif // F_INC_GENERAL_OUT_P_H

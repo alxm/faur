@@ -15,12 +15,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_FAUR_V_H
-#define A_INC_FAUR_V_H
+#ifndef F_INC_FAUR_V_H
+#define F_INC_FAUR_V_H
 
 #include "faur.h"
 
-A_EXTERN_C_START
+F_EXTERN_C_START
 #include "collision/f_collide.v.h"
 #include "collision/f_grid.v.h"
 #include "data/f_bitfield.v.h"
@@ -84,6 +84,6 @@ A_EXTERN_C_START
 #include "strings/f_str.v.h"
 #include "time/f_timer.v.h"
 #include "time/f_time.v.h"
-A_EXTERN_C_END
+F_EXTERN_C_END
 
-#endif // A_INC_FAUR_V_H
+#endif // F_INC_FAUR_V_H

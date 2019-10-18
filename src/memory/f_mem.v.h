@@ -15,8 +15,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_MEMORY_MEM_V_H
-#define A_INC_MEMORY_MEM_V_H
+#ifndef F_INC_MEMORY_MEM_V_H
+#define F_INC_MEMORY_MEM_V_H
 
 #include "memory/f_mem.p.h"
 
@@ -30,4 +30,4 @@ typedef union {
 
 extern size_t f_mem__tally, f_mem__top;
 
-#endif // A_INC_MEMORY_MEM_V_H
+#endif // F_INC_MEMORY_MEM_V_H

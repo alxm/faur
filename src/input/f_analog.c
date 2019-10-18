@@ -23,18 +23,18 @@ struct AAnalog {
     AList* platformInputs; // list of APlatformAnalog
 };
 
-static const char* g_analogNames[A_AXIS_NUM] = {
-    #if A_CONFIG_SYSTEM_CAANOO
-        [A_AXIS_LEFTX] = "Stick",
-        [A_AXIS_LEFTY] = "Stick",
+static const char* g_analogNames[F_AXIS_NUM] = {
+    #if F_CONFIG_SYSTEM_CAANOO
+        [F_AXIS_LEFTX] = "Stick",
+        [F_AXIS_LEFTY] = "Stick",
     #else
-        [A_AXIS_LEFTX] = "Left-Stick",
-        [A_AXIS_LEFTY] = "Left-Stick",
+        [F_AXIS_LEFTX] = "Left-Stick",
+        [F_AXIS_LEFTY] = "Left-Stick",
     #endif
-    [A_AXIS_RIGHTX] = "Right-Stick",
-    [A_AXIS_RIGHTY] = "Right-Stick",
-    [A_AXIS_LEFTTRIGGER] = "Left-Trigger",
-    [A_AXIS_RIGHTTRIGGER] = "Right-Trigger",
+    [F_AXIS_RIGHTX] = "Right-Stick",
+    [F_AXIS_RIGHTY] = "Right-Stick",
+    [F_AXIS_LEFTTRIGGER] = "Left-Trigger",
+    [F_AXIS_RIGHTTRIGGER] = "Right-Trigger",
 };
 
 static const char* g_defaultName = "AAnalog";
@@ -89,21 +89,21 @@ AFix f_analog_valueGet(const AAnalog* Analog)
 {
     int value = 0;
 
-    #define A__ANALOG_BITS 15
-    #define A__ANALOG_MAX_DISTANCE (1 << A__ANALOG_BITS)
-    #define A__ANALOG_ERROR_MARGIN (A__ANALOG_MAX_DISTANCE / 20)
+    #define F__ANALOG_BITS 15
+    #define F__ANALOG_MAX_DISTANCE (1 << F__ANALOG_BITS)
+    #define F__ANALOG_ERROR_MARGIN (F__ANALOG_MAX_DISTANCE / 20)
 
-    A_LIST_ITERATE(Analog->platformInputs, APlatformAnalog*, a) {
+    F_LIST_ITERATE(Analog->platformInputs, APlatformAnalog*, a) {
         value = f_platform_api__inputAnalogValueGet(a);
 
-        if(f_math_abs(value) > A__ANALOG_ERROR_MARGIN) {
+        if(f_math_abs(value) > F__ANALOG_ERROR_MARGIN) {
             break;
         }
     }
 
-    #if A_FIX_BIT_PRECISION < A__ANALOG_BITS
-        return value >> (A__ANALOG_BITS - A_FIX_BIT_PRECISION);
+    #if F_FIX_BIT_PRECISION < F__ANALOG_BITS
+        return value >> (F__ANALOG_BITS - F_FIX_BIT_PRECISION);
     #else
-        return value << (A_FIX_BIT_PRECISION - A__ANALOG_BITS);
+        return value << (F_FIX_BIT_PRECISION - F__ANALOG_BITS);
     #endif
 }

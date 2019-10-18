@@ -18,7 +18,7 @@
 #include "f_png.v.h"
 #include <faur.v.h>
 
-#if A_CONFIG_LIB_PNG
+#if F_CONFIG_LIB_PNG
 #include <zlib.h>
 #include <png.h>
 
@@ -42,7 +42,7 @@ static APixels* pngToPixels(png_structp Png, png_infop Info)
     unsigned numChannels = png_get_channels(Png, Info);
     png_bytepp rows = png_get_rows(Png, Info);
 
-    APixels* pixels = f_pixels__new((int)w, (int)h, 1, A_PIXELS__ALLOC);
+    APixels* pixels = f_pixels__new((int)w, (int)h, 1, F_PIXELS__ALLOC);
     APixel* buffer = pixels->buffer;
 
     for(png_uint_32 y = h; y--; rows++) {
@@ -63,13 +63,13 @@ APixels* f_png__readFile(const char* Path)
     png_structp png = NULL;
     png_infop info = NULL;
 
-    AFile* f = f_file_new(Path, A_FILE_READ | A_FILE_BINARY);
+    AFile* f = f_file_new(Path, F_FILE_READ | F_FILE_BINARY);
 
     if(f == NULL) {
         goto cleanUp;
     }
 
-    if(f_path_test(f_file_pathGet(f), A_PATH_EMBEDDED)) {
+    if(f_path_test(f_file_pathGet(f), F_PATH_EMBEDDED)) {
         pixels = f_png__readMemory(f_file__dataGet(f)->buffer);
         goto cleanUp;
     }
@@ -185,7 +185,7 @@ cleanUp:
 
 void f_png__write(const char* Path, const APixels* Pixels, unsigned Frame, char* Title, char* Description)
 {
-    AFile* f = f_file_new(Path, A_FILE_WRITE | A_FILE_BINARY);
+    AFile* f = f_file_new(Path, F_FILE_WRITE | F_FILE_BINARY);
 
     png_structp png = NULL;
     png_infop info = NULL;
@@ -277,4 +277,4 @@ cleanUp:
 
     f_file_free(f);
 }
-#endif // A_CONFIG_LIB_PNG
+#endif // F_CONFIG_LIB_PNG

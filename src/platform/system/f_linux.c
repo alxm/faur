@@ -18,12 +18,12 @@
 #include "f_linux.v.h"
 #include <faur.v.h>
 
-#if A_CONFIG_SYSTEM_LINUX
+#if F_CONFIG_SYSTEM_LINUX
 #include <signal.h>
 
 static void f__term(int Signal)
 {
-    A_UNUSED(Signal);
+    F_UNUSED(Signal);
 
     exit(0);
 }
@@ -41,4 +41,4 @@ void f_platform_linux__init(void)
         f_out__error("sigaction(SIGTERM) failed");
     }
 }
-#endif // A_CONFIG_SYSTEM_LINUX
+#endif // F_CONFIG_SYSTEM_LINUX

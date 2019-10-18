@@ -18,7 +18,7 @@
 #include "f_embed.v.h"
 #include <faur.v.h>
 
-#if !A_CONFIG_SYSTEM_GAMEBUINO
+#if !F_CONFIG_SYSTEM_GAMEBUINO
 #include "media/console.png.h"
 #include "media/fontgrid.png.h"
 #include "media/fontgrid_keyed.png.h"
@@ -83,6 +83,6 @@ const AEmbeddedFile* f_embed__fileGet(const char* Path)
 {
     return f_strhash_get(g_files, Path);
 }
-#else // A_CONFIG_SYSTEM_GAMEBUINO
+#else // F_CONFIG_SYSTEM_GAMEBUINO
 const APack f_pack__embed;
-#endif // A_CONFIG_SYSTEM_GAMEBUINO
+#endif // F_CONFIG_SYSTEM_GAMEBUINO

@@ -15,8 +15,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_TIME_TIMER_V_H
-#define A_INC_TIME_TIMER_V_H
+#ifndef F_INC_TIME_TIMER_V_H
+#define F_INC_TIME_TIMER_V_H
 
 #include "time/f_timer.p.h"
 
@@ -26,4 +26,4 @@ extern const APack f_pack__timer;
 
 extern void f_timer__tick(void);
 
-#endif // A_INC_TIME_TIMER_V_H
+#endif // F_INC_TIME_TIMER_V_H

@@ -18,8 +18,8 @@
 #include "f_software_draw.v.h"
 #include <faur.v.h>
 
-#if A_CONFIG_LIB_RENDER_SOFTWARE
-#define A__COMPILE_INC 1
+#if F_CONFIG_LIB_RENDER_SOFTWARE
+#define F__COMPILE_INC 1
 
 typedef void (*ADrawPixel)(int X, int Y);
 typedef void (*ADrawHLine)(int X1, int X2, int Y);
@@ -40,18 +40,18 @@ static bool cohen_sutherland_clip(int* X1, int* Y1, int* X2, int* Y2)
     const int clipY1 = f__screen.clipY;
     const int clipY2 = f__screen.clipY2;
 
-    #define A__OUT_LEFT  1
-    #define A__OUT_RIGHT 2
-    #define A__OUT_TOP   4
-    #define A__OUT_DOWN  8
+    #define F__OUT_LEFT  1
+    #define F__OUT_RIGHT 2
+    #define F__OUT_TOP   4
+    #define F__OUT_DOWN  8
 
     #define outcode(o, x, y)                  \
     {                                         \
-        if(x < clipX1) o |= A__OUT_LEFT;         \
-        else if(x >= clipX2) o |= A__OUT_RIGHT;  \
+        if(x < clipX1) o |= F__OUT_LEFT;         \
+        else if(x >= clipX2) o |= F__OUT_RIGHT;  \
                                               \
-        if(y < clipY1) o |= A__OUT_TOP;          \
-        else if(y >= clipY2) o |= A__OUT_DOWN;   \
+        if(y < clipY1) o |= F__OUT_TOP;          \
+        else if(y >= clipY2) o |= F__OUT_DOWN;   \
     }
 
     #define solvex() (x1 + (x1 - x2) * (y - y1) / (y1 - y2))
@@ -77,16 +77,16 @@ static bool cohen_sutherland_clip(int* X1, int* Y1, int* X2, int* Y2)
             int x, y;
             const int outcode = outcode1 ? outcode1 : outcode2;
 
-            if(outcode & A__OUT_LEFT) {
+            if(outcode & F__OUT_LEFT) {
                 x = clipX1;
                 y = solvey();
-            } else if(outcode & A__OUT_RIGHT) {
+            } else if(outcode & F__OUT_RIGHT) {
                 x = clipX2 - 1;
                 y = solvey();
-            } else if(outcode & A__OUT_TOP) {
+            } else if(outcode & F__OUT_TOP) {
                 y = clipY1;
                 x = solvex();
-            } else { // outcode & A__OUT_DOWN
+            } else { // outcode & F__OUT_DOWN
                 y = clipY2 - 1;
                 x = solvex();
             }
@@ -175,7 +175,7 @@ do {                                                                        \
             error += 2 * PrimaryCoord + 1;                                  \
             PrimaryCoord++;                                                 \
                                                                             \
-            A__PIXEL_DRAW(dst);                                             \
+            F__PIXEL_DRAW(dst);                                             \
             dst += PrimaryBufferInc;                                        \
                                                                             \
             if(error > 0) {                                                 \
@@ -192,55 +192,55 @@ do {                                                                        \
     }                                                                       \
 } while(0)
 
-#define A__FUNC_NAME(Name) A_GLUE4(f_draw__, Name, _, A__BLEND)
-#define A__PIXEL_DRAW(Dst) A_GLUE2(f_color__draw_, A__BLEND)(Dst A__PIXEL_PARAMS)
+#define F__FUNC_NAME(Name) F_GLUE4(f_draw__, Name, _, F__BLEND)
+#define F__PIXEL_DRAW(Dst) F_GLUE2(f_color__draw_, F__BLEND)(Dst F__PIXEL_PARAMS)
 
-#define A__BLEND plain
-#define A__BLEND_SETUP const APixel color = f__color.pixel;
-#define A__PIXEL_PARAMS , color
+#define F__BLEND plain
+#define F__BLEND_SETUP const APixel color = f__color.pixel;
+#define F__PIXEL_PARAMS , color
 #include "platform/graphics/f_software_draw.inc.c"
 
-#define A__BLEND rgba
-#define A__BLEND_SETUP \
+#define F__BLEND rgba
+#define F__BLEND_SETUP \
     const ARgb rgb = f__color.rgb; \
     const int alpha = f__color.alpha; \
     if(alpha == 0) { \
         return; \
     }
-#define A__PIXEL_PARAMS , &rgb, alpha
+#define F__PIXEL_PARAMS , &rgb, alpha
 #include "platform/graphics/f_software_draw.inc.c"
 
-#define A__BLEND rgb25
-#define A__BLEND_SETUP const ARgb rgb = f__color.rgb;
-#define A__PIXEL_PARAMS , &rgb
+#define F__BLEND rgb25
+#define F__BLEND_SETUP const ARgb rgb = f__color.rgb;
+#define F__PIXEL_PARAMS , &rgb
 #include "platform/graphics/f_software_draw.inc.c"
 
-#define A__BLEND rgb50
-#define A__BLEND_SETUP const ARgb rgb = f__color.rgb;
-#define A__PIXEL_PARAMS , &rgb
+#define F__BLEND rgb50
+#define F__BLEND_SETUP const ARgb rgb = f__color.rgb;
+#define F__PIXEL_PARAMS , &rgb
 #include "platform/graphics/f_software_draw.inc.c"
 
-#define A__BLEND rgb75
-#define A__BLEND_SETUP const ARgb rgb = f__color.rgb;
-#define A__PIXEL_PARAMS , &rgb
+#define F__BLEND rgb75
+#define F__BLEND_SETUP const ARgb rgb = f__color.rgb;
+#define F__PIXEL_PARAMS , &rgb
 #include "platform/graphics/f_software_draw.inc.c"
 
-#define A__BLEND inverse
-#define A__BLEND_SETUP
-#define A__PIXEL_PARAMS
+#define F__BLEND inverse
+#define F__BLEND_SETUP
+#define F__PIXEL_PARAMS
 #include "platform/graphics/f_software_draw.inc.c"
 
-#define A__BLEND mod
-#define A__BLEND_SETUP const ARgb rgb = f__color.rgb;
-#define A__PIXEL_PARAMS , &rgb
+#define F__BLEND mod
+#define F__BLEND_SETUP const ARgb rgb = f__color.rgb;
+#define F__PIXEL_PARAMS , &rgb
 #include "platform/graphics/f_software_draw.inc.c"
 
-#define A__BLEND add
-#define A__BLEND_SETUP const ARgb rgb = f__color.rgb;
-#define A__PIXEL_PARAMS , &rgb
+#define F__BLEND add
+#define F__BLEND_SETUP const ARgb rgb = f__color.rgb;
+#define F__PIXEL_PARAMS , &rgb
 #include "platform/graphics/f_software_draw.inc.c"
 
-#define A__INIT_BLEND(Index, Name)                           \
+#define F__INIT_BLEND(Index, Name)                           \
     [Index] = {                                              \
         .pixel = f_draw__pixel_##Name,                       \
         .hline = f_draw__hline_##Name,                       \
@@ -261,15 +261,15 @@ static const struct {
     ADrawLine line;
     ADrawRectangle rectangle[2]; // [Fill]
     ADrawCircle circle[2][2]; // [Clip][Fill]
-} g_draw[A_COLOR_BLEND_NUM] = {
-    A__INIT_BLEND(A_COLOR_BLEND_PLAIN, plain)
-    A__INIT_BLEND(A_COLOR_BLEND_RGBA, rgba)
-    A__INIT_BLEND(A_COLOR_BLEND_RGB25, rgb25)
-    A__INIT_BLEND(A_COLOR_BLEND_RGB50, rgb50)
-    A__INIT_BLEND(A_COLOR_BLEND_RGB75, rgb75)
-    A__INIT_BLEND(A_COLOR_BLEND_INVERSE, inverse)
-    A__INIT_BLEND(A_COLOR_BLEND_MOD, mod)
-    A__INIT_BLEND(A_COLOR_BLEND_ADD, add)
+} g_draw[F_COLOR_BLEND_NUM] = {
+    F__INIT_BLEND(F_COLOR_BLEND_PLAIN, plain)
+    F__INIT_BLEND(F_COLOR_BLEND_RGBA, rgba)
+    F__INIT_BLEND(F_COLOR_BLEND_RGB25, rgb25)
+    F__INIT_BLEND(F_COLOR_BLEND_RGB50, rgb50)
+    F__INIT_BLEND(F_COLOR_BLEND_RGB75, rgb75)
+    F__INIT_BLEND(F_COLOR_BLEND_INVERSE, inverse)
+    F__INIT_BLEND(F_COLOR_BLEND_MOD, mod)
+    F__INIT_BLEND(F_COLOR_BLEND_ADD, add)
 };
 
 void f_platform_api__drawPixel(int X, int Y)
@@ -376,4 +376,4 @@ void f_platform_api__drawCircleFilled(int X, int Y, int Radius)
 {
     drawCircle(X, Y, Radius);
 }
-#endif // A_CONFIG_LIB_RENDER_SOFTWARE
+#endif // F_CONFIG_LIB_RENDER_SOFTWARE

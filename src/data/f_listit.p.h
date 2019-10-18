@@ -15,8 +15,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_DATA_LISTIT_P_H
-#define A_INC_DATA_LISTIT_P_H
+#ifndef F_INC_DATA_LISTIT_P_H
+#define F_INC_DATA_LISTIT_P_H
 
 #include "general/f_system_includes.h"
 
@@ -38,31 +38,31 @@ extern void f__listit_remove(const AListIt* Iterator);
 extern bool f__listit_isFirst(const AListIt* Iterator);
 extern bool f__listit_isLast(const AListIt* Iterator);
 
-#define A_LIST_ITERATE(List, PtrType, Name)                          \
+#define F_LIST_ITERATE(List, PtrType, Name)                          \
     for(AListIt f__it = f__listit_new(List, false);                  \
         f__it.sentinelNode != NULL;                                  \
         f__it.sentinelNode = NULL)                                   \
         for(PtrType Name; f__listit_getNext(&f__it, (void*)&Name); )
 
-#define A_LIST_ITERATE_REV(List, PtrType, Name)                      \
+#define F_LIST_ITERATE_REV(List, PtrType, Name)                      \
     for(AListIt f__it = f__listit_new(List, true);                   \
         f__it.sentinelNode != NULL;                                  \
         f__it.sentinelNode = NULL)                                   \
         for(PtrType Name; f__listit_getNext(&f__it, (void*)&Name); )
 
-#define A_LIST_FILTER(List, PtrType, Name, Filter) \
-    A_LIST_ITERATE(List, PtrType, Name)            \
+#define F_LIST_FILTER(List, PtrType, Name, Filter) \
+    F_LIST_ITERATE(List, PtrType, Name)            \
         if(!(Filter)) continue;                    \
         else
 
-#define A_LIST_FILTER_REV(List, PtrType, Name, Filter) \
-    A_LIST_ITERATE_REV(List, PtrType, Name)            \
+#define F_LIST_FILTER_REV(List, PtrType, Name, Filter) \
+    F_LIST_ITERATE_REV(List, PtrType, Name)            \
         if(!(Filter)) continue;                        \
         else
 
-#define A_LIST_INDEX() f__it.index
-#define A_LIST_REMOVE_CURRENT() f__listit_remove(&f__it)
-#define A_LIST_IS_FIRST() f__listit_isFirst(&f__it)
-#define A_LIST_IS_LAST() f__listit_isLast(&f__it)
+#define F_LIST_INDEX() f__it.index
+#define F_LIST_REMOVE_CURRENT() f__listit_remove(&f__it)
+#define F_LIST_IS_FIRST() f__listit_isFirst(&f__it)
+#define F_LIST_IS_LAST() f__listit_isLast(&f__it)
 
-#endif // A_INC_DATA_LISTIT_P_H
+#endif // F_INC_DATA_LISTIT_P_H

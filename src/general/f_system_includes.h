@@ -15,26 +15,26 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_GENERAL_SYSTEM_INCLUDES_H
-#define A_INC_GENERAL_SYSTEM_INCLUDES_H
+#ifndef F_INC_GENERAL_SYSTEM_INCLUDES_H
+#define F_INC_GENERAL_SYSTEM_INCLUDES_H
 
-#define A_UNUSED(X) (X = X)
-#define A_ARRAY_LEN(A) (sizeof(A) / sizeof(A[0]))
+#define F_UNUSED(X) (X = X)
+#define F_ARRAY_LEN(A) (sizeof(A) / sizeof(A[0]))
 
-#define A_FLAGS_BIT(N) (1u << (unsigned)(N))
-#define A_FLAGS_SET(Value, Mask) ((Value) |= (unsigned)(Mask))
-#define A_FLAGS_CLEAR(Value, Mask) ((Value) &= ~(unsigned)(Mask))
-#define A_FLAGS_TEST_ANY(Value, Mask) !!((unsigned)(Value) & (unsigned)(Mask))
-#define A_FLAGS_TEST_ALL(Value, Mask) (((unsigned)(Value) & (unsigned)(Mask)) == (unsigned)(Mask))
+#define F_FLAGS_BIT(N) (1u << (unsigned)(N))
+#define F_FLAGS_SET(Value, Mask) ((Value) |= (unsigned)(Mask))
+#define F_FLAGS_CLEAR(Value, Mask) ((Value) &= ~(unsigned)(Mask))
+#define F_FLAGS_TEST_ANY(Value, Mask) !!((unsigned)(Value) & (unsigned)(Mask))
+#define F_FLAGS_TEST_ALL(Value, Mask) (((unsigned)(Value) & (unsigned)(Mask)) == (unsigned)(Mask))
 
-#define A__STRINGIFY_DO_NOT_CALL(X) #X
-#define A_STRINGIFY(X) A__STRINGIFY_DO_NOT_CALL(X)
+#define F__STRINGIFY_DO_NOT_CALL(X) #X
+#define F_STRINGIFY(X) F__STRINGIFY_DO_NOT_CALL(X)
 
-#define A__GLUE_DO_NOT_CALL(A, B) A##B
-#define A_GLUE2(A, B) A__GLUE_DO_NOT_CALL(A, B)
-#define A_GLUE3(A, B, C) A_GLUE2(A, A_GLUE2(B, C))
-#define A_GLUE4(A, B, C, D) A_GLUE2(A, A_GLUE3(B, C, D))
-#define A_GLUE5(A, B, C, D, E) A_GLUE2(A, A_GLUE4(B, C, D, E))
+#define F__GLUE_DO_NOT_CALL(A, B) A##B
+#define F_GLUE2(A, B) F__GLUE_DO_NOT_CALL(A, B)
+#define F_GLUE3(A, B, C) F_GLUE2(A, F_GLUE2(B, C))
+#define F_GLUE4(A, B, C, D) F_GLUE2(A, F_GLUE3(B, C, D))
+#define F_GLUE5(A, B, C, D, E) F_GLUE2(A, F_GLUE4(B, C, D, E))
 
 typedef void AFree(void* Self);
 
@@ -61,4 +61,4 @@ typedef volatile int AEvent;
     #include "platform/system/f_gamebuino_config.h"
 #endif
 
-#endif // A_INC_GENERAL_SYSTEM_INCLUDES_H
+#endif // F_INC_GENERAL_SYSTEM_INCLUDES_H

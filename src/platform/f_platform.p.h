@@ -15,8 +15,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_PLATFORM_PLATFORM_P_H
+#ifndef F_INC_PLATFORM_PLATFORM_P_H
 
 #include "general/f_system_includes.h"
 
-#endif // A_INC_PLATFORM_PLATFORM_P_H
+#endif // F_INC_PLATFORM_PLATFORM_P_H

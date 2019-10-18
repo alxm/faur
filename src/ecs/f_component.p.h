@@ -15,8 +15,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_ECS_COMPONENT_P_H
-#define A_INC_ECS_COMPONENT_P_H
+#ifndef F_INC_ECS_COMPONENT_P_H
+#define F_INC_ECS_COMPONENT_P_H
 
 #include "general/f_system_includes.h"
 
@@ -36,4 +36,4 @@ extern void f_component_template(int ComponentIndex, const char* StringId, size_
 extern const void* f_component_dataGet(const void* ComponentBuffer);
 extern AEntity* f_component_entityGet(const void* ComponentBuffer);
 
-#endif // A_INC_ECS_COMPONENT_P_H
+#endif // F_INC_ECS_COMPONENT_P_H

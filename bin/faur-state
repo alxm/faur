@@ -37,22 +37,22 @@ def main():
 
 void t_{name}(void)
 {{
-    A_STATE_INIT
+    F_STATE_INIT
     {{
         //
     }}
 
-    A_STATE_TICK
+    F_STATE_TICK
     {{
         //
     }}
 
-    A_STATE_DRAW
+    F_STATE_DRAW
     {{
         //
     }}
 
-    A_STATE_FREE
+    F_STATE_FREE
     {{
         //
     }}

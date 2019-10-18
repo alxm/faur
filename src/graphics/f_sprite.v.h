@@ -15,8 +15,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_GRAPHICS_SPRITE_V_H
-#define A_INC_GRAPHICS_SPRITE_V_H
+#ifndef F_INC_GRAPHICS_SPRITE_V_H
+#define F_INC_GRAPHICS_SPRITE_V_H
 
 #include "graphics/f_sprite.p.h"
 
@@ -26,4 +26,4 @@ extern APixels* f_sprite__pixelsGet(ASprite* Sprite);
 extern APlatformTexture* f_sprite__textureGet(const ASprite* Sprite, unsigned Frame);
 extern void f_sprite__textureCommit(ASprite* Sprite, unsigned Frame);
 
-#endif // A_INC_GRAPHICS_SPRITE_V_H
+#endif // F_INC_GRAPHICS_SPRITE_V_H

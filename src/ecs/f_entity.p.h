@@ -15,8 +15,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_ECS_ENTITY_P_H
-#define A_INC_ECS_ENTITY_P_H
+#ifndef F_INC_ECS_ENTITY_P_H
+#define F_INC_ECS_ENTITY_P_H
 
 #include "general/f_system_includes.h"
 
@@ -52,4 +52,4 @@ extern bool f_entity_muteGet(const AEntity* Entity);
 extern void f_entity_muteInc(AEntity* Entity);
 extern void f_entity_muteDec(AEntity* Entity);
 
-#endif // A_INC_ECS_ENTITY_P_H
+#endif // F_INC_ECS_ENTITY_P_H

@@ -15,8 +15,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_GRAPHICS_PIXELS_V_H
-#define A_INC_GRAPHICS_PIXELS_V_H
+#ifndef F_INC_GRAPHICS_PIXELS_V_H
+#define F_INC_GRAPHICS_PIXELS_V_H
 
 #include "graphics/f_pixels.p.h"
 
@@ -27,10 +27,10 @@ typedef struct APixels APixels;
 #include "math/f_fix.v.h"
 
 typedef enum {
-    A_PIXELS__ALLOC = A_FLAGS_BIT(0),
-    A_PIXELS__DIRTY = A_FLAGS_BIT(1),
-    A_PIXELS__DYNAMIC = A_FLAGS_BIT(2),
-    A_PIXELS__CONST = A_FLAGS_BIT(3),
+    F_PIXELS__ALLOC = F_FLAGS_BIT(0),
+    F_PIXELS__DIRTY = F_FLAGS_BIT(1),
+    F_PIXELS__DYNAMIC = F_FLAGS_BIT(2),
+    F_PIXELS__CONST = F_FLAGS_BIT(3),
 } APixelsFlags;
 
 struct APixels {
@@ -72,4 +72,4 @@ static inline APixel f_pixels__bufferGetValue(const APixels* Pixels, unsigned Fr
     return *f_pixels__bufferGetFrom(Pixels, Frame, X, Y);
 }
 
-#endif // A_INC_GRAPHICS_PIXELS_V_H
+#endif // F_INC_GRAPHICS_PIXELS_V_H

@@ -23,11 +23,11 @@
 #include "f_gp2x.v.h"
 #include <faur.v.h>
 
-#if A_CONFIG_SYSTEM_GP2X
+#if F_CONFIG_SYSTEM_GP2X
 #include <fcntl.h>
 #include <sys/mman.h>
 
-#if A_CONFIG_SYSTEM_GP2X_MHZ > 0
+#if F_CONFIG_SYSTEM_GP2X_MHZ > 0
 static void setCpuSpeed(unsigned MHz)
 {
     unsigned mhz = MHz * 1000000;
@@ -97,13 +97,13 @@ static void setRamTimings(unsigned tRC, unsigned tRAS, unsigned tWR, unsigned tM
 
 void f_platform_gp2x__init(void)
 {
-    if(f_path_exists("./mmuhack.o", A_PATH_FILE)) {
+    if(f_path_exists("./mmuhack.o", F_PATH_FILE)) {
         system("/sbin/rmmod mmuhack");
         system("/sbin/insmod mmuhack.o");
     }
 
-    #if A_CONFIG_SYSTEM_GP2X_MHZ > 0
-        setCpuSpeed(A_CONFIG_SYSTEM_GP2X_MHZ);
+    #if F_CONFIG_SYSTEM_GP2X_MHZ > 0
+        setCpuSpeed(F_CONFIG_SYSTEM_GP2X_MHZ);
     #endif
 
     setRamTimings(6, 4, 1, 1, 1, 2, 2);
@@ -120,4 +120,4 @@ void f_platform_gp2x__uninit(void)
 
     setRamTimings(8, 16, 3, 8, 8, 8, 8);
 }
-#endif // A_CONFIG_SYSTEM_GP2X
+#endif // F_CONFIG_SYSTEM_GP2X

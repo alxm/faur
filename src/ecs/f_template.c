@@ -18,13 +18,13 @@
 #include "f_template.v.h"
 #include <faur.v.h>
 
-#if A_CONFIG_ECS_ENABLED
+#if F_CONFIG_ECS_ENABLED
 struct ATemplate {
     unsigned instanceNumber; // Incremented by each new entity
     AEntityInit* init; // Optional, runs after components init and parent init
     ABitfield* componentBits; // Set if template or a parent has component
     ABitfield* componentBitsOwn; // Set if template actually has the component
-    void* data[A_CONFIG_ECS_COM_NUM]; // Parsed component config data, or NULL
+    void* data[F_CONFIG_ECS_COM_NUM]; // Parsed component config data, or NULL
     const ATemplate* parent; // template chain
 };
 
@@ -34,8 +34,8 @@ static ATemplate* templateNew(const char* Id)
 {
     ATemplate* t = f_mem_zalloc(sizeof(ATemplate));
 
-    t->componentBits = f_bitfield_new(A_CONFIG_ECS_COM_NUM);
-    t->componentBitsOwn = f_bitfield_new(A_CONFIG_ECS_COM_NUM);
+    t->componentBits = f_bitfield_new(F_CONFIG_ECS_COM_NUM);
+    t->componentBitsOwn = f_bitfield_new(F_CONFIG_ECS_COM_NUM);
 
     char* parentId = f_str_prefixGetToLast(Id, '.');
 
@@ -48,7 +48,7 @@ static ATemplate* templateNew(const char* Id)
 
         t->parent = parentTemplate;
 
-        for(unsigned c = A_CONFIG_ECS_COM_NUM; c--; ) {
+        for(unsigned c = F_CONFIG_ECS_COM_NUM; c--; ) {
             if(f_bitfield_test(parentTemplate->componentBits, c)) {
                 f_bitfield_set(t->componentBits, c);
                 t->data[c] = parentTemplate->data[c];
@@ -65,7 +65,7 @@ static ATemplate* templateNew(const char* Id)
 
 static void templateFree(ATemplate* Template)
 {
-    for(int c = A_CONFIG_ECS_COM_NUM; c--; ) {
+    for(int c = F_CONFIG_ECS_COM_NUM; c--; ) {
         if(f_bitfield_test(Template->componentBitsOwn, (unsigned)c)
             && Template->data[c]) {
 
@@ -93,12 +93,12 @@ void f_template_new(const char* FilePath)
 {
     ABlock* root = f_block_new(FilePath);
 
-    A_LIST_ITERATE(f_block_blocksGet(root), const ABlock*, b) {
+    F_LIST_ITERATE(f_block_blocksGet(root), const ABlock*, b) {
         const char* templateId = f_block_lineGetString(b, 0);
 
-        #if A_CONFIG_BUILD_DEBUG
+        #if F_CONFIG_BUILD_DEBUG
             if(f_strhash_contains(g_templates, templateId)) {
-                A__FATAL("f_template_new(%s): '%s' already declared",
+                F__FATAL("f_template_new(%s): '%s' already declared",
                          FilePath,
                          templateId);
             }
@@ -106,7 +106,7 @@ void f_template_new(const char* FilePath)
 
         ATemplate* t = templateNew(templateId);
 
-        A_LIST_ITERATE(f_block_blocksGet(b), const ABlock*, b) {
+        F_LIST_ITERATE(f_block_blocksGet(b), const ABlock*, b) {
             const char* componentId = f_block_lineGetString(b, 0);
             int componentIndex = f_component__stringToIndex(componentId);
 
@@ -132,9 +132,9 @@ const ATemplate* f_template__get(const char* TemplateId)
 {
     ATemplate* t = f_strhash_get(g_templates, TemplateId);
 
-    #if A_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_BUILD_DEBUG
         if(t == NULL) {
-            A__FATAL("Unknown template '%s'", TemplateId);
+            F__FATAL("Unknown template '%s'", TemplateId);
         }
     #endif
 
@@ -158,9 +158,9 @@ void f_template_init(const char* Id, AEntityInit* Init)
 {
     ATemplate* t = f_strhash_get(g_templates, Id);
 
-    #if A_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_BUILD_DEBUG
         if(t == NULL) {
-            A__FATAL("f_template_init(%s): Unknown template", Id);
+            F__FATAL("f_template_init(%s): Unknown template", Id);
         }
     #endif
 
@@ -181,4 +181,4 @@ const void* f_template__dataGet(const ATemplate* Template, int ComponentIndex)
 {
     return Template->data[ComponentIndex];
 }
-#endif // A_CONFIG_ECS_ENABLED
+#endif // F_CONFIG_ECS_ENABLED

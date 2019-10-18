@@ -15,19 +15,19 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_FILES_PATH_P_H
-#define A_INC_FILES_PATH_P_H
+#ifndef F_INC_FILES_PATH_P_H
+#define F_INC_FILES_PATH_P_H
 
 #include "general/f_system_includes.h"
 
 typedef struct APath APath;
 
 typedef enum {
-    A_PATH_FILE = A_FLAGS_BIT(0),
-    A_PATH_DIR = A_FLAGS_BIT(1),
-    A_PATH_OTHER = A_FLAGS_BIT(2),
-    A_PATH_EMBEDDED = A_FLAGS_BIT(3),
-    A_PATH_REAL = A_FLAGS_BIT(4),
+    F_PATH_FILE = F_FLAGS_BIT(0),
+    F_PATH_DIR = F_FLAGS_BIT(1),
+    F_PATH_OTHER = F_FLAGS_BIT(2),
+    F_PATH_EMBEDDED = F_FLAGS_BIT(3),
+    F_PATH_REAL = F_FLAGS_BIT(4),
 } APathFlags;
 
 extern APath* f_path_new(const char* Path);
@@ -41,4 +41,4 @@ extern const char* f_path_getFull(const APath* Path);
 extern const char* f_path_getDirs(const APath* Path);
 extern const char* f_path_getName(const APath* Path);
 
-#endif // A_INC_FILES_PATH_P_H
+#endif // F_INC_FILES_PATH_P_H

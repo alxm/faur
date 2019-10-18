@@ -15,8 +15,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_ECS_TEMPLATE_V_H
-#define A_INC_ECS_TEMPLATE_V_H
+#ifndef F_INC_ECS_TEMPLATE_V_H
+#define F_INC_ECS_TEMPLATE_V_H
 
 #include "ecs/f_template.p.h"
 
@@ -32,4 +32,4 @@ extern unsigned f_template__instanceGet(const ATemplate* Template);
 extern bool f_template__componentHas(const ATemplate* Template, int ComponentIndex);
 extern const void* f_template__dataGet(const ATemplate* Template, int ComponentIndex);
 
-#endif // A_INC_ECS_TEMPLATE_V_H
+#endif // F_INC_ECS_TEMPLATE_V_H

@@ -23,11 +23,11 @@ AFile* f_file_new(const char* Path, AFileMode Mode)
     AFile* f = NULL;
     APath* path = f_path_new(Path);
 
-    if(A_FLAGS_TEST_ANY(Mode, A_FILE_WRITE)
-        || f_path_test(path, A_PATH_FILE | A_PATH_REAL)) {
+    if(F_FLAGS_TEST_ANY(Mode, F_FILE_WRITE)
+        || f_path_test(path, F_PATH_FILE | F_PATH_REAL)) {
 
         f = f_file_real__new(path, Mode);
-    } else if(f_path_test(path, A_PATH_FILE | A_PATH_EMBEDDED)) {
+    } else if(f_path_test(path, F_PATH_FILE | F_PATH_EMBEDDED)) {
         f = f_file_embedded__new(path);
     } else {
         f_out__warning("f_file_new(%s): File does not exist", Path);
@@ -46,7 +46,7 @@ void f_file_free(AFile* File)
         return;
     }
 
-    if(f_path_test(File->path, A_PATH_REAL)) {
+    if(f_path_test(File->path, F_PATH_REAL)) {
         fclose(File->u.handle);
     }
 
@@ -63,7 +63,7 @@ const APath* f_file_pathGet(const AFile* File)
 
 FILE* f_file_handleGet(const AFile* File)
 {
-    if(f_path_test(File->path, A_PATH_REAL)) {
+    if(f_path_test(File->path, F_PATH_REAL)) {
         return File->u.handle;
     } else {
         return NULL;
@@ -72,7 +72,7 @@ FILE* f_file_handleGet(const AFile* File)
 
 const AEmbeddedFile* f_file__dataGet(AFile* File)
 {
-    if(f_path_test(File->path, A_PATH_EMBEDDED)) {
+    if(f_path_test(File->path, F_PATH_EMBEDDED)) {
         return File->u.e.data;
     } else {
         return NULL;
@@ -81,9 +81,9 @@ const AEmbeddedFile* f_file__dataGet(AFile* File)
 
 uint8_t* f_file_toBuffer(const char* Path)
 {
-    if(f_path_exists(Path, A_PATH_FILE | A_PATH_REAL)) {
+    if(f_path_exists(Path, F_PATH_FILE | F_PATH_REAL)) {
         return f_file_real__toBuffer(Path);
-    } else if(f_path_exists(Path, A_PATH_FILE | A_PATH_EMBEDDED)) {
+    } else if(f_path_exists(Path, F_PATH_FILE | F_PATH_EMBEDDED)) {
         return f_file_embedded__toBuffer(Path);
     }
 
@@ -238,7 +238,7 @@ unsigned f_file_lineNumberGet(const AFile* File)
 
 bool f_file_rewind(AFile* File)
 {
-    bool ret = File->interface->seek(File, 0, A_FILE__OFFSET_START);
+    bool ret = File->interface->seek(File, 0, F_FILE__OFFSET_START);
 
     if(ret) {
         File->lineNumber = 0;
@@ -252,7 +252,7 @@ bool f_file_rewind(AFile* File)
 
 bool f_file_seekStart(AFile* File, int Offset)
 {
-    bool ret = File->interface->seek(File, Offset, A_FILE__OFFSET_START);
+    bool ret = File->interface->seek(File, Offset, F_FILE__OFFSET_START);
 
     if(!ret) {
         f_out__error("f_file_seekStart(%s, %d) failed",
@@ -265,7 +265,7 @@ bool f_file_seekStart(AFile* File, int Offset)
 
 bool f_file_seekEnd(AFile* File, int Offset)
 {
-    bool ret = File->interface->seek(File, Offset, A_FILE__OFFSET_END);
+    bool ret = File->interface->seek(File, Offset, F_FILE__OFFSET_END);
 
     if(!ret) {
         f_out__error("f_file_seekEnd(%s, %d) failed",
@@ -278,7 +278,7 @@ bool f_file_seekEnd(AFile* File, int Offset)
 
 bool f_file_seekCurrent(AFile* File, int Offset)
 {
-    bool ret = File->interface->seek(File, Offset, A_FILE__OFFSET_CURRENT);
+    bool ret = File->interface->seek(File, Offset, F_FILE__OFFSET_CURRENT);
 
     if(!ret) {
         f_out__error("f_file_seekCurrent(%s, %d) failed",

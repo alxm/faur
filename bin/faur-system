@@ -37,7 +37,7 @@ def main():
 
 void s_{name}(AEntity* Entity)
 {{
-    A_UNUSED(Entity);
+    F_UNUSED(Entity);
 }}
 """.format(name = sys_name))
 

@@ -15,8 +15,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_MATH_RANDOM_P_H
-#define A_INC_MATH_RANDOM_P_H
+#ifndef F_INC_MATH_RANDOM_P_H
+#define F_INC_MATH_RANDOM_P_H
 
 #include "general/f_system_includes.h"
 
@@ -38,4 +38,4 @@ extern unsigned f_random_rangeu(unsigned Min, unsigned Max);
 extern bool f_random_chance(int Something, int OutOf);
 extern bool f_random_chanceu(unsigned Something, unsigned OutOf);
 
-#endif // A_INC_MATH_RANDOM_P_H
+#endif // F_INC_MATH_RANDOM_P_H

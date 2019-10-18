@@ -15,8 +15,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_INPUTS_INPUT_P_H
-#define A_INC_INPUTS_INPUT_P_H
+#ifndef F_INC_INPUTS_INPUT_P_H
+#define F_INC_INPUTS_INPUT_P_H
 
 #include "general/f_system_includes.h"
 
@@ -28,4 +28,4 @@ extern bool f_input_readKey(AKeyId Key);
 extern bool f_input_readButton(AButtonId Button);
 extern AFix f_input_readAnalog(AAnalogId Axis);
 
-#endif // A_INC_INPUTS_INPUT_P_H
+#endif // F_INC_INPUTS_INPUT_P_H

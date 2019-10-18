@@ -15,18 +15,18 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_GENERAL_MENU_P_H
-#define A_INC_GENERAL_MENU_P_H
+#ifndef F_INC_GENERAL_MENU_P_H
+#define F_INC_GENERAL_MENU_P_H
 
 #include "general/f_system_includes.h"
 
 typedef struct AMenu AMenu;
 
 typedef enum {
-    A_MENU_STATE_INVALID = -1,
-    A_MENU_STATE_RUNNING,
-    A_MENU_STATE_SELECTED,
-    A_MENU_STATE_CANCELED
+    F_MENU_STATE_INVALID = -1,
+    F_MENU_STATE_RUNNING,
+    F_MENU_STATE_SELECTED,
+    F_MENU_STATE_CANCELED
 } AMenuState;
 
 #include "data/f_list.p.h"
@@ -51,4 +51,4 @@ extern void* f_menu_itemGetSelected(const AMenu* Menu);
 extern void f_menu_keepRunning(AMenu* Menu);
 extern void f_menu_reset(AMenu* Menu);
 
-#endif // A_INC_GENERAL_MENU_P_H
+#endif // F_INC_GENERAL_MENU_P_H

@@ -15,8 +15,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_GENERAL_STATE_P_H
-#define A_INC_GENERAL_STATE_P_H
+#ifndef F_INC_GENERAL_STATE_P_H
+#define F_INC_GENERAL_STATE_P_H
 
 #include "general/f_system_includes.h"
 
@@ -42,19 +42,19 @@ extern bool f_state_blockGet(void);
 extern void f_state_blockSet(const AEvent* Event);
 
 typedef enum {
-    A__STATE_STAGE_INVALID = -1,
-    A__STATE_STAGE_INIT,
-    A__STATE_STAGE_TICK,
-    A__STATE_STAGE_DRAW,
-    A__STATE_STAGE_FREE,
-    A__STATE_STAGE_NUM
+    F__STATE_STAGE_INVALID = -1,
+    F__STATE_STAGE_INIT,
+    F__STATE_STAGE_TICK,
+    F__STATE_STAGE_DRAW,
+    F__STATE_STAGE_FREE,
+    F__STATE_STAGE_NUM
 } AStateStage;
 
 extern bool f__state_stageCheck(AStateStage Stage);
 
-#define A_STATE_INIT if(f__state_stageCheck(A__STATE_STAGE_INIT))
-#define A_STATE_TICK if(f__state_stageCheck(A__STATE_STAGE_TICK))
-#define A_STATE_DRAW if(f__state_stageCheck(A__STATE_STAGE_DRAW))
-#define A_STATE_FREE if(f__state_stageCheck(A__STATE_STAGE_FREE))
+#define F_STATE_INIT if(f__state_stageCheck(F__STATE_STAGE_INIT))
+#define F_STATE_TICK if(f__state_stageCheck(F__STATE_STAGE_TICK))
+#define F_STATE_DRAW if(f__state_stageCheck(F__STATE_STAGE_DRAW))
+#define F_STATE_FREE if(f__state_stageCheck(F__STATE_STAGE_FREE))
 
-#endif // A_INC_GENERAL_STATE_P_H
+#endif // F_INC_GENERAL_STATE_P_H

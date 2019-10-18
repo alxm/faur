@@ -18,12 +18,12 @@
 #include "f_strhash.v.h"
 #include <faur.v.h>
 
-#define A_STRHASH__SLOTS 128
-#define A_STRHASH__SLOTS_MASK (A_STRHASH__SLOTS - 1)
+#define F_STRHASH__SLOTS 128
+#define F_STRHASH__SLOTS_MASK (F_STRHASH__SLOTS - 1)
 
 struct AStrHash {
     AList* entriesList;
-    AStrHashEntry* slots[A_STRHASH__SLOTS];
+    AStrHashEntry* slots[F_STRHASH__SLOTS];
 };
 
 struct AStrHashEntry {
@@ -40,7 +40,7 @@ static inline unsigned getSlot(const char* Key)
         s = (unsigned)*Key + (s << 5) - s;
     }
 
-    return s & A_STRHASH__SLOTS_MASK;
+    return s & F_STRHASH__SLOTS_MASK;
 }
 
 AStrHash* f_strhash_new(void)
@@ -49,7 +49,7 @@ AStrHash* f_strhash_new(void)
 
     h->entriesList = f_list_new();
 
-    for(int i = A_STRHASH__SLOTS; i--; ) {
+    for(int i = F_STRHASH__SLOTS; i--; ) {
         h->slots[i] = NULL;
     }
 
@@ -67,7 +67,7 @@ void f_strhash_freeEx(AStrHash* Hash, AFree* Free)
         return;
     }
 
-    A_LIST_ITERATE(Hash->entriesList, AStrHashEntry*, e) {
+    F_LIST_ITERATE(Hash->entriesList, AStrHashEntry*, e) {
         if(Free) {
             Free(e->content);
         }
@@ -140,8 +140,8 @@ void** f_strhash_toArray(const AStrHash* Hash)
     void** array = f_mem_malloc(
                     f_list_sizeGet(Hash->entriesList) * sizeof(void*));
 
-    A_LIST_ITERATE(Hash->entriesList, const AStrHashEntry*, e) {
-        array[A_LIST_INDEX()] = e->content;
+    F_LIST_ITERATE(Hash->entriesList, const AStrHashEntry*, e) {
+        array[F_LIST_INDEX()] = e->content;
     }
 
     return array;
@@ -168,7 +168,7 @@ void f__strhash_printStats(const AStrHash* Hash, const char* Message)
     unsigned occupiedSlots = 0;
     unsigned slotsWithCollisions = 0;
 
-    for(int i = 0; i < A_STRHASH__SLOTS; i++) {
+    for(int i = 0; i < F_STRHASH__SLOTS; i++) {
         unsigned entriesInSlot = 0;
 
         for(AStrHashEntry* e = Hash->slots[i]; e; e = e->next) {
@@ -198,7 +198,7 @@ void f__strhash_printStats(const AStrHash* Hash, const char* Message)
 
     printf("%d entries, %d%% slots used, %d%% have collisions - ",
            f_list_sizeGet(Hash->entriesList),
-           100 * occupiedSlots / A_STRHASH__SLOTS,
+           100 * occupiedSlots / F_STRHASH__SLOTS,
            100 * slotsWithCollisions / occupiedSlots);
 
     if(maxInSlot < 2) {

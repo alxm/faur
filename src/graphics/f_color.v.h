@@ -15,8 +15,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_GRAPHICS_COLOR_V_H
-#define A_INC_GRAPHICS_COLOR_V_H
+#ifndef F_INC_GRAPHICS_COLOR_V_H
+#define F_INC_GRAPHICS_COLOR_V_H
 
 #include "graphics/f_color.p.h"
 
@@ -103,4 +103,4 @@ static inline void f_color__draw_add(APixel* Dst, const ARgb* Rgb)
                            f_math_min(rgb.b + Rgb->b, 255));
 }
 
-#endif // A_INC_GRAPHICS_COLOR_V_H
+#endif // F_INC_GRAPHICS_COLOR_V_H

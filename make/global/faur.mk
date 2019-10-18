@@ -1,4 +1,4 @@
-FAUR_DIR_OBJ := $(A_DIR_OBJ_FAUR)
+FAUR_DIR_OBJ := $(F_DIR_OBJ_FAUR)
 FAUR_DIR_GEN := $(FAUR_DIR_OBJ)/faur__gen
 
 FAUR_EMBED_PATHS := \
@@ -21,14 +21,14 @@ FAUR_INFO_COMPILE_TIME := $(shell date "+%Y-%m-%d\ %H:%M:%S")
 FAUR_INFO_GIT_HASH := $(shell cd $(FAUR_PATH) && git rev-parse --verify HEAD)
 
 FAUR_GENERIC_CFLAGS := \
-    $(A_GENERIC_CFLAGS) \
+    $(F_GENERIC_CFLAGS) \
     -I$(FAUR_DIR_GEN) \
-    -DA_CONFIG_BUILD_GIT_HASH=\"$(FAUR_INFO_GIT_HASH)\" \
-    -DA_CONFIG_BUILD_TIMESTAMP=\"$(FAUR_INFO_COMPILE_TIME)\" \
+    -DF_CONFIG_BUILD_GIT_HASH=\"$(FAUR_INFO_GIT_HASH)\" \
+    -DF_CONFIG_BUILD_TIMESTAMP=\"$(FAUR_INFO_COMPILE_TIME)\" \
 
 $(FAUR_FILE_PUBLIC_FAUR_LIB) : $(FAUR_FILES_OBJ)
 	@ mkdir -p $(@D)
-	$(AR) rs$(A_CONFIG_BUILD_AR_FLAGS) $@ $(FAUR_FILES_OBJ)
+	$(AR) rs$(F_CONFIG_BUILD_AR_FLAGS) $@ $(FAUR_FILES_OBJ)
 
 $(FAUR_DIR_OBJ)/%.c.o : $(FAUR_DIR_SRC)/%.c
 	@ mkdir -p $(@D)
@@ -41,4 +41,4 @@ $(FAUR_DIR_GEN)/%.h : $(FAUR_DIR_ROOT)/% $(FAUR_PATH)/bin/faur-bin
 	$(FAUR_PATH)/bin/faur-bin $< $@ $(<:$(FAUR_DIR_ROOT)/%=%) f__bin__
 
 $(FAUR_FILE_EDITOR_TAGS) : $(FAUR_FILES_PUBLIC_FAUR_HEADERS)
-	test ! -d $(@D) || CFLAGS="$(A_CONFIG_BUILD_CFLAGS)" geany -g -P $@ $^
+	test ! -d $(@D) || CFLAGS="$(F_CONFIG_BUILD_CFLAGS)" geany -g -P $@ $^

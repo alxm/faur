@@ -15,8 +15,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_GENERAL_STATE_V_H
-#define A_INC_GENERAL_STATE_V_H
+#ifndef F_INC_GENERAL_STATE_V_H
+#define F_INC_GENERAL_STATE_V_H
 
 #include "general/f_state.p.h"
 
@@ -27,4 +27,4 @@ extern const APack f_pack__state;
 extern void f_state__runLoop(void);
 extern bool f_state__runStep(void);
 
-#endif // A_INC_GENERAL_STATE_V_H
+#endif // F_INC_GENERAL_STATE_V_H

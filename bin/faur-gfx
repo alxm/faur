@@ -124,7 +124,7 @@ static const struct {{
         {frames_num},
         {width} * {height},
         {width} * {height} * sizeof(APixel),
-        A_PIXELS__CONST,
+        F_PIXELS__CONST,
         (APixel*)f_gfx__buffer__{var},
     }},
     {{{textures}

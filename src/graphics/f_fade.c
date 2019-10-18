@@ -19,11 +19,11 @@
 #include <faur.v.h>
 
 typedef enum {
-    A__FADE_INVALID = -1,
-    A__FADE_TOCOLOR,
-    A__FADE_FROMCOLOR,
-    A__FADE_SCREENS,
-    A__FADE_NUM
+    F__FADE_INVALID = -1,
+    F__FADE_TOCOLOR,
+    F__FADE_FROMCOLOR,
+    F__FADE_SCREENS,
+    F__FADE_NUM
 } AFadeOpId;
 
 static struct {
@@ -33,12 +33,12 @@ static struct {
     APixel color;
     ASprite* oldScreen;
 } g_fade = {
-    .op = A__FADE_INVALID,
+    .op = F__FADE_INVALID,
 };
 
 static void f_fade__init(void)
 {
-    #if !A_CONFIG_SYSTEM_GAMEBUINO
+    #if !F_CONFIG_SYSTEM_GAMEBUINO
         g_fade.oldScreen = f_sprite_newBlank(
                             f__screen.pixels->w, f__screen.pixels->h, 1, false);
     #endif
@@ -69,28 +69,28 @@ static void newFade(AFadeOpId Op, unsigned DurationMs)
     g_fade.event = 1;
     g_fade.op = Op;
     g_fade.angle = 0;
-    g_fade.angleInc = A_DEG_090_FIX
+    g_fade.angleInc = F_DEG_090_FIX
                         / f_math_maxu(f_time_ticksFromMs(DurationMs), 1);
 }
 
 void f_fade_startColorTo(unsigned DurationMs)
 {
-    newFade(A__FADE_TOCOLOR, DurationMs);
+    newFade(F__FADE_TOCOLOR, DurationMs);
 
     g_fade.color = f__color.pixel;
 }
 
 void f_fade_startColorFrom(unsigned DurationMs)
 {
-    newFade(A__FADE_FROMCOLOR, DurationMs);
+    newFade(F__FADE_FROMCOLOR, DurationMs);
 
     g_fade.color = f__color.pixel;
 }
 
-#if !A_CONFIG_SYSTEM_GAMEBUINO
+#if !F_CONFIG_SYSTEM_GAMEBUINO
 void f_fade_startScreens(unsigned DurationMs)
 {
-    newFade(A__FADE_SCREENS, DurationMs);
+    newFade(F__FADE_SCREENS, DurationMs);
 
     f_screen__toSprite(g_fade.oldScreen, 0);
 }
@@ -98,49 +98,49 @@ void f_fade_startScreens(unsigned DurationMs)
 
 void f_fade__tick(void)
 {
-    if(g_fade.op == A__FADE_INVALID) {
+    if(g_fade.op == F__FADE_INVALID) {
         return;
     }
 
     g_fade.angle += g_fade.angleInc;
 
-    if(g_fade.angle > A_DEG_090_FIX) {
+    if(g_fade.angle > F_DEG_090_FIX) {
         g_fade.event = 0;
-        g_fade.op = A__FADE_INVALID;
+        g_fade.op = F__FADE_INVALID;
     }
 }
 
 void f_fade__draw(void)
 {
-    if(g_fade.op == A__FADE_INVALID) {
+    if(g_fade.op == F__FADE_INVALID) {
         return;
     }
 
     f_color_push();
-    f_color_blendSet(A_COLOR_BLEND_RGBA);
+    f_color_blendSet(F_COLOR_BLEND_RGBA);
 
     switch(g_fade.op) {
-        case A__FADE_TOCOLOR: {
+        case F__FADE_TOCOLOR: {
             f_color_alphaSet(
-                f_fix_toInt(f_fix_sinf(g_fade.angle) * A_COLOR_ALPHA_MAX));
+                f_fix_toInt(f_fix_sinf(g_fade.angle) * F_COLOR_ALPHA_MAX));
 
             f_color_baseSetPixel(g_fade.color);
             f_draw_fill();
         } break;
 
-        case A__FADE_FROMCOLOR: {
+        case F__FADE_FROMCOLOR: {
             f_color_alphaSet(
-                f_fix_toInt(f_fix_sinf(A_DEG_090_FIX - g_fade.angle)
-                                * A_COLOR_ALPHA_MAX));
+                f_fix_toInt(f_fix_sinf(F_DEG_090_FIX - g_fade.angle)
+                                * F_COLOR_ALPHA_MAX));
 
             f_color_baseSetPixel(g_fade.color);
             f_draw_fill();
         } break;
 
-        case A__FADE_SCREENS: {
+        case F__FADE_SCREENS: {
             f_color_alphaSet(
-                f_fix_toInt(f_fix_sinf(A_DEG_090_FIX - g_fade.angle)
-                                * A_COLOR_ALPHA_MAX));
+                f_fix_toInt(f_fix_sinf(F_DEG_090_FIX - g_fade.angle)
+                                * F_COLOR_ALPHA_MAX));
 
             f_sprite_blit(g_fade.oldScreen, 0, 0, 0);
         } break;

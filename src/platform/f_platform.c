@@ -20,60 +20,60 @@
 
 static void f_platform__init(void)
 {
-    #if A_CONFIG_SYSTEM_EMSCRIPTEN
+    #if F_CONFIG_SYSTEM_EMSCRIPTEN
         f_platform_emscripten__init();
     #endif
 
-    #if A_CONFIG_SYSTEM_LINUX
+    #if F_CONFIG_SYSTEM_LINUX
         f_platform_linux__init();
     #endif
 
-    #if A_CONFIG_SYSTEM_PANDORA
+    #if F_CONFIG_SYSTEM_PANDORA
         f_platform_pandora__init();
     #endif
 
-    #if A_CONFIG_LIB_SDL
+    #if F_CONFIG_LIB_SDL
         f_platform_sdl__init();
     #endif
 
-    #if A_CONFIG_SYSTEM_GP2X
+    #if F_CONFIG_SYSTEM_GP2X
         f_platform_gp2x__init();
-    #elif A_CONFIG_SYSTEM_WIZ || A_CONFIG_SYSTEM_CAANOO
+    #elif F_CONFIG_SYSTEM_WIZ || F_CONFIG_SYSTEM_CAANOO
         f_platform_wiz__init();
     #endif
 
     f_platform_api__screenInit();
 
-    #if A_CONFIG_LIB_RENDER_SOFTWARE
-        #if A_CONFIG_SCREEN_ALLOCATE
+    #if F_CONFIG_LIB_RENDER_SOFTWARE
+        #if F_CONFIG_SCREEN_ALLOCATE
             f_out__info("Software graphics (virtual buffer)");
         #else
             f_out__info("Software graphics (raw buffer)");
         #endif
 
         f_platform_software_blit__init();
-    #elif A_CONFIG_LIB_RENDER_SDL
+    #elif F_CONFIG_LIB_RENDER_SDL
         f_out__info("SDL graphics");
     #endif
 }
 
 static void f_platform__uninit(void)
 {
-    #if A_CONFIG_LIB_RENDER_SOFTWARE
+    #if F_CONFIG_LIB_RENDER_SOFTWARE
         f_platform_software_blit__uninit();
     #endif
 
     f_platform_api__screenUninit();
 
-    #if A_CONFIG_SYSTEM_GP2X
+    #if F_CONFIG_SYSTEM_GP2X
         f_platform_gp2x__uninit();
-    #elif A_CONFIG_SYSTEM_WIZ || A_CONFIG_SYSTEM_CAANOO
+    #elif F_CONFIG_SYSTEM_WIZ || F_CONFIG_SYSTEM_CAANOO
         f_platform_wiz__uninit();
-    #elif A_CONFIG_SYSTEM_PANDORA
+    #elif F_CONFIG_SYSTEM_PANDORA
         f_platform_pandora__uninit();
     #endif
 
-    #if A_CONFIG_LIB_SDL
+    #if F_CONFIG_LIB_SDL
         f_platform_sdl__uninit();
     #endif
 }

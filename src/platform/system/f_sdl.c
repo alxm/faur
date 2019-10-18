@@ -18,10 +18,10 @@
 #include "f_sdl.v.h"
 #include <faur.v.h>
 
-#if A_CONFIG_LIB_SDL
-#if A_CONFIG_LIB_SDL == 1
+#if F_CONFIG_LIB_SDL
+#if F_CONFIG_LIB_SDL == 1
     #include <SDL/SDL.h>
-#elif A_CONFIG_LIB_SDL == 2
+#elif F_CONFIG_LIB_SDL == 2
     #include <SDL2/SDL.h>
 #endif
 
@@ -31,20 +31,20 @@ void f_platform_sdl__init(void)
 {
     g_sdlFlags = 0;
 
-    #if A_CONFIG_LIB_SDL_TIME
+    #if F_CONFIG_LIB_SDL_TIME
         g_sdlFlags |= SDL_INIT_TIMER;
     #endif
 
     if(SDL_Init(g_sdlFlags) != 0) {
-        A__FATAL("SDL_Init: %s", SDL_GetError());
+        F__FATAL("SDL_Init: %s", SDL_GetError());
     }
 
     SDL_version cv, rv;
     SDL_VERSION(&cv);
 
-    #if A_CONFIG_LIB_SDL == 1
+    #if F_CONFIG_LIB_SDL == 1
         rv = *SDL_Linked_Version();
-    #elif A_CONFIG_LIB_SDL == 2
+    #elif F_CONFIG_LIB_SDL == 2
         SDL_GetVersion(&rv);
     #endif
 
@@ -54,7 +54,7 @@ void f_platform_sdl__init(void)
     f_platform_sdl_input__init();
     f_platform_sdl_video__init();
 
-    #if A_CONFIG_SOUND_ENABLED
+    #if F_CONFIG_SOUND_ENABLED
         f_platform_sdl_sound__init();
     #endif
 }
@@ -64,7 +64,7 @@ void f_platform_sdl__uninit(void)
     f_platform_sdl_input__uninit();
     f_platform_sdl_video__uninit();
 
-    #if A_CONFIG_SOUND_ENABLED
+    #if F_CONFIG_SOUND_ENABLED
         f_platform_sdl_sound__uninit();
     #endif
 
@@ -72,7 +72,7 @@ void f_platform_sdl__uninit(void)
     SDL_Quit();
 }
 
-#if A_CONFIG_LIB_SDL_TIME
+#if F_CONFIG_LIB_SDL_TIME
 uint32_t f_platform_api__timeMsGet(void)
 {
     return SDL_GetTicks();
@@ -80,11 +80,11 @@ uint32_t f_platform_api__timeMsGet(void)
 
 void f_platform_api__timeMsWait(uint32_t Ms)
 {
-    #if A_CONFIG_TRAIT_NOSLEEP
+    #if F_CONFIG_TRAIT_NOSLEEP
         return;
     #endif
 
-    #if A_CONFIG_SYSTEM_GP2X // too inaccurate
+    #if F_CONFIG_SYSTEM_GP2X // too inaccurate
         if(Ms < 10) {
             f_time_spinMs(Ms);
             return;
@@ -94,4 +94,4 @@ void f_platform_api__timeMsWait(uint32_t Ms)
     SDL_Delay(Ms);
 }
 #endif
-#endif // A_CONFIG_LIB_SDL
+#endif // F_CONFIG_LIB_SDL

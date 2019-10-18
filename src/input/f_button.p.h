@@ -15,75 +15,75 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_INPUTS_BUTTON_P_H
-#define A_INC_INPUTS_BUTTON_P_H
+#ifndef F_INC_INPUTS_BUTTON_P_H
+#define F_INC_INPUTS_BUTTON_P_H
 
 #include "general/f_system_includes.h"
 
 typedef struct AButton AButton;
 
 typedef enum {
-    A_BUTTON_INVALID = -1,
-    A_BUTTON_UP,
-    A_BUTTON_DOWN,
-    A_BUTTON_LEFT,
-    A_BUTTON_RIGHT,
-    A_BUTTON_A,
-    A_BUTTON_B,
-    A_BUTTON_X,
-    A_BUTTON_Y,
-    A_BUTTON_L,
-    A_BUTTON_R,
-    A_BUTTON_START,
-    A_BUTTON_SELECT,
-    A_BUTTON_STICKCLICK,
-    A_BUTTON_UPLEFT,
-    A_BUTTON_UPRIGHT,
-    A_BUTTON_DOWNLEFT,
-    A_BUTTON_DOWNRIGHT,
-    A_BUTTON_VOLUP,
-    A_BUTTON_VOLDOWN,
-    A_BUTTON_GUIDE,
-    A_BUTTON_HOLD,
-    A_BUTTON_NUM
+    F_BUTTON_INVALID = -1,
+    F_BUTTON_UP,
+    F_BUTTON_DOWN,
+    F_BUTTON_LEFT,
+    F_BUTTON_RIGHT,
+    F_BUTTON_A,
+    F_BUTTON_B,
+    F_BUTTON_X,
+    F_BUTTON_Y,
+    F_BUTTON_L,
+    F_BUTTON_R,
+    F_BUTTON_START,
+    F_BUTTON_SELECT,
+    F_BUTTON_STICKCLICK,
+    F_BUTTON_UPLEFT,
+    F_BUTTON_UPRIGHT,
+    F_BUTTON_DOWNLEFT,
+    F_BUTTON_DOWNRIGHT,
+    F_BUTTON_VOLUP,
+    F_BUTTON_VOLDOWN,
+    F_BUTTON_GUIDE,
+    F_BUTTON_HOLD,
+    F_BUTTON_NUM
 } AButtonId;
 
 typedef enum {
-    A_KEY_INVALID = -1,
-    A_KEY_UP,
-    A_KEY_DOWN,
-    A_KEY_LEFT,
-    A_KEY_RIGHT,
-    A_KEY_Z,
-    A_KEY_X,
-    A_KEY_C,
-    A_KEY_V,
-    A_KEY_M,
-    A_KEY_ENTER,
-    A_KEY_SPACE,
-    A_KEY_HOME,
-    A_KEY_END,
-    A_KEY_PAGEUP,
-    A_KEY_PAGEDOWN,
-    A_KEY_LALT,
-    A_KEY_LCTRL,
-    A_KEY_LSHIFT,
-    A_KEY_RALT,
-    A_KEY_RCTRL,
-    A_KEY_RSHIFT,
-    A_KEY_F1,
-    A_KEY_F2,
-    A_KEY_F3,
-    A_KEY_F4,
-    A_KEY_F5,
-    A_KEY_F6,
-    A_KEY_F7,
-    A_KEY_F8,
-    A_KEY_F9,
-    A_KEY_F10,
-    A_KEY_F11,
-    A_KEY_F12,
-    A_KEY_NUM,
+    F_KEY_INVALID = -1,
+    F_KEY_UP,
+    F_KEY_DOWN,
+    F_KEY_LEFT,
+    F_KEY_RIGHT,
+    F_KEY_Z,
+    F_KEY_X,
+    F_KEY_C,
+    F_KEY_V,
+    F_KEY_M,
+    F_KEY_ENTER,
+    F_KEY_SPACE,
+    F_KEY_HOME,
+    F_KEY_END,
+    F_KEY_PAGEUP,
+    F_KEY_PAGEDOWN,
+    F_KEY_LALT,
+    F_KEY_LCTRL,
+    F_KEY_LSHIFT,
+    F_KEY_RALT,
+    F_KEY_RCTRL,
+    F_KEY_RSHIFT,
+    F_KEY_F1,
+    F_KEY_F2,
+    F_KEY_F3,
+    F_KEY_F4,
+    F_KEY_F5,
+    F_KEY_F6,
+    F_KEY_F7,
+    F_KEY_F8,
+    F_KEY_F9,
+    F_KEY_F10,
+    F_KEY_F11,
+    F_KEY_F12,
+    F_KEY_NUM,
 } AKeyId;
 
 #include "input/f_controller.v.h"
@@ -104,4 +104,4 @@ extern bool f_button_pressGetOnce(AButton* Button);
 extern void f_button_pressSetRepeat(AButton* Button, unsigned RepeatMs);
 extern void f_button_pressClear(AButton* Button);
 
-#endif // A_INC_INPUTS_BUTTON_P_H
+#endif // F_INC_INPUTS_BUTTON_P_H

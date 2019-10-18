@@ -15,12 +15,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_PLATFORM_SYSTEM_PANDORA_V_H
-#define A_INC_PLATFORM_SYSTEM_PANDORA_V_H
+#ifndef F_INC_PLATFORM_SYSTEM_PANDORA_V_H
+#define F_INC_PLATFORM_SYSTEM_PANDORA_V_H
 
 #include "platform/system/f_pandora.p.h"
 
 extern void f_platform_pandora__init(void);
 extern void f_platform_pandora__uninit(void);
 
-#endif // A_INC_PLATFORM_SYSTEM_PANDORA_V_H
+#endif // F_INC_PLATFORM_SYSTEM_PANDORA_V_H

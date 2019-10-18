@@ -75,9 +75,9 @@ void f_random_seedSet(unsigned Seed)
 
 int f_random_int(int Max)
 {
-    #if A_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_BUILD_DEBUG
         if(Max <= 0) {
-            A__FATAL("f_random_int(%d): Invalid arg", Max);
+            F__FATAL("f_random_int(%d): Invalid arg", Max);
         }
     #endif
 
@@ -86,9 +86,9 @@ int f_random_int(int Max)
 
 unsigned f_random_intu(unsigned Max)
 {
-    #if A_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_BUILD_DEBUG
         if(Max == 0) {
-            A__FATAL("f_random_intu(0): Invalid arg");
+            F__FATAL("f_random_intu(0): Invalid arg");
         }
     #endif
 
@@ -97,9 +97,9 @@ unsigned f_random_intu(unsigned Max)
 
 int f_random_range(int Min, int Max)
 {
-    #if A_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_BUILD_DEBUG
         if(Min >= Max) {
-            A__FATAL("f_random_range(%d, %d): Invalid args", Min, Max);
+            F__FATAL("f_random_range(%d, %d): Invalid args", Min, Max);
         }
     #endif
 
@@ -113,9 +113,9 @@ unsigned f_random_rangeu(unsigned Min, unsigned Max)
 
 bool f_random_chance(int Something, int OutOf)
 {
-    #if A_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_BUILD_DEBUG
         if(Something > OutOf) {
-            A__FATAL("f_random_chance(%d, %d): Invalid args", Something, OutOf);
+            F__FATAL("f_random_chance(%d, %d): Invalid args", Something, OutOf);
         }
     #endif
 
@@ -124,9 +124,9 @@ bool f_random_chance(int Something, int OutOf)
 
 bool f_random_chanceu(unsigned Something, unsigned OutOf)
 {
-    #if A_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_BUILD_DEBUG
         if(Something > OutOf) {
-            A__FATAL(
+            F__FATAL(
                 "f_random_chanceu(%d, %d): Invalid args", Something, OutOf);
         }
     #endif

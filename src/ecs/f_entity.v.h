@@ -15,8 +15,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_ECS_ENTITY_V_H
-#define A_INC_ECS_ENTITY_V_H
+#ifndef F_INC_ECS_ENTITY_V_H
+#define F_INC_ECS_ENTITY_V_H
 
 #include "ecs/f_entity.p.h"
 
@@ -25,11 +25,11 @@
 #include "ecs/f_template.v.h"
 
 typedef enum {
-    A_ENTITY__ACTIVE_REMOVED = A_FLAGS_BIT(0), // kicked by active-only system
-    A_ENTITY__ACTIVE_PERMANENT = A_FLAGS_BIT(1), // always report as active
-    A_ENTITY__DEBUG = A_FLAGS_BIT(2), // print debug messages for this entity
-    A_ENTITY__REMOVED = A_FLAGS_BIT(3), // marked for removal, may have refs
-    A_ENTITY__REMOVE_INACTIVE = A_FLAGS_BIT(4), // mark for removal if kicked
+    F_ENTITY__ACTIVE_REMOVED = F_FLAGS_BIT(0), // kicked by active-only system
+    F_ENTITY__ACTIVE_PERMANENT = F_FLAGS_BIT(1), // always report as active
+    F_ENTITY__DEBUG = F_FLAGS_BIT(2), // print debug messages for this entity
+    F_ENTITY__REMOVED = F_FLAGS_BIT(3), // marked for removal, may have refs
+    F_ENTITY__REMOVE_INACTIVE = F_FLAGS_BIT(4), // mark for removal if kicked
 } AEntityFlags;
 
 extern void f_entity__free(AEntity* Entity);
@@ -45,4 +45,4 @@ extern void f_entity__systemsAddTo(AEntity* Entity);
 extern void f_entity__systemsRemoveFromAll(AEntity* Entity);
 extern void f_entity__systemsRemoveFromActive(AEntity* Entity);
 
-#endif // A_INC_ECS_ENTITY_V_H
+#endif // F_INC_ECS_ENTITY_V_H

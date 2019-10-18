@@ -15,8 +15,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_INPUTS_TOUCH_P_H
-#define A_INC_INPUTS_TOUCH_P_H
+#ifndef F_INC_INPUTS_TOUCH_P_H
+#define F_INC_INPUTS_TOUCH_P_H
 
 #include "general/f_system_includes.h"
 
@@ -27,4 +27,4 @@ extern bool f_touch_tapGet(void);
 extern bool f_touch_pointGet(int X, int Y);
 extern bool f_touch_boxGet(int X, int Y, int W, int H);
 
-#endif // A_INC_INPUTS_TOUCH_P_H
+#endif // F_INC_INPUTS_TOUCH_P_H

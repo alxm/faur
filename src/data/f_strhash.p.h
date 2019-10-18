@@ -15,8 +15,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_DATA_STRHASH_P_H
-#define A_INC_DATA_STRHASH_P_H
+#ifndef F_INC_DATA_STRHASH_P_H
+#define F_INC_DATA_STRHASH_P_H
 
 #include "general/f_system_includes.h"
 
@@ -41,18 +41,18 @@ extern const AList* f__strhash_entries(const AStrHash* Hash);
 extern void* f__strhash_entryValue(const AStrHashEntry* Entry);
 extern const char* f__strhash_entryKey(const AStrHashEntry* Entry);
 
-#define A_STRHASH_ITERATE(StrHash, PtrType, Name)                           \
-    A_LIST_ITERATE(f__strhash_entries(StrHash), const AStrHashEntry*, f__e) \
+#define F_STRHASH_ITERATE(StrHash, PtrType, Name)                           \
+    F_LIST_ITERATE(f__strhash_entries(StrHash), const AStrHashEntry*, f__e) \
         for(PtrType Name = f__strhash_entryValue(f__e);                     \
             f__e != NULL; f__e = NULL)
 
-#define A_STRHASH_KEYS(StrHash, Name)                                       \
-    A_LIST_ITERATE(f__strhash_entries(StrHash), const AStrHashEntry*, f__e) \
+#define F_STRHASH_KEYS(StrHash, Name)                                       \
+    F_LIST_ITERATE(f__strhash_entries(StrHash), const AStrHashEntry*, f__e) \
         for(const char* Name = f__strhash_entryKey(f__e);                   \
             f__e != NULL; f__e = NULL)
 
-#define A_STRHASH_KEY() f__strhash_entryKey(f__e)
+#define F_STRHASH_KEY() f__strhash_entryKey(f__e)
 
 extern void f__strhash_printStats(const AStrHash* Hash, const char* Message);
 
-#endif // A_INC_DATA_STRHASH_P_H
+#endif // F_INC_DATA_STRHASH_P_H

@@ -15,8 +15,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_DATA_BITFIELD_P_H
-#define A_INC_DATA_BITFIELD_P_H
+#ifndef F_INC_DATA_BITFIELD_P_H
+#define F_INC_DATA_BITFIELD_P_H
 
 #include "general/f_system_includes.h"
 
@@ -32,4 +32,4 @@ extern void f_bitfield_reset(ABitfield* Bitfield);
 extern bool f_bitfield_test(const ABitfield* Bitfield, unsigned Bit);
 extern bool f_bitfield_testMask(const ABitfield* Bitfield, const ABitfield* Mask);
 
-#endif // A_INC_DATA_BITFIELD_P_H
+#endif // F_INC_DATA_BITFIELD_P_H

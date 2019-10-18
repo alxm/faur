@@ -15,8 +15,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_COLLISION_GRID_P_H
-#define A_INC_COLLISION_GRID_P_H
+#ifndef F_INC_COLLISION_GRID_P_H
+#define F_INC_COLLISION_GRID_P_H
 
 #include "general/f_system_includes.h"
 
@@ -36,4 +36,4 @@ extern void f_grid_itemFree(AGridItem* Item);
 
 extern void f_grid_itemCoordsSet(const AGrid* Grid, AGridItem* Item, void* Context, AVectorFix Coords);
 
-#endif // A_INC_COLLISION_GRID_P_H
+#endif // F_INC_COLLISION_GRID_P_H

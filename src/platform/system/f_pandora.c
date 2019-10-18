@@ -18,7 +18,7 @@
 #include "f_pandora.v.h"
 #include <faur.v.h>
 
-#if A_CONFIG_SYSTEM_PANDORA
+#if F_CONFIG_SYSTEM_PANDORA
 static char* g_nubModes[2];
 
 static void pandora_setNubModes(const char* Nub0, const char* Nub1)
@@ -62,7 +62,7 @@ void f_platform_pandora__init(void)
 {
     for(int i = 0; i < 2; i++) {
         const char* path = f_str__fmt512("/proc/pandora/nub%d/mode", i);
-        AFile* nub = f_file_new(path, A_FILE_READ);
+        AFile* nub = f_file_new(path, F_FILE_READ);
 
         if(nub && f_file_lineRead(nub)) {
             g_nubModes[i] = f_str_dup(f_file_lineBufferGet(nub));
@@ -91,4 +91,4 @@ void f_platform_pandora__uninit(void)
         f_mem_free(g_nubModes[i]);
     }
 }
-#endif // A_CONFIG_SYSTEM_PANDORA
+#endif // F_CONFIG_SYSTEM_PANDORA

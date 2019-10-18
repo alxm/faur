@@ -15,22 +15,22 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_INPUTS_ANALOG_P_H
-#define A_INC_INPUTS_ANALOG_P_H
+#ifndef F_INC_INPUTS_ANALOG_P_H
+#define F_INC_INPUTS_ANALOG_P_H
 
 #include "general/f_system_includes.h"
 
 typedef struct AAnalog AAnalog;
 
 typedef enum {
-    A_AXIS_INVALID = -1,
-    A_AXIS_LEFTX,
-    A_AXIS_LEFTY,
-    A_AXIS_RIGHTX,
-    A_AXIS_RIGHTY,
-    A_AXIS_LEFTTRIGGER,
-    A_AXIS_RIGHTTRIGGER,
-    A_AXIS_NUM
+    F_AXIS_INVALID = -1,
+    F_AXIS_LEFTX,
+    F_AXIS_LEFTY,
+    F_AXIS_RIGHTX,
+    F_AXIS_RIGHTY,
+    F_AXIS_LEFTTRIGGER,
+    F_AXIS_RIGHTTRIGGER,
+    F_AXIS_NUM
 } AAnalogId;
 
 #include "input/f_controller.v.h"
@@ -46,4 +46,4 @@ extern const char* f_analog_nameGet(const AAnalog* Analog);
 
 extern AFix f_analog_valueGet(const AAnalog* Analog);
 
-#endif // A_INC_INPUTS_ANALOG_P_H
+#endif // F_INC_INPUTS_ANALOG_P_H

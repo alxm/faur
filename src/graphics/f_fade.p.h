@@ -15,8 +15,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_GRAPHICS_FADE_P_H
-#define A_INC_GRAPHICS_FADE_P_H
+#ifndef F_INC_GRAPHICS_FADE_P_H
+#define F_INC_GRAPHICS_FADE_P_H
 
 #include "general/f_system_includes.h"
 
@@ -26,4 +26,4 @@ extern void f_fade_startColorTo(unsigned DurationMs);
 extern void f_fade_startColorFrom(unsigned DurationMs);
 extern void f_fade_startScreens(unsigned DurationMs);
 
-#endif // A_INC_GRAPHICS_FADE_P_H
+#endif // F_INC_GRAPHICS_FADE_P_H

@@ -15,8 +15,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_GENERAL_CONSOLE_V_H
-#define A_INC_GENERAL_CONSOLE_V_H
+#ifndef F_INC_GENERAL_CONSOLE_V_H
+#define F_INC_GENERAL_CONSOLE_V_H
 
 #include "general/f_console.p.h"
 
@@ -31,4 +31,4 @@ extern void f_console__draw(void);
 extern bool f_console__isInitialized(void);
 extern void f_console__write(AOutSource Source, AOutType Type, const char* Text);
 
-#endif // A_INC_GENERAL_CONSOLE_V_H
+#endif // F_INC_GENERAL_CONSOLE_V_H

@@ -15,17 +15,17 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_FILES_FILE_P_H
-#define A_INC_FILES_FILE_P_H
+#ifndef F_INC_FILES_FILE_P_H
+#define F_INC_FILES_FILE_P_H
 
 #include "general/f_system_includes.h"
 
 typedef struct AFile AFile;
 
 typedef enum {
-    A_FILE_READ = A_FLAGS_BIT(0),
-    A_FILE_WRITE = A_FLAGS_BIT(1),
-    A_FILE_BINARY = A_FLAGS_BIT(2),
+    F_FILE_READ = F_FLAGS_BIT(0),
+    F_FILE_WRITE = F_FLAGS_BIT(1),
+    F_FILE_BINARY = F_FLAGS_BIT(2),
 } AFileMode;
 
 #include "files/f_path.p.h"
@@ -55,4 +55,4 @@ extern bool f_file_seekStart(AFile* File, int Offset);
 extern bool f_file_seekEnd(AFile* File, int Offset);
 extern bool f_file_seekCurrent(AFile* File, int Offset);
 
-#endif // A_INC_FILES_FILE_P_H
+#endif // F_INC_FILES_FILE_P_H

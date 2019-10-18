@@ -36,7 +36,7 @@ AMenu* f_menu_new(AButton* Next, AButton* Back, AButton* Select, AButton* Cancel
 {
     AMenu* m = f_mem_malloc(sizeof(AMenu));
 
-    m->state = A_MENU_STATE_RUNNING;
+    m->state = F_MENU_STATE_RUNNING;
     m->items = f_list_new();
     m->selectedItem = NULL;
     m->selectedIndex = 0;
@@ -90,7 +90,7 @@ void f_menu_itemAdd(AMenu* Menu, void* Item)
 
 void f_menu_tick(AMenu* Menu)
 {
-    if(f_list_isEmpty(Menu->items) || Menu->state != A_MENU_STATE_RUNNING) {
+    if(f_list_isEmpty(Menu->items) || Menu->state != F_MENU_STATE_RUNNING) {
         return;
     }
 
@@ -115,27 +115,27 @@ void f_menu_tick(AMenu* Menu)
                                 Menu->items, Menu->selectedIndex);
 
         if(Menu->soundBrowse) {
-            f_channel_play(A_CHANNEL_ANY, Menu->soundBrowse, A_CHANNEL_NORMAL);
+            f_channel_play(F_CHANNEL_ANY, Menu->soundBrowse, F_CHANNEL_NORMAL);
         }
     } else {
         if(f_button_pressGet(Menu->select)) {
-            Menu->state = A_MENU_STATE_SELECTED;
+            Menu->state = F_MENU_STATE_SELECTED;
 
             if(Menu->soundAccept) {
                 f_channel_play(
-                    A_CHANNEL_ANY, Menu->soundAccept, A_CHANNEL_NORMAL);
+                    F_CHANNEL_ANY, Menu->soundAccept, F_CHANNEL_NORMAL);
             }
         } else if(Menu->cancel && f_button_pressGet(Menu->cancel)) {
-            Menu->state = A_MENU_STATE_CANCELED;
+            Menu->state = F_MENU_STATE_CANCELED;
 
             if(Menu->soundCancel) {
                 f_channel_play(
-                    A_CHANNEL_ANY, Menu->soundCancel, A_CHANNEL_NORMAL);
+                    F_CHANNEL_ANY, Menu->soundCancel, F_CHANNEL_NORMAL);
             }
         }
     }
 
-    if(Menu->state != A_MENU_STATE_RUNNING) {
+    if(Menu->state != F_MENU_STATE_RUNNING) {
         f_button_pressClear(Menu->next);
         f_button_pressClear(Menu->back);
         f_button_pressClear(Menu->select);
@@ -173,12 +173,12 @@ void* f_menu_itemGetSelected(const AMenu* Menu)
 
 void f_menu_keepRunning(AMenu* Menu)
 {
-    Menu->state = A_MENU_STATE_RUNNING;
+    Menu->state = F_MENU_STATE_RUNNING;
 }
 
 void f_menu_reset(AMenu* Menu)
 {
-    Menu->state = A_MENU_STATE_RUNNING;
+    Menu->state = F_MENU_STATE_RUNNING;
     Menu->selectedItem = f_list_getFirst(Menu->items);
     Menu->selectedIndex = 0;
 }

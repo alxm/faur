@@ -17,12 +17,12 @@
 
 #include <faur.v.h>
 
-#if A__COMPILE_INC
+#if F__COMPILE_INC
 // Spans format for each graphic line:
 // [NumSpans << 1 | 1 (draw) / 0 (transparent)][[len]...]
-static void A__FUNC_NAME(Keyed, NoClip)(const APlatformTexture* Texture, const APixels* Pixels, unsigned Frame, int X, int Y)
+static void F__FUNC_NAME(Keyed, NoClip)(const APlatformTexture* Texture, const APixels* Pixels, unsigned Frame, int X, int Y)
 {
-    A__BLEND_SETUP;
+    F__BLEND_SETUP;
 
     const int screenW = f__screen.pixels->w;
     APixel* startDst = f_screen__bufferGetFrom(X, Y);
@@ -39,8 +39,8 @@ static void A__FUNC_NAME(Keyed, NoClip)(const APlatformTexture* Texture, const A
 
             if(draw) {
                 while(len--) {
-                    A__PIXEL_SETUP;
-                    A__PIXEL_DRAW(dst);
+                    F__PIXEL_SETUP;
+                    F__PIXEL_DRAW(dst);
                     dst++;
                     src++;
                 }
@@ -54,9 +54,9 @@ static void A__FUNC_NAME(Keyed, NoClip)(const APlatformTexture* Texture, const A
     }
 }
 
-static void A__FUNC_NAME(Keyed, DoClip)(const APlatformTexture* Texture, const APixels* Pixels, unsigned Frame, int X, int Y)
+static void F__FUNC_NAME(Keyed, DoClip)(const APlatformTexture* Texture, const APixels* Pixels, unsigned Frame, int X, int Y)
 {
-    A__BLEND_SETUP;
+    F__BLEND_SETUP;
 
     const int screenW = f__screen.pixels->w;
     const int spriteW = Pixels->w;
@@ -107,8 +107,8 @@ static void A__FUNC_NAME(Keyed, DoClip)(const APlatformTexture* Texture, const A
                 drawColumns -= len;
             } else {
                 while(len-- && drawColumns--) {
-                    A__PIXEL_SETUP;
-                    A__PIXEL_DRAW(dst);
+                    F__PIXEL_SETUP;
+                    F__PIXEL_DRAW(dst);
                     dst++;
                     src++;
                 }
@@ -121,8 +121,8 @@ static void A__FUNC_NAME(Keyed, DoClip)(const APlatformTexture* Texture, const A
 
             if(draw) {
                 while(len-- && drawColumns--) {
-                    A__PIXEL_SETUP;
-                    A__PIXEL_DRAW(dst);
+                    F__PIXEL_SETUP;
+                    F__PIXEL_DRAW(dst);
                     dst++;
                     src++;
                 }
@@ -140,11 +140,11 @@ static void A__FUNC_NAME(Keyed, DoClip)(const APlatformTexture* Texture, const A
     }
 }
 
-static void A__FUNC_NAME(Block, NoClip)(const APlatformTexture* Texture, const APixels* Pixels, unsigned Frame, int X, int Y)
+static void F__FUNC_NAME(Block, NoClip)(const APlatformTexture* Texture, const APixels* Pixels, unsigned Frame, int X, int Y)
 {
-    A_UNUSED(Texture);
+    F_UNUSED(Texture);
 
-    A__BLEND_SETUP;
+    F__BLEND_SETUP;
 
     const int screenW = f__screen.pixels->w;
     APixel* startDst = f_screen__bufferGetFrom(X, Y);
@@ -154,19 +154,19 @@ static void A__FUNC_NAME(Block, NoClip)(const APlatformTexture* Texture, const A
         APixel* dst = startDst;
 
         for(int j = Pixels->w; j--; ) {
-            A__PIXEL_SETUP;
-            A__PIXEL_DRAW(dst);
+            F__PIXEL_SETUP;
+            F__PIXEL_DRAW(dst);
             dst++;
             src++;
         }
     }
 }
 
-static void A__FUNC_NAME(Block, DoClip)(const APlatformTexture* Texture, const APixels* Pixels, unsigned Frame, int X, int Y)
+static void F__FUNC_NAME(Block, DoClip)(const APlatformTexture* Texture, const APixels* Pixels, unsigned Frame, int X, int Y)
 {
-    A_UNUSED(Texture);
+    F_UNUSED(Texture);
 
-    A__BLEND_SETUP;
+    F__BLEND_SETUP;
 
     const int screenW = f__screen.pixels->w;
     const int spriteW = Pixels->w;
@@ -189,23 +189,23 @@ static void A__FUNC_NAME(Block, DoClip)(const APlatformTexture* Texture, const A
         const APixel* src = startSrc;
 
         for(int j = columns; j--; ) {
-            A__PIXEL_SETUP;
-            A__PIXEL_DRAW(dst);
+            F__PIXEL_SETUP;
+            F__PIXEL_DRAW(dst);
             dst++;
             src++;
         }
     }
 }
 
-#define A__PIXEL_TRANSPARENCY 0
+#define F__PIXEL_TRANSPARENCY 0
 #include "platform/graphics/f_software_blitex.inc.c"
 
-#define A__PIXEL_TRANSPARENCY 1
+#define F__PIXEL_TRANSPARENCY 1
 #include "platform/graphics/f_software_blitex.inc.c"
 
-#undef A__BLEND
-#undef A__FILL
-#undef A__BLEND_SETUP
-#undef A__PIXEL_SETUP
-#undef A__PIXEL_PARAMS
-#endif // A__COMPILE_INC
+#undef F__BLEND
+#undef F__FILL
+#undef F__BLEND_SETUP
+#undef F__PIXEL_SETUP
+#undef F__PIXEL_PARAMS
+#endif // F__COMPILE_INC

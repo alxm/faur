@@ -15,8 +15,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_STRINGS_STR_P_H
-#define A_INC_STRINGS_STR_P_H
+#ifndef F_INC_STRINGS_STR_P_H
+#define F_INC_STRINGS_STR_P_H
 
 #include "general/f_system_includes.h"
 
@@ -52,4 +52,4 @@ static inline bool f_str_equal(const char* String1, const char* String2)
     return strcmp(String1, String2) == 0;
 }
 
-#endif // A_INC_STRINGS_STR_P_H
+#endif // F_INC_STRINGS_STR_P_H

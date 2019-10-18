@@ -15,8 +15,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_GENERAL_FPS_P_H
-#define A_INC_GENERAL_FPS_P_H
+#ifndef F_INC_GENERAL_FPS_P_H
+#define F_INC_GENERAL_FPS_P_H
 
 #include "general/f_system_includes.h"
 
@@ -24,7 +24,7 @@
 
 static inline unsigned f_fps_rateTickGet(void)
 {
-    return A_CONFIG_FPS_RATE_TICK;
+    return F_CONFIG_FPS_RATE_TICK;
 }
 
 extern unsigned f_fps_rateDrawGet(void);
@@ -34,4 +34,4 @@ extern unsigned f_fps_ticksGet(void);
 extern bool f_fps_ticksNth(unsigned N);
 extern AFix f_fps_ticksSin(uint8_t Mul, uint8_t Div, unsigned Offset);
 
-#endif // A_INC_GENERAL_FPS_P_H
+#endif // F_INC_GENERAL_FPS_P_H

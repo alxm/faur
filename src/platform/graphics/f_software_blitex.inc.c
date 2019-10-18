@@ -17,16 +17,16 @@
 
 #include <faur.v.h>
 
-#if A__COMPILE_INC
-#if A__PIXEL_TRANSPARENCY
-    #define A__COLORKEY Keyed
+#if F__COMPILE_INC
+#if F__PIXEL_TRANSPARENCY
+    #define F__COLORKEY Keyed
 #else
-    #define A__COLORKEY Block
+    #define F__COLORKEY Block
 #endif
 
-static void A__FUNC_NAME_EX(const APixels* Pixels, unsigned Frame, int X, int Y, AFix Scale, unsigned Angle, AFix CenterX, AFix CenterY)
+static void F__FUNC_NAME_EX(const APixels* Pixels, unsigned Frame, int X, int Y, AFix Scale, unsigned Angle, AFix CenterX, AFix CenterY)
 {
-    A__BLEND_SETUP;
+    F__BLEND_SETUP;
 
     const AVectorInt size = {Pixels->w, Pixels->h};
     const AVectorFix sizeScaled = {size.x * Scale, size.y * Scale};
@@ -84,7 +84,7 @@ static void A__FUNC_NAME_EX(const APixels* Pixels, unsigned Frame, int X, int Y,
 
     // Based on Angle ranges, determine the top and bottom y coords
     // of the rotated sprite and the sides to interpolate.
-    if(Angle < A_DEG_090_INT) {
+    if(Angle < F_DEG_090_INT) {
         screenTop = p1;
         screenBottom = p3;
         screenLeft = p0;
@@ -94,7 +94,7 @@ static void A__FUNC_NAME_EX(const APixels* Pixels, unsigned Frame, int X, int Y,
         spriteBottom = sprite3;
         spriteMidleft = sprite0;
         spriteMidright = sprite2;
-    } else if(Angle >= A_DEG_090_INT && Angle < A_DEG_180_INT) {
+    } else if(Angle >= F_DEG_090_INT && Angle < F_DEG_180_INT) {
         screenTop = p2;
         screenBottom = p0;
         screenLeft = p1;
@@ -104,7 +104,7 @@ static void A__FUNC_NAME_EX(const APixels* Pixels, unsigned Frame, int X, int Y,
         spriteBottom = sprite0;
         spriteMidleft = sprite1;
         spriteMidright = sprite3;
-    } else if(Angle >= A_DEG_180_INT && Angle < A_DEG_270_INT) {
+    } else if(Angle >= F_DEG_180_INT && Angle < F_DEG_270_INT) {
         screenTop = p3;
         screenBottom = p1;
         screenLeft = p2;
@@ -114,7 +114,7 @@ static void A__FUNC_NAME_EX(const APixels* Pixels, unsigned Frame, int X, int Y,
         spriteBottom = sprite1;
         spriteMidleft = sprite2;
         spriteMidright = sprite0;
-    } else { // if(Angle >= A_DEG_270_INT) {
+    } else { // if(Angle >= F_DEG_270_INT) {
         screenTop = p0;
         screenBottom = p2;
         screenLeft = p3;
@@ -182,16 +182,16 @@ static void A__FUNC_NAME_EX(const APixels* Pixels, unsigned Frame, int X, int Y,
                                     + f_fix_toInt(sprite.y) * size.x
                                     + f_fix_toInt(sprite.x);
 
-            #if A__PIXEL_TRANSPARENCY
+            #if F__PIXEL_TRANSPARENCY
                 if(*src != f_color__key) {
-                    A__PIXEL_SETUP;
-                    A__PIXEL_DRAW(dst);
+                    F__PIXEL_SETUP;
+                    F__PIXEL_DRAW(dst);
                 }
             #else
-                A_UNUSED(src);
+                F_UNUSED(src);
 
-                A__PIXEL_SETUP;
-                A__PIXEL_DRAW(dst);
+                F__PIXEL_SETUP;
+                F__PIXEL_DRAW(dst);
             #endif
 
             dst++;
@@ -202,6 +202,6 @@ static void A__FUNC_NAME_EX(const APixels* Pixels, unsigned Frame, int X, int Y,
     }
 }
 
-#undef A__PIXEL_TRANSPARENCY
-#undef A__COLORKEY
-#endif // A__COMPILE_INC
+#undef F__PIXEL_TRANSPARENCY
+#undef F__COLORKEY
+#endif // F__COMPILE_INC

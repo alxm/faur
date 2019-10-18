@@ -18,7 +18,7 @@
 #include "f_system.v.h"
 #include <faur.v.h>
 
-#if A_CONFIG_ECS_ENABLED
+#if F_CONFIG_ECS_ENABLED
 struct ASystem {
     ASystemHandler* handler;
     ASystemSort* compare;
@@ -27,11 +27,11 @@ struct ASystem {
     bool onlyActiveEntities; // skip entities that are not active
 };
 
-static ASystem g_systems[A_CONFIG_ECS_SYS_NUM];
+static ASystem g_systems[F_CONFIG_ECS_SYS_NUM];
 
 void f_system__uninit(void)
 {
-    for(unsigned s = A_CONFIG_ECS_SYS_NUM; s--; ) {
+    for(unsigned s = F_CONFIG_ECS_SYS_NUM; s--; ) {
         f_list_free(g_systems[s].entities);
         f_bitfield_free(g_systems[s].componentBits);
     }
@@ -39,13 +39,13 @@ void f_system__uninit(void)
 
 ASystem* f_system__get(int SystemIndex)
 {
-    #if A_CONFIG_BUILD_DEBUG
-        if(SystemIndex < 0 || SystemIndex >= A_CONFIG_ECS_SYS_NUM) {
-            A__FATAL("Unknown system %d", SystemIndex);
+    #if F_CONFIG_BUILD_DEBUG
+        if(SystemIndex < 0 || SystemIndex >= F_CONFIG_ECS_SYS_NUM) {
+            F__FATAL("Unknown system %d", SystemIndex);
         }
 
         if(g_systems[SystemIndex].entities == NULL) {
-            A__FATAL("Uninitialized system %d", SystemIndex);
+            F__FATAL("Uninitialized system %d", SystemIndex);
         }
     #endif
 
@@ -54,9 +54,9 @@ ASystem* f_system__get(int SystemIndex)
 
 void f_system_new(int SystemIndex, ASystemHandler* Handler, ASystemSort* Compare, bool OnlyActiveEntities)
 {
-    #if A_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_BUILD_DEBUG
         if(g_systems[SystemIndex].entities != NULL) {
-            A__FATAL("f_system_new(%d): Already declared", SystemIndex);
+            F__FATAL("f_system_new(%d): Already declared", SystemIndex);
         }
     #endif
 
@@ -65,7 +65,7 @@ void f_system_new(int SystemIndex, ASystemHandler* Handler, ASystemSort* Compare
     system->handler = Handler;
     system->compare = Compare;
     system->entities = f_list_new();
-    system->componentBits = f_bitfield_new(A_CONFIG_ECS_COM_NUM);
+    system->componentBits = f_bitfield_new(F_CONFIG_ECS_COM_NUM);
     system->onlyActiveEntities = OnlyActiveEntities;
 }
 
@@ -85,7 +85,7 @@ void f_system_run(int SystemIndex)
     }
 
     if(system->onlyActiveEntities) {
-        A_LIST_ITERATE(system->entities, AEntity*, entity) {
+        F_LIST_ITERATE(system->entities, AEntity*, entity) {
             if(f_entity_activeGet(entity)) {
                 system->handler(entity);
             } else {
@@ -93,7 +93,7 @@ void f_system_run(int SystemIndex)
             }
         }
     } else {
-        A_LIST_ITERATE(system->entities, AEntity*, entity) {
+        F_LIST_ITERATE(system->entities, AEntity*, entity) {
             system->handler(entity);
         }
     }
@@ -115,4 +115,4 @@ bool f_system__isActiveOnly(const ASystem* System)
 {
     return System->onlyActiveEntities;
 }
-#endif // A_CONFIG_ECS_ENABLED
+#endif // F_CONFIG_ECS_ENABLED

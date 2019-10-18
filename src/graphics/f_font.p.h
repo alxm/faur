@@ -15,18 +15,18 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_GRAPHICS_FONT_P_H
-#define A_INC_GRAPHICS_FONT_P_H
+#ifndef F_INC_GRAPHICS_FONT_P_H
+#define F_INC_GRAPHICS_FONT_P_H
 
 #include "general/f_system_includes.h"
 
 typedef struct ASprite AFont;
 
 typedef enum {
-    A_FONT_ALIGN_INVALID = -1,
-    A_FONT_ALIGN_LEFT,
-    A_FONT_ALIGN_MIDDLE,
-    A_FONT_ALIGN_RIGHT,
+    F_FONT_ALIGN_INVALID = -1,
+    F_FONT_ALIGN_LEFT,
+    F_FONT_ALIGN_MIDDLE,
+    F_FONT_ALIGN_RIGHT,
 } AFontAlign;
 
 #include "graphics/f_sprite.p.h"
@@ -61,4 +61,4 @@ extern void f_font_print(const char* Text);
 extern void f_font_printf(const char* Format, ...);
 extern void f_font_printv(const char* Format, va_list Args);
 
-#endif // A_INC_GRAPHICS_FONT_P_H
+#endif // F_INC_GRAPHICS_FONT_P_H

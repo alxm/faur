@@ -15,8 +15,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_INPUTS_INPUT_V_H
-#define A_INC_INPUTS_INPUT_V_H
+#ifndef F_INC_INPUTS_INPUT_V_H
+#define F_INC_INPUTS_INPUT_V_H
 
 #include "input/f_input.p.h"
 
@@ -26,4 +26,4 @@ extern const APack f_pack__input;
 
 extern void f_input__tick(void);
 
-#endif // A_INC_INPUTS_INPUT_V_H
+#endif // F_INC_INPUTS_INPUT_V_H

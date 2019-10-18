@@ -32,19 +32,19 @@ static APathFlags getPathFlags(const char* Path)
     APathFlags flags = 0;
 
     if(stat(Path, &info) == 0) {
-        A_FLAGS_SET(flags, A_PATH_REAL);
+        F_FLAGS_SET(flags, F_PATH_REAL);
 
         if(S_ISREG(info.st_mode)) {
-            A_FLAGS_SET(flags, A_PATH_FILE);
+            F_FLAGS_SET(flags, F_PATH_FILE);
         } else if(S_ISDIR(info.st_mode)) {
-            A_FLAGS_SET(flags, A_PATH_DIR);
+            F_FLAGS_SET(flags, F_PATH_DIR);
         } else {
-            A_FLAGS_SET(flags, A_PATH_OTHER);
+            F_FLAGS_SET(flags, F_PATH_OTHER);
         }
     } else if(f_embed__fileGet(Path) != NULL) {
-        A_FLAGS_SET(flags, A_PATH_EMBEDDED | A_PATH_FILE);
+        F_FLAGS_SET(flags, F_PATH_EMBEDDED | F_PATH_FILE);
     } else if(f_embed__dirGet(Path) != NULL) {
-        A_FLAGS_SET(flags, A_PATH_EMBEDDED | A_PATH_DIR);
+        F_FLAGS_SET(flags, F_PATH_EMBEDDED | F_PATH_DIR);
     }
 
     return flags;
@@ -80,7 +80,7 @@ APath* f_path_newf(const char* Format, ...)
     va_end(args);
 
     if(bytesNeeded <= 1) {
-        A__FATAL("f_path_newf(%s): vsnprintf failed", Format);
+        F__FATAL("f_path_newf(%s): vsnprintf failed", Format);
     }
 
     char* buffer = f_mem_malloc((size_t)bytesNeeded);
@@ -106,17 +106,17 @@ void f_path_free(APath* Path)
 
 bool f_path_exists(const char* Path, APathFlags Flags)
 {
-    return A_FLAGS_TEST_ALL(getPathFlags(Path), Flags);
+    return F_FLAGS_TEST_ALL(getPathFlags(Path), Flags);
 }
 
 bool f_path_test(const APath* Path, APathFlags Flags)
 {
-    return A_FLAGS_TEST_ALL(Path->flags, Flags);
+    return F_FLAGS_TEST_ALL(Path->flags, Flags);
 }
 
 void f_path__flagsSet(APath* Path, APathFlags Flags)
 {
-    A_FLAGS_SET(Path->flags, Flags);
+    F_FLAGS_SET(Path->flags, Flags);
 }
 
 const char* f_path_getFull(const APath* Path)

@@ -22,7 +22,7 @@ APixels* f_pixels__new(int W, int H, unsigned Frames, APixelsFlags Flags)
 {
     APixels* p = f_mem_malloc(sizeof(APixels));
 
-    f_pixels__init(p, W, H, Frames, Flags | A_PIXELS__DYNAMIC);
+    f_pixels__init(p, W, H, Frames, Flags | F_PIXELS__DYNAMIC);
 
     return p;
 }
@@ -34,7 +34,7 @@ void f_pixels__init(APixels* Pixels, int W, int H, unsigned Frames, APixelsFlags
     Pixels->framesNum = Frames;
     Pixels->flags = Flags;
 
-    if(A_FLAGS_TEST_ANY(Flags, A_PIXELS__ALLOC)) {
+    if(F_FLAGS_TEST_ANY(Flags, F_PIXELS__ALLOC)) {
         Pixels->bufferLen = (unsigned)(W * H);
         Pixels->bufferSize = Pixels->bufferLen * (unsigned)sizeof(APixel);
         Pixels->buffer = f_mem_zalloc(Pixels->bufferSize * Frames);
@@ -51,11 +51,11 @@ void f_pixels__free(APixels* Pixels)
         return;
     }
 
-    if(A_FLAGS_TEST_ANY(Pixels->flags, A_PIXELS__ALLOC)) {
+    if(F_FLAGS_TEST_ANY(Pixels->flags, F_PIXELS__ALLOC)) {
         f_mem_free(Pixels->buffer);
     }
 
-    if(A_FLAGS_TEST_ANY(Pixels->flags, A_PIXELS__DYNAMIC)) {
+    if(F_FLAGS_TEST_ANY(Pixels->flags, F_PIXELS__DYNAMIC)) {
         f_mem_free(Pixels);
     }
 }
@@ -64,7 +64,7 @@ void f_pixels__copy(APixels* Dst, const APixels* Src)
 {
     memcpy(Dst, Src, sizeof(APixels));
 
-    if(A_FLAGS_TEST_ANY(Dst->flags, A_PIXELS__ALLOC)) {
+    if(F_FLAGS_TEST_ANY(Dst->flags, F_PIXELS__ALLOC)) {
         Dst->buffer = f_mem_dup(Dst->buffer, Dst->bufferSize * Dst->framesNum);
     }
 }
@@ -175,7 +175,7 @@ AVectorInt f_pixels__boundsFind(const APixels* Pixels, unsigned Frame, int X, in
     AVectorInt bounds;
 
     if(X < 0 || X >= Pixels->w || Y < 0 || Y >= Pixels->h) {
-        A__FATAL("f_pixels__boundsFind(%d, %d): Invalid coords on %dx%d area",
+        F__FATAL("f_pixels__boundsFind(%d, %d): Invalid coords on %dx%d area",
                  X,
                  Y,
                  Pixels->w,

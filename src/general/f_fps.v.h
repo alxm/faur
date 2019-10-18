@@ -15,8 +15,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_GENERAL_FPS_V_H
-#define A_INC_GENERAL_FPS_V_H
+#ifndef F_INC_GENERAL_FPS_V_H
+#define F_INC_GENERAL_FPS_V_H
 
 #include "general/f_fps.p.h"
 
@@ -28,4 +28,4 @@ extern void f_fps__reset(void);
 extern bool f_fps__tick(void);
 extern void f_fps__frame(void);
 
-#endif // A_INC_GENERAL_FPS_V_H
+#endif // F_INC_GENERAL_FPS_V_H

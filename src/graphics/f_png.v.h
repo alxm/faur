@@ -15,8 +15,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_GRAPHICS_PNG_V_H
-#define A_INC_GRAPHICS_PNG_V_H
+#ifndef F_INC_GRAPHICS_PNG_V_H
+#define F_INC_GRAPHICS_PNG_V_H
 
 #include "graphics/f_png.p.h"
 
@@ -26,4 +26,4 @@ extern APixels* f_png__readFile(const char* Path);
 extern APixels* f_png__readMemory(const uint8_t* Data);
 extern void f_png__write(const char* Path, const APixels* Pixels, unsigned Frame, char* Title, char* Description);
 
-#endif // A_INC_GRAPHICS_PNG_V_H
+#endif // F_INC_GRAPHICS_PNG_V_H

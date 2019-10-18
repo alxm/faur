@@ -15,9 +15,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_COLLISION_GRID_V_H
-#define A_INC_COLLISION_GRID_V_H
+#ifndef F_INC_COLLISION_GRID_V_H
+#define F_INC_COLLISION_GRID_V_H
 
 #include "collision/f_grid.p.h"
 
-#endif // A_INC_COLLISION_GRID_V_H
+#endif // F_INC_COLLISION_GRID_V_H

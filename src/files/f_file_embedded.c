@@ -24,14 +24,14 @@ static bool fileSeek(AFile* File, int Offset, AFileOffset Origin)
     size_t off = (size_t)Offset;
 
     switch(Origin) {
-        case A_FILE__OFFSET_START: {
+        case F_FILE__OFFSET_START: {
             if(Offset >= 0 && off <= File->u.e.data->size) {
                 File->u.e.index = off;
                 ret = true;
             }
         } break;
 
-        case A_FILE__OFFSET_CURRENT: {
+        case F_FILE__OFFSET_CURRENT: {
             if((Offset >= 0 && File->u.e.index + off <= File->u.e.data->size)
                 || (Offset < 0 && (size_t)-Offset <= File->u.e.index)) {
 
@@ -40,7 +40,7 @@ static bool fileSeek(AFile* File, int Offset, AFileOffset Origin)
             }
         } break;
 
-        case A_FILE__OFFSET_END: {
+        case F_FILE__OFFSET_END: {
             if(Offset <= 0 && (size_t)-Offset <= File->u.e.data->size) {
                 File->u.e.index = File->u.e.data->size + off;
                 ret = true;
@@ -65,25 +65,25 @@ static bool fileRead(AFile* File, void* Buffer, size_t Size)
 
 static bool fileWrite(AFile* File, const void* Buffer, size_t Size)
 {
-    A_UNUSED(File);
-    A_UNUSED(Buffer);
-    A_UNUSED(Size);
+    F_UNUSED(File);
+    F_UNUSED(Buffer);
+    F_UNUSED(Size);
 
     return false;
 }
 
 static bool fileWritef(AFile* File, const char* Format, va_list Args)
 {
-    A_UNUSED(File);
-    A_UNUSED(Format);
-    A_UNUSED(Args);
+    F_UNUSED(File);
+    F_UNUSED(Format);
+    F_UNUSED(Args);
 
     return false;
 }
 
 static bool fileFlush(AFile* File)
 {
-    A_UNUSED(File);
+    F_UNUSED(File);
 
     return false;
 }
@@ -101,7 +101,7 @@ static int fileGetChar(AFile* File)
 
 static int fileUnGetChar(AFile* File, int Char)
 {
-    A_UNUSED(Char);
+    F_UNUSED(Char);
 
     int c = EOF;
 

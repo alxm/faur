@@ -15,19 +15,19 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_TIME_TIMER_P_H
-#define A_INC_TIME_TIMER_P_H
+#ifndef F_INC_TIME_TIMER_P_H
+#define F_INC_TIME_TIMER_P_H
 
 #include "general/f_system_includes.h"
 
 typedef struct ATimer ATimer;
 
 typedef enum {
-    A_TIMER_INVALID = -1,
-    A_TIMER_MS,
-    A_TIMER_SEC,
-    A_TIMER_TICKS,
-    A_TIMER_NUM
+    F_TIMER_INVALID = -1,
+    F_TIMER_MS,
+    F_TIMER_SEC,
+    F_TIMER_TICKS,
+    F_TIMER_NUM
 } ATimerType;
 
 extern ATimer* f_timer_new(ATimerType Type, unsigned Period, bool Repeat);
@@ -47,4 +47,4 @@ extern bool f_timer_expiredGet(const ATimer* Timer);
 extern unsigned f_timer_expiredGetCount(const ATimer* Timer);
 extern void f_timer_expiredClear(ATimer* Timer);
 
-#endif // A_INC_TIME_TIMER_P_H
+#endif // F_INC_TIME_TIMER_P_H

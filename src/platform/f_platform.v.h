@@ -15,8 +15,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_PLATFORM_PLATFORM_V_H
-#define A_INC_PLATFORM_PLATFORM_V_H
+#ifndef F_INC_PLATFORM_PLATFORM_V_H
+#define F_INC_PLATFORM_PLATFORM_V_H
 
 #include "platform/f_platform.p.h"
 
@@ -111,4 +111,4 @@ extern bool f_platform_api__inputTouchTapGet(void);
 extern APlatformController* f_platform_api__inputControllerClaim(AControllerBind* Callback);
 extern void f_platform_api__inputControllerRelease(APlatformController* Controller);
 
-#endif // A_INC_PLATFORM_PLATFORM_V_H
+#endif // F_INC_PLATFORM_PLATFORM_V_H

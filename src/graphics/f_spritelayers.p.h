@@ -15,8 +15,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_GRAPHICS_SPRITELAYERS_P_H
-#define A_INC_GRAPHICS_SPRITELAYERS_P_H
+#ifndef F_INC_GRAPHICS_SPRITELAYERS_P_H
+#define F_INC_GRAPHICS_SPRITELAYERS_P_H
 
 #include "general/f_system_includes.h"
 
@@ -33,4 +33,4 @@ extern void f_spritelayers_add(ASpriteLayers* Layers, ASprite* Sprite, AColorBle
 
 extern void f_spritelayers_blit(const ASpriteLayers* Layers, unsigned Frame, int X, int Y);
 
-#endif // A_INC_GRAPHICS_SPRITELAYERS_P_H
+#endif // F_INC_GRAPHICS_SPRITELAYERS_P_H

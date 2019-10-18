@@ -18,13 +18,13 @@
 #include "f_ecs.v.h"
 #include <faur.v.h>
 
-#if A_CONFIG_ECS_ENABLED
-static AList* g_lists[A_ECS__NUM]; // Each entity is in exactly one of these
+#if F_CONFIG_ECS_ENABLED
+static AList* g_lists[F_ECS__NUM]; // Each entity is in exactly one of these
 static bool g_ignoreRefDec; // Set to prevent using freed entities
 
 static void f_ecs__init(void)
 {
-    for(int i = A_ECS__NUM; i--; ) {
+    for(int i = F_ECS__NUM; i--; ) {
         g_lists[i] = f_list_new();
     }
 
@@ -36,7 +36,7 @@ static void f_ecs__uninit(void)
 {
     f_ecs__refDecIgnoreSet(true);
 
-    for(int i = A_ECS__NUM; i--; ) {
+    for(int i = F_ECS__NUM; i--; ) {
         f_list_freeEx(g_lists[i], (AFree*)f_entity__free);
     }
 
@@ -64,7 +64,7 @@ unsigned f_ecs__listGetSum(void)
 {
     unsigned sum = 0;
 
-    for(int i = A_ECS__NUM; i--; ) {
+    for(int i = F_ECS__NUM; i--; ) {
         sum += f_list_sizeGet(g_lists[i]);
     }
 
@@ -86,39 +86,39 @@ void f_ecs__tick(void)
     f_ecs__flushEntitiesFromSystems();
 
     // Check what systems the new entities match
-    A_LIST_ITERATE(g_lists[A_ECS__NEW], AEntity*, e) {
-        for(int s = A_CONFIG_ECS_SYS_NUM; s--; ) {
+    F_LIST_ITERATE(g_lists[F_ECS__NEW], AEntity*, e) {
+        for(int s = F_CONFIG_ECS_SYS_NUM; s--; ) {
             f_entity__systemsMatch(e, f_system__get(s));
         }
 
-        f_entity__ecsListAdd(e, g_lists[A_ECS__RESTORE]);
+        f_entity__ecsListAdd(e, g_lists[F_ECS__RESTORE]);
     }
 
     // Add entities to the systems they match
-    A_LIST_ITERATE(g_lists[A_ECS__RESTORE], AEntity*, e) {
+    F_LIST_ITERATE(g_lists[F_ECS__RESTORE], AEntity*, e) {
         f_entity__systemsAddTo(e);
     }
 
-    f_list_clear(g_lists[A_ECS__NEW]);
-    f_list_clear(g_lists[A_ECS__RESTORE]);
-    f_list_clearEx(g_lists[A_ECS__FREE], (AFree*)f_entity__free);
+    f_list_clear(g_lists[F_ECS__NEW]);
+    f_list_clear(g_lists[F_ECS__RESTORE]);
+    f_list_clearEx(g_lists[F_ECS__FREE], (AFree*)f_entity__free);
 }
 
 void f_ecs__flushEntitiesFromSystems(void)
 {
-    A_LIST_ITERATE(g_lists[A_ECS__FLUSH], AEntity*, e) {
+    F_LIST_ITERATE(g_lists[F_ECS__FLUSH], AEntity*, e) {
         f_entity__systemsRemoveFromAll(e);
 
         f_entity__ecsListAdd(
-            e, g_lists[f_entity__canDelete(e) ? A_ECS__FREE : A_ECS__DEFAULT]);
+            e, g_lists[f_entity__canDelete(e) ? F_ECS__FREE : F_ECS__DEFAULT]);
     }
 
-    f_list_clear(g_lists[A_ECS__FLUSH]);
+    f_list_clear(g_lists[F_ECS__FLUSH]);
 }
-#else // !A_CONFIG_ECS_ENABLED
+#else // !F_CONFIG_ECS_ENABLED
 const APack f_pack__ecs;
 
 void f_ecs__tick(void)
 {
 }
-#endif // !A_CONFIG_ECS_ENABLED
+#endif // !F_CONFIG_ECS_ENABLED

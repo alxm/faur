@@ -21,13 +21,13 @@ extern "C" {
 
 #include <faur.v.h>
 
-#if A_CONFIG_SYSTEM_GAMEBUINO
+#if F_CONFIG_SYSTEM_GAMEBUINO
 #include <Arduino.h>
 #include <Gamebuino-Meta.h>
 
 static APixels g_pixels;
-static const AVectorInt g_size = {A_CONFIG_SCREEN_HARDWARE_WIDTH,
-                                  A_CONFIG_SCREEN_HARDWARE_HEIGHT};
+static const AVectorInt g_size = {F_CONFIG_SCREEN_HARDWARE_WIDTH,
+                                  F_CONFIG_SCREEN_HARDWARE_HEIGHT};
 
 void f_platform_api__screenInit(void)
 {
@@ -57,4 +57,4 @@ APixels* f_platform_api__screenPixelsGet(void)
 {
     return &g_pixels;
 }
-#endif // A_CONFIG_SYSTEM_GAMEBUINO
+#endif // F_CONFIG_SYSTEM_GAMEBUINO

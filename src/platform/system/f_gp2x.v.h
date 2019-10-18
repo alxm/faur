@@ -15,12 +15,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_PLATFORM_SYSTEM_GP2X_V_H
-#define A_INC_PLATFORM_SYSTEM_GP2X_V_H
+#ifndef F_INC_PLATFORM_SYSTEM_GP2X_V_H
+#define F_INC_PLATFORM_SYSTEM_GP2X_V_H
 
 #include "platform/system/f_gp2x.p.h"
 
 extern void f_platform_gp2x__init(void);
 extern void f_platform_gp2x__uninit(void);
 
-#endif // A_INC_PLATFORM_SYSTEM_GP2X_V_H
+#endif // F_INC_PLATFORM_SYSTEM_GP2X_V_H

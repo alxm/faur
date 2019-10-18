@@ -19,16 +19,16 @@
 #include <faur.v.h>
 #include <sys/stat.h>
 
-#if A_CONFIG_SYSTEM_EMSCRIPTEN
+#if F_CONFIG_SYSTEM_EMSCRIPTEN
     #include <emscripten.h>
 #endif
 
 static bool fileSeek(AFile* File, int Offset, AFileOffset Origin)
 {
-    static const int whence[A_FILE__OFFSET_NUM] = {
-        [A_FILE__OFFSET_START] = SEEK_SET,
-        [A_FILE__OFFSET_CURRENT] = SEEK_CUR,
-        [A_FILE__OFFSET_END] = SEEK_END,
+    static const int whence[F_FILE__OFFSET_NUM] = {
+        [F_FILE__OFFSET_START] = SEEK_SET,
+        [F_FILE__OFFSET_CURRENT] = SEEK_CUR,
+        [F_FILE__OFFSET_END] = SEEK_END,
     };
 
     return fseek(File->u.handle, (long int)Offset, whence[Origin]) == 0;
@@ -43,7 +43,7 @@ static bool fileWrite(AFile* File, const void* Buffer, size_t Size)
 {
     bool ret = fwrite(Buffer, Size, 1, File->u.handle) == 1;
 
-    #if A_CONFIG_SYSTEM_EMSCRIPTEN
+    #if F_CONFIG_SYSTEM_EMSCRIPTEN
         EM_ASM(
             {
                 FS.syncfs(false, function(Error) {});
@@ -90,13 +90,13 @@ AFile* f_file_real__new(APath* Path, AFileMode Mode)
     int index = 0;
     char mode[4];
 
-    if(A_FLAGS_TEST_ANY(Mode, A_FILE_READ)) {
+    if(F_FLAGS_TEST_ANY(Mode, F_FILE_READ)) {
         mode[index++] = 'r';
-    } else if(A_FLAGS_TEST_ANY(Mode, A_FILE_WRITE)) {
+    } else if(F_FLAGS_TEST_ANY(Mode, F_FILE_WRITE)) {
         mode[index++] = 'w';
     }
 
-    if(A_FLAGS_TEST_ANY(Mode, A_FILE_BINARY)) {
+    if(F_FLAGS_TEST_ANY(Mode, F_FILE_BINARY)) {
         mode[index++] = 'b';
     }
 
@@ -112,8 +112,8 @@ AFile* f_file_real__new(APath* Path, AFileMode Mode)
         return NULL;
     }
 
-    if(A_FLAGS_TEST_ANY(Mode, A_FILE_WRITE)) {
-        f_path__flagsSet(Path, A_PATH_FILE | A_PATH_REAL);
+    if(F_FLAGS_TEST_ANY(Mode, F_FILE_WRITE)) {
+        f_path__flagsSet(Path, F_PATH_FILE | F_PATH_REAL);
     }
 
     AFile* f = f_mem_zalloc(sizeof(AFile));
@@ -134,7 +134,7 @@ uint8_t* f_file_real__toBuffer(const char* Path)
         return NULL;
     }
 
-    AFile* f = f_file_new(Path, A_FILE_READ | A_FILE_BINARY);
+    AFile* f = f_file_new(Path, F_FILE_READ | F_FILE_BINARY);
 
     if(f == NULL) {
         return NULL;

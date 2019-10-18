@@ -15,11 +15,11 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_PLATFORM_SYSTEM_EMSCRIPTEN_V_H
-#define A_INC_PLATFORM_SYSTEM_EMSCRIPTEN_V_H
+#ifndef F_INC_PLATFORM_SYSTEM_EMSCRIPTEN_V_H
+#define F_INC_PLATFORM_SYSTEM_EMSCRIPTEN_V_H
 
 #include "platform/system/f_emscripten.p.h"
 
 extern void f_platform_emscripten__init(void);
 
-#endif // A_INC_PLATFORM_SYSTEM_EMSCRIPTEN_V_H
+#endif // F_INC_PLATFORM_SYSTEM_EMSCRIPTEN_V_H

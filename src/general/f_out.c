@@ -18,50 +18,50 @@
 #include "f_out.v.h"
 #include <faur.v.h>
 
-#if A_CONFIG_OUTPUT_ENABLED
-#define A_OUT__STREAM_STDOUT stdout
+#if F_CONFIG_OUTPUT_ENABLED
+#define F_OUT__STREAM_STDOUT stdout
 
-#if A_CONFIG_SYSTEM_EMSCRIPTEN
-    #define A_OUT__STREAM_STDERR stdout
+#if F_CONFIG_SYSTEM_EMSCRIPTEN
+    #define F_OUT__STREAM_STDERR stdout
 #else
-    #define A_OUT__STREAM_STDERR stderr
+    #define F_OUT__STREAM_STDERR stderr
 #endif
 
 typedef enum {
-    A_OUT__FLAG_OVERWRITE = A_FLAGS_BIT(0),
+    F_OUT__FLAG_OVERWRITE = F_FLAGS_BIT(0),
 } AOutFlags;
 
 typedef enum {
-    A_COLOR__INVALID = -1,
-    A_COLOR__BLACK = 30,
-    A_COLOR__RED = 31,
-    A_COLOR__GREEN = 32,
-    A_COLOR__YELLOW = 33,
-    A_COLOR__BLUE = 34,
-    A_COLOR__MAGENTA = 35,
-    A_COLOR__CYAN = 36,
-    A_COLOR__WHITE = 37
+    F_COLOR__INVALID = -1,
+    F_COLOR__BLACK = 30,
+    F_COLOR__RED = 31,
+    F_COLOR__GREEN = 32,
+    F_COLOR__YELLOW = 33,
+    F_COLOR__BLUE = 34,
+    F_COLOR__MAGENTA = 35,
+    F_COLOR__CYAN = 36,
+    F_COLOR__WHITE = 37
 } AColorCode;
 
-static const char* g_sources[A_OUT__SOURCE_NUM] = {
-    [A_OUT__SOURCE_FAUR] = "Faur",
-    [A_OUT__SOURCE_APP] = "Game",
+static const char* g_sources[F_OUT__SOURCE_NUM] = {
+    [F_OUT__SOURCE_FAUR] = "Faur",
+    [F_OUT__SOURCE_APP] = "Game",
 };
 
 static const struct {
     const char* name;
     AColorCode color;
-} g_types[A_OUT__TYPE_NUM] = {
-    [A_OUT__TYPE_INFO] = {"Inf", A_COLOR__GREEN},
-    [A_OUT__TYPE_WARNING] = {"Wrn", A_COLOR__YELLOW},
-    [A_OUT__TYPE_ERROR] = {"Err", A_COLOR__RED},
-    [A_OUT__TYPE_STATE] = {"Stt", A_COLOR__BLUE},
-    [A_OUT__TYPE_FATAL] = {"Ftl", A_COLOR__RED},
+} g_types[F_OUT__TYPE_NUM] = {
+    [F_OUT__TYPE_INFO] = {"Inf", F_COLOR__GREEN},
+    [F_OUT__TYPE_WARNING] = {"Wrn", F_COLOR__YELLOW},
+    [F_OUT__TYPE_ERROR] = {"Err", F_COLOR__RED},
+    [F_OUT__TYPE_STATE] = {"Stt", F_COLOR__BLUE},
+    [F_OUT__TYPE_FATAL] = {"Ftl", F_COLOR__RED},
 };
 
 static void outWorkerPrint(AOutSource Source, AOutType Type, FILE* Stream, const char* Text)
 {
-    #if A_CONFIG_SYSTEM_LINUX && A_CONFIG_TRAIT_DESKTOP
+    #if F_CONFIG_SYSTEM_LINUX && F_CONFIG_TRAIT_DESKTOP
         fprintf(Stream,
                 "\033[1;%dm[%s][%s][%08x]\033[0m ",
                 g_types[Type].color,
@@ -96,9 +96,9 @@ void f_out__info(const char* Format, ...)
     va_list args;
     va_start(args, Format);
 
-    outWorker(A_OUT__SOURCE_FAUR,
-              A_OUT__TYPE_INFO,
-              A_OUT__STREAM_STDOUT,
+    outWorker(F_OUT__SOURCE_FAUR,
+              F_OUT__TYPE_INFO,
+              F_OUT__STREAM_STDOUT,
               Format,
               args);
 
@@ -110,9 +110,9 @@ void f_out__warning(const char* Format, ...)
     va_list args;
     va_start(args, Format);
 
-    outWorker(A_OUT__SOURCE_FAUR,
-              A_OUT__TYPE_WARNING,
-              A_OUT__STREAM_STDERR,
+    outWorker(F_OUT__SOURCE_FAUR,
+              F_OUT__TYPE_WARNING,
+              F_OUT__STREAM_STDERR,
               Format,
               args);
 
@@ -124,9 +124,9 @@ void f_out__error(const char* Format, ...)
     va_list args;
     va_start(args, Format);
 
-    outWorker(A_OUT__SOURCE_FAUR,
-              A_OUT__TYPE_ERROR,
-              A_OUT__STREAM_STDERR,
+    outWorker(F_OUT__SOURCE_FAUR,
+              F_OUT__TYPE_ERROR,
+              F_OUT__STREAM_STDERR,
               Format,
               args);
 
@@ -135,9 +135,9 @@ void f_out__error(const char* Format, ...)
 
 void f_out__errorv(const char* Format, va_list Args)
 {
-    outWorker(A_OUT__SOURCE_FAUR,
-              A_OUT__TYPE_ERROR,
-              A_OUT__STREAM_STDERR,
+    outWorker(F_OUT__SOURCE_FAUR,
+              F_OUT__TYPE_ERROR,
+              F_OUT__STREAM_STDERR,
               Format,
               Args);
 }
@@ -147,9 +147,9 @@ void f_out__state(const char* Format, ...)
     va_list args;
     va_start(args, Format);
 
-    outWorker(A_OUT__SOURCE_FAUR,
-              A_OUT__TYPE_STATE,
-              A_OUT__STREAM_STDOUT,
+    outWorker(F_OUT__SOURCE_FAUR,
+              F_OUT__TYPE_STATE,
+              F_OUT__STREAM_STDOUT,
               Format,
               args);
 
@@ -158,9 +158,9 @@ void f_out__state(const char* Format, ...)
 
 void f_out_text(const char* Text)
 {
-    outWorkerPrint(A_OUT__SOURCE_APP,
-                   A_OUT__TYPE_INFO,
-                   A_OUT__STREAM_STDOUT,
+    outWorkerPrint(F_OUT__SOURCE_APP,
+                   F_OUT__TYPE_INFO,
+                   F_OUT__STREAM_STDOUT,
                    Text);
 }
 
@@ -169,9 +169,9 @@ void f_out_info(const char* Format, ...)
     va_list args;
     va_start(args, Format);
 
-    outWorker(A_OUT__SOURCE_APP,
-              A_OUT__TYPE_INFO,
-              A_OUT__STREAM_STDOUT,
+    outWorker(F_OUT__SOURCE_APP,
+              F_OUT__TYPE_INFO,
+              F_OUT__STREAM_STDOUT,
               Format,
               args);
 
@@ -183,9 +183,9 @@ void f_out_warning(const char* Format, ...)
     va_list args;
     va_start(args, Format);
 
-    outWorker(A_OUT__SOURCE_APP,
-              A_OUT__TYPE_WARNING,
-              A_OUT__STREAM_STDERR,
+    outWorker(F_OUT__SOURCE_APP,
+              F_OUT__TYPE_WARNING,
+              F_OUT__STREAM_STDERR,
               Format,
               args);
 
@@ -197,12 +197,12 @@ void f_out_error(const char* Format, ...)
     va_list args;
     va_start(args, Format);
 
-    outWorker(A_OUT__SOURCE_APP,
-              A_OUT__TYPE_ERROR,
-              A_OUT__STREAM_STDERR,
+    outWorker(F_OUT__SOURCE_APP,
+              F_OUT__TYPE_ERROR,
+              F_OUT__STREAM_STDERR,
               Format,
               args);
 
     va_end(args);
 }
-#endif // A_CONFIG_OUTPUT_ENABLED
+#endif // F_CONFIG_OUTPUT_ENABLED

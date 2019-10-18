@@ -25,9 +25,9 @@ static struct {
 
 static struct {
     unsigned head;
-    unsigned drawFrameMs[A_CONFIG_FPS_HISTORY];
+    unsigned drawFrameMs[F_CONFIG_FPS_HISTORY];
     unsigned drawFrameMsSum;
-    unsigned drawFrameMsMin[A_CONFIG_FPS_HISTORY];
+    unsigned drawFrameMsMin[F_CONFIG_FPS_HISTORY];
     unsigned drawFrameMsMinSum;
 } g_history;
 
@@ -41,8 +41,8 @@ static struct {
 
 static void f_fps__init(void)
 {
-    g_settings.tickFrameMs = 1000 / A_CONFIG_FPS_RATE_TICK;
-    g_settings.drawFrameMs = 1000 / A_CONFIG_FPS_RATE_DRAW;
+    g_settings.tickFrameMs = 1000 / F_CONFIG_FPS_RATE_TICK;
+    g_settings.drawFrameMs = 1000 / F_CONFIG_FPS_RATE_DRAW;
 
     f_fps__reset();
 }
@@ -59,16 +59,16 @@ const APack f_pack__fps = {
 
 void f_fps__reset(void)
 {
-    g_run.drawFps = A_CONFIG_FPS_RATE_DRAW;
+    g_run.drawFps = F_CONFIG_FPS_RATE_DRAW;
     g_run.drawFpsMax = g_run.drawFps;
 
-    for(int i = A_CONFIG_FPS_HISTORY; i--; ) {
+    for(int i = F_CONFIG_FPS_HISTORY; i--; ) {
         g_history.drawFrameMs[i] = g_settings.drawFrameMs;
         g_history.drawFrameMsMin[i] = g_settings.drawFrameMs;
     }
 
-    g_history.drawFrameMsSum = A_CONFIG_FPS_HISTORY * 1000
-                                / A_CONFIG_FPS_RATE_DRAW;
+    g_history.drawFrameMsSum = F_CONFIG_FPS_HISTORY * 1000
+                                / F_CONFIG_FPS_RATE_DRAW;
     g_history.drawFrameMsMinSum = g_history.drawFrameMsSum;
 
     g_run.lastFrameMs = f_time_getMs();
@@ -97,7 +97,7 @@ void f_fps__frame(void)
         g_history.drawFrameMsMin[g_history.head] = elapsedMs;
         g_history.drawFrameMsMinSum += elapsedMs;
 
-        g_run.drawFpsMax = A_CONFIG_FPS_HISTORY * 1000
+        g_run.drawFpsMax = F_CONFIG_FPS_HISTORY * 1000
                             / g_history.drawFrameMsMinSum;
     }
 
@@ -114,14 +114,14 @@ void f_fps__frame(void)
         g_history.drawFrameMsSum -= g_history.drawFrameMs[g_history.head];
         g_history.drawFrameMs[g_history.head] = elapsedMs;
         g_history.drawFrameMsSum += g_history.drawFrameMs[g_history.head];
-        g_run.drawFps = A_CONFIG_FPS_HISTORY * 1000 / g_history.drawFrameMsSum;
+        g_run.drawFps = F_CONFIG_FPS_HISTORY * 1000 / g_history.drawFrameMsSum;
     }
 
-    g_history.head = (g_history.head + 1) % A_CONFIG_FPS_HISTORY;
+    g_history.head = (g_history.head + 1) % F_CONFIG_FPS_HISTORY;
 
     g_run.lastFrameMs = nowMs;
 
-    #if A_CONFIG_FPS_CAP_LAG
+    #if F_CONFIG_FPS_CAP_LAG
         g_run.tickCreditMs += f_math_minu(
                                 elapsedMs, g_settings.drawFrameMs * 2);
     #else
@@ -151,11 +151,11 @@ bool f_fps_ticksNth(unsigned N)
 
 AFix f_fps_ticksSin(uint8_t Mul, uint8_t Div, unsigned Offset)
 {
-    uint64_t param = (uint64_t)g_run.frameCounter * Mul * A_FIX_ANGLES_NUM;
+    uint64_t param = (uint64_t)g_run.frameCounter * Mul * F_FIX_ANGLES_NUM;
 
     if(Div > 1) {
         param /= Div;
     }
 
-    return f_fix_sin((unsigned)(param / A_CONFIG_FPS_RATE_TICK) + Offset);
+    return f_fix_sin((unsigned)(param / F_CONFIG_FPS_RATE_TICK) + Offset);
 }

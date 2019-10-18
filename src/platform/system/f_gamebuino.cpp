@@ -21,18 +21,18 @@ extern "C" {
 
 #include <faur.v.h>
 
-#if A_CONFIG_SYSTEM_GAMEBUINO
+#if F_CONFIG_SYSTEM_GAMEBUINO
 #include <Arduino.h>
 #include <Gamebuino-Meta.h>
 
 void setup(void)
 {
     gb.begin();
-    gb.setFrameRate(A_CONFIG_FPS_RATE_TICK);
+    gb.setFrameRate(F_CONFIG_FPS_RATE_TICK);
 
     SerialUSB.begin(9600);
 
-    #if A_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_BUILD_DEBUG
         unsigned now = millis();
 
         while(!SerialUSB && millis() - now < 1000) {
@@ -51,7 +51,7 @@ void loop(void)
 
     f_state__runStep();
 
-    #if A_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_BUILD_DEBUG
         gb.display.setColor(WHITE);
         gb.display.setCursor(2, 46);
         gb.display.print(gb.getCpuLoad(), DEC);
@@ -73,4 +73,4 @@ void f_platform_api__timeMsWait(uint32_t Ms)
 {
     f_time_spinMs(Ms);
 }
-#endif // A_CONFIG_SYSTEM_GAMEBUINO
+#endif // F_CONFIG_SYSTEM_GAMEBUINO

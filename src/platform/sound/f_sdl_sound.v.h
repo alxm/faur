@@ -15,12 +15,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_PLATFORM_SOUND_SDL_SOUND_V_H
-#define A_INC_PLATFORM_SOUND_SDL_SOUND_V_H
+#ifndef F_INC_PLATFORM_SOUND_SDL_SOUND_V_H
+#define F_INC_PLATFORM_SOUND_SDL_SOUND_V_H
 
 #include "platform/sound/f_sdl_sound.p.h"
 
 extern void f_platform_sdl_sound__init(void);
 extern void f_platform_sdl_sound__uninit(void);
 
-#endif // A_INC_PLATFORM_SOUND_SDL_SOUND_V_H
+#endif // F_INC_PLATFORM_SOUND_SDL_SOUND_V_H

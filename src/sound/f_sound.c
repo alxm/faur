@@ -18,30 +18,30 @@
 #include "f_sound.v.h"
 #include <faur.v.h>
 
-#if A_CONFIG_SOUND_ENABLED
+#if F_CONFIG_SOUND_ENABLED
 static int g_volume;
 static int g_musicVolume;
 static int g_samplesVolume;
 static int g_volumeMax;
 
-#if A_CONFIG_SYSTEM_GP2X || A_CONFIG_SYSTEM_WIZ
-    #define A__SOUND_VOLUME_BAR 1
-    #define A__VOLUME_STEP 1
-    #define A__VOLBAR_SHOW_MS 500
+#if F_CONFIG_SYSTEM_GP2X || F_CONFIG_SYSTEM_WIZ
+    #define F__SOUND_VOLUME_BAR 1
+    #define F__VOLUME_STEP 1
+    #define F__VOLBAR_SHOW_MS 500
     static ATimer* g_volTimer;
     static AButton* g_volumeUpButton;
     static AButton* g_volumeDownButton;
 #endif
 
-#if A_CONFIG_TRAIT_KEYBOARD
+#if F_CONFIG_TRAIT_KEYBOARD
     static AButton* g_muteButton;
 #endif
 
 static void adjustSoundVolume(int Volume)
 {
     g_volume = f_math_clamp(Volume, 0, g_volumeMax);
-    g_musicVolume = g_volume * A_CONFIG_SOUND_VOLUME_SCALE_MUSIC / 100;
-    g_samplesVolume = g_volume * A_CONFIG_SOUND_VOLUME_SCALE_SAMPLE / 100;
+    g_musicVolume = g_volume * F_CONFIG_SOUND_VOLUME_SCALE_MUSIC / 100;
+    g_samplesVolume = g_volume * F_CONFIG_SOUND_VOLUME_SCALE_SAMPLE / 100;
 
     f_platform_api__soundSampleVolumeSetAll(g_samplesVolume);
     f_platform_api__soundMusicVolumeSet(g_musicVolume);
@@ -51,34 +51,34 @@ static void f_sound__init(void)
 {
     g_volumeMax = f_platform_api__soundVolumeGetMax();
 
-    #if A__SOUND_VOLUME_BAR
+    #if F__SOUND_VOLUME_BAR
         adjustSoundVolume(g_volumeMax / 16);
-        g_volTimer = f_timer_new(A_TIMER_MS, A__VOLBAR_SHOW_MS, false);
+        g_volTimer = f_timer_new(F_TIMER_MS, F__VOLBAR_SHOW_MS, false);
     #else
         adjustSoundVolume(g_volumeMax);
     #endif
 
-    #if A__SOUND_VOLUME_BAR
+    #if F__SOUND_VOLUME_BAR
         g_volumeUpButton = f_button_new();
-        f_button_bindButton(g_volumeUpButton, NULL, A_BUTTON_VOLUP);
+        f_button_bindButton(g_volumeUpButton, NULL, F_BUTTON_VOLUP);
 
         g_volumeDownButton = f_button_new();
-        f_button_bindButton(g_volumeDownButton, NULL, A_BUTTON_VOLDOWN);
+        f_button_bindButton(g_volumeDownButton, NULL, F_BUTTON_VOLDOWN);
     #endif
 
-    #if A_CONFIG_TRAIT_KEYBOARD
+    #if F_CONFIG_TRAIT_KEYBOARD
         g_muteButton = f_button_new();
-        f_button_bindKey(g_muteButton, A_KEY_M);
+        f_button_bindKey(g_muteButton, F_KEY_M);
     #endif
 }
 
 static void f_sound__uninit(void)
 {
-    #if A__SOUND_VOLUME_BAR
+    #if F__SOUND_VOLUME_BAR
         f_timer_free(g_volTimer);
     #endif
 
-    #if A_CONFIG_TRAIT_KEYBOARD
+    #if F_CONFIG_TRAIT_KEYBOARD
         f_button_free(g_muteButton);
     #endif
 
@@ -97,13 +97,13 @@ const APack f_pack__sound = {
 
 void f_sound__tick(void)
 {
-    #if A__SOUND_VOLUME_BAR
+    #if F__SOUND_VOLUME_BAR
         int adjust = 0;
 
         if(f_button_pressGet(g_volumeUpButton)) {
-            adjust = A__VOLUME_STEP;
+            adjust = F__VOLUME_STEP;
         } else if(f_button_pressGet(g_volumeDownButton)) {
-            adjust = -A__VOLUME_STEP;
+            adjust = -F__VOLUME_STEP;
         }
 
         if(adjust) {
@@ -112,7 +112,7 @@ void f_sound__tick(void)
         }
     #endif
 
-    #if A_CONFIG_TRAIT_KEYBOARD
+    #if F_CONFIG_TRAIT_KEYBOARD
         if(f_button_pressGetOnce(g_muteButton)) {
             f_platform_api__soundMuteFlip();
 
@@ -124,23 +124,23 @@ void f_sound__tick(void)
 
 void f_sound__draw(void)
 {
-    #if A__SOUND_VOLUME_BAR
+    #if F__SOUND_VOLUME_BAR
         if(!f_timer_isRunning(g_volTimer) || f_timer_expiredGet(g_volTimer)) {
             return;
         }
 
-        f_color_blendSet(A_COLOR_BLEND_PLAIN);
+        f_color_blendSet(F_COLOR_BLEND_PLAIN);
 
-        f_color_baseSetHex(A_CONFIG_COLOR_VOLBAR_BACKGROUND);
-        f_draw_rectangle(0, 181, g_volumeMax / A__VOLUME_STEP + 5, 16);
+        f_color_baseSetHex(F_CONFIG_COLOR_VOLBAR_BACKGROUND);
+        f_draw_rectangle(0, 181, g_volumeMax / F__VOLUME_STEP + 5, 16);
 
-        f_color_baseSetHex(A_CONFIG_COLOR_VOLBAR_BORDER);
-        f_draw_hline(0, g_volumeMax / A__VOLUME_STEP + 4, 180);
-        f_draw_hline(0, g_volumeMax / A__VOLUME_STEP + 4, 183 + 14);
-        f_draw_vline(g_volumeMax / A__VOLUME_STEP + 4 + 1, 181, 183 + 13);
+        f_color_baseSetHex(F_CONFIG_COLOR_VOLBAR_BORDER);
+        f_draw_hline(0, g_volumeMax / F__VOLUME_STEP + 4, 180);
+        f_draw_hline(0, g_volumeMax / F__VOLUME_STEP + 4, 183 + 14);
+        f_draw_vline(g_volumeMax / F__VOLUME_STEP + 4 + 1, 181, 183 + 13);
 
-        f_color_baseSetHex(A_CONFIG_COLOR_VOLBAR_FILL);
-        f_draw_rectangle(0, 186, g_volume / A__VOLUME_STEP, 6);
+        f_color_baseSetHex(F_CONFIG_COLOR_VOLBAR_FILL);
+        f_draw_rectangle(0, 186, g_volume / F__VOLUME_STEP, 6);
     #endif
 }
 
@@ -149,7 +149,7 @@ AMusic* f_music_new(const char* Path)
     APlatformMusic* m = f_platform_api__soundMusicNew(Path);
 
     if(m == NULL) {
-        A__FATAL("f_music_new(%s): Cannot open file", Path);
+        F__FATAL("f_music_new(%s): Cannot open file", Path);
     }
 
     return m;
@@ -180,18 +180,18 @@ ASample* f_sample_new(const char* Path)
 {
     APlatformSample* s = NULL;
 
-    if(f_path_exists(Path, A_PATH_FILE | A_PATH_REAL)) {
+    if(f_path_exists(Path, F_PATH_FILE | F_PATH_REAL)) {
         s = f_platform_api__soundSampleNewFromFile(Path);
-    } else if(f_path_exists(Path, A_PATH_FILE | A_PATH_EMBEDDED)) {
+    } else if(f_path_exists(Path, F_PATH_FILE | F_PATH_EMBEDDED)) {
         const AEmbeddedFile* e = f_embed__fileGet(Path);
 
         s = f_platform_api__soundSampleNewFromData(e->buffer, (int)e->size);
     } else {
-        A__FATAL("f_sample_new(%s): File does not exist", Path);
+        F__FATAL("f_sample_new(%s): File does not exist", Path);
     }
 
     if(s == NULL) {
-        A__FATAL("f_sample_new(%s): Cannot open file", Path);
+        F__FATAL("f_sample_new(%s): Cannot open file", Path);
     }
 
     return s;
@@ -215,16 +215,16 @@ void f_channel_play(int Channel, ASample* Sample, AChannelFlags Flags)
         return;
     }
 
-    if(A_FLAGS_TEST_ANY(Flags, A_CHANNEL_RESTART)) {
+    if(F_FLAGS_TEST_ANY(Flags, F_CHANNEL_RESTART)) {
         f_platform_api__soundSampleStop(Channel);
-    } else if(A_FLAGS_TEST_ANY(Flags, A_CHANNEL_YIELD)
+    } else if(F_FLAGS_TEST_ANY(Flags, F_CHANNEL_YIELD)
         && f_platform_api__soundSampleIsPlaying(Channel)) {
 
         return;
     }
 
     f_platform_api__soundSamplePlay(
-        Sample, Channel, A_FLAGS_TEST_ANY(Flags, A_CHANNEL_LOOP));
+        Sample, Channel, F_FLAGS_TEST_ANY(Flags, F_CHANNEL_LOOP));
 }
 
 void f_channel_stop(int Channel)
@@ -236,7 +236,7 @@ bool f_channel_isPlaying(int Channel)
 {
     return f_platform_api__soundSampleIsPlaying(Channel);
 }
-#else // !A_CONFIG_SOUND_ENABLED
+#else // !F_CONFIG_SOUND_ENABLED
 const APack f_pack__sound;
 
 void f_sound__tick(void)
@@ -249,19 +249,19 @@ void f_sound__draw(void)
 
 AMusic* f_music_new(const char* Path)
 {
-    A_UNUSED(Path);
+    F_UNUSED(Path);
 
     return NULL;
 }
 
 void f_music_free(AMusic* Music)
 {
-    A_UNUSED(Music);
+    F_UNUSED(Music);
 }
 
 void f_music_play(AMusic* Music)
 {
-    A_UNUSED(Music);
+    F_UNUSED(Music);
 }
 
 void f_music_stop(void)
@@ -270,14 +270,14 @@ void f_music_stop(void)
 
 ASample* f_sample_new(const char* Path)
 {
-    A_UNUSED(Path);
+    F_UNUSED(Path);
 
     return NULL;
 }
 
 void f_sample_free(ASample* Sample)
 {
-    A_UNUSED(Sample);
+    F_UNUSED(Sample);
 }
 
 int f_channel_new(void)
@@ -287,20 +287,20 @@ int f_channel_new(void)
 
 void f_channel_play(int Channel, ASample* Sample, AChannelFlags Flags)
 {
-    A_UNUSED(Channel);
-    A_UNUSED(Sample);
-    A_UNUSED(Flags);
+    F_UNUSED(Channel);
+    F_UNUSED(Sample);
+    F_UNUSED(Flags);
 }
 
 void f_channel_stop(int Channel)
 {
-    A_UNUSED(Channel);
+    F_UNUSED(Channel);
 }
 
 bool f_channel_isPlaying(int Channel)
 {
-    A_UNUSED(Channel);
+    F_UNUSED(Channel);
 
     return false;
 }
-#endif // !A_CONFIG_SOUND_ENABLED
+#endif // !F_CONFIG_SOUND_ENABLED

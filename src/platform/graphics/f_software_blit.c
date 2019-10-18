@@ -18,8 +18,8 @@
 #include "f_software_blit.v.h"
 #include <faur.v.h>
 
-#if A_CONFIG_LIB_RENDER_SOFTWARE
-#define A__COMPILE_INC 1
+#if F_CONFIG_LIB_RENDER_SOFTWARE
+#define F__COMPILE_INC 1
 
 enum {LEFT, RIGHT};
 
@@ -35,14 +35,14 @@ struct APlatformTexture {
 typedef void (*ABlitter)(const APlatformTexture* Texture, const APixels* Pixels, unsigned Frame, int X, int Y);
 typedef void (*ABlitterEx)(const APixels* Pixels, unsigned Frame, int X, int Y, AFix Scale, unsigned Angle, AFix CenterX, AFix CenterY);
 
-#if A_CONFIG_SCREEN_SIZE_HEIGHT < 0
-    #define A__SCANLINES_MALLOC 1
+#if F_CONFIG_SCREEN_SIZE_HEIGHT < 0
+    #define F__SCANLINES_MALLOC 1
 #endif
 
-#if A__SCANLINES_MALLOC
+#if F__SCANLINES_MALLOC
     static AScanline* g_scanlines;
 #else
-    static AScanline g_scanlines[A_CONFIG_SCREEN_SIZE_HEIGHT];
+    static AScanline g_scanlines[F_CONFIG_SCREEN_SIZE_HEIGHT];
 #endif
 
 // Interpolate sprite side (SprP1, SprP2) along screen line (ScrP1, ScrP2).
@@ -92,132 +92,132 @@ static void scan_line(int Index, AVectorInt ScrP1, AVectorInt ScrP2, AVectorFix 
     }
 }
 
-#define A__FUNC_NAME(ColorKey, Clip) A_GLUE5(f_blit__, A__BLEND, A__FILL, ColorKey, Clip)
-#define A__FUNC_NAME_EX A_GLUE4(f_blitEx__, A__BLEND, A__FILL, A__COLORKEY)
-#define A__PIXEL_DRAW(Dst) A_GLUE2(f_color__draw_, A__BLEND)(Dst A__PIXEL_PARAMS)
+#define F__FUNC_NAME(ColorKey, Clip) F_GLUE5(f_blit__, F__BLEND, F__FILL, ColorKey, Clip)
+#define F__FUNC_NAME_EX F_GLUE4(f_blitEx__, F__BLEND, F__FILL, F__COLORKEY)
+#define F__PIXEL_DRAW(Dst) F_GLUE2(f_color__draw_, F__BLEND)(Dst F__PIXEL_PARAMS)
 
-#define A__BLEND plain
-#define A__FILL Data
-#define A__BLEND_SETUP
-#define A__PIXEL_SETUP
-#define A__PIXEL_PARAMS , *src
+#define F__BLEND plain
+#define F__FILL Data
+#define F__BLEND_SETUP
+#define F__PIXEL_SETUP
+#define F__PIXEL_PARAMS , *src
 #include "platform/graphics/f_software_blit.inc.c"
 
-#define A__BLEND plain
-#define A__FILL Flat
-#define A__BLEND_SETUP const APixel color = f__color.pixel;
-#define A__PIXEL_SETUP
-#define A__PIXEL_PARAMS , color
+#define F__BLEND plain
+#define F__FILL Flat
+#define F__BLEND_SETUP const APixel color = f__color.pixel;
+#define F__PIXEL_SETUP
+#define F__PIXEL_PARAMS , color
 #include "platform/graphics/f_software_blit.inc.c"
 
-#define A__BLEND rgba
-#define A__FILL Data
-#define A__BLEND_SETUP \
+#define F__BLEND rgba
+#define F__FILL Data
+#define F__BLEND_SETUP \
     const int alpha = f__color.alpha; \
     if(alpha == 0) { \
         return; \
     }
-#define A__PIXEL_SETUP const ARgb rgb = f_pixel_toRgb(*src);
-#define A__PIXEL_PARAMS , &rgb, alpha
+#define F__PIXEL_SETUP const ARgb rgb = f_pixel_toRgb(*src);
+#define F__PIXEL_PARAMS , &rgb, alpha
 #include "platform/graphics/f_software_blit.inc.c"
 
-#define A__BLEND rgba
-#define A__FILL Flat
-#define A__BLEND_SETUP \
+#define F__BLEND rgba
+#define F__FILL Flat
+#define F__BLEND_SETUP \
     const ARgb rgb = f__color.rgb; \
     const int alpha = f__color.alpha; \
     if(alpha == 0) { \
         return; \
     }
-#define A__PIXEL_SETUP
-#define A__PIXEL_PARAMS , &rgb, alpha
+#define F__PIXEL_SETUP
+#define F__PIXEL_PARAMS , &rgb, alpha
 #include "platform/graphics/f_software_blit.inc.c"
 
-#define A__BLEND rgb25
-#define A__FILL Data
-#define A__BLEND_SETUP
-#define A__PIXEL_SETUP const ARgb rgb = f_pixel_toRgb(*src);
-#define A__PIXEL_PARAMS , &rgb
+#define F__BLEND rgb25
+#define F__FILL Data
+#define F__BLEND_SETUP
+#define F__PIXEL_SETUP const ARgb rgb = f_pixel_toRgb(*src);
+#define F__PIXEL_PARAMS , &rgb
 #include "platform/graphics/f_software_blit.inc.c"
 
-#define A__BLEND rgb25
-#define A__FILL Flat
-#define A__BLEND_SETUP const ARgb rgb = f__color.rgb;
-#define A__PIXEL_SETUP
-#define A__PIXEL_PARAMS , &rgb
+#define F__BLEND rgb25
+#define F__FILL Flat
+#define F__BLEND_SETUP const ARgb rgb = f__color.rgb;
+#define F__PIXEL_SETUP
+#define F__PIXEL_PARAMS , &rgb
 #include "platform/graphics/f_software_blit.inc.c"
 
-#define A__BLEND rgb50
-#define A__FILL Data
-#define A__BLEND_SETUP
-#define A__PIXEL_SETUP const ARgb rgb = f_pixel_toRgb(*src);
-#define A__PIXEL_PARAMS , &rgb
+#define F__BLEND rgb50
+#define F__FILL Data
+#define F__BLEND_SETUP
+#define F__PIXEL_SETUP const ARgb rgb = f_pixel_toRgb(*src);
+#define F__PIXEL_PARAMS , &rgb
 #include "platform/graphics/f_software_blit.inc.c"
 
-#define A__BLEND rgb50
-#define A__FILL Flat
-#define A__BLEND_SETUP const ARgb rgb = f__color.rgb;
-#define A__PIXEL_SETUP
-#define A__PIXEL_PARAMS , &rgb
+#define F__BLEND rgb50
+#define F__FILL Flat
+#define F__BLEND_SETUP const ARgb rgb = f__color.rgb;
+#define F__PIXEL_SETUP
+#define F__PIXEL_PARAMS , &rgb
 #include "platform/graphics/f_software_blit.inc.c"
 
-#define A__BLEND rgb75
-#define A__FILL Data
-#define A__BLEND_SETUP
-#define A__PIXEL_SETUP const ARgb rgb = f_pixel_toRgb(*src);
-#define A__PIXEL_PARAMS , &rgb
+#define F__BLEND rgb75
+#define F__FILL Data
+#define F__BLEND_SETUP
+#define F__PIXEL_SETUP const ARgb rgb = f_pixel_toRgb(*src);
+#define F__PIXEL_PARAMS , &rgb
 #include "platform/graphics/f_software_blit.inc.c"
 
-#define A__BLEND rgb75
-#define A__FILL Flat
-#define A__BLEND_SETUP const ARgb rgb = f__color.rgb;
-#define A__PIXEL_SETUP
-#define A__PIXEL_PARAMS , &rgb
+#define F__BLEND rgb75
+#define F__FILL Flat
+#define F__BLEND_SETUP const ARgb rgb = f__color.rgb;
+#define F__PIXEL_SETUP
+#define F__PIXEL_PARAMS , &rgb
 #include "platform/graphics/f_software_blit.inc.c"
 
-#define A__BLEND inverse
-#define A__FILL Data
-#define A__BLEND_SETUP
-#define A__PIXEL_SETUP
-#define A__PIXEL_PARAMS
+#define F__BLEND inverse
+#define F__FILL Data
+#define F__BLEND_SETUP
+#define F__PIXEL_SETUP
+#define F__PIXEL_PARAMS
 #include "platform/graphics/f_software_blit.inc.c"
 
-#define A__BLEND inverse
-#define A__FILL Flat
-#define A__BLEND_SETUP
-#define A__PIXEL_SETUP
-#define A__PIXEL_PARAMS
+#define F__BLEND inverse
+#define F__FILL Flat
+#define F__BLEND_SETUP
+#define F__PIXEL_SETUP
+#define F__PIXEL_PARAMS
 #include "platform/graphics/f_software_blit.inc.c"
 
-#define A__BLEND mod
-#define A__FILL Data
-#define A__BLEND_SETUP
-#define A__PIXEL_SETUP const ARgb rgb = f_pixel_toRgb(*src);
-#define A__PIXEL_PARAMS , &rgb
+#define F__BLEND mod
+#define F__FILL Data
+#define F__BLEND_SETUP
+#define F__PIXEL_SETUP const ARgb rgb = f_pixel_toRgb(*src);
+#define F__PIXEL_PARAMS , &rgb
 #include "platform/graphics/f_software_blit.inc.c"
 
-#define A__BLEND mod
-#define A__FILL Flat
-#define A__BLEND_SETUP const ARgb rgb = f__color.rgb;
-#define A__PIXEL_SETUP
-#define A__PIXEL_PARAMS , &rgb
+#define F__BLEND mod
+#define F__FILL Flat
+#define F__BLEND_SETUP const ARgb rgb = f__color.rgb;
+#define F__PIXEL_SETUP
+#define F__PIXEL_PARAMS , &rgb
 #include "platform/graphics/f_software_blit.inc.c"
 
-#define A__BLEND add
-#define A__FILL Data
-#define A__BLEND_SETUP
-#define A__PIXEL_SETUP const ARgb rgb = f_pixel_toRgb(*src);
-#define A__PIXEL_PARAMS , &rgb
+#define F__BLEND add
+#define F__FILL Data
+#define F__BLEND_SETUP
+#define F__PIXEL_SETUP const ARgb rgb = f_pixel_toRgb(*src);
+#define F__PIXEL_PARAMS , &rgb
 #include "platform/graphics/f_software_blit.inc.c"
 
-#define A__BLEND add
-#define A__FILL Flat
-#define A__BLEND_SETUP const ARgb rgb = f__color.rgb;
-#define A__PIXEL_SETUP
-#define A__PIXEL_PARAMS , &rgb
+#define F__BLEND add
+#define F__FILL Flat
+#define F__BLEND_SETUP const ARgb rgb = f__color.rgb;
+#define F__PIXEL_SETUP
+#define F__PIXEL_PARAMS , &rgb
 #include "platform/graphics/f_software_blit.inc.c"
 
-#define A__INIT_BLEND(Index, Name)                      \
+#define F__INIT_BLEND(Index, Name)                      \
     [Index][0][0][0] = f_blit__##Name##DataBlockNoClip, \
     [Index][0][0][1] = f_blit__##Name##DataBlockDoClip, \
     [Index][0][1][0] = f_blit__##Name##DataKeyedNoClip, \
@@ -228,38 +228,38 @@ static void scan_line(int Index, AVectorInt ScrP1, AVectorInt ScrP2, AVectorFix 
     [Index][1][1][1] = f_blit__##Name##FlatKeyedDoClip, \
 
 // [Blend][Fill][ColorKey][Clip]
-static const ABlitter g_blitters[A_COLOR_BLEND_NUM][2][2][2] = {
-    A__INIT_BLEND(A_COLOR_BLEND_PLAIN, plain)
-    A__INIT_BLEND(A_COLOR_BLEND_RGBA, rgba)
-    A__INIT_BLEND(A_COLOR_BLEND_RGB25, rgb25)
-    A__INIT_BLEND(A_COLOR_BLEND_RGB50, rgb50)
-    A__INIT_BLEND(A_COLOR_BLEND_RGB75, rgb75)
-    A__INIT_BLEND(A_COLOR_BLEND_INVERSE, inverse)
-    A__INIT_BLEND(A_COLOR_BLEND_MOD, mod)
-    A__INIT_BLEND(A_COLOR_BLEND_ADD, add)
+static const ABlitter g_blitters[F_COLOR_BLEND_NUM][2][2][2] = {
+    F__INIT_BLEND(F_COLOR_BLEND_PLAIN, plain)
+    F__INIT_BLEND(F_COLOR_BLEND_RGBA, rgba)
+    F__INIT_BLEND(F_COLOR_BLEND_RGB25, rgb25)
+    F__INIT_BLEND(F_COLOR_BLEND_RGB50, rgb50)
+    F__INIT_BLEND(F_COLOR_BLEND_RGB75, rgb75)
+    F__INIT_BLEND(F_COLOR_BLEND_INVERSE, inverse)
+    F__INIT_BLEND(F_COLOR_BLEND_MOD, mod)
+    F__INIT_BLEND(F_COLOR_BLEND_ADD, add)
 };
 
-#define A__INIT_BLEND_EX(Index, Name)            \
+#define F__INIT_BLEND_EX(Index, Name)            \
     [Index][0][0] = f_blitEx__##Name##DataBlock, \
     [Index][0][1] = f_blitEx__##Name##DataKeyed, \
     [Index][1][0] = f_blitEx__##Name##FlatBlock, \
     [Index][1][1] = f_blitEx__##Name##FlatKeyed, \
 
 // [Blend][Fill][ColorKey]
-static const ABlitterEx g_blittersEx[A_COLOR_BLEND_NUM][2][2] = {
-    A__INIT_BLEND_EX(A_COLOR_BLEND_PLAIN, plain)
-    A__INIT_BLEND_EX(A_COLOR_BLEND_RGBA, rgba)
-    A__INIT_BLEND_EX(A_COLOR_BLEND_RGB25, rgb25)
-    A__INIT_BLEND_EX(A_COLOR_BLEND_RGB50, rgb50)
-    A__INIT_BLEND_EX(A_COLOR_BLEND_RGB75, rgb75)
-    A__INIT_BLEND_EX(A_COLOR_BLEND_INVERSE, inverse)
-    A__INIT_BLEND_EX(A_COLOR_BLEND_MOD, mod)
-    A__INIT_BLEND_EX(A_COLOR_BLEND_ADD, add)
+static const ABlitterEx g_blittersEx[F_COLOR_BLEND_NUM][2][2] = {
+    F__INIT_BLEND_EX(F_COLOR_BLEND_PLAIN, plain)
+    F__INIT_BLEND_EX(F_COLOR_BLEND_RGBA, rgba)
+    F__INIT_BLEND_EX(F_COLOR_BLEND_RGB25, rgb25)
+    F__INIT_BLEND_EX(F_COLOR_BLEND_RGB50, rgb50)
+    F__INIT_BLEND_EX(F_COLOR_BLEND_RGB75, rgb75)
+    F__INIT_BLEND_EX(F_COLOR_BLEND_INVERSE, inverse)
+    F__INIT_BLEND_EX(F_COLOR_BLEND_MOD, mod)
+    F__INIT_BLEND_EX(F_COLOR_BLEND_ADD, add)
 };
 
 void f_platform_software_blit__init(void)
 {
-    #if A__SCANLINES_MALLOC
+    #if F__SCANLINES_MALLOC
         g_scanlines = f_mem_malloc((unsigned)
                         f_platform_api__screenSizeGet().y * sizeof(AScanline));
     #endif
@@ -267,7 +267,7 @@ void f_platform_software_blit__init(void)
 
 void f_platform_software_blit__uninit(void)
 {
-    #if A__SCANLINES_MALLOC
+    #if F__SCANLINES_MALLOC
         f_mem_free(g_scanlines);
     #endif
 }
@@ -380,4 +380,4 @@ void f_platform_api__textureBlitEx(const APlatformTexture* Texture, const APixel
         [Texture != NULL]
             (Pixels, Frame, X, Y, Scale, Angle, CenterX, CenterY);
 }
-#endif // A_CONFIG_LIB_RENDER_SOFTWARE
+#endif // F_CONFIG_LIB_RENDER_SOFTWARE

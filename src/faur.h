@@ -15,18 +15,18 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_FAUR_H
-#define A_INC_FAUR_H
+#ifndef F_INC_FAUR_H
+#define F_INC_FAUR_H
 
 #ifdef __cplusplus
-#define A_EXTERN_C_START extern "C" {
-#define A_EXTERN_C_END }
+#define F_EXTERN_C_START extern "C" {
+#define F_EXTERN_C_END }
 #else
-#define A_EXTERN_C_START
-#define A_EXTERN_C_END
+#define F_EXTERN_C_START
+#define F_EXTERN_C_END
 #endif
 
-A_EXTERN_C_START
+F_EXTERN_C_START
 #include "collision/f_collide.p.h"
 #include "collision/f_grid.p.h"
 #include "data/f_bitfield.p.h"
@@ -90,6 +90,6 @@ A_EXTERN_C_START
 #include "strings/f_str.p.h"
 #include "time/f_time.p.h"
 #include "time/f_timer.p.h"
-A_EXTERN_C_END
+F_EXTERN_C_END
 
-#endif // A_INC_FAUR_H
+#endif // F_INC_FAUR_H

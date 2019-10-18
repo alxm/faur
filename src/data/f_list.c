@@ -18,13 +18,13 @@
 #include "f_list.v.h"
 #include <faur.v.h>
 
-#define A__ITERATE(List, N) \
+#define F__ITERATE(List, N) \
     for(AListNode* N = List->sentinel.next; N != &List->sentinel; N = N->next)
 
-#define A__ITERATE_REV(List, N) \
+#define F__ITERATE_REV(List, N) \
     for(AListNode* N = List->sentinel.prev; N != &List->sentinel; N = N->prev)
 
-#define A__ITERATE_SAFE(List, Current, Next)                             \
+#define F__ITERATE_SAFE(List, Current, Next)                             \
     for(AListNode *Current = List->sentinel.next, *Next = Current->next; \
         Current != &List->sentinel;                                      \
         Current = Next, Next = Next->next)
@@ -109,7 +109,7 @@ void f_list_appendMove(AList* Dst, AList* Src)
         return;
     }
 
-    A__ITERATE(Src, n) {
+    F__ITERATE(Src, n) {
         n->list = Dst;
     }
 
@@ -139,7 +139,7 @@ void f_list_appendCopy(AList* Dst, const AList* Src)
 void* f_list_getByIndex(const AList* List, unsigned Index)
 {
     if(Index < List->items >> 1) {
-        A__ITERATE(List, n) {
+        F__ITERATE(List, n) {
             if(Index-- == 0) {
                 return n->content;
             }
@@ -147,7 +147,7 @@ void* f_list_getByIndex(const AList* List, unsigned Index)
     } else {
         Index = List->items - 1 - Index;
 
-        A__ITERATE_REV(List, n) {
+        F__ITERATE_REV(List, n) {
             if(Index-- == 0) {
                 return n->content;
             }
@@ -197,7 +197,7 @@ static inline void* removeNode(AListNode* Node)
 
 void* f_list_removeItem(AList* List, const void* Item)
 {
-    A__ITERATE(List, n) {
+    F__ITERATE(List, n) {
         if(n->content == Item) {
             return removeNode(n);
         }
@@ -231,7 +231,7 @@ void* f_list_removeLast(AList* List)
 void* f_list_removeByIndex(AList* List, unsigned Index)
 {
     if(Index < List->items >> 1) {
-        A__ITERATE(List, n) {
+        F__ITERATE(List, n) {
             if(Index-- == 0) {
                 return removeNode(n);
             }
@@ -239,7 +239,7 @@ void* f_list_removeByIndex(AList* List, unsigned Index)
     } else {
         Index = List->items - 1 - Index;
 
-        A__ITERATE_REV(List, n) {
+        F__ITERATE_REV(List, n) {
             if(Index-- == 0) {
                 return removeNode(n);
             }
@@ -271,7 +271,7 @@ void f_list_clear(AList* List)
 void f_list_clearEx(AList* List, AFree* Free)
 {
     if(Free) {
-        A__ITERATE_SAFE(List, current, next) {
+        F__ITERATE_SAFE(List, current, next) {
             Free(current->content);
 
             // Check if the Free callback already self-removed from the list
@@ -280,7 +280,7 @@ void f_list_clearEx(AList* List, AFree* Free)
             }
         }
     } else {
-        A__ITERATE_SAFE(List, current, next) {
+        F__ITERATE_SAFE(List, current, next) {
             f_mem_free(current);
         }
     }
@@ -295,7 +295,7 @@ AList* f_list_dup(const AList* List)
 {
     AList* l = f_list_new();
 
-    A__ITERATE(List, n) {
+    F__ITERATE(List, n) {
         f_list_addLast(l, n->content);
     }
 
@@ -307,7 +307,7 @@ void** f_list_toArray(const AList* List)
     int i = 0;
     void** array = f_mem_malloc(List->items * sizeof(void*));
 
-    A__ITERATE(List, n) {
+    F__ITERATE(List, n) {
         array[i++] = n->content;
     }
 
@@ -435,7 +435,7 @@ bool f_list_isEmpty(const AList* List)
 
 bool f_list_contains(const AList* List, const void* Item)
 {
-    A__ITERATE(List, n) {
+    F__ITERATE(List, n) {
         if(n->content == Item) {
             return true;
         }

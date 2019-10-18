@@ -54,14 +54,14 @@ void c_{name}_templateInit(void* Data, const ABlock* Config)
 
     data->startValue = 2;
 
-    A_UNUSED(Config);
+    F_UNUSED(Config);
 }}
 
 void c_{name}_templateFree(void* Data)
 {{
     {ctype}Data* data = Data;
 
-    A_UNUSED(data);
+    F_UNUSED(data);
 }}
 
 void c_{name}_instanceInit(void* Self)
@@ -83,7 +83,7 @@ void c_{name}_instanceFree(void* Self)
 {{
     {ctype}* {localVar} = Self;
 
-    A_UNUSED({localVar});
+    F_UNUSED({localVar});
 }}
 
 int c_{name}_valueGet(const {ctype}* {paramVar})

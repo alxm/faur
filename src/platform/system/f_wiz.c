@@ -22,12 +22,12 @@
 #include "f_wiz.v.h"
 #include <faur.v.h>
 
-#if A_CONFIG_SYSTEM_WIZ || A_CONFIG_SYSTEM_CAANOO
+#if F_CONFIG_SYSTEM_WIZ || F_CONFIG_SYSTEM_CAANOO
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 
-#if A_CONFIG_SYSTEM_WIZ
+#if F_CONFIG_SYSTEM_WIZ
     static bool g_mmuHackOn = false;
 #endif
 
@@ -77,7 +77,7 @@ static void timer_init(void)
     }
 
     if(div < 1 || div > 256 || div2 >= 4) {
-        A__FATAL("Could not set up Pollux timer");
+        F__FATAL("Could not set up Pollux timer");
     }
 
     if(TIMER_REG(0x08) & 8) { // Timer in use
@@ -93,8 +93,8 @@ static void timer_init(void)
 
 void f_platform_wiz__init(void)
 {
-    #if A_CONFIG_SYSTEM_WIZ
-        if(f_path_exists("./mmuhack.ko", A_PATH_FILE)) {
+    #if F_CONFIG_SYSTEM_WIZ
+        if(f_path_exists("./mmuhack.ko", F_PATH_FILE)) {
             system("/sbin/rmmod mmuhack");
             system("/sbin/insmod mmuhack.ko");
 
@@ -123,7 +123,7 @@ void f_platform_wiz__uninit(void)
     timer_clean();
     close(g_memfd);
 
-    #if A_CONFIG_SYSTEM_WIZ
+    #if F_CONFIG_SYSTEM_WIZ
         if(g_mmuHackOn) {
             system("/sbin/rmmod mmuhack");
         }
@@ -143,7 +143,7 @@ void f_platform_api__timeMsWait(uint32_t Ms)
     f_time_spinMs(Ms);
 }
 
-#if A_CONFIG_SYSTEM_WIZ
+#if F_CONFIG_SYSTEM_WIZ
 void f_platform_wiz__portraitModeSet(void)
 {
     // Set Wiz screen to portrait mode to avoid diagonal tearing
@@ -159,4 +159,4 @@ void f_platform_wiz__portraitModeSet(void)
     close(fb_fd);
 }
 #endif
-#endif // A_CONFIG_SYSTEM_WIZ || A_CONFIG_SYSTEM_CAANOO
+#endif // F_CONFIG_SYSTEM_WIZ || F_CONFIG_SYSTEM_CAANOO

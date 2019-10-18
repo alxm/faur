@@ -18,7 +18,7 @@
 #include "f_component.v.h"
 #include <faur.v.h>
 
-#if A_CONFIG_ECS_ENABLED
+#if F_CONFIG_ECS_ENABLED
 struct AComponent {
     size_t size; // total size of AComponentInstance + user data that follows
     AComponentInstanceInit* init; // sets component buffer default values
@@ -30,7 +30,7 @@ struct AComponent {
     const char* stringId; // string ID
 };
 
-static AComponent g_components[A_CONFIG_ECS_COM_NUM];
+static AComponent g_components[F_CONFIG_ECS_COM_NUM];
 static AStrHash* g_componentsIndex; // table of AComponent
 static const char* g_defaultId = "Unknown";
 
@@ -59,13 +59,13 @@ int f_component__stringToIndex(const char* StringId)
 
 const AComponent* f_component__get(int ComponentIndex)
 {
-    #if A_CONFIG_BUILD_DEBUG
-        if(ComponentIndex < 0 || ComponentIndex >= A_CONFIG_ECS_COM_NUM) {
-            A__FATAL("Unknown component %d", ComponentIndex);
+    #if F_CONFIG_BUILD_DEBUG
+        if(ComponentIndex < 0 || ComponentIndex >= F_CONFIG_ECS_COM_NUM) {
+            F__FATAL("Unknown component %d", ComponentIndex);
         }
 
         if(g_components[ComponentIndex].stringId == NULL) {
-            A__FATAL("Uninitialized component %d", ComponentIndex);
+            F__FATAL("Uninitialized component %d", ComponentIndex);
         }
     #endif
 
@@ -76,9 +76,9 @@ void f_component_new(int ComponentIndex, size_t InstanceSize, AComponentInstance
 {
     AComponent* component = &g_components[ComponentIndex];
 
-    #if A_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_BUILD_DEBUG
         if(component->stringId != NULL) {
-            A__FATAL("f_component_new(%d): Already declared", ComponentIndex);
+            F__FATAL("f_component_new(%d): Already declared", ComponentIndex);
         }
     #endif
 
@@ -92,18 +92,18 @@ void f_component_template(int ComponentIndex, const char* StringId, size_t Templ
 {
     AComponent* component = &g_components[ComponentIndex];
 
-    #if A_CONFIG_BUILD_DEBUG
-        if(ComponentIndex < 0 || ComponentIndex >= A_CONFIG_ECS_COM_NUM) {
-            A__FATAL("f_component_template(%s): Unknown component", StringId);
+    #if F_CONFIG_BUILD_DEBUG
+        if(ComponentIndex < 0 || ComponentIndex >= F_CONFIG_ECS_COM_NUM) {
+            F__FATAL("f_component_template(%s): Unknown component", StringId);
         }
 
         if(g_components[ComponentIndex].stringId == NULL) {
-            A__FATAL(
+            F__FATAL(
                 "f_component_template(%s): Uninitialized component", StringId);
         }
 
         if(f_strhash_contains(g_componentsIndex, StringId)) {
-            A__FATAL("f_component_template(%s): Already declared", StringId);
+            F__FATAL("f_component_template(%s): Already declared", StringId);
         }
     #endif
 
@@ -189,4 +189,4 @@ void f_component__instanceFree(AComponentInstance* Instance)
 
     f_mem_free(Instance);
 }
-#endif // A_CONFIG_ECS_ENABLED
+#endif // F_CONFIG_ECS_ENABLED

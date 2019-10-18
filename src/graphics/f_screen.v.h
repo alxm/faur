@@ -15,8 +15,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_GRAPHICS_SCREEN_V_H
-#define A_INC_GRAPHICS_SCREEN_V_H
+#ifndef F_INC_GRAPHICS_SCREEN_V_H
+#define F_INC_GRAPHICS_SCREEN_V_H
 
 #include "graphics/f_screen.p.h"
 
@@ -27,7 +27,7 @@ typedef struct AScreen AScreen;
 
 struct AScreen {
     APixels* pixels;
-    #if !A_CONFIG_LIB_RENDER_SOFTWARE
+    #if !F_CONFIG_LIB_RENDER_SOFTWARE
         APlatformTexture* texture;
     #endif
     ASprite* sprite;
@@ -51,4 +51,4 @@ static inline APixel* f_screen__bufferGetFrom(int X, int Y)
     return f_pixels__bufferGetFrom(f__screen.pixels, f__screen.frame, X, Y);
 }
 
-#endif // A_INC_GRAPHICS_SCREEN_V_H
+#endif // F_INC_GRAPHICS_SCREEN_V_H

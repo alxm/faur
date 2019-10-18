@@ -15,8 +15,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_MATH_MATH_P_H
-#define A_INC_MATH_MATH_P_H
+#ifndef F_INC_MATH_MATH_P_H
+#define F_INC_MATH_MATH_P_H
 
 #include "general/f_system_includes.h"
 
@@ -70,4 +70,4 @@ static inline int f_math_abs(int X)
     return X >= 0 ? X : -X;
 }
 
-#endif // A_INC_MATH_MATH_P_H
+#endif // F_INC_MATH_MATH_P_H

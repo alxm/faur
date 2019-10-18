@@ -18,21 +18,21 @@
 #include "f_sdl_sound.v.h"
 #include <faur.v.h>
 
-#if A_CONFIG_SOUND_ENABLED && A_CONFIG_LIB_SDL
-#if A_CONFIG_LIB_SDL == 1
+#if F_CONFIG_SOUND_ENABLED && F_CONFIG_LIB_SDL
+#if F_CONFIG_LIB_SDL == 1
     #include <SDL/SDL.h>
     #include <SDL/SDL_mixer.h>
-#elif A_CONFIG_LIB_SDL == 2
+#elif F_CONFIG_LIB_SDL == 2
     #include <SDL2/SDL.h>
     #include <SDL2/SDL_mixer.h>
 #endif
 
-#if A_CONFIG_SYSTEM_EMSCRIPTEN && A_CONFIG_LIB_SDL == 1
-    #define A__SOUND_NO_VOLUME_ADJUSTMENT 1
+#if F_CONFIG_SYSTEM_EMSCRIPTEN && F_CONFIG_LIB_SDL == 1
+    #define F__SOUND_NO_VOLUME_ADJUSTMENT 1
 #endif
 
 static bool g_enabled;
-static bool g_mute = A_CONFIG_SOUND_MUTE;
+static bool g_mute = F_CONFIG_SOUND_MUTE;
 static int g_numSampleChannels;
 static int g_numSampleChannelsReserved;
 static int g_currentSampleChannel;
@@ -40,7 +40,7 @@ static int g_currentSampleChannel;
 void f_platform_sdl_sound__init(void)
 {
     if(SDL_InitSubSystem(SDL_INIT_AUDIO) != 0) {
-        A__FATAL("SDL_InitSubSystem: %s", SDL_GetError());
+        F__FATAL("SDL_InitSubSystem: %s", SDL_GetError());
     }
 
     if(Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 256) != 0) {
@@ -51,14 +51,14 @@ void f_platform_sdl_sound__init(void)
     g_enabled = true;
 
     g_numSampleChannels =
-        Mix_AllocateChannels(A_CONFIG_SOUND_SAMPLE_CHANNELS_TOTAL);
+        Mix_AllocateChannels(F_CONFIG_SOUND_SAMPLE_CHANNELS_TOTAL);
 
     if(g_numSampleChannels < 1) {
         f_out__error("Mix_AllocateChannels: %s", Mix_GetError());
     }
 
     g_numSampleChannelsReserved =
-        Mix_ReserveChannels(A_CONFIG_SOUND_SAMPLE_CHANNELS_RESERVED);
+        Mix_ReserveChannels(F_CONFIG_SOUND_SAMPLE_CHANNELS_RESERVED);
 
     if(g_numSampleChannelsReserved < 1) {
         f_out__error("Mix_ReserveChannels: %s", Mix_GetError());
@@ -129,8 +129,8 @@ void f_platform_api__soundMusicVolumeSet(int Volume)
         return;
     }
 
-    #if A__SOUND_NO_VOLUME_ADJUSTMENT
-        A_UNUSED(Volume);
+    #if F__SOUND_NO_VOLUME_ADJUSTMENT
+        F_UNUSED(Volume);
     #else
         Mix_VolumeMusic(Volume);
     #endif
@@ -206,9 +206,9 @@ void f_platform_api__soundSampleVolumeSet(APlatformSample* Sample, int Volume)
         return;
     }
 
-    #if A__SOUND_NO_VOLUME_ADJUSTMENT
-        A_UNUSED(Sample);
-        A_UNUSED(Volume);
+    #if F__SOUND_NO_VOLUME_ADJUSTMENT
+        F_UNUSED(Sample);
+        F_UNUSED(Volume);
     #else
         Mix_VolumeChunk(Sample, Volume);
     #endif
@@ -220,8 +220,8 @@ void f_platform_api__soundSampleVolumeSetAll(int Volume)
         return;
     }
 
-    #if A__SOUND_NO_VOLUME_ADJUSTMENT
-        A_UNUSED(Volume);
+    #if F__SOUND_NO_VOLUME_ADJUSTMENT
+        F_UNUSED(Volume);
     #else
         Mix_Volume(-1, Volume);
     #endif
@@ -234,7 +234,7 @@ void f_platform_api__soundSamplePlay(APlatformSample* Sample, int Channel, bool 
     }
 
     if(Mix_PlayChannel(Channel, Sample, Loop ? -1 : 0) == -1) {
-        #if A_CONFIG_BUILD_DEBUG
+        #if F_CONFIG_BUILD_DEBUG
             f_out__error("Mix_PlayChannel(%d): %s", Channel, Mix_GetError());
         #endif
     }
@@ -266,4 +266,4 @@ int f_platform_api__soundSampleChannelGet(void)
 
     return g_currentSampleChannel++ % g_numSampleChannelsReserved;
 }
-#endif // A_CONFIG_SOUND_ENABLED && A_CONFIG_LIB_SDL
+#endif // F_CONFIG_SOUND_ENABLED && F_CONFIG_LIB_SDL

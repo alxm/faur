@@ -15,17 +15,17 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_FILES_FILE_V_H
-#define A_INC_FILES_FILE_V_H
+#ifndef F_INC_FILES_FILE_V_H
+#define F_INC_FILES_FILE_V_H
 
 #include "files/f_file.p.h"
 
 typedef enum {
-    A_FILE__OFFSET_INVALID = -1,
-    A_FILE__OFFSET_START,
-    A_FILE__OFFSET_CURRENT,
-    A_FILE__OFFSET_END,
-    A_FILE__OFFSET_NUM
+    F_FILE__OFFSET_INVALID = -1,
+    F_FILE__OFFSET_START,
+    F_FILE__OFFSET_CURRENT,
+    F_FILE__OFFSET_END,
+    F_FILE__OFFSET_NUM
 } AFileOffset;
 
 typedef struct {
@@ -58,4 +58,4 @@ struct AFile {
 
 extern const AEmbeddedFile* f_file__dataGet(AFile* File);
 
-#endif // A_INC_FILES_FILE_V_H
+#endif // F_INC_FILES_FILE_V_H

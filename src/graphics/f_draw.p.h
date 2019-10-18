@@ -15,8 +15,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_GRAPHICS_DRAW_P_H
-#define A_INC_GRAPHICS_DRAW_P_H
+#ifndef F_INC_GRAPHICS_DRAW_P_H
+#define F_INC_GRAPHICS_DRAW_P_H
 
 #include "general/f_system_includes.h"
 
@@ -28,4 +28,4 @@ extern void f_draw_vline(int X, int Y1, int Y2);
 extern void f_draw_rectangle(int X, int Y, int Width, int Height);
 extern void f_draw_circle(int X, int Y, int Radius);
 
-#endif // A_INC_GRAPHICS_DRAW_P_H
+#endif // F_INC_GRAPHICS_DRAW_P_H

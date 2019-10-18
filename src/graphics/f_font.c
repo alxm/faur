@@ -18,9 +18,9 @@
 #include "f_font.v.h"
 #include <faur.v.h>
 
-#define A__CHAR_START 32
-#define A__CHAR_INDEX(Char) ((unsigned)Char - A__CHAR_START)
-#define A__LINE_SPACING 1
+#define F__CHAR_START 32
+#define F__CHAR_INDEX(Char) ((unsigned)Char - F__CHAR_START)
+#define F__LINE_SPACING 1
 
 typedef struct {
     const AFont* font;
@@ -30,7 +30,7 @@ typedef struct {
     int wrapWidth, currentLineWidth;
 } AFontState;
 
-static AFont* g_defaultFonts[A_FONT__ID_NUM];
+static AFont* g_defaultFonts[F_FONT__ID_NUM];
 static AFontState g_state;
 static AList* g_stateStack;
 static char g_buffer[512];
@@ -39,22 +39,22 @@ static void f_font__init(void)
 {
     g_stateStack = f_list_new();
 
-    #if A_CONFIG_LIB_PNG
-        APixel colors[A_FONT__ID_NUM] = {
-            [A_FONT__ID_LIGHT_GRAY] = f_pixel_fromHex(0xaf9898),
-            [A_FONT__ID_GREEN] = f_pixel_fromHex(0x4fbf9f),
-            [A_FONT__ID_YELLOW] = f_pixel_fromHex(0xa8cf3f),
-            [A_FONT__ID_RED] = f_pixel_fromHex(0xcf2f4f),
-            [A_FONT__ID_BLUE] = f_pixel_fromHex(0x4f8fdf),
+    #if F_CONFIG_LIB_PNG
+        APixel colors[F_FONT__ID_NUM] = {
+            [F_FONT__ID_LIGHT_GRAY] = f_pixel_fromHex(0xaf9898),
+            [F_FONT__ID_GREEN] = f_pixel_fromHex(0x4fbf9f),
+            [F_FONT__ID_YELLOW] = f_pixel_fromHex(0xa8cf3f),
+            [F_FONT__ID_RED] = f_pixel_fromHex(0xcf2f4f),
+            [F_FONT__ID_BLUE] = f_pixel_fromHex(0x4f8fdf),
         };
 
-        g_defaultFonts[A_FONT__ID_DEFAULT] = f_font_newFromPng(
+        g_defaultFonts[F_FONT__ID_DEFAULT] = f_font_newFromPng(
                                                 "/faur/font", 0, 0, 6, 8);
-        g_defaultFonts[A_FONT__ID_WHITE] = f_font_newFromPng(
+        g_defaultFonts[F_FONT__ID_WHITE] = f_font_newFromPng(
                                             "/faur/fontKeyed", 0, 0, 6, 8);
 
-        for(int f = A_FONT__ID_WHITE + 1; f < A_FONT__ID_NUM; f++) {
-            g_defaultFonts[f] = f_font_dup(g_defaultFonts[A_FONT__ID_WHITE],
+        for(int f = F_FONT__ID_WHITE + 1; f < F_FONT__ID_NUM; f++) {
+            g_defaultFonts[f] = f_font_dup(g_defaultFonts[F_FONT__ID_WHITE],
                                            colors[f]);
         }
 
@@ -64,7 +64,7 @@ static void f_font__init(void)
 
 static void f_font__uninit(void)
 {
-    for(int f = 0; f < A_FONT__ID_NUM; f++) {
+    for(int f = 0; f < F_FONT__ID_NUM; f++) {
         f_font_free(g_defaultFonts[f]);
     }
 
@@ -81,7 +81,7 @@ const APack f_pack__font = {
     },
 };
 
-#if A_CONFIG_LIB_PNG
+#if F_CONFIG_LIB_PNG
 AFont* f_font_newFromPng(const char* Path, int X, int Y, int CharWidth, int CharHeight)
 {
     return f_sprite_newFromPng(Path, X, Y, CharWidth, CharHeight);
@@ -126,9 +126,9 @@ void f_font_pop(void)
 {
     AFontState* state = f_list_pop(g_stateStack);
 
-    #if A_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_BUILD_DEBUG
         if(state == NULL) {
-            A__FATAL("f_font_pop: Stack is empty");
+            F__FATAL("f_font_pop: Stack is empty");
         }
     #endif
 
@@ -138,8 +138,8 @@ void f_font_pop(void)
 
 void f_font_reset(void)
 {
-    f_font__fontSet(A_FONT__ID_DEFAULT);
-    f_font_alignSet(A_FONT_ALIGN_LEFT);
+    f_font__fontSet(F_FONT__ID_DEFAULT);
+    f_font_alignSet(F_FONT_ALIGN_LEFT);
     f_font_coordsSet(0, 0);
     f_font_lineWrapSet(0);
 }
@@ -147,11 +147,11 @@ void f_font_reset(void)
 void f_font_fontSet(const AFont* Font)
 {
     if(Font == NULL) {
-        Font = g_defaultFonts[A_FONT__ID_DEFAULT];
+        Font = g_defaultFonts[F_FONT__ID_DEFAULT];
     }
 
     g_state.font = Font;
-    g_state.lineHeight = f_sprite_sizeGetHeight(Font) + A__LINE_SPACING;
+    g_state.lineHeight = f_sprite_sizeGetHeight(Font) + F__LINE_SPACING;
 }
 
 void f_font__fontSet(AFontId Font)
@@ -210,14 +210,14 @@ static void drawString(const char* Text, ptrdiff_t Length)
     const ASprite* chars = g_state.font;
     int charWidth = f_sprite_sizeGetWidth(chars);
 
-    if(g_state.align == A_FONT_ALIGN_MIDDLE) {
+    if(g_state.align == F_FONT_ALIGN_MIDDLE) {
         g_state.x -= (int)Length * charWidth / 2;
-    } else if(g_state.align == A_FONT_ALIGN_RIGHT) {
+    } else if(g_state.align == F_FONT_ALIGN_RIGHT) {
         g_state.x -= (int)Length * charWidth;
     }
 
     for( ; Length--; Text++) {
-        f_sprite_blit(chars, A__CHAR_INDEX(*Text), g_state.x, g_state.y);
+        f_sprite_blit(chars, F__CHAR_INDEX(*Text), g_state.x, g_state.y);
         g_state.x += charWidth;
     }
 }
@@ -230,7 +230,7 @@ static void wrapString(const char* Text)
     const char* wordStart = NULL;
 
     for(char ch = *Text; ch != '\0'; ch = *Text) {
-        if(ch > A__CHAR_START) {
+        if(ch > F__CHAR_START) {
             if(wordStart == NULL) {
                 wordStart = Text;
             }
@@ -293,7 +293,7 @@ void f_font_print(const char* Text)
     const char* lineStart = Text;
 
     for(char ch = *Text; ch != '\0'; ch = *++Text) {
-        if(ch < A__CHAR_START) {
+        if(ch < F__CHAR_START) {
             drawString(lineStart, Text - lineStart);
 
             if(ch == '\n') {
@@ -329,7 +329,7 @@ int f_font_widthGet(const char* Text)
     int width = 0;
     int charWidth = f_sprite_sizeGetWidth(g_state.font);
 
-    for(char ch = *Text; ch >= A__CHAR_START; ch = *++Text) {
+    for(char ch = *Text; ch >= F__CHAR_START; ch = *++Text) {
         width += charWidth;
     }
 

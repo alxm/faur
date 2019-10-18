@@ -21,11 +21,11 @@
 AScreen f__screen;
 static AList* g_stack; // list of AScreen
 
-#if A_CONFIG_TRAIT_DESKTOP
+#if F_CONFIG_TRAIT_DESKTOP
     static AButton* g_fullScreenButton;
 
-    #define A__ZOOM_LEVELS 3
-    static AButton* g_zoomButtons[A__ZOOM_LEVELS];
+    #define F__ZOOM_LEVELS 3
+    static AButton* g_zoomButtons[F__ZOOM_LEVELS];
 #endif
 
 static void f_screen__init(void)
@@ -34,7 +34,7 @@ static void f_screen__init(void)
 
     f__screen.pixels = f_platform_api__screenPixelsGet();
 
-    #if !A_CONFIG_LIB_RENDER_SOFTWARE
+    #if !F_CONFIG_LIB_RENDER_SOFTWARE
         f__screen.texture = f_platform_api__screenTextureGet();
     #endif
 
@@ -45,13 +45,13 @@ static void f_screen__init(void)
     f__screen.clipWidth = size.x;
     f__screen.clipHeight = size.y;
 
-    #if A_CONFIG_TRAIT_DESKTOP
+    #if F_CONFIG_TRAIT_DESKTOP
         g_fullScreenButton = f_button_new();
-        f_button_bindKey(g_fullScreenButton, A_KEY_F4);
+        f_button_bindKey(g_fullScreenButton, F_KEY_F4);
 
-        for(int z = 0; z < A__ZOOM_LEVELS; z++) {
+        for(int z = 0; z < F__ZOOM_LEVELS; z++) {
             g_zoomButtons[z] = f_button_new();
-            f_button_bindKey(g_zoomButtons[z], A_KEY_F1 + z);
+            f_button_bindKey(g_zoomButtons[z], F_KEY_F1 + z);
         }
     #endif
 
@@ -62,10 +62,10 @@ static void f_screen__uninit(void)
 {
     f_list_freeEx(g_stack, f_mem_free);
 
-    #if A_CONFIG_TRAIT_DESKTOP
+    #if F_CONFIG_TRAIT_DESKTOP
         f_button_free(g_fullScreenButton);
 
-        for(int z = 0; z < A__ZOOM_LEVELS; z++) {
+        for(int z = 0; z < F__ZOOM_LEVELS; z++) {
             f_button_free(g_zoomButtons[z]);
         }
     #endif
@@ -83,7 +83,7 @@ const APack f_pack__screen = {
 
 void f_screen__tick(void)
 {
-    #if A_CONFIG_TRAIT_DESKTOP
+    #if F_CONFIG_TRAIT_DESKTOP
         if(f_button_pressGetOnce(g_fullScreenButton)) {
             f_platform_api__screenFullscreenFlip();
 
@@ -92,7 +92,7 @@ void f_screen__tick(void)
                             ? "fullscreen" : "windowed");
         }
 
-        for(int z = 0; z < A__ZOOM_LEVELS; z++) {
+        for(int z = 0; z < F__ZOOM_LEVELS; z++) {
             if(f_button_pressGetOnce(g_zoomButtons[z])) {
                 int zoom = z + 1;
 
@@ -111,9 +111,9 @@ void f_screen__tick(void)
 
 void f_screen__draw(void)
 {
-    #if A_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_BUILD_DEBUG
         if(!f_list_isEmpty(g_stack)) {
-            A__FATAL("Screen target stack is not empty");
+            F__FATAL("Screen target stack is not empty");
         }
     #endif
 
@@ -122,7 +122,7 @@ void f_screen__draw(void)
 
 APixel* f_screen_pixelsGetBuffer(void)
 {
-    #if !A_CONFIG_LIB_RENDER_SOFTWARE
+    #if !F_CONFIG_LIB_RENDER_SOFTWARE
         f_platform_api__screenTextureRead(f__screen.pixels, f__screen.frame);
     #endif
 
@@ -146,12 +146,12 @@ int f_screen_sizeGetHeight(void)
 
 void f_screen_clear(void)
 {
-    #if A_CONFIG_LIB_RENDER_SOFTWARE
+    #if F_CONFIG_LIB_RENDER_SOFTWARE
         f_pixels__clear(f__screen.pixels, f__screen.frame);
     #else
         f_color_push();
 
-        f_color_blendSet(A_COLOR_BLEND_PLAIN);
+        f_color_blendSet(F_COLOR_BLEND_PLAIN);
         f_color_baseSetPixel(0);
         f_platform_api__screenClear();
 
@@ -161,11 +161,11 @@ void f_screen_clear(void)
 
 void f_screen_push(ASprite* Sprite, unsigned Frame)
 {
-    #if A_CONFIG_BUILD_DEBUG
-        if(A_FLAGS_TEST_ANY(
-            f_sprite__pixelsGet(Sprite)->flags, A_PIXELS__CONST)) {
+    #if F_CONFIG_BUILD_DEBUG
+        if(F_FLAGS_TEST_ANY(
+            f_sprite__pixelsGet(Sprite)->flags, F_PIXELS__CONST)) {
 
-            A__FATAL("f_screen_push: Const sprite");
+            F__FATAL("f_screen_push: Const sprite");
         }
     #endif
 
@@ -175,11 +175,11 @@ void f_screen_push(ASprite* Sprite, unsigned Frame)
     f__screen.sprite = Sprite;
     f__screen.frame = Frame;
 
-    #if !A_CONFIG_LIB_RENDER_SOFTWARE
+    #if !F_CONFIG_LIB_RENDER_SOFTWARE
         f__screen.texture = f_sprite__textureGet(Sprite, Frame);
         f_platform_api__screenTextureSet(f__screen.texture);
 
-        A_FLAGS_SET(f_sprite__pixelsGet(Sprite)->flags, A_PIXELS__DIRTY);
+        F_FLAGS_SET(f_sprite__pixelsGet(Sprite)->flags, F_PIXELS__DIRTY);
     #endif
 
     f_screen_clipReset();
@@ -189,20 +189,20 @@ void f_screen_pop(void)
 {
     AScreen* screen = f_list_pop(g_stack);
 
-    #if A_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_BUILD_DEBUG
         if(screen == NULL) {
-            A__FATAL("f_screen_pop: Stack is empty");
+            F__FATAL("f_screen_pop: Stack is empty");
         }
     #endif
 
-    #if A_CONFIG_LIB_RENDER_SOFTWARE
+    #if F_CONFIG_LIB_RENDER_SOFTWARE
         f_sprite__textureCommit(f__screen.sprite, f__screen.frame);
     #endif
 
     f__screen = *screen;
     f_mem_free(screen);
 
-    #if !A_CONFIG_LIB_RENDER_SOFTWARE
+    #if !F_CONFIG_LIB_RENDER_SOFTWARE
         f_platform_api__screenTextureSet(f__screen.texture);
         f_platform_api__screenClipSet(f__screen.clipX,
                                       f__screen.clipY,
@@ -233,7 +233,7 @@ void f_screen_clipSet(int X, int Y, int Width, int Height)
     f__screen.clipWidth = Width;
     f__screen.clipHeight = Height;
 
-    #if !A_CONFIG_LIB_RENDER_SOFTWARE
+    #if !F_CONFIG_LIB_RENDER_SOFTWARE
         f_platform_api__screenClipSet(X, Y, Width, Height);
     #endif
 }
@@ -275,19 +275,19 @@ void f_screen__toSprite(ASprite* Sprite, unsigned Frame)
     if(f__screen.pixels->w != spriteSize.x
         || f__screen.pixels->h != spriteSize.y) {
 
-        A__FATAL("f_screen__toSprite: Sprite is %dx%d, screen is %dx%d",
+        F__FATAL("f_screen__toSprite: Sprite is %dx%d, screen is %dx%d",
                  spriteSize.x,
                  spriteSize.y,
                  f__screen.pixels->w,
                  f__screen.pixels->h);
     }
 
-    #if A_CONFIG_LIB_RENDER_SOFTWARE
+    #if F_CONFIG_LIB_RENDER_SOFTWARE
         f_pixels__copyFrame(
             f_sprite__pixelsGet(Sprite), Frame, f__screen.pixels, 0);
     #else
         f_color_push();
-        f_color_blendSet(A_COLOR_BLEND_PLAIN);
+        f_color_blendSet(F_COLOR_BLEND_PLAIN);
         f_color_fillBlitSet(false);
 
         f_platform_api__screenTextureSet(f_sprite__textureGet(Sprite, Frame));

@@ -15,24 +15,24 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_GENERAL_MAIN_V_H
-#define A_INC_GENERAL_MAIN_V_H
+#ifndef F_INC_GENERAL_MAIN_V_H
+#define F_INC_GENERAL_MAIN_V_H
 
 #include "general/f_main.p.h"
 
-#define A_PACK__PASSES_NUM 2
+#define F_PACK__PASSES_NUM 2
 
 typedef void APackInit(void);
 typedef void APackUninit(void);
 
 typedef struct {
     const char* name;
-    APackInit* init[A_PACK__PASSES_NUM];
-    APackUninit* uninit[A_PACK__PASSES_NUM];
+    APackInit* init[F_PACK__PASSES_NUM];
+    APackUninit* uninit[F_PACK__PASSES_NUM];
 } APack;
 
 extern void f__main(void);
 
-extern void A__FATAL(const char* Format, ...) __attribute__((noreturn));
+extern void F__FATAL(const char* Format, ...) __attribute__((noreturn));
 
-#endif // A_INC_GENERAL_MAIN_V_H
+#endif // F_INC_GENERAL_MAIN_V_H

@@ -18,7 +18,7 @@
 #include "f_emscripten.v.h"
 #include <faur.v.h>
 
-#if A_CONFIG_SYSTEM_EMSCRIPTEN
+#if F_CONFIG_SYSTEM_EMSCRIPTEN
 #include <emscripten.h>
 
 void f_platform_emscripten__init(void)
@@ -34,7 +34,7 @@ void f_platform_emscripten__init(void)
             FS.mount(IDBFS, {}, prefix);
             FS.syncfs(true, function(Error) { Module.faur_fsIsReady = 1; });
         },
-        A_CONFIG_PATH_STORAGE_PREFIX
+        F_CONFIG_PATH_STORAGE_PREFIX
     );
 }
-#endif // A_CONFIG_SYSTEM_EMSCRIPTEN
+#endif // F_CONFIG_SYSTEM_EMSCRIPTEN

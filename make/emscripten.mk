@@ -1,69 +1,69 @@
 include $(FAUR_PATH)/make/global/defs.mk
 
-ifndef A_DO_BUILD
+ifndef F_DO_BUILD
 
-A_MAKE_CMD := \
-    source $(A_SDK_EMSCRIPTEN_ROOT)/emsdk_env.sh \
-    && emmake $(MAKE) -f $(firstword $(MAKEFILE_LIST)) -j8 A_DO_BUILD=1
+F_MAKE_CMD := \
+    source $(F_SDK_EMSCRIPTEN_ROOT)/emsdk_env.sh \
+    && emmake $(MAKE) -f $(firstword $(MAKEFILE_LIST)) -j8 F_DO_BUILD=1
 
 all :
-	bash -c "$(A_MAKE_CMD)"
+	bash -c "$(F_MAKE_CMD)"
 
 % :
-	bash -c "$(A_MAKE_CMD) $@"
+	bash -c "$(F_MAKE_CMD) $@"
 
 else
 
-A_CONFIG_BUILD_C_STANDARD := gnu11
-A_CONFIG_BUILD_OPT := 3
-A_CONFIG_LIB_PNG := 1
-A_CONFIG_LIB_SDL ?= 2
-A_CONFIG_LIB_SDL_TIME := 1
-A_CONFIG_PATH_STORAGE_PREFIX := /faur-idbfs/
-A_CONFIG_SCREEN_BPP := 32
-A_CONFIG_SCREEN_VSYNC ?= 1
-A_CONFIG_SYSTEM_EMSCRIPTEN := 1
-A_CONFIG_SYSTEM_LINUX := 1
-A_CONFIG_TRAIT_KEYBOARD := 1
-A_CONFIG_TRAIT_NOSLEEP := 1
+F_CONFIG_BUILD_C_STANDARD := gnu11
+F_CONFIG_BUILD_OPT := 3
+F_CONFIG_LIB_PNG := 1
+F_CONFIG_LIB_SDL ?= 2
+F_CONFIG_LIB_SDL_TIME := 1
+F_CONFIG_PATH_STORAGE_PREFIX := /faur-idbfs/
+F_CONFIG_SCREEN_BPP := 32
+F_CONFIG_SCREEN_VSYNC ?= 1
+F_CONFIG_SYSTEM_EMSCRIPTEN := 1
+F_CONFIG_SYSTEM_LINUX := 1
+F_CONFIG_TRAIT_KEYBOARD := 1
+F_CONFIG_TRAIT_NOSLEEP := 1
 
-ifeq ($(A_CONFIG_LIB_SDL), 1)
-    A_CONFIG_SCREEN_FORMAT ?= ABGR
-else ifeq ($(A_CONFIG_LIB_SDL), 2)
-    A_CONFIG_SCREEN_FORMAT ?= RGBA
+ifeq ($(F_CONFIG_LIB_SDL), 1)
+    F_CONFIG_SCREEN_FORMAT ?= ABGR
+else ifeq ($(F_CONFIG_LIB_SDL), 2)
+    F_CONFIG_SCREEN_FORMAT ?= RGBA
 endif
 
-A_BUILD_EMSCRIPTEN_LIBS := \
-    -s USE_SDL=$(A_CONFIG_LIB_SDL) \
-    -s USE_SDL_MIXER=$(A_CONFIG_LIB_SDL) \
+F_BUILD_EMSCRIPTEN_LIBS := \
+    -s USE_SDL=$(F_CONFIG_LIB_SDL) \
+    -s USE_SDL_MIXER=$(F_CONFIG_LIB_SDL) \
     -s USE_ZLIB=1 \
     -s USE_LIBPNG=1 \
 
-ifdef A_CONFIG_SYSTEM_EMSCRIPTEN_TOTAL_MEMORY
-    A_BUILD_EMSCRIPTEN_LIBS += -s TOTAL_MEMORY=$(A_CONFIG_SYSTEM_EMSCRIPTEN_TOTAL_MEMORY)
+ifdef F_CONFIG_SYSTEM_EMSCRIPTEN_TOTAL_MEMORY
+    F_BUILD_EMSCRIPTEN_LIBS += -s TOTAL_MEMORY=$(F_CONFIG_SYSTEM_EMSCRIPTEN_TOTAL_MEMORY)
 endif
 
-A_BUILD_EMSCRIPTEN_EMBED := \
+F_BUILD_EMSCRIPTEN_EMBED := \
     --use-preload-plugins \
-    $(addprefix --preload-file $(A_DIR_ROOT)/, \
-        $(join $(A_CONFIG_PATH_EMBED_EMSCRIPTEN), \
-               $(addprefix @, $(A_CONFIG_PATH_EMBED_EMSCRIPTEN)))) \
+    $(addprefix --preload-file $(F_DIR_ROOT)/, \
+        $(join $(F_CONFIG_PATH_EMBED_EMSCRIPTEN), \
+               $(addprefix @, $(F_CONFIG_PATH_EMBED_EMSCRIPTEN)))) \
 
-A_CONFIG_APP_NAME_SUFFIX := .html
+F_CONFIG_APP_NAME_SUFFIX := .html
 
-A_CONFIG_BUILD_LIBS += \
-    -O$(A_CONFIG_BUILD_OPT) \
-    $(A_BUILD_EMSCRIPTEN_LIBS) \
-    $(A_BUILD_EMSCRIPTEN_EMBED) \
+F_CONFIG_BUILD_LIBS += \
+    -O$(F_CONFIG_BUILD_OPT) \
+    $(F_BUILD_EMSCRIPTEN_LIBS) \
+    $(F_BUILD_EMSCRIPTEN_EMBED) \
 
-A_CONFIG_BUILD_CFLAGS += \
-    $(A_BUILD_EMSCRIPTEN_LIBS) \
+F_CONFIG_BUILD_CFLAGS += \
+    $(F_BUILD_EMSCRIPTEN_LIBS) \
     -Wno-dollar-in-identifier-extension \
     -Wno-gnu-zero-variadic-macro-arguments \
 
 include $(FAUR_PATH)/make/global/rules.mk
 
 run :
-	cd $(A_DIR_BIN) && $(FAUR_PATH)/bin/faur-runweb $(A_FILE_BIN)
+	cd $(F_DIR_BIN) && $(FAUR_PATH)/bin/faur-runweb $(F_FILE_BIN)
 
 endif

@@ -15,9 +15,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_PLATFORM_GRAPHICS_SDL_DRAW_V_H
-#define A_INC_PLATFORM_GRAPHICS_SDL_DRAW_V_H
+#ifndef F_INC_PLATFORM_GRAPHICS_SDL_DRAW_V_H
+#define F_INC_PLATFORM_GRAPHICS_SDL_DRAW_V_H
 
 #include "platform/graphics/f_sdl_draw.p.h"
 
-#endif // A_INC_PLATFORM_GRAPHICS_SDL_DRAW_V_H
+#endif // F_INC_PLATFORM_GRAPHICS_SDL_DRAW_V_H

@@ -31,11 +31,11 @@ AGrid* f_grid_new(AFix Width, AFix Height, AFix MaxObjectDim)
 
     g->shift = 0;
 
-    while((A_FIX_ONE << g->shift) < MaxObjectDim) {
+    while((F_FIX_ONE << g->shift) < MaxObjectDim) {
         g->shift++;
     }
 
-    AFix cellDim = A_FIX_ONE << g->shift;
+    AFix cellDim = F_FIX_ONE << g->shift;
 
     g->w = f_fix_toInt((Width + cellDim - 1) >> g->shift);
     g->h = f_fix_toInt((Height + cellDim - 1) >> g->shift);
@@ -100,7 +100,7 @@ void f_grid_itemCoordsSet(const AGrid* Grid, AGridItem* Item, void* Context, AVe
     int cellY = f_fix_toInt(Coords.y >> Grid->shift);
 
     AVectorInt cellStart, cellEnd;
-    AFix cellDim = A_FIX_ONE << Grid->shift;
+    AFix cellDim = F_FIX_ONE << Grid->shift;
     AVectorFix cellOffset = {Coords.x & (cellDim - 1),
                              Coords.y & (cellDim - 1)};
 

@@ -15,8 +15,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_ECS_COLLECTION_P_H
-#define A_INC_ECS_COLLECTION_P_H
+#ifndef F_INC_ECS_COLLECTION_P_H
+#define F_INC_ECS_COLLECTION_P_H
 
 #include "general/f_system_includes.h"
 
@@ -32,4 +32,4 @@ extern void f_collection_clear(ACollection* Collection);
 extern void f_collection_muteInc(ACollection* Collection);
 extern void f_collection_muteDec(ACollection* Collection);
 
-#endif // A_INC_ECS_COLLECTION_P_H
+#endif // F_INC_ECS_COLLECTION_P_H

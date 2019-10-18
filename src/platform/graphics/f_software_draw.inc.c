@@ -17,40 +17,40 @@
 
 #include <faur.v.h>
 
-#if A__COMPILE_INC
-static void A__FUNC_NAME(pixel)(int X, int Y)
+#if F__COMPILE_INC
+static void F__FUNC_NAME(pixel)(int X, int Y)
 {
-    A__BLEND_SETUP;
+    F__BLEND_SETUP;
 
-    A__PIXEL_DRAW(f_screen__bufferGetFrom(X, Y));
+    F__PIXEL_DRAW(f_screen__bufferGetFrom(X, Y));
 }
 
-static void A__FUNC_NAME(hline)(int X1, int X2, int Y)
+static void F__FUNC_NAME(hline)(int X1, int X2, int Y)
 {
-    A__BLEND_SETUP;
+    F__BLEND_SETUP;
 
     APixel* dst = f_screen__bufferGetFrom(X1, Y);
 
     for(int i = X2 - X1 + 1; i--; dst++) {
-        A__PIXEL_DRAW(dst);
+        F__PIXEL_DRAW(dst);
     }
 }
 
-static void A__FUNC_NAME(vline)(int X, int Y1, int Y2)
+static void F__FUNC_NAME(vline)(int X, int Y1, int Y2)
 {
-    A__BLEND_SETUP;
+    F__BLEND_SETUP;
 
     const int screenw = f__screen.pixels->w;
     APixel* dst = f_screen__bufferGetFrom(X, Y1);
 
     for(int i = Y2 - Y1 + 1; i--; dst += screenw) {
-        A__PIXEL_DRAW(dst);
+        F__PIXEL_DRAW(dst);
     }
 }
 
-static void A__FUNC_NAME(line)(int X1, int Y1, int X2, int Y2)
+static void F__FUNC_NAME(line)(int X1, int Y1, int X2, int Y2)
 {
-    A__BLEND_SETUP;
+    F__BLEND_SETUP;
 
     const int xmin = f_math_min(X1, X2);
     const int xmax = f_math_max(X1, X2);
@@ -58,9 +58,9 @@ static void A__FUNC_NAME(line)(int X1, int Y1, int X2, int Y2)
     const int ymax = f_math_max(Y1, Y2);
 
     if(X1 == X2) {
-        A__FUNC_NAME(vline)(X1, ymin, ymax);
+        F__FUNC_NAME(vline)(X1, ymin, ymax);
     } else if(Y1 == Y2) {
-        A__FUNC_NAME(hline)(xmin, xmax, Y1);
+        F__FUNC_NAME(hline)(xmin, xmax, Y1);
     } else {
         const int deltax = xmax - xmin;
         const int deltay = ymax - ymin;
@@ -83,8 +83,8 @@ static void A__FUNC_NAME(line)(int X1, int Y1, int X2, int Y2)
         APixel* dst2 = f_screen__bufferGetFrom(X2, Y2);
 
         for(int i = (denominator + 1) / 2; i--; ) {
-            A__PIXEL_DRAW(dst1);
-            A__PIXEL_DRAW(dst2);
+            F__PIXEL_DRAW(dst1);
+            F__PIXEL_DRAW(dst2);
 
             numerator += numeratorinc;
 
@@ -106,31 +106,31 @@ static void A__FUNC_NAME(line)(int X1, int Y1, int X2, int Y2)
         }
 
         if((denominator & 1) == 0) {
-            A__PIXEL_DRAW(dst1);
+            F__PIXEL_DRAW(dst1);
         }
     }
 }
 
-static void A__FUNC_NAME(rectangle_nofill)(int X, int Y, int Width, int Height)
+static void F__FUNC_NAME(rectangle_nofill)(int X, int Y, int Width, int Height)
 {
-    A__FUNC_NAME(hline)(X, X + Width - 1, Y);
+    F__FUNC_NAME(hline)(X, X + Width - 1, Y);
 
     if(Height > 1) {
-        A__FUNC_NAME(hline)(X, X + Width - 1, Y + Height - 1);
+        F__FUNC_NAME(hline)(X, X + Width - 1, Y + Height - 1);
 
         if(Height > 2) {
-            A__FUNC_NAME(vline)(X, Y + 1, Y + Height - 2);
+            F__FUNC_NAME(vline)(X, Y + 1, Y + Height - 2);
 
             if(Width > 1) {
-                A__FUNC_NAME(vline)(X + Width - 1, Y + 1, Y + Height - 2);
+                F__FUNC_NAME(vline)(X + Width - 1, Y + 1, Y + Height - 2);
             }
         }
     }
 }
 
-static void A__FUNC_NAME(rectangle_fill)(int X, int Y, int Width, int Height)
+static void F__FUNC_NAME(rectangle_fill)(int X, int Y, int Width, int Height)
 {
-    A__BLEND_SETUP;
+    F__BLEND_SETUP;
 
     APixel* pixels = f_screen__bufferGetFrom(X, Y);
     const int screenw = f__screen.pixels->w;
@@ -139,14 +139,14 @@ static void A__FUNC_NAME(rectangle_fill)(int X, int Y, int Width, int Height)
         APixel* dst = pixels;
 
         for(int j = Width; j--; dst++) {
-            A__PIXEL_DRAW(dst);
+            F__PIXEL_DRAW(dst);
         }
     }
 }
 
-static void A__FUNC_NAME(circle_noclip_nofill)(int X, int Y, int Radius)
+static void F__FUNC_NAME(circle_noclip_nofill)(int X, int Y, int Radius)
 {
-    A__BLEND_SETUP;
+    F__BLEND_SETUP;
 
     // Using inclusive coords
     if(--Radius < 0) {
@@ -183,14 +183,14 @@ static void A__FUNC_NAME(circle_noclip_nofill)(int X, int Y, int Radius)
     APixel* oct8 = pixels + q4Y * width + q4X + Radius;
 
     while(x > y) {
-        A__PIXEL_DRAW(oct1);
-        A__PIXEL_DRAW(oct2);
-        A__PIXEL_DRAW(oct3);
-        A__PIXEL_DRAW(oct4);
-        A__PIXEL_DRAW(oct5);
-        A__PIXEL_DRAW(oct6);
-        A__PIXEL_DRAW(oct7);
-        A__PIXEL_DRAW(oct8);
+        F__PIXEL_DRAW(oct1);
+        F__PIXEL_DRAW(oct2);
+        F__PIXEL_DRAW(oct3);
+        F__PIXEL_DRAW(oct4);
+        F__PIXEL_DRAW(oct5);
+        F__PIXEL_DRAW(oct6);
+        F__PIXEL_DRAW(oct7);
+        F__PIXEL_DRAW(oct8);
 
         oct1 -= width;
         oct2 += 1;
@@ -220,16 +220,16 @@ static void A__FUNC_NAME(circle_noclip_nofill)(int X, int Y, int Radius)
     }
 
     if(x == y) {
-        A__PIXEL_DRAW(oct1);
-        A__PIXEL_DRAW(oct3);
-        A__PIXEL_DRAW(oct5);
-        A__PIXEL_DRAW(oct7);
+        F__PIXEL_DRAW(oct1);
+        F__PIXEL_DRAW(oct3);
+        F__PIXEL_DRAW(oct5);
+        F__PIXEL_DRAW(oct7);
     }
 
-    #undef A__PIXEL_DRAW2
+    #undef F__PIXEL_DRAW2
 }
 
-static void A__FUNC_NAME(circle_noclip_fill)(int X, int Y, int Radius)
+static void F__FUNC_NAME(circle_noclip_fill)(int X, int Y, int Radius)
 {
     // Using inclusive coords
     if(--Radius < 0) {
@@ -237,7 +237,7 @@ static void A__FUNC_NAME(circle_noclip_fill)(int X, int Y, int Radius)
     }
 
     if(Radius == 0) {
-        A__FUNC_NAME(rectangle_fill)(X - 1, Y - 1, 2, 2);
+        F__FUNC_NAME(rectangle_fill)(X - 1, Y - 1, 2, 2);
 
         return;
     }
@@ -256,8 +256,8 @@ static void A__FUNC_NAME(circle_noclip_fill)(int X, int Y, int Radius)
     int y4 = Y + x;
 
     while(x > y) {
-        A__FUNC_NAME(hline)(x1, x2, y1);
-        A__FUNC_NAME(hline)(x1, x2, y2);
+        F__FUNC_NAME(hline)(x1, x2, y1);
+        F__FUNC_NAME(hline)(x1, x2, y2);
 
         error += 2 * y + 1; // (y+1)^2 = y^2 + 2y + 1
         y++;
@@ -268,8 +268,8 @@ static void A__FUNC_NAME(circle_noclip_fill)(int X, int Y, int Radius)
         x4++;
 
         if(error > 0) { // check if x^2 + y^2 > r^2
-            A__FUNC_NAME(hline)(x3, x4, y3);
-            A__FUNC_NAME(hline)(x3, x4, y4);
+            F__FUNC_NAME(hline)(x3, x4, y3);
+            F__FUNC_NAME(hline)(x3, x4, y4);
 
             error += -2 * x + 1; // (x-1)^2 = x^2 - 2x + 1
             x--;
@@ -282,14 +282,14 @@ static void A__FUNC_NAME(circle_noclip_fill)(int X, int Y, int Radius)
     }
 
     if(x == y) {
-        A__FUNC_NAME(hline)(x3, x4, y3);
-        A__FUNC_NAME(hline)(x3, x4, y4);
+        F__FUNC_NAME(hline)(x3, x4, y3);
+        F__FUNC_NAME(hline)(x3, x4, y4);
     }
 }
 
-static void A__FUNC_NAME(circle_clip_nofill)(int X, int Y, int Radius)
+static void F__FUNC_NAME(circle_clip_nofill)(int X, int Y, int Radius)
 {
-    A__BLEND_SETUP;
+    F__BLEND_SETUP;
 
     // Using inclusive coords
     if(--Radius < 0) {
@@ -477,7 +477,7 @@ static void A__FUNC_NAME(circle_clip_nofill)(int X, int Y, int Radius)
         );
 }
 
-static void A__FUNC_NAME(circle_clip_fill)(int X, int Y, int Radius)
+static void F__FUNC_NAME(circle_clip_fill)(int X, int Y, int Radius)
 {
     if(--Radius <= 0) {
         if(Radius == 0) {
@@ -532,7 +532,7 @@ static void A__FUNC_NAME(circle_clip_fill)(int X, int Y, int Radius)
     }
 }
 
-#undef A__BLEND
-#undef A__BLEND_SETUP
-#undef A__PIXEL_PARAMS
-#endif // A__COMPILE_INC
+#undef F__BLEND
+#undef F__BLEND_SETUP
+#undef F__PIXEL_PARAMS
+#endif // F__COMPILE_INC

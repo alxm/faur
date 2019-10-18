@@ -18,7 +18,7 @@
 #include "f_mem.v.h"
 #include <faur.v.h>
 
-#if A_CONFIG_BUILD_DEBUG_ALLOC
+#if F_CONFIG_BUILD_DEBUG_ALLOC
 size_t f_mem__tally, f_mem__top;
 
 static inline void tallyAdd(size_t Size)
@@ -30,12 +30,12 @@ static inline void tallyAdd(size_t Size)
 
 void* f_mem_malloc(size_t Size)
 {
-    #if A_CONFIG_BUILD_DEBUG_ALLOC
+    #if F_CONFIG_BUILD_DEBUG_ALLOC
         size_t total = Size + sizeof(AMaxMemAlignType);
         AMaxMemAlignType* ptr = malloc(total);
 
         if(ptr == NULL) {
-            A__FATAL("malloc(%u) failed", total);
+            F__FATAL("malloc(%u) failed", total);
         }
 
         ptr->u_size = total;
@@ -47,7 +47,7 @@ void* f_mem_malloc(size_t Size)
         void* ptr = malloc(Size);
 
         if(ptr == NULL) {
-            A__FATAL("malloc(%u) failed", Size);
+            F__FATAL("malloc(%u) failed", Size);
         }
 
         return ptr;
@@ -56,12 +56,12 @@ void* f_mem_malloc(size_t Size)
 
 void* f_mem_zalloc(size_t Size)
 {
-    #if A_CONFIG_BUILD_DEBUG_ALLOC
+    #if F_CONFIG_BUILD_DEBUG_ALLOC
         size_t total = Size + sizeof(AMaxMemAlignType);
         AMaxMemAlignType* ptr = calloc(1, total);
 
         if(ptr == NULL) {
-            A__FATAL("calloc(1, %u) failed", total);
+            F__FATAL("calloc(1, %u) failed", total);
         }
 
         ptr->u_size = total;
@@ -73,7 +73,7 @@ void* f_mem_zalloc(size_t Size)
         void* ptr = calloc(1, Size);
 
         if(ptr == NULL) {
-            A__FATAL("calloc(1, %u) failed", Size);
+            F__FATAL("calloc(1, %u) failed", Size);
         }
 
         return ptr;
@@ -95,7 +95,7 @@ void f_mem_free(void* Buffer)
         return;
     }
 
-    #if A_CONFIG_BUILD_DEBUG_ALLOC
+    #if F_CONFIG_BUILD_DEBUG_ALLOC
         AMaxMemAlignType* header = (AMaxMemAlignType*)Buffer - 1;
 
         f_mem__tally -= header->u_size;

@@ -15,8 +15,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_COLLISION_COLLIDE_P_H
-#define A_INC_COLLISION_COLLIDE_P_H
+#ifndef F_INC_COLLISION_COLLIDE_P_H
+#define F_INC_COLLISION_COLLIDE_P_H
 
 #include "general/f_system_includes.h"
 
@@ -28,4 +28,4 @@ extern bool f_collide_circleAndCirclef(AFix X1, AFix Y1, AFix R1, AFix X2, AFix 
 extern bool f_collide_pointInBox(int X, int Y, int BoxX, int BoxY, int BoxW, int BoxH);
 extern bool f_collide_pointInCircle(int X, int Y, int CircleX, int CircleY, int CircleR);
 
-#endif // A_INC_COLLISION_COLLIDE_P_H
+#endif // F_INC_COLLISION_COLLIDE_P_H

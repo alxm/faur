@@ -88,10 +88,10 @@ static inline const ABlock* blockGet(const ABlock* Block, unsigned LineNumber)
 
 ABlock* f_block_new(const char* File)
 {
-    AFile* f = f_file_new(File, A_FILE_READ);
+    AFile* f = f_file_new(File, F_FILE_READ);
 
     if(f == NULL) {
-        A__FATAL("f_block_new(%s): Cannot open file", File);
+        F__FATAL("f_block_new(%s): Cannot open file", File);
     }
 
     ABlock* root = blockNew("");
@@ -112,7 +112,7 @@ ABlock* f_block_new(const char* File)
         int currentIndent = indentCharsNum / 4;
 
         if((indentCharsNum % 4) != 0 || currentIndent > lastIndent + 1) {
-            A__FATAL("f_block_new: Bad indent in %s:%d <%s>",
+            F__FATAL("f_block_new: Bad indent in %s:%d <%s>",
                      File,
                      f_file_lineNumberGet(f),
                      textStart);
@@ -146,7 +146,7 @@ ABlock* f_block_new(const char* File)
 void f_block_free(ABlock* Block)
 {
     if(!f_str_equal(Block->text, "")) {
-        A__FATAL("f_block_free: Must call on root block");
+        F__FATAL("f_block_free: Must call on root block");
     }
 
     blockFree(Block);

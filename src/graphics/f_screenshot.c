@@ -18,8 +18,8 @@
 #include "f_screenshot.v.h"
 #include <faur.v.h>
 
-#if A_CONFIG_LIB_PNG
-#define A__SCREENSHOTS_LIMIT 99999
+#if F_CONFIG_LIB_PNG
+#define F__SCREENSHOTS_LIMIT 99999
 
 static bool g_isInit;
 static char* g_filePrefix;
@@ -31,7 +31,7 @@ static AButton* g_button;
 static bool lazy_init(void)
 {
     // Only interested in the last file, to get the number from its name
-    ADir* dir = f_dir_new(A_CONFIG_DIR_SCREENSHOTS);
+    ADir* dir = f_dir_new(F_CONFIG_DIR_SCREENSHOTS);
     APath* entry = f_list_getLast(f_dir_entriesGet(dir));
 
     if(entry == NULL) {
@@ -63,23 +63,23 @@ static bool lazy_init(void)
 
     if(g_isInit) {
         g_filePrefix = f_str_dup(f_str__fmt512("%s/%s-",
-                                               A_CONFIG_DIR_SCREENSHOTS,
-                                               A_CONFIG_APP_NAME));
+                                               F_CONFIG_DIR_SCREENSHOTS,
+                                               F_CONFIG_APP_NAME));
 
         g_title = f_str_dup(f_str__fmt512(
             "%s %s by %s",
-            A_CONFIG_APP_NAME,
-            A_CONFIG_APP_VERSION_STRING,
-            A_CONFIG_APP_AUTHOR));
+            F_CONFIG_APP_NAME,
+            F_CONFIG_APP_VERSION_STRING,
+            F_CONFIG_APP_AUTHOR));
 
         g_description = f_str_dup(f_str__fmt512(
             "%s %s by %s, built %s. Using Faur %s %s.",
-            A_CONFIG_APP_NAME,
-            A_CONFIG_APP_VERSION_STRING,
-            A_CONFIG_APP_AUTHOR,
-            A_CONFIG_BUILD_TIMESTAMP,
-            A_CONFIG_BUILD_UID,
-            A_CONFIG_BUILD_GIT_HASH));
+            F_CONFIG_APP_NAME,
+            F_CONFIG_APP_VERSION_STRING,
+            F_CONFIG_APP_AUTHOR,
+            F_CONFIG_BUILD_TIMESTAMP,
+            F_CONFIG_BUILD_UID,
+            F_CONFIG_BUILD_GIT_HASH));
 
         if(g_filePrefix && g_title && g_description) {
             // No spaces in file name
@@ -102,8 +102,8 @@ static void takeScreenshot(void)
         return;
     }
 
-    if(++g_screenshotNumber > A__SCREENSHOTS_LIMIT) {
-        f_out__error("%d screenshots limit exceeded", A__SCREENSHOTS_LIMIT);
+    if(++g_screenshotNumber > F__SCREENSHOTS_LIMIT) {
+        f_out__error("%d screenshots limit exceeded", F__SCREENSHOTS_LIMIT);
         return;
     }
 
@@ -112,7 +112,7 @@ static void takeScreenshot(void)
 
     f_out__info("Saving screenshot '%s'", name);
 
-    #if !A_CONFIG_LIB_RENDER_SOFTWARE
+    #if !F_CONFIG_LIB_RENDER_SOFTWARE
         f_platform_api__screenTextureRead(f__screen.pixels, f__screen.frame);
     #endif
 
@@ -123,7 +123,7 @@ static void takeScreenshot(void)
 void f_screenshot__init(void)
 {
     g_button = f_button_new();
-    f_button_bindKey(g_button, A_KEY_F12);
+    f_button_bindKey(g_button, F_KEY_F12);
 }
 
 void f_screenshot__uninit(void)
@@ -156,10 +156,10 @@ void f_screenshot_take(void)
 {
     takeScreenshot();
 }
-#else // !A_CONFIG_LIB_PNG
+#else // !F_CONFIG_LIB_PNG
 const APack f_pack__screenshot;
 
 void f_screenshot__tick(void)
 {
 }
-#endif // !A_CONFIG_LIB_PNG
+#endif // !F_CONFIG_LIB_PNG

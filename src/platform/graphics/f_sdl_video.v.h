@@ -15,23 +15,23 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_PLATFORM_GRAPHICS_SDL_VIDEO_V_H
-#define A_INC_PLATFORM_GRAPHICS_SDL_VIDEO_V_H
+#ifndef F_INC_PLATFORM_GRAPHICS_SDL_VIDEO_V_H
+#define F_INC_PLATFORM_GRAPHICS_SDL_VIDEO_V_H
 
 #include "platform/graphics/f_sdl_video.p.h"
 
-#if A_CONFIG_LIB_SDL == 2
-    #if A_CONFIG_SCREEN_BPP == 16
-        #if A_CONFIG_LIB_RENDER_SOFTWARE
-            #define A_SDL__PIXEL_FORMAT SDL_PIXELFORMAT_RGB565
-        #elif A_CONFIG_LIB_RENDER_SDL
-            #define A_SDL__PIXEL_FORMAT SDL_PIXELFORMAT_RGBA5551
+#if F_CONFIG_LIB_SDL == 2
+    #if F_CONFIG_SCREEN_BPP == 16
+        #if F_CONFIG_LIB_RENDER_SOFTWARE
+            #define F_SDL__PIXEL_FORMAT SDL_PIXELFORMAT_RGB565
+        #elif F_CONFIG_LIB_RENDER_SDL
+            #define F_SDL__PIXEL_FORMAT SDL_PIXELFORMAT_RGBA5551
         #endif
-    #elif A_CONFIG_SCREEN_BPP == 32
-        #if A_CONFIG_LIB_RENDER_SOFTWARE
-            #define A_SDL__PIXEL_FORMAT SDL_PIXELFORMAT_RGBX8888
-        #elif A_CONFIG_LIB_RENDER_SDL
-            #define A_SDL__PIXEL_FORMAT SDL_PIXELFORMAT_RGBA8888
+    #elif F_CONFIG_SCREEN_BPP == 32
+        #if F_CONFIG_LIB_RENDER_SOFTWARE
+            #define F_SDL__PIXEL_FORMAT SDL_PIXELFORMAT_RGBX8888
+        #elif F_CONFIG_LIB_RENDER_SDL
+            #define F_SDL__PIXEL_FORMAT SDL_PIXELFORMAT_RGBA8888
         #endif
     #endif
 #endif
@@ -42,4 +42,4 @@ extern void f_platform_sdl_video__uninit(void);
 extern int f_platform_sdl_video__pixelBlendToSdlBlend(void);
 extern uint8_t f_platform_sdl_video__pixelAlphaToSdlAlpha(void);
 
-#endif // A_INC_PLATFORM_GRAPHICS_SDL_VIDEO_V_H
+#endif // F_INC_PLATFORM_GRAPHICS_SDL_VIDEO_V_H

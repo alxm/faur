@@ -18,7 +18,7 @@
 #include "f_dir.v.h"
 #include <faur.v.h>
 
-#if !A_CONFIG_SYSTEM_GAMEBUINO
+#if !F_CONFIG_SYSTEM_GAMEBUINO
 #include <dirent.h>
 #include <sys/stat.h>
 
@@ -66,7 +66,7 @@ static AList* dirReal(APath* Path)
     DIR* dir = opendir(path);
 
     if(dir == NULL) {
-        #if A_CONFIG_SYSTEM_LINUX
+        #if F_CONFIG_SYSTEM_LINUX
             int result = mkdir(path, S_IRWXU);
         #else
             int result = mkdir(path);
@@ -81,7 +81,7 @@ static AList* dirReal(APath* Path)
         dir = opendir(path);
 
         if(dir != NULL) {
-            f_path__flagsSet(Path, A_PATH_DIR | A_PATH_REAL);
+            f_path__flagsSet(Path, F_PATH_DIR | F_PATH_REAL);
         }
     }
 
@@ -125,16 +125,16 @@ ADir* f_dir_new(const char* Path)
     AList* files = NULL;
     APath* path = f_path_new(Path);
 
-    if(f_path_test(path, A_PATH_DIR | A_PATH_REAL)) {
+    if(f_path_test(path, F_PATH_DIR | F_PATH_REAL)) {
         files = dirReal(path);
-    } else if(f_path_test(path, A_PATH_DIR | A_PATH_EMBEDDED)) {
+    } else if(f_path_test(path, F_PATH_DIR | F_PATH_EMBEDDED)) {
         files = dirEmbedded(path);
     } else {
         files = dirReal(path);
     }
 
     if(files == NULL) {
-        A__FATAL("f_dir_new(%s): Cannot open dir", Path);
+        F__FATAL("f_dir_new(%s): Cannot open dir", Path);
     }
 
     ADir* d = f_mem_malloc(sizeof(ADir));
@@ -166,4 +166,4 @@ const AList* f_dir_entriesGet(const ADir* Dir)
 {
     return Dir->files;
 }
-#endif // !A_CONFIG_SYSTEM_GAMEBUINO
+#endif // !F_CONFIG_SYSTEM_GAMEBUINO

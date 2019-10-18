@@ -28,9 +28,9 @@ struct AStrBuilder {
 
 AStrBuilder* f_strbuilder_new(size_t Bytes)
 {
-    #if A_CONFIG_BUILD_DEBUG
+    #if F_CONFIG_BUILD_DEBUG
         if(Bytes == 0) {
-            A__FATAL("f_strbuilder_new: Invalid size 0");
+            F__FATAL("f_strbuilder_new: Invalid size 0");
         }
     #endif
 

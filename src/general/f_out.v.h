@@ -15,29 +15,29 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_GENERAL_OUT_V_H
-#define A_INC_GENERAL_OUT_V_H
+#ifndef F_INC_GENERAL_OUT_V_H
+#define F_INC_GENERAL_OUT_V_H
 
 #include "general/f_out.p.h"
 
 typedef enum {
-    A_OUT__SOURCE_INVALID = -1,
-    A_OUT__SOURCE_FAUR,
-    A_OUT__SOURCE_APP,
-    A_OUT__SOURCE_NUM
+    F_OUT__SOURCE_INVALID = -1,
+    F_OUT__SOURCE_FAUR,
+    F_OUT__SOURCE_APP,
+    F_OUT__SOURCE_NUM
 } AOutSource;
 
 typedef enum {
-    A_OUT__TYPE_INVALID = -1,
-    A_OUT__TYPE_INFO,
-    A_OUT__TYPE_WARNING,
-    A_OUT__TYPE_ERROR,
-    A_OUT__TYPE_STATE,
-    A_OUT__TYPE_FATAL,
-    A_OUT__TYPE_NUM
+    F_OUT__TYPE_INVALID = -1,
+    F_OUT__TYPE_INFO,
+    F_OUT__TYPE_WARNING,
+    F_OUT__TYPE_ERROR,
+    F_OUT__TYPE_STATE,
+    F_OUT__TYPE_FATAL,
+    F_OUT__TYPE_NUM
 } AOutType;
 
-#if A_CONFIG_OUTPUT_ENABLED
+#if F_CONFIG_OUTPUT_ENABLED
     extern void f_out__info(const char* Format, ...);
     extern void f_out__warning(const char* Format, ...);
     extern void f_out__error(const char* Format, ...);
@@ -51,4 +51,4 @@ typedef enum {
     #define f_out__state(...)
 #endif
 
-#endif // A_INC_GENERAL_OUT_V_H
+#endif // F_INC_GENERAL_OUT_V_H

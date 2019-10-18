@@ -15,8 +15,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef A_INC_MEMORY_MEM_P_H
-#define A_INC_MEMORY_MEM_P_H
+#ifndef F_INC_MEMORY_MEM_P_H
+#define F_INC_MEMORY_MEM_P_H
 
 #include "general/f_system_includes.h"
 
@@ -25,4 +25,4 @@ extern void* f_mem_zalloc(size_t Size);
 extern void* f_mem_dup(const void* Buffer, size_t Size);
 extern void f_mem_free(void* Buffer);
 
-#endif // A_INC_MEMORY_MEM_P_H
+#endif // F_INC_MEMORY_MEM_P_H
