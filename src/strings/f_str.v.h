@@ -18,8 +18,8 @@
 #ifndef A_INC_STRINGS_STR_V_H
 #define A_INC_STRINGS_STR_V_H
 
-#include "strings/a_str.p.h"
+#include "strings/f_str.p.h"
 
-extern const char* a_str__fmt512(const char* Format, ...);
+extern const char* f_str__fmt512(const char* Format, ...);
 
 #endif // A_INC_STRINGS_STR_V_H

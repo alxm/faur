@@ -15,7 +15,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a_system.v.h"
+#include "f_system.v.h"
 #include <faur.v.h>
 
 #if A_CONFIG_ECS_ENABLED
@@ -29,15 +29,15 @@ struct ASystem {
 
 static ASystem g_systems[A_CONFIG_ECS_SYS_NUM];
 
-void a_system__uninit(void)
+void f_system__uninit(void)
 {
     for(unsigned s = A_CONFIG_ECS_SYS_NUM; s--; ) {
-        a_list_free(g_systems[s].entities);
-        a_bitfield_free(g_systems[s].componentBits);
+        f_list_free(g_systems[s].entities);
+        f_bitfield_free(g_systems[s].componentBits);
     }
 }
 
-ASystem* a_system__get(int SystemIndex)
+ASystem* f_system__get(int SystemIndex)
 {
     #if A_CONFIG_BUILD_DEBUG
         if(SystemIndex < 0 || SystemIndex >= A_CONFIG_ECS_SYS_NUM) {
@@ -52,11 +52,11 @@ ASystem* a_system__get(int SystemIndex)
     return &g_systems[SystemIndex];
 }
 
-void a_system_new(int SystemIndex, ASystemHandler* Handler, ASystemSort* Compare, bool OnlyActiveEntities)
+void f_system_new(int SystemIndex, ASystemHandler* Handler, ASystemSort* Compare, bool OnlyActiveEntities)
 {
     #if A_CONFIG_BUILD_DEBUG
         if(g_systems[SystemIndex].entities != NULL) {
-            A__FATAL("a_system_new(%d): Already declared", SystemIndex);
+            A__FATAL("f_system_new(%d): Already declared", SystemIndex);
         }
     #endif
 
@@ -64,32 +64,32 @@ void a_system_new(int SystemIndex, ASystemHandler* Handler, ASystemSort* Compare
 
     system->handler = Handler;
     system->compare = Compare;
-    system->entities = a_list_new();
-    system->componentBits = a_bitfield_new(A_CONFIG_ECS_COM_NUM);
+    system->entities = f_list_new();
+    system->componentBits = f_bitfield_new(A_CONFIG_ECS_COM_NUM);
     system->onlyActiveEntities = OnlyActiveEntities;
 }
 
-void a_system_add(int SystemIndex, int ComponentIndex)
+void f_system_add(int SystemIndex, int ComponentIndex)
 {
-    ASystem* system = a_system__get(SystemIndex);
+    ASystem* system = f_system__get(SystemIndex);
 
-    a_bitfield_set(system->componentBits, (unsigned)ComponentIndex);
+    f_bitfield_set(system->componentBits, (unsigned)ComponentIndex);
 }
 
-void a_system_run(int SystemIndex)
+void f_system_run(int SystemIndex)
 {
-    ASystem* system = a_system__get(SystemIndex);
+    ASystem* system = f_system__get(SystemIndex);
 
     if(system->compare) {
-        a_list_sort(system->entities, (AListCompare*)system->compare);
+        f_list_sort(system->entities, (AListCompare*)system->compare);
     }
 
     if(system->onlyActiveEntities) {
         A_LIST_ITERATE(system->entities, AEntity*, entity) {
-            if(a_entity_activeGet(entity)) {
+            if(f_entity_activeGet(entity)) {
                 system->handler(entity);
             } else {
-                a_entity__systemsRemoveFromActive(entity);
+                f_entity__systemsRemoveFromActive(entity);
             }
         }
     } else {
@@ -98,20 +98,20 @@ void a_system_run(int SystemIndex)
         }
     }
 
-    a_ecs__flushEntitiesFromSystems();
+    f_ecs__flushEntitiesFromSystems();
 }
 
-AListNode* a_system__entityAdd(const ASystem* System, AEntity* Entity)
+AListNode* f_system__entityAdd(const ASystem* System, AEntity* Entity)
 {
-    return a_list_addLast(System->entities, Entity);
+    return f_list_addLast(System->entities, Entity);
 }
 
-const ABitfield* a_system__componentBitsGet(const ASystem* System)
+const ABitfield* f_system__componentBitsGet(const ASystem* System)
 {
     return System->componentBits;
 }
 
-bool a_system__isActiveOnly(const ASystem* System)
+bool f_system__isActiveOnly(const ASystem* System)
 {
     return System->onlyActiveEntities;
 }

@@ -39,7 +39,7 @@ A_FILES_EMBED_BIN := $(shell $(FAUR_PATH)/bin/faur-gather -q $(A_DIR_ROOT) $(A_C
 A_FILES_SRC_GEN_H := $(A_FILES_EMBED_BIN:%=$(A_DIR_GEN_EMBED)/%.h)
 
 #
-# Implements a_embed__populate
+# Implements f_embed__populate
 #
 A_FILES_SRC_GEN_EMBED_DOT_C := $(A_DIR_GEN_EMBED)/embed.c
 
@@ -127,11 +127,11 @@ $(A_FILE_BIN_TARGET) : $(A_FILES_OBJ) $(FAUR_FILE_PUBLIC_FAUR_LIB)
 
 $(A_DIR_GEN_EMBED)/%.h : $(A_DIR_ROOT)/% $(FAUR_PATH)/bin/faur-bin
 	@ mkdir -p $(@D)
-	$(FAUR_PATH)/bin/faur-bin $< $@ $(<:$(A_DIR_ROOT)/%=%) a__bin_
+	$(FAUR_PATH)/bin/faur-bin $< $@ $(<:$(A_DIR_ROOT)/%=%) f__bin_
 
 $(A_FILES_SRC_GEN_EMBED_DOT_C) : $(A_FILES_SRC_GEN_H) $(FAUR_PATH)/bin/faur-embed
 	@ mkdir -p $(@D)
-	$(FAUR_PATH)/bin/faur-embed $@ $(A_DIR_GEN_EMBED) a__bin_ $(A_FILES_SRC_GEN_H:$(A_DIR_GEN_EMBED)/%=%)
+	$(FAUR_PATH)/bin/faur-embed $@ $(A_DIR_GEN_EMBED) f__bin_ $(A_FILES_SRC_GEN_H:$(A_DIR_GEN_EMBED)/%=%)
 
 $(A_DIR_GEN_GFX)/%.c : $(A_DIR_ROOT)/% $(FAUR_PATH)/bin/faur-gfx
 	@ mkdir -p $(@D)

@@ -15,7 +15,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a_dir.v.h"
+#include "f_dir.v.h"
 #include <faur.v.h>
 
 #if !A_CONFIG_SYSTEM_GAMEBUINO
@@ -29,8 +29,8 @@ struct ADir {
 
 static int dirSort(const APath* A, const APath* B)
 {
-    const char* nameA = a_path_getName(A);
-    const char* nameB = a_path_getName(B);
+    const char* nameA = f_path_getName(A);
+    const char* nameB = f_path_getName(B);
     int a = *nameA;
     int b = *nameB;
     int lowerCaseUpperCaseCmp = 0;
@@ -62,7 +62,7 @@ static int dirSort(const APath* A, const APath* B)
 
 static AList* dirReal(APath* Path)
 {
-    const char* path = a_path_getFull(Path);
+    const char* path = f_path_getFull(Path);
     DIR* dir = opendir(path);
 
     if(dir == NULL) {
@@ -73,7 +73,7 @@ static AList* dirReal(APath* Path)
         #endif
 
         if(result == -1) {
-            a_out__error("a_dir_new: mkdir(%s) failed", path);
+            f_out__error("f_dir_new: mkdir(%s) failed", path);
 
             return NULL;
         }
@@ -81,25 +81,25 @@ static AList* dirReal(APath* Path)
         dir = opendir(path);
 
         if(dir != NULL) {
-            a_path__flagsSet(Path, A_PATH_DIR | A_PATH_REAL);
+            f_path__flagsSet(Path, A_PATH_DIR | A_PATH_REAL);
         }
     }
 
     if(dir == NULL) {
-        a_out__error("a_dir_new: opendir(%s) failed", path);
+        f_out__error("f_dir_new: opendir(%s) failed", path);
 
         return NULL;
     }
 
-    AList* files = a_list_new();
+    AList* files = f_list_new();
 
     for(struct dirent* ent = readdir(dir); ent; ent = readdir(dir)) {
         if(ent->d_name[0] != '.') {
-            a_list_addLast(files, a_path_newf("%s/%s", path, ent->d_name));
+            f_list_addLast(files, f_path_newf("%s/%s", path, ent->d_name));
         }
     }
 
-    a_list_sort(files, (AListCompare*)dirSort);
+    f_list_sort(files, (AListCompare*)dirSort);
 
     closedir(dir);
 
@@ -108,36 +108,36 @@ static AList* dirReal(APath* Path)
 
 static AList* dirEmbedded(APath* Path)
 {
-    const char* path = a_path_getFull(Path);
-    const AEmbeddedDir* data = a_embed__dirGet(path);
+    const char* path = f_path_getFull(Path);
+    const AEmbeddedDir* data = f_embed__dirGet(path);
 
-    AList* files = a_list_new();
+    AList* files = f_list_new();
 
     for(size_t e = data->size; e--; ) {
-        a_list_addLast(files, a_path_newf("%s/%s", path, data->entries[e]));
+        f_list_addLast(files, f_path_newf("%s/%s", path, data->entries[e]));
     }
 
     return files;
 }
 
-ADir* a_dir_new(const char* Path)
+ADir* f_dir_new(const char* Path)
 {
     AList* files = NULL;
-    APath* path = a_path_new(Path);
+    APath* path = f_path_new(Path);
 
-    if(a_path_test(path, A_PATH_DIR | A_PATH_REAL)) {
+    if(f_path_test(path, A_PATH_DIR | A_PATH_REAL)) {
         files = dirReal(path);
-    } else if(a_path_test(path, A_PATH_DIR | A_PATH_EMBEDDED)) {
+    } else if(f_path_test(path, A_PATH_DIR | A_PATH_EMBEDDED)) {
         files = dirEmbedded(path);
     } else {
         files = dirReal(path);
     }
 
     if(files == NULL) {
-        A__FATAL("a_dir_new(%s): Cannot open dir", Path);
+        A__FATAL("f_dir_new(%s): Cannot open dir", Path);
     }
 
-    ADir* d = a_mem_malloc(sizeof(ADir));
+    ADir* d = f_mem_malloc(sizeof(ADir));
 
     d->path = path;
     d->files = files;
@@ -145,24 +145,24 @@ ADir* a_dir_new(const char* Path)
     return d;
 }
 
-void a_dir_free(ADir* Dir)
+void f_dir_free(ADir* Dir)
 {
     if(Dir == NULL) {
         return;
     }
 
-    a_list_freeEx(Dir->files, (AFree*)a_path_free);
-    a_path_free(Dir->path);
+    f_list_freeEx(Dir->files, (AFree*)f_path_free);
+    f_path_free(Dir->path);
 
-    a_mem_free(Dir);
+    f_mem_free(Dir);
 }
 
-const APath* a_dir_pathGet(const ADir* Dir)
+const APath* f_dir_pathGet(const ADir* Dir)
 {
     return Dir->path;
 }
 
-const AList* a_dir_entriesGet(const ADir* Dir)
+const AList* f_dir_entriesGet(const ADir* Dir)
 {
     return Dir->files;
 }

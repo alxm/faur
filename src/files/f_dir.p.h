@@ -18,17 +18,17 @@
 #ifndef A_INC_FILES_DIR_P_H
 #define A_INC_FILES_DIR_P_H
 
-#include "general/a_system_includes.h"
+#include "general/f_system_includes.h"
 
 typedef struct ADir ADir;
 
-#include "data/a_list.p.h"
-#include "files/a_path.p.h"
+#include "data/f_list.p.h"
+#include "files/f_path.p.h"
 
-extern ADir* a_dir_new(const char* Path);
-extern void a_dir_free(ADir* Dir);
+extern ADir* f_dir_new(const char* Path);
+extern void f_dir_free(ADir* Dir);
 
-extern const APath* a_dir_pathGet(const ADir* Dir);
-extern const AList* a_dir_entriesGet(const ADir* Dir);
+extern const APath* f_dir_pathGet(const ADir* Dir);
+extern const AList* f_dir_entriesGet(const ADir* Dir);
 
 #endif // A_INC_FILES_DIR_P_H

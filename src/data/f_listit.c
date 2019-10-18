@@ -15,10 +15,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a_listit.v.h"
+#include "f_listit.v.h"
 #include <faur.v.h>
 
-AListIt a__listit_new(const AList* List, bool Reversed)
+AListIt f__listit_new(const AList* List, bool Reversed)
 {
     AListIt it;
 
@@ -26,7 +26,7 @@ AListIt a__listit_new(const AList* List, bool Reversed)
 
     if(Reversed) {
         it.nextNode = List->sentinel.prev;
-        it.index = a_list_sizeGet(List);
+        it.index = f_list_sizeGet(List);
     } else {
         it.nextNode = List->sentinel.next;
         it.index = UINT_MAX;
@@ -37,7 +37,7 @@ AListIt a__listit_new(const AList* List, bool Reversed)
     return it;
 }
 
-bool a__listit_getNext(AListIt* Iterator, void* UserPtrAddress)
+bool f__listit_getNext(AListIt* Iterator, void* UserPtrAddress)
 {
     if(Iterator->nextNode == Iterator->sentinelNode) {
         return false;
@@ -56,13 +56,13 @@ bool a__listit_getNext(AListIt* Iterator, void* UserPtrAddress)
     return true;
 }
 
-void a__listit_remove(const AListIt* Iterator)
+void f__listit_remove(const AListIt* Iterator)
 {
-    a_list_removeNode(Iterator->reversed
+    f_list_removeNode(Iterator->reversed
                         ? Iterator->nextNode->next : Iterator->nextNode->prev);
 }
 
-bool a__listit_isFirst(const AListIt* Iterator)
+bool f__listit_isFirst(const AListIt* Iterator)
 {
     if(Iterator->reversed) {
         return Iterator->nextNode->next->next == Iterator->sentinelNode;
@@ -71,7 +71,7 @@ bool a__listit_isFirst(const AListIt* Iterator)
     }
 }
 
-bool a__listit_isLast(const AListIt* Iterator)
+bool f__listit_isLast(const AListIt* Iterator)
 {
     return Iterator->nextNode == Iterator->sentinelNode;
 }

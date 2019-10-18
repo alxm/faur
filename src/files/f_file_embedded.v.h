@@ -18,12 +18,12 @@
 #ifndef A_INC_FILES_FILE_EMBEDDED_V_H
 #define A_INC_FILES_FILE_EMBEDDED_V_H
 
-#include "files/a_file_embedded.p.h"
+#include "files/f_file_embedded.p.h"
 
-#include "files/a_file.v.h"
+#include "files/f_file.v.h"
 
-extern AFile* a_file_embedded__new(APath* Path);
+extern AFile* f_file_embedded__new(APath* Path);
 
-extern uint8_t* a_file_embedded__toBuffer(const char* Path);
+extern uint8_t* f_file_embedded__toBuffer(const char* Path);
 
 #endif // A_INC_FILES_FILE_EMBEDDED_V_H

@@ -15,56 +15,56 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a_draw.v.h"
+#include "f_draw.v.h"
 #include <faur.v.h>
 
-void a_draw_fill(void)
+void f_draw_fill(void)
 {
-    a_color_push();
-    a_color_fillDrawSet(true);
+    f_color_push();
+    f_color_fillDrawSet(true);
 
-    a_draw_rectangle(a__screen.clipX,
-                     a__screen.clipY,
-                     a__screen.clipWidth,
-                     a__screen.clipHeight);
+    f_draw_rectangle(f__screen.clipX,
+                     f__screen.clipY,
+                     f__screen.clipWidth,
+                     f__screen.clipHeight);
 
-    a_color_pop();
+    f_color_pop();
 }
 
-void a_draw_pixel(int X, int Y)
+void f_draw_pixel(int X, int Y)
 {
-    a_platform_api__drawPixel(X, Y);
+    f_platform_api__drawPixel(X, Y);
 }
 
-void a_draw_line(int X1, int Y1, int X2, int Y2)
+void f_draw_line(int X1, int Y1, int X2, int Y2)
 {
-    a_platform_api__drawLine(X1, Y1, X2, Y2);
+    f_platform_api__drawLine(X1, Y1, X2, Y2);
 }
 
-void a_draw_hline(int X1, int X2, int Y)
+void f_draw_hline(int X1, int X2, int Y)
 {
-    a_platform_api__drawHLine(a_math_min(X1, X2), a_math_max(X1, X2), Y);
+    f_platform_api__drawHLine(f_math_min(X1, X2), f_math_max(X1, X2), Y);
 }
 
-void a_draw_vline(int X, int Y1, int Y2)
+void f_draw_vline(int X, int Y1, int Y2)
 {
-    a_platform_api__drawVLine(X, a_math_min(Y1, Y2), a_math_max(Y1, Y2));
+    f_platform_api__drawVLine(X, f_math_min(Y1, Y2), f_math_max(Y1, Y2));
 }
 
-void a_draw_rectangle(int X, int Y, int Width, int Height)
+void f_draw_rectangle(int X, int Y, int Width, int Height)
 {
-    if(a__color.fillDraw) {
-        a_platform_api__drawRectangleFilled(X, Y, Width, Height);
+    if(f__color.fillDraw) {
+        f_platform_api__drawRectangleFilled(X, Y, Width, Height);
     } else {
-        a_platform_api__drawRectangleOutline(X, Y, Width, Height);
+        f_platform_api__drawRectangleOutline(X, Y, Width, Height);
     }
 }
 
-void a_draw_circle(int X, int Y, int Radius)
+void f_draw_circle(int X, int Y, int Radius)
 {
-    if(a__color.fillDraw) {
-        a_platform_api__drawCircleFilled(X, Y, Radius);
+    if(f__color.fillDraw) {
+        f_platform_api__drawCircleFilled(X, Y, Radius);
     } else {
-        a_platform_api__drawCircleOutline(X, Y, Radius);
+        f_platform_api__drawCircleOutline(X, Y, Radius);
     }
 }

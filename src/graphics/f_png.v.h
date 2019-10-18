@@ -18,12 +18,12 @@
 #ifndef A_INC_GRAPHICS_PNG_V_H
 #define A_INC_GRAPHICS_PNG_V_H
 
-#include "graphics/a_png.p.h"
+#include "graphics/f_png.p.h"
 
-#include "graphics/a_pixels.v.h"
+#include "graphics/f_pixels.v.h"
 
-extern APixels* a_png__readFile(const char* Path);
-extern APixels* a_png__readMemory(const uint8_t* Data);
-extern void a_png__write(const char* Path, const APixels* Pixels, unsigned Frame, char* Title, char* Description);
+extern APixels* f_png__readFile(const char* Path);
+extern APixels* f_png__readMemory(const uint8_t* Data);
+extern void f_png__write(const char* Path, const APixels* Pixels, unsigned Frame, char* Title, char* Description);
 
 #endif // A_INC_GRAPHICS_PNG_V_H

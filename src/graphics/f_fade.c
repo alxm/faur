@@ -15,7 +15,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a_fade.v.h"
+#include "f_fade.v.h"
 #include <faur.v.h>
 
 typedef enum {
@@ -36,30 +36,30 @@ static struct {
     .op = A__FADE_INVALID,
 };
 
-static void a_fade__init(void)
+static void f_fade__init(void)
 {
     #if !A_CONFIG_SYSTEM_GAMEBUINO
-        g_fade.oldScreen = a_sprite_newBlank(
-                            a__screen.pixels->w, a__screen.pixels->h, 1, false);
+        g_fade.oldScreen = f_sprite_newBlank(
+                            f__screen.pixels->w, f__screen.pixels->h, 1, false);
     #endif
 }
 
-static void a_fade__uninit(void)
+static void f_fade__uninit(void)
 {
-    a_sprite_free(g_fade.oldScreen);
+    f_sprite_free(g_fade.oldScreen);
 }
 
-const APack a_pack__fade = {
+const APack f_pack__fade = {
     "Fade",
     {
-        [0] = a_fade__init,
+        [0] = f_fade__init,
     },
     {
-        [0] = a_fade__uninit,
+        [0] = f_fade__uninit,
     },
 };
 
-const AEvent* a_fade_eventGet(void)
+const AEvent* f_fade_eventGet(void)
 {
     return &g_fade.event;
 }
@@ -70,33 +70,33 @@ static void newFade(AFadeOpId Op, unsigned DurationMs)
     g_fade.op = Op;
     g_fade.angle = 0;
     g_fade.angleInc = A_DEG_090_FIX
-                        / a_math_maxu(a_time_ticksFromMs(DurationMs), 1);
+                        / f_math_maxu(f_time_ticksFromMs(DurationMs), 1);
 }
 
-void a_fade_startColorTo(unsigned DurationMs)
+void f_fade_startColorTo(unsigned DurationMs)
 {
     newFade(A__FADE_TOCOLOR, DurationMs);
 
-    g_fade.color = a__color.pixel;
+    g_fade.color = f__color.pixel;
 }
 
-void a_fade_startColorFrom(unsigned DurationMs)
+void f_fade_startColorFrom(unsigned DurationMs)
 {
     newFade(A__FADE_FROMCOLOR, DurationMs);
 
-    g_fade.color = a__color.pixel;
+    g_fade.color = f__color.pixel;
 }
 
 #if !A_CONFIG_SYSTEM_GAMEBUINO
-void a_fade_startScreens(unsigned DurationMs)
+void f_fade_startScreens(unsigned DurationMs)
 {
     newFade(A__FADE_SCREENS, DurationMs);
 
-    a_screen__toSprite(g_fade.oldScreen, 0);
+    f_screen__toSprite(g_fade.oldScreen, 0);
 }
 #endif
 
-void a_fade__tick(void)
+void f_fade__tick(void)
 {
     if(g_fade.op == A__FADE_INVALID) {
         return;
@@ -110,43 +110,43 @@ void a_fade__tick(void)
     }
 }
 
-void a_fade__draw(void)
+void f_fade__draw(void)
 {
     if(g_fade.op == A__FADE_INVALID) {
         return;
     }
 
-    a_color_push();
-    a_color_blendSet(A_COLOR_BLEND_RGBA);
+    f_color_push();
+    f_color_blendSet(A_COLOR_BLEND_RGBA);
 
     switch(g_fade.op) {
         case A__FADE_TOCOLOR: {
-            a_color_alphaSet(
-                a_fix_toInt(a_fix_sinf(g_fade.angle) * A_COLOR_ALPHA_MAX));
+            f_color_alphaSet(
+                f_fix_toInt(f_fix_sinf(g_fade.angle) * A_COLOR_ALPHA_MAX));
 
-            a_color_baseSetPixel(g_fade.color);
-            a_draw_fill();
+            f_color_baseSetPixel(g_fade.color);
+            f_draw_fill();
         } break;
 
         case A__FADE_FROMCOLOR: {
-            a_color_alphaSet(
-                a_fix_toInt(a_fix_sinf(A_DEG_090_FIX - g_fade.angle)
+            f_color_alphaSet(
+                f_fix_toInt(f_fix_sinf(A_DEG_090_FIX - g_fade.angle)
                                 * A_COLOR_ALPHA_MAX));
 
-            a_color_baseSetPixel(g_fade.color);
-            a_draw_fill();
+            f_color_baseSetPixel(g_fade.color);
+            f_draw_fill();
         } break;
 
         case A__FADE_SCREENS: {
-            a_color_alphaSet(
-                a_fix_toInt(a_fix_sinf(A_DEG_090_FIX - g_fade.angle)
+            f_color_alphaSet(
+                f_fix_toInt(f_fix_sinf(A_DEG_090_FIX - g_fade.angle)
                                 * A_COLOR_ALPHA_MAX));
 
-            a_sprite_blit(g_fade.oldScreen, 0, 0, 0);
+            f_sprite_blit(g_fade.oldScreen, 0, 0, 0);
         } break;
 
         default: break;
     }
 
-    a_color_pop();
+    f_color_pop();
 }

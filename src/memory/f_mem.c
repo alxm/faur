@@ -15,20 +15,20 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a_mem.v.h"
+#include "f_mem.v.h"
 #include <faur.v.h>
 
 #if A_CONFIG_BUILD_DEBUG_ALLOC
-size_t a_mem__tally, a_mem__top;
+size_t f_mem__tally, f_mem__top;
 
 static inline void tallyAdd(size_t Size)
 {
-    a_mem__tally += Size;
-    a_mem__top = a_math_maxz(a_mem__top, a_mem__tally);
+    f_mem__tally += Size;
+    f_mem__top = f_math_maxz(f_mem__top, f_mem__tally);
 }
 #endif
 
-void* a_mem_malloc(size_t Size)
+void* f_mem_malloc(size_t Size)
 {
     #if A_CONFIG_BUILD_DEBUG_ALLOC
         size_t total = Size + sizeof(AMaxMemAlignType);
@@ -54,7 +54,7 @@ void* a_mem_malloc(size_t Size)
     #endif
 }
 
-void* a_mem_zalloc(size_t Size)
+void* f_mem_zalloc(size_t Size)
 {
     #if A_CONFIG_BUILD_DEBUG_ALLOC
         size_t total = Size + sizeof(AMaxMemAlignType);
@@ -80,16 +80,16 @@ void* a_mem_zalloc(size_t Size)
     #endif
 }
 
-void* a_mem_dup(const void* Buffer, size_t Size)
+void* f_mem_dup(const void* Buffer, size_t Size)
 {
-    void* copy = a_mem_malloc(Size);
+    void* copy = f_mem_malloc(Size);
 
     memcpy(copy, Buffer, Size);
 
     return copy;
 }
 
-void a_mem_free(void* Buffer)
+void f_mem_free(void* Buffer)
 {
     if(Buffer == NULL) {
         return;
@@ -98,7 +98,7 @@ void a_mem_free(void* Buffer)
     #if A_CONFIG_BUILD_DEBUG_ALLOC
         AMaxMemAlignType* header = (AMaxMemAlignType*)Buffer - 1;
 
-        a_mem__tally -= header->u_size;
+        f_mem__tally -= header->u_size;
 
         free(header);
     #else

@@ -18,8 +18,8 @@
 #ifndef A_INC_ECS_COLLECTION_V_H
 #define A_INC_ECS_COLLECTION_V_H
 
-#include "ecs/a_collection.p.h"
+#include "ecs/f_collection.p.h"
 
-extern ACollection* a_collection__get(void);
+extern ACollection* f_collection__get(void);
 
 #endif // A_INC_ECS_COLLECTION_V_H

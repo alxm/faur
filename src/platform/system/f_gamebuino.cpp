@@ -16,7 +16,7 @@
 */
 
 extern "C" {
-    #include "a_gamebuino.v.h"
+    #include "f_gamebuino.v.h"
 }
 
 #include <faur.v.h>
@@ -40,7 +40,7 @@ void setup(void)
         }
     #endif
 
-    a__main();
+    f__main();
 }
 
 void loop(void)
@@ -49,7 +49,7 @@ void loop(void)
         return;
     }
 
-    a_state__runStep();
+    f_state__runStep();
 
     #if A_CONFIG_BUILD_DEBUG
         gb.display.setColor(WHITE);
@@ -64,13 +64,13 @@ void loop(void)
     #endif
 }
 
-uint32_t a_platform_api__timeMsGet(void)
+uint32_t f_platform_api__timeMsGet(void)
 {
     return millis();
 }
 
-void a_platform_api__timeMsWait(uint32_t Ms)
+void f_platform_api__timeMsWait(uint32_t Ms)
 {
-    a_time_spinMs(Ms);
+    f_time_spinMs(Ms);
 }
 #endif // A_CONFIG_SYSTEM_GAMEBUINO

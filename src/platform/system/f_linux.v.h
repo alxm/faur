@@ -18,8 +18,8 @@
 #ifndef A_INC_PLATFORM_SYSTEM_LINUX_V_H
 #define A_INC_PLATFORM_SYSTEM_LINUX_V_H
 
-#include "platform/system/a_linux.p.h"
+#include "platform/system/f_linux.p.h"
 
-extern void a_platform_linux__init(void);
+extern void f_platform_linux__init(void);
 
 #endif // A_INC_PLATFORM_SYSTEM_LINUX_V_H

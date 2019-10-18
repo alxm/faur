@@ -18,38 +18,38 @@
 #ifndef A_INC_ECS_ENTITY_P_H
 #define A_INC_ECS_ENTITY_P_H
 
-#include "general/a_system_includes.h"
+#include "general/f_system_includes.h"
 
 typedef struct AEntity AEntity;
 
-extern AEntity* a_entity_new(const char* Template, const void* Context);
+extern AEntity* f_entity_new(const char* Template, const void* Context);
 
-extern void a_entity_debugSet(AEntity* Entity, bool DebugOn);
+extern void f_entity_debugSet(AEntity* Entity, bool DebugOn);
 
-extern const char* a_entity_idGet(const AEntity* Entity);
+extern const char* f_entity_idGet(const AEntity* Entity);
 
-extern AEntity* a_entity_parentGet(const AEntity* Entity);
-extern void a_entity_parentSet(AEntity* Entity, AEntity* Parent);
-extern bool a_entity_parentHas(const AEntity* Child, const AEntity* PotentialParent);
+extern AEntity* f_entity_parentGet(const AEntity* Entity);
+extern void f_entity_parentSet(AEntity* Entity, AEntity* Parent);
+extern bool f_entity_parentHas(const AEntity* Child, const AEntity* PotentialParent);
 
-extern void a_entity_refInc(AEntity* Entity);
-extern void a_entity_refDec(AEntity* Entity);
+extern void f_entity_refInc(AEntity* Entity);
+extern void f_entity_refDec(AEntity* Entity);
 
-extern bool a_entity_removedGet(const AEntity* Entity);
-extern void a_entity_removedSet(AEntity* Entity);
+extern bool f_entity_removedGet(const AEntity* Entity);
+extern void f_entity_removedSet(AEntity* Entity);
 
-extern bool a_entity_activeGet(const AEntity* Entity);
-extern void a_entity_activeSet(AEntity* Entity);
-extern void a_entity_activeSetRemove(AEntity* Entity);
-extern void a_entity_activeSetPermanent(AEntity* Entity);
+extern bool f_entity_activeGet(const AEntity* Entity);
+extern void f_entity_activeSet(AEntity* Entity);
+extern void f_entity_activeSetRemove(AEntity* Entity);
+extern void f_entity_activeSetPermanent(AEntity* Entity);
 
-extern void* a_entity_componentAdd(AEntity* Entity, int ComponentIndex);
-extern bool a_entity_componentHas(const AEntity* Entity, int ComponentIndex);
-extern void* a_entity_componentGet(const AEntity* Entity, int ComponentIndex);
-extern void* a_entity_componentReq(const AEntity* Entity, int ComponentIndex);
+extern void* f_entity_componentAdd(AEntity* Entity, int ComponentIndex);
+extern bool f_entity_componentHas(const AEntity* Entity, int ComponentIndex);
+extern void* f_entity_componentGet(const AEntity* Entity, int ComponentIndex);
+extern void* f_entity_componentReq(const AEntity* Entity, int ComponentIndex);
 
-extern bool a_entity_muteGet(const AEntity* Entity);
-extern void a_entity_muteInc(AEntity* Entity);
-extern void a_entity_muteDec(AEntity* Entity);
+extern bool f_entity_muteGet(const AEntity* Entity);
+extern void f_entity_muteInc(AEntity* Entity);
+extern void f_entity_muteDec(AEntity* Entity);
 
 #endif // A_INC_ECS_ENTITY_P_H

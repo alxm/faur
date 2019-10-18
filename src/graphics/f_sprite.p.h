@@ -18,32 +18,32 @@
 #ifndef A_INC_GRAPHICS_SPRITE_P_H
 #define A_INC_GRAPHICS_SPRITE_P_H
 
-#include "general/a_system_includes.h"
+#include "general/f_system_includes.h"
 
 typedef struct ASprite ASprite;
 
-#include "graphics/a_color.p.h"
-#include "math/a_fix.p.h"
+#include "graphics/f_color.p.h"
+#include "math/f_fix.p.h"
 
-extern ASprite* a_sprite_newFromPng(const char* Path, int X, int Y, int FrameWidth, int FrameHeight);
-extern ASprite* a_sprite_newFromSprite(const ASprite* Sheet, int X, int Y, int FrameWidth, int FrameHeight);
-extern ASprite* a_sprite_newBlank(int Width, int Height, unsigned Frames, bool ColorKeyed);
-extern ASprite* a_sprite_dup(const ASprite* Sprite);
-extern void a_sprite_free(ASprite* Sprite);
+extern ASprite* f_sprite_newFromPng(const char* Path, int X, int Y, int FrameWidth, int FrameHeight);
+extern ASprite* f_sprite_newFromSprite(const ASprite* Sheet, int X, int Y, int FrameWidth, int FrameHeight);
+extern ASprite* f_sprite_newBlank(int Width, int Height, unsigned Frames, bool ColorKeyed);
+extern ASprite* f_sprite_dup(const ASprite* Sprite);
+extern void f_sprite_free(ASprite* Sprite);
 
-extern void a_sprite_blit(const ASprite* Sprite, unsigned Frame, int X, int Y);
-extern void a_sprite_blitEx(const ASprite* Sprite, unsigned Frame, int X, int Y, AFix Scale, unsigned Angle, AFix CenterX, AFix CenterY);
+extern void f_sprite_blit(const ASprite* Sprite, unsigned Frame, int X, int Y);
+extern void f_sprite_blitEx(const ASprite* Sprite, unsigned Frame, int X, int Y, AFix Scale, unsigned Angle, AFix CenterX, AFix CenterY);
 
-extern void a_sprite_swapColor(ASprite* Sprite, APixel OldColor, APixel NewColor);
-extern void a_sprite_swapColors(ASprite* Sprite, const APixel* OldColors, const APixel* NewColors, unsigned NumColors);
+extern void f_sprite_swapColor(ASprite* Sprite, APixel OldColor, APixel NewColor);
+extern void f_sprite_swapColors(ASprite* Sprite, const APixel* OldColors, const APixel* NewColors, unsigned NumColors);
 
-extern AVectorInt a_sprite_sizeGet(const ASprite* Sprite);
-extern int a_sprite_sizeGetWidth(const ASprite* Sprite);
-extern int a_sprite_sizeGetHeight(const ASprite* Sprite);
+extern AVectorInt f_sprite_sizeGet(const ASprite* Sprite);
+extern int f_sprite_sizeGetWidth(const ASprite* Sprite);
+extern int f_sprite_sizeGetHeight(const ASprite* Sprite);
 
-extern unsigned a_sprite_framesNumGet(const ASprite* Sprite);
+extern unsigned f_sprite_framesNumGet(const ASprite* Sprite);
 
-extern const APixel* a_sprite_pixelsGetBuffer(const ASprite* Sprite, unsigned Frame);
-extern APixel a_sprite_pixelsGetValue(const ASprite* Sprite, unsigned Frame, int X, int Y);
+extern const APixel* f_sprite_pixelsGetBuffer(const ASprite* Sprite, unsigned Frame);
+extern APixel f_sprite_pixelsGetValue(const ASprite* Sprite, unsigned Frame, int X, int Y);
 
 #endif // A_INC_GRAPHICS_SPRITE_P_H

@@ -18,12 +18,12 @@
 #ifndef A_INC_GRAPHICS_SPRITE_V_H
 #define A_INC_GRAPHICS_SPRITE_V_H
 
-#include "graphics/a_sprite.p.h"
+#include "graphics/f_sprite.p.h"
 
-#include "platform/a_platform.v.h"
+#include "platform/f_platform.v.h"
 
-extern APixels* a_sprite__pixelsGet(ASprite* Sprite);
-extern APlatformTexture* a_sprite__textureGet(const ASprite* Sprite, unsigned Frame);
-extern void a_sprite__textureCommit(ASprite* Sprite, unsigned Frame);
+extern APixels* f_sprite__pixelsGet(ASprite* Sprite);
+extern APlatformTexture* f_sprite__textureGet(const ASprite* Sprite, unsigned Frame);
+extern void f_sprite__textureCommit(ASprite* Sprite, unsigned Frame);
 
 #endif // A_INC_GRAPHICS_SPRITE_V_H

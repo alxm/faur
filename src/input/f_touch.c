@@ -15,30 +15,30 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a_touch.v.h"
+#include "f_touch.v.h"
 #include <faur.v.h>
 
-AVectorInt a_touch_deltaGet(void)
+AVectorInt f_touch_deltaGet(void)
 {
-    return a_platform_api__inputTouchDeltaGet();
+    return f_platform_api__inputTouchDeltaGet();
 }
 
-bool a_touch_tapGet(void)
+bool f_touch_tapGet(void)
 {
-    return a_platform_api__inputTouchTapGet();
+    return f_platform_api__inputTouchTapGet();
 }
 
-bool a_touch_pointGet(int X, int Y)
+bool f_touch_pointGet(int X, int Y)
 {
-    return a_touch_boxGet(X - 1, Y - 1, 3, 3);
+    return f_touch_boxGet(X - 1, Y - 1, 3, 3);
 }
 
-bool a_touch_boxGet(int X, int Y, int W, int H)
+bool f_touch_boxGet(int X, int Y, int W, int H)
 {
-    if(a_platform_api__inputTouchTapGet()) {
-        AVectorInt coords = a_platform_api__inputTouchCoordsGet();
+    if(f_platform_api__inputTouchTapGet()) {
+        AVectorInt coords = f_platform_api__inputTouchCoordsGet();
 
-        if(a_collide_pointInBox(coords.x, coords.y, X, Y, W, H)) {
+        if(f_collide_pointInBox(coords.x, coords.y, X, Y, W, H)) {
             return true;
         }
     }

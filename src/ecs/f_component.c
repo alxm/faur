@@ -15,7 +15,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a_component.v.h"
+#include "f_component.v.h"
 #include <faur.v.h>
 
 #if A_CONFIG_ECS_ENABLED
@@ -40,24 +40,24 @@ static inline const AComponentInstance* bufferGetInstance(const void* ComponentB
             ((uint8_t*)ComponentBuffer - offsetof(AComponentInstance, buffer));
 }
 
-void a_component__init(void)
+void f_component__init(void)
 {
-    g_componentsIndex = a_strhash_new();
+    g_componentsIndex = f_strhash_new();
 }
 
-void a_component__uninit(void)
+void f_component__uninit(void)
 {
-    a_strhash_free(g_componentsIndex);
+    f_strhash_free(g_componentsIndex);
 }
 
-int a_component__stringToIndex(const char* StringId)
+int f_component__stringToIndex(const char* StringId)
 {
-    const AComponent* component = a_strhash_get(g_componentsIndex, StringId);
+    const AComponent* component = f_strhash_get(g_componentsIndex, StringId);
 
     return component ? (int)(component - g_components) : -1;
 }
 
-const AComponent* a_component__get(int ComponentIndex)
+const AComponent* f_component__get(int ComponentIndex)
 {
     #if A_CONFIG_BUILD_DEBUG
         if(ComponentIndex < 0 || ComponentIndex >= A_CONFIG_ECS_COM_NUM) {
@@ -72,13 +72,13 @@ const AComponent* a_component__get(int ComponentIndex)
     return &g_components[ComponentIndex];
 }
 
-void a_component_new(int ComponentIndex, size_t InstanceSize, AComponentInstanceInit* InstanceInit, AComponentInstanceFree* InstanceFree)
+void f_component_new(int ComponentIndex, size_t InstanceSize, AComponentInstanceInit* InstanceInit, AComponentInstanceFree* InstanceFree)
 {
     AComponent* component = &g_components[ComponentIndex];
 
     #if A_CONFIG_BUILD_DEBUG
         if(component->stringId != NULL) {
-            A__FATAL("a_component_new(%d): Already declared", ComponentIndex);
+            A__FATAL("f_component_new(%d): Already declared", ComponentIndex);
         }
     #endif
 
@@ -88,22 +88,22 @@ void a_component_new(int ComponentIndex, size_t InstanceSize, AComponentInstance
     component->stringId = g_defaultId;
 }
 
-void a_component_template(int ComponentIndex, const char* StringId, size_t TemplateSize, AComponentTemplateInit* TemplateInit, AComponentTemplateFree* TemplateFree, AComponentInstanceInitEx* InstanceInitEx)
+void f_component_template(int ComponentIndex, const char* StringId, size_t TemplateSize, AComponentTemplateInit* TemplateInit, AComponentTemplateFree* TemplateFree, AComponentInstanceInitEx* InstanceInitEx)
 {
     AComponent* component = &g_components[ComponentIndex];
 
     #if A_CONFIG_BUILD_DEBUG
         if(ComponentIndex < 0 || ComponentIndex >= A_CONFIG_ECS_COM_NUM) {
-            A__FATAL("a_component_template(%s): Unknown component", StringId);
+            A__FATAL("f_component_template(%s): Unknown component", StringId);
         }
 
         if(g_components[ComponentIndex].stringId == NULL) {
             A__FATAL(
-                "a_component_template(%s): Uninitialized component", StringId);
+                "f_component_template(%s): Uninitialized component", StringId);
         }
 
-        if(a_strhash_contains(g_componentsIndex, StringId)) {
-            A__FATAL("a_component_template(%s): Already declared", StringId);
+        if(f_strhash_contains(g_componentsIndex, StringId)) {
+            A__FATAL("f_component_template(%s): Already declared", StringId);
         }
     #endif
 
@@ -113,32 +113,32 @@ void a_component_template(int ComponentIndex, const char* StringId, size_t Templ
     component->templateFree = TemplateFree;
     component->stringId = StringId;
 
-    a_strhash_add(g_componentsIndex, StringId, component);
+    f_strhash_add(g_componentsIndex, StringId, component);
 }
 
-const void* a_component_dataGet(const void* ComponentBuffer)
+const void* f_component_dataGet(const void* ComponentBuffer)
 {
     const AComponentInstance* instance = bufferGetInstance(ComponentBuffer);
 
-    return a_template__dataGet(a_entity__templateGet(instance->entity),
+    return f_template__dataGet(f_entity__templateGet(instance->entity),
                                (int)(instance->component - g_components));
 }
 
 
-AEntity* a_component_entityGet(const void* ComponentBuffer)
+AEntity* f_component_entityGet(const void* ComponentBuffer)
 {
     return bufferGetInstance(ComponentBuffer)->entity;
 }
 
-const char* a_component__stringGet(const AComponent* Component)
+const char* f_component__stringGet(const AComponent* Component)
 {
     return Component->stringId;
 }
 
-void* a_component__templateInit(const AComponent* Component, const ABlock* Block)
+void* f_component__templateInit(const AComponent* Component, const ABlock* Block)
 {
     if(Component->templateSize > 0) {
-        void* buffer = a_mem_zalloc(Component->templateSize);
+        void* buffer = f_mem_zalloc(Component->templateSize);
 
         if(Component->templateInit) {
             Component->templateInit(buffer, Block);
@@ -150,18 +150,18 @@ void* a_component__templateInit(const AComponent* Component, const ABlock* Block
     return NULL;
 }
 
-void a_component__templateFree(const AComponent* Component, void* Buffer)
+void f_component__templateFree(const AComponent* Component, void* Buffer)
 {
     if(Component->templateFree) {
         Component->templateFree(Buffer);
     }
 
-    a_mem_free(Buffer);
+    f_mem_free(Buffer);
 }
 
-AComponentInstance* a_component__instanceNew(const AComponent* Component, AEntity* Entity, const void* TemplateData)
+AComponentInstance* f_component__instanceNew(const AComponent* Component, AEntity* Entity, const void* TemplateData)
 {
-    AComponentInstance* c = a_mem_zalloc(Component->size);
+    AComponentInstance* c = f_mem_zalloc(Component->size);
 
     c->component = Component;
     c->entity = Entity;
@@ -177,7 +177,7 @@ AComponentInstance* a_component__instanceNew(const AComponent* Component, AEntit
     return c;
 }
 
-void a_component__instanceFree(AComponentInstance* Instance)
+void f_component__instanceFree(AComponentInstance* Instance)
 {
     if(Instance == NULL) {
         return;
@@ -187,6 +187,6 @@ void a_component__instanceFree(AComponentInstance* Instance)
         Instance->component->free(Instance->buffer);
     }
 
-    a_mem_free(Instance);
+    f_mem_free(Instance);
 }
 #endif // A_CONFIG_ECS_ENABLED

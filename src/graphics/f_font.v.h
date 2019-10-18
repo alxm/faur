@@ -18,7 +18,7 @@
 #ifndef A_INC_GRAPHICS_FONT_V_H
 #define A_INC_GRAPHICS_FONT_V_H
 
-#include "graphics/a_font.p.h"
+#include "graphics/f_font.p.h"
 
 typedef enum {
     A_FONT__ID_INVALID = -1,
@@ -32,10 +32,10 @@ typedef enum {
     A_FONT__ID_NUM
 } AFontId;
 
-#include "general/a_main.v.h"
+#include "general/f_main.v.h"
 
-extern const APack a_pack__font;
+extern const APack f_pack__font;
 
-extern void a_font__fontSet(AFontId Font);
+extern void f_font__fontSet(AFontId Font);
 
 #endif // A_INC_GRAPHICS_FONT_V_H

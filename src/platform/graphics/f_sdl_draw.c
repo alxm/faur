@@ -15,71 +15,71 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a_sdl_draw.v.h"
+#include "f_sdl_draw.v.h"
 #include <faur.v.h>
 
 #if A_CONFIG_LIB_RENDER_SDL
 #include <SDL2/SDL.h>
 
-extern SDL_Renderer* a__sdlRenderer;
+extern SDL_Renderer* f__sdlRenderer;
 
-void a_platform_api__drawPixel(int X, int Y)
+void f_platform_api__drawPixel(int X, int Y)
 {
-    if(SDL_RenderDrawPoint(a__sdlRenderer, X, Y) < 0) {
-        a_out__error("SDL_RenderDrawPoint: %s", SDL_GetError());
+    if(SDL_RenderDrawPoint(f__sdlRenderer, X, Y) < 0) {
+        f_out__error("SDL_RenderDrawPoint: %s", SDL_GetError());
     }
 }
 
-void a_platform_api__drawLine(int X1, int Y1, int X2, int Y2)
+void f_platform_api__drawLine(int X1, int Y1, int X2, int Y2)
 {
-    if(SDL_RenderDrawLine(a__sdlRenderer, X1, Y1, X2, Y2) < 0) {
-        a_out__error("SDL_RenderDrawLine: %s", SDL_GetError());
+    if(SDL_RenderDrawLine(f__sdlRenderer, X1, Y1, X2, Y2) < 0) {
+        f_out__error("SDL_RenderDrawLine: %s", SDL_GetError());
     }
 }
 
-void a_platform_api__drawHLine(int X1, int X2, int Y)
+void f_platform_api__drawHLine(int X1, int X2, int Y)
 {
-    a_platform_api__drawRectangleFilled(X1, Y, X2 - X1 + 1, 1);
+    f_platform_api__drawRectangleFilled(X1, Y, X2 - X1 + 1, 1);
 }
 
-void a_platform_api__drawVLine(int X, int Y1, int Y2)
+void f_platform_api__drawVLine(int X, int Y1, int Y2)
 {
-    a_platform_api__drawRectangleFilled(X, Y1, 1, Y2 - Y1 + 1);
+    f_platform_api__drawRectangleFilled(X, Y1, 1, Y2 - Y1 + 1);
 }
 
-void a_platform_api__drawRectangleFilled(int X, int Y, int Width, int Height)
+void f_platform_api__drawRectangleFilled(int X, int Y, int Width, int Height)
 {
     SDL_Rect area = {X, Y, Width, Height};
 
-    if(SDL_RenderFillRect(a__sdlRenderer, &area) < 0) {
-        a_out__error("SDL_RenderFillRect: %s", SDL_GetError());
+    if(SDL_RenderFillRect(f__sdlRenderer, &area) < 0) {
+        f_out__error("SDL_RenderFillRect: %s", SDL_GetError());
     }
 }
 
-void a_platform_api__drawRectangleOutline(int X, int Y, int Width, int Height)
+void f_platform_api__drawRectangleOutline(int X, int Y, int Width, int Height)
 {
-    a_platform_api__drawRectangleFilled(X, Y, Width, 1);
+    f_platform_api__drawRectangleFilled(X, Y, Width, 1);
 
     if(Height <= 1) {
         return;
     }
 
-    a_platform_api__drawRectangleFilled(X, Y + Height - 1, Width, 1);
+    f_platform_api__drawRectangleFilled(X, Y + Height - 1, Width, 1);
 
     if(Width <= 1 || Height <= 2) {
         return;
     }
 
-    a_platform_api__drawRectangleFilled(X, Y + 1, 1, Height - 2);
-    a_platform_api__drawRectangleFilled(X + Width - 1, Y + 1, 1, Height - 2);
+    f_platform_api__drawRectangleFilled(X, Y + 1, 1, Height - 2);
+    f_platform_api__drawRectangleFilled(X + Width - 1, Y + 1, 1, Height - 2);
 }
 
-void a_platform_api__drawCircleOutline(int X, int Y, int Radius)
+void f_platform_api__drawCircleOutline(int X, int Y, int Radius)
 {
     // Using inclusive coords
     if(--Radius <= 0) {
         if(Radius == 0) {
-            a_platform_api__drawRectangleFilled(X - 1, Y - 1, 2, 2);
+            f_platform_api__drawRectangleFilled(X - 1, Y - 1, 2, 2);
         }
 
         return;
@@ -175,18 +175,18 @@ void a_platform_api__drawCircleOutline(int X, int Y, int Radius)
     }
 
     if(SDL_RenderDrawPoints(
-        a__sdlRenderer, (SDL_Point*)scanlines, numPointPairs * 4 * 2) < 0) {
+        f__sdlRenderer, (SDL_Point*)scanlines, numPointPairs * 4 * 2) < 0) {
 
-        a_out__error("SDL_RenderDrawPoints: %s", SDL_GetError());
+        f_out__error("SDL_RenderDrawPoints: %s", SDL_GetError());
     }
 }
 
-void a_platform_api__drawCircleFilled(int X, int Y, int Radius)
+void f_platform_api__drawCircleFilled(int X, int Y, int Radius)
 {
     // Using inclusive coords
     if(--Radius <= 0) {
         if(Radius == 0) {
-            a_platform_api__drawRectangleFilled(X - 1, Y - 1, 2, 2);
+            f_platform_api__drawRectangleFilled(X - 1, Y - 1, 2, 2);
         }
 
         return;
@@ -251,9 +251,9 @@ void a_platform_api__drawCircleFilled(int X, int Y, int Radius)
     }
 
     if(SDL_RenderFillRects(
-        a__sdlRenderer, scanlines, (int)A_ARRAY_LEN(scanlines)) < 0) {
+        f__sdlRenderer, scanlines, (int)A_ARRAY_LEN(scanlines)) < 0) {
 
-        a_out__error("SDL_RenderFillRects: %s", SDL_GetError());
+        f_out__error("SDL_RenderFillRects: %s", SDL_GetError());
     }
 }
 #endif // A_CONFIG_LIB_RENDER_SDL

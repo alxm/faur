@@ -18,7 +18,7 @@
 #ifndef A_INC_GRAPHICS_COLOR_P_H
 #define A_INC_GRAPHICS_COLOR_P_H
 
-#include "general/a_system_includes.h"
+#include "general/f_system_includes.h"
 
 #if A_CONFIG_SCREEN_BPP == 16
     typedef uint16_t APixel;
@@ -85,7 +85,7 @@ typedef struct {
     #define A_COLOR_ALPHA_MAX 255
 #endif
 
-static inline APixel a_pixel_fromRgb(int Red, int Green, int Blue)
+static inline APixel f_pixel_fromRgb(int Red, int Green, int Blue)
 {
     return (APixel)
         (((((unsigned)Red   & 0xff) >> A__PX_PACK_R) << A__PX_SHIFT_R) |
@@ -93,7 +93,7 @@ static inline APixel a_pixel_fromRgb(int Red, int Green, int Blue)
          ((((unsigned)Blue  & 0xff) >> A__PX_PACK_B) << A__PX_SHIFT_B));
 }
 
-static inline APixel a_pixel_fromHex(uint32_t Hexcode)
+static inline APixel f_pixel_fromHex(uint32_t Hexcode)
 {
     #if A_CONFIG_SCREEN_BPP == 16 || A_CONFIG_SCREEN_FORMAT_ABGR
         return (APixel)
@@ -105,7 +105,7 @@ static inline APixel a_pixel_fromHex(uint32_t Hexcode)
     #endif
 }
 
-static inline ARgb a_pixel_toRgb(APixel Pixel)
+static inline ARgb f_pixel_toRgb(APixel Pixel)
 {
     ARgb rgb = {
         (int)((Pixel >> A__PX_SHIFT_R) & A__PX_MASK_R) << A__PX_PACK_R,
@@ -129,19 +129,19 @@ typedef enum {
     A_COLOR_BLEND_NUM
 } AColorBlend;
 
-extern void a_color_push(void);
-extern void a_color_pop(void);
-extern void a_color_reset(void);
+extern void f_color_push(void);
+extern void f_color_pop(void);
+extern void f_color_reset(void);
 
-extern void a_color_blendSet(AColorBlend Blend);
-extern void a_color_alphaSet(int Alpha);
+extern void f_color_blendSet(AColorBlend Blend);
+extern void f_color_alphaSet(int Alpha);
 
-extern void a_color_baseSetRgb(int Red, int Green, int Blue);
-extern void a_color_baseSetRgba(int Red, int Green, int Blue, int Alpha);
-extern void a_color_baseSetHex(uint32_t Hexcode);
-extern void a_color_baseSetPixel(APixel Pixel);
+extern void f_color_baseSetRgb(int Red, int Green, int Blue);
+extern void f_color_baseSetRgba(int Red, int Green, int Blue, int Alpha);
+extern void f_color_baseSetHex(uint32_t Hexcode);
+extern void f_color_baseSetPixel(APixel Pixel);
 
-extern void a_color_fillBlitSet(bool Fill);
-extern void a_color_fillDrawSet(bool Fill);
+extern void f_color_fillBlitSet(bool Fill);
+extern void f_color_fillDrawSet(bool Fill);
 
 #endif // A_INC_GRAPHICS_COLOR_P_H

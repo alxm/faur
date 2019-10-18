@@ -15,7 +15,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a_template.v.h"
+#include "f_template.v.h"
 #include <faur.v.h>
 
 #if A_CONFIG_ECS_ENABLED
@@ -32,15 +32,15 @@ static AStrHash* g_templates; // table of ATemplate
 
 static ATemplate* templateNew(const char* Id)
 {
-    ATemplate* t = a_mem_zalloc(sizeof(ATemplate));
+    ATemplate* t = f_mem_zalloc(sizeof(ATemplate));
 
-    t->componentBits = a_bitfield_new(A_CONFIG_ECS_COM_NUM);
-    t->componentBitsOwn = a_bitfield_new(A_CONFIG_ECS_COM_NUM);
+    t->componentBits = f_bitfield_new(A_CONFIG_ECS_COM_NUM);
+    t->componentBitsOwn = f_bitfield_new(A_CONFIG_ECS_COM_NUM);
 
-    char* parentId = a_str_prefixGetToLast(Id, '.');
+    char* parentId = f_str_prefixGetToLast(Id, '.');
 
     if(parentId) {
-        ATemplate* parentTemplate = a_strhash_get(g_templates, parentId);
+        ATemplate* parentTemplate = f_strhash_get(g_templates, parentId);
 
         if(parentTemplate == NULL) {
             parentTemplate = templateNew(parentId);
@@ -49,16 +49,16 @@ static ATemplate* templateNew(const char* Id)
         t->parent = parentTemplate;
 
         for(unsigned c = A_CONFIG_ECS_COM_NUM; c--; ) {
-            if(a_bitfield_test(parentTemplate->componentBits, c)) {
-                a_bitfield_set(t->componentBits, c);
+            if(f_bitfield_test(parentTemplate->componentBits, c)) {
+                f_bitfield_set(t->componentBits, c);
                 t->data[c] = parentTemplate->data[c];
             }
         }
 
-        a_mem_free(parentId);
+        f_mem_free(parentId);
     }
 
-    a_strhash_add(g_templates, Id, t);
+    f_strhash_add(g_templates, Id, t);
 
     return t;
 }
@@ -66,39 +66,39 @@ static ATemplate* templateNew(const char* Id)
 static void templateFree(ATemplate* Template)
 {
     for(int c = A_CONFIG_ECS_COM_NUM; c--; ) {
-        if(a_bitfield_test(Template->componentBitsOwn, (unsigned)c)
+        if(f_bitfield_test(Template->componentBitsOwn, (unsigned)c)
             && Template->data[c]) {
 
-            a_component__templateFree(a_component__get(c), Template->data[c]);
+            f_component__templateFree(f_component__get(c), Template->data[c]);
         }
     }
 
-    a_bitfield_free(Template->componentBits);
-    a_bitfield_free(Template->componentBitsOwn);
+    f_bitfield_free(Template->componentBits);
+    f_bitfield_free(Template->componentBitsOwn);
 
-    a_mem_free(Template);
+    f_mem_free(Template);
 }
 
-void a_template__init(void)
+void f_template__init(void)
 {
-    g_templates = a_strhash_new();
+    g_templates = f_strhash_new();
 }
 
-void a_template__uninit(void)
+void f_template__uninit(void)
 {
-    a_strhash_freeEx(g_templates, (AFree*)templateFree);
+    f_strhash_freeEx(g_templates, (AFree*)templateFree);
 }
 
-void a_template_new(const char* FilePath)
+void f_template_new(const char* FilePath)
 {
-    ABlock* root = a_block_new(FilePath);
+    ABlock* root = f_block_new(FilePath);
 
-    A_LIST_ITERATE(a_block_blocksGet(root), const ABlock*, b) {
-        const char* templateId = a_block_lineGetString(b, 0);
+    A_LIST_ITERATE(f_block_blocksGet(root), const ABlock*, b) {
+        const char* templateId = f_block_lineGetString(b, 0);
 
         #if A_CONFIG_BUILD_DEBUG
-            if(a_strhash_contains(g_templates, templateId)) {
-                A__FATAL("a_template_new(%s): '%s' already declared",
+            if(f_strhash_contains(g_templates, templateId)) {
+                A__FATAL("f_template_new(%s): '%s' already declared",
                          FilePath,
                          templateId);
             }
@@ -106,31 +106,31 @@ void a_template_new(const char* FilePath)
 
         ATemplate* t = templateNew(templateId);
 
-        A_LIST_ITERATE(a_block_blocksGet(b), const ABlock*, b) {
-            const char* componentId = a_block_lineGetString(b, 0);
-            int componentIndex = a_component__stringToIndex(componentId);
+        A_LIST_ITERATE(f_block_blocksGet(b), const ABlock*, b) {
+            const char* componentId = f_block_lineGetString(b, 0);
+            int componentIndex = f_component__stringToIndex(componentId);
 
             if(componentIndex < 0) {
-                a_out__error("a_template_new(%s): Unknown component '%s'",
+                f_out__error("f_template_new(%s): Unknown component '%s'",
                              templateId,
                              componentId);
 
                 continue;
             }
 
-            a_bitfield_set(t->componentBits, (unsigned)componentIndex);
-            a_bitfield_set(t->componentBitsOwn, (unsigned)componentIndex);
+            f_bitfield_set(t->componentBits, (unsigned)componentIndex);
+            f_bitfield_set(t->componentBitsOwn, (unsigned)componentIndex);
             t->data[componentIndex] =
-                a_component__templateInit(a_component__get(componentIndex), b);
+                f_component__templateInit(f_component__get(componentIndex), b);
         }
     }
 
-    a_block_free(root);
+    f_block_free(root);
 }
 
-const ATemplate* a_template__get(const char* TemplateId)
+const ATemplate* f_template__get(const char* TemplateId)
 {
-    ATemplate* t = a_strhash_get(g_templates, TemplateId);
+    ATemplate* t = f_strhash_get(g_templates, TemplateId);
 
     #if A_CONFIG_BUILD_DEBUG
         if(t == NULL) {
@@ -143,10 +143,10 @@ const ATemplate* a_template__get(const char* TemplateId)
     return t;
 }
 
-void a_template__initRun(const ATemplate* Template, AEntity* Entity, const void* Context)
+void f_template__initRun(const ATemplate* Template, AEntity* Entity, const void* Context)
 {
     if(Template->parent) {
-        a_template__initRun(Template->parent, Entity, Context);
+        f_template__initRun(Template->parent, Entity, Context);
     }
 
     if(Template->init) {
@@ -154,30 +154,30 @@ void a_template__initRun(const ATemplate* Template, AEntity* Entity, const void*
     }
 }
 
-void a_template_init(const char* Id, AEntityInit* Init)
+void f_template_init(const char* Id, AEntityInit* Init)
 {
-    ATemplate* t = a_strhash_get(g_templates, Id);
+    ATemplate* t = f_strhash_get(g_templates, Id);
 
     #if A_CONFIG_BUILD_DEBUG
         if(t == NULL) {
-            A__FATAL("a_template_init(%s): Unknown template", Id);
+            A__FATAL("f_template_init(%s): Unknown template", Id);
         }
     #endif
 
     t->init = Init;
 }
 
-unsigned a_template__instanceGet(const ATemplate* Template)
+unsigned f_template__instanceGet(const ATemplate* Template)
 {
     return Template->instanceNumber;
 }
 
-bool a_template__componentHas(const ATemplate* Template, int ComponentIndex)
+bool f_template__componentHas(const ATemplate* Template, int ComponentIndex)
 {
-    return a_bitfield_test(Template->componentBits, (unsigned)ComponentIndex);
+    return f_bitfield_test(Template->componentBits, (unsigned)ComponentIndex);
 }
 
-const void* a_template__dataGet(const ATemplate* Template, int ComponentIndex)
+const void* f_template__dataGet(const ATemplate* Template, int ComponentIndex)
 {
     return Template->data[ComponentIndex];
 }

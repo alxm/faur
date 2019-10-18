@@ -15,7 +15,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a_spritelayers.v.h"
+#include "f_spritelayers.v.h"
 #include <faur.v.h>
 
 typedef struct {
@@ -26,7 +26,7 @@ typedef struct {
 
 static ALayer* layer_new(ASprite* Sprite, AColorBlend Blend, int Red, int Green, int Blue, int Alpha)
 {
-    ALayer* l = a_mem_malloc(sizeof(ALayer));
+    ALayer* l = f_mem_malloc(sizeof(ALayer));
 
     l->sprite = Sprite;
     l->blend = Blend;
@@ -40,54 +40,54 @@ static ALayer* layer_new(ASprite* Sprite, AColorBlend Blend, int Red, int Green,
 
 static void layer_free(ALayer* Layer)
 {
-    a_mem_free(Layer);
+    f_mem_free(Layer);
 }
 
 static void layer_freeEx(ALayer* Layer)
 {
-    a_sprite_free(Layer->sprite);
+    f_sprite_free(Layer->sprite);
 
-    a_mem_free(Layer);
+    f_mem_free(Layer);
 }
 
-ASpriteLayers* a_spritelayers_new(void)
+ASpriteLayers* f_spritelayers_new(void)
 {
-    return a_list_new();
+    return f_list_new();
 }
 
-void a_spritelayers_free(ASpriteLayers* Layers, bool FreeSprites)
+void f_spritelayers_free(ASpriteLayers* Layers, bool FreeSprites)
 {
     if(FreeSprites) {
-        a_list_freeEx(Layers, (AFree*)layer_freeEx);
+        f_list_freeEx(Layers, (AFree*)layer_freeEx);
     } else {
-        a_list_freeEx(Layers, (AFree*)layer_free);
+        f_list_freeEx(Layers, (AFree*)layer_free);
     }
 }
 
-void a_spritelayers_clear(ASpriteLayers* Layers, bool FreeSprites)
+void f_spritelayers_clear(ASpriteLayers* Layers, bool FreeSprites)
 {
     if(FreeSprites) {
-        a_list_clearEx(Layers, (AFree*)layer_freeEx);
+        f_list_clearEx(Layers, (AFree*)layer_freeEx);
     } else {
-        a_list_clearEx(Layers, (AFree*)layer_free);
+        f_list_clearEx(Layers, (AFree*)layer_free);
     }
 }
 
-void a_spritelayers_add(ASpriteLayers* Layers, ASprite* Sprite, AColorBlend Blend, int Red, int Green, int Blue, int Alpha)
+void f_spritelayers_add(ASpriteLayers* Layers, ASprite* Sprite, AColorBlend Blend, int Red, int Green, int Blue, int Alpha)
 {
-    a_list_addLast(Layers, layer_new(Sprite, Blend, Red, Green, Blue, Alpha));
+    f_list_addLast(Layers, layer_new(Sprite, Blend, Red, Green, Blue, Alpha));
 }
 
-void a_spritelayers_blit(const ASpriteLayers* Layers, unsigned Frame, int X, int Y)
+void f_spritelayers_blit(const ASpriteLayers* Layers, unsigned Frame, int X, int Y)
 {
-    a_color_push();
+    f_color_push();
 
     A_LIST_ITERATE(Layers, ALayer*, l) {
-        a_color_blendSet(l->blend);
-        a_color_baseSetRgba(l->r, l->g, l->b, l->a);
+        f_color_blendSet(l->blend);
+        f_color_baseSetRgba(l->r, l->g, l->b, l->a);
 
-        a_sprite_blit(l->sprite, Frame, X, Y);
+        f_sprite_blit(l->sprite, Frame, X, Y);
     }
 
-    a_color_pop();
+    f_color_pop();
 }

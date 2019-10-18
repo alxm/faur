@@ -18,8 +18,8 @@
 #ifndef A_INC_GENERAL_CONSOLE_P_H
 #define A_INC_GENERAL_CONSOLE_P_H
 
-#include "general/a_system_includes.h"
+#include "general/f_system_includes.h"
 
-extern void a_console_showSet(bool Show);
+extern void f_console_showSet(bool Show);
 
 #endif // A_INC_GENERAL_CONSOLE_P_H

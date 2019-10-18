@@ -24,9 +24,9 @@ static void A__FUNC_NAME(Keyed, NoClip)(const APlatformTexture* Texture, const A
 {
     A__BLEND_SETUP;
 
-    const int screenW = a__screen.pixels->w;
-    APixel* startDst = a_screen__bufferGetFrom(X, Y);
-    const APixel* src = a_pixels__bufferGetStart(Pixels, Frame);
+    const int screenW = f__screen.pixels->w;
+    APixel* startDst = f_screen__bufferGetFrom(X, Y);
+    const APixel* src = f_pixels__bufferGetStart(Pixels, Frame);
     const unsigned* spans = Texture->spans;
 
     for(int i = Pixels->h; i--; startDst += screenW) {
@@ -58,20 +58,20 @@ static void A__FUNC_NAME(Keyed, DoClip)(const APlatformTexture* Texture, const A
 {
     A__BLEND_SETUP;
 
-    const int screenW = a__screen.pixels->w;
+    const int screenW = f__screen.pixels->w;
     const int spriteW = Pixels->w;
     const int spriteH = Pixels->h;
 
-    const int yClipUp = a_math_max(0, a__screen.clipY - Y);
-    const int yClipDown = a_math_max(0, Y + spriteH - a__screen.clipY2);
-    const int xClipLeft = a_math_max(0, a__screen.clipX - X);
-    const int xClipRight = a_math_max(0, X + spriteW - a__screen.clipX2);
+    const int yClipUp = f_math_max(0, f__screen.clipY - Y);
+    const int yClipDown = f_math_max(0, Y + spriteH - f__screen.clipY2);
+    const int xClipLeft = f_math_max(0, f__screen.clipX - X);
+    const int xClipRight = f_math_max(0, X + spriteW - f__screen.clipX2);
 
     const int rows = spriteH - yClipUp - yClipDown;
     const int columns = spriteW - xClipLeft - xClipRight;
 
-    APixel* startDst = a_screen__bufferGetFrom(X + xClipLeft, Y + yClipUp);
-    const APixel* startSrc = a_pixels__bufferGetFrom(
+    APixel* startDst = f_screen__bufferGetFrom(X + xClipLeft, Y + yClipUp);
+    const APixel* startSrc = f_pixels__bufferGetFrom(
                                 Pixels, Frame, xClipLeft, yClipUp);
 
     const unsigned* spans = Texture->spans;
@@ -146,9 +146,9 @@ static void A__FUNC_NAME(Block, NoClip)(const APlatformTexture* Texture, const A
 
     A__BLEND_SETUP;
 
-    const int screenW = a__screen.pixels->w;
-    APixel* startDst = a_screen__bufferGetFrom(X, Y);
-    const APixel* src = a_pixels__bufferGetStart(Pixels, Frame);
+    const int screenW = f__screen.pixels->w;
+    APixel* startDst = f_screen__bufferGetFrom(X, Y);
+    const APixel* src = f_pixels__bufferGetStart(Pixels, Frame);
 
     for(int i = Pixels->h; i--; startDst += screenW) {
         APixel* dst = startDst;
@@ -168,20 +168,20 @@ static void A__FUNC_NAME(Block, DoClip)(const APlatformTexture* Texture, const A
 
     A__BLEND_SETUP;
 
-    const int screenW = a__screen.pixels->w;
+    const int screenW = f__screen.pixels->w;
     const int spriteW = Pixels->w;
     const int spriteH = Pixels->h;
 
-    const int yClipUp = a_math_max(0, a__screen.clipY - Y);
-    const int yClipDown = a_math_max(0, Y + spriteH - a__screen.clipY2);
-    const int xClipLeft = a_math_max(0, a__screen.clipX - X);
-    const int xClipRight = a_math_max(0, X + spriteW - a__screen.clipX2);
+    const int yClipUp = f_math_max(0, f__screen.clipY - Y);
+    const int yClipDown = f_math_max(0, Y + spriteH - f__screen.clipY2);
+    const int xClipLeft = f_math_max(0, f__screen.clipX - X);
+    const int xClipRight = f_math_max(0, X + spriteW - f__screen.clipX2);
 
     const int rows = spriteH - yClipUp - yClipDown;
     const int columns = spriteW - xClipLeft - xClipRight;
 
-    APixel* startDst = a_screen__bufferGetFrom(X + xClipLeft, Y + yClipUp);
-    const APixel* startSrc = a_pixels__bufferGetFrom(
+    APixel* startDst = f_screen__bufferGetFrom(X + xClipLeft, Y + yClipUp);
+    const APixel* startSrc = f_pixels__bufferGetFrom(
                                 Pixels, Frame, xClipLeft, yClipUp);
 
     for(int i = rows; i--; startDst += screenW, startSrc += spriteW) {
@@ -198,10 +198,10 @@ static void A__FUNC_NAME(Block, DoClip)(const APlatformTexture* Texture, const A
 }
 
 #define A__PIXEL_TRANSPARENCY 0
-#include "platform/graphics/a_software_blitex.inc.c"
+#include "platform/graphics/f_software_blitex.inc.c"
 
 #define A__PIXEL_TRANSPARENCY 1
-#include "platform/graphics/a_software_blitex.inc.c"
+#include "platform/graphics/f_software_blitex.inc.c"
 
 #undef A__BLEND
 #undef A__FILL

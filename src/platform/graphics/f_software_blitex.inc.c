@@ -31,10 +31,10 @@ static void A__FUNC_NAME_EX(const APixels* Pixels, unsigned Frame, int X, int Y,
     const AVectorInt size = {Pixels->w, Pixels->h};
     const AVectorFix sizeScaled = {size.x * Scale, size.y * Scale};
     const AVectorFix sizeScaledHalf = {sizeScaled.x / 2, sizeScaled.y / 2};
-    const APixel* const pixels = a_pixels__bufferGetFrom(Pixels, Frame, 0, 0);
+    const APixel* const pixels = f_pixels__bufferGetFrom(Pixels, Frame, 0, 0);
 
-    const AVectorInt screenSize = a_screen_sizeGet();
-    APixel* const screenPixels = a_screen__bufferGetFrom(0, 0);
+    const AVectorInt screenSize = f_screen_sizeGet();
+    APixel* const screenPixels = f_screen__bufferGetFrom(0, 0);
 
     /*
          Counter-clockwise rotations:
@@ -46,14 +46,14 @@ static void A__FUNC_NAME_EX(const APixels* Pixels, unsigned Frame, int X, int Y,
                     0 deg               90 deg
     */
 
-    Angle = a_fix_angleWrap(Angle);
+    Angle = f_fix_angleWrap(Angle);
 
-    const AFix sin = a_fix_sin(Angle);
-    const AFix cos = a_fix_cos(Angle);
+    const AFix sin = f_fix_sin(Angle);
+    const AFix cos = f_fix_cos(Angle);
 
-    const AFix wLeft = sizeScaledHalf.x + a_fix_mul(CenterX, sizeScaledHalf.x);
+    const AFix wLeft = sizeScaledHalf.x + f_fix_mul(CenterX, sizeScaledHalf.x);
     const AFix wRight = sizeScaled.x - wLeft;
-    const AFix hTop = sizeScaledHalf.y + a_fix_mul(CenterY, sizeScaledHalf.y);
+    const AFix hTop = sizeScaledHalf.y + f_fix_mul(CenterY, sizeScaledHalf.y);
     const AFix hDown = sizeScaled.y - hTop;
 
     const AFix xMns = -wLeft;
@@ -61,8 +61,8 @@ static void A__FUNC_NAME_EX(const APixels* Pixels, unsigned Frame, int X, int Y,
     const AFix yMns = -hTop;
     const AFix yPls = hDown - 1;
 
-    #define ROTATE_X(x, y) a_fix_toInt(a_fix_mul(x,  cos) + a_fix_mul(y, sin))
-    #define ROTATE_Y(x, y) a_fix_toInt(a_fix_mul(x, -sin) + a_fix_mul(y, cos))
+    #define ROTATE_X(x, y) f_fix_toInt(f_fix_mul(x,  cos) + f_fix_mul(y, sin))
+    #define ROTATE_Y(x, y) f_fix_toInt(f_fix_mul(x, -sin) + f_fix_mul(y, cos))
 
     const AVectorInt
         p0 = {X + ROTATE_X(xMns, yMns), Y + ROTATE_Y(xMns, yMns)},
@@ -78,9 +78,9 @@ static void A__FUNC_NAME_EX(const APixels* Pixels, unsigned Frame, int X, int Y,
 
     const AVectorFix
         sprite0 = {0, 0},
-        sprite1 = {a_fix_fromInt(size.x) - 1, 0},
-        sprite2 = {a_fix_fromInt(size.x) - 1, a_fix_fromInt(size.y) - 1},
-        sprite3 = {0, a_fix_fromInt(size.y) - 1};
+        sprite1 = {f_fix_fromInt(size.x) - 1, 0},
+        sprite2 = {f_fix_fromInt(size.x) - 1, f_fix_fromInt(size.y) - 1},
+        sprite3 = {0, f_fix_fromInt(size.y) - 1};
 
     // Based on Angle ranges, determine the top and bottom y coords
     // of the rotated sprite and the sides to interpolate.
@@ -137,8 +137,8 @@ static void A__FUNC_NAME_EX(const APixels* Pixels, unsigned Frame, int X, int Y,
     scan_line(RIGHT, screenTop, screenRight, spriteTop, spriteMidright);
     scan_line(RIGHT, screenRight, screenBottom, spriteMidright, spriteBottom);
 
-    const int scrTopYClipped = a_math_max(screenTop.y, 0);
-    const int scrBottomYClipped = a_math_min(screenBottom.y, screenSize.y - 1);
+    const int scrTopYClipped = f_math_max(screenTop.y, 0);
+    const int scrBottomYClipped = f_math_min(screenBottom.y, screenSize.y - 1);
 
     for(int scrY = scrTopYClipped; scrY <= scrBottomYClipped; scrY++) {
         int screenX0 = g_scanlines[scrY].screenX[LEFT];
@@ -179,11 +179,11 @@ static void A__FUNC_NAME_EX(const APixels* Pixels, unsigned Frame, int X, int Y,
 
         for(int x = screenX0; x <= screenX1; x++) {
             const APixel* src = pixels
-                                    + a_fix_toInt(sprite.y) * size.x
-                                    + a_fix_toInt(sprite.x);
+                                    + f_fix_toInt(sprite.y) * size.x
+                                    + f_fix_toInt(sprite.x);
 
             #if A__PIXEL_TRANSPARENCY
-                if(*src != a_color__key) {
+                if(*src != f_color__key) {
                     A__PIXEL_SETUP;
                     A__PIXEL_DRAW(dst);
                 }

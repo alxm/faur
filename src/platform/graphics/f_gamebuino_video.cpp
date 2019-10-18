@@ -16,7 +16,7 @@
 */
 
 extern "C" {
-    #include "a_gamebuino_video.v.h"
+    #include "f_gamebuino_video.v.h"
 }
 
 #include <faur.v.h>
@@ -29,31 +29,31 @@ static APixels g_pixels;
 static const AVectorInt g_size = {A_CONFIG_SCREEN_HARDWARE_WIDTH,
                                   A_CONFIG_SCREEN_HARDWARE_HEIGHT};
 
-void a_platform_api__screenInit(void)
+void f_platform_api__screenInit(void)
 {
-    a_pixels__init(&g_pixels, g_size.x, g_size.y, 1, (APixelsFlags)0);
-    a_pixels__bufferSet(&g_pixels, gb.display._buffer, g_size.x, g_size.y);
+    f_pixels__init(&g_pixels, g_size.x, g_size.y, 1, (APixelsFlags)0);
+    f_pixels__bufferSet(&g_pixels, gb.display._buffer, g_size.x, g_size.y);
 }
 
-void a_platform_api__screenUninit(void)
-{
-}
-
-void a_platform_api__screenShow(void)
+void f_platform_api__screenUninit(void)
 {
 }
 
-bool a_platform_api__screenVsyncGet(void)
+void f_platform_api__screenShow(void)
+{
+}
+
+bool f_platform_api__screenVsyncGet(void)
 {
     return true;
 }
 
-AVectorInt a_platform_api__screenSizeGet(void)
+AVectorInt f_platform_api__screenSizeGet(void)
 {
     return g_size;
 }
 
-APixels* a_platform_api__screenPixelsGet(void)
+APixels* f_platform_api__screenPixelsGet(void)
 {
     return &g_pixels;
 }

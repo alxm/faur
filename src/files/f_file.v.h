@@ -18,7 +18,7 @@
 #ifndef A_INC_FILES_FILE_V_H
 #define A_INC_FILES_FILE_V_H
 
-#include "files/a_file.p.h"
+#include "files/f_file.p.h"
 
 typedef enum {
     A_FILE__OFFSET_INVALID = -1,
@@ -38,7 +38,7 @@ typedef struct {
     int (*ungetchar)(AFile* File, int Char);
 } AFileInterface;
 
-#include "files/a_embed.v.h"
+#include "files/f_embed.v.h"
 
 struct AFile {
     APath* path;
@@ -56,6 +56,6 @@ struct AFile {
     bool eof;
 };
 
-extern const AEmbeddedFile* a_file__dataGet(AFile* File);
+extern const AEmbeddedFile* f_file__dataGet(AFile* File);
 
 #endif // A_INC_FILES_FILE_V_H

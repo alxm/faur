@@ -15,7 +15,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a_timer.v.h"
+#include "f_timer.v.h"
 #include <faur.v.h>
 
 typedef enum {
@@ -43,8 +43,8 @@ static AList* g_runningTimers; // list of ATimer
 
 static inline void setNow(void)
 {
-    g_now.ms = a_time_getMs();
-    g_now.ticks = a_fps_ticksGet();
+    g_now.ms = f_time_getMs();
+    g_now.ticks = f_fps_ticksGet();
 }
 
 static inline unsigned getNow(const ATimer* Timer)
@@ -62,36 +62,36 @@ static inline unsigned getNow(const ATimer* Timer)
     }
 }
 
-static void a_timer__init(void)
+static void f_timer__init(void)
 {
     setNow();
 
-    g_runningTimers = a_list_new();
+    g_runningTimers = f_list_new();
 }
 
-static void a_timer__uninit(void)
+static void f_timer__uninit(void)
 {
-    a_list_free(g_runningTimers);
+    f_list_free(g_runningTimers);
 }
 
-const APack a_pack__timer = {
+const APack f_pack__timer = {
     "Timer",
     {
-        [0] = a_timer__init,
+        [0] = f_timer__init,
     },
     {
-        [0] = a_timer__uninit,
+        [0] = f_timer__uninit,
     },
 };
 
-void a_timer__tick(void)
+void f_timer__tick(void)
 {
     setNow();
 
     A_LIST_ITERATE(g_runningTimers, ATimer*, t) {
         if(!A_FLAGS_TEST_ANY(t->flags, A_TIMER__RUNNING)) {
             // Kick out timer that was marked as not running last frame
-            a_list_removeNode(t->runningListNode);
+            f_list_removeNode(t->runningListNode);
             t->runningListNode = NULL;
 
             A_FLAGS_CLEAR(t->flags, A_TIMER__EXPIRED);
@@ -121,9 +121,9 @@ void a_timer__tick(void)
     }
 }
 
-ATimer* a_timer_new(ATimerType Type, unsigned Period, bool Repeat)
+ATimer* f_timer_new(ATimerType Type, unsigned Period, bool Repeat)
 {
-    ATimer* t = a_mem_zalloc(sizeof(ATimer));
+    ATimer* t = f_mem_zalloc(sizeof(ATimer));
 
     if(Type == A_TIMER_SEC) {
         Period *= 1000;
@@ -139,9 +139,9 @@ ATimer* a_timer_new(ATimerType Type, unsigned Period, bool Repeat)
     return t;
 }
 
-ATimer* a_timer_dup(const ATimer* Timer)
+ATimer* f_timer_dup(const ATimer* Timer)
 {
-    ATimer* t = a_mem_dup(Timer, sizeof(ATimer));
+    ATimer* t = f_mem_dup(Timer, sizeof(ATimer));
 
     A_FLAGS_CLEAR(t->flags, A_TIMER__RUNNING | A_TIMER__EXPIRED);
 
@@ -151,25 +151,25 @@ ATimer* a_timer_dup(const ATimer* Timer)
     return t;
 }
 
-void a_timer_free(ATimer* Timer)
+void f_timer_free(ATimer* Timer)
 {
     if(Timer == NULL) {
         return;
     }
 
     if(Timer->runningListNode) {
-        a_list_removeNode(Timer->runningListNode);
+        f_list_removeNode(Timer->runningListNode);
     }
 
-    a_mem_free(Timer);
+    f_mem_free(Timer);
 }
 
-unsigned a_timer_elapsedGet(const ATimer* Timer)
+unsigned f_timer_elapsedGet(const ATimer* Timer)
 {
     return Timer->diff;
 }
 
-unsigned a_timer_periodGet(const ATimer* Timer)
+unsigned f_timer_periodGet(const ATimer* Timer)
 {
     if(Timer->type == A_TIMER_SEC) {
         return Timer->period / 1000;
@@ -178,7 +178,7 @@ unsigned a_timer_periodGet(const ATimer* Timer)
     return Timer->period;
 }
 
-void a_timer_periodSet(ATimer* Timer, unsigned Period)
+void f_timer_periodSet(ATimer* Timer, unsigned Period)
 {
     if(Timer->type == A_TIMER_SEC) {
         Period *= 1000;
@@ -193,7 +193,7 @@ void a_timer_periodSet(ATimer* Timer, unsigned Period)
     }
 }
 
-void a_timer_start(ATimer* Timer)
+void f_timer_start(ATimer* Timer)
 {
     Timer->start = getNow(Timer);
     Timer->diff = 0;
@@ -209,38 +209,38 @@ void a_timer_start(ATimer* Timer)
     }
 
     if(Timer->runningListNode == NULL) {
-        Timer->runningListNode = a_list_addLast(g_runningTimers, Timer);
+        Timer->runningListNode = f_list_addLast(g_runningTimers, Timer);
     }
 }
 
-void a_timer_stop(ATimer* Timer)
+void f_timer_stop(ATimer* Timer)
 {
     Timer->diff = 0;
 
     A_FLAGS_CLEAR(Timer->flags, A_TIMER__RUNNING | A_TIMER__EXPIRED);
 
     if(Timer->runningListNode) {
-        a_list_removeNode(Timer->runningListNode);
+        f_list_removeNode(Timer->runningListNode);
         Timer->runningListNode = NULL;
     }
 }
 
-bool a_timer_isRunning(const ATimer* Timer)
+bool f_timer_isRunning(const ATimer* Timer)
 {
     return A_FLAGS_TEST_ANY(Timer->flags, A_TIMER__RUNNING);
 }
 
-bool a_timer_expiredGet(const ATimer* Timer)
+bool f_timer_expiredGet(const ATimer* Timer)
 {
     return A_FLAGS_TEST_ANY(Timer->flags, A_TIMER__EXPIRED);
 }
 
-unsigned a_timer_expiredGetCount(const ATimer* Timer)
+unsigned f_timer_expiredGetCount(const ATimer* Timer)
 {
     return Timer->expiredCount;
 }
 
-void a_timer_expiredClear(ATimer* Timer)
+void f_timer_expiredClear(ATimer* Timer)
 {
     if(Timer->period > 0) {
         A_FLAGS_CLEAR(Timer->flags, A_TIMER__EXPIRED);

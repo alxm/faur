@@ -15,7 +15,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a_sdl_video.v.h"
+#include "f_sdl_video.v.h"
 #include <faur.v.h>
 
 #if A_CONFIG_LIB_SDL
@@ -28,7 +28,7 @@
 #if A_CONFIG_LIB_SDL == 1
     static SDL_Surface* g_sdlScreen;
 #elif A_CONFIG_LIB_SDL == 2
-    SDL_Renderer* a__sdlRenderer;
+    SDL_Renderer* f__sdlRenderer;
     static SDL_Window* g_sdlWindow;
     static SDL_Texture* g_sdlTexture;
     static ARgb g_clearRgb;
@@ -56,7 +56,7 @@ static bool g_fullscreen = A_CONFIG_SCREEN_FULLSCREEN;
 static int g_zoom = A_CONFIG_SCREEN_ZOOM;
 static APixels g_pixels;
 
-void a_platform_sdl_video__init(void)
+void f_platform_sdl_video__init(void)
 {
     #if A_CONFIG_SYSTEM_PANDORA
         putenv("SDL_VIDEODRIVER=omapdss");
@@ -68,7 +68,7 @@ void a_platform_sdl_video__init(void)
     }
 }
 
-void a_platform_sdl_video__uninit(void)
+void f_platform_sdl_video__uninit(void)
 {
     #if A_CONFIG_LIB_SDL == 1
         #if !A_CONFIG_SCREEN_ALLOCATE
@@ -78,7 +78,7 @@ void a_platform_sdl_video__uninit(void)
         #endif
     #elif A_CONFIG_LIB_SDL == 2
         SDL_DestroyTexture(g_sdlTexture);
-        SDL_DestroyRenderer(a__sdlRenderer);
+        SDL_DestroyRenderer(f__sdlRenderer);
         SDL_DestroyWindow(g_sdlWindow);
     #endif
 
@@ -89,7 +89,7 @@ void a_platform_sdl_video__uninit(void)
 static bool sdl1ScreenSet(int Width, int Height, uint32_t Flags)
 {
     if(SDL_VideoModeOK(Width, Height, A_CONFIG_SCREEN_BPP, Flags) == 0) {
-        a_out__error("SDL_VideoModeOK(%d, %d, %d): Mode not available",
+        f_out__error("SDL_VideoModeOK(%d, %d, %d): Mode not available",
                      Width,
                      Height,
                      A_CONFIG_SCREEN_BPP);
@@ -133,12 +133,12 @@ static AVectorInt sdlScreenSizeGetNative(void)
     SDL_DisplayMode mode;
 
     if(SDL_GetCurrentDisplayMode(0, &mode) < 0) {
-        a_out__error("SDL_GetCurrentDisplayMode: %s", SDL_GetError());
+        f_out__error("SDL_GetCurrentDisplayMode: %s", SDL_GetError());
 
         return (AVectorInt){0, 0};
     }
 
-    a_out__info("Display info: %dx%d %dbpp",
+    f_out__info("Display info: %dx%d %dbpp",
                 mode.w,
                 mode.h,
                 SDL_BITSPERPIXEL(mode.format));
@@ -148,7 +148,7 @@ static AVectorInt sdlScreenSizeGetNative(void)
 #endif
 #endif // A__SIZE_DYNAMIC
 
-void a_platform_api__screenInit(void)
+void f_platform_api__screenInit(void)
 {
     #if A__SIZE_DYNAMIC
         AVectorInt res = sdlScreenSizeGetNative();
@@ -167,7 +167,7 @@ void a_platform_api__screenInit(void)
     if(g_size.x <= 0 || g_size.y <= 0) {
         A__FATAL("Invalid screen resolution %dx%d", g_size.x, g_size.y);
     } else {
-        a_out__info("Screen resolution %dx%d, zoom x%d",
+        f_out__info("Screen resolution %dx%d, zoom x%d",
                     g_size.x,
                     g_size.y,
                     A_CONFIG_SCREEN_ZOOM);
@@ -179,7 +179,7 @@ void a_platform_api__screenInit(void)
         pFlags |= A_PIXELS__ALLOC;
     #endif
 
-    a_pixels__init(&g_pixels, g_size.x, g_size.y, 1, pFlags);
+    f_pixels__init(&g_pixels, g_size.x, g_size.y, 1, pFlags);
 
     #if A_CONFIG_LIB_SDL == 1
         uint32_t videoFlags = SDL_SWSURFACE;
@@ -202,7 +202,7 @@ void a_platform_api__screenInit(void)
                 }
             }
 
-            a_pixels__bufferSet(&g_pixels,
+            f_pixels__bufferSet(&g_pixels,
                                 g_sdlScreen->pixels,
                                 g_sdlScreen->pitch / sizeof(APixel),
                                 g_sdlScreen->h);
@@ -237,7 +237,7 @@ void a_platform_api__screenInit(void)
             if(SDL_SetWindowFullscreen(
                 g_sdlWindow, SDL_WINDOW_FULLSCREEN) < 0) {
 
-                a_out__error("SDL_SetWindowFullscreen: %s", SDL_GetError());
+                f_out__error("SDL_SetWindowFullscreen: %s", SDL_GetError());
             }
         #endif
 
@@ -248,14 +248,14 @@ void a_platform_api__screenInit(void)
             rendererFlags |= SDL_RENDERER_PRESENTVSYNC;
         #endif
 
-        a__sdlRenderer = SDL_CreateRenderer(g_sdlWindow, -1, rendererFlags);
+        f__sdlRenderer = SDL_CreateRenderer(g_sdlWindow, -1, rendererFlags);
 
-        if(a__sdlRenderer == NULL) {
+        if(f__sdlRenderer == NULL) {
             A__FATAL("SDL_CreateRenderer: %s", SDL_GetError());
         }
 
         SDL_RendererInfo info;
-        SDL_GetRendererInfo(a__sdlRenderer, &info);
+        SDL_GetRendererInfo(f__sdlRenderer, &info);
 
         if(!(info.flags & SDL_RENDERER_TARGETTEXTURE)) {
             A__FATAL("SDL_CreateRenderer: "
@@ -263,14 +263,14 @@ void a_platform_api__screenInit(void)
         }
 
         if(info.flags & SDL_RENDERER_ACCELERATED) {
-            a_out__info("Using SDL2 accelerated renderer");
+            f_out__info("Using SDL2 accelerated renderer");
         } else {
-            a_out__info("Using SDL2 software renderer");
+            f_out__info("Using SDL2 software renderer");
         }
 
         g_vsync = info.flags & SDL_RENDERER_PRESENTVSYNC;
 
-        ret = SDL_RenderSetLogicalSize(a__sdlRenderer, g_size.x, g_size.y);
+        ret = SDL_RenderSetLogicalSize(f__sdlRenderer, g_size.x, g_size.y);
 
         if(ret < 0) {
             A__FATAL("SDL_RenderSetLogicalSize: %s", SDL_GetError());
@@ -282,7 +282,7 @@ void a_platform_api__screenInit(void)
             int access = SDL_TEXTUREACCESS_TARGET;
         #endif
 
-        g_sdlTexture = SDL_CreateTexture(a__sdlRenderer,
+        g_sdlTexture = SDL_CreateTexture(f__sdlRenderer,
                                          A_SDL__PIXEL_FORMAT,
                                          access,
                                          g_size.x,
@@ -293,21 +293,21 @@ void a_platform_api__screenInit(void)
         }
 
         #if A_CONFIG_LIB_RENDER_SDL
-            a_platform_api__screenTextureSet(
-                a_platform_api__screenTextureGet());
+            f_platform_api__screenTextureSet(
+                f_platform_api__screenTextureGet());
         #endif
 
         SDL_SetHintWithPriority(
             SDL_HINT_RENDER_SCALE_QUALITY, "nearest", SDL_HINT_OVERRIDE);
 
-        g_clearRgb = a_pixel_toRgb(
-                        a_pixel_fromHex(A_CONFIG_COLOR_SCREEN_BORDER));
+        g_clearRgb = f_pixel_toRgb(
+                        f_pixel_fromHex(A_CONFIG_COLOR_SCREEN_BORDER));
     #endif
 
-    a_out__info("V-sync is %s", g_vsync ? "on" : "off");
+    f_out__info("V-sync is %s", g_vsync ? "on" : "off");
 
     #if A_CONFIG_TRAIT_DESKTOP
-        const char* caption = a_str__fmt512("%s %s",
+        const char* caption = f_str__fmt512("%s %s",
                                             A_CONFIG_APP_NAME,
                                             A_CONFIG_APP_VERSION_STRING);
 
@@ -318,71 +318,71 @@ void a_platform_api__screenInit(void)
         #endif
     #endif
 
-    a_platform_api__screenMouseCursorSet(A_CONFIG_INPUT_MOUSE_CURSOR);
+    f_platform_api__screenMouseCursorSet(A_CONFIG_INPUT_MOUSE_CURSOR);
 
     #if A_CONFIG_SCREEN_WIZ_FIX
-        a_platform_wiz__portraitModeSet();
+        f_platform_wiz__portraitModeSet();
     #endif
 }
 
-void a_platform_api__screenUninit(void)
+void f_platform_api__screenUninit(void)
 {
-    a_pixels__free(&g_pixels);
+    f_pixels__free(&g_pixels);
 }
 
 #if A_CONFIG_LIB_SDL == 2
-void a_platform_api__screenClear(void)
+void f_platform_api__screenClear(void)
 {
-    if(SDL_RenderClear(a__sdlRenderer) < 0) {
-        a_out__error("SDL_RenderClear: %s", SDL_GetError());
+    if(SDL_RenderClear(f__sdlRenderer) < 0) {
+        f_out__error("SDL_RenderClear: %s", SDL_GetError());
     }
 }
 
-APlatformTexture* a_platform_api__screenTextureGet(void)
+APlatformTexture* f_platform_api__screenTextureGet(void)
 {
     return (APlatformTexture*)&g_sdlTexture;
 }
 
-void a_platform_api__screenTextureSet(APlatformTexture* Texture)
+void f_platform_api__screenTextureSet(APlatformTexture* Texture)
 {
     SDL_Texture* t = Texture ? *(SDL_Texture**)Texture : NULL;
 
-    if(SDL_SetRenderTarget(a__sdlRenderer, t) < 0) {
+    if(SDL_SetRenderTarget(f__sdlRenderer, t) < 0) {
         A__FATAL("SDL_SetRenderTarget: %s", SDL_GetError());
     }
 }
 
-void a_platform_api__screenTextureRead(APixels* Pixels, unsigned Frame)
+void f_platform_api__screenTextureRead(APixels* Pixels, unsigned Frame)
 {
     // Unreliable on texture targets
-    if(SDL_RenderReadPixels(a__sdlRenderer,
+    if(SDL_RenderReadPixels(f__sdlRenderer,
                             NULL,
                             A_SDL__PIXEL_FORMAT,
-                            a_pixels__bufferGetFrom(Pixels, Frame, 0, 0),
+                            f_pixels__bufferGetFrom(Pixels, Frame, 0, 0),
                             Pixels->w * (int)sizeof(APixel)) < 0) {
 
         A__FATAL("SDL_RenderReadPixels: %s", SDL_GetError());
     }
 }
 
-void a_platform_api__screenClipSet(int X, int Y, int Width, int Height)
+void f_platform_api__screenClipSet(int X, int Y, int Width, int Height)
 {
     SDL_Rect area = {X, Y, Width, Height};
 
-    if(SDL_RenderSetClipRect(a__sdlRenderer, Width > 0 ? &area : NULL) < 0) {
-        a_out__error("SDL_RenderSetClipRect: %s", SDL_GetError());
+    if(SDL_RenderSetClipRect(f__sdlRenderer, Width > 0 ? &area : NULL) < 0) {
+        f_out__error("SDL_RenderSetClipRect: %s", SDL_GetError());
     }
 }
 
-void a_platform_api__screenDraw(void)
+void f_platform_api__screenDraw(void)
 {
-    if(SDL_RenderCopy(a__sdlRenderer, g_sdlTexture, NULL, NULL) < 0) {
+    if(SDL_RenderCopy(f__sdlRenderer, g_sdlTexture, NULL, NULL) < 0) {
         A__FATAL("SDL_RenderCopy: %s", SDL_GetError());
     }
 }
 #endif
 
-void a_platform_api__screenShow(void)
+void f_platform_api__screenShow(void)
 {
     #if A_CONFIG_LIB_SDL == 1
         #if A_CONFIG_SCREEN_WIZ_FIX
@@ -488,27 +488,27 @@ void a_platform_api__screenShow(void)
                 }
             }
 
-            a_pixels__bufferSet(&g_pixels,
+            f_pixels__bufferSet(&g_pixels,
                                 g_sdlScreen->pixels,
                                 g_sdlScreen->pitch / sizeof(APixel),
                                 g_sdlScreen->h);
         #endif
     #elif A_CONFIG_LIB_SDL == 2
         #if A_CONFIG_LIB_RENDER_SDL
-            a_platform_api__screenTextureSet(NULL);
-            a_platform_api__screenClipSet(0, 0, 0, 0);
+            f_platform_api__screenTextureSet(NULL);
+            f_platform_api__screenClipSet(0, 0, 0, 0);
         #endif
 
-        if(SDL_SetRenderDrawColor(a__sdlRenderer,
+        if(SDL_SetRenderDrawColor(f__sdlRenderer,
                                   (uint8_t)g_clearRgb.r,
                                   (uint8_t)g_clearRgb.g,
                                   (uint8_t)g_clearRgb.b,
                                   SDL_ALPHA_OPAQUE) < 0) {
 
-            a_out__error("SDL_SetRenderDrawColor: %s", SDL_GetError());
+            f_out__error("SDL_SetRenderDrawColor: %s", SDL_GetError());
         }
 
-        a_platform_api__screenClear();
+        f_platform_api__screenClear();
 
         #if A_CONFIG_LIB_RENDER_SOFTWARE
             if(SDL_UpdateTexture(g_sdlTexture,
@@ -519,49 +519,49 @@ void a_platform_api__screenShow(void)
                 A__FATAL("SDL_UpdateTexture: %s", SDL_GetError());
             }
 
-            a_platform_api__screenDraw();
+            f_platform_api__screenDraw();
         #else
-            a_color_push();
-            a_color_blendSet(A_COLOR_BLEND_PLAIN);
-            a_color_fillBlitSet(false);
+            f_color_push();
+            f_color_blendSet(A_COLOR_BLEND_PLAIN);
+            f_color_fillBlitSet(false);
 
-            a_platform_api__screenDraw();
+            f_platform_api__screenDraw();
 
-            a_platform_api__screenTextureSet(
-                a_platform_api__screenTextureGet());
-            a_platform_api__screenClipSet(a__screen.clipX,
-                                          a__screen.clipY,
-                                          a__screen.clipWidth,
-                                          a__screen.clipHeight);
+            f_platform_api__screenTextureSet(
+                f_platform_api__screenTextureGet());
+            f_platform_api__screenClipSet(f__screen.clipX,
+                                          f__screen.clipY,
+                                          f__screen.clipWidth,
+                                          f__screen.clipHeight);
 
-            a_color_pop();
+            f_color_pop();
         #endif
 
-        SDL_RenderPresent(a__sdlRenderer);
+        SDL_RenderPresent(f__sdlRenderer);
     #endif
 }
 
-APixels* a_platform_api__screenPixelsGet(void)
+APixels* f_platform_api__screenPixelsGet(void)
 {
     return &g_pixels;
 }
 
-AVectorInt a_platform_api__screenSizeGet(void)
+AVectorInt f_platform_api__screenSizeGet(void)
 {
     return g_size;
 }
 
-bool a_platform_api__screenVsyncGet(void)
+bool f_platform_api__screenVsyncGet(void)
 {
     return g_vsync;
 }
 
-int a_platform_api__screenZoomGet(void)
+int f_platform_api__screenZoomGet(void)
 {
     return g_zoom;
 }
 
-void a_platform_api__screenZoomSet(int Zoom)
+void f_platform_api__screenZoomSet(int Zoom)
 {
     #if A_CONFIG_LIB_SDL == 1
         #if A_CONFIG_SCREEN_ALLOCATE
@@ -574,7 +574,7 @@ void a_platform_api__screenZoomSet(int Zoom)
         #else
             A_UNUSED(Zoom);
 
-            a_out__warning(
+            f_out__warning(
                 "SDL 1.2 screen zoom needs A_CONFIG_SCREEN_ALLOCATE=1");
         #endif
     #elif A_CONFIG_LIB_SDL == 2
@@ -584,12 +584,12 @@ void a_platform_api__screenZoomSet(int Zoom)
     #endif
 }
 
-bool a_platform_api__screenFullscreenGet(void)
+bool f_platform_api__screenFullscreenGet(void)
 {
     return g_fullscreen;
 }
 
-void a_platform_api__screenFullscreenFlip(void)
+void f_platform_api__screenFullscreenFlip(void)
 {
     g_fullscreen = !g_fullscreen;
 
@@ -605,21 +605,21 @@ void a_platform_api__screenFullscreenFlip(void)
 
             sdl1ScreenSet(g_sdlScreen->w, g_sdlScreen->h, videoFlags);
         #else
-            a_out__warning(
+            f_out__warning(
                 "SDL 1.2 fullscreen needs A_CONFIG_SCREEN_ALLOCATE=1");
         #endif
     #elif A_CONFIG_LIB_SDL == 2
         if(SDL_SetWindowFullscreen(
             g_sdlWindow, g_fullscreen ? SDL_WINDOW_FULLSCREEN : 0) < 0) {
 
-            a_out__error("SDL_SetWindowFullscreen: %s", SDL_GetError());
+            f_out__error("SDL_SetWindowFullscreen: %s", SDL_GetError());
         }
     #endif
 
-    a_platform_api__screenMouseCursorSet(!g_fullscreen);
+    f_platform_api__screenMouseCursorSet(!g_fullscreen);
 }
 
-void a_platform_api__screenMouseCursorSet(bool Show)
+void f_platform_api__screenMouseCursorSet(bool Show)
 {
     #if A_CONFIG_INPUT_MOUSE_CURSOR
         int setting = Show ? SDL_ENABLE : SDL_DISABLE;
@@ -629,14 +629,14 @@ void a_platform_api__screenMouseCursorSet(bool Show)
     #endif
 
     if(SDL_ShowCursor(setting) < 0) {
-        a_out__error("SDL_ShowCursor: %s", SDL_GetError());
+        f_out__error("SDL_ShowCursor: %s", SDL_GetError());
     }
 }
 
 #if A_CONFIG_LIB_RENDER_SDL
-int a_platform_sdl_video__pixelBlendToSdlBlend(void)
+int f_platform_sdl_video__pixelBlendToSdlBlend(void)
 {
-    switch(a__color.blend) {
+    switch(f__color.blend) {
         case A_COLOR_BLEND_MOD:
             return SDL_BLENDMODE_MOD;
 
@@ -648,11 +648,11 @@ int a_platform_sdl_video__pixelBlendToSdlBlend(void)
     }
 }
 
-uint8_t a_platform_sdl_video__pixelAlphaToSdlAlpha(void)
+uint8_t f_platform_sdl_video__pixelAlphaToSdlAlpha(void)
 {
-    switch(a__color.blend) {
+    switch(f__color.blend) {
         case A_COLOR_BLEND_RGBA:
-            return (uint8_t)a__color.alpha;
+            return (uint8_t)f__color.alpha;
 
         case A_COLOR_BLEND_RGB25:
             return SDL_ALPHA_OPAQUE / 4;
@@ -668,26 +668,26 @@ uint8_t a_platform_sdl_video__pixelAlphaToSdlAlpha(void)
     }
 }
 
-void a_platform_api__renderSetDrawColor(void)
+void f_platform_api__renderSetDrawColor(void)
 {
     if(SDL_SetRenderDrawColor(
-        a__sdlRenderer,
-        (uint8_t)a__color.rgb.r,
-        (uint8_t)a__color.rgb.g,
-        (uint8_t)a__color.rgb.b,
-        a_platform_sdl_video__pixelAlphaToSdlAlpha()) < 0) {
+        f__sdlRenderer,
+        (uint8_t)f__color.rgb.r,
+        (uint8_t)f__color.rgb.g,
+        (uint8_t)f__color.rgb.b,
+        f_platform_sdl_video__pixelAlphaToSdlAlpha()) < 0) {
 
-        a_out__error("SDL_SetRenderDrawColor: %s", SDL_GetError());
+        f_out__error("SDL_SetRenderDrawColor: %s", SDL_GetError());
     }
 }
 
-void a_platform_api__renderSetBlendMode(void)
+void f_platform_api__renderSetBlendMode(void)
 {
     SDL_BlendMode blend =
-        (SDL_BlendMode)a_platform_sdl_video__pixelBlendToSdlBlend();
+        (SDL_BlendMode)f_platform_sdl_video__pixelBlendToSdlBlend();
 
-    if(SDL_SetRenderDrawBlendMode(a__sdlRenderer, blend) < 0) {
-        a_out__error("SDL_SetRenderDrawBlendMode: %s", SDL_GetError());
+    if(SDL_SetRenderDrawBlendMode(f__sdlRenderer, blend) < 0) {
+        f_out__error("SDL_SetRenderDrawBlendMode: %s", SDL_GetError());
     }
 }
 #endif // A_CONFIG_LIB_RENDER_SDL

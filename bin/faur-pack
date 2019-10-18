@@ -23,25 +23,25 @@ import time
 from utils.tool import Tool
 
 """
-category/a_sample.p.h
-    #include "general/a_system_includes.h"
-    #include "foo/a_bar.p.h"
+category/f_sample.p.h
+    #include "general/f_system_includes.h"
+    #include "foo/f_bar.p.h"
     <public typedefs>
-    #include "foo/a_bar.p.h"
+    #include "foo/f_bar.p.h"
     <public typedef implementations>
     <public api prototypes>
     <static inline functions>
 
-category/a_sample.v.h
-    #include "category/a_sample.p.h"
+category/f_sample.v.h
+    #include "category/f_sample.p.h"
     <private typedefs>
-    #include "foo/a_bar.v.h"
+    #include "foo/f_bar.v.h"
     <private typedef implementations>
     <private api prototypes>
     <static inline functions>
 
-category/a_sample.c
-    #include "a_sample.v.h"
+category/f_sample.c
+    #include "f_sample.v.h"
     #include <faur.v.h>
     #include <system headers>
     <private types>
@@ -61,9 +61,9 @@ def main():
     elif not os.path.isdir(pack_path):
         g_tool.out.error('{} is not a dir'.format(pack_path))
 
-    pack_c = os.path.join(pack_path, 'a_{}.c'.format(pack_name))
-    pack_ph = os.path.join(pack_path, 'a_{}.p.h'.format(pack_name))
-    pack_vh = os.path.join(pack_path, 'a_{}.v.h'.format(pack_name))
+    pack_c = os.path.join(pack_path, 'f_{}.c'.format(pack_name))
+    pack_ph = os.path.join(pack_path, 'f_{}.p.h'.format(pack_name))
+    pack_vh = os.path.join(pack_path, 'f_{}.v.h'.format(pack_name))
 
     g_tool.check_files_not_exist(pack_c, pack_ph, pack_vh)
 
@@ -103,26 +103,26 @@ def main():
 """\
 {header_comment}
 
-#include "a_{name}.v.h"
+#include "f_{name}.v.h"
 #include <faur.v.h>
 
-static void a_{name}__init(void)
+static void f_{name}__init(void)
 {{
     //
 }}
 
-static void a_{name}__uninit(void)
+static void f_{name}__uninit(void)
 {{
     //
 }}
 
-const APack a_pack__{name} = {{
+const APack f_pack__{name} = {{
     "{name}",
     {{
-        [0] = a_{name}__init,
+        [0] = f_{name}__init,
     }},
     {{
-        [0] = a_{name}__uninit,
+        [0] = f_{name}__uninit,
     }},
 }};
 """.format(header_comment = license_header, name = pack_name))
@@ -134,7 +134,7 @@ const APack a_pack__{name} = {{
 #ifndef {guard}
 #define {guard}
 
-#include "general/a_system_includes.h"
+#include "general/f_system_includes.h"
 
 #endif // {guard}
 """.format(header_comment = license_header, guard = header_guard_p))
@@ -146,11 +146,11 @@ const APack a_pack__{name} = {{
 #ifndef {guard}
 #define {guard}
 
-#include "{folder}/a_{name}.p.h"
+#include "{folder}/f_{name}.p.h"
 
-#include "general/a_main.v.h"
+#include "general/f_main.v.h"
 
-extern const APack a_pack__{name};
+extern const APack f_pack__{name};
 
 #endif // {guard}
 """.format(header_comment = license_header,

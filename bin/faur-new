@@ -64,9 +64,9 @@ include $(FAUR_PATH)/make/dev.mk
 
 AStateHandler drawBox;
 
-void a_main(void)
+void f_main(void)
 {{
-    a_state_push(drawBox);
+    f_state_push(drawBox);
 }}
 
 void drawBox(void)
@@ -77,41 +77,41 @@ void drawBox(void)
 
     A_STATE_INIT
     {{
-        context.x = a_screen_sizeGetWidth() / 2;
-        context.y = a_screen_sizeGetHeight() / 2;
+        context.x = f_screen_sizeGetWidth() / 2;
+        context.y = f_screen_sizeGetHeight() / 2;
     }}
 
     A_STATE_TICK
     {{
-        if(a_input_readKey(A_KEY_UP) || a_input_readButton(A_BUTTON_UP)) {{
+        if(f_input_readKey(A_KEY_UP) || f_input_readButton(A_BUTTON_UP)) {{
             context.y--;
         }}
 
-        if(a_input_readKey(A_KEY_DOWN) || a_input_readButton(A_BUTTON_DOWN)) {{
+        if(f_input_readKey(A_KEY_DOWN) || f_input_readButton(A_BUTTON_DOWN)) {{
             context.y++;
         }}
 
-        if(a_input_readKey(A_KEY_LEFT) || a_input_readButton(A_BUTTON_LEFT)) {{
+        if(f_input_readKey(A_KEY_LEFT) || f_input_readButton(A_BUTTON_LEFT)) {{
             context.x--;
         }}
 
-        if(a_input_readKey(A_KEY_RIGHT) || a_input_readButton(A_BUTTON_RIGHT)) {{
+        if(f_input_readKey(A_KEY_RIGHT) || f_input_readButton(A_BUTTON_RIGHT)) {{
             context.x++;
         }}
     }}
 
     A_STATE_DRAW
     {{
-        a_color_baseSetHex(0xaaff88);
-        a_draw_fill();
+        f_color_baseSetHex(0xaaff88);
+        f_draw_fill();
 
-        a_color_baseSetHex(0xffaa44);
-        a_draw_rectangle(context.x - 40, context.y - 40, 80, 80);
+        f_color_baseSetHex(0xffaa44);
+        f_draw_rectangle(context.x - 40, context.y - 40, 80, 80);
     }}
 
     A_STATE_FREE
     {{
-        a_out_info("Bye!");
+        f_out_info("Bye!");
     }}
 }}
 """.format())

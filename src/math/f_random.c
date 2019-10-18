@@ -15,7 +15,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a_random.v.h"
+#include "f_random.v.h"
 #include <faur.v.h>
 #include <time.h>
 
@@ -23,22 +23,22 @@ static ARandomPrng* g_rand;
 static ARandomPrngSeed* g_srand;
 static unsigned g_seed;
 
-static void a_random__init(void)
+static void f_random__init(void)
 {
-    a_random_generatorReset();
+    f_random_generatorReset();
 }
 
-const APack a_pack__random = {
+const APack f_pack__random = {
     "Random",
     {
-        [0] = a_random__init,
+        [0] = f_random__init,
     },
     {
         NULL,
     },
 };
 
-void a_random_generatorSet(ARandomPrng* Rand, ARandomPrngSeed* Srand)
+void f_random_generatorSet(ARandomPrng* Rand, ARandomPrngSeed* Srand)
 {
     g_rand = Rand;
     g_srand = Srand;
@@ -46,23 +46,23 @@ void a_random_generatorSet(ARandomPrng* Rand, ARandomPrngSeed* Srand)
     time_t t = time(NULL);
 
     if(t < 0) {
-        a_random_seedSet(0);
+        f_random_seedSet(0);
     } else {
-        a_random_seedSet((unsigned)t);
+        f_random_seedSet((unsigned)t);
     }
 }
 
-void a_random_generatorReset(void)
+void f_random_generatorReset(void)
 {
-    a_random_generatorSet(rand, srand);
+    f_random_generatorSet(rand, srand);
 }
 
-unsigned a_random_seedGet(void)
+unsigned f_random_seedGet(void)
 {
     return g_seed;
 }
 
-void a_random_seedSet(unsigned Seed)
+void f_random_seedSet(unsigned Seed)
 {
     g_seed = Seed;
 
@@ -70,66 +70,66 @@ void a_random_seedSet(unsigned Seed)
         g_srand(Seed);
     }
 
-    a_out__info("a_random_seedSet(%u)", Seed);
+    f_out__info("f_random_seedSet(%u)", Seed);
 }
 
-int a_random_int(int Max)
+int f_random_int(int Max)
 {
     #if A_CONFIG_BUILD_DEBUG
         if(Max <= 0) {
-            A__FATAL("a_random_int(%d): Invalid arg", Max);
+            A__FATAL("f_random_int(%d): Invalid arg", Max);
         }
     #endif
 
     return g_rand() % Max;
 }
 
-unsigned a_random_intu(unsigned Max)
+unsigned f_random_intu(unsigned Max)
 {
     #if A_CONFIG_BUILD_DEBUG
         if(Max == 0) {
-            A__FATAL("a_random_intu(0): Invalid arg");
+            A__FATAL("f_random_intu(0): Invalid arg");
         }
     #endif
 
     return (unsigned)g_rand() % Max;
 }
 
-int a_random_range(int Min, int Max)
+int f_random_range(int Min, int Max)
 {
     #if A_CONFIG_BUILD_DEBUG
         if(Min >= Max) {
-            A__FATAL("a_random_range(%d, %d): Invalid args", Min, Max);
+            A__FATAL("f_random_range(%d, %d): Invalid args", Min, Max);
         }
     #endif
 
     return Min + (g_rand() % (Max - Min));
 }
 
-unsigned a_random_rangeu(unsigned Min, unsigned Max)
+unsigned f_random_rangeu(unsigned Min, unsigned Max)
 {
     return Min + ((unsigned)g_rand() % (Max - Min));
 }
 
-bool a_random_chance(int Something, int OutOf)
+bool f_random_chance(int Something, int OutOf)
 {
     #if A_CONFIG_BUILD_DEBUG
         if(Something > OutOf) {
-            A__FATAL("a_random_chance(%d, %d): Invalid args", Something, OutOf);
+            A__FATAL("f_random_chance(%d, %d): Invalid args", Something, OutOf);
         }
     #endif
 
-    return a_random_int(OutOf) < Something;
+    return f_random_int(OutOf) < Something;
 }
 
-bool a_random_chanceu(unsigned Something, unsigned OutOf)
+bool f_random_chanceu(unsigned Something, unsigned OutOf)
 {
     #if A_CONFIG_BUILD_DEBUG
         if(Something > OutOf) {
             A__FATAL(
-                "a_random_chanceu(%d, %d): Invalid args", Something, OutOf);
+                "f_random_chanceu(%d, %d): Invalid args", Something, OutOf);
         }
     #endif
 
-    return a_random_intu(OutOf) < Something;
+    return f_random_intu(OutOf) < Something;
 }

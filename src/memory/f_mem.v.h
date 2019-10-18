@@ -18,7 +18,7 @@
 #ifndef A_INC_MEMORY_MEM_V_H
 #define A_INC_MEMORY_MEM_V_H
 
-#include "memory/a_mem.p.h"
+#include "memory/f_mem.p.h"
 
 typedef union {
     intmax_t u_intmax;
@@ -28,6 +28,6 @@ typedef union {
     void (*u_funcp)(void);
 } AMaxMemAlignType;
 
-extern size_t a_mem__tally, a_mem__top;
+extern size_t f_mem__tally, f_mem__top;
 
 #endif // A_INC_MEMORY_MEM_V_H

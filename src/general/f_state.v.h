@@ -18,13 +18,13 @@
 #ifndef A_INC_GENERAL_STATE_V_H
 #define A_INC_GENERAL_STATE_V_H
 
-#include "general/a_state.p.h"
+#include "general/f_state.p.h"
 
-#include "general/a_main.v.h"
+#include "general/f_main.v.h"
 
-extern const APack a_pack__state;
+extern const APack f_pack__state;
 
-extern void a_state__runLoop(void);
-extern bool a_state__runStep(void);
+extern void f_state__runLoop(void);
+extern bool f_state__runStep(void);
 
 #endif // A_INC_GENERAL_STATE_V_H

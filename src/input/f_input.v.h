@@ -18,12 +18,12 @@
 #ifndef A_INC_INPUTS_INPUT_V_H
 #define A_INC_INPUTS_INPUT_V_H
 
-#include "input/a_input.p.h"
+#include "input/f_input.p.h"
 
-#include "general/a_main.v.h"
+#include "general/f_main.v.h"
 
-extern const APack a_pack__input;
+extern const APack f_pack__input;
 
-extern void a_input__tick(void);
+extern void f_input__tick(void);
 
 #endif // A_INC_INPUTS_INPUT_V_H

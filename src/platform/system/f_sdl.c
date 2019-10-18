@@ -15,7 +15,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a_sdl.v.h"
+#include "f_sdl.v.h"
 #include <faur.v.h>
 
 #if A_CONFIG_LIB_SDL
@@ -27,7 +27,7 @@
 
 static uint32_t g_sdlFlags;
 
-void a_platform_sdl__init(void)
+void f_platform_sdl__init(void)
 {
     g_sdlFlags = 0;
 
@@ -48,24 +48,24 @@ void a_platform_sdl__init(void)
         SDL_GetVersion(&rv);
     #endif
 
-    a_out__info("Built with SDL %d.%d.%d", cv.major, cv.minor, cv.patch);
-    a_out__info("Running on SDL %d.%d.%d", rv.major, rv.minor, rv.patch);
+    f_out__info("Built with SDL %d.%d.%d", cv.major, cv.minor, cv.patch);
+    f_out__info("Running on SDL %d.%d.%d", rv.major, rv.minor, rv.patch);
 
-    a_platform_sdl_input__init();
-    a_platform_sdl_video__init();
+    f_platform_sdl_input__init();
+    f_platform_sdl_video__init();
 
     #if A_CONFIG_SOUND_ENABLED
-        a_platform_sdl_sound__init();
+        f_platform_sdl_sound__init();
     #endif
 }
 
-void a_platform_sdl__uninit(void)
+void f_platform_sdl__uninit(void)
 {
-    a_platform_sdl_input__uninit();
-    a_platform_sdl_video__uninit();
+    f_platform_sdl_input__uninit();
+    f_platform_sdl_video__uninit();
 
     #if A_CONFIG_SOUND_ENABLED
-        a_platform_sdl_sound__uninit();
+        f_platform_sdl_sound__uninit();
     #endif
 
     SDL_QuitSubSystem(g_sdlFlags);
@@ -73,12 +73,12 @@ void a_platform_sdl__uninit(void)
 }
 
 #if A_CONFIG_LIB_SDL_TIME
-uint32_t a_platform_api__timeMsGet(void)
+uint32_t f_platform_api__timeMsGet(void)
 {
     return SDL_GetTicks();
 }
 
-void a_platform_api__timeMsWait(uint32_t Ms)
+void f_platform_api__timeMsWait(uint32_t Ms)
 {
     #if A_CONFIG_TRAIT_NOSLEEP
         return;
@@ -86,7 +86,7 @@ void a_platform_api__timeMsWait(uint32_t Ms)
 
     #if A_CONFIG_SYSTEM_GP2X // too inaccurate
         if(Ms < 10) {
-            a_time_spinMs(Ms);
+            f_time_spinMs(Ms);
             return;
         }
     #endif

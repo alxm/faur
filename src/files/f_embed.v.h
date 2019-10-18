@@ -18,7 +18,7 @@
 #ifndef A_INC_FILES_EMBED_V_H
 #define A_INC_FILES_EMBED_V_H
 
-#include "files/a_embed.p.h"
+#include "files/f_embed.p.h"
 
 typedef struct {
     const char* path;
@@ -32,16 +32,16 @@ typedef struct {
     uint8_t buffer[];
 } AEmbeddedFile;
 
-#include "general/a_main.v.h"
+#include "general/f_main.v.h"
 
-extern const APack a_pack__embed;
+extern const APack f_pack__embed;
 
-extern void a_embed__populate(void);
+extern void f_embed__populate(void);
 
-extern void a_embed__dirAdd(const void* Data);
-extern const AEmbeddedDir* a_embed__dirGet(const char* Path);
+extern void f_embed__dirAdd(const void* Data);
+extern const AEmbeddedDir* f_embed__dirGet(const char* Path);
 
-extern void a_embed__fileAdd(const void* Data);
-extern const AEmbeddedFile* a_embed__fileGet(const char* Path);
+extern void f_embed__fileAdd(const void* Data);
+extern const AEmbeddedFile* f_embed__fileGet(const char* Path);
 
 #endif // A_INC_FILES_EMBED_V_H

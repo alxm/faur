@@ -18,7 +18,7 @@
 #ifndef A_INC_FILES_PATH_P_H
 #define A_INC_FILES_PATH_P_H
 
-#include "general/a_system_includes.h"
+#include "general/f_system_includes.h"
 
 typedef struct APath APath;
 
@@ -30,15 +30,15 @@ typedef enum {
     A_PATH_REAL = A_FLAGS_BIT(4),
 } APathFlags;
 
-extern APath* a_path_new(const char* Path);
-extern APath* a_path_newf(const char* Format, ...);
-extern void a_path_free(APath* Path);
+extern APath* f_path_new(const char* Path);
+extern APath* f_path_newf(const char* Format, ...);
+extern void f_path_free(APath* Path);
 
-extern bool a_path_exists(const char* Path, APathFlags Flags);
-extern bool a_path_test(const APath* Path, APathFlags Flags);
+extern bool f_path_exists(const char* Path, APathFlags Flags);
+extern bool f_path_test(const APath* Path, APathFlags Flags);
 
-extern const char* a_path_getFull(const APath* Path);
-extern const char* a_path_getDirs(const APath* Path);
-extern const char* a_path_getName(const APath* Path);
+extern const char* f_path_getFull(const APath* Path);
+extern const char* f_path_getDirs(const APath* Path);
+extern const char* f_path_getName(const APath* Path);
 
 #endif // A_INC_FILES_PATH_P_H

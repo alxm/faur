@@ -18,54 +18,54 @@
 #ifndef A_INC_MATH_MATH_P_H
 #define A_INC_MATH_MATH_P_H
 
-#include "general/a_system_includes.h"
+#include "general/f_system_includes.h"
 
-static inline int a_math_min(int X, int Y)
+static inline int f_math_min(int X, int Y)
 {
     return X < Y ? X : Y;
 }
 
-static inline unsigned a_math_minu(unsigned X, unsigned Y)
+static inline unsigned f_math_minu(unsigned X, unsigned Y)
 {
     return X < Y ? X : Y;
 }
 
-static inline size_t a_math_minz(size_t X, size_t Y)
+static inline size_t f_math_minz(size_t X, size_t Y)
 {
     return X < Y ? X : Y;
 }
 
-static inline int a_math_max(int X, int Y)
+static inline int f_math_max(int X, int Y)
 {
     return X > Y ? X : Y;
 }
 
-static inline unsigned a_math_maxu(unsigned X, unsigned Y)
+static inline unsigned f_math_maxu(unsigned X, unsigned Y)
 {
     return X > Y ? X : Y;
 }
 
-static inline size_t a_math_maxz(size_t X, size_t Y)
+static inline size_t f_math_maxz(size_t X, size_t Y)
 {
     return X > Y ? X : Y;
 }
 
-static inline int a_math_clamp(int X, int Min, int Max)
+static inline int f_math_clamp(int X, int Min, int Max)
 {
     return X < Min ? Min : (X > Max ? Max : X);
 }
 
-static inline unsigned a_math_clampu(unsigned X, unsigned Min, unsigned Max)
+static inline unsigned f_math_clampu(unsigned X, unsigned Min, unsigned Max)
 {
     return X < Min ? Min : (X > Max ? Max : X);
 }
 
-static inline size_t a_math_clampz(size_t X, size_t Min, size_t Max)
+static inline size_t f_math_clampz(size_t X, size_t Min, size_t Max)
 {
     return X < Min ? Min : (X > Max ? Max : X);
 }
 
-static inline int a_math_abs(int X)
+static inline int f_math_abs(int X)
 {
     return X >= 0 ? X : -X;
 }

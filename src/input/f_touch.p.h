@@ -18,13 +18,13 @@
 #ifndef A_INC_INPUTS_TOUCH_P_H
 #define A_INC_INPUTS_TOUCH_P_H
 
-#include "general/a_system_includes.h"
+#include "general/f_system_includes.h"
 
-#include "math/a_fix.p.h"
+#include "math/f_fix.p.h"
 
-extern AVectorInt a_touch_deltaGet(void);
-extern bool a_touch_tapGet(void);
-extern bool a_touch_pointGet(int X, int Y);
-extern bool a_touch_boxGet(int X, int Y, int W, int H);
+extern AVectorInt f_touch_deltaGet(void);
+extern bool f_touch_tapGet(void);
+extern bool f_touch_pointGet(int X, int Y);
+extern bool f_touch_boxGet(int X, int Y, int W, int H);
 
 #endif // A_INC_INPUTS_TOUCH_P_H

@@ -15,30 +15,30 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a_linux.v.h"
+#include "f_linux.v.h"
 #include <faur.v.h>
 
 #if A_CONFIG_SYSTEM_LINUX
 #include <signal.h>
 
-static void a__term(int Signal)
+static void f__term(int Signal)
 {
     A_UNUSED(Signal);
 
     exit(0);
 }
 
-void a_platform_linux__init(void)
+void f_platform_linux__init(void)
 {
     struct sigaction s;
     memset(&s, 0, sizeof(struct sigaction));
 
-    s.sa_handler = a__term;
+    s.sa_handler = f__term;
     sigemptyset(&s.sa_mask);
     s.sa_flags = 0;
 
     if(sigaction(SIGTERM, &s, NULL) != 0) {
-        a_out__error("sigaction(SIGTERM) failed");
+        f_out__error("sigaction(SIGTERM) failed");
     }
 }
 #endif // A_CONFIG_SYSTEM_LINUX

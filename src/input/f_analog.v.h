@@ -18,6 +18,6 @@
 #ifndef A_INC_INPUTS_ANALOG_V_H
 #define A_INC_INPUTS_ANALOG_V_H
 
-#include "input/a_analog.p.h"
+#include "input/f_analog.p.h"
 
 #endif // A_INC_INPUTS_ANALOG_V_H

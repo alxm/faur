@@ -18,19 +18,19 @@
 #ifndef A_INC_GRAPHICS_SPRITELAYERS_P_H
 #define A_INC_GRAPHICS_SPRITELAYERS_P_H
 
-#include "general/a_system_includes.h"
+#include "general/f_system_includes.h"
 
 typedef struct AList ASpriteLayers;
 
-#include "data/a_list.p.h"
-#include "graphics/a_sprite.p.h"
+#include "data/f_list.p.h"
+#include "graphics/f_sprite.p.h"
 
-extern ASpriteLayers* a_spritelayers_new(void);
-extern void a_spritelayers_free(ASpriteLayers* Layers, bool FreeSprites);
+extern ASpriteLayers* f_spritelayers_new(void);
+extern void f_spritelayers_free(ASpriteLayers* Layers, bool FreeSprites);
 
-extern void a_spritelayers_clear(ASpriteLayers* Layers, bool FreeSprites);
-extern void a_spritelayers_add(ASpriteLayers* Layers, ASprite* Sprite, AColorBlend Blend, int Red, int Green, int Blue, int Alpha);
+extern void f_spritelayers_clear(ASpriteLayers* Layers, bool FreeSprites);
+extern void f_spritelayers_add(ASpriteLayers* Layers, ASprite* Sprite, AColorBlend Blend, int Red, int Green, int Blue, int Alpha);
 
-extern void a_spritelayers_blit(const ASpriteLayers* Layers, unsigned Frame, int X, int Y);
+extern void f_spritelayers_blit(const ASpriteLayers* Layers, unsigned Frame, int X, int Y);
 
 #endif // A_INC_GRAPHICS_SPRITELAYERS_P_H

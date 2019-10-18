@@ -18,12 +18,12 @@
 #ifndef A_INC_FILES_FILE_REAL_V_H
 #define A_INC_FILES_FILE_REAL_V_H
 
-#include "files/a_file_real.p.h"
+#include "files/f_file_real.p.h"
 
-#include "files/a_file.v.h"
+#include "files/f_file.v.h"
 
-extern AFile* a_file_real__new(APath* Path, AFileMode Mode);
+extern AFile* f_file_real__new(APath* Path, AFileMode Mode);
 
-extern uint8_t* a_file_real__toBuffer(const char* Path);
+extern uint8_t* f_file_real__toBuffer(const char* Path);
 
 #endif // A_INC_FILES_FILE_REAL_V_H

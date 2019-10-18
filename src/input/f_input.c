@@ -15,52 +15,52 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a_input.v.h"
+#include "f_input.v.h"
 #include <faur.v.h>
 
-static void a_input__init(void)
+static void f_input__init(void)
 {
-    a_input_button__init();
+    f_input_button__init();
 }
 
-static void a_input__uninit(void)
+static void f_input__uninit(void)
 {
-    a_input_button__uninit();
+    f_input_button__uninit();
 }
 
-const APack a_pack__input = {
+const APack f_pack__input = {
     "Input",
     {
-        [0] = a_input__init,
+        [0] = f_input__init,
     },
     {
-        [0] = a_input__uninit,
+        [0] = f_input__uninit,
     },
 };
 
-void a_input__tick(void)
+void f_input__tick(void)
 {
-    a_platform_api__inputPoll();
-    a_input_button__tick();
+    f_platform_api__inputPoll();
+    f_input_button__tick();
 }
 
-bool a_input_readKey(AKeyId Key)
+bool f_input_readKey(AKeyId Key)
 {
-    const APlatformButton* k = a_platform_api__inputKeyGet(Key);
+    const APlatformButton* k = f_platform_api__inputKeyGet(Key);
 
-    return k ? a_platform_api__inputButtonPressGet(k) : false;
+    return k ? f_platform_api__inputButtonPressGet(k) : false;
 }
 
-bool a_input_readButton(AButtonId Button)
+bool f_input_readButton(AButtonId Button)
 {
-    const APlatformButton* b = a_platform_api__inputButtonGet(NULL, Button);
+    const APlatformButton* b = f_platform_api__inputButtonGet(NULL, Button);
 
-    return b ? a_platform_api__inputButtonPressGet(b) : false;
+    return b ? f_platform_api__inputButtonPressGet(b) : false;
 }
 
-AFix a_input_readAnalog(AAnalogId Axis)
+AFix f_input_readAnalog(AAnalogId Axis)
 {
-    const APlatformAnalog* a = a_platform_api__inputAnalogGet(NULL, Axis);
+    const APlatformAnalog* a = f_platform_api__inputAnalogGet(NULL, Axis);
 
-    return a ? a_platform_api__inputAnalogValueGet(a) : 0;
+    return a ? f_platform_api__inputAnalogValueGet(a) : 0;
 }

@@ -18,18 +18,18 @@
 #ifndef A_INC_ECS_COLLECTION_P_H
 #define A_INC_ECS_COLLECTION_P_H
 
-#include "general/a_system_includes.h"
+#include "general/f_system_includes.h"
 
 typedef struct AList ACollection;
 
-extern void a_collection_set(ACollection* Collection);
+extern void f_collection_set(ACollection* Collection);
 
-extern ACollection* a_collection_new(void);
-extern void a_collection_free(ACollection* Collection);
+extern ACollection* f_collection_new(void);
+extern void f_collection_free(ACollection* Collection);
 
-extern void a_collection_clear(ACollection* Collection);
+extern void f_collection_clear(ACollection* Collection);
 
-extern void a_collection_muteInc(ACollection* Collection);
-extern void a_collection_muteDec(ACollection* Collection);
+extern void f_collection_muteInc(ACollection* Collection);
+extern void f_collection_muteDec(ACollection* Collection);
 
 #endif // A_INC_ECS_COLLECTION_P_H

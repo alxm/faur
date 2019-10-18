@@ -15,7 +15,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a_strbuilder.v.h"
+#include "f_strbuilder.v.h"
 #include <faur.v.h>
 
 struct AStrBuilder {
@@ -26,15 +26,15 @@ struct AStrBuilder {
     char buffer[];
 };
 
-AStrBuilder* a_strbuilder_new(size_t Bytes)
+AStrBuilder* f_strbuilder_new(size_t Bytes)
 {
     #if A_CONFIG_BUILD_DEBUG
         if(Bytes == 0) {
-            A__FATAL("a_strbuilder_new: Invalid size 0");
+            A__FATAL("f_strbuilder_new: Invalid size 0");
         }
     #endif
 
-    AStrBuilder* b = a_mem_malloc(sizeof(AStrBuilder) + Bytes);
+    AStrBuilder* b = f_mem_malloc(sizeof(AStrBuilder) + Bytes);
 
     b->fmtBuffer = NULL;
     b->fmtSize = 0;
@@ -45,22 +45,22 @@ AStrBuilder* a_strbuilder_new(size_t Bytes)
     return b;
 }
 
-void a_strbuilder_free(AStrBuilder* Builder)
+void f_strbuilder_free(AStrBuilder* Builder)
 {
     if(Builder == NULL) {
         return;
     }
 
-    a_mem_free(Builder->fmtBuffer);
-    a_mem_free(Builder);
+    f_mem_free(Builder->fmtBuffer);
+    f_mem_free(Builder);
 }
 
-const char* a_strbuilder_get(AStrBuilder* Builder)
+const char* f_strbuilder_get(AStrBuilder* Builder)
 {
     return Builder->buffer;
 }
 
-bool a_strbuilder_add(AStrBuilder* Builder, const char* String)
+bool f_strbuilder_add(AStrBuilder* Builder, const char* String)
 {
     const size_t limit = Builder->size - 1;
     size_t index = Builder->index;
@@ -77,7 +77,7 @@ bool a_strbuilder_add(AStrBuilder* Builder, const char* String)
     return *String == '\0';
 }
 
-bool a_strbuilder_addf(AStrBuilder* Builder, const char* Format, ...)
+bool f_strbuilder_addf(AStrBuilder* Builder, const char* Format, ...)
 {
     va_list args;
     va_start(args, Format);
@@ -91,15 +91,15 @@ bool a_strbuilder_addf(AStrBuilder* Builder, const char* Format, ...)
     }
 
     if(Builder->fmtSize < (size_t)bytesNeeded) {
-        a_mem_free(Builder->fmtBuffer);
+        f_mem_free(Builder->fmtBuffer);
 
         Builder->fmtSize = (size_t)bytesNeeded;
-        Builder->fmtBuffer = a_mem_malloc(Builder->fmtSize);
+        Builder->fmtBuffer = f_mem_malloc(Builder->fmtSize);
     }
 
     va_start(args, Format);
     vsnprintf(Builder->fmtBuffer, Builder->fmtSize, Format, args);
     va_end(args);
 
-    return a_strbuilder_add(Builder, Builder->fmtBuffer);
+    return f_strbuilder_add(Builder, Builder->fmtBuffer);
 }

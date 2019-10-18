@@ -18,13 +18,13 @@
 #ifndef A_INC_GRAPHICS_FADE_V_H
 #define A_INC_GRAPHICS_FADE_V_H
 
-#include "graphics/a_fade.p.h"
+#include "graphics/f_fade.p.h"
 
-#include "general/a_main.v.h"
+#include "general/f_main.v.h"
 
-extern const APack a_pack__fade;
+extern const APack f_pack__fade;
 
-extern void a_fade__tick(void);
-extern void a_fade__draw(void);
+extern void f_fade__tick(void);
+extern void f_fade__draw(void);
 
 #endif // A_INC_GRAPHICS_FADE_V_H

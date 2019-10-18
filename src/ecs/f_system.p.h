@@ -18,16 +18,16 @@
 #ifndef A_INC_ECS_SYSTEM_P_H
 #define A_INC_ECS_SYSTEM_P_H
 
-#include "general/a_system_includes.h"
+#include "general/f_system_includes.h"
 
-#include "ecs/a_entity.p.h"
+#include "ecs/f_entity.p.h"
 
 typedef void ASystemHandler(AEntity* Entity);
 typedef int ASystemSort(AEntity* A, AEntity* B);
 
-extern void a_system_new(int SystemIndex, ASystemHandler* Handler, ASystemSort* Compare, bool OnlyActiveEntities);
-extern void a_system_add(int SystemIndex, int ComponentIndex);
+extern void f_system_new(int SystemIndex, ASystemHandler* Handler, ASystemSort* Compare, bool OnlyActiveEntities);
+extern void f_system_add(int SystemIndex, int ComponentIndex);
 
-extern void a_system_run(int SystemIndex);
+extern void f_system_run(int SystemIndex);
 
 #endif // A_INC_ECS_SYSTEM_P_H

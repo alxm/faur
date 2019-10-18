@@ -15,34 +15,34 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a_time.v.h"
+#include "f_time.v.h"
 #include <faur.v.h>
 
-uint32_t a_time_getMs(void)
+uint32_t f_time_getMs(void)
 {
-    return a_platform_api__timeMsGet();
+    return f_platform_api__timeMsGet();
 }
 
-void a_time_waitMs(uint32_t Ms)
+void f_time_waitMs(uint32_t Ms)
 {
-    a_platform_api__timeMsWait(Ms);
+    f_platform_api__timeMsWait(Ms);
 }
 
-void a_time_waitSec(uint32_t Sec)
+void f_time_waitSec(uint32_t Sec)
 {
-    a_platform_api__timeMsWait(Sec * 1000);
+    f_platform_api__timeMsWait(Sec * 1000);
 }
 
-void a_time_spinMs(uint32_t Ms)
+void f_time_spinMs(uint32_t Ms)
 {
-    const uint32_t start = a_platform_api__timeMsGet();
+    const uint32_t start = f_platform_api__timeMsGet();
 
-    while(a_platform_api__timeMsGet() - start < Ms) {
+    while(f_platform_api__timeMsGet() - start < Ms) {
         continue;
     }
 }
 
-void a_time_spinSec(uint32_t Sec)
+void f_time_spinSec(uint32_t Sec)
 {
-    a_time_spinMs(Sec * 1000);
+    f_time_spinMs(Sec * 1000);
 }

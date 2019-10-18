@@ -18,7 +18,7 @@
 #ifndef A_INC_FILES_FILE_P_H
 #define A_INC_FILES_FILE_P_H
 
-#include "general/a_system_includes.h"
+#include "general/f_system_includes.h"
 
 typedef struct AFile AFile;
 
@@ -28,31 +28,31 @@ typedef enum {
     A_FILE_BINARY = A_FLAGS_BIT(2),
 } AFileMode;
 
-#include "files/a_path.p.h"
+#include "files/f_path.p.h"
 
-extern AFile* a_file_new(const char* Path, AFileMode Mode);
-extern void a_file_free(AFile* File);
+extern AFile* f_file_new(const char* Path, AFileMode Mode);
+extern void f_file_free(AFile* File);
 
-extern const APath* a_file_pathGet(const AFile* File);
-extern FILE* a_file_handleGet(const AFile* File);
+extern const APath* f_file_pathGet(const AFile* File);
+extern FILE* f_file_handleGet(const AFile* File);
 
-extern uint8_t* a_file_toBuffer(const char* Path);
+extern uint8_t* f_file_toBuffer(const char* Path);
 
-extern bool a_file_prefixCheck(AFile* File, const char* Prefix);
-extern void a_file_prefixWrite(AFile* File, const char* Prefix);
+extern bool f_file_prefixCheck(AFile* File, const char* Prefix);
+extern void f_file_prefixWrite(AFile* File, const char* Prefix);
 
-extern bool a_file_read(AFile* File, void* Buffer, size_t Size);
-extern bool a_file_write(AFile* File, const void* Buffer, size_t Size);
-extern bool a_file_writef(AFile* File, const char* Format, ...);
-extern bool a_file_flush(AFile* File);
+extern bool f_file_read(AFile* File, void* Buffer, size_t Size);
+extern bool f_file_write(AFile* File, const void* Buffer, size_t Size);
+extern bool f_file_writef(AFile* File, const char* Format, ...);
+extern bool f_file_flush(AFile* File);
 
-extern bool a_file_lineRead(AFile* File);
-extern const char* a_file_lineBufferGet(const AFile* File);
-extern unsigned a_file_lineNumberGet(const AFile* File);
+extern bool f_file_lineRead(AFile* File);
+extern const char* f_file_lineBufferGet(const AFile* File);
+extern unsigned f_file_lineNumberGet(const AFile* File);
 
-extern bool a_file_rewind(AFile* File);
-extern bool a_file_seekStart(AFile* File, int Offset);
-extern bool a_file_seekEnd(AFile* File, int Offset);
-extern bool a_file_seekCurrent(AFile* File, int Offset);
+extern bool f_file_rewind(AFile* File);
+extern bool f_file_seekStart(AFile* File, int Offset);
+extern bool f_file_seekEnd(AFile* File, int Offset);
+extern bool f_file_seekCurrent(AFile* File, int Offset);
 
 #endif // A_INC_FILES_FILE_P_H

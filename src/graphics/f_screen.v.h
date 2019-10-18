@@ -18,12 +18,12 @@
 #ifndef A_INC_GRAPHICS_SCREEN_V_H
 #define A_INC_GRAPHICS_SCREEN_V_H
 
-#include "graphics/a_screen.p.h"
+#include "graphics/f_screen.p.h"
 
 typedef struct AScreen AScreen;
 
-#include "general/a_main.v.h"
-#include "graphics/a_sprite.v.h"
+#include "general/f_main.v.h"
+#include "graphics/f_sprite.v.h"
 
 struct AScreen {
     APixels* pixels;
@@ -37,18 +37,18 @@ struct AScreen {
     int clipWidth, clipHeight;
 };
 
-extern const APack a_pack__screen;
+extern const APack f_pack__screen;
 
-extern AScreen a__screen;
+extern AScreen f__screen;
 
-extern void a_screen__tick(void);
-extern void a_screen__draw(void);
+extern void f_screen__tick(void);
+extern void f_screen__draw(void);
 
-extern void a_screen__toSprite(ASprite* Sprite, unsigned Frame);
+extern void f_screen__toSprite(ASprite* Sprite, unsigned Frame);
 
-static inline APixel* a_screen__bufferGetFrom(int X, int Y)
+static inline APixel* f_screen__bufferGetFrom(int X, int Y)
 {
-    return a_pixels__bufferGetFrom(a__screen.pixels, a__screen.frame, X, Y);
+    return f_pixels__bufferGetFrom(f__screen.pixels, f__screen.frame, X, Y);
 }
 
 #endif // A_INC_GRAPHICS_SCREEN_V_H

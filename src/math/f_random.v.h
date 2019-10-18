@@ -18,10 +18,10 @@
 #ifndef A_INC_MATH_RANDOM_V_H
 #define A_INC_MATH_RANDOM_V_H
 
-#include "math/a_random.p.h"
+#include "math/f_random.p.h"
 
-#include "general/a_main.v.h"
+#include "general/f_main.v.h"
 
-extern const APack a_pack__random;
+extern const APack f_pack__random;
 
 #endif // A_INC_MATH_RANDOM_V_H

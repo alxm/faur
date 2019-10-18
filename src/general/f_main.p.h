@@ -18,12 +18,12 @@
 #ifndef A_INC_GENERAL_MAIN_P_H
 #define A_INC_GENERAL_MAIN_P_H
 
-#include "general/a_system_includes.h"
+#include "general/f_system_includes.h"
 
-extern void a_main(void);
+extern void f_main(void);
 
-extern int a_main_argsNumGet(void);
-extern const char* a_main_argsGet(int ArgNum);
+extern int f_main_argsNumGet(void);
+extern const char* f_main_argsGet(int ArgNum);
 
 extern void A_FATAL(const char* Format, ...) __attribute__((noreturn));
 

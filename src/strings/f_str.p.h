@@ -18,36 +18,36 @@
 #ifndef A_INC_STRINGS_STR_P_H
 #define A_INC_STRINGS_STR_P_H
 
-#include "general/a_system_includes.h"
+#include "general/f_system_includes.h"
 
-#include "data/a_list.p.h"
+#include "data/f_list.p.h"
 
-extern const char* a_str_fmt(char* Buffer, size_t Size, bool OverflowOk, const char* Format, ...);
-extern const char* a_str_fmtv(char* Buffer, size_t Size, bool OverflowOk, const char* Format, va_list Args);
-extern const char* a_str_fmt512(const char* Format, ...);
+extern const char* f_str_fmt(char* Buffer, size_t Size, bool OverflowOk, const char* Format, ...);
+extern const char* f_str_fmtv(char* Buffer, size_t Size, bool OverflowOk, const char* Format, va_list Args);
+extern const char* f_str_fmt512(const char* Format, ...);
 
-extern char* a_str_merge(const char* String1, ...);
-extern char* a_str_dup(const char* String);
-extern char* a_str_trim(const char* String);
+extern char* f_str_merge(const char* String1, ...);
+extern char* f_str_dup(const char* String);
+extern char* f_str_trim(const char* String);
 
-extern char* a_str_subGetRange(const char* String, int Start, int End);
-extern char* a_str_subGetPrefix(const char* String, int Length);
-extern char* a_str_subGetSuffix(const char* String, int Length);
+extern char* f_str_subGetRange(const char* String, int Start, int End);
+extern char* f_str_subGetPrefix(const char* String, int Length);
+extern char* f_str_subGetSuffix(const char* String, int Length);
 
-extern int a_str_indexGetFirst(const char* String, char Character);
-extern int a_str_indexGetLast(const char* String, char Character);
+extern int f_str_indexGetFirst(const char* String, char Character);
+extern int f_str_indexGetLast(const char* String, char Character);
 
-extern bool a_str_startsWith(const char* String, const char* Prefix);
-extern bool a_str_endsWith(const char* String, const char* Suffix);
+extern bool f_str_startsWith(const char* String, const char* Prefix);
+extern bool f_str_endsWith(const char* String, const char* Suffix);
 
-extern char* a_str_prefixGetToFirst(const char* String, char Marker);
-extern char* a_str_prefixGetToLast(const char* String, char Marker);
-extern char* a_str_suffixGetFromFirst(const char* String, char Marker);
-extern char* a_str_suffixGetFromLast(const char* String, char Marker);
+extern char* f_str_prefixGetToFirst(const char* String, char Marker);
+extern char* f_str_prefixGetToLast(const char* String, char Marker);
+extern char* f_str_suffixGetFromFirst(const char* String, char Marker);
+extern char* f_str_suffixGetFromLast(const char* String, char Marker);
 
-extern AList* a_str_split(const char* String, const char* Delimiters);
+extern AList* f_str_split(const char* String, const char* Delimiters);
 
-static inline bool a_str_equal(const char* String1, const char* String2)
+static inline bool f_str_equal(const char* String1, const char* String2)
 {
     return strcmp(String1, String2) == 0;
 }

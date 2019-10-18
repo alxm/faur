@@ -15,7 +15,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a_embed.v.h"
+#include "f_embed.v.h"
 #include <faur.v.h>
 
 #if !A_CONFIG_SYSTEM_GAMEBUINO
@@ -28,61 +28,61 @@ static AStrHash* g_files; // table of AEmbeddedFile
 
 static inline void addDir(const char* Path, const void* Data)
 {
-    a_strhash_add(g_dirs, Path, (void*)Data);
+    f_strhash_add(g_dirs, Path, (void*)Data);
 }
 
 static inline void addFile(const char* Path, const void* Data)
 {
-    a_strhash_add(g_files, Path, (void*)Data);
+    f_strhash_add(g_files, Path, (void*)Data);
 }
 
-static void a_embed__init(void)
+static void f_embed__init(void)
 {
-    g_dirs = a_strhash_new();
-    g_files = a_strhash_new();
+    g_dirs = f_strhash_new();
+    g_files = f_strhash_new();
 
-    addFile("/faur/consoleTitles", &a__bin__media_console_png);
-    addFile("/faur/font", &a__bin__media_fontgrid_png);
-    addFile("/faur/fontKeyed", &a__bin__media_fontgrid_keyed_png);
+    addFile("/faur/consoleTitles", &f__bin__media_console_png);
+    addFile("/faur/font", &f__bin__media_fontgrid_png);
+    addFile("/faur/fontKeyed", &f__bin__media_fontgrid_keyed_png);
 
-    a_embed__populate();
+    f_embed__populate();
 }
 
-static void a_embed__uninit(void)
+static void f_embed__uninit(void)
 {
-    a_strhash_free(g_dirs);
-    a_strhash_free(g_files);
+    f_strhash_free(g_dirs);
+    f_strhash_free(g_files);
 }
 
-const APack a_pack__embed = {
+const APack f_pack__embed = {
     "Embed",
     {
-        [0] = a_embed__init,
+        [0] = f_embed__init,
     },
     {
-        [0] = a_embed__uninit,
+        [0] = f_embed__uninit,
     },
 };
 
-void a_embed__dirAdd(const void* Data)
+void f_embed__dirAdd(const void* Data)
 {
     addDir(((const AEmbeddedDir*)Data)->path, Data);
 }
 
-const AEmbeddedDir* a_embed__dirGet(const char* Path)
+const AEmbeddedDir* f_embed__dirGet(const char* Path)
 {
-    return a_strhash_get(g_dirs, Path);
+    return f_strhash_get(g_dirs, Path);
 }
 
-void a_embed__fileAdd(const void* Data)
+void f_embed__fileAdd(const void* Data)
 {
     addFile(((const AEmbeddedFile*)Data)->path, Data);
 }
 
-const AEmbeddedFile* a_embed__fileGet(const char* Path)
+const AEmbeddedFile* f_embed__fileGet(const char* Path)
 {
-    return a_strhash_get(g_files, Path);
+    return f_strhash_get(g_files, Path);
 }
 #else // A_CONFIG_SYSTEM_GAMEBUINO
-const APack a_pack__embed;
+const APack f_pack__embed;
 #endif // A_CONFIG_SYSTEM_GAMEBUINO

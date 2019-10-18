@@ -18,26 +18,26 @@
 #ifndef A_INC_TIME_TIME_P_H
 #define A_INC_TIME_TIME_P_H
 
-#include "general/a_system_includes.h"
+#include "general/f_system_includes.h"
 
-#include "general/a_fps.p.h"
+#include "general/f_fps.p.h"
 
-extern uint32_t a_time_getMs(void);
+extern uint32_t f_time_getMs(void);
 
-extern void a_time_waitMs(uint32_t Ms);
-extern void a_time_waitSec(uint32_t Sec);
+extern void f_time_waitMs(uint32_t Ms);
+extern void f_time_waitSec(uint32_t Sec);
 
-extern void a_time_spinMs(uint32_t Ms);
-extern void a_time_spinSec(uint32_t Sec);
+extern void f_time_spinMs(uint32_t Ms);
+extern void f_time_spinSec(uint32_t Sec);
 
-static inline unsigned a_time_ticksFromMs(unsigned Ms)
+static inline unsigned f_time_ticksFromMs(unsigned Ms)
 {
-    return (a_fps_rateTickGet() * Ms + 500) / 1000;
+    return (f_fps_rateTickGet() * Ms + 500) / 1000;
 }
 
-static inline unsigned a_time_ticksFromSec(unsigned Sec)
+static inline unsigned f_time_ticksFromSec(unsigned Sec)
 {
-    return a_fps_rateTickGet() * Sec;
+    return f_fps_rateTickGet() * Sec;
 }
 
 #endif // A_INC_TIME_TIME_P_H

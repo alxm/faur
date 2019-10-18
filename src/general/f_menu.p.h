@@ -18,7 +18,7 @@
 #ifndef A_INC_GENERAL_MENU_P_H
 #define A_INC_GENERAL_MENU_P_H
 
-#include "general/a_system_includes.h"
+#include "general/f_system_includes.h"
 
 typedef struct AMenu AMenu;
 
@@ -29,26 +29,26 @@ typedef enum {
     A_MENU_STATE_CANCELED
 } AMenuState;
 
-#include "data/a_list.p.h"
-#include "input/a_button.p.h"
-#include "sound/a_sound.p.h"
+#include "data/f_list.p.h"
+#include "input/f_button.p.h"
+#include "sound/f_sound.p.h"
 
-extern AMenu* a_menu_new(AButton* Next, AButton* Back, AButton* Select, AButton* Cancel);
-extern void a_menu_free(AMenu* Menu);
-extern void a_menu_freeEx(AMenu* Menu, AFree* ItemFree);
+extern AMenu* f_menu_new(AButton* Next, AButton* Back, AButton* Select, AButton* Cancel);
+extern void f_menu_free(AMenu* Menu);
+extern void f_menu_freeEx(AMenu* Menu, AFree* ItemFree);
 
-extern void a_menu_soundSet(AMenu* Menu, ASample* Accept, ASample* Cancel, ASample* Browse);
-extern void a_menu_itemAdd(AMenu* Menu, void* Item);
+extern void f_menu_soundSet(AMenu* Menu, ASample* Accept, ASample* Cancel, ASample* Browse);
+extern void f_menu_itemAdd(AMenu* Menu, void* Item);
 
-extern void a_menu_tick(AMenu* Menu);
-extern AMenuState a_menu_stateGet(const AMenu* Menu);
+extern void f_menu_tick(AMenu* Menu);
+extern AMenuState f_menu_stateGet(const AMenu* Menu);
 
-extern const AList* a_menu_itemsGet(const AMenu* Menu);
-extern bool a_menu_itemIsSelected(const AMenu* Menu, const void* Item);
-extern unsigned a_menu_selectedIndexGet(const AMenu* Menu);
-extern void* a_menu_itemGetSelected(const AMenu* Menu);
+extern const AList* f_menu_itemsGet(const AMenu* Menu);
+extern bool f_menu_itemIsSelected(const AMenu* Menu, const void* Item);
+extern unsigned f_menu_selectedIndexGet(const AMenu* Menu);
+extern void* f_menu_itemGetSelected(const AMenu* Menu);
 
-extern void a_menu_keepRunning(AMenu* Menu);
-extern void a_menu_reset(AMenu* Menu);
+extern void f_menu_keepRunning(AMenu* Menu);
+extern void f_menu_reset(AMenu* Menu);
 
 #endif // A_INC_GENERAL_MENU_P_H

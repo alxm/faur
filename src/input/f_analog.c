@@ -15,7 +15,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a_analog.v.h"
+#include "f_analog.v.h"
 #include <faur.v.h>
 
 struct AAnalog {
@@ -39,30 +39,30 @@ static const char* g_analogNames[A_AXIS_NUM] = {
 
 static const char* g_defaultName = "AAnalog";
 
-AAnalog* a_analog_new(void)
+AAnalog* f_analog_new(void)
 {
-    AAnalog* a = a_mem_malloc(sizeof(AAnalog));
+    AAnalog* a = f_mem_malloc(sizeof(AAnalog));
 
     a->name = g_defaultName;
-    a->platformInputs = a_list_new();
+    a->platformInputs = f_list_new();
 
     return a;
 }
 
-void a_analog_free(AAnalog* Analog)
+void f_analog_free(AAnalog* Analog)
 {
     if(Analog == NULL) {
         return;
     }
 
-    a_list_free(Analog->platformInputs);
+    f_list_free(Analog->platformInputs);
 
-    a_mem_free(Analog);
+    f_mem_free(Analog);
 }
 
-void a_analog_bind(AAnalog* Analog, const AController* Controller, AAnalogId Id)
+void f_analog_bind(AAnalog* Analog, const AController* Controller, AAnalogId Id)
 {
-    const APlatformAnalog* a = a_platform_api__inputAnalogGet(Controller, Id);
+    const APlatformAnalog* a = f_platform_api__inputAnalogGet(Controller, Id);
 
     if(a == NULL) {
         return;
@@ -72,20 +72,20 @@ void a_analog_bind(AAnalog* Analog, const AController* Controller, AAnalogId Id)
         Analog->name = g_analogNames[Id];
     }
 
-    a_list_addLast(Analog->platformInputs, (APlatformAnalog*)a);
+    f_list_addLast(Analog->platformInputs, (APlatformAnalog*)a);
 }
 
-bool a_analog_isWorking(const AAnalog* Analog)
+bool f_analog_isWorking(const AAnalog* Analog)
 {
-    return !a_list_isEmpty(Analog->platformInputs);
+    return !f_list_isEmpty(Analog->platformInputs);
 }
 
-const char* a_analog_nameGet(const AAnalog* Analog)
+const char* f_analog_nameGet(const AAnalog* Analog)
 {
     return Analog->name;
 }
 
-AFix a_analog_valueGet(const AAnalog* Analog)
+AFix f_analog_valueGet(const AAnalog* Analog)
 {
     int value = 0;
 
@@ -94,9 +94,9 @@ AFix a_analog_valueGet(const AAnalog* Analog)
     #define A__ANALOG_ERROR_MARGIN (A__ANALOG_MAX_DISTANCE / 20)
 
     A_LIST_ITERATE(Analog->platformInputs, APlatformAnalog*, a) {
-        value = a_platform_api__inputAnalogValueGet(a);
+        value = f_platform_api__inputAnalogValueGet(a);
 
-        if(a_math_abs(value) > A__ANALOG_ERROR_MARGIN) {
+        if(f_math_abs(value) > A__ANALOG_ERROR_MARGIN) {
             break;
         }
     }

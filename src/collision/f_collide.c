@@ -15,15 +15,15 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a_collide.v.h"
+#include "f_collide.v.h"
 #include <faur.v.h>
 
-bool a_collide_boxAndBox(int X1, int Y1, int W1, int H1, int X2, int Y2, int W2, int H2)
+bool f_collide_boxAndBox(int X1, int Y1, int W1, int H1, int X2, int Y2, int W2, int H2)
 {
     return !(Y1 >= Y2 + H2 || Y2 >= Y1 + H1 || X1 >= X2 + W2 || X2 >= X1 + W1);
 }
 
-bool a_collide_circleAndCircle(int X1, int Y1, int R1, int X2, int Y2, int R2)
+bool f_collide_circleAndCircle(int X1, int Y1, int R1, int X2, int Y2, int R2)
 {
     const int x = X1 - X2;
     const int y = Y1 - Y2;
@@ -32,7 +32,7 @@ bool a_collide_circleAndCircle(int X1, int Y1, int R1, int X2, int Y2, int R2)
     return x * x + y * y < r * r;
 }
 
-bool a_collide_circleAndCirclef(AFix X1, AFix Y1, AFix R1, AFix X2, AFix Y2, AFix R2)
+bool f_collide_circleAndCirclef(AFix X1, AFix Y1, AFix R1, AFix X2, AFix Y2, AFix R2)
 {
     const int64_t x = X1 - X2;
     const int64_t y = Y1 - Y2;
@@ -41,12 +41,12 @@ bool a_collide_circleAndCirclef(AFix X1, AFix Y1, AFix R1, AFix X2, AFix Y2, AFi
     return x * x + y * y < r * r;
 }
 
-bool a_collide_pointInBox(int X, int Y, int BoxX, int BoxY, int BoxW, int BoxH)
+bool f_collide_pointInBox(int X, int Y, int BoxX, int BoxY, int BoxW, int BoxH)
 {
     return X >= BoxX && X < BoxX + BoxW && Y >= BoxY && Y < BoxY + BoxH;
 }
 
-bool a_collide_pointInCircle(int X, int Y, int CircleX, int CircleY, int CircleR)
+bool f_collide_pointInCircle(int X, int Y, int CircleX, int CircleY, int CircleR)
 {
     const int dx = X - CircleX;
     const int dy = Y - CircleY;

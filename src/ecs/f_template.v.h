@@ -18,18 +18,18 @@
 #ifndef A_INC_ECS_TEMPLATE_V_H
 #define A_INC_ECS_TEMPLATE_V_H
 
-#include "ecs/a_template.p.h"
+#include "ecs/f_template.p.h"
 
 typedef struct ATemplate ATemplate;
 
-extern void a_template__init(void);
-extern void a_template__uninit(void);
+extern void f_template__init(void);
+extern void f_template__uninit(void);
 
-extern const ATemplate* a_template__get(const char* TemplateId);
+extern const ATemplate* f_template__get(const char* TemplateId);
 
-extern void a_template__initRun(const ATemplate* Template, AEntity* Entity, const void* Context);
-extern unsigned a_template__instanceGet(const ATemplate* Template);
-extern bool a_template__componentHas(const ATemplate* Template, int ComponentIndex);
-extern const void* a_template__dataGet(const ATemplate* Template, int ComponentIndex);
+extern void f_template__initRun(const ATemplate* Template, AEntity* Entity, const void* Context);
+extern unsigned f_template__instanceGet(const ATemplate* Template);
+extern bool f_template__componentHas(const ATemplate* Template, int ComponentIndex);
+extern const void* f_template__dataGet(const ATemplate* Template, int ComponentIndex);
 
 #endif // A_INC_ECS_TEMPLATE_V_H

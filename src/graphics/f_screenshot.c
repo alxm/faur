@@ -15,7 +15,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a_screenshot.v.h"
+#include "f_screenshot.v.h"
 #include <faur.v.h>
 
 #if A_CONFIG_LIB_PNG
@@ -31,19 +31,19 @@ static AButton* g_button;
 static bool lazy_init(void)
 {
     // Only interested in the last file, to get the number from its name
-    ADir* dir = a_dir_new(A_CONFIG_DIR_SCREENSHOTS);
-    APath* entry = a_list_getLast(a_dir_entriesGet(dir));
+    ADir* dir = f_dir_new(A_CONFIG_DIR_SCREENSHOTS);
+    APath* entry = f_list_getLast(f_dir_entriesGet(dir));
 
     if(entry == NULL) {
         g_isInit = true;
     } else {
-        const char* file = a_path_getName(entry);
+        const char* file = f_path_getName(entry);
 
-        int start = a_str_indexGetLast(file, '-');
-        int end = a_str_indexGetLast(file, '.');
+        int start = f_str_indexGetLast(file, '-');
+        int end = f_str_indexGetLast(file, '.');
 
         if(start != -1 && end != -1 && end - start == 6) {
-            char* numberStr = a_str_subGetRange(file, start + 1, end);
+            char* numberStr = f_str_subGetRange(file, start + 1, end);
             int number = atoi(numberStr);
 
             if(number > 0) {
@@ -51,28 +51,28 @@ static bool lazy_init(void)
                 g_isInit = true;
             }
 
-            a_mem_free(numberStr);
+            f_mem_free(numberStr);
         }
 
         if(!g_isInit) {
-            a_out__error("Invalid file name '%s'", a_path_getFull(entry));
+            f_out__error("Invalid file name '%s'", f_path_getFull(entry));
         }
     }
 
-    a_dir_free(dir);
+    f_dir_free(dir);
 
     if(g_isInit) {
-        g_filePrefix = a_str_dup(a_str__fmt512("%s/%s-",
+        g_filePrefix = f_str_dup(f_str__fmt512("%s/%s-",
                                                A_CONFIG_DIR_SCREENSHOTS,
                                                A_CONFIG_APP_NAME));
 
-        g_title = a_str_dup(a_str__fmt512(
+        g_title = f_str_dup(f_str__fmt512(
             "%s %s by %s",
             A_CONFIG_APP_NAME,
             A_CONFIG_APP_VERSION_STRING,
             A_CONFIG_APP_AUTHOR));
 
-        g_description = a_str_dup(a_str__fmt512(
+        g_description = f_str_dup(f_str__fmt512(
             "%s %s by %s, built %s. Using Faur %s %s.",
             A_CONFIG_APP_NAME,
             A_CONFIG_APP_VERSION_STRING,
@@ -103,63 +103,63 @@ static void takeScreenshot(void)
     }
 
     if(++g_screenshotNumber > A__SCREENSHOTS_LIMIT) {
-        a_out__error("%d screenshots limit exceeded", A__SCREENSHOTS_LIMIT);
+        f_out__error("%d screenshots limit exceeded", A__SCREENSHOTS_LIMIT);
         return;
     }
 
-    const char* name = a_str__fmt512(
+    const char* name = f_str__fmt512(
                         "%s%05d.png", g_filePrefix, g_screenshotNumber);
 
-    a_out__info("Saving screenshot '%s'", name);
+    f_out__info("Saving screenshot '%s'", name);
 
     #if !A_CONFIG_LIB_RENDER_SOFTWARE
-        a_platform_api__screenTextureRead(a__screen.pixels, a__screen.frame);
+        f_platform_api__screenTextureRead(f__screen.pixels, f__screen.frame);
     #endif
 
-    a_png__write(
-        name, a__screen.pixels, a__screen.frame, g_title, g_description);
+    f_png__write(
+        name, f__screen.pixels, f__screen.frame, g_title, g_description);
 }
 
-void a_screenshot__init(void)
+void f_screenshot__init(void)
 {
-    g_button = a_button_new();
-    a_button_bindKey(g_button, A_KEY_F12);
+    g_button = f_button_new();
+    f_button_bindKey(g_button, A_KEY_F12);
 }
 
-void a_screenshot__uninit(void)
+void f_screenshot__uninit(void)
 {
-    a_mem_free(g_filePrefix);
-    a_mem_free(g_title);
-    a_mem_free(g_description);
+    f_mem_free(g_filePrefix);
+    f_mem_free(g_title);
+    f_mem_free(g_description);
 
-    a_button_free(g_button);
+    f_button_free(g_button);
 }
 
-const APack a_pack__screenshot = {
+const APack f_pack__screenshot = {
     "Screenshot",
     {
-        [0] = a_screenshot__init,
+        [0] = f_screenshot__init,
     },
     {
-        [0] = a_screenshot__uninit,
+        [0] = f_screenshot__uninit,
     },
 };
 
-void a_screenshot__tick(void)
+void f_screenshot__tick(void)
 {
-    if(a_button_pressGetOnce(g_button)) {
+    if(f_button_pressGetOnce(g_button)) {
         takeScreenshot();
     }
 }
 
-void a_screenshot_take(void)
+void f_screenshot_take(void)
 {
     takeScreenshot();
 }
 #else // !A_CONFIG_LIB_PNG
-const APack a_pack__screenshot;
+const APack f_pack__screenshot;
 
-void a_screenshot__tick(void)
+void f_screenshot__tick(void)
 {
 }
 #endif // !A_CONFIG_LIB_PNG

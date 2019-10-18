@@ -15,7 +15,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a_main.v.h"
+#include "f_main.v.h"
 #include <faur.v.h>
 
 #ifdef __GLIBC__
@@ -31,32 +31,32 @@ static int g_argsNum;
 static const char** g_args;
 
 static const APack* g_packs[] = {
-    &a_pack__console,
-    &a_pack__embed,
-    &a_pack__platform,
-    &a_pack__timer,
-    &a_pack__input,
-    &a_pack__screen,
-    &a_pack__color,
-    &a_pack__fps,
-    &a_pack__screenshot,
-    &a_pack__sound,
-    &a_pack__random,
-    &a_pack__fix,
-    &a_pack__state,
-    &a_pack__ecs,
-    &a_pack__fade,
-    &a_pack__font,
+    &f_pack__console,
+    &f_pack__embed,
+    &f_pack__platform,
+    &f_pack__timer,
+    &f_pack__input,
+    &f_pack__screen,
+    &f_pack__color,
+    &f_pack__fps,
+    &f_pack__screenshot,
+    &f_pack__sound,
+    &f_pack__random,
+    &f_pack__fix,
+    &f_pack__state,
+    &f_pack__ecs,
+    &f_pack__fade,
+    &f_pack__font,
 };
 
-static void a__atexit(void)
+static void f__atexit(void)
 {
-    a_out__info("Running atexit");
+    f_out__info("Running atexit");
 
     for(unsigned pass = A_PACK__PASSES_NUM; pass--; ) {
         for(unsigned pack = A_ARRAY_LEN(g_packs); pack--; ) {
             if(g_packs[pack]->uninit[pass]) {
-                a_out__info("[%s] Uninit pass %d", g_packs[pack]->name, pass);
+                f_out__info("[%s] Uninit pass %d", g_packs[pack]->name, pass);
                 g_packs[pack]->uninit[pass]();
             }
         }
@@ -76,51 +76,51 @@ int main(int Argc, char* Argv[])
     g_argsNum = Argc;
     g_args = (const char**)Argv;
 
-    a__main();
+    f__main();
 
-    a_state__runLoop();
+    f_state__runLoop();
 
     return 0;
 }
 #endif
 
-void a__main(void)
+void f__main(void)
 {
-    a_out__info("PID: %d", getpid());
-    a_out__info("Faur: %s %s", A_CONFIG_BUILD_UID, A_CONFIG_BUILD_GIT_HASH);
-    a_out__info("App: %s %s by %s",
+    f_out__info("PID: %d", getpid());
+    f_out__info("Faur: %s %s", A_CONFIG_BUILD_UID, A_CONFIG_BUILD_GIT_HASH);
+    f_out__info("App: %s %s by %s",
                 A_CONFIG_APP_NAME,
                 A_CONFIG_APP_VERSION_STRING,
                 A_CONFIG_APP_AUTHOR);
-    a_out__info("Build timestamp: %s", A_CONFIG_BUILD_TIMESTAMP);
+    f_out__info("Build timestamp: %s", A_CONFIG_BUILD_TIMESTAMP);
 
-    if(atexit(a__atexit)) {
-        a_out__error("Cannot register atexit callback");
+    if(atexit(f__atexit)) {
+        f_out__error("Cannot register atexit callback");
     }
 
     for(unsigned pass = 0; pass < A_PACK__PASSES_NUM; pass++) {
         for(unsigned pack = 0; pack < A_ARRAY_LEN(g_packs); pack++) {
             if(g_packs[pack]->init[pass]) {
-                a_out__info("[%s] Init pass %d", g_packs[pack]->name, pass);
+                f_out__info("[%s] Init pass %d", g_packs[pack]->name, pass);
                 g_packs[pack]->init[pass]();
             }
         }
     }
 
-    a_out__info("a_main start");
-    a_main();
-    a_out__info("a_main end");
+    f_out__info("f_main start");
+    f_main();
+    f_out__info("f_main end");
 }
 
-int a_main_argsNumGet(void)
+int f_main_argsNumGet(void)
 {
     return g_argsNum;
 }
 
-const char* a_main_argsGet(int ArgNum)
+const char* f_main_argsGet(int ArgNum)
 {
     if(ArgNum >= g_argsNum) {
-        A__FATAL("a_main_argsGet(%d): Only %d args total", ArgNum, g_argsNum);
+        A__FATAL("f_main_argsGet(%d): Only %d args total", ArgNum, g_argsNum);
     }
 
     return g_args[ArgNum];
@@ -137,27 +137,27 @@ __attribute__((noreturn)) static void handleFatal(void)
             char** functionNames = backtrace_symbols(addresses, numAddresses);
 
             for(int i = 0; i < numAddresses; i++) {
-                a_out__error(functionNames[i]);
+                f_out__error(functionNames[i]);
             }
 
             free(functionNames);
         #endif
 
-        a_console_showSet(true);
-        a_console__draw();
-        a_screen__draw();
+        f_console_showSet(true);
+        f_console__draw();
+        f_screen__draw();
 
         #if A_CONFIG_BUILD_DEBUG_WAIT
             while(true) {
                 printf("Waiting to attach debugger: PID %d\n", getpid());
-                a_time_spinSec(1);
+                f_time_spinSec(1);
             }
         #elif !A_CONFIG_TRAIT_DESKTOP
-            if(a_console__isInitialized()) {
-                a_out__info("Exiting in 10s");
-                a_console__draw();
-                a_screen__draw();
-                a_time_waitSec(10);
+            if(f_console__isInitialized()) {
+                f_out__info("Exiting in 10s");
+                f_console__draw();
+                f_screen__draw();
+                f_time_waitSec(10);
             }
         #endif
 
@@ -174,7 +174,7 @@ void A__FATAL(const char* Format, ...)
     va_list args;
     va_start(args, Format);
 
-    a_out__errorv(Format, args);
+    f_out__errorv(Format, args);
 
     va_end(args);
 
@@ -186,7 +186,7 @@ void A_FATAL(const char* Format, ...)
     va_list args;
     va_start(args, Format);
 
-    a_out__errorv(Format, args);
+    f_out__errorv(Format, args);
 
     va_end(args);
 

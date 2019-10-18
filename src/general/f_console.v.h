@@ -18,17 +18,17 @@
 #ifndef A_INC_GENERAL_CONSOLE_V_H
 #define A_INC_GENERAL_CONSOLE_V_H
 
-#include "general/a_console.p.h"
+#include "general/f_console.p.h"
 
-#include "general/a_main.v.h"
-#include "general/a_out.v.h"
+#include "general/f_main.v.h"
+#include "general/f_out.v.h"
 
-extern const APack a_pack__console;
+extern const APack f_pack__console;
 
-extern void a_console__tick(void);
-extern void a_console__draw(void);
+extern void f_console__tick(void);
+extern void f_console__draw(void);
 
-extern bool a_console__isInitialized(void);
-extern void a_console__write(AOutSource Source, AOutType Type, const char* Text);
+extern bool f_console__isInitialized(void);
+extern void f_console__write(AOutSource Source, AOutType Type, const char* Text);
 
 #endif // A_INC_GENERAL_CONSOLE_V_H

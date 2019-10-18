@@ -19,7 +19,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a_wiz.v.h"
+#include "f_wiz.v.h"
 #include <faur.v.h>
 
 #if A_CONFIG_SYSTEM_WIZ || A_CONFIG_SYSTEM_CAANOO
@@ -91,10 +91,10 @@ static void timer_init(void)
     TIMER_REG(0x08) = 0x68 | div2; // Run timer, clear irq, latch value
 }
 
-void a_platform_wiz__init(void)
+void f_platform_wiz__init(void)
 {
     #if A_CONFIG_SYSTEM_WIZ
-        if(a_path_exists("./mmuhack.ko", A_PATH_FILE)) {
+        if(f_path_exists("./mmuhack.ko", A_PATH_FILE)) {
             system("/sbin/rmmod mmuhack");
             system("/sbin/insmod mmuhack.ko");
 
@@ -118,7 +118,7 @@ void a_platform_wiz__init(void)
     timer_init();
 }
 
-void a_platform_wiz__uninit(void)
+void f_platform_wiz__uninit(void)
 {
     timer_clean();
     close(g_memfd);
@@ -130,7 +130,7 @@ void a_platform_wiz__uninit(void)
     #endif
 }
 
-uint32_t a_platform_api__timeMsGet(void)
+uint32_t f_platform_api__timeMsGet(void)
 {
     unsigned div = TIMER_REG(0x08) & 3;
     TIMER_REG(0x08) = 0x48 | div; // Run timer, latch value
@@ -138,13 +138,13 @@ uint32_t a_platform_api__timeMsGet(void)
     return TIMER_REG(0) / 1000;
 }
 
-void a_platform_api__timeMsWait(uint32_t Ms)
+void f_platform_api__timeMsWait(uint32_t Ms)
 {
-    a_time_spinMs(Ms);
+    f_time_spinMs(Ms);
 }
 
 #if A_CONFIG_SYSTEM_WIZ
-void a_platform_wiz__portraitModeSet(void)
+void f_platform_wiz__portraitModeSet(void)
 {
     // Set Wiz screen to portrait mode to avoid diagonal tearing
     #define FBIO_MAGIC 'D'

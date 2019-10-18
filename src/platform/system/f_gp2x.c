@@ -20,7 +20,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a_gp2x.v.h"
+#include "f_gp2x.v.h"
 #include <faur.v.h>
 
 #if A_CONFIG_SYSTEM_GP2X
@@ -95,9 +95,9 @@ static void setRamTimings(unsigned tRC, unsigned tRAS, unsigned tWR, unsigned tM
     close(memfd);
 }
 
-void a_platform_gp2x__init(void)
+void f_platform_gp2x__init(void)
 {
-    if(a_path_exists("./mmuhack.o", A_PATH_FILE)) {
+    if(f_path_exists("./mmuhack.o", A_PATH_FILE)) {
         system("/sbin/rmmod mmuhack");
         system("/sbin/insmod mmuhack.o");
     }
@@ -109,7 +109,7 @@ void a_platform_gp2x__init(void)
     setRamTimings(6, 4, 1, 1, 1, 2, 2);
 }
 
-void a_platform_gp2x__uninit(void)
+void f_platform_gp2x__uninit(void)
 {
     int mmufd = open("/dev/mmuhack", O_RDWR);
 

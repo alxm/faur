@@ -18,6 +18,6 @@
 #ifndef A_INC_PLATFORM_GRAPHICS_GAMEBUINO_VIDEO_V_H
 #define A_INC_PLATFORM_GRAPHICS_GAMEBUINO_VIDEO_V_H
 
-#include "platform/graphics/a_gamebuino_video.p.h"
+#include "platform/graphics/f_gamebuino_video.p.h"
 
 #endif // A_INC_PLATFORM_GRAPHICS_GAMEBUINO_VIDEO_V_H

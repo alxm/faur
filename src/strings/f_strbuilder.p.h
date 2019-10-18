@@ -18,16 +18,16 @@
 #ifndef A_INC_STRINGS_STRBUILDER_P_H
 #define A_INC_STRINGS_STRBUILDER_P_H
 
-#include "general/a_system_includes.h"
+#include "general/f_system_includes.h"
 
 typedef struct AStrBuilder AStrBuilder;
 
-extern AStrBuilder* a_strbuilder_new(size_t Bytes);
-extern void a_strbuilder_free(AStrBuilder* Builder);
+extern AStrBuilder* f_strbuilder_new(size_t Bytes);
+extern void f_strbuilder_free(AStrBuilder* Builder);
 
-extern const char* a_strbuilder_get(AStrBuilder* Builder);
+extern const char* f_strbuilder_get(AStrBuilder* Builder);
 
-extern bool a_strbuilder_add(AStrBuilder* Builder, const char* String);
-extern bool a_strbuilder_addf(AStrBuilder* Builder, const char* Format, ...);
+extern bool f_strbuilder_add(AStrBuilder* Builder, const char* String);
+extern bool f_strbuilder_addf(AStrBuilder* Builder, const char* Format, ...);
 
 #endif // A_INC_STRINGS_STRBUILDER_P_H

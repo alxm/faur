@@ -15,7 +15,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a_str.v.h"
+#include "f_str.v.h"
 #include <faur.v.h>
 
 static inline const char* strFmtv(char* Buffer, size_t Size, bool OverflowOk, const char* Format, va_list Args)
@@ -25,7 +25,7 @@ static inline const char* strFmtv(char* Buffer, size_t Size, bool OverflowOk, co
     return (r >= 0 && (r < (int)Size || OverflowOk)) ? Buffer : NULL;
 }
 
-const char* a_str_fmt(char* Buffer, size_t Size, bool OverflowOk, const char* Format, ...)
+const char* f_str_fmt(char* Buffer, size_t Size, bool OverflowOk, const char* Format, ...)
 {
     va_list args;
     va_start(args, Format);
@@ -37,12 +37,12 @@ const char* a_str_fmt(char* Buffer, size_t Size, bool OverflowOk, const char* Fo
     return ret;
 }
 
-const char* a_str_fmtv(char* Buffer, size_t Size, bool OverflowOk, const char* Format, va_list Args)
+const char* f_str_fmtv(char* Buffer, size_t Size, bool OverflowOk, const char* Format, va_list Args)
 {
     return strFmtv(Buffer, Size, OverflowOk, Format, Args);
 }
 
-const char* a_str_fmt512(const char* Format, ...)
+const char* f_str_fmt512(const char* Format, ...)
 {
     va_list args;
     va_start(args, Format);
@@ -55,7 +55,7 @@ const char* a_str_fmt512(const char* Format, ...)
     return ret;
 }
 
-const char* a_str__fmt512(const char* Format, ...)
+const char* f_str__fmt512(const char* Format, ...)
 {
     va_list args;
     va_start(args, Format);
@@ -68,7 +68,7 @@ const char* a_str__fmt512(const char* Format, ...)
     return ret;
 }
 
-char* a_str_merge(const char* String1, ...)
+char* f_str_merge(const char* String1, ...)
 {
     va_list args;
     size_t size = 0;
@@ -81,7 +81,7 @@ char* a_str_merge(const char* String1, ...)
 
     va_end(args);
 
-    char* string = a_mem_malloc(size + 1);
+    char* string = f_mem_malloc(size + 1);
     char* buffer = string;
 
     va_start(args, String1);
@@ -99,18 +99,18 @@ char* a_str_merge(const char* String1, ...)
     return string;
 }
 
-char* a_str_dup(const char* String)
+char* f_str_dup(const char* String)
 {
     if(String == NULL) {
         return NULL;
     }
 
-    char* buffer = a_mem_malloc(strlen(String) + 1);
+    char* buffer = f_mem_malloc(strlen(String) + 1);
 
     return strcpy(buffer, String);
 }
 
-char* a_str_trim(const char* String)
+char* f_str_trim(const char* String)
 {
     int start = 0;
     int end = (int)strlen(String) - 1;
@@ -123,13 +123,13 @@ char* a_str_trim(const char* String)
         end--;
     }
 
-    return a_str_subGetRange(String, start, end + 1);
+    return f_str_subGetRange(String, start, end + 1);
 }
 
-char* a_str_subGetRange(const char* String, int Start, int End)
+char* f_str_subGetRange(const char* String, int Start, int End)
 {
     size_t len = (size_t)(End - Start);
-    char* str = a_mem_malloc(len + 1);
+    char* str = f_mem_malloc(len + 1);
 
     memcpy(str, String + Start, len);
     str[len] = '\0';
@@ -137,18 +137,18 @@ char* a_str_subGetRange(const char* String, int Start, int End)
     return str;
 }
 
-char* a_str_subGetPrefix(const char* String, int Length)
+char* f_str_subGetPrefix(const char* String, int Length)
 {
-    return a_str_subGetRange(String, 0, Length);
+    return f_str_subGetRange(String, 0, Length);
 }
 
-char* a_str_subGetSuffix(const char* String, int Length)
+char* f_str_subGetSuffix(const char* String, int Length)
 {
     int sLen = (int)strlen(String);
-    return a_str_subGetRange(String, sLen - Length, sLen);
+    return f_str_subGetRange(String, sLen - Length, sLen);
 }
 
-int a_str_indexGetFirst(const char* String, char Character)
+int f_str_indexGetFirst(const char* String, char Character)
 {
     for(int i = 0; String[i] != '\0'; i++) {
         if(String[i] == Character) {
@@ -159,7 +159,7 @@ int a_str_indexGetFirst(const char* String, char Character)
     return -1;
 }
 
-int a_str_indexGetLast(const char* String, char Character)
+int f_str_indexGetLast(const char* String, char Character)
 {
     for(int i = (int)strlen(String); i--; ) {
         if(String[i] == Character) {
@@ -170,7 +170,7 @@ int a_str_indexGetLast(const char* String, char Character)
     return -1;
 }
 
-bool a_str_startsWith(const char* String, const char* Prefix)
+bool f_str_startsWith(const char* String, const char* Prefix)
 {
     while(*String != '\0' && *Prefix != '\0') {
         if(*String++ != *Prefix++) {
@@ -181,7 +181,7 @@ bool a_str_startsWith(const char* String, const char* Prefix)
     return *Prefix == '\0';
 }
 
-bool a_str_endsWith(const char* String, const char* Suffix)
+bool f_str_endsWith(const char* String, const char* Suffix)
 {
     const size_t str_len = strlen(String);
     const size_t suf_len = strlen(Suffix);
@@ -193,31 +193,31 @@ bool a_str_endsWith(const char* String, const char* Suffix)
     return strcmp(String + str_len - suf_len, Suffix) == 0;
 }
 
-char* a_str_prefixGetToFirst(const char* String, char Marker)
+char* f_str_prefixGetToFirst(const char* String, char Marker)
 {
-    const int index = a_str_indexGetFirst(String, Marker);
+    const int index = f_str_indexGetFirst(String, Marker);
 
     if(index == -1) {
         return NULL;
     }
 
-    return a_str_subGetRange(String, 0, index);
+    return f_str_subGetRange(String, 0, index);
 }
 
-char* a_str_prefixGetToLast(const char* String, char Marker)
+char* f_str_prefixGetToLast(const char* String, char Marker)
 {
-    const int index = a_str_indexGetLast(String, Marker);
+    const int index = f_str_indexGetLast(String, Marker);
 
     if(index == -1) {
         return NULL;
     }
 
-    return a_str_subGetRange(String, 0, index);
+    return f_str_subGetRange(String, 0, index);
 }
 
-char* a_str_suffixGetFromFirst(const char* String, char Marker)
+char* f_str_suffixGetFromFirst(const char* String, char Marker)
 {
-    const int start = a_str_indexGetFirst(String, Marker) + 1;
+    const int start = f_str_indexGetFirst(String, Marker) + 1;
     int end = start;
 
     if(start == 0) {
@@ -228,23 +228,23 @@ char* a_str_suffixGetFromFirst(const char* String, char Marker)
         end++;
     }
 
-    return a_str_subGetRange(String, start, end);
+    return f_str_subGetRange(String, start, end);
 }
 
-char* a_str_suffixGetFromLast(const char* String, char Marker)
+char* f_str_suffixGetFromLast(const char* String, char Marker)
 {
-    const int index = a_str_indexGetLast(String, Marker);
+    const int index = f_str_indexGetLast(String, Marker);
 
     if(index == -1) {
         return NULL;
     }
 
-    return a_str_subGetRange(String, index + 1, (int)strlen(String));
+    return f_str_subGetRange(String, index + 1, (int)strlen(String));
 }
 
-AList* a_str_split(const char* String, const char* Delimiters)
+AList* f_str_split(const char* String, const char* Delimiters)
 {
-    AList* strings = a_list_new();
+    AList* strings = f_list_new();
 
     const char* str = String;
     const char* start = String;
@@ -254,12 +254,12 @@ AList* a_str_split(const char* String, const char* Delimiters)
             if(*str == *d) {
                 if(str > start) {
                     size_t len = (size_t)(str - start);
-                    char* split = a_mem_malloc(len + 1);
+                    char* split = f_mem_malloc(len + 1);
 
                     memcpy(split, start, len);
                     split[len] = '\0';
 
-                    a_list_addLast(strings, split);
+                    f_list_addLast(strings, split);
                 }
 
                 start = str + 1;
@@ -272,12 +272,12 @@ AList* a_str_split(const char* String, const char* Delimiters)
 
     if(str > start) {
         size_t len = (size_t)(str - start);
-        char* split = a_mem_malloc(len + 1);
+        char* split = f_mem_malloc(len + 1);
 
         memcpy(split, start, len);
         split[len] = '\0';
 
-        a_list_addLast(strings, split);
+        f_list_addLast(strings, split);
     }
 
     return strings;

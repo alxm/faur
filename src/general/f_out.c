@@ -15,7 +15,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a_out.v.h"
+#include "f_out.v.h"
 #include <faur.v.h>
 
 #if A_CONFIG_OUTPUT_ENABLED
@@ -67,31 +67,31 @@ static void outWorkerPrint(AOutSource Source, AOutType Type, FILE* Stream, const
                 g_types[Type].color,
                 g_sources[Source],
                 g_types[Type].name,
-                (unsigned)a_fps_ticksGet());
+                (unsigned)f_fps_ticksGet());
     #else
         fprintf(Stream,
                 "[%s][%s][%08x] ",
                 g_sources[Source],
                 g_types[Type].name,
-                (unsigned)a_fps_ticksGet());
+                (unsigned)f_fps_ticksGet());
     #endif
 
     fputs(Text, Stream);
     fputs("\n", Stream);
 
-    a_console__write(Source, Type, Text);
+    f_console__write(Source, Type, Text);
 }
 
 static void outWorker(AOutSource Source, AOutType Type, FILE* Stream, const char* Format, va_list Args)
 {
     static char buffer[512];
 
-    if(a_str_fmtv(buffer, sizeof(buffer), true, Format, Args)) {
+    if(f_str_fmtv(buffer, sizeof(buffer), true, Format, Args)) {
         outWorkerPrint(Source, Type, Stream, buffer);
     }
 }
 
-void a_out__info(const char* Format, ...)
+void f_out__info(const char* Format, ...)
 {
     va_list args;
     va_start(args, Format);
@@ -105,7 +105,7 @@ void a_out__info(const char* Format, ...)
     va_end(args);
 }
 
-void a_out__warning(const char* Format, ...)
+void f_out__warning(const char* Format, ...)
 {
     va_list args;
     va_start(args, Format);
@@ -119,7 +119,7 @@ void a_out__warning(const char* Format, ...)
     va_end(args);
 }
 
-void a_out__error(const char* Format, ...)
+void f_out__error(const char* Format, ...)
 {
     va_list args;
     va_start(args, Format);
@@ -133,7 +133,7 @@ void a_out__error(const char* Format, ...)
     va_end(args);
 }
 
-void a_out__errorv(const char* Format, va_list Args)
+void f_out__errorv(const char* Format, va_list Args)
 {
     outWorker(A_OUT__SOURCE_FAUR,
               A_OUT__TYPE_ERROR,
@@ -142,7 +142,7 @@ void a_out__errorv(const char* Format, va_list Args)
               Args);
 }
 
-void a_out__state(const char* Format, ...)
+void f_out__state(const char* Format, ...)
 {
     va_list args;
     va_start(args, Format);
@@ -156,7 +156,7 @@ void a_out__state(const char* Format, ...)
     va_end(args);
 }
 
-void a_out_text(const char* Text)
+void f_out_text(const char* Text)
 {
     outWorkerPrint(A_OUT__SOURCE_APP,
                    A_OUT__TYPE_INFO,
@@ -164,7 +164,7 @@ void a_out_text(const char* Text)
                    Text);
 }
 
-void a_out_info(const char* Format, ...)
+void f_out_info(const char* Format, ...)
 {
     va_list args;
     va_start(args, Format);
@@ -178,7 +178,7 @@ void a_out_info(const char* Format, ...)
     va_end(args);
 }
 
-void a_out_warning(const char* Format, ...)
+void f_out_warning(const char* Format, ...)
 {
     va_list args;
     va_start(args, Format);
@@ -192,7 +192,7 @@ void a_out_warning(const char* Format, ...)
     va_end(args);
 }
 
-void a_out_error(const char* Format, ...)
+void f_out_error(const char* Format, ...)
 {
     va_list args;
     va_start(args, Format);

@@ -18,11 +18,11 @@
 #ifndef A_INC_PLATFORM_SYSTEM_WIZ_V_H
 #define A_INC_PLATFORM_SYSTEM_WIZ_V_H
 
-#include "platform/system/a_wiz.p.h"
+#include "platform/system/f_wiz.p.h"
 
-extern void a_platform_wiz__init(void);
-extern void a_platform_wiz__uninit(void);
+extern void f_platform_wiz__init(void);
+extern void f_platform_wiz__uninit(void);
 
-extern void a_platform_wiz__portraitModeSet(void);
+extern void f_platform_wiz__portraitModeSet(void);
 
 #endif // A_INC_PLATFORM_SYSTEM_WIZ_V_H

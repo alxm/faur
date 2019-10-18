@@ -40,18 +40,18 @@ def main():
 
         if os.path.isdir(os.path.join(gen_dir, no_h)):
             embed_calls += """\
-    a_embed__dirAdd(&{prefix}{var});
+    f_embed__dirAdd(&{prefix}{var});
 """.format(prefix = cvar_prefix, var = g_tool.sanitize_c_var(no_h))
         else:
             embed_calls += """\
-    a_embed__fileAdd(&{prefix}{var});
+    f_embed__fileAdd(&{prefix}{var});
 """.format(prefix = cvar_prefix, var = g_tool.sanitize_c_var(no_h))
 
     g_tool.write_text(c_file,
 """\
 #include <faur.v.h>
 {}
-void a_embed__populate(void)
+void f_embed__populate(void)
 {{
 {}}}
 """.format(includes, embed_calls))

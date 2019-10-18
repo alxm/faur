@@ -15,7 +15,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a_png.v.h"
+#include "f_png.v.h"
 #include <faur.v.h>
 
 #if A_CONFIG_LIB_PNG
@@ -42,12 +42,12 @@ static APixels* pngToPixels(png_structp Png, png_infop Info)
     unsigned numChannels = png_get_channels(Png, Info);
     png_bytepp rows = png_get_rows(Png, Info);
 
-    APixels* pixels = a_pixels__new((int)w, (int)h, 1, A_PIXELS__ALLOC);
+    APixels* pixels = f_pixels__new((int)w, (int)h, 1, A_PIXELS__ALLOC);
     APixel* buffer = pixels->buffer;
 
     for(png_uint_32 y = h; y--; rows++) {
         for(png_uint_32 x = w, chOffset = 0; x--; chOffset += numChannels) {
-            *buffer++ = a_pixel_fromRgb(rows[0][chOffset + 0],
+            *buffer++ = f_pixel_fromRgb(rows[0][chOffset + 0],
                                         rows[0][chOffset + 1],
                                         rows[0][chOffset + 2]);
         }
@@ -56,31 +56,31 @@ static APixels* pngToPixels(png_structp Png, png_infop Info)
     return pixels;
 }
 
-APixels* a_png__readFile(const char* Path)
+APixels* f_png__readFile(const char* Path)
 {
     APixels* volatile pixels = NULL;
 
     png_structp png = NULL;
     png_infop info = NULL;
 
-    AFile* f = a_file_new(Path, A_FILE_READ | A_FILE_BINARY);
+    AFile* f = f_file_new(Path, A_FILE_READ | A_FILE_BINARY);
 
     if(f == NULL) {
         goto cleanUp;
     }
 
-    if(a_path_test(a_file_pathGet(f), A_PATH_EMBEDDED)) {
-        pixels = a_png__readMemory(a_file__dataGet(f)->buffer);
+    if(f_path_test(f_file_pathGet(f), A_PATH_EMBEDDED)) {
+        pixels = f_png__readMemory(f_file__dataGet(f)->buffer);
         goto cleanUp;
     }
 
     #define PNG_SIG 8
     png_byte sig[PNG_SIG];
 
-    a_file_read(f, sig, PNG_SIG);
+    f_file_read(f, sig, PNG_SIG);
 
     if(png_sig_cmp(sig, 0, PNG_SIG) != 0) {
-        a_out__error("a_png__readFile(%s): Not a PNG", Path);
+        f_out__error("f_png__readFile(%s): Not a PNG", Path);
         goto cleanUp;
     }
 
@@ -100,14 +100,14 @@ APixels* a_png__readFile(const char* Path)
         goto cleanUp;
     }
 
-    png_init_io(png, a_file_handleGet(f));
+    png_init_io(png, f_file_handleGet(f));
     png_set_sig_bytes(png, PNG_SIG);
     png_read_png(png, info, PNG_TRANSFORM_EXPAND, NULL);
 
     int type = png_get_color_type(png, info);
 
     if(type != PNG_COLOR_TYPE_RGB && type != PNG_COLOR_TYPE_RGBA) {
-        a_out__error("a_png__readFile(%s): Not an RGB or RGBA PNG", Path);
+        f_out__error("f_png__readFile(%s): Not an RGB or RGBA PNG", Path);
         goto cleanUp;
     }
 
@@ -118,16 +118,16 @@ cleanUp:
         png_destroy_read_struct(&png, info ? &info : NULL, NULL);
     }
 
-    a_file_free(f);
+    f_file_free(f);
 
     return pixels;
 }
 
-APixels* a_png__readMemory(const uint8_t* Data)
+APixels* f_png__readMemory(const uint8_t* Data)
 {
     APixels* volatile pixels = NULL;
 
-    AByteStream* stream = a_mem_malloc(sizeof(AByteStream));
+    AByteStream* stream = f_mem_malloc(sizeof(AByteStream));
 
     stream->data = Data;
     stream->offset = 0;
@@ -141,7 +141,7 @@ APixels* a_png__readMemory(const uint8_t* Data)
     memcpy(sig, Data, PNG_SIG);
 
     if(png_sig_cmp(sig, 0, PNG_SIG) != 0) {
-        a_out__error("a_png__readMemory: Data not a PNG");
+        f_out__error("f_png__readMemory: Data not a PNG");
         goto cleanUp;
     }
 
@@ -167,7 +167,7 @@ APixels* a_png__readMemory(const uint8_t* Data)
     const int type = png_get_color_type(png, info);
 
     if(type != PNG_COLOR_TYPE_RGB && type != PNG_COLOR_TYPE_RGBA) {
-        a_out__error("a_png__readMemory: Data not an RGB or RGBA PNG");
+        f_out__error("f_png__readMemory: Data not an RGB or RGBA PNG");
         goto cleanUp;
     }
 
@@ -178,14 +178,14 @@ cleanUp:
         png_destroy_read_struct(&png, info ? &info : NULL, NULL);
     }
 
-    a_mem_free(stream);
+    f_mem_free(stream);
 
     return pixels;
 }
 
-void a_png__write(const char* Path, const APixels* Pixels, unsigned Frame, char* Title, char* Description)
+void f_png__write(const char* Path, const APixels* Pixels, unsigned Frame, char* Title, char* Description)
 {
-    AFile* f = a_file_new(Path, A_FILE_WRITE | A_FILE_BINARY);
+    AFile* f = f_file_new(Path, A_FILE_WRITE | A_FILE_BINARY);
 
     png_structp png = NULL;
     png_infop info = NULL;
@@ -202,8 +202,8 @@ void a_png__write(const char* Path, const APixels* Pixels, unsigned Frame, char*
     unsigned height = (unsigned)Pixels->h;
 
     #define COLOR_CHANNELS 3
-    rows = a_mem_malloc(height * sizeof(png_bytep));
-    rowsData = a_mem_malloc(width * height * COLOR_CHANNELS * sizeof(png_byte));
+    rows = f_mem_malloc(height * sizeof(png_bytep));
+    rowsData = f_mem_malloc(width * height * COLOR_CHANNELS * sizeof(png_byte));
 
     png = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 
@@ -233,13 +233,13 @@ void a_png__write(const char* Path, const APixels* Pixels, unsigned Frame, char*
                  PNG_COMPRESSION_TYPE_DEFAULT,
                  PNG_FILTER_TYPE_DEFAULT);
 
-    const APixel* buffer = a_pixels__bufferGetStart(Pixels, Frame);
+    const APixel* buffer = f_pixels__bufferGetStart(Pixels, Frame);
 
     for(unsigned y = 0; y < height; y++) {
         rows[y] = rowsData + y * width * COLOR_CHANNELS;
 
         for(unsigned x = 0; x < width; x++) {
-            ARgb rgb = a_pixel_toRgb(*buffer++);
+            ARgb rgb = f_pixel_toRgb(*buffer++);
 
             rows[y][x * COLOR_CHANNELS + 0] = (png_byte)rgb.r;
             rows[y][x * COLOR_CHANNELS + 1] = (png_byte)rgb.g;
@@ -261,7 +261,7 @@ void a_png__write(const char* Path, const APixels* Pixels, unsigned Frame, char*
         numText++;
     }
 
-    png_init_io(png, a_file_handleGet(f));
+    png_init_io(png, f_file_handleGet(f));
     png_set_rows(png, info, rows);
     png_set_text(png, info, text, numText);
     png_write_png(png, info, PNG_TRANSFORM_IDENTITY, NULL);
@@ -272,9 +272,9 @@ cleanUp:
         png_destroy_write_struct(&png, info ? &info : NULL);
     }
 
-    a_mem_free(rows);
-    a_mem_free(rowsData);
+    f_mem_free(rows);
+    f_mem_free(rowsData);
 
-    a_file_free(f);
+    f_file_free(f);
 }
 #endif // A_CONFIG_LIB_PNG

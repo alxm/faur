@@ -18,11 +18,11 @@
 #ifndef A_INC_DATA_LISTIT_P_H
 #define A_INC_DATA_LISTIT_P_H
 
-#include "general/a_system_includes.h"
+#include "general/f_system_includes.h"
 
 typedef struct AListIt AListIt;
 
-#include "data/a_list.p.h"
+#include "data/f_list.p.h"
 
 struct AListIt {
     const AListNode* sentinelNode;
@@ -31,24 +31,24 @@ struct AListIt {
     bool reversed;
 };
 
-extern AListIt a__listit_new(const AList* List, bool Reversed);
+extern AListIt f__listit_new(const AList* List, bool Reversed);
 
-extern bool a__listit_getNext(AListIt* Iterator, void* UserPtrAddress);
-extern void a__listit_remove(const AListIt* Iterator);
-extern bool a__listit_isFirst(const AListIt* Iterator);
-extern bool a__listit_isLast(const AListIt* Iterator);
+extern bool f__listit_getNext(AListIt* Iterator, void* UserPtrAddress);
+extern void f__listit_remove(const AListIt* Iterator);
+extern bool f__listit_isFirst(const AListIt* Iterator);
+extern bool f__listit_isLast(const AListIt* Iterator);
 
 #define A_LIST_ITERATE(List, PtrType, Name)                          \
-    for(AListIt a__it = a__listit_new(List, false);                  \
-        a__it.sentinelNode != NULL;                                  \
-        a__it.sentinelNode = NULL)                                   \
-        for(PtrType Name; a__listit_getNext(&a__it, (void*)&Name); )
+    for(AListIt f__it = f__listit_new(List, false);                  \
+        f__it.sentinelNode != NULL;                                  \
+        f__it.sentinelNode = NULL)                                   \
+        for(PtrType Name; f__listit_getNext(&f__it, (void*)&Name); )
 
 #define A_LIST_ITERATE_REV(List, PtrType, Name)                      \
-    for(AListIt a__it = a__listit_new(List, true);                   \
-        a__it.sentinelNode != NULL;                                  \
-        a__it.sentinelNode = NULL)                                   \
-        for(PtrType Name; a__listit_getNext(&a__it, (void*)&Name); )
+    for(AListIt f__it = f__listit_new(List, true);                   \
+        f__it.sentinelNode != NULL;                                  \
+        f__it.sentinelNode = NULL)                                   \
+        for(PtrType Name; f__listit_getNext(&f__it, (void*)&Name); )
 
 #define A_LIST_FILTER(List, PtrType, Name, Filter) \
     A_LIST_ITERATE(List, PtrType, Name)            \
@@ -60,9 +60,9 @@ extern bool a__listit_isLast(const AListIt* Iterator);
         if(!(Filter)) continue;                        \
         else
 
-#define A_LIST_INDEX() a__it.index
-#define A_LIST_REMOVE_CURRENT() a__listit_remove(&a__it)
-#define A_LIST_IS_FIRST() a__listit_isFirst(&a__it)
-#define A_LIST_IS_LAST() a__listit_isLast(&a__it)
+#define A_LIST_INDEX() f__it.index
+#define A_LIST_REMOVE_CURRENT() f__listit_remove(&f__it)
+#define A_LIST_IS_FIRST() f__listit_isFirst(&f__it)
+#define A_LIST_IS_LAST() f__listit_isLast(&f__it)
 
 #endif // A_INC_DATA_LISTIT_P_H

@@ -22,14 +22,14 @@ static void A__FUNC_NAME(pixel)(int X, int Y)
 {
     A__BLEND_SETUP;
 
-    A__PIXEL_DRAW(a_screen__bufferGetFrom(X, Y));
+    A__PIXEL_DRAW(f_screen__bufferGetFrom(X, Y));
 }
 
 static void A__FUNC_NAME(hline)(int X1, int X2, int Y)
 {
     A__BLEND_SETUP;
 
-    APixel* dst = a_screen__bufferGetFrom(X1, Y);
+    APixel* dst = f_screen__bufferGetFrom(X1, Y);
 
     for(int i = X2 - X1 + 1; i--; dst++) {
         A__PIXEL_DRAW(dst);
@@ -40,8 +40,8 @@ static void A__FUNC_NAME(vline)(int X, int Y1, int Y2)
 {
     A__BLEND_SETUP;
 
-    const int screenw = a__screen.pixels->w;
-    APixel* dst = a_screen__bufferGetFrom(X, Y1);
+    const int screenw = f__screen.pixels->w;
+    APixel* dst = f_screen__bufferGetFrom(X, Y1);
 
     for(int i = Y2 - Y1 + 1; i--; dst += screenw) {
         A__PIXEL_DRAW(dst);
@@ -52,10 +52,10 @@ static void A__FUNC_NAME(line)(int X1, int Y1, int X2, int Y2)
 {
     A__BLEND_SETUP;
 
-    const int xmin = a_math_min(X1, X2);
-    const int xmax = a_math_max(X1, X2);
-    const int ymin = a_math_min(Y1, Y2);
-    const int ymax = a_math_max(Y1, Y2);
+    const int xmin = f_math_min(X1, X2);
+    const int xmax = f_math_max(X1, X2);
+    const int ymin = f_math_min(Y1, Y2);
+    const int ymax = f_math_max(Y1, Y2);
 
     if(X1 == X2) {
         A__FUNC_NAME(vline)(X1, ymin, ymax);
@@ -65,8 +65,8 @@ static void A__FUNC_NAME(line)(int X1, int Y1, int X2, int Y2)
         const int deltax = xmax - xmin;
         const int deltay = ymax - ymin;
 
-        const int denominator = a_math_max(deltax, deltay);
-        const int numeratorinc = a_math_min(deltax, deltay);
+        const int denominator = f_math_max(deltax, deltay);
+        const int numeratorinc = f_math_min(deltax, deltay);
         int numerator = denominator / 2;
 
         const int xinct = (X1 <= X2) ? 1 : -1;
@@ -78,9 +78,9 @@ static void A__FUNC_NAME(line)(int X1, int Y1, int X2, int Y2)
         const int xinc2 = (denominator == deltax) ? 0 : xinct;
         const int yinc2 = (denominator == deltax) ? yinct : 0;
 
-        const int screenw = a__screen.pixels->w;
-        APixel* dst1 = a_screen__bufferGetFrom(X1, Y1);
-        APixel* dst2 = a_screen__bufferGetFrom(X2, Y2);
+        const int screenw = f__screen.pixels->w;
+        APixel* dst1 = f_screen__bufferGetFrom(X1, Y1);
+        APixel* dst2 = f_screen__bufferGetFrom(X2, Y2);
 
         for(int i = (denominator + 1) / 2; i--; ) {
             A__PIXEL_DRAW(dst1);
@@ -132,8 +132,8 @@ static void A__FUNC_NAME(rectangle_fill)(int X, int Y, int Width, int Height)
 {
     A__BLEND_SETUP;
 
-    APixel* pixels = a_screen__bufferGetFrom(X, Y);
-    const int screenw = a__screen.pixels->w;
+    APixel* pixels = f_screen__bufferGetFrom(X, Y);
+    const int screenw = f__screen.pixels->w;
 
     for(int i = Height; i--; pixels += screenw) {
         APixel* dst = pixels;
@@ -154,10 +154,10 @@ static void A__FUNC_NAME(circle_noclip_nofill)(int X, int Y, int Radius)
     }
 
     if(Radius == 0) {
-        a_draw_pixel(X,     Y);
-        a_draw_pixel(X - 1, Y);
-        a_draw_pixel(X,     Y - 1);
-        a_draw_pixel(X - 1, Y - 1);
+        f_draw_pixel(X,     Y);
+        f_draw_pixel(X - 1, Y);
+        f_draw_pixel(X,     Y - 1);
+        f_draw_pixel(X - 1, Y - 1);
         return;
     }
 
@@ -170,8 +170,8 @@ static void A__FUNC_NAME(circle_noclip_nofill)(int X, int Y, int Radius)
     const int q3X = X - 1, q3Y = Y;
     const int q4X = X,     q4Y = Y;
 
-    const int width = a__screen.pixels->w;
-    APixel* const pixels = a_screen__bufferGetFrom(0, 0);
+    const int width = f__screen.pixels->w;
+    APixel* const pixels = f_screen__bufferGetFrom(0, 0);
 
     APixel* oct1 = pixels + q1Y * width + q1X + Radius;
     APixel* oct2 = pixels + (q1Y - Radius) * width + q1X;
@@ -297,10 +297,10 @@ static void A__FUNC_NAME(circle_clip_nofill)(int X, int Y, int Radius)
     }
 
     if(Radius == 0) {
-        a_draw_pixel(X,     Y);
-        a_draw_pixel(X - 1, Y);
-        a_draw_pixel(X,     Y - 1);
-        a_draw_pixel(X - 1, Y - 1);
+        f_draw_pixel(X,     Y);
+        f_draw_pixel(X - 1, Y);
+        f_draw_pixel(X,     Y - 1);
+        f_draw_pixel(X - 1, Y - 1);
         return;
     }
 
@@ -309,13 +309,13 @@ static void A__FUNC_NAME(circle_clip_nofill)(int X, int Y, int Radius)
     const int q3X = X - 1, q3Y = Y;
     const int q4X = X,     q4Y = Y;
 
-    const int width = a__screen.pixels->w;
-    APixel* const pixels = a_screen__bufferGetFrom(0, 0);
+    const int width = f__screen.pixels->w;
+    APixel* const pixels = f_screen__bufferGetFrom(0, 0);
 
-    const int clipX1 = a__screen.clipX;
-    const int clipX2 = a__screen.clipX2;
-    const int clipY1 = a__screen.clipY;
-    const int clipY2 = a__screen.clipY2;
+    const int clipX1 = f__screen.clipX;
+    const int clipX2 = f__screen.clipX2;
+    const int clipY1 = f__screen.clipY;
+    const int clipY2 = f__screen.clipY2;
 
     APixel* oct1 = pixels + q1Y * width + q1X + Radius;
     APixel* oct2 = pixels + (q1Y - Radius) * width + q1X;
@@ -330,10 +330,10 @@ static void A__FUNC_NAME(circle_clip_nofill)(int X, int Y, int Radius)
     findMidpoint(Radius, &midx, &midy);
 
     if(midx - midy == 2) {
-        a_draw_pixel(q1X + midx - 1, q1Y - midy - 1); // o1-o2
-        a_draw_pixel(q2X - midx + 1, q2Y - midy - 1); // o3-o4
-        a_draw_pixel(q3X - midx + 1, q3Y + midy + 1); // o5-o6
-        a_draw_pixel(q4X + midx - 1, q4Y + midy + 1); // o7-o8
+        f_draw_pixel(q1X + midx - 1, q1Y - midy - 1); // o1-o2
+        f_draw_pixel(q2X - midx + 1, q2Y - midy - 1); // o3-o4
+        f_draw_pixel(q3X - midx + 1, q3Y + midy + 1); // o5-o6
+        f_draw_pixel(q4X + midx - 1, q4Y + midy + 1); // o7-o8
     }
 
     // For octant1, reused for rest
@@ -481,7 +481,7 @@ static void A__FUNC_NAME(circle_clip_fill)(int X, int Y, int Radius)
 {
     if(--Radius <= 0) {
         if(Radius == 0) {
-            a_draw_rectangle(X - 1, Y - 1, 2, 2);
+            f_draw_rectangle(X - 1, Y - 1, 2, 2);
         }
 
         return;
@@ -501,8 +501,8 @@ static void A__FUNC_NAME(circle_clip_fill)(int X, int Y, int Radius)
     int y4 = Y + x;
 
     while(x > y) {
-        a_draw_hline(x1, x2, y1);
-        a_draw_hline(x1, x2, y2);
+        f_draw_hline(x1, x2, y1);
+        f_draw_hline(x1, x2, y2);
 
         error += 2 * y + 1; // (y+1)^2 = y^2 + 2y + 1
         y++;
@@ -513,8 +513,8 @@ static void A__FUNC_NAME(circle_clip_fill)(int X, int Y, int Radius)
         x4++;
 
         if(error > 0) { // check if x^2 + y^2 > r^2
-            a_draw_hline(x3, x4, y3);
-            a_draw_hline(x3, x4, y4);
+            f_draw_hline(x3, x4, y3);
+            f_draw_hline(x3, x4, y4);
 
             error += -2 * x + 1; // (x-1)^2 = x^2 - 2x + 1
             x--;
@@ -527,8 +527,8 @@ static void A__FUNC_NAME(circle_clip_fill)(int X, int Y, int Radius)
     }
 
     if(x == y) {
-        a_draw_hline(x3, x4, y3);
-        a_draw_hline(x3, x4, y4);
+        f_draw_hline(x3, x4, y3);
+        f_draw_hline(x3, x4, y4);
     }
 }
 

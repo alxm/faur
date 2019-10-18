@@ -18,9 +18,9 @@
 #ifndef A_INC_PLATFORM_INPUT_SDL_INPUT_V_H
 #define A_INC_PLATFORM_INPUT_SDL_INPUT_V_H
 
-#include "platform/input/a_sdl_input.p.h"
+#include "platform/input/f_sdl_input.p.h"
 
-extern void a_platform_sdl_input__init(void);
-extern void a_platform_sdl_input__uninit(void);
+extern void f_platform_sdl_input__init(void);
+extern void f_platform_sdl_input__uninit(void);
 
 #endif // A_INC_PLATFORM_INPUT_SDL_INPUT_V_H

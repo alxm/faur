@@ -18,13 +18,13 @@
 #ifndef A_INC_SOUND_SOUND_V_H
 #define A_INC_SOUND_SOUND_V_H
 
-#include "sound/a_sound.p.h"
+#include "sound/f_sound.p.h"
 
-#include "general/a_main.v.h"
+#include "general/f_main.v.h"
 
-extern const APack a_pack__sound;
+extern const APack f_pack__sound;
 
-extern void a_sound__tick(void);
-extern void a_sound__draw(void);
+extern void f_sound__tick(void);
+extern void f_sound__draw(void);
 
 #endif // A_INC_SOUND_SOUND_V_H

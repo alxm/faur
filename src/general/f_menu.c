@@ -15,7 +15,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a_menu.v.h"
+#include "f_menu.v.h"
 #include <faur.v.h>
 
 struct AMenu {
@@ -32,153 +32,153 @@ struct AMenu {
     AButton* cancel;
 };
 
-AMenu* a_menu_new(AButton* Next, AButton* Back, AButton* Select, AButton* Cancel)
+AMenu* f_menu_new(AButton* Next, AButton* Back, AButton* Select, AButton* Cancel)
 {
-    AMenu* m = a_mem_malloc(sizeof(AMenu));
+    AMenu* m = f_mem_malloc(sizeof(AMenu));
 
     m->state = A_MENU_STATE_RUNNING;
-    m->items = a_list_new();
+    m->items = f_list_new();
     m->selectedItem = NULL;
     m->selectedIndex = 0;
     m->soundAccept = NULL;
     m->soundCancel = NULL;
     m->soundBrowse = NULL;
-    m->next = a_button_dup(Next);
-    m->back = a_button_dup(Back);
+    m->next = f_button_dup(Next);
+    m->back = f_button_dup(Back);
     m->select = Select;
     m->cancel = Cancel;
 
-    a_button_pressSetRepeat(m->next, 200);
-    a_button_pressSetRepeat(m->back, 200);
+    f_button_pressSetRepeat(m->next, 200);
+    f_button_pressSetRepeat(m->back, 200);
 
     return m;
 }
 
-void a_menu_free(AMenu* Menu)
+void f_menu_free(AMenu* Menu)
 {
-    a_menu_freeEx(Menu, NULL);
+    f_menu_freeEx(Menu, NULL);
 }
 
-void a_menu_freeEx(AMenu* Menu, AFree* ItemFree)
+void f_menu_freeEx(AMenu* Menu, AFree* ItemFree)
 {
     if(Menu == NULL) {
         return;
     }
 
-    a_list_freeEx(Menu->items, ItemFree);
-    a_button_free(Menu->next);
-    a_button_free(Menu->back);
+    f_list_freeEx(Menu->items, ItemFree);
+    f_button_free(Menu->next);
+    f_button_free(Menu->back);
 
-    a_mem_free(Menu);
+    f_mem_free(Menu);
 }
 
-void a_menu_soundSet(AMenu* Menu, ASample* Accept, ASample* Cancel, ASample* Browse)
+void f_menu_soundSet(AMenu* Menu, ASample* Accept, ASample* Cancel, ASample* Browse)
 {
     Menu->soundAccept = Accept;
     Menu->soundCancel = Cancel;
     Menu->soundBrowse = Browse;
 }
 
-void a_menu_itemAdd(AMenu* Menu, void* Item)
+void f_menu_itemAdd(AMenu* Menu, void* Item)
 {
-    a_list_addLast(Menu->items, Item);
+    f_list_addLast(Menu->items, Item);
 
     if(Menu->selectedItem == NULL) {
         Menu->selectedItem = Item;
     }
 }
 
-void a_menu_tick(AMenu* Menu)
+void f_menu_tick(AMenu* Menu)
 {
-    if(a_list_isEmpty(Menu->items) || Menu->state != A_MENU_STATE_RUNNING) {
+    if(f_list_isEmpty(Menu->items) || Menu->state != A_MENU_STATE_RUNNING) {
         return;
     }
 
     bool browsed = false;
 
-    if(a_button_pressGet(Menu->back)) {
+    if(f_button_pressGet(Menu->back)) {
         browsed = true;
 
         if(Menu->selectedIndex-- == 0) {
-            Menu->selectedIndex = a_list_sizeGet(Menu->items) - 1;
+            Menu->selectedIndex = f_list_sizeGet(Menu->items) - 1;
         }
-    } else if(a_button_pressGet(Menu->next)) {
+    } else if(f_button_pressGet(Menu->next)) {
         browsed = true;
 
-        if(++Menu->selectedIndex == a_list_sizeGet(Menu->items)) {
+        if(++Menu->selectedIndex == f_list_sizeGet(Menu->items)) {
             Menu->selectedIndex = 0;
         }
     }
 
     if(browsed) {
-        Menu->selectedItem = a_list_getByIndex(
+        Menu->selectedItem = f_list_getByIndex(
                                 Menu->items, Menu->selectedIndex);
 
         if(Menu->soundBrowse) {
-            a_channel_play(A_CHANNEL_ANY, Menu->soundBrowse, A_CHANNEL_NORMAL);
+            f_channel_play(A_CHANNEL_ANY, Menu->soundBrowse, A_CHANNEL_NORMAL);
         }
     } else {
-        if(a_button_pressGet(Menu->select)) {
+        if(f_button_pressGet(Menu->select)) {
             Menu->state = A_MENU_STATE_SELECTED;
 
             if(Menu->soundAccept) {
-                a_channel_play(
+                f_channel_play(
                     A_CHANNEL_ANY, Menu->soundAccept, A_CHANNEL_NORMAL);
             }
-        } else if(Menu->cancel && a_button_pressGet(Menu->cancel)) {
+        } else if(Menu->cancel && f_button_pressGet(Menu->cancel)) {
             Menu->state = A_MENU_STATE_CANCELED;
 
             if(Menu->soundCancel) {
-                a_channel_play(
+                f_channel_play(
                     A_CHANNEL_ANY, Menu->soundCancel, A_CHANNEL_NORMAL);
             }
         }
     }
 
     if(Menu->state != A_MENU_STATE_RUNNING) {
-        a_button_pressClear(Menu->next);
-        a_button_pressClear(Menu->back);
-        a_button_pressClear(Menu->select);
+        f_button_pressClear(Menu->next);
+        f_button_pressClear(Menu->back);
+        f_button_pressClear(Menu->select);
 
         if(Menu->cancel) {
-            a_button_pressClear(Menu->cancel);
+            f_button_pressClear(Menu->cancel);
         }
     }
 }
 
-AMenuState a_menu_stateGet(const AMenu* Menu)
+AMenuState f_menu_stateGet(const AMenu* Menu)
 {
     return Menu->state;
 }
 
-const AList* a_menu_itemsGet(const AMenu* Menu)
+const AList* f_menu_itemsGet(const AMenu* Menu)
 {
     return Menu->items;
 }
 
-bool a_menu_itemIsSelected(const AMenu* Menu, const void* Item)
+bool f_menu_itemIsSelected(const AMenu* Menu, const void* Item)
 {
     return Item == Menu->selectedItem;
 }
 
-unsigned a_menu_selectedIndexGet(const AMenu* Menu)
+unsigned f_menu_selectedIndexGet(const AMenu* Menu)
 {
     return Menu->selectedIndex;
 }
 
-void* a_menu_itemGetSelected(const AMenu* Menu)
+void* f_menu_itemGetSelected(const AMenu* Menu)
 {
     return Menu->selectedItem;
 }
 
-void a_menu_keepRunning(AMenu* Menu)
+void f_menu_keepRunning(AMenu* Menu)
 {
     Menu->state = A_MENU_STATE_RUNNING;
 }
 
-void a_menu_reset(AMenu* Menu)
+void f_menu_reset(AMenu* Menu)
 {
     Menu->state = A_MENU_STATE_RUNNING;
-    Menu->selectedItem = a_list_getFirst(Menu->items);
+    Menu->selectedItem = f_list_getFirst(Menu->items);
     Menu->selectedIndex = 0;
 }

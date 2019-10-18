@@ -18,18 +18,18 @@
 #ifndef A_INC_GENERAL_OUT_P_H
 #define A_INC_GENERAL_OUT_P_H
 
-#include "general/a_system_includes.h"
+#include "general/f_system_includes.h"
 
 #if A_CONFIG_OUTPUT_ENABLED
-    extern void a_out_text(const char* Text);
-    extern void a_out_info(const char* Format, ...);
-    extern void a_out_warning(const char* Format, ...);
-    extern void a_out_error(const char* Format, ...);
+    extern void f_out_text(const char* Text);
+    extern void f_out_info(const char* Format, ...);
+    extern void f_out_warning(const char* Format, ...);
+    extern void f_out_error(const char* Format, ...);
 #else
-    #define a_out_text(Text)
-    #define a_out_info(...)
-    #define a_out_warning(...)
-    #define a_out_error(...)
+    #define f_out_text(Text)
+    #define f_out_info(...)
+    #define f_out_warning(...)
+    #define f_out_error(...)
 #endif
 
 #endif // A_INC_GENERAL_OUT_P_H

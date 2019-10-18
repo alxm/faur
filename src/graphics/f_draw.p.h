@@ -18,14 +18,14 @@
 #ifndef A_INC_GRAPHICS_DRAW_P_H
 #define A_INC_GRAPHICS_DRAW_P_H
 
-#include "general/a_system_includes.h"
+#include "general/f_system_includes.h"
 
-extern void a_draw_fill(void);
-extern void a_draw_pixel(int X, int Y);
-extern void a_draw_line(int X1, int Y1, int X2, int Y2);
-extern void a_draw_hline(int X1, int X2, int Y);
-extern void a_draw_vline(int X, int Y1, int Y2);
-extern void a_draw_rectangle(int X, int Y, int Width, int Height);
-extern void a_draw_circle(int X, int Y, int Radius);
+extern void f_draw_fill(void);
+extern void f_draw_pixel(int X, int Y);
+extern void f_draw_line(int X1, int Y1, int X2, int Y2);
+extern void f_draw_hline(int X1, int X2, int Y);
+extern void f_draw_vline(int X, int Y1, int Y2);
+extern void f_draw_rectangle(int X, int Y, int Width, int Height);
+extern void f_draw_circle(int X, int Y, int Radius);
 
 #endif // A_INC_GRAPHICS_DRAW_P_H

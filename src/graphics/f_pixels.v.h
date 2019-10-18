@@ -18,13 +18,13 @@
 #ifndef A_INC_GRAPHICS_PIXELS_V_H
 #define A_INC_GRAPHICS_PIXELS_V_H
 
-#include "graphics/a_pixels.p.h"
+#include "graphics/f_pixels.p.h"
 
 typedef struct APixels APixels;
 
-#include "general/a_main.v.h"
-#include "graphics/a_color.v.h"
-#include "math/a_fix.v.h"
+#include "general/f_main.v.h"
+#include "graphics/f_color.v.h"
+#include "math/f_fix.v.h"
 
 typedef enum {
     A_PIXELS__ALLOC = A_FLAGS_BIT(0),
@@ -42,34 +42,34 @@ struct APixels {
     APixel* buffer; // [w * h * framesNum]
 };
 
-extern APixels* a_pixels__new(int W, int H, unsigned Frames, APixelsFlags Flags);
-extern void a_pixels__init(APixels* Pixels, int W, int H, unsigned Frames, APixelsFlags Flags);
-extern void a_pixels__free(APixels* Pixels);
+extern APixels* f_pixels__new(int W, int H, unsigned Frames, APixelsFlags Flags);
+extern void f_pixels__init(APixels* Pixels, int W, int H, unsigned Frames, APixelsFlags Flags);
+extern void f_pixels__free(APixels* Pixels);
 
-extern void a_pixels__copy(APixels* Dst, const APixels* Src);
-extern void a_pixels__copyFrame(const APixels* Dst, unsigned DstFrame, const APixels* Src, unsigned SrcFrame);
-extern void a_pixels__copyFrameEx(const APixels* Dst, unsigned DstFrame, const APixels* SrcPixels, unsigned SrcFrame, int SrcX, int SrcY);
+extern void f_pixels__copy(APixels* Dst, const APixels* Src);
+extern void f_pixels__copyFrame(const APixels* Dst, unsigned DstFrame, const APixels* Src, unsigned SrcFrame);
+extern void f_pixels__copyFrameEx(const APixels* Dst, unsigned DstFrame, const APixels* SrcPixels, unsigned SrcFrame, int SrcX, int SrcY);
 
-extern void a_pixels__bufferSet(APixels* Pixels, APixel* Buffer, int W, int H);
+extern void f_pixels__bufferSet(APixels* Pixels, APixel* Buffer, int W, int H);
 
-extern void a_pixels__clear(const APixels* Pixels, unsigned Frame);
-extern void a_pixels__fill(const APixels* Pixels, unsigned Frame, APixel Value);
+extern void f_pixels__clear(const APixels* Pixels, unsigned Frame);
+extern void f_pixels__fill(const APixels* Pixels, unsigned Frame, APixel Value);
 
-extern AVectorInt a_pixels__boundsFind(const APixels* Pixels, unsigned Frame, int X, int Y);
+extern AVectorInt f_pixels__boundsFind(const APixels* Pixels, unsigned Frame, int X, int Y);
 
-static inline APixel* a_pixels__bufferGetStart(const APixels* Pixels, unsigned Frame)
+static inline APixel* f_pixels__bufferGetStart(const APixels* Pixels, unsigned Frame)
 {
     return Pixels->buffer + Frame * Pixels->bufferLen;
 }
 
-static inline APixel* a_pixels__bufferGetFrom(const APixels* Pixels, unsigned Frame, int X, int Y)
+static inline APixel* f_pixels__bufferGetFrom(const APixels* Pixels, unsigned Frame, int X, int Y)
 {
-    return a_pixels__bufferGetStart(Pixels, Frame) + Y * Pixels->w + X;
+    return f_pixels__bufferGetStart(Pixels, Frame) + Y * Pixels->w + X;
 }
 
-static inline APixel a_pixels__bufferGetValue(const APixels* Pixels, unsigned Frame, int X, int Y)
+static inline APixel f_pixels__bufferGetValue(const APixels* Pixels, unsigned Frame, int X, int Y)
 {
-    return *a_pixels__bufferGetFrom(Pixels, Frame, X, Y);
+    return *f_pixels__bufferGetFrom(Pixels, Frame, X, Y);
 }
 
 #endif // A_INC_GRAPHICS_PIXELS_V_H

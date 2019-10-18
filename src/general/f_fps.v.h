@@ -18,14 +18,14 @@
 #ifndef A_INC_GENERAL_FPS_V_H
 #define A_INC_GENERAL_FPS_V_H
 
-#include "general/a_fps.p.h"
+#include "general/f_fps.p.h"
 
-#include "general/a_main.v.h"
+#include "general/f_main.v.h"
 
-extern const APack a_pack__fps;
+extern const APack f_pack__fps;
 
-extern void a_fps__reset(void);
-extern bool a_fps__tick(void);
-extern void a_fps__frame(void);
+extern void f_fps__reset(void);
+extern bool f_fps__tick(void);
+extern void f_fps__frame(void);
 
 #endif // A_INC_GENERAL_FPS_V_H

@@ -15,7 +15,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a_block.v.h"
+#include "f_block.v.h"
 #include <faur.v.h>
 
 struct ABlock {
@@ -28,9 +28,9 @@ struct ABlock {
 
 static ABlock* blockNew(const char* Content)
 {
-    ABlock* block = a_mem_zalloc(sizeof(ABlock));
+    ABlock* block = f_mem_zalloc(sizeof(ABlock));
 
-    block->text = a_str_dup(Content);
+    block->text = f_str_dup(Content);
 
     return block;
 }
@@ -38,38 +38,38 @@ static ABlock* blockNew(const char* Content)
 static void blockFree(ABlock* Block)
 {
     if(Block->blocks) {
-        a_list_freeEx(Block->blocks, (AFree*)blockFree);
-        a_strhash_freeEx(Block->index, (AFree*)a_list_free);
-        a_mem_free(Block->array);
+        f_list_freeEx(Block->blocks, (AFree*)blockFree);
+        f_strhash_freeEx(Block->index, (AFree*)f_list_free);
+        f_mem_free(Block->array);
     }
 
-    a_mem_free(Block->text);
-    a_mem_free(Block);
+    f_mem_free(Block->text);
+    f_mem_free(Block);
 }
 
 static void blockAdd(ABlock* Parent, ABlock* Child)
 {
     if(Parent->blocks == NULL) {
-        Parent->blocks = a_list_new();
-        Parent->index = a_strhash_new();
+        Parent->blocks = f_list_new();
+        Parent->index = f_strhash_new();
     }
 
-    AList* indexList = a_strhash_get(Parent->index, Child->text);
+    AList* indexList = f_strhash_get(Parent->index, Child->text);
 
     if(indexList == NULL) {
-        indexList = a_list_new();
-        a_strhash_add(Parent->index, Child->text, indexList);
+        indexList = f_list_new();
+        f_strhash_add(Parent->index, Child->text, indexList);
     }
 
-    a_list_addLast(Parent->blocks, Child);
-    a_list_addLast(indexList, Child);
+    f_list_addLast(Parent->blocks, Child);
+    f_list_addLast(indexList, Child);
 }
 
 static void blockCommitLines(ABlock* Block)
 {
     if(Block->blocks != NULL) {
-        Block->array = (const ABlock**)a_list_toArray(Block->blocks);
-        Block->arrayLen = a_list_sizeGet(Block->blocks);
+        Block->array = (const ABlock**)f_list_toArray(Block->blocks);
+        Block->arrayLen = f_list_sizeGet(Block->blocks);
     }
 }
 
@@ -86,22 +86,22 @@ static inline const ABlock* blockGet(const ABlock* Block, unsigned LineNumber)
     return NULL;
 }
 
-ABlock* a_block_new(const char* File)
+ABlock* f_block_new(const char* File)
 {
-    AFile* f = a_file_new(File, A_FILE_READ);
+    AFile* f = f_file_new(File, A_FILE_READ);
 
     if(f == NULL) {
-        A__FATAL("a_block_new(%s): Cannot open file", File);
+        A__FATAL("f_block_new(%s): Cannot open file", File);
     }
 
     ABlock* root = blockNew("");
-    AList* stack = a_list_new();
+    AList* stack = f_list_new();
     int lastIndent = -1;
 
-    a_list_push(stack, root);
+    f_list_push(stack, root);
 
-    while(a_file_lineRead(f)) {
-        const char* const lineStart = a_file_lineBufferGet(f);
+    while(f_file_lineRead(f)) {
+        const char* const lineStart = f_file_lineBufferGet(f);
         const char* textStart = lineStart;
 
         while(*textStart == ' ') {
@@ -112,121 +112,121 @@ ABlock* a_block_new(const char* File)
         int currentIndent = indentCharsNum / 4;
 
         if((indentCharsNum % 4) != 0 || currentIndent > lastIndent + 1) {
-            A__FATAL("a_block_new: Bad indent in %s:%d <%s>",
+            A__FATAL("f_block_new: Bad indent in %s:%d <%s>",
                      File,
-                     a_file_lineNumberGet(f),
+                     f_file_lineNumberGet(f),
                      textStart);
         }
 
         // Each subsequent entry has -1 indentation, pop until reach parent
         while(currentIndent <= lastIndent) {
-            blockCommitLines(a_list_pop(stack));
+            blockCommitLines(f_list_pop(stack));
             lastIndent--;
         }
 
         lastIndent = currentIndent;
 
-        ABlock* parent = a_list_peek(stack);
+        ABlock* parent = f_list_peek(stack);
         ABlock* block = blockNew(textStart);
 
         blockAdd(parent, block);
-        a_list_push(stack, block);
+        f_list_push(stack, block);
     }
 
-    while(!a_list_isEmpty(stack)) {
-        blockCommitLines(a_list_pop(stack));
+    while(!f_list_isEmpty(stack)) {
+        blockCommitLines(f_list_pop(stack));
     }
 
-    a_file_free(f);
-    a_list_free(stack);
+    f_file_free(f);
+    f_list_free(stack);
 
     return root;
 }
 
-void a_block_free(ABlock* Block)
+void f_block_free(ABlock* Block)
 {
-    if(!a_str_equal(Block->text, "")) {
-        A__FATAL("a_block_free: Must call on root block");
+    if(!f_str_equal(Block->text, "")) {
+        A__FATAL("f_block_free: Must call on root block");
     }
 
     blockFree(Block);
 }
 
-const AList* a_block_blocksGet(const ABlock* Block)
+const AList* f_block_blocksGet(const ABlock* Block)
 {
-    return Block->blocks ? Block->blocks : &a__list_empty;
+    return Block->blocks ? Block->blocks : &f__list_empty;
 }
 
-const ABlock* a_block_keyGetBlock(const ABlock* Block, const char* Key)
+const ABlock* f_block_keyGetBlock(const ABlock* Block, const char* Key)
 {
-    return a_list_getFirst(a_block_keyGetBlocks(Block, Key));
+    return f_list_getFirst(f_block_keyGetBlocks(Block, Key));
 }
 
-const AList* a_block_keyGetBlocks(const ABlock* Block, const char* Key)
+const AList* f_block_keyGetBlocks(const ABlock* Block, const char* Key)
 {
     if(Block->index) {
-        AList* list = a_strhash_get(Block->index, Key);
+        AList* list = f_strhash_get(Block->index, Key);
 
         if(list) {
             return list;
         }
     }
 
-    return &a__list_empty;
+    return &f__list_empty;
 }
 
-bool a_block_keyExists(const ABlock* Block, const char* Key)
+bool f_block_keyExists(const ABlock* Block, const char* Key)
 {
-    return Block->index && a_strhash_contains(Block->index, Key);
+    return Block->index && f_strhash_contains(Block->index, Key);
 }
 
-int a_block_lineGetInt(const ABlock* Block, unsigned LineNumber)
+int f_block_lineGetInt(const ABlock* Block, unsigned LineNumber)
 {
     const ABlock* line = blockGet(Block, LineNumber);
 
     return line ? atoi(line->text) : 0;
 }
 
-unsigned a_block_lineGetIntu(const ABlock* Block, unsigned LineNumber)
+unsigned f_block_lineGetIntu(const ABlock* Block, unsigned LineNumber)
 {
     const ABlock* line = blockGet(Block, LineNumber);
 
     return line ? (unsigned)atoi(line->text) : 0;
 }
 
-AFix a_block_lineGetFix(const ABlock* Block, unsigned LineNumber)
+AFix f_block_lineGetFix(const ABlock* Block, unsigned LineNumber)
 {
     const ABlock* line = blockGet(Block, LineNumber);
 
-    return line ? a_fix_fromDouble(atof(line->text)) : 0;
+    return line ? f_fix_fromDouble(atof(line->text)) : 0;
 }
 
-AFixu a_block_lineGetAngle(const ABlock* Block, unsigned LineNumber)
+AFixu f_block_lineGetAngle(const ABlock* Block, unsigned LineNumber)
 {
     const ABlock* line = blockGet(Block, LineNumber);
 
     if(line) {
-        return a_fix_angleFromDegf((unsigned)atoi(line->text));
+        return f_fix_angleFromDegf((unsigned)atoi(line->text));
     } else {
         return 0;
     }
 }
 
-APixel a_block_lineGetPixel(const ABlock* Block, unsigned LineNumber)
+APixel f_block_lineGetPixel(const ABlock* Block, unsigned LineNumber)
 {
     const ABlock* line = blockGet(Block, LineNumber);
 
-    return line ? a_pixel_fromHex((uint32_t)strtol(line->text, NULL, 16)) : 0;
+    return line ? f_pixel_fromHex((uint32_t)strtol(line->text, NULL, 16)) : 0;
 }
 
-const char* a_block_lineGetString(const ABlock* Block, unsigned LineNumber)
+const char* f_block_lineGetString(const ABlock* Block, unsigned LineNumber)
 {
     const ABlock* line = blockGet(Block, LineNumber);
 
     return line ? line->text : "";
 }
 
-AVectorInt a_block_lineGetCoords(const ABlock* Block, unsigned LineNumber)
+AVectorInt f_block_lineGetCoords(const ABlock* Block, unsigned LineNumber)
 {
     const ABlock* line = blockGet(Block, LineNumber);
     AVectorInt v = {0, 0};
@@ -238,7 +238,7 @@ AVectorInt a_block_lineGetCoords(const ABlock* Block, unsigned LineNumber)
     return v;
 }
 
-AVectorFix a_block_lineGetCoordsf(const ABlock* Block, unsigned LineNumber)
+AVectorFix f_block_lineGetCoordsf(const ABlock* Block, unsigned LineNumber)
 {
     const ABlock* line = blockGet(Block, LineNumber);
     AVectorFix v = {0, 0};
@@ -247,26 +247,26 @@ AVectorFix a_block_lineGetCoordsf(const ABlock* Block, unsigned LineNumber)
         double x = 0, y = 0;
         sscanf(line->text, "%lf, %lf", &x, &y);
 
-        v.x = a_fix_fromDouble(x);
-        v.y = a_fix_fromDouble(y);
+        v.x = f_fix_fromDouble(x);
+        v.y = f_fix_fromDouble(y);
     }
 
     return v;
 }
 
-int a_block_lineGetFmt(const ABlock* Block, unsigned LineNumber, const char* Format, ...)
+int f_block_lineGetFmt(const ABlock* Block, unsigned LineNumber, const char* Format, ...)
 {
     va_list args;
     va_start(args, Format);
 
-    int ret = a_block_lineGetFmtv(Block, LineNumber, Format, args);
+    int ret = f_block_lineGetFmtv(Block, LineNumber, Format, args);
 
     va_end(args);
 
     return ret;
 }
 
-int a_block_lineGetFmtv(const ABlock* Block, unsigned LineNumber, const char* Format, va_list Args)
+int f_block_lineGetFmtv(const ABlock* Block, unsigned LineNumber, const char* Format, va_list Args)
 {
     const ABlock* line = blockGet(Block, LineNumber);
 
@@ -277,13 +277,13 @@ int a_block_lineGetFmtv(const ABlock* Block, unsigned LineNumber, const char* Fo
     return -1;
 }
 
-int a_block_keyGetFmt(const ABlock* Block, const char* Key, const char* Format, ...)
+int f_block_keyGetFmt(const ABlock* Block, const char* Key, const char* Format, ...)
 {
     va_list args;
     va_start(args, Format);
 
-    int ret = a_block_lineGetFmtv(
-                a_block_keyGetBlock(Block, Key), 1, Format, args);
+    int ret = f_block_lineGetFmtv(
+                f_block_keyGetBlock(Block, Key), 1, Format, args);
 
     va_end(args);
 

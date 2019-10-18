@@ -18,12 +18,12 @@
 #ifndef A_INC_INPUTS_CONTROLLER_P_H
 #define A_INC_INPUTS_CONTROLLER_P_H
 
-#include "general/a_system_includes.h"
+#include "general/f_system_includes.h"
 
 typedef void AController;
 typedef void AControllerBind(const AController* Controller);
 
-extern AController* a_controller_new(AControllerBind* Callback);
-extern void a_controller_free(AController* Controller);
+extern AController* f_controller_new(AControllerBind* Callback);
+extern void f_controller_free(AController* Controller);
 
 #endif // A_INC_INPUTS_CONTROLLER_P_H

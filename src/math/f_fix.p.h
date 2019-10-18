@@ -18,7 +18,7 @@
 #ifndef A_INC_MATH_FIX_P_H
 #define A_INC_MATH_FIX_P_H
 
-#include "general/a_system_includes.h"
+#include "general/f_system_includes.h"
 
 typedef int32_t AFix;
 typedef uint32_t AFixu;
@@ -81,74 +81,74 @@ typedef enum {
 } ADegFix;
 
 #if A_CONFIG_BUILD_FIX_LUT
-    extern const AFix a__fix_sin[A_FIX_ANGLES_NUM];
-    extern const AFix a__fix_csc[A_FIX_ANGLES_NUM];
+    extern const AFix f__fix_sin[A_FIX_ANGLES_NUM];
+    extern const AFix f__fix_csc[A_FIX_ANGLES_NUM];
 #else
-    extern AFix a__fix_sin[A_FIX_ANGLES_NUM];
-    extern AFix a__fix_csc[A_FIX_ANGLES_NUM];
+    extern AFix f__fix_sin[A_FIX_ANGLES_NUM];
+    extern AFix f__fix_csc[A_FIX_ANGLES_NUM];
 #endif
 
-static inline AFix a_fix_fromInt(int X)
+static inline AFix f_fix_fromInt(int X)
 {
     return X << A_FIX_BIT_PRECISION;
 }
 
-static inline AFix a_fix_fromFloat(float X)
+static inline AFix f_fix_fromFloat(float X)
 {
     return (AFix)(X * A_FIX_ONE);
 }
 
-static inline AFix a_fix_fromDouble(double X)
+static inline AFix f_fix_fromDouble(double X)
 {
     return (AFix)(X * A_FIX_ONE);
 }
 
-static inline int a_fix_toInt(AFix X)
+static inline int f_fix_toInt(AFix X)
 {
     return X >> A_FIX_BIT_PRECISION;
 }
 
-static inline float a_fix_toFloat(AFix X)
+static inline float f_fix_toFloat(AFix X)
 {
     return (float)X / A_FIX_ONE;
 }
 
-static inline double a_fix_toDouble(AFix X)
+static inline double f_fix_toDouble(AFix X)
 {
     return (double)X / A_FIX_ONE;
 }
 
-static inline AFix a_fix_mul(AFix X, AFix Y)
+static inline AFix f_fix_mul(AFix X, AFix Y)
 {
     return (AFix)(((int64_t)X * Y) >> A_FIX_BIT_PRECISION);
 }
 
-static inline AFix a_fix_div(AFix X, AFix Y)
+static inline AFix f_fix_div(AFix X, AFix Y)
 {
     return (AFix)(((int64_t)X << A_FIX_BIT_PRECISION) / Y);
 }
 
-static inline AFix a_fix_sqrt(AFix X)
+static inline AFix f_fix_sqrt(AFix X)
 {
     return (AFix)(sqrtf((float)X) * (1 << (A_FIX_BIT_PRECISION / 2)));
 }
 
-static inline AFix a_fix_round(AFix X)
+static inline AFix f_fix_round(AFix X)
 {
     return (X + A_FIX_ONE / 2) & (AFix)~A_FIX_FRACTION_MASK;
 }
 
-static inline AFix a_fix_floor(AFix X)
+static inline AFix f_fix_floor(AFix X)
 {
     return X & (AFix)~A_FIX_FRACTION_MASK;
 }
 
-static inline AFix a_fix_ceiling(AFix X)
+static inline AFix f_fix_ceiling(AFix X)
 {
     return (X + A_FIX_ONE - 1) & (AFix)~A_FIX_FRACTION_MASK;
 }
 
-static inline AFix a_fix_truncate(AFix X)
+static inline AFix f_fix_truncate(AFix X)
 {
     if(X >= 0) {
         return X & (AFix)~A_FIX_FRACTION_MASK;
@@ -157,7 +157,7 @@ static inline AFix a_fix_truncate(AFix X)
     }
 }
 
-static inline AFix a_fix_fraction(AFix X)
+static inline AFix f_fix_fraction(AFix X)
 {
     if(X >= 0) {
         return X & A_FIX_FRACTION_MASK;
@@ -166,161 +166,161 @@ static inline AFix a_fix_fraction(AFix X)
     }
 }
 
-static inline AFixu a_fixu_fromInt(unsigned X)
+static inline AFixu f_fixu_fromInt(unsigned X)
 {
     return X << A_FIX_BIT_PRECISION;
 }
 
-static inline AFixu a_fixu_fromFloat(float X)
+static inline AFixu f_fixu_fromFloat(float X)
 {
     return (AFixu)(X * A_FIX_ONE);
 }
 
-static inline AFixu a_fixu_fromDouble(double X)
+static inline AFixu f_fixu_fromDouble(double X)
 {
     return (AFixu)(X * A_FIX_ONE);
 }
 
-static inline unsigned a_fixu_toInt(AFixu X)
+static inline unsigned f_fixu_toInt(AFixu X)
 {
     return X >> A_FIX_BIT_PRECISION;
 }
 
-static inline float a_fixu_toFloat(AFixu X)
+static inline float f_fixu_toFloat(AFixu X)
 {
     return (float)X / A_FIX_ONE;
 }
 
-static inline double a_fixu_toDouble(AFixu X)
+static inline double f_fixu_toDouble(AFixu X)
 {
     return (double)X / A_FIX_ONE;
 }
 
-static inline AFixu a_fixu_mul(AFixu X, AFixu Y)
+static inline AFixu f_fixu_mul(AFixu X, AFixu Y)
 {
     return (AFixu)(((uint64_t)X * Y) >> A_FIX_BIT_PRECISION);
 }
 
-static inline AFixu a_fixu_div(AFixu X, AFixu Y)
+static inline AFixu f_fixu_div(AFixu X, AFixu Y)
 {
     return (AFixu)(((uint64_t)X << A_FIX_BIT_PRECISION) / Y);
 }
 
-static inline AFixu a_fixu_sqrt(AFixu X)
+static inline AFixu f_fixu_sqrt(AFixu X)
 {
     return (AFixu)(sqrtf((float)X) * (1 << (A_FIX_BIT_PRECISION / 2)));
 }
 
-static inline AFixu a_fixu_round(AFixu X)
+static inline AFixu f_fixu_round(AFixu X)
 {
     return (X + A_FIX_ONE / 2) & (AFixu)~A_FIX_FRACTION_MASK;
 }
 
-static inline AFixu a_fixu_floor(AFixu X)
+static inline AFixu f_fixu_floor(AFixu X)
 {
     return X & (AFixu)~A_FIX_FRACTION_MASK;
 }
 
-static inline AFixu a_fixu_ceiling(AFixu X)
+static inline AFixu f_fixu_ceiling(AFixu X)
 {
     return (X + A_FIX_ONE - 1) & (AFixu)~A_FIX_FRACTION_MASK;
 }
 
-static inline AFixu a_fixu_truncate(AFixu X)
+static inline AFixu f_fixu_truncate(AFixu X)
 {
     return X & (AFixu)~A_FIX_FRACTION_MASK;
 }
 
-static inline AFixu a_fixu_fraction(AFixu X)
+static inline AFixu f_fixu_fraction(AFixu X)
 {
     return X & A_FIX_FRACTION_MASK;
 }
 
-static inline unsigned a_fix_angleWrap(unsigned Angle)
+static inline unsigned f_fix_angleWrap(unsigned Angle)
 {
     return Angle & (A_FIX_ANGLES_NUM - 1);
 }
 
-static inline AFixu a_fix_angleWrapf(AFixu Angle)
+static inline AFixu f_fix_angleWrapf(AFixu Angle)
 {
     return Angle & (A_FIX_ANGLES_NUM * A_FIX_ONE - 1);
 }
 
-static inline unsigned a_fix_angleFromDeg(unsigned Degrees)
+static inline unsigned f_fix_angleFromDeg(unsigned Degrees)
 {
     return A_FIX_ANGLES_NUM * Degrees / 360;
 }
 
-static inline AFixu a_fix_angleFromDegf(unsigned Degrees)
+static inline AFixu f_fix_angleFromDegf(unsigned Degrees)
 {
     return (AFixu)((uint64_t)(A_FIX_ONE * A_FIX_ANGLES_NUM) * Degrees / 360);
 }
 
-static inline AFix a_fix_sin(unsigned Angle)
+static inline AFix f_fix_sin(unsigned Angle)
 {
-    return a__fix_sin[a_fix_angleWrap(Angle)];
+    return f__fix_sin[f_fix_angleWrap(Angle)];
 }
 
-static inline AFix a_fix_cos(unsigned Angle)
+static inline AFix f_fix_cos(unsigned Angle)
 {
-    return a__fix_sin[a_fix_angleWrap(Angle + A_DEG_090_INT)];
+    return f__fix_sin[f_fix_angleWrap(Angle + A_DEG_090_INT)];
 }
 
-static inline AFix a_fix_csc(unsigned Angle)
+static inline AFix f_fix_csc(unsigned Angle)
 {
-    return a__fix_csc[a_fix_angleWrap(Angle)];
+    return f__fix_csc[f_fix_angleWrap(Angle)];
 }
 
-static inline AFix a_fix_sec(unsigned Angle)
+static inline AFix f_fix_sec(unsigned Angle)
 {
-    return a__fix_csc[a_fix_angleWrap(Angle + A_DEG_090_INT)];
+    return f__fix_csc[f_fix_angleWrap(Angle + A_DEG_090_INT)];
 }
 
-static inline AFix a_fix_sinf(AFixu Angle)
+static inline AFix f_fix_sinf(AFixu Angle)
 {
-    return a__fix_sin[a_fix_angleWrap(a_fixu_toInt(Angle))];
+    return f__fix_sin[f_fix_angleWrap(f_fixu_toInt(Angle))];
 }
 
-static inline AFix a_fix_cosf(AFixu Angle)
+static inline AFix f_fix_cosf(AFixu Angle)
 {
-    return a__fix_sin[a_fix_angleWrap(a_fixu_toInt(Angle + A_DEG_090_FIX))];
+    return f__fix_sin[f_fix_angleWrap(f_fixu_toInt(Angle + A_DEG_090_FIX))];
 }
 
-static inline AFix a_fix_cscf(AFixu Angle)
+static inline AFix f_fix_cscf(AFixu Angle)
 {
-    return a__fix_csc[a_fix_angleWrap(a_fixu_toInt(Angle))];
+    return f__fix_csc[f_fix_angleWrap(f_fixu_toInt(Angle))];
 }
 
-static inline AFix a_fix_secf(AFixu Angle)
+static inline AFix f_fix_secf(AFixu Angle)
 {
-    return a__fix_csc[a_fix_angleWrap(a_fixu_toInt(Angle + A_DEG_090_FIX))];
+    return f__fix_csc[f_fix_angleWrap(f_fixu_toInt(Angle + A_DEG_090_FIX))];
 }
 
-extern unsigned a_fix_atan(AFix X1, AFix Y1, AFix X2, AFix Y2);
+extern unsigned f_fix_atan(AFix X1, AFix Y1, AFix X2, AFix Y2);
 
-extern AVectorFix a_fix_rotateCounter(AFix X, AFix Y, unsigned Angle);
-extern AVectorFix a_fix_rotateClockwise(AFix X, AFix Y, unsigned Angle);
+extern AVectorFix f_fix_rotateCounter(AFix X, AFix Y, unsigned Angle);
+extern AVectorFix f_fix_rotateClockwise(AFix X, AFix Y, unsigned Angle);
 
-static inline AVectorInt a_vectorfix_toInt(const AVectorFix Fix)
+static inline AVectorInt f_vectorfix_toInt(const AVectorFix Fix)
 {
-    AVectorInt v = {a_fix_toInt(Fix.x), a_fix_toInt(Fix.y)};
+    AVectorInt v = {f_fix_toInt(Fix.x), f_fix_toInt(Fix.y)};
 
     return v;
 }
 
-static inline AVectorFix a_vectorint_toFix(const AVectorInt Int)
+static inline AVectorFix f_vectorint_toFix(const AVectorInt Int)
 {
-    AVectorFix v = {a_fix_fromInt(Int.x), a_fix_fromInt(Int.y)};
+    AVectorFix v = {f_fix_fromInt(Int.x), f_fix_fromInt(Int.y)};
 
     return v;
 }
 
-static inline bool a_vectorfix_equal(AVectorFix A, AVectorFix B)
+static inline bool f_vectorfix_equal(AVectorFix A, AVectorFix B)
 {
     return A.x == B.x && A.y == B.y;
 }
 
-static inline bool a_vectorint_equal(AVectorInt A, AVectorInt B)
+static inline bool f_vectorint_equal(AVectorInt A, AVectorInt B)
 {
     return A.x == B.x && A.y == B.y;
 }

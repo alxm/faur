@@ -18,8 +18,8 @@
 #ifndef A_INC_GRAPHICS_SCREENSHOT_P_H
 #define A_INC_GRAPHICS_SCREENSHOT_P_H
 
-#include "general/a_system_includes.h"
+#include "general/f_system_includes.h"
 
-extern void a_screenshot_take(void);
+extern void f_screenshot_take(void);
 
 #endif // A_INC_GRAPHICS_SCREENSHOT_P_H

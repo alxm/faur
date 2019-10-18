@@ -18,7 +18,7 @@
 #ifndef A_INC_GENERAL_MAIN_V_H
 #define A_INC_GENERAL_MAIN_V_H
 
-#include "general/a_main.p.h"
+#include "general/f_main.p.h"
 
 #define A_PACK__PASSES_NUM 2
 
@@ -31,7 +31,7 @@ typedef struct {
     APackUninit* uninit[A_PACK__PASSES_NUM];
 } APack;
 
-extern void a__main(void);
+extern void f__main(void);
 
 extern void A__FATAL(const char* Format, ...) __attribute__((noreturn));
 

@@ -18,7 +18,7 @@
 #ifndef A_INC_DATA_LIST_V_H
 #define A_INC_DATA_LIST_V_H
 
-#include "data/a_list.p.h"
+#include "data/f_list.p.h"
 
 struct AListNode {
     void* content;
@@ -32,9 +32,9 @@ struct AList {
     unsigned items;
 };
 
-extern const AList a__list_empty;
+extern const AList f__list_empty;
 
-static inline AList* a_list__nodeGetList(const AListNode* Node)
+static inline AList* f_list__nodeGetList(const AListNode* Node)
 {
     return Node->list;
 }

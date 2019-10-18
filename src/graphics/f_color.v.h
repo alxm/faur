@@ -18,7 +18,7 @@
 #ifndef A_INC_GRAPHICS_COLOR_V_H
 #define A_INC_GRAPHICS_COLOR_V_H
 
-#include "graphics/a_color.p.h"
+#include "graphics/f_color.p.h"
 
 typedef struct {
     AColorBlend blend, canonicalBlend;
@@ -29,78 +29,78 @@ typedef struct {
     bool fillDraw;
 } APixelState;
 
-#include "general/a_main.v.h"
-#include "math/a_math.v.h"
+#include "general/f_main.v.h"
+#include "math/f_math.v.h"
 
-extern const APack a_pack__color;
+extern const APack f_pack__color;
 
-extern APixelState a__color;
+extern APixelState f__color;
 
-extern APixel a_color__key;
-extern APixel a_color__limit;
+extern APixel f_color__key;
+extern APixel f_color__limit;
 
-static inline void a_color__draw_plain(APixel* Dst, APixel Pixel)
+static inline void f_color__draw_plain(APixel* Dst, APixel Pixel)
 {
     *Dst = Pixel;
 }
 
-static inline void a_color__draw_rgba(APixel* Dst, const ARgb* Rgb, int Alpha)
+static inline void f_color__draw_rgba(APixel* Dst, const ARgb* Rgb, int Alpha)
 {
-    ARgb rgb = a_pixel_toRgb(*Dst);
+    ARgb rgb = f_pixel_toRgb(*Dst);
 
-    *Dst = a_pixel_fromRgb(rgb.r + (((Rgb->r - rgb.r) * Alpha) >> 8),
+    *Dst = f_pixel_fromRgb(rgb.r + (((Rgb->r - rgb.r) * Alpha) >> 8),
                            rgb.g + (((Rgb->g - rgb.g) * Alpha) >> 8),
                            rgb.b + (((Rgb->b - rgb.b) * Alpha) >> 8));
 }
 
-static inline void a_color__draw_rgb25(APixel* Dst, const ARgb* Rgb)
+static inline void f_color__draw_rgb25(APixel* Dst, const ARgb* Rgb)
 {
-    ARgb rgb = a_pixel_toRgb(*Dst);
+    ARgb rgb = f_pixel_toRgb(*Dst);
 
-    *Dst = a_pixel_fromRgb(rgb.r - (rgb.r >> 2) + (Rgb->r >> 2),
+    *Dst = f_pixel_fromRgb(rgb.r - (rgb.r >> 2) + (Rgb->r >> 2),
                            rgb.g - (rgb.g >> 2) + (Rgb->g >> 2),
                            rgb.b - (rgb.b >> 2) + (Rgb->b >> 2));
 }
 
-static inline void a_color__draw_rgb50(APixel* Dst, const ARgb* Rgb)
+static inline void f_color__draw_rgb50(APixel* Dst, const ARgb* Rgb)
 {
-    ARgb rgb = a_pixel_toRgb(*Dst);
+    ARgb rgb = f_pixel_toRgb(*Dst);
 
-    *Dst = a_pixel_fromRgb((rgb.r + Rgb->r) >> 1,
+    *Dst = f_pixel_fromRgb((rgb.r + Rgb->r) >> 1,
                            (rgb.g + Rgb->g) >> 1,
                            (rgb.b + Rgb->b) >> 1);
 }
 
-static inline void a_color__draw_rgb75(APixel* Dst, const ARgb* Rgb)
+static inline void f_color__draw_rgb75(APixel* Dst, const ARgb* Rgb)
 {
-    ARgb rgb = a_pixel_toRgb(*Dst);
+    ARgb rgb = f_pixel_toRgb(*Dst);
 
-    *Dst = a_pixel_fromRgb((rgb.r >> 2) + Rgb->r - (Rgb->r >> 2),
+    *Dst = f_pixel_fromRgb((rgb.r >> 2) + Rgb->r - (Rgb->r >> 2),
                            (rgb.g >> 2) + Rgb->g - (Rgb->g >> 2),
                            (rgb.b >> 2) + Rgb->b - (Rgb->b >> 2));
 }
 
-static inline void a_color__draw_inverse(APixel* Dst)
+static inline void f_color__draw_inverse(APixel* Dst)
 {
     *Dst = (APixel)~*Dst;
 }
 
-static inline void a_color__draw_mod(APixel* Dst, const ARgb* Rgb)
+static inline void f_color__draw_mod(APixel* Dst, const ARgb* Rgb)
 {
-    ARgb rgb = a_pixel_toRgb(*Dst);
+    ARgb rgb = f_pixel_toRgb(*Dst);
 
-    *Dst = a_pixel_fromRgb((rgb.r * Rgb->r) >> 8,
+    *Dst = f_pixel_fromRgb((rgb.r * Rgb->r) >> 8,
                            (rgb.g * Rgb->g) >> 8,
                            (rgb.b * Rgb->b) >> 8);
 }
 
-static inline void a_color__draw_add(APixel* Dst, const ARgb* Rgb)
+static inline void f_color__draw_add(APixel* Dst, const ARgb* Rgb)
 {
-    ARgb rgb = a_pixel_toRgb(*Dst);
+    ARgb rgb = f_pixel_toRgb(*Dst);
 
-    *Dst = a_pixel_fromRgb(a_math_min(rgb.r + Rgb->r, 255),
-                           a_math_min(rgb.g + Rgb->g, 255),
-                           a_math_min(rgb.b + Rgb->b, 255));
+    *Dst = f_pixel_fromRgb(f_math_min(rgb.r + Rgb->r, 255),
+                           f_math_min(rgb.g + Rgb->g, 255),
+                           f_math_min(rgb.b + Rgb->b, 255));
 }
 
 #endif // A_INC_GRAPHICS_COLOR_V_H

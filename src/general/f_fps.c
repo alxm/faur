@@ -15,7 +15,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a_fps.v.h"
+#include "f_fps.v.h"
 #include <faur.v.h>
 
 static struct {
@@ -39,25 +39,25 @@ static struct {
     unsigned tickCreditMs;
 } g_run;
 
-static void a_fps__init(void)
+static void f_fps__init(void)
 {
     g_settings.tickFrameMs = 1000 / A_CONFIG_FPS_RATE_TICK;
     g_settings.drawFrameMs = 1000 / A_CONFIG_FPS_RATE_DRAW;
 
-    a_fps__reset();
+    f_fps__reset();
 }
 
-const APack a_pack__fps = {
+const APack f_pack__fps = {
     "FPS",
     {
-        [0] = a_fps__init,
+        [0] = f_fps__init,
     },
     {
         NULL,
     }
 };
 
-void a_fps__reset(void)
+void f_fps__reset(void)
 {
     g_run.drawFps = A_CONFIG_FPS_RATE_DRAW;
     g_run.drawFpsMax = g_run.drawFps;
@@ -71,11 +71,11 @@ void a_fps__reset(void)
                                 / A_CONFIG_FPS_RATE_DRAW;
     g_history.drawFrameMsMinSum = g_history.drawFrameMsSum;
 
-    g_run.lastFrameMs = a_time_getMs();
+    g_run.lastFrameMs = f_time_getMs();
     g_run.tickCreditMs = g_settings.tickFrameMs;
 }
 
-bool a_fps__tick(void)
+bool f_fps__tick(void)
 {
     if(g_run.tickCreditMs >= g_settings.tickFrameMs) {
         g_run.tickCreditMs -= g_settings.tickFrameMs;
@@ -87,9 +87,9 @@ bool a_fps__tick(void)
     return false;
 }
 
-void a_fps__frame(void)
+void f_fps__frame(void)
 {
-    uint32_t nowMs = a_time_getMs();
+    uint32_t nowMs = f_time_getMs();
     uint32_t elapsedMs = nowMs - g_run.lastFrameMs;
 
     if(elapsedMs > 0) {
@@ -101,11 +101,11 @@ void a_fps__frame(void)
                             / g_history.drawFrameMsMinSum;
     }
 
-    if(!a_platform_api__screenVsyncGet()) {
+    if(!f_platform_api__screenVsyncGet()) {
         while(elapsedMs < g_settings.drawFrameMs) {
-            a_time_waitMs(g_settings.drawFrameMs - elapsedMs);
+            f_time_waitMs(g_settings.drawFrameMs - elapsedMs);
 
-            nowMs = a_time_getMs();
+            nowMs = f_time_getMs();
             elapsedMs = nowMs - g_run.lastFrameMs;
         }
     }
@@ -122,34 +122,34 @@ void a_fps__frame(void)
     g_run.lastFrameMs = nowMs;
 
     #if A_CONFIG_FPS_CAP_LAG
-        g_run.tickCreditMs += a_math_minu(
+        g_run.tickCreditMs += f_math_minu(
                                 elapsedMs, g_settings.drawFrameMs * 2);
     #else
         g_run.tickCreditMs += elapsedMs;
     #endif
 }
 
-unsigned a_fps_rateDrawGet(void)
+unsigned f_fps_rateDrawGet(void)
 {
     return g_run.drawFps;
 }
 
-unsigned a_fps_rateDrawGetMax(void)
+unsigned f_fps_rateDrawGetMax(void)
 {
     return g_run.drawFpsMax;
 }
 
-unsigned a_fps_ticksGet(void)
+unsigned f_fps_ticksGet(void)
 {
     return g_run.frameCounter;
 }
 
-bool a_fps_ticksNth(unsigned N)
+bool f_fps_ticksNth(unsigned N)
 {
     return (g_run.frameCounter % N) == 0;
 }
 
-AFix a_fps_ticksSin(uint8_t Mul, uint8_t Div, unsigned Offset)
+AFix f_fps_ticksSin(uint8_t Mul, uint8_t Div, unsigned Offset)
 {
     uint64_t param = (uint64_t)g_run.frameCounter * Mul * A_FIX_ANGLES_NUM;
 
@@ -157,5 +157,5 @@ AFix a_fps_ticksSin(uint8_t Mul, uint8_t Div, unsigned Offset)
         param /= Div;
     }
 
-    return a_fix_sin((unsigned)(param / A_CONFIG_FPS_RATE_TICK) + Offset);
+    return f_fix_sin((unsigned)(param / A_CONFIG_FPS_RATE_TICK) + Offset);
 }

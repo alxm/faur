@@ -17,7 +17,7 @@
 
 #define FAUR_IMPLEMENT 1
 
-#include "a_state.v.h"
+#include "f_state.v.h"
 #include <faur.v.h>
 
 #if A_CONFIG_SYSTEM_EMSCRIPTEN
@@ -46,46 +46,46 @@ static const char* g_stageNames[A__STATE_STAGE_NUM] = {
 
 static void pending_push(AStateHandler* Handler, const char* Name)
 {
-    AStateStackEntry* e = a_mem_malloc(sizeof(AStateStackEntry));
+    AStateStackEntry* e = f_mem_malloc(sizeof(AStateStackEntry));
 
     e->name = Name;
     e->handler = Handler;
     e->stage = A__STATE_STAGE_INIT;
 
-    a_list_addLast(g_pending, e);
+    f_list_addLast(g_pending, e);
 }
 
 static void pending_pop(void)
 {
-    a_list_addLast(g_pending, NULL);
+    f_list_addLast(g_pending, NULL);
 }
 
 static void pending_handle(void)
 {
-    AStateStackEntry* current = a_list_peek(g_stack);
+    AStateStackEntry* current = f_list_peek(g_stack);
 
     // Check if the current state just ran its Free stage
     if(current && current->stage == A__STATE_STAGE_FREE) {
         #if A_CONFIG_BUILD_DEBUG
-            a_out__state("Destroying '%s' instance", current->name);
+            f_out__state("Destroying '%s' instance", current->name);
         #endif
 
-        a_mem_free(a_list_pop(g_stack));
-        current = a_list_peek(g_stack);
+        f_mem_free(f_list_pop(g_stack));
+        current = f_list_peek(g_stack);
 
-        if(!g_exiting && a_list_isEmpty(g_pending)
+        if(!g_exiting && f_list_isEmpty(g_pending)
             && current && current->stage == A__STATE_STAGE_TICK) {
 
-            a_fps__reset();
+            f_fps__reset();
         }
     }
 
     // If there are no pending state changes,
     // check if the current state should transition from Init to Loop
-    if(a_list_isEmpty(g_pending)) {
+    if(f_list_isEmpty(g_pending)) {
         if(current && current->stage == A__STATE_STAGE_INIT) {
             #if A_CONFIG_BUILD_DEBUG
-                a_out__state("'%s' going from %s to %s",
+                f_out__state("'%s' going from %s to %s",
                              current->name,
                              g_stageNames[A__STATE_STAGE_INIT],
                              g_stageNames[A__STATE_STAGE_TICK]);
@@ -93,13 +93,13 @@ static void pending_handle(void)
 
             current->stage = A__STATE_STAGE_TICK;
 
-            a_fps__reset();
+            f_fps__reset();
         }
 
         return;
     }
 
-    AStateStackEntry* pendingState = a_list_pop(g_pending);
+    AStateStackEntry* pendingState = f_list_pop(g_pending);
 
     if(pendingState == NULL) {
         #if A_CONFIG_BUILD_DEBUG
@@ -107,9 +107,9 @@ static void pending_handle(void)
                 A__FATAL("Pop state: stack is empty");
             }
 
-            a_out__state("Pop '%s'", current->name);
+            f_out__state("Pop '%s'", current->name);
 
-            a_out__state("'%s' going from %s to %s",
+            f_out__state("'%s' going from %s to %s",
                          current->name,
                          g_stageNames[current->stage],
                          g_stageNames[A__STATE_STAGE_FREE]);
@@ -118,7 +118,7 @@ static void pending_handle(void)
         current->stage = A__STATE_STAGE_FREE;
     } else {
         #if A_CONFIG_BUILD_DEBUG
-            a_out__state("Push '%s'", pendingState->name);
+            f_out__state("Push '%s'", pendingState->name);
 
             A_LIST_ITERATE(g_stack, const AStateStackEntry*, e) {
                 if(pendingState->handler == e->handler) {
@@ -127,79 +127,79 @@ static void pending_handle(void)
             }
         #endif
 
-        a_out__state("New '%s' instance", pendingState->name);
-        a_list_push(g_stack, pendingState);
+        f_out__state("New '%s' instance", pendingState->name);
+        f_list_push(g_stack, pendingState);
     }
 }
 
-static void a_state__init(void)
+static void f_state__init(void)
 {
-    g_stack = a_list_new();
-    g_pending = a_list_new();
+    g_stack = f_list_new();
+    g_pending = f_list_new();
 }
 
-static void a_state__uninit(void)
+static void f_state__uninit(void)
 {
-    a_list_freeEx(g_stack, a_mem_free);
-    a_list_freeEx(g_pending, a_mem_free);
+    f_list_freeEx(g_stack, f_mem_free);
+    f_list_freeEx(g_pending, f_mem_free);
 }
 
-const APack a_pack__state = {
+const APack f_pack__state = {
     "State",
     {
-        [0] = a_state__init,
+        [0] = f_state__init,
     },
     {
-        [0] = a_state__uninit,
+        [0] = f_state__uninit,
     },
 };
 
-void a_state_push(AStateHandler* Handler, const char* Name)
+void f_state_push(AStateHandler* Handler, const char* Name)
 {
     if(g_exiting) {
         #if A_CONFIG_BUILD_DEBUG
-            a_out__state("a_state_push(%s): Already exiting", Name);
+            f_out__state("f_state_push(%s): Already exiting", Name);
         #endif
 
         return;
     }
 
     #if A_CONFIG_BUILD_DEBUG
-        a_out__state("a_state_push(%s)", Name);
+        f_out__state("f_state_push(%s)", Name);
     #endif
 
     pending_push(Handler, Name);
 }
 
-void a_state_pop(void)
+void f_state_pop(void)
 {
     if(g_exiting) {
         #if A_CONFIG_BUILD_DEBUG
-            a_out__state("a_state_pop: Already exiting");
+            f_out__state("f_state_pop: Already exiting");
         #endif
 
         return;
     }
 
     #if A_CONFIG_BUILD_DEBUG
-        a_out__state("a_state_pop()");
+        f_out__state("f_state_pop()");
     #endif
 
     pending_pop();
 }
 
-void a_state_popUntil(AStateHandler* Handler, const char* Name)
+void f_state_popUntil(AStateHandler* Handler, const char* Name)
 {
     if(g_exiting) {
         #if A_CONFIG_BUILD_DEBUG
-            a_out__state("a_state_popUntil(%s): Already exiting", Name);
+            f_out__state("f_state_popUntil(%s): Already exiting", Name);
         #endif
 
         return;
     }
 
     #if A_CONFIG_BUILD_DEBUG
-        a_out__state("a_state_popUntil(%s)", Name);
+        f_out__state("f_state_popUntil(%s)", Name);
     #endif
 
     int pops = 0;
@@ -215,7 +215,7 @@ void a_state_popUntil(AStateHandler* Handler, const char* Name)
     }
 
     if(!found) {
-        A__FATAL("a_state_popUntil(%s): State not in stack", Name);
+        A__FATAL("f_state_popUntil(%s): State not in stack", Name);
     }
 
     while(pops--) {
@@ -223,64 +223,64 @@ void a_state_popUntil(AStateHandler* Handler, const char* Name)
     }
 }
 
-void a_state_replace(AStateHandler* Handler, const char* Name)
+void f_state_replace(AStateHandler* Handler, const char* Name)
 {
     if(g_exiting) {
         #if A_CONFIG_BUILD_DEBUG
-            a_out__state("a_state_replace(%s): Already exiting", Name);
+            f_out__state("f_state_replace(%s): Already exiting", Name);
         #endif
 
         return;
     }
 
     #if A_CONFIG_BUILD_DEBUG
-        a_out__state("a_state_replace(%s)", Name);
+        f_out__state("f_state_replace(%s)", Name);
     #endif
 
     pending_pop();
     pending_push(Handler, Name);
 }
 
-void a_state_exit(void)
+void f_state_exit(void)
 {
     if(g_exiting) {
         #if A_CONFIG_BUILD_DEBUG
-            a_out__state("a_state_exit: Already exiting");
+            f_out__state("f_state_exit: Already exiting");
         #endif
 
         return;
     }
 
-    a_out__state("*** Telling all states to exit ***");
+    f_out__state("*** Telling all states to exit ***");
 
     g_exiting = true;
 
     // Clear the pending actions queue
-    a_list_clearEx(g_pending, a_mem_free);
+    f_list_clearEx(g_pending, f_mem_free);
 
     // Queue a pop for every state in the stack
-    for(unsigned i = a_list_sizeGet(g_stack); i--; ) {
+    for(unsigned i = f_list_sizeGet(g_stack); i--; ) {
         pending_pop();
     }
 }
 
-AStateHandler* a_state_currentGet(void)
+AStateHandler* f_state_currentGet(void)
 {
-    AStateStackEntry* current = a_list_peek(g_stack);
+    AStateStackEntry* current = f_list_peek(g_stack);
 
     if(current == NULL) {
-        A__FATAL("a_state_currentGet: Stack is empty");
+        A__FATAL("f_state_currentGet: Stack is empty");
     }
 
     return current->handler;
 }
 
-bool a_state_currentChanged(void)
+bool f_state_currentChanged(void)
 {
-    return !a_list_isEmpty(g_pending);
+    return !f_list_isEmpty(g_pending);
 }
 
-bool a_state_blockGet(void)
+bool f_state_blockGet(void)
 {
     if(g_blockEvent) {
         if(*g_blockEvent != 0) {
@@ -293,12 +293,12 @@ bool a_state_blockGet(void)
     return false;
 }
 
-void a_state_blockSet(const AEvent* Event)
+void f_state_blockSet(const AEvent* Event)
 {
     g_blockEvent = Event;
 }
 
-bool a_state__runStep(void)
+bool f_state__runStep(void)
 {
     #if A_CONFIG_SYSTEM_EMSCRIPTEN
         if(!EM_ASM_INT({ return Module.faur_fsIsReady; }, 0)) {
@@ -306,34 +306,34 @@ bool a_state__runStep(void)
         }
     #endif
 
-    if(!a_state_blockGet()) {
+    if(!f_state_blockGet()) {
         pending_handle();
     }
 
-    AStateStackEntry* s = a_list_peek(g_stack);
+    AStateStackEntry* s = f_list_peek(g_stack);
 
     if(s == NULL) {
         return false;
     }
 
     if(s->stage == A__STATE_STAGE_TICK) {
-        while(a_fps__tick()) {
-            a_timer__tick();
-            a_input__tick();
-            a_sound__tick();
-            a_screen__tick();
-            a_screenshot__tick();
-            a_console__tick();
-            a_ecs__tick();
-            a_fade__tick();
+        while(f_fps__tick()) {
+            f_timer__tick();
+            f_input__tick();
+            f_sound__tick();
+            f_screen__tick();
+            f_screenshot__tick();
+            f_console__tick();
+            f_ecs__tick();
+            f_fade__tick();
 
-            if(!a_list_isEmpty(g_pending) && !a_state_blockGet()) {
+            if(!f_list_isEmpty(g_pending) && !f_state_blockGet()) {
                 return true;
             }
 
             s->handler();
 
-            if(!a_list_isEmpty(g_pending) && !a_state_blockGet()) {
+            if(!f_list_isEmpty(g_pending) && !f_state_blockGet()) {
                 return true;
             }
         }
@@ -342,15 +342,15 @@ bool a_state__runStep(void)
         s->handler();
         s->stage = A__STATE_STAGE_TICK;
 
-        a_fade__draw();
-        a_sound__draw();
-        a_console__draw();
-        a_screen__draw();
+        f_fade__draw();
+        f_sound__draw();
+        f_console__draw();
+        f_screen__draw();
 
-        a_fps__frame();
+        f_fps__frame();
     } else {
         #if A_CONFIG_BUILD_DEBUG
-            a_out__state("'%s' running %s", s->name, g_stageNames[s->stage]);
+            f_out__state("'%s' running %s", s->name, g_stageNames[s->stage]);
         #endif
 
         s->handler();
@@ -362,34 +362,34 @@ bool a_state__runStep(void)
 #if A_CONFIG_SYSTEM_EMSCRIPTEN
 static void loop(void)
 {
-    if(!a_state__runStep()) {
-        a_out__state("Finished running states");
+    if(!f_state__runStep()) {
+        f_out__state("Finished running states");
         emscripten_cancel_main_loop();
     }
 }
 #endif
 
-void a_state__runLoop(void)
+void f_state__runLoop(void)
 {
-    a_out__state("Running states");
+    f_out__state("Running states");
 
     #if A_CONFIG_SYSTEM_EMSCRIPTEN
         emscripten_set_main_loop(
             loop,
-            a_platform_api__screenVsyncGet() ? 0 : A_CONFIG_FPS_RATE_DRAW,
+            f_platform_api__screenVsyncGet() ? 0 : A_CONFIG_FPS_RATE_DRAW,
             true);
     #else
-        while(a_state__runStep()) {
+        while(f_state__runStep()) {
             continue;
         }
 
-        a_out__state("Finished running states");
+        f_out__state("Finished running states");
     #endif
 }
 
-bool a__state_stageCheck(AStateStage Stage)
+bool f__state_stageCheck(AStateStage Stage)
 {
-    const AStateStackEntry* e = a_list_peek(g_stack);
+    const AStateStackEntry* e = f_list_peek(g_stack);
 
     #if A_CONFIG_BUILD_DEBUG
         if(e == NULL) {

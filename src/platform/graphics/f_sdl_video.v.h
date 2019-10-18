@@ -18,7 +18,7 @@
 #ifndef A_INC_PLATFORM_GRAPHICS_SDL_VIDEO_V_H
 #define A_INC_PLATFORM_GRAPHICS_SDL_VIDEO_V_H
 
-#include "platform/graphics/a_sdl_video.p.h"
+#include "platform/graphics/f_sdl_video.p.h"
 
 #if A_CONFIG_LIB_SDL == 2
     #if A_CONFIG_SCREEN_BPP == 16
@@ -36,10 +36,10 @@
     #endif
 #endif
 
-extern void a_platform_sdl_video__init(void);
-extern void a_platform_sdl_video__uninit(void);
+extern void f_platform_sdl_video__init(void);
+extern void f_platform_sdl_video__uninit(void);
 
-extern int a_platform_sdl_video__pixelBlendToSdlBlend(void);
-extern uint8_t a_platform_sdl_video__pixelAlphaToSdlAlpha(void);
+extern int f_platform_sdl_video__pixelBlendToSdlBlend(void);
+extern uint8_t f_platform_sdl_video__pixelAlphaToSdlAlpha(void);
 
 #endif // A_INC_PLATFORM_GRAPHICS_SDL_VIDEO_V_H

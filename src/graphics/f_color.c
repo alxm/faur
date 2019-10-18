@@ -15,77 +15,77 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a_color.v.h"
+#include "f_color.v.h"
 #include <faur.v.h>
 
-APixelState a__color;
+APixelState f__color;
 static AList* g_stateStack;
 
-APixel a_color__key;
-APixel a_color__limit;
+APixel f_color__key;
+APixel f_color__limit;
 
-static void a_color__init(void)
+static void f_color__init(void)
 {
-    g_stateStack = a_list_new();
-    a_color_reset();
+    g_stateStack = f_list_new();
+    f_color_reset();
 
-    a_color__key = a_pixel_fromHex(A_CONFIG_COLOR_SPRITE_KEY);
-    a_color__limit = a_pixel_fromHex(A_CONFIG_COLOR_SPRITE_BORDER);
+    f_color__key = f_pixel_fromHex(A_CONFIG_COLOR_SPRITE_KEY);
+    f_color__limit = f_pixel_fromHex(A_CONFIG_COLOR_SPRITE_BORDER);
 }
 
-static void a_color__uninit(void)
+static void f_color__uninit(void)
 {
-    a_list_freeEx(g_stateStack, a_mem_free);
+    f_list_freeEx(g_stateStack, f_mem_free);
 }
 
-const APack a_pack__color = {
+const APack f_pack__color = {
     "Color",
     {
-        [0] = a_color__init,
+        [0] = f_color__init,
     },
     {
-        [0] = a_color__uninit,
+        [0] = f_color__uninit,
     },
 };
 
-void a_color_push(void)
+void f_color_push(void)
 {
-    a_list_push(g_stateStack, a_mem_dup(&a__color, sizeof(APixelState)));
+    f_list_push(g_stateStack, f_mem_dup(&f__color, sizeof(APixelState)));
 }
 
-void a_color_pop(void)
+void f_color_pop(void)
 {
-    APixelState* state = a_list_pop(g_stateStack);
+    APixelState* state = f_list_pop(g_stateStack);
 
     #if A_CONFIG_BUILD_DEBUG
         if(state == NULL) {
-            A__FATAL("a_color_pop: Stack is empty");
+            A__FATAL("f_color_pop: Stack is empty");
         }
     #endif
 
-    a__color = *state;
-    a_mem_free(state);
+    f__color = *state;
+    f_mem_free(state);
 
-    a_color_blendSet(a__color.blend);
-    a_color_baseSetRgba(
-        a__color.rgb.r, a__color.rgb.g, a__color.rgb.b, a__color.alpha);
+    f_color_blendSet(f__color.blend);
+    f_color_baseSetRgba(
+        f__color.rgb.r, f__color.rgb.g, f__color.rgb.b, f__color.alpha);
 }
 
-void a_color_reset(void)
+void f_color_reset(void)
 {
-    a_color_blendSet(A_COLOR_BLEND_PLAIN);
-    a_color_baseSetRgba(0, 0, 0, A_COLOR_ALPHA_MAX);
-    a_color_fillBlitSet(false);
-    a_color_fillDrawSet(true);
+    f_color_blendSet(A_COLOR_BLEND_PLAIN);
+    f_color_baseSetRgba(0, 0, 0, A_COLOR_ALPHA_MAX);
+    f_color_fillBlitSet(false);
+    f_color_fillDrawSet(true);
 }
 
 #if A_CONFIG_LIB_RENDER_SOFTWARE
 static void optimizeAlphaBlending(void)
 {
-    if(a__color.canonicalBlend == A_COLOR_BLEND_RGBA) {
+    if(f__color.canonicalBlend == A_COLOR_BLEND_RGBA) {
         AColorBlend fastestBlend = A_COLOR_BLEND_RGBA;
 
-        switch(a__color.alpha) {
+        switch(f__color.alpha) {
             case A_COLOR_ALPHA_MAX / 4: {
                 fastestBlend = A_COLOR_BLEND_RGB25;
             } break;
@@ -103,102 +103,102 @@ static void optimizeAlphaBlending(void)
             } break;
         }
 
-        if(a__color.blend != fastestBlend) {
-            a__color.blend = fastestBlend;
+        if(f__color.blend != fastestBlend) {
+            f__color.blend = fastestBlend;
         }
     }
 }
 #endif
 
-void a_color_blendSet(AColorBlend Blend)
+void f_color_blendSet(AColorBlend Blend)
 {
-    a__color.blend = Blend;
-    a__color.canonicalBlend = Blend;
+    f__color.blend = Blend;
+    f__color.canonicalBlend = Blend;
 
     #if A_CONFIG_LIB_RENDER_SOFTWARE
         optimizeAlphaBlending();
     #else
         if(Blend == A_COLOR_BLEND_RGB25) {
-            a_color_alphaSet(A_COLOR_ALPHA_MAX / 4);
+            f_color_alphaSet(A_COLOR_ALPHA_MAX / 4);
         } else if(Blend == A_COLOR_BLEND_RGB50) {
-            a_color_alphaSet(A_COLOR_ALPHA_MAX / 2);
+            f_color_alphaSet(A_COLOR_ALPHA_MAX / 2);
         } else if(Blend == A_COLOR_BLEND_RGB75) {
-            a_color_alphaSet(A_COLOR_ALPHA_MAX * 3 / 4);
+            f_color_alphaSet(A_COLOR_ALPHA_MAX * 3 / 4);
         }
 
-        a_platform_api__renderSetBlendMode();
+        f_platform_api__renderSetBlendMode();
     #endif
 }
 
-void a_color_alphaSet(int Alpha)
+void f_color_alphaSet(int Alpha)
 {
-    a__color.alpha = a_math_clamp(Alpha, 0, A_COLOR_ALPHA_MAX);
+    f__color.alpha = f_math_clamp(Alpha, 0, A_COLOR_ALPHA_MAX);
 
     #if A_CONFIG_LIB_RENDER_SOFTWARE
         optimizeAlphaBlending();
     #else
-        a_platform_api__renderSetDrawColor();
+        f_platform_api__renderSetDrawColor();
     #endif
 }
 
 static void setRgb(int Red, int Green, int Blue)
 {
-    a__color.rgb.r = (unsigned)Red & 0xff;
-    a__color.rgb.g = (unsigned)Green & 0xff;
-    a__color.rgb.b = (unsigned)Blue & 0xff;
+    f__color.rgb.r = (unsigned)Red & 0xff;
+    f__color.rgb.g = (unsigned)Green & 0xff;
+    f__color.rgb.b = (unsigned)Blue & 0xff;
 
-    a__color.pixel = a_pixel_fromRgb(Red, Green, Blue);
+    f__color.pixel = f_pixel_fromRgb(Red, Green, Blue);
 }
 
-void a_color_baseSetRgb(int Red, int Green, int Blue)
+void f_color_baseSetRgb(int Red, int Green, int Blue)
 {
     setRgb(Red, Green, Blue);
 
     #if !A_CONFIG_LIB_RENDER_SOFTWARE
-        a_platform_api__renderSetDrawColor();
+        f_platform_api__renderSetDrawColor();
     #endif
 }
 
-void a_color_baseSetRgba(int Red, int Green, int Blue, int Alpha)
+void f_color_baseSetRgba(int Red, int Green, int Blue, int Alpha)
 {
     setRgb(Red, Green, Blue);
-    a__color.alpha = a_math_clamp(Alpha, 0, A_COLOR_ALPHA_MAX);
+    f__color.alpha = f_math_clamp(Alpha, 0, A_COLOR_ALPHA_MAX);
 
     #if A_CONFIG_LIB_RENDER_SOFTWARE
         optimizeAlphaBlending();
     #else
-        a_platform_api__renderSetDrawColor();
+        f_platform_api__renderSetDrawColor();
     #endif
 }
 
-void a_color_baseSetHex(uint32_t Hexcode)
+void f_color_baseSetHex(uint32_t Hexcode)
 {
-    a__color.rgb.r = (Hexcode >> 16) & 0xff;
-    a__color.rgb.g = (Hexcode >> 8)  & 0xff;
-    a__color.rgb.b = (Hexcode)       & 0xff;
-    a__color.pixel = a_pixel_fromHex(Hexcode);
+    f__color.rgb.r = (Hexcode >> 16) & 0xff;
+    f__color.rgb.g = (Hexcode >> 8)  & 0xff;
+    f__color.rgb.b = (Hexcode)       & 0xff;
+    f__color.pixel = f_pixel_fromHex(Hexcode);
 
     #if !A_CONFIG_LIB_RENDER_SOFTWARE
-        a_platform_api__renderSetDrawColor();
+        f_platform_api__renderSetDrawColor();
     #endif
 }
 
-void a_color_baseSetPixel(APixel Pixel)
+void f_color_baseSetPixel(APixel Pixel)
 {
-    a__color.rgb = a_pixel_toRgb(Pixel);
-    a__color.pixel = Pixel;
+    f__color.rgb = f_pixel_toRgb(Pixel);
+    f__color.pixel = Pixel;
 
     #if !A_CONFIG_LIB_RENDER_SOFTWARE
-        a_platform_api__renderSetDrawColor();
+        f_platform_api__renderSetDrawColor();
     #endif
 }
 
-void a_color_fillBlitSet(bool Fill)
+void f_color_fillBlitSet(bool Fill)
 {
-    a__color.fillBlit = Fill;
+    f__color.fillBlit = Fill;
 }
 
-void a_color_fillDrawSet(bool Fill)
+void f_color_fillDrawSet(bool Fill)
 {
-    a__color.fillDraw = Fill;
+    f__color.fillDraw = Fill;
 }

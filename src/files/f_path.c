@@ -15,7 +15,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a_path.v.h"
+#include "f_path.v.h"
 #include <faur.v.h>
 #include <sys/stat.h>
 
@@ -41,36 +41,36 @@ static APathFlags getPathFlags(const char* Path)
         } else {
             A_FLAGS_SET(flags, A_PATH_OTHER);
         }
-    } else if(a_embed__fileGet(Path) != NULL) {
+    } else if(f_embed__fileGet(Path) != NULL) {
         A_FLAGS_SET(flags, A_PATH_EMBEDDED | A_PATH_FILE);
-    } else if(a_embed__dirGet(Path) != NULL) {
+    } else if(f_embed__dirGet(Path) != NULL) {
         A_FLAGS_SET(flags, A_PATH_EMBEDDED | A_PATH_DIR);
     }
 
     return flags;
 }
 
-APath* a_path_new(const char* Path)
+APath* f_path_new(const char* Path)
 {
-    APath* p = a_mem_malloc(sizeof(APath));
+    APath* p = f_mem_malloc(sizeof(APath));
 
     p->flags = getPathFlags(Path);
-    p->full = a_str_dup(Path);
-    p->dirsPart = a_str_prefixGetToLast(Path, '/');
-    p->namePart = a_str_suffixGetFromLast(Path, '/');
+    p->full = f_str_dup(Path);
+    p->dirsPart = f_str_prefixGetToLast(Path, '/');
+    p->namePart = f_str_suffixGetFromLast(Path, '/');
 
     if(p->dirsPart == NULL) {
-        p->dirsPart = a_str_dup(".");
+        p->dirsPart = f_str_dup(".");
     }
 
     if(p->namePart == NULL) {
-        p->namePart = a_str_dup(Path);
+        p->namePart = f_str_dup(Path);
     }
 
     return p;
 }
 
-APath* a_path_newf(const char* Format, ...)
+APath* f_path_newf(const char* Format, ...)
 {
     va_list args;
     va_start(args, Format);
@@ -80,56 +80,56 @@ APath* a_path_newf(const char* Format, ...)
     va_end(args);
 
     if(bytesNeeded <= 1) {
-        A__FATAL("a_path_newf(%s): vsnprintf failed", Format);
+        A__FATAL("f_path_newf(%s): vsnprintf failed", Format);
     }
 
-    char* buffer = a_mem_malloc((size_t)bytesNeeded);
+    char* buffer = f_mem_malloc((size_t)bytesNeeded);
 
     va_start(args, Format);
     vsnprintf(buffer, (size_t)bytesNeeded, Format, args);
     va_end(args);
 
-    APath* p = a_path_new(buffer);
+    APath* p = f_path_new(buffer);
 
-    a_mem_free(buffer);
+    f_mem_free(buffer);
 
     return p;
 }
 
-void a_path_free(APath* Path)
+void f_path_free(APath* Path)
 {
-    a_mem_free(Path->full);
-    a_mem_free(Path->dirsPart);
-    a_mem_free(Path->namePart);
-    a_mem_free(Path);
+    f_mem_free(Path->full);
+    f_mem_free(Path->dirsPart);
+    f_mem_free(Path->namePart);
+    f_mem_free(Path);
 }
 
-bool a_path_exists(const char* Path, APathFlags Flags)
+bool f_path_exists(const char* Path, APathFlags Flags)
 {
     return A_FLAGS_TEST_ALL(getPathFlags(Path), Flags);
 }
 
-bool a_path_test(const APath* Path, APathFlags Flags)
+bool f_path_test(const APath* Path, APathFlags Flags)
 {
     return A_FLAGS_TEST_ALL(Path->flags, Flags);
 }
 
-void a_path__flagsSet(APath* Path, APathFlags Flags)
+void f_path__flagsSet(APath* Path, APathFlags Flags)
 {
     A_FLAGS_SET(Path->flags, Flags);
 }
 
-const char* a_path_getFull(const APath* Path)
+const char* f_path_getFull(const APath* Path)
 {
     return Path->full;
 }
 
-const char* a_path_getDirs(const APath* Path)
+const char* f_path_getDirs(const APath* Path)
 {
     return Path->dirsPart;
 }
 
-const char* a_path_getName(const APath* Path)
+const char* f_path_getName(const APath* Path)
 {
     return Path->namePart;
 }

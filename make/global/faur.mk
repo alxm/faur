@@ -9,7 +9,7 @@ FAUR_EMBED_PATHS := \
 FAUR_FILES_SRC_GEN_H := $(FAUR_EMBED_PATHS:%=$(FAUR_DIR_GEN)/%.h)
 
 FAUR_FILES_PUBLIC_FAUR_HEADERS := \
-    $(FAUR_DIR_SRC)/general/a_system_includes.h \
+    $(FAUR_DIR_SRC)/general/f_system_includes.h \
     $(shell find $(FAUR_DIR_SRC) -type f -name "*.p.h")
 FAUR_FILES_PRIVATE_FAUR_HEADERS := $(shell find $(FAUR_DIR_SRC) -type f -name "*.v.h")
 FAUR_FILE_PUBLIC_FAUR_LIB := $(FAUR_DIR_OBJ)/faur.a
@@ -34,11 +34,11 @@ $(FAUR_DIR_OBJ)/%.c.o : $(FAUR_DIR_SRC)/%.c
 	@ mkdir -p $(@D)
 	$(CC) -c -o $@ $< $(FAUR_GENERIC_CFLAGS)
 
-$(FAUR_DIR_OBJ)/files/a_embed.c.o : $(FAUR_FILES_SRC_GEN_H)
+$(FAUR_DIR_OBJ)/files/f_embed.c.o : $(FAUR_FILES_SRC_GEN_H)
 
 $(FAUR_DIR_GEN)/%.h : $(FAUR_DIR_ROOT)/% $(FAUR_PATH)/bin/faur-bin
 	@ mkdir -p $(@D)
-	$(FAUR_PATH)/bin/faur-bin $< $@ $(<:$(FAUR_DIR_ROOT)/%=%) a__bin__
+	$(FAUR_PATH)/bin/faur-bin $< $@ $(<:$(FAUR_DIR_ROOT)/%=%) f__bin__
 
 $(FAUR_FILE_EDITOR_TAGS) : $(FAUR_FILES_PUBLIC_FAUR_HEADERS)
 	test ! -d $(@D) || CFLAGS="$(A_CONFIG_BUILD_CFLAGS)" geany -g -P $@ $^

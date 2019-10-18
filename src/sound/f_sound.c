@@ -15,7 +15,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a_sound.v.h"
+#include "f_sound.v.h"
 #include <faur.v.h>
 
 #if A_CONFIG_SOUND_ENABLED
@@ -39,265 +39,265 @@ static int g_volumeMax;
 
 static void adjustSoundVolume(int Volume)
 {
-    g_volume = a_math_clamp(Volume, 0, g_volumeMax);
+    g_volume = f_math_clamp(Volume, 0, g_volumeMax);
     g_musicVolume = g_volume * A_CONFIG_SOUND_VOLUME_SCALE_MUSIC / 100;
     g_samplesVolume = g_volume * A_CONFIG_SOUND_VOLUME_SCALE_SAMPLE / 100;
 
-    a_platform_api__soundSampleVolumeSetAll(g_samplesVolume);
-    a_platform_api__soundMusicVolumeSet(g_musicVolume);
+    f_platform_api__soundSampleVolumeSetAll(g_samplesVolume);
+    f_platform_api__soundMusicVolumeSet(g_musicVolume);
 }
 
-static void a_sound__init(void)
+static void f_sound__init(void)
 {
-    g_volumeMax = a_platform_api__soundVolumeGetMax();
+    g_volumeMax = f_platform_api__soundVolumeGetMax();
 
     #if A__SOUND_VOLUME_BAR
         adjustSoundVolume(g_volumeMax / 16);
-        g_volTimer = a_timer_new(A_TIMER_MS, A__VOLBAR_SHOW_MS, false);
+        g_volTimer = f_timer_new(A_TIMER_MS, A__VOLBAR_SHOW_MS, false);
     #else
         adjustSoundVolume(g_volumeMax);
     #endif
 
     #if A__SOUND_VOLUME_BAR
-        g_volumeUpButton = a_button_new();
-        a_button_bindButton(g_volumeUpButton, NULL, A_BUTTON_VOLUP);
+        g_volumeUpButton = f_button_new();
+        f_button_bindButton(g_volumeUpButton, NULL, A_BUTTON_VOLUP);
 
-        g_volumeDownButton = a_button_new();
-        a_button_bindButton(g_volumeDownButton, NULL, A_BUTTON_VOLDOWN);
+        g_volumeDownButton = f_button_new();
+        f_button_bindButton(g_volumeDownButton, NULL, A_BUTTON_VOLDOWN);
     #endif
 
     #if A_CONFIG_TRAIT_KEYBOARD
-        g_muteButton = a_button_new();
-        a_button_bindKey(g_muteButton, A_KEY_M);
+        g_muteButton = f_button_new();
+        f_button_bindKey(g_muteButton, A_KEY_M);
     #endif
 }
 
-static void a_sound__uninit(void)
+static void f_sound__uninit(void)
 {
     #if A__SOUND_VOLUME_BAR
-        a_timer_free(g_volTimer);
+        f_timer_free(g_volTimer);
     #endif
 
     #if A_CONFIG_TRAIT_KEYBOARD
-        a_button_free(g_muteButton);
+        f_button_free(g_muteButton);
     #endif
 
-    a_music_stop();
+    f_music_stop();
 }
 
-const APack a_pack__sound = {
+const APack f_pack__sound = {
     "Sound",
     {
-        [0] = a_sound__init,
+        [0] = f_sound__init,
     },
     {
-        [0] = a_sound__uninit,
+        [0] = f_sound__uninit,
     },
 };
 
-void a_sound__tick(void)
+void f_sound__tick(void)
 {
     #if A__SOUND_VOLUME_BAR
         int adjust = 0;
 
-        if(a_button_pressGet(g_volumeUpButton)) {
+        if(f_button_pressGet(g_volumeUpButton)) {
             adjust = A__VOLUME_STEP;
-        } else if(a_button_pressGet(g_volumeDownButton)) {
+        } else if(f_button_pressGet(g_volumeDownButton)) {
             adjust = -A__VOLUME_STEP;
         }
 
         if(adjust) {
             adjustSoundVolume(g_volume + adjust);
-            a_timer_start(g_volTimer);
+            f_timer_start(g_volTimer);
         }
     #endif
 
     #if A_CONFIG_TRAIT_KEYBOARD
-        if(a_button_pressGetOnce(g_muteButton)) {
-            a_platform_api__soundMuteFlip();
+        if(f_button_pressGetOnce(g_muteButton)) {
+            f_platform_api__soundMuteFlip();
 
-            a_out__info("Sound is now %s",
-                        a_platform_api__soundMuteGet() ? "off" : "on");
+            f_out__info("Sound is now %s",
+                        f_platform_api__soundMuteGet() ? "off" : "on");
         }
     #endif
 }
 
-void a_sound__draw(void)
+void f_sound__draw(void)
 {
     #if A__SOUND_VOLUME_BAR
-        if(!a_timer_isRunning(g_volTimer) || a_timer_expiredGet(g_volTimer)) {
+        if(!f_timer_isRunning(g_volTimer) || f_timer_expiredGet(g_volTimer)) {
             return;
         }
 
-        a_color_blendSet(A_COLOR_BLEND_PLAIN);
+        f_color_blendSet(A_COLOR_BLEND_PLAIN);
 
-        a_color_baseSetHex(A_CONFIG_COLOR_VOLBAR_BACKGROUND);
-        a_draw_rectangle(0, 181, g_volumeMax / A__VOLUME_STEP + 5, 16);
+        f_color_baseSetHex(A_CONFIG_COLOR_VOLBAR_BACKGROUND);
+        f_draw_rectangle(0, 181, g_volumeMax / A__VOLUME_STEP + 5, 16);
 
-        a_color_baseSetHex(A_CONFIG_COLOR_VOLBAR_BORDER);
-        a_draw_hline(0, g_volumeMax / A__VOLUME_STEP + 4, 180);
-        a_draw_hline(0, g_volumeMax / A__VOLUME_STEP + 4, 183 + 14);
-        a_draw_vline(g_volumeMax / A__VOLUME_STEP + 4 + 1, 181, 183 + 13);
+        f_color_baseSetHex(A_CONFIG_COLOR_VOLBAR_BORDER);
+        f_draw_hline(0, g_volumeMax / A__VOLUME_STEP + 4, 180);
+        f_draw_hline(0, g_volumeMax / A__VOLUME_STEP + 4, 183 + 14);
+        f_draw_vline(g_volumeMax / A__VOLUME_STEP + 4 + 1, 181, 183 + 13);
 
-        a_color_baseSetHex(A_CONFIG_COLOR_VOLBAR_FILL);
-        a_draw_rectangle(0, 186, g_volume / A__VOLUME_STEP, 6);
+        f_color_baseSetHex(A_CONFIG_COLOR_VOLBAR_FILL);
+        f_draw_rectangle(0, 186, g_volume / A__VOLUME_STEP, 6);
     #endif
 }
 
-AMusic* a_music_new(const char* Path)
+AMusic* f_music_new(const char* Path)
 {
-    APlatformMusic* m = a_platform_api__soundMusicNew(Path);
+    APlatformMusic* m = f_platform_api__soundMusicNew(Path);
 
     if(m == NULL) {
-        A__FATAL("a_music_new(%s): Cannot open file", Path);
+        A__FATAL("f_music_new(%s): Cannot open file", Path);
     }
 
     return m;
 }
 
-void a_music_free(AMusic* Music)
+void f_music_free(AMusic* Music)
 {
     if(Music) {
-        a_platform_api__soundMusicFree(Music);
+        f_platform_api__soundMusicFree(Music);
     }
 }
 
-void a_music_play(AMusic* Music)
+void f_music_play(AMusic* Music)
 {
-    if(a_platform_api__soundMuteGet()) {
+    if(f_platform_api__soundMuteGet()) {
         return;
     }
 
-    a_platform_api__soundMusicPlay(Music);
+    f_platform_api__soundMusicPlay(Music);
 }
 
-void a_music_stop(void)
+void f_music_stop(void)
 {
-    a_platform_api__soundMusicStop();
+    f_platform_api__soundMusicStop();
 }
 
-ASample* a_sample_new(const char* Path)
+ASample* f_sample_new(const char* Path)
 {
     APlatformSample* s = NULL;
 
-    if(a_path_exists(Path, A_PATH_FILE | A_PATH_REAL)) {
-        s = a_platform_api__soundSampleNewFromFile(Path);
-    } else if(a_path_exists(Path, A_PATH_FILE | A_PATH_EMBEDDED)) {
-        const AEmbeddedFile* e = a_embed__fileGet(Path);
+    if(f_path_exists(Path, A_PATH_FILE | A_PATH_REAL)) {
+        s = f_platform_api__soundSampleNewFromFile(Path);
+    } else if(f_path_exists(Path, A_PATH_FILE | A_PATH_EMBEDDED)) {
+        const AEmbeddedFile* e = f_embed__fileGet(Path);
 
-        s = a_platform_api__soundSampleNewFromData(e->buffer, (int)e->size);
+        s = f_platform_api__soundSampleNewFromData(e->buffer, (int)e->size);
     } else {
-        A__FATAL("a_sample_new(%s): File does not exist", Path);
+        A__FATAL("f_sample_new(%s): File does not exist", Path);
     }
 
     if(s == NULL) {
-        A__FATAL("a_sample_new(%s): Cannot open file", Path);
+        A__FATAL("f_sample_new(%s): Cannot open file", Path);
     }
 
     return s;
 }
 
-void a_sample_free(ASample* Sample)
+void f_sample_free(ASample* Sample)
 {
     if(Sample) {
-        a_platform_api__soundSampleFree(Sample);
+        f_platform_api__soundSampleFree(Sample);
     }
 }
 
-int a_channel_new(void)
+int f_channel_new(void)
 {
-    return a_platform_api__soundSampleChannelGet();
+    return f_platform_api__soundSampleChannelGet();
 }
 
-void a_channel_play(int Channel, ASample* Sample, AChannelFlags Flags)
+void f_channel_play(int Channel, ASample* Sample, AChannelFlags Flags)
 {
-    if(a_platform_api__soundMuteGet()) {
+    if(f_platform_api__soundMuteGet()) {
         return;
     }
 
     if(A_FLAGS_TEST_ANY(Flags, A_CHANNEL_RESTART)) {
-        a_platform_api__soundSampleStop(Channel);
+        f_platform_api__soundSampleStop(Channel);
     } else if(A_FLAGS_TEST_ANY(Flags, A_CHANNEL_YIELD)
-        && a_platform_api__soundSampleIsPlaying(Channel)) {
+        && f_platform_api__soundSampleIsPlaying(Channel)) {
 
         return;
     }
 
-    a_platform_api__soundSamplePlay(
+    f_platform_api__soundSamplePlay(
         Sample, Channel, A_FLAGS_TEST_ANY(Flags, A_CHANNEL_LOOP));
 }
 
-void a_channel_stop(int Channel)
+void f_channel_stop(int Channel)
 {
-    a_platform_api__soundSampleStop(Channel);
+    f_platform_api__soundSampleStop(Channel);
 }
 
-bool a_channel_isPlaying(int Channel)
+bool f_channel_isPlaying(int Channel)
 {
-    return a_platform_api__soundSampleIsPlaying(Channel);
+    return f_platform_api__soundSampleIsPlaying(Channel);
 }
 #else // !A_CONFIG_SOUND_ENABLED
-const APack a_pack__sound;
+const APack f_pack__sound;
 
-void a_sound__tick(void)
+void f_sound__tick(void)
 {
 }
 
-void a_sound__draw(void)
+void f_sound__draw(void)
 {
 }
 
-AMusic* a_music_new(const char* Path)
-{
-    A_UNUSED(Path);
-
-    return NULL;
-}
-
-void a_music_free(AMusic* Music)
-{
-    A_UNUSED(Music);
-}
-
-void a_music_play(AMusic* Music)
-{
-    A_UNUSED(Music);
-}
-
-void a_music_stop(void)
-{
-}
-
-ASample* a_sample_new(const char* Path)
+AMusic* f_music_new(const char* Path)
 {
     A_UNUSED(Path);
 
     return NULL;
 }
 
-void a_sample_free(ASample* Sample)
+void f_music_free(AMusic* Music)
+{
+    A_UNUSED(Music);
+}
+
+void f_music_play(AMusic* Music)
+{
+    A_UNUSED(Music);
+}
+
+void f_music_stop(void)
+{
+}
+
+ASample* f_sample_new(const char* Path)
+{
+    A_UNUSED(Path);
+
+    return NULL;
+}
+
+void f_sample_free(ASample* Sample)
 {
     A_UNUSED(Sample);
 }
 
-int a_channel_new(void)
+int f_channel_new(void)
 {
     return -1;
 }
 
-void a_channel_play(int Channel, ASample* Sample, AChannelFlags Flags)
+void f_channel_play(int Channel, ASample* Sample, AChannelFlags Flags)
 {
     A_UNUSED(Channel);
     A_UNUSED(Sample);
     A_UNUSED(Flags);
 }
 
-void a_channel_stop(int Channel)
+void f_channel_stop(int Channel)
 {
     A_UNUSED(Channel);
 }
 
-bool a_channel_isPlaying(int Channel)
+bool f_channel_isPlaying(int Channel)
 {
     A_UNUSED(Channel);
 

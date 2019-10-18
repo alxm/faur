@@ -15,7 +15,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a_file_real.v.h"
+#include "f_file_real.v.h"
 #include <faur.v.h>
 #include <sys/stat.h>
 
@@ -85,7 +85,7 @@ static const AFileInterface g_interface = {
     .ungetchar = fileUnGetChar,
 };
 
-AFile* a_file_real__new(APath* Path, AFileMode Mode)
+AFile* f_file_real__new(APath* Path, AFileMode Mode)
 {
     int index = 0;
     char mode[4];
@@ -102,21 +102,21 @@ AFile* a_file_real__new(APath* Path, AFileMode Mode)
 
     mode[index] = '\0';
 
-    FILE* handle = fopen(a_path_getFull(Path), mode);
+    FILE* handle = fopen(f_path_getFull(Path), mode);
 
     if(handle == NULL) {
-        a_out__error("a_file_new(%s): Cannot open for '%s'",
-                     a_path_getFull(Path),
+        f_out__error("f_file_new(%s): Cannot open for '%s'",
+                     f_path_getFull(Path),
                      mode);
 
         return NULL;
     }
 
     if(A_FLAGS_TEST_ANY(Mode, A_FILE_WRITE)) {
-        a_path__flagsSet(Path, A_PATH_FILE | A_PATH_REAL);
+        f_path__flagsSet(Path, A_PATH_FILE | A_PATH_REAL);
     }
 
-    AFile* f = a_mem_zalloc(sizeof(AFile));
+    AFile* f = f_mem_zalloc(sizeof(AFile));
 
     f->path = Path;
     f->interface = &g_interface;
@@ -125,30 +125,30 @@ AFile* a_file_real__new(APath* Path, AFileMode Mode)
     return f;
 }
 
-uint8_t* a_file_real__toBuffer(const char* Path)
+uint8_t* f_file_real__toBuffer(const char* Path)
 {
     struct stat info;
 
     if(stat(Path, &info) != 0) {
-        a_out__error("a_file_toBuffer: stat(%s) failed", Path);
+        f_out__error("f_file_toBuffer: stat(%s) failed", Path);
         return NULL;
     }
 
-    AFile* f = a_file_new(Path, A_FILE_READ | A_FILE_BINARY);
+    AFile* f = f_file_new(Path, A_FILE_READ | A_FILE_BINARY);
 
     if(f == NULL) {
         return NULL;
     }
 
     size_t size = (size_t)info.st_size;
-    uint8_t* buffer = a_mem_malloc(size);
+    uint8_t* buffer = f_mem_malloc(size);
 
-    if(!a_file_read(f, buffer, size)) {
-        a_mem_free(buffer);
+    if(!f_file_read(f, buffer, size)) {
+        f_mem_free(buffer);
         buffer = NULL;
     }
 
-    a_file_free(f);
+    f_file_free(f);
 
     return buffer;
 }

@@ -15,10 +15,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a_screen.v.h"
+#include "f_screen.v.h"
 #include <faur.v.h>
 
-AScreen a__screen;
+AScreen f__screen;
 static AList* g_stack; // list of AScreen
 
 #if A_CONFIG_TRAIT_DESKTOP
@@ -28,79 +28,79 @@ static AList* g_stack; // list of AScreen
     static AButton* g_zoomButtons[A__ZOOM_LEVELS];
 #endif
 
-static void a_screen__init(void)
+static void f_screen__init(void)
 {
-    AVectorInt size = a_platform_api__screenSizeGet();
+    AVectorInt size = f_platform_api__screenSizeGet();
 
-    a__screen.pixels = a_platform_api__screenPixelsGet();
+    f__screen.pixels = f_platform_api__screenPixelsGet();
 
     #if !A_CONFIG_LIB_RENDER_SOFTWARE
-        a__screen.texture = a_platform_api__screenTextureGet();
+        f__screen.texture = f_platform_api__screenTextureGet();
     #endif
 
-    a__screen.clipX = 0;
-    a__screen.clipY = 0;
-    a__screen.clipX2 = size.x;
-    a__screen.clipY2 = size.y;
-    a__screen.clipWidth = size.x;
-    a__screen.clipHeight = size.y;
+    f__screen.clipX = 0;
+    f__screen.clipY = 0;
+    f__screen.clipX2 = size.x;
+    f__screen.clipY2 = size.y;
+    f__screen.clipWidth = size.x;
+    f__screen.clipHeight = size.y;
 
     #if A_CONFIG_TRAIT_DESKTOP
-        g_fullScreenButton = a_button_new();
-        a_button_bindKey(g_fullScreenButton, A_KEY_F4);
+        g_fullScreenButton = f_button_new();
+        f_button_bindKey(g_fullScreenButton, A_KEY_F4);
 
         for(int z = 0; z < A__ZOOM_LEVELS; z++) {
-            g_zoomButtons[z] = a_button_new();
-            a_button_bindKey(g_zoomButtons[z], A_KEY_F1 + z);
+            g_zoomButtons[z] = f_button_new();
+            f_button_bindKey(g_zoomButtons[z], A_KEY_F1 + z);
         }
     #endif
 
-    g_stack = a_list_new();
+    g_stack = f_list_new();
 }
 
-static void a_screen__uninit(void)
+static void f_screen__uninit(void)
 {
-    a_list_freeEx(g_stack, a_mem_free);
+    f_list_freeEx(g_stack, f_mem_free);
 
     #if A_CONFIG_TRAIT_DESKTOP
-        a_button_free(g_fullScreenButton);
+        f_button_free(g_fullScreenButton);
 
         for(int z = 0; z < A__ZOOM_LEVELS; z++) {
-            a_button_free(g_zoomButtons[z]);
+            f_button_free(g_zoomButtons[z]);
         }
     #endif
 }
 
-const APack a_pack__screen = {
+const APack f_pack__screen = {
     "Screen",
     {
-        [0] = a_screen__init,
+        [0] = f_screen__init,
     },
     {
-        [0] = a_screen__uninit,
+        [0] = f_screen__uninit,
     },
 };
 
-void a_screen__tick(void)
+void f_screen__tick(void)
 {
     #if A_CONFIG_TRAIT_DESKTOP
-        if(a_button_pressGetOnce(g_fullScreenButton)) {
-            a_platform_api__screenFullscreenFlip();
+        if(f_button_pressGetOnce(g_fullScreenButton)) {
+            f_platform_api__screenFullscreenFlip();
 
-            a_out__info("Screen is now %s",
-                        a_platform_api__screenFullscreenGet()
+            f_out__info("Screen is now %s",
+                        f_platform_api__screenFullscreenGet()
                             ? "fullscreen" : "windowed");
         }
 
         for(int z = 0; z < A__ZOOM_LEVELS; z++) {
-            if(a_button_pressGetOnce(g_zoomButtons[z])) {
+            if(f_button_pressGetOnce(g_zoomButtons[z])) {
                 int zoom = z + 1;
 
-                if(a_platform_api__screenZoomGet() != zoom) {
-                    a_platform_api__screenZoomSet(zoom);
+                if(f_platform_api__screenZoomGet() != zoom) {
+                    f_platform_api__screenZoomSet(zoom);
 
-                    a_out__info(
-                        "Screen zoom %d", a_platform_api__screenZoomGet());
+                    f_out__info(
+                        "Screen zoom %d", f_platform_api__screenZoomGet());
                 }
 
                 break;
@@ -109,198 +109,198 @@ void a_screen__tick(void)
     #endif
 }
 
-void a_screen__draw(void)
+void f_screen__draw(void)
 {
     #if A_CONFIG_BUILD_DEBUG
-        if(!a_list_isEmpty(g_stack)) {
+        if(!f_list_isEmpty(g_stack)) {
             A__FATAL("Screen target stack is not empty");
         }
     #endif
 
-    a_platform_api__screenShow();
+    f_platform_api__screenShow();
 }
 
-APixel* a_screen_pixelsGetBuffer(void)
+APixel* f_screen_pixelsGetBuffer(void)
 {
     #if !A_CONFIG_LIB_RENDER_SOFTWARE
-        a_platform_api__screenTextureRead(a__screen.pixels, a__screen.frame);
+        f_platform_api__screenTextureRead(f__screen.pixels, f__screen.frame);
     #endif
 
-    return a_screen__bufferGetFrom(0, 0);
+    return f_screen__bufferGetFrom(0, 0);
 }
 
-AVectorInt a_screen_sizeGet(void)
+AVectorInt f_screen_sizeGet(void)
 {
-    return (AVectorInt){a__screen.pixels->w, a__screen.pixels->h};
+    return (AVectorInt){f__screen.pixels->w, f__screen.pixels->h};
 }
 
-int a_screen_sizeGetWidth(void)
+int f_screen_sizeGetWidth(void)
 {
-    return a__screen.pixels->w;
+    return f__screen.pixels->w;
 }
 
-int a_screen_sizeGetHeight(void)
+int f_screen_sizeGetHeight(void)
 {
-    return a__screen.pixels->h;
+    return f__screen.pixels->h;
 }
 
-void a_screen_clear(void)
+void f_screen_clear(void)
 {
     #if A_CONFIG_LIB_RENDER_SOFTWARE
-        a_pixels__clear(a__screen.pixels, a__screen.frame);
+        f_pixels__clear(f__screen.pixels, f__screen.frame);
     #else
-        a_color_push();
+        f_color_push();
 
-        a_color_blendSet(A_COLOR_BLEND_PLAIN);
-        a_color_baseSetPixel(0);
-        a_platform_api__screenClear();
+        f_color_blendSet(A_COLOR_BLEND_PLAIN);
+        f_color_baseSetPixel(0);
+        f_platform_api__screenClear();
 
-        a_color_pop();
+        f_color_pop();
     #endif
 }
 
-void a_screen_push(ASprite* Sprite, unsigned Frame)
+void f_screen_push(ASprite* Sprite, unsigned Frame)
 {
     #if A_CONFIG_BUILD_DEBUG
         if(A_FLAGS_TEST_ANY(
-            a_sprite__pixelsGet(Sprite)->flags, A_PIXELS__CONST)) {
+            f_sprite__pixelsGet(Sprite)->flags, A_PIXELS__CONST)) {
 
-            A__FATAL("a_screen_push: Const sprite");
+            A__FATAL("f_screen_push: Const sprite");
         }
     #endif
 
-    a_list_push(g_stack, a_mem_dup(&a__screen, sizeof(AScreen)));
+    f_list_push(g_stack, f_mem_dup(&f__screen, sizeof(AScreen)));
 
-    a__screen.pixels = a_sprite__pixelsGet(Sprite);
-    a__screen.sprite = Sprite;
-    a__screen.frame = Frame;
+    f__screen.pixels = f_sprite__pixelsGet(Sprite);
+    f__screen.sprite = Sprite;
+    f__screen.frame = Frame;
 
     #if !A_CONFIG_LIB_RENDER_SOFTWARE
-        a__screen.texture = a_sprite__textureGet(Sprite, Frame);
-        a_platform_api__screenTextureSet(a__screen.texture);
+        f__screen.texture = f_sprite__textureGet(Sprite, Frame);
+        f_platform_api__screenTextureSet(f__screen.texture);
 
-        A_FLAGS_SET(a_sprite__pixelsGet(Sprite)->flags, A_PIXELS__DIRTY);
+        A_FLAGS_SET(f_sprite__pixelsGet(Sprite)->flags, A_PIXELS__DIRTY);
     #endif
 
-    a_screen_clipReset();
+    f_screen_clipReset();
 }
 
-void a_screen_pop(void)
+void f_screen_pop(void)
 {
-    AScreen* screen = a_list_pop(g_stack);
+    AScreen* screen = f_list_pop(g_stack);
 
     #if A_CONFIG_BUILD_DEBUG
         if(screen == NULL) {
-            A__FATAL("a_screen_pop: Stack is empty");
+            A__FATAL("f_screen_pop: Stack is empty");
         }
     #endif
 
     #if A_CONFIG_LIB_RENDER_SOFTWARE
-        a_sprite__textureCommit(a__screen.sprite, a__screen.frame);
+        f_sprite__textureCommit(f__screen.sprite, f__screen.frame);
     #endif
 
-    a__screen = *screen;
-    a_mem_free(screen);
+    f__screen = *screen;
+    f_mem_free(screen);
 
     #if !A_CONFIG_LIB_RENDER_SOFTWARE
-        a_platform_api__screenTextureSet(a__screen.texture);
-        a_platform_api__screenClipSet(a__screen.clipX,
-                                      a__screen.clipY,
-                                      a__screen.clipWidth,
-                                      a__screen.clipHeight);
+        f_platform_api__screenTextureSet(f__screen.texture);
+        f_platform_api__screenClipSet(f__screen.clipX,
+                                      f__screen.clipY,
+                                      f__screen.clipWidth,
+                                      f__screen.clipHeight);
     #endif
 }
 
-void a_screen_clipSet(int X, int Y, int Width, int Height)
+void f_screen_clipSet(int X, int Y, int Width, int Height)
 {
-    if(!a_screen_boxInsideScreen(X, Y, Width, Height)) {
-        a_out__error(
-            "a_screen_clipSet(%d, %d, %d, %d): Invalid area on %dx%d screen",
+    if(!f_screen_boxInsideScreen(X, Y, Width, Height)) {
+        f_out__error(
+            "f_screen_clipSet(%d, %d, %d, %d): Invalid area on %dx%d screen",
             X,
             Y,
             Width,
             Height,
-            a__screen.pixels->w,
-            a__screen.pixels->h);
+            f__screen.pixels->w,
+            f__screen.pixels->h);
 
         return;
     }
 
-    a__screen.clipX = X;
-    a__screen.clipY = Y;
-    a__screen.clipX2 = X + Width;
-    a__screen.clipY2 = Y + Height;
-    a__screen.clipWidth = Width;
-    a__screen.clipHeight = Height;
+    f__screen.clipX = X;
+    f__screen.clipY = Y;
+    f__screen.clipX2 = X + Width;
+    f__screen.clipY2 = Y + Height;
+    f__screen.clipWidth = Width;
+    f__screen.clipHeight = Height;
 
     #if !A_CONFIG_LIB_RENDER_SOFTWARE
-        a_platform_api__screenClipSet(X, Y, Width, Height);
+        f_platform_api__screenClipSet(X, Y, Width, Height);
     #endif
 }
 
-void a_screen_clipReset(void)
+void f_screen_clipReset(void)
 {
-    a_screen_clipSet(0, 0, a__screen.pixels->w, a__screen.pixels->h);
+    f_screen_clipSet(0, 0, f__screen.pixels->w, f__screen.pixels->h);
 }
 
-bool a_screen_boxOnScreen(int X, int Y, int W, int H)
+bool f_screen_boxOnScreen(int X, int Y, int W, int H)
 {
-    return a_collide_boxAndBox(X, Y, W, H,
-                               0, 0, a__screen.pixels->w, a__screen.pixels->h);
+    return f_collide_boxAndBox(X, Y, W, H,
+                               0, 0, f__screen.pixels->w, f__screen.pixels->h);
 }
 
-bool a_screen_boxInsideScreen(int X, int Y, int W, int H)
+bool f_screen_boxInsideScreen(int X, int Y, int W, int H)
 {
     return X >= 0 && Y >= 0
-        && X + W <= a__screen.pixels->w && Y + H <= a__screen.pixels->h;
+        && X + W <= f__screen.pixels->w && Y + H <= f__screen.pixels->h;
 }
 
-bool a_screen_boxOnClip(int X, int Y, int W, int H)
+bool f_screen_boxOnClip(int X, int Y, int W, int H)
 {
-    return a_collide_boxAndBox(X, Y, W, H,
-                               a__screen.clipX, a__screen.clipY,
-                               a__screen.clipWidth, a__screen.clipHeight);
+    return f_collide_boxAndBox(X, Y, W, H,
+                               f__screen.clipX, f__screen.clipY,
+                               f__screen.clipWidth, f__screen.clipHeight);
 }
 
-bool a_screen_boxInsideClip(int X, int Y, int W, int H)
+bool f_screen_boxInsideClip(int X, int Y, int W, int H)
 {
-    return X >= a__screen.clipX && Y >= a__screen.clipY
-        && X + W <= a__screen.clipX2 && Y + H <= a__screen.clipY2;
+    return X >= f__screen.clipX && Y >= f__screen.clipY
+        && X + W <= f__screen.clipX2 && Y + H <= f__screen.clipY2;
 }
 
-void a_screen__toSprite(ASprite* Sprite, unsigned Frame)
+void f_screen__toSprite(ASprite* Sprite, unsigned Frame)
 {
-    AVectorInt spriteSize = a_sprite_sizeGet(Sprite);
+    AVectorInt spriteSize = f_sprite_sizeGet(Sprite);
 
-    if(a__screen.pixels->w != spriteSize.x
-        || a__screen.pixels->h != spriteSize.y) {
+    if(f__screen.pixels->w != spriteSize.x
+        || f__screen.pixels->h != spriteSize.y) {
 
-        A__FATAL("a_screen__toSprite: Sprite is %dx%d, screen is %dx%d",
+        A__FATAL("f_screen__toSprite: Sprite is %dx%d, screen is %dx%d",
                  spriteSize.x,
                  spriteSize.y,
-                 a__screen.pixels->w,
-                 a__screen.pixels->h);
+                 f__screen.pixels->w,
+                 f__screen.pixels->h);
     }
 
     #if A_CONFIG_LIB_RENDER_SOFTWARE
-        a_pixels__copyFrame(
-            a_sprite__pixelsGet(Sprite), Frame, a__screen.pixels, 0);
+        f_pixels__copyFrame(
+            f_sprite__pixelsGet(Sprite), Frame, f__screen.pixels, 0);
     #else
-        a_color_push();
-        a_color_blendSet(A_COLOR_BLEND_PLAIN);
-        a_color_fillBlitSet(false);
+        f_color_push();
+        f_color_blendSet(A_COLOR_BLEND_PLAIN);
+        f_color_fillBlitSet(false);
 
-        a_platform_api__screenTextureSet(a_sprite__textureGet(Sprite, Frame));
-        a_platform_api__screenClipSet(0, 0, spriteSize.x, spriteSize.y);
+        f_platform_api__screenTextureSet(f_sprite__textureGet(Sprite, Frame));
+        f_platform_api__screenClipSet(0, 0, spriteSize.x, spriteSize.y);
 
-        a_platform_api__screenDraw();
+        f_platform_api__screenDraw();
 
-        a_platform_api__screenTextureSet(a__screen.texture);
-        a_platform_api__screenClipSet(a__screen.clipX,
-                                      a__screen.clipY,
-                                      a__screen.clipWidth,
-                                      a__screen.clipHeight);
+        f_platform_api__screenTextureSet(f__screen.texture);
+        f_platform_api__screenClipSet(f__screen.clipX,
+                                      f__screen.clipY,
+                                      f__screen.clipWidth,
+                                      f__screen.clipHeight);
 
-        a_color_pop();
+        f_color_pop();
     #endif
 }

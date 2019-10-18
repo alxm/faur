@@ -18,12 +18,12 @@
 #ifndef A_INC_TIME_TIMER_V_H
 #define A_INC_TIME_TIMER_V_H
 
-#include "time/a_timer.p.h"
+#include "time/f_timer.p.h"
 
-#include "general/a_main.v.h"
+#include "general/f_main.v.h"
 
-extern const APack a_pack__timer;
+extern const APack f_pack__timer;
 
-extern void a_timer__tick(void);
+extern void f_timer__tick(void);
 
 #endif // A_INC_TIME_TIMER_V_H

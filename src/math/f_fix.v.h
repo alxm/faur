@@ -18,10 +18,10 @@
 #ifndef A_INC_MATH_FIX_V_H
 #define A_INC_MATH_FIX_V_H
 
-#include "math/a_fix.p.h"
+#include "math/f_fix.p.h"
 
-#include "general/a_main.v.h"
+#include "general/f_main.v.h"
 
-extern const APack a_pack__fix;
+extern const APack f_pack__fix;
 
 #endif // A_INC_MATH_FIX_V_H

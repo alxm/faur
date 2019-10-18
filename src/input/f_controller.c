@@ -15,15 +15,15 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a_controller.v.h"
+#include "f_controller.v.h"
 #include <faur.v.h>
 
-AController* a_controller_new(AControllerBind* Callback)
+AController* f_controller_new(AControllerBind* Callback)
 {
-    return a_platform_api__inputControllerClaim(Callback);
+    return f_platform_api__inputControllerClaim(Callback);
 }
 
-void a_controller_free(AController* Controller)
+void f_controller_free(AController* Controller)
 {
-    a_platform_api__inputControllerRelease(Controller);
+    f_platform_api__inputControllerRelease(Controller);
 }

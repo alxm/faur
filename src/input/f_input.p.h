@@ -18,14 +18,14 @@
 #ifndef A_INC_INPUTS_INPUT_P_H
 #define A_INC_INPUTS_INPUT_P_H
 
-#include "general/a_system_includes.h"
+#include "general/f_system_includes.h"
 
-#include "input/a_analog.p.h"
-#include "input/a_button.p.h"
-#include "math/a_fix.p.h"
+#include "input/f_analog.p.h"
+#include "input/f_button.p.h"
+#include "math/f_fix.p.h"
 
-extern bool a_input_readKey(AKeyId Key);
-extern bool a_input_readButton(AButtonId Button);
-extern AFix a_input_readAnalog(AAnalogId Axis);
+extern bool f_input_readKey(AKeyId Key);
+extern bool f_input_readButton(AButtonId Button);
+extern AFix f_input_readAnalog(AAnalogId Axis);
 
 #endif // A_INC_INPUTS_INPUT_P_H

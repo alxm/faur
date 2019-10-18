@@ -18,22 +18,22 @@
 #ifndef A_INC_COLLISION_GRID_P_H
 #define A_INC_COLLISION_GRID_P_H
 
-#include "general/a_system_includes.h"
+#include "general/f_system_includes.h"
 
 typedef struct AGrid AGrid;
 typedef struct AList AGridItem;
 
-#include "data/a_list.p.h"
-#include "math/a_fix.p.h"
+#include "data/f_list.p.h"
+#include "math/f_fix.p.h"
 
-extern AGrid* a_grid_new(AFix Width, AFix Height, AFix MaxObjectDim);
-extern void a_grid_free(AGrid* Grid);
+extern AGrid* f_grid_new(AFix Width, AFix Height, AFix MaxObjectDim);
+extern void f_grid_free(AGrid* Grid);
 
-extern const AList* a_grid_nearGet(const AGrid* Grid, AVectorFix Coords);
+extern const AList* f_grid_nearGet(const AGrid* Grid, AVectorFix Coords);
 
-extern AGridItem* a_grid_itemNew(void);
-extern void a_grid_itemFree(AGridItem* Item);
+extern AGridItem* f_grid_itemNew(void);
+extern void f_grid_itemFree(AGridItem* Item);
 
-extern void a_grid_itemCoordsSet(const AGrid* Grid, AGridItem* Item, void* Context, AVectorFix Coords);
+extern void f_grid_itemCoordsSet(const AGrid* Grid, AGridItem* Item, void* Context, AVectorFix Coords);
 
 #endif // A_INC_COLLISION_GRID_P_H

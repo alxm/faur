@@ -15,7 +15,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a_button.v.h"
+#include "f_button.v.h"
 #include <faur.v.h>
 
 struct AButton {
@@ -108,23 +108,23 @@ static const char* g_defaultName = "AButton";
 
 static AList* g_buttons; // list of AButton
 
-void a_input_button__init(void)
+void f_input_button__init(void)
 {
-    g_buttons = a_list_new();
+    g_buttons = f_list_new();
 }
 
-void a_input_button__uninit(void)
+void f_input_button__uninit(void)
 {
-    a_list_free(g_buttons);
+    f_list_free(g_buttons);
 }
 
-AButton* a_button_new(void)
+AButton* f_button_new(void)
 {
-    AButton* b = a_mem_malloc(sizeof(AButton));
+    AButton* b = f_mem_malloc(sizeof(AButton));
 
-    b->listNode = a_list_addLast(g_buttons, b);
+    b->listNode = f_list_addLast(g_buttons, b);
     b->name = g_defaultName;
-    b->platformInputs = a_list_new();
+    b->platformInputs = f_list_new();
     b->combos = NULL;
     b->autoRepeat = NULL;
     b->isClone = false;
@@ -134,11 +134,11 @@ AButton* a_button_new(void)
     return b;
 }
 
-AButton* a_button_dup(const AButton* Button)
+AButton* f_button_dup(const AButton* Button)
 {
-    AButton* b = a_mem_dup(Button, sizeof(AButton));
+    AButton* b = f_mem_dup(Button, sizeof(AButton));
 
-    b->listNode = a_list_addLast(g_buttons, b);
+    b->listNode = f_list_addLast(g_buttons, b);
     b->autoRepeat = NULL;
     b->isClone = true;
     b->waitForRelease = false;
@@ -147,27 +147,27 @@ AButton* a_button_dup(const AButton* Button)
     return b;
 }
 
-void a_button_free(AButton* Button)
+void f_button_free(AButton* Button)
 {
     if(Button == NULL) {
         return;
     }
 
-    a_list_removeNode(Button->listNode);
+    f_list_removeNode(Button->listNode);
 
     if(!Button->isClone) {
-        a_list_freeEx(Button->combos, (AFree*)a_list_free);
-        a_list_free(Button->platformInputs);
+        f_list_freeEx(Button->combos, (AFree*)f_list_free);
+        f_list_free(Button->platformInputs);
     }
 
-    a_timer_free(Button->autoRepeat);
+    f_timer_free(Button->autoRepeat);
 
-    a_mem_free(Button);
+    f_mem_free(Button);
 }
 
-void a_button_bindKey(AButton* Button, AKeyId Id)
+void f_button_bindKey(AButton* Button, AKeyId Id)
 {
-    const APlatformButton* k = a_platform_api__inputKeyGet(Id);
+    const APlatformButton* k = f_platform_api__inputKeyGet(Id);
 
     if(k == NULL) {
         return;
@@ -177,12 +177,12 @@ void a_button_bindKey(AButton* Button, AKeyId Id)
         Button->name = g_keyNames[Id];
     }
 
-    a_list_addLast(Button->platformInputs, (APlatformButton*)k);
+    f_list_addLast(Button->platformInputs, (APlatformButton*)k);
 }
 
-void a_button_bindButton(AButton* Button, const AController* Controller, AButtonId Id)
+void f_button_bindButton(AButton* Button, const AController* Controller, AButtonId Id)
 {
-    const APlatformButton* b = a_platform_api__inputButtonGet(Controller, Id);
+    const APlatformButton* b = f_platform_api__inputButtonGet(Controller, Id);
 
     if(b == NULL) {
         return;
@@ -192,88 +192,88 @@ void a_button_bindButton(AButton* Button, const AController* Controller, AButton
         Button->name = g_buttonNames[Id];
     }
 
-    a_list_addLast(Button->platformInputs, (APlatformButton*)b);
+    f_list_addLast(Button->platformInputs, (APlatformButton*)b);
 }
 
-void a_button_bindCombo(AButton* Button, const AController* Controller, AButtonId Id, ...)
+void f_button_bindCombo(AButton* Button, const AController* Controller, AButtonId Id, ...)
 {
     va_list args;
     va_start(args, Id);
 
-    AList* combo = a_list_new();
+    AList* combo = f_list_new();
 
     for(int i = Id; i != A_BUTTON_INVALID; i = va_arg(args, int)) {
         const APlatformButton* b =
-            a_platform_api__inputButtonGet(Controller, i);
+            f_platform_api__inputButtonGet(Controller, i);
 
         if(b) {
-            a_list_addLast(combo, (APlatformButton*)b);
+            f_list_addLast(combo, (APlatformButton*)b);
         }
     }
 
-    if(a_list_isEmpty(combo)) {
-        a_list_free(combo);
+    if(f_list_isEmpty(combo)) {
+        f_list_free(combo);
     } else {
         if(Button->combos == NULL) {
-            Button->combos = a_list_new();
+            Button->combos = f_list_new();
         }
 
-        a_list_push(Button->combos, combo);
+        f_list_push(Button->combos, combo);
     }
 
     va_end(args);
 }
 
-bool a_button_isWorking(const AButton* Button)
+bool f_button_isWorking(const AButton* Button)
 {
-    return !a_list_isEmpty(Button->platformInputs)
-        || (Button->combos && !a_list_isEmpty(Button->combos));
+    return !f_list_isEmpty(Button->platformInputs)
+        || (Button->combos && !f_list_isEmpty(Button->combos));
 }
 
-const char* a_button_nameGet(const AButton* Button)
+const char* f_button_nameGet(const AButton* Button)
 {
     return Button->name;
 }
 
-bool a_button_pressGet(const AButton* Button)
+bool f_button_pressGet(const AButton* Button)
 {
     return Button->pressed;
 }
 
-bool a_button_pressGetOnce(AButton* Button)
+bool f_button_pressGetOnce(AButton* Button)
 {
-    bool pressed = a_button_pressGet(Button);
+    bool pressed = f_button_pressGet(Button);
 
     if(pressed) {
-        a_button_pressClear(Button);
+        f_button_pressClear(Button);
     }
 
     return pressed;
 }
 
-void a_button_pressSetRepeat(AButton* Button, unsigned RepeatMs)
+void f_button_pressSetRepeat(AButton* Button, unsigned RepeatMs)
 {
     if(Button->autoRepeat == NULL) {
-        Button->autoRepeat = a_timer_new(A_TIMER_MS, RepeatMs, true);
+        Button->autoRepeat = f_timer_new(A_TIMER_MS, RepeatMs, true);
     } else {
-        a_timer_stop(Button->autoRepeat);
-        a_timer_periodSet(Button->autoRepeat, RepeatMs);
+        f_timer_stop(Button->autoRepeat);
+        f_timer_periodSet(Button->autoRepeat, RepeatMs);
     }
 }
 
-void a_button_pressClear(AButton* Button)
+void f_button_pressClear(AButton* Button)
 {
     Button->waitForRelease = true;
     Button->pressed = false;
 }
 
-void a_input_button__tick(void)
+void f_input_button__tick(void)
 {
     A_LIST_ITERATE(g_buttons, AButton*, b) {
         bool pressed = false;
 
         A_LIST_ITERATE(b->platformInputs, const APlatformButton*, pb) {
-            if(a_platform_api__inputButtonPressGet(pb)) {
+            if(f_platform_api__inputButtonPressGet(pb)) {
                 pressed = true;
                 goto done;
             }
@@ -282,7 +282,7 @@ void a_input_button__tick(void)
         if(b->combos) {
             A_LIST_ITERATE(b->combos, AList*, andList) {
                 A_LIST_ITERATE(andList, const APlatformButton*, pb) {
-                    if(!a_platform_api__inputButtonPressGet(pb)) {
+                    if(!f_platform_api__inputButtonPressGet(pb)) {
                         break;
                     } else if(A_LIST_IS_LAST()) {
                         pressed = true;
@@ -299,13 +299,13 @@ done:
 
         if(b->autoRepeat) {
             if(pressed) {
-                if(!a_timer_isRunning(b->autoRepeat)) {
-                    a_timer_start(b->autoRepeat);
-                } else if(!a_timer_expiredGet(b->autoRepeat)) {
+                if(!f_timer_isRunning(b->autoRepeat)) {
+                    f_timer_start(b->autoRepeat);
+                } else if(!f_timer_expiredGet(b->autoRepeat)) {
                     pressed = false;
                 }
             } else {
-                a_timer_stop(b->autoRepeat);
+                f_timer_stop(b->autoRepeat);
             }
         }
 

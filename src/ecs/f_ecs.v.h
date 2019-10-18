@@ -18,7 +18,7 @@
 #ifndef A_INC_ECS_ECS_V_H
 #define A_INC_ECS_ECS_V_H
 
-#include "ecs/a_ecs.p.h"
+#include "ecs/f_ecs.p.h"
 
 typedef enum {
     A_ECS__INVALID = -1,
@@ -30,19 +30,19 @@ typedef enum {
     A_ECS__NUM
 } AEcsListId;
 
-#include "data/a_list.v.h"
-#include "general/a_main.v.h"
+#include "data/f_list.v.h"
+#include "general/f_main.v.h"
 
-extern const APack a_pack__ecs;
+extern const APack f_pack__ecs;
 
-extern AList* a_ecs__listGet(AEcsListId List);
-extern unsigned a_ecs__listGetSum(void);
+extern AList* f_ecs__listGet(AEcsListId List);
+extern unsigned f_ecs__listGetSum(void);
 
-extern bool a_ecs__refDecIgnoreGet(void);
-extern void a_ecs__refDecIgnoreSet(bool IgnoreRefDec);
+extern bool f_ecs__refDecIgnoreGet(void);
+extern void f_ecs__refDecIgnoreSet(bool IgnoreRefDec);
 
-extern void a_ecs__tick(void);
+extern void f_ecs__tick(void);
 
-extern void a_ecs__flushEntitiesFromSystems(void);
+extern void f_ecs__flushEntitiesFromSystems(void);
 
 #endif // A_INC_ECS_ECS_V_H

@@ -15,50 +15,50 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a_collection.v.h"
+#include "f_collection.v.h"
 #include <faur.v.h>
 
 #if A_CONFIG_ECS_ENABLED
 static ACollection* g_current; // New entities are added to this collection
 
-ACollection* a_collection__get(void)
+ACollection* f_collection__get(void)
 {
     return g_current;
 }
 
-void a_collection_set(ACollection* Collection)
+void f_collection_set(ACollection* Collection)
 {
     g_current = Collection;
 }
 
-ACollection* a_collection_new(void)
+ACollection* f_collection_new(void)
 {
-    return a_list_new();
+    return f_list_new();
 }
 
-void a_collection_free(ACollection* Collection)
+void f_collection_free(ACollection* Collection)
 {
-    a_ecs__refDecIgnoreSet(true);
-    a_list_freeEx(Collection, (AFree*)a_entity__freeEx);
-    a_ecs__refDecIgnoreSet(false);
+    f_ecs__refDecIgnoreSet(true);
+    f_list_freeEx(Collection, (AFree*)f_entity__freeEx);
+    f_ecs__refDecIgnoreSet(false);
 }
 
-void a_collection_clear(ACollection* Collection)
+void f_collection_clear(ACollection* Collection)
 {
-    a_list_clearEx(Collection, (AFree*)a_entity_removedSet);
+    f_list_clearEx(Collection, (AFree*)f_entity_removedSet);
 }
 
-void a_collection_muteInc(ACollection* Collection)
+void f_collection_muteInc(ACollection* Collection)
 {
     A_LIST_ITERATE(Collection, AEntity*, e) {
-        a_entity_muteInc(e);
+        f_entity_muteInc(e);
     }
 }
 
-void a_collection_muteDec(ACollection* Collection)
+void f_collection_muteDec(ACollection* Collection)
 {
     A_LIST_ITERATE(Collection, AEntity*, e) {
-        a_entity_muteDec(e);
+        f_entity_muteDec(e);
     }
 }
 #endif // A_CONFIG_ECS_ENABLED

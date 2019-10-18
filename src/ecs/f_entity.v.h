@@ -18,11 +18,11 @@
 #ifndef A_INC_ECS_ENTITY_V_H
 #define A_INC_ECS_ENTITY_V_H
 
-#include "ecs/a_entity.p.h"
+#include "ecs/f_entity.p.h"
 
-#include "data/a_list.v.h"
-#include "ecs/a_system.v.h"
-#include "ecs/a_template.v.h"
+#include "data/f_list.v.h"
+#include "ecs/f_system.v.h"
+#include "ecs/f_template.v.h"
 
 typedef enum {
     A_ENTITY__ACTIVE_REMOVED = A_FLAGS_BIT(0), // kicked by active-only system
@@ -32,17 +32,17 @@ typedef enum {
     A_ENTITY__REMOVE_INACTIVE = A_FLAGS_BIT(4), // mark for removal if kicked
 } AEntityFlags;
 
-extern void a_entity__free(AEntity* Entity);
-extern void a_entity__freeEx(AEntity* Entity);
+extern void f_entity__free(AEntity* Entity);
+extern void f_entity__freeEx(AEntity* Entity);
 
-extern const ATemplate* a_entity__templateGet(const AEntity* Entity);
+extern const ATemplate* f_entity__templateGet(const AEntity* Entity);
 
-extern bool a_entity__canDelete(const AEntity* Entity);
-extern void a_entity__ecsListAdd(AEntity* Entity, AList* List);
+extern bool f_entity__canDelete(const AEntity* Entity);
+extern void f_entity__ecsListAdd(AEntity* Entity, AList* List);
 
-extern void a_entity__systemsMatch(AEntity* Entity, ASystem* System);
-extern void a_entity__systemsAddTo(AEntity* Entity);
-extern void a_entity__systemsRemoveFromAll(AEntity* Entity);
-extern void a_entity__systemsRemoveFromActive(AEntity* Entity);
+extern void f_entity__systemsMatch(AEntity* Entity, ASystem* System);
+extern void f_entity__systemsAddTo(AEntity* Entity);
+extern void f_entity__systemsRemoveFromAll(AEntity* Entity);
+extern void f_entity__systemsRemoveFromActive(AEntity* Entity);
 
 #endif // A_INC_ECS_ENTITY_V_H

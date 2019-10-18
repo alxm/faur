@@ -15,13 +15,13 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a_emscripten.v.h"
+#include "f_emscripten.v.h"
 #include <faur.v.h>
 
 #if A_CONFIG_SYSTEM_EMSCRIPTEN
 #include <emscripten.h>
 
-void a_platform_emscripten__init(void)
+void f_platform_emscripten__init(void)
 {
     EM_ASM(
         {

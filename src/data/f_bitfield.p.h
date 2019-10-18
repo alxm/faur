@@ -18,18 +18,18 @@
 #ifndef A_INC_DATA_BITFIELD_P_H
 #define A_INC_DATA_BITFIELD_P_H
 
-#include "general/a_system_includes.h"
+#include "general/f_system_includes.h"
 
 typedef struct ABitfield ABitfield;
 
-extern ABitfield* a_bitfield_new(unsigned NumBits);
-extern void a_bitfield_free(ABitfield* Bitfield);
+extern ABitfield* f_bitfield_new(unsigned NumBits);
+extern void f_bitfield_free(ABitfield* Bitfield);
 
-extern void a_bitfield_set(ABitfield* Bitfield, unsigned Bit);
-extern void a_bitfield_clear(ABitfield* Bitfield, unsigned Bit);
-extern void a_bitfield_reset(ABitfield* Bitfield);
+extern void f_bitfield_set(ABitfield* Bitfield, unsigned Bit);
+extern void f_bitfield_clear(ABitfield* Bitfield, unsigned Bit);
+extern void f_bitfield_reset(ABitfield* Bitfield);
 
-extern bool a_bitfield_test(const ABitfield* Bitfield, unsigned Bit);
-extern bool a_bitfield_testMask(const ABitfield* Bitfield, const ABitfield* Mask);
+extern bool f_bitfield_test(const ABitfield* Bitfield, unsigned Bit);
+extern bool f_bitfield_testMask(const ABitfield* Bitfield, const ABitfield* Mask);
 
 #endif // A_INC_DATA_BITFIELD_P_H

@@ -15,7 +15,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a_file_embedded.v.h"
+#include "f_file_embedded.v.h"
 #include <faur.v.h>
 
 static bool fileSeek(AFile* File, int Offset, AFileOffset Origin)
@@ -55,7 +55,7 @@ static bool fileSeek(AFile* File, int Offset, AFileOffset Origin)
 
 static bool fileRead(AFile* File, void* Buffer, size_t Size)
 {
-    size_t len = a_math_minz(Size, File->u.e.data->size - File->u.e.index);
+    size_t len = f_math_minz(Size, File->u.e.data->size - File->u.e.index);
 
     memcpy(Buffer, File->u.e.data->buffer + File->u.e.index, len);
     File->u.e.index += len;
@@ -122,21 +122,21 @@ static const AFileInterface g_interface = {
     .ungetchar = fileUnGetChar,
 };
 
-AFile* a_file_embedded__new(APath* Path)
+AFile* f_file_embedded__new(APath* Path)
 {
-    AFile* f = a_mem_zalloc(sizeof(AFile));
+    AFile* f = f_mem_zalloc(sizeof(AFile));
 
     f->path = Path;
     f->interface = &g_interface;
-    f->u.e.data = a_embed__fileGet(a_path_getFull(Path));
+    f->u.e.data = f_embed__fileGet(f_path_getFull(Path));
     f->u.e.index = 0;
 
     return f;
 }
 
-uint8_t* a_file_embedded__toBuffer(const char* Path)
+uint8_t* f_file_embedded__toBuffer(const char* Path)
 {
-    const AEmbeddedFile* data = a_embed__fileGet(Path);
+    const AEmbeddedFile* data = f_embed__fileGet(Path);
 
-    return a_mem_dup(data->buffer, data->size);
+    return f_mem_dup(data->buffer, data->size);
 }

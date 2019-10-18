@@ -18,7 +18,7 @@
 #ifndef A_INC_INPUTS_BUTTON_P_H
 #define A_INC_INPUTS_BUTTON_P_H
 
-#include "general/a_system_includes.h"
+#include "general/f_system_includes.h"
 
 typedef struct AButton AButton;
 
@@ -86,22 +86,22 @@ typedef enum {
     A_KEY_NUM,
 } AKeyId;
 
-#include "input/a_controller.v.h"
+#include "input/f_controller.v.h"
 
-extern AButton* a_button_new(void);
-extern AButton* a_button_dup(const AButton* Button);
-extern void a_button_free(AButton* Button);
+extern AButton* f_button_new(void);
+extern AButton* f_button_dup(const AButton* Button);
+extern void f_button_free(AButton* Button);
 
-extern void a_button_bindKey(AButton* Button, AKeyId Id);
-extern void a_button_bindButton(AButton* Button, const AController* Controller, AButtonId Id);
-extern void a_button_bindCombo(AButton* Button, const AController* Controller, AButtonId Id, ...);
+extern void f_button_bindKey(AButton* Button, AKeyId Id);
+extern void f_button_bindButton(AButton* Button, const AController* Controller, AButtonId Id);
+extern void f_button_bindCombo(AButton* Button, const AController* Controller, AButtonId Id, ...);
 
-extern bool a_button_isWorking(const AButton* Button);
-extern const char* a_button_nameGet(const AButton* Button);
+extern bool f_button_isWorking(const AButton* Button);
+extern const char* f_button_nameGet(const AButton* Button);
 
-extern bool a_button_pressGet(const AButton* Button);
-extern bool a_button_pressGetOnce(AButton* Button);
-extern void a_button_pressSetRepeat(AButton* Button, unsigned RepeatMs);
-extern void a_button_pressClear(AButton* Button);
+extern bool f_button_pressGet(const AButton* Button);
+extern bool f_button_pressGetOnce(AButton* Button);
+extern void f_button_pressSetRepeat(AButton* Button, unsigned RepeatMs);
+extern void f_button_pressClear(AButton* Button);
 
 #endif // A_INC_INPUTS_BUTTON_P_H

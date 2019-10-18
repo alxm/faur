@@ -18,9 +18,9 @@
 #ifndef A_INC_PLATFORM_SYSTEM_SDL_V_H
 #define A_INC_PLATFORM_SYSTEM_SDL_V_H
 
-#include "platform/system/a_sdl.p.h"
+#include "platform/system/f_sdl.p.h"
 
-extern void a_platform_sdl__init(void);
-extern void a_platform_sdl__uninit(void);
+extern void f_platform_sdl__init(void);
+extern void f_platform_sdl__uninit(void);
 
 #endif // A_INC_PLATFORM_SYSTEM_SDL_V_H

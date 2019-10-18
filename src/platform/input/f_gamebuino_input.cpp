@@ -16,7 +16,7 @@
 */
 
 extern "C" {
-    #include "a_gamebuino_input.v.h"
+    #include "f_gamebuino_input.v.h"
 }
 
 #include <faur.v.h>
@@ -54,23 +54,23 @@ static const Button* const g_buttons[A_BUTTON_NUM] = {
     [A_BUTTON_SELECT] = &BUTTON_MENU,
 };
 
-void a_platform_api__inputPoll(void)
+void f_platform_api__inputPoll(void)
 {
 }
 
-const APlatformButton* a_platform_api__inputKeyGet(AKeyId Id)
+const APlatformButton* f_platform_api__inputKeyGet(AKeyId Id)
 {
     return (APlatformButton*)g_keys[Id];
 }
 
-const APlatformButton* a_platform_api__inputButtonGet(const APlatformController* Controller, AButtonId Id)
+const APlatformButton* f_platform_api__inputButtonGet(const APlatformController* Controller, AButtonId Id)
 {
     A_UNUSED(Controller);
 
     return (APlatformButton*)g_buttons[Id];
 }
 
-bool a_platform_api__inputButtonPressGet(const APlatformButton* Button)
+bool f_platform_api__inputButtonPressGet(const APlatformButton* Button)
 {
     return gb.buttons.repeat(Button->code, 0);
 }

@@ -15,7 +15,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a_strhash.v.h"
+#include "f_strhash.v.h"
 #include <faur.v.h>
 
 #define A_STRHASH__SLOTS 128
@@ -43,11 +43,11 @@ static inline unsigned getSlot(const char* Key)
     return s & A_STRHASH__SLOTS_MASK;
 }
 
-AStrHash* a_strhash_new(void)
+AStrHash* f_strhash_new(void)
 {
-    AStrHash* h = a_mem_malloc(sizeof(AStrHash));
+    AStrHash* h = f_mem_malloc(sizeof(AStrHash));
 
-    h->entriesList = a_list_new();
+    h->entriesList = f_list_new();
 
     for(int i = A_STRHASH__SLOTS; i--; ) {
         h->slots[i] = NULL;
@@ -56,12 +56,12 @@ AStrHash* a_strhash_new(void)
     return h;
 }
 
-void a_strhash_free(AStrHash* Hash)
+void f_strhash_free(AStrHash* Hash)
 {
-    a_strhash_freeEx(Hash, NULL);
+    f_strhash_freeEx(Hash, NULL);
 }
 
-void a_strhash_freeEx(AStrHash* Hash, AFree* Free)
+void f_strhash_freeEx(AStrHash* Hash, AFree* Free)
 {
     if(Hash == NULL) {
         return;
@@ -72,33 +72,33 @@ void a_strhash_freeEx(AStrHash* Hash, AFree* Free)
             Free(e->content);
         }
 
-        a_mem_free(e->key);
-        a_mem_free(e);
+        f_mem_free(e->key);
+        f_mem_free(e);
     }
 
-    a_list_free(Hash->entriesList);
+    f_list_free(Hash->entriesList);
 
-    a_mem_free(Hash);
+    f_mem_free(Hash);
 }
 
-void a_strhash_add(AStrHash* Hash, const char* Key, void* Content)
+void f_strhash_add(AStrHash* Hash, const char* Key, void* Content)
 {
     unsigned slot = getSlot(Key);
     AStrHashEntry* oldEntry = Hash->slots[slot];
-    AStrHashEntry* newEntry = a_mem_malloc(sizeof(AStrHashEntry));
+    AStrHashEntry* newEntry = f_mem_malloc(sizeof(AStrHashEntry));
 
-    newEntry->key = a_str_dup(Key);
+    newEntry->key = f_str_dup(Key);
     newEntry->content = Content;
     newEntry->next = oldEntry;
 
     Hash->slots[slot] = newEntry;
-    a_list_addLast(Hash->entriesList, newEntry);
+    f_list_addLast(Hash->entriesList, newEntry);
 }
 
-void* a_strhash_update(AStrHash* Hash, const char* Key, void* NewContent)
+void* f_strhash_update(AStrHash* Hash, const char* Key, void* NewContent)
 {
     for(AStrHashEntry* e = Hash->slots[getSlot(Key)]; e; e = e->next) {
-        if(a_str_equal(Key, e->key)) {
+        if(f_str_equal(Key, e->key)) {
             void* oldContent = e->content;
             e->content = NewContent;
             return oldContent;
@@ -108,10 +108,10 @@ void* a_strhash_update(AStrHash* Hash, const char* Key, void* NewContent)
     return NULL;
 }
 
-void* a_strhash_get(const AStrHash* Hash, const char* Key)
+void* f_strhash_get(const AStrHash* Hash, const char* Key)
 {
     for(AStrHashEntry* e = Hash->slots[getSlot(Key)]; e; e = e->next) {
-        if(a_str_equal(Key, e->key)) {
+        if(f_str_equal(Key, e->key)) {
             return e->content;
         }
     }
@@ -119,10 +119,10 @@ void* a_strhash_get(const AStrHash* Hash, const char* Key)
     return NULL;
 }
 
-bool a_strhash_contains(const AStrHash* Hash, const char* Key)
+bool f_strhash_contains(const AStrHash* Hash, const char* Key)
 {
     for(AStrHashEntry* e = Hash->slots[getSlot(Key)]; e; e = e->next) {
-        if(a_str_equal(Key, e->key)) {
+        if(f_str_equal(Key, e->key)) {
             return true;
         }
     }
@@ -130,15 +130,15 @@ bool a_strhash_contains(const AStrHash* Hash, const char* Key)
     return false;
 }
 
-unsigned a_strhash_sizeGet(const AStrHash* Hash)
+unsigned f_strhash_sizeGet(const AStrHash* Hash)
 {
-    return a_list_sizeGet(Hash->entriesList);
+    return f_list_sizeGet(Hash->entriesList);
 }
 
-void** a_strhash_toArray(const AStrHash* Hash)
+void** f_strhash_toArray(const AStrHash* Hash)
 {
-    void** array = a_mem_malloc(
-                    a_list_sizeGet(Hash->entriesList) * sizeof(void*));
+    void** array = f_mem_malloc(
+                    f_list_sizeGet(Hash->entriesList) * sizeof(void*));
 
     A_LIST_ITERATE(Hash->entriesList, const AStrHashEntry*, e) {
         array[A_LIST_INDEX()] = e->content;
@@ -147,22 +147,22 @@ void** a_strhash_toArray(const AStrHash* Hash)
     return array;
 }
 
-const AList* a__strhash_entries(const AStrHash* Hash)
+const AList* f__strhash_entries(const AStrHash* Hash)
 {
     return Hash->entriesList;
 }
 
-void* a__strhash_entryValue(const AStrHashEntry* Entry)
+void* f__strhash_entryValue(const AStrHashEntry* Entry)
 {
     return Entry->content;
 }
 
-const char* a__strhash_entryKey(const AStrHashEntry* Entry)
+const char* f__strhash_entryKey(const AStrHashEntry* Entry)
 {
     return Entry->key;
 }
 
-void a__strhash_printStats(const AStrHash* Hash, const char* Message)
+void f__strhash_printStats(const AStrHash* Hash, const char* Message)
 {
     unsigned maxInSlot = 0, maxInSlotNum = 0;
     unsigned occupiedSlots = 0;
@@ -197,7 +197,7 @@ void a__strhash_printStats(const AStrHash* Hash, const char* Message)
     }
 
     printf("%d entries, %d%% slots used, %d%% have collisions - ",
-           a_list_sizeGet(Hash->entriesList),
+           f_list_sizeGet(Hash->entriesList),
            100 * occupiedSlots / A_STRHASH__SLOTS,
            100 * slotsWithCollisions / occupiedSlots);
 

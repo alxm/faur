@@ -18,13 +18,13 @@
 #ifndef A_INC_ECS_TEMPLATE_P_H
 #define A_INC_ECS_TEMPLATE_P_H
 
-#include "general/a_system_includes.h"
+#include "general/f_system_includes.h"
 
-#include "ecs/a_entity.p.h"
+#include "ecs/f_entity.p.h"
 
 typedef void AEntityInit(AEntity* Entity, const void* CallerContext);
 
-extern void a_template_new(const char* FilePath);
-extern void a_template_init(const char* Id, AEntityInit* Init);
+extern void f_template_new(const char* FilePath);
+extern void f_template_init(const char* Id, AEntityInit* Init);
 
 #endif // A_INC_ECS_TEMPLATE_P_H

@@ -15,7 +15,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a_software_draw.v.h"
+#include "f_software_draw.v.h"
 #include <faur.v.h>
 
 #if A_CONFIG_LIB_RENDER_SOFTWARE
@@ -35,10 +35,10 @@ static bool cohen_sutherland_clip(int* X1, int* Y1, int* X2, int* Y2)
     int x2 = *X2;
     int y2 = *Y2;
 
-    const int clipX1 = a__screen.clipX;
-    const int clipX2 = a__screen.clipX2;
-    const int clipY1 = a__screen.clipY;
-    const int clipY2 = a__screen.clipY2;
+    const int clipX1 = f__screen.clipX;
+    const int clipX2 = f__screen.clipX2;
+    const int clipY1 = f__screen.clipY;
+    const int clipY2 = f__screen.clipY2;
 
     #define A__OUT_LEFT  1
     #define A__OUT_RIGHT 2
@@ -132,7 +132,7 @@ static void findMidpoint(int Radius, int* MidX, int* MidY)
                           YOffScreen, XOffScreen,                           \
                           PrimaryOnScreen, SecondaryOnScreen)               \
 do {                                                                        \
-    if(!a_screen_boxOnClip(BoundX, BoundY, BoundW, BoundH)) {               \
+    if(!f_screen_boxOnClip(BoundX, BoundY, BoundW, BoundH)) {               \
         break;                                                              \
     }                                                                       \
                                                                             \
@@ -192,66 +192,66 @@ do {                                                                        \
     }                                                                       \
 } while(0)
 
-#define A__FUNC_NAME(Name) A_GLUE4(a_draw__, Name, _, A__BLEND)
-#define A__PIXEL_DRAW(Dst) A_GLUE2(a_color__draw_, A__BLEND)(Dst A__PIXEL_PARAMS)
+#define A__FUNC_NAME(Name) A_GLUE4(f_draw__, Name, _, A__BLEND)
+#define A__PIXEL_DRAW(Dst) A_GLUE2(f_color__draw_, A__BLEND)(Dst A__PIXEL_PARAMS)
 
 #define A__BLEND plain
-#define A__BLEND_SETUP const APixel color = a__color.pixel;
+#define A__BLEND_SETUP const APixel color = f__color.pixel;
 #define A__PIXEL_PARAMS , color
-#include "platform/graphics/a_software_draw.inc.c"
+#include "platform/graphics/f_software_draw.inc.c"
 
 #define A__BLEND rgba
 #define A__BLEND_SETUP \
-    const ARgb rgb = a__color.rgb; \
-    const int alpha = a__color.alpha; \
+    const ARgb rgb = f__color.rgb; \
+    const int alpha = f__color.alpha; \
     if(alpha == 0) { \
         return; \
     }
 #define A__PIXEL_PARAMS , &rgb, alpha
-#include "platform/graphics/a_software_draw.inc.c"
+#include "platform/graphics/f_software_draw.inc.c"
 
 #define A__BLEND rgb25
-#define A__BLEND_SETUP const ARgb rgb = a__color.rgb;
+#define A__BLEND_SETUP const ARgb rgb = f__color.rgb;
 #define A__PIXEL_PARAMS , &rgb
-#include "platform/graphics/a_software_draw.inc.c"
+#include "platform/graphics/f_software_draw.inc.c"
 
 #define A__BLEND rgb50
-#define A__BLEND_SETUP const ARgb rgb = a__color.rgb;
+#define A__BLEND_SETUP const ARgb rgb = f__color.rgb;
 #define A__PIXEL_PARAMS , &rgb
-#include "platform/graphics/a_software_draw.inc.c"
+#include "platform/graphics/f_software_draw.inc.c"
 
 #define A__BLEND rgb75
-#define A__BLEND_SETUP const ARgb rgb = a__color.rgb;
+#define A__BLEND_SETUP const ARgb rgb = f__color.rgb;
 #define A__PIXEL_PARAMS , &rgb
-#include "platform/graphics/a_software_draw.inc.c"
+#include "platform/graphics/f_software_draw.inc.c"
 
 #define A__BLEND inverse
 #define A__BLEND_SETUP
 #define A__PIXEL_PARAMS
-#include "platform/graphics/a_software_draw.inc.c"
+#include "platform/graphics/f_software_draw.inc.c"
 
 #define A__BLEND mod
-#define A__BLEND_SETUP const ARgb rgb = a__color.rgb;
+#define A__BLEND_SETUP const ARgb rgb = f__color.rgb;
 #define A__PIXEL_PARAMS , &rgb
-#include "platform/graphics/a_software_draw.inc.c"
+#include "platform/graphics/f_software_draw.inc.c"
 
 #define A__BLEND add
-#define A__BLEND_SETUP const ARgb rgb = a__color.rgb;
+#define A__BLEND_SETUP const ARgb rgb = f__color.rgb;
 #define A__PIXEL_PARAMS , &rgb
-#include "platform/graphics/a_software_draw.inc.c"
+#include "platform/graphics/f_software_draw.inc.c"
 
 #define A__INIT_BLEND(Index, Name)                           \
     [Index] = {                                              \
-        .pixel = a_draw__pixel_##Name,                       \
-        .hline = a_draw__hline_##Name,                       \
-        .vline = a_draw__vline_##Name,                       \
-        .line = a_draw__line_##Name,                         \
-        .rectangle[0] = a_draw__rectangle_nofill_##Name,     \
-        .rectangle[1] = a_draw__rectangle_fill_##Name,       \
-        .circle[0][0] = a_draw__circle_noclip_nofill_##Name, \
-        .circle[0][1] = a_draw__circle_noclip_fill_##Name,   \
-        .circle[1][0] = a_draw__circle_clip_nofill_##Name,   \
-        .circle[1][1] = a_draw__circle_clip_fill_##Name,     \
+        .pixel = f_draw__pixel_##Name,                       \
+        .hline = f_draw__hline_##Name,                       \
+        .vline = f_draw__vline_##Name,                       \
+        .line = f_draw__line_##Name,                         \
+        .rectangle[0] = f_draw__rectangle_nofill_##Name,     \
+        .rectangle[1] = f_draw__rectangle_fill_##Name,       \
+        .circle[0][0] = f_draw__circle_noclip_nofill_##Name, \
+        .circle[0][1] = f_draw__circle_noclip_fill_##Name,   \
+        .circle[1][0] = f_draw__circle_clip_nofill_##Name,   \
+        .circle[1][1] = f_draw__circle_clip_fill_##Name,     \
     },
 
 static const struct {
@@ -272,83 +272,83 @@ static const struct {
     A__INIT_BLEND(A_COLOR_BLEND_ADD, add)
 };
 
-void a_platform_api__drawPixel(int X, int Y)
+void f_platform_api__drawPixel(int X, int Y)
 {
-    if(a_screen_boxInsideClip(X, Y, 1, 1)) {
-        g_draw[a__color.blend].pixel(X, Y);
+    if(f_screen_boxInsideClip(X, Y, 1, 1)) {
+        g_draw[f__color.blend].pixel(X, Y);
     }
 }
 
-void a_platform_api__drawLine(int X1, int Y1, int X2, int Y2)
+void f_platform_api__drawLine(int X1, int Y1, int X2, int Y2)
 {
-    int x = a_math_min(X1, X2);
-    int y = a_math_min(Y1, Y2);
-    int w = a_math_abs(X2 - X1) + 1;
-    int h = a_math_abs(Y2 - Y1) + 1;
+    int x = f_math_min(X1, X2);
+    int y = f_math_min(Y1, Y2);
+    int w = f_math_abs(X2 - X1) + 1;
+    int h = f_math_abs(Y2 - Y1) + 1;
 
-    if(!a_screen_boxOnClip(x, y, w, h)
+    if(!f_screen_boxOnClip(x, y, w, h)
         || !cohen_sutherland_clip(&X1, &Y1, &X2, &Y2)) {
 
         return;
     }
 
-    g_draw[a__color.blend].line(X1, Y1, X2, Y2);
+    g_draw[f__color.blend].line(X1, Y1, X2, Y2);
 }
 
-void a_platform_api__drawHLine(int X1, int X2, int Y)
+void f_platform_api__drawHLine(int X1, int X2, int Y)
 {
-    if(!a_screen_boxOnClip(X1, Y, X2 - X1 + 1, 1)) {
+    if(!f_screen_boxOnClip(X1, Y, X2 - X1 + 1, 1)) {
         return;
     }
 
-    X1 = a_math_max(X1, a__screen.clipX);
-    X2 = a_math_min(X2, a__screen.clipX2 - 1);
+    X1 = f_math_max(X1, f__screen.clipX);
+    X2 = f_math_min(X2, f__screen.clipX2 - 1);
 
-    g_draw[a__color.blend].hline(X1, X2, Y);
+    g_draw[f__color.blend].hline(X1, X2, Y);
 }
 
-void a_platform_api__drawVLine(int X, int Y1, int Y2)
+void f_platform_api__drawVLine(int X, int Y1, int Y2)
 {
-    if(!a_screen_boxOnClip(X, Y1, 1, Y2 - Y1 + 1)) {
+    if(!f_screen_boxOnClip(X, Y1, 1, Y2 - Y1 + 1)) {
         return;
     }
 
-    Y1 = a_math_max(Y1, a__screen.clipY);
-    Y2 = a_math_min(Y2, a__screen.clipY2 - 1);
+    Y1 = f_math_max(Y1, f__screen.clipY);
+    Y2 = f_math_min(Y2, f__screen.clipY2 - 1);
 
-    g_draw[a__color.blend].vline(X, Y1, Y2);
+    g_draw[f__color.blend].vline(X, Y1, Y2);
 }
 
 static void drawRectangle(int X, int Y, int Width, int Height)
 {
-    if(!a_screen_boxOnClip(X, Y, Width, Height)) {
+    if(!f_screen_boxOnClip(X, Y, Width, Height)) {
         return;
     }
 
-    if(a_screen_boxInsideClip(X, Y, Width, Height)) {
-        g_draw[a__color.blend].rectangle[a__color.fillDraw]
+    if(f_screen_boxInsideClip(X, Y, Width, Height)) {
+        g_draw[f__color.blend].rectangle[f__color.fillDraw]
             (X, Y, Width, Height);
 
         return;
     }
 
-    const int x2 = a_math_min(X + Width, a__screen.clipX2);
-    const int y2 = a_math_min(Y + Height, a__screen.clipY2);
+    const int x2 = f_math_min(X + Width, f__screen.clipX2);
+    const int y2 = f_math_min(Y + Height, f__screen.clipY2);
 
-    X = a_math_max(X, a__screen.clipX);
-    Y = a_math_max(Y, a__screen.clipY);
-    Width = a_math_min(Width, x2 - X);
-    Height = a_math_min(Height, y2 - Y);
+    X = f_math_max(X, f__screen.clipX);
+    Y = f_math_max(Y, f__screen.clipY);
+    Width = f_math_min(Width, x2 - X);
+    Height = f_math_min(Height, y2 - Y);
 
-    g_draw[a__color.blend].rectangle[a__color.fillDraw](X, Y, Width, Height);
+    g_draw[f__color.blend].rectangle[f__color.fillDraw](X, Y, Width, Height);
 }
 
-void a_platform_api__drawRectangleFilled(int X, int Y, int Width, int Height)
+void f_platform_api__drawRectangleFilled(int X, int Y, int Width, int Height)
 {
     drawRectangle(X, Y, Width, Height);
 }
 
-void a_platform_api__drawRectangleOutline(int X, int Y, int Width, int Height)
+void f_platform_api__drawRectangleOutline(int X, int Y, int Width, int Height)
 {
     drawRectangle(X, Y, Width, Height);
 }
@@ -359,20 +359,20 @@ static void drawCircle(int X, int Y, int Radius)
     int boxY = Y - Radius;
     int boxDim = 2 * Radius;
 
-    if(a_screen_boxOnClip(boxX, boxY, boxDim, boxDim)) {
-        g_draw[a__color.blend].circle
-            [!a_screen_boxInsideClip(boxX, boxY, boxDim, boxDim)]
-            [a__color.fillDraw]
+    if(f_screen_boxOnClip(boxX, boxY, boxDim, boxDim)) {
+        g_draw[f__color.blend].circle
+            [!f_screen_boxInsideClip(boxX, boxY, boxDim, boxDim)]
+            [f__color.fillDraw]
                 (X, Y, Radius);
     }
 }
 
-void a_platform_api__drawCircleOutline(int X, int Y, int Radius)
+void f_platform_api__drawCircleOutline(int X, int Y, int Radius)
 {
     drawCircle(X, Y, Radius);
 }
 
-void a_platform_api__drawCircleFilled(int X, int Y, int Radius)
+void f_platform_api__drawCircleFilled(int X, int Y, int Radius)
 {
     drawCircle(X, Y, Radius);
 }

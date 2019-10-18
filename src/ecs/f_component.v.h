@@ -18,11 +18,11 @@
 #ifndef A_INC_ECS_COMPONENT_V_H
 #define A_INC_ECS_COMPONENT_V_H
 
-#include "ecs/a_component.p.h"
+#include "ecs/f_component.p.h"
 
 typedef struct AComponent AComponent;
 
-#include "memory/a_mem.v.h"
+#include "memory/f_mem.v.h"
 
 typedef struct {
     const AComponent* component; // shared data for all components of same type
@@ -30,18 +30,18 @@ typedef struct {
     AMaxMemAlignType buffer[];
 } AComponentInstance;
 
-extern void a_component__init(void);
-extern void a_component__uninit(void);
+extern void f_component__init(void);
+extern void f_component__uninit(void);
 
-extern int a_component__stringToIndex(const char* StringId);
-extern const AComponent* a_component__get(int Index);
+extern int f_component__stringToIndex(const char* StringId);
+extern const AComponent* f_component__get(int Index);
 
-extern const char* a_component__stringGet(const AComponent* Component);
+extern const char* f_component__stringGet(const AComponent* Component);
 
-extern void* a_component__templateInit(const AComponent* Component, const ABlock* Block);
-extern void a_component__templateFree(const AComponent* Component, void* Buffer);
+extern void* f_component__templateInit(const AComponent* Component, const ABlock* Block);
+extern void f_component__templateFree(const AComponent* Component, void* Buffer);
 
-extern AComponentInstance* a_component__instanceNew(const AComponent* Component, AEntity* Entity, const void* TemplateData);
-extern void a_component__instanceFree(AComponentInstance* Instance);
+extern AComponentInstance* f_component__instanceNew(const AComponent* Component, AEntity* Entity, const void* TemplateData);
+extern void f_component__instanceFree(AComponentInstance* Instance);
 
 #endif // A_INC_ECS_COMPONENT_V_H

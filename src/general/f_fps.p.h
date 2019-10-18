@@ -18,20 +18,20 @@
 #ifndef A_INC_GENERAL_FPS_P_H
 #define A_INC_GENERAL_FPS_P_H
 
-#include "general/a_system_includes.h"
+#include "general/f_system_includes.h"
 
-#include "math/a_fix.p.h"
+#include "math/f_fix.p.h"
 
-static inline unsigned a_fps_rateTickGet(void)
+static inline unsigned f_fps_rateTickGet(void)
 {
     return A_CONFIG_FPS_RATE_TICK;
 }
 
-extern unsigned a_fps_rateDrawGet(void);
-extern unsigned a_fps_rateDrawGetMax(void);
+extern unsigned f_fps_rateDrawGet(void);
+extern unsigned f_fps_rateDrawGetMax(void);
 
-extern unsigned a_fps_ticksGet(void);
-extern bool a_fps_ticksNth(unsigned N);
-extern AFix a_fps_ticksSin(uint8_t Mul, uint8_t Div, unsigned Offset);
+extern unsigned f_fps_ticksGet(void);
+extern bool f_fps_ticksNth(unsigned N);
+extern AFix f_fps_ticksSin(uint8_t Mul, uint8_t Div, unsigned Offset);
 
 #endif // A_INC_GENERAL_FPS_P_H

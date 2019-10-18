@@ -18,7 +18,7 @@
 #ifndef A_INC_GENERAL_OUT_V_H
 #define A_INC_GENERAL_OUT_V_H
 
-#include "general/a_out.p.h"
+#include "general/f_out.p.h"
 
 typedef enum {
     A_OUT__SOURCE_INVALID = -1,
@@ -38,17 +38,17 @@ typedef enum {
 } AOutType;
 
 #if A_CONFIG_OUTPUT_ENABLED
-    extern void a_out__info(const char* Format, ...);
-    extern void a_out__warning(const char* Format, ...);
-    extern void a_out__error(const char* Format, ...);
-    extern void a_out__errorv(const char* Format, va_list Args);
-    extern void a_out__state(const char* Format, ...);
+    extern void f_out__info(const char* Format, ...);
+    extern void f_out__warning(const char* Format, ...);
+    extern void f_out__error(const char* Format, ...);
+    extern void f_out__errorv(const char* Format, va_list Args);
+    extern void f_out__state(const char* Format, ...);
 #else
-    #define a_out__info(...)
-    #define a_out__warning(...)
-    #define a_out__error(...)
-    #define a_out__errorv(Format, Args)
-    #define a_out__state(...)
+    #define f_out__info(...)
+    #define f_out__warning(...)
+    #define f_out__error(...)
+    #define f_out__errorv(Format, Args)
+    #define f_out__state(...)
 #endif
 
 #endif // A_INC_GENERAL_OUT_V_H

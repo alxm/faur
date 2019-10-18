@@ -18,7 +18,7 @@
 #ifndef A_INC_SOUND_SOUND_P_H
 #define A_INC_SOUND_SOUND_P_H
 
-#include "general/a_system_includes.h"
+#include "general/f_system_includes.h"
 
 typedef void AMusic;
 typedef void ASample;
@@ -32,18 +32,18 @@ typedef enum {
 
 #define A_CHANNEL_ANY -1
 
-extern AMusic* a_music_new(const char* Path);
-extern void a_music_free(AMusic* Music);
+extern AMusic* f_music_new(const char* Path);
+extern void f_music_free(AMusic* Music);
 
-extern void a_music_play(AMusic* Music);
-extern void a_music_stop(void);
+extern void f_music_play(AMusic* Music);
+extern void f_music_stop(void);
 
-extern ASample* a_sample_new(const char* Path);
-extern void a_sample_free(ASample* Sample);
+extern ASample* f_sample_new(const char* Path);
+extern void f_sample_free(ASample* Sample);
 
-extern int a_channel_new(void);
-extern void a_channel_play(int Channel, ASample* Sample, AChannelFlags Flags);
-extern void a_channel_stop(int Channel);
-extern bool a_channel_isPlaying(int Channel);
+extern int f_channel_new(void);
+extern void f_channel_play(int Channel, ASample* Sample, AChannelFlags Flags);
+extern void f_channel_stop(int Channel);
+extern bool f_channel_isPlaying(int Channel);
 
 #endif // A_INC_SOUND_SOUND_P_H

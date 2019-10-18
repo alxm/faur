@@ -18,19 +18,19 @@
 #ifndef A_INC_ECS_SYSTEM_V_H
 #define A_INC_ECS_SYSTEM_V_H
 
-#include "ecs/a_system.p.h"
+#include "ecs/f_system.p.h"
 
 typedef struct ASystem ASystem;
 
-#include "data/a_bitfield.v.h"
-#include "data/a_list.v.h"
+#include "data/f_bitfield.v.h"
+#include "data/f_list.v.h"
 
-extern void a_system__uninit(void);
+extern void f_system__uninit(void);
 
-extern ASystem* a_system__get(int SystemIndex);
+extern ASystem* f_system__get(int SystemIndex);
 
-extern AListNode* a_system__entityAdd(const ASystem* System, AEntity* Entity);
-extern const ABitfield* a_system__componentBitsGet(const ASystem* System);
-extern bool a_system__isActiveOnly(const ASystem* System);
+extern AListNode* f_system__entityAdd(const ASystem* System, AEntity* Entity);
+extern const ABitfield* f_system__componentBitsGet(const ASystem* System);
+extern bool f_system__isActiveOnly(const ASystem* System);
 
 #endif // A_INC_ECS_SYSTEM_V_H

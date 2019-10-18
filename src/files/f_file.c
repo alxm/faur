@@ -15,129 +15,129 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "a_file.v.h"
+#include "f_file.v.h"
 #include <faur.v.h>
 
-AFile* a_file_new(const char* Path, AFileMode Mode)
+AFile* f_file_new(const char* Path, AFileMode Mode)
 {
     AFile* f = NULL;
-    APath* path = a_path_new(Path);
+    APath* path = f_path_new(Path);
 
     if(A_FLAGS_TEST_ANY(Mode, A_FILE_WRITE)
-        || a_path_test(path, A_PATH_FILE | A_PATH_REAL)) {
+        || f_path_test(path, A_PATH_FILE | A_PATH_REAL)) {
 
-        f = a_file_real__new(path, Mode);
-    } else if(a_path_test(path, A_PATH_FILE | A_PATH_EMBEDDED)) {
-        f = a_file_embedded__new(path);
+        f = f_file_real__new(path, Mode);
+    } else if(f_path_test(path, A_PATH_FILE | A_PATH_EMBEDDED)) {
+        f = f_file_embedded__new(path);
     } else {
-        a_out__warning("a_file_new(%s): File does not exist", Path);
+        f_out__warning("f_file_new(%s): File does not exist", Path);
     }
 
     if(f == NULL) {
-        a_path_free(path);
+        f_path_free(path);
     }
 
     return f;
 }
 
-void a_file_free(AFile* File)
+void f_file_free(AFile* File)
 {
     if(File == NULL) {
         return;
     }
 
-    if(a_path_test(File->path, A_PATH_REAL)) {
+    if(f_path_test(File->path, A_PATH_REAL)) {
         fclose(File->u.handle);
     }
 
-    a_path_free(File->path);
+    f_path_free(File->path);
 
-    a_mem_free(File->lineBuffer);
-    a_mem_free(File);
+    f_mem_free(File->lineBuffer);
+    f_mem_free(File);
 }
 
-const APath* a_file_pathGet(const AFile* File)
+const APath* f_file_pathGet(const AFile* File)
 {
     return File->path;
 }
 
-FILE* a_file_handleGet(const AFile* File)
+FILE* f_file_handleGet(const AFile* File)
 {
-    if(a_path_test(File->path, A_PATH_REAL)) {
+    if(f_path_test(File->path, A_PATH_REAL)) {
         return File->u.handle;
     } else {
         return NULL;
     }
 }
 
-const AEmbeddedFile* a_file__dataGet(AFile* File)
+const AEmbeddedFile* f_file__dataGet(AFile* File)
 {
-    if(a_path_test(File->path, A_PATH_EMBEDDED)) {
+    if(f_path_test(File->path, A_PATH_EMBEDDED)) {
         return File->u.e.data;
     } else {
         return NULL;
     }
 }
 
-uint8_t* a_file_toBuffer(const char* Path)
+uint8_t* f_file_toBuffer(const char* Path)
 {
-    if(a_path_exists(Path, A_PATH_FILE | A_PATH_REAL)) {
-        return a_file_real__toBuffer(Path);
-    } else if(a_path_exists(Path, A_PATH_FILE | A_PATH_EMBEDDED)) {
-        return a_file_embedded__toBuffer(Path);
+    if(f_path_exists(Path, A_PATH_FILE | A_PATH_REAL)) {
+        return f_file_real__toBuffer(Path);
+    } else if(f_path_exists(Path, A_PATH_FILE | A_PATH_EMBEDDED)) {
+        return f_file_embedded__toBuffer(Path);
     }
 
     return NULL;
 }
 
-bool a_file_prefixCheck(AFile* File, const char* Prefix)
+bool f_file_prefixCheck(AFile* File, const char* Prefix)
 {
     size_t size = strlen(Prefix) + 1;
     char buffer[size];
 
-    a_file_seekStart(File, 0);
+    f_file_seekStart(File, 0);
 
-    if(!a_file_read(File, buffer, size)) {
+    if(!f_file_read(File, buffer, size)) {
         return false;
     }
 
     buffer[size - 1] = '\0';
 
-    return a_str_equal(buffer, Prefix);
+    return f_str_equal(buffer, Prefix);
 }
 
-void a_file_prefixWrite(AFile* File, const char* Prefix)
+void f_file_prefixWrite(AFile* File, const char* Prefix)
 {
-    a_file_write(File, Prefix, strlen(Prefix) + 1);
+    f_file_write(File, Prefix, strlen(Prefix) + 1);
 }
 
-bool a_file_read(AFile* File, void* Buffer, size_t Size)
+bool f_file_read(AFile* File, void* Buffer, size_t Size)
 {
     bool ret = File->interface->read(File, Buffer, Size);
 
     if(!ret) {
-        a_out__warning("a_file_read(%s): Could not read %u bytes",
-                       a_path_getFull(File->path),
+        f_out__warning("f_file_read(%s): Could not read %u bytes",
+                       f_path_getFull(File->path),
                        Size);
     }
 
     return ret;
 }
 
-bool a_file_write(AFile* File, const void* Buffer, size_t Size)
+bool f_file_write(AFile* File, const void* Buffer, size_t Size)
 {
     bool ret = File->interface->write(File, Buffer, Size);
 
     if(!ret) {
-        a_out__error("a_file_write(%s): Could not write %u bytes",
-                     a_path_getFull(File->path),
+        f_out__error("f_file_write(%s): Could not write %u bytes",
+                     f_path_getFull(File->path),
                      Size);
     }
 
     return ret;
 }
 
-bool a_file_writef(AFile* File, const char* Format, ...)
+bool f_file_writef(AFile* File, const char* Format, ...)
 {
     va_list args;
     va_start(args, Format);
@@ -147,14 +147,14 @@ bool a_file_writef(AFile* File, const char* Format, ...)
     va_end(args);
 
     if(!ret) {
-        a_out__error(
-            "a_file_writef(%s): Could not write", a_path_getFull(File->path));
+        f_out__error(
+            "f_file_writef(%s): Could not write", f_path_getFull(File->path));
     }
 
     return ret;
 }
 
-bool a_file_flush(AFile* File)
+bool f_file_flush(AFile* File)
 {
     return File->interface->flush(File);
 }
@@ -188,7 +188,7 @@ static int readChar(AFile* File)
     return ch;
 }
 
-bool a_file_lineRead(AFile* File)
+bool f_file_lineRead(AFile* File)
 {
     int ch;
 
@@ -204,14 +204,14 @@ bool a_file_lineRead(AFile* File)
 
     do {
         if(index + 1 >= File->lineBufferSize) {
-            unsigned newSize = a_math_maxu(File->lineBufferSize * 2, 64);
-            char* newBuffer = a_mem_malloc(newSize);
+            unsigned newSize = f_math_maxu(File->lineBufferSize * 2, 64);
+            char* newBuffer = f_mem_malloc(newSize);
 
             if(File->lineBufferSize > 0) {
                 memcpy(newBuffer, File->lineBuffer, File->lineBufferSize);
             }
 
-            a_mem_free(File->lineBuffer);
+            f_mem_free(File->lineBuffer);
 
             File->lineBuffer = newBuffer;
             File->lineBufferSize = newSize;
@@ -226,17 +226,17 @@ bool a_file_lineRead(AFile* File)
     return true;
 }
 
-const char* a_file_lineBufferGet(const AFile* File)
+const char* f_file_lineBufferGet(const AFile* File)
 {
     return File->lineBuffer;
 }
 
-unsigned a_file_lineNumberGet(const AFile* File)
+unsigned f_file_lineNumberGet(const AFile* File)
 {
     return File->lineNumber;
 }
 
-bool a_file_rewind(AFile* File)
+bool f_file_rewind(AFile* File)
 {
     bool ret = File->interface->seek(File, 0, A_FILE__OFFSET_START);
 
@@ -244,45 +244,45 @@ bool a_file_rewind(AFile* File)
         File->lineNumber = 0;
         File->eof = false;
     } else {
-        a_out__error("a_file_rewind(%s) failed", a_path_getFull(File->path));
+        f_out__error("f_file_rewind(%s) failed", f_path_getFull(File->path));
     }
 
     return ret;
 }
 
-bool a_file_seekStart(AFile* File, int Offset)
+bool f_file_seekStart(AFile* File, int Offset)
 {
     bool ret = File->interface->seek(File, Offset, A_FILE__OFFSET_START);
 
     if(!ret) {
-        a_out__error("a_file_seekStart(%s, %d) failed",
-                     a_path_getFull(File->path),
+        f_out__error("f_file_seekStart(%s, %d) failed",
+                     f_path_getFull(File->path),
                      Offset);
     }
 
     return ret;
 }
 
-bool a_file_seekEnd(AFile* File, int Offset)
+bool f_file_seekEnd(AFile* File, int Offset)
 {
     bool ret = File->interface->seek(File, Offset, A_FILE__OFFSET_END);
 
     if(!ret) {
-        a_out__error("a_file_seekEnd(%s, %d) failed",
-                     a_path_getFull(File->path),
+        f_out__error("f_file_seekEnd(%s, %d) failed",
+                     f_path_getFull(File->path),
                      Offset);
     }
 
     return ret;
 }
 
-bool a_file_seekCurrent(AFile* File, int Offset)
+bool f_file_seekCurrent(AFile* File, int Offset)
 {
     bool ret = File->interface->seek(File, Offset, A_FILE__OFFSET_CURRENT);
 
     if(!ret) {
-        a_out__error("a_file_seekCurrent(%s, %d) failed",
-                     a_path_getFull(File->path),
+        f_out__error("f_file_seekCurrent(%s, %d) failed",
+                     f_path_getFull(File->path),
                      Offset);
     }
 

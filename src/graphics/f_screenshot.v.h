@@ -18,12 +18,12 @@
 #ifndef A_INC_GRAPHICS_SCREENSHOT_V_H
 #define A_INC_GRAPHICS_SCREENSHOT_V_H
 
-#include "graphics/a_screenshot.p.h"
+#include "graphics/f_screenshot.p.h"
 
-#include "general/a_main.v.h"
+#include "general/f_main.v.h"
 
-extern const APack a_pack__screenshot;
+extern const APack f_pack__screenshot;
 
-extern void a_screenshot__tick(void);
+extern void f_screenshot__tick(void);
 
 #endif // A_INC_GRAPHICS_SCREENSHOT_V_H
