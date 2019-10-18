@@ -19,29 +19,29 @@
 #include <faur.v.h>
 
 #define F__ITERATE(List, N) \
-    for(AListNode* N = List->sentinel.next; N != &List->sentinel; N = N->next)
+    for(FListNode* N = List->sentinel.next; N != &List->sentinel; N = N->next)
 
 #define F__ITERATE_REV(List, N) \
-    for(AListNode* N = List->sentinel.prev; N != &List->sentinel; N = N->prev)
+    for(FListNode* N = List->sentinel.prev; N != &List->sentinel; N = N->prev)
 
 #define F__ITERATE_SAFE(List, Current, Next)                             \
-    for(AListNode *Current = List->sentinel.next, *Next = Current->next; \
+    for(FListNode *Current = List->sentinel.next, *Next = Current->next; \
         Current != &List->sentinel;                                      \
         Current = Next, Next = Next->next)
 
-const AList f__list_empty = {
+const FList f__list_empty = {
     {
         NULL,
-        (AList*)&f__list_empty,
-        (AListNode*)&f__list_empty.sentinel,
-        (AListNode*)&f__list_empty.sentinel,
+        (FList*)&f__list_empty,
+        (FListNode*)&f__list_empty.sentinel,
+        (FListNode*)&f__list_empty.sentinel,
     },
     0,
 };
 
-AList* f_list_new(void)
+FList* f_list_new(void)
 {
-    AList* list = f_mem_malloc(sizeof(AList));
+    FList* list = f_mem_malloc(sizeof(FList));
 
     list->sentinel.content = NULL;
     list->sentinel.list = list;
@@ -53,12 +53,12 @@ AList* f_list_new(void)
     return list;
 }
 
-void f_list_free(AList* List)
+void f_list_free(FList* List)
 {
     f_list_freeEx(List, NULL);
 }
 
-void f_list_freeEx(AList* List, AFree* Free)
+void f_list_freeEx(FList* List, FFree* Free)
 {
     if(List == NULL) {
         return;
@@ -69,9 +69,9 @@ void f_list_freeEx(AList* List, AFree* Free)
     f_mem_free(List);
 }
 
-AListNode* f_list_addFirst(AList* List, void* Content)
+FListNode* f_list_addFirst(FList* List, void* Content)
 {
-    AListNode* n = f_mem_malloc(sizeof(AListNode));
+    FListNode* n = f_mem_malloc(sizeof(FListNode));
 
     n->content = Content;
     n->list = List;
@@ -86,9 +86,9 @@ AListNode* f_list_addFirst(AList* List, void* Content)
     return n;
 }
 
-AListNode* f_list_addLast(AList* List, void* Content)
+FListNode* f_list_addLast(FList* List, void* Content)
 {
-    AListNode* n = f_mem_malloc(sizeof(AListNode));
+    FListNode* n = f_mem_malloc(sizeof(FListNode));
 
     n->content = Content;
     n->list = List;
@@ -103,7 +103,7 @@ AListNode* f_list_addLast(AList* List, void* Content)
     return n;
 }
 
-void f_list_appendMove(AList* Dst, AList* Src)
+void f_list_appendMove(FList* Dst, FList* Src)
 {
     if(Dst == Src || Src->items == 0) {
         return;
@@ -126,17 +126,17 @@ void f_list_appendMove(AList* Dst, AList* Src)
     Src->items = 0;
 }
 
-void f_list_appendCopy(AList* Dst, const AList* Src)
+void f_list_appendCopy(FList* Dst, const FList* Src)
 {
     // Capture the address of Src's last node, in case Src == Dst
-    AListNode* lastSrcNode = Src->sentinel.prev;
+    FListNode* lastSrcNode = Src->sentinel.prev;
 
-    for(const AListNode* n = &Src->sentinel; n != lastSrcNode; n = n->next) {
+    for(const FListNode* n = &Src->sentinel; n != lastSrcNode; n = n->next) {
         f_list_addLast(Dst, n->next->content);
     }
 }
 
-void* f_list_getByIndex(const AList* List, unsigned Index)
+void* f_list_getByIndex(const FList* List, unsigned Index)
 {
     if(Index < List->items >> 1) {
         F__ITERATE(List, n) {
@@ -157,17 +157,17 @@ void* f_list_getByIndex(const AList* List, unsigned Index)
     return NULL;
 }
 
-void* f_list_getFirst(const AList* List)
+void* f_list_getFirst(const FList* List)
 {
     return List->sentinel.next->content;
 }
 
-void* f_list_getLast(const AList* List)
+void* f_list_getLast(const FList* List)
 {
     return List->sentinel.prev->content;
 }
 
-void* f_list_getRandom(const AList* List)
+void* f_list_getRandom(const FList* List)
 {
     if(List->items == 0) {
         return NULL;
@@ -176,12 +176,12 @@ void* f_list_getRandom(const AList* List)
     return f_list_getByIndex(List, f_random_intu(List->items));
 }
 
-void* f_list_getNodeContent(const AListNode* Node)
+void* f_list_getNodeContent(const FListNode* Node)
 {
     return Node->content;
 }
 
-static inline void* removeNode(AListNode* Node)
+static inline void* removeNode(FListNode* Node)
 {
     void* v = Node->content;
 
@@ -195,7 +195,7 @@ static inline void* removeNode(AListNode* Node)
     return v;
 }
 
-void* f_list_removeItem(AList* List, const void* Item)
+void* f_list_removeItem(FList* List, const void* Item)
 {
     F__ITERATE(List, n) {
         if(n->content == Item) {
@@ -206,9 +206,9 @@ void* f_list_removeItem(AList* List, const void* Item)
     return NULL;
 }
 
-void* f_list_removeFirst(AList* List)
+void* f_list_removeFirst(FList* List)
 {
-    AListNode* n = List->sentinel.next;
+    FListNode* n = List->sentinel.next;
 
     if(n != &List->sentinel) {
         return removeNode(n);
@@ -217,9 +217,9 @@ void* f_list_removeFirst(AList* List)
     return NULL;
 }
 
-void* f_list_removeLast(AList* List)
+void* f_list_removeLast(FList* List)
 {
-    AListNode* n = List->sentinel.prev;
+    FListNode* n = List->sentinel.prev;
 
     if(n != &List->sentinel) {
         return removeNode(n);
@@ -228,7 +228,7 @@ void* f_list_removeLast(AList* List)
     return NULL;
 }
 
-void* f_list_removeByIndex(AList* List, unsigned Index)
+void* f_list_removeByIndex(FList* List, unsigned Index)
 {
     if(Index < List->items >> 1) {
         F__ITERATE(List, n) {
@@ -249,7 +249,7 @@ void* f_list_removeByIndex(AList* List, unsigned Index)
     return NULL;
 }
 
-void* f_list_removeRandom(AList* List)
+void* f_list_removeRandom(FList* List)
 {
     if(List->items > 0) {
         return f_list_removeByIndex(List, f_random_intu(List->items));
@@ -258,17 +258,17 @@ void* f_list_removeRandom(AList* List)
     return NULL;
 }
 
-void f_list_removeNode(AListNode* Node)
+void f_list_removeNode(FListNode* Node)
 {
     removeNode(Node);
 }
 
-void f_list_clear(AList* List)
+void f_list_clear(FList* List)
 {
     f_list_clearEx(List, NULL);
 }
 
-void f_list_clearEx(AList* List, AFree* Free)
+void f_list_clearEx(FList* List, FFree* Free)
 {
     if(Free) {
         F__ITERATE_SAFE(List, current, next) {
@@ -291,9 +291,9 @@ void f_list_clearEx(AList* List, AFree* Free)
     List->items = 0;
 }
 
-AList* f_list_dup(const AList* List)
+FList* f_list_dup(const FList* List)
 {
-    AList* l = f_list_new();
+    FList* l = f_list_new();
 
     F__ITERATE(List, n) {
         f_list_addLast(l, n->content);
@@ -302,7 +302,7 @@ AList* f_list_dup(const AList* List)
     return l;
 }
 
-void** f_list_toArray(const AList* List)
+void** f_list_toArray(const FList* List)
 {
     int i = 0;
     void** array = f_mem_malloc(List->items * sizeof(void*));
@@ -314,22 +314,22 @@ void** f_list_toArray(const AList* List)
     return array;
 }
 
-void f_list_reverse(AList* List)
+void f_list_reverse(FList* List)
 {
-    for(AListNode* n = List->sentinel.prev; n != &List->sentinel; n = n->next) {
-        AListNode* save = n->next;
+    for(FListNode* n = List->sentinel.prev; n != &List->sentinel; n = n->next) {
+        FListNode* save = n->next;
 
         n->next = n->prev;
         n->prev = save;
     }
 
-    AListNode* save = List->sentinel.next;
+    FListNode* save = List->sentinel.next;
 
     List->sentinel.next = List->sentinel.prev;
     List->sentinel.prev = save;
 }
 
-static inline AListNode* getNode(AListNode* Start, unsigned Index)
+static inline FListNode* getNode(FListNode* Start, unsigned Index)
 {
     while(Index--) {
         Start = Start->next;
@@ -338,9 +338,9 @@ static inline AListNode* getNode(AListNode* Start, unsigned Index)
     return Start;
 }
 
-static inline void addHeadToMerged(AListNode** MergedTail, AListNode** SortedHead)
+static inline void addHeadToMerged(FListNode** MergedTail, FListNode** SortedHead)
 {
-    AListNode* nextSortedHead = (*SortedHead)->next;
+    FListNode* nextSortedHead = (*SortedHead)->next;
 
     if(nextSortedHead != NULL) {
         nextSortedHead->prev = NULL;
@@ -354,7 +354,7 @@ static inline void addHeadToMerged(AListNode** MergedTail, AListNode** SortedHea
     *SortedHead = nextSortedHead;
 }
 
-static AListNode* sort(AListNode* Start, unsigned Length, AListCompare* Compare)
+static FListNode* sort(FListNode* Start, unsigned Length, FListCompare* Compare)
 {
     if(Length == 1) {
         return Start;
@@ -362,18 +362,18 @@ static AListNode* sort(AListNode* Start, unsigned Length, AListCompare* Compare)
 
     unsigned halfPoint = Length / 2;
 
-    AListNode* firstHalfHead = getNode(Start, 0);
-    AListNode* secondHalfHead = getNode(Start, halfPoint);
+    FListNode* firstHalfHead = getNode(Start, 0);
+    FListNode* secondHalfHead = getNode(Start, halfPoint);
 
     secondHalfHead->prev->next = NULL;
     secondHalfHead->prev = NULL;
 
     // sort [0, halfPoint) and [halfPoint, Length)
-    AListNode* a = sort(firstHalfHead, halfPoint, Compare);
-    AListNode* b = sort(secondHalfHead, Length - halfPoint, Compare);
+    FListNode* a = sort(firstHalfHead, halfPoint, Compare);
+    FListNode* b = sort(secondHalfHead, Length - halfPoint, Compare);
 
-    AListNode mergedHead = {NULL, NULL, NULL, NULL};
-    AListNode* mergedTail = &mergedHead;
+    FListNode mergedHead = {NULL, NULL, NULL, NULL};
+    FListNode* mergedTail = &mergedHead;
 
     // Merge a and b
     while(true) {
@@ -401,7 +401,7 @@ static AListNode* sort(AListNode* Start, unsigned Length, AListCompare* Compare)
     return mergedHead.next;
 }
 
-void f_list_sort(AList* List, AListCompare* Compare)
+void f_list_sort(FList* List, FListCompare* Compare)
 {
     if(List->items < 2) {
         return;
@@ -410,7 +410,7 @@ void f_list_sort(AList* List, AListCompare* Compare)
     List->sentinel.next->prev = NULL;
     List->sentinel.prev->next = NULL;
 
-    AListNode* sorted = sort(List->sentinel.next, List->items, Compare);
+    FListNode* sorted = sort(List->sentinel.next, List->items, Compare);
 
     List->sentinel.next = sorted;
     sorted->prev = &List->sentinel;
@@ -423,17 +423,17 @@ void f_list_sort(AList* List, AListCompare* Compare)
     List->sentinel.prev = sorted;
 }
 
-unsigned f_list_sizeGet(const AList* List)
+unsigned f_list_sizeGet(const FList* List)
 {
     return List->items;
 }
 
-bool f_list_isEmpty(const AList* List)
+bool f_list_isEmpty(const FList* List)
 {
     return List->items == 0;
 }
 
-bool f_list_contains(const AList* List, const void* Item)
+bool f_list_contains(const FList* List, const void* Item)
 {
     F__ITERATE(List, n) {
         if(n->content == Item) {

@@ -18,19 +18,19 @@
 #include "f_screen.v.h"
 #include <faur.v.h>
 
-AScreen f__screen;
-static AList* g_stack; // list of AScreen
+FScreen f__screen;
+static FList* g_stack; // list of FScreen
 
 #if F_CONFIG_TRAIT_DESKTOP
-    static AButton* g_fullScreenButton;
+    static FButton* g_fullScreenButton;
 
     #define F__ZOOM_LEVELS 3
-    static AButton* g_zoomButtons[F__ZOOM_LEVELS];
+    static FButton* g_zoomButtons[F__ZOOM_LEVELS];
 #endif
 
 static void f_screen__init(void)
 {
-    AVectorInt size = f_platform_api__screenSizeGet();
+    FVectorInt size = f_platform_api__screenSizeGet();
 
     f__screen.pixels = f_platform_api__screenPixelsGet();
 
@@ -71,7 +71,7 @@ static void f_screen__uninit(void)
     #endif
 }
 
-const APack f_pack__screen = {
+const FPack f_pack__screen = {
     "Screen",
     {
         [0] = f_screen__init,
@@ -120,7 +120,7 @@ void f_screen__draw(void)
     f_platform_api__screenShow();
 }
 
-APixel* f_screen_pixelsGetBuffer(void)
+FPixel* f_screen_pixelsGetBuffer(void)
 {
     #if !F_CONFIG_LIB_RENDER_SOFTWARE
         f_platform_api__screenTextureRead(f__screen.pixels, f__screen.frame);
@@ -129,9 +129,9 @@ APixel* f_screen_pixelsGetBuffer(void)
     return f_screen__bufferGetFrom(0, 0);
 }
 
-AVectorInt f_screen_sizeGet(void)
+FVectorInt f_screen_sizeGet(void)
 {
-    return (AVectorInt){f__screen.pixels->w, f__screen.pixels->h};
+    return (FVectorInt){f__screen.pixels->w, f__screen.pixels->h};
 }
 
 int f_screen_sizeGetWidth(void)
@@ -159,7 +159,7 @@ void f_screen_clear(void)
     #endif
 }
 
-void f_screen_push(ASprite* Sprite, unsigned Frame)
+void f_screen_push(FSprite* Sprite, unsigned Frame)
 {
     #if F_CONFIG_BUILD_DEBUG
         if(F_FLAGS_TEST_ANY(
@@ -169,7 +169,7 @@ void f_screen_push(ASprite* Sprite, unsigned Frame)
         }
     #endif
 
-    f_list_push(g_stack, f_mem_dup(&f__screen, sizeof(AScreen)));
+    f_list_push(g_stack, f_mem_dup(&f__screen, sizeof(FScreen)));
 
     f__screen.pixels = f_sprite__pixelsGet(Sprite);
     f__screen.sprite = Sprite;
@@ -187,7 +187,7 @@ void f_screen_push(ASprite* Sprite, unsigned Frame)
 
 void f_screen_pop(void)
 {
-    AScreen* screen = f_list_pop(g_stack);
+    FScreen* screen = f_list_pop(g_stack);
 
     #if F_CONFIG_BUILD_DEBUG
         if(screen == NULL) {
@@ -268,9 +268,9 @@ bool f_screen_boxInsideClip(int X, int Y, int W, int H)
         && X + W <= f__screen.clipX2 && Y + H <= f__screen.clipY2;
 }
 
-void f_screen__toSprite(ASprite* Sprite, unsigned Frame)
+void f_screen__toSprite(FSprite* Sprite, unsigned Frame)
 {
-    AVectorInt spriteSize = f_sprite_sizeGet(Sprite);
+    FVectorInt spriteSize = f_sprite_sizeGet(Sprite);
 
     if(f__screen.pixels->w != spriteSize.x
         || f__screen.pixels->h != spriteSize.y) {

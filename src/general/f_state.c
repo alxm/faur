@@ -26,14 +26,14 @@
 
 typedef struct {
     const char* name;
-    AStateHandler* handler;
-    AStateStage stage;
-} AStateStackEntry;
+    FStateHandler* handler;
+    FStateStage stage;
+} FStateStackEntry;
 
-static AList* g_stack; // list of AStateStackEntry
-static AList* g_pending; // list of AStateStackEntry/NULL
+static FList* g_stack; // list of FStateStackEntry
+static FList* g_pending; // list of FStateStackEntry/NULL
 static bool g_exiting;
-static const AEvent* g_blockEvent;
+static const FEvent* g_blockEvent;
 
 #if F_CONFIG_BUILD_DEBUG
 static const char* g_stageNames[F__STATE_STAGE_NUM] = {
@@ -44,9 +44,9 @@ static const char* g_stageNames[F__STATE_STAGE_NUM] = {
 };
 #endif
 
-static void pending_push(AStateHandler* Handler, const char* Name)
+static void pending_push(FStateHandler* Handler, const char* Name)
 {
-    AStateStackEntry* e = f_mem_malloc(sizeof(AStateStackEntry));
+    FStateStackEntry* e = f_mem_malloc(sizeof(FStateStackEntry));
 
     e->name = Name;
     e->handler = Handler;
@@ -62,7 +62,7 @@ static void pending_pop(void)
 
 static void pending_handle(void)
 {
-    AStateStackEntry* current = f_list_peek(g_stack);
+    FStateStackEntry* current = f_list_peek(g_stack);
 
     // Check if the current state just ran its Free stage
     if(current && current->stage == F__STATE_STAGE_FREE) {
@@ -99,7 +99,7 @@ static void pending_handle(void)
         return;
     }
 
-    AStateStackEntry* pendingState = f_list_pop(g_pending);
+    FStateStackEntry* pendingState = f_list_pop(g_pending);
 
     if(pendingState == NULL) {
         #if F_CONFIG_BUILD_DEBUG
@@ -120,7 +120,7 @@ static void pending_handle(void)
         #if F_CONFIG_BUILD_DEBUG
             f_out__state("Push '%s'", pendingState->name);
 
-            F_LIST_ITERATE(g_stack, const AStateStackEntry*, e) {
+            F_LIST_ITERATE(g_stack, const FStateStackEntry*, e) {
                 if(pendingState->handler == e->handler) {
                     F__FATAL("State '%s' already in stack", e->name);
                 }
@@ -144,7 +144,7 @@ static void f_state__uninit(void)
     f_list_freeEx(g_pending, f_mem_free);
 }
 
-const APack f_pack__state = {
+const FPack f_pack__state = {
     "State",
     {
         [0] = f_state__init,
@@ -154,7 +154,7 @@ const APack f_pack__state = {
     },
 };
 
-void f_state_push(AStateHandler* Handler, const char* Name)
+void f_state_push(FStateHandler* Handler, const char* Name)
 {
     if(g_exiting) {
         #if F_CONFIG_BUILD_DEBUG
@@ -188,7 +188,7 @@ void f_state_pop(void)
     pending_pop();
 }
 
-void f_state_popUntil(AStateHandler* Handler, const char* Name)
+void f_state_popUntil(FStateHandler* Handler, const char* Name)
 {
     if(g_exiting) {
         #if F_CONFIG_BUILD_DEBUG
@@ -205,7 +205,7 @@ void f_state_popUntil(AStateHandler* Handler, const char* Name)
     int pops = 0;
     bool found = false;
 
-    F_LIST_ITERATE(g_stack, const AStateStackEntry*, e) {
+    F_LIST_ITERATE(g_stack, const FStateStackEntry*, e) {
         if(e->handler == Handler) {
             found = true;
             break;
@@ -223,7 +223,7 @@ void f_state_popUntil(AStateHandler* Handler, const char* Name)
     }
 }
 
-void f_state_replace(AStateHandler* Handler, const char* Name)
+void f_state_replace(FStateHandler* Handler, const char* Name)
 {
     if(g_exiting) {
         #if F_CONFIG_BUILD_DEBUG
@@ -264,9 +264,9 @@ void f_state_exit(void)
     }
 }
 
-AStateHandler* f_state_currentGet(void)
+FStateHandler* f_state_currentGet(void)
 {
-    AStateStackEntry* current = f_list_peek(g_stack);
+    FStateStackEntry* current = f_list_peek(g_stack);
 
     if(current == NULL) {
         F__FATAL("f_state_currentGet: Stack is empty");
@@ -293,7 +293,7 @@ bool f_state_blockGet(void)
     return false;
 }
 
-void f_state_blockSet(const AEvent* Event)
+void f_state_blockSet(const FEvent* Event)
 {
     g_blockEvent = Event;
 }
@@ -310,7 +310,7 @@ bool f_state__runStep(void)
         pending_handle();
     }
 
-    AStateStackEntry* s = f_list_peek(g_stack);
+    FStateStackEntry* s = f_list_peek(g_stack);
 
     if(s == NULL) {
         return false;
@@ -387,9 +387,9 @@ void f_state__runLoop(void)
     #endif
 }
 
-bool f__state_stageCheck(AStateStage Stage)
+bool f__state_stageCheck(FStateStage Stage)
 {
-    const AStateStackEntry* e = f_list_peek(g_stack);
+    const FStateStackEntry* e = f_list_peek(g_stack);
 
     #if F_CONFIG_BUILD_DEBUG
         if(e == NULL) {

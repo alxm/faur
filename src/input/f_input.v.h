@@ -22,7 +22,7 @@
 
 #include "general/f_main.v.h"
 
-extern const APack f_pack__input;
+extern const FPack f_pack__input;
 
 extern void f_input__tick(void);
 

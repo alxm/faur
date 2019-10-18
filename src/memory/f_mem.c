@@ -31,8 +31,8 @@ static inline void tallyAdd(size_t Size)
 void* f_mem_malloc(size_t Size)
 {
     #if F_CONFIG_BUILD_DEBUG_ALLOC
-        size_t total = Size + sizeof(AMaxMemAlignType);
-        AMaxMemAlignType* ptr = malloc(total);
+        size_t total = Size + sizeof(FMaxMemAlignType);
+        FMaxMemAlignType* ptr = malloc(total);
 
         if(ptr == NULL) {
             F__FATAL("malloc(%u) failed", total);
@@ -57,8 +57,8 @@ void* f_mem_malloc(size_t Size)
 void* f_mem_zalloc(size_t Size)
 {
     #if F_CONFIG_BUILD_DEBUG_ALLOC
-        size_t total = Size + sizeof(AMaxMemAlignType);
-        AMaxMemAlignType* ptr = calloc(1, total);
+        size_t total = Size + sizeof(FMaxMemAlignType);
+        FMaxMemAlignType* ptr = calloc(1, total);
 
         if(ptr == NULL) {
             F__FATAL("calloc(1, %u) failed", total);
@@ -96,7 +96,7 @@ void f_mem_free(void* Buffer)
     }
 
     #if F_CONFIG_BUILD_DEBUG_ALLOC
-        AMaxMemAlignType* header = (AMaxMemAlignType*)Buffer - 1;
+        FMaxMemAlignType* header = (FMaxMemAlignType*)Buffer - 1;
 
         f_mem__tally -= header->u_size;
 

@@ -29,7 +29,7 @@
 
 typedef enum {
     F_OUT__FLAG_OVERWRITE = F_FLAGS_BIT(0),
-} AOutFlags;
+} FOutFlags;
 
 typedef enum {
     F_COLOR__INVALID = -1,
@@ -41,7 +41,7 @@ typedef enum {
     F_COLOR__MAGENTA = 35,
     F_COLOR__CYAN = 36,
     F_COLOR__WHITE = 37
-} AColorCode;
+} FColorCode;
 
 static const char* g_sources[F_OUT__SOURCE_NUM] = {
     [F_OUT__SOURCE_FAUR] = "Faur",
@@ -50,7 +50,7 @@ static const char* g_sources[F_OUT__SOURCE_NUM] = {
 
 static const struct {
     const char* name;
-    AColorCode color;
+    FColorCode color;
 } g_types[F_OUT__TYPE_NUM] = {
     [F_OUT__TYPE_INFO] = {"Inf", F_COLOR__GREEN},
     [F_OUT__TYPE_WARNING] = {"Wrn", F_COLOR__YELLOW},
@@ -59,7 +59,7 @@ static const struct {
     [F_OUT__TYPE_FATAL] = {"Ftl", F_COLOR__RED},
 };
 
-static void outWorkerPrint(AOutSource Source, AOutType Type, FILE* Stream, const char* Text)
+static void outWorkerPrint(FOutSource Source, FOutType Type, FILE* Stream, const char* Text)
 {
     #if F_CONFIG_SYSTEM_LINUX && F_CONFIG_TRAIT_DESKTOP
         fprintf(Stream,
@@ -82,7 +82,7 @@ static void outWorkerPrint(AOutSource Source, AOutType Type, FILE* Stream, const
     f_console__write(Source, Type, Text);
 }
 
-static void outWorker(AOutSource Source, AOutType Type, FILE* Stream, const char* Format, va_list Args)
+static void outWorker(FOutSource Source, FOutType Type, FILE* Stream, const char* Format, va_list Args)
 {
     static char buffer[512];
 

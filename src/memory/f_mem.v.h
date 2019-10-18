@@ -26,7 +26,7 @@ typedef union {
     size_t u_size;
     void* u_voidp;
     void (*u_funcp)(void);
-} AMaxMemAlignType;
+} FMaxMemAlignType;
 
 extern size_t f_mem__tally, f_mem__top;
 

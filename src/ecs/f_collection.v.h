@@ -20,6 +20,6 @@
 
 #include "ecs/f_collection.p.h"
 
-extern ACollection* f_collection__get(void);
+extern FCollection* f_collection__get(void);
 
 #endif // F_INC_ECS_COLLECTION_V_H

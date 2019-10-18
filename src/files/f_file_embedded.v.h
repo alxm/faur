@@ -22,7 +22,7 @@
 
 #include "files/f_file.v.h"
 
-extern AFile* f_file_embedded__new(APath* Path);
+extern FFile* f_file_embedded__new(FPath* Path);
 
 extern uint8_t* f_file_embedded__toBuffer(const char* Path);
 

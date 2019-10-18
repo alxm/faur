@@ -18,7 +18,7 @@
 #include "f_file_embedded.v.h"
 #include <faur.v.h>
 
-static bool fileSeek(AFile* File, int Offset, AFileOffset Origin)
+static bool fileSeek(FFile* File, int Offset, FFileOffset Origin)
 {
     bool ret = false;
     size_t off = (size_t)Offset;
@@ -53,7 +53,7 @@ static bool fileSeek(AFile* File, int Offset, AFileOffset Origin)
     return ret;
 }
 
-static bool fileRead(AFile* File, void* Buffer, size_t Size)
+static bool fileRead(FFile* File, void* Buffer, size_t Size)
 {
     size_t len = f_math_minz(Size, File->u.e.data->size - File->u.e.index);
 
@@ -63,7 +63,7 @@ static bool fileRead(AFile* File, void* Buffer, size_t Size)
     return len == Size;
 }
 
-static bool fileWrite(AFile* File, const void* Buffer, size_t Size)
+static bool fileWrite(FFile* File, const void* Buffer, size_t Size)
 {
     F_UNUSED(File);
     F_UNUSED(Buffer);
@@ -72,7 +72,7 @@ static bool fileWrite(AFile* File, const void* Buffer, size_t Size)
     return false;
 }
 
-static bool fileWritef(AFile* File, const char* Format, va_list Args)
+static bool fileWritef(FFile* File, const char* Format, va_list Args)
 {
     F_UNUSED(File);
     F_UNUSED(Format);
@@ -81,14 +81,14 @@ static bool fileWritef(AFile* File, const char* Format, va_list Args)
     return false;
 }
 
-static bool fileFlush(AFile* File)
+static bool fileFlush(FFile* File)
 {
     F_UNUSED(File);
 
     return false;
 }
 
-static int fileGetChar(AFile* File)
+static int fileGetChar(FFile* File)
 {
     int c = EOF;
 
@@ -99,7 +99,7 @@ static int fileGetChar(AFile* File)
     return c;
 }
 
-static int fileUnGetChar(AFile* File, int Char)
+static int fileUnGetChar(FFile* File, int Char)
 {
     F_UNUSED(Char);
 
@@ -112,7 +112,7 @@ static int fileUnGetChar(AFile* File, int Char)
     return c;
 }
 
-static const AFileInterface g_interface = {
+static const FFileInterface g_interface = {
     .seek = fileSeek,
     .read = fileRead,
     .write = fileWrite,
@@ -122,9 +122,9 @@ static const AFileInterface g_interface = {
     .ungetchar = fileUnGetChar,
 };
 
-AFile* f_file_embedded__new(APath* Path)
+FFile* f_file_embedded__new(FPath* Path)
 {
-    AFile* f = f_mem_zalloc(sizeof(AFile));
+    FFile* f = f_mem_zalloc(sizeof(FFile));
 
     f->path = Path;
     f->interface = &g_interface;
@@ -136,7 +136,7 @@ AFile* f_file_embedded__new(APath* Path)
 
 uint8_t* f_file_embedded__toBuffer(const char* Path)
 {
-    const AEmbeddedFile* data = f_embed__fileGet(Path);
+    const FEmbeddedFile* data = f_embed__fileGet(Path);
 
     return f_mem_dup(data->buffer, data->size);
 }

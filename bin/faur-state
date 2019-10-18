@@ -65,7 +65,7 @@ void t_{name}(void)
 
 #include <faur.h>
 
-extern AStateHandler t_{name};
+extern FStateHandler t_{name};
 """.format(name = state_name))
 
 if __name__ == '__main__':

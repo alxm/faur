@@ -18,17 +18,17 @@
 #include "f_sprite.v.h"
 #include <faur.v.h>
 
-struct ASprite {
-    APixels pixels;
-    APlatformTexture* textures[]; // [pixels.framesNum]
+struct FSprite {
+    FPixels pixels;
+    FPlatformTexture* textures[]; // [pixels.framesNum]
 };
 
-static ASprite* spriteNew(const APixels* Pixels, unsigned Frame, int X, int Y, int FrameWidth, int FrameHeight)
+static FSprite* spriteNew(const FPixels* Pixels, unsigned Frame, int X, int Y, int FrameWidth, int FrameHeight)
 {
-    AVectorInt gridDim;
+    FVectorInt gridDim;
 
     if(X == 0 && Y == 0 && FrameWidth < 1 && FrameHeight < 1) {
-        gridDim = (AVectorInt){Pixels->w, Pixels->h};
+        gridDim = (FVectorInt){Pixels->w, Pixels->h};
     } else {
         gridDim = f_pixels__boundsFind(Pixels, Frame, X, Y);
     }
@@ -54,8 +54,8 @@ static ASprite* spriteNew(const APixels* Pixels, unsigned Frame, int X, int Y, i
     int endX = X + gridDim.x - (gridDim.x % FrameWidth);
     int endY = Y + gridDim.y - (gridDim.y % FrameHeight);
 
-    ASprite* s = f_mem_malloc(sizeof(ASprite)
-                                + sizeof(APlatformTexture*) * framesNum);
+    FSprite* s = f_mem_malloc(sizeof(FSprite)
+                                + sizeof(FPlatformTexture*) * framesNum);
 
     f_pixels__init(
         &s->pixels, FrameWidth, FrameHeight, framesNum, F_PIXELS__ALLOC);
@@ -76,9 +76,9 @@ static ASprite* spriteNew(const APixels* Pixels, unsigned Frame, int X, int Y, i
 }
 
 #if F_CONFIG_LIB_PNG
-ASprite* f_sprite_newFromPng(const char* Path, int X, int Y, int FrameWidth, int FrameHeight)
+FSprite* f_sprite_newFromPng(const char* Path, int X, int Y, int FrameWidth, int FrameHeight)
 {
-    APixels* pixels = f_png__readFile(Path);
+    FPixels* pixels = f_png__readFile(Path);
 
     if(pixels == NULL) {
         F__FATAL("f_sprite_newFromPng(%s): Cannot read file", Path);
@@ -99,7 +99,7 @@ ASprite* f_sprite_newFromPng(const char* Path, int X, int Y, int FrameWidth, int
         }
     }
 
-    ASprite* s = spriteNew(pixels, 0, X, Y, FrameWidth, FrameHeight);
+    FSprite* s = spriteNew(pixels, 0, X, Y, FrameWidth, FrameHeight);
 
     f_pixels__free(pixels);
 
@@ -107,19 +107,19 @@ ASprite* f_sprite_newFromPng(const char* Path, int X, int Y, int FrameWidth, int
 }
 #endif
 
-ASprite* f_sprite_newFromSprite(const ASprite* Sheet, int X, int Y, int FrameWidth, int FrameHeight)
+FSprite* f_sprite_newFromSprite(const FSprite* Sheet, int X, int Y, int FrameWidth, int FrameHeight)
 {
     return spriteNew(&Sheet->pixels, 0, X, Y, FrameWidth, FrameHeight);
 }
 
-ASprite* f_sprite_newBlank(int Width, int Height, unsigned Frames, bool ColorKeyed)
+FSprite* f_sprite_newBlank(int Width, int Height, unsigned Frames, bool ColorKeyed)
 {
     if(Frames == 0) {
         F__FATAL("f_sprite_newBlank: Frames == 0");
     }
 
-    ASprite* s = f_mem_malloc(sizeof(ASprite)
-                                + sizeof(APlatformTexture*) * Frames);
+    FSprite* s = f_mem_malloc(sizeof(FSprite)
+                                + sizeof(FPlatformTexture*) * Frames);
 
     f_pixels__init(&s->pixels, Width, Height, Frames, F_PIXELS__ALLOC);
 
@@ -134,10 +134,10 @@ ASprite* f_sprite_newBlank(int Width, int Height, unsigned Frames, bool ColorKey
     return s;
 }
 
-ASprite* f_sprite_dup(const ASprite* Sprite)
+FSprite* f_sprite_dup(const FSprite* Sprite)
 {
-    ASprite* s = f_mem_malloc(sizeof(ASprite)
-                                + sizeof(APlatformTexture*)
+    FSprite* s = f_mem_malloc(sizeof(FSprite)
+                                + sizeof(FPlatformTexture*)
                                     * Sprite->pixels.framesNum);
 
     f_pixels__copy(&s->pixels, &Sprite->pixels);
@@ -164,7 +164,7 @@ ASprite* f_sprite_dup(const ASprite* Sprite)
     return s;
 }
 
-void f_sprite_free(ASprite* Sprite)
+void f_sprite_free(FSprite* Sprite)
 {
     if(Sprite == NULL) {
         return;
@@ -179,13 +179,13 @@ void f_sprite_free(ASprite* Sprite)
     f_mem_free(Sprite);
 }
 
-void f_sprite_blit(const ASprite* Sprite, unsigned Frame, int X, int Y)
+void f_sprite_blit(const FSprite* Sprite, unsigned Frame, int X, int Y)
 {
     f_platform_api__textureBlit(
         Sprite->textures[Frame], &Sprite->pixels, Frame, X, Y);
 }
 
-void f_sprite_blitEx(const ASprite* Sprite, unsigned Frame, int X, int Y, AFix Scale, unsigned Angle, AFix CenterX, AFix CenterY)
+void f_sprite_blitEx(const FSprite* Sprite, unsigned Frame, int X, int Y, FFix Scale, unsigned Angle, FFix CenterX, FFix CenterY)
 {
     CenterX = f_math_clamp(CenterX, -F_FIX_ONE, F_FIX_ONE);
     CenterY = f_math_clamp(CenterY, -F_FIX_ONE, F_FIX_ONE);
@@ -201,10 +201,10 @@ void f_sprite_blitEx(const ASprite* Sprite, unsigned Frame, int X, int Y, AFix S
                                   CenterY);
 }
 
-void f_sprite_swapColor(ASprite* Sprite, APixel OldColor, APixel NewColor)
+void f_sprite_swapColor(FSprite* Sprite, FPixel OldColor, FPixel NewColor)
 {
     for(unsigned f = Sprite->pixels.framesNum; f--; ) {
-        APixel* buffer = f_pixels__bufferGetStart(&Sprite->pixels, f);
+        FPixel* buffer = f_pixels__bufferGetStart(&Sprite->pixels, f);
 
         for(unsigned i = Sprite->pixels.bufferLen; i--; ) {
             if(buffer[i] == OldColor) {
@@ -223,13 +223,13 @@ void f_sprite_swapColor(ASprite* Sprite, APixel OldColor, APixel NewColor)
     }
 }
 
-void f_sprite_swapColors(ASprite* Sprite, const APixel* OldColors, const APixel* NewColors, unsigned NumColors)
+void f_sprite_swapColors(FSprite* Sprite, const FPixel* OldColors, const FPixel* NewColors, unsigned NumColors)
 {
     for(unsigned f = Sprite->pixels.framesNum; f--; ) {
-        APixel* buffer = f_pixels__bufferGetStart(&Sprite->pixels, f);
+        FPixel* buffer = f_pixels__bufferGetStart(&Sprite->pixels, f);
 
         for(unsigned i = Sprite->pixels.bufferLen; i--; ) {
-            const APixel pixel = buffer[i];
+            const FPixel pixel = buffer[i];
 
             for(unsigned c = NumColors; c--; ) {
                 if(pixel == OldColors[c]) {
@@ -250,37 +250,37 @@ void f_sprite_swapColors(ASprite* Sprite, const APixel* OldColors, const APixel*
     }
 }
 
-AVectorInt f_sprite_sizeGet(const ASprite* Sprite)
+FVectorInt f_sprite_sizeGet(const FSprite* Sprite)
 {
-    return (AVectorInt){Sprite->pixels.w, Sprite->pixels.h};
+    return (FVectorInt){Sprite->pixels.w, Sprite->pixels.h};
 }
 
-int f_sprite_sizeGetWidth(const ASprite* Sprite)
+int f_sprite_sizeGetWidth(const FSprite* Sprite)
 {
     return Sprite->pixels.w;
 }
 
-int f_sprite_sizeGetHeight(const ASprite* Sprite)
+int f_sprite_sizeGetHeight(const FSprite* Sprite)
 {
     return Sprite->pixels.h;
 }
 
-unsigned f_sprite_framesNumGet(const ASprite* Sprite)
+unsigned f_sprite_framesNumGet(const FSprite* Sprite)
 {
     return Sprite->pixels.framesNum;
 }
 
-APixels* f_sprite__pixelsGet(ASprite* Sprite)
+FPixels* f_sprite__pixelsGet(FSprite* Sprite)
 {
     return &Sprite->pixels;
 }
 
-APlatformTexture* f_sprite__textureGet(const ASprite* Sprite, unsigned Frame)
+FPlatformTexture* f_sprite__textureGet(const FSprite* Sprite, unsigned Frame)
 {
     return Sprite->textures[Frame];
 }
 
-void f_sprite__textureCommit(ASprite* Sprite, unsigned Frame)
+void f_sprite__textureCommit(FSprite* Sprite, unsigned Frame)
 {
     if(Sprite->textures[Frame]) {
         f_platform_api__textureFree(Sprite->textures[Frame]);
@@ -290,12 +290,12 @@ void f_sprite__textureCommit(ASprite* Sprite, unsigned Frame)
                                 &Sprite->pixels, Frame);
 }
 
-const APixel* f_sprite_pixelsGetBuffer(const ASprite* Sprite, unsigned Frame)
+const FPixel* f_sprite_pixelsGetBuffer(const FSprite* Sprite, unsigned Frame)
 {
     return f_pixels__bufferGetStart(&Sprite->pixels, Frame);
 }
 
-APixel f_sprite_pixelsGetValue(const ASprite* Sprite, unsigned Frame, int X, int Y)
+FPixel f_sprite_pixelsGetValue(const FSprite* Sprite, unsigned Frame, int X, int Y)
 {
     return f_pixels__bufferGetValue(&Sprite->pixels, Frame, X, Y);
 }

@@ -20,7 +20,7 @@
 
 #include "general/f_system_includes.h"
 
-typedef struct APath APath;
+typedef struct FPath FPath;
 
 typedef enum {
     F_PATH_FILE = F_FLAGS_BIT(0),
@@ -28,17 +28,17 @@ typedef enum {
     F_PATH_OTHER = F_FLAGS_BIT(2),
     F_PATH_EMBEDDED = F_FLAGS_BIT(3),
     F_PATH_REAL = F_FLAGS_BIT(4),
-} APathFlags;
+} FPathFlags;
 
-extern APath* f_path_new(const char* Path);
-extern APath* f_path_newf(const char* Format, ...);
-extern void f_path_free(APath* Path);
+extern FPath* f_path_new(const char* Path);
+extern FPath* f_path_newf(const char* Format, ...);
+extern void f_path_free(FPath* Path);
 
-extern bool f_path_exists(const char* Path, APathFlags Flags);
-extern bool f_path_test(const APath* Path, APathFlags Flags);
+extern bool f_path_exists(const char* Path, FPathFlags Flags);
+extern bool f_path_test(const FPath* Path, FPathFlags Flags);
 
-extern const char* f_path_getFull(const APath* Path);
-extern const char* f_path_getDirs(const APath* Path);
-extern const char* f_path_getName(const APath* Path);
+extern const char* f_path_getFull(const FPath* Path);
+extern const char* f_path_getDirs(const FPath* Path);
+extern const char* f_path_getName(const FPath* Path);
 
 #endif // F_INC_FILES_PATH_P_H

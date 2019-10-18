@@ -62,7 +62,7 @@ include $(FAUR_PATH)/make/dev.mk
 """\
 #include <faur.h>
 
-AStateHandler drawBox;
+FStateHandler drawBox;
 
 void f_main(void)
 {{

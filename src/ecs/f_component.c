@@ -19,25 +19,25 @@
 #include <faur.v.h>
 
 #if F_CONFIG_ECS_ENABLED
-struct AComponent {
-    size_t size; // total size of AComponentInstance + user data that follows
-    AComponentInstanceInit* init; // sets component buffer default values
-    AComponentInstanceInitEx* initEx; // init with template data
-    AComponentInstanceFree* free; // does not free the actual component buffer
+struct FComponent {
+    size_t size; // total size of FComponentInstance + user data that follows
+    FComponentInstanceInit* init; // sets component buffer default values
+    FComponentInstanceInitEx* initEx; // init with template data
+    FComponentInstanceFree* free; // does not free the actual component buffer
     size_t templateSize; // size of template data buffer
-    AComponentTemplateInit* templateInit; // init template buffer with ABlock
-    AComponentTemplateFree* templateFree; // does not free the template buffer
+    FComponentTemplateInit* templateInit; // init template buffer with FBlock
+    FComponentTemplateFree* templateFree; // does not free the template buffer
     const char* stringId; // string ID
 };
 
-static AComponent g_components[F_CONFIG_ECS_COM_NUM];
-static AStrHash* g_componentsIndex; // table of AComponent
+static FComponent g_components[F_CONFIG_ECS_COM_NUM];
+static FStrHash* g_componentsIndex; // table of FComponent
 static const char* g_defaultId = "Unknown";
 
-static inline const AComponentInstance* bufferGetInstance(const void* ComponentBuffer)
+static inline const FComponentInstance* bufferGetInstance(const void* ComponentBuffer)
 {
     return (void*)
-            ((uint8_t*)ComponentBuffer - offsetof(AComponentInstance, buffer));
+            ((uint8_t*)ComponentBuffer - offsetof(FComponentInstance, buffer));
 }
 
 void f_component__init(void)
@@ -52,12 +52,12 @@ void f_component__uninit(void)
 
 int f_component__stringToIndex(const char* StringId)
 {
-    const AComponent* component = f_strhash_get(g_componentsIndex, StringId);
+    const FComponent* component = f_strhash_get(g_componentsIndex, StringId);
 
     return component ? (int)(component - g_components) : -1;
 }
 
-const AComponent* f_component__get(int ComponentIndex)
+const FComponent* f_component__get(int ComponentIndex)
 {
     #if F_CONFIG_BUILD_DEBUG
         if(ComponentIndex < 0 || ComponentIndex >= F_CONFIG_ECS_COM_NUM) {
@@ -72,9 +72,9 @@ const AComponent* f_component__get(int ComponentIndex)
     return &g_components[ComponentIndex];
 }
 
-void f_component_new(int ComponentIndex, size_t InstanceSize, AComponentInstanceInit* InstanceInit, AComponentInstanceFree* InstanceFree)
+void f_component_new(int ComponentIndex, size_t InstanceSize, FComponentInstanceInit* InstanceInit, FComponentInstanceFree* InstanceFree)
 {
-    AComponent* component = &g_components[ComponentIndex];
+    FComponent* component = &g_components[ComponentIndex];
 
     #if F_CONFIG_BUILD_DEBUG
         if(component->stringId != NULL) {
@@ -82,15 +82,15 @@ void f_component_new(int ComponentIndex, size_t InstanceSize, AComponentInstance
         }
     #endif
 
-    component->size = sizeof(AComponentInstance) + InstanceSize;
+    component->size = sizeof(FComponentInstance) + InstanceSize;
     component->init = InstanceInit;
     component->free = InstanceFree;
     component->stringId = g_defaultId;
 }
 
-void f_component_template(int ComponentIndex, const char* StringId, size_t TemplateSize, AComponentTemplateInit* TemplateInit, AComponentTemplateFree* TemplateFree, AComponentInstanceInitEx* InstanceInitEx)
+void f_component_template(int ComponentIndex, const char* StringId, size_t TemplateSize, FComponentTemplateInit* TemplateInit, FComponentTemplateFree* TemplateFree, FComponentInstanceInitEx* InstanceInitEx)
 {
-    AComponent* component = &g_components[ComponentIndex];
+    FComponent* component = &g_components[ComponentIndex];
 
     #if F_CONFIG_BUILD_DEBUG
         if(ComponentIndex < 0 || ComponentIndex >= F_CONFIG_ECS_COM_NUM) {
@@ -118,24 +118,24 @@ void f_component_template(int ComponentIndex, const char* StringId, size_t Templ
 
 const void* f_component_dataGet(const void* ComponentBuffer)
 {
-    const AComponentInstance* instance = bufferGetInstance(ComponentBuffer);
+    const FComponentInstance* instance = bufferGetInstance(ComponentBuffer);
 
     return f_template__dataGet(f_entity__templateGet(instance->entity),
                                (int)(instance->component - g_components));
 }
 
 
-AEntity* f_component_entityGet(const void* ComponentBuffer)
+FEntity* f_component_entityGet(const void* ComponentBuffer)
 {
     return bufferGetInstance(ComponentBuffer)->entity;
 }
 
-const char* f_component__stringGet(const AComponent* Component)
+const char* f_component__stringGet(const FComponent* Component)
 {
     return Component->stringId;
 }
 
-void* f_component__templateInit(const AComponent* Component, const ABlock* Block)
+void* f_component__templateInit(const FComponent* Component, const FBlock* Block)
 {
     if(Component->templateSize > 0) {
         void* buffer = f_mem_zalloc(Component->templateSize);
@@ -150,7 +150,7 @@ void* f_component__templateInit(const AComponent* Component, const ABlock* Block
     return NULL;
 }
 
-void f_component__templateFree(const AComponent* Component, void* Buffer)
+void f_component__templateFree(const FComponent* Component, void* Buffer)
 {
     if(Component->templateFree) {
         Component->templateFree(Buffer);
@@ -159,9 +159,9 @@ void f_component__templateFree(const AComponent* Component, void* Buffer)
     f_mem_free(Buffer);
 }
 
-AComponentInstance* f_component__instanceNew(const AComponent* Component, AEntity* Entity, const void* TemplateData)
+FComponentInstance* f_component__instanceNew(const FComponent* Component, FEntity* Entity, const void* TemplateData)
 {
-    AComponentInstance* c = f_mem_zalloc(Component->size);
+    FComponentInstance* c = f_mem_zalloc(Component->size);
 
     c->component = Component;
     c->entity = Entity;
@@ -177,7 +177,7 @@ AComponentInstance* f_component__instanceNew(const AComponent* Component, AEntit
     return c;
 }
 
-void f_component__instanceFree(AComponentInstance* Instance)
+void f_component__instanceFree(FComponentInstance* Instance)
 {
     if(Instance == NULL) {
         return;

@@ -35,7 +35,7 @@ def main():
 """\
 #include "system_{name}.h"
 
-void s_{name}(AEntity* Entity)
+void s_{name}(FEntity* Entity)
 {{
     F_UNUSED(Entity);
 }}
@@ -47,7 +47,7 @@ void s_{name}(AEntity* Entity)
 
 #include <faur.h>
 
-extern ASystemHandler s_{name};
+extern FSystemHandler s_{name};
 """.format(name = sys_name))
 
 if __name__ == '__main__':

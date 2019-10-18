@@ -20,14 +20,14 @@
 
 #include "general/f_system_includes.h"
 
-typedef struct AStrBuilder AStrBuilder;
+typedef struct FStrBuilder FStrBuilder;
 
-extern AStrBuilder* f_strbuilder_new(size_t Bytes);
-extern void f_strbuilder_free(AStrBuilder* Builder);
+extern FStrBuilder* f_strbuilder_new(size_t Bytes);
+extern void f_strbuilder_free(FStrBuilder* Builder);
 
-extern const char* f_strbuilder_get(AStrBuilder* Builder);
+extern const char* f_strbuilder_get(FStrBuilder* Builder);
 
-extern bool f_strbuilder_add(AStrBuilder* Builder, const char* String);
-extern bool f_strbuilder_addf(AStrBuilder* Builder, const char* Format, ...);
+extern bool f_strbuilder_add(FStrBuilder* Builder, const char* String);
+extern bool f_strbuilder_addf(FStrBuilder* Builder, const char* Format, ...);
 
 #endif // F_INC_STRINGS_STRBUILDER_P_H

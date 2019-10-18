@@ -22,10 +22,10 @@
 
 #include "ecs/f_entity.p.h"
 
-typedef void ASystemHandler(AEntity* Entity);
-typedef int ASystemSort(AEntity* A, AEntity* B);
+typedef void FSystemHandler(FEntity* Entity);
+typedef int FSystemSort(FEntity* A, FEntity* B);
 
-extern void f_system_new(int SystemIndex, ASystemHandler* Handler, ASystemSort* Compare, bool OnlyActiveEntities);
+extern void f_system_new(int SystemIndex, FSystemHandler* Handler, FSystemSort* Compare, bool OnlyActiveEntities);
 extern void f_system_add(int SystemIndex, int ComponentIndex);
 
 extern void f_system_run(int SystemIndex);

@@ -22,7 +22,7 @@
 
 #include "math/f_fix.p.h"
 
-extern AVectorInt f_touch_deltaGet(void);
+extern FVectorInt f_touch_deltaGet(void);
 extern bool f_touch_tapGet(void);
 extern bool f_touch_pointGet(int X, int Y);
 extern bool f_touch_boxGet(int X, int Y, int W, int H);

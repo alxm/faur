@@ -25,29 +25,29 @@ enum {LEFT, RIGHT};
 
 typedef struct {
     int screenX[2]; // screen horizontal span to draw to
-    AVectorFix sprite[2]; // sprite line to interpolate and fill the span with
-} AScanline;
+    FVectorFix sprite[2]; // sprite line to interpolate and fill the span with
+} FScanline;
 
-struct APlatformTexture {
+struct FPlatformTexture {
     unsigned spans[1];
 };
 
-typedef void (*ABlitter)(const APlatformTexture* Texture, const APixels* Pixels, unsigned Frame, int X, int Y);
-typedef void (*ABlitterEx)(const APixels* Pixels, unsigned Frame, int X, int Y, AFix Scale, unsigned Angle, AFix CenterX, AFix CenterY);
+typedef void (*FBlitter)(const FPlatformTexture* Texture, const FPixels* Pixels, unsigned Frame, int X, int Y);
+typedef void (*FBlitterEx)(const FPixels* Pixels, unsigned Frame, int X, int Y, FFix Scale, unsigned Angle, FFix CenterX, FFix CenterY);
 
 #if F_CONFIG_SCREEN_SIZE_HEIGHT < 0
     #define F__SCANLINES_MALLOC 1
 #endif
 
 #if F__SCANLINES_MALLOC
-    static AScanline* g_scanlines;
+    static FScanline* g_scanlines;
 #else
-    static AScanline g_scanlines[F_CONFIG_SCREEN_SIZE_HEIGHT];
+    static FScanline g_scanlines[F_CONFIG_SCREEN_SIZE_HEIGHT];
 #endif
 
 // Interpolate sprite side (SprP1, SprP2) along screen line (ScrP1, ScrP2).
 // ScrP1.y <= ScrP2.y and at least part of this range is on screen.
-static void scan_line(int Index, AVectorInt ScrP1, AVectorInt ScrP2, AVectorFix SprP1, AVectorFix SprP2)
+static void scan_line(int Index, FVectorInt ScrP1, FVectorInt ScrP2, FVectorFix SprP1, FVectorFix SprP2)
 {
     // Happens when sprite angle is a multiple of 90deg,
     // and 2 of the sprite's opposite sides are 0-height in screen space.
@@ -56,17 +56,17 @@ static void scan_line(int Index, AVectorInt ScrP1, AVectorInt ScrP2, AVectorFix 
     }
 
     const int scrDY = ScrP2.y - ScrP1.y + 1;
-    AFix scrX = f_fix_fromInt(ScrP1.x);
-    const AFix scrXInc = f_fix_fromInt(ScrP2.x - ScrP1.x + 1) / scrDY;
+    FFix scrX = f_fix_fromInt(ScrP1.x);
+    const FFix scrXInc = f_fix_fromInt(ScrP2.x - ScrP1.x + 1) / scrDY;
 
-    AFix sprX = SprP1.x;
-    AFix sprY = SprP1.y;
-    const AFix sprDX = SprP2.x - SprP1.x
+    FFix sprX = SprP1.x;
+    FFix sprY = SprP1.y;
+    const FFix sprDX = SprP2.x - SprP1.x
                         + (SprP2.x > SprP1.x) - (SprP2.x < SprP1.x);
-    const AFix sprDY = SprP2.y - SprP1.y
+    const FFix sprDY = SprP2.y - SprP1.y
                         + (SprP2.y > SprP1.y) - (SprP2.y < SprP1.y);
-    const AFix sprXInc = sprDX / scrDY;
-    const AFix sprYInc = sprDY / scrDY;
+    const FFix sprXInc = sprDX / scrDY;
+    const FFix sprYInc = sprDY / scrDY;
 
     if(ScrP1.y < 0) {
         scrX += scrXInc * -ScrP1.y;
@@ -105,7 +105,7 @@ static void scan_line(int Index, AVectorInt ScrP1, AVectorInt ScrP2, AVectorFix 
 
 #define F__BLEND plain
 #define F__FILL Flat
-#define F__BLEND_SETUP const APixel color = f__color.pixel;
+#define F__BLEND_SETUP const FPixel color = f__color.pixel;
 #define F__PIXEL_SETUP
 #define F__PIXEL_PARAMS , color
 #include "platform/graphics/f_software_blit.inc.c"
@@ -117,14 +117,14 @@ static void scan_line(int Index, AVectorInt ScrP1, AVectorInt ScrP2, AVectorFix 
     if(alpha == 0) { \
         return; \
     }
-#define F__PIXEL_SETUP const ARgb rgb = f_pixel_toRgb(*src);
+#define F__PIXEL_SETUP const FRgb rgb = f_pixel_toRgb(*src);
 #define F__PIXEL_PARAMS , &rgb, alpha
 #include "platform/graphics/f_software_blit.inc.c"
 
 #define F__BLEND rgba
 #define F__FILL Flat
 #define F__BLEND_SETUP \
-    const ARgb rgb = f__color.rgb; \
+    const FRgb rgb = f__color.rgb; \
     const int alpha = f__color.alpha; \
     if(alpha == 0) { \
         return; \
@@ -136,13 +136,13 @@ static void scan_line(int Index, AVectorInt ScrP1, AVectorInt ScrP2, AVectorFix 
 #define F__BLEND rgb25
 #define F__FILL Data
 #define F__BLEND_SETUP
-#define F__PIXEL_SETUP const ARgb rgb = f_pixel_toRgb(*src);
+#define F__PIXEL_SETUP const FRgb rgb = f_pixel_toRgb(*src);
 #define F__PIXEL_PARAMS , &rgb
 #include "platform/graphics/f_software_blit.inc.c"
 
 #define F__BLEND rgb25
 #define F__FILL Flat
-#define F__BLEND_SETUP const ARgb rgb = f__color.rgb;
+#define F__BLEND_SETUP const FRgb rgb = f__color.rgb;
 #define F__PIXEL_SETUP
 #define F__PIXEL_PARAMS , &rgb
 #include "platform/graphics/f_software_blit.inc.c"
@@ -150,13 +150,13 @@ static void scan_line(int Index, AVectorInt ScrP1, AVectorInt ScrP2, AVectorFix 
 #define F__BLEND rgb50
 #define F__FILL Data
 #define F__BLEND_SETUP
-#define F__PIXEL_SETUP const ARgb rgb = f_pixel_toRgb(*src);
+#define F__PIXEL_SETUP const FRgb rgb = f_pixel_toRgb(*src);
 #define F__PIXEL_PARAMS , &rgb
 #include "platform/graphics/f_software_blit.inc.c"
 
 #define F__BLEND rgb50
 #define F__FILL Flat
-#define F__BLEND_SETUP const ARgb rgb = f__color.rgb;
+#define F__BLEND_SETUP const FRgb rgb = f__color.rgb;
 #define F__PIXEL_SETUP
 #define F__PIXEL_PARAMS , &rgb
 #include "platform/graphics/f_software_blit.inc.c"
@@ -164,13 +164,13 @@ static void scan_line(int Index, AVectorInt ScrP1, AVectorInt ScrP2, AVectorFix 
 #define F__BLEND rgb75
 #define F__FILL Data
 #define F__BLEND_SETUP
-#define F__PIXEL_SETUP const ARgb rgb = f_pixel_toRgb(*src);
+#define F__PIXEL_SETUP const FRgb rgb = f_pixel_toRgb(*src);
 #define F__PIXEL_PARAMS , &rgb
 #include "platform/graphics/f_software_blit.inc.c"
 
 #define F__BLEND rgb75
 #define F__FILL Flat
-#define F__BLEND_SETUP const ARgb rgb = f__color.rgb;
+#define F__BLEND_SETUP const FRgb rgb = f__color.rgb;
 #define F__PIXEL_SETUP
 #define F__PIXEL_PARAMS , &rgb
 #include "platform/graphics/f_software_blit.inc.c"
@@ -192,13 +192,13 @@ static void scan_line(int Index, AVectorInt ScrP1, AVectorInt ScrP2, AVectorFix 
 #define F__BLEND mod
 #define F__FILL Data
 #define F__BLEND_SETUP
-#define F__PIXEL_SETUP const ARgb rgb = f_pixel_toRgb(*src);
+#define F__PIXEL_SETUP const FRgb rgb = f_pixel_toRgb(*src);
 #define F__PIXEL_PARAMS , &rgb
 #include "platform/graphics/f_software_blit.inc.c"
 
 #define F__BLEND mod
 #define F__FILL Flat
-#define F__BLEND_SETUP const ARgb rgb = f__color.rgb;
+#define F__BLEND_SETUP const FRgb rgb = f__color.rgb;
 #define F__PIXEL_SETUP
 #define F__PIXEL_PARAMS , &rgb
 #include "platform/graphics/f_software_blit.inc.c"
@@ -206,13 +206,13 @@ static void scan_line(int Index, AVectorInt ScrP1, AVectorInt ScrP2, AVectorFix 
 #define F__BLEND add
 #define F__FILL Data
 #define F__BLEND_SETUP
-#define F__PIXEL_SETUP const ARgb rgb = f_pixel_toRgb(*src);
+#define F__PIXEL_SETUP const FRgb rgb = f_pixel_toRgb(*src);
 #define F__PIXEL_PARAMS , &rgb
 #include "platform/graphics/f_software_blit.inc.c"
 
 #define F__BLEND add
 #define F__FILL Flat
-#define F__BLEND_SETUP const ARgb rgb = f__color.rgb;
+#define F__BLEND_SETUP const FRgb rgb = f__color.rgb;
 #define F__PIXEL_SETUP
 #define F__PIXEL_PARAMS , &rgb
 #include "platform/graphics/f_software_blit.inc.c"
@@ -228,7 +228,7 @@ static void scan_line(int Index, AVectorInt ScrP1, AVectorInt ScrP2, AVectorFix 
     [Index][1][1][1] = f_blit__##Name##FlatKeyedDoClip, \
 
 // [Blend][Fill][ColorKey][Clip]
-static const ABlitter g_blitters[F_COLOR_BLEND_NUM][2][2][2] = {
+static const FBlitter g_blitters[F_COLOR_BLEND_NUM][2][2][2] = {
     F__INIT_BLEND(F_COLOR_BLEND_PLAIN, plain)
     F__INIT_BLEND(F_COLOR_BLEND_RGBA, rgba)
     F__INIT_BLEND(F_COLOR_BLEND_RGB25, rgb25)
@@ -246,7 +246,7 @@ static const ABlitter g_blitters[F_COLOR_BLEND_NUM][2][2][2] = {
     [Index][1][1] = f_blitEx__##Name##FlatKeyed, \
 
 // [Blend][Fill][ColorKey]
-static const ABlitterEx g_blittersEx[F_COLOR_BLEND_NUM][2][2] = {
+static const FBlitterEx g_blittersEx[F_COLOR_BLEND_NUM][2][2] = {
     F__INIT_BLEND_EX(F_COLOR_BLEND_PLAIN, plain)
     F__INIT_BLEND_EX(F_COLOR_BLEND_RGBA, rgba)
     F__INIT_BLEND_EX(F_COLOR_BLEND_RGB25, rgb25)
@@ -261,7 +261,7 @@ void f_platform_software_blit__init(void)
 {
     #if F__SCANLINES_MALLOC
         g_scanlines = f_mem_malloc((unsigned)
-                        f_platform_api__screenSizeGet().y * sizeof(AScanline));
+                        f_platform_api__screenSizeGet().y * sizeof(FScanline));
     #endif
 }
 
@@ -272,9 +272,9 @@ void f_platform_software_blit__uninit(void)
     #endif
 }
 
-static bool hasTransparency(const APixels* Pixels, unsigned Frame)
+static bool hasTransparency(const FPixels* Pixels, unsigned Frame)
 {
-    const APixel* buffer = f_pixels__bufferGetStart(Pixels, Frame);
+    const FPixel* buffer = f_pixels__bufferGetStart(Pixels, Frame);
 
     for(int i = Pixels->w * Pixels->h; i--; ) {
         if(*buffer++ == f_color__key) {
@@ -285,13 +285,13 @@ static bool hasTransparency(const APixels* Pixels, unsigned Frame)
     return false;
 }
 
-static size_t spansBytesNeeded(const APixels* Pixels, unsigned Frame)
+static size_t spansBytesNeeded(const FPixels* Pixels, unsigned Frame)
 {
     // Spans format for each scanline:
     // (NumSpans << 1 | start draw/transparent), len0, len1, ...
 
     size_t bytesNeeded = 0;
-    const APixel* buffer = f_pixels__bufferGetStart(Pixels, Frame);
+    const FPixel* buffer = f_pixels__bufferGetStart(Pixels, Frame);
 
     for(int y = Pixels->h; y--; ) {
         bytesNeeded += sizeof(unsigned); // total size and initial state
@@ -310,10 +310,10 @@ static size_t spansBytesNeeded(const APixels* Pixels, unsigned Frame)
     return bytesNeeded;
 }
 
-static void spansUpdate(const APixels* Pixels, unsigned Frame, APlatformTexture* Texture)
+static void spansUpdate(const FPixels* Pixels, unsigned Frame, FPlatformTexture* Texture)
 {
     unsigned* spans = Texture->spans;
-    const APixel* buffer = f_pixels__bufferGetStart(Pixels, Frame);
+    const FPixel* buffer = f_pixels__bufferGetStart(Pixels, Frame);
 
     for(int y = Pixels->h; y--; ) {
         unsigned* lineStart = spans;
@@ -337,9 +337,9 @@ static void spansUpdate(const APixels* Pixels, unsigned Frame, APlatformTexture*
     }
 }
 
-APlatformTexture* f_platform_api__textureNew(const APixels* Pixels, unsigned Frame)
+FPlatformTexture* f_platform_api__textureNew(const FPixels* Pixels, unsigned Frame)
 {
-    APlatformTexture* texture = NULL;
+    FPlatformTexture* texture = NULL;
 
     if(hasTransparency(Pixels, Frame)) {
         texture = f_mem_malloc(spansBytesNeeded(Pixels, Frame));
@@ -349,7 +349,7 @@ APlatformTexture* f_platform_api__textureNew(const APixels* Pixels, unsigned Fra
     return texture;
 }
 
-void f_platform_api__textureFree(APlatformTexture* Texture)
+void f_platform_api__textureFree(FPlatformTexture* Texture)
 {
     if(Texture == NULL) {
         return;
@@ -358,7 +358,7 @@ void f_platform_api__textureFree(APlatformTexture* Texture)
     f_mem_free(Texture);
 }
 
-void f_platform_api__textureBlit(const APlatformTexture* Texture, const APixels* Pixels, unsigned Frame, int X, int Y)
+void f_platform_api__textureBlit(const FPlatformTexture* Texture, const FPixels* Pixels, unsigned Frame, int X, int Y)
 {
     if(!f_screen_boxOnClip(X, Y, Pixels->w, Pixels->h)) {
         return;
@@ -372,7 +372,7 @@ void f_platform_api__textureBlit(const APlatformTexture* Texture, const APixels*
             (Texture, Pixels, Frame, X, Y);
 }
 
-void f_platform_api__textureBlitEx(const APlatformTexture* Texture, const APixels* Pixels, unsigned Frame, int X, int Y, AFix Scale, unsigned Angle, AFix CenterX, AFix CenterY)
+void f_platform_api__textureBlitEx(const FPlatformTexture* Texture, const FPixels* Pixels, unsigned Frame, int X, int Y, FFix Scale, unsigned Angle, FFix CenterX, FFix CenterY)
 {
     g_blittersEx
         [f__color.blend]

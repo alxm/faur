@@ -20,20 +20,20 @@
 
 #include "general/f_system_includes.h"
 
-typedef struct AGrid AGrid;
-typedef struct AList AGridItem;
+typedef struct FGrid FGrid;
+typedef struct FList FGridItem;
 
 #include "data/f_list.p.h"
 #include "math/f_fix.p.h"
 
-extern AGrid* f_grid_new(AFix Width, AFix Height, AFix MaxObjectDim);
-extern void f_grid_free(AGrid* Grid);
+extern FGrid* f_grid_new(FFix Width, FFix Height, FFix MaxObjectDim);
+extern void f_grid_free(FGrid* Grid);
 
-extern const AList* f_grid_nearGet(const AGrid* Grid, AVectorFix Coords);
+extern const FList* f_grid_nearGet(const FGrid* Grid, FVectorFix Coords);
 
-extern AGridItem* f_grid_itemNew(void);
-extern void f_grid_itemFree(AGridItem* Item);
+extern FGridItem* f_grid_itemNew(void);
+extern void f_grid_itemFree(FGridItem* Item);
 
-extern void f_grid_itemCoordsSet(const AGrid* Grid, AGridItem* Item, void* Context, AVectorFix Coords);
+extern void f_grid_itemCoordsSet(const FGrid* Grid, FGridItem* Item, void* Context, FVectorFix Coords);
 
 #endif // F_INC_COLLISION_GRID_P_H

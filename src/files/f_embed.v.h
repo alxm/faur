@@ -24,24 +24,24 @@ typedef struct {
     const char* path;
     size_t size;
     const char* entries[];
-} AEmbeddedDir;
+} FEmbeddedDir;
 
 typedef struct {
     const char* path;
     size_t size;
     uint8_t buffer[];
-} AEmbeddedFile;
+} FEmbeddedFile;
 
 #include "general/f_main.v.h"
 
-extern const APack f_pack__embed;
+extern const FPack f_pack__embed;
 
 extern void f_embed__populate(void);
 
 extern void f_embed__dirAdd(const void* Data);
-extern const AEmbeddedDir* f_embed__dirGet(const char* Path);
+extern const FEmbeddedDir* f_embed__dirGet(const char* Path);
 
 extern void f_embed__fileAdd(const void* Data);
-extern const AEmbeddedFile* f_embed__fileGet(const char* Path);
+extern const FEmbeddedFile* f_embed__fileGet(const char* Path);
 
 #endif // F_INC_FILES_EMBED_V_H

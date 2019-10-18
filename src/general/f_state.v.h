@@ -22,7 +22,7 @@
 
 #include "general/f_main.v.h"
 
-extern const APack f_pack__state;
+extern const FPack f_pack__state;
 
 extern void f_state__runLoop(void);
 extern bool f_state__runStep(void);

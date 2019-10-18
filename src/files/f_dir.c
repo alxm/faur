@@ -22,12 +22,12 @@
 #include <dirent.h>
 #include <sys/stat.h>
 
-struct ADir {
-    APath* path;
-    AList* files; // list of APath
+struct FDir {
+    FPath* path;
+    FList* files; // list of FPath
 };
 
-static int dirSort(const APath* A, const APath* B)
+static int dirSort(const FPath* A, const FPath* B)
 {
     const char* nameA = f_path_getName(A);
     const char* nameB = f_path_getName(B);
@@ -60,7 +60,7 @@ static int dirSort(const APath* A, const APath* B)
     return a - b;
 }
 
-static AList* dirReal(APath* Path)
+static FList* dirReal(FPath* Path)
 {
     const char* path = f_path_getFull(Path);
     DIR* dir = opendir(path);
@@ -91,7 +91,7 @@ static AList* dirReal(APath* Path)
         return NULL;
     }
 
-    AList* files = f_list_new();
+    FList* files = f_list_new();
 
     for(struct dirent* ent = readdir(dir); ent; ent = readdir(dir)) {
         if(ent->d_name[0] != '.') {
@@ -99,19 +99,19 @@ static AList* dirReal(APath* Path)
         }
     }
 
-    f_list_sort(files, (AListCompare*)dirSort);
+    f_list_sort(files, (FListCompare*)dirSort);
 
     closedir(dir);
 
     return files;
 }
 
-static AList* dirEmbedded(APath* Path)
+static FList* dirEmbedded(FPath* Path)
 {
     const char* path = f_path_getFull(Path);
-    const AEmbeddedDir* data = f_embed__dirGet(path);
+    const FEmbeddedDir* data = f_embed__dirGet(path);
 
-    AList* files = f_list_new();
+    FList* files = f_list_new();
 
     for(size_t e = data->size; e--; ) {
         f_list_addLast(files, f_path_newf("%s/%s", path, data->entries[e]));
@@ -120,10 +120,10 @@ static AList* dirEmbedded(APath* Path)
     return files;
 }
 
-ADir* f_dir_new(const char* Path)
+FDir* f_dir_new(const char* Path)
 {
-    AList* files = NULL;
-    APath* path = f_path_new(Path);
+    FList* files = NULL;
+    FPath* path = f_path_new(Path);
 
     if(f_path_test(path, F_PATH_DIR | F_PATH_REAL)) {
         files = dirReal(path);
@@ -137,7 +137,7 @@ ADir* f_dir_new(const char* Path)
         F__FATAL("f_dir_new(%s): Cannot open dir", Path);
     }
 
-    ADir* d = f_mem_malloc(sizeof(ADir));
+    FDir* d = f_mem_malloc(sizeof(FDir));
 
     d->path = path;
     d->files = files;
@@ -145,24 +145,24 @@ ADir* f_dir_new(const char* Path)
     return d;
 }
 
-void f_dir_free(ADir* Dir)
+void f_dir_free(FDir* Dir)
 {
     if(Dir == NULL) {
         return;
     }
 
-    f_list_freeEx(Dir->files, (AFree*)f_path_free);
+    f_list_freeEx(Dir->files, (FFree*)f_path_free);
     f_path_free(Dir->path);
 
     f_mem_free(Dir);
 }
 
-const APath* f_dir_pathGet(const ADir* Dir)
+const FPath* f_dir_pathGet(const FDir* Dir)
 {
     return Dir->path;
 }
 
-const AList* f_dir_entriesGet(const ADir* Dir)
+const FList* f_dir_entriesGet(const FDir* Dir)
 {
     return Dir->files;
 }

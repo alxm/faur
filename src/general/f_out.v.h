@@ -25,7 +25,7 @@ typedef enum {
     F_OUT__SOURCE_FAUR,
     F_OUT__SOURCE_APP,
     F_OUT__SOURCE_NUM
-} AOutSource;
+} FOutSource;
 
 typedef enum {
     F_OUT__TYPE_INVALID = -1,
@@ -35,7 +35,7 @@ typedef enum {
     F_OUT__TYPE_STATE,
     F_OUT__TYPE_FATAL,
     F_OUT__TYPE_NUM
-} AOutType;
+} FOutType;
 
 #if F_CONFIG_OUTPUT_ENABLED
     extern void f_out__info(const char* Format, ...);

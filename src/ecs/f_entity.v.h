@@ -30,19 +30,19 @@ typedef enum {
     F_ENTITY__DEBUG = F_FLAGS_BIT(2), // print debug messages for this entity
     F_ENTITY__REMOVED = F_FLAGS_BIT(3), // marked for removal, may have refs
     F_ENTITY__REMOVE_INACTIVE = F_FLAGS_BIT(4), // mark for removal if kicked
-} AEntityFlags;
+} FEntityFlags;
 
-extern void f_entity__free(AEntity* Entity);
-extern void f_entity__freeEx(AEntity* Entity);
+extern void f_entity__free(FEntity* Entity);
+extern void f_entity__freeEx(FEntity* Entity);
 
-extern const ATemplate* f_entity__templateGet(const AEntity* Entity);
+extern const FTemplate* f_entity__templateGet(const FEntity* Entity);
 
-extern bool f_entity__canDelete(const AEntity* Entity);
-extern void f_entity__ecsListAdd(AEntity* Entity, AList* List);
+extern bool f_entity__canDelete(const FEntity* Entity);
+extern void f_entity__ecsListAdd(FEntity* Entity, FList* List);
 
-extern void f_entity__systemsMatch(AEntity* Entity, ASystem* System);
-extern void f_entity__systemsAddTo(AEntity* Entity);
-extern void f_entity__systemsRemoveFromAll(AEntity* Entity);
-extern void f_entity__systemsRemoveFromActive(AEntity* Entity);
+extern void f_entity__systemsMatch(FEntity* Entity, FSystem* System);
+extern void f_entity__systemsAddTo(FEntity* Entity);
+extern void f_entity__systemsRemoveFromAll(FEntity* Entity);
+extern void f_entity__systemsRemoveFromActive(FEntity* Entity);
 
 #endif // F_INC_ECS_ENTITY_V_H

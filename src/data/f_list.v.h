@@ -20,21 +20,21 @@
 
 #include "data/f_list.p.h"
 
-struct AListNode {
+struct FListNode {
     void* content;
-    AList* list;
-    AListNode* next;
-    AListNode* prev;
+    FList* list;
+    FListNode* next;
+    FListNode* prev;
 };
 
-struct AList {
-    AListNode sentinel;
+struct FList {
+    FListNode sentinel;
     unsigned items;
 };
 
-extern const AList f__list_empty;
+extern const FList f__list_empty;
 
-static inline AList* f_list__nodeGetList(const AListNode* Node)
+static inline FList* f_list__nodeGetList(const FListNode* Node)
 {
     return Node->list;
 }

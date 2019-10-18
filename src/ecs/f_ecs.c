@@ -19,7 +19,7 @@
 #include <faur.v.h>
 
 #if F_CONFIG_ECS_ENABLED
-static AList* g_lists[F_ECS__NUM]; // Each entity is in exactly one of these
+static FList* g_lists[F_ECS__NUM]; // Each entity is in exactly one of these
 static bool g_ignoreRefDec; // Set to prevent using freed entities
 
 static void f_ecs__init(void)
@@ -37,7 +37,7 @@ static void f_ecs__uninit(void)
     f_ecs__refDecIgnoreSet(true);
 
     for(int i = F_ECS__NUM; i--; ) {
-        f_list_freeEx(g_lists[i], (AFree*)f_entity__free);
+        f_list_freeEx(g_lists[i], (FFree*)f_entity__free);
     }
 
     f_template__uninit();
@@ -45,7 +45,7 @@ static void f_ecs__uninit(void)
     f_component__uninit();
 }
 
-const APack f_pack__ecs = {
+const FPack f_pack__ecs = {
     "ECS",
     {
         [0] = f_ecs__init,
@@ -55,7 +55,7 @@ const APack f_pack__ecs = {
     },
 };
 
-AList* f_ecs__listGet(AEcsListId List)
+FList* f_ecs__listGet(FEcsListId List)
 {
     return g_lists[List];
 }
@@ -86,7 +86,7 @@ void f_ecs__tick(void)
     f_ecs__flushEntitiesFromSystems();
 
     // Check what systems the new entities match
-    F_LIST_ITERATE(g_lists[F_ECS__NEW], AEntity*, e) {
+    F_LIST_ITERATE(g_lists[F_ECS__NEW], FEntity*, e) {
         for(int s = F_CONFIG_ECS_SYS_NUM; s--; ) {
             f_entity__systemsMatch(e, f_system__get(s));
         }
@@ -95,18 +95,18 @@ void f_ecs__tick(void)
     }
 
     // Add entities to the systems they match
-    F_LIST_ITERATE(g_lists[F_ECS__RESTORE], AEntity*, e) {
+    F_LIST_ITERATE(g_lists[F_ECS__RESTORE], FEntity*, e) {
         f_entity__systemsAddTo(e);
     }
 
     f_list_clear(g_lists[F_ECS__NEW]);
     f_list_clear(g_lists[F_ECS__RESTORE]);
-    f_list_clearEx(g_lists[F_ECS__FREE], (AFree*)f_entity__free);
+    f_list_clearEx(g_lists[F_ECS__FREE], (FFree*)f_entity__free);
 }
 
 void f_ecs__flushEntitiesFromSystems(void)
 {
-    F_LIST_ITERATE(g_lists[F_ECS__FLUSH], AEntity*, e) {
+    F_LIST_ITERATE(g_lists[F_ECS__FLUSH], FEntity*, e) {
         f_entity__systemsRemoveFromAll(e);
 
         f_entity__ecsListAdd(
@@ -116,7 +116,7 @@ void f_ecs__flushEntitiesFromSystems(void)
     f_list_clear(g_lists[F_ECS__FLUSH]);
 }
 #else // !F_CONFIG_ECS_ENABLED
-const APack f_pack__ecs;
+const FPack f_pack__ecs;
 
 void f_ecs__tick(void)
 {

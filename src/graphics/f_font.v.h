@@ -30,12 +30,12 @@ typedef enum {
     F_FONT__ID_RED,
     F_FONT__ID_BLUE,
     F_FONT__ID_NUM
-} AFontId;
+} FFontId;
 
 #include "general/f_main.v.h"
 
-extern const APack f_pack__font;
+extern const FPack f_pack__font;
 
-extern void f_font__fontSet(AFontId Font);
+extern void f_font__fontSet(FFontId Font);
 
 #endif // F_INC_GRAPHICS_FONT_V_H

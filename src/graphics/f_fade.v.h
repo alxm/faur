@@ -22,7 +22,7 @@
 
 #include "general/f_main.v.h"
 
-extern const APack f_pack__fade;
+extern const FPack f_pack__fade;
 
 extern void f_fade__tick(void);
 extern void f_fade__draw(void);

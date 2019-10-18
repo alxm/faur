@@ -19,45 +19,45 @@
 #include <faur.v.h>
 
 #if F_CONFIG_ECS_ENABLED
-static ACollection* g_current; // New entities are added to this collection
+static FCollection* g_current; // New entities are added to this collection
 
-ACollection* f_collection__get(void)
+FCollection* f_collection__get(void)
 {
     return g_current;
 }
 
-void f_collection_set(ACollection* Collection)
+void f_collection_set(FCollection* Collection)
 {
     g_current = Collection;
 }
 
-ACollection* f_collection_new(void)
+FCollection* f_collection_new(void)
 {
     return f_list_new();
 }
 
-void f_collection_free(ACollection* Collection)
+void f_collection_free(FCollection* Collection)
 {
     f_ecs__refDecIgnoreSet(true);
-    f_list_freeEx(Collection, (AFree*)f_entity__freeEx);
+    f_list_freeEx(Collection, (FFree*)f_entity__freeEx);
     f_ecs__refDecIgnoreSet(false);
 }
 
-void f_collection_clear(ACollection* Collection)
+void f_collection_clear(FCollection* Collection)
 {
-    f_list_clearEx(Collection, (AFree*)f_entity_removedSet);
+    f_list_clearEx(Collection, (FFree*)f_entity_removedSet);
 }
 
-void f_collection_muteInc(ACollection* Collection)
+void f_collection_muteInc(FCollection* Collection)
 {
-    F_LIST_ITERATE(Collection, AEntity*, e) {
+    F_LIST_ITERATE(Collection, FEntity*, e) {
         f_entity_muteInc(e);
     }
 }
 
-void f_collection_muteDec(ACollection* Collection)
+void f_collection_muteDec(FCollection* Collection)
 {
-    F_LIST_ITERATE(Collection, AEntity*, e) {
+    F_LIST_ITERATE(Collection, FEntity*, e) {
         f_entity_muteDec(e);
     }
 }

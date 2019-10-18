@@ -20,16 +20,16 @@
 
 #include "general/f_system_includes.h"
 
-typedef struct AList ACollection;
+typedef struct FList FCollection;
 
-extern void f_collection_set(ACollection* Collection);
+extern void f_collection_set(FCollection* Collection);
 
-extern ACollection* f_collection_new(void);
-extern void f_collection_free(ACollection* Collection);
+extern FCollection* f_collection_new(void);
+extern void f_collection_free(FCollection* Collection);
 
-extern void f_collection_clear(ACollection* Collection);
+extern void f_collection_clear(FCollection* Collection);
 
-extern void f_collection_muteInc(ACollection* Collection);
-extern void f_collection_muteDec(ACollection* Collection);
+extern void f_collection_muteInc(FCollection* Collection);
+extern void f_collection_muteDec(FCollection* Collection);
 
 #endif // F_INC_ECS_COLLECTION_P_H

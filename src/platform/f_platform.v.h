@@ -20,14 +20,14 @@
 
 #include "platform/f_platform.p.h"
 
-typedef struct APlatformAnalog APlatformAnalog;
-typedef struct APlatformButton APlatformButton;
-typedef struct APlatformController APlatformController;
+typedef struct FPlatformAnalog FPlatformAnalog;
+typedef struct FPlatformButton FPlatformButton;
+typedef struct FPlatformController FPlatformController;
 
-typedef void APlatformMusic;
-typedef void APlatformSample;
+typedef void FPlatformMusic;
+typedef void FPlatformSample;
 
-typedef struct APlatformTexture APlatformTexture;
+typedef struct FPlatformTexture FPlatformTexture;
 
 #include "general/f_main.v.h"
 #include "graphics/f_pixels.v.h"
@@ -35,7 +35,7 @@ typedef struct APlatformTexture APlatformTexture;
 #include "input/f_button.v.h"
 #include "math/f_fix.v.h"
 
-extern const APack f_pack__platform;
+extern const FPack f_pack__platform;
 
 extern uint32_t f_platform_api__timeMsGet(void);
 extern void f_platform_api__timeMsWait(uint32_t Ms);
@@ -43,14 +43,14 @@ extern void f_platform_api__timeMsWait(uint32_t Ms);
 extern void f_platform_api__screenInit(void);
 extern void f_platform_api__screenUninit(void);
 extern void f_platform_api__screenClear(void);
-extern APlatformTexture* f_platform_api__screenTextureGet(void);
-extern void f_platform_api__screenTextureSet(APlatformTexture* Texture);
-extern void f_platform_api__screenTextureRead(APixels* Pixels, unsigned Frame);
+extern FPlatformTexture* f_platform_api__screenTextureGet(void);
+extern void f_platform_api__screenTextureSet(FPlatformTexture* Texture);
+extern void f_platform_api__screenTextureRead(FPixels* Pixels, unsigned Frame);
 extern void f_platform_api__screenClipSet(int X, int Y, int Width, int Height);
 extern void f_platform_api__screenDraw(void);
 extern void f_platform_api__screenShow(void);
-extern APixels* f_platform_api__screenPixelsGet(void);
-extern AVectorInt f_platform_api__screenSizeGet(void);
+extern FPixels* f_platform_api__screenPixelsGet(void);
+extern FVectorInt f_platform_api__screenSizeGet(void);
 extern bool f_platform_api__screenVsyncGet(void);
 extern int f_platform_api__screenZoomGet(void);
 extern void f_platform_api__screenZoomSet(int Zoom);
@@ -70,45 +70,45 @@ extern void f_platform_api__drawRectangleOutline(int X, int Y, int Width, int He
 extern void f_platform_api__drawCircleOutline(int X, int Y, int Radius);
 extern void f_platform_api__drawCircleFilled(int X, int Y, int Radius);
 
-extern APlatformTexture* f_platform_api__textureNew(const APixels* Pixels, unsigned Frame);
-extern void f_platform_api__textureFree(APlatformTexture* Texture);
-extern void f_platform_api__textureBlit(const APlatformTexture* Texture, const APixels* Pixels, unsigned Frame, int X, int Y);
-extern void f_platform_api__textureBlitEx(const APlatformTexture* Texture, const APixels* Pixels, unsigned Frame, int X, int Y, AFix Scale, unsigned Angle, AFix CenterX, AFix CenterY);
+extern FPlatformTexture* f_platform_api__textureNew(const FPixels* Pixels, unsigned Frame);
+extern void f_platform_api__textureFree(FPlatformTexture* Texture);
+extern void f_platform_api__textureBlit(const FPlatformTexture* Texture, const FPixels* Pixels, unsigned Frame, int X, int Y);
+extern void f_platform_api__textureBlitEx(const FPlatformTexture* Texture, const FPixels* Pixels, unsigned Frame, int X, int Y, FFix Scale, unsigned Angle, FFix CenterX, FFix CenterY);
 
 extern bool f_platform_api__soundMuteGet(void);
 extern void f_platform_api__soundMuteFlip(void);
 extern int f_platform_api__soundVolumeGetMax(void);
 
-extern APlatformMusic* f_platform_api__soundMusicNew(const char* Path);
-extern void f_platform_api__soundMusicFree(APlatformMusic* Music);
+extern FPlatformMusic* f_platform_api__soundMusicNew(const char* Path);
+extern void f_platform_api__soundMusicFree(FPlatformMusic* Music);
 extern void f_platform_api__soundMusicVolumeSet(int Volume);
-extern void f_platform_api__soundMusicPlay(APlatformMusic* Music);
+extern void f_platform_api__soundMusicPlay(FPlatformMusic* Music);
 extern void f_platform_api__soundMusicStop(void);
 
-extern APlatformSample* f_platform_api__soundSampleNewFromFile(const char* Path);
-extern APlatformSample* f_platform_api__soundSampleNewFromData(const uint8_t* Data, int Size);
-extern void f_platform_api__soundSampleFree(APlatformSample* Sample);
-extern void f_platform_api__soundSampleVolumeSet(APlatformSample* Sample, int Volume);
+extern FPlatformSample* f_platform_api__soundSampleNewFromFile(const char* Path);
+extern FPlatformSample* f_platform_api__soundSampleNewFromData(const uint8_t* Data, int Size);
+extern void f_platform_api__soundSampleFree(FPlatformSample* Sample);
+extern void f_platform_api__soundSampleVolumeSet(FPlatformSample* Sample, int Volume);
 extern void f_platform_api__soundSampleVolumeSetAll(int Volume);
-extern void f_platform_api__soundSamplePlay(APlatformSample* Sample, int Channel, bool Loop);
+extern void f_platform_api__soundSamplePlay(FPlatformSample* Sample, int Channel, bool Loop);
 extern void f_platform_api__soundSampleStop(int Channel);
 extern bool f_platform_api__soundSampleIsPlaying(int Channel);
 extern int f_platform_api__soundSampleChannelGet(void);
 
 extern void f_platform_api__inputPoll(void);
 
-extern const APlatformButton* f_platform_api__inputKeyGet(AKeyId Id);
-extern const APlatformButton* f_platform_api__inputButtonGet(const APlatformController* Controller, AButtonId Id);
-extern bool f_platform_api__inputButtonPressGet(const APlatformButton* Button);
+extern const FPlatformButton* f_platform_api__inputKeyGet(FKeyId Id);
+extern const FPlatformButton* f_platform_api__inputButtonGet(const FPlatformController* Controller, FButtonId Id);
+extern bool f_platform_api__inputButtonPressGet(const FPlatformButton* Button);
 
-extern const APlatformAnalog* f_platform_api__inputAnalogGet(const APlatformController* Controller, AAnalogId Id);
-extern int f_platform_api__inputAnalogValueGet(const APlatformAnalog* Analog);
+extern const FPlatformAnalog* f_platform_api__inputAnalogGet(const FPlatformController* Controller, FAnalogId Id);
+extern int f_platform_api__inputAnalogValueGet(const FPlatformAnalog* Analog);
 
-extern AVectorInt f_platform_api__inputTouchCoordsGet(void);
-extern AVectorInt f_platform_api__inputTouchDeltaGet(void);
+extern FVectorInt f_platform_api__inputTouchCoordsGet(void);
+extern FVectorInt f_platform_api__inputTouchDeltaGet(void);
 extern bool f_platform_api__inputTouchTapGet(void);
 
-extern APlatformController* f_platform_api__inputControllerClaim(AControllerBind* Callback);
-extern void f_platform_api__inputControllerRelease(APlatformController* Controller);
+extern FPlatformController* f_platform_api__inputControllerClaim(FControllerBind* Callback);
+extern void f_platform_api__inputControllerRelease(FPlatformController* Controller);
 
 #endif // F_INC_PLATFORM_PLATFORM_V_H

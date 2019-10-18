@@ -19,17 +19,17 @@
 #include <faur.v.h>
 #include <sys/stat.h>
 
-struct APath {
-    APathFlags flags;
+struct FPath {
+    FPathFlags flags;
     char* full;
     char* dirsPart;
     char* namePart;
 };
 
-static APathFlags getPathFlags(const char* Path)
+static FPathFlags getPathFlags(const char* Path)
 {
     struct stat info;
-    APathFlags flags = 0;
+    FPathFlags flags = 0;
 
     if(stat(Path, &info) == 0) {
         F_FLAGS_SET(flags, F_PATH_REAL);
@@ -50,9 +50,9 @@ static APathFlags getPathFlags(const char* Path)
     return flags;
 }
 
-APath* f_path_new(const char* Path)
+FPath* f_path_new(const char* Path)
 {
-    APath* p = f_mem_malloc(sizeof(APath));
+    FPath* p = f_mem_malloc(sizeof(FPath));
 
     p->flags = getPathFlags(Path);
     p->full = f_str_dup(Path);
@@ -70,7 +70,7 @@ APath* f_path_new(const char* Path)
     return p;
 }
 
-APath* f_path_newf(const char* Format, ...)
+FPath* f_path_newf(const char* Format, ...)
 {
     va_list args;
     va_start(args, Format);
@@ -89,14 +89,14 @@ APath* f_path_newf(const char* Format, ...)
     vsnprintf(buffer, (size_t)bytesNeeded, Format, args);
     va_end(args);
 
-    APath* p = f_path_new(buffer);
+    FPath* p = f_path_new(buffer);
 
     f_mem_free(buffer);
 
     return p;
 }
 
-void f_path_free(APath* Path)
+void f_path_free(FPath* Path)
 {
     f_mem_free(Path->full);
     f_mem_free(Path->dirsPart);
@@ -104,32 +104,32 @@ void f_path_free(APath* Path)
     f_mem_free(Path);
 }
 
-bool f_path_exists(const char* Path, APathFlags Flags)
+bool f_path_exists(const char* Path, FPathFlags Flags)
 {
     return F_FLAGS_TEST_ALL(getPathFlags(Path), Flags);
 }
 
-bool f_path_test(const APath* Path, APathFlags Flags)
+bool f_path_test(const FPath* Path, FPathFlags Flags)
 {
     return F_FLAGS_TEST_ALL(Path->flags, Flags);
 }
 
-void f_path__flagsSet(APath* Path, APathFlags Flags)
+void f_path__flagsSet(FPath* Path, FPathFlags Flags)
 {
     F_FLAGS_SET(Path->flags, Flags);
 }
 
-const char* f_path_getFull(const APath* Path)
+const char* f_path_getFull(const FPath* Path)
 {
     return Path->full;
 }
 
-const char* f_path_getDirs(const APath* Path)
+const char* f_path_getDirs(const FPath* Path)
 {
     return Path->dirsPart;
 }
 
-const char* f_path_getName(const APath* Path)
+const char* f_path_getName(const FPath* Path)
 {
     return Path->namePart;
 }

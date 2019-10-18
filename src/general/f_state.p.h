@@ -20,12 +20,12 @@
 
 #include "general/f_system_includes.h"
 
-typedef void AStateHandler(void);
+typedef void FStateHandler(void);
 
-extern void f_state_push(AStateHandler* Handler, const char* Name);
+extern void f_state_push(FStateHandler* Handler, const char* Name);
 extern void f_state_pop(void);
-extern void f_state_popUntil(AStateHandler* Handler, const char* Name);
-extern void f_state_replace(AStateHandler* Handler, const char* Name);
+extern void f_state_popUntil(FStateHandler* Handler, const char* Name);
+extern void f_state_replace(FStateHandler* Handler, const char* Name);
 
 #ifndef FAUR_IMPLEMENT
     #define f_state_push(Handler) f_state_push(Handler, #Handler)
@@ -35,11 +35,11 @@ extern void f_state_replace(AStateHandler* Handler, const char* Name);
 
 extern void f_state_exit(void);
 
-extern AStateHandler* f_state_currentGet(void);
+extern FStateHandler* f_state_currentGet(void);
 extern bool f_state_currentChanged(void);
 
 extern bool f_state_blockGet(void);
-extern void f_state_blockSet(const AEvent* Event);
+extern void f_state_blockSet(const FEvent* Event);
 
 typedef enum {
     F__STATE_STAGE_INVALID = -1,
@@ -48,9 +48,9 @@ typedef enum {
     F__STATE_STAGE_DRAW,
     F__STATE_STAGE_FREE,
     F__STATE_STAGE_NUM
-} AStateStage;
+} FStateStage;
 
-extern bool f__state_stageCheck(AStateStage Stage);
+extern bool f__state_stageCheck(FStateStage Stage);
 
 #define F_STATE_INIT if(f__state_stageCheck(F__STATE_STAGE_INIT))
 #define F_STATE_TICK if(f__state_stageCheck(F__STATE_STAGE_TICK))

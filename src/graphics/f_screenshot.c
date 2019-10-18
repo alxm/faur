@@ -26,13 +26,13 @@ static char* g_filePrefix;
 static char* g_title;
 static char* g_description;
 static unsigned g_screenshotNumber;
-static AButton* g_button;
+static FButton* g_button;
 
 static bool lazy_init(void)
 {
     // Only interested in the last file, to get the number from its name
-    ADir* dir = f_dir_new(F_CONFIG_DIR_SCREENSHOTS);
-    APath* entry = f_list_getLast(f_dir_entriesGet(dir));
+    FDir* dir = f_dir_new(F_CONFIG_DIR_SCREENSHOTS);
+    FPath* entry = f_list_getLast(f_dir_entriesGet(dir));
 
     if(entry == NULL) {
         g_isInit = true;
@@ -135,7 +135,7 @@ void f_screenshot__uninit(void)
     f_button_free(g_button);
 }
 
-const APack f_pack__screenshot = {
+const FPack f_pack__screenshot = {
     "Screenshot",
     {
         [0] = f_screenshot__init,
@@ -157,7 +157,7 @@ void f_screenshot_take(void)
     takeScreenshot();
 }
 #else // !F_CONFIG_LIB_PNG
-const APack f_pack__screenshot;
+const FPack f_pack__screenshot;
 
 void f_screenshot__tick(void)
 {

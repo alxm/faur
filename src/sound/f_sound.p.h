@@ -20,29 +20,29 @@
 
 #include "general/f_system_includes.h"
 
-typedef void AMusic;
-typedef void ASample;
+typedef void FMusic;
+typedef void FSample;
 
 typedef enum {
     F_CHANNEL_NORMAL = 0,
     F_CHANNEL_LOOP = F_FLAGS_BIT(0),
     F_CHANNEL_RESTART = F_FLAGS_BIT(1),
     F_CHANNEL_YIELD = F_FLAGS_BIT(2),
-} AChannelFlags;
+} FChannelFlags;
 
 #define F_CHANNEL_ANY -1
 
-extern AMusic* f_music_new(const char* Path);
-extern void f_music_free(AMusic* Music);
+extern FMusic* f_music_new(const char* Path);
+extern void f_music_free(FMusic* Music);
 
-extern void f_music_play(AMusic* Music);
+extern void f_music_play(FMusic* Music);
 extern void f_music_stop(void);
 
-extern ASample* f_sample_new(const char* Path);
-extern void f_sample_free(ASample* Sample);
+extern FSample* f_sample_new(const char* Path);
+extern void f_sample_free(FSample* Sample);
 
 extern int f_channel_new(void);
-extern void f_channel_play(int Channel, ASample* Sample, AChannelFlags Flags);
+extern void f_channel_play(int Channel, FSample* Sample, FChannelFlags Flags);
 extern void f_channel_stop(int Channel);
 extern bool f_channel_isPlaying(int Channel);
 

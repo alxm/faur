@@ -32,7 +32,7 @@ bool f_collide_circleAndCircle(int X1, int Y1, int R1, int X2, int Y2, int R2)
     return x * x + y * y < r * r;
 }
 
-bool f_collide_circleAndCirclef(AFix X1, AFix Y1, AFix R1, AFix X2, AFix Y2, AFix R2)
+bool f_collide_circleAndCirclef(FFix X1, FFix Y1, FFix R1, FFix X2, FFix Y2, FFix R2)
 {
     const int64_t x = X1 - X2;
     const int64_t y = Y1 - Y2;

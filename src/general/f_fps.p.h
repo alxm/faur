@@ -32,6 +32,6 @@ extern unsigned f_fps_rateDrawGetMax(void);
 
 extern unsigned f_fps_ticksGet(void);
 extern bool f_fps_ticksNth(unsigned N);
-extern AFix f_fps_ticksSin(uint8_t Mul, uint8_t Div, unsigned Offset);
+extern FFix f_fps_ticksSin(uint8_t Mul, uint8_t Div, unsigned Offset);
 
 #endif // F_INC_GENERAL_FPS_P_H

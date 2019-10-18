@@ -18,10 +18,10 @@
 #include "f_file.v.h"
 #include <faur.v.h>
 
-AFile* f_file_new(const char* Path, AFileMode Mode)
+FFile* f_file_new(const char* Path, FFileMode Mode)
 {
-    AFile* f = NULL;
-    APath* path = f_path_new(Path);
+    FFile* f = NULL;
+    FPath* path = f_path_new(Path);
 
     if(F_FLAGS_TEST_ANY(Mode, F_FILE_WRITE)
         || f_path_test(path, F_PATH_FILE | F_PATH_REAL)) {
@@ -40,7 +40,7 @@ AFile* f_file_new(const char* Path, AFileMode Mode)
     return f;
 }
 
-void f_file_free(AFile* File)
+void f_file_free(FFile* File)
 {
     if(File == NULL) {
         return;
@@ -56,12 +56,12 @@ void f_file_free(AFile* File)
     f_mem_free(File);
 }
 
-const APath* f_file_pathGet(const AFile* File)
+const FPath* f_file_pathGet(const FFile* File)
 {
     return File->path;
 }
 
-FILE* f_file_handleGet(const AFile* File)
+FILE* f_file_handleGet(const FFile* File)
 {
     if(f_path_test(File->path, F_PATH_REAL)) {
         return File->u.handle;
@@ -70,7 +70,7 @@ FILE* f_file_handleGet(const AFile* File)
     }
 }
 
-const AEmbeddedFile* f_file__dataGet(AFile* File)
+const FEmbeddedFile* f_file__dataGet(FFile* File)
 {
     if(f_path_test(File->path, F_PATH_EMBEDDED)) {
         return File->u.e.data;
@@ -90,7 +90,7 @@ uint8_t* f_file_toBuffer(const char* Path)
     return NULL;
 }
 
-bool f_file_prefixCheck(AFile* File, const char* Prefix)
+bool f_file_prefixCheck(FFile* File, const char* Prefix)
 {
     size_t size = strlen(Prefix) + 1;
     char buffer[size];
@@ -106,12 +106,12 @@ bool f_file_prefixCheck(AFile* File, const char* Prefix)
     return f_str_equal(buffer, Prefix);
 }
 
-void f_file_prefixWrite(AFile* File, const char* Prefix)
+void f_file_prefixWrite(FFile* File, const char* Prefix)
 {
     f_file_write(File, Prefix, strlen(Prefix) + 1);
 }
 
-bool f_file_read(AFile* File, void* Buffer, size_t Size)
+bool f_file_read(FFile* File, void* Buffer, size_t Size)
 {
     bool ret = File->interface->read(File, Buffer, Size);
 
@@ -124,7 +124,7 @@ bool f_file_read(AFile* File, void* Buffer, size_t Size)
     return ret;
 }
 
-bool f_file_write(AFile* File, const void* Buffer, size_t Size)
+bool f_file_write(FFile* File, const void* Buffer, size_t Size)
 {
     bool ret = File->interface->write(File, Buffer, Size);
 
@@ -137,7 +137,7 @@ bool f_file_write(AFile* File, const void* Buffer, size_t Size)
     return ret;
 }
 
-bool f_file_writef(AFile* File, const char* Format, ...)
+bool f_file_writef(FFile* File, const char* Format, ...)
 {
     va_list args;
     va_start(args, Format);
@@ -154,12 +154,12 @@ bool f_file_writef(AFile* File, const char* Format, ...)
     return ret;
 }
 
-bool f_file_flush(AFile* File)
+bool f_file_flush(FFile* File)
 {
     return File->interface->flush(File);
 }
 
-static int readChar(AFile* File)
+static int readChar(FFile* File)
 {
     int ch = File->interface->getchar(File);
 
@@ -188,7 +188,7 @@ static int readChar(AFile* File)
     return ch;
 }
 
-bool f_file_lineRead(AFile* File)
+bool f_file_lineRead(FFile* File)
 {
     int ch;
 
@@ -226,17 +226,17 @@ bool f_file_lineRead(AFile* File)
     return true;
 }
 
-const char* f_file_lineBufferGet(const AFile* File)
+const char* f_file_lineBufferGet(const FFile* File)
 {
     return File->lineBuffer;
 }
 
-unsigned f_file_lineNumberGet(const AFile* File)
+unsigned f_file_lineNumberGet(const FFile* File)
 {
     return File->lineNumber;
 }
 
-bool f_file_rewind(AFile* File)
+bool f_file_rewind(FFile* File)
 {
     bool ret = File->interface->seek(File, 0, F_FILE__OFFSET_START);
 
@@ -250,7 +250,7 @@ bool f_file_rewind(AFile* File)
     return ret;
 }
 
-bool f_file_seekStart(AFile* File, int Offset)
+bool f_file_seekStart(FFile* File, int Offset)
 {
     bool ret = File->interface->seek(File, Offset, F_FILE__OFFSET_START);
 
@@ -263,7 +263,7 @@ bool f_file_seekStart(AFile* File, int Offset)
     return ret;
 }
 
-bool f_file_seekEnd(AFile* File, int Offset)
+bool f_file_seekEnd(FFile* File, int Offset)
 {
     bool ret = File->interface->seek(File, Offset, F_FILE__OFFSET_END);
 
@@ -276,7 +276,7 @@ bool f_file_seekEnd(AFile* File, int Offset)
     return ret;
 }
 
-bool f_file_seekCurrent(AFile* File, int Offset)
+bool f_file_seekCurrent(FFile* File, int Offset)
 {
     bool ret = File->interface->seek(File, Offset, F_FILE__OFFSET_CURRENT);
 

@@ -28,14 +28,14 @@ typedef enum {
     F_ECS__FLUSH, // muted or removed entities, to be flushed from systems
     F_ECS__FREE, // entities to be freed at the end of current frame
     F_ECS__NUM
-} AEcsListId;
+} FEcsListId;
 
 #include "data/f_list.v.h"
 #include "general/f_main.v.h"
 
-extern const APack f_pack__ecs;
+extern const FPack f_pack__ecs;
 
-extern AList* f_ecs__listGet(AEcsListId List);
+extern FList* f_ecs__listGet(FEcsListId List);
 extern unsigned f_ecs__listGetSum(void);
 
 extern bool f_ecs__refDecIgnoreGet(void);

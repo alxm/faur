@@ -18,23 +18,23 @@
 #include "f_menu.v.h"
 #include <faur.v.h>
 
-struct AMenu {
-    AMenuState state;
-    AList* items;
+struct FMenu {
+    FMenuState state;
+    FList* items;
     void* selectedItem;
     unsigned selectedIndex;
-    ASample* soundAccept;
-    ASample* soundCancel;
-    ASample* soundBrowse;
-    AButton* next;
-    AButton* back;
-    AButton* select;
-    AButton* cancel;
+    FSample* soundAccept;
+    FSample* soundCancel;
+    FSample* soundBrowse;
+    FButton* next;
+    FButton* back;
+    FButton* select;
+    FButton* cancel;
 };
 
-AMenu* f_menu_new(AButton* Next, AButton* Back, AButton* Select, AButton* Cancel)
+FMenu* f_menu_new(FButton* Next, FButton* Back, FButton* Select, FButton* Cancel)
 {
-    AMenu* m = f_mem_malloc(sizeof(AMenu));
+    FMenu* m = f_mem_malloc(sizeof(FMenu));
 
     m->state = F_MENU_STATE_RUNNING;
     m->items = f_list_new();
@@ -54,12 +54,12 @@ AMenu* f_menu_new(AButton* Next, AButton* Back, AButton* Select, AButton* Cancel
     return m;
 }
 
-void f_menu_free(AMenu* Menu)
+void f_menu_free(FMenu* Menu)
 {
     f_menu_freeEx(Menu, NULL);
 }
 
-void f_menu_freeEx(AMenu* Menu, AFree* ItemFree)
+void f_menu_freeEx(FMenu* Menu, FFree* ItemFree)
 {
     if(Menu == NULL) {
         return;
@@ -72,14 +72,14 @@ void f_menu_freeEx(AMenu* Menu, AFree* ItemFree)
     f_mem_free(Menu);
 }
 
-void f_menu_soundSet(AMenu* Menu, ASample* Accept, ASample* Cancel, ASample* Browse)
+void f_menu_soundSet(FMenu* Menu, FSample* Accept, FSample* Cancel, FSample* Browse)
 {
     Menu->soundAccept = Accept;
     Menu->soundCancel = Cancel;
     Menu->soundBrowse = Browse;
 }
 
-void f_menu_itemAdd(AMenu* Menu, void* Item)
+void f_menu_itemAdd(FMenu* Menu, void* Item)
 {
     f_list_addLast(Menu->items, Item);
 
@@ -88,7 +88,7 @@ void f_menu_itemAdd(AMenu* Menu, void* Item)
     }
 }
 
-void f_menu_tick(AMenu* Menu)
+void f_menu_tick(FMenu* Menu)
 {
     if(f_list_isEmpty(Menu->items) || Menu->state != F_MENU_STATE_RUNNING) {
         return;
@@ -146,37 +146,37 @@ void f_menu_tick(AMenu* Menu)
     }
 }
 
-AMenuState f_menu_stateGet(const AMenu* Menu)
+FMenuState f_menu_stateGet(const FMenu* Menu)
 {
     return Menu->state;
 }
 
-const AList* f_menu_itemsGet(const AMenu* Menu)
+const FList* f_menu_itemsGet(const FMenu* Menu)
 {
     return Menu->items;
 }
 
-bool f_menu_itemIsSelected(const AMenu* Menu, const void* Item)
+bool f_menu_itemIsSelected(const FMenu* Menu, const void* Item)
 {
     return Item == Menu->selectedItem;
 }
 
-unsigned f_menu_selectedIndexGet(const AMenu* Menu)
+unsigned f_menu_selectedIndexGet(const FMenu* Menu)
 {
     return Menu->selectedIndex;
 }
 
-void* f_menu_itemGetSelected(const AMenu* Menu)
+void* f_menu_itemGetSelected(const FMenu* Menu)
 {
     return Menu->selectedItem;
 }
 
-void f_menu_keepRunning(AMenu* Menu)
+void f_menu_keepRunning(FMenu* Menu)
 {
     Menu->state = F_MENU_STATE_RUNNING;
 }
 
-void f_menu_reset(AMenu* Menu)
+void f_menu_reset(FMenu* Menu)
 {
     Menu->state = F_MENU_STATE_RUNNING;
     Menu->selectedItem = f_list_getFirst(Menu->items);

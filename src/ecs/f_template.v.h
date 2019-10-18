@@ -20,16 +20,16 @@
 
 #include "ecs/f_template.p.h"
 
-typedef struct ATemplate ATemplate;
+typedef struct FTemplate FTemplate;
 
 extern void f_template__init(void);
 extern void f_template__uninit(void);
 
-extern const ATemplate* f_template__get(const char* TemplateId);
+extern const FTemplate* f_template__get(const char* TemplateId);
 
-extern void f_template__initRun(const ATemplate* Template, AEntity* Entity, const void* Context);
-extern unsigned f_template__instanceGet(const ATemplate* Template);
-extern bool f_template__componentHas(const ATemplate* Template, int ComponentIndex);
-extern const void* f_template__dataGet(const ATemplate* Template, int ComponentIndex);
+extern void f_template__initRun(const FTemplate* Template, FEntity* Entity, const void* Context);
+extern unsigned f_template__instanceGet(const FTemplate* Template);
+extern bool f_template__componentHas(const FTemplate* Template, int ComponentIndex);
+extern const void* f_template__dataGet(const FTemplate* Template, int ComponentIndex);
 
 #endif // F_INC_ECS_TEMPLATE_V_H

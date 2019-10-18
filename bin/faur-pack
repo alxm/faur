@@ -116,7 +116,7 @@ static void f_{name}__uninit(void)
     //
 }}
 
-const APack f_pack__{name} = {{
+const FPack f_pack__{name} = {{
     "{name}",
     {{
         [0] = f_{name}__init,
@@ -150,7 +150,7 @@ const APack f_pack__{name} = {{
 
 #include "general/f_main.v.h"
 
-extern const APack f_pack__{name};
+extern const FPack f_pack__{name};
 
 #endif // {guard}
 """.format(header_comment = license_header,

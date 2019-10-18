@@ -22,6 +22,6 @@
 
 #include "general/f_main.v.h"
 
-extern const APack f_pack__fix;
+extern const FPack f_pack__fix;
 
 #endif // F_INC_MATH_FIX_V_H

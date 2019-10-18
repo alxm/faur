@@ -18,16 +18,16 @@
 #include "f_grid.v.h"
 #include <faur.v.h>
 
-struct AGrid {
+struct FGrid {
     int shift; // right-shift item coords to get cell index
     int w, h; // width and height of grid in cells
-    AList*** cells; // AList*[h][w] of void*
-    AList** cellsData; // AList*[h * w] of void*
+    FList*** cells; // FList*[h][w] of void*
+    FList** cellsData; // FList*[h * w] of void*
 };
 
-AGrid* f_grid_new(AFix Width, AFix Height, AFix MaxObjectDim)
+FGrid* f_grid_new(FFix Width, FFix Height, FFix MaxObjectDim)
 {
-    AGrid* g = f_mem_malloc(sizeof(AGrid));
+    FGrid* g = f_mem_malloc(sizeof(FGrid));
 
     g->shift = 0;
 
@@ -35,13 +35,13 @@ AGrid* f_grid_new(AFix Width, AFix Height, AFix MaxObjectDim)
         g->shift++;
     }
 
-    AFix cellDim = F_FIX_ONE << g->shift;
+    FFix cellDim = F_FIX_ONE << g->shift;
 
     g->w = f_fix_toInt((Width + cellDim - 1) >> g->shift);
     g->h = f_fix_toInt((Height + cellDim - 1) >> g->shift);
 
-    g->cells = f_mem_malloc((unsigned)g->h * sizeof(AList**));
-    g->cellsData = f_mem_malloc((unsigned)(g->h * g->w) * sizeof(AList*));
+    g->cells = f_mem_malloc((unsigned)g->h * sizeof(FList**));
+    g->cellsData = f_mem_malloc((unsigned)(g->h * g->w) * sizeof(FList*));
 
     for(int i = g->h; i--; ) {
         g->cells[i] = g->cellsData + i * g->w;
@@ -54,7 +54,7 @@ AGrid* f_grid_new(AFix Width, AFix Height, AFix MaxObjectDim)
     return g;
 }
 
-void f_grid_free(AGrid* Grid)
+void f_grid_free(FGrid* Grid)
 {
     if(Grid == NULL) {
         return;
@@ -71,7 +71,7 @@ void f_grid_free(AGrid* Grid)
     f_mem_free(Grid);
 }
 
-const AList* f_grid_nearGet(const AGrid* Grid, AVectorFix Coords)
+const FList* f_grid_nearGet(const FGrid* Grid, FVectorFix Coords)
 {
     int x = f_math_clamp(f_fix_toInt(Coords.x >> Grid->shift), 0, Grid->w - 1);
     int y = f_math_clamp(f_fix_toInt(Coords.y >> Grid->shift), 0, Grid->h - 1);
@@ -79,29 +79,29 @@ const AList* f_grid_nearGet(const AGrid* Grid, AVectorFix Coords)
     return Grid->cells[y][x];
 }
 
-AGridItem* f_grid_itemNew(void)
+FGridItem* f_grid_itemNew(void)
 {
     return f_list_new();
 }
 
-void f_grid_itemFree(AGridItem* Item)
+void f_grid_itemFree(FGridItem* Item)
 {
     // Remove item from any lists it is in
-    f_list_freeEx(Item, (AFree*)f_list_removeNode);
+    f_list_freeEx(Item, (FFree*)f_list_removeNode);
 }
 
-void f_grid_itemCoordsSet(const AGrid* Grid, AGridItem* Item, void* Context, AVectorFix Coords)
+void f_grid_itemCoordsSet(const FGrid* Grid, FGridItem* Item, void* Context, FVectorFix Coords)
 {
     // remove item from all the cells it was previously in
-    f_list_clearEx(Item, (AFree*)f_list_removeNode);
+    f_list_clearEx(Item, (FFree*)f_list_removeNode);
 
     // center cell coords
     int cellX = f_fix_toInt(Coords.x >> Grid->shift);
     int cellY = f_fix_toInt(Coords.y >> Grid->shift);
 
-    AVectorInt cellStart, cellEnd;
-    AFix cellDim = F_FIX_ONE << Grid->shift;
-    AVectorFix cellOffset = {Coords.x & (cellDim - 1),
+    FVectorInt cellStart, cellEnd;
+    FFix cellDim = F_FIX_ONE << Grid->shift;
+    FVectorFix cellOffset = {Coords.x & (cellDim - 1),
                              Coords.y & (cellDim - 1)};
 
     if(cellOffset.x < cellDim / 2) {

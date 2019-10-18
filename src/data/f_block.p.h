@@ -20,75 +20,75 @@
 
 #include "general/f_system_includes.h"
 
-typedef struct ABlock ABlock;
+typedef struct FBlock FBlock;
 
 #include "data/f_list.p.h"
 #include "graphics/f_color.p.h"
 #include "math/f_fix.p.h"
 
-extern ABlock* f_block_new(const char* File);
-extern void f_block_free(ABlock* Block);
+extern FBlock* f_block_new(const char* File);
+extern void f_block_free(FBlock* Block);
 
-extern const AList* f_block_blocksGet(const ABlock* Block);
+extern const FList* f_block_blocksGet(const FBlock* Block);
 
-extern const ABlock* f_block_keyGetBlock(const ABlock* Block, const char* Key);
-extern const AList* f_block_keyGetBlocks(const ABlock* Block, const char* Key);
-extern bool f_block_keyExists(const ABlock* Block, const char* Key);
+extern const FBlock* f_block_keyGetBlock(const FBlock* Block, const char* Key);
+extern const FList* f_block_keyGetBlocks(const FBlock* Block, const char* Key);
+extern bool f_block_keyExists(const FBlock* Block, const char* Key);
 
-extern int f_block_lineGetInt(const ABlock* Block, unsigned LineNumber);
-extern unsigned f_block_lineGetIntu(const ABlock* Block, unsigned LineNumber);
-extern AFix f_block_lineGetFix(const ABlock* Block, unsigned LineNumber);
-extern AFixu f_block_lineGetAngle(const ABlock* Block, unsigned LineNumber);
-extern APixel f_block_lineGetPixel(const ABlock* Block, unsigned LineNumber);
-extern const char* f_block_lineGetString(const ABlock* Block, unsigned LineNumber);
-extern AVectorInt f_block_lineGetCoords(const ABlock* Block, unsigned LineNumber);
-extern AVectorFix f_block_lineGetCoordsf(const ABlock* Block, unsigned LineNumber);
-extern int f_block_lineGetFmt(const ABlock* Block, unsigned LineNumber, const char* Format, ...);
-extern int f_block_lineGetFmtv(const ABlock* Block, unsigned LineNumber, const char* Format, va_list Args);
+extern int f_block_lineGetInt(const FBlock* Block, unsigned LineNumber);
+extern unsigned f_block_lineGetIntu(const FBlock* Block, unsigned LineNumber);
+extern FFix f_block_lineGetFix(const FBlock* Block, unsigned LineNumber);
+extern FFixu f_block_lineGetAngle(const FBlock* Block, unsigned LineNumber);
+extern FPixel f_block_lineGetPixel(const FBlock* Block, unsigned LineNumber);
+extern const char* f_block_lineGetString(const FBlock* Block, unsigned LineNumber);
+extern FVectorInt f_block_lineGetCoords(const FBlock* Block, unsigned LineNumber);
+extern FVectorFix f_block_lineGetCoordsf(const FBlock* Block, unsigned LineNumber);
+extern int f_block_lineGetFmt(const FBlock* Block, unsigned LineNumber, const char* Format, ...);
+extern int f_block_lineGetFmtv(const FBlock* Block, unsigned LineNumber, const char* Format, va_list Args);
 
-static inline int f_block_keyGetInt(const ABlock* Block, const char* Key)
+static inline int f_block_keyGetInt(const FBlock* Block, const char* Key)
 {
     return f_block_lineGetInt(f_block_keyGetBlock(Block, Key), 1);
 }
 
-static inline unsigned f_block_keyGetIntu(const ABlock* Block, const char* Key)
+static inline unsigned f_block_keyGetIntu(const FBlock* Block, const char* Key)
 {
     return f_block_lineGetIntu(f_block_keyGetBlock(Block, Key), 1);
 }
 
-static inline AFix f_block_keyGetFix(const ABlock* Block, const char* Key)
+static inline FFix f_block_keyGetFix(const FBlock* Block, const char* Key)
 {
     return f_block_lineGetFix(f_block_keyGetBlock(Block, Key), 1);
 }
 
-static inline AFixu f_block_keyGetAngle(const ABlock* Block, const char* Key)
+static inline FFixu f_block_keyGetAngle(const FBlock* Block, const char* Key)
 {
     return f_block_lineGetAngle(f_block_keyGetBlock(Block, Key), 1);
 }
 
-static inline APixel f_block_keyGetPixel(const ABlock* Block, const char* Key)
+static inline FPixel f_block_keyGetPixel(const FBlock* Block, const char* Key)
 {
     return f_block_lineGetPixel(f_block_keyGetBlock(Block, Key), 1);
 }
 
-static inline const char* f_block_keyGetString(const ABlock* Block, const char* Key)
+static inline const char* f_block_keyGetString(const FBlock* Block, const char* Key)
 {
     return f_block_lineGetString(f_block_keyGetBlock(Block, Key), 1);
 }
 
-static inline AVectorInt f_block_keyGetCoords(const ABlock* Block, const char* Key)
+static inline FVectorInt f_block_keyGetCoords(const FBlock* Block, const char* Key)
 {
     return f_block_lineGetCoords(f_block_keyGetBlock(Block, Key), 1);
 }
 
-static inline AVectorFix f_block_keyGetCoordsf(const ABlock* Block, const char* Key)
+static inline FVectorFix f_block_keyGetCoordsf(const FBlock* Block, const char* Key)
 {
     return f_block_lineGetCoordsf(f_block_keyGetBlock(Block, Key), 1);
 }
 
-extern int f_block_keyGetFmt(const ABlock* Block, const char* Key, const char* Format, ...);
+extern int f_block_keyGetFmt(const FBlock* Block, const char* Key, const char* Format, ...);
 
-static inline int f_block_keyGetFmtv(const ABlock* Block, const char* Key, const char* Format, va_list Args)
+static inline int f_block_keyGetFmtv(const FBlock* Block, const char* Key, const char* Format, va_list Args)
 {
     return f_block_lineGetFmtv(f_block_keyGetBlock(Block, Key), 1, Format, Args);
 }

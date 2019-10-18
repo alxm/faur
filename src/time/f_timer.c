@@ -22,16 +22,16 @@ typedef enum {
     F_TIMER__REPEAT = F_FLAGS_BIT(0),
     F_TIMER__RUNNING = F_FLAGS_BIT(1),
     F_TIMER__EXPIRED = F_FLAGS_BIT(2),
-} ATimerFlags;
+} FTimerFlags;
 
-struct ATimer {
-    ATimerType type;
-    ATimerFlags flags;
+struct FTimer {
+    FTimerType type;
+    FTimerFlags flags;
     unsigned period;
     unsigned start;
     unsigned diff;
     unsigned expiredCount;
-    AListNode* runningListNode;
+    FListNode* runningListNode;
 };
 
 static struct {
@@ -39,7 +39,7 @@ static struct {
     unsigned ticks;
 } g_now;
 
-static AList* g_runningTimers; // list of ATimer
+static FList* g_runningTimers; // list of FTimer
 
 static inline void setNow(void)
 {
@@ -47,7 +47,7 @@ static inline void setNow(void)
     g_now.ticks = f_fps_ticksGet();
 }
 
-static inline unsigned getNow(const ATimer* Timer)
+static inline unsigned getNow(const FTimer* Timer)
 {
     switch(Timer->type) {
         case F_TIMER_MS:
@@ -74,7 +74,7 @@ static void f_timer__uninit(void)
     f_list_free(g_runningTimers);
 }
 
-const APack f_pack__timer = {
+const FPack f_pack__timer = {
     "Timer",
     {
         [0] = f_timer__init,
@@ -88,7 +88,7 @@ void f_timer__tick(void)
 {
     setNow();
 
-    F_LIST_ITERATE(g_runningTimers, ATimer*, t) {
+    F_LIST_ITERATE(g_runningTimers, FTimer*, t) {
         if(!F_FLAGS_TEST_ANY(t->flags, F_TIMER__RUNNING)) {
             // Kick out timer that was marked as not running last frame
             f_list_removeNode(t->runningListNode);
@@ -121,9 +121,9 @@ void f_timer__tick(void)
     }
 }
 
-ATimer* f_timer_new(ATimerType Type, unsigned Period, bool Repeat)
+FTimer* f_timer_new(FTimerType Type, unsigned Period, bool Repeat)
 {
-    ATimer* t = f_mem_zalloc(sizeof(ATimer));
+    FTimer* t = f_mem_zalloc(sizeof(FTimer));
 
     if(Type == F_TIMER_SEC) {
         Period *= 1000;
@@ -139,9 +139,9 @@ ATimer* f_timer_new(ATimerType Type, unsigned Period, bool Repeat)
     return t;
 }
 
-ATimer* f_timer_dup(const ATimer* Timer)
+FTimer* f_timer_dup(const FTimer* Timer)
 {
-    ATimer* t = f_mem_dup(Timer, sizeof(ATimer));
+    FTimer* t = f_mem_dup(Timer, sizeof(FTimer));
 
     F_FLAGS_CLEAR(t->flags, F_TIMER__RUNNING | F_TIMER__EXPIRED);
 
@@ -151,7 +151,7 @@ ATimer* f_timer_dup(const ATimer* Timer)
     return t;
 }
 
-void f_timer_free(ATimer* Timer)
+void f_timer_free(FTimer* Timer)
 {
     if(Timer == NULL) {
         return;
@@ -164,12 +164,12 @@ void f_timer_free(ATimer* Timer)
     f_mem_free(Timer);
 }
 
-unsigned f_timer_elapsedGet(const ATimer* Timer)
+unsigned f_timer_elapsedGet(const FTimer* Timer)
 {
     return Timer->diff;
 }
 
-unsigned f_timer_periodGet(const ATimer* Timer)
+unsigned f_timer_periodGet(const FTimer* Timer)
 {
     if(Timer->type == F_TIMER_SEC) {
         return Timer->period / 1000;
@@ -178,7 +178,7 @@ unsigned f_timer_periodGet(const ATimer* Timer)
     return Timer->period;
 }
 
-void f_timer_periodSet(ATimer* Timer, unsigned Period)
+void f_timer_periodSet(FTimer* Timer, unsigned Period)
 {
     if(Timer->type == F_TIMER_SEC) {
         Period *= 1000;
@@ -193,7 +193,7 @@ void f_timer_periodSet(ATimer* Timer, unsigned Period)
     }
 }
 
-void f_timer_start(ATimer* Timer)
+void f_timer_start(FTimer* Timer)
 {
     Timer->start = getNow(Timer);
     Timer->diff = 0;
@@ -213,7 +213,7 @@ void f_timer_start(ATimer* Timer)
     }
 }
 
-void f_timer_stop(ATimer* Timer)
+void f_timer_stop(FTimer* Timer)
 {
     Timer->diff = 0;
 
@@ -225,22 +225,22 @@ void f_timer_stop(ATimer* Timer)
     }
 }
 
-bool f_timer_isRunning(const ATimer* Timer)
+bool f_timer_isRunning(const FTimer* Timer)
 {
     return F_FLAGS_TEST_ANY(Timer->flags, F_TIMER__RUNNING);
 }
 
-bool f_timer_expiredGet(const ATimer* Timer)
+bool f_timer_expiredGet(const FTimer* Timer)
 {
     return F_FLAGS_TEST_ANY(Timer->flags, F_TIMER__EXPIRED);
 }
 
-unsigned f_timer_expiredGetCount(const ATimer* Timer)
+unsigned f_timer_expiredGetCount(const FTimer* Timer)
 {
     return Timer->expiredCount;
 }
 
-void f_timer_expiredClear(ATimer* Timer)
+void f_timer_expiredClear(FTimer* Timer)
 {
     if(Timer->period > 0) {
         F_FLAGS_CLEAR(Timer->flags, F_TIMER__EXPIRED);

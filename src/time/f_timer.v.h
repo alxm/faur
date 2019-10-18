@@ -22,7 +22,7 @@
 
 #include "general/f_main.v.h"
 
-extern const APack f_pack__timer;
+extern const FPack f_pack__timer;
 
 extern void f_timer__tick(void);
 

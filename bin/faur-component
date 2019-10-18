@@ -48,7 +48,7 @@ struct {ctype} {{
 const size_t c_{name}_templateSize = sizeof({ctype}Data);
 const size_t c_{name}_instanceSize = sizeof({ctype});
 
-void c_{name}_templateInit(void* Data, const ABlock* Config)
+void c_{name}_templateInit(void* Data, const FBlock* Config)
 {{
     {ctype}Data* data = Data;
 
@@ -109,13 +109,13 @@ void c_{name}_valueSet({ctype}* {paramVar}, int Value)
 typedef struct {ctype} {ctype};
 
 extern const size_t c_{name}_templateSize;
-extern AComponentTemplateInit c_{name}_templateInit;
-extern AComponentTemplateFree c_{name}_templateFree;
+extern FComponentTemplateInit c_{name}_templateInit;
+extern FComponentTemplateFree c_{name}_templateFree;
 
 extern const size_t c_{name}_instanceSize;
-extern AComponentInstanceInit c_{name}_instanceInit;
-extern AComponentInstanceInitEx c_{name}_instanceInitEx;
-extern AComponentInstanceFree c_{name}_instanceFree;
+extern FComponentInstanceInit c_{name}_instanceInit;
+extern FComponentInstanceInitEx c_{name}_instanceInitEx;
+extern FComponentInstanceFree c_{name}_instanceFree;
 
 extern int c_{name}_valueGet(const {ctype}* {paramVar});
 extern void c_{name}_valueSet({ctype}* {paramVar}, int Value);

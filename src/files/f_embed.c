@@ -23,8 +23,8 @@
 #include "media/fontgrid.png.h"
 #include "media/fontgrid_keyed.png.h"
 
-static AStrHash* g_dirs; // table of AEmbeddedDir
-static AStrHash* g_files; // table of AEmbeddedFile
+static FStrHash* g_dirs; // table of FEmbeddedDir
+static FStrHash* g_files; // table of FEmbeddedFile
 
 static inline void addDir(const char* Path, const void* Data)
 {
@@ -54,7 +54,7 @@ static void f_embed__uninit(void)
     f_strhash_free(g_files);
 }
 
-const APack f_pack__embed = {
+const FPack f_pack__embed = {
     "Embed",
     {
         [0] = f_embed__init,
@@ -66,23 +66,23 @@ const APack f_pack__embed = {
 
 void f_embed__dirAdd(const void* Data)
 {
-    addDir(((const AEmbeddedDir*)Data)->path, Data);
+    addDir(((const FEmbeddedDir*)Data)->path, Data);
 }
 
-const AEmbeddedDir* f_embed__dirGet(const char* Path)
+const FEmbeddedDir* f_embed__dirGet(const char* Path)
 {
     return f_strhash_get(g_dirs, Path);
 }
 
 void f_embed__fileAdd(const void* Data)
 {
-    addFile(((const AEmbeddedFile*)Data)->path, Data);
+    addFile(((const FEmbeddedFile*)Data)->path, Data);
 }
 
-const AEmbeddedFile* f_embed__fileGet(const char* Path)
+const FEmbeddedFile* f_embed__fileGet(const char* Path)
 {
     return f_strhash_get(g_files, Path);
 }
 #else // F_CONFIG_SYSTEM_GAMEBUINO
-const APack f_pack__embed;
+const FPack f_pack__embed;
 #endif // F_CONFIG_SYSTEM_GAMEBUINO

@@ -22,7 +22,7 @@
 
 #include "general/f_main.v.h"
 
-extern const APack f_pack__sound;
+extern const FPack f_pack__sound;
 
 extern void f_sound__tick(void);
 extern void f_sound__draw(void);

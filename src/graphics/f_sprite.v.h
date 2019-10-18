@@ -22,8 +22,8 @@
 
 #include "platform/f_platform.v.h"
 
-extern APixels* f_sprite__pixelsGet(ASprite* Sprite);
-extern APlatformTexture* f_sprite__textureGet(const ASprite* Sprite, unsigned Frame);
-extern void f_sprite__textureCommit(ASprite* Sprite, unsigned Frame);
+extern FPixels* f_sprite__pixelsGet(FSprite* Sprite);
+extern FPlatformTexture* f_sprite__textureGet(const FSprite* Sprite, unsigned Frame);
+extern void f_sprite__textureCommit(FSprite* Sprite, unsigned Frame);
 
 #endif // F_INC_GRAPHICS_SPRITE_V_H

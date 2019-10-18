@@ -19,15 +19,15 @@
 #include <faur.v.h>
 
 #if F_CONFIG_ECS_ENABLED
-struct ASystem {
-    ASystemHandler* handler;
-    ASystemSort* compare;
-    ABitfield* componentBits; // IDs of components that this system works on
-    AList* entities; // entities currently picked up by this system
+struct FSystem {
+    FSystemHandler* handler;
+    FSystemSort* compare;
+    FBitfield* componentBits; // IDs of components that this system works on
+    FList* entities; // entities currently picked up by this system
     bool onlyActiveEntities; // skip entities that are not active
 };
 
-static ASystem g_systems[F_CONFIG_ECS_SYS_NUM];
+static FSystem g_systems[F_CONFIG_ECS_SYS_NUM];
 
 void f_system__uninit(void)
 {
@@ -37,7 +37,7 @@ void f_system__uninit(void)
     }
 }
 
-ASystem* f_system__get(int SystemIndex)
+FSystem* f_system__get(int SystemIndex)
 {
     #if F_CONFIG_BUILD_DEBUG
         if(SystemIndex < 0 || SystemIndex >= F_CONFIG_ECS_SYS_NUM) {
@@ -52,7 +52,7 @@ ASystem* f_system__get(int SystemIndex)
     return &g_systems[SystemIndex];
 }
 
-void f_system_new(int SystemIndex, ASystemHandler* Handler, ASystemSort* Compare, bool OnlyActiveEntities)
+void f_system_new(int SystemIndex, FSystemHandler* Handler, FSystemSort* Compare, bool OnlyActiveEntities)
 {
     #if F_CONFIG_BUILD_DEBUG
         if(g_systems[SystemIndex].entities != NULL) {
@@ -60,7 +60,7 @@ void f_system_new(int SystemIndex, ASystemHandler* Handler, ASystemSort* Compare
         }
     #endif
 
-    ASystem* system = &g_systems[SystemIndex];
+    FSystem* system = &g_systems[SystemIndex];
 
     system->handler = Handler;
     system->compare = Compare;
@@ -71,21 +71,21 @@ void f_system_new(int SystemIndex, ASystemHandler* Handler, ASystemSort* Compare
 
 void f_system_add(int SystemIndex, int ComponentIndex)
 {
-    ASystem* system = f_system__get(SystemIndex);
+    FSystem* system = f_system__get(SystemIndex);
 
     f_bitfield_set(system->componentBits, (unsigned)ComponentIndex);
 }
 
 void f_system_run(int SystemIndex)
 {
-    ASystem* system = f_system__get(SystemIndex);
+    FSystem* system = f_system__get(SystemIndex);
 
     if(system->compare) {
-        f_list_sort(system->entities, (AListCompare*)system->compare);
+        f_list_sort(system->entities, (FListCompare*)system->compare);
     }
 
     if(system->onlyActiveEntities) {
-        F_LIST_ITERATE(system->entities, AEntity*, entity) {
+        F_LIST_ITERATE(system->entities, FEntity*, entity) {
             if(f_entity_activeGet(entity)) {
                 system->handler(entity);
             } else {
@@ -93,7 +93,7 @@ void f_system_run(int SystemIndex)
             }
         }
     } else {
-        F_LIST_ITERATE(system->entities, AEntity*, entity) {
+        F_LIST_ITERATE(system->entities, FEntity*, entity) {
             system->handler(entity);
         }
     }
@@ -101,17 +101,17 @@ void f_system_run(int SystemIndex)
     f_ecs__flushEntitiesFromSystems();
 }
 
-AListNode* f_system__entityAdd(const ASystem* System, AEntity* Entity)
+FListNode* f_system__entityAdd(const FSystem* System, FEntity* Entity)
 {
     return f_list_addLast(System->entities, Entity);
 }
 
-const ABitfield* f_system__componentBitsGet(const ASystem* System)
+const FBitfield* f_system__componentBitsGet(const FSystem* System)
 {
     return System->componentBits;
 }
 
-bool f_system__isActiveOnly(const ASystem* System)
+bool f_system__isActiveOnly(const FSystem* System)
 {
     return System->onlyActiveEntities;
 }

@@ -18,16 +18,16 @@
 #include "f_bitfield.v.h"
 #include <faur.v.h>
 
-typedef unsigned long AChunk;
-#define F__BITS_PER_CHUNK (unsigned)(sizeof(AChunk) * 8)
+typedef unsigned long FChunk;
+#define F__BITS_PER_CHUNK (unsigned)(sizeof(FChunk) * 8)
 #define f__BITS_PER_CHUNK_MASK (F__BITS_PER_CHUNK - 1)
 
-struct ABitfield {
+struct FBitfield {
     unsigned numChunks;
-    AChunk bits[];
+    FChunk bits[];
 };
 
-ABitfield* f_bitfield_new(unsigned NumBits)
+FBitfield* f_bitfield_new(unsigned NumBits)
 {
     #if F_CONFIG_BUILD_DEBUG
         if(NumBits < 1) {
@@ -36,44 +36,44 @@ ABitfield* f_bitfield_new(unsigned NumBits)
     #endif
 
     unsigned numChunks = (NumBits + F__BITS_PER_CHUNK - 1) / F__BITS_PER_CHUNK;
-    ABitfield* b = f_mem_zalloc(sizeof(ABitfield) + numChunks * sizeof(AChunk));
+    FBitfield* b = f_mem_zalloc(sizeof(FBitfield) + numChunks * sizeof(FChunk));
 
     b->numChunks = numChunks;
 
     return b;
 }
 
-void f_bitfield_free(ABitfield* Bitfield)
+void f_bitfield_free(FBitfield* Bitfield)
 {
     f_mem_free(Bitfield);
 }
 
-void f_bitfield_set(ABitfield* Bitfield, unsigned Bit)
+void f_bitfield_set(FBitfield* Bitfield, unsigned Bit)
 {
-    AChunk bit = (AChunk)1 << (Bit & f__BITS_PER_CHUNK_MASK);
+    FChunk bit = (FChunk)1 << (Bit & f__BITS_PER_CHUNK_MASK);
     Bitfield->bits[Bit / F__BITS_PER_CHUNK] |= bit;
 }
 
-void f_bitfield_clear(ABitfield* Bitfield, unsigned Bit)
+void f_bitfield_clear(FBitfield* Bitfield, unsigned Bit)
 {
-    AChunk bit = (AChunk)1 << (Bit & f__BITS_PER_CHUNK_MASK);
+    FChunk bit = (FChunk)1 << (Bit & f__BITS_PER_CHUNK_MASK);
     Bitfield->bits[Bit / F__BITS_PER_CHUNK] &= ~bit;
 }
 
-void f_bitfield_reset(ABitfield* Bitfield)
+void f_bitfield_reset(FBitfield* Bitfield)
 {
-    memset(Bitfield->bits, 0, Bitfield->numChunks * sizeof(AChunk));
+    memset(Bitfield->bits, 0, Bitfield->numChunks * sizeof(FChunk));
 }
 
-bool f_bitfield_test(const ABitfield* Bitfield, unsigned Bit)
+bool f_bitfield_test(const FBitfield* Bitfield, unsigned Bit)
 {
-    AChunk value = Bitfield->bits[Bit / F__BITS_PER_CHUNK];
-    AChunk bit = (AChunk)1 << (Bit & f__BITS_PER_CHUNK_MASK);
+    FChunk value = Bitfield->bits[Bit / F__BITS_PER_CHUNK];
+    FChunk bit = (FChunk)1 << (Bit & f__BITS_PER_CHUNK_MASK);
 
     return (value & bit) != 0;
 }
 
-bool f_bitfield_testMask(const ABitfield* Bitfield, const ABitfield* Mask)
+bool f_bitfield_testMask(const FBitfield* Bitfield, const FBitfield* Mask)
 {
     for(unsigned i = Mask->numChunks; i--; ) {
         if((Bitfield->bits[i] & Mask->bits[i]) != Mask->bits[i]) {

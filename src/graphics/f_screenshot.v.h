@@ -22,7 +22,7 @@
 
 #include "general/f_main.v.h"
 
-extern const APack f_pack__screenshot;
+extern const FPack f_pack__screenshot;
 
 extern void f_screenshot__tick(void);
 

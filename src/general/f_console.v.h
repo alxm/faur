@@ -23,12 +23,12 @@
 #include "general/f_main.v.h"
 #include "general/f_out.v.h"
 
-extern const APack f_pack__console;
+extern const FPack f_pack__console;
 
 extern void f_console__tick(void);
 extern void f_console__draw(void);
 
 extern bool f_console__isInitialized(void);
-extern void f_console__write(AOutSource Source, AOutType Type, const char* Text);
+extern void f_console__write(FOutSource Source, FOutType Type, const char* Text);
 
 #endif // F_INC_GENERAL_CONSOLE_V_H

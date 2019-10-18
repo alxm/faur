@@ -24,8 +24,8 @@
 #include "input/f_button.p.h"
 #include "math/f_fix.p.h"
 
-extern bool f_input_readKey(AKeyId Key);
-extern bool f_input_readButton(AButtonId Button);
-extern AFix f_input_readAnalog(AAnalogId Axis);
+extern bool f_input_readKey(FKeyId Key);
+extern bool f_input_readButton(FButtonId Button);
+extern FFix f_input_readAnalog(FAnalogId Axis);
 
 #endif // F_INC_INPUTS_INPUT_P_H

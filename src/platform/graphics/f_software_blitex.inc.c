@@ -24,17 +24,17 @@
     #define F__COLORKEY Block
 #endif
 
-static void F__FUNC_NAME_EX(const APixels* Pixels, unsigned Frame, int X, int Y, AFix Scale, unsigned Angle, AFix CenterX, AFix CenterY)
+static void F__FUNC_NAME_EX(const FPixels* Pixels, unsigned Frame, int X, int Y, FFix Scale, unsigned Angle, FFix CenterX, FFix CenterY)
 {
     F__BLEND_SETUP;
 
-    const AVectorInt size = {Pixels->w, Pixels->h};
-    const AVectorFix sizeScaled = {size.x * Scale, size.y * Scale};
-    const AVectorFix sizeScaledHalf = {sizeScaled.x / 2, sizeScaled.y / 2};
-    const APixel* const pixels = f_pixels__bufferGetFrom(Pixels, Frame, 0, 0);
+    const FVectorInt size = {Pixels->w, Pixels->h};
+    const FVectorFix sizeScaled = {size.x * Scale, size.y * Scale};
+    const FVectorFix sizeScaledHalf = {sizeScaled.x / 2, sizeScaled.y / 2};
+    const FPixel* const pixels = f_pixels__bufferGetFrom(Pixels, Frame, 0, 0);
 
-    const AVectorInt screenSize = f_screen_sizeGet();
-    APixel* const screenPixels = f_screen__bufferGetFrom(0, 0);
+    const FVectorInt screenSize = f_screen_sizeGet();
+    FPixel* const screenPixels = f_screen__bufferGetFrom(0, 0);
 
     /*
          Counter-clockwise rotations:
@@ -48,23 +48,23 @@ static void F__FUNC_NAME_EX(const APixels* Pixels, unsigned Frame, int X, int Y,
 
     Angle = f_fix_angleWrap(Angle);
 
-    const AFix sin = f_fix_sin(Angle);
-    const AFix cos = f_fix_cos(Angle);
+    const FFix sin = f_fix_sin(Angle);
+    const FFix cos = f_fix_cos(Angle);
 
-    const AFix wLeft = sizeScaledHalf.x + f_fix_mul(CenterX, sizeScaledHalf.x);
-    const AFix wRight = sizeScaled.x - wLeft;
-    const AFix hTop = sizeScaledHalf.y + f_fix_mul(CenterY, sizeScaledHalf.y);
-    const AFix hDown = sizeScaled.y - hTop;
+    const FFix wLeft = sizeScaledHalf.x + f_fix_mul(CenterX, sizeScaledHalf.x);
+    const FFix wRight = sizeScaled.x - wLeft;
+    const FFix hTop = sizeScaledHalf.y + f_fix_mul(CenterY, sizeScaledHalf.y);
+    const FFix hDown = sizeScaled.y - hTop;
 
-    const AFix xMns = -wLeft;
-    const AFix xPls = wRight - 1;
-    const AFix yMns = -hTop;
-    const AFix yPls = hDown - 1;
+    const FFix xMns = -wLeft;
+    const FFix xPls = wRight - 1;
+    const FFix yMns = -hTop;
+    const FFix yPls = hDown - 1;
 
     #define ROTATE_X(x, y) f_fix_toInt(f_fix_mul(x,  cos) + f_fix_mul(y, sin))
     #define ROTATE_Y(x, y) f_fix_toInt(f_fix_mul(x, -sin) + f_fix_mul(y, cos))
 
-    const AVectorInt
+    const FVectorInt
         p0 = {X + ROTATE_X(xMns, yMns), Y + ROTATE_Y(xMns, yMns)},
         p1 = {X + ROTATE_X(xPls, yMns), Y + ROTATE_Y(xPls, yMns)},
         p2 = {X + ROTATE_X(xPls, yPls), Y + ROTATE_Y(xPls, yPls)},
@@ -73,10 +73,10 @@ static void F__FUNC_NAME_EX(const APixels* Pixels, unsigned Frame, int X, int Y,
     #undef ROTATE_X
     #undef ROTATE_Y
 
-    AVectorInt screenTop, screenBottom, screenLeft, screenRight;
-    AVectorFix spriteTop, spriteBottom, spriteMidleft, spriteMidright;
+    FVectorInt screenTop, screenBottom, screenLeft, screenRight;
+    FVectorFix spriteTop, spriteBottom, spriteMidleft, spriteMidright;
 
-    const AVectorFix
+    const FVectorFix
         sprite0 = {0, 0},
         sprite1 = {f_fix_fromInt(size.x) - 1, 0},
         sprite2 = {f_fix_fromInt(size.x) - 1, f_fix_fromInt(size.y) - 1},
@@ -148,21 +148,21 @@ static void F__FUNC_NAME_EX(const APixels* Pixels, unsigned Frame, int X, int Y,
             continue;
         }
 
-        const AVectorFix sprite0 = g_scanlines[scrY].sprite[LEFT];
-        const AVectorFix sprite1 = g_scanlines[scrY].sprite[RIGHT];
+        const FVectorFix sprite0 = g_scanlines[scrY].sprite[LEFT];
+        const FVectorFix sprite1 = g_scanlines[scrY].sprite[RIGHT];
 
-        const AFix spriteDeltaX =
+        const FFix spriteDeltaX =
             sprite1.x - sprite0.x
                 + (sprite1.x > sprite0.x) - (sprite1.x < sprite0.x);
-        const AFix spriteDeltaY =
+        const FFix spriteDeltaY =
             sprite1.y - sprite0.y
                 + (sprite1.y > sprite0.y) - (sprite1.y < sprite0.y);
 
-        AVectorFix sprite = sprite0;
+        FVectorFix sprite = sprite0;
 
         const int screenDeltaX = screenX1 - screenX0 + 1;
-        const AFix spriteXInc = spriteDeltaX / screenDeltaX;
-        const AFix spriteYInc = spriteDeltaY / screenDeltaX;
+        const FFix spriteXInc = spriteDeltaX / screenDeltaX;
+        const FFix spriteYInc = spriteDeltaY / screenDeltaX;
 
         if(screenX0 < 0) {
             sprite.x += spriteXInc * -screenX0;
@@ -175,10 +175,10 @@ static void F__FUNC_NAME_EX(const APixels* Pixels, unsigned Frame, int X, int Y,
             screenX1 = screenSize.x - 1;
         }
 
-        APixel* dst = screenPixels + scrY * screenSize.x + screenX0;
+        FPixel* dst = screenPixels + scrY * screenSize.x + screenX0;
 
         for(int x = screenX0; x <= screenX1; x++) {
-            const APixel* src = pixels
+            const FPixel* src = pixels
                                     + f_fix_toInt(sprite.y) * size.x
                                     + f_fix_toInt(sprite.x);
 

@@ -28,7 +28,7 @@ static void f_input__uninit(void)
     f_input_button__uninit();
 }
 
-const APack f_pack__input = {
+const FPack f_pack__input = {
     "Input",
     {
         [0] = f_input__init,
@@ -44,23 +44,23 @@ void f_input__tick(void)
     f_input_button__tick();
 }
 
-bool f_input_readKey(AKeyId Key)
+bool f_input_readKey(FKeyId Key)
 {
-    const APlatformButton* k = f_platform_api__inputKeyGet(Key);
+    const FPlatformButton* k = f_platform_api__inputKeyGet(Key);
 
     return k ? f_platform_api__inputButtonPressGet(k) : false;
 }
 
-bool f_input_readButton(AButtonId Button)
+bool f_input_readButton(FButtonId Button)
 {
-    const APlatformButton* b = f_platform_api__inputButtonGet(NULL, Button);
+    const FPlatformButton* b = f_platform_api__inputButtonGet(NULL, Button);
 
     return b ? f_platform_api__inputButtonPressGet(b) : false;
 }
 
-AFix f_input_readAnalog(AAnalogId Axis)
+FFix f_input_readAnalog(FAnalogId Axis)
 {
-    const APlatformAnalog* a = f_platform_api__inputAnalogGet(NULL, Axis);
+    const FPlatformAnalog* a = f_platform_api__inputAnalogGet(NULL, Axis);
 
     return a ? f_platform_api__inputAnalogValueGet(a) : 0;
 }

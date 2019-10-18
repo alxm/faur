@@ -20,7 +20,7 @@
 
 #include "general/f_system_includes.h"
 
-typedef struct AAnalog AAnalog;
+typedef struct FAnalog FAnalog;
 
 typedef enum {
     F_AXIS_INVALID = -1,
@@ -31,19 +31,19 @@ typedef enum {
     F_AXIS_LEFTTRIGGER,
     F_AXIS_RIGHTTRIGGER,
     F_AXIS_NUM
-} AAnalogId;
+} FAnalogId;
 
 #include "input/f_controller.v.h"
 #include "math/f_fix.p.h"
 
-extern AAnalog* f_analog_new(void);
-extern void f_analog_free(AAnalog* Analog);
+extern FAnalog* f_analog_new(void);
+extern void f_analog_free(FAnalog* Analog);
 
-extern void f_analog_bind(AAnalog* Analog, const AController* Controller, AAnalogId Id);
+extern void f_analog_bind(FAnalog* Analog, const FController* Controller, FAnalogId Id);
 
-extern bool f_analog_isWorking(const AAnalog* Analog);
-extern const char* f_analog_nameGet(const AAnalog* Analog);
+extern bool f_analog_isWorking(const FAnalog* Analog);
+extern const char* f_analog_nameGet(const FAnalog* Analog);
 
-extern AFix f_analog_valueGet(const AAnalog* Analog);
+extern FFix f_analog_valueGet(const FAnalog* Analog);
 
 #endif // F_INC_INPUTS_ANALOG_P_H

@@ -24,14 +24,14 @@ typedef enum {
     F__FADE_FROMCOLOR,
     F__FADE_SCREENS,
     F__FADE_NUM
-} AFadeOpId;
+} FFadeOpId;
 
 static struct {
-    AEvent event;
-    AFadeOpId op;
-    AFixu angle, angleInc;
-    APixel color;
-    ASprite* oldScreen;
+    FEvent event;
+    FFadeOpId op;
+    FFixu angle, angleInc;
+    FPixel color;
+    FSprite* oldScreen;
 } g_fade = {
     .op = F__FADE_INVALID,
 };
@@ -49,7 +49,7 @@ static void f_fade__uninit(void)
     f_sprite_free(g_fade.oldScreen);
 }
 
-const APack f_pack__fade = {
+const FPack f_pack__fade = {
     "Fade",
     {
         [0] = f_fade__init,
@@ -59,12 +59,12 @@ const APack f_pack__fade = {
     },
 };
 
-const AEvent* f_fade_eventGet(void)
+const FEvent* f_fade_eventGet(void)
 {
     return &g_fade.event;
 }
 
-static void newFade(AFadeOpId Op, unsigned DurationMs)
+static void newFade(FFadeOpId Op, unsigned DurationMs)
 {
     g_fade.event = 1;
     g_fade.op = Op;

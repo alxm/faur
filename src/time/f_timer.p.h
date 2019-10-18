@@ -20,7 +20,7 @@
 
 #include "general/f_system_includes.h"
 
-typedef struct ATimer ATimer;
+typedef struct FTimer FTimer;
 
 typedef enum {
     F_TIMER_INVALID = -1,
@@ -28,23 +28,23 @@ typedef enum {
     F_TIMER_SEC,
     F_TIMER_TICKS,
     F_TIMER_NUM
-} ATimerType;
+} FTimerType;
 
-extern ATimer* f_timer_new(ATimerType Type, unsigned Period, bool Repeat);
-extern ATimer* f_timer_dup(const ATimer* Timer);
-extern void f_timer_free(ATimer* Timer);
+extern FTimer* f_timer_new(FTimerType Type, unsigned Period, bool Repeat);
+extern FTimer* f_timer_dup(const FTimer* Timer);
+extern void f_timer_free(FTimer* Timer);
 
-extern unsigned f_timer_elapsedGet(const ATimer* Timer);
+extern unsigned f_timer_elapsedGet(const FTimer* Timer);
 
-extern unsigned f_timer_periodGet(const ATimer* Timer);
-extern void f_timer_periodSet(ATimer* Timer, unsigned Period);
+extern unsigned f_timer_periodGet(const FTimer* Timer);
+extern void f_timer_periodSet(FTimer* Timer, unsigned Period);
 
-extern void f_timer_start(ATimer* Timer);
-extern void f_timer_stop(ATimer* Timer);
-extern bool f_timer_isRunning(const ATimer* Timer);
+extern void f_timer_start(FTimer* Timer);
+extern void f_timer_stop(FTimer* Timer);
+extern bool f_timer_isRunning(const FTimer* Timer);
 
-extern bool f_timer_expiredGet(const ATimer* Timer);
-extern unsigned f_timer_expiredGetCount(const ATimer* Timer);
-extern void f_timer_expiredClear(ATimer* Timer);
+extern bool f_timer_expiredGet(const FTimer* Timer);
+extern unsigned f_timer_expiredGetCount(const FTimer* Timer);
+extern void f_timer_expiredClear(FTimer* Timer);
 
 #endif // F_INC_TIME_TIMER_P_H

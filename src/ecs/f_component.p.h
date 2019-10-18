@@ -23,17 +23,17 @@
 #include "data/f_block.p.h"
 #include "ecs/f_entity.p.h"
 
-typedef void AComponentInstanceInit(void* Self);
-typedef void AComponentInstanceInitEx(void* Self, const void* Data);
-typedef void AComponentInstanceFree(void* Self);
+typedef void FComponentInstanceInit(void* Self);
+typedef void FComponentInstanceInitEx(void* Self, const void* Data);
+typedef void FComponentInstanceFree(void* Self);
 
-typedef void AComponentTemplateInit(void* Data, const ABlock* Config);
-typedef void AComponentTemplateFree(void* Data);
+typedef void FComponentTemplateInit(void* Data, const FBlock* Config);
+typedef void FComponentTemplateFree(void* Data);
 
-extern void f_component_new(int ComponentIndex, size_t InstanceSize, AComponentInstanceInit* InstanceInit, AComponentInstanceFree* InstanceFree);
-extern void f_component_template(int ComponentIndex, const char* StringId, size_t TemplateSize, AComponentTemplateInit* TemplateInit, AComponentTemplateFree* TemplateFree, AComponentInstanceInitEx* InstanceInitEx);
+extern void f_component_new(int ComponentIndex, size_t InstanceSize, FComponentInstanceInit* InstanceInit, FComponentInstanceFree* InstanceFree);
+extern void f_component_template(int ComponentIndex, const char* StringId, size_t TemplateSize, FComponentTemplateInit* TemplateInit, FComponentTemplateFree* TemplateFree, FComponentInstanceInitEx* InstanceInitEx);
 
 extern const void* f_component_dataGet(const void* ComponentBuffer);
-extern AEntity* f_component_entityGet(const void* ComponentBuffer);
+extern FEntity* f_component_entityGet(const void* ComponentBuffer);
 
 #endif // F_INC_ECS_COMPONENT_P_H

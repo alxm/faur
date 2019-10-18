@@ -47,7 +47,7 @@ static void f_fps__init(void)
     f_fps__reset();
 }
 
-const APack f_pack__fps = {
+const FPack f_pack__fps = {
     "FPS",
     {
         [0] = f_fps__init,
@@ -149,7 +149,7 @@ bool f_fps_ticksNth(unsigned N)
     return (g_run.frameCounter % N) == 0;
 }
 
-AFix f_fps_ticksSin(uint8_t Mul, uint8_t Div, unsigned Offset)
+FFix f_fps_ticksSin(uint8_t Mul, uint8_t Div, unsigned Offset)
 {
     uint64_t param = (uint64_t)g_run.frameCounter * Mul * F_FIX_ANGLES_NUM;
 

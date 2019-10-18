@@ -20,16 +20,16 @@
 
 #include "general/f_system_includes.h"
 
-typedef struct ABitfield ABitfield;
+typedef struct FBitfield FBitfield;
 
-extern ABitfield* f_bitfield_new(unsigned NumBits);
-extern void f_bitfield_free(ABitfield* Bitfield);
+extern FBitfield* f_bitfield_new(unsigned NumBits);
+extern void f_bitfield_free(FBitfield* Bitfield);
 
-extern void f_bitfield_set(ABitfield* Bitfield, unsigned Bit);
-extern void f_bitfield_clear(ABitfield* Bitfield, unsigned Bit);
-extern void f_bitfield_reset(ABitfield* Bitfield);
+extern void f_bitfield_set(FBitfield* Bitfield, unsigned Bit);
+extern void f_bitfield_clear(FBitfield* Bitfield, unsigned Bit);
+extern void f_bitfield_reset(FBitfield* Bitfield);
 
-extern bool f_bitfield_test(const ABitfield* Bitfield, unsigned Bit);
-extern bool f_bitfield_testMask(const ABitfield* Bitfield, const ABitfield* Mask);
+extern bool f_bitfield_test(const FBitfield* Bitfield, unsigned Bit);
+extern bool f_bitfield_testMask(const FBitfield* Bitfield, const FBitfield* Mask);
 
 #endif // F_INC_DATA_BITFIELD_P_H

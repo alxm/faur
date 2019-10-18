@@ -22,8 +22,8 @@
 
 #include "graphics/f_pixels.v.h"
 
-extern APixels* f_png__readFile(const char* Path);
-extern APixels* f_png__readMemory(const uint8_t* Data);
-extern void f_png__write(const char* Path, const APixels* Pixels, unsigned Frame, char* Title, char* Description);
+extern FPixels* f_png__readFile(const char* Path);
+extern FPixels* f_png__readMemory(const uint8_t* Data);
+extern void f_png__write(const char* Path, const FPixels* Pixels, unsigned Frame, char* Title, char* Description);
 
 #endif // F_INC_GRAPHICS_PNG_V_H

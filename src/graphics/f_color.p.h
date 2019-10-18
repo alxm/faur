@@ -21,14 +21,14 @@
 #include "general/f_system_includes.h"
 
 #if F_CONFIG_SCREEN_BPP == 16
-    typedef uint16_t APixel;
+    typedef uint16_t FPixel;
 #elif F_CONFIG_SCREEN_BPP == 32
-    typedef uint32_t APixel;
+    typedef uint32_t FPixel;
 #endif
 
 typedef struct {
     int r, g, b;
-} ARgb;
+} FRgb;
 
 #if F_CONFIG_SCREEN_BPP == 16
     #if F_CONFIG_LIB_RENDER_SOFTWARE
@@ -85,29 +85,29 @@ typedef struct {
     #define F_COLOR_ALPHA_MAX 255
 #endif
 
-static inline APixel f_pixel_fromRgb(int Red, int Green, int Blue)
+static inline FPixel f_pixel_fromRgb(int Red, int Green, int Blue)
 {
-    return (APixel)
+    return (FPixel)
         (((((unsigned)Red   & 0xff) >> F__PX_PACK_R) << F__PX_SHIFT_R) |
          ((((unsigned)Green & 0xff) >> F__PX_PACK_G) << F__PX_SHIFT_G) |
          ((((unsigned)Blue  & 0xff) >> F__PX_PACK_B) << F__PX_SHIFT_B));
 }
 
-static inline APixel f_pixel_fromHex(uint32_t Hexcode)
+static inline FPixel f_pixel_fromHex(uint32_t Hexcode)
 {
     #if F_CONFIG_SCREEN_BPP == 16 || F_CONFIG_SCREEN_FORMAT_ABGR
-        return (APixel)
+        return (FPixel)
             (((((Hexcode >> 16) & 0xff) >> F__PX_PACK_R) << F__PX_SHIFT_R) |
              ((((Hexcode >> 8)  & 0xff) >> F__PX_PACK_G) << F__PX_SHIFT_G) |
              ((((Hexcode)       & 0xff) >> F__PX_PACK_B) << F__PX_SHIFT_B));
     #elif F_CONFIG_SCREEN_BPP == 32 && F_CONFIG_SCREEN_FORMAT_RGBA
-        return (APixel)((Hexcode & 0xffffff) << F__PX_BITS_A);
+        return (FPixel)((Hexcode & 0xffffff) << F__PX_BITS_A);
     #endif
 }
 
-static inline ARgb f_pixel_toRgb(APixel Pixel)
+static inline FRgb f_pixel_toRgb(FPixel Pixel)
 {
-    ARgb rgb = {
+    FRgb rgb = {
         (int)((Pixel >> F__PX_SHIFT_R) & F__PX_MASK_R) << F__PX_PACK_R,
         (int)((Pixel >> F__PX_SHIFT_G) & F__PX_MASK_G) << F__PX_PACK_G,
         (int)((Pixel >> F__PX_SHIFT_B) & F__PX_MASK_B) << F__PX_PACK_B
@@ -127,19 +127,19 @@ typedef enum {
     F_COLOR_BLEND_MOD,
     F_COLOR_BLEND_ADD,
     F_COLOR_BLEND_NUM
-} AColorBlend;
+} FColorBlend;
 
 extern void f_color_push(void);
 extern void f_color_pop(void);
 extern void f_color_reset(void);
 
-extern void f_color_blendSet(AColorBlend Blend);
+extern void f_color_blendSet(FColorBlend Blend);
 extern void f_color_alphaSet(int Alpha);
 
 extern void f_color_baseSetRgb(int Red, int Green, int Blue);
 extern void f_color_baseSetRgba(int Red, int Green, int Blue, int Alpha);
 extern void f_color_baseSetHex(uint32_t Hexcode);
-extern void f_color_baseSetPixel(APixel Pixel);
+extern void f_color_baseSetPixel(FPixel Pixel);
 
 extern void f_color_fillBlitSet(bool Fill);
 extern void f_color_fillDrawSet(bool Fill);

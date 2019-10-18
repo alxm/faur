@@ -103,7 +103,7 @@ int f_platform_api__soundVolumeGetMax(void)
     return MIX_MAX_VOLUME;
 }
 
-APlatformMusic* f_platform_api__soundMusicNew(const char* Path)
+FPlatformMusic* f_platform_api__soundMusicNew(const char* Path)
 {
     if(!g_enabled) {
         return NULL;
@@ -118,7 +118,7 @@ APlatformMusic* f_platform_api__soundMusicNew(const char* Path)
     return m;
 }
 
-void f_platform_api__soundMusicFree(APlatformMusic* Music)
+void f_platform_api__soundMusicFree(FPlatformMusic* Music)
 {
     Mix_FreeMusic(Music);
 }
@@ -136,7 +136,7 @@ void f_platform_api__soundMusicVolumeSet(int Volume)
     #endif
 }
 
-void f_platform_api__soundMusicPlay(APlatformMusic* Music)
+void f_platform_api__soundMusicPlay(FPlatformMusic* Music)
 {
     if(Music == NULL) {
         return;
@@ -156,7 +156,7 @@ void f_platform_api__soundMusicStop(void)
     Mix_HaltMusic();
 }
 
-APlatformSample* f_platform_api__soundSampleNewFromFile(const char* Path)
+FPlatformSample* f_platform_api__soundSampleNewFromFile(const char* Path)
 {
     if(!g_enabled) {
         return NULL;
@@ -171,7 +171,7 @@ APlatformSample* f_platform_api__soundSampleNewFromFile(const char* Path)
     return chunk;
 }
 
-APlatformSample* f_platform_api__soundSampleNewFromData(const uint8_t* Data, int Size)
+FPlatformSample* f_platform_api__soundSampleNewFromData(const uint8_t* Data, int Size)
 {
     if(!g_enabled) {
         return NULL;
@@ -195,12 +195,12 @@ APlatformSample* f_platform_api__soundSampleNewFromData(const uint8_t* Data, int
     return chunk;
 }
 
-void f_platform_api__soundSampleFree(APlatformSample* Sample)
+void f_platform_api__soundSampleFree(FPlatformSample* Sample)
 {
     Mix_FreeChunk(Sample);
 }
 
-void f_platform_api__soundSampleVolumeSet(APlatformSample* Sample, int Volume)
+void f_platform_api__soundSampleVolumeSet(FPlatformSample* Sample, int Volume)
 {
     if(Sample == NULL) {
         return;
@@ -227,7 +227,7 @@ void f_platform_api__soundSampleVolumeSetAll(int Volume)
     #endif
 }
 
-void f_platform_api__soundSamplePlay(APlatformSample* Sample, int Channel, bool Loop)
+void f_platform_api__soundSamplePlay(FPlatformSample* Sample, int Channel, bool Loop)
 {
     if(Sample == NULL) {
         return;

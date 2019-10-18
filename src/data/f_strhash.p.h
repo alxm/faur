@@ -20,39 +20,39 @@
 
 #include "general/f_system_includes.h"
 
-typedef struct AStrHash AStrHash;
-typedef struct AStrHashEntry AStrHashEntry;
+typedef struct FStrHash FStrHash;
+typedef struct FStrHashEntry FStrHashEntry;
 
 #include "data/f_listit.p.h"
 
-extern AStrHash* f_strhash_new(void);
-extern void f_strhash_free(AStrHash* Hash);
-extern void f_strhash_freeEx(AStrHash* Hash, AFree* Free);
+extern FStrHash* f_strhash_new(void);
+extern void f_strhash_free(FStrHash* Hash);
+extern void f_strhash_freeEx(FStrHash* Hash, FFree* Free);
 
-extern void f_strhash_add(AStrHash* Hash, const char* Key, void* Content);
-extern void* f_strhash_update(AStrHash* Hash, const char* Key, void* NewContent);
-extern void* f_strhash_get(const AStrHash* Hash, const char* Key);
-extern bool f_strhash_contains(const AStrHash* Hash, const char* Key);
-extern unsigned f_strhash_sizeGet(const AStrHash* Hash);
+extern void f_strhash_add(FStrHash* Hash, const char* Key, void* Content);
+extern void* f_strhash_update(FStrHash* Hash, const char* Key, void* NewContent);
+extern void* f_strhash_get(const FStrHash* Hash, const char* Key);
+extern bool f_strhash_contains(const FStrHash* Hash, const char* Key);
+extern unsigned f_strhash_sizeGet(const FStrHash* Hash);
 
-extern void** f_strhash_toArray(const AStrHash* Hash);
+extern void** f_strhash_toArray(const FStrHash* Hash);
 
-extern const AList* f__strhash_entries(const AStrHash* Hash);
-extern void* f__strhash_entryValue(const AStrHashEntry* Entry);
-extern const char* f__strhash_entryKey(const AStrHashEntry* Entry);
+extern const FList* f__strhash_entries(const FStrHash* Hash);
+extern void* f__strhash_entryValue(const FStrHashEntry* Entry);
+extern const char* f__strhash_entryKey(const FStrHashEntry* Entry);
 
 #define F_STRHASH_ITERATE(StrHash, PtrType, Name)                           \
-    F_LIST_ITERATE(f__strhash_entries(StrHash), const AStrHashEntry*, f__e) \
+    F_LIST_ITERATE(f__strhash_entries(StrHash), const FStrHashEntry*, f__e) \
         for(PtrType Name = f__strhash_entryValue(f__e);                     \
             f__e != NULL; f__e = NULL)
 
 #define F_STRHASH_KEYS(StrHash, Name)                                       \
-    F_LIST_ITERATE(f__strhash_entries(StrHash), const AStrHashEntry*, f__e) \
+    F_LIST_ITERATE(f__strhash_entries(StrHash), const FStrHashEntry*, f__e) \
         for(const char* Name = f__strhash_entryKey(f__e);                   \
             f__e != NULL; f__e = NULL)
 
 #define F_STRHASH_KEY() f__strhash_entryKey(f__e)
 
-extern void f__strhash_printStats(const AStrHash* Hash, const char* Message);
+extern void f__strhash_printStats(const FStrHash* Hash, const char* Message);
 
 #endif // F_INC_DATA_STRHASH_P_H

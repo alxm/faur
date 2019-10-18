@@ -21,12 +21,12 @@
 #if F_CONFIG_LIB_RENDER_SOFTWARE
 #define F__COMPILE_INC 1
 
-typedef void (*ADrawPixel)(int X, int Y);
-typedef void (*ADrawHLine)(int X1, int X2, int Y);
-typedef void (*ADrawVLine)(int X, int Y1, int Y2);
-typedef void (*ADrawLine)(int X1, int Y1, int X2, int Y2);
-typedef void (*ADrawRectangle)(int X, int Y, int Width, int Height);
-typedef void (*ADrawCircle)(int X, int Y, int Radius);
+typedef void (*FDrawPixel)(int X, int Y);
+typedef void (*FDrawHLine)(int X1, int X2, int Y);
+typedef void (*FDrawVLine)(int X, int Y1, int Y2);
+typedef void (*FDrawLine)(int X1, int Y1, int X2, int Y2);
+typedef void (*FDrawRectangle)(int X, int Y, int Width, int Height);
+typedef void (*FDrawCircle)(int X, int Y, int Radius);
 
 static bool cohen_sutherland_clip(int* X1, int* Y1, int* X2, int* Y2)
 {
@@ -168,7 +168,7 @@ do {                                                                        \
         }                                                                   \
     }                                                                       \
                                                                             \
-    APixel* dst = Buffer;                                                   \
+    FPixel* dst = Buffer;                                                   \
                                                                             \
     if((PrimaryOnScreen) && (SecondaryOnScreen)) {                          \
         while(PrimaryCoord < SecondaryCoord && (PrimaryOnScreen)) {         \
@@ -196,13 +196,13 @@ do {                                                                        \
 #define F__PIXEL_DRAW(Dst) F_GLUE2(f_color__draw_, F__BLEND)(Dst F__PIXEL_PARAMS)
 
 #define F__BLEND plain
-#define F__BLEND_SETUP const APixel color = f__color.pixel;
+#define F__BLEND_SETUP const FPixel color = f__color.pixel;
 #define F__PIXEL_PARAMS , color
 #include "platform/graphics/f_software_draw.inc.c"
 
 #define F__BLEND rgba
 #define F__BLEND_SETUP \
-    const ARgb rgb = f__color.rgb; \
+    const FRgb rgb = f__color.rgb; \
     const int alpha = f__color.alpha; \
     if(alpha == 0) { \
         return; \
@@ -211,17 +211,17 @@ do {                                                                        \
 #include "platform/graphics/f_software_draw.inc.c"
 
 #define F__BLEND rgb25
-#define F__BLEND_SETUP const ARgb rgb = f__color.rgb;
+#define F__BLEND_SETUP const FRgb rgb = f__color.rgb;
 #define F__PIXEL_PARAMS , &rgb
 #include "platform/graphics/f_software_draw.inc.c"
 
 #define F__BLEND rgb50
-#define F__BLEND_SETUP const ARgb rgb = f__color.rgb;
+#define F__BLEND_SETUP const FRgb rgb = f__color.rgb;
 #define F__PIXEL_PARAMS , &rgb
 #include "platform/graphics/f_software_draw.inc.c"
 
 #define F__BLEND rgb75
-#define F__BLEND_SETUP const ARgb rgb = f__color.rgb;
+#define F__BLEND_SETUP const FRgb rgb = f__color.rgb;
 #define F__PIXEL_PARAMS , &rgb
 #include "platform/graphics/f_software_draw.inc.c"
 
@@ -231,12 +231,12 @@ do {                                                                        \
 #include "platform/graphics/f_software_draw.inc.c"
 
 #define F__BLEND mod
-#define F__BLEND_SETUP const ARgb rgb = f__color.rgb;
+#define F__BLEND_SETUP const FRgb rgb = f__color.rgb;
 #define F__PIXEL_PARAMS , &rgb
 #include "platform/graphics/f_software_draw.inc.c"
 
 #define F__BLEND add
-#define F__BLEND_SETUP const ARgb rgb = f__color.rgb;
+#define F__BLEND_SETUP const FRgb rgb = f__color.rgb;
 #define F__PIXEL_PARAMS , &rgb
 #include "platform/graphics/f_software_draw.inc.c"
 
@@ -255,12 +255,12 @@ do {                                                                        \
     },
 
 static const struct {
-    ADrawPixel pixel;
-    ADrawHLine hline;
-    ADrawVLine vline;
-    ADrawLine line;
-    ADrawRectangle rectangle[2]; // [Fill]
-    ADrawCircle circle[2][2]; // [Clip][Fill]
+    FDrawPixel pixel;
+    FDrawHLine hline;
+    FDrawVLine vline;
+    FDrawLine line;
+    FDrawRectangle rectangle[2]; // [Fill]
+    FDrawCircle circle[2][2]; // [Clip][Fill]
 } g_draw[F_COLOR_BLEND_NUM] = {
     F__INIT_BLEND(F_COLOR_BLEND_PLAIN, plain)
     F__INIT_BLEND(F_COLOR_BLEND_RGBA, rgba)

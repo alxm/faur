@@ -20,33 +20,33 @@
 
 #include "graphics/f_screen.p.h"
 
-typedef struct AScreen AScreen;
+typedef struct FScreen FScreen;
 
 #include "general/f_main.v.h"
 #include "graphics/f_sprite.v.h"
 
-struct AScreen {
-    APixels* pixels;
+struct FScreen {
+    FPixels* pixels;
     #if !F_CONFIG_LIB_RENDER_SOFTWARE
-        APlatformTexture* texture;
+        FPlatformTexture* texture;
     #endif
-    ASprite* sprite;
+    FSprite* sprite;
     unsigned frame;
     int clipX, clipY;
     int clipX2, clipY2;
     int clipWidth, clipHeight;
 };
 
-extern const APack f_pack__screen;
+extern const FPack f_pack__screen;
 
-extern AScreen f__screen;
+extern FScreen f__screen;
 
 extern void f_screen__tick(void);
 extern void f_screen__draw(void);
 
-extern void f_screen__toSprite(ASprite* Sprite, unsigned Frame);
+extern void f_screen__toSprite(FSprite* Sprite, unsigned Frame);
 
-static inline APixel* f_screen__bufferGetFrom(int X, int Y)
+static inline FPixel* f_screen__bufferGetFrom(int X, int Y)
 {
     return f_pixels__bufferGetFrom(f__screen.pixels, f__screen.frame, X, Y);
 }

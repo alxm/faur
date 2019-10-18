@@ -19,27 +19,27 @@
 #include <faur.v.h>
 
 #if F_CONFIG_ECS_ENABLED
-struct AEntity {
+struct FEntity {
     char* id; // specified name for debugging
-    const ATemplate* template; // template used to init this entity's components
-    AEntity* parent; // manually associated parent entity
-    AListNode* node; // list node in one of AEcsListId
-    AListNode* collectionNode; // ACollection list nod
-    AList* matchingSystemsActive; // list of ASystem
-    AList* matchingSystemsRest; // list of ASystem
-    AList* systemNodesActive; // list of nodes in active-only ASystem lists
-    AList* systemNodesEither; // list of nodes in normal ASystem.entities lists
-    ABitfield* componentBits; // each component's bit is set
+    const FTemplate* template; // template used to init this entity's components
+    FEntity* parent; // manually associated parent entity
+    FListNode* node; // list node in one of FEcsListId
+    FListNode* collectionNode; // FCollection list nod
+    FList* matchingSystemsActive; // list of FSystem
+    FList* matchingSystemsRest; // list of FSystem
+    FList* systemNodesActive; // list of nodes in active-only FSystem lists
+    FList* systemNodesEither; // list of nodes in normal FSystem.entities lists
+    FBitfield* componentBits; // each component's bit is set
     unsigned lastActive; // frame when f_entity_activeSet was last called
     int references; // if >0, then the entity lingers in the removed limbo list
     int muteCount; // if >0, then the entity isn't picked up by any systems
-    AEntityFlags flags; // various properties
-    AComponentInstance* componentsTable[F_CONFIG_ECS_COM_NUM]; // Comp, or NULL
+    FEntityFlags flags; // various properties
+    FComponentInstance* componentsTable[F_CONFIG_ECS_COM_NUM]; // Comp, or NULL
 };
 
-static AComponentInstance* componentAdd(AEntity* Entity, int ComponentIndex, const AComponent* Component, const void* TemplateData)
+static FComponentInstance* componentAdd(FEntity* Entity, int ComponentIndex, const FComponent* Component, const void* TemplateData)
 {
-    AComponentInstance* c = f_component__instanceNew(
+    FComponentInstance* c = f_component__instanceNew(
                                 Component, Entity, TemplateData);
 
     Entity->componentsTable[ComponentIndex] = c;
@@ -48,26 +48,26 @@ static AComponentInstance* componentAdd(AEntity* Entity, int ComponentIndex, con
     return c;
 }
 
-static inline bool listIsIn(const AEntity* Entity, AEcsListId List)
+static inline bool listIsIn(const FEntity* Entity, FEcsListId List)
 {
     return f_list__nodeGetList(Entity->node) == f_ecs__listGet(List);
 }
 
-static inline void listAddTo(AEntity* Entity, AEcsListId List)
+static inline void listAddTo(FEntity* Entity, FEcsListId List)
 {
     Entity->node = f_list_addLast(f_ecs__listGet(List), Entity);
 }
 
-static inline void listMoveTo(AEntity* Entity, AEcsListId List)
+static inline void listMoveTo(FEntity* Entity, FEcsListId List)
 {
     f_list_removeNode(Entity->node);
 
     listAddTo(Entity, List);
 }
 
-AEntity* f_entity_new(const char* Template, const void* Context)
+FEntity* f_entity_new(const char* Template, const void* Context)
 {
-    AEntity* e = f_mem_zalloc(sizeof(AEntity));
+    FEntity* e = f_mem_zalloc(sizeof(FEntity));
 
     listAddTo(e, F_ECS__NEW);
 
@@ -78,14 +78,14 @@ AEntity* f_entity_new(const char* Template, const void* Context)
     e->componentBits = f_bitfield_new(F_CONFIG_ECS_COM_NUM);
     e->lastActive = f_fps_ticksGet() - 1;
 
-    ACollection* collection = f_collection__get();
+    FCollection* collection = f_collection__get();
 
     if(collection) {
         e->collectionNode = f_list_addLast(collection, e);
     }
 
     if(Template) {
-        const ATemplate* template = f_template__get(Template);
+        const FTemplate* template = f_template__get(Template);
         const char* id = f_str__fmt512("%s#%u",
                                        Template,
                                        f_template__instanceGet(template));
@@ -108,7 +108,7 @@ AEntity* f_entity_new(const char* Template, const void* Context)
     return e;
 }
 
-void f_entity__free(AEntity* Entity)
+void f_entity__free(FEntity* Entity)
 {
     if(Entity == NULL) {
         return;
@@ -126,8 +126,8 @@ void f_entity__free(AEntity* Entity)
 
     f_list_free(Entity->matchingSystemsActive);
     f_list_free(Entity->matchingSystemsRest);
-    f_list_freeEx(Entity->systemNodesActive, (AFree*)f_list_removeNode);
-    f_list_freeEx(Entity->systemNodesEither, (AFree*)f_list_removeNode);
+    f_list_freeEx(Entity->systemNodesActive, (FFree*)f_list_removeNode);
+    f_list_freeEx(Entity->systemNodesEither, (FFree*)f_list_removeNode);
 
     for(int c = F_CONFIG_ECS_COM_NUM; c--; ) {
         f_component__instanceFree(Entity->componentsTable[c]);
@@ -143,7 +143,7 @@ void f_entity__free(AEntity* Entity)
     f_mem_free(Entity);
 }
 
-void f_entity__freeEx(AEntity* Entity)
+void f_entity__freeEx(FEntity* Entity)
 {
     if(Entity == NULL) {
         return;
@@ -154,7 +154,7 @@ void f_entity__freeEx(AEntity* Entity)
     f_entity__free(Entity);
 }
 
-void f_entity_debugSet(AEntity* Entity, bool DebugOn)
+void f_entity_debugSet(FEntity* Entity, bool DebugOn)
 {
     if(DebugOn) {
         F_FLAGS_SET(Entity->flags, F_ENTITY__DEBUG);
@@ -163,17 +163,17 @@ void f_entity_debugSet(AEntity* Entity, bool DebugOn)
     }
 }
 
-const char* f_entity_idGet(const AEntity* Entity)
+const char* f_entity_idGet(const FEntity* Entity)
 {
-    return Entity->id ? Entity->id : "AEntity";
+    return Entity->id ? Entity->id : "FEntity";
 }
 
-AEntity* f_entity_parentGet(const AEntity* Entity)
+FEntity* f_entity_parentGet(const FEntity* Entity)
 {
     return Entity->parent;
 }
 
-void f_entity_parentSet(AEntity* Entity, AEntity* Parent)
+void f_entity_parentSet(FEntity* Entity, FEntity* Parent)
 {
     #if F_CONFIG_BUILD_DEBUG
         if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
@@ -208,9 +208,9 @@ void f_entity_parentSet(AEntity* Entity, AEntity* Parent)
     }
 }
 
-bool f_entity_parentHas(const AEntity* Child, const AEntity* PotentialParent)
+bool f_entity_parentHas(const FEntity* Child, const FEntity* PotentialParent)
 {
-    for(AEntity* p = Child->parent; p != NULL; p = p->parent) {
+    for(FEntity* p = Child->parent; p != NULL; p = p->parent) {
         if(p == PotentialParent) {
             return true;
         }
@@ -219,7 +219,7 @@ bool f_entity_parentHas(const AEntity* Child, const AEntity* PotentialParent)
     return false;
 }
 
-void f_entity_refInc(AEntity* Entity)
+void f_entity_refInc(FEntity* Entity)
 {
     #if F_CONFIG_BUILD_DEBUG
         if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__REMOVED)) {
@@ -243,12 +243,12 @@ void f_entity_refInc(AEntity* Entity)
     Entity->references++;
 }
 
-void f_entity_refDec(AEntity* Entity)
+void f_entity_refDec(FEntity* Entity)
 {
     if(f_ecs__refDecIgnoreGet()) {
         // The entity could have already been freed despite any outstanding
-        // references. This is the only AEntity API that may be called by
-        // components' AComponentInstanceFree callbacks.
+        // references. This is the only FEntity API that may be called by
+        // components' FComponentInstanceFree callbacks.
         return;
     }
 
@@ -273,12 +273,12 @@ void f_entity_refDec(AEntity* Entity)
     }
 }
 
-bool f_entity_removedGet(const AEntity* Entity)
+bool f_entity_removedGet(const FEntity* Entity)
 {
     return F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__REMOVED);
 }
 
-void f_entity_removedSet(AEntity* Entity)
+void f_entity_removedSet(FEntity* Entity)
 {
     if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__REMOVED)) {
         #if F_CONFIG_BUILD_DEBUG
@@ -299,13 +299,13 @@ void f_entity_removedSet(AEntity* Entity)
     listMoveTo(Entity, F_ECS__FLUSH);
 }
 
-bool f_entity_activeGet(const AEntity* Entity)
+bool f_entity_activeGet(const FEntity* Entity)
 {
     return F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__ACTIVE_PERMANENT)
         || Entity->lastActive == f_fps_ticksGet();
 }
 
-void f_entity_activeSet(AEntity* Entity)
+void f_entity_activeSet(FEntity* Entity)
 {
     if(Entity->muteCount > 0
         || F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__REMOVED)) {
@@ -325,14 +325,14 @@ void f_entity_activeSet(AEntity* Entity)
         F_FLAGS_CLEAR(Entity->flags, F_ENTITY__ACTIVE_REMOVED);
 
         // Add entity back to active-only systems
-        F_LIST_ITERATE(Entity->matchingSystemsActive, ASystem*, system) {
+        F_LIST_ITERATE(Entity->matchingSystemsActive, FSystem*, system) {
             f_list_addLast(
                 Entity->systemNodesActive, f_system__entityAdd(system, Entity));
         }
     }
 }
 
-void f_entity_activeSetRemove(AEntity* Entity)
+void f_entity_activeSetRemove(FEntity* Entity)
 {
     #if F_CONFIG_BUILD_DEBUG
         if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
@@ -344,7 +344,7 @@ void f_entity_activeSetRemove(AEntity* Entity)
     F_FLAGS_SET(Entity->flags, F_ENTITY__REMOVE_INACTIVE);
 }
 
-void f_entity_activeSetPermanent(AEntity* Entity)
+void f_entity_activeSetPermanent(FEntity* Entity)
 {
     #if F_CONFIG_BUILD_DEBUG
         if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
@@ -356,9 +356,9 @@ void f_entity_activeSetPermanent(AEntity* Entity)
     F_FLAGS_SET(Entity->flags, F_ENTITY__ACTIVE_PERMANENT);
 }
 
-void* f_entity_componentAdd(AEntity* Entity, int ComponentIndex)
+void* f_entity_componentAdd(FEntity* Entity, int ComponentIndex)
 {
-    const AComponent* component = f_component__get(ComponentIndex);
+    const FComponent* component = f_component__get(ComponentIndex);
 
     #if F_CONFIG_BUILD_DEBUG
         if(!listIsIn(Entity, F_ECS__NEW)) {
@@ -383,7 +383,7 @@ void* f_entity_componentAdd(AEntity* Entity, int ComponentIndex)
     return componentAdd(Entity, ComponentIndex, component, NULL)->buffer;
 }
 
-bool f_entity_componentHas(const AEntity* Entity, int ComponentIndex)
+bool f_entity_componentHas(const FEntity* Entity, int ComponentIndex)
 {
     #if F_CONFIG_BUILD_DEBUG
         f_component__get(ComponentIndex);
@@ -392,28 +392,28 @@ bool f_entity_componentHas(const AEntity* Entity, int ComponentIndex)
     return Entity->componentsTable[ComponentIndex] != NULL;
 }
 
-void* f_entity_componentGet(const AEntity* Entity, int ComponentIndex)
+void* f_entity_componentGet(const FEntity* Entity, int ComponentIndex)
 {
     #if F_CONFIG_BUILD_DEBUG
         f_component__get(ComponentIndex);
     #endif
 
-    AComponentInstance* instance = Entity->componentsTable[ComponentIndex];
+    FComponentInstance* instance = Entity->componentsTable[ComponentIndex];
 
     return instance ? instance->buffer : NULL;
 }
 
-void* f_entity_componentReq(const AEntity* Entity, int ComponentIndex)
+void* f_entity_componentReq(const FEntity* Entity, int ComponentIndex)
 {
     #if F_CONFIG_BUILD_DEBUG
         f_component__get(ComponentIndex);
     #endif
 
-    AComponentInstance* instance = Entity->componentsTable[ComponentIndex];
+    FComponentInstance* instance = Entity->componentsTable[ComponentIndex];
 
     #if F_CONFIG_BUILD_DEBUG
         if(instance == NULL) {
-            const AComponent* component = f_component__get(ComponentIndex);
+            const FComponent* component = f_component__get(ComponentIndex);
 
             F__FATAL("f_entity_componentReq(%s, %s): Missing component",
                      f_entity_idGet(Entity),
@@ -424,12 +424,12 @@ void* f_entity_componentReq(const AEntity* Entity, int ComponentIndex)
     return instance->buffer;
 }
 
-bool f_entity_muteGet(const AEntity* Entity)
+bool f_entity_muteGet(const FEntity* Entity)
 {
     return Entity->muteCount > 0;
 }
 
-void f_entity_muteInc(AEntity* Entity)
+void f_entity_muteInc(FEntity* Entity)
 {
     if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__REMOVED)) {
         #if F_CONFIG_BUILD_DEBUG
@@ -459,7 +459,7 @@ void f_entity_muteInc(AEntity* Entity)
     }
 }
 
-void f_entity_muteDec(AEntity* Entity)
+void f_entity_muteDec(FEntity* Entity)
 {
     if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__REMOVED)) {
         #if F_CONFIG_BUILD_DEBUG
@@ -502,23 +502,23 @@ void f_entity_muteDec(AEntity* Entity)
     }
 }
 
-const ATemplate* f_entity__templateGet(const AEntity* Entity)
+const FTemplate* f_entity__templateGet(const FEntity* Entity)
 {
     return Entity->template;
 }
 
-bool f_entity__canDelete(const AEntity* Entity)
+bool f_entity__canDelete(const FEntity* Entity)
 {
     return Entity->references == 0
             && F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__REMOVED);
 }
 
-void f_entity__ecsListAdd(AEntity* Entity, AList* List)
+void f_entity__ecsListAdd(FEntity* Entity, FList* List)
 {
     Entity->node = f_list_addLast(List, Entity);
 }
 
-void f_entity__systemsMatch(AEntity* Entity, ASystem* System)
+void f_entity__systemsMatch(FEntity* Entity, FSystem* System)
 {
     if(f_bitfield_testMask(
         Entity->componentBits, f_system__componentBitsGet(System))) {
@@ -531,7 +531,7 @@ void f_entity__systemsMatch(AEntity* Entity, ASystem* System)
     }
 }
 
-void f_entity__systemsAddTo(AEntity* Entity)
+void f_entity__systemsAddTo(FEntity* Entity)
 {
     #if F_CONFIG_BUILD_DEBUG
         if(f_list_isEmpty(Entity->matchingSystemsActive)
@@ -543,13 +543,13 @@ void f_entity__systemsAddTo(AEntity* Entity)
     #endif
 
     if(!F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__ACTIVE_REMOVED)) {
-        F_LIST_ITERATE(Entity->matchingSystemsActive, ASystem*, system) {
+        F_LIST_ITERATE(Entity->matchingSystemsActive, FSystem*, system) {
             f_list_addLast(
                 Entity->systemNodesActive, f_system__entityAdd(system, Entity));
         }
     }
 
-    F_LIST_ITERATE(Entity->matchingSystemsRest, ASystem*, system) {
+    F_LIST_ITERATE(Entity->matchingSystemsRest, FSystem*, system) {
         f_list_addLast(
             Entity->systemNodesEither, f_system__entityAdd(system, Entity));
     }
@@ -557,7 +557,7 @@ void f_entity__systemsAddTo(AEntity* Entity)
     listAddTo(Entity, F_ECS__DEFAULT);
 }
 
-void f_entity__systemsRemoveFromAll(AEntity* Entity)
+void f_entity__systemsRemoveFromAll(FEntity* Entity)
 {
     #if F_CONFIG_BUILD_DEBUG
         if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
@@ -566,11 +566,11 @@ void f_entity__systemsRemoveFromAll(AEntity* Entity)
         }
     #endif
 
-    f_list_clearEx(Entity->systemNodesActive, (AFree*)f_list_removeNode);
-    f_list_clearEx(Entity->systemNodesEither, (AFree*)f_list_removeNode);
+    f_list_clearEx(Entity->systemNodesActive, (FFree*)f_list_removeNode);
+    f_list_clearEx(Entity->systemNodesEither, (FFree*)f_list_removeNode);
 }
 
-void f_entity__systemsRemoveFromActive(AEntity* Entity)
+void f_entity__systemsRemoveFromActive(FEntity* Entity)
 {
     #if F_CONFIG_BUILD_DEBUG
         if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
@@ -580,7 +580,7 @@ void f_entity__systemsRemoveFromActive(AEntity* Entity)
     #endif
 
     F_FLAGS_SET(Entity->flags, F_ENTITY__ACTIVE_REMOVED);
-    f_list_clearEx(Entity->systemNodesActive, (AFree*)f_list_removeNode);
+    f_list_clearEx(Entity->systemNodesActive, (FFree*)f_list_removeNode);
 
     if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__REMOVE_INACTIVE)) {
         f_entity_removedSet(Entity);

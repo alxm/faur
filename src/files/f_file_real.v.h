@@ -22,7 +22,7 @@
 
 #include "files/f_file.v.h"
 
-extern AFile* f_file_real__new(APath* Path, AFileMode Mode);
+extern FFile* f_file_real__new(FPath* Path, FFileMode Mode);
 
 extern uint8_t* f_file_real__toBuffer(const char* Path);
 

@@ -18,9 +18,9 @@
 #include "f_analog.v.h"
 #include <faur.v.h>
 
-struct AAnalog {
+struct FAnalog {
     const char* name; // friendly name
-    AList* platformInputs; // list of APlatformAnalog
+    FList* platformInputs; // list of FPlatformAnalog
 };
 
 static const char* g_analogNames[F_AXIS_NUM] = {
@@ -37,11 +37,11 @@ static const char* g_analogNames[F_AXIS_NUM] = {
     [F_AXIS_RIGHTTRIGGER] = "Right-Trigger",
 };
 
-static const char* g_defaultName = "AAnalog";
+static const char* g_defaultName = "FAnalog";
 
-AAnalog* f_analog_new(void)
+FAnalog* f_analog_new(void)
 {
-    AAnalog* a = f_mem_malloc(sizeof(AAnalog));
+    FAnalog* a = f_mem_malloc(sizeof(FAnalog));
 
     a->name = g_defaultName;
     a->platformInputs = f_list_new();
@@ -49,7 +49,7 @@ AAnalog* f_analog_new(void)
     return a;
 }
 
-void f_analog_free(AAnalog* Analog)
+void f_analog_free(FAnalog* Analog)
 {
     if(Analog == NULL) {
         return;
@@ -60,9 +60,9 @@ void f_analog_free(AAnalog* Analog)
     f_mem_free(Analog);
 }
 
-void f_analog_bind(AAnalog* Analog, const AController* Controller, AAnalogId Id)
+void f_analog_bind(FAnalog* Analog, const FController* Controller, FAnalogId Id)
 {
-    const APlatformAnalog* a = f_platform_api__inputAnalogGet(Controller, Id);
+    const FPlatformAnalog* a = f_platform_api__inputAnalogGet(Controller, Id);
 
     if(a == NULL) {
         return;
@@ -72,20 +72,20 @@ void f_analog_bind(AAnalog* Analog, const AController* Controller, AAnalogId Id)
         Analog->name = g_analogNames[Id];
     }
 
-    f_list_addLast(Analog->platformInputs, (APlatformAnalog*)a);
+    f_list_addLast(Analog->platformInputs, (FPlatformAnalog*)a);
 }
 
-bool f_analog_isWorking(const AAnalog* Analog)
+bool f_analog_isWorking(const FAnalog* Analog)
 {
     return !f_list_isEmpty(Analog->platformInputs);
 }
 
-const char* f_analog_nameGet(const AAnalog* Analog)
+const char* f_analog_nameGet(const FAnalog* Analog)
 {
     return Analog->name;
 }
 
-AFix f_analog_valueGet(const AAnalog* Analog)
+FFix f_analog_valueGet(const FAnalog* Analog)
 {
     int value = 0;
 
@@ -93,7 +93,7 @@ AFix f_analog_valueGet(const AAnalog* Analog)
     #define F__ANALOG_MAX_DISTANCE (1 << F__ANALOG_BITS)
     #define F__ANALOG_ERROR_MARGIN (F__ANALOG_MAX_DISTANCE / 20)
 
-    F_LIST_ITERATE(Analog->platformInputs, APlatformAnalog*, a) {
+    F_LIST_ITERATE(Analog->platformInputs, FPlatformAnalog*, a) {
         value = f_platform_api__inputAnalogValueGet(a);
 
         if(f_math_abs(value) > F__ANALOG_ERROR_MARGIN) {

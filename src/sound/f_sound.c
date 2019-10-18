@@ -28,13 +28,13 @@ static int g_volumeMax;
     #define F__SOUND_VOLUME_BAR 1
     #define F__VOLUME_STEP 1
     #define F__VOLBAR_SHOW_MS 500
-    static ATimer* g_volTimer;
-    static AButton* g_volumeUpButton;
-    static AButton* g_volumeDownButton;
+    static FTimer* g_volTimer;
+    static FButton* g_volumeUpButton;
+    static FButton* g_volumeDownButton;
 #endif
 
 #if F_CONFIG_TRAIT_KEYBOARD
-    static AButton* g_muteButton;
+    static FButton* g_muteButton;
 #endif
 
 static void adjustSoundVolume(int Volume)
@@ -85,7 +85,7 @@ static void f_sound__uninit(void)
     f_music_stop();
 }
 
-const APack f_pack__sound = {
+const FPack f_pack__sound = {
     "Sound",
     {
         [0] = f_sound__init,
@@ -144,9 +144,9 @@ void f_sound__draw(void)
     #endif
 }
 
-AMusic* f_music_new(const char* Path)
+FMusic* f_music_new(const char* Path)
 {
-    APlatformMusic* m = f_platform_api__soundMusicNew(Path);
+    FPlatformMusic* m = f_platform_api__soundMusicNew(Path);
 
     if(m == NULL) {
         F__FATAL("f_music_new(%s): Cannot open file", Path);
@@ -155,14 +155,14 @@ AMusic* f_music_new(const char* Path)
     return m;
 }
 
-void f_music_free(AMusic* Music)
+void f_music_free(FMusic* Music)
 {
     if(Music) {
         f_platform_api__soundMusicFree(Music);
     }
 }
 
-void f_music_play(AMusic* Music)
+void f_music_play(FMusic* Music)
 {
     if(f_platform_api__soundMuteGet()) {
         return;
@@ -176,14 +176,14 @@ void f_music_stop(void)
     f_platform_api__soundMusicStop();
 }
 
-ASample* f_sample_new(const char* Path)
+FSample* f_sample_new(const char* Path)
 {
-    APlatformSample* s = NULL;
+    FPlatformSample* s = NULL;
 
     if(f_path_exists(Path, F_PATH_FILE | F_PATH_REAL)) {
         s = f_platform_api__soundSampleNewFromFile(Path);
     } else if(f_path_exists(Path, F_PATH_FILE | F_PATH_EMBEDDED)) {
-        const AEmbeddedFile* e = f_embed__fileGet(Path);
+        const FEmbeddedFile* e = f_embed__fileGet(Path);
 
         s = f_platform_api__soundSampleNewFromData(e->buffer, (int)e->size);
     } else {
@@ -197,7 +197,7 @@ ASample* f_sample_new(const char* Path)
     return s;
 }
 
-void f_sample_free(ASample* Sample)
+void f_sample_free(FSample* Sample)
 {
     if(Sample) {
         f_platform_api__soundSampleFree(Sample);
@@ -209,7 +209,7 @@ int f_channel_new(void)
     return f_platform_api__soundSampleChannelGet();
 }
 
-void f_channel_play(int Channel, ASample* Sample, AChannelFlags Flags)
+void f_channel_play(int Channel, FSample* Sample, FChannelFlags Flags)
 {
     if(f_platform_api__soundMuteGet()) {
         return;
@@ -237,7 +237,7 @@ bool f_channel_isPlaying(int Channel)
     return f_platform_api__soundSampleIsPlaying(Channel);
 }
 #else // !F_CONFIG_SOUND_ENABLED
-const APack f_pack__sound;
+const FPack f_pack__sound;
 
 void f_sound__tick(void)
 {
@@ -247,19 +247,19 @@ void f_sound__draw(void)
 {
 }
 
-AMusic* f_music_new(const char* Path)
+FMusic* f_music_new(const char* Path)
 {
     F_UNUSED(Path);
 
     return NULL;
 }
 
-void f_music_free(AMusic* Music)
+void f_music_free(FMusic* Music)
 {
     F_UNUSED(Music);
 }
 
-void f_music_play(AMusic* Music)
+void f_music_play(FMusic* Music)
 {
     F_UNUSED(Music);
 }
@@ -268,14 +268,14 @@ void f_music_stop(void)
 {
 }
 
-ASample* f_sample_new(const char* Path)
+FSample* f_sample_new(const char* Path)
 {
     F_UNUSED(Path);
 
     return NULL;
 }
 
-void f_sample_free(ASample* Sample)
+void f_sample_free(FSample* Sample)
 {
     F_UNUSED(Sample);
 }
@@ -285,7 +285,7 @@ int f_channel_new(void)
     return -1;
 }
 
-void f_channel_play(int Channel, ASample* Sample, AChannelFlags Flags)
+void f_channel_play(int Channel, FSample* Sample, FChannelFlags Flags)
 {
     F_UNUSED(Channel);
     F_UNUSED(Sample);

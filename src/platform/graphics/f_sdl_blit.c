@@ -27,19 +27,19 @@ typedef enum {
     F_TEXTURE__COLORMOD_BITMAP, // colorkey: RGB:0xffffff
     F_TEXTURE__COLORMOD_FLAT, // non-colorkey: RGB:0xffffff
     F_TEXTURE__NUM
-} APlatformTextureVersion;
+} FPlatformTextureVersion;
 
-struct APlatformTexture {
+struct FPlatformTexture {
     SDL_Texture* texture[F_TEXTURE__NUM];
 };
 
 extern SDL_Renderer* f__sdlRenderer;
 
-APlatformTexture* f_platform_api__textureNew(const APixels* Pixels, unsigned Frame)
+FPlatformTexture* f_platform_api__textureNew(const FPixels* Pixels, unsigned Frame)
 {
-    APlatformTexture* texture = f_mem_zalloc(sizeof(APlatformTexture));
-    const APixel* original = f_pixels__bufferGetStart(Pixels, Frame);
-    APixel* buffer = f_mem_dup(original, Pixels->bufferSize);
+    FPlatformTexture* texture = f_mem_zalloc(sizeof(FPlatformTexture));
+    const FPixel* original = f_pixels__bufferGetStart(Pixels, Frame);
+    FPixel* buffer = f_mem_dup(original, Pixels->bufferSize);
 
     for(int t = 0; t < F_TEXTURE__NUM; t++) {
         switch(t) {
@@ -47,7 +47,7 @@ APlatformTexture* f_platform_api__textureNew(const APixels* Pixels, unsigned Fra
                 for(int i = Pixels->w * Pixels->h; i--; ) {
                     if(original[i] != f_color__key) {
                         // Set full alpha for non-transparent pixel
-                        buffer[i] |= (APixel)F__PX_MASK_A << F__PX_SHIFT_A;
+                        buffer[i] |= (FPixel)F__PX_MASK_A << F__PX_SHIFT_A;
                     }
                 }
             } break;
@@ -81,7 +81,7 @@ APlatformTexture* f_platform_api__textureNew(const APixels* Pixels, unsigned Fra
         }
 
         if(SDL_UpdateTexture(
-            tex, NULL, buffer, Pixels->w * (int)sizeof(APixel)) < 0) {
+            tex, NULL, buffer, Pixels->w * (int)sizeof(FPixel)) < 0) {
 
             F__FATAL("SDL_UpdateTexture: %s", SDL_GetError());
         }
@@ -98,7 +98,7 @@ APlatformTexture* f_platform_api__textureNew(const APixels* Pixels, unsigned Fra
     return texture;
 }
 
-void f_platform_api__textureFree(APlatformTexture* Texture)
+void f_platform_api__textureFree(FPlatformTexture* Texture)
 {
     if(Texture == NULL) {
         return;
@@ -113,7 +113,7 @@ void f_platform_api__textureFree(APlatformTexture* Texture)
     f_mem_free(Texture);
 }
 
-void f_platform_api__textureBlit(const APlatformTexture* Texture, const APixels* Pixels, unsigned Frame, int X, int Y)
+void f_platform_api__textureBlit(const FPlatformTexture* Texture, const FPixels* Pixels, unsigned Frame, int X, int Y)
 {
     f_platform_api__textureBlitEx(Texture,
                                   Pixels,
@@ -126,7 +126,7 @@ void f_platform_api__textureBlit(const APlatformTexture* Texture, const APixels*
                                   0);
 }
 
-void f_platform_api__textureBlitEx(const APlatformTexture* Texture, const APixels* Pixels, unsigned Frame, int X, int Y, AFix Scale, unsigned Angle, AFix CenterX, AFix CenterY)
+void f_platform_api__textureBlitEx(const FPlatformTexture* Texture, const FPixels* Pixels, unsigned Frame, int X, int Y, FFix Scale, unsigned Angle, FFix CenterX, FFix CenterY)
 {
     F_UNUSED(Frame);
 
@@ -162,7 +162,7 @@ void f_platform_api__textureBlitEx(const APlatformTexture* Texture, const APixel
         }
     }
 
-    AVectorInt halfSize = {Pixels->w / 2, Pixels->h / 2};
+    FVectorInt halfSize = {Pixels->w / 2, Pixels->h / 2};
 
     SDL_Point center = {
         f_fix_toInt(

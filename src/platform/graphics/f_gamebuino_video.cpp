@@ -25,13 +25,13 @@ extern "C" {
 #include <Arduino.h>
 #include <Gamebuino-Meta.h>
 
-static APixels g_pixels;
-static const AVectorInt g_size = {F_CONFIG_SCREEN_HARDWARE_WIDTH,
+static FPixels g_pixels;
+static const FVectorInt g_size = {F_CONFIG_SCREEN_HARDWARE_WIDTH,
                                   F_CONFIG_SCREEN_HARDWARE_HEIGHT};
 
 void f_platform_api__screenInit(void)
 {
-    f_pixels__init(&g_pixels, g_size.x, g_size.y, 1, (APixelsFlags)0);
+    f_pixels__init(&g_pixels, g_size.x, g_size.y, 1, (FPixelsFlags)0);
     f_pixels__bufferSet(&g_pixels, gb.display._buffer, g_size.x, g_size.y);
 }
 
@@ -48,12 +48,12 @@ bool f_platform_api__screenVsyncGet(void)
     return true;
 }
 
-AVectorInt f_platform_api__screenSizeGet(void)
+FVectorInt f_platform_api__screenSizeGet(void)
 {
     return g_size;
 }
 
-APixels* f_platform_api__screenPixelsGet(void)
+FPixels* f_platform_api__screenPixelsGet(void)
 {
     return &g_pixels;
 }

@@ -22,15 +22,15 @@
 
 #include "graphics/f_sprite.p.h"
 
-extern APixel* f_screen_pixelsGetBuffer(void);
+extern FPixel* f_screen_pixelsGetBuffer(void);
 
-extern AVectorInt f_screen_sizeGet(void);
+extern FVectorInt f_screen_sizeGet(void);
 extern int f_screen_sizeGetWidth(void);
 extern int f_screen_sizeGetHeight(void);
 
 extern void f_screen_clear(void);
 
-extern void f_screen_push(ASprite* Sprite, unsigned Frame);
+extern void f_screen_push(FSprite* Sprite, unsigned Frame);
 extern void f_screen_pop(void);
 
 extern void f_screen_clipSet(int X, int Y, int Width, int Height);

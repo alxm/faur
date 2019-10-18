@@ -23,7 +23,7 @@
     #include <emscripten.h>
 #endif
 
-static bool fileSeek(AFile* File, int Offset, AFileOffset Origin)
+static bool fileSeek(FFile* File, int Offset, FFileOffset Origin)
 {
     static const int whence[F_FILE__OFFSET_NUM] = {
         [F_FILE__OFFSET_START] = SEEK_SET,
@@ -34,12 +34,12 @@ static bool fileSeek(AFile* File, int Offset, AFileOffset Origin)
     return fseek(File->u.handle, (long int)Offset, whence[Origin]) == 0;
 }
 
-static bool fileRead(AFile* File, void* Buffer, size_t Size)
+static bool fileRead(FFile* File, void* Buffer, size_t Size)
 {
     return fread(Buffer, Size, 1, File->u.handle) == 1;
 }
 
-static bool fileWrite(AFile* File, const void* Buffer, size_t Size)
+static bool fileWrite(FFile* File, const void* Buffer, size_t Size)
 {
     bool ret = fwrite(Buffer, Size, 1, File->u.handle) == 1;
 
@@ -55,27 +55,27 @@ static bool fileWrite(AFile* File, const void* Buffer, size_t Size)
     return ret;
 }
 
-static bool fileWritef(AFile* File, const char* Format, va_list Args)
+static bool fileWritef(FFile* File, const char* Format, va_list Args)
 {
     return vfprintf(File->u.handle, Format, Args) >= 0;
 }
 
-static bool fileFlush(AFile* File)
+static bool fileFlush(FFile* File)
 {
     return fflush(File->u.handle) == 0;
 }
 
-static int fileGetChar(AFile* File)
+static int fileGetChar(FFile* File)
 {
     return fgetc(File->u.handle);
 }
 
-static int fileUnGetChar(AFile* File, int Char)
+static int fileUnGetChar(FFile* File, int Char)
 {
     return ungetc(Char, File->u.handle);
 }
 
-static const AFileInterface g_interface = {
+static const FFileInterface g_interface = {
     .seek = fileSeek,
     .read = fileRead,
     .write = fileWrite,
@@ -85,7 +85,7 @@ static const AFileInterface g_interface = {
     .ungetchar = fileUnGetChar,
 };
 
-AFile* f_file_real__new(APath* Path, AFileMode Mode)
+FFile* f_file_real__new(FPath* Path, FFileMode Mode)
 {
     int index = 0;
     char mode[4];
@@ -116,7 +116,7 @@ AFile* f_file_real__new(APath* Path, AFileMode Mode)
         f_path__flagsSet(Path, F_PATH_FILE | F_PATH_REAL);
     }
 
-    AFile* f = f_mem_zalloc(sizeof(AFile));
+    FFile* f = f_mem_zalloc(sizeof(FFile));
 
     f->path = Path;
     f->interface = &g_interface;
@@ -134,7 +134,7 @@ uint8_t* f_file_real__toBuffer(const char* Path)
         return NULL;
     }
 
-    AFile* f = f_file_new(Path, F_FILE_READ | F_FILE_BINARY);
+    FFile* f = f_file_new(Path, F_FILE_READ | F_FILE_BINARY);
 
     if(f == NULL) {
         return NULL;

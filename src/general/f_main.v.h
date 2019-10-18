@@ -22,14 +22,14 @@
 
 #define F_PACK__PASSES_NUM 2
 
-typedef void APackInit(void);
-typedef void APackUninit(void);
+typedef void FPackInit(void);
+typedef void FPackUninit(void);
 
 typedef struct {
     const char* name;
-    APackInit* init[F_PACK__PASSES_NUM];
-    APackUninit* uninit[F_PACK__PASSES_NUM];
-} APack;
+    FPackInit* init[F_PACK__PASSES_NUM];
+    FPackUninit* uninit[F_PACK__PASSES_NUM];
+} FPack;
 
 extern void f__main(void);
 

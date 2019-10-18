@@ -36,9 +36,9 @@
 #define F_GLUE4(A, B, C, D) F_GLUE2(A, F_GLUE3(B, C, D))
 #define F_GLUE5(A, B, C, D, E) F_GLUE2(A, F_GLUE4(B, C, D, E))
 
-typedef void AFree(void* Self);
+typedef void FFree(void* Self);
 
-typedef volatile int AEvent;
+typedef volatile int FEvent;
 
 #include <ctype.h>
 #include <float.h>

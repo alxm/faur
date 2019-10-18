@@ -20,7 +20,7 @@
 
 #include "general/f_system_includes.h"
 
-extern const AEvent* f_fade_eventGet(void);
+extern const FEvent* f_fade_eventGet(void);
 
 extern void f_fade_startColorTo(unsigned DurationMs);
 extern void f_fade_startColorFrom(unsigned DurationMs);

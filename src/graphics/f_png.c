@@ -25,25 +25,25 @@
 typedef struct {
     const uint8_t* data;
     size_t offset;
-} AByteStream;
+} FByteStream;
 
 static void readFunction(png_structp Png, png_bytep Data, png_size_t Length)
 {
-    AByteStream* stream = png_get_io_ptr(Png);
+    FByteStream* stream = png_get_io_ptr(Png);
 
     memcpy(Data, stream->data + stream->offset, Length);
     stream->offset += Length;
 }
 
-static APixels* pngToPixels(png_structp Png, png_infop Info)
+static FPixels* pngToPixels(png_structp Png, png_infop Info)
 {
     png_uint_32 w = png_get_image_width(Png, Info);
     png_uint_32 h = png_get_image_height(Png, Info);
     unsigned numChannels = png_get_channels(Png, Info);
     png_bytepp rows = png_get_rows(Png, Info);
 
-    APixels* pixels = f_pixels__new((int)w, (int)h, 1, F_PIXELS__ALLOC);
-    APixel* buffer = pixels->buffer;
+    FPixels* pixels = f_pixels__new((int)w, (int)h, 1, F_PIXELS__ALLOC);
+    FPixel* buffer = pixels->buffer;
 
     for(png_uint_32 y = h; y--; rows++) {
         for(png_uint_32 x = w, chOffset = 0; x--; chOffset += numChannels) {
@@ -56,14 +56,14 @@ static APixels* pngToPixels(png_structp Png, png_infop Info)
     return pixels;
 }
 
-APixels* f_png__readFile(const char* Path)
+FPixels* f_png__readFile(const char* Path)
 {
-    APixels* volatile pixels = NULL;
+    FPixels* volatile pixels = NULL;
 
     png_structp png = NULL;
     png_infop info = NULL;
 
-    AFile* f = f_file_new(Path, F_FILE_READ | F_FILE_BINARY);
+    FFile* f = f_file_new(Path, F_FILE_READ | F_FILE_BINARY);
 
     if(f == NULL) {
         goto cleanUp;
@@ -123,11 +123,11 @@ cleanUp:
     return pixels;
 }
 
-APixels* f_png__readMemory(const uint8_t* Data)
+FPixels* f_png__readMemory(const uint8_t* Data)
 {
-    APixels* volatile pixels = NULL;
+    FPixels* volatile pixels = NULL;
 
-    AByteStream* stream = f_mem_malloc(sizeof(AByteStream));
+    FByteStream* stream = f_mem_malloc(sizeof(FByteStream));
 
     stream->data = Data;
     stream->offset = 0;
@@ -183,9 +183,9 @@ cleanUp:
     return pixels;
 }
 
-void f_png__write(const char* Path, const APixels* Pixels, unsigned Frame, char* Title, char* Description)
+void f_png__write(const char* Path, const FPixels* Pixels, unsigned Frame, char* Title, char* Description)
 {
-    AFile* f = f_file_new(Path, F_FILE_WRITE | F_FILE_BINARY);
+    FFile* f = f_file_new(Path, F_FILE_WRITE | F_FILE_BINARY);
 
     png_structp png = NULL;
     png_infop info = NULL;
@@ -233,13 +233,13 @@ void f_png__write(const char* Path, const APixels* Pixels, unsigned Frame, char*
                  PNG_COMPRESSION_TYPE_DEFAULT,
                  PNG_FILTER_TYPE_DEFAULT);
 
-    const APixel* buffer = f_pixels__bufferGetStart(Pixels, Frame);
+    const FPixel* buffer = f_pixels__bufferGetStart(Pixels, Frame);
 
     for(unsigned y = 0; y < height; y++) {
         rows[y] = rowsData + y * width * COLOR_CHANNELS;
 
         for(unsigned x = 0; x < width; x++) {
-            ARgb rgb = f_pixel_toRgb(*buffer++);
+            FRgb rgb = f_pixel_toRgb(*buffer++);
 
             rows[y][x * COLOR_CHANNELS + 0] = (png_byte)rgb.r;
             rows[y][x * COLOR_CHANNELS + 1] = (png_byte)rgb.g;

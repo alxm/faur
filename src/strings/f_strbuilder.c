@@ -18,7 +18,7 @@
 #include "f_strbuilder.v.h"
 #include <faur.v.h>
 
-struct AStrBuilder {
+struct FStrBuilder {
     char* fmtBuffer;
     size_t fmtSize;
     size_t size;
@@ -26,7 +26,7 @@ struct AStrBuilder {
     char buffer[];
 };
 
-AStrBuilder* f_strbuilder_new(size_t Bytes)
+FStrBuilder* f_strbuilder_new(size_t Bytes)
 {
     #if F_CONFIG_BUILD_DEBUG
         if(Bytes == 0) {
@@ -34,7 +34,7 @@ AStrBuilder* f_strbuilder_new(size_t Bytes)
         }
     #endif
 
-    AStrBuilder* b = f_mem_malloc(sizeof(AStrBuilder) + Bytes);
+    FStrBuilder* b = f_mem_malloc(sizeof(FStrBuilder) + Bytes);
 
     b->fmtBuffer = NULL;
     b->fmtSize = 0;
@@ -45,7 +45,7 @@ AStrBuilder* f_strbuilder_new(size_t Bytes)
     return b;
 }
 
-void f_strbuilder_free(AStrBuilder* Builder)
+void f_strbuilder_free(FStrBuilder* Builder)
 {
     if(Builder == NULL) {
         return;
@@ -55,12 +55,12 @@ void f_strbuilder_free(AStrBuilder* Builder)
     f_mem_free(Builder);
 }
 
-const char* f_strbuilder_get(AStrBuilder* Builder)
+const char* f_strbuilder_get(FStrBuilder* Builder)
 {
     return Builder->buffer;
 }
 
-bool f_strbuilder_add(AStrBuilder* Builder, const char* String)
+bool f_strbuilder_add(FStrBuilder* Builder, const char* String)
 {
     const size_t limit = Builder->size - 1;
     size_t index = Builder->index;
@@ -77,7 +77,7 @@ bool f_strbuilder_add(AStrBuilder* Builder, const char* String)
     return *String == '\0';
 }
 
-bool f_strbuilder_addf(AStrBuilder* Builder, const char* Format, ...)
+bool f_strbuilder_addf(FStrBuilder* Builder, const char* Format, ...)
 {
     va_list args;
     va_start(args, Format);

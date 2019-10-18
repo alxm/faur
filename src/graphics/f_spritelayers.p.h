@@ -20,17 +20,17 @@
 
 #include "general/f_system_includes.h"
 
-typedef struct AList ASpriteLayers;
+typedef struct FList FSpriteLayers;
 
 #include "data/f_list.p.h"
 #include "graphics/f_sprite.p.h"
 
-extern ASpriteLayers* f_spritelayers_new(void);
-extern void f_spritelayers_free(ASpriteLayers* Layers, bool FreeSprites);
+extern FSpriteLayers* f_spritelayers_new(void);
+extern void f_spritelayers_free(FSpriteLayers* Layers, bool FreeSprites);
 
-extern void f_spritelayers_clear(ASpriteLayers* Layers, bool FreeSprites);
-extern void f_spritelayers_add(ASpriteLayers* Layers, ASprite* Sprite, AColorBlend Blend, int Red, int Green, int Blue, int Alpha);
+extern void f_spritelayers_clear(FSpriteLayers* Layers, bool FreeSprites);
+extern void f_spritelayers_add(FSpriteLayers* Layers, FSprite* Sprite, FColorBlend Blend, int Red, int Green, int Blue, int Alpha);
 
-extern void f_spritelayers_blit(const ASpriteLayers* Layers, unsigned Frame, int X, int Y);
+extern void f_spritelayers_blit(const FSpriteLayers* Layers, unsigned Frame, int X, int Y);
 
 #endif // F_INC_GRAPHICS_SPRITELAYERS_P_H

@@ -19,20 +19,20 @@
 #include <faur.v.h>
 
 #if F_CONFIG_ECS_ENABLED
-struct ATemplate {
+struct FTemplate {
     unsigned instanceNumber; // Incremented by each new entity
-    AEntityInit* init; // Optional, runs after components init and parent init
-    ABitfield* componentBits; // Set if template or a parent has component
-    ABitfield* componentBitsOwn; // Set if template actually has the component
+    FEntityInit* init; // Optional, runs after components init and parent init
+    FBitfield* componentBits; // Set if template or a parent has component
+    FBitfield* componentBitsOwn; // Set if template actually has the component
     void* data[F_CONFIG_ECS_COM_NUM]; // Parsed component config data, or NULL
-    const ATemplate* parent; // template chain
+    const FTemplate* parent; // template chain
 };
 
-static AStrHash* g_templates; // table of ATemplate
+static FStrHash* g_templates; // table of FTemplate
 
-static ATemplate* templateNew(const char* Id)
+static FTemplate* templateNew(const char* Id)
 {
-    ATemplate* t = f_mem_zalloc(sizeof(ATemplate));
+    FTemplate* t = f_mem_zalloc(sizeof(FTemplate));
 
     t->componentBits = f_bitfield_new(F_CONFIG_ECS_COM_NUM);
     t->componentBitsOwn = f_bitfield_new(F_CONFIG_ECS_COM_NUM);
@@ -40,7 +40,7 @@ static ATemplate* templateNew(const char* Id)
     char* parentId = f_str_prefixGetToLast(Id, '.');
 
     if(parentId) {
-        ATemplate* parentTemplate = f_strhash_get(g_templates, parentId);
+        FTemplate* parentTemplate = f_strhash_get(g_templates, parentId);
 
         if(parentTemplate == NULL) {
             parentTemplate = templateNew(parentId);
@@ -63,7 +63,7 @@ static ATemplate* templateNew(const char* Id)
     return t;
 }
 
-static void templateFree(ATemplate* Template)
+static void templateFree(FTemplate* Template)
 {
     for(int c = F_CONFIG_ECS_COM_NUM; c--; ) {
         if(f_bitfield_test(Template->componentBitsOwn, (unsigned)c)
@@ -86,14 +86,14 @@ void f_template__init(void)
 
 void f_template__uninit(void)
 {
-    f_strhash_freeEx(g_templates, (AFree*)templateFree);
+    f_strhash_freeEx(g_templates, (FFree*)templateFree);
 }
 
 void f_template_new(const char* FilePath)
 {
-    ABlock* root = f_block_new(FilePath);
+    FBlock* root = f_block_new(FilePath);
 
-    F_LIST_ITERATE(f_block_blocksGet(root), const ABlock*, b) {
+    F_LIST_ITERATE(f_block_blocksGet(root), const FBlock*, b) {
         const char* templateId = f_block_lineGetString(b, 0);
 
         #if F_CONFIG_BUILD_DEBUG
@@ -104,9 +104,9 @@ void f_template_new(const char* FilePath)
             }
         #endif
 
-        ATemplate* t = templateNew(templateId);
+        FTemplate* t = templateNew(templateId);
 
-        F_LIST_ITERATE(f_block_blocksGet(b), const ABlock*, b) {
+        F_LIST_ITERATE(f_block_blocksGet(b), const FBlock*, b) {
             const char* componentId = f_block_lineGetString(b, 0);
             int componentIndex = f_component__stringToIndex(componentId);
 
@@ -128,9 +128,9 @@ void f_template_new(const char* FilePath)
     f_block_free(root);
 }
 
-const ATemplate* f_template__get(const char* TemplateId)
+const FTemplate* f_template__get(const char* TemplateId)
 {
-    ATemplate* t = f_strhash_get(g_templates, TemplateId);
+    FTemplate* t = f_strhash_get(g_templates, TemplateId);
 
     #if F_CONFIG_BUILD_DEBUG
         if(t == NULL) {
@@ -143,7 +143,7 @@ const ATemplate* f_template__get(const char* TemplateId)
     return t;
 }
 
-void f_template__initRun(const ATemplate* Template, AEntity* Entity, const void* Context)
+void f_template__initRun(const FTemplate* Template, FEntity* Entity, const void* Context)
 {
     if(Template->parent) {
         f_template__initRun(Template->parent, Entity, Context);
@@ -154,9 +154,9 @@ void f_template__initRun(const ATemplate* Template, AEntity* Entity, const void*
     }
 }
 
-void f_template_init(const char* Id, AEntityInit* Init)
+void f_template_init(const char* Id, FEntityInit* Init)
 {
-    ATemplate* t = f_strhash_get(g_templates, Id);
+    FTemplate* t = f_strhash_get(g_templates, Id);
 
     #if F_CONFIG_BUILD_DEBUG
         if(t == NULL) {
@@ -167,17 +167,17 @@ void f_template_init(const char* Id, AEntityInit* Init)
     t->init = Init;
 }
 
-unsigned f_template__instanceGet(const ATemplate* Template)
+unsigned f_template__instanceGet(const FTemplate* Template)
 {
     return Template->instanceNumber;
 }
 
-bool f_template__componentHas(const ATemplate* Template, int ComponentIndex)
+bool f_template__componentHas(const FTemplate* Template, int ComponentIndex)
 {
     return f_bitfield_test(Template->componentBits, (unsigned)ComponentIndex);
 }
 
-const void* f_template__dataGet(const ATemplate* Template, int ComponentIndex)
+const void* f_template__dataGet(const FTemplate* Template, int ComponentIndex)
 {
     return Template->data[ComponentIndex];
 }

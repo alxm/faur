@@ -20,17 +20,17 @@
 
 #include "ecs/f_system.p.h"
 
-typedef struct ASystem ASystem;
+typedef struct FSystem FSystem;
 
 #include "data/f_bitfield.v.h"
 #include "data/f_list.v.h"
 
 extern void f_system__uninit(void);
 
-extern ASystem* f_system__get(int SystemIndex);
+extern FSystem* f_system__get(int SystemIndex);
 
-extern AListNode* f_system__entityAdd(const ASystem* System, AEntity* Entity);
-extern const ABitfield* f_system__componentBitsGet(const ASystem* System);
-extern bool f_system__isActiveOnly(const ASystem* System);
+extern FListNode* f_system__entityAdd(const FSystem* System, FEntity* Entity);
+extern const FBitfield* f_system__componentBitsGet(const FSystem* System);
+extern bool f_system__isActiveOnly(const FSystem* System);
 
 #endif // F_INC_ECS_SYSTEM_V_H

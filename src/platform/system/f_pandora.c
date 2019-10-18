@@ -62,7 +62,7 @@ void f_platform_pandora__init(void)
 {
     for(int i = 0; i < 2; i++) {
         const char* path = f_str__fmt512("/proc/pandora/nub%d/mode", i);
-        AFile* nub = f_file_new(path, F_FILE_READ);
+        FFile* nub = f_file_new(path, F_FILE_READ);
 
         if(nub && f_file_lineRead(nub)) {
             g_nubModes[i] = f_str_dup(f_file_lineBufferGet(nub));

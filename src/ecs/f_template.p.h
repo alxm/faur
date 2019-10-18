@@ -22,9 +22,9 @@
 
 #include "ecs/f_entity.p.h"
 
-typedef void AEntityInit(AEntity* Entity, const void* CallerContext);
+typedef void FEntityInit(FEntity* Entity, const void* CallerContext);
 
 extern void f_template_new(const char* FilePath);
-extern void f_template_init(const char* Id, AEntityInit* Init);
+extern void f_template_init(const char* Id, FEntityInit* Init);
 
 #endif // F_INC_ECS_TEMPLATE_P_H

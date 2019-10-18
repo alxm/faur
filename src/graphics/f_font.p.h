@@ -20,29 +20,29 @@
 
 #include "general/f_system_includes.h"
 
-typedef struct ASprite AFont;
+typedef struct FSprite FFont;
 
 typedef enum {
     F_FONT_ALIGN_INVALID = -1,
     F_FONT_ALIGN_LEFT,
     F_FONT_ALIGN_MIDDLE,
     F_FONT_ALIGN_RIGHT,
-} AFontAlign;
+} FFontAlign;
 
 #include "graphics/f_sprite.p.h"
 
-extern AFont* f_font_newFromPng(const char* Path, int X, int Y, int CharWidth, int CharHeight);
-extern AFont* f_font_newFromSprite(const ASprite* Sheet, int X, int Y, int CharWidth, int CharHeight);
-extern AFont* f_font_dup(const AFont* Font, APixel Color);
-extern void f_font_free(AFont* Font);
+extern FFont* f_font_newFromPng(const char* Path, int X, int Y, int CharWidth, int CharHeight);
+extern FFont* f_font_newFromSprite(const FSprite* Sheet, int X, int Y, int CharWidth, int CharHeight);
+extern FFont* f_font_dup(const FFont* Font, FPixel Color);
+extern void f_font_free(FFont* Font);
 
 extern void f_font_push(void);
 extern void f_font_pop(void);
 
 extern void f_font_reset(void);
 
-extern void f_font_fontSet(const AFont* Font);
-extern void f_font_alignSet(AFontAlign Align);
+extern void f_font_fontSet(const FFont* Font);
+extern void f_font_alignSet(FFontAlign Align);
 
 extern void f_font_coordsSet(int X, int Y);
 extern int f_font_coordsGetX(void);

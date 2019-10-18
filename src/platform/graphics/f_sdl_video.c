@@ -31,7 +31,7 @@
     SDL_Renderer* f__sdlRenderer;
     static SDL_Window* g_sdlWindow;
     static SDL_Texture* g_sdlTexture;
-    static ARgb g_clearRgb;
+    static FRgb g_clearRgb;
 #endif
 
 #if F_CONFIG_LIB_SDL == 2 || F_CONFIG_SYSTEM_EMSCRIPTEN
@@ -45,16 +45,16 @@
 #endif
 
 #if F__SIZE_DYNAMIC
-static AVectorInt g_size = {
+static FVectorInt g_size = {
 #else
-static const AVectorInt g_size = {
+static const FVectorInt g_size = {
 #endif
     F_CONFIG_SCREEN_SIZE_WIDTH,
     F_CONFIG_SCREEN_SIZE_HEIGHT
 };
 static bool g_fullscreen = F_CONFIG_SCREEN_FULLSCREEN;
 static int g_zoom = F_CONFIG_SCREEN_ZOOM;
-static APixels g_pixels;
+static FPixels g_pixels;
 
 void f_platform_sdl_video__init(void)
 {
@@ -115,27 +115,27 @@ static bool sdl1ScreenSet(int Width, int Height, uint32_t Flags)
 
 #if F__SIZE_DYNAMIC
 #if F_CONFIG_SCREEN_HARDWARE_WIDTH > 0 && F_CONFIG_SCREEN_HARDWARE_HEIGHT > 0
-static AVectorInt sdlScreenSizeGetNative(void)
+static FVectorInt sdlScreenSizeGetNative(void)
 {
-    return (AVectorInt){F_CONFIG_SCREEN_HARDWARE_WIDTH,
+    return (FVectorInt){F_CONFIG_SCREEN_HARDWARE_WIDTH,
                         F_CONFIG_SCREEN_HARDWARE_HEIGHT};
 }
 #elif F_CONFIG_LIB_SDL == 1
-static AVectorInt sdlScreenSizeGetNative(void)
+static FVectorInt sdlScreenSizeGetNative(void)
 {
     const SDL_VideoInfo* info = SDL_GetVideoInfo();
 
-    return (AVectorInt){info->current_w, info->current_h};
+    return (FVectorInt){info->current_w, info->current_h};
 }
 #elif F_CONFIG_LIB_SDL == 2
-static AVectorInt sdlScreenSizeGetNative(void)
+static FVectorInt sdlScreenSizeGetNative(void)
 {
     SDL_DisplayMode mode;
 
     if(SDL_GetCurrentDisplayMode(0, &mode) < 0) {
         f_out__error("SDL_GetCurrentDisplayMode: %s", SDL_GetError());
 
-        return (AVectorInt){0, 0};
+        return (FVectorInt){0, 0};
     }
 
     f_out__info("Display info: %dx%d %dbpp",
@@ -143,7 +143,7 @@ static AVectorInt sdlScreenSizeGetNative(void)
                 mode.h,
                 SDL_BITSPERPIXEL(mode.format));
 
-    return (AVectorInt){mode.w, mode.h};
+    return (FVectorInt){mode.w, mode.h};
 }
 #endif
 #endif // F__SIZE_DYNAMIC
@@ -151,7 +151,7 @@ static AVectorInt sdlScreenSizeGetNative(void)
 void f_platform_api__screenInit(void)
 {
     #if F__SIZE_DYNAMIC
-        AVectorInt res = sdlScreenSizeGetNative();
+        FVectorInt res = sdlScreenSizeGetNative();
 
         if(res.x > 0 && res.y > 0) {
             if(g_size.x < 0) {
@@ -173,7 +173,7 @@ void f_platform_api__screenInit(void)
                     F_CONFIG_SCREEN_ZOOM);
     }
 
-    APixelsFlags pFlags = 0;
+    FPixelsFlags pFlags = 0;
 
     #if F_CONFIG_SCREEN_ALLOCATE
         pFlags |= F_PIXELS__ALLOC;
@@ -204,7 +204,7 @@ void f_platform_api__screenInit(void)
 
             f_pixels__bufferSet(&g_pixels,
                                 g_sdlScreen->pixels,
-                                g_sdlScreen->pitch / sizeof(APixel),
+                                g_sdlScreen->pitch / sizeof(FPixel),
                                 g_sdlScreen->h);
         #endif
     #elif F_CONFIG_LIB_SDL == 2
@@ -338,12 +338,12 @@ void f_platform_api__screenClear(void)
     }
 }
 
-APlatformTexture* f_platform_api__screenTextureGet(void)
+FPlatformTexture* f_platform_api__screenTextureGet(void)
 {
-    return (APlatformTexture*)&g_sdlTexture;
+    return (FPlatformTexture*)&g_sdlTexture;
 }
 
-void f_platform_api__screenTextureSet(APlatformTexture* Texture)
+void f_platform_api__screenTextureSet(FPlatformTexture* Texture)
 {
     SDL_Texture* t = Texture ? *(SDL_Texture**)Texture : NULL;
 
@@ -352,14 +352,14 @@ void f_platform_api__screenTextureSet(APlatformTexture* Texture)
     }
 }
 
-void f_platform_api__screenTextureRead(APixels* Pixels, unsigned Frame)
+void f_platform_api__screenTextureRead(FPixels* Pixels, unsigned Frame)
 {
     // Unreliable on texture targets
     if(SDL_RenderReadPixels(f__sdlRenderer,
                             NULL,
                             F_SDL__PIXEL_FORMAT,
                             f_pixels__bufferGetFrom(Pixels, Frame, 0, 0),
-                            Pixels->w * (int)sizeof(APixel)) < 0) {
+                            Pixels->w * (int)sizeof(FPixel)) < 0) {
 
         F__FATAL("SDL_RenderReadPixels: %s", SDL_GetError());
     }
@@ -400,8 +400,8 @@ void f_platform_api__screenShow(void)
             #define F__SCREEN_TOTAL (F_CONFIG_SCREEN_HARDWARE_WIDTH \
                                         * F_CONFIG_SCREEN_HARDWARE_HEIGHT)
 
-            APixel* dst = (APixel*)g_sdlScreen->pixels + F__SCREEN_TOTAL;
-            const APixel* src = g_pixels.buffer;
+            FPixel* dst = (FPixel*)g_sdlScreen->pixels + F__SCREEN_TOTAL;
+            const FPixel* src = g_pixels.buffer;
 
             for(int i = F_CONFIG_SCREEN_HARDWARE_HEIGHT;
                 i--;
@@ -426,14 +426,14 @@ void f_platform_api__screenShow(void)
             }
 
             if(g_zoom <= 1) {
-                if(g_pixels.w * (int)sizeof(APixel) == g_sdlScreen->pitch) {
+                if(g_pixels.w * (int)sizeof(FPixel) == g_sdlScreen->pitch) {
                     memcpy(g_sdlScreen->pixels,
                            g_pixels.buffer,
                            g_pixels.bufferSize);
                 } else {
                     uint8_t* dst = g_sdlScreen->pixels;
-                    const APixel* src = g_pixels.buffer;
-                    size_t rowSize = (size_t)g_sdlScreen->w * sizeof(APixel);
+                    const FPixel* src = g_pixels.buffer;
+                    size_t rowSize = (size_t)g_sdlScreen->w * sizeof(FPixel);
 
                     for(int y = g_sdlScreen->h; y--; ) {
                         memcpy(dst, src, rowSize);
@@ -443,15 +443,15 @@ void f_platform_api__screenShow(void)
                     }
                 }
             } else {
-                APixel* dst = g_sdlScreen->pixels;
-                const APixel* src = g_pixels.buffer;
+                FPixel* dst = g_sdlScreen->pixels;
+                const FPixel* src = g_pixels.buffer;
                 int realH = g_sdlScreen->h / g_zoom;
                 int realW = g_sdlScreen->w / g_zoom;
-                size_t rowLen = g_sdlScreen->pitch / sizeof(APixel);
+                size_t rowLen = g_sdlScreen->pitch / sizeof(FPixel);
                 ptrdiff_t rowRemainder = (int)rowLen - g_sdlScreen->w;
 
                 for(int y = realH; y--; ) {
-                    const APixel* firstLine = dst;
+                    const FPixel* firstLine = dst;
 
                     for(int x = realW; x--; ) {
                         for(int z = g_zoom; z--; ) {
@@ -490,7 +490,7 @@ void f_platform_api__screenShow(void)
 
             f_pixels__bufferSet(&g_pixels,
                                 g_sdlScreen->pixels,
-                                g_sdlScreen->pitch / sizeof(APixel),
+                                g_sdlScreen->pitch / sizeof(FPixel),
                                 g_sdlScreen->h);
         #endif
     #elif F_CONFIG_LIB_SDL == 2
@@ -514,7 +514,7 @@ void f_platform_api__screenShow(void)
             if(SDL_UpdateTexture(g_sdlTexture,
                                  NULL,
                                  g_pixels.buffer,
-                                 g_pixels.w * (int)sizeof(APixel)) < 0) {
+                                 g_pixels.w * (int)sizeof(FPixel)) < 0) {
 
                 F__FATAL("SDL_UpdateTexture: %s", SDL_GetError());
             }
@@ -541,12 +541,12 @@ void f_platform_api__screenShow(void)
     #endif
 }
 
-APixels* f_platform_api__screenPixelsGet(void)
+FPixels* f_platform_api__screenPixelsGet(void)
 {
     return &g_pixels;
 }
 
-AVectorInt f_platform_api__screenSizeGet(void)
+FVectorInt f_platform_api__screenSizeGet(void)
 {
     return g_size;
 }

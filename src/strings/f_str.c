@@ -242,9 +242,9 @@ char* f_str_suffixGetFromLast(const char* String, char Marker)
     return f_str_subGetRange(String, index + 1, (int)strlen(String));
 }
 
-AList* f_str_split(const char* String, const char* Delimiters)
+FList* f_str_split(const char* String, const char* Delimiters)
 {
-    AList* strings = f_list_new();
+    FList* strings = f_list_new();
 
     const char* str = String;
     const char* start = String;

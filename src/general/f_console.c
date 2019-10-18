@@ -21,27 +21,27 @@
 
 #if F_CONFIG_CONSOLE_ENABLED
 typedef struct {
-    AOutSource source;
-    AOutType type;
+    FOutSource source;
+    FOutType type;
     char* text;
-} ALine;
+} FLine;
 
 typedef enum {
     F_CONSOLE__STATE_INVALID = -1,
     F_CONSOLE__STATE_BASIC,
     F_CONSOLE__STATE_FULL,
-} AConsoleState;
+} FConsoleState;
 
-static AConsoleState g_state = F_CONSOLE__STATE_INVALID;
-static AList* g_lines;
+static FConsoleState g_state = F_CONSOLE__STATE_INVALID;
+static FList* g_lines;
 static unsigned g_linesPerScreen;
-static ASprite* g_tags;
-static AButton* g_toggle;
+static FSprite* g_tags;
+static FButton* g_toggle;
 static bool g_show = F_CONFIG_CONSOLE_SHOW;
 
-static ALine* line_new(AOutSource Source, AOutType Type, const char* Text)
+static FLine* line_new(FOutSource Source, FOutType Type, const char* Text)
 {
-    ALine* line = f_mem_malloc(sizeof(ALine));
+    FLine* line = f_mem_malloc(sizeof(FLine));
 
     line->source = Source;
     line->type = Type;
@@ -50,7 +50,7 @@ static ALine* line_new(AOutSource Source, AOutType Type, const char* Text)
     return line;
 }
 
-static void line_free(ALine* Line)
+static void line_free(FLine* Line)
 {
     f_mem_free(Line->text);
     f_mem_free(Line);
@@ -93,12 +93,12 @@ static void f_console__uninit1(void)
 {
     g_state = F_CONSOLE__STATE_INVALID;
 
-    f_list_freeEx(g_lines, (AFree*)line_free);
+    f_list_freeEx(g_lines, (FFree*)line_free);
     f_sprite_free(g_tags);
     f_button_free(g_toggle);
 }
 
-const APack f_pack__console = {
+const FPack f_pack__console = {
     "Console",
     {
         [0] = f_console__init0,
@@ -181,7 +181,7 @@ void f_console__draw(void)
         f_font_coordsSet(1 + tagWidth + 1 + tagWidth + 2, f_font_coordsGetY());
         f_font__fontSet(F_FONT__ID_LIGHT_GRAY);
 
-        F_LIST_ITERATE(g_lines, ALine*, l) {
+        F_LIST_ITERATE(g_lines, FLine*, l) {
             f_sprite_blit(g_tags, (unsigned)l->source, 1, f_font_coordsGetY());
             f_sprite_blit(g_tags,
                           (unsigned)(F_OUT__SOURCE_NUM + l->type),
@@ -260,7 +260,7 @@ bool f_console__isInitialized(void)
     return g_state == F_CONSOLE__STATE_FULL;
 }
 
-void f_console__write(AOutSource Source, AOutType Type, const char* Text)
+void f_console__write(FOutSource Source, FOutType Type, const char* Text)
 {
     if(g_state == F_CONSOLE__STATE_INVALID) {
         return;
@@ -273,7 +273,7 @@ void f_console__write(AOutSource Source, AOutType Type, const char* Text)
     }
 }
 #else // !F_CONFIG_CONSOLE_ENABLED
-const APack f_pack__console;
+const FPack f_pack__console;
 
 void f_console_showSet(bool Show)
 {
@@ -293,7 +293,7 @@ bool f_console__isInitialized(void)
     return false;
 }
 
-void f_console__write(AOutSource Source, AOutType Type, const char* Text)
+void f_console__write(FOutSource Source, FOutType Type, const char* Text)
 {
     F_UNUSED(Source);
     F_UNUSED(Type);

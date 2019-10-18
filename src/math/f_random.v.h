@@ -22,6 +22,6 @@
 
 #include "general/f_main.v.h"
 
-extern const APack f_pack__random;
+extern const FPack f_pack__random;
 
 #endif // F_INC_MATH_RANDOM_V_H

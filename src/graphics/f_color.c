@@ -18,11 +18,11 @@
 #include "f_color.v.h"
 #include <faur.v.h>
 
-APixelState f__color;
-static AList* g_stateStack;
+FPixelState f__color;
+static FList* g_stateStack;
 
-APixel f_color__key;
-APixel f_color__limit;
+FPixel f_color__key;
+FPixel f_color__limit;
 
 static void f_color__init(void)
 {
@@ -38,7 +38,7 @@ static void f_color__uninit(void)
     f_list_freeEx(g_stateStack, f_mem_free);
 }
 
-const APack f_pack__color = {
+const FPack f_pack__color = {
     "Color",
     {
         [0] = f_color__init,
@@ -50,12 +50,12 @@ const APack f_pack__color = {
 
 void f_color_push(void)
 {
-    f_list_push(g_stateStack, f_mem_dup(&f__color, sizeof(APixelState)));
+    f_list_push(g_stateStack, f_mem_dup(&f__color, sizeof(FPixelState)));
 }
 
 void f_color_pop(void)
 {
-    APixelState* state = f_list_pop(g_stateStack);
+    FPixelState* state = f_list_pop(g_stateStack);
 
     #if F_CONFIG_BUILD_DEBUG
         if(state == NULL) {
@@ -83,7 +83,7 @@ void f_color_reset(void)
 static void optimizeAlphaBlending(void)
 {
     if(f__color.canonicalBlend == F_COLOR_BLEND_RGBA) {
-        AColorBlend fastestBlend = F_COLOR_BLEND_RGBA;
+        FColorBlend fastestBlend = F_COLOR_BLEND_RGBA;
 
         switch(f__color.alpha) {
             case F_COLOR_ALPHA_MAX / 4: {
@@ -110,7 +110,7 @@ static void optimizeAlphaBlending(void)
 }
 #endif
 
-void f_color_blendSet(AColorBlend Blend)
+void f_color_blendSet(FColorBlend Blend)
 {
     f__color.blend = Blend;
     f__color.canonicalBlend = Blend;
@@ -183,7 +183,7 @@ void f_color_baseSetHex(uint32_t Hexcode)
     #endif
 }
 
-void f_color_baseSetPixel(APixel Pixel)
+void f_color_baseSetPixel(FPixel Pixel)
 {
     f__color.rgb = f_pixel_toRgb(Pixel);
     f__color.pixel = Pixel;

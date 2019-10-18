@@ -18,12 +18,12 @@
 #include "f_controller.v.h"
 #include <faur.v.h>
 
-AController* f_controller_new(AControllerBind* Callback)
+FController* f_controller_new(FControllerBind* Callback)
 {
     return f_platform_api__inputControllerClaim(Callback);
 }
 
-void f_controller_free(AController* Controller)
+void f_controller_free(FController* Controller)
 {
     f_platform_api__inputControllerRelease(Controller);
 }

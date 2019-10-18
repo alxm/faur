@@ -26,27 +26,27 @@ typedef enum {
     F_FILE__OFFSET_CURRENT,
     F_FILE__OFFSET_END,
     F_FILE__OFFSET_NUM
-} AFileOffset;
+} FFileOffset;
 
 typedef struct {
-    bool (*seek)(AFile* File, int Offset, AFileOffset Origin);
-    bool (*read)(AFile* File, void* Buffer, size_t Size);
-    bool (*write)(AFile* File, const void* Buffer, size_t Size);
-    bool (*writef)(AFile* File, const char* Format, va_list Args);
-    bool (*flush)(AFile* File);
-    int (*getchar)(AFile* File);
-    int (*ungetchar)(AFile* File, int Char);
-} AFileInterface;
+    bool (*seek)(FFile* File, int Offset, FFileOffset Origin);
+    bool (*read)(FFile* File, void* Buffer, size_t Size);
+    bool (*write)(FFile* File, const void* Buffer, size_t Size);
+    bool (*writef)(FFile* File, const char* Format, va_list Args);
+    bool (*flush)(FFile* File);
+    int (*getchar)(FFile* File);
+    int (*ungetchar)(FFile* File, int Char);
+} FFileInterface;
 
 #include "files/f_embed.v.h"
 
-struct AFile {
-    APath* path;
-    const AFileInterface* interface;
+struct FFile {
+    FPath* path;
+    const FFileInterface* interface;
     union {
         FILE* handle;
         struct {
-            const AEmbeddedFile* data;
+            const FEmbeddedFile* data;
             size_t index;
         } e;
     } u;
@@ -56,6 +56,6 @@ struct AFile {
     bool eof;
 };
 
-extern const AEmbeddedFile* f_file__dataGet(AFile* File);
+extern const FEmbeddedFile* f_file__dataGet(FFile* File);
 
 #endif // F_INC_FILES_FILE_V_H

@@ -25,7 +25,7 @@ extern "C" {
 #include <Arduino.h>
 #include <Gamebuino-Meta.h>
 
-struct APlatformButton {
+struct FPlatformButton {
     Button code;
 };
 
@@ -58,19 +58,19 @@ void f_platform_api__inputPoll(void)
 {
 }
 
-const APlatformButton* f_platform_api__inputKeyGet(AKeyId Id)
+const FPlatformButton* f_platform_api__inputKeyGet(FKeyId Id)
 {
-    return (APlatformButton*)g_keys[Id];
+    return (FPlatformButton*)g_keys[Id];
 }
 
-const APlatformButton* f_platform_api__inputButtonGet(const APlatformController* Controller, AButtonId Id)
+const FPlatformButton* f_platform_api__inputButtonGet(const FPlatformController* Controller, FButtonId Id)
 {
     F_UNUSED(Controller);
 
-    return (APlatformButton*)g_buttons[Id];
+    return (FPlatformButton*)g_buttons[Id];
 }
 
-bool f_platform_api__inputButtonPressGet(const APlatformButton* Button)
+bool f_platform_api__inputButtonPressGet(const FPlatformButton* Button)
 {
     return gb.buttons.repeat(Button->code, 0);
 }

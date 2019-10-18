@@ -78,7 +78,7 @@ static void f_platform__uninit(void)
     #endif
 }
 
-const APack f_pack__platform = {
+const FPack f_pack__platform = {
     "Platform",
     {
         [0] = f_platform__init,

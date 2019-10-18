@@ -18,9 +18,9 @@
 #include "f_listit.v.h"
 #include <faur.v.h>
 
-AListIt f__listit_new(const AList* List, bool Reversed)
+FListIt f__listit_new(const FList* List, bool Reversed)
 {
-    AListIt it;
+    FListIt it;
 
     it.sentinelNode = &List->sentinel;
 
@@ -37,7 +37,7 @@ AListIt f__listit_new(const AList* List, bool Reversed)
     return it;
 }
 
-bool f__listit_getNext(AListIt* Iterator, void* UserPtrAddress)
+bool f__listit_getNext(FListIt* Iterator, void* UserPtrAddress)
 {
     if(Iterator->nextNode == Iterator->sentinelNode) {
         return false;
@@ -56,13 +56,13 @@ bool f__listit_getNext(AListIt* Iterator, void* UserPtrAddress)
     return true;
 }
 
-void f__listit_remove(const AListIt* Iterator)
+void f__listit_remove(const FListIt* Iterator)
 {
     f_list_removeNode(Iterator->reversed
                         ? Iterator->nextNode->next : Iterator->nextNode->prev);
 }
 
-bool f__listit_isFirst(const AListIt* Iterator)
+bool f__listit_isFirst(const FListIt* Iterator)
 {
     if(Iterator->reversed) {
         return Iterator->nextNode->next->next == Iterator->sentinelNode;
@@ -71,7 +71,7 @@ bool f__listit_isFirst(const AListIt* Iterator)
     }
 }
 
-bool f__listit_isLast(const AListIt* Iterator)
+bool f__listit_isLast(const FListIt* Iterator)
 {
     return Iterator->nextNode == Iterator->sentinelNode;
 }

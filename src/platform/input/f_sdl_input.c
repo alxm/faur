@@ -25,8 +25,8 @@
     #include <SDL2/SDL.h>
 #endif
 
-struct APlatformButton {
-    AList* forwardButtons; // list of APlatformButton or NULL
+struct FPlatformButton {
+    FList* forwardButtons; // list of FPlatformButton or NULL
     union {
         #if F_CONFIG_LIB_SDL == 1
             SDLKey keyCode;
@@ -41,15 +41,15 @@ struct APlatformButton {
     bool pressed;
 };
 
-struct APlatformAnalog {
-    AList* forwardButtons; // list of APlatformButtonPair or NULL
+struct FPlatformAnalog {
+    FList* forwardButtons; // list of FPlatformButtonPair or NULL
     int axisIndex;
     int value;
 };
 
-struct APlatformController {
+struct FPlatformController {
     #if F_CONFIG_SYSTEM_PANDORA
-        APlatformController* next;
+        FPlatformController* next;
     #endif
     SDL_Joystick* joystick;
     #if F_CONFIG_LIB_SDL == 1
@@ -58,36 +58,36 @@ struct APlatformController {
         SDL_JoystickID id;
         SDL_GameController* controller;
         SDL_JoystickGUID guid;
-        AControllerBind* bindCallback;
+        FControllerBind* bindCallback;
         bool removed;
     #endif
     bool claimed;
     int numButtons;
     int numHats;
     int numAxes;
-    APlatformButton* buttons[F_BUTTON_NUM];
-    APlatformAnalog* axes[F_AXIS_NUM];
+    FPlatformButton* buttons[F_BUTTON_NUM];
+    FPlatformAnalog* axes[F_AXIS_NUM];
 };
 
 typedef struct {
-    APlatformButton* negative;
-    APlatformButton* positive;
+    FPlatformButton* negative;
+    FPlatformButton* positive;
     bool lastPressedNegative;
     bool lastPressedPositive;
-} APlatformButtonPair;
+} FPlatformButtonPair;
 
 static struct {
-    AVectorInt coords;
-    AVectorInt delta;
+    FVectorInt coords;
+    FVectorInt delta;
     bool tap;
 } g_mouse;
 
-static APlatformController* g_defaultController; // first to be attached
-static AList* g_controllers; // list of APlatformController
-static AList* g_forwardButtonsQueue[2]; // list of APlatformButton
+static FPlatformController* g_defaultController; // first to be attached
+static FList* g_controllers; // list of FPlatformController
+static FList* g_forwardButtonsQueue[2]; // list of FPlatformButton
 static uint32_t g_sdlFlags;
 
-static const AButtonId g_defaultOrder[] = {
+static const FButtonId g_defaultOrder[] = {
     F_BUTTON_A,
     F_BUTTON_B,
     F_BUTTON_X,
@@ -100,7 +100,7 @@ static const AButtonId g_defaultOrder[] = {
 };
 
 #if F_CONFIG_LIB_SDL == 2
-static const AButtonId g_buttonsMap[SDL_CONTROLLER_BUTTON_MAX] = {
+static const FButtonId g_buttonsMap[SDL_CONTROLLER_BUTTON_MAX] = {
     [SDL_CONTROLLER_BUTTON_A] = F_BUTTON_A,
     [SDL_CONTROLLER_BUTTON_B] = F_BUTTON_B,
     [SDL_CONTROLLER_BUTTON_X] = F_BUTTON_X,
@@ -118,7 +118,7 @@ static const AButtonId g_buttonsMap[SDL_CONTROLLER_BUTTON_MAX] = {
     [SDL_CONTROLLER_BUTTON_DPAD_RIGHT] = F_BUTTON_RIGHT,
 };
 
-static const AAnalogId g_axesMap[SDL_CONTROLLER_AXIS_MAX] = {
+static const FAnalogId g_axesMap[SDL_CONTROLLER_AXIS_MAX] = {
     [SDL_CONTROLLER_AXIS_LEFTX] = F_AXIS_LEFTX,
     [SDL_CONTROLLER_AXIS_LEFTY] = F_AXIS_LEFTY,
     [SDL_CONTROLLER_AXIS_RIGHTX] = F_AXIS_RIGHTX,
@@ -127,19 +127,19 @@ static const AAnalogId g_axesMap[SDL_CONTROLLER_AXIS_MAX] = {
     [SDL_CONTROLLER_AXIS_TRIGGERRIGHT] = F_AXIS_RIGHTTRIGGER,
 };
 
-static AList* g_futureControllers; // list of APlatformController
+static FList* g_futureControllers; // list of FPlatformController
 #endif
 
 #if F_CONFIG_TRAIT_KEYBOARD
-static APlatformButton* g_keys[F_KEY_NUM];
+static FPlatformButton* g_keys[F_KEY_NUM];
 
-static void keyAdd(AKeyId Id, int Code)
+static void keyAdd(FKeyId Id, int Code)
 {
     if(g_keys[Id] != NULL) {
         return;
     }
 
-    APlatformButton* k = f_mem_malloc(sizeof(APlatformButton));
+    FPlatformButton* k = f_mem_malloc(sizeof(FPlatformButton));
 
     k->forwardButtons = NULL;
     k->code.code = Code;
@@ -150,13 +150,13 @@ static void keyAdd(AKeyId Id, int Code)
 }
 #endif
 
-static void buttonAdd(APlatformController* Controller, AButtonId Id, int Code)
+static void buttonAdd(FPlatformController* Controller, FButtonId Id, int Code)
 {
     if(Controller->buttons[Id] != NULL) {
         return;
     }
 
-    APlatformButton* b = f_mem_malloc(sizeof(APlatformButton));
+    FPlatformButton* b = f_mem_malloc(sizeof(FPlatformButton));
 
     b->forwardButtons = NULL;
     b->code.code = Code;
@@ -167,7 +167,7 @@ static void buttonAdd(APlatformController* Controller, AButtonId Id, int Code)
     Controller->buttons[Id] = b;
 }
 
-static void buttonFree(APlatformButton* Button)
+static void buttonFree(FPlatformButton* Button)
 {
     if(Button == NULL) {
         return;
@@ -178,7 +178,7 @@ static void buttonFree(APlatformButton* Button)
     f_mem_free(Button);
 }
 
-static void buttonPress(APlatformButton* Button, bool Pressed)
+static void buttonPress(FPlatformButton* Button, bool Pressed)
 {
     Button->pressed = Pressed;
     Button->lastEventTick = f_fps_ticksGet();
@@ -187,7 +187,7 @@ static void buttonPress(APlatformButton* Button, bool Pressed)
         return;
     }
 
-    F_LIST_ITERATE(Button->forwardButtons, APlatformButton*, b) {
+    F_LIST_ITERATE(Button->forwardButtons, FPlatformButton*, b) {
         // Queue forwarded button presses and releases to be processed after
         // all input events were received, so they don't conflict with them.
         f_list_addLast(g_forwardButtonsQueue[Pressed], b);
@@ -195,10 +195,10 @@ static void buttonPress(APlatformButton* Button, bool Pressed)
 }
 
 #if F_CONFIG_SYSTEM_GP2X || F_CONFIG_SYSTEM_WIZ
-static void buttonForward(const APlatformController* Controller, AButtonId Source, AButtonId Destination)
+static void buttonForward(const FPlatformController* Controller, FButtonId Source, FButtonId Destination)
 {
-    APlatformButton* bSrc = Controller->buttons[Source];
-    APlatformButton* bDst = Controller->buttons[Destination];
+    FPlatformButton* bSrc = Controller->buttons[Source];
+    FPlatformButton* bDst = Controller->buttons[Destination];
 
     if(bSrc == NULL || bDst == NULL) {
         return;
@@ -211,10 +211,10 @@ static void buttonForward(const APlatformController* Controller, AButtonId Sourc
     f_list_addLast(bSrc->forwardButtons, bDst);
 }
 #elif F_CONFIG_SYSTEM_PANDORA
-static void keyForward(AKeyId Source, const APlatformController* Controller, AButtonId Destination)
+static void keyForward(FKeyId Source, const FPlatformController* Controller, FButtonId Destination)
 {
-    APlatformButton* bSrc = g_keys[Source];
-    APlatformButton* bDst = Controller->buttons[Destination];
+    FPlatformButton* bSrc = g_keys[Source];
+    FPlatformButton* bDst = Controller->buttons[Destination];
 
     if(bSrc == NULL || bDst == NULL) {
         return;
@@ -228,13 +228,13 @@ static void keyForward(AKeyId Source, const APlatformController* Controller, ABu
 }
 #endif
 
-static void analogAdd(APlatformController* Controller, AAnalogId Id, int AxisIndex)
+static void analogAdd(FPlatformController* Controller, FAnalogId Id, int AxisIndex)
 {
     if(Controller->axes[Id] != NULL) {
         return;
     }
 
-    APlatformAnalog* a = f_mem_malloc(sizeof(APlatformAnalog));
+    FPlatformAnalog* a = f_mem_malloc(sizeof(FPlatformAnalog));
 
     a->forwardButtons = NULL;
     a->axisIndex = AxisIndex;
@@ -243,7 +243,7 @@ static void analogAdd(APlatformController* Controller, AAnalogId Id, int AxisInd
     Controller->axes[Id] = a;
 }
 
-static void analogFree(APlatformAnalog* Analog)
+static void analogFree(FPlatformAnalog* Analog)
 {
     if(Analog == NULL) {
         return;
@@ -254,7 +254,7 @@ static void analogFree(APlatformAnalog* Analog)
     f_mem_free(Analog);
 }
 
-static void analogSet(APlatformAnalog* Analog, int Value)
+static void analogSet(FPlatformAnalog* Analog, int Value)
 {
     Analog->value = Value;
 
@@ -267,7 +267,7 @@ static void analogSet(APlatformAnalog* Analog, int Value)
     bool pressedNegative = Value < -F__PRESS_THRESHOLD;
     bool pressedPositive = Value > F__PRESS_THRESHOLD;
 
-    F_LIST_ITERATE(Analog->forwardButtons, APlatformButtonPair*, b) {
+    F_LIST_ITERATE(Analog->forwardButtons, FPlatformButtonPair*, b) {
         if(b->negative && pressedNegative != b->lastPressedNegative) {
             buttonPress(b->negative, pressedNegative);
             b->lastPressedNegative = pressedNegative;
@@ -280,15 +280,15 @@ static void analogSet(APlatformAnalog* Analog, int Value)
     }
 }
 
-static void analogForward(const APlatformController* Controller, AAnalogId Source, AButtonId Negative, AButtonId Positive)
+static void analogForward(const FPlatformController* Controller, FAnalogId Source, FButtonId Negative, FButtonId Positive)
 {
-    APlatformAnalog* aSrc = Controller->axes[Source];
+    FPlatformAnalog* aSrc = Controller->axes[Source];
 
     if(aSrc == NULL) {
         return;
     }
 
-    APlatformButtonPair* f = f_mem_malloc(sizeof(APlatformButtonPair));
+    FPlatformButtonPair* f = f_mem_malloc(sizeof(FPlatformButtonPair));
 
     f->negative = Negative < 0 ? NULL : Controller->buttons[Negative];
     f->positive = Positive < 0 ? NULL : Controller->buttons[Positive];
@@ -302,7 +302,7 @@ static void analogForward(const APlatformController* Controller, AAnalogId Sourc
     f_list_addLast(aSrc->forwardButtons, f);
 }
 
-static inline const char* joystickName(const APlatformController* Controller)
+static inline const char* joystickName(const FPlatformController* Controller)
 {
     #if F_CONFIG_LIB_SDL == 1
         return SDL_JoystickName(Controller->id);
@@ -311,7 +311,7 @@ static inline const char* joystickName(const APlatformController* Controller)
     #endif
 }
 
-static bool controllerInit(APlatformController* Controller, int Index)
+static bool controllerInit(FPlatformController* Controller, int Index)
 {
     SDL_Joystick* joystick = NULL;
 
@@ -495,7 +495,7 @@ static bool controllerInit(APlatformController* Controller, int Index)
             analogAdd(Controller, F_AXIS_RIGHTY, 1);
 
             // Attach to nub0 to compose a single dual-analog controller
-            F_LIST_ITERATE(g_controllers, APlatformController*, nub0) {
+            F_LIST_ITERATE(g_controllers, FPlatformController*, nub0) {
                 if(f_str_equal(joystickName(nub0), "nub0")) {
                     nub0->next = Controller;
                     break;
@@ -580,7 +580,7 @@ static bool controllerInit(APlatformController* Controller, int Index)
     return true;
 }
 
-static void controllerFree(APlatformController* Controller)
+static void controllerFree(FPlatformController* Controller)
 {
     for(int id = 0; id < F_BUTTON_NUM; id++) {
         buttonFree(Controller->buttons[id]);
@@ -606,7 +606,7 @@ static void controllerFree(APlatformController* Controller)
 }
 
 #if F_CONFIG_LIB_SDL == 2
-static void controllerRemove(APlatformController* Controller)
+static void controllerRemove(FPlatformController* Controller)
 {
     char guidStrBuffer[64];
     SDL_JoystickGetGUIDString(
@@ -629,7 +629,7 @@ static void controllerRemove(APlatformController* Controller)
     }
 }
 
-static bool controllerRestore(APlatformController* Controller, int Index)
+static bool controllerRestore(FPlatformController* Controller, int Index)
 {
     char guidStrBuffer[64];
     SDL_JoystickGetGUIDString(
@@ -767,7 +767,7 @@ void f_platform_sdl_input__init(void)
         f_out__info("%d controllers attached", joysticksNum);
 
         for(int j = 0; j < joysticksNum; j++) {
-            APlatformController* c = f_mem_zalloc(sizeof(APlatformController));
+            FPlatformController* c = f_mem_zalloc(sizeof(FPlatformController));
 
             if(!controllerInit(c, j)) {
                 f_mem_free(c);
@@ -804,7 +804,7 @@ void f_platform_sdl_input__uninit(void)
     f_list_free(g_forwardButtonsQueue[0]);
     f_list_free(g_forwardButtonsQueue[1]);
 
-    f_list_freeEx(g_controllers, (AFree*)controllerFree);
+    f_list_freeEx(g_controllers, (FFree*)controllerFree);
 
     #if F_CONFIG_LIB_SDL == 2
         f_list_freeEx(g_futureControllers, f_mem_free);
@@ -829,7 +829,7 @@ void f_platform_api__inputPoll(void)
                 SDL_JoystickGUID guid = SDL_JoystickGetDeviceGUID(
                                             event.jdevice.which);
 
-                F_LIST_ITERATE(g_controllers, APlatformController*, c) {
+                F_LIST_ITERATE(g_controllers, FPlatformController*, c) {
                     if(memcmp(&guid, &c->guid, sizeof(SDL_JoystickGUID)) == 0) {
                         if(!controllerRestore(c, event.jdevice.which)) {
                             controllerFree(c);
@@ -842,7 +842,7 @@ void f_platform_api__inputPoll(void)
                 }
 
                 if(!found) {
-                    APlatformController* c = f_list_pop(g_futureControllers);
+                    FPlatformController* c = f_list_pop(g_futureControllers);
 
                     if(c) {
                         if(controllerInit(c, event.jdevice.which)) {
@@ -853,7 +853,7 @@ void f_platform_api__inputPoll(void)
                             f_list_push(g_futureControllers, c);
                         }
                     } else {
-                        c = f_mem_zalloc(sizeof(APlatformController));
+                        c = f_mem_zalloc(sizeof(FPlatformController));
 
                         if(!controllerInit(c, event.jdevice.which)) {
                             f_mem_free(c);
@@ -863,7 +863,7 @@ void f_platform_api__inputPoll(void)
             } break;
 
             case SDL_JOYDEVICEREMOVED: {
-                F_LIST_ITERATE(g_controllers, APlatformController*, c) {
+                F_LIST_ITERATE(g_controllers, FPlatformController*, c) {
                     if(c->id == event.jdevice.which) {
                         controllerRemove(c);
                         break;
@@ -897,7 +897,7 @@ void f_platform_api__inputPoll(void)
 
             case SDL_JOYBUTTONUP:
             case SDL_JOYBUTTONDOWN: {
-                F_LIST_ITERATE(g_controllers, APlatformController*, c) {
+                F_LIST_ITERATE(g_controllers, FPlatformController*, c) {
                     #if F_CONFIG_LIB_SDL == 2
                         if(c->controller) {
                             continue;
@@ -909,7 +909,7 @@ void f_platform_api__inputPoll(void)
                     }
 
                     for(int id = 0; id < F_BUTTON_NUM; id++) {
-                        APlatformButton* b = c->buttons[id];
+                        FPlatformButton* b = c->buttons[id];
 
                         if(b && b->code.buttonIndex == event.jbutton.button) {
                             buttonPress(b, event.jbutton.state == SDL_PRESSED);
@@ -962,7 +962,7 @@ void f_platform_api__inputPoll(void)
                     } break;
                 }
 
-                F_LIST_ITERATE(g_controllers, APlatformController*, c) {
+                F_LIST_ITERATE(g_controllers, FPlatformController*, c) {
                     #if F_CONFIG_LIB_SDL == 2
                         if(c->controller) {
                             continue;
@@ -973,7 +973,7 @@ void f_platform_api__inputPoll(void)
                         continue;
                     }
 
-                    APlatformButton* buttons[4] = {
+                    FPlatformButton* buttons[4] = {
                         c->buttons[F_BUTTON_UP],
                         c->buttons[F_BUTTON_DOWN],
                         c->buttons[F_BUTTON_LEFT],
@@ -981,7 +981,7 @@ void f_platform_api__inputPoll(void)
                     };
 
                     for(int i = 0; i < 4; i++, state >>= 1) {
-                        APlatformButton* b = buttons[i];
+                        FPlatformButton* b = buttons[i];
 
                         if(state & 1) {
                             if(!b->lastHatEventPressed) {
@@ -1001,7 +1001,7 @@ void f_platform_api__inputPoll(void)
             } break;
 
             case SDL_JOYAXISMOTION: {
-                F_LIST_ITERATE(g_controllers, APlatformController*, c) {
+                F_LIST_ITERATE(g_controllers, FPlatformController*, c) {
                     #if F_CONFIG_LIB_SDL == 2
                         if(c->controller) {
                             continue;
@@ -1013,7 +1013,7 @@ void f_platform_api__inputPoll(void)
                     }
 
                     for(int id = 0; id < F_AXIS_NUM; id++) {
-                        APlatformAnalog* a = c->axes[id];
+                        FPlatformAnalog* a = c->axes[id];
 
                         if(a && a->axisIndex == event.jaxis.axis) {
                             analogSet(a, event.jaxis.value);
@@ -1028,13 +1028,13 @@ void f_platform_api__inputPoll(void)
 #if F_CONFIG_LIB_SDL == 2
             case SDL_CONTROLLERBUTTONUP:
             case SDL_CONTROLLERBUTTONDOWN: {
-                F_LIST_ITERATE(g_controllers, APlatformController*, c) {
+                F_LIST_ITERATE(g_controllers, FPlatformController*, c) {
                     if(c->controller == NULL || c->id != event.cbutton.which) {
                         continue;
                     }
 
                     for(int id = 0; id < F_BUTTON_NUM; id++) {
-                        APlatformButton* b = c->buttons[id];
+                        FPlatformButton* b = c->buttons[id];
 
                         if(b && b->code.buttonIndex == event.cbutton.button) {
                             buttonPress(b, event.cbutton.state == SDL_PRESSED);
@@ -1047,13 +1047,13 @@ void f_platform_api__inputPoll(void)
             } break;
 
             case SDL_CONTROLLERAXISMOTION: {
-                F_LIST_ITERATE(g_controllers, APlatformController*, c) {
+                F_LIST_ITERATE(g_controllers, FPlatformController*, c) {
                     if(c->controller == NULL || c->id != event.caxis.which) {
                         continue;
                     }
 
                     for(int id = 0; id < F_AXIS_NUM; id++) {
-                        APlatformAnalog* a = c->axes[id];
+                        FPlatformAnalog* a = c->axes[id];
 
                         if(a && a->axisIndex == event.caxis.axis) {
                             analogSet(a, event.caxis.value);
@@ -1097,12 +1097,12 @@ void f_platform_api__inputPoll(void)
 
     unsigned ticksNow = f_fps_ticksGet();
 
-    F_LIST_ITERATE(g_forwardButtonsQueue[1], APlatformButton*, b) {
+    F_LIST_ITERATE(g_forwardButtonsQueue[1], FPlatformButton*, b) {
         // Overwrite whatever current state with a press
         buttonPress(b, true);
     }
 
-    F_LIST_ITERATE(g_forwardButtonsQueue[0], APlatformButton*, b) {
+    F_LIST_ITERATE(g_forwardButtonsQueue[0], FPlatformButton*, b) {
         // Only release if did not receive an event this frame
         if(b->lastEventTick != ticksNow) {
             buttonPress(b, false);
@@ -1113,14 +1113,14 @@ void f_platform_api__inputPoll(void)
     f_list_clear(g_forwardButtonsQueue[1]);
 
     #if !F_CONFIG_SYSTEM_EMSCRIPTEN
-        AVectorInt mouseDelta = {0, 0};
+        FVectorInt mouseDelta = {0, 0};
         SDL_GetRelativeMouseState(&mouseDelta.x, &mouseDelta.y);
 
         g_mouse.delta = mouseDelta;
     #endif
 }
 
-const APlatformButton* f_platform_api__inputKeyGet(AKeyId Id)
+const FPlatformButton* f_platform_api__inputKeyGet(FKeyId Id)
 {
     #if F_CONFIG_TRAIT_KEYBOARD
         if(Id != F_KEY_INVALID) {
@@ -1133,7 +1133,7 @@ const APlatformButton* f_platform_api__inputKeyGet(AKeyId Id)
     return NULL;
 }
 
-const APlatformButton* f_platform_api__inputButtonGet(const APlatformController* Controller, AButtonId Id)
+const FPlatformButton* f_platform_api__inputButtonGet(const FPlatformController* Controller, FButtonId Id)
 {
     if(Controller == NULL) {
         Controller = g_defaultController;
@@ -1146,12 +1146,12 @@ const APlatformButton* f_platform_api__inputButtonGet(const APlatformController*
     return NULL;
 }
 
-bool f_platform_api__inputButtonPressGet(const APlatformButton* Button)
+bool f_platform_api__inputButtonPressGet(const FPlatformButton* Button)
 {
     return Button->pressed;
 }
 
-const APlatformAnalog* f_platform_api__inputAnalogGet(const APlatformController* Controller, AAnalogId Id)
+const FPlatformAnalog* f_platform_api__inputAnalogGet(const FPlatformController* Controller, FAnalogId Id)
 {
     if(Controller == NULL) {
         Controller = g_defaultController;
@@ -1159,7 +1159,7 @@ const APlatformAnalog* f_platform_api__inputAnalogGet(const APlatformController*
 
     if(Controller && Id != F_AXIS_INVALID) {
         #if F_CONFIG_SYSTEM_PANDORA
-            for(const APlatformController* c = Controller; c; c = c->next) {
+            for(const FPlatformController* c = Controller; c; c = c->next) {
                 if(c->axes[Id]) {
                     return c->axes[Id];
                 }
@@ -1172,17 +1172,17 @@ const APlatformAnalog* f_platform_api__inputAnalogGet(const APlatformController*
     return NULL;
 }
 
-int f_platform_api__inputAnalogValueGet(const APlatformAnalog* Analog)
+int f_platform_api__inputAnalogValueGet(const FPlatformAnalog* Analog)
 {
     return Analog->value;
 }
 
-AVectorInt f_platform_api__inputTouchCoordsGet(void)
+FVectorInt f_platform_api__inputTouchCoordsGet(void)
 {
     return g_mouse.coords;
 }
 
-AVectorInt f_platform_api__inputTouchDeltaGet(void)
+FVectorInt f_platform_api__inputTouchDeltaGet(void)
 {
     return g_mouse.delta;
 }
@@ -1192,12 +1192,12 @@ bool f_platform_api__inputTouchTapGet(void)
     return g_mouse.tap;
 }
 
-APlatformController* f_platform_api__inputControllerClaim(AControllerBind* Callback)
+FPlatformController* f_platform_api__inputControllerClaim(FControllerBind* Callback)
 {
-    APlatformController* controller = NULL;
+    FPlatformController* controller = NULL;
 
     #if F_CONFIG_LIB_SDL == 2
-        F_LIST_ITERATE(g_controllers, APlatformController*, c) {
+        F_LIST_ITERATE(g_controllers, FPlatformController*, c) {
             if(!c->removed && !c->claimed) {
                 controller = c;
                 break;
@@ -1206,7 +1206,7 @@ APlatformController* f_platform_api__inputControllerClaim(AControllerBind* Callb
     #endif
 
     if(controller == NULL) {
-        F_LIST_ITERATE(g_controllers, APlatformController*, c) {
+        F_LIST_ITERATE(g_controllers, FPlatformController*, c) {
             if(!c->claimed) {
                 controller = c;
                 break;
@@ -1221,7 +1221,7 @@ APlatformController* f_platform_api__inputControllerClaim(AControllerBind* Callb
 
     #if F_CONFIG_LIB_SDL == 2
         if(controller == NULL) {
-            controller = f_mem_zalloc(sizeof(APlatformController));
+            controller = f_mem_zalloc(sizeof(FPlatformController));
 
             controller->claimed = true;
             controller->bindCallback = Callback;
@@ -1233,7 +1233,7 @@ APlatformController* f_platform_api__inputControllerClaim(AControllerBind* Callb
     return controller;
 }
 
-void f_platform_api__inputControllerRelease(APlatformController* Controller)
+void f_platform_api__inputControllerRelease(FPlatformController* Controller)
 {
     if(Controller == NULL) {
         return;

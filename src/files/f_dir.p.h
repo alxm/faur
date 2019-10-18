@@ -20,15 +20,15 @@
 
 #include "general/f_system_includes.h"
 
-typedef struct ADir ADir;
+typedef struct FDir FDir;
 
 #include "data/f_list.p.h"
 #include "files/f_path.p.h"
 
-extern ADir* f_dir_new(const char* Path);
-extern void f_dir_free(ADir* Dir);
+extern FDir* f_dir_new(const char* Path);
+extern void f_dir_free(FDir* Dir);
 
-extern const APath* f_dir_pathGet(const ADir* Dir);
-extern const AList* f_dir_entriesGet(const ADir* Dir);
+extern const FPath* f_dir_pathGet(const FDir* Dir);
+extern const FList* f_dir_entriesGet(const FDir* Dir);
 
 #endif // F_INC_FILES_DIR_P_H

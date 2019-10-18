@@ -22,7 +22,7 @@
 
 #include "general/f_main.v.h"
 
-extern const APack f_pack__fps;
+extern const FPack f_pack__fps;
 
 extern void f_fps__reset(void);
 extern bool f_fps__tick(void);

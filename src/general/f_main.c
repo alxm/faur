@@ -30,7 +30,7 @@
 static int g_argsNum;
 static const char** g_args;
 
-static const APack* g_packs[] = {
+static const FPack* g_packs[] = {
     &f_pack__console,
     &f_pack__embed,
     &f_pack__platform,

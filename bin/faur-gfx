@@ -63,7 +63,7 @@ def process_h(var_name):
     content = """\
 #include <faur.h>
 
-extern const ASprite* const f_gfx_{var};
+extern const FSprite* const f_gfx_{var};
 """.format(var = var_name)
 
     return content
@@ -112,26 +112,26 @@ def process_c(image_file, target_file, var_name, bpp, color_key):
     content = """\
 #include <faur.v.h>
 
-static const APixel f_gfx__buffer__{var}[{width} * {height} * {frames_num}] = {{{pixels}}};{spans}
+static const FPixel f_gfx__buffer__{var}[{width} * {height} * {frames_num}] = {{{pixels}}};{spans}
 
 static const struct {{
-    APixels pixels;
-    APlatformTexture* textures[{frames_num}];
+    FPixels pixels;
+    FPlatformTexture* textures[{frames_num}];
 }} f_gfx__sprite__{var} = {{
     {{
         {width},
         {height},
         {frames_num},
         {width} * {height},
-        {width} * {height} * sizeof(APixel),
+        {width} * {height} * sizeof(FPixel),
         F_PIXELS__CONST,
-        (APixel*)f_gfx__buffer__{var},
+        (FPixel*)f_gfx__buffer__{var},
     }},
     {{{textures}
     }},
 }};
 
-const ASprite* const f_gfx_{var} = (const ASprite*)&f_gfx__sprite__{var};
+const FSprite* const f_gfx_{var} = (const FSprite*)&f_gfx__sprite__{var};
 """.format(var = var_name,
            width = frame_width,
            height = frame_height,
@@ -183,7 +183,7 @@ static const unsigned f_gfx__spans__{var}__{num}[] = {{
            spans_data = ', '.join([str(s) for s in spans_data]))
 
     spans_arrays = """
-        (APlatformTexture*)f_gfx__spans__{var}__{num},\
+        (FPlatformTexture*)f_gfx__spans__{var}__{num},\
 """.format(var = var_name,
            num = frames_num)
 
