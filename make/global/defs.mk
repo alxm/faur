@@ -13,6 +13,7 @@ F_CONFIG_BUILD_PLATFORM := \
 F_DIR_ROOT := ../..
 F_DIR_ROOT_FROM_BIN := ../../../..
 F_DIR_CONFIG := $(HOME)/.config/faur
+F_FILE_SDK := $(F_DIR_CONFIG)/sdk.mk
 
 #
 # To support app and author names with spaces
@@ -24,7 +25,9 @@ F_MAKE_SPACE_ESCAPE = $(subst $(F_MAKE_SPACE),\$(F_MAKE_SPACE),$1)
 #
 # Custom SDK paths
 #
--include $(F_DIR_CONFIG)/sdk.mk
+ifneq ($(wildcard $(F_FILE_SDK)),)
+include $(F_FILE_SDK)
+endif
 
 F_SDK_ARDUINO_DIR ?= /opt/arduino
 F_SDK_ARDUINO_MAKEFILE ?= /opt/Arduino-Makefile
