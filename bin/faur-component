@@ -1,0 +1,127 @@
+#!/usr/bin/env python3
+
+"""
+    Copyright 2017-2019 Alex Margarit <alex@alxm.org>
+    This file is part of Faur, a C video game framework.
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License version 3,
+    as published by the Free Software Foundation.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
+import os
+
+from utils.tool import Tool
+
+g_tool = Tool('ComponentName')
+
+def main():
+    comp_name = g_tool.get_arg('ComponentName')
+
+    comp_c = os.path.join('.', 'component_{}.c'.format(comp_name.lower()))
+    comp_h = os.path.join('.', 'component_{}.h'.format(comp_name.lower()))
+
+    g_tool.check_files_not_exist(comp_c, comp_h)
+
+    struct_name = 'C{}'.format(comp_name)
+
+    g_tool.write_text(comp_c,
+"""\
+#include "component_{name}.h"
+
+typedef struct {{
+    int startValue;
+}} {ctype}Data;
+
+struct {ctype} {{
+    int value;
+}};
+
+const size_t c_{name}_templateSize = sizeof({ctype}Data);
+const size_t c_{name}_instanceSize = sizeof({ctype});
+
+void c_{name}_templateInit(void* Data, const FBlock* Config)
+{{
+    {ctype}Data* data = Data;
+
+    data->startValue = 2;
+
+    F_UNUSED(Config);
+}}
+
+void c_{name}_templateFree(void* Data)
+{{
+    {ctype}Data* data = Data;
+
+    F_UNUSED(data);
+}}
+
+void c_{name}_instanceInit(void* Self)
+{{
+    {ctype}* {localVar} = Self;
+
+    {localVar}->value = 1;
+}}
+
+void c_{name}_instanceInitEx(void* Self, const void* Data)
+{{
+    {ctype}* {localVar} = Self;
+    const {ctype}Data* data = Data;
+
+    {localVar}->value = data->startValue;
+}}
+
+void c_{name}_instanceFree(void* Self)
+{{
+    {ctype}* {localVar} = Self;
+
+    F_UNUSED({localVar});
+}}
+
+int c_{name}_valueGet(const {ctype}* {paramVar})
+{{
+    return {paramVar}->value;
+}}
+
+void c_{name}_valueSet({ctype}* {paramVar}, int Value)
+{{
+    {paramVar}->value = Value;
+}}
+""".format(ctype = struct_name,
+           name = comp_name.lower(),
+           paramVar = comp_name,
+           localVar = comp_name[0].lower() + comp_name[1 : ]))
+
+    g_tool.write_text(comp_h,
+"""\
+#pragma once
+
+#include <faur.h>
+
+typedef struct {ctype} {ctype};
+
+extern const size_t c_{name}_templateSize;
+extern FComponentTemplateInit c_{name}_templateInit;
+extern FComponentTemplateFree c_{name}_templateFree;
+
+extern const size_t c_{name}_instanceSize;
+extern FComponentInstanceInit c_{name}_instanceInit;
+extern FComponentInstanceInitEx c_{name}_instanceInitEx;
+extern FComponentInstanceFree c_{name}_instanceFree;
+
+extern int c_{name}_valueGet(const {ctype}* {paramVar});
+extern void c_{name}_valueSet({ctype}* {paramVar}, int Value);
+""".format(ctype = struct_name,
+           name = comp_name.lower(),
+           paramVar = comp_name))
+
+if __name__ == '__main__':
+    main()

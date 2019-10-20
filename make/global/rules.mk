@@ -1,78 +1,78 @@
 #
 # Process and reconcile build settings
 #
-include $(A2X_PATH)/make/global/config.mk
+include $(FAUR_PATH)/make/global/config.mk
 
-A_DIR_BUILD_SHARED := $(A_DIR_ROOT)/$(A_CONFIG_DIR_BUILD)/shared
-A_DIR_BUILD_STATIC := $(A_DIR_ROOT)/$(A_CONFIG_DIR_BUILD)/static
-A_DIR_BUILD_UID := $(A_DIR_ROOT)/$(A_CONFIG_DIR_BUILD)/builds/$(A_CONFIG_BUILD_UID)
+F_DIR_BUILD_SHARED := $(F_DIR_ROOT)/$(F_CONFIG_DIR_BUILD)/shared
+F_DIR_BUILD_STATIC := $(F_DIR_ROOT)/$(F_CONFIG_DIR_BUILD)/static
+F_DIR_BUILD_UID := $(F_DIR_ROOT)/$(F_CONFIG_DIR_BUILD)/builds/$(F_CONFIG_BUILD_UID)
 
 #
 # Object files dir for current platform
 #
-A_DIR_OBJ := $(A_DIR_BUILD_UID)/obj
-A_DIR_OBJ_APP := $(A_DIR_OBJ)/app
-A_DIR_OBJ_A2X := $(A_DIR_OBJ)/a2x
+F_DIR_OBJ := $(F_DIR_BUILD_UID)/obj
+F_DIR_OBJ_APP := $(F_DIR_OBJ)/app
+F_DIR_OBJ_FAUR := $(F_DIR_OBJ)/faur
 
 #
 # Subdir for generated code and its object files
 #
-A_DIR_GEN := $(A_DIR_OBJ_APP)/a2x_gen
-A_DIR_GEN_EMBED := $(A_DIR_GEN)/embed
-A_DIR_GEN_EXTRA := $(A_DIR_GEN)/extra
-A_DIR_GEN_GFX := $(A_DIR_GEN)/gfx
+F_DIR_GEN := $(F_DIR_OBJ_APP)/faur_gen
+F_DIR_GEN_EMBED := $(F_DIR_GEN)/embed
+F_DIR_GEN_EXTRA := $(F_DIR_GEN)/extra
+F_DIR_GEN_GFX := $(F_DIR_GEN)/gfx
 
 #
 # The final bin that gets built
 #
-A_DIR_BIN := $(A_DIR_BUILD_UID)/bin
-A_FILE_BIN := $(call A_MAKE_SPACE_DASH,$(A_CONFIG_APP_NAME))$(A_CONFIG_APP_NAME_SUFFIX)
-A_FILE_BIN_TARGET := $(A_DIR_BIN)/$(A_FILE_BIN)
-A_FILE_BIN_LINK_ASSETS := $(A_DIR_BIN)/$(A_CONFIG_DIR_ASSETS)
-A_FILE_BIN_LINK_SCREENSHOTS := $(A_DIR_BIN)/$(A_CONFIG_DIR_SCREENSHOTS)
-A_FILE_BIN_LINKS := $(A_FILE_BIN_LINK_ASSETS) $(A_FILE_BIN_LINK_SCREENSHOTS)
+F_DIR_BIN := $(F_DIR_BUILD_UID)/bin
+F_FILE_BIN := $(call F_MAKE_SPACE_DASH,$(F_CONFIG_APP_NAME))$(F_CONFIG_APP_NAME_SUFFIX)
+F_FILE_BIN_TARGET := $(F_DIR_BIN)/$(F_FILE_BIN)
+F_FILE_BIN_LINK_ASSETS := $(F_DIR_BIN)/$(F_CONFIG_DIR_ASSETS)
+F_FILE_BIN_LINK_SCREENSHOTS := $(F_DIR_BIN)/$(F_CONFIG_DIR_SCREENSHOTS)
+F_FILE_BIN_LINKS := $(F_FILE_BIN_LINK_ASSETS) $(F_FILE_BIN_LINK_SCREENSHOTS)
 
 #
 # Project root-relative file and dir paths
 #
-A_FILES_EMBED_BIN := $(shell $(A2X_PATH)/bin/a2x_gather -q $(A_DIR_ROOT) $(A_CONFIG_PATH_EMBED))
-A_FILES_SRC_GEN_H := $(A_FILES_EMBED_BIN:%=$(A_DIR_GEN_EMBED)/%.h)
+F_FILES_EMBED_BIN := $(shell $(FAUR_PATH)/bin/faur-gather -q $(F_DIR_ROOT) $(F_CONFIG_PATH_EMBED))
+F_FILES_SRC_GEN_H := $(F_FILES_EMBED_BIN:%=$(F_DIR_GEN_EMBED)/%.h)
 
 #
-# Implements a_embed__populate
+# Implements f_embed__populate
 #
-A_FILES_SRC_GEN_EMBED_DOT_C := $(A_DIR_GEN_EMBED)/embed.c
+F_FILES_SRC_GEN_EMBED_DOT_C := $(F_DIR_GEN_EMBED)/embed.c
 
 #
 # Graphics data
 #
-A_FILES_GFX_BIN += $(shell $(A2X_PATH)/bin/a2x_gather -q --no-dirs $(A_DIR_ROOT) $(A_CONFIG_PATH_GFX))
-A_FILES_GFX_C := $(A_FILES_GFX_BIN:%=$(A_DIR_GEN_GFX)/%.c)
-A_FILES_GFX_H := $(A_FILES_GFX_BIN:%=$(A_DIR_GEN_GFX)/%.h)
+F_FILES_GFX_BIN += $(shell $(FAUR_PATH)/bin/faur-gather -q --no-dirs $(F_DIR_ROOT) $(F_CONFIG_PATH_GFX))
+F_FILES_GFX_C := $(F_FILES_GFX_BIN:%=$(F_DIR_GEN_GFX)/%.c)
+F_FILES_GFX_H := $(F_FILES_GFX_BIN:%=$(F_DIR_GEN_GFX)/%.h)
 
 #
 # C source files
 #
-A_FILES_SRC_C := $(shell find $(A_DIR_ROOT)/$(A_CONFIG_DIR_SRC) -type f -name "*.c")
-A_FILES_SRC_C := $(A_FILES_SRC_C:$(A_DIR_ROOT)/$(A_CONFIG_DIR_SRC)/%=%)
+F_FILES_SRC_C := $(shell find $(F_DIR_ROOT)/$(F_CONFIG_DIR_SRC) -type f -name "*.c")
+F_FILES_SRC_C := $(F_FILES_SRC_C:$(F_DIR_ROOT)/$(F_CONFIG_DIR_SRC)/%=%)
 
 #
 # All the object files
 #
-A_FILES_OBJ_APP := $(A_FILES_SRC_C:%=$(A_DIR_OBJ_APP)/%.o)
+F_FILES_OBJ_APP := $(F_FILES_SRC_C:%=$(F_DIR_OBJ_APP)/%.o)
 
-A_FILES_OBJ_GEN_EMBED := $(A_FILES_SRC_GEN_EMBED_DOT_C:=.o)
-A_FILES_OBJ_GEN_GFX := $(A_FILES_GFX_C:=.o)
-A_FILES_OBJ_GEN := $(A_FILES_OBJ_GEN_EMBED) $(A_FILES_OBJ_GEN_GFX)
+F_FILES_OBJ_GEN_EMBED := $(F_FILES_SRC_GEN_EMBED_DOT_C:=.o)
+F_FILES_OBJ_GEN_GFX := $(F_FILES_GFX_C:=.o)
+F_FILES_OBJ_GEN := $(F_FILES_OBJ_GEN_EMBED) $(F_FILES_OBJ_GEN_GFX)
 
-A_FILES_OBJ_EXTRA := $(A_CONFIG_BUILD_SRC_EXTRA:%=$(A_DIR_GEN_EXTRA)%.o)
+F_FILES_OBJ_EXTRA := $(F_CONFIG_BUILD_SRC_EXTRA:%=$(F_DIR_GEN_EXTRA)%.o)
 
-A_FILES_OBJ := $(A_FILES_OBJ_APP) $(A_FILES_OBJ_GEN) $(A_FILES_OBJ_EXTRA)
+F_FILES_OBJ := $(F_FILES_OBJ_APP) $(F_FILES_OBJ_GEN) $(F_FILES_OBJ_EXTRA)
 
 #
 # Compiler flags for all targets
 #
-A_GENERIC_CFLAGS := \
+F_GENERIC_CFLAGS := \
     -MMD \
     -Wall \
     -Wextra \
@@ -84,90 +84,90 @@ A_GENERIC_CFLAGS := \
     -pedantic-errors \
     -fstrict-aliasing \
     -D_XOPEN_SOURCE \
-    -I$(A2X_DIR_SRC) \
-    -I$(A_DIR_OBJ_A2X) \
-    -I$(A_DIR_OBJ_APP) \
-    $(A_CONFIG_BUILD_CFLAGS) \
-    -O$(A_CONFIG_BUILD_OPT) \
-    -std=$(A_CONFIG_BUILD_C_STANDARD) \
+    -I$(FAUR_DIR_SRC) \
+    -I$(F_DIR_OBJ_FAUR) \
+    -I$(F_DIR_OBJ_APP) \
+    $(F_CONFIG_BUILD_CFLAGS) \
+    -O$(F_CONFIG_BUILD_OPT) \
+    -std=$(F_CONFIG_BUILD_C_STANDARD) \
 
-ifeq ($(A_CONFIG_BUILD_DEBUG), 1)
-    A_GENERIC_CFLAGS += -g
+ifeq ($(F_CONFIG_BUILD_DEBUG), 1)
+    F_GENERIC_CFLAGS += -g
 else
-    A_GENERIC_CFLAGS += -s
+    F_GENERIC_CFLAGS += -s
 endif
 
-A_MAKE_ALL := $(A_FILE_BIN_TARGET) $(A_FILE_BIN_LINKS)
+F_MAKE_ALL := $(F_FILE_BIN_TARGET) $(F_FILE_BIN_LINKS)
 
-ifdef A_CONFIG_PATH_STATIC_COPY
-    A_MAKE_ALL += copystatic
+ifdef F_CONFIG_PATH_STATIC_COPY
+    F_MAKE_ALL += copystatic
 endif
 
-.PHONY : all run clean $(A_CONFIG_MAKE_CLEAN) copystatic
+.PHONY : all run clean $(F_CONFIG_MAKE_CLEAN) copystatic
 
-.SECONDARY : $(A_FILES_GFX_C)
+.SECONDARY : $(F_FILES_GFX_C)
 
-all : $(A_MAKE_ALL)
+all : $(F_MAKE_ALL)
 
 #
-# a2x header and lib build rules
+# Faur lib build rules
 #
-include $(A2X_PATH)/make/global/a2x.mk
+include $(FAUR_PATH)/make/global/faur.mk
 
 #
 # Object dependencies
 #
--include $(A_FILES_OBJ:.o=.d) $(A2X_FILES_OBJ:.o=.d)
+-include $(F_FILES_OBJ:.o=.d) $(FAUR_FILES_OBJ:.o=.d)
 
-$(A_FILES_OBJ_APP) : $(A_FILES_GFX_H)
+$(F_FILES_OBJ_APP) : $(F_FILES_GFX_H)
 
-$(A_FILE_BIN_TARGET) : $(A_FILES_OBJ) $(A2X_FILE_PUBLIC_A2X_LIB)
+$(F_FILE_BIN_TARGET) : $(F_FILES_OBJ) $(FAUR_FILE_PUBLIC_FAUR_LIB)
 	@ mkdir -p $(@D)
-	$(CC) -o $@ $^ $(A_CONFIG_BUILD_LIBS)
+	$(CC) -o $@ $^ $(F_CONFIG_BUILD_LIBS)
 
-$(A_DIR_GEN_EMBED)/%.h : $(A_DIR_ROOT)/% $(A2X_PATH)/bin/a2x_bin
+$(F_DIR_GEN_EMBED)/%.h : $(F_DIR_ROOT)/% $(FAUR_PATH)/bin/faur-bin
 	@ mkdir -p $(@D)
-	$(A2X_PATH)/bin/a2x_bin $< $@ $(<:$(A_DIR_ROOT)/%=%) a__bin_
+	$(FAUR_PATH)/bin/faur-bin $< $@ $(<:$(F_DIR_ROOT)/%=%) f__bin_
 
-$(A_FILES_SRC_GEN_EMBED_DOT_C) : $(A_FILES_SRC_GEN_H) $(A2X_PATH)/bin/a2x_embed
+$(F_FILES_SRC_GEN_EMBED_DOT_C) : $(F_FILES_SRC_GEN_H) $(FAUR_PATH)/bin/faur-embed
 	@ mkdir -p $(@D)
-	$(A2X_PATH)/bin/a2x_embed $@ $(A_DIR_GEN_EMBED) a__bin_ $(A_FILES_SRC_GEN_H:$(A_DIR_GEN_EMBED)/%=%)
+	$(FAUR_PATH)/bin/faur-embed $@ $(F_DIR_GEN_EMBED) f__bin_ $(F_FILES_SRC_GEN_H:$(F_DIR_GEN_EMBED)/%=%)
 
-$(A_DIR_GEN_GFX)/%.c : $(A_DIR_ROOT)/% $(A2X_PATH)/bin/a2x_gfx
+$(F_DIR_GEN_GFX)/%.c : $(F_DIR_ROOT)/% $(FAUR_PATH)/bin/faur-gfx
 	@ mkdir -p $(@D)
-	$(A2X_PATH)/bin/a2x_gfx $< $@ $(<:$(A_DIR_ROOT)/%=%) $(A_CONFIG_SCREEN_BPP) $(A_CONFIG_COLOR_SPRITE_KEY)
+	$(FAUR_PATH)/bin/faur-gfx $< $@ $(<:$(F_DIR_ROOT)/%=%) $(F_CONFIG_SCREEN_BPP) $(F_CONFIG_COLOR_SPRITE_KEY)
 
-$(A_DIR_GEN_GFX)/%.h : $(A_DIR_ROOT)/% $(A2X_PATH)/bin/a2x_gfx
+$(F_DIR_GEN_GFX)/%.h : $(F_DIR_ROOT)/% $(FAUR_PATH)/bin/faur-gfx
 	@ mkdir -p $(@D)
-	$(A2X_PATH)/bin/a2x_gfx $< $@ $(<:$(A_DIR_ROOT)/%=%) $(A_CONFIG_SCREEN_BPP) $(A_CONFIG_COLOR_SPRITE_KEY)
+	$(FAUR_PATH)/bin/faur-gfx $< $@ $(<:$(F_DIR_ROOT)/%=%) $(F_CONFIG_SCREEN_BPP) $(F_CONFIG_COLOR_SPRITE_KEY)
 
-$(A_DIR_OBJ_APP)/%.c.o : $(A_DIR_ROOT)/$(A_CONFIG_DIR_SRC)/%.c
+$(F_DIR_OBJ_APP)/%.c.o : $(F_DIR_ROOT)/$(F_CONFIG_DIR_SRC)/%.c
 	@ mkdir -p $(@D)
-	$(CC) -c -o $@ $< $(A_GENERIC_CFLAGS)
+	$(CC) -c -o $@ $< $(F_GENERIC_CFLAGS)
 
-$(A_DIR_GEN_EXTRA)%.c.o : %.c
+$(F_DIR_GEN_EXTRA)%.c.o : %.c
 	@ mkdir -p $(@D)
-	$(CC) -c -o $@ $< $(A_GENERIC_CFLAGS)
+	$(CC) -c -o $@ $< $(F_GENERIC_CFLAGS)
 
-$(A_DIR_GEN)/%.c.o : $(A_DIR_GEN)/%.c
+$(F_DIR_GEN)/%.c.o : $(F_DIR_GEN)/%.c
 	@ mkdir -p $(@D)
-	$(CC) -c -o $@ $< $(A_GENERIC_CFLAGS)
+	$(CC) -c -o $@ $< $(F_GENERIC_CFLAGS)
 
-$(A_FILE_BIN_LINK_ASSETS) :
+$(F_FILE_BIN_LINK_ASSETS) :
 	@ mkdir -p $(@D)
-	ln -s $(A_DIR_ROOT_FROM_BIN)/$(A_CONFIG_DIR_ASSETS) $@
+	ln -s $(F_DIR_ROOT_FROM_BIN)/$(F_CONFIG_DIR_ASSETS) $@
 
-$(A_FILE_BIN_LINK_SCREENSHOTS) :
+$(F_FILE_BIN_LINK_SCREENSHOTS) :
 	@ mkdir -p $(@D)
-	@ mkdir -p $(A_DIR_BUILD_SHARED)/$(A_CONFIG_DIR_SCREENSHOTS)
-	ln -s $(A_DIR_ROOT_FROM_BIN)/build/shared/$(A_CONFIG_DIR_SCREENSHOTS) $@
+	@ mkdir -p $(F_DIR_BUILD_SHARED)/$(F_CONFIG_DIR_SCREENSHOTS)
+	ln -s $(F_DIR_ROOT_FROM_BIN)/build/shared/$(F_CONFIG_DIR_SCREENSHOTS) $@
 
-clean : $(A_CONFIG_MAKE_CLEAN)
-	rm -rf $(A_DIR_BUILD_UID)
+clean : $(F_CONFIG_MAKE_CLEAN)
+	rm -rf $(F_DIR_BUILD_UID)
 
 run : all
-	cd $(A_DIR_BIN) && ./$(A_FILE_BIN)
+	cd $(F_DIR_BIN) && ./$(F_FILE_BIN)
 
 copystatic :
-	@ mkdir -p $(A_DIR_BIN)
-	rsync --archive --progress --human-readable $(A_CONFIG_PATH_STATIC_COPY:%=$(A_DIR_BUILD_STATIC)/%/) $(A_DIR_BIN)
+	@ mkdir -p $(F_DIR_BIN)
+	rsync --archive --progress --human-readable $(F_CONFIG_PATH_STATIC_COPY:%=$(F_DIR_BUILD_STATIC)/%/) $(F_DIR_BIN)

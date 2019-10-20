@@ -1,6 +1,6 @@
 """
     Copyright 2016-2019 Alex Margarit <alex@alxm.org>
-    This file is part of a2x, a C video game framework.
+    This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License version 3,
@@ -71,18 +71,18 @@ class Tool:
         for name, value in zip(arg_names, arg_values):
             self.arg_db[name] = value
 
-        if 'A2X_PATH' in os.environ:
-            a2x_path = os.environ['A2X_PATH']
+        if 'FAUR_PATH' in os.environ:
+            faur_path = os.environ['FAUR_PATH']
         else:
-            a2x_path = os.path.join(os.path.dirname(__file__), '..', '..')
+            faur_path = os.path.join(os.path.dirname(__file__), '..', '..')
 
-        self.dir_a2x = os.path.realpath(
-                        os.path.expandvars(os.path.expanduser(a2x_path)))
+        self.dir_faur = os.path.realpath(
+                            os.path.expandvars(os.path.expanduser(faur_path)))
 
-        self.dir_bin = os.path.join(self.dir_a2x, 'bin')
-        self.dir_cfg = os.path.join(os.environ['HOME'], '.config', 'a2x')
-        self.dir_make = os.path.join(self.dir_a2x, 'make')
-        self.dir_src = os.path.join(self.dir_a2x, 'src')
+        self.dir_bin = os.path.join(self.dir_faur, 'bin')
+        self.dir_cfg = os.path.join(os.environ['HOME'], '.config', 'faur')
+        self.dir_make = os.path.join(self.dir_faur, 'make')
+        self.dir_src = os.path.join(self.dir_faur, 'src')
 
         if not os.path.exists(self.dir_cfg):
             os.makedirs(self.dir_cfg)

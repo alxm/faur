@@ -1,0 +1,54 @@
+#!/usr/bin/env python3
+
+"""
+    Copyright 2018-2019 Alex Margarit <alex@alxm.org>
+    This file is part of Faur, a C video game framework.
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License version 3,
+    as published by the Free Software Foundation.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
+import os
+
+from utils.tool import Tool
+
+g_tool = Tool('RootDir ...', '--no-dirs')
+
+def main():
+    files = []
+    startRoot = os.path.abspath(g_tool.get_arg('RootDir'))
+
+    if not os.path.isdir(startRoot):
+        g_tool.usage('{} is not a dir'.format(startRoot))
+
+    def scan_file(Root, File):
+        filePath = os.path.join(Root, File)
+        isDir = os.path.isdir(filePath)
+
+        if isDir and g_tool.get_flag('--no-dirs'):
+            scanned = []
+        else:
+            scanned = [os.path.relpath(filePath, start = startRoot)]
+
+        if isDir:
+            for f in g_tool.list_dir(filePath):
+                scanned += scan_file(filePath, f)
+
+        return scanned
+
+    for f in g_tool.get_arg('...'):
+        files += scan_file(startRoot, f)
+
+    print(' '.join(files))
+
+if __name__ == '__main__':
+    main()

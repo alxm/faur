@@ -1,6 +1,6 @@
 """
     Copyright 2016-2017, 2019 Alex Margarit <alex@alxm.org>
-    This file is part of a2x, a C video game framework.
+    This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License version 3,
@@ -43,11 +43,12 @@ class Output:
         print('\033[{}m{}\033[0m'.format(color, text), end = '')
 
     def __title(self):
-        self.__colored('[', Color.White)
+        self.__colored('[', Color.LightGray)
+        self.__colored('f', Color.White)
         self.__colored('a', Color.LightBlue)
-        self.__colored('2', Color.LightGreen)
-        self.__colored('x', Color.Yellow)
-        self.__colored('{}]'.format(self.tool.name[3 : ]), Color.White)
+        self.__colored('u', Color.LightGreen)
+        self.__colored('r', Color.Yellow)
+        self.__colored('{}]'.format(self.tool.name[4 : ]), Color.LightGray)
 
     def __worker(self, tag, color, text):
         if not self.tool.get_flag('-q'):

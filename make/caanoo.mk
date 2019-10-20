@@ -1,23 +1,23 @@
-include $(A2X_PATH)/make/global/defs.mk
+include $(FAUR_PATH)/make/global/defs.mk
 
-A_CONFIG_BUILD_AR_FLAGS := T
-A_CONFIG_BUILD_OPT := 3
-A_CONFIG_INPUT_MOUSE_CURSOR := 0
-A_CONFIG_LIB_PNG := 1
-A_CONFIG_LIB_SDL := 1
-A_CONFIG_SCREEN_FULLSCREEN := 1
-A_CONFIG_SCREEN_HARDWARE_WIDTH := 320
-A_CONFIG_SCREEN_HARDWARE_HEIGHT := 240
-A_CONFIG_SYSTEM_CAANOO := 1
-A_CONFIG_SYSTEM_LINUX := 1
+F_CONFIG_BUILD_AR_FLAGS := T
+F_CONFIG_BUILD_OPT := 3
+F_CONFIG_INPUT_MOUSE_CURSOR := 0
+F_CONFIG_LIB_PNG := 1
+F_CONFIG_LIB_SDL := 1
+F_CONFIG_SCREEN_FULLSCREEN := 1
+F_CONFIG_SCREEN_HARDWARE_WIDTH := 320
+F_CONFIG_SCREEN_HARDWARE_HEIGHT := 240
+F_CONFIG_SYSTEM_CAANOO := 1
+F_CONFIG_SYSTEM_LINUX := 1
 
-CAANOO_SDK := $(A_SDK_CAANOO_ROOT)/$(A_SDK_CAANOO_TOOLCHAIN)
+CAANOO_SDK := $(F_SDK_CAANOO_ROOT)/$(F_SDK_CAANOO_TOOLCHAIN)
 
-A_CONFIG_APP_NAME_SUFFIX := .gpe
+F_CONFIG_APP_NAME_SUFFIX := .gpe
 
-A_CONFIG_BUILD_LIBS += \
-    -L$(A_SDK_CAANOO_ROOT)/lib/target \
-    -L$(A_SDK_CAANOO_ROOT)/DGE/lib/target \
+F_CONFIG_BUILD_LIBS += \
+    -L$(F_SDK_CAANOO_ROOT)/lib/target \
+    -L$(F_SDK_CAANOO_ROOT)/DGE/lib/target \
     -L$(CAANOO_SDK)/lib \
     -L$(CAANOO_SDK)/arm-gph-linux-gnueabi/lib \
     -lpng12 \
@@ -29,14 +29,14 @@ A_CONFIG_BUILD_LIBS += \
     -lm \
     -ldl \
 
-A_CONFIG_BUILD_CFLAGS += \
+F_CONFIG_BUILD_CFLAGS += \
     -march=armv5te \
     -mtune=arm9tdmi \
     -msoft-float \
     -ffast-math \
     -fomit-frame-pointer \
-    -isystem$(A_SDK_CAANOO_ROOT)/include \
-    -isystem$(A_SDK_CAANOO_ROOT)/DGE/include \
+    -isystem$(F_SDK_CAANOO_ROOT)/include \
+    -isystem$(F_SDK_CAANOO_ROOT)/DGE/include \
     -isystem$(CAANOO_SDK)/include \
     -isystem$(CAANOO_SDK)/arm-gph-linux-gnueabi/include \
     -Wno-conversion \
@@ -53,4 +53,4 @@ export OBJCOPY := $(PREFIX)objcopy
 export READELF := $(PREFIX)readelf
 export STRIP   := $(PREFIX)strip
 
-include $(A2X_PATH)/make/global/rules.mk
+include $(FAUR_PATH)/make/global/rules.mk

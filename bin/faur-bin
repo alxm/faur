@@ -1,0 +1,99 @@
+#!/usr/bin/env python3
+
+"""
+    Copyright 2016-2019 Alex Margarit <alex@alxm.org>
+    This file is part of Faur, a C video game framework.
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License version 3,
+    as published by the Free Software Foundation.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
+import os
+
+from utils.tool import Tool
+
+g_tool = Tool('File.bin File.h OriginalPath CVarPrefix')
+
+def main():
+    bin_file = g_tool.get_arg('File.bin')
+    h_file = g_tool.get_arg('File.h')
+    original_path = g_tool.get_arg('OriginalPath')
+    cvar_prefix = g_tool.get_arg('CVarPrefix')
+
+    if os.path.isdir(bin_file):
+        content = process_dir(bin_file, cvar_prefix, original_path)
+    elif os.path.isfile(bin_file):
+        content = process_file(bin_file, cvar_prefix, original_path)
+    else:
+        g_tool.out.error('{} is an invalid file'.format(bin_file))
+
+    g_tool.write_text(h_file, content)
+
+def process_dir(bin_file, cvar_prefix, original_path):
+    entries = g_tool.list_dir(bin_file)
+    bin_data = ''
+    bin_size = len(entries)
+
+    for f in entries:
+        bin_data += '\n        "{}",'.format(f)
+
+    content = """\
+static const struct {{
+    const char* path;
+    size_t size;
+    const char* entries[{size}];
+}} {prefix}{var} = {{
+    "{path}",
+    {size},
+    {{{data}
+    }}
+}};
+""".format(prefix = cvar_prefix,
+           var = g_tool.sanitize_c_var(original_path),
+           path = original_path,
+           size = bin_size,
+           data = bin_data)
+
+    return content
+
+def process_file(bin_file, cvar_prefix, original_path):
+    bin_bytes = g_tool.read_bytes(bin_file)
+    bin_data = ''
+    bin_size = len(bin_bytes)
+
+    for index, byte in enumerate(bin_bytes):
+        if index % 8 == 0:
+            bin_data += '\n        '
+
+        bin_data += '0x{:0>2x},'.format(byte)
+
+    content = """\
+static const struct {{
+    const char* path;
+    size_t size;
+    uint8_t buffer[{size}];
+}} {prefix}{var} = {{
+    "{path}",
+    {size},
+    {{{data}
+    }}
+}};
+""".format(prefix = cvar_prefix,
+           var = g_tool.sanitize_c_var(original_path),
+           path = original_path,
+           size = bin_size,
+           data = bin_data)
+
+    return content
+
+if __name__ == '__main__':
+    main()

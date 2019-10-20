@@ -1,0 +1,162 @@
+#!/usr/bin/env python3
+
+"""
+    Copyright 2016-2019 Alex Margarit <alex@alxm.org>
+    This file is part of Faur, a C video game framework.
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License version 3,
+    as published by the Free Software Foundation.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
+import os
+import time
+
+from utils.tool import Tool
+
+"""
+category/f_sample.p.h
+    #include "general/f_system_includes.h"
+    #include "foo/f_bar.p.h"
+    <public typedefs>
+    #include "foo/f_bar.p.h"
+    <public typedef implementations>
+    <public api prototypes>
+    <static inline functions>
+
+category/f_sample.v.h
+    #include "category/f_sample.p.h"
+    <private typedefs>
+    #include "foo/f_bar.v.h"
+    <private typedef implementations>
+    <private api prototypes>
+    <static inline functions>
+
+category/f_sample.c
+    #include "f_sample.v.h"
+    #include <faur.v.h>
+    #include <system headers>
+    <private types>
+    <implementations>
+"""
+
+g_tool = Tool('Folder Name')
+
+def main():
+    pack_folder = g_tool.get_arg('Folder').lower().replace(' ', '_')
+    pack_name = g_tool.get_arg('Name').lower().replace(' ', '_')
+
+    pack_path = os.path.join(g_tool.dir_src, pack_folder)
+
+    if not os.path.exists(pack_path):
+        os.makedirs(pack_path)
+    elif not os.path.isdir(pack_path):
+        g_tool.out.error('{} is not a dir'.format(pack_path))
+
+    pack_c = os.path.join(pack_path, 'f_{}.c'.format(pack_name))
+    pack_ph = os.path.join(pack_path, 'f_{}.p.h'.format(pack_name))
+    pack_vh = os.path.join(pack_path, 'f_{}.v.h'.format(pack_name))
+
+    g_tool.check_files_not_exist(pack_c, pack_ph, pack_vh)
+
+    author = '<your username>'
+
+    for key in ['USER', 'USERNAME', 'LOGNAME']:
+        if key in os.environ:
+            author = os.environ[key]
+            break
+
+    header_guard = 'F_INC_{}_{}'.format(
+        g_tool.sanitize_c_var(pack_folder).upper(),
+        g_tool.sanitize_c_var(pack_name).upper())
+
+    header_guard_p = header_guard + '_P_H'
+    header_guard_v = header_guard + '_V_H'
+
+    license_header = """\
+/*
+    Copyright {date} {author}
+    This file is part of Faur, a C video game framework.
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License version 3,
+    as published by the Free Software Foundation.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/""".format(date = time.strftime('%Y'), author = author)
+
+    g_tool.write_text(pack_c,
+"""\
+{header_comment}
+
+#include "f_{name}.v.h"
+#include <faur.v.h>
+
+static void f_{name}__init(void)
+{{
+    //
+}}
+
+static void f_{name}__uninit(void)
+{{
+    //
+}}
+
+const FPack f_pack__{name} = {{
+    "{name}",
+    {{
+        [0] = f_{name}__init,
+    }},
+    {{
+        [0] = f_{name}__uninit,
+    }},
+}};
+""".format(header_comment = license_header, name = pack_name))
+
+    g_tool.write_text(pack_ph,
+"""\
+{header_comment}
+
+#ifndef {guard}
+#define {guard}
+
+#include "general/f_system_includes.h"
+
+#endif // {guard}
+""".format(header_comment = license_header, guard = header_guard_p))
+
+    g_tool.write_text(pack_vh,
+"""\
+{header_comment}
+
+#ifndef {guard}
+#define {guard}
+
+#include "{folder}/f_{name}.p.h"
+
+#include "general/f_main.v.h"
+
+extern const FPack f_pack__{name};
+
+#endif // {guard}
+""".format(header_comment = license_header,
+           guard = header_guard_v,
+           folder = pack_folder,
+           name = pack_name))
+
+if __name__ == '__main__':
+    main()
