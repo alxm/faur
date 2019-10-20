@@ -4,6 +4,7 @@
 geany -i \
     * \
     .gitignore \
+    .travis.yml \
     bin/* \
     bin/utils/* \
     make/* \

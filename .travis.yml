@@ -17,5 +17,5 @@ git:
     depth: 1
 
 script:
-    - bin/a2x_new test
-    - make A2X_PATH=../../.. --directory=test/build/make --jobs
+    - bin/faur-new test
+    - make FAUR_PATH=../../.. -C test/build/make -j8
