@@ -1,6 +1,3 @@
-FAUR_DIR_ROOT := $(realpath $(FAUR_PATH))
-FAUR_DIR_SRC := $(FAUR_DIR_ROOT)/src
-
 #
 # make/global/defs is included by every platform Makefile on line 1
 #
@@ -9,6 +6,9 @@ F_CONFIG_BUILD_PLATFORM := \
         $(word \
             $(shell expr $(words $(MAKEFILE_LIST)) \- 1), \
             $(MAKEFILE_LIST))))
+
+FAUR_DIR_ROOT := $(realpath $(FAUR_PATH))
+FAUR_DIR_SRC := $(FAUR_DIR_ROOT)/src
 
 F_DIR_ROOT := ../..
 F_DIR_ROOT_FROM_BIN := ../../../..
@@ -21,6 +21,8 @@ F_FILE_SDK := $(F_DIR_CONFIG)/sdk.mk
 F_MAKE_SPACE := $(F_MAKE_SPACE) $(F_MAKE_SPACE)
 F_MAKE_SPACE_DASH = $(subst $(F_MAKE_SPACE),-,$1)
 F_MAKE_SPACE_ESCAPE = $(subst $(F_MAKE_SPACE),\$(F_MAKE_SPACE),$1)
+
+A_MAKE_PARALLEL_JOBS := 8
 
 #
 # Custom SDK paths

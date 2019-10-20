@@ -15,13 +15,14 @@ include $(FAUR_PATH)/make/global/config.mk
 
 ifndef F_DO_BUILD
 
-F_MAKE_CMD := $(MAKE) \
-                -C $(F_DIR_ROOT)/$(F_CONFIG_DIR_SRC) \
-                -f $(realpath $(firstword $(MAKEFILE_LIST))) \
-                -j8 \
-                OBJDIR=$(realpath $(F_DIR_ROOT))/$(F_CONFIG_DIR_BUILD)/builds/$(F_CONFIG_BUILD_UID) \
-                F_DIR_SOURCE=$(realpath $(F_DIR_ROOT))/$(F_CONFIG_DIR_SRC) \
-                F_DO_BUILD=1
+F_MAKE_CMD := \
+    $(MAKE) \
+	-C $(F_DIR_ROOT)/$(F_CONFIG_DIR_SRC) \
+	-f $(realpath $(firstword $(MAKEFILE_LIST))) \
+	-j$(A_MAKE_PARALLEL_JOBS) \
+	OBJDIR=$(realpath $(F_DIR_ROOT))/$(F_CONFIG_DIR_BUILD)/builds/$(F_CONFIG_BUILD_UID) \
+	F_DIR_SOURCE=$(realpath $(F_DIR_ROOT))/$(F_CONFIG_DIR_SRC) \
+	F_DO_BUILD=1
 
 all :
 	bash -c "$(F_MAKE_CMD)"

@@ -3,8 +3,6 @@
 #
 include $(FAUR_PATH)/make/global/config.mk
 
-F_DIR_BUILD_SHARED := $(F_DIR_ROOT)/$(F_CONFIG_DIR_BUILD)/shared
-F_DIR_BUILD_STATIC := $(F_DIR_ROOT)/$(F_CONFIG_DIR_BUILD)/static
 F_DIR_BUILD_UID := $(F_DIR_ROOT)/$(F_CONFIG_DIR_BUILD)/builds/$(F_CONFIG_BUILD_UID)
 
 #
@@ -115,7 +113,7 @@ all : $(F_MAKE_ALL)
 include $(FAUR_PATH)/make/global/faur.mk
 
 #
-# Object dependencies
+# Auto-generated object dependencies
 #
 -include $(F_FILES_OBJ:.o=.d) $(FAUR_FILES_OBJ:.o=.d)
 
@@ -159,8 +157,8 @@ $(F_FILE_BIN_LINK_ASSETS) :
 
 $(F_FILE_BIN_LINK_SCREENSHOTS) :
 	@ mkdir -p $(@D)
-	@ mkdir -p $(F_DIR_BUILD_SHARED)/$(F_CONFIG_DIR_SCREENSHOTS)
-	ln -s $(F_DIR_ROOT_FROM_BIN)/build/shared/$(F_CONFIG_DIR_SCREENSHOTS) $@
+	@ mkdir -p $(F_DIR_ROOT)/$(F_CONFIG_DIR_BUILD)/shared/$(F_CONFIG_DIR_SCREENSHOTS)
+	ln -s $(F_DIR_ROOT_FROM_BIN)/$(F_CONFIG_DIR_BUILD)/shared/$(F_CONFIG_DIR_SCREENSHOTS) $@
 
 clean : $(F_CONFIG_MAKE_CLEAN)
 	rm -rf $(F_DIR_BUILD_UID)
@@ -170,4 +168,4 @@ run : all
 
 copystatic :
 	@ mkdir -p $(F_DIR_BIN)
-	rsync --archive --progress --human-readable $(F_CONFIG_PATH_STATIC_COPY:%=$(F_DIR_BUILD_STATIC)/%/) $(F_DIR_BIN)
+	rsync --archive --progress --human-readable $(F_CONFIG_PATH_STATIC_COPY:%=$(F_DIR_ROOT)/$(F_CONFIG_DIR_BUILD)/static/%/) $(F_DIR_BIN)

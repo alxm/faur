@@ -53,11 +53,6 @@ F_CONFIG_COLOR_VOLBAR_FILL ?= 0x9fcf3f
 #
 # Project dirs
 #
-#   F_CONFIG_DIR_ASSETS - Project's media assets
-#   F_CONFIG_DIR_BUILD - Root build dir
-#   F_CONFIG_DIR_SCREENSHOTS - Executable-relative path to screenshots dir
-#   F_CONFIG_DIR_SRC - Project's source tree
-#
 F_CONFIG_DIR_ASSETS ?= assets
 F_CONFIG_DIR_BUILD ?= build
 F_CONFIG_DIR_SCREENSHOTS ?= screenshots
@@ -65,10 +60,6 @@ F_CONFIG_DIR_SRC ?= src
 
 #
 # ECS
-#
-#   F_CONFIG_ECS_ENABLED - Whether to build with ECS
-#   F_CONFIG_ECS_COM_NUM - Source dir-relative file and enum value to read
-#   F_CONFIG_ECS_SYS_NUM - Source dir-relative file and enum value to read
 #
 ifdef F_CONFIG_ECS_COM_NUM
     F_CONFIG_ECS_COM_NUM := $(shell $(FAUR_PATH)/bin/faur-enum -q $(F_DIR_ROOT)/$(F_CONFIG_DIR_SRC)/$(F_CONFIG_ECS_COM_NUM))
@@ -116,8 +107,7 @@ F_CONFIG_INPUT_MOUSE_CURSOR ?= 1
 #
 # Make
 #
-#   F_CONFIG_MAKE_CLEAN - Targets to run before the default clean target
-#
+F_CONFIG_MAKE_CLEAN ?=
 
 #
 # Debug Output
@@ -133,12 +123,6 @@ endif
 #
 # File paths
 #
-#   F_CONFIG_PATH_EMBED - Root-relative space-separated file and dir paths
-#   F_CONFIG_PATH_EMBED_EMSCRIPTEN - Same as above, but using Emscripten
-#   F_CONFIG_PATH_GFX - Root-relative image and dir paths to convert to bin data
-#   F_CONFIG_PATH_STATIC_COPY - dirs in build/static to expand and copy to bin
-#   F_CONFIG_PATH_STORAGE_PREFIX - IDBFS mount point on Emscripten targets
-#
 F_CONFIG_PATH_EMBED ?=
 F_CONFIG_PATH_EMBED_EMSCRIPTEN ?=
 F_CONFIG_PATH_GFX ?=
@@ -147,16 +131,6 @@ F_CONFIG_PATH_STORAGE_PREFIX ?= ./
 
 #
 # Screen properties
-#
-#   F_CONFIG_SCREEN_ALLOCATE - Allocate a buffer or try to use the platform's
-#   F_CONFIG_SCREEN_BPP - Color depth, bits per pixel
-#   F_CONFIG_SCREEN_FORMAT - Colors order: RGBA, ABGR
-#   F_CONFIG_SCREEN_FULLSCREEN - Whether to start in fullscreen mode
-#   F_CONFIG_SCREEN_HARDWARE_HEIGHT, WIDTH - Device-specific resolution
-#   F_CONFIG_SCREEN_MAXIMIZED - Whether the window should start maximized
-#   F_CONFIG_SCREEN_SIZE_HEIGHT, WIDTH - Logical screen resolution
-#   F_CONFIG_SCREEN_VSYNC - Try to use V-sync
-#   F_CONFIG_SCREEN_ZOOM - Integer zoom when showing the logical screen
 #
 F_CONFIG_SCREEN_HARDWARE_WIDTH ?= 0
 F_CONFIG_SCREEN_HARDWARE_HEIGHT ?= 0
