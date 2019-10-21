@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2018 Alex Margarit <alex@alxm.org>
+    Copyright 2016-2019 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -15,9 +15,17 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef F_INC_SOUND_SOUND_P_H
-#define F_INC_SOUND_SOUND_P_H
+#ifndef F_INC_SOUND_MUSIC_P_H
+#define F_INC_SOUND_MUSIC_P_H
 
 #include "general/f_system_includes.h"
 
-#endif // F_INC_SOUND_SOUND_P_H
+typedef void FMusic;
+
+extern FMusic* f_music_new(const char* Path);
+extern void f_music_free(FMusic* Music);
+
+extern void f_music_play(FMusic* Music);
+extern void f_music_stop(void);
+
+#endif // F_INC_SOUND_MUSIC_P_H
