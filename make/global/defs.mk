@@ -1,6 +1,3 @@
-FAUR_DIR_ROOT := $(realpath $(FAUR_PATH))
-FAUR_DIR_SRC := $(FAUR_DIR_ROOT)/src
-
 #
 # make/global/defs is included by every platform Makefile on line 1
 #
@@ -10,9 +7,13 @@ F_CONFIG_BUILD_PLATFORM := \
             $(shell expr $(words $(MAKEFILE_LIST)) \- 1), \
             $(MAKEFILE_LIST))))
 
+FAUR_DIR_ROOT := $(realpath $(FAUR_PATH))
+FAUR_DIR_SRC := $(FAUR_DIR_ROOT)/src
+
 F_DIR_ROOT := ../..
 F_DIR_ROOT_FROM_BIN := ../../../..
 F_DIR_CONFIG := $(HOME)/.config/faur
+F_FILE_SDK := $(F_DIR_CONFIG)/sdk.mk
 
 #
 # To support app and author names with spaces
@@ -21,10 +22,14 @@ F_MAKE_SPACE := $(F_MAKE_SPACE) $(F_MAKE_SPACE)
 F_MAKE_SPACE_DASH = $(subst $(F_MAKE_SPACE),-,$1)
 F_MAKE_SPACE_ESCAPE = $(subst $(F_MAKE_SPACE),\$(F_MAKE_SPACE),$1)
 
+A_MAKE_PARALLEL_JOBS := 8
+
 #
 # Custom SDK paths
 #
--include $(F_DIR_CONFIG)/sdk.mk
+ifneq ($(wildcard $(F_FILE_SDK)),)
+include $(F_FILE_SDK)
+endif
 
 F_SDK_ARDUINO_DIR ?= /opt/arduino
 F_SDK_ARDUINO_MAKEFILE ?= /opt/Arduino-Makefile

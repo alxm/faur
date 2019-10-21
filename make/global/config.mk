@@ -53,11 +53,6 @@ F_CONFIG_COLOR_VOLBAR_FILL ?= 0x9fcf3f
 #
 # Project dirs
 #
-#   F_CONFIG_DIR_ASSETS - Project's media assets
-#   F_CONFIG_DIR_BUILD - Root build dir
-#   F_CONFIG_DIR_SCREENSHOTS - Executable-relative path to screenshots dir
-#   F_CONFIG_DIR_SRC - Project's source tree
-#
 F_CONFIG_DIR_ASSETS ?= assets
 F_CONFIG_DIR_BUILD ?= build
 F_CONFIG_DIR_SCREENSHOTS ?= screenshots
@@ -65,10 +60,6 @@ F_CONFIG_DIR_SRC ?= src
 
 #
 # ECS
-#
-#   F_CONFIG_ECS_ENABLED - Whether to build with ECS
-#   F_CONFIG_ECS_COM_NUM - Source dir-relative file and enum value to read
-#   F_CONFIG_ECS_SYS_NUM - Source dir-relative file and enum value to read
 #
 ifdef F_CONFIG_ECS_COM_NUM
     F_CONFIG_ECS_COM_NUM := $(shell $(FAUR_PATH)/bin/faur-enum -q $(F_DIR_ROOT)/$(F_CONFIG_DIR_SRC)/$(F_CONFIG_ECS_COM_NUM))
@@ -116,8 +107,7 @@ F_CONFIG_INPUT_MOUSE_CURSOR ?= 1
 #
 # Make
 #
-#   F_CONFIG_MAKE_CLEAN - Targets to run before the default clean target
-#
+F_CONFIG_MAKE_CLEAN ?=
 
 #
 # Debug Output
@@ -133,12 +123,6 @@ endif
 #
 # File paths
 #
-#   F_CONFIG_PATH_EMBED - Root-relative space-separated file and dir paths
-#   F_CONFIG_PATH_EMBED_EMSCRIPTEN - Same as above, but using Emscripten
-#   F_CONFIG_PATH_GFX - Root-relative image and dir paths to convert to bin data
-#   F_CONFIG_PATH_STATIC_COPY - dirs in build/static to expand and copy to bin
-#   F_CONFIG_PATH_STORAGE_PREFIX - IDBFS mount point on Emscripten targets
-#
 F_CONFIG_PATH_EMBED ?=
 F_CONFIG_PATH_EMBED_EMSCRIPTEN ?=
 F_CONFIG_PATH_GFX ?=
@@ -147,17 +131,6 @@ F_CONFIG_PATH_STORAGE_PREFIX ?= ./
 
 #
 # Screen properties
-#
-#   F_CONFIG_SCREEN_ALLOCATE - Allocate a buffer or try to use the platform's
-#   F_CONFIG_SCREEN_BPP - Color depth, bits per pixel
-#   F_CONFIG_SCREEN_FORMAT - Colors order: RGBA, ABGR
-#   F_CONFIG_SCREEN_FULLSCREEN - Whether to start in fullscreen mode
-#   F_CONFIG_SCREEN_HARDWARE_HEIGHT, WIDTH - Device-specific resolution
-#   F_CONFIG_SCREEN_MAXIMIZED - Whether the window should start maximized
-#   F_CONFIG_SCREEN_SIZE_HEIGHT, WIDTH - Logical screen resolution
-#   F_CONFIG_SCREEN_VSYNC - Try to use V-sync
-#   F_CONFIG_SCREEN_WIZ_FIX - Fix screen tearing on GP2X Wiz
-#   F_CONFIG_SCREEN_ZOOM - Integer zoom when showing the logical screen
 #
 F_CONFIG_SCREEN_HARDWARE_WIDTH ?= 0
 F_CONFIG_SCREEN_HARDWARE_HEIGHT ?= 0
@@ -185,10 +158,10 @@ ifeq ($(F_CONFIG_LIB_SDL), 2)
 endif
 
 ifeq ($(F_CONFIG_SYSTEM_WIZ), 1)
-    F_CONFIG_SCREEN_WIZ_FIX ?= 1
+    F_CONFIG_SYSTEM_WIZ_SCREEN_FIX ?= 1
 endif
 
-ifeq ($(F_CONFIG_SCREEN_WIZ_FIX), 1)
+ifeq ($(F_CONFIG_SYSTEM_WIZ_SCREEN_FIX), 1)
     F_CONFIG_SCREEN_ALLOCATE := 1
 endif
 
@@ -202,7 +175,6 @@ F_CONFIG_SCREEN_FORMAT ?= RGBA
 F_CONFIG_SCREEN_FULLSCREEN ?= 0
 F_CONFIG_SCREEN_MAXIMIZED ?= 1
 F_CONFIG_SCREEN_VSYNC ?= 0
-F_CONFIG_SCREEN_WIZ_FIX ?= 0
 F_CONFIG_SCREEN_ZOOM ?= 1
 
 #
@@ -231,6 +203,8 @@ F_CONFIG_SYSTEM_GP2X_MENU ?= 1
 F_CONFIG_SYSTEM_GP2X_MHZ ?= 0
 
 F_CONFIG_SYSTEM_EMSCRIPTEN_TOTAL_MEMORY ?=
+
+F_CONFIG_SYSTEM_WIZ_SCREEN_FIX ?= 0
 
 #
 # System traits
@@ -335,7 +309,6 @@ F_CONFIG_BUILD_CFLAGS += \
     -DF_CONFIG_SCREEN_SIZE_HEIGHT=$(F_CONFIG_SCREEN_SIZE_HEIGHT) \
     -DF_CONFIG_SCREEN_SIZE_WIDTH=$(F_CONFIG_SCREEN_SIZE_WIDTH) \
     -DF_CONFIG_SCREEN_VSYNC=$(F_CONFIG_SCREEN_VSYNC) \
-    -DF_CONFIG_SCREEN_WIZ_FIX=$(F_CONFIG_SCREEN_WIZ_FIX) \
     -DF_CONFIG_SCREEN_ZOOM=$(F_CONFIG_SCREEN_ZOOM) \
     -DF_CONFIG_SOUND_ENABLED=$(F_CONFIG_SOUND_ENABLED) \
     -DF_CONFIG_SOUND_MUTE=$(F_CONFIG_SOUND_MUTE) \
@@ -353,6 +326,7 @@ F_CONFIG_BUILD_CFLAGS += \
     -DF_CONFIG_SYSTEM_MINGW=$(F_CONFIG_SYSTEM_MINGW) \
     -DF_CONFIG_SYSTEM_PANDORA=$(F_CONFIG_SYSTEM_PANDORA) \
     -DF_CONFIG_SYSTEM_WIZ=$(F_CONFIG_SYSTEM_WIZ) \
+    -DF_CONFIG_SYSTEM_WIZ_SCREEN_FIX=$(F_CONFIG_SYSTEM_WIZ_SCREEN_FIX) \
     -DF_CONFIG_TRAIT_DESKTOP=$(F_CONFIG_TRAIT_DESKTOP) \
     -DF_CONFIG_TRAIT_KEYBOARD=$(F_CONFIG_TRAIT_KEYBOARD) \
     -DF_CONFIG_TRAIT_NOSLEEP=$(F_CONFIG_TRAIT_NOSLEEP) \

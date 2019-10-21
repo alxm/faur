@@ -166,8 +166,8 @@ void f_console__draw(void)
         f_font__fontSet(F_FONT__ID_LIGHT_GRAY);
         f_font_printf(" %s %.8s %s\n",
                       F_CONFIG_BUILD_UID,
-                      F_CONFIG_BUILD_GIT_HASH,
-                      F_CONFIG_BUILD_TIMESTAMP);
+                      F_CONFIG_BUILD_FAUR_GIT,
+                      F_CONFIG_BUILD_FAUR_TIME);
 
         f_font__fontSet(F_FONT__ID_WHITE);
         f_font_printf("%s %s by %s\n",

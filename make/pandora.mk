@@ -58,7 +58,7 @@ export LD      := $(PREFIX)ld
 
 include $(FAUR_PATH)/make/global/rules.mk
 
-F_DIR_PND_BASE := $(F_DIR_BUILD_STATIC)/pnd
+F_DIR_PND_BASE := $(F_DIR_ROOT)/$(F_CONFIG_DIR_BUILD)/static/pnd
 F_DIR_PND_STAGING := $(F_DIR_BUILD_UID)/pnd
 F_FILE_PND := $(call F_MAKE_SPACE_DASH,$(F_CONFIG_APP_AUTHOR)).$(call F_MAKE_SPACE_DASH,$(F_CONFIG_APP_NAME)).pnd
 F_FILE_PND_TARGET := $(PWD)/$(F_DIR_BIN)/$(F_FILE_PND)

@@ -55,8 +55,8 @@
 #define F_CONFIG_BUILD_FIX_LUT 1
 #endif
 
-#ifndef F_CONFIG_BUILD_TIMESTAMP
-#define F_CONFIG_BUILD_TIMESTAMP __DATE__ " " __TIME__
+#ifndef F_CONFIG_BUILD_FAUR_TIME
+#define F_CONFIG_BUILD_FAUR_TIME __DATE__ " " __TIME__
 #endif
 
 #ifndef F_CONFIG_BUILD_UID
