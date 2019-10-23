@@ -19,6 +19,7 @@ F_DIR_GEN := $(F_DIR_OBJ_APP)/faur_gen
 F_DIR_GEN_EMBED := $(F_DIR_GEN)/embed
 F_DIR_GEN_EXTRA := $(F_DIR_GEN)/extra
 F_DIR_GEN_GFX := $(F_DIR_GEN)/gfx
+F_DIR_GEN_SFX := $(F_DIR_GEN)/sfx
 
 #
 # The final bin that gets built
@@ -49,6 +50,13 @@ F_FILES_GFX_C := $(F_FILES_GFX_BIN:%=$(F_DIR_GEN_GFX)/%.c)
 F_FILES_GFX_H := $(F_FILES_GFX_BIN:%=$(F_DIR_GEN_GFX)/%.h)
 
 #
+# Sound effects data
+#
+F_FILES_SFX_BIN += $(shell $(FAUR_PATH)/bin/faur-gather -q --no-dirs $(F_DIR_ROOT) $(F_CONFIG_PATH_SFX))
+F_FILES_SFX_C := $(F_FILES_SFX_BIN:%=$(F_DIR_GEN_SFX)/%.c)
+F_FILES_SFX_H := $(F_FILES_SFX_BIN:%=$(F_DIR_GEN_SFX)/%.h)
+
+#
 # C source files
 #
 F_FILES_SRC_C := $(shell find $(F_DIR_ROOT)/$(F_CONFIG_DIR_SRC) -type f -name "*.c")
@@ -61,7 +69,8 @@ F_FILES_OBJ_APP := $(F_FILES_SRC_C:%=$(F_DIR_OBJ_APP)/%.o)
 
 F_FILES_OBJ_GEN_EMBED := $(F_FILES_SRC_GEN_EMBED_DOT_C:=.o)
 F_FILES_OBJ_GEN_GFX := $(F_FILES_GFX_C:=.o)
-F_FILES_OBJ_GEN := $(F_FILES_OBJ_GEN_EMBED) $(F_FILES_OBJ_GEN_GFX)
+F_FILES_OBJ_GEN_SFX := $(F_FILES_SFX_C:=.o)
+F_FILES_OBJ_GEN := $(F_FILES_OBJ_GEN_EMBED) $(F_FILES_OBJ_GEN_GFX) $(F_FILES_OBJ_GEN_SFX)
 
 F_FILES_OBJ_EXTRA := $(F_CONFIG_BUILD_SRC_EXTRA:%=$(F_DIR_GEN_EXTRA)%.o)
 
@@ -103,7 +112,7 @@ endif
 
 .PHONY : all run clean $(F_CONFIG_MAKE_CLEAN) copystatic
 
-.SECONDARY : $(F_FILES_GFX_C)
+.SECONDARY : $(F_FILES_GFX_C) $(F_FILES_SFX_C)
 
 all : $(F_MAKE_ALL)
 
@@ -117,7 +126,7 @@ include $(FAUR_PATH)/make/global/faur.mk
 #
 -include $(F_FILES_OBJ:.o=.d) $(FAUR_FILES_OBJ:.o=.d)
 
-$(F_FILES_OBJ_APP) : $(F_FILES_GFX_H)
+$(F_FILES_OBJ_APP) : $(F_FILES_GFX_H) $(F_FILES_SFX_H)
 
 $(F_FILE_BIN_TARGET) : $(F_FILES_OBJ) $(FAUR_FILE_PUBLIC_FAUR_LIB)
 	@ mkdir -p $(@D)
@@ -138,6 +147,14 @@ $(F_DIR_GEN_GFX)/%.c : $(F_DIR_ROOT)/% $(FAUR_PATH)/bin/faur-gfx
 $(F_DIR_GEN_GFX)/%.h : $(F_DIR_ROOT)/% $(FAUR_PATH)/bin/faur-gfx
 	@ mkdir -p $(@D)
 	$(FAUR_PATH)/bin/faur-gfx $< $@ $(<:$(F_DIR_ROOT)/%=%) $(F_CONFIG_SCREEN_BPP) $(F_CONFIG_COLOR_SPRITE_KEY)
+
+$(F_DIR_GEN_SFX)/%.c : $(F_DIR_ROOT)/% $(FAUR_PATH)/bin/faur-sfx
+	@ mkdir -p $(@D)
+	$(FAUR_PATH)/bin/faur-sfx $< $@ $(<:$(F_DIR_ROOT)/%=%)
+
+$(F_DIR_GEN_SFX)/%.h : $(F_DIR_ROOT)/% $(FAUR_PATH)/bin/faur-sfx
+	@ mkdir -p $(@D)
+	$(FAUR_PATH)/bin/faur-sfx $< $@ $(<:$(F_DIR_ROOT)/%=%)
 
 $(F_DIR_OBJ_APP)/%.c.o : $(F_DIR_ROOT)/$(F_CONFIG_DIR_SRC)/%.c
 	@ mkdir -p $(@D)

@@ -1,0 +1,86 @@
+#!/usr/bin/env python3
+
+"""
+    Copyright 2019 Alex Margarit <alex@alxm.org>
+    This file is part of Faur, a C video game framework.
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License version 3,
+    as published by the Free Software Foundation.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
+from utils.tool import Tool
+
+g_tool = Tool('Sound.wav GenFile.c/.h VarName')
+
+def main():
+    wav_file = g_tool.get_arg('Sound.wav')
+    target_file = g_tool.get_arg('GenFile.c/.h')
+    var_name = g_tool.sanitize_c_var(g_tool.get_arg('VarName'))
+
+    if not wav_file.endswith('.wav'):
+        g_tool.usage('Sound file must be a .wav file')
+
+    if target_file.endswith('.h'):
+        content = process_h(var_name)
+    elif target_file.endswith('.c'):
+        content = process_c(var_name, wav_file)
+    else:
+        g_tool.usage('GenFile must be a .c or .h file')
+
+    g_tool.write_text(target_file, content)
+
+def process_h(var_name):
+    content = """\
+#include <faur.h>
+
+extern const FSample* const f_sfx_{var};
+""".format(var = var_name)
+
+    return content
+
+def process_c(var_name, wav_file):
+    bufferData = []
+    data = g_tool.read_bytes(wav_file)
+
+    for b in data:
+        bufferData.append('0x{:0>2x}'.format(b))
+
+    bufferData = ', '.join(bufferData)
+
+    content = """\
+#include <faur.v.h>
+
+#if F_CONFIG_LIB_SDL
+    #define F__GEN_CONST
+#else
+    #define F__GEN_CONST const
+#endif
+
+static const uint8_t f_sfx__buffer__{var}[{bufferSize}] = {{{bufferData}}};
+
+static F__GEN_CONST struct {{
+    uint32_t size;
+    uint8_t* buffer;
+}} f_sfx__sample__{var} = {{
+    {bufferSize},
+    (uint8_t*)f_sfx__buffer__{var}
+}};
+
+const FSample* const f_sfx_{var} = (const FSample*)&f_sfx__sample__{var};
+""".format(var = var_name,
+           bufferSize = len(data),
+           bufferData = bufferData)
+
+    return content
+
+if __name__ == '__main__':
+    main()

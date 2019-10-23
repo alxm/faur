@@ -32,7 +32,7 @@ typedef enum {
 #define F_CHANNEL_ANY -1
 
 extern int f_channel_new(void);
-extern void f_channel_play(int Channel, FSample* Sample, FChannelFlags Flags);
+extern void f_channel_play(int Channel, const FSample* Sample, FChannelFlags Flags);
 extern void f_channel_stop(int Channel);
 extern bool f_channel_isPlaying(int Channel);
 
