@@ -19,24 +19,27 @@
 #include <faur.v.h>
 
 #if F_CONFIG_SOUND_ENABLED
-static int g_volume;
-static int g_musicVolume;
-static int g_samplesVolume;
-static int g_volumeMax;
+#if F_CONFIG_SOUND_VOLUME_ADJUSTABLE
+    static int g_volume;
+    static int g_musicVolume;
+    static int g_samplesVolume;
+    static int g_volumeMax;
 
-#if F_CONFIG_SYSTEM_GP2X || F_CONFIG_SYSTEM_WIZ
-    #define F__SOUND_VOLUME_BAR 1
-    #define F__VOLUME_STEP 1
-    #define F__VOLBAR_SHOW_MS 500
-    static FTimer* g_volTimer;
-    static FButton* g_volumeUpButton;
-    static FButton* g_volumeDownButton;
+    #if F_CONFIG_SYSTEM_GP2X || F_CONFIG_SYSTEM_WIZ
+        #define F__SOUND_VOLUME_BAR 1
+        #define F__VOLUME_STEP 1
+        #define F__VOLBAR_SHOW_MS 500
+        static FTimer* g_volTimer;
+        static FButton* g_volumeUpButton;
+        static FButton* g_volumeDownButton;
+    #endif
 #endif
 
 #if F_CONFIG_TRAIT_KEYBOARD
     static FButton* g_muteButton;
 #endif
 
+#if F_CONFIG_SOUND_VOLUME_ADJUSTABLE
 static void adjustSoundVolume(int Volume)
 {
     g_volume = f_math_clamp(Volume, 0, g_volumeMax);
@@ -46,28 +49,30 @@ static void adjustSoundVolume(int Volume)
     f_platform_api__soundSampleVolumeSetAll(g_samplesVolume);
     f_platform_api__soundMusicVolumeSet(g_musicVolume);
 }
+#endif
 
 static void f_sound__init(void)
 {
-    g_volumeMax = f_platform_api__soundVolumeGetMax();
+    #if F_CONFIG_SOUND_VOLUME_ADJUSTABLE
+        g_volumeMax = f_platform_api__soundVolumeGetMax();
 
-    #if F__SOUND_VOLUME_BAR
-        adjustSoundVolume(g_volumeMax / 16);
-        g_volTimer = f_timer_new(F_TIMER_MS, F__VOLBAR_SHOW_MS, false);
-    #else
-        adjustSoundVolume(g_volumeMax);
-    #endif
+        #if F__SOUND_VOLUME_BAR
+            adjustSoundVolume(g_volumeMax / 16);
+            g_volTimer = f_timer_new(F_TIMER_MS, F__VOLBAR_SHOW_MS, false);
 
-    #if F__SOUND_VOLUME_BAR
-        g_volumeUpButton = f_button_new();
-        f_button_bindButton(g_volumeUpButton, NULL, F_BUTTON_VOLUP);
+            g_volumeUpButton = f_button_new();
+            f_button_bindButton(g_volumeUpButton, NULL, F_BUTTON_VOLUP);
 
-        g_volumeDownButton = f_button_new();
-        f_button_bindButton(g_volumeDownButton, NULL, F_BUTTON_VOLDOWN);
+            g_volumeDownButton = f_button_new();
+            f_button_bindButton(g_volumeDownButton, NULL, F_BUTTON_VOLDOWN);
+        #else
+            adjustSoundVolume(g_volumeMax);
+        #endif
     #endif
 
     #if F_CONFIG_TRAIT_KEYBOARD
         g_muteButton = f_button_new();
+
         f_button_bindKey(g_muteButton, F_KEY_M);
     #endif
 }
