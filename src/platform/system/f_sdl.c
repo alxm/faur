@@ -29,16 +29,6 @@ static uint32_t g_sdlFlags;
 
 void f_platform_sdl__init(void)
 {
-    g_sdlFlags = 0;
-
-    #if F_CONFIG_LIB_SDL_TIME
-        g_sdlFlags |= SDL_INIT_TIMER;
-    #endif
-
-    if(SDL_Init(g_sdlFlags) != 0) {
-        F__FATAL("SDL_Init: %s", SDL_GetError());
-    }
-
     SDL_version cv, rv;
     SDL_VERSION(&cv);
 
@@ -50,6 +40,16 @@ void f_platform_sdl__init(void)
 
     f_out__info("Built with SDL %d.%d.%d", cv.major, cv.minor, cv.patch);
     f_out__info("Running on SDL %d.%d.%d", rv.major, rv.minor, rv.patch);
+
+    g_sdlFlags = 0;
+
+    #if F_CONFIG_LIB_SDL_TIME
+        g_sdlFlags |= SDL_INIT_TIMER;
+    #endif
+
+    if(SDL_Init(g_sdlFlags) != 0) {
+        F__FATAL("SDL_Init: %s", SDL_GetError());
+    }
 
     f_platform_sdl_input__init();
     f_platform_sdl_video__init();

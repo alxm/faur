@@ -31,7 +31,7 @@ typedef enum {
 
 #include "data/f_list.p.h"
 #include "input/f_button.p.h"
-#include "sound/f_sound.p.h"
+#include "sound/f_sample.p.h"
 
 extern FMenu* f_menu_new(FButton* Next, FButton* Back, FButton* Select, FButton* Cancel);
 extern void f_menu_free(FMenu* Menu);
