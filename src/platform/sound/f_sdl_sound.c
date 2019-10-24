@@ -47,6 +47,12 @@ static int g_currentSampleChannel;
 
 void f_platform_sdl_sound__init(void)
 {
+    SDL_version cv, rv = *Mix_Linked_Version();
+    SDL_MIXER_VERSION(&cv);
+
+    f_out__info("Built with SDL_mixer %d.%d.%d", cv.major, cv.minor, cv.patch);
+    f_out__info("Running on SDL_mixer %d.%d.%d", rv.major, rv.minor, rv.patch);
+
     if(SDL_InitSubSystem(SDL_INIT_AUDIO) != 0) {
         F__FATAL("SDL_InitSubSystem: %s", SDL_GetError());
     }
