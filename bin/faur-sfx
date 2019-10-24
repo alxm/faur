@@ -17,6 +17,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import subprocess
+
 from utils.tool import Tool
 
 g_tool = Tool('Sound.wav GenFile.c/.h VarName')
@@ -48,13 +50,24 @@ extern const FSample* const f_sfx_{var};
     return content
 
 def process_c(var_name, wav_file):
-    bufferData = []
-    data = g_tool.read_bytes(wav_file)
+    ret = subprocess.run(['ffmpeg',
+                            '-loglevel', 'quiet',
+                            '-i', wav_file,
+                            '-ac', '1',
+                            '-ar', '22050',
+                            '-acodec', 'pcm_u8',
+                            '-f', 'u8',
+                            'pipe:1'],
+                         stdout = subprocess.PIPE)
 
-    for b in data:
-        bufferData.append('0x{:0>2x}'.format(b))
+    if ret.returncode != 0:
+        g_tool.out.error('ffmpeg error code {}'.format(ret.returncode))
 
-    bufferData = ', '.join(bufferData)
+    wavBytes = g_tool.read_bytes(wav_file)
+    gbmBytes = ret.stdout
+
+    def formatBytes(Bytes):
+        return ', '.join(['0x{:0>2x}'.format(b) for b in Bytes])
 
     content = """\
 #include <faur.v.h>
@@ -65,20 +78,34 @@ def process_c(var_name, wav_file):
     #define F__GEN_CONST const
 #endif
 
-static const uint8_t f_sfx__buffer__{var}[{bufferSize}] = {{{bufferData}}};
+#if F_CONFIG_SYSTEM_GAMEBUINO
+    static const uint8_t f_sfx__buffer__{var}[{bufferSizeGamebuino}] = {{{bufferDataGamebuino}}};
 
-static F__GEN_CONST struct {{
-    uint32_t size;
-    uint8_t* buffer;
-}} f_sfx__sample__{var} = {{
-    {bufferSize},
-    (uint8_t*)f_sfx__buffer__{var}
-}};
+    static F__GEN_CONST struct {{
+        uint32_t size;
+        uint8_t* buffer;
+    }} f_sfx__sample__{var} = {{
+        {bufferSizeGamebuino},
+        (uint8_t*)f_sfx__buffer__{var}
+    }};
+#else
+    static const uint8_t f_sfx__buffer__{var}[{bufferSizeWav}] = {{{bufferDataWav}}};
+
+    static F__GEN_CONST struct {{
+        uint32_t size;
+        uint8_t* buffer;
+    }} f_sfx__sample__{var} = {{
+        {bufferSizeWav},
+        (uint8_t*)f_sfx__buffer__{var}
+    }};
+#endif
 
 const FSample* const f_sfx_{var} = (const FSample*)&f_sfx__sample__{var};
 """.format(var = var_name,
-           bufferSize = len(data),
-           bufferData = bufferData)
+           bufferSizeWav = len(wavBytes),
+           bufferDataWav = formatBytes(wavBytes),
+           bufferSizeGamebuino = len(gbmBytes),
+           bufferDataGamebuino = formatBytes(gbmBytes))
 
     return content
 
