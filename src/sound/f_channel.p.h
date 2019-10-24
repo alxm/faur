@@ -21,10 +21,10 @@
 #include "general/f_system_includes.h"
 
 typedef enum {
-    F_CHANNEL_NORMAL = 0,
-    F_CHANNEL_LOOP = F_FLAGS_BIT(0),
-    F_CHANNEL_RESTART = F_FLAGS_BIT(1),
-    F_CHANNEL_YIELD = F_FLAGS_BIT(2),
+    F_CHANNEL_PLAY_NORMAL = 0,
+    F_CHANNEL_PLAY_LOOP = F_FLAGS_BIT(0),
+    F_CHANNEL_PLAY_RESTART = F_FLAGS_BIT(1),
+    F_CHANNEL_PLAY_YIELD = F_FLAGS_BIT(2),
 } FChannelFlags;
 
 #include "sound/f_sample.p.h"

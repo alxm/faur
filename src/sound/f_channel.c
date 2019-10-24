@@ -30,9 +30,9 @@ void f_channel_play(int Channel, const FSample* Sample, FChannelFlags Flags)
         return;
     }
 
-    if(F_FLAGS_TEST_ANY(Flags, F_CHANNEL_RESTART)) {
+    if(F_FLAGS_TEST_ANY(Flags, F_CHANNEL_PLAY_RESTART)) {
         f_platform_api__soundSampleStop(Channel);
-    } else if(F_FLAGS_TEST_ANY(Flags, F_CHANNEL_YIELD)
+    } else if(F_FLAGS_TEST_ANY(Flags, F_CHANNEL_PLAY_YIELD)
         && f_platform_api__soundSampleIsPlaying(Channel)) {
 
         return;
@@ -40,7 +40,7 @@ void f_channel_play(int Channel, const FSample* Sample, FChannelFlags Flags)
 
     f_platform_api__soundSamplePlay((FPlatformSample*)Sample,
                                     Channel,
-                                    F_FLAGS_TEST_ANY(Flags, F_CHANNEL_LOOP));
+                                    F_FLAGS_TEST_ANY(Flags, F_CHANNEL_PLAY_LOOP));
 }
 
 void f_channel_stop(int Channel)
