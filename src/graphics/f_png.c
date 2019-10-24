@@ -43,13 +43,13 @@ static FPixels* pngToPixels(png_structp Png, png_infop Info)
     png_bytepp rows = png_get_rows(Png, Info);
 
     FPixels* pixels = f_pixels__new((int)w, (int)h, 1, F_PIXELS__ALLOC);
-    FPixel* buffer = pixels->buffer;
+    FColorPixel* buffer = pixels->buffer;
 
     for(png_uint_32 y = h; y--; rows++) {
         for(png_uint_32 x = w, chOffset = 0; x--; chOffset += numChannels) {
-            *buffer++ = f_pixel_fromRgb(rows[0][chOffset + 0],
-                                        rows[0][chOffset + 1],
-                                        rows[0][chOffset + 2]);
+            *buffer++ = f_color_pixelFromRgb(rows[0][chOffset + 0],
+                                             rows[0][chOffset + 1],
+                                             rows[0][chOffset + 2]);
         }
     }
 
@@ -233,13 +233,13 @@ void f_png__write(const char* Path, const FPixels* Pixels, unsigned Frame, char*
                  PNG_COMPRESSION_TYPE_DEFAULT,
                  PNG_FILTER_TYPE_DEFAULT);
 
-    const FPixel* buffer = f_pixels__bufferGetStart(Pixels, Frame);
+    const FColorPixel* buffer = f_pixels__bufferGetStart(Pixels, Frame);
 
     for(unsigned y = 0; y < height; y++) {
         rows[y] = rowsData + y * width * COLOR_CHANNELS;
 
         for(unsigned x = 0; x < width; x++) {
-            FRgb rgb = f_pixel_toRgb(*buffer++);
+            FColorRgb rgb = f_color_pixelToRgb(*buffer++);
 
             rows[y][x * COLOR_CHANNELS + 0] = (png_byte)rgb.r;
             rows[y][x * COLOR_CHANNELS + 1] = (png_byte)rgb.g;

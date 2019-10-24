@@ -212,11 +212,13 @@ FFixu f_block_lineGetAngle(const FBlock* Block, unsigned LineNumber)
     }
 }
 
-FPixel f_block_lineGetPixel(const FBlock* Block, unsigned LineNumber)
+FColorPixel f_block_lineGetPixel(const FBlock* Block, unsigned LineNumber)
 {
     const FBlock* line = blockGet(Block, LineNumber);
 
-    return line ? f_pixel_fromHex((uint32_t)strtol(line->text, NULL, 16)) : 0;
+    return line
+            ? f_color_pixelFromHex((uint32_t)strtol(line->text, NULL, 16))
+            : 0;
 }
 
 const char* f_block_lineGetString(const FBlock* Block, unsigned LineNumber)

@@ -38,8 +38,8 @@ extern SDL_Renderer* f__sdlRenderer;
 FPlatformTexture* f_platform_api__textureNew(const FPixels* Pixels, unsigned Frame)
 {
     FPlatformTexture* texture = f_mem_zalloc(sizeof(FPlatformTexture));
-    const FPixel* original = f_pixels__bufferGetStart(Pixels, Frame);
-    FPixel* buffer = f_mem_dup(original, Pixels->bufferSize);
+    const FColorPixel* original = f_pixels__bufferGetStart(Pixels, Frame);
+    FColorPixel* buffer = f_mem_dup(original, Pixels->bufferSize);
 
     for(int t = 0; t < F_TEXTURE__NUM; t++) {
         switch(t) {
@@ -47,7 +47,7 @@ FPlatformTexture* f_platform_api__textureNew(const FPixels* Pixels, unsigned Fra
                 for(int i = Pixels->w * Pixels->h; i--; ) {
                     if(original[i] != f_color__key) {
                         // Set full alpha for non-transparent pixel
-                        buffer[i] |= (FPixel)F__PX_MASK_A << F__PX_SHIFT_A;
+                        buffer[i] |= (FColorPixel)F__PX_MASK_A << F__PX_SHIFT_A;
                     }
                 }
             } break;
@@ -56,7 +56,7 @@ FPlatformTexture* f_platform_api__textureNew(const FPixels* Pixels, unsigned Fra
                 for(int i = Pixels->w * Pixels->h; i--; ) {
                     if(original[i] == f_color__key) {
                         // Set full color for transparent pixel
-                        buffer[i] |= f_pixel_fromHex(0xffffff);
+                        buffer[i] |= f_color_pixelFromHex(0xffffff);
                     }
                 }
             } break;
@@ -65,7 +65,7 @@ FPlatformTexture* f_platform_api__textureNew(const FPixels* Pixels, unsigned Fra
                 for(int i = Pixels->w * Pixels->h; i--;) {
                     if(original[i] != f_color__key) {
                         // Set full color for non-transparent pixel
-                        buffer[i] |= f_pixel_fromHex(0xffffff);
+                        buffer[i] |= f_color_pixelFromHex(0xffffff);
                     }
                 }
             } break;
@@ -81,7 +81,7 @@ FPlatformTexture* f_platform_api__textureNew(const FPixels* Pixels, unsigned Fra
         }
 
         if(SDL_UpdateTexture(
-            tex, NULL, buffer, Pixels->w * (int)sizeof(FPixel)) < 0) {
+            tex, NULL, buffer, Pixels->w * (int)sizeof(FColorPixel)) < 0) {
 
             F__FATAL("SDL_UpdateTexture: %s", SDL_GetError());
         }

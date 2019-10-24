@@ -34,8 +34,8 @@ extern void f_sprite_free(FSprite* Sprite);
 extern void f_sprite_blit(const FSprite* Sprite, unsigned Frame, int X, int Y);
 extern void f_sprite_blitEx(const FSprite* Sprite, unsigned Frame, int X, int Y, FFix Scale, unsigned Angle, FFix CenterX, FFix CenterY);
 
-extern void f_sprite_swapColor(FSprite* Sprite, FPixel OldColor, FPixel NewColor);
-extern void f_sprite_swapColors(FSprite* Sprite, const FPixel* OldColors, const FPixel* NewColors, unsigned NumColors);
+extern void f_sprite_swapColor(FSprite* Sprite, FColorPixel OldColor, FColorPixel NewColor);
+extern void f_sprite_swapColors(FSprite* Sprite, const FColorPixel* OldColors, const FColorPixel* NewColors, unsigned NumColors);
 
 extern FVectorInt f_sprite_sizeGet(const FSprite* Sprite);
 extern int f_sprite_sizeGetWidth(const FSprite* Sprite);
@@ -43,7 +43,7 @@ extern int f_sprite_sizeGetHeight(const FSprite* Sprite);
 
 extern unsigned f_sprite_framesNumGet(const FSprite* Sprite);
 
-extern const FPixel* f_sprite_pixelsGetBuffer(const FSprite* Sprite, unsigned Frame);
-extern FPixel f_sprite_pixelsGetValue(const FSprite* Sprite, unsigned Frame, int X, int Y);
+extern const FColorPixel* f_sprite_pixelsGetBuffer(const FSprite* Sprite, unsigned Frame);
+extern FColorPixel f_sprite_pixelsGetValue(const FSprite* Sprite, unsigned Frame, int X, int Y);
 
 #endif // F_INC_GRAPHICS_SPRITE_P_H

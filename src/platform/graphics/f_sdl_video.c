@@ -31,7 +31,7 @@
     SDL_Renderer* f__sdlRenderer;
     static SDL_Window* g_sdlWindow;
     static SDL_Texture* g_sdlTexture;
-    static FRgb g_clearRgb;
+    static FColorRgb g_clearRgb;
 #endif
 
 #if F_CONFIG_LIB_SDL == 2 || F_CONFIG_SYSTEM_EMSCRIPTEN
@@ -204,7 +204,7 @@ void f_platform_api__screenInit(void)
 
             f_pixels__bufferSet(&g_pixels,
                                 g_sdlScreen->pixels,
-                                g_sdlScreen->pitch / sizeof(FPixel),
+                                g_sdlScreen->pitch / sizeof(FColorPixel),
                                 g_sdlScreen->h);
         #endif
     #elif F_CONFIG_LIB_SDL == 2
@@ -300,8 +300,8 @@ void f_platform_api__screenInit(void)
         SDL_SetHintWithPriority(
             SDL_HINT_RENDER_SCALE_QUALITY, "nearest", SDL_HINT_OVERRIDE);
 
-        g_clearRgb = f_pixel_toRgb(
-                        f_pixel_fromHex(F_CONFIG_COLOR_SCREEN_BORDER));
+        g_clearRgb = f_color_pixelToRgb(
+                        f_color_pixelFromHex(F_CONFIG_COLOR_SCREEN_BORDER));
     #endif
 
     f_out__info("V-sync is %s", g_vsync ? "on" : "off");
@@ -359,7 +359,7 @@ void f_platform_api__screenTextureRead(FPixels* Pixels, unsigned Frame)
                             NULL,
                             F_SDL__PIXEL_FORMAT,
                             f_pixels__bufferGetFrom(Pixels, Frame, 0, 0),
-                            Pixels->w * (int)sizeof(FPixel)) < 0) {
+                            Pixels->w * (int)sizeof(FColorPixel)) < 0) {
 
         F__FATAL("SDL_RenderReadPixels: %s", SDL_GetError());
     }
@@ -400,8 +400,9 @@ void f_platform_api__screenShow(void)
             #define F__SCREEN_TOTAL (F_CONFIG_SCREEN_HARDWARE_WIDTH \
                                         * F_CONFIG_SCREEN_HARDWARE_HEIGHT)
 
-            FPixel* dst = (FPixel*)g_sdlScreen->pixels + F__SCREEN_TOTAL;
-            const FPixel* src = g_pixels.buffer;
+            FColorPixel* dst =
+                (FColorPixel*)g_sdlScreen->pixels + F__SCREEN_TOTAL;
+            const FColorPixel* src = g_pixels.buffer;
 
             for(int i = F_CONFIG_SCREEN_HARDWARE_HEIGHT;
                 i--;
@@ -426,14 +427,17 @@ void f_platform_api__screenShow(void)
             }
 
             if(g_zoom <= 1) {
-                if(g_pixels.w * (int)sizeof(FPixel) == g_sdlScreen->pitch) {
+                if(g_pixels.w * (int)sizeof(FColorPixel)
+                    == g_sdlScreen->pitch) {
+
                     memcpy(g_sdlScreen->pixels,
                            g_pixels.buffer,
                            g_pixels.bufferSize);
                 } else {
                     uint8_t* dst = g_sdlScreen->pixels;
-                    const FPixel* src = g_pixels.buffer;
-                    size_t rowSize = (size_t)g_sdlScreen->w * sizeof(FPixel);
+                    const FColorPixel* src = g_pixels.buffer;
+                    size_t rowSize =
+                        (size_t)g_sdlScreen->w * sizeof(FColorPixel);
 
                     for(int y = g_sdlScreen->h; y--; ) {
                         memcpy(dst, src, rowSize);
@@ -443,15 +447,15 @@ void f_platform_api__screenShow(void)
                     }
                 }
             } else {
-                FPixel* dst = g_sdlScreen->pixels;
-                const FPixel* src = g_pixels.buffer;
+                FColorPixel* dst = g_sdlScreen->pixels;
+                const FColorPixel* src = g_pixels.buffer;
                 int realH = g_sdlScreen->h / g_zoom;
                 int realW = g_sdlScreen->w / g_zoom;
-                size_t rowLen = g_sdlScreen->pitch / sizeof(FPixel);
+                size_t rowLen = g_sdlScreen->pitch / sizeof(FColorPixel);
                 ptrdiff_t rowRemainder = (int)rowLen - g_sdlScreen->w;
 
                 for(int y = realH; y--; ) {
-                    const FPixel* firstLine = dst;
+                    const FColorPixel* firstLine = dst;
 
                     for(int x = realW; x--; ) {
                         for(int z = g_zoom; z--; ) {
@@ -490,7 +494,7 @@ void f_platform_api__screenShow(void)
 
             f_pixels__bufferSet(&g_pixels,
                                 g_sdlScreen->pixels,
-                                g_sdlScreen->pitch / sizeof(FPixel),
+                                g_sdlScreen->pitch / sizeof(FColorPixel),
                                 g_sdlScreen->h);
         #endif
     #elif F_CONFIG_LIB_SDL == 2
@@ -514,7 +518,7 @@ void f_platform_api__screenShow(void)
             if(SDL_UpdateTexture(g_sdlTexture,
                                  NULL,
                                  g_pixels.buffer,
-                                 g_pixels.w * (int)sizeof(FPixel)) < 0) {
+                                 g_pixels.w * (int)sizeof(FColorPixel)) < 0) {
 
                 F__FATAL("SDL_UpdateTexture: %s", SDL_GetError());
             }

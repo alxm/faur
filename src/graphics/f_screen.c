@@ -120,7 +120,7 @@ void f_screen__draw(void)
     f_platform_api__screenShow();
 }
 
-FPixel* f_screen_pixelsGetBuffer(void)
+FColorPixel* f_screen_pixelsGetBuffer(void)
 {
     #if !F_CONFIG_LIB_RENDER_SOFTWARE
         f_platform_api__screenTextureRead(f__screen.pixels, f__screen.frame);

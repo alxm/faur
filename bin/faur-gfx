@@ -110,7 +110,7 @@ def process_c(var_name, image_file, bpp, color_key):
     content = """\
 #include <faur.v.h>
 
-static const FPixel f_gfx__buffer__{var}[{width} * {height} * {frames_num}] = {{{pixels}}};{spans}
+static const FColorPixel f_gfx__buffer__{var}[{width} * {height} * {frames_num}] = {{{pixels}}};{spans}
 
 static const struct {{
     FPixels pixels;
@@ -121,9 +121,9 @@ static const struct {{
         {height},
         {frames_num},
         {width} * {height},
-        {width} * {height} * sizeof(FPixel),
+        {width} * {height} * sizeof(FColorPixel),
         F_PIXELS__CONST,
-        (FPixel*)f_gfx__buffer__{var},
+        (FColorPixel*)f_gfx__buffer__{var},
     }},
     {{{textures}
     }},

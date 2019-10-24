@@ -39,7 +39,7 @@ struct FPixels {
     unsigned bufferLen;
     unsigned bufferSize;
     FPixelsFlags flags;
-    FPixel* buffer; // [w * h * framesNum]
+    FColorPixel* buffer; // [w * h * framesNum]
 };
 
 extern FPixels* f_pixels__new(int W, int H, unsigned Frames, FPixelsFlags Flags);
@@ -50,24 +50,24 @@ extern void f_pixels__copy(FPixels* Dst, const FPixels* Src);
 extern void f_pixels__copyFrame(const FPixels* Dst, unsigned DstFrame, const FPixels* Src, unsigned SrcFrame);
 extern void f_pixels__copyFrameEx(const FPixels* Dst, unsigned DstFrame, const FPixels* SrcPixels, unsigned SrcFrame, int SrcX, int SrcY);
 
-extern void f_pixels__bufferSet(FPixels* Pixels, FPixel* Buffer, int W, int H);
+extern void f_pixels__bufferSet(FPixels* Pixels, FColorPixel* Buffer, int W, int H);
 
 extern void f_pixels__clear(const FPixels* Pixels, unsigned Frame);
-extern void f_pixels__fill(const FPixels* Pixels, unsigned Frame, FPixel Value);
+extern void f_pixels__fill(const FPixels* Pixels, unsigned Frame, FColorPixel Value);
 
 extern FVectorInt f_pixels__boundsFind(const FPixels* Pixels, unsigned Frame, int X, int Y);
 
-static inline FPixel* f_pixels__bufferGetStart(const FPixels* Pixels, unsigned Frame)
+static inline FColorPixel* f_pixels__bufferGetStart(const FPixels* Pixels, unsigned Frame)
 {
     return Pixels->buffer + Frame * Pixels->bufferLen;
 }
 
-static inline FPixel* f_pixels__bufferGetFrom(const FPixels* Pixels, unsigned Frame, int X, int Y)
+static inline FColorPixel* f_pixels__bufferGetFrom(const FPixels* Pixels, unsigned Frame, int X, int Y)
 {
     return f_pixels__bufferGetStart(Pixels, Frame) + Y * Pixels->w + X;
 }
 
-static inline FPixel f_pixels__bufferGetValue(const FPixels* Pixels, unsigned Frame, int X, int Y)
+static inline FColorPixel f_pixels__bufferGetValue(const FPixels* Pixels, unsigned Frame, int X, int Y)
 {
     return *f_pixels__bufferGetFrom(Pixels, Frame, X, Y);
 }

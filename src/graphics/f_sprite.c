@@ -205,10 +205,10 @@ void f_sprite_blitEx(const FSprite* Sprite, unsigned Frame, int X, int Y, FFix S
                                   CenterY);
 }
 
-void f_sprite_swapColor(FSprite* Sprite, FPixel OldColor, FPixel NewColor)
+void f_sprite_swapColor(FSprite* Sprite, FColorPixel OldColor, FColorPixel NewColor)
 {
     for(unsigned f = Sprite->pixels.framesNum; f--; ) {
-        FPixel* buffer = f_pixels__bufferGetStart(&Sprite->pixels, f);
+        FColorPixel* buffer = f_pixels__bufferGetStart(&Sprite->pixels, f);
 
         for(unsigned i = Sprite->pixels.bufferLen; i--; ) {
             if(buffer[i] == OldColor) {
@@ -227,13 +227,13 @@ void f_sprite_swapColor(FSprite* Sprite, FPixel OldColor, FPixel NewColor)
     }
 }
 
-void f_sprite_swapColors(FSprite* Sprite, const FPixel* OldColors, const FPixel* NewColors, unsigned NumColors)
+void f_sprite_swapColors(FSprite* Sprite, const FColorPixel* OldColors, const FColorPixel* NewColors, unsigned NumColors)
 {
     for(unsigned f = Sprite->pixels.framesNum; f--; ) {
-        FPixel* buffer = f_pixels__bufferGetStart(&Sprite->pixels, f);
+        FColorPixel* buffer = f_pixels__bufferGetStart(&Sprite->pixels, f);
 
         for(unsigned i = Sprite->pixels.bufferLen; i--; ) {
-            const FPixel pixel = buffer[i];
+            const FColorPixel pixel = buffer[i];
 
             for(unsigned c = NumColors; c--; ) {
                 if(pixel == OldColors[c]) {
@@ -294,12 +294,12 @@ void f_sprite__textureCommit(FSprite* Sprite, unsigned Frame)
                                 &Sprite->pixels, Frame);
 }
 
-const FPixel* f_sprite_pixelsGetBuffer(const FSprite* Sprite, unsigned Frame)
+const FColorPixel* f_sprite_pixelsGetBuffer(const FSprite* Sprite, unsigned Frame)
 {
     return f_pixels__bufferGetStart(&Sprite->pixels, Frame);
 }
 
-FPixel f_sprite_pixelsGetValue(const FSprite* Sprite, unsigned Frame, int X, int Y)
+FColorPixel f_sprite_pixelsGetValue(const FSprite* Sprite, unsigned Frame, int X, int Y)
 {
     return f_pixels__bufferGetValue(&Sprite->pixels, Frame, X, Y);
 }

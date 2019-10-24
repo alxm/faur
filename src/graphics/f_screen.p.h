@@ -22,7 +22,7 @@
 
 #include "graphics/f_sprite.p.h"
 
-extern FPixel* f_screen_pixelsGetBuffer(void);
+extern FColorPixel* f_screen_pixelsGetBuffer(void);
 
 extern FVectorInt f_screen_sizeGet(void);
 extern int f_screen_sizeGetWidth(void);

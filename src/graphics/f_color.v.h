@@ -22,8 +22,8 @@
 
 typedef struct {
     FColorBlend blend, canonicalBlend;
-    FRgb rgb;
-    FPixel pixel;
+    FColorRgb rgb;
+    FColorPixel pixel;
     int alpha;
     bool fillBlit;
     bool fillDraw;
@@ -36,71 +36,71 @@ extern const FPack f_pack__color;
 
 extern FPixelState f__color;
 
-extern FPixel f_color__key;
-extern FPixel f_color__limit;
+extern FColorPixel f_color__key;
+extern FColorPixel f_color__limit;
 
-static inline void f_color__draw_plain(FPixel* Dst, FPixel Pixel)
+static inline void f_color__draw_plain(FColorPixel* Dst, FColorPixel Pixel)
 {
     *Dst = Pixel;
 }
 
-static inline void f_color__draw_rgba(FPixel* Dst, const FRgb* Rgb, int Alpha)
+static inline void f_color__draw_rgba(FColorPixel* Dst, const FColorRgb* Rgb, int Alpha)
 {
-    FRgb rgb = f_pixel_toRgb(*Dst);
+    FColorRgb rgb = f_color_pixelToRgb(*Dst);
 
-    *Dst = f_pixel_fromRgb(rgb.r + (((Rgb->r - rgb.r) * Alpha) >> 8),
-                           rgb.g + (((Rgb->g - rgb.g) * Alpha) >> 8),
-                           rgb.b + (((Rgb->b - rgb.b) * Alpha) >> 8));
+    *Dst = f_color_pixelFromRgb(rgb.r + (((Rgb->r - rgb.r) * Alpha) >> 8),
+                                rgb.g + (((Rgb->g - rgb.g) * Alpha) >> 8),
+                                rgb.b + (((Rgb->b - rgb.b) * Alpha) >> 8));
 }
 
-static inline void f_color__draw_rgb25(FPixel* Dst, const FRgb* Rgb)
+static inline void f_color__draw_rgb25(FColorPixel* Dst, const FColorRgb* Rgb)
 {
-    FRgb rgb = f_pixel_toRgb(*Dst);
+    FColorRgb rgb = f_color_pixelToRgb(*Dst);
 
-    *Dst = f_pixel_fromRgb(rgb.r - (rgb.r >> 2) + (Rgb->r >> 2),
-                           rgb.g - (rgb.g >> 2) + (Rgb->g >> 2),
-                           rgb.b - (rgb.b >> 2) + (Rgb->b >> 2));
+    *Dst = f_color_pixelFromRgb(rgb.r - (rgb.r >> 2) + (Rgb->r >> 2),
+                                rgb.g - (rgb.g >> 2) + (Rgb->g >> 2),
+                                rgb.b - (rgb.b >> 2) + (Rgb->b >> 2));
 }
 
-static inline void f_color__draw_rgb50(FPixel* Dst, const FRgb* Rgb)
+static inline void f_color__draw_rgb50(FColorPixel* Dst, const FColorRgb* Rgb)
 {
-    FRgb rgb = f_pixel_toRgb(*Dst);
+    FColorRgb rgb = f_color_pixelToRgb(*Dst);
 
-    *Dst = f_pixel_fromRgb((rgb.r + Rgb->r) >> 1,
-                           (rgb.g + Rgb->g) >> 1,
-                           (rgb.b + Rgb->b) >> 1);
+    *Dst = f_color_pixelFromRgb((rgb.r + Rgb->r) >> 1,
+                                (rgb.g + Rgb->g) >> 1,
+                                (rgb.b + Rgb->b) >> 1);
 }
 
-static inline void f_color__draw_rgb75(FPixel* Dst, const FRgb* Rgb)
+static inline void f_color__draw_rgb75(FColorPixel* Dst, const FColorRgb* Rgb)
 {
-    FRgb rgb = f_pixel_toRgb(*Dst);
+    FColorRgb rgb = f_color_pixelToRgb(*Dst);
 
-    *Dst = f_pixel_fromRgb((rgb.r >> 2) + Rgb->r - (Rgb->r >> 2),
-                           (rgb.g >> 2) + Rgb->g - (Rgb->g >> 2),
-                           (rgb.b >> 2) + Rgb->b - (Rgb->b >> 2));
+    *Dst = f_color_pixelFromRgb((rgb.r >> 2) + Rgb->r - (Rgb->r >> 2),
+                                (rgb.g >> 2) + Rgb->g - (Rgb->g >> 2),
+                                (rgb.b >> 2) + Rgb->b - (Rgb->b >> 2));
 }
 
-static inline void f_color__draw_inverse(FPixel* Dst)
+static inline void f_color__draw_inverse(FColorPixel* Dst)
 {
-    *Dst = (FPixel)~*Dst;
+    *Dst = (FColorPixel)~*Dst;
 }
 
-static inline void f_color__draw_mod(FPixel* Dst, const FRgb* Rgb)
+static inline void f_color__draw_mod(FColorPixel* Dst, const FColorRgb* Rgb)
 {
-    FRgb rgb = f_pixel_toRgb(*Dst);
+    FColorRgb rgb = f_color_pixelToRgb(*Dst);
 
-    *Dst = f_pixel_fromRgb((rgb.r * Rgb->r) >> 8,
-                           (rgb.g * Rgb->g) >> 8,
-                           (rgb.b * Rgb->b) >> 8);
+    *Dst = f_color_pixelFromRgb((rgb.r * Rgb->r) >> 8,
+                                (rgb.g * Rgb->g) >> 8,
+                                (rgb.b * Rgb->b) >> 8);
 }
 
-static inline void f_color__draw_add(FPixel* Dst, const FRgb* Rgb)
+static inline void f_color__draw_add(FColorPixel* Dst, const FColorRgb* Rgb)
 {
-    FRgb rgb = f_pixel_toRgb(*Dst);
+    FColorRgb rgb = f_color_pixelToRgb(*Dst);
 
-    *Dst = f_pixel_fromRgb(f_math_min(rgb.r + Rgb->r, 255),
-                           f_math_min(rgb.g + Rgb->g, 255),
-                           f_math_min(rgb.b + Rgb->b, 255));
+    *Dst = f_color_pixelFromRgb(f_math_min(rgb.r + Rgb->r, 255),
+                                f_math_min(rgb.g + Rgb->g, 255),
+                                f_math_min(rgb.b + Rgb->b, 255));
 }
 
 #endif // F_INC_GRAPHICS_COLOR_V_H

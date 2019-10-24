@@ -105,7 +105,7 @@ static void scan_line(int Index, FVectorInt ScrP1, FVectorInt ScrP2, FVectorFix 
 
 #define F__BLEND plain
 #define F__FILL Flat
-#define F__BLEND_SETUP const FPixel color = f__color.pixel;
+#define F__BLEND_SETUP const FColorPixel color = f__color.pixel;
 #define F__PIXEL_SETUP
 #define F__PIXEL_PARAMS , color
 #include "platform/graphics/f_software_blit.inc.c"
@@ -117,14 +117,14 @@ static void scan_line(int Index, FVectorInt ScrP1, FVectorInt ScrP2, FVectorFix 
     if(alpha == 0) { \
         return; \
     }
-#define F__PIXEL_SETUP const FRgb rgb = f_pixel_toRgb(*src);
+#define F__PIXEL_SETUP const FColorRgb rgb = f_color_pixelToRgb(*src);
 #define F__PIXEL_PARAMS , &rgb, alpha
 #include "platform/graphics/f_software_blit.inc.c"
 
 #define F__BLEND rgba
 #define F__FILL Flat
 #define F__BLEND_SETUP \
-    const FRgb rgb = f__color.rgb; \
+    const FColorRgb rgb = f__color.rgb; \
     const int alpha = f__color.alpha; \
     if(alpha == 0) { \
         return; \
@@ -136,13 +136,13 @@ static void scan_line(int Index, FVectorInt ScrP1, FVectorInt ScrP2, FVectorFix 
 #define F__BLEND rgb25
 #define F__FILL Data
 #define F__BLEND_SETUP
-#define F__PIXEL_SETUP const FRgb rgb = f_pixel_toRgb(*src);
+#define F__PIXEL_SETUP const FColorRgb rgb = f_color_pixelToRgb(*src);
 #define F__PIXEL_PARAMS , &rgb
 #include "platform/graphics/f_software_blit.inc.c"
 
 #define F__BLEND rgb25
 #define F__FILL Flat
-#define F__BLEND_SETUP const FRgb rgb = f__color.rgb;
+#define F__BLEND_SETUP const FColorRgb rgb = f__color.rgb;
 #define F__PIXEL_SETUP
 #define F__PIXEL_PARAMS , &rgb
 #include "platform/graphics/f_software_blit.inc.c"
@@ -150,13 +150,13 @@ static void scan_line(int Index, FVectorInt ScrP1, FVectorInt ScrP2, FVectorFix 
 #define F__BLEND rgb50
 #define F__FILL Data
 #define F__BLEND_SETUP
-#define F__PIXEL_SETUP const FRgb rgb = f_pixel_toRgb(*src);
+#define F__PIXEL_SETUP const FColorRgb rgb = f_color_pixelToRgb(*src);
 #define F__PIXEL_PARAMS , &rgb
 #include "platform/graphics/f_software_blit.inc.c"
 
 #define F__BLEND rgb50
 #define F__FILL Flat
-#define F__BLEND_SETUP const FRgb rgb = f__color.rgb;
+#define F__BLEND_SETUP const FColorRgb rgb = f__color.rgb;
 #define F__PIXEL_SETUP
 #define F__PIXEL_PARAMS , &rgb
 #include "platform/graphics/f_software_blit.inc.c"
@@ -164,13 +164,13 @@ static void scan_line(int Index, FVectorInt ScrP1, FVectorInt ScrP2, FVectorFix 
 #define F__BLEND rgb75
 #define F__FILL Data
 #define F__BLEND_SETUP
-#define F__PIXEL_SETUP const FRgb rgb = f_pixel_toRgb(*src);
+#define F__PIXEL_SETUP const FColorRgb rgb = f_color_pixelToRgb(*src);
 #define F__PIXEL_PARAMS , &rgb
 #include "platform/graphics/f_software_blit.inc.c"
 
 #define F__BLEND rgb75
 #define F__FILL Flat
-#define F__BLEND_SETUP const FRgb rgb = f__color.rgb;
+#define F__BLEND_SETUP const FColorRgb rgb = f__color.rgb;
 #define F__PIXEL_SETUP
 #define F__PIXEL_PARAMS , &rgb
 #include "platform/graphics/f_software_blit.inc.c"
@@ -192,13 +192,13 @@ static void scan_line(int Index, FVectorInt ScrP1, FVectorInt ScrP2, FVectorFix 
 #define F__BLEND mod
 #define F__FILL Data
 #define F__BLEND_SETUP
-#define F__PIXEL_SETUP const FRgb rgb = f_pixel_toRgb(*src);
+#define F__PIXEL_SETUP const FColorRgb rgb = f_color_pixelToRgb(*src);
 #define F__PIXEL_PARAMS , &rgb
 #include "platform/graphics/f_software_blit.inc.c"
 
 #define F__BLEND mod
 #define F__FILL Flat
-#define F__BLEND_SETUP const FRgb rgb = f__color.rgb;
+#define F__BLEND_SETUP const FColorRgb rgb = f__color.rgb;
 #define F__PIXEL_SETUP
 #define F__PIXEL_PARAMS , &rgb
 #include "platform/graphics/f_software_blit.inc.c"
@@ -206,13 +206,13 @@ static void scan_line(int Index, FVectorInt ScrP1, FVectorInt ScrP2, FVectorFix 
 #define F__BLEND add
 #define F__FILL Data
 #define F__BLEND_SETUP
-#define F__PIXEL_SETUP const FRgb rgb = f_pixel_toRgb(*src);
+#define F__PIXEL_SETUP const FColorRgb rgb = f_color_pixelToRgb(*src);
 #define F__PIXEL_PARAMS , &rgb
 #include "platform/graphics/f_software_blit.inc.c"
 
 #define F__BLEND add
 #define F__FILL Flat
-#define F__BLEND_SETUP const FRgb rgb = f__color.rgb;
+#define F__BLEND_SETUP const FColorRgb rgb = f__color.rgb;
 #define F__PIXEL_SETUP
 #define F__PIXEL_PARAMS , &rgb
 #include "platform/graphics/f_software_blit.inc.c"
@@ -274,7 +274,7 @@ void f_platform_software_blit__uninit(void)
 
 static bool hasTransparency(const FPixels* Pixels, unsigned Frame)
 {
-    const FPixel* buffer = f_pixels__bufferGetStart(Pixels, Frame);
+    const FColorPixel* buffer = f_pixels__bufferGetStart(Pixels, Frame);
 
     for(int i = Pixels->w * Pixels->h; i--; ) {
         if(*buffer++ == f_color__key) {
@@ -291,7 +291,7 @@ static size_t spansBytesNeeded(const FPixels* Pixels, unsigned Frame)
     // (NumSpans << 1 | start draw/transparent), len0, len1, ...
 
     size_t bytesNeeded = 0;
-    const FPixel* buffer = f_pixels__bufferGetStart(Pixels, Frame);
+    const FColorPixel* buffer = f_pixels__bufferGetStart(Pixels, Frame);
 
     for(int y = Pixels->h; y--; ) {
         bytesNeeded += sizeof(unsigned); // total size and initial state
@@ -313,7 +313,7 @@ static size_t spansBytesNeeded(const FPixels* Pixels, unsigned Frame)
 static void spansUpdate(const FPixels* Pixels, unsigned Frame, FPlatformTexture* Texture)
 {
     unsigned* spans = Texture->spans;
-    const FPixel* buffer = f_pixels__bufferGetStart(Pixels, Frame);
+    const FColorPixel* buffer = f_pixels__bufferGetStart(Pixels, Frame);
 
     for(int y = Pixels->h; y--; ) {
         unsigned* lineStart = spans;

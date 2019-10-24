@@ -21,16 +21,16 @@
 FPixelState f__color;
 static FList* g_stateStack;
 
-FPixel f_color__key;
-FPixel f_color__limit;
+FColorPixel f_color__key;
+FColorPixel f_color__limit;
 
 static void f_color__init(void)
 {
     g_stateStack = f_list_new();
     f_color_reset();
 
-    f_color__key = f_pixel_fromHex(F_CONFIG_COLOR_SPRITE_KEY);
-    f_color__limit = f_pixel_fromHex(F_CONFIG_COLOR_SPRITE_BORDER);
+    f_color__key = f_color_pixelFromHex(F_CONFIG_COLOR_SPRITE_KEY);
+    f_color__limit = f_color_pixelFromHex(F_CONFIG_COLOR_SPRITE_BORDER);
 }
 
 static void f_color__uninit(void)
@@ -147,7 +147,7 @@ static void setRgb(int Red, int Green, int Blue)
     f__color.rgb.g = (unsigned)Green & 0xff;
     f__color.rgb.b = (unsigned)Blue & 0xff;
 
-    f__color.pixel = f_pixel_fromRgb(Red, Green, Blue);
+    f__color.pixel = f_color_pixelFromRgb(Red, Green, Blue);
 }
 
 void f_color_baseSetRgb(int Red, int Green, int Blue)
@@ -176,16 +176,16 @@ void f_color_baseSetHex(uint32_t Hexcode)
     f__color.rgb.r = (Hexcode >> 16) & 0xff;
     f__color.rgb.g = (Hexcode >> 8)  & 0xff;
     f__color.rgb.b = (Hexcode)       & 0xff;
-    f__color.pixel = f_pixel_fromHex(Hexcode);
+    f__color.pixel = f_color_pixelFromHex(Hexcode);
 
     #if !F_CONFIG_LIB_RENDER_SOFTWARE
         f_platform_api__renderSetDrawColor();
     #endif
 }
 
-void f_color_baseSetPixel(FPixel Pixel)
+void f_color_baseSetPixel(FColorPixel Pixel)
 {
-    f__color.rgb = f_pixel_toRgb(Pixel);
+    f__color.rgb = f_color_pixelToRgb(Pixel);
     f__color.pixel = Pixel;
 
     #if !F_CONFIG_LIB_RENDER_SOFTWARE

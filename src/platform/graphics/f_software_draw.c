@@ -45,11 +45,11 @@ static bool cohen_sutherland_clip(int* X1, int* Y1, int* X2, int* Y2)
     #define F__OUT_TOP   4
     #define F__OUT_DOWN  8
 
-    #define outcode(o, x, y)                  \
-    {                                         \
+    #define outcode(o, x, y)                     \
+    {                                            \
         if(x < clipX1) o |= F__OUT_LEFT;         \
         else if(x >= clipX2) o |= F__OUT_RIGHT;  \
-                                              \
+                                                 \
         if(y < clipY1) o |= F__OUT_TOP;          \
         else if(y >= clipY2) o |= F__OUT_DOWN;   \
     }
@@ -168,7 +168,7 @@ do {                                                                        \
         }                                                                   \
     }                                                                       \
                                                                             \
-    FPixel* dst = Buffer;                                                   \
+    FColorPixel* dst = Buffer;                                              \
                                                                             \
     if((PrimaryOnScreen) && (SecondaryOnScreen)) {                          \
         while(PrimaryCoord < SecondaryCoord && (PrimaryOnScreen)) {         \
@@ -196,13 +196,13 @@ do {                                                                        \
 #define F__PIXEL_DRAW(Dst) F_GLUE2(f_color__draw_, F__BLEND)(Dst F__PIXEL_PARAMS)
 
 #define F__BLEND plain
-#define F__BLEND_SETUP const FPixel color = f__color.pixel;
+#define F__BLEND_SETUP const FColorPixel color = f__color.pixel;
 #define F__PIXEL_PARAMS , color
 #include "platform/graphics/f_software_draw.inc.c"
 
 #define F__BLEND rgba
 #define F__BLEND_SETUP \
-    const FRgb rgb = f__color.rgb; \
+    const FColorRgb rgb = f__color.rgb; \
     const int alpha = f__color.alpha; \
     if(alpha == 0) { \
         return; \
@@ -211,17 +211,17 @@ do {                                                                        \
 #include "platform/graphics/f_software_draw.inc.c"
 
 #define F__BLEND rgb25
-#define F__BLEND_SETUP const FRgb rgb = f__color.rgb;
+#define F__BLEND_SETUP const FColorRgb rgb = f__color.rgb;
 #define F__PIXEL_PARAMS , &rgb
 #include "platform/graphics/f_software_draw.inc.c"
 
 #define F__BLEND rgb50
-#define F__BLEND_SETUP const FRgb rgb = f__color.rgb;
+#define F__BLEND_SETUP const FColorRgb rgb = f__color.rgb;
 #define F__PIXEL_PARAMS , &rgb
 #include "platform/graphics/f_software_draw.inc.c"
 
 #define F__BLEND rgb75
-#define F__BLEND_SETUP const FRgb rgb = f__color.rgb;
+#define F__BLEND_SETUP const FColorRgb rgb = f__color.rgb;
 #define F__PIXEL_PARAMS , &rgb
 #include "platform/graphics/f_software_draw.inc.c"
 
@@ -231,12 +231,12 @@ do {                                                                        \
 #include "platform/graphics/f_software_draw.inc.c"
 
 #define F__BLEND mod
-#define F__BLEND_SETUP const FRgb rgb = f__color.rgb;
+#define F__BLEND_SETUP const FColorRgb rgb = f__color.rgb;
 #define F__PIXEL_PARAMS , &rgb
 #include "platform/graphics/f_software_draw.inc.c"
 
 #define F__BLEND add
-#define F__BLEND_SETUP const FRgb rgb = f__color.rgb;
+#define F__BLEND_SETUP const FColorRgb rgb = f__color.rgb;
 #define F__PIXEL_PARAMS , &rgb
 #include "platform/graphics/f_software_draw.inc.c"
 

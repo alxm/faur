@@ -30,7 +30,7 @@ static struct {
     FEvent event;
     FFadeOpId op;
     FFixu angle, angleInc;
-    FPixel color;
+    FColorPixel color;
     FSprite* oldScreen;
 } g_fade = {
     .op = F__FADE_INVALID,
