@@ -181,12 +181,16 @@ void f_sprite_free(FSprite* Sprite)
 
 void f_sprite_blit(const FSprite* Sprite, unsigned Frame, int X, int Y)
 {
+    Frame %= Sprite->pixels.framesNum;
+
     f_platform_api__textureBlit(
         Sprite->textures[Frame], &Sprite->pixels, Frame, X, Y);
 }
 
 void f_sprite_blitEx(const FSprite* Sprite, unsigned Frame, int X, int Y, FFix Scale, unsigned Angle, FFix CenterX, FFix CenterY)
 {
+    Frame %= Sprite->pixels.framesNum;
+
     CenterX = f_math_clamp(CenterX, -F_FIX_ONE, F_FIX_ONE);
     CenterY = f_math_clamp(CenterY, -F_FIX_ONE, F_FIX_ONE);
 
