@@ -1,5 +1,5 @@
 #
-# make/global/defs is included by every platform Makefile on line 1
+# make/global/defs.mk is included by every platform Makefile on line 1
 #
 F_CONFIG_BUILD_PLATFORM := \
     $(basename $(notdir \
