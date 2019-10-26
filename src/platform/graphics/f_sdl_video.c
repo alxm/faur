@@ -204,7 +204,7 @@ void f_platform_api__screenInit(void)
 
             f_pixels__bufferSet(&g_pixels,
                                 g_sdlScreen->pixels,
-                                g_sdlScreen->pitch / sizeof(FColorPixel),
+                                g_sdlScreen->pitch / (int)sizeof(FColorPixel),
                                 g_sdlScreen->h);
         #endif
     #elif F_CONFIG_LIB_SDL == 2
@@ -494,7 +494,7 @@ void f_platform_api__screenShow(void)
 
             f_pixels__bufferSet(&g_pixels,
                                 g_sdlScreen->pixels,
-                                g_sdlScreen->pitch / sizeof(FColorPixel),
+                                g_sdlScreen->pitch / (int)sizeof(FColorPixel),
                                 g_sdlScreen->h);
         #endif
     #elif F_CONFIG_LIB_SDL == 2

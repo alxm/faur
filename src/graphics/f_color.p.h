@@ -60,12 +60,12 @@ typedef struct {
     #endif
 #endif
 
-#if F_CONFIG_SCREEN_FORMAT_RGBA
+#if F_CONFIG_SCREEN_ORDER_RGBA
     #define F__PX_SHIFT_A (0)
     #define F__PX_SHIFT_B (F__PX_BITS_A)
     #define F__PX_SHIFT_G (F__PX_BITS_A + F__PX_BITS_B)
     #define F__PX_SHIFT_R (F__PX_BITS_A + F__PX_BITS_B + F__PX_BITS_G)
-#elif F_CONFIG_SCREEN_FORMAT_ABGR
+#elif F_CONFIG_SCREEN_ORDER_ABGR
     #define F__PX_SHIFT_R (0)
     #define F__PX_SHIFT_G (F__PX_BITS_R)
     #define F__PX_SHIFT_B (F__PX_BITS_R + F__PX_BITS_G)
@@ -97,13 +97,13 @@ static inline FColorPixel f_color_pixelFromRgb(int Red, int Green, int Blue)
 
 static inline FColorPixel f_color_pixelFromHex(uint32_t Hexcode)
 {
-    #if F_CONFIG_SCREEN_BPP == 16 || F_CONFIG_SCREEN_FORMAT_ABGR
+    #if F_CONFIG_SCREEN_BPP == 32 && F_CONFIG_SCREEN_ORDER_RGBA
+        return (FColorPixel)((Hexcode & 0xffffff) << F__PX_BITS_A);
+    #else
         return (FColorPixel)
             (((((Hexcode >> 16) & 0xff) >> F__PX_PACK_R) << F__PX_SHIFT_R) |
              ((((Hexcode >> 8)  & 0xff) >> F__PX_PACK_G) << F__PX_SHIFT_G) |
              ((((Hexcode)       & 0xff) >> F__PX_PACK_B) << F__PX_SHIFT_B));
-    #elif F_CONFIG_SCREEN_BPP == 32 && F_CONFIG_SCREEN_FORMAT_RGBA
-        return (FColorPixel)((Hexcode & 0xffffff) << F__PX_BITS_A);
     #endif
 }
 
