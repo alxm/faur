@@ -28,7 +28,7 @@
 #endif
 
 #if F_CONFIG_SYSTEM_EMSCRIPTEN && F_CONFIG_LIB_SDL == 1
-    #define F__SOUND_NO_VOLUME_ADJUSTMENT 1
+    #define F__SOUND_LIMITED_SUPPORT 1
 #endif
 
 struct FPlatformSample {
@@ -47,11 +47,15 @@ static int g_currentSampleChannel;
 
 void f_platform_sdl_sound__init(void)
 {
-    SDL_version cv, rv = *Mix_Linked_Version();
-    SDL_MIXER_VERSION(&cv);
+    #if !F__SOUND_LIMITED_SUPPORT
+        SDL_version cv, rv = *Mix_Linked_Version();
+        SDL_MIXER_VERSION(&cv);
 
-    f_out__info("Built with SDL_mixer %d.%d.%d", cv.major, cv.minor, cv.patch);
-    f_out__info("Running on SDL_mixer %d.%d.%d", rv.major, rv.minor, rv.patch);
+        f_out__info(
+            "Built with SDL_mixer %d.%d.%d", cv.major, cv.minor, cv.patch);
+        f_out__info(
+            "Running on SDL_mixer %d.%d.%d", rv.major, rv.minor, rv.patch);
+    #endif
 
     if(SDL_InitSubSystem(SDL_INIT_AUDIO) != 0) {
         F__FATAL("SDL_InitSubSystem: %s", SDL_GetError());
@@ -143,7 +147,7 @@ void f_platform_api__soundMusicVolumeSet(int Volume)
         return;
     }
 
-    #if F__SOUND_NO_VOLUME_ADJUSTMENT
+    #if F__SOUND_LIMITED_SUPPORT
         F_UNUSED(Volume);
     #else
         Mix_VolumeMusic(Volume);
@@ -262,7 +266,7 @@ void f_platform_api__soundSampleVolumeSet(FPlatformSample* Sample, int Volume)
         return;
     }
 
-    #if F__SOUND_NO_VOLUME_ADJUSTMENT
+    #if F__SOUND_LIMITED_SUPPORT
         F_UNUSED(Sample);
         F_UNUSED(Volume);
     #else
@@ -277,7 +281,7 @@ void f_platform_api__soundSampleVolumeSetAll(int Volume)
         return;
     }
 
-    #if F__SOUND_NO_VOLUME_ADJUSTMENT
+    #if F__SOUND_LIMITED_SUPPORT
         F_UNUSED(Volume);
     #else
         Mix_Volume(-1, Volume);
