@@ -88,22 +88,22 @@ void f_platform_sdl_video__uninit(void)
 #if F_CONFIG_LIB_SDL == 1
 static bool sdl1ScreenSet(int Width, int Height, uint32_t Flags)
 {
-    if(SDL_VideoModeOK(Width, Height, F_CONFIG_SCREEN_BPP, Flags) == 0) {
+    if(SDL_VideoModeOK(Width, Height, F_COLOR_BPP, Flags) == 0) {
         f_out__error("SDL_VideoModeOK(%d, %d, %d): Mode not available",
                      Width,
                      Height,
-                     F_CONFIG_SCREEN_BPP);
+                     F_COLOR_BPP);
 
         return false;
     }
 
-    g_sdlScreen = SDL_SetVideoMode(Width, Height, F_CONFIG_SCREEN_BPP, Flags);
+    g_sdlScreen = SDL_SetVideoMode(Width, Height, F_COLOR_BPP, Flags);
 
     if(g_sdlScreen == NULL) {
         F__FATAL("SDL_SetVideoMode(%d, %d, %d): %s",
                  Width,
                  Height,
-                 F_CONFIG_SCREEN_BPP,
+                 F_COLOR_BPP,
                  SDL_GetError());
     }
 
@@ -229,6 +229,7 @@ void f_platform_api__screenInit(void)
                                        g_size.x * F_CONFIG_SCREEN_ZOOM,
                                        g_size.y * F_CONFIG_SCREEN_ZOOM,
                                        windowFlags);
+
         if(g_sdlWindow == NULL) {
             F__FATAL("SDL_CreateWindow: %s", SDL_GetError());
         }
@@ -267,6 +268,14 @@ void f_platform_api__screenInit(void)
         } else {
             f_out__info("Using SDL2 software renderer");
         }
+
+        for(unsigned i = 0; i < info.num_texture_formats; i++) {
+            f_out__info("    Supports %s",
+                        SDL_GetPixelFormatName(info.texture_formats[i]));
+        }
+
+        f_out__info("       Using %s",
+                    SDL_GetPixelFormatName(F_SDL__PIXEL_FORMAT));
 
         g_vsync = info.flags & SDL_RENDERER_PRESENTVSYNC;
 

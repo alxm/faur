@@ -23,19 +23,26 @@ from PIL import Image
 
 from utils.tool import Tool
 
-g_tool = Tool('Image.file GenFile.c/.h VarName Bpp ColorKeyHex')
+g_tool = Tool('Image.file GenFile.c/.h VarName ColorFormat ColorKeyHex')
 
 def main():
     image_file = g_tool.get_arg('Image.file')
     target_file = g_tool.get_arg('GenFile.c/.h')
     var_name = g_tool.sanitize_c_var(g_tool.get_arg('VarName'))
-    bpp = int(g_tool.get_arg('Bpp'))
+    color_fmt = g_tool.get_arg('ColorFormat')
     color_key = g_tool.get_arg('ColorKeyHex')
 
-    supported_bpp = [16, 32]
+    supported_fmt = [
+        'F_COLOR_FORMAT_RGB_565',
+        'F_COLOR_FORMAT_RGBA_5551',
+        'F_COLOR_FORMAT_RGBA_8888',
+        'F_COLOR_FORMAT_ARGB_8888',
+        'F_COLOR_FORMAT_ABGR_8888',
+    ]
 
-    if bpp not in supported_bpp:
-        g_tool.usage('Bpp {} not supported, only {}'.format(bpp, supported_bpp))
+    if color_fmt not in supported_fmt:
+        g_tool.usage('ColorFormat {} not supported, only {}'
+                        .format(color_fmt, supported_fmt))
 
     if not re.match('^0[xX][0-9a-fA-F]{6}$', color_key):
         g_tool.usage('ColorKeyHex {} not a 0xRRGGBB hex'.format(color_key))
@@ -51,7 +58,7 @@ def main():
     if target_file.endswith('.h'):
         content = process_h(var_name)
     elif target_file.endswith('.c'):
-        content = process_c(var_name, image_file, bpp, color_key_pixel)
+        content = process_c(var_name, image_file, color_fmt, color_key_pixel)
     else:
         g_tool.usage('GenFile must be a .c or .h file')
 
@@ -66,7 +73,7 @@ extern const FSprite* const f_gfx_{var};
 
     return content
 
-def process_c(var_name, image_file, bpp, color_key):
+def process_c(var_name, image_file, color_fmt, color_key):
     image = Image.open(image_file).convert('RGB')
 
     width, height = image.size
@@ -103,9 +110,10 @@ def process_c(var_name, image_file, bpp, color_key):
 
             spans_fmt += spans_fmt2
             spans_arrays += spans_arrays2
-
-            pixels_fmt += '\n    ' + process_pixels(frame_pixels, bpp) + '\n'
             frames_num += 1
+            pixels_fmt += """
+    {}
+""".format(process_pixels(frame_pixels, color_fmt))
 
     content = """\
 #include <faur.v.h>
@@ -168,7 +176,7 @@ def spans(pixels, width, height, color_key):
 
     return spans
 
-def process_spans(frame_pixels, frame_width, frame_height, color_key, var_name, frames_num):
+def process_spans(frame_pixels, frame_width, frame_height, color_key, var_name, frame_number):
     spans_data = spans(frame_pixels, frame_width, frame_height, color_key)
 
     spans_fmt = """
@@ -177,30 +185,36 @@ static const unsigned f_gfx__spans__{var}__{num}[] = {{
     {spans_data}
 }};\
 """.format(var = var_name,
-           num = frames_num,
+           num = frame_number,
            spans_data = ', '.join([str(s) for s in spans_data]))
 
     spans_arrays = """
         (FPlatformTexture*)f_gfx__spans__{var}__{num},\
 """.format(var = var_name,
-           num = frames_num)
+           num = frame_number)
 
     return spans_fmt, spans_arrays
 
-def process_pixels(frame_pixels, bpp):
+def process_pixels(frame_pixels, color_fmt):
     pixels_hex = []
 
-    if bpp == 16:
-        for p in frame_pixels:
-            r, g, b = p
-            packed = ((r >> 3) << 11) | ((g >> 2) << 5) | (b >> 3)
+    for p in frame_pixels:
+        r, g, b = p
 
+        if color_fmt == 'F_COLOR_FORMAT_RGB_565':
+            packed = ((r >> 3) << 11) | ((g >> 2) << 5) | ((b >> 3) << 0)
             pixels_hex.append('0x{:0>4x}'.format(packed))
-    elif bpp == 32:
-        for p in frame_pixels:
-            r, g, b = p
+        elif color_fmt == 'F_COLOR_FORMAT_RGBA_5551':
+            packed = ((r >> 3) << 11) | ((g >> 3) << 6) | ((b >> 3) << 1)
+            pixels_hex.append('0x{:0>4x}'.format(packed))
+        elif color_fmt == 'F_COLOR_FORMAT_RGBA_8888':
             packed = (r << 24) | (g << 16) | (b << 8)
-
+            pixels_hex.append('0x{:0>8x}'.format(packed))
+        elif color_fmt == 'F_COLOR_FORMAT_ARGB_8888':
+            packed = (r << 16) | (g << 8) | (b << 0)
+            pixels_hex.append('0x{:0>8x}'.format(packed))
+        elif color_fmt == 'F_COLOR_FORMAT_ABGR_8888':
+            packed = (b << 16) | (g << 8) | (r << 0)
             pixels_hex.append('0x{:0>8x}'.format(packed))
 
     return ', '.join(pixels_hex) + ','

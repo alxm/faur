@@ -206,7 +206,7 @@ void f_console__draw(void)
         f_font_printf("%dx%d:%d x%d %c\n",
                       f_screen_sizeGetWidth(),
                       f_screen_sizeGetHeight(),
-                      F_CONFIG_SCREEN_BPP,
+                      F_COLOR_BPP,
                       f_platform_api__screenZoomGet(),
                       f_platform_api__screenFullscreenGet() ? 'F' : 'W');
         f_font_printf(

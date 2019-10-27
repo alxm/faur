@@ -47,7 +47,8 @@ FPlatformTexture* f_platform_api__textureNew(const FPixels* Pixels, unsigned Fra
                 for(int i = Pixels->w * Pixels->h; i--; ) {
                     if(original[i] != f_color__key) {
                         // Set full alpha for non-transparent pixel
-                        buffer[i] |= (FColorPixel)F__PX_MASK_A << F__PX_SHIFT_A;
+                        buffer[i] |= (FColorPixel)
+                            ((1 << F__PX_BITS_A) - 1) << F__PX_SHIFT_A;
                     }
                 }
             } break;
