@@ -25,6 +25,44 @@ from utils.tool import Tool
 
 g_tool = Tool('Image.file GenFile.c/.h VarName ColorFormat ColorKeyHex')
 
+def formatRgb565(Pixel):
+    r, g, b = Pixel
+    packed = ((r >> 3) << 11) | ((g >> 2) << 5) | ((b >> 3) << 0)
+
+    return '0x{:0>4x}'.format(packed)
+
+def formatRgba5551(Pixel):
+    r, g, b = Pixel
+    packed = ((r >> 3) << 11) | ((g >> 3) << 6) | ((b >> 3) << 1)
+
+    return '0x{:0>4x}'.format(packed)
+
+def formatRgba8888(Pixel):
+    r, g, b = Pixel
+    packed = (r << 24) | (g << 16) | (b << 8)
+
+    return '0x{:0>8x}'.format(packed)
+
+def formatArgb8888(Pixel):
+    r, g, b = Pixel
+    packed = (r << 16) | (g << 8) | (b << 0)
+
+    return '0x{:0>8x}'.format(packed)
+
+def formatAbgr8888(Pixel):
+    r, g, b = Pixel
+    packed = (b << 16) | (g << 8) | (r << 0)
+
+    return '0x{:0>8x}'.format(packed)
+
+g_formats = {
+    'F_COLOR_FORMAT_RGB_565': formatRgb565,
+    'F_COLOR_FORMAT_RGBA_5551': formatRgba5551,
+    'F_COLOR_FORMAT_RGBA_8888': formatRgba8888,
+    'F_COLOR_FORMAT_ARGB_8888': formatArgb8888,
+    'F_COLOR_FORMAT_ABGR_8888': formatAbgr8888,
+}
+
 def main():
     image_file = g_tool.get_arg('Image.file')
     target_file = g_tool.get_arg('GenFile.c/.h')
@@ -32,15 +70,7 @@ def main():
     color_fmt = g_tool.get_arg('ColorFormat')
     color_key = g_tool.get_arg('ColorKeyHex')
 
-    supported_fmt = [
-        'F_COLOR_FORMAT_RGB_565',
-        'F_COLOR_FORMAT_RGBA_5551',
-        'F_COLOR_FORMAT_RGBA_8888',
-        'F_COLOR_FORMAT_ARGB_8888',
-        'F_COLOR_FORMAT_ABGR_8888',
-    ]
-
-    if color_fmt not in supported_fmt:
+    if color_fmt not in g_formats:
         g_tool.usage('ColorFormat {} not supported, only {}'
                         .format(color_fmt, supported_fmt))
 
@@ -88,10 +118,7 @@ def process_c(var_name, image_file, color_fmt, color_key):
         frame_width = width
         frame_height = height
 
-    frames_num = 0
-    pixels_fmt = ''
-    spans_fmt = ''
-    spans_arrays = ''
+    frames_pixels = []
 
     for starty in range(0, height, frame_height):
         for startx in range(0, width, frame_width):
@@ -101,24 +128,52 @@ def process_c(var_name, image_file, color_fmt, color_key):
                 for x in range(startx, startx + frame_width):
                     frame_pixels.append(pixels[x, y])
 
-            spans_fmt2, spans_arrays2 = process_spans(frame_pixels,
-                                                      frame_width,
-                                                      frame_height,
-                                                      color_key,
-                                                      var_name,
-                                                      frames_num)
+            frames_pixels.append(frame_pixels)
 
-            spans_fmt += spans_fmt2
-            spans_arrays += spans_arrays2
-            frames_num += 1
-            pixels_fmt += """
-    {}
-""".format(process_pixels(frame_pixels, color_fmt))
+    pixel_buffers = ''
+    span_buffers = ''
+    span_vars = ''
+
+    for fmt in g_formats:
+        pixels_fmt = ''
+
+        for frame_pixels in frames_pixels:
+            pixels_fmt += '        '
+
+            for pixel in frame_pixels:
+                pixels_fmt += '{}, '.format(g_formats[fmt](pixel))
+
+            pixels_fmt += '\n'
+
+        pixel_buffers += """\
+    #if F_CONFIG_SCREEN_FORMAT == {fmt}
+{pixel_buffer}    #endif
+""".format(fmt = fmt, pixel_buffer = pixels_fmt)
+
+    for frame_index, frame_pixels in enumerate(frames_pixels):
+        spans = spans_make(frame_pixels, frame_width, frame_height, color_key)
+
+        span_buffers += """\
+static const unsigned f_gfx__spans__{var}__{num}[] = {{
+    {spans_data}
+}};
+""".format(var = var_name,
+           num = frame_index,
+           spans_data = ', '.join([str(s) for s in spans]))
+
+        span_vars += """\
+            (FPlatformTexture*)f_gfx__spans__{var}__{num},
+""".format(var = var_name,
+               num = frame_index)
 
     content = """\
 #include <faur.v.h>
 
-static const FColorPixel f_gfx__buffer__{var}[{width} * {height} * {frames_num}] = {{{pixels}}};{spans}
+static const FColorPixel f_gfx__buffer__{var}[{width} * {height} * {frames_num}] = {{
+{pixel_buffers}}};
+
+#if F_CONFIG_LIB_RENDER_SOFTWARE
+{span_buffers}#endif
 
 static const struct {{
     FPixels pixels;
@@ -133,7 +188,9 @@ static const struct {{
         F_PIXELS__CONST,
         (FColorPixel*)f_gfx__buffer__{var},
     }},
-    {{{textures}
+    {{
+        #if F_CONFIG_LIB_RENDER_SOFTWARE
+{span_vars}        #endif
     }},
 }};
 
@@ -141,14 +198,14 @@ const FSprite* const f_gfx_{var} = (const FSprite*)&f_gfx__sprite__{var};
 """.format(var = var_name,
            width = frame_width,
            height = frame_height,
-           frames_num = frames_num,
-           pixels = pixels_fmt,
-           spans = spans_fmt,
-           textures = spans_arrays)
+           frames_num = len(frames_pixels),
+           pixel_buffers = pixel_buffers,
+           span_buffers = span_buffers,
+           span_vars = span_vars)
 
     return content
 
-def spans(pixels, width, height, color_key):
+def spans_make(pixels, width, height, color_key):
     # Spans format for each scanline:
     # (NumSpans << 1 | start draw/transparent), len0, len1, ...
     spans = []
@@ -175,49 +232,6 @@ def spans(pixels, width, height, color_key):
         spans.append(span_length) # record the last span's length
 
     return spans
-
-def process_spans(frame_pixels, frame_width, frame_height, color_key, var_name, frame_number):
-    spans_data = spans(frame_pixels, frame_width, frame_height, color_key)
-
-    spans_fmt = """
-
-static const unsigned f_gfx__spans__{var}__{num}[] = {{
-    {spans_data}
-}};\
-""".format(var = var_name,
-           num = frame_number,
-           spans_data = ', '.join([str(s) for s in spans_data]))
-
-    spans_arrays = """
-        (FPlatformTexture*)f_gfx__spans__{var}__{num},\
-""".format(var = var_name,
-           num = frame_number)
-
-    return spans_fmt, spans_arrays
-
-def process_pixels(frame_pixels, color_fmt):
-    pixels_hex = []
-
-    for p in frame_pixels:
-        r, g, b = p
-
-        if color_fmt == 'F_COLOR_FORMAT_RGB_565':
-            packed = ((r >> 3) << 11) | ((g >> 2) << 5) | ((b >> 3) << 0)
-            pixels_hex.append('0x{:0>4x}'.format(packed))
-        elif color_fmt == 'F_COLOR_FORMAT_RGBA_5551':
-            packed = ((r >> 3) << 11) | ((g >> 3) << 6) | ((b >> 3) << 1)
-            pixels_hex.append('0x{:0>4x}'.format(packed))
-        elif color_fmt == 'F_COLOR_FORMAT_RGBA_8888':
-            packed = (r << 24) | (g << 16) | (b << 8)
-            pixels_hex.append('0x{:0>8x}'.format(packed))
-        elif color_fmt == 'F_COLOR_FORMAT_ARGB_8888':
-            packed = (r << 16) | (g << 8) | (b << 0)
-            pixels_hex.append('0x{:0>8x}'.format(packed))
-        elif color_fmt == 'F_COLOR_FORMAT_ABGR_8888':
-            packed = (b << 16) | (g << 8) | (r << 0)
-            pixels_hex.append('0x{:0>8x}'.format(packed))
-
-    return ', '.join(pixels_hex) + ','
 
 if __name__ == '__main__':
     main()
