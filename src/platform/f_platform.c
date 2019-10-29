@@ -46,14 +46,14 @@ static void f_platform__init(void)
 
     #if F_CONFIG_LIB_RENDER_SOFTWARE
         #if F_CONFIG_SCREEN_ALLOCATE
-            f_out__info("Software graphics (virtual buffer)");
+            f_out__info("Using S/W graphics (virtual buffer)");
         #else
-            f_out__info("Software graphics (raw buffer)");
+            f_out__info("Using S/W graphics (raw buffer)");
         #endif
 
         f_platform_software_blit__init();
     #elif F_CONFIG_LIB_RENDER_SDL
-        f_out__info("SDL graphics");
+        f_out__info("Using SDL graphics");
     #endif
 }
 
