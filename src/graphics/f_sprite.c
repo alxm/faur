@@ -170,6 +170,19 @@ void f_sprite_free(FSprite* Sprite)
         return;
     }
 
+    if(F_FLAGS_TEST_ANY(Sprite->pixels.flags, F_PIXELS__CONST)) {
+        #if !F_CONFIG_LIB_RENDER_SOFTWARE
+            for(unsigned f = Sprite->pixels.framesNum; f--; ) {
+                f_platform_api__textureFree(Sprite->textures[f]);
+
+                // Sprite may be re-used later
+                Sprite->textures[f] = NULL;
+            }
+        #endif
+
+        return;
+    }
+
     for(unsigned f = Sprite->pixels.framesNum; f--; ) {
         f_platform_api__textureFree(Sprite->textures[f]);
     }
@@ -179,8 +192,24 @@ void f_sprite_free(FSprite* Sprite)
     f_mem_free(Sprite);
 }
 
+#if !F_CONFIG_LIB_RENDER_SOFTWARE
+static void lazyInitTextures(FSprite* Sprite)
+{
+    if(Sprite->textures[0] == NULL) {
+        for(unsigned f = Sprite->pixels.framesNum; f--; ) {
+            Sprite->textures[f] =
+                f_platform_api__textureNew(&Sprite->pixels, f);
+        }
+    }
+}
+#endif
+
 void f_sprite_blit(const FSprite* Sprite, unsigned Frame, int X, int Y)
 {
+    #if !F_CONFIG_LIB_RENDER_SOFTWARE
+        lazyInitTextures((FSprite*)Sprite);
+    #endif
+
     Frame %= Sprite->pixels.framesNum;
 
     f_platform_api__textureBlit(
@@ -189,6 +218,10 @@ void f_sprite_blit(const FSprite* Sprite, unsigned Frame, int X, int Y)
 
 void f_sprite_blitEx(const FSprite* Sprite, unsigned Frame, int X, int Y, FFix Scale, unsigned Angle, FFix CenterX, FFix CenterY)
 {
+    #if !F_CONFIG_LIB_RENDER_SOFTWARE
+        lazyInitTextures((FSprite*)Sprite);
+    #endif
+
     Frame %= Sprite->pixels.framesNum;
 
     CenterX = f_math_clamp(CenterX, -F_FIX_ONE, F_FIX_ONE);

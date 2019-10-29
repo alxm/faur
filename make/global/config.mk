@@ -217,14 +217,6 @@ F_CONFIG_LIB_SDL ?= 0
 F_CONFIG_LIB_SDL_GAMEPADMAP ?= gamecontrollerdb.txt
 F_CONFIG_LIB_SDL_TIME ?= 0
 
-ifneq ($(F_CONFIG_PATH_GFX), )
-    F_CONFIG_LIB_RENDER ?= SOFTWARE
-
-    ifneq ($(F_CONFIG_LIB_RENDER), SOFTWARE)
-        $(error F_CONFIG_PATH_GFX requires F_CONFIG_LIB_RENDER = SOFTWARE)
-    endif
-endif
-
 ifeq ($(F_CONFIG_LIB_SDL), 2)
     F_CONFIG_LIB_RENDER ?= SDL
 else
