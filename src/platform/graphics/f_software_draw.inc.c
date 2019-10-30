@@ -40,7 +40,7 @@ static void F__FUNC_NAME(vline)(int X, int Y1, int Y2)
 {
     F__BLEND_SETUP;
 
-    const int screenw = f__screen.pixels->w;
+    const int screenw = f__screen.pixels->size.x;
     FColorPixel* dst = f_screen__bufferGetFrom(X, Y1);
 
     for(int i = Y2 - Y1 + 1; i--; dst += screenw) {
@@ -78,7 +78,7 @@ static void F__FUNC_NAME(line)(int X1, int Y1, int X2, int Y2)
         const int xinc2 = (denominator == deltax) ? 0 : xinct;
         const int yinc2 = (denominator == deltax) ? yinct : 0;
 
-        const int screenw = f__screen.pixels->w;
+        const int screenw = f__screen.pixels->size.x;
         FColorPixel* dst1 = f_screen__bufferGetFrom(X1, Y1);
         FColorPixel* dst2 = f_screen__bufferGetFrom(X2, Y2);
 
@@ -133,7 +133,7 @@ static void F__FUNC_NAME(rectangle_fill)(int X, int Y, int Width, int Height)
     F__BLEND_SETUP;
 
     FColorPixel* pixels = f_screen__bufferGetFrom(X, Y);
-    const int screenw = f__screen.pixels->w;
+    const int screenw = f__screen.pixels->size.x;
 
     for(int i = Height; i--; pixels += screenw) {
         FColorPixel* dst = pixels;
@@ -170,7 +170,7 @@ static void F__FUNC_NAME(circle_noclip_nofill)(int X, int Y, int Radius)
     const int q3X = X - 1, q3Y = Y;
     const int q4X = X,     q4Y = Y;
 
-    const int width = f__screen.pixels->w;
+    const int width = f__screen.pixels->size.x;
     FColorPixel* const pixels = f_screen__bufferGetFrom(0, 0);
 
     FColorPixel* oct1 = pixels + q1Y * width + q1X + Radius;
@@ -309,7 +309,7 @@ static void F__FUNC_NAME(circle_clip_nofill)(int X, int Y, int Radius)
     const int q3X = X - 1, q3Y = Y;
     const int q4X = X,     q4Y = Y;
 
-    const int width = f__screen.pixels->w;
+    const int width = f__screen.pixels->size.x;
     FColorPixel* const pixels = f_screen__bufferGetFrom(0, 0);
 
     const int clipX1 = f__screen.clipX;

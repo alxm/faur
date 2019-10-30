@@ -198,8 +198,8 @@ void f_png__write(const char* Path, const FPixels* Pixels, unsigned Frame, char*
         goto cleanUp;
     }
 
-    unsigned width = (unsigned)Pixels->w;
-    unsigned height = (unsigned)Pixels->h;
+    unsigned width = (unsigned)Pixels->size.x;
+    unsigned height = (unsigned)Pixels->size.y;
 
     #define COLOR_CHANNELS 3
     rows = f_mem_malloc(height * sizeof(png_bytep));

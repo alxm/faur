@@ -29,8 +29,8 @@ FPixels* f_pixels__new(int W, int H, unsigned Frames, FPixelsFlags Flags)
 
 void f_pixels__init(FPixels* Pixels, int W, int H, unsigned Frames, FPixelsFlags Flags)
 {
-    Pixels->w = W;
-    Pixels->h = H;
+    Pixels->size.x = W;
+    Pixels->size.y = H;
     Pixels->framesNum = Frames;
     Pixels->flags = Flags;
 
@@ -87,18 +87,18 @@ void f_pixels__copyFrameEx(const FPixels* Dst, unsigned DstFrame, const FPixels*
     const FColorPixel* src = f_pixels__bufferGetFrom(
                                 SrcPixels, SrcFrame, SrcX, SrcY);
 
-    for(int i = Dst->h; i--; ) {
-        memcpy(dst, src, (unsigned)Dst->w * sizeof(FColorPixel));
+    for(int i = Dst->size.y; i--; ) {
+        memcpy(dst, src, (unsigned)Dst->size.x * sizeof(FColorPixel));
 
-        src += SrcPixels->w;
-        dst += Dst->w;
+        src += SrcPixels->size.x;
+        dst += Dst->size.x;
     }
 }
 
 void f_pixels__bufferSet(FPixels* Pixels, FColorPixel* Buffer, int W, int H)
 {
-    Pixels->w = W;
-    Pixels->h = H;
+    Pixels->size.x = W;
+    Pixels->size.y = H;
     Pixels->buffer = Buffer;
     Pixels->bufferLen = (unsigned)(W * H);
     Pixels->bufferSize = Pixels->bufferLen * (unsigned)sizeof(FColorPixel);
@@ -114,14 +114,14 @@ void f_pixels__fill(const FPixels* Pixels, unsigned Frame, FColorPixel Value)
 {
     FColorPixel* buffer = f_pixels__bufferGetStart(Pixels, Frame);
 
-    for(int i = Pixels->w * Pixels->h; i--; ) {
+    for(int i = Pixels->size.x * Pixels->size.y; i--; ) {
         *buffer++ = Value;
     }
 }
 
 static int findNextVerticalEdge(const FPixels* Pixels, unsigned Frame, int StartX, int StartY, int* EdgeX)
 {
-    for(int x = StartX + *EdgeX + 1; x < Pixels->w; x++) {
+    for(int x = StartX + *EdgeX + 1; x < Pixels->size.x; x++) {
         FColorPixel p = f_pixels__bufferGetValue(Pixels, Frame, x, StartY);
 
         if(p == f_color__limit) {
@@ -131,12 +131,12 @@ static int findNextVerticalEdge(const FPixels* Pixels, unsigned Frame, int Start
             FColorPixel* buffer = f_pixels__bufferGetFrom(
                                     Pixels, Frame, x, StartY + 1);
 
-            for(int y = Pixels->h - (StartY + 1); y--; ) {
+            for(int y = Pixels->size.y - (StartY + 1); y--; ) {
                 if(*buffer != f_color__limit) {
                     break;
                 }
 
-                buffer += Pixels->w;
+                buffer += Pixels->size.x;
                 len++;
             }
 
@@ -149,7 +149,7 @@ static int findNextVerticalEdge(const FPixels* Pixels, unsigned Frame, int Start
 
 static int findNextHorizontalEdge(const FPixels* Pixels, unsigned Frame, int StartX, int StartY, int* EdgeY)
 {
-    for(int y = StartY + *EdgeY + 1; y < Pixels->h; y++) {
+    for(int y = StartY + *EdgeY + 1; y < Pixels->size.y; y++) {
         FColorPixel p = f_pixels__bufferGetValue(Pixels, Frame, StartX, y);
 
         if(p == f_color__limit) {
@@ -159,7 +159,7 @@ static int findNextHorizontalEdge(const FPixels* Pixels, unsigned Frame, int Sta
             FColorPixel* buffer = f_pixels__bufferGetFrom(
                                     Pixels, Frame, StartX + 1, y);
 
-            for(int x = Pixels->w - (StartX + 1); x--; ) {
+            for(int x = Pixels->size.x - (StartX + 1); x--; ) {
                 if(*buffer != f_color__limit) {
                     break;
                 }
@@ -179,12 +179,12 @@ FVectorInt f_pixels__boundsFind(const FPixels* Pixels, unsigned Frame, int X, in
 {
     FVectorInt bounds;
 
-    if(X < 0 || X >= Pixels->w || Y < 0 || Y >= Pixels->h) {
+    if(X < 0 || X >= Pixels->size.x || Y < 0 || Y >= Pixels->size.y) {
         F__FATAL("f_pixels__boundsFind(%d, %d): Invalid coords on %dx%d area",
                  X,
                  Y,
-                 Pixels->w,
-                 Pixels->h);
+                 Pixels->size.x,
+                 Pixels->size.y);
     }
 
     int vEdgeX = 0;
@@ -203,8 +203,8 @@ FVectorInt f_pixels__boundsFind(const FPixels* Pixels, unsigned Frame, int X, in
     }
 
     if(vEdgeLen == -1 || hEdgeLen == -1) {
-        bounds.x = Pixels->w - X;
-        bounds.y = Pixels->h - Y;
+        bounds.x = Pixels->size.x - X;
+        bounds.y = Pixels->size.y - Y;
     } else {
         bounds.x = vEdgeX;
         bounds.y = hEdgeY;

@@ -39,8 +39,10 @@ static struct {
 static void f_fade__init(void)
 {
     #if !F_CONFIG_SYSTEM_GAMEBUINO
-        g_fade.oldScreen = f_sprite_newBlank(
-                            f__screen.pixels->w, f__screen.pixels->h, 1, false);
+        g_fade.oldScreen = f_sprite_newBlank(f__screen.pixels->size.x,
+                                             f__screen.pixels->size.y,
+                                             1,
+                                             false);
     #endif
 }
 

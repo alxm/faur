@@ -24,12 +24,12 @@ static void F__FUNC_NAME(Keyed, NoClip)(const FPlatformTexture* Texture, const F
 {
     F__BLEND_SETUP;
 
-    const int screenW = f__screen.pixels->w;
+    const int screenW = f__screen.pixels->size.x;
     FColorPixel* startDst = f_screen__bufferGetFrom(X, Y);
     const FColorPixel* src = f_pixels__bufferGetStart(Pixels, Frame);
     const unsigned* spans = Texture->spans;
 
-    for(int i = Pixels->h; i--; startDst += screenW) {
+    for(int i = Pixels->size.y; i--; startDst += screenW) {
         bool draw = *spans & 1;
         unsigned numSpans = *spans++ >> 1;
         FColorPixel* dst = startDst;
@@ -58,9 +58,9 @@ static void F__FUNC_NAME(Keyed, DoClip)(const FPlatformTexture* Texture, const F
 {
     F__BLEND_SETUP;
 
-    const int screenW = f__screen.pixels->w;
-    const int spriteW = Pixels->w;
-    const int spriteH = Pixels->h;
+    const int screenW = f__screen.pixels->size.x;
+    const int spriteW = Pixels->size.x;
+    const int spriteH = Pixels->size.y;
 
     const int yClipUp = f_math_max(0, f__screen.clipY - Y);
     const int yClipDown = f_math_max(0, Y + spriteH - f__screen.clipY2);
@@ -146,14 +146,14 @@ static void F__FUNC_NAME(Block, NoClip)(const FPlatformTexture* Texture, const F
 
     F__BLEND_SETUP;
 
-    const int screenW = f__screen.pixels->w;
+    const int screenW = f__screen.pixels->size.x;
     FColorPixel* startDst = f_screen__bufferGetFrom(X, Y);
     const FColorPixel* src = f_pixels__bufferGetStart(Pixels, Frame);
 
-    for(int i = Pixels->h; i--; startDst += screenW) {
+    for(int i = Pixels->size.y; i--; startDst += screenW) {
         FColorPixel* dst = startDst;
 
-        for(int j = Pixels->w; j--; ) {
+        for(int j = Pixels->size.x; j--; ) {
             F__PIXEL_SETUP;
             F__PIXEL_DRAW(dst);
             dst++;
@@ -168,9 +168,9 @@ static void F__FUNC_NAME(Block, DoClip)(const FPlatformTexture* Texture, const F
 
     F__BLEND_SETUP;
 
-    const int screenW = f__screen.pixels->w;
-    const int spriteW = Pixels->w;
-    const int spriteH = Pixels->h;
+    const int screenW = f__screen.pixels->size.x;
+    const int spriteW = Pixels->size.x;
+    const int spriteH = Pixels->size.y;
 
     const int yClipUp = f_math_max(0, f__screen.clipY - Y);
     const int yClipDown = f_math_max(0, Y + spriteH - f__screen.clipY2);

@@ -28,7 +28,7 @@ static FSprite* spriteNew(const FPixels* Pixels, unsigned Frame, int X, int Y, i
     FVectorInt gridDim;
 
     if(X == 0 && Y == 0 && FrameWidth < 1 && FrameHeight < 1) {
-        gridDim = (FVectorInt){Pixels->w, Pixels->h};
+        gridDim = Pixels->size;
     } else {
         gridDim = f_pixels__boundsFind(Pixels, Frame, X, Y);
     }
@@ -45,8 +45,8 @@ static FSprite* spriteNew(const FPixels* Pixels, unsigned Frame, int X, int Y, i
         F__FATAL("Cannot create a %dx%d sprite from %dx%d @ %d,%d",
                  FrameWidth,
                  FrameHeight,
-                 Pixels->w,
-                 Pixels->h,
+                 Pixels->size.x,
+                 Pixels->size.y,
                  X,
                  Y);
     }
@@ -301,17 +301,17 @@ void f_sprite_swapColors(FSprite* Sprite, const FColorPixel* OldColors, const FC
 
 FVectorInt f_sprite_sizeGet(const FSprite* Sprite)
 {
-    return (FVectorInt){Sprite->pixels.w, Sprite->pixels.h};
+    return Sprite->pixels.size;
 }
 
 int f_sprite_sizeGetWidth(const FSprite* Sprite)
 {
-    return Sprite->pixels.w;
+    return Sprite->pixels.size.x;
 }
 
 int f_sprite_sizeGetHeight(const FSprite* Sprite)
 {
-    return Sprite->pixels.h;
+    return Sprite->pixels.size.y;
 }
 
 unsigned f_sprite_framesNumGet(const FSprite* Sprite)

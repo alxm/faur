@@ -34,7 +34,7 @@ typedef enum {
 } FPixelsFlags;
 
 struct FPixels {
-    int w, h;
+    FVectorInt size;
     unsigned framesNum;
     unsigned bufferLen;
     unsigned bufferSize;
@@ -64,7 +64,7 @@ static inline FColorPixel* f_pixels__bufferGetStart(const FPixels* Pixels, unsig
 
 static inline FColorPixel* f_pixels__bufferGetFrom(const FPixels* Pixels, unsigned Frame, int X, int Y)
 {
-    return f_pixels__bufferGetStart(Pixels, Frame) + Y * Pixels->w + X;
+    return f_pixels__bufferGetStart(Pixels, Frame) + Y * Pixels->size.x + X;
 }
 
 static inline FColorPixel f_pixels__bufferGetValue(const FPixels* Pixels, unsigned Frame, int X, int Y)

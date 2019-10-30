@@ -186,13 +186,12 @@ static F__GEN_CONST struct {{
     FPlatformTexture* textures[{frames_num}];
 }} f_gfx__sprite__{var} = {{
     {{
-        {width},
-        {height},
-        {frames_num},
-        {width} * {height},
-        {width} * {height} * sizeof(FColorPixel),
-        F_PIXELS__CONST,
-        (FColorPixel*)f_gfx__buffer__{var},
+        .size = {{{width}, {height}}},
+        .framesNum = {frames_num},
+        .bufferLen = {width} * {height},
+        .bufferSize = {width} * {height} * sizeof(FColorPixel),
+        .flags = F_PIXELS__CONST,
+        .buffer = (FColorPixel*)f_gfx__buffer__{var},
     }},
     {{
         #if F_CONFIG_LIB_RENDER_SOFTWARE

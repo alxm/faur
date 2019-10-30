@@ -368,7 +368,7 @@ void f_platform_api__screenTextureRead(FPixels* Pixels, unsigned Frame)
                             NULL,
                             F_SDL__PIXEL_FORMAT,
                             f_pixels__bufferGetFrom(Pixels, Frame, 0, 0),
-                            Pixels->w * (int)sizeof(FColorPixel)) < 0) {
+                            Pixels->size.x * (int)sizeof(FColorPixel)) < 0) {
 
         F__FATAL("SDL_RenderReadPixels: %s", SDL_GetError());
     }
@@ -436,7 +436,7 @@ void f_platform_api__screenShow(void)
             }
 
             if(g_zoom <= 1) {
-                if(g_pixels.w * (int)sizeof(FColorPixel)
+                if(g_pixels.size.x * (int)sizeof(FColorPixel)
                     == g_sdlScreen->pitch) {
 
                     memcpy(g_sdlScreen->pixels,
@@ -524,11 +524,13 @@ void f_platform_api__screenShow(void)
         f_platform_api__screenClear();
 
         #if F_CONFIG_LIB_RENDER_SOFTWARE
-            if(SDL_UpdateTexture(g_sdlTexture,
-                                 NULL,
-                                 g_pixels.buffer,
-                                 g_pixels.w * (int)sizeof(FColorPixel)) < 0) {
+            int ret = SDL_UpdateTexture(
+                        g_sdlTexture,
+                        NULL,
+                        g_pixels.buffer,
+                        g_pixels.size.x * (int)sizeof(FColorPixel));
 
+            if(ret < 0) {
                 F__FATAL("SDL_UpdateTexture: %s", SDL_GetError());
             }
 
@@ -578,8 +580,8 @@ void f_platform_api__screenZoomSet(int Zoom)
 {
     #if F_CONFIG_LIB_SDL == 1
         #if F_CONFIG_SCREEN_ALLOCATE
-            int newWidth = g_pixels.w * Zoom;
-            int newHeight = g_pixels.h * Zoom;
+            int newWidth = g_pixels.size.x * Zoom;
+            int newHeight = g_pixels.size.y * Zoom;
 
             if(sdl1ScreenSet(newWidth, newHeight, g_sdlScreen->flags)) {
                 g_zoom = Zoom;
@@ -591,7 +593,8 @@ void f_platform_api__screenZoomSet(int Zoom)
                 "SDL 1.2 screen zoom needs F_CONFIG_SCREEN_ALLOCATE=1");
         #endif
     #elif F_CONFIG_LIB_SDL == 2
-        SDL_SetWindowSize(g_sdlWindow, g_pixels.w * Zoom, g_pixels.h * Zoom);
+        SDL_SetWindowSize(
+            g_sdlWindow, g_pixels.size.x * Zoom, g_pixels.size.y * Zoom);
 
         g_zoom = Zoom;
     #endif

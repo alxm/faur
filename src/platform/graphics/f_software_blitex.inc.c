@@ -28,7 +28,7 @@ static void F__FUNC_NAME_EX(const FPixels* Pixels, unsigned Frame, int X, int Y,
 {
     F__BLEND_SETUP;
 
-    const FVectorInt size = {Pixels->w, Pixels->h};
+    const FVectorInt size = Pixels->size;
     const FVectorFix sizeScaled = {size.x * Scale, size.y * Scale};
     const FVectorFix sizeScaledHalf = {sizeScaled.x / 2, sizeScaled.y / 2};
     const FColorPixel* const pixels = f_pixels__bufferGetFrom(

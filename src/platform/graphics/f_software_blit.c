@@ -51,7 +51,9 @@ static void scan_line(int Index, FVectorInt ScrP1, FVectorInt ScrP2, FVectorFix 
 {
     // Happens when sprite angle is a multiple of 90deg,
     // and 2 of the sprite's opposite sides are 0-height in screen space.
-    if(ScrP1.y == ScrP2.y || ScrP1.y >= f__screen.pixels->h || ScrP2.y < 0) {
+    if(ScrP1.y == ScrP2.y
+        || ScrP1.y >= f__screen.pixels->size.y || ScrP2.y < 0) {
+
         return;
     }
 
@@ -77,8 +79,8 @@ static void scan_line(int Index, FVectorInt ScrP1, FVectorInt ScrP2, FVectorFix 
         ScrP1.y = 0;
     }
 
-    if(ScrP2.y >= f__screen.pixels->h) {
-        ScrP2.y = f__screen.pixels->h - 1;
+    if(ScrP2.y >= f__screen.pixels->size.y) {
+        ScrP2.y = f__screen.pixels->size.y - 1;
     }
 
     for(int scrY = ScrP1.y; scrY <= ScrP2.y; scrY++, scrX += scrXInc) {
@@ -276,7 +278,7 @@ static bool hasTransparency(const FPixels* Pixels, unsigned Frame)
 {
     const FColorPixel* buffer = f_pixels__bufferGetStart(Pixels, Frame);
 
-    for(int i = Pixels->w * Pixels->h; i--; ) {
+    for(int i = Pixels->size.x * Pixels->size.y; i--; ) {
         if(*buffer++ == f_color__key) {
             return true;
         }
@@ -293,11 +295,11 @@ static size_t spansBytesNeeded(const FPixels* Pixels, unsigned Frame)
     size_t bytesNeeded = 0;
     const FColorPixel* buffer = f_pixels__bufferGetStart(Pixels, Frame);
 
-    for(int y = Pixels->h; y--; ) {
+    for(int y = Pixels->size.y; y--; ) {
         bytesNeeded += sizeof(unsigned); // total size and initial state
         bool doDraw = *buffer != f_color__key; // initial state
 
-        for(int x = Pixels->w; x--; ) {
+        for(int x = Pixels->size.x; x--; ) {
             if((*buffer++ != f_color__key) != doDraw) {
                 bytesNeeded += sizeof(unsigned); // length of new span
                 doDraw = !doDraw;
@@ -315,14 +317,14 @@ static void spansUpdate(const FPixels* Pixels, unsigned Frame, FPlatformTexture*
     unsigned* spans = Texture->spans;
     const FColorPixel* buffer = f_pixels__bufferGetStart(Pixels, Frame);
 
-    for(int y = Pixels->h; y--; ) {
+    for(int y = Pixels->size.y; y--; ) {
         unsigned* lineStart = spans;
         unsigned spanLength = 0;
 
         bool doDraw = *buffer != f_color__key; // initial state
         *spans++ = doDraw;
 
-        for(int x = Pixels->w; x--; ) {
+        for(int x = Pixels->size.x; x--; ) {
             if((*buffer++ != f_color__key) == doDraw) {
                 spanLength++; // keep growing current span
             } else {
@@ -360,7 +362,7 @@ void f_platform_api__textureFree(FPlatformTexture* Texture)
 
 void f_platform_api__textureBlit(const FPlatformTexture* Texture, const FPixels* Pixels, unsigned Frame, int X, int Y)
 {
-    if(!f_screen_boxOnClip(X, Y, Pixels->w, Pixels->h)) {
+    if(!f_screen_boxOnClip(X, Y, Pixels->size.x, Pixels->size.y)) {
         return;
     }
 
@@ -368,7 +370,7 @@ void f_platform_api__textureBlit(const FPlatformTexture* Texture, const FPixels*
         [f__color.blend]
         [f__color.fillBlit]
         [Texture != NULL]
-        [!f_screen_boxInsideClip(X, Y, Pixels->w, Pixels->h)]
+        [!f_screen_boxInsideClip(X, Y, Pixels->size.x, Pixels->size.y)]
             (Texture, Pixels, Frame, X, Y);
 }
 
