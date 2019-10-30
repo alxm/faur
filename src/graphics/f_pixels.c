@@ -64,6 +64,11 @@ void f_pixels__copy(FPixels* Dst, const FPixels* Src)
 {
     memcpy(Dst, Src, sizeof(FPixels));
 
+    if(F_FLAGS_TEST_ANY(Dst->flags, F_PIXELS__CONST)) {
+        F_FLAGS_CLEAR(Dst->flags, F_PIXELS__CONST);
+        F_FLAGS_SET(Dst->flags, F_PIXELS__ALLOC);
+    }
+
     if(F_FLAGS_TEST_ANY(Dst->flags, F_PIXELS__ALLOC)) {
         Dst->buffer = f_mem_dup(Dst->buffer, Dst->bufferSize * Dst->framesNum);
     }
