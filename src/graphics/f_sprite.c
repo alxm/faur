@@ -240,6 +240,12 @@ void f_sprite_blitEx(const FSprite* Sprite, unsigned Frame, int X, int Y, FFix S
 
 void f_sprite_swapColor(FSprite* Sprite, FColorPixel OldColor, FColorPixel NewColor)
 {
+    #if F_CONFIG_BUILD_DEBUG
+        if(F_FLAGS_TEST_ANY(Sprite->pixels.flags, F_PIXELS__CONST)) {
+            F__FATAL("f_sprite_swapColor: Const sprite");
+        }
+    #endif
+
     for(unsigned f = Sprite->pixels.framesNum; f--; ) {
         FColorPixel* buffer = f_pixels__bufferGetStart(&Sprite->pixels, f);
 
@@ -262,6 +268,12 @@ void f_sprite_swapColor(FSprite* Sprite, FColorPixel OldColor, FColorPixel NewCo
 
 void f_sprite_swapColors(FSprite* Sprite, const FColorPixel* OldColors, const FColorPixel* NewColors, unsigned NumColors)
 {
+    #if F_CONFIG_BUILD_DEBUG
+        if(F_FLAGS_TEST_ANY(Sprite->pixels.flags, F_PIXELS__CONST)) {
+            F__FATAL("f_sprite_swapColors: Const sprite");
+        }
+    #endif
+
     for(unsigned f = Sprite->pixels.framesNum; f--; ) {
         FColorPixel* buffer = f_pixels__bufferGetStart(&Sprite->pixels, f);
 
