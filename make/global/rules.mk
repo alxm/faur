@@ -142,11 +142,11 @@ $(F_FILES_SRC_GEN_EMBED_DOT_C) : $(F_FILES_SRC_GEN_H) $(FAUR_PATH)/bin/faur-embe
 
 $(F_DIR_GEN_GFX)/%.c : $(F_DIR_ROOT)/% $(FAUR_PATH)/bin/faur-gfx
 	@ mkdir -p $(@D)
-	$(FAUR_PATH)/bin/faur-gfx $< $@ $(<:$(F_DIR_ROOT)/%=%) $(F_CONFIG_SCREEN_FORMAT) $(F_CONFIG_COLOR_SPRITE_KEY)
+	$(FAUR_PATH)/bin/faur-gfx $< $@ $(<:$(F_DIR_ROOT)/%=%) $(F_CONFIG_COLOR_SPRITE_KEY)
 
 $(F_DIR_GEN_GFX)/%.h : $(F_DIR_ROOT)/% $(FAUR_PATH)/bin/faur-gfx
 	@ mkdir -p $(@D)
-	$(FAUR_PATH)/bin/faur-gfx $< $@ $(<:$(F_DIR_ROOT)/%=%) $(F_CONFIG_SCREEN_FORMAT) $(F_CONFIG_COLOR_SPRITE_KEY)
+	$(FAUR_PATH)/bin/faur-gfx $< $@ $(<:$(F_DIR_ROOT)/%=%) $(F_CONFIG_COLOR_SPRITE_KEY)
 
 $(F_DIR_GEN_SFX)/%.c : $(F_DIR_ROOT)/% $(FAUR_PATH)/bin/faur-sfx
 	@ mkdir -p $(@D)
