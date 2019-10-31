@@ -19,10 +19,6 @@
 #include <faur.v.h>
 
 #if !F_CONFIG_SYSTEM_GAMEBUINO
-#include "media/console.png.h"
-#include "media/fontgrid.png.h"
-#include "media/fontgrid_keyed.png.h"
-
 static FStrHash* g_dirs; // table of FEmbeddedDir
 static FStrHash* g_files; // table of FEmbeddedFile
 
@@ -40,10 +36,6 @@ static void f_embed__init(void)
 {
     g_dirs = f_strhash_new();
     g_files = f_strhash_new();
-
-    addFile("/faur/consoleTitles", &f__bin__media_console_png);
-    addFile("/faur/font", &f__bin__media_fontgrid_png);
-    addFile("/faur/fontKeyed", &f__bin__media_fontgrid_keyed_png);
 
     f_embed__populate();
 }

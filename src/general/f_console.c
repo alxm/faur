@@ -19,6 +19,8 @@
 #include "f_console.v.h"
 #include <faur.v.h>
 
+#include "generated/media/console_19x7.png.h"
+
 #if F_CONFIG_CONSOLE_ENABLED
 typedef struct {
     FOutSource source;
@@ -35,7 +37,6 @@ typedef enum {
 static FConsoleState g_state = F_CONSOLE__STATE_INVALID;
 static FList* g_lines;
 static unsigned g_linesPerScreen;
-static FSprite* g_tags;
 static FButton* g_toggle;
 static bool g_show = F_CONFIG_CONSOLE_SHOW;
 
@@ -74,10 +75,6 @@ static void f_console__init1(void)
         line_free(f_list_pop(g_lines));
     }
 
-    #if F_CONFIG_LIB_PNG
-        g_tags = f_sprite_newFromPng("/faur/consoleTitles", 0, 0, 19, 7);
-    #endif
-
     g_toggle = f_button_new();
     f_button_bindKey(g_toggle, F_KEY_F11);
     f_button_bindCombo(g_toggle,
@@ -94,7 +91,6 @@ static void f_console__uninit1(void)
     g_state = F_CONSOLE__STATE_INVALID;
 
     f_list_freeEx(g_lines, (FFree*)line_free);
-    f_sprite_free(g_tags);
     f_button_free(g_toggle);
 }
 
@@ -177,14 +173,17 @@ void f_console__draw(void)
     }
 
     {
-        int tagWidth = f_sprite_sizeGetWidth(g_tags);
+        int tagWidth = f_sprite_sizeGetWidth(f_gfx__console_19x7);
 
         f_font_coordsSet(1 + tagWidth + 1 + tagWidth + 2, f_font_coordsGetY());
         f_font__fontSet(F_FONT__ID_LIGHT_GRAY);
 
         F_LIST_ITERATE(g_lines, FLine*, l) {
-            f_sprite_blit(g_tags, (unsigned)l->source, 1, f_font_coordsGetY());
-            f_sprite_blit(g_tags,
+            f_sprite_blit(f_gfx__console_19x7,
+                          (unsigned)l->source,
+                          1,
+                          f_font_coordsGetY());
+            f_sprite_blit(f_gfx__console_19x7,
                           (unsigned)(F_OUT__SOURCE_NUM + l->type),
                           1 + tagWidth + 1,
                           f_font_coordsGetY());

@@ -110,9 +110,20 @@ ifdef F_CONFIG_PATH_STATIC_COPY
     F_MAKE_ALL += copystatic
 endif
 
-.PHONY : all run clean $(F_CONFIG_MAKE_CLEAN) copystatic
+#
+# Turn off default suffix rules
+#
+.SUFFIXES :
 
+#
+# Keep intermediary C files around for debugging
+#
 .SECONDARY : $(F_FILES_GFX_C) $(F_FILES_SFX_C)
+
+#
+# Not file targets
+#
+.PHONY : all run clean $(F_CONFIG_MAKE_CLEAN) copystatic
 
 all : $(F_MAKE_ALL)
 

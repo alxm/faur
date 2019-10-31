@@ -18,6 +18,9 @@
 #include "f_font.v.h"
 #include <faur.v.h>
 
+#include "generated/media/font_6x8.png.h"
+#include "generated/media/font_keyed_6x8.png.h"
+
 #define F__CHAR_START 32
 #define F__CHAR_INDEX(Char) ((unsigned)Char - F__CHAR_START)
 #define F__LINE_SPACING 1
@@ -39,7 +42,11 @@ static void f_font__init(void)
 {
     g_stateStack = f_list_new();
 
-    #if F_CONFIG_LIB_PNG
+    g_defaultFonts[F_FONT__ID_DEFAULT] = (FFont*)f_gfx__font_6x8;
+
+    #if !F_CONFIG_SYSTEM_GAMEBUINO
+        g_defaultFonts[F_FONT__ID_WHITE] = (FFont*)f_gfx__font_keyed_6x8;
+
         FColorPixel colors[F_FONT__ID_NUM] = {
             [F_FONT__ID_LIGHT_GRAY] = f_color_pixelFromHex(0xaf9898),
             [F_FONT__ID_GREEN] = f_color_pixelFromHex(0x4fbf9f),
@@ -48,18 +55,13 @@ static void f_font__init(void)
             [F_FONT__ID_BLUE] = f_color_pixelFromHex(0x4f8fdf),
         };
 
-        g_defaultFonts[F_FONT__ID_DEFAULT] = f_font_newFromPng(
-                                                "/faur/font", 0, 0, 6, 8);
-        g_defaultFonts[F_FONT__ID_WHITE] = f_font_newFromPng(
-                                            "/faur/fontKeyed", 0, 0, 6, 8);
-
         for(int f = F_FONT__ID_WHITE + 1; f < F_FONT__ID_NUM; f++) {
             g_defaultFonts[f] = f_font_dup(g_defaultFonts[F_FONT__ID_WHITE],
                                            colors[f]);
         }
-
-        f_font_reset();
     #endif
+
+    f_font_reset();
 }
 
 static void f_font__uninit(void)
