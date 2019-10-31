@@ -29,7 +29,7 @@ static void F__FUNC_NAME(hline)(int X1, int X2, int Y)
 {
     F__BLEND_SETUP;
 
-    FPixel* dst = f_screen__bufferGetFrom(X1, Y);
+    FColorPixel* dst = f_screen__bufferGetFrom(X1, Y);
 
     for(int i = X2 - X1 + 1; i--; dst++) {
         F__PIXEL_DRAW(dst);
@@ -40,8 +40,8 @@ static void F__FUNC_NAME(vline)(int X, int Y1, int Y2)
 {
     F__BLEND_SETUP;
 
-    const int screenw = f__screen.pixels->w;
-    FPixel* dst = f_screen__bufferGetFrom(X, Y1);
+    const int screenw = f__screen.pixels->size.x;
+    FColorPixel* dst = f_screen__bufferGetFrom(X, Y1);
 
     for(int i = Y2 - Y1 + 1; i--; dst += screenw) {
         F__PIXEL_DRAW(dst);
@@ -78,9 +78,9 @@ static void F__FUNC_NAME(line)(int X1, int Y1, int X2, int Y2)
         const int xinc2 = (denominator == deltax) ? 0 : xinct;
         const int yinc2 = (denominator == deltax) ? yinct : 0;
 
-        const int screenw = f__screen.pixels->w;
-        FPixel* dst1 = f_screen__bufferGetFrom(X1, Y1);
-        FPixel* dst2 = f_screen__bufferGetFrom(X2, Y2);
+        const int screenw = f__screen.pixels->size.x;
+        FColorPixel* dst1 = f_screen__bufferGetFrom(X1, Y1);
+        FColorPixel* dst2 = f_screen__bufferGetFrom(X2, Y2);
 
         for(int i = (denominator + 1) / 2; i--; ) {
             F__PIXEL_DRAW(dst1);
@@ -132,11 +132,11 @@ static void F__FUNC_NAME(rectangle_fill)(int X, int Y, int Width, int Height)
 {
     F__BLEND_SETUP;
 
-    FPixel* pixels = f_screen__bufferGetFrom(X, Y);
-    const int screenw = f__screen.pixels->w;
+    FColorPixel* pixels = f_screen__bufferGetFrom(X, Y);
+    const int screenw = f__screen.pixels->size.x;
 
     for(int i = Height; i--; pixels += screenw) {
-        FPixel* dst = pixels;
+        FColorPixel* dst = pixels;
 
         for(int j = Width; j--; dst++) {
             F__PIXEL_DRAW(dst);
@@ -170,17 +170,17 @@ static void F__FUNC_NAME(circle_noclip_nofill)(int X, int Y, int Radius)
     const int q3X = X - 1, q3Y = Y;
     const int q4X = X,     q4Y = Y;
 
-    const int width = f__screen.pixels->w;
-    FPixel* const pixels = f_screen__bufferGetFrom(0, 0);
+    const int width = f__screen.pixels->size.x;
+    FColorPixel* const pixels = f_screen__bufferGetFrom(0, 0);
 
-    FPixel* oct1 = pixels + q1Y * width + q1X + Radius;
-    FPixel* oct2 = pixels + (q1Y - Radius) * width + q1X;
-    FPixel* oct3 = pixels + (q2Y - Radius) * width + q2X;
-    FPixel* oct4 = pixels + q2Y * width + q2X - Radius;
-    FPixel* oct5 = pixels + q3Y * width + q3X - Radius;
-    FPixel* oct6 = pixels + (q3Y + Radius) * width + q3X;
-    FPixel* oct7 = pixels + (q4Y + Radius) * width + q4X;
-    FPixel* oct8 = pixels + q4Y * width + q4X + Radius;
+    FColorPixel* oct1 = pixels + q1Y * width + q1X + Radius;
+    FColorPixel* oct2 = pixels + (q1Y - Radius) * width + q1X;
+    FColorPixel* oct3 = pixels + (q2Y - Radius) * width + q2X;
+    FColorPixel* oct4 = pixels + q2Y * width + q2X - Radius;
+    FColorPixel* oct5 = pixels + q3Y * width + q3X - Radius;
+    FColorPixel* oct6 = pixels + (q3Y + Radius) * width + q3X;
+    FColorPixel* oct7 = pixels + (q4Y + Radius) * width + q4X;
+    FColorPixel* oct8 = pixels + q4Y * width + q4X + Radius;
 
     while(x > y) {
         F__PIXEL_DRAW(oct1);
@@ -309,22 +309,22 @@ static void F__FUNC_NAME(circle_clip_nofill)(int X, int Y, int Radius)
     const int q3X = X - 1, q3Y = Y;
     const int q4X = X,     q4Y = Y;
 
-    const int width = f__screen.pixels->w;
-    FPixel* const pixels = f_screen__bufferGetFrom(0, 0);
+    const int width = f__screen.pixels->size.x;
+    FColorPixel* const pixels = f_screen__bufferGetFrom(0, 0);
 
     const int clipX1 = f__screen.clipX;
     const int clipX2 = f__screen.clipX2;
     const int clipY1 = f__screen.clipY;
     const int clipY2 = f__screen.clipY2;
 
-    FPixel* oct1 = pixels + q1Y * width + q1X + Radius;
-    FPixel* oct2 = pixels + (q1Y - Radius) * width + q1X;
-    FPixel* oct3 = pixels + (q2Y - Radius) * width + q2X;
-    FPixel* oct4 = pixels + q2Y * width + q2X - Radius;
-    FPixel* oct5 = pixels + q3Y * width + q3X - Radius;
-    FPixel* oct6 = pixels + (q3Y + Radius) * width + q3X;
-    FPixel* oct7 = pixels + (q4Y + Radius) * width + q4X;
-    FPixel* oct8 = pixels + q4Y * width + q4X + Radius;
+    FColorPixel* oct1 = pixels + q1Y * width + q1X + Radius;
+    FColorPixel* oct2 = pixels + (q1Y - Radius) * width + q1X;
+    FColorPixel* oct3 = pixels + (q2Y - Radius) * width + q2X;
+    FColorPixel* oct4 = pixels + q2Y * width + q2X - Radius;
+    FColorPixel* oct5 = pixels + q3Y * width + q3X - Radius;
+    FColorPixel* oct6 = pixels + (q3Y + Radius) * width + q3X;
+    FColorPixel* oct7 = pixels + (q4Y + Radius) * width + q4X;
+    FColorPixel* oct8 = pixels + q4Y * width + q4X + Radius;
 
     int midx, midy;
     findMidpoint(Radius, &midx, &midy);

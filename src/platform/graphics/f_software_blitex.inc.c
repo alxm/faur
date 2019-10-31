@@ -28,13 +28,14 @@ static void F__FUNC_NAME_EX(const FPixels* Pixels, unsigned Frame, int X, int Y,
 {
     F__BLEND_SETUP;
 
-    const FVectorInt size = {Pixels->w, Pixels->h};
+    const FVectorInt size = Pixels->size;
     const FVectorFix sizeScaled = {size.x * Scale, size.y * Scale};
     const FVectorFix sizeScaledHalf = {sizeScaled.x / 2, sizeScaled.y / 2};
-    const FPixel* const pixels = f_pixels__bufferGetFrom(Pixels, Frame, 0, 0);
+    const FColorPixel* const pixels = f_pixels__bufferGetFrom(
+                                        Pixels, Frame, 0, 0);
 
     const FVectorInt screenSize = f_screen_sizeGet();
-    FPixel* const screenPixels = f_screen__bufferGetFrom(0, 0);
+    FColorPixel* const screenPixels = f_screen__bufferGetFrom(0, 0);
 
     /*
          Counter-clockwise rotations:
@@ -175,12 +176,11 @@ static void F__FUNC_NAME_EX(const FPixels* Pixels, unsigned Frame, int X, int Y,
             screenX1 = screenSize.x - 1;
         }
 
-        FPixel* dst = screenPixels + scrY * screenSize.x + screenX0;
+        FColorPixel* dst = screenPixels + scrY * screenSize.x + screenX0;
 
         for(int x = screenX0; x <= screenX1; x++) {
-            const FPixel* src = pixels
-                                    + f_fix_toInt(sprite.y) * size.x
-                                    + f_fix_toInt(sprite.x);
+            const FColorPixel* src =
+                pixels + f_fix_toInt(sprite.y) * size.x + f_fix_toInt(sprite.x);
 
             #if F__PIXEL_TRANSPARENCY
                 if(*src != f_color__key) {

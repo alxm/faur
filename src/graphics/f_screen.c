@@ -120,7 +120,7 @@ void f_screen__draw(void)
     f_platform_api__screenShow();
 }
 
-FPixel* f_screen_pixelsGetBuffer(void)
+FColorPixel* f_screen_pixelsGetBuffer(void)
 {
     #if !F_CONFIG_LIB_RENDER_SOFTWARE
         f_platform_api__screenTextureRead(f__screen.pixels, f__screen.frame);
@@ -131,17 +131,17 @@ FPixel* f_screen_pixelsGetBuffer(void)
 
 FVectorInt f_screen_sizeGet(void)
 {
-    return (FVectorInt){f__screen.pixels->w, f__screen.pixels->h};
+    return f__screen.pixels->size;
 }
 
 int f_screen_sizeGetWidth(void)
 {
-    return f__screen.pixels->w;
+    return f__screen.pixels->size.x;
 }
 
 int f_screen_sizeGetHeight(void)
 {
-    return f__screen.pixels->h;
+    return f__screen.pixels->size.y;
 }
 
 void f_screen_clear(void)
@@ -220,8 +220,8 @@ void f_screen_clipSet(int X, int Y, int Width, int Height)
             Y,
             Width,
             Height,
-            f__screen.pixels->w,
-            f__screen.pixels->h);
+            f__screen.pixels->size.x,
+            f__screen.pixels->size.y);
 
         return;
     }
@@ -240,19 +240,21 @@ void f_screen_clipSet(int X, int Y, int Width, int Height)
 
 void f_screen_clipReset(void)
 {
-    f_screen_clipSet(0, 0, f__screen.pixels->w, f__screen.pixels->h);
+    f_screen_clipSet(0, 0, f__screen.pixels->size.x, f__screen.pixels->size.y);
 }
 
 bool f_screen_boxOnScreen(int X, int Y, int W, int H)
 {
-    return f_collide_boxAndBox(X, Y, W, H,
-                               0, 0, f__screen.pixels->w, f__screen.pixels->h);
+    return f_collide_boxAndBox(
+            X, Y, W, H,
+            0, 0, f__screen.pixels->size.x, f__screen.pixels->size.y);
 }
 
 bool f_screen_boxInsideScreen(int X, int Y, int W, int H)
 {
     return X >= 0 && Y >= 0
-        && X + W <= f__screen.pixels->w && Y + H <= f__screen.pixels->h;
+        && X + W <= f__screen.pixels->size.x
+        && Y + H <= f__screen.pixels->size.y;
 }
 
 bool f_screen_boxOnClip(int X, int Y, int W, int H)
@@ -272,14 +274,12 @@ void f_screen__toSprite(FSprite* Sprite, unsigned Frame)
 {
     FVectorInt spriteSize = f_sprite_sizeGet(Sprite);
 
-    if(f__screen.pixels->w != spriteSize.x
-        || f__screen.pixels->h != spriteSize.y) {
-
+    if(!f_vectorint_equal(f__screen.pixels->size, spriteSize)) {
         F__FATAL("f_screen__toSprite: Sprite is %dx%d, screen is %dx%d",
                  spriteSize.x,
                  spriteSize.y,
-                 f__screen.pixels->w,
-                 f__screen.pixels->h);
+                 f__screen.pixels->size.x,
+                 f__screen.pixels->size.y);
     }
 
     #if F_CONFIG_LIB_RENDER_SOFTWARE

@@ -20,60 +20,76 @@
 
 #include "general/f_system_includes.h"
 
-#if F_CONFIG_SCREEN_BPP == 16
-    typedef uint16_t FPixel;
-#elif F_CONFIG_SCREEN_BPP == 32
-    typedef uint32_t FPixel;
+#define F__C_RGBA (1 << 30)
+#define F__C_ARGB (1 << 29)
+#define F__C_ABGR (1 << 28)
+
+#define F__C_16   (1 << 20)
+#define F__C_32   (1 << 19)
+
+#define F__C_565  (F__C_16 | (1 << 15))
+#define F__C_5551 (F__C_16 | (1 << 14))
+#define F__C_8888 (F__C_32 | (1 << 13))
+
+#define F__C_FORMAT(Order, Layout) (Order | Layout)
+
+#define F_COLOR_FORMAT_RGB_565   F__C_FORMAT(F__C_RGBA, F__C_565)
+#define F_COLOR_FORMAT_RGBA_5551 F__C_FORMAT(F__C_RGBA, F__C_5551)
+#define F_COLOR_FORMAT_RGBA_8888 F__C_FORMAT(F__C_RGBA, F__C_8888)
+#define F_COLOR_FORMAT_ARGB_8888 F__C_FORMAT(F__C_ARGB, F__C_8888)
+#define F_COLOR_FORMAT_ABGR_8888 F__C_FORMAT(F__C_ABGR, F__C_8888)
+
+#if F_CONFIG_SCREEN_FORMAT & F__C_16
+    #define F_COLOR_BPP 16
+    typedef uint16_t FColorPixel;
+#elif F_CONFIG_SCREEN_FORMAT & F__C_32
+    #define F_COLOR_BPP 32
+    typedef uint32_t FColorPixel;
+#else
+    #error Invalid F_CONFIG_SCREEN_FORMAT value
 #endif
 
 typedef struct {
     int r, g, b;
-} FRgb;
+} FColorRgb;
 
-#if F_CONFIG_SCREEN_BPP == 16
-    #if F_CONFIG_LIB_RENDER_SOFTWARE
-        // RGB565
-        #define F__PX_BITS_R 5
-        #define F__PX_BITS_G 6
-        #define F__PX_BITS_B 5
-        #define F__PX_BITS_A 0
-    #elif F_CONFIG_LIB_RENDER_SDL
-        // RGBA5551
-        #define F__PX_BITS_R 5
-        #define F__PX_BITS_G 5
-        #define F__PX_BITS_B 5
-        #define F__PX_BITS_A 1
-    #endif
-#elif F_CONFIG_SCREEN_BPP == 32
+#if (F_CONFIG_SCREEN_FORMAT & F__C_565) == F__C_565
+    #define F__PX_BITS_R 5
+    #define F__PX_BITS_G 6
+    #define F__PX_BITS_B 5
+    #define F__PX_BITS_A 0
+#elif (F_CONFIG_SCREEN_FORMAT & F__C_5551) == F__C_5551
+    #define F__PX_BITS_R 5
+    #define F__PX_BITS_G 5
+    #define F__PX_BITS_B 5
+    #define F__PX_BITS_A 1
+#elif (F_CONFIG_SCREEN_FORMAT & F__C_8888) == F__C_8888
     #define F__PX_BITS_R 8
     #define F__PX_BITS_G 8
     #define F__PX_BITS_B 8
-
-    #if F_CONFIG_LIB_SDL == 1
-        // XRGB8888
-        #define F__PX_BITS_A 0
-    #elif F_CONFIG_LIB_SDL == 2
-        // RGBX8888 / RGBA8888
-        #define F__PX_BITS_A 8
-    #endif
+    #define F__PX_BITS_A 8
+#else
+    #error Invalid F_CONFIG_SCREEN_FORMAT value
 #endif
 
-#if F_CONFIG_SCREEN_FORMAT_RGBA
-    #define F__PX_SHIFT_A (0)
-    #define F__PX_SHIFT_B (F__PX_BITS_A)
-    #define F__PX_SHIFT_G (F__PX_BITS_A + F__PX_BITS_B)
+#if F_CONFIG_SCREEN_FORMAT & F__C_RGBA
     #define F__PX_SHIFT_R (F__PX_BITS_A + F__PX_BITS_B + F__PX_BITS_G)
-#elif F_CONFIG_SCREEN_FORMAT_ABGR
-    #define F__PX_SHIFT_R (0)
-    #define F__PX_SHIFT_G (F__PX_BITS_R)
-    #define F__PX_SHIFT_B (F__PX_BITS_R + F__PX_BITS_G)
+    #define F__PX_SHIFT_G (F__PX_BITS_A + F__PX_BITS_B)
+    #define F__PX_SHIFT_B (F__PX_BITS_A)
+    #define F__PX_SHIFT_A (0)
+#elif F_CONFIG_SCREEN_FORMAT & F__C_ARGB
+    #define F__PX_SHIFT_A (F__PX_BITS_B + F__PX_BITS_G + F__PX_BITS_R)
+    #define F__PX_SHIFT_R (F__PX_BITS_B + F__PX_BITS_G)
+    #define F__PX_SHIFT_G (F__PX_BITS_B)
+    #define F__PX_SHIFT_B (0)
+#elif F_CONFIG_SCREEN_FORMAT & F__C_ABGR
     #define F__PX_SHIFT_A (F__PX_BITS_R + F__PX_BITS_G + F__PX_BITS_B)
+    #define F__PX_SHIFT_B (F__PX_BITS_R + F__PX_BITS_G)
+    #define F__PX_SHIFT_G (F__PX_BITS_R)
+    #define F__PX_SHIFT_R (0)
+#else
+    #error Invalid F_CONFIG_SCREEN_FORMAT value
 #endif
-
-#define F__PX_MASK_R ((1 << F__PX_BITS_R) - 1)
-#define F__PX_MASK_G ((1 << F__PX_BITS_G) - 1)
-#define F__PX_MASK_B ((1 << F__PX_BITS_B) - 1)
-#define F__PX_MASK_A ((1 << F__PX_BITS_A) - 1)
 
 #define F__PX_PACK_R (8 - F__PX_BITS_R)
 #define F__PX_PACK_G (8 - F__PX_BITS_G)
@@ -85,32 +101,32 @@ typedef struct {
     #define F_COLOR_ALPHA_MAX 255
 #endif
 
-static inline FPixel f_pixel_fromRgb(int Red, int Green, int Blue)
+static inline FColorPixel f_color_pixelFromRgb(int Red, int Green, int Blue)
 {
-    return (FPixel)
+    return (FColorPixel)
         (((((unsigned)Red   & 0xff) >> F__PX_PACK_R) << F__PX_SHIFT_R) |
          ((((unsigned)Green & 0xff) >> F__PX_PACK_G) << F__PX_SHIFT_G) |
          ((((unsigned)Blue  & 0xff) >> F__PX_PACK_B) << F__PX_SHIFT_B));
 }
 
-static inline FPixel f_pixel_fromHex(uint32_t Hexcode)
+static inline FColorPixel f_color_pixelFromHex(uint32_t Hexcode)
 {
-    #if F_CONFIG_SCREEN_BPP == 16 || F_CONFIG_SCREEN_FORMAT_ABGR
-        return (FPixel)
-            (((((Hexcode >> 16) & 0xff) >> F__PX_PACK_R) << F__PX_SHIFT_R) |
-             ((((Hexcode >> 8)  & 0xff) >> F__PX_PACK_G) << F__PX_SHIFT_G) |
-             ((((Hexcode)       & 0xff) >> F__PX_PACK_B) << F__PX_SHIFT_B));
-    #elif F_CONFIG_SCREEN_BPP == 32 && F_CONFIG_SCREEN_FORMAT_RGBA
-        return (FPixel)((Hexcode & 0xffffff) << F__PX_BITS_A);
+    #if F_CONFIG_SCREEN_FORMAT == F_COLOR_FORMAT_RGBA_8888
+        return (FColorPixel)((Hexcode & 0xffffff) << F__PX_BITS_A);
+    #elif F_CONFIG_SCREEN_FORMAT == F_COLOR_FORMAT_ARGB_8888
+        return (FColorPixel)(Hexcode & 0xffffff);
+    #else
+        return f_color_pixelFromRgb(
+                (int)(Hexcode >> 16), (int)(Hexcode >> 8), (int)(Hexcode));
     #endif
 }
 
-static inline FRgb f_pixel_toRgb(FPixel Pixel)
+static inline FColorRgb f_color_pixelToRgb(FColorPixel Pixel)
 {
-    FRgb rgb = {
-        (int)((Pixel >> F__PX_SHIFT_R) & F__PX_MASK_R) << F__PX_PACK_R,
-        (int)((Pixel >> F__PX_SHIFT_G) & F__PX_MASK_G) << F__PX_PACK_G,
-        (int)((Pixel >> F__PX_SHIFT_B) & F__PX_MASK_B) << F__PX_PACK_B
+    FColorRgb rgb = {
+        (int)((Pixel >> F__PX_SHIFT_R) << F__PX_PACK_R) & 0xff,
+        (int)((Pixel >> F__PX_SHIFT_G) << F__PX_PACK_G) & 0xff,
+        (int)((Pixel >> F__PX_SHIFT_B) << F__PX_PACK_B) & 0xff
     };
 
     return rgb;
@@ -139,7 +155,7 @@ extern void f_color_alphaSet(int Alpha);
 extern void f_color_baseSetRgb(int Red, int Green, int Blue);
 extern void f_color_baseSetRgba(int Red, int Green, int Blue, int Alpha);
 extern void f_color_baseSetHex(uint32_t Hexcode);
-extern void f_color_baseSetPixel(FPixel Pixel);
+extern void f_color_baseSetPixel(FColorPixel Pixel);
 
 extern void f_color_fillBlitSet(bool Fill);
 extern void f_color_fillDrawSet(bool Fill);

@@ -9,5 +9,6 @@ geany -i \
     bin/utils/* \
     make/* \
     make/global/* \
+    media/Makefile \
     `find src` \
     &

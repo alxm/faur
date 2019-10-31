@@ -46,7 +46,7 @@ extern void f_screen__draw(void);
 
 extern void f_screen__toSprite(FSprite* Sprite, unsigned Frame);
 
-static inline FPixel* f_screen__bufferGetFrom(int X, int Y)
+static inline FColorPixel* f_screen__bufferGetFrom(int X, int Y)
 {
     return f_pixels__bufferGetFrom(f__screen.pixels, f__screen.frame, X, Y);
 }

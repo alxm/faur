@@ -28,7 +28,7 @@ static FSprite* spriteNew(const FPixels* Pixels, unsigned Frame, int X, int Y, i
     FVectorInt gridDim;
 
     if(X == 0 && Y == 0 && FrameWidth < 1 && FrameHeight < 1) {
-        gridDim = (FVectorInt){Pixels->w, Pixels->h};
+        gridDim = Pixels->size;
     } else {
         gridDim = f_pixels__boundsFind(Pixels, Frame, X, Y);
     }
@@ -45,8 +45,8 @@ static FSprite* spriteNew(const FPixels* Pixels, unsigned Frame, int X, int Y, i
         F__FATAL("Cannot create a %dx%d sprite from %dx%d @ %d,%d",
                  FrameWidth,
                  FrameHeight,
-                 Pixels->w,
-                 Pixels->h,
+                 Pixels->size.x,
+                 Pixels->size.y,
                  X,
                  Y);
     }
@@ -170,6 +170,19 @@ void f_sprite_free(FSprite* Sprite)
         return;
     }
 
+    if(F_FLAGS_TEST_ANY(Sprite->pixels.flags, F_PIXELS__CONST)) {
+        #if !F_CONFIG_LIB_RENDER_SOFTWARE
+            for(unsigned f = Sprite->pixels.framesNum; f--; ) {
+                f_platform_api__textureFree(Sprite->textures[f]);
+
+                // Sprite may be re-used later
+                Sprite->textures[f] = NULL;
+            }
+        #endif
+
+        return;
+    }
+
     for(unsigned f = Sprite->pixels.framesNum; f--; ) {
         f_platform_api__textureFree(Sprite->textures[f]);
     }
@@ -179,14 +192,38 @@ void f_sprite_free(FSprite* Sprite)
     f_mem_free(Sprite);
 }
 
+#if !F_CONFIG_LIB_RENDER_SOFTWARE
+static void lazyInitTextures(FSprite* Sprite)
+{
+    if(Sprite->textures[0] == NULL) {
+        for(unsigned f = Sprite->pixels.framesNum; f--; ) {
+            Sprite->textures[f] =
+                f_platform_api__textureNew(&Sprite->pixels, f);
+        }
+    }
+}
+#endif
+
 void f_sprite_blit(const FSprite* Sprite, unsigned Frame, int X, int Y)
 {
+    #if !F_CONFIG_LIB_RENDER_SOFTWARE
+        lazyInitTextures((FSprite*)Sprite);
+    #endif
+
+    Frame %= Sprite->pixels.framesNum;
+
     f_platform_api__textureBlit(
         Sprite->textures[Frame], &Sprite->pixels, Frame, X, Y);
 }
 
 void f_sprite_blitEx(const FSprite* Sprite, unsigned Frame, int X, int Y, FFix Scale, unsigned Angle, FFix CenterX, FFix CenterY)
 {
+    #if !F_CONFIG_LIB_RENDER_SOFTWARE
+        lazyInitTextures((FSprite*)Sprite);
+    #endif
+
+    Frame %= Sprite->pixels.framesNum;
+
     CenterX = f_math_clamp(CenterX, -F_FIX_ONE, F_FIX_ONE);
     CenterY = f_math_clamp(CenterY, -F_FIX_ONE, F_FIX_ONE);
 
@@ -201,10 +238,16 @@ void f_sprite_blitEx(const FSprite* Sprite, unsigned Frame, int X, int Y, FFix S
                                   CenterY);
 }
 
-void f_sprite_swapColor(FSprite* Sprite, FPixel OldColor, FPixel NewColor)
+void f_sprite_swapColor(FSprite* Sprite, FColorPixel OldColor, FColorPixel NewColor)
 {
+    #if F_CONFIG_BUILD_DEBUG
+        if(F_FLAGS_TEST_ANY(Sprite->pixels.flags, F_PIXELS__CONST)) {
+            F__FATAL("f_sprite_swapColor: Const sprite");
+        }
+    #endif
+
     for(unsigned f = Sprite->pixels.framesNum; f--; ) {
-        FPixel* buffer = f_pixels__bufferGetStart(&Sprite->pixels, f);
+        FColorPixel* buffer = f_pixels__bufferGetStart(&Sprite->pixels, f);
 
         for(unsigned i = Sprite->pixels.bufferLen; i--; ) {
             if(buffer[i] == OldColor) {
@@ -223,13 +266,19 @@ void f_sprite_swapColor(FSprite* Sprite, FPixel OldColor, FPixel NewColor)
     }
 }
 
-void f_sprite_swapColors(FSprite* Sprite, const FPixel* OldColors, const FPixel* NewColors, unsigned NumColors)
+void f_sprite_swapColors(FSprite* Sprite, const FColorPixel* OldColors, const FColorPixel* NewColors, unsigned NumColors)
 {
+    #if F_CONFIG_BUILD_DEBUG
+        if(F_FLAGS_TEST_ANY(Sprite->pixels.flags, F_PIXELS__CONST)) {
+            F__FATAL("f_sprite_swapColors: Const sprite");
+        }
+    #endif
+
     for(unsigned f = Sprite->pixels.framesNum; f--; ) {
-        FPixel* buffer = f_pixels__bufferGetStart(&Sprite->pixels, f);
+        FColorPixel* buffer = f_pixels__bufferGetStart(&Sprite->pixels, f);
 
         for(unsigned i = Sprite->pixels.bufferLen; i--; ) {
-            const FPixel pixel = buffer[i];
+            const FColorPixel pixel = buffer[i];
 
             for(unsigned c = NumColors; c--; ) {
                 if(pixel == OldColors[c]) {
@@ -252,17 +301,17 @@ void f_sprite_swapColors(FSprite* Sprite, const FPixel* OldColors, const FPixel*
 
 FVectorInt f_sprite_sizeGet(const FSprite* Sprite)
 {
-    return (FVectorInt){Sprite->pixels.w, Sprite->pixels.h};
+    return Sprite->pixels.size;
 }
 
 int f_sprite_sizeGetWidth(const FSprite* Sprite)
 {
-    return Sprite->pixels.w;
+    return Sprite->pixels.size.x;
 }
 
 int f_sprite_sizeGetHeight(const FSprite* Sprite)
 {
-    return Sprite->pixels.h;
+    return Sprite->pixels.size.y;
 }
 
 unsigned f_sprite_framesNumGet(const FSprite* Sprite)
@@ -290,12 +339,12 @@ void f_sprite__textureCommit(FSprite* Sprite, unsigned Frame)
                                 &Sprite->pixels, Frame);
 }
 
-const FPixel* f_sprite_pixelsGetBuffer(const FSprite* Sprite, unsigned Frame)
+const FColorPixel* f_sprite_pixelsGetBuffer(const FSprite* Sprite, unsigned Frame)
 {
     return f_pixels__bufferGetStart(&Sprite->pixels, Frame);
 }
 
-FPixel f_sprite_pixelsGetValue(const FSprite* Sprite, unsigned Frame, int X, int Y)
+FColorPixel f_sprite_pixelsGetValue(const FSprite* Sprite, unsigned Frame, int X, int Y)
 {
     return f_pixels__bufferGetValue(&Sprite->pixels, Frame, X, Y);
 }

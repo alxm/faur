@@ -24,15 +24,15 @@ static void F__FUNC_NAME(Keyed, NoClip)(const FPlatformTexture* Texture, const F
 {
     F__BLEND_SETUP;
 
-    const int screenW = f__screen.pixels->w;
-    FPixel* startDst = f_screen__bufferGetFrom(X, Y);
-    const FPixel* src = f_pixels__bufferGetStart(Pixels, Frame);
+    const int screenW = f__screen.pixels->size.x;
+    FColorPixel* startDst = f_screen__bufferGetFrom(X, Y);
+    const FColorPixel* src = f_pixels__bufferGetStart(Pixels, Frame);
     const unsigned* spans = Texture->spans;
 
-    for(int i = Pixels->h; i--; startDst += screenW) {
+    for(int i = Pixels->size.y; i--; startDst += screenW) {
         bool draw = *spans & 1;
         unsigned numSpans = *spans++ >> 1;
-        FPixel* dst = startDst;
+        FColorPixel* dst = startDst;
 
         while(numSpans--) {
             int len = (int)*spans++;
@@ -58,9 +58,9 @@ static void F__FUNC_NAME(Keyed, DoClip)(const FPlatformTexture* Texture, const F
 {
     F__BLEND_SETUP;
 
-    const int screenW = f__screen.pixels->w;
-    const int spriteW = Pixels->w;
-    const int spriteH = Pixels->h;
+    const int screenW = f__screen.pixels->size.x;
+    const int spriteW = Pixels->size.x;
+    const int spriteH = Pixels->size.y;
 
     const int yClipUp = f_math_max(0, f__screen.clipY - Y);
     const int yClipDown = f_math_max(0, Y + spriteH - f__screen.clipY2);
@@ -70,9 +70,9 @@ static void F__FUNC_NAME(Keyed, DoClip)(const FPlatformTexture* Texture, const F
     const int rows = spriteH - yClipUp - yClipDown;
     const int columns = spriteW - xClipLeft - xClipRight;
 
-    FPixel* startDst = f_screen__bufferGetFrom(X + xClipLeft, Y + yClipUp);
-    const FPixel* startSrc = f_pixels__bufferGetFrom(
-                                Pixels, Frame, xClipLeft, yClipUp);
+    FColorPixel* startDst = f_screen__bufferGetFrom(X + xClipLeft, Y + yClipUp);
+    const FColorPixel* startSrc = f_pixels__bufferGetFrom(
+                                    Pixels, Frame, xClipLeft, yClipUp);
 
     const unsigned* spans = Texture->spans;
 
@@ -85,8 +85,8 @@ static void F__FUNC_NAME(Keyed, DoClip)(const FPlatformTexture* Texture, const F
     for(int i = rows; i--; startDst += screenW, startSrc += spriteW) {
         bool draw = *spans & 1;
         const unsigned* nextLine = spans + 1 + (*spans >> 1);
-        FPixel* dst = startDst;
-        const FPixel* src = startSrc;
+        FColorPixel* dst = startDst;
+        const FColorPixel* src = startSrc;
         int clippedLen = 0;
         int drawColumns = columns;
 
@@ -146,14 +146,14 @@ static void F__FUNC_NAME(Block, NoClip)(const FPlatformTexture* Texture, const F
 
     F__BLEND_SETUP;
 
-    const int screenW = f__screen.pixels->w;
-    FPixel* startDst = f_screen__bufferGetFrom(X, Y);
-    const FPixel* src = f_pixels__bufferGetStart(Pixels, Frame);
+    const int screenW = f__screen.pixels->size.x;
+    FColorPixel* startDst = f_screen__bufferGetFrom(X, Y);
+    const FColorPixel* src = f_pixels__bufferGetStart(Pixels, Frame);
 
-    for(int i = Pixels->h; i--; startDst += screenW) {
-        FPixel* dst = startDst;
+    for(int i = Pixels->size.y; i--; startDst += screenW) {
+        FColorPixel* dst = startDst;
 
-        for(int j = Pixels->w; j--; ) {
+        for(int j = Pixels->size.x; j--; ) {
             F__PIXEL_SETUP;
             F__PIXEL_DRAW(dst);
             dst++;
@@ -168,9 +168,9 @@ static void F__FUNC_NAME(Block, DoClip)(const FPlatformTexture* Texture, const F
 
     F__BLEND_SETUP;
 
-    const int screenW = f__screen.pixels->w;
-    const int spriteW = Pixels->w;
-    const int spriteH = Pixels->h;
+    const int screenW = f__screen.pixels->size.x;
+    const int spriteW = Pixels->size.x;
+    const int spriteH = Pixels->size.y;
 
     const int yClipUp = f_math_max(0, f__screen.clipY - Y);
     const int yClipDown = f_math_max(0, Y + spriteH - f__screen.clipY2);
@@ -180,13 +180,13 @@ static void F__FUNC_NAME(Block, DoClip)(const FPlatformTexture* Texture, const F
     const int rows = spriteH - yClipUp - yClipDown;
     const int columns = spriteW - xClipLeft - xClipRight;
 
-    FPixel* startDst = f_screen__bufferGetFrom(X + xClipLeft, Y + yClipUp);
-    const FPixel* startSrc = f_pixels__bufferGetFrom(
-                                Pixels, Frame, xClipLeft, yClipUp);
+    FColorPixel* startDst = f_screen__bufferGetFrom(X + xClipLeft, Y + yClipUp);
+    const FColorPixel* startSrc = f_pixels__bufferGetFrom(
+                                    Pixels, Frame, xClipLeft, yClipUp);
 
     for(int i = rows; i--; startDst += screenW, startSrc += spriteW) {
-        FPixel* dst = startDst;
-        const FPixel* src = startSrc;
+        FColorPixel* dst = startDst;
+        const FColorPixel* src = startSrc;
 
         for(int j = columns; j--; ) {
             F__PIXEL_SETUP;

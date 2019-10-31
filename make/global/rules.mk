@@ -110,9 +110,20 @@ ifdef F_CONFIG_PATH_STATIC_COPY
     F_MAKE_ALL += copystatic
 endif
 
-.PHONY : all run clean $(F_CONFIG_MAKE_CLEAN) copystatic
+#
+# Turn off default suffix rules
+#
+.SUFFIXES :
 
+#
+# Keep intermediary C files around for debugging
+#
 .SECONDARY : $(F_FILES_GFX_C) $(F_FILES_SFX_C)
+
+#
+# Not file targets
+#
+.PHONY : all run clean $(F_CONFIG_MAKE_CLEAN) copystatic
 
 all : $(F_MAKE_ALL)
 
@@ -142,11 +153,11 @@ $(F_FILES_SRC_GEN_EMBED_DOT_C) : $(F_FILES_SRC_GEN_H) $(FAUR_PATH)/bin/faur-embe
 
 $(F_DIR_GEN_GFX)/%.c : $(F_DIR_ROOT)/% $(FAUR_PATH)/bin/faur-gfx
 	@ mkdir -p $(@D)
-	$(FAUR_PATH)/bin/faur-gfx $< $@ $(<:$(F_DIR_ROOT)/%=%) $(F_CONFIG_SCREEN_BPP) $(F_CONFIG_COLOR_SPRITE_KEY)
+	$(FAUR_PATH)/bin/faur-gfx $< $@ $(<:$(F_DIR_ROOT)/%=%) $(F_CONFIG_COLOR_SPRITE_KEY)
 
 $(F_DIR_GEN_GFX)/%.h : $(F_DIR_ROOT)/% $(FAUR_PATH)/bin/faur-gfx
 	@ mkdir -p $(@D)
-	$(FAUR_PATH)/bin/faur-gfx $< $@ $(<:$(F_DIR_ROOT)/%=%) $(F_CONFIG_SCREEN_BPP) $(F_CONFIG_COLOR_SPRITE_KEY)
+	$(FAUR_PATH)/bin/faur-gfx $< $@ $(<:$(F_DIR_ROOT)/%=%) $(F_CONFIG_COLOR_SPRITE_KEY)
 
 $(F_DIR_GEN_SFX)/%.c : $(F_DIR_ROOT)/% $(FAUR_PATH)/bin/faur-sfx
 	@ mkdir -p $(@D)

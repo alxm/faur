@@ -33,7 +33,7 @@ typedef enum {
 
 extern FFont* f_font_newFromPng(const char* Path, int X, int Y, int CharWidth, int CharHeight);
 extern FFont* f_font_newFromSprite(const FSprite* Sheet, int X, int Y, int CharWidth, int CharHeight);
-extern FFont* f_font_dup(const FFont* Font, FPixel Color);
+extern FFont* f_font_dup(const FFont* Font, FColorPixel Color);
 extern void f_font_free(FFont* Font);
 
 extern void f_font_push(void);

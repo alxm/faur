@@ -105,6 +105,9 @@ class Tool:
 
         self.out.error(message)
 
+    def get_cmd(self):
+        return ' '.join([os.path.basename(sys.argv[0])] + sys.argv[1 : ])
+
     def get_arg(self, name):
         if name in self.arg_db:
             return self.arg_db[name]
