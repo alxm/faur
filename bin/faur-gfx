@@ -133,34 +133,25 @@ def process_c(var_name, image_file, color_key):
     span_vars = ''
 
     for fmt in g_formats:
-        pixels_fmt = ''
-
-        for frame_pixels in frames_pixels:
-            pixels_fmt += '        '
-
-            for pixel in frame_pixels:
-                pixels_fmt += '{}, '.format(g_formats[fmt](pixel))
-
-            pixels_fmt += '\n'
+        pixels_fmt = [g_formats[fmt](p) for f in frames_pixels for p in f]
 
         pixel_buffers += """\
     #if F_CONFIG_SCREEN_FORMAT == {fmt}
-{pixel_buffer}    #endif
-""".format(fmt = fmt, pixel_buffer = pixels_fmt)
+        {pixel_buffer}
+    #endif
+""".format(fmt = fmt, pixel_buffer = ', '.join(pixels_fmt))
 
     for frame_index, frame_pixels in enumerate(frames_pixels):
         spans = spans_make(frame_pixels, frame_width, frame_height, color_key)
 
         span_buffers += """\
-static const unsigned f_gfx__spans__{var}__{num}[] = {{
-    {spans_data}
-}};
+static const unsigned f_gfx__spans__{var}__{num}[] = {{{spans_data}}};
 """.format(var = var_name,
            num = frame_index,
            spans_data = ', '.join([str(s) for s in spans]))
 
         span_vars += """\
-            (FPlatformTexture*)f_gfx__spans__{var}__{num},
+            (FPlatformTexture*)(void*)f_gfx__spans__{var}__{num},
 """.format(var = var_name, num = frame_index)
 
     content = """\
@@ -201,7 +192,7 @@ static F__GEN_CONST struct {{
     }},
 }};
 
-const FSprite* const f_gfx_{var} = (const FSprite*)&f_gfx__sprite__{var};
+const FSprite* const f_gfx_{var} = (const FSprite*)(void*)&f_gfx__sprite__{var};
 """.format(cmd = g_tool.get_cmd(),
            var = var_name,
            width = frame_width,
