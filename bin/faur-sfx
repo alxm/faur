@@ -85,28 +85,24 @@ def process_c(var_name, wav_file):
 #endif
 
 #if F_CONFIG_SYSTEM_GAMEBUINO
-    static const uint8_t f_sfx__buffer__{var}[{bufferSizeGamebuino}] = {{{bufferDataGamebuino}}};
-
-    static F__GEN_CONST struct {{
-        uint32_t size;
-        uint8_t* buffer;
-    }} f_sfx__sample__{var} = {{
-        {bufferSizeGamebuino},
-        (uint8_t*)f_sfx__buffer__{var}
-    }};
+    #define F__GEN_BUFFER_SIZE {bufferSizeGamebuino}
+    #define F__GEN_BUFFER_DATA {bufferDataGamebuino}
 #else
-    static const uint8_t f_sfx__buffer__{var}[{bufferSizeWav}] = {{{bufferDataWav}}};
-
-    static F__GEN_CONST struct {{
-        uint32_t size;
-        uint8_t* buffer;
-    }} f_sfx__sample__{var} = {{
-        {bufferSizeWav},
-        (uint8_t*)f_sfx__buffer__{var}
-    }};
+    #define F__GEN_BUFFER_SIZE {bufferSizeWav}
+    #define F__GEN_BUFFER_DATA {bufferDataWav}
 #endif
 
-const FSample* const f_sfx_{var} = (const FSample*)&f_sfx__sample__{var};
+static const uint8_t f_sfx__buffer__{var}[F__GEN_BUFFER_SIZE] = {{F__GEN_BUFFER_DATA}};
+
+static F__GEN_CONST struct {{
+    uint32_t size;
+    uint8_t* buffer;
+}} f_sfx__sample__{var} = {{
+    F__GEN_BUFFER_SIZE,
+    (uint8_t*)f_sfx__buffer__{var}
+}};
+
+const FSample* const f_sfx_{var} = (const FSample*)(void*)&f_sfx__sample__{var};
 """.format(cmd = g_tool.get_cmd(),
            var = var_name,
            bufferSizeWav = len(wavBytes),
