@@ -6,7 +6,7 @@ F_MAKE_CMD := \
     source $(F_SDK_EMSCRIPTEN_ROOT)/emsdk_env.sh \
     && emmake $(MAKE) \
         -f $(firstword $(MAKEFILE_LIST)) \
-        -j$(A_MAKE_PARALLEL_JOBS) \
+        -j$(F_MAKE_PARALLEL_JOBS) \
         F_DO_BUILD=1
 
 all :
