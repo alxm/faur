@@ -97,9 +97,15 @@ static const uint8_t f_sfx__buffer__{var}[F__GEN_BUFFER_SIZE] = {{F__GEN_BUFFER_
 static F__GEN_CONST struct {{
     uint32_t size;
     uint8_t* buffer;
+    #if F_CONFIG_LIB_SDL
+        void* sample;
+    #endif
 }} f_sfx__sample__{var} = {{
     F__GEN_BUFFER_SIZE,
-    (uint8_t*)f_sfx__buffer__{var}
+    (uint8_t*)f_sfx__buffer__{var},
+    #if F_CONFIG_LIB_SDL
+        NULL,
+    #endif
 }};
 
 const FSample* const f_sfx_{var} = (const FSample*)(void*)&f_sfx__sample__{var};

@@ -33,10 +33,8 @@
 
 struct FPlatformSample {
     uint32_t size;
-    union {
-        uint8_t* buffer;
-        Mix_Chunk* chunk;
-    } data;
+    uint8_t* buffer;
+    Mix_Chunk* chunk;
 };
 
 static bool g_enabled;
@@ -182,10 +180,9 @@ FPlatformSample* f_platform_api__soundSampleNewFromFile(const char* Path)
         Mix_Chunk* chunk = Mix_LoadWAV(Path);
 
         if(chunk) {
-            s = f_mem_malloc(sizeof(FPlatformSample));
+            s = f_mem_zalloc(sizeof(FPlatformSample));
 
-            s->size = 0;
-            s->data.chunk = chunk;
+            s->chunk = chunk;
         } else {
             f_out__error("Mix_LoadWAV: %s", Mix_GetError());
         }
@@ -205,10 +202,9 @@ FPlatformSample* f_platform_api__soundSampleNewFromData(const uint8_t* Data, int
             Mix_Chunk* chunk = Mix_LoadWAV_RW(rw, 0);
 
             if(chunk) {
-                s = f_mem_malloc(sizeof(FPlatformSample));
+                s = f_mem_zalloc(sizeof(FPlatformSample));
 
-                s->size = 0;
-                s->data.chunk = chunk;
+                s->chunk = chunk;
             } else {
                 f_out__error("Mix_LoadWAV_RW: %s", Mix_GetError());
             }
@@ -228,8 +224,9 @@ void f_platform_api__soundSampleFree(FPlatformSample* Sample)
         return;
     }
 
-    if(Sample->size == 0 || Sample->size == UINT32_MAX) {
-        Mix_FreeChunk(Sample->data.chunk);
+    if(Sample->chunk) {
+        Mix_FreeChunk(Sample->chunk);
+        Sample->chunk = NULL;
     }
 
     if(Sample->size == 0) {
@@ -239,16 +236,14 @@ void f_platform_api__soundSampleFree(FPlatformSample* Sample)
 
 static void sampleLazyInit(FPlatformSample* Sample)
 {
-    if(Sample->size != 0 && Sample->size != UINT32_MAX) {
-        SDL_RWops* rw = SDL_RWFromMem(
-                            (void*)Sample->data.buffer, (int)Sample->size);
+    if(Sample->size > 0 && Sample->chunk == NULL) {
+        SDL_RWops* rw = SDL_RWFromMem((void*)Sample->buffer, (int)Sample->size);
 
         if(rw) {
             Mix_Chunk* chunk = Mix_LoadWAV_RW(rw, 0);
 
             if(chunk) {
-                Sample->size = UINT32_MAX;
-                Sample->data.chunk = chunk;
+                Sample->chunk = chunk;
             } else {
                 f_out__error("Mix_LoadWAV_RW: %s", Mix_GetError());
             }
@@ -271,7 +266,7 @@ void f_platform_api__soundSampleVolumeSet(FPlatformSample* Sample, int Volume)
         F_UNUSED(Volume);
     #else
         sampleLazyInit(Sample);
-        Mix_VolumeChunk(Sample->data.chunk, Volume);
+        Mix_VolumeChunk(Sample->chunk, Volume);
     #endif
 }
 
@@ -296,7 +291,7 @@ void f_platform_api__soundSamplePlay(FPlatformSample* Sample, int Channel, bool 
 
     sampleLazyInit(Sample);
 
-    if(Mix_PlayChannel(Channel, Sample->data.chunk, Loop ? -1 : 0) == -1) {
+    if(Mix_PlayChannel(Channel, Sample->chunk, Loop ? -1 : 0) == -1) {
         #if F_CONFIG_BUILD_DEBUG
             f_out__error("Mix_PlayChannel(%d): %s", Channel, Mix_GetError());
         #endif
