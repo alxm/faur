@@ -35,6 +35,11 @@ bool f_platform_api__soundMuteGet(void)
     return false;
 }
 
+void f_platform_api__soundSampleFree(FPlatformSample* Sample)
+{
+    F_UNUSED(Sample);
+}
+
 void f_platform_api__soundSamplePlay(FPlatformSample* Sample, int Channel, bool Loop)
 {
     if(Sample == NULL) {

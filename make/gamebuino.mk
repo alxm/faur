@@ -21,7 +21,7 @@ F_MAKE_CMD := \
     $(MAKE) \
 	-C $(F_DIR_ROOT)/$(F_CONFIG_DIR_SRC) \
 	-f $(realpath $(firstword $(MAKEFILE_LIST))) \
-	-j$(A_MAKE_PARALLEL_JOBS) \
+	-j$(F_MAKE_PARALLEL_JOBS) \
 	OBJDIR=$(realpath $(F_DIR_ROOT))/$(F_CONFIG_DIR_BUILD)/builds/$(F_CONFIG_BUILD_UID) \
 	F_DIR_SOURCE=$(realpath $(F_DIR_ROOT))/$(F_CONFIG_DIR_SRC) \
 	F_DO_BUILD=1
