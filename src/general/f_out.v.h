@@ -37,7 +37,7 @@ typedef enum {
     F_OUT__TYPE_NUM
 } FOutType;
 
-#if F_CONFIG_OUTPUT_ENABLED
+#if F_CONFIG_FEATURE_OUTPUT
     extern void f_out__info(const char* Format, ...);
     extern void f_out__warning(const char* Format, ...);
     extern void f_out__error(const char* Format, ...);

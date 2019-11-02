@@ -18,7 +18,7 @@
 #include "f_entity.v.h"
 #include <faur.v.h>
 
-#if F_CONFIG_ECS_ENABLED
+#if F_CONFIG_FEATURE_ECS
 struct FEntity {
     char* id; // specified name for debugging
     const FTemplate* template; // template used to init this entity's components
@@ -586,4 +586,4 @@ void f_entity__systemsRemoveFromActive(FEntity* Entity)
         f_entity_removedSet(Entity);
     }
 }
-#endif // F_CONFIG_ECS_ENABLED
+#endif // F_CONFIG_FEATURE_ECS

@@ -18,7 +18,7 @@
 #include "f_out.v.h"
 #include <faur.v.h>
 
-#if F_CONFIG_OUTPUT_ENABLED
+#if F_CONFIG_FEATURE_OUTPUT
 #define F_OUT__STREAM_STDOUT stdout
 
 #if F_CONFIG_SYSTEM_EMSCRIPTEN
@@ -205,4 +205,4 @@ void f_out_error(const char* Format, ...)
 
     va_end(args);
 }
-#endif // F_CONFIG_OUTPUT_ENABLED
+#endif // F_CONFIG_FEATURE_OUTPUT

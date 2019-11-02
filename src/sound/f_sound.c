@@ -18,7 +18,7 @@
 #include "f_sound.v.h"
 #include <faur.v.h>
 
-#if F_CONFIG_SOUND_ENABLED
+#if F_CONFIG_FEATURE_SOUND
 #if F_CONFIG_SOUND_VOLUME_ADJUSTABLE
     static int g_volume;
     static int g_musicVolume;
@@ -148,7 +148,7 @@ void f_sound__draw(void)
         f_draw_rectangle(0, 186, g_volume / F__VOLUME_STEP, 6);
     #endif
 }
-#else // !F_CONFIG_SOUND_ENABLED
+#else // !F_CONFIG_FEATURE_SOUND
 const FPack f_pack__sound;
 
 void f_sound__tick(void)
@@ -158,4 +158,4 @@ void f_sound__tick(void)
 void f_sound__draw(void)
 {
 }
-#endif // !F_CONFIG_SOUND_ENABLED
+#endif // !F_CONFIG_FEATURE_SOUND

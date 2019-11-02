@@ -18,7 +18,7 @@
 #include "f_template.v.h"
 #include <faur.v.h>
 
-#if F_CONFIG_ECS_ENABLED
+#if F_CONFIG_FEATURE_ECS
 struct FTemplate {
     unsigned instanceNumber; // Incremented by each new entity
     FEntityInit* init; // Optional, runs after components init and parent init
@@ -181,4 +181,4 @@ const void* f_template__dataGet(const FTemplate* Template, int ComponentIndex)
 {
     return Template->data[ComponentIndex];
 }
-#endif // F_CONFIG_ECS_ENABLED
+#endif // F_CONFIG_FEATURE_ECS

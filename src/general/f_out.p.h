@@ -20,7 +20,7 @@
 
 #include "general/f_system_includes.h"
 
-#if F_CONFIG_OUTPUT_ENABLED
+#if F_CONFIG_FEATURE_OUTPUT
     extern void f_out_text(const char* Text);
     extern void f_out_info(const char* Format, ...);
     extern void f_out_warning(const char* Format, ...);
