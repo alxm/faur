@@ -20,16 +20,9 @@
 
 #include "general/f_system_includes.h"
 
-#if F_CONFIG_FEATURE_OUTPUT
-    extern void f_out_text(const char* Text);
-    extern void f_out_info(const char* Format, ...);
-    extern void f_out_warning(const char* Format, ...);
-    extern void f_out_error(const char* Format, ...);
-#else
-    #define f_out_text(Text)
-    #define f_out_info(...)
-    #define f_out_warning(...)
-    #define f_out_error(...)
-#endif
+extern void f_out_text(const char* Text);
+extern void f_out_info(const char* Format, ...);
+extern void f_out_warning(const char* Format, ...);
+extern void f_out_error(const char* Format, ...);
 
 #endif // F_INC_GENERAL_OUT_P_H

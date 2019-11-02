@@ -55,6 +55,10 @@
 #define F_CONFIG_BUILD_FIX_LUT 1
 #endif
 
+#ifndef F_CONFIG_BUILD_FAUR_GIT
+#define F_CONFIG_BUILD_FAUR_GIT "(commit unknown)"
+#endif
+
 #ifndef F_CONFIG_BUILD_FAUR_TIME
 #define F_CONFIG_BUILD_FAUR_TIME __DATE__ " " __TIME__
 #endif

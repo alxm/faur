@@ -205,4 +205,50 @@ void f_out_error(const char* Format, ...)
 
     va_end(args);
 }
-#endif // F_CONFIG_FEATURE_OUTPUT
+#else // !F_CONFIG_FEATURE_OUTPUT
+void f_out__info(const char* Format, ...)
+{
+    F_UNUSED(Format);
+}
+
+void f_out__warning(const char* Format, ...)
+{
+    F_UNUSED(Format);
+}
+
+void f_out__error(const char* Format, ...)
+{
+    F_UNUSED(Format);
+}
+
+void f_out__errorv(const char* Format, va_list Args)
+{
+    F_UNUSED(Format);
+    F_UNUSED(Args);
+}
+
+void f_out__state(const char* Format, ...)
+{
+    F_UNUSED(Format);
+}
+
+void f_out_text(const char* Text)
+{
+    F_UNUSED(Text);
+}
+
+void f_out_info(const char* Format, ...)
+{
+    F_UNUSED(Format);
+}
+
+void f_out_warning(const char* Format, ...)
+{
+    F_UNUSED(Format);
+}
+
+void f_out_error(const char* Format, ...)
+{
+    F_UNUSED(Format);
+}
+#endif // !F_CONFIG_FEATURE_OUTPUT
