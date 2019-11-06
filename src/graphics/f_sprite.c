@@ -78,7 +78,15 @@ static FSprite* spriteNew(const FPixels* Pixels, unsigned Frame, int X, int Y, i
 #if F_CONFIG_LIB_PNG
 FSprite* f_sprite_newFromPng(const char* Path, int X, int Y, int FrameWidth, int FrameHeight)
 {
-    FPixels* pixels = f_png__readFile(Path);
+    FPixels* pixels = NULL;
+
+    if(f_path_exists(Path, F_PATH_FILE | F_PATH_REAL)) {
+        pixels = f_png__readFile(Path);
+    } else if(f_path_exists(Path, F_PATH_FILE | F_PATH_EMBEDDED)) {
+        pixels = f_png__readMemory(f_embed__fileGet(Path)->buffer);
+    } else {
+        F__FATAL("f_sprite_newFromPng(%s): File does not exist", Path);
+    }
 
     if(pixels == NULL) {
         F__FATAL("f_sprite_newFromPng(%s): Cannot read file", Path);

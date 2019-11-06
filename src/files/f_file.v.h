@@ -28,34 +28,4 @@ typedef enum {
     F_FILE__OFFSET_NUM
 } FFileOffset;
 
-typedef struct {
-    bool (*seek)(FFile* File, int Offset, FFileOffset Origin);
-    bool (*read)(FFile* File, void* Buffer, size_t Size);
-    bool (*write)(FFile* File, const void* Buffer, size_t Size);
-    bool (*writef)(FFile* File, const char* Format, va_list Args);
-    bool (*flush)(FFile* File);
-    int (*getchar)(FFile* File);
-    int (*ungetchar)(FFile* File, int Char);
-} FFileInterface;
-
-#include "files/f_embed.v.h"
-
-struct FFile {
-    FPath* path;
-    const FFileInterface* interface;
-    union {
-        FILE* handle;
-        struct {
-            const FEmbeddedFile* data;
-            size_t index;
-        } e;
-    } u;
-    char* lineBuffer;
-    unsigned lineBufferSize;
-    unsigned lineNumber;
-    bool eof;
-};
-
-extern const FEmbeddedFile* f_file__dataGet(FFile* File);
-
 #endif // F_INC_FILES_FILE_V_H

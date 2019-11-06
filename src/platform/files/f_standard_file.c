@@ -1,0 +1,148 @@
+/*
+    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
+    This file is part of Faur, a C video game framework.
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License version 3,
+    as published by the Free Software Foundation.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+#include "f_standard_file.v.h"
+#include <faur.v.h>
+#include <sys/stat.h>
+
+#if F_CONFIG_SYSTEM_EMSCRIPTEN
+    #include <emscripten.h>
+#endif
+
+struct FPlatformFile {
+    FILE* handle;
+};
+
+FPlatformFile* f_platform_api__fileNew(FPath* Path, FFileMode Mode)
+{
+    int index = 0;
+    char mode[4];
+
+    if(F_FLAGS_TEST_ANY(Mode, F_FILE_READ)) {
+        mode[index++] = 'r';
+    } else if(F_FLAGS_TEST_ANY(Mode, F_FILE_WRITE)) {
+        mode[index++] = 'w';
+    }
+
+    if(F_FLAGS_TEST_ANY(Mode, F_FILE_BINARY)) {
+        mode[index++] = 'b';
+    }
+
+    mode[index] = '\0';
+
+    FILE* handle = fopen(f_path_getFull(Path), mode);
+
+    if(handle == NULL) {
+        f_out__error("f_file_new(%s): Cannot open for '%s'",
+                     f_path_getFull(Path),
+                     mode);
+
+        return NULL;
+    }
+
+    if(F_FLAGS_TEST_ANY(Mode, F_FILE_WRITE)) {
+        f_path__flagsSet(Path, F_PATH_FILE | F_PATH_REAL);
+    }
+
+    return handle;
+}
+
+void f_platform_api__fileFree(FPlatformFile* File)
+{
+    fclose(File);
+}
+
+bool f_platform_api__fileSeek(FPlatformFile* File, int Offset, FFileOffset Origin)
+{
+    static const int whence[F_FILE__OFFSET_NUM] = {
+        [F_FILE__OFFSET_START] = SEEK_SET,
+        [F_FILE__OFFSET_CURRENT] = SEEK_CUR,
+        [F_FILE__OFFSET_END] = SEEK_END,
+    };
+
+    return fseek(File, (long int)Offset, whence[Origin]) == 0;
+}
+
+bool f_platform_api__fileRead(FPlatformFile* File, void* Buffer, size_t Size)
+{
+    return fread(Buffer, Size, 1, File) == 1;
+}
+
+bool f_platform_api__fileWrite(FPlatformFile* File, const void* Buffer, size_t Size)
+{
+    bool ret = fwrite(Buffer, Size, 1, File) == 1;
+
+    #if F_CONFIG_SYSTEM_EMSCRIPTEN
+        EM_ASM(
+            {
+                FS.syncfs(false, function(Error) {});
+            },
+            0
+        );
+    #endif
+
+    return ret;
+}
+
+bool f_platform_api__fileWritef(FPlatformFile* File, const char* Format, va_list Args)
+{
+    return vfprintf(File, Format, Args) >= 0;
+}
+
+bool f_platform_api__fileFlush(FPlatformFile* File)
+{
+    return fflush(File) == 0;
+}
+
+int f_platform_api__fileReadChar(FPlatformFile* File)
+{
+    return fgetc(File);
+}
+
+int f_platform_api__fileReadCharUndo(FPlatformFile* File, int Char)
+{
+    return ungetc(Char, File);
+}
+
+uint8_t* f_platform_api__fileToBuffer(const char* Path)
+{
+    struct stat info;
+
+    if(stat(Path, &info) != 0) {
+        f_out__error("stat(%s) failed", Path);
+
+        return NULL;
+    }
+
+    FFile* f = f_file_new(Path, F_FILE_READ | F_FILE_BINARY);
+
+    if(f == NULL) {
+        return NULL;
+    }
+
+    size_t size = (size_t)info.st_size;
+    uint8_t* buffer = f_mem_malloc(size);
+
+    if(!f_file_read(f, buffer, size)) {
+        f_mem_free(buffer);
+        buffer = NULL;
+    }
+
+    f_file_free(f);
+
+    return buffer;
+}

@@ -69,11 +69,6 @@ FPixels* f_png__readFile(const char* Path)
         goto cleanUp;
     }
 
-    if(f_path_test(f_file_pathGet(f), F_PATH_EMBEDDED)) {
-        pixels = f_png__readMemory(f_file__dataGet(f)->buffer);
-        goto cleanUp;
-    }
-
     #define PNG_SIG 8
     png_byte sig[PNG_SIG];
 

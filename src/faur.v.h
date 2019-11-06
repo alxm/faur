@@ -30,7 +30,6 @@ F_EXTERN_C_START
 #include "ecs/f_template.v.h"
 #include "files/f_embed.v.h"
 #include "files/f_file_embedded.v.h"
-#include "files/f_file_real.v.h"
 #include "files/f_file.v.h"
 #include "files/f_path.v.h"
 #include "general/f_console.v.h"

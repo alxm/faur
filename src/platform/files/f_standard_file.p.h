@@ -1,5 +1,5 @@
 /*
-    Copyright 2018 Alex Margarit <alex@alxm.org>
+    Copyright 2019 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -15,15 +15,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef F_INC_FILES_FILE_REAL_V_H
-#define F_INC_FILES_FILE_REAL_V_H
+#ifndef F_INC_PLATFORM_FILES_STANDARD_FILE_P_H
+#define F_INC_PLATFORM_FILES_STANDARD_FILE_P_H
 
-#include "files/f_file_real.p.h"
+#include "general/f_system_includes.h"
 
-#include "files/f_file.v.h"
-
-extern FFile* f_file_real__new(FPath* Path, FFileMode Mode);
-
-extern uint8_t* f_file_real__toBuffer(const char* Path);
-
-#endif // F_INC_FILES_FILE_REAL_V_H
+#endif // F_INC_PLATFORM_FILES_STANDARD_FILE_P_H
