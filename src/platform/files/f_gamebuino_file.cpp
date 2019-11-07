@@ -93,4 +93,11 @@ bool f_platform_api__fileWrite(FPlatformFile* File, const void* Buffer, size_t S
 
     return f->file.write(Buffer, Size) == (int)Size;
 }
+
+void f_platform_api__filePrint(FPlatformFile* File, const char* String)
+{
+    F_UNUSED(File);
+
+    SerialUSB.printf(String);
+}
 #endif // F_CONFIG_FILES_LIB_GAMEBUINO

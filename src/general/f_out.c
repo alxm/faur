@@ -61,23 +61,28 @@ static const struct {
 
 static void outWorkerPrint(FOutSource Source, FOutType Type, FILE* Stream, const char* Text)
 {
-    #if F_CONFIG_SYSTEM_LINUX && F_CONFIG_TRAIT_DESKTOP
-        fprintf(Stream,
-                "\033[1;%dm[%s][%s][%08x]\033[0m ",
-                g_types[Type].color,
-                g_sources[Source],
-                g_types[Type].name,
-                (unsigned)f_fps_ticksGet());
-    #else
-        fprintf(Stream,
-                "[%s][%s][%08x] ",
-                g_sources[Source],
-                g_types[Type].name,
-                (unsigned)f_fps_ticksGet());
-    #endif
+    static char headerBuffer[64];
 
-    fputs(Text, Stream);
-    fputs("\n", Stream);
+    const char* headerTag = f_str_fmt(
+                                headerBuffer,
+                                sizeof(headerBuffer),
+                                false,
+#if F_CONFIG_SYSTEM_LINUX && F_CONFIG_TRAIT_DESKTOP
+                                "\033[1;%dm[%s][%s][%08x]\033[0m ",
+                                g_types[Type].color,
+#else
+                                "[%s][%s][%08x] ",
+#endif
+                                g_sources[Source],
+                                g_types[Type].name,
+                                (unsigned)f_fps_ticksGet());
+
+    if(headerTag) {
+        f_platform_api__filePrint(Stream, headerTag);
+    }
+
+    f_platform_api__filePrint(Stream, Text);
+    f_platform_api__filePrint(Stream, "\n");
 
     f_console__write(Source, Type, Text);
 }

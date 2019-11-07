@@ -121,6 +121,7 @@ extern bool f_platform_api__fileSeek(FPlatformFile* File, int Offset, FFileOffse
 extern bool f_platform_api__fileRead(FPlatformFile* File, void* Buffer, size_t Size);
 extern bool f_platform_api__fileWrite(FPlatformFile* File, const void* Buffer, size_t Size);
 extern bool f_platform_api__fileWritef(FPlatformFile* File, const char* Format, va_list Args);
+extern void f_platform_api__filePrint(FPlatformFile* File, const char* String);
 extern bool f_platform_api__fileFlush(FPlatformFile* File);
 extern int f_platform_api__fileReadChar(FPlatformFile* File);
 extern int f_platform_api__fileReadCharUndo(FPlatformFile* File, int Char);

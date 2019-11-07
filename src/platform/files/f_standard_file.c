@@ -128,6 +128,11 @@ bool f_platform_api__fileWritef(FPlatformFile* File, const char* Format, va_list
     return vfprintf(File, Format, Args) >= 0;
 }
 
+void f_platform_api__filePrint(FPlatformFile* File, const char* String)
+{
+    fputs(String, File);
+}
+
 bool f_platform_api__fileFlush(FPlatformFile* File)
 {
     return fflush(File) == 0;
