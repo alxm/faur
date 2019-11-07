@@ -24,7 +24,7 @@ FMusic* f_music_new(const char* Path)
     FPlatformMusic* m = f_platform_api__soundMusicNew(Path);
 
     if(m == NULL) {
-        F__FATAL("f_music_new(%s): Cannot open file", Path);
+        f_out__error("f_music_new(%s): Cannot open file", Path);
     }
 
     return m;
