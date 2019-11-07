@@ -17,7 +17,6 @@
 
 #include "f_path.v.h"
 #include <faur.v.h>
-#include <sys/stat.h>
 
 struct FPath {
     FPathFlags flags;
@@ -28,23 +27,14 @@ struct FPath {
 
 static FPathFlags getPathFlags(const char* Path)
 {
-    struct stat info;
     FPathFlags flags = 0;
 
-    if(stat(Path, &info) == 0) {
-        F_FLAGS_SET(flags, F_PATH_REAL);
-
-        if(S_ISREG(info.st_mode)) {
-            F_FLAGS_SET(flags, F_PATH_FILE);
-        } else if(S_ISDIR(info.st_mode)) {
-            F_FLAGS_SET(flags, F_PATH_DIR);
-        } else {
-            F_FLAGS_SET(flags, F_PATH_OTHER);
+    if(!f_platform_api__fileStat(Path, &flags)) {
+        if(f_embed__fileGet(Path) != NULL) {
+            F_FLAGS_SET(flags, F_PATH_EMBEDDED | F_PATH_FILE);
+        } else if(f_embed__dirGet(Path) != NULL) {
+            F_FLAGS_SET(flags, F_PATH_EMBEDDED | F_PATH_DIR);
         }
-    } else if(f_embed__fileGet(Path) != NULL) {
-        F_FLAGS_SET(flags, F_PATH_EMBEDDED | F_PATH_FILE);
-    } else if(f_embed__dirGet(Path) != NULL) {
-        F_FLAGS_SET(flags, F_PATH_EMBEDDED | F_PATH_DIR);
     }
 
     return flags;

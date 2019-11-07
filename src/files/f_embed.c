@@ -77,4 +77,32 @@ const FEmbeddedFile* f_embed__fileGet(const char* Path)
 }
 #else // F_CONFIG_SYSTEM_GAMEBUINO
 const FPack f_pack__embed;
+
+void f_embed__populate(void)
+{
+}
+
+void f_embed__dirAdd(const void* Data)
+{
+    F_UNUSED(Data);
+}
+
+const FEmbeddedDir* f_embed__dirGet(const char* Path)
+{
+    F_UNUSED(Path);
+
+    return NULL;
+}
+
+void f_embed__fileAdd(const void* Data)
+{
+    F_UNUSED(Data);
+}
+
+const FEmbeddedFile* f_embed__fileGet(const char* Path)
+{
+    F_UNUSED(Path);
+
+    return NULL;
+}
 #endif // F_CONFIG_SYSTEM_GAMEBUINO

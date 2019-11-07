@@ -114,6 +114,7 @@ extern bool f_platform_api__inputTouchTapGet(void);
 extern FPlatformController* f_platform_api__inputControllerClaim(FControllerBind* Callback);
 extern void f_platform_api__inputControllerRelease(FPlatformController* Controller);
 
+extern bool f_platform_api__fileStat(const char* Path, FPathFlags* Flags);
 extern FPlatformFile* f_platform_api__fileNew(FPath* Path, FFileMode Mode);
 extern void f_platform_api__fileFree(FPlatformFile* File);
 extern bool f_platform_api__fileSeek(FPlatformFile* File, int Offset, FFileOffset Origin);
