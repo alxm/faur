@@ -34,7 +34,7 @@ void f_platform_emscripten__init(void)
             FS.mount(IDBFS, {}, prefix);
             FS.syncfs(true, function(Error) { Module.faur_fsIsReady = 1; });
         },
-        F_CONFIG_PATH_STORAGE_PREFIX
+        F_CONFIG_FILES_PREFIX
     );
 }
 #endif // F_CONFIG_SYSTEM_EMSCRIPTEN
