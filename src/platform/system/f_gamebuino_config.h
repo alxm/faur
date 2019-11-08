@@ -18,10 +18,15 @@
 #ifndef F_INC_PLATFORM_SYSTEM_GAMEBUINO_CONFIG_H
 #define F_INC_PLATFORM_SYSTEM_GAMEBUINO_CONFIG_H
 
+
 #include <sketch/config-faur.h>
 
 #ifndef F_CONFIG_APP_AUTHOR
 #define F_CONFIG_APP_AUTHOR "you"
+#endif
+
+#ifndef F_CONFIG_APP_DIR
+#define F_CONFIG_APP_DIR "untitled"
 #endif
 
 #ifndef F_CONFIG_APP_NAME
@@ -146,4 +151,19 @@
 #ifndef F_CONFIG_SYSTEM_GAMEBUINO
 #define F_CONFIG_SYSTEM_GAMEBUINO 1
 #endif
+
+// Application must supply a `/config-gamebuino.h` file that includes <faur.h>
+// (for use by Gamebuino_META), and a `/config-faur.h` file (for use by Faur).
+#undef FOLDER_NAME
+#define FOLDER_NAME F_CONFIG_APP_DIR
+
+#undef DISPLAY_MODE
+#define DISPLAY_MODE DISPLAY_MODE_RGB565
+
+#undef SOUND_CHANNELS
+#define SOUND_CHANNELS 1
+
+#undef SOUND_FREQ
+#define SOUND_FREQ 22050
+
 #endif // F_INC_PLATFORM_SYSTEM_GAMEBUINO_CONFIG_H
