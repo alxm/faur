@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2018-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2019 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -15,17 +15,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef F_INC_FILES_FILE_V_H
-#define F_INC_FILES_FILE_V_H
+#ifndef F_INC_PLATFORM_FILES_GAMEBUINO_FILE_P_H
+#define F_INC_PLATFORM_FILES_GAMEBUINO_FILE_P_H
 
-#include "files/f_file.p.h"
+#include "general/f_system_includes.h"
 
-typedef enum {
-    F_FILE__OFFSET_INVALID = -1,
-    F_FILE__OFFSET_START,
-    F_FILE__OFFSET_CURRENT,
-    F_FILE__OFFSET_END,
-    F_FILE__OFFSET_NUM
-} FFileOffset;
-
-#endif // F_INC_FILES_FILE_V_H
+#endif // F_INC_PLATFORM_FILES_GAMEBUINO_FILE_P_H

@@ -18,7 +18,7 @@
 #include "f_out.v.h"
 #include <faur.v.h>
 
-#if F_CONFIG_OUTPUT_ENABLED
+#if F_CONFIG_FEATURE_OUTPUT
 #define F_OUT__STREAM_STDOUT stdout
 
 #if F_CONFIG_SYSTEM_EMSCRIPTEN
@@ -61,23 +61,28 @@ static const struct {
 
 static void outWorkerPrint(FOutSource Source, FOutType Type, FILE* Stream, const char* Text)
 {
-    #if F_CONFIG_SYSTEM_LINUX && F_CONFIG_TRAIT_DESKTOP
-        fprintf(Stream,
-                "\033[1;%dm[%s][%s][%08x]\033[0m ",
-                g_types[Type].color,
-                g_sources[Source],
-                g_types[Type].name,
-                (unsigned)f_fps_ticksGet());
-    #else
-        fprintf(Stream,
-                "[%s][%s][%08x] ",
-                g_sources[Source],
-                g_types[Type].name,
-                (unsigned)f_fps_ticksGet());
-    #endif
+    static char headerBuffer[64];
 
-    fputs(Text, Stream);
-    fputs("\n", Stream);
+    const char* headerTag = f_str_fmt(
+                                headerBuffer,
+                                sizeof(headerBuffer),
+                                false,
+#if F_CONFIG_SYSTEM_LINUX && F_CONFIG_TRAIT_DESKTOP
+                                "\033[1;%dm[%s][%s][%08x]\033[0m ",
+                                g_types[Type].color,
+#else
+                                "[%s][%s][%08x] ",
+#endif
+                                g_sources[Source],
+                                g_types[Type].name,
+                                (unsigned)f_fps_ticksGet());
+
+    if(headerTag) {
+        f_platform_api__filePrint(Stream, headerTag);
+    }
+
+    f_platform_api__filePrint(Stream, Text);
+    f_platform_api__filePrint(Stream, "\n");
 
     f_console__write(Source, Type, Text);
 }
@@ -205,4 +210,50 @@ void f_out_error(const char* Format, ...)
 
     va_end(args);
 }
-#endif // F_CONFIG_OUTPUT_ENABLED
+#else // !F_CONFIG_FEATURE_OUTPUT
+void f_out__info(const char* Format, ...)
+{
+    F_UNUSED(Format);
+}
+
+void f_out__warning(const char* Format, ...)
+{
+    F_UNUSED(Format);
+}
+
+void f_out__error(const char* Format, ...)
+{
+    F_UNUSED(Format);
+}
+
+void f_out__errorv(const char* Format, va_list Args)
+{
+    F_UNUSED(Format);
+    F_UNUSED(Args);
+}
+
+void f_out__state(const char* Format, ...)
+{
+    F_UNUSED(Format);
+}
+
+void f_out_text(const char* Text)
+{
+    F_UNUSED(Text);
+}
+
+void f_out_info(const char* Format, ...)
+{
+    F_UNUSED(Format);
+}
+
+void f_out_warning(const char* Format, ...)
+{
+    F_UNUSED(Format);
+}
+
+void f_out_error(const char* Format, ...)
+{
+    F_UNUSED(Format);
+}
+#endif // !F_CONFIG_FEATURE_OUTPUT

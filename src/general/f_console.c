@@ -21,7 +21,7 @@
 
 #include "generated/media/console_19x7.png.h"
 
-#if F_CONFIG_CONSOLE_ENABLED
+#if F_CONFIG_FEATURE_CONSOLE
 typedef struct {
     FOutSource source;
     FOutType type;
@@ -90,6 +90,7 @@ static void f_console__uninit1(void)
 {
     g_state = F_CONSOLE__STATE_INVALID;
 
+    f_sprite_free((FSprite*)f_gfx__console_19x7);
     f_list_freeEx(g_lines, (FFree*)line_free);
     f_button_free(g_toggle);
 }
@@ -227,7 +228,7 @@ void f_console__draw(void)
             f_font_print("SDL Gfx\n");
         #endif
 
-        #if F_CONFIG_SOUND_ENABLED
+        #if F_CONFIG_FEATURE_SOUND
             f_font_printf(
                 "Sound %s\n", f_platform_api__soundMuteGet() ? "off" : "on");
         #endif
@@ -241,7 +242,7 @@ void f_console__draw(void)
             printBytes(f_mem__top, "top");
         #endif
 
-        #if F_CONFIG_ECS_ENABLED
+        #if F_CONFIG_FEATURE_ECS
             f_font_printf("%u entities", f_ecs__listGetSum());
         #endif
     }
@@ -272,7 +273,7 @@ void f_console__write(FOutSource Source, FOutType Type, const char* Text)
         line_free(f_list_pop(g_lines));
     }
 }
-#else // !F_CONFIG_CONSOLE_ENABLED
+#else // !F_CONFIG_FEATURE_CONSOLE
 const FPack f_pack__console;
 
 void f_console_showSet(bool Show)
@@ -299,4 +300,4 @@ void f_console__write(FOutSource Source, FOutType Type, const char* Text)
     F_UNUSED(Type);
     F_UNUSED(Text);
 }
-#endif // !F_CONFIG_CONSOLE_ENABLED
+#endif // !F_CONFIG_FEATURE_CONSOLE

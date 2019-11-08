@@ -18,24 +18,44 @@
 #include "f_file.v.h"
 #include <faur.v.h>
 
+struct FFile {
+    FPath* path;
+    union {
+        void* file;
+        FPlatformFile* platform;
+        FFileEmbedded* embedded;
+    } f;
+    char* lineBuffer;
+    unsigned lineBufferSize;
+    unsigned lineNumber;
+    bool eof;
+};
+
 FFile* f_file_new(const char* Path, FFileMode Mode)
 {
-    FFile* f = NULL;
     FPath* path = f_path_new(Path);
+    void* file = NULL;
 
     if(F_FLAGS_TEST_ANY(Mode, F_FILE_WRITE)
         || f_path_test(path, F_PATH_FILE | F_PATH_REAL)) {
 
-        f = f_file_real__new(path, Mode);
+        file = f_platform_api__fileNew(path, Mode);
     } else if(f_path_test(path, F_PATH_FILE | F_PATH_EMBEDDED)) {
-        f = f_file_embedded__new(path);
+        file = f_file_embedded__new(path);
     } else {
         f_out__warning("f_file_new(%s): File does not exist", Path);
     }
 
-    if(f == NULL) {
+    if(file == NULL) {
         f_path_free(path);
+
+        return NULL;
     }
+
+    FFile* f = f_mem_zalloc(sizeof(FFile));
+
+    f->path = path;
+    f->f.file = file;
 
     return f;
 }
@@ -47,7 +67,7 @@ void f_file_free(FFile* File)
     }
 
     if(f_path_test(File->path, F_PATH_REAL)) {
-        fclose(File->u.handle);
+        f_platform_api__fileFree(File->f.platform);
     }
 
     f_path_free(File->path);
@@ -63,26 +83,14 @@ const FPath* f_file_pathGet(const FFile* File)
 
 FILE* f_file_handleGet(const FFile* File)
 {
-    if(f_path_test(File->path, F_PATH_REAL)) {
-        return File->u.handle;
-    } else {
-        return NULL;
-    }
-}
-
-const FEmbeddedFile* f_file__dataGet(FFile* File)
-{
-    if(f_path_test(File->path, F_PATH_EMBEDDED)) {
-        return File->u.e.data;
-    } else {
-        return NULL;
-    }
+    return f_path_test(File->path, F_PATH_REAL)
+            ? (FILE*)File->f.platform : NULL;
 }
 
 uint8_t* f_file_toBuffer(const char* Path)
 {
     if(f_path_exists(Path, F_PATH_FILE | F_PATH_REAL)) {
-        return f_file_real__toBuffer(Path);
+        return f_platform_api__fileToBuffer(Path);
     } else if(f_path_exists(Path, F_PATH_FILE | F_PATH_EMBEDDED)) {
         return f_file_embedded__toBuffer(Path);
     }
@@ -113,7 +121,13 @@ void f_file_prefixWrite(FFile* File, const char* Prefix)
 
 bool f_file_read(FFile* File, void* Buffer, size_t Size)
 {
-    bool ret = File->interface->read(File, Buffer, Size);
+    bool ret;
+
+    if(f_path_test(File->path, F_PATH_EMBEDDED)) {
+        ret = f_file_embedded__read(File->f.embedded, Buffer, Size);
+    } else {
+        ret = f_platform_api__fileRead(File->f.platform, Buffer, Size);
+    }
 
     if(!ret) {
         f_out__warning("f_file_read(%s): Could not read %u bytes",
@@ -126,7 +140,13 @@ bool f_file_read(FFile* File, void* Buffer, size_t Size)
 
 bool f_file_write(FFile* File, const void* Buffer, size_t Size)
 {
-    bool ret = File->interface->write(File, Buffer, Size);
+    bool ret;
+
+    if(f_path_test(File->path, F_PATH_EMBEDDED)) {
+        ret = f_file_embedded__write(File->f.embedded, Buffer, Size);
+    } else {
+        ret = f_platform_api__fileWrite(File->f.platform, Buffer, Size);
+    }
 
     if(!ret) {
         f_out__error("f_file_write(%s): Could not write %u bytes",
@@ -142,7 +162,13 @@ bool f_file_writef(FFile* File, const char* Format, ...)
     va_list args;
     va_start(args, Format);
 
-    bool ret = File->interface->writef(File, Format, args);
+    bool ret;
+
+    if(f_path_test(File->path, F_PATH_EMBEDDED)) {
+        ret = f_file_embedded__writef(File->f.embedded, Format, args);
+    } else {
+        ret = f_platform_api__fileWritef(File->f.platform, Format, args);
+    }
 
     va_end(args);
 
@@ -156,20 +182,39 @@ bool f_file_writef(FFile* File, const char* Format, ...)
 
 bool f_file_flush(FFile* File)
 {
-    return File->interface->flush(File);
+    if(f_path_test(File->path, F_PATH_EMBEDDED)) {
+        return f_file_embedded__flush(File->f.embedded);
+    } else {
+        return f_platform_api__fileFlush(File->f.platform);
+    }
 }
 
 static int readChar(FFile* File)
 {
-    int ch = File->interface->getchar(File);
+    int ch;
+    bool embedded = f_path_test(File->path, F_PATH_EMBEDDED);
+
+    if(embedded) {
+        ch = f_file_embedded__readChar(File->f.embedded);
+    } else {
+        ch = f_platform_api__fileReadChar(File->f.platform);
+    }
 
     if(ch == '\r') {
         // Check if \r is followed by \n for CRLF line endings
-        ch = File->interface->getchar(File);
+        if(embedded) {
+            ch = f_file_embedded__readChar(File->f.embedded);
+        } else {
+            ch = f_platform_api__fileReadChar(File->f.platform);
+        }
 
         if(ch != '\n') {
             // \r not followed by \n, assume CR line endings and put char back
-            ch = File->interface->ungetchar(File, ch);
+            if(embedded) {
+                ch = f_file_embedded__readCharUndo(File->f.embedded, ch);
+            } else {
+                ch = f_platform_api__fileReadCharUndo(File->f.platform, ch);
+            }
 
             if(ch != EOF) {
                 File->lineNumber++;
@@ -238,7 +283,15 @@ unsigned f_file_lineNumberGet(const FFile* File)
 
 bool f_file_rewind(FFile* File)
 {
-    bool ret = File->interface->seek(File, 0, F_FILE__OFFSET_START);
+    bool ret;
+
+    if(f_path_test(File->path, F_PATH_EMBEDDED)) {
+        ret = f_file_embedded__seek(
+                File->f.embedded, 0, F_FILE__OFFSET_START);
+    } else {
+        ret = f_platform_api__fileSeek(
+                File->f.platform, 0, F_FILE__OFFSET_START);
+    }
 
     if(ret) {
         File->lineNumber = 0;
@@ -252,7 +305,15 @@ bool f_file_rewind(FFile* File)
 
 bool f_file_seekStart(FFile* File, int Offset)
 {
-    bool ret = File->interface->seek(File, Offset, F_FILE__OFFSET_START);
+    bool ret;
+
+    if(f_path_test(File->path, F_PATH_EMBEDDED)) {
+        ret = f_file_embedded__seek(
+                File->f.embedded, Offset, F_FILE__OFFSET_START);
+    } else {
+        ret = f_platform_api__fileSeek(
+                File->f.platform, Offset, F_FILE__OFFSET_START);
+    }
 
     if(!ret) {
         f_out__error("f_file_seekStart(%s, %d) failed",
@@ -265,7 +326,15 @@ bool f_file_seekStart(FFile* File, int Offset)
 
 bool f_file_seekEnd(FFile* File, int Offset)
 {
-    bool ret = File->interface->seek(File, Offset, F_FILE__OFFSET_END);
+    bool ret;
+
+    if(f_path_test(File->path, F_PATH_EMBEDDED)) {
+        ret = f_file_embedded__seek(
+                File->f.embedded, Offset, F_FILE__OFFSET_END);
+    } else {
+        ret = f_platform_api__fileSeek(
+                File->f.platform, Offset, F_FILE__OFFSET_END);
+    }
 
     if(!ret) {
         f_out__error("f_file_seekEnd(%s, %d) failed",
@@ -278,7 +347,15 @@ bool f_file_seekEnd(FFile* File, int Offset)
 
 bool f_file_seekCurrent(FFile* File, int Offset)
 {
-    bool ret = File->interface->seek(File, Offset, F_FILE__OFFSET_CURRENT);
+    bool ret;
+
+    if(f_path_test(File->path, F_PATH_EMBEDDED)) {
+        ret = f_file_embedded__seek(
+                File->f.embedded, Offset, F_FILE__OFFSET_CURRENT);
+    } else {
+        ret = f_platform_api__fileSeek(
+                File->f.platform, Offset, F_FILE__OFFSET_CURRENT);
+    }
 
     if(!ret) {
         f_out__error("f_file_seekCurrent(%s, %d) failed",

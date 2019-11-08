@@ -18,7 +18,7 @@
 #include "f_channel.v.h"
 #include <faur.v.h>
 
-#if F_CONFIG_SOUND_ENABLED
+#if F_CONFIG_FEATURE_SOUND
 int f_channel_new(void)
 {
     return f_platform_api__soundSampleChannelGet();
@@ -52,7 +52,7 @@ bool f_channel_isPlaying(int Channel)
 {
     return f_platform_api__soundSampleIsPlaying(Channel);
 }
-#else // !F_CONFIG_SOUND_ENABLED
+#else // !F_CONFIG_FEATURE_SOUND
 int f_channel_new(void)
 {
     return -1;
@@ -76,4 +76,4 @@ bool f_channel_isPlaying(int Channel)
 
     return false;
 }
-#endif // !F_CONFIG_SOUND_ENABLED
+#endif // !F_CONFIG_FEATURE_SOUND

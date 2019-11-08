@@ -18,13 +18,13 @@
 #include "f_music.v.h"
 #include <faur.v.h>
 
-#if F_CONFIG_SOUND_ENABLED && F_CONFIG_SOUND_ENABLED_MUSIC
+#if F_CONFIG_FEATURE_MUSIC
 FMusic* f_music_new(const char* Path)
 {
     FPlatformMusic* m = f_platform_api__soundMusicNew(Path);
 
     if(m == NULL) {
-        F__FATAL("f_music_new(%s): Cannot open file", Path);
+        f_out__error("f_music_new(%s): Cannot open file", Path);
     }
 
     return m;
@@ -50,7 +50,7 @@ void f_music_stop(void)
 {
     f_platform_api__soundMusicStop();
 }
-#else // !F_CONFIG_SOUND_ENABLED || !F_CONFIG_SOUND_ENABLED_MUSIC
+#else // !F_CONFIG_FEATURE_MUSIC
 FMusic* f_music_new(const char* Path)
 {
     F_UNUSED(Path);
@@ -71,4 +71,4 @@ void f_music_play(FMusic* Music)
 void f_music_stop(void)
 {
 }
-#endif // !F_CONFIG_SOUND_ENABLED || !F_CONFIG_SOUND_ENABLED_MUSIC
+#endif // !F_CONFIG_FEATURE_MUSIC
