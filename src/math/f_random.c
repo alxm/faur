@@ -43,13 +43,9 @@ void f_random_generatorSet(FRandomPrng* Rand, FRandomPrngSeed* Srand)
     g_rand = Rand;
     g_srand = Srand;
 
-    time_t t = time(NULL);
-
-    if(t < 0) {
-        f_random_seedSet(0);
-    } else {
-        f_random_seedSet((unsigned)t);
-    }
+    #if F_CONFIG_FEATURE_RANDOM_SEED
+        f_random_seedSet((unsigned)time(NULL));
+    #endif
 }
 
 void f_random_generatorReset(void)
