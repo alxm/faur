@@ -31,11 +31,7 @@ typedef struct {
 
 bool f_platform_api__fileStat(const char* Path, FPathFlags* Flags)
 {
-    File file = SD.open(Path, O_RDONLY);
-
-    if(file) {
-        file.close();
-
+    if(SD.exists(Path)) {
         *Flags = (FPathFlags)(F_PATH_REAL | F_PATH_FILE);
 
         return true;
