@@ -18,7 +18,7 @@
 #include "f_embed.v.h"
 #include <faur.v.h>
 
-#if !F_CONFIG_SYSTEM_GAMEBUINO
+#if F_CONFIG_FEATURE_EMBED
 static FStrHash* g_dirs; // table of FEmbeddedDir
 static FStrHash* g_files; // table of FEmbeddedFile
 
@@ -75,12 +75,8 @@ const FEmbeddedFile* f_embed__fileGet(const char* Path)
 {
     return f_strhash_get(g_files, Path);
 }
-#else // F_CONFIG_SYSTEM_GAMEBUINO
+#else // !F_CONFIG_FEATURE_EMBED
 const FPack f_pack__embed;
-
-void f_embed__populate(void)
-{
-}
 
 void f_embed__dirAdd(const void* Data)
 {
@@ -105,4 +101,4 @@ const FEmbeddedFile* f_embed__fileGet(const char* Path)
 
     return NULL;
 }
-#endif // F_CONFIG_SYSTEM_GAMEBUINO
+#endif // !F_CONFIG_FEATURE_EMBED
