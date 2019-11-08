@@ -165,7 +165,7 @@ __attribute__((noreturn)) static void handleFatal(void)
             emscripten_force_exit(1);
         #endif
 
-        exit(1);
+        exit(EXIT_FAILURE);
     #endif
 }
 
