@@ -121,7 +121,9 @@ void f_fps__frame(void)
 
     g_run.lastFrameMs = nowMs;
 
-    #if F_CONFIG_FPS_CAP_LAG
+    #if F_CONFIG_SYSTEM_GAMEBUINO
+        g_run.tickCreditMs = g_settings.tickFrameMs;
+    #elif F_CONFIG_FPS_CAP_LAG
         g_run.tickCreditMs += f_math_minu(
                                 elapsedMs, g_settings.drawFrameMs * 2);
     #else
