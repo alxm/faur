@@ -18,10 +18,13 @@
 #include "f_fps.v.h"
 #include <faur.v.h>
 
-static struct {
+static const struct {
     unsigned tickFrameMs;
     unsigned drawFrameMs;
-} g_settings;
+} g_settings = {
+    1000 / F_CONFIG_FPS_RATE_TICK,
+    1000 / F_CONFIG_FPS_RATE_DRAW,
+};
 
 static struct {
     unsigned head;
@@ -41,9 +44,6 @@ static struct {
 
 static void f_fps__init(void)
 {
-    g_settings.tickFrameMs = 1000 / F_CONFIG_FPS_RATE_TICK;
-    g_settings.drawFrameMs = 1000 / F_CONFIG_FPS_RATE_DRAW;
-
     f_fps__reset();
 }
 
