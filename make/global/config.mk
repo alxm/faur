@@ -150,19 +150,19 @@ F_CONFIG_FPS_RATE_DRAW ?= $(F_CONFIG_FPS_RATE_TICK)
 F_CONFIG_FPS_HISTORY ?= $(shell expr $(F_CONFIG_FPS_RATE_TICK) \* 2)
 
 ifeq ($(shell expr $(F_CONFIG_FPS_RATE_TICK) \< 1), 1)
-    $(error F_CONFIG_FPS_RATE_TICK ($(F_CONFIG_FPS_RATE_TICK)) < 1)
+    F_CONFIG_FPS_RATE_TICK := 1
 endif
 
 ifeq ($(shell expr $(F_CONFIG_FPS_RATE_DRAW) \< 1), 1)
-    $(error F_CONFIG_FPS_RATE_DRAW ($(F_CONFIG_FPS_RATE_DRAW)) < 1)
+    F_CONFIG_FPS_RATE_DRAW := 1
 endif
 
 ifeq ($(shell expr $(F_CONFIG_FPS_RATE_TICK) \< $(F_CONFIG_FPS_RATE_DRAW)), 1)
-    $(error F_CONFIG_FPS_RATE_TICK ($(F_CONFIG_FPS_RATE_TICK)) < F_CONFIG_FPS_RATE_DRAW ($(F_CONFIG_FPS_RATE_DRAW)))
+    F_CONFIG_FPS_RATE_DRAW := F_CONFIG_FPS_RATE_TICK
 endif
 
 ifeq ($(shell expr $(F_CONFIG_FPS_HISTORY) \< 1), 1)
-    $(error F_CONFIG_FPS_HISTORY ($(F_CONFIG_FPS_HISTORY)) < 1)
+    F_CONFIG_FPS_HISTORY := 1
 endif
 
 #
