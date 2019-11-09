@@ -27,4 +27,4 @@ $(FAUR_DIR_OBJ)/%.c.o : $(FAUR_DIR_SRC)/%.c
 	$(CC) -c -o $@ $< $(FAUR_GENERIC_CFLAGS)
 
 $(FAUR_FILE_EDITOR_TAGS) : $(FAUR_FILES_PUBLIC_FAUR_HEADERS)
-	test ! -d $(@D) || CFLAGS="$(F_CONFIG_BUILD_CFLAGS)" geany -g -P $@ $^
+	test ! -d $(@D) || CFLAGS="$(F_CONFIG_BUILD_CFLAGS)" geany -g $@ $^
