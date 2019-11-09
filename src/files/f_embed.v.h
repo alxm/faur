@@ -23,13 +23,13 @@
 typedef struct {
     const char* path;
     size_t size;
-    const char* entries[];
+    const char* entries[1];
 } FEmbeddedDir;
 
 typedef struct {
     const char* path;
     size_t size;
-    uint8_t buffer[];
+    uint8_t buffer[1];
 } FEmbeddedFile;
 
 #include "../general/f_main.v.h"

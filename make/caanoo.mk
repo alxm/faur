@@ -1,6 +1,8 @@
 include $(FAUR_PATH)/make/global/defs.mk
 
-F_CONFIG_BUILD_AR_FLAGS := T
+F_CONFIG_BUILD_FLAGS_AR := T
+F_CONFIG_BUILD_FLAGS_CPP_PEDANTIC := 0
+F_CONFIG_BUILD_FLAGS_CPP_STANDARD := c++98
 F_CONFIG_BUILD_OPT := 3
 F_CONFIG_INPUT_MOUSE_CURSOR := 0
 F_CONFIG_LIB_PNG := 1
@@ -30,7 +32,7 @@ F_CONFIG_BUILD_LIBS += \
     -lm \
     -ldl \
 
-F_CONFIG_BUILD_CFLAGS += \
+F_CONFIG_BUILD_FLAGS_SHARED += \
     -march=armv5te \
     -mtune=arm9tdmi \
     -msoft-float \
@@ -41,6 +43,8 @@ F_CONFIG_BUILD_CFLAGS += \
     -isystem$(CAANOO_SDK)/include \
     -isystem$(CAANOO_SDK)/arm-gph-linux-gnueabi/include \
     -Wno-conversion \
+
+F_CONFIG_BUILD_FLAGS_C += \
     -Wno-override-init \
 
 PREFIX := arm-gph-linux-gnueabi-

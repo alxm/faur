@@ -82,7 +82,8 @@ void f_component_new(int ComponentIndex, size_t InstanceSize, FComponentInstance
         }
     #endif
 
-    component->size = sizeof(FComponentInstance) + InstanceSize;
+    component->size = sizeof(FComponentInstance)
+                        - sizeof(FMaxMemAlignType) + InstanceSize;
     component->init = InstanceInit;
     component->free = InstanceFree;
     component->stringId = g_defaultId;

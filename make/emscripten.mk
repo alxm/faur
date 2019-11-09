@@ -17,7 +17,8 @@ all :
 
 else
 
-F_CONFIG_BUILD_C_STANDARD := gnu11
+F_CONFIG_BUILD_FLAGS_C_STANDARD := gnu11
+F_CONFIG_BUILD_FLAGS_CPP_STANDARD := gnu++11
 F_CONFIG_BUILD_OPT := 3
 F_CONFIG_FILES_PREFIX := /faur-idbfs/
 F_CONFIG_LIB_PNG := 1
@@ -56,7 +57,7 @@ F_CONFIG_BUILD_LIBS += \
     $(F_BUILD_EMSCRIPTEN_LIBS) \
     $(F_BUILD_EMSCRIPTEN_EMBED) \
 
-F_CONFIG_BUILD_CFLAGS += \
+F_CONFIG_BUILD_FLAGS_SHARED += \
     $(F_BUILD_EMSCRIPTEN_LIBS) \
     -Wno-dollar-in-identifier-extension \
     -Wno-gnu-zero-variadic-macro-arguments \

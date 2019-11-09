@@ -27,7 +27,7 @@ typedef struct FComponent FComponent;
 typedef struct {
     const FComponent* component; // shared data for all components of same type
     FEntity* entity; // entity this component belongs to
-    FMaxMemAlignType buffer[];
+    FMaxMemAlignType buffer[1];
 } FComponentInstance;
 
 extern void f_component__init(void);

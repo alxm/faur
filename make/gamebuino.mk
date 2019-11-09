@@ -55,11 +55,11 @@ include $(ARDMK_DIR)/Sam.mk
 F_DIR_GEN := $(OBJDIR)/userlibs/faur/faur_gen
 
 # Gamebuino_META needs __SKETCH_NAME__ (usually defined by Arduino IDE)
-F_CONFIG_BUILD_CFLAGS += \
+F_CONFIG_BUILD_FLAGS_SHARED += \
     -I$(F_DIR_GEN) \
     -D__SKETCH_NAME__=\"$(TARGET).ino\" \
 
-CPPFLAGS := $(F_CONFIG_BUILD_CFLAGS) $(CPPFLAGS)
+CPPFLAGS := $(F_CONFIG_BUILD_FLAGS_SHARED) $(CPPFLAGS)
 
 # Libraries don't build well with Link Time Optimization
 CFLAGS += -fno-lto

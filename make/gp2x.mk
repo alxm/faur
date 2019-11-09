@@ -1,5 +1,7 @@
 include $(FAUR_PATH)/make/global/defs.mk
 
+F_CONFIG_BUILD_FLAGS_CPP_PEDANTIC := 0
+F_CONFIG_BUILD_FLAGS_CPP_STANDARD := c++98
 F_CONFIG_BUILD_OPT := 3
 F_CONFIG_INPUT_MOUSE_CURSOR := 0
 F_CONFIG_LIB_PNG := 1
@@ -33,7 +35,7 @@ F_CONFIG_BUILD_LIBS += \
     -lstdc++ \
     -ldl \
 
-F_CONFIG_BUILD_CFLAGS += \
+F_CONFIG_BUILD_FLAGS_SHARED += \
     -mcpu=arm920t \
     -mtune=arm920t \
     -msoft-float \
