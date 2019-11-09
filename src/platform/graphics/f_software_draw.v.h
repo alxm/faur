@@ -18,6 +18,6 @@
 #ifndef F_INC_PLATFORM_GRAPHICS_SOFTWARE_DRAW_V_H
 #define F_INC_PLATFORM_GRAPHICS_SOFTWARE_DRAW_V_H
 
-#include "platform/graphics/f_software_draw.p.h"
+#include "f_software_draw.p.h"
 
 #endif // F_INC_PLATFORM_GRAPHICS_SOFTWARE_DRAW_V_H

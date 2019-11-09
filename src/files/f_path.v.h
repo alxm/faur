@@ -18,7 +18,7 @@
 #ifndef F_INC_FILES_PATH_V_H
 #define F_INC_FILES_PATH_V_H
 
-#include "files/f_path.p.h"
+#include "f_path.p.h"
 
 extern void f_path__flagsSet(FPath* Path, FPathFlags Flags);
 

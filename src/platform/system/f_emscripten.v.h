@@ -18,7 +18,7 @@
 #ifndef F_INC_PLATFORM_SYSTEM_EMSCRIPTEN_V_H
 #define F_INC_PLATFORM_SYSTEM_EMSCRIPTEN_V_H
 
-#include "platform/system/f_emscripten.p.h"
+#include "f_emscripten.p.h"
 
 extern void f_platform_emscripten__init(void);
 

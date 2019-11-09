@@ -18,12 +18,12 @@
 #ifndef F_INC_GRAPHICS_SPRITE_P_H
 #define F_INC_GRAPHICS_SPRITE_P_H
 
-#include "general/f_system_includes.h"
+#include "../general/f_system_includes.h"
 
 typedef struct FSprite FSprite;
 
-#include "graphics/f_color.p.h"
-#include "math/f_fix.p.h"
+#include "../graphics/f_color.p.h"
+#include "../math/f_fix.p.h"
 
 extern FSprite* f_sprite_newFromPng(const char* Path, int X, int Y, int FrameWidth, int FrameHeight);
 extern FSprite* f_sprite_newFromSprite(const FSprite* Sheet, int X, int Y, int FrameWidth, int FrameHeight);

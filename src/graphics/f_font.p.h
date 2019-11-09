@@ -18,7 +18,7 @@
 #ifndef F_INC_GRAPHICS_FONT_P_H
 #define F_INC_GRAPHICS_FONT_P_H
 
-#include "general/f_system_includes.h"
+#include "../general/f_system_includes.h"
 
 typedef struct FSprite FFont;
 
@@ -29,7 +29,7 @@ typedef enum {
     F_FONT_ALIGN_RIGHT,
 } FFontAlign;
 
-#include "graphics/f_sprite.p.h"
+#include "../graphics/f_sprite.p.h"
 
 extern FFont* f_font_newFromPng(const char* Path, int X, int Y, int CharWidth, int CharHeight);
 extern FFont* f_font_newFromSprite(const FSprite* Sheet, int X, int Y, int CharWidth, int CharHeight);

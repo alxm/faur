@@ -18,9 +18,9 @@
 #ifndef F_INC_GRAPHICS_SPRITE_V_H
 #define F_INC_GRAPHICS_SPRITE_V_H
 
-#include "graphics/f_sprite.p.h"
+#include "f_sprite.p.h"
 
-#include "platform/f_platform.v.h"
+#include "../platform/f_platform.v.h"
 
 extern FPixels* f_sprite__pixelsGet(FSprite* Sprite);
 extern FPlatformTexture* f_sprite__textureGet(const FSprite* Sprite, unsigned Frame);

@@ -103,14 +103,14 @@ static void scan_line(int Index, FVectorInt ScrP1, FVectorInt ScrP2, FVectorFix 
 #define F__BLEND_SETUP
 #define F__PIXEL_SETUP
 #define F__PIXEL_PARAMS , *src
-#include "platform/graphics/f_software_blit.inc.c"
+#include "f_software_blit.inc.c"
 
 #define F__BLEND plain
 #define F__FILL Flat
 #define F__BLEND_SETUP const FColorPixel color = f__color.pixel;
 #define F__PIXEL_SETUP
 #define F__PIXEL_PARAMS , color
-#include "platform/graphics/f_software_blit.inc.c"
+#include "f_software_blit.inc.c"
 
 #define F__BLEND rgba
 #define F__FILL Data
@@ -121,7 +121,7 @@ static void scan_line(int Index, FVectorInt ScrP1, FVectorInt ScrP2, FVectorFix 
     }
 #define F__PIXEL_SETUP const FColorRgb rgb = f_color_pixelToRgb(*src);
 #define F__PIXEL_PARAMS , &rgb, alpha
-#include "platform/graphics/f_software_blit.inc.c"
+#include "f_software_blit.inc.c"
 
 #define F__BLEND rgba
 #define F__FILL Flat
@@ -133,91 +133,91 @@ static void scan_line(int Index, FVectorInt ScrP1, FVectorInt ScrP2, FVectorFix 
     }
 #define F__PIXEL_SETUP
 #define F__PIXEL_PARAMS , &rgb, alpha
-#include "platform/graphics/f_software_blit.inc.c"
+#include "f_software_blit.inc.c"
 
 #define F__BLEND rgb25
 #define F__FILL Data
 #define F__BLEND_SETUP
 #define F__PIXEL_SETUP const FColorRgb rgb = f_color_pixelToRgb(*src);
 #define F__PIXEL_PARAMS , &rgb
-#include "platform/graphics/f_software_blit.inc.c"
+#include "f_software_blit.inc.c"
 
 #define F__BLEND rgb25
 #define F__FILL Flat
 #define F__BLEND_SETUP const FColorRgb rgb = f__color.rgb;
 #define F__PIXEL_SETUP
 #define F__PIXEL_PARAMS , &rgb
-#include "platform/graphics/f_software_blit.inc.c"
+#include "f_software_blit.inc.c"
 
 #define F__BLEND rgb50
 #define F__FILL Data
 #define F__BLEND_SETUP
 #define F__PIXEL_SETUP const FColorRgb rgb = f_color_pixelToRgb(*src);
 #define F__PIXEL_PARAMS , &rgb
-#include "platform/graphics/f_software_blit.inc.c"
+#include "f_software_blit.inc.c"
 
 #define F__BLEND rgb50
 #define F__FILL Flat
 #define F__BLEND_SETUP const FColorRgb rgb = f__color.rgb;
 #define F__PIXEL_SETUP
 #define F__PIXEL_PARAMS , &rgb
-#include "platform/graphics/f_software_blit.inc.c"
+#include "f_software_blit.inc.c"
 
 #define F__BLEND rgb75
 #define F__FILL Data
 #define F__BLEND_SETUP
 #define F__PIXEL_SETUP const FColorRgb rgb = f_color_pixelToRgb(*src);
 #define F__PIXEL_PARAMS , &rgb
-#include "platform/graphics/f_software_blit.inc.c"
+#include "f_software_blit.inc.c"
 
 #define F__BLEND rgb75
 #define F__FILL Flat
 #define F__BLEND_SETUP const FColorRgb rgb = f__color.rgb;
 #define F__PIXEL_SETUP
 #define F__PIXEL_PARAMS , &rgb
-#include "platform/graphics/f_software_blit.inc.c"
+#include "f_software_blit.inc.c"
 
 #define F__BLEND inverse
 #define F__FILL Data
 #define F__BLEND_SETUP
 #define F__PIXEL_SETUP
 #define F__PIXEL_PARAMS
-#include "platform/graphics/f_software_blit.inc.c"
+#include "f_software_blit.inc.c"
 
 #define F__BLEND inverse
 #define F__FILL Flat
 #define F__BLEND_SETUP
 #define F__PIXEL_SETUP
 #define F__PIXEL_PARAMS
-#include "platform/graphics/f_software_blit.inc.c"
+#include "f_software_blit.inc.c"
 
 #define F__BLEND mod
 #define F__FILL Data
 #define F__BLEND_SETUP
 #define F__PIXEL_SETUP const FColorRgb rgb = f_color_pixelToRgb(*src);
 #define F__PIXEL_PARAMS , &rgb
-#include "platform/graphics/f_software_blit.inc.c"
+#include "f_software_blit.inc.c"
 
 #define F__BLEND mod
 #define F__FILL Flat
 #define F__BLEND_SETUP const FColorRgb rgb = f__color.rgb;
 #define F__PIXEL_SETUP
 #define F__PIXEL_PARAMS , &rgb
-#include "platform/graphics/f_software_blit.inc.c"
+#include "f_software_blit.inc.c"
 
 #define F__BLEND add
 #define F__FILL Data
 #define F__BLEND_SETUP
 #define F__PIXEL_SETUP const FColorRgb rgb = f_color_pixelToRgb(*src);
 #define F__PIXEL_PARAMS , &rgb
-#include "platform/graphics/f_software_blit.inc.c"
+#include "f_software_blit.inc.c"
 
 #define F__BLEND add
 #define F__FILL Flat
 #define F__BLEND_SETUP const FColorRgb rgb = f__color.rgb;
 #define F__PIXEL_SETUP
 #define F__PIXEL_PARAMS , &rgb
-#include "platform/graphics/f_software_blit.inc.c"
+#include "f_software_blit.inc.c"
 
 #define F__INIT_BLEND(Index, Name)                      \
     [Index][0][0][0] = f_blit__##Name##DataBlockNoClip, \

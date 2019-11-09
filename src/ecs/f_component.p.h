@@ -18,10 +18,10 @@
 #ifndef F_INC_ECS_COMPONENT_P_H
 #define F_INC_ECS_COMPONENT_P_H
 
-#include "general/f_system_includes.h"
+#include "../general/f_system_includes.h"
 
-#include "data/f_block.p.h"
-#include "ecs/f_entity.p.h"
+#include "../data/f_block.p.h"
+#include "../ecs/f_entity.p.h"
 
 typedef void FComponentInstanceInit(void* Self);
 typedef void FComponentInstanceInitEx(void* Self, const void* Data);

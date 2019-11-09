@@ -18,7 +18,7 @@
 #ifndef F_INC_PLATFORM_SOUND_SDL_SOUND_V_H
 #define F_INC_PLATFORM_SOUND_SDL_SOUND_V_H
 
-#include "platform/sound/f_sdl_sound.p.h"
+#include "f_sdl_sound.p.h"
 
 extern void f_platform_sdl_sound__init(void);
 extern void f_platform_sdl_sound__uninit(void);

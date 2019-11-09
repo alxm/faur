@@ -18,9 +18,9 @@
 #ifndef F_INC_INPUTS_INPUT_V_H
 #define F_INC_INPUTS_INPUT_V_H
 
-#include "input/f_input.p.h"
+#include "f_input.p.h"
 
-#include "general/f_main.v.h"
+#include "../general/f_main.v.h"
 
 extern const FPack f_pack__input;
 

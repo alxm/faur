@@ -18,6 +18,6 @@
 #ifndef F_INC_PLATFORM_INPUT_GAMEBUINO_INPUT_V_H
 #define F_INC_PLATFORM_INPUT_GAMEBUINO_INPUT_V_H
 
-#include "platform/input/f_gamebuino_input.p.h"
+#include "f_gamebuino_input.p.h"
 
 #endif // F_INC_PLATFORM_INPUT_GAMEBUINO_INPUT_V_H

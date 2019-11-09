@@ -18,9 +18,9 @@
 #ifndef F_INC_MATH_RANDOM_V_H
 #define F_INC_MATH_RANDOM_V_H
 
-#include "math/f_random.p.h"
+#include "f_random.p.h"
 
-#include "general/f_main.v.h"
+#include "../general/f_main.v.h"
 
 extern const FPack f_pack__random;
 

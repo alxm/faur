@@ -18,7 +18,7 @@
 #ifndef F_INC_PLATFORM_PLATFORM_V_H
 #define F_INC_PLATFORM_PLATFORM_V_H
 
-#include "platform/f_platform.p.h"
+#include "f_platform.p.h"
 
 typedef struct FPlatformAnalog FPlatformAnalog;
 typedef struct FPlatformButton FPlatformButton;
@@ -31,12 +31,12 @@ typedef struct FPlatformTexture FPlatformTexture;
 
 typedef void FPlatformFile;
 
-#include "files/f_file.v.h"
-#include "general/f_main.v.h"
-#include "graphics/f_pixels.v.h"
-#include "input/f_analog.v.h"
-#include "input/f_button.v.h"
-#include "math/f_fix.v.h"
+#include "../files/f_file.v.h"
+#include "../general/f_main.v.h"
+#include "../graphics/f_pixels.v.h"
+#include "../input/f_analog.v.h"
+#include "../input/f_button.v.h"
+#include "../math/f_fix.v.h"
 
 extern const FPack f_pack__platform;
 

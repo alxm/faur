@@ -18,6 +18,6 @@
 #ifndef F_INC_COLLISION_COLLIDE_V_H
 #define F_INC_COLLISION_COLLIDE_V_H
 
-#include "collision/f_collide.p.h"
+#include "f_collide.p.h"
 
 #endif // F_INC_COLLISION_COLLIDE_V_H

@@ -18,12 +18,12 @@
 #ifndef F_INC_FILES_DIR_P_H
 #define F_INC_FILES_DIR_P_H
 
-#include "general/f_system_includes.h"
+#include "../general/f_system_includes.h"
 
 typedef struct FDir FDir;
 
-#include "data/f_list.p.h"
-#include "files/f_path.p.h"
+#include "../data/f_list.p.h"
+#include "../files/f_path.p.h"
 
 extern FDir* f_dir_new(const char* Path);
 extern void f_dir_free(FDir* Dir);

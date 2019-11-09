@@ -18,9 +18,9 @@
 #ifndef F_INC_TIME_TIME_P_H
 #define F_INC_TIME_TIME_P_H
 
-#include "general/f_system_includes.h"
+#include "../general/f_system_includes.h"
 
-#include "general/f_fps.p.h"
+#include "../general/f_fps.p.h"
 
 extern uint32_t f_time_getMs(void);
 

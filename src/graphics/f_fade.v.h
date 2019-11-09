@@ -18,9 +18,9 @@
 #ifndef F_INC_GRAPHICS_FADE_V_H
 #define F_INC_GRAPHICS_FADE_V_H
 
-#include "graphics/f_fade.p.h"
+#include "f_fade.p.h"
 
-#include "general/f_main.v.h"
+#include "../general/f_main.v.h"
 
 extern const FPack f_pack__fade;
 

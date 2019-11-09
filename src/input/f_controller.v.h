@@ -18,6 +18,6 @@
 #ifndef F_INC_INPUTS_CONTROLLER_V_H
 #define F_INC_INPUTS_CONTROLLER_V_H
 
-#include "input/f_controller.p.h"
+#include "f_controller.p.h"
 
 #endif // F_INC_INPUTS_CONTROLLER_V_H

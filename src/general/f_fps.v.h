@@ -18,9 +18,9 @@
 #ifndef F_INC_GENERAL_FPS_V_H
 #define F_INC_GENERAL_FPS_V_H
 
-#include "general/f_fps.p.h"
+#include "f_fps.p.h"
 
-#include "general/f_main.v.h"
+#include "../general/f_main.v.h"
 
 extern const FPack f_pack__fps;
 

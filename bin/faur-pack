@@ -24,18 +24,18 @@ from utils.tool import Tool
 
 """
 category/f_sample.p.h
-    #include "general/f_system_includes.h"
-    #include "foo/f_bar.p.h"
+    #include "../general/f_system_includes.h"
+    #include "../foo/f_bar.p.h"
     <public typedefs>
-    #include "foo/f_bar.p.h"
+    #include "../foo/f_bar.p.h"
     <public typedef implementations>
     <public api prototypes>
     <static inline functions>
 
 category/f_sample.v.h
-    #include "category/f_sample.p.h"
+    #include "f_sample.p.h"
     <private typedefs>
-    #include "foo/f_bar.v.h"
+    #include "../foo/f_bar.v.h"
     <private typedef implementations>
     <private api prototypes>
     <static inline functions>
@@ -51,8 +51,11 @@ category/f_sample.c
 g_tool = Tool('Folder Name')
 
 def main():
-    pack_folder = g_tool.get_arg('Folder').lower().replace(' ', '_')
+    pack_folder = g_tool.get_arg('Folder').strip('./').lower().replace(' ', '_')
     pack_name = g_tool.get_arg('Name').lower().replace(' ', '_')
+
+    if len(pack_folder) < 1:
+        g_tool.out.error('Invalid path {}'.format(g_tool.get_arg('Folder')))
 
     pack_path = os.path.join(g_tool.dir_src, pack_folder)
 
@@ -99,6 +102,8 @@ def main():
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */""".format(date = time.strftime('%Y'), author = author)
 
+    root_prefix = '../' * (1 + pack_folder.count('/'))
+
     g_tool.write_text(pack_c,
 """\
 {header_comment}
@@ -134,10 +139,12 @@ const FPack f_pack__{name} = {{
 #ifndef {guard}
 #define {guard}
 
-#include "general/f_system_includes.h"
+#include "{root}general/f_system_includes.h"
 
 #endif // {guard}
-""".format(header_comment = license_header, guard = header_guard_p))
+""".format(header_comment = license_header,
+           guard = header_guard_p,
+           root = root_prefix))
 
     g_tool.write_text(pack_vh,
 """\
@@ -146,16 +153,16 @@ const FPack f_pack__{name} = {{
 #ifndef {guard}
 #define {guard}
 
-#include "{folder}/f_{name}.p.h"
+#include "f_{name}.p.h"
 
-#include "general/f_main.v.h"
+#include "{root}general/f_main.v.h"
 
 extern const FPack f_pack__{name};
 
 #endif // {guard}
 """.format(header_comment = license_header,
            guard = header_guard_v,
-           folder = pack_folder,
+           root = root_prefix,
            name = pack_name))
 
 if __name__ == '__main__':

@@ -18,6 +18,6 @@
 #ifndef F_INC_STRINGS_STRBUILDER_V_H
 #define F_INC_STRINGS_STRBUILDER_V_H
 
-#include "strings/f_strbuilder.p.h"
+#include "f_strbuilder.p.h"
 
 #endif // F_INC_STRINGS_STRBUILDER_V_H

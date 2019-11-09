@@ -18,7 +18,7 @@
 #ifndef F_INC_FILES_EMBED_V_H
 #define F_INC_FILES_EMBED_V_H
 
-#include "files/f_embed.p.h"
+#include "f_embed.p.h"
 
 typedef struct {
     const char* path;
@@ -32,7 +32,7 @@ typedef struct {
     uint8_t buffer[];
 } FEmbeddedFile;
 
-#include "general/f_main.v.h"
+#include "../general/f_main.v.h"
 
 extern const FPack f_pack__embed;
 

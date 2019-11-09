@@ -18,7 +18,7 @@
 #ifndef F_INC_PLATFORM_SYSTEM_LINUX_V_H
 #define F_INC_PLATFORM_SYSTEM_LINUX_V_H
 
-#include "platform/system/f_linux.p.h"
+#include "f_linux.p.h"
 
 extern void f_platform_linux__init(void);
 

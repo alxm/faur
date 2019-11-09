@@ -18,7 +18,7 @@
 #ifndef F_INC_GENERAL_MENU_P_H
 #define F_INC_GENERAL_MENU_P_H
 
-#include "general/f_system_includes.h"
+#include "../general/f_system_includes.h"
 
 typedef struct FMenu FMenu;
 
@@ -29,9 +29,9 @@ typedef enum {
     F_MENU_STATE_CANCELED
 } FMenuState;
 
-#include "data/f_list.p.h"
-#include "input/f_button.p.h"
-#include "sound/f_sample.p.h"
+#include "../data/f_list.p.h"
+#include "../input/f_button.p.h"
+#include "../sound/f_sample.p.h"
 
 extern FMenu* f_menu_new(FButton* Next, FButton* Back, FButton* Select, FButton* Cancel);
 extern void f_menu_free(FMenu* Menu);

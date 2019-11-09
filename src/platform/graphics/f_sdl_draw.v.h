@@ -18,6 +18,6 @@
 #ifndef F_INC_PLATFORM_GRAPHICS_SDL_DRAW_V_H
 #define F_INC_PLATFORM_GRAPHICS_SDL_DRAW_V_H
 
-#include "platform/graphics/f_sdl_draw.p.h"
+#include "f_sdl_draw.p.h"
 
 #endif // F_INC_PLATFORM_GRAPHICS_SDL_DRAW_V_H

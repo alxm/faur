@@ -18,12 +18,12 @@
 #ifndef F_INC_ECS_SYSTEM_V_H
 #define F_INC_ECS_SYSTEM_V_H
 
-#include "ecs/f_system.p.h"
+#include "f_system.p.h"
 
 typedef struct FSystem FSystem;
 
-#include "data/f_bitfield.v.h"
-#include "data/f_list.v.h"
+#include "../data/f_bitfield.v.h"
+#include "../data/f_list.v.h"
 
 extern void f_system__uninit(void);
 

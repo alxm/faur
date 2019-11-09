@@ -18,6 +18,6 @@
 #ifndef F_INC_DATA_STRHASH_V_H
 #define F_INC_DATA_STRHASH_V_H
 
-#include "data/f_strhash.p.h"
+#include "f_strhash.p.h"
 
 #endif // F_INC_DATA_STRHASH_V_H

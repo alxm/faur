@@ -18,6 +18,6 @@
 #ifndef F_INC_PLATFORM_VIDEO_GAMEBUINO_V_H
 #define F_INC_PLATFORM_VIDEO_GAMEBUINO_V_H
 
-#include "platform/system/f_gamebuino.p.h"
+#include "f_gamebuino.p.h"
 
 #endif // F_INC_PLATFORM_VIDEO_GAMEBUINO_V_H

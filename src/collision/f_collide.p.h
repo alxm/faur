@@ -18,9 +18,9 @@
 #ifndef F_INC_COLLISION_COLLIDE_P_H
 #define F_INC_COLLISION_COLLIDE_P_H
 
-#include "general/f_system_includes.h"
+#include "../general/f_system_includes.h"
 
-#include "math/f_fix.p.h"
+#include "../math/f_fix.p.h"
 
 extern bool f_collide_boxAndBox(int X1, int Y1, int W1, int H1, int X2, int Y2, int W2, int H2);
 extern bool f_collide_circleAndCircle(int X1, int Y1, int R1, int X2, int Y2, int R2);

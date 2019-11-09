@@ -18,7 +18,7 @@
 #ifndef F_INC_ECS_ECS_V_H
 #define F_INC_ECS_ECS_V_H
 
-#include "ecs/f_ecs.p.h"
+#include "f_ecs.p.h"
 
 typedef enum {
     F_ECS__INVALID = -1,
@@ -30,8 +30,8 @@ typedef enum {
     F_ECS__NUM
 } FEcsListId;
 
-#include "data/f_list.v.h"
-#include "general/f_main.v.h"
+#include "../data/f_list.v.h"
+#include "../general/f_main.v.h"
 
 extern const FPack f_pack__ecs;
 

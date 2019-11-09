@@ -18,7 +18,7 @@
 #ifndef F_INC_ECS_TEMPLATE_V_H
 #define F_INC_ECS_TEMPLATE_V_H
 
-#include "ecs/f_template.p.h"
+#include "f_template.p.h"
 
 typedef struct FTemplate FTemplate;
 

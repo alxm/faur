@@ -18,10 +18,10 @@
 #ifndef F_INC_GENERAL_CONSOLE_V_H
 #define F_INC_GENERAL_CONSOLE_V_H
 
-#include "general/f_console.p.h"
+#include "f_console.p.h"
 
-#include "general/f_main.v.h"
-#include "general/f_out.v.h"
+#include "../general/f_main.v.h"
+#include "../general/f_out.v.h"
 
 extern const FPack f_pack__console;
 

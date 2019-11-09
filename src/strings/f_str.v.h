@@ -18,7 +18,7 @@
 #ifndef F_INC_STRINGS_STR_V_H
 #define F_INC_STRINGS_STR_V_H
 
-#include "strings/f_str.p.h"
+#include "f_str.p.h"
 
 extern const char* f_str__fmt512(const char* Format, ...);
 

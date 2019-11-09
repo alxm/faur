@@ -18,6 +18,6 @@
 #ifndef F_INC_GRAPHICS_PIXELS_P_H
 #define F_INC_GRAPHICS_PIXELS_P_H
 
-#include "general/f_system_includes.h"
+#include "../general/f_system_includes.h"
 
 #endif // F_INC_GRAPHICS_PIXELS_P_H

@@ -18,7 +18,7 @@
 #ifndef F_INC_MEMORY_MEM_V_H
 #define F_INC_MEMORY_MEM_V_H
 
-#include "memory/f_mem.p.h"
+#include "f_mem.p.h"
 
 typedef union {
     intmax_t u_intmax;

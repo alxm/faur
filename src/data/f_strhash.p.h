@@ -18,12 +18,12 @@
 #ifndef F_INC_DATA_STRHASH_P_H
 #define F_INC_DATA_STRHASH_P_H
 
-#include "general/f_system_includes.h"
+#include "../general/f_system_includes.h"
 
 typedef struct FStrHash FStrHash;
 typedef struct FStrHashEntry FStrHashEntry;
 
-#include "data/f_listit.p.h"
+#include "../data/f_listit.p.h"
 
 extern FStrHash* f_strhash_new(void);
 extern void f_strhash_free(FStrHash* Hash);

@@ -18,7 +18,7 @@
 #ifndef F_INC_PLATFORM_SYSTEM_GP2X_V_H
 #define F_INC_PLATFORM_SYSTEM_GP2X_V_H
 
-#include "platform/system/f_gp2x.p.h"
+#include "f_gp2x.p.h"
 
 extern void f_platform_gp2x__init(void);
 extern void f_platform_gp2x__uninit(void);

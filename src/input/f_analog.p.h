@@ -18,7 +18,7 @@
 #ifndef F_INC_INPUTS_ANALOG_P_H
 #define F_INC_INPUTS_ANALOG_P_H
 
-#include "general/f_system_includes.h"
+#include "../general/f_system_includes.h"
 
 typedef struct FAnalog FAnalog;
 
@@ -33,8 +33,8 @@ typedef enum {
     F_AXIS_NUM
 } FAnalogId;
 
-#include "input/f_controller.v.h"
-#include "math/f_fix.p.h"
+#include "../input/f_controller.v.h"
+#include "../math/f_fix.p.h"
 
 extern FAnalog* f_analog_new(void);
 extern void f_analog_free(FAnalog* Analog);

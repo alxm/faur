@@ -18,7 +18,7 @@
 #ifndef F_INC_GRAPHICS_COLOR_P_H
 #define F_INC_GRAPHICS_COLOR_P_H
 
-#include "general/f_system_includes.h"
+#include "../general/f_system_includes.h"
 
 #define F__C_RGBA (1 << 30)
 #define F__C_ARGB (1 << 29)

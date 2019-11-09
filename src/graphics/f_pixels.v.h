@@ -18,13 +18,13 @@
 #ifndef F_INC_GRAPHICS_PIXELS_V_H
 #define F_INC_GRAPHICS_PIXELS_V_H
 
-#include "graphics/f_pixels.p.h"
+#include "f_pixels.p.h"
 
 typedef struct FPixels FPixels;
 
-#include "general/f_main.v.h"
-#include "graphics/f_color.v.h"
-#include "math/f_fix.v.h"
+#include "../general/f_main.v.h"
+#include "../graphics/f_color.v.h"
+#include "../math/f_fix.v.h"
 
 typedef enum {
     F_PIXELS__ALLOC = F_FLAGS_BIT(0),

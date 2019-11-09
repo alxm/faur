@@ -18,9 +18,9 @@
 #ifndef F_INC_ECS_TEMPLATE_P_H
 #define F_INC_ECS_TEMPLATE_P_H
 
-#include "general/f_system_includes.h"
+#include "../general/f_system_includes.h"
 
-#include "ecs/f_entity.p.h"
+#include "../ecs/f_entity.p.h"
 
 typedef void FEntityInit(FEntity* Entity, const void* CallerContext);
 

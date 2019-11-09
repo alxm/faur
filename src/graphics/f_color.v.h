@@ -18,7 +18,7 @@
 #ifndef F_INC_GRAPHICS_COLOR_V_H
 #define F_INC_GRAPHICS_COLOR_V_H
 
-#include "graphics/f_color.p.h"
+#include "f_color.p.h"
 
 typedef struct {
     FColorBlend blend, canonicalBlend;
@@ -29,8 +29,8 @@ typedef struct {
     bool fillDraw;
 } FPixelState;
 
-#include "general/f_main.v.h"
-#include "math/f_math.v.h"
+#include "../general/f_main.v.h"
+#include "../math/f_math.v.h"
 
 extern const FPack f_pack__color;
 

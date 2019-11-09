@@ -18,7 +18,7 @@
 #ifndef F_INC_INPUTS_BUTTON_V_H
 #define F_INC_INPUTS_BUTTON_V_H
 
-#include "input/f_button.p.h"
+#include "f_button.p.h"
 
 extern void f_input_button__init(void);
 extern void f_input_button__uninit(void);

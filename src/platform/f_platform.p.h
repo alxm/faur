@@ -17,6 +17,6 @@
 
 #ifndef F_INC_PLATFORM_PLATFORM_P_H
 
-#include "general/f_system_includes.h"
+#include "../general/f_system_includes.h"
 
 #endif // F_INC_PLATFORM_PLATFORM_P_H
