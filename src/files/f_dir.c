@@ -18,7 +18,7 @@
 #include "f_dir.v.h"
 #include <faur.v.h>
 
-#if !F_CONFIG_SYSTEM_GAMEBUINO
+#if F_CONFIG_FILES_LIB_STANDARD
 #include <dirent.h>
 #include <sys/stat.h>
 
@@ -166,4 +166,4 @@ const FList* f_dir_entriesGet(const FDir* Dir)
 {
     return Dir->files;
 }
-#endif // !F_CONFIG_SYSTEM_GAMEBUINO
+#endif // F_CONFIG_FILES_LIB_STANDARD

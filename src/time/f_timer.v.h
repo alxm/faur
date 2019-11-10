@@ -18,9 +18,9 @@
 #ifndef F_INC_TIME_TIMER_V_H
 #define F_INC_TIME_TIMER_V_H
 
-#include "time/f_timer.p.h"
+#include "f_timer.p.h"
 
-#include "general/f_main.v.h"
+#include "../general/f_main.v.h"
 
 extern const FPack f_pack__timer;
 

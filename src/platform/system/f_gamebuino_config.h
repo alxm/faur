@@ -18,10 +18,15 @@
 #ifndef F_INC_PLATFORM_SYSTEM_GAMEBUINO_CONFIG_H
 #define F_INC_PLATFORM_SYSTEM_GAMEBUINO_CONFIG_H
 
+
 #include <sketch/config-faur.h>
 
 #ifndef F_CONFIG_APP_AUTHOR
 #define F_CONFIG_APP_AUTHOR "you"
+#endif
+
+#ifndef F_CONFIG_APP_DIR
+#define F_CONFIG_APP_DIR "untitled"
 #endif
 
 #ifndef F_CONFIG_APP_NAME
@@ -51,8 +56,8 @@
 #define F_CONFIG_BUILD_DEBUG_FATAL_SPIN 1
 #endif
 
-#ifndef F_CONFIG_BUILD_FIX_LUT
-#define F_CONFIG_BUILD_FIX_LUT 1
+#ifndef F_CONFIG_FIX_LUT
+#define F_CONFIG_FIX_LUT 1
 #endif
 
 #ifndef F_CONFIG_BUILD_FAUR_GIT
@@ -99,6 +104,26 @@
 #define F_CONFIG_FPS_RATE_TICK 30
 #endif
 
+#if F_CONFIG_FPS_RATE_TICK < 1
+    #undef F_CONFIG_FPS_RATE_TICK
+    #define F_CONFIG_FPS_RATE_TICK 1
+#endif
+
+#if F_CONFIG_FPS_RATE_DRAW < 1
+    #undef F_CONFIG_FPS_RATE_DRAW
+    #define F_CONFIG_FPS_RATE_DRAW 1
+#endif
+
+#if F_CONFIG_FPS_RATE_DRAW < F_CONFIG_FPS_RATE_TICK
+    #undef F_CONFIG_FPS_RATE_DRAW
+    #define F_CONFIG_FPS_RATE_DRAW F_CONFIG_FPS_RATE_TICK
+#endif
+
+#if F_CONFIG_FPS_HISTORY < 1
+    #undef F_CONFIG_FPS_HISTORY
+    #define F_CONFIG_FPS_HISTORY 1
+#endif
+
 #ifndef F_CONFIG_LIB_RENDER_SOFTWARE
 #define F_CONFIG_LIB_RENDER_SOFTWARE 1
 #endif
@@ -126,4 +151,19 @@
 #ifndef F_CONFIG_SYSTEM_GAMEBUINO
 #define F_CONFIG_SYSTEM_GAMEBUINO 1
 #endif
+
+// Application must supply a `/config-gamebuino.h` file that includes <faur.h>
+// (for use by Gamebuino_META), and a `/config-faur.h` file (for use by Faur).
+#undef FOLDER_NAME
+#define FOLDER_NAME F_CONFIG_APP_DIR
+
+#undef DISPLAY_MODE
+#define DISPLAY_MODE DISPLAY_MODE_RGB565
+
+#undef SOUND_CHANNELS
+#define SOUND_CHANNELS 1
+
+#undef SOUND_FREQ
+#define SOUND_FREQ 22050
+
 #endif // F_INC_PLATFORM_SYSTEM_GAMEBUINO_CONFIG_H

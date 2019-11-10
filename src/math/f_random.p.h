@@ -18,7 +18,7 @@
 #ifndef F_INC_MATH_RANDOM_P_H
 #define F_INC_MATH_RANDOM_P_H
 
-#include "general/f_system_includes.h"
+#include "../general/f_system_includes.h"
 
 typedef int FRandomPrng(void);
 typedef void FRandomPrngSeed(unsigned Seed);

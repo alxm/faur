@@ -18,11 +18,11 @@
 #ifndef F_INC_INPUTS_INPUT_P_H
 #define F_INC_INPUTS_INPUT_P_H
 
-#include "general/f_system_includes.h"
+#include "../general/f_system_includes.h"
 
-#include "input/f_analog.p.h"
-#include "input/f_button.p.h"
-#include "math/f_fix.p.h"
+#include "../input/f_analog.p.h"
+#include "../input/f_button.p.h"
+#include "../math/f_fix.p.h"
 
 extern bool f_input_readKey(FKeyId Key);
 extern bool f_input_readButton(FButtonId Button);

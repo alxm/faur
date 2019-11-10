@@ -18,9 +18,9 @@
 #ifndef F_INC_GRAPHICS_SCREENSHOT_V_H
 #define F_INC_GRAPHICS_SCREENSHOT_V_H
 
-#include "graphics/f_screenshot.p.h"
+#include "f_screenshot.p.h"
 
-#include "general/f_main.v.h"
+#include "../general/f_main.v.h"
 
 extern const FPack f_pack__screenshot;
 

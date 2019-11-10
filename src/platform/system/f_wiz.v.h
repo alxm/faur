@@ -18,7 +18,7 @@
 #ifndef F_INC_PLATFORM_SYSTEM_WIZ_V_H
 #define F_INC_PLATFORM_SYSTEM_WIZ_V_H
 
-#include "platform/system/f_wiz.p.h"
+#include "f_wiz.p.h"
 
 extern void f_platform_wiz__init(void);
 extern void f_platform_wiz__uninit(void);

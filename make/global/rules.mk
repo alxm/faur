@@ -79,7 +79,7 @@ F_FILES_OBJ := $(F_FILES_OBJ_APP) $(F_FILES_OBJ_GEN) $(F_FILES_OBJ_EXTRA)
 #
 # Compiler flags for all targets
 #
-F_GENERIC_CFLAGS := \
+F_GENERIC_FLAGS_SHARED := \
     -MMD \
     -Wall \
     -Wextra \
@@ -87,21 +87,36 @@ F_GENERIC_CFLAGS := \
     -Wcast-align \
     -Wformat-security \
     -Werror \
-    -pedantic \
-    -pedantic-errors \
     -fstrict-aliasing \
     -D_XOPEN_SOURCE \
     -I$(FAUR_DIR_SRC) \
     -I$(F_DIR_OBJ_FAUR) \
     -I$(F_DIR_OBJ_APP) \
-    $(F_CONFIG_BUILD_CFLAGS) \
     -O$(F_CONFIG_BUILD_OPT) \
-    -std=$(F_CONFIG_BUILD_C_STANDARD) \
+    $(F_CONFIG_BUILD_FLAGS_SHARED) \
 
 ifeq ($(F_CONFIG_BUILD_DEBUG), 1)
-    F_GENERIC_CFLAGS += -g
+    F_GENERIC_FLAGS_SHARED += -g
 else
-    F_GENERIC_CFLAGS += -s
+    F_GENERIC_FLAGS_SHARED += -s
+endif
+
+F_GENERIC_FLAGS_C := \
+    $(F_GENERIC_FLAGS_SHARED) \
+    $(F_CONFIG_BUILD_FLAGS_C) \
+    -std=$(F_CONFIG_BUILD_FLAGS_C_STANDARD) \
+
+ifneq ($(F_CONFIG_BUILD_FLAGS_C_PEDANTIC), 0)
+    F_GENERIC_FLAGS_C += -pedantic -pedantic-errors
+endif
+
+F_GENERIC_FLAGS_CPP := \
+    $(F_GENERIC_FLAGS_SHARED) \
+    $(F_CONFIG_BUILD_FLAGS_CPP) \
+    -std=$(F_CONFIG_BUILD_FLAGS_CPP_STANDARD) \
+
+ifneq ($(F_CONFIG_BUILD_FLAGS_CPP_PEDANTIC), 0)
+    F_GENERIC_FLAGS_CPP += -pedantic -pedantic-errors
 endif
 
 F_MAKE_ALL := $(F_FILE_BIN_TARGET) $(F_FILE_BIN_LINKS)
@@ -169,15 +184,15 @@ $(F_DIR_GEN_SFX)/%.h : $(F_DIR_ROOT)/% $(FAUR_PATH)/bin/faur-sfx
 
 $(F_DIR_OBJ_APP)/%.c.o : $(F_DIR_ROOT)/$(F_CONFIG_DIR_SRC)/%.c
 	@ mkdir -p $(@D)
-	$(CC) -c -o $@ $< $(F_GENERIC_CFLAGS)
+	$(CC) -c -o $@ $< $(F_GENERIC_FLAGS_C)
 
 $(F_DIR_GEN_EXTRA)%.c.o : %.c
 	@ mkdir -p $(@D)
-	$(CC) -c -o $@ $< $(F_GENERIC_CFLAGS)
+	$(CC) -c -o $@ $< $(F_GENERIC_FLAGS_C)
 
 $(F_DIR_GEN)/%.c.o : $(F_DIR_GEN)/%.c
 	@ mkdir -p $(@D)
-	$(CC) -c -o $@ $< $(F_GENERIC_CFLAGS)
+	$(CC) -c -o $@ $< $(F_GENERIC_FLAGS_C)
 
 $(F_FILE_BIN_LINK_ASSETS) :
 	@ mkdir -p $(@D)

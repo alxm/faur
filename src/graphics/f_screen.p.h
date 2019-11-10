@@ -18,9 +18,9 @@
 #ifndef F_INC_GRAPHICS_SCREEN_P_H
 #define F_INC_GRAPHICS_SCREEN_P_H
 
-#include "general/f_system_includes.h"
+#include "../general/f_system_includes.h"
 
-#include "graphics/f_sprite.p.h"
+#include "../graphics/f_sprite.p.h"
 
 extern FColorPixel* f_screen_pixelsGetBuffer(void);
 

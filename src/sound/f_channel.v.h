@@ -18,6 +18,6 @@
 #ifndef F_INC_SOUND_CHANNEL_V_H
 #define F_INC_SOUND_CHANNEL_V_H
 
-#include "sound/f_channel.p.h"
+#include "../sound/f_channel.p.h"
 
 #endif // F_INC_SOUND_CHANNEL_V_H

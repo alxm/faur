@@ -18,6 +18,6 @@
 #ifndef F_INC_PLATFORM_SOUND_GAMEBUINO_SOUND_V_H
 #define F_INC_PLATFORM_SOUND_GAMEBUINO_SOUND_V_H
 
-#include "platform/sound/f_gamebuino_sound.p.h"
+#include "f_gamebuino_sound.p.h"
 
 #endif // F_INC_PLATFORM_SOUND_GAMEBUINO_SOUND_V_H

@@ -18,11 +18,11 @@
 #ifndef F_INC_FILES_FILE_EMBEDDED_V_H
 #define F_INC_FILES_FILE_EMBEDDED_V_H
 
-#include "files/f_file_embedded.p.h"
+#include "f_file_embedded.p.h"
 
 typedef struct FFileEmbedded FFileEmbedded;
 
-#include "files/f_file.v.h"
+#include "../files/f_file.v.h"
 
 extern FFileEmbedded* f_file_embedded__new(FPath* Path);
 

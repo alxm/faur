@@ -18,7 +18,7 @@
 #ifndef F_INC_PLATFORM_GRAPHICS_SOFTWARE_BLIT_V_H
 #define F_INC_PLATFORM_GRAPHICS_SOFTWARE_BLIT_V_H
 
-#include "platform/graphics/f_software_blit.p.h"
+#include "f_software_blit.p.h"
 
 extern void f_platform_software_blit__init(void);
 extern void f_platform_software_blit__uninit(void);

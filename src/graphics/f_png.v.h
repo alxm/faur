@@ -18,9 +18,9 @@
 #ifndef F_INC_GRAPHICS_PNG_V_H
 #define F_INC_GRAPHICS_PNG_V_H
 
-#include "graphics/f_png.p.h"
+#include "f_png.p.h"
 
-#include "graphics/f_pixels.v.h"
+#include "../graphics/f_pixels.v.h"
 
 extern FPixels* f_png__readFile(const char* Path);
 extern FPixels* f_png__readMemory(const uint8_t* Data);

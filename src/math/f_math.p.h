@@ -18,7 +18,7 @@
 #ifndef F_INC_MATH_MATH_P_H
 #define F_INC_MATH_MATH_P_H
 
-#include "general/f_system_includes.h"
+#include "../general/f_system_includes.h"
 
 static inline int f_math_min(int X, int Y)
 {

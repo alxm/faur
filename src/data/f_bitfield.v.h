@@ -18,6 +18,6 @@
 #ifndef F_INC_DATA_BITFIELD_V_H
 #define F_INC_DATA_BITFIELD_V_H
 
-#include "data/f_bitfield.p.h"
+#include "f_bitfield.p.h"
 
 #endif // F_INC_DATA_BITFIELD_V_H

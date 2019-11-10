@@ -18,16 +18,16 @@
 #ifndef F_INC_ECS_COMPONENT_V_H
 #define F_INC_ECS_COMPONENT_V_H
 
-#include "ecs/f_component.p.h"
+#include "f_component.p.h"
 
 typedef struct FComponent FComponent;
 
-#include "memory/f_mem.v.h"
+#include "../memory/f_mem.v.h"
 
 typedef struct {
     const FComponent* component; // shared data for all components of same type
     FEntity* entity; // entity this component belongs to
-    FMaxMemAlignType buffer[];
+    FMaxMemAlignType buffer[1];
 } FComponentInstance;
 
 extern void f_component__init(void);

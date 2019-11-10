@@ -18,21 +18,21 @@
 #ifndef F_INC_FILES_EMBED_V_H
 #define F_INC_FILES_EMBED_V_H
 
-#include "files/f_embed.p.h"
+#include "f_embed.p.h"
 
 typedef struct {
     const char* path;
     size_t size;
-    const char* entries[];
+    const char* entries[1];
 } FEmbeddedDir;
 
 typedef struct {
     const char* path;
     size_t size;
-    uint8_t buffer[];
+    uint8_t buffer[1];
 } FEmbeddedFile;
 
-#include "general/f_main.v.h"
+#include "../general/f_main.v.h"
 
 extern const FPack f_pack__embed;
 

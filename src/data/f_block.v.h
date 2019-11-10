@@ -18,6 +18,6 @@
 #ifndef F_INC_DATA_BLOCK_V_H
 #define F_INC_DATA_BLOCK_V_H
 
-#include "data/f_block.p.h"
+#include "f_block.p.h"
 
 #endif // F_INC_DATA_BLOCK_V_H

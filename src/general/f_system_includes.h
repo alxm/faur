@@ -58,7 +58,7 @@ typedef volatile int FEvent;
 #endif
 
 #ifdef __SAMD21G18A__
-    #include "platform/system/f_gamebuino_config.h"
+    #include "../platform/system/f_gamebuino_config.h"
 #endif
 
 #endif // F_INC_GENERAL_SYSTEM_INCLUDES_H

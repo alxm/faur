@@ -18,9 +18,9 @@
 #ifndef F_INC_SOUND_SOUND_V_H
 #define F_INC_SOUND_SOUND_V_H
 
-#include "sound/f_sound.p.h"
+#include "../sound/f_sound.p.h"
 
-#include "general/f_main.v.h"
+#include "../general/f_main.v.h"
 
 extern const FPack f_pack__sound;
 

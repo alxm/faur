@@ -18,6 +18,9 @@
 #ifndef F_INC_PLATFORM_GRAPHICS_GAMEBUINO_VIDEO_P_H
 #define F_INC_PLATFORM_GRAPHICS_GAMEBUINO_VIDEO_P_H
 
-#include "general/f_system_includes.h"
+#include "../../general/f_system_includes.h"
+
+extern void f_gamebuino_lightsStart(void);
+extern void f_gamebuino_lightsEnd(void);
 
 #endif // F_INC_PLATFORM_GRAPHICS_GAMEBUINO_VIDEO_P_H

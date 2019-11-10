@@ -18,6 +18,6 @@
 #ifndef F_INC_SOUND_SAMPLE_V_H
 #define F_INC_SOUND_SAMPLE_V_H
 
-#include "sound/f_sample.p.h"
+#include "../sound/f_sample.p.h"
 
 #endif // F_INC_SOUND_SAMPLE_V_H

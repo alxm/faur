@@ -18,12 +18,12 @@
 #ifndef F_INC_GRAPHICS_SPRITELAYERS_P_H
 #define F_INC_GRAPHICS_SPRITELAYERS_P_H
 
-#include "general/f_system_includes.h"
+#include "../general/f_system_includes.h"
 
 typedef struct FList FSpriteLayers;
 
-#include "data/f_list.p.h"
-#include "graphics/f_sprite.p.h"
+#include "../data/f_list.p.h"
+#include "../graphics/f_sprite.p.h"
 
 extern FSpriteLayers* f_spritelayers_new(void);
 extern void f_spritelayers_free(FSpriteLayers* Layers, bool FreeSprites);

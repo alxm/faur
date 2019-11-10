@@ -18,7 +18,7 @@
 #ifndef F_INC_ECS_COLLECTION_V_H
 #define F_INC_ECS_COLLECTION_V_H
 
-#include "ecs/f_collection.p.h"
+#include "f_collection.p.h"
 
 extern FCollection* f_collection__get(void);
 

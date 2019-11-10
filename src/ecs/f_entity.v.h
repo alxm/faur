@@ -18,11 +18,11 @@
 #ifndef F_INC_ECS_ENTITY_V_H
 #define F_INC_ECS_ENTITY_V_H
 
-#include "ecs/f_entity.p.h"
+#include "f_entity.p.h"
 
-#include "data/f_list.v.h"
-#include "ecs/f_system.v.h"
-#include "ecs/f_template.v.h"
+#include "../data/f_list.v.h"
+#include "../ecs/f_system.v.h"
+#include "../ecs/f_template.v.h"
 
 typedef enum {
     F_ENTITY__ACTIVE_REMOVED = F_FLAGS_BIT(0), // kicked by active-only system

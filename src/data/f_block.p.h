@@ -18,13 +18,13 @@
 #ifndef F_INC_DATA_BLOCK_P_H
 #define F_INC_DATA_BLOCK_P_H
 
-#include "general/f_system_includes.h"
+#include "../general/f_system_includes.h"
 
 typedef struct FBlock FBlock;
 
-#include "data/f_list.p.h"
-#include "graphics/f_color.p.h"
-#include "math/f_fix.p.h"
+#include "../data/f_list.p.h"
+#include "../graphics/f_color.p.h"
+#include "../math/f_fix.p.h"
 
 extern FBlock* f_block_new(const char* File);
 extern void f_block_free(FBlock* Block);

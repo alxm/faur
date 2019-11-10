@@ -18,9 +18,9 @@
 #ifndef F_INC_MATH_FIX_V_H
 #define F_INC_MATH_FIX_V_H
 
-#include "math/f_fix.p.h"
+#include "f_fix.p.h"
 
-#include "general/f_main.v.h"
+#include "../general/f_main.v.h"
 
 extern const FPack f_pack__fix;
 

@@ -18,7 +18,7 @@
 #ifndef F_INC_MATH_FIX_P_H
 #define F_INC_MATH_FIX_P_H
 
-#include "general/f_system_includes.h"
+#include "../general/f_system_includes.h"
 
 typedef int32_t FFix;
 typedef uint32_t FFixu;
@@ -80,7 +80,7 @@ typedef enum {
     F_DEG_360_FIX = (F_DEG_360_INT * F_FIX_ONE),
 } FDegFix;
 
-#if F_CONFIG_BUILD_FIX_LUT
+#if F_CONFIG_FIX_LUT
     extern const FFix f__fix_sin[F_FIX_ANGLES_NUM];
     extern const FFix f__fix_csc[F_FIX_ANGLES_NUM];
 #else

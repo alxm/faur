@@ -18,7 +18,7 @@
 #ifndef F_INC_GENERAL_OUT_P_H
 #define F_INC_GENERAL_OUT_P_H
 
-#include "general/f_system_includes.h"
+#include "../general/f_system_includes.h"
 
 extern void f_out_text(const char* Text);
 extern void f_out_info(const char* Format, ...);

@@ -18,7 +18,7 @@
 #ifndef F_INC_SOUND_CHANNEL_P_H
 #define F_INC_SOUND_CHANNEL_P_H
 
-#include "general/f_system_includes.h"
+#include "../general/f_system_includes.h"
 
 typedef enum {
     F_CHANNEL_PLAY_NORMAL = 0,
@@ -27,7 +27,7 @@ typedef enum {
     F_CHANNEL_PLAY_YIELD = F_FLAGS_BIT(2),
 } FChannelFlags;
 
-#include "sound/f_sample.p.h"
+#include "../sound/f_sample.p.h"
 
 #define F_CHANNEL_ANY -1
 

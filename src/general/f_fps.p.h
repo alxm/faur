@@ -18,9 +18,9 @@
 #ifndef F_INC_GENERAL_FPS_P_H
 #define F_INC_GENERAL_FPS_P_H
 
-#include "general/f_system_includes.h"
+#include "../general/f_system_includes.h"
 
-#include "math/f_fix.p.h"
+#include "../math/f_fix.p.h"
 
 static inline unsigned f_fps_rateTickGet(void)
 {

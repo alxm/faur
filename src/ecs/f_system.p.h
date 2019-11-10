@@ -18,9 +18,9 @@
 #ifndef F_INC_ECS_SYSTEM_P_H
 #define F_INC_ECS_SYSTEM_P_H
 
-#include "general/f_system_includes.h"
+#include "../general/f_system_includes.h"
 
-#include "ecs/f_entity.p.h"
+#include "../ecs/f_entity.p.h"
 
 typedef void FSystemHandler(FEntity* Entity);
 typedef int FSystemSort(FEntity* A, FEntity* B);

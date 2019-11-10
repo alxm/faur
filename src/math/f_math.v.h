@@ -18,6 +18,6 @@
 #ifndef F_INC_MATH_MATH_V_H
 #define F_INC_MATH_MATH_V_H
 
-#include "math/f_math.p.h"
+#include "f_math.p.h"
 
 #endif // F_INC_MATH_MATH_V_H

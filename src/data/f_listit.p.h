@@ -18,11 +18,11 @@
 #ifndef F_INC_DATA_LISTIT_P_H
 #define F_INC_DATA_LISTIT_P_H
 
-#include "general/f_system_includes.h"
+#include "../general/f_system_includes.h"
 
 typedef struct FListIt FListIt;
 
-#include "data/f_list.p.h"
+#include "../data/f_list.p.h"
 
 struct FListIt {
     const FListNode* sentinelNode;

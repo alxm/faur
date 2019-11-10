@@ -18,6 +18,6 @@
 #ifndef F_INC_INPUTS_TOUCH_V_H
 #define F_INC_INPUTS_TOUCH_V_H
 
-#include "input/f_touch.p.h"
+#include "f_touch.p.h"
 
 #endif // F_INC_INPUTS_TOUCH_V_H

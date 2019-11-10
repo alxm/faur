@@ -18,6 +18,6 @@
 #ifndef F_INC_COLLISION_GRID_V_H
 #define F_INC_COLLISION_GRID_V_H
 
-#include "collision/f_grid.p.h"
+#include "f_grid.p.h"
 
 #endif // F_INC_COLLISION_GRID_V_H

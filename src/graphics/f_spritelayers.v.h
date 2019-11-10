@@ -18,6 +18,6 @@
 #ifndef F_INC_GRAPHICS_SPRITELAYERS_V_H
 #define F_INC_GRAPHICS_SPRITELAYERS_V_H
 
-#include "graphics/f_spritelayers.p.h"
+#include "f_spritelayers.p.h"
 
 #endif // F_INC_GRAPHICS_SPRITELAYERS_V_H

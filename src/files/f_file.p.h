@@ -18,7 +18,7 @@
 #ifndef F_INC_FILES_FILE_P_H
 #define F_INC_FILES_FILE_P_H
 
-#include "general/f_system_includes.h"
+#include "../general/f_system_includes.h"
 
 typedef struct FFile FFile;
 
@@ -28,7 +28,7 @@ typedef enum {
     F_FILE_BINARY = F_FLAGS_BIT(2),
 } FFileMode;
 
-#include "files/f_path.p.h"
+#include "../files/f_path.p.h"
 
 extern FFile* f_file_new(const char* Path, FFileMode Mode);
 extern void f_file_free(FFile* File);

@@ -198,10 +198,10 @@ static void F__FUNC_NAME(Block, DoClip)(const FPlatformTexture* Texture, const F
 }
 
 #define F__PIXEL_TRANSPARENCY 0
-#include "platform/graphics/f_software_blitex.inc.c"
+#include "f_software_blitex.inc.c"
 
 #define F__PIXEL_TRANSPARENCY 1
-#include "platform/graphics/f_software_blitex.inc.c"
+#include "f_software_blitex.inc.c"
 
 #undef F__BLEND
 #undef F__FILL

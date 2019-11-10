@@ -18,13 +18,13 @@
 #ifndef F_INC_COLLISION_GRID_P_H
 #define F_INC_COLLISION_GRID_P_H
 
-#include "general/f_system_includes.h"
+#include "../general/f_system_includes.h"
 
 typedef struct FGrid FGrid;
 typedef struct FList FGridItem;
 
-#include "data/f_list.p.h"
-#include "math/f_fix.p.h"
+#include "../data/f_list.p.h"
+#include "../math/f_fix.p.h"
 
 extern FGrid* f_grid_new(FFix Width, FFix Height, FFix MaxObjectDim);
 extern void f_grid_free(FGrid* Grid);

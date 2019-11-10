@@ -18,9 +18,9 @@
 #ifndef F_INC_PLATFORM_GRAPHICS_SDL_VIDEO_V_H
 #define F_INC_PLATFORM_GRAPHICS_SDL_VIDEO_V_H
 
-#include "platform/graphics/f_sdl_video.p.h"
+#include "f_sdl_video.p.h"
 
-#include "graphics/f_color.v.h"
+#include "../../graphics/f_color.v.h"
 
 #if F_CONFIG_LIB_SDL == 2
     #if F_CONFIG_SCREEN_FORMAT == F_COLOR_FORMAT_RGB_565

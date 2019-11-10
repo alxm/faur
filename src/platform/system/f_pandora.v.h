@@ -18,7 +18,7 @@
 #ifndef F_INC_PLATFORM_SYSTEM_PANDORA_V_H
 #define F_INC_PLATFORM_SYSTEM_PANDORA_V_H
 
-#include "platform/system/f_pandora.p.h"
+#include "f_pandora.p.h"
 
 extern void f_platform_pandora__init(void);
 extern void f_platform_pandora__uninit(void);

@@ -1,5 +1,5 @@
 /*
-    Copyright 2018 Alex Margarit <alex@alxm.org>
+    Copyright 2018-2019 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -25,7 +25,7 @@ static void f__term(int Signal)
 {
     F_UNUSED(Signal);
 
-    exit(0);
+    exit(EXIT_SUCCESS);
 }
 
 void f_platform_linux__init(void)

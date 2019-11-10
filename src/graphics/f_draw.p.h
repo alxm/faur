@@ -18,7 +18,7 @@
 #ifndef F_INC_GRAPHICS_DRAW_P_H
 #define F_INC_GRAPHICS_DRAW_P_H
 
-#include "general/f_system_includes.h"
+#include "../general/f_system_includes.h"
 
 extern void f_draw_fill(void);
 extern void f_draw_pixel(int X, int Y);

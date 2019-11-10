@@ -18,7 +18,7 @@
 #ifndef F_INC_INPUTS_BUTTON_P_H
 #define F_INC_INPUTS_BUTTON_P_H
 
-#include "general/f_system_includes.h"
+#include "../general/f_system_includes.h"
 
 typedef struct FButton FButton;
 
@@ -86,7 +86,7 @@ typedef enum {
     F_KEY_NUM,
 } FKeyId;
 
-#include "input/f_controller.v.h"
+#include "../input/f_controller.v.h"
 
 extern FButton* f_button_new(void);
 extern FButton* f_button_dup(const FButton* Button);

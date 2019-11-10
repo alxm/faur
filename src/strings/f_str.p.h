@@ -18,9 +18,9 @@
 #ifndef F_INC_STRINGS_STR_P_H
 #define F_INC_STRINGS_STR_P_H
 
-#include "general/f_system_includes.h"
+#include "../general/f_system_includes.h"
 
-#include "data/f_list.p.h"
+#include "../data/f_list.p.h"
 
 extern const char* f_str_fmt(char* Buffer, size_t Size, bool OverflowOk, const char* Format, ...);
 extern const char* f_str_fmtv(char* Buffer, size_t Size, bool OverflowOk, const char* Format, va_list Args);

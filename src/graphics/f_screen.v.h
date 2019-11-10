@@ -18,12 +18,12 @@
 #ifndef F_INC_GRAPHICS_SCREEN_V_H
 #define F_INC_GRAPHICS_SCREEN_V_H
 
-#include "graphics/f_screen.p.h"
+#include "f_screen.p.h"
 
 typedef struct FScreen FScreen;
 
-#include "general/f_main.v.h"
-#include "graphics/f_sprite.v.h"
+#include "../general/f_main.v.h"
+#include "../graphics/f_sprite.v.h"
 
 struct FScreen {
     FPixels* pixels;

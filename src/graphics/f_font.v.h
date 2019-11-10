@@ -18,7 +18,7 @@
 #ifndef F_INC_GRAPHICS_FONT_V_H
 #define F_INC_GRAPHICS_FONT_V_H
 
-#include "graphics/f_font.p.h"
+#include "f_font.p.h"
 
 typedef enum {
     F_FONT__ID_INVALID = -1,
@@ -32,7 +32,7 @@ typedef enum {
     F_FONT__ID_NUM
 } FFontId;
 
-#include "general/f_main.v.h"
+#include "../general/f_main.v.h"
 
 extern const FPack f_pack__font;
 

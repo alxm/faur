@@ -18,7 +18,7 @@
 #ifndef F_INC_GENERAL_CONSOLE_P_H
 #define F_INC_GENERAL_CONSOLE_P_H
 
-#include "general/f_system_includes.h"
+#include "../general/f_system_includes.h"
 
 extern void f_console_showSet(bool Show);
 

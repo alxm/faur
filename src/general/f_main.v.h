@@ -18,7 +18,7 @@
 #ifndef F_INC_GENERAL_MAIN_V_H
 #define F_INC_GENERAL_MAIN_V_H
 
-#include "general/f_main.p.h"
+#include "f_main.p.h"
 
 #define F_PACK__PASSES_NUM 2
 
