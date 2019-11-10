@@ -25,6 +25,8 @@
     #include <SDL2/SDL.h>
 #endif
 
+#define F__SDL_TIME !(F_CONFIG_SYSTEM_WIZ || F_CONFIG_SYSTEM_CAANOO)
+
 static uint32_t g_sdlFlags;
 
 void f_platform_sdl__init(void)
@@ -43,7 +45,7 @@ void f_platform_sdl__init(void)
 
     g_sdlFlags = 0;
 
-    #if F_CONFIG_LIB_SDL_TIME
+    #if F__SDL_TIME
         g_sdlFlags |= SDL_INIT_TIMER;
     #endif
 
@@ -72,7 +74,7 @@ void f_platform_sdl__uninit(void)
     SDL_Quit();
 }
 
-#if F_CONFIG_LIB_SDL_TIME
+#if F__SDL_TIME
 uint32_t f_platform_api__timeMsGet(void)
 {
     return SDL_GetTicks();
