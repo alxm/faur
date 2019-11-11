@@ -56,6 +56,10 @@
 #define F_CONFIG_BUILD_DEBUG_FATAL_SPIN 1
 #endif
 
+#ifndef F_CONFIG_FILES_PREFIX
+#define F_CONFIG_FILES_PREFIX ""
+#endif
+
 #ifndef F_CONFIG_FIX_LUT
 #define F_CONFIG_FIX_LUT 1
 #endif

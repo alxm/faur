@@ -143,7 +143,7 @@ endif
 # Files
 #
 F_CONFIG_FILES_LIB ?= STANDARD
-F_CONFIG_FILES_PREFIX ?= ./
+F_CONFIG_FILES_PREFIX ?=
 
 #
 # Fixed point math
