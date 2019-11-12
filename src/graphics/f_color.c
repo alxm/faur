@@ -147,7 +147,7 @@ static void setRgb(int Red, int Green, int Blue)
     f__color.rgb.g = (unsigned)Green & 0xff;
     f__color.rgb.b = (unsigned)Blue & 0xff;
 
-    f__color.pixel = f_color_pixelFromRgb(Red, Green, Blue);
+    f__color.pixel = f_color_pixelFromRgb3(Red, Green, Blue);
 }
 
 void f_color_baseSetRgb(int Red, int Green, int Blue)

@@ -47,9 +47,9 @@ static FPixels* pngToPixels(png_structp Png, png_infop Info)
 
     for(png_uint_32 y = h; y--; rows++) {
         for(png_uint_32 x = w, chOffset = 0; x--; chOffset += numChannels) {
-            *buffer++ = f_color_pixelFromRgb(rows[0][chOffset + 0],
-                                             rows[0][chOffset + 1],
-                                             rows[0][chOffset + 2]);
+            *buffer++ = f_color_pixelFromRgb3(rows[0][chOffset + 0],
+                                              rows[0][chOffset + 1],
+                                              rows[0][chOffset + 2]);
         }
     }
 

@@ -101,12 +101,17 @@ typedef struct {
     #define F_COLOR_ALPHA_MAX 255
 #endif
 
-static inline FColorPixel f_color_pixelFromRgb(int Red, int Green, int Blue)
+static inline FColorPixel f_color_pixelFromRgb3(int Red, int Green, int Blue)
 {
     return (FColorPixel)
         (((((unsigned)Red   & 0xff) >> F__PX_PACK_R) << F__PX_SHIFT_R) |
          ((((unsigned)Green & 0xff) >> F__PX_PACK_G) << F__PX_SHIFT_G) |
          ((((unsigned)Blue  & 0xff) >> F__PX_PACK_B) << F__PX_SHIFT_B));
+}
+
+static inline FColorPixel f_color_pixelFromRgb(FColorRgb Rgb)
+{
+    return f_color_pixelFromRgb3(Rgb.r, Rgb.g, Rgb.b);
 }
 
 static inline FColorPixel f_color_pixelFromHex(uint32_t Hexcode)
@@ -116,7 +121,7 @@ static inline FColorPixel f_color_pixelFromHex(uint32_t Hexcode)
     #elif F_CONFIG_SCREEN_FORMAT == F_COLOR_FORMAT_ARGB_8888
         return (FColorPixel)(Hexcode & 0xffffff);
     #else
-        return f_color_pixelFromRgb(
+        return f_color_pixelFromRgb3(
                 (int)(Hexcode >> 16), (int)(Hexcode >> 8), (int)(Hexcode));
     #endif
 }
