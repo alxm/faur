@@ -72,10 +72,6 @@ FPlatformFile* f_platform_api__fileNew(FPath* Path, FFileMode Mode)
     FILE* handle = fopen(f_path_getFull(Path), mode);
 
     if(handle == NULL) {
-        f_out__error("f_file_new(%s): Cannot open for '%s'",
-                     f_path_getFull(Path),
-                     mode);
-
         return NULL;
     }
 

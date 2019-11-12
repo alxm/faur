@@ -49,6 +49,8 @@ FFile* f_file_new(const char* Path, FFileMode Mode)
     if(file == NULL) {
         f_path_free(path);
 
+        f_out__error("f_file_new(%s, %x): Cannot open", Path, Mode);
+
         return NULL;
     }
 
