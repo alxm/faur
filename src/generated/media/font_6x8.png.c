@@ -3,10 +3,12 @@
 //
 #include <faur.v.h>
 
-#if F_CONFIG_LIB_RENDER_SOFTWARE
-    #define F__GEN_CONST const
-#else
-    #define F__GEN_CONST
+#ifndef F__GEN_GFX_CONST
+    #if F_CONFIG_LIB_RENDER_SOFTWARE
+        #define F__GEN_GFX_CONST const
+    #else
+        #define F__GEN_GFX_CONST
+    #endif
 #endif
 
 static const FColorPixel f_gfx__buffer___font_6x8[6 * 8 * 96] = {
@@ -126,7 +128,7 @@ static const unsigned f_gfx__spans___font_6x8__94[] = {3, 6, 3, 6, 3, 6, 3, 6, 3
 static const unsigned f_gfx__spans___font_6x8__95[] = {3, 6, 3, 6, 3, 6, 3, 6, 3, 6, 3, 6, 3, 6, 3, 6};
 #endif
 
-static F__GEN_CONST struct {
+static F__GEN_GFX_CONST struct {
     FPixels pixels;
     FPlatformTexture* textures[96];
 } f_gfx__sprite___font_6x8 = {
