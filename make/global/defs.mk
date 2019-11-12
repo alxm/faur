@@ -10,8 +10,21 @@ F_CONFIG_BUILD_PLATFORM := \
 FAUR_DIR_ROOT := $(realpath $(FAUR_PATH))
 FAUR_DIR_SRC := $(FAUR_DIR_ROOT)/src
 
+#
+# From <project>/build/make/ to <project>
+#
 F_DIR_ROOT := ../..
+
+#
+# May already have been set by parent make before changing dir
+#
+F_DIR_ROOT_ABS ?= $(realpath $(F_DIR_ROOT))
+
+#
+# From <project>/build/builds/build_uid/bin/ to <project>
+#
 F_DIR_ROOT_FROM_BIN := ../../../..
+
 F_DIR_CONFIG := $(HOME)/.config/faur
 F_FILE_SDK := $(F_DIR_CONFIG)/sdk.mk
 

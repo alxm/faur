@@ -28,8 +28,7 @@ F_MAKE_CMD := \
 	-C $(F_DIR_ROOT)/$(F_CONFIG_DIR_SRC) \
 	-f $(realpath $(firstword $(MAKEFILE_LIST))) \
 	-j$(F_MAKE_PARALLEL_JOBS) \
-	OBJDIR=$(realpath $(F_DIR_ROOT))/$(F_CONFIG_DIR_BUILD)/builds/$(F_CONFIG_BUILD_UID) \
-	F_DIR_SOURCE=$(realpath $(F_DIR_ROOT))/$(F_CONFIG_DIR_SRC) \
+	F_DIR_ROOT_ABS=$(F_DIR_ROOT_ABS) \
 	F_DO_BUILD=1
 
 all :
@@ -47,8 +46,8 @@ BOARD_TAG = gamebuino_meta_native
 ALTERNATE_CORE_PATH = $(wildcard $(HOME)/.arduino15/packages/gamebuino/hardware/samd/1.*)
 
 ARDUINO_LIBS = faur Gamebuino_META SPI
-
 OPTIMIZATION_LEVEL = $(F_CONFIG_BUILD_OPT)
+OBJDIR=$(F_DIR_ROOT_ABS)/$(F_CONFIG_DIR_BUILD)/builds/$(F_CONFIG_BUILD_UID)
 
 include $(ARDMK_DIR)/Sam.mk
 
@@ -72,7 +71,7 @@ F_FILES_CONFIG := \
 
 $(USER_LIB_OBJS) $(LOCAL_OBJS) : $(F_FILES_CONFIG)
 
-$(F_DIR_GEN)/sketch/%.h : $(F_DIR_SOURCE)/%.h
+$(F_DIR_GEN)/sketch/%.h : $(F_DIR_ROOT_ABS)/$(F_CONFIG_DIR_SRC)/%.h
 	@ mkdir -p $(@D)
 	cp $< $@
 
