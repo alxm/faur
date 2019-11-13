@@ -18,6 +18,9 @@
 #include "f_color.v.h"
 #include <faur.v.h>
 
+#define F__OPTIMIZE_ALPHA \
+    (F_CONFIG_LIB_RENDER_SOFTWARE && !F_CONFIG_SYSTEM_GAMEBUINO)
+
 FPixelState f__color;
 static FList* g_stateStack;
 
@@ -79,7 +82,7 @@ void f_color_reset(void)
     f_color_fillDrawSet(true);
 }
 
-#if F_CONFIG_LIB_RENDER_SOFTWARE
+#if F__OPTIMIZE_ALPHA
 static void optimizeAlphaBlending(void)
 {
     if(f__color.canonicalBlend == F_COLOR_BLEND_RGBA) {
@@ -115,9 +118,9 @@ void f_color_blendSet(FColorBlend Blend)
     f__color.blend = Blend;
     f__color.canonicalBlend = Blend;
 
-    #if F_CONFIG_LIB_RENDER_SOFTWARE
+    #if F__OPTIMIZE_ALPHA
         optimizeAlphaBlending();
-    #else
+    #elif !F_CONFIG_LIB_RENDER_SOFTWARE
         if(Blend == F_COLOR_BLEND_RGB25) {
             f_color_alphaSet(F_COLOR_ALPHA_MAX / 4);
         } else if(Blend == F_COLOR_BLEND_RGB50) {
@@ -134,9 +137,9 @@ void f_color_alphaSet(int Alpha)
 {
     f__color.alpha = f_math_clamp(Alpha, 0, F_COLOR_ALPHA_MAX);
 
-    #if F_CONFIG_LIB_RENDER_SOFTWARE
+    #if F__OPTIMIZE_ALPHA
         optimizeAlphaBlending();
-    #else
+    #elif !F_CONFIG_LIB_RENDER_SOFTWARE
         f_platform_api__renderSetDrawColor();
     #endif
 }
@@ -164,9 +167,9 @@ void f_color_baseSetRgba(int Red, int Green, int Blue, int Alpha)
     setRgb(Red, Green, Blue);
     f__color.alpha = f_math_clamp(Alpha, 0, F_COLOR_ALPHA_MAX);
 
-    #if F_CONFIG_LIB_RENDER_SOFTWARE
+    #if F__OPTIMIZE_ALPHA
         optimizeAlphaBlending();
-    #else
+    #elif !F_CONFIG_LIB_RENDER_SOFTWARE
         f_platform_api__renderSetDrawColor();
     #endif
 }
