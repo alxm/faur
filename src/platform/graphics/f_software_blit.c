@@ -112,7 +112,7 @@ static void scan_line(int Index, FVectorInt ScrP1, FVectorInt ScrP2, FVectorFix 
 #define F__PIXEL_PARAMS , color
 #include "f_software_blit.inc.c"
 
-#define F__BLEND rgba
+#define F__BLEND alpha
 #define F__FILL Data
 #define F__BLEND_SETUP \
     const int alpha = f__color.alpha; \
@@ -123,7 +123,7 @@ static void scan_line(int Index, FVectorInt ScrP1, FVectorInt ScrP2, FVectorFix 
 #define F__PIXEL_PARAMS , &rgb, alpha
 #include "f_software_blit.inc.c"
 
-#define F__BLEND rgba
+#define F__BLEND alpha
 #define F__FILL Flat
 #define F__BLEND_SETUP \
     const FColorRgb rgb = f__color.rgb; \
@@ -135,42 +135,42 @@ static void scan_line(int Index, FVectorInt ScrP1, FVectorInt ScrP2, FVectorFix 
 #define F__PIXEL_PARAMS , &rgb, alpha
 #include "f_software_blit.inc.c"
 
-#define F__BLEND rgb25
+#define F__BLEND alpha25
 #define F__FILL Data
 #define F__BLEND_SETUP
 #define F__PIXEL_SETUP const FColorRgb rgb = f_color_pixelToRgb(*src);
 #define F__PIXEL_PARAMS , &rgb
 #include "f_software_blit.inc.c"
 
-#define F__BLEND rgb25
+#define F__BLEND alpha25
 #define F__FILL Flat
 #define F__BLEND_SETUP const FColorRgb rgb = f__color.rgb;
 #define F__PIXEL_SETUP
 #define F__PIXEL_PARAMS , &rgb
 #include "f_software_blit.inc.c"
 
-#define F__BLEND rgb50
+#define F__BLEND alpha50
 #define F__FILL Data
 #define F__BLEND_SETUP
 #define F__PIXEL_SETUP const FColorRgb rgb = f_color_pixelToRgb(*src);
 #define F__PIXEL_PARAMS , &rgb
 #include "f_software_blit.inc.c"
 
-#define F__BLEND rgb50
+#define F__BLEND alpha50
 #define F__FILL Flat
 #define F__BLEND_SETUP const FColorRgb rgb = f__color.rgb;
 #define F__PIXEL_SETUP
 #define F__PIXEL_PARAMS , &rgb
 #include "f_software_blit.inc.c"
 
-#define F__BLEND rgb75
+#define F__BLEND alpha75
 #define F__FILL Data
 #define F__BLEND_SETUP
 #define F__PIXEL_SETUP const FColorRgb rgb = f_color_pixelToRgb(*src);
 #define F__PIXEL_PARAMS , &rgb
 #include "f_software_blit.inc.c"
 
-#define F__BLEND rgb75
+#define F__BLEND alpha75
 #define F__FILL Flat
 #define F__BLEND_SETUP const FColorRgb rgb = f__color.rgb;
 #define F__PIXEL_SETUP
@@ -232,10 +232,10 @@ static void scan_line(int Index, FVectorInt ScrP1, FVectorInt ScrP2, FVectorFix 
 // [Blend][Fill][ColorKey][Clip]
 static const FBlitter g_blitters[F_COLOR_BLEND_NUM][2][2][2] = {
     F__INIT_BLEND(F_COLOR_BLEND_PLAIN, plain)
-    F__INIT_BLEND(F_COLOR_BLEND_RGBA, rgba)
-    F__INIT_BLEND(F_COLOR_BLEND_RGB25, rgb25)
-    F__INIT_BLEND(F_COLOR_BLEND_RGB50, rgb50)
-    F__INIT_BLEND(F_COLOR_BLEND_RGB75, rgb75)
+    F__INIT_BLEND(F_COLOR_BLEND_ALPHA, alpha)
+    F__INIT_BLEND(F_COLOR_BLEND_ALPHA_25, alpha25)
+    F__INIT_BLEND(F_COLOR_BLEND_ALPHA_50, alpha50)
+    F__INIT_BLEND(F_COLOR_BLEND_ALPHA_75, alpha75)
     F__INIT_BLEND(F_COLOR_BLEND_INVERSE, inverse)
     F__INIT_BLEND(F_COLOR_BLEND_MOD, mod)
     F__INIT_BLEND(F_COLOR_BLEND_ADD, add)
@@ -250,10 +250,10 @@ static const FBlitter g_blitters[F_COLOR_BLEND_NUM][2][2][2] = {
 // [Blend][Fill][ColorKey]
 static const FBlitterEx g_blittersEx[F_COLOR_BLEND_NUM][2][2] = {
     F__INIT_BLEND_EX(F_COLOR_BLEND_PLAIN, plain)
-    F__INIT_BLEND_EX(F_COLOR_BLEND_RGBA, rgba)
-    F__INIT_BLEND_EX(F_COLOR_BLEND_RGB25, rgb25)
-    F__INIT_BLEND_EX(F_COLOR_BLEND_RGB50, rgb50)
-    F__INIT_BLEND_EX(F_COLOR_BLEND_RGB75, rgb75)
+    F__INIT_BLEND_EX(F_COLOR_BLEND_ALPHA, alpha)
+    F__INIT_BLEND_EX(F_COLOR_BLEND_ALPHA_25, alpha25)
+    F__INIT_BLEND_EX(F_COLOR_BLEND_ALPHA_50, alpha50)
+    F__INIT_BLEND_EX(F_COLOR_BLEND_ALPHA_75, alpha75)
     F__INIT_BLEND_EX(F_COLOR_BLEND_INVERSE, inverse)
     F__INIT_BLEND_EX(F_COLOR_BLEND_MOD, mod)
     F__INIT_BLEND_EX(F_COLOR_BLEND_ADD, add)

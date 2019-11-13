@@ -119,7 +119,7 @@ void f_fade__draw(void)
     }
 
     f_color_push();
-    f_color_blendSet(F_COLOR_BLEND_RGBA);
+    f_color_blendSet(F_COLOR_BLEND_ALPHA);
 
     switch(g_fade.op) {
         case F__FADE_TOCOLOR: {

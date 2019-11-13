@@ -85,20 +85,20 @@ void f_color_reset(void)
 #if F__OPTIMIZE_ALPHA
 static void optimizeAlphaBlending(void)
 {
-    if(f__color.canonicalBlend == F_COLOR_BLEND_RGBA) {
-        FColorBlend fastestBlend = F_COLOR_BLEND_RGBA;
+    if(f__color.canonicalBlend == F_COLOR_BLEND_ALPHA) {
+        FColorBlend fastestBlend = F_COLOR_BLEND_ALPHA;
 
         switch(f__color.alpha) {
             case F_COLOR_ALPHA_MAX / 4: {
-                fastestBlend = F_COLOR_BLEND_RGB25;
+                fastestBlend = F_COLOR_BLEND_ALPHA_25;
             } break;
 
             case F_COLOR_ALPHA_MAX / 2: {
-                fastestBlend = F_COLOR_BLEND_RGB50;
+                fastestBlend = F_COLOR_BLEND_ALPHA_50;
             } break;
 
             case F_COLOR_ALPHA_MAX * 3 / 4: {
-                fastestBlend = F_COLOR_BLEND_RGB75;
+                fastestBlend = F_COLOR_BLEND_ALPHA_75;
             } break;
 
             case F_COLOR_ALPHA_MAX: {
@@ -121,11 +121,11 @@ void f_color_blendSet(FColorBlend Blend)
     #if F__OPTIMIZE_ALPHA
         optimizeAlphaBlending();
     #elif !F_CONFIG_LIB_RENDER_SOFTWARE
-        if(Blend == F_COLOR_BLEND_RGB25) {
+        if(Blend == F_COLOR_BLEND_ALPHA_25) {
             f_color_alphaSet(F_COLOR_ALPHA_MAX / 4);
-        } else if(Blend == F_COLOR_BLEND_RGB50) {
+        } else if(Blend == F_COLOR_BLEND_ALPHA_50) {
             f_color_alphaSet(F_COLOR_ALPHA_MAX / 2);
-        } else if(Blend == F_COLOR_BLEND_RGB75) {
+        } else if(Blend == F_COLOR_BLEND_ALPHA_75) {
             f_color_alphaSet(F_COLOR_ALPHA_MAX * 3 / 4);
         }
 

@@ -200,7 +200,7 @@ do {                                                                        \
 #define F__PIXEL_PARAMS , color
 #include "f_software_draw.inc.c"
 
-#define F__BLEND rgba
+#define F__BLEND alpha
 #define F__BLEND_SETUP \
     const FColorRgb rgb = f__color.rgb; \
     const int alpha = f__color.alpha; \
@@ -210,17 +210,17 @@ do {                                                                        \
 #define F__PIXEL_PARAMS , &rgb, alpha
 #include "f_software_draw.inc.c"
 
-#define F__BLEND rgb25
+#define F__BLEND alpha25
 #define F__BLEND_SETUP const FColorRgb rgb = f__color.rgb;
 #define F__PIXEL_PARAMS , &rgb
 #include "f_software_draw.inc.c"
 
-#define F__BLEND rgb50
+#define F__BLEND alpha50
 #define F__BLEND_SETUP const FColorRgb rgb = f__color.rgb;
 #define F__PIXEL_PARAMS , &rgb
 #include "f_software_draw.inc.c"
 
-#define F__BLEND rgb75
+#define F__BLEND alpha75
 #define F__BLEND_SETUP const FColorRgb rgb = f__color.rgb;
 #define F__PIXEL_PARAMS , &rgb
 #include "f_software_draw.inc.c"
@@ -263,10 +263,10 @@ static const struct {
     FDrawCircle circle[2][2]; // [Clip][Fill]
 } g_draw[F_COLOR_BLEND_NUM] = {
     F__INIT_BLEND(F_COLOR_BLEND_PLAIN, plain)
-    F__INIT_BLEND(F_COLOR_BLEND_RGBA, rgba)
-    F__INIT_BLEND(F_COLOR_BLEND_RGB25, rgb25)
-    F__INIT_BLEND(F_COLOR_BLEND_RGB50, rgb50)
-    F__INIT_BLEND(F_COLOR_BLEND_RGB75, rgb75)
+    F__INIT_BLEND(F_COLOR_BLEND_ALPHA, alpha)
+    F__INIT_BLEND(F_COLOR_BLEND_ALPHA_25, alpha25)
+    F__INIT_BLEND(F_COLOR_BLEND_ALPHA_50, alpha50)
+    F__INIT_BLEND(F_COLOR_BLEND_ALPHA_75, alpha75)
     F__INIT_BLEND(F_COLOR_BLEND_INVERSE, inverse)
     F__INIT_BLEND(F_COLOR_BLEND_MOD, mod)
     F__INIT_BLEND(F_COLOR_BLEND_ADD, add)

@@ -44,7 +44,7 @@ static inline void f_color__draw_plain(FColorPixel* Dst, FColorPixel Pixel)
     *Dst = Pixel;
 }
 
-static inline void f_color__draw_rgba(FColorPixel* Dst, const FColorRgb* Rgb, int Alpha)
+static inline void f_color__draw_alpha(FColorPixel* Dst, const FColorRgb* Rgb, int Alpha)
 {
     FColorRgb rgb = f_color_pixelToRgb(*Dst);
 
@@ -53,7 +53,7 @@ static inline void f_color__draw_rgba(FColorPixel* Dst, const FColorRgb* Rgb, in
                                  rgb.b + (((Rgb->b - rgb.b) * Alpha) >> 8));
 }
 
-static inline void f_color__draw_rgb25(FColorPixel* Dst, const FColorRgb* Rgb)
+static inline void f_color__draw_alpha25(FColorPixel* Dst, const FColorRgb* Rgb)
 {
     FColorRgb rgb = f_color_pixelToRgb(*Dst);
 
@@ -62,7 +62,7 @@ static inline void f_color__draw_rgb25(FColorPixel* Dst, const FColorRgb* Rgb)
                                  rgb.b - (rgb.b >> 2) + (Rgb->b >> 2));
 }
 
-static inline void f_color__draw_rgb50(FColorPixel* Dst, const FColorRgb* Rgb)
+static inline void f_color__draw_alpha50(FColorPixel* Dst, const FColorRgb* Rgb)
 {
     FColorRgb rgb = f_color_pixelToRgb(*Dst);
 
@@ -71,7 +71,7 @@ static inline void f_color__draw_rgb50(FColorPixel* Dst, const FColorRgb* Rgb)
                                  (rgb.b + Rgb->b) >> 1);
 }
 
-static inline void f_color__draw_rgb75(FColorPixel* Dst, const FColorRgb* Rgb)
+static inline void f_color__draw_alpha75(FColorPixel* Dst, const FColorRgb* Rgb)
 {
     FColorRgb rgb = f_color_pixelToRgb(*Dst);
 
