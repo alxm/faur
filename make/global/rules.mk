@@ -15,11 +15,20 @@ F_DIR_OBJ_FAUR := $(F_DIR_OBJ)/faur
 #
 # Subdir for generated code and its object files
 #
-F_DIR_GEN := $(F_DIR_OBJ_APP)/faur_gen
-F_DIR_GEN_EMBED := $(F_DIR_GEN)/embed
-F_DIR_GEN_EXTRA := $(F_DIR_GEN)/extra
-F_DIR_GEN_GFX := $(F_DIR_GEN)/gfx
-F_DIR_GEN_SFX := $(F_DIR_GEN)/sfx
+F_DIR_GEN_O := $(F_DIR_OBJ_APP)/faur_gen
+
+ifneq ($(F_CONFIG_PATH_SRC_GEN), 0)
+    F_DIR_GEN_C := $(F_DIR_ROOT)/$(F_CONFIG_DIR_SRC)/faur_gen
+else
+    F_DIR_GEN_C := $(F_DIR_GEN_O)
+endif
+
+F_DIR_GEN_EMBED := $(F_DIR_GEN_O)/embed
+F_DIR_GEN_EXTRA := $(F_DIR_GEN_O)/extra
+F_DIR_GEN_GFX_C := $(F_DIR_GEN_C)/gfx
+F_DIR_GEN_GFX_O := $(F_DIR_GEN_O)/gfx
+F_DIR_GEN_SFX_C := $(F_DIR_GEN_C)/sfx
+F_DIR_GEN_SFX_O := $(F_DIR_GEN_O)/sfx
 
 #
 # The final bin that gets built
@@ -45,16 +54,16 @@ F_FILES_SRC_GEN_EMBED_DOT_C := $(F_DIR_GEN_EMBED)/embed.c
 #
 # Graphics data
 #
-F_FILES_GFX_BIN += $(shell $(FAUR_PATH)/bin/faur-gather -q --no-dirs $(F_DIR_ROOT) $(F_CONFIG_PATH_GFX))
-F_FILES_GFX_C := $(F_FILES_GFX_BIN:%=$(F_DIR_GEN_GFX)/%.c)
-F_FILES_GFX_H := $(F_FILES_GFX_BIN:%=$(F_DIR_GEN_GFX)/%.h)
+F_FILES_GFX_BIN := $(shell $(FAUR_PATH)/bin/faur-gather -q --no-dirs $(F_DIR_ROOT) $(F_CONFIG_PATH_GFX))
+F_FILES_GFX_C := $(F_FILES_GFX_BIN:%=$(F_DIR_GEN_GFX_C)/%.c)
+F_FILES_GFX_H := $(F_FILES_GFX_BIN:%=$(F_DIR_GEN_GFX_C)/%.h)
 
 #
 # Sound effects data
 #
-F_FILES_SFX_BIN += $(shell $(FAUR_PATH)/bin/faur-gather -q --no-dirs $(F_DIR_ROOT) $(F_CONFIG_PATH_SFX))
-F_FILES_SFX_C := $(F_FILES_SFX_BIN:%=$(F_DIR_GEN_SFX)/%.c)
-F_FILES_SFX_H := $(F_FILES_SFX_BIN:%=$(F_DIR_GEN_SFX)/%.h)
+F_FILES_SFX_BIN := $(shell $(FAUR_PATH)/bin/faur-gather -q --no-dirs $(F_DIR_ROOT) $(F_CONFIG_PATH_SFX))
+F_FILES_SFX_C := $(F_FILES_SFX_BIN:%=$(F_DIR_GEN_SFX_C)/%.c)
+F_FILES_SFX_H := $(F_FILES_SFX_BIN:%=$(F_DIR_GEN_SFX_C)/%.h)
 
 #
 # C source files
@@ -68,8 +77,8 @@ F_FILES_SRC_C := $(F_FILES_SRC_C:$(F_DIR_ROOT)/$(F_CONFIG_DIR_SRC)/%=%)
 F_FILES_OBJ_APP := $(F_FILES_SRC_C:%=$(F_DIR_OBJ_APP)/%.o)
 
 F_FILES_OBJ_GEN_EMBED := $(F_FILES_SRC_GEN_EMBED_DOT_C:=.o)
-F_FILES_OBJ_GEN_GFX := $(F_FILES_GFX_C:=.o)
-F_FILES_OBJ_GEN_SFX := $(F_FILES_SFX_C:=.o)
+F_FILES_OBJ_GEN_GFX := $(F_FILES_GFX_BIN:%=$(F_DIR_GEN_GFX_O)/%.c.o)
+F_FILES_OBJ_GEN_SFX := $(F_FILES_SFX_BIN:%=$(F_DIR_GEN_SFX_O)/%.c.o)
 F_FILES_OBJ_GEN := $(F_FILES_OBJ_GEN_EMBED) $(F_FILES_OBJ_GEN_GFX) $(F_FILES_OBJ_GEN_SFX)
 
 F_FILES_OBJ_EXTRA := $(F_CONFIG_BUILD_SRC_EXTRA:%=$(F_DIR_GEN_EXTRA)%.o)
@@ -166,19 +175,19 @@ $(F_FILES_SRC_GEN_EMBED_DOT_C) : $(F_FILES_SRC_GEN_H) $(FAUR_PATH)/bin/faur-embe
 	@ mkdir -p $(@D)
 	$(FAUR_PATH)/bin/faur-embed $@ $(F_DIR_GEN_EMBED) f__bin_ $(F_FILES_SRC_GEN_H:$(F_DIR_GEN_EMBED)/%=%)
 
-$(F_DIR_GEN_GFX)/%.c : $(F_DIR_ROOT)/% $(FAUR_PATH)/bin/faur-gfx
+$(F_DIR_GEN_GFX_C)/%.c : $(F_DIR_ROOT)/% $(FAUR_PATH)/bin/faur-gfx
 	@ mkdir -p $(@D)
 	$(FAUR_PATH)/bin/faur-gfx $< $@ $(<:$(F_DIR_ROOT)/%=%) $(F_CONFIG_COLOR_SPRITE_KEY)
 
-$(F_DIR_GEN_GFX)/%.h : $(F_DIR_ROOT)/% $(FAUR_PATH)/bin/faur-gfx
+$(F_DIR_GEN_GFX_C)/%.h : $(F_DIR_ROOT)/% $(FAUR_PATH)/bin/faur-gfx
 	@ mkdir -p $(@D)
 	$(FAUR_PATH)/bin/faur-gfx $< $@ $(<:$(F_DIR_ROOT)/%=%) $(F_CONFIG_COLOR_SPRITE_KEY)
 
-$(F_DIR_GEN_SFX)/%.c : $(F_DIR_ROOT)/% $(FAUR_PATH)/bin/faur-sfx
+$(F_DIR_GEN_SFX_C)/%.c : $(F_DIR_ROOT)/% $(FAUR_PATH)/bin/faur-sfx
 	@ mkdir -p $(@D)
 	$(FAUR_PATH)/bin/faur-sfx $< $@ $(<:$(F_DIR_ROOT)/%=%)
 
-$(F_DIR_GEN_SFX)/%.h : $(F_DIR_ROOT)/% $(FAUR_PATH)/bin/faur-sfx
+$(F_DIR_GEN_SFX_C)/%.h : $(F_DIR_ROOT)/% $(FAUR_PATH)/bin/faur-sfx
 	@ mkdir -p $(@D)
 	$(FAUR_PATH)/bin/faur-sfx $< $@ $(<:$(F_DIR_ROOT)/%=%)
 
@@ -190,7 +199,11 @@ $(F_DIR_GEN_EXTRA)%.c.o : %.c
 	@ mkdir -p $(@D)
 	$(CC) -c -o $@ $< $(F_GENERIC_FLAGS_C)
 
-$(F_DIR_GEN)/%.c.o : $(F_DIR_GEN)/%.c
+$(F_DIR_GEN_O)/%.c.o : $(F_DIR_GEN_C)/%.c
+	@ mkdir -p $(@D)
+	$(CC) -c -o $@ $< $(F_GENERIC_FLAGS_C)
+
+$(F_DIR_GEN_O)/%.c.o : $(F_DIR_GEN_O)/%.c
 	@ mkdir -p $(@D)
 	$(CC) -c -o $@ $< $(F_GENERIC_FLAGS_C)
 

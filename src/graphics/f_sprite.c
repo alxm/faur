@@ -23,6 +23,18 @@ struct FSprite {
     FPlatformTexture* textures[]; // [pixels.framesNum]
 };
 
+FSpriteAlign g_align = F_SPRITE_ALIGN_X_LEFT | F_SPRITE_ALIGN_Y_TOP;
+
+void f_sprite_alignSet(FSpriteAlign Align)
+{
+    g_align = Align;
+}
+
+void f_sprite_alignReset(void)
+{
+    g_align = F_SPRITE_ALIGN_X_LEFT | F_SPRITE_ALIGN_Y_TOP;
+}
+
 static FSprite* spriteNew(const FPixels* Pixels, unsigned Frame, int X, int Y, int FrameWidth, int FrameHeight)
 {
     FVectorInt gridDim;
@@ -219,6 +231,20 @@ void f_sprite_blit(const FSprite* Sprite, unsigned Frame, int X, int Y)
     #endif
 
     Frame %= Sprite->pixels.framesNum;
+
+    FVectorInt spriteSize = Sprite->pixels.size;
+
+    if(g_align & F_SPRITE_ALIGN_X_CENTER) {
+        X -= spriteSize.x >> 1;
+    } else if(g_align & F_SPRITE_ALIGN_X_RIGHT) {
+        X -= spriteSize.x;
+    }
+
+    if(g_align & F_SPRITE_ALIGN_Y_CENTER) {
+        Y -= spriteSize.y >> 1;
+    } else if(g_align & F_SPRITE_ALIGN_Y_BOTTOM) {
+        Y -= spriteSize.y;
+    }
 
     f_platform_api__textureBlit(
         Sprite->textures[Frame], &Sprite->pixels, Frame, X, Y);
