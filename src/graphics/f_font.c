@@ -100,7 +100,7 @@ FFont* f_font_dup(const FFont* Font, FColorPixel Color)
     FFont* f = f_sprite_dup(Font);
 
     f_color_push();
-    f_color_baseSetPixel(Color);
+    f_color_colorSetPixel(Color);
     f_color_fillBlitSet(true);
 
     for(unsigned i = f_sprite_framesNumGet(f); i--; ) {

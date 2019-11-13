@@ -126,7 +126,7 @@ void f_fade__draw(void)
             f_color_alphaSet(
                 f_fix_toInt(f_fix_sinf(g_fade.angle) * F_COLOR_ALPHA_MAX));
 
-            f_color_baseSetPixel(g_fade.color);
+            f_color_colorSetPixel(g_fade.color);
             f_draw_fill();
         } break;
 
@@ -135,7 +135,7 @@ void f_fade__draw(void)
                 f_fix_toInt(f_fix_sinf(F_DEG_090_FIX - g_fade.angle)
                                 * F_COLOR_ALPHA_MAX));
 
-            f_color_baseSetPixel(g_fade.color);
+            f_color_colorSetPixel(g_fade.color);
             f_draw_fill();
         } break;
 

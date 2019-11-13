@@ -84,10 +84,10 @@ void drawBox(void)
 
     F_STATE_DRAW
     {
-        f_color_baseSetHex(0xaaff88);
+        f_color_colorSetHex(0xaaff88);
         f_draw_fill();
 
-        f_color_baseSetHex(0xffaa44);
+        f_color_colorSetHex(0xffaa44);
         f_draw_rectangle(context.x - 40, context.y - 40, 80, 80);
     }
 

@@ -152,7 +152,7 @@ void f_screen_clear(void)
         f_color_push();
 
         f_color_blendSet(F_COLOR_BLEND_PLAIN);
-        f_color_baseSetPixel(0);
+        f_color_colorSetPixel(0);
         f_platform_api__screenClear();
 
         f_color_pop();

@@ -70,14 +70,14 @@ void f_color_pop(void)
     f_mem_free(state);
 
     f_color_blendSet(f__color.blend);
-    f_color_baseSetRgba(
+    f_color_colorSetRgba(
         f__color.rgb.r, f__color.rgb.g, f__color.rgb.b, f__color.alpha);
 }
 
 void f_color_reset(void)
 {
     f_color_blendSet(F_COLOR_BLEND_PLAIN);
-    f_color_baseSetRgba(0, 0, 0, F_COLOR_ALPHA_MAX);
+    f_color_colorSetRgba(0, 0, 0, F_COLOR_ALPHA_MAX);
     f_color_fillBlitSet(false);
     f_color_fillDrawSet(true);
 }
@@ -153,7 +153,7 @@ static void setRgb(int Red, int Green, int Blue)
     f__color.pixel = f_color_pixelFromRgb3(Red, Green, Blue);
 }
 
-void f_color_baseSetRgb(int Red, int Green, int Blue)
+void f_color_colorSetRgb(int Red, int Green, int Blue)
 {
     setRgb(Red, Green, Blue);
 
@@ -162,7 +162,7 @@ void f_color_baseSetRgb(int Red, int Green, int Blue)
     #endif
 }
 
-void f_color_baseSetRgba(int Red, int Green, int Blue, int Alpha)
+void f_color_colorSetRgba(int Red, int Green, int Blue, int Alpha)
 {
     setRgb(Red, Green, Blue);
     f__color.alpha = f_math_clamp(Alpha, 0, F_COLOR_ALPHA_MAX);
@@ -174,7 +174,7 @@ void f_color_baseSetRgba(int Red, int Green, int Blue, int Alpha)
     #endif
 }
 
-void f_color_baseSetHex(uint32_t Hexcode)
+void f_color_colorSetHex(uint32_t Hexcode)
 {
     f__color.rgb.r = (Hexcode >> 16) & 0xff;
     f__color.rgb.g = (Hexcode >> 8)  & 0xff;
@@ -186,7 +186,7 @@ void f_color_baseSetHex(uint32_t Hexcode)
     #endif
 }
 
-void f_color_baseSetPixel(FColorPixel Pixel)
+void f_color_colorSetPixel(FColorPixel Pixel)
 {
     f__color.rgb = f_color_pixelToRgb(Pixel);
     f__color.pixel = Pixel;

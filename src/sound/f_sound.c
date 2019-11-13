@@ -136,15 +136,15 @@ void f_sound__draw(void)
 
         f_color_blendSet(F_COLOR_BLEND_PLAIN);
 
-        f_color_baseSetHex(F_CONFIG_COLOR_VOLBAR_BACKGROUND);
+        f_color_colorSetHex(F_CONFIG_COLOR_VOLBAR_BACKGROUND);
         f_draw_rectangle(0, 181, g_volumeMax / F__VOLUME_STEP + 5, 16);
 
-        f_color_baseSetHex(F_CONFIG_COLOR_VOLBAR_BORDER);
+        f_color_colorSetHex(F_CONFIG_COLOR_VOLBAR_BORDER);
         f_draw_hline(0, g_volumeMax / F__VOLUME_STEP + 4, 180);
         f_draw_hline(0, g_volumeMax / F__VOLUME_STEP + 4, 183 + 14);
         f_draw_vline(g_volumeMax / F__VOLUME_STEP + 4 + 1, 181, 183 + 13);
 
-        f_color_baseSetHex(F_CONFIG_COLOR_VOLBAR_FILL);
+        f_color_colorSetHex(F_CONFIG_COLOR_VOLBAR_FILL);
         f_draw_rectangle(0, 186, g_volume / F__VOLUME_STEP, 6);
     #endif
 }
