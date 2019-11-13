@@ -225,6 +225,16 @@ do {                                                                        \
 #define F__PIXEL_PARAMS , &rgb
 #include "f_software_draw.inc.c"
 
+#define F__BLEND alphaMask
+#define F__BLEND_SETUP \
+    const FColorRgb rgb = f__color.rgb; \
+    const int alpha = f__color.alpha; \
+    if(alpha == 0) { \
+        return; \
+    }
+#define F__PIXEL_PARAMS , &rgb, alpha, F_COLOR_ALPHA_MAX
+#include "f_software_draw.inc.c"
+
 #define F__BLEND inverse
 #define F__BLEND_SETUP
 #define F__PIXEL_PARAMS
@@ -267,6 +277,7 @@ static const struct {
     F__INIT_BLEND(F_COLOR_BLEND_ALPHA_25, alpha25)
     F__INIT_BLEND(F_COLOR_BLEND_ALPHA_50, alpha50)
     F__INIT_BLEND(F_COLOR_BLEND_ALPHA_75, alpha75)
+    F__INIT_BLEND(F_COLOR_BLEND_ALPHA_MASK, alphaMask)
     F__INIT_BLEND(F_COLOR_BLEND_INVERSE, inverse)
     F__INIT_BLEND(F_COLOR_BLEND_MOD, mod)
     F__INIT_BLEND(F_COLOR_BLEND_ADD, add)

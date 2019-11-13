@@ -177,6 +177,24 @@ static void scan_line(int Index, FVectorInt ScrP1, FVectorInt ScrP2, FVectorFix 
 #define F__PIXEL_PARAMS , &rgb
 #include "f_software_blit.inc.c"
 
+#define F__BLEND alphaMask
+#define F__FILL Data
+#define F__BLEND_SETUP \
+    const FColorRgb rgb = f__color.rgb; \
+    const int alpha = f__color.alpha;
+#define F__PIXEL_SETUP
+#define F__PIXEL_PARAMS , &rgb, alpha, f_color_pixelToRgbAny(*src)
+#include "f_software_blit.inc.c"
+
+#define F__BLEND alphaMask
+#define F__FILL Flat
+#define F__BLEND_SETUP \
+    const FColorRgb rgb = f__color.rgb; \
+    const int alpha = f__color.alpha;
+#define F__PIXEL_SETUP
+#define F__PIXEL_PARAMS , &rgb, alpha, f_color_pixelToRgbAny(*src)
+#include "f_software_blit.inc.c"
+
 #define F__BLEND inverse
 #define F__FILL Data
 #define F__BLEND_SETUP
@@ -236,6 +254,7 @@ static const FBlitter g_blitters[F_COLOR_BLEND_NUM][2][2][2] = {
     F__INIT_BLEND(F_COLOR_BLEND_ALPHA_25, alpha25)
     F__INIT_BLEND(F_COLOR_BLEND_ALPHA_50, alpha50)
     F__INIT_BLEND(F_COLOR_BLEND_ALPHA_75, alpha75)
+    F__INIT_BLEND(F_COLOR_BLEND_ALPHA_MASK, alphaMask)
     F__INIT_BLEND(F_COLOR_BLEND_INVERSE, inverse)
     F__INIT_BLEND(F_COLOR_BLEND_MOD, mod)
     F__INIT_BLEND(F_COLOR_BLEND_ADD, add)
@@ -254,6 +273,7 @@ static const FBlitterEx g_blittersEx[F_COLOR_BLEND_NUM][2][2] = {
     F__INIT_BLEND_EX(F_COLOR_BLEND_ALPHA_25, alpha25)
     F__INIT_BLEND_EX(F_COLOR_BLEND_ALPHA_50, alpha50)
     F__INIT_BLEND_EX(F_COLOR_BLEND_ALPHA_75, alpha75)
+    F__INIT_BLEND_EX(F_COLOR_BLEND_ALPHA_MASK, alphaMask)
     F__INIT_BLEND_EX(F_COLOR_BLEND_INVERSE, inverse)
     F__INIT_BLEND_EX(F_COLOR_BLEND_MOD, mod)
     F__INIT_BLEND_EX(F_COLOR_BLEND_ADD, add)

@@ -137,6 +137,11 @@ static inline FColorRgb f_color_pixelToRgb(FColorPixel Pixel)
     return rgb;
 }
 
+static inline int f_color_pixelToRgbAny(FColorPixel Pixel)
+{
+    return (int)((Pixel >> F__PX_SHIFT_B) << F__PX_PACK_B) & 0xff;
+}
+
 typedef enum {
     F_COLOR_BLEND_INVALID = -1,
     F_COLOR_BLEND_PLAIN,
@@ -144,6 +149,7 @@ typedef enum {
     F_COLOR_BLEND_ALPHA_25,
     F_COLOR_BLEND_ALPHA_50,
     F_COLOR_BLEND_ALPHA_75,
+    F_COLOR_BLEND_ALPHA_MASK,
     F_COLOR_BLEND_INVERSE,
     F_COLOR_BLEND_MOD,
     F_COLOR_BLEND_ADD,

@@ -668,6 +668,7 @@ uint8_t f_platform_sdl_video__pixelAlphaToSdlAlpha(void)
 {
     switch(f__color.blend) {
         case F_COLOR_BLEND_ALPHA:
+        case F_COLOR_BLEND_ALPHA_MASK:
             return (uint8_t)f__color.alpha;
 
         case F_COLOR_BLEND_ALPHA_25:

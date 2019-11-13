@@ -80,6 +80,16 @@ static inline void f_color__draw_alpha75(FColorPixel* Dst, const FColorRgb* Rgb)
                                  (rgb.b >> 2) + Rgb->b - (Rgb->b >> 2));
 }
 
+static inline void f_color__draw_alphaMask(FColorPixel* Dst, const FColorRgb* Rgb, int GlobalAlpha, int PixelAlpha)
+{
+    FColorRgb rgb = f_color_pixelToRgb(*Dst);
+    int alpha = GlobalAlpha * PixelAlpha;
+
+    *Dst = f_color_pixelFromRgb3(rgb.r + (((Rgb->r - rgb.r) * alpha) >> 16),
+                                 rgb.g + (((Rgb->g - rgb.g) * alpha) >> 16),
+                                 rgb.b + (((Rgb->b - rgb.b) * alpha) >> 16));
+}
+
 static inline void f_color__draw_inverse(FColorPixel* Dst)
 {
     *Dst = (FColorPixel)~*Dst;
