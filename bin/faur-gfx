@@ -145,13 +145,13 @@ def process_c(var_name, image_file, color_key):
         spans = spans_make(frame_pixels, frame_width, frame_height, color_key)
 
         span_buffers += """\
-static const unsigned f_gfx__spans__{var}__{num}[] = {{{spans_data}}};
+static const unsigned f__gfx_spans__{var}__{num}[] = {{{spans_data}}};
 """.format(var = var_name,
            num = frame_index,
            spans_data = ', '.join([str(s) for s in spans]))
 
         span_vars += """\
-            (FPlatformTexture*)(void*)f_gfx__spans__{var}__{num},
+            (FPlatformTexture*)(void*)f__gfx_spans__{var}__{num},
 """.format(var = var_name, num = frame_index)
 
     content = """\
@@ -168,7 +168,7 @@ static const unsigned f_gfx__spans__{var}__{num}[] = {{{spans_data}}};
     #endif
 #endif
 
-static const FColorPixel f_gfx__buffer__{var}[{width} * {height} * {frames_num}] = {{
+static const FColorPixel f__gfx_buffer__{var}[{width} * {height} * {frames_num}] = {{
 {pixel_buffers}}};
 
 #if F_CONFIG_LIB_RENDER_SOFTWARE
@@ -177,14 +177,14 @@ static const FColorPixel f_gfx__buffer__{var}[{width} * {height} * {frames_num}]
 static F__GEN_GFX_CONST struct {{
     FPixels pixels;
     FPlatformTexture* textures[{frames_num}];
-}} f_gfx__sprite__{var} = {{
+}} f__gfx_sprite__{var} = {{
     {{
         .size = {{{width}, {height}}},
         .framesNum = {frames_num},
         .bufferLen = {width} * {height},
         .bufferSize = {width} * {height} * sizeof(FColorPixel),
         .flags = F_PIXELS__CONST,
-        .buffer = (FColorPixel*)f_gfx__buffer__{var},
+        .buffer = (FColorPixel*)f__gfx_buffer__{var},
     }},
     {{
         #if F_CONFIG_LIB_RENDER_SOFTWARE
@@ -194,7 +194,7 @@ static F__GEN_GFX_CONST struct {{
     }},
 }};
 
-const FSprite* const f_gfx_{var} = (const FSprite*)(void*)&f_gfx__sprite__{var};
+const FSprite* const f_gfx_{var} = (const FSprite*)(void*)&f__gfx_sprite__{var};
 """.format(cmd = g_tool.get_cmd(),
            var = var_name,
            width = frame_width,
