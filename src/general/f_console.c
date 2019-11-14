@@ -143,6 +143,7 @@ void f_console__draw(void)
     f_color_push();
     f_font_push();
     f_screen_clipReset();
+    f_sprite_alignReset();
 
     f_color_blendSet(F_COLOR_BLEND_ALPHA_75);
     f_color_colorSetHex(0x1f0f0f);
