@@ -35,6 +35,8 @@ static FList* g_pending; // list of FStateStackEntry/NULL
 static bool g_exiting;
 static const FEvent* g_blockEvent;
 
+static FStateCallback *g_tickPre, *g_tickPost, *g_drawPre, *g_drawPost;
+
 #if F_CONFIG_BUILD_DEBUG
 static const char* g_stageNames[F__STATE_STAGE_NUM] = {
     [F__STATE_STAGE_INIT] = "Init",
@@ -153,6 +155,14 @@ const FPack f_pack__state = {
         [0] = f_state__uninit,
     },
 };
+
+void f_state_callbacks(FStateCallback* TickPre, FStateCallback* TickPost, FStateCallback* DrawPre, FStateCallback* DrawPost)
+{
+    g_tickPre = TickPre;
+    g_tickPost = TickPost;
+    g_drawPre = DrawPre;
+    g_drawPost = DrawPost;
+}
 
 void f_state_push(FStateHandler* Handler, const char* Name)
 {
@@ -331,7 +341,15 @@ bool f_state__runStep(void)
                 return true;
             }
 
+            if(g_tickPre) {
+                g_tickPre();
+            }
+
             s->handler();
+
+            if(g_tickPost) {
+                g_tickPost();
+            }
 
             if(!f_list_isEmpty(g_pending) && !f_state_blockGet()) {
                 return true;
@@ -339,7 +357,17 @@ bool f_state__runStep(void)
         }
 
         s->stage = F__STATE_STAGE_DRAW;
+
+        if(g_drawPre) {
+            g_drawPre();
+        }
+
         s->handler();
+
+        if(g_drawPost) {
+            g_drawPost();
+        }
+
         s->stage = F__STATE_STAGE_TICK;
 
         f_fade__draw();
