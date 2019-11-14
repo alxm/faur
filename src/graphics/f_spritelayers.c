@@ -84,7 +84,7 @@ void f_spritelayers_blit(const FSpriteLayers* Layers, unsigned Frame, int X, int
 
     F_LIST_ITERATE(Layers, FLayer*, l) {
         f_color_blendSet(l->blend);
-        f_color_baseSetRgba(l->r, l->g, l->b, l->a);
+        f_color_colorSetRgba(l->r, l->g, l->b, l->a);
 
         f_sprite_blit(l->sprite, Frame, X, Y);
     }

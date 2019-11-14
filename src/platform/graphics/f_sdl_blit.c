@@ -26,6 +26,7 @@ typedef enum {
     F_TEXTURE__NORMAL, // non-colorkey: alpha:0xff
     F_TEXTURE__COLORMOD_BITMAP, // colorkey: RGB:0xffffff
     F_TEXTURE__COLORMOD_FLAT, // non-colorkey: RGB:0xffffff
+    F_TEXTURE__ALPHA_MASK, // all: alpha:RGB
     F_TEXTURE__NUM
 } FPlatformTextureVersion;
 
@@ -68,6 +69,15 @@ FPlatformTexture* f_platform_api__textureNew(const FPixels* Pixels, unsigned Fra
                         // Set full color for non-transparent pixel
                         buffer[i] |= f_color_pixelFromHex(0xffffff);
                     }
+                }
+            } break;
+
+            case F_TEXTURE__ALPHA_MASK: {
+                for(int i = Pixels->size.x * Pixels->size.y; i--;) {
+                    int alpha = f_color_pixelToRgbAny(original[i]);
+
+                    buffer[i] =
+                        original[i] | (FColorPixel)(alpha << F__PX_SHIFT_A);
                 }
             } break;
         }
@@ -138,10 +148,14 @@ void f_platform_api__textureBlitEx(const FPlatformTexture* Texture, const FPixel
     SDL_BlendMode blend =
         (SDL_BlendMode)f_platform_sdl_video__pixelBlendToSdlBlend();
 
+    bool mod = f__color.fillBlit || f__color.blend == F_COLOR_BLEND_ALPHA_MASK;
+
     if(f__color.fillBlit) {
         tex = Texture->texture[F_TEXTURE__COLORMOD_FLAT];
     } else if(blend == SDL_BLENDMODE_MOD) {
         tex = Texture->texture[F_TEXTURE__COLORMOD_BITMAP];
+    } else if(f__color.blend == F_COLOR_BLEND_ALPHA_MASK) {
+        tex = Texture->texture[F_TEXTURE__ALPHA_MASK];
     } else {
         tex = Texture->texture[F_TEXTURE__NORMAL];
     }
@@ -156,7 +170,7 @@ void f_platform_api__textureBlitEx(const FPlatformTexture* Texture, const FPixel
         f_out__error("SDL_SetTextureAlphaMod: %s", SDL_GetError());
     }
 
-    if(f__color.fillBlit) {
+    if(mod) {
         if(SDL_SetTextureColorMod(tex,
                                   (uint8_t)f__color.rgb.r,
                                   (uint8_t)f__color.rgb.g,
@@ -191,7 +205,7 @@ void f_platform_api__textureBlitEx(const FPlatformTexture* Texture, const FPixel
         f_out__error("SDL_RenderCopyEx: %s", SDL_GetError());
     }
 
-    if(f__color.fillBlit) {
+    if(mod) {
         if(SDL_SetTextureColorMod(tex, 0xff, 0xff, 0xff) < 0) {
             f_out__error("SDL_SetTextureColorMod: %s", SDL_GetError());
         }

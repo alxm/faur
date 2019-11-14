@@ -137,13 +137,19 @@ static inline FColorRgb f_color_pixelToRgb(FColorPixel Pixel)
     return rgb;
 }
 
+static inline int f_color_pixelToRgbAny(FColorPixel Pixel)
+{
+    return (int)((Pixel >> F__PX_SHIFT_B) << F__PX_PACK_B) & 0xff;
+}
+
 typedef enum {
     F_COLOR_BLEND_INVALID = -1,
     F_COLOR_BLEND_PLAIN,
-    F_COLOR_BLEND_RGBA,
-    F_COLOR_BLEND_RGB25,
-    F_COLOR_BLEND_RGB50,
-    F_COLOR_BLEND_RGB75,
+    F_COLOR_BLEND_ALPHA,
+    F_COLOR_BLEND_ALPHA_25,
+    F_COLOR_BLEND_ALPHA_50,
+    F_COLOR_BLEND_ALPHA_75,
+    F_COLOR_BLEND_ALPHA_MASK,
     F_COLOR_BLEND_INVERSE,
     F_COLOR_BLEND_MOD,
     F_COLOR_BLEND_ADD,
@@ -157,10 +163,10 @@ extern void f_color_reset(void);
 extern void f_color_blendSet(FColorBlend Blend);
 extern void f_color_alphaSet(int Alpha);
 
-extern void f_color_baseSetRgb(int Red, int Green, int Blue);
-extern void f_color_baseSetRgba(int Red, int Green, int Blue, int Alpha);
-extern void f_color_baseSetHex(uint32_t Hexcode);
-extern void f_color_baseSetPixel(FColorPixel Pixel);
+extern void f_color_colorSetRgb(int Red, int Green, int Blue);
+extern void f_color_colorSetRgba(int Red, int Green, int Blue, int Alpha);
+extern void f_color_colorSetHex(uint32_t Hexcode);
+extern void f_color_colorSetPixel(FColorPixel Pixel);
 
 extern void f_color_fillBlitSet(bool Fill);
 extern void f_color_fillDrawSet(bool Fill);

@@ -667,16 +667,17 @@ int f_platform_sdl_video__pixelBlendToSdlBlend(void)
 uint8_t f_platform_sdl_video__pixelAlphaToSdlAlpha(void)
 {
     switch(f__color.blend) {
-        case F_COLOR_BLEND_RGBA:
+        case F_COLOR_BLEND_ALPHA:
+        case F_COLOR_BLEND_ALPHA_MASK:
             return (uint8_t)f__color.alpha;
 
-        case F_COLOR_BLEND_RGB25:
+        case F_COLOR_BLEND_ALPHA_25:
             return SDL_ALPHA_OPAQUE / 4;
 
-        case F_COLOR_BLEND_RGB50:
+        case F_COLOR_BLEND_ALPHA_50:
             return SDL_ALPHA_OPAQUE / 2;
 
-        case F_COLOR_BLEND_RGB75:
+        case F_COLOR_BLEND_ALPHA_75:
             return SDL_ALPHA_OPAQUE * 3 / 4;
 
         default:

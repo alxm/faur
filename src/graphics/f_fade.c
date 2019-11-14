@@ -119,14 +119,14 @@ void f_fade__draw(void)
     }
 
     f_color_push();
-    f_color_blendSet(F_COLOR_BLEND_RGBA);
+    f_color_blendSet(F_COLOR_BLEND_ALPHA);
 
     switch(g_fade.op) {
         case F__FADE_TOCOLOR: {
             f_color_alphaSet(
                 f_fix_toInt(f_fix_sinf(g_fade.angle) * F_COLOR_ALPHA_MAX));
 
-            f_color_baseSetPixel(g_fade.color);
+            f_color_colorSetPixel(g_fade.color);
             f_draw_fill();
         } break;
 
@@ -135,7 +135,7 @@ void f_fade__draw(void)
                 f_fix_toInt(f_fix_sinf(F_DEG_090_FIX - g_fade.angle)
                                 * F_COLOR_ALPHA_MAX));
 
-            f_color_baseSetPixel(g_fade.color);
+            f_color_colorSetPixel(g_fade.color);
             f_draw_fill();
         } break;
 

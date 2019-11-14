@@ -144,8 +144,8 @@ void f_console__draw(void)
     f_font_push();
     f_screen_clipReset();
 
-    f_color_blendSet(F_COLOR_BLEND_RGB75);
-    f_color_baseSetHex(0x1f0f0f);
+    f_color_blendSet(F_COLOR_BLEND_ALPHA_75);
+    f_color_colorSetHex(0x1f0f0f);
     f_draw_fill();
 
     f_color_reset();

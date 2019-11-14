@@ -133,24 +133,28 @@ static void F__FUNC_NAME_EX(const FPixels* Pixels, unsigned Frame, int X, int Y,
         return;
     }
 
-    scan_line(LEFT, screenTop, screenLeft, spriteTop, spriteMidleft);
-    scan_line(LEFT, screenLeft, screenBottom, spriteMidleft, spriteBottom);
-    scan_line(RIGHT, screenTop, screenRight, spriteTop, spriteMidright);
-    scan_line(RIGHT, screenRight, screenBottom, spriteMidright, spriteBottom);
+    scan_line(
+        &g_edges[0], screenTop, screenLeft, spriteTop, spriteMidleft);
+    scan_line(
+        &g_edges[0], screenLeft, screenBottom, spriteMidleft, spriteBottom);
+    scan_line(
+        &g_edges[1], screenTop, screenRight, spriteTop, spriteMidright);
+    scan_line(
+        &g_edges[1], screenRight, screenBottom, spriteMidright, spriteBottom);
 
     const int scrTopYClipped = f_math_max(screenTop.y, 0);
     const int scrBottomYClipped = f_math_min(screenBottom.y, screenSize.y - 1);
 
     for(int scrY = scrTopYClipped; scrY <= scrBottomYClipped; scrY++) {
-        int screenX0 = g_scanlines[scrY].screenX[LEFT];
-        int screenX1 = g_scanlines[scrY].screenX[RIGHT];
+        int screenX0 = g_edges[0].screen[scrY];
+        int screenX1 = g_edges[1].screen[scrY];
 
         if(screenX0 >= screenSize.x || screenX1 < 0) {
             continue;
         }
 
-        const FVectorFix sprite0 = g_scanlines[scrY].sprite[LEFT];
-        const FVectorFix sprite1 = g_scanlines[scrY].sprite[RIGHT];
+        const FVectorFix sprite0 = g_edges[0].sprite[scrY];
+        const FVectorFix sprite1 = g_edges[1].sprite[scrY];
 
         const FFix spriteDeltaX =
             sprite1.x - sprite0.x
