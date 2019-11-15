@@ -286,6 +286,8 @@ static void wrapString(const char* Text)
 
 void f_font_print(const char* Text)
 {
+    f_sprite_alignReset();
+
     if(g_state.wrapWidth > 0) {
         wrapString(Text);
 

@@ -219,6 +219,9 @@ $(F_FILE_BIN_LINK_SCREENSHOTS) :
 clean : $(F_CONFIG_MAKE_CLEAN)
 	rm -rf $(F_DIR_BUILD_UID)
 
+cleangen :
+	rm -rf $(F_DIR_GEN_C) $(F_DIR_GEN_O)
+
 run : all
 	cd $(F_DIR_BIN) && ./$(F_FILE_BIN)
 

@@ -87,12 +87,4 @@ void f_gamebuino_lightsEnd(void)
 {
     f__screen = g_screen;
 }
-#else // !F_CONFIG_SYSTEM_GAMEBUINO
-void f_gamebuino_lightsStart(void)
-{
-}
-
-void f_gamebuino_lightsEnd(void)
-{
-}
-#endif // !F_CONFIG_SYSTEM_GAMEBUINO
+#endif // F_CONFIG_SYSTEM_GAMEBUINO

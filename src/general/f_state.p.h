@@ -21,6 +21,9 @@
 #include "../general/f_system_includes.h"
 
 typedef void FStateHandler(void);
+typedef void FStateCallback(void);
+
+extern void f_state_callbacks(FStateCallback* TickPre, FStateCallback* TickPost, FStateCallback* DrawPre, FStateCallback* DrawPost);
 
 extern void f_state_push(FStateHandler* Handler, const char* Name);
 extern void f_state_pop(void);
