@@ -52,7 +52,7 @@ static void pending_push(FStateHandler* Handler, const char* Name)
 
     e->name = Name;
     e->handler = Handler;
-    e->stage = F__STATE_STAGE_INIT;
+    e->stage = F__STATE_STAGE_INVALID;
 
     f_list_addLast(g_pending, e);
 }
@@ -66,26 +66,10 @@ static void pending_handle(void)
 {
     FStateStackEntry* current = f_list_peek(g_stack);
 
-    // Check if the current state just ran its Free stage
-    if(current && current->stage == F__STATE_STAGE_FREE) {
-        #if F_CONFIG_BUILD_DEBUG
-            f_out__state("Destroying '%s' instance", current->name);
-        #endif
+    if(current) {
+        bool resetFps = false;
 
-        f_mem_free(f_list_pop(g_stack));
-        current = f_list_peek(g_stack);
-
-        if(!g_exiting && f_list_isEmpty(g_pending)
-            && current && current->stage == F__STATE_STAGE_TICK) {
-
-            f_fps__reset();
-        }
-    }
-
-    // If there are no pending state changes,
-    // check if the current state should transition from Init to Loop
-    if(f_list_isEmpty(g_pending)) {
-        if(current && current->stage == F__STATE_STAGE_INIT) {
+        if(current->stage == F__STATE_STAGE_INIT) {
             #if F_CONFIG_BUILD_DEBUG
                 f_out__state("'%s' going from %s to %s",
                              current->name,
@@ -94,10 +78,24 @@ static void pending_handle(void)
             #endif
 
             current->stage = F__STATE_STAGE_TICK;
+            resetFps = true;
+        } else if(current->stage == F__STATE_STAGE_FREE) {
+            #if F_CONFIG_BUILD_DEBUG
+                f_out__state("Destroying '%s' instance", current->name);
+            #endif
 
-            f_fps__reset();
+            f_mem_free(f_list_pop(g_stack));
+
+            current = f_list_peek(g_stack);
+            resetFps = current && current->stage == F__STATE_STAGE_TICK;
         }
 
+        if(resetFps && !g_exiting && f_list_isEmpty(g_pending)) {
+            f_fps__reset();
+        }
+    }
+
+    if(f_list_isEmpty(g_pending) || f_state_blockGet()) {
         return;
     }
 
@@ -130,7 +128,10 @@ static void pending_handle(void)
         #endif
 
         f_out__state("New '%s' instance", pendingState->name);
+
         f_list_push(g_stack, pendingState);
+
+        pendingState->stage = F__STATE_STAGE_INIT;
     }
 }
 
@@ -316,9 +317,7 @@ bool f_state__runStep(void)
         }
     #endif
 
-    if(!f_state_blockGet()) {
-        pending_handle();
-    }
+    pending_handle();
 
     FStateStackEntry* s = f_list_peek(g_stack);
 
