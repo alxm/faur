@@ -27,15 +27,18 @@ extern "C" {
 #define F__SCREEN_SIZE \
     (F_CONFIG_SCREEN_SIZE_WIDTH * F_CONFIG_SCREEN_SIZE_HEIGHT)
 
-static FScreen g_screen;
 static FPixels g_pixels;
-static FColorPixel g_screenBuffer[F__SCREEN_SIZE];
-
+static FColorPixel* g_screenBuffer;
 static const FVectorInt g_screenSize = {F_CONFIG_SCREEN_SIZE_WIDTH,
                                         F_CONFIG_SCREEN_SIZE_HEIGHT};
 
 void f_platform_api__screenInit(void)
 {
+    g_screenBuffer =
+        (FColorPixel*)ps_malloc(
+            (F_CONFIG_SCREEN_SIZE_WIDTH * F_CONFIG_SCREEN_SIZE_HEIGHT
+                * sizeof(FColorPixel)));
+
     f_pixels__init(
         &g_pixels, g_screenSize.x, g_screenSize.y, 1, (FPixelsFlags)0);
     f_pixels__bufferSet(
@@ -59,11 +62,12 @@ void f_platform_api__screenShow(void)
         bytes++;
     }
 
-    GO.lcd.drawBitmap(0,
-                      0,
-                      F_CONFIG_SCREEN_SIZE_WIDTH,
-                      F_CONFIG_SCREEN_SIZE_HEIGHT,
-                      g_screenBuffer);
+    GO.lcd.drawBitmap(
+        (F_CONFIG_SCREEN_HARDWARE_WIDTH - F_CONFIG_SCREEN_SIZE_WIDTH) / 2,
+        (F_CONFIG_SCREEN_HARDWARE_HEIGHT - F_CONFIG_SCREEN_SIZE_HEIGHT) / 2,
+        F_CONFIG_SCREEN_SIZE_WIDTH,
+        F_CONFIG_SCREEN_SIZE_HEIGHT,
+        g_screenBuffer);
 }
 
 bool f_platform_api__screenVsyncGet(void)
