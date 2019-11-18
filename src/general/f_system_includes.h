@@ -57,8 +57,10 @@ typedef volatile int FEvent;
     #error Code needs CHAR_BIT == 8
 #endif
 
-#ifdef __SAMD21G18A__
+#if __SAMD21G18A__
     #include "../platform/system/f_gamebuino_config.h"
+#elif ESP_PLATFORM
+    #include "../platform/system/f_odroid_go_config.h"
 #endif
 
 #endif // F_INC_GENERAL_SYSTEM_INCLUDES_H

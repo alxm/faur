@@ -15,11 +15,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef F_INC_PLATFORM_SYSTEM_GAMEBUINO_CONFIG_H
-#define F_INC_PLATFORM_SYSTEM_GAMEBUINO_CONFIG_H
+#ifndef F_INC_PLATFORM_SYSTEM_ODROID_GO_CONFIG_H
+#define F_INC_PLATFORM_SYSTEM_ODROID_GO_CONFIG_H
 
-
-#include <sketch/config-faur.h>
+//#include <sketch/config-faur.h>
 
 #ifndef F_CONFIG_APP_AUTHOR
 #define F_CONFIG_APP_AUTHOR "you"
@@ -73,7 +72,7 @@
 #endif
 
 #ifndef F_CONFIG_BUILD_UID
-#define F_CONFIG_BUILD_UID "gamebuino_arduino"
+#define F_CONFIG_BUILD_UID "odroid_go_arduino"
 #endif
 
 #ifndef F_CONFIG_COLOR_SPRITE_BORDER
@@ -85,15 +84,11 @@
 #endif
 
 #ifndef F_CONFIG_FEATURE_OUTPUT
-#define F_CONFIG_FEATURE_OUTPUT 1
+#define F_CONFIG_FEATURE_OUTPUT 0
 #endif
 
 #ifndef F_CONFIG_FEATURE_SOUND
-#define F_CONFIG_FEATURE_SOUND 1
-#endif
-
-#ifndef F_CONFIG_FILES_LIB_GAMEBUINO
-#define F_CONFIG_FILES_LIB_GAMEBUINO 1
+#define F_CONFIG_FEATURE_SOUND 0
 #endif
 
 #ifndef F_CONFIG_FPS_HISTORY
@@ -137,11 +132,11 @@
 #endif
 
 #ifndef F_CONFIG_SCREEN_HARDWARE_HEIGHT
-#define F_CONFIG_SCREEN_HARDWARE_HEIGHT 64
+#define F_CONFIG_SCREEN_HARDWARE_HEIGHT 240
 #endif
 
 #ifndef F_CONFIG_SCREEN_HARDWARE_WIDTH
-#define F_CONFIG_SCREEN_HARDWARE_WIDTH 80
+#define F_CONFIG_SCREEN_HARDWARE_WIDTH 320
 #endif
 
 #ifndef F_CONFIG_SCREEN_SIZE_HEIGHT
@@ -152,26 +147,16 @@
 #define F_CONFIG_SCREEN_SIZE_WIDTH 80
 #endif
 
+#ifndef F_CONFIG_SCREEN_ZOOM
+#define F_CONFIG_SCREEN_ZOOM 3
+#endif
+
 #ifndef F_CONFIG_SYSTEM_ARDUINO
 #define F_CONFIG_SYSTEM_ARDUINO 1
 #endif
 
-#ifndef F_CONFIG_SYSTEM_GAMEBUINO
-#define F_CONFIG_SYSTEM_GAMEBUINO 1
+#ifndef F_CONFIG_SYSTEM_ODROID_GO
+#define F_CONFIG_SYSTEM_ODROID_GO 1
 #endif
 
-// Application must supply a `/config-gamebuino.h` file that includes <faur.h>
-// (for use by Gamebuino_META), and a `/config-faur.h` file (for use by Faur).
-#undef FOLDER_NAME
-#define FOLDER_NAME F_CONFIG_APP_DIR
-
-#undef DISPLAY_MODE
-#define DISPLAY_MODE DISPLAY_MODE_RGB565
-
-#undef SOUND_CHANNELS
-#define SOUND_CHANNELS 1
-
-#undef SOUND_FREQ
-#define SOUND_FREQ 22050
-
-#endif // F_INC_PLATFORM_SYSTEM_GAMEBUINO_CONFIG_H
+#endif // F_INC_PLATFORM_SYSTEM_ODROID_GO_CONFIG_H

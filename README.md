@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/alxm/faur.svg?branch=master)](https://travis-ci.org/alxm/faur)
 
-*Faur* is a C framework I wrote for my video games. It runs natively on Linux and FreeBSD, and can be cross-compiled for Web, Windows, GP2X, Wiz, Caanoo, Open Pandora, and the Arduino-compatible Gamebuino META.
+*Faur* is a C framework I wrote for my video games. It runs natively on Linux and FreeBSD, and can be cross-compiled for Web, Windows, GP2X, Wiz, Caanoo, Open Pandora, and the Arduino-compatible Gamebuino META and Odroid-GO (early).
 
 ## Dependencies & Path Setup
 
@@ -115,11 +115,13 @@ include $(FAUR_PATH)/make/dev.mk
 
 I first wrote Faur (formerly *a2x*) to make games for the Linux-based [GP2X handheld](https://www.alxm.org/games/gamepark.html). These are the supported platforms now:
 
+* Linux, FreeBSD *(native)*
 * Web *(Emscripten)*
 * Windows *(MinGW-w64)*
 * GP2X, Wiz, Caanoo *(Open2x SDK, GPH SDK)*
 * Open Pandora *(Pandora SDK)*
 * Gamebuino META *(Arduino SAMD)*
+* Odroid-GO *(Arduino ESP32, early)*
 
 The default toolchain paths are in faur/make/global/defs.mk and they can be overridden in ~/.config/faur/sdk.mk. To build for a different target, edit the application Makefile and replace `dev.mk` with another file from faur/make/.
 
