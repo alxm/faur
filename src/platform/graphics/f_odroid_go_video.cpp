@@ -29,6 +29,7 @@ extern "C" {
 
 static FPixels g_pixels;
 static FColorPixel* g_screenBuffer;
+static FColorPixel* g_scaledBuffer;
 static const FVectorInt g_screenSize = {F_CONFIG_SCREEN_SIZE_WIDTH,
                                         F_CONFIG_SCREEN_SIZE_HEIGHT};
 
@@ -38,6 +39,12 @@ void f_platform_api__screenInit(void)
         (FColorPixel*)ps_malloc(
             (F_CONFIG_SCREEN_SIZE_WIDTH * F_CONFIG_SCREEN_SIZE_HEIGHT
                 * sizeof(FColorPixel)));
+
+    g_scaledBuffer =
+        (FColorPixel*)ps_malloc(
+            (F_CONFIG_SCREEN_SIZE_WIDTH * F_CONFIG_SCREEN_ZOOM
+                * F_CONFIG_SCREEN_SIZE_HEIGHT * F_CONFIG_SCREEN_ZOOM
+                    * sizeof(FColorPixel)));
 
     f_pixels__init(
         &g_pixels, g_screenSize.x, g_screenSize.y, 1, (FPixelsFlags)0);
@@ -62,12 +69,38 @@ void f_platform_api__screenShow(void)
         bytes++;
     }
 
+    FColorPixel* dst = g_scaledBuffer;
+    const FColorPixel* src = g_screenBuffer;
+
+    for(int y = F_CONFIG_SCREEN_SIZE_HEIGHT; y--; ) {
+        const FColorPixel* firstLine = dst;
+
+        for(int x = F_CONFIG_SCREEN_SIZE_WIDTH; x--; ) {
+            for(int z = F_CONFIG_SCREEN_ZOOM; z--; ) {
+                *dst++ = *src;
+            }
+
+            src++;
+        }
+
+        for(int z = F_CONFIG_SCREEN_ZOOM - 1; z--; ) {
+            memcpy(dst,
+                   firstLine,
+                   F_CONFIG_SCREEN_SIZE_WIDTH * F_CONFIG_SCREEN_ZOOM
+                    * sizeof(FColorPixel));
+
+            dst += F_CONFIG_SCREEN_SIZE_WIDTH * F_CONFIG_SCREEN_ZOOM;
+        }
+    }
+
     GO.lcd.drawBitmap(
-        (F_CONFIG_SCREEN_HARDWARE_WIDTH - F_CONFIG_SCREEN_SIZE_WIDTH) / 2,
-        (F_CONFIG_SCREEN_HARDWARE_HEIGHT - F_CONFIG_SCREEN_SIZE_HEIGHT) / 2,
-        F_CONFIG_SCREEN_SIZE_WIDTH,
-        F_CONFIG_SCREEN_SIZE_HEIGHT,
-        g_screenBuffer);
+        (F_CONFIG_SCREEN_HARDWARE_WIDTH
+            - F_CONFIG_SCREEN_SIZE_WIDTH * F_CONFIG_SCREEN_ZOOM) / 2,
+        (F_CONFIG_SCREEN_HARDWARE_HEIGHT
+            - F_CONFIG_SCREEN_SIZE_HEIGHT * F_CONFIG_SCREEN_ZOOM) / 2,
+        F_CONFIG_SCREEN_SIZE_WIDTH * F_CONFIG_SCREEN_ZOOM,
+        F_CONFIG_SCREEN_SIZE_HEIGHT * F_CONFIG_SCREEN_ZOOM,
+        g_scaledBuffer);
 }
 
 bool f_platform_api__screenVsyncGet(void)
