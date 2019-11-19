@@ -21,7 +21,7 @@ extern "C" {
 
 #include <faur.v.h>
 
-#if F_CONFIG_FILES_LIB_GAMEBUINO
+#if F_CONFIG_SYSTEM_GAMEBUINO
 #include <Arduino.h>
 #include <Gamebuino-Meta.h>
 
@@ -96,4 +96,4 @@ void f_platform_api__filePrint(FPlatformFile* File, const char* String)
 
     SerialUSB.printf(String);
 }
-#endif // F_CONFIG_FILES_LIB_GAMEBUINO
+#endif // F_CONFIG_SYSTEM_GAMEBUINO
