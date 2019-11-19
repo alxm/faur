@@ -4,6 +4,8 @@
 
 *Faur* is a C framework I wrote for my video games. It runs natively on Linux and FreeBSD, and can be cross-compiled for Web, Windows, GP2X, Wiz, Caanoo, Open Pandora, and the Arduino-compatible Gamebuino META and Odroid-GO (early).
 
+Features include cross-platform graphics, sound, inputs, file I/O, state management, ECS model, and utilities to help with data, math, strings, time, and more.
+
 ## Dependencies & Path Setup
 
 ```sh

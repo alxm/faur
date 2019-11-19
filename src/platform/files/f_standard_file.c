@@ -18,7 +18,7 @@
 #include "f_standard_file.v.h"
 #include <faur.v.h>
 
-#if F_CONFIG_FILES_LIB_STANDARD
+#if F_CONFIG_FILES_STANDARD
 #include <sys/stat.h>
 
 #if F_CONFIG_SYSTEM_EMSCRIPTEN
@@ -172,4 +172,4 @@ uint8_t* f_platform_api__fileToBuffer(const char* Path)
 
     return buffer;
 }
-#endif // F_CONFIG_FILES_LIB_STANDARD
+#endif // F_CONFIG_FILES_STANDARD

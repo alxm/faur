@@ -78,7 +78,16 @@ int main(int Argc, char* Argv[])
 
     f__main();
 
-    f_state__runLoop();
+    #if F_CONFIG_SYSTEM_EMSCRIPTEN
+        emscripten_set_main_loop(
+            f_platform_emscripten__loop,
+            f_platform_api__screenVsyncGet() ? 0 : F_CONFIG_FPS_RATE_DRAW,
+            true);
+    #else
+        while(f_state__runStep()) {
+            continue;
+        }
+    #endif
 
     return 0;
 }

@@ -24,7 +24,6 @@
 
 extern const FPack f_pack__state;
 
-extern void f_state__runLoop(void);
 extern bool f_state__runStep(void);
 
 #endif // F_INC_GENERAL_STATE_V_H

@@ -311,12 +311,6 @@ void f_state_blockSet(const FEvent* Event)
 
 bool f_state__runStep(void)
 {
-    #if F_CONFIG_SYSTEM_EMSCRIPTEN
-        if(!EM_ASM_INT({ return Module.faur_fsIsReady; }, 0)) {
-            return true;
-        }
-    #endif
-
     pending_handle();
 
     FStateStackEntry* s = f_list_peek(g_stack);
@@ -384,34 +378,6 @@ bool f_state__runStep(void)
     }
 
     return true;
-}
-
-#if F_CONFIG_SYSTEM_EMSCRIPTEN
-static void loop(void)
-{
-    if(!f_state__runStep()) {
-        f_out__state("Finished running states");
-        emscripten_cancel_main_loop();
-    }
-}
-#endif
-
-void f_state__runLoop(void)
-{
-    f_out__state("Running states");
-
-    #if F_CONFIG_SYSTEM_EMSCRIPTEN
-        emscripten_set_main_loop(
-            loop,
-            f_platform_api__screenVsyncGet() ? 0 : F_CONFIG_FPS_RATE_DRAW,
-            true);
-    #else
-        while(f_state__runStep()) {
-            continue;
-        }
-
-        f_out__state("Finished running states");
-    #endif
 }
 
 bool f__state_stageCheck(FStateStage Stage)

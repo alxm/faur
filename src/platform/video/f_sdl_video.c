@@ -40,9 +40,8 @@
     static const bool g_vsync = false;
 #endif
 
-#if F_CONFIG_SCREEN_SIZE_WIDTH < 0 || F_CONFIG_SCREEN_SIZE_HEIGHT < 0
-    #define F__SIZE_DYNAMIC 1
-#endif
+#define F__SIZE_DYNAMIC \
+    (F_CONFIG_SCREEN_SIZE_WIDTH < 0 || F_CONFIG_SCREEN_SIZE_HEIGHT < 0)
 
 #if F__SIZE_DYNAMIC
 static FVectorInt g_size = {

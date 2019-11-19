@@ -37,4 +37,15 @@ void f_platform_emscripten__init(void)
         F_CONFIG_FILES_PREFIX
     );
 }
+
+void f_platform_emscripten__loop(void)
+{
+    if(!EM_ASM_INT({ return Module.faur_fsIsReady; }, 0)) {
+        return;
+    }
+
+    if(!f_state__runStep()) {
+        emscripten_cancel_main_loop();
+    }
+}
 #endif // F_CONFIG_SYSTEM_EMSCRIPTEN
