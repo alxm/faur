@@ -48,7 +48,7 @@ static void scan_line(FScanlineEdge* Edge, FVectorInt ScrP1, FVectorInt ScrP2, F
     // Happens when sprite angle is a multiple of 90deg,
     // and 2 of the sprite's opposite sides are 0-height in screen space.
     if(ScrP1.y == ScrP2.y
-        || ScrP1.y >= f__screen.pixels->size.y || ScrP2.y < 0) {
+        || ScrP1.y >= f__screen.clipY2 || ScrP2.y < f__screen.clipY) {
 
         return;
     }
