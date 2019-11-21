@@ -20,8 +20,13 @@
 
 #include "f_color.p.h"
 
+#define F__OPTIMIZE_ALPHA (F_CONFIG_RENDER_SOFTWARE && F_CONFIG_TRAIT_SLOW_MUL)
+
 typedef struct {
-    FColorBlend blend, canonicalBlend;
+    FColorBlend blend;
+    #if F__OPTIMIZE_ALPHA
+        FColorBlend canonicalBlend;
+    #endif
     FColorRgb rgb;
     FColorPixel pixel;
     int alpha;

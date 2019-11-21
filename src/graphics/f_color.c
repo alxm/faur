@@ -18,9 +18,6 @@
 #include "f_color.v.h"
 #include <faur.v.h>
 
-#define F__OPTIMIZE_ALPHA \
-    (F_CONFIG_RENDER_SOFTWARE && !F_CONFIG_SYSTEM_GAMEBUINO)
-
 FPixelState f__color;
 static FList* g_stateStack;
 
@@ -116,11 +113,11 @@ static void optimizeAlphaBlending(void)
 void f_color_blendSet(FColorBlend Blend)
 {
     f__color.blend = Blend;
-    f__color.canonicalBlend = Blend;
 
     #if F__OPTIMIZE_ALPHA
+        f__color.canonicalBlend = Blend;
         optimizeAlphaBlending();
-    #elif !F_CONFIG_RENDER_SOFTWARE
+    #else
         if(Blend == F_COLOR_BLEND_ALPHA_25) {
             f_color_alphaSet(F_COLOR_ALPHA_MAX / 4);
         } else if(Blend == F_COLOR_BLEND_ALPHA_50) {
@@ -129,7 +126,9 @@ void f_color_blendSet(FColorBlend Blend)
             f_color_alphaSet(F_COLOR_ALPHA_MAX * 3 / 4);
         }
 
-        f_platform_api__renderSetBlendMode();
+        #if !F_CONFIG_RENDER_SOFTWARE
+            f_platform_api__renderSetBlendMode();
+        #endif
     #endif
 }
 

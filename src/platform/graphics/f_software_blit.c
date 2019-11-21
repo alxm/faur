@@ -132,47 +132,49 @@ static void scan_line(FScanlineEdge* Edge, FVectorInt ScrP1, FVectorInt ScrP2, F
 #define F__PIXEL_PARAMS , &rgb, alpha
 #include "f_software_blit.inc.c"
 
-#define F__BLEND alpha25
-#define F__FILL Data
-#define F__BLEND_SETUP
-#define F__PIXEL_SETUP const FColorRgb rgb = f_color_pixelToRgb(*src);
-#define F__PIXEL_PARAMS , &rgb
-#include "f_software_blit.inc.c"
+#if F__OPTIMIZE_ALPHA
+    #define F__BLEND alpha25
+    #define F__FILL Data
+    #define F__BLEND_SETUP
+    #define F__PIXEL_SETUP const FColorRgb rgb = f_color_pixelToRgb(*src);
+    #define F__PIXEL_PARAMS , &rgb
+    #include "f_software_blit.inc.c"
 
-#define F__BLEND alpha25
-#define F__FILL Flat
-#define F__BLEND_SETUP const FColorRgb rgb = f__color.rgb;
-#define F__PIXEL_SETUP
-#define F__PIXEL_PARAMS , &rgb
-#include "f_software_blit.inc.c"
+    #define F__BLEND alpha25
+    #define F__FILL Flat
+    #define F__BLEND_SETUP const FColorRgb rgb = f__color.rgb;
+    #define F__PIXEL_SETUP
+    #define F__PIXEL_PARAMS , &rgb
+    #include "f_software_blit.inc.c"
 
-#define F__BLEND alpha50
-#define F__FILL Data
-#define F__BLEND_SETUP
-#define F__PIXEL_SETUP const FColorRgb rgb = f_color_pixelToRgb(*src);
-#define F__PIXEL_PARAMS , &rgb
-#include "f_software_blit.inc.c"
+    #define F__BLEND alpha50
+    #define F__FILL Data
+    #define F__BLEND_SETUP
+    #define F__PIXEL_SETUP const FColorRgb rgb = f_color_pixelToRgb(*src);
+    #define F__PIXEL_PARAMS , &rgb
+    #include "f_software_blit.inc.c"
 
-#define F__BLEND alpha50
-#define F__FILL Flat
-#define F__BLEND_SETUP const FColorRgb rgb = f__color.rgb;
-#define F__PIXEL_SETUP
-#define F__PIXEL_PARAMS , &rgb
-#include "f_software_blit.inc.c"
+    #define F__BLEND alpha50
+    #define F__FILL Flat
+    #define F__BLEND_SETUP const FColorRgb rgb = f__color.rgb;
+    #define F__PIXEL_SETUP
+    #define F__PIXEL_PARAMS , &rgb
+    #include "f_software_blit.inc.c"
 
-#define F__BLEND alpha75
-#define F__FILL Data
-#define F__BLEND_SETUP
-#define F__PIXEL_SETUP const FColorRgb rgb = f_color_pixelToRgb(*src);
-#define F__PIXEL_PARAMS , &rgb
-#include "f_software_blit.inc.c"
+    #define F__BLEND alpha75
+    #define F__FILL Data
+    #define F__BLEND_SETUP
+    #define F__PIXEL_SETUP const FColorRgb rgb = f_color_pixelToRgb(*src);
+    #define F__PIXEL_PARAMS , &rgb
+    #include "f_software_blit.inc.c"
 
-#define F__BLEND alpha75
-#define F__FILL Flat
-#define F__BLEND_SETUP const FColorRgb rgb = f__color.rgb;
-#define F__PIXEL_SETUP
-#define F__PIXEL_PARAMS , &rgb
-#include "f_software_blit.inc.c"
+    #define F__BLEND alpha75
+    #define F__FILL Flat
+    #define F__BLEND_SETUP const FColorRgb rgb = f__color.rgb;
+    #define F__PIXEL_SETUP
+    #define F__PIXEL_PARAMS , &rgb
+    #include "f_software_blit.inc.c"
+#endif // F__OPTIMIZE_ALPHA
 
 #define F__BLEND alphaMask
 #define F__FILL Data
@@ -248,9 +250,15 @@ static void scan_line(FScanlineEdge* Edge, FVectorInt ScrP1, FVectorInt ScrP2, F
 static const FBlitter g_blitters[F_COLOR_BLEND_NUM][2][2][2] = {
     F__INIT_BLEND(F_COLOR_BLEND_PLAIN, plain)
     F__INIT_BLEND(F_COLOR_BLEND_ALPHA, alpha)
-    F__INIT_BLEND(F_COLOR_BLEND_ALPHA_25, alpha25)
-    F__INIT_BLEND(F_COLOR_BLEND_ALPHA_50, alpha50)
-    F__INIT_BLEND(F_COLOR_BLEND_ALPHA_75, alpha75)
+    #if F__OPTIMIZE_ALPHA
+        F__INIT_BLEND(F_COLOR_BLEND_ALPHA_25, alpha25)
+        F__INIT_BLEND(F_COLOR_BLEND_ALPHA_50, alpha50)
+        F__INIT_BLEND(F_COLOR_BLEND_ALPHA_75, alpha75)
+    #else
+        F__INIT_BLEND(F_COLOR_BLEND_ALPHA_25, alpha)
+        F__INIT_BLEND(F_COLOR_BLEND_ALPHA_50, alpha)
+        F__INIT_BLEND(F_COLOR_BLEND_ALPHA_75, alpha)
+    #endif
     F__INIT_BLEND(F_COLOR_BLEND_ALPHA_MASK, alphaMask)
     F__INIT_BLEND(F_COLOR_BLEND_INVERSE, inverse)
     F__INIT_BLEND(F_COLOR_BLEND_MOD, mod)
@@ -267,9 +275,15 @@ static const FBlitter g_blitters[F_COLOR_BLEND_NUM][2][2][2] = {
 static const FBlitterEx g_blittersEx[F_COLOR_BLEND_NUM][2][2] = {
     F__INIT_BLEND_EX(F_COLOR_BLEND_PLAIN, plain)
     F__INIT_BLEND_EX(F_COLOR_BLEND_ALPHA, alpha)
-    F__INIT_BLEND_EX(F_COLOR_BLEND_ALPHA_25, alpha25)
-    F__INIT_BLEND_EX(F_COLOR_BLEND_ALPHA_50, alpha50)
-    F__INIT_BLEND_EX(F_COLOR_BLEND_ALPHA_75, alpha75)
+    #if F__OPTIMIZE_ALPHA
+        F__INIT_BLEND_EX(F_COLOR_BLEND_ALPHA_25, alpha25)
+        F__INIT_BLEND_EX(F_COLOR_BLEND_ALPHA_50, alpha50)
+        F__INIT_BLEND_EX(F_COLOR_BLEND_ALPHA_75, alpha75)
+    #else
+        F__INIT_BLEND_EX(F_COLOR_BLEND_ALPHA_25, alpha)
+        F__INIT_BLEND_EX(F_COLOR_BLEND_ALPHA_50, alpha)
+        F__INIT_BLEND_EX(F_COLOR_BLEND_ALPHA_75, alpha)
+    #endif
     F__INIT_BLEND_EX(F_COLOR_BLEND_ALPHA_MASK, alphaMask)
     F__INIT_BLEND_EX(F_COLOR_BLEND_INVERSE, inverse)
     F__INIT_BLEND_EX(F_COLOR_BLEND_MOD, mod)

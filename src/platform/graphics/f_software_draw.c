@@ -210,20 +210,22 @@ do {                                                                        \
 #define F__PIXEL_PARAMS , &rgb, alpha
 #include "f_software_draw.inc.c"
 
-#define F__BLEND alpha25
-#define F__BLEND_SETUP const FColorRgb rgb = f__color.rgb;
-#define F__PIXEL_PARAMS , &rgb
-#include "f_software_draw.inc.c"
+#if F__OPTIMIZE_ALPHA
+    #define F__BLEND alpha25
+    #define F__BLEND_SETUP const FColorRgb rgb = f__color.rgb;
+    #define F__PIXEL_PARAMS , &rgb
+    #include "f_software_draw.inc.c"
 
-#define F__BLEND alpha50
-#define F__BLEND_SETUP const FColorRgb rgb = f__color.rgb;
-#define F__PIXEL_PARAMS , &rgb
-#include "f_software_draw.inc.c"
+    #define F__BLEND alpha50
+    #define F__BLEND_SETUP const FColorRgb rgb = f__color.rgb;
+    #define F__PIXEL_PARAMS , &rgb
+    #include "f_software_draw.inc.c"
 
-#define F__BLEND alpha75
-#define F__BLEND_SETUP const FColorRgb rgb = f__color.rgb;
-#define F__PIXEL_PARAMS , &rgb
-#include "f_software_draw.inc.c"
+    #define F__BLEND alpha75
+    #define F__BLEND_SETUP const FColorRgb rgb = f__color.rgb;
+    #define F__PIXEL_PARAMS , &rgb
+    #include "f_software_draw.inc.c"
+#endif // F__OPTIMIZE_ALPHA
 
 #define F__BLEND alphaMask
 #define F__BLEND_SETUP \
@@ -274,9 +276,15 @@ static const struct {
 } g_draw[F_COLOR_BLEND_NUM] = {
     F__INIT_BLEND(F_COLOR_BLEND_PLAIN, plain)
     F__INIT_BLEND(F_COLOR_BLEND_ALPHA, alpha)
-    F__INIT_BLEND(F_COLOR_BLEND_ALPHA_25, alpha25)
-    F__INIT_BLEND(F_COLOR_BLEND_ALPHA_50, alpha50)
-    F__INIT_BLEND(F_COLOR_BLEND_ALPHA_75, alpha75)
+    #if F__OPTIMIZE_ALPHA
+        F__INIT_BLEND(F_COLOR_BLEND_ALPHA_25, alpha25)
+        F__INIT_BLEND(F_COLOR_BLEND_ALPHA_50, alpha50)
+        F__INIT_BLEND(F_COLOR_BLEND_ALPHA_75, alpha75)
+    #else
+        F__INIT_BLEND(F_COLOR_BLEND_ALPHA_25, alpha)
+        F__INIT_BLEND(F_COLOR_BLEND_ALPHA_50, alpha)
+        F__INIT_BLEND(F_COLOR_BLEND_ALPHA_75, alpha)
+    #endif
     F__INIT_BLEND(F_COLOR_BLEND_ALPHA_MASK, alphaMask)
     F__INIT_BLEND(F_COLOR_BLEND_INVERSE, inverse)
     F__INIT_BLEND(F_COLOR_BLEND_MOD, mod)

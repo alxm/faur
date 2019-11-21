@@ -17,6 +17,7 @@ all :
 
 else
 
+F_CONFIG_APP_NAME_SUFFIX := .html
 F_CONFIG_BUILD_FLAGS_C_STANDARD := gnu11
 F_CONFIG_BUILD_FLAGS_CPP_STANDARD := gnu++11
 F_CONFIG_BUILD_OPT := 3
@@ -48,8 +49,6 @@ F_BUILD_EMSCRIPTEN_EMBED := \
     $(addprefix --preload-file $(F_DIR_ROOT)/, \
         $(join $(F_CONFIG_PATH_EMBED_EMSCRIPTEN), \
                $(addprefix @, $(F_CONFIG_PATH_EMBED_EMSCRIPTEN)))) \
-
-F_CONFIG_APP_NAME_SUFFIX := .html
 
 F_CONFIG_BUILD_LIBS += \
     -O$(F_CONFIG_BUILD_OPT) \
