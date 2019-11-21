@@ -161,7 +161,7 @@ static const unsigned f__gfx_spans__{var}__{num}[] = {{{spans_data}}};
 #include <faur.v.h>
 
 #ifndef F__GEN_GFX_CONST
-    #if F_CONFIG_LIB_RENDER_SOFTWARE
+    #if F_CONFIG_RENDER_SOFTWARE
         #define F__GEN_GFX_CONST const
     #else
         #define F__GEN_GFX_CONST
@@ -171,7 +171,7 @@ static const unsigned f__gfx_spans__{var}__{num}[] = {{{spans_data}}};
 static const FColorPixel f__gfx_buffer__{var}[{width} * {height} * {frames_num}] = {{
 {pixel_buffers}}};
 
-#if F_CONFIG_LIB_RENDER_SOFTWARE
+#if F_CONFIG_RENDER_SOFTWARE
 {span_buffers}#endif
 
 static F__GEN_GFX_CONST struct {{
@@ -187,7 +187,7 @@ static F__GEN_GFX_CONST struct {{
         .buffer = (FColorPixel*)f__gfx_buffer__{var},
     }},
     {{
-        #if F_CONFIG_LIB_RENDER_SOFTWARE
+        #if F_CONFIG_RENDER_SOFTWARE
 {span_vars}        #else
             NULL,
         #endif

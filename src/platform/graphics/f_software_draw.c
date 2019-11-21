@@ -18,7 +18,7 @@
 #include "f_software_draw.v.h"
 #include <faur.v.h>
 
-#if F_CONFIG_LIB_RENDER_SOFTWARE
+#if F_CONFIG_RENDER_SOFTWARE
 #define F__COMPILE_INC 1
 
 typedef void (*FDrawPixel)(int X, int Y);
@@ -387,4 +387,4 @@ void f_platform_api__drawCircleFilled(int X, int Y, int Radius)
 {
     drawCircle(X, Y, Radius);
 }
-#endif // F_CONFIG_LIB_RENDER_SOFTWARE
+#endif // F_CONFIG_RENDER_SOFTWARE

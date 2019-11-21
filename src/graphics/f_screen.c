@@ -34,7 +34,7 @@ static void f_screen__init(void)
 
     f__screen.pixels = f_platform_api__screenPixelsGet();
 
-    #if !F_CONFIG_LIB_RENDER_SOFTWARE
+    #if !F_CONFIG_RENDER_SOFTWARE
         f__screen.texture = f_platform_api__screenTextureGet();
     #endif
 
@@ -122,7 +122,7 @@ void f_screen__draw(void)
 
 FColorPixel* f_screen_pixelsGetBuffer(void)
 {
-    #if !F_CONFIG_LIB_RENDER_SOFTWARE
+    #if !F_CONFIG_RENDER_SOFTWARE
         f_platform_api__screenTextureRead(f__screen.pixels, f__screen.frame);
     #endif
 
@@ -146,7 +146,7 @@ int f_screen_sizeGetHeight(void)
 
 void f_screen_clear(void)
 {
-    #if F_CONFIG_LIB_RENDER_SOFTWARE
+    #if F_CONFIG_RENDER_SOFTWARE
         f_pixels__clear(f__screen.pixels, f__screen.frame);
     #else
         f_color_push();
@@ -175,7 +175,7 @@ void f_screen_push(FSprite* Sprite, unsigned Frame)
     f__screen.sprite = Sprite;
     f__screen.frame = Frame;
 
-    #if !F_CONFIG_LIB_RENDER_SOFTWARE
+    #if !F_CONFIG_RENDER_SOFTWARE
         f__screen.texture = f_sprite__textureGet(Sprite, Frame);
         f_platform_api__screenTextureSet(f__screen.texture);
 
@@ -195,14 +195,14 @@ void f_screen_pop(void)
         }
     #endif
 
-    #if F_CONFIG_LIB_RENDER_SOFTWARE
+    #if F_CONFIG_RENDER_SOFTWARE
         f_sprite__textureCommit(f__screen.sprite, f__screen.frame);
     #endif
 
     f__screen = *screen;
     f_mem_free(screen);
 
-    #if !F_CONFIG_LIB_RENDER_SOFTWARE
+    #if !F_CONFIG_RENDER_SOFTWARE
         f_platform_api__screenTextureSet(f__screen.texture);
         f_platform_api__screenClipSet(f__screen.clipX,
                                       f__screen.clipY,
@@ -233,7 +233,7 @@ void f_screen_clipSet(int X, int Y, int Width, int Height)
     f__screen.clipWidth = Width;
     f__screen.clipHeight = Height;
 
-    #if !F_CONFIG_LIB_RENDER_SOFTWARE
+    #if !F_CONFIG_RENDER_SOFTWARE
         f_platform_api__screenClipSet(X, Y, Width, Height);
     #endif
 }
@@ -282,7 +282,7 @@ void f_screen__toSprite(FSprite* Sprite, unsigned Frame)
                  f__screen.pixels->size.y);
     }
 
-    #if F_CONFIG_LIB_RENDER_SOFTWARE
+    #if F_CONFIG_RENDER_SOFTWARE
         f_pixels__copyFrame(
             f_sprite__pixelsGet(Sprite), Frame, f__screen.pixels, 0);
     #else

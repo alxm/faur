@@ -4,7 +4,7 @@
 #include <faur.v.h>
 
 #ifndef F__GEN_GFX_CONST
-    #if F_CONFIG_LIB_RENDER_SOFTWARE
+    #if F_CONFIG_RENDER_SOFTWARE
         #define F__GEN_GFX_CONST const
     #else
         #define F__GEN_GFX_CONST
@@ -29,7 +29,7 @@ static const FColorPixel f__gfx_buffer___font_keyed_6x8[6 * 8 * 96] = {
     #endif
 };
 
-#if F_CONFIG_LIB_RENDER_SOFTWARE
+#if F_CONFIG_RENDER_SOFTWARE
 static const unsigned f__gfx_spans___font_keyed_6x8__0[] = {2, 6, 2, 6, 2, 6, 2, 6, 2, 6, 2, 6, 2, 6, 2, 6};
 static const unsigned f__gfx_spans___font_keyed_6x8__1[] = {6, 2, 1, 3, 6, 1, 3, 2, 6, 1, 3, 2, 6, 2, 1, 3, 6, 2, 1, 3, 2, 6, 6, 2, 1, 3, 2, 6};
 static const unsigned f__gfx_spans___font_keyed_6x8__2[] = {9, 2, 1, 2, 1, 9, 2, 1, 2, 1, 9, 1, 2, 1, 2, 2, 6, 2, 6, 2, 6, 2, 6, 2, 6};
@@ -141,7 +141,7 @@ static F__GEN_GFX_CONST struct {
         .buffer = (FColorPixel*)f__gfx_buffer___font_keyed_6x8,
     },
     {
-        #if F_CONFIG_LIB_RENDER_SOFTWARE
+        #if F_CONFIG_RENDER_SOFTWARE
             (FPlatformTexture*)(void*)f__gfx_spans___font_keyed_6x8__0,
             (FPlatformTexture*)(void*)f__gfx_spans___font_keyed_6x8__1,
             (FPlatformTexture*)(void*)f__gfx_spans___font_keyed_6x8__2,

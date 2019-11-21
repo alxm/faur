@@ -219,13 +219,13 @@ void f_console__draw(void)
             f_font_print("SDL 2.0\n");
         #endif
 
-        #if F_CONFIG_LIB_RENDER_SOFTWARE
+        #if F_CONFIG_RENDER_SOFTWARE
             #if F_CONFIG_SCREEN_ALLOCATE
                 f_font_print("S/W Gfx (buffer)\n");
             #else
                 f_font_print("S/W Gfx (raw)\n");
             #endif
-        #elif F_CONFIG_LIB_RENDER_SDL
+        #elif F_CONFIG_RENDER_SDL2
             f_font_print("SDL Gfx\n");
         #endif
 

@@ -18,7 +18,7 @@
 #include "f_software_blit.v.h"
 #include <faur.v.h>
 
-#if F_CONFIG_LIB_RENDER_SOFTWARE
+#if F_CONFIG_RENDER_SOFTWARE
 #define F__COMPILE_INC 1
 #define F__SCANLINES_MALLOC (F_CONFIG_SCREEN_SIZE_HEIGHT < 0)
 
@@ -409,4 +409,4 @@ void f_platform_api__textureBlitEx(const FPlatformTexture* Texture, const FPixel
         [Texture != NULL]
             (Pixels, Frame, X, Y, Scale, Angle, CenterX, CenterY);
 }
-#endif // F_CONFIG_LIB_RENDER_SOFTWARE
+#endif // F_CONFIG_RENDER_SOFTWARE

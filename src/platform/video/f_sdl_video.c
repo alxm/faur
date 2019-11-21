@@ -284,7 +284,7 @@ void f_platform_api__screenInit(void)
             F__FATAL("SDL_RenderSetLogicalSize: %s", SDL_GetError());
         }
 
-        #if F_CONFIG_LIB_RENDER_SOFTWARE
+        #if F_CONFIG_RENDER_SOFTWARE
             int access = SDL_TEXTUREACCESS_STREAMING;
         #else
             int access = SDL_TEXTUREACCESS_TARGET;
@@ -300,7 +300,7 @@ void f_platform_api__screenInit(void)
             F__FATAL("SDL_CreateTexture: %s", SDL_GetError());
         }
 
-        #if F_CONFIG_LIB_RENDER_SDL
+        #if F_CONFIG_RENDER_SDL2
             f_platform_api__screenTextureSet(
                 f_platform_api__screenTextureGet());
         #endif
@@ -506,7 +506,7 @@ void f_platform_api__screenShow(void)
                                 g_sdlScreen->h);
         #endif
     #elif F_CONFIG_LIB_SDL == 2
-        #if F_CONFIG_LIB_RENDER_SDL
+        #if F_CONFIG_RENDER_SDL2
             f_platform_api__screenTextureSet(NULL);
             f_platform_api__screenClipSet(0, 0, 0, 0);
         #endif
@@ -522,7 +522,7 @@ void f_platform_api__screenShow(void)
 
         f_platform_api__screenClear();
 
-        #if F_CONFIG_LIB_RENDER_SOFTWARE
+        #if F_CONFIG_RENDER_SOFTWARE
             int ret = SDL_UpdateTexture(
                         g_sdlTexture,
                         NULL,
@@ -648,7 +648,7 @@ void f_platform_api__screenMouseCursorSet(bool Show)
     }
 }
 
-#if F_CONFIG_LIB_RENDER_SDL
+#if F_CONFIG_RENDER_SDL2
 int f_platform_sdl_video__pixelBlendToSdlBlend(void)
 {
     switch(f__color.blend) {
@@ -706,5 +706,5 @@ void f_platform_api__renderSetBlendMode(void)
         f_out__error("SDL_SetRenderDrawBlendMode: %s", SDL_GetError());
     }
 }
-#endif // F_CONFIG_LIB_RENDER_SDL
+#endif // F_CONFIG_RENDER_SDL2
 #endif // F_CONFIG_LIB_SDL

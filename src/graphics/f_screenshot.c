@@ -112,7 +112,7 @@ static void takeScreenshot(void)
 
     f_out__info("Saving screenshot '%s'", name);
 
-    #if !F_CONFIG_LIB_RENDER_SOFTWARE
+    #if !F_CONFIG_RENDER_SOFTWARE
         f_platform_api__screenTextureRead(f__screen.pixels, f__screen.frame);
     #endif
 
