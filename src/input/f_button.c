@@ -120,16 +120,11 @@ void f_input_button__uninit(void)
 
 FButton* f_button_new(void)
 {
-    FButton* b = f_mem_malloc(sizeof(FButton));
+    FButton* b = f_mem_zalloc(sizeof(FButton));
 
     b->listNode = f_list_addLast(g_buttons, b);
     b->name = g_defaultName;
     b->platformInputs = f_list_new();
-    b->combos = NULL;
-    b->autoRepeat = NULL;
-    b->isClone = false;
-    b->waitForRelease = false;
-    b->pressed = false;
 
     return b;
 }
