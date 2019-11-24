@@ -23,6 +23,7 @@
 #define F__OPTIMIZE_ALPHA (F_CONFIG_RENDER_SOFTWARE && F_CONFIG_TRAIT_SLOW_MUL)
 
 typedef struct {
+    const FPalette* palette;
     FColorBlend blend;
     #if F__OPTIMIZE_ALPHA
         FColorBlend canonicalBlend;

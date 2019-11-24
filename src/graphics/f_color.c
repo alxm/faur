@@ -79,6 +79,11 @@ void f_color_reset(void)
     f_color_fillDrawSet(true);
 }
 
+void f_color_paletteSet(const FPalette* Palette)
+{
+    f__color.palette = Palette;
+}
+
 #if F__OPTIMIZE_ALPHA
 static void optimizeAlphaBlending(void)
 {
@@ -193,6 +198,17 @@ void f_color_colorSetPixel(FColorPixel Pixel)
     #if !F_CONFIG_RENDER_SOFTWARE
         f_platform_api__renderSetDrawColor();
     #endif
+}
+
+void f_color_colorSetIndex(int ColorIndex)
+{
+    #if F_CONFIG_BUILD_DEBUG
+        if(f__color.palette == NULL) {
+            F__FATAL("f_color_colorSetIndex(%d): No palette set", ColorIndex);
+        }
+    #endif
+
+    f_color_colorSetPixel(f_palette_getPixel(f__color.palette, ColorIndex));
 }
 
 void f_color_fillBlitSet(bool Fill)

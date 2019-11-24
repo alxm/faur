@@ -53,6 +53,8 @@ typedef struct {
     int r, g, b;
 } FColorRgb;
 
+#include "../graphics/f_palette.p.h"
+
 #if (F_CONFIG_SCREEN_FORMAT & F__C_565) == F__C_565
     #define F__PX_BITS_R 5
     #define F__PX_BITS_G 6
@@ -160,6 +162,8 @@ extern void f_color_push(void);
 extern void f_color_pop(void);
 extern void f_color_reset(void);
 
+extern void f_color_paletteSet(const FPalette* Palette);
+
 extern void f_color_blendSet(FColorBlend Blend);
 extern void f_color_alphaSet(int Alpha);
 
@@ -167,6 +171,7 @@ extern void f_color_colorSetRgb(int Red, int Green, int Blue);
 extern void f_color_colorSetRgba(int Red, int Green, int Blue, int Alpha);
 extern void f_color_colorSetHex(uint32_t Hexcode);
 extern void f_color_colorSetPixel(FColorPixel Pixel);
+extern void f_color_colorSetIndex(int ColorIndex);
 
 extern void f_color_fillBlitSet(bool Fill);
 extern void f_color_fillDrawSet(bool Fill);
