@@ -43,24 +43,3 @@ void f_input__tick(void)
     f_platform_api__inputPoll();
     f_input_button__tick();
 }
-
-bool f_input_readKey(FKeyId Key)
-{
-    const FPlatformButton* k = f_platform_api__inputKeyGet(Key);
-
-    return k ? f_platform_api__inputButtonPressGet(k) : false;
-}
-
-bool f_input_readButton(FButtonId Button)
-{
-    const FPlatformButton* b = f_platform_api__inputButtonGet(NULL, Button);
-
-    return b ? f_platform_api__inputButtonPressGet(b) : false;
-}
-
-FFix f_input_readAnalog(FAnalogId Axis)
-{
-    const FPlatformAnalog* a = f_platform_api__inputAnalogGet(NULL, Axis);
-
-    return a ? f_platform_api__inputAnalogValueGet(a) : 0;
-}
