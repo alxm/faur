@@ -57,29 +57,46 @@ void drawBox(void)
 {
     static struct {
         int x, y;
+        FButton *up, *down, *left, *right;
     } context;
 
     F_STATE_INIT
     {
         context.x = f_screen_sizeGetWidth() / 2;
         context.y = f_screen_sizeGetHeight() / 2;
+
+        context.up = f_button_new();
+        f_button_bindKey(context.up, F_KEY_UP);
+        f_button_bindButton(context.up, NULL, F_BUTTON_UP);
+
+        context.down = f_button_new();
+        f_button_bindKey(context.down, F_KEY_DOWN);
+        f_button_bindButton(context.down, NULL, F_BUTTON_DOWN);
+
+        context.left = f_button_new();
+        f_button_bindKey(context.left, F_KEY_LEFT);
+        f_button_bindButton(context.left, NULL, F_BUTTON_LEFT);
+
+        context.right = f_button_new();
+        f_button_bindKey(context.right, F_KEY_RIGHT);
+        f_button_bindButton(context.right, NULL, F_BUTTON_RIGHT);
     }
 
     F_STATE_TICK
     {
-        if(f_input_readKey(F_KEY_UP) || f_input_readButton(F_BUTTON_UP)) {
+        if(f_button_pressGet(context.up)) {
             context.y--;
         }
 
-        if(f_input_readKey(F_KEY_DOWN) || f_input_readButton(F_BUTTON_DOWN)) {
+        if(f_button_pressGet(context.down)) {
             context.y++;
         }
 
-        if(f_input_readKey(F_KEY_LEFT) || f_input_readButton(F_BUTTON_LEFT)) {
+        if(f_button_pressGet(context.left)) {
             context.x--;
         }
 
-        if(f_input_readKey(F_KEY_RIGHT) || f_input_readButton(F_BUTTON_RIGHT)) {
+        if(f_button_pressGet(context.right)) {
             context.x++;
         }
     }
@@ -95,7 +112,10 @@ void drawBox(void)
 
     F_STATE_FREE
     {
-        f_out_info("Bye!");
+        f_button_free(context.up);
+        f_button_free(context.down);
+        f_button_free(context.left);
+        f_button_free(context.right);
     }
 }
 ```

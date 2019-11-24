@@ -29,16 +29,6 @@ struct FPlatformButton {
     Button code;
 };
 
-static const Button* const g_keys[F_KEY_NUM] = {
-    [F_KEY_UP] = &BUTTON_UP,
-    [F_KEY_DOWN] = &BUTTON_DOWN,
-    [F_KEY_LEFT] = &BUTTON_LEFT,
-    [F_KEY_RIGHT] = &BUTTON_RIGHT,
-    [F_KEY_Z] = &BUTTON_A,
-    [F_KEY_X] = &BUTTON_B,
-    [F_KEY_C] = &BUTTON_MENU,
-};
-
 static const Button* const g_buttons[F_BUTTON_NUM] = {
     [F_BUTTON_UP] = &BUTTON_UP,
     [F_BUTTON_DOWN] = &BUTTON_DOWN,
@@ -56,11 +46,6 @@ static const Button* const g_buttons[F_BUTTON_NUM] = {
 
 void f_platform_api__inputPoll(void)
 {
-}
-
-const FPlatformButton* f_platform_api__inputKeyGet(FKeyId Id)
-{
-    return (FPlatformButton*)g_keys[Id];
 }
 
 const FPlatformButton* f_platform_api__inputButtonGet(const FPlatformController* Controller, FButtonId Id)

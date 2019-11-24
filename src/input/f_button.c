@@ -29,6 +29,7 @@ struct FButton {
     bool pressed;
 };
 
+#if F_CONFIG_TRAIT_KEYBOARD
 static const char* g_keyNames[F_KEY_NUM] = {
     [F_KEY_UP] = "Up",
     [F_KEY_DOWN] = "Down",
@@ -64,6 +65,7 @@ static const char* g_keyNames[F_KEY_NUM] = {
     [F_KEY_F11] = "F11",
     [F_KEY_F12] = "F12",
 };
+#endif // F_CONFIG_TRAIT_KEYBOARD
 
 static const char* g_buttonNames[F_BUTTON_NUM] = {
     [F_BUTTON_UP] = "Up",
@@ -120,16 +122,11 @@ void f_input_button__uninit(void)
 
 FButton* f_button_new(void)
 {
-    FButton* b = f_mem_malloc(sizeof(FButton));
+    FButton* b = f_mem_zalloc(sizeof(FButton));
 
     b->listNode = f_list_addLast(g_buttons, b);
     b->name = g_defaultName;
     b->platformInputs = f_list_new();
-    b->combos = NULL;
-    b->autoRepeat = NULL;
-    b->isClone = false;
-    b->waitForRelease = false;
-    b->pressed = false;
 
     return b;
 }
@@ -167,17 +164,22 @@ void f_button_free(FButton* Button)
 
 void f_button_bindKey(FButton* Button, FKeyId Id)
 {
-    const FPlatformButton* k = f_platform_api__inputKeyGet(Id);
+    #if F_CONFIG_TRAIT_KEYBOARD
+        const FPlatformButton* k = f_platform_api__inputKeyGet(Id);
 
-    if(k == NULL) {
-        return;
-    }
+        if(k == NULL) {
+            return;
+        }
 
-    if(Button->name == g_defaultName) {
-        Button->name = g_keyNames[Id];
-    }
+        if(Button->name == g_defaultName) {
+            Button->name = g_keyNames[Id];
+        }
 
-    f_list_addLast(Button->platformInputs, (FPlatformButton*)k);
+        f_list_addLast(Button->platformInputs, (FPlatformButton*)k);
+    #else
+        F_UNUSED(Button);
+        F_UNUSED(Id);
+    #endif
 }
 
 void f_button_bindButton(FButton* Button, const FController* Controller, FButtonId Id)
