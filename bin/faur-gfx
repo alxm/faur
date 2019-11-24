@@ -132,14 +132,21 @@ def process_c(var_name, image_file, color_key):
     span_buffers = ''
     span_vars = ''
 
-    for fmt in g_formats:
+    for index, fmt in enumerate(g_formats):
         pixels_fmt = [g_formats[fmt](p) for f in frames_pixels for p in f]
 
         pixel_buffers += """\
-    #if F_CONFIG_SCREEN_FORMAT == {fmt}
+    #{cond} F_CONFIG_SCREEN_FORMAT == {fmt}
         {pixel_buffer}
+""".format(cond = 'if' if index == 0 else 'elif',
+           fmt = fmt,
+           pixel_buffer = ', '.join(pixels_fmt))
+
+    pixel_buffers += """\
+    #else
+        #error Unknown color format
     #endif
-""".format(fmt = fmt, pixel_buffer = ', '.join(pixels_fmt))
+"""
 
     for frame_index, frame_pixels in enumerate(frames_pixels):
         spans = spans_make(frame_pixels, frame_width, frame_height, color_key)
