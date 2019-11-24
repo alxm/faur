@@ -358,6 +358,11 @@ FPixels* f_sprite__pixelsGet(FSprite* Sprite)
     return &Sprite->pixels;
 }
 
+const FPixels* f_sprite__pixelsGetc(const FSprite* Sprite)
+{
+    return &Sprite->pixels;
+}
+
 FPlatformTexture* f_sprite__textureGet(const FSprite* Sprite, unsigned Frame)
 {
     return Sprite->textures[Frame];

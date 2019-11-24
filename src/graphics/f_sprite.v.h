@@ -23,6 +23,7 @@
 #include "../platform/f_platform.v.h"
 
 extern FPixels* f_sprite__pixelsGet(FSprite* Sprite);
+extern const FPixels* f_sprite__pixelsGetc(const FSprite* Sprite);
 extern FPlatformTexture* f_sprite__textureGet(const FSprite* Sprite, unsigned Frame);
 extern void f_sprite__textureCommit(FSprite* Sprite, unsigned Frame);
 

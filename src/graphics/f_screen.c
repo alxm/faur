@@ -163,7 +163,7 @@ void f_screen_push(FSprite* Sprite, unsigned Frame)
 {
     #if F_CONFIG_BUILD_DEBUG
         if(F_FLAGS_TEST_ANY(
-            f_sprite__pixelsGet(Sprite)->flags, F_PIXELS__CONST)) {
+            f_sprite__pixelsGetc(Sprite)->flags, F_PIXELS__CONST)) {
 
             F__FATAL("f_screen_push: Const sprite");
         }
@@ -284,7 +284,7 @@ void f_screen__toSprite(FSprite* Sprite, unsigned Frame)
 
     #if F_CONFIG_RENDER_SOFTWARE
         f_pixels__copyFrame(
-            f_sprite__pixelsGet(Sprite), Frame, f__screen.pixels, 0);
+            f_sprite__pixelsGetc(Sprite), Frame, f__screen.pixels, 0);
     #else
         f_color_push();
         f_color_blendSet(F_COLOR_BLEND_PLAIN);
