@@ -56,11 +56,6 @@ void f_platform_api__inputPoll(void)
     }
 }
 
-const FPlatformButton* f_platform_api__inputKeyGet(FKeyId Id)
-{
-    return NULL;
-}
-
 const FPlatformButton* f_platform_api__inputButtonGet(const FPlatformController* Controller, FButtonId Id)
 {
     F_UNUSED(Controller);

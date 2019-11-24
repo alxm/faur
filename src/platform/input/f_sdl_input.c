@@ -1120,18 +1120,12 @@ void f_platform_api__inputPoll(void)
     #endif
 }
 
+#if F_CONFIG_TRAIT_KEYBOARD
 const FPlatformButton* f_platform_api__inputKeyGet(FKeyId Id)
 {
-    #if F_CONFIG_TRAIT_KEYBOARD
-        if(Id != F_KEY_INVALID) {
-            return g_keys[Id];
-        }
-    #else
-        F_UNUSED(Id);
-    #endif
-
-    return NULL;
+    return Id != F_KEY_INVALID ? g_keys[Id] : NULL;
 }
+#endif
 
 const FPlatformButton* f_platform_api__inputButtonGet(const FPlatformController* Controller, FButtonId Id)
 {
