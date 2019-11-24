@@ -33,14 +33,14 @@ typedef struct {
     int alpha;
     bool fillBlit;
     bool fillDraw;
-} FPixelState;
+} FColorState;
 
 #include "../general/f_main.v.h"
 #include "../math/f_math.v.h"
 
 extern const FPack f_pack__color;
 
-extern FPixelState f__color;
+extern FColorState f__color;
 
 extern FColorPixel f_color__key;
 extern FColorPixel f_color__limit;

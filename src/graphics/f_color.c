@@ -18,7 +18,7 @@
 #include "f_color.v.h"
 #include <faur.v.h>
 
-FPixelState f__color;
+FColorState f__color;
 static FList* g_stateStack;
 
 FColorPixel f_color__key;
@@ -50,12 +50,12 @@ const FPack f_pack__color = {
 
 void f_color_push(void)
 {
-    f_list_push(g_stateStack, f_mem_dup(&f__color, sizeof(FPixelState)));
+    f_list_push(g_stateStack, f_mem_dup(&f__color, sizeof(FColorState)));
 }
 
 void f_color_pop(void)
 {
-    FPixelState* state = f_list_pop(g_stateStack);
+    FColorState* state = f_list_pop(g_stateStack);
 
     #if F_CONFIG_BUILD_DEBUG
         if(state == NULL) {
