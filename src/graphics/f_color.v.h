@@ -20,24 +20,47 @@
 
 #include "f_color.p.h"
 
+#define F__OPTIMIZE_ALPHA (F_CONFIG_RENDER_SOFTWARE && F_CONFIG_TRAIT_SLOW_MUL)
+
 typedef struct {
-    FColorBlend blend, canonicalBlend;
+    const FPalette* palette;
+    FColorBlend blend;
+    #if F__OPTIMIZE_ALPHA
+        FColorBlend canonicalBlend;
+    #endif
     FColorRgb rgb;
     FColorPixel pixel;
     int alpha;
     bool fillBlit;
     bool fillDraw;
-} FPixelState;
+} FColorState;
+
+typedef enum {
+    F_COLOR__PAL_INVALID = -1,
+    F_COLOR__PAL_BROWN1,
+    F_COLOR__PAL_BROWN2,
+    F_COLOR__PAL_GRAY1,
+    F_COLOR__PAL_GRAY2,
+    F_COLOR__PAL_BLUE1,
+    F_COLOR__PAL_BLUE2,
+    F_COLOR__PAL_GREEN1,
+    F_COLOR__PAL_GREEN2,
+    F_COLOR__PAL_CHARTREUSE1,
+    F_COLOR__PAL_CHARTREUSE2,
+    F_COLOR__PAL_NUM
+} FColorPaletteInternal;
 
 #include "../general/f_main.v.h"
 #include "../math/f_math.v.h"
 
 extern const FPack f_pack__color;
 
-extern FPixelState f__color;
+extern FColorState f__color;
 
 extern FColorPixel f_color__key;
 extern FColorPixel f_color__limit;
+
+extern void f_color__colorSetInternal(FColorPaletteInternal ColorIndex);
 
 static inline void f_color__draw_plain(FColorPixel* Dst, FColorPixel Pixel)
 {

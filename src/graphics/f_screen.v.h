@@ -27,7 +27,7 @@ typedef struct FScreen FScreen;
 
 struct FScreen {
     FPixels* pixels;
-    #if !F_CONFIG_LIB_RENDER_SOFTWARE
+    #if !F_CONFIG_RENDER_SOFTWARE
         FPlatformTexture* texture;
     #endif
     FSprite* sprite;

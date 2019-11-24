@@ -18,7 +18,7 @@
 #include "f_sdl_blit.v.h"
 #include <faur.v.h>
 
-#if F_CONFIG_LIB_RENDER_SDL
+#if F_CONFIG_RENDER_SDL2
 #include <SDL2/SDL.h>
 
 typedef enum {
@@ -211,4 +211,4 @@ void f_platform_api__textureBlitEx(const FPlatformTexture* Texture, const FPixel
         }
     }
 }
-#endif // F_CONFIG_LIB_RENDER_SDL
+#endif // F_CONFIG_RENDER_SDL2

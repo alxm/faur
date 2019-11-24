@@ -127,8 +127,10 @@ static void F__FUNC_NAME_EX(const FPixels* Pixels, unsigned Frame, int X, int Y,
         spriteMidright = sprite1;
     }
 
-    if(screenBottom.y < 0 || screenTop.y >= screenSize.y
-        || screenRight.x < 0 || screenLeft.x >= screenSize.x) {
+    if(!f_screen_boxOnClip(screenLeft.x,
+                           screenTop.y,
+                           screenRight.x - screenLeft.x + 1,
+                           screenBottom.y - screenTop.y + 1)) {
 
         return;
     }
@@ -142,14 +144,15 @@ static void F__FUNC_NAME_EX(const FPixels* Pixels, unsigned Frame, int X, int Y,
     scan_line(
         &g_edges[1], screenRight, screenBottom, spriteMidright, spriteBottom);
 
-    const int scrTopYClipped = f_math_max(screenTop.y, 0);
-    const int scrBottomYClipped = f_math_min(screenBottom.y, screenSize.y - 1);
+    const int scrTopYClipped = f_math_max(screenTop.y, f__screen.clipY);
+    const int scrBottomYClipped = f_math_min(
+                                    screenBottom.y, f__screen.clipY2 - 1);
 
     for(int scrY = scrTopYClipped; scrY <= scrBottomYClipped; scrY++) {
         int screenX0 = g_edges[0].screen[scrY];
         int screenX1 = g_edges[1].screen[scrY];
 
-        if(screenX0 >= screenSize.x || screenX1 < 0) {
+        if(screenX0 >= f__screen.clipX2 || screenX1 < f__screen.clipX) {
             continue;
         }
 
@@ -169,15 +172,15 @@ static void F__FUNC_NAME_EX(const FPixels* Pixels, unsigned Frame, int X, int Y,
         const FFix spriteXInc = spriteDeltaX / screenDeltaX;
         const FFix spriteYInc = spriteDeltaY / screenDeltaX;
 
-        if(screenX0 < 0) {
-            sprite.x += spriteXInc * -screenX0;
-            sprite.y += spriteYInc * -screenX0;
+        if(screenX0 < f__screen.clipX) {
+            sprite.x += spriteXInc * (f__screen.clipX - screenX0);
+            sprite.y += spriteYInc * (f__screen.clipX - screenX0);
 
-            screenX0 = 0;
+            screenX0 = f__screen.clipX;
         }
 
-        if(screenX1 >= screenSize.x) {
-            screenX1 = screenSize.x - 1;
+        if(screenX1 >= f__screen.clipX2) {
+            screenX1 = f__screen.clipX2 - 1;
         }
 
         FColorPixel* dst = screenPixels + scrY * screenSize.x + screenX0;

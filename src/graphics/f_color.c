@@ -18,18 +18,21 @@
 #include "f_color.v.h"
 #include <faur.v.h>
 
-#define F__OPTIMIZE_ALPHA \
-    (F_CONFIG_LIB_RENDER_SOFTWARE && !F_CONFIG_SYSTEM_GAMEBUINO)
+#include "../generated/media/palette.png.h"
 
-FPixelState f__color;
-static FList* g_stateStack;
+FColorState f__color;
 
 FColorPixel f_color__key;
 FColorPixel f_color__limit;
 
+static FList* g_stateStack;
+static FPalette* g_palette;
+
 static void f_color__init(void)
 {
     g_stateStack = f_list_new();
+    g_palette = f_palette_newFromSprite(f_gfx__palette);
+
     f_color_reset();
 
     f_color__key = f_color_pixelFromHex(F_CONFIG_COLOR_SPRITE_KEY);
@@ -39,6 +42,7 @@ static void f_color__init(void)
 static void f_color__uninit(void)
 {
     f_list_freeEx(g_stateStack, f_mem_free);
+    f_palette_free(g_palette);
 }
 
 const FPack f_pack__color = {
@@ -53,12 +57,12 @@ const FPack f_pack__color = {
 
 void f_color_push(void)
 {
-    f_list_push(g_stateStack, f_mem_dup(&f__color, sizeof(FPixelState)));
+    f_list_push(g_stateStack, f_mem_dup(&f__color, sizeof(FColorState)));
 }
 
 void f_color_pop(void)
 {
-    FPixelState* state = f_list_pop(g_stateStack);
+    FColorState* state = f_list_pop(g_stateStack);
 
     #if F_CONFIG_BUILD_DEBUG
         if(state == NULL) {
@@ -80,6 +84,11 @@ void f_color_reset(void)
     f_color_colorSetRgba(0, 0, 0, F_COLOR_ALPHA_MAX);
     f_color_fillBlitSet(false);
     f_color_fillDrawSet(true);
+}
+
+void f_color_paletteSet(const FPalette* Palette)
+{
+    f__color.palette = Palette;
 }
 
 #if F__OPTIMIZE_ALPHA
@@ -116,11 +125,11 @@ static void optimizeAlphaBlending(void)
 void f_color_blendSet(FColorBlend Blend)
 {
     f__color.blend = Blend;
-    f__color.canonicalBlend = Blend;
 
     #if F__OPTIMIZE_ALPHA
+        f__color.canonicalBlend = Blend;
         optimizeAlphaBlending();
-    #elif !F_CONFIG_LIB_RENDER_SOFTWARE
+    #else
         if(Blend == F_COLOR_BLEND_ALPHA_25) {
             f_color_alphaSet(F_COLOR_ALPHA_MAX / 4);
         } else if(Blend == F_COLOR_BLEND_ALPHA_50) {
@@ -129,7 +138,9 @@ void f_color_blendSet(FColorBlend Blend)
             f_color_alphaSet(F_COLOR_ALPHA_MAX * 3 / 4);
         }
 
-        f_platform_api__renderSetBlendMode();
+        #if !F_CONFIG_RENDER_SOFTWARE
+            f_platform_api__renderSetBlendMode();
+        #endif
     #endif
 }
 
@@ -139,7 +150,7 @@ void f_color_alphaSet(int Alpha)
 
     #if F__OPTIMIZE_ALPHA
         optimizeAlphaBlending();
-    #elif !F_CONFIG_LIB_RENDER_SOFTWARE
+    #elif !F_CONFIG_RENDER_SOFTWARE
         f_platform_api__renderSetDrawColor();
     #endif
 }
@@ -157,7 +168,7 @@ void f_color_colorSetRgb(int Red, int Green, int Blue)
 {
     setRgb(Red, Green, Blue);
 
-    #if !F_CONFIG_LIB_RENDER_SOFTWARE
+    #if !F_CONFIG_RENDER_SOFTWARE
         f_platform_api__renderSetDrawColor();
     #endif
 }
@@ -169,7 +180,7 @@ void f_color_colorSetRgba(int Red, int Green, int Blue, int Alpha)
 
     #if F__OPTIMIZE_ALPHA
         optimizeAlphaBlending();
-    #elif !F_CONFIG_LIB_RENDER_SOFTWARE
+    #elif !F_CONFIG_RENDER_SOFTWARE
         f_platform_api__renderSetDrawColor();
     #endif
 }
@@ -181,7 +192,7 @@ void f_color_colorSetHex(uint32_t Hexcode)
     f__color.rgb.b = (Hexcode)       & 0xff;
     f__color.pixel = f_color_pixelFromHex(Hexcode);
 
-    #if !F_CONFIG_LIB_RENDER_SOFTWARE
+    #if !F_CONFIG_RENDER_SOFTWARE
         f_platform_api__renderSetDrawColor();
     #endif
 }
@@ -191,9 +202,25 @@ void f_color_colorSetPixel(FColorPixel Pixel)
     f__color.rgb = f_color_pixelToRgb(Pixel);
     f__color.pixel = Pixel;
 
-    #if !F_CONFIG_LIB_RENDER_SOFTWARE
+    #if !F_CONFIG_RENDER_SOFTWARE
         f_platform_api__renderSetDrawColor();
     #endif
+}
+
+void f_color_colorSetIndex(int ColorIndex)
+{
+    #if F_CONFIG_BUILD_DEBUG
+        if(f__color.palette == NULL) {
+            F__FATAL("f_color_colorSetIndex(%d): No palette set", ColorIndex);
+        }
+    #endif
+
+    f_color_colorSetPixel(f_palette_getPixel(f__color.palette, ColorIndex));
+}
+
+void f_color__colorSetInternal(FColorPaletteInternal ColorIndex)
+{
+    f_color_colorSetPixel(f_palette_getPixel(g_palette, ColorIndex));
 }
 
 void f_color_fillBlitSet(bool Fill)

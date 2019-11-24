@@ -2,6 +2,7 @@ F_FILES_GFX := \
 	console_19x7.png \
 	font_6x8.png \
 	font_keyed_6x8.png \
+	palette.png \
 
 F_DIR_GEN := ../src/generated/media
 

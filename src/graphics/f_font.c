@@ -18,8 +18,8 @@
 #include "f_font.v.h"
 #include <faur.v.h>
 
-#include "generated/media/font_6x8.png.h"
-#include "generated/media/font_keyed_6x8.png.h"
+#include "../generated/media/font_6x8.png.h"
+#include "../generated/media/font_keyed_6x8.png.h"
 
 #define F__CHAR_START 32
 #define F__CHAR_INDEX(Char) ((unsigned)Char - F__CHAR_START)
@@ -42,23 +42,10 @@ static void f_font__init(void)
 {
     g_stateStack = f_list_new();
 
-    g_defaultFonts[F_FONT__ID_DEFAULT] = (FFont*)f_gfx__font_6x8;
+    g_defaultFonts[F_FONT__ID_BLOCK] = (FFont*)f_gfx__font_6x8;
 
     #if !F_CONFIG_SYSTEM_GAMEBUINO
-        g_defaultFonts[F_FONT__ID_WHITE] = (FFont*)f_gfx__font_keyed_6x8;
-
-        FColorPixel colors[F_FONT__ID_NUM] = {
-            [F_FONT__ID_LIGHT_GRAY] = f_color_pixelFromHex(0xaf9898),
-            [F_FONT__ID_GREEN] = f_color_pixelFromHex(0x4fbf9f),
-            [F_FONT__ID_YELLOW] = f_color_pixelFromHex(0xa8cf3f),
-            [F_FONT__ID_RED] = f_color_pixelFromHex(0xcf2f4f),
-            [F_FONT__ID_BLUE] = f_color_pixelFromHex(0x4f8fdf),
-        };
-
-        for(int f = F_FONT__ID_WHITE + 1; f < F_FONT__ID_NUM; f++) {
-            g_defaultFonts[f] = f_font_dup(g_defaultFonts[F_FONT__ID_WHITE],
-                                           colors[f]);
-        }
+        g_defaultFonts[F_FONT__ID_KEYED] = (FFont*)f_gfx__font_keyed_6x8;
     #endif
 
     f_font_reset();
@@ -95,25 +82,6 @@ FFont* f_font_newFromSprite(const FSprite* Sheet, int X, int Y, int CharWidth, i
     return f_sprite_newFromSprite(Sheet, X, Y, CharWidth, CharHeight);
 }
 
-FFont* f_font_dup(const FFont* Font, FColorPixel Color)
-{
-    FFont* f = f_sprite_dup(Font);
-
-    f_color_push();
-    f_color_colorSetPixel(Color);
-    f_color_fillBlitSet(true);
-
-    for(unsigned i = f_sprite_framesNumGet(f); i--; ) {
-        f_screen_push(f, i);
-        f_sprite_blit(f, i, 0, 0);
-        f_screen_pop();
-    }
-
-    f_color_pop();
-
-    return f;
-}
-
 void f_font_free(FFont* Font)
 {
     f_sprite_free(Font);
@@ -140,7 +108,7 @@ void f_font_pop(void)
 
 void f_font_reset(void)
 {
-    f_font__fontSet(F_FONT__ID_DEFAULT);
+    f_font__fontSet(F_FONT__ID_BLOCK);
     f_font_alignSet(F_FONT_ALIGN_LEFT);
     f_font_coordsSet(0, 0);
     f_font_lineWrapSet(0);
@@ -149,7 +117,7 @@ void f_font_reset(void)
 void f_font_fontSet(const FFont* Font)
 {
     if(Font == NULL) {
-        Font = g_defaultFonts[F_FONT__ID_DEFAULT];
+        Font = g_defaultFonts[F_FONT__ID_BLOCK];
     }
 
     g_state.font = Font;

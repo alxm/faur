@@ -18,7 +18,7 @@
 #include "f_sdl_draw.v.h"
 #include <faur.v.h>
 
-#if F_CONFIG_LIB_RENDER_SDL
+#if F_CONFIG_RENDER_SDL2
 #include <SDL2/SDL.h>
 
 extern SDL_Renderer* f__sdlRenderer;
@@ -256,4 +256,4 @@ void f_platform_api__drawCircleFilled(int X, int Y, int Radius)
         f_out__error("SDL_RenderFillRects: %s", SDL_GetError());
     }
 }
-#endif // F_CONFIG_LIB_RENDER_SDL
+#endif // F_CONFIG_RENDER_SDL2

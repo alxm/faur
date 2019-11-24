@@ -44,7 +44,7 @@ static void f_platform__init(void)
 
     f_platform_api__screenInit();
 
-    #if F_CONFIG_LIB_RENDER_SOFTWARE
+    #if F_CONFIG_RENDER_SOFTWARE
         #if F_CONFIG_SCREEN_ALLOCATE
             f_out__info("Using S/W graphics (virtual buffer)");
         #else
@@ -52,14 +52,14 @@ static void f_platform__init(void)
         #endif
 
         f_platform_software_blit__init();
-    #elif F_CONFIG_LIB_RENDER_SDL
+    #elif F_CONFIG_RENDER_SDL2
         f_out__info("Using SDL graphics");
     #endif
 }
 
 static void f_platform__uninit(void)
 {
-    #if F_CONFIG_LIB_RENDER_SOFTWARE
+    #if F_CONFIG_RENDER_SOFTWARE
         f_platform_software_blit__uninit();
     #endif
 

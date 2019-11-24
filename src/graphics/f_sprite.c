@@ -165,7 +165,7 @@ FSprite* f_sprite_dup(const FSprite* Sprite)
     for(unsigned f = Sprite->pixels.framesNum; f--; ) {
         s->textures[f] = f_platform_api__textureNew(&s->pixels, f);
 
-        #if !F_CONFIG_LIB_RENDER_SOFTWARE
+        #if !F_CONFIG_RENDER_SOFTWARE
             if(F_FLAGS_TEST_ANY(Sprite->pixels.flags, F_PIXELS__DIRTY)) {
                 // The sprite's pixel buffer may be stale if the texture
                 // was already set as render target and drawn to
@@ -191,7 +191,7 @@ void f_sprite_free(FSprite* Sprite)
     }
 
     if(F_FLAGS_TEST_ANY(Sprite->pixels.flags, F_PIXELS__CONST)) {
-        #if !F_CONFIG_LIB_RENDER_SOFTWARE
+        #if !F_CONFIG_RENDER_SOFTWARE
             for(unsigned f = Sprite->pixels.framesNum; f--; ) {
                 f_platform_api__textureFree(Sprite->textures[f]);
 
@@ -212,7 +212,7 @@ void f_sprite_free(FSprite* Sprite)
     f_mem_free(Sprite);
 }
 
-#if !F_CONFIG_LIB_RENDER_SOFTWARE
+#if !F_CONFIG_RENDER_SOFTWARE
 static void lazyInitTextures(FSprite* Sprite)
 {
     if(Sprite->textures[0] == NULL) {
@@ -226,7 +226,7 @@ static void lazyInitTextures(FSprite* Sprite)
 
 void f_sprite_blit(const FSprite* Sprite, unsigned Frame, int X, int Y)
 {
-    #if !F_CONFIG_LIB_RENDER_SOFTWARE
+    #if !F_CONFIG_RENDER_SOFTWARE
         lazyInitTextures((FSprite*)Sprite);
     #endif
 
@@ -252,7 +252,7 @@ void f_sprite_blit(const FSprite* Sprite, unsigned Frame, int X, int Y)
 
 void f_sprite_blitEx(const FSprite* Sprite, unsigned Frame, int X, int Y, FFix Scale, unsigned Angle, FFix CenterX, FFix CenterY)
 {
-    #if !F_CONFIG_LIB_RENDER_SOFTWARE
+    #if !F_CONFIG_RENDER_SOFTWARE
         lazyInitTextures((FSprite*)Sprite);
     #endif
 
@@ -289,7 +289,7 @@ void f_sprite_swapColor(FSprite* Sprite, FColorPixel OldColor, FColorPixel NewCo
             }
         }
 
-        #if !F_CONFIG_LIB_RENDER_SOFTWARE
+        #if !F_CONFIG_RENDER_SOFTWARE
             if(Sprite->textures[f]) {
                 f_platform_api__textureFree(Sprite->textures[f]);
             }
@@ -322,7 +322,7 @@ void f_sprite_swapColors(FSprite* Sprite, const FColorPixel* OldColors, const FC
             }
         }
 
-        #if !F_CONFIG_LIB_RENDER_SOFTWARE
+        #if !F_CONFIG_RENDER_SOFTWARE
             if(Sprite->textures[f]) {
                 f_platform_api__textureFree(Sprite->textures[f]);
             }
@@ -354,6 +354,11 @@ unsigned f_sprite_framesNumGet(const FSprite* Sprite)
 }
 
 FPixels* f_sprite__pixelsGet(FSprite* Sprite)
+{
+    return &Sprite->pixels;
+}
+
+const FPixels* f_sprite__pixelsGetc(const FSprite* Sprite)
 {
     return &Sprite->pixels;
 }

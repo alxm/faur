@@ -132,14 +132,21 @@ def process_c(var_name, image_file, color_key):
     span_buffers = ''
     span_vars = ''
 
-    for fmt in g_formats:
+    for index, fmt in enumerate(g_formats):
         pixels_fmt = [g_formats[fmt](p) for f in frames_pixels for p in f]
 
         pixel_buffers += """\
-    #if F_CONFIG_SCREEN_FORMAT == {fmt}
+    #{cond} F_CONFIG_SCREEN_FORMAT == {fmt}
         {pixel_buffer}
+""".format(cond = 'if' if index == 0 else 'elif',
+           fmt = fmt,
+           pixel_buffer = ', '.join(pixels_fmt))
+
+    pixel_buffers += """\
+    #else
+        #error Unknown color format
     #endif
-""".format(fmt = fmt, pixel_buffer = ', '.join(pixels_fmt))
+"""
 
     for frame_index, frame_pixels in enumerate(frames_pixels):
         spans = spans_make(frame_pixels, frame_width, frame_height, color_key)
@@ -161,7 +168,7 @@ static const unsigned f__gfx_spans__{var}__{num}[] = {{{spans_data}}};
 #include <faur.v.h>
 
 #ifndef F__GEN_GFX_CONST
-    #if F_CONFIG_LIB_RENDER_SOFTWARE
+    #if F_CONFIG_RENDER_SOFTWARE
         #define F__GEN_GFX_CONST const
     #else
         #define F__GEN_GFX_CONST
@@ -171,7 +178,7 @@ static const unsigned f__gfx_spans__{var}__{num}[] = {{{spans_data}}};
 static const FColorPixel f__gfx_buffer__{var}[{width} * {height} * {frames_num}] = {{
 {pixel_buffers}}};
 
-#if F_CONFIG_LIB_RENDER_SOFTWARE
+#if F_CONFIG_RENDER_SOFTWARE
 {span_buffers}#endif
 
 static F__GEN_GFX_CONST struct {{
@@ -187,7 +194,7 @@ static F__GEN_GFX_CONST struct {{
         .buffer = (FColorPixel*)f__gfx_buffer__{var},
     }},
     {{
-        #if F_CONFIG_LIB_RENDER_SOFTWARE
+        #if F_CONFIG_RENDER_SOFTWARE
 {span_vars}        #else
             NULL,
         #endif
