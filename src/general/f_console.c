@@ -19,7 +19,7 @@
 #include "f_console.v.h"
 #include <faur.v.h>
 
-#include "generated/media/console_19x7.png.h"
+#include "../generated/media/console_19x7.png.h"
 
 #if F_CONFIG_FEATURE_CONSOLE
 typedef struct {
@@ -146,28 +146,38 @@ void f_console__draw(void)
     f_sprite_alignReset();
 
     f_color_blendSet(F_COLOR_BLEND_ALPHA_75);
-    f_color_colorSetHex(0x1f0f0f);
+    f_color__colorSetInternal(F_COLOR__PAL_BROWN1);
     f_draw_fill();
 
     f_color_reset();
     f_font_reset();
 
+    f_font__fontSet(F_FONT__ID_KEYED);
+    f_color_fillBlitSet(true);
+
     {
         f_font_coordsSet(2, 2);
         f_font_alignSet(F_FONT_ALIGN_LEFT);
 
-        f_font__fontSet(F_FONT__ID_WHITE); f_font_print("F");
-        f_font__fontSet(F_FONT__ID_BLUE); f_font_print("A");
-        f_font__fontSet(F_FONT__ID_GREEN); f_font_print("U");
-        f_font__fontSet(F_FONT__ID_YELLOW); f_font_print("R");
+        f_color__colorSetInternal(F_COLOR__PAL_GRAY1);
+        f_font_print("F");
 
-        f_font__fontSet(F_FONT__ID_LIGHT_GRAY);
+        f_color__colorSetInternal(F_COLOR__PAL_BLUE1);
+        f_font_print("A");
+
+        f_color__colorSetInternal(F_COLOR__PAL_GREEN1);
+        f_font_print("U");
+
+        f_color__colorSetInternal(F_COLOR__PAL_CHARTREUSE1);
+        f_font_print("R");
+
+        f_color__colorSetInternal(F_COLOR__PAL_GRAY1);
         f_font_printf(" %s %.8s %s\n",
                       F_CONFIG_BUILD_UID,
                       F_CONFIG_BUILD_FAUR_GIT,
                       F_CONFIG_BUILD_FAUR_TIME);
 
-        f_font__fontSet(F_FONT__ID_WHITE);
+        f_color__colorSetInternal(F_COLOR__PAL_GRAY2);
         f_font_printf("%s %s by %s\n",
                       F_CONFIG_APP_NAME,
                       F_CONFIG_APP_VERSION_STRING,
@@ -178,17 +188,21 @@ void f_console__draw(void)
         int tagWidth = f_sprite_sizeGetWidth(f_gfx__console_19x7);
 
         f_font_coordsSet(1 + tagWidth + 1 + tagWidth + 2, f_font_coordsGetY());
-        f_font__fontSet(F_FONT__ID_LIGHT_GRAY);
+        f_color__colorSetInternal(F_COLOR__PAL_GRAY1);
 
         F_LIST_ITERATE(g_lines, FLine*, l) {
+            f_color_fillBlitSet(false);
             f_sprite_blit(f_gfx__console_19x7,
                           (unsigned)l->source,
                           1,
                           f_font_coordsGetY());
+
             f_sprite_blit(f_gfx__console_19x7,
                           (unsigned)(F_OUT__SOURCE_NUM + l->type),
                           1 + tagWidth + 1,
                           f_font_coordsGetY());
+
+            f_color_fillBlitSet(true);
             f_font_print(l->text);
             f_font_lineNew();
         }
@@ -198,12 +212,12 @@ void f_console__draw(void)
         f_font_alignSet(F_FONT_ALIGN_RIGHT);
         f_font_coordsSet(f__screen.pixels->size.x - 1, 2);
 
-        f_font__fontSet(F_FONT__ID_YELLOW);
+        f_color__colorSetInternal(F_COLOR__PAL_CHARTREUSE1);
         f_font_printf("%u tick fps\n", f_fps_rateTickGet());
         f_font_printf("%u draw fps\n", f_fps_rateDrawGet());
         f_font_printf("%u draw max\n", f_fps_rateDrawGetMax());
 
-        f_font__fontSet(F_FONT__ID_GREEN);
+        f_color__colorSetInternal(F_COLOR__PAL_GREEN1);
         f_font_printf("%dx%d:%d x%d %c\n",
                       f_screen_sizeGetWidth(),
                       f_screen_sizeGetHeight(),
@@ -234,7 +248,7 @@ void f_console__draw(void)
                 "Sound %s\n", f_platform_api__soundMuteGet() ? "off" : "on");
         #endif
 
-        f_font__fontSet(F_FONT__ID_BLUE);
+        f_color__colorSetInternal(F_COLOR__PAL_BLUE1);
         f_font_printf("PID %d\n", getpid());
         f_font_printf("%u ticks\n", f_fps_ticksGet());
 

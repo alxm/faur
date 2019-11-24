@@ -18,15 +18,21 @@
 #include "f_color.v.h"
 #include <faur.v.h>
 
+#include "../generated/media/palette.png.h"
+
 FColorState f__color;
-static FList* g_stateStack;
 
 FColorPixel f_color__key;
 FColorPixel f_color__limit;
 
+static FList* g_stateStack;
+static FPalette* g_palette;
+
 static void f_color__init(void)
 {
     g_stateStack = f_list_new();
+    g_palette = f_palette_newFromSprite(f_gfx__palette);
+
     f_color_reset();
 
     f_color__key = f_color_pixelFromHex(F_CONFIG_COLOR_SPRITE_KEY);
@@ -36,6 +42,7 @@ static void f_color__init(void)
 static void f_color__uninit(void)
 {
     f_list_freeEx(g_stateStack, f_mem_free);
+    f_palette_free(g_palette);
 }
 
 const FPack f_pack__color = {
@@ -209,6 +216,11 @@ void f_color_colorSetIndex(int ColorIndex)
     #endif
 
     f_color_colorSetPixel(f_palette_getPixel(f__color.palette, ColorIndex));
+}
+
+void f_color__colorSetInternal(FColorPaletteInternal ColorIndex)
+{
+    f_color_colorSetPixel(f_palette_getPixel(g_palette, ColorIndex));
 }
 
 void f_color_fillBlitSet(bool Fill)

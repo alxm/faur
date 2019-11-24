@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2018 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2018-2019 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -22,13 +22,8 @@
 
 typedef enum {
     F_FONT__ID_INVALID = -1,
-    F_FONT__ID_DEFAULT,
-    F_FONT__ID_WHITE,
-    F_FONT__ID_LIGHT_GRAY,
-    F_FONT__ID_GREEN,
-    F_FONT__ID_YELLOW,
-    F_FONT__ID_RED,
-    F_FONT__ID_BLUE,
+    F_FONT__ID_BLOCK,
+    F_FONT__ID_KEYED,
     F_FONT__ID_NUM
 } FFontId;
 
