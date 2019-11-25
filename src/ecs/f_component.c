@@ -18,7 +18,7 @@
 #include "f_component.v.h"
 #include <faur.v.h>
 
-#if F_CONFIG_FEATURE_ECS
+#if F_CONFIG_ECS_ENABLED
 struct FComponent {
     size_t size; // total size of FComponentInstance + user data that follows
     FComponentInstanceInit* init; // sets component buffer default values
@@ -190,4 +190,4 @@ void f_component__instanceFree(FComponentInstance* Instance)
 
     f_mem_free(Instance);
 }
-#endif // F_CONFIG_FEATURE_ECS
+#endif // F_CONFIG_ECS_ENABLED

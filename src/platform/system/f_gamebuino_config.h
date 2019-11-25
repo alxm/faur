@@ -18,7 +18,9 @@
 #ifndef F_INC_PLATFORM_SYSTEM_GAMEBUINO_CONFIG_H
 #define F_INC_PLATFORM_SYSTEM_GAMEBUINO_CONFIG_H
 
-
+// The Gamebuino target requires the application to provide the file
+// `<src>/config-faur.h`, which is used to allow some degree of build-time
+// config when using Faur as an Arduino library from the Arduino IDE.
 #include <sketch/config-faur.h>
 
 #ifndef F_CONFIG_APP_AUTHOR
@@ -84,12 +86,8 @@
 #define F_CONFIG_COLOR_SPRITE_KEY 0xFF00FF
 #endif
 
-#ifndef F_CONFIG_FEATURE_OUTPUT
-#define F_CONFIG_FEATURE_OUTPUT 1
-#endif
-
-#ifndef F_CONFIG_FEATURE_SOUND
-#define F_CONFIG_FEATURE_SOUND 1
+#ifndef F_CONFIG_SOUND_ENABLED
+#define F_CONFIG_SOUND_ENABLED 1
 #endif
 
 #ifndef F_CONFIG_FPS_HISTORY
@@ -156,8 +154,15 @@
 #define F_CONFIG_SYSTEM_GAMEBUINO 1
 #endif
 
-// Application must supply a `/config-gamebuino.h` file that includes <faur.h>
-// (for use by Gamebuino_META), and a `/config-faur.h` file (for use by Faur).
+#ifndef F_CONFIG_SYSTEM_GAMEBUINO_NO_EXIT
+#define F_CONFIG_SYSTEM_GAMEBUINO_NO_EXIT 0
+#endif
+
+// The Gamebuino target also requires the application to provide the file
+// `<src>/config-gamebuino.h`, which is used by the Gamebuino_META lib for its
+// own build-time settings. `config-gamebuino.h` only has to #include <faur.h>,
+// which sets all the Gamebuino_META options it needs.
+
 #undef FOLDER_NAME
 #define FOLDER_NAME F_CONFIG_APP_DIR
 
@@ -169,5 +174,10 @@
 
 #undef SOUND_FREQ
 #define SOUND_FREQ 22050
+
+#if F_CONFIG_SYSTEM_GAMEBUINO_NO_EXIT
+    #undef HOME_MENU_NO_EXIT
+    #define HOME_MENU_NO_EXIT 1
+#endif
 
 #endif // F_INC_PLATFORM_SYSTEM_GAMEBUINO_CONFIG_H

@@ -37,7 +37,7 @@ struct FPlatformTexture {
 };
 
 typedef void (*FBlitter)(const FPlatformTexture* Texture, const FPixels* Pixels, unsigned Frame, int X, int Y);
-typedef void (*FBlitterEx)(const FPixels* Pixels, unsigned Frame, int X, int Y, FFix Scale, unsigned Angle, FFix CenterX, FFix CenterY);
+typedef void (*FBlitterEx)(const FPixels* Pixels, unsigned Frame, int TopY, int BottomY);
 
 static FScanlineEdge g_edges[2];
 
@@ -417,10 +417,122 @@ void f_platform_api__textureBlit(const FPlatformTexture* Texture, const FPixels*
 
 void f_platform_api__textureBlitEx(const FPlatformTexture* Texture, const FPixels* Pixels, unsigned Frame, int X, int Y, FFix Scale, unsigned Angle, FFix CenterX, FFix CenterY)
 {
+    const FVectorInt size = Pixels->size;
+    const FVectorFix sizeScaled = {size.x * Scale, size.y * Scale};
+    const FVectorFix sizeScaledHalf = {sizeScaled.x / 2, sizeScaled.y / 2};
+
+    /*
+         Counter-clockwise rotations:
+
+                  p0 --- p1           p1 --- p2
+                  |       |           |       |
+                  p3 --- p2           p0 --- p3
+
+                    0 deg               90 deg
+    */
+
+    const FFix sin = f_fix_sin(Angle);
+    const FFix cos = f_fix_cos(Angle);
+
+    const FFix wLeft = sizeScaledHalf.x + f_fix_mul(CenterX, sizeScaledHalf.x);
+    const FFix wRight = sizeScaled.x - wLeft;
+    const FFix hTop = sizeScaledHalf.y + f_fix_mul(CenterY, sizeScaledHalf.y);
+    const FFix hDown = sizeScaled.y - hTop;
+
+    const FFix xMns = -wLeft;
+    const FFix xPls = wRight - 1;
+    const FFix yMns = -hTop;
+    const FFix yPls = hDown - 1;
+
+    #define ROTATE_X(x, y) f_fix_toInt(f_fix_mul(x,  cos) + f_fix_mul(y, sin))
+    #define ROTATE_Y(x, y) f_fix_toInt(f_fix_mul(x, -sin) + f_fix_mul(y, cos))
+
+    const FVectorInt
+        p0 = {X + ROTATE_X(xMns, yMns), Y + ROTATE_Y(xMns, yMns)},
+        p1 = {X + ROTATE_X(xPls, yMns), Y + ROTATE_Y(xPls, yMns)},
+        p2 = {X + ROTATE_X(xPls, yPls), Y + ROTATE_Y(xPls, yPls)},
+        p3 = {X + ROTATE_X(xMns, yPls), Y + ROTATE_Y(xMns, yPls)};
+
+    #undef ROTATE_X
+    #undef ROTATE_Y
+
+    FVectorInt screenTop, screenBottom, screenLeft, screenRight;
+    FVectorFix spriteTop, spriteBottom, spriteMidleft, spriteMidright;
+
+    FVectorFix
+        sprite0 = {0, 0},
+        sprite1 = {f_fix_fromInt(size.x) - 1, 0},
+        sprite2 = {f_fix_fromInt(size.x) - 1, f_fix_fromInt(size.y) - 1},
+        sprite3 = {0, f_fix_fromInt(size.y) - 1};
+
+    // Based on Angle ranges, determine the top and bottom y coords
+    // of the rotated sprite and the sides to interpolate.
+    if(Angle < F_DEG_090_INT) {
+        screenTop = p1;
+        screenBottom = p3;
+        screenLeft = p0;
+        screenRight = p2;
+
+        spriteTop = sprite1;
+        spriteBottom = sprite3;
+        spriteMidleft = sprite0;
+        spriteMidright = sprite2;
+    } else if(Angle >= F_DEG_090_INT && Angle < F_DEG_180_INT) {
+        screenTop = p2;
+        screenBottom = p0;
+        screenLeft = p1;
+        screenRight = p3;
+
+        spriteTop = sprite2;
+        spriteBottom = sprite0;
+        spriteMidleft = sprite1;
+        spriteMidright = sprite3;
+    } else if(Angle >= F_DEG_180_INT && Angle < F_DEG_270_INT) {
+        screenTop = p3;
+        screenBottom = p1;
+        screenLeft = p2;
+        screenRight = p0;
+
+        spriteTop = sprite3;
+        spriteBottom = sprite1;
+        spriteMidleft = sprite2;
+        spriteMidright = sprite0;
+    } else { // if(Angle >= F_DEG_270_INT) {
+        screenTop = p0;
+        screenBottom = p2;
+        screenLeft = p3;
+        screenRight = p1;
+
+        spriteTop = sprite0;
+        spriteBottom = sprite2;
+        spriteMidleft = sprite3;
+        spriteMidright = sprite1;
+    }
+
+    if(!f_screen_boxOnClip(screenLeft.x,
+                           screenTop.y,
+                           screenRight.x - screenLeft.x + 1,
+                           screenBottom.y - screenTop.y + 1)) {
+
+        return;
+    }
+
+    scan_line(
+        &g_edges[0], screenTop, screenLeft, spriteTop, spriteMidleft);
+    scan_line(
+        &g_edges[0], screenLeft, screenBottom, spriteMidleft, spriteBottom);
+    scan_line(
+        &g_edges[1], screenTop, screenRight, spriteTop, spriteMidright);
+    scan_line(
+        &g_edges[1], screenRight, screenBottom, spriteMidright, spriteBottom);
+
+    int yTop = f_math_max(screenTop.y, f__screen.clipY);
+    int yBottom = f_math_min(screenBottom.y, f__screen.clipY2 - 1);
+
     g_blittersEx
         [f__color.blend]
         [f__color.fillBlit]
         [Texture != NULL]
-            (Pixels, Frame, X, Y, Scale, Angle, CenterX, CenterY);
+            (Pixels, Frame, yTop, yBottom);
 }
 #endif // F_CONFIG_RENDER_SOFTWARE

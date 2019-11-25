@@ -18,7 +18,7 @@
 #include "f_ecs.v.h"
 #include <faur.v.h>
 
-#if F_CONFIG_FEATURE_ECS
+#if F_CONFIG_ECS_ENABLED
 static FList* g_lists[F_ECS__NUM]; // Each entity is in exactly one of these
 static bool g_ignoreRefDec; // Set to prevent using freed entities
 
@@ -115,10 +115,10 @@ void f_ecs__flushEntitiesFromSystems(void)
 
     f_list_clear(g_lists[F_ECS__FLUSH]);
 }
-#else // !F_CONFIG_FEATURE_ECS
+#else // !F_CONFIG_ECS_ENABLED
 const FPack f_pack__ecs;
 
 void f_ecs__tick(void)
 {
 }
-#endif // !F_CONFIG_FEATURE_ECS
+#endif // !F_CONFIG_ECS_ENABLED
