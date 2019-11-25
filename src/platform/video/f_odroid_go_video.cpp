@@ -58,6 +58,10 @@ void f_platform_api__screenUninit(void)
 
 void f_platform_api__screenShow(void)
 {
+    #if F_CONFIG_BUILD_DEBUG
+        f_font_printf("%u", f_fps_rateDrawGetMax());
+    #endif
+
     uint8_t* bytes = (uint8_t*)g_screenBuffer;
 
     for(int i = F__SCREEN_SIZE; i--; ) {
