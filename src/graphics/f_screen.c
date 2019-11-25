@@ -275,7 +275,7 @@ void f_screen__toSprite(FSprite* Sprite, unsigned Frame)
     FVectorInt spriteSize = f_sprite_sizeGet(Sprite);
 
     if(!f_vectorint_equal(f__screen.pixels->size, spriteSize)) {
-        F__FATAL("f_screen__toSprite: Sprite is %dx%d, screen is %dx%d",
+        F__FATAL("f_screen__toSprite: %dx%d sprite, %dx%d screen",
                  spriteSize.x,
                  spriteSize.y,
                  f__screen.pixels->size.x,
