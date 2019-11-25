@@ -18,7 +18,7 @@
 #include "f_sample.v.h"
 #include <faur.v.h>
 
-#if F_CONFIG_FEATURE_SOUND
+#if F_CONFIG_SOUND_ENABLED
 FSample* f_sample_new(const char* Path)
 {
     FPlatformSample* s = NULL;
@@ -46,7 +46,7 @@ void f_sample_free(FSample* Sample)
         f_platform_api__soundSampleFree(Sample);
     }
 }
-#else // !F_CONFIG_FEATURE_SOUND
+#else // !F_CONFIG_SOUND_ENABLED
 FSample* f_sample_new(const char* Path)
 {
     F_UNUSED(Path);
@@ -58,4 +58,4 @@ void f_sample_free(FSample* Sample)
 {
     F_UNUSED(Sample);
 }
-#endif // !F_CONFIG_FEATURE_SOUND
+#endif // !F_CONFIG_SOUND_ENABLED

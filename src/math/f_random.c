@@ -43,7 +43,7 @@ void f_random_generatorSet(FRandomPrng* Rand, FRandomPrngSeed* Srand)
     g_rand = Rand;
     g_srand = Srand;
 
-    #if F_CONFIG_FEATURE_RANDOM_SEED
+    #if !F_CONFIG_SYSTEM_GAMEBUINO
         f_random_seedSet((unsigned)time(NULL));
     #endif
 }

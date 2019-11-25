@@ -18,7 +18,7 @@
 #include "f_system.v.h"
 #include <faur.v.h>
 
-#if F_CONFIG_FEATURE_ECS
+#if F_CONFIG_ECS_ENABLED
 struct FSystem {
     FSystemHandler* handler;
     FSystemSort* compare;
@@ -115,4 +115,4 @@ bool f_system__isActiveOnly(const FSystem* System)
 {
     return System->onlyActiveEntities;
 }
-#endif // F_CONFIG_FEATURE_ECS
+#endif // F_CONFIG_ECS_ENABLED
