@@ -36,12 +36,12 @@ static const FVectorInt g_screenSize = {F_CONFIG_SCREEN_SIZE_WIDTH,
 void f_platform_api__screenInit(void)
 {
     g_screenBuffer =
-        (FColorPixel*)ps_malloc(
+        (FColorPixel*)f_mem_malloc(
             (F_CONFIG_SCREEN_SIZE_WIDTH * F_CONFIG_SCREEN_SIZE_HEIGHT
                 * sizeof(FColorPixel)));
 
     g_scaledBuffer =
-        (FColorPixel*)ps_malloc(
+        (FColorPixel*)f_mem_malloc(
             (F_CONFIG_SCREEN_SIZE_WIDTH * F_CONFIG_SCREEN_ZOOM
                 * F_CONFIG_SCREEN_SIZE_HEIGHT * F_CONFIG_SCREEN_ZOOM
                     * sizeof(FColorPixel)));
