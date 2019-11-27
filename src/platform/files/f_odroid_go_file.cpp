@@ -22,52 +22,39 @@ extern "C" {
 #include <faur.v.h>
 
 #if F_CONFIG_SYSTEM_ODROID_GO
+#include <SD.h>
+
 bool f_platform_api__fileStat(const char* Path, FPathFlags* Flags)
 {
-    F_UNUSED(Path);
-    F_UNUSED(Flags);
+    if(SD.exists(Path)) {
+        *Flags = (FPathFlags)(F_PATH_REAL | F_PATH_FILE);
+
+        return true;
+    }
 
     return false;
 }
 
-FPlatformFile* f_platform_api__fileNew(FPath* Path, FFileMode Mode)
+bool f_platform_api__fileBufferRead(const char* Path, void* Buffer, size_t Size)
 {
-    F_UNUSED(Path);
-    F_UNUSED(Mode);
+    File f = SD.open(Path, "r");
 
-    return NULL;
+    // f's destructor closes file
+    return f && f.read((uint8_t*)Buffer, Size) == Size;
 }
 
-void f_platform_api__fileFree(FPlatformFile* File)
+bool f_platform_api__fileBufferWrite(const char* Path, const void* Buffer, size_t Size)
 {
-    F_UNUSED(File);
+    File f = SD.open(Path, "w");
 
-    return;
-}
-
-bool f_platform_api__fileRead(FPlatformFile* File, void* Buffer, size_t Size)
-{
-    F_UNUSED(File);
-    F_UNUSED(Buffer);
-    F_UNUSED(Size);
-
-    return false;
-}
-
-bool f_platform_api__fileWrite(FPlatformFile* File, const void* Buffer, size_t Size)
-{
-    F_UNUSED(File);
-    F_UNUSED(Buffer);
-    F_UNUSED(Size);
-
-    return false;
+    // f's destructor closes file
+    return f && f.write((const uint8_t*)Buffer, Size) == Size;
 }
 
 void f_platform_api__filePrint(FPlatformFile* File, const char* String)
 {
     F_UNUSED(File);
-    F_UNUSED(String);
 
-    return;
+    Serial.printf(String);
 }
 #endif // F_CONFIG_SYSTEM_ODROID_GO
