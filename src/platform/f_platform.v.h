@@ -115,6 +115,8 @@ extern FPlatformController* f_platform_api__inputControllerClaim(FControllerBind
 extern void f_platform_api__inputControllerRelease(FPlatformController* Controller);
 
 extern bool f_platform_api__fileStat(const char* Path, FPathFlags* Flags);
+extern bool f_platform_api__fileBufferRead(const char* Path, void* Buffer, size_t Size);
+extern bool f_platform_api__fileBufferWrite(const char* Path, const void* Buffer, size_t Size);
 extern FPlatformFile* f_platform_api__fileNew(FPath* Path, FFileMode Mode);
 extern void f_platform_api__fileFree(FPlatformFile* File);
 extern bool f_platform_api__fileSeek(FPlatformFile* File, int Offset, FFileOffset Origin);
@@ -125,6 +127,5 @@ extern void f_platform_api__filePrint(FPlatformFile* File, const char* String);
 extern bool f_platform_api__fileFlush(FPlatformFile* File);
 extern int f_platform_api__fileReadChar(FPlatformFile* File);
 extern int f_platform_api__fileReadCharUndo(FPlatformFile* File, int Char);
-extern uint8_t* f_platform_api__fileToBuffer(const char* Path);
 
 #endif // F_INC_PLATFORM_PLATFORM_V_H

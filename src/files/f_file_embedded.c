@@ -127,9 +127,15 @@ int f_file_embedded__readCharUndo(FFileEmbedded* File, int Char)
     return c;
 }
 
-uint8_t* f_file_embedded__toBuffer(const char* Path)
+bool f_file_embedded__bufferRead(const char* Path, void* Buffer, size_t Size)
 {
     const FEmbeddedFile* data = f_embed__fileGet(Path);
 
-    return f_mem_dup(data->buffer, data->size);
+    if(data && data->size <= Size) {
+        memcpy(Buffer, data->buffer, data->size);
+
+        return true;
+    }
+
+    return false;
 }

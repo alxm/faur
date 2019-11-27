@@ -31,6 +31,36 @@ struct FFile {
     bool eof;
 };
 
+bool f_file_bufferRead(const char* Path, void* Buffer, size_t Size)
+{
+    bool ret;
+
+    if(f_path_exists(Path, F_PATH_FILE | F_PATH_REAL)) {
+        ret = f_platform_api__fileBufferRead(Path, Buffer, Size);
+    } else if(f_path_exists(Path, F_PATH_FILE | F_PATH_EMBEDDED)) {
+        ret = f_file_embedded__bufferRead(Path, Buffer, Size);
+    } else {
+        ret = false;
+    }
+
+    if(!ret) {
+        f_out__warning("f_file_bufferRead(%s, %lu): Failed", Path, Size);
+    }
+
+    return ret;
+}
+
+bool f_file_bufferWrite(const char* Path, const void* Buffer, size_t Size)
+{
+    bool ret = f_platform_api__fileBufferWrite(Path, Buffer, Size);
+
+    if(!ret) {
+        f_out__error("f_file_bufferWrite(%s, %lu): Failed", Path, Size);
+    }
+
+    return ret;
+}
+
 FFile* f_file_new(const char* Path, FFileMode Mode)
 {
     FPath* path = f_path_new(Path);
@@ -87,17 +117,6 @@ FILE* f_file_handleGet(const FFile* File)
 {
     return f_path_test(File->path, F_PATH_REAL)
             ? (FILE*)File->f.platform : NULL;
-}
-
-uint8_t* f_file_toBuffer(const char* Path)
-{
-    if(f_path_exists(Path, F_PATH_FILE | F_PATH_REAL)) {
-        return f_platform_api__fileToBuffer(Path);
-    } else if(f_path_exists(Path, F_PATH_FILE | F_PATH_EMBEDDED)) {
-        return f_file_embedded__toBuffer(Path);
-    }
-
-    return NULL;
 }
 
 bool f_file_prefixCheck(FFile* File, const char* Prefix)

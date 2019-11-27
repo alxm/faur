@@ -52,6 +52,45 @@ bool f_platform_api__fileStat(const char* Path, FPathFlags* Flags)
     return false;
 }
 
+bool f_platform_api__fileBufferRead(const char* Path, void* Buffer, size_t Size)
+{
+    struct stat info;
+
+    if(stat(Path, &info) != 0) {
+        f_out__error("stat(%s) failed", Path);
+
+        return false;
+    }
+
+    FFile* f = f_file_new(Path, F_FILE_READ | F_FILE_BINARY);
+
+    if(f == NULL) {
+        return false;
+    }
+
+    size_t fileSize = (size_t)info.st_size;
+    bool ret = fileSize <= Size && f_file_read(f, Buffer, fileSize);
+
+    f_file_free(f);
+
+    return ret;
+}
+
+bool f_platform_api__fileBufferWrite(const char* Path, const void* Buffer, size_t Size)
+{
+    FFile* f = f_file_new(Path, F_FILE_WRITE | F_FILE_BINARY);
+
+    if(f == NULL) {
+        return false;
+    }
+
+    bool ret = f_file_write(f, Buffer, Size);
+
+    f_file_free(f);
+
+    return ret;
+}
+
 FPlatformFile* f_platform_api__fileNew(FPath* Path, FFileMode Mode)
 {
     int index = 0;
@@ -142,34 +181,5 @@ int f_platform_api__fileReadChar(FPlatformFile* File)
 int f_platform_api__fileReadCharUndo(FPlatformFile* File, int Char)
 {
     return ungetc(Char, File);
-}
-
-uint8_t* f_platform_api__fileToBuffer(const char* Path)
-{
-    struct stat info;
-
-    if(stat(Path, &info) != 0) {
-        f_out__error("stat(%s) failed", Path);
-
-        return NULL;
-    }
-
-    FFile* f = f_file_new(Path, F_FILE_READ | F_FILE_BINARY);
-
-    if(f == NULL) {
-        return NULL;
-    }
-
-    size_t size = (size_t)info.st_size;
-    uint8_t* buffer = f_mem_malloc(size);
-
-    if(!f_file_read(f, buffer, size)) {
-        f_mem_free(buffer);
-        buffer = NULL;
-    }
-
-    f_file_free(f);
-
-    return buffer;
 }
 #endif // F_CONFIG_FILES_STANDARD

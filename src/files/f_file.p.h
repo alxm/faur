@@ -30,13 +30,14 @@ typedef enum {
 
 #include "../files/f_path.p.h"
 
+extern bool f_file_bufferRead(const char* Path, void* Buffer, size_t Size);
+extern bool f_file_bufferWrite(const char* Path, const void* Buffer, size_t Size);
+
 extern FFile* f_file_new(const char* Path, FFileMode Mode);
 extern void f_file_free(FFile* File);
 
 extern const FPath* f_file_pathGet(const FFile* File);
 extern FILE* f_file_handleGet(const FFile* File);
-
-extern uint8_t* f_file_toBuffer(const char* Path);
 
 extern bool f_file_prefixCheck(FFile* File, const char* Prefix);
 extern void f_file_prefixWrite(FFile* File, const char* Prefix);
