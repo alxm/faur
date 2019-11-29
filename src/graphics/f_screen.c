@@ -146,17 +146,9 @@ int f_screen_sizeGetHeight(void)
 
 void f_screen_clear(void)
 {
-    #if F_CONFIG_RENDER_SOFTWARE
-        f_pixels__clear(f__screen.pixels, f__screen.frame);
-    #else
-        f_color_push();
+    f_platform_api__screenClear();
 
-        f_color_blendSet(F_COLOR_BLEND_PLAIN);
-        f_color_colorSetPixel(0);
-        f_platform_api__screenClear();
-
-        f_color_pop();
-    #endif
+    f_pixels__fill(f__screen.pixels, f__screen.frame, f__color.pixel);
 }
 
 void f_screen_push(FSprite* Sprite, unsigned Frame)

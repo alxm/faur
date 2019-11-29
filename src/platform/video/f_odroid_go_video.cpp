@@ -56,21 +56,24 @@ void f_platform_api__screenUninit(void)
 {
 }
 
+void f_platform_api__screenClear(void)
+{
+    GO.lcd.fillScreen(f__color.pixel);
+}
+
 void f_platform_api__screenShow(void)
 {
     #if F_CONFIG_BUILD_DEBUG
         f_font_printf("%u", f_fps_rateDrawGetMax());
     #endif
 
-    uint8_t* bytes = (uint8_t*)g_screenBuffer;
+    // Convert to little-endian
+    uint16_t* pixels = g_screenBuffer;
 
     for(int i = F__SCREEN_SIZE; i--; ) {
-        uint8_t t = *bytes;
+        uint16_t p = *pixels;
 
-        // Convert to little-endian
-        *bytes = *(bytes + 1);
-        *++bytes = t;
-        bytes++;
+        *pixels++ = (p << 8) | (p >> 8);
     }
 
     FColorPixel* dst = g_scaledBuffer;

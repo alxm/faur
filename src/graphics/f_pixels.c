@@ -105,16 +105,11 @@ void f_pixels__bufferSet(FPixels* Pixels, FColorPixel* Buffer, int W, int H)
     Pixels->framesNum = 1;
 }
 
-void f_pixels__clear(const FPixels* Pixels, unsigned Frame)
-{
-    memset(f_pixels__bufferGetFrom(Pixels, Frame, 0, 0), 0, Pixels->bufferSize);
-}
-
 void f_pixels__fill(const FPixels* Pixels, unsigned Frame, FColorPixel Value)
 {
     FColorPixel* buffer = f_pixels__bufferGetStart(Pixels, Frame);
 
-    for(int i = Pixels->size.x * Pixels->size.y; i--; ) {
+    for(unsigned i = Pixels->bufferLen; i--; ) {
         *buffer++ = Value;
     }
 }
