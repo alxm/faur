@@ -363,6 +363,11 @@ bool f_state__runStep(void)
 
         s->stage = F__STATE_STAGE_TICK;
 
+        f_color_reset();
+        f_font_reset();
+        f_screen_clipReset();
+        f_sprite_alignReset();
+
         f_fade__draw();
         f_sound__draw();
         f_console__draw();

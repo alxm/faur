@@ -173,6 +173,7 @@ FSprite* f_sprite_dup(const FSprite* Sprite)
                 f_screen_push(s, f);
 
                 f_color_reset();
+                f_sprite_alignReset();
                 f_sprite_blit(Sprite, f, 0, 0);
 
                 f_screen_pop();

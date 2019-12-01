@@ -23,10 +23,17 @@ extern "C" {
 
 #if F_CONFIG_SYSTEM_ODROID_GO
 #include <odroid_go.h>
+#include <SD.h>
+
+#define F__SD_PIN 22
 
 void setup(void)
 {
     GO.begin();
+
+    if(!SD.begin(F__SD_PIN)) {
+        f_out__error("SD.begin(%d) failed", F__SD_PIN);
+    }
 
     f__main();
 }

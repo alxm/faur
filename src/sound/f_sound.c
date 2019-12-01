@@ -134,6 +134,7 @@ void f_sound__draw(void)
             return;
         }
 
+        f_color_push();
         f_color_blendSet(F_COLOR_BLEND_PLAIN);
 
         f_color__colorSetInternal(F_COLOR__PAL_BROWN2);
@@ -146,6 +147,8 @@ void f_sound__draw(void)
 
         f_color__colorSetInternal(F_COLOR__PAL_CHARTREUSE1);
         f_draw_rectangle(0, 186, g_volume / F__VOLUME_STEP, 6);
+
+        f_color_pop();
     #endif
 }
 #else // !F_CONFIG_SOUND_ENABLED

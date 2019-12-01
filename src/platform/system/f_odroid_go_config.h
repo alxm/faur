@@ -56,7 +56,7 @@
 #endif
 
 #ifndef F_CONFIG_FILES_PREFIX
-#define F_CONFIG_FILES_PREFIX ""
+#define F_CONFIG_FILES_PREFIX "/"
 #endif
 
 #ifndef F_CONFIG_FIX_LUT

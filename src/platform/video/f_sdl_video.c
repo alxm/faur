@@ -338,7 +338,11 @@ void f_platform_api__screenUninit(void)
     f_pixels__free(&g_pixels);
 }
 
-#if F_CONFIG_LIB_SDL == 2
+#if F_CONFIG_LIB_SDL == 1
+void f_platform_api__screenClear(void)
+{
+}
+#elif F_CONFIG_LIB_SDL == 2
 void f_platform_api__screenClear(void)
 {
     if(SDL_RenderClear(f__sdlRenderer) < 0) {

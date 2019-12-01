@@ -52,7 +52,6 @@ extern void f_pixels__copyFrameEx(const FPixels* Dst, unsigned DstFrame, const F
 
 extern void f_pixels__bufferSet(FPixels* Pixels, FColorPixel* Buffer, int W, int H);
 
-extern void f_pixels__clear(const FPixels* Pixels, unsigned Frame);
 extern void f_pixels__fill(const FPixels* Pixels, unsigned Frame, FColorPixel Value);
 
 extern FVectorInt f_pixels__boundsFind(const FPixels* Pixels, unsigned Frame, int X, int Y);

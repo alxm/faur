@@ -40,6 +40,36 @@ bool f_platform_api__fileStat(const char* Path, FPathFlags* Flags)
     return false;
 }
 
+bool f_platform_api__fileBufferRead(const char* Path, void* Buffer, size_t Size)
+{
+    File f = SD.open(Path, O_RDONLY);
+
+    if(!f) {
+        return false;
+    }
+
+    bool ret = f.read(Buffer, Size) == (int)Size;
+
+    f.close();
+
+    return ret;
+}
+
+bool f_platform_api__fileBufferWrite(const char* Path, const void* Buffer, size_t Size)
+{
+    File f = SD.open(Path, O_RDWR | O_CREAT);
+
+    if(!f) {
+        return false;
+    }
+
+    bool ret = f.write(Buffer, Size) == (int)Size;
+
+    f.close();
+
+    return ret;
+}
+
 FPlatformFile* f_platform_api__fileNew(FPath* Path, FFileMode Mode)
 {
     oflag_t flags = 0;

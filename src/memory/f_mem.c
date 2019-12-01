@@ -28,6 +28,14 @@ static inline void tallyAdd(size_t Size)
 }
 #endif
 
+#if F_CONFIG_SYSTEM_ODROID_GO
+    extern void *ps_malloc(size_t size);
+    extern void *ps_calloc(size_t n, size_t size);
+
+    #define malloc(Size) ps_malloc(Size)
+    #define calloc(N, Size) ps_calloc(N, Size)
+#endif
+
 void* f_mem_malloc(size_t Size)
 {
     #if F_CONFIG_BUILD_DEBUG_ALLOC

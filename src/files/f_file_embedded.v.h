@@ -34,6 +34,6 @@ extern bool f_file_embedded__flush(FFileEmbedded* File);
 extern int f_file_embedded__readChar(FFileEmbedded* File);
 extern int f_file_embedded__readCharUndo(FFileEmbedded* File, int Char);
 
-extern uint8_t* f_file_embedded__toBuffer(const char* Path);
+extern bool f_file_embedded__bufferRead(const char* Path, void* Buffer, size_t Size);
 
 #endif // F_INC_FILES_FILE_EMBEDDED_V_H
