@@ -232,13 +232,9 @@ void f_console__draw(void)
         #endif
 
         #if F_CONFIG_RENDER_SOFTWARE
-            #if F_CONFIG_SCREEN_ALLOCATE
-                f_font_print("S/W Gfx (buffer)\n");
-            #else
-                f_font_print("S/W Gfx (raw)\n");
-            #endif
+            f_font_print("S/W Gfx\n");
         #elif F_CONFIG_RENDER_SDL2
-            f_font_print("SDL Gfx\n");
+            f_font_print("SDL2 Gfx\n");
         #endif
 
         #if F_CONFIG_SOUND_ENABLED

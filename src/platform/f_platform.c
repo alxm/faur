@@ -45,15 +45,10 @@ static void f_platform__init(void)
     f_platform_api__screenInit();
 
     #if F_CONFIG_RENDER_SOFTWARE
-        #if F_CONFIG_SCREEN_ALLOCATE
-            f_out__info("Using S/W graphics (virtual buffer)");
-        #else
-            f_out__info("Using S/W graphics (raw buffer)");
-        #endif
-
+        f_out__info("Using S/W graphics");
         f_platform_software_blit__init();
     #elif F_CONFIG_RENDER_SDL2
-        f_out__info("Using SDL graphics");
+        f_out__info("Using SDL2 graphics");
     #endif
 }
 

@@ -92,20 +92,22 @@ void f_screen__tick(void)
                             ? "fullscreen" : "windowed");
         }
 
-        for(int z = 0; z < F__ZOOM_LEVELS; z++) {
-            if(f_button_pressGetOnce(g_zoomButtons[z])) {
-                int zoom = z + 1;
+        #if F_CONFIG_SCREEN_ZOOM_CAN_CHANGE
+            for(int z = 0; z < F__ZOOM_LEVELS; z++) {
+                if(f_button_pressGetOnce(g_zoomButtons[z])) {
+                    int zoom = z + 1;
 
-                if(f_platform_api__screenZoomGet() != zoom) {
-                    f_platform_api__screenZoomSet(zoom);
+                    if(f_platform_api__screenZoomGet() != zoom) {
+                        f_platform_api__screenZoomSet(zoom);
 
-                    f_out__info(
-                        "Screen zoom %d", f_platform_api__screenZoomGet());
+                        f_out__info(
+                            "Screen zoom %d", f_platform_api__screenZoomGet());
+                    }
+
+                    break;
                 }
-
-                break;
             }
-        }
+        #endif
     #endif
 }
 
