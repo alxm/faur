@@ -365,6 +365,13 @@ void f_platform_api__screenUninit(void)
 #if F_CONFIG_LIB_SDL == 1
 void f_platform_api__screenClear(void)
 {
+    FColorPixel* pixels = g_sdlScreen->pixels;
+
+    for(int i = g_sdlScreen->pitch / (int)sizeof(FColorPixel) * g_sdlScreen->h;
+        i--; ) {
+
+        *pixels++ = f__color.pixel;
+    }
 }
 #elif F_CONFIG_LIB_SDL == 2
 void f_platform_api__screenClear(void)
