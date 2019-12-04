@@ -21,16 +21,19 @@ extern "C" {
 
 #include <faur.v.h>
 
+#define F__NEOPIXELS_W 2
+#define F__NEOPIXELS_H 4
+
+static FScreen g_screen;
+static const FVectorInt g_lightsSize = {F__NEOPIXELS_W, F__NEOPIXELS_H};
+
 #if F_CONFIG_SYSTEM_GAMEBUINO
 #include <Arduino.h>
 #include <Gamebuino-Meta.h>
 
-static FScreen g_screen;
 static FPixels g_pixels, g_lights;
-
 static const FVectorInt g_screenSize = {F_CONFIG_SCREEN_HARDWARE_WIDTH,
                                         F_CONFIG_SCREEN_HARDWARE_HEIGHT};
-static const FVectorInt g_lightsSize = {2, 4};
 
 void f_platform_api__screenInit(void)
 {
@@ -71,6 +74,17 @@ FPixels* f_platform_api__screenPixelsGet(void)
 {
     return &g_pixels;
 }
+#else // !F_CONFIG_SYSTEM_GAMEBUINO
+static FColorPixel g_buffer[F__NEOPIXELS_W * F__NEOPIXELS_H] = {0};
+static FPixels g_lights = {
+    {F__NEOPIXELS_W, F__NEOPIXELS_H},
+    1,
+    F__NEOPIXELS_W * F__NEOPIXELS_H,
+    F__NEOPIXELS_W * F__NEOPIXELS_H * sizeof(FColorPixel),
+    (FPixelsFlags)0,
+    g_buffer,
+};
+#endif // !F_CONFIG_SYSTEM_GAMEBUINO
 
 void f_gamebuino_lightsStart(void)
 {
@@ -85,10 +99,13 @@ void f_gamebuino_lightsStart(void)
     f__screen.clipY2 = g_lightsSize.y;
     f__screen.clipWidth = g_lightsSize.x;
     f__screen.clipHeight = g_lightsSize.y;
+
+    f_color_push();
 }
 
 void f_gamebuino_lightsEnd(void)
 {
     f__screen = g_screen;
+
+    f_color_pop();
 }
-#endif // F_CONFIG_SYSTEM_GAMEBUINO
