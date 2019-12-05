@@ -82,7 +82,7 @@ void f_color_pop(void)
 
 void f_color_reset(void)
 {
-    f_color_blendSet(F_COLOR_BLEND_PLAIN);
+    f_color_blendSet(F_COLOR_BLEND_SOLID);
     f_color_colorSetRgba(0, 0, 0, F_COLOR_ALPHA_MAX);
     f_color_fillBlitSet(false);
     f_color_fillDrawSet(true);
@@ -113,7 +113,7 @@ static void optimizeAlphaBlending(void)
             } break;
 
             case F_COLOR_ALPHA_MAX: {
-                fastestBlend = F_COLOR_BLEND_PLAIN;
+                fastestBlend = F_COLOR_BLEND_SOLID;
             } break;
         }
 

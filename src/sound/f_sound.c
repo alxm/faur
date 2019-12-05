@@ -135,7 +135,7 @@ void f_sound__draw(void)
         }
 
         f_color_push();
-        f_color_blendSet(F_COLOR_BLEND_PLAIN);
+        f_color_blendSet(F_COLOR_BLEND_SOLID);
 
         f_color__colorSetInternal(F_COLOR__PAL_BROWN2);
         f_draw_rectangle(0, 181, g_volumeMax / F__VOLUME_STEP + 5, 16);

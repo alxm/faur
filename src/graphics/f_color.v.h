@@ -62,7 +62,7 @@ extern FColorPixel f_color__limit;
 
 extern void f_color__colorSetInternal(FColorPaletteInternal ColorIndex);
 
-static inline void f_color__draw_plain(FColorPixel* Dst, FColorPixel Pixel)
+static inline void f_color__draw_solid(FColorPixel* Dst, FColorPixel Pixel)
 {
     *Dst = Pixel;
 }

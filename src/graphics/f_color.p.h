@@ -146,7 +146,7 @@ static inline int f_color_pixelToRgbAny(FColorPixel Pixel)
 
 typedef enum {
     F_COLOR_BLEND_INVALID = -1,
-    F_COLOR_BLEND_PLAIN,
+    F_COLOR_BLEND_SOLID,
     F_COLOR_BLEND_ALPHA,
     F_COLOR_BLEND_ALPHA_25,
     F_COLOR_BLEND_ALPHA_50,
