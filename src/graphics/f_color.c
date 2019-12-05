@@ -58,6 +58,8 @@ const FPack f_pack__color = {
 void f_color_push(void)
 {
     f_list_push(g_stateStack, f_mem_dup(&f__color, sizeof(FColorState)));
+
+    f_color_reset();
 }
 
 void f_color_pop(void)
@@ -176,6 +178,7 @@ void f_color_colorSetRgb(int Red, int Green, int Blue)
 void f_color_colorSetRgba(int Red, int Green, int Blue, int Alpha)
 {
     setRgb(Red, Green, Blue);
+
     f__color.alpha = f_math_clamp(Alpha, 0, F_COLOR_ALPHA_MAX);
 
     #if F__OPTIMIZE_ALPHA

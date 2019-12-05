@@ -90,6 +90,8 @@ void f_font_free(FFont* Font)
 void f_font_push(void)
 {
     f_list_push(g_stateStack, f_mem_dup(&g_state, sizeof(FFontState)));
+
+    f_font_reset();
 }
 
 void f_font_pop(void)

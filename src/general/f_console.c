@@ -147,9 +147,6 @@ void f_console__draw(void)
     f_color__colorSetInternal(F_COLOR__PAL_BROWN1);
     f_draw_fill();
 
-    f_color_reset();
-    f_font_reset();
-
     f_font__fontSet(F_FONT__ID_KEYED);
     f_color_fillBlitSet(true);
 

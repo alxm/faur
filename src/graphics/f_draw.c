@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2017 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016-2017, 2019 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -20,15 +20,10 @@
 
 void f_draw_fill(void)
 {
-    f_color_push();
-    f_color_fillDrawSet(true);
-
-    f_draw_rectangle(f__screen.clipX,
-                     f__screen.clipY,
-                     f__screen.clipWidth,
-                     f__screen.clipHeight);
-
-    f_color_pop();
+    f_platform_api__drawRectangleFilled(f__screen.clipX,
+                                        f__screen.clipY,
+                                        f__screen.clipWidth,
+                                        f__screen.clipHeight);
 }
 
 void f_draw_pixel(int X, int Y)
