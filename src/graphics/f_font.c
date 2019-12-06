@@ -27,7 +27,6 @@
 
 typedef struct {
     const FFont* font;
-    FFontAlign align;
     int x, startX, y;
     int lineHeight;
     int wrapWidth, currentLineWidth;
@@ -111,7 +110,6 @@ void f_font_pop(void)
 void f_font_reset(void)
 {
     f_font__fontSet(F_FONT__ID_BLOCK);
-    f_font_alignSet(F_FONT_ALIGN_LEFT);
     f_font_coordsSet(0, 0);
     f_font_lineWrapSet(0);
 }
@@ -129,11 +127,6 @@ void f_font_fontSet(const FFont* Font)
 void f_font__fontSet(FFontId Font)
 {
     f_font_fontSet(g_defaultFonts[Font]);
-}
-
-void f_font_alignSet(FFontAlign Align)
-{
-    g_state.align = Align;
 }
 
 void f_font_coordsSet(int X, int Y)
@@ -179,12 +172,16 @@ void f_font_lineNew(void)
 
 static void drawString(const char* Text, ptrdiff_t Length)
 {
+    FAlign align = f__align;
+
+    f_align_set(F_ALIGN_X_LEFT, F_ALIGN_Y_TOP);
+
     const FSprite* chars = g_state.font;
     int charWidth = f_sprite_sizeGetWidth(chars);
 
-    if(g_state.align == F_FONT_ALIGN_MIDDLE) {
+    if(align.x == F_ALIGN_X_CENTER) {
         g_state.x -= (int)Length * charWidth / 2;
-    } else if(g_state.align == F_FONT_ALIGN_RIGHT) {
+    } else if(align.x == F_ALIGN_X_RIGHT) {
         g_state.x -= (int)Length * charWidth;
     }
 
@@ -192,6 +189,8 @@ static void drawString(const char* Text, ptrdiff_t Length)
         f_sprite_blit(chars, F__CHAR_INDEX(*Text), g_state.x, g_state.y);
         g_state.x += charWidth;
     }
+
+    f__align = align;
 }
 
 static void wrapString(const char* Text)
@@ -256,8 +255,6 @@ static void wrapString(const char* Text)
 
 void f_font_print(const char* Text)
 {
-    f_sprite_alignReset();
-
     if(g_state.wrapWidth > 0) {
         wrapString(Text);
 

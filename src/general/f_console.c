@@ -140,6 +140,7 @@ void f_console__draw(void)
         return;
     }
 
+    f_align_push();
     f_color_push();
     f_font_push();
 
@@ -152,7 +153,6 @@ void f_console__draw(void)
 
     {
         f_font_coordsSet(2, 2);
-        f_font_alignSet(F_FONT_ALIGN_LEFT);
 
         f_color__colorSetInternal(F_COLOR__PAL_GRAY1);
         f_font_print("F");
@@ -204,7 +204,7 @@ void f_console__draw(void)
     }
 
     {
-        f_font_alignSet(F_FONT_ALIGN_RIGHT);
+        f_align_set(F_ALIGN_X_RIGHT, F_ALIGN_Y_TOP);
         f_font_coordsSet(f__screen.pixels->size.x - 1, 2);
 
         f_color__colorSetInternal(F_COLOR__PAL_CHARTREUSE1);
@@ -253,6 +253,7 @@ void f_console__draw(void)
         #endif
     }
 
+    f_align_pop();
     f_color_pop();
     f_font_pop();
 }

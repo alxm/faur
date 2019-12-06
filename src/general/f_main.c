@@ -37,6 +37,7 @@ static const FPack* g_packs[] = {
     &f_pack__timer,
     &f_pack__input,
     &f_pack__screen,
+    &f_pack__align,
     &f_pack__color,
     &f_pack__fps,
     &f_pack__screenshot,

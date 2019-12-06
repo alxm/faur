@@ -34,9 +34,6 @@ typedef enum {
 #include "../graphics/f_color.p.h"
 #include "../math/f_fix.p.h"
 
-extern void f_sprite_alignSet(FSpriteAlign Align);
-extern void f_sprite_alignReset(void);
-
 extern FSprite* f_sprite_newFromPng(const char* Path, int X, int Y, int FrameWidth, int FrameHeight);
 extern FSprite* f_sprite_newFromSprite(const FSprite* Sheet, int X, int Y, int FrameWidth, int FrameHeight);
 extern FSprite* f_sprite_newBlank(int Width, int Height, unsigned Frames, bool ColorKeyed);

@@ -48,6 +48,7 @@ F_EXTERN_C_START
 #include "general/f_menu.p.h"
 #include "general/f_out.p.h"
 #include "general/f_state.p.h"
+#include "graphics/f_align.p.h"
 #include "graphics/f_color.p.h"
 #include "graphics/f_draw.p.h"
 #include "graphics/f_fade.p.h"
