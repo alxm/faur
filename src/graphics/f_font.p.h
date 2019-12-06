@@ -22,13 +22,6 @@
 
 typedef struct FSprite FFont;
 
-typedef enum {
-    F_FONT_ALIGN_INVALID = -1,
-    F_FONT_ALIGN_LEFT,
-    F_FONT_ALIGN_MIDDLE,
-    F_FONT_ALIGN_RIGHT,
-} FFontAlign;
-
 #include "../graphics/f_sprite.p.h"
 
 extern FFont* f_font_newFromPng(const char* Path, int X, int Y, int CharWidth, int CharHeight);
@@ -41,7 +34,6 @@ extern void f_font_pop(void);
 extern void f_font_reset(void);
 
 extern void f_font_fontSet(const FFont* Font);
-extern void f_font_alignSet(FFontAlign Align);
 
 extern void f_font_coordsSet(int X, int Y);
 extern int f_font_coordsGetX(void);

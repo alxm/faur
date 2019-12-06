@@ -140,8 +140,6 @@ void f_fade__draw(void)
         } break;
 
         case F__FADE_SCREENS: {
-            f_sprite_alignReset();
-
             f_color_alphaSet(
                 f_fix_toInt(f_fix_sinf(F_DEG_090_FIX - g_fade.angle)
                                 * F_COLOR_ALPHA_MAX));

@@ -92,20 +92,22 @@ void f_screen__tick(void)
                             ? "fullscreen" : "windowed");
         }
 
-        for(int z = 0; z < F__ZOOM_LEVELS; z++) {
-            if(f_button_pressGetOnce(g_zoomButtons[z])) {
-                int zoom = z + 1;
+        #if F_CONFIG_SCREEN_ZOOM_CAN_CHANGE
+            for(int z = 0; z < F__ZOOM_LEVELS; z++) {
+                if(f_button_pressGetOnce(g_zoomButtons[z])) {
+                    int zoom = z + 1;
 
-                if(f_platform_api__screenZoomGet() != zoom) {
-                    f_platform_api__screenZoomSet(zoom);
+                    if(f_platform_api__screenZoomGet() != zoom) {
+                        f_platform_api__screenZoomSet(zoom);
 
-                    f_out__info(
-                        "Screen zoom %d", f_platform_api__screenZoomGet());
+                        f_out__info(
+                            "Screen zoom %d", f_platform_api__screenZoomGet());
+                    }
+
+                    break;
                 }
-
-                break;
             }
-        }
+        #endif
     #endif
 }
 
@@ -123,7 +125,7 @@ void f_screen__draw(void)
 FColorPixel* f_screen_pixelsGetBuffer(void)
 {
     #if !F_CONFIG_RENDER_SOFTWARE
-        f_platform_api__screenTextureRead(f__screen.pixels, f__screen.frame);
+        f_platform_api__screenTextureSync();
     #endif
 
     return f_screen__bufferGetFrom(0, 0);
@@ -196,10 +198,7 @@ void f_screen_pop(void)
 
     #if !F_CONFIG_RENDER_SOFTWARE
         f_platform_api__screenTextureSet(f__screen.texture);
-        f_platform_api__screenClipSet(f__screen.clipX,
-                                      f__screen.clipY,
-                                      f__screen.clipWidth,
-                                      f__screen.clipHeight);
+        f_platform_api__screenClipSet();
     #endif
 }
 
@@ -226,7 +225,7 @@ void f_screen_clipSet(int X, int Y, int Width, int Height)
     f__screen.clipHeight = Height;
 
     #if !F_CONFIG_RENDER_SOFTWARE
-        f_platform_api__screenClipSet(X, Y, Width, Height);
+        f_platform_api__screenClipSet();
     #endif
 }
 
@@ -278,21 +277,6 @@ void f_screen__toSprite(FSprite* Sprite, unsigned Frame)
         f_pixels__copyFrame(
             f_sprite__pixelsGetc(Sprite), Frame, f__screen.pixels, 0);
     #else
-        f_color_push();
-        f_color_blendSet(F_COLOR_BLEND_PLAIN);
-        f_color_fillBlitSet(false);
-
-        f_platform_api__screenTextureSet(f_sprite__textureGet(Sprite, Frame));
-        f_platform_api__screenClipSet(0, 0, spriteSize.x, spriteSize.y);
-
-        f_platform_api__screenDraw();
-
-        f_platform_api__screenTextureSet(f__screen.texture);
-        f_platform_api__screenClipSet(f__screen.clipX,
-                                      f__screen.clipY,
-                                      f__screen.clipWidth,
-                                      f__screen.clipHeight);
-
-        f_color_pop();
+        f_platform_api__screenToTexture(f_sprite__textureGet(Sprite, Frame));
     #endif
 }

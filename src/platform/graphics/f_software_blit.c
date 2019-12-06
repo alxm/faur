@@ -95,14 +95,14 @@ static void scan_line(FScanlineEdge* Edge, FVectorInt ScrP1, FVectorInt ScrP2, F
 #define F__FUNC_NAME_EX F_GLUE4(f_blitEx__, F__BLEND, F__FILL, F__COLORKEY)
 #define F__PIXEL_DRAW(Dst) F_GLUE2(f_color__draw_, F__BLEND)(Dst F__PIXEL_PARAMS)
 
-#define F__BLEND plain
+#define F__BLEND solid
 #define F__FILL Data
 #define F__BLEND_SETUP
 #define F__PIXEL_SETUP
 #define F__PIXEL_PARAMS , *src
 #include "f_software_blit.inc.c"
 
-#define F__BLEND plain
+#define F__BLEND solid
 #define F__FILL Flat
 #define F__BLEND_SETUP const FColorPixel color = f__color.pixel;
 #define F__PIXEL_SETUP
@@ -248,7 +248,7 @@ static void scan_line(FScanlineEdge* Edge, FVectorInt ScrP1, FVectorInt ScrP2, F
 
 // [Blend][Fill][ColorKey][Clip]
 static const FBlitter g_blitters[F_COLOR_BLEND_NUM][2][2][2] = {
-    F__INIT_BLEND(F_COLOR_BLEND_PLAIN, plain)
+    F__INIT_BLEND(F_COLOR_BLEND_SOLID, solid)
     F__INIT_BLEND(F_COLOR_BLEND_ALPHA, alpha)
     #if F__OPTIMIZE_ALPHA
         F__INIT_BLEND(F_COLOR_BLEND_ALPHA_25, alpha25)
@@ -273,7 +273,7 @@ static const FBlitter g_blitters[F_COLOR_BLEND_NUM][2][2][2] = {
 
 // [Blend][Fill][ColorKey]
 static const FBlitterEx g_blittersEx[F_COLOR_BLEND_NUM][2][2] = {
-    F__INIT_BLEND_EX(F_COLOR_BLEND_PLAIN, plain)
+    F__INIT_BLEND_EX(F_COLOR_BLEND_SOLID, solid)
     F__INIT_BLEND_EX(F_COLOR_BLEND_ALPHA, alpha)
     #if F__OPTIMIZE_ALPHA
         F__INIT_BLEND_EX(F_COLOR_BLEND_ALPHA_25, alpha25)

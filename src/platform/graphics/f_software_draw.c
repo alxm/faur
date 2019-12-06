@@ -195,7 +195,7 @@ do {                                                                        \
 #define F__FUNC_NAME(Name) F_GLUE4(f_draw__, Name, _, F__BLEND)
 #define F__PIXEL_DRAW(Dst) F_GLUE2(f_color__draw_, F__BLEND)(Dst F__PIXEL_PARAMS)
 
-#define F__BLEND plain
+#define F__BLEND solid
 #define F__BLEND_SETUP const FColorPixel color = f__color.pixel;
 #define F__PIXEL_PARAMS , color
 #include "f_software_draw.inc.c"
@@ -274,7 +274,7 @@ static const struct {
     FDrawRectangle rectangle[2]; // [Fill]
     FDrawCircle circle[2][2]; // [Clip][Fill]
 } g_draw[F_COLOR_BLEND_NUM] = {
-    F__INIT_BLEND(F_COLOR_BLEND_PLAIN, plain)
+    F__INIT_BLEND(F_COLOR_BLEND_SOLID, solid)
     F__INIT_BLEND(F_COLOR_BLEND_ALPHA, alpha)
     #if F__OPTIMIZE_ALPHA
         F__INIT_BLEND(F_COLOR_BLEND_ALPHA_25, alpha25)

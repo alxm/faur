@@ -134,19 +134,24 @@ void f_sound__draw(void)
             return;
         }
 
+        #define F__VOL_Y 181
+        #define F__VOL_W 128
+        #define F__VOL_H 16
+
         f_color_push();
-        f_color_blendSet(F_COLOR_BLEND_PLAIN);
+        f_color_blendSet(F_COLOR_BLEND_ALPHA_75);
 
         f_color__colorSetInternal(F_COLOR__PAL_BROWN2);
-        f_draw_rectangle(0, 181, g_volumeMax / F__VOLUME_STEP + 5, 16);
+        f_draw_rectangle(0, F__VOL_Y, F__VOL_W, F__VOL_H);
 
         f_color__colorSetInternal(F_COLOR__PAL_BLUE1);
-        f_draw_hline(0, g_volumeMax / F__VOLUME_STEP + 4, 180);
-        f_draw_hline(0, g_volumeMax / F__VOLUME_STEP + 4, 183 + 14);
-        f_draw_vline(g_volumeMax / F__VOLUME_STEP + 4 + 1, 181, 183 + 13);
+        f_draw_hline(0, F__VOL_W - 1, F__VOL_Y - 1);
+        f_draw_hline(0, F__VOL_W - 1, F__VOL_Y + F__VOL_H);
+        f_draw_vline(F__VOL_W, F__VOL_Y, F__VOL_Y + F__VOL_H - 1);
 
         f_color__colorSetInternal(F_COLOR__PAL_CHARTREUSE1);
-        f_draw_rectangle(0, 186, g_volume / F__VOLUME_STEP, 6);
+        f_draw_rectangle(
+            0, F__VOL_Y + 4, (F__VOL_W - 4) * g_volume / g_volumeMax, 8);
 
         f_color_pop();
     #endif
