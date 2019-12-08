@@ -30,38 +30,11 @@
 static int g_argsNum;
 static const char** g_args;
 
-static const FPack* g_packs[] = {
-    &f_pack__console,
-    &f_pack__embed,
-    &f_pack__platform,
-    &f_pack__timer,
-    &f_pack__input,
-    &f_pack__screen,
-    &f_pack__align,
-    &f_pack__color,
-    &f_pack__fps,
-    &f_pack__screenshot,
-    &f_pack__sound,
-    &f_pack__random,
-    &f_pack__fix,
-    &f_pack__state,
-    &f_pack__ecs,
-    &f_pack__fade,
-    &f_pack__font,
-};
-
 static void f__atexit(void)
 {
     f_out__info("Running atexit");
 
-    for(unsigned pass = F_PACK__PASSES_NUM; pass--; ) {
-        for(unsigned pack = F_ARRAY_LEN(g_packs); pack--; ) {
-            if(g_packs[pack]->uninit[pass]) {
-                f_out__info("[%s] Uninit pass %d", g_packs[pack]->name, pass);
-                g_packs[pack]->uninit[pass]();
-            }
-        }
-    }
+    f_init__uninit();
 
     #if F_CONFIG_SYSTEM_GP2X || F_CONFIG_SYSTEM_WIZ || F_CONFIG_SYSTEM_CAANOO
         #if F_CONFIG_SYSTEM_GP2X_MENU
@@ -108,14 +81,7 @@ void f__main(void)
         f_out__error("Cannot register atexit callback");
     }
 
-    for(unsigned pass = 0; pass < F_PACK__PASSES_NUM; pass++) {
-        for(unsigned pack = 0; pack < F_ARRAY_LEN(g_packs); pack++) {
-            if(g_packs[pack]->init[pass]) {
-                f_out__info("[%s] Init pass %d", g_packs[pack]->name, pass);
-                g_packs[pack]->init[pass]();
-            }
-        }
-    }
+    f_init__init();
 
     f_out__info("f_main start");
     f_main();

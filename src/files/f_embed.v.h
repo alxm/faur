@@ -32,7 +32,7 @@ typedef struct {
     uint8_t buffer[1];
 } FEmbeddedFile;
 
-#include "../general/f_main.v.h"
+#include "../general/f_init.v.h"
 
 extern const FPack f_pack__embed;
 

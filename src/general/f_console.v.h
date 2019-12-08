@@ -20,7 +20,7 @@
 
 #include "f_console.p.h"
 
-#include "../general/f_main.v.h"
+#include "../general/f_init.v.h"
 #include "../general/f_out.v.h"
 
 extern const FPack f_pack__console;
