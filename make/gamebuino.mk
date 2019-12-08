@@ -63,7 +63,6 @@ CXXFLAGS += -fno-lto
 LDFLAGS += -fno-lto
 
 F_FILES_CONFIG := \
-    $(F_DIR_GEN)/sketch/config-faur.h \
     $(F_DIR_GEN)/sketch/config-gamebuino.h \
 
 $(USER_LIB_OBJS) $(LOCAL_OBJS) : $(F_FILES_CONFIG)
