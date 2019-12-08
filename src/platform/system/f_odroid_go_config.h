@@ -21,11 +21,11 @@
 //#include <sketch/config-faur.h>
 
 #ifndef F_CONFIG_APP_AUTHOR
-#define F_CONFIG_APP_AUTHOR "you"
+#define F_CONFIG_APP_AUTHOR "Unknown"
 #endif
 
 #ifndef F_CONFIG_APP_DIR
-#define F_CONFIG_APP_DIR "untitled"
+#define F_CONFIG_APP_DIR "Untitled"
 #endif
 
 #ifndef F_CONFIG_APP_NAME
