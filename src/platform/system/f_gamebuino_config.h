@@ -27,10 +27,6 @@
 #define F_CONFIG_APP_AUTHOR "Unknown"
 #endif
 
-#ifndef F_CONFIG_APP_DIR
-#define F_CONFIG_APP_DIR "Untitled"
-#endif
-
 #ifndef F_CONFIG_APP_NAME
 #define F_CONFIG_APP_NAME "Untitled"
 #endif
@@ -164,7 +160,7 @@
 // which sets all the Gamebuino_META options it needs.
 
 #undef FOLDER_NAME
-#define FOLDER_NAME F_CONFIG_APP_DIR
+#define FOLDER_NAME F_CONFIG_APP_NAME
 
 #undef DISPLAY_MODE
 #define DISPLAY_MODE DISPLAY_MODE_RGB565

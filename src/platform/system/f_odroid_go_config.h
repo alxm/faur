@@ -24,10 +24,6 @@
 #define F_CONFIG_APP_AUTHOR "Unknown"
 #endif
 
-#ifndef F_CONFIG_APP_DIR
-#define F_CONFIG_APP_DIR "Untitled"
-#endif
-
 #ifndef F_CONFIG_APP_NAME
 #define F_CONFIG_APP_NAME "Untitled"
 #endif
