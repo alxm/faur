@@ -69,12 +69,14 @@ int main(int Argc, char* Argv[])
 
 void f__main(void)
 {
+    f_init();
+
     f_out__info("PID: %d", getpid());
     f_out__info("Faur: %s %s", F_CONFIG_BUILD_UID, F_CONFIG_BUILD_FAUR_GIT);
     f_out__info("App: %s %s by %s",
-                F_CONFIG_APP_NAME,
-                F_CONFIG_APP_VERSION_STRING,
-                F_CONFIG_APP_AUTHOR);
+                f_init__app_name,
+                f_init__app_version,
+                f_init__app_author);
     f_out__info("Build timestamp: %s", F_CONFIG_BUILD_FAUR_TIME);
 
     if(atexit(f__atexit)) {
@@ -83,9 +85,7 @@ void f__main(void)
 
     f_init__init();
 
-    f_out__info("f_main start");
     f_main();
-    f_out__info("f_main end");
 }
 
 int f_main_argsNumGet(void)

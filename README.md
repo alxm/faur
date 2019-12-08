@@ -48,6 +48,11 @@ Here are the generated source files:
 
 FStateHandler drawBox;
 
+void f_init(void)
+{
+    f_init_app("hello", "you", 1, 0, 0);
+}
+
 void f_main(void)
 {
     f_state_push(drawBox);
@@ -123,12 +128,7 @@ void drawBox(void)
 #### Makefile
 
 ```make
-F_CONFIG_APP_AUTHOR := you
 F_CONFIG_APP_NAME := hello
-
-F_CONFIG_APP_VERSION_MAJOR := 1
-F_CONFIG_APP_VERSION_MINOR := 0
-F_CONFIG_APP_VERSION_MICRO := 0
 
 include $(FAUR_PATH)/make/dev.mk
 ```

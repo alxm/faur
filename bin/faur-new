@@ -48,21 +48,21 @@ def main():
 
     dir_make.write_file('Makefile',
 """\
-F_CONFIG_APP_AUTHOR := {author}
 F_CONFIG_APP_NAME := {name}
 
-F_CONFIG_APP_VERSION_MAJOR := 1
-F_CONFIG_APP_VERSION_MINOR := 0
-F_CONFIG_APP_VERSION_MICRO := 0
-
 include $(FAUR_PATH)/make/dev.mk
-""".format(author = author, name = project_name))
+""".format(name = project_name))
 
     dir_source.write_file('main.c',
 """\
 #include <faur.h>
 
 FStateHandler drawBox;
+
+void f_init(void)
+{{
+    f_init_app("{name}", "{author}", 1, 0, 0);
+}}
 
 void f_main(void)
 {{
@@ -134,7 +134,7 @@ void drawBox(void)
         f_button_free(context.right);
     }}
 }}
-""".format())
+""".format(author = author, name = project_name))
 
     dir_root.write_file('.gitignore',
 """\

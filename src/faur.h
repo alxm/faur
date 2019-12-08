@@ -44,6 +44,7 @@ F_EXTERN_C_START
 #include "files/f_path.p.h"
 #include "general/f_console.p.h"
 #include "general/f_fps.p.h"
+#include "general/f_init.p.h"
 #include "general/f_main.p.h"
 #include "general/f_menu.p.h"
 #include "general/f_out.p.h"
