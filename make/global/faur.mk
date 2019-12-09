@@ -33,4 +33,4 @@ $(FAUR_DIR_OBJ)/%.cpp.o : $(FAUR_DIR_SRC)/%.cpp
 	$(CXX) -c -o $@ $< $(FAUR_GENERIC_FLAGS_CPP)
 
 $(FAUR_FILE_EDITOR_TAGS) : $(FAUR_FILES_PUBLIC_FAUR_HEADERS)
-	test ! -d $(@D) || CFLAGS="$(F_CONFIG_BUILD_FLAGS_SHARED)" geany -g $@ $^
+	test ! -d $(@D) || CFLAGS="$(F_CONFIG_BUILD_FLAGS_SETTINGS)" geany -g $@ $^
