@@ -23,5 +23,6 @@
 extern void f_init(void);
 
 extern void f_init_app(const char* Name, const char* Author, uint8_t VerMajor, uint8_t VerMinor, uint8_t VerMicro);
+extern void f_init_fps(unsigned TickRate, unsigned DrawRate);
 
 #endif // F_INC_GENERAL_INIT_P_H
