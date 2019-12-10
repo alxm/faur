@@ -27,7 +27,7 @@ typedef enum {
     F_FONT__ID_NUM
 } FFontId;
 
-#include "../general/f_main.v.h"
+#include "../general/f_init.v.h"
 
 extern const FPack f_pack__font;
 

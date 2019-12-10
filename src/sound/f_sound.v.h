@@ -20,7 +20,7 @@
 
 #include "../sound/f_sound.p.h"
 
-#include "../general/f_main.v.h"
+#include "../general/f_init.v.h"
 
 extern const FPack f_pack__sound;
 

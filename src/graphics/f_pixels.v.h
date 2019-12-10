@@ -22,7 +22,7 @@
 
 typedef struct FPixels FPixels;
 
-#include "../general/f_main.v.h"
+#include "../general/f_init.v.h"
 #include "../graphics/f_color.v.h"
 #include "../math/f_fix.v.h"
 

@@ -22,11 +22,7 @@
 
 #include "../math/f_fix.p.h"
 
-static inline unsigned f_fps_rateTickGet(void)
-{
-    return F_CONFIG_FPS_RATE_TICK;
-}
-
+extern unsigned f_fps_rateTickGet(void);
 extern unsigned f_fps_rateDrawGet(void);
 extern unsigned f_fps_rateDrawGetMax(void);
 

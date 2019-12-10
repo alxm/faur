@@ -18,19 +18,22 @@
 #include "f_fps.v.h"
 #include <faur.v.h>
 
-static const struct {
+static struct {
     unsigned tickFrameMs;
     unsigned drawFrameMs;
-} g_settings = {
-    1000 / F_CONFIG_FPS_RATE_TICK,
-    1000 / F_CONFIG_FPS_RATE_DRAW,
-};
+} g_settings;
+
+#if F_CONFIG_SYSTEM_GAMEBUINO
+    #define F__HISTORY_LEN 1
+#else
+    #define F__HISTORY_LEN 128
+#endif
 
 static struct {
     unsigned head;
-    unsigned drawFrameMs[F_CONFIG_FPS_HISTORY];
+    unsigned drawFrameMs[F__HISTORY_LEN];
     unsigned drawFrameMsSum;
-    unsigned drawFrameMsMin[F_CONFIG_FPS_HISTORY];
+    unsigned drawFrameMsMin[F__HISTORY_LEN];
     unsigned drawFrameMsMinSum;
 } g_history;
 
@@ -44,6 +47,9 @@ static struct {
 
 static void f_fps__init(void)
 {
+    g_settings.tickFrameMs = 1000 / f_init__fps_tick;
+    g_settings.drawFrameMs = 1000 / f_init__fps_draw;
+
     f_fps__reset();
 }
 
@@ -59,16 +65,15 @@ const FPack f_pack__fps = {
 
 void f_fps__reset(void)
 {
-    g_run.drawFps = F_CONFIG_FPS_RATE_DRAW;
+    g_run.drawFps = f_init__fps_draw;
     g_run.drawFpsMax = g_run.drawFps;
 
-    for(int i = F_CONFIG_FPS_HISTORY; i--; ) {
+    for(int i = F__HISTORY_LEN; i--; ) {
         g_history.drawFrameMs[i] = g_settings.drawFrameMs;
         g_history.drawFrameMsMin[i] = g_settings.drawFrameMs;
     }
 
-    g_history.drawFrameMsSum = F_CONFIG_FPS_HISTORY * 1000
-                                / F_CONFIG_FPS_RATE_DRAW;
+    g_history.drawFrameMsSum = F__HISTORY_LEN * 1000 / f_init__fps_draw;
     g_history.drawFrameMsMinSum = g_history.drawFrameMsSum;
 
     g_run.lastFrameMs = f_time_getMs();
@@ -97,8 +102,7 @@ void f_fps__frame(void)
         g_history.drawFrameMsMin[g_history.head] = elapsedMs;
         g_history.drawFrameMsMinSum += elapsedMs;
 
-        g_run.drawFpsMax = F_CONFIG_FPS_HISTORY * 1000
-                            / g_history.drawFrameMsMinSum;
+        g_run.drawFpsMax = F__HISTORY_LEN * 1000 / g_history.drawFrameMsMinSum;
     }
 
     if(!f_platform_api__screenVsyncGet()) {
@@ -114,10 +118,11 @@ void f_fps__frame(void)
         g_history.drawFrameMsSum -= g_history.drawFrameMs[g_history.head];
         g_history.drawFrameMs[g_history.head] = elapsedMs;
         g_history.drawFrameMsSum += g_history.drawFrameMs[g_history.head];
-        g_run.drawFps = F_CONFIG_FPS_HISTORY * 1000 / g_history.drawFrameMsSum;
+
+        g_run.drawFps = F__HISTORY_LEN * 1000 / g_history.drawFrameMsSum;
     }
 
-    g_history.head = (g_history.head + 1) % F_CONFIG_FPS_HISTORY;
+    g_history.head = (g_history.head + 1) % F__HISTORY_LEN;
 
     g_run.lastFrameMs = nowMs;
 
@@ -129,6 +134,11 @@ void f_fps__frame(void)
     #else
         g_run.tickCreditMs += elapsedMs;
     #endif
+}
+
+unsigned f_fps_rateTickGet(void)
+{
+    return f_init__fps_tick;
 }
 
 unsigned f_fps_rateDrawGet(void)
@@ -159,5 +169,5 @@ FFix f_fps_ticksSin(uint8_t Mul, uint8_t Div, unsigned Offset)
         param /= Div;
     }
 
-    return f_fix_sin((unsigned)(param / F_CONFIG_FPS_RATE_TICK) + Offset);
+    return f_fix_sin((unsigned)(param / f_init__fps_tick) + Offset);
 }

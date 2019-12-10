@@ -155,7 +155,7 @@ const FPack f_pack__{name} = {{
 
 #include "f_{name}.p.h"
 
-#include "{root}general/f_main.v.h"
+#include "{root}general/f_init.v.h"
 
 extern const FPack f_pack__{name};
 

@@ -36,7 +36,6 @@ typedef struct {
 } FColorState;
 
 typedef enum {
-    F_COLOR__PAL_INVALID = -1,
     F_COLOR__PAL_BROWN1,
     F_COLOR__PAL_BROWN2,
     F_COLOR__PAL_GRAY1,
@@ -50,7 +49,7 @@ typedef enum {
     F_COLOR__PAL_NUM
 } FColorPaletteInternal;
 
-#include "../general/f_main.v.h"
+#include "../general/f_init.v.h"
 #include "../math/f_math.v.h"
 
 extern const FPack f_pack__color;

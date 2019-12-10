@@ -339,9 +339,8 @@ void f_platform_api__screenInit(void)
     f_out__info("V-sync is %s", g_vsync ? "on" : "off");
 
     #if F_CONFIG_TRAIT_DESKTOP
-        const char* caption = f_str__fmt512("%s %s",
-                                            F_CONFIG_APP_NAME,
-                                            F_CONFIG_APP_VERSION_STRING);
+        const char* caption =
+            f_str__fmt512("%s %s", f_init__app_name, f_init__app_version);
 
         #if F_CONFIG_LIB_SDL == 1
             SDL_WM_SetCaption(caption, NULL);

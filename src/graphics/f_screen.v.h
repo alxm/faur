@@ -22,7 +22,7 @@
 
 typedef struct FScreen FScreen;
 
-#include "../general/f_main.v.h"
+#include "../general/f_init.v.h"
 #include "../graphics/f_sprite.v.h"
 
 struct FScreen {

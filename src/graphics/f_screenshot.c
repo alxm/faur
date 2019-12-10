@@ -64,19 +64,19 @@ static bool lazy_init(void)
     if(g_isInit) {
         g_filePrefix = f_str_dup(f_str__fmt512("%s/%s-",
                                                F_CONFIG_DIR_SCREENSHOTS,
-                                               F_CONFIG_APP_NAME));
+                                               f_init__app_name));
 
         g_title = f_str_dup(f_str__fmt512(
             "%s %s by %s",
-            F_CONFIG_APP_NAME,
-            F_CONFIG_APP_VERSION_STRING,
-            F_CONFIG_APP_AUTHOR));
+            f_init__app_name,
+            f_init__app_version,
+            f_init__app_author));
 
         g_description = f_str_dup(f_str__fmt512(
             "%s %s by %s, built %s. Using Faur %s %s.",
-            F_CONFIG_APP_NAME,
-            F_CONFIG_APP_VERSION_STRING,
-            F_CONFIG_APP_AUTHOR,
+            f_init__app_name,
+            f_init__app_version,
+            f_init__app_author,
             F_CONFIG_BUILD_FAUR_TIME,
             F_CONFIG_BUILD_UID,
             F_CONFIG_BUILD_FAUR_GIT));

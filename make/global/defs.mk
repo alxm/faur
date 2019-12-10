@@ -10,6 +10,9 @@ F_CONFIG_BUILD_PLATFORM := \
 FAUR_DIR_ROOT := $(realpath $(FAUR_PATH))
 FAUR_DIR_SRC := $(FAUR_DIR_ROOT)/src
 
+FAUR_INFO_COMPILE_TIME := $(shell date "+%Y-%m-%d\ %H:%M:%S")
+FAUR_INFO_GIT_HASH := $(shell cd $(FAUR_PATH) && git rev-parse --verify HEAD)
+
 #
 # From <project>/build/make/ to <project>
 #

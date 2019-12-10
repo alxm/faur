@@ -25,9 +25,10 @@ typedef struct FSystem FSystem;
 #include "../data/f_bitfield.v.h"
 #include "../data/f_list.v.h"
 
+extern void f_system__init(void);
 extern void f_system__uninit(void);
 
-extern FSystem* f_system__get(int SystemIndex);
+extern FSystem* f_system__get(unsigned SystemIndex);
 
 extern FListNode* f_system__entityAdd(const FSystem* System, FEntity* Entity);
 extern const FBitfield* f_system__componentBitsGet(const FSystem* System);

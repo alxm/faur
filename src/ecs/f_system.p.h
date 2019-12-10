@@ -25,9 +25,9 @@
 typedef void FSystemHandler(FEntity* Entity);
 typedef int FSystemSort(FEntity* A, FEntity* B);
 
-extern void f_system_new(int SystemIndex, FSystemHandler* Handler, FSystemSort* Compare, bool OnlyActiveEntities);
-extern void f_system_add(int SystemIndex, int ComponentIndex);
+extern void f_system_new(unsigned SystemIndex, FSystemHandler* Handler, FSystemSort* Compare, bool OnlyActiveEntities);
+extern void f_system_add(unsigned SystemIndex, unsigned ComponentIndex);
 
-extern void f_system_run(int SystemIndex);
+extern void f_system_run(unsigned SystemIndex);
 
 #endif // F_INC_ECS_SYSTEM_P_H

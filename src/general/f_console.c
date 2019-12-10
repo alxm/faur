@@ -174,9 +174,9 @@ void f_console__draw(void)
 
         f_color__colorSetInternal(F_COLOR__PAL_GRAY2);
         f_font_printf("%s %s by %s\n",
-                      F_CONFIG_APP_NAME,
-                      F_CONFIG_APP_VERSION_STRING,
-                      F_CONFIG_APP_AUTHOR);
+                      f_init__app_name,
+                      f_init__app_version,
+                      f_init__app_author);
     }
 
     {
@@ -248,9 +248,7 @@ void f_console__draw(void)
             printBytes(f_mem__top, "top");
         #endif
 
-        #if F_CONFIG_ECS_ENABLED
-            f_font_printf("%u entities", f_ecs__listGetSum());
-        #endif
+        f_font_printf("%u entities", f_ecs__listGetSum());
     }
 
     f_align_pop();

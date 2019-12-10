@@ -28,7 +28,6 @@ extern "C" {
 void setup(void)
 {
     gb.begin();
-    gb.setFrameRate(F_CONFIG_FPS_RATE_TICK);
 
     SerialUSB.begin(9600);
 
@@ -41,6 +40,8 @@ void setup(void)
     #endif
 
     f__main();
+
+    gb.setFrameRate(f_init__fps_tick);
 }
 
 void loop(void)

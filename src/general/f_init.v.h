@@ -15,20 +15,30 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef F_INC_GRAPHICS_PALETTE_P_H
-#define F_INC_GRAPHICS_PALETTE_P_H
+#ifndef F_INC_GENERAL_INIT_V_H
+#define F_INC_GENERAL_INIT_V_H
 
-#include "../general/f_system_includes.h"
+#include "f_init.p.h"
 
-typedef struct FPalette FPalette;
+#define F_PACK__PASSES_NUM 2
+#define F_INIT__VERSION_LEN (sizeof("255.255.255"))
 
-#include "../graphics/f_sprite.p.h"
+typedef void FPackInit(void);
+typedef void FPackUninit(void);
 
-extern FPalette* f_palette_newFromPng(const char* Path);
-extern FPalette* f_palette_newFromSprite(const FSprite* Sprite);
-extern void f_palette_free(FPalette* Palette);
+typedef struct {
+    const char* name;
+    FPackInit* init[F_PACK__PASSES_NUM];
+    FPackUninit* uninit[F_PACK__PASSES_NUM];
+} FPack;
 
-extern FColorPixel f_palette_getPixel(const FPalette* Palette, unsigned Index);
-extern FColorRgb f_palette_getRgb(const FPalette* Palette, unsigned Index);
+extern const char* f_init__app_name;
+extern const char* f_init__app_author;
+extern char f_init__app_version[F_INIT__VERSION_LEN];
+extern unsigned f_init__fps_tick, f_init__fps_draw;
+extern unsigned f_init__ecs_com, f_init__ecs_sys;
 
-#endif // F_INC_GRAPHICS_PALETTE_P_H
+extern void f_init__init(void);
+extern void f_init__uninit(void);
+
+#endif // F_INC_GENERAL_INIT_V_H

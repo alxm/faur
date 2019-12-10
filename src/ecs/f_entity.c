@@ -18,7 +18,6 @@
 #include "f_entity.v.h"
 #include <faur.v.h>
 
-#if F_CONFIG_ECS_ENABLED
 struct FEntity {
     char* id; // specified name for debugging
     const FTemplate* template; // template used to init this entity's components
@@ -34,16 +33,16 @@ struct FEntity {
     int references; // if >0, then the entity lingers in the removed limbo list
     int muteCount; // if >0, then the entity isn't picked up by any systems
     FEntityFlags flags; // various properties
-    FComponentInstance* componentsTable[F_CONFIG_ECS_COM_NUM]; // Comp, or NULL
+    FComponentInstance* componentsTable[]; // [f_init__ecs_com] Buffer, or NULL
 };
 
-static FComponentInstance* componentAdd(FEntity* Entity, int ComponentIndex, const FComponent* Component, const void* TemplateData)
+static FComponentInstance* componentAdd(FEntity* Entity, unsigned ComponentIndex, const FComponent* Component, const void* TemplateData)
 {
     FComponentInstance* c = f_component__instanceNew(
                                 Component, Entity, TemplateData);
 
     Entity->componentsTable[ComponentIndex] = c;
-    f_bitfield_set(Entity->componentBits, (unsigned)ComponentIndex);
+    f_bitfield_set(Entity->componentBits, ComponentIndex);
 
     return c;
 }
@@ -67,7 +66,9 @@ static inline void listMoveTo(FEntity* Entity, FEcsListId List)
 
 FEntity* f_entity_new(const char* Template, const void* Context)
 {
-    FEntity* e = f_mem_zalloc(sizeof(FEntity));
+    FEntity* e = f_mem_zalloc(
+                    sizeof(FEntity)
+                        + sizeof(FComponentInstance*) * f_init__ecs_com);
 
     listAddTo(e, F_ECS__NEW);
 
@@ -75,7 +76,7 @@ FEntity* f_entity_new(const char* Template, const void* Context)
     e->matchingSystemsRest = f_list_new();
     e->systemNodesActive = f_list_new();
     e->systemNodesEither = f_list_new();
-    e->componentBits = f_bitfield_new(F_CONFIG_ECS_COM_NUM);
+    e->componentBits = f_bitfield_new(f_init__ecs_com);
     e->lastActive = f_fps_ticksGet() - 1;
 
     FCollection* collection = f_collection__get();
@@ -93,7 +94,7 @@ FEntity* f_entity_new(const char* Template, const void* Context)
         e->id = f_str_dup(id);
         e->template = template;
 
-        for(int c = F_CONFIG_ECS_COM_NUM; c--; ) {
+        for(unsigned c = f_init__ecs_com; c--; ) {
             if(f_template__componentHas(template, c)) {
                 componentAdd(e,
                              c,
@@ -129,7 +130,7 @@ void f_entity__free(FEntity* Entity)
     f_list_freeEx(Entity->systemNodesActive, (FFree*)f_list_removeNode);
     f_list_freeEx(Entity->systemNodesEither, (FFree*)f_list_removeNode);
 
-    for(int c = F_CONFIG_ECS_COM_NUM; c--; ) {
+    for(unsigned c = f_init__ecs_com; c--; ) {
         f_component__instanceFree(Entity->componentsTable[c]);
     }
 
@@ -356,7 +357,7 @@ void f_entity_activeSetPermanent(FEntity* Entity)
     F_FLAGS_SET(Entity->flags, F_ENTITY__ACTIVE_PERMANENT);
 }
 
-void* f_entity_componentAdd(FEntity* Entity, int ComponentIndex)
+void* f_entity_componentAdd(FEntity* Entity, unsigned ComponentIndex)
 {
     const FComponent* component = f_component__get(ComponentIndex);
 
@@ -383,7 +384,7 @@ void* f_entity_componentAdd(FEntity* Entity, int ComponentIndex)
     return componentAdd(Entity, ComponentIndex, component, NULL)->buffer;
 }
 
-bool f_entity_componentHas(const FEntity* Entity, int ComponentIndex)
+bool f_entity_componentHas(const FEntity* Entity, unsigned ComponentIndex)
 {
     #if F_CONFIG_BUILD_DEBUG
         f_component__get(ComponentIndex);
@@ -392,7 +393,7 @@ bool f_entity_componentHas(const FEntity* Entity, int ComponentIndex)
     return Entity->componentsTable[ComponentIndex] != NULL;
 }
 
-void* f_entity_componentGet(const FEntity* Entity, int ComponentIndex)
+void* f_entity_componentGet(const FEntity* Entity, unsigned ComponentIndex)
 {
     #if F_CONFIG_BUILD_DEBUG
         f_component__get(ComponentIndex);
@@ -403,7 +404,7 @@ void* f_entity_componentGet(const FEntity* Entity, int ComponentIndex)
     return instance ? instance->buffer : NULL;
 }
 
-void* f_entity_componentReq(const FEntity* Entity, int ComponentIndex)
+void* f_entity_componentReq(const FEntity* Entity, unsigned ComponentIndex)
 {
     #if F_CONFIG_BUILD_DEBUG
         f_component__get(ComponentIndex);
@@ -586,4 +587,3 @@ void f_entity__systemsRemoveFromActive(FEntity* Entity)
         f_entity_removedSet(Entity);
     }
 }
-#endif // F_CONFIG_ECS_ENABLED

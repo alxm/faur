@@ -31,7 +31,7 @@ typedef enum {
 } FEcsListId;
 
 #include "../data/f_list.v.h"
-#include "../general/f_main.v.h"
+#include "../general/f_init.v.h"
 
 extern const FPack f_pack__ecs;
 

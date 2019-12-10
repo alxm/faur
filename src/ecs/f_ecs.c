@@ -18,7 +18,6 @@
 #include "f_ecs.v.h"
 #include <faur.v.h>
 
-#if F_CONFIG_ECS_ENABLED
 static FList* g_lists[F_ECS__NUM]; // Each entity is in exactly one of these
 static bool g_ignoreRefDec; // Set to prevent using freed entities
 
@@ -29,6 +28,7 @@ static void f_ecs__init(void)
     }
 
     f_component__init();
+    f_system__init();
     f_template__init();
 }
 
@@ -87,7 +87,7 @@ void f_ecs__tick(void)
 
     // Check what systems the new entities match
     F_LIST_ITERATE(g_lists[F_ECS__NEW], FEntity*, e) {
-        for(int s = F_CONFIG_ECS_SYS_NUM; s--; ) {
+        for(unsigned s = f_init__ecs_sys; s--; ) {
             f_entity__systemsMatch(e, f_system__get(s));
         }
 
@@ -115,10 +115,3 @@ void f_ecs__flushEntitiesFromSystems(void)
 
     f_list_clear(g_lists[F_ECS__FLUSH]);
 }
-#else // !F_CONFIG_ECS_ENABLED
-const FPack f_pack__ecs;
-
-void f_ecs__tick(void)
-{
-}
-#endif // !F_CONFIG_ECS_ENABLED
