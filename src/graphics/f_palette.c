@@ -107,22 +107,22 @@ void f_palette_free(FPalette* Palette)
     f_mem_free(Palette);
 }
 
-FColorPixel f_palette_getPixel(const FPalette* Palette, int Index)
+FColorPixel f_palette_getPixel(const FPalette* Palette, unsigned Index)
 {
     #if F_CONFIG_BUILD_DEBUG
-        if(Index < 0 || Index >= (int)Palette->size) {
-            F__FATAL("f_palette_getPixel(%d): Invalid index", Index);
+        if(Index >= Palette->size) {
+            F__FATAL("f_palette_getPixel(%u): Invalid index", Index);
         }
     #endif
 
     return Palette->entries[Index].pixel;
 }
 
-FColorRgb f_palette_getRgb(const FPalette* Palette, int Index)
+FColorRgb f_palette_getRgb(const FPalette* Palette, unsigned Index)
 {
     #if F_CONFIG_BUILD_DEBUG
-        if(Index < 0 || Index >= (int)Palette->size) {
-            F__FATAL("f_palette_getRgb(%d): Invalid index", Index);
+        if(Index >= Palette->size) {
+            F__FATAL("f_palette_getRgb(%u): Invalid index", Index);
         }
     #endif
 

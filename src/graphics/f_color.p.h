@@ -171,7 +171,7 @@ extern void f_color_colorSetRgb(int Red, int Green, int Blue);
 extern void f_color_colorSetRgba(int Red, int Green, int Blue, int Alpha);
 extern void f_color_colorSetHex(uint32_t Hexcode);
 extern void f_color_colorSetPixel(FColorPixel Pixel);
-extern void f_color_colorSetIndex(int ColorIndex);
+extern void f_color_colorSetIndex(unsigned ColorIndex);
 
 extern void f_color_fillBlitSet(bool Fill);
 extern void f_color_fillDrawSet(bool Fill);

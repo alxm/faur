@@ -28,7 +28,7 @@ extern FPalette* f_palette_newFromPng(const char* Path);
 extern FPalette* f_palette_newFromSprite(const FSprite* Sprite);
 extern void f_palette_free(FPalette* Palette);
 
-extern FColorPixel f_palette_getPixel(const FPalette* Palette, int Index);
-extern FColorRgb f_palette_getRgb(const FPalette* Palette, int Index);
+extern FColorPixel f_palette_getPixel(const FPalette* Palette, unsigned Index);
+extern FColorRgb f_palette_getRgb(const FPalette* Palette, unsigned Index);
 
 #endif // F_INC_GRAPHICS_PALETTE_P_H

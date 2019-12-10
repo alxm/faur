@@ -210,7 +210,7 @@ void f_color_colorSetPixel(FColorPixel Pixel)
     #endif
 }
 
-void f_color_colorSetIndex(int ColorIndex)
+void f_color_colorSetIndex(unsigned ColorIndex)
 {
     #if F_CONFIG_BUILD_DEBUG
         if(f__color.palette == NULL) {

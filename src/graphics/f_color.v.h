@@ -36,7 +36,6 @@ typedef struct {
 } FColorState;
 
 typedef enum {
-    F_COLOR__PAL_INVALID = -1,
     F_COLOR__PAL_BROWN1,
     F_COLOR__PAL_BROWN2,
     F_COLOR__PAL_GRAY1,
