@@ -25,6 +25,7 @@ typedef struct FSystem FSystem;
 #include "../data/f_bitfield.v.h"
 #include "../data/f_list.v.h"
 
+extern void f_system__init(void);
 extern void f_system__uninit(void);
 
 extern FSystem* f_system__get(unsigned SystemIndex);

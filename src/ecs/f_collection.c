@@ -18,7 +18,6 @@
 #include "f_collection.v.h"
 #include <faur.v.h>
 
-#if F_CONFIG_ECS_ENABLED
 static FCollection* g_current; // New entities are added to this collection
 
 FCollection* f_collection__get(void)
@@ -61,4 +60,3 @@ void f_collection_muteDec(FCollection* Collection)
         f_entity_muteDec(e);
     }
 }
-#endif // F_CONFIG_ECS_ENABLED

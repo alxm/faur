@@ -18,7 +18,6 @@
 #include "f_system.v.h"
 #include <faur.v.h>
 
-#if F_CONFIG_ECS_ENABLED
 struct FSystem {
     FSystemHandler* handler;
     FSystemSort* compare;
@@ -27,20 +26,27 @@ struct FSystem {
     bool onlyActiveEntities; // skip entities that are not active
 };
 
-static FSystem g_systems[F_CONFIG_ECS_SYS_NUM];
+static FSystem* g_systems; // [f_init__ecs_sys]
+
+void f_system__init(void)
+{
+    g_systems = f_mem_zalloc(sizeof(FSystem) * f_init__ecs_sys);
+}
 
 void f_system__uninit(void)
 {
-    for(unsigned s = F_CONFIG_ECS_SYS_NUM; s--; ) {
+    for(unsigned s = f_init__ecs_sys; s--; ) {
         f_list_free(g_systems[s].entities);
         f_bitfield_free(g_systems[s].componentBits);
     }
+
+    f_mem_free(g_systems);
 }
 
 FSystem* f_system__get(unsigned SystemIndex)
 {
     #if F_CONFIG_BUILD_DEBUG
-        if(SystemIndex >= F_CONFIG_ECS_SYS_NUM) {
+        if(SystemIndex >= f_init__ecs_sys) {
             F__FATAL("Unknown system %u", SystemIndex);
         }
 
@@ -65,7 +71,7 @@ void f_system_new(unsigned SystemIndex, FSystemHandler* Handler, FSystemSort* Co
     system->handler = Handler;
     system->compare = Compare;
     system->entities = f_list_new();
-    system->componentBits = f_bitfield_new(F_CONFIG_ECS_COM_NUM);
+    system->componentBits = f_bitfield_new(f_init__ecs_com);
     system->onlyActiveEntities = OnlyActiveEntities;
 }
 
@@ -115,4 +121,3 @@ bool f_system__isActiveOnly(const FSystem* System)
 {
     return System->onlyActiveEntities;
 }
-#endif // F_CONFIG_ECS_ENABLED

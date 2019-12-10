@@ -248,9 +248,7 @@ void f_console__draw(void)
             printBytes(f_mem__top, "top");
         #endif
 
-        #if F_CONFIG_ECS_ENABLED
-            f_font_printf("%u entities", f_ecs__listGetSum());
-        #endif
+        f_font_printf("%u entities", f_ecs__listGetSum());
     }
 
     f_align_pop();

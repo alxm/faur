@@ -18,24 +18,24 @@
 #include "f_template.v.h"
 #include <faur.v.h>
 
-#if F_CONFIG_ECS_ENABLED
 struct FTemplate {
     unsigned instanceNumber; // Incremented by each new entity
     FEntityInit* init; // Optional, runs after components init and parent init
     FBitfield* componentBits; // Set if template or a parent has component
     FBitfield* componentBitsOwn; // Set if template actually has the component
-    void* data[F_CONFIG_ECS_COM_NUM]; // Parsed component config data, or NULL
     const FTemplate* parent; // template chain
+    void* data[]; // [f_init__ecs_com] Loaded and parsed config data, or NULL
 };
 
 static FStrHash* g_templates; // table of FTemplate
 
 static FTemplate* templateNew(const char* Id)
 {
-    FTemplate* t = f_mem_zalloc(sizeof(FTemplate));
+    FTemplate* t = f_mem_zalloc(
+                    sizeof(FTemplate) + sizeof(void*) * f_init__ecs_com);
 
-    t->componentBits = f_bitfield_new(F_CONFIG_ECS_COM_NUM);
-    t->componentBitsOwn = f_bitfield_new(F_CONFIG_ECS_COM_NUM);
+    t->componentBits = f_bitfield_new(f_init__ecs_com);
+    t->componentBitsOwn = f_bitfield_new(f_init__ecs_com);
 
     char* parentId = f_str_prefixGetToLast(Id, '.');
 
@@ -48,7 +48,7 @@ static FTemplate* templateNew(const char* Id)
 
         t->parent = parentTemplate;
 
-        for(unsigned c = F_CONFIG_ECS_COM_NUM; c--; ) {
+        for(unsigned c = f_init__ecs_com; c--; ) {
             if(f_bitfield_test(parentTemplate->componentBits, c)) {
                 f_bitfield_set(t->componentBits, c);
                 t->data[c] = parentTemplate->data[c];
@@ -65,7 +65,7 @@ static FTemplate* templateNew(const char* Id)
 
 static void templateFree(FTemplate* Template)
 {
-    for(unsigned c = F_CONFIG_ECS_COM_NUM; c--; ) {
+    for(unsigned c = f_init__ecs_com; c--; ) {
         if(f_bitfield_test(Template->componentBitsOwn, c)
             && Template->data[c]) {
 
@@ -181,4 +181,3 @@ const void* f_template__dataGet(const FTemplate* Template, unsigned ComponentInd
 {
     return Template->data[ComponentIndex];
 }
-#endif // F_CONFIG_ECS_ENABLED
