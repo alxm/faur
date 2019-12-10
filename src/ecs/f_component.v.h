@@ -33,8 +33,8 @@ typedef struct {
 extern void f_component__init(void);
 extern void f_component__uninit(void);
 
-extern int f_component__stringToIndex(const char* StringId);
-extern const FComponent* f_component__get(int Index);
+extern unsigned f_component__stringToIndex(const char* StringId);
+extern const FComponent* f_component__get(unsigned ComponentIndex);
 
 extern const char* f_component__stringGet(const FComponent* Component);
 

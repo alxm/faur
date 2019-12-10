@@ -27,7 +27,7 @@ typedef struct FSystem FSystem;
 
 extern void f_system__uninit(void);
 
-extern FSystem* f_system__get(int SystemIndex);
+extern FSystem* f_system__get(unsigned SystemIndex);
 
 extern FListNode* f_system__entityAdd(const FSystem* System, FEntity* Entity);
 extern const FBitfield* f_system__componentBitsGet(const FSystem* System);

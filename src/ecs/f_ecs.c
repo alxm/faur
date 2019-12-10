@@ -87,7 +87,7 @@ void f_ecs__tick(void)
 
     // Check what systems the new entities match
     F_LIST_ITERATE(g_lists[F_ECS__NEW], FEntity*, e) {
-        for(int s = F_CONFIG_ECS_SYS_NUM; s--; ) {
+        for(unsigned s = F_CONFIG_ECS_SYS_NUM; s--; ) {
             f_entity__systemsMatch(e, f_system__get(s));
         }
 

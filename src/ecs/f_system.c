@@ -37,26 +37,26 @@ void f_system__uninit(void)
     }
 }
 
-FSystem* f_system__get(int SystemIndex)
+FSystem* f_system__get(unsigned SystemIndex)
 {
     #if F_CONFIG_BUILD_DEBUG
-        if(SystemIndex < 0 || SystemIndex >= F_CONFIG_ECS_SYS_NUM) {
-            F__FATAL("Unknown system %d", SystemIndex);
+        if(SystemIndex >= F_CONFIG_ECS_SYS_NUM) {
+            F__FATAL("Unknown system %u", SystemIndex);
         }
 
         if(g_systems[SystemIndex].entities == NULL) {
-            F__FATAL("Uninitialized system %d", SystemIndex);
+            F__FATAL("Uninitialized system %u", SystemIndex);
         }
     #endif
 
     return &g_systems[SystemIndex];
 }
 
-void f_system_new(int SystemIndex, FSystemHandler* Handler, FSystemSort* Compare, bool OnlyActiveEntities)
+void f_system_new(unsigned SystemIndex, FSystemHandler* Handler, FSystemSort* Compare, bool OnlyActiveEntities)
 {
     #if F_CONFIG_BUILD_DEBUG
         if(g_systems[SystemIndex].entities != NULL) {
-            F__FATAL("f_system_new(%d): Already declared", SystemIndex);
+            F__FATAL("f_system_new(%u): Already declared", SystemIndex);
         }
     #endif
 
@@ -69,14 +69,14 @@ void f_system_new(int SystemIndex, FSystemHandler* Handler, FSystemSort* Compare
     system->onlyActiveEntities = OnlyActiveEntities;
 }
 
-void f_system_add(int SystemIndex, int ComponentIndex)
+void f_system_add(unsigned SystemIndex, unsigned ComponentIndex)
 {
     FSystem* system = f_system__get(SystemIndex);
 
-    f_bitfield_set(system->componentBits, (unsigned)ComponentIndex);
+    f_bitfield_set(system->componentBits, ComponentIndex);
 }
 
-void f_system_run(int SystemIndex)
+void f_system_run(unsigned SystemIndex)
 {
     FSystem* system = f_system__get(SystemIndex);
 

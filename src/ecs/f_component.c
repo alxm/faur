@@ -50,35 +50,35 @@ void f_component__uninit(void)
     f_strhash_free(g_componentsIndex);
 }
 
-int f_component__stringToIndex(const char* StringId)
+unsigned f_component__stringToIndex(const char* StringId)
 {
     const FComponent* component = f_strhash_get(g_componentsIndex, StringId);
 
-    return component ? (int)(component - g_components) : -1;
+    return component ? (unsigned)(component - g_components) : UINT_MAX;
 }
 
-const FComponent* f_component__get(int ComponentIndex)
+const FComponent* f_component__get(unsigned ComponentIndex)
 {
     #if F_CONFIG_BUILD_DEBUG
-        if(ComponentIndex < 0 || ComponentIndex >= F_CONFIG_ECS_COM_NUM) {
-            F__FATAL("Unknown component %d", ComponentIndex);
+        if(ComponentIndex >= F_CONFIG_ECS_COM_NUM) {
+            F__FATAL("Unknown component %u", ComponentIndex);
         }
 
         if(g_components[ComponentIndex].stringId == NULL) {
-            F__FATAL("Uninitialized component %d", ComponentIndex);
+            F__FATAL("Uninitialized component %u", ComponentIndex);
         }
     #endif
 
     return &g_components[ComponentIndex];
 }
 
-void f_component_new(int ComponentIndex, size_t InstanceSize, FComponentInstanceInit* InstanceInit, FComponentInstanceFree* InstanceFree)
+void f_component_new(unsigned ComponentIndex, size_t InstanceSize, FComponentInstanceInit* InstanceInit, FComponentInstanceFree* InstanceFree)
 {
     FComponent* component = &g_components[ComponentIndex];
 
     #if F_CONFIG_BUILD_DEBUG
         if(component->stringId != NULL) {
-            F__FATAL("f_component_new(%d): Already declared", ComponentIndex);
+            F__FATAL("f_component_new(%u): Already declared", ComponentIndex);
         }
     #endif
 
@@ -89,12 +89,12 @@ void f_component_new(int ComponentIndex, size_t InstanceSize, FComponentInstance
     component->stringId = g_defaultId;
 }
 
-void f_component_template(int ComponentIndex, const char* StringId, size_t TemplateSize, FComponentTemplateInit* TemplateInit, FComponentTemplateFree* TemplateFree, FComponentInstanceInitEx* InstanceInitEx)
+void f_component_template(unsigned ComponentIndex, const char* StringId, size_t TemplateSize, FComponentTemplateInit* TemplateInit, FComponentTemplateFree* TemplateFree, FComponentInstanceInitEx* InstanceInitEx)
 {
     FComponent* component = &g_components[ComponentIndex];
 
     #if F_CONFIG_BUILD_DEBUG
-        if(ComponentIndex < 0 || ComponentIndex >= F_CONFIG_ECS_COM_NUM) {
+        if(ComponentIndex >= F_CONFIG_ECS_COM_NUM) {
             F__FATAL("f_component_template(%s): Unknown component", StringId);
         }
 
@@ -122,7 +122,7 @@ const void* f_component_dataGet(const void* ComponentBuffer)
     const FComponentInstance* instance = bufferGetInstance(ComponentBuffer);
 
     return f_template__dataGet(f_entity__templateGet(instance->entity),
-                               (int)(instance->component - g_components));
+                               (unsigned)(instance->component - g_components));
 }
 
 

@@ -65,8 +65,8 @@ static FTemplate* templateNew(const char* Id)
 
 static void templateFree(FTemplate* Template)
 {
-    for(int c = F_CONFIG_ECS_COM_NUM; c--; ) {
-        if(f_bitfield_test(Template->componentBitsOwn, (unsigned)c)
+    for(unsigned c = F_CONFIG_ECS_COM_NUM; c--; ) {
+        if(f_bitfield_test(Template->componentBitsOwn, c)
             && Template->data[c]) {
 
             f_component__templateFree(f_component__get(c), Template->data[c]);
@@ -108,9 +108,9 @@ void f_template_new(const char* FilePath)
 
         F_LIST_ITERATE(f_block_blocksGet(b), const FBlock*, b) {
             const char* componentId = f_block_lineGetString(b, 0);
-            int componentIndex = f_component__stringToIndex(componentId);
+            unsigned componentIndex = f_component__stringToIndex(componentId);
 
-            if(componentIndex < 0) {
+            if(componentIndex == UINT_MAX) {
                 f_out__error("f_template_new(%s): Unknown component '%s'",
                              templateId,
                              componentId);
@@ -118,8 +118,8 @@ void f_template_new(const char* FilePath)
                 continue;
             }
 
-            f_bitfield_set(t->componentBits, (unsigned)componentIndex);
-            f_bitfield_set(t->componentBitsOwn, (unsigned)componentIndex);
+            f_bitfield_set(t->componentBits, componentIndex);
+            f_bitfield_set(t->componentBitsOwn, componentIndex);
             t->data[componentIndex] =
                 f_component__templateInit(f_component__get(componentIndex), b);
         }
@@ -172,12 +172,12 @@ unsigned f_template__instanceGet(const FTemplate* Template)
     return Template->instanceNumber;
 }
 
-bool f_template__componentHas(const FTemplate* Template, int ComponentIndex)
+bool f_template__componentHas(const FTemplate* Template, unsigned ComponentIndex)
 {
-    return f_bitfield_test(Template->componentBits, (unsigned)ComponentIndex);
+    return f_bitfield_test(Template->componentBits, ComponentIndex);
 }
 
-const void* f_template__dataGet(const FTemplate* Template, int ComponentIndex)
+const void* f_template__dataGet(const FTemplate* Template, unsigned ComponentIndex)
 {
     return Template->data[ComponentIndex];
 }

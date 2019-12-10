@@ -30,8 +30,8 @@ typedef void FComponentInstanceFree(void* Self);
 typedef void FComponentTemplateInit(void* Data, const FBlock* Config);
 typedef void FComponentTemplateFree(void* Data);
 
-extern void f_component_new(int ComponentIndex, size_t InstanceSize, FComponentInstanceInit* InstanceInit, FComponentInstanceFree* InstanceFree);
-extern void f_component_template(int ComponentIndex, const char* StringId, size_t TemplateSize, FComponentTemplateInit* TemplateInit, FComponentTemplateFree* TemplateFree, FComponentInstanceInitEx* InstanceInitEx);
+extern void f_component_new(unsigned ComponentIndex, size_t InstanceSize, FComponentInstanceInit* InstanceInit, FComponentInstanceFree* InstanceFree);
+extern void f_component_template(unsigned ComponentIndex, const char* StringId, size_t TemplateSize, FComponentTemplateInit* TemplateInit, FComponentTemplateFree* TemplateFree, FComponentInstanceInitEx* InstanceInitEx);
 
 extern const void* f_component_dataGet(const void* ComponentBuffer);
 extern FEntity* f_component_entityGet(const void* ComponentBuffer);

@@ -43,10 +43,10 @@ extern void f_entity_activeSet(FEntity* Entity);
 extern void f_entity_activeSetRemove(FEntity* Entity);
 extern void f_entity_activeSetPermanent(FEntity* Entity);
 
-extern void* f_entity_componentAdd(FEntity* Entity, int ComponentIndex);
-extern bool f_entity_componentHas(const FEntity* Entity, int ComponentIndex);
-extern void* f_entity_componentGet(const FEntity* Entity, int ComponentIndex);
-extern void* f_entity_componentReq(const FEntity* Entity, int ComponentIndex);
+extern void* f_entity_componentAdd(FEntity* Entity, unsigned ComponentIndex);
+extern bool f_entity_componentHas(const FEntity* Entity, unsigned ComponentIndex);
+extern void* f_entity_componentGet(const FEntity* Entity, unsigned ComponentIndex);
+extern void* f_entity_componentReq(const FEntity* Entity, unsigned ComponentIndex);
 
 extern bool f_entity_muteGet(const FEntity* Entity);
 extern void f_entity_muteInc(FEntity* Entity);
