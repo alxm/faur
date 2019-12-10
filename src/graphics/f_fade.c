@@ -31,9 +31,11 @@ static struct {
     FEvent event;
     FFadeOpId op;
     FFixu angle, angleInc;
-    FColorPixel color;
     FSprite* oldScreen;
-    FFadeCallback* callback;
+    union {
+        FColorPixel color;
+        FFadeCallback* callback;
+    } u;
 } g_fade = {
     .op = F__FADE_INVALID,
 };
@@ -81,14 +83,14 @@ void f_fade_startColorTo(unsigned DurationMs)
 {
     newFade(F__FADE_TOCOLOR, DurationMs);
 
-    g_fade.color = f__color.pixel;
+    g_fade.u.color = f__color.pixel;
 }
 
 void f_fade_startColorFrom(unsigned DurationMs)
 {
     newFade(F__FADE_FROMCOLOR, DurationMs);
 
-    g_fade.color = f__color.pixel;
+    g_fade.u.color = f__color.pixel;
 }
 
 #if !F_CONFIG_SYSTEM_GAMEBUINO
@@ -104,7 +106,7 @@ void f_fade_startCustom(FFadeCallback* Callback, unsigned DurationMs)
 {
     newFade(F__FADE_CUSTOM, DurationMs);
 
-    g_fade.callback = Callback;
+    g_fade.u.callback = Callback;
 }
 
 void f_fade__tick(void)
@@ -135,7 +137,7 @@ void f_fade__draw(void)
             f_color_alphaSet(
                 f_fix_toInt(f_fix_sinf(g_fade.angle) * F_COLOR_ALPHA_MAX));
 
-            f_color_colorSetPixel(g_fade.color);
+            f_color_colorSetPixel(g_fade.u.color);
             f_draw_fill();
         } break;
 
@@ -145,7 +147,7 @@ void f_fade__draw(void)
                 f_fix_toInt(f_fix_sinf(F_DEG_090_FIX - g_fade.angle)
                                 * F_COLOR_ALPHA_MAX));
 
-            f_color_colorSetPixel(g_fade.color);
+            f_color_colorSetPixel(g_fade.u.color);
             f_draw_fill();
         } break;
 
@@ -159,7 +161,7 @@ void f_fade__draw(void)
         } break;
 
         case F__FADE_CUSTOM: {
-            g_fade.callback(f_fix_sinf(g_fade.angle));
+            g_fade.u.callback(f_fix_sinf(g_fade.angle));
         } break;
 
         default: break;
