@@ -23,6 +23,7 @@ typedef enum {
     F__FADE_TOCOLOR,
     F__FADE_FROMCOLOR,
     F__FADE_SCREENS,
+    F__FADE_CUSTOM,
     F__FADE_NUM
 } FFadeOpId;
 
@@ -30,8 +31,11 @@ static struct {
     FEvent event;
     FFadeOpId op;
     FFixu angle, angleInc;
-    FColorPixel color;
     FSprite* oldScreen;
+    union {
+        FColorPixel color;
+        FFadeCallback* callback;
+    } u;
 } g_fade = {
     .op = F__FADE_INVALID,
 };
@@ -79,14 +83,14 @@ void f_fade_startColorTo(unsigned DurationMs)
 {
     newFade(F__FADE_TOCOLOR, DurationMs);
 
-    g_fade.color = f__color.pixel;
+    g_fade.u.color = f__color.pixel;
 }
 
 void f_fade_startColorFrom(unsigned DurationMs)
 {
     newFade(F__FADE_FROMCOLOR, DurationMs);
 
-    g_fade.color = f__color.pixel;
+    g_fade.u.color = f__color.pixel;
 }
 
 #if !F_CONFIG_SYSTEM_GAMEBUINO
@@ -97,6 +101,13 @@ void f_fade_startScreens(unsigned DurationMs)
     f_screen__toSprite(g_fade.oldScreen, 0);
 }
 #endif
+
+void f_fade_startCustom(FFadeCallback* Callback, unsigned DurationMs)
+{
+    newFade(F__FADE_CUSTOM, DurationMs);
+
+    g_fade.u.callback = Callback;
+}
 
 void f_fade__tick(void)
 {
@@ -119,32 +130,38 @@ void f_fade__draw(void)
     }
 
     f_color_push();
-    f_color_blendSet(F_COLOR_BLEND_ALPHA);
 
     switch(g_fade.op) {
         case F__FADE_TOCOLOR: {
+            f_color_blendSet(F_COLOR_BLEND_ALPHA);
             f_color_alphaSet(
                 f_fix_toInt(f_fix_sinf(g_fade.angle) * F_COLOR_ALPHA_MAX));
 
-            f_color_colorSetPixel(g_fade.color);
+            f_color_colorSetPixel(g_fade.u.color);
             f_draw_fill();
         } break;
 
         case F__FADE_FROMCOLOR: {
+            f_color_blendSet(F_COLOR_BLEND_ALPHA);
             f_color_alphaSet(
                 f_fix_toInt(f_fix_sinf(F_DEG_090_FIX - g_fade.angle)
                                 * F_COLOR_ALPHA_MAX));
 
-            f_color_colorSetPixel(g_fade.color);
+            f_color_colorSetPixel(g_fade.u.color);
             f_draw_fill();
         } break;
 
         case F__FADE_SCREENS: {
+            f_color_blendSet(F_COLOR_BLEND_ALPHA);
             f_color_alphaSet(
                 f_fix_toInt(f_fix_sinf(F_DEG_090_FIX - g_fade.angle)
                                 * F_COLOR_ALPHA_MAX));
 
             f_sprite_blit(g_fade.oldScreen, 0, 0, 0);
+        } break;
+
+        case F__FADE_CUSTOM: {
+            g_fade.u.callback(f_fix_sinf(g_fade.angle));
         } break;
 
         default: break;

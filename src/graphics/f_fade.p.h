@@ -20,10 +20,15 @@
 
 #include "../general/f_system_includes.h"
 
+#include "../math/f_fix.p.h"
+
+typedef void FFadeCallback(FFix ZeroToOne);
+
 extern const FEvent* f_fade_eventGet(void);
 
 extern void f_fade_startColorTo(unsigned DurationMs);
 extern void f_fade_startColorFrom(unsigned DurationMs);
 extern void f_fade_startScreens(unsigned DurationMs);
+extern void f_fade_startCustom(FFadeCallback* Callback, unsigned DurationMs);
 
 #endif // F_INC_GRAPHICS_FADE_P_H
