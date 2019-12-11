@@ -20,7 +20,9 @@
 
 #include "../general/f_system_includes.h"
 
-extern void f_main(void);
+#include "../general/f_state.p.h"
+
+extern FStateHandler f_main;
 
 extern int f_main_argsNumGet(void);
 extern const char* f_main_argsGet(int ArgNum);
