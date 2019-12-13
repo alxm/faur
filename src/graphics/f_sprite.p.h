@@ -22,15 +22,6 @@
 
 typedef struct FSprite FSprite;
 
-typedef enum {
-    F_SPRITE_ALIGN_X_LEFT = F_FLAGS_BIT(0),
-    F_SPRITE_ALIGN_X_CENTER = F_FLAGS_BIT(1),
-    F_SPRITE_ALIGN_X_RIGHT = F_FLAGS_BIT(2),
-    F_SPRITE_ALIGN_Y_TOP = F_FLAGS_BIT(3),
-    F_SPRITE_ALIGN_Y_CENTER = F_FLAGS_BIT(4),
-    F_SPRITE_ALIGN_Y_BOTTOM = F_FLAGS_BIT(5),
-} FSpriteAlign;
-
 #include "../graphics/f_color.p.h"
 #include "../math/f_fix.p.h"
 

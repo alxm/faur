@@ -46,19 +46,12 @@ Here are the generated source files:
 ```c
 #include <faur.h>
 
-FStateHandler drawBox;
-
 void f_init(void)
 {
     f_init_app("hello", "you", 1, 0, 0);
 }
 
 void f_main(void)
-{
-    f_state_push(drawBox);
-}
-
-void drawBox(void)
 {
     static struct {
         int x, y;

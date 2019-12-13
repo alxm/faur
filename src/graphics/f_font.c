@@ -179,16 +179,27 @@ static void drawString(const char* Text, ptrdiff_t Length)
     const FSprite* chars = g_state.font;
     int charWidth = f_sprite_sizeGetWidth(chars);
 
+    int x = g_state.x;
+    int y = g_state.y;
+
     if(align.x == F_ALIGN_X_CENTER) {
-        g_state.x -= (int)Length * charWidth / 2;
+        x -= (int)Length * charWidth / 2;
     } else if(align.x == F_ALIGN_X_RIGHT) {
-        g_state.x -= (int)Length * charWidth;
+        x -= (int)Length * charWidth;
+    }
+
+    if(align.y == F_ALIGN_Y_CENTER) {
+        y -= f_sprite_sizeGetHeight(chars) / 2;
+    } else if(align.y == F_ALIGN_Y_BOTTOM) {
+        y -= f_sprite_sizeGetHeight(chars);
     }
 
     for( ; Length--; Text++) {
-        f_sprite_blit(chars, F__CHAR_INDEX(*Text), g_state.x, g_state.y);
-        g_state.x += charWidth;
+        f_sprite_blit(chars, F__CHAR_INDEX(*Text), x, y);
+        x += charWidth;
     }
+
+    g_state.x = x;
 
     f__align = align;
 }

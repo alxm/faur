@@ -84,8 +84,7 @@ void f__main(void)
     }
 
     f_init__init();
-
-    f_main();
+    f_state_push(f_main);
 }
 
 int f_main_argsNumGet(void)
