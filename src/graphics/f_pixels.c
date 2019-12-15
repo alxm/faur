@@ -172,15 +172,18 @@ static int findNextHorizontalEdge(const FPixels* Pixels, unsigned Frame, int Sta
 
 FVectorInt f_pixels__boundsFind(const FPixels* Pixels, unsigned Frame, int X, int Y)
 {
-    FVectorInt bounds;
-
-    if(X < 0 || X >= Pixels->size.x || Y < 0 || Y >= Pixels->size.y) {
-        F__FATAL("f_pixels__boundsFind(%d, %d): Invalid coords on %dx%d area",
+    #if F_CONFIG_BUILD_DEBUG
+        if(X < 0 || X >= Pixels->size.x || Y < 0 || Y >= Pixels->size.y) {
+            F__FATAL(
+                "f_pixels__boundsFind(%d, %d): Invalid coords on %dx%d area",
                  X,
                  Y,
                  Pixels->size.x,
                  Pixels->size.y);
-    }
+        }
+    #endif
+
+    FVectorInt bounds;
 
     int vEdgeX = 0;
     int vEdgeLen = findNextVerticalEdge(Pixels, Frame, X, Y, &vEdgeX);

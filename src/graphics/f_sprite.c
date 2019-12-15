@@ -27,13 +27,20 @@ static FSprite* spriteNew(const FPixels* Pixels, unsigned Frame, int X, int Y, i
 {
     FVectorInt gridDim;
 
-    if(X == 0 && Y == 0 && FrameWidth < 1 && FrameHeight < 1) {
+    #if F_CONFIG_BUILD_DEBUG
+        if((FrameWidth < 1 || FrameHeight < 1) && FrameWidth != FrameHeight) {
+            F__FATAL(
+                "FrameWidth = %d, FrameHeight = %d", FrameWidth, FrameHeight);
+        }
+    #endif
+
+    if(X == 0 && Y == 0 && FrameWidth < 0) {
         gridDim = Pixels->size;
     } else {
         gridDim = f_pixels__boundsFind(Pixels, Frame, X, Y);
     }
 
-    if(FrameWidth < 1 || FrameHeight < 1) {
+    if(FrameWidth < 1) {
         FrameWidth = gridDim.x;
         FrameHeight = gridDim.y;
     }
