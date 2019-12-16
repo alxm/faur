@@ -112,7 +112,7 @@ FBlock* f_block_new(const char* File)
         int currentIndent = indentCharsNum / 4;
 
         if((indentCharsNum % 4) != 0 || currentIndent > lastIndent + 1) {
-            F__FATAL("f_block_new: Bad indent in %s:%d <%s>",
+            F__FATAL("f_block_new(%s): Bad indent on line %d <%s>",
                      File,
                      f_file_lineNumberGet(f),
                      textStart);
