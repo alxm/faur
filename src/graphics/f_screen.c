@@ -274,8 +274,10 @@ void f_screen__toSprite(FSprite* Sprite, unsigned Frame)
     }
 
     #if F_CONFIG_RENDER_SOFTWARE
-        f_pixels__copyFrame(
-            f_sprite__pixelsGetc(Sprite), Frame, f__screen.pixels, 0);
+        f_pixels__copyFrame(f_sprite__pixelsGetc(Sprite),
+                            Frame,
+                            f__screen.pixels,
+                            f__screen.frame);
     #else
         f_platform_api__screenToTexture(f_sprite__textureGet(Sprite, Frame));
     #endif
