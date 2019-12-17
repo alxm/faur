@@ -36,6 +36,11 @@ struct FPlatformTexture {
 
 extern SDL_Renderer* f__sdlRenderer;
 
+FPlatformTextureScreen* f_platform_api__textureSpriteToScreen(FPlatformTexture* SpriteTexture)
+{
+    return SpriteTexture->texture[F_TEXTURE__NORMAL];
+}
+
 FPlatformTexture* f_platform_api__textureNew(const FPixels* Pixels, unsigned Frame)
 {
     FPlatformTexture* texture = f_mem_zalloc(sizeof(FPlatformTexture));

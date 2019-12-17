@@ -380,16 +380,14 @@ void f_platform_api__screenClear(void)
     }
 }
 
-FPlatformTexture* f_platform_api__screenTextureGet(void)
+FPlatformTextureScreen* f_platform_api__screenTextureGet(void)
 {
-    return (FPlatformTexture*)&g_sdlTexture;
+    return g_sdlTexture;
 }
 
-void f_platform_api__screenTextureSet(FPlatformTexture* Texture)
+void f_platform_api__screenTextureSet(FPlatformTextureScreen* Texture)
 {
-    SDL_Texture* t = Texture ? *(SDL_Texture**)Texture : NULL;
-
-    if(SDL_SetRenderTarget(f__sdlRenderer, t) < 0) {
+    if(SDL_SetRenderTarget(f__sdlRenderer, Texture) < 0) {
         F__FATAL("SDL_SetRenderTarget: %s", SDL_GetError());
     }
 }
@@ -409,13 +407,13 @@ void f_platform_api__screenTextureSync(void)
 }
 
 #if F_CONFIG_RENDER_SDL2
-void f_platform_api__screenToTexture(FPlatformTexture* Texture)
+void f_platform_api__screenToTexture(FPlatformTextureScreen* Texture)
 {
     if(SDL_SetRenderDrawBlendMode(f__sdlRenderer, SDL_BLENDMODE_NONE) < 0) {
         f_out__error("SDL_SetRenderDrawBlendMode: %s", SDL_GetError());
     }
 
-    if(SDL_SetRenderTarget(f__sdlRenderer, *(SDL_Texture**)Texture) < 0) {
+    if(SDL_SetRenderTarget(f__sdlRenderer, Texture) < 0) {
         F__FATAL("SDL_SetRenderTarget: %s", SDL_GetError());
     }
 
@@ -429,9 +427,7 @@ void f_platform_api__screenToTexture(FPlatformTexture* Texture)
 
     // Restore user settings
 
-    if(SDL_SetRenderTarget(
-        f__sdlRenderer, *(SDL_Texture**)f__screen.texture) < 0) {
-
+    if(SDL_SetRenderTarget(f__sdlRenderer, f__screen.texture) < 0) {
         F__FATAL("SDL_SetRenderTarget: %s", SDL_GetError());
     }
 
