@@ -50,7 +50,7 @@ extern void f_platform_api__screenClear(void);
 extern FPlatformTextureScreen* f_platform_api__screenTextureGet(void);
 extern void f_platform_api__screenTextureSet(FPlatformTextureScreen* Texture);
 extern void f_platform_api__screenTextureSync(void);
-extern void f_platform_api__screenToTexture(FPlatformTextureScreen* Texture);
+extern void f_platform_api__screenToTexture(FPlatformTextureScreen* Texture, unsigned Frame);
 extern void f_platform_api__screenClipSet(void);
 extern void f_platform_api__screenShow(void);
 extern FPixels* f_platform_api__screenPixelsGet(void);
@@ -74,7 +74,8 @@ extern void f_platform_api__drawCircleOutline(int X, int Y, int Radius);
 extern void f_platform_api__drawCircleFilled(int X, int Y, int Radius);
 
 extern FPlatformTextureScreen* f_platform_api__textureSpriteToScreen(FPlatformTexture* SpriteTexture);
-extern FPlatformTexture* f_platform_api__textureNew(const FPixels* Pixels, unsigned Frame);
+extern FPlatformTexture* f_platform_api__textureNew(const FPixels* Pixels);
+extern FPlatformTexture* f_platform_api__textureDup(const FPlatformTexture* Texture, const FPixels* Pixels);
 extern void f_platform_api__textureFree(FPlatformTexture* Texture);
 extern void f_platform_api__textureBlit(const FPlatformTexture* Texture, const FPixels* Pixels, unsigned Frame, int X, int Y);
 extern void f_platform_api__textureBlitEx(const FPlatformTexture* Texture, const FPixels* Pixels, unsigned Frame, int X, int Y, FFix Scale, unsigned Angle, FFix CenterX, FFix CenterY);

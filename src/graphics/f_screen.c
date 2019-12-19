@@ -170,10 +170,10 @@ void f_screen_push(FSprite* Sprite, unsigned Frame)
     f__screen.frame = Frame;
 
     #if !F_CONFIG_RENDER_SOFTWARE
-        f__screen.texture = f_sprite__textureGet(Sprite, Frame);
-        f_platform_api__screenTextureSet(f__screen.texture);
+        f__screen.yOffset = (int)f__screen.frame * f__screen.pixels->size.y;
+        f__screen.texture = f_sprite__textureGet(Sprite);
 
-        F_FLAGS_SET(f_sprite__pixelsGet(Sprite)->flags, F_PIXELS__DIRTY);
+        f_platform_api__screenTextureSet(f__screen.texture);
     #endif
 
     f_screen_clipReset();
@@ -190,7 +190,7 @@ void f_screen_pop(void)
     #endif
 
     #if F_CONFIG_RENDER_SOFTWARE
-        f_sprite__textureCommit(f__screen.sprite, f__screen.frame);
+        f_sprite__textureCommit(f__screen.sprite);
     #endif
 
     f__screen = *screen;
@@ -279,6 +279,6 @@ void f_screen__toSprite(FSprite* Sprite, unsigned Frame)
                             f__screen.pixels,
                             f__screen.frame);
     #else
-        f_platform_api__screenToTexture(f_sprite__textureGet(Sprite, Frame));
+        f_platform_api__screenToTexture(f_sprite__textureGet(Sprite), Frame);
     #endif
 }

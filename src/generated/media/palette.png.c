@@ -29,12 +29,19 @@ static const FColorPixel f__gfx_buffer___palette[10 * 2 * 1] = {
 
 #if F_CONFIG_RENDER_SOFTWARE
 static const unsigned f__gfx_spans___palette__0[] = {7, 1, 1, 8, 3, 10};
+
+static const struct {
+    unsigned framesNum;
+    unsigned* spans[1];
+} f__gfx_texture___palette = {
+    1,
+    {
+        (unsigned*)f__gfx_spans___palette__0,
+    },
+};
 #endif
 
-static F__GEN_GFX_CONST struct {
-    FPixels pixels;
-    FPlatformTexture* textures[1];
-} f__gfx_sprite___palette = {
+static F__GEN_GFX_CONST FSprite f__gfx_sprite___palette = {
     {
         .size = {10, 2},
         .framesNum = 1,
@@ -43,13 +50,11 @@ static F__GEN_GFX_CONST struct {
         .flags = F_PIXELS__CONST,
         .buffer = (FColorPixel*)f__gfx_buffer___palette,
     },
-    {
-        #if F_CONFIG_RENDER_SOFTWARE
-            (FPlatformTexture*)(void*)f__gfx_spans___palette__0,
-        #else
-            NULL,
-        #endif
-    },
+    #if F_CONFIG_RENDER_SOFTWARE
+        (FPlatformTexture*)(void*)&f__gfx_texture___palette,
+    #else
+        NULL,
+    #endif
 };
 
 const FSprite* const f_gfx__palette = (const FSprite*)(void*)&f__gfx_sprite___palette;

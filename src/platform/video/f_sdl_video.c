@@ -407,7 +407,7 @@ void f_platform_api__screenTextureSync(void)
 }
 
 #if F_CONFIG_RENDER_SDL2
-void f_platform_api__screenToTexture(FPlatformTextureScreen* Texture)
+void f_platform_api__screenToTexture(FPlatformTextureScreen* Texture, unsigned Frame)
 {
     if(SDL_SetRenderDrawBlendMode(f__sdlRenderer, SDL_BLENDMODE_NONE) < 0) {
         f_out__error("SDL_SetRenderDrawBlendMode: %s", SDL_GetError());
@@ -417,7 +417,10 @@ void f_platform_api__screenToTexture(FPlatformTextureScreen* Texture)
         F__FATAL("SDL_SetRenderTarget: %s", SDL_GetError());
     }
 
-    if(SDL_RenderSetClipRect(f__sdlRenderer, NULL) < 0) {
+    FVectorInt size = f__screen.pixels->size;
+    SDL_Rect area = {0, (int)Frame * size.y, size.x, size.y};
+
+    if(SDL_RenderSetClipRect(f__sdlRenderer, &area) < 0) {
         f_out__error("SDL_RenderSetClipRect: %s", SDL_GetError());
     }
 
@@ -434,20 +437,22 @@ void f_platform_api__screenToTexture(FPlatformTextureScreen* Texture)
     f_platform_api__screenClipSet();
     f_platform_api__renderSetBlendMode();
 }
-#endif
 
 void f_platform_api__screenClipSet(void)
 {
-    SDL_Rect area = {f__screen.clipX,
-                     f__screen.clipY,
-                     f__screen.clipWidth,
-                     f__screen.clipHeight};
+    SDL_Rect area = {
+        f__screen.clipX,
+        f__screen.yOffset + f__screen.clipY,
+        f__screen.clipWidth,
+        f__screen.clipHeight
+    };
 
     if(SDL_RenderSetClipRect(f__sdlRenderer, &area) < 0) {
         f_out__error("SDL_RenderSetClipRect: %s", SDL_GetError());
     }
 }
-#endif
+#endif // F_CONFIG_RENDER_SDL2
+#endif // F_CONFIG_LIB_SDL == 2
 
 void f_platform_api__screenShow(void)
 {

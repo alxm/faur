@@ -27,14 +27,15 @@ typedef struct FScreen FScreen;
 
 struct FScreen {
     FPixels* pixels;
-    #if !F_CONFIG_RENDER_SOFTWARE
-        FPlatformTextureScreen* texture;
-    #endif
     FSprite* sprite;
     unsigned frame;
     int clipX, clipY;
     int clipX2, clipY2;
     int clipWidth, clipHeight;
+    #if !F_CONFIG_RENDER_SOFTWARE
+        int yOffset;
+        FPlatformTextureScreen* texture;
+    #endif
 };
 
 extern const FPack f_pack__screen;

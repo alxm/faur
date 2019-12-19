@@ -33,7 +33,8 @@ typedef struct {
 } FScanlineEdge;
 
 struct FPlatformTexture {
-    unsigned spans[1];
+    unsigned framesNum;
+    unsigned* spans[]; // [framesNum]
 };
 
 typedef void (*FBlitter)(const FPlatformTexture* Texture, const FPixels* Pixels, unsigned Frame, int X, int Y);
@@ -355,7 +356,7 @@ static size_t spansBytesNeeded(const FPixels* Pixels, unsigned Frame)
 
 static void spansUpdate(const FPixels* Pixels, unsigned Frame, FPlatformTexture* Texture)
 {
-    unsigned* spans = Texture->spans;
+    unsigned* spans = Texture->spans[Frame];
     const FColorPixel* buffer = f_pixels__bufferGetStart(Pixels, Frame);
 
     for(int y = Pixels->size.y; y--; ) {
@@ -380,22 +381,54 @@ static void spansUpdate(const FPixels* Pixels, unsigned Frame, FPlatformTexture*
     }
 }
 
-FPlatformTexture* f_platform_api__textureNew(const FPixels* Pixels, unsigned Frame)
+FPlatformTexture* f_platform_api__textureNew(const FPixels* Pixels)
 {
-    FPlatformTexture* texture = NULL;
+    FPlatformTexture* t = f_mem_zalloc(
+                            sizeof(FPlatformTexture)
+                                + Pixels->framesNum * sizeof(unsigned*));
 
-    if(hasTransparency(Pixels, Frame)) {
-        texture = f_mem_malloc(spansBytesNeeded(Pixels, Frame));
-        spansUpdate(Pixels, Frame, texture);
+    t->framesNum = Pixels->framesNum;
+
+    for(unsigned f = Pixels->framesNum; f--; ) {
+        if(hasTransparency(Pixels, f)) {
+            t->spans[f] = f_mem_malloc(spansBytesNeeded(Pixels, f));
+            spansUpdate(Pixels, f, t);
+        }
     }
 
-    return texture;
+    return t;
+}
+
+FPlatformTexture* f_platform_api__textureDup(const FPlatformTexture* Texture, const FPixels* Pixels)
+{
+    F_UNUSED(Pixels);
+
+    FPlatformTexture* t = f_mem_zalloc(
+                            sizeof(FPlatformTexture)
+                                + Texture->framesNum * sizeof(unsigned*));
+
+    t->framesNum = Texture->framesNum;
+
+    for(unsigned f = Texture->framesNum; f--; ) {
+        if(Texture->spans[f]) {
+            unsigned num = Texture->spans[f][0] >> 1;
+
+            t->spans[f] = f_mem_dup(
+                            Texture->spans[f], (num + 1) * sizeof(unsigned));
+        }
+    }
+
+    return t;
 }
 
 void f_platform_api__textureFree(FPlatformTexture* Texture)
 {
     if(Texture == NULL) {
         return;
+    }
+
+    for(unsigned f = Texture->framesNum; f--; ) {
+        f_mem_free(Texture->spans[f]);
     }
 
     f_mem_free(Texture);
@@ -410,7 +443,7 @@ void f_platform_api__textureBlit(const FPlatformTexture* Texture, const FPixels*
     g_blitters
         [f__color.blend]
         [f__color.fillBlit]
-        [Texture != NULL]
+        [Texture->spans[Frame] != NULL]
         [!f_screen_boxInsideClip(X, Y, Pixels->size.x, Pixels->size.y)]
             (Texture, Pixels, Frame, X, Y);
 }

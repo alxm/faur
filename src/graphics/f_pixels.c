@@ -20,6 +20,12 @@
 
 FPixels* f_pixels__new(int W, int H, unsigned Frames, FPixelsFlags Flags)
 {
+    #if F_CONFIG_BUILD_DEBUG
+        if(Frames == 0) {
+            F__FATAL("f_pixels__new(%d, %d): 0 frames", W, H);
+        }
+    #endif
+
     FPixels* p = f_mem_malloc(sizeof(FPixels));
 
     f_pixels__init(p, W, H, Frames, Flags | F_PIXELS__DYNAMIC);
@@ -29,6 +35,12 @@ FPixels* f_pixels__new(int W, int H, unsigned Frames, FPixelsFlags Flags)
 
 void f_pixels__init(FPixels* Pixels, int W, int H, unsigned Frames, FPixelsFlags Flags)
 {
+    #if F_CONFIG_BUILD_DEBUG
+        if(Frames == 0) {
+            F__FATAL("f_pixels__init(%d, %d): 0 frames", W, H);
+        }
+    #endif
+
     Pixels->size.x = W;
     Pixels->size.y = H;
     Pixels->framesNum = Frames;
