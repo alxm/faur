@@ -30,6 +30,6 @@ struct FSprite {
 extern FPixels* f_sprite__pixelsGet(FSprite* Sprite);
 extern const FPixels* f_sprite__pixelsGetc(const FSprite* Sprite);
 extern FPlatformTextureScreen* f_sprite__textureGet(const FSprite* Sprite);
-extern void f_sprite__textureCommit(FSprite* Sprite);
+extern void f_sprite__textureUpdate(FSprite* Sprite, unsigned Frame);
 
 #endif // F_INC_GRAPHICS_SPRITE_V_H

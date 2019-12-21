@@ -190,7 +190,7 @@ void f_screen_pop(void)
     #endif
 
     #if F_CONFIG_RENDER_SOFTWARE
-        f_sprite__textureCommit(f__screen.sprite);
+        f_sprite__textureUpdate(f__screen.sprite, f__screen.frame);
     #endif
 
     f__screen = *screen;

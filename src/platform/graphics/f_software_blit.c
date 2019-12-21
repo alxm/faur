@@ -316,26 +316,28 @@ void f_platform_software_blit__uninit(void)
     #endif
 }
 
-static bool hasTransparency(const FPixels* Pixels, unsigned Frame)
+static unsigned* spansNew(const FPixels* Pixels, unsigned Frame)
 {
-    const FColorPixel* buffer = f_pixels__bufferGetStart(Pixels, Frame);
+    const FColorPixel* bufferStart = f_pixels__bufferGetStart(Pixels, Frame);
+    const FColorPixel* buffer = bufferStart;
+    bool transparent = false;
 
-    for(int i = Pixels->size.x * Pixels->size.y; i--; ) {
+    for(unsigned i = Pixels->bufferLen; i--; ) {
         if(*buffer++ == f_color__key) {
-            return true;
+            transparent = true;
+            break;
         }
     }
 
-    return false;
-}
+    if(!transparent) {
+        return NULL;
+    }
 
-static size_t spansBytesNeeded(const FPixels* Pixels, unsigned Frame)
-{
     // Spans format for each scanline:
     // (NumSpans << 1 | start draw/transparent), len0, len1, ...
 
     size_t bytesNeeded = 0;
-    const FColorPixel* buffer = f_pixels__bufferGetStart(Pixels, Frame);
+    buffer = bufferStart;
 
     for(int y = Pixels->size.y; y--; ) {
         bytesNeeded += sizeof(unsigned); // total size and initial state
@@ -351,13 +353,9 @@ static size_t spansBytesNeeded(const FPixels* Pixels, unsigned Frame)
         bytesNeeded += sizeof(unsigned); // line's last span length
     }
 
-    return bytesNeeded;
-}
-
-static void spansUpdate(const FPixels* Pixels, unsigned Frame, FPlatformTexture* Texture)
-{
-    unsigned* spans = Texture->spans[Frame];
-    const FColorPixel* buffer = f_pixels__bufferGetStart(Pixels, Frame);
+    unsigned* spansStart = f_mem_malloc(bytesNeeded);
+    unsigned* spans = spansStart;
+    buffer = bufferStart;
 
     for(int y = Pixels->size.y; y--; ) {
         unsigned* lineStart = spans;
@@ -379,6 +377,8 @@ static void spansUpdate(const FPixels* Pixels, unsigned Frame, FPlatformTexture*
         *lineStart |= (unsigned)(spans - lineStart) << 1; // line's # of spans
         *spans++ = spanLength; // record the last span's length
     }
+
+    return spansStart;
 }
 
 FPlatformTexture* f_platform_api__textureNew(const FPixels* Pixels)
@@ -390,10 +390,7 @@ FPlatformTexture* f_platform_api__textureNew(const FPixels* Pixels)
     t->framesNum = Pixels->framesNum;
 
     for(unsigned f = Pixels->framesNum; f--; ) {
-        if(hasTransparency(Pixels, f)) {
-            t->spans[f] = f_mem_malloc(spansBytesNeeded(Pixels, f));
-            spansUpdate(Pixels, f, t);
-        }
+        t->spans[f] = spansNew(Pixels, f);
     }
 
     return t;
@@ -432,6 +429,13 @@ void f_platform_api__textureFree(FPlatformTexture* Texture)
     }
 
     f_mem_free(Texture);
+}
+
+void f_platform_api__textureUpdate(FPlatformTexture* Texture, const FPixels* Pixels, unsigned Frame)
+{
+    f_mem_free(Texture->spans[Frame]);
+
+    Texture->spans[Frame] = spansNew(Pixels, Frame);
 }
 
 void f_platform_api__textureBlit(const FPlatformTexture* Texture, const FPixels* Pixels, unsigned Frame, int X, int Y)
