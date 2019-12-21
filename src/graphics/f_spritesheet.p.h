@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2019 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -15,21 +15,19 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef F_INC_GRAPHICS_SPRITE_V_H
-#define F_INC_GRAPHICS_SPRITE_V_H
+#ifndef F_INC_GRAPHICS_SPRITESHEET_P_H
+#define F_INC_GRAPHICS_SPRITESHEET_P_H
 
-#include "f_sprite.p.h"
+#include "../general/f_system_includes.h"
 
-#include "../platform/f_platform.v.h"
+#include "../data/f_strhash.p.h"
+#include "../graphics/f_sprite.p.h"
 
-struct FSprite {
-    FPixels pixels;
-    FPlatformTexture* texture;
-};
+typedef FStrHash FSpriteSheet;
 
-extern FPixels* f_sprite__pixelsGet(FSprite* Sprite);
-extern const FPixels* f_sprite__pixelsGetc(const FSprite* Sprite);
-extern FPlatformTextureScreen* f_sprite__textureGet(const FSprite* Sprite);
-extern void f_sprite__textureUpdate(FSprite* Sprite, unsigned Frame);
+extern FSpriteSheet* f_spritesheet_new(const char* Path);
+extern void f_spritesheet_free(FSpriteSheet* Sheet);
 
-#endif // F_INC_GRAPHICS_SPRITE_V_H
+extern const FSprite* f_spritesheet_get(const FSpriteSheet* Sheet, const char* Id);
+
+#endif // F_INC_GRAPHICS_SPRITESHEET_P_H

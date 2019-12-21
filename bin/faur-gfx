@@ -157,8 +157,8 @@ static const unsigned f__gfx_spans__{var}__{num}[] = {{{spans_data}}};
            num = frame_index,
            spans_data = ', '.join([str(s) for s in spans]))
 
-        span_vars += """\
-            (FPlatformTexture*)(void*)f__gfx_spans__{var}__{num},
+        span_vars += """
+        (unsigned*)f__gfx_spans__{var}__{num},\
 """.format(var = var_name, num = frame_index)
 
     content = """\
@@ -179,12 +179,18 @@ static const FColorPixel f__gfx_buffer__{var}[{width} * {height} * {frames_num}]
 {pixel_buffers}}};
 
 #if F_CONFIG_RENDER_SOFTWARE
-{span_buffers}#endif
+{span_buffers}
+static const struct {{
+    unsigned framesNum;
+    unsigned* spans[{frames_num}];
+}} f__gfx_texture__{var} = {{
+    {frames_num},
+    {{{span_vars}
+    }},
+}};
+#endif
 
-static F__GEN_GFX_CONST struct {{
-    FPixels pixels;
-    FPlatformTexture* textures[{frames_num}];
-}} f__gfx_sprite__{var} = {{
+static F__GEN_GFX_CONST FSprite f__gfx_sprite__{var} = {{
     {{
         .size = {{{width}, {height}}},
         .framesNum = {frames_num},
@@ -193,12 +199,11 @@ static F__GEN_GFX_CONST struct {{
         .flags = F_PIXELS__CONST,
         .buffer = (FColorPixel*)f__gfx_buffer__{var},
     }},
-    {{
-        #if F_CONFIG_RENDER_SOFTWARE
-{span_vars}        #else
-            NULL,
-        #endif
-    }},
+    #if F_CONFIG_RENDER_SOFTWARE
+        (FPlatformTexture*)(void*)&f__gfx_texture__{var},
+    #else
+        NULL,
+    #endif
 }};
 
 const FSprite* const f_gfx_{var} = (const FSprite*)(void*)&f__gfx_sprite__{var};

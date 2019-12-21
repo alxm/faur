@@ -28,9 +28,8 @@ typedef struct FPixels FPixels;
 
 typedef enum {
     F_PIXELS__ALLOC = F_FLAGS_BIT(0),
-    F_PIXELS__DIRTY = F_FLAGS_BIT(1),
-    F_PIXELS__DYNAMIC = F_FLAGS_BIT(2),
-    F_PIXELS__CONST = F_FLAGS_BIT(3),
+    F_PIXELS__DYNAMIC = F_FLAGS_BIT(1),
+    F_PIXELS__CONST = F_FLAGS_BIT(2),
 } FPixelsFlags;
 
 struct FPixels {

@@ -35,12 +35,25 @@ static const unsigned f__gfx_spans___console_19x7__3[] = {6, 1, 17, 1, 3, 19, 3,
 static const unsigned f__gfx_spans___console_19x7__4[] = {6, 1, 17, 1, 3, 19, 3, 19, 3, 19, 3, 19, 3, 19, 6, 1, 17, 1};
 static const unsigned f__gfx_spans___console_19x7__5[] = {6, 1, 17, 1, 3, 19, 3, 19, 3, 19, 3, 19, 3, 19, 6, 1, 17, 1};
 static const unsigned f__gfx_spans___console_19x7__6[] = {6, 1, 17, 1, 3, 19, 3, 19, 3, 19, 3, 19, 3, 19, 6, 1, 17, 1};
+
+static const struct {
+    unsigned framesNum;
+    unsigned* spans[7];
+} f__gfx_texture___console_19x7 = {
+    7,
+    {
+        (unsigned*)f__gfx_spans___console_19x7__0,
+        (unsigned*)f__gfx_spans___console_19x7__1,
+        (unsigned*)f__gfx_spans___console_19x7__2,
+        (unsigned*)f__gfx_spans___console_19x7__3,
+        (unsigned*)f__gfx_spans___console_19x7__4,
+        (unsigned*)f__gfx_spans___console_19x7__5,
+        (unsigned*)f__gfx_spans___console_19x7__6,
+    },
+};
 #endif
 
-static F__GEN_GFX_CONST struct {
-    FPixels pixels;
-    FPlatformTexture* textures[7];
-} f__gfx_sprite___console_19x7 = {
+static F__GEN_GFX_CONST FSprite f__gfx_sprite___console_19x7 = {
     {
         .size = {19, 7},
         .framesNum = 7,
@@ -49,19 +62,11 @@ static F__GEN_GFX_CONST struct {
         .flags = F_PIXELS__CONST,
         .buffer = (FColorPixel*)f__gfx_buffer___console_19x7,
     },
-    {
-        #if F_CONFIG_RENDER_SOFTWARE
-            (FPlatformTexture*)(void*)f__gfx_spans___console_19x7__0,
-            (FPlatformTexture*)(void*)f__gfx_spans___console_19x7__1,
-            (FPlatformTexture*)(void*)f__gfx_spans___console_19x7__2,
-            (FPlatformTexture*)(void*)f__gfx_spans___console_19x7__3,
-            (FPlatformTexture*)(void*)f__gfx_spans___console_19x7__4,
-            (FPlatformTexture*)(void*)f__gfx_spans___console_19x7__5,
-            (FPlatformTexture*)(void*)f__gfx_spans___console_19x7__6,
-        #else
-            NULL,
-        #endif
-    },
+    #if F_CONFIG_RENDER_SOFTWARE
+        (FPlatformTexture*)(void*)&f__gfx_texture___console_19x7,
+    #else
+        NULL,
+    #endif
 };
 
 const FSprite* const f_gfx__console_19x7 = (const FSprite*)(void*)&f__gfx_sprite___console_19x7;

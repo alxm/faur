@@ -27,7 +27,7 @@ static void F__FUNC_NAME(Keyed, NoClip)(const FPlatformTexture* Texture, const F
     const int screenW = f__screen.pixels->size.x;
     FColorPixel* startDst = f_screen__bufferGetFrom(X, Y);
     const FColorPixel* src = f_pixels__bufferGetStart(Pixels, Frame);
-    const unsigned* spans = Texture->spans;
+    const unsigned* spans = Texture->spans[Frame];
 
     for(int i = Pixels->size.y; i--; startDst += screenW) {
         bool draw = *spans & 1;
@@ -74,7 +74,7 @@ static void F__FUNC_NAME(Keyed, DoClip)(const FPlatformTexture* Texture, const F
     const FColorPixel* startSrc = f_pixels__bufferGetFrom(
                                     Pixels, Frame, xClipLeft, yClipUp);
 
-    const unsigned* spans = Texture->spans;
+    const unsigned* spans = Texture->spans[Frame];
 
     // skip clipped top rows
     for(int i = yClipUp; i--; ) {

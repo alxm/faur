@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2019 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -15,21 +15,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef F_INC_GRAPHICS_SPRITE_V_H
-#define F_INC_GRAPHICS_SPRITE_V_H
+#ifndef F_INC_GRAPHICS_SPRITESHEET_V_H
+#define F_INC_GRAPHICS_SPRITESHEET_V_H
 
-#include "f_sprite.p.h"
+#include "f_spritesheet.p.h"
 
-#include "../platform/f_platform.v.h"
-
-struct FSprite {
-    FPixels pixels;
-    FPlatformTexture* texture;
-};
-
-extern FPixels* f_sprite__pixelsGet(FSprite* Sprite);
-extern const FPixels* f_sprite__pixelsGetc(const FSprite* Sprite);
-extern FPlatformTextureScreen* f_sprite__textureGet(const FSprite* Sprite);
-extern void f_sprite__textureUpdate(FSprite* Sprite, unsigned Frame);
-
-#endif // F_INC_GRAPHICS_SPRITE_V_H
+#endif // F_INC_GRAPHICS_SPRITESHEET_V_H

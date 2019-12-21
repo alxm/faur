@@ -25,6 +25,8 @@ extern SDL_Renderer* f__sdlRenderer;
 
 void f_platform_api__drawPixel(int X, int Y)
 {
+    Y += f__screen.yOffset;
+
     if(SDL_RenderDrawPoint(f__sdlRenderer, X, Y) < 0) {
         f_out__error("SDL_RenderDrawPoint: %s", SDL_GetError());
     }
@@ -32,6 +34,9 @@ void f_platform_api__drawPixel(int X, int Y)
 
 void f_platform_api__drawLine(int X1, int Y1, int X2, int Y2)
 {
+    Y1 += f__screen.yOffset;
+    Y2 += f__screen.yOffset;
+
     if(SDL_RenderDrawLine(f__sdlRenderer, X1, Y1, X2, Y2) < 0) {
         f_out__error("SDL_RenderDrawLine: %s", SDL_GetError());
     }
@@ -39,16 +44,23 @@ void f_platform_api__drawLine(int X1, int Y1, int X2, int Y2)
 
 void f_platform_api__drawHLine(int X1, int X2, int Y)
 {
+    Y += f__screen.yOffset;
+
     f_platform_api__drawRectangleFilled(X1, Y, X2 - X1 + 1, 1);
 }
 
 void f_platform_api__drawVLine(int X, int Y1, int Y2)
 {
+    Y1 += f__screen.yOffset;
+    Y2 += f__screen.yOffset;
+
     f_platform_api__drawRectangleFilled(X, Y1, 1, Y2 - Y1 + 1);
 }
 
 void f_platform_api__drawRectangleFilled(int X, int Y, int Width, int Height)
 {
+    Y += f__screen.yOffset;
+
     SDL_Rect area = {X, Y, Width, Height};
 
     if(SDL_RenderFillRect(f__sdlRenderer, &area) < 0) {
@@ -84,6 +96,8 @@ void f_platform_api__drawCircleOutline(int X, int Y, int Radius)
 
         return;
     }
+
+    Y += f__screen.yOffset;
 
     int x = Radius;
     int y = 0;
@@ -191,6 +205,8 @@ void f_platform_api__drawCircleFilled(int X, int Y, int Radius)
 
         return;
     }
+
+    Y += f__screen.yOffset;
 
     int x = Radius;
     int y = 0;
