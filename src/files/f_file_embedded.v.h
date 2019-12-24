@@ -28,9 +28,6 @@ extern FFileEmbedded* f_file_embedded__new(FPath* Path);
 
 extern bool f_file_embedded__seek(FFileEmbedded* File, int Offset, FFileOffset Origin);
 extern bool f_file_embedded__read(FFileEmbedded* File, void* Buffer, size_t Size);
-extern bool f_file_embedded__write(FFileEmbedded* File, const void* Buffer, size_t Size);
-extern bool f_file_embedded__writef(FFileEmbedded* File, const char* Format, va_list Args);
-extern bool f_file_embedded__flush(FFileEmbedded* File);
 extern int f_file_embedded__readChar(FFileEmbedded* File);
 extern int f_file_embedded__readCharUndo(FFileEmbedded* File, int Char);
 

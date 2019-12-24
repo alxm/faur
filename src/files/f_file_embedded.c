@@ -78,31 +78,6 @@ bool f_file_embedded__read(FFileEmbedded* File, void* Buffer, size_t Size)
     return len == Size;
 }
 
-bool f_file_embedded__write(FFileEmbedded* File, const void* Buffer, size_t Size)
-{
-    F_UNUSED(File);
-    F_UNUSED(Buffer);
-    F_UNUSED(Size);
-
-    return false;
-}
-
-bool f_file_embedded__writef(FFileEmbedded* File, const char* Format, va_list Args)
-{
-    F_UNUSED(File);
-    F_UNUSED(Format);
-    F_UNUSED(Args);
-
-    return false;
-}
-
-bool f_file_embedded__flush(FFileEmbedded* File)
-{
-    F_UNUSED(File);
-
-    return false;
-}
-
 int f_file_embedded__readChar(FFileEmbedded* File)
 {
     int c = EOF;
