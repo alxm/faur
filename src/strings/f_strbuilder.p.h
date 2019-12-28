@@ -28,6 +28,6 @@ extern void f_strbuilder_free(FStrBuilder* Builder);
 extern const char* f_strbuilder_get(FStrBuilder* Builder);
 
 extern bool f_strbuilder_add(FStrBuilder* Builder, const char* String);
-extern bool f_strbuilder_addf(FStrBuilder* Builder, const char* Format, ...);
+extern bool f_strbuilder_addf(FStrBuilder* Builder, const char* Format, ...) F__ATTRIBUTE_FORMAT(2);
 
 #endif // F_INC_STRINGS_STRBUILDER_P_H

@@ -44,7 +44,7 @@ extern void f_file_prefixWrite(FFile* File, const char* Prefix);
 
 extern bool f_file_read(FFile* File, void* Buffer, size_t Size);
 extern bool f_file_write(FFile* File, const void* Buffer, size_t Size);
-extern bool f_file_writef(FFile* File, const char* Format, ...);
+extern bool f_file_writef(FFile* File, const char* Format, ...) F__ATTRIBUTE_FORMAT(2);
 extern bool f_file_flush(FFile* File);
 
 extern bool f_file_lineRead(FFile* File);

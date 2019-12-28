@@ -20,6 +20,6 @@
 
 #include "f_str.p.h"
 
-extern const char* f_str__fmt512(const char* Format, ...);
+extern const char* f_str__fmt512(const char* Format, ...) F__ATTRIBUTE_FORMAT(1);
 
 #endif // F_INC_STRINGS_STR_V_H

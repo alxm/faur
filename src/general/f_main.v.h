@@ -22,6 +22,6 @@
 
 extern void f__main(void);
 
-extern void F__FATAL(const char* Format, ...) F__ATTRIBUTE_NORETURN;
+extern void F__FATAL(const char* Format, ...) F__ATTRIBUTE_NORETURN F__ATTRIBUTE_FORMAT(1);
 
 #endif // F_INC_GENERAL_MAIN_V_H

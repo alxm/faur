@@ -43,7 +43,7 @@ void* f_mem_malloc(size_t Size)
         FMaxMemAlignType* ptr = malloc(total);
 
         if(ptr == NULL) {
-            F__FATAL("malloc(%u) failed", total);
+            F__FATAL("malloc(%zu) failed", total);
         }
 
         ptr->u_size = total;
@@ -55,7 +55,7 @@ void* f_mem_malloc(size_t Size)
         void* ptr = malloc(Size);
 
         if(ptr == NULL) {
-            F__FATAL("malloc(%u) failed", Size);
+            F__FATAL("malloc(%zu) failed", Size);
         }
 
         return ptr;
@@ -69,7 +69,7 @@ void* f_mem_zalloc(size_t Size)
         FMaxMemAlignType* ptr = calloc(1, total);
 
         if(ptr == NULL) {
-            F__FATAL("calloc(1, %u) failed", total);
+            F__FATAL("calloc(1, %zu) failed", total);
         }
 
         ptr->u_size = total;
@@ -81,7 +81,7 @@ void* f_mem_zalloc(size_t Size)
         void* ptr = calloc(1, Size);
 
         if(ptr == NULL) {
-            F__FATAL("calloc(1, %u) failed", Size);
+            F__FATAL("calloc(1, %zu) failed", Size);
         }
 
         return ptr;

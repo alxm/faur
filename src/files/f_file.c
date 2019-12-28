@@ -47,7 +47,7 @@ bool f_file_bufferRead(const char* Path, void* Buffer, size_t Size)
     }
 
     if(!ret) {
-        f_out__warning("f_file_bufferRead(%s, %lu): Failed", Path, Size);
+        f_out__warning("f_file_bufferRead(%s, %zu): Failed", Path, Size);
     }
 
     return ret;
@@ -58,7 +58,7 @@ bool f_file_bufferWrite(const char* Path, const void* Buffer, size_t Size)
     bool ret = f_platform_api__fileBufferWrite(Path, Buffer, Size);
 
     if(!ret) {
-        f_out__error("f_file_bufferWrite(%s, %lu): Failed", Path, Size);
+        f_out__error("f_file_bufferWrite(%s, %zu): Failed", Path, Size);
     }
 
     return ret;
@@ -177,7 +177,7 @@ bool f_file_read(FFile* File, void* Buffer, size_t Size)
 {
     #if F_CONFIG_BUILD_DEBUG
         if(!F_FLAGS_TEST_ANY(File->mode, F_FILE_READ)) {
-            F__FATAL("f_file_read(%s, %u): Bad mode %x",
+            F__FATAL("f_file_read(%s, %zu): Bad mode %x",
                      f_path_getFull(File->path),
                      Size,
                      File->mode);
@@ -193,7 +193,7 @@ bool f_file_read(FFile* File, void* Buffer, size_t Size)
     }
 
     if(!ret) {
-        f_out__warning("f_file_read(%s): Could not read %u bytes",
+        f_out__warning("f_file_read(%s): Could not read %zu bytes",
                        f_path_getFull(File->path),
                        Size);
     }
@@ -205,7 +205,7 @@ bool f_file_write(FFile* File, const void* Buffer, size_t Size)
 {
     #if F_CONFIG_BUILD_DEBUG
         if(!F_FLAGS_TEST_ANY(File->mode, F_FILE_WRITE)) {
-            F__FATAL("f_file_write(%s, %u): Bad mode %x",
+            F__FATAL("f_file_write(%s, %zu): Bad mode %x",
                      f_path_getFull(File->path),
                      Size,
                      File->mode);
@@ -215,7 +215,7 @@ bool f_file_write(FFile* File, const void* Buffer, size_t Size)
     bool ret = f_platform_api__fileWrite(File->f.platform, Buffer, Size);
 
     if(!ret) {
-        f_out__error("f_file_write(%s): Could not write %u bytes",
+        f_out__error("f_file_write(%s): Could not write %zu bytes",
                      f_path_getFull(File->path),
                      Size);
     }

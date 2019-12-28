@@ -21,8 +21,8 @@
 #include "../general/f_system_includes.h"
 
 extern void f_out_text(const char* Text);
-extern void f_out_info(const char* Format, ...);
-extern void f_out_warning(const char* Format, ...);
-extern void f_out_error(const char* Format, ...);
+extern void f_out_info(const char* Format, ...) F__ATTRIBUTE_FORMAT(1);
+extern void f_out_warning(const char* Format, ...) F__ATTRIBUTE_FORMAT(1);
+extern void f_out_error(const char* Format, ...) F__ATTRIBUTE_FORMAT(1);
 
 #endif // F_INC_GENERAL_OUT_P_H
