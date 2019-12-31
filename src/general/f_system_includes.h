@@ -36,6 +36,8 @@
 #define F_GLUE4(A, B, C, D) F_GLUE2(A, F_GLUE3(B, C, D))
 #define F_GLUE5(A, B, C, D, E) F_GLUE2(A, F_GLUE4(B, C, D, E))
 
+#define F__ATTRIBUTE_NORETURN __attribute__((noreturn))
+
 typedef void FFree(void* Self);
 
 typedef volatile int FEvent;
