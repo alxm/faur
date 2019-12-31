@@ -90,6 +90,7 @@ F_FILES_OBJ := $(F_FILES_OBJ_APP) $(F_FILES_OBJ_GEN) $(F_FILES_OBJ_EXTRA)
 #
 F_GENERIC_FLAGS_SHARED := \
     -MMD \
+    -MP \
     -Wall \
     -Wextra \
     -Wconversion \
