@@ -101,7 +101,7 @@ const char* f_main_argsGet(int ArgNum)
     return g_args[ArgNum];
 }
 
-__attribute__((noreturn)) static void handleFatal(void)
+F__ATTRIBUTE_NORETURN static void handleFatal(void)
 {
     #if F_CONFIG_BUILD_DEBUG_FATAL_SPIN
         while(true);

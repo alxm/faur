@@ -90,6 +90,7 @@ F_FILES_OBJ := $(F_FILES_OBJ_APP) $(F_FILES_OBJ_GEN) $(F_FILES_OBJ_EXTRA)
 #
 F_GENERIC_FLAGS_SHARED := \
     -MMD \
+    -MP \
     -Wall \
     -Wextra \
     -Wconversion \
@@ -223,7 +224,7 @@ cleangen :
 	rm -rf $(F_DIR_GEN_C) $(F_DIR_GEN_O)
 
 run : all
-	cd $(F_DIR_BIN) && ./$(F_FILE_BIN)
+	cd $(F_DIR_BIN) && LD_LIBRARY_PATH=".:$$LD_LIBRARY_PATH" ./$(F_FILE_BIN)
 
 copystatic :
 	@ mkdir -p $(F_DIR_BIN)
