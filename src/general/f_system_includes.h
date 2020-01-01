@@ -60,9 +60,9 @@ typedef volatile int FEvent;
 #endif
 
 #if __SAMD21G18A__
-    #include "../platform/system/f_gamebuino_config.h"
+    #include "../platform/config/f_gamebuino_config.h"
 #elif ESP_PLATFORM
-    #include "../platform/system/f_odroid_go_config.h"
+    #include "../platform/config/f_odroid_go_config.h"
 #endif
 
 #endif // F_INC_GENERAL_SYSTEM_INCLUDES_H
