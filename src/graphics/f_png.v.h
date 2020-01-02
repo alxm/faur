@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2019 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2019-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -22,8 +22,7 @@
 
 #include "../graphics/f_pixels.v.h"
 
-extern FPixels* f_png__readFile(const char* Path);
-extern FPixels* f_png__readMemory(const uint8_t* Data);
+extern FPixels* f_png__read(const char* Path);
 extern void f_png__write(const char* Path, const FPixels* Pixels, unsigned Frame, char* Title, char* Description);
 
 #endif // F_INC_GRAPHICS_PNG_V_H
