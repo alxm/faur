@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2016-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -104,10 +104,6 @@ FPlatformTexture* f_platform_api__textureNew(const FPixels* Pixels)
 
         texture->texture[t] = tex;
 
-        if(SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND) < 0) {
-            f_out__error("SDL_SetTextureBlendMode: %s", SDL_GetError());
-        }
-
         if(SDL_UpdateTexture(
             tex, NULL, buffer, Pixels->size.x * (int)sizeof(FColorPixel)) < 0) {
 
@@ -123,10 +119,6 @@ FPlatformTexture* f_platform_api__textureNew(const FPixels* Pixels)
 FPlatformTexture* f_platform_api__textureDup(const FPlatformTexture* Texture, const FPixels* Pixels)
 {
     FPlatformTexture* texture = f_mem_zalloc(sizeof(FPlatformTexture));
-
-    if(SDL_SetRenderDrawBlendMode(f__sdlRenderer, SDL_BLENDMODE_NONE) < 0) {
-        f_out__error("SDL_SetRenderDrawBlendMode: %s", SDL_GetError());
-    }
 
     if(SDL_RenderSetClipRect(f__sdlRenderer, NULL) < 0) {
         f_out__error("SDL_RenderSetClipRect: %s", SDL_GetError());
@@ -146,12 +138,14 @@ FPlatformTexture* f_platform_api__textureDup(const FPlatformTexture* Texture, co
 
         texture->texture[t] = tex;
 
-        if(SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND) < 0) {
-            f_out__error("SDL_SetTextureBlendMode: %s", SDL_GetError());
-        }
-
         if(SDL_SetRenderTarget(f__sdlRenderer, tex) < 0) {
             F__FATAL("SDL_SetRenderTarget: %s", SDL_GetError());
+        }
+
+        if(SDL_SetTextureBlendMode(
+            Texture->texture[t], SDL_BLENDMODE_NONE) < 0) {
+
+            f_out__error("SDL_SetTextureBlendMode: %s", SDL_GetError());
         }
 
         if(SDL_RenderCopy(
@@ -168,7 +162,6 @@ FPlatformTexture* f_platform_api__textureDup(const FPlatformTexture* Texture, co
     }
 
     f_platform_api__screenClipSet();
-    f_platform_api__renderSetBlendMode();
 
     return texture;
 }

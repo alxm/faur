@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -409,10 +409,6 @@ void f_platform_api__screenTextureSync(void)
 #if F_CONFIG_RENDER_SDL2
 void f_platform_api__screenToTexture(FPlatformTextureScreen* Texture, unsigned Frame)
 {
-    if(SDL_SetRenderDrawBlendMode(f__sdlRenderer, SDL_BLENDMODE_NONE) < 0) {
-        f_out__error("SDL_SetRenderDrawBlendMode: %s", SDL_GetError());
-    }
-
     if(SDL_SetRenderTarget(f__sdlRenderer, Texture) < 0) {
         F__FATAL("SDL_SetRenderTarget: %s", SDL_GetError());
     }
@@ -435,7 +431,6 @@ void f_platform_api__screenToTexture(FPlatformTextureScreen* Texture, unsigned F
     }
 
     f_platform_api__screenClipSet();
-    f_platform_api__renderSetBlendMode();
 }
 
 void f_platform_api__screenClipSet(void)
@@ -608,12 +603,6 @@ void f_platform_api__screenShow(void)
                 F__FATAL("SDL_RenderCopy: %s", SDL_GetError());
             }
         #else
-            if(SDL_SetRenderDrawBlendMode(
-                f__sdlRenderer, SDL_BLENDMODE_NONE) < 0) {
-
-                f_out__error("SDL_SetRenderDrawBlendMode: %s", SDL_GetError());
-            }
-
             if(SDL_RenderCopy(f__sdlRenderer, g_sdlTexture, NULL, NULL) < 0) {
                 F__FATAL("SDL_RenderCopy: %s", SDL_GetError());
             }
@@ -625,7 +614,6 @@ void f_platform_api__screenShow(void)
             }
 
             f_platform_api__screenClipSet();
-            f_platform_api__renderSetBlendMode();
         #endif
 
         SDL_RenderPresent(f__sdlRenderer);
