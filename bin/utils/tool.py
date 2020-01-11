@@ -1,5 +1,5 @@
 """
-    Copyright 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2016-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -139,7 +139,10 @@ class Tool:
         if not os.path.isdir(path):
             self.out.error('{} is not a dir'.format(path))
 
-        return sorted(os.listdir(path))
+        entries = os.listdir(path)
+        entries.sort()
+
+        return entries
 
     def check_files_exist(self, *paths):
         for f in paths:
