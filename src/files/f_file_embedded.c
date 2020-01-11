@@ -1,5 +1,5 @@
 /*
-    Copyright 2018-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2018-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -31,6 +31,11 @@ FFileEmbedded* f_file_embedded__new(FPath* Path)
     f->index = 0;
 
     return f;
+}
+
+void f_file_embedded__free(FFileEmbedded* File)
+{
+    f_mem_free(File);
 }
 
 bool f_file_embedded__seek(FFileEmbedded* File, int Offset, FFileOffset Origin)

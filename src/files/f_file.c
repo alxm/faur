@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -115,6 +115,8 @@ void f_file_free(FFile* File)
 
     if(f_path_test(File->path, F_PATH_REAL)) {
         f_platform_api__fileFree(File->f.platform);
+    } else {
+        f_file_embedded__free(File->f.embedded);
     }
 
     f_path_free(File->path);
