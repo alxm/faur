@@ -34,6 +34,8 @@ typedef struct {
 
 #include "../general/f_init.v.h"
 
+#include "../files/f_path.v.h"
+
 extern const FPack f_pack__embed;
 
 extern void f_embed__populate(void);
@@ -43,5 +45,7 @@ extern const FEmbeddedDir* f_embed__dirGet(const char* Path);
 
 extern void f_embed__fileAdd(const FEmbeddedFile* File);
 extern const FEmbeddedFile* f_embed__fileGet(const char* Path);
+
+extern bool f_embed__stat(const char* Path, FPathInfo* Info);
 
 #endif // F_INC_FILES_EMBED_V_H

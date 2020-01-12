@@ -66,3 +66,26 @@ const FEmbeddedFile* f_embed__fileGet(const char* Path)
 {
     return f_strhash_get(g_files, Path);
 }
+
+bool f_embed__stat(const char* Path, FPathInfo* Info)
+{
+    const FEmbeddedFile* f = f_embed__fileGet(Path);
+
+    if(f) {
+        Info->flags = F_PATH_EMBEDDED | F_PATH_FILE;
+        Info->size = f->size;
+
+        return true;
+    }
+
+    const FEmbeddedDir* d = f_embed__dirGet(Path);
+
+    if(d) {
+        Info->flags = F_PATH_EMBEDDED | F_PATH_DIR;
+        Info->size = 0;
+
+        return true;
+    }
+
+    return false;
+}

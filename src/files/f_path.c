@@ -1,5 +1,5 @@
 /*
-    Copyright 2018-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2018-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -19,32 +19,26 @@
 #include <faur.v.h>
 
 struct FPath {
-    FPathFlags flags;
+    FPathInfo info;
     char* full;
     char* dirsPart;
     char* namePart;
 };
 
-static FPathFlags getPathFlags(const char* Path)
+static inline bool getPathInfo(const char* Path, FPathInfo* Info)
 {
-    FPathFlags flags = 0;
-
-    if(!f_platform_api__fileStat(Path, &flags)) {
-        if(f_embed__fileGet(Path) != NULL) {
-            F_FLAGS_SET(flags, F_PATH_EMBEDDED | F_PATH_FILE);
-        } else if(f_embed__dirGet(Path) != NULL) {
-            F_FLAGS_SET(flags, F_PATH_EMBEDDED | F_PATH_DIR);
-        }
-    }
-
-    return flags;
+    return f_platform_api__fileStat(Path, Info) || f_embed__stat(Path, Info);
 }
 
 FPath* f_path_new(const char* Path)
 {
     FPath* p = f_mem_malloc(sizeof(FPath));
 
-    p->flags = getPathFlags(Path);
+    if(!getPathInfo(Path, &p->info)) {
+        p->info.flags = 0;
+        p->info.size = 0;
+    }
+
     p->full = f_str_dup(Path);
     p->dirsPart = f_str_prefixGetToLast(Path, '/');
     p->namePart = f_str_suffixGetFromLast(Path, '/');
@@ -96,17 +90,24 @@ void f_path_free(FPath* Path)
 
 bool f_path_exists(const char* Path, FPathFlags Flags)
 {
-    return F_FLAGS_TEST_ALL(getPathFlags(Path), Flags);
+    FPathInfo info;
+
+    return getPathInfo(Path, &info) && F_FLAGS_TEST_ALL(info.flags, Flags);
 }
 
 bool f_path_test(const FPath* Path, FPathFlags Flags)
 {
-    return F_FLAGS_TEST_ALL(Path->flags, Flags);
+    return F_FLAGS_TEST_ALL(Path->info.flags, Flags);
+}
+
+size_t f_path__sizeGet(const FPath* Path)
+{
+    return Path->info.size;
 }
 
 void f_path__flagsSet(FPath* Path, FPathFlags Flags)
 {
-    F_FLAGS_SET(Path->flags, Flags);
+    F_FLAGS_SET(Path->info.flags, Flags);
 }
 
 const char* f_path_getFull(const FPath* Path)
