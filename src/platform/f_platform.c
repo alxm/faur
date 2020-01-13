@@ -1,5 +1,5 @@
 /*
-    Copyright 2017-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2017-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -40,6 +40,10 @@ static void f_platform__init(void)
         f_platform_gp2x__init();
     #elif F_CONFIG_SYSTEM_WIZ || F_CONFIG_SYSTEM_CAANOO
         f_platform_wiz__init();
+    #endif
+
+    #if F_CONFIG_SYSTEM_ODROID_GO
+        f_platform_odroid_go__init();
     #endif
 
     f_platform_api__screenInit();

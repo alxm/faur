@@ -1,5 +1,5 @@
 /*
-    Copyright 2019 Alex Margarit <alex@alxm.org>
+    Copyright 2019-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -29,20 +29,18 @@ struct FPlatformButton {
     bool pressed;
 };
 
-static FPlatformButton g_buttons[F_BUTTON_NUM] = {
-    [F_BUTTON_UP] = {NULL, false},
-    [F_BUTTON_DOWN] = {NULL, false},
-    [F_BUTTON_LEFT] = {NULL, false},
-    [F_BUTTON_RIGHT] = {NULL, false},
-    [F_BUTTON_A] = {&GO.BtnB, false},
-    [F_BUTTON_B] = {&GO.BtnA, false},
-    [F_BUTTON_X] = {&GO.BtnB, false},
-    [F_BUTTON_Y] = {&GO.BtnA, false},
-    [F_BUTTON_L] = {&GO.BtnB, false},
-    [F_BUTTON_R] = {&GO.BtnA, false},
-    [F_BUTTON_START] = {&GO.BtnStart, false},
-    [F_BUTTON_SELECT] = {&GO.BtnSelect, false},
-};
+static FPlatformButton g_buttons[F_BUTTON_NUM];
+
+void f_platform_odroid_go_input__init(void)
+{
+    g_buttons[F_BUTTON_A].odroidButton = &GO.BtnB;
+    g_buttons[F_BUTTON_B].odroidButton = &GO.BtnA;
+    g_buttons[F_BUTTON_START].odroidButton = &GO.BtnStart;
+    g_buttons[F_BUTTON_SELECT].odroidButton = &GO.BtnSelect;
+    g_buttons[F_BUTTON_GUIDE].odroidButton = &GO.BtnMenu;
+    g_buttons[F_BUTTON_VOLUP].odroidButton = &GO.BtnVolume;
+    g_buttons[F_BUTTON_VOLDOWN].odroidButton = &GO.BtnVolume;
+}
 
 void f_platform_api__inputPoll(void)
 {
@@ -51,8 +49,12 @@ void f_platform_api__inputPoll(void)
     g_buttons[F_BUTTON_LEFT].pressed = GO.JOY_X.isAxisPressed() == 2;
     g_buttons[F_BUTTON_RIGHT].pressed = GO.JOY_X.isAxisPressed() == 1;
 
-    for(int b = F_BUTTON_A; b <= F_BUTTON_SELECT; b++) {
-        g_buttons[b].pressed = g_buttons[b].odroidButton->isPressed() == 1;
+    for(int b = F_BUTTON_NUM; b--; ) {
+        Button* button = g_buttons[b].odroidButton;
+
+        if(button) {
+            g_buttons[b].pressed = button->isPressed() == 1;
+        }
     }
 }
 

@@ -1,5 +1,5 @@
 /*
-    Copyright 2019 Alex Margarit <alex@alxm.org>
+    Copyright 2019-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -43,6 +43,11 @@ void loop(void)
     GO.update();
 
     f_state__runStep();
+}
+
+void f_platform_odroid_go__init(void)
+{
+    f_platform_odroid_go_input__init();
 }
 
 uint32_t f_platform_api__timeMsGet(void)

@@ -1,5 +1,5 @@
 /*
-    Copyright 2019 Alex Margarit <alex@alxm.org>
+    Copyright 2019-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -36,10 +36,10 @@ static const Button* const g_buttons[F_BUTTON_NUM] = {
     [F_BUTTON_RIGHT] = &BUTTON_RIGHT,
     [F_BUTTON_A] = &BUTTON_A,
     [F_BUTTON_B] = &BUTTON_B,
-    [F_BUTTON_X] = &BUTTON_A,
-    [F_BUTTON_Y] = &BUTTON_B,
-    [F_BUTTON_L] = &BUTTON_LEFT,
-    [F_BUTTON_R] = &BUTTON_RIGHT,
+    [F_BUTTON_X] = NULL,
+    [F_BUTTON_Y] = NULL,
+    [F_BUTTON_L] = NULL,
+    [F_BUTTON_R] = NULL,
     [F_BUTTON_START] = &BUTTON_MENU,
     [F_BUTTON_SELECT] = &BUTTON_MENU,
 };
