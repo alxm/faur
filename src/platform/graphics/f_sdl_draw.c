@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2016-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -22,6 +22,29 @@
 #include <SDL2/SDL.h>
 
 extern SDL_Renderer* f__sdlRenderer;
+
+void f_platform_api__drawSetColor(void)
+{
+    if(SDL_SetRenderDrawColor(
+        f__sdlRenderer,
+        (uint8_t)f__color.rgb.r,
+        (uint8_t)f__color.rgb.g,
+        (uint8_t)f__color.rgb.b,
+        f_platform_sdl_video__pixelAlphaToSdlAlpha()) < 0) {
+
+        f_out__error("SDL_SetRenderDrawColor: %s", SDL_GetError());
+    }
+}
+
+void f_platform_api__drawSetBlend(void)
+{
+    SDL_BlendMode blend =
+        (SDL_BlendMode)f_platform_sdl_video__pixelBlendToSdlBlend();
+
+    if(SDL_SetRenderDrawBlendMode(f__sdlRenderer, blend) < 0) {
+        f_out__error("SDL_SetRenderDrawBlendMode: %s", SDL_GetError());
+    }
+}
 
 void f_platform_api__drawPixel(int X, int Y)
 {

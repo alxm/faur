@@ -141,7 +141,7 @@ void f_color_blendSet(FColorBlend Blend)
         }
 
         #if !F_CONFIG_RENDER_SOFTWARE
-            f_platform_api__renderSetBlendMode();
+            f_platform_api__drawSetBlend();
         #endif
     #endif
 }
@@ -153,7 +153,7 @@ void f_color_alphaSet(int Alpha)
     #if F__OPTIMIZE_ALPHA
         optimizeAlphaBlending();
     #elif !F_CONFIG_RENDER_SOFTWARE
-        f_platform_api__renderSetDrawColor();
+        f_platform_api__drawSetColor();
     #endif
 }
 
@@ -171,7 +171,7 @@ void f_color_colorSetRgb(int Red, int Green, int Blue)
     setRgb(Red, Green, Blue);
 
     #if !F_CONFIG_RENDER_SOFTWARE
-        f_platform_api__renderSetDrawColor();
+        f_platform_api__drawSetColor();
     #endif
 }
 
@@ -184,7 +184,7 @@ void f_color_colorSetRgba(int Red, int Green, int Blue, int Alpha)
     #if F__OPTIMIZE_ALPHA
         optimizeAlphaBlending();
     #elif !F_CONFIG_RENDER_SOFTWARE
-        f_platform_api__renderSetDrawColor();
+        f_platform_api__drawSetColor();
     #endif
 }
 
@@ -196,7 +196,7 @@ void f_color_colorSetHex(uint32_t Hexcode)
     f__color.pixel = f_color_pixelFromHex(Hexcode);
 
     #if !F_CONFIG_RENDER_SOFTWARE
-        f_platform_api__renderSetDrawColor();
+        f_platform_api__drawSetColor();
     #endif
 }
 
@@ -206,7 +206,7 @@ void f_color_colorSetPixel(FColorPixel Pixel)
     f__color.pixel = Pixel;
 
     #if !F_CONFIG_RENDER_SOFTWARE
-        f_platform_api__renderSetDrawColor();
+        f_platform_api__drawSetColor();
     #endif
 }
 

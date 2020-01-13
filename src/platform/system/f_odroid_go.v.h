@@ -1,5 +1,5 @@
 /*
-    Copyright 2019 Alex Margarit <alex@alxm.org>
+    Copyright 2019-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -19,5 +19,7 @@
 #define F_INC_PLATFORM_SYSTEM_ODROID_GO_V_H
 
 #include "f_odroid_go.p.h"
+
+extern void f_platform_odroid_go__init(void);
 
 #endif // F_INC_PLATFORM_SYSTEM_ODROID_GO_V_H
