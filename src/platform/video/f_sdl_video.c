@@ -734,28 +734,5 @@ uint8_t f_platform_sdl_video__pixelAlphaToSdlAlpha(void)
             return SDL_ALPHA_OPAQUE;
     }
 }
-
-void f_platform_api__renderSetDrawColor(void)
-{
-    if(SDL_SetRenderDrawColor(
-        f__sdlRenderer,
-        (uint8_t)f__color.rgb.r,
-        (uint8_t)f__color.rgb.g,
-        (uint8_t)f__color.rgb.b,
-        f_platform_sdl_video__pixelAlphaToSdlAlpha()) < 0) {
-
-        f_out__error("SDL_SetRenderDrawColor: %s", SDL_GetError());
-    }
-}
-
-void f_platform_api__renderSetBlendMode(void)
-{
-    SDL_BlendMode blend =
-        (SDL_BlendMode)f_platform_sdl_video__pixelBlendToSdlBlend();
-
-    if(SDL_SetRenderDrawBlendMode(f__sdlRenderer, blend) < 0) {
-        f_out__error("SDL_SetRenderDrawBlendMode: %s", SDL_GetError());
-    }
-}
 #endif // F_CONFIG_RENDER_SDL2
 #endif // F_CONFIG_LIB_SDL

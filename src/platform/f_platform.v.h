@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -61,9 +61,8 @@ extern void f_platform_api__screenZoomSet(int Zoom);
 extern bool f_platform_api__screenFullscreenGet(void);
 extern void f_platform_api__screenFullscreenFlip(void);
 
-extern void f_platform_api__renderSetDrawColor(void);
-extern void f_platform_api__renderSetBlendMode(void);
-
+extern void f_platform_api__drawSetColor(void);
+extern void f_platform_api__drawSetBlend(void);
 extern void f_platform_api__drawPixel(int X, int Y);
 extern void f_platform_api__drawLine(int X1, int Y1, int X2, int Y2);
 extern void f_platform_api__drawHLine(int X1, int X2, int Y);
