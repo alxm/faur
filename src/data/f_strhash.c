@@ -84,6 +84,15 @@ void f_strhash_freeEx(FStrHash* Hash, FFree* Free)
 void f_strhash_add(FStrHash* Hash, const char* Key, void* Content)
 {
     unsigned slot = getSlot(Key);
+
+    #if F_CONFIG_BUILD_DEBUG
+        for(FStrHashEntry* e = Hash->slots[slot]; e; e = e->next) {
+            if(f_str_equal(Key, e->key)) {
+                F__FATAL("f_strhash_add(%s): Key already in table", Key);
+            }
+        }
+    #endif
+
     FStrHashEntry* oldEntry = Hash->slots[slot];
     FStrHashEntry* newEntry = f_mem_malloc(sizeof(FStrHashEntry));
 
