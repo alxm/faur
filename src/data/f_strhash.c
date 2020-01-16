@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2018-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016, 2018-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -101,11 +101,55 @@ void* f_strhash_update(FStrHash* Hash, const char* Key, void* NewContent)
         if(f_str_equal(Key, e->key)) {
             void* oldContent = e->content;
             e->content = NewContent;
+
             return oldContent;
         }
     }
 
     return NULL;
+}
+
+static void removeEntry(FStrHash* Hash, unsigned Slot, FStrHashEntry* Current, FStrHashEntry* Previous)
+{
+    if(Previous == NULL) {
+        Hash->slots[Slot] = Current->next;
+    } else {
+        Previous->next = Current->next;
+    }
+
+    f_list_removeItem(Hash->entriesList, Current);
+
+    f_mem_free(Current->key);
+    f_mem_free(Current);
+}
+
+void f_strhash_removeKey(FStrHash* Hash, const char* Key)
+{
+    unsigned slot = getSlot(Key);
+    FStrHashEntry* prev = NULL;
+
+    for(FStrHashEntry* e = Hash->slots[slot]; e; prev = e, e = e->next) {
+        if(f_str_equal(e->key, Key)) {
+            removeEntry(Hash, slot, e, prev);
+
+            return;
+        }
+    }
+}
+
+void f_strhash_removeItem(FStrHash* Hash, const void* Content)
+{
+    for(unsigned slot = F_STRHASH__SLOTS; slot--; ) {
+        FStrHashEntry* prev = NULL;
+
+        for(FStrHashEntry* e = Hash->slots[slot]; e; prev = e, e = e->next) {
+            if(e->content == Content) {
+                removeEntry(Hash, slot, e, prev);
+
+                return;
+            }
+        }
+    }
 }
 
 void* f_strhash_get(const FStrHash* Hash, const char* Key)
@@ -193,6 +237,7 @@ void f__strhash_printStats(const FStrHash* Hash, const char* Message)
 
     if(occupiedSlots == 0) {
         printf("empty\n");
+
         return;
     }
 
@@ -204,7 +249,7 @@ void f__strhash_printStats(const FStrHash* Hash, const char* Message)
     if(maxInSlot < 2) {
         printf("no collisions\n");
     } else {
-        printf("longest chain is %d (%d slots, %d%%)\n",
+        printf("longest chain is %d (in %d slots, %d%%)\n",
                maxInSlot,
                maxInSlotNum,
                100 * maxInSlotNum / occupiedSlots);

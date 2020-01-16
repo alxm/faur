@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2018-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016, 2018-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -31,10 +31,14 @@ extern void f_strhash_freeEx(FStrHash* Hash, FFree* Free);
 
 extern void f_strhash_add(FStrHash* Hash, const char* Key, void* Content);
 extern void* f_strhash_update(FStrHash* Hash, const char* Key, void* NewContent);
+
+extern void f_strhash_removeKey(FStrHash* Hash, const char* Key);
+extern void f_strhash_removeItem(FStrHash* Hash, const void* Content);
+
 extern void* f_strhash_get(const FStrHash* Hash, const char* Key);
 extern bool f_strhash_contains(const FStrHash* Hash, const char* Key);
-extern unsigned f_strhash_sizeGet(const FStrHash* Hash);
 
+extern unsigned f_strhash_sizeGet(const FStrHash* Hash);
 extern void** f_strhash_toArray(const FStrHash* Hash);
 
 extern const FList* f__strhash_entries(const FStrHash* Hash);
