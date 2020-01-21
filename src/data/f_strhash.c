@@ -217,9 +217,8 @@ const char* f__strhash_entryKey(const FStrHashEntry* Entry)
 
 void f__strhash_printStats(const FStrHash* Hash, const char* Message)
 {
-    unsigned maxInSlot = 0, maxInSlotNum = 0;
-    unsigned occupiedSlots = 0;
-    unsigned slotsWithCollisions = 0;
+    unsigned occupiedSlots = 0, slotsWithCollisions = 0, collisions = 0;
+    unsigned minLength = UINT_MAX, maxLength = 0, lengthSum = 0;
 
     for(int i = 0; i < F_STRHASH__SLOTS; i++) {
         unsigned entriesInSlot = 0;
@@ -228,16 +227,21 @@ void f__strhash_printStats(const FStrHash* Hash, const char* Message)
             entriesInSlot++;
         }
 
-        occupiedSlots += entriesInSlot > 0;
+        if(entriesInSlot > 0) {
+            occupiedSlots++;
+            lengthSum += entriesInSlot;
 
-        if(entriesInSlot >= 2) {
-            slotsWithCollisions++;
+            if(entriesInSlot > 1) {
+                slotsWithCollisions++;
+                collisions += entriesInSlot - 1;
+            }
 
-            if(entriesInSlot > maxInSlot) {
-                maxInSlot = entriesInSlot;
-                maxInSlotNum = 1;
-            } else if(entriesInSlot == maxInSlot) {
-                maxInSlotNum++;
+            if(entriesInSlot < minLength) {
+                minLength = entriesInSlot;
+            }
+
+            if(entriesInSlot > maxLength) {
+                maxLength = entriesInSlot;
             }
         }
     }
@@ -250,17 +254,17 @@ void f__strhash_printStats(const FStrHash* Hash, const char* Message)
         return;
     }
 
-    printf("%d entries, %d%% slots used, %d%% have collisions - ",
-           f_list_sizeGet(Hash->entriesList),
-           100 * occupiedSlots / F_STRHASH__SLOTS,
-           100 * slotsWithCollisions / occupiedSlots);
+    unsigned numEntries = f_list_sizeGet(Hash->entriesList);
 
-    if(maxInSlot < 2) {
-        printf("no collisions\n");
-    } else {
-        printf("longest chain is %d (in %d slots, %d%%)\n",
-               maxInSlot,
-               maxInSlotNum,
-               100 * maxInSlotNum / occupiedSlots);
-    }
+    printf("%d/%d (%d%%) slots used, %d/%d (%d%%) entries collide, "
+           "chain min %d avg %.2f max %d\n",
+           occupiedSlots,
+           F_STRHASH__SLOTS,
+           100 * occupiedSlots / F_STRHASH__SLOTS,
+           collisions,
+           numEntries,
+           100 * collisions / numEntries,
+           minLength,
+           (float)lengthSum / (float)occupiedSlots,
+           maxLength);
 }
