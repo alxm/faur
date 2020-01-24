@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016, 2018-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016, 2018-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -84,6 +84,15 @@ void f_strhash_freeEx(FStrHash* Hash, FFree* Free)
 void f_strhash_add(FStrHash* Hash, const char* Key, void* Content)
 {
     unsigned slot = getSlot(Key);
+
+    #if F_CONFIG_BUILD_DEBUG
+        for(FStrHashEntry* e = Hash->slots[slot]; e; e = e->next) {
+            if(f_str_equal(Key, e->key)) {
+                F__FATAL("f_strhash_add(%s): Key already in table", Key);
+            }
+        }
+    #endif
+
     FStrHashEntry* oldEntry = Hash->slots[slot];
     FStrHashEntry* newEntry = f_mem_malloc(sizeof(FStrHashEntry));
 
@@ -101,11 +110,55 @@ void* f_strhash_update(FStrHash* Hash, const char* Key, void* NewContent)
         if(f_str_equal(Key, e->key)) {
             void* oldContent = e->content;
             e->content = NewContent;
+
             return oldContent;
         }
     }
 
     return NULL;
+}
+
+static void removeEntry(FStrHash* Hash, unsigned Slot, FStrHashEntry* Current, FStrHashEntry* Previous)
+{
+    if(Previous == NULL) {
+        Hash->slots[Slot] = Current->next;
+    } else {
+        Previous->next = Current->next;
+    }
+
+    f_list_removeItem(Hash->entriesList, Current);
+
+    f_mem_free(Current->key);
+    f_mem_free(Current);
+}
+
+void f_strhash_removeKey(FStrHash* Hash, const char* Key)
+{
+    unsigned slot = getSlot(Key);
+    FStrHashEntry* prev = NULL;
+
+    for(FStrHashEntry* e = Hash->slots[slot]; e; prev = e, e = e->next) {
+        if(f_str_equal(e->key, Key)) {
+            removeEntry(Hash, slot, e, prev);
+
+            return;
+        }
+    }
+}
+
+void f_strhash_removeItem(FStrHash* Hash, const void* Content)
+{
+    for(unsigned slot = F_STRHASH__SLOTS; slot--; ) {
+        FStrHashEntry* prev = NULL;
+
+        for(FStrHashEntry* e = Hash->slots[slot]; e; prev = e, e = e->next) {
+            if(e->content == Content) {
+                removeEntry(Hash, slot, e, prev);
+
+                return;
+            }
+        }
+    }
 }
 
 void* f_strhash_get(const FStrHash* Hash, const char* Key)
@@ -164,9 +217,8 @@ const char* f__strhash_entryKey(const FStrHashEntry* Entry)
 
 void f__strhash_printStats(const FStrHash* Hash, const char* Message)
 {
-    unsigned maxInSlot = 0, maxInSlotNum = 0;
-    unsigned occupiedSlots = 0;
-    unsigned slotsWithCollisions = 0;
+    unsigned occupiedSlots = 0, slotsWithCollisions = 0, collisions = 0;
+    unsigned minLength = UINT_MAX, maxLength = 0, lengthSum = 0;
 
     for(int i = 0; i < F_STRHASH__SLOTS; i++) {
         unsigned entriesInSlot = 0;
@@ -175,16 +227,21 @@ void f__strhash_printStats(const FStrHash* Hash, const char* Message)
             entriesInSlot++;
         }
 
-        occupiedSlots += entriesInSlot > 0;
+        if(entriesInSlot > 0) {
+            occupiedSlots++;
+            lengthSum += entriesInSlot;
 
-        if(entriesInSlot >= 2) {
-            slotsWithCollisions++;
+            if(entriesInSlot > 1) {
+                slotsWithCollisions++;
+                collisions += entriesInSlot - 1;
+            }
 
-            if(entriesInSlot > maxInSlot) {
-                maxInSlot = entriesInSlot;
-                maxInSlotNum = 1;
-            } else if(entriesInSlot == maxInSlot) {
-                maxInSlotNum++;
+            if(entriesInSlot < minLength) {
+                minLength = entriesInSlot;
+            }
+
+            if(entriesInSlot > maxLength) {
+                maxLength = entriesInSlot;
             }
         }
     }
@@ -193,20 +250,21 @@ void f__strhash_printStats(const FStrHash* Hash, const char* Message)
 
     if(occupiedSlots == 0) {
         printf("empty\n");
+
         return;
     }
 
-    printf("%d entries, %d%% slots used, %d%% have collisions - ",
-           f_list_sizeGet(Hash->entriesList),
-           100 * occupiedSlots / F_STRHASH__SLOTS,
-           100 * slotsWithCollisions / occupiedSlots);
+    unsigned numEntries = f_list_sizeGet(Hash->entriesList);
 
-    if(maxInSlot < 2) {
-        printf("no collisions\n");
-    } else {
-        printf("longest chain is %d (%d slots, %d%%)\n",
-               maxInSlot,
-               maxInSlotNum,
-               100 * maxInSlotNum / occupiedSlots);
-    }
+    printf("%d/%d (%d%%) slots used, %d/%d (%d%%) entries collide, "
+           "chain min %d avg %.2f max %d\n",
+           occupiedSlots,
+           F_STRHASH__SLOTS,
+           100 * occupiedSlots / F_STRHASH__SLOTS,
+           collisions,
+           numEntries,
+           100 * collisions / numEntries,
+           minLength,
+           (float)lengthSum / (float)occupiedSlots,
+           maxLength);
 }
