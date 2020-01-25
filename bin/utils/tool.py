@@ -117,6 +117,12 @@ class Tool:
     def get_flag(self, flag):
         return flag in self.flag_db
 
+    def write_bytes(self, name, contents):
+        self.out.info('Writing file {}'.format(name))
+
+        with open(name, 'wb') as f:
+            f.write(bytes(contents))
+
     def write_text(self, name, contents):
         self.out.info('Writing file {}'.format(name))
 

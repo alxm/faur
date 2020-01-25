@@ -40,9 +40,13 @@ extern const FPack f_pack__embed;
 
 extern void f_embed__populate(void);
 
+extern FEmbeddedDir* f_embed__dirNew(const char* Path, size_t Size);
+extern void f_embed__dirFree(FEmbeddedDir* Dir);
 extern void f_embed__dirAdd(const FEmbeddedDir* Dir);
 extern const FEmbeddedDir* f_embed__dirGet(const char* Path);
 
+extern FEmbeddedFile* f_embed__fileNew(const char* Path, size_t Size, const uint8_t* Buffer);
+extern void f_embed__fileFree(FEmbeddedFile* File);
 extern void f_embed__fileAdd(const FEmbeddedFile* File);
 extern const FEmbeddedFile* f_embed__fileGet(const char* Path);
 

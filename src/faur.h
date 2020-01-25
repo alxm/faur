@@ -1,5 +1,5 @@
 /*
-    Copyright 2019 Alex Margarit <alex@alxm.org>
+    Copyright 2019-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -39,6 +39,7 @@ F_EXTERN_C_START
 #include "ecs/f_entity.p.h"
 #include "ecs/f_system.p.h"
 #include "ecs/f_template.p.h"
+#include "files/f_blob.p.h"
 #include "files/f_dir.p.h"
 #include "files/f_file.p.h"
 #include "files/f_path.p.h"
