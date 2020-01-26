@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2016-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 #include "../ecs/f_entity.p.h"
 
 typedef void FSystemHandler(FEntity* Entity);
-typedef int FSystemSort(FEntity* A, FEntity* B);
+typedef int FSystemSort(const FEntity* A, const FEntity* B);
 
 extern void f_system_new(unsigned SystemIndex, FSystemHandler* Handler, FSystemSort* Compare, bool OnlyActiveEntities);
 extern void f_system_add(unsigned SystemIndex, unsigned ComponentIndex);
