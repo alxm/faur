@@ -34,35 +34,32 @@ ifeq ($(F_CONFIG_LIB_SDL), 1)
     F_CONFIG_SCREEN_FORMAT := F_COLOR_FORMAT_ABGR_8888
 endif
 
-F_BUILD_EMSCRIPTEN_LIBS := \
+F_EMSCRIPTEN_OPTIONS := \
     -s USE_SDL=$(F_CONFIG_LIB_SDL) \
     -s USE_SDL_MIXER=$(F_CONFIG_LIB_SDL) \
     -s USE_ZLIB=1 \
     -s USE_LIBPNG=1 \
 
 ifdef F_CONFIG_SYSTEM_EMSCRIPTEN_TOTAL_MEMORY
-    F_BUILD_EMSCRIPTEN_LIBS += -s TOTAL_MEMORY=$(F_CONFIG_SYSTEM_EMSCRIPTEN_TOTAL_MEMORY)
+    F_EMSCRIPTEN_OPTIONS += -s TOTAL_MEMORY=$(F_CONFIG_SYSTEM_EMSCRIPTEN_TOTAL_MEMORY)
 endif
-
-F_BUILD_EMSCRIPTEN_EMBED := \
-    --use-preload-plugins \
-    $(addprefix --preload-file $(F_DIR_ROOT)/, \
-        $(join $(F_CONFIG_PATH_EMBED_EMSCRIPTEN), \
-               $(addprefix @, $(F_CONFIG_PATH_EMBED_EMSCRIPTEN)))) \
 
 F_CONFIG_BUILD_LIBS += \
     -O$(F_CONFIG_BUILD_OPT) \
-    $(F_BUILD_EMSCRIPTEN_LIBS) \
-    $(F_BUILD_EMSCRIPTEN_EMBED) \
+    $(F_EMSCRIPTEN_OPTIONS) \
+    --use-preload-plugins \
+    $(addprefix --preload-file $(F_DIR_ROOT_FROM_MAKE)/, \
+        $(join $(F_CONFIG_PATH_EMBED_EMSCRIPTEN), \
+               $(addprefix @, $(F_CONFIG_PATH_EMBED_EMSCRIPTEN)))) \
 
 F_CONFIG_BUILD_FLAGS_SHARED += \
-    $(F_BUILD_EMSCRIPTEN_LIBS) \
+    $(F_EMSCRIPTEN_OPTIONS) \
     -Wno-dollar-in-identifier-extension \
     -Wno-gnu-zero-variadic-macro-arguments \
 
 include $(FAUR_PATH)/make/global/rules.mk
 
 run :
-	cd $(F_DIR_BIN) && $(FAUR_PATH)/bin/faur-runweb $(F_FILE_BIN)
+	cd $(F_BUILD_DIR_BIN) && $(F_FAUR_DIR_BIN)/faur-runweb $(F_BUILD_FILE_BIN)
 
 endif

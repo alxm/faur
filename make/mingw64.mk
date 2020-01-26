@@ -1,13 +1,11 @@
 include $(FAUR_PATH)/make/global/defs.mk
 
-MINGW_BIN := $(F_SDK_MINGW64_ROOT)/$(F_SDK_MINGW64_ARCH)/bin
-
 F_CONFIG_APP_NAME_SUFFIX := .exe
 F_CONFIG_BUILD_FLAGS_AR := T
 F_CONFIG_BUILD_OPT := 3
 F_CONFIG_LIB_PNG := 1
 F_CONFIG_LIB_SDL := 2
-F_CONFIG_LIB_SDL_CONFIG := $(MINGW_BIN)/sdl2-config
+F_CONFIG_LIB_SDL_CONFIG := $(F_SDK_MINGW64_ROOT)/x86_64-w64-mingw32/bin/sdl2-config
 F_CONFIG_SYSTEM_MINGW := 1
 F_CONFIG_TRAIT_DESKTOP := 1
 F_CONFIG_TRAIT_KEYBOARD := 1
@@ -20,17 +18,17 @@ F_CONFIG_BUILD_LIBS += \
 F_CONFIG_BUILD_FLAGS_SHARED += \
     -D__USE_MINGW_ANSI_STDIO=1 \
 
-PREFIX := $(F_SDK_MINGW64_ARCH)-
+F_TOOLCHAIN_PREFIX := x86_64-w64-mingw32-
 
-export CC      := $(PREFIX)gcc
-export CXX     := $(PREFIX)g++
-export AS      := $(PREFIX)as
-export AR      := $(PREFIX)ar
-export OBJCOPY := $(PREFIX)objcopy
-export READELF := $(PREFIX)readelf
-export STRIP   := $(PREFIX)strip
+export CC      := $(F_TOOLCHAIN_PREFIX)gcc
+export CXX     := $(F_TOOLCHAIN_PREFIX)g++
+export AS      := $(F_TOOLCHAIN_PREFIX)as
+export AR      := $(F_TOOLCHAIN_PREFIX)ar
+export OBJCOPY := $(F_TOOLCHAIN_PREFIX)objcopy
+export READELF := $(F_TOOLCHAIN_PREFIX)readelf
+export STRIP   := $(F_TOOLCHAIN_PREFIX)strip
 
 include $(FAUR_PATH)/make/global/rules.mk
 
 run :
-	cd $(F_DIR_BIN) && wine ./$(F_FILE_BIN)
+	cd $(F_BUILD_DIR_BIN) && wine ./$(F_BUILD_FILE_BIN)

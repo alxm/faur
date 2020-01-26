@@ -20,21 +20,21 @@ ifndef F_DO_BUILD
 
 F_MAKE_CMD := \
     $(MAKE) \
-	-C $(F_DIR_ROOT)/$(F_CONFIG_DIR_SRC) \
+	-C $(F_DIR_ROOT_FROM_MAKE)/$(F_CONFIG_DIR_SRC) \
 	-f $(realpath $(firstword $(MAKEFILE_LIST))) \
 	-j$(F_MAKE_PARALLEL_JOBS) \
-	F_DIR_ROOT_ABS=$(F_DIR_ROOT_ABS) \
+	F_DIR_ROOT=$(F_DIR_ROOT) \
 	F_DO_BUILD=1
 
 all :
-	bash -c "$(F_MAKE_CMD)"
+	$(F_MAKE_CMD)
 
 % :
-	bash -c "$(F_MAKE_CMD) $@"
+	$(F_MAKE_CMD) $@
 
 else
 
-ARDUINO_DIR = $(F_SDK_ARDUINO_DIR)
+ARDUINO_DIR = $(F_SDK_ARDUINO_ROOT)
 ARDMK_DIR = $(F_SDK_ARDUINO_MAKEFILE)
 
 BOARD_TAG = gamebuino_meta_native
@@ -42,30 +42,36 @@ ALTERNATE_CORE_PATH = $(wildcard $(HOME)/.arduino15/packages/gamebuino/hardware/
 
 ARDUINO_LIBS = faur Gamebuino_META SPI
 OPTIMIZATION_LEVEL = $(F_CONFIG_BUILD_OPT)
-OBJDIR=$(F_DIR_ROOT_ABS)/$(F_CONFIG_DIR_BUILD)/builds/$(F_CONFIG_BUILD_UID)
+OBJDIR=$(F_DIR_ROOT)/$(F_CONFIG_DIR_BUILD)/builds/$(F_CONFIG_BUILD_UID)
 
 include $(ARDMK_DIR)/Sam.mk
 
-F_DIR_GEN := $(OBJDIR)/userlibs/faur/faur_gen
+#
+# Gamebuino_META needs <objdir>/sketch/config-gamebuino.h
+#
+F_GAMEBUINO_DIR_GEN := $(OBJDIR)/userlibs/faur/faur_gen
+F_GAMEBUINO_CONFIG_SRC := $(F_DIR_ROOT)/$(F_CONFIG_DIR_SRC)/config-gamebuino.h
+F_GAMEBUINO_CONFIG_DST := $(F_GAMEBUINO_DIR_GEN)/sketch/config-gamebuino.h
 
-# Gamebuino_META needs __SKETCH_NAME__ (usually defined by Arduino IDE)
+#
+# Arduino IDE usually defines __SKETCH_NAME__, which Gamebuino_META lib uses
+#
 F_CONFIG_BUILD_FLAGS_SHARED += \
-    -I$(F_DIR_GEN) \
+    -I$(F_GAMEBUINO_DIR_GEN) \
     -D__SKETCH_NAME__=\"$(TARGET).ino\" \
 
 CPPFLAGS := $(F_CONFIG_BUILD_FLAGS_SHARED) $(CPPFLAGS)
 
+#
 # Libraries don't build well with Link Time Optimization
+#
 CFLAGS += -fno-lto
 CXXFLAGS += -fno-lto
 LDFLAGS += -fno-lto
 
-F_FILES_CONFIG := \
-    $(F_DIR_GEN)/sketch/config-gamebuino.h \
+$(USER_LIB_OBJS) $(LOCAL_OBJS) : $(F_GAMEBUINO_CONFIG_DST)
 
-$(USER_LIB_OBJS) $(LOCAL_OBJS) : $(F_FILES_CONFIG)
-
-$(F_DIR_GEN)/sketch/%.h : $(F_DIR_ROOT_ABS)/$(F_CONFIG_DIR_SRC)/%.h
+$(F_GAMEBUINO_CONFIG_DST) : $(F_GAMEBUINO_CONFIG_SRC)
 	@ mkdir -p $(@D)
 	cp $< $@
 
