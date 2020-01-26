@@ -38,6 +38,14 @@
 
 #define F__ATTRIBUTE_NORETURN __attribute__((noreturn))
 
+#if F_CONFIG_SYSTEM_MINGW
+    #define F__ATTRIBUTE_FORMAT(FormatIndex) \
+        __attribute__((format (gnu_printf, FormatIndex, FormatIndex + 1)))
+#else
+    #define F__ATTRIBUTE_FORMAT(FormatIndex) \
+        __attribute__((format (printf, FormatIndex, FormatIndex + 1)))
+#endif
+
 typedef void FFree(void* Self);
 
 typedef volatile int FEvent;

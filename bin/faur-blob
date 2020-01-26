@@ -1,0 +1,136 @@
+#!/usr/bin/env python3
+
+"""
+    Copyright 2020 Alex Margarit <alex@alxm.org>
+    This file is part of Faur, a C video game framework.
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License version 3,
+    as published by the Free Software Foundation.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
+import os
+
+from utils.tool import Tool
+
+g_tool = Tool('DstBlobFile RootDir ...')
+
+def main():
+    blob = Blob(g_tool.get_arg('RootDir'), g_tool.get_arg('...'))
+
+    g_tool.write_bytes(g_tool.get_arg('DstBlobFile'), blob.buffer)
+
+class Blob:
+    def __init__(self, RootDir, Files):
+        self.buffer = []
+        self.offsets = {}
+        self.files = []
+        self.align = 4
+        self.startRoot = os.path.abspath(RootDir)
+
+        if not os.path.isdir(self.startRoot):
+            g_tool.usage('{} is not a dir'.format(self.startRoot))
+
+        for f in Files:
+            self.scan_file('', f)
+
+        self.files.sort(reverse = True, key = lambda f: f.pathPartial)
+
+        self.write_string('faurblob')
+        self.write_bytes([0] * 8)
+        self.write_uint32(len(self.files))
+        self.write_uint8(self.align)
+
+        for f in self.files:
+            if f.isDir:
+                self.write_dir(f)
+            else:
+                self.write_file(f)
+
+        self.write_pad()
+
+    def scan_file(self, Prefix, File):
+        filePathPartial = os.path.join(Prefix, File)
+        filePathFull = os.path.join(self.startRoot, filePathPartial)
+
+        if not os.path.exists(filePathFull):
+            g_tool.out.error('{} does not exist'.format(filePathFull))
+
+        if not filePathPartial in self.offsets:
+            self.offsets[filePathPartial] = None
+
+            f = BlobFile(filePathPartial, filePathFull)
+            self.files.append(f)
+
+            if f.isDir:
+                for f in g_tool.list_dir(filePathFull):
+                    self.scan_file(filePathPartial, f)
+
+    def write_bytes(self, Bytes):
+        self.buffer += Bytes
+
+    def write_uint8(self, Number):
+        self.buffer.append(int(Number))
+
+    def write_uint32(self, Number):
+        self.write_uint8((Number >> 24) & 0xff)
+        self.write_uint8((Number >> 16) & 0xff)
+        self.write_uint8((Number >>  8) & 0xff)
+        self.write_uint8((Number >>  0) & 0xff)
+
+    def write_string(self, String):
+        for char in String:
+            self.write_uint8(ord(char))
+
+    def write_stringz(self, String):
+        self.write_string(String)
+        self.write_uint8(0)
+
+    def write_pad(self):
+        head = len(self.buffer)
+        headP = ((head + (1 << self.align) - 1) >> self.align) << self.align
+
+        self.write_bytes([0] * (headP - head))
+
+    def write_file(self, File):
+        self.offsets[File.pathPartial] = len(self.buffer)
+
+        fileBuffer = g_tool.read_bytes(File.pathFull)
+
+        self.write_uint8(1)
+        self.write_stringz(File.pathPartial)
+        self.write_uint32(len(fileBuffer))
+        self.write_pad()
+        self.write_bytes(fileBuffer)
+
+    def write_dir(self, File):
+        self.offsets[File.pathPartial] = len(self.buffer)
+
+        dirEntries = g_tool.list_dir(File.pathFull)
+
+        self.write_uint8(2)
+        self.write_stringz(File.pathPartial)
+        self.write_uint32(len(dirEntries))
+
+        for e in dirEntries:
+            ePathPartial = os.path.join(File.pathPartial, e)
+            eOffset = self.offsets[ePathPartial]
+
+            self.write_uint32(eOffset)
+
+class BlobFile:
+    def __init__(self, PathPartial, PathFull):
+        self.pathPartial = PathPartial
+        self.pathFull = PathFull
+        self.isDir = os.path.isdir(PathFull)
+
+if __name__ == '__main__':
+    main()

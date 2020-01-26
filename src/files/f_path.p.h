@@ -31,7 +31,7 @@ typedef enum {
 } FPathFlags;
 
 extern FPath* f_path_new(const char* Path);
-extern FPath* f_path_newf(const char* Format, ...);
+extern FPath* f_path_newf(const char* Format, ...) F__ATTRIBUTE_FORMAT(1);
 extern void f_path_free(FPath* Path);
 
 extern bool f_path_exists(const char* Path, FPathFlags Flags);

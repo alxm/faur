@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -85,19 +85,7 @@ static FSprite* spriteNew(const FPixels* Pixels, unsigned Frame, int X, int Y, i
 #if F_CONFIG_LIB_PNG
 FSprite* f_sprite_newFromPng(const char* Path, int X, int Y, int FrameWidth, int FrameHeight)
 {
-    FPixels* pixels = NULL;
-
-    if(f_path_exists(Path, F_PATH_FILE | F_PATH_REAL)) {
-        pixels = f_png__readFile(Path);
-    } else if(f_path_exists(Path, F_PATH_FILE | F_PATH_EMBEDDED)) {
-        pixels = f_png__readMemory(f_embed__fileGet(Path)->buffer);
-    } else {
-        F__FATAL("f_sprite_newFromPng(%s): File does not exist", Path);
-    }
-
-    if(pixels == NULL) {
-        F__FATAL("f_sprite_newFromPng(%s): Cannot read file", Path);
-    }
+    FPixels* pixels = f_png__read(Path);
 
     if(FrameWidth < 1 || FrameHeight < 1) {
         char* suffix = f_str_suffixGetFromLast(Path, '_');

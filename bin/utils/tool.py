@@ -1,5 +1,5 @@
 """
-    Copyright 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2016-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -117,6 +117,12 @@ class Tool:
     def get_flag(self, flag):
         return flag in self.flag_db
 
+    def write_bytes(self, name, contents):
+        self.out.info('Writing file {}'.format(name))
+
+        with open(name, 'wb') as f:
+            f.write(bytes(contents))
+
     def write_text(self, name, contents):
         self.out.info('Writing file {}'.format(name))
 
@@ -139,7 +145,10 @@ class Tool:
         if not os.path.isdir(path):
             self.out.error('{} is not a dir'.format(path))
 
-        return sorted(os.listdir(path))
+        entries = os.listdir(path)
+        entries.sort()
+
+        return entries
 
     def check_files_exist(self, *paths):
         for f in paths:

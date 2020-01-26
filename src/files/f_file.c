@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -28,6 +28,9 @@ struct FFile {
     char* lineBuffer;
     unsigned lineBufferSize;
     unsigned lineNumber;
+    #if F_CONFIG_BUILD_DEBUG
+        FFileMode mode;
+    #endif
     bool eof;
 };
 
@@ -44,7 +47,7 @@ bool f_file_bufferRead(const char* Path, void* Buffer, size_t Size)
     }
 
     if(!ret) {
-        f_out__warning("f_file_bufferRead(%s, %lu): Failed", Path, Size);
+        f_out__warning("f_file_bufferRead(%s, %zu): Failed", Path, Size);
     }
 
     return ret;
@@ -55,7 +58,7 @@ bool f_file_bufferWrite(const char* Path, const void* Buffer, size_t Size)
     bool ret = f_platform_api__fileBufferWrite(Path, Buffer, Size);
 
     if(!ret) {
-        f_out__error("f_file_bufferWrite(%s, %lu): Failed", Path, Size);
+        f_out__error("f_file_bufferWrite(%s, %zu): Failed", Path, Size);
     }
 
     return ret;
@@ -63,12 +66,24 @@ bool f_file_bufferWrite(const char* Path, const void* Buffer, size_t Size)
 
 FFile* f_file_new(const char* Path, FFileMode Mode)
 {
-    FPath* path = f_path_new(Path);
+    #if F_CONFIG_BUILD_DEBUG
+        if(F_FLAGS_TEST_ALL(Mode, F_FILE_READ | F_FILE_WRITE)
+            || !F_FLAGS_TEST_ANY(Mode, F_FILE_READ | F_FILE_WRITE)) {
+
+            F__FATAL("f_file_new(%s, %x): Invalid mode", Path, Mode);
+        }
+    #endif
+
     void* file = NULL;
+    FPath* path = f_path_new(Path);
 
-    if(F_FLAGS_TEST_ANY(Mode, F_FILE_WRITE)
-        || f_path_test(path, F_PATH_FILE | F_PATH_REAL)) {
+    if(F_FLAGS_TEST_ANY(Mode, F_FILE_WRITE)) {
+        file = f_platform_api__fileNew(path, Mode);
 
+        if(file) {
+            f_path__flagsSet(path, F_PATH_FILE | F_PATH_REAL);
+        }
+    } else if(f_path_test(path, F_PATH_FILE | F_PATH_REAL)) {
         file = f_platform_api__fileNew(path, Mode);
     } else if(f_path_test(path, F_PATH_FILE | F_PATH_EMBEDDED)) {
         file = f_file_embedded__new(path);
@@ -89,6 +104,10 @@ FFile* f_file_new(const char* Path, FFileMode Mode)
     f->path = path;
     f->f.file = file;
 
+    #if F_CONFIG_BUILD_DEBUG
+        f->mode = Mode;
+    #endif
+
     return f;
 }
 
@@ -100,6 +119,8 @@ void f_file_free(FFile* File)
 
     if(f_path_test(File->path, F_PATH_REAL)) {
         f_platform_api__fileFree(File->f.platform);
+    } else {
+        f_file_embedded__free(File->f.embedded);
     }
 
     f_path_free(File->path);
@@ -119,8 +140,17 @@ FILE* f_file_handleGet(const FFile* File)
             ? (FILE*)File->f.platform : NULL;
 }
 
-bool f_file_prefixCheck(FFile* File, const char* Prefix)
+bool f_file_prefixRead(FFile* File, const char* Prefix)
 {
+    #if F_CONFIG_BUILD_DEBUG
+        if(!F_FLAGS_TEST_ANY(File->mode, F_FILE_READ)) {
+            F__FATAL("f_file_prefixRead(%s, %s): Bad mode %x",
+                     f_path_getFull(File->path),
+                     Prefix,
+                     File->mode);
+        }
+    #endif
+
     size_t size = strlen(Prefix) + 1;
     char buffer[size];
 
@@ -137,11 +167,29 @@ bool f_file_prefixCheck(FFile* File, const char* Prefix)
 
 void f_file_prefixWrite(FFile* File, const char* Prefix)
 {
+    #if F_CONFIG_BUILD_DEBUG
+        if(!F_FLAGS_TEST_ANY(File->mode, F_FILE_WRITE)) {
+            F__FATAL("f_file_prefixWrite(%s, %s): Bad mode %x",
+                     f_path_getFull(File->path),
+                     Prefix,
+                     File->mode);
+        }
+    #endif
+
     f_file_write(File, Prefix, strlen(Prefix) + 1);
 }
 
 bool f_file_read(FFile* File, void* Buffer, size_t Size)
 {
+    #if F_CONFIG_BUILD_DEBUG
+        if(!F_FLAGS_TEST_ANY(File->mode, F_FILE_READ)) {
+            F__FATAL("f_file_read(%s, %zu): Bad mode %x",
+                     f_path_getFull(File->path),
+                     Size,
+                     File->mode);
+        }
+    #endif
+
     bool ret;
 
     if(f_path_test(File->path, F_PATH_EMBEDDED)) {
@@ -151,7 +199,7 @@ bool f_file_read(FFile* File, void* Buffer, size_t Size)
     }
 
     if(!ret) {
-        f_out__warning("f_file_read(%s): Could not read %u bytes",
+        f_out__warning("f_file_read(%s): Could not read %zu bytes",
                        f_path_getFull(File->path),
                        Size);
     }
@@ -161,16 +209,19 @@ bool f_file_read(FFile* File, void* Buffer, size_t Size)
 
 bool f_file_write(FFile* File, const void* Buffer, size_t Size)
 {
-    bool ret;
+    #if F_CONFIG_BUILD_DEBUG
+        if(!F_FLAGS_TEST_ANY(File->mode, F_FILE_WRITE)) {
+            F__FATAL("f_file_write(%s, %zu): Bad mode %x",
+                     f_path_getFull(File->path),
+                     Size,
+                     File->mode);
+        }
+    #endif
 
-    if(f_path_test(File->path, F_PATH_EMBEDDED)) {
-        ret = f_file_embedded__write(File->f.embedded, Buffer, Size);
-    } else {
-        ret = f_platform_api__fileWrite(File->f.platform, Buffer, Size);
-    }
+    bool ret = f_platform_api__fileWrite(File->f.platform, Buffer, Size);
 
     if(!ret) {
-        f_out__error("f_file_write(%s): Could not write %u bytes",
+        f_out__error("f_file_write(%s): Could not write %zu bytes",
                      f_path_getFull(File->path),
                      Size);
     }
@@ -180,16 +231,18 @@ bool f_file_write(FFile* File, const void* Buffer, size_t Size)
 
 bool f_file_writef(FFile* File, const char* Format, ...)
 {
+    #if F_CONFIG_BUILD_DEBUG
+        if(!F_FLAGS_TEST_ANY(File->mode, F_FILE_WRITE)) {
+            F__FATAL("f_file_writef(%s): Bad mode %x",
+                     f_path_getFull(File->path),
+                     File->mode);
+        }
+    #endif
+
     va_list args;
     va_start(args, Format);
 
-    bool ret;
-
-    if(f_path_test(File->path, F_PATH_EMBEDDED)) {
-        ret = f_file_embedded__writef(File->f.embedded, Format, args);
-    } else {
-        ret = f_platform_api__fileWritef(File->f.platform, Format, args);
-    }
+    bool ret = f_platform_api__fileWritef(File->f.platform, Format, args);
 
     va_end(args);
 
@@ -203,11 +256,15 @@ bool f_file_writef(FFile* File, const char* Format, ...)
 
 bool f_file_flush(FFile* File)
 {
-    if(f_path_test(File->path, F_PATH_EMBEDDED)) {
-        return f_file_embedded__flush(File->f.embedded);
-    } else {
-        return f_platform_api__fileFlush(File->f.platform);
-    }
+    #if F_CONFIG_BUILD_DEBUG
+        if(!F_FLAGS_TEST_ANY(File->mode, F_FILE_WRITE)) {
+            F__FATAL("f_file_flush(%s): Bad mode %x",
+                     f_path_getFull(File->path),
+                     File->mode);
+        }
+    #endif
+
+    return f_platform_api__fileFlush(File->f.platform);
 }
 
 static int readChar(FFile* File)
@@ -256,6 +313,14 @@ static int readChar(FFile* File)
 
 bool f_file_lineRead(FFile* File)
 {
+    #if F_CONFIG_BUILD_DEBUG
+        if(!F_FLAGS_TEST_ANY(File->mode, F_FILE_READ)) {
+            F__FATAL("f_file_lineRead(%s): Bad mode %x",
+                     f_path_getFull(File->path),
+                     File->mode);
+        }
+    #endif
+
     int ch;
 
     do {
@@ -294,11 +359,27 @@ bool f_file_lineRead(FFile* File)
 
 const char* f_file_lineBufferGet(const FFile* File)
 {
+    #if F_CONFIG_BUILD_DEBUG
+        if(!F_FLAGS_TEST_ANY(File->mode, F_FILE_READ)) {
+            F__FATAL("f_file_lineBufferGet(%s): Bad mode %x",
+                     f_path_getFull(File->path),
+                     File->mode);
+        }
+    #endif
+
     return File->lineBuffer;
 }
 
 unsigned f_file_lineNumberGet(const FFile* File)
 {
+    #if F_CONFIG_BUILD_DEBUG
+        if(!F_FLAGS_TEST_ANY(File->mode, F_FILE_READ)) {
+            F__FATAL("f_file_lineNumberGet(%s): Bad mode %x",
+                     f_path_getFull(File->path),
+                     File->mode);
+        }
+    #endif
+
     return File->lineNumber;
 }
 

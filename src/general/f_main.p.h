@@ -27,6 +27,6 @@ extern FStateHandler f_main;
 extern int f_main_argsNumGet(void);
 extern const char* f_main_argsGet(int ArgNum);
 
-extern void F_FATAL(const char* Format, ...) F__ATTRIBUTE_NORETURN;
+extern void F_FATAL(const char* Format, ...) F__ATTRIBUTE_NORETURN F__ATTRIBUTE_FORMAT(1);
 
 #endif // F_INC_GENERAL_MAIN_P_H

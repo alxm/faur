@@ -45,11 +45,11 @@ extern void f_font_lineWrapSet(int Width);
 extern void f_font_lineNew(void);
 
 extern int f_font_widthGet(const char* Text);
-extern int f_font_widthGetf(const char* Format, ...);
+extern int f_font_widthGetf(const char* Format, ...) F__ATTRIBUTE_FORMAT(1);
 extern int f_font_widthGetv(const char* Format, va_list Args);
 
 extern void f_font_print(const char* Text);
-extern void f_font_printf(const char* Format, ...);
+extern void f_font_printf(const char* Format, ...) F__ATTRIBUTE_FORMAT(1);
 extern void f_font_printv(const char* Format, va_list Args);
 
 #endif // F_INC_GRAPHICS_FONT_P_H

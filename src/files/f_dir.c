@@ -60,35 +60,26 @@ static int dirSort(const FPath* A, const FPath* B)
     return a - b;
 }
 
-static FList* dirReal(FPath* Path)
+static void dirRealCreate(const char* Path)
+{
+    #if F_CONFIG_SYSTEM_LINUX
+        int ret = mkdir(Path, S_IRWXU);
+    #else
+        int ret = mkdir(Path);
+    #endif
+
+    if(ret != 0) {
+        F__FATAL("mkdir(%s) failed", Path);
+    }
+}
+
+static FList* dirRealOpen(FPath* Path)
 {
     const char* path = f_path_getFull(Path);
     DIR* dir = opendir(path);
 
     if(dir == NULL) {
-        #if F_CONFIG_SYSTEM_LINUX
-            int result = mkdir(path, S_IRWXU);
-        #else
-            int result = mkdir(path);
-        #endif
-
-        if(result == -1) {
-            f_out__error("f_dir_new: mkdir(%s) failed", path);
-
-            return NULL;
-        }
-
-        dir = opendir(path);
-
-        if(dir != NULL) {
-            f_path__flagsSet(Path, F_PATH_DIR | F_PATH_REAL);
-        }
-    }
-
-    if(dir == NULL) {
-        f_out__error("f_dir_new: opendir(%s) failed", path);
-
-        return NULL;
+        F__FATAL("opendir(%s) failed", path);
     }
 
     FList* files = f_list_new();
@@ -106,7 +97,7 @@ static FList* dirReal(FPath* Path)
     return files;
 }
 
-static FList* dirEmbedded(FPath* Path)
+static FList* dirEmbeddedOpen(FPath* Path)
 {
     const char* path = f_path_getFull(Path);
     const FEmbeddedDir* data = f_embed__dirGet(path);
@@ -122,18 +113,18 @@ static FList* dirEmbedded(FPath* Path)
 
 FDir* f_dir_new(const char* Path)
 {
-    FList* files = NULL;
+    if(!f_path_exists(Path, F_PATH_DIR)) {
+        dirRealCreate(Path);
+    }
+
+    FList* files;
     FPath* path = f_path_new(Path);
 
     if(f_path_test(path, F_PATH_DIR | F_PATH_REAL)) {
-        files = dirReal(path);
+        files = dirRealOpen(path);
     } else if(f_path_test(path, F_PATH_DIR | F_PATH_EMBEDDED)) {
-        files = dirEmbedded(path);
+        files = dirEmbeddedOpen(path);
     } else {
-        files = dirReal(path);
-    }
-
-    if(files == NULL) {
         F__FATAL("f_dir_new(%s): Cannot open dir", Path);
     }
 

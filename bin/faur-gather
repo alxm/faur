@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-    Copyright 2018-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2018-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -24,29 +24,29 @@ from utils.tool import Tool
 g_tool = Tool('RootDir ...', '--no-dirs')
 
 def main():
+    table = {}
     files = []
     startRoot = os.path.abspath(g_tool.get_arg('RootDir'))
 
     if not os.path.isdir(startRoot):
         g_tool.usage('{} is not a dir'.format(startRoot))
 
-    def scan_file(Root, File):
-        filePath = os.path.join(Root, File)
-        isDir = os.path.isdir(filePath)
+    def scan_file(Prefix, File):
+        filePathPartial = os.path.join(Prefix, File)
+        filePathFull = os.path.join(startRoot, filePathPartial)
+        isDir = os.path.isdir(filePathFull)
 
-        if isDir and g_tool.get_flag('--no-dirs'):
-            scanned = []
-        else:
-            scanned = [os.path.relpath(filePath, start = startRoot)]
+        if not isDir or not g_tool.get_flag('--no-dirs'):
+            if not filePathPartial in table:
+                table[filePathPartial] = None
+                files.append(filePathPartial)
 
         if isDir:
-            for f in g_tool.list_dir(filePath):
-                scanned += scan_file(filePath, f)
-
-        return scanned
+            for f in g_tool.list_dir(filePathFull):
+                scan_file(filePathPartial, f)
 
     for f in g_tool.get_arg('...'):
-        files += scan_file(startRoot, f)
+        scan_file('', f)
 
     print(' '.join(files))
 

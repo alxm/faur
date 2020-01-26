@@ -1,5 +1,5 @@
 /*
-    Copyright 2019 Alex Margarit <alex@alxm.org>
+    Copyright 2019-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -29,10 +29,25 @@ typedef struct {
     File file;
 } FGamebuinoFile;
 
-bool f_platform_api__fileStat(const char* Path, FPathFlags* Flags)
+bool f_platform_api__fileStat(const char* Path, FPathInfo* Info)
 {
-    if(SD.exists(Path)) {
-        *Flags = (FPathFlags)(F_PATH_REAL | F_PATH_FILE);
+    File f = SD.open(Path, O_RDONLY);
+
+    if(f) {
+        unsigned flags = F_PATH_REAL;
+        size_t size = 0;
+
+        if(f.isDirectory()) {
+            F_FLAGS_SET(flags, F_PATH_DIR);
+        } else {
+            F_FLAGS_SET(flags, F_PATH_FILE);
+            size = f.size();
+        }
+
+        f.close();
+
+        Info->flags = (FPathFlags)flags;
+        Info->size = size;
 
         return true;
     }
@@ -70,7 +85,7 @@ bool f_platform_api__fileBufferWrite(const char* Path, const void* Buffer, size_
     return ret;
 }
 
-FPlatformFile* f_platform_api__fileNew(FPath* Path, FFileMode Mode)
+FPlatformFile* f_platform_api__fileNew(const FPath* Path, FFileMode Mode)
 {
     oflag_t flags = 0;
 

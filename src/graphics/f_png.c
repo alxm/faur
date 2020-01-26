@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -56,17 +56,12 @@ static FPixels* pngToPixels(png_structp Png, png_infop Info)
     return pixels;
 }
 
-FPixels* f_png__readFile(const char* Path)
+static FPixels* f_png__readFile(const char* Path)
 {
-    FPixels* volatile pixels = NULL;
-
-    png_structp png = NULL;
-    png_infop info = NULL;
-
     FFile* f = f_file_new(Path, F_FILE_READ | F_FILE_BINARY);
 
     if(f == NULL) {
-        goto cleanUp;
+        F__FATAL("f_png__readFile(%s): Could not open file", Path);
     }
 
     #define PNG_SIG 8
@@ -75,24 +70,24 @@ FPixels* f_png__readFile(const char* Path)
     f_file_read(f, sig, PNG_SIG);
 
     if(png_sig_cmp(sig, 0, PNG_SIG) != 0) {
-        f_out__error("f_png__readFile(%s): Not a PNG", Path);
-        goto cleanUp;
+        F__FATAL("png_sig_cmp(%s) failed", Path);
     }
 
-    png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+    png_structp png = png_create_read_struct(
+                        PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 
     if(png == NULL) {
-        goto cleanUp;
+        F__FATAL("png_create_read_struct(%s) failed", Path);
     }
 
-    info = png_create_info_struct(png);
+    png_infop info = png_create_info_struct(png);
 
     if(info == NULL) {
-        goto cleanUp;
+        F__FATAL("png_create_info_struct(%s) failed", Path);
     }
 
     if(setjmp(png_jmpbuf(png))) {
-        goto cleanUp;
+        F__FATAL("f_png__readFile(%s) failed", Path);
     }
 
     png_init_io(png, f_file_handleGet(f));
@@ -102,33 +97,23 @@ FPixels* f_png__readFile(const char* Path)
     int type = png_get_color_type(png, info);
 
     if(type != PNG_COLOR_TYPE_RGB && type != PNG_COLOR_TYPE_RGBA) {
-        f_out__error("f_png__readFile(%s): Not an RGB or RGBA PNG", Path);
-        goto cleanUp;
+        F__FATAL("png_get_color_type(%s): Not an RGB or RGBA PNG", Path);
     }
 
-    pixels = pngToPixels(png, info);
+    FPixels* pixels = pngToPixels(png, info);
 
-cleanUp:
-    if(png) {
-        png_destroy_read_struct(&png, info ? &info : NULL, NULL);
-    }
-
+    png_destroy_read_struct(&png, &info, NULL);
     f_file_free(f);
 
     return pixels;
 }
 
-FPixels* f_png__readMemory(const uint8_t* Data)
+static FPixels* f_png__readMemory(const uint8_t* Data)
 {
-    FPixels* volatile pixels = NULL;
-
     FByteStream* stream = f_mem_malloc(sizeof(FByteStream));
 
     stream->data = Data;
     stream->offset = 0;
-
-    png_structp png = NULL;
-    png_infop info = NULL;
 
     #define PNG_SIG 8
     png_byte sig[PNG_SIG];
@@ -136,24 +121,24 @@ FPixels* f_png__readMemory(const uint8_t* Data)
     memcpy(sig, Data, PNG_SIG);
 
     if(png_sig_cmp(sig, 0, PNG_SIG) != 0) {
-        f_out__error("f_png__readMemory: Data not a PNG");
-        goto cleanUp;
+        F__FATAL("png_sig_cmp failed");
     }
 
-    png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+    png_structp png = png_create_read_struct(
+                        PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 
     if(png == NULL) {
-        goto cleanUp;
+        F__FATAL("png_create_read_struct failed");
     }
 
-    info = png_create_info_struct(png);
+    png_infop info = png_create_info_struct(png);
 
     if(info == NULL) {
-        goto cleanUp;
+        F__FATAL("png_create_info_struct failed");
     }
 
     if(setjmp(png_jmpbuf(png))) {
-        goto cleanUp;
+        F__FATAL("f_png__readMemory failed");
     }
 
     png_set_read_fn(png, stream, readFunction);
@@ -162,32 +147,42 @@ FPixels* f_png__readMemory(const uint8_t* Data)
     const int type = png_get_color_type(png, info);
 
     if(type != PNG_COLOR_TYPE_RGB && type != PNG_COLOR_TYPE_RGBA) {
-        f_out__error("f_png__readMemory: Data not an RGB or RGBA PNG");
-        goto cleanUp;
+        F__FATAL("png_get_color_type: Not an RGB or RGBA PNG");
     }
 
-    pixels = pngToPixels(png, info);
+    FPixels* pixels = pngToPixels(png, info);
 
-cleanUp:
-    if(png) {
-        png_destroy_read_struct(&png, info ? &info : NULL, NULL);
-    }
-
+    png_destroy_read_struct(&png, &info, NULL);
     f_mem_free(stream);
+
+    return pixels;
+}
+
+FPixels* f_png__read(const char* Path)
+{
+    FPixels* pixels;
+
+    if(f_path_exists(Path, F_PATH_FILE | F_PATH_REAL)) {
+        pixels = f_png__readFile(Path);
+    } else if(f_path_exists(Path, F_PATH_FILE | F_PATH_EMBEDDED)) {
+        pixels = f_png__readMemory(f_embed__fileGet(Path)->buffer);
+    } else {
+        F__FATAL("f_png__read(%s): File does not exist", Path);
+    }
 
     return pixels;
 }
 
 void f_png__write(const char* Path, const FPixels* Pixels, unsigned Frame, char* Title, char* Description)
 {
-    FFile* f = f_file_new(Path, F_FILE_WRITE | F_FILE_BINARY);
-
     png_structp png = NULL;
     png_infop info = NULL;
     volatile png_bytepp rows = NULL;
     volatile png_bytep rowsData = NULL;
     png_text text[2];
     volatile int numText = 0;
+
+    FFile* f = f_file_new(Path, F_FILE_WRITE | F_FILE_BINARY);
 
     if(f == NULL) {
         goto cleanUp;
@@ -203,16 +198,22 @@ void f_png__write(const char* Path, const FPixels* Pixels, unsigned Frame, char*
     png = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 
     if(png == NULL) {
+        f_out__error("png_create_write_struct(%s) failed", Path);
+
         goto cleanUp;
     }
 
     info = png_create_info_struct(png);
 
     if(info == NULL) {
+        f_out__error("png_create_info_struct(%s) failed", Path);
+
         goto cleanUp;
     }
 
     if(setjmp(png_jmpbuf(png))) {
+        f_out__error("f_png__write(%s) failed", Path);
+
         goto cleanUp;
     }
 

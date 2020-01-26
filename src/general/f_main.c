@@ -112,7 +112,7 @@ F__ATTRIBUTE_NORETURN static void handleFatal(void)
             char** functionNames = backtrace_symbols(addresses, numAddresses);
 
             for(int i = 0; i < numAddresses; i++) {
-                f_out__error(functionNames[i]);
+                f_out__error("%s", functionNames[i]);
             }
 
             free(functionNames);

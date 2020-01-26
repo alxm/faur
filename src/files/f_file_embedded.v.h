@@ -1,5 +1,5 @@
 /*
-    Copyright 2018-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2018-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -24,13 +24,11 @@ typedef struct FFileEmbedded FFileEmbedded;
 
 #include "../files/f_file.v.h"
 
-extern FFileEmbedded* f_file_embedded__new(FPath* Path);
+extern FFileEmbedded* f_file_embedded__new(const FPath* Path);
+extern void f_file_embedded__free(FFileEmbedded* File);
 
 extern bool f_file_embedded__seek(FFileEmbedded* File, int Offset, FFileOffset Origin);
 extern bool f_file_embedded__read(FFileEmbedded* File, void* Buffer, size_t Size);
-extern bool f_file_embedded__write(FFileEmbedded* File, const void* Buffer, size_t Size);
-extern bool f_file_embedded__writef(FFileEmbedded* File, const char* Format, va_list Args);
-extern bool f_file_embedded__flush(FFileEmbedded* File);
 extern int f_file_embedded__readChar(FFileEmbedded* File);
 extern int f_file_embedded__readCharUndo(FFileEmbedded* File, int Char);
 

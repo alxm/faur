@@ -33,6 +33,7 @@ typedef void FPlatformTextureScreen;
 typedef void FPlatformFile;
 
 #include "../files/f_file.v.h"
+#include "../files/f_path.v.h"
 #include "../general/f_main.v.h"
 #include "../graphics/f_pixels.v.h"
 #include "../input/f_analog.v.h"
@@ -116,10 +117,10 @@ extern bool f_platform_api__inputTouchTapGet(void);
 extern FPlatformController* f_platform_api__inputControllerClaim(FControllerBind* Callback);
 extern void f_platform_api__inputControllerRelease(FPlatformController* Controller);
 
-extern bool f_platform_api__fileStat(const char* Path, FPathFlags* Flags);
+extern bool f_platform_api__fileStat(const char* Path, FPathInfo* Info);
 extern bool f_platform_api__fileBufferRead(const char* Path, void* Buffer, size_t Size);
 extern bool f_platform_api__fileBufferWrite(const char* Path, const void* Buffer, size_t Size);
-extern FPlatformFile* f_platform_api__fileNew(FPath* Path, FFileMode Mode);
+extern FPlatformFile* f_platform_api__fileNew(const FPath* Path, FFileMode Mode);
 extern void f_platform_api__fileFree(FPlatformFile* File);
 extern bool f_platform_api__fileSeek(FPlatformFile* File, int Offset, FFileOffset Origin);
 extern bool f_platform_api__fileRead(FPlatformFile* File, void* Buffer, size_t Size);

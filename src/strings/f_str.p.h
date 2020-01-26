@@ -22,11 +22,11 @@
 
 #include "../data/f_list.p.h"
 
-extern const char* f_str_fmt(char* Buffer, size_t Size, bool OverflowOk, const char* Format, ...);
+extern const char* f_str_fmt(char* Buffer, size_t Size, bool OverflowOk, const char* Format, ...) F__ATTRIBUTE_FORMAT(4);
 extern const char* f_str_fmtv(char* Buffer, size_t Size, bool OverflowOk, const char* Format, va_list Args);
-extern const char* f_str_fmt512(const char* Format, ...);
+extern const char* f_str_fmt512(const char* Format, ...) F__ATTRIBUTE_FORMAT(1);
 
-extern char* f_str_merge(const char* String1, ...);
+extern char* f_str_merge(const char* String1, ...) F__ATTRIBUTE_FORMAT(1);
 extern char* f_str_dup(const char* String);
 extern char* f_str_trim(const char* String);
 

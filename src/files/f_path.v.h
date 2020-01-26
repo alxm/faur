@@ -1,5 +1,5 @@
 /*
-    Copyright 2018 Alex Margarit <alex@alxm.org>
+    Copyright 2018, 2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -19,6 +19,13 @@
 #define F_INC_FILES_PATH_V_H
 
 #include "f_path.p.h"
+
+typedef struct {
+    FPathFlags flags;
+    size_t size;
+} FPathInfo;
+
+extern size_t f_path__sizeGet(const FPath* Path);
 
 extern void f_path__flagsSet(FPath* Path, FPathFlags Flags);
 

@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2019-2020 Alex Margarit <alex@alxm.org>
+    Copyright 2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -15,14 +15,14 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef F_INC_GRAPHICS_PNG_V_H
-#define F_INC_GRAPHICS_PNG_V_H
+#ifndef F_INC_FILES_BLOB_P_H
+#define F_INC_FILES_BLOB_P_H
 
-#include "f_png.p.h"
+#include "../general/f_system_includes.h"
 
-#include "../graphics/f_pixels.v.h"
+typedef struct FBlob FBlob;
 
-extern FPixels* f_png__read(const char* Path);
-extern void f_png__write(const char* Path, const FPixels* Pixels, unsigned Frame, char* Title, char* Description);
+extern FBlob* f_blob_new(const char* Path);
+extern void f_blob_free(FBlob* Blob);
 
-#endif // F_INC_GRAPHICS_PNG_V_H
+#endif // F_INC_FILES_BLOB_P_H

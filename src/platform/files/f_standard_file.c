@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -29,22 +29,25 @@ struct FPlatformFile {
     FILE* handle;
 };
 
-bool f_platform_api__fileStat(const char* Path, FPathFlags* Flags)
+bool f_platform_api__fileStat(const char* Path, FPathInfo* Info)
 {
     struct stat info;
 
     if(stat(Path, &info) == 0) {
         FPathFlags flags = F_PATH_REAL;
+        size_t size = 0;
 
         if(S_ISREG(info.st_mode)) {
             F_FLAGS_SET(flags, F_PATH_FILE);
+            size = (size_t)info.st_size;
         } else if(S_ISDIR(info.st_mode)) {
             F_FLAGS_SET(flags, F_PATH_DIR);
         } else {
             F_FLAGS_SET(flags, F_PATH_OTHER);
         }
 
-        *Flags = flags;
+        Info->flags = flags;
+        Info->size = size;
 
         return true;
     }
@@ -91,7 +94,7 @@ bool f_platform_api__fileBufferWrite(const char* Path, const void* Buffer, size_
     return ret;
 }
 
-FPlatformFile* f_platform_api__fileNew(FPath* Path, FFileMode Mode)
+FPlatformFile* f_platform_api__fileNew(const FPath* Path, FFileMode Mode)
 {
     int index = 0;
     char mode[4];
@@ -108,17 +111,7 @@ FPlatformFile* f_platform_api__fileNew(FPath* Path, FFileMode Mode)
 
     mode[index] = '\0';
 
-    FILE* handle = fopen(f_path_getFull(Path), mode);
-
-    if(handle == NULL) {
-        return NULL;
-    }
-
-    if(F_FLAGS_TEST_ANY(Mode, F_FILE_WRITE)) {
-        f_path__flagsSet(Path, F_PATH_FILE | F_PATH_REAL);
-    }
-
-    return handle;
+    return fopen(f_path_getFull(Path), mode);
 }
 
 void f_platform_api__fileFree(FPlatformFile* File)

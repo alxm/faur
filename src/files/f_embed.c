@@ -1,5 +1,5 @@
 /*
-    Copyright 2017-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2017-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -18,26 +18,17 @@
 #include "f_embed.v.h"
 #include <faur.v.h>
 
-#if F_CONFIG_FILES_EMBED
 static FStrHash* g_dirs; // table of FEmbeddedDir
 static FStrHash* g_files; // table of FEmbeddedFile
-
-static inline void addDir(const char* Path, const void* Data)
-{
-    f_strhash_add(g_dirs, Path, (void*)Data);
-}
-
-static inline void addFile(const char* Path, const void* Data)
-{
-    f_strhash_add(g_files, Path, (void*)Data);
-}
 
 static void f_embed__init(void)
 {
     g_dirs = f_strhash_new();
     g_files = f_strhash_new();
 
-    f_embed__populate();
+    #if F_CONFIG_FILES_EMBED
+        f_embed__populate();
+    #endif
 }
 
 static void f_embed__uninit(void)
@@ -56,9 +47,30 @@ const FPack f_pack__embed = {
     },
 };
 
-void f_embed__dirAdd(const void* Data)
+FEmbeddedDir* f_embed__dirNew(const char* Path, size_t Size)
 {
-    addDir(((const FEmbeddedDir*)Data)->path, Data);
+    FEmbeddedDir* d = f_mem_malloc(sizeof(FEmbeddedDir));
+
+    d->path = Path;
+    d->size = Size;
+    d->entries = f_mem_malloc(Size * sizeof(const char*));
+
+    f_strhash_add(g_dirs, Path, d);
+
+    return d;
+}
+
+void f_embed__dirFree(FEmbeddedDir* Dir)
+{
+    f_strhash_removeKey(g_dirs, Dir->path);
+
+    f_mem_free(Dir->entries);
+    f_mem_free(Dir);
+}
+
+void f_embed__dirAdd(const FEmbeddedDir* Dir)
+{
+    f_strhash_add(g_dirs, Dir->path, (void*)Dir);
 }
 
 const FEmbeddedDir* f_embed__dirGet(const char* Path)
@@ -66,39 +78,55 @@ const FEmbeddedDir* f_embed__dirGet(const char* Path)
     return f_strhash_get(g_dirs, Path);
 }
 
-void f_embed__fileAdd(const void* Data)
+FEmbeddedFile* f_embed__fileNew(const char* Path, size_t Size, const uint8_t* Buffer)
 {
-    addFile(((const FEmbeddedFile*)Data)->path, Data);
+    FEmbeddedFile* f = f_mem_malloc(sizeof(FEmbeddedFile));
+
+    f->path = Path;
+    f->size = Size;
+    f->buffer = Buffer;
+
+    f_strhash_add(g_files, Path, f);
+
+    return f;
+}
+
+void f_embed__fileFree(FEmbeddedFile* File)
+{
+    f_strhash_removeKey(g_files, File->path);
+
+    f_mem_free(File);
+}
+
+void f_embed__fileAdd(const FEmbeddedFile* File)
+{
+    f_strhash_add(g_files, File->path, (void*)File);
 }
 
 const FEmbeddedFile* f_embed__fileGet(const char* Path)
 {
     return f_strhash_get(g_files, Path);
 }
-#else // !F_CONFIG_FILES_EMBED
-const FPack f_pack__embed;
 
-void f_embed__dirAdd(const void* Data)
+bool f_embed__stat(const char* Path, FPathInfo* Info)
 {
-    F_UNUSED(Data);
+    const FEmbeddedFile* f = f_embed__fileGet(Path);
+
+    if(f) {
+        Info->flags = F_PATH_EMBEDDED | F_PATH_FILE;
+        Info->size = f->size;
+
+        return true;
+    }
+
+    const FEmbeddedDir* d = f_embed__dirGet(Path);
+
+    if(d) {
+        Info->flags = F_PATH_EMBEDDED | F_PATH_DIR;
+        Info->size = 0;
+
+        return true;
+    }
+
+    return false;
 }
-
-const FEmbeddedDir* f_embed__dirGet(const char* Path)
-{
-    F_UNUSED(Path);
-
-    return NULL;
-}
-
-void f_embed__fileAdd(const void* Data)
-{
-    F_UNUSED(Data);
-}
-
-const FEmbeddedFile* f_embed__fileGet(const char* Path)
-{
-    F_UNUSED(Path);
-
-    return NULL;
-}
-#endif // !F_CONFIG_FILES_EMBED
