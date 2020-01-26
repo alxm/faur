@@ -24,7 +24,7 @@ typedef struct FFileEmbedded FFileEmbedded;
 
 #include "../files/f_file.v.h"
 
-extern FFileEmbedded* f_file_embedded__new(FPath* Path);
+extern FFileEmbedded* f_file_embedded__new(const FPath* Path);
 extern void f_file_embedded__free(FFileEmbedded* File);
 
 extern bool f_file_embedded__seek(FFileEmbedded* File, int Offset, FFileOffset Origin);

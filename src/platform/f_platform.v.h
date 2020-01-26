@@ -120,7 +120,7 @@ extern void f_platform_api__inputControllerRelease(FPlatformController* Controll
 extern bool f_platform_api__fileStat(const char* Path, FPathInfo* Info);
 extern bool f_platform_api__fileBufferRead(const char* Path, void* Buffer, size_t Size);
 extern bool f_platform_api__fileBufferWrite(const char* Path, const void* Buffer, size_t Size);
-extern FPlatformFile* f_platform_api__fileNew(FPath* Path, FFileMode Mode);
+extern FPlatformFile* f_platform_api__fileNew(const FPath* Path, FFileMode Mode);
 extern void f_platform_api__fileFree(FPlatformFile* File);
 extern bool f_platform_api__fileSeek(FPlatformFile* File, int Offset, FFileOffset Origin);
 extern bool f_platform_api__fileRead(FPlatformFile* File, void* Buffer, size_t Size);

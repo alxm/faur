@@ -85,7 +85,7 @@ bool f_platform_api__fileBufferWrite(const char* Path, const void* Buffer, size_
     return ret;
 }
 
-FPlatformFile* f_platform_api__fileNew(FPath* Path, FFileMode Mode)
+FPlatformFile* f_platform_api__fileNew(const FPath* Path, FFileMode Mode)
 {
     oflag_t flags = 0;
 

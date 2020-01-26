@@ -23,7 +23,7 @@ struct FFileEmbedded {
     size_t index;
 };
 
-FFileEmbedded* f_file_embedded__new(FPath* Path)
+FFileEmbedded* f_file_embedded__new(const FPath* Path)
 {
     FFileEmbedded* f = f_mem_malloc(sizeof(FFileEmbedded));
 

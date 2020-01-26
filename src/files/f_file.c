@@ -77,9 +77,13 @@ FFile* f_file_new(const char* Path, FFileMode Mode)
     void* file = NULL;
     FPath* path = f_path_new(Path);
 
-    if(F_FLAGS_TEST_ANY(Mode, F_FILE_WRITE)
-        || f_path_test(path, F_PATH_FILE | F_PATH_REAL)) {
+    if(F_FLAGS_TEST_ANY(Mode, F_FILE_WRITE)) {
+        file = f_platform_api__fileNew(path, Mode);
 
+        if(file) {
+            f_path__flagsSet(path, F_PATH_FILE | F_PATH_REAL);
+        }
+    } else if(f_path_test(path, F_PATH_FILE | F_PATH_REAL)) {
         file = f_platform_api__fileNew(path, Mode);
     } else if(f_path_test(path, F_PATH_FILE | F_PATH_EMBEDDED)) {
         file = f_file_embedded__new(path);

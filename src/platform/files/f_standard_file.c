@@ -94,7 +94,7 @@ bool f_platform_api__fileBufferWrite(const char* Path, const void* Buffer, size_
     return ret;
 }
 
-FPlatformFile* f_platform_api__fileNew(FPath* Path, FFileMode Mode)
+FPlatformFile* f_platform_api__fileNew(const FPath* Path, FFileMode Mode)
 {
     int index = 0;
     char mode[4];
@@ -111,17 +111,7 @@ FPlatformFile* f_platform_api__fileNew(FPath* Path, FFileMode Mode)
 
     mode[index] = '\0';
 
-    FILE* handle = fopen(f_path_getFull(Path), mode);
-
-    if(handle == NULL) {
-        return NULL;
-    }
-
-    if(F_FLAGS_TEST_ANY(Mode, F_FILE_WRITE)) {
-        f_path__flagsSet(Path, F_PATH_FILE | F_PATH_REAL);
-    }
-
-    return handle;
+    return fopen(f_path_getFull(Path), mode);
 }
 
 void f_platform_api__fileFree(FPlatformFile* File)
