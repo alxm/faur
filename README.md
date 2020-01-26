@@ -2,9 +2,11 @@
 
 [![Build Status](https://travis-ci.org/alxm/faur.svg?branch=master)](https://travis-ci.org/alxm/faur)
 
-*Faur* is a C framework I wrote for my video games. It runs natively on Linux and FreeBSD, and can be cross-compiled for Web, Windows, GP2X, Wiz, Caanoo, Open Pandora, and the Arduino-compatible Gamebuino META and Odroid-GO (early).
+*Faur* is a personal C framework I'm writing for my video games.
 
-Features include cross-platform graphics, sound, inputs, file I/O, state management, ECS model, and utilities to help with data, math, strings, time, and more.
+Features include 2D graphics, sound, inputs, state management, ECS model, and utilities to help with data, files, math, strings, time, and more.
+
+Faur builds natively on Linux, and can be [cross-compiled](#cross-compile-for-other-platforms) for Web, Windows, and a variety of embedded devices.
 
 ## Dependencies & Path Setup
 
@@ -20,10 +22,10 @@ sudo apt install libsdl1.2-dev libsdl-mixer1.2-dev mingw-w64
 cd ~
 git clone git://github.com/alxm/faur.git
 
-# Set FAUR_PATH, required
+# Set FAUR_PATH environment var
 export FAUR_PATH="$HOME/faur"
 
-# Add tools to path, optional
+# Add Faur's tools to $PATH
 export PATH="$PATH:$FAUR_PATH/bin"
 ```
 
@@ -130,19 +132,27 @@ include $(FAUR_PATH)/make/dev.mk
 
 I first wrote Faur (formerly *a2x*) to make games for the Linux-based [GP2X handheld](https://www.alxm.org/games/gamepark.html). These are the supported platforms now:
 
+#### Desktop
+
 * Linux, FreeBSD *(native)*
-* Web *(Emscripten)*
 * Windows *(MinGW-w64)*
+* Web *(Emscripten)*
+
+#### Embedded Linux
+
 * GP2X, Wiz, Caanoo *(Open2x SDK, GPH SDK)*
 * Open Pandora *(Pandora SDK)*
+
+#### Arduino
+
 * Gamebuino META *(Arduino SAMD)*
-* Odroid-GO *(Arduino ESP32, early)*
+* Odroid-GO *(Arduino ESP32)*
 
 The default toolchain paths are in faur/make/global/defs.mk and they can be overridden in ~/.config/faur/sdk.mk. To build for a different target, edit the application Makefile and replace `dev.mk` with another file from faur/make/.
 
 ## License
 
-Copyright 2010-2019 Alex Margarit (alex@alxm.org)
+Copyright 2010-2020 Alex Margarit (alex@alxm.org)
 
 * Source code licensed under [GNU GPL 3.0](https://www.gnu.org/licenses/gpl.html) (file `LICENSE`)
 * Other content licensed under [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/) (file `media/CC-BY-NC-ND`)
