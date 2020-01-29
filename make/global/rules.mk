@@ -64,7 +64,6 @@ F_BUILD_FILES_SFX_H := $(F_BUILD_FILES_SFX_BIN:%=$(F_BUILD_DIR_GEN_SFX)/%.h)
 #
 # All application source code and object files
 #
-
 F_BUILD_FILES_C := \
     $(F_BUILD_FILES_SRC_C) \
     $(F_BUILD_FILES_EMBED_POPULATE) \
@@ -246,6 +245,9 @@ cleangen :
 
 run : all
 	cd $(F_BUILD_DIR_BIN) && LD_LIBRARY_PATH=".:$$LD_LIBRARY_PATH" ./$(F_BUILD_FILE_BIN)
+
+valgrind : all
+	cd $(F_BUILD_DIR_BIN) && LD_LIBRARY_PATH=".:$$LD_LIBRARY_PATH" valgrind ./$(F_BUILD_FILE_BIN)
 
 copystatic :
 	@ mkdir -p $(F_BUILD_DIR_BIN)
