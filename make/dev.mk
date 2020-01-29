@@ -30,4 +30,4 @@ F_CONFIG_BUILD_FLAGS_SHARED += \
 
 include $(FAUR_PATH)/make/global/rules.mk
 
-all : $(FAUR_FILE_EDITOR_TAGS)
+all : $(F_FAUR_FILE_GEANY_TAGS)

@@ -16,11 +16,9 @@ F_CONFIG_SYSTEM_WIZ := 1
 F_CONFIG_SYSTEM_WIZ_SCREEN_FIX ?= 1
 F_CONFIG_TRAIT_SLOW_MUL := 1
 
-OPEN2X := $(F_SDK_OPEN2X_ROOT)/$(F_SDK_OPEN2X_TOOLCHAIN)
-
 F_CONFIG_BUILD_LIBS += \
-    -L$(OPEN2X)/lib \
-    -L$(OPEN2X)/arm-open2x-linux/lib \
+    -L$(F_SDK_OPEN2X_TOOLCHAIN)/lib \
+    -L$(F_SDK_OPEN2X_TOOLCHAIN)/arm-open2x-linux/lib \
     -lpng12 \
     -lz \
     -lSDL_mixer \
@@ -36,19 +34,19 @@ F_CONFIG_BUILD_FLAGS_SHARED += \
     -msoft-float \
     -ffast-math \
     -fomit-frame-pointer \
-    -isystem$(OPEN2X)/include \
-    -isystem$(OPEN2X)/arm-open2x-linux/include \
+    -isystem$(F_SDK_OPEN2X_TOOLCHAIN)/include \
+    -isystem$(F_SDK_OPEN2X_TOOLCHAIN)/arm-open2x-linux/include \
     -Wno-conversion \
 
-PREFIX := arm-open2x-linux-
+F_TOOLCHAIN_PREFIX := arm-open2x-linux-
 
-export PATH    := $(OPEN2X)/bin:$(PATH)
-export CC      := $(PREFIX)gcc
-export CXX     := $(PREFIX)g++
-export AS      := $(PREFIX)as
-export AR      := $(PREFIX)ar
-export OBJCOPY := $(PREFIX)objcopy
-export READELF := $(PREFIX)readelf
-export STRIP   := $(PREFIX)strip
+export PATH    := $(F_SDK_OPEN2X_TOOLCHAIN)/bin:$(PATH)
+export CC      := $(F_TOOLCHAIN_PREFIX)gcc
+export CXX     := $(F_TOOLCHAIN_PREFIX)g++
+export AS      := $(F_TOOLCHAIN_PREFIX)as
+export AR      := $(F_TOOLCHAIN_PREFIX)ar
+export OBJCOPY := $(F_TOOLCHAIN_PREFIX)objcopy
+export READELF := $(F_TOOLCHAIN_PREFIX)readelf
+export STRIP   := $(F_TOOLCHAIN_PREFIX)strip
 
 include $(FAUR_PATH)/make/global/rules.mk

@@ -13,13 +13,10 @@ F_CONFIG_SYSTEM_LINUX := 1
 F_CONFIG_SYSTEM_PANDORA := 1
 F_CONFIG_TRAIT_KEYBOARD := 1
 
-PANDORA_SDK := $(F_SDK_PANDORA_ROOT)/$(F_SDK_PANDORA_TOOLCHAIN)
-PANDORA_UTILS := $(F_SDK_PANDORA_ROOT)/$(F_SDK_PANDORA_UTILS)
-
 F_CONFIG_BUILD_LIBS += \
-    -L$(PANDORA_SDK)/lib \
-    -L$(PANDORA_SDK)/usr/lib \
-    -L$(PANDORA_SDK)/arm-none-linux-gnueabi/lib \
+    -L$(F_SDK_PANDORA_TOOLCHAIN)/lib \
+    -L$(F_SDK_PANDORA_TOOLCHAIN)/usr/lib \
+    -L$(F_SDK_PANDORA_TOOLCHAIN)/arm-none-linux-gnueabi/lib \
     -lpng12 \
     -lz \
     -lSDL_mixer \
@@ -40,38 +37,37 @@ F_CONFIG_BUILD_FLAGS_SHARED += \
     -fsingle-precision-constant \
     -ftree-vectorize \
     -fomit-frame-pointer \
-    -isystem$(PANDORA_SDK)/include \
-    -isystem$(PANDORA_SDK)/usr/include \
-    -isystem$(PANDORA_SDK)/arm-none-linux-gnueabi/include \
+    -isystem$(F_SDK_PANDORA_TOOLCHAIN)/include \
+    -isystem$(F_SDK_PANDORA_TOOLCHAIN)/usr/include \
+    -isystem$(F_SDK_PANDORA_TOOLCHAIN)/arm-none-linux-gnueabi/include \
 
-PREFIX := arm-none-linux-gnueabi-
+F_TOOLCHAIN_PREFIX := arm-none-linux-gnueabi-
 
-export PATH    := $(PANDORA_SDK)/bin:$(PATH)
-export CC      := $(PREFIX)gcc
-export CXX     := $(PREFIX)g++
-export AS      := $(PREFIX)as
-export AR      := $(PREFIX)ar
-export OBJCOPY := $(PREFIX)objcopy
-export READELF := $(PREFIX)readelf
-export STRIP   := $(PREFIX)strip
-export LD      := $(PREFIX)ld
+export PATH    := $(F_SDK_PANDORA_TOOLCHAIN)/bin:$(PATH)
+export CC      := $(F_TOOLCHAIN_PREFIX)gcc
+export CXX     := $(F_TOOLCHAIN_PREFIX)g++
+export AS      := $(F_TOOLCHAIN_PREFIX)as
+export AR      := $(F_TOOLCHAIN_PREFIX)ar
+export OBJCOPY := $(F_TOOLCHAIN_PREFIX)objcopy
+export READELF := $(F_TOOLCHAIN_PREFIX)readelf
+export STRIP   := $(F_TOOLCHAIN_PREFIX)strip
+export LD      := $(F_TOOLCHAIN_PREFIX)ld
 
 include $(FAUR_PATH)/make/global/rules.mk
 
-F_DIR_PND_BASE := $(F_DIR_ROOT)/$(F_CONFIG_DIR_BUILD)/static/pnd
-F_DIR_PND_STAGING := $(F_DIR_BUILD_UID)/pnd
-F_FILE_PND := $(call F_MAKE_SPACE_DASH,$(F_CONFIG_APP_AUTHOR)).$(call F_MAKE_SPACE_DASH,$(F_CONFIG_APP_NAME)).pnd
-F_FILE_PND_TARGET := $(PWD)/$(F_DIR_BIN)/$(F_FILE_PND)
+F_PND_DIR_BASE := $(F_DIR_ROOT_FROM_MAKE)/$(F_CONFIG_DIR_BUILD)/static/pnd
+F_PND_DIR_STAGE := $(F_BUILD_DIR)/pnd
+F_PND_FILE := $(call F_MAKE_SPACE_DASH,$(F_CONFIG_APP_AUTHOR)).$(call F_MAKE_SPACE_DASH,$(F_CONFIG_APP_NAME)).pnd
 
-all : $(F_FILE_PND_TARGET)
+all : $(PWD)/$(F_BUILD_DIR_BIN)/$(F_PND_FILE)
 
-$(F_FILE_PND_TARGET) : $(F_FILE_BIN_TARGET)
-	@ mkdir -p $(@D) $(F_DIR_PND_STAGING)
-	rsync --archive --delete --progress --human-readable $(F_DIR_PND_BASE)/ $(F_DIR_PND_STAGING)
-	rsync --archive --delete --progress --human-readable $(F_DIR_ROOT)/$(F_CONFIG_DIR_ASSETS) $(F_DIR_PND_STAGING)
-	cp $(F_FILE_BIN_TARGET) $(F_DIR_PND_STAGING)
-	$(PANDORA_UTILS)/pnd_make.sh -c \
-		-d $(PWD)/$(F_DIR_PND_STAGING) \
-		-p $(F_FILE_PND_TARGET) \
-		-x $(PWD)/$(F_DIR_PND_STAGING)/doc/PXML.xml \
-		-i $(PWD)/$(F_DIR_PND_STAGING)/img/icon.png
+$(PWD)/$(F_BUILD_DIR_BIN)/$(F_PND_FILE) : $(F_BUILD_DIR_BIN)/$(F_BUILD_FILE_BIN)
+	@ mkdir -p $(@D) $(F_PND_DIR_STAGE)
+	rsync --archive --delete --progress --human-readable $(F_PND_DIR_BASE)/ $(F_PND_DIR_STAGE)
+	rsync --archive --delete --progress --human-readable $(F_DIR_ROOT_FROM_MAKE)/$(F_CONFIG_DIR_ASSETS) $(F_PND_DIR_STAGE)
+	cp $(F_BUILD_DIR_BIN)/$(F_BUILD_FILE_BIN) $(F_PND_DIR_STAGE)
+	$(F_SDK_PANDORA_UTILS)/pnd_make.sh -c \
+		-d $(PWD)/$(F_PND_DIR_STAGE) \
+		-p $(PWD)/$(F_BUILD_DIR_BIN)/$(F_PND_FILE) \
+		-x $(PWD)/$(F_PND_DIR_STAGE)/doc/PXML.xml \
+		-i $(PWD)/$(F_PND_DIR_STAGE)/img/icon.png

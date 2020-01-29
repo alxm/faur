@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -22,7 +22,7 @@
 
 typedef struct FList FList;
 typedef struct FListNode FListNode;
-typedef int FListCompare(void* ItemA, void* ItemB);
+typedef int FListCompare(const void* A, const void* B);
 
 extern FList* f_list_new(void);
 extern void f_list_free(FList* List);
