@@ -26,23 +26,18 @@ F_BUILD_LINK_BIN_SCREENSHOTS := $(F_BUILD_DIR_BIN)/$(F_CONFIG_DIR_SCREENSHOTS)
 F_BUILD_DIR_FAUR_O := $(F_BUILD_DIR)/obj/faur
 F_BUILD_DIR_PROJ_O := $(F_BUILD_DIR)/obj/proj
 
-F_BUILD_DIR_GEN_O := $(F_BUILD_DIR_PROJ_O)/faur_gen
-
-ifneq ($(F_CONFIG_PATH_SRC_GEN), 0)
-    F_BUILD_DIR_GEN_C := $(F_DIR_ROOT_FROM_MAKE)/$(F_CONFIG_DIR_SRC)/faur_gen
-else
-    F_BUILD_DIR_GEN_C := $(F_BUILD_DIR_GEN_O)
-endif
-
-F_BUILD_DIR_GEN_EMBED := $(F_BUILD_DIR_GEN_O)/embed
+#
+# Source code dirs
+#
+F_BUILD_DIR_SRC := $(F_DIR_ROOT_FROM_MAKE)/$(F_CONFIG_DIR_SRC)
+F_BUILD_DIR_GEN := $(F_BUILD_DIR_SRC)/faur_gen
+F_BUILD_DIR_GEN_EMBED := $(F_BUILD_DIR_GEN)/embed
 F_BUILD_DIR_GEN_EMBED_ENTRIES := $(F_BUILD_DIR_GEN_EMBED)/entries
-F_BUILD_DIR_GEN_GFX_C := $(F_BUILD_DIR_GEN_C)/gfx
-F_BUILD_DIR_GEN_GFX_O := $(F_BUILD_DIR_GEN_O)/gfx
-F_BUILD_DIR_GEN_SFX_C := $(F_BUILD_DIR_GEN_C)/sfx
-F_BUILD_DIR_GEN_SFX_O := $(F_BUILD_DIR_GEN_O)/sfx
+F_BUILD_DIR_GEN_GFX := $(F_BUILD_DIR_GEN)/gfx
+F_BUILD_DIR_GEN_SFX := $(F_BUILD_DIR_GEN)/sfx
 
 #
-# Application source and object files
+# Application source code
 #
 F_BUILD_FILES_SRC_C := $(shell find $(F_BUILD_DIR_SRC) -type f -name "*.c" -not -path "$(F_BUILD_DIR_GEN)")
 F_BUILD_FILES_SRC_O := $(F_BUILD_FILES_SRC_C:$(F_BUILD_DIR_SRC)/%=$(F_BUILD_DIR_PROJ_O)/%.o)
@@ -59,16 +54,23 @@ F_BUILD_FILES_EMBED_POPULATE := $(F_BUILD_DIR_GEN_EMBED)/populate.c
 # Embedded FSprite and FSample objects
 #
 F_BUILD_FILES_GFX_BIN := $(shell $(F_FAUR_DIR_BIN)/faur-gather -q --no-dirs $(F_DIR_ROOT_FROM_MAKE) $(F_CONFIG_PATH_GFX))
-F_BUILD_FILES_GFX_C := $(F_BUILD_FILES_GFX_BIN:%=$(F_BUILD_DIR_GEN_GFX_C)/%.c)
-F_BUILD_FILES_GFX_H := $(F_BUILD_FILES_GFX_BIN:%=$(F_BUILD_DIR_GEN_GFX_C)/%.h)
+F_BUILD_FILES_GFX_C := $(F_BUILD_FILES_GFX_BIN:%=$(F_BUILD_DIR_GEN_GFX)/%.c)
+F_BUILD_FILES_GFX_H := $(F_BUILD_FILES_GFX_BIN:%=$(F_BUILD_DIR_GEN_GFX)/%.h)
 
 F_BUILD_FILES_SFX_BIN := $(shell $(F_FAUR_DIR_BIN)/faur-gather -q --no-dirs $(F_DIR_ROOT_FROM_MAKE) $(F_CONFIG_PATH_SFX))
-F_BUILD_FILES_SFX_C := $(F_BUILD_FILES_SFX_BIN:%=$(F_BUILD_DIR_GEN_SFX_C)/%.c)
-F_BUILD_FILES_SFX_H := $(F_BUILD_FILES_SFX_BIN:%=$(F_BUILD_DIR_GEN_SFX_C)/%.h)
+F_BUILD_FILES_SFX_C := $(F_BUILD_FILES_SFX_BIN:%=$(F_BUILD_DIR_GEN_SFX)/%.c)
+F_BUILD_FILES_SFX_H := $(F_BUILD_FILES_SFX_BIN:%=$(F_BUILD_DIR_GEN_SFX)/%.h)
 
 #
-# All application object files
+# All application source code and object files
 #
+
+F_BUILD_FILES_C := \
+    $(F_BUILD_FILES_SRC_C) \
+    $(F_BUILD_FILES_EMBED_POPULATE) \
+    $(F_BUILD_FILES_GFX_C) \
+    $(F_BUILD_FILES_SFX_C) \
+
 F_BUILD_FILES_O := \
     $(F_BUILD_FILES_C:$(F_BUILD_DIR_SRC)/%=$(F_BUILD_DIR_PROJ_O)/%.o)
 
@@ -179,9 +181,9 @@ $(F_BUILD_LINK_BIN_SCREENSHOTS) :
 	ln -s $(F_DIR_ROOT_FROM_BIN)/$(F_CONFIG_DIR_BUILD)/shared/$(F_CONFIG_DIR_SCREENSHOTS) $@
 
 #
-# Project source code
+# Project source code, including generated code
 #
-$(F_BUILD_DIR_PROJ_O)/%.c.o : $(F_DIR_ROOT_FROM_MAKE)/$(F_CONFIG_DIR_SRC)/%.c
+$(F_BUILD_DIR_PROJ_O)/%.c.o : $(F_BUILD_DIR_SRC)/%.c
 	@ mkdir -p $(@D)
 	$(CC) -c -o $@ $< $(F_BUILD_FLAGS_C)
 
@@ -197,19 +199,19 @@ $(F_BUILD_FILES_EMBED_POPULATE) : $(F_BUILD_FILES_EMBED_H) $(F_FAUR_DIR_BIN)/fau
 	@ mkdir -p $(F_BUILD_DIR_GEN_EMBED_ENTRIES)
 	$(F_FAUR_DIR_BIN)/faur-embed $@ $(F_BUILD_DIR_GEN_EMBED_ENTRIES) f__bin_ $(F_BUILD_FILES_EMBED_BIN_H)
 
-$(F_BUILD_DIR_GEN_GFX_C)/%.c : $(F_DIR_ROOT_FROM_MAKE)/% $(F_FAUR_DIR_BIN)/faur-gfx
+$(F_BUILD_DIR_GEN_GFX)/%.c : $(F_DIR_ROOT_FROM_MAKE)/% $(F_FAUR_DIR_BIN)/faur-gfx
 	@ mkdir -p $(@D)
 	$(F_FAUR_DIR_BIN)/faur-gfx $< $@ $(<:$(F_DIR_ROOT_FROM_MAKE)/%=%) $(F_CONFIG_COLOR_SPRITE_KEY)
 
-$(F_BUILD_DIR_GEN_GFX_C)/%.h : $(F_DIR_ROOT_FROM_MAKE)/% $(F_FAUR_DIR_BIN)/faur-gfx
+$(F_BUILD_DIR_GEN_GFX)/%.h : $(F_DIR_ROOT_FROM_MAKE)/% $(F_FAUR_DIR_BIN)/faur-gfx
 	@ mkdir -p $(@D)
 	$(F_FAUR_DIR_BIN)/faur-gfx $< $@ $(<:$(F_DIR_ROOT_FROM_MAKE)/%=%) $(F_CONFIG_COLOR_SPRITE_KEY)
 
-$(F_BUILD_DIR_GEN_SFX_C)/%.c : $(F_DIR_ROOT_FROM_MAKE)/% $(F_FAUR_DIR_BIN)/faur-sfx
+$(F_BUILD_DIR_GEN_SFX)/%.c : $(F_DIR_ROOT_FROM_MAKE)/% $(F_FAUR_DIR_BIN)/faur-sfx
 	@ mkdir -p $(@D)
 	$(F_FAUR_DIR_BIN)/faur-sfx $< $@ $(<:$(F_DIR_ROOT_FROM_MAKE)/%=%)
 
-$(F_BUILD_DIR_GEN_SFX_C)/%.h : $(F_DIR_ROOT_FROM_MAKE)/% $(F_FAUR_DIR_BIN)/faur-sfx
+$(F_BUILD_DIR_GEN_SFX)/%.h : $(F_DIR_ROOT_FROM_MAKE)/% $(F_FAUR_DIR_BIN)/faur-sfx
 	@ mkdir -p $(@D)
 	$(F_FAUR_DIR_BIN)/faur-sfx $< $@ $(<:$(F_DIR_ROOT_FROM_MAKE)/%=%)
 
@@ -240,7 +242,7 @@ clean : $(F_CONFIG_MAKE_CLEAN)
 	rm -rf $(F_BUILD_DIR)
 
 cleangen :
-	rm -rf $(F_BUILD_DIR_GEN_C) $(F_BUILD_DIR_GEN_O)
+	rm -rf $(F_BUILD_DIR_GEN)
 
 run : all
 	cd $(F_BUILD_DIR_BIN) && LD_LIBRARY_PATH=".:$$LD_LIBRARY_PATH" ./$(F_BUILD_FILE_BIN)

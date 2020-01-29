@@ -53,12 +53,14 @@ def main():
 //
 #include <faur.v.h>
 
+#if F_CONFIG_FILES_EMBED
 {}
 
 void f_embed__populate(void)
 {{
 {}
 }}
+#endif // F_CONFIG_FILES_EMBED
 """.format(g_tool.get_cmd(), '\n'.join(includes), '\n'.join(embed_calls)))
 
 if __name__ == '__main__':
