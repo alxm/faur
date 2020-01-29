@@ -149,7 +149,7 @@ FBlob* f_blob_new(const char* Path)
     // File buffer alignment
     reader.alignShift = read_uint8(&reader);
 
-    f_out_info("f_blob_new(%s): Loading %u entries", Path, numEntries);
+    f_out_info("f_blob_new(%s): %u entries", Path, (unsigned)numEntries);
 
     while(numEntries--) {
         uint8_t entryType = read_uint8(&reader);
@@ -200,7 +200,7 @@ FBlob* f_blob_new(const char* Path)
             F__FATAL("f_blob_new(%s): '%s' has invalid type %u",
                      Path,
                      entryPath,
-                     entryType);
+                     (unsigned)entryType);
         }
     }
 
