@@ -71,7 +71,16 @@ static const uint8_t* read_bytes(FBlobReader* Reader, unsigned Size)
     return start;
 }
 
-static void skip_padding(FBlobReader* Reader)
+static void read_skip(FBlobReader* Reader, unsigned Size)
+{
+    Reader->buffer += Size;
+
+    if(Reader->buffer > Reader->bufferEnd) {
+        F__FATAL("f_blob_new(%s): Not enough data", Reader->path);
+    }
+}
+
+static void read_padding(FBlobReader* Reader)
 {
     uintptr_t p = (uintptr_t)Reader->buffer;
     unsigned shift = Reader->alignShift;
@@ -148,7 +157,17 @@ FBlob* f_blob_new(const char* Path)
         uint32_t entrySize = read_uint32(&reader);
 
         if(entryType == 1) {
-            skip_padding(&reader);
+            read_padding(&reader);
+
+            if(f_embed__fileGet(entryPath)) {
+                f_out__error("f_blob_new(%s): Entry '%s' already exists",
+                             Path,
+                             entryPath);
+
+                read_skip(&reader, entrySize);
+
+                continue;
+            }
 
             FEmbeddedFile* emb = f_embed__fileNew(
                                     entryPath,
@@ -157,6 +176,16 @@ FBlob* f_blob_new(const char* Path)
 
             f_list_addLast(b->files, emb);
         } else if(entryType == 2) {
+            if(f_embed__dirGet(entryPath)) {
+                f_out__error("f_blob_new(%s): Entry '%s' already exists",
+                             Path,
+                             entryPath);
+
+                read_skip(&reader, entrySize * (unsigned)sizeof(uint32_t));
+
+                continue;
+            }
+
             FEmbeddedDir* emb = f_embed__dirNew(entryPath, entrySize);
 
             for(uint32_t e = 0; e < entrySize; e++) {
