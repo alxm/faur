@@ -182,25 +182,22 @@ void f_entity_parentSet(FEntity* Entity, FEntity* Parent)
                         f_entity_idGet(Entity),
                         Parent ? f_entity_idGet(Parent) : "NULL");
         }
-    #endif
 
-    if(Entity->parent) {
-        f_entity_refDec(Entity->parent);
-    }
-
-    #if F_CONFIG_BUILD_DEBUG
         if(Parent
-            && ((Parent->collectionNode
-                    && Entity->collectionNode
+            && ((!!Parent->collectionNode != !!Entity->collectionNode)
+                || (Parent->collectionNode
                     && f_list__nodeGetList(Parent->collectionNode)
-                        != f_list__nodeGetList(Entity->collectionNode))
-                || (!!Parent->collectionNode ^ !!Entity->collectionNode))) {
+                        != f_list__nodeGetList(Entity->collectionNode)))) {
 
             F__FATAL("f_entity_parentSet(%s, %s): Different collections",
                      f_entity_idGet(Entity),
                      f_entity_idGet(Parent));
         }
     #endif
+
+    if(Entity->parent) {
+        f_entity_refDec(Entity->parent);
+    }
 
     Entity->parent = Parent;
 
