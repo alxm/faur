@@ -31,6 +31,7 @@ F_EXTERN_C_START
 #include "collision/f_grid.p.h"
 #include "data/f_bitfield.p.h"
 #include "data/f_block.p.h"
+#include "data/f_hash.p.h"
 #include "data/f_listit.p.h"
 #include "data/f_list.p.h"
 #include "data/f_strhash.p.h"
