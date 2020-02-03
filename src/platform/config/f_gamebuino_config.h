@@ -1,5 +1,5 @@
 /*
-    Copyright 2019 Alex Margarit <alex@alxm.org>
+    Copyright 2019-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -48,6 +48,8 @@
     #define F_CONFIG_SYSTEM_ARDUINO 1
     #define F_CONFIG_SYSTEM_GAMEBUINO 1
     #define F_CONFIG_SYSTEM_GAMEBUINO_NO_EXIT 0
+
+    #define F_CONFIG_TRAIT_LOW_MEM 1
 #endif // !F_CONFIG_MAKE
 
 // The Gamebuino target also requires the application to provide the file

@@ -23,7 +23,7 @@ static struct {
     unsigned drawFrameMs;
 } g_settings;
 
-#if F_CONFIG_SYSTEM_GAMEBUINO
+#if F_CONFIG_TRAIT_LOW_MEM
     #define F__HISTORY_LEN 1
 #else
     #define F__HISTORY_LEN 128
