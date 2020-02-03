@@ -29,6 +29,7 @@ typedef bool FHashEqual(const void* KeyA, const void* KeyB);
 #include "../data/f_listit.p.h"
 
 extern FHash* f_hash_new(FHashFunction* Function, FHashEqual* KeyEqual, FFree* KeyFree, unsigned NumSlots);
+extern FHash* f_hash_newStr(unsigned NumSlots, bool FreeKeyString);
 extern void f_hash_free(FHash* Hash);
 extern void f_hash_freeEx(FHash* Hash, FFree* Free);
 

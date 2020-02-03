@@ -43,6 +43,17 @@ static inline unsigned getSlot(const FHash* Hash, const void* Key)
     return Hash->function(Key) & (Hash->numSlots - 1);
 }
 
+static unsigned func_djb2(const char* Key)
+{
+    unsigned h = 5381;
+
+    for(char c = *Key; c != '\0'; c = *++Key) {
+        h += (h << 5) + (unsigned)c;
+    }
+
+    return h;
+}
+
 FHash* f_hash_new(FHashFunction* Function, FHashEqual* KeyEqual, FFree* KeyFree, unsigned NumSlots)
 {
     #if F_CONFIG_BUILD_DEBUG
@@ -70,6 +81,14 @@ FHash* f_hash_new(FHashFunction* Function, FHashEqual* KeyEqual, FFree* KeyFree,
     h->entries = f_list_new();
 
     return h;
+}
+
+FHash* f_hash_newStr(unsigned NumSlots, bool FreeKeyString)
+{
+    return f_hash_new((FHashFunction*)func_djb2,
+                      (FHashEqual*)f_str_equal,
+                      FreeKeyString ? f_mem_free : NULL,
+                      NumSlots);
 }
 
 void f_hash_free(FHash* Hash)
