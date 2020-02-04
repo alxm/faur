@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2016-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -30,7 +30,7 @@ struct FComponent {
 };
 
 static FComponent* g_components; // [f_init__ecs_com]
-static FStrHash* g_componentsIndex; // table of FComponent
+static FHash* g_componentsIndex; // table of FComponent
 static const char* g_defaultId = "Unknown";
 
 static inline const FComponentInstance* bufferGetInstance(const void* ComponentBuffer)
@@ -41,19 +41,21 @@ static inline const FComponentInstance* bufferGetInstance(const void* ComponentB
 
 void f_component__init(void)
 {
-    g_components = f_mem_zalloc(sizeof(FComponent) * f_init__ecs_com);
-    g_componentsIndex = f_strhash_new();
+    if(f_init__ecs_com > 0) {
+        g_components = f_mem_zalloc(sizeof(FComponent) * f_init__ecs_com);
+        g_componentsIndex = f_hash_newStr(256, false);
+    }
 }
 
 void f_component__uninit(void)
 {
-    f_strhash_free(g_componentsIndex);
+    f_hash_free(g_componentsIndex);
     f_mem_free(g_components);
 }
 
 unsigned f_component__stringToIndex(const char* StringId)
 {
-    const FComponent* component = f_strhash_get(g_componentsIndex, StringId);
+    const FComponent* component = f_hash_get(g_componentsIndex, StringId);
 
     return component ? (unsigned)(component - g_components) : UINT_MAX;
 }
@@ -104,7 +106,7 @@ void f_component_template(unsigned ComponentIndex, const char* StringId, size_t 
                 "f_component_template(%s): Uninitialized component", StringId);
         }
 
-        if(f_strhash_contains(g_componentsIndex, StringId)) {
+        if(f_hash_contains(g_componentsIndex, StringId)) {
             F__FATAL("f_component_template(%s): Already declared", StringId);
         }
     #endif
@@ -115,7 +117,7 @@ void f_component_template(unsigned ComponentIndex, const char* StringId, size_t 
     component->templateFree = TemplateFree;
     component->stringId = StringId;
 
-    f_strhash_add(g_componentsIndex, StringId, component);
+    f_hash_add(g_componentsIndex, StringId, component);
 }
 
 const void* f_component_dataGet(const void* ComponentBuffer)

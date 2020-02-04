@@ -1,5 +1,5 @@
 /*
-    Copyright 2018-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2018-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -27,7 +27,7 @@ struct FTemplate {
     void* data[]; // [f_init__ecs_com] Loaded and parsed config data, or NULL
 };
 
-static FStrHash* g_templates; // table of FTemplate
+static FHash* g_templates; // table of FTemplate
 
 static FTemplate* templateNew(const char* Id)
 {
@@ -40,7 +40,7 @@ static FTemplate* templateNew(const char* Id)
     char* parentId = f_str_prefixGetToLast(Id, '.');
 
     if(parentId) {
-        FTemplate* parentTemplate = f_strhash_get(g_templates, parentId);
+        FTemplate* parentTemplate = f_hash_get(g_templates, parentId);
 
         if(parentTemplate == NULL) {
             parentTemplate = templateNew(parentId);
@@ -58,7 +58,7 @@ static FTemplate* templateNew(const char* Id)
         f_mem_free(parentId);
     }
 
-    f_strhash_add(g_templates, Id, t);
+    f_hash_add(g_templates, f_str_dup(Id), t);
 
     return t;
 }
@@ -81,12 +81,12 @@ static void templateFree(FTemplate* Template)
 
 void f_template__init(void)
 {
-    g_templates = f_strhash_new();
+    g_templates = f_hash_newStr(256, true);
 }
 
 void f_template__uninit(void)
 {
-    f_strhash_freeEx(g_templates, (FFree*)templateFree);
+    f_hash_freeEx(g_templates, (FFree*)templateFree);
 }
 
 void f_template_new(const char* FilePath)
@@ -97,7 +97,7 @@ void f_template_new(const char* FilePath)
         const char* templateId = f_block_lineGetString(b, 0);
 
         #if F_CONFIG_BUILD_DEBUG
-            if(f_strhash_contains(g_templates, templateId)) {
+            if(f_hash_contains(g_templates, templateId)) {
                 F__FATAL("f_template_new(%s): '%s' already declared",
                          FilePath,
                          templateId);
@@ -130,7 +130,7 @@ void f_template_new(const char* FilePath)
 
 const FTemplate* f_template__get(const char* TemplateId)
 {
-    FTemplate* t = f_strhash_get(g_templates, TemplateId);
+    FTemplate* t = f_hash_get(g_templates, TemplateId);
 
     #if F_CONFIG_BUILD_DEBUG
         if(t == NULL) {
@@ -156,7 +156,7 @@ void f_template__initRun(const FTemplate* Template, FEntity* Entity, const void*
 
 void f_template_init(const char* Id, FEntityInit* Init)
 {
-    FTemplate* t = f_strhash_get(g_templates, Id);
+    FTemplate* t = f_hash_get(g_templates, Id);
 
     #if F_CONFIG_BUILD_DEBUG
         if(t == NULL) {

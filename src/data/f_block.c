@@ -1,5 +1,5 @@
 /*
-    Copyright 2018-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2018-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -21,7 +21,7 @@
 struct FBlock {
     char* text; // own content
     FList* blocks; // list of FBlock indented under this block
-    FStrHash* index; // table of FList of FBlock, the blocks indexed by name
+    FHash* index; // table of FList of FBlock, the blocks indexed by name
     const FBlock** array; // the blocks indexed by line # relative to parent
     unsigned arrayLen; // number of blocks under parent
 };
@@ -39,7 +39,7 @@ static void blockFree(FBlock* Block)
 {
     if(Block->blocks) {
         f_list_freeEx(Block->blocks, (FFree*)blockFree);
-        f_strhash_freeEx(Block->index, (FFree*)f_list_free);
+        f_hash_freeEx(Block->index, (FFree*)f_list_free);
         f_mem_free(Block->array);
     }
 
@@ -51,14 +51,14 @@ static void blockAdd(FBlock* Parent, FBlock* Child)
 {
     if(Parent->blocks == NULL) {
         Parent->blocks = f_list_new();
-        Parent->index = f_strhash_new();
+        Parent->index = f_hash_newStr(16, false);
     }
 
-    FList* indexList = f_strhash_get(Parent->index, Child->text);
+    FList* indexList = f_hash_get(Parent->index, Child->text);
 
     if(indexList == NULL) {
         indexList = f_list_new();
-        f_strhash_add(Parent->index, Child->text, indexList);
+        f_hash_add(Parent->index, Child->text, indexList);
     }
 
     f_list_addLast(Parent->blocks, Child);
@@ -165,7 +165,7 @@ const FBlock* f_block_keyGetBlock(const FBlock* Block, const char* Key)
 const FList* f_block_keyGetBlocks(const FBlock* Block, const char* Key)
 {
     if(Block->index) {
-        FList* list = f_strhash_get(Block->index, Key);
+        FList* list = f_hash_get(Block->index, Key);
 
         if(list) {
             return list;
@@ -177,7 +177,7 @@ const FList* f_block_keyGetBlocks(const FBlock* Block, const char* Key)
 
 bool f_block_keyExists(const FBlock* Block, const char* Key)
 {
-    return Block->index && f_strhash_contains(Block->index, Key);
+    return Block->index && f_hash_contains(Block->index, Key);
 }
 
 int f_block_lineGetInt(const FBlock* Block, unsigned LineNumber)

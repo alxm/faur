@@ -20,10 +20,10 @@
 
 #include "../general/f_system_includes.h"
 
-#include "../data/f_strhash.p.h"
+#include "../data/f_hash.p.h"
 #include "../graphics/f_sprite.p.h"
 
-typedef FStrHash FSpriteSheet;
+typedef FHash FSpriteSheet;
 
 extern FSpriteSheet* f_spritesheet_new(const char* Path);
 extern void f_spritesheet_free(FSpriteSheet* Sheet);
