@@ -30,7 +30,7 @@ struct FComponent {
 };
 
 static FComponent* g_components; // [f_init__ecs_com]
-static FHash* g_componentsIndex; // table of FComponent
+static FHash* g_componentsIndex; // FHash<const char*, FComponent*>
 static const char* g_defaultId = "Unknown";
 
 static inline const FComponentInstance* bufferGetInstance(const void* ComponentBuffer)

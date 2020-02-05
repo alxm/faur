@@ -26,7 +26,7 @@
 #endif
 
 struct FPlatformButton {
-    FList* forwardButtons; // list of FPlatformButton or NULL
+    FList* forwardButtons; // FList<FPlatformButton*/NULL>
     union {
         #if F_CONFIG_LIB_SDL == 1
             SDLKey keyCode;
@@ -42,7 +42,7 @@ struct FPlatformButton {
 };
 
 struct FPlatformAnalog {
-    FList* forwardButtons; // list of FPlatformButtonPair or NULL
+    FList* forwardButtons; // FList<FPlatformButtonPair*/NULL>
     int axisIndex;
     int value;
 };
@@ -83,8 +83,8 @@ static struct {
 } g_mouse;
 
 static FPlatformController* g_defaultController; // first to be attached
-static FList* g_controllers; // list of FPlatformController
-static FList* g_forwardButtonsQueue[2]; // list of FPlatformButton
+static FList* g_controllers; // FList<FPlatformController*>
+static FList* g_forwardButtonsQueue[2]; // FList<FPlatformButton*>
 static uint32_t g_sdlFlags;
 
 static const FButtonId g_defaultOrder[] = {
@@ -127,7 +127,7 @@ static const FAnalogId g_axesMap[SDL_CONTROLLER_AXIS_MAX] = {
     [SDL_CONTROLLER_AXIS_TRIGGERRIGHT] = F_AXIS_RIGHTTRIGGER,
 };
 
-static FList* g_futureControllers; // list of FPlatformController
+static FList* g_futureControllers; // FList<FPlatformController*>
 #endif
 
 #if F_CONFIG_TRAIT_KEYBOARD

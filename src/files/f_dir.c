@@ -24,7 +24,7 @@
 
 struct FDir {
     FPath* path;
-    FList* files; // list of FPath
+    FList* files; // FList<FPath*>
 };
 
 static int dirSort(const FPath* A, const FPath* B)

@@ -27,7 +27,7 @@ struct FTemplate {
     void* data[]; // [f_init__ecs_com] Loaded and parsed config data, or NULL
 };
 
-static FHash* g_templates; // table of FTemplate
+static FHash* g_templates; // FHash<char*, FTemplate*>
 
 static FTemplate* templateNew(const char* Id)
 {

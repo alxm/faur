@@ -20,8 +20,8 @@
 
 struct FBlock {
     char* text; // own content
-    FList* blocks; // list of FBlock indented under this block
-    FHash* index; // table of FList of FBlock, the blocks indexed by name
+    FList* blocks; // FList<FBlock*>, all blocks indented under this block
+    FHash* index; // FHash<const char*, FList<FBlock*>>, same blocks by text
     const FBlock** array; // the blocks indexed by line # relative to parent
     unsigned arrayLen; // number of blocks under parent
 };

@@ -19,8 +19,8 @@
 #include <faur.v.h>
 
 struct FBlob {
-    FList* dirs; // list of FEmbeddedDir
-    FList* files; // list of FEmbeddedFile
+    FList* dirs; // FList<FEmbeddedDir*>
+    FList* files; // FList<FEmbeddedFile*>
     void* buffer; // NULL if blob itself is an embedded file
 };
 

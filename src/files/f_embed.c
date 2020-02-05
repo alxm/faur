@@ -18,8 +18,8 @@
 #include "f_embed.v.h"
 #include <faur.v.h>
 
-static FHash* g_dirs; // table of FEmbeddedDir
-static FHash* g_files; // table of FEmbeddedFile
+static FHash* g_dirs; // FHash<const char*, FEmbeddedDir>
+static FHash* g_files; // FHash<const char*, FEmbeddedFile*>
 
 static void f_embed__init(void)
 {

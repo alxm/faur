@@ -24,10 +24,10 @@ struct FEntity {
     FEntity* parent; // manually associated parent entity
     FListNode* node; // list node in one of FEcsListId
     FListNode* collectionNode; // FCollection list nod
-    FList* matchingSystemsActive; // list of FSystem
-    FList* matchingSystemsRest; // list of FSystem
-    FList* systemNodesActive; // list of nodes in active-only FSystem lists
-    FList* systemNodesEither; // list of nodes in normal FSystem.entities lists
+    FList* matchingSystemsActive; // FList<FSystem*>
+    FList* matchingSystemsRest; // FList<FSystem*>
+    FList* systemNodesActive; // FList<FListNode*> in active-only FSystem lists
+    FList* systemNodesEither; // FList<FListNode*> in rest FSystem lists
     FBitfield* componentBits; // each component's bit is set
     unsigned lastActive; // frame when f_entity_activeSet was last called
     int references; // if >0, then the entity lingers in the removed limbo list
