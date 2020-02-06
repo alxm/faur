@@ -133,6 +133,7 @@ void f_main(void)
 """\
 /build/builds/
 /build/shared/
+/src/faur_gen/
 """)
 
     g_tool.shell('cd {} && git init && git add .'.format(dir_root.path))
