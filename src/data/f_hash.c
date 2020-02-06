@@ -33,6 +33,49 @@ struct FHashEntry {
     void* content;
 };
 
+#if F_CONFIG_BUILD_LUT_GENERATE
+static uint8_t g_crc8[256];
+
+static void f_hash__init(void)
+{
+    printf("g_crc8:\n");
+
+    for(unsigned byte = 0; byte < 256; byte++) {
+        unsigned crc = byte;
+
+        for(int b = 8; b--; ) {
+            crc <<= 1;
+
+            if(crc & 0x100) {
+                crc ^= 0x37;
+            }
+        }
+
+        g_crc8[byte] = (uint8_t)crc;
+
+        printf("%u, ", g_crc8[byte]);
+    }
+
+    printf("\n");
+}
+
+const FPack f_pack__hash = {
+    "Hash",
+    {
+        [0] = f_hash__init,
+    },
+    {
+        NULL,
+    },
+};
+#else // !F_CONFIG_BUILD_LUT_GENERATE
+const FPack f_pack__hash;
+
+static const uint8_t g_crc8[256] = {
+    0, 55, 110, 89, 220, 235, 178, 133, 143, 184, 225, 214, 83, 100, 61, 10, 41, 30, 71, 112, 245, 194, 155, 172, 166, 145, 200, 255, 122, 77, 20, 35, 82, 101, 60, 11, 142, 185, 224, 215, 221, 234, 179, 132, 1, 54, 111, 88, 123, 76, 21, 34, 167, 144, 201, 254, 244, 195, 154, 173, 40, 31, 70, 113, 164, 147, 202, 253, 120, 79, 22, 33, 43, 28, 69, 114, 247, 192, 153, 174, 141, 186, 227, 212, 81, 102, 63, 8, 2, 53, 108, 91, 222, 233, 176, 135, 246, 193, 152, 175, 42, 29, 68, 115, 121, 78, 23, 32, 165, 146, 203, 252, 223, 232, 177, 134, 3, 52, 109, 90, 80, 103, 62, 9, 140, 187, 226, 213, 127, 72, 17, 38, 163, 148, 205, 250, 240, 199, 158, 169, 44, 27, 66, 117, 86, 97, 56, 15, 138, 189, 228, 211, 217, 238, 183, 128, 5, 50, 107, 92, 45, 26, 67, 116, 241, 198, 159, 168, 162, 149, 204, 251, 126, 73, 16, 39, 4, 51, 106, 93, 216, 239, 182, 129, 139, 188, 229, 210, 87, 96, 57, 14, 219, 236, 181, 130, 7, 48, 105, 94, 84, 99, 58, 13, 136, 191, 230, 209, 242, 197, 156, 171, 46, 25, 64, 119, 125, 74, 19, 36, 161, 150, 207, 248, 137, 190, 231, 208, 85, 98, 59, 12, 6, 49, 104, 95, 218, 237, 180, 131, 160, 151, 206, 249, 124, 75, 18, 37, 47, 24, 65, 118, 243, 196, 157, 170
+};
+#endif
+
 static bool keyEqual(const void* KeyA, const void* KeyB)
 {
     return KeyA == KeyB;
@@ -314,4 +357,16 @@ void f__hash_printStats(const FHash* Hash, const char* Message)
            minLength,
            (float)lengthSum / (float)occupiedSlots,
            maxLength);
+}
+
+uint8_t f_hash_crc8(const void* Buffer, size_t Size)
+{
+    unsigned crc = 0;
+    const uint8_t* key = Buffer;
+
+    while(Size--) {
+        crc = g_crc8[crc ^ *key++];
+    }
+
+    return (uint8_t)crc;
 }

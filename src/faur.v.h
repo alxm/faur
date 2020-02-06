@@ -21,6 +21,7 @@
 #include "faur.h"
 
 F_EXTERN_C_START
+#include "data/f_hash.v.h"
 #include "data/f_list.v.h"
 #include "ecs/f_collection.v.h"
 #include "ecs/f_component.v.h"

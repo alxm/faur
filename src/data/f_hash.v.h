@@ -20,4 +20,8 @@
 
 #include "f_hash.p.h"
 
+#include "../general/f_init.v.h"
+
+extern const FPack f_pack__hash;
+
 #endif // F_INC_DATA_HASH_V_H

@@ -63,4 +63,6 @@ extern const void* f__hash_entryKey(const FHashEntry* Entry);
 
 extern void f__hash_printStats(const FHash* Hash, const char* Message);
 
+extern uint8_t f_hash_crc8(const void* Buffer, size_t Size);
+
 #endif // F_INC_DATA_HASH_P_H
