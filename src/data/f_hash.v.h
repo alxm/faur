@@ -1,5 +1,5 @@
 /*
-    Copyright 2010 Alex Margarit <alex@alxm.org>
+    Copyright 2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -15,9 +15,13 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef F_INC_DATA_STRHASH_V_H
-#define F_INC_DATA_STRHASH_V_H
+#ifndef F_INC_DATA_HASH_V_H
+#define F_INC_DATA_HASH_V_H
 
-#include "f_strhash.p.h"
+#include "f_hash.p.h"
 
-#endif // F_INC_DATA_STRHASH_V_H
+#include "../general/f_init.v.h"
+
+extern const FPack f_pack__hash;
+
+#endif // F_INC_DATA_HASH_V_H

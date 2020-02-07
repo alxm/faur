@@ -19,7 +19,7 @@
 #include <faur.v.h>
 
 FScreen f__screen;
-static FList* g_stack; // list of FScreen
+static FList* g_stack; // FList<FScreen*>
 
 #if F_CONFIG_TRAIT_DESKTOP
     static FButton* g_fullScreenButton;

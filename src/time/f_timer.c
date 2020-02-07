@@ -39,7 +39,7 @@ static struct {
     unsigned ticks;
 } g_now;
 
-static FList* g_runningTimers; // list of FTimer
+static FList* g_runningTimers; // FList<FTimer*>
 
 static inline void setNow(void)
 {

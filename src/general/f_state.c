@@ -30,8 +30,8 @@ typedef struct {
     FStateStage stage;
 } FStateStackEntry;
 
-static FList* g_stack; // list of FStateStackEntry
-static FList* g_pending; // list of FStateStackEntry/NULL
+static FList* g_stack; // FList<FStateStackEntry*>
+static FList* g_pending; // FList<FStateStackEntry*/NULL>
 static bool g_exiting;
 static const FEvent* g_blockEvent;
 

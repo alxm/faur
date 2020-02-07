@@ -21,8 +21,8 @@
 struct FButton {
     FListNode* listNode;
     const char* name; // friendly name
-    FList* platformInputs; // list of FPlatformButton
-    FList* combos; // List of lists of FPlatformButton, each a button combo
+    FList* platformInputs; // FList<FPlatformButton*>
+    FList* combos; // FList<FList<FPlatformButton*>>
     FTimer* autoRepeat;
     bool isClone;
     bool waitForRelease;
@@ -108,7 +108,7 @@ static const char* g_buttonNames[F_BUTTON_NUM] = {
 
 static const char* g_defaultName = "FButton";
 
-static FList* g_buttons; // list of FButton
+static FList* g_buttons; // FList<FButton*>
 
 void f_input_button__init(void)
 {

@@ -20,7 +20,7 @@
 
 struct FAnalog {
     const char* name; // friendly name
-    FList* platformInputs; // list of FPlatformAnalog
+    FList* platformInputs; // FList<FPlatformAnalog*>
 };
 
 static const char* g_analogNames[F_AXIS_NUM] = {

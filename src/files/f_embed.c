@@ -18,13 +18,15 @@
 #include "f_embed.v.h"
 #include <faur.v.h>
 
-static FStrHash* g_dirs; // table of FEmbeddedDir
-static FStrHash* g_files; // table of FEmbeddedFile
+static FHash* g_dirs; // FHash<const char*, FEmbeddedDir>
+static FHash* g_files; // FHash<const char*, FEmbeddedFile*>
 
 static void f_embed__init(void)
 {
-    g_dirs = f_strhash_new();
-    g_files = f_strhash_new();
+    #if !F_CONFIG_TRAIT_LOW_MEM
+        g_dirs = f_hash_newStr(256, false);
+        g_files = f_hash_newStr(256, false);
+    #endif
 
     #if F_CONFIG_FILES_EMBED
         f_embed__populate();
@@ -33,8 +35,8 @@ static void f_embed__init(void)
 
 static void f_embed__uninit(void)
 {
-    f_strhash_free(g_dirs);
-    f_strhash_free(g_files);
+    f_hash_free(g_dirs);
+    f_hash_free(g_files);
 }
 
 const FPack f_pack__embed = {
@@ -55,14 +57,14 @@ FEmbeddedDir* f_embed__dirNew(const char* Path, size_t Size)
     d->size = Size;
     d->entries = f_mem_malloc(Size * sizeof(const char*));
 
-    f_strhash_add(g_dirs, Path, d);
+    f_hash_add(g_dirs, Path, d);
 
     return d;
 }
 
 void f_embed__dirFree(FEmbeddedDir* Dir)
 {
-    f_strhash_removeKey(g_dirs, Dir->path);
+    f_hash_removeKey(g_dirs, Dir->path);
 
     f_mem_free(Dir->entries);
     f_mem_free(Dir);
@@ -70,12 +72,12 @@ void f_embed__dirFree(FEmbeddedDir* Dir)
 
 void f_embed__dirAdd(const FEmbeddedDir* Dir)
 {
-    f_strhash_add(g_dirs, Dir->path, (void*)Dir);
+    f_hash_add(g_dirs, Dir->path, (void*)Dir);
 }
 
 const FEmbeddedDir* f_embed__dirGet(const char* Path)
 {
-    return f_strhash_get(g_dirs, Path);
+    return f_hash_get(g_dirs, Path);
 }
 
 FEmbeddedFile* f_embed__fileNew(const char* Path, size_t Size, const uint8_t* Buffer)
@@ -86,26 +88,26 @@ FEmbeddedFile* f_embed__fileNew(const char* Path, size_t Size, const uint8_t* Bu
     f->size = Size;
     f->buffer = Buffer;
 
-    f_strhash_add(g_files, Path, f);
+    f_hash_add(g_files, Path, f);
 
     return f;
 }
 
 void f_embed__fileFree(FEmbeddedFile* File)
 {
-    f_strhash_removeKey(g_files, File->path);
+    f_hash_removeKey(g_files, File->path);
 
     f_mem_free(File);
 }
 
 void f_embed__fileAdd(const FEmbeddedFile* File)
 {
-    f_strhash_add(g_files, File->path, (void*)File);
+    f_hash_add(g_files, File->path, (void*)File);
 }
 
 const FEmbeddedFile* f_embed__fileGet(const char* Path)
 {
-    return f_strhash_get(g_files, Path);
+    return f_hash_get(g_files, Path);
 }
 
 bool f_embed__stat(const char* Path, FPathInfo* Info)

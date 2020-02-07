@@ -1,5 +1,5 @@
 /*
-    Copyright 2019 Alex Margarit <alex@alxm.org>
+    Copyright 2019-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -20,13 +20,19 @@
 
 FSpriteSheet* f_spritesheet_new(const char* Path)
 {
-    FStrHash* t = f_strhash_new();
-
     FBlock* root = f_block_new(Path);
     FPath* rootPath = f_path_new(Path);
     const char* rootDirs = f_path_getDirs(rootPath);
+    const FList* blocks = f_block_blocksGet(root);
+    unsigned num = 0;
 
-    F_LIST_ITERATE(f_block_blocksGet(root), const FBlock*, b) {
+    F_LIST_ITERATE(blocks, const FBlock*, b) {
+        num += f_list_sizeGet(f_block_blocksGet(b));
+    }
+
+    FHash* t = f_hash_newStr(num, true);
+
+    F_LIST_ITERATE(blocks, const FBlock*, b) {
         const char* name = f_block_lineGetString(b, 0);
         const char* path = f_str__fmt512("%s/%s", rootDirs, name);
         FSprite* sheet = f_sprite_newFromPng(path, 0, 0, -1, -1);
@@ -39,7 +45,7 @@ FSpriteSheet* f_spritesheet_new(const char* Path)
             FSprite* sprite = f_sprite_newFromSprite(
                                 sheet, coords.x, coords.y, dim.x, dim.y);
 
-            f_strhash_add(t, id, sprite);
+            f_hash_add(t, f_str_dup(id), sprite);
         }
 
         f_sprite_free(sheet);
@@ -53,10 +59,10 @@ FSpriteSheet* f_spritesheet_new(const char* Path)
 
 void f_spritesheet_free(FSpriteSheet* Sheet)
 {
-    f_strhash_freeEx(Sheet, (FFree*)f_sprite_free);
+    f_hash_freeEx(Sheet, (FFree*)f_sprite_free);
 }
 
 const FSprite* f_spritesheet_get(const FSpriteSheet* Sheet, const char* Id)
 {
-    return f_strhash_get(Sheet, Id);
+    return f_hash_get(Sheet, Id);
 }
