@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016, 2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -23,8 +23,8 @@
 extern void f_draw_fill(void);
 extern void f_draw_pixel(int X, int Y);
 extern void f_draw_line(int X1, int Y1, int X2, int Y2);
-extern void f_draw_hline(int X1, int X2, int Y);
-extern void f_draw_vline(int X, int Y1, int Y2);
+extern void f_draw_lineh(int X1, int X2, int Y);
+extern void f_draw_linev(int X, int Y1, int Y2);
 extern void f_draw_rectangle(int X, int Y, int Width, int Height);
 extern void f_draw_circle(int X, int Y, int Radius);
 

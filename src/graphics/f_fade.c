@@ -42,7 +42,7 @@ static struct {
 
 static void f_fade__init(void)
 {
-    #if !F_CONFIG_SYSTEM_GAMEBUINO
+    #if !F_CONFIG_TRAIT_LOW_MEM
         g_fade.oldScreen = f_sprite_newBlank(f__screen.pixels->size.x,
                                              f__screen.pixels->size.y,
                                              1,
@@ -93,7 +93,7 @@ void f_fade_startColorFrom(unsigned DurationMs)
     g_fade.u.color = f__color.pixel;
 }
 
-#if !F_CONFIG_SYSTEM_GAMEBUINO
+#if !F_CONFIG_TRAIT_LOW_MEM
 void f_fade_startScreens(unsigned DurationMs)
 {
     newFade(F__FADE_SCREENS, DurationMs);

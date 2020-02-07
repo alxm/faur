@@ -65,14 +65,14 @@ void f_platform_api__drawLine(int X1, int Y1, int X2, int Y2)
     }
 }
 
-void f_platform_api__drawHLine(int X1, int X2, int Y)
+void f_platform_api__drawLineH(int X1, int X2, int Y)
 {
     Y += f__screen.yOffset;
 
     f_platform_api__drawRectangleFilled(X1, Y, X2 - X1 + 1, 1);
 }
 
-void f_platform_api__drawVLine(int X, int Y1, int Y2)
+void f_platform_api__drawLineV(int X, int Y1, int Y2)
 {
     Y1 += f__screen.yOffset;
     Y2 += f__screen.yOffset;

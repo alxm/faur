@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2017, 2019 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016-2017, 2019-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -36,14 +36,14 @@ void f_draw_line(int X1, int Y1, int X2, int Y2)
     f_platform_api__drawLine(X1, Y1, X2, Y2);
 }
 
-void f_draw_hline(int X1, int X2, int Y)
+void f_draw_lineh(int X1, int X2, int Y)
 {
-    f_platform_api__drawHLine(f_math_min(X1, X2), f_math_max(X1, X2), Y);
+    f_platform_api__drawLineH(f_math_min(X1, X2), f_math_max(X1, X2), Y);
 }
 
-void f_draw_vline(int X, int Y1, int Y2)
+void f_draw_linev(int X, int Y1, int Y2)
 {
-    f_platform_api__drawVLine(X, f_math_min(Y1, Y2), f_math_max(Y1, Y2));
+    f_platform_api__drawLineV(X, f_math_min(Y1, Y2), f_math_max(Y1, Y2));
 }
 
 void f_draw_rectangle(int X, int Y, int Width, int Height)

@@ -15,9 +15,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <faur.v.h>
+#include <faur.h>
 
-#if F__COMPILE_INC
+#ifdef F_INC_FAUR_V_H
 #if F__PIXEL_TRANSPARENCY
     #define F__COLORKEY Keyed
 #else
@@ -97,4 +97,4 @@ static void F__FUNC_NAME_EX(const FPixels* Pixels, unsigned Frame, int TopY, int
 
 #undef F__PIXEL_TRANSPARENCY
 #undef F__COLORKEY
-#endif // F__COMPILE_INC
+#endif // F_INC_FAUR_V_H

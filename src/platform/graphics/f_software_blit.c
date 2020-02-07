@@ -19,7 +19,6 @@
 #include <faur.v.h>
 
 #if F_CONFIG_RENDER_SOFTWARE
-#define F__COMPILE_INC 1
 #define F__SCANLINES_MALLOC (F_CONFIG_SCREEN_SIZE_HEIGHT < 0)
 
 typedef struct {

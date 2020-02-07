@@ -15,9 +15,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <faur.v.h>
+#include <faur.h>
 
-#if F__COMPILE_INC
+#ifdef F_INC_FAUR_V_H
 static void F__FUNC_NAME(pixel)(int X, int Y)
 {
     F__BLEND_SETUP;
@@ -501,8 +501,8 @@ static void F__FUNC_NAME(circle_clip_fill)(int X, int Y, int Radius)
     int y4 = Y + x;
 
     while(x > y) {
-        f_draw_hline(x1, x2, y1);
-        f_draw_hline(x1, x2, y2);
+        f_draw_lineh(x1, x2, y1);
+        f_draw_lineh(x1, x2, y2);
 
         error += 2 * y + 1; // (y+1)^2 = y^2 + 2y + 1
         y++;
@@ -513,8 +513,8 @@ static void F__FUNC_NAME(circle_clip_fill)(int X, int Y, int Radius)
         x4++;
 
         if(error > 0) { // check if x^2 + y^2 > r^2
-            f_draw_hline(x3, x4, y3);
-            f_draw_hline(x3, x4, y4);
+            f_draw_lineh(x3, x4, y3);
+            f_draw_lineh(x3, x4, y4);
 
             error += -2 * x + 1; // (x-1)^2 = x^2 - 2x + 1
             x--;
@@ -527,12 +527,12 @@ static void F__FUNC_NAME(circle_clip_fill)(int X, int Y, int Radius)
     }
 
     if(x == y) {
-        f_draw_hline(x3, x4, y3);
-        f_draw_hline(x3, x4, y4);
+        f_draw_lineh(x3, x4, y3);
+        f_draw_lineh(x3, x4, y4);
     }
 }
 
 #undef F__BLEND
 #undef F__BLEND_SETUP
 #undef F__PIXEL_PARAMS
-#endif // F__COMPILE_INC
+#endif // F_INC_FAUR_V_H

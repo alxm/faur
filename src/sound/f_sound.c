@@ -145,9 +145,9 @@ void f_sound__draw(void)
         f_draw_rectangle(0, F__VOL_Y, F__VOL_W, F__VOL_H);
 
         f_color__colorSetInternal(F_COLOR__PAL_BLUE1);
-        f_draw_hline(0, F__VOL_W - 1, F__VOL_Y - 1);
-        f_draw_hline(0, F__VOL_W - 1, F__VOL_Y + F__VOL_H);
-        f_draw_vline(F__VOL_W, F__VOL_Y, F__VOL_Y + F__VOL_H - 1);
+        f_draw_lineh(0, F__VOL_W - 1, F__VOL_Y - 1);
+        f_draw_lineh(0, F__VOL_W - 1, F__VOL_Y + F__VOL_H);
+        f_draw_linev(F__VOL_W, F__VOL_Y, F__VOL_Y + F__VOL_H - 1);
 
         f_color__colorSetInternal(F_COLOR__PAL_CHARTREUSE1);
         f_draw_rectangle(

@@ -43,7 +43,7 @@ static void f_font__init(void)
 
     g_defaultFonts[F_FONT__ID_BLOCK] = (FFont*)f_gfx__font_6x8;
 
-    #if !F_CONFIG_SYSTEM_GAMEBUINO
+    #if !F_CONFIG_TRAIT_LOW_MEM
         g_defaultFonts[F_FONT__ID_KEYED] = (FFont*)f_gfx__font_keyed_6x8;
     #endif
 

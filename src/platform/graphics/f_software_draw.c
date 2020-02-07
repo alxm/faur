@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -19,8 +19,6 @@
 #include <faur.v.h>
 
 #if F_CONFIG_RENDER_SOFTWARE
-#define F__COMPILE_INC 1
-
 typedef void (*FDrawPixel)(int X, int Y);
 typedef void (*FDrawHLine)(int X1, int X2, int Y);
 typedef void (*FDrawVLine)(int X, int Y1, int Y2);
@@ -314,7 +312,7 @@ void f_platform_api__drawLine(int X1, int Y1, int X2, int Y2)
     g_draw[f__color.blend].line(X1, Y1, X2, Y2);
 }
 
-void f_platform_api__drawHLine(int X1, int X2, int Y)
+void f_platform_api__drawLineH(int X1, int X2, int Y)
 {
     if(!f_screen_boxOnClip(X1, Y, X2 - X1 + 1, 1)) {
         return;
@@ -326,7 +324,7 @@ void f_platform_api__drawHLine(int X1, int X2, int Y)
     g_draw[f__color.blend].hline(X1, X2, Y);
 }
 
-void f_platform_api__drawVLine(int X, int Y1, int Y2)
+void f_platform_api__drawLineV(int X, int Y1, int Y2)
 {
     if(!f_screen_boxOnClip(X, Y1, 1, Y2 - Y1 + 1)) {
         return;

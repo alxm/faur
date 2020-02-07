@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -24,7 +24,7 @@ static FList* g_stack; // list of FScreen
 #if F_CONFIG_TRAIT_DESKTOP
     static FButton* g_fullScreenButton;
 
-    #define F__ZOOM_LEVELS 3
+    #define F__ZOOM_LEVELS 4
     static FButton* g_zoomButtons[F__ZOOM_LEVELS];
 #endif
 
@@ -47,7 +47,7 @@ static void f_screen__init(void)
 
     #if F_CONFIG_TRAIT_DESKTOP
         g_fullScreenButton = f_button_new();
-        f_button_bindKey(g_fullScreenButton, F_KEY_F4);
+        f_button_bindKey(g_fullScreenButton, F_KEY_F5);
 
         for(int z = 0; z < F__ZOOM_LEVELS; z++) {
             g_zoomButtons[z] = f_button_new();
