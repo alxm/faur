@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -82,18 +82,22 @@ uint32_t f_platform_api__timeMsGet(void)
 
 void f_platform_api__timeMsWait(uint32_t Ms)
 {
-    #if F_CONFIG_TRAIT_NOSLEEP
+    #if F_CONFIG_TRAIT_NO_SLEEP
+        F_UNUSED(Ms);
+
         return;
-    #endif
+    #else
+        // Wait is too coarse on GP2X
+        #if F_CONFIG_SYSTEM_GP2X
+            if(Ms < 10) {
+                f_time_spinMs(Ms);
 
-    #if F_CONFIG_SYSTEM_GP2X // too inaccurate
-        if(Ms < 10) {
-            f_time_spinMs(Ms);
-            return;
-        }
-    #endif
+                return;
+            }
+        #endif
 
-    SDL_Delay(Ms);
+        SDL_Delay(Ms);
+    #endif
 }
 #endif
 #endif // F_CONFIG_LIB_SDL
