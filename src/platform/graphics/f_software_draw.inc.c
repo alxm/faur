@@ -15,9 +15,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <faur.v.h>
+#include <faur.h>
 
-#if F__COMPILE_INC
+#ifdef F_INC_FAUR_V_H
 static void F__FUNC_NAME(pixel)(int X, int Y)
 {
     F__BLEND_SETUP;
@@ -535,4 +535,4 @@ static void F__FUNC_NAME(circle_clip_fill)(int X, int Y, int Radius)
 #undef F__BLEND
 #undef F__BLEND_SETUP
 #undef F__PIXEL_PARAMS
-#endif // F__COMPILE_INC
+#endif // F_INC_FAUR_V_H

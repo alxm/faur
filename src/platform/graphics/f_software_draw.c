@@ -19,8 +19,6 @@
 #include <faur.v.h>
 
 #if F_CONFIG_RENDER_SOFTWARE
-#define F__COMPILE_INC 1
-
 typedef void (*FDrawPixel)(int X, int Y);
 typedef void (*FDrawHLine)(int X1, int X2, int Y);
 typedef void (*FDrawVLine)(int X, int Y1, int Y2);
