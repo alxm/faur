@@ -80,12 +80,12 @@ typedef enum {
     F_DEG_360_FIX = (F_DEG_360_INT * F_FIX_ONE),
 } FDegFix;
 
-#if F_CONFIG_FIX_LUT
-    extern const FFix f__fix_sin[F_FIX_ANGLES_NUM];
-    extern const FFix f__fix_csc[F_FIX_ANGLES_NUM];
-#else
+#if F_CONFIG_BUILD_LUT_GENERATE
     extern FFix f__fix_sin[F_FIX_ANGLES_NUM];
     extern FFix f__fix_csc[F_FIX_ANGLES_NUM];
+#else
+    extern const FFix f__fix_sin[F_FIX_ANGLES_NUM];
+    extern const FFix f__fix_csc[F_FIX_ANGLES_NUM];
 #endif
 
 static inline FFix f_fix_fromInt(int X)

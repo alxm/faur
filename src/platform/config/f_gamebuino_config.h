@@ -33,8 +33,6 @@
 
     #define F_CONFIG_FILES_PREFIX ""
 
-    #define F_CONFIG_FIX_LUT 1
-
     #define F_CONFIG_SOUND_ENABLED 1
 
     #define F_CONFIG_RENDER_SOFTWARE 1
