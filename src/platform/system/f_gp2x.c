@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org> and:
+    Copyright 2010, 2016-2020 Alex Margarit <alex@alxm.org> and:
 
     - GP2X clock speed from the GP2X Wiki
     - GP2X mmuhack by Squidge and NK
@@ -26,6 +26,7 @@
 #if F_CONFIG_SYSTEM_GP2X
 #include <fcntl.h>
 #include <sys/mman.h>
+#include <unistd.h>
 
 #if F_CONFIG_SYSTEM_GP2X_MHZ > 0
 static void setCpuSpeed(unsigned MHz)
