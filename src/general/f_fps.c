@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -126,7 +126,7 @@ void f_fps__frame(void)
 
     g_run.lastFrameMs = nowMs;
 
-    #if F_CONFIG_SYSTEM_GAMEBUINO
+    #if F_CONFIG_FPS_CONSTANT_CREDIT
         g_run.tickCreditMs = g_settings.tickFrameMs;
     #elif F_CONFIG_FPS_CAP_LAG
         g_run.tickCreditMs += f_math_minu(
