@@ -22,12 +22,14 @@ F_MAKE_CMD := \
     $(MAKE) \
 	-C $(F_DIR_ROOT_FROM_MAKE)/$(F_CONFIG_DIR_SRC) \
 	-f $(realpath $(firstword $(MAKEFILE_LIST))) \
-	-j$(F_MAKE_PARALLEL_JOBS) \
 	F_DIR_ROOT=$(F_DIR_ROOT) \
 	F_DO_BUILD=1
 
 all :
-	$(F_MAKE_CMD)
+	$(F_MAKE_CMD) -j$(F_MAKE_PARALLEL_JOBS)
+
+upload : all
+	$(F_MAKE_CMD) reset do_sam_upload
 
 % :
 	$(F_MAKE_CMD) $@
