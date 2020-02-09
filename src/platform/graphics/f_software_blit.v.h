@@ -1,5 +1,5 @@
 /*
-    Copyright 2017 Alex Margarit <alex@alxm.org>
+    Copyright 2017, 2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -19,6 +19,12 @@
 #define F_INC_PLATFORM_GRAPHICS_SOFTWARE_BLIT_V_H
 
 #include "f_software_blit.p.h"
+
+#if F_CONFIG_TRAIT_LOW_MEM
+    typedef uint8_t FSpriteWord;
+#else
+    typedef unsigned FSpriteWord;
+#endif
 
 extern void f_platform_software_blit__init(void);
 extern void f_platform_software_blit__uninit(void);

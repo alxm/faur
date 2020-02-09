@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -27,11 +27,11 @@ static void F__FUNC_NAME(Keyed, NoClip)(const FPlatformTexture* Texture, const F
     const int screenW = f__screen.pixels->size.x;
     FColorPixel* startDst = f_screen__bufferGetFrom(X, Y);
     const FColorPixel* src = f_pixels__bufferGetStart(Pixels, Frame);
-    const unsigned* spans = Texture->spans[Frame];
+    const FSpriteWord* spans = Texture->spans[Frame];
 
     for(int i = Pixels->size.y; i--; startDst += screenW) {
         bool draw = *spans & 1;
-        unsigned numSpans = *spans++ >> 1;
+        FSpriteWord numSpans = *spans++ >> 1;
         FColorPixel* dst = startDst;
 
         while(numSpans--) {
@@ -74,7 +74,7 @@ static void F__FUNC_NAME(Keyed, DoClip)(const FPlatformTexture* Texture, const F
     const FColorPixel* startSrc = f_pixels__bufferGetFrom(
                                     Pixels, Frame, xClipLeft, yClipUp);
 
-    const unsigned* spans = Texture->spans[Frame];
+    const FSpriteWord* spans = Texture->spans[Frame];
 
     // skip clipped top rows
     for(int i = yClipUp; i--; ) {
@@ -84,7 +84,7 @@ static void F__FUNC_NAME(Keyed, DoClip)(const FPlatformTexture* Texture, const F
     // draw visible rows
     for(int i = rows; i--; startDst += screenW, startSrc += spriteW) {
         bool draw = *spans & 1;
-        const unsigned* nextLine = spans + 1 + (*spans >> 1);
+        const FSpriteWord* nextLine = spans + 1 + (*spans >> 1);
         FColorPixel* dst = startDst;
         const FColorPixel* src = startSrc;
         int clippedLen = 0;

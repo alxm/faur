@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -32,8 +32,8 @@ typedef struct {
 } FScanlineEdge;
 
 struct FPlatformTexture {
-    unsigned framesNum;
-    unsigned* spans[]; // [framesNum]
+    FSpriteWord framesNum;
+    FSpriteWord* spans[]; // [framesNum]
 };
 
 typedef void (*FBlitter)(const FPlatformTexture* Texture, const FPixels* Pixels, unsigned Frame, int X, int Y);
@@ -315,7 +315,7 @@ void f_platform_software_blit__uninit(void)
     #endif
 }
 
-static unsigned* spansNew(const FPixels* Pixels, unsigned Frame)
+static FSpriteWord* spansNew(const FPixels* Pixels, unsigned Frame)
 {
     const FColorPixel* bufferStart = f_pixels__bufferGetStart(Pixels, Frame);
     const FColorPixel* buffer = bufferStart;
@@ -339,26 +339,26 @@ static unsigned* spansNew(const FPixels* Pixels, unsigned Frame)
     buffer = bufferStart;
 
     for(int y = Pixels->size.y; y--; ) {
-        bytesNeeded += sizeof(unsigned); // total size and initial state
+        bytesNeeded += sizeof(FSpriteWord); // NumSpans, initial state
         bool doDraw = *buffer != f_color__key; // initial state
 
         for(int x = Pixels->size.x; x--; ) {
             if((*buffer++ != f_color__key) != doDraw) {
-                bytesNeeded += sizeof(unsigned); // length of new span
+                bytesNeeded += sizeof(FSpriteWord); // length of span
                 doDraw = !doDraw;
             }
         }
 
-        bytesNeeded += sizeof(unsigned); // line's last span length
+        bytesNeeded += sizeof(FSpriteWord); // length of last span
     }
 
-    unsigned* spansStart = f_mem_malloc(bytesNeeded);
-    unsigned* spans = spansStart;
+    FSpriteWord* spansStart = f_mem_malloc(bytesNeeded);
+    FSpriteWord* spans = spansStart;
     buffer = bufferStart;
 
     for(int y = Pixels->size.y; y--; ) {
-        unsigned* lineStart = spans;
-        unsigned spanLength = 0;
+        FSpriteWord* lineStart = spans;
+        FSpriteWord spanLength = 0;
 
         bool doDraw = *buffer != f_color__key; // initial state
         *spans++ = doDraw;
@@ -373,7 +373,7 @@ static unsigned* spansNew(const FPixels* Pixels, unsigned Frame)
             }
         }
 
-        *lineStart |= (unsigned)(spans - lineStart) << 1; // line's # of spans
+        *lineStart |= (FSpriteWord)((spans - lineStart) << 1); // # of spans
         *spans++ = spanLength; // record the last span's length
     }
 
@@ -382,11 +382,11 @@ static unsigned* spansNew(const FPixels* Pixels, unsigned Frame)
 
 FPlatformTexture* f_platform_api__textureNew(const FPixels* Pixels)
 {
-    FPlatformTexture* t = f_mem_zalloc(
+    FPlatformTexture* t = f_mem_malloc(
                             sizeof(FPlatformTexture)
-                                + Pixels->framesNum * sizeof(unsigned*));
+                                + Pixels->framesNum * sizeof(FSpriteWord*));
 
-    t->framesNum = Pixels->framesNum;
+    t->framesNum = (FSpriteWord)Pixels->framesNum;
 
     for(unsigned f = Pixels->framesNum; f--; ) {
         t->spans[f] = spansNew(Pixels, f);
@@ -401,16 +401,16 @@ FPlatformTexture* f_platform_api__textureDup(const FPlatformTexture* Texture, co
 
     FPlatformTexture* t = f_mem_zalloc(
                             sizeof(FPlatformTexture)
-                                + Texture->framesNum * sizeof(unsigned*));
+                                + Texture->framesNum * sizeof(FSpriteWord*));
 
     t->framesNum = Texture->framesNum;
 
     for(unsigned f = Texture->framesNum; f--; ) {
         if(Texture->spans[f]) {
-            unsigned num = Texture->spans[f][0] >> 1;
+            FSpriteWord num = Texture->spans[f][0] >> 1;
 
-            t->spans[f] = f_mem_dup(
-                            Texture->spans[f], (num + 1) * sizeof(unsigned));
+            t->spans[f] = f_mem_dup(Texture->spans[f],
+                                    (num + 1u) * sizeof(FSpriteWord));
         }
     }
 
