@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2016-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -38,9 +38,12 @@ void f_channel_play(int Channel, const FSample* Sample, FChannelFlags Flags)
         return;
     }
 
-    f_platform_api__soundSamplePlay((FPlatformSample*)Sample,
-                                    Channel,
-                                    F_FLAGS_TEST_ANY(Flags, F_CHANNEL_PLAY_LOOP));
+    f_sample__lazyInit((FSample*)Sample);
+
+    f_platform_api__soundSamplePlay(
+        Sample->platform,
+        Channel,
+        F_FLAGS_TEST_ANY(Flags, F_CHANNEL_PLAY_LOOP));
 }
 
 void f_channel_stop(int Channel)

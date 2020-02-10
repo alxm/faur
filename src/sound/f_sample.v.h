@@ -1,5 +1,5 @@
 /*
-    Copyright 2019 Alex Margarit <alex@alxm.org>
+    Copyright 2019-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -19,5 +19,15 @@
 #define F_INC_SOUND_SAMPLE_V_H
 
 #include "../sound/f_sample.p.h"
+
+#include "../platform/f_platform.v.h"
+
+struct FSample {
+    unsigned size;
+    const uint8_t* buffer;
+    FPlatformSample* platform;
+};
+
+extern void f_sample__lazyInit(FSample* Sample);
 
 #endif // F_INC_SOUND_SAMPLE_V_H

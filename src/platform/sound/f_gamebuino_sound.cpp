@@ -1,5 +1,5 @@
 /*
-    Copyright 2019 Alex Margarit <alex@alxm.org>
+    Copyright 2019-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -25,14 +25,17 @@ extern "C" {
 #include <Arduino.h>
 #include <Gamebuino-Meta.h>
 
-struct FPlatformSample {
-    uint32_t size;
-    uint8_t* buffer;
-};
-
 bool f_platform_api__soundMuteGet(void)
 {
     return false;
+}
+
+FPlatformSample* f_platform_api__soundSampleNewFromData(const uint8_t* Data, size_t Size)
+{
+    F_UNUSED(Data);
+    F_UNUSED(Size);
+
+    return NULL;
 }
 
 void f_platform_api__soundSampleFree(FPlatformSample* Sample)
@@ -40,7 +43,7 @@ void f_platform_api__soundSampleFree(FPlatformSample* Sample)
     F_UNUSED(Sample);
 }
 
-void f_platform_api__soundSamplePlay(FPlatformSample* Sample, int Channel, bool Loop)
+void f_platform_api__soundSamplePlay(const FPlatformSample* Sample, int Channel, bool Loop)
 {
     if(Sample == NULL) {
         return;
@@ -49,8 +52,10 @@ void f_platform_api__soundSamplePlay(FPlatformSample* Sample, int Channel, bool 
     F_UNUSED(Channel);
     F_UNUSED(Loop);
 
+    const FSample* sample = (const FSample*)Sample;
+
     gb.sound.stop(0);
-    gb.sound.play(Sample->buffer, Sample->size);
+    gb.sound.play(sample->buffer, sample->size);
 }
 
 void f_platform_api__soundSampleStop(int Channel)

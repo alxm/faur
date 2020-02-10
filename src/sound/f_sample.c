@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2016-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -21,19 +21,20 @@
 #if F_CONFIG_SOUND_ENABLED
 FSample* f_sample_new(const char* Path)
 {
-    FPlatformSample* s = NULL;
+    FSample* s = f_mem_zalloc(sizeof(FSample));
 
     if(f_path_exists(Path, F_PATH_FILE | F_PATH_REAL)) {
-        s = f_platform_api__soundSampleNewFromFile(Path);
+        s->platform = f_platform_api__soundSampleNewFromFile(Path);
     } else if(f_path_exists(Path, F_PATH_FILE | F_PATH_EMBEDDED)) {
         const FEmbeddedFile* e = f_embed__fileGet(Path);
 
-        s = f_platform_api__soundSampleNewFromData(e->buffer, (int)e->size);
+        s->platform =
+            f_platform_api__soundSampleNewFromData(e->buffer, e->size);
     } else {
         F__FATAL("f_sample_new(%s): File does not exist", Path);
     }
 
-    if(s == NULL) {
+    if(s->platform == NULL) {
         F__FATAL("f_sample_new(%s): Cannot open file", Path);
     }
 
@@ -42,8 +43,24 @@ FSample* f_sample_new(const char* Path)
 
 void f_sample_free(FSample* Sample)
 {
-    if(Sample) {
-        f_platform_api__soundSampleFree(Sample);
+    if(Sample == NULL) {
+        return;
+    }
+
+    f_platform_api__soundSampleFree(Sample->platform);
+
+    if(Sample->size == 0) {
+        f_mem_free(Sample);
+    } else {
+        Sample->platform = NULL;
+    }
+}
+
+void f_sample__lazyInit(FSample* Sample)
+{
+    if(Sample->size > 0 && Sample->platform == NULL) {
+        Sample->platform = f_platform_api__soundSampleNewFromData(
+                            Sample->buffer, Sample->size);
     }
 }
 #else // !F_CONFIG_SOUND_ENABLED

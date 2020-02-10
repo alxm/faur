@@ -25,7 +25,7 @@ typedef struct FPlatformButton FPlatformButton;
 typedef struct FPlatformController FPlatformController;
 
 typedef void FPlatformMusic;
-typedef struct FPlatformSample FPlatformSample;
+typedef void FPlatformSample;
 
 typedef struct FPlatformTexture FPlatformTexture;
 typedef void FPlatformTextureScreen;
@@ -92,11 +92,10 @@ extern void f_platform_api__soundMusicPlay(FPlatformMusic* Music);
 extern void f_platform_api__soundMusicStop(void);
 
 extern FPlatformSample* f_platform_api__soundSampleNewFromFile(const char* Path);
-extern FPlatformSample* f_platform_api__soundSampleNewFromData(const uint8_t* Data, int Size);
+extern FPlatformSample* f_platform_api__soundSampleNewFromData(const uint8_t* Data, size_t Size);
 extern void f_platform_api__soundSampleFree(FPlatformSample* Sample);
-extern void f_platform_api__soundSampleVolumeSet(FPlatformSample* Sample, int Volume);
 extern void f_platform_api__soundSampleVolumeSetAll(int Volume);
-extern void f_platform_api__soundSamplePlay(FPlatformSample* Sample, int Channel, bool Loop);
+extern void f_platform_api__soundSamplePlay(const FPlatformSample* Sample, int Channel, bool Loop);
 extern void f_platform_api__soundSampleStop(int Channel);
 extern bool f_platform_api__soundSampleIsPlaying(int Channel);
 extern int f_platform_api__soundSampleChannelGet(void);
