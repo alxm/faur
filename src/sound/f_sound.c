@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -46,8 +46,7 @@ static void adjustSoundVolume(int Volume)
     g_musicVolume = g_volume * F_CONFIG_SOUND_VOLUME_SCALE_MUSIC / 100;
     g_samplesVolume = g_volume * F_CONFIG_SOUND_VOLUME_SCALE_SAMPLE / 100;
 
-    f_platform_api__soundSampleVolumeSetAll(g_samplesVolume);
-    f_platform_api__soundMusicVolumeSet(g_musicVolume);
+    f_platform_api__soundVolumeSet(g_musicVolume, g_samplesVolume);
 }
 #endif
 

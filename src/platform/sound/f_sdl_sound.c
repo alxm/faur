@@ -113,6 +113,21 @@ int f_platform_api__soundVolumeGetMax(void)
     return MIX_MAX_VOLUME;
 }
 
+void f_platform_api__soundVolumeSet(int MusicVolume, int SamplesVolume)
+{
+    if(!g_enabled) {
+        return;
+    }
+
+    #if F__SOUND_LIMITED_SUPPORT
+        F_UNUSED(MusicVolume);
+        F_UNUSED(SamplesVolume);
+    #else
+        Mix_VolumeMusic(MusicVolume);
+        Mix_Volume(-1, SamplesVolume);
+    #endif
+}
+
 FPlatformMusic* f_platform_api__soundMusicNew(const char* Path)
 {
     if(!g_enabled) {
@@ -131,19 +146,6 @@ FPlatformMusic* f_platform_api__soundMusicNew(const char* Path)
 void f_platform_api__soundMusicFree(FPlatformMusic* Music)
 {
     Mix_FreeMusic(Music);
-}
-
-void f_platform_api__soundMusicVolumeSet(int Volume)
-{
-    if(!g_enabled) {
-        return;
-    }
-
-    #if F__SOUND_LIMITED_SUPPORT
-        F_UNUSED(Volume);
-    #else
-        Mix_VolumeMusic(Volume);
-    #endif
 }
 
 void f_platform_api__soundMusicPlay(FPlatformMusic* Music)

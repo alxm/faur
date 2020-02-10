@@ -84,17 +84,16 @@ extern void f_platform_api__textureBlitEx(const FPlatformTexture* Texture, const
 extern bool f_platform_api__soundMuteGet(void);
 extern void f_platform_api__soundMuteFlip(void);
 extern int f_platform_api__soundVolumeGetMax(void);
+extern void f_platform_api__soundVolumeSet(int MusicVolume, int SamplesVolume);
 
 extern FPlatformMusic* f_platform_api__soundMusicNew(const char* Path);
 extern void f_platform_api__soundMusicFree(FPlatformMusic* Music);
-extern void f_platform_api__soundMusicVolumeSet(int Volume);
 extern void f_platform_api__soundMusicPlay(FPlatformMusic* Music);
 extern void f_platform_api__soundMusicStop(void);
 
 extern FPlatformSample* f_platform_api__soundSampleNewFromFile(const char* Path);
 extern FPlatformSample* f_platform_api__soundSampleNewFromData(const uint8_t* Data, size_t Size);
 extern void f_platform_api__soundSampleFree(FPlatformSample* Sample);
-extern void f_platform_api__soundSampleVolumeSetAll(int Volume);
 extern void f_platform_api__soundSamplePlay(const FPlatformSample* Sample, int Channel, bool Loop);
 extern void f_platform_api__soundSampleStop(int Channel);
 extern bool f_platform_api__soundSampleIsPlaying(int Channel);
