@@ -20,10 +20,6 @@
 #include "f_state.v.h"
 #include <faur.v.h>
 
-#if F_CONFIG_SYSTEM_EMSCRIPTEN
-    #include <emscripten.h>
-#endif
-
 typedef struct {
     const char* name;
     FStateHandler* handler;

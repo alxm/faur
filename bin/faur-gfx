@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-    Copyright 2019 Alex Margarit <alex@alxm.org>
+    Copyright 2019-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -152,13 +152,13 @@ def process_c(var_name, image_file, color_key):
         spans = spans_make(frame_pixels, frame_width, frame_height, color_key)
 
         span_buffers += """\
-static const unsigned f__gfx_spans__{var}__{num}[] = {{{spans_data}}};
+static const FSpriteWord f__gfx_spans__{var}__{num}[] = {{{spans_data}}};
 """.format(var = var_name,
            num = frame_index,
            spans_data = ', '.join([str(s) for s in spans]))
 
         span_vars += """
-        (unsigned*)f__gfx_spans__{var}__{num},\
+        (FSpriteWord*)f__gfx_spans__{var}__{num},\
 """.format(var = var_name, num = frame_index)
 
     content = """\
@@ -181,8 +181,8 @@ static const FColorPixel f__gfx_buffer__{var}[{width} * {height} * {frames_num}]
 #if F_CONFIG_RENDER_SOFTWARE
 {span_buffers}
 static const struct {{
-    unsigned framesNum;
-    unsigned* spans[{frames_num}];
+    FSpriteWord framesNum;
+    FSpriteWord* spans[{frames_num}];
 }} f__gfx_texture__{var} = {{
     {frames_num},
     {{{span_vars}

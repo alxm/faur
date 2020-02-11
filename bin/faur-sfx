@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-    Copyright 2019 Alex Margarit <alex@alxm.org>
+    Copyright 2019-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -96,17 +96,13 @@ def process_c(var_name, wav_file):
 
 static const uint8_t f__sfx_buffer__{var}[F__GEN_BUFFER_SIZE__{var}] = {{F__GEN_BUFFER_DATA__{var}}};
 
-static F__GEN_SFX_CONST struct {{
-    uint32_t size;
-    uint8_t* buffer;
-    #if F_CONFIG_LIB_SDL
-        void* sample;
-    #endif
-}} f__sfx_sample__{var} = {{
+static F__GEN_SFX_CONST FSample f__sfx_sample__{var} = {{
     F__GEN_BUFFER_SIZE__{var},
-    (uint8_t*)f__sfx_buffer__{var},
+    f__sfx_buffer__{var},
     #if F_CONFIG_LIB_SDL
         NULL,
+    #else
+        (FPlatformSample*)&f__sfx_sample__{var},
     #endif
 }};
 

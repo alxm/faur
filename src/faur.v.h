@@ -66,6 +66,7 @@ F_EXTERN_C_START
 #include "platform/system/f_pandora.v.h"
 #include "platform/system/f_sdl.v.h"
 #include "platform/system/f_wiz.v.h"
+#include "sound/f_sample.v.h"
 #include "sound/f_sound.v.h"
 #include "strings/f_str.v.h"
 #include "time/f_timer.v.h"

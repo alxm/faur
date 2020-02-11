@@ -18,17 +18,16 @@
 #include "f_embed.v.h"
 #include <faur.v.h>
 
+#if F_CONFIG_FILES_EMBED_ENABLED
 static FHash* g_dirs; // FHash<const char*, FEmbeddedDir>
 static FHash* g_files; // FHash<const char*, FEmbeddedFile*>
 
 static void f_embed__init(void)
 {
-    #if !F_CONFIG_TRAIT_LOW_MEM
-        g_dirs = f_hash_newStr(256, false);
-        g_files = f_hash_newStr(256, false);
-    #endif
+    g_dirs = f_hash_newStr(256, false);
+    g_files = f_hash_newStr(256, false);
 
-    #if F_CONFIG_FILES_EMBED
+    #if F_CONFIG_FILES_EMBED_IN_BIN
         f_embed__populate();
     #endif
 }
@@ -132,3 +131,28 @@ bool f_embed__stat(const char* Path, FPathInfo* Info)
 
     return false;
 }
+#else // !F_CONFIG_FILES_EMBED_ENABLED
+const FPack f_pack__embed;
+
+bool f_embed__stat(const char* Path, FPathInfo* Info)
+{
+    F_UNUSED(Path);
+    F_UNUSED(Info);
+
+    return false;
+}
+
+const FEmbeddedDir* f_embed__dirGet(const char* Path)
+{
+    F_UNUSED(Path);
+
+    return NULL;
+}
+
+const FEmbeddedFile* f_embed__fileGet(const char* Path)
+{
+    F_UNUSED(Path);
+
+    return NULL;
+}
+#endif // !F_CONFIG_FILES_EMBED_ENABLED

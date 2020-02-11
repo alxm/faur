@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -30,12 +30,6 @@
 #if F_CONFIG_SYSTEM_EMSCRIPTEN && F_CONFIG_LIB_SDL == 1
     #define F__SOUND_LIMITED_SUPPORT 1
 #endif
-
-struct FPlatformSample {
-    uint32_t size;
-    uint8_t* buffer;
-    Mix_Chunk* chunk;
-};
 
 static bool g_enabled;
 static bool g_mute = F_CONFIG_SOUND_MUTE;
@@ -119,6 +113,21 @@ int f_platform_api__soundVolumeGetMax(void)
     return MIX_MAX_VOLUME;
 }
 
+void f_platform_api__soundVolumeSet(int MusicVolume, int SamplesVolume)
+{
+    if(!g_enabled) {
+        return;
+    }
+
+    #if F__SOUND_LIMITED_SUPPORT
+        F_UNUSED(MusicVolume);
+        F_UNUSED(SamplesVolume);
+    #else
+        Mix_VolumeMusic(MusicVolume);
+        Mix_Volume(-1, SamplesVolume);
+    #endif
+}
+
 FPlatformMusic* f_platform_api__soundMusicNew(const char* Path)
 {
     if(!g_enabled) {
@@ -137,19 +146,6 @@ FPlatformMusic* f_platform_api__soundMusicNew(const char* Path)
 void f_platform_api__soundMusicFree(FPlatformMusic* Music)
 {
     Mix_FreeMusic(Music);
-}
-
-void f_platform_api__soundMusicVolumeSet(int Volume)
-{
-    if(!g_enabled) {
-        return;
-    }
-
-    #if F__SOUND_LIMITED_SUPPORT
-        F_UNUSED(Volume);
-    #else
-        Mix_VolumeMusic(Volume);
-    #endif
 }
 
 void f_platform_api__soundMusicPlay(FPlatformMusic* Music)
@@ -174,48 +170,42 @@ void f_platform_api__soundMusicStop(void)
 
 FPlatformSample* f_platform_api__soundSampleNewFromFile(const char* Path)
 {
-    FPlatformSample* s = NULL;
-
-    if(g_enabled) {
-        Mix_Chunk* chunk = Mix_LoadWAV(Path);
-
-        if(chunk) {
-            s = f_mem_zalloc(sizeof(FPlatformSample));
-
-            s->chunk = chunk;
-        } else {
-            f_out__error("Mix_LoadWAV: %s", Mix_GetError());
-        }
+    if(!g_enabled) {
+        return NULL;
     }
 
-    return s;
+    Mix_Chunk* chunk = Mix_LoadWAV(Path);
+
+    if(chunk == NULL) {
+        f_out__error("Mix_LoadWAV(%s): %s", Path, Mix_GetError());
+    }
+
+    return chunk;
 }
 
-FPlatformSample* f_platform_api__soundSampleNewFromData(const uint8_t* Data, int Size)
+FPlatformSample* f_platform_api__soundSampleNewFromData(const uint8_t* Data, size_t Size)
 {
-    FPlatformSample* s = NULL;
-
-    if(g_enabled) {
-        SDL_RWops* rw = SDL_RWFromMem((void*)Data, Size);
-
-        if(rw) {
-            Mix_Chunk* chunk = Mix_LoadWAV_RW(rw, 0);
-
-            if(chunk) {
-                s = f_mem_zalloc(sizeof(FPlatformSample));
-
-                s->chunk = chunk;
-            } else {
-                f_out__error("Mix_LoadWAV_RW: %s", Mix_GetError());
-            }
-
-            SDL_FreeRW(rw);
-        } else {
-            f_out__error("SDL_RWFromMem: %s", SDL_GetError());
-        }
+    if(!g_enabled) {
+        return NULL;
     }
 
-    return s;
+    SDL_RWops* rw = SDL_RWFromMem((void*)Data, (int)Size);
+
+    if(rw == NULL) {
+        f_out__error("SDL_RWFromMem: %s", SDL_GetError());
+
+        return NULL;
+    }
+
+    Mix_Chunk* chunk = Mix_LoadWAV_RW(rw, 0);
+
+    if(chunk == NULL) {
+        f_out__error("Mix_LoadWAV_RW: %s", Mix_GetError());
+    }
+
+    SDL_FreeRW(rw);
+
+    return chunk;
 }
 
 void f_platform_api__soundSampleFree(FPlatformSample* Sample)
@@ -224,74 +214,16 @@ void f_platform_api__soundSampleFree(FPlatformSample* Sample)
         return;
     }
 
-    if(Sample->chunk) {
-        Mix_FreeChunk(Sample->chunk);
-        Sample->chunk = NULL;
-    }
-
-    if(Sample->size == 0) {
-        f_mem_free(Sample);
-    }
+    Mix_FreeChunk(Sample);
 }
 
-static void sampleLazyInit(FPlatformSample* Sample)
-{
-    if(Sample->size > 0 && Sample->chunk == NULL) {
-        SDL_RWops* rw = SDL_RWFromMem((void*)Sample->buffer, (int)Sample->size);
-
-        if(rw) {
-            Mix_Chunk* chunk = Mix_LoadWAV_RW(rw, 0);
-
-            if(chunk) {
-                Sample->chunk = chunk;
-            } else {
-                f_out__error("Mix_LoadWAV_RW: %s", Mix_GetError());
-            }
-
-            SDL_FreeRW(rw);
-        } else {
-            f_out__error("SDL_RWFromMem: %s", SDL_GetError());
-        }
-    }
-}
-
-void f_platform_api__soundSampleVolumeSet(FPlatformSample* Sample, int Volume)
+void f_platform_api__soundSamplePlay(const FPlatformSample* Sample, int Channel, bool Loop)
 {
     if(Sample == NULL) {
         return;
     }
 
-    #if F__SOUND_LIMITED_SUPPORT
-        F_UNUSED(Sample);
-        F_UNUSED(Volume);
-    #else
-        sampleLazyInit(Sample);
-        Mix_VolumeChunk(Sample->chunk, Volume);
-    #endif
-}
-
-void f_platform_api__soundSampleVolumeSetAll(int Volume)
-{
-    if(!g_enabled) {
-        return;
-    }
-
-    #if F__SOUND_LIMITED_SUPPORT
-        F_UNUSED(Volume);
-    #else
-        Mix_Volume(-1, Volume);
-    #endif
-}
-
-void f_platform_api__soundSamplePlay(FPlatformSample* Sample, int Channel, bool Loop)
-{
-    if(Sample == NULL) {
-        return;
-    }
-
-    sampleLazyInit(Sample);
-
-    if(Mix_PlayChannel(Channel, Sample->chunk, Loop ? -1 : 0) == -1) {
+    if(Mix_PlayChannel(Channel, (Mix_Chunk*)Sample, Loop ? -1 : 0) == -1) {
         #if F_CONFIG_BUILD_DEBUG
             f_out__error("Mix_PlayChannel(%d): %s", Channel, Mix_GetError());
         #endif

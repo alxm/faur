@@ -59,7 +59,7 @@ F_CONFIG_BUILD_FLAGS_SHARED += \
 
 include $(FAUR_PATH)/make/global/rules.mk
 
-run :
+run : all
 	cd $(F_BUILD_DIR_BIN) && $(F_FAUR_DIR_BIN)/faur-runweb $(F_BUILD_FILE_BIN)
 
 endif

@@ -1,5 +1,5 @@
 /*
-    Copyright 2011, 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2011, 2016-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -51,7 +51,6 @@ typedef void FFree(void* Self);
 typedef volatile int FEvent;
 
 #include <ctype.h>
-#include <float.h>
 #include <limits.h>
 #include <math.h>
 #include <stdarg.h>
@@ -61,7 +60,6 @@ typedef volatile int FEvent;
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 
 #if CHAR_BIT != 8
     #error Code needs CHAR_BIT == 8

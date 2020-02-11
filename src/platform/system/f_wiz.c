@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2018 Alex Margarit <alex@alxm.org> and:
+    Copyright 2010, 2016-2018, 2020 Alex Margarit <alex@alxm.org> and:
 
     - Wiz framebuffer direction set code by Orkie
     - Wiz/Caanoo timer code by notaz (https://github.com/notaz/libpicofe)
@@ -26,6 +26,7 @@
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
+#include <unistd.h>
 
 #if F_CONFIG_SYSTEM_WIZ
     static bool g_mmuHackOn = false;

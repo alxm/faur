@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2016-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -19,9 +19,11 @@
 #include "f_console.v.h"
 #include <faur.v.h>
 
+#if F_CONFIG_CONSOLE_ENABLED
 #include "../generated/media/console_19x7.png.h"
 
-#if F_CONFIG_CONSOLE_ENABLED
+#include <unistd.h>
+
 typedef struct {
     FOutSource source;
     FOutType type;
