@@ -45,7 +45,7 @@ F_BUILD_FILES_SRC_O := $(F_BUILD_FILES_SRC_C:$(F_BUILD_DIR_SRC)/%=$(F_BUILD_DIR_
 #
 # Project root-relative paths, and the file that implements f_embed__populate
 #
-ifeq ($(F_CONFIG_FILES_EMBED), 1)
+ifeq ($(F_CONFIG_FILES_EMBED_IN_BIN), 1)
     F_BUILD_FILES_EMBED_BIN := $(shell find $(F_CONFIG_PATH_EMBED:%=$(F_DIR_ROOT_FROM_MAKE)/%))
 endif
 
