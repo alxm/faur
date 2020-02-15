@@ -189,30 +189,29 @@ $(F_BUILD_DIR_PROJ_O)/%.c.o : $(F_BUILD_DIR_SRC)/%.c
 #
 # Embedded files and objects
 #
-$(F_BUILD_DIR_GEN_EMBED_ENTRIES)/%.h : $(F_DIR_ROOT_FROM_MAKE)/% $(F_FAUR_DIR_BIN)/faur-bin
+$(F_BUILD_DIR_GEN_EMBED_ENTRIES)/%.h : $(F_DIR_ROOT_FROM_MAKE)/% $(F_FAUR_DIR_BIN)/faur-embed-bin
 	@ mkdir -p $(@D)
-	$(F_FAUR_DIR_BIN)/faur-bin $< $@ $(<:$(F_DIR_ROOT_FROM_MAKE)/%=%) f__bin_
+	$(F_FAUR_DIR_BIN)/faur-embed-bin $< $@ $(<:$(F_DIR_ROOT_FROM_MAKE)/%=%) f__bin_
 
-$(F_BUILD_FILES_EMBED_POPULATE) : $(F_BUILD_FILES_EMBED_ENTRIES_TARGET) $(F_FAUR_DIR_BIN)/faur-embed
-	@ mkdir -p $(@D)
-	@ mkdir -p $(F_BUILD_DIR_GEN_EMBED_ENTRIES)
-	$(F_FAUR_DIR_BIN)/faur-embed $@ $(F_BUILD_DIR_GEN_EMBED_ENTRIES) f__bin_ $(F_BUILD_FILES_EMBED_ENTRIES_NAMES)
+$(F_BUILD_FILES_EMBED_POPULATE) : $(F_BUILD_FILES_EMBED_ENTRIES_TARGET) $(F_FAUR_DIR_BIN)/faur-embed-pop
+	@ mkdir -p $(@D) $(F_BUILD_DIR_GEN_EMBED_ENTRIES)
+	$(F_FAUR_DIR_BIN)/faur-embed-pop $@ $(F_BUILD_DIR_GEN_EMBED_ENTRIES) f__bin_ $(F_BUILD_FILES_EMBED_ENTRIES_NAMES)
 
-$(F_BUILD_DIR_GEN_GFX)/%.c : $(F_DIR_ROOT_FROM_MAKE)/% $(F_FAUR_DIR_BIN)/faur-gfx
+$(F_BUILD_DIR_GEN_GFX)/%.c : $(F_DIR_ROOT_FROM_MAKE)/% $(F_FAUR_DIR_BIN)/faur-embed-gfx
 	@ mkdir -p $(@D)
-	$(F_FAUR_DIR_BIN)/faur-gfx $< $@ $(<:$(F_DIR_ROOT_FROM_MAKE)/%=%) $(F_CONFIG_COLOR_SPRITE_KEY)
+	$(F_FAUR_DIR_BIN)/faur-embed-gfx $< $@ $(<:$(F_DIR_ROOT_FROM_MAKE)/%=%) $(F_CONFIG_COLOR_SPRITE_KEY)
 
-$(F_BUILD_DIR_GEN_GFX)/%.h : $(F_DIR_ROOT_FROM_MAKE)/% $(F_FAUR_DIR_BIN)/faur-gfx
+$(F_BUILD_DIR_GEN_GFX)/%.h : $(F_DIR_ROOT_FROM_MAKE)/% $(F_FAUR_DIR_BIN)/faur-embed-gfx
 	@ mkdir -p $(@D)
-	$(F_FAUR_DIR_BIN)/faur-gfx $< $@ $(<:$(F_DIR_ROOT_FROM_MAKE)/%=%) $(F_CONFIG_COLOR_SPRITE_KEY)
+	$(F_FAUR_DIR_BIN)/faur-embed-gfx $< $@ $(<:$(F_DIR_ROOT_FROM_MAKE)/%=%) $(F_CONFIG_COLOR_SPRITE_KEY)
 
-$(F_BUILD_DIR_GEN_SFX)/%.c : $(F_DIR_ROOT_FROM_MAKE)/% $(F_FAUR_DIR_BIN)/faur-sfx
+$(F_BUILD_DIR_GEN_SFX)/%.c : $(F_DIR_ROOT_FROM_MAKE)/% $(F_FAUR_DIR_BIN)/faur-embed-sfx
 	@ mkdir -p $(@D)
-	$(F_FAUR_DIR_BIN)/faur-sfx $< $@ $(<:$(F_DIR_ROOT_FROM_MAKE)/%=%)
+	$(F_FAUR_DIR_BIN)/faur-embed-sfx $< $@ $(<:$(F_DIR_ROOT_FROM_MAKE)/%=%)
 
-$(F_BUILD_DIR_GEN_SFX)/%.h : $(F_DIR_ROOT_FROM_MAKE)/% $(F_FAUR_DIR_BIN)/faur-sfx
+$(F_BUILD_DIR_GEN_SFX)/%.h : $(F_DIR_ROOT_FROM_MAKE)/% $(F_FAUR_DIR_BIN)/faur-embed-sfx
 	@ mkdir -p $(@D)
-	$(F_FAUR_DIR_BIN)/faur-sfx $< $@ $(<:$(F_DIR_ROOT_FROM_MAKE)/%=%)
+	$(F_FAUR_DIR_BIN)/faur-embed-sfx $< $@ $(<:$(F_DIR_ROOT_FROM_MAKE)/%=%)
 
 $(F_BUILD_FILES_SRC_O) : $(F_BUILD_FILES_GFX_H) $(F_BUILD_FILES_SFX_H)
 
