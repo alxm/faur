@@ -15,11 +15,11 @@ F_FILES_H := $(F_FILES_GFX:%=$(F_DIR_GEN)/%.h)
 
 gen : $(F_FILES_C) $(F_FILES_H)
 
-$(F_DIR_GEN)/%.c : % $(FAUR_PATH)/bin/faur-gfx
-	$(FAUR_PATH)/bin/faur-gfx $< $@ _$(basename $<) 0xff00ff
+$(F_DIR_GEN)/%.c : % $(FAUR_PATH)/bin/faur-embed-gfx
+	$(FAUR_PATH)/bin/faur-embed-gfx $< $@ _$(basename $<) 0xff00ff
 
-$(F_DIR_GEN)/%.h : % $(FAUR_PATH)/bin/faur-gfx
-	$(FAUR_PATH)/bin/faur-gfx $< $@ _$(basename $<) 0xff00ff
+$(F_DIR_GEN)/%.h : % $(FAUR_PATH)/bin/faur-embed-gfx
+	$(FAUR_PATH)/bin/faur-embed-gfx $< $@ _$(basename $<) 0xff00ff
 
 clean :
 	rm -f $(F_FILES_C) $(F_FILES_H)

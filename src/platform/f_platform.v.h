@@ -27,7 +27,7 @@ typedef struct FPlatformController FPlatformController;
 typedef void FPlatformMusic;
 typedef void FPlatformSample;
 
-typedef struct FPlatformTexture FPlatformTexture;
+typedef void FPlatformTexture;
 typedef void FPlatformTextureScreen;
 
 typedef void FPlatformFile;
