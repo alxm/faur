@@ -118,14 +118,10 @@ class Tool:
         return flag in self.flag_db
 
     def write_bytes(self, name, contents):
-        self.out.info('Writing file {}'.format(name))
-
         with open(name, 'wb') as f:
             f.write(bytes(contents))
 
     def write_text(self, name, contents):
-        self.out.info('Writing file {}'.format(name))
-
         with open(name, 'w') as f:
             f.write(contents)
 

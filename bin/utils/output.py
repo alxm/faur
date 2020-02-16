@@ -61,9 +61,6 @@ class Output:
     def note(self, text):
         self.__worker('[Note]', Color.LightGreen, text)
 
-    def info(self, text):
-        self.__worker('[Info]', Color.LightBlue, text)
-
     def error(self, text):
         self.__worker('[Error]', Color.LightRed, text)
         sys.exit(1)
