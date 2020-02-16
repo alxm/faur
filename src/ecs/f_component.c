@@ -21,7 +21,6 @@
 struct FComponent {
     size_t size; // total size of FComponentInstance + user data that follows
     FComponentInstanceInit* init; // sets component buffer default values
-    FComponentInstanceInitEx* initEx; // init with template data
     FComponentInstanceFree* free; // does not free the actual component buffer
     size_t templateSize; // size of template data buffer
     FComponentTemplateInit* templateInit; // init template buffer with FBlock
@@ -92,7 +91,7 @@ void f_component_new(unsigned ComponentIndex, size_t InstanceSize, FComponentIns
     component->stringId = g_defaultId;
 }
 
-void f_component_template(unsigned ComponentIndex, const char* StringId, size_t TemplateSize, FComponentTemplateInit* TemplateInit, FComponentTemplateFree* TemplateFree, FComponentInstanceInitEx* InstanceInitEx)
+void f_component_template(unsigned ComponentIndex, const char* StringId, size_t TemplateSize, FComponentTemplateInit* TemplateInit, FComponentTemplateFree* TemplateFree)
 {
     FComponent* component = &g_components[ComponentIndex];
 
@@ -111,7 +110,6 @@ void f_component_template(unsigned ComponentIndex, const char* StringId, size_t 
         }
     #endif
 
-    component->initEx = InstanceInitEx;
     component->templateSize = TemplateSize;
     component->templateInit = TemplateInit;
     component->templateFree = TemplateFree;
@@ -171,11 +169,7 @@ FComponentInstance* f_component__instanceNew(const FComponent* Component, FEntit
     c->entity = Entity;
 
     if(Component->init) {
-        Component->init(c->buffer);
-    }
-
-    if(Component->initEx && TemplateData) {
-        Component->initEx(c->buffer, TemplateData);
+        Component->init(c->buffer, TemplateData);
     }
 
     return c;

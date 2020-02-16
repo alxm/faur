@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-    Copyright 2017-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2017-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -64,19 +64,16 @@ void c_{name}_templateFree(void* Data)
     F_UNUSED(data);
 }}
 
-void c_{name}_instanceInit(void* Self)
-{{
-    {ctype}* {localVar} = Self;
-
-    {localVar}->value = 1;
-}}
-
-void c_{name}_instanceInitEx(void* Self, const void* Data)
+void c_{name}_instanceInit(void* Self, const void* Data)
 {{
     {ctype}* {localVar} = Self;
     const {ctype}Data* data = Data;
 
-    {localVar}->value = data->startValue;
+    if(data == NULL) {{
+        {localVar}->value = 1;
+    }} else {{
+        {localVar}->value = data->startValue;
+    }}
 }}
 
 void c_{name}_instanceFree(void* Self)
@@ -114,7 +111,6 @@ extern FComponentTemplateFree c_{name}_templateFree;
 
 extern const size_t c_{name}_instanceSize;
 extern FComponentInstanceInit c_{name}_instanceInit;
-extern FComponentInstanceInitEx c_{name}_instanceInitEx;
 extern FComponentInstanceFree c_{name}_instanceFree;
 
 extern int c_{name}_valueGet(const {ctype}* {paramVar});

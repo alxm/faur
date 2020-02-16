@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2016-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -23,15 +23,14 @@
 #include "../data/f_block.p.h"
 #include "../ecs/f_entity.p.h"
 
-typedef void FComponentInstanceInit(void* Self);
-typedef void FComponentInstanceInitEx(void* Self, const void* Data);
-typedef void FComponentInstanceFree(void* Self);
-
 typedef void FComponentTemplateInit(void* Data, const FBlock* Config);
 typedef void FComponentTemplateFree(void* Data);
 
+typedef void FComponentInstanceInit(void* Self, const void* Data);
+typedef void FComponentInstanceFree(void* Self);
+
 extern void f_component_new(unsigned ComponentIndex, size_t InstanceSize, FComponentInstanceInit* InstanceInit, FComponentInstanceFree* InstanceFree);
-extern void f_component_template(unsigned ComponentIndex, const char* StringId, size_t TemplateSize, FComponentTemplateInit* TemplateInit, FComponentTemplateFree* TemplateFree, FComponentInstanceInitEx* InstanceInitEx);
+extern void f_component_template(unsigned ComponentIndex, const char* StringId, size_t TemplateSize, FComponentTemplateInit* TemplateInit, FComponentTemplateFree* TemplateFree);
 
 extern const void* f_component_dataGet(const void* ComponentBuffer);
 extern FEntity* f_component_entityGet(const void* ComponentBuffer);
