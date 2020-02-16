@@ -106,7 +106,7 @@ static F__GEN_SFX_CONST FSample f__sfx_sample__{var} = {{
     #endif
 }};
 
-const FSample* const f_sfx_{var} = (const FSample*)(void*)&f__sfx_sample__{var};
+const FSample* const f_sfx_{var} = (const FSample*)&f__sfx_sample__{var};
 """.format(cmd = g_tool.get_cmd(),
            var = var_name,
            bufferSizeWav = len(wavBytes),

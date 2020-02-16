@@ -200,13 +200,13 @@ static F__GEN_GFX_CONST FSprite f__gfx_sprite__{var} = {{
         .buffer = (FColorPixel*)f__gfx_buffer__{var},
     }},
     #if F_CONFIG_RENDER_SOFTWARE
-        (FPlatformTexture*)(void*)&f__gfx_texture__{var},
+        (FPlatformTexture*)&f__gfx_texture__{var},
     #else
         NULL,
     #endif
 }};
 
-const FSprite* const f_gfx_{var} = (const FSprite*)(void*)&f__gfx_sprite__{var};
+const FSprite* const f_gfx_{var} = (const FSprite*)&f__gfx_sprite__{var};
 """.format(cmd = g_tool.get_cmd(),
            var = var_name,
            width = frame_width,

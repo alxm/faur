@@ -31,12 +31,12 @@ typedef struct {
     #endif
 } FScanlineEdge;
 
-struct FPlatformTexture {
+typedef struct {
     FSpriteWord framesNum;
     FSpriteWord* spans[]; // [framesNum]
-};
+} FTexture;
 
-typedef void (*FBlitter)(const FPlatformTexture* Texture, const FPixels* Pixels, unsigned Frame, int X, int Y);
+typedef void (*FBlitter)(const FTexture* Texture, const FPixels* Pixels, unsigned Frame, int X, int Y);
 typedef void (*FBlitterEx)(const FPixels* Pixels, unsigned Frame, int TopY, int BottomY);
 
 static FScanlineEdge g_edges[2];
@@ -382,8 +382,7 @@ static FSpriteWord* spansNew(const FPixels* Pixels, unsigned Frame)
 
 FPlatformTexture* f_platform_api__textureNew(const FPixels* Pixels)
 {
-    FPlatformTexture* t = f_mem_malloc(
-                            sizeof(FPlatformTexture)
+    FTexture* t = f_mem_malloc(sizeof(FTexture)
                                 + Pixels->framesNum * sizeof(FSpriteWord*));
 
     t->framesNum = (FSpriteWord)Pixels->framesNum;
@@ -399,22 +398,23 @@ FPlatformTexture* f_platform_api__textureDup(const FPlatformTexture* Texture, co
 {
     F_UNUSED(Pixels);
 
-    FPlatformTexture* t = f_mem_zalloc(
-                            sizeof(FPlatformTexture)
-                                + Texture->framesNum * sizeof(FSpriteWord*));
+    const FTexture* texSrc = Texture;
+    FTexture* texDst = f_mem_zalloc(
+                        sizeof(FTexture)
+                            + Pixels->framesNum * sizeof(FSpriteWord*));
 
-    t->framesNum = Texture->framesNum;
+    texDst->framesNum = texSrc->framesNum;
 
-    for(unsigned f = Texture->framesNum; f--; ) {
-        if(Texture->spans[f]) {
-            FSpriteWord num = Texture->spans[f][0] >> 1;
+    for(unsigned f = texSrc->framesNum; f--; ) {
+        if(texSrc->spans[f]) {
+            FSpriteWord num = texSrc->spans[f][0] >> 1;
 
-            t->spans[f] = f_mem_dup(Texture->spans[f],
-                                    (num + 1u) * sizeof(FSpriteWord));
+            texDst->spans[f] = f_mem_dup(texSrc->spans[f],
+                                         (num + 1u) * sizeof(FSpriteWord));
         }
     }
 
-    return t;
+    return texDst;
 }
 
 void f_platform_api__textureFree(FPlatformTexture* Texture)
@@ -423,18 +423,22 @@ void f_platform_api__textureFree(FPlatformTexture* Texture)
         return;
     }
 
-    for(unsigned f = Texture->framesNum; f--; ) {
-        f_mem_free(Texture->spans[f]);
+    FTexture* texture = Texture;
+
+    for(unsigned f = texture->framesNum; f--; ) {
+        f_mem_free(texture->spans[f]);
     }
 
-    f_mem_free(Texture);
+    f_mem_free(texture);
 }
 
 void f_platform_api__textureUpdate(FPlatformTexture* Texture, const FPixels* Pixels, unsigned Frame)
 {
-    f_mem_free(Texture->spans[Frame]);
+    FTexture* texture = Texture;
 
-    Texture->spans[Frame] = spansNew(Pixels, Frame);
+    f_mem_free(texture->spans[Frame]);
+
+    texture->spans[Frame] = spansNew(Pixels, Frame);
 }
 
 void f_platform_api__textureBlit(const FPlatformTexture* Texture, const FPixels* Pixels, unsigned Frame, int X, int Y)
@@ -446,7 +450,7 @@ void f_platform_api__textureBlit(const FPlatformTexture* Texture, const FPixels*
     g_blitters
         [f__color.blend]
         [f__color.fillBlit]
-        [Texture->spans[Frame] != NULL]
+        [((FTexture*)Texture)->spans[Frame] != NULL]
         [!f_screen_boxInsideClip(X, Y, Pixels->size.x, Pixels->size.y)]
             (Texture, Pixels, Frame, X, Y);
 }
