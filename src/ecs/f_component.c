@@ -52,9 +52,12 @@ static inline const FComponentInstance* bufferGetInstance(const void* ComponentB
 const void* f_component_dataGet(const void* ComponentBuffer)
 {
     const FComponentInstance* instance = bufferGetInstance(ComponentBuffer);
+    const FTemplate* template = f_entity__templateGet(instance->entity);
+    const void* data = NULL;
 
-    return f_template__dataGet(
-            f_entity__templateGet(instance->entity), instance->component);
+    f_template__dataGet(template, instance->component, &data);
+
+    return data;
 }
 
 FEntity* f_component_entityGet(const void* ComponentBuffer)

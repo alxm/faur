@@ -237,10 +237,10 @@ FEntity* f_entity_new(const char* Template, const void* Context)
 
         for(unsigned c = f_component__num; c--; ) {
             const FComponent* component = f_component__getByIndex(c);
+            const void* data = NULL;
 
-            if(f_template__componentHas(template, component)) {
-                componentAdd(
-                    e, component, f_template__dataGet(template, component));
+            if(f_template__dataGet(template, component, &data)) {
+                componentAdd(e, component, data);
             }
         }
 

@@ -173,12 +173,13 @@ unsigned f_template__instanceGet(const FTemplate* Template)
     return Template->instanceNumber;
 }
 
-bool f_template__componentHas(const FTemplate* Template, const FComponent* Component)
+bool f_template__dataGet(const FTemplate* Template, const FComponent* Component, const void** Data)
 {
-    return f_bitfield_test(Template->componentBits, Component->bitId);
-}
+    if(f_bitfield_test(Template->componentBits, Component->bitId)) {
+        *Data = Template->data[Component->bitId];
 
-const void* f_template__dataGet(const FTemplate* Template, const FComponent* Component)
-{
-    return Template->data[Component->bitId];
+        return true;
+    }
+
+    return false;
 }

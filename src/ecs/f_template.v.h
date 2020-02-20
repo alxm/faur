@@ -29,7 +29,6 @@ extern const FTemplate* f_template__get(const char* TemplateId);
 
 extern void f_template__initRun(const FTemplate* Template, FEntity* Entity, const void* Context);
 extern unsigned f_template__instanceGet(const FTemplate* Template);
-extern bool f_template__componentHas(const FTemplate* Template, const FComponent* Component);
-extern const void* f_template__dataGet(const FTemplate* Template, const FComponent* Component);
+extern bool f_template__dataGet(const FTemplate* Template, const FComponent* Component, const void** Data);
 
 #endif // F_INC_ECS_TEMPLATE_V_H
