@@ -43,26 +43,6 @@ void f_component__uninit(void)
     f_hash_free(f_component__index);
 }
 
-const FComponent* f_component__getByIndex(unsigned BitId)
-{
-    #if F_CONFIG_BUILD_DEBUG
-        if(BitId >= f_component__num) {
-            F__FATAL("Unknown component %u", BitId);
-        }
-
-        if(f_component__array[BitId]->stringId == NULL) {
-            F__FATAL("Uninitialized component %u", BitId);
-        }
-    #endif
-
-    return f_component__array[BitId];
-}
-
-const FComponent* f_component__getByString(const char* StringId)
-{
-    return f_hash_get(f_component__index, StringId);
-}
-
 static inline const FComponentInstance* bufferGetInstance(const void* ComponentBuffer)
 {
     return (void*)
