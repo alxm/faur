@@ -49,10 +49,9 @@ typedef enum {
 static FList* g_lists[F_LIST__NUM]; // Each entity is in exactly one of these
 bool f_entity__ignoreRefDec; // Set to prevent using freed entities
 
-static FComponentInstance* componentAdd(FEntity* Entity, const FComponent* Component, const void* TemplateData)
+static FComponentInstance* componentAdd(FEntity* Entity, const FComponent* Component, const void* Data)
 {
-    FComponentInstance* c = f_component__instanceNew(
-                                Component, Entity, TemplateData);
+    FComponentInstance* c = f_component__instanceNew(Component, Entity, Data);
 
     Entity->componentsTable[Component->bitId] = c;
     f_bitfield_set(Entity->componentBits, Component->bitId);

@@ -36,10 +36,10 @@ extern FHash* f_component__index;
 extern void f_component__init(FComponent** Components, size_t ComponentsNum);
 extern void f_component__uninit(void);
 
-extern void* f_component__templateInit(const FComponent* Component, const FBlock* Block);
-extern void f_component__templateFree(const FComponent* Component, void* Buffer);
+extern void* f_component__dataInit(const FComponent* Component, const FBlock* Block);
+extern void f_component__dataFree(const FComponent* Component, void* Buffer);
 
-extern FComponentInstance* f_component__instanceNew(const FComponent* Component, FEntity* Entity, const void* TemplateData);
+extern FComponentInstance* f_component__instanceNew(const FComponent* Component, FEntity* Entity, const void* Data);
 extern void f_component__instanceFree(FComponentInstance* Instance);
 
 static inline const FComponent* f_component__getByIndex(unsigned BitId)

@@ -65,13 +65,13 @@ FEntity* f_component_entityGet(const void* ComponentBuffer)
     return bufferGetInstance(ComponentBuffer)->entity;
 }
 
-void* f_component__templateInit(const FComponent* Component, const FBlock* Block)
+void* f_component__dataInit(const FComponent* Component, const FBlock* Block)
 {
-    if(Component->templateSize > 0) {
-        void* buffer = f_mem_zalloc(Component->templateSize);
+    if(Component->dataSize > 0) {
+        void* buffer = f_mem_zalloc(Component->dataSize);
 
-        if(Component->templateInit) {
-            Component->templateInit(buffer, Block);
+        if(Component->dataInit) {
+            Component->dataInit(buffer, Block);
         }
 
         return buffer;
@@ -80,16 +80,16 @@ void* f_component__templateInit(const FComponent* Component, const FBlock* Block
     return NULL;
 }
 
-void f_component__templateFree(const FComponent* Component, void* Buffer)
+void f_component__dataFree(const FComponent* Component, void* Buffer)
 {
-    if(Component->templateFree) {
-        Component->templateFree(Buffer);
+    if(Component->dataFree) {
+        Component->dataFree(Buffer);
     }
 
     f_mem_free(Buffer);
 }
 
-FComponentInstance* f_component__instanceNew(const FComponent* Component, FEntity* Entity, const void* TemplateData)
+FComponentInstance* f_component__instanceNew(const FComponent* Component, FEntity* Entity, const void* Data)
 {
     FComponentInstance* c = f_mem_zalloc(Component->size);
 
@@ -97,7 +97,7 @@ FComponentInstance* f_component__instanceNew(const FComponent* Component, FEntit
     c->entity = Entity;
 
     if(Component->init) {
-        Component->init(c->buffer, TemplateData);
+        Component->init(c->buffer, Data);
     }
 
     return c;

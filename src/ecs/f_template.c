@@ -70,7 +70,7 @@ static void templateFree(FTemplate* Template)
         if(f_bitfield_test(Template->componentBitsOwn, c)
             && Template->data[c]) {
 
-            f_component__templateFree(
+            f_component__dataFree(
                 f_component__getByIndex(c), Template->data[c]);
         }
     }
@@ -122,7 +122,7 @@ void f_template_new(const char* FilePath)
 
             f_bitfield_set(t->componentBits, component->bitId);
             f_bitfield_set(t->componentBitsOwn, component->bitId);
-            t->data[component->bitId] = f_component__templateInit(component, b);
+            t->data[component->bitId] = f_component__dataInit(component, b);
         }
     }
 
