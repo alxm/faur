@@ -18,17 +18,9 @@
 #include "f_ecs.v.h"
 #include <faur.v.h>
 
-static FList* g_lists[F_ECS__NUM]; // Each entity is in exactly one of these
-static bool g_ignoreRefDec; // Set to prevent using freed entities
-
 static void f_ecs__uninit(void)
 {
-    f_ecs__refDecIgnoreSet(true);
-
-    for(int i = F_ECS__NUM; i--; ) {
-        f_list_freeEx(g_lists[i], (FFree*)f_entity__free);
-    }
-
+    f_entity__uninit();
     f_template__uninit();
     f_system__uninit();
     f_component__uninit();
@@ -46,80 +38,8 @@ const FPack f_pack__ecs = {
 
 void f_ecs_init(FComponent** Components, size_t ComponentsNum, FSystem** Systems, size_t SystemsNum)
 {
-    for(int i = F_ECS__NUM; i--; ) {
-        g_lists[i] = f_list_new();
-    }
-
     f_component__init(Components, ComponentsNum);
     f_system__init(Systems, SystemsNum);
     f_template__init();
-}
-
-FList* f_ecs__listGet(FEcsListId List)
-{
-    return g_lists[List];
-}
-
-unsigned f_ecs__listGetSum(void)
-{
-    if(g_lists[0] == NULL) {
-        return 0;
-    }
-
-    unsigned sum = 0;
-
-    for(int i = F_ECS__NUM; i--; ) {
-        sum += f_list_sizeGet(g_lists[i]);
-    }
-
-    return sum;
-}
-
-bool f_ecs__refDecIgnoreGet(void)
-{
-    return g_ignoreRefDec;
-}
-
-void f_ecs__refDecIgnoreSet(bool IgnoreRefDec)
-{
-    g_ignoreRefDec = IgnoreRefDec;
-}
-
-void f_ecs__tick(void)
-{
-    if(g_lists[0] == NULL) {
-        return;
-    }
-
-    f_ecs__flushEntitiesFromSystems();
-
-    // Check what systems the new entities match
-    F_LIST_ITERATE(g_lists[F_ECS__NEW], FEntity*, e) {
-        for(unsigned s = f_system__num; s--; ) {
-            f_entity__systemsMatch(e, f_system__array[s]);
-        }
-
-        f_entity__ecsListAdd(e, g_lists[F_ECS__RESTORE]);
-    }
-
-    // Add entities to the systems they match
-    F_LIST_ITERATE(g_lists[F_ECS__RESTORE], FEntity*, e) {
-        f_entity__systemsAddTo(e);
-    }
-
-    f_list_clear(g_lists[F_ECS__NEW]);
-    f_list_clear(g_lists[F_ECS__RESTORE]);
-    f_list_clearEx(g_lists[F_ECS__FREE], (FFree*)f_entity__free);
-}
-
-void f_ecs__flushEntitiesFromSystems(void)
-{
-    F_LIST_ITERATE(g_lists[F_ECS__FLUSH], FEntity*, e) {
-        f_entity__systemsRemoveFromAll(e);
-
-        f_entity__ecsListAdd(
-            e, g_lists[f_entity__canDelete(e) ? F_ECS__FREE : F_ECS__DEFAULT]);
-    }
-
-    f_list_clear(g_lists[F_ECS__FLUSH]);
+    f_entity__init();
 }

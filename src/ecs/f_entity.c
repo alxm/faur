@@ -22,7 +22,7 @@ struct FEntity {
     char* id; // specified name for debugging
     const FTemplate* template; // template used to init this entity's components
     FEntity* parent; // manually associated parent entity
-    FListNode* node; // list node in one of FEcsListId
+    FListNode* node; // list node in one of FEntityList
     FListNode* collectionNode; // FCollection list nod
     FList* matchingSystemsActive; // FList<FSystem*>
     FList* matchingSystemsRest; // FList<FSystem*>
@@ -36,6 +36,19 @@ struct FEntity {
     FComponentInstance* componentsTable[]; // [f_component__num] Buffer/NULL
 };
 
+typedef enum {
+    F_LIST__INVALID = -1,
+    F_LIST__DEFAULT, // no pending changes
+    F_LIST__NEW, // new entities that aren't in any systems yet
+    F_LIST__RESTORE, // entities matched to systems, to be added to them
+    F_LIST__FLUSH, // muted or removed entities, to be flushed from systems
+    F_LIST__FREE, // entities to be freed at the end of current frame
+    F_LIST__NUM
+} FEntityList;
+
+static FList* g_lists[F_LIST__NUM]; // Each entity is in exactly one of these
+bool f_entity__ignoreRefDec; // Set to prevent using freed entities
+
 static FComponentInstance* componentAdd(FEntity* Entity, const FComponent* Component, const void* TemplateData)
 {
     FComponentInstance* c = f_component__instanceNew(
@@ -47,21 +60,149 @@ static FComponentInstance* componentAdd(FEntity* Entity, const FComponent* Compo
     return c;
 }
 
-static inline bool listIsIn(const FEntity* Entity, FEcsListId List)
+static inline bool canDelete(const FEntity* Entity)
 {
-    return f_list__nodeGetList(Entity->node) == f_ecs__listGet(List);
+    return Entity->references == 0
+            && F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__REMOVED);
 }
 
-static inline void listAddTo(FEntity* Entity, FEcsListId List)
+static inline bool listIsIn(const FEntity* Entity, FEntityList List)
 {
-    Entity->node = f_list_addLast(f_ecs__listGet(List), Entity);
+    return f_list__nodeGetList(Entity->node) == g_lists[List];
 }
 
-static inline void listMoveTo(FEntity* Entity, FEcsListId List)
+static inline void listAddTo(FEntity* Entity, FEntityList List)
+{
+    Entity->node = f_list_addLast(g_lists[List], Entity);
+}
+
+static inline void listMoveTo(FEntity* Entity, FEntityList List)
 {
     f_list_removeNode(Entity->node);
 
     listAddTo(Entity, List);
+}
+
+void f_entity__init(void)
+{
+    for(int i = F_LIST__NUM; i--; ) {
+        g_lists[i] = f_list_new();
+    }
+}
+
+void f_entity__uninit(void)
+{
+    f_entity__ignoreRefDec = true;
+
+    for(int i = F_LIST__NUM; i--; ) {
+        f_list_freeEx(g_lists[i], (FFree*)f_entity__free);
+    }
+}
+
+void f_entity__tick(void)
+{
+    if(g_lists[0] == NULL) {
+        return;
+    }
+
+    f_entity__flushFromSystems();
+
+    // Check what systems the new entities match
+    F_LIST_ITERATE(g_lists[F_LIST__NEW], FEntity*, e) {
+        for(unsigned s = f_system__num; s--; ) {
+            FSystem* system = f_system__array[s];
+
+            if(f_bitfield_testMask(e->componentBits, system->componentBits)) {
+                if(system->onlyActiveEntities) {
+                    f_list_addLast(e->matchingSystemsActive, system);
+                } else {
+                    f_list_addLast(e->matchingSystemsRest, system);
+                }
+            }
+        }
+
+        listAddTo(e, F_LIST__RESTORE);
+    }
+
+    // Add entities to the systems they match
+    F_LIST_ITERATE(g_lists[F_LIST__RESTORE], FEntity*, e) {
+        #if F_CONFIG_BUILD_DEBUG
+            if(f_list_isEmpty(e->matchingSystemsActive)
+                && f_list_isEmpty(e->matchingSystemsRest)) {
+
+                f_out__warning("Entity %s was not matched to any systems",
+                               f_entity_idGet(e));
+            }
+        #endif
+
+        if(!F_FLAGS_TEST_ANY(e->flags, F_ENTITY__ACTIVE_REMOVED)) {
+            F_LIST_ITERATE(e->matchingSystemsActive, FSystem*, system) {
+                f_list_addLast(
+                    e->systemNodesActive, f_system__entityAdd(system, e));
+            }
+        }
+
+        F_LIST_ITERATE(e->matchingSystemsRest, FSystem*, system) {
+            f_list_addLast(
+                e->systemNodesEither, f_system__entityAdd(system, e));
+        }
+
+        listAddTo(e, F_LIST__DEFAULT);
+    }
+
+    f_list_clear(g_lists[F_LIST__NEW]);
+    f_list_clear(g_lists[F_LIST__RESTORE]);
+    f_list_clearEx(g_lists[F_LIST__FREE], (FFree*)f_entity__free);
+}
+
+void f_entity__flushFromSystems(void)
+{
+    F_LIST_ITERATE(g_lists[F_LIST__FLUSH], FEntity*, e) {
+        #if F_CONFIG_BUILD_DEBUG
+            if(F_FLAGS_TEST_ANY(e->flags, F_ENTITY__DEBUG)) {
+                f_out__info("%s removed from all systems", f_entity_idGet(e));
+            }
+        #endif
+
+        f_list_clearEx(e->systemNodesActive, (FFree*)f_list_removeNode);
+        f_list_clearEx(e->systemNodesEither, (FFree*)f_list_removeNode);
+
+        listAddTo(e, canDelete(e) ? F_LIST__FREE : F_LIST__DEFAULT);
+    }
+
+    f_list_clear(g_lists[F_LIST__FLUSH]);
+}
+
+void f_entity__flushFromSystemsActive(FEntity* Entity)
+{
+    #if F_CONFIG_BUILD_DEBUG
+        if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
+            f_out__info(
+                "%s removed from active-only systems", f_entity_idGet(Entity));
+        }
+    #endif
+
+    F_FLAGS_SET(Entity->flags, F_ENTITY__ACTIVE_REMOVED);
+    f_list_clearEx(Entity->systemNodesActive, (FFree*)f_list_removeNode);
+
+    if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__REMOVE_INACTIVE)) {
+        f_entity_removedSet(Entity);
+    }
+}
+
+unsigned f_entity__numGet(void)
+{
+    if(g_lists[0] == NULL) {
+        return 0;
+    }
+
+    unsigned sum = 0;
+
+    for(int i = F_LIST__NUM; i--; ) {
+        sum += f_list_sizeGet(g_lists[i]);
+    }
+
+    return sum;
 }
 
 FEntity* f_entity_new(const char* Template, const void* Context)
@@ -70,7 +211,7 @@ FEntity* f_entity_new(const char* Template, const void* Context)
                     sizeof(FEntity)
                         + sizeof(FComponentInstance*) * f_component__num);
 
-    listAddTo(e, F_ECS__NEW);
+    listAddTo(e, F_LIST__NEW);
 
     e->matchingSystemsActive = f_list_new();
     e->matchingSystemsRest = f_list_new();
@@ -243,7 +384,7 @@ void f_entity_refInc(FEntity* Entity)
 
 void f_entity_refDec(FEntity* Entity)
 {
-    if(f_ecs__refDecIgnoreGet()) {
+    if(f_entity__ignoreRefDec) {
         // The entity could have already been freed despite any outstanding
         // references. This is the only FEntity API that may be called by
         // components' FComponentInstanceFree callbacks.
@@ -266,8 +407,8 @@ void f_entity_refDec(FEntity* Entity)
 
     Entity->references--;
 
-    if(f_entity__canDelete(Entity)) {
-        listMoveTo(Entity, F_ECS__FLUSH);
+    if(canDelete(Entity)) {
+        listMoveTo(Entity, F_LIST__FLUSH);
     }
 }
 
@@ -294,7 +435,7 @@ void f_entity_removedSet(FEntity* Entity)
     #endif
 
     F_FLAGS_SET(Entity->flags, F_ENTITY__REMOVED);
-    listMoveTo(Entity, F_ECS__FLUSH);
+    listMoveTo(Entity, F_LIST__FLUSH);
 }
 
 bool f_entity_activeGet(const FEntity* Entity)
@@ -357,7 +498,7 @@ void f_entity_activeSetPermanent(FEntity* Entity)
 void* f_entity_componentAdd(FEntity* Entity, const FComponent* Component)
 {
     #if F_CONFIG_BUILD_DEBUG
-        if(!listIsIn(Entity, F_ECS__NEW)) {
+        if(!listIsIn(Entity, F_LIST__NEW)) {
             F__FATAL("f_entity_componentAdd(%s, %s): Too late",
                      f_entity_idGet(Entity),
                      Component->stringId);
@@ -437,7 +578,7 @@ void f_entity_muteInc(FEntity* Entity)
     #endif
 
     if(Entity->muteCount++ == 0) {
-        listMoveTo(Entity, F_ECS__FLUSH);
+        listMoveTo(Entity, F_LIST__FLUSH);
     }
 }
 
@@ -470,16 +611,16 @@ void f_entity_muteDec(FEntity* Entity)
         if(!f_list_isEmpty(Entity->matchingSystemsActive)
             || !f_list_isEmpty(Entity->matchingSystemsRest)) {
 
-            if(listIsIn(Entity, F_ECS__FLUSH)) {
+            if(listIsIn(Entity, F_LIST__FLUSH)) {
                 // Entity was muted and unmuted before it left systems
-                listMoveTo(Entity, F_ECS__DEFAULT);
+                listMoveTo(Entity, F_LIST__DEFAULT);
             } else {
                 // To be added back to matched systems
-                listMoveTo(Entity, F_ECS__RESTORE);
+                listMoveTo(Entity, F_LIST__RESTORE);
             }
         } else {
             // Entity has not been matched to systems yet, treat it as new
-            listMoveTo(Entity, F_ECS__NEW);
+            listMoveTo(Entity, F_LIST__NEW);
         }
     }
 }
@@ -487,82 +628,4 @@ void f_entity_muteDec(FEntity* Entity)
 const FTemplate* f_entity__templateGet(const FEntity* Entity)
 {
     return Entity->template;
-}
-
-bool f_entity__canDelete(const FEntity* Entity)
-{
-    return Entity->references == 0
-            && F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__REMOVED);
-}
-
-void f_entity__ecsListAdd(FEntity* Entity, FList* List)
-{
-    Entity->node = f_list_addLast(List, Entity);
-}
-
-void f_entity__systemsMatch(FEntity* Entity, FSystem* System)
-{
-    if(f_bitfield_testMask(Entity->componentBits, System->componentBits)) {
-        if(System->onlyActiveEntities) {
-            f_list_addLast(Entity->matchingSystemsActive, System);
-        } else {
-            f_list_addLast(Entity->matchingSystemsRest, System);
-        }
-    }
-}
-
-void f_entity__systemsAddTo(FEntity* Entity)
-{
-    #if F_CONFIG_BUILD_DEBUG
-        if(f_list_isEmpty(Entity->matchingSystemsActive)
-            && f_list_isEmpty(Entity->matchingSystemsRest)) {
-
-            f_out__warning("Entity %s was not matched to any systems",
-                           f_entity_idGet(Entity));
-        }
-    #endif
-
-    if(!F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__ACTIVE_REMOVED)) {
-        F_LIST_ITERATE(Entity->matchingSystemsActive, FSystem*, system) {
-            f_list_addLast(
-                Entity->systemNodesActive, f_system__entityAdd(system, Entity));
-        }
-    }
-
-    F_LIST_ITERATE(Entity->matchingSystemsRest, FSystem*, system) {
-        f_list_addLast(
-            Entity->systemNodesEither, f_system__entityAdd(system, Entity));
-    }
-
-    listAddTo(Entity, F_ECS__DEFAULT);
-}
-
-void f_entity__systemsRemoveFromAll(FEntity* Entity)
-{
-    #if F_CONFIG_BUILD_DEBUG
-        if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
-            f_out__info(
-                "%s removed from all systems", f_entity_idGet(Entity));
-        }
-    #endif
-
-    f_list_clearEx(Entity->systemNodesActive, (FFree*)f_list_removeNode);
-    f_list_clearEx(Entity->systemNodesEither, (FFree*)f_list_removeNode);
-}
-
-void f_entity__systemsRemoveFromActive(FEntity* Entity)
-{
-    #if F_CONFIG_BUILD_DEBUG
-        if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
-            f_out__info(
-                "%s removed from active-only systems", f_entity_idGet(Entity));
-        }
-    #endif
-
-    F_FLAGS_SET(Entity->flags, F_ENTITY__ACTIVE_REMOVED);
-    f_list_clearEx(Entity->systemNodesActive, (FFree*)f_list_removeNode);
-
-    if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__REMOVE_INACTIVE)) {
-        f_entity_removedSet(Entity);
-    }
 }

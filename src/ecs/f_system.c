@@ -59,7 +59,7 @@ void f_system_run(const FSystem* System)
             if(f_entity_activeGet(entity)) {
                 System->handler(entity);
             } else {
-                f_entity__systemsRemoveFromActive(entity);
+                f_entity__flushFromSystemsActive(entity);
             }
         }
     } else {
@@ -68,5 +68,5 @@ void f_system_run(const FSystem* System)
         }
     }
 
-    f_ecs__flushEntitiesFromSystems();
+    f_entity__flushFromSystems();
 }

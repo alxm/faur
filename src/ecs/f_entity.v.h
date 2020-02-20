@@ -1,5 +1,5 @@
 /*
-    Copyright 2016, 2018-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2016, 2018-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -32,17 +32,20 @@ typedef enum {
     F_ENTITY__REMOVE_INACTIVE = F_FLAGS_BIT(4), // mark for removal if kicked
 } FEntityFlags;
 
+extern bool f_entity__ignoreRefDec;
+
+extern void f_entity__init(void);
+extern void f_entity__uninit(void);
+
+extern void f_entity__tick(void);
+extern void f_entity__flushFromSystems(void);
+extern unsigned f_entity__numGet(void);
+
 extern void f_entity__free(FEntity* Entity);
 extern void f_entity__freeEx(FEntity* Entity);
 
 extern const FTemplate* f_entity__templateGet(const FEntity* Entity);
 
-extern bool f_entity__canDelete(const FEntity* Entity);
-extern void f_entity__ecsListAdd(FEntity* Entity, FList* List);
-
-extern void f_entity__systemsMatch(FEntity* Entity, FSystem* System);
-extern void f_entity__systemsAddTo(FEntity* Entity);
-extern void f_entity__systemsRemoveFromAll(FEntity* Entity);
-extern void f_entity__systemsRemoveFromActive(FEntity* Entity);
+extern void f_entity__flushFromSystemsActive(FEntity* Entity);
 
 #endif // F_INC_ECS_ENTITY_V_H
