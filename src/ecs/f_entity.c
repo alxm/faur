@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2016-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -33,16 +33,16 @@ struct FEntity {
     int references; // if >0, then the entity lingers in the removed limbo list
     int muteCount; // if >0, then the entity isn't picked up by any systems
     FEntityFlags flags; // various properties
-    FComponentInstance* componentsTable[]; // [f_init__ecs_com] Buffer, or NULL
+    FComponentInstance* componentsTable[]; // [f_component__num] Buffer/NULL
 };
 
-static FComponentInstance* componentAdd(FEntity* Entity, unsigned ComponentIndex, const FComponent* Component, const void* TemplateData)
+static FComponentInstance* componentAdd(FEntity* Entity, const FComponent* Component, const void* TemplateData)
 {
     FComponentInstance* c = f_component__instanceNew(
                                 Component, Entity, TemplateData);
 
-    Entity->componentsTable[ComponentIndex] = c;
-    f_bitfield_set(Entity->componentBits, ComponentIndex);
+    Entity->componentsTable[Component->bitId] = c;
+    f_bitfield_set(Entity->componentBits, Component->bitId);
 
     return c;
 }
@@ -68,7 +68,7 @@ FEntity* f_entity_new(const char* Template, const void* Context)
 {
     FEntity* e = f_mem_zalloc(
                     sizeof(FEntity)
-                        + sizeof(FComponentInstance*) * f_init__ecs_com);
+                        + sizeof(FComponentInstance*) * f_component__num);
 
     listAddTo(e, F_ECS__NEW);
 
@@ -76,7 +76,7 @@ FEntity* f_entity_new(const char* Template, const void* Context)
     e->matchingSystemsRest = f_list_new();
     e->systemNodesActive = f_list_new();
     e->systemNodesEither = f_list_new();
-    e->componentBits = f_bitfield_new(f_init__ecs_com);
+    e->componentBits = f_bitfield_new(f_component__num);
     e->lastActive = f_fps_ticksGet() - 1;
 
     FCollection* collection = f_collection__get();
@@ -94,12 +94,12 @@ FEntity* f_entity_new(const char* Template, const void* Context)
         e->id = f_str_dup(id);
         e->template = template;
 
-        for(unsigned c = f_init__ecs_com; c--; ) {
-            if(f_template__componentHas(template, c)) {
-                componentAdd(e,
-                             c,
-                             f_component__get(c),
-                             f_template__dataGet(template, c));
+        for(unsigned c = f_component__num; c--; ) {
+            const FComponent* component = f_component__getByIndex(c);
+
+            if(f_template__componentHas(template, component)) {
+                componentAdd(
+                    e, component, f_template__dataGet(template, component));
             }
         }
 
@@ -130,7 +130,7 @@ void f_entity__free(FEntity* Entity)
     f_list_freeEx(Entity->systemNodesActive, (FFree*)f_list_removeNode);
     f_list_freeEx(Entity->systemNodesEither, (FFree*)f_list_removeNode);
 
-    for(unsigned c = f_init__ecs_com; c--; ) {
+    for(unsigned c = f_component__num; c--; ) {
         f_component__instanceFree(Entity->componentsTable[c]);
     }
 
@@ -354,68 +354,52 @@ void f_entity_activeSetPermanent(FEntity* Entity)
     F_FLAGS_SET(Entity->flags, F_ENTITY__ACTIVE_PERMANENT);
 }
 
-void* f_entity_componentAdd(FEntity* Entity, unsigned ComponentIndex)
+void* f_entity_componentAdd(FEntity* Entity, const FComponent* Component)
 {
-    const FComponent* component = f_component__get(ComponentIndex);
-
     #if F_CONFIG_BUILD_DEBUG
         if(!listIsIn(Entity, F_ECS__NEW)) {
             F__FATAL("f_entity_componentAdd(%s, %s): Too late",
                      f_entity_idGet(Entity),
-                     f_component__stringGet(component));
+                     Component->stringId);
         }
 
-        if(Entity->componentsTable[ComponentIndex] != NULL) {
+        if(Entity->componentsTable[Component->bitId] != NULL) {
             F__FATAL("f_entity_componentAdd(%s, %s): Already added",
                      f_entity_idGet(Entity),
-                     f_component__stringGet(component));
+                     Component->stringId);
         }
 
         if(F_FLAGS_TEST_ANY(Entity->flags, F_ENTITY__DEBUG)) {
             f_out__info("f_entity_componentAdd(%s, %s)",
                         f_entity_idGet(Entity),
-                        f_component__stringGet(component));
+                        Component->stringId);
         }
     #endif
 
-    return componentAdd(Entity, ComponentIndex, component, NULL)->buffer;
+    return componentAdd(Entity, Component, NULL)->buffer;
 }
 
-bool f_entity_componentHas(const FEntity* Entity, unsigned ComponentIndex)
+bool f_entity_componentHas(const FEntity* Entity, const FComponent* Component)
 {
-    #if F_CONFIG_BUILD_DEBUG
-        f_component__get(ComponentIndex);
-    #endif
-
-    return Entity->componentsTable[ComponentIndex] != NULL;
+    return Entity->componentsTable[Component->bitId] != NULL;
 }
 
-void* f_entity_componentGet(const FEntity* Entity, unsigned ComponentIndex)
+void* f_entity_componentGet(const FEntity* Entity, const FComponent* Component)
 {
-    #if F_CONFIG_BUILD_DEBUG
-        f_component__get(ComponentIndex);
-    #endif
-
-    FComponentInstance* instance = Entity->componentsTable[ComponentIndex];
+    FComponentInstance* instance = Entity->componentsTable[Component->bitId];
 
     return instance ? instance->buffer : NULL;
 }
 
-void* f_entity_componentReq(const FEntity* Entity, unsigned ComponentIndex)
+void* f_entity_componentReq(const FEntity* Entity, const FComponent* Component)
 {
-    #if F_CONFIG_BUILD_DEBUG
-        f_component__get(ComponentIndex);
-    #endif
-
-    FComponentInstance* instance = Entity->componentsTable[ComponentIndex];
+    FComponentInstance* instance = Entity->componentsTable[Component->bitId];
 
     #if F_CONFIG_BUILD_DEBUG
         if(instance == NULL) {
-            const FComponent* component = f_component__get(ComponentIndex);
-
             F__FATAL("f_entity_componentReq(%s, %s): Missing component",
                      f_entity_idGet(Entity),
-                     f_component__stringGet(component));
+                     Component->stringId);
         }
     #endif
 
@@ -518,10 +502,8 @@ void f_entity__ecsListAdd(FEntity* Entity, FList* List)
 
 void f_entity__systemsMatch(FEntity* Entity, FSystem* System)
 {
-    if(f_bitfield_testMask(
-        Entity->componentBits, f_system__componentBitsGet(System))) {
-
-        if(f_system__isActiveOnly(System)) {
+    if(f_bitfield_testMask(Entity->componentBits, System->componentBits)) {
+        if(System->onlyActiveEntities) {
             f_list_addLast(Entity->matchingSystemsActive, System);
         } else {
             f_list_addLast(Entity->matchingSystemsRest, System);

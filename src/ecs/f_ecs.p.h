@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 Alex Margarit <alex@alxm.org>
+    Copyright 2016-2018, 2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -19,5 +19,10 @@
 #define F_INC_ECS_ECS_P_H
 
 #include "../general/f_system_includes.h"
+
+#include "../ecs/f_component.p.h"
+#include "../ecs/f_system.p.h"
+
+extern void f_ecs_init(FComponent** Components, size_t ComponentsNum, FSystem** Systems, size_t SystemsNum);
 
 #endif // F_INC_ECS_ECS_P_H

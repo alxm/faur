@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2016-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -20,18 +20,15 @@
 
 #include "f_system.p.h"
 
-typedef struct FSystem FSystem;
+extern FSystem** f_system__array;
+extern unsigned f_system__num;
 
-#include "../data/f_bitfield.v.h"
-#include "../data/f_list.v.h"
-
-extern void f_system__init(void);
+extern void f_system__init(FSystem** Systems, size_t SystemsNum);
 extern void f_system__uninit(void);
 
-extern FSystem* f_system__get(unsigned SystemIndex);
-
-extern FListNode* f_system__entityAdd(const FSystem* System, FEntity* Entity);
-extern const FBitfield* f_system__componentBitsGet(const FSystem* System);
-extern bool f_system__isActiveOnly(const FSystem* System);
+static inline FListNode* f_system__entityAdd(const FSystem* System, FEntity* Entity)
+{
+    return f_list_addLast(System->entities, Entity);
+}
 
 #endif // F_INC_ECS_SYSTEM_V_H

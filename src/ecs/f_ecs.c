@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2016-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -21,17 +21,6 @@
 static FList* g_lists[F_ECS__NUM]; // Each entity is in exactly one of these
 static bool g_ignoreRefDec; // Set to prevent using freed entities
 
-static void f_ecs__init(void)
-{
-    for(int i = F_ECS__NUM; i--; ) {
-        g_lists[i] = f_list_new();
-    }
-
-    f_component__init();
-    f_system__init();
-    f_template__init();
-}
-
 static void f_ecs__uninit(void)
 {
     f_ecs__refDecIgnoreSet(true);
@@ -48,12 +37,23 @@ static void f_ecs__uninit(void)
 const FPack f_pack__ecs = {
     "ECS",
     {
-        [0] = f_ecs__init,
+        NULL,
     },
     {
         [0] = f_ecs__uninit,
     },
 };
+
+void f_ecs_init(FComponent** Components, size_t ComponentsNum, FSystem** Systems, size_t SystemsNum)
+{
+    for(int i = F_ECS__NUM; i--; ) {
+        g_lists[i] = f_list_new();
+    }
+
+    f_component__init(Components, ComponentsNum);
+    f_system__init(Systems, SystemsNum);
+    f_template__init();
+}
 
 FList* f_ecs__listGet(FEcsListId List)
 {
@@ -62,6 +62,10 @@ FList* f_ecs__listGet(FEcsListId List)
 
 unsigned f_ecs__listGetSum(void)
 {
+    if(g_lists[0] == NULL) {
+        return 0;
+    }
+
     unsigned sum = 0;
 
     for(int i = F_ECS__NUM; i--; ) {
@@ -83,12 +87,16 @@ void f_ecs__refDecIgnoreSet(bool IgnoreRefDec)
 
 void f_ecs__tick(void)
 {
+    if(g_lists[0] == NULL) {
+        return;
+    }
+
     f_ecs__flushEntitiesFromSystems();
 
     // Check what systems the new entities match
     F_LIST_ITERATE(g_lists[F_ECS__NEW], FEntity*, e) {
-        for(unsigned s = f_init__ecs_sys; s--; ) {
-            f_entity__systemsMatch(e, f_system__get(s));
+        for(unsigned s = f_system__num; s--; ) {
+            f_entity__systemsMatch(e, f_system__array[s]);
         }
 
         f_entity__ecsListAdd(e, g_lists[F_ECS__RESTORE]);

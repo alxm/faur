@@ -18,19 +18,50 @@
 #include "f_component.v.h"
 #include <faur.v.h>
 
-struct FComponent {
-    size_t size; // total size of FComponentInstance + user data that follows
-    FComponentInstanceInit* init; // sets component buffer default values
-    FComponentInstanceFree* free; // does not free the actual component buffer
-    size_t templateSize; // size of template data buffer
-    FComponentTemplateInit* templateInit; // init template buffer with FBlock
-    FComponentTemplateFree* templateFree; // does not free the template buffer
-    const char* stringId; // string ID
-};
+FComponent** f_component__array; // [f_component__num]
+unsigned f_component__num;
+FHash* f_component__index; // FHash<const char*, FComponent*>
 
-static FComponent* g_components; // [f_init__ecs_com]
-static FHash* g_componentsIndex; // FHash<const char*, FComponent*>
-static const char* g_defaultId = "Unknown";
+void f_component__init(FComponent** Components, size_t ComponentsNum)
+{
+    f_component__array = Components;
+    f_component__num = (unsigned)ComponentsNum;
+    f_component__index = f_hash_newStr(256, false);
+
+    for(unsigned c = f_component__num; c--; ) {
+        FComponent* com = f_component__array[c];
+
+        com->size += sizeof(FComponentInstance) - sizeof(FMaxMemAlignType);
+        com->bitId = c;
+
+        f_hash_add(f_component__index, com->stringId, com);
+    }
+}
+
+void f_component__uninit(void)
+{
+    f_hash_free(f_component__index);
+}
+
+const FComponent* f_component__getByIndex(unsigned BitId)
+{
+    #if F_CONFIG_BUILD_DEBUG
+        if(BitId >= f_component__num) {
+            F__FATAL("Unknown component %u", BitId);
+        }
+
+        if(f_component__array[BitId]->stringId == NULL) {
+            F__FATAL("Uninitialized component %u", BitId);
+        }
+    #endif
+
+    return f_component__array[BitId];
+}
+
+const FComponent* f_component__getByString(const char* StringId)
+{
+    return f_hash_get(f_component__index, StringId);
+}
 
 static inline const FComponentInstance* bufferGetInstance(const void* ComponentBuffer)
 {
@@ -38,103 +69,17 @@ static inline const FComponentInstance* bufferGetInstance(const void* ComponentB
             ((uint8_t*)ComponentBuffer - offsetof(FComponentInstance, buffer));
 }
 
-void f_component__init(void)
-{
-    if(f_init__ecs_com > 0) {
-        g_components = f_mem_zalloc(sizeof(FComponent) * f_init__ecs_com);
-        g_componentsIndex = f_hash_newStr(256, false);
-    }
-}
-
-void f_component__uninit(void)
-{
-    f_hash_free(g_componentsIndex);
-    f_mem_free(g_components);
-}
-
-unsigned f_component__stringToIndex(const char* StringId)
-{
-    const FComponent* component = f_hash_get(g_componentsIndex, StringId);
-
-    return component ? (unsigned)(component - g_components) : UINT_MAX;
-}
-
-const FComponent* f_component__get(unsigned ComponentIndex)
-{
-    #if F_CONFIG_BUILD_DEBUG
-        if(ComponentIndex >= f_init__ecs_com) {
-            F__FATAL("Unknown component %u", ComponentIndex);
-        }
-
-        if(g_components[ComponentIndex].stringId == NULL) {
-            F__FATAL("Uninitialized component %u", ComponentIndex);
-        }
-    #endif
-
-    return &g_components[ComponentIndex];
-}
-
-void f_component_new(unsigned ComponentIndex, size_t InstanceSize, FComponentInstanceInit* InstanceInit, FComponentInstanceFree* InstanceFree)
-{
-    FComponent* component = &g_components[ComponentIndex];
-
-    #if F_CONFIG_BUILD_DEBUG
-        if(component->stringId != NULL) {
-            F__FATAL("f_component_new(%u): Already declared", ComponentIndex);
-        }
-    #endif
-
-    component->size = sizeof(FComponentInstance)
-                        - sizeof(FMaxMemAlignType) + InstanceSize;
-    component->init = InstanceInit;
-    component->free = InstanceFree;
-    component->stringId = g_defaultId;
-}
-
-void f_component_template(unsigned ComponentIndex, const char* StringId, size_t TemplateSize, FComponentTemplateInit* TemplateInit, FComponentTemplateFree* TemplateFree)
-{
-    FComponent* component = &g_components[ComponentIndex];
-
-    #if F_CONFIG_BUILD_DEBUG
-        if(ComponentIndex >= f_init__ecs_com) {
-            F__FATAL("f_component_template(%s): Unknown component", StringId);
-        }
-
-        if(g_components[ComponentIndex].stringId == NULL) {
-            F__FATAL(
-                "f_component_template(%s): Uninitialized component", StringId);
-        }
-
-        if(f_hash_contains(g_componentsIndex, StringId)) {
-            F__FATAL("f_component_template(%s): Already declared", StringId);
-        }
-    #endif
-
-    component->templateSize = TemplateSize;
-    component->templateInit = TemplateInit;
-    component->templateFree = TemplateFree;
-    component->stringId = StringId;
-
-    f_hash_add(g_componentsIndex, StringId, component);
-}
-
 const void* f_component_dataGet(const void* ComponentBuffer)
 {
     const FComponentInstance* instance = bufferGetInstance(ComponentBuffer);
 
-    return f_template__dataGet(f_entity__templateGet(instance->entity),
-                               (unsigned)(instance->component - g_components));
+    return f_template__dataGet(
+            f_entity__templateGet(instance->entity), instance->component);
 }
-
 
 FEntity* f_component_entityGet(const void* ComponentBuffer)
 {
     return bufferGetInstance(ComponentBuffer)->entity;
-}
-
-const char* f_component__stringGet(const FComponent* Component)
-{
-    return Component->stringId;
 }
 
 void* f_component__templateInit(const FComponent* Component, const FBlock* Block)

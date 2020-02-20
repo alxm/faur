@@ -20,6 +20,8 @@
 
 #include "../general/f_system_includes.h"
 
+typedef struct FComponent FComponent;
+
 #include "../data/f_block.p.h"
 #include "../ecs/f_entity.p.h"
 
@@ -29,8 +31,27 @@ typedef void FComponentTemplateFree(void* Data);
 typedef void FComponentInstanceInit(void* Self, const void* Data);
 typedef void FComponentInstanceFree(void* Self);
 
-extern void f_component_new(unsigned ComponentIndex, size_t InstanceSize, FComponentInstanceInit* InstanceInit, FComponentInstanceFree* InstanceFree);
-extern void f_component_template(unsigned ComponentIndex, const char* StringId, size_t TemplateSize, FComponentTemplateInit* TemplateInit, FComponentTemplateFree* TemplateFree);
+struct FComponent {
+    size_t size; // total size of FComponentInstance + user data that follows
+    size_t templateSize; // size of template data buffer
+    const char* stringId; // unique string ID
+    FComponentInstanceInit* init; // sets component buffer default values
+    FComponentInstanceFree* free; // does not free the actual component buffer
+    FComponentTemplateInit* templateInit; // init template buffer with FBlock
+    FComponentTemplateFree* templateFree; // does not free the template buffer
+    unsigned bitId; // unique number ID
+};
+
+#define F_COMPONENT(Name, InstanceSize, InstanceInit, InstanceFree, TemplateSize, TemplateInit, TemplateFree) \
+    FComponent Name = {                                                                                       \
+        .size = InstanceSize,                                                                                 \
+        .init = InstanceInit,                                                                                 \
+        .free = InstanceFree,                                                                                 \
+        .templateSize = TemplateSize,                                                                         \
+        .templateInit = TemplateInit,                                                                         \
+        .templateFree = TemplateFree,                                                                         \
+        .stringId = F_STRINGIFY(Name),                                                                        \
+    }
 
 extern const void* f_component_dataGet(const void* ComponentBuffer);
 extern FEntity* f_component_entityGet(const void* ComponentBuffer);

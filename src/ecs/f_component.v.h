@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2016-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -20,8 +20,7 @@
 
 #include "f_component.p.h"
 
-typedef struct FComponent FComponent;
-
+#include "../data/f_hash.v.h"
 #include "../memory/f_mem.v.h"
 
 typedef struct {
@@ -30,13 +29,15 @@ typedef struct {
     FMaxMemAlignType buffer[1];
 } FComponentInstance;
 
-extern void f_component__init(void);
+extern FComponent** f_component__array;
+extern unsigned f_component__num;
+extern FHash* f_component__index;
+
+extern void f_component__init(FComponent** Components, size_t ComponentsNum);
 extern void f_component__uninit(void);
 
-extern unsigned f_component__stringToIndex(const char* StringId);
-extern const FComponent* f_component__get(unsigned ComponentIndex);
-
-extern const char* f_component__stringGet(const FComponent* Component);
+extern const FComponent* f_component__getByIndex(unsigned BitId);
+extern const FComponent* f_component__getByString(const char* StringId);
 
 extern void* f_component__templateInit(const FComponent* Component, const FBlock* Block);
 extern void f_component__templateFree(const FComponent* Component, void* Buffer);

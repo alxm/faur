@@ -36,6 +36,7 @@ F_EXTERN_C_START
 #include "data/f_list.p.h"
 #include "ecs/f_collection.p.h"
 #include "ecs/f_component.p.h"
+#include "ecs/f_ecs.p.h"
 #include "ecs/f_entity.p.h"
 #include "ecs/f_system.p.h"
 #include "ecs/f_template.p.h"
