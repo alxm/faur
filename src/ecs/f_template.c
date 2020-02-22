@@ -91,7 +91,7 @@ void f_template__uninit(void)
     f_hash_freeEx(g_templates, (FFree*)templateFree);
 }
 
-void f_template_new(const char* FilePath)
+static void process_file(const char* FilePath)
 {
     FBlock* root = f_block_new(FilePath);
 
@@ -100,7 +100,7 @@ void f_template_new(const char* FilePath)
 
         #if F_CONFIG_BUILD_DEBUG
             if(f_hash_contains(g_templates, templateId)) {
-                F__FATAL("f_template_new(%s): '%s' already declared",
+                F__FATAL("f_template_load(%s): '%s' already declared",
                          FilePath,
                          templateId);
             }
@@ -113,7 +113,7 @@ void f_template_new(const char* FilePath)
             const FComponent* component = f_component__getByString(componentId);
 
             if(component == NULL) {
-                f_out__error("f_template_new(%s): Unknown component '%s'",
+                f_out__error("f_template_load(%s): Unknown component '%s'",
                              templateId,
                              componentId);
 
@@ -127,6 +127,28 @@ void f_template_new(const char* FilePath)
     }
 
     f_block_free(root);
+}
+
+static void process_dir(const char* Path)
+{
+    FDir* dir = f_dir_new(Path);
+
+    F_LIST_ITERATE(f_dir_entriesGet(dir), const FPath*, p) {
+        const char* path = f_path_getFull(p);
+
+        if(f_path_test(p, F_PATH_DIR)) {
+            process_dir(path);
+        } else if(f_str_endsWith(f_path_getName(p), ".txt")) {
+            process_file(path);
+        }
+    }
+
+    f_dir_free(dir);
+}
+
+void f_template_load(const char* Dir)
+{
+    process_dir(Dir);
 }
 
 const FTemplate* f_template__get(const char* TemplateId)
