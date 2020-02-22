@@ -2,13 +2,9 @@
 # . dev.sh
 
 geany -i \
-    * \
     .gitignore \
     .travis.yml \
-    bin/* \
-    bin/utils/* \
-    make/* \
-    make/global/* \
     media/Makefile \
-    `find src` \
+    `find bin make src -type f -not -path "*__pycache__*"` \
+    * \
     &
