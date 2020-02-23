@@ -18,10 +18,10 @@
 #include "f_system.v.h"
 #include <faur.v.h>
 
-FSystem** f_system__array; // [f_system__num]
+FSystem* const* f_system__array; // [f_system__num]
 unsigned f_system__num;
 
-void f_system__init(FSystem** Systems, size_t SystemsNum)
+void f_system__init(FSystem* const* Systems, size_t SystemsNum)
 {
     f_system__array = Systems;
     f_system__num = (unsigned)SystemsNum;

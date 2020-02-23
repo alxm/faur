@@ -20,10 +20,10 @@
 
 #include "f_system.p.h"
 
-extern FSystem** f_system__array;
+extern FSystem* const* f_system__array;
 extern unsigned f_system__num;
 
-extern void f_system__init(FSystem** Systems, size_t SystemsNum);
+extern void f_system__init(FSystem* const* Systems, size_t SystemsNum);
 extern void f_system__uninit(void);
 
 static inline FListNode* f_system__entityAdd(const FSystem* System, FEntity* Entity)

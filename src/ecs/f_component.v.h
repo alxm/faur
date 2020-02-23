@@ -29,11 +29,11 @@ typedef struct {
     FMaxMemAlignType buffer[1];
 } FComponentInstance;
 
-extern FComponent** f_component__array;
+extern FComponent* const* f_component__array;
 extern unsigned f_component__num;
 extern FHash* f_component__index;
 
-extern void f_component__init(FComponent** Components, size_t ComponentsNum);
+extern void f_component__init(FComponent* const* Components, size_t ComponentsNum);
 extern void f_component__uninit(void);
 
 extern void* f_component__dataInit(const FComponent* Component, const FBlock* Block);

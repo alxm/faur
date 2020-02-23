@@ -23,6 +23,6 @@
 #include "../ecs/f_component.p.h"
 #include "../ecs/f_system.p.h"
 
-extern void f_ecs_init(FComponent** Components, size_t ComponentsNum, FSystem** Systems, size_t SystemsNum);
+extern void f_ecs_init(FComponent* const* Components, size_t ComponentsNum, FSystem* const* Systems, size_t SystemsNum);
 
 #endif // F_INC_ECS_ECS_P_H

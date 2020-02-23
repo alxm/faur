@@ -18,11 +18,11 @@
 #include "f_component.v.h"
 #include <faur.v.h>
 
-FComponent** f_component__array; // [f_component__num]
+FComponent* const* f_component__array; // [f_component__num]
 unsigned f_component__num;
 FHash* f_component__index; // FHash<const char*, FComponent*>
 
-void f_component__init(FComponent** Components, size_t ComponentsNum)
+void f_component__init(FComponent* const* Components, size_t ComponentsNum)
 {
     f_component__array = Components;
     f_component__num = (unsigned)ComponentsNum;
