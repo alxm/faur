@@ -226,24 +226,19 @@ FEntity* f_entity_new(const char* Template, const void* Context)
     }
 
     if(Template) {
-        const FTemplate* template = f_template__get(Template);
+        const FTemplate* t = f_template__get(Template);
         const char* id = f_str__fmt512("%s#%u",
                                        Template,
-                                       f_template__instanceGet(template));
+                                       f_template__instanceGet(t));
 
         e->id = f_str_dup(id);
-        e->template = template;
+        e->template = t;
 
-        for(unsigned c = f_component__num; c--; ) {
-            const FComponent* component = f_component__getByIndex(c);
-            const void* data = NULL;
-
-            if(f_template__dataGet(template, component, &data)) {
-                componentAdd(e, component, data);
-            }
+        F_LIST_ITERATE(f_template__componentsGet(t), const FComponent*, c) {
+            componentAdd(e, c, f_template__dataGet(t, c));
         }
 
-        f_template__initRun(template, e, Context);
+        f_template__initRun(t, e, Context);
     }
 
     return e;

@@ -42,14 +42,4 @@ extern void f_component__dataFree(const FComponent* Component, void* Buffer);
 extern FComponentInstance* f_component__instanceNew(const FComponent* Component, FEntity* Entity, const void* Data);
 extern void f_component__instanceFree(FComponentInstance* Instance);
 
-static inline const FComponent* f_component__getByIndex(unsigned BitId)
-{
-    return f_component__array[BitId];
-}
-
-static inline const FComponent* f_component__getByString(const char* StringId)
-{
-    return (const FComponent*)f_hash_get(f_component__index, StringId);
-}
-
 #endif // F_INC_ECS_COMPONENT_V_H

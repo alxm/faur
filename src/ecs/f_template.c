@@ -19,24 +19,26 @@
 #include <faur.v.h>
 
 struct FTemplate {
+    const FTemplate* parent; // Template chain
     unsigned instanceNumber; // Incremented by each new entity
     FEntityInit* init; // Optional, runs after components init and parent init
-    FBitfield* componentBits; // Set if template or a parent has component
-    FBitfield* componentBitsOwn; // Set if template actually has the component
-    const FTemplate* parent; // template chain
+    FList* componentsOwn; // FList<const FComponent*> this template only
+    FList* componentsAll; // FList<const FComponent*> this template or parent
+    FBitfield* componentsBits; // Set if this template or parent has component
     void* data[]; // [f_component__num] Loaded config data, or NULL
                   // Component bit might be set even if data is NULL
 };
 
 static FHash* g_templates; // FHash<char*, FTemplate*>
 
-static FTemplate* templateNew(const char* Id)
+static FTemplate* templateNew(const char* Id, const FBlock* Block)
 {
     FTemplate* t = f_mem_zalloc(
                     sizeof(FTemplate) + sizeof(void*) * f_component__num);
 
-    t->componentBits = f_bitfield_new(f_component__num);
-    t->componentBitsOwn = f_bitfield_new(f_component__num);
+    t->componentsOwn = f_list_new();
+    t->componentsAll = f_list_new();
+    t->componentsBits = f_bitfield_new(f_component__num);
 
     char* parentId = f_str_prefixGetToLast(Id, '.');
 
@@ -44,19 +46,40 @@ static FTemplate* templateNew(const char* Id)
         FTemplate* parentTemplate = f_hash_get(g_templates, parentId);
 
         if(parentTemplate == NULL) {
-            parentTemplate = templateNew(parentId);
+            parentTemplate = templateNew(parentId, NULL);
         }
 
         t->parent = parentTemplate;
 
-        for(unsigned c = f_component__num; c--; ) {
-            if(f_bitfield_test(parentTemplate->componentBits, c)) {
-                f_bitfield_set(t->componentBits, c);
-                t->data[c] = parentTemplate->data[c];
-            }
+        F_LIST_ITERATE(parentTemplate->componentsAll, const FComponent*, c) {
+            f_list_addLast(t->componentsAll, (void*)c);
+            f_bitfield_set(t->componentsBits, c->bitId);
+
+            t->data[c->bitId] = parentTemplate->data[c->bitId];
         }
 
         f_mem_free(parentId);
+    }
+
+    if(Block) {
+        F_LIST_ITERATE(f_block_blocksGet(Block), const FBlock*, b) {
+            const char* componentId = f_block_lineGetString(b, 0);
+            const FComponent* c = f_hash_get(f_component__index, componentId);
+
+            if(c == NULL) {
+                f_out__error("f_template_load(%s): Unknown component '%s'",
+                             Id,
+                             componentId);
+
+                continue;
+            }
+
+            f_list_addLast(t->componentsOwn, (void*)c);
+            f_list_addLast(t->componentsAll, (void*)c);
+            f_bitfield_set(t->componentsBits, c->bitId);
+
+            t->data[c->bitId] = f_component__dataInit(c, b);
+        }
     }
 
     f_hash_add(g_templates, f_str_dup(Id), t);
@@ -66,17 +89,13 @@ static FTemplate* templateNew(const char* Id)
 
 static void templateFree(FTemplate* Template)
 {
-    for(unsigned c = f_component__num; c--; ) {
-        if(f_bitfield_test(Template->componentBitsOwn, c)
-            && Template->data[c]) {
-
-            f_component__dataFree(
-                f_component__getByIndex(c), Template->data[c]);
-        }
+    F_LIST_ITERATE(Template->componentsOwn, const FComponent*, c) {
+        f_component__dataFree(c, Template->data[c->bitId]);
     }
 
-    f_bitfield_free(Template->componentBits);
-    f_bitfield_free(Template->componentBitsOwn);
+    f_list_free(Template->componentsOwn);
+    f_list_free(Template->componentsAll);
+    f_bitfield_free(Template->componentsBits);
 
     f_mem_free(Template);
 }
@@ -106,24 +125,7 @@ static void process_file(const char* FilePath)
             }
         #endif
 
-        FTemplate* t = templateNew(templateId);
-
-        F_LIST_ITERATE(f_block_blocksGet(b), const FBlock*, b) {
-            const char* componentId = f_block_lineGetString(b, 0);
-            const FComponent* component = f_component__getByString(componentId);
-
-            if(component == NULL) {
-                f_out__error("f_template_load(%s): Unknown component '%s'",
-                             templateId,
-                             componentId);
-
-                continue;
-            }
-
-            f_bitfield_set(t->componentBits, component->bitId);
-            f_bitfield_set(t->componentBitsOwn, component->bitId);
-            t->data[component->bitId] = f_component__dataInit(component, b);
-        }
+        templateNew(templateId, b);
     }
 
     f_block_free(root);
@@ -195,13 +197,12 @@ unsigned f_template__instanceGet(const FTemplate* Template)
     return Template->instanceNumber;
 }
 
-bool f_template__dataGet(const FTemplate* Template, const FComponent* Component, const void** Data)
+const FList* f_template__componentsGet(const FTemplate* Template)
 {
-    if(f_bitfield_test(Template->componentBits, Component->bitId)) {
-        *Data = Template->data[Component->bitId];
+    return Template->componentsAll;
+}
 
-        return true;
-    }
-
-    return false;
+const void* f_template__dataGet(const FTemplate* Template, const FComponent* Component)
+{
+    return Template->data[Component->bitId];
 }

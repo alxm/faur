@@ -53,11 +53,8 @@ const void* f_component_dataGet(const void* ComponentBuffer)
 {
     const FComponentInstance* instance = bufferGetInstance(ComponentBuffer);
     const FTemplate* template = f_entity__templateGet(instance->entity);
-    const void* data = NULL;
 
-    f_template__dataGet(template, instance->component, &data);
-
-    return data;
+    return f_template__dataGet(template, instance->component);
 }
 
 FEntity* f_component_entityGet(const void* ComponentBuffer)
@@ -82,6 +79,10 @@ void* f_component__dataInit(const FComponent* Component, const FBlock* Block)
 
 void f_component__dataFree(const FComponent* Component, void* Buffer)
 {
+    if(Buffer == NULL) {
+        return;
+    }
+
     if(Component->dataFree) {
         Component->dataFree(Buffer);
     }
