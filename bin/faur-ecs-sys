@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-    Copyright 2017-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2017-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -35,10 +35,18 @@ def main():
 """\
 #include "system_{name}.h"
 
-void s_{name}(FEntity* Entity)
+static void h_{name}(FEntity* Entity)
 {{
     F_UNUSED(Entity);
 }}
+
+F_SYSTEM(
+    s_{name},
+    h_{name},
+    NULL,
+    false,
+    NULL // &c_1, &c_2, ...
+);
 """.format(name = sys_name))
 
     g_tool.write_text(sys_h,
@@ -47,7 +55,7 @@ void s_{name}(FEntity* Entity)
 
 #include <faur.h>
 
-extern FSystemHandler s_{name};
+extern FSystem s_{name};
 """.format(name = sys_name))
 
 if __name__ == '__main__':
