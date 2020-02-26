@@ -31,6 +31,7 @@ typedef void FSystemHandler(FEntity* Entity);
 typedef int FSystemSort(const FEntity* A, const FEntity* B);
 
 struct FSystem {
+    const char* stringId; // unique string ID
     FList* entities; // entities currently picked up by this system
     const FComponent** components; // [componentsNum]
     FBitfield* componentBits; // IDs of components that this system works on
@@ -48,6 +49,7 @@ struct FSystem {
         .components = (const FComponent*[]){__VA_ARGS__},             \
         .componentsNum = sizeof((const FComponent*[]){__VA_ARGS__})   \
                             / sizeof(const FComponent*),              \
+        .stringId = F_STRINGIFY(Name),                                \
     }
 
 extern void f_system_run(const FSystem* System);
