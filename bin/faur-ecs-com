@@ -45,39 +45,30 @@ struct {ctype} {{
     int value;
 }};
 
-static void c_{name}_dataInit(void* Data, const FBlock* Config)
+static void c_{name}_dataInit({ctype}Data* Data, const FBlock* Config)
 {{
-    {ctype}Data* data = Data;
-
-    data->startValue = 2;
-
     F_UNUSED(Config);
+
+    Data->startValue = 2;
 }}
 
-static void c_{name}_dataFree(void* Data)
+static void c_{name}_dataFree({ctype}Data* Data)
 {{
-    {ctype}Data* data = Data;
-
-    F_UNUSED(data);
+    F_UNUSED(Data);
 }}
 
-static void c_{name}_instanceInit(void* Self, const void* Data)
+static void c_{name}_instanceInit({ctype}* {paramVar}, const {ctype}Data* Data)
 {{
-    {ctype}* {localVar} = Self;
-    const {ctype}Data* data = Data;
-
-    if(data == NULL) {{
-        {localVar}->value = 1;
+    if(Data == NULL) {{
+        {paramVar}->value = 1;
     }} else {{
-        {localVar}->value = data->startValue;
+        {paramVar}->value = Data->startValue;
     }}
 }}
 
-static void c_{name}_instanceFree(void* Self)
+static void c_{name}_instanceFree({ctype}* {paramVar})
 {{
-    {ctype}* {localVar} = Self;
-
-    F_UNUSED({localVar});
+    F_UNUSED({paramVar});
 }}
 
 F_COMPONENT(
@@ -101,8 +92,7 @@ void c_{name}_valueSet({ctype}* {paramVar}, int Value)
 }}
 """.format(ctype = struct_name,
            name = comp_name.lower(),
-           paramVar = comp_name,
-           localVar = comp_name[0].lower() + comp_name[1 : ]))
+           paramVar = comp_name))
 
     g_tool.write_text(comp_h,
 """\

@@ -45,11 +45,11 @@ struct FComponent {
 #define F_COMPONENT(Name, InstanceSize, InstanceInit, InstanceFree, DataSize, DataInit, DataFree) \
     FComponent Name = {                                                                           \
         .size = InstanceSize,                                                                     \
-        .init = InstanceInit,                                                                     \
-        .free = InstanceFree,                                                                     \
+        .init = (FComponentInstanceInit*)InstanceInit,                                            \
+        .free = (FComponentInstanceFree*)InstanceFree,                                            \
         .dataSize = DataSize,                                                                     \
-        .dataInit = DataInit,                                                                     \
-        .dataFree = DataFree,                                                                     \
+        .dataInit = (FComponentDataInit*)DataInit,                                                \
+        .dataFree = (FComponentDataFree*)DataFree,                                                \
         .stringId = F_STRINGIFY(Name),                                                            \
     }
 
