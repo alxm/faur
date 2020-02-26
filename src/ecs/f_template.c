@@ -40,7 +40,7 @@ static FTemplate* templateNew(const char* Id, const FBlock* Block)
     t->componentsAll = f_list_new();
     t->componentsBits = f_bitfield_new(f_component__num);
 
-    char* parentId = f_str_prefixGetToLast(Id, '.');
+    char* parentId = f_str_prefixGetToLast(Id, '_');
 
     if(parentId) {
         FTemplate* parentTemplate = f_hash_get(g_templates, parentId);
