@@ -30,12 +30,14 @@ struct FTemplate {
 };
 
 static FHash* g_templates; // FHash<char*, FTemplate*>
+static FHash* g_initCallbacks; // FHash<const char*, FEntityInit*>
 
 static FTemplate* templateNew(const char* Id, const FBlock* Block)
 {
     FTemplate* t = f_mem_zalloc(
                     sizeof(FTemplate) + sizeof(void*) * f_component__num);
 
+    t->init = (FEntityInit*)(uintptr_t)f_hash_get(g_initCallbacks, Id);
     t->componentsOwn = f_list_new();
     t->componentsAll = f_list_new();
     t->componentsBits = f_bitfield_new(f_component__num);
@@ -103,11 +105,13 @@ static void templateFree(FTemplate* Template)
 void f_template__init(void)
 {
     g_templates = f_hash_newStr(256, true);
+    g_initCallbacks = f_hash_newStr(256, false);
 }
 
 void f_template__uninit(void)
 {
     f_hash_freeEx(g_templates, (FFree*)templateFree);
+    f_hash_free(g_initCallbacks);
 }
 
 static void process_file(const char* FilePath)
@@ -153,19 +157,22 @@ void f_template_load(const char* Dir)
     process_dir(Dir);
 }
 
-const FTemplate* f_template__get(const char* TemplateId)
+const FTemplate* f_template__get(const char* Id)
 {
-    FTemplate* t = f_hash_get(g_templates, TemplateId);
+    FTemplate* t = f_hash_get(g_templates, Id);
 
-    #if F_CONFIG_BUILD_DEBUG
-        if(t == NULL) {
-            F__FATAL("Unknown template '%s'", TemplateId);
-        }
-    #endif
+    if(t == NULL) {
+        F__FATAL("Unknown template '%s'", Id);
+    }
 
     t->instanceNumber++;
 
     return t;
+}
+
+void f_template__set(const char* Id, FEntityInit* Init)
+{
+    f_hash_add(g_initCallbacks, Id, (void*)(uintptr_t)Init);
 }
 
 void f_template__initRun(const FTemplate* Template, FEntity* Entity, const void* Context)
@@ -177,19 +184,6 @@ void f_template__initRun(const FTemplate* Template, FEntity* Entity, const void*
     if(Template->init) {
         Template->init(Entity, Context);
     }
-}
-
-void f_template_init(const char* Id, FEntityInit* Init)
-{
-    FTemplate* t = f_hash_get(g_templates, Id);
-
-    #if F_CONFIG_BUILD_DEBUG
-        if(t == NULL) {
-            F__FATAL("f_template_init(%s): Unknown template", Id);
-        }
-    #endif
-
-    t->init = Init;
 }
 
 unsigned f_template__instanceGet(const FTemplate* Template)

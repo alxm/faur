@@ -30,6 +30,7 @@ def main():
     externs = []
     components = []
     systems = []
+    entities = []
 
     class Rule:
         def __init__(self, List, Pattern):
@@ -39,6 +40,7 @@ def main():
     rules = [
         Rule(components, 'extern FComponent (c(_[a-zA-Z0-9]+)+);'),
         Rule(systems, 'extern FSystem (s(_[a-zA-Z0-9]+)+);'),
+        Rule(entities, 'extern FEntityInit (e(_[a-zA-Z0-9]+)+);'),
     ]
 
     for h in headers:
@@ -77,13 +79,17 @@ void f_ecs__populate(void)
     }};
 
     f_ecs__set(components, {componentsNum}, systems, {systemsNum});
+
+{entities}
 }}
 """.format(cmd = g_tool.get_cmd(),
            externs = '\n'.join(externs),
            components = '\n'.join([f'        &{c},' for c in components]),
            componentsNum = len(components),
            systems = '\n'.join([f'        &{s},' for s in systems]),
-           systemsNum = len(systems))
+           systemsNum = len(systems),
+           entities =
+            '\n'.join([f'    f_template__set("{e}", {e});' for e in entities]))
     else:
         content = """\
 //

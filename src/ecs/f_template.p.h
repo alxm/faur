@@ -25,6 +25,5 @@
 typedef void FEntityInit(FEntity* Entity, const void* CallerContext);
 
 extern void f_template_load(const char* Dir);
-extern void f_template_init(const char* Id, FEntityInit* Init);
 
 #endif // F_INC_ECS_TEMPLATE_P_H

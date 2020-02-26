@@ -25,7 +25,8 @@ typedef struct FTemplate FTemplate;
 extern void f_template__init(void);
 extern void f_template__uninit(void);
 
-extern const FTemplate* f_template__get(const char* TemplateId);
+extern const FTemplate* f_template__get(const char* Id);
+extern void f_template__set(const char* Id, FEntityInit* Init);
 
 extern void f_template__initRun(const FTemplate* Template, FEntity* Entity, const void* Context);
 extern unsigned f_template__instanceGet(const FTemplate* Template);
