@@ -18,7 +18,7 @@
 #ifndef F_INC_PLATFORM_SYSTEM_GAMEBUINO_CONFIG_H
 #define F_INC_PLATFORM_SYSTEM_GAMEBUINO_CONFIG_H
 
-#if !F_CONFIG_MAKE
+#if !F_CONFIG_BUILD_MAKE
     #define F_CONFIG_APP_AUTHOR "Unknown"
     #define F_CONFIG_APP_NAME "Untitled"
 
@@ -50,7 +50,7 @@
     #define F_CONFIG_SYSTEM_GAMEBUINO_NO_EXIT 0
 
     #define F_CONFIG_TRAIT_LOW_MEM 1
-#endif // !F_CONFIG_MAKE
+#endif // !F_CONFIG_BUILD_MAKE
 
 // The Gamebuino target also requires the application to provide the file
 // `<src>/config-gamebuino.h`, which is used by the Gamebuino_META lib for its

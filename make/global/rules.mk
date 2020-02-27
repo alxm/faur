@@ -170,7 +170,7 @@ endif
 #
 # Not file targets
 #
-.PHONY : all run clean $(F_CONFIG_MAKE_CLEAN) copystatic
+.PHONY : all run clean $(F_CONFIG_BUILD_MAKE_CLEAN) copystatic
 
 all : $(F_MAKE_ALL)
 
@@ -259,7 +259,7 @@ $(F_FAUR_FILE_GEANY_TAGS) : $(F_BUILD_FILES_FAUR_PUBLIC_HEADERS)
 #
 # Action targets
 #
-clean : $(F_CONFIG_MAKE_CLEAN)
+clean : $(F_CONFIG_BUILD_MAKE_CLEAN)
 	rm -rf $(F_BUILD_DIR)
 
 cleangen :
