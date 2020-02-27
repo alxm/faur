@@ -79,12 +79,15 @@ F_BUILD_FILES_SFX_H := $(F_CONFIG_PATH_SFX:%=$(F_BUILD_DIR_GEN_SFX)/%.h)
 #
 # All application source code and object files
 #
-F_BUILD_FILES_C := \
-    $(F_BUILD_FILES_SRC_C) \
+F_BUILD_FILES_GEN_C := \
     $(F_BUILD_FILES_ECS_INIT) \
     $(F_BUILD_FILES_EMBED_INIT) \
     $(F_BUILD_FILES_GFX_C) \
     $(F_BUILD_FILES_SFX_C) \
+
+F_BUILD_FILES_C := \
+    $(F_BUILD_FILES_SRC_C) \
+    $(F_BUILD_FILES_GEN_C) \
 
 F_BUILD_FILES_O := \
     $(F_BUILD_FILES_C:$(F_BUILD_DIR_SRC)/%=$(F_BUILD_DIR_PROJ_O)/%.o)
@@ -150,6 +153,7 @@ endif
 #
 F_MAKE_ALL := \
     $(F_BUILD_DIR_BIN)/$(F_BUILD_FILE_BIN) \
+    $(F_BUILD_FILES_GEN_C) \
     $(F_BUILD_LINK_BIN_ASSETS) \
     $(F_BUILD_LINK_BIN_SCREENSHOTS) \
 
@@ -161,11 +165,6 @@ endif
 # Turn off default suffix rules
 #
 .SUFFIXES :
-
-#
-# Keep intermediary C files around for debugging
-#
-.SECONDARY : $(F_BUILD_FILES_GFX_C) $(F_BUILD_FILES_SFX_C)
 
 #
 # Not file targets
@@ -210,7 +209,7 @@ $(F_BUILD_FILES_ECS_INIT) : $(F_BUILD_FILES_ECS_HEADERS) $(F_FAUR_DIR_BIN)/faur-
 	$(F_FAUR_DIR_BIN)/faur-ecs-init $@ $(F_BUILD_FILES_ECS_HEADERS)
 
 #
-# Embedded files and objects
+# Embedded files
 #
 $(F_BUILD_DIR_GEN_EMBED)/%.h : $(F_DIR_ROOT_FROM_MAKE)/% $(F_FAUR_DIR_BIN)/faur-embed-bin
 	@ mkdir -p $(@D)
@@ -220,6 +219,9 @@ $(F_BUILD_FILES_EMBED_INIT) : $(F_BUILD_FILES_EMBED_TARGET) $(F_FAUR_DIR_BIN)/fa
 	@ mkdir -p $(@D) $(F_BUILD_DIR_GEN_EMBED)
 	$(F_FAUR_DIR_BIN)/faur-embed-init $@ $(F_BUILD_DIR_GEN_EMBED) f__bin_ $(F_BUILD_FILES_EMBED_NAMES)
 
+#
+# Embedded objects
+#
 $(F_BUILD_DIR_GEN_GFX)/%.c : $(F_DIR_ROOT_FROM_MAKE)/% $(F_FAUR_DIR_BIN)/faur-embed-gfx
 	@ mkdir -p $(@D)
 	$(F_FAUR_DIR_BIN)/faur-embed-gfx $< $@ $(<:$(F_DIR_ROOT_FROM_MAKE)/%=%) $(F_CONFIG_COLOR_SPRITE_KEY)
@@ -236,6 +238,9 @@ $(F_BUILD_DIR_GEN_SFX)/%.h : $(F_DIR_ROOT_FROM_MAKE)/% $(F_FAUR_DIR_BIN)/faur-em
 	@ mkdir -p $(@D)
 	$(F_FAUR_DIR_BIN)/faur-embed-sfx $< $@ $(<:$(F_DIR_ROOT_FROM_MAKE)/%=%)
 
+#
+# So application C files can use these generated headers
+#
 $(F_BUILD_FILES_SRC_O) : $(F_BUILD_FILES_GFX_H) $(F_BUILD_FILES_SFX_H)
 
 #
