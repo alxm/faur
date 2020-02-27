@@ -20,14 +20,38 @@
 
 #include "../general/f_system_includes.h"
 
+typedef struct FSystem FSystem;
+
+#include "../data/f_bitfield.v.h"
+#include "../data/f_list.v.h"
+#include "../ecs/f_component.p.h"
 #include "../ecs/f_entity.p.h"
 
 typedef void FSystemHandler(FEntity* Entity);
 typedef int FSystemSort(const FEntity* A, const FEntity* B);
 
-extern void f_system_new(unsigned SystemIndex, FSystemHandler* Handler, FSystemSort* Compare, bool OnlyActiveEntities);
-extern void f_system_add(unsigned SystemIndex, unsigned ComponentIndex);
+struct FSystem {
+    const char* stringId; // unique string ID
+    FList* entities; // entities currently picked up by this system
+    const FComponent** components; // [componentsNum]
+    FBitfield* componentBits; // IDs of components that this system works on
+    FSystemHandler* handler; // invoked on each entity in list
+    FSystemSort* compare; // for sorting the entities list before running
+    unsigned componentsNum; // length of components array
+    bool onlyActiveEntities; // kick out entities that are not marked active
+};
 
-extern void f_system_run(unsigned SystemIndex);
+#define F_SYSTEM(Name, Handler, SortCompare, OnlyActiveEntities, ...) \
+    FSystem Name = {                                                  \
+        .handler = Handler,                                           \
+        .compare = SortCompare,                                       \
+        .onlyActiveEntities = OnlyActiveEntities,                     \
+        .components = (const FComponent*[]){__VA_ARGS__},             \
+        .componentsNum = sizeof((const FComponent*[]){__VA_ARGS__})   \
+                            / sizeof(const FComponent*),              \
+        .stringId = F_STRINGIFY(Name),                                \
+    }
+
+extern void f_system_run(const FSystem* System);
 
 #endif // F_INC_ECS_SYSTEM_P_H

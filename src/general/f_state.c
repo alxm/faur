@@ -323,7 +323,7 @@ bool f_state__runStep(void)
             f_screen__tick();
             f_screenshot__tick();
             f_console__tick();
-            f_ecs__tick();
+            f_entity__tick();
             f_fade__tick();
 
             if(!f_list_isEmpty(g_pending) && !f_state_blockGet()) {

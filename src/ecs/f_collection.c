@@ -1,5 +1,5 @@
 /*
-    Copyright 2018-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2018-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -37,9 +37,11 @@ FCollection* f_collection_new(void)
 
 void f_collection_free(FCollection* Collection)
 {
-    f_ecs__refDecIgnoreSet(true);
+    f_entity__ignoreRefDec = true;
+
     f_list_freeEx(Collection, (FFree*)f_entity__freeEx);
-    f_ecs__refDecIgnoreSet(false);
+
+    f_entity__ignoreRefDec = false;
 }
 
 void f_collection_clear(FCollection* Collection)

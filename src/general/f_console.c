@@ -250,7 +250,7 @@ void f_console__draw(void)
             printBytes(f_mem__top, "top");
         #endif
 
-        f_font_printf("%u entities", f_ecs__listGetSum());
+        f_font_printf("%u entities", f_entity__numGet());
     }
 
     f_align_pop();

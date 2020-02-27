@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2016-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -22,6 +22,8 @@
 
 typedef struct FEntity FEntity;
 
+#include "../ecs/f_component.p.h"
+
 extern FEntity* f_entity_new(const char* Template, const void* Context);
 
 extern void f_entity_debugSet(FEntity* Entity, bool DebugOn);
@@ -43,10 +45,10 @@ extern void f_entity_activeSet(FEntity* Entity);
 extern void f_entity_activeSetRemove(FEntity* Entity);
 extern void f_entity_activeSetPermanent(FEntity* Entity);
 
-extern void* f_entity_componentAdd(FEntity* Entity, unsigned ComponentIndex);
-extern bool f_entity_componentHas(const FEntity* Entity, unsigned ComponentIndex);
-extern void* f_entity_componentGet(const FEntity* Entity, unsigned ComponentIndex);
-extern void* f_entity_componentReq(const FEntity* Entity, unsigned ComponentIndex);
+extern void* f_entity_componentAdd(FEntity* Entity, const FComponent* Component);
+extern bool f_entity_componentHas(const FEntity* Entity, const FComponent* Component);
+extern void* f_entity_componentGet(const FEntity* Entity, const FComponent* Component);
+extern void* f_entity_componentReq(const FEntity* Entity, const FComponent* Component);
 
 extern bool f_entity_muteGet(const FEntity* Entity);
 extern void f_entity_muteInc(FEntity* Entity);

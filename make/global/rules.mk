@@ -31,6 +31,7 @@ F_BUILD_DIR_PROJ_O := $(F_BUILD_DIR)/obj/proj
 #
 F_BUILD_DIR_SRC := $(F_DIR_ROOT_FROM_MAKE)/$(F_CONFIG_DIR_SRC)
 F_BUILD_DIR_GEN := $(F_BUILD_DIR_SRC)/faur_gen
+F_BUILD_DIR_GEN_ECS := $(F_BUILD_DIR_GEN)/ecs
 F_BUILD_DIR_GEN_EMBED := $(F_BUILD_DIR_GEN)/embed
 F_BUILD_DIR_GEN_EMBED_ENTRIES := $(F_BUILD_DIR_GEN_EMBED)/entries
 F_BUILD_DIR_GEN_GFX := $(F_BUILD_DIR_GEN)/gfx
@@ -39,8 +40,24 @@ F_BUILD_DIR_GEN_SFX := $(F_BUILD_DIR_GEN)/sfx
 #
 # Application source code
 #
-F_BUILD_FILES_SRC_C := $(shell find $(F_BUILD_DIR_SRC) -type f -name "*.c" -not -path "$(F_BUILD_DIR_GEN)")
+F_BUILD_FILES_SRC_C := $(shell find $(F_BUILD_DIR_SRC) -type f -name "*.c" -not -path "$(F_BUILD_DIR_GEN)/*")
 F_BUILD_FILES_SRC_O := $(F_BUILD_FILES_SRC_C:$(F_BUILD_DIR_SRC)/%=$(F_BUILD_DIR_PROJ_O)/%.o)
+
+#
+# Generated ECS init code
+#
+F_BUILD_FILES_ECS_INIT := $(F_BUILD_DIR_GEN_ECS)/init.c
+F_BUILD_FILES_ECS_HEADERS := $(shell find $(F_BUILD_DIR_SRC) \
+				-type f \
+				-name "*.h" \
+				-not -path "$(F_BUILD_DIR_GEN)/*" \
+				-exec \
+				    grep \
+					-l \
+					-e "extern FSystem s_" \
+					-e "extern FComponent c_" \
+					-e "extern FEntityInit e_" \
+					{} +)
 
 #
 # Project root-relative paths, and the file that implements f_embed__populate
@@ -66,6 +83,7 @@ F_BUILD_FILES_SFX_H := $(F_CONFIG_PATH_SFX:%=$(F_BUILD_DIR_GEN_SFX)/%.h)
 #
 F_BUILD_FILES_C := \
     $(F_BUILD_FILES_SRC_C) \
+    $(F_BUILD_FILES_ECS_INIT) \
     $(F_BUILD_FILES_EMBED_POPULATE) \
     $(F_BUILD_FILES_GFX_C) \
     $(F_BUILD_FILES_SFX_C) \
@@ -185,6 +203,13 @@ $(F_BUILD_LINK_BIN_SCREENSHOTS) :
 $(F_BUILD_DIR_PROJ_O)/%.c.o : $(F_BUILD_DIR_SRC)/%.c
 	@ mkdir -p $(@D)
 	$(CC) -c -o $@ $< $(F_BUILD_FLAGS_C)
+
+#
+# ECS init code
+#
+$(F_BUILD_FILES_ECS_INIT) : $(F_BUILD_FILES_ECS_HEADERS) $(F_FAUR_DIR_BIN)/faur-ecs-init
+	@ mkdir -p $(@D)
+	$(F_FAUR_DIR_BIN)/faur-ecs-init $@ $(F_BUILD_FILES_ECS_HEADERS)
 
 #
 # Embedded files and objects

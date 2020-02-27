@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2016-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -20,18 +20,38 @@
 
 #include "../general/f_system_includes.h"
 
+typedef struct FComponent FComponent;
+
 #include "../data/f_block.p.h"
 #include "../ecs/f_entity.p.h"
 
-typedef void FComponentInstanceInit(void* Self);
-typedef void FComponentInstanceInitEx(void* Self, const void* Data);
+typedef void FComponentDataInit(void* Data, const FBlock* Config);
+typedef void FComponentDataFree(void* Data);
+
+typedef void FComponentInstanceInit(void* Self, const void* Data);
 typedef void FComponentInstanceFree(void* Self);
 
-typedef void FComponentTemplateInit(void* Data, const FBlock* Config);
-typedef void FComponentTemplateFree(void* Data);
+struct FComponent {
+    size_t size; // total size of FComponentInstance + user data that follows
+    size_t dataSize; // size of template data buffer
+    const char* stringId; // unique string ID
+    FComponentInstanceInit* init; // sets component buffer default values
+    FComponentInstanceFree* free; // does not free the actual component buffer
+    FComponentDataInit* dataInit; // init template buffer with FBlock
+    FComponentDataFree* dataFree; // does not free the template buffer
+    unsigned bitId; // unique number ID
+};
 
-extern void f_component_new(unsigned ComponentIndex, size_t InstanceSize, FComponentInstanceInit* InstanceInit, FComponentInstanceFree* InstanceFree);
-extern void f_component_template(unsigned ComponentIndex, const char* StringId, size_t TemplateSize, FComponentTemplateInit* TemplateInit, FComponentTemplateFree* TemplateFree, FComponentInstanceInitEx* InstanceInitEx);
+#define F_COMPONENT(Name, InstanceSize, InstanceInit, InstanceFree, DataSize, DataInit, DataFree) \
+    FComponent Name = {                                                                           \
+        .size = InstanceSize,                                                                     \
+        .init = (FComponentInstanceInit*)InstanceInit,                                            \
+        .free = (FComponentInstanceFree*)InstanceFree,                                            \
+        .dataSize = DataSize,                                                                     \
+        .dataInit = (FComponentDataInit*)DataInit,                                                \
+        .dataFree = (FComponentDataFree*)DataFree,                                                \
+        .stringId = F_STRINGIFY(Name),                                                            \
+    }
 
 extern const void* f_component_dataGet(const void* ComponentBuffer);
 extern FEntity* f_component_entityGet(const void* ComponentBuffer);

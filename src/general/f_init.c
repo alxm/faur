@@ -25,8 +25,6 @@ char f_init__app_version[F_INIT__VERSION_LEN];
 unsigned f_init__fps_tick = 30;
 unsigned f_init__fps_draw = 30;
 
-unsigned f_init__ecs_com, f_init__ecs_sys;
-
 static const FPack* g_packs[] = {
     &f_pack__console,
     &f_pack__embed,
@@ -90,10 +88,4 @@ void f_init_fps(unsigned TickRate, unsigned DrawRate)
 {
     f_init__fps_tick = TickRate;
     f_init__fps_draw = DrawRate;
-}
-
-void f_init_ecs(unsigned NumComponents, unsigned NumSystems)
-{
-    f_init__ecs_com = NumComponents;
-    f_init__ecs_sys = NumSystems;
 }
