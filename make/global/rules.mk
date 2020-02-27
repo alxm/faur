@@ -216,7 +216,7 @@ $(F_BUILD_DIR_GEN_EMBED)/%.h : $(F_DIR_ROOT_FROM_MAKE)/% $(F_FAUR_DIR_BIN)/faur-
 	$(F_FAUR_DIR_BIN)/faur-embed-bin $< $@ $(<:$(F_DIR_ROOT_FROM_MAKE)/%=%) f__bin_
 
 $(F_BUILD_FILES_EMBED_INIT) : $(F_BUILD_FILES_EMBED_TARGET) $(F_FAUR_DIR_BIN)/faur-embed-init
-	@ mkdir -p $(@D) $(F_BUILD_DIR_GEN_EMBED)
+	@ mkdir -p $(@D)
 	$(F_FAUR_DIR_BIN)/faur-embed-init $@ $(F_BUILD_DIR_GEN_EMBED) f__bin_ $(F_BUILD_FILES_EMBED_NAMES)
 
 #
