@@ -35,7 +35,7 @@ def main():
     embed_calls = []
 
     for h in h_files:
-        includes.append('#include "entries/{}"'.format(h))
+        includes.append('#include "embed/{}"'.format(h))
 
         no_h = h[: -2]
 
