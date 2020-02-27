@@ -74,20 +74,20 @@ class Tool:
         if 'FAUR_PATH' in os.environ:
             faur_path = os.environ['FAUR_PATH']
         else:
-            faur_path = os.path.join(os.path.dirname(__file__), '..', '..')
+            faur_path = f'{os.path.dirname(__file__)}/../..'
 
         self.dir_faur = os.path.realpath(
                             os.path.expandvars(os.path.expanduser(faur_path)))
 
-        self.dir_bin = os.path.join(self.dir_faur, 'bin')
-        self.dir_cfg = os.path.join(os.environ['HOME'], '.config', 'faur')
-        self.dir_make = os.path.join(self.dir_faur, 'make')
-        self.dir_src = os.path.join(self.dir_faur, 'src')
+        self.dir_bin = f'{self.dir_faur}/bin'
+        self.dir_cfg = f'{os.environ["HOME"]}/.config/faur'
+        self.dir_make = f'{self.dir_faur}/make'
+        self.dir_src = f'{self.dir_faur}/src'
 
         if not os.path.exists(self.dir_cfg):
             os.makedirs(self.dir_cfg)
         elif not os.path.isdir(self.dir_cfg):
-            self.out.error('{} is not a dir'.format(self.dir_cfg))
+            self.out.error(f'{self.dir_cfg} is not a dir')
 
     def usage(self, error_message = None):
         message = ''
@@ -95,13 +95,13 @@ class Tool:
         if error_message:
             message += error_message + '\n'
 
-        message += 'Usage: {}'.format(self.name)
+        message += f'Usage: {self.name}'
 
         for flag in self.flag_names:
-            message += ' [{}]'.format(flag)
+            message += f' [{flag}]'
 
         for arg in self.arg_names:
-            message += ' {}'.format(arg)
+            message += f' {arg}'
 
         self.out.error(message)
 
@@ -139,7 +139,7 @@ class Tool:
 
     def list_dir(self, path):
         if not os.path.isdir(path):
-            self.out.error('{} is not a dir'.format(path))
+            self.out.error(f'{path} is not a dir')
 
         entries = os.listdir(path)
         entries.sort()
@@ -149,19 +149,19 @@ class Tool:
     def check_files_exist(self, *paths):
         for f in paths:
             if not os.path.exists(f):
-                self.out.error('{} does not exist'.format(f))
+                self.out.error(f'{f} does not exist')
 
     def check_files_not_exist(self, *paths):
         for f in paths:
             if os.path.exists(f):
-                self.out.error('{} already exists'.format(f))
+                self.out.error(f'{f} already exists')
 
     def shell(self, cmd):
         self.out.shell(cmd)
         status, output = subprocess.getstatusoutput(cmd)
 
         for line in output.splitlines():
-            self.out.shell('    {}'.format(line))
+            self.out.shell(f'    {line}')
 
         if status != 0:
             sys.exit(status)

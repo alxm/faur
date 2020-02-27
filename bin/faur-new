@@ -27,7 +27,7 @@ def main():
     project_name = g_tool.get_arg('ProjectName').replace(' ', '-')
 
     if project_name != os.path.basename(project_name):
-        g_tool.out.error('Project name cannot be a path'.format(project_name))
+        g_tool.out.error(f'Project name cannot be a path: {project_name}')
 
     project_path = os.path.abspath(project_name)
 
@@ -47,19 +47,19 @@ def main():
             break
 
     dir_make.write_file('Makefile',
-"""\
-F_CONFIG_APP_NAME := {name}
+f"""\
+F_CONFIG_APP_NAME := {project_name}
 
 include $(FAUR_PATH)/make/dev.mk
-""".format(name = project_name))
+""")
 
     dir_source.write_file('main.c',
-"""\
+f"""\
 #include <faur.h>
 
 void f_init(void)
 {{
-    f_init_app("{name}", "{author}", 1, 0, 0);
+    f_init_app("{project_name}", "{author}", 1, 0, 0);
 }}
 
 void f_main(void)
@@ -127,7 +127,7 @@ void f_main(void)
         f_button_free(context.right);
     }}
 }}
-""".format(author = author, name = project_name))
+""")
 
     dir_root.write_file('.gitignore',
 """\
@@ -136,9 +136,9 @@ void f_main(void)
 /src/faur_gen/
 """)
 
-    g_tool.shell('cd {} && git init && git add .'.format(dir_root.path))
+    g_tool.shell(f'cd {dir_root.path} && git init && git add .')
     g_tool.out.note('To build and run:')
-    g_tool.out.note('cd {} && make -j run'.format(dir_make.path))
+    g_tool.out.note(f'cd {dir_make.path} && make -j run')
 
 class Dir:
     def __init__(self, Path):
@@ -148,10 +148,10 @@ class Dir:
         os.mkdir(Path)
 
     def add_subdir(self, Name):
-        return Dir(os.path.join(self.path, Name))
+        return Dir(f'{self.path}/{Name}')
 
     def write_file(self, Name, Content):
-        g_tool.write_text(os.path.join(self.path, Name), Content)
+        g_tool.write_text(f'{self.path}/{Name}', Content)
 
 if __name__ == '__main__':
     main()

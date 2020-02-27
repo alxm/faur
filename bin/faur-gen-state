@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-    Copyright 2019 Alex Margarit <alex@alxm.org>
+    Copyright 2019-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -17,8 +17,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import os
-
 from utils.tool import Tool
 
 g_tool = Tool('StateName')
@@ -26,16 +24,16 @@ g_tool = Tool('StateName')
 def main():
     state_name = g_tool.get_arg('StateName').lower()
 
-    state_c = os.path.join('.', 'state_{}.c'.format(state_name))
-    state_h = os.path.join('.', 'state_{}.h'.format(state_name))
+    state_c = f'state_{state_name}.c'
+    state_h = f'state_{state_name}.h'
 
     g_tool.check_files_not_exist(state_c, state_h)
 
     g_tool.write_text(state_c,
-"""\
-#include "state_{name}.h"
+f"""\
+#include "state_{state_name}.h"
 
-void t_{name}(void)
+void t_{state_name}(void)
 {{
     F_STATE_INIT
     {{
@@ -57,16 +55,16 @@ void t_{name}(void)
         //
     }}
 }}
-""".format(name = state_name))
+""")
 
     g_tool.write_text(state_h,
-"""\
+f"""\
 #pragma once
 
 #include <faur.h>
 
-extern FStateHandler t_{name};
-""".format(name = state_name))
+extern FStateHandler t_{state_name};
+""")
 
 if __name__ == '__main__':
     main()
