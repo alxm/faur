@@ -27,7 +27,7 @@ static void f_embed__init(void)
     g_dirs = f_hash_newStr(256, false);
     g_files = f_hash_newStr(256, false);
 
-    #if F_CONFIG_FILES_EMBED_IN_BIN
+    #if F_CONFIG_BUILD_GEN
         f_embed__populate();
     #endif
 }

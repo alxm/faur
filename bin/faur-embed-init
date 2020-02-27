@@ -54,14 +54,14 @@ def main():
 //
 #include <faur.v.h>
 
-#if F_CONFIG_FILES_EMBED_ENABLED && F_CONFIG_FILES_EMBED_IN_BIN
+#if F_CONFIG_FILES_EMBED_ENABLED
 {}
 
 void f_embed__populate(void)
 {{
 {}
 }}
-#endif // F_CONFIG_FILES_EMBED_ENABLED && F_CONFIG_FILES_EMBED_IN_BIN
+#endif // F_CONFIG_FILES_EMBED_ENABLED
 """.format(g_tool.get_cmd(),
            '\n'.join(includes),
            '\n'.join(embed_calls)))
