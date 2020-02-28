@@ -24,14 +24,14 @@ g_tool = Tool('SystemName')
 def main():
     sys_name = g_tool.get_arg('SystemName').lower()
 
-    sys_c = f'system_{sys_name}.c'
-    sys_h = f'system_{sys_name}.h'
+    sys_c = f's_{sys_name}.c'
+    sys_h = f's_{sys_name}.h'
 
     g_tool.check_files_not_exist(sys_c, sys_h)
 
     g_tool.write_text(sys_c,
 f"""\
-#include "system_{sys_name}.h"
+#include "s_{sys_name}.h"
 
 static void h_{sys_name}(FEntity* Entity)
 {{
