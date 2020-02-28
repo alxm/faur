@@ -22,7 +22,7 @@
 
 typedef struct {
     const char* name;
-    FStateHandler* handler;
+    FState* handler;
     FStateStage stage;
 } FStateStackEntry;
 
@@ -42,7 +42,7 @@ static const char* g_stageNames[F__STATE_STAGE_NUM] = {
 };
 #endif
 
-static void pending_push(FStateHandler* Handler, const char* Name)
+static void pending_push(FState* Handler, const char* Name)
 {
     FStateStackEntry* e = f_mem_malloc(sizeof(FStateStackEntry));
 
@@ -161,7 +161,7 @@ void f_state_callbacks(FStateCallback* TickPre, FStateCallback* TickPost, FState
     g_drawPost = DrawPost;
 }
 
-void f_state_push(FStateHandler* Handler, const char* Name)
+void f_state_push(FState* Handler, const char* Name)
 {
     if(g_exiting) {
         #if F_CONFIG_BUILD_DEBUG
@@ -195,7 +195,7 @@ void f_state_pop(void)
     pending_pop();
 }
 
-void f_state_popUntil(FStateHandler* Handler, const char* Name)
+void f_state_popUntil(FState* Handler, const char* Name)
 {
     if(g_exiting) {
         #if F_CONFIG_BUILD_DEBUG
@@ -230,7 +230,7 @@ void f_state_popUntil(FStateHandler* Handler, const char* Name)
     }
 }
 
-void f_state_replace(FStateHandler* Handler, const char* Name)
+void f_state_replace(FState* Handler, const char* Name)
 {
     if(g_exiting) {
         #if F_CONFIG_BUILD_DEBUG
@@ -271,7 +271,7 @@ void f_state_exit(void)
     }
 }
 
-FStateHandler* f_state_currentGet(void)
+FState* f_state_currentGet(void)
 {
     FStateStackEntry* current = f_list_peek(g_stack);
 

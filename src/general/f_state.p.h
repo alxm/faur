@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -20,15 +20,15 @@
 
 #include "../general/f_system_includes.h"
 
-typedef void FStateHandler(void);
+typedef void FState(void);
 typedef void FStateCallback(void);
 
 extern void f_state_callbacks(FStateCallback* TickPre, FStateCallback* TickPost, FStateCallback* DrawPre, FStateCallback* DrawPost);
 
-extern void f_state_push(FStateHandler* Handler, const char* Name);
+extern void f_state_push(FState* Handler, const char* Name);
 extern void f_state_pop(void);
-extern void f_state_popUntil(FStateHandler* Handler, const char* Name);
-extern void f_state_replace(FStateHandler* Handler, const char* Name);
+extern void f_state_popUntil(FState* Handler, const char* Name);
+extern void f_state_replace(FState* Handler, const char* Name);
 
 #ifndef FAUR_IMPLEMENT
     #define f_state_push(Handler) f_state_push(Handler, #Handler)
@@ -38,7 +38,7 @@ extern void f_state_replace(FStateHandler* Handler, const char* Name);
 
 extern void f_state_exit(void);
 
-extern FStateHandler* f_state_currentGet(void);
+extern FState* f_state_currentGet(void);
 extern bool f_state_currentChanged(void);
 
 extern bool f_state_blockGet(void);
