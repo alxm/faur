@@ -31,9 +31,7 @@ F_BUILD_DIR_PROJ_O := $(F_BUILD_DIR)/obj/proj
 #
 F_BUILD_DIR_SRC := $(F_DIR_ROOT_FROM_MAKE)/$(F_CONFIG_DIR_SRC)
 F_BUILD_DIR_GEN := $(F_BUILD_DIR_SRC)/faur_gen
-F_BUILD_DIR_GEN_ECS := $(F_BUILD_DIR_GEN)/ecs
 F_BUILD_DIR_GEN_EMBED := $(F_BUILD_DIR_GEN)/embed
-F_BUILD_DIR_GEN_EMBED_ENTRIES := $(F_BUILD_DIR_GEN_EMBED)/entries
 F_BUILD_DIR_GEN_GFX := $(F_BUILD_DIR_GEN)/gfx
 F_BUILD_DIR_GEN_SFX := $(F_BUILD_DIR_GEN)/sfx
 
@@ -46,7 +44,7 @@ F_BUILD_FILES_SRC_O := $(F_BUILD_FILES_SRC_C:$(F_BUILD_DIR_SRC)/%=$(F_BUILD_DIR_
 #
 # Generated ECS init code
 #
-F_BUILD_FILES_ECS_INIT := $(F_BUILD_DIR_GEN_ECS)/init.c
+F_BUILD_FILES_ECS_INIT := $(F_BUILD_DIR_GEN)/g_ecs_init.c
 F_BUILD_FILES_ECS_HEADERS := $(shell find $(F_BUILD_DIR_SRC) \
 				-type f \
 				-name "*.h" \
@@ -62,13 +60,13 @@ F_BUILD_FILES_ECS_HEADERS := $(shell find $(F_BUILD_DIR_SRC) \
 #
 # Project root-relative paths, and the file that implements f_embed__populate
 #
-ifeq ($(F_CONFIG_FILES_EMBED_IN_BIN), 1)
+ifneq ($(F_CONFIG_PATH_EMBED),)
     F_BUILD_FILES_EMBED_BIN := $(shell find $(F_CONFIG_PATH_EMBED:%=$(F_DIR_ROOT_FROM_MAKE)/%))
+    F_BUILD_FILES_EMBED_NAMES := $(F_BUILD_FILES_EMBED_BIN:$(F_DIR_ROOT_FROM_MAKE)/%=%.h)
+    F_BUILD_FILES_EMBED_TARGET := $(F_BUILD_FILES_EMBED_NAMES:%=$(F_BUILD_DIR_GEN_EMBED)/%)
 endif
 
-F_BUILD_FILES_EMBED_ENTRIES_NAMES := $(F_BUILD_FILES_EMBED_BIN:$(F_DIR_ROOT_FROM_MAKE)/%=%.h)
-F_BUILD_FILES_EMBED_ENTRIES_TARGET := $(F_BUILD_FILES_EMBED_ENTRIES_NAMES:%=$(F_BUILD_DIR_GEN_EMBED_ENTRIES)/%)
-F_BUILD_FILES_EMBED_POPULATE := $(F_BUILD_DIR_GEN_EMBED)/populate.c
+F_BUILD_FILES_EMBED_INIT := $(F_BUILD_DIR_GEN)/g_embed_init.c
 
 #
 # Embedded FSprite and FSample objects
@@ -81,12 +79,15 @@ F_BUILD_FILES_SFX_H := $(F_CONFIG_PATH_SFX:%=$(F_BUILD_DIR_GEN_SFX)/%.h)
 #
 # All application source code and object files
 #
-F_BUILD_FILES_C := \
-    $(F_BUILD_FILES_SRC_C) \
+F_BUILD_FILES_GEN_C := \
     $(F_BUILD_FILES_ECS_INIT) \
-    $(F_BUILD_FILES_EMBED_POPULATE) \
+    $(F_BUILD_FILES_EMBED_INIT) \
     $(F_BUILD_FILES_GFX_C) \
     $(F_BUILD_FILES_SFX_C) \
+
+F_BUILD_FILES_C := \
+    $(F_BUILD_FILES_SRC_C) \
+    $(F_BUILD_FILES_GEN_C) \
 
 F_BUILD_FILES_O := \
     $(F_BUILD_FILES_C:$(F_BUILD_DIR_SRC)/%=$(F_BUILD_DIR_PROJ_O)/%.o)
@@ -152,6 +153,7 @@ endif
 #
 F_MAKE_ALL := \
     $(F_BUILD_DIR_BIN)/$(F_BUILD_FILE_BIN) \
+    $(F_BUILD_FILES_GEN_C) \
     $(F_BUILD_LINK_BIN_ASSETS) \
     $(F_BUILD_LINK_BIN_SCREENSHOTS) \
 
@@ -165,14 +167,9 @@ endif
 .SUFFIXES :
 
 #
-# Keep intermediary C files around for debugging
-#
-.SECONDARY : $(F_BUILD_FILES_GFX_C) $(F_BUILD_FILES_SFX_C)
-
-#
 # Not file targets
 #
-.PHONY : all run clean $(F_CONFIG_MAKE_CLEAN) copystatic
+.PHONY : all run clean $(F_CONFIG_BUILD_MAKE_CLEAN) copystatic
 
 all : $(F_MAKE_ALL)
 
@@ -212,16 +209,19 @@ $(F_BUILD_FILES_ECS_INIT) : $(F_BUILD_FILES_ECS_HEADERS) $(F_FAUR_DIR_BIN)/faur-
 	$(F_FAUR_DIR_BIN)/faur-ecs-init $@ $(F_BUILD_FILES_ECS_HEADERS)
 
 #
-# Embedded files and objects
+# Embedded files
 #
-$(F_BUILD_DIR_GEN_EMBED_ENTRIES)/%.h : $(F_DIR_ROOT_FROM_MAKE)/% $(F_FAUR_DIR_BIN)/faur-embed-bin
+$(F_BUILD_DIR_GEN_EMBED)/%.h : $(F_DIR_ROOT_FROM_MAKE)/% $(F_FAUR_DIR_BIN)/faur-embed-bin
 	@ mkdir -p $(@D)
 	$(F_FAUR_DIR_BIN)/faur-embed-bin $< $@ $(<:$(F_DIR_ROOT_FROM_MAKE)/%=%) f__bin_
 
-$(F_BUILD_FILES_EMBED_POPULATE) : $(F_BUILD_FILES_EMBED_ENTRIES_TARGET) $(F_FAUR_DIR_BIN)/faur-embed-pop
-	@ mkdir -p $(@D) $(F_BUILD_DIR_GEN_EMBED_ENTRIES)
-	$(F_FAUR_DIR_BIN)/faur-embed-pop $@ $(F_BUILD_DIR_GEN_EMBED_ENTRIES) f__bin_ $(F_BUILD_FILES_EMBED_ENTRIES_NAMES)
+$(F_BUILD_FILES_EMBED_INIT) : $(F_BUILD_FILES_EMBED_TARGET) $(F_FAUR_DIR_BIN)/faur-embed-init
+	@ mkdir -p $(@D)
+	$(F_FAUR_DIR_BIN)/faur-embed-init $@ $(F_BUILD_DIR_GEN_EMBED) f__bin_ $(F_BUILD_FILES_EMBED_NAMES)
 
+#
+# Embedded objects
+#
 $(F_BUILD_DIR_GEN_GFX)/%.c : $(F_DIR_ROOT_FROM_MAKE)/% $(F_FAUR_DIR_BIN)/faur-embed-gfx
 	@ mkdir -p $(@D)
 	$(F_FAUR_DIR_BIN)/faur-embed-gfx $< $@ $(<:$(F_DIR_ROOT_FROM_MAKE)/%=%) $(F_CONFIG_COLOR_SPRITE_KEY)
@@ -238,6 +238,9 @@ $(F_BUILD_DIR_GEN_SFX)/%.h : $(F_DIR_ROOT_FROM_MAKE)/% $(F_FAUR_DIR_BIN)/faur-em
 	@ mkdir -p $(@D)
 	$(F_FAUR_DIR_BIN)/faur-embed-sfx $< $@ $(<:$(F_DIR_ROOT_FROM_MAKE)/%=%)
 
+#
+# So application C files can use these generated headers
+#
 $(F_BUILD_FILES_SRC_O) : $(F_BUILD_FILES_GFX_H) $(F_BUILD_FILES_SFX_H)
 
 #
@@ -261,7 +264,7 @@ $(F_FAUR_FILE_GEANY_TAGS) : $(F_BUILD_FILES_FAUR_PUBLIC_HEADERS)
 #
 # Action targets
 #
-clean : $(F_CONFIG_MAKE_CLEAN)
+clean : $(F_CONFIG_BUILD_MAKE_CLEAN)
 	rm -rf $(F_BUILD_DIR)
 
 cleangen :

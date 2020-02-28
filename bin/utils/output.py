@@ -1,5 +1,5 @@
 """
-    Copyright 2016-2017, 2019 Alex Margarit <alex@alxm.org>
+    Copyright 2016-2017, 2019-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -40,7 +40,7 @@ class Output:
         self.tool = tool
 
     def __colored(self, text, color):
-        print('\033[{}m{}\033[0m'.format(color, text), end = '')
+        print(f'\033[{color}m{text}\033[0m', end = '')
 
     def __title(self):
         self.__colored('[', Color.LightGray)
@@ -48,13 +48,13 @@ class Output:
         self.__colored('a', Color.LightBlue)
         self.__colored('u', Color.LightGreen)
         self.__colored('r', Color.Yellow)
-        self.__colored('{}]'.format(self.tool.name[4 : ]), Color.LightGray)
+        self.__colored(f'{self.tool.name[4 : ]}]', Color.LightGray)
 
     def __worker(self, tag, color, text):
         if not self.tool.get_flag('-q'):
             for line in text.splitlines():
                 self.__title()
-                self.__colored('{} '.format(tag), color)
+                self.__colored(f'{tag} ', color)
 
                 print(line)
 

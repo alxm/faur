@@ -17,25 +17,24 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import os
-
 from utils.tool import Tool
 
 g_tool = Tool('ComponentName')
 
 def main():
     comp_name = g_tool.get_arg('ComponentName')
+    comp_name_lower = comp_name.lower()
 
-    comp_c = os.path.join('.', 'component_{}.c'.format(comp_name.lower()))
-    comp_h = os.path.join('.', 'component_{}.h'.format(comp_name.lower()))
+    struct_name = f'C{comp_name}'
+
+    comp_c = f'c_{comp_name_lower}.c'
+    comp_h = f'c_{comp_name_lower}.h'
 
     g_tool.check_files_not_exist(comp_c, comp_h)
 
-    struct_name = 'C{}'.format(comp_name)
-
     g_tool.write_text(comp_c,
 """\
-#include "component_{name}.h"
+#include "c_{name}.h"
 
 typedef struct {{
     int startValue;
@@ -91,7 +90,7 @@ void c_{name}_valueSet({ctype}* {paramVar}, int Value)
     {paramVar}->value = Value;
 }}
 """.format(ctype = struct_name,
-           name = comp_name.lower(),
+           name = comp_name_lower,
            paramVar = comp_name))
 
     g_tool.write_text(comp_h,
@@ -107,7 +106,7 @@ typedef struct {ctype} {ctype};
 extern int c_{name}_valueGet(const {ctype}* {paramVar});
 extern void c_{name}_valueSet({ctype}* {paramVar}, int Value);
 """.format(ctype = struct_name,
-           name = comp_name.lower(),
+           name = comp_name_lower,
            paramVar = comp_name))
 
 if __name__ == '__main__':

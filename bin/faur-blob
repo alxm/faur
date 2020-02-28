@@ -37,7 +37,7 @@ class Blob:
         self.startRoot = os.path.abspath(RootDir)
 
         if not os.path.isdir(self.startRoot):
-            g_tool.usage('{} is not a dir'.format(self.startRoot))
+            g_tool.usage(f'{self.startRoot} is not a dir')
 
         for f in Files:
             self.scan_file('', f)
@@ -58,11 +58,11 @@ class Blob:
         self.write_pad()
 
     def scan_file(self, Prefix, File):
-        filePathPartial = os.path.join(Prefix, File)
-        filePathFull = os.path.join(self.startRoot, filePathPartial)
+        filePathPartial = f'{Prefix}/{File}'
+        filePathFull = f'{self.startRoot}/{filePathPartial}'
 
         if not os.path.exists(filePathFull):
-            g_tool.out.error('{} does not exist'.format(filePathFull))
+            g_tool.out.error(f'{filePathFull} does not exist')
 
         if not filePathPartial in self.offsets:
             self.offsets[filePathPartial] = None
@@ -121,7 +121,7 @@ class Blob:
         self.write_uint32(len(dirEntries))
 
         for e in dirEntries:
-            ePathPartial = os.path.join(File.pathPartial, e)
+            ePathPartial = f'{File.pathPartial}/{e}'
             eOffset = self.offsets[ePathPartial]
 
             self.write_uint32(eOffset)

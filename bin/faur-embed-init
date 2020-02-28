@@ -29,22 +29,23 @@ def main():
     cvar_prefix = g_tool.get_arg('CVarPrefix')
     h_files = g_tool.get_arg('...')
 
-    g_tool.check_files_exist(gen_dir)
-
     includes = []
     embed_calls = []
 
-    for h in h_files:
-        includes.append('#include "entries/{}"'.format(h))
+    if os.path.isdir(gen_dir):
+        for h in h_files:
+            includes.append(f'#include "embed/{h}"')
 
-        no_h = h[: -2]
+            no_h = h[: -2]
 
-        if os.path.isdir(os.path.join(gen_dir, no_h)):
-            embed_calls.append('    f_embed__dirAdd(&{}{});'
-                .format(cvar_prefix, g_tool.sanitize_c_var(no_h)))
-        else:
-            embed_calls.append('    f_embed__fileAdd(&{}{});'
-                .format(cvar_prefix, g_tool.sanitize_c_var(no_h)))
+            if os.path.isdir(f'{gen_dir}/{no_h}'):
+                embed_calls.append('    f_embed__dirAdd(&{prefix}{var});'
+                    .format(prefix = cvar_prefix,
+                            var = g_tool.sanitize_c_var(no_h)))
+            else:
+                embed_calls.append('    f_embed__fileAdd(&{prefix}{var});'
+                    .format(prefix = cvar_prefix,
+                            var = g_tool.sanitize_c_var(no_h)))
 
     g_tool.write_text(c_file,
 """\
@@ -53,15 +54,17 @@ def main():
 //
 #include <faur.v.h>
 
-#if F_CONFIG_FILES_EMBED_ENABLED && F_CONFIG_FILES_EMBED_IN_BIN
+#if F_CONFIG_FILES_EMBED_ENABLED
 {}
 
 void f_embed__populate(void)
 {{
 {}
 }}
-#endif // F_CONFIG_FILES_EMBED_ENABLED && F_CONFIG_FILES_EMBED_IN_BIN
-""".format(g_tool.get_cmd(), '\n'.join(includes), '\n'.join(embed_calls)))
+#endif // F_CONFIG_FILES_EMBED_ENABLED
+""".format(g_tool.get_cmd(),
+           '\n'.join(includes),
+           '\n'.join(embed_calls)))
 
 if __name__ == '__main__':
     main()

@@ -37,10 +37,12 @@ def main():
         server_thread = threading.Thread(target = server.serve_forever)
         server_thread.start()
 
-        g_tool.out.note('Web server running at http://{}:{}'.format(host, port))
+        g_tool.out.note(f'Web server running at http://{host}:{port}')
 
         g_tool.shell('firefox -new-window http://{host}:{port}/{file}'
-            .format(host = host, port = port, file = g_tool.get_arg('File')))
+            .format(host = host,
+                    port = port,
+                    file = g_tool.get_arg('File')))
 
         input('\nPress ENTER to exit web server\n\n')
 
