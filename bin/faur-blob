@@ -40,7 +40,7 @@ class Blob:
             g_tool.usage(f'{self.startRoot} is not a dir')
 
         for f in Files:
-            self.scan_file('', f)
+            self.scan_file(f)
 
         self.files.sort(reverse = True, key = lambda f: f.pathPartial)
 
@@ -57,22 +57,22 @@ class Blob:
 
         self.write_pad()
 
-    def scan_file(self, Prefix, File):
-        filePathPartial = f'{Prefix}/{File}'
-        filePathFull = f'{self.startRoot}/{filePathPartial}'
+    def scan_file(self, File):
+        if File not in self.offsets:
+            filePathFull = self.path_full(File)
+            g_tool.check_files_exist(filePathFull)
 
-        if not os.path.exists(filePathFull):
-            g_tool.out.error(f'{filePathFull} does not exist')
+            f = BlobFile(File, os.path.isdir(filePathFull))
 
-        if not filePathPartial in self.offsets:
-            self.offsets[filePathPartial] = None
-
-            f = BlobFile(filePathPartial, filePathFull)
+            self.offsets[File] = None
             self.files.append(f)
 
             if f.isDir:
                 for f in g_tool.list_dir(filePathFull):
-                    self.scan_file(filePathPartial, f)
+                    self.scan_file(f'{File}/{f}')
+
+    def path_full(self, File):
+        return f'{self.startRoot}/{File}'
 
     def write_bytes(self, Bytes):
         self.buffer += Bytes
@@ -103,7 +103,7 @@ class Blob:
     def write_file(self, File):
         self.offsets[File.pathPartial] = len(self.buffer)
 
-        fileBuffer = g_tool.read_bytes(File.pathFull)
+        fileBuffer = g_tool.read_bytes(self.path_full(File.pathPartial))
 
         self.write_uint8(1)
         self.write_stringz(File.pathPartial)
@@ -114,7 +114,7 @@ class Blob:
     def write_dir(self, File):
         self.offsets[File.pathPartial] = len(self.buffer)
 
-        dirEntries = g_tool.list_dir(File.pathFull)
+        dirEntries = g_tool.list_dir(self.path_full(File.pathPartial))
 
         self.write_uint8(2)
         self.write_stringz(File.pathPartial)
@@ -127,10 +127,9 @@ class Blob:
             self.write_uint32(eOffset)
 
 class BlobFile:
-    def __init__(self, PathPartial, PathFull):
+    def __init__(self, PathPartial, IsDir):
         self.pathPartial = PathPartial
-        self.pathFull = PathFull
-        self.isDir = os.path.isdir(PathFull)
+        self.isDir = IsDir
 
 if __name__ == '__main__':
     main()
