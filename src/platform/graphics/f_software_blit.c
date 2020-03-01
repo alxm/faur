@@ -48,7 +48,7 @@ static void scan_line(FScanlineEdge* Edge, FVectorInt ScrP1, FVectorInt ScrP2, F
     // Happens when sprite angle is a multiple of 90deg,
     // and 2 of the sprite's opposite sides are 0-height in screen space.
     if(ScrP1.y == ScrP2.y
-        || ScrP1.y >= f__screen.clipY2 || ScrP2.y < f__screen.clipY) {
+        || ScrP1.y >= f__screen.clipEnd.y || ScrP2.y < f__screen.clipStart.y) {
 
         return;
     }
@@ -566,8 +566,8 @@ void f_platform_api__textureBlitEx(const FPlatformTexture* Texture, const FPixel
     scan_line(
         &g_edges[1], screenRight, screenBottom, spriteMidright, spriteBottom);
 
-    int yTop = f_math_max(screenTop.y, f__screen.clipY);
-    int yBottom = f_math_min(screenBottom.y, f__screen.clipY2 - 1);
+    int yTop = f_math_max(screenTop.y, f__screen.clipStart.y);
+    int yBottom = f_math_min(screenBottom.y, f__screen.clipEnd.y - 1);
 
     g_blittersEx
         [f__color.blend]

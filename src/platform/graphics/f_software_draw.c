@@ -33,10 +33,10 @@ static bool cohen_sutherland_clip(int* X1, int* Y1, int* X2, int* Y2)
     int x2 = *X2;
     int y2 = *Y2;
 
-    const int clipX1 = f__screen.clipX;
-    const int clipX2 = f__screen.clipX2;
-    const int clipY1 = f__screen.clipY;
-    const int clipY2 = f__screen.clipY2;
+    const int clipX1 = f__screen.clipStart.x;
+    const int clipX2 = f__screen.clipEnd.x;
+    const int clipY1 = f__screen.clipStart.y;
+    const int clipY2 = f__screen.clipEnd.y;
 
     #define F__OUT_LEFT  1
     #define F__OUT_RIGHT 2
@@ -318,8 +318,8 @@ void f_platform_api__drawLineH(int X1, int X2, int Y)
         return;
     }
 
-    X1 = f_math_max(X1, f__screen.clipX);
-    X2 = f_math_min(X2, f__screen.clipX2 - 1);
+    X1 = f_math_max(X1, f__screen.clipStart.x);
+    X2 = f_math_min(X2, f__screen.clipEnd.x - 1);
 
     g_draw[f__color.blend].hline(X1, X2, Y);
 }
@@ -330,8 +330,8 @@ void f_platform_api__drawLineV(int X, int Y1, int Y2)
         return;
     }
 
-    Y1 = f_math_max(Y1, f__screen.clipY);
-    Y2 = f_math_min(Y2, f__screen.clipY2 - 1);
+    Y1 = f_math_max(Y1, f__screen.clipStart.y);
+    Y2 = f_math_min(Y2, f__screen.clipEnd.y - 1);
 
     g_draw[f__color.blend].vline(X, Y1, Y2);
 }
@@ -349,11 +349,11 @@ static void drawRectangle(int X, int Y, int Width, int Height)
         return;
     }
 
-    const int x2 = f_math_min(X + Width, f__screen.clipX2);
-    const int y2 = f_math_min(Y + Height, f__screen.clipY2);
+    const int x2 = f_math_min(X + Width, f__screen.clipEnd.x);
+    const int y2 = f_math_min(Y + Height, f__screen.clipEnd.y);
 
-    X = f_math_max(X, f__screen.clipX);
-    Y = f_math_max(Y, f__screen.clipY);
+    X = f_math_max(X, f__screen.clipStart.x);
+    Y = f_math_max(Y, f__screen.clipStart.y);
     Width = f_math_min(Width, x2 - X);
     Height = f_math_min(Height, y2 - Y);
 

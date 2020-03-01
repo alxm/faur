@@ -436,10 +436,10 @@ void f_platform_api__screenToTexture(FPlatformTextureScreen* Texture, unsigned F
 void f_platform_api__screenClipSet(void)
 {
     SDL_Rect area = {
-        f__screen.clipX,
-        f__screen.yOffset + f__screen.clipY,
-        f__screen.clipWidth,
-        f__screen.clipHeight
+        f__screen.clipStart.x,
+        f__screen.yOffset + f__screen.clipStart.y,
+        f__screen.clipSize.x,
+        f__screen.clipSize.y
     };
 
     if(SDL_RenderSetClipRect(f__sdlRenderer, &area) < 0) {

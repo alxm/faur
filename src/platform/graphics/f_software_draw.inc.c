@@ -312,10 +312,10 @@ static void F__FUNC_NAME(circle_clip_nofill)(int X, int Y, int Radius)
     const int width = f__screen.pixels->size.x;
     FColorPixel* const pixels = f_screen__bufferGetFrom(0, 0);
 
-    const int clipX1 = f__screen.clipX;
-    const int clipX2 = f__screen.clipX2;
-    const int clipY1 = f__screen.clipY;
-    const int clipY2 = f__screen.clipY2;
+    const int clipX1 = f__screen.clipStart.x;
+    const int clipX2 = f__screen.clipEnd.x;
+    const int clipY1 = f__screen.clipStart.y;
+    const int clipY2 = f__screen.clipEnd.y;
 
     FColorPixel* oct1 = pixels + q1Y * width + q1X + Radius;
     FColorPixel* oct2 = pixels + (q1Y - Radius) * width + q1X;

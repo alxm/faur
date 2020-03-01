@@ -38,7 +38,9 @@ static void F__FUNC_NAME_EX(const FPixels* Pixels, unsigned Frame, int TopY, int
         int screenX0 = g_edges[0].screen[scrY];
         int screenX1 = g_edges[1].screen[scrY];
 
-        if(screenX0 >= f__screen.clipX2 || screenX1 < f__screen.clipX) {
+        if(screenX0 >= f__screen.clipEnd.x
+            || screenX1 < f__screen.clipStart.x) {
+
             continue;
         }
 
@@ -58,15 +60,15 @@ static void F__FUNC_NAME_EX(const FPixels* Pixels, unsigned Frame, int TopY, int
         const FFix spriteXInc = spriteDeltaX / screenDeltaX;
         const FFix spriteYInc = spriteDeltaY / screenDeltaX;
 
-        if(screenX0 < f__screen.clipX) {
-            sprite.x += spriteXInc * (f__screen.clipX - screenX0);
-            sprite.y += spriteYInc * (f__screen.clipX - screenX0);
+        if(screenX0 < f__screen.clipStart.x) {
+            sprite.x += spriteXInc * (f__screen.clipStart.x - screenX0);
+            sprite.y += spriteYInc * (f__screen.clipStart.x - screenX0);
 
-            screenX0 = f__screen.clipX;
+            screenX0 = f__screen.clipStart.x;
         }
 
-        if(screenX1 >= f__screen.clipX2) {
-            screenX1 = f__screen.clipX2 - 1;
+        if(screenX1 >= f__screen.clipEnd.x) {
+            screenX1 = f__screen.clipEnd.x - 1;
         }
 
         FColorPixel* dst = screenPixels + scrY * screenSize.x + screenX0;

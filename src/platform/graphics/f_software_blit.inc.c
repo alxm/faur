@@ -62,10 +62,10 @@ static void F__FUNC_NAME(Keyed, DoClip)(const FTexture* Texture, const FPixels* 
     const int spriteW = Pixels->size.x;
     const int spriteH = Pixels->size.y;
 
-    const int yClipUp = f_math_max(0, f__screen.clipY - Y);
-    const int yClipDown = f_math_max(0, Y + spriteH - f__screen.clipY2);
-    const int xClipLeft = f_math_max(0, f__screen.clipX - X);
-    const int xClipRight = f_math_max(0, X + spriteW - f__screen.clipX2);
+    const int yClipUp = f_math_max(0, f__screen.clipStart.y - Y);
+    const int yClipDown = f_math_max(0, Y + spriteH - f__screen.clipEnd.y);
+    const int xClipLeft = f_math_max(0, f__screen.clipStart.x - X);
+    const int xClipRight = f_math_max(0, X + spriteW - f__screen.clipEnd.x);
 
     const int rows = spriteH - yClipUp - yClipDown;
     const int columns = spriteW - xClipLeft - xClipRight;
@@ -172,10 +172,10 @@ static void F__FUNC_NAME(Block, DoClip)(const FTexture* Texture, const FPixels* 
     const int spriteW = Pixels->size.x;
     const int spriteH = Pixels->size.y;
 
-    const int yClipUp = f_math_max(0, f__screen.clipY - Y);
-    const int yClipDown = f_math_max(0, Y + spriteH - f__screen.clipY2);
-    const int xClipLeft = f_math_max(0, f__screen.clipX - X);
-    const int xClipRight = f_math_max(0, X + spriteW - f__screen.clipX2);
+    const int yClipUp = f_math_max(0, f__screen.clipStart.y - Y);
+    const int yClipDown = f_math_max(0, Y + spriteH - f__screen.clipEnd.y);
+    const int xClipLeft = f_math_max(0, f__screen.clipStart.x - X);
+    const int xClipRight = f_math_max(0, X + spriteW - f__screen.clipEnd.x);
 
     const int rows = spriteH - yClipUp - yClipDown;
     const int columns = spriteW - xClipLeft - xClipRight;
