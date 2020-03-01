@@ -1,5 +1,5 @@
 /*
-    Copyright 2010-2011, 2016-2018 Alex Margarit <alex@alxm.org>
+    Copyright 2010-2011, 2015-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -22,10 +22,66 @@
 
 #include "../math/f_fix.p.h"
 
-extern bool f_collide_boxAndBox(int X1, int Y1, int W1, int H1, int X2, int Y2, int W2, int H2);
-extern bool f_collide_circleAndCircle(int X1, int Y1, int R1, int X2, int Y2, int R2);
-extern bool f_collide_circleAndCirclef(FFix X1, FFix Y1, FFix R1, FFix X2, FFix Y2, FFix R2);
-extern bool f_collide_pointInBox(int X, int Y, int BoxX, int BoxY, int BoxW, int BoxH);
-extern bool f_collide_pointInCircle(int X, int Y, int CircleX, int CircleY, int CircleR);
+static inline bool f_collide_boxAndBox(FVectorInt Coords1, FVectorInt Size1, FVectorInt Coords2, FVectorInt Size2)
+{
+    return !(Coords1.y >= Coords2.y + Size2.y
+          || Coords2.y >= Coords1.y + Size1.y
+          || Coords1.x >= Coords2.x + Size2.x
+          || Coords2.x >= Coords1.x + Size1.x);
+}
+
+static inline bool f_collide_boxAndBoxf(FVectorFix Coords1, FVectorFix Size1, FVectorFix Coords2, FVectorFix Size2)
+{
+    return !(Coords1.y >= Coords2.y + Size2.y
+          || Coords2.y >= Coords1.y + Size1.y
+          || Coords1.x >= Coords2.x + Size2.x
+          || Coords2.x >= Coords1.x + Size1.x);
+}
+
+static inline bool f_collide_circleAndCircle(FVectorInt Coords1, int Radius1, FVectorInt Coords2, int Radius2)
+{
+    int dx = Coords1.x - Coords2.x;
+    int dy = Coords1.y - Coords2.y;
+    int rSum = Radius1 + Radius2;
+
+    return dx * dx + dy * dy < rSum * rSum;
+}
+
+static inline bool f_collide_circleAndCirclef(FVectorFix Coords1, FFix Radius1, FVectorFix Coords2, FFix Radius2)
+{
+    int64_t dx = Coords1.x - Coords2.x;
+    int64_t dy = Coords1.y - Coords2.y;
+    int64_t rSum = Radius1 + Radius2;
+
+    return dx * dx + dy * dy < rSum * rSum;
+}
+
+static inline bool f_collide_pointInBox(FVectorInt Point, FVectorInt BoxCoords, FVectorInt BoxSize)
+{
+    return Point.x >= BoxCoords.x && Point.x < BoxCoords.x + BoxSize.x
+        && Point.y >= BoxCoords.y && Point.y < BoxCoords.y + BoxSize.y;
+}
+
+static inline bool f_collide_pointInBoxf(FVectorFix Point, FVectorFix BoxCoords, FVectorFix BoxSize)
+{
+    return Point.x >= BoxCoords.x && Point.x < BoxCoords.x + BoxSize.x
+        && Point.y >= BoxCoords.y && Point.y < BoxCoords.y + BoxSize.y;
+}
+
+static inline bool f_collide_pointInCircle(FVectorInt Point, FVectorInt CircleCoords, int CircleRadius)
+{
+    int dx = Point.x - CircleCoords.x;
+    int dy = Point.y - CircleCoords.y;
+
+    return dx * dx + dy * dy < CircleRadius * CircleRadius;
+}
+
+static inline bool f_collide_pointInCirclef(FVectorFix Point, FVectorFix CircleCoords, FFix CircleRadius)
+{
+    int64_t dx = Point.x - CircleCoords.x;
+    int64_t dy = Point.y - CircleCoords.y;
+
+    return dx * dx + dy * dy < (int64_t)CircleRadius * CircleRadius;
+}
 
 #endif // F_INC_COLLISION_COLLIDE_P_H

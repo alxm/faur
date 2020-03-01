@@ -236,9 +236,10 @@ void f_screen_clipReset(void)
 
 bool f_screen_boxOnScreen(int X, int Y, int W, int H)
 {
-    return f_collide_boxAndBox(
-            X, Y, W, H,
-            0, 0, f__screen.pixels->size.x, f__screen.pixels->size.y);
+    return f_collide_boxAndBox((FVectorInt){X, Y},
+                               (FVectorInt){W, H},
+                               (FVectorInt){0, 0},
+                               f__screen.pixels->size);
 }
 
 bool f_screen_boxInsideScreen(int X, int Y, int W, int H)
@@ -250,9 +251,11 @@ bool f_screen_boxInsideScreen(int X, int Y, int W, int H)
 
 bool f_screen_boxOnClip(int X, int Y, int W, int H)
 {
-    return f_collide_boxAndBox(X, Y, W, H,
-                               f__screen.clipX, f__screen.clipY,
-                               f__screen.clipWidth, f__screen.clipHeight);
+    return f_collide_boxAndBox(
+            (FVectorInt){X, Y},
+            (FVectorInt){W, H},
+            (FVectorInt){f__screen.clipX, f__screen.clipY},
+            (FVectorInt){f__screen.clipWidth, f__screen.clipHeight});
 }
 
 bool f_screen_boxInsideClip(int X, int Y, int W, int H)

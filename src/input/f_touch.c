@@ -38,7 +38,9 @@ bool f_touch_boxGet(int X, int Y, int W, int H)
     if(f_platform_api__inputTouchTapGet()) {
         FVectorInt coords = f_platform_api__inputTouchCoordsGet();
 
-        if(f_collide_pointInBox(coords.x, coords.y, X, Y, W, H)) {
+        if(f_collide_pointInBox(
+            coords, (FVectorInt){X, Y}, (FVectorInt){W, H})) {
+
             return true;
         }
     }
