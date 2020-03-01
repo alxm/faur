@@ -38,8 +38,8 @@ def main():
 
     g_tool.write_text(h_file, content)
 
-def process_dir(bin_file, cvar_prefix, original_path):
-    entries = g_tool.list_dir(bin_file)
+def process_dir(BinFile, CVarPrefix, OriginalPath):
+    entries = g_tool.list_dir(BinFile)
 
     content = """\
 //
@@ -56,16 +56,16 @@ static const FEmbeddedDir {prefix}{var} = {{
     {prefix}{var}__entries,
 }};
 """.format(cmd = g_tool.get_cmd(),
-           prefix = cvar_prefix,
-           var = g_tool.sanitize_c_var(original_path),
-           path = original_path,
+           prefix = CVarPrefix,
+           var = g_tool.sanitize_c_var(OriginalPath),
+           path = OriginalPath,
            size = len(entries),
            data = '\n'.join([f'    "{f}",' for f in entries]))
 
     return content
 
-def process_file(bin_file, cvar_prefix, original_path):
-    bin_bytes = g_tool.read_bytes(bin_file)
+def process_file(BinFile, CVarPrefix, OriginalPath):
+    bin_bytes = g_tool.read_bytes(BinFile)
 
     content = """\
 //
@@ -80,9 +80,9 @@ static const FEmbeddedFile {prefix}{var} = {{
     {prefix}{var}__buffer,
 }};
 """.format(cmd = g_tool.get_cmd(),
-           prefix = cvar_prefix,
-           var = g_tool.sanitize_c_var(original_path),
-           path = original_path,
+           prefix = CVarPrefix,
+           var = g_tool.sanitize_c_var(OriginalPath),
+           path = OriginalPath,
            size = len(bin_bytes),
            data = ','.join(['0x{:0>2x}'.format(b) for b in bin_bytes]))
 

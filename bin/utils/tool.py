@@ -22,12 +22,12 @@ import sys
 from utils.output import Output
 
 class Tool:
-    def __init__(self, arg_names, flag_names = ''):
+    def __init__(self, ArgNames, FlagNames = ''):
         required_num = 0
         optional_num = 0
         has_tail = False
-        arg_names = arg_names.split()
-        flag_names = ['-q'] + flag_names.split()
+        arg_names = ArgNames.split()
+        flag_names = ['-q'] + FlagNames.split()
 
         self.name = os.path.basename(sys.argv[0])
         self.out = Output(self)
@@ -89,11 +89,11 @@ class Tool:
         elif not os.path.isdir(self.dir_cfg):
             self.out.error(f'{self.dir_cfg} is not a dir')
 
-    def usage(self, error_message = None):
+    def usage(self, ErrorMessage = None):
         message = ''
 
-        if error_message:
-            message += error_message + '\n'
+        if ErrorMessage:
+            message += ErrorMessage + '\n'
 
         message += f'Usage: {self.name}'
 
@@ -108,57 +108,57 @@ class Tool:
     def get_cmd(self):
         return ' '.join([os.path.basename(sys.argv[0])] + sys.argv[1 : ])
 
-    def get_arg(self, name):
-        if name in self.arg_db:
-            return self.arg_db[name]
+    def get_arg(self, Name):
+        if Name in self.arg_db:
+            return self.arg_db[Name]
         else:
             return ''
 
-    def get_flag(self, flag):
-        return flag in self.flag_db
+    def get_flag(self, Flag):
+        return Flag in self.flag_db
 
-    def write_bytes(self, name, contents):
-        with open(name, 'wb') as f:
-            f.write(bytes(contents))
+    def write_bytes(self, Name, Contents):
+        with open(Name, 'wb') as f:
+            f.write(bytes(Contents))
 
-    def write_text(self, name, contents):
-        with open(name, 'w') as f:
-            f.write(contents)
+    def write_text(self, Name, Contents):
+        with open(Name, 'w') as f:
+            f.write(Contents)
 
-    def read_bytes(self, name):
-        with open(name, 'rb') as f:
+    def read_bytes(self, Name):
+        with open(Name, 'rb') as f:
             return f.read()
 
-    def read_text(self, name):
-        with open(name, 'rU') as f:
+    def read_text(self, Name):
+        with open(Name, 'rU') as f:
             return f.read()
 
-    def read_text_lines(self, name):
-        with open(name, 'rU') as f:
+    def read_text_lines(self, Name):
+        with open(Name, 'rU') as f:
             return f.readlines()
 
-    def list_dir(self, path):
-        if not os.path.isdir(path):
-            self.out.error(f'{path} is not a dir')
+    def list_dir(self, Path):
+        if not os.path.isdir(Path):
+            self.out.error(f'{Path} is not a dir')
 
-        entries = os.listdir(path)
+        entries = os.listdir(Path)
         entries.sort()
 
         return entries
 
-    def check_files_exist(self, *paths):
-        for f in paths:
+    def check_files_exist(self, *Paths):
+        for f in Paths:
             if not os.path.exists(f):
                 self.out.error(f'{f} does not exist')
 
-    def check_files_not_exist(self, *paths):
-        for f in paths:
+    def check_files_not_exist(self, *Paths):
+        for f in Paths:
             if os.path.exists(f):
                 self.out.error(f'{f} already exists')
 
-    def shell(self, cmd):
-        self.out.shell(cmd)
-        status, output = subprocess.getstatusoutput(cmd)
+    def shell(self, Cmd):
+        self.out.shell(Cmd)
+        status, output = subprocess.getstatusoutput(Cmd)
 
         for line in output.splitlines():
             self.out.shell(f'    {line}')
@@ -166,5 +166,5 @@ class Tool:
         if status != 0:
             sys.exit(status)
 
-    def sanitize_c_var(self, name):
-        return name.replace('.', '_').replace('-', '_').replace('/', '_')
+    def sanitize_c_var(self, Name):
+        return Name.replace('.', '_').replace('-', '_').replace('/', '_')

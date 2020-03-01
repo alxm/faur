@@ -70,24 +70,24 @@ def main():
 
 void f_ecs__populate(void)
 {{
-    static FComponent* const components[{componentsNum}] = {{
+    static FComponent* const components[{components_num}] = {{
 {components}
     }};
 
-    static FSystem* const systems[{systemsNum}] = {{
+    static FSystem* const systems[{systems_num}] = {{
 {systems}
     }};
 
-    f_ecs__set(components, {componentsNum}, systems, {systemsNum});
+    f_ecs__set(components, {components_num}, systems, {systems_num});
 
 {entities}
 }}
 """.format(cmd = g_tool.get_cmd(),
            externs = '\n'.join(externs),
            components = '\n'.join([f'        &{c},' for c in components]),
-           componentsNum = len(components),
+           components_num = len(components),
            systems = '\n'.join([f'        &{s},' for s in systems]),
-           systemsNum = len(systems),
+           systems_num = len(systems),
            entities =
             '\n'.join([f'    f_template__set("{e}", {e});' for e in entities]))
     else:

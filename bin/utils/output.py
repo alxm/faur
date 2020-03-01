@@ -36,11 +36,11 @@ class Color:
     White = '1;37'
 
 class Output:
-    def __init__(self, tool):
-        self.tool = tool
+    def __init__(self, Tool):
+        self.tool = Tool
 
-    def __colored(self, text, color):
-        print(f'\033[{color}m{text}\033[0m', end = '')
+    def __colored(self, Text, Color):
+        print(f'\033[{Color}m{Text}\033[0m', end = '')
 
     def __title(self):
         self.__colored('[', Color.LightGray)
@@ -50,20 +50,20 @@ class Output:
         self.__colored('r', Color.Yellow)
         self.__colored(f'{self.tool.name[4 : ]}]', Color.LightGray)
 
-    def __worker(self, tag, color, text):
+    def __worker(self, Tag, Color, Text):
         if not self.tool.get_flag('-q'):
-            for line in text.splitlines():
+            for line in Text.splitlines():
                 self.__title()
-                self.__colored(f'{tag} ', color)
+                self.__colored(f'{Tag} ', Color)
 
                 print(line)
 
-    def note(self, text):
-        self.__worker('[Note]', Color.LightGreen, text)
+    def note(self, Text):
+        self.__worker('[Note]', Color.LightGreen, Text)
 
-    def error(self, text):
-        self.__worker('[Error]', Color.LightRed, text)
+    def error(self, Text):
+        self.__worker('[Error]', Color.LightRed, Text)
         sys.exit(1)
 
-    def shell(self, text):
-        self.__worker('[Shell]', Color.LightPurple, text)
+    def shell(self, Text):
+        self.__worker('[Shell]', Color.LightPurple, Text)
