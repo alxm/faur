@@ -18,10 +18,6 @@
 #include "f_init.v.h"
 #include <faur.v.h>
 
-const char* f_init__app_name = F_CONFIG_APP_NAME;
-const char* f_init__app_author = F_CONFIG_APP_AUTHOR;
-char f_init__app_version[F_INIT__VERSION_LEN];
-
 static const FPack* g_packs[] = {
     &f_pack__console,
     &f_pack__embed,
@@ -65,18 +61,4 @@ void f_init__uninit(void)
             }
         }
     }
-}
-
-void f_init_app(const char* Name, const char* Author, uint8_t VerMajor, uint8_t VerMinor, uint8_t VerMicro)
-{
-    f_init__app_name = Name;
-    f_init__app_author = Author;
-
-    f_str_fmt(f_init__app_version,
-              F_INIT__VERSION_LEN,
-              true,
-              "%u.%u.%u",
-              VerMajor,
-              VerMinor,
-              VerMicro);
 }

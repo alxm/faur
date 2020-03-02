@@ -46,6 +46,11 @@
         __attribute__((format (printf, FormatIndex, FormatIndex + 1)))
 #endif
 
+#define F__APP_VERSION_STRING \
+    F_STRINGIFY(F_CONFIG_APP_VERSION_MAJOR) \
+        "." F_STRINGIFY(F_CONFIG_APP_VERSION_MINOR) \
+        "." F_STRINGIFY(F_CONFIG_APP_VERSION_MICRO)
+
 typedef void FFree(void* Self);
 
 typedef volatile int FEvent;

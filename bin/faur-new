@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-    Copyright 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2016-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -39,7 +39,7 @@ def main():
     dir_make = dir_build.add_subdir('make')
     dir_source = dir_root.add_subdir('src')
 
-    author = '<your username>'
+    author = '<author>'
 
     for key in ['USER', 'USERNAME', 'LOGNAME']:
         if key in os.environ:
@@ -48,6 +48,7 @@ def main():
 
     dir_make.write_file('Makefile',
 f"""\
+F_CONFIG_APP_AUTHOR := {author}
 F_CONFIG_APP_NAME := {project_name}
 
 include $(FAUR_PATH)/make/dev.mk
@@ -56,11 +57,6 @@ include $(FAUR_PATH)/make/dev.mk
     dir_source.write_file('main.c',
 f"""\
 #include <faur.h>
-
-void f_init(void)
-{{
-    f_init_app("{project_name}", "{author}", 1, 0, 0);
-}}
 
 void f_main(void)
 {{

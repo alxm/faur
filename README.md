@@ -48,11 +48,6 @@ Here are the generated source files:
 ```c
 #include <faur.h>
 
-void f_init(void)
-{
-    f_init_app("hello", "you", 1, 0, 0);
-}
-
 void f_main(void)
 {
     static struct {
@@ -123,6 +118,7 @@ void f_main(void)
 #### Makefile
 
 ```make
+F_CONFIG_APP_AUTHOR := <author>
 F_CONFIG_APP_NAME := hello
 
 include $(FAUR_PATH)/make/dev.mk
