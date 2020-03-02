@@ -22,9 +22,6 @@ const char* f_init__app_name = F_CONFIG_APP_NAME;
 const char* f_init__app_author = F_CONFIG_APP_AUTHOR;
 char f_init__app_version[F_INIT__VERSION_LEN];
 
-unsigned f_init__fps_tick = 30;
-unsigned f_init__fps_draw = 30;
-
 static const FPack* g_packs[] = {
     &f_pack__console,
     &f_pack__embed,
@@ -82,10 +79,4 @@ void f_init_app(const char* Name, const char* Author, uint8_t VerMajor, uint8_t 
               VerMajor,
               VerMinor,
               VerMicro);
-}
-
-void f_init_fps(unsigned TickRate, unsigned DrawRate)
-{
-    f_init__fps_tick = TickRate;
-    f_init__fps_draw = DrawRate;
 }

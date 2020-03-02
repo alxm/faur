@@ -34,6 +34,8 @@
     #define F_CONFIG_FILES_PREFIX ""
 
     #define F_CONFIG_FPS_CONSTANT_CREDIT 1
+    #define F_CONFIG_FPS_RATE_DRAW 30
+    #define F_CONFIG_FPS_RATE_TICK 30
 
     #define F_CONFIG_RENDER_SOFTWARE 1
 

@@ -35,7 +35,6 @@ typedef struct {
 extern const char* f_init__app_name;
 extern const char* f_init__app_author;
 extern char f_init__app_version[F_INIT__VERSION_LEN];
-extern unsigned f_init__fps_tick, f_init__fps_draw;
 
 extern void f_init__init(void);
 extern void f_init__uninit(void);

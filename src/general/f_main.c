@@ -57,7 +57,7 @@ int main(int Argc, char* Argv[])
     #if F_CONFIG_SYSTEM_EMSCRIPTEN
         emscripten_set_main_loop(
             f_platform_emscripten__loop,
-            f_platform_api__screenVsyncGet() ? 0 : (int)f_init__fps_draw,
+            f_platform_api__screenVsyncGet() ? 0 : F_CONFIG_FPS_RATE_DRAW,
             true);
     #else
         while(f_state__runStep()) {

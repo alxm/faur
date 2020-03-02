@@ -1,5 +1,5 @@
 /*
-    Copyright 2019 Alex Margarit <alex@alxm.org>
+    Copyright 2019-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -33,7 +33,8 @@
 
     #define F_CONFIG_FILES_PREFIX "/"
 
-    #define F_CONFIG_SOUND_ENABLED 0
+    #define F_CONFIG_FPS_RATE_DRAW 30
+    #define F_CONFIG_FPS_RATE_TICK 30
 
     #define F_CONFIG_RENDER_SOFTWARE 1
 
@@ -43,6 +44,8 @@
     #define F_CONFIG_SCREEN_SIZE_HEIGHT 64
     #define F_CONFIG_SCREEN_SIZE_WIDTH 80
     #define F_CONFIG_SCREEN_ZOOM 3
+
+    #define F_CONFIG_SOUND_ENABLED 0
 
     #define F_CONFIG_SYSTEM_ARDUINO 1
     #define F_CONFIG_SYSTEM_ODROID_GO 1
