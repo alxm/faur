@@ -43,7 +43,7 @@ FPlatformTextureScreen* f_platform_api__textureSpriteToScreen(FPlatformTexture* 
 
 FPlatformTexture* f_platform_api__textureNew(const FPixels* Pixels)
 {
-    FTexture* texture = f_mem_zalloc(sizeof(FTexture));
+    FTexture* texture = f_mem_mallocz(sizeof(FTexture));
 
     unsigned totalBufferLen = Pixels->bufferLen * Pixels->framesNum;
     unsigned totalBufferSize = Pixels->bufferSize * Pixels->framesNum;
@@ -119,7 +119,7 @@ FPlatformTexture* f_platform_api__textureNew(const FPixels* Pixels)
 FPlatformTexture* f_platform_api__textureDup(const FPlatformTexture* Texture, const FPixels* Pixels)
 {
     const FTexture* texSrc = Texture;
-    FTexture* texDst = f_mem_zalloc(sizeof(FTexture));
+    FTexture* texDst = f_mem_mallocz(sizeof(FTexture));
 
     if(SDL_RenderSetClipRect(f__sdlRenderer, NULL) < 0) {
         f_out__error("SDL_RenderSetClipRect: %s", SDL_GetError());

@@ -399,7 +399,7 @@ FPlatformTexture* f_platform_api__textureDup(const FPlatformTexture* Texture, co
     F_UNUSED(Pixels);
 
     const FTexture* texSrc = Texture;
-    FTexture* texDst = f_mem_zalloc(
+    FTexture* texDst = f_mem_mallocz(
                         sizeof(FTexture)
                             + Pixels->framesNum * sizeof(FSpriteWord*));
 

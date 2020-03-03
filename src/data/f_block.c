@@ -28,7 +28,7 @@ struct FBlock {
 
 static FBlock* blockNew(const char* Content)
 {
-    FBlock* block = f_mem_zalloc(sizeof(FBlock));
+    FBlock* block = f_mem_mallocz(sizeof(FBlock));
 
     block->text = f_str_dup(Content);
 

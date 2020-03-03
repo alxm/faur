@@ -122,7 +122,7 @@ void f_input_button__uninit(void)
 
 FButton* f_button_new(void)
 {
-    FButton* b = f_mem_zalloc(sizeof(FButton));
+    FButton* b = f_mem_mallocz(sizeof(FButton));
 
     b->listNode = f_list_addLast(g_buttons, b);
     b->name = g_defaultName;

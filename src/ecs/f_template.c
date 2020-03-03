@@ -34,7 +34,7 @@ static FHash* g_initCallbacks; // FHash<const char*, FEntityInit*>
 
 static FTemplate* templateNew(const char* Id, const FBlock* Block)
 {
-    FTemplate* t = f_mem_zalloc(
+    FTemplate* t = f_mem_mallocz(
                     sizeof(FTemplate) + sizeof(void*) * f_component__num);
 
     t->init = (FEntityInit*)(uintptr_t)f_hash_get(g_initCallbacks, Id);

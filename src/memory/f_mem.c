@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2017, 2019 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016-2017, 2019-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -32,8 +32,8 @@ static inline void tallyAdd(size_t Size)
     extern void *ps_malloc(size_t size);
     extern void *ps_calloc(size_t n, size_t size);
 
-    #define malloc(Size) ps_malloc(Size)
-    #define calloc(N, Size) ps_calloc(N, Size)
+    #define malloc ps_malloc
+    #define calloc ps_calloc
 #endif
 
 void* f_mem_malloc(size_t Size)
@@ -62,7 +62,7 @@ void* f_mem_malloc(size_t Size)
     #endif
 }
 
-void* f_mem_zalloc(size_t Size)
+void* f_mem_mallocz(size_t Size)
 {
     #if F_CONFIG_BUILD_DEBUG_ALLOC
         size_t total = Size + sizeof(FMaxMemAlignType);

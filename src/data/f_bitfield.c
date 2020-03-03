@@ -36,7 +36,8 @@ FBitfield* f_bitfield_new(unsigned NumBits)
     #endif
 
     unsigned numChunks = (NumBits + F__BITS_PER_CHUNK - 1) / F__BITS_PER_CHUNK;
-    FBitfield* b = f_mem_zalloc(sizeof(FBitfield) + numChunks * sizeof(FChunk));
+    FBitfield* b = f_mem_mallocz(
+                    sizeof(FBitfield) + numChunks * sizeof(FChunk));
 
     b->numChunks = numChunks;
 

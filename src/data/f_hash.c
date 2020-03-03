@@ -115,7 +115,7 @@ FHash* f_hash_new(FHashFunction* Function, FHashEqual* KeyEqual, FFree* KeyFree,
         NumSlots = slots;
     }
 
-    FHash* h = f_mem_zalloc(sizeof(FHash) + NumSlots * sizeof(FHashEntry*));
+    FHash* h = f_mem_mallocz(sizeof(FHash) + NumSlots * sizeof(FHashEntry*));
 
     h->function = Function;
     h->keyEqual = KeyEqual ? KeyEqual : keyEqual;

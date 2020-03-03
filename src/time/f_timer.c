@@ -123,7 +123,7 @@ void f_timer__tick(void)
 
 FTimer* f_timer_new(FTimerType Type, unsigned Period, bool Repeat)
 {
-    FTimer* t = f_mem_zalloc(sizeof(FTimer));
+    FTimer* t = f_mem_mallocz(sizeof(FTimer));
 
     if(Type == F_TIMER_SEC) {
         Period *= 1000;
