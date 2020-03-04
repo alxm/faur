@@ -36,6 +36,7 @@
 #define F_GLUE4(A, B, C, D) F_GLUE2(A, F_GLUE3(B, C, D))
 #define F_GLUE5(A, B, C, D, E) F_GLUE2(A, F_GLUE4(B, C, D, E))
 
+#define F__ATTRIBUTE_ALIGN(AlignExp) __attribute__((aligned (1 << (AlignExp))))
 #define F__ATTRIBUTE_NORETURN __attribute__((noreturn))
 
 #if F_CONFIG_SYSTEM_MINGW
@@ -45,6 +46,11 @@
     #define F__ATTRIBUTE_FORMAT(FormatIndex) \
         __attribute__((format (printf, FormatIndex, FormatIndex + 1)))
 #endif
+
+#define F__APP_VERSION_STRING \
+    F_STRINGIFY(F_CONFIG_APP_VERSION_MAJOR) \
+        "." F_STRINGIFY(F_CONFIG_APP_VERSION_MINOR) \
+        "." F_STRINGIFY(F_CONFIG_APP_VERSION_MICRO)
 
 typedef void FFree(void* Self);
 

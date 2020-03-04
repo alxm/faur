@@ -18,10 +18,13 @@
 #include "f_fps.v.h"
 #include <faur.v.h>
 
-static struct {
+static const struct {
     unsigned tickFrameMs;
     unsigned drawFrameMs;
-} g_settings;
+} g_settings = {
+    1000 / F_CONFIG_FPS_RATE_TICK,
+    1000 / F_CONFIG_FPS_RATE_DRAW,
+};
 
 #if F_CONFIG_TRAIT_LOW_MEM
     #define F__HISTORY_LEN 1
@@ -47,9 +50,6 @@ static struct {
 
 static void f_fps__init(void)
 {
-    g_settings.tickFrameMs = 1000 / f_init__fps_tick;
-    g_settings.drawFrameMs = 1000 / f_init__fps_draw;
-
     f_fps__reset();
 }
 
@@ -65,7 +65,7 @@ const FPack f_pack__fps = {
 
 void f_fps__reset(void)
 {
-    g_run.drawFps = f_init__fps_draw;
+    g_run.drawFps = F_CONFIG_FPS_RATE_DRAW;
     g_run.drawFpsMax = g_run.drawFps;
 
     for(int i = F__HISTORY_LEN; i--; ) {
@@ -73,7 +73,7 @@ void f_fps__reset(void)
         g_history.drawFrameMsMin[i] = g_settings.drawFrameMs;
     }
 
-    g_history.drawFrameMsSum = F__HISTORY_LEN * 1000 / f_init__fps_draw;
+    g_history.drawFrameMsSum = F__HISTORY_LEN * 1000 / F_CONFIG_FPS_RATE_DRAW;
     g_history.drawFrameMsMinSum = g_history.drawFrameMsSum;
 
     g_run.lastFrameMs = f_time_getMs();
@@ -136,11 +136,6 @@ void f_fps__frame(void)
     #endif
 }
 
-unsigned f_fps_rateTickGet(void)
-{
-    return f_init__fps_tick;
-}
-
 unsigned f_fps_rateDrawGet(void)
 {
     return g_run.drawFps;
@@ -169,5 +164,5 @@ FFix f_fps_ticksSin(uint8_t Mul, uint8_t Div, unsigned Offset)
         param /= Div;
     }
 
-    return f_fix_sin((unsigned)(param / f_init__fps_tick) + Offset);
+    return f_fix_sin((unsigned)(param / F_CONFIG_FPS_RATE_TICK) + Offset);
 }

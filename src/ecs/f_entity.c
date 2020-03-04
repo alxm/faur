@@ -206,7 +206,7 @@ unsigned f_entity__numGet(void)
 
 FEntity* f_entity_new(const char* Template, const void* Context)
 {
-    FEntity* e = f_mem_zalloc(
+    FEntity* e = f_mem_mallocz(
                     sizeof(FEntity)
                         + sizeof(FComponentInstance*) * f_component__num);
 

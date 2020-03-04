@@ -57,7 +57,7 @@ int main(int Argc, char* Argv[])
     #if F_CONFIG_SYSTEM_EMSCRIPTEN
         emscripten_set_main_loop(
             f_platform_emscripten__loop,
-            f_platform_api__screenVsyncGet() ? 0 : (int)f_init__fps_draw,
+            f_platform_api__screenVsyncGet() ? 0 : F_CONFIG_FPS_RATE_DRAW,
             true);
     #else
         while(f_state__runStep()) {
@@ -71,14 +71,12 @@ int main(int Argc, char* Argv[])
 
 void f__main(void)
 {
-    f_init();
-
     f_out__info("PID: %d", getpid());
     f_out__info("Faur: %s %s", F_CONFIG_BUILD_UID, F_CONFIG_BUILD_FAUR_GIT);
     f_out__info("App: %s %s by %s",
-                f_init__app_name,
-                f_init__app_version,
-                f_init__app_author);
+                F_CONFIG_APP_NAME,
+                F__APP_VERSION_STRING,
+                F_CONFIG_APP_AUTHOR);
     f_out__info("Build timestamp: %s", F_CONFIG_BUILD_FAUR_TIME);
 
     if(atexit(f__atexit)) {

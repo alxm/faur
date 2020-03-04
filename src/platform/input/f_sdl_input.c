@@ -767,7 +767,7 @@ void f_platform_sdl_input__init(void)
         f_out__info("%d controllers attached", joysticksNum);
 
         for(int j = 0; j < joysticksNum; j++) {
-            FPlatformController* c = f_mem_zalloc(sizeof(FPlatformController));
+            FPlatformController* c = f_mem_mallocz(sizeof(FPlatformController));
 
             if(!controllerInit(c, j)) {
                 f_mem_free(c);
@@ -853,7 +853,7 @@ void f_platform_api__inputPoll(void)
                             f_list_push(g_futureControllers, c);
                         }
                     } else {
-                        c = f_mem_zalloc(sizeof(FPlatformController));
+                        c = f_mem_mallocz(sizeof(FPlatformController));
 
                         if(!controllerInit(c, event.jdevice.which)) {
                             f_mem_free(c);
@@ -1215,7 +1215,7 @@ FPlatformController* f_platform_api__inputControllerClaim(FControllerBind* Callb
 
     #if F_CONFIG_LIB_SDL == 2
         if(controller == NULL) {
-            controller = f_mem_zalloc(sizeof(FPlatformController));
+            controller = f_mem_mallocz(sizeof(FPlatformController));
 
             controller->claimed = true;
             controller->bindCallback = Callback;

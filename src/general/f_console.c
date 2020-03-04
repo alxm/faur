@@ -176,9 +176,9 @@ void f_console__draw(void)
 
         f_color__colorSetInternal(F_COLOR__PAL_GRAY2);
         f_font_printf("%s %s by %s\n",
-                      f_init__app_name,
-                      f_init__app_version,
-                      f_init__app_author);
+                      F_CONFIG_APP_NAME,
+                      F__APP_VERSION_STRING,
+                      F_CONFIG_APP_AUTHOR);
     }
 
     {

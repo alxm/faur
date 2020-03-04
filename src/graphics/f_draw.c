@@ -20,10 +20,10 @@
 
 void f_draw_fill(void)
 {
-    f_platform_api__drawRectangleFilled(f__screen.clipX,
-                                        f__screen.clipY,
-                                        f__screen.clipWidth,
-                                        f__screen.clipHeight);
+    f_platform_api__drawRectangleFilled(f__screen.clipStart.x,
+                                        f__screen.clipStart.y,
+                                        f__screen.clipSize.x,
+                                        f__screen.clipSize.y);
 }
 
 void f_draw_pixel(int X, int Y)

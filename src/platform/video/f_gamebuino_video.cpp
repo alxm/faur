@@ -93,12 +93,10 @@ void f_gamebuino_lightsStart(void)
     f__screen.pixels = &g_lights;
     f__screen.sprite = NULL;
     f__screen.frame = 0;
-    f__screen.clipX = 0;
-    f__screen.clipY = 0;
-    f__screen.clipX2 = g_lightsSize.x;
-    f__screen.clipY2 = g_lightsSize.y;
-    f__screen.clipWidth = g_lightsSize.x;
-    f__screen.clipHeight = g_lightsSize.y;
+    f__screen.clipStart.x = 0;
+    f__screen.clipStart.y = 0;
+    f__screen.clipEnd = g_lightsSize;
+    f__screen.clipSize = g_lightsSize;
 
     f_color_push();
 }

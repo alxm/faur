@@ -38,12 +38,9 @@ static void f_screen__init(void)
         f__screen.texture = f_platform_api__screenTextureGet();
     #endif
 
-    f__screen.clipX = 0;
-    f__screen.clipY = 0;
-    f__screen.clipX2 = size.x;
-    f__screen.clipY2 = size.y;
-    f__screen.clipWidth = size.x;
-    f__screen.clipHeight = size.y;
+    f__screen.clipStart = (FVectorInt){0, 0};
+    f__screen.clipEnd = size;
+    f__screen.clipSize = size;
 
     #if F_CONFIG_TRAIT_DESKTOP
         g_fullScreenButton = f_button_new();
@@ -217,12 +214,9 @@ void f_screen_clipSet(int X, int Y, int Width, int Height)
         return;
     }
 
-    f__screen.clipX = X;
-    f__screen.clipY = Y;
-    f__screen.clipX2 = X + Width;
-    f__screen.clipY2 = Y + Height;
-    f__screen.clipWidth = Width;
-    f__screen.clipHeight = Height;
+    f__screen.clipStart = (FVectorInt){X, Y};
+    f__screen.clipEnd = (FVectorInt){X + Width, Y + Height};
+    f__screen.clipSize = (FVectorInt){Width, Height};
 
     #if !F_CONFIG_RENDER_SOFTWARE
         f_platform_api__screenClipSet();
@@ -236,9 +230,10 @@ void f_screen_clipReset(void)
 
 bool f_screen_boxOnScreen(int X, int Y, int W, int H)
 {
-    return f_collide_boxAndBox(
-            X, Y, W, H,
-            0, 0, f__screen.pixels->size.x, f__screen.pixels->size.y);
+    return f_collide_boxAndBox((FVectorInt){X, Y},
+                               (FVectorInt){W, H},
+                               (FVectorInt){0, 0},
+                               f__screen.pixels->size);
 }
 
 bool f_screen_boxInsideScreen(int X, int Y, int W, int H)
@@ -250,15 +245,16 @@ bool f_screen_boxInsideScreen(int X, int Y, int W, int H)
 
 bool f_screen_boxOnClip(int X, int Y, int W, int H)
 {
-    return f_collide_boxAndBox(X, Y, W, H,
-                               f__screen.clipX, f__screen.clipY,
-                               f__screen.clipWidth, f__screen.clipHeight);
+    return f_collide_boxAndBox((FVectorInt){X, Y},
+                               (FVectorInt){W, H},
+                               f__screen.clipStart,
+                               f__screen.clipSize);
 }
 
 bool f_screen_boxInsideClip(int X, int Y, int W, int H)
 {
-    return X >= f__screen.clipX && Y >= f__screen.clipY
-        && X + W <= f__screen.clipX2 && Y + H <= f__screen.clipY2;
+    return X >= f__screen.clipStart.x && Y >= f__screen.clipStart.y
+        && X + W <= f__screen.clipEnd.x && Y + H <= f__screen.clipEnd.y;
 }
 
 void f_screen__toSprite(FSprite* Sprite, unsigned Frame)

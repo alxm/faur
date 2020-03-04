@@ -49,7 +49,7 @@ void f_pixels__init(FPixels* Pixels, int W, int H, unsigned Frames, FPixelsFlags
     if(F_FLAGS_TEST_ANY(Flags, F_PIXELS__ALLOC)) {
         Pixels->bufferLen = (unsigned)(W * H);
         Pixels->bufferSize = Pixels->bufferLen * (unsigned)sizeof(FColorPixel);
-        Pixels->buffer = f_mem_zalloc(Pixels->bufferSize * Frames);
+        Pixels->buffer = f_mem_mallocz(Pixels->bufferSize * Frames);
     } else {
         Pixels->bufferLen = 0;
         Pixels->bufferSize = 0;

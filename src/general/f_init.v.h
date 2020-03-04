@@ -21,7 +21,6 @@
 #include "f_init.p.h"
 
 #define F_PACK__PASSES_NUM 2
-#define F_INIT__VERSION_LEN (sizeof("255.255.255"))
 
 typedef void FPackInit(void);
 typedef void FPackUninit(void);
@@ -31,11 +30,6 @@ typedef struct {
     FPackInit* init[F_PACK__PASSES_NUM];
     FPackUninit* uninit[F_PACK__PASSES_NUM];
 } FPack;
-
-extern const char* f_init__app_name;
-extern const char* f_init__app_author;
-extern char f_init__app_version[F_INIT__VERSION_LEN];
-extern unsigned f_init__fps_tick, f_init__fps_draw;
 
 extern void f_init__init(void);
 extern void f_init__uninit(void);

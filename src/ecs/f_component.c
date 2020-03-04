@@ -65,7 +65,7 @@ FEntity* f_component_entityGet(const void* ComponentBuffer)
 void* f_component__dataInit(const FComponent* Component, const FBlock* Block)
 {
     if(Component->dataSize > 0) {
-        void* buffer = f_mem_zalloc(Component->dataSize);
+        void* buffer = f_mem_mallocz(Component->dataSize);
 
         if(Component->dataInit) {
             Component->dataInit(buffer, Block);
@@ -92,7 +92,7 @@ void f_component__dataFree(const FComponent* Component, void* Buffer)
 
 FComponentInstance* f_component__instanceNew(const FComponent* Component, FEntity* Entity, const void* Data)
 {
-    FComponentInstance* c = f_mem_zalloc(Component->size);
+    FComponentInstance* c = f_mem_mallocz(Component->size);
 
     c->component = Component;
     c->entity = Entity;

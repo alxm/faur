@@ -20,4 +20,6 @@
 
 #include "f_blob.p.h"
 
+#define F_BLOB__BUFFER_ALIGN_MAX 4
+
 #endif // F_INC_FILES_BLOB_V_H

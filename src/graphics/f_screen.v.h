@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -24,14 +24,13 @@ typedef struct FScreen FScreen;
 
 #include "../general/f_init.v.h"
 #include "../graphics/f_sprite.v.h"
+#include "../math/f_fix.v.h"
 
 struct FScreen {
     FPixels* pixels;
     FSprite* sprite;
     unsigned frame;
-    int clipX, clipY;
-    int clipX2, clipY2;
-    int clipWidth, clipHeight;
+    FVectorInt clipStart, clipEnd, clipSize;
     #if !F_CONFIG_RENDER_SOFTWARE
         int yOffset;
         FPlatformTextureScreen* texture;

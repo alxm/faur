@@ -21,7 +21,7 @@
 #if F_CONFIG_SOUND_ENABLED
 FSample* f_sample_new(const char* Path)
 {
-    FSample* s = f_mem_zalloc(sizeof(FSample));
+    FSample* s = f_mem_mallocz(sizeof(FSample));
 
     if(f_path_exists(Path, F_PATH_FILE | F_PATH_REAL)) {
         s->platform = f_platform_api__soundSampleNewFromFile(Path);

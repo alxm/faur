@@ -99,7 +99,7 @@ FFile* f_file_new(const char* Path, FFileMode Mode)
         return NULL;
     }
 
-    FFile* f = f_mem_zalloc(sizeof(FFile));
+    FFile* f = f_mem_mallocz(sizeof(FFile));
 
     f->path = path;
     f->f.file = file;

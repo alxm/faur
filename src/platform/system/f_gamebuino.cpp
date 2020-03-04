@@ -1,5 +1,5 @@
 /*
-    Copyright 2019 Alex Margarit <alex@alxm.org>
+    Copyright 2019-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -28,6 +28,7 @@ extern "C" {
 void setup(void)
 {
     gb.begin();
+    gb.setFrameRate(F_CONFIG_FPS_RATE_TICK);
 
     SerialUSB.begin(9600);
 
@@ -40,8 +41,6 @@ void setup(void)
     #endif
 
     f__main();
-
-    gb.setFrameRate(f_init__fps_tick);
 }
 
 void loop(void)

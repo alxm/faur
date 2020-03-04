@@ -339,8 +339,9 @@ void f_platform_api__screenInit(void)
     f_out__info("V-sync is %s", g_vsync ? "on" : "off");
 
     #if F_CONFIG_TRAIT_DESKTOP
-        const char* caption =
-            f_str__fmt512("%s %s", f_init__app_name, f_init__app_version);
+        const char* caption = f_str__fmt512("%s %s",
+                                            F_CONFIG_APP_NAME,
+                                            F__APP_VERSION_STRING);
 
         #if F_CONFIG_LIB_SDL == 1
             SDL_WM_SetCaption(caption, NULL);
@@ -436,10 +437,10 @@ void f_platform_api__screenToTexture(FPlatformTextureScreen* Texture, unsigned F
 void f_platform_api__screenClipSet(void)
 {
     SDL_Rect area = {
-        f__screen.clipX,
-        f__screen.yOffset + f__screen.clipY,
-        f__screen.clipWidth,
-        f__screen.clipHeight
+        f__screen.clipStart.x,
+        f__screen.yOffset + f__screen.clipStart.y,
+        f__screen.clipSize.x,
+        f__screen.clipSize.y
     };
 
     if(SDL_RenderSetClipRect(f__sdlRenderer, &area) < 0) {

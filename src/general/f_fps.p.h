@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2017-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2017-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -22,7 +22,11 @@
 
 #include "../math/f_fix.p.h"
 
-extern unsigned f_fps_rateTickGet(void);
+static inline unsigned f_fps_rateTickGet(void)
+{
+    return F_CONFIG_FPS_RATE_TICK;
+}
+
 extern unsigned f_fps_rateDrawGet(void);
 extern unsigned f_fps_rateDrawGetMax(void);
 

@@ -34,15 +34,15 @@ class Blob:
         self.offsets = {}
         self.files = []
         self.align = 4
-        self.startRoot = os.path.abspath(RootDir)
+        self.start_root = os.path.abspath(RootDir)
 
-        if not os.path.isdir(self.startRoot):
-            g_tool.usage(f'{self.startRoot} is not a dir')
+        if not os.path.isdir(self.start_root):
+            g_tool.usage(f'{self.start_root} is not a dir')
 
         for f in Files:
-            self.scan_file('', f)
+            self.scan_file(f)
 
-        self.files.sort(reverse = True, key = lambda f: f.pathPartial)
+        self.files.sort(reverse = True, key = lambda f: f.path_partial)
 
         self.write_string('faurblob')
         self.write_bytes([0] * 8)
@@ -50,29 +50,29 @@ class Blob:
         self.write_uint8(self.align)
 
         for f in self.files:
-            if f.isDir:
+            if f.is_dir:
                 self.write_dir(f)
             else:
                 self.write_file(f)
 
         self.write_pad()
 
-    def scan_file(self, Prefix, File):
-        filePathPartial = f'{Prefix}/{File}'
-        filePathFull = f'{self.startRoot}/{filePathPartial}'
+    def scan_file(self, File):
+        if File not in self.offsets:
+            file_path_full = self.path_full(File)
+            g_tool.check_files_exist(file_path_full)
 
-        if not os.path.exists(filePathFull):
-            g_tool.out.error(f'{filePathFull} does not exist')
+            f = BlobFile(File, os.path.isdir(file_path_full))
 
-        if not filePathPartial in self.offsets:
-            self.offsets[filePathPartial] = None
-
-            f = BlobFile(filePathPartial, filePathFull)
+            self.offsets[File] = None
             self.files.append(f)
 
-            if f.isDir:
-                for f in g_tool.list_dir(filePathFull):
-                    self.scan_file(filePathPartial, f)
+            if f.is_dir:
+                for f in g_tool.list_dir(file_path_full):
+                    self.scan_file(f'{File}/{f}')
+
+    def path_full(self, File):
+        return f'{self.start_root}/{File}'
 
     def write_bytes(self, Bytes):
         self.buffer += Bytes
@@ -96,41 +96,40 @@ class Blob:
 
     def write_pad(self):
         head = len(self.buffer)
-        headP = ((head + (1 << self.align) - 1) >> self.align) << self.align
+        head_pad = ((head + (1 << self.align) - 1) >> self.align) << self.align
 
-        self.write_bytes([0] * (headP - head))
+        self.write_bytes([0] * (head_pad - head))
 
     def write_file(self, File):
-        self.offsets[File.pathPartial] = len(self.buffer)
+        self.offsets[File.path_partial] = len(self.buffer)
 
-        fileBuffer = g_tool.read_bytes(File.pathFull)
+        file_buffer = g_tool.read_bytes(self.path_full(File.path_partial))
 
         self.write_uint8(1)
-        self.write_stringz(File.pathPartial)
-        self.write_uint32(len(fileBuffer))
+        self.write_stringz(File.path_partial)
+        self.write_uint32(len(file_buffer))
         self.write_pad()
-        self.write_bytes(fileBuffer)
+        self.write_bytes(file_buffer)
 
     def write_dir(self, File):
-        self.offsets[File.pathPartial] = len(self.buffer)
+        self.offsets[File.path_partial] = len(self.buffer)
 
-        dirEntries = g_tool.list_dir(File.pathFull)
+        dir_entries = g_tool.list_dir(self.path_full(File.path_partial))
 
         self.write_uint8(2)
-        self.write_stringz(File.pathPartial)
-        self.write_uint32(len(dirEntries))
+        self.write_stringz(File.path_partial)
+        self.write_uint32(len(dir_entries))
 
-        for e in dirEntries:
-            ePathPartial = f'{File.pathPartial}/{e}'
-            eOffset = self.offsets[ePathPartial]
+        for e in dir_entries:
+            e_path_partial = f'{File.path_partial}/{e}'
+            e_offset = self.offsets[e_path_partial]
 
-            self.write_uint32(eOffset)
+            self.write_uint32(e_offset)
 
 class BlobFile:
-    def __init__(self, PathPartial, PathFull):
-        self.pathPartial = PathPartial
-        self.pathFull = PathFull
-        self.isDir = os.path.isdir(PathFull)
+    def __init__(self, PathPartial, IsDir):
+        self.path_partial = PathPartial
+        self.is_dir = IsDir
 
 if __name__ == '__main__':
     main()
