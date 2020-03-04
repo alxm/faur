@@ -88,6 +88,24 @@ void* f_mem_mallocz(size_t Size)
     #endif
 }
 
+void* f_mem_malloca(size_t Size, unsigned AlignExp)
+{
+    #if F_CONFIG_BUILD_DEBUG
+        if((1u << AlignExp) < sizeof(void*)) {
+            F__FATAL(
+                "f_mem_malloca(%zu, %u): Alignment too small", Size, AlignExp);
+        }
+    #endif
+
+    uintptr_t mask = (uintptr_t)((1 << AlignExp) - 1);
+    void* ptr = f_mem_malloc(sizeof(void*) + Size + mask);
+    uintptr_t adj = ((uintptr_t)ptr + sizeof(void*) + mask) & ~mask;
+
+    *((void**)adj - 1) = ptr;
+
+    return (void*)adj;
+}
+
 void* f_mem_dup(const void* Buffer, size_t Size)
 {
     void* copy = f_mem_malloc(Size);
@@ -112,4 +130,13 @@ void f_mem_free(void* Buffer)
     #else
         free(Buffer);
     #endif
+}
+
+void f_mem_freea(void* Buffer)
+{
+    if(Buffer == NULL) {
+        return;
+    }
+
+    f_mem_free(*((void**)Buffer - 1));
 }

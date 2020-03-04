@@ -22,7 +22,9 @@
 
 extern void* f_mem_malloc(size_t Size);
 extern void* f_mem_mallocz(size_t Size);
+extern void* f_mem_malloca(size_t Size, unsigned AlignExp);
 extern void* f_mem_dup(const void* Buffer, size_t Size);
 extern void f_mem_free(void* Buffer);
+extern void f_mem_freea(void* Buffer);
 
 #endif // F_INC_MEMORY_MEM_P_H
