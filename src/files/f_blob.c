@@ -104,7 +104,7 @@ FBlob* f_blob_new(const char* Path)
     size_t blobBufferSize = f_path__sizeGet(path);
 
     if(f_path_test(path, F_PATH_REAL)) {
-        blobBuffer = f_mem_malloc(blobBufferSize);
+        blobBuffer = f_mem_malloca(blobBufferSize, F_BLOB__BUFFER_ALIGN_MAX);
         blobBufferEmbedded = false;
 
         if(!f_file_read(f, blobBuffer, blobBufferSize)) {
@@ -148,6 +148,13 @@ FBlob* f_blob_new(const char* Path)
 
     // File buffer alignment
     reader.alignShift = read_uint8(&reader);
+
+    if(reader.alignShift > F_BLOB__BUFFER_ALIGN_MAX) {
+        F__FATAL("f_blob_new(%s): Cannot align to %d, max %d",
+                 Path,
+                 1 << reader.alignShift,
+                 1 << F_BLOB__BUFFER_ALIGN_MAX);
+    }
 
     f_out_info("f_blob_new(%s): %u entries", Path, (unsigned)numEntries);
 
@@ -216,6 +223,6 @@ void f_blob_free(FBlob* Blob)
     f_list_freeEx(Blob->files, (FFree*)f_embed__fileFree);
     f_list_freeEx(Blob->dirs, (FFree*)f_embed__dirFree);
 
-    f_mem_free(Blob->buffer);
+    f_mem_freea(Blob->buffer);
     f_mem_free(Blob);
 }
