@@ -27,7 +27,7 @@ struct FBlob {
 typedef struct {
     const char* path; // blob file path
     const uint8_t *buffer, *bufferEnd; // blob file buffer
-    unsigned alignShift; // embedded buffers are aligned to 1<<alignShift
+    unsigned alignMask; // used to calculate padding before file buffer start
 } FBlobReader;
 
 static uint8_t read_uint8(FBlobReader* Reader)
@@ -83,10 +83,9 @@ static void read_skip(FBlobReader* Reader, unsigned Size)
 static void read_padding(FBlobReader* Reader)
 {
     uintptr_t p = (uintptr_t)Reader->buffer;
-    unsigned shift = Reader->alignShift;
+    uintptr_t mask = Reader->alignMask;
 
-    Reader->buffer =
-        (const uint8_t*)(((p + (1u << shift) - 1) >> shift) << shift);
+    Reader->buffer = (const uint8_t*)((p + mask) & ~mask);
 }
 
 FBlob* f_blob_new(const char* Path)
@@ -127,7 +126,7 @@ FBlob* f_blob_new(const char* Path)
         .path = Path,
         .buffer = blobBuffer,
         .bufferEnd = (const uint8_t*)blobBuffer + blobBufferSize,
-        .alignShift = 0
+        .alignMask = 0
     };
 
     const char* prefix = "faurblob";
@@ -143,18 +142,17 @@ FBlob* f_blob_new(const char* Path)
         read_uint8(&reader);
     }
 
-    // Number of entries
     uint32_t numEntries = read_uint32(&reader);
+    uint8_t alignExp = read_uint8(&reader);
 
-    // File buffer alignment
-    reader.alignShift = read_uint8(&reader);
-
-    if(reader.alignShift > F_BLOB__BUFFER_ALIGN_MAX) {
+    if(alignExp > F_BLOB__BUFFER_ALIGN_MAX) {
         F__FATAL("f_blob_new(%s): Cannot align to %d, max %d",
                  Path,
-                 1 << reader.alignShift,
+                 1 << alignExp,
                  1 << F_BLOB__BUFFER_ALIGN_MAX);
     }
+
+    reader.alignMask = (1u << alignExp) - 1;
 
     f_out_info("f_blob_new(%s): %u entries", Path, (unsigned)numEntries);
 
