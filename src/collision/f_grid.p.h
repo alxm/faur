@@ -1,5 +1,5 @@
 /*
-    Copyright 2010-2011, 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2010-2011, 2016-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -26,7 +26,7 @@ typedef struct FList FGridItem;
 #include "../data/f_list.p.h"
 #include "../math/f_vec.p.h"
 
-extern FGrid* f_grid_new(FFix Width, FFix Height, FFix MaxObjectDim);
+extern FGrid* f_grid_new(FFix Width, FFix Height, FFix MaxItemDiameter);
 extern void f_grid_free(FGrid* Grid);
 
 extern const FList* f_grid_nearGet(const FGrid* Grid, FVecFix Coords);
