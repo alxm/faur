@@ -1,5 +1,5 @@
 /*
-    Copyright 2019 Alex Margarit <alex@alxm.org>
+    Copyright 2019-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -30,5 +30,7 @@ extern void f_palette_free(FPalette* Palette);
 
 extern FColorPixel f_palette_getPixel(const FPalette* Palette, unsigned Index);
 extern FColorRgb f_palette_getRgb(const FPalette* Palette, unsigned Index);
+
+extern unsigned f_palette_sizeGet(const FPalette* Palette);
 
 #endif // F_INC_GRAPHICS_PALETTE_P_H
