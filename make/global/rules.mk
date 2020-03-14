@@ -169,7 +169,7 @@ endif
 #
 # Not file targets
 #
-.PHONY : all run clean $(F_CONFIG_BUILD_MAKE_CLEAN) copystatic
+.PHONY : all clean cleangen copystatic run valgrind $(F_CONFIG_BUILD_MAKE_CLEAN)
 
 all : $(F_MAKE_ALL)
 
