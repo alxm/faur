@@ -45,6 +45,7 @@ extern char* f_str_suffixGetFromFirst(const char* String, char Marker);
 extern char* f_str_suffixGetFromLast(const char* String, char Marker);
 
 extern FList* f_str_split(const char* String, const char* Delimiters);
+extern void f_str_splitFree(FList* List);
 
 static inline bool f_str_equal(const char* String1, const char* String2)
 {

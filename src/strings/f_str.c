@@ -256,3 +256,8 @@ FList* f_str_split(const char* String, const char* Delimiters)
 
     return strings;
 }
+
+void f_str_splitFree(FList* List)
+{
+    f_list_freeEx(List, f_mem_free);
+}
