@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2018 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016-2018, 2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -22,9 +22,8 @@
 
 #include "../data/f_list.p.h"
 
-extern const char* f_str_fmt(char* Buffer, size_t Size, bool OverflowOk, const char* Format, ...) F__ATTRIBUTE_FORMAT(4);
-extern const char* f_str_fmtv(char* Buffer, size_t Size, bool OverflowOk, const char* Format, va_list Args);
-extern const char* f_str_fmt512(const char* Format, ...) F__ATTRIBUTE_FORMAT(1);
+extern bool f_str_fmt(char* Buffer, size_t Size, bool OverflowOk, const char* Format, ...) F__ATTRIBUTE_FORMAT(4);
+extern bool f_str_fmtv(char* Buffer, size_t Size, bool OverflowOk, const char* Format, va_list Args);
 
 extern char* f_str_merge(const char* String1, ...) F__ATTRIBUTE_FORMAT(1);
 extern char* f_str_dup(const char* String);

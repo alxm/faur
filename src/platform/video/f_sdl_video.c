@@ -339,15 +339,21 @@ void f_platform_api__screenInit(void)
     f_out__info("V-sync is %s", g_vsync ? "on" : "off");
 
     #if F_CONFIG_TRAIT_DESKTOP
-        const char* caption = f_str__fmt512("%s %s",
-                                            F_CONFIG_APP_NAME,
-                                            F__APP_VERSION_STRING);
+        char caption[64];
 
-        #if F_CONFIG_LIB_SDL == 1
-            SDL_WM_SetCaption(caption, NULL);
-        #elif F_CONFIG_LIB_SDL == 2
-            SDL_SetWindowTitle(g_sdlWindow, caption);
-        #endif
+        if(f_str_fmt(caption,
+                     sizeof(caption),
+                     true,
+                     "%s %s",
+                     F_CONFIG_APP_NAME,
+                     F__APP_VERSION_STRING)) {
+
+            #if F_CONFIG_LIB_SDL == 1
+                SDL_WM_SetCaption(caption, NULL);
+            #elif F_CONFIG_LIB_SDL == 2
+                SDL_SetWindowTitle(g_sdlWindow, caption);
+            #endif
+        }
     #endif
 
     mouseCursorSet(F_CONFIG_INPUT_MOUSE_CURSOR);

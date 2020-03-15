@@ -226,10 +226,18 @@ FEntity* f_entity_new(const char* Template, const void* Context)
     }
 
     if(Template) {
+        char id[64];
         const FTemplate* t = f_template__get(Template);
-        const char* id = f_str__fmt512("%s#%u",
-                                       Template,
-                                       f_template__instanceGet(t));
+
+        if(!f_str_fmt(id,
+                      sizeof(id),
+                      false,
+                      "%s#%u",
+                      Template,
+                      f_template__instanceGet(t))) {
+
+            id[0] = '\0';
+        }
 
         e->id = f_str_dup(id);
         e->template = t;
