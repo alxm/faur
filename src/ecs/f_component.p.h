@@ -42,7 +42,7 @@ struct FComponent {
     unsigned bitId; // unique number ID
 };
 
-#define F_COMPONENT(Name, InstanceSize, InstanceInit, InstanceFree, DataSize, DataInit, DataFree) \
+#define F_COMPONENT(Name, DataSize, DataInit, DataFree, InstanceSize, InstanceInit, InstanceFree) \
     FComponent Name = {                                                                           \
         .size = InstanceSize,                                                                     \
         .init = (FComponentInstanceInit*)InstanceInit,                                            \
