@@ -47,6 +47,7 @@ endif
 F_CONFIG_BUILD_LIBS += \
     -O$(F_CONFIG_BUILD_OPT) \
     $(F_EMSCRIPTEN_OPTIONS) \
+    -lidbfs.js \
     --use-preload-plugins \
     $(addprefix --preload-file $(F_DIR_ROOT_FROM_MAKE)/, \
         $(join $(F_CONFIG_PATH_EMBED_EMSCRIPTEN), \
