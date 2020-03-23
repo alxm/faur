@@ -18,24 +18,13 @@
 #include "f_template.v.h"
 #include <faur.v.h>
 
-struct FTemplate {
-    const FTemplate* parent; // Template chain
-    unsigned instanceNumber; // Incremented by each new entity
-    FEntityInit* init; // Optional, runs after components init and parent init
-    FList* componentsOwn; // FList<const FComponent*> this template only
-    FList* componentsAll; // FList<const FComponent*> this template or parent
-    FBitfield* componentsBits; // Set if this template or parent has component
-    void* data[]; // [f_component__num] Loaded config data, or NULL
-                  // Component bit might be set even if data is NULL
-};
-
 static FHash* g_templates; // FHash<char*, FTemplate*>
 static FHash* g_initCallbacks; // FHash<const char*, FEntityInit*>
 
 static FTemplate* templateNew(const char* Id, const FBlock* Block)
 {
     FTemplate* t = f_mem_mallocz(
-                    sizeof(FTemplate) + sizeof(void*) * f_component__num);
+                    sizeof(FTemplate) + sizeof(void*) * (f_component__num - 1));
 
     t->init = (FEntityInit*)(uintptr_t)f_hash_get(g_initCallbacks, Id);
     t->componentsOwn = f_list_new();
@@ -165,7 +154,7 @@ const FTemplate* f_template__get(const char* Id)
         F__FATAL("Unknown template '%s'", Id);
     }
 
-    t->instanceNumber++;
+    t->iNumber++;
 
     return t;
 }
@@ -184,19 +173,4 @@ void f_template__initRun(const FTemplate* Template, FEntity* Entity, const void*
     if(Template->init) {
         Template->init(Entity, Context);
     }
-}
-
-unsigned f_template__instanceGet(const FTemplate* Template)
-{
-    return Template->instanceNumber;
-}
-
-const FList* f_template__componentsGet(const FTemplate* Template)
-{
-    return Template->componentsAll;
-}
-
-const void* f_template__dataGet(const FTemplate* Template, const FComponent* Component)
-{
-    return Template->data[Component->bitId];
 }

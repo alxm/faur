@@ -52,9 +52,16 @@ static inline const FComponentInstance* bufferGetInstance(const void* ComponentB
 const void* f_component_dataGet(const void* ComponentBuffer)
 {
     const FComponentInstance* instance = bufferGetInstance(ComponentBuffer);
-    const FTemplate* template = f_entity__templateGet(instance->entity);
 
-    return f_template__dataGet(template, instance->component);
+    #if F_CONFIG_BUILD_DEBUG
+        if(instance->entity->templ == NULL) {
+            F_FATAL("f_component_dataGet(%s.%s): No template",
+                    instance->entity->id,
+                    instance->component->stringId);
+        }
+    #endif
+
+    return instance->entity->templ->data[instance->component->bitId];
 }
 
 FEntity* f_component_entityGet(const void* ComponentBuffer)

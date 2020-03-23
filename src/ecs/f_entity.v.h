@@ -21,6 +21,7 @@
 #include "f_entity.p.h"
 
 #include "../data/f_list.v.h"
+#include "../ecs/f_component.v.h"
 #include "../ecs/f_system.v.h"
 #include "../ecs/f_template.v.h"
 
@@ -31,6 +32,24 @@ typedef enum {
     F_ENTITY__REMOVED = F_FLAGS_BIT(3), // marked for removal, may have refs
     F_ENTITY__REMOVE_INACTIVE = F_FLAGS_BIT(4), // mark for removal if kicked
 } FEntityFlags;
+
+struct FEntity {
+    char* id; // specified name for debugging
+    const FTemplate* templ; // template used to init this entity's components
+    FEntity* parent; // manually associated parent entity
+    FListNode* node; // list node in one of FEntityList
+    FListNode* collectionNode; // FCollection list nod
+    FList* matchingSystemsActive; // FList<FSystem*>
+    FList* matchingSystemsRest; // FList<FSystem*>
+    FList* systemNodesActive; // FList<FListNode*> in active-only FSystem lists
+    FList* systemNodesEither; // FList<FListNode*> in rest FSystem lists
+    FBitfield* componentBits; // each component's bit is set
+    unsigned lastActive; // frame when f_entity_activeSet was last called
+    int references; // if >0, then the entity lingers in the removed limbo list
+    int muteCount; // if >0, then the entity isn't picked up by any systems
+    FEntityFlags flags; // various properties
+    FComponentInstance* componentsTable[1]; // [f_component__num] Buffer/NULL
+};
 
 extern bool f_entity__ignoreRefDec;
 
@@ -43,8 +62,6 @@ extern unsigned f_entity__numGet(void);
 
 extern void f_entity__free(FEntity* Entity);
 extern void f_entity__freeEx(FEntity* Entity);
-
-extern const FTemplate* f_entity__templateGet(const FEntity* Entity);
 
 extern void f_entity__flushFromSystemsActive(FEntity* Entity);
 
