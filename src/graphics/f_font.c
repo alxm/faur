@@ -18,8 +18,8 @@
 #include "f_font.v.h"
 #include <faur.v.h>
 
-#include "../generated/media/font_6x8.png.h"
-#include "../generated/media/font_keyed_6x8.png.h"
+#include "../generated/media/g_font_6x8.png.h"
+#include "../generated/media/g_font_keyed_6x8.png.h"
 
 #define F__CHAR_START 32
 #define F__CHAR_INDEX(Char) ((unsigned)Char - F__CHAR_START)
@@ -41,10 +41,10 @@ static void f_font__init(void)
 {
     g_stateStack = f_list_new();
 
-    g_defaultFonts[F_FONT__ID_BLOCK] = (FFont*)f_gfx__font_6x8;
+    g_defaultFonts[F_FONT__ID_BLOCK] = (FFont*)f_gfx__g_font_6x8;
 
     #if !F_CONFIG_TRAIT_LOW_MEM
-        g_defaultFonts[F_FONT__ID_KEYED] = (FFont*)f_gfx__font_keyed_6x8;
+        g_defaultFonts[F_FONT__ID_KEYED] = (FFont*)f_gfx__g_font_keyed_6x8;
     #endif
 
     f_font_reset();

@@ -18,7 +18,7 @@
 #include "f_color.v.h"
 #include <faur.v.h>
 
-#include "../generated/media/palette.png.h"
+#include "../generated/media/g_palette.png.h"
 
 FColorState f__color;
 
@@ -31,7 +31,7 @@ static FPalette* g_palette;
 static void f_color__init(void)
 {
     g_stateStack = f_list_new();
-    g_palette = f_palette_newFromSprite(f_gfx__palette);
+    g_palette = f_palette_newFromSprite(f_gfx__g_palette);
 
     f_color_reset();
 

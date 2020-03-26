@@ -20,7 +20,7 @@
 #include <faur.v.h>
 
 #if F_CONFIG_CONSOLE_ENABLED
-#include "../generated/media/console_19x7.png.h"
+#include "../generated/media/g_console_19x7.png.h"
 
 #include <unistd.h>
 
@@ -92,7 +92,7 @@ static void f_console__uninit1(void)
 {
     g_state = F_CONSOLE__STATE_INVALID;
 
-    f_sprite_free((FSprite*)f_gfx__console_19x7);
+    f_sprite_free((FSprite*)f_gfx__g_console_19x7);
     f_list_freeEx(g_lines, (FFree*)line_free);
     f_button_free(g_toggle);
 }
@@ -182,19 +182,19 @@ void f_console__draw(void)
     }
 
     {
-        int tagWidth = f_sprite_sizeGetWidth(f_gfx__console_19x7);
+        int tagWidth = f_sprite_sizeGetWidth(f_gfx__g_console_19x7);
 
         f_font_coordsSet(1 + tagWidth + 1 + tagWidth + 2, f_font_coordsGetY());
         f_color__colorSetInternal(F_COLOR__PAL_GRAY1);
 
         F_LIST_ITERATE(g_lines, FLine*, l) {
             f_color_fillBlitSet(false);
-            f_sprite_blit(f_gfx__console_19x7,
+            f_sprite_blit(f_gfx__g_console_19x7,
                           (unsigned)l->source,
                           1,
                           f_font_coordsGetY());
 
-            f_sprite_blit(f_gfx__console_19x7,
+            f_sprite_blit(f_gfx__g_console_19x7,
                           (unsigned)(F_OUT__SOURCE_NUM + l->type),
                           1 + tagWidth + 1,
                           f_font_coordsGetY());
