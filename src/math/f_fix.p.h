@@ -128,6 +128,11 @@ static inline FFix f_fix_div(FFix X, FFix Y)
     return (FFix)(((int64_t)X << F_FIX_BIT_PRECISION) / Y);
 }
 
+static inline FFix f_fix_inverse(FFix X)
+{
+    return (FFix)((int64_t)F_FIX_ONE * F_FIX_ONE / X);
+}
+
 static inline FFix f_fix_sqrt(FFix X)
 {
     return (FFix)(sqrtf((float)X) * (1 << (F_FIX_BIT_PRECISION / 2)));
@@ -204,6 +209,11 @@ static inline FFixu f_fixu_mul(FFixu X, FFixu Y)
 static inline FFixu f_fixu_div(FFixu X, FFixu Y)
 {
     return (FFixu)(((uint64_t)X << F_FIX_BIT_PRECISION) / Y);
+}
+
+static inline FFixu f_fixu_inverse(FFixu X)
+{
+    return (FFixu)((uint64_t)F_FIX_ONE * F_FIX_ONE / X);
 }
 
 static inline FFixu f_fixu_sqrt(FFixu X)
