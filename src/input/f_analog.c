@@ -77,7 +77,7 @@ void f_analog_bind(FAnalog* Analog, const FController* Controller, FAnalogId Id)
 
 bool f_analog_isWorking(const FAnalog* Analog)
 {
-    return !f_list_isEmpty(Analog->platformInputs);
+    return !f_list_sizeIsEmpty(Analog->platformInputs);
 }
 
 const char* f_analog_nameGet(const FAnalog* Analog)

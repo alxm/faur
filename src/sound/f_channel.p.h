@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2016-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -32,8 +32,8 @@ typedef enum {
 #define F_CHANNEL_ANY -1
 
 extern int f_channel_new(void);
-extern void f_channel_play(int Channel, const FSample* Sample, FChannelFlags Flags);
-extern void f_channel_stop(int Channel);
-extern bool f_channel_isPlaying(int Channel);
+extern void f_channel_playStart(int Channel, const FSample* Sample, FChannelFlags Flags);
+extern void f_channel_playStop(int Channel);
+extern bool f_channel_playGet(int Channel);
 
 #endif // F_INC_SOUND_CHANNEL_P_H

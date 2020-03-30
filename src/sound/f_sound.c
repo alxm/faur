@@ -112,7 +112,7 @@ void f_sound__tick(void)
 
         if(adjust) {
             adjustSoundVolume(g_volume + adjust);
-            f_timer_start(g_volTimer);
+            f_timer_runStart(g_volTimer);
         }
     #endif
 
@@ -129,7 +129,7 @@ void f_sound__tick(void)
 void f_sound__draw(void)
 {
     #if F__SOUND_VOLUME_BAR
-        if(!f_timer_isRunning(g_volTimer) || f_timer_expiredGet(g_volTimer)) {
+        if(!f_timer_runGet(g_volTimer) || f_timer_expiredGet(g_volTimer)) {
             return;
         }
 

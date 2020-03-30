@@ -111,7 +111,7 @@ void f_screen__tick(void)
 void f_screen__draw(void)
 {
     #if F_CONFIG_BUILD_DEBUG
-        if(!f_list_isEmpty(g_stack)) {
+        if(!f_list_sizeIsEmpty(g_stack)) {
             F__FATAL("Screen target stack is not empty");
         }
     #endif

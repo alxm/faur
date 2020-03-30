@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -157,6 +157,11 @@ void* f_list_getByIndex(const FList* List, unsigned Index)
     return NULL;
 }
 
+void* f_list_getByNode(const FListNode* Node)
+{
+    return Node->content;
+}
+
 void* f_list_getFirst(const FList* List)
 {
     return List->sentinel.next->content;
@@ -174,11 +179,6 @@ void* f_list_getRandom(const FList* List)
     }
 
     return f_list_getByIndex(List, f_random_intu(List->items));
-}
-
-void* f_list_getNodeContent(const FListNode* Node)
-{
-    return Node->content;
 }
 
 static inline void* removeNode(FListNode* Node)
@@ -428,7 +428,7 @@ unsigned f_list_sizeGet(const FList* List)
     return List->items;
 }
 
-bool f_list_isEmpty(const FList* List)
+bool f_list_sizeIsEmpty(const FList* List)
 {
     return List->items == 0;
 }

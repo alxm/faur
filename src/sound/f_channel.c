@@ -24,7 +24,7 @@ int f_channel_new(void)
     return f_platform_api__soundSampleChannelGet();
 }
 
-void f_channel_play(int Channel, const FSample* Sample, FChannelFlags Flags)
+void f_channel_playStart(int Channel, const FSample* Sample, FChannelFlags Flags)
 {
     if(f_platform_api__soundMuteGet()) {
         return;
@@ -46,12 +46,12 @@ void f_channel_play(int Channel, const FSample* Sample, FChannelFlags Flags)
         F_FLAGS_TEST_ANY(Flags, F_CHANNEL_PLAY_LOOP));
 }
 
-void f_channel_stop(int Channel)
+void f_channel_playStop(int Channel)
 {
     f_platform_api__soundSampleStop(Channel);
 }
 
-bool f_channel_isPlaying(int Channel)
+bool f_channel_playGet(int Channel)
 {
     return f_platform_api__soundSampleIsPlaying(Channel);
 }
@@ -61,19 +61,19 @@ int f_channel_new(void)
     return -1;
 }
 
-void f_channel_play(int Channel, const FSample* Sample, FChannelFlags Flags)
+void f_channel_playStart(int Channel, const FSample* Sample, FChannelFlags Flags)
 {
     F_UNUSED(Channel);
     F_UNUSED(Sample);
     F_UNUSED(Flags);
 }
 
-void f_channel_stop(int Channel)
+void f_channel_playStop(int Channel)
 {
     F_UNUSED(Channel);
 }
 
-bool f_channel_isPlaying(int Channel)
+bool f_channel_playGet(int Channel)
 {
     F_UNUSED(Channel);
 

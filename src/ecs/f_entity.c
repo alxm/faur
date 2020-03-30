@@ -108,8 +108,8 @@ void f_entity__tick(void)
     // Add entities to the systems they match
     F_LIST_ITERATE(g_lists[F_LIST__RESTORE], FEntity*, e) {
         #if F_CONFIG_BUILD_DEBUG
-            if(f_list_isEmpty(e->matchingSystemsActive)
-                && f_list_isEmpty(e->matchingSystemsRest)) {
+            if(f_list_sizeIsEmpty(e->matchingSystemsActive)
+                && f_list_sizeIsEmpty(e->matchingSystemsRest)) {
 
                 f_out__warning(
                     "Entity %s was not matched to any systems", e->id);
@@ -579,8 +579,8 @@ void f_entity_muteDec(FEntity* Entity)
     #endif
 
     if(--Entity->muteCount == 0) {
-        if(!f_list_isEmpty(Entity->matchingSystemsActive)
-            || !f_list_isEmpty(Entity->matchingSystemsRest)) {
+        if(!f_list_sizeIsEmpty(Entity->matchingSystemsActive)
+            || !f_list_sizeIsEmpty(Entity->matchingSystemsRest)) {
 
             if(listIsIn(Entity, F_LIST__FLUSH)) {
                 // Entity was muted and unmuted before it left systems

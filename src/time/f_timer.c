@@ -1,5 +1,5 @@
 /*
-    Copyright 2011, 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2011, 2016-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -193,7 +193,7 @@ void f_timer_periodSet(FTimer* Timer, unsigned Period)
     }
 }
 
-void f_timer_start(FTimer* Timer)
+void f_timer_runStart(FTimer* Timer)
 {
     Timer->start = getNow(Timer);
     Timer->diff = 0;
@@ -213,7 +213,7 @@ void f_timer_start(FTimer* Timer)
     }
 }
 
-void f_timer_stop(FTimer* Timer)
+void f_timer_runStop(FTimer* Timer)
 {
     Timer->diff = 0;
 
@@ -225,7 +225,7 @@ void f_timer_stop(FTimer* Timer)
     }
 }
 
-bool f_timer_isRunning(const FTimer* Timer)
+bool f_timer_runGet(const FTimer* Timer)
 {
     return F_FLAGS_TEST_ANY(Timer->flags, F_TIMER__RUNNING);
 }
