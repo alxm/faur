@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2014, 2018-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2014, 2018-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -194,20 +194,20 @@ unsigned f_fix_atan(FFix X1, FFix Y1, FFix X2, FFix Y2)
     }
 }
 
-FVectorFix f_fix_rotateCounter(FFix X, FFix Y, unsigned Angle)
+FVectorFix f_fix_rotateCounter(FVectorFix Vec, unsigned Angle)
 {
     const FFix sin = f_fix_sin(Angle);
     const FFix cos = f_fix_cos(Angle);
 
-    return (FVectorFix){f_fix_mul(X,  cos) + f_fix_mul(Y, sin),
-                        f_fix_mul(X, -sin) + f_fix_mul(Y, cos)};
+    return (FVectorFix){f_fix_mul(Vec.x,  cos) + f_fix_mul(Vec.y, sin),
+                        f_fix_mul(Vec.x, -sin) + f_fix_mul(Vec.y, cos)};
 }
 
-FVectorFix f_fix_rotateClockwise(FFix X, FFix Y, unsigned Angle)
+FVectorFix f_fix_rotateClockwise(FVectorFix Vec, unsigned Angle)
 {
     const FFix sin = f_fix_sin(Angle);
     const FFix cos = f_fix_cos(Angle);
 
-    return (FVectorFix){f_fix_mul(X, cos) + f_fix_mul(Y, -sin),
-                        f_fix_mul(X, sin) + f_fix_mul(Y,  cos)};
+    return (FVectorFix){f_fix_mul(Vec.x, cos) + f_fix_mul(Vec.y, -sin),
+                        f_fix_mul(Vec.x, sin) + f_fix_mul(Vec.y,  cos)};
 }

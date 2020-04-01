@@ -308,8 +308,8 @@ static inline FFix f_fix_secf(FFixu Angle)
 
 extern unsigned f_fix_atan(FFix X1, FFix Y1, FFix X2, FFix Y2);
 
-extern FVectorFix f_fix_rotateCounter(FFix X, FFix Y, unsigned Angle);
-extern FVectorFix f_fix_rotateClockwise(FFix X, FFix Y, unsigned Angle);
+extern FVectorFix f_fix_rotateCounter(FVectorFix Vec, unsigned Angle);
+extern FVectorFix f_fix_rotateClockwise(FVectorFix Vec, unsigned Angle);
 
 static inline FVectorInt f_vectorfix_toInt(const FVectorFix Fix)
 {
