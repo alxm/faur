@@ -52,9 +52,9 @@
     (F_CONFIG_SCREEN_HARDWARE_WIDTH > 0 && F_CONFIG_SCREEN_HARDWARE_HEIGHT > 0)
 
 #if F__SIZE_DYNAMIC
-static FVectorInt g_size = {
+static FVecInt g_size = {
 #else
-static const FVectorInt g_size = {
+static const FVecInt g_size = {
 #endif
     F_CONFIG_SCREEN_SIZE_WIDTH,
     F_CONFIG_SCREEN_SIZE_HEIGHT
@@ -122,27 +122,27 @@ static bool sdl1ScreenSet(int Width, int Height, uint32_t Flags)
 
 #if F__SIZE_DYNAMIC
 #if F__HARDWARE_SCREEN
-static FVectorInt sdlScreenSizeGetNative(void)
+static FVecInt sdlScreenSizeGetNative(void)
 {
-    return (FVectorInt){F_CONFIG_SCREEN_HARDWARE_WIDTH,
-                        F_CONFIG_SCREEN_HARDWARE_HEIGHT};
+    return (FVecInt){F_CONFIG_SCREEN_HARDWARE_WIDTH,
+                     F_CONFIG_SCREEN_HARDWARE_HEIGHT};
 }
 #elif F_CONFIG_LIB_SDL == 1
-static FVectorInt sdlScreenSizeGetNative(void)
+static FVecInt sdlScreenSizeGetNative(void)
 {
     const SDL_VideoInfo* info = SDL_GetVideoInfo();
 
-    return (FVectorInt){info->current_w, info->current_h};
+    return (FVecInt){info->current_w, info->current_h};
 }
 #elif F_CONFIG_LIB_SDL == 2
-static FVectorInt sdlScreenSizeGetNative(void)
+static FVecInt sdlScreenSizeGetNative(void)
 {
     SDL_DisplayMode mode;
 
     if(SDL_GetCurrentDisplayMode(0, &mode) < 0) {
         f_out__error("SDL_GetCurrentDisplayMode: %s", SDL_GetError());
 
-        return (FVectorInt){0, 0};
+        return (FVecInt){0, 0};
     }
 
     f_out__info("Display info: %dx%d %dbpp",
@@ -150,7 +150,7 @@ static FVectorInt sdlScreenSizeGetNative(void)
                 mode.h,
                 SDL_BITSPERPIXEL(mode.format));
 
-    return (FVectorInt){mode.w, mode.h};
+    return (FVecInt){mode.w, mode.h};
 }
 #endif
 #endif // F__SIZE_DYNAMIC
@@ -172,7 +172,7 @@ static void mouseCursorSet(bool Show)
 void f_platform_api__screenInit(void)
 {
     #if F__SIZE_DYNAMIC
-        FVectorInt res = sdlScreenSizeGetNative();
+        FVecInt res = sdlScreenSizeGetNative();
 
         if(res.x > 0 && res.y > 0) {
             if(g_size.x < 0) {
@@ -414,7 +414,7 @@ void f_platform_api__screenToTexture(FPlatformTextureScreen* Texture, unsigned F
         F__FATAL("SDL_SetRenderTarget: %s", SDL_GetError());
     }
 
-    FVectorInt size = f__screen.pixels->size;
+    FVecInt size = f__screen.pixels->size;
     SDL_Rect area = {0, (int)Frame * size.y, size.x, size.y};
 
     if(SDL_RenderSetClipRect(f__sdlRenderer, &area) < 0) {
@@ -626,7 +626,7 @@ FPixels* f_platform_api__screenPixelsGet(void)
     return &g_pixels;
 }
 
-FVectorInt f_platform_api__screenSizeGet(void)
+FVecInt f_platform_api__screenSizeGet(void)
 {
     return g_size;
 }

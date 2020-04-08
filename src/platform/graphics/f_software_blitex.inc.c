@@ -28,11 +28,11 @@ static void F__FUNC_NAME_EX(const FPixels* Pixels, unsigned Frame, int TopY, int
 {
     F__BLEND_SETUP;
 
-    const FVectorInt screenSize = f_screen_sizeGet();
+    const FVecInt screenSize = f_screen_sizeGet();
     FColorPixel* const screenPixels = f_screen__bufferGetFrom(0, 0);
     const FColorPixel* const pixels = f_pixels__bufferGetFrom(
                                         Pixels, Frame, 0, 0);
-    const FVectorInt size = Pixels->size;
+    const FVecInt size = Pixels->size;
 
     for(int scrY = TopY; scrY <= BottomY; scrY++) {
         int screenX0 = g_edges[0].screen[scrY];
@@ -44,8 +44,8 @@ static void F__FUNC_NAME_EX(const FPixels* Pixels, unsigned Frame, int TopY, int
             continue;
         }
 
-        const FVectorFix sprite0 = g_edges[0].sprite[scrY];
-        const FVectorFix sprite1 = g_edges[1].sprite[scrY];
+        const FVecFix sprite0 = g_edges[0].sprite[scrY];
+        const FVecFix sprite1 = g_edges[1].sprite[scrY];
 
         const FFix spriteDeltaX =
             sprite1.x - sprite0.x
@@ -54,7 +54,7 @@ static void F__FUNC_NAME_EX(const FPixels* Pixels, unsigned Frame, int TopY, int
             sprite1.y - sprite0.y
                 + (sprite1.y > sprite0.y) - (sprite1.y < sprite0.y);
 
-        FVectorFix sprite = sprite0;
+        FVecFix sprite = sprite0;
 
         const int screenDeltaX = screenX1 - screenX0 + 1;
         const FFix spriteXInc = spriteDeltaX / screenDeltaX;

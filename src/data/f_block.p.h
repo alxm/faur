@@ -41,8 +41,8 @@ extern FFix f_block_lineGetFix(const FBlock* Block, unsigned LineNumber);
 extern FFixu f_block_lineGetAngle(const FBlock* Block, unsigned LineNumber);
 extern FColorPixel f_block_lineGetPixel(const FBlock* Block, unsigned LineNumber);
 extern const char* f_block_lineGetString(const FBlock* Block, unsigned LineNumber);
-extern FVectorInt f_block_lineGetCoords(const FBlock* Block, unsigned LineNumber);
-extern FVectorFix f_block_lineGetCoordsf(const FBlock* Block, unsigned LineNumber);
+extern FVecInt f_block_lineGetCoords(const FBlock* Block, unsigned LineNumber);
+extern FVecFix f_block_lineGetCoordsf(const FBlock* Block, unsigned LineNumber);
 extern int f_block_lineGetFmt(const FBlock* Block, unsigned LineNumber, const char* Format, ...) F__ATTRIBUTE_FORMAT(3);
 extern int f_block_lineGetFmtv(const FBlock* Block, unsigned LineNumber, const char* Format, va_list Args);
 
@@ -76,12 +76,12 @@ static inline const char* f_block_keyGetString(const FBlock* Block, const char* 
     return f_block_lineGetString(f_block_keyGetBlock(Block, Key), 1);
 }
 
-static inline FVectorInt f_block_keyGetCoords(const FBlock* Block, const char* Key)
+static inline FVecInt f_block_keyGetCoords(const FBlock* Block, const char* Key)
 {
     return f_block_lineGetCoords(f_block_keyGetBlock(Block, Key), 1);
 }
 
-static inline FVectorFix f_block_keyGetCoordsf(const FBlock* Block, const char* Key)
+static inline FVecFix f_block_keyGetCoordsf(const FBlock* Block, const char* Key)
 {
     return f_block_lineGetCoordsf(f_block_keyGetBlock(Block, Key), 1);
 }

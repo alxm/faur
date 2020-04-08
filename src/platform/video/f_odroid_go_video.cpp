@@ -30,8 +30,8 @@ extern "C" {
 static FPixels g_pixels;
 static FColorPixel* g_screenBuffer;
 static FColorPixel* g_scaledBuffer;
-static const FVectorInt g_screenSize = {F_CONFIG_SCREEN_SIZE_WIDTH,
-                                        F_CONFIG_SCREEN_SIZE_HEIGHT};
+static const FVecInt g_screenSize = {F_CONFIG_SCREEN_SIZE_WIDTH,
+                                     F_CONFIG_SCREEN_SIZE_HEIGHT};
 
 void f_platform_api__screenInit(void)
 {
@@ -115,7 +115,7 @@ bool f_platform_api__screenVsyncGet(void)
     return false;
 }
 
-FVectorInt f_platform_api__screenSizeGet(void)
+FVecInt f_platform_api__screenSizeGet(void)
 {
     return g_screenSize;
 }

@@ -228,10 +228,10 @@ const char* f_block_lineGetString(const FBlock* Block, unsigned LineNumber)
     return line ? line->text : "";
 }
 
-FVectorInt f_block_lineGetCoords(const FBlock* Block, unsigned LineNumber)
+FVecInt f_block_lineGetCoords(const FBlock* Block, unsigned LineNumber)
 {
     const FBlock* line = blockGet(Block, LineNumber);
-    FVectorInt v = {0, 0};
+    FVecInt v = {0, 0};
 
     if(line) {
         sscanf(line->text, "%d, %d", &v.x, &v.y);
@@ -240,10 +240,10 @@ FVectorInt f_block_lineGetCoords(const FBlock* Block, unsigned LineNumber)
     return v;
 }
 
-FVectorFix f_block_lineGetCoordsf(const FBlock* Block, unsigned LineNumber)
+FVecFix f_block_lineGetCoordsf(const FBlock* Block, unsigned LineNumber)
 {
     const FBlock* line = blockGet(Block, LineNumber);
-    FVectorFix v = {0, 0};
+    FVecFix v = {0, 0};
 
     if(line) {
         double x = 0, y = 0;

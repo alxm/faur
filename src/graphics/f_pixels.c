@@ -182,7 +182,7 @@ static int findNextHorizontalEdge(const FPixels* Pixels, unsigned Frame, int Sta
     return -1;
 }
 
-FVectorInt f_pixels__boundsFind(const FPixels* Pixels, unsigned Frame, int X, int Y)
+FVecInt f_pixels__boundsFind(const FPixels* Pixels, unsigned Frame, int X, int Y)
 {
     #if F_CONFIG_BUILD_DEBUG
         if(X < 0 || X >= Pixels->size.x || Y < 0 || Y >= Pixels->size.y) {
@@ -195,7 +195,7 @@ FVectorInt f_pixels__boundsFind(const FPixels* Pixels, unsigned Frame, int X, in
         }
     #endif
 
-    FVectorInt bounds;
+    FVecInt bounds;
 
     int vEdgeX = 0;
     int vEdgeLen = findNextVerticalEdge(Pixels, Frame, X, Y, &vEdgeX);

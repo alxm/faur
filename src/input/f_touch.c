@@ -18,7 +18,7 @@
 #include "f_touch.v.h"
 #include <faur.v.h>
 
-FVectorInt f_touch_deltaGet(void)
+FVecInt f_touch_deltaGet(void)
 {
     return f_platform_api__inputTouchDeltaGet();
 }
@@ -36,11 +36,9 @@ bool f_touch_pointGet(int X, int Y)
 bool f_touch_boxGet(int X, int Y, int W, int H)
 {
     if(f_platform_api__inputTouchTapGet()) {
-        FVectorInt coords = f_platform_api__inputTouchCoordsGet();
+        FVecInt coords = f_platform_api__inputTouchCoordsGet();
 
-        if(f_collide_pointInBox(
-            coords, (FVectorInt){X, Y}, (FVectorInt){W, H})) {
-
+        if(f_collide_pointInBox(coords, (FVecInt){X, Y}, (FVecInt){W, H})) {
             return true;
         }
     }

@@ -37,7 +37,7 @@ extern void f_sprite_blitEx(const FSprite* Sprite, unsigned Frame, int X, int Y,
 extern void f_sprite_swapColor(FSprite* Sprite, FColorPixel OldColor, FColorPixel NewColor);
 extern void f_sprite_swapColors(FSprite* Sprite, const FColorPixel* OldColors, const FColorPixel* NewColors, unsigned NumColors);
 
-extern FVectorInt f_sprite_sizeGet(const FSprite* Sprite);
+extern FVecInt f_sprite_sizeGet(const FSprite* Sprite);
 extern int f_sprite_sizeGetWidth(const FSprite* Sprite);
 extern int f_sprite_sizeGetHeight(const FSprite* Sprite);
 

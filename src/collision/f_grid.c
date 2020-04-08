@@ -71,7 +71,7 @@ void f_grid_free(FGrid* Grid)
     f_mem_free(Grid);
 }
 
-const FList* f_grid_nearGet(const FGrid* Grid, FVectorFix Coords)
+const FList* f_grid_nearGet(const FGrid* Grid, FVecFix Coords)
 {
     int x = f_math_clamp(f_fix_toInt(Coords.x >> Grid->shift), 0, Grid->w - 1);
     int y = f_math_clamp(f_fix_toInt(Coords.y >> Grid->shift), 0, Grid->h - 1);
@@ -90,7 +90,7 @@ void f_grid_itemFree(FGridItem* Item)
     f_list_freeEx(Item, (FFree*)f_list_removeNode);
 }
 
-void f_grid_itemCoordsSet(const FGrid* Grid, FGridItem* Item, void* Context, FVectorFix Coords)
+void f_grid_itemCoordsSet(const FGrid* Grid, FGridItem* Item, void* Context, FVecFix Coords)
 {
     // remove item from all the cells it was previously in
     f_list_clearEx(Item, (FFree*)f_list_removeNode);
@@ -99,10 +99,9 @@ void f_grid_itemCoordsSet(const FGrid* Grid, FGridItem* Item, void* Context, FVe
     int cellX = f_fix_toInt(Coords.x >> Grid->shift);
     int cellY = f_fix_toInt(Coords.y >> Grid->shift);
 
-    FVectorInt cellStart, cellEnd;
+    FVecInt cellStart, cellEnd;
     FFix cellDim = F_FIX_ONE << Grid->shift;
-    FVectorFix cellOffset = {Coords.x & (cellDim - 1),
-                             Coords.y & (cellDim - 1)};
+    FVecFix cellOffset = {Coords.x & (cellDim - 1), Coords.y & (cellDim - 1)};
 
     if(cellOffset.x < cellDim / 2) {
         cellStart.x = f_math_clamp(cellX - 1, 0, Grid->w - 1);

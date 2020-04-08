@@ -1,5 +1,5 @@
 /*
-    Copyright 2017-2020 Alex Margarit <alex@alxm.org>
+    Copyright 2018-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -24,35 +24,35 @@
 
 typedef struct {
     FFix x, y;
-} FVectorFix;
+} FVecFix;
 
 typedef struct {
     int x, y;
-} FVectorInt;
+} FVecInt;
 
-extern FVectorFix f_fix_rotateCounter(FVectorFix Vec, unsigned Angle);
-extern FVectorFix f_fix_rotateClockwise(FVectorFix Vec, unsigned Angle);
+extern FVecFix f_vecfix_rotateCounter(FVecFix Vec, unsigned Angle);
+extern FVecFix f_vecfix_rotateClockwise(FVecFix Vec, unsigned Angle);
 
-static inline FVectorInt f_vectorfix_toInt(const FVectorFix Fix)
+static inline FVecInt f_vecfix_toInt(const FVecFix Fix)
 {
-    FVectorInt v = {f_fix_toInt(Fix.x), f_fix_toInt(Fix.y)};
+    FVecInt v = {f_fix_toInt(Fix.x), f_fix_toInt(Fix.y)};
 
     return v;
 }
 
-static inline FVectorFix f_vectorint_toFix(const FVectorInt Int)
+static inline FVecFix f_vecint_toFix(const FVecInt Int)
 {
-    FVectorFix v = {f_fix_fromInt(Int.x), f_fix_fromInt(Int.y)};
+    FVecFix v = {f_fix_fromInt(Int.x), f_fix_fromInt(Int.y)};
 
     return v;
 }
 
-static inline bool f_vectorfix_equal(FVectorFix A, FVectorFix B)
+static inline bool f_vecfix_equal(FVecFix A, FVecFix B)
 {
     return A.x == B.x && A.y == B.y;
 }
 
-static inline bool f_vectorint_equal(FVectorInt A, FVectorInt B)
+static inline bool f_vecint_equal(FVecInt A, FVecInt B)
 {
     return A.x == B.x && A.y == B.y;
 }

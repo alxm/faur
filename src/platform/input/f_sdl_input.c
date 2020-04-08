@@ -77,8 +77,8 @@ typedef struct {
 } FPlatformButtonPair;
 
 static struct {
-    FVectorInt coords;
-    FVectorInt delta;
+    FVecInt coords;
+    FVecInt delta;
     bool tap;
 } g_mouse;
 
@@ -1113,7 +1113,7 @@ void f_platform_api__inputPoll(void)
     f_list_clear(g_forwardButtonsQueue[1]);
 
     #if !F_CONFIG_SYSTEM_EMSCRIPTEN
-        FVectorInt mouseDelta = {0, 0};
+        FVecInt mouseDelta = {0, 0};
         SDL_GetRelativeMouseState(&mouseDelta.x, &mouseDelta.y);
 
         g_mouse.delta = mouseDelta;
@@ -1171,12 +1171,12 @@ int f_platform_api__inputAnalogValueGet(const FPlatformAnalog* Analog)
     return Analog->value;
 }
 
-FVectorInt f_platform_api__inputTouchCoordsGet(void)
+FVecInt f_platform_api__inputTouchCoordsGet(void)
 {
     return g_mouse.coords;
 }
 
-FVectorInt f_platform_api__inputTouchDeltaGet(void)
+FVecInt f_platform_api__inputTouchDeltaGet(void)
 {
     return g_mouse.delta;
 }

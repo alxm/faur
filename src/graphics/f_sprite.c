@@ -29,7 +29,7 @@ static inline void lazyInitTextures(FSprite* Sprite)
 
 static FSprite* spriteNew(const FPixels* Pixels, unsigned Frame, int X, int Y, int FrameWidth, int FrameHeight)
 {
-    FVectorInt gridDim;
+    FVecInt gridDim;
 
     #if F_CONFIG_BUILD_DEBUG
         if((FrameWidth < 1 || FrameHeight < 1) && FrameWidth != FrameHeight) {
@@ -182,7 +182,7 @@ void f_sprite_blit(const FSprite* Sprite, unsigned Frame, int X, int Y)
 
     Frame %= Sprite->pixels.framesNum;
 
-    FVectorInt spriteSize = Sprite->pixels.size;
+    FVecInt spriteSize = Sprite->pixels.size;
 
     if(f__align.x == F_ALIGN_X_CENTER) {
         X -= spriteSize.x >> 1;
@@ -276,7 +276,7 @@ void f_sprite_swapColors(FSprite* Sprite, const FColorPixel* OldColors, const FC
     #endif
 }
 
-FVectorInt f_sprite_sizeGet(const FSprite* Sprite)
+FVecInt f_sprite_sizeGet(const FSprite* Sprite)
 {
     return Sprite->pixels.size;
 }
