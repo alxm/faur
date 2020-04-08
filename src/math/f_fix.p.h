@@ -23,14 +23,6 @@
 typedef int32_t FFix;
 typedef uint32_t FFixu;
 
-typedef struct {
-    FFix x, y;
-} FVectorFix;
-
-typedef struct {
-    int x, y;
-} FVectorInt;
-
 #define F_FIX_BIT_PRECISION (16)
 #define F_FIX_ONE           (1 << F_FIX_BIT_PRECISION)
 #define F_FIX_FRACTION_MASK (F_FIX_ONE - 1)
@@ -307,32 +299,5 @@ static inline FFix f_fix_secf(FFixu Angle)
 }
 
 extern unsigned f_fix_atan(FFix X1, FFix Y1, FFix X2, FFix Y2);
-
-extern FVectorFix f_fix_rotateCounter(FVectorFix Vec, unsigned Angle);
-extern FVectorFix f_fix_rotateClockwise(FVectorFix Vec, unsigned Angle);
-
-static inline FVectorInt f_vectorfix_toInt(const FVectorFix Fix)
-{
-    FVectorInt v = {f_fix_toInt(Fix.x), f_fix_toInt(Fix.y)};
-
-    return v;
-}
-
-static inline FVectorFix f_vectorint_toFix(const FVectorInt Int)
-{
-    FVectorFix v = {f_fix_fromInt(Int.x), f_fix_fromInt(Int.y)};
-
-    return v;
-}
-
-static inline bool f_vectorfix_equal(FVectorFix A, FVectorFix B)
-{
-    return A.x == B.x && A.y == B.y;
-}
-
-static inline bool f_vectorint_equal(FVectorInt A, FVectorInt B)
-{
-    return A.x == B.x && A.y == B.y;
-}
 
 #endif // F_INC_MATH_FIX_P_H

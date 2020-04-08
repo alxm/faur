@@ -20,7 +20,7 @@
 
 #include "../general/f_system_includes.h"
 
-#include "../math/f_fix.p.h"
+#include "../math/f_vec.p.h"
 
 static inline bool f_collide_boxAndBox(FVectorInt Coords1, FVectorInt Size1, FVectorInt Coords2, FVectorInt Size2)
 {

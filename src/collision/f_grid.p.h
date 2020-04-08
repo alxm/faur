@@ -24,7 +24,7 @@ typedef struct FGrid FGrid;
 typedef struct FList FGridItem;
 
 #include "../data/f_list.p.h"
-#include "../math/f_fix.p.h"
+#include "../math/f_vec.p.h"
 
 extern FGrid* f_grid_new(FFix Width, FFix Height, FFix MaxObjectDim);
 extern void f_grid_free(FGrid* Grid);

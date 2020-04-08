@@ -23,7 +23,7 @@
 typedef struct FSprite FSprite;
 
 #include "../graphics/f_color.p.h"
-#include "../math/f_fix.p.h"
+#include "../math/f_vec.p.h"
 
 extern FSprite* f_sprite_newFromPng(const char* Path, int X, int Y, int FrameWidth, int FrameHeight);
 extern FSprite* f_sprite_newFromSprite(const FSprite* Sheet, int X, int Y, int FrameWidth, int FrameHeight);

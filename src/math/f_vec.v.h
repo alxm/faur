@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2017-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -15,16 +15,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef F_INC_INPUTS_TOUCH_P_H
-#define F_INC_INPUTS_TOUCH_P_H
+#ifndef F_INC_MATH_VEC_V_H
+#define F_INC_MATH_VEC_V_H
 
-#include "../general/f_system_includes.h"
+#include "f_vec.p.h"
 
-#include "../math/f_vec.p.h"
-
-extern FVectorInt f_touch_deltaGet(void);
-extern bool f_touch_tapGet(void);
-extern bool f_touch_pointGet(int X, int Y);
-extern bool f_touch_boxGet(int X, int Y, int W, int H);
-
-#endif // F_INC_INPUTS_TOUCH_P_H
+#endif // F_INC_MATH_VEC_V_H
