@@ -24,16 +24,16 @@ typedef struct FGrid FGrid;
 typedef struct FList FGridItem;
 
 #include "../data/f_list.p.h"
-#include "../math/f_fix.p.h"
+#include "../math/f_vec.p.h"
 
 extern FGrid* f_grid_new(FFix Width, FFix Height, FFix MaxObjectDim);
 extern void f_grid_free(FGrid* Grid);
 
-extern const FList* f_grid_nearGet(const FGrid* Grid, FVectorFix Coords);
+extern const FList* f_grid_nearGet(const FGrid* Grid, FVecFix Coords);
 
 extern FGridItem* f_grid_itemNew(void);
 extern void f_grid_itemFree(FGridItem* Item);
 
-extern void f_grid_itemCoordsSet(const FGrid* Grid, FGridItem* Item, void* Context, FVectorFix Coords);
+extern void f_grid_itemCoordsSet(const FGrid* Grid, FGridItem* Item, void* Context, FVecFix Coords);
 
 #endif // F_INC_COLLISION_GRID_P_H

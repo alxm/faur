@@ -55,7 +55,7 @@ extern void f_platform_api__screenToTexture(FPlatformTextureScreen* Texture, uns
 extern void f_platform_api__screenClipSet(void);
 extern void f_platform_api__screenShow(void);
 extern FPixels* f_platform_api__screenPixelsGet(void);
-extern FVectorInt f_platform_api__screenSizeGet(void);
+extern FVecInt f_platform_api__screenSizeGet(void);
 extern bool f_platform_api__screenVsyncGet(void);
 extern int f_platform_api__screenZoomGet(void);
 extern void f_platform_api__screenZoomSet(int Zoom);
@@ -108,8 +108,8 @@ extern bool f_platform_api__inputButtonPressGet(const FPlatformButton* Button);
 extern const FPlatformAnalog* f_platform_api__inputAnalogGet(const FPlatformController* Controller, FAnalogId Id);
 extern int f_platform_api__inputAnalogValueGet(const FPlatformAnalog* Analog);
 
-extern FVectorInt f_platform_api__inputTouchCoordsGet(void);
-extern FVectorInt f_platform_api__inputTouchDeltaGet(void);
+extern FVecInt f_platform_api__inputTouchCoordsGet(void);
+extern FVecInt f_platform_api__inputTouchDeltaGet(void);
 extern bool f_platform_api__inputTouchTapGet(void);
 
 extern FPlatformController* f_platform_api__inputControllerClaim(FControllerBind* Callback);

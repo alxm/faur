@@ -33,7 +33,7 @@ typedef enum {
 } FPixelsFlags;
 
 struct FPixels {
-    FVectorInt size;
+    FVecInt size;
     unsigned framesNum;
     unsigned bufferLen;
     unsigned bufferSize;
@@ -53,7 +53,7 @@ extern void f_pixels__bufferSet(FPixels* Pixels, FColorPixel* Buffer, int W, int
 
 extern void f_pixels__fill(const FPixels* Pixels, unsigned Frame, FColorPixel Value);
 
-extern FVectorInt f_pixels__boundsFind(const FPixels* Pixels, unsigned Frame, int X, int Y);
+extern FVecInt f_pixels__boundsFind(const FPixels* Pixels, unsigned Frame, int X, int Y);
 
 static inline FColorPixel* f_pixels__bufferGetStart(const FPixels* Pixels, unsigned Frame)
 {

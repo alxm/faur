@@ -20,9 +20,9 @@
 
 #include "../general/f_system_includes.h"
 
-#include "../math/f_fix.p.h"
+#include "../math/f_vec.p.h"
 
-static inline bool f_collide_boxAndBox(FVectorInt Coords1, FVectorInt Size1, FVectorInt Coords2, FVectorInt Size2)
+static inline bool f_collide_boxAndBox(FVecInt Coords1, FVecInt Size1, FVecInt Coords2, FVecInt Size2)
 {
     return !(Coords1.y >= Coords2.y + Size2.y
           || Coords2.y >= Coords1.y + Size1.y
@@ -30,7 +30,7 @@ static inline bool f_collide_boxAndBox(FVectorInt Coords1, FVectorInt Size1, FVe
           || Coords2.x >= Coords1.x + Size1.x);
 }
 
-static inline bool f_collide_boxAndBoxf(FVectorFix Coords1, FVectorFix Size1, FVectorFix Coords2, FVectorFix Size2)
+static inline bool f_collide_boxAndBoxf(FVecFix Coords1, FVecFix Size1, FVecFix Coords2, FVecFix Size2)
 {
     return !(Coords1.y >= Coords2.y + Size2.y
           || Coords2.y >= Coords1.y + Size1.y
@@ -38,7 +38,7 @@ static inline bool f_collide_boxAndBoxf(FVectorFix Coords1, FVectorFix Size1, FV
           || Coords2.x >= Coords1.x + Size1.x);
 }
 
-static inline bool f_collide_circleAndCircle(FVectorInt Coords1, int Radius1, FVectorInt Coords2, int Radius2)
+static inline bool f_collide_circleAndCircle(FVecInt Coords1, int Radius1, FVecInt Coords2, int Radius2)
 {
     int dx = Coords1.x - Coords2.x;
     int dy = Coords1.y - Coords2.y;
@@ -47,7 +47,7 @@ static inline bool f_collide_circleAndCircle(FVectorInt Coords1, int Radius1, FV
     return dx * dx + dy * dy < rSum * rSum;
 }
 
-static inline bool f_collide_circleAndCirclef(FVectorFix Coords1, FFix Radius1, FVectorFix Coords2, FFix Radius2)
+static inline bool f_collide_circleAndCirclef(FVecFix Coords1, FFix Radius1, FVecFix Coords2, FFix Radius2)
 {
     int64_t dx = Coords1.x - Coords2.x;
     int64_t dy = Coords1.y - Coords2.y;
@@ -56,19 +56,19 @@ static inline bool f_collide_circleAndCirclef(FVectorFix Coords1, FFix Radius1, 
     return dx * dx + dy * dy < rSum * rSum;
 }
 
-static inline bool f_collide_pointInBox(FVectorInt Point, FVectorInt BoxCoords, FVectorInt BoxSize)
+static inline bool f_collide_pointInBox(FVecInt Point, FVecInt BoxCoords, FVecInt BoxSize)
 {
     return Point.x >= BoxCoords.x && Point.x < BoxCoords.x + BoxSize.x
         && Point.y >= BoxCoords.y && Point.y < BoxCoords.y + BoxSize.y;
 }
 
-static inline bool f_collide_pointInBoxf(FVectorFix Point, FVectorFix BoxCoords, FVectorFix BoxSize)
+static inline bool f_collide_pointInBoxf(FVecFix Point, FVecFix BoxCoords, FVecFix BoxSize)
 {
     return Point.x >= BoxCoords.x && Point.x < BoxCoords.x + BoxSize.x
         && Point.y >= BoxCoords.y && Point.y < BoxCoords.y + BoxSize.y;
 }
 
-static inline bool f_collide_pointInCircle(FVectorInt Point, FVectorInt CircleCoords, int CircleRadius)
+static inline bool f_collide_pointInCircle(FVecInt Point, FVecInt CircleCoords, int CircleRadius)
 {
     int dx = Point.x - CircleCoords.x;
     int dy = Point.y - CircleCoords.y;
@@ -76,7 +76,7 @@ static inline bool f_collide_pointInCircle(FVectorInt Point, FVectorInt CircleCo
     return dx * dx + dy * dy < CircleRadius * CircleRadius;
 }
 
-static inline bool f_collide_pointInCirclef(FVectorFix Point, FVectorFix CircleCoords, FFix CircleRadius)
+static inline bool f_collide_pointInCirclef(FVecFix Point, FVecFix CircleCoords, FFix CircleRadius)
 {
     int64_t dx = Point.x - CircleCoords.x;
     int64_t dy = Point.y - CircleCoords.y;

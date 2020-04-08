@@ -24,7 +24,7 @@
 
 extern FColorPixel* f_screen_pixelsGetBuffer(void);
 
-extern FVectorInt f_screen_sizeGet(void);
+extern FVecInt f_screen_sizeGet(void);
 extern int f_screen_sizeGetWidth(void);
 extern int f_screen_sizeGetHeight(void);
 

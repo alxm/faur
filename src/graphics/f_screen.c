@@ -30,7 +30,7 @@ static FList* g_stack; // FList<FScreen*>
 
 static void f_screen__init(void)
 {
-    FVectorInt size = f_platform_api__screenSizeGet();
+    FVecInt size = f_platform_api__screenSizeGet();
 
     f__screen.pixels = f_platform_api__screenPixelsGet();
 
@@ -38,7 +38,7 @@ static void f_screen__init(void)
         f__screen.texture = f_platform_api__screenTextureGet();
     #endif
 
-    f__screen.clipStart = (FVectorInt){0, 0};
+    f__screen.clipStart = (FVecInt){0, 0};
     f__screen.clipEnd = size;
     f__screen.clipSize = size;
 
@@ -128,7 +128,7 @@ FColorPixel* f_screen_pixelsGetBuffer(void)
     return f_screen__bufferGetFrom(0, 0);
 }
 
-FVectorInt f_screen_sizeGet(void)
+FVecInt f_screen_sizeGet(void)
 {
     return f__screen.pixels->size;
 }
@@ -214,9 +214,9 @@ void f_screen_clipSet(int X, int Y, int Width, int Height)
         return;
     }
 
-    f__screen.clipStart = (FVectorInt){X, Y};
-    f__screen.clipEnd = (FVectorInt){X + Width, Y + Height};
-    f__screen.clipSize = (FVectorInt){Width, Height};
+    f__screen.clipStart = (FVecInt){X, Y};
+    f__screen.clipEnd = (FVecInt){X + Width, Y + Height};
+    f__screen.clipSize = (FVecInt){Width, Height};
 
     #if !F_CONFIG_RENDER_SOFTWARE
         f_platform_api__screenClipSet();
@@ -230,9 +230,9 @@ void f_screen_clipReset(void)
 
 bool f_screen_boxOnScreen(int X, int Y, int W, int H)
 {
-    return f_collide_boxAndBox((FVectorInt){X, Y},
-                               (FVectorInt){W, H},
-                               (FVectorInt){0, 0},
+    return f_collide_boxAndBox((FVecInt){X, Y},
+                               (FVecInt){W, H},
+                               (FVecInt){0, 0},
                                f__screen.pixels->size);
 }
 
@@ -245,8 +245,8 @@ bool f_screen_boxInsideScreen(int X, int Y, int W, int H)
 
 bool f_screen_boxOnClip(int X, int Y, int W, int H)
 {
-    return f_collide_boxAndBox((FVectorInt){X, Y},
-                               (FVectorInt){W, H},
+    return f_collide_boxAndBox((FVecInt){X, Y},
+                               (FVecInt){W, H},
                                f__screen.clipStart,
                                f__screen.clipSize);
 }
@@ -259,9 +259,9 @@ bool f_screen_boxInsideClip(int X, int Y, int W, int H)
 
 void f_screen__toSprite(FSprite* Sprite, unsigned Frame)
 {
-    FVectorInt spriteSize = f_sprite_sizeGet(Sprite);
+    FVecInt spriteSize = f_sprite_sizeGet(Sprite);
 
-    if(!f_vectorint_equal(f__screen.pixels->size, spriteSize)) {
+    if(!f_vecint_equal(f__screen.pixels->size, spriteSize)) {
         F__FATAL("f_screen__toSprite: %dx%d sprite, %dx%d screen",
                  spriteSize.x,
                  spriteSize.y,

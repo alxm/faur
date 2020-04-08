@@ -233,7 +233,7 @@ void f_platform_api__textureBlitEx(const FPlatformTexture* Texture, const FPixel
 
     Y += f__screen.yOffset;
 
-    FVectorInt halfSize = {Pixels->size.x / 2, Pixels->size.y / 2};
+    FVecInt halfSize = {Pixels->size.x / 2, Pixels->size.y / 2};
 
     SDL_Point center = {
         f_fix_toInt(

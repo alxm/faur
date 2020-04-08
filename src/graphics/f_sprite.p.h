@@ -23,7 +23,7 @@
 typedef struct FSprite FSprite;
 
 #include "../graphics/f_color.p.h"
-#include "../math/f_fix.p.h"
+#include "../math/f_vec.p.h"
 
 extern FSprite* f_sprite_newFromPng(const char* Path, int X, int Y, int FrameWidth, int FrameHeight);
 extern FSprite* f_sprite_newFromSprite(const FSprite* Sheet, int X, int Y, int FrameWidth, int FrameHeight);
@@ -37,7 +37,7 @@ extern void f_sprite_blitEx(const FSprite* Sprite, unsigned Frame, int X, int Y,
 extern void f_sprite_swapColor(FSprite* Sprite, FColorPixel OldColor, FColorPixel NewColor);
 extern void f_sprite_swapColors(FSprite* Sprite, const FColorPixel* OldColors, const FColorPixel* NewColors, unsigned NumColors);
 
-extern FVectorInt f_sprite_sizeGet(const FSprite* Sprite);
+extern FVecInt f_sprite_sizeGet(const FSprite* Sprite);
 extern int f_sprite_sizeGetWidth(const FSprite* Sprite);
 extern int f_sprite_sizeGetHeight(const FSprite* Sprite);
 

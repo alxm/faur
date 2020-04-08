@@ -30,7 +30,7 @@ struct FScreen {
     FPixels* pixels;
     FSprite* sprite;
     unsigned frame;
-    FVectorInt clipStart, clipEnd, clipSize;
+    FVecInt clipStart, clipEnd, clipSize;
     #if !F_CONFIG_RENDER_SOFTWARE
         int yOffset;
         FPlatformTextureScreen* texture;

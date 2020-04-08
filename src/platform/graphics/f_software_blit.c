@@ -24,10 +24,10 @@
 typedef struct {
     #if F__SCANLINES_MALLOC
         int* screen; // one end of the horizontal screen span to draw to
-        FVectorFix* sprite; // one end of the sprite line to interpolate along
+        FVecFix* sprite; // one end of the sprite line to interpolate along
     #else
         int screen[F_CONFIG_SCREEN_SIZE_HEIGHT];
-        FVectorFix sprite[F_CONFIG_SCREEN_SIZE_HEIGHT];
+        FVecFix sprite[F_CONFIG_SCREEN_SIZE_HEIGHT];
     #endif
 } FScanlineEdge;
 
@@ -43,7 +43,7 @@ static FScanlineEdge g_edges[2];
 
 // Interpolate sprite side (SprP1, SprP2) along screen line (ScrP1, ScrP2).
 // ScrP1.y <= ScrP2.y and at least part of this range is on screen.
-static void scan_line(FScanlineEdge* Edge, FVectorInt ScrP1, FVectorInt ScrP2, FVectorFix SprP1, FVectorFix SprP2)
+static void scan_line(FScanlineEdge* Edge, FVecInt ScrP1, FVecInt ScrP2, FVecFix SprP1, FVecFix SprP2)
 {
     // Happens when sprite angle is a multiple of 90deg,
     // and 2 of the sprite's opposite sides are 0-height in screen space.
@@ -78,7 +78,7 @@ static void scan_line(FScanlineEdge* Edge, FVectorInt ScrP1, FVectorInt ScrP2, F
     }
 
     int* sideScreen = Edge->screen;
-    FVectorFix* sideSprite = Edge->sprite;
+    FVecFix* sideSprite = Edge->sprite;
 
     for(int scrY = ScrP1.y; scrY <= ScrP2.y; scrY++, scrX += scrIncX) {
         sideScreen[scrY] = f_fix_toInt(scrX);
@@ -300,7 +300,7 @@ void f_platform_software_blit__init(void)
                 f_mem_malloc((unsigned)height * sizeof(int));
 
             g_edges[i].sprite =
-                f_mem_malloc((unsigned)height * sizeof(FVectorFix));
+                f_mem_malloc((unsigned)height * sizeof(FVecFix));
         }
     #endif
 }
@@ -457,9 +457,9 @@ void f_platform_api__textureBlit(const FPlatformTexture* Texture, const FPixels*
 
 void f_platform_api__textureBlitEx(const FPlatformTexture* Texture, const FPixels* Pixels, unsigned Frame, int X, int Y, FFix Scale, unsigned Angle, FFix CenterX, FFix CenterY)
 {
-    const FVectorInt size = Pixels->size;
-    const FVectorFix sizeScaled = {size.x * Scale, size.y * Scale};
-    const FVectorFix sizeScaledHalf = {sizeScaled.x / 2, sizeScaled.y / 2};
+    const FVecInt size = Pixels->size;
+    const FVecFix sizeScaled = {size.x * Scale, size.y * Scale};
+    const FVecFix sizeScaledHalf = {sizeScaled.x / 2, sizeScaled.y / 2};
 
     /*
          Counter-clockwise rotations:
@@ -487,7 +487,7 @@ void f_platform_api__textureBlitEx(const FPlatformTexture* Texture, const FPixel
     #define ROTATE_X(x, y) f_fix_toInt(f_fix_mul(x,  cos) + f_fix_mul(y, sin))
     #define ROTATE_Y(x, y) f_fix_toInt(f_fix_mul(x, -sin) + f_fix_mul(y, cos))
 
-    const FVectorInt
+    const FVecInt
         p0 = {X + ROTATE_X(xMns, yMns), Y + ROTATE_Y(xMns, yMns)},
         p1 = {X + ROTATE_X(xPls, yMns), Y + ROTATE_Y(xPls, yMns)},
         p2 = {X + ROTATE_X(xPls, yPls), Y + ROTATE_Y(xPls, yPls)},
@@ -496,10 +496,10 @@ void f_platform_api__textureBlitEx(const FPlatformTexture* Texture, const FPixel
     #undef ROTATE_X
     #undef ROTATE_Y
 
-    FVectorInt screenTop, screenBottom, screenLeft, screenRight;
-    FVectorFix spriteTop, spriteBottom, spriteMidleft, spriteMidright;
+    FVecInt screenTop, screenBottom, screenLeft, screenRight;
+    FVecFix spriteTop, spriteBottom, spriteMidleft, spriteMidright;
 
-    FVectorFix
+    FVecFix
         sprite0 = {0, 0},
         sprite1 = {f_fix_fromInt(size.x) - 1, 0},
         sprite2 = {f_fix_fromInt(size.x) - 1, f_fix_fromInt(size.y) - 1},

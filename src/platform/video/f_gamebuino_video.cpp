@@ -25,15 +25,15 @@ extern "C" {
 #define F__NEOPIXELS_H 4
 
 static FScreen g_screen;
-static const FVectorInt g_lightsSize = {F__NEOPIXELS_W, F__NEOPIXELS_H};
+static const FVecInt g_lightsSize = {F__NEOPIXELS_W, F__NEOPIXELS_H};
 
 #if F_CONFIG_SYSTEM_GAMEBUINO
 #include <Arduino.h>
 #include <Gamebuino-Meta.h>
 
 static FPixels g_pixels, g_lights;
-static const FVectorInt g_screenSize = {F_CONFIG_SCREEN_HARDWARE_WIDTH,
-                                        F_CONFIG_SCREEN_HARDWARE_HEIGHT};
+static const FVecInt g_screenSize = {F_CONFIG_SCREEN_HARDWARE_WIDTH,
+                                     F_CONFIG_SCREEN_HARDWARE_HEIGHT};
 
 void f_platform_api__screenInit(void)
 {
@@ -65,7 +65,7 @@ bool f_platform_api__screenVsyncGet(void)
     return true;
 }
 
-FVectorInt f_platform_api__screenSizeGet(void)
+FVecInt f_platform_api__screenSizeGet(void)
 {
     return g_screenSize;
 }

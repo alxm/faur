@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2018-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -15,33 +15,23 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "f_touch.v.h"
+#include "f_vec.v.h"
 #include <faur.v.h>
 
-FVecInt f_touch_deltaGet(void)
+FVecFix f_vecfix_rotateCounter(FVecFix Vec, unsigned Angle)
 {
-    return f_platform_api__inputTouchDeltaGet();
+    const FFix sin = f_fix_sin(Angle);
+    const FFix cos = f_fix_cos(Angle);
+
+    return (FVecFix){f_fix_mul(Vec.x,  cos) + f_fix_mul(Vec.y, sin),
+                     f_fix_mul(Vec.x, -sin) + f_fix_mul(Vec.y, cos)};
 }
 
-bool f_touch_tapGet(void)
+FVecFix f_vecfix_rotateClockwise(FVecFix Vec, unsigned Angle)
 {
-    return f_platform_api__inputTouchTapGet();
-}
+    const FFix sin = f_fix_sin(Angle);
+    const FFix cos = f_fix_cos(Angle);
 
-bool f_touch_pointGet(int X, int Y)
-{
-    return f_touch_boxGet(X - 1, Y - 1, 3, 3);
-}
-
-bool f_touch_boxGet(int X, int Y, int W, int H)
-{
-    if(f_platform_api__inputTouchTapGet()) {
-        FVecInt coords = f_platform_api__inputTouchCoordsGet();
-
-        if(f_collide_pointInBox(coords, (FVecInt){X, Y}, (FVecInt){W, H})) {
-            return true;
-        }
-    }
-
-    return false;
+    return (FVecFix){f_fix_mul(Vec.x, cos) + f_fix_mul(Vec.y, -sin),
+                     f_fix_mul(Vec.x, sin) + f_fix_mul(Vec.y,  cos)};
 }

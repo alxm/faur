@@ -39,8 +39,8 @@ FSpriteSheet* f_spritesheet_new(const char* Path)
 
         F_LIST_ITERATE(f_block_blocksGet(b), const FBlock*, b) {
             const char* id = f_block_lineGetString(b, 0);
-            FVectorInt coords = f_block_lineGetCoords(b, 1);
-            FVectorInt dim = f_block_lineGetCoords(b, 2);
+            FVecInt coords = f_block_lineGetCoords(b, 1);
+            FVecInt dim = f_block_lineGetCoords(b, 2);
 
             FSprite* sprite = f_sprite_newFromSprite(
                                 sheet, coords.x, coords.y, dim.x, dim.y);
