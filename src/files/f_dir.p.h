@@ -1,5 +1,5 @@
 /*
-    Copyright 2011, 2016, 2018-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2011, 2016, 2018-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -29,6 +29,8 @@ extern FDir* f_dir_new(const char* Path);
 extern void f_dir_free(FDir* Dir);
 
 extern const FPath* f_dir_pathGet(const FDir* Dir);
+
 extern const FList* f_dir_entriesGet(const FDir* Dir);
+extern unsigned f_dir_entriesGetNum(const FDir* Dir);
 
 #endif // F_INC_FILES_DIR_P_H

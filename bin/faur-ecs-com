@@ -72,12 +72,12 @@ static void c_{name}_instanceFree({ctype}* {paramVar})
 
 F_COMPONENT(
     c_{name},
-    sizeof({ctype}),
-    c_{name}_instanceInit,
-    c_{name}_instanceFree,
     sizeof({ctype}Data),
     c_{name}_dataInit,
-    c_{name}_dataFree
+    c_{name}_dataFree,
+    sizeof({ctype}),
+    c_{name}_instanceInit,
+    c_{name}_instanceFree
 );
 
 int c_{name}_valueGet(const {ctype}* {paramVar})

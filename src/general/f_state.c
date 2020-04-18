@@ -86,12 +86,12 @@ static void pending_handle(void)
             resetFps = current && current->stage == F__STATE_STAGE_TICK;
         }
 
-        if(resetFps && !g_exiting && f_list_isEmpty(g_pending)) {
+        if(resetFps && !g_exiting && f_list_sizeIsEmpty(g_pending)) {
             f_fps__reset();
         }
     }
 
-    if(f_list_isEmpty(g_pending) || f_state_blockGet()) {
+    if(f_list_sizeIsEmpty(g_pending) || f_state_blockGet()) {
         return;
     }
 
@@ -284,7 +284,7 @@ FState* f_state_currentGet(void)
 
 bool f_state_currentChanged(void)
 {
-    return !f_list_isEmpty(g_pending);
+    return !f_list_sizeIsEmpty(g_pending);
 }
 
 bool f_state_blockGet(void)
@@ -326,7 +326,7 @@ bool f_state__runStep(void)
             f_entity__tick();
             f_fade__tick();
 
-            if(!f_list_isEmpty(g_pending) && !f_state_blockGet()) {
+            if(!f_list_sizeIsEmpty(g_pending) && !f_state_blockGet()) {
                 return true;
             }
 
@@ -340,7 +340,7 @@ bool f_state__runStep(void)
                 g_tickPost();
             }
 
-            if(!f_list_isEmpty(g_pending) && !f_state_blockGet()) {
+            if(!f_list_sizeIsEmpty(g_pending) && !f_state_blockGet()) {
                 return true;
             }
         }

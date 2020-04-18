@@ -90,7 +90,7 @@ void f_menu_itemAdd(FMenu* Menu, void* Item)
 
 void f_menu_tick(FMenu* Menu)
 {
-    if(f_list_isEmpty(Menu->items) || Menu->state != F_MENU_STATE_RUNNING) {
+    if(f_list_sizeIsEmpty(Menu->items) || Menu->state != F_MENU_STATE_RUNNING) {
         return;
     }
 
@@ -115,7 +115,7 @@ void f_menu_tick(FMenu* Menu)
                                 Menu->items, Menu->selectedIndex);
 
         if(Menu->soundBrowse) {
-            f_channel_play(
+            f_channel_playStart(
                 F_CHANNEL_ANY, Menu->soundBrowse, F_CHANNEL_PLAY_NORMAL);
         }
     } else {
@@ -123,14 +123,14 @@ void f_menu_tick(FMenu* Menu)
             Menu->state = F_MENU_STATE_SELECTED;
 
             if(Menu->soundAccept) {
-                f_channel_play(
+                f_channel_playStart(
                     F_CHANNEL_ANY, Menu->soundAccept, F_CHANNEL_PLAY_NORMAL);
             }
         } else if(Menu->cancel && f_button_pressGet(Menu->cancel)) {
             Menu->state = F_MENU_STATE_CANCELED;
 
             if(Menu->soundCancel) {
-                f_channel_play(
+                f_channel_playStart(
                     F_CHANNEL_ANY, Menu->soundCancel, F_CHANNEL_PLAY_NORMAL);
             }
         }

@@ -86,7 +86,7 @@ FPlatformTexture* f_platform_api__textureNew(const FPixels* Pixels)
                     int alpha = f_color_pixelToRgbAny(original[i]);
 
                     buffer[i] =
-                        original[i] | (FColorPixel)(alpha << F__PX_SHIFT_A);
+                        original[i] | ((FColorPixel)alpha << F__PX_SHIFT_A);
                 }
             } break;
         }

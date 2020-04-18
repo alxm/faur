@@ -37,33 +37,32 @@ class Color:
 
 class Output:
     def __init__(self, Tool):
-        self.tool = Tool
+        self.__tool = Tool
+        self.__title = self.__colorfmt(
+                        ('[f', Color.White),
+                        ('a', Color.LightBlue),
+                        ('u', Color.LightGreen),
+                        ('r', Color.Yellow),
+                        (f'{self.__tool.name[4 : ]}]', Color.White))
 
-    def __colored(self, Text, Color):
-        print(f'\033[{Color}m{Text}\033[0m', end = '')
+    def __colorfmt(self, *Args):
+        return ''.join(f'\033[{color}m{text}\033[0m' for (text, color) in Args)
 
-    def __title(self):
-        self.__colored('[', Color.LightGray)
-        self.__colored('f', Color.White)
-        self.__colored('a', Color.LightBlue)
-        self.__colored('u', Color.LightGreen)
-        self.__colored('r', Color.Yellow)
-        self.__colored(f'{self.tool.name[4 : ]}]', Color.LightGray)
+    def __worker(self, Tag, TagColor, Text, OutputFile):
+        if self.__tool.get_flag('-q'):
+            return
 
-    def __worker(self, Tag, Color, Text):
-        if not self.tool.get_flag('-q'):
-            for line in Text.splitlines():
-                self.__title()
-                self.__colored(f'{Tag} ', Color)
+        tag = self.__colorfmt((f'[{Tag}]', TagColor))
 
-                print(line)
+        for line in Text.splitlines():
+            print(f'{self.__title}{tag} {line}', file = OutputFile)
 
     def note(self, Text):
-        self.__worker('[Note]', Color.LightGreen, Text)
+        self.__worker('Note', Color.LightGreen, Text, sys.stdout)
 
     def error(self, Text):
-        self.__worker('[Error]', Color.LightRed, Text)
+        self.__worker('Error', Color.LightRed, Text, sys.stderr)
         sys.exit(1)
 
     def shell(self, Text):
-        self.__worker('[Shell]', Color.LightPurple, Text)
+        self.__worker('Shell', Color.LightPurple, Text, sys.stdout)

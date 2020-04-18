@@ -97,7 +97,16 @@ F_BUILD_FILES_O := \
 #
 F_BUILD_FILE_FAUR_LIB := $(F_BUILD_DIR_FAUR_O)/faur.a
 
-F_BUILD_FILES_FAUR_C := $(shell find $(F_FAUR_DIR_SRC) -type f \( -name "*.c" -o -name "*.cpp" \))
+F_BUILD_FILES_FAUR_GFX_PNG := $(shell find $(F_FAUR_DIR_MEDIA) -type f -name "g_*.png")
+F_BUILD_FILES_FAUR_GFX_H := $(F_BUILD_FILES_FAUR_GFX_PNG:$(F_FAUR_DIR_ROOT)/%=$(F_FAUR_DIR_SRC_GEN)/%.h)
+
+F_BUILD_FILES_FAUR_C := \
+    $(shell find $(F_FAUR_DIR_SRC) \
+	-not -path "$(F_FAUR_DIR_SRC_GEN)/*" \
+	-type f \
+	\( -name "*.c" -o -name "*.cpp" \)) \
+    $(F_BUILD_FILES_FAUR_GFX_H:%.h=%.c) \
+
 F_BUILD_FILES_FAUR_O := $(F_BUILD_FILES_FAUR_C:$(F_FAUR_DIR_SRC)/%=$(F_BUILD_DIR_FAUR_O)/%.o)
 
 F_BUILD_FILES_FAUR_PUBLIC_HEADERS := \
@@ -169,7 +178,7 @@ endif
 #
 # Not file targets
 #
-.PHONY : all run clean $(F_CONFIG_BUILD_MAKE_CLEAN) copystatic
+.PHONY : all clean cleangen copystatic run valgrind $(F_CONFIG_BUILD_MAKE_CLEAN)
 
 all : $(F_MAKE_ALL)
 
@@ -258,8 +267,21 @@ $(F_BUILD_DIR_FAUR_O)/%.cpp.o : $(F_FAUR_DIR_SRC)/%.cpp
 	@ mkdir -p $(@D)
 	$(CXX) -c -o $@ $< $(F_BUILD_FLAGS_CPP)
 
+$(F_FAUR_DIR_SRC_GEN)/%.c : $(F_FAUR_DIR_ROOT)/% $(F_FAUR_DIR_BIN)/faur-embed-gfx
+	@ mkdir -p $(@D)
+	$(F_FAUR_DIR_BIN)/faur-embed-gfx $< $@ _$(notdir $(basename $<)) $(F_CONFIG_COLOR_SPRITE_KEY)
+
+$(F_FAUR_DIR_SRC_GEN)/%.h : $(F_FAUR_DIR_ROOT)/% $(F_FAUR_DIR_BIN)/faur-embed-gfx
+	@ mkdir -p $(@D)
+	$(F_FAUR_DIR_BIN)/faur-embed-gfx $< $@ _$(notdir $(basename $<)) $(F_CONFIG_COLOR_SPRITE_KEY)
+
+$(F_BUILD_FILES_FAUR_O) : $(F_BUILD_FILES_FAUR_GFX_H)
+
 $(F_FAUR_FILE_GEANY_TAGS) : $(F_BUILD_FILES_FAUR_PUBLIC_HEADERS)
 	test ! -d $(@D) || CFLAGS="$(F_CONFIG_BUILD_FLAGS_SETTINGS)" geany -g $@ $^
+
+$(F_FAUR_FILE_SDK_MK) :
+	touch $@
 
 #
 # Action targets

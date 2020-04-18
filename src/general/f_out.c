@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2016-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -60,23 +60,21 @@ static const struct {
 
 static void outWorkerPrint(FOutSource Source, FOutType Type, FILE* Stream, const char* Text)
 {
-    static char headerBuffer[64];
+    char headerTag[64];
 
-    const char* headerTag = f_str_fmt(
-                                headerBuffer,
-                                sizeof(headerBuffer),
-                                false,
+    if(f_str_fmt(headerTag,
+                 sizeof(headerTag),
+                 false,
 #if F_CONFIG_SYSTEM_LINUX && F_CONFIG_TRAIT_DESKTOP
-                                "\033[1;%dm[%s][%s][%08x]\033[0m ",
-                                g_types[Type].color,
+                 "\033[1;%dm[%s][%s][%08x]\033[0m ",
+                 g_types[Type].color,
 #else
-                                "[%s][%s][%08x] ",
+                 "[%s][%s][%08x] ",
 #endif
-                                g_sources[Source],
-                                g_types[Type].name,
-                                (unsigned)f_fps_ticksGet());
+                 g_sources[Source],
+                 g_types[Type].name,
+                 (unsigned)f_fps_ticksGet())) {
 
-    if(headerTag) {
         f_platform_api__filePrint(Stream, headerTag);
     }
 

@@ -44,6 +44,7 @@ F_CONFIG_BUILD_FLAGS_SHARED += \
 
 F_CONFIG_BUILD_FLAGS_C += \
     -Wno-override-init \
+    -fgnu89-inline \
 
 F_TOOLCHAIN_PREFIX := arm-gph-linux-gnueabi-
 

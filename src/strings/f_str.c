@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2016-2018 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2016-2018, 2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -18,54 +18,28 @@
 #include "f_str.v.h"
 #include <faur.v.h>
 
-static inline const char* strFmtv(char* Buffer, size_t Size, bool OverflowOk, const char* Format, va_list Args)
+static inline bool strFmtv(char* Buffer, size_t Size, bool OverflowOk, const char* Format, va_list Args)
 {
     int r = vsnprintf(Buffer, Size, Format, Args);
 
-    return (r >= 0 && (r < (int)Size || OverflowOk)) ? Buffer : NULL;
+    return r >= 0 && (r < (int)Size || OverflowOk);
 }
 
-const char* f_str_fmt(char* Buffer, size_t Size, bool OverflowOk, const char* Format, ...)
+bool f_str_fmt(char* Buffer, size_t Size, bool OverflowOk, const char* Format, ...)
 {
     va_list args;
     va_start(args, Format);
 
-    const char* ret = strFmtv(Buffer, Size, OverflowOk, Format, args);
+    bool ret = strFmtv(Buffer, Size, OverflowOk, Format, args);
 
     va_end(args);
 
     return ret;
 }
 
-const char* f_str_fmtv(char* Buffer, size_t Size, bool OverflowOk, const char* Format, va_list Args)
+bool f_str_fmtv(char* Buffer, size_t Size, bool OverflowOk, const char* Format, va_list Args)
 {
     return strFmtv(Buffer, Size, OverflowOk, Format, Args);
-}
-
-const char* f_str_fmt512(const char* Format, ...)
-{
-    va_list args;
-    va_start(args, Format);
-
-    static char buffer[512];
-    const char* ret = strFmtv(buffer, sizeof(buffer), false, Format, args);
-
-    va_end(args);
-
-    return ret;
-}
-
-const char* f_str__fmt512(const char* Format, ...)
-{
-    va_list args;
-    va_start(args, Format);
-
-    static char buffer[512];
-    const char* ret = strFmtv(buffer, sizeof(buffer), false, Format, args);
-
-    va_end(args);
-
-    return ret;
 }
 
 char* f_str_merge(const char* String1, ...)
@@ -281,4 +255,9 @@ FList* f_str_split(const char* String, const char* Delimiters)
     }
 
     return strings;
+}
+
+void f_str_splitFree(FList* List)
+{
+    f_list_freeEx(List, f_mem_free);
 }

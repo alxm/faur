@@ -22,6 +22,19 @@
 
 typedef struct FTemplate FTemplate;
 
+#include "../data/f_bitfield.v.h"
+
+struct FTemplate {
+    const FTemplate* parent; // Template chain
+    FEntityInit* init; // Optional, runs after components init and parent init
+    FList* componentsOwn; // FList<const FComponent*> this template only
+    FList* componentsAll; // FList<const FComponent*> this template or parent
+    FBitfield* componentsBits; // Set if this template or parent has component
+    uint32_t iNumber; // Incremented by every new entity
+    void* data[1]; // [f_component__num] Loaded config data, or NULL
+                   // Component bit might be set even if data is NULL
+};
+
 extern void f_template__init(void);
 extern void f_template__uninit(void);
 
@@ -29,8 +42,5 @@ extern const FTemplate* f_template__get(const char* Id);
 extern void f_template__set(const char* Id, FEntityInit* Init);
 
 extern void f_template__initRun(const FTemplate* Template, FEntity* Entity, const void* Context);
-extern unsigned f_template__instanceGet(const FTemplate* Template);
-extern const FList* f_template__componentsGet(const FTemplate* Template);
-extern const void* f_template__dataGet(const FTemplate* Template, const FComponent* Component);
 
 #endif // F_INC_ECS_TEMPLATE_V_H

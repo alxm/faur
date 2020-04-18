@@ -35,10 +35,10 @@ extern void f_list_appendMove(FList* Dst, FList* Src);
 extern void f_list_appendCopy(FList* Dst, const FList* Src);
 
 extern void* f_list_getByIndex(const FList* List, unsigned Index);
+extern void* f_list_getByNode(const FListNode* Node);
 extern void* f_list_getFirst(const FList* List);
 extern void* f_list_getLast(const FList* List);
 extern void* f_list_getRandom(const FList* List);
-extern void* f_list_getNodeContent(const FListNode* Node);
 
 extern void* f_list_removeItem(FList* List, const void* Item);
 extern void* f_list_removeFirst(FList* List);
@@ -57,7 +57,8 @@ extern void f_list_reverse(FList* List);
 extern void f_list_sort(FList* List, FListCompare* Compare);
 
 extern unsigned f_list_sizeGet(const FList* List);
-extern bool f_list_isEmpty(const FList* List);
+extern bool f_list_sizeIsEmpty(const FList* List);
+
 extern bool f_list_contains(const FList* List, const void* Item);
 
 static inline FListNode* f_list_push(FList* List, void* Content)

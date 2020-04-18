@@ -1,5 +1,5 @@
 /*
-    Copyright 2010-2011, 2015-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2010-2011, 2015-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -25,15 +25,17 @@ struct FGrid {
     FList** cellsData; // FList*[h * w] of void*
 };
 
-FGrid* f_grid_new(FFix Width, FFix Height, FFix MaxObjectDim)
+FGrid* f_grid_new(FFix Width, FFix Height, FFix MaxItemDiameter)
 {
     FGrid* g = f_mem_malloc(sizeof(FGrid));
 
-    g->shift = 0;
+    int shift = 0;
 
-    while((F_FIX_ONE << g->shift) < MaxObjectDim) {
-        g->shift++;
+    while((F_FIX_ONE << shift) < MaxItemDiameter) {
+        shift++;
     }
+
+    g->shift = shift + 1;
 
     FFix cellDim = F_FIX_ONE << g->shift;
 

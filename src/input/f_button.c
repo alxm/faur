@@ -213,7 +213,7 @@ void f_button_bindCombo(FButton* Button, const FController* Controller, FButtonI
         }
     }
 
-    if(f_list_isEmpty(combo)) {
+    if(f_list_sizeIsEmpty(combo)) {
         f_list_free(combo);
     } else {
         if(Button->combos == NULL) {
@@ -228,8 +228,8 @@ void f_button_bindCombo(FButton* Button, const FController* Controller, FButtonI
 
 bool f_button_isWorking(const FButton* Button)
 {
-    return !f_list_isEmpty(Button->platformInputs)
-        || (Button->combos && !f_list_isEmpty(Button->combos));
+    return !f_list_sizeIsEmpty(Button->platformInputs)
+        || (Button->combos && !f_list_sizeIsEmpty(Button->combos));
 }
 
 const char* f_button_nameGet(const FButton* Button)
@@ -258,7 +258,7 @@ void f_button_pressSetRepeat(FButton* Button, unsigned RepeatMs)
     if(Button->autoRepeat == NULL) {
         Button->autoRepeat = f_timer_new(F_TIMER_MS, RepeatMs, true);
     } else {
-        f_timer_stop(Button->autoRepeat);
+        f_timer_runStop(Button->autoRepeat);
         f_timer_periodSet(Button->autoRepeat, RepeatMs);
     }
 }
@@ -301,13 +301,13 @@ done:
 
         if(b->autoRepeat) {
             if(pressed) {
-                if(!f_timer_isRunning(b->autoRepeat)) {
-                    f_timer_start(b->autoRepeat);
+                if(!f_timer_runGet(b->autoRepeat)) {
+                    f_timer_runStart(b->autoRepeat);
                 } else if(!f_timer_expiredGet(b->autoRepeat)) {
                     pressed = false;
                 }
             } else {
-                f_timer_stop(b->autoRepeat);
+                f_timer_runStop(b->autoRepeat);
             }
         }
 

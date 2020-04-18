@@ -1,5 +1,5 @@
 /*
-    Copyright 2010, 2014, 2016-2019 Alex Margarit <alex@alxm.org>
+    Copyright 2010, 2014, 2016-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -82,7 +82,11 @@ typedef enum {
 
 static inline FFix f_fix_fromInt(int X)
 {
-    return X << F_FIX_BIT_PRECISION;
+    #if F_CONFIG_TRAIT_SLOW_MUL
+        return X << F_FIX_BIT_PRECISION;
+    #else
+        return X * (1 << F_FIX_BIT_PRECISION);
+    #endif
 }
 
 static inline FFix f_fix_fromFloat(float X)
@@ -117,7 +121,11 @@ static inline FFix f_fix_mul(FFix X, FFix Y)
 
 static inline FFix f_fix_div(FFix X, FFix Y)
 {
-    return (FFix)(((int64_t)X << F_FIX_BIT_PRECISION) / Y);
+    #if F_CONFIG_TRAIT_SLOW_MUL
+        return (FFix)(((int64_t)X << F_FIX_BIT_PRECISION) / Y);
+    #else
+        return (FFix)(((int64_t)X * (1 << F_FIX_BIT_PRECISION)) / Y);
+    #endif
 }
 
 static inline FFix f_fix_inverse(FFix X)

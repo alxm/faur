@@ -24,7 +24,9 @@ F_MAKE_SPACE_ESCAPE = $(subst $(F_MAKE_SPACE),\$(F_MAKE_SPACE),$1)
 #
 F_FAUR_DIR_ROOT := $(realpath $(FAUR_PATH))
 F_FAUR_DIR_BIN := $(F_FAUR_DIR_ROOT)/bin
+F_FAUR_DIR_MEDIA := $(F_FAUR_DIR_ROOT)/media
 F_FAUR_DIR_SRC := $(F_FAUR_DIR_ROOT)/src
+F_FAUR_DIR_SRC_GEN := $(F_FAUR_DIR_SRC)/generated
 F_FAUR_DIR_CONFIG := $(HOME)/.config/faur
 
 #

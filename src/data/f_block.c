@@ -133,7 +133,7 @@ FBlock* f_block_new(const char* File)
         f_list_push(stack, block);
     }
 
-    while(!f_list_isEmpty(stack)) {
+    while(!f_list_sizeIsEmpty(stack)) {
         blockCommitLines(f_list_pop(stack));
     }
 
