@@ -62,10 +62,10 @@ static int dirSort(const FPath* A, const FPath* B)
 
 static void dirRealCreate(const char* Path)
 {
-    #if F_CONFIG_SYSTEM_LINUX
-        int ret = mkdir(Path, S_IRWXU);
-    #else
+    #if F_CONFIG_SYSTEM_MINGW
         int ret = mkdir(Path);
+    #else
+        int ret = mkdir(Path, S_IRWXU);
     #endif
 
     if(ret != 0) {
