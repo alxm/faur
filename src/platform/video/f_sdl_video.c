@@ -338,7 +338,7 @@ void f_platform_api__screenInit(void)
 
     f_out__info("V-sync is %s", g_vsync ? "on" : "off");
 
-    #if F_CONFIG_TRAIT_DESKTOP
+    #if F_CONFIG_TRAIT_DESKTOP || F_CONFIG_SYSTEM_EMSCRIPTEN
         char caption[64];
 
         if(f_str_fmt(caption,
