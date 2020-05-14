@@ -33,12 +33,16 @@ ifeq ($(F_CONFIG_LIB_SDL), 1)
     F_CONFIG_SCREEN_FORMAT := F_COLOR_FORMAT_ABGR_8888
 endif
 
+#
+# Flags are in $(F_SDK_EMSCRIPTEN_ROOT)/upstream/emscripten/src/settings.js
+#
 F_EMSCRIPTEN_OPTIONS := \
     -s USE_SDL=$(F_CONFIG_LIB_SDL) \
     -s USE_SDL_MIXER=$(F_CONFIG_LIB_SDL) \
     -s USE_ZLIB=1 \
     -s USE_LIBPNG=1 \
     -s ALLOW_MEMORY_GROWTH=1 \
+    -s WASM=1 \
     --shell-file $(F_FAUR_DIR_MEDIA)/shell.html \
 
 ifdef F_CONFIG_SYSTEM_EMSCRIPTEN_INITIAL_MEMORY

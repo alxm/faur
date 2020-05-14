@@ -523,10 +523,10 @@ void f_platform_api__screenShow(void)
             } else {
                 FColorPixel* dst = g_sdlScreen->pixels;
                 const FColorPixel* src = g_pixels.buffer;
-                size_t dstRowLen = g_sdlScreen->pitch / sizeof(FColorPixel);
+                int dstRowLen = g_sdlScreen->pitch / (int)sizeof(FColorPixel);
 
                 dst += (g_sdlScreen->h - (g_zoom * g_size.y))
-                        * (int)dstRowLen / 2
+                        * dstRowLen / 2
                         + (g_sdlScreen->w - (g_zoom * g_size.x)) / 2;
 
                 for(int y = g_pixels.size.y; y--; ) {
@@ -543,7 +543,7 @@ void f_platform_api__screenShow(void)
                     dst = firstLine + dstRowLen;
 
                     for(int z = g_zoom - 1; z--; ) {
-                        memcpy(dst, firstLine, g_sdlScreen->pitch);
+                        memcpy(dst, firstLine, (size_t)g_sdlScreen->pitch);
                         dst += dstRowLen;
                     }
                 }
