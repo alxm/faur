@@ -33,6 +33,18 @@ ifeq ($(F_CONFIG_LIB_SDL), 1)
     F_CONFIG_SCREEN_FORMAT := F_COLOR_FORMAT_ABGR_8888
 endif
 
+ifdef F_CONFIG_SYSTEM_EMSCRIPTEN_SHELL
+    F_EMSCRIPTEN_SHELL := $(F_DIR_ROOT_FROM_MAKE)/$(F_CONFIG_SYSTEM_EMSCRIPTEN_SHELL)
+else
+    ifdef F_CONFIG_SCREEN_SIZE_WIDTH
+        ifeq ($(shell expr $(F_CONFIG_SCREEN_SIZE_WIDTH) \< 0), 1)
+            F_EMSCRIPTEN_SHELL := $(F_FAUR_DIR_MEDIA)/shell-fullscreen.html
+        endif
+    endif
+
+    F_EMSCRIPTEN_SHELL ?= $(F_FAUR_DIR_MEDIA)/shell.html
+endif
+
 #
 # Flags are in $(F_SDK_EMSCRIPTEN_ROOT)/upstream/emscripten/src/settings.js
 #
@@ -43,7 +55,7 @@ F_EMSCRIPTEN_OPTIONS := \
     -s USE_LIBPNG=1 \
     -s ALLOW_MEMORY_GROWTH=1 \
     -s WASM=1 \
-    --shell-file $(F_FAUR_DIR_MEDIA)/shell.html \
+    --shell-file $(F_EMSCRIPTEN_SHELL) \
 
 ifdef F_CONFIG_SYSTEM_EMSCRIPTEN_INITIAL_MEMORY
     F_EMSCRIPTEN_OPTIONS += -s INITIAL_MEMORY=$(F_CONFIG_SYSTEM_EMSCRIPTEN_INITIAL_MEMORY)
