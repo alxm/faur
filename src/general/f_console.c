@@ -19,7 +19,9 @@
 #include "f_console.v.h"
 #include <faur.v.h>
 
-#if F_CONFIG_CONSOLE_ENABLED
+#define F__CONSOLE_ENABLED (!F_CONFIG_SYSTEM_ARDUINO && !F_CONFIG_TRAIT_LOW_MEM)
+
+#if F__CONSOLE_ENABLED
 #include "../generated/media/g_console_19x7.png.h"
 
 #include <unistd.h>
@@ -40,7 +42,7 @@ static FConsoleState g_state = F_CONSOLE__STATE_INVALID;
 static FList* g_lines;
 static unsigned g_linesPerScreen;
 static FButton* g_toggle;
-static bool g_show = F_CONFIG_CONSOLE_SHOW;
+static bool g_show;
 
 static FLine* line_new(FOutSource Source, FOutType Type, const char* Text)
 {
@@ -280,7 +282,7 @@ void f_console__write(FOutSource Source, FOutType Type, const char* Text)
         line_free(f_list_pop(g_lines));
     }
 }
-#else // !F_CONFIG_CONSOLE_ENABLED
+#else // !F__CONSOLE_ENABLED
 const FPack f_pack__console;
 
 void f_console_showSet(bool Show)
@@ -307,4 +309,4 @@ void f_console__write(FOutSource Source, FOutType Type, const char* Text)
     F_UNUSED(Type);
     F_UNUSED(Text);
 }
-#endif // !F_CONFIG_CONSOLE_ENABLED
+#endif // !F__CONSOLE_ENABLED
