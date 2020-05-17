@@ -1,5 +1,5 @@
 /*
-    Copyright 2019 Alex Margarit <alex@alxm.org>
+    Copyright 2019-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -20,8 +20,12 @@
 
 #include "f_emscripten.p.h"
 
+#include "../../math/f_vec.v.h"
+
 extern void f_platform_emscripten__init(void);
 
 extern void f_platform_emscripten__loop(void);
+
+extern FVecInt f_platform_emscripten__windowSizeGet(void);
 
 #endif // F_INC_PLATFORM_SYSTEM_EMSCRIPTEN_V_H

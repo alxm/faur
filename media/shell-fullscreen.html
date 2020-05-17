@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Untitled</title>
+        <style>
+            * {
+                margin:0;
+                padding:0;
+                border:0;
+                line-height:0;
+                box-sizing:border-box;
+            }
+            html {
+                height:100%;
+            }
+            body {
+                height:100%;
+                background:#2f1f1f;
+            }
+            canvas {
+                width:100%;
+                height:100%;
+            }
+        </style>
+    </head>
+    <body>
+        <canvas id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
+        <script>
+            var canvasElement = document.getElementById('canvas');
+
+            var Module = {
+                preRun: [],
+                postRun: [],
+
+                print: (function() {
+                    return function(text) {
+                        if(arguments.length > 1) {
+                            text = Array.prototype.slice.call(arguments).join(' ');
+                        }
+
+                        console.log(text);
+                    };
+                })(),
+
+                printErr: function(text) {
+                    if(arguments.length > 1) {
+                        text = Array.prototype.slice.call(arguments).join(' ');
+                    }
+
+                    console.error(text);
+                },
+
+                canvas: (function() {
+                    // As a default initial behavior, pop up an alert when webgl context is lost. To make your
+                    // application robust, you may want to override this behavior before shipping!
+                    // See http://www.khronos.org/registry/webgl/specs/latest/1.0/#5.15.2
+                    canvasElement.addEventListener(
+                        "webglcontextlost",
+                        function(e) {
+                            alert('WebGL context lost. You will need to reload the page.');
+                            e.preventDefault();
+                        },
+                        false);
+
+                    return canvasElement;
+                })(),
+
+                setStatus: function(text) {
+                    if(!Module.setStatus.last) {
+                        Module.setStatus.last = {
+                            text: ''
+                        };
+                    }
+
+                    text = text.trim();
+
+                    if(text.length > 0 && text !== Module.setStatus.last.text) {
+                        Module.setStatus.last.text = text;
+
+                        if(!text.match(/([^(]+)\((\d+(\.\d+)?)\/(\d+)\)/)) {
+                            Module.print(text);
+                        }
+                    }
+                },
+
+                totalDependencies: 0,
+                monitorRunDependencies: function(left) {
+                    this.totalDependencies = Math.max(this.totalDependencies, left);
+                    Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies-left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
+                }
+            };
+
+            Module.setStatus('Downloading...');
+
+            window.onerror = function(event) {
+                // TODO: do not warn on ok events like simulating an infinite loop or exitStatus
+                Module.setStatus('Exception thrown, see JavaScript console');
+                Module.setStatus = function(text) {
+                    if(text) {
+                        Module.printErr('[post-exception status] ' + text);
+                    }
+                };
+            };
+
+            function audio_enable_fix() {
+                try {
+                    if(Module.SDL2
+                        && Module.SDL2.audioContext
+                        && Module.SDL2.audioContext.resume) {
+
+                        if(Module.SDL2.audioContext.state == 'suspended') {
+                            Module.SDL2.audioContext.resume();
+                        }
+
+                        if(Module.SDL2.audioContext.state == 'running') {
+                            document.removeEventListener('keydown', audio_enable_fix);
+                            document.removeEventListener('click', audio_enable_fix);
+                        }
+                    }
+                } catch(e) {
+                    Module.printErr(e.toString());
+                }
+            }
+
+            document.addEventListener('keydown', audio_enable_fix);
+            document.addEventListener('click', audio_enable_fix);
+        </script>
+        {{{ SCRIPT }}}
+    </body>
+</html>

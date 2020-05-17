@@ -1,5 +1,5 @@
 /*
-    Copyright 2019 Alex Margarit <alex@alxm.org>
+    Copyright 2019-2020 Alex Margarit <alex@alxm.org>
     This file is part of Faur, a C video game framework.
 
     This program is free software: you can redistribute it and/or modify
@@ -47,5 +47,17 @@ void f_platform_emscripten__loop(void)
     if(!f_state__runStep()) {
         emscripten_cancel_main_loop();
     }
+}
+
+FVecInt f_platform_emscripten__windowSizeGet(void)
+{
+    return (FVecInt){
+        EM_ASM_INT({
+            return window.innerWidth;
+        }),
+        EM_ASM_INT({
+            return window.innerHeight;
+        })
+    };
 }
 #endif // F_CONFIG_SYSTEM_EMSCRIPTEN

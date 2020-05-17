@@ -118,9 +118,13 @@ F__ATTRIBUTE_NORETURN static void handleFatal(void)
             free(functionNames);
         #endif
 
-        f_console_showSet(true);
-        f_console__draw();
-        f_screen__draw();
+        bool console = f_console__isInitialized();
+
+        if(console) {
+            f_console_showSet(true);
+            f_console__draw();
+            f_screen__draw();
+        }
 
         #if F_CONFIG_BUILD_DEBUG_WAIT
             while(true) {
@@ -128,7 +132,7 @@ F__ATTRIBUTE_NORETURN static void handleFatal(void)
                 f_time_spinSec(1);
             }
         #elif !F_CONFIG_TRAIT_DESKTOP
-            if(f_console__isInitialized()) {
+            if(console) {
                 f_out__info("Exiting in 10s");
                 f_console__draw();
                 f_screen__draw();

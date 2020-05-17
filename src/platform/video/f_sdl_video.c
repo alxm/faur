@@ -40,8 +40,11 @@
     static const bool g_vsync = false;
 #endif
 
-#define F__SIZE_DYNAMIC \
-    (F_CONFIG_SCREEN_SIZE_WIDTH < 0 || F_CONFIG_SCREEN_SIZE_HEIGHT < 0)
+#if (F_CONFIG_SCREEN_SIZE_WIDTH < 0) != (F_CONFIG_SCREEN_SIZE_HEIGHT < 0)
+    #error Invalid screen size
+#endif
+
+#define F__SIZE_DYNAMIC (F_CONFIG_SCREEN_SIZE_WIDTH < 0)
 
 #define F__ALLOCATE_LOGICAL_BUFFER \
     (F_CONFIG_LIB_SDL == 2 \
@@ -121,38 +124,29 @@ static bool sdl1ScreenSet(int Width, int Height, uint32_t Flags)
 #endif
 
 #if F__SIZE_DYNAMIC
-#if F__HARDWARE_SCREEN
 static FVecInt sdlScreenSizeGetNative(void)
 {
-    return (FVecInt){F_CONFIG_SCREEN_HARDWARE_WIDTH,
-                     F_CONFIG_SCREEN_HARDWARE_HEIGHT};
+    #if F__HARDWARE_SCREEN
+        return (FVecInt){F_CONFIG_SCREEN_HARDWARE_WIDTH,
+                         F_CONFIG_SCREEN_HARDWARE_HEIGHT};
+    #elif F_CONFIG_SYSTEM_EMSCRIPTEN
+        return f_platform_emscripten__windowSizeGet();
+    #elif F_CONFIG_LIB_SDL == 1
+        const SDL_VideoInfo* info = SDL_GetVideoInfo();
+
+        return (FVecInt){info->current_w, info->current_h};
+    #elif F_CONFIG_LIB_SDL == 2
+        SDL_DisplayMode mode;
+
+        if(SDL_GetCurrentDisplayMode(0, &mode) < 0) {
+            f_out__error("SDL_GetCurrentDisplayMode: %s", SDL_GetError());
+
+            return (FVecInt){0, 0};
+        }
+
+        return (FVecInt){mode.w, mode.h};
+    #endif
 }
-#elif F_CONFIG_LIB_SDL == 1
-static FVecInt sdlScreenSizeGetNative(void)
-{
-    const SDL_VideoInfo* info = SDL_GetVideoInfo();
-
-    return (FVecInt){info->current_w, info->current_h};
-}
-#elif F_CONFIG_LIB_SDL == 2
-static FVecInt sdlScreenSizeGetNative(void)
-{
-    SDL_DisplayMode mode;
-
-    if(SDL_GetCurrentDisplayMode(0, &mode) < 0) {
-        f_out__error("SDL_GetCurrentDisplayMode: %s", SDL_GetError());
-
-        return (FVecInt){0, 0};
-    }
-
-    f_out__info("Display info: %dx%d %dbpp",
-                mode.w,
-                mode.h,
-                SDL_BITSPERPIXEL(mode.format));
-
-    return (FVecInt){mode.w, mode.h};
-}
-#endif
 #endif // F__SIZE_DYNAMIC
 
 static void mouseCursorSet(bool Show)
@@ -338,7 +332,7 @@ void f_platform_api__screenInit(void)
 
     f_out__info("V-sync is %s", g_vsync ? "on" : "off");
 
-    #if F_CONFIG_TRAIT_DESKTOP
+    #if F_CONFIG_TRAIT_DESKTOP || F_CONFIG_SYSTEM_EMSCRIPTEN
         char caption[64];
 
         if(f_str_fmt(caption,
@@ -523,10 +517,10 @@ void f_platform_api__screenShow(void)
             } else {
                 FColorPixel* dst = g_sdlScreen->pixels;
                 const FColorPixel* src = g_pixels.buffer;
-                size_t dstRowLen = g_sdlScreen->pitch / sizeof(FColorPixel);
+                int dstRowLen = g_sdlScreen->pitch / (int)sizeof(FColorPixel);
 
                 dst += (g_sdlScreen->h - (g_zoom * g_size.y))
-                        * (int)dstRowLen / 2
+                        * dstRowLen / 2
                         + (g_sdlScreen->w - (g_zoom * g_size.x)) / 2;
 
                 for(int y = g_pixels.size.y; y--; ) {
@@ -543,7 +537,7 @@ void f_platform_api__screenShow(void)
                     dst = firstLine + dstRowLen;
 
                     for(int z = g_zoom - 1; z--; ) {
-                        memcpy(dst, firstLine, g_sdlScreen->pitch);
+                        memcpy(dst, firstLine, (size_t)g_sdlScreen->pitch);
                         dst += dstRowLen;
                     }
                 }

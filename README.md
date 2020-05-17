@@ -29,7 +29,7 @@ export FAUR_PATH="$HOME/faur"
 export PATH="$PATH:$FAUR_PATH/bin"
 ```
 
-## *Hello, World*
+## *Hello, World* Project
 
 ```sh
 faur-new hello
@@ -41,9 +41,28 @@ make run
 
 Move the square with the arrow keys or a gamepad.
 
-Here are the generated source files:
+### Generated Files
 
-#### main.c
+```sh
+hello/
+├── assets/
+├── build/
+│   └── make/
+│       └── Makefile
+└── src/
+    └── main.c
+```
+
+#### hello/build/make/Makefile
+
+```make
+F_CONFIG_APP_AUTHOR := <author>
+F_CONFIG_APP_NAME := hello
+
+include $(FAUR_PATH)/make/dev.mk
+```
+
+#### hello/src/main.c
 
 ```c
 #include <faur.h>
@@ -113,15 +132,6 @@ void f_main(void)
         f_button_free(context.right);
     }
 }
-```
-
-#### Makefile
-
-```make
-F_CONFIG_APP_AUTHOR := <author>
-F_CONFIG_APP_NAME := hello
-
-include $(FAUR_PATH)/make/dev.mk
 ```
 
 ## Cross-Compile for Other Platforms
